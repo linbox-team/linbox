@@ -1,3 +1,7 @@
+// use of modular-int.h is now deprecated.  Use modular-int32.h.
+#include <linbox/field/modular-int32.h>
+
+#if 0
 #ifndef __LINBOX_MODULAR_INT_H
 #define __LINBOX_MODULAR_INT_H
 
@@ -673,4 +677,5 @@ namespace LinBox
 } 
 
 #include "linbox/randiter/modular.h"
+#endif
 #endif

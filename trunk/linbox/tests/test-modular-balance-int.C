@@ -42,18 +42,18 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	cout << endl << "Modular<int> field test suite" << endl;
+	cout << endl << "ModularBalance<int> field test suite" << endl;
 	cout.flush ();
 	bool pass = true;
 
-	Modular<int> F_int (1073741789);//(2147483629);//(2147483647);
+	ModularBalance<int> F_int (1073741789);//(2147483629);//(2147483647);
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	if (!runFieldTests (F_int,  "Modular<int>",  iterations, n, false)) pass = false;
-	//if (!testRandomIterator (F_int,  "Modular<int>", trials, categories, hist_level)) pass = false;
+	if (!runFieldTests (F_int,  "ModularBalance<int>",  iterations, n, false)) pass = false;
+	//if (!testRandomIterator (F_int,  "ModularBalance<int>", trials, categories, hist_level)) pass = false;
 
 	return pass ? 0 : -1;
 }

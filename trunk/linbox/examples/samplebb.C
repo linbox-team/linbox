@@ -110,7 +110,7 @@ void scramble(DenseMatrix<Ring>& M)
 	    Ring R = M.field();
 
 		int N,n = M.rowdim(); // number of random basic row and col ops.
-		N = n;
+		N = 2*n;
 	
 		for (int k = 0; k < N; ++k) {
 
@@ -123,16 +123,16 @@ void scramble(DenseMatrix<Ring>& M)
 		    // M*i += alpha M*j and Mj* -= alpha Mi*
 
 			typename Ring::Element alpha, beta, x;
-			R.init(alpha, rand());
+			R.init(alpha, rand()%5 - 2);
 			R.neg(beta, alpha);
 			
-	   	 	for (size_t l = 0; l < M.rowdim(); ++l) {
+	   	 	for (size_t l = 0; l < M.rowdim(); ++l) if (!R.isZero(alpha)) {
 					R.mul(x, alpha, M[l][j]);
 					R.addin(M[l][i], x);
    	    	}
 
 
-	    	for (size_t l = 0; l < M.coldim(); ++l) {
+	   	 	for (size_t l = 0; l < M.rowdim(); ++l) if (!R.isZero(alpha)) {
 					R.mul(x, beta, M[i][l]);
 					R.addin(M[j][l], x);
    	    	}
