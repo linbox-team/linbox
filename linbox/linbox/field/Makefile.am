@@ -12,6 +12,7 @@ BASIC_HDRS =			\
 	gmp-rational.h		\
 	modular.h		\
 	modular.inl		\
+	modular-int.h		\
 	modular-int32.h		\
 	modular-short.h		\
 	modular-byte.h		\
