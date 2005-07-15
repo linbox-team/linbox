@@ -2,7 +2,7 @@
 /* Author: Zhendong Wan */
 
 #include <linbox/field/modular-double.h>
-#include <linbox/field/modular-int.h>
+#include <linbox/field/modular-int32.h>
 #include <linbox/algorithms/cra.h>
 #include <linbox/ffpack/ffpack.h>
 #include <linbox/randiter/random-prime.h>
@@ -238,7 +238,7 @@ private:
 	template <class Vector, class Matrix>
 	static Vector& symmetricLU (Vector& v, const Matrix& IM) {
 
-		typedef Modular<int> Field;
+		typedef Modular<int32> Field;
 		typedef Field::Element Element;
 		typedef DenseMatrix<Field> FMatrix;
 		RandomPrime primeg(20);
