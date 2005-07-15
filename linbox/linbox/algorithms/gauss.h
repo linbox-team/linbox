@@ -71,7 +71,7 @@ namespace LinBox
                 Callers of the different rank routines\\
                 -/ The "in" suffix indicates in place computation\\
                 -/ Without Ni, Nj, the Matrix parameter must be a vector of sparse 
-                row vectors.\\
+                row vectors, NOT storing any zero.\\
                 -/ Calls {@link rankinLinearPivoting rankinLinearPivoting} (by default) or {@link rankinNoReordering rankinNoReordering}
             */
             //@{
