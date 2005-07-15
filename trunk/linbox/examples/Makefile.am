@@ -7,7 +7,7 @@ LDADD = $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(ATLAS_LIBS) -lcbl
 
 SUBDIRS=fields 
 
-EXTRA_PROGRAMS= rank det minpoly smith charpoly solve dot-product
+EXTRA_PROGRAMS= rank det minpoly valence smith charpoly solve dot-product
 
 examples: ${EXTRA_PROGRAMS}
 
@@ -22,6 +22,7 @@ det_SOURCES = det.C
 rank_SOURCES = rank.C
 smith_SOURCES = smith.C
 minpoly_SOURCES = minpoly.C
+valence_SOURCES = valence.C
 solve_SOURCES = solve.C
 
 LINBOX=@prefix@

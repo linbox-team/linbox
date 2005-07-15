@@ -26,7 +26,7 @@
 
 #include <iostream>
 
-#ifdef NDEBUG
+#ifndef DEBUG
 #  define linbox_check(check)
 #else
 #  ifdef __GNUC__

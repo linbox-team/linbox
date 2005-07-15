@@ -39,7 +39,6 @@ using std::vector;
 using LinBox::Companion;
 using LinBox::DirectSum;
 using LinBox::DenseMatrix;
-using LinBox::MatrixHom;
 using LinBox::NTL_ZZ;
 using NTL::ZZX;
 
@@ -224,7 +223,7 @@ int main(int ac, char* av[])
 			// into sparse matrix, then 3n row ops with corresponding col ops
 			DenseMatrix<Ring>* B;//(Z,A.rowdim(), A.coldim());
 			//MatrixDomain<Ring> MD(Z);
-			MatrixHom::map (B, A, Z);
+			LinBox::MatrixHom::map (B, A, Z);
 
 			scramble(*B);
 			printMatrix(*B);
