@@ -282,7 +282,7 @@ static bool testSingularConsistentSolve (const Field          &F,
 	VectorWrapper::ensureDim (b1, n);
 
 	MethodTraits traits (method);
-	traits.preconditioner (MethodTraits::NONE);
+	traits.preconditioner (MethodTraits::NO_PRECONDITIONER);
 
 	while (stream1 && stream2) {
 		commentator.startIteration (stream1.j ());

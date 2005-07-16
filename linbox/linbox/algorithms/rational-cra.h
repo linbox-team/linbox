@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // ======================================================================= //
-// Time-stamp: <15 Jul 05 18:53:06 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <16 Jul 05 12:09:23 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_RATIONAL_CRA_H
 #define __LINBOX_RATIONAL_CRA_H
@@ -175,19 +175,18 @@ namespace LinBox {
 		
         Integer& iterativeratrecon(Integer& u1, Integer& new_den, const Integer& old_den, const Integer& m1, const Integer& s) {
             Integer a;
-            PID_integer::reconstructRational(a, new_den, u1*=old_den, m1, s, s);
+            PID_integer::reconstructRational(a, new_den, u1*=old_den, m1, s);
             return u1=a;
         }
 
         void Early_progress (const Domain& D, const DomainElement& e) {
             DomainElement u0, m0;
+
             fieldreconstruct(Table0, D, e, D.init(u0,Table0), D.init(m0,Modulo0), Integer(Table0), Modulo0);
             D.characteristic( nextm );
-            _ZZ.sqrt(nexts, nextm);
             Modulo0 *= nextm;
-            Sqrt0   *= nexts;
             Integer a, b;
-            PID_integer::reconstructRational(a, b, Table0, Modulo0, Sqrt0, Sqrt0);
+            PID_integer::reconstructRational(a, b, Table0, Modulo0);
             if ((a == Numer0) && (b == Denom0))
                 ++occurency;
             else {
@@ -200,8 +199,7 @@ namespace LinBox {
         void First_Early_progress (const Domain& D, const DomainElement& e) {
             D.characteristic( Modulo0 );
             D.convert(Table0, e);
-            _ZZ.sqrt(Sqrt0, Modulo0);
-            PID_integer::reconstructRational(Numer0, Denom0, Table0, Modulo0, Sqrt0, Sqrt0);
+            PID_integer::reconstructRational(Numer0, Denom0, Table0, Modulo0);
         }
 
         template<template<class T> class Vect>
@@ -210,8 +208,6 @@ namespace LinBox {
         }
  
     protected:
-        Integer					Sqrt0;
-        Integer					nexts;
         Integer					Numer0;
         Integer					Denom0;
     };
