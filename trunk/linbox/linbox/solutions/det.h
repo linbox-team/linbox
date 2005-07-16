@@ -290,7 +290,6 @@ namespace LinBox
     }
 } // end of LinBox namespace 
 
-//#include "linbox/algorithms/cra.h"
 #include "linbox/field/modular.h"
 //#include "linbox/field/givaro-zpz.h"
 #include "linbox/algorithms/cra-domain.h"
@@ -321,7 +320,7 @@ namespace LinBox {
     
 
     template <class Blackbox, class MyMethod>
-    typename Blackbox::Field::Element &old_det (typename Blackbox::Field::Element         &d,
+    typename Blackbox::Field::Element &cra_det (typename Blackbox::Field::Element         &d,
                                             const Blackbox                            &A,
                                             const RingCategories::IntegerTag          &tag,
                                             const MyMethod                            &M)
@@ -339,6 +338,9 @@ namespace LinBox {
 
 } // end of LinBox namespace
 
+
+#ifdef __LINBOX_HAVE_NTL
+
 #include "linbox/algorithms/hybrid-det.h"
 
 namespace LinBox {
@@ -353,5 +355,20 @@ namespace LinBox {
     }    
 } // end of LinBox namespace
 
+
+#else
+namespace LinBox {
+    
+    template <class Blackbox, class MyMethod>
+    typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d,
+                                            const Blackbox                            &A,
+                                            const RingCategories::IntegerTag          &tag,
+                                            const MyMethod                            &M)
+    {
+        return cra_det(d, A, tag, M);
+    }    
+} // end of LinBox namespace
+
+#endif //ifdef  __LINBOX_HAVE_NTL
         
 #endif // __DET_H
