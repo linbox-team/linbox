@@ -7,7 +7,16 @@ LDADD = $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(ATLAS_LIBS) -lcbl
 
 SUBDIRS=fields 
 
-EXTRA_PROGRAMS= rank det minpoly valence smith charpoly solve dot-product
+EXAMPLES=rank det minpoly valence solve dot-product
+GIVARONTL_EXAMPLES=smith charpoly
+if LINBOX_HAVE_NTL
+if LINBOX_HAVE_GIVARO
+USE_GIVARONTL_EXAMPLES = $(GIVARONTL_EXAMPLES)
+endif
+endif
+
+
+EXTRA_PROGRAMS= $(EXAMPLES) $(USE_GIVARONTL_EXAMPLES) 
 
 examples: ${EXTRA_PROGRAMS}
 
