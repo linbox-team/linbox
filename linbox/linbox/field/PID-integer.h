@@ -146,17 +146,17 @@ namespace LinBox {
 		}
             
                 inline static void reconstructRational (Element& a, Element& b, const Element& x, const Element& m) {
-                        RationalReconstruction(a,b, x, m, ::sqrt(m), true);
+                        RationalReconstruction(a,b, x, m, ::sqrt(m), true, true);
                 }
             
                 inline static void reconstructRational (Element& a, Element& b, const Element& x, const Element& m, const Element& bound) {
-                        RationalReconstruction(a,b, x, m, bound, true);
+                        RationalReconstruction(a,b, x, m, bound, true, true);
                 }
             
                 inline static long reconstructRational (Element& a, Element& b, 
                                                         const Element& x, const Element& m, 
                                                         const Element& a_bound, const Element& b_bound) {
-                        ratrecon(a,b,x,m,a_bound);
+                        RationalReconstruction(a,b,x,m,a_bound, true, false);
                         return  (b > b_bound)? 0: 1;	
                 }
             
@@ -234,21 +234,32 @@ namespace LinBox {
                 inline static void RationalReconstruction( Element& a, Element& b, 
                                                           const Element& f, const Element& m, 
                                                           const Element& k, 
-                                                          bool recursive ) {
-                        ratrecon(a,b,f,m,k);
-                        bool res = reduce(a,b,f,m,k, recursive);
+                                                          bool reduce, bool recursive ) {
+			Element x(f);
+                        if (x<0) {
+                        	if ((-x)>m)
+                            		x %=m;
+                        	if (x<0)
+                            		x += m;
+                    	} else {
+                        	if (x>m)
+                            		x %= m;
+                    	}
+                        bool res = ratrecon(a,b,x,m,k, reduce, recursive);
                         if (recursive)
-                            for( Element newk = k + 1; (!res) && (newk<f) ; ++newk) {
-                                ratrecon(a,b,f,m,newk);
-                                res = reduce(a,b,f,m,newk,true);
-                            }
+                                for( Element newk = k + 1; (!res) && (newk<f) ; ++newk)
+                                        res = ratrecon(a,b,x,m,newk,reduce, true);
                 }
 
-                inline static void ratrecon( Element& num, Element& den, 
+                // Precondition f is suppposed positive and less than m
+                inline static bool ratrecon( Element& num, Element& den, 
                                              const Element& f, const Element& m, 
-                                             const Element& k) {
-// std::cerr << "RatRecon " << f << " mod " << m << ", b: " << k << std::endl;
+                                             const Element& k, 
+                                             bool reduce, bool recursive ) {
                     
+std::cerr << "RatRecon : " << f << " " << m << " " << k << std::endl;
+                    
+
                         Element  r0, t0, q, u;
                         r0=m;
                         t0=0;
@@ -276,26 +287,23 @@ namespace LinBox {
 //                             u *= q;
 //                             den -= u;	// num <-- r0-q*num
 			    Integer::axmyin(den,u,q);
-                        }
-// std::cerr << "RatRecon End " << num << "/" << den << std::endl;
-                }
 
-                inline static bool reduce( Element& num, Element& den, 
-                                             const Element& f, const Element& m, 
-                                             const Element& k, 
-                                             bool recursive ) {
+                        } 
+
+                        if (reduce) {
+    
                                 // [GG, MCA, 1999] Theorem 5.26
                                 // (i)
-                        if (den < 0) {
+                            if (den < 0) {
                                 Integer::negin(num);
                                 Integer::negin(den);
-                        }
+                            }
 
                                 // (ii)
-                        Element gg;
-                        if (gcd(gg,num,den) != 1) {
+                            Element gg;
+                            if (gcd(gg,num,den) != 1) {
                                 
-                                Element q, ganum, gar2, r0, t0;
+                                Element ganum, gar2;
                                 for( q = 1, ganum = r0-num, gar2 = r0 ; (ganum >= k) || (gar2<k); ++q ) {
                                     ganum -= num;
                                     gar2 -= num;
@@ -346,8 +354,9 @@ namespace LinBox {
                                             << std::endl;
                                     return false;
                                 }
+                            }
                         }
-// std::cerr << "Reduce End " << num << "/" << den << std::endl;
+std::cerr << "RatRecon End " << num << "/" << den << std::endl;
                         return true;    
                 }
 
