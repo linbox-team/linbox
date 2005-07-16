@@ -257,7 +257,7 @@ namespace LinBox {
                                              const Element& k, 
                                              bool reduce, bool recursive ) {
                     
-std::cerr << "RatRecon : " << f << " " << m << " " << k << std::endl;
+// std::cerr << "RatRecon : " << f << " " << m << " " << k << std::endl;
                     
 
                         Element  r0, t0, q, u;
@@ -356,7 +356,7 @@ std::cerr << "RatRecon : " << f << " " << m << " " << k << std::endl;
                                 }
                             }
                         }
-std::cerr << "RatRecon End " << num << "/" << den << std::endl;
+// std::cerr << "RatRecon End " << num << "/" << den << std::endl;
                         return true;    
                 }
 
