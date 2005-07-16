@@ -107,7 +107,7 @@ int main (int argc, char **argv)
             // Wiedemann 
         chrono.clear();
         chrono.start();		
-        solve (X, A, B, Method::Wiedemann());
+        solve (X, A, B, Method::Blackbox());
         chrono.stop();
 		
         std::cout << "(Wiedemann) Solution is [";
@@ -117,32 +117,32 @@ int main (int argc, char **argv)
         std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<<std::endl;;
 		
 		
-            // Lanczos
-        chrono.clear();
-        chrono.start();		
-        solve (X, A, B, Method::Lanczos());
-        chrono.stop();
+//             // Lanczos
+//         chrono.clear();
+//         chrono.start();		
+//         solve (X, A, B, Method::Lanczos());
+//         chrono.stop();
 		
-        std::cout << "(Lanczos) Solution is [";
-        for(std::vector<Field::Element>::const_iterator it=X.begin();it != X.end(); ++it)
-            F.write(cout, *it) << " ";
-        std::cout << "]" << std::endl;		
-        std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<< std::endl;
+//         std::cout << "(Lanczos) Solution is [";
+//         for(std::vector<Field::Element>::const_iterator it=X.begin();it != X.end(); ++it)
+//             F.write(cout, *it) << " ";
+//         std::cout << "]" << std::endl;		
+//         std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<< std::endl;
 
 
-            // Block Lanczos
-        Method::BlockLanczos MBL;
-        MBL.preconditioner(Specifier::FULL_DIAGONAL);
-        chrono.clear();
-        chrono.start();		
-        solve (X, A, B, MBL);
-        chrono.stop();
+//             // Block Lanczos
+//         Method::BlockLanczos MBL;
+//         MBL.preconditioner(Specifier::FULL_DIAGONAL);
+//         chrono.clear();
+//         chrono.start();		
+//         solve (X, A, B, MBL);
+//         chrono.stop();
 		
-        std::cout << "(Block Lanczos) Solution is [";
-        for(std::vector<Field::Element>::const_iterator it=X.begin();it != X.end(); ++it)
-            F.write(cout, *it) << " ";
-        std::cout << "]" << std::endl;		
-        std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<< std::endl;
+//         std::cout << "(Block Lanczos) Solution is [";
+//         for(std::vector<Field::Element>::const_iterator it=X.begin();it != X.end(); ++it)
+//             F.write(cout, *it) << " ";
+//         std::cout << "]" << std::endl;		
+//         std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<< std::endl;
 		
     } else { 
 
@@ -190,44 +190,44 @@ int main (int argc, char **argv)
         std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
 
 		
-//             // Wiedemann
-//         chrono.start();
-//         solve (X, d, A, B, Method::Wiedemann());
-//         chrono.stop();
+            // Wiedemann
+        chrono.start();
+        solve (X, d, A, B, Method::Wiedemann());
+        chrono.stop();
 		
-//         std::cout << "(Wiedemann) Solution is [";
+        std::cout << "(Wiedemann) Solution is [";
+        for(std::vector<PID_integer::Element>::const_iterator it=X.begin();it != X.end(); ++it)
+            ZZ.write(cout, *it) << " ";
+        std::cout << "] / ";
+        ZZ.write(std::cout, d) << std::endl;		
+        std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
+
+
+//             // Lanczos
+//         chrono.start();
+//         solve (X, d, A, B, Method::Lanczos());
+//         chrono.stop();
+
+//         std::cout << "(Lanczos) Solution is [";
 //         for(std::vector<PID_integer::Element>::const_iterator it=X.begin();it != X.end(); ++it)
 //             ZZ.write(cout, *it) << " ";
 //         std::cout << "] / ";
 //         ZZ.write(std::cout, d) << std::endl;		
 //         std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
-
-
-            // Lanczos
-        chrono.start();
-        solve (X, d, A, B, Method::Lanczos());
-        chrono.stop();
-
-        std::cout << "(Lanczos) Solution is [";
-        for(std::vector<PID_integer::Element>::const_iterator it=X.begin();it != X.end(); ++it)
-            ZZ.write(cout, *it) << " ";
-        std::cout << "] / ";
-        ZZ.write(std::cout, d) << std::endl;		
-        std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
 		
 
-            // Block Lanczos
-        chrono.clear();
-        chrono.start();
-        solve (X, d, A, B, Method::BlockLanczos());
-        chrono.stop();
+//             // Block Lanczos
+//         chrono.clear();
+//         chrono.start();
+//         solve (X, d, A, B, Method::BlockLanczos());
+//         chrono.stop();
 
-        std::cout << "(Block Lanczos) Solution is [";
-        for(std::vector<PID_integer::Element>::const_iterator it=X.begin();it != X.end(); ++it)
-            ZZ.write(cout, *it) << " ";
-        std::cout << "] / ";
-        ZZ.write(std::cout, d) << std::endl;		
-        std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
+//         std::cout << "(Block Lanczos) Solution is [";
+//         for(std::vector<PID_integer::Element>::const_iterator it=X.begin();it != X.end(); ++it)
+//             ZZ.write(cout, *it) << " ";
+//         std::cout << "] / ";
+//         ZZ.write(std::cout, d) << std::endl;		
+//         std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
 
     }
 

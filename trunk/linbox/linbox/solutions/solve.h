@@ -79,8 +79,8 @@ namespace LinBox
 		      const Method::Blackbox& m)
 	{ 
 		// what is chosen here should be best and/or most reliable currently available choice
-		integer c; A.field().cardinality(c);
-		if (c < 100) return solve(x, A, b, Method::BlockLanczos(m));
+// 		integer c; A.field().cardinality(c);
+// 		if (c < 100) return solve(x, A, b, Method::BlockLanczos(m));
 		return solve(x, A, b, Method::Wiedemann(m));
 	}
 
@@ -521,32 +521,32 @@ namespace LinBox
 	// Lanczos ////////////////
 	// may throw SolverFailed or InconsistentSystem
 	
-	template <class Vector, class BB> 
-	Vector& solve(Vector& x, const BB& A, const Vector& b, 
-		      const RingCategories::ModularTag & tag, 
-		      const Method::Lanczos& m)
-	{
-		solve(A, x, b, A.field(), m);
-		return x;
-	}
+// 	template <class Vector, class BB> 
+// 	Vector& solve(Vector& x, const BB& A, const Vector& b, 
+// 		      const RingCategories::ModularTag & tag, 
+// 		      const Method::Lanczos& m)
+// 	{
+// 		solve(A, x, b, A.field(), m);
+// 		return x;
+// 	}
 
 
 
-	template <class Vector, class BB> 
-	Vector& solve(Vector& x, const BB& A, const Vector& b, 
-		      const RingCategories::ModularTag & tag, 
-		      const Method::BlockLanczos& m)
-	{
-            try { 
-                solve(A, x, b, A.field(), m); 
-            } catch (SolveFailed) {
-                typename BB::Field::Element zero; A.field().init(zero, 0);
-                for (typename Vector::iterator i = x.begin(); 
-                     i != x.end(); ++i) 
-                    *i = zero;
-            }
-            return x;
-	}
+// 	template <class Vector, class BB> 
+// 	Vector& solve(Vector& x, const BB& A, const Vector& b, 
+// 		      const RingCategories::ModularTag & tag, 
+// 		      const Method::BlockLanczos& m)
+// 	{
+//             try { 
+//                 solve(A, x, b, A.field(), m); 
+//             } catch (SolveFailed) {
+//                 typename BB::Field::Element zero; A.field().init(zero, 0);
+//                 for (typename Vector::iterator i = x.begin(); 
+//                      i != x.end(); ++i) 
+//                     *i = zero;
+//             }
+//             return x;
+// 	}
 
 	// Wiedemann section ////////////////
 
@@ -619,7 +619,7 @@ namespace LinBox {
                   const MyMethod& M)
     {
         commentator.start ("Integer CRA Solve", "Isolve");
-        RandomPrime genprime( 26 ); 
+        RandomPrime genprime( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)); 
 //         RationalRemainder< Modular<double> > rra((double)
 //                                                  ( A.coldim()/2.0*log((double) A.coldim()) ) );
         RationalRemainder< Modular<double> > rra(3UL, A.coldim());

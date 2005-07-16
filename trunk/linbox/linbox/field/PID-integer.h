@@ -144,16 +144,19 @@ namespace LinBox {
 			}
 	
 		}
-
             
                 inline static void reconstructRational (Element& a, Element& b, const Element& x, const Element& m) {
                         RationalReconstruction(a,b, x, m, ::sqrt(m), true);
                 }
             
+                inline static void reconstructRational (Element& a, Element& b, const Element& x, const Element& m, const Element& bound) {
+                        RationalReconstruction(a,b, x, m, bound, true);
+                }
+            
                 inline static long reconstructRational (Element& a, Element& b, 
                                                         const Element& x, const Element& m, 
                                                         const Element& a_bound, const Element& b_bound) {
-                        RationalReconstruction(a,b,x,m,a_bound, false);
+                        ratrecon(a,b,x,m,a_bound);
                         return  (b > b_bound)? 0: 1;	
                 }
             
@@ -232,123 +235,121 @@ namespace LinBox {
                                                           const Element& f, const Element& m, 
                                                           const Element& k, 
                                                           bool recursive ) {
-                        bool res = ratrecon(a,b,f,m,k,recursive);
+                        ratrecon(a,b,f,m,k);
+                        bool res = reduce(a,b,f,m,k, recursive);
                         if (recursive)
-                                for( Element newk = k + 1; (!res) && (newk<f) ; ++newk)
-                                        res = ratrecon(a,b,f,m,newk,true);
+                            for( Element newk = k + 1; (!res) && (newk<f) ; ++newk) {
+                                ratrecon(a,b,f,m,newk);
+                                res = reduce(a,b,f,m,newk,true);
+                            }
                 }
 
-                inline static bool ratrecon( Element& num, Element& den, 
+                inline static void ratrecon( Element& num, Element& den, 
                                              const Element& f, const Element& m, 
-                                             const Element& k, 
-                                             bool recursive ) {
+                                             const Element& k) {
+// std::cerr << "RatRecon " << f << " mod " << m << ", b: " << k << std::endl;
                     
-// 	std::cerr << "RatRecon : " << f << " " << m << " " << k << std::endl;
-                    
-                        Element x = m, y = (f<0?-f:f) % m, r0, t0;
-
-                        Element r1, t1, q, u;
-                        r0=x;
+                        Element  r0, t0, q, u;
+                        r0=m;
                         t0=0;
-                        r1=y;
-                        t1=1;
-                        while(r1>=k)
+                        num=f;
+                        if (f<0) num+= m;
+                        den=1;
+                        while(num>=k)
                         {
         
                             q = r0;
-                            q /= r1;        // r0/r1
+                            q /= num;        // r0/num
                             
 
-                            u = r1;
-                            r1 = r0;  	// r1 <-- r0
-                            r0 = u;	// r0 <-- r1
+                            u = num;
+                            num = r0;  	// num <-- r0
+                            r0 = u;	// r0 <-- num
 //                             u *= q;
-//                             r1 -= u;	// r1 <-- r0-q*r1
-			    Integer::axmyin(r1,u,q);
-                            if (r1 == 0) break;
+//                             num -= u;	// num <-- r0-q*num
+			    Integer::axmyin(num,u,q);
+                            if (num == 0) break;
                             
-                            u = t1;
-                            t1 = t0;  	// r1 <-- r0
-                            t0 = u;	// r0 <-- r1
+                            u = den;
+                            den = t0;  	// num <-- r0
+                            t0 = u;	// r0 <-- num
 //                             u *= q;
-//                             t1 -= u;	// r1 <-- r0-q*r1
-			    Integer::axmyin(t1,u,q);
-
-                        } 
-    
-                            // [GG, MCA, 1999] Theorem 5.26
-                            // (i)
-                        if (t1 < 0) {
-                            num = -r1;
-                            den = -t1;
-                        } else {
-                            num = r1;
-                            den = t1;
+//                             den -= u;	// num <-- r0-q*num
+			    Integer::axmyin(den,u,q);
                         }
-                        
-                            // (ii)
-                        Element gg;
-                        if (gcd(gg,num,den) != 1) {
-        
-                            Element gar1, gar2;
-                            for( q = 1, gar1 = r0-r1, gar2 = r0 ; (gar1 >= k) || (gar2<k); ++q ) {
-                                gar1 -= r1;
-                                gar2 -= r1;
-                            }
-                            
-//                             r0 -= q * r1;
-//                             t0 -= q * t1;
-			    Integer::axmyin(r0,q,r1);
-			    Integer::axmyin(t0,q,t1);
-                            
-                            if (t0 < 0) {
-                                num = -r0;
-                                den = -t0;
-                            } else {
-                                num = r0;
-                                den = t0;
-                            }
-                            
-                            if (t0 > m/k) {
-                                if (!recursive) 
-                                    std::cerr 
-                                        << "*** Error *** No rational reconstruction of " 
-                                        << f 
-                                        << " modulo " 
-                                        << m 
-                                        << " with denominator <= " 
-                                        << (m/k)
-                                        << std::endl;   
-                            }
-                            if (gcd(gg,num,den) != 1) {
-                                if (!recursive) 
-                                    std::cerr 
-                                        << "*** Error *** There exists no rational reconstruction of " 
-                                        << f 
-                                        << " modulo " 
-                                        << m 
-                                        << " with |numerator| < " 
-                                        << k
-                                        << std::endl
-                                        << "*** Error *** But " 
-                                        << num
-                                        << " = "
-                                        << den
-                                        << " * "
-                                        << f
-                                        << " modulo " 
-                                        << m 
-                                        << std::endl;
-                                return false;
-                            }
-                        }
-// std::cerr << "RatRecon End " << std::endl;
-                        return true;    
+// std::cerr << "RatRecon End " << num << "/" << den << std::endl;
                 }
 
-            
+                inline static bool reduce( Element& num, Element& den, 
+                                             const Element& f, const Element& m, 
+                                             const Element& k, 
+                                             bool recursive ) {
+                                // [GG, MCA, 1999] Theorem 5.26
+                                // (i)
+                        if (den < 0) {
+                                Integer::negin(num);
+                                Integer::negin(den);
+                        }
 
-
+                                // (ii)
+                        Element gg;
+                        if (gcd(gg,num,den) != 1) {
+                                
+                                Element q, ganum, gar2, r0, t0;
+                                for( q = 1, ganum = r0-num, gar2 = r0 ; (ganum >= k) || (gar2<k); ++q ) {
+                                    ganum -= num;
+                                    gar2 -= num;
+                                }
+                                
+//                             r0 -= q * num;
+//                             t0 -= q * den;
+                                Integer::axmyin(r0,q,num);
+                                Integer::axmyin(t0,q,den);
+                                
+                                if (t0 < 0) {
+                                    num = -r0;
+                                    den = -t0;
+                                } else {
+                                    num = r0;
+                                    den = t0;
+                                }
+                                
+                                if (t0 > m/k) {
+                                    if (!recursive) 
+                                        std::cerr 
+                                            << "*** Error *** No rational reconstruction of " 
+                                            << f 
+                                            << " modulo " 
+                                            << m 
+                                            << " with denominator <= " 
+                                            << (m/k)
+                                            << std::endl;   
+                                }
+                                if (gcd(gg,num,den) != 1) {
+                                    if (!recursive) 
+                                        std::cerr 
+                                            << "*** Error *** There exists no rational reconstruction of " 
+                                            << f 
+                                            << " modulo " 
+                                            << m 
+                                            << " with |numerator| < " 
+                                            << k
+                                            << std::endl
+                                            << "*** Error *** But " 
+                                            << num
+                                            << " = "
+                                            << den
+                                            << " * "
+                                            << f
+                                            << " modulo " 
+                                            << m 
+                                            << std::endl;
+                                    return false;
+                                }
+                        }
+// std::cerr << "Reduce End " << num << "/" << den << std::endl;
+                        return true;    
+                }
 
 	}; //end of class PID_integer
 
