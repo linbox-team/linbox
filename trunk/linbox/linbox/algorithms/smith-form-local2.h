@@ -25,7 +25,6 @@ namespace LinBox
 
 /** 
  \brief Smith normal form (invariant factors) of a matrix over a local ring.
- * @doc
  */
 template<class LocalRing>
 class SmithFormLocal;

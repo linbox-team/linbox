@@ -30,38 +30,33 @@
 namespace LinBox
 {
 
-	/** \class Diagonal diagonal.h linbox/blackbox/diagonal.h
-	 * Random diagonal matrices are used heavily as preconditioners.
+	/** 
+	 * \brief Random diagonal matrices are used heavily as preconditioners.
 
 	 * This is a class of n by n diagonal matrices templatized by the 
 	 * field in 
 	 * which the elements reside.  The class conforms to the 
-	 * {@link Archetypes archetype} for blackBox matrices.
+	 * BlackboxArchetype.
 	 *
-	 * The matrix itself is not stored in memory.  Rather, its apply
+	 * The matrix itself is not stored in memory.  Rather, its <tt>apply</tt>
 	 * methods use a vector of field elements, which are 
 	 * used to "multiply" the matrix to a vector.
 	 * 
 	 * This class has two template parameters.  The first is the field in 
 	 * which the arithmetic is to be done.  
 	 * The second is the vector trait indicating dense or 
-	 * sparse vector interface, dense by default.
+	 * sparse vector interface (dense by default).
 	 * This class is then specialized for dense and sparse vectors.
 	 * 
 	 * The default class is not implemented.  It's functions should never
 	 * be called because partial template specialization should always be
 	 * done on the vector traits.
-\ingroup blackbox
-	 * @param Field \Ref{LinBox} field
-	 * @param Vector \Ref{LinBox} dense or sparse vector of field elements
+	 * \ingroup blackbox
+	 * @param Field \ref LinBox field
 	 * @param Trait  Marker whether to use dense or sparse LinBox vector 
 	 *               implementation.  This is chosen by a default parameter 
 	 *               and partial template specialization.
 	 */
-	//@{
-	/** 
-	\brief General diagonal, not be implemented
-	*/
 	template <class Field,
 		  class Trait = typename VectorTraits<typename LinBox::Vector<Field>::Dense>::VectorCategory>
 	class Diagonal

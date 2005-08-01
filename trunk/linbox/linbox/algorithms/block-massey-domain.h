@@ -63,7 +63,7 @@ namespace LinBox
 
 	/** 
 	    \brief Compute the linear generator of a sequence of matrices
-	    * @doc
+
 	    * Giorgi, Jeannerod Villard algorithm from ISSAC'03
 	    * This class encapsulates the functionality required for computing 
 	    * the block minimal polynomial of a matrix.

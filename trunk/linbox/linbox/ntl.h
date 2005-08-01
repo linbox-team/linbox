@@ -1,4 +1,4 @@
-/// \file ntl.h \ingroup linbox
+/// \file ntl.h linbox/ntl.h \ingroup linbox
 
 /* linbox/ntl.h
  * Copyright (C) 2002 William J. Turner
@@ -10,6 +10,4 @@
  * See COPYING for license information.
  */
 
-
 #include "linbox/field/ntl.h"
-

@@ -15,10 +15,10 @@
 namespace LinBox 
 {
 	
-	/*- @memo Valence of a blackbox linear operator A.
+	/*- @brief Valence of a blackbox linear operator A.
          * This is the coefficient of the smallest degree
          * non zero monomial of the minimal polynomial of A.
-	 * @doc The resulting value is a Field Element.
+	 * The resulting value is a Field Element.
 	 */
 	template < class Blackbox, class DomainCategory, class MyMethod>
 	typename Blackbox::Field::Element &valence (typename Blackbox::Field::Element & V,

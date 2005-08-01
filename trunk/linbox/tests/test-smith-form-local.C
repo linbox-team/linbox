@@ -28,7 +28,7 @@
 
 using namespace LinBox;
 
-/** @memo Test 1: Invariant factors of random dense matrices.
+/** @brief Test 1: Invariant factors of random dense matrices.
  *
  * Construct a random matrix which is equivalent to a random diagonal matrix,
  * and check its Smith form.

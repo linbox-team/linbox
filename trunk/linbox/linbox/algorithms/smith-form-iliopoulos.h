@@ -15,7 +15,8 @@
 namespace LinBox {
 	
 /** \brief This is Iliopoulos' algorithm do diagonalize.
- * @doc Compute Smith Form by elimination modulo m, for some modulus m such 
+
+ * Compute Smith Form by elimination modulo m, for some modulus m such 
  * as S(n), the last invariant factor.  
  * The elimination method is originally described in 
  * "Worst Case Complexity Bounds on Algorithms for computing the Canonical 

@@ -27,7 +27,7 @@
 namespace LinBox
 {
 
-	/** \brief Blackbox for aI.  Use particularly for representing 0 and I.
+	/** \brief Blackbox for <tt>aI</tt>.  Use particularly for representing <tt>0</tt> and <tt>I</tt>.
 
 	 * This is a class of blackbox square scalar matrices.
 	 * Each scalar matrix occupies O(scalar-size) memory.

@@ -30,7 +30,7 @@ namespace LinBox {
 	  // define the prime type
 	  typedef integer Prime_Type;
 	  
-	  /** @memo randomPrime()
+	  /** @brief randomPrime()
 	   *  return a random prime
 	   */
 	  inline Prime_Type randomPrime() const {
@@ -41,7 +41,7 @@ namespace LinBox {
 	    return tmp;
 	  }
 	  
-	  /** @memo randomPrime(Prime_Type& p)
+	  /** @brief randomPrime(Prime_Type& p)
 	   *  return a random prime
 	   */
 	  inline Prime_Type randomPrime (Prime_Type& p) const {
@@ -51,7 +51,7 @@ namespace LinBox {
 	    return p ; 
 	  }
 	  
-	  /** @memo setSeed (unsigned long ul)
+	  /** @brief setSeed (unsigned long ul)
 	   *  Set the random seed to be ul.
 	   */
 	  void static setSeed(unsigned long ul) { 

@@ -49,7 +49,7 @@ namespace LinBox {
 	};
 
 
-	// @memo Limited docs so far.
+	// @brief Limited docs so far.
 	template <class _Element>
 	class BlasMatrix : public DenseSubmatrix<_Element> {
 		

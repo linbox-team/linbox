@@ -52,9 +52,12 @@ namespace LinBox
 	 * The determinant of a linear operator A, represented as a
 	 * black box, is computed over the ring or field of A.
 	 *
-	 * @param d Field element into which to store the result
-	 * @param A Black box of which to compute the determinant
-	 * @param M may be a Method::BlasElimination (default) or a Method::Wiedemann.
+	 * @param d - Field element into which to store the result
+	 * @param A - Black box of which to compute the determinant
+	 * @param M - optional method.  The default is Method::Hybrid(), Other options
+include Blackbox, Elimination, Wiedemann, and BlasElimination.  Sometimes it helps to
+indicate properties of the matrix in the method object (for instance symmetry).
+See class Method for details.
          \ingroup solutions
         */
     template <class Blackbox, class MyMethod>

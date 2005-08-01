@@ -26,7 +26,7 @@ namespace LinBox
 
 /** 
  \brief Solve a linear system using the conjugate Lanczos iteration.
- * @doc
+ * 
  * Lanczos system solver class.
  * This class encapsulates the functionality required for solving a linear
  * system through the conjugate Lanczos iteration
@@ -38,7 +38,7 @@ class LanczosSolver
 
 	/** Constructor
 	 * @param F Field over which to operate
-	 * @param traits @Ref{SolverTraits} structure describing user
+	 * @param traits @ref{SolverTraits} structure describing user
 	 *               options for the solver 
 	 */
 	LanczosSolver (const Field &F, const LanczosTraits &traits)
@@ -47,7 +47,7 @@ class LanczosSolver
 
 	/** Constructor with a random iterator
 	 * @param F Field over which to operate
-	 * @param traits @Ref{SolverTraits} structure describing user
+	 * @param traits @ref{SolverTraits} structure describing user
 	 *               options for the solver 
 	 * @param r Random iterator to use for randomization
 	 */

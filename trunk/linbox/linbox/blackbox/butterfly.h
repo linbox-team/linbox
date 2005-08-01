@@ -50,7 +50,7 @@ namespace LinBox
  *
  * This is a blackbox matrix object, and it implements all
  * purely virtual methods of the abstract base class.
- * See \Ref{BlackboxArchetype} for the specification of these methods.
+ * See \ref{BlackboxArchetype} for the specification of these methods.
  *
  * This matrix requires a dense vector to be used.  Sparse vectors must
  * somehow be converted to dense vectors before this matrix may
@@ -90,7 +90,7 @@ class Butterfly : public BlackboxInterface
 
 	/*- Application of BlackBox matrix.
 	 * y = A*x.
-	 * Requires one vector conforming to the \Ref{LinBox}
+	 * Requires one vector conforming to the \ref{LinBox}
 	 * vector {@link Archetypes archetype}.
 	 * Required by abstract base class.
 	 * For this matrix, this involves applying each switch in order to the 
@@ -105,7 +105,7 @@ class Butterfly : public BlackboxInterface
 
 	/*- Application of BlackBox matrix transpose.
 	 * y = transpose (A)*x.
-	 * Requires one vector conforming to the \Ref{LinBox}
+	 * Requires one vector conforming to the \ref{LinBox}
 	 * vector {@link Archetypes archetype}.
 	 * Required by abstract base class.
 	 * For this matrix, this involves applying the transpose of each switch 

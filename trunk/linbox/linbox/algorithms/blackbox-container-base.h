@@ -44,7 +44,7 @@ namespace LinBox
 
 /** \brief A base class for BlackboxContainer.
   * The primary member function is begin().
-  * @doc 
+
   * It returns an iterator which after i increments (++) dereferences to 
   * $v^T A^i u$, for $v$ and $u$ determined by the form of construction.
   * It is designed to be used with implementations of Berlekamp-Massey

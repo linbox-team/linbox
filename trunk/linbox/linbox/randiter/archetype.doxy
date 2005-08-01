@@ -5,7 +5,7 @@
 
   @see Archetypes
 
-  @memo {@link Archetypes Archetype} for implementing the \Ref{LinBox}
+  @\brief {@link Archetypes Archetype} for implementing the \Ref{LinBox}
         \Ref{Random Iterator Generators} common object interface.
 */
 //@{

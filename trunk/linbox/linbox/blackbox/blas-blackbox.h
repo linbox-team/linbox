@@ -50,7 +50,12 @@ namespace LinBox {
 	}
 
 
-	/// \ingroup blackbox
+	/** \brief dense matrix representation for BLAS based elimination. \ingroup blackbox
+	 *
+	 *  A BlasBlackbox can be constructed from any blackbox matrix. This costs n blackbox
+	 * matrix vector products in general, but is efficiently done from a DenseMatrix 
+	 * or SparseMatrix.
+	 */
 	template <class _Field>
 	class BlasBlackbox : public BlasMatrix<typename _Field::Element> 
 	{

@@ -49,7 +49,7 @@ namespace LinBox
 const long _DEGINFTY_ = -1;
 
 /** \brief Berlekamp/Massey algorithm. 
- @doc
+
    Domain Massey
    - Computation is stopped when the polynomials remain the same
      for more than EARLY_TERM_THRESOLD

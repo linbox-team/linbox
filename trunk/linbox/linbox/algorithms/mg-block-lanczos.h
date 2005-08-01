@@ -41,8 +41,7 @@ namespace LinBox
 
 /** \brief Block Lanczos iteration
  *
- * @doc
- * This is a blocked version of the iteration given in @Ref{LanczosSolver}. The
+ * This is a blocked version of the iteration given in @ref{LanczosSolver}. The
  * essential difference is that, rather than applying the black box $A$ to a
  * single vector $v$ during each iteration, the block box $A$ is applied to an
  * $n\times N$ matrix $V$ or, equivalently, to $N$ vectors
@@ -65,7 +64,7 @@ class MGBlockLanczosSolver
 
 	/** Constructor
 	 * @param F Field over which to operate
-	 * @param traits @Ref{SolverTraits} structure describing user
+	 * @param traits @ref{SolverTraits} structure describing user
 	 *               options for the solver 
 	 */
 	MGBlockLanczosSolver (const Field &F, const BlockLanczosTraits &traits)
@@ -77,7 +76,7 @@ class MGBlockLanczosSolver
 
 	/** Constructor with a random iterator
 	 * @param F Field over which to operate
-	 * @param traits @Ref{SolverTraits} structure describing user
+	 * @param traits @ref{SolverTraits} structure describing user
 	 *               options for the solver 
 	 * @param r Random iterator to use for randomization
 	 */

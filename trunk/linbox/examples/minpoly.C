@@ -1,5 +1,5 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-/** \file examples/minpoly.C
+/** \file examples/minpoly.C examples/minpoly.C 
 \brief Minimal polynomial of a sparse matrix.
 \ingroup examples
 */
@@ -44,7 +44,7 @@ int main (int argc, char **argv)
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
 		vector<GMP_Integers::Element> m_A;
-		minpoly (m_A, A);
+		minpoly (m_A, A); 
 
 		cout << "Minimal Polynomial is ";
 		printPolynomial (ZZ, m_A);

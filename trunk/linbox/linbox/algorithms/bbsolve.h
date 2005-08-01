@@ -25,10 +25,10 @@
 namespace LinBox 
 {
 
-	/** @name Solvers
-	 * @memo Solving linear system Ax = b over the field F.
-	 */
-	//@{
+//	/** @name Solvers
+//	 * @brief Solving linear system Ax = b over the field F.
+//	 */
+//	//@{
 
 	/*
 	// for specialization on method.
@@ -269,7 +269,7 @@ namespace LinBox
 
 		return SOLVE_SUCCESSFUL;
 	}
-	//@}
+//	//@}
 
 }
 

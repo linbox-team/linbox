@@ -42,12 +42,12 @@ namespace LinBox
 			       const MyMethod        &M);
 
         /** \brief  ...using an optional Method parameter
-	    \parameter P - the output characteristic polynomial.  If the polynomial 
+	    \param P - the output characteristic polynomial.  If the polynomial 
 	    is of degree d, this random access container has size d+1, the 0-th 
 	    entry is the constant coefficient and the d-th is 1 since the charpoly 
 	    is monic.
-	    \parameter A - a blackbox matrix
-	    Optional \parameter M - the method object.  Generally, the default
+	    \param A - a blackbox matrix
+	    Optional \param M - the method object.  Generally, the default
 	    object suffices and the algorithm used is determined by the class of M.
 	    Basic methods are Method::Blackbox, Method::Elimination, and 
 	    Method::Hybrid (the default).
@@ -110,13 +110,13 @@ namespace LinBox
 	}
 
 
-	/** @brief Compute the characteristic polynomial over {\bf Z_p}
+	/** @brief Compute the characteristic polynomial over <bold>Z</bold><sub>p</sub>
 	 *
 	 * Compute the characteristic polynomial of a matrix using dense 
 	 * elimination methods
 
 	 * @param P Polynomial where to store the result
-	 * @param A \ref{Blacbox} representing the matrix
+	 * @param A Blackbox representing the matrix
 	 */
 	template < class Polynomial, class Blackbox >
 	Polynomial& charpoly (Polynomial                       & P, 
@@ -231,13 +231,13 @@ namespace LinBox {
 #endif	
 
 	
-	/** Compute the characteristic polynomial over {\bf Zp}
+	/** Compute the characteristic polynomial over <bold>Z</bold><sub>p</sub>.
 	 *
 	 * Compute the characteristic polynomial of a matrix, represented via 
 	 * a blackBox.
 	 * 
 	 * @param P Polynomial where to store the result
-	 * @param A \ref{Blacbox} representing the matrix
+	 * @param A Blackbox representing the matrix
 	 */
 	template < class Polynomial, class Blackbox/*, class Categorytag*/ >
 	Polynomial& charpoly (Polynomial                       & P, 

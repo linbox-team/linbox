@@ -58,7 +58,7 @@ become links to the current page and are a distraction and annoyance to the read
 
 Use documented parameter listings, with <tt>\\param arg - ...</tt>, when you have something significant to 
 say about all or most of the parameters.  When you use \c \param for one parameter of a function,
-use it for all of them.  However, it is sometimes better to skip the \c \param listing format 
+use it for all of them.  However, it is sometimes better to skip the <tt>\\param</tt> listing format 
 and just discuss in sentences the parameters, their requirements on input, relation to each other, 
 and properties on output.  Use your judgement about this on a case by case basis.
 
@@ -70,7 +70,7 @@ or use in this particular class, then document that special property.
 See Butterfly for an example of this.
 In many functions the return value is a reference to the first parameter, the primary output paramater.
 parameter and is rarely used in practice.  
-In this case, don't use both the \c \param and the \c \return.  Earlier I proposed not to use \c \return 
+In this case, don't use both the <tt>\\param</tt> and the <tt>\\return</tt>.  Earlier I proposed not to use \c \return 
 at all in these situations.  Perhaps we should use <tt> \\return arg1 - ...</tt> in place of 
 <tt>\\param arg1 - ... </tt>.
 See <tt>???</tt> for an example of this.

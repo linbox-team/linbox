@@ -5,7 +5,6 @@
   Use of a function compiled with the field archetype but called
   with two distinct field types.
   */
-//@{
 // =========================================================
 // (C) The Linbox Group 1999
 // Examples for using fields 
@@ -80,4 +79,3 @@ int main() {
 
   return 0;
 };
-//@}

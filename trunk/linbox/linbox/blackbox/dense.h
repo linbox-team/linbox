@@ -144,7 +144,7 @@ class DenseMatrix : public BlackboxInterface, public DenseMatrixBase<typename _F
 
 	/** Constructor from a DenseMatrixBase. Copies all matrix data.
 	 * @param F Field over which this matrix' arithmetic will be.
-	 * @param M This will contain a complete copy of \Ref{DenseMatrixBase} M.
+	 * @param M This will contain a complete copy of \ref{DenseMatrixBase} M.
 	 */
 	DenseMatrix (const Field &F, DenseMatrixBase<Element> &M)
 		: DenseMatrixBase<Element> (M), _F (F), _MD (F), _AT (*this)

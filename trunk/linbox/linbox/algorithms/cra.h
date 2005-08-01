@@ -77,12 +77,12 @@ namespace LinBox {
 	resulting from the Chinese remainder process on sufficiently many primes to meet the 
 	termination condition.
 
-	\parameter F - Function object of two arguments, F(r, p), given prime p it outputs residue(s) r.
+	\param F - Function object of two arguments, F(r, p), given prime p it outputs residue(s) r.
 	This loop may be parallelized.  F must be reentrant, thread safe.
 	For example, F may be returning the coefficients of the minimal polynomial of a matrix mod p.
 	Warning - we won't detect bad primes.
 
-	\parameter genprime - RandIter object for generating primes.
+	\param genprime - RandIter object for generating primes.
 	\result res - an integer or object of a class meeting the FixedVector interface (with iterator
 	requirement relaxed to forward iterators).  Vectors, SubVectors, STL lists may be used.
 	*/
@@ -99,9 +99,9 @@ namespace LinBox {
 
         
     /** \brief Function for adding a new prime and it's residue to the CRA process.
-	\parameter p - A modulus.  Process is most efficient if it is relatively prime to 
+	\param p - A modulus.  Process is most efficient if it is relatively prime to 
 	all other moduli used.
-	\parameter d - A residue, image  mod p of the desired value.
+	\param d - A residue, image  mod p of the desired value.
 	*/
 	void progress (const Integer& p, const Integer& d) {
 
@@ -160,9 +160,9 @@ namespace LinBox {
             // should also allow a bound to be given.
             /* possible set sub related to d. size() */
     /** \brief Taking a step when the CRA process is being applied ot a vector or list of values..
-	\parameter p - A modulus.  Process is most efficient if it is relatively prime to 
+	\param p - A modulus.  Process is most efficient if it is relatively prime to 
 	all other moduli used.
-	\parameter d - A residue sequence: images  mod p of the desired value.  May be a list, vector,
+	\param d - A residue sequence: images  mod p of the desired value.  May be a list, vector,
 	SubVector.
 	*/
 	template <class Vect>

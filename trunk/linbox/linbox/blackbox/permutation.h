@@ -49,7 +49,7 @@ namespace LinBox
 	/** \brief size is n.
 
 \ingroup blackbox
-	 * @param Storage \Ref{LinBox} dense or sparse vector of field elements
+	 * @param Storage \ref{LinBox} dense or sparse vector of field elements
 	 */
     template<class _Field, class Storage = std::vector< long > >
 	class Permutation : public  BlackboxInterface 
@@ -107,7 +107,7 @@ namespace LinBox
 
 		/* Application of BlackBox permutation matrix.
 		 * y= P*x.
-		 * Requires one vector conforming to the \Ref{LinBox}
+		 * Requires one vector conforming to the \ref{LinBox}
 		 * vector {@link Archetypes archetype}.
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
@@ -132,7 +132,7 @@ namespace LinBox
 
 		/* Application of BlackBox permutation matrix transpose.
 		 * y= transpose(P)*x, equivalently y= P^-1*x
-		 * Requires one vector conforming to the \Ref{LinBox}
+		 * Requires one vector conforming to the \ref{LinBox}
 		 * vector {@link Archetypes archetype}.
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.

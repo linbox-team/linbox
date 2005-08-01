@@ -14,7 +14,7 @@
 namespace LinBox {
 
 /** \ingroup blackbox
-\brief Companion matrix of a monic polynomial.
+\brief %Companion matrix of a monic polynomial.
 */
 template<class _Field>
 struct Companion: public TriplesBB<_Field> {

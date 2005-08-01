@@ -1,5 +1,5 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-/** \file examples/rank.C
+/** \file examples/power-rank.C
 \brief Rank of sparse matrix over Z or Zp.
 \ingroup examples
 */

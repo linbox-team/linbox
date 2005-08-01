@@ -31,7 +31,7 @@ namespace LinBox
 
 	/** \brief Abstract element base class, a technicality.
 
-	 * The element class of \Ref{FieldAbstract}.
+	 * The element class of \ref{FieldAbstract}.
 	 * This element has no knowledge of the field to which it belongs. 
 	 * All operations and functions requiring knolwedge of the field,
 	 * such as addition and other arithmetic operations, are supplied
