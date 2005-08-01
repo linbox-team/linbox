@@ -39,27 +39,12 @@
 #include "linbox/integer.h"
 #include "linbox-config.h"
 
-#ifdef __LINBOX_XMLENABLED
-
-#include "linbox/util/xml/linbox-reader.h"
-#include "linbox/util/xml/linbox-writer.h"
-
-#include <iostream>
-#include <string>
-
-#endif
-
 #include "linbox/util/error.h"
 
 namespace LinBox
 {
 	// Forward declarations
 	class RandIterArchetype;
-/*	
-  #ifdef __LINBOX_XMLENABLED
-	class RingArchetypeFTor;
-#endif
-*/
 
 	/** 
 	 * \brief specification and archetypic instance for the ring interface 
@@ -111,17 +96,8 @@ namespace LinBox
 		 * @param F {\tt RingArchetype} object.
 		 */
 	  RingArchetype (const RingArchetype &F) : FieldArchetype ( F )	{ }
-/*		
-#ifdef __LINBOX_XMLENABLED
-
-		friend class RingArchetypeFtor;
-		RingArchetype(Reader &R);
-#endif
-*/		
-
-
     
-	  /** Invertibility test.
+	  /** \brief Invertibility test.
 		 * Test if ring element is invertible.
 		 * This function assumes the ring element has already been
 		 * constructed and initialized.

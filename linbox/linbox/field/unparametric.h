@@ -80,7 +80,7 @@ namespace LinBox
     
 		/** @name Common Object Interface for a LinBox Field.
 		 * These methods and member types are required of all LinBox fields.
-		 * See \Ref{FieldArchetype} for detailed specifications.
+		 * See \ref{FieldArchetype} for detailed specifications.
 		 */
 		//@{
     

@@ -1,18 +1,14 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
-// Copyright (C) 2004 Clément Pernet
-// See COPYING for license information.
-/** @name examples/dense-charpoly.C
+/** \file dense-det.C examples/dense-det.C \ingroup examples
  *
  * @author Clément Pernet <clement.pernet@imag.fr>
  *
- * @memo 
- * Small program that computes timings for dense-charpoly computation of dense matrices
+ * \brief Small program that computes timings for dense-charpoly computation of dense matrices
  *
- * @doc
  * Load the input matrix from a file, compute its charpoly over a prime finite field.
  */
-//@{
+// Copyright (C) 2004 Clément Pernet
+// See COPYING for license information.
 #include "linbox-config.h"
 #define DISP 0
 #define DEBUG 0
@@ -95,4 +91,3 @@ int main (int argc, char **argv)
 	
 	return 0;
 }
-//@}

@@ -3,8 +3,7 @@
 %LinBox is a C++ template library of routines 
 for solution of linear algebra
 problems including linear system solution, rank, determinant, minimal polynomial,
-characteristic polynomial.  In some cases, Frobenius form, Smith form, and other 
-functions are available.
+characteristic polynomial, and Smith normal form.
 Algorithms are provided for 
 matrices with integer entries or entries in a finite field. 
 In support of the algorithms,
@@ -81,11 +80,9 @@ The distribution contains subdirectories (documented as `modules')
    - linbox/<a href="group__util.html">util</a>, basic integers, timing clocks, commentator. 
  - <a href="group__examples.html">examples</a>, programs meant to be directly useful or be guides 
    for the progammer using %LinBox.
+ - <a href="group__doc.html">doc</a>, the browsable html documentation is generated with doxygen,
+ - <a href="group__interfaces.html">interfaces</a>, interfaces to other systems, such as Maple, gap, web servers,
  - <a href="group__tests.html">tests</a>, primarily correctness tests to aid development. 
- - <a href="group__doc.html">doc</a>, 
-   - doc/linbox-html, the documentation for online browsing.
-   - doc/latex, the documentation for printing.
- - <a href="group__interfaces.html">interfaces</a>, interfaces to other systems.
 
 \authors Members of the %LinBox group.  The most prolific documenters 
 have been first William J Turner, then Bradford Hovinen, and recently

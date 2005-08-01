@@ -43,7 +43,7 @@ class GMPRationalElement
     public:
 
 	/** @name Common Object Interface for LinBox Field elements.
-	 * These methods are required of all \Ref{LinBox} 
+	 * These methods are required of all \ref{LinBox} 
 	 * {@link Fields field} elements.
 	 */
 	//@{
@@ -105,7 +105,7 @@ class GMPRationalElement
 	 * Constructs field element from an mpq_t
 	 * Not part of the interface.
 	 * Creates new copy of element object in dynamic memory.
-	 * @param  elem_ptr  pointer to \Ref{ElementAbstract}
+	 * @param  elem_ptr  pointer to \ref{ElementAbstract}
 	 */
 	GMPRationalElement (mpq_t _rep) {
 		mpq_init (rep);
@@ -149,7 +149,7 @@ class GMPRationalElement
 	//@{
     
 	/** Pointer to parameterized field element.
-	 * Not part of the common object interface for \Ref{LinBox} field elements.
+	 * Not part of the common object interface for \ref{LinBox} field elements.
 	 * Included to avoid code bloat.
 	 */
 	mutable mpq_t rep;

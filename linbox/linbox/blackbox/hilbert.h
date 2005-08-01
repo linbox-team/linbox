@@ -35,7 +35,7 @@ namespace LinBox
 	 * This is a class of n by n Hilbert matrices templatized by the 
 	 * {@link Fields field} in 
 	 * which the elements reside.  The class conforms to the 
-	 * {@link Archetypes archetype} for \Ref{BlackBox Matrices}.
+	 * {@link Archetypes archetype} for \ref{BlackBox Matrices}.
 	 *
 	 * The matrix itself is not stored in memory.  Rather, its apply
 	 * methods use a vector of {@link Fields field} elements, which are 
@@ -43,16 +43,16 @@ namespace LinBox
 	 * 
 	 * This class has three template parameters.  The first is the field in 
 	 * which the arithmetic is to be done.  The second is the type of 
-	 * \Ref{LinBox} vector to which to apply the matrix.  The 
-	 * third is chosen be defualt to be the \Ref{LinBox} vector trait
+	 * \ref{LinBox} vector to which to apply the matrix.  The 
+	 * third is chosen be defualt to be the \ref{LinBox} vector trait
 	 * of the vector.  This class is then specialized for dense and sparse 
 	 * vectors.
 	 * 
 	 * The default class is not implemented.  It's functions should never
 	 * be called because partial template specialization should always be
 	 * done on the vector traits.
-	 * @param Field \Ref{LinBox} field
-	 * @param Vector \Ref{LinBox} dense or sparse vector of field elements
+	 * @param Field \ref{LinBox} field
+	 * @param Vector \ref{LinBox} dense or sparse vector of field elements
 	 * @param Trait  Marker whether to use dense or sparse LinBox vector 
 	 *               implementation.  This is chosen by a default parameter 
 	 *               and partial template specialization.
@@ -73,7 +73,7 @@ namespace LinBox
 
 		/** Application of BlackBox matrix.
 		 * y= A*x.
-		 * Requires one vector conforming to the \Ref{LinBox}
+		 * Requires one vector conforming to the \ref{LinBox}
 		 * vector {@link Archetypes archetype}.
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
@@ -84,7 +84,7 @@ namespace LinBox
 
 		/** Application of BlackBox matrix transpose.
 		 * y= transpose (A)*x.
-		 * Requires one vector conforming to the \Ref{LinBox}
+		 * Requires one vector conforming to the \ref{LinBox}
 		 * vector {@link Archetypes archetype}.
 		 * Required by abstract base class.
 		 * Because the Hilbert matrix is symmetric, this is the same as calling 

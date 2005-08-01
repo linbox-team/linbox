@@ -22,14 +22,13 @@ needs of algorithms, and some are primarily for testing purposes.
 Users are most likely to be interested in the sparse matrix classes (SparseMatrix, TriplesBB), the class DenseMatrix,
 and structured matrix classes such as Toeplitz.  Consult the constructors and/or read() member
 function documentation to see how to create them.  To use a blackbox of class BB in a code:
-{\tt \#include "/linbox/blackbox/BB.h"}
 
 Classes designed to be used as preconditioners in algorithms or for testing typically also provide
 functionality to generate random instances of the class.  
 Examples are Diagonal and Butterfly for preconditioners, xxx for testing.
 
 Some of the classes provide a rudimentary basis of blackbox operators for a "blackbox calculus."  
-These include {\tt Compose, Sum, Dif, Submatrix, DirectSum, Inverse, MoorePenrose}.
+These include <tt>Compose, Sum, Dif, Submatrix, DirectSum, Inverse, MoorePenrose</tt>.
 
 Developers: All black box matrices should be derived from the 
 \link LinBox::BlackboxArchetype BlackboxArchetype \endlink, so that they may be used as parameters to 

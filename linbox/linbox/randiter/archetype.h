@@ -35,9 +35,7 @@ namespace LinBox
 {
 	class ElementArchetype;
 
-	/** Random field element generator archetype.
-	 * Archetype for the random field element generator
-	 * common object interface to \Ref{LinBox}.
+	/** \brief Random field element generator archetype.
 	 *
 	 * This encapsulated class is a generator of random field elements for 
 	 * the encapsulating field.

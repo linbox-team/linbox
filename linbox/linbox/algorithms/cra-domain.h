@@ -142,12 +142,12 @@ namespace LinBox {
             resulting from the Chinese remainder process on sufficiently many primes to meet the 
             termination condition.
 			
-            \parameter F - Function object of two arguments, F(r, p), given prime p it outputs residue(s) r.
+            \param F - Function object of two arguments, F(r, p), given prime p it outputs residue(s) r.
             This loop may be parallelized.  F must be reentrant, thread safe.
             For example, F may be returning the coefficients of the minimal polynomial of a matrix mod p.
             Warning - we won't detect bad primes.
 			
-            \parameter genprime - RandIter object for generating primes.
+            \param genprime - RandIter object for generating primes.
             \result res - an integer
             */
         template<class Function, class RandPrime>
@@ -216,8 +216,8 @@ namespace LinBox {
 
        
             /** \brief Function for adding a new prime and it's residue to the CRA process.
-                \parameter D - A domain (e.g. a Field).  
-                \parameter e - A residue, image in the domain D of the desired value.
+                \param D - A domain (e.g. a Field).  
+                \param e - A residue, image in the domain D of the desired value.
             */
         template<class VectOrInt>
         void progress (const Domain& D, const VectOrInt& e) {

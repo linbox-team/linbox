@@ -56,7 +56,7 @@ namespace LinBox
 {
 
 /** \brief Linear system solvers based on Wiedemann's method.
- * @doc
+ * 
  * This class encapsulates all of the functionality for linear system
  * solving with Wiedemann's algorithm. It includes the random solution and
  * random nullspace element of Kaltofen and Saunders (1991), as well as the
@@ -95,6 +95,8 @@ class WiedemannSolver
 	{}
 
 	// @name Solvers
+	// try to make the idea work doxy
+	/// \defgroup Solvers
 
 	//@{
 

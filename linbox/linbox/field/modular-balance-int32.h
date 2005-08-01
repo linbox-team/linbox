@@ -20,7 +20,7 @@
 // #ifndef LINBOX_MAX_MODULUS
 // #define LINBOX_MAX_MODULUS 1073741824
 
-#endif 
+//#endif 
 
 
 // Namespace in which all LinBox code resides

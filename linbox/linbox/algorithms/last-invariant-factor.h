@@ -13,7 +13,8 @@
 namespace LinBox {
 	
 /** \brief This is used in a Smith Form algorithm.
-@doc This computes the last invariant factor of an integer matrix,
+
+This computes the last invariant factor of an integer matrix,
 whether zero or not, by rational solving.
 */
 	template<class _Ring,

@@ -36,8 +36,8 @@
 namespace LinBox 
 {
 	
-	/*- @memo Minimal polynomial of a blackbox linear operator A.
-	 * @doc The resulting polynomial is a vector of coefficients.
+	/*- @brief Minimal polynomial of a blackbox linear operator A.
+	 * The resulting polynomial is a vector of coefficients.
 	 * Somewhere we should document our handling of polys.
 	 */
 	template < class Blackbox, class Polynomial, class DomainCategory, class MyMethod>
@@ -47,11 +47,11 @@ namespace LinBox
 			     const MyMethod& M);
 
         /** \brief  ...using an optional Method parameter
-	\parameter P - the output minimal polynomial.  If the polynomial is
+	\param P - the output minimal polynomial.  If the polynomial is
 of degree d, this random access container has size d+1, the 0-th entry is 
 the constant coefficient and the d-th is 1 since the minpoly is monic.
-	\parameter A - a blackbox matrix
-	Optional \parameter M - the method object.  Generally, the default
+	\param A - a blackbox matrix
+	Optional \param M - the method object.  Generally, the default
 object suffices and the algorithm used is determined by the class of M.
 Basic methods are Method::Blackbox, Method::Elimination, and Method::Hybrid
 (the default).

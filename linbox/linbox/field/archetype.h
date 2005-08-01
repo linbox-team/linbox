@@ -65,11 +65,6 @@ namespace LinBox
 {
 	// Forward declarations
 	class RandIterArchetype;
-/*	
-#ifdef __LINBOX_XMLENABLED
-	class FieldArchetypeFTor;
-#endif
-*/
 
 	/** \brief field specification and archetypical instance.
 	\ingroup field
@@ -92,7 +87,7 @@ namespace LinBox
 	    public:
 
 		/** @name Common Object Interface for a LinBox Field.
-		 * These methods are required of all \Ref{LinBox} fields.
+		 * These methods are required of all \ref{LinBox} fields.
 		 */
 		//@{
     
@@ -563,7 +558,6 @@ namespace LinBox
 			return r;
 		}
 
-#ifndef __LINBOX_XMLENABLED 
 		//@} Inplace Arithmetic Operations
     
 		/** @name Input/Output Operations */
@@ -612,77 +606,26 @@ namespace LinBox
 			{ return _field_ptr->read (is, *x._elem_ptr); }
     
 		//@} Input/Output Operations
-#else
-		std::ostream &write(std::ostream &os) const
-		{
-			if(_field_ptr)
-				return _field_ptr->write(os);
-			else
-				return os;
-		}
-
-	        bool toTag(Writer &W) const
-		{
-			if(_field_ptr)
-				return _field_ptr->toTag(W);
-			else 
-				return false;
-			
-		}
-
-		std::ostream &write(std::ostream &os, const Element &e) const
-		{
-			if(_field_ptr)
-				return _field_ptr->write(os, *(e._elem_ptr));
-			else
-				return os;
-		}
-
-		bool toTag(Writer &W, const Element &e) const
-		{
-			if(_field_ptr)
-				return _field_ptr->toTag(W, *(e._elem_ptr));
-			else 
-				return false;
-			
-		}
-
-		istream &read(istream &is, Element &e) const
-		{
-			if(_field_ptr)
-				return _field_ptr->read(is, *(e._elem_ptr));
-			else
-				return is;
-		}
-
-		bool fromTag(Reader &R, Element &e) const
-		{
-			if(_field_ptr)
-				return _field_ptr->fromTag(R, *(e._elem_ptr));
-			else
-				return false;
-		}
-#endif    
 		//@} Common Object Interface
     
 		/** @name Implementation-Specific Methods.
-		 * These methods are not required of all \Ref{LinBox Fields}
+		 * These methods are not required of all \ref{LinBox Fields}
 		 * and are included only for this implementation of the archetype.
 		 */
 		//@{
 
 		/** Constructor.
-		 * Constructs field from pointer to \Ref{FieldAbstract} and its
+		 * Constructs field from pointer to \ref{FieldAbstract} and its
 		 * encapsulated element and random element generator.
 		 * Not part of the interface.
 		 * Creates new copies of field, element, and random iterator generator
 		 * objects in dynamic memory.
-		 * @param  field_ptr pointer to \Ref{FieldAbstract}.
-		 * @param  elem_ptr  pointer to \Ref{ElementAbstract}, which is the
-		 *                    encapsulated element of \Ref{FieldAbstract}.
-		 * @param  randIter_ptr  pointer to \Ref{RandIterAbstract}, which is the
+		 * @param  field_ptr pointer to \ref{FieldAbstract}.
+		 * @param  elem_ptr  pointer to \ref{ElementAbstract}, which is the
+		 *                    encapsulated element of \ref{FieldAbstract}.
+		 * @param  randIter_ptr  pointer to \ref{RandIterAbstract}, which is the
 		 *                        encapsulated random iterator generator
-		 *                        of \Ref{FieldAbstract}.
+		 *                        of \ref{FieldAbstract}.
 		 */
 		FieldArchetype (FieldAbstract    *field_ptr,
 				 ElementAbstract  *elem_ptr,
@@ -696,7 +639,7 @@ namespace LinBox
     
 		/** Constructor.
 		 * Constructs field from ANYTHING matching the interface
-		 * using the enveloppe as a \Ref{FieldAbstract} and its
+		 * using the enveloppe as a \ref{FieldAbstract} and its
 		 * encapsulated element and random element generator if needed.
 		 * @param  field_ptr pointer to field matching the interface
 		 * @param  elem_ptr  pointer to element matching the interface
@@ -772,53 +715,6 @@ namespace LinBox
 	}; // class FieldArchetype
   
 } // namespace LinBox
-/*
-#ifdef __LINBOX_XMLENABLED
-
-#include "linbox/util/xml/field-reader-analyzer.h"
-
-namespace LinBox {
-
-
-	class FieldArchetypeFtor {
-		public:
-			FieldArchetypeFtor(FieldArchetype &A) : _A(A) {}
-			
-			template<class Field>
-			void* operator()(Field* F) 
-			{
-				_A.constructor(F, F);
-				
-				//				FieldEnvelope<Field> Envelope(*F);
-				delete F;
-
-				//				_A._field_ptr = new FieldEnvelope<Field>(Envelope);
-				return NULL;
-			}
-			
-			FieldArchetype &_A;
-	};
-
-
-		// Note - This constructor is potentially dangerous as it 
-		// makes a call to FieldReaderAnalyzer's makeField method, 
-		// which can throw errors.  This class does not catch the
-		// errors, as they are not the responsibility of FieldArchetype
-		// but of the user code
-		//
-	FieldArchetype::FieldArchetype(Reader &R)
-	{
-		FieldReaderAnalyzer Analyzer(R);
-		FieldArchetypeFtor Functor(*this);
-		
-		Analyzer.makeField(Functor);
-		
-		return;
-	}
-}
-#endif
-*/
-
 
 #include "linbox/randiter/archetype.h"
 

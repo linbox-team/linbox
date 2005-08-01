@@ -54,7 +54,7 @@ namespace LinBox
 	    public:
 
 		/** @name Common Object Interface for LinBox Field elements.
-		 * These methods are required of all \Ref{LinBox} 
+		 * These methods are required of all \ref{LinBox} 
 		 * {@link Fields field} elements.
 		 */
 		//@{
@@ -120,10 +120,10 @@ namespace LinBox
 		//@{
 
 		/** Constructor.
-		 * Constructs field element from pointer to \Ref{ElementAbstract}
+		 * Constructs field element from pointer to \ref{ElementAbstract}
 		 * Not part of the interface.
 		 * Creates new copy of element object in dynamic memory.
-		 * @param  elem\_ptr  pointer to \Ref{ElementAbstract}
+		 * @param  elem\_ptr  pointer to \ref{ElementAbstract}
 		 */
 		ElementArchetype (ElementAbstract *elem_ptr)
 			: _elem_ptr (elem_ptr->clone ()) {}
@@ -143,7 +143,7 @@ namespace LinBox
 		//@{
     
 		/** Pointer to parameterized field element.
-		 * Not part of the common object interface for \Ref{LinBox} field elements.
+		 * Not part of the common object interface for \ref{LinBox} field elements.
 		 * Included to avoid code bloat.
 		 */
 		mutable ElementAbstract *_elem_ptr;

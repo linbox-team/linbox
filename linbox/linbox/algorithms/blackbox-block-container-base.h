@@ -47,7 +47,7 @@ namespace LinBox
 
 	/** \brief A base class for BlackboxBlockContainer.
 	 * The primary member function is begin().
-	 * @doc
+
 	 * It returns an iterator which after i increments (++) dereferences to 
 	 * $U A^i V$, for $U$ and $V$ determined by the init function.
 	 * It is designed to be used with implementations of Block Berlekamp-Massey 

@@ -33,7 +33,7 @@
 namespace LinBox
 {
 
-/** Directly-represented matrix archetype
+/** @brief Directly-represented matrix archetype
  *
  * This archetype gives the common interface for matrices that have direct
  * representations. The matrices are required to provide iterators to access and
@@ -49,7 +49,7 @@ class MatrixArchetype
 
 	typedef _Element Element;
 
-	/** Emptye Constructor.
+	/** Empty Constructor.
 	 */
 	MatrixArchetype ();
 
@@ -77,9 +77,10 @@ class MatrixArchetype
 	 */
 	size_t coldim () const;
 
-	/** Resize the matrix to the given dimensions
+	/** \brief Resize the matrix to the given dimensions
+	 *
 	 * The state of the matrix's entries after a call to this method is
-	 * undefined
+	 * undefined.
 	 *
 	 * This interface is optional; a matrix can omit it if it makes no sense
 	 * in the context.

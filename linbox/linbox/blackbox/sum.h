@@ -25,9 +25,9 @@ namespace LinBox
 
 \ingroup blackbox
          * Adds only at apply time.
-	 * @doc Given two black boxes A and B of the same dimensions, form a black
+	 * Given two black boxes A and B of the same dimensions, form a black
 	 * box representing A+B, i.e., Sum(A,B)x=(A+B)x=Ax+Bx
-	 * @param Vector \Ref{LinBox} dense or sparse vector of field elements
+	 * @param Vector \ref{LinBox} dense or sparse vector of field elements
 	 */
 	template <class Blackbox1, class Blackbox2>
 	class Sum : public BlackboxInterface 
@@ -90,7 +90,7 @@ namespace LinBox
 
 		/** Application of BlackBox matrix.
 		 * y= (A+B)*x.
-		 * Requires one vector conforming to the \Ref{LinBox}
+		 * Requires one vector conforming to the \ref{LinBox}
 		 * vector {@link Archetypes archetype}.
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
@@ -114,7 +114,7 @@ namespace LinBox
 
 		/** Application of BlackBox matrix transpose.
 		 * y= transpose(A+B)*x.
-		 * Requires one vector conforming to the \Ref{LinBox}
+		 * Requires one vector conforming to the \ref{LinBox}
 		 * vector {@link Archetypes archetype}.
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.

@@ -24,7 +24,7 @@ namespace LinBox
 {
 
 /** \brief Symmetrizing iterator (for rank computations).
-@doc
+
  #
 //================================================================
 // LinBox Project 1999

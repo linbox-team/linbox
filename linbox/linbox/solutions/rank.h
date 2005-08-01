@@ -48,9 +48,10 @@ namespace LinBox {
             (and is memory efficient).
             For some sparse matrices SparseElimination may outperform Wiedemann.
             For small or dense matrices BlasElimination will be faster.
-            \returns <em>r</em> rank of A.
-            \param A linear transform, member of any blackbox class.
-            \param M may be a Method::Wiedemann (the default), a Method::BlasElimination, or a Method::SparseElimination..
+		\param r - output rank of A.
+            \param - input A linear transform, member of any blackbox class.
+            \param - input M may be a Method::Wiedemann (the default), a Method::BlasElimination, or a Method::SparseElimination..
+            \returns  reference to r.
             \ingroup solutions
 	*/
 // 	template <class Blackbox, class Method, class DomainCategory>
@@ -156,6 +157,7 @@ namespace LinBox {
                          const Blackbox                  &A,
                          const RingCategories::ModularTag          &tag,
                          const Method::Wiedemann    &M) 
+// This is too much for solutions.  It belongs in algorithms
     {
             
         typedef typename Blackbox::Field Field;
@@ -449,7 +451,7 @@ namespace LinBox {
         return r;
     }
     
-	/// Change of representation to be able to call the sparse elimination
+	// Change of representation to be able to call the sparse elimination
     template <class Blackbox>
     unsigned long &rank (unsigned long                       &r,
                          const Blackbox  &A,
@@ -465,7 +467,7 @@ namespace LinBox {
         return r;
     }
     
-	/// M may be <code>Method::BlasElimination()</code>.
+	// M may be <code>Method::BlasElimination()</code>.
     template <class Blackbox>
     unsigned long &rank (unsigned long                     &r,
                          const Blackbox                      &A,
@@ -487,7 +489,8 @@ namespace LinBox {
     }
 
 
-	/// A is modified.
+// is this used?
+	// A is modified.
     template <class Matrix>
     unsigned long &rankin (unsigned long                      &r,
                            Matrix                               &A,
@@ -516,11 +519,6 @@ namespace LinBox {
         commentator.stop ("done", NULL, "rank");
         return r;
     }
-
-
-} // LinBox
-
-namespace LinBox {
 
     template <class Blackbox, class MyMethod>
     unsigned long &rank (unsigned long                     &r,

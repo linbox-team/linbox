@@ -1,4 +1,4 @@
-/** \file examples/ex-integers.C
+/** \file examples/integer-mul.C
  * \author Gilles Villard
  * \brief The LinBox arbitrary precision integer type illustrated.
 \ingroup examples

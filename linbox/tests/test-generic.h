@@ -456,9 +456,8 @@ bool testFieldInversion (const Field &F, const char *name, unsigned int iteratio
 	return ret;
 }
 
-/** @memo Generic test 7: Commutativity and distributivity of addition
- * and multiplication
- * @doc
+/** @brief Generic test 7: Commutativity and distributivity of addition and multiplication
+
  * Given random field elements 'a', 'b', and 'c', checks that
  * (a + b) * c = a * c + b * c = c * (a + b) = b * c + a * c
  */

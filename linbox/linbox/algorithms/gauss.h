@@ -37,9 +37,9 @@
 namespace LinBox 
 {
 
-/** \brief Repository of functions for rank by elimination 
-    on sparse matrices.
-    @doc Several versions allow for adjustment of the pivoting strategy
+/** \brief Repository of functions for rank by elimination on sparse matrices.
+
+    Several versions allow for adjustment of the pivoting strategy
     and for choosing in-place elimination or for not modifying the input matrix.
     Also an LU interface is offered.
 */
@@ -102,22 +102,21 @@ namespace LinBox
             //@}
 
 
-            /** \brief
-                Sparse in place Gaussian elimination with reordering to reduce fill-in.
-                @doc pivots are chosen in sparsest column of sparsest row.
+            /** \brief Sparse in place Gaussian elimination with reordering to reduce fill-in.
+                pivots are chosen in sparsest column of sparsest row.
                 This runs in linear overhead.
                 It is similar in spirit but different from Markovitz' approach.  
 
-                \begin{verbatim}
+                <pre>
                 Using : SparseFindPivot(..., density) for sparsest column, and 
                 eliminate (..., density)
-                \end{verbatim}
+                </pre>
 
                 The Matrix parameter must meet the LinBox sparse matrix interface.
                 [check details].
                 The storrows indicates whether the algorithm must keep already computed rows.
 
-                @Ref [Jean-Guillaume Dumas and Gilles Villard, 
+                @ref [Jean-Guillaume Dumas and Gilles Villard, 
                 Computing the rank of sparse matrices over finite fields.
                 In Ganzha et~al. CASC'2002, pages 47--62.]
             */
@@ -129,9 +128,8 @@ namespace LinBox
                                              bool           storrows = false);
 
 
-            /** \brief
-                Sparse Gaussian elimination without reordering. 
-                @doc
+            /** \brief Sparse Gaussian elimination without reordering. 
+
                 Gaussian elimination is done on a copy of the matrix.
                 Using : SparseFindPivot
                 eliminate
@@ -144,18 +142,16 @@ namespace LinBox
 	template <class Matrix>
 	unsigned long& rankinNoReordering (unsigned long &rank, Matrix &LigneA, unsigned long Ni, unsigned long Nj);
 
-            /** \brief
-                Dense in place LU factorization without reordering
-                @doc 
+            /** \brief Dense in place LU factorization without reordering
+
                 Using : FindPivot and LU
             */
 	template <class Matrix>
 	unsigned long &LUin (unsigned long &rank, Matrix &A);
 
 
-            /** \brief
-                Dense in place Gaussian elimination without reordering
-                @doc
+            /** \brief Dense in place Gaussian elimination without reordering
+
                 Using : FindPivot and LU
             */
 	template <class Matrix>

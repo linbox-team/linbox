@@ -87,7 +87,7 @@ namespace LinBox
 
 		/** Application of BlackBox matrix.
 		 * y= (A+B)*x.
-		 * Requires one vector conforming to the \Ref{LinBox}
+		 * Requires one vector conforming to the \ref{LinBox}
 		 * vector {@link Archetypes archetype}.
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
@@ -113,7 +113,7 @@ namespace LinBox
 
 		/** Application of BlackBox matrix transpose.
 		 * y= transpose(A+B)*x.
-		 * Requires one vector conforming to the \Ref{LinBox}
+		 * Requires one vector conforming to the \ref{LinBox}
 		 * vector {@link Archetypes archetype}.
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.

@@ -69,7 +69,7 @@ namespace LinBox
  
 		/** @name Object Management
 		 * There are no public constructors for this class.
-		 * It should only be used in tandem with \Ref{FieldArchetype}.
+		 * It should only be used in tandem with \ref{FieldArchetype}.
 		 */
 		//@{
 

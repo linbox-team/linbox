@@ -38,7 +38,7 @@
 namespace LinBox{
 
 /** @name Factorized Matrix
- * @memo Solving using blas and LU style factored matrix.
+ * @brief Solving using blas and LU style factored matrix.
  */
 //@{
 

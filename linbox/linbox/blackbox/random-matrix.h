@@ -16,9 +16,10 @@ namespace LinBox {
 
 	public:
 
-         /** randomMatrix generates random matrices used in EGV and EGV+ algorithm
+         /** generates random matrices used in EGV and EGV+ algorithm
+
 		  * [I, R] or [I, R]^t, where R is a random matrix.
-		 @doc General case.
+		 General case.
 		 */
 		template <class Blackbox, class Field>
 			static Blackbox*& randomMatrix (Blackbox* &, const Field& f, 

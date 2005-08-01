@@ -1,3 +1,5 @@
+2005-08-1  bds 
+	* numerous doc tweaks
 2005-07-15  bds and zw
 	* Now modular-balance-int.h and modular-int32.h define different classes.
 	* Modular-int had been replaced by modular-int32.

@@ -1,7 +1,8 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-/** \file archetype.h linbox/blackbox/archetype.h
-\brief apply, applytranspose, rowdim, coldim
-*/
+// no file docs except where a main() is defined.
+// /** \file archetype.h linbox/blackbox/archetype.h
+// \brief apply, applytranspose, rowdim, coldim
+// */
 
 /* linbox/blackbox/archetype.h
  * Copyright (C) 1999-2005 William J Turner,
@@ -52,7 +53,7 @@ namespace LinBox
 	 * Because of their use of virtual member funtions, these archetypes can be 
 	 * inefficient.
 	 *
-	 * @param Vector \Ref{LinBox} dense or sparse vector of field elements
+	 * @param Vector \ref{LinBox} dense or sparse vector of field elements
 	 */
 
 	/*- 
@@ -74,13 +75,13 @@ namespace LinBox
 	may be compiled against any of these classes specifically or may be separately compiled
 	against the archetype.  Algorithms may also be written with a BlackboxArchetype parameter
 	and then called with an instance of a concrete blackbox class. 
-	In contrast with the situation for \Ref{Field}s there is 
+	In contrast with the situation for \ref{Field}s there is 
 	negligible performance cost for separate compilation here.
 	
-	{\bf Template Parameter:} Vector - A type meeting the LinBox \Ref{VectorArchetype} interface.
+	{\bf Template Parameter:} Vector - A type meeting the LinBox \ref{VectorArchetype} interface.
 	Vectors of this type are the normal arguments to {\tt apply} and {\tt applyTranspose}.
 	
-	@see \Ref{../archetypes} for general discussion of LinBox archetypes.
+	@see \ref{../archetypes} for general discussion of LinBox archetypes.
 	*/
 
 	/** \brief showing the member functions provided by all blackbox matrix classes.
