@@ -1,4 +1,4 @@
-/** \file samplebb.C
+/** \file samplebb.C \ingroup examples
 \brief generate an example matrix with specified frobenius form.
 
 samplebb takes options and any number of argument triples denoting companion matrix blocks.
