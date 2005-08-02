@@ -8,6 +8,6 @@ sanity checks and some contain useful timing measurements.
 In particular test-fields is intended to help choose the 
 most efficient field representation on a given platform.
 
-Do `make check' to try the lot.
+Do <tt>make check</tt> to try the lot.
 */
 
