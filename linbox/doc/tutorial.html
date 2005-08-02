@@ -1,5 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head><meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1">
+<!-- Copyright (C) 2005 David Saunders, part of LinBox, GNU LGPL, see COPYING -->
 <title>linbox: LinBox Tutorial</title>
 <link href="doxygen.css" rel="stylesheet" type="text/css">
 </head><body>
@@ -43,11 +44,12 @@ Choose a blackbox or matrix representation suitable to your data and construct
 specific matrix A over R.
 <li>
 Call needed algorithm.  The solutions directory is designed to support this by 
-providing functions with simple problem oriented interfaces (rank(), det(), solve()), yet 
+providing functions with simple problem oriented interfaces (<tt>rank(), det(), solve()</tt>), yet 
 allowing some user control of algorithm details.  The programmer may be providing some of the 
 parts such as an application specific blackbox matrix class.  
 </ol>
 
+<p>
 <li>
 Power development.
 <p>
@@ -75,23 +77,23 @@ program to compute the determinant of a sparse matrix over GF(101).  The program
 has 3 major issues: field, matrix, algorithm.  
 
 The basic algorithm choice is between blackbox and elimination algorithms.  
-If our matrix is A and field is F, then the algorithm call may look like
+If our matrix is A, then the algorithm call may look like
 <pre>
-determinant(det, A, F, WiedemannTr);
+determinant(det, A, Method::Blackbox());
 //or 
-determinant(det, A, F, EliminationTr);
+determinant(det, A, Method::Elimination());
 </pre>
-To have access to this determinant function, <code>#include &lt;linbox/solutions/determinant.h></code>.
+To have access to this determinant function, <tt>#include &lt;linbox/solutions/determinant.h></tt>.
 
 The larger and
 sparser the matrix the more likely that the blackbox algorithm is fastest.  Hybrids are
 under development to help make this choice, and even to make it at run time adaptively.
-The last argument to the solutions functions is a <em>trait</em> object which specifies
+The last argument to the solutions functions is a method object which specifies
 the algorithm to be used.  In each case there is a default, so this argument is optional.
-Also, some traits may be constructed so as to convey more detail about the algorithm to use.
+Also, some method objects may be constructed so as to convey more detail about the algorithm to use.
 For example it may help to promise that the matrix is nonsingular or symmetric or to request
 a particular algorithm variant.  The blackbox algorithm based fundamentally on 
-Wiedemann's approach is specified by WiedemannTr, see x for more details.  Specification
+Wiedemann's approach is specified by <tt>Method::Wiedemann</tt>, see <tt>linbox/solutions/methods.h</tt> for more details.  Specification
 of a blocked blackbox algorithm may be advantageous (in the future).   
 Elimination is likely fastest if the matrix is not extremely sparse or not large or 
 not subject to rapid fill-in.
@@ -110,7 +112,7 @@ It is a good idea to use a typedef, making it easy to change representations lat
 The <em>Modular</em> field representations are LinBox's own and contain some useful
 optimizations.  Another possibility is use of NTL's zz_p class.  The linbox wrapper of
 that, called NTL_zz_p is found in <tt>linbox/field/NTL-zz_p.h</tt>.  Or use 
-a Givaro table based representation, GivaroGFq in <tt>linbox/field/givaro-gfq.h</tt>.
+a Givaro table based representation, <tt>GivaroGFq</tt> in <tt>linbox/field/givaro-gfq.h</tt>.
 ...and there are many other options.  The program <tt>tests/test-fields.C</tt> will provide some
 timing data on the basic functions of each representation.
 In linbox, a Field class and the class representing the field entries are distinct types.  The 
@@ -123,22 +125,23 @@ F.init(a, 2); F.init(b, 3);
 F.mul(c, a, b); // c <- a*b
 F.write(cout, c);
 </pre>
-[put here a diatribe on field and element representations]
 
-You have seen that the field representations are in subdirectory linbox/field.  Similarly
-the matrix representations are in linbox/blackbox and linbox/matrix.  The representations
-in the former are suitable for blackbox algorithms.  Only those deriving from the matrix
-directory are suitable for elimination.  
-For a sparse matrix, TriplesBB is a good representation choice if a blackbox algorithm
-is to be used.  For a {0,1}-incidence matrix, the class ZeroOne will be more economical
+<!-- put here a diatribe on field and element representations -->
+
+You have seen that the field representations are in subdirectory <tt>linbox/field</tt>.  Similarly
+the matrix representations are in <tt>linbox/blackbox</tt>.
+All of these are are suitable for blackbox algorithms.  Only those deriving from
+representations in <tt>linbox/matrix</tt> are suitable for elimination.  
+For a sparse matrix, <tt>TriplesBB</tt> is a good representation choice if a blackbox algorithm
+is to be used.  For a {0,1}-incidence matrix, the class <tt>ZeroOne</tt> will be more economical
 of space and time.  On the other hand, if elimination is to be used, those will not serve at
 all,
-but SparseMatrix, which allows internal modification, will do the trick.  
-The ordinary matrix representation is DenseMatrix.  
+but <tt>SparseMatrix</tt>, which allows internal modification, will do the trick.  
+The ordinary matrix representation is <tt>DenseMatrix</tt>.  
 If your matrix structure allows you to compute matrix-vector products in a way faster than
 these classes provide, you can gain by defining your own matrix class adhering to the 
-blackbox interface.  The main components of the blackbox interface are apply() and applyTranspose() 
-functions. Thus <tt>A.apply(y, x)</tt> performs y leftarrow Ax.
+blackbox interface.  The main components of the blackbox interface are member functions <tt>apply()</tt> and <tt>applyTranspose()</tt> 
+functions. <tt>A.apply(y, x)</tt> performs y leftarrow Ax.
 
 Then there is the question of initializing matrix
 entries.  Two basic approaches are illustrated here.
@@ -146,7 +149,7 @@ entries.  Two basic approaches are illustrated here.
 TriplesBB A; 
 A.read("triples-file"); // initialize A from data in file (including shape).
 </pre>
-Or a program can add entries to a sparse or dense matrix one by one using the <code>setEntry</code>
+Or a program can add entries to a sparse or dense matrix one by one using the <tt>setEntry</tt>
 function.
 <pre>
 SparseMatrix B(100, 200); // 100 by 200 zero matrix (so far).
@@ -154,7 +157,7 @@ for ( ... )
 {
    Field::Element v;
    F.init(v, ...); 
-   setEntry(B, i, j, v);  // put nonzerp v in i,j position.
+   B.setEntry(i, j, v);  // put nonzerp v in i,j position.
 }
 </pre>
 
@@ -172,10 +175,10 @@ Field F(65521);
 Matrix A; A.read("datafile");
 Field::Element det;
 determinant(det, A, blasElimination);
-cout << "the determinant is ";
-F.write(cout, det) << endl;
+F.write(cout << "the determinant is ", det) << endl;
 }
 </pre>
 
-Discuss compilation issues. (which may be learned from examining Makefile in examples dir.)
+This tutorial should continue with a discussion of compilation issues, but it 
+doesn't.  Something useful may be learned from examining the Makefile.am in the examples directory.
 </body></html>
