@@ -8,7 +8,7 @@ LDADD = $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(ATLAS_LIBS) -lcbl
 SUBDIRS=fields 
 
 EXAMPLES=rank det minpoly valence solve dot-product
-GIVARONTL_EXAMPLES=smith charpoly
+GIVARONTL_EXAMPLES=smith charpoly graph-charpoly
 if LINBOX_HAVE_NTL
 if LINBOX_HAVE_GIVARO
 USE_GIVARONTL_EXAMPLES = $(GIVARONTL_EXAMPLES)
@@ -27,6 +27,7 @@ dot_product_SOURCES = \
 #	linbox-program.C
 
 charpoly_SOURCES = charpoly.C Matio.h
+graph_charpoly_SOURCES = graph-charpoly.C Matio.h
 det_SOURCES = det.C
 rank_SOURCES = rank.C
 smith_SOURCES = smith.C
