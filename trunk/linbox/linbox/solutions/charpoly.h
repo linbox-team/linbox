@@ -163,7 +163,7 @@ namespace LinBox
 			      const RingCategories::IntegerTag & tag,
 			      const Method::Blackbox           & M)
 	{
-		return blackboxcharpoly (P, A, tag);
+		return blackboxcharpoly (P, A, tag, M);
 	}
 
 #else
@@ -245,7 +245,7 @@ namespace LinBox {
 			      const RingCategories::ModularTag & tag,
 			      const Method::Blackbox           & M)
 	{
-		return blackboxcharpoly (P, A, tag);
+		return blackboxcharpoly (P, A, tag, M);
 	}
 	
 
