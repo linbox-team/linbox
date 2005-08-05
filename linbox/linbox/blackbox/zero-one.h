@@ -42,15 +42,17 @@ namespace LinBox
 \ingroup blackbox
    */
   
-  template<class Field>
+  template<class _Field>
   class ZeroOne : public BlackboxInterface
   {
   protected:  
-    typedef typename Field::Element Element;
     typedef size_t Index;
     typedef LinBox::uint32 uint32;
     typedef LinBox::uint64 uint64;
   public:
+    typedef ZeroOne<_Field> Self_t;
+    typedef _Field Field;
+    typedef typename _Field::Element Element;
     
     // Default constructor, do nothing.
     ZeroOne();
@@ -87,9 +89,17 @@ namespace LinBox
     size_t coldim() const { return _cols; }      
 
 
-      template<typename _Tp1>
-      struct rebind 
-      { typedef ZeroOne<_Tp1> other; };
+    template<typename _Tp1>
+    struct rebind 
+    { 
+      typedef ZeroOne<_Tp1> other;
+      void operator() (other *& Ap,
+		       const Self_t& A, 
+		       const _Tp1& F) {
+	Ap = new other(F, A._rowP, A._colP, A._rows, A._cols,
+		       A._nnz, A._rowSort, A._colSort);
+      }
+    };
 
     
     /** RawIterator class.  Iterates straight through the values of the matrix
@@ -110,6 +120,37 @@ namespace LinBox
     RawIndexIterator indexEnd();
     const RawIndexIterator indexEnd() const;
 
+    /** Read the matrix from a stream in the JGD's SMS format
+     *  @param is Input stream from which to read the matrix
+     *  @return Reference to input stream 
+     */
+    std::istream &read (std::istream &is){
+      size_t i, j, k, m, n;
+      
+      char buf[80];
+      buf[0]=0;
+      is.getline (buf, 80);
+      std::istringstream str (buf);	
+      str >> m >> n >> k;
+      _rows = m;
+      _cols = n;
+      _nnz = k;
+      _rowP = new size_t[k];//cerr<<A.coldim()<<" "<<A.rowdim()<<endl;
+      _colP = new size_t[k];//cerr<<A.coldim()<<" "<<A.rowdim()<<endl;
+      size_t x;
+      size_t l=0;
+      while (is >> i) {
+	if (i == 0 || i == (size_t) -1) {is >> j; is >> x; break;}
+	is >> j;
+	is >> x;
+	if (x == 1UL) {
+	  _rowP[l] = i-1;
+	  _colP[l++] = j-1;
+	}
+      }
+      return is;
+    }
+ 
     std::ostream& write(std::ostream& out =std::cout)
     {
       size_t* i=_rowP;
