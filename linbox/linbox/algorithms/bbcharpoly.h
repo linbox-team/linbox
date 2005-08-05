@@ -10,7 +10,7 @@
 #ifndef __BBCHARPOLY_H
 #define __BBCHARPOLY_H
 
-#define __MAXITER 4
+#define __MAXITER 5
 #include <vector>
 #include <map>
 
@@ -35,7 +35,8 @@ namespace LinBox
 	Polynomial&
 	blackboxcharpoly (Polynomial & P, 
 			  const Blackbox                   & A,
-			  const Categorytag                & tag);
+			  const Categorytag                & tag,
+			  const Method::Blackbox           & M);
 	
 	/* Algorithm computing the integer characteristic polynomial
 	 * of a blackbox.
@@ -44,7 +45,8 @@ namespace LinBox
 	GivPolynomial<typename Blackbox::Field::Element>&
 	blackboxcharpoly (GivPolynomial<typename Blackbox::Field::Element> & P, 
 			  const Blackbox                   & A,
-			  const RingCategories::IntegerTag & tag)
+			  const RingCategories::IntegerTag & tag,
+			  const Method::Blackbox           & M)
 	{
 		commentator.start ("Integer Blackbox Charpoly ", "IbbCharpoly");
 
@@ -67,7 +69,9 @@ namespace LinBox
 		
  		/* Computation of the integer minimal polynomial */
  		IntPoly intMinPoly;
- 		minpoly (intMinPoly, A, Method::Blackbox());
+
+		
+		minpoly (intMinPoly, A, M);
 		
  		if (intMinPoly.size() == n+1){
 			commentator.stop ("done", NULL, "IbbCharpoly");
@@ -77,6 +81,8 @@ namespace LinBox
  		vector<IntPoly*> intFactors;    
  		vector<unsigned long> exp;
  		IPD.factor (intFactors, exp, intMinPoly);
+				
+
 		size_t factnum = intFactors.size();
 
  		/* Choose a modular prime field */
@@ -126,7 +132,7 @@ namespace LinBox
  		FieldBlackbox * Ap;
  		MatrixHom::map(Ap, A, F);
 		
-		findMultiplicities (*Ap, factCharPoly, leadingBlocks, goal);
+		findMultiplicities (*Ap, factCharPoly, leadingBlocks, goal, M);
 
  		// Building the integer charpoly
 		IntPoly intCharPoly (n+1);
@@ -150,8 +156,8 @@ namespace LinBox
 	GivPolynomial<typename Blackbox::Field::Element>& 
 	blackboxcharpoly (GivPolynomial<typename Blackbox::Field::Element> & P, 
 			  const Blackbox                                   & A,
-			  const RingCategories::ModularTag                 & tag)
-		
+			  const RingCategories::ModularTag                 & tag,
+			  const Method::Blackbox           & M)
 	{
 		commentator.start ("Modular Blackbox Charpoly ", "MbbCharpoly");
 		typedef typename Blackbox::Field Field;
@@ -170,7 +176,7 @@ namespace LinBox
 
 		/* Computation of the minimal polynomial */
 		Polynomial minPoly;
-		minpoly (minPoly, A, Method::BlasElimination());
+		minpoly (minPoly, A, M);
 		//std::cerr<<"Minpoly = "<<minPoly;
 		if (minPoly.size() == n+1){
 			commentator.stop ("done", NULL, "MbbCharpoly");
@@ -218,7 +224,7 @@ namespace LinBox
 			}
 		}
 		 
-		findMultiplicities ( A, factCharPoly, leadingBlocks, goal);
+		findMultiplicities ( A, factCharPoly, leadingBlocks, goal, M);
 		 
 		// Building the product 
 		Polynomial charPoly (n+1);
@@ -310,7 +316,8 @@ namespace LinBox
 	void findMultiplicities( const Blackbox& A, 
 				 std::multimap<unsigned long, FactorMult<FieldPoly,IntPoly>* >& factCharPoly,
 				 std::multimap<FactorMult<FieldPoly,IntPoly>*,bool>& leadingBlocks,
-				 int goal)
+				 int goal,
+				 const Method::Blackbox &M)
 	{
 		typedef multimap<unsigned long, FactorMult<FieldPoly,IntPoly>* > FactPoly;
 		typedef typename Blackbox::Field Field;
@@ -332,12 +339,13 @@ namespace LinBox
 			
 			/* The matrix Pi (A) */
 			if (F.isZero (itf->second->fieldP->operator[](0))){
-				rank( r, A, Method::Blackbox() ) ;
+				rank (r, A, M) ;
 			} else {
 				PolynomialBB<Blackbox, FieldPoly > PA (A, *itf->second->fieldP);
-				rank( r, PA,  Method::Blackbox() ) ;
+				rank (r, PA,  M) ;
 			}
 			itf->second->multiplicity = r;
+
 			//std::cerr<<"Rank 1 : "<<*itf->second->fieldP<<" --> "<<r<<std::endl;
 			factnum--;
 			itf++;
@@ -352,8 +360,8 @@ namespace LinBox
 			
 			PolynomialBB<Blackbox, FieldPoly > PA (A, *itf->second->fieldP);
 			long unsigned int r;
-			rank (r, PA,  Method::Blackbox()) ;
-			
+			rank (r, PA,  M);
+						
 			itf->second->multiplicity =r;
 			//std::cerr<<"Rank > 1 : "<<*itf->second->fieldP<<" --> "<<r<<std::endl;
 
@@ -380,7 +388,7 @@ namespace LinBox
 					// Need one more computation:
 					PolynomialBB<Blackbox, FieldPoly > PA (A, *currFFM->fieldP);
 					long unsigned int r;
-					rank (r, PA,  Method::Blackbox()) ;
+					rank (r, PA, M) ;
 					//std::cerr<<"extra factor : "<<*currFFM->fieldP<<" --> "<<r<<std::endl;
 
 					int tmp = currFFM->multiplicity;
@@ -437,7 +445,7 @@ namespace LinBox
 				Sum<Blackbox,ScalarMatrix<Field> > Agamma(A, gammaId);
 
 				// Compute det (A+gamma.Id)
-				det( d, Agamma, Method::Blackbox() );
+				det (d, Agamma, M);
 				if (A.rowdim()%2)
 					F.negin(d);
 				
