@@ -233,7 +233,7 @@ namespace LinBox {
 				
 		/** @brief
 		 *  If y is a unit, return x = 1 / y,
-		 *  otherwsie, throw an exception
+		 *  otherwise, throw an exception
 		 */
 		inline Element& inv (Element& x, const Element& y) const {
 
@@ -499,7 +499,7 @@ namespace LinBox {
 		}
 
 		/** @brief
-		 *  r = remindar of  a / b
+		 *  r = reminder of  a / b
 		 */
 		inline Element& rem (Element& r, const Element& a, const Element& b) const  {
 			
