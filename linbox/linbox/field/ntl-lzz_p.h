@@ -80,6 +80,16 @@ namespace LinBox
             
 	    static inline integer getMaxModulus()
 		{ return integer( NTL_SP_BOUND ); }
+
+	    NTL::zz_p& pow( NTL::zz_p& res, const NTL::zz_p& x, long exp ) const
+	    {
+	    	NTL::power( res, x, exp );
+		return res;
+	    }
+
+	    NTL::zz_p& powin( NTL::zz_p& x, long exp ) const {
+	    	return x = NTL::power(x,exp);
+	    }
 	};
 
 /*

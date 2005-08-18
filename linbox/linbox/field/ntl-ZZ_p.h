@@ -148,6 +148,18 @@ namespace LinBox{
 		template <class ANY>
 		ANY& convert(ANY& x, const NTL::ZZ_p& y) const
 		{ return x = static_cast<ANY>(rep(y)); }
+
+		static inline integer getMaxModulus()
+		{ return integer( -1 ); }
+
+		NTL::ZZ_p& pow( NTL::ZZ_p& res, const NTL::ZZ_p& x, long exp ) const {
+			NTL::power( res, x, exp );
+			return res;
+		}
+
+		NTL::ZZ_p& powin( NTL::ZZ_p& x, long exp ) const {
+			return x = NTL::power(x,exp);
+		}
             
         };
 

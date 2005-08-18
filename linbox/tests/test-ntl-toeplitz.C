@@ -5,7 +5,8 @@
 
 #include <linbox/field/ntl-ZZ_p.h>
 #include <linbox/integer.h>
-#include <linbox/blackbox/ntl-toeplitz.h>
+//#include <linbox/blackbox/ntl-toeplitz.h>
+#include <linbox/blackbox/toeplitz.h>
 
 /* Copyright (C) 2002 Austin Lobo, B. David Saunders*/
 
@@ -36,29 +37,31 @@ int main(int argc, char* argv[])
   
   
   //------ Read q and construct F(q)
-  NTL::ZZ modulus; 	// prime modulus
-  modulus = q;
+  //NTL::ZZ modulus; 	// prime modulus
+  //modulus = q;
 
 
   //std::cout << std::endl << "Enter a prime number for the modulus of the field: ";
   //std::cin >> modulus;
-  report <<  "The modulus is " << modulus << std::endl;
-  NTL::ZZ_p::init(modulus); // NOTE: This is essential for using NTL
+  //report <<  "The modulus is " << modulus << std::endl;
+  report <<  "The modulus is " << q << std::endl;
+  //NTL::ZZ_p::init(modulus); // NOTE: This is essential for using NTL
 
   cout  <<"====>\t Toeplitz matrix black box test suite" << endl;
-  cout  <<"     \tDimension= " << n << "\t modulus= " << modulus << endl;
+  //cout  <<"     \tDimension= " << n << "\t modulus= " << modulus << endl;
+  cout  <<"     \tDimension= " << n << "\t modulus= " << q << endl;
   
-  typedef LinBox::UnparametricField<NTL::ZZ_p> Field;
+  typedef NTL_ZZ_p Field;
   typedef Field::Element element;
   typedef std::vector<element> Vector;  
   
   // Now we are using the NTL wrapper as the field, call the instance F
-  Field F;
+  Field F(q);
   element zero;
   F.init(zero, 0);
   
   // Use the default constructor to create a matrix
-  LinBox::Toeplitz<Field> T;
+  LinBox::Toeplitz<Field> T(F);
   
   // Use a special constructor to construct a matrix of dim TSIZE
   int TSIZE = 2*n-1;
