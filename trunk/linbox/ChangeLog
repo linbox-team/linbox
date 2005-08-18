@@ -1,3 +1,16 @@
+2005-08-18 Dan Roche
+	* Added functionality for computing the determinant of a toeplitz matrix
+	* Added field/ntl-ZZ_pX.h and field/ntl-lzz_pX.h, rings over the
+	  respective NTL polynomial types
+	* Added functions pow and powin to field/ntl-ZZ_p.h and 
+	  field/ntl-lzz_p.h (could be added to all fields)
+	* Added blackbox/toeplitz.h and blackbox/toeplitz.inl, very similar to
+	  the existing Toeplitz blackbox class, but generalized to use any
+	  polynomial ring.  Didn't delete the old blackbox/ntl-toeplitz.h, inl
+	  so old code doesn't break
+	* Added tests/test-toeplitz-det.C to test all this
+	* Modified tests/test-ntl-toeplitz.C to use the new Toeplitz class
+
 2005-08-1  bds 
 	* numerous doc tweaks
 2005-07-15  bds and zw

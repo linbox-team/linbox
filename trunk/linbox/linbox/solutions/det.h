@@ -104,6 +104,16 @@ See class Method for details.
         return det(d, A, tag, Method::Elimination(M));
     }
 
+    // Forward declaration saves us from including blackbox/toeplitz.h
+    template<class A, class B> class Toeplitz;
+       
+       // Toeplitz determinant
+    template<class CField, class PField >
+    typename CField::Element& det(
+    	typename CField::Element& res,
+	const Toeplitz<CField,PField>& A )
+    { return A.det(res); }
+
 	// The det with Elimination Method 
     template<class Blackbox>
     typename Blackbox::Field::Element &det (

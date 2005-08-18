@@ -137,7 +137,8 @@ NTL_TESTS = 				\
 	test-ntl-ZZ_p			\
 	test-rational-solver		\
 	test-rational-solver-adaptive	\
-	test-last-invariant-factor
+	test-last-invariant-factor	\
+	test-toeplitz-det
 
 LIDIA_TESTS =			\
 	test-lidia-gfq
@@ -295,6 +296,9 @@ test_ntl_hankel_SOURCES =		\
 test_ntl_sylvester_SOURCES =		\
 	test-ntl-sylvester.C		\
 	test-common.h
+
+test_toeplitz_det_SOURCES =		\
+	test-toeplitz-det.C
 
 test_trace_SOURCES = 			\
 	test-trace.C			\
