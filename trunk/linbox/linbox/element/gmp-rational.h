@@ -130,10 +130,15 @@ class GMPRationalElement
 	GMPRationalElement(const integer &num)
 	{
 		mpq_init (rep);
+		/*
+		//potential error, error occurs when |num| is bigger than largest int
 		mpz_set_si (mpq_numref(rep), num);
 		mpz_set_si (mpq_denref(rep), integer(1));
+		*/
+		mpq_set_z(rep, num.get_rep());
 	}
 
+	mpq_ptr get_rep() {return rep;}
 
 	//@}p
     

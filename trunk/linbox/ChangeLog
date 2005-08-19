@@ -1,3 +1,7 @@
+2005-08-19 Z. Wan 
+	* linbox/element/gmp-rational.h  Fixed the error which occurs duing conversion 
+									 between gmp integer and gmp rational
+
 2005-08-18 Dan Roche
 	* Added functionality for computing the determinant of a toeplitz matrix
 	* Added field/ntl-ZZ_pX.h and field/ntl-lzz_pX.h, rings over the
