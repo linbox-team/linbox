@@ -15,7 +15,6 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
-#include <list>
 //#include "Matio.h"
 #include "linbox/integer.h"
 #include "linbox/field/modular.h"
@@ -25,12 +24,11 @@
 #include "linbox/algorithms/blas-domain.h"
 
 using namespace LinBox;
-using namespace std;
 //typedef  GivaroZpz<Std32> Field;
 typedef Modular<double> Field;
 typedef Field::Element Element;
 typedef BlasMatrix<Element> Matrix;
-typedef vector<Field::Element> Polynomial;
+typedef std::vector<Field::Element> Polynomial;
 
 template<class T, template <class T> class Container>
 std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
@@ -46,33 +44,33 @@ int main (int argc, char **argv)
 {
 	
 	if (argc != 4){
-		cerr << " Usage: dense-charpoly p Afile i" <<endl
-		     << " p: the characteristic of the field"<<endl
-		     << " Afile: name of file containing a square matrix"<<endl
-		     << " i: the number of iterations"<<endl;
+		std::cerr << " Usage: dense-charpoly p Afile i" << std::endl
+		     << " p: the characteristic of the field" << std::endl
+		     << " Afile: name of file containing a square matrix" << std::endl
+		     << " i: the number of iterations" << std::endl;
 		return -1;
 	}
 
 	Field F (atoi(argv[1]));
-	ifstream input (argv[2]);
+	std::ifstream input (argv[2]);
 	int nbi = atoi(argv[3]);
 	
 	if (!input) {
-		cerr << "Error: Cannot load matrix " << argv[1] << endl;
+		std::cerr << "Error: Cannot load matrix " << argv[1] << std::endl;
 		return -1;
 	}
-	cerr<<"Loading Matrix ....";
+	std::cerr<<"Loading Matrix ....";
 	
 	SparseMatrix<Field> Ad(F);
 	Ad.read (input);
 	if ( Ad.coldim() != Ad.rowdim() ) {
-		cerr << "A is " << Ad.rowdim() << " by " << Ad.coldim() << endl;
-		cerr << "Error: A is not a square matrix" << endl;
+		std::cerr << "A is " << Ad.rowdim() << " by " << Ad.coldim() << std::endl;
+		std::cerr << "Error: A is not a square matrix" << std::endl;
 		return -1;
 	}
-	cerr<<"..";
+	std::cerr << "..";
 	BlasMatrix<Element> A(Ad);
-	cerr<<"Done"<<endl;
+	std::cerr << "Done" << std::endl;
 	BlasMatrixDomain<Field> BMD(F);
 	
 	Timer tim, tot;
@@ -86,8 +84,8 @@ int main (int argc, char **argv)
 	        tot+=tim;
 	}
 
-	F.write( cout , d ) << endl;
-	cerr << tot << endl;
+	F.write( std::cout , d ) << std::endl;
+	std::cerr << tot << std::endl;
 	
 	return 0;
 }
