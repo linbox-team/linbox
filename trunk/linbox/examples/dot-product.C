@@ -17,8 +17,6 @@
 #include "linbox-config.h"
 
 #include <iostream>
-#include <fstream>
-#include <vector>
 
 #include "linbox/field/modular.h"
 #include "linbox/vector/vector-domain.h"
@@ -26,7 +24,6 @@
 #include "linbox/util/commentator.h"
 
 using namespace LinBox;
-using namespace std;
 
 typedef Modular<uint32> Field;
 
@@ -39,7 +36,7 @@ const int q = 32749;
 int main (int argc, char **argv)
 {
 	commentator.setMaxDepth (1);
-	commentator.setReportStream (cout);
+	commentator.setReportStream (std::cout);
 
 	Field F (q);
 
