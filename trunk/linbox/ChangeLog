@@ -1,3 +1,30 @@
+2005-08-31 Pascal Giorgi:
+	* linbox/algorithms/blas-domain.inl: add inverse specialization for multimod double domain
+	* linbox/algorithms/cia.h: call domain specialized minpoly instead of calling API and make code generic according to integer ring
+	* linbox/algorithms/lifting-container.h: support for multimod double domain
+	* linbox/algorithms/matrix-hom.h: support for multimod double domain
+	* linbox/algorithms/matrix-inverse.h: support for multimod double domain
+	* linbox/algorithms/rational-solver.inl: support for multimod double domain
+	* linbox/blackbox/apply.h: support for multimod double domain and new optimization
+	* linbox/blackbox/blas-blackbox.h:  support for multimod double domain, add construction from MatrixReader and finalize apply function
+	* linbox/blackbox/submatrix.h: fixed indent style problem
+	* linbox/ffpack/ffpack.h: fix memory leak problem
+	* linbox/field/modular-double.h: add support for multimod double domain
+	* linbox/field/ntl-ZZ.h: fix indent style problem
+	* linbox/field/ntl-ZZ_p.h: set FieldTraits categoryTag
+	* linbox/matrix/blas-matrix.h: add constructor from MatrixStream
+	* linbox/matrix/dense-submatrix.h: add constructor from non const MatrixDenseBase
+	* linbox/matrix/dense-submatrix.inl: add constructor from non const MatrixDenseBase, fix bug in ConstRawIterator operator++(int)
+	* linbox/matrix/transpose.h: make the reference to the matrix to be non const
+	* linbox/ring/givaro-polynomial.h: add support for PID-integer and NTL-ZZ domain
+	* linbox/solutions/charpoly.h: throw an exception if matrix are not square
+	* linbox/solutions/det.h: fix indentation and throw an exception if matrix are not square
+	* linbox/solutions/minpoly.h: fix indentation, throw an exception if matrix are not square and make minpoly over the integer generic
+	* linbox/solutions/rank.h: fix indentation
+	* linbox/solutions/smith-form.h" fix indentation
+	* linbox/util/debug.h: allow the PreconditionFailed to be a real LinBox exception
+
+
 2005-08-19 Z. Wan 
 	* linbox/element/gmp-rational.h  Fixed the error which occurs duing conversion 
 									 between gmp integer and gmp rational
