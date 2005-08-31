@@ -46,7 +46,7 @@ namespace LinBox
 		FieldPoly fieldCharPoly(A.coldim());
 		/* Computation of the integer minimal polynomial */
 		IntPoly intMinPoly;
-		minpoly (intMinPoly, A, M);
+		minpoly (intMinPoly, A, RingCategories::IntegerTag(), M);
 		
 		/* Factorization over the integers */
 		vector<IntPoly*> intFactors;    
@@ -65,11 +65,13 @@ namespace LinBox
 		/* Determination of the multiplicities */
 		FieldPolyDom FPD (F);
 		std::vector<FieldPoly> fieldFactors (nf);
+		integer tmp_convert; // PG 2005-08-04
 		for (size_t i = 0; i < nf; ++i){
 			size_t d= intFactors[i]->size();
 			fieldFactors[i].resize(d);
 			for (size_t j = 0; j < d; ++j)
-				F.init ((fieldFactors[i])[j], (*intFactors[i])[j]);
+				//F.init ((fieldFactors[i])[j], (*intFactors[i])[j]);
+				F.init ((fieldFactors[i])[j], intRing.convert(tmp_convert,(*intFactors[i])[j]));// PG 2005-08-04
 		}
 		
 		FieldPoly currPol = fieldCharPoly;

@@ -47,6 +47,7 @@ namespace LinBox {
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
+	class MultiModDouble;
 	
 	/// \ingroup field
 	template <>
@@ -54,21 +55,26 @@ namespace LinBox {
 
 	protected:
 
-		double modulus;
+		double  modulus;
+		long   lmodulus;
 
 		//double inv_modulus;
 		
 	public:	       
 		friend class FieldAXPY<Modular<double> >;
 		friend class DotProductDomain<Modular<double> >;
-		    
+		friend class MultiModDouble;
 			       
 		typedef double Element;
 		typedef ModularRandIter<double> RandIter;
 
+		static ClassifyRing<Modular<double> >::categoryTag getCategory() {return ClassifyRing<Modular<double> >::categoryTag();}
+		
+
+
 		Modular () {}
 
-		Modular (int32 p, int exp = 1)  : modulus((double)p)//, inv_modulus(1./(double)p) 
+		Modular (int32 p, int exp = 1)  : modulus((double)p), lmodulus(p)//, inv_modulus(1./(double)p) 
 		{
 			if(modulus <= 1)
 				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
@@ -76,10 +82,10 @@ namespace LinBox {
 			integer max;
 			if(modulus > (double) FieldTraits<Modular<double> >::maxModulus(max))
 				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
-				
+			
 		}
 
-		Modular (double p) :modulus(p) {
+		Modular (double p) : modulus(p), lmodulus((unsigned long)p) {
 			if( modulus <= 1 )
 				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
 			integer max;
@@ -87,7 +93,7 @@ namespace LinBox {
 				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
 		}
 
-		Modular (long int p) :modulus((double)p) {
+		Modular (long int p) :modulus((double)p), lmodulus(p) {
 			if( (double) modulus <= 1 )
 				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
 			integer max;
@@ -95,7 +101,7 @@ namespace LinBox {
 				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
 		}
 
-		Modular (const integer& p) : modulus((double) p)//, inv_modulus(1./(double)p)
+		Modular (const integer& p) : modulus((double) p), lmodulus(p) //, inv_modulus(1./(double)p)
 		{
 			if(modulus <= 1)
 				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
@@ -104,11 +110,12 @@ namespace LinBox {
 				
 		}
 
-		Modular(const Modular<double>& mf) : modulus(mf.modulus)//,inv_modulus(mf.inv_modulus)
+		Modular(const Modular<double>& mf) : modulus(mf.modulus), lmodulus(mf.lmodulus)//,inv_modulus(mf.inv_modulus)
 		{}
 
 		const Modular &operator=(const Modular<double> &F) {
 			modulus = F.modulus;
+			lmodulus= F.lmodulus;
 			//inv_modulus = F.inv_modulus;
 			return *this;
 		}
@@ -157,14 +164,14 @@ namespace LinBox {
 		
 
 		Element &init (Element &x, const integer &y) const  {
-			x = y % long (modulus);
-			if (x < 0) x += modulus;
+			x = mpz_fdiv_ui(y.get_mpz(),lmodulus );
+		
 			return x;
 		}
 
 		inline Element& init(Element& x, double y =0) const {		  
 
-			double tmp = y;
+			//double tmp = y;
 
 			/*
 			int sign=0;
@@ -179,7 +186,7 @@ namespace LinBox {
 			//Some odds donot support it. It is in C99.
 			//tmp = round (y); 
 			
-			tmp = fmod (tmp, modulus);
+			x = fmod (y, modulus);
 
 			/*
 			if (tmp > modulus) 
@@ -196,9 +203,9 @@ namespace LinBox {
 					return x = tmp;
 			*/
 
-			if (tmp < 0) tmp += modulus;
+			if (x < 0) x += modulus;
 
-			return x = tmp;
+			return x;
 		}
 
 		

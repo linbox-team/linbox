@@ -54,11 +54,12 @@ namespace LinBox {
             \returns  reference to r.
             \ingroup solutions
 	*/
-// 	template <class Blackbox, class Method, class DomainCategory>
-// 	unsigned long &rank (unsigned long                   &r,
-// 			     const Blackbox                  &A,
-//                              const DomainCategory                      &tag,
-// 			     const Method    &M);
+	
+ 	template <class Blackbox, class Method, class DomainCategory>
+ 	unsigned long &rank (unsigned long                   &r,
+ 			     const Blackbox                  &A,
+			     const DomainCategory          &tag,
+ 			     const Method                   &M);
 
 	/** 
             Compute the rank of a linear transform A over a field. 
@@ -461,7 +462,7 @@ namespace LinBox {
         typedef typename Blackbox::Field Field;
         typedef SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq> SparseBB;
         SparseBB * SpA;
-        MatrixHom::map(SpA, A, A.field());
+	MatrixHom::map(SpA, A, A.field());
         rankin(r, *SpA, tag, M);
         delete SpA;
         return r;

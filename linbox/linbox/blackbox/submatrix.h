@@ -1,4 +1,5 @@
-/* -*- C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
 
 /* linbox/blackbox/submatrix.h
  * Copyright (C) 2001 Bradford Hovinen

@@ -71,6 +71,13 @@ namespace LinBox {
 		BlasMatrix (int m, int n) 
 			: DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (m,n)),0,0,m,n), _stride(n), _alloc(true) { _ptr = this->_M->FullIterator();}
 
+
+		/** Constructor from a matrix stream */
+		template< class Field >
+		BlasMatrix(MatrixStream<Field>& ms)
+			: DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (ms))),  _alloc(true) { _ptr = this->_M->FullIterator(); _stride= this->coldim();}
+
+
 		// Generic copy constructor from either a blackbox or a matrix container
 		template <class Matrix>
 		BlasMatrix (const Matrix &A)

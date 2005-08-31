@@ -43,6 +43,8 @@
 #include <linbox/solutions/methods.h>
 #include <linbox/util/debug.h>
 #include <linbox-config.h>
+#include <linbox/field/multimod-field.h>
+
 #ifdef __LINBOX_BLAS_AVAILABLE
 #include <linbox/blackbox/blas-blackbox.h>
 #include <linbox/matrix/blas-matrix.h>
@@ -56,6 +58,21 @@
 //#define SKIP_NONSINGULAR
 
 namespace LinBox {
+	
+	template <class Prime>
+	bool checkBlasPrime(const Prime p) {
+		return p < Prime(67108863);
+	}
+
+	template<>
+	bool checkBlasPrime(const std::vector<integer> p){
+		bool tmp=true;
+		for (size_t i=0;i<p.size();++i)
+			if  (p[i] >= integer(67108863)) {tmp=false;break;}
+		
+		return tmp;
+	}
+
 
 	// SPECIALIZATION FOR WIEDEMANN 	
 
@@ -578,7 +595,7 @@ namespace LinBox {
 			if (trials != 0) chooseNewPrime();
 			trials++;
 #ifdef DEBUG_DIXON
-			std::cout << "_prime: "<<_prime<<"\n";
+			//std::cout << "_prime: "<<_prime<<"\n";
 			std::cout<<"A:=\n";
 			A.write(std::cout);
 			std::cout<<"b:=\n";
@@ -608,9 +625,8 @@ namespace LinBox {
 		
 				F= new Field (_prime);					
 		
-				FMP = new BlasBlackbox<Field>(*F, A.rowdim(),A.coldim());
-
-				
+				//FMP = new BlasBlackbox<Field>(*F, A.rowdim(),A.coldim());
+			
 				MatrixHom::map (FMP, A, *F); // use MatrixHom to reduce matrix PG 2005-06-16
 				//typename BlasBlackbox<Field>::RawIterator iter_p  = FMP->rawBegin();
 				//typename IMatrix::ConstRawIterator iter  = A.rawBegin();
@@ -624,8 +640,10 @@ namespace LinBox {
 				FMP->write(std::cout,*F);
 #endif				
 			
-				if ( _prime >  Prime(67108863) )
+				if (!checkBlasPrime(_prime)){
+					FMP = new BlasBlackbox<Field>(*F, A.rowdim(),A.coldim());
 					notfr = MatrixInverse::matrixInverseIn(*F,*FMP);
+				}
 				else {
 					BlasBlackbox<Field> *invA = new BlasBlackbox<Field>(*F, A.rowdim(),A.coldim());
 					BlasMatrixDomain<Field> BMDF(*F);
@@ -633,8 +651,8 @@ namespace LinBox {
 					tNonsingularSetup.stop();
 					ttNonsingularSetup += tNonsingularSetup;
 					tNonsingularInv.start();
-#endif
-					BMDF.inv(*invA, *FMP, notfr); //notfr <- nullity
+#endif				
+					BMDF.invin(*invA, *FMP, notfr); //notfr <- nullity
 					delete FMP;
 					FMP = invA;
 // 					std::cout << "notfr = " << notfr << std::endl;
@@ -646,7 +664,7 @@ namespace LinBox {
 #endif
 				}
 			}
-			else {
+		else {
 #ifdef RSTIMING
 				tNonsingularSetup.stop();
 				ttNonsingularSetup += tNonsingularSetup;
@@ -660,16 +678,15 @@ namespace LinBox {
 		FMP->write(std::cout,*F);
 #endif		
 
-		typedef DixonLiftingContainer<Ring,Field,IMatrix,BlasBlackbox<Field> > LiftingContainer;
-			
-		LiftingContainer lc(_R, *F, *IMP, *FMP, b, _prime);		
+		typedef DixonLiftingContainer<Ring,Field,IMatrix,BlasBlackbox<Field> > LiftingContainer;		
+		LiftingContainer lc(_R, *F, A, *FMP, b, _prime);		
 		RationalReconstruction<LiftingContainer > re(lc);
 
-		if (!re.getRational(num, den, 0)) return SS_FAILED;
+		if (!re.getRational(num, den, 50)) return SS_FAILED;
 #ifdef RSTIMING
 		ttNonsingularSolve.update(re, lc);
 #endif	
-				
+		
 		return SS_OK;
 	}
 
@@ -749,14 +766,24 @@ namespace LinBox {
 			BlasBlackbox<Field>* TAS_factors = new BlasBlackbox<Field>(F, A.coldim()+1, A.rowdim());
 			Hom<Ring, Field> Hmap(_R, F);
 
+			BlasBlackbox<Field> *Ap;
+			MatrixHom::map(Ap, A, F);
+
 			for (size_t i=0;i<A.rowdim();++i)
 				for (size_t j=0;j<A.coldim();++j)
 					//F.init(TAS_factors->refEntry(j,i),_R.convert(tmp,A.getEntry(i,j)));
-					Hmap.image(TAS_factors->refEntry(j,i),A.getEntry(i,j));
+					//Hmap.image(TAS_factors->refEntry(j,i),A.getEntry(i,j));
+					TAS_factors->setEntry(j,i, Ap->getEntry(i,j));
+					
+			delete Ap;
 
-			for (size_t i=0;i<A.rowdim();++i)
-				Hmap.image(TAS_factors->refEntry(A.coldim(),i), b[i]);
-				//F.init(TAS_factors->refEntry(A.coldim(),i),_R.convert(tmp,b[i]));
+			for (size_t i=0;i<A.rowdim();++i){
+				typename Field::Element tmpe;
+				F.init(tmpe);
+				//Hmap.image(TAS_factors->refEntry(A.coldim(),i), b[i]);
+				F.init(tmpe,_R.convert(tmp,b[i]));
+				TAS_factors->setEntry(A.coldim(),i, tmpe);
+			}
 #ifdef RSTIMING
 			tSetup.stop();
 			ttSetup += tSetup;
@@ -879,8 +906,8 @@ namespace LinBox {
  				Atp_minor_inv->write(std::cout << "Atp_minor_inv:" << std::endl, F);
 				std::cout << "zt: "; for (size_t i=0; i<rank; i++) std::cout << zt[i] <<' '; std::cout << std::endl;
 #endif
-				BlasBlackbox<Ring>  BBAt_minor(_R, At_minor);
-				BlasBlackbox<Field> BBAtp_minor_inv(F, *Atp_minor_inv);
+				//BlasBlackbox<Ring>  BBAt_minor(_R, At_minor);
+				//BlasBlackbox<Field> BBAtp_minor_inv(F, *Atp_minor_inv);
 				//BlasMatrix<Integer>  BBAt_minor( At_minor);
 				//BlasMatrix<Element>  BBAtp_minor_inv( *Atp_minor_inv);
 
@@ -889,7 +916,7 @@ namespace LinBox {
 				ttCheckConsistency += tCheckConsistency;
 #endif			
 
-				LiftingContainer lc(_R, F, BBAt_minor, BBAtp_minor_inv, zt, _prime);
+				LiftingContainer lc(_R, F, At_minor, *Atp_minor_inv, zt, _prime);
 				
 				RationalReconstruction<LiftingContainer > re(lc);
 				
@@ -902,7 +929,7 @@ namespace LinBox {
 				ttConsistencySolve.update(re, lc);
 				tCheckConsistency.start();
 #endif
-				delete Atp_minor_inv;
+				//delete Atp_minor_inv;
 				
 				VectorFraction<Ring> cert(_R, short_num. size());
 				cert. numer = short_num;
@@ -1061,10 +1088,11 @@ namespace LinBox {
 			newb.resize(rank);
 
 			BlasBlackbox<Ring>  BBA_minor(_R,A_minor);
-			BlasBlackbox<Field> BBA_inv(F,*Ap_minor_inv);
+			//BlasBlackbox<Field> BBA_inv(F,*Ap_minor_inv);
 			//BlasMatrix<Integer>  BBA_minor(A_minor);
 			//BlasMatrix<Element> BBA_inv(*Ap_minor_inv);
-			LiftingContainer lc(_R, F, BBA_minor, BBA_inv, newb, _prime);
+			//LiftingContainer lc(_R, F, BBA_minor, BBA_inv, newb, _prime);
+			LiftingContainer lc(_R, F, BBA_minor, *Ap_minor_inv, newb, _prime);
 
 #ifdef DEBUG_DIXON
 			std::cout<<"length of lifting: "<<lc.length()<<std::endl;
@@ -1195,7 +1223,9 @@ namespace LinBox {
 				tCertSetup.stop();
 				ttCertSetup += tCertSetup;
 #endif
-				LiftingContainer lc2(_R, F, BBA_minor, BBA_inv, q, _prime);
+				//LiftingContainer lc2(_R, F, BBA_minor, BBA_inv, q, _prime);
+				LiftingContainer lc2(_R, F, BBA_minor, *Ap_minor_inv, q, _prime);
+
 				RationalReconstruction<LiftingContainer> re(lc2);
 				Vector1 u_num(rank); Integer u_den;
 				if (!re.getRational(u_num, u_den,0)) return SS_FAILED;

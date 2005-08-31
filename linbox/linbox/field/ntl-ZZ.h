@@ -95,18 +95,18 @@ namespace LinBox {
 			return x;
 		}
 
-      /** @brief
-      *   Init from a uint64
-      */
-      inline Element& init (Element& x, const uint64& y) const {
-      	uint64 shift = (uint64)1 << 32;
-      	uint32 temp = y % shift;
-      	NTL::conv (x,temp);
-      	x <<= 32;
-      	temp = y / shift;
-      	x += temp;
-      	return x;
-      } 
+		/** @brief
+		 *   Init from a uint64
+		 */
+		inline Element& init (Element& x, const uint64& y) const {
+			uint64 shift = (uint64)1 << 32;
+			uint32 temp = y % shift;
+			NTL::conv (x,temp);
+			x <<= 32;
+			temp = y / shift;
+			x += temp;
+			return x;
+		} 
 
 		/** @brief
 		 *  I don't  know how to init from integer efficiently.

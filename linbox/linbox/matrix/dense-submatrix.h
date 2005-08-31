@@ -107,6 +107,12 @@ class DenseSubmatrix
 			size_t rowdim,
 			size_t coldim);
 
+	/** Constructor from an existing @ref{DenseMatrixBase} 
+	 * \param M Pointer to @ref{DenseMatrixBase} of which to construct submatrix
+	 */
+	DenseSubmatrix (DenseMatrixBase<Element> &M);
+
+
 	/** Constructor from an existing submatrix and dimensions
 	 * @param SM Constant reference to DenseSubmatrix from which to
 	 *           construct submatrix

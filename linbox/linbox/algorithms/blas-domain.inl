@@ -72,6 +72,41 @@ namespace LinBox {
 		
 	};
 
+	template <>	
+	class BlasMatrixDomainInv<MultiModDouble,BlasBlackbox<MultiModDouble> > {
+	public:
+		int operator() (const MultiModDouble                   &F, 
+				BlasBlackbox<MultiModDouble>        &Ainv,
+				const BlasBlackbox<MultiModDouble>     &A) const{
+			
+			linbox_check( A.rowdim() == A.coldim());
+			linbox_check( A.rowdim() == Ainv.rowdim());
+			linbox_check( A.coldim() == Ainv.coldim());
+			BlasBlackbox<MultiModDouble> tmp(A);			
+			return (*this)(F,Ainv,tmp);
+		}
+
+		int operator() (const MultiModDouble                &F, 
+				BlasBlackbox<MultiModDouble>     &Ainv,
+				BlasBlackbox<MultiModDouble>        &A) const{
+			
+			linbox_check( A.rowdim() == A.coldim());
+			linbox_check( A.rowdim() == Ainv.rowdim());
+			linbox_check( A.coldim() == Ainv.coldim());			
+			int nullity, defrank=0;
+			
+			for (size_t i=0;i<F.size();++i){
+				FFPACK::Invert2(F.getBase(i),A.rowdim(), A.getMatrix(i)->getPointer(),A.getMatrix(i)->getStride(),
+						Ainv.getMatrix(i)->getPointer(),Ainv.getMatrix(i)->getStride(),nullity);
+				defrank+=nullity;
+			}
+			return defrank;
+		}
+		
+	};
+
+
+
 	// Rank
 	template <class Field>
 	class 	BlasMatrixDomainRank<Field,BlasBlackbox<Field> > {
