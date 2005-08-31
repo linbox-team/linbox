@@ -123,7 +123,10 @@ namespace LinBox
 			      const Blackbox                   & A,
 			      const RingCategories::ModularTag & tag,
 			      const Method::BlasElimination    & M) 
-	{ 
+	{ 	
+		if (A.coldim() != A.rowdim())
+			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
+		
 		BlasBlackbox< typename Blackbox::Field > BBB (A);
 		BlasMatrixDomain< typename Blackbox::Field > BMD (BBB.field());
 		return BMD.charpoly (P, static_cast<BlasMatrix<typename Blackbox::Field::Element> >(BBB));
@@ -146,6 +149,8 @@ namespace LinBox
 			      const RingCategories::IntegerTag & tag,
 			      const Method::BlasElimination    & M) 
 	{
+		if (A.coldim() != A.rowdim())
+			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
 		return cia (P, A, M);
 	}
 
@@ -163,6 +168,8 @@ namespace LinBox
 			      const RingCategories::IntegerTag & tag,
 			      const Method::Blackbox           & M)
 	{
+		if (A.coldim() != A.rowdim())
+			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
 		return blackboxcharpoly (P, A, tag, M);
 	}
 
@@ -187,7 +194,7 @@ namespace LinBox {
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 			FBlackbox * Ap;
 			MatrixHom::map(Ap, A, F);
-			charpoly( P, *Ap, M);
+			charpoly( P, *Ap, typename FieldTraits<Field>::categoryTag(), M);
 			integer p;
 			F.characteristic(p);
 			//std::cerr<<"Charpoly(A) mod "<<p<<" = "<<P;
@@ -203,6 +210,9 @@ namespace LinBox {
 			      const RingCategories::IntegerTag & tag,
 			      const Method::Blackbox           & M)
 	{
+		if (A.coldim() != A.rowdim())
+			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
+
 		commentator.start ("Integer BlackBox Charpoly : No NTL installation -> chinese remaindering", "IbbCharpoly");
 		
 		RandomPrime genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
@@ -218,6 +228,9 @@ namespace LinBox {
 			      const RingCategories::IntegerTag & tag,
 			      const Method::BlasElimination    & M)
 	{
+		if (A.coldim() != A.rowdim())
+			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
+
 		commentator.start ("Integer Dense Charpoly : No NTL installation -> chinese remaindering", "IbbCharpoly");
 		
 		RandomPrime genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
@@ -245,6 +258,9 @@ namespace LinBox {
 			      const RingCategories::ModularTag & tag,
 			      const Method::Blackbox           & M)
 	{
+		if (A.coldim() != A.rowdim())
+			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
+
 		return blackboxcharpoly (P, A, tag, M);
 	}
 	

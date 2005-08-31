@@ -187,9 +187,11 @@ public:
 		size_t *rowP = new size_t[M];
 		
 		nullity = M - LUdivine( F, FflasNonUnit, M, M, A, lda, P, FfpackLQUP,rowP);
-		if (nullity > 0)
+		if (nullity > 0){
+			delete[] P;
+			delete[] rowP;
 			return NULL;
-		
+		}
 		// Improvement: construct X=P^1 directly
 		for (size_t i=0;i<M;++i)
 			for (size_t j=0; j<M;++j)
@@ -203,6 +205,10 @@ public:
 		      A, lda , X, ldx);
 		ftrsm(F, FflasRight, FflasLower, FflasNoTrans, FflasUnit, M, M, one, 
 		      A, lda , X, ldx);
+		
+		delete[] P;
+		delete[] rowP;
+		
 		return X;
 	}
 	
@@ -221,8 +227,11 @@ public:
 		size_t *rowP = new size_t[M];
 		
 		nullity = M - LUdivine( F, FflasNonUnit, M, M, A, lda, P, FfpackLQUP,rowP);
-		if (nullity > 0)
+		if (nullity > 0){
+			delete[] P;
+			delete[] rowP;
 			return NULL;
+		}
 		else {
 			
 			// Initializing X to 0
@@ -241,8 +250,10 @@ public:
 			// X = P^-1.X
 			applyP( F, FflasLeft, FflasTrans, M, 0, M, X, ldx, P ); 
 			
+			delete[] P;
+			delete[] rowP;
 			return X;
-		}
+		}	
  	}
 
 	/** 

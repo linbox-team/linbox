@@ -52,8 +52,8 @@ namespace LinBox
 		const Blackbox                              &A,
 		const MyMethod                           &M) 
     {
-        smithForm(S, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), M);
-		return S;
+	    smithForm(S, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), M);
+	    return S;
     }
 
         // for specialization with respect to the DomainCategory

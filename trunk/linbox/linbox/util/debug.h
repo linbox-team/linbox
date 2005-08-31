@@ -25,6 +25,8 @@
 #define __UTIL_DEBUG_H
 
 #include <iostream>
+#include <sstream>
+#include <linbox/util/error.h>
 
 #ifndef DEBUG
 #  define linbox_check(check)
@@ -42,7 +44,7 @@
 
 namespace LinBox
 {
-	class PreconditionFailed
+	class PreconditionFailed : public LinboxError
 	{
 		static std::ostream *_errorStream;
 
@@ -57,6 +59,14 @@ namespace LinBox
 		}
 
 		static void setErrorStream (std::ostream &stream);
+
+		// -- overload the virtual print of LinboxError
+		std::ostream &print (std::ostream &o) const { 
+			if (std::ostringstream * str = dynamic_cast<std::ostringstream*>(_errorStream))
+				return o << str->str() ; 
+			else
+				throw LinboxError("LinBox ERROR: PreconditionFailed exception is not initialized correctly");
+		}
 	};
 }
 

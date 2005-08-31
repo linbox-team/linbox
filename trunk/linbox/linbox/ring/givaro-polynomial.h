@@ -85,6 +85,69 @@ GivPolynomialRing<UnparametricField<integer>,Dense>::factor (std::vector<GivPoly
 		}
 		return factors;
 }
+
+#include <linbox/field/PID-integer.h>
+template <>
+template <>
+std::vector<GivPolynomial<integer>* >& 
+GivPolynomialRing<const PID_integer,Dense>::factor<std::vector<GivPolynomial<integer>* > > (std::vector<GivPolynomial<integer>* >& factors, 
+										      std::vector<unsigned long>& exp,
+										      const GivPolynomial<integer> &P)
+{
+		NTL::ZZXFac_InitNumPrimes = 1;
+		NTL::ZZX f;
+		for (size_t i = 0; i < P.size(); ++i){
+			NTL::SetCoeff (f, i, NTL::to_ZZ((std::string( P[i] )).c_str()) );
+		}
+		NTL::vec_pair_ZZX_long ntlfactors;
+		NTL::ZZ c;
+		NTL::factor (c, ntlfactors, f);
+			
+		NTL::ZZ t; 
+		NTL_ZZ NTLIntDom;
+		factors.resize(ntlfactors.length());
+		exp.resize(ntlfactors.length());
+		for (int i= 0; i<ntlfactors.length(); ++i) {
+			factors[i] = new GivPolynomial<integer>( deg(ntlfactors[i].a)+1 );
+			for(int j = 0; j <= deg(ntlfactors[i].a); ++j) {
+				NTL::GetCoeff(t,ntlfactors[i].a,j);
+				NTLIntDom.convert( factors[i]->operator[](j), t );
+			}
+			exp[i] = ntlfactors[i].b;
+		}
+		return factors;
+}
+
+template <>
+template <>
+std::vector<GivPolynomial<NTL::ZZ>* >& 
+GivPolynomialRing<const NTL_ZZ , Dense>::factor<std::vector<GivPolynomial<NTL::ZZ>* > > (std::vector<GivPolynomial<NTL::ZZ>* >& factors, 
+										    std::vector<unsigned long>& exp,
+										    const GivPolynomial<NTL::ZZ> &P)
+{
+		NTL::ZZXFac_InitNumPrimes = 1;
+		NTL::ZZX f;
+		for (size_t i = 0; i < P.size(); ++i){
+			NTL::SetCoeff (f, i, P[i]);
+		}
+		NTL::vec_pair_ZZX_long ntlfactors;
+		NTL::ZZ c;
+		NTL::factor (c, ntlfactors, f);
+			
+		NTL::ZZ t; 
+		NTL_ZZ NTLIntDom;
+		factors.resize(ntlfactors.length());
+		exp.resize(ntlfactors.length());
+		for (int i= 0; i<ntlfactors.length(); ++i) {
+			factors[i] = new GivPolynomial<NTL::ZZ>( deg(ntlfactors[i].a)+1 );
+			for(int j = 0; j <= deg(ntlfactors[i].a); ++j) {
+				NTL::GetCoeff( factors[i]->operator[](j),ntlfactors[i].a,j);
+			}
+			exp[i] = ntlfactors[i].b;
+		}
+		return factors;
+} 
+
 #endif
 
 template <>

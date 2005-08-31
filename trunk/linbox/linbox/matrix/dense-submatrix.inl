@@ -31,7 +31,7 @@
 
 namespace LinBox
 {
- 
+
 template <class Element>
 DenseSubmatrix<Element>::DenseSubmatrix (DenseMatrixBase<Element> &M,
 					 size_t row,
@@ -45,6 +45,13 @@ DenseSubmatrix<Element>::DenseSubmatrix (DenseMatrixBase<Element> &M,
 	linbox_check (_end_row <= M.rowdim ());
 	linbox_check (_end_col <= M.coldim ());
 } 
+
+
+template <class Element>
+DenseSubmatrix<Element>::DenseSubmatrix (DenseMatrixBase<Element> &M)
+	: _M(&M), _beg_row(0), _end_row(M.rowdim()), _beg_col(0), _end_col(M.coldim()) {}
+
+
 
 template <class Element>
 DenseSubmatrix<Element>::DenseSubmatrix (const DenseSubmatrix<Element> &SM,
@@ -181,7 +188,7 @@ class DenseSubmatrix<Element>::ConstRawIterator
 		return *this;
 	}
 
-	ConstRawIterator& operator++(int)
+	ConstRawIterator operator++(int)
 	{
 		ConstRawIterator tmp = *this;
 		this->operator++();

@@ -14,6 +14,7 @@
 #define __LINBOX__MATRIX_INVERSE_H__
 
 #include <linbox/util/debug.h>
+#include <linbox/util/error.h>
 #include <vector>
 #include <algorithm>
 
@@ -170,6 +171,13 @@ namespace LinBox
 			return 0;
 		}
 	};
+
+	template<>
+	long MatrixInverse::matrixInverseIn(const MultiModDouble& F, BlasBlackbox<MultiModDouble>& A) {
+		throw LinboxError("LinBox ERROR: use of MultiModDouble with too large moduli is not allowed at this time\n");
+		return 0;
+	}
+
 } // namespace LinBox
 
 

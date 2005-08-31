@@ -39,6 +39,8 @@
 #include <linbox/vector/vector-domain.h>
 #include <linbox/blackbox/compose.h>
 #include <linbox/algorithms/blas-domain.h>
+#include <linbox/field/hom.h>
+//#include <linbox/algorithms/vector-hom.h>
 #undef _U
 
 namespace LinBox {
@@ -54,13 +56,29 @@ namespace LinBox {
 	template <class Ring, class ItMatrix>
 	void SpecialBound(const Ring& R, typename Ring::Element& H_col_sqr, 
 			  typename Ring::Element& short_col_sqr, const ItMatrix& A) {
+					
 		typedef typename Ring::Element Integer;
-		Integer sqsum;
-		size_t m, n, col=0;
-		n=A.coldim();
-		m=A.rowdim();
+		//Integer sqsum;
+		//size_t m, n, col=0;
+		//n=A.coldim();
+		//m=A.rowdim();
 		R.init(H_col_sqr, 1);
+		Integer zero;
+		R.init(zero,0UL);
 		
+		typename ItMatrix::ConstRowIterator row= A.rowBegin();
+		std::vector<Integer> tmp(A.coldim(), zero);
+		for (; row != A.rowEnd(); row++){
+			typename ItMatrix::ConstRow::const_iterator elm= row->begin();
+			for (size_t i=0; elm != row->end(); elm++, ++i)
+				R.axpyin(tmp[i], *elm, *elm);			
+		}
+
+		for (size_t i=0;i<A.coldim();++i)
+			R.mulin(H_col_sqr,tmp[i]);
+		short_col_sqr= *(std::min_element(tmp.begin(),tmp.end()));
+
+		/* at this point RowIterator is better than ColIterator
 		typename ItMatrix::ConstColIterator colIter;
 		colIter = A.colBegin();
 
@@ -73,6 +91,8 @@ namespace LinBox {
 			if (col == 0 || sqsum < short_col_sqr)
 				short_col_sqr = sqsum;
 		}
+		*/
+		
 	}
 
 	// in solveNonsingular, we may work with something that inherits from DenseMatrixBase
@@ -282,11 +302,27 @@ namespace LinBox {
 		//BlasApply<Ring>          _BA;
 
 	
+	
+
+		void convertPrime(Integer& e, const integer& p){
+			_R.init(e,p);
+		}
+		
+
+		void convertPrime(Integer& e, const std::vector<integer>& p){
+			integer tmp=1;
+			for (size_t i=0;i<p.size();++i)
+				tmp*=integer(p[i]);			
+			_R.init(e,tmp);
+		}
+	
+
 	public:
 
 		template <class Prime_Type, class Vector1>
 		LiftingContainerBase (const Ring& R, const IMatrix& A, const Vector1& b, const Prime_Type& p):
 			_A(A), _R(R), _VDR(R), _MAD(R,A) {
+		
 #ifdef RSTIMING
 			ttSetup.start();
 #endif
@@ -298,7 +334,10 @@ namespace LinBox {
 			//assert(m == n); //logic may not work otherwise
 			linbox_check( m == n );
 			// initialise the prime as an Integer
-			this->_R.init(_p,p);
+			//this->_R.init(_p,p);
+			this->convertPrime(_p, p);
+			//std::cout<<"padic base= "<<_p<<std::endl;
+			
 			
 			// initialize res = b
 			_b.resize(b.size());
@@ -328,6 +367,11 @@ namespace LinBox {
 #ifdef DEBUG_LC                                   
 			std::cout<<" norms computed, p = "<<_p<<"\n";
 			std::cout<<" N = "<<N<<", D = "<<D<<", length = "<<_length<<"\n";
+			std::cout<<"A:=\n";
+			_A.write(std::cout);
+			std::cout<<"b:=\n";
+			for (size_t i=0;i<_b.size();++i) std::cout<<_b[i]<<" , ";
+			std::cout<<std::endl;
 #endif
 			this->_R.init(_numbound,N);
 			this->_R.init(_denbound,D);
@@ -368,11 +412,20 @@ namespace LinBox {
 				_lc.tRingApply.start();
 #endif
 
+#ifdef DEBUG_LC
+				std::cout<<"\n residu "<<_position<<": ";
+				for (size_t i=0;i<digit.size();++i)
+					std::cout<<_res[i]<<",";
+				std::cout<<"\n digit "<<_position<<": ";			
+				for (size_t i=0;i<digit.size();++i)
+					std::cout<<digit[i]<<",";
+				std::cout<<"\n";
+#endif 	
 				/*  prepare for updating residu */
 
 				// compute v2 = _A * digit				
 				IVector v2 (_lc._A.coldim());
-				_lc._MAD.applyV(v2,digit);
+				_lc._MAD.applyV(v2,digit, _res);
 											
 #ifdef RSTIMING
 				_lc.tRingApply.stop();
@@ -476,6 +529,14 @@ namespace LinBox {
 		const Integer denbound() const
 		{return _denbound;}
 		
+		// return the matrix
+		const IMatrix& getMatrix() const
+		{return _A; }
+
+		// return the right hand side
+		const IVector& getVector() const
+		{return _b;}
+		
 	};
 
 	template <class _Ring, class _Field, class _IMatrix, class _FMatrix>
@@ -516,11 +577,21 @@ namespace LinBox {
 			  _res_p(b.size()), _digit_p(A.coldim()), _BA(F) 
 		{
 
+			for (size_t i=0; i< _res_p.size(); ++i)
+				_F.init(_res_p[i]);
+			for (size_t i=0; i< _digit_p.size(); ++i)
+				_F.init(_digit_p[i]);
+			
 			//Ap.write(std::cout,F);
 #ifdef RSTIMING
 			ttGetDigit.clear();
 			ttGetDigitConvert.clear();
+#endif	
+#ifdef DEBUG_LC
+			std::cout<<"Primes: ";
+			_F.write(std::cout);
 #endif
+
 		}
 		
 		
@@ -536,37 +607,45 @@ namespace LinBox {
 			tGetDigitConvert.start();
 #endif
 			LinBox::integer tmp;
-
+			
+			Hom<Ring, Field> hom(this->_R, _F);
 			// res_p =  residu mod p
+			//VectorHom::map (_res_p, residu, _F, this->_R);			
 			{
 				typename FVector::iterator iter_p = _res_p.begin();
 				typename IVector::const_iterator iter = residu.begin();
 				for ( ;iter != residu. end(); ++iter, ++iter_p)
-					_F. init (*iter_p, this->_R.convert(tmp,*iter));
-			}
+					//_F. init (*iter_p, this->_R.convert(tmp,*iter));
+					hom.image(*iter_p, *iter);
+			}			
 #ifdef RSTIMING
 			tGetDigitConvert.stop();
 			ttGetDigitConvert += tGetDigitConvert;
 			tGetDigit.start();
 #endif			
+			
 			// compute the solution by applying the inverse of A mod p
-			_BA.applyV(_digit_p,_Ap,_res_p);
+			//_BA.applyV(_digit_p,_Ap,_res_p);
+			_Ap.apply(_digit_p, _res_p);
 #ifdef RSTIMING
 			tGetDigit.stop();
 			ttGetDigit+=tGetDigit;
 			tGetDigitConvert.start();
 #endif
 			// digit = digit_p
+			//VectorHom::map(digit, _digit_p, this->_R, _F);			
 			{
 				typename FVector::const_iterator iter_p = _digit_p.begin(); 
 				typename IVector::iterator iter = digit.begin();
 				for ( ; iter_p!= _digit_p.end(); ++iter_p, ++iter)
-					this->_R.init(*iter, _F.convert(tmp,*iter_p));
+					//this->_R.init(*iter, _F.convert(tmp,*iter_p));
+					hom.preimage(*iter, *iter_p);
 			}
+			
 #ifdef RSTIMING
 			tGetDigitConvert.stop();
 			ttGetDigitConvert += tGetDigitConvert;
-#endif
+#endif		
 			return digit;
 		}
 		

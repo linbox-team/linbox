@@ -381,7 +381,7 @@ class TransposeMatrix<Matrix, MatrixCategories::ColMatrixTag>
 
     protected:
 
-	Matrix &_A;
+	const Matrix &_A;
 };
 
 template <class Matrix>

@@ -163,6 +163,11 @@ namespace LinBox{
             
         };
 
+	template <>
+	struct ClassifyRing<NTL_ZZ_p>  {
+		typedef RingCategories::ModularTag categoryTag;
+	};
+
 
   
 	//@} doc of NTL_ZZ_p
