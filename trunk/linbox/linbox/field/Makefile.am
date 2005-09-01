@@ -27,7 +27,8 @@ BASIC_HDRS =			\
 	local2_32.h		\
 	PID-integer.h		\
 	PID-double.h		\
-	gmp-integers.h
+	gmp-integers.h		\
+	multimod-field.h
 
 NTL_HDRS =				\
 	ntl.h				\
