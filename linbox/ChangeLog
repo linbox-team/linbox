@@ -1,3 +1,6 @@
+2005-09-01 Dan Roche
+	* linbox/algorithms/toeplitz-det.h: Forgot to add this before.
+
 2005-08-31 Pascal Giorgi:
 	* linbox/algorithms/blas-domain.inl: add inverse specialization for multimod double domain
 	* linbox/algorithms/cia.h: call domain specialized minpoly instead of calling API and make code generic according to integer ring
