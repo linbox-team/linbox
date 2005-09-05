@@ -55,7 +55,7 @@ LinBox::FFPACK::KGFast ( const Field& F, std::list<Polynomial>& charp,
 			size_t * Q = new size_t[mc];
 
 			if ( (r = LUdivine( F, FflasNonUnit, mc, mc, 
-					    LUP, mc, P, FfpackLQUP, Q )) < mc ){
+					    LUP, mc, P, Q, FfpackLQUP)) < mc ){
 				* kg_mc = mc;
 				* kg_mb = mb;
 				* kg_j = j;
