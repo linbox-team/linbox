@@ -154,7 +154,17 @@ namespace LinBox
 	{
 	protected:
 		typedef ToeplitzBase< typename _PField::CoeffField, _PField > TBase;
+		using TBase::P;
+		using TBase::rowDim;
+		using TBase::colDim;
+		using TBase::sysDim;
+		using TBase::shape;
+		using TBase::pdata;
+		using TBase::rpdata;
+		using TBase::K;
 	public:
+		using TBase::rowdim;
+		using TBase::coldim;
 		typedef typename TBase::PField PField;
 		typedef typename TBase::Poly Poly;
 
