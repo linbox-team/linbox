@@ -16,10 +16,10 @@
 template <class Field, class Polynomial>
 Polynomial&
 LinBox::FFPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
-			   const typename Field::Element *A, const size_t lda,
-			   typename Field::Element* X, const size_t ldx,
-			   size_t* P, const enum FFPACK_MINPOLY_TAG MinTag = FfpackDense,
-			    const size_t kg_mc =0, const size_t kg_mb=0, const size_t kg_j=0 ){
+			 const typename Field::Element *A, const size_t lda,
+			 typename Field::Element* X, const size_t ldx,
+			 size_t* P, const enum FFPACK_MINPOLY_TAG MinTag = FfpackDense,
+			 const size_t kg_mc =0, const size_t kg_mb=0, const size_t kg_j=0 ){
 
 	typedef typename Field::Element elt;
 	static elt one,zero;
@@ -49,15 +49,11 @@ LinBox::FFPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
 		}
 	}while(KeepOn);
 	
-//  	write_field(F,cerr<<"A="<<endl, A, N,N,lda);
-//  	write_field(F,cerr<<"X="<<endl, X, 1,N,ldx);
-
 	nRow = 1;
 	
 	// LUP factorization of the Krylov Base Matrix
-	
-	k = LUdivine_construct( F, FflasUnit, N+1, N, A, lda, X, ldx, U, P, true,
-				MinTag, kg_mc, kg_mb, kg_j );
+	k = LUdivine_construct (F, FflasUnit, N+1, N, A, lda, X, ldx, U, P, true,
+				MinTag, kg_mc, kg_mb, kg_j);
 
 	//delete[] U;
 	minP.resize(k+1);

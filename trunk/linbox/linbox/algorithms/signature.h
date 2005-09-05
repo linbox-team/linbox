@@ -197,7 +197,7 @@ private:
 				K. init (*p, *raw_p);
 
 			//clog << "\rComputing lup mod " << prime << ". ";
-			FFPACK::LUdivine(K, FFLAS::FflasNonUnit, n, n, FA, n, P, FFPACK::FfpackLQUP, PQ);
+			FFPACK::LUdivine(K, FFLAS::FflasNonUnit, n, n, FA, n, P, PQ, FFPACK::FfpackLQUP);
 
 			bool faithful = true;
 			for ( j = 0, P_p = P, PQ_p = PQ; j < n; ++ j, ++ P_p, ++ PQ_p) 

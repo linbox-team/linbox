@@ -147,8 +147,8 @@ namespace LinBox{
 			//std::cerr<<"Je passe par le constructeur const"<<std::endl;
 
 			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit, _m, _n, 
-						   _LU.getPointer(),_LU.getStride(), 
-						   _P.getWritePointer(), FFPACK::FfpackLQUP, _Q.getWritePointer() );
+						 _LU.getPointer(),_LU.getStride(), 
+						 _P.getWritePointer(), _Q.getWritePointer(), FFPACK::FfpackLQUP );
 			
 		}
 
@@ -158,8 +158,8 @@ namespace LinBox{
 			  _m(A.rowdim()), _n(A.coldim()), _alloc(false) {
 			//std::cerr<<"Je passe par le constructeur non const"<<std::endl;
 			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit, _m, _n, 
-						   _LU.getPointer(),_LU.getStride(), 
-						   _P.getWritePointer(), FFPACK::FfpackLQUP, _Q.getWritePointer() );
+						 _LU.getPointer(),_LU.getStride(), 
+						 _P.getWritePointer(), _Q.getWritePointer(), FFPACK::FfpackLQUP );
 			
 		}
 
@@ -170,8 +170,8 @@ namespace LinBox{
 			  _n(A.coldim()), _alloc(true)  {
 			
 			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit, _m, _n, 
-						   _LU.getPointer(),_LU.getStride(), 
-						   _P.getWritePointer(), FFPACK::FfpackLQUP, _Q.getWritePointer() );
+						 _LU.getPointer(),_LU.getStride(), 
+						 _P.getWritePointer(), _Q.getWritePointer(), FFPACK::FfpackLQUP );
 		}
 
 		// Contruction of LQUP factorization of A (in-place in A)
@@ -180,8 +180,8 @@ namespace LinBox{
 			  _m(A.rowdim()), _n(A.coldim()), _alloc(false) {
 			
 			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit, _m, _n, 
-						   _LU.getPointer(),_LU.getStride(), 
-						   _P.getWritePointer(), FFPACK::FfpackLQUP, _Q.getWritePointer() );
+						 _LU.getPointer(),_LU.getStride(), 
+						 _P.getWritePointer(), _Q.getWritePointer(), FFPACK::FfpackLQUP );
 		}
 		
 

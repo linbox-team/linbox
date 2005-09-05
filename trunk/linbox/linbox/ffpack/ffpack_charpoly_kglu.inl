@@ -135,7 +135,7 @@ LinBox::FFPACK::KellerGehrig( const Field& F, std::list<Polynomial>& charp, cons
 		P[i]=0;
 	for ( i=0;i<2*N;++i) 
 		Q[i]=0;
-	LUdivine( F, FflasNonUnit, 2*N, N, X, N, P, FfpackLQUP,Q );
+	LUdivine( F, FflasNonUnit, 2*N, N, X, N, P, Q, FfpackLQUP);
 	
 	k = newD( F,d, KeepOn, l, N, X, Q, m);
 	
@@ -226,7 +226,7 @@ LinBox::FFPACK::KellerGehrig( const Field& F, std::list<Polynomial>& charp, cons
 			P[i]=0;
 		for ( i=0;i<2*N;++i) 
 			Q[i]=0;
-		LUdivine( F, FflasNonUnit, nrowX, N, X, N, P, FfpackLQUP,Q );
+		LUdivine( F, FflasNonUnit, nrowX, N, X, N, P, Q, FfpackLQUP);
 		
 		// Recompute the degrees of the list factors
 		k = newD(F, d, KeepOn, l, N, X,Q, m);
@@ -235,6 +235,7 @@ LinBox::FFPACK::KellerGehrig( const Field& F, std::list<Polynomial>& charp, cons
 	delete[] V;
 	delete[] B;
 	delete[] P;
+	delete[] Q;
 	delete[] dv;
 	delete[] dold;
 	

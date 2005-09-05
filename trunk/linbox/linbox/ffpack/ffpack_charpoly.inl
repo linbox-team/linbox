@@ -36,6 +36,10 @@ LinBox::FFPACK::CharPoly( const Field& F, std::list<Polynomial>& charp, const si
 		return KellerGehrig( F, charp, N, A, lda );
 		break;
 	}
+	case FfpackDanilevski:{
+		return Danilevski (F, charp, N, A, lda);
+		break;
+	}
 	case FfpackKGFast:{
 		size_t mc, mb, j;
 		if (KGFast( F, charp, N, A, lda, &mc, &mb, &j )){

@@ -44,15 +44,14 @@ class FFPACK : public FFLAS {
 	
 public:
 	enum FFPACK_LUDIVINE_TAG { FfpackLQUP=1,
-				     FfpackSingular=2, 
-                                     FfpackLSP=3,
-				     FfpackTURBO=4};
+				   FfpackSingular=2};
 	
 	enum FFPACK_CHARPOLY_TAG { FfpackLUK=1,
-				     FfpackKG=2,
-				     FfpackHybrid=3,
-				     FfpackKGFast=4,
-				     FfpackHybrid2=5};
+				   FfpackKG=2,
+				   FfpackHybrid=3,
+				   FfpackKGFast=4,
+				   FfpackHybrid2=5,
+				   FfpackDanilevski=6 };
 	
 	enum FFPACK_MINPOLY_TAG { FfpackDense=1,
 				    FfpackKGF=2 };
@@ -72,7 +71,7 @@ public:
 	      typename Field::Element * A, const size_t lda){
 		size_t *P = new size_t[N];
 		size_t *Q = new size_t[M];
-		size_t R = LUdivine( F, FflasUnit, M, N, A, lda, P, FfpackLQUP,Q);
+		size_t R = LUdivine( F, FflasUnit, M, N, A, lda, P, Q, FfpackLQUP);
 		delete[] Q;
 		delete[] P;
 		return R;
@@ -90,9 +89,11 @@ public:
 		    typename Field::Element * A, const size_t lda){
 		
 		size_t *P = new size_t[N];
-		bool singular  = !LUdivine( F, FflasNonUnit, M, N, A, lda, P, FfpackSingular);
+		size_t *Q = new size_t[M];
+		bool singular  = !LUdivine( F, FflasNonUnit, M, N, A, lda, P, Q, FfpackSingular);
 		
 		delete[] P;
+		delete[] Q;
 		return singular;
  	}
 	
@@ -110,10 +111,12 @@ public:
 		typename Field::Element det;
 		bool singular;
 		size_t *P = new size_t[N];
-		singular  = !LUdivine( F, FflasNonUnit, M, N, A, lda, P, FfpackSingular);
+		size_t *Q = new size_t[M];
+		singular  = !LUdivine( F, FflasNonUnit, M, N, A, lda, P, Q, FfpackSingular);
 		if (singular){
 			F.init(det,0);
 			delete[] P;
+			delete[] Q; 
 			return det;
 		}
 		else{
@@ -130,6 +133,7 @@ public:
 				F.negin(det);
 		}
 		delete[] P; 
+		delete[] Q; 
 		return det;
  	}
 	//---------------------------------------------------------------------
@@ -151,8 +155,10 @@ public:
 		size_t *P = new size_t[M];
 		size_t *rowP = new size_t[M];
 		
-		if (LUdivine( F, FflasNonUnit, M, M, A, lda, P, FfpackLQUP,rowP) < M){
+		if (LUdivine( F, FflasNonUnit, M, M, A, lda, P, rowP, FfpackLQUP) < M){
 			std::cerr<<"SINGULAR MATRIX"<<std::endl;
+			delete[] P; 
+			delete[] rowP; 
 			return x;
 		}
 		else{
@@ -163,6 +169,9 @@ public:
 			ftrsv(F,  FflasUpper, FflasNoTrans, FflasNonUnit, M, 
 			      A, lda , x, incx);
 			applyP( F, FflasRight, FflasTrans, M, 0, M, x, incx, P );
+			delete[] rowP; 
+			delete[] P; 
+
 			return x;
 		
 		}
@@ -186,10 +195,10 @@ public:
 		size_t *P = new size_t[M];
 		size_t *rowP = new size_t[M];
 		
-		nullity = M - LUdivine( F, FflasNonUnit, M, M, A, lda, P, FfpackLQUP,rowP);
+		nullity = M - LUdivine( F, FflasNonUnit, M, M, A, lda, P, rowP, FfpackLQUP);
 		if (nullity > 0){
-			delete[] P;
-			delete[] rowP;
+			delete[] P; 
+			delete[] rowP; 
 			return NULL;
 		}
 		// Improvement: construct X=P^1 directly
@@ -205,10 +214,8 @@ public:
 		      A, lda , X, ldx);
 		ftrsm(F, FflasRight, FflasLower, FflasNoTrans, FflasUnit, M, M, one, 
 		      A, lda , X, ldx);
-		
 		delete[] P;
 		delete[] rowP;
-		
 		return X;
 	}
 	
@@ -226,14 +233,12 @@ public:
 		size_t *P = new size_t[M];
 		size_t *rowP = new size_t[M];
 		
-		nullity = M - LUdivine( F, FflasNonUnit, M, M, A, lda, P, FfpackLQUP,rowP);
+		nullity = M - LUdivine( F, FflasNonUnit, M, M, A, lda, P, rowP, FfpackLQUP);
 		if (nullity > 0){
 			delete[] P;
-			delete[] rowP;
+			delete[] rowP; 
 			return NULL;
-		}
-		else {
-			
+		} else {
 			// Initializing X to 0
 			for (size_t i=0; i<M; ++i)
 				for (size_t j=0; j<M;++j)
@@ -322,8 +327,7 @@ public:
 	LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 		  const size_t M, const size_t N,
 		  typename Field::Element * A, const size_t lda,
-		  size_t* P, const enum FFPACK_LUDIVINE_TAG LuTag=FfpackLQUP,
-		  size_t* rowP=NULL );
+		  size_t* P, size_t* Q, const enum FFPACK_LUDIVINE_TAG LuTag=FfpackLQUP);
         
 	
 	// Apply a permutation submatrix of P (between ibeg and iend) to a matrix
@@ -588,122 +592,6 @@ protected:
 		std::vector<std::vector<typename Field::Element> >& minpt );
 	
 	//---------------------------------------------------------------------
-	// TriangleCopy: copy a semi-upper-triangular matrix A to its triangular
-	//               form in T, by removing the zero rows of A.
-	//               cf Ibara, Moran, Hui 1982
-	//               T is R*R
-	//---------------------------------------------------------------------
-	template <class Field>
-	static void
-	TriangleCopy( const Field& F, const enum FFLAS_UPLO Side,
-		      const enum FFLAS_DIAG Diag, const size_t R, 
-		      typename Field::Element * T, const size_t ldt, 
-		      const typename Field::Element * A, const size_t lda ){
-
-		 typename Field::Element one;
-		F.init(one, 1);
-		const typename Field::Element * Ai = A;
-		typename Field::Element * Ti = T;
-		size_t j ;
-		if ( Side == FflasUpper ){
-			j=R-1;
-			for (; Ti<T+R*ldt; Ti+=ldt, Ai+=lda+1, --j){
-				while (F.isZero(*Ai))
-					Ai+=lda;
-				if ( Diag == FflasUnit ){
-					*(Ti++) = one;
-					fcopy( F, j, Ti, 1, Ai+1, 1);
-				}
-				else{
-					fcopy( F, j+1, Ti++, 1, Ai, 1);
-				}
-			}
-		}
-		else{
-			j=0;
-			for (; Ti<T+R*ldt; Ti+=ldt+1, Ai+=lda+1, ++j){
-				while (F.isZero(*Ai)){
-					Ai+=lda;
-				}
-				if ( Diag == FflasUnit ){
-					*Ti = one;
-					fcopy( F, j, Ti-j, 1, Ai-j, 1);
-				}
-				else{
-					fcopy( F, j+1, Ti-j, 1, Ai-j, 1);
-				}
-			}
-		}
-	}
-	
-	//---------------------------------------------------------------------
-	//---------------------------------------------------------------------
-	// RectangleCopy: copy a rectangular matrix A to its reduced
-	//               form in T, by removing the zero rows of A.
-	//               T is M*N.
-	//---------------------------------------------------------------------
-	template <class Field>
-	static void
-	RectangleCopy( const Field& F, const size_t M, const size_t N, 
-		       typename Field::Element * T, const size_t ldt, 
-		       const typename Field::Element * A, const size_t lda ){
-
-		const typename Field::Element * Ai = A;
-		typename Field::Element * Ti = T;
-		size_t x = M;
-		for (; Ti<T+M*ldt; Ti+=ldt, Ai+=lda){
-			while (F.isZero(*(Ai-x))){ // test if the pivot is 0
-				Ai+=lda;
-			}
-			fcopy( F, N, Ti, 1, Ai, 1);
-			x--;
-		}
-	}
-	/*	template <class Field>
-	static void
-	RectangleCopy( const Field& F, const size_t M, const size_t N, 
-		       const long dist2pivot,
-		       typename Field::Element * T, const size_t ldt, 
-		       const typename Field::Element * A, const size_t lda ){
-
-		const typename Field::Element * Ai = A;
-		typename Field::Element * Ti = T;
-	        long x = dist2pivot;
-	        for (; Ti<T+M*ldt; Ti+=ldt, Ai+=lda){
-			while (F.isZero(*(Ai-x))){ // test if the pivot is 0
-	        		Ai+=lda;
-	        	}
-			fcopy( F, N, Ti, 1, Ai, 1);
-			x--;
-		}
-	}
-	*/
-	//---------------------------------------------------------------------
-	// RectangleCopy2: copy a rectangular matrix A to its reduced
-	//               form in T, by removing the rows of A corresponding to 
-	//               triangular part of the lsp located in A-dist2pivot.
-	//               T is M*N.
-	//---------------------------------------------------------------------
-	template <class Field>
-	static void
-	RectangleCopy2( const Field& F, const size_t M, const size_t N, 
-		       const long dist2pivot,
-		       typename Field::Element * T, const size_t ldt, 
-		       const typename Field::Element * A, const size_t lda ){
-
-		const typename Field::Element * Ai = A;
-		typename Field::Element * Ti = T;
-		long x = dist2pivot;
-		for (; Ti<T+M*ldt; Ai+=lda){
-			while (F.isZero(*(Ai-x))){ // test if the pivot is 0
-				fcopy( F, N, Ti, 1, Ai, 1);
-				Ai += lda;
-				Ti += ldt;
-			}
-			x--;
-		}
-	}
-	//---------------------------------------------------------------------
 	// RectangleCopyTURBO: Copy A to T, with respect to the row permutation 
 	//                     defined by the lsp factorization of located in 
 	//                     A-dist2pivot
@@ -779,7 +667,11 @@ protected:
 		  typename Field::Element * U, const size_t ldu,
 		  const enum FFPACK_CHARPOLY_TAG CharpTag);
 
-
+	template <class Field, class Polynomial>
+	static std::list<Polynomial>&
+	Danilevski (const Field& F, std::list<Polynomial>& charp, 
+		    const size_t N, typename Field::Element * A, const size_t lda);
+		
 	template <class Field, class Polynomial>
 	static std::list<Polynomial>&
 	LUKrylov_KGFast( const Field& F, std::list<Polynomial>& charp, const size_t N,
@@ -793,6 +685,7 @@ protected:
 #include "linbox/ffpack/ffpack_minpoly.inl"
 #include "linbox/ffpack/ffpack_charpoly_kglu.inl"
 #include "linbox/ffpack/ffpack_charpoly_kgfast.inl"
+#include "linbox/ffpack/ffpack_charpoly_danilevski.inl"
 #include "linbox/ffpack/ffpack_charpoly.inl"
 
 #endif // __FFPACK_H
