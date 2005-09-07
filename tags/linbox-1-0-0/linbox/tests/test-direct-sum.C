@@ -1,0 +1,61 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
+/* tests/test-direct-sum.C
+ * Written by David Saunders
+ *
+ * See COPYING for license information.
+ */
+
+#include "linbox-config.h"
+
+#include <iostream>
+#include <fstream>
+#include <vector>
+
+#include "linbox/util/commentator.h"
+#include "linbox/field/modular.h"
+#include "linbox/blackbox/scalar-matrix.h"
+#include "linbox/blackbox/direct-sum.h"
+
+#include "test-generic.h"
+
+using namespace LinBox;
+
+int main (int argc, char **argv)
+{
+	bool pass = true;
+
+	static size_t n = 10;
+	static integer q = 101;
+	static int iterations1 = 100;
+	static int iterations2 = 1;
+
+	static Argument args[] = {
+		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)", TYPE_INT,     &n },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 101)", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations (default 100)",   TYPE_INT,     &iterations1 },
+		{ 'j', "-j J", "Apply test matrix to J vectors (default 1)",         TYPE_INT,     &iterations2 },
+	};
+
+	typedef Modular<uint32> Field;
+	typedef vector<Field::Element> Vector;
+
+	parseArguments (argc, argv, args);
+	Field F (q);
+	Field::Element k;
+
+	cout << endl << "black box direct sum test suite" << endl;
+
+	F.init(k, 5);
+	ScalarMatrix<Field> B(F, 10, k);
+	F.init(k, 2);
+	ScalarMatrix<Field> C(F, 5, k);
+	
+	DirectSum<ScalarMatrix<Field>, ScalarMatrix<Field> > A(&B, &C);
+	pass = pass && testBlackbox(F, A);
+	DirectSum<ScalarMatrix<Field>, ScalarMatrix<Field> > D(B, C);
+	pass = pass && testBlackbox(F, D);
+	//pass = pass && testSmallBlackbox(F, A);
+
+	return pass ? 0 : -1;
+}

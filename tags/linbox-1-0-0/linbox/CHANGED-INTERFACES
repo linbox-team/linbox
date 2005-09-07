@@ -1,0 +1,75 @@
+Author: Hovinen (early 2002), edits by Saunders (2003Jan)
+
+Class names:
+
+	In general: Most class names now follow the Java/Smalltalk
+	MyClass style. Abbreviations have been removed in most cases.
+
+	Field::randIter -> Field::RandIter
+
+	sparsemat* -> SparseMatrix*
+
+	diagonal -> Diagonal
+	hilbert -> Hilbert
+	etc.
+
+	There are two notable exceptions: The wrapper of GMP long
+	integers is "integer", and field elements are represented by
+	"element".
+
+	ParamModular was first renamed LargeModular, since it works
+	over a modulus of arbitrary size. Corresponding SmallModular
+	(word size modulus) and TinyModular (half-word size modulus)
+	were planned.  All of this has become Modular<element>, for
+	basic element types of the various sizes, including unsigned 
+	and floating types.  For example Modular<uint32>.
+
+Class methods:
+
+	In general: I have standardized everything on the Java
+	studlycaps style, e.g. MyClass::myMethod
+
+	The names Blackbox_archetype::applyin and
+	Blackbox_archetype::applyTransposein have been changed to
+	BlackboxArchetype::applyIn and
+	BlackboxArchetype::applyTransposeIn, respectively.
+
+Header files:
+
+	All header files that previously used '_' to separate words
+	use '-' now as '-' is easier to type.  More generally the 
+	header file named first-second-third.h can be expected to 
+	contain a declaration of class FirstSecondThird.
+
+	The archetype header files have been moved into directories
+	containing objects of those archetypes and are all now named
+	"archetype.h", "abstract.h", and "envelope.h".
+
+	Header files are now installed into a tree matching that of
+	the source code as opposed to a single, flat directory. So,
+	for example, one now includes LinBox/blackbox/archetype.h as
+	opposed to LinBox/blackbox-archetype.h
+
+Miscellanae:
+
+	In the random iterator interface, the operator () has been
+	replaced by a function random accepting a single argument --
+	an element type into which the random element should be
+	placed. This eliminates the potential for memory leaks.
+
+	The blackbox container class now requires that a field be
+	passed, as it no longer retrieves the field from the black
+	box.
+
+        Some terms composed of more than one word are considered to be
+        compound words and do not have internal capitalization, e.g. Blackbox
+        (vs. BlackBox) and minpoly (vs. minPoly).
+
+Frozen design:
+
+	These files are frozen and require team consensus for changes.
+
+	field-archetype.h
+	blackbox-archetype.h
+	element-archetype.h
+	randiter-archetype.h
