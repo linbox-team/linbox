@@ -2,7 +2,7 @@
 #define __LINBOX_PP_GAUSS_H__
 // ========================================================================= //
 // (C) Givaro Team 1999
-// Time-stamp: <15 Jul 05 16:00:22 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <17 Jul 05 11:19:54 Jean-Guillaume.Dumas@imag.fr> 
 // ========================================================================= //
 
 #include <map>
@@ -77,7 +77,7 @@ namespace LinBox
                 typedef Modulo Ring;
                 if (a == 1) return a;
                 if (a == -1) return a;
-                Ring u,v, d ;
+                Ring u, d ;
                 d = MY_Zpz_bezout(Ring(a),Ring(pp),u) ;
                 
                 if (d == -1) { u = -u; }
