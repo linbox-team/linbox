@@ -392,11 +392,14 @@ namespace LinBox {
 		//Chnage A to DenseMatrix
 		DenseMatrix<Ring>* DA; Ring R(A. field());
 		MatrixHom::map (DA, A, R);
-		oif. oneInvariantFactor_Bonus (_lif, _bonus, *DA, (int)r);
-		A. field(). convert (lif, _lif); A. field(). convert (bonus, _bonus);
-		//oif. oneInvariantFactor (bonus, A, (int)r);
-		report << "   The largest invariant factor: " << lif << std::endl;
-		report << "   Bonus (previous one): " << bonus << std::endl;
+		do {
+			oif. oneInvariantFactor_Bonus (_lif, _bonus, *DA, (int)r);
+		
+			A. field(). convert (lif, _lif); A. field(). convert (bonus, _bonus);
+			//oif. oneInvariantFactor (bonus, A, (int)r);
+			report << "   The largest invariant factor: " << lif << std::endl;
+			report << "   Bonus (previous one): " << bonus << std::endl;
+		} while (lif == 0);
 		report << "Computation of the largest invariant factor with bonus finished.\n";
 		// bonus = smooth * rough;
 		integer r_mod; r_mod = lif;
@@ -502,11 +505,13 @@ namespace LinBox {
 		OIF oif; oif. setThreshold  (10); oif.getLastInvariantFactor().setThreshold (6);
 		typename Ring::Element _lif, _bonus; integer lif, bonus;
 		//Chnage A to DenseMatrix
-		oif. oneInvariantFactor_Bonus (_lif, _bonus, A, (int)r);
-		A. field(). convert (lif, _lif); A. field(). convert (bonus, _bonus);
-		//oif. oneInvariantFactor (bonus, A, (int)r);
-		report << "   The largest invariant factor: " << lif << std::endl;
-		report << "   Bonus (previous one): " << bonus << std::endl;
+		do {
+			oif. oneInvariantFactor_Bonus (_lif, _bonus, A, (int)r);
+			A. field(). convert (lif, _lif); A. field(). convert (bonus, _bonus);
+			//oif. oneInvariantFactor (bonus, A, (int)r);
+			report << "   The largest invariant factor: " << lif << std::endl;
+			report << "   Bonus (previous one): " << bonus << std::endl;
+		} while (lif == 0);
 		report << "Computation of the largest invariant factor with bonus finished.\n";
 		// bonus = smooth * rough;
 		integer r_mod; r_mod = lif;
