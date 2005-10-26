@@ -61,6 +61,16 @@ namespace LinBox {
 			     const DomainCategory          &tag,
  			     const Method                   &M);
 
+	// error hanlder for rational domain
+	template <class Blackbox, class Method>
+ 	unsigned long &rank (unsigned long                           &r,
+ 			     const Blackbox                          &A,
+			     const RingCategories::RationalTag     &tag,
+ 			     const Method                           &M){
+		throw LinboxError("LinBox ERROR: rank is not yet define over a rational domain");
+	}
+
+
 	/** 
             Compute the rank of a linear transform A over a field. 
 

@@ -34,12 +34,24 @@
 
 namespace LinBox
 {
+	
 	// for specialization with respect to the DomainCategory
 	template< class Blackbox, class Polynomial, class MyMethod, class DomainCategory>
 	Polynomial &charpoly ( Polynomial            &P, 
 			       const Blackbox        &A,
 			       const DomainCategory  &tag,
 			       const MyMethod        &M);
+	
+
+	//error handler for rational domain
+	template <class Blackbox, class Polynomial>
+	Polynomial &charpoly (Polynomial& P,
+			      const Blackbox& A,
+			      const RingCategories::RationalTag& tag,
+			      const Method::Hybrid& M)
+	{
+		throw LinboxError("LinBox ERROR: charpoly is not yet define over a rational domain");
+	}
 
         /** \brief  ...using an optional Method parameter
 	    \param P - the output characteristic polynomial.  If the polynomial 

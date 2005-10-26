@@ -19,6 +19,7 @@
 #include "linbox/blackbox/dense.h"
 #include "linbox/matrix/factorized-matrix.h"
 #include "linbox/util/debug.h"
+#include "linbox/util/error.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/solutions/methods.h"
 #include "linbox/algorithms/bbsolve.h"
@@ -79,8 +80,8 @@ namespace LinBox
 		      const Method::Blackbox& m)
 	{ 
 		// what is chosen here should be best and/or most reliable currently available choice
-// 		integer c; A.field().cardinality(c);
-// 		if (c < 100) return solve(x, A, b, Method::BlockLanczos(m));
+		// 		integer c; A.field().cardinality(c);
+		// 		if (c < 100) return solve(x, A, b, Method::BlockLanczos(m));
 		return solve(x, A, b, Method::Wiedemann(m));
 	}
 
@@ -108,7 +109,7 @@ namespace LinBox
 	Vector& solve(Vector& x, const SparseMatrix<Field>& A, const Vector& b, 
 		      const Method::Elimination& m)
 	{	
-//             bool consistent = false;
+		//             bool consistent = false;
 		// sparse elimination based solver can be called here ?
         	// For now we call the dense one
         	
@@ -116,11 +117,11 @@ namespace LinBox
 			     typename FieldTraits<typename SparseMatrix<Field>::Field>::categoryTag(), 
 			     Method::BlasElimination(m)); 
 
-// 		if ( ! consistent ) {  // we will return the zero vector
-// 			typename Field::Element zero; A.field().init(zero, 0);
-// 			for (typename Vector::iterator i = x.begin(); i != x.end(); ++i) *i = zero;
-// 		}
-// 		return x;
+		// 		if ( ! consistent ) {  // we will return the zero vector
+		// 			typename Field::Element zero; A.field().init(zero, 0);
+		// 			for (typename Vector::iterator i = x.begin(); i != x.end(); ++i) *i = zero;
+		// 		}
+		// 		return x;
 	}
 	// BlasElimination section ///////////////////
 
@@ -138,8 +139,11 @@ namespace LinBox
 		      const RingCategories::ModularTag & tag, 
 		      const Method::BlasElimination& m)
 	{ 
+		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
+			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
+
 		commentator.start ("Solving linear system (FFLAS LQUP)", "LQUP::left_solve");
-//		bool consistent = false;
+		//		bool consistent = false;
 		LQUPMatrix<Field> LQUP(A);
 		//FactorizedMatrix<Field> LQUP(A);
 
@@ -162,9 +166,6 @@ namespace LinBox
 	 */  
 
 
-
-
-
 	// error handler for bad use of the integer solver API
 	template <class Vector, class BB> 
 	Vector& solve(Vector& x, const BB& A, const Vector& b, 
@@ -175,23 +176,62 @@ namespace LinBox
 			 <<"the API need either \n"
 			 <<" - a vector of rational as the solution \n"
 			 <<" - or an integer for the common denominator and a vector of integer for the numerators\n\n";
-		LinboxError("bad use of integer API solver\n");
+		throw LinboxError("bad use of integer API solver\n");
 		
 	} 
 
-
+	// error handler for non defined solver over rational domain
+	template <class RatVector, class Vector, class BB, class MethodTraits> 
+	Vector& solve(RatVector& x, const BB& A, const Vector& b, 
+		      const RingCategories::RationalTag & tag, 
+		      const MethodTraits& m)
+	{ 
+		throw LinboxError("LinBox ERROR: solver not yet defined over rational domain");
+	}
+	
+	// error handler for non defined solver over rational domain
+	template <class Vector, class BB, class MethodTraits> 
+	Vector& solve(Vector& x, const BB& A, const Vector& b, 
+		      const RingCategories::RationalTag & tag, 
+		      const MethodTraits& m)
+	{ 
+		throw LinboxError("LinBox ERROR: solver not yet defined over rational domain");
+	}
+	
 	
 	/*
 	 * 1st integer solver API :
 	 * solution is a vector of rational numbers
 	 * RatVector is assumed to be the type of a vector of rational number
-	 */
-	
-	// default API (methos is BlasElimination)
+	 */	
+
+	// default API (method is BlasElimination)
 	template<class RatVector, class Vector, class BB>	
 	RatVector& solve(RatVector& x, const BB &A, const Vector &b){
 		return solve(x, A, b, Method::BlasElimination());
 	}
+
+	// API with Hybrid method
+	template<class RatVector, class Vector, class BB>	
+	RatVector& solve(RatVector& x, const BB &A, const Vector &b, const Method::Hybrid &m){
+		if (useBB(A)) 
+			return solve(x, A, b, Method::Blackbox(m)); 
+		else 
+			return solve(x, A, b, Method::Elimination(m));
+	}
+
+	// API with Blackbox method
+	template<class RatVector, class Vector, class BB>	
+	RatVector& solve(RatVector& x, const BB &A, const Vector &b, const Method::Blackbox &m){
+		return solve(x, A, b, Method::Wiedemann(m));
+	}
+
+	// API with Elimination method
+	template<class RatVector, class Vector, class BB>	
+	RatVector& solve(RatVector& x, const BB &A, const Vector &b, const Method::Elimination &m){
+		return solve(x, A, b,  Method::BlasElimination(m));
+	}
+
 
 	// launcher of specialized solver depending on the MethodTrait
 	template<class RatVector, class Vector, class BB, class MethodTraits>	
@@ -199,15 +239,15 @@ namespace LinBox
 		return solve(x, A, b, typename FieldTraits<typename BB::Field>::categoryTag(),  m);
 	}
 
-	
+
 	/* Specializations for BlasElimination over the integers
 	 */
 
 	// input matrix is generic (copying it into a BlasBlackbox)
 	template <class RatVector, class Vector, class BB> 
-	Vector& solve(RatVector& x, const BB& A, const Vector& b, 
-		      const RingCategories::IntegerTag & tag, 
-		      const Method::BlasElimination& m)
+	RatVector& solve(RatVector& x, const BB& A, const Vector& b, 
+			 const RingCategories::IntegerTag & tag, 
+			 const Method::BlasElimination& m)
 	{ 
 		BlasBlackbox<typename BB::Field> B(A); // copy A into a BlasBlackbox
 		return solve(x, B, b, tag, m);
@@ -215,18 +255,23 @@ namespace LinBox
 	
 	// input matrix is a BlasBlackbox (no copy)
 	template <class RatVector, class Vector, class Ring> 
-	Vector& solve(RatVector& x, const BlasBlackbox<Ring>& A, const Vector& b, 
-		      const RingCategories::IntegerTag & tag, 
-		      const Method::BlasElimination& m)
+	RatVector& solve(RatVector& x, const BlasBlackbox<Ring>& A, const Vector& b, 
+			 const RingCategories::IntegerTag & tag, 
+			 const Method::BlasElimination& m)
 	{ 
+	
 		Method::Dixon mDixon(m);
 		typename Ring::Element d;
 		std::vector< typename Ring::Element> num(A.coldim());
 		solve (num, d, A, b, tag, mDixon);
+		
 		typename RatVector::iterator it_x= x.begin();
 		typename std::vector< typename Ring::Element>::const_iterator it_num= num.begin();
+		integer n,den;
+		A.field().convert(den,d);
 		for (; it_x != x.end(); ++it_x, ++it_num){			
-			*it_x = typename RatVector::value_type(*it_num, d);
+			A.field().convert(n, *it_num);
+			*it_x = typename RatVector::value_type(n, den);
 		}
 			
 		return x;
@@ -234,9 +279,9 @@ namespace LinBox
 
 	// input matrix is a DenseMatrix (no copy)
 	template <class RatVector, class Vector, class Ring> 
-	Vector& solve(RatVector& x, const DenseMatrix<Ring>& A, const Vector& b, 
-		      const RingCategories::IntegerTag & tag, 
-		      const Method::BlasElimination& m)
+	RatVector& solve(RatVector& x, const DenseMatrix<Ring>& A, const Vector& b, 
+			 const RingCategories::IntegerTag & tag, 
+			 const Method::BlasElimination& m)
 	{ 
 		Method::Dixon mDixon(m);
 		typename Ring::Element d;
@@ -244,8 +289,11 @@ namespace LinBox
 		solve (num, d, A, b, tag, mDixon);
 		typename RatVector::iterator it_x= x.begin();
 		typename std::vector< typename Ring::Element>::const_iterator it_num= num.begin();
+		integer n,den;
+		A.field().convert(den,d); 
 		for (; it_x != x.end(); ++it_x, ++it_num){			
-			*it_x = typename RatVector::value_type(*it_num, d);
+			A.field().convert(n, *it_num);
+			*it_x = typename RatVector::value_type(n, den);
 		}
 		
 		return x;
@@ -258,7 +306,7 @@ namespace LinBox
 	 */
 	
 	
-	// default API (methid is BlasElimination)
+	// default API (method is BlasElimination)
 	template< class Vector, class BB>
 	Vector& solve(Vector &x, typename BB::Field::Element &d, const BB &A, const Vector &b){
 		return solve(x, d, A, b, typename FieldTraits<typename BB::Field>::categoryTag(),  Method::BlasElimination());
@@ -311,7 +359,9 @@ namespace LinBox
 	Vector& solve(Vector& x, typename Ring::Element &d, const BlasBlackbox<Ring>& A, const Vector& b, 
 		      const RingCategories::IntegerTag tag, Method::Dixon& m)
 	{ 
-		linbox_check ((x.size () == A.coldim ()) && (b.size () == A.rowdim ()));
+		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
+			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
+
 		commentator.start ("Padic Integer Blas-based Solving", "solving");
 		
 		typedef Modular<double> Field;
@@ -340,16 +390,16 @@ namespace LinBox
 					break;					
 				case DixonTraits::DIOPHANTINE:
 					{ 
-                                            DiophantineSolver<RationalSolver<Ring,Field,RandomPrime, DixonTraits> > dsolve(rsolve);
-                                            status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
-                                                                            (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
+						DiophantineSolver<RationalSolver<Ring,Field,RandomPrime, DixonTraits> > dsolve(rsolve);
+						status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
+										(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
                                         }
                                         break;					
 				default:
 					break;
 				}			
 				break;
-                            default:
+			default:
                                 break;
 			}
 			
@@ -373,9 +423,9 @@ namespace LinBox
 				
 			case DixonTraits::DIOPHANTINE:
 				{
-                                    DiophantineSolver<RationalSolver<Ring,Field,RandomPrime, DixonTraits> > dsolve(rsolve);
-                                    status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
-                                                                    (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
+					DiophantineSolver<RationalSolver<Ring,Field,RandomPrime, DixonTraits> > dsolve(rsolve);
+					status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
+									(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
                                 }
 				break;
 				
@@ -402,8 +452,9 @@ namespace LinBox
 	Vector& solve(Vector& x, typename Ring::Element &d, const DenseMatrix<Ring>& A, const Vector& b, 
 		      const RingCategories::IntegerTag tag, const Method::Dixon& m)
 	{  
-
-		linbox_check ((x.size () == A.coldim ()) && (b.size () == A.rowdim ()));
+		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
+			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
+		
 		commentator.start ("Padic Integer Blas-based Solving", "solving");
 		
 		typedef Modular<double> Field;
@@ -521,32 +572,32 @@ namespace LinBox
 	// Lanczos ////////////////
 	// may throw SolverFailed or InconsistentSystem
 	
-// 	template <class Vector, class BB> 
-// 	Vector& solve(Vector& x, const BB& A, const Vector& b, 
-// 		      const RingCategories::ModularTag & tag, 
-// 		      const Method::Lanczos& m)
-// 	{
-// 		solve(A, x, b, A.field(), m);
-// 		return x;
-// 	}
+	// 	template <class Vector, class BB> 
+	// 	Vector& solve(Vector& x, const BB& A, const Vector& b, 
+	// 		      const RingCategories::ModularTag & tag, 
+	// 		      const Method::Lanczos& m)
+	// 	{
+	// 		solve(A, x, b, A.field(), m);
+	// 		return x;
+	// 	}
 
 
 
-// 	template <class Vector, class BB> 
-// 	Vector& solve(Vector& x, const BB& A, const Vector& b, 
-// 		      const RingCategories::ModularTag & tag, 
-// 		      const Method::BlockLanczos& m)
-// 	{
-//             try { 
-//                 solve(A, x, b, A.field(), m); 
-//             } catch (SolveFailed) {
-//                 typename BB::Field::Element zero; A.field().init(zero, 0);
-//                 for (typename Vector::iterator i = x.begin(); 
-//                      i != x.end(); ++i) 
-//                     *i = zero;
-//             }
-//             return x;
-// 	}
+	// 	template <class Vector, class BB> 
+	// 	Vector& solve(Vector& x, const BB& A, const Vector& b, 
+	// 		      const RingCategories::ModularTag & tag, 
+	// 		      const Method::BlockLanczos& m)
+	// 	{
+	//             try { 
+	//                 solve(A, x, b, A.field(), m); 
+	//             } catch (SolveFailed) {
+	//                 typename BB::Field::Element zero; A.field().init(zero, 0);
+	//                 for (typename Vector::iterator i = x.begin(); 
+	//                      i != x.end(); ++i) 
+	//                     *i = zero;
+	//             }
+	//             return x;
+	// 	}
 
 	// Wiedemann section ////////////////
 
@@ -556,6 +607,9 @@ namespace LinBox
 		      const RingCategories::ModularTag & tag, 
 		      const Method::Wiedemann& m)
 	{
+		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
+			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
+		
 		// adapt to earlier signature of wiedemann solver
 		solve(A, x, b, A.field(), m);
 		return x;
@@ -580,72 +634,96 @@ namespace LinBox
 namespace LinBox {
    
 
-    template <class Blackbox, class Vector, class MyMethod>
-    struct IntegerModularSolve {       
-        const Blackbox &A;
-        const Vector &B;
-        const MyMethod &M;
+	template <class Blackbox, class Vector, class MyMethod>
+	struct IntegerModularSolve {       
+		const Blackbox &A;
+		const Vector &B;
+		const MyMethod &M;
 
-        IntegerModularSolve(const Blackbox& b, const Vector& v, const MyMethod& n) 
-                : A(b), B(v), M(n) {}
+		IntegerModularSolve(const Blackbox& b, const Vector& v, const MyMethod& n) 
+			: A(b), B(v), M(n) {}
         
         
-        template<typename Field>
-        typename Rebind<Vector, Field>::other& operator()(typename Rebind<Vector, Field>::other& x, const Field& F) const {
-            typedef typename Blackbox::template rebind<Field>::other FBlackbox;
-            FBlackbox * Ap;
-            MatrixHom::map(Ap, A, F);
+		template<typename Field>
+		typename Rebind<Vector, Field>::other& operator()(typename Rebind<Vector, Field>::other& x, const Field& F) const {
+			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
+			FBlackbox * Ap;
+			MatrixHom::map(Ap, A, F);
 
-            typedef typename Rebind<Vector, Field>::other FVector;
-            Hom<typename Blackbox::Field, Field> hom(A.field(), F);
-            FVector Bp(B.size());
-            typename Vector::const_iterator Bit = B.begin();
-            typename FVector::iterator      Bpit = Bp.begin();
-            for( ; Bit != B.end(); ++Bit, ++Bpit)
-                hom.image (*Bpit, *Bit);
+			typedef typename Rebind<Vector, Field>::other FVector;
+			Hom<typename Blackbox::Field, Field> hom(A.field(), F);
+			FVector Bp(B.size());
+			typename Vector::const_iterator Bit = B.begin();
+			typename FVector::iterator      Bpit = Bp.begin();
+			for( ; Bit != B.end(); ++Bit, ++Bpit)
+				hom.image (*Bpit, *Bit);
 
-            VectorWrapper::ensureDim (x, A.coldim());
-            solve( x, *Ap, Bp, RingCategories::ModularTag(), M);
-            delete Ap;
+			VectorWrapper::ensureDim (x, A.coldim());
+			solve( x, *Ap, Bp, M);
+			delete Ap;
 
-            return x;
-        }            
-    };
+			return x;
+		}            
+	};
 
 	// may throw SolverFailed or InconsistentSystem
-    template <class Vector, class BB, class MyMethod> 
-    Vector& solve(Vector& x, typename BB::Field::Element& d, const BB& A, const Vector& b, 
-                  const RingCategories::IntegerTag & tag, 
-                  const MyMethod& M)
-    {
-        commentator.start ("Integer CRA Solve", "Isolve");
-        RandomPrime genprime( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)); 
-//         RationalRemainder< Modular<double> > rra((double)
-//                                                  ( A.coldim()/2.0*log((double) A.coldim()) ) );
-        RationalRemainder< Modular<double> > rra(3UL, A.coldim());
-        IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
-        rra(x, d, iteration, genprime);
-        commentator.stop ("done", NULL, "Isolve");
-        return x;
-    }
-    
-    template <class RatVector, class Vector, class BB, class MyMethod> 
-    RatVector& solve(RatVector& x, const BB& A, const Vector& b, 
-                  const RingCategories::IntegerTag & tag, 
-                  const MyMethod& M)
-    {
-        commentator.start ("Rational CRA Solve", "Rsolve");
-        Integer den;
-        std::vector< Integer > num(A.coldim());
-        solve (num, den, A, b, tag, M);
-        typename RatVector::iterator it_x= x.begin();
-        typename std::vector<Integer>::const_iterator it_num= num.begin();
-        for (; it_x != x.end(); ++it_x, ++it_num){			
-            *it_x = typename RatVector::value_type(*it_num, den);
-        }
-        commentator.stop ("done", NULL, "Rsolve");
-        return x;
-    }
+	template <class Vector, class BB, class MyMethod> 
+	Vector& solve(Vector& x, typename BB::Field::Element& d, const BB& A, const Vector& b, 
+		      const RingCategories::IntegerTag & tag, 
+		      const MyMethod& M)
+	{
+		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
+			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
+
+		commentator.start ("Integer CRA Solve", "Isolve");
+		RandomPrime genprime( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)); 
+		//         RationalRemainder< Modular<double> > rra((double)
+		//                                                  ( A.coldim()/2.0*log((double) A.coldim()) ) );
+	
+		RationalRemainder< Modular<double> > rra(3UL, A.coldim());
+		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
+
+		// use of integer due to non genericity of rra (PG 2005-09-01)
+		Integer den;
+		std::vector< Integer > num(A.coldim());
+		rra(num, den, iteration, genprime);
+		//rra(x, d, iteration, genprime);
+		
+		typename Vector::iterator it_x= x.begin();
+		typename std::vector<Integer>::const_iterator it_num= num.begin();
+		
+		// convert the result
+		for (; it_x != x.end(); ++it_x, ++it_num)
+			A.field().init(*it_x, *it_num);
+		A.field().init(d, den);
+
+		commentator.stop ("done", NULL, "Isolve");
+		return x;
+	}
+	
+	template <class RatVector, class Vector, class BB, class MyMethod> 
+	RatVector& solve(RatVector& x, const BB& A, const Vector& b, 
+			 const RingCategories::IntegerTag & tag, 
+			 const MyMethod& M)
+	{
+		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
+			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
+
+		commentator.start ("Rational CRA Solve", "Rsolve");
+		typename BB::Field::Element den;
+		std::vector<typename BB::Field::Element > num(A.coldim());
+		solve (num, den, A, b, tag, M);
+		typename RatVector::iterator it_x= x.begin();
+		typename std::vector<typename BB::Field::Element>::const_iterator it_num= num.begin();
+		integer n,d;
+		A.field().convert(d,den); 
+		for (; it_x != x.end(); ++it_x, ++it_num){			
+			A.field().convert(n, *it_num);
+			*it_x = typename RatVector::value_type(n, d);
+		}
+		commentator.stop ("done", NULL, "Rsolve");
+		return x;
+	}
     
 } // LinBox
 

@@ -46,6 +46,17 @@ namespace LinBox
 			     const DomainCategory& tag,
 			     const MyMethod& M);
 
+	//error handler for rational domain
+	template < class Blackbox, class Polynomial, class MyMethod>
+	Polynomial &minpoly (Polynomial& P,
+			     const Blackbox& A,
+			     const RingCategories::RationalTag& tag,
+			     const MyMethod& M)
+	{
+		throw LinboxError("LinBox ERROR: minpoly is not yet define over a rational domain");
+	}
+ 
+
         /** \brief  ...using an optional Method parameter
 	    \param P - the output minimal polynomial.  If the polynomial is
 	    of degree d, this random access container has size d+1, the 0-th entry is 
@@ -88,6 +99,17 @@ namespace LinBox
 	Polynomial &minpoly (
 			     Polynomial         &P, 
 			     const DenseMatrix<Field> 			&A,
+			     const RingCategories::ModularTag          &tag,
+			     const Method::Hybrid& M)
+	{
+		return minpoly(P, A, tag, Method::Elimination(M));
+	}
+	
+	// The minpoly with Hybrid Method on BlasBlackbox
+	template<class Polynomial, class Field>
+	Polynomial &minpoly (
+			     Polynomial         &P, 
+			     const BlasBlackbox<Field> 			&A,
 			     const RingCategories::ModularTag          &tag,
 			     const Method::Hybrid& M)
 	{
