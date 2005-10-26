@@ -547,7 +547,9 @@ namespace LinBox
 #ifdef __LINBOX_COUNT__
                     nbelem += LigneA[k].size ();
 #endif
+#ifndef __LINBOX_KEEPROWS__
                     LigneA[k] = Vzer;
+#endif
 		}
             }
 
