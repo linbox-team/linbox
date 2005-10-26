@@ -220,6 +220,34 @@ namespace LinBox{
 		Target _target;
 	}; // end Hom 
 
+
+	template<>
+	class Hom<PID_integer, PID_integer> {
+
+	public:
+		typedef PID_integer Source;
+		typedef Source Target;
+		typedef Source::Element SrcElt;
+		typedef Target::Element Elt;
+	
+		Hom(const Source& S, const Target& T) : _source (S), _target (T) {}
+		inline Elt& image(Elt& t, const SrcElt& s) {
+			_target. assign (t, s);
+			return t;
+		}
+		inline SrcElt& preimage(SrcElt& s, const Elt& t) {
+			_target. assign (s, t);
+			return s;
+		}
+		const Source& source() { return _source;}
+		const Target& target() { return _target;}
+
+	protected:
+		Source _source;
+		Target _target;
+	}; // end Hom 
+
+
 	/*
 	  #ifdef __FIELD_MODULAR_H
 	  // Dan Roche mapping from UnparametricField to Modular - for integer
@@ -296,10 +324,10 @@ namespace LinBox {
 	
 		Hom(const Source& S, const Target& T) : _source(S), _target(T){}
 		inline Elt& image(Elt& t, const SrcElt& s) {
-			return _target. init (t, _source. convert (tmp, s));
+			return _target.assign(t, s);
 		}
 		inline SrcElt& preimage(SrcElt& s, const Elt& t) {
-			return _source. init (s, _target. convert (tmp, t) );
+			return _source.assign(s, t);
 		}
 		const Source& source() { return _source;}
 		const Target& target() { return _target;}
@@ -348,7 +376,31 @@ namespace LinBox {
 		Target _target;
 	}; // end Hom 
 
+	template <>
+	class Hom<GMPRationalField, GMPRationalField> {
 
+	public:
+		typedef GMPRationalField Source;
+		typedef Source Target;
+		typedef Source::Element SrcElt;
+		typedef Target::Element Elt;
+	
+		Hom(const Source& S, const Target& T) : _source (S), _target(T){}
+		Elt& image(Elt& t, const SrcElt& s) {
+			_target.assign(t, s);
+			return t;
+		}
+		SrcElt& preimage(SrcElt& s, const Elt& t) {
+			_source.assign(s, t);
+			return s;
+		}
+		const Source& source() { return _source;}
+		const Target& target() { return _target;}
+
+	protected:
+		Source _source;
+		Target _target;
+	}; // end Hom 
 }
 #endif
 
