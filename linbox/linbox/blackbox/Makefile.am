@@ -36,7 +36,10 @@ BASIC_HDRS =			\
 	random-matrix.h		\
 	lambda-sparse.h		\
 	blas-blackbox.h		\
-	polynomial.h
+	polynomial.h		\
+	block-hankel.h		\
+	block-toeplitz.h	\
+	block-hankel-inverse.h	
 
 NTL_HDRS =			\
 	ntl-toeplitz.h ntl-hankel.h ntl-sylvester.h \
