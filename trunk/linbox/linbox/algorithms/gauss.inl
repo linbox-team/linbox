@@ -463,7 +463,7 @@ namespace LinBox
                                                               Matrix        &LigneA,
                                                               unsigned long  Ni,
                                                               unsigned long  Nj,
-                                                              bool           storrows)
+                                                              const bool           storrows)
     {
 	typedef typename Matrix::Row        Vector;
 	typedef typename Vector::value_type E;    
@@ -481,11 +481,7 @@ namespace LinBox
 	long long nbelem = 0;
 #endif
 
-#ifndef __LINBOX_KEEPROWS__
 	Vector Vzer (0);
-	if (storrows) Vzer.resize (1);
-#endif
-
             // allocation of the column density
         std::vector<size_t> col_density (Nj);
 
@@ -513,7 +509,7 @@ namespace LinBox
 #ifdef __LINBOX_FILLIN__  
             if ( ! (k % 100) ) {
 #else          
-		if ( ! (k % sstep) ) {
+            if ( ! (k % sstep) ) {
 #endif
                     commentator.progress (k);
 #ifdef __LINBOX_FILLIN__            
@@ -524,9 +520,9 @@ namespace LinBox
                         << "Fillin (" << indcol << "/" << Ni << ") = "
                         << sl << std::endl;
 #endif 
-		}
+            }
 
-		if (s) {
+            if (s) {
                     for (l = k + 1; l < Ni; ++l)
                         if (((sl = LigneA[l].size ()) < s) && (sl)) {
                             s = sl;
@@ -547,10 +543,7 @@ namespace LinBox
 #ifdef __LINBOX_COUNT__
                     nbelem += LigneA[k].size ();
 #endif
-#ifndef __LINBOX_KEEPROWS__
-                    LigneA[k] = Vzer;
-#endif
-		}
+                    if (! storrows) LigneA[k] = Vzer;
             }
 
             SparseFindPivot (LigneA[last], indcol, c);
