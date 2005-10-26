@@ -118,8 +118,8 @@ class GMPRationalElement
 	GMPRationalElement (const integer &num, const integer &den) 
 	{
 		mpq_init (rep);
-		mpz_set_si (mpq_numref (rep), num);
-		mpz_set_si (mpq_denref (rep), den);
+		mpz_set (mpq_numref (rep), num.get_rep());
+		mpz_set (mpq_denref (rep), den.get_rep());
 	}
 	
 	// Added by Rich Seagraves to take care of some headaches
