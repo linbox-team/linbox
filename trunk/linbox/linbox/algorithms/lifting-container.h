@@ -38,6 +38,7 @@
 #include <linbox/blackbox/blas-blackbox.h>
 #include <linbox/vector/vector-domain.h>
 #include <linbox/blackbox/compose.h>
+#include <linbox/blackbox/block-hankel-inverse.h>
 #include <linbox/algorithms/blas-domain.h>
 #include <linbox/field/hom.h>
 //#include <linbox/algorithms/vector-hom.h>
@@ -895,7 +896,10 @@ namespace LinBox {
 			  _n(n), 
 			  _U(m-1,Ap.rowdim()), 
 			  _BMD(F) {
-					
+			
+	
+		
+		
 			for (size_t i=0;i<_m-1;++i)
 				for (size_t j=0;j< _row;++j)
 					_rand.random(_U.refEntry(i,j));
@@ -905,7 +909,13 @@ namespace LinBox {
 				for (size_t j=0; j< n;++j)
 					_rand.random(V.refEntry(i,j));
 			
-			
+		       
+			std::cout<<"U:\n";
+			_U.write(std::cout, _F);
+
+			std::cout<<"V:\n";
+			V.write(std::cout, _F);
+
 			Block UAp(_m, _row);
 
 			typename Block::ConstRowIterator    iter_U   = _U.rowBegin();
@@ -916,9 +926,17 @@ namespace LinBox {
 				
 			for (size_t i=0;i<m;++i)
 				_rand.random(UAp.refEntry(0,i));			
-
+			
+			
 			_Seq = new Sequence (&Ap, _F, UAp,V);
+			std::cout<<"Sequence:\n";
+			for (size_t i=0;i<_Seq->getRep().size();++i)
+				_Seq->getRep()[i].write(std::cout,_F)<<"\n";
+			std::cout<<"\n";
+
+			
 			_Dom = new BlockMasseyDomain<Field,Sequence> (_Seq);					      					      
+			
 
 #ifdef RSTIMING
 			ttGetDigit.clear();
@@ -961,9 +979,22 @@ namespace LinBox {
 			ttGetDigitConvert+=tGetDigitConvert;
 			tGetDigit.start();
 #endif		
+
+			std::cout<<"residue:\n";
+			for (size_t i=0;i<_res_p.size();++i)
+				_F.write(std::cout,_res_p[i])<<",";
+			std::cout<<"\n";
+
+			
+
 			// compute the Minimal polynomial of the modified Sequence
 			_Seq->setU(_res_p,0);
 			_Seq->recompute();
+			std::cout<<"Modified Sequence:\n";
+			for (size_t i=0;i<_Seq->getRep().size();++i)
+				_Seq->getRep()[i].write(std::cout,_F)<<"\n";
+			std::cout<<"\n";
+			
 			FBlockPolynomial minpoly;
 			std::vector<size_t> degree(_m);
 
@@ -975,7 +1006,11 @@ namespace LinBox {
 			tMinPoly.stop();
 			ttMinPoly+=tMinPoly;
 #endif		
-	
+			std::cout<<"Block Minpoly:\n";
+			for (size_t i=0;i<minpoly.size();++i)
+				minpoly[i].write(std::cout,_F)<<"\n";			
+			std::cout<<"\n";
+
 			size_t idx=0;
 			if ( _F.isZero(minpoly[0].getEntry(0,0))) {
 				size_t i=1;
@@ -1025,7 +1060,8 @@ namespace LinBox {
 			_F.neg(scaling,minpoly[0].getEntry(idx,0));
 			_F.invin(scaling);
 			_VDF.mul(_digit_p,accu,scaling);
-					
+			
+			
 			// check results
 			FVector error(_Ap.coldim());
 			_Ap.apply(error,_digit_p);		
@@ -1059,6 +1095,240 @@ namespace LinBox {
 	}; // end of class WiedemannLiftingContainerBase
 
 
+	template <class _Ring, class _Field, class _IMatrix, class _FMatrix, class _Block>
+	class BlockHankelLiftingContainer : public LiftingContainerBase< _Ring, _IMatrix> {
+
+	public:
+		typedef _Field                               Field;
+		typedef _Ring                                 Ring;
+		typedef _IMatrix                           IMatrix;		
+		typedef _FMatrix                           FMatrix;	
+		typedef typename Field::Element            Element;
+		typedef typename IMatrix::Element          Integer;
+		typedef std::vector<Integer>               IVector;
+		typedef std::vector<Element>               FVector;
+		typedef _Block                               Block;
+
+	protected:
+		
+		const FMatrix&                      _Ap;
+		const Diagonal<Field>               &_D;
+		const BlockHankelInverse<Field>  &_Hinv;
+		Field                                _F;
+		mutable FVector                  _res_p;
+		mutable FVector                _digit_p;		
+		std::vector<std::vector<Element> >   _u;
+		std::vector<std::vector<Element> >   _v;
+		size_t                           _block;
+		size_t                        _numblock;
+		VectorDomain<Field>                 _VD;
+		BlasMatrixDomain<Field>            _BMD;
+		Element                           _zero;
+		
+	public:
+#ifdef RSTIMING
+		mutable Timer tGetDigit, ttGetDigit, tGetDigitConvert, ttGetDigitConvert;
+#endif
+		mutable Timer tApplyU, tApplyV, tApplyH, tAcc;;
+
+
+		template <class Prime_Type, class VectorIn>
+		BlockHankelLiftingContainer (const Ring&        R, 
+					     const Field&       F, 
+					     const IMatrix&     A, 
+					     const FMatrix&    Ap,
+					     const Diagonal<Field> &D,
+					     const BlockHankelInverse<Field> &Hinv,
+					     const Block&      U,
+					     const Block&      V,
+					     const VectorIn&   b, 
+					     const Prime_Type& p)
+			: LiftingContainerBase<Ring,IMatrix> (R,A,b,p), _Ap(Ap), _Hinv(Hinv), _F(F),
+			  _res_p(b.size()), _digit_p(A.coldim()),  _block(U.rowdim()), _numblock(A.coldim()/_block) , _VD(F), _BMD(F), _D(D)
+		{
+			tApplyU.clear();
+			tApplyH.clear();
+			tApplyV.clear();
+			for (size_t i=0; i< _res_p.size(); ++i)
+				_F.init(_res_p[i]);
+			for (size_t i=0; i< _digit_p.size(); ++i)
+				_F.init(_digit_p[i]);
+			
+			size_t block= U.rowdim();
+
+			_u.resize(_block, std::vector<Element>(_numblock));
+			_v.resize(_block, std::vector<Element>(_numblock));
+
+			for (size_t i=0;i<_block;++i)
+				for (size_t j=0;j<_numblock;++j){
+					_F.assign(_u[i][j], U.getEntry(0, i*_numblock+j));
+					_F.assign(_v[i][j], V.getEntry(i*_numblock+j, i));
+				}
+			_F.init(_zero,0);
+
+			//Ap.write(std::cout,F);
+#ifdef RSTIMING
+			ttGetDigit.clear();
+			ttGetDigitConvert.clear();
+#endif	
+#ifdef DEBUG_LC
+			std::cout<<"Primes: ";
+			_F.write(std::cout);
+#endif
+
+		}
+		
+		
+		virtual ~BlockHankelLiftingContainer() {
+			std::cout<<"time apply U: "<<tApplyU<<"\n";
+			std::cout<<"time apply H: "<<tApplyH<<"\n";
+			std::cout<<"time apply V: "<<tApplyV<<"\n";
+
+		}
+
+		// return the field
+		const Field& field() const { return _F; }
+
+	protected:
+		
+		virtual IVector& nextdigit(IVector& digit, const IVector& residu) const {		
+#ifdef RSTIMING			
+			tGetDigitConvert.start();
+#endif
+			//LinBox::integer tmp;
+			
+			Hom<Ring, Field> hom(this->_R, _F);
+			// res_p =  residu mod p
+			//VectorHom::map (_res_p, residu, _F, this->_R);			
+			{
+				typename FVector::iterator iter_p = _res_p.begin();
+				typename IVector::const_iterator iter = residu.begin();
+				for ( ;iter != residu. end(); ++iter, ++iter_p)
+					//_F. init (*iter_p, this->_R.convert(tmp,*iter));
+					hom.image(*iter_p, *iter);
+			}			
+#ifdef RSTIMING
+			tGetDigitConvert.stop();
+			ttGetDigitConvert += tGetDigitConvert;
+			tGetDigit.start();
+#endif			
+		
+			// compute the solution of _Ap^(-1).residu mod p = [V^T AV^T ... A^k]^T . Hinv . [U^T U^TA ... U^TA^k]^T residue mod p
+			// with k= numblock -1
+			
+			tAcc.clear();
+			tAcc.start();			
+			/*
+			std::cout<<"b:=<";
+			for (size_t i=0;i<_res_p.size()-1;++i)
+				_F.write(std::cout,_res_p[i])<<",";
+			_F.write(std::cout,_res_p[_res_p.size()-1])<<">;\n";
+			*/
+
+		
+
+			size_t n = _Ap.coldim();
+			// compute z0 = [U^T U^T Ap^T ... U^T Ap^k]^T . residue mod p
+			FVector z0(n), b0(n), b1(n);
+			_D.apply(b0, _res_p);
+			_res_p=b0;
+			BlasMatrix<Element> Apib(n, _numblock);
+			for (size_t i=0;i<n;++i){
+				_F.assign(Apib.refEntry(i,0), _res_p[i]);
+			}
+		
+			int swi=1;
+			for (size_t j=1; j<_numblock; ++j)
+				if (swi){
+					_Ap.apply(b1, b0);
+					for (size_t i=0;i<n;++i)
+						_F.assign(Apib.refEntry(i,j), b1[i]);					
+					swi=0;
+				}
+				else{
+					_Ap.apply(b0, b1);
+					for (size_t i=0;i<n;++i)
+						_F.assign(Apib.refEntry(i,j), b0[i]);
+					swi=1;
+				}
+		
+			FVector tmp(_numblock);
+			for (size_t i=0; i<_block; ++i){
+				BlasMatrix<Element> T(Apib, i*_numblock, 0, _numblock, _numblock); 				
+				_BMD.mul(tmp, _u[i], T);
+				for (size_t j=0;j<_numblock;++j){
+					this->_F.assign(z0[j*_block+i], tmp[j]);					
+				}
+			}	
+			tAcc.stop();
+			tApplyU+=tAcc;
+			tAcc.clear();
+			tAcc.start();
+
+			// compute z1 = Hinv.z0
+			FVector z1(n);
+			_Hinv.apply(z1, z0);
+			tAcc.stop();
+			tApplyH+=tAcc;
+			tAcc.clear();
+			tAcc.start();
+
+			/*
+			std::cout<<" Hinv U b mod p done\n";
+			std::cout<<"\n y:=<";
+			for (size_t i=0;i<_digit_p.size()-1;++i)
+				_F.write(std::cout,z1[i])<<",";
+			_F.write(std::cout,z1[_digit_p.size()-1])<<">;\n";
+			*/
+			// compute digit_p  = [V^T AV^T ... A^k]^T.z1			
+			FVector b_bar(n), b_hat(_numblock);			
+			for (size_t i=0;i<n;++i)
+				_F.assign(_digit_p[i], _zero);			
+						
+			for (int i= _numblock-1;i>=0; --i){				
+				_Ap.apply(b1, _digit_p);
+				_digit_p=b1;
+				for (size_t j=0;j<_block;++j){
+					_VD.mul(b_hat, _v[j], z1[i*_block+j]);
+					for (size_t k=0;k<_numblock;++k)
+						_F.assign(b_bar[j*_numblock+k], b_hat[k]);
+				}
+				_VD.addin(_digit_p, b_bar);
+			}
+			tAcc.stop();
+			tApplyV+=tAcc;
+
+			/*
+			std::cout<<" V Hinv U b mod p done\n";
+			std::cout<<"\n x:=<";
+			for (size_t i=0;i<_digit_p.size()-1;++i)
+				_F.write(std::cout,_digit_p[i])<<",";
+			_F.write(std::cout,_digit_p[_digit_p.size()-1])<<">;\n";
+			*/
+
+#ifdef RSTIMING
+			tGetDigit.stop();
+			ttGetDigit+=tGetDigit;
+			tGetDigitConvert.start();
+#endif
+			// digit = digit_p
+			//VectorHom::map(digit, _digit_p, this->_R, _F);			
+			{
+				typename FVector::const_iterator iter_p = _digit_p.begin(); 
+				typename IVector::iterator iter = digit.begin();
+				for ( ; iter_p!= _digit_p.end(); ++iter_p, ++iter)
+					//this->_R.init(*iter, _F.convert(tmp,*iter_p));
+					hom.preimage(*iter, *iter_p);
+			}
+			
+#ifdef RSTIMING
+			tGetDigitConvert.stop();
+			ttGetDigitConvert += tGetDigitConvert;
+#endif		
+			return digit;
+		}
+		
+	}; // end of class BlockHankelLiftingContainer
 
 
 } // end of namespace LinBox
