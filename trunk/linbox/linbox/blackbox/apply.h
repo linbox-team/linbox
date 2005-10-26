@@ -249,9 +249,9 @@ namespace LinBox {
 
 		void setup(LinBox::integer prime){}
 				
-		Vector& applyV(Vector& y, Vector& x) const { return _M.apply(y,x);}
+		Vector& applyV(Vector& y, Vector& x, Vector& z) const { return _M.apply(y,x);}
 
-		Vector& applyVTrans(Vector& y, Vector& x) const {return _M.applyTranspose(y,x);}
+		Vector& applyVTrans(Vector& y, Vector& x, Vector&z) const {return _M.applyTranspose(y,x);}
 
 	private:
 		Domain          _D;
