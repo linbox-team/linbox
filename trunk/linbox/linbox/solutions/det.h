@@ -42,10 +42,22 @@ namespace LinBox
 {
 	// for specialization with respect to the DomainCategory
 	template< class Blackbox, class DetMethod, class DomainCategory> 
+	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element          &d, 
+						const Blackbox                             &A,
+						const DomainCategory                     &tag,
+						const DetMethod                           &M);
+
+	
+	//error handler for rational domain
+	template< class Blackbox, class DetMethod> 
 	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d, 
-						const Blackbox                              &A,
-						const DomainCategory                      &tag,
-						const DetMethod                          &M);
+						const Blackbox                            &A,
+						const RingCategories::RationalTag       &tag,
+						const DetMethod                          &M)
+	{
+		throw LinboxError("LinBox ERROR: determinant is not yet define over a rational domain");
+	}
+
 
 	/** \brief Compute the determinant of A
 	 *
@@ -366,9 +378,8 @@ namespace LinBox {
 
 } // end of LinBox namespace
 
-
 #ifdef __LINBOX_HAVE_NTL
-//#if 0
+
 #include "linbox/algorithms/hybrid-det.h"
 
 namespace LinBox {
