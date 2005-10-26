@@ -1,3 +1,26 @@
+2005-10-26 Pascal Giorgi:
+	* linbox/algorithms/Makefile.am: add sigma-basis.h file
+	* linbox/algorithms/sigma-basis.h: make sigma basis algorithm available
+	* linbox/algorithms/blackbox-block-container.h: add support for special structured block
+	* linbox/algorithms/blas-domain.h: fix bug
+	* linbox/algorithms/lifting-container.h: add support for sparse solver using a Block Hankel inverse
+	* linbox/algorithms/rational-solver.h(.inl): add new algorithm for solving sparse system
+	* linbox/blackbox/Makefile.am: add block-hankel.h. block-toeplitz.h and block-hankel-inverse.h
+	* linbox/blackbox/apply.h: fix optimization compatibility
+	* linbox/blackbox/block-hankel.h : add a blackbox for block Hankel matrices
+	* linbox/blackbox/block-hankel-inverse.h: add blackbox to compute the inverse of a block Hankel blackbox
+	* linbox/blackbox/block-toeplitz.h: add a blackbox for block Toeplitz matrices
+	* linbox/element/gmp-rational.h: fix this stupid bug using signed long integer to convert rational !!!
+	* linbox/field/hom.h: add support for PID_integer homomorphism
+	* linbox/ring/givaro-polynomial.h: fix bug
+	* linbox/solutions/det.h: add handler for rational domain
+	* linbox/solutions/charpoly.h: add handler for rational domain
+	* linbox/solutions/minpoly.h: add handler for rational domain and hybrid method for blas blackbox
+	* linbox/solutions/rank.h: add handler for rational domain  
+	* linbox/solutions/solve.h: add handler for rational domain and fix indentation
+	* linbox/solutions/methods.h: fix indentation and add block hankel method
+
+	
 2005-09-01 Dan Roche
 	* linbox/algorithms/toeplitz-det.h: Forgot to add this before.
 
