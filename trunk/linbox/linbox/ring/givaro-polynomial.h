@@ -90,7 +90,7 @@ GivPolynomialRing<UnparametricField<integer>,Dense>::factor (std::vector<GivPoly
 template <>
 template <>
 std::vector<GivPolynomial<integer>* >& 
-GivPolynomialRing<const PID_integer,Dense>::factor<std::vector<GivPolynomial<integer>* > > (std::vector<GivPolynomial<integer>* >& factors, 
+GivPolynomialRing<PID_integer,Dense>::factor<std::vector<GivPolynomial<integer>* > > (std::vector<GivPolynomial<integer>* >& factors, 
 										      std::vector<unsigned long>& exp,
 										      const GivPolynomial<integer> &P)
 {
@@ -121,7 +121,7 @@ GivPolynomialRing<const PID_integer,Dense>::factor<std::vector<GivPolynomial<int
 template <>
 template <>
 std::vector<GivPolynomial<NTL::ZZ>* >& 
-GivPolynomialRing<const NTL_ZZ , Dense>::factor<std::vector<GivPolynomial<NTL::ZZ>* > > (std::vector<GivPolynomial<NTL::ZZ>* >& factors, 
+GivPolynomialRing< NTL_ZZ , Dense>::factor<std::vector<GivPolynomial<NTL::ZZ>* > > (std::vector<GivPolynomial<NTL::ZZ>* >& factors, 
 										    std::vector<unsigned long>& exp,
 										    const GivPolynomial<NTL::ZZ> &P)
 {
