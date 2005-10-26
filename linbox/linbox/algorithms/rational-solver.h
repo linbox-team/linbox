@@ -35,10 +35,10 @@
 #include <linbox/algorithms/vector-fraction.h>
 #include <linbox/util/timer.h>
 
-//#define RSTIMING
+#define RSTIMING
 #define DEFAULT_PRIMESIZE 20 
 
-namespace LinBox {
+namespace LinBox {// LinBox
 
 	// bsd and mac problem
 #undef _R
@@ -362,7 +362,7 @@ namespace LinBox {
 	};
 #endif
 
-	
+
 	/** \brief partial specialization of p-adic based solver with block Wiedemann algorithm
 	 *
 	 *   See the following reference for details on this algorithm:
@@ -908,10 +908,55 @@ namespace LinBox {
 		inline static int cblas_rsol (int n, const double* M, integer* numx, integer& denx, double* b);
 	};
 
+
+
+	template<class Ring, class Field,class RandomPrime>		
+ 	class RationalSolver<Ring, Field, RandomPrime, BlockHankelTraits> 
+	{
+	public:
+		typedef Ring                                 RingType;
+		typedef typename Ring::Element               Integer;
+		typedef typename Field::Element              Element;
+		typedef typename RandomPrime::Prime_Type     Prime;
+	
+	protected:
+		RandomPrime                     _genprime;
+		mutable Prime                   _prime;
+		Ring                            _R; 
+
+	public:
+		
+
+		/** Constructor
+		 * @param r   , a Ring, set by default
+		 * @param rp  , a RandomPrime generator, set by default		 
+		 */
+		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) : 
+			 _genprime(rp), _R(r) 
+		{
+			_prime=_genprime.randomPrime(); 
+		}
+    
+		
+		/** Constructor, trying the prime p first
+		 * @param p   , a Prime
+		 * @param r   , a Ring, set by default
+		 * @param rp  , a RandomPrime generator, set by default		 
+		 */
+		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) : 
+			_genprime(rp), _prime(p), _R(r) {}
+
+
+		// solve non singular system
+		template<class IMatrix, class Vector1, class Vector2>
+		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, size_t blocksize, int maxPrimes = DEFAULT_MAXPRIMES) const;         				
+	};
+
+
 }
-
-
 
 #include <linbox/algorithms/rational-solver.inl>
 
 #endif
+
+

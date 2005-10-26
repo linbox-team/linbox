@@ -24,12 +24,27 @@
 #ifndef __LINBOXX__RECONSTRUCTION_H__
 #define __LINBOXX__RECONSTRUCTION_H__
 
+#include <linbox-config.h>
 #include <linbox/util/debug.h>
 
 //#define DEBUG_RR
 //#define DEBUG_RR_BOUNDACCURACY
 #define DEF_THRESH 50
 
+#ifdef __LINBOX_HAVE_NTL
+#include <NTL/LLL.h>
+#endif
+
+
+#define __LINBOX_HAVE_FPLLL
+#ifdef __LINBOX_HAVE_FPLLL
+extern "C" {
+#include </home/pgiorgi/Library/fplll-1.1/myheuristic.h>
+#include </home/pgiorgi/Library/fplll-1.1/myproved.h>
+}
+#endif
+
+#include <linbox/algorithms/short-vector.h>
 namespace LinBox {
 
 	
@@ -96,6 +111,7 @@ public:
 			//getRational3(num, den);print (num); std::cout << "Denominator: " << den << "\n";}
 			
 		else
+			//return getRational6(num,den, switcher);
 			return getRational1 (num, den);
 			//{getRational1(num,den); print (num); std::cout << "Denominator: " << den << "\n";
 			//getRational3(num, den);print (num); std::cout << "Denominator: " << den << "\n";}
@@ -947,7 +963,979 @@ public:
 		return true;
 
 	} // end of getRational3
+
+
+
+#ifdef __LINBOX_HAVE_NTL
+	/* 
+	 * Rational reconstruction using Lattice base reduction	 
+	 */
+	template<class Vector1>
+	bool getRational4(Vector1& num, Integer& den, size_t thresh) const { 
+
+#ifdef RSTIMING
+		ttRecon.clear();
+		tRecon.start();
+#endif
 	
+		linbox_check(num.size() == (size_t)_lcontainer.size());
+		
+		// prime 
+		Integer prime = _lcontainer.prime();
+		
+		// length of whole approximation
+		size_t length=_lcontainer.length();
+		
+		// size of the solution
+		size_t size= _lcontainer.size();
+
+		// numerator  upper bound
+		Integer numbound;
+		_r.assign(numbound,_lcontainer.numbound());
+		 
+		// parameter used for the lattice dimension
+		size_t k = (5> size)? size:5 ;
+
+		// number of padic steps to perform first (use of LinBox::integer)
+		LinBox::integer N,D, bound, mod;
+		_r.convert(N, _lcontainer.numbound());
+		_r.convert(D, _lcontainer.denbound());
+		_r.convert(mod, prime);
+		::root (D, D, k); D+=1;
+		bound=2*N*D;
+		std::cout<<"size in bit of the bound : "<<bound.bitsize()<<std::endl;
+		size_t minsteps = logp(bound, mod)+1;
+
+		Timer magn;
+		magn.start();
+		// magnitude of A and b
+		integer maxValue=0,value, MagnA, Magnb;
+		typename LiftingContainer::IMatrix::ConstRawIterator it = _lcontainer.getMatrix().rawBegin();
+		for (; it != _lcontainer.getMatrix().rawEnd(); ++it) {
+			_r.convert(value,*it);
+			if (value<0) value=-value;
+			if (value> maxValue)
+				maxValue= value;						    
+		}
+		MagnA=maxValue;
+
+		maxValue=0;
+		typename LiftingContainer::IVector::const_iterator it_b = _lcontainer.getVector().begin();
+		for (;it_b!= _lcontainer.getVector().end();++it_b){
+			_r.convert(value,*it_b);
+			if (value<0) value=-value;
+			if (value> maxValue)
+				maxValue= value;	
+		}
+		Magnb=maxValue;
+		magn.stop();
+		std::cout<<"magnitude time:                 "<<magn<<"\n";
+		
+		// some constants
+		Integer zero;
+		_r.init(zero,0);
+		Vector zero_digit(_lcontainer.size(),zero);	
+
+		// store approximation as a polynomial and evaluate by baby step giant step
+		std::vector<Vector>  digit_approximation(length,zero_digit); 
+
+		// store real approximation
+		Vector real_approximation(size,zero); 
+		Vector last_real_approximation;
+
+		// store modulus (intially set to 1)
+		Integer modulus, last_modulus;
+		_r.init(modulus, 1);
+		
+		typename LiftingContainer::const_iterator iter = _lcontainer.begin();
+
+		
+		size_t moresteps    = thresh;
+		size_t startingsteps =0;
+		size_t endingsteps  =minsteps;
+
+		// switchers
+		bool latticeOK=false, numeratorOK=false, domoresteps=true, domorelattice=true,;
+			
+		// common denominator
+		Integer common_denom;
+		_r.init(common_denom,1);
+
+		// bad numerator index
+		size_t bad_num_index=0;		
+
+
+		bool neg_denom=false;
+
+#ifdef RSTIMING
+		tRecon.stop();
+		ttRecon += tRecon;	
+		std::cout<<"\ninitialization time :           "<<tRecon<<"\n";
+#endif	
+		
+
+
+
+		do {// main loop
+			
+			// keep track on the last power of the approximation
+			_r.assign(last_modulus,modulus);
+			
+			if (domoresteps){
+			
+				// compute the padic digits
+				for (size_t i = startingsteps ;  (i< endingsteps) && (iter.next(digit_approximation[i]));++i) {
+					_r.mulin(modulus,prime); 
+				}
+					
+			
+#ifdef RSTIMING
+				tRecon.clear();
+				tRecon.start();
+#endif
+				// evaluate the padic digit into an integer approximation	
+				Integer xeval=prime;
+				typename std::vector<Vector>::const_iterator poly_digit= digit_approximation.begin()+startingsteps;
+				PolEval(real_approximation, poly_digit, endingsteps - startingsteps, xeval);				
+								
+				if (startingsteps != 0){
+					for (size_t i=0;i<size;++i){
+						_r.axpyin(last_real_approximation[i],real_approximation[i], last_modulus); 
+					}
+					real_approximation=last_real_approximation;
+				}
+				else 
+					last_real_approximation = real_approximation;	
+#ifdef RSTIMING
+		tRecon.stop();
+		ttRecon += tRecon;		
+		std::cout<<"evaluation time :               "<<tRecon<<"\n";
+#endif	
+			}
+#ifdef RSTIMING
+			tRecon.clear();
+			tRecon.start();
+#endif	
+		
+			
+			// construct the lattice
+			NTL::mat_ZZ Lattice;
+			NTL::ZZ m, tmp, det;
+			integer tmp_int;
+			_r.convert(mod, modulus);
+			m=NTL::to_ZZ((std::string(mod)).c_str());
+			
+
+			Lattice.SetDims(k+1, k+1);
+			NTL::clear(Lattice);
+			Lattice[0][0]=1;
+			for (size_t i= bad_num_index+1;i< bad_num_index+k+1;++i){
+				Lattice[i][i]=m;//not working when bad index <> 0
+				_r.convert(tmp_int, real_approximation[i-1]);
+				tmp=NTL::to_ZZ((std::string(tmp_int)).c_str());
+				Lattice[0][i]=tmp;//not working when bad index <> 0
+			}
+		
+			// ratio to check the validity of the denominator compare to the entries in the reduced lattice
+			NTL::ZZ ratio;
+			ratio=NTL::to_ZZ(100L);
+			
+			// reduce the lattice using LLL algorithm
+			Timer chrono;
+			chrono.start();
+			//NTL::LLL(det, Lattice);
+			NTL::LLL_XD(Lattice);
+			chrono.stop();
+			std::cout<<"lattice reduction time :        "<<chrono<<std::endl;
+
+		
+			// check if the 1st row is the short vector
+			latticeOK=true;
+			tmp=abs(Lattice[0][0])*ratio;	
+			for (size_t i=1;i<k+1;++i){
+				for (size_t j=0;j<k+1;++j)
+					if (tmp > abs(Lattice[i][j])){
+						latticeOK=false;
+						break;
+					}
+			}
+		
+			
+			
+
+			if (latticeOK) {// lattice ok
+				Timer  checknum;
+				checknum.start();
+				bool neg=false;
+				// get the denominator from the lattice
+				tmp =Lattice[0][0];
+				if (sign(tmp) <0) neg=true;
+				long b = NumBytes(tmp);
+				unsigned char* byteArray;
+				byteArray = new unsigned char[(size_t)b ];
+				BytesFromZZ(byteArray, tmp, b);
+				integer base(256);
+				integer dd= integer(0);	    
+				for(long i = b - 1; i >= 0; --i) {
+					dd *= base;
+					dd += integer(byteArray[i]);
+				}
+				delete [] byteArray;
+				Integer denom;
+				_r.init(denom,dd);
+				if (neg) _r.negin(denom);							
+
+				neg_denom= neg_denom^neg;
+
+				// compute the lcm of the denomintator and the last denominator
+				_r.lcmin(common_denom, denom);				
+
+				Integer neg_approx, abs_approx;
+				
+				numeratorOK=true;
+				// compute the numerators and check their validity according to the numerator  bound
+				for (size_t i=0;i<size;++i){
+					_r.mulin(real_approximation[i], denom);
+					_r.remin(real_approximation[i], modulus);
+					_r. sub (neg_approx, real_approximation[i], modulus);
+					_r. abs (abs_approx, neg_approx);
+
+					if ( _r.compare(real_approximation[i], numbound) < 0)
+						_r.assign(num[i], real_approximation[i]);									
+					else if (_r.compare(abs_approx, numbound) <0)
+						_r.assign(num[i], neg_approx);		
+					else {
+						bad_num_index= std::min(i, size-k);
+						numeratorOK=false;
+						break;
+					}
+				}
+				checknum.stop();
+				std::cout<<"checking numerator time :       "<<checknum<<"\n";
+
+				if (numeratorOK) {//numerator ok					
+					Timer checksol;
+					checksol.start();
+					// compute the magnitude of the numerator
+					integer maxnum=0;
+					typename Vector::const_iterator it_num=num.begin();
+					for (; it_num != num.end(); ++it_num) {
+						_r.convert(value,*it_num);
+						if (value<0) value=-value;
+						if (value> maxnum)
+							maxnum= value;						    
+					}
+				
+					// check the validity of the solution according to n.||A||.||num||+ d.||b|| < modulus
+					integer check= size*MagnA*maxnum+dd*Magnb;
+					
+					checksol.stop();
+					std::cout<<"checking solution time :        "<<checksol<<"\n\n";
+					
+					domorelattice=false;
+
+					if (check < mod)
+						domoresteps=false;
+					else
+						domoresteps=true;
+			
+				}
+				else{
+					domorelattice=true;
+					domoresteps=false;
+				}
+				
+			} 
+			else{
+				std::cout<<"lattice failed\n";
+				domoresteps=true;
+				domorelattice=false;
+			}
+			
+			if (domoresteps) std::cout<<"do more steps\n";
+			if (domorelattice) std::cout<<"do more lattice\n";
+
+			startingsteps = endingsteps;
+			if (domoresteps){
+				bad_num_index=0;
+				endingsteps+= moresteps;
+				if (endingsteps>length)
+					endingsteps=length;
+			}
+#ifdef RSTIMING
+			tRecon.stop();
+			ttRecon += tRecon;		
+#endif
+		}
+		while (domoresteps||domorelattice);
+	
+#ifdef RSTIMING
+		tRecon.clear();
+		tRecon.start();
+#endif	
+		_r.assign(den, common_denom);
+		
+		if (neg_denom){
+			for (size_t i=0;i<size;++i)
+				_r.negin(num[i]);			
+		}
+#ifdef RSTIMING
+		tRecon.stop();
+		ttRecon += tRecon;		
+#endif	
+		return true;
+
+	} // end of getRational4
+
+#endif // end of __LINBOX_HAVE_NTL	
+
+
+
+
+
+#ifdef __LINBOX_HAVE_FPLLL
+
+	/* 
+	 * Rational reconstruction using Lattice base reduction	 
+	 */
+	template<class Vector1>
+	bool getRational5(Vector1& num, Integer& den, size_t thresh) const { 
+
+#ifdef RSTIMING
+		ttRecon.clear();
+		tRecon.start();
+#endif
+	
+		linbox_check(num.size() == (size_t)_lcontainer.size());
+		
+		// prime 
+		Integer prime = _lcontainer.prime();
+		
+		// length of whole approximation
+		size_t length=_lcontainer.length();
+		
+		// size of the solution
+		size_t size= _lcontainer.size();
+
+		// numerator  upper bound
+		Integer numbound;
+		_r.assign(numbound,_lcontainer.numbound());
+		 
+		// parameter used for the lattice dimension
+		size_t k = (2> size)? size:2 ;
+
+		// number of padic steps to perform first (use of LinBox::integer)
+		LinBox::integer N,D, bound, mod;
+		_r.convert(N, _lcontainer.numbound());
+		_r.convert(D, _lcontainer.denbound());
+		_r.convert(mod, prime);
+		::root (D, D, k); D+=1;
+		bound=2*N*D;
+		std::cout<<"size in bit of the bound : "<<bound.bitsize()<<std::endl;
+		size_t minsteps = logp(bound, mod)+1;
+
+		Timer magn;
+		magn.start();
+		// magnitude of A and b
+		integer maxValue=0,value, MagnA, Magnb;
+		typename LiftingContainer::IMatrix::ConstRawIterator it = _lcontainer.getMatrix().rawBegin();
+		for (; it != _lcontainer.getMatrix().rawEnd(); ++it) {
+			_r.convert(value,*it);
+			if (value<0) value=-value;
+			if (value> maxValue)
+				maxValue= value;						    
+		}
+		MagnA=maxValue;
+
+		maxValue=0;
+		typename LiftingContainer::IVector::const_iterator it_b = _lcontainer.getVector().begin();
+		for (;it_b!= _lcontainer.getVector().end();++it_b){
+			_r.convert(value,*it_b);
+			if (value<0) value=-value;
+			if (value> maxValue)
+				maxValue= value;	
+		}
+		Magnb=maxValue;
+		magn.stop();
+		std::cout<<"magnitude time:                 "<<magn<<"\n";
+		
+		// some constants
+		Integer zero;
+		_r.init(zero,0);
+		Vector zero_digit(_lcontainer.size(),zero);	
+
+		// store approximation as a polynomial and evaluate by baby step giant step
+		std::vector<Vector>  digit_approximation(length,zero_digit); 
+
+		// store real approximation
+		Vector real_approximation(size,zero); 
+		Vector last_real_approximation;
+
+		// store modulus (intially set to 1)
+		Integer modulus, last_modulus;
+		_r.init(modulus, 1);
+		
+		typename LiftingContainer::const_iterator iter = _lcontainer.begin();
+
+		
+		size_t moresteps    = thresh;
+		size_t startingsteps =0;
+		size_t endingsteps  =minsteps;
+
+		// switchers
+		bool latticeOK=false, numeratorOK=false, domoresteps=true, domorelattice=true,;
+			
+		// common denominator
+		Integer common_denom;
+		_r.init(common_denom,1);
+
+		// bad numerator index
+		size_t bad_num_index=0;		
+
+
+		bool neg_denom=false;
+
+#ifdef RSTIMING
+		tRecon.stop();
+		ttRecon += tRecon;	
+		std::cout<<"\ninitialization time :           "<<tRecon<<"\n";
+#endif	
+		
+
+
+
+		do {// main loop
+			
+			// keep track on the last power of the approximation
+			_r.assign(last_modulus,modulus);
+			
+			if (domoresteps){
+			
+				linbox_check(startingsteps != endingsteps);
+				
+				// compute the padic digits
+				for (size_t i = startingsteps ;  (i< endingsteps) && (iter.next(digit_approximation[i]));++i) {
+					_r.mulin(modulus,prime); 
+				}
+					
+			
+#ifdef RSTIMING
+				tRecon.clear();
+				tRecon.start();
+#endif
+				// evaluate the padic digit into an integer approximation	
+				Integer xeval=prime;
+				typename std::vector<Vector>::const_iterator poly_digit= digit_approximation.begin()+startingsteps;
+				PolEval(real_approximation, poly_digit, endingsteps - startingsteps, xeval);				
+								
+				if (startingsteps != 0){
+					for (size_t i=0;i<size;++i){
+						_r.axpyin(last_real_approximation[i],real_approximation[i], last_modulus); 
+					}
+					real_approximation=last_real_approximation;
+				}
+				else 
+					last_real_approximation = real_approximation;	
+#ifdef RSTIMING
+		tRecon.stop();
+		ttRecon += tRecon;		
+		std::cout<<"evaluation time :               "<<tRecon<<"\n";
+#endif	
+			}
+#ifdef RSTIMING
+			tRecon.clear();
+			tRecon.start();
+#endif	
+		
+			
+			// construct the lattice
+			mpz_t **Lattice;
+			Lattice= new mpz_t*[k+2];
+			for (size_t i=0;i<k+2;++i){
+				Lattice[i]= new mpz_t[k+2];
+				for (size_t j=0;j<k+2;++j)
+					mpz_init(Lattice[i][j]);
+			}
+			
+			integer tmp=1;
+			_r.convert(mod, modulus);
+					       
+			mpz_set(Lattice[1][1], tmp.get_mpz());
+			for (size_t i=2;i< k+2;++i){
+				mpz_set(Lattice[i][i],mod.get_mpz());
+				_r.convert(tmp, real_approximation[bad_num_index+i-2]);
+				mpz_set(Lattice[1][i],tmp.get_mpz());
+			}
+		
+			// ratio to check the validity of the denominator compare to the entries in the reduced lattice
+			integer ratio;
+			ratio=100L;
+			
+			// reduce the lattice using LLL algorithm
+			Timer chrono;
+			chrono.start();
+			myLLLproved(Lattice, k+1,k+1);
+			chrono.stop();
+			std::cout<<"lattice reduction time :        "<<chrono<<std::endl;
+
+		
+			// check if the 1st row is the short vector
+			latticeOK=true;
+			mpz_mul(tmp.get_mpz(), Lattice[1][1],ratio.get_mpz());	
+			for (size_t i=2;i<k+2;++i){
+				for (size_t j=1;j<k+2;++j)
+					if (mpz_cmpabs(tmp.get_mpz() , Lattice[i][j])> 0){
+						latticeOK=false;
+						break;
+					}
+			}
+		
+			integer dd;
+			// get the denominator from the lattice
+			mpz_set(dd.get_mpz(),Lattice[1][1]);
+			
+			//delete the lattice
+			for (size_t i=0;i<k+2;++i){
+				for (size_t j=0;j<k+2;++j)
+					mpz_clear(Lattice[i][j]);
+				delete[] Lattice[i];
+			}
+			delete[] Lattice;
+
+
+			if (latticeOK) {// lattice ok
+				Timer  checknum;
+				checknum.start();
+			
+
+				Integer denom;
+				_r.init(denom,tmp);
+				
+				bool neg=true;
+				if (dd < 0){
+					neg=true;std::cout<<"negative det\n";}
+				
+				neg_denom= neg_denom^neg;
+
+				// compute the lcm of the denomintator and the last denominator
+				_r.lcmin(common_denom, denom);				
+
+				Integer neg_approx, abs_approx;
+				
+				numeratorOK=true;
+				// compute the numerators and check their validity according to the numerator  bound
+				for (size_t i=0;i<size;++i){
+					_r.mulin(real_approximation[i], common_denom);
+					_r.remin(real_approximation[i], modulus);
+					_r. sub (neg_approx, real_approximation[i], modulus);
+					_r. abs (abs_approx, neg_approx);
+
+					if ( _r.compare(real_approximation[i], numbound) < 0)
+						_r.assign(num[i], real_approximation[i]);									
+					else if (_r.compare(abs_approx, numbound) <0)
+						_r.assign(num[i], neg_approx);		
+					else {
+						bad_num_index= std::min(i, size-k);
+						numeratorOK=false;
+						break;
+					}
+				}
+				checknum.stop();
+				std::cout<<"checking numerator time :       "<<checknum<<"\n";
+
+				if (numeratorOK) {//numerator ok					
+					Timer checksol;
+					checksol.start();
+					// compute the magnitude of the numerator
+					integer maxnum=0;
+					typename Vector::const_iterator it_num=num.begin();
+					for (; it_num != num.end(); ++it_num) {
+						_r.convert(value,*it_num);
+						if (value<0) value=-value;
+						if (value> maxnum)
+							maxnum= value;						    
+					}
+				
+					// check the validity of the solution according to n.||A||.||num||+ d.||b|| < modulus
+					integer check= size*MagnA*maxnum+dd*Magnb;
+					
+					checksol.stop();
+					std::cout<<"checking solution time :        "<<checksol<<"\n\n";
+					
+					domorelattice=false;
+
+					if (check < mod)
+						domoresteps=false;
+					else
+						domoresteps=true;
+			
+				}
+				else{
+					domorelattice=true;
+					domoresteps=false;
+				}
+				
+			} 
+			else{
+				std::cout<<"lattice failed\n";
+				domoresteps=true;
+				domorelattice=false;
+			}
+			
+			if (domoresteps) std::cout<<"do more steps\n";
+			if (domorelattice) std::cout<<"do more lattice\n";
+
+			startingsteps = endingsteps;
+			if (domoresteps){
+				bad_num_index=0;
+				endingsteps+= moresteps;
+				if (endingsteps>length)
+					endingsteps=length;
+			}
+#ifdef RSTIMING
+			tRecon.stop();
+			ttRecon += tRecon;		
+#endif
+		}
+		while (domoresteps||domorelattice);
+	
+#ifdef RSTIMING
+		tRecon.clear();
+		tRecon.start();
+#endif	
+		_r.assign(den, common_denom);
+		
+		if (neg_denom){
+			for (size_t i=0;i<size;++i)
+				_r.negin(num[i]);			
+		}
+#ifdef RSTIMING
+		tRecon.stop();
+		ttRecon += tRecon;		
+#endif	
+		return true;
+
+	} // end of getRational4
+
+
+	/* 
+	 * Rational reconstruction using Lattice base reduction	 
+	 */
+	template<class Vector1>
+	bool getRational6(Vector1& num, Integer& den, size_t thresh) const { 
+
+#ifdef RSTIMING
+		ttRecon.clear();
+		tRecon.start();
+#endif
+	
+		linbox_check(num.size() == (size_t)_lcontainer.size());
+		
+		// prime 
+		Integer prime = _lcontainer.prime();
+		
+		// length of whole approximation
+		size_t length=_lcontainer.length();
+		
+		// size of the solution
+		size_t size= _lcontainer.size();
+
+		// numerator  upper bound
+		Integer numbound;
+		_r.assign(numbound,_lcontainer.numbound());
+		 
+		// parameter used for the lattice dimension
+		size_t k = (2> size)? size:2 ;
+
+		// number of padic steps to perform first (use of LinBox::integer)
+		LinBox::integer N,D, bound, mod;
+		_r.convert(N, _lcontainer.numbound());
+		_r.convert(D, _lcontainer.denbound());
+		_r.convert(mod, prime);
+		::root (D, D, k); D+=1;
+		bound=2*N*D;
+		std::cout<<"size in bit of the bound : "<<bound.bitsize()<<std::endl;
+		size_t minsteps = logp(bound, mod)+1;
+
+		Timer magn;
+		magn.start();
+		// magnitude of A and b
+		integer maxValue=0,value, MagnA, Magnb;
+		typename LiftingContainer::IMatrix::ConstRawIterator it = _lcontainer.getMatrix().rawBegin();
+		for (; it != _lcontainer.getMatrix().rawEnd(); ++it) {
+			_r.convert(value,*it);
+			if (value<0) value=-value;
+			if (value> maxValue)
+				maxValue= value;						    
+		}
+		MagnA=maxValue;
+
+		maxValue=0;
+		typename LiftingContainer::IVector::const_iterator it_b = _lcontainer.getVector().begin();
+		for (;it_b!= _lcontainer.getVector().end();++it_b){
+			_r.convert(value,*it_b);
+			if (value<0) value=-value;
+			if (value> maxValue)
+				maxValue= value;	
+		}
+		Magnb=maxValue;
+		magn.stop();
+		std::cout<<"magnitude time:                 "<<magn<<"\n";
+		
+		// some constants
+		Integer zero;
+		_r.init(zero,0);
+		Vector zero_digit(_lcontainer.size(),zero);	
+
+		// store approximation as a polynomial and evaluate by baby step giant step
+		std::vector<Vector>  digit_approximation(length,zero_digit); 
+
+		// store real approximation
+		Vector real_approximation(size,zero); 
+		Vector last_real_approximation;
+
+		// store modulus (intially set to 1)
+		Integer modulus, last_modulus;
+		_r.init(modulus, 1);
+		
+		typename LiftingContainer::const_iterator iter = _lcontainer.begin();
+
+		
+		size_t moresteps    = thresh;
+		size_t startingsteps =0;
+		size_t endingsteps  =minsteps;
+
+		// switchers
+		bool latticeOK=false, numeratorOK=false, domoresteps=true, domorelattice=true,;
+			
+		// common denominator
+		Integer common_denom;
+		_r.init(common_denom,1);
+
+		// bad numerator index
+		size_t bad_num_index=0;		
+
+
+		bool neg_denom=false;
+
+#ifdef RSTIMING
+		tRecon.stop();
+		ttRecon += tRecon;	
+		std::cout<<"\ninitialization time :           "<<tRecon<<"\n";
+#endif	
+		
+
+
+
+		do {// main loop
+			
+			// keep track on the last power of the approximation
+			_r.assign(last_modulus,modulus);
+			
+			if (domoresteps){
+			
+				linbox_check(startingsteps != endingsteps);
+				
+				// compute the padic digits
+				for (size_t i = startingsteps ;  (i< endingsteps) && (iter.next(digit_approximation[i]));++i) {
+					_r.mulin(modulus,prime); 
+				}
+					
+			
+#ifdef RSTIMING
+				tRecon.clear();
+				tRecon.start();
+#endif
+				// evaluate the padic digit into an integer approximation	
+				Integer xeval=prime;
+				typename std::vector<Vector>::const_iterator poly_digit= digit_approximation.begin()+startingsteps;
+				PolEval(real_approximation, poly_digit, endingsteps - startingsteps, xeval);				
+								
+				if (startingsteps != 0){
+					for (size_t i=0;i<size;++i){
+						_r.axpyin(last_real_approximation[i],real_approximation[i], last_modulus); 
+					}
+					real_approximation=last_real_approximation;
+				}
+				else 
+					last_real_approximation = real_approximation;	
+#ifdef RSTIMING
+		tRecon.stop();
+		ttRecon += tRecon;		
+		std::cout<<"evaluation time :               "<<tRecon<<"\n";
+#endif	
+			}
+#ifdef RSTIMING
+			tRecon.clear();
+			tRecon.start();
+#endif	
+		
+			
+			// construct the lattice			
+			std::vector<integer> Lattice(9);
+			
+			integer tmp=1;
+			_r.convert(mod, modulus);
+					       
+			Lattice[0]=tmp;
+			for (size_t i=1;i< k+1;++i){
+				Lattice[i*(k+1)+i]=mod;				
+				_r.convert(tmp, real_approximation[bad_num_index+i-1]);
+				Lattice[i]=tmp;
+			}
+			
+			// ratio to check the validity of the denominator compare to the entries in the reduced lattice
+			integer ratio;
+			ratio=100L;
+			
+			// reduce the lattice using LLL algorithm
+			Timer chrono;
+			chrono.start();
+			TernaryLattice L3(Lattice);
+			L3.reduce();
+			chrono.stop();
+			std::cout<<"lattice reduction time :        "<<chrono<<std::endl;
+
+		
+			// check if the 1st row is the short vector
+			latticeOK=true;
+			tmp = ::abs(L3[0][0]*ratio);
+			for (size_t i=1;i<k+1;++i){
+				for (size_t j=0;j<k+1;++j)
+					if (tmp > ::abs(L3[i][j])){
+						latticeOK=false;
+						break;
+					}
+			}
+		
+			integer dd;
+			// get the denominator from the lattice
+			dd= L3[0][0];
+			//L3.print();
+
+			if (latticeOK) {// lattice ok
+				Timer  checknum;
+				checknum.start();
+			
+
+				Integer denom;
+				_r.init(denom,tmp);
+				
+				bool neg=true;
+				if (dd < 0){
+					neg=true;std::cout<<"negative det\n";}
+				
+				neg_denom= neg_denom^neg;
+
+				// compute the lcm of the denominator and the last denominator
+				_r.lcmin(common_denom, denom);				
+
+				Integer neg_approx, abs_approx;
+				
+				numeratorOK=true;
+				// compute the numerators and check their validity according to the numerator  bound
+				for (size_t i=0;i<size;++i){
+					_r.mulin(real_approximation[i], common_denom);
+					_r.remin(real_approximation[i], modulus);
+					_r. sub (neg_approx, real_approximation[i], modulus);
+					_r. abs (abs_approx, neg_approx);
+
+					if ( _r.compare(real_approximation[i], numbound) < 0)
+						_r.assign(num[i], real_approximation[i]);									
+					else if (_r.compare(abs_approx, numbound) <0)
+						_r.assign(num[i], neg_approx);		
+					else {
+						bad_num_index= std::min(i, size-k);
+						numeratorOK=false;
+						break;
+					}
+				}
+				checknum.stop();
+				std::cout<<"checking numerator time :       "<<checknum<<"\n";
+
+				if (numeratorOK) {//numerator ok					
+					Timer checksol;
+					checksol.start();
+					// compute the magnitude of the numerator
+					integer maxnum=0;
+					typename Vector::const_iterator it_num=num.begin();
+					for (; it_num != num.end(); ++it_num) {
+						_r.convert(value,*it_num);
+						if (value<0) value=-value;
+						if (value> maxnum)
+							maxnum= value;						    
+					}
+				
+					// check the validity of the solution according to n.||A||.||num||+ d.||b|| < modulus
+					integer check= size*MagnA*maxnum+dd*Magnb;
+					
+					checksol.stop();
+					std::cout<<"checking solution time :        "<<checksol<<"\n\n";
+					
+					domorelattice=false;
+
+					if (check < mod)
+						domoresteps=false;
+					else
+						domoresteps=true;
+			
+				}
+				else{
+					domorelattice=true;
+					domoresteps=false;
+				}
+				
+			} 
+			else{
+				std::cout<<"lattice failed\n";
+				domoresteps=true;
+				domorelattice=false;
+			}
+			
+			if (domoresteps) std::cout<<"do more steps\n";
+			if (domorelattice) std::cout<<"do more lattice\n";
+
+			startingsteps = endingsteps;
+			if (domoresteps){
+				bad_num_index=0;
+				endingsteps+= moresteps;
+				if (endingsteps>length)
+					endingsteps=length;
+			}
+#ifdef RSTIMING
+			tRecon.stop();
+			ttRecon += tRecon;		
+#endif
+		}
+		while (domoresteps||domorelattice);
+	
+#ifdef RSTIMING
+		tRecon.clear();
+		tRecon.start();
+#endif	
+		_r.assign(den, common_denom);
+		
+		if (neg_denom){
+			for (size_t i=0;i<size;++i)
+				_r.negin(num[i]);			
+		}
+#ifdef RSTIMING
+		tRecon.stop();
+		ttRecon += tRecon;		
+#endif	
+		return true;
+
+	} // end of getRational6
+
+
+
+#endif // end of __LINBOX_HAVE_NTL	
+
+
+
+
+
+
 };
 	
 }

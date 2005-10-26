@@ -172,7 +172,7 @@ namespace LinBox
 		}
     
 		// constructor of the sequence from a blackbox, a field and two blocks projection
-		BlackboxBlockContainerRecord(const _Blackbox *D, const Field &F, const Block &U0, const Block& V0) 
+		BlackboxBlockContainerRecord(const _Blackbox *D, const Field &F, const Block &U0, const Block& V0, bool denseblock= true) 
 			: BlackboxBlockContainerBase<Field,_Blackbox> (D, F,U0.rowdim(), V0.coldim()),
 			  _W(D->rowdim(), V0.coldim()), _BMD(F),  _launcher(Nothing), _iter(1)
 		{ 
@@ -181,13 +181,34 @@ namespace LinBox
 			tSequence.clear();
 			tSequence.start();
 #endif
-			this->init (U0, U0); 
+			this->init (U0, V0);
+
+			
 			_rep = std::vector<Value> (this->_size);
 			_Vcopy = this->_V;		
-			for (size_t i=0;i< this->_size;++i){
-				_rep[i] = this->_value;
-				_launch_record();
+			if (denseblock) {
+				for (size_t i=0;i< this->_size;++i){
+					_rep[i] = this->_value;
+					_launch_record();
+				}
 			}
+			else {
+				_rep.resize(_rep.size()-3);
+				size_t block= U0.rowdim();
+				size_t N = U0.coldim()/block;
+				_Special_U.resize(block, std::vector<typename Field::Element>(N));
+
+				for (size_t i=0;i<block;++i)
+					for (size_t j=0;j<N;++j)
+						F.assign(_Special_U[i][j], U0.getEntry(0, i*N+j));
+				
+				for (size_t i=0;i< this->_size-3;++i){
+					_launch_record_notdense();
+					_rep[i] = this->_value;					
+				}
+				
+			}
+
 			this->_value=_rep[0];		
 #ifdef _BBC_TIMING
 			tSequence.stop();
@@ -325,6 +346,8 @@ namespace LinBox
 		}
 #endif	
 		
+		const std::vector<Value>& getRep() const { return _rep;}
+		
 
 	protected: 	
 		
@@ -337,7 +360,8 @@ namespace LinBox
 		std::vector<Element>            _w;
 		Launcher                 _launcher;
 		size_t                       _iter;
-		size_t                       _case;  
+		size_t                       _case; 
+		std::vector<std::vector<Element> > _Special_U; 
 #ifdef _BBC_TIMING		
 		Timer        ttSequence, tSequence;
 #endif	
@@ -354,7 +378,41 @@ namespace LinBox
 				this->casenumber = 1;
 			}  
 		}
-		
+
+
+		// launcher of computation of sequence element 
+		void _launch_record_notdense () {
+			size_t block= this->_V.coldim();
+			size_t numblock=_Special_U[0].size();
+			if (this->casenumber) {	
+				Mul(_W,*this->_BB,this->_V);
+			
+				std::vector<Element> tmp(block);
+				for (size_t i=0; i<block; ++i){
+					BlasMatrix<Element> T(_W, i*numblock, 0, numblock, block); 
+					_BMD.mul(tmp, _Special_U[i], T);
+					for (size_t j=0;j<block;++j){
+						this->_F.assign(this->_value.refEntry(i,j), tmp[j]);
+					}
+				}
+			
+				this->casenumber = 0;
+			} else { 
+				Mul(this->_V,*this->_BB,_W);
+			
+				std::vector<Element> tmp(block);
+				for (size_t i=0; i< block; ++i){
+					BlasMatrix<Element> T(this->_V, i*numblock, 0, numblock, block);
+					_BMD.mul(tmp, _Special_U[i], T);
+					for (size_t j=0;j<block;++j)
+						this->_F.assign(this->_value.refEntry(i,j), tmp[j]);					
+				}			
+			
+				this->casenumber = 1;
+			}  
+		}
+
+
 		// launcher of computation of sequence element
 		// just update one row in the sequence element
 		void _launch_record_row() {
