@@ -1,7 +1,7 @@
 # FACING_REALITY is used anywhere?
 FACING_REALITY = 0
 INCLUDES=-I$(top_srcdir)
-AM_LDFLAGS = -llapack -lcblas -latlas 
+#AM_LDFLAGS = -llapack -lcblas -latlas 
 AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall
 #AM_CFLAGS = -g -Wall
 
@@ -157,9 +157,9 @@ if LINBOX_HAVE_LIDIA
 USE_LIDIA_TESTS = $(LIDIA_TESTS)
 endif
 
-if LINBOX_HAVE_ATLAS
+
 USE_ATLAS_TESTS = $(ATLAS_TESTS)
-endif
+
 
 TESTS =				\
 	$(BASIC_TESTS)		\
