@@ -1,3 +1,16 @@
+2005-11-17 Pascal Giorgi:
+	* macros/blas-check.m4: adding new support for blas libraries
+	* macros/linbox-opt.m4: adding new support for blas libraries
+	* macros/linbox-misc.m4: adding new support for blas libraries
+	* linbox/config-blas.h: linbox headers for BLAS
+	* linbox/Makefile.am: add new BLAS support
+	* linbox/fflas/Makefile.am: remove dependencies to ATLAS 
+	* linbox/fflas/fflas.h:  add new BLAS support
+	* linbox/ffpack.Makefile.am: remove dependencies to ATLAS
+	* configure.in: remove ATLAS checking and replace with BLAS checking
+	* linbox-config.in:  remove ATLAS libs and replace with BLAS libs 
+	* tests/Makefile.am: remove ATLAS dependencies
+
 2005-10-26 Pascal Giorgi:
 	* linbox/algorithms/Makefile.am: add sigma-basis.h file
 	* linbox/algorithms/sigma-basis.h: make sigma basis algorithm available
