@@ -1,4 +1,3 @@
-if LINBOX_HAVE_ATLAS
 pkgincludesubdir=$(pkgincludedir)/fflas
 
 pkgincludesub_HEADERS = \
@@ -12,6 +11,5 @@ pkgincludesub_HEADERS = \
 	fflas_ftrmm.inl			\
 	fflas_ftrsv.inl			
 
-endif 
 EXTRA_DIST = fflas.doxy
 

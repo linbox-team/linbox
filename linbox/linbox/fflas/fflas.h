@@ -16,9 +16,12 @@
 #include <linbox-config.h>
 #include "linbox/field/unparametric.h"
 
+/*
 extern "C" {
 #include "cblas.h"
 }
+*/
+#include <linbox/config-blas.h>
 
 namespace LinBox {
 	
