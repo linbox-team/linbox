@@ -10,15 +10,17 @@ AC_MSG_RESULT(yes)
 BACKUP_CXXFLAGS=${CXXFLAGS}
 BACKUP_LIBS=${LIBS}
 	
-if test "x$HAVE_ATLAS" = "xyes" ;then
+if test "x$HAVE_BLAS" = "xyes" ;then
 AC_MSG_CHECKING([best threshold for Strassen-Winograd matrix multiplication])
 
 
-CXXFLAGS="${BACKUP_CXXFLAGS} -I`pwd` ${ATLAS_CFLAGS} ${GMP_CFLAGS}  ${GIVARO_CFLAGS} " 
-LIBS="${BACKUP_LIBS} ${ATLAS_LIBS} ${GMP_LIBS}" 
+CXXFLAGS="${BACKUP_CXXFLAGS} -I`pwd` ${BLAS_CFLAGS} ${GMP_CFLAGS}  ${GIVARO_CFLAGS} ${CBLAS_FLAG}" 
+LIBS="${BACKUP_LIBS} ${BLAS_LIBS} ${GMP_LIBS}" 
 
 AC_TRY_RUN([	#define LinBoxSrcOnly
 		#include <iostream>
+		#define __LINBOX_CONFIGURATION
+		#include <linbox/config-blas.h>
 		#include <linbox/fflas/fflas.h>
 		#include <linbox/field/modular-double.h>
 		#include <linbox/util/timer.h>
