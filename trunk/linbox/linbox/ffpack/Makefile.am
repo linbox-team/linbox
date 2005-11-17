@@ -1,4 +1,3 @@
-if LINBOX_HAVE_ATLAS
 pkgincludesubdir=$(pkgincludedir)/ffpack
 
 pkgincludesub_HEADERS = \
@@ -9,6 +8,5 @@ pkgincludesub_HEADERS = \
 	ffpack_ludivine.inl		\
 	ffpack_minpoly.inl		\
 	ffpack_minpoly_construct.inl	
-endif
 
 EXTRA_DIST = ffpack.doxy
