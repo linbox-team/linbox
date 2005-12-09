@@ -894,7 +894,7 @@ namespace LinBox {// LinBox
 		inline static int update_r_int (double* r, int n, const double* M, const double* d, int shift);
 		//update r = r * shift - M d, where 2^32 <= norm (r) < 2^53
 		inline static int update_r_ll (double* r, int n, const double* M, const double* d, int shift);
-		/** compute  the hadamard boud*/
+		/** compute  the hadamard bound*/
 		inline static int cblas_hbound (integer& b, int m, int n, const double* M);
 		/* solve Ax = b 
 		 * A, the integer matrix
