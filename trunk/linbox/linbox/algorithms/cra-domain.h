@@ -85,15 +85,15 @@ namespace LinBox {
     struct ChineseRemainder {
     protected:
         typedef typename Domain::Element DomainElement;
-        typedef unsigned long            BaseRing;
+        typedef unsigned long            BaseRing; // used anywhere?
 		
 
         unsigned int   				occurency;
-        double         				dSizes0;
+        double         				dSizes0; // used anywhere?
         Integer 				nextm;
         Integer					Modulo0;
         Integer					Table0;
-        bool           				Occupation0;
+        bool           				Occupation0; //used anywhere?
         std::vector< unsigned long >		randv;
         std::vector< double >  			dSizes;
         std::vector< LazyProduct >		Modulo;

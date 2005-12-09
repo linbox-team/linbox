@@ -203,8 +203,6 @@ class DenseMatrix : public BlackboxInterface, public DenseMatrixBase<typename _F
 	const Field &field () const
 		{ return _F;}
 
-#ifndef __LINBOX_XMLENABLED
-
 	/*- @name Input and output
 	 */
 
@@ -223,31 +221,6 @@ class DenseMatrix : public BlackboxInterface, public DenseMatrixBase<typename _F
 		{ return DenseMatrixBase<Element>::write (os, _F); }
  
 	//@}
-
-#else
-	ostream &write(ostream &out) const
-	{
-		Writer W;
-		if( toTag(W)) 
-			W.write(out);
-
-		return out;
-	}
-
-	bool toTag(Writer &W) const
-	{
-		if(DenseMatrixBase<Element>::toTag(W)) {
-			W.insertTagChild();
-			_F.toTag(W);
-			W.upToParent();
-			return true;
-		}
-		else
-			return false;
-	}
-
-
-#endif
 
 
 	/*- @name Black box interface

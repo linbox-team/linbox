@@ -1,3 +1,5 @@
+2005-12-8 bds
+	* minor cleanups
 2005-11-17 Pascal Giorgi:
 	* macros/blas-check.m4: adding new support for blas libraries
 	* macros/linbox-opt.m4: adding new support for blas libraries
