@@ -35,6 +35,9 @@
 #include <linbox/blackbox/compose.h>
 #include <linbox/vector/vector-domain.h>
 
+//#define PADEMATRIX
+
+
 namespace LinBox {
 
 
@@ -63,7 +66,7 @@ namespace LinBox {
 		BlockHankelInverse(const Field &F, const std::vector<BlasMatrix<Element> > &P) 
 			: _F(F), _VD(F), _BMD(F)
 		{
-			//write_maple("A",P);
+			//write_maple("UAV",P);
 			
 			size_t block    = P[0].rowdim();
 			size_t deg      = P.size();
@@ -78,6 +81,8 @@ namespace LinBox {
 
 			// compute right and left matrix Pade Approximant of P of order deg+2 and deg
 
+
+#ifndef PADEMATRIX
 			// construct the matrix polynomial serie  [ P(x)^T  I ]^T and [ P^T(x) I ]
 			std::vector<Coefficient> RightPowerSerie(deg+2), LeftPowerSerie(deg+2), LPS(deg+2), RPS(deg+2);
 			for (size_t i=0;i< deg+2; ++i){
@@ -96,7 +101,7 @@ namespace LinBox {
 				RightPowerSerie[0].setEntry(j, block+j, one);   RPS[0].setEntry(j, j+block , one);
 			}
 			
-		
+			//write_maple("Sx",LeftPowerSerie);
 
 			SigmaBasis<Field> SBL(F, LeftPowerSerie);
 			SigmaBasis<Field> SBR(F, RightPowerSerie);
@@ -107,35 +112,58 @@ namespace LinBox {
 			
 			for (size_t i=block;i<two_n;++i){
 				dlp1[i]=1;
-				dlp2[i]=1;
 				drp1[i]=1;
-				drp2[i]=1;				
-				}
+				dlp2[i]=1;
+				drp2[i]=1;
+			}
 			
-
+			
 			// Compute the sigma basis
-			Timer chrono;
-			chrono.start();
+			//Timer chrono;
+			//chrono.start();
 			SBL.multi_left_basis  (LP1, deg-1, dlp1, LP2, deg+1, dlp2);
 			SBR.multi_right_basis (RP1, deg-1, drp1, RP2, deg+1, drp2);
-			chrono.stop();
-			std::cout<<"SigmaBasis Computation : "<<chrono<<"\n";
-			Timing();
-			SBL.printTimer();
-			std::cout<<"num multiplication: "<<num_multi<<"\n";
-
+			//chrono.stop();
+			//std::cout<<"SigmaBasis Computation : "<<chrono<<"\n";
+			//SBL.printTimer();
+			
 		 	//SBL.left_basis  (LP1, deg-1, dlp1);		
 			//SBR.right_basis (RP1, deg-1, drp1);
 			//SBL.left_basis  (LP2, deg+1, dlp2);
 			//SBR.right_basis (RP2, deg+1, drp2);
 
-
 			std::vector<BlasMatrix<Element> > SLP1, SLP2, SRP1, SRP2;
-			
+					
 			extractLeftSigma  (SLP1, LP1, dlp1, block);
 			extractLeftSigma  (SLP2, LP2, dlp2, block);
+
 			extractRightSigma (SRP1, RP1, drp1, block);
 			extractRightSigma (SRP2, RP2, drp2, block);
+			
+#else
+			size_t two_n= block<<1;
+			std::vector<size_t> dlp(two_n,0), drp(two_n,0);			
+			for (size_t i=block;i<two_n;++i){
+				dlp[i]=1;
+				drp[i]=1;
+			}
+						
+			Coefficient ZeroSerie(block, block);	
+			std::vector<Coefficient> Serie(deg+2, ZeroSerie);
+			for (size_t i=0;i<deg;++i)				
+				for (size_t j=0;j<block;++j)
+					for (size_t k=0;k<block;++k)
+						Serie[i].setEntry(j,k, P[i].getEntry(j,k));
+						
+			SigmaBasis<Field> SBL(F, Serie);
+			SigmaBasis<Field> SBR(F, Serie);
+
+			std::vector<BlasMatrix<Element> > SLP1, SLP2, SRP1, SRP2;
+			SBL.multi_left_PadeMatrix  (SLP1, deg-1, SLP2, deg+1, dlp);		
+			SBR.multi_right_PadeMatrix (SRP1, deg-1, SRP2, deg+1, drp);
+
+#endif
+			
 
 			BlasMatrix<Element> Res(block,block), Inv(block, block);
 
@@ -160,10 +188,12 @@ namespace LinBox {
 
 			
 			// Normalization of SLP1 (Q*)			
-			_BMD.mul(Res, SLP1[0], LeftPowerSerie[deg-1]);
+			//_BMD.mul(Res, SLP1[0], LeftPowerSerie[deg-1]);
+			_BMD.mul(Res, SLP1[0], P[deg-1]);
 			for (size_t i=1;i<SLP1.size(); ++i)
-				_BMD.axpyin(Res, SLP1[i], LeftPowerSerie[deg-1-i]);
-			
+				//_BMD.axpyin(Res, SLP1[i], LeftPowerSerie[deg-1-i]);
+				_BMD.axpyin(Res, SLP1[i], P[deg-1-i]);
+
 			_BMD.inv(Inv, Res,singular);
 			if (singular)
 				throw LinboxError("BLock Hankel Inversion failed\n;");
@@ -174,9 +204,12 @@ namespace LinBox {
 
 			
 			// Normalization of SRP1 (Q)
-			_BMD.mul(Res, RightPowerSerie[deg-1], SRP1[0]);
+			//_BMD.mul(Res, RightPowerSerie[deg-1], SRP1[0]);
+			_BMD.mul(Res, P[deg-1], SRP1[0]);			
 			for (size_t i=1;i<SRP1.size(); ++i)
-				_BMD.axpyin(Res, RightPowerSerie[deg-1-i], SRP1[i]);
+				//_BMD.axpyin(Res, RightPowerSerie[deg-1-i], SRP1[i]);
+				_BMD.axpyin(Res, P[deg-1-i], SRP1[i]);
+			
 			_BMD.inv(Inv, Res, singular);
 			if (singular)
 				throw LinboxError("BLock Hankel Inversion failed\n;");
@@ -202,7 +235,7 @@ namespace LinBox {
 
 			
 			_H1 = new BlockHankel<Field>  (_F, rev_poly, BlockHankelTag::up); // V
-
+			
 			rev_poly.resize(SRP2.size());
 			const BlasMatrix<Element> Zero(block,block);
 			for (size_t i=0;i<SRP1.size();++i)
@@ -213,12 +246,11 @@ namespace LinBox {
 			
 			
 			_H2 = new BlockHankel<Field>  (_F, rev_poly, BlockHankelTag::up); // Q
-
-
+			
 			_T1 = new BlockHankel<Field>  (_F, SLP1, BlockHankelTag::up); // Qstar
 
 			SLP2.erase(SLP2.begin());
-			_T2 = new BlockHankel<Field>  (_F, SLP2, BlockHankelTag::up); // Vstar				
+			_T2 = new BlockHankel<Field>  (_F, SLP2, BlockHankelTag::up); // Vstar	
 
 		}
 		

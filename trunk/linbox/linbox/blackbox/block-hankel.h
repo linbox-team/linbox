@@ -31,6 +31,8 @@
 #include <linbox/algorithms/blas-domain.h>
 #include <linbox/util/debug.h>
 
+//#define BHANKEL_TIMER
+
 namespace LinBox {
 
 	class BlockHankelTag {
@@ -146,15 +148,6 @@ namespace LinBox {
 				F.axpyin(*it, a, *it_next);
 		}
 
-
-		/*
-		  std::cout<<"Lagrange product:\n";
-		  typename std::list<typename Field::Element>::iterator it = L.begin();
-		  for (; it != L.end(); ++it)
-		  std::cout<<*it<<",";
-		  std::cout<<"\n";;
-		*/
-
 		// compute P[i]:= L/(x-i)
 		P[0]= std::vector<typename Field::Element>(++L.begin(), L.end());
 		size_t deg=L.size();
@@ -169,15 +162,6 @@ namespace LinBox {
 				F.axpy(P[i][j], a, P[i][j+1], *rit);		
 		}
 	
-		/*
-		  std::cout<<"partial lagrange polynomial:\n";
-		  for (size_t i=0;i<P.size();++i){
-		  for (size_t j=0;j<P[i].size();++j)
-		  F.write(std::cout, P[i][j])<<",";
-		  std::cout<<"\n";
-		  }
-		*/
-
 		// compute P[i]= P[i] / Prod((i-j), j<>i)
 		typename Field::Element prod, ui, uj, tmp;
 		F.init(ui,-1);
@@ -283,6 +267,12 @@ namespace LinBox {
 				break;
 			}
 			_numpoints = _deg+_colblock-1;
+			integer prime;
+			F.characteristic(prime);
+			if (integer(_numpoints) > prime){
+				std::cout<<"LinBox ERROR: prime ("<<prime<<") is too small for number of block ("<< _numpoints <<") in block Hankel blackbox\n";
+				throw LinboxError("LinBox ERROR: prime too small in block Hankel blackbox\n");
+			}
 			
 			_vecpoly.resize(_numpoints, std::vector<Element>(_block));
 			_veclagrange.resize(_numpoints);
@@ -346,9 +336,10 @@ namespace LinBox {
 			linbox_check(_coldim == y.size());
 			linbox_check(_rowdim == x.size());		
 			BlasMatrixDomain<Field> BMD(_field);
-			//std::cout<<"numpoints: "<<_numpoints<<"\n";
+#ifdef BHANKEL_TIMER
 			_chrono.clear();
 			_chrono.start();
+#endif
 			// evaluation of the vector seen as a vector polynomial in 
 			//BHVectorEvaluation(_field, _vecpoly, y, _block);
 			
@@ -362,40 +353,23 @@ namespace LinBox {
 				for (size_t j=0;j<_block; ++j)
 					_field.assign(_vecpoly[i][j], _X.getEntry(i,j));
 			}
-			
+#ifdef BHANKEL_TIMER		
 			_chrono.stop();
 			_Teval+=_chrono;
-			
-			/*
-			std::cout<<"evaluated vector :\n";
-			for (size_t i=0;i<_vecpoly.size();++i){
-				for (size_t j=0;j<_vecpoly[i].size();++j)
-					_field.write(std::cout, _vecpoly[i][j])<<",";
-				std::cout<<"\n";
-			}
-			*/
-
 			_chrono.clear();
 			_chrono.start();
+#endif
 			std::vector<std::vector<Element> > x_vecpoly(_vecpoly.size(), std::vector<Element>(_block));
 			// perform the apply componentwise
 			for (size_t i=0;i<_vecpoly.size();++i)
 				BMD.mul(x_vecpoly[i], _matpoly[i], _vecpoly[i]);
+
+#ifdef BHANKEL_TIMER		
 			_chrono.stop();
 			_Tapply+=_chrono;
-
-			/*
-			std::cout<<"evaluated result  :\n";
-			for (size_t i=0;i<x_vecpoly.size();++i){
-				for (size_t j=0;j<x_vecpoly[i].size();++j)
-					_field.write(std::cout, x_vecpoly[i][j])<<",";
-				std::cout<<"\n";
-			}
-			*/
-			
 			_chrono.clear();
 			_chrono.start();
-
+#endif
 			// get the result according to the right part of the polynomial
 			//size_t shift=_colblock-1;
 			//if ( _shape == BlockHankelTag::up)
@@ -414,24 +388,16 @@ namespace LinBox {
 				for (size_t j=0;j<_block;++j)
 					_field.assign( x[x.size() - (i+1)*_block +j], _Y.getEntry(i,j));
 			
-
+#ifdef BHANKEL_TIMER
 			_chrono.stop();
 			_Tinterp +=_chrono;
-			
+#endif
 
 			return x;
 		}
 
 
-		~BlockHankel() {
-			/*
-			std::cout<<"block Hankel Apply timing:\n";
-			std::cout<<"  - evaluation    : "<<_Teval<<"\n";
-			std::cout<<"  - apply         : "<<_Tapply<<"\n";
-			std::cout<<"  - interpolation : "<<_Tinterp<<"\n"; 
-			*/
-			
-		}
+		~BlockHankel() {}
 
 		// apply the transposed of the blackbox to a vector
 		template<class Vector1, class Vector2>
