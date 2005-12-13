@@ -1,3 +1,18 @@
+2005-12-13 Pascal Giorgi
+	* linbox/algorithms/Makefile.am: add new files
+	* linbox/algorithms/lifting-container.h: minor change
+	* linbox/algorithms/matpoly-mult.h: adding FFT and Karatsuba based polynomial matrix multiplication and middle product
+	* linbox/algorithms/rational-reconstruction.h: use macro to enable timing
+	* linbox/algorithms/rational-solver.h:  minor change
+	* linbox/algorithms/rational-solver.inl: minor chane
+	* linbox/algorithms/short-vector.h: work in progress for ternary lattice reduction
+	* linbox/algorithms/sigma-basis.h: add muti sigma basis computation and special Pade solver.
+	* linbox/blackbox/block-hankel-inverse.h: enable use of new special Pade solver
+	* linbox/blackbox/block-hankel.h: use macro to enable timing	
+	* linbox/randiter/{Makefile.am,random-fftprime.h}: add fftprime generator
+
+
+	
 2005-12-8 bds
 	* minor cleanups
 2005-11-17 Pascal Giorgi:

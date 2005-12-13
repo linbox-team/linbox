@@ -2,12 +2,12 @@
 
 //#define DEBUG 3
 
-#include "maplec.h"
+
 #include "linbox/field/modular.h"
 #include "linbox/field/givaro-zpz.h"
 #include "linbox/fflas/fflas.h"
-#include "linbox/fflapack/fflapack.h"
-
+#include "linbox/ffpack/ffpack.h"
+#include "maplec.h"
 
 using namespace LinBox;
 
@@ -197,10 +197,10 @@ extern "C" {
 		if (k == 2) {        
 			Perm2= (ALGEB) argv[7];
 			size_t *TMP3= (size_t*) RTableDataBlock(kv,Perm2);        
-			FFLAPACK::LUdivine( F, FFLAS::FflasNonUnit, m, n, TMP1, n, TMP2, FFLAPACK::FflapackLQUP,TMP3); 
+			FFPACK::LUdivine( F, FFLAS::FflasNonUnit, m, n, TMP1, n, TMP2, FFPACK::FfpackLQUP,TMP3); 
 		}
 		else{
-			FFLAPACK::LUdivine( F, FFLAS::FflasNonUnit, m, n, TMP1, n, TMP2, FFLAPACK::FflapackLSP);
+			FFPACK::LUdivine( F, FFLAS::FflasNonUnit, m, n, TMP1, n, TMP2, FFPACK::FfpackLSP);
 		}
  
       
@@ -269,7 +269,7 @@ extern "C" {
 			}
 		A= (Element*) RTableDataBlock(kv,Matrix);
   
-		int rank=FFLAPACK::Rank(F,m,n,A,n);
+		int rank=FFPACK::Rank(F,m,n,A,n);
 
 		return ToMapleInteger(kv,rank);
 	}
@@ -313,7 +313,7 @@ extern "C" {
 			}
 		A= (Element*) RTableDataBlock(kv,Matrix);
   
-		Element d=FFLAPACK::Det(F,m,n,A,n);
+		Element d=FFPACK::Det(F,m,n,A,n);
 
 		return ToMapleInteger(kv,long(d));
 	}
@@ -373,7 +373,7 @@ extern "C" {
 			}
 		X= (Element*) RTableDataBlock(kv,Matrix);
 
-		FFLAPACK::Invert(F,m,A,m,X,m);
+		FFPACK::Invert(F,m,A,m,X,m);
 
 		Matrix = (ALGEB)argv[4];
 		RTableGetSettings(kv,&settings,Matrix);
