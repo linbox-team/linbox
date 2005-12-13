@@ -36,15 +36,16 @@
 #endif
 
 
-#define __LINBOX_HAVE_FPLLL
+//#define __LINBOX_HAVE_FPLLL
 #ifdef __LINBOX_HAVE_FPLLL
 extern "C" {
 #include </home/pgiorgi/Library/fplll-1.1/myheuristic.h>
 #include </home/pgiorgi/Library/fplll-1.1/myproved.h>
 }
+#include <linbox/algorithms/short-vector.h>
 #endif
 
-#include <linbox/algorithms/short-vector.h>
+
 namespace LinBox {
 
 	
@@ -855,7 +856,7 @@ public:
 // 			std::cout<<"full rational reconstruction : "<<dumb_ratrecon.usertime()<<std::endl;
 // 		}
 		
-
+		
 		/*
 		 * Rational Reconstruction of each coefficient according to a common denominator
 		 */
@@ -1055,7 +1056,7 @@ public:
 		size_t endingsteps  =minsteps;
 
 		// switchers
-		bool latticeOK=false, numeratorOK=false, domoresteps=true, domorelattice=true,;
+		bool latticeOK=false, numeratorOK=false, domoresteps=true, domorelattice=true;
 			
 		// common denominator
 		Integer common_denom;
@@ -1383,7 +1384,7 @@ public:
 		size_t endingsteps  =minsteps;
 
 		// switchers
-		bool latticeOK=false, numeratorOK=false, domoresteps=true, domorelattice=true,;
+		bool latticeOK=false, numeratorOK=false, domoresteps=true, domorelattice=true;
 			
 		// common denominator
 		Integer common_denom;
@@ -1706,8 +1707,8 @@ public:
 		size_t endingsteps  =minsteps;
 
 		// switchers
-		bool latticeOK=false, numeratorOK=false, domoresteps=true, domorelattice=true,;
-			
+		bool latticeOK=false, numeratorOK=false, domoresteps=true, domorelattice=true;
+ 			
 		// common denominator
 		Integer common_denom;
 		_r.init(common_denom,1);
@@ -1929,7 +1930,7 @@ public:
 
 
 
-#endif // end of __LINBOX_HAVE_NTL	
+#endif // end of __LINBOX_HAVE_FPLLL	
 
 
 

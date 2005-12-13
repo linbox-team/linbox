@@ -111,8 +111,8 @@ namespace LinBox {
 	}
 
 
-	template < class Ring, class Ring2>
-	void BoundBlackbox (const Ring& R, typename Ring::Element& H_col_sqr, typename Ring::Element& short_col_sqr, const SparseMatrix<Ring2>& A) {
+	template < class Ring, class Blackbox>
+	void BoundBlackbox (const Ring& R, typename Ring::Element& H_col_sqr, typename Ring::Element& short_col_sqr, const Blackbox& A) {
 		typedef typename Ring::Element Integer;
 		Integer one,zero,sqsum;
 		size_t m,n;
@@ -1180,10 +1180,11 @@ namespace LinBox {
 		
 		
 		virtual ~BlockHankelLiftingContainer() {
+#ifdef RSTIMING
 			std::cout<<"time apply U: "<<tApplyU<<"\n";
 			std::cout<<"time apply H: "<<tApplyH<<"\n";
 			std::cout<<"time apply V: "<<tApplyV<<"\n";
-
+#endif
 		}
 
 		// return the field
@@ -1215,9 +1216,10 @@ namespace LinBox {
 		
 			// compute the solution of _Ap^(-1).residu mod p = [V^T AV^T ... A^k]^T . Hinv . [U^T U^TA ... U^TA^k]^T residue mod p
 			// with k= numblock -1
-			
+#ifdef RSTIMING		
 			tAcc.clear();
 			tAcc.start();			
+#endif
 			/*
 			std::cout<<"b:=<";
 			for (size_t i=0;i<_res_p.size()-1;++i)
@@ -1259,20 +1261,22 @@ namespace LinBox {
 				for (size_t j=0;j<_numblock;++j){
 					this->_F.assign(z0[j*_block+i], tmp[j]);					
 				}
-			}	
+			}
+#ifdef RSTIMING
 			tAcc.stop();
 			tApplyU+=tAcc;
 			tAcc.clear();
 			tAcc.start();
-
+#endif
 			// compute z1 = Hinv.z0
 			FVector z1(n);
 			_Hinv.apply(z1, z0);
+#ifdef RSTIMING
 			tAcc.stop();
 			tApplyH+=tAcc;
 			tAcc.clear();
 			tAcc.start();
-
+#endif
 			/*
 			std::cout<<" Hinv U b mod p done\n";
 			std::cout<<"\n y:=<";
@@ -1295,9 +1299,10 @@ namespace LinBox {
 				}
 				_VD.addin(_digit_p, b_bar);
 			}
+#ifdef RSTIMING
 			tAcc.stop();
 			tApplyV+=tAcc;
-
+#endif
 			/*
 			std::cout<<" V Hinv U b mod p done\n";
 			std::cout<<"\n x:=<";

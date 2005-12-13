@@ -53,6 +53,7 @@ pkgincludesub_HEADERS = \
 	cia.h			\
 	bbcharpoly.h		\
 	minpoly-integer.h	\
-	sigma-basis.h
+	sigma-basis.h		\
+	matpoly-mult.h
 
 EXTRA_DIST = algorithms.doxy

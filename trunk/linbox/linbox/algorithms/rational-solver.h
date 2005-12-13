@@ -35,7 +35,7 @@
 #include <linbox/algorithms/vector-fraction.h>
 #include <linbox/util/timer.h>
 
-#define RSTIMING
+//#define RSTIMING
 #define DEFAULT_PRIMESIZE 20 
 
 namespace LinBox {// LinBox
