@@ -1327,11 +1327,15 @@ namespace LinBox {
 		// precondition Ap  with a random diagonal Matrix
 		typename Field::RandIter G(F,0,123456);
 		std::vector<Element> diag(Ap->rowdim());
-		for(size_t i=0;i<Ap->rowdim();++i)
+		
+		for(size_t i=0;i<Ap->rowdim();++i){
 			do {
 				G.random(diag[i]);
 			} while(F.isZero(diag[i]));
-		
+		}
+	
+
+
 		Diagonal<Field> D(F, diag);
 		
 		Compose<Diagonal<Field>, FMatrix> DAp(D,*Ap);
@@ -1347,31 +1351,32 @@ namespace LinBox {
 				G.random(V.refEntry(i,j));
 			}
 		for (size_t i=0;i<n;++i)
-			G.random(U.refEntry(0,i));
-		
+			G.random(U.refEntry(0,i));			
+
+#ifdef RSTIMING
 		Timer chrono;
 		chrono.clear();
 		chrono.start();
+#endif
 
-		// compute the block krylov sequence associated to U.A^i.V
+		// compute the block krylov sequence associated to U.A^i.V	
 		BlackboxBlockContainerRecord<Field, Compose<Diagonal<Field>,FMatrix> >  Seq(&DAp, F, U, V, false);
-		
+	
+#ifdef RSTIMING
 		chrono.stop();
 		std::cout<<"sequence generation: "<<chrono<<"\n";
-		
-
-		/*
-		for (size_t i=0;i<Seq.getRep().size();++i)
-			(Seq.getRep()[i]).write(std::cout, F);
-		*/
-
 		chrono.clear();
 		chrono.start();
+#endif
+
 		// compute the inverse of the Hankel matrix associated with the Krylov Sequence
 		BlockHankelInverse<Field> Hinv(F, Seq.getRep());
 		std::vector<Element> y(n), x(n, 1);
+
+#ifdef RSTIMING
 		chrono.stop();
 		std::cout<<"inverse block hankel: "<<chrono<<"\n";
+#endif
 
 		typedef BlockHankelLiftingContainer<Ring,Field,IMatrix,Compose<Diagonal<Field>,FMatrix>, BlasMatrix<Element> > LiftingContainer;		
 		LiftingContainer lc(_R, F, A, DAp, D, Hinv, U, V, b, _prime);		
