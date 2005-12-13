@@ -6,7 +6,7 @@ FFPACK:=module()
 
 
 	create := proc()
-	libname :="/home/pgiorgi/Librairie/linbox/interfaces/maple/.libs/liblbmapleffpack.so"; 
+	libname :="/home/pgiorgi/Library/src/linbox/interfaces/maple/.libs/liblbmapleffpack.so"; 
 	fgemm:=define_external('fgemm',MAPLE,LIB=libname);
 	lsp:=define_external('lsp',MAPLE,LIB=libname);
 	lbrank:=define_external('rank',MAPLE,LIB=libname);
