@@ -545,7 +545,7 @@ namespace LinBox
 #endif
                     if (! storrows) LigneA[k] = Vzer;
             }
-
+	    }
             SparseFindPivot (LigneA[last], indcol, c);
 
 #ifdef __LINBOX_COUNT__
