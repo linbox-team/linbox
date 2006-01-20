@@ -48,6 +48,10 @@ LinBox::FFPACK::CharPoly( const Field& F, std::list<Polynomial>& charp, const si
 		return charp;
 		break;
 	}
+// 	case FfpackKGFastG:{
+// 		return KGFast_generalized (F, charp, N, A, lda);
+// 		break;
+// 	}
 	case FfpackHybrid2:{
 		typename Field::Element * X = new typename Field::Element[N*(N+1)];
 		LUKrylov_KGFast( F, charp, N, A, lda, X, N);

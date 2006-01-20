@@ -51,7 +51,8 @@ public:
 				   FfpackHybrid=3,
 				   FfpackKGFast=4,
 				   FfpackHybrid2=5,
-				   FfpackDanilevski=6 };
+				   FfpackDanilevski=6,
+				   FfpackKGFastG=7};
 	
 	enum FFPACK_MINPOLY_TAG { FfpackDense=1,
 				    FfpackKGF=2 };
@@ -677,6 +678,13 @@ protected:
 	LUKrylov_KGFast( const Field& F, std::list<Polynomial>& charp, const size_t N,
 			 typename Field::Element * A, const size_t lda,
 			 typename Field::Element * X, const size_t ldx);
+
+// 	template <class Field, class Polynomial>
+// 	static std::list<Polynomial>&
+// 	KGFast_generalized ( const Field& F, std::list<Polynomial>& charp, 
+// 			     const size_t N,
+// 			     typename Field::Element * A, const size_t lda);
+
 		
 };
 
@@ -686,6 +694,7 @@ protected:
 #include "linbox/ffpack/ffpack_charpoly_kglu.inl"
 #include "linbox/ffpack/ffpack_charpoly_kgfast.inl"
 #include "linbox/ffpack/ffpack_charpoly_danilevski.inl"
+//#include "linbox/ffpack/ffpack_charpoly_kgfastgeneralized.inl"
 #include "linbox/ffpack/ffpack_charpoly.inl"
 
 #endif // __FFPACK_H
