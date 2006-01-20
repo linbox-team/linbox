@@ -1,3 +1,5 @@
+2006-01-20 bds and Hui Wang
+	* linbox/algorithms/gauss.inl - we think we made it better but it still isn't working :-)
 2005-12-13 Pascal Giorgi
 	* linbox/algorithms/Makefile.am: add new files
 	* linbox/algorithms/lifting-container.h: minor change

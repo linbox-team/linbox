@@ -27,6 +27,7 @@
 #define __GAUSS_INL
 
 #include "linbox/algorithms/gauss.h"
+#include "linbox/util/commentator.h"
 
 #ifdef __LINBOX_ALL__
 #define __LINBOX_COUNT__
@@ -473,7 +474,7 @@ namespace LinBox
             // With reordering (D is a density type. Density is allocated here)
             //    long Ni = LigneA.n_row (), Nj = LigneA.n_col ();
 	commentator.start ("Gaussian elimination with reordering",
-			   "GaussDomain::gauss_rankin", Ni);
+			   "GaussDomain::rankinLinearPivoting", Ni);
 	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
             << "Gaussian elimination on " << Ni << " x " << Nj << " matrix" << std::endl;
 
@@ -521,31 +522,31 @@ namespace LinBox
                         << sl << std::endl;
 #endif 
             }
-
+	    
             if (s) {
                     for (l = k + 1; l < Ni; ++l)
-                        if (((sl = LigneA[l].size ()) < s) && (sl)) {
-                            s = sl;
-                            p = l;
-                        }
+			    if (((sl = LigneA[l].size ()) < s) && (sl)) {
+				    s = sl;
+				    p = l;
+			    }
 
                     if (p != k) {
-                        Vector vtm = LigneA[k];
-                        LigneA[k] = LigneA[p];
-                        LigneA[p] = vtm;
+			    Vector vtm = LigneA[k];
+			    LigneA[k] = LigneA[p];
+			    LigneA[p] = vtm;
                     }
-
+		    
                     SparseFindPivot (LigneA[k], indcol, c, col_density);
                     if (c != (unsigned long) -1)
-                        for (l = k + 1; l < Ni; ++l)
-                            eliminate (LigneA[l], LigneA[k],
-                                       indcol, c, col_density);
+			    for (l = k + 1; l < Ni; ++l)
+				    eliminate (LigneA[l], LigneA[k],
+					       indcol, c, col_density);
 #ifdef __LINBOX_COUNT__
                     nbelem += LigneA[k].size ();
 #endif
                     if (! storrows) LigneA[k] = Vzer;
             }
-	    }
+	    	    
             SparseFindPivot (LigneA[last], indcol, c);
 
 #ifdef __LINBOX_COUNT__
@@ -564,16 +565,16 @@ namespace LinBox
 #endif
     
             res = indcol;
+        }//for k
 
             integer card;
 
             commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT) 
 		<< "Rank : " << res
 		<< " over GF (" << _F.cardinality (card) << ")" << std::endl;
-            commentator.stop ("done", 0, "GaussDomain::gauss_rankin");
+            commentator.stop ("done", 0, "GaussDomain::rankinLinearPivoting");
             return res;
-        }
-
+    }
 
         template <class _Field>
             template <class Matrix>
@@ -588,7 +589,7 @@ namespace LinBox
                     //     long Ni = SLA.n_row (), Nj = SLA.n_col ();
                     //    long Ni = LigneA.n_row (), Nj = LigneA.n_col ();
                 commentator.start ("Gaussian elimination (no reordering)",
-                                   "GaussDomain::gauss_rankin", Ni);
+                                   "GaussDomain::rankinNoReordering", Ni);
                 commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) 
                     << "Gaussian elimination on " << Ni << " x " << Nj << " matrix" << std::endl;
 
@@ -639,7 +640,7 @@ namespace LinBox
                 commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT) 
                     << "Rank : " << res
                     << " over GF (" << _F.cardinality (card) << ")" << std::endl;
-                commentator.stop ("done", 0, "GaussDomain::gauss_rankin");
+                commentator.stop ("done", 0, "GaussDomain::rankinNoReordering");
                 return res;
             }
 
@@ -748,6 +749,6 @@ namespace LinBox
 
 
 
-    } // namespace LinBox
+} // namespace LinBox
 
 #endif // __GAUSS_INL
