@@ -14,6 +14,7 @@
  * Added testApply and testApplyTranspose to time critical
  *        blackbox-functions.
  * ------------------------------------
+ * fix testLinearity for rectangular matrices.  2006-02-17 Hui Wang
  *
  * See COPYING for license information.
  */
@@ -433,13 +434,11 @@ bool testFieldInversion (const Field &F, const char *name, unsigned int iteratio
 
 		F.inv (ainv, a);
 
-		report << "a^{-1} = ";
-		F.write (report, ainv) << endl;
+		report << "a^{-1} = ";  F.write (report, ainv) << endl;
 
 		F.mul (aainv, ainv, a);
 
-		report << "a a^{-1} = ";
-		F.write (report, aainv) << endl;
+		report << "a a^{-1} = ";  F.write (report, aainv) << endl;
 
 		if (!F.areEqual (aainv, one)) {
 			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
@@ -1107,38 +1106,25 @@ testTranspose (Field                             &F,
 		stream1.next (u);
 		stream2.next (v);
 
-		ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
-		report << "Input vector u:            ";
-		VD.write (report, u);
-		report << endl;
+		//ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
-		report << "Input vector v:            ";
-		VD.write (report, v);
-		report << endl;
+		VD.write( report << "Input vector u:            ", u) << endl;
+		VD.write( report << "Input vector v:            ", v) << endl;
 
 		A.apply (Av, v);
 
-		report << "Result of apply:           ";
-		VD.write (report, Av);
-		report << endl;
+		VD.write( report << "Result of apply:           ", Av) << endl;
 
 		VD.dot (r1, u, Av);
-
 		A.applyTranspose (uA, u);
 
-		report << "Result of transpose apply: ";
-		VD.write (report, uA);
-		report << endl;
+		VD.write( report << "Result of transpose apply: ", uA) << endl;
 
 		VD.dot (r2, uA, v);
 
-		report << "<u, Av>:  ";
-		F.write (report, r1);
-		report << endl;
+		F.write( report << "<u, Av>:  ", r1) << endl;
 
-		report << "<A^T u, v>:  ";
-		F.write (report, r2);
-		report << endl;
+		F.write( report << "<A^T u, v>:  ", r2) << endl;
 
 		if (!F.areEqual (r1, r2)) {
 			ret = false;
@@ -1182,13 +1168,13 @@ testLinearity (Field                             &F,
 	typename Field::RandIter r (F);
 	typename Field::Element alpha;
 
-	LinBox::VectorWrapper::ensureDim (x, n);
-	LinBox::VectorWrapper::ensureDim (y, n);
-	LinBox::VectorWrapper::ensureDim (xpay, n);
-	LinBox::VectorWrapper::ensureDim (Axpay, m);
-	LinBox::VectorWrapper::ensureDim (Ax, m);
-	LinBox::VectorWrapper::ensureDim (Ay, m);
-	LinBox::VectorWrapper::ensureDim (AxpaAy, m);
+	LinBox::VectorWrapper::ensureDim (x, m);
+	LinBox::VectorWrapper::ensureDim (y, m);
+	LinBox::VectorWrapper::ensureDim (xpay, m);
+	LinBox::VectorWrapper::ensureDim (Axpay, n);
+	LinBox::VectorWrapper::ensureDim (Ax, n);
+	LinBox::VectorWrapper::ensureDim (Ay, n);
+	LinBox::VectorWrapper::ensureDim (AxpaAy, n);
 
 	ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Blackbox linearity test [that A.apply to (ax + y) == a A.apply to x + A.apply to y]" << std::endl;
@@ -1203,44 +1189,29 @@ testLinearity (Field                             &F,
 
 		r.random (alpha);
 
-		ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
-		report << "Input vector x: ";
-		VD.write (report, x);
-		report << endl;
+		//ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		VD.write( report << "Input vector x: ", x) << endl;
 
-		report << "Input vector y: ";
-		VD.write (report, y);
-		report << endl;
+		VD.write( report << "Input vector y: ", y) << endl;
 
-		report << "Input alpha: ";
-		F.write (report, alpha) << endl;
+		F.write( report << "Input alpha: ", alpha) << endl;
 
-		VD.axpy (xpay, alpha, y, x);
-		A.apply (Axpay, xpay);
+		VD.axpy ( xpay, alpha, y, x);
+		A.apply ( Axpay, xpay);
 
-		A.apply (Ax, x);
-		A.apply (Ay, y);
-		VD.axpy (AxpaAy, alpha, Ay, Ax);
+		A.apply ( Ax, x);
+		A.apply ( Ay, y);
+		VD.axpy ( AxpaAy, alpha, Ay, Ax);
 
-		report << "   x+alpha y = ";
-		VD.write (report, xpay);
-		report << endl;
+		VD.write( report << "   x+alpha y = ", xpay) << endl;
+ 
+		VD.write( report << "A(x+alpha y) = ", Axpay) << endl;
 
-		report << "A(x+alpha y) = ";
-		VD.write (report, Axpay);
-		report << endl;
+		VD.write( report << "          Ax = ", Ax) << endl;
 
-		report << "          Ax = ";
-		VD.write (report, Ax);
-		report << endl;
+		VD.write( report << "          Ay = ", Ay) << endl;
 
-		report << "          Ay = ";
-		VD.write (report, Ay);
-		report << endl;
-
-		report << " Ax+alpha Ay = ";
-		VD.write (report, AxpaAy);
-		report << endl;
+		VD.write( report << " Ax+alpha Ay = ", AxpaAy) << endl;
 
 		if (!VD.areEqual (Axpay, AxpaAy))
 			ret = iter_passed = false;
@@ -1323,62 +1294,75 @@ testBlackbox(Field& F, BB &A)
 	typedef std::vector<typename Field::Element> DenseVector;
 	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "testBlackbox on " << A.rowdim() << " by " << A.coldim() << " matrix." << endl;
-
-	int iterations = 1; 
+	
 	
 	LinBox::commentator.setMaxDepth(-1);
+	bool ret = true;
+
+	/* timing tests */   // I changed the order of all tests. Timing now is the first set of tests and then linearity and transpose
+	{
+		DenseVector x(A.coldim()), y(A.rowdim());
+		for(size_t i = 0; i < A.coldim(); ++i) F.init(x[i], i);
+		for(size_t i = 0; i < A.rowdim(); ++i) F.init(y[i], i);
+		//A.apply(y, x);
+		
+		if (A.coldim() >= largeThresh)
+			{
+				LinBox::commentator.start ("\t--Timing Test (Av)","testApply", 1);
+				A.apply(y, x);
+				LinBox::commentator.stop (MSG_STATUS (true), (const char *) 0, "testApply");
+			}
+		
+		if (A.rowdim() >= largeThresh)
+			{
+				LinBox::commentator.start ("\t--Timing Test(v^T A)", 
+										   "testApplyTranspose", 1);
+				A.applyTranspose(x, y);
+				LinBox::commentator.stop (MSG_STATUS (true), (const char *) 0, "testApplyTranspose");
+			}
+		
+	} // timing test block
+	
+#if 1  
+	size_t iterations = 1; 
 	LinBox::commentator.start ("\t--Testing A(ax+y) = a(Ax) + (Ay)", 
-				   "testLinearity", 1);
+							   "testLinearity", 1);
 	LinBox::RandomDenseStream<Field, DenseVector>
 		stream1 (F, A.rowdim(), iterations), 
 		stream2 (F, A.coldim(), iterations);
-	bool ret = testLinearity (F, A, stream1, stream2);
 
+	ret = ret && testLinearity (F, A, stream1, stream2);
+	
 	LinBox::commentator.stop (MSG_STATUS (ret), 
-				  (const char *) 0, "testLinearity");
-
-
+							  (const char *) 0, "testLinearity");
+	
+	
 	LinBox::commentator.start ("\t--Testing u^T(Av) = (u^T A)v", 
-				   "testTranspose", 1);
-
+							   "testTranspose", 1);
+	
 	LinBox::RandomDenseStream<Field, DenseVector>
 		stream3 (F, A.rowdim(), iterations), 
 		stream4 (F, A.coldim(), iterations);
+
 	ret = ret && testTranspose (F, A, stream3, stream4); 
-	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testTranspose");
+	LinBox::commentator.stop (MSG_STATUS (ret), 
+							  (const char *) 0, "testTranspose");
+	
+#endif
 
-
-	/* timing tests */
-
-	if (A.coldim() >= largeThresh)
-	{
-	DenseVector x(A.coldim()), y(A.rowdim());
-	LinBox::commentator.start ("\t--Timing Test (Av)","testApply", 1);
-	A.apply(y, x);
-	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testApply");
-	}
-
-	if (A.rowdim() >= largeThresh)
-	{
-	DenseVector x(A.coldim()), y(A.rowdim());
-	LinBox::commentator.start ("\t--Timing Test(v^T A)", 
-				   "testApplyTranspose", 1);
-	A.applyTranspose(x, y);
-	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testApplyTranspose");
-	}
-
+	
 	/*  Testing against constructed dense matrix doesn't really add much.  
 	    May be useful to see the matrix in the report.
 	*/
 	if (A.rowdim() <= smallThresh && A.coldim() <= smallThresh)
-	{
-	    LinBox::commentator.start ("\t--Testing A behaves like Dense A", 
-				       "testSmallBlackbox", 1);
-	    ret = ret && testSmallBlackbox(F, A);
-	    LinBox::commentator.stop (MSG_STATUS (ret), 
-				      (const char *) 0, "testSmallBlackbox");
-	}
-
+		{
+			LinBox::commentator.start ("\t--Testing A behaves like Dense A", 
+									   "testSmallBlackbox", 1);
+			ret = ret && testSmallBlackbox(F, A);
+			LinBox::commentator.stop (MSG_STATUS (ret), 
+									  (const char *) 0, "testSmallBlackbox");
+		}
+	
 	return ret;
 }
  
@@ -1386,7 +1370,8 @@ testBlackbox(Field& F, BB &A)
  * 
  * Call testTranspose and testLinearity.
  * If large, time apply and applyTranspose.
- * if small, call testSmallBlackbox.
+ * if small, call test
+SmallBlackbox.
  */
 template <class Field, class Blackbox> 
 static bool 
