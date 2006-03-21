@@ -133,8 +133,6 @@ NTL_TESTS = 				\
 	test-smith-form-iliopoulos	\
 	test-smith-form-adaptive	\
 	test-smith-form-binary		\
-	test-ntl-lzz_p			\
-	test-ntl-ZZ_p			\
 	test-rational-solver		\
 	test-rational-solver-adaptive	\
 	test-last-invariant-factor	\
