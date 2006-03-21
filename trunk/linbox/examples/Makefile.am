@@ -43,4 +43,4 @@ LINBOX_BIN=@bindir@
 
 # for compilation of new examples
 %:%.C 
-	$(CXX) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $*  $(shell $(LINBOX_BIN)/linbox-config --cflags ) $(LDADD)
+	$(CXX) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $*  $(shell $(LINBOX_BIN)/linbox-config --cflags ) $(LDADD)  $(shell $(LINBOX_BIN)/linbox-config --libs)
