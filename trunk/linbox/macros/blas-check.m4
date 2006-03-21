@@ -46,7 +46,7 @@ if test -n "$BLAS_VAL"; then
 
 	## check with user supplied value
 	CBLAS="yes"	 	
-	CBLAS_FLAG="-D__LINBOX_HAVE_CBLAS -I${BLAS_VAL}/include"
+	CBLAS_FLAG="-D__LINBOX_HAVE_CBLAS"
 
 	if   test -d "$BLAS_VAL"; then
 		if test -r "$BLAS_VAL/lib/libcblas.a" ; then 

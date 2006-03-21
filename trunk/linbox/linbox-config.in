@@ -55,7 +55,7 @@ while test $# -gt 0; do
 	;;
 
     --cflags)
-       	echo -I${includedir} @GMP_CFLAGS@ @NTL_CFLAGS@ @GIVARO_CFLAGS@ @SACLIB_CFLAGS@ @LIDIA_CFLAGS@ @CBLAS_FLAG@
+       	echo -I${includedir} @GMP_CFLAGS@ @NTL_CFLAGS@ @GIVARO_CFLAGS@ @SACLIB_CFLAGS@ @LIDIA_CFLAGS@ 
        	;;
 
     --libs)
