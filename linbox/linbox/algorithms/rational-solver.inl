@@ -1421,7 +1421,7 @@ namespace LinBox {
 #include <linbox/config-blas.h>
 extern "C" {
 	//#include <cblas.h>
-#include <clapack.h>
+	//#include <clapack.h>
 }
 
 namespace LinBox {

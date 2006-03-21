@@ -216,6 +216,14 @@ extern "C" {
 			 const int K, const double alpha, const double *A, const int lda, const double *B, const int ldb,
 			 const double beta, double *C, const int ldc) ;
 
+	// LAPACK routines
+
+	int clapack_dgetrf(const enum CBLAS_ORDER Order, const int M, const int N,
+			   double *A, const int lda, int *ipiv);
+	int clapack_dgetri(const enum CBLAS_ORDER Order, const int N, double *A,
+			   const int lda, const int *ipiv);
+
+
 }
 #endif
 
