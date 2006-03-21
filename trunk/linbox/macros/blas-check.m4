@@ -52,20 +52,20 @@ if test -n "$BLAS_VAL"; then
 		if test -r "$BLAS_VAL/lib/libcblas.a" ; then 
 			ATLAS_NEEDED=`nm -u $BLAS_VAL/lib/libcblas.a | grep ATL`
 			if test -n "$ATLAS_NEEDED"; then
-				ATLAS_LIBS="-latlas"	
+				ATLAS_LIBS="-llapack -lcblas -lf77blas -latlas"	
 			else
-				ATLAS_LIBS=""
+				ATLAS_LIBS="-lcblas"
 			fi		
-			BLAS_LIBS="-L${BLAS_VAL}/lib  -lcblas $ATLAS_LIBS" 
+			BLAS_LIBS="-L${BLAS_VAL}/lib $ATLAS_LIBS" 
 
 		elif test -r "$BLAS_VAL/libcblas.a" ; then 
 			ATLAS_NEEDED=`nm -u $BLAS_VAL/libcblas.a | grep ATL`
 			if test -n "$ATLAS_NEEDED"; then
-				ATLAS_LIBS="-latlas"	
+				ATLAS_LIBS="-llapack -lcblas -lf77blas -latlas"	
 			else
-				ATLAS_LIBS=""
+				ATLAS_LIBS="-lcblas"
 			fi		
-			BLAS_LIBS="-L${BLAS_VAL}  -lcblas $ATLAS_LIBS" 
+			BLAS_LIBS="-L${BLAS_VAL} $ATLAS_LIBS" 
 		fi
 	else
 		BLAS_LIBS="$BLAS_VAL"
@@ -116,24 +116,24 @@ else
 		if test -r "$BLAS_HOME/lib/libcblas.a"; then
 			ATLAS_NEEDED=`nm -u $BLAS_HOME/lib/libcblas.a | grep ATL`
 			if test -n "$ATLAS_NEEDED"; then
-				ATLAS_LIBS="-latlas"	
+				ATLAS_LIBS="-llapack -lcblas -lf77blas -latlas"	
 			else
-				ATLAS_LIBS=""
+				ATLAS_LIBS="-lcblas"
 			fi		
 			if test "x$BLAS_HOME" = "x/usr" -o "x$BLAS_HOME" = "x/usr/local" ; then
- 				BLAS_LIBS="-lcblas  ${ATLAS_LIBS}"
+ 				BLAS_LIBS=" ${ATLAS_LIBS}"
 			else
-				BLAS_LIBS="-L${BLAS_HOME}/lib  -lcblas  ${ATLAS_LIBS}"
+				BLAS_LIBS="-L${BLAS_HOME}/lib ${ATLAS_LIBS}"
 			fi
 
 		elif test -r "$BLAS_HOME/libcblas.a"; then
 			ATLAS_NEEDED=`nm -u $BLAS_HOME/lib/libcblas.a | grep ATL`
 			if test -n "$ATLAS_NEEDED"; then
-				ATLAS_LIBS="-latlas"
+				ATLAS_LIBS="-llapack -lcblas -lf77blas -latlas"
 			else
-				ATLAS_LIBS=""	
+				ATLAS_LIBS="-lcblas"	
 			fi		
-			BLAS_LIBS="-L${BLAS_HOME} -lcblas  ${ATLAS_LIBS}"
+			BLAS_LIBS="-L${BLAS_HOME} ${ATLAS_LIBS}"
 		fi 
 	
 		CXXFLAGS="${BACKUP_CXXFLAGS} ${CBLAS_FLAG}" 
