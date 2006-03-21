@@ -13,7 +13,7 @@
 #ifndef __FFLAS_H
 #define __FFLAS_H
 
-#include <linbox-config.h>
+//#include <linbox-config.h>
 #include "linbox/field/unparametric.h"
 
 /*
