@@ -172,8 +172,8 @@ namespace LinBox
         void FaireElimination( Modulo MOD,
                                Vecteur& lignecourante,
                                const Vecteur& lignepivot,
-                               const long& indcol,
-                               const long& indpermut,
+                               const size_t& indcol,
+                               const size_t& indpermut,
                                De& columns) {
     
 //     typedef typename Vecteur::coefficientSpace F;
@@ -183,7 +183,7 @@ namespace LinBox
     
             typedef unsigned long UModulo;
 
-            long k = indcol - 1;
+            size_t k = indcol - 1;
             long nj =  lignecourante.size() ;
             if (nj) {
                 long j_head(0);
@@ -227,7 +227,7 @@ namespace LinBox
                     F headcoeff = lignecourante[0].second ;
                     --columns[ lignecourante[0].first ];
            
-                    long j_piv;
+                    unsigned long j_piv;
                     F tmp;
                     for(;l<npiv;++l)
                         if (lignepivot[l].first > k) break;
@@ -296,7 +296,7 @@ namespace LinBox
             D col_density(Nj);
 
                 // assignment of LigneA with the domain object
-            long jj;
+            size_t jj;
             for(jj=0; jj<Ni; jj++) {
                 Vecteur tmp = LigneA[jj];
                 Vecteur toto(tmp.size());
@@ -319,7 +319,7 @@ namespace LinBox
             }
             Vecteur Vzer(0);
 
-            long last = Ni-1;
+            size_t last = Ni-1;
             long c;
             long indcol(0);
             unsigned long ind_pow = 1;
@@ -327,9 +327,9 @@ namespace LinBox
             unsigned long thres = Ni/maxout; thres = (thres >0 ? thres : 1);
 
 
-            for (long k=0; k<last;++k) {
+            for (size_t k=0; k<last;++k) {
 
-                long p=k;
+                size_t p=k;
                 for(;;) {
             
                    
@@ -352,8 +352,8 @@ namespace LinBox
                     }
 
                     if (c > -2) break;
-                    for(long ii=k;ii<Ni;++ii)
-                        for(long jj=LigneA[ii].size();jj--;)
+                    for(size_t ii=k;ii<Ni;++ii)
+                        for(size_t jj=LigneA[ii].size();jj--;)
                             LigneA[ii][jj].second = ( LigneA[ii][jj].second / PRIME);
                     MOD = MOD / PRIME;
                     ranks.push_back( indcol );
@@ -370,7 +370,7 @@ namespace LinBox
                     LigneA[p] = vtm;
                 }
                 if (c != -1)
-                    for(long l=k + 1; l < Ni; ++l)
+                    for(size_t l=k + 1; l < Ni; ++l)
                         FaireElimination(MOD, LigneA[l], LigneA[k], indcol, c, col_density);
 #ifndef GIVARO_PRANK_OUT
                 LigneA[k] = Vzer;
