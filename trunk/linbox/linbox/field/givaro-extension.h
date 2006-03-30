@@ -265,7 +265,7 @@ namespace LinBox
 		 * The default behaviour is a no-op.
 		 */
 		SrcElt& preimage(SrcElt& s, const Elt& t) {
-                    _target.getEntry(s, Degree(0), t);
+                    return _target.getEntry(s, Degree(0), t);
                 }
 
 		const Source& source() { return _source;}
