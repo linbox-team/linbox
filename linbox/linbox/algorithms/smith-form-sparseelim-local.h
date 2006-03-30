@@ -2,7 +2,7 @@
 #define __LINBOX_PP_GAUSS_H__
 // ========================================================================= //
 // (C) Givaro Team 1999
-// Time-stamp: <17 Jul 05 11:19:54 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <30 Mar 06 17:47:04 Jean-Guillaume.Dumas@imag.fr> 
 // ========================================================================= //
 
 #include <map>
@@ -77,7 +77,7 @@ namespace LinBox
                 typedef Modulo Ring;
                 if (a == 1) return a;
                 if (a == -1) return a;
-                Ring u, d ;
+                Ring u, d;
                 d = MY_Zpz_bezout(Ring(a),Ring(pp),u) ;
                 
                 if (d == -1) { u = -u; }
@@ -108,8 +108,8 @@ namespace LinBox
 // Pivot Searchers and column strategy
 // ------------------------------------------------
         template<class Vecteur>
-        void CherchePivot( Vecteur& lignepivot, long& indcol , long& indpermut ) {
-            long nj =  lignepivot.size() ;
+        void CherchePivot( Vecteur& lignepivot, unsigned long& indcol , long& indpermut ) {
+            unsigned long nj =  lignepivot.size() ;
             if (nj) {
                 indpermut= lignepivot[0].first;
                 if (indpermut != indcol)
@@ -122,7 +122,7 @@ namespace LinBox
 
 
         template<class Modulo, class Vecteur, class D>
-        void CherchePivot(Modulo PRIME, Vecteur& lignepivot, long& indcol , long& indpermut, D& columns ) {
+        void CherchePivot(Modulo PRIME, Vecteur& lignepivot, unsigned long& indcol , long& indpermut, D& columns ) {
             typedef typename Vecteur::value_type E;
             typedef typename Field::Element F;
             long nj =  lignepivot.size() ;
@@ -141,7 +141,7 @@ namespace LinBox
                             p = j;
                         }
                     if (p != 0) {
-                        if (indpermut == indcol) {
+                        if (indpermut == (long)indcol) {
                             F ttm = lignepivot[p].second;
                             indpermut = lignepivot[p].first;
                             lignepivot[p].second = (lignepivot[0].second);
@@ -154,7 +154,7 @@ namespace LinBox
                             lignepivot[0] = ttm;
                         }
                     } 
-                    if (indpermut != indcol)
+                    if (indpermut != (long)indcol)
                         lignepivot[0].first = (indcol);
                     indcol++ ;
                     for(j=nj;j--;)
@@ -172,8 +172,8 @@ namespace LinBox
         void FaireElimination( Modulo MOD,
                                Vecteur& lignecourante,
                                const Vecteur& lignepivot,
-                               const size_t& indcol,
-                               const size_t& indpermut,
+                               const long& indcol,
+                               const long& indpermut,
                                De& columns) {
     
 //     typedef typename Vecteur::coefficientSpace F;
@@ -183,17 +183,17 @@ namespace LinBox
     
             typedef unsigned long UModulo;
 
-            size_t k = indcol - 1;
-            long nj =  lignecourante.size() ;
+            unsigned long k = indcol - 1;
+            unsigned long nj =  lignecourante.size() ;
             if (nj) {
-                long j_head(0);
+                unsigned long j_head(0);
                 for(; j_head<nj; ++j_head)
-                    if (lignecourante[j_head].first >= indpermut) break;
-                long bjh(j_head-1);
-                if ((j_head<nj) && (lignecourante[j_head].first == indpermut)) {
+                    if (long(lignecourante[j_head].first) >= indpermut) break;
+                unsigned long bjh(j_head-1);
+                if ((j_head<nj) && (long(lignecourante[j_head].first) == indpermut)) {
                         // -------------------------------------------
                         // Permutation
-                    if (indpermut != k) {
+                    if (indpermut != (long)k) {
                         if (lignecourante[0].first == k) {     
                                 // non zero  <--> non zero
                             F tmp = lignecourante[0].second ;
@@ -213,15 +213,15 @@ namespace LinBox
                     }
                         // -------------------------------------------
                         // Elimination
-                    long npiv = lignepivot.size();
+                    unsigned long npiv = lignepivot.size();
                     Vecteur construit(nj + npiv);
                         // construit : <-- ci
                         // courante  : <-- m
                         // pivot     : <-- l
                     typedef typename Vecteur::iterator Viter;
                     Viter ci = construit.begin();
-                    long m=1;
-                    long l(0);
+                    unsigned long m=1;
+                    unsigned long l(0);
                         // A[i,k] <-- A[i,k] / A[k,k]
                     lignecourante[0].second = (  ((UModulo)( ( MOD-(lignecourante[0].second) ) * ( MY_Zpz_inv( lignepivot[0].second, MOD) ) ) ) % (UModulo)MOD ) ;
                     F headcoeff = lignecourante[0].second ;
@@ -259,8 +259,8 @@ namespace LinBox
                 } else
                         // -------------------------------------------
                         // Permutation
-                    if (indpermut != k) {
-                        long l(0);
+                    if (indpermut != (long)k) {
+                        unsigned long l(0);
                         for(; l<nj; ++l)
                             if (lignecourante[l].first >= k) break;
                         if ((l<nj) && (lignecourante[l].first == k))  {
@@ -297,7 +297,7 @@ namespace LinBox
 
                 // assignment of LigneA with the domain object
             size_t jj;
-            for(jj=0; jj<Ni; jj++) {
+            for(jj=0; jj<Ni; ++jj) {
                 Vecteur tmp = LigneA[jj];
                 Vecteur toto(tmp.size());
                 unsigned long k=0,rs=0;
@@ -319,24 +319,24 @@ namespace LinBox
             }
             Vecteur Vzer(0);
 
-            size_t last = Ni-1;
+            unsigned long last = Ni-1;
             long c;
-            long indcol(0);
+            unsigned long indcol(0);
             unsigned long ind_pow = 1;
             unsigned long maxout = Ni/1000; maxout = (maxout<10 ? 10 : (maxout>100 ? 100 : maxout) );
             unsigned long thres = Ni/maxout; thres = (thres >0 ? thres : 1);
 
 
-            for (size_t k=0; k<last;++k) {
+            for (unsigned long k=0; k<last;++k) {
 
-                size_t p=k;
+                unsigned long p=k;
                 for(;;) {
             
                    
                     std::multimap< long, long > psizes; 
                     for(p=k; p<Ni; ++p)
                         psizes.insert( psizes.end(), std::pair<long,long>( LigneA[p].size(), p) );
-                
+                        /*
 #ifdef  GIVARO_PRANK_OUT   
                     std::cerr << "------------  ordered rows -----------" << std::endl;
                     for( std::multimap< long, long >::const_iterator iter = psizes.begin(); iter != psizes.end(); ++iter) {
@@ -344,6 +344,7 @@ namespace LinBox
                     }
                     std::cerr << "--------------------------------------" << std::endl;
 #endif
+                        */
 
                     for( typename std::multimap< long, long >::const_iterator iter = psizes.begin(); iter != psizes.end(); ++iter) {
                         p = (*iter).second;
@@ -352,8 +353,8 @@ namespace LinBox
                     }
 
                     if (c > -2) break;
-                    for(size_t ii=k;ii<Ni;++ii)
-                        for(size_t jj=LigneA[ii].size();jj--;)
+                    for(unsigned long ii=k;ii<Ni;++ii)
+                        for(unsigned long jj=LigneA[ii].size();jj--;)
                             LigneA[ii][jj].second = ( LigneA[ii][jj].second / PRIME);
                     MOD = MOD / PRIME;
                     ranks.push_back( indcol );
@@ -370,7 +371,7 @@ namespace LinBox
                     LigneA[p] = vtm;
                 }
                 if (c != -1)
-                    for(size_t l=k + 1; l < Ni; ++l)
+                    for(unsigned long l=k + 1; l < Ni; ++l)
                         FaireElimination(MOD, LigneA[l], LigneA[k], indcol, c, col_density);
 #ifndef GIVARO_PRANK_OUT
                 LigneA[k] = Vzer;
