@@ -47,8 +47,6 @@ namespace LinBox
   {
   protected:  
     typedef size_t Index;
-    typedef LinBox::uint32 uint32;
-    typedef LinBox::uint64 uint64;
   public:
     typedef ZeroOne<_Field> Self_t;
     typedef _Field Field;

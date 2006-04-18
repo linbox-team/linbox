@@ -1323,33 +1323,38 @@ testBlackbox(Field& F, BB &A)
 		
 	} // timing test block
 	
-#if 1  
+#if 1 
 	size_t iterations = 1; 
 	LinBox::commentator.start ("\t--Testing A(ax+y) = a(Ax) + (Ay)", 
 							   "testLinearity", 1);
-	LinBox::RandomDenseStream<Field, DenseVector>
-		stream1 (F, A.rowdim(), iterations), 
-		stream2 (F, A.coldim(), iterations);
+	typename Field::RandIter r(F);
+	LinBox::RandomDenseStream<Field, DenseVector> stream1 (F, r, A.rowdim(), iterations); 
+	typename Field::Element x; 
+	r.random(x);
+	LinBox::RandomDenseStream<Field, DenseVector> stream2 (F, r, A.coldim(), iterations); 
 
 	ret = ret && testLinearity (F, A, stream1, stream2);
 	
 	LinBox::commentator.stop (MSG_STATUS (ret), 
 							  (const char *) 0, "testLinearity");
 	
-	
 	LinBox::commentator.start ("\t--Testing u^T(Av) = (u^T A)v", 
 							   "testTranspose", 1);
 	
-	LinBox::RandomDenseStream<Field, DenseVector>
-		stream3 (F, A.rowdim(), iterations), 
-		stream4 (F, A.coldim(), iterations);
+	r.random(x);
+	r.random(x);
+	LinBox::RandomDenseStream<Field, DenseVector> stream3 (F, r, A.rowdim(), iterations); 
+	r.random(x);
+	r.random(x);
+	r.random(x);
+	r.random(x);
+	LinBox::RandomDenseStream<Field, DenseVector> stream4 (F, r, A.coldim(), iterations); 
 
 	ret = ret && testTranspose (F, A, stream3, stream4); 
 	LinBox::commentator.stop (MSG_STATUS (ret), 
 							  (const char *) 0, "testTranspose");
 	
 #endif
-
 	
 	/*  Testing against constructed dense matrix doesn't really add much.  
 	    May be useful to see the matrix in the report.
@@ -1362,7 +1367,7 @@ testBlackbox(Field& F, BB &A)
 			LinBox::commentator.stop (MSG_STATUS (ret), 
 									  (const char *) 0, "testSmallBlackbox");
 		}
-	
+
 	return ret;
 }
  

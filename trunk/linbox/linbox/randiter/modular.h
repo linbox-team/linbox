@@ -160,34 +160,6 @@ namespace LinBox
 			return (a = ElementEnvelope <Modular<Element> > (tmp));
 		}
 
-#ifdef __LINBOX_XMLENABLED
-
-		std::ostream &write(std::ostream &os) const
-		{
-			LinBox::Writer W;
-			if( toTag(W))
-				W.write(os);
-
-			return os;
-		}
-
-
-		bool toTag(LinBox::Writer &W) const
-		{
-			std::string s;
-			W.setTagName("randiter");
-			W.setAttribute("seed", LinBox::Writer::numToString(s, _seed));
-			W.setAttribute("size", LinBox::Writer::numToString(s, _size));
-
-			W.addTagChild();
-			if(!_F.toTag(W)) return false;
-			W.upToParent();
-
-			return true;
-		}
-#endif
-
-
 	    private:
 
 		/// Field in which arithmetic is done
@@ -210,9 +182,6 @@ namespace LinBox
 			: _r (F, size, seed) {}
 		RandIter (const ModularBase<Element>::RandIter &r)
 			: _r (r._r) {}
-#ifdef __LINBOX_XMLENABLED // XML LinBox::Reader constructor
-		RandIter (LinBox::Reader &R) : _r(R) {}
-#endif
 
 		~RandIter () {}
 		RandIter &operator= (const RandIter &r)
@@ -221,16 +190,6 @@ namespace LinBox
 			{ return _r.random (a); }
 		ElementAbstract &random (ElementAbstract &a) const
 			{ return _r.random (a); }
-
-#ifdef __LINBOX_XMLENABLED
-		std::ostream &write(std::ostream &os) {
-			return _r.write(os);
-		}
-
-		bool toTag(LinBox::Writer &W) {
-			return _r.toTag(W);
-		}
-#endif
 
 	};
 

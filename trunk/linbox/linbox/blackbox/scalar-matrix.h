@@ -45,8 +45,8 @@ namespace LinBox
 
 		/*  In each specialization, I must define suitable constructor(s) and
 		BlackboxArchetype<Vector> * clone() const;
-		Vector& apply(Vector& y, const Vector& x) const;
-		Vector& applyTranspose(Vector& y, const Vector& x) const;
+		Vector& apply(Vector& y, Vector& x) const;
+		Vector& applyTranspose(Vector& y, Vector& x) const;
 		size_t rowdim(void) const;
 		size_t coldim(void) const;
 		*/
@@ -82,10 +82,11 @@ namespace LinBox
 		 * Requires time linear in n, the size of the matrix.
 		 */
                 template<class OutVector, class InVector>
-		OutVector& apply(OutVector &y, const InVector &x) const 
+		OutVector& apply(OutVector &y, InVector &x) const 
 		{
-			typename VectorTraits<InVector>::VectorCategory t;
-			return _app (y, x, t);
+			//typename VectorTraits<InVector>::VectorCategory t;
+			//return _app (y, x, t);
+			return _app (y, x, *new VectorCategories::DenseVectorTag);
 		}
 
 		/** Application of BlackBox matrix transpose.
@@ -93,7 +94,7 @@ namespace LinBox
 		 * Requires time linear in n, the size of the matrix.
 		 */
 		template<class OutVector, class InVector>
-		OutVector& applyTranspose(OutVector &y, const InVector &x) const
+		OutVector& applyTranspose(OutVector &y, InVector &x) const
 			{ return apply(y, x); }  // symmetric matrix.
 
 
