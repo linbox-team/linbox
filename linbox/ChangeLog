@@ -1,3 +1,10 @@
+2006-04-18 bds and Hui Wang
+	* examples/smith.C minor changes
+	* linbox/blackbox/apply.h - don't recall what we did to wreck this.
+	* linbox/blackbox/archetype.h linbox/blackbox/scalar-matrix.h linbox/blackbox/zero-one.h linbox/randiter/modular.h linbox/vector/stream.h tests/Makefile.am tests/Matio.h - minor touches
+	* cvs thinks we changed just about everything in tests, but diff shows no change.  We're checking in anyway
+	* Where are our added files blackbox/zo.h zo.inl quad-matrix.h ?  - which are a new version of zero-one and a block decomposed sparse matrix, resp.
+
 2006-01-20 bds and Hui Wang
 	* linbox/algorithms/gauss.inl - we think we made it better but it still isn't working :-)
 2005-12-13 Pascal Giorgi

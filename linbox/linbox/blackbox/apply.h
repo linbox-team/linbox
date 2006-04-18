@@ -393,8 +393,8 @@ namespace LinBox {
 
 				//if (use_neg) num_chunks++; //the leading chunk will be negative
 				
-				int n2 = _m*_n;
-				chunks = new double[n2*num_chunks];
+				//int n2 = _m*_n;
+				chunks = new double[_m*_n*num_chunks];
 				memset(chunks, 0, sizeof(double)*_m*_n*num_chunks);
 				
 				shift= use_neg? maxValue : integer(0);

@@ -18,13 +18,6 @@
 #ifndef __BLACKBOX_ARCHETYPE_H
 #define __BLACKBOX_ARCHETYPE_H
 
-#ifdef __LINBOX_XMLENABLED
-
-#include "linbox/util/xml/linbox-writer.h"
-#include <iostream>
-
-#endif
-
 namespace LinBox
 {
 

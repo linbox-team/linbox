@@ -1,7 +1,7 @@
 # FACING_REALITY is used anywhere?
 FACING_REALITY = 0
 INCLUDES=-I$(top_srcdir)
-#AM_LDFLAGS = -llapack -lcblas -latlas 
+AM_LDFLAGS = -llapack -lcblas -latlas 
 AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall
 #AM_CFLAGS = -g -Wall
 
@@ -63,7 +63,11 @@ BASIC_TESTS =  			\
         test-trace              \
         test-triplesbb          \
         test-vector-domain      \
-	test-zero-one 
+        test-zo                 \
+        test-side-by-side       \
+        test-over-under         \
+        test-quad-matrix        \
+        test-zero-one 
 
 # tests of components not adhering to LinBox requirements.
 NONCOMPLIANT_TESTS =	\
@@ -376,13 +380,33 @@ test_lidia_gfq_SOURCES =		\
 	test-generic.h			\
 	test-common.h
 
-test_param_fuzzy_SOURCES =	       \
-	test-param-fuzzy.C	       \
-	test-generic.h		       \
+test_param_fuzzy_SOURCES =	        \
+	test-param-fuzzy.C	        \
+	test-generic.h		        \
 	test-common.h
 
-test_lu_SOURCES =                      \
+test_lu_SOURCES =                       \
 	test-lu.C			 
+
+test_side_by_side_SOURCES =		\
+	test-side-by-side.C		\
+	test-generic.h			\
+	test-common.h
+
+test_over_under_SOURCES =		\
+	test-over-under.C		\
+	test-generic.h			\
+	test-common.h
+
+test_quad_matrix_SOURCES =		\
+	test-quad-matrix.C		\
+	test-generic.h			\
+	test-common.h
+
+test_zo_SOURCES =			\
+	test-zo.C			\
+	test-generic.h			\
+	test-common.h
 
 test_zero_one_SOURCES =			\
 	test-zero-one.C			\

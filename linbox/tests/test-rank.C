@@ -62,7 +62,7 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double s
 		A.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION),FORMAT_MAPLE ) << endl; 
 
 		rank (rank_Wiedemann, A, Method::Wiedemann ());
-		rank (rank_elimination, A, Method::SparseElimination());
+		//rank (rank_elimination, A, Method::SparseElimination());
 		rank (rank_blas_elimination, A, Method::BlasElimination ());
 
 		commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
@@ -187,7 +187,7 @@ int main (int argc, char **argv)
 //	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) 
 //	<< "over Modular<int>" << endl; 
 	Modular<double> G (q);
-	if (!testRankMethods (G, n, iterations, sparsity)) pass = false;
+    if (!testRankMethods (G, n, iterations, sparsity)) pass = false;
 	if (!testZeroAndIdentRank (G, n, 1)) pass = false;
 
 

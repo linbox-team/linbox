@@ -305,7 +305,9 @@ void Mat(DenseMatrix<PIR>& M, PIR& R, int n,
 
 		in >> rdim >> cdim;
 
+cout << "about to resize" << endl;
 		M. resize (rdim, cdim);
+cout << "resized" << endl;
 
 		int val;
 
@@ -329,6 +331,7 @@ void Mat(DenseMatrix<PIR>& M, PIR& R, int n,
 			char mark;
 
 			in >> mark;
+cout << "got into sparse" << endl;
 
 			LinBox::integer val;
 
@@ -343,6 +346,7 @@ void Mat(DenseMatrix<PIR>& M, PIR& R, int n,
 				R. init (M[i-1][j-1], val);
 
 			} while (true);
+cout << "got through sparse input" << endl;
 
 		}
 		  //Krattenthaler's q^e matrices, given by exponent
