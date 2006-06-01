@@ -62,7 +62,7 @@ class BlackboxContainerBase {
 	BlackboxContainerBase () {} 
 
 	BlackboxContainerBase (const Blackbox *BB, const Field &F)
-		: _F (F), _VD (F), _BB (BB), _size (MIN (BB->rowdim (), BB->coldim ()) << 1) {}
+		: _F (F), _VD (F), _BB (BB), _size (MIN (BB->rowdim (), BB->coldim ())) { _size <<= 1; }
 	
 	// Pascal Giorgi 16.02.2004
 	BlackboxContainerBase (const Blackbox *BB, const Field &F, unsigned long size)
