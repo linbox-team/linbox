@@ -505,8 +505,8 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 			// Dan Roche 2005-7-7 I believe this was a memory leak.
 		value_type *operator -> ()
 			{ return &(_j->second); }
-		const value_type &operator*() { return _j->second; }
-		const value_type *operator-> () { return &(_j->second); }
+		const value_type &operator*() const { return _j->second; }
+		const value_type *operator-> () const { return &(_j->second); }
 
 	    private:
 		RepIterator _i;
