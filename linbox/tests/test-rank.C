@@ -48,7 +48,8 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double s
 	bool ret = true;
 	unsigned int i;
 
-	unsigned long rank_Wiedemann, rank_elimination, rank_blas_elimination;
+	unsigned long rank_blackbox, rank_elimination, rank_hybrid;
+	//unsigned long rank_Wiedemann, rank_elimination, rank_blas_elimination;
 
 	typename Field::RandIter ri (F);
 
@@ -61,8 +62,26 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double s
 		F.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)) << endl; 
 		A.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION),FORMAT_MAPLE ) << endl; 
 
+		rank (rank_blackbox, A, Method::Blackbox ());
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "blackbox rank " << rank_blackbox << endl;
+		rank (rank_elimination, A, Method::Elimination());
+		if (rank_blackbox != rank_elimination) {
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: blackbox rank != elimination rank " << rank_elimination << endl;
+			ret = false;
+		}
+		rank (rank_hybrid, A, Method::Hybrid());
+		if (rank_blackbox != rank_hybrid) {
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: blackbox rank != hybrid rank " << rank_hybrid << endl;
+			ret = false;
+		}
+		
+	/*
 		rank (rank_Wiedemann, A, Method::Wiedemann ());
-		//rank (rank_elimination, A, Method::SparseElimination());
+		//rank (rank_elimination, B, Method::SparseElimination());
+		rank_elimination = rank_Wiedemann;
 		rank (rank_blas_elimination, A, Method::BlasElimination ());
 
 		commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
@@ -75,6 +94,7 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double s
 				<< "ERROR: Ranks are not equal" << endl;
 			ret = false;
 		}
+		*/
 
 		commentator.stop ("done");
 		commentator.progress ();
@@ -85,7 +105,7 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double s
 	return ret;
 }
 
-/* Test 4: Rank of zero and identity matrices
+/* Test 4: Rank of zero and identity matrices by Wiedemann variants
  *
  */
 
@@ -120,7 +140,7 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations)
 		rank (r, I, Method::Wiedemann ());
 		if (r != n) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Wiedemann Rank of I is not " << n << ", but is " << r << endl;
+				<< "ERROR: Wiedemann Rank of I is " << r << ", should be " << n << endl;
 			ret = false;
 		}
 
@@ -128,14 +148,14 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations)
 		rank (r, B, Method::Wiedemann ());
 		if (r != n) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Wiedemann Rank of I+0 is not " << n << ", but is " << r << endl;
+				<< "ERROR: Wiedemann Rank of I+0 is " << r << ", should be " << n << endl;
 			ret = false;
 		}
                 
                 rank (r, B, Method::Wiedemann(Method::Wiedemann::SYMMETRIC));
 		if (r != n) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Wiedemann Symmetric Rank of I+0 is not " << n << ", but is " << r << endl;
+				<< "ERROR: Symmetric Wiedemann Rank of I+0 is " << r << ", should be " << n << endl;
 			ret = false;
 		}
 		commentator.stop ("done");
@@ -158,10 +178,10 @@ int main (int argc, char **argv)
    
 	bool pass = true;
 
-	static size_t n = 80;
+	static size_t n = 22;
 	static integer q = 65519U;
 	//static integer q = 1000003U;
-	static int iterations = 2;
+	static int iterations = 1;
         static double sparsity = 0.05;
 
 	static Argument args[] = {
@@ -179,20 +199,22 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 
-//	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
-//	<< "over Modular<uint32>" << endl; 
+	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+	<< "over Modular<uint32>" << endl; 
 	Modular<LinBox::uint32> F (q);
 	if (!testRankMethods (F, n, iterations, sparsity)) pass = false;
 	if (!testZeroAndIdentRank (F, n, 1)) pass = false;
-//	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) 
-//	<< "over Modular<int>" << endl; 
+
+	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) 
+	<< "over Modular<int>" << endl; 
 	Modular<double> G (q);
     if (!testRankMethods (G, n, iterations, sparsity)) pass = false;
 	if (!testZeroAndIdentRank (G, n, 1)) pass = false;
 
 
-        GMP_Integers R;
-        
+	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) 
+	<< "over GMP_Integers" << endl; 
+       GMP_Integers R;
 	if (!testRankMethods (R, n, iterations, sparsity)) pass = false;
 
 	return pass ? 0 : -1;
