@@ -1,3 +1,6 @@
+2006-06-01 bds 
+	* rank.h adjusted to work around faulty PIVOT_LINEAR code in sparse elim.
+	* test-rank.C now tests blackbox, elimination, hybrid methods as well as...:wq
 2006-04-18 bds and Hui Wang
 	* examples/smith.C minor changes
 	* linbox/blackbox/apply.h - don't recall what we did to wreck this.

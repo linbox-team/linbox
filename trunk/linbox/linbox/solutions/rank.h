@@ -457,7 +457,9 @@ namespace LinBox {
     {
         commentator.start ("Sparse Elimination Rank", "rank");
         GaussDomain<Field> GD ( A.field() );
-        GD.rankin (r, A, M.strategy ());
+		//not working.  Seems to be problem with PIVOT_LINEAR. -bds 2006may30
+        //GD.rankin (r, A, M.strategy ());
+        GD.rankin (r, A, Specifier::PIVOT_NONE);
         commentator.stop ("done", NULL, "rank");
         return r;
     }
