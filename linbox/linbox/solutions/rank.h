@@ -86,6 +86,8 @@ namespace LinBox {
     {  return rank(r, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), Method::Hybrid()); 
     }
 
+	/** A may be modified
+	*/
     template <class Matrix>
     unsigned long &rankin (unsigned long                   &r,
                          Matrix                  &A)
