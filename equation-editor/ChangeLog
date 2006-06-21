@@ -1,9 +1,0 @@
-2000-10-23  Bradford Hovinen  <hovinen@helixcode.com>
-
-	* configure.in (have_bonobo): Check for Bonobo >=0.18 rather than 0.23
-
-2000-10-20  Bradford Hovinen  <hovinen@helixcode.com>
-
-	* configure.in: Add support for Bonobo
-	(CFLAGS): Added missing macros/Makefile, test/Makefile
-

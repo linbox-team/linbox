@@ -1,1 +1,0 @@
-SUBDIRS=Iterators  Lanczos  Massey

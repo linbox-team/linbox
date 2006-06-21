@@ -1,8 +1,0 @@
-*.gmo
-*.mo
-Makefile
-Makefile.in
-POTFILES
-erdos.pot
-cat-id-tbl.c
-stamp-cat-id
