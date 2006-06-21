@@ -1,8 +1,0 @@
-Future plans for the project:
-
-	* Get the cursor positioning to a bug-free state
-	* Add rendering of mathematical symbols (from the fonts given)
-	* Implement grouped layout, matrix layout, and math unit layout
-	* Implement persistence (e.g., to MathML or LaTeX)
-	* Editing operations: Cut/copy/paste/undo/redo
-	* Act as a container as well as a component

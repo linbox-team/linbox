@@ -1,1 +1,0 @@
-SUBDIRS=algorithms archetypes objects solutions

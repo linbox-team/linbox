@@ -1,5 +1,0 @@
-bl_bit  := floor(evalf (expand(log(67108864 / sqrt(1.0 * n)) / log (2))));                                                                                              
-bb_perbit := evalf(0.000001828748357*n*n*log(n) / 30.0);
-bl_perbit := evalf(0.0000000003732102412*n*n*n*log (n) / bl_bit);
-lu_perbit := evalf(0.0000000003838888362*n*n*n / bl_bit);
-
