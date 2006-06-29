@@ -26,7 +26,7 @@ BASIC_HDRS =			\
 NTL_HDRS =				\
 	ntl.h				\
 	ntl-RR.h			\
-	ntl-ZZ_p.h			\
+	ntl-zz_p_2.h			\
 	ntl-ZZ_pE.h			\
 	ntl-zz_p.h
 

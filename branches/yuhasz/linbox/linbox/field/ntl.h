@@ -20,7 +20,7 @@
 #define __FIELD_NTL_H
 
 #include "linbox/field/ntl-RR.h"
-#include "linbox/field/ntl-ZZ_p.h"
+#include "linbox/field/ntl-zz_p_2.h"
 #include "linbox/field/ntl-zz_p.h"
 #include "linbox/field/ntl-ZZ_pE.h"
 

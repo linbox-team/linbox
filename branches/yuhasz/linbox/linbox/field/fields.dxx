@@ -19,7 +19,7 @@
   //@Include: lidia-gfq.h
   //@Include: modular.h
   //@Include: ntl-RR.h
-  //@Include: ntl-ZZ_p.h
+  //@Include: ntl-zz_p_2.h
   //@Include: ntl-ZZ_pE.h
   //@Include: ntl-zz_p.h
   //@Include: param-fuzzy.h
