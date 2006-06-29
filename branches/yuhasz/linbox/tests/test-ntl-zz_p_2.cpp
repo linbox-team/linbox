@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* tests/test-ntl-ZZ_p.cpp
+/* tests/test-ntl-zz_p_2.cpp
  * Copyright (C) 2002 William J. Turner
  *
  * Written by William J. Turner <wjturner@math.ncsu.edu>
@@ -49,22 +49,22 @@ int main (int argc, char **argv)
 
         parseArguments (argc, argv, args);
 
-	cout << "UnparametricField<NTL::ZZ_p> field test suite" << endl << endl;
+	cout << "UnparametricField<NTL::zz_p_2> field test suite" << endl << endl;
 	cout.flush ();
 	bool pass = true;
 
-	NTL::ZZ_p::init(NTL::to_ZZ(q));
-	UnparametricField<NTL::ZZ_p> F;
+	NTL::zz_p_2::init(NTL::to_ZZ(q));
+	UnparametricField<NTL::zz_p_2> F;
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
-	if (!runFieldTests (F, "UnparametricField<NTL::ZZ_p>", iterations, n, false)) pass = false;
+	if (!runFieldTests (F, "UnparametricField<NTL::zz_p_2>", iterations, n, false)) pass = false;
 
 #if 0
-	FieldArchetype K(new UnparametricField<NTL::ZZ_p>(101));
+	FieldArchetype K(new UnparametricField<NTL::zz_p_2>(101));
 
-	if (!testField<FieldArchetype> (K, "Testing archetype with envelope of UnField<NTL::ZZ_p> field"))
+	if (!testField<FieldArchetype> (K, "Testing archetype with envelope of UnField<NTL::zz_p_2> field"))
 		pass = false;
 #endif
 
@@ -72,9 +72,9 @@ int main (int argc, char **argv)
 	//
         commentator.start ("\t--Testing init/convert match");
         bool part_pass = true;
-	NTL::ZZ_p::init(NTL::to_ZZ("1234567890123456789012345678901234568123"));
-	UnparametricField<NTL::ZZ_p> G;
-	UnparametricField<NTL::ZZ_p>::Element a;
+	NTL::zz_p_2::init(NTL::to_ZZ("1234567890123456789012345678901234568123"));
+	UnparametricField<NTL::zz_p_2> G;
+	UnparametricField<NTL::zz_p_2>::Element a;
 	LinBox::integer b, c("123456789012345678901234567890");
 	// LinBox::integer b, c("34");
 	G.init(a, c );

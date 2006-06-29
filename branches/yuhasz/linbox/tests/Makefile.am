@@ -67,7 +67,7 @@ GIVARO_TESTS =			\
 
 NTL_TESTS = 			\
 	test-ntl-zz_p		\
-	test-ntl-ZZ_p		\
+	test-ntl-zz_p_2		\
 	test-ntl-RR		\
 	test-ntl-toeplitz	\
 	test-ntl-hankel   	\
@@ -274,8 +274,8 @@ test_ntl_RR_SOURCES =			\
 	test-generic.h			\
 	test-common.C	test-common.h
 
-test_ntl_ZZ_p_SOURCES =			\
-	test-ntl-ZZ_p.cpp		\
+test_ntl_zz_p_2_SOURCES =			\
+	test-ntl-zz_p_2.cpp		\
 	test-generic.h			\
 	test-common.C	test-common.h
 
