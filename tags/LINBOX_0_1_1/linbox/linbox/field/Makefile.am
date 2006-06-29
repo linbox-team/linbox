@@ -18,7 +18,7 @@ NTL_HDRS =				\
 	ntl-RR.h			\
 	ntl-ZZ_p.h			\
 	ntl-ZZ_pE.h			\
-	ntl-zz_p.h
+	ntl-zz_p_1.h
 
 GIVARO_HDRS =				\
 	givaro.h			\

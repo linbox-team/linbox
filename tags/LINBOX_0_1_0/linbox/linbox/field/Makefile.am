@@ -16,7 +16,7 @@ include_HEADERS=			\
 	$(GIVARO_HEADERS_FIELD)		\
 	$(LIDIA_HEADERS_FIELD)	
 
-EXTRA_HEADERS= ntl.h ntl-RR.h ntl-ZZ_p.h ntl-ZZ_pE.h ntl-zz_p.h givaro.h givaro-zpz.h givaro-gfq.h lidia-gfq.h lidia.h
+EXTRA_HEADERS= ntl.h ntl-RR.h ntl-ZZ_p.h ntl-ZZ_pE.h ntl-zz_p_1_1_1.h givaro.h givaro-zpz.h givaro-gfq.h lidia-gfq.h lidia.h
 
 EXTRA_DIST=				\
 	abstract.dxx			\

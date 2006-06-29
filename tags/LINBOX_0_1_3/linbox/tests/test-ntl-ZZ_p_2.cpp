@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* tests/test-ntl-ZZ_p.cpp
+/* tests/test-ntl-zz_p_2.cpp
  * Copyright (C) 2002 William J. Turner
  *
  * Written by William J. Turner <wjturner@math.ncsu.edu>

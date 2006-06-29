@@ -171,7 +171,7 @@ test_ntl_RR_SOURCES =			\
 	test-common.C	test-common.h
 
 test_ntl_ZZ_p_SOURCES =			\
-	test-ntl-ZZ_p.cpp		\
+	test-ntl-zz_p_2.cpp		\
 	test-generic.h			\
 	test-common.C	test-common.h
 

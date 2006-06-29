@@ -21,7 +21,7 @@
   //@Include: ntl-RR.h
   //@Include: ntl-ZZ_p.h
   //@Include: ntl-ZZ_pE.h
-  //@Include: ntl-zz_p.h
+  //@Include: ntl-zz_p_1.h
   //@Include: param-fuzzy.h
   //@Include: unparametric.h
 //@}

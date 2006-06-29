@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/field/ntl-zz_p.h
+/* linbox/field/ntl-zz_p_1_1_1_1.h
  * Copyright (C) 1999-2002 William J Turner,
  *               2001 Bradford Hovinen
  *
