@@ -49,7 +49,7 @@
 	  <ol style="list-style: upper-roman;">
 	    <li><a href="#compilation">Compilation and installation</a></li>
 	    <li><a href="#layout">Basic layout</a></li>
-	    <li><a href="#cvs">CVS</a></li>
+	    <li><a href="#source">Subversion</a></li>
 	    <li><a href="#standards">Coding standards</a></li>
 	    <li><a href="#checklist">Checklist for adding files</a></li>
 	  </ol>
@@ -60,8 +60,8 @@
 	  <p>
 	    If you are installing from a tarred distribution, please
 	    see the file INSTALL for basic instructions on how to
-	    install LinBox. If you are installing from CVS, please see
-	    the instructions in the <a href="#cvs">section</a> below.
+	    install LinBox. If you are installing from Subversion, please see
+	    the instructions in the <a href="#source">section</a> below.
 	  </p>
 
 	  <a name="layout"></a>
@@ -157,15 +157,15 @@
 	    in parallel with the source code, under the src/ tree.
 	  </p>
 
-	  <a name="cvs"></a>
-	  <h2>CVS</h2>
+	  <a name="source"></a>
+	  <h2>Subversion</h2>
 
 	  <p>
-	    LinBox is stored in a CVS repository at the University of
+	    LinBox is stored in a Subversion repository at the University of
 	    Delaware. To access the latest bleeding edge copy of
 	    LinBox from this source, you will need a working copy of
-	    CVS and all of the GNU development tools (e.g. autoconf,
-	    automake, GNU make, and so on). To access CVS:
+	    Subversion and all of the GNU development tools (e.g. autoconf,
+	    automake, GNU make, and so on). To access Subversion:
 	  </p>
 
 	  <ol style="list-style: decimal;">
@@ -173,7 +173,7 @@
 	      Make sure you have the necessary tools installed
 
 	      <p>
-		You will need CVS installed. See <a href="http://www.cvshome.org/">http://www.cvshome.org/</a>
+		You will need <a href="http://subversion.tigris.org/">Subversion</a> installed.
 	      </p>
 
 	      <p>
@@ -197,10 +197,10 @@
 	      </p>
 
 	      <p>
-		Of the four tools I have mentioned, only GMP is
+		Of the four tools mentioned, only GMP is
 		required if you are installing from a tarball. GNU
 		Autoconf, GNU Automake, and GNU Libtool are only
-		required for users of CVS and those individuals
+		required for users of Subversion and those individuals
 		interested in doing major development work on the
 		library.
 	      </p>
@@ -217,31 +217,9 @@
 	    </li>
 
 	    <li>
-	      Set your CVSROOT environment variable (on Bourne shell):
+	      Check out the LinBox project source code from the trunk of the repository
 
-	      <p><tt>export CVSROOT=:pserver:&lt;username&gt;@linbox.pc.cis.udel.edu:/home/cvs</tt></p>
-
-	      <p>(and on the C shell):</p>
-
-	      <p><tt>setenv CVSROOT :pserver:&lt;username&gt;@linbox.pc.cis.udel.edu:/home/cvs</tt></p>
-	    </li>
-
-	    <li>
-	      Log in to CVS; you only ever need to do this once for
-	      any given Unix shell account:
-
-	      <p><tt>cvs login</tt></p>
-	    </li>
-
-	    <li>
-	      Check out the linbox module
-
-	      <p><tt>cvs -z3 co linbox</tt></p>
-
-	      <p>
-		The <tt>-z3</tt> option compresses the data in
-		transit, making the operation faster for remote users.
-	      </p>
+	      <p><tt>svn co svn://linbox.eschew.org/linbox/trunk/linbox/</tt></p>
 	    </li>
 
 	    <li>
@@ -289,25 +267,18 @@
 
 	  <p>
 	    When you want to update your tree with the contents of
-	    the main CVS repository, issue the following command
+	    the LinBox Subversion repository, issue the following command
 	    from the linbox/ directory:
 	  </p>
 
-	  <p><tt>cvs -z3 up -dP</tt></p>
-
-	  <p>
-	    The <tt>-z3</tt> option is as before and the <tt>-dP</tt>
-	    option tells CVS to update the directory structure as
-	    well as the files. Note that the order of items in
-	    that command <i>is</i> important.
-	  </p>
+	  <p><tt>svn up</tt></p>
 
 	  <p>
 	    You should receive some information on what files have
 	    been updated. If any files have a "C" before them,
 	    this means what you have conflicts with what is in the
 	    repository. In other words, you made changes while
-	    someone else made other changes and CVS does not know
+	    someone else made other changes and Subversion does not know
 	    how to reconcile the two. You will need to edit that
 	    file manually, looking for and fixing lines like
 	  </p>
@@ -327,7 +298,7 @@
 	    the global repository, issue the command
 	  </p>
 
-	  <p><tt>cvs -z3 ci [&lt;filename(s)&gt;]</tt></p>
+	  <p><tt>svn ci [&lt;filename(s)&gt;]</tt></p>
 
 	  <p>
 	    The optional filename(s) argument specifies what you would
@@ -345,9 +316,12 @@
 	  <p>
 	    If you are not a main LinBox developer but would like to
 	    submit some addition or modification, your code is
-	    welcome. Please email a patch (use '<tt>cvs -z3 diff
-	    -u</tt>' to form a patch) to us and we will consider
-	    including it.
+	    welcome. Please email a patch
+        (use '<tt>svn diff</tt>' to form a patch)
+        to us and we will consider including it. Or, even better,
+        attach your patch to a ticket in
+        <a href="http://linbox.eschew.org/trac/">our Trac database</a>.
+        
 	  </p>
 
 	  <a name="standards"></a>
@@ -577,37 +551,36 @@ namespace LinBox
 	    </li>
 
 	    <li>
-	      Add an entry to linbox-new/ChangeLog of the following form:
-
-	      <pre>
-2002-02-03  Bradford Hovinen  &lt;bghovinen@math.uwaterloo.ca&gt;
-
-	* &lt;dir&gt;/Makefile.am (include_HEADERS): Added &lt;filename&gt;
-	      </pre>
-
-	      Replace the date, name, and email I have given with the
-	      current date and your own name and email.
+            <p>
+            For <strong>major</strong> changes only:
+	        Add an entry to linbox/ChangeLog detailing the IDEAS
+            that are different in LinBox's architecture or implementation.
+            </p>
+            <p>
+            Small modifications, file renamings, and so on do not
+            deserve entries in the ChangeLog -- details like that are
+            <a href="http://linbox.eschew.org/trac/log/trunk/www?limit=100&mode=stop_on_copy&format=changelog">generated automatically by Trac.</a>
+            </p>
 	    </li>
 
 	    <li>
-	      Run the command "<tt>cvs add &lt;filename&gt;</tt>" from
+	      Run the command "<tt>svn add &lt;filename&gt;</tt>" from
 	      the directory where the file is located.
 	    </li>
 
 	    <li>
-	      Commit your changes with "<tt>cvs ci</tt>", issued from
-	      the linbox-new directory. When the editor opens up to
-	      enter your log entry, use the text that you just entered
-	      in the ChangeLog.
+	      Commit your changes with "<tt>svn ci</tt>", issued from
+	      the linbox directory. Be sure to include a meaningful comment
+          that summarizes the changes you have made!
 	    </li>
 	  </ol>
 
 	  <h3>Adding a test</h3>
 
 	  <p>
-	    All tests should go in the directory tests. They should be
+	    All tests should go in the directory <tt>tests</tt>. They should be
 	    in the form of a standalone program that can run a
-	    sensable test with no command line arguments, preferably
+	    sensible test with no command line arguments, preferably
 	    with a name prefixed by "test-". In the text below,
 	    &lt;test&gt; refers to the name of your test binary,
 	    e.g. <tt>test-minpoly</tt>. &lt;mod-test&gt; refers to the
@@ -648,12 +621,7 @@ test_sparse_matrix_SOURCES = 		\
 	    </li>
 
 	    <li>
-	      Open <tt>tests/.cvsignore</tt> and add &lt;test&gt; on a
-	      line by itself to that file.
-	    </li>
-
-	    <li>
-	      Open <tt>linbox-new/ChangeLog</tt> and add a block of
+	      Open <tt>linbox/ChangeLog</tt> and add a block of
 	      the following format:
 
 	      <pre>
@@ -664,13 +632,12 @@ test_sparse_matrix_SOURCES = 		\
 	    </li>
 
 	    <li>
-	      Add the file to cvs with "<tt>cvs add &lt;test-source&gt;</tt>"
+	      Add the file to Subversion with "<tt>svn add &lt;test-source&gt;</tt>"
 	    </li>
 
 	    <li>
-	      Commit your changes with "<tt>cvs ci tests</tt>", issued
-	      from the linbox-new directory. Use the text you entered
-	      in ChangeLog for your log entry.
+	      Commit your changes with "<tt>svn ci tests</tt>", issued
+	      from the linbox directory. Again, include a meaningful log entry.
 	    </li>
 	  </ol>
 	</td>
@@ -693,7 +660,7 @@ test_sparse_matrix_SOURCES = 		\
 	  Comments? Bug reports? Please contact us at <a href="mailto:linbox@yahoogroups.com">linbox@yahoogroups.com</a><br>
 	  This page's URL: <a href="http://www.linalg.org/developer.html">http://www.linalg.org/developer.html</a><br>
 	  Page created: 4 August 2002<br>
-	  Page last updated: 23 September 2002<br>
+	  Page last updated: 1 July 2006<br>
 	</td>
       </tr>
     </table>
