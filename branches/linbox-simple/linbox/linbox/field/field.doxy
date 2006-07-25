@@ -1,0 +1,13 @@
+/** \defgroup field linbox/field
+
+\brief %LinBox fields, field wrappers, field construction tools.
+
+%LinBox fields implement the concept
+which is specified in the field archetype.  
+
+Some implement a basic ring concept rather than a field
+(inv and div are partial functions).  Ring representations with 
+additional functions are also found in the \ref ring directory.
+
+*/
+

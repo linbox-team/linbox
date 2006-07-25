@@ -1,0 +1,578 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+  <head>
+    <title>Exact computational linear algebra tools</title>
+    <link rel="stylesheet" href="linbox.css" title="linbox" type="text/css">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="keywords" content="linear algebra computation, symbolic computation, exact computation, linbox, Smith form, GAP homology package, simplicial homology, Wiedemann, Lanczos">
+    <meta name="description" content="Home page for project LinBox, a library for high-performance exact linear algebraic computations.">
+  </head>
+
+  <body>
+    <table border="0" cellspacing="0" cellpadding="4">
+      <tbody>
+	<tr>
+	  <td colspan="2"><h1>Documentation - Project LinBox</h1></td>
+	</tr>
+
+	<tr>
+	  <td id="LinksPart" valign="top">
+	    <a href="index.html">Home</a><br>
+	    <a href="overview.html">Overview</a><br>
+	    <a href="news.html">News</a><br>
+	    <a href="people.html">People</a><br>
+	    <a href="download.html">Download</a><br>
+	    <a href="docs.html">Documentation</a><br>
+	    <a href="developer.html">Developer</a><br>
+	    <a href="links.html">Links</a><br>
+	    <a href="support.html">Support</a><br>
+
+	    <hr>
+
+	    <a href="gap.html">GAP homology package</a><br>
+	    <a href="maple-linbox.html">Maple-LinBox package</a><br>
+
+	    <hr>
+
+	    <a href="servers.html">Online computing servers</a><br>
+	  </td>
+
+	  <td id="Mainpart" valign="top">
+	    <h2>Finite Fields in LinBox</h2>
+
+	    <p>
+	      The purpose of this page is not to present LinBox Fields
+	      as a tutorial or a documentation will do it. We just
+	      want to provide a basic support to people interested in
+	      using LinBox Fields in the best and simplest way.
+	    </p>
+
+	    <h2>What kinds of Fields are in LinBox?</h2>
+
+	    <p>LinBox provides two kinds of finite fields:</p>
+
+	    <ul>
+	      <li>Prime Fields (Z/pZ)</li>
+	      <li>Extension Fields ( GF(p^n))</li>
+	    </ul>
+
+	    <p>Each field comes from either extern libraries or Linbox directly.</p>
+
+	    <h3>Available Library plugins in LinBox:</h3>
+
+	    <ul>
+	      <li><a href="http://www-id.imag.fr/Logiciels/givaro/">Givaro</a></li>
+	      <li><a href="http://www.shoup.net/ntl">Ntl&nbsp;</a></li>
+	      <li><a href="www.informatik.tu-darmstadt.de/TI/LiDIA/">LiDIA</a></li>
+	    </ul>
+
+	    <h2>What are the LinBox classes defining Fields ?</h2>
+
+	    <p>Through wrappers using external libraries:</p>
+		    
+	    <ul>
+	      <li>
+		<p>Givaro:</p>
+
+		<ul>
+		  <li>
+		    GivaroZpz&lt;XXX&gt;
+		    (XXX taken in {<a href="GivZpz-Std32.txt">Std32</a>, <a href="GivZpz-Std16.txt">Std16</a>, <a href="GivZpz-Log16.txt">Log16</a>})
+		
+		    <p>
+		      This is a template class defining a prime field
+		      with elements of type 32-bits integer with STD32 ,
+		      16-bits integer with STD16 and LOG16. The classes
+		      GivaroZpz&lt;STD32&gt; and GivaroZpz&lt;STD16&gt;
+		      use a classical modular arithmetic whereas
+		      GivaroZpz&lt;LOG16&gt; uses a totally tabulated
+		      arithmetic using a Zech Log representation.
+		    </p>
+		  </li>
+
+		  <li>
+		    <a href="GivaroGfq.txt">GivaroGfq</a>
+			
+		    <p>
+		      This class allows the user to define extension
+		      fields with elements of type "standard C" long
+		      . This class uses the Zech Log representation
+		      and so can only define extension field with a
+		      cardinality less than 2^16, since the Zech Log
+		      representation needs to tabulate some
+		      value.
+		    </p>
+		  </li>
+		</ul>
+	      </li>
+
+	      <li>
+		<p>NTL:</p>
+		    
+		<ul>
+		  <li>
+		    UnparametricField&lt;XXX&gt;
+		    (XXX took in {<a href="UnparametricField-NTL-zz_p.txt">NTL::zz_p</a>, <a href="UnparametricField-NTL-ZZ-p.txt">NTL::ZZ_p</a>})
+
+		    <p>
+		      This is a template class defining prime fields
+		      with elements of type "standard C" long with
+		      NTL::zz_p and multi-precision integer with
+		      NTL::ZZ_p (based on Ntl multi-precision
+		      numbers).
+		    </p>
+		  </li>
+		</ul>
+	      </li>
+			
+	      <li>
+		<p>LiDIA:</p>
+		      
+		<ul>
+		  <li>
+		    <a href="LidiaGfq.txt">LidiaGfq</a>
+
+		    <p>
+		      This class allows the user to define extension
+		      fields with elements of type LiDIA
+		      polynomial. So this class represents elements of
+		      a field as polynomials and use polynomial
+		      arithmetic. The cardinality of field is not
+		      restricted but larger it is, the slower
+		      the arithmetic operations are.
+		    </p>
+		  </li>
+		</ul>
+	      </li>
+	    </ul>
+
+	    <p>Directly written in LinBox Library:</p>
+
+	    <ul>
+	      <li>
+		Modular&lt;XXX&gt;
+		(XXX taken in {<a href="Modular-int.txt">uint16</a>, uint32, <a href="Modular-integer.txt">LinBox::integer</a>})
+		
+		<p>
+		  This class is a template class defining prime fields
+		  where the elements take their type in the class
+		  passed in template parameter.  Such a class needs to
+		  have the overloaded operator (%, =, ==, +, -, *, /,
+		  +=, -=, *=, /=) to be passed as template
+		  parameter. The class LinBox::integer allows one to
+		  use multi-precision arithmetic based on <a
+		  href="http://www.swox.com/gmp">gmp</a> library.
+		</p>
+	      </li>
+	    </ul>
+
+	    <h2>Genericity of LinBox Fields in the library?</h2>
+
+	    <p>
+	      Most of the functions and the objects of the LinBox
+	      library are templated by a field type. This allows to
+	      use any of fields defined in LinBox in a generic way.
+	      This is possible because each fields in LinBox is
+	      defined according to a field interface which sets names
+	      and functions in a Linbox field class.  The field
+	      interface is defined in a class called "FieldArchetype"
+	      in the file <tt>/linbox/field/archetype.h</tt> in the
+	      library.
+	    </p>
+
+	    <h2>What is the efficiency of Linbox Fields in the Library?</h2>
+
+	    <br>
+
+	    <table class="PerformanceTable">
+	      <caption>
+		Performance of LinBox fields, 1 Ghz Pentium III, Solaris 5.8
+	      </caption>
+
+	      <thead>
+		<tr class="Header">
+		  <th>Field Type</th>
+		  <th>Rep.</th>
+		  <th>LinBox Class</th>
+		  <th>+ (Mops)</th>
+		  <th>- (Mops)</th>
+		  <th>* (Mops)</th>
+		  <th>/ (Mops)</th>
+		  <th>axpy (Mops)</th>
+		  <th>Dense Au (Mops)</th>
+		  <th>Sparse Au (Mops)</th>
+		  <th>Dense AB (Mops)</th>
+		</tr>
+	      </thead>
+
+	      <tbody>
+		<tr>
+		  <td><b>Z/pZ</b></td>
+		  <td>Simple Precision</td>
+		  <td>GivaroZpz &lt;Std32&gt;</td>
+		  <td class="Fastest">50.0</td>
+		  <td class="Fastest">50.0</td>
+		  <td>20.0</td>
+		  <td>1.30</td>
+		  <td class="Fastest">43.2</td>
+		  <td class="Fastest">32.6</td>
+		  <td>22.18</td>
+		  <td>22.22</td>
+		</tr>
+
+		<tr>
+		  <td></td>
+		  <td></td>
+		  <td>Modular &lt;uint32&gt;</td>
+		  <td class="Fastest">50.0</td>
+		  <td class="Fastest">50.0</td>
+		  <td>16.0</td>
+		  <td>1.70</td>
+		  <td>42.1</td>
+		  <td>?</td>
+		  <td class="Fastest">55.44</td>
+		  <td class="Fastest">40.0</td>
+		</tr>
+
+		<tr>
+		  <td></td>
+		  <td></td>
+		  <td>GivaroGfq</td>
+		  <td>16.7</td>
+		  <td>14.3</td>
+		  <td class="Fastest">33.3</td>
+		  <td class="Fastest">33.0</td>
+		  <td>35.56</td>
+		  <td>0.46</td>
+		  <td>0.013</td>
+		  <td>0.062</td>
+		</tr>
+
+		<tr>
+		  <td></td>
+		  <td></td>
+		  <td>UnparametricField &lt;NTL::zz_p&gt;</td>
+		  <td>20.0</td>
+		  <td>20.0</td>
+		  <td>7.14</td>
+		  <td>15.0</td>
+		  <td>11.1</td>
+		  <td>10.8</td>
+		  <td>9.24</td>
+		  <td>8.695</td>
+		</tr>
+	      </tbody>
+
+	      <tbody>
+		<tr>
+		  <td></td>
+		  <td>Multi Precision</td>
+		  <td>Modular &lt;LinBox::integer&gt;</td>
+		  <td class="Fastest">2.50</td>
+		  <td class="Fastest">3.33</td>
+		  <td>0.28</td>
+		  <td>0.006</td>
+		  <td>0.33</td>
+		  <td>0.888</td>
+		  <td>0.894</td>
+		  <td class="Fastest">0.836</td>
+		</tr>
+
+		<tr>
+		  <td></td>
+		  <td></td>
+		  <td>UnparametricField &lt;NTL::ZZ_p&gt;</td>
+		  <td class="Fastest">2.50</td>
+		  <td class="Fastest">3.33</td>
+		  <td class="Fastest">1.00</td>
+		  <td class="Fastest">0.180</td>
+		  <td class="Fastest">1.00</td>
+		  <td class="Fastest">1.00</td>
+		  <td class="Fastest">1.35</td>
+		  <td>?</td>
+		</tr>
+	      </tbody>
+
+	      <tbody>
+		<tr>
+		  <td></td>
+		  <td>Totally tabulated</td>
+		  <td>GivaroZpz &lt;Log16&gt;</td>
+		  <td>33.3</td>
+		  <td>50.0</td>
+		  <td>50.0</td>
+		  <td>33.0</td>
+		  <td>100.0</td>
+		  <td>32.67</td>
+		  <td>?</td>
+		  <td>?</td>
+		</tr>
+	      </tbody>
+
+	      <tbody>
+		<tr>
+		  <td><b>GF(p^n)</b></td>
+		  <td>Polynomial</td>
+		  <td>LidiaGfq</td>
+		  <td>0.714</td>
+		  <td>0.769</td>
+		  <td>0.045</td>
+		  <td>6.80</td>
+		  <td>0.033</td>
+		  <td>0.033</td>
+		  <td>0.05</td>
+		  <td>0.032</td>
+		</tr>
+	      </tbody>
+
+	      <tbody>
+		<tr>
+		  <td></td>
+		  <td>Zech Log</td>
+		  <td>GivaroGfq</td>
+		  <td>25.0</td>
+		  <td>25.0</td>
+		  <td>50.0</td>
+		  <td>50.0</td>
+		  <td>20.779</td>
+		  <td>0.20</td>
+		  <td>0.00777</td>
+		  <td>0.028</td>
+		</tr>
+	      </tbody>
+	    </table>
+
+	    <br>
+
+	    <table class="PerformanceTable">
+	      <caption>
+		Performance of LinBox fields, 433 Mhz Sun Ultra Sparc IIi
+	      </caption>
+
+	      <thead>
+		<tr class="Header">
+		  <th>Field Type</th>
+		  <th>Rep.</th>
+		  <th>LinBox Class</th>
+		  <th>+ (Mops)</th>
+		  <th>- (Mops)</th>
+		  <th>* (Mops)</th>
+		  <th>/ (Mops)</th>
+		  <th>axpy (Mops)</th>
+		  <th>Dense Au (Mops)</th>
+		  <th>Sparse Au (Mops)</th>
+		  <th>Dense AB (Mops)</th>
+		</tr>
+	      </thead>
+
+	      <tbody>
+		<tr>
+		  <td><b>Z/pz</b></td>
+		  <td>Simple Precision</td>
+		  <td>GivaroZpz &lt;Std32&gt;</td>
+		  <td class="Fastest">16.7</td>
+		  <td class="Fastest">16.7</td>
+		  <td>3.125</td>
+		  <td>0.170</td>
+		  <td>6.22</td>
+		  <td class="Fastest">5.76</td>
+		  <td>5.04</td>
+		  <td>4.545</td>
+		</tr>
+
+		<tr>
+		  <td></td>
+		  <td></td>
+		  <td>Modular &lt;int&gt;</td>
+		  <td class="Fastest">16.7</td>
+		  <td class="Fastest">16.7</td>
+		  <td>3.125</td>
+		  <td>0.270</td>
+		  <td>6.01</td>
+		  <td>?</td>
+		  <td class="Fastest">12.321</td>
+		  <td class="Fastest">10.526</td>
+		</tr>
+
+		<tr>
+		  <td></td>
+		  <td></td>
+		  <td>GivaroGfq</td>
+		  <td>7.14</td>
+		  <td>5.55</td>
+		  <td class="Fastest">14.3</td>
+		  <td class="Fastest">14.0</td>
+		  <td class="Fastest">12.9</td>
+		  <td>0.56</td>
+		  <td>0.021</td>
+		  <td>0.077</td>
+		</tr>
+
+		<tr>
+		  <td></td>
+		  <td></td>
+		  <td>UnparametricField &lt;NTL::zz_p&gt;</td>
+		  <td>7.69</td>
+		  <td>8.33</td>
+		  <td>2.38</td>
+		  <td>0.150</td>
+		  <td>3.55</td>
+		  <td>3.63</td>
+		  <td>2.92</td>
+		  <td>3.076</td>
+		</tr>
+	      </tbody>
+
+	      <tbody>
+		<tr>
+		  <td></td>
+		  <td>Multi Precision</td>
+		  <td>Modular &lt;LinBox::integer&gt;</td>
+		  <td>1.67</td>
+		  <td>1.42</td>
+		  <td>0.07</td>
+		  <td>0.00178</td>
+		  <td>0.093</td>
+		  <td class="Fastest">0.275</td>
+		  <td>0.284</td>
+		  <td>0.256</td>
+		</tr>
+
+		<tr>
+		  <td></td>
+		  <td></td>
+		  <td>UnparametricField &lt;NTL::ZZ_p&gt;</td>
+		  <td class="Fastest">2.00</td>
+		  <td class="Fastest">2.00</td>
+		  <td class="Fastest">0.27</td>
+		  <td class="Fastest">0.040</td>
+		  <td class="Fastest">0.25</td>
+		  <td>0.25</td>
+		  <td class="Fastest">0.434</td>
+		  <td class="Fastest">1.60</td>
+		</tr>
+	      </tbody>
+
+	      <tbody>
+		<tr>
+		  <td></td>
+		  <td>Totally tabulated</td>
+		  <td>GivaroZpz &lt;Log16&gt;</td>
+		  <td>8.33</td>
+		  <td>10.0</td>
+		  <td>16.7</td>
+		  <td>125.0</td>
+		  <td>13.91</td>
+		  <td>12.25</td>
+		  <td>?</td>
+		  <td>?</td>
+		</tr>
+	      </tbody>
+
+	      <tbody>
+		<tr>
+		  <td><b>GF(p^n)</b></td>
+		  <td>Polynomial</td>
+		  <td>LidiaGfq</td>
+		  <td>?</td>
+		  <td>?</td>
+		  <td>?</td>
+		  <td>?</td>
+		  <td>?</td>
+		  <td>?</td>
+		  <td>?</td>
+		  <td>?</td>
+		</tr>
+	      </tbody>
+
+	      <tbody>
+		<tr>
+		  <td></td>
+		  <td>Zech Log</td>
+		  <td>GivaroGfq</td>
+		  <td>9.10</td>
+		  <td>6.70</td>
+		  <td>14.28</td>
+		  <td>14.0</td>
+		  <td>11.42</td>
+		  <td>0.25</td>
+		  <td>0.01</td>
+		  <td>0.037</td>
+		</tr>
+	      </tbody>
+	    </table>
+
+	    <br>
+
+	    <h2>These performances have been obtained with these features:</h2>
+
+	    <h3>Z/pz:</h3>
+
+	    <ul>
+	      <li>p = 40493 for Simple Precision Arithmetic.</li>
+	      <li>p = 8191 for Totally Tabulated Arithmetic.</li>
+	      <li>p = 1267650600228229401496703301361 for Multi Precision Arithmetic (about 100 bits).</li>
+	      <li>Axpyin used 2 vectors of size : 2000 (for simple precision) and 100 (for multi precision).</li>
+	      <li>
+		Dense Au (product of a matrix and a vector) used one
+		matrix of size 700*700 (for simple precision) and
+		200*200 (for multi precision).  and one vector of size
+		700 (for simple precision) and 200 (for multi
+		precision).
+	      </li>
+	      <li>
+		Sparse Au used the Trefethen matrix (20000*20000 with
+		approimatively 555000 non-zero elements) and one
+		vector of size : 20000.
+	      </li>
+	      <li>
+		Dense A*B (product of two matrices) used two matrices
+		of size 100*100 (for simple precision) and 20*20 (for
+		multi precision).
+	      </li>
+	    </ul>
+
+	    <h3>GF(p^n) :</h3>
+
+	    <ul>
+	      <li>p = 17 and n = 4 for Zech Log Arithmetic.</li>
+	      <li>p = 17 and n = 6 for Polynomial Arithmetic.</li>
+	      <li>
+		Polynomial arithmetic: For each test, the same
+		dimension as a prime field with multi precision
+		arithmetic were used.
+	      </li>
+	      <li>
+		Zech Log arithmetic: For each test, the same dimension
+		as a prime field with simple precision arithmetic were
+		used.
+	      </li>
+	    </ul>
+
+	  </td>
+	</tr>
+
+	<tr>
+	  <td id="BottomPart" colspan="2">
+	    <hr>
+
+	    <a href="http://validator.w3.org/check/referer">
+	      <img src="http://validator.w3.org/images/vh40" alt="Valid HTML 4.0!">
+	    </a>
+
+	    <a href="http://jigsaw.w3.org/css-validator">
+	      <img src="http://jigsaw.w3.org/css-validator/images/vcss.gif" alt="Valid CSS!">
+	    </a>
+
+	    Comments? Bug reports? Please contact us at <a href="mailto:linbox@yahoogroups.com">linbox@yahoogroups.com</a><br>
+	    Page prepared by Pascal Giorgi <a href="mailto:pascal.giorgi@ens-lyon.fr">&lt;<i>pascal.giorgi@ens-lyon.fr</i>&gt;</a><br>
+	    Modifications by Bradford Hovinen <a href="mailto:bghovinen@math.uwaterloo.ca">&lt;<i>bghovinen@math.uwaterloo.ca</i>&gt;</a><br>
+	    This page's URL: <a href="http://www.linalg.org/field.html">http://www.linalg.org/field.html</a><br>
+	    Page created: 30 October 2002<br>
+	    Page last updated: 21 December 2002<br>
+	  </td>
+	</tr>
+      </tbody>
+    </table>
+  </body>
+</html>

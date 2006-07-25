@@ -1,0 +1,10 @@
+/** \defgroup ring linbox/ring
+
+LinBox rings, ring wrappers, ring construction tools.
+
+LinBox rings implement the ring concept,
+inheriting from the field concept,
+as it is defined in the ring archetype. 
+
+*/
+

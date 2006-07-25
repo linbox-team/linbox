@@ -1,0 +1,16 @@
+Makefile
+Makefile.in
+.deps
+.libs
+example
+mmZZ_pE
+dot-product
+charpoly
+graph-charpoly
+smith
+rank
+minpoly
+det
+run
+blackbox
+integers

@@ -1,0 +1,249 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+  <head>
+    <title>Exact computational linear algebra tools</title>
+    <link rel="stylesheet" href="linbox.css" title="linbox" type="text/css">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="keywords" content="linear algebra computation, symbolic computation, exact computation, linbox, Smith form, GAP homology package, simplicial homology, Wiedemann, Lanczos">
+    <meta name="description" content="Home page for project LinBox, a library for high-performance exact linear algebraic computations.">
+  </head>
+
+  <body>
+    <table border="0" cellpadding="4" cellspacing="0">
+      <tr>
+	<td colspan="2"><h1>GAP homology package - Project LinBox</h1></td>
+      </tr>
+
+      <tr>
+	<td id="LinksPart" valign="top">
+	  <a href="index.html">Home</a><br>
+	  <a href="overview.html">Overview</a><br>
+	  <a href="links.html">News</a><br>
+	  <a href="people.html">People</a><br>
+	  <a href="download.html">Download</a><br>
+	  <a href="docs.html">Documentation</a><br>
+	  <a href="developer.html">Developer</a><br>
+	  <a href="links.html">Links</a><br>
+	  <a href="support.html">Support</a><br>
+
+	  <hr>
+
+	  GAP homology package<br>
+	  <a href="maple-linbox.html">Maple-LinBox package</a><br>
+
+	  <hr>
+
+	  <a href="servers.html">Online computing servers</a><br>
+	</td>
+
+	<td id="MainPart" valign="top">
+	  <p>Version 1.1beta compatible with gmp-3, gcc-3</p>
+
+	  <ul>
+	    <li>
+	      Functionality:
+
+	      <ul>
+		<li>Calculate simplicial homology of finite simplicial complexes (with integer coefficients)</li>
+		<li>Apply classical constructors and modifiers from algebraic topology to simplicial complexes</li>
+		<li>
+		  Construct and modify order complexes of finite
+		  partially ordred sets. Important classes of
+		  partially ordred sets from combinatorics and finite
+		  group theory are implemented.
+		</li>
+		<li>
+		  Calculate the Smith-Normal-form of a sparse integer
+		  matrix (this is part of the homology computations
+		  but can be applied to any matrix of interest).  Four
+		  algorithms (deterministic and probabilitic) are
+		  implemented.
+		</li>
+	      </ul>
+
+	      <br>
+	    </li>
+
+	    <li>
+	      Complete manual:
+
+	      <p>
+		<a href="http://www.cis.udel.edu/~dumas/Homology/manual/manual.dvi.gz">DVI</a> (35 Kb),<br>
+		<a href="http://www.cis.udel.edu/~dumas/Homology/manual/manual.ps.gz">Postscript</a> (171 Kb),<br>
+		<a href="http://www.cis.udel.edu/~dumas/Homology/manual/manual.pdf.gz">Adobe Acrobat</a> (245 Kb).
+	      </p>
+	    </li>
+
+	    <li>
+	      Remote usage:
+
+	      <p>
+		The package may be tried out by submitting
+		gap/homology commands via this form <a
+		href="servers.html">servers.html</a> and receiving
+		results via the web or email. This facility is in beta
+		test.
+	      </p>
+	    </li>
+
+	    <li>
+	      Binary download:
+
+	      <p>
+		As the compilation process requires a lot of new GNU
+		features, some binaries are available: <a
+		href="http://www.cis.udel.edu/~dumas/Homology/Binaries">Binaries</a>. These
+		architectures are currently supported:
+	      </p>
+
+	      <ul>
+		<li><a href="http://www.cis.udel.edu/~dumas/Homology/Binaries/homology_i686-pc-linux-gnu-gcc.tgz">i686-pc-linux-gnu</a> (775 Kb),</li>
+		<li><a href="http://www.cis.udel.edu/~dumas/Homology/Binaries/homology-1.1beta_i686-pc-linux-gnu-gcc.tgz">i686-pc-linux-gnu, version 1.1 beta</a> (905 Kb),</li>
+		<li><a href="http://www.cis.udel.edu/~dumas/Homology/Binaries/homology_SGI_IRIX6.5.bin.tgz">SGI_IRIX6.5</a>, version 1.1 beta (1500 Kb, thanks to <a href="mailto:mtobias@wugrav.wustl.edu">Malcolm Tobias</a>),</li>
+		<li><a href="http://www.cis.udel.edu/~dumas/Homology/Binaries/homology_UltraSparcSunOS5.7.bin.tgz">UltraSparc</a> (694 Kb).</li>
+	      </ul>
+	    </li>
+
+	    <li>
+	      Source download:
+
+	      <p>
+		Sources for this GAP package are also available: 
+	      </p>
+
+	      <ul>
+		<li><a href="http://www.cis.udel.edu/~dumas/Homology/Software/homology.tgz">homology.tgz</a> (<i>157 Kb, Final update: Saturday August 4, 2001</i>).</li>
+		<li><a href="http://www.cis.udel.edu/~dumas/Homology/Software/homology-1.2.tgz">homology-1.2.tgz</a> (<i>205 Kb,
+Last update: Tuesday, December 17th 2002
+</i>).</li>
+	      </ul>
+
+	      <br>
+	    </li>
+
+	    <li>
+	      Requirements:
+
+	      <p>
+		This package requires GAP, the GNU C++ and Pascal
+		(G++, GPC) compilers, the GNU Multi-Precision Library
+		(GMP) and GNU make (gmake). The required versions are
+		GAP 4, G++ 2.95, GPC 19990118 (beta), GMP 2.0.2, and
+		any fairly recent version of gmake. They can be
+		obtained e.g.  from the following web sites:
+	      </p>
+
+	      <table>
+		<tr>
+		  <td>GAP</td>
+		  <td>: <a href="http://www-gap.dcs.st-and.ac.uk/~gap/">http://www-gap.dcs.st-and.ac.uk/~gap/</a></td>
+		</tr>
+
+		<tr>
+		  <td>g++</td>
+		  <td>: <a href="http://gcc.gnu.org/">http://gcc.gnu.org/</a></td>
+		</tr>
+
+		<tr>
+		  <td>gpc</td>
+		  <td>: <a href="http://home.pages.de/~GNU-Pascal/">http://home.pages.de/~GNU-Pascal</a></td>
+		</tr>
+
+		<tr>
+		  <td>GMP</td>
+		  <td>: <a href="http://www.swox.com/gmp/">http://www.swox.com/gmp/</a></td>
+		</tr>
+
+		<tr>
+		  <td>GNU Make</td>
+		  <td>: <a href="http://www.gnu.org/software/make/">http://www.gnu.org/software/make/</a></td>
+		</tr>
+	      </table>
+
+	      <br>
+	    <li>
+	      Usage:
+
+	      <p>
+		After extracting the binary archive file to GAP home
+		directory, run GAP and execute this gap command:
+	      </p>
+
+	      <p><tt>RequirePackage("homology");</tt></p>
+	    </li>
+
+	    <li>
+	      Installation:
+
+	      <p>
+		To install this share package (after extracting the
+		package's archive file to the GAP home directory) go
+		to the directory `pkg/homology' (the directory
+		containing this README file) and call
+	      </p>
+
+	      <p><tt>/bin/sh ./configure</tt></p>
+
+	      <p>If the default parameters do not suit you call:</p>
+
+	      <p><tt>/bin/sh ./configure --help</tt></p>
+
+	      <p>and follow the instructions to change parameters.</p>
+
+	      <p>
+		If you want to use GMP only for compiling this package
+		you should first install it, for instance in the
+		default path searched by 'configure':
+		`pkg/homology/src/Gmp/gmp-2.0.2'.
+	      </p>
+
+	      <p>
+		Afterwards call `<tt>make</tt>' or preferably
+		'<tt>gmake</tt>' (GNU make) to compile the binary.
+	      </p>
+
+	      <p><tt>gmake all</tt></p>
+
+	      <p>
+		If you installed GAP on several architectures, you
+		must execute this configure/make step for the
+		``homology'' share package on each of the
+		architectures immediately after configuring GAP itself
+		on this architecture.
+	      </p>
+	    </li>
+	  </ul>
+
+	  <p>
+	    <a href="http://www-lmc.imag.fr/lmc-mosaic/Jean-Guillaume.Dumas">Jean-Guillaume Dumas</a><br>
+	    <a href="http://www.mi.uni-erlangen.de/~heckenb">Frank Heckenbach</a><br>
+	    <a href="http://www.cis.udel.edu/~saunders">B. David Saunders</a><br>
+	    <a href="http://www.Mathematik.uni-marburg.de/~welker">Volkmar Welker</a>
+	  </p>
+	</td>
+      </tr>
+
+      <tr>
+	<td colspan="2" id="BottomPart">
+	  <hr>
+
+	  <a href="http://validator.w3.org/check/referer">
+	    <img src="http://validator.w3.org/images/vh40"
+		 alt="Valid HTML 4.0!">
+	  </a>
+
+	  <a href="http://jigsaw.w3.org/css-validator">
+	    <img src="http://jigsaw.w3.org/css-validator/images/vcss.gif" 
+		 alt="Valid CSS!">
+	  </a>
+
+	  Page prepared by J.-G. Dumas, F. Heckenbach, B. D. Saunders, V. Welker.<br>
+	  Modifications by Bradford Hovinen <a href="mailto:bghovinen@math.uwaterloo.ca">&lt;<i>bghovinen@math.uwaterloo.ca</i>&gt;</a><br>
+	  This page's URL: <a href="http://www.linalg.org/gap.html">http://www.linalg.org/gap.html</a><br>
+	  Page created: 4 August 2002<br>
+	  Page last updated: 23 September 2002<br>
+	</td>
+      </tr>
+    </table>
+  </body>
+</html>
