@@ -133,35 +133,6 @@ LB_DOC
 CXXFLAGS="${GMP_CFLAGS} ${NTL_CFLAGS} ${GIVARO_CFLAGS} ${SACLIB_CFLAGS} ${CXXFLAGS}"
 AC_SUBST(CXXFLAGS)
 
-AC_OUTPUT([
-Makefile
-linbox-config
-examples/Makefile
-examples/fields/Makefile
-examples/Readme-make
-examples/solver/Makefile
-gmp++/Makefile
-doc/Makefile
-linbox/Makefile
-linbox/algorithms/Makefile
-linbox/fflas/Makefile
-linbox/ffpack/Makefile
-linbox/blackbox/Makefile
-linbox/element/Makefile
-linbox/field/Makefile
-linbox/matrix/Makefile
-linbox/randiter/Makefile
-linbox/ring/Makefile
-linbox/solutions/Makefile
-linbox/switch/Makefile
-linbox/util/Makefile
-linbox/util/gmp++/Makefile
-linbox/util/formats/Makefile
-linbox/vector/Makefile
-tests/Makefile
-tests/data/Makefile
-interfaces/Makefile
-interfaces/maple/Makefile
-macros/Makefile
-])
+# Must be all on one line to prevent Cygwin from choking to death on newlines.
+AC_OUTPUT([Makefile linbox-config examples/Makefile examples/fields/Makefile examples/Readme-make examples/solver/Makefile gmp++/Makefile doc/Makefile linbox/Makefile linbox/algorithms/Makefile linbox/fflas/Makefile linbox/ffpack/Makefile linbox/blackbox/Makefile linbox/element/Makefile linbox/field/Makefile linbox/matrix/Makefile linbox/randiter/Makefile linbox/ring/Makefile linbox/solutions/Makefile linbox/switch/Makefile linbox/util/Makefile linbox/util/gmp++/Makefile linbox/util/formats/Makefile linbox/vector/Makefile tests/Makefile tests/data/Makefile interfaces/Makefile interfaces/maple/Makefile macros/Makefile])
 

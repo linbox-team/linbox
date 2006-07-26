@@ -52,7 +52,7 @@ if test -n "$BLAS_VAL"; then
 		if test -r "$BLAS_VAL/lib/libcblas.a" ; then 
 			ATLAS_NEEDED=`nm -u $BLAS_VAL/lib/libcblas.a | grep ATL`
 			if test -n "$ATLAS_NEEDED"; then
-				ATLAS_LIBS="-llapack -lcblas -lf77blas -latlas"	
+				ATLAS_LIBS="-llapack -lcblas -latlas"	
 			else
 				ATLAS_LIBS="-lcblas"
 			fi		
@@ -61,7 +61,7 @@ if test -n "$BLAS_VAL"; then
 		elif test -r "$BLAS_VAL/libcblas.a" ; then 
 			ATLAS_NEEDED=`nm -u $BLAS_VAL/libcblas.a | grep ATL`
 			if test -n "$ATLAS_NEEDED"; then
-				ATLAS_LIBS="-llapack -lcblas -lf77blas -latlas"	
+				ATLAS_LIBS="-llapack -lcblas -latlas"	
 			else
 				ATLAS_LIBS="-lcblas"
 			fi		
@@ -116,7 +116,7 @@ else
 		if test -r "$BLAS_HOME/lib/libcblas.a"; then
 			ATLAS_NEEDED=`nm -u $BLAS_HOME/lib/libcblas.a | grep ATL`
 			if test -n "$ATLAS_NEEDED"; then
-				ATLAS_LIBS="-llapack -lcblas -lf77blas -latlas"	
+				ATLAS_LIBS="-llapack -lcblas -latlas"	
 			else
 				ATLAS_LIBS="-lcblas"
 			fi		
@@ -129,7 +129,7 @@ else
 		elif test -r "$BLAS_HOME/libcblas.a"; then
 			ATLAS_NEEDED=`nm -u $BLAS_HOME/lib/libcblas.a | grep ATL`
 			if test -n "$ATLAS_NEEDED"; then
-				ATLAS_LIBS="-llapack -lcblas -lf77blas -latlas"
+				ATLAS_LIBS="-llapack -lcblas -latlas"
 			else
 				ATLAS_LIBS="-lcblas"	
 			fi		
