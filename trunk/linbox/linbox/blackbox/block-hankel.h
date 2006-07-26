@@ -307,8 +307,8 @@ namespace LinBox {
 
 			_partial_inv_vander= BlasMatrix<Element> (_inv_vander, shift, 0, _colblock, _numpoints);
 			
-			_X = BlasMatrix<Element> (_numpoints, _block);
-			_Y = BlasMatrix<Element> (_colblock, _block);
+			_x = BlasMatrix<Element> (_numpoints, _block);
+			_y = BlasMatrix<Element> (_colblock, _block);
 			
 
 			_Tapply.clear();
@@ -345,13 +345,13 @@ namespace LinBox {
 			
 			for (size_t i=0;i<_colblock;++i)
 				for (size_t j=0;j<_block;++j)
-					_Y.setEntry(i,j, y[i*_block+j]);
+					_y.setEntry(i,j, y[i*_block+j]);
 		
-			_BMD.mul(_X, _partial_vander, _Y);
+			_BMD.mul(_x, _partial_vander, _y);
 			
 			for (size_t i=0;i<_numpoints;++i){
 				for (size_t j=0;j<_block; ++j)
-					_field.assign(_vecpoly[i][j], _X.getEntry(i,j));
+					_field.assign(_vecpoly[i][j], _x.getEntry(i,j));
 			}
 #ifdef BHANKEL_TIMER		
 			_chrono.stop();
@@ -380,13 +380,13 @@ namespace LinBox {
 			
 			for (size_t i=0;i<_numpoints;++i)
 				for (size_t j=0;j<_block;++j)
-					_X.setEntry(i,j, x_vecpoly[i][j]);
+					_x.setEntry(i,j, x_vecpoly[i][j]);
 
-			_BMD.mul(_Y, _partial_inv_vander, _X);
+			_BMD.mul(_y, _partial_inv_vander, _x);
 
 			for (size_t i=0;i<_colblock;++i)
 				for (size_t j=0;j<_block;++j)
-					_field.assign( x[x.size() - (i+1)*_block +j], _Y.getEntry(i,j));
+					_field.assign( x[x.size() - (i+1)*_block +j], _y.getEntry(i,j));
 			
 #ifdef BHANKEL_TIMER
 			_chrono.stop();
@@ -414,8 +414,8 @@ namespace LinBox {
 		BlasMatrix<Element>                       _partial_vander;
 		BlasMatrix<Element>                           _inv_vander;
 		BlasMatrix<Element>                   _partial_inv_vander;
-		mutable BlasMatrix<Element>                            _Y;
-		mutable BlasMatrix<Element>                            _X;
+		mutable BlasMatrix<Element>                            _y;
+		mutable BlasMatrix<Element>                            _x;
 		BlasMatrixDomain<Field>                              _BMD;
 		size_t _deg;
 		size_t _row;

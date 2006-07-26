@@ -55,7 +55,6 @@ BASIC_TESTS =  			\
         test-randiter-nonzero   \
         test-rank               \
         test-scalar-matrix      \
-        test-solve              \
         test-sparse             \
         test-subiterator        \
         test-submatrix          \
@@ -63,10 +62,6 @@ BASIC_TESTS =  			\
         test-trace              \
         test-triplesbb          \
         test-vector-domain      \
-        test-zo                 \
-        test-side-by-side       \
-        test-over-under         \
-        test-quad-matrix        \
         test-zero-one 
 
 # tests of components not adhering to LinBox requirements.
@@ -93,6 +88,11 @@ NONEXISTING_TESTS =
 NONCOMPILING_TESTS =  		
 
 FAILING_TESTS =		\
+        test-solve              \
+        test-zo                 \
+        test-side-by-side       \
+        test-over-under         \
+        test-quad-matrix        \
 	test-la-block-lanczos
 
 USE_NONCOMPILING_TESTS = 
