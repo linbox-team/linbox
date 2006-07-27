@@ -18,7 +18,12 @@ namespace LinBox
   OutVector & ZeroOne<Field>::apply(OutVector & y, const InVector & x) const
   //OutVector & ZeroOne<Field>::apply(OutVector & y, const InVector & x)
   {
-    //std::cout << "\n\napply\n\n";
+
+    //std::cout << endl;
+    //std::cout << " new apply pass " << endl;
+    //std::cout << this->rowdim() << " " << this->coldim() << endl;
+    //std::cout << " inside apply " << endl;
+    //std::cout << x.size() << " " << y.size() << endl;
 
     linbox_check((y.size()==rowdim())&&(x.size()==coldim()));
     
@@ -28,22 +33,48 @@ namespace LinBox
     typename InVector::const_iterator xp;
     PointerVector::const_iterator ip;
     IndexVector::const_iterator jp;
-    
-    if( sorted == sortedByCol ) switch_sort();
+
+
+    //std::cout << " before sorting " << endl;
+
+    if( !sorted )
+      {
+    	//std::cout << " -- apply: switch sort (" << _rowdim << ", " << _coldim << ", " << nnz() << ", " << sorted << " " << &(this->sorted) << ") -- " << std::endl;
+    	switch_sort();
+    	//std::cout << " -- apply: switch sort (" << _rowdim << ", " << _coldim << ", " << nnz() << ", " << sorted << ") -- " << std::endl;
+      }
+    //std::cout << " -- zo apply: " << this << "(" << _rowdim << ", " << _coldim << ", " << nnz() << ")" << std::endl;
 
     xp=x.begin();
     yp=y.begin();
     accum.reset();
 
-    for(ip = _indexP.begin(); ip < _indexP.end()-1; ++ip, ++yp)
-    //for(ip = _indexP.begin(); ip < _indexP.end()-2; ++ip, ++yp)  //zigzag way
-      {	
-	for(jp = *ip; jp <*(ip + 1); ++jp)
-	  accum.accumulate_special( *(xp + *jp) );
+
+    //std::cout << " before for loop " << endl;
+    //std::cout << _indexP.end() - _indexP.begin() << " ";
+    //std::cout << _index.end() - _index.begin() << endl;
+
+    //std::cout << " stupid test here " << (*_indexP.begin()) - _index.begin() << endl;
+    //cout << &_index << "  of size ";
+    //cout << sizeof(_index) << " ";
+    //cout  << &(*_index.begin()) << endl;
+
+    for(ip = _indexP.begin(); ip !=_indexP.end()-1; ++ip, ++yp)
+    //for(ip = _indexP.begin(); ip < _indexP.end()-2; ++ip, ++yp)  // zigzag way
+      {
+	//std::cout << " inside the outer for loop " << ip - _indexP.begin() << endl;
+	for(jp = *ip; jp !=*(ip + 1); ++jp)
+	  {
+	    //std::cout << jp - _index.begin() << endl;
+	    accum.accumulate_special( *(xp + *jp) );
+	  }
+	//std::cout << " accumulate is done for one iteration " << endl;
+	//std::cout << " before accum.get " << yp - y.begin() << endl;
         accum.get(*yp);
+	//std::cout << " before accum.reset " << endl;
         accum.reset();
 
-	/*
+	/* // zigzag way
 	++ip;++yp;
 	
 	for(jp = *(ip + 1); jp >*ip; --jp)
@@ -74,8 +105,7 @@ namespace LinBox
     typename InVector::const_iterator xp;
     PointerVector::const_iterator ip; 
     IndexVector::const_iterator jp;      
-
-        
+       
     xp=x.begin();
     yp=y.begin();
     accum.reset();
@@ -97,8 +127,6 @@ namespace LinBox
   template<class OutVector, class InVector>
   OutVector & ZeroOne<Field>::applyTranspose(OutVector & y, const InVector & x) const
   {
-    //std::cout << "\n\napplyTranspose\n\n";
-    
     linbox_check((y.size()==coldim())&&(x.size()==rowdim()));
     
     FieldAXPY<Field> accum (_F);
@@ -106,14 +134,18 @@ namespace LinBox
     typename OutVector::iterator yp;
     typename InVector::const_iterator xp;
     PointerVector::const_iterator ip; 
-    IndexVector::const_iterator jp;      
-    
-        
+    IndexVector::const_iterator jp;
+
     xp=x.begin();
     yp=y.begin();
     accum.reset();
 
-    if( sorted == sortedByRow ) switch_sort();
+    if( sorted )
+      //{
+	//std::cout << " -- in apply transpose, before switch sort -- " << std::endl;
+	switch_sort();
+	//std::cout << " -- in apply transpose, after switch sort -- " << std::endl;
+      //}
 
     for(ip = _indexP.begin(); ip < _indexP.end()-1; ++ip, ++yp)
       {       
@@ -122,9 +154,7 @@ namespace LinBox
         accum.get(*yp);
         accum.reset();
       }
-
     return y;
-    
   }
        
 }//End of LinBox

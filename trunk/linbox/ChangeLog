@@ -1,3 +1,8 @@
+2006-07-27 Hui Wang and bds 
+	* Add blackbox/quad-matrix.h which defines the ZOQuad matrix, 
+	* which is a cache efficient {0,1}-matrix rep.
+	* Add it's tests, modify also blackbox/zo.h, 
+	* and accumulate-special in field/modular.h to better support sums of field elements efficiently.
 2006-06-01 bds 
 	* rank.h adjusted to work around faulty PIVOT_LINEAR code in sparse elim.
 	* test-rank.C now tests blackbox, elimination, hybrid methods as well as...:wq
