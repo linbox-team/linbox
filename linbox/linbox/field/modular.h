@@ -1234,11 +1234,13 @@ namespace LinBox
                             return _y;
 		}
 
+		inline uint64& accumulate_special (const Element &t)
+		{ return _y += t; }
+
 		inline Element &get (Element &y) {
 			_y %= (uint64) _F._modulus;
-			if ((int64) _y < 0) _y += _F._modulus;
-			y = (uint32) _y;
-			return y;
+			//if ((int64) _y < 0) _y += _F._modulus;
+			return y = (uint32) _y;
 		}
 
 		inline FieldAXPY &assign (const Element y)

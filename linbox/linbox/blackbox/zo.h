@@ -1,11 +1,13 @@
 /* -*- mode: C++; style: linux -*- */
 
-/* linbox/blackbox/zero-one.h
- *
+/* linbox/blackbox/zo.h
+ * by Hui Wang, assisted by bds
  * ------------------------------------
  * See COPYING for license information.
  */
 
+// note:  We define a blackbox class of the same name as that in zero-one.h,
+// hence we use the same name here.  The two cannot be used in the same prog.
 #ifndef __ZERO_ONE_H
 #define __ZERO_ONE_H
 
@@ -32,7 +34,8 @@ namespace LinBox
   /** \brief Time and space efficient representation of sparse {0,1}-matrices.
    *  
    * A 0-1 matrix is a matrix with all 0's and 1's as entries.  
-   * We're using a NAG-sparse format. 
+   * We're using a comp-col or comp-row format.  That is we have an array of col indices and an array of pointers indicating where the col indices for each row begins within the col index array.  (or vice versa if we have sorted by columns.
+   *
    * Applies can be performed fast, using only additions.
    * When initalizing this class, you only need to build 2 arrays of equal length:
    * an array of the row indices for the non-zero (1's) entries, and an array of the column
@@ -40,13 +43,13 @@ namespace LinBox
    
    A {0, 1,-1} matrix can be effecively represented as the \ref Dif of two ZeroOne's.
    \ingroup blackbox
-   */
+  */
   
   template<class _Field>
   class ZeroOne : public BlackboxInterface
   {
   public:
-    friend class ZOQuad;
+    //friend class ZOQuad;
     
     typedef size_t Index;
     typedef ZeroOne<_Field> Self_t;
@@ -55,60 +58,95 @@ namespace LinBox
     typedef std::vector<Index> IndexVector;
     typedef std::vector<IndexVector::iterator> PointerVector;
     //to denote by which way we sort our matrix
-    enum howToSort { sortedByRow, sortedByCol };
+    enum howToSort { sortedByRow, sortedByCol }; //( true / false )
 
     // DEFAULT CONSTRUCTOR, do nothing. Matrix will be uninitialized.
     ZeroOne(){};
 
     // basic constructor, can be used with subsequent read.
-    ZeroOne(const Field& F): _F(F), sorted(sortedByRow){}
+    ZeroOne(const Field& F): _F(F), sorted(true){}
 
     // constructor for use by ZOQuad.  Needs work.
     ZeroOne
-    (Field& F, IndexVector& index, PointerVector& indexP, Index coldim, howToSort sortedBy)
-      : _F(F), _index(index), _indexP(indexP), _rowdim(indexP.size()-1), _coldim(coldim), sorted(sortedBy)
-      //(Field& F, IndexVector& col, PointerVector& rowP, IndexVector& row, PointerVector& colP)
-      //  : _F(F), _col(col), _rowP(rowP), _row(row), _colP(colP), _rowdim(rowP.size()-1), _coldim(cols), sorted(sortedByRow)
-    {}
+    (const Field& F, IndexVector& index, PointerVector& indexP, Index rowdim, Index coldim, bool sortedBy)
+      : _F(F), _index(index), _rowdim(rowdim), _coldim(coldim), sorted(sortedBy)
+    {
+      _indexP.push_back( _index.begin() );
+      IndexVector::iterator i = _index.begin();
+      PointerVector::iterator j = indexP.begin();
+      for( ++j; j < indexP.end(); ++j )
+	{
+	  _indexP.push_back( i + ( *j - *(j-1) ) );
+	  i = _indexP.back();
+	}
+    }
 
     /** The real constructor /todo give docs here
 	assuming entries are sorted in lexicographic order by (row,col) pair.
     */
     ZeroOne
     (Field& F, Index* rowP, Index* colP, Index rows, Index cols, Index NNz) 
-      : _F(F), _rowdim(rows), _coldim(cols), sorted(sortedByRow)
+      : _F(F), _rowdim(rows), _coldim(cols), sorted(true)
     { 
       std::vector<std::pair<Index, Index> > indexPairs;
       for (Index i = 0; i < NNz; ++i, ++rowP, ++colP) 
 	indexPairs.push_back(std::pair<Index,Index>(static_cast<Index>(*rowP), static_cast<Index>(*colP)));
       init(indexPairs);
     }
+    ZeroOne(const ZeroOne<Field>& A) // better keep the commented out statements below for later debugging
+      : _F(A._F), _index(A._index), _rowdim(A._rowdim), _coldim(A._coldim), sorted(A.sorted)
+    {
+      //cout << " copy constructor of zero-one matrix: A.rowdim = "  << A._rowdim << " A.coldim = " << A._coldim << endl;
+      //ZeroOne(A._F, A._index, A._indexP, A._rowdim, A._coldim, A.sorted);
+      //cout << " copy constructor of zero-one matrix: rowdim = " << _rowdim << " coldim = " << _coldim << endl;
+      _indexP.push_back( _index.begin() );
+      IndexVector::iterator i = _index.begin();
+      PointerVector::iterator j = A._indexP.begin();
+      for( ++j; j < A._indexP.end(); ++j )
+	{
+	  //cout << *j - *(j-1) << endl;
+	  _indexP.push_back( i + ( *j - *(j-1) ) );
+	  //std::cout << " stupid test here " << (*_indexP.begin()) - _index.begin() << endl;
+	  //cout << " the size of _indexP now is " << _indexP.size() << endl;
+	  i = _indexP.back();
+	  //cout << " the last element points to the position " << _indexP.back() - *_indexP.begin() << endl;
+	}
+      //_indexP.push_back(_index.end());
+      //cout << &_index << " "; 
+      //std::cout << &(*_index.begin()) << endl;
+      //cout << endl;
+    }
 
    //switching the way in which the matrix is sorted
     void switch_sort() const
     {
+      //std::cout << " -- switch_sort: " << endl;
       Index dim;
 
-      if( sorted == sortedByRow ) dim = _coldim;
+      if( sorted ) dim = _coldim;
       else dim = _rowdim;
 
-      IndexVector temp[dim];
-      for( PointerVector::iterator i = _indexP.begin(); i != _indexP.end() - 1; ++i )
-	{
-	  IndexVector::iterator j = *i;
-	  for( ; j != *(i+1); ++j ) temp[*j].push_back( (Index)(i - _indexP.begin()) );
-	}
+      //std::cout << " -- in switch sort, before allocating temp -- " << std::endl;
+      std::vector< IndexVector > temp(dim);
+      //std::cout << temp.size() << std::endl;
+      //IndexVector temp[dim]; //maybe this needs toooooo much memory space when dim is very large
+      //std::cout << " -- in switch sort, after allocating temp -- " << std::endl;
+
+      for( PointerVector::iterator i = _indexP.begin(); i < _indexP.end() - 1; ++i )
+	for( IndexVector::iterator j = *i; j != *(i+1); ++j )
+	  temp[*j].push_back( (Index)(i - _indexP.begin()) );
+
       _index.clear(); _indexP.clear();
       std::back_insert_iterator < std::vector<Index> > colend( _index) ;
       for( size_t k = 0; k < dim; ++k )
 	{
 	  _indexP.push_back( _index.end() );
-	  copy( temp[k].begin(), temp[k].end(), colend );
+    	  copy( temp[k].begin(), temp[k].end(), colend );
 	}
+
       _indexP.push_back( _index.end() );
-      if( sorted == sortedByRow ) sorted = sortedByCol;
-      else sorted = sortedByRow;
-      
+      sorted = !sorted;
+
       return;
     }
 
@@ -122,7 +160,7 @@ namespace LinBox
       // set up _index
       for (Index i = 0; i < NNz; ++i) 
 	_index.push_back(ip[i].second);
-      
+
       // set up _indexP
       IndexVector::iterator p = _index.begin(); //how about if the first row of the matrix is empty
       _indexP.push_back(p);                     //we haven't met this case up to now
@@ -171,7 +209,7 @@ namespace LinBox
   public:
     
     // Destructor, once again do nothing
-    //~ZeroOne(){};
+    ~ZeroOne(){};
     
     /** \brief
      *
@@ -222,16 +260,29 @@ namespace LinBox
       std::vector<std::pair<Index, Index> > indexPairs;
       Index r, c; 
       Element v;
-      MatrixStream<Field> S(_F, is);
+      //MatrixStream<Field> S(_F, is);
+      long count = 0;
       
-      while (S.nextTriple(r, c, v) ) 
-	//indexPairs.push_back(std::pair<Index,Index>(r, c));
-	indexPairs.push_back(std::pair<Index,Index>(static_cast<Index>(r), static_cast<Index>(c)));
+      /*
+      while (S.nextTriple(r, c, v) )
+	{ 
+	  indexPairs.push_back(std::pair<Index,Index>(static_cast<Index>(r), static_cast<Index>(c)));
+	  ++count;
+	}
+      */
+      char v0;
+      is >> _rowdim >> _coldim >> v0;
+      std::cout << " -- read: row dimension is " << _rowdim << " and column dimension is " <<_coldim << endl;
+      while (is >> r >> c >> v)
+	{
+	  if ( r == 0 && c == 0 && v == 0 ) {std::cout << " -- read: reach the end" << endl;break;}
+	  indexPairs.push_back(std::pair<Index,Index>(static_cast<Index>(r), static_cast<Index>(c)));
+	  ++count;
+	}
+      std::cout << " -- read: " << count << std::endl;
       
-      S.getRows(_rowdim); S.getColumns(_coldim);
-      //_nnz = indexPairs.size();
+      //S.getRows(_rowdim); S.getColumns(_coldim);
       init(indexPairs);
-	//init(indexPairs, _rowdim, _coldim);
       return is;
     }
     std::ostream& write(std::ostream& out =std::cout) const
@@ -251,7 +302,7 @@ namespace LinBox
     
     
   protected:
-    
+
     Field _F; // The field used by this class
     
     /* _indexP is a pointer to an array of row indexes.  _colP is a pointer
@@ -271,7 +322,7 @@ namespace LinBox
      *
      *
      */
-
+  public: //temporarily
     mutable IndexVector _index; // The nnz indices sorted by row or by col
     mutable PointerVector _indexP; // the pointers to beginning of each row if sorted by row 
                            // and to beginning of each col if sorted by col
@@ -284,7 +335,7 @@ namespace LinBox
     //PointerVector _colP; // the _coldim+1 pointers to beginning of col in _row
 
     Index _rowdim, _coldim;
-    mutable howToSort sorted;
+    mutable bool sorted;
 
   }; //ZeroOne
 
