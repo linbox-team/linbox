@@ -178,13 +178,13 @@ namespace LinBox
 		do is >> c; while (is && isspace (c));
 
 		if (isdigit (c))
-			is.unget (c);
+			is.unget ();
 
 		c = ','; x.clear (); idx = 0;
 
 		while (is && c == ',') {
 			do is >> c; while (is && isspace (c));
-			is.unget (c);
+			is.unget ();
 			VectorDomainBase<Field>::_F.read (is, tmp);
 			if (!VectorDomainBase<Field>::_F.isZero (tmp))
 				x.push_back (std::pair <size_t, typename Field::Element> (idx, tmp));
@@ -207,13 +207,13 @@ namespace LinBox
 		do is >> c; while (is && isspace (c));
 
 		if (isdigit (c))
-			is.unget (c);
+			is.unget ();
 
 		c = ','; x.clear (); idx = 0;
 
 		while (is && c == ',') {
 			do is >> c; while (is && isspace (c));
-			is.unget (c);
+			is.unget ();
 			VectorDomainBase<Field>::_F.read (is, tmp);
 			if (!VectorDomainBase<Field>::_F.isZero (tmp))
 				x[idx] = tmp;
@@ -236,13 +236,13 @@ namespace LinBox
 		do is >> c; while (is && isspace (c));
 
 		if (isdigit (c))
-			is.unget (c);
+			is.unget ();
 
 		c = ','; x.clear (); idx = 0;
 
 		while (is && c == ',') {
 			do is >> c; while (is && isspace (c));
-			is.unget (c);
+			is.unget ();
 			VectorDomainBase<Field>::_F.read (is, tmp);
 
 			if (!VectorDomainBase<Field>::_F.isZero (tmp)) {
