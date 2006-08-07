@@ -20,71 +20,67 @@ test-common.C
 # Note that among the available groups are NONCOMPILING_TESTS and FAILING_TESTS, which
 # will be ignored by "make check" and can be temporary storage for problematic tests.
 BASIC_TESTS =  			\
-        test-bitonic-sort       \
-	test-blas-domain	\
-        test-butterfly          \
-        test-commentator        \
-        test-companion          \
-        test-dense              \
-        test-det                \
-        test-diagonal           \
-        test-dif                \
-        test-direct-sum         \
-	test-ffpack		\
-        test-frobenius          \
-        test-getentry           \
-        test-gf2                \
-        test-gmp-rational       \
-        test-hilbert            \
-        test-hom                \
-        test-inverse            \
-        test-isposdef           \
-        test-ispossemidef       \
-        test-lu                 \
-        test-matrix-domain      \
-        test-matrix-stream      \
-        test-mg-block-lanczos   \
-        test-minpoly            \
-        test-modular            \
-        test-modular-balance-int\
-        test-modular-byte       \
-        test-modular-double     \
-        test-modular-int        \
-        test-modular-short      \
-        test-moore-penrose      \
-        test-randiter-nonzero   \
-        test-rank               \
-        test-scalar-matrix      \
-        test-solve              \
-        test-sparse             \
-        test-subiterator        \
-        test-submatrix          \
-        test-subvector          \
-        test-trace              \
-        test-triplesbb          \
-        test-vector-domain      \
-        test-zo                 \
-        test-side-by-side       \
-        test-over-under         \
-        test-quad-matrix        \
-        test-zero-one 
-
+        test-bitonic-sort$(EXEEXT)      \
+	  test-blas-domain$(EXEEXT)\
+        test-butterfly$(EXEEXT)         \
+        test-commentator$(EXEEXT)       \
+        test-companion$(EXEEXT)         \
+        test-dense$(EXEEXT)             \
+        test-det$(EXEEXT)               \
+        test-diagonal$(EXEEXT)          \
+        test-dif$(EXEEXT)               \
+        test-direct-sum$(EXEEXT)        \
+	  test-ffpack$(EXEEXT)	\
+        test-frobenius$(EXEEXT)         \
+        test-getentry$(EXEEXT)          \
+        test-gf2$(EXEEXT)               \
+        test-gmp-rational$(EXEEXT)      \
+        test-hilbert$(EXEEXT)           \
+        test-hom$(EXEEXT)               \
+        test-inverse$(EXEEXT)           \
+        test-isposdef$(EXEEXT)          \
+        test-ispossemidef$(EXEEXT)      \
+        test-lu$(EXEEXT)                \
+        test-matrix-domain$(EXEEXT)     \
+        test-matrix-stream$(EXEEXT)     \
+        test-mg-block-lanczos$(EXEEXT)  \
+        test-minpoly$(EXEEXT)           \
+        test-modular$(EXEEXT)           \
+        test-modular-balance-int\$(EXEEXT) \
+	  test-modular-byte$(EXEEXT)      \
+        test-modular-double$(EXEEXT)    \
+        test-modular-int$(EXEEXT)       \
+        test-modular-short$(EXEEXT)     \
+        test-moore-penrose$(EXEEXT)     \
+        test-randiter-nonzero$(EXEEXT)  \
+        test-rank$(EXEEXT)              \
+        test-scalar-matrix$(EXEEXT)     \
+        test-solve$(EXEEXT)             \
+        test-sparse$(EXEEXT)            \
+        test-subiterator$(EXEEXT)       \
+        test-submatrix$(EXEEXT)         \
+        test-subvector$(EXEEXT)         \
+        test-trace$(EXEEXT)             \
+        test-triplesbb$(EXEEXT)         \
+        test-vector-domain$(EXEEXT)     \
+        test-zo$(EXEEXT)                \
+        test-side-by-side$(EXEEXT)      \
+        test-over-under$(EXEEXT)        \
+        test-quad-matrix$(EXEEXT)       \
+        test-zero-one$(EXEEXT)
 # tests of components not adhering to LinBox requirements.
 NONCOMPLIANT_TESTS =	\
-	test-unparametric-field	\
-	test-ntl-RR		\
-	test-param-fuzzy
-
+	test-unparametric-field$(EXEEXT)\
+	test-ntl-RR$(EXEEXT)	\
+	test-param-fuzzy$(EXEEXT)
 #These need clapack
-#test-rational-solver-adaptive
-#test-smith-form-adaptive  
+#test-rational-solver-adaptive$(EXEEXT)#test-smith-form-adaptive$(EXEEXT) 
 
 # this allows _SOURCES entry to remain
 # except for "make dist"
 NONEXISTING_TESTS =
 #NONEXISTING_TESTS =		\
-#	test-solutions
-#
+#	test-solutions$(EXEEXT)#
 #test_solutions_SOURCES=    \
 #	test-common.h	\
 #	test-solutions.C
@@ -93,8 +89,7 @@ NONEXISTING_TESTS =
 NONCOMPILING_TESTS =  		
 
 FAILING_TESTS =		\
-	test-la-block-lanczos
-
+	test-la-block-lanczos$(EXEEXT)
 USE_NONCOMPILING_TESTS = 
 USE_FAILING_TESTS = 
 # comment out these two lines to avoid facing reality
@@ -103,48 +98,41 @@ USE_FAILING_TESTS =
 
 # a benchmarker, not to be included in check.
 BENCHMARK_TESTS = 		\
-	test-fields		
+	test-fields$(EXEEXT)	
 
 # historical tests, no longer in use
-#	test-nag-sparse		  replaced by tripplesbb
-#       test-lsp 	lsp.h superceded by factorized-matrix.h
+#	test-nag-sparse$(EXEEXT)	  replaced by tripplesbb
+#       test-lsp$(EXEEXT)	lsp.h superceded by factorized-matrix.h
 # removed test
-#	test-nag-sparse
-#	test-image-field       replaced by hom 
-#       test-lsp
-# I put test-gssv_rank in hmrg:~saunders/gen_superlu.  It is not linbox until and unless it is made to work
-# test-gssv is an ntl test
+#	test-nag-sparse$(EXEEXT)#	test-image-field$(EXEEXT)      replaced by hom 
+#       test-lsp$(EXEEXT)# I put test-gssv_rank$(EXEEXT)in hmrg:~saunders/gen_superlu.  It is not linbox until and unless it is made to work
+# test-gssv$(EXEEXT)is an ntl test
 
 
 # no explicit test needed, I guess...
-#	Transpose is tested in test-triplesbb
-#	Compose is tested in test-butterfly
-
+#	Transpose is tested in test-triplesbb$(EXEEXT)#	Compose is tested in test-butterfly$(EXEEXT)
 GIVARO_TESTS =			\
-	test-charpoly		\
-	test-givaro-zpz		\
-	test-givaro-zpzuns
-
+	test-charpoly$(EXEEXT)	\
+	test-givaro-zpz$(EXEEXT)	\
+	test-givaro-zpzuns$(EXEEXT)
 NTL_TESTS = 				\
-	test-ntl-lzz_p			\
-	test-ntl-ZZ_p			\
-	test-ntl-toeplitz		\
-	test-ntl-hankel   		\
-	test-ntl-sylvester		\
-	test-sum			\
-	test-smith-form-local		\
-	test-smith-form			\
-	test-smith-form-iliopoulos	\
-	test-smith-form-adaptive	\
-	test-smith-form-binary		\
-	test-rational-solver		\
-	test-rational-solver-adaptive	\
-	test-last-invariant-factor	\
-	test-toeplitz-det
-
+	test-ntl-lzz_p$(EXEEXT)		\
+	test-ntl-ZZ_p$(EXEEXT)		\
+	test-ntl-toeplitz$(EXEEXT)	\
+	test-ntl-hankel$(EXEEXT)  		\
+	test-ntl-sylvester$(EXEEXT)	\
+	test-sum$(EXEEXT)		\
+	test-smith-form-local$(EXEEXT)	\
+	test-smith-form$(EXEEXT)		\
+	test-smith-form-iliopoulos$(EXEEXT)\
+	test-smith-form-adaptive$(EXEEXT)\
+	test-smith-form-binary$(EXEEXT)	\
+	test-rational-solver$(EXEEXT)	\
+	test-rational-solver-adaptive$(EXEEXT)\
+	test-last-invariant-factor$(EXEEXT)\
+	test-toeplitz-det$(EXEEXT)
 LIDIA_TESTS =			\
-	test-lidia-gfq
-
+	test-lidia-gfq$(EXEEXT)
 ATLAS_TESTS = 
 
 if LINBOX_HAVE_NTL

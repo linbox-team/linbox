@@ -28,7 +28,7 @@ procedures and external calling definitions.
     
 3.  Availability:
 	The interface is currently distributed as part of the LinBox package,
-available through CVS.  Please goto http://www.linalg.org/developer.html
+available through Subversion.  Please go to http://linalg.org/developer.html
 for information about getting the latest version of LinBox.  (Note - at
 present, the Maple interface is not available through the latest LinBox
 beta release, v0.3b.  It should be available when the next beta release of
@@ -40,9 +40,9 @@ LinBox distribution.
 	At the moment, the package has been tested under Linux and
 theoretically will work on other Unix variant systems.
 Both LinBox and this interface has had some trouble building on Solaris,
-and at present Solaris doesnot support a build feature that this interface
+and at present Solaris does not support a build feature that this interface
 needs.  If someone has had extensive experience with Solaris and would like
-to help out with this, I'd be more than happy toi recieve that help.
+to help out with this, I'd be more than happy to recieve that help.
 
 5.  Installation:
 	The interface consists of a shared object file and a plain text

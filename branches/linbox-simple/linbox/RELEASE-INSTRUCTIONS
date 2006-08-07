@@ -1,6 +1,6 @@
 Instructions for making a LinBox release:
 
-1. Run 'cvs up -PAd' to make sure you are fully up to date and on the
+1. Run 'svn up' to make sure you are fully up to date and on the
    HEAD branch [1]
 2. Update the version number in Makefile.am next to 'VERSION = '.
 2. Run 'make distcheck' on your local copy of LinBox. If there are any
@@ -14,8 +14,9 @@ Instructions for making a LinBox release:
 4. Make sure everything in your local copy of LinBox is committed. In
    particular, either commit or eliminate anything from step 1 that
    was marked modified.
-5. Tag the CVS repository with 'cvs tag LINBOX_<version>' where
-   <version> is the version number of the LinBox release with periods
+   5. Tag the Subversion repository with the following command:
+   svn copy LINBOX_<version>
+   where <version> is the version number of the LinBox release with periods
    replaced by underscores. For example, for version 0.1.5, use
    '0_1_5' for <version>.
 6. Run 'make dist' (or 'make distcheck') so that the last ChangeLog

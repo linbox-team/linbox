@@ -6,7 +6,7 @@ I. Compilation and installation
 
 If you are installing from a tarred distribution, please see the file
 INSTALL for basic instructions on how to install Linbox. If you are
-installing from CVS, please see the instructions in section (III)
+installing from Subversion, please see the instructions in section (III)
 below.
 
 II. Basic layout
@@ -39,16 +39,16 @@ N.B. Though the doc/ directory contains some top-level and tutorial
 documentation, reference documentation is stored in parallel with the
 source code, under the src/ tree.
 
-III. CVS
+III. Subversion
 
-Linbox is stored in a CVS repository at the University of Delaware. To
-access the latest bleeding edge copy of Linbox from this source, you
-will need a working copy of CVS and all of the GNU development tools
-(e.g. autoconf, automake, GNU make, and so on). To access CVS:
+Linbox is stored in a Subversion repository at the University of Delaware.
+To access the latest bleeding edge copy of Linbox from this source, you
+will need a working copy of Subversion and all of the GNU development tools
+(e.g. autoconf, automake, GNU make, and so on). To access Subversion:
 
 0. Make sure you have the necessary tools installed
 
-You will need CVS installed. See http://www.cvshome.org/
+You will need Subversion installed. See http://subversion.tigris.org/
 
 You will need GNU Autoconf, GNU Automake, GNU Libtool, and the GNU
 multiprecision library (GMP) to compile Linbox. Make sure the bin
@@ -63,36 +63,20 @@ of Automake. Similarly, if Libtool is installed to a separate prefix,
 you should add "-I <libtool prefix>/share/aclocal" to ACLOCAL_FLAGS,
 where <libtool prefix> is the install prefix of Libtool.
 
-Of the four tools I have mentioned, only GMP is required if you are
-installing from a tarball. GNU Autoconf, GNU Automake, and GNU Libtool
-are only required for users of CVS and those individuals interested in
-doing major development work on the library.
+Of the four tools mentioned, only GMP is required if you are installing
+from a tarball. GNU Autoconf, GNU Automake, and GNU Libtool are only
+required for users of Subversion and those individuals interested in doing
+major development work on the library.
 
 See http://www.gnu.org/software/autoconf/ for GNU Autoconf,
 http://www.gnu.org/software/automake/ for GNU Automake, and
 http://www.gnu.org/software/libtool/ for GNU Libtool.
 
-1. Set your CVSROOT environment variable (on Bourne shell):
+1. Check out the linbox code
 
-export CVSROOT=:pserver:<username>@linbox.pc.cis.udel.edu:/home/cvs
+svn co svn://linalg.org/linalg/trunk/linbox/
 
-(and on the C shell):
-
-setenv CVSROOT :pserver:<username>@linbox.pc.cis.udel.edu:/home/cvs
-
-2. Log in to CVS; you only ever need to do this once for any given
-Unix shell account:
-
-cvs login
-
-3. Check out the linbox module
-
-cvs -z3 co linbox
-
-The -z3 option compresses the data in transit, making the operation
-faster for remote users.
-
-4. Switch to the newly-created linbox directory and run the script
+2. Switch to the newly-created linbox directory and run the script
 autogen.sh, optionally specifying the installation prefix:
 
 cd linbox
@@ -102,23 +86,18 @@ cd linbox
 
 	--with-gmp<prefix>    Prefix of your GMP installation
 	--with-ntl=<prefix>    Prefix of your NTL installation
+	--with=blas=<prefix>    Prefix of your BLAS installation
 
 GMP is *required* for the library to compile, so you must specify
 --with-gmp=<prefix> if <prefix> is not a standard location such
 as /usr or /usr/local otherwise you juste give the option --with-gmp.
 
-5. Install the library:
+3. Install the library:
 
 make install
 
-When you want to update your tree with the contents of the main CVS
-repository, issue the following command from the linbox/ directory:
-
-cvs -z3 up -dP
-
-The -z3 option is as before and the -dP option tells CVS to update the
-directory structure as well as the files. Note that the order of items
-in that command *is* important.
+When you want to update your tree with the contents of the main
+Subversion repository, run `svn update` from the linbox/ directory.
 
 You should receive some information on what files have been updated. 
 If any files have a "U" or "P" before them, this means that there has
@@ -127,12 +106,12 @@ If any files have a "M" before them, this means that a change in the
 repository has been merged with your version.  The appropriate question
 is "should I commit my version to the repository?"
 If any files have a "?" before them, this means that this is a file
-that CVS (and hence the rest of the team) knows nothing about.  If it
-is not a file created by build or install activity, the appropriate
+that Subversion (and hence the rest of the team) knows nothing about.
+If it is not a file created by build or install activity, the appropriate
 question is "should I add this to the repository?"
 If any files have a "C" before them, this means what you have
 conflicts with what is in the repository. In other words, you made
-changes while someone else made other changes and CVS does not know
+changes while someone else made other changes and Subversion does not know
 how to reconcile the two. You will need to edit that file manually,
 looking for and fixing lines like
 
@@ -141,7 +120,7 @@ that show the sections that could not be reconciled.
 If you have made changes and would like to commit them to the global
 repository, issue the command
 
-cvs -z3 ci [<filename(s)>]
+svn ci [<filename(s)>]
 
 The optional filename(s) argument specifies what you would like to
 commit; the default is to commit everything that has changed in the
@@ -154,7 +133,7 @@ and exit the text editor.
 
 If you are not a main Linbox developer but would like to submit some
 addition or modification, your code is welcome. Please email a patch
-(use 'cvs -z3 diff -u' to form a patch) to us and we will consider
+(use 'svn diff' to form a patch) to us and we will consider
 including it.
 
 IV. Coding standards
@@ -271,10 +250,10 @@ located.
 	   Replace the date, name, and email I have given with the
 	   current date and your own name and email.
 
-	4. Run the command "cvs add <filename>" from the directory
+	4. Run the command "svn add <filename>" from the directory
 	   where the file is located.
 
-	5. Commit your changes with "cvs ci", issued from the
+	5. Commit your changes with "svn ci", issued from the
 	   linbox-new directory. When the editor opens up to enter
 	   your log entry, use the text that you just entered in the
 	   ChangeLog.
@@ -308,19 +287,16 @@ source file should be <test>.C
 			<test-source>		\
 			test-common.C	test-common.h
 
-	4. Open tests/.cvsignore and add <test> on a line by itself
-	   to that file.
-
-	5. Open linbox-new/ChangeLog and add a block of the following
+	4. Open linbox-new/ChangeLog and add a block of the following
 	   format:
 
 		2002-02-03  Bradford Hovinen  <hovinen@ximian.com>
 
 			* tests/Makefile.am (BASIC_TESTS): Added <test>
 
-	6. Add the file to cvs with "cvs add <test-source>"
+	5. Add the file to Subversion with "svn add <test-source>"
 
-	7. Commit your changes with "cvs ci tests", issued from the
+	6. Commit your changes with "svn ci tests", issued from the
 	   linbox-new directory. Use the text you entered in ChangeLog
 	   for your log entry.
 
