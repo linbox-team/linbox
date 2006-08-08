@@ -1,3 +1,7 @@
+2006-08-08 bds 
+	* examples/det.C, solutions/det.h, methods.h modified in preparation for
+	* mpi based paralle cra loop in algorithms/cra-domain.h (by Bryan Youse).
+	* also a stub of util/mpicpp.h added (will become the mpi interface).
 2006-07-27 Hui Wang and bds 
 	* Add blackbox/quad-matrix.h which defines the ZOQuad matrix, 
 	* which is a cache efficient {0,1}-matrix rep.

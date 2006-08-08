@@ -138,7 +138,7 @@ namespace LinBox
 		 * Assigns VectorDomain object MD to field.
 		 * @param  MD VectorDomain object.
 		 */
-		VectorDomain &operator = (const VectorDomain &VD)
+		VectorDomain &operator = (const VectorDomain &VD) const
 			{ VectorDomainBase<Field>::_F = VD._F; VectorDomainBase<Field>::accu = VD.accu; return *this; }
 
 		/** Retrieve the underlying field

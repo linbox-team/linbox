@@ -369,7 +369,8 @@ namespace LinBox {
 		ChineseRemainder< Modular<double> > cra(3UL);
 		IntegerModularDet<Blackbox,MyMethod> iteration(A, M);
 		integer dd; // use of integer due to non genericity of cra. PG 2005-08-04
-		cra(dd, iteration, genprime);
+		Communicator C = M.communicator();
+		cra(dd, iteration, genprime, C);
 		A.field().init(d, dd); // convert the result from integer to original type
 		commentator.stop ("done", NULL, "det");
 		return d;
@@ -379,25 +380,12 @@ namespace LinBox {
 } // end of LinBox namespace
 
 #ifdef __LINBOX_HAVE_NTL
-
-#include "linbox/algorithms/hybrid-det.h"
-
-namespace LinBox {
-    
-	template <class Blackbox, class MyMethod>
-	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d,
-						const Blackbox                            &A,
-						const RingCategories::IntegerTag          &tag,
-						const MyMethod                            &M)
-	{
-		if (A.coldim() != A.rowdim())
-			throw LinboxError("LinBox ERROR: matrix must be square for determinant computation\n");
-		return lif_cra_det(d, A, tag, M);
-	}    
-} // end of LinBox namespace
-
-
+# include "linbox/algorithms/hybrid-det.h"
+# define CRA_DET lif_cra_det
 #else
+# define CRA_DET cra_det
+#endif
+
 namespace LinBox {
     
 	template <class Blackbox, class MyMethod>
@@ -408,10 +396,22 @@ namespace LinBox {
 	{
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for determinant computation\n");
-		return cra_det(d, A, tag, M);
+		return CRA_DET(d, A, tag, M);
 	}    
 } // end of LinBox namespace
 
-#endif //ifdef  __LINBOX_HAVE_NTL
-        
+#ifdef __LINBOX_HAVE_MPI
+# include "linbox/util/mpicpp.h"
+namespace LinBox {
+    
+	template <class Blackbox>
+	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d,
+						const Blackbox                            &A,
+						const Communicator						&C)
+	{
+		return det(d, A, Method::Hybrid(C));
+	}
+}
+#endif //__LINBOX_HAVE_MPI
+
 #endif // __DET_H
