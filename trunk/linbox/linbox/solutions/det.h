@@ -369,8 +369,9 @@ namespace LinBox {
 		ChineseRemainder< Modular<double> > cra(3UL);
 		IntegerModularDet<Blackbox,MyMethod> iteration(A, M);
 		integer dd; // use of integer due to non genericity of cra. PG 2005-08-04
-		Communicator C = M.communicator();
-		cra(dd, iteration, genprime, &C);
+		Communicator* C = M.communicatorp();
+		std::cout << "using cra_det with C = " << int(C) << " and dd = " << dd << std::endl;
+		cra(dd, iteration, genprime, C);
 		A.field().init(d, dd); // convert the result from integer to original type
 		commentator.stop ("done", NULL, "det");
 		return d;
