@@ -1,16 +1,21 @@
 /* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /* author: B. David Saunders and Zhendong Wan*/
+// parallelized for BOINC computing by Bryan Youse
 // ======================================================================= //
 // Time-stamp: <15 Jul 05 18:53:10 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_CRA_H
 #define __LINBOX_CRA_H
 
+#define MPICH_IGNORE_CXX_SEEK
 #include "linbox/util/timer.h"
 #include <stdlib.h>
 #include "linbox/integer.h"
 #include "linbox/solutions/methods.h"
 #include <vector>
+//#include "backend_lib.h"
+#include "linbox/util/mpicpp.h"
+
 //#include <linbox/util/timer.h>
 
 namespace LinBox {
@@ -20,7 +25,7 @@ namespace LinBox {
     struct LazyProduct : public std::vector< Integer > {
         typedef std::vector< Integer > Father_t;
     protected:
-        bool 					_tobecomputed;
+        bool                _tobecomputed;
     public:
         LazyProduct() : Father_t(), _tobecomputed(true) {}
         void initialize(const Integer& i) {
@@ -28,7 +33,7 @@ namespace LinBox {
             this->resize(0);
             this->push_back(i);
         }
-				
+            
         bool mulin(const Integer& i) {
             if (this->size()) {
                 if (i != this->back()) {
@@ -37,18 +42,18 @@ namespace LinBox {
                 } else {
                     return _tobecomputed;
                 }
-				
+            
             } else {
                 this->push_back( i );
                 return _tobecomputed = false;
             }
         }
-		
+      
         bool mulin(const LazyProduct& i) {
             this->insert(this->end(), i.begin(), i.end());
             return _tobecomputed = (this->size()>1);
         }
-		
+      
         Integer & operator() () {
             if (_tobecomputed) {
                 Father_t::const_iterator iter = this->begin();
@@ -66,8 +71,8 @@ namespace LinBox {
             for(Father_t::const_iterator iter = this->begin(); iter != this->end(); ++iter)
                 if ( gcd(g,i,*iter) > 1) return true;
             return false;
-        }	
-		 
+        }   
+       
         friend std::ostream& operator<< (std::ostream& o, const LazyProduct& C) {
             o << "{";
             for(Father_t::const_iterator refs = C.begin();
@@ -86,30 +91,45 @@ namespace LinBox {
     protected:
         typedef typename Domain::Element DomainElement;
         typedef unsigned long            BaseRing; // used anywhere?
-		
+      
 
-        unsigned int   				occurency;
-        double         				dSizes0; // used anywhere?
-        Integer 				nextm;
-        Integer					Modulo0;
-        Integer					Table0;
-        bool           				Occupation0; //used anywhere?
-        std::vector< unsigned long >		randv;
-        std::vector< double >  			dSizes;
-        std::vector< LazyProduct >		Modulo;
-        std::vector< std::vector<Integer> > 	Table;
-        std::vector< bool >    			Occupation;
-        unsigned int 				EARLY_TERM_THRESHOLD;
-        double 					LOGARITHMIC_UPPER_BOUND;
-        unsigned int 				step;
+        unsigned int               occurency;
+        double                     dSizes0; // used anywhere?
+        Integer             nextm;
+        Integer               Modulo0;
+        Integer               Table0;
+        bool                       Occupation0; //used anywhere?
+        bool               boinc;
+        Communicator               *commPtr;
+        unsigned int               numprocs;
+        std::vector< unsigned long >      randv;
+        std::vector< double >           dSizes;
+        std::vector< LazyProduct >      Modulo;
+        std::vector< std::vector<Integer> >    Table;
+        std::vector< bool >             Occupation;
+        unsigned int             EARLY_TERM_THRESHOLD;
+        double                LOGARITHMIC_UPPER_BOUND;
+        unsigned int             step;
 
     public:
 
-        ChineseRemainder(const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD, const size_t n=1) {
+        ChineseRemainder(const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD, const size_t n=1) : Modulo0(0) {
             initialize(EARLY, n, 0.0);
         }
-        
-        ChineseRemainder(const double BOUND) {
+/**
+/////  effective?   
+   ChineseRemainder(const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD, bool b=false, const size_t n=1){
+            boinc = b;
+            initialize(EARLY, n, 0.0);
+   }
+   */
+
+   ChineseRemainder(Communicator *c = NULL, const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD, const size_t n=1) : Modulo0(0) {
+            commPtr = c;
+            numprocs = commPtr->size();
+            initialize(EARLY, n, 0.0);
+   }
+        ChineseRemainder(const double BOUND) : Modulo0(0) {
             initialize(0, 0, BOUND);
         }
 
@@ -132,21 +152,130 @@ namespace LinBox {
                      int_p != randv. end(); ++ int_p) 
                     *int_p = ((unsigned long)lrand48()) % 20000;
             }
-        }	
+        }   
 
-	
-		
+      
+      /*
+        void operator() (int *res, Communicator *Comm) {
+            Integer p;
+
+            int procs = Comm->size();
+            int mpi_rank = Comm->rank();
+
+                    //  parent process
+                    if(!mpi_rank){
+                       for(int i=1; i<procs; i++){
+                          Comm->send(p, i); 
+                          Comm->recv(p, i);
+                          cout << "Received p from [" << i << "]" << std::endl;
+                       }
+                    }
+                    else{
+                       Comm->recv(p, 0);
+                       Domain D(p); 
+                       DomainElement r; D.init(r);
+                       Comm->send(p, 0);
+                    }
+        }
+   */
+
             /** \brief The CRA loop
-				
+            
             Given a function to generate residues mod a single prime, this loop produces the residues 
             resulting from the Chinese remainder process on sufficiently many primes to meet the 
             termination condition.
-			
+         
             \param F - Function object of two arguments, F(r, p), given prime p it outputs residue(s) r.
             This loop may be parallelized.  F must be reentrant, thread safe.
             For example, F may be returning the coefficients of the minimal polynomial of a matrix mod p.
             Warning - we won't detect bad primes.
-			
+         
+            \param genprime - RandIter object for generating primes.
+            \result res - an integer
+            */
+        template<class Function, class RandPrime>
+        Integer & operator() (Integer& res, Function& Iteration, RandPrime& genprime, Communicator *Comm) {
+            if(Comm == 0)
+					return this->operator()(res, Iteration, genprime);
+					
+            Integer p;
+/*
+            int procs = Comm->size();
+            int process = Comm->rank();
+
+            if (EARLY_TERM_THRESHOLD) {
+				    //  parent process
+// PAR
+                if(!process){
+                    genprime.randomPrime(p);
+                    Domain D(p); 
+                    DomainElement r; D.init(r);
+                    //this->Early_progress( D, Iteration(r, D) );
+					    for(int i=1; i<procs; i++){
+                    	genprime.randomPrime(p);
+                    	while(this->Early_noncoprimality(p) )
+                    	  genprime.randomPrime(p);
+						  	Comm->send(p, i);
+						 }
+						 int idle_process = 0;
+                	while( ! this->Early_terminated() ){
+						   if(idle_process){
+							   genprime.randomPrime(p);
+							   Comm->send(p, idle_process);
+							}
+							Comm->recv(r, MPI_ANY_SOURCE);
+							idle_process = (Comm->stat).MPI_SOURCE;
+							this->Early_progress( D, r );
+						}
+
+						std::cout << "EARLY TERMINATION REACHED..." << std::endl;
+						//  termination messages
+						for(int i=1; i<procs; i++){
+						   Comm->buffer_attach(0);
+							Comm->bsend(0, i);
+						}
+						
+                  return this->Early_result(res);
+					 }
+					 //  child processes
+					 else{
+                    while(true){ 
+						     Comm->recv(p, 0);
+						     if(!p)
+							     break;
+                    	  Domain D(p);
+                       DomainElement r; D.init(r);
+                    	  Iteration(r, D);
+							  Comm->buffer_attach(r);
+							  Comm->bsend(r, 0);
+						  }
+                }
+            } else {
+                while( ! this->Full_terminated() ) {
+                    genprime.randomPrime(p);
+                    while(this->Full_noncoprimality(p) )
+                        genprime.randomPrime(p);
+                    Domain D(p); 
+                    DomainElement r; D.init(r);
+                    this->Full_progress( D, Iteration(r, D) );
+                }
+                return this->Full_result(res);
+            }
+*/
+        }
+
+
+            /** \brief The CRA loop
+            
+            Given a function to generate residues mod a single prime, this loop produces the residues 
+            resulting from the Chinese remainder process on sufficiently many primes to meet the 
+            termination condition.
+         
+            \param F - Function object of two arguments, F(r, p), given prime p it outputs residue(s) r.
+            This loop may be parallelized.  F must be reentrant, thread safe.
+            For example, F may be returning the coefficients of the minimal polynomial of a matrix mod p.
+            Warning - we won't detect bad primes.
+         
             \param genprime - RandIter object for generating primes.
             \result res - an integer
             */
@@ -158,15 +287,15 @@ namespace LinBox {
                     genprime.randomPrime(p);
                     Domain D(p); 
                     DomainElement r; D.init(r);
-                    this->First_Early_progress( D, Iteration(r, D) );				
+                    this->First_Early_progress( D, Iteration(r, D) );
                 }
                 while( ! this->Early_terminated() ) {
                     genprime.randomPrime(p);
-                    while(this->Early_noncoprimality(p) ) genprime.randomPrime(p);
+                    while(this->Early_noncoprimality(p) )
+                        genprime.randomPrime(p);
                     Domain D(p); 
                     DomainElement r; D.init(r);
-					Iteration(r, D);
-                    this->Early_progress( D, r);
+                    this->Early_progress( D, Iteration(r, D) );
                 }
                 return this->Early_result(res);
             } else {
@@ -182,6 +311,8 @@ namespace LinBox {
             }
         }
 
+
+
         template<template <class T> class Vect, class Function, class RandPrime>
         Vect<Integer> & operator() (Vect<Integer>& res, Function& Iteration, RandPrime& genprime) {
             Integer p;
@@ -190,7 +321,7 @@ namespace LinBox {
                     genprime.randomPrime(p);
                     Domain D(p); 
                     Vect<DomainElement> r; 
-                    this->First_Early_progress( D, Iteration(r, D) );				
+                    this->First_Early_progress( D, Iteration(r, D) );            
                 }
                 while( ! this->Early_terminated() ) {
                     genprime.randomPrime(p);
@@ -234,10 +365,10 @@ namespace LinBox {
             }
         }
 
-	int steps() {return step;}        
-		
+   int steps() {return step;}        
+      
             /** \brief result mod the lcm of the moduli.
-				
+            
             A value mod the lcm of the progress step moduli
             which agrees with each residue mod the corresponding modulus. 
             */
@@ -267,8 +398,8 @@ namespace LinBox {
             Integer g;
             return (gcd(g, i, Modulo0) != 1) ;
         }
-		
-				
+      
+            
         bool Full_noncoprimality(const Integer& i) const {
             std::vector< LazyProduct >::const_iterator _mod_it = Modulo.begin();
             std::vector< bool >::const_iterator    _occ_it = Occupation.begin();
@@ -276,15 +407,15 @@ namespace LinBox {
                 if ((*_occ_it) && (_mod_it->noncoprime(i))) return true;
             return false;
         }
-		
+      
         void Full_progress (const Domain& D, const DomainElement& e) {
             std::vector<DomainElement> Ve; Ve.push_back(e);
             Full_progress(D, Ve);
         }
 
-				
+            
         template<template<class T> class Vect>
-        void Full_progress (const Domain& D, const Vect<DomainElement>& e) {			
+        void Full_progress (const Domain& D, const Vect<DomainElement>& e) {         
             std::vector< double >::iterator  _dsz_it = dSizes.begin();
             std::vector< LazyProduct >::iterator _mod_it = Modulo.begin();
             std::vector< std::vector<Integer> >::iterator _tab_it = Table.begin();
@@ -313,7 +444,7 @@ namespace LinBox {
                 *_occ_it = true;
                 return;
             }
-			
+         
             for(++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it ; _occ_it != Occupation.end() ; ++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it) {
                 if (*_occ_it) {
                     std::vector<Integer>::iterator      ri_it = ri.begin();
@@ -343,13 +474,13 @@ namespace LinBox {
             Full_result(Vd);
             return d=Vd.front();
         }
-		
+      
         template<template<class T> class Vect>
         Vect<Integer>& Full_result (Vect<Integer> &d){
             d.resize( (Table.front()).size() );
-            std::vector< LazyProduct >::iterator 			_mod_it = Modulo.begin();
+            std::vector< LazyProduct >::iterator          _mod_it = Modulo.begin();
             std::vector< std::vector< Integer > >::iterator _tab_it = Table.begin();
-            std::vector< bool >::iterator    				_occ_it = Occupation.begin();
+            std::vector< bool >::iterator                _occ_it = Occupation.begin();
             LazyProduct Product;
             for( ; _occ_it != Occupation.end() ; ++_mod_it, ++_tab_it, ++_occ_it) {
                 if (*_occ_it) {
@@ -382,7 +513,7 @@ namespace LinBox {
             Modulo.front() = Product;
             return d;
         }
-		
+      
         bool Full_terminated() {
             double logm(0.0);
             std::vector< double >::iterator _dsz_it = dSizes.begin();
@@ -426,8 +557,15 @@ namespace LinBox {
         }
 
         virtual void Early_progress (const Domain& D, const DomainElement& e) {
-            Modulo0 *= nextm; D.characteristic( nextm );
-            Early_normalized_fieldreconstruct(Table0, Modulo0, D, e, nextm);
+				if(Modulo0 == 0){
+               D.characteristic( Modulo0 );
+               D.convert(Table0, e);
+               nextm = 1;
+				}
+				else{
+               Modulo0 *= nextm; D.characteristic( nextm );
+               Early_normalized_fieldreconstruct(Table0, Modulo0, D, e, nextm);
+				}
         }
 
         virtual void First_Early_progress (const Domain& D, const DomainElement& e) {
@@ -439,12 +577,12 @@ namespace LinBox {
         template<template<class T> class Vect>
         Vect<Integer>& Early_result(Vect<Integer>& d) {
             return Full_result(d);
-        }		
+        }      
 
 
         Integer& Early_result(Integer& d) {
             return d=Table0;
-        }		
+        }      
 
         bool Early_terminated() {
             return occurency>EARLY_TERM_THRESHOLD;
@@ -476,18 +614,18 @@ namespace LinBox {
                 occurency = 0;
                 return normalized_fieldreconstruct(res, D1, u1, u0, D1.init(m0, P0), Integer(res), P0, M1);
             }
-			
+         
         }
 
         Integer& fieldreconstruct(Integer& res, const Domain& D1, const DomainElement& u1, DomainElement& u0, DomainElement& m0, const Integer& r0, const Integer& P0) {
                 // u0 and m0 are modified
-            D1.negin(u0);	// u0 <-- -u0
-            D1.addin(u0,u1);	// u0 <-- u1-u0
-            D1.invin(m0);	// m0 <-- m0^{-1} mod m1
-            D1.mulin(u0, m0);	// u0 <-- (u1-u0)( m0^{-1} mod m1 )
+            D1.negin(u0);   // u0 <-- -u0
+            D1.addin(u0,u1);   // u0 <-- u1-u0
+            D1.invin(m0);   // m0 <-- m0^{-1} mod m1
+            D1.mulin(u0, m0);   // u0 <-- (u1-u0)( m0^{-1} mod m1 )
             D1.convert(res, u0);// res <-- (u1-u0)( m0^{-1} mod m1 )         and res <  m1
-            res *= P0;		// res <-- (u1-u0)( m0^{-1} mod m1 ) m0      and res <= (m0m1-m0)
-            return res += r0;	// res <-- u0 + (u1-u0)( m0^{-1} mod m1 ) m0 and res <  m0m1
+            res *= P0;      // res <-- (u1-u0)( m0^{-1} mod m1 ) m0      and res <= (m0m1-m0)
+            return res += r0;   // res <-- u0 + (u1-u0)( m0^{-1} mod m1 ) m0 and res <  m0m1
         }
 
         Integer& normalized_fieldreconstruct(Integer& res, const Domain& D1, const DomainElement& u1, DomainElement& u0, DomainElement& m0, const Integer& r0, const Integer& P0, const Integer& m1) {
@@ -500,19 +638,19 @@ namespace LinBox {
             Integer tmp(res);
             tmp -= m1;
             if (absCompare(res,tmp)>0) res = tmp;
-            res *= P0;		// res <-- (u1-u0)( m0^{-1} mod m1 ) m0       and res <= (m0m1-m0)
-            return res += r0;	// res <-- u0 + (u1-u0)( m0^{-1} mod m1 ) m0  and res <  m0m1
+            res *= P0;      // res <-- (u1-u0)( m0^{-1} mod m1 ) m0       and res <= (m0m1-m0)
+            return res += r0;   // res <-- u0 + (u1-u0)( m0^{-1} mod m1 ) m0  and res <  m0m1
         }
 
-		
+      
         Integer& smallbigreconstruct(Integer& u1, const Integer& m1, const Integer& u0, const Integer& m0) {
             Integer tmp=u1;
-            inv(u1, m0, m1);   	// res <-- m0^{-1} mod m1
-            tmp -= u0;         	// tmp <-- (u1-u0)
-            u1 *= tmp;         	// res <-- (u1-u0)( m0^{-1} mod m1 )   
-            u1 %= m1;		// 						 res <  m1 
-            u1 *= m0;          	// res <-- (u1-u0)( m0^{-1} mod m1 ) m0      and res <= (m0m1-m0)
-            return u1 += u0;   	// res <-- u0 + (u1-u0)( m0^{-1} mod m1 ) m0 and res <  m0m1
+            inv(u1, m0, m1);      // res <-- m0^{-1} mod m1
+            tmp -= u0;            // tmp <-- (u1-u0)
+            u1 *= tmp;            // res <-- (u1-u0)( m0^{-1} mod m1 )   
+            u1 %= m1;      //                    res <  m1 
+            u1 *= m0;             // res <-- (u1-u0)( m0^{-1} mod m1 ) m0      and res <= (m0m1-m0)
+            return u1 += u0;      // res <-- u0 + (u1-u0)( m0^{-1} mod m1 ) m0 and res <  m0m1
         }
 
         Integer& normalize(Integer& u1, Integer& tmp, const Integer& m1) {
@@ -521,37 +659,37 @@ namespace LinBox {
             else
                 tmp -= m1;
             if (absCompare(u1,tmp) > 0) return u1 = tmp;
-            else 			return u1;
+            else          return u1;
         }
         
 
 
         Integer& normalizesmallbigreconstruct(Integer& u1, const Integer& m1, const Integer& u0, const Integer& m0) {
             Integer tmp=u1;
-            inv(u1, m0, m1);	// res <-- m0^{-1} mod m1
-            tmp -= u0;		// tmp <-- (u1-u0)
-            u1 *= tmp;		// res <-- (u1-u0)( m0^{-1} mod m1 )   
+            inv(u1, m0, m1);   // res <-- m0^{-1} mod m1
+            tmp -= u0;      // tmp <-- (u1-u0)
+            u1 *= tmp;      // res <-- (u1-u0)( m0^{-1} mod m1 )   
             u1 %= m1;
-            normalize(u1, tmp=u1, m1);			// Normalization
+            normalize(u1, tmp=u1, m1);         // Normalization
             u1 *= m0;          // res <-- (u1-u0)( m0^{-1} mod m1 ) m0       and res <= (m0m1-m0)
             return u1 += u0;   // res <-- u0 + (u1-u0)( m0^{-1} mod m1 ) m0  and res <  m0m1
         }
 
 
-	template <template<class T> class Vect1, class Vect2>
-	DomainElement& dot (DomainElement& z, const Domain& D, const Vect1<DomainElement>& v1, const Vect2& v2){
+   template <template<class T> class Vect1, class Vect2>
+   DomainElement& dot (DomainElement& z, const Domain& D, const Vect1<DomainElement>& v1, const Vect2& v2){
             D.init(z,0); DomainElement tmp;
             typename Vect1<DomainElement>::const_iterator v1_p;
             typename Vect2::const_iterator v2_p;
             for (v1_p  = v1. begin(), v2_p = v2. begin(); 
                  v1_p != v1. end(); 
-                 ++ v1_p, ++ v2_p)	 	
+                 ++ v1_p, ++ v2_p)       
                 D.axpyin(z, (*v1_p), D.init(tmp, (*v2_p)));
 
 //             commentator.report(Commentator::LEVEL_ALWAYS, INTERNAL_DESCRIPTION) << "v: " << v2 << std::endl;
 //             commentator.report(Commentator::LEVEL_ALWAYS, INTERNAL_DESCRIPTION) << "z: " << z << std::endl;
             return z;
-	}
+   }
 
     };
 }
