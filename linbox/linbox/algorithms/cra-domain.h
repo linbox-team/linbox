@@ -162,11 +162,11 @@ namespace LinBox {
                 }
                 while( ! this->Early_terminated() ) {
                     genprime.randomPrime(p);
-                    while(this->Early_noncoprimality(p) )
-                        genprime.randomPrime(p);
+                    while(this->Early_noncoprimality(p) ) genprime.randomPrime(p);
                     Domain D(p); 
                     DomainElement r; D.init(r);
-                    this->Early_progress( D, Iteration(r, D) );
+					Iteration(r, D);
+                    this->Early_progress( D, r);
                 }
                 return this->Early_result(res);
             } else {

@@ -101,6 +101,12 @@ namespace LinBox {
 			NTL::zz_pX irredPoly = NTL::BuildIrred_zz_pX ((long) k);
 			NTL::zz_pE::init(irredPoly);
 		}
+
+		Element& random (Element& x) const
+		{
+			NTL::random(x);
+			return x;
+		}
 		
 	}; // end o class NTL_zz_pE
 	

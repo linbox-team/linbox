@@ -163,7 +163,7 @@ namespace LinBox
 		 */
 		 // I believe this should be virtual -bds
 		///
-		UnparametricField &operator=(const UnparametricField &F) { return *this; }
+		UnparametricField &operator=(const UnparametricField &F) const { return *this; }
 		//@} Field Object Basics.
     
 		/** @name Data Object Management.

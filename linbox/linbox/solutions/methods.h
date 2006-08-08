@@ -33,6 +33,8 @@
 #endif
 
 #include "linbox/blackbox/dense.h"
+#include "linbox/util/mpicpp.h"
+
 
 namespace LinBox
 {
@@ -94,7 +96,8 @@ namespace LinBox
 			  _ett(DEFAULT_EARLY_TERM_THRESHOLD),
 			  _blockingFactor(16),
 			  _strategy(PIVOT_LINEAR),
-			  _provensuccessprobability( 0.0 )
+			  _provensuccessprobability( 0.0 ),
+			  _communicator( 0 )
 		{}
   
 		Specifier (const Specifier& s): 
@@ -107,7 +110,8 @@ namespace LinBox
 			_ett( s._ett),
 			_blockingFactor( s._blockingFactor),
 			_strategy( s._strategy),
-			_provensuccessprobability( s._provensuccessprobability)
+			_provensuccessprobability( s._provensuccessprobability),
+			_communicator(s._communicator)
 		{}
 
 		/** Accessors
@@ -127,6 +131,7 @@ namespace LinBox
 		PivotStrategy strategy () const { return _strategy; }
 		double trustability ()   const  { return _provensuccessprobability; }
 		bool checkResult    ()    const       { return _checkResult; }
+		bool communicator    ()    const       { return _communicator; }
 
 
 		/** Manipulators
@@ -146,6 +151,8 @@ namespace LinBox
 		void strategy (PivotStrategy strategy) { _strategy = strategy; }
 		void trustability   (double p)         { _provensuccessprobability = p; }
 		void checkResult    (bool s)           { _checkResult = s; }
+		void communicator   (Communicator* cp) { _communicator = cp; }
+
 
 	protected:
 		Preconditioner _preconditioner;
@@ -159,11 +166,14 @@ namespace LinBox
 		PivotStrategy _strategy;
 		double         _provensuccessprobability;
 		bool           _checkResult;
+		Communicator*   _communicator;
 	};
     
 	struct HybridSpecifier :public Specifier {
 		HybridSpecifier(){};
 		HybridSpecifier (const Specifier& m): Specifier(m){};
+		HybridSpecifier (Communicator& C): Specifier()
+		{ _communicator = &C; };
 	};
 	struct BlackboxSpecifier :public Specifier {
 		BlackboxSpecifier(){};
