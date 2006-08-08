@@ -3,6 +3,8 @@
 \brief Determinant of sparse matrix over Z or Zp.
 \ingroup examples
 */
+#define MPICH_IGNORE_CXX_SEEK
+
 //#include "linbox-config.h"
 #include <iostream>
 
@@ -18,7 +20,7 @@ using namespace std;
 int main (int argc, char **argv)
 {
 
-	if (argc < 2 || argc > 3) {
+	if (argc > 3) {
 		cerr << "Usage: det <matrix-file-in-supported-format> [<p>]" << endl;
 		return -1;
 	}
