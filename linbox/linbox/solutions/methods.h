@@ -97,7 +97,7 @@ namespace LinBox
 			  _blockingFactor(16),
 			  _strategy(PIVOT_LINEAR),
 			  _provensuccessprobability( 0.0 ),
-			  _communicator( 0 )
+			  _communicatorp( 0 )
 		{}
   
 		Specifier (const Specifier& s): 
@@ -111,7 +111,7 @@ namespace LinBox
 			_blockingFactor( s._blockingFactor),
 			_strategy( s._strategy),
 			_provensuccessprobability( s._provensuccessprobability),
-			_communicator(s._communicator)
+			_communicatorp(s._communicatorp)
 		{}
 
 		/** Accessors
@@ -131,7 +131,7 @@ namespace LinBox
 		PivotStrategy strategy () const { return _strategy; }
 		double trustability ()   const  { return _provensuccessprobability; }
 		bool checkResult    ()    const       { return _checkResult; }
-		bool communicator    ()    const       { return _communicator; }
+		Communicator* communicatorp    ()    const       { return _communicatorp; }
 
 
 		/** Manipulators
@@ -151,7 +151,7 @@ namespace LinBox
 		void strategy (PivotStrategy strategy) { _strategy = strategy; }
 		void trustability   (double p)         { _provensuccessprobability = p; }
 		void checkResult    (bool s)           { _checkResult = s; }
-		void communicator   (Communicator* cp) { _communicator = cp; }
+		void communicatorp   (Communicator* cp) { _communicatorp = cp; }
 
 
 	protected:
@@ -166,14 +166,14 @@ namespace LinBox
 		PivotStrategy _strategy;
 		double         _provensuccessprobability;
 		bool           _checkResult;
-		Communicator*   _communicator;
+		Communicator*   _communicatorp;
 	};
     
 	struct HybridSpecifier :public Specifier {
 		HybridSpecifier(){};
 		HybridSpecifier (const Specifier& m): Specifier(m){};
 		HybridSpecifier (Communicator& C): Specifier()
-		{ _communicator = &C; };
+		{ _communicatorp = &C; };
 	};
 	struct BlackboxSpecifier :public Specifier {
 		BlackboxSpecifier(){};
