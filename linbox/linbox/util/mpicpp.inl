@@ -21,7 +21,7 @@ Communicator::Communicator(int* ac, char*** av)
 
 // copy constructor
 Communicator::Communicator(const Communicator& D) 
-	: _mpi_comm(D._mpi_comm), stat(D.stat), _mpi_boss(false) 
+	: _mpi_comm(D._mpi_comm), _mpi_boss(false), stat(D.stat)
 {}
 
 Communicator::~Communicator()  
