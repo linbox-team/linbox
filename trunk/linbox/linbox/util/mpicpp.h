@@ -1,6 +1,14 @@
 #ifndef __MPICPP_H_
 #define __MPICPP_H_
+#ifndef __LINBOX_HAVE_MPI
+ typedef int Communicator; 
+#else
 #include <iterator>
+
+// problem of mpi in C++
+#undef SEEK_SET 
+#undef SEEK_CUR 
+#undef SEEK_END 
 #include <mpi.h>
 
 namespace LinBox {
@@ -81,4 +89,5 @@ int rank();
 }// namespace LinBox
 
 #include "mpicpp.inl"
-#endif
+#endif // __LINBOX_HAVE_MPI
+#endif // __MPICPP_H_
