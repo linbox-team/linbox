@@ -30,6 +30,9 @@
 #include "linbox/algorithms/blas-domain.h"
 #include "linbox/solutions/methods.h"
 #include "linbox/util/commentator.h"
+#ifdef __LINBOX_HAVE_MPI
+#include "linbox/util/mpicpp.h"
+#endif
 #include <linbox/algorithms/minpoly-integer.h>
 
 
@@ -322,7 +325,11 @@ namespace LinBox {
 		ChineseRemainder< Modular<double> > cra(3UL,A.coldim());
 		IntegerModularMinpoly<Blackbox,MyMethod> iteration(A, M);
 		std::vector<integer> PP; // use of integer du to non genericity of cra. PG 2005-08-04
+#ifdef __LINBOX_HAVE_MPI
+		cra(PP, iteration, genprime, M.communicatorp());
+#else
 		cra(PP, iteration, genprime);
+#endif
 		size_t i =0;
 		P.resize(PP.size());
 		for (typename Polynomial::iterator it= P.begin(); it != P.end(); ++it, ++i)
