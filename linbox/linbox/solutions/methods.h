@@ -33,7 +33,9 @@
 #endif
 
 #include "linbox/blackbox/dense.h"
+#ifdef __LINBOX_HAVE_MPI
 #include "linbox/util/mpicpp.h"
+#endif
 
 
 namespace LinBox
@@ -96,8 +98,10 @@ namespace LinBox
 			  _ett(DEFAULT_EARLY_TERM_THRESHOLD),
 			  _blockingFactor(16),
 			  _strategy(PIVOT_LINEAR),
-			  _provensuccessprobability( 0.0 ),
-			  _communicatorp( 0 )
+			  _provensuccessprobability( 0.0 )
+#ifdef __LINBOX_HAVE_MPI
+			  , _communicatorp( 0 )
+#endif
 		{}
   
 		Specifier (const Specifier& s): 
@@ -110,8 +114,10 @@ namespace LinBox
 			_ett( s._ett),
 			_blockingFactor( s._blockingFactor),
 			_strategy( s._strategy),
-			_provensuccessprobability( s._provensuccessprobability),
-			_communicatorp(s._communicatorp)
+			_provensuccessprobability( s._provensuccessprobability)
+#ifdef __LINBOX_HAVE_MPI
+			, _communicatorp(s._communicatorp)
+#endif
 		{}
 
 		/** Accessors
@@ -131,7 +137,9 @@ namespace LinBox
 		PivotStrategy strategy () const { return _strategy; }
 		double trustability ()   const  { return _provensuccessprobability; }
 		bool checkResult    ()    const       { return _checkResult; }
+#ifdef __LINBOX_HAVE_MPI
 		Communicator* communicatorp    ()    const       { return _communicatorp; }
+#endif
 
 
 		/** Manipulators
@@ -151,7 +159,9 @@ namespace LinBox
 		void strategy (PivotStrategy strategy) { _strategy = strategy; }
 		void trustability   (double p)         { _provensuccessprobability = p; }
 		void checkResult    (bool s)           { _checkResult = s; }
+#ifdef __LINBOX_HAVE_MPI
 		void communicatorp   (Communicator* cp) { _communicatorp = cp; }
+#endif
 
 
 	protected:
@@ -166,14 +176,18 @@ namespace LinBox
 		PivotStrategy _strategy;
 		double         _provensuccessprobability;
 		bool           _checkResult;
+#ifdef __LINBOX_HAVE_MPI
 		Communicator*   _communicatorp;
+#endif
 	};
     
 	struct HybridSpecifier :public Specifier {
 		HybridSpecifier(){};
 		HybridSpecifier (const Specifier& m): Specifier(m){};
+#ifdef __LINBOX_HAVE_MPI
 		HybridSpecifier (Communicator& C): Specifier()
 		{ _communicatorp = &C; };
+#endif
 	};
 	struct BlackboxSpecifier :public Specifier {
 		BlackboxSpecifier(){};
