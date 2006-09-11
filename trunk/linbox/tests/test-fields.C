@@ -122,7 +122,7 @@ void fieldTest( const Field& f, double* array, long iter = 1000000, bool fulltes
 		f.addin(s, returnValue);
 	}
 	timer.stop(); array[0] = timer.time() - overHeadTime;
-std::cout << iter << " add done " << array[0] << std::endl;
+//std::cout << iter << " add done " << array[0] << std::endl;
 
 if (fulltest) {
     // sub
@@ -152,7 +152,7 @@ if (fulltest) {
 		f.addin(s, returnValue);
 	}
 	timer.stop(); array[3] = timer.time() - overHeadTime;
-std::cout << iter << " mul done " << array[3] << std::endl;
+//std::cout << iter << " mul done " << array[3] << std::endl;
 
 if (fulltest) {
 	// inv
@@ -182,7 +182,7 @@ if (fulltest) {
 		f.addin(s, returnValue);
 	}
 	timer.stop(); array[6] = timer.time() - overHeadTime;
-	std::cout << timer.time() << "  - " << overHeadTime << " = " << array[6] << std::endl;;
+	//std::cout << timer.time() << "  - " << overHeadTime << " = " << array[6] << std::endl;;
 
 	// DotProduct1 ( dense * dense )
 	timer.clear(); timer.start();
@@ -192,7 +192,7 @@ if (fulltest) {
 		f.addin(s, returnValue);
 	}
 	timer.stop(); array[7] = timer.time();
-	std::cout << (iter/vectorSize) << " dd " << timer.time() << std::endl;;
+//	std::cout << (iter/vectorSize) << " dd " << timer.time() << std::endl;;
 
 if (fulltest) {
 	// DotProduct2 ( dense * sparse )
@@ -281,8 +281,10 @@ void doTest(char* name, integer& p, integer& exp, int64& iter, bool fulltest = f
 
 int main(int argc, char** argv) {
 	int64 ops = getOps(1);
+	std::cout << "timings recorded in mops.  Bigger is better." << std::endl;
 	std::cout << "Ops per sec, roughly: " << ops << std::endl;
-	int64 iterations = ops/16;
+	//int64 iterations = ops/16;
+	int64 iterations = ops;
 	integer prime(101), exp(1);
 	if( argc >= 2 ) prime = integer( argv[1] );
 	if( argc >= 3 ) exp = integer( argv[2] );
@@ -308,15 +310,15 @@ int main(int argc, char** argv) {
 	     << std::setw(12) << "axpy/(mul+add)"
 		 << std::endl;
 
-    //doTest< Modular<int8> >( "Modular<int8>", prime, exp, iterations, fulltest );
-    //doTest< Modular<int16> >( "Modular<int16>", prime, exp, iterations, fulltest );
+    doTest< Modular<int8> >( "Modular<int8>", prime, exp, iterations, fulltest );
+    doTest< Modular<int16> >( "Modular<int16>", prime, exp, iterations, fulltest );
     doTest< Modular<int32> >( "Modular<int32>", prime, exp, iterations, fulltest );
     doTest< Modular<int> >( "Modular<int>", prime, exp, iterations, fulltest );
     doTest< Modular<double> >( "Modular<double>", prime, exp, iterations, fulltest );
 #ifdef __LINBOX_HAVE_NTL
     doTest< NTL_zz_p >( "NTL_zz_p", prime, exp, iterations, fulltest );
     doTest< NTL_PID_zz_p >( "NTL_PID_zz_p", prime, exp, iterations, fulltest ); 
-    //doTest< NTL_ZZ_p >( "NTL_ZZ_p", prime, exp, iterations, fulltest );
+    doTest< NTL_ZZ_p >( "NTL_ZZ_p", prime, exp, iterations, fulltest );
     doTest< PIR_ntl_ZZ_p >( "PIR_ntl_ZZ_p", prime, exp, iterations, fulltest );
     doTest< NTL_ZZ >( "NTL_ZZ", prime, exp, iterations, fulltest );
 #endif
@@ -327,7 +329,7 @@ int main(int argc, char** argv) {
     doTest< GMPRationalField >( "GMPRationalField", prime, exp, iterations, fulltest ); 
 	//if (prime == 2)
     	doTest< PIRModular<int32> >( "PIRModular<int32>", prime, exp, iterations, fulltest );
-    //doTest< Local2_32 >( "Local2_32", prime, exp, iterations, fulltest );
+    doTest< Local2_32 >( "Local2_32", prime, exp, iterations, fulltest );
 
 	return 0;
 }
