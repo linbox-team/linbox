@@ -370,13 +370,13 @@ namespace LinBox {
 		IntegerModularDet<Blackbox,MyMethod> iteration(A, M);
 		integer dd; // use of integer due to non genericity of cra. PG 2005-08-04
 
-	#ifdef __LINBOX_HAVE_NTL
+#ifdef __LINBOX_HAVE_MPI
 		Communicator* C = M.communicatorp();
 		std::cout << "using cra_det with C = " << int(C) << " and dd = " << dd << std::endl;
                 cra(dd, iteration, genprime, C);
-	#else
+#else
 		cra(dd, iteration, genprime);
-	#endif
+#endif
 		A.field().init(d, dd); // convert the result from integer to original type
 		commentator.stop ("done", NULL, "det");
 		return d;

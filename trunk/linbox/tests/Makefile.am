@@ -1,7 +1,7 @@
 # FACING_REALITY is used anywhere?
 FACING_REALITY = 0
 INCLUDES=-I$(top_srcdir)
-AM_LDFLAGS = -llapack -lcblas -latlas 
+#AM_LDFLAGS = -llapack -lcblas -latlas 
 AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall
 #AM_CFLAGS = -g -Wall
 
@@ -90,10 +90,10 @@ NONCOMPILING_TESTS =
 FAILING_TESTS =		\
         test-solve              \
         test-zo                 \
-        test-side-by-side       \
-        test-over-under         \
         test-quad-matrix        \
-	test-la-block-lanczos
+	test-la-block-lanczos    
+#       test-over-under         \
+#       test-side-by-side       \
 
 USE_NONCOMPILING_TESTS = 
 USE_FAILING_TESTS = 
@@ -388,15 +388,15 @@ test_param_fuzzy_SOURCES =	        \
 test_lu_SOURCES =                       \
 	test-lu.C			 
 
-test_side_by_side_SOURCES =		\
-	test-side-by-side.C		\
-	test-generic.h			\
-	test-common.h
+#test_side_by_side_SOURCES =		\
+#	test-side-by-side.C		\
+#	test-generic.h			\
+#	test-common.h
 
-test_over_under_SOURCES =		\
-	test-over-under.C		\
-	test-generic.h			\
-	test-common.h
+#test_over_under_SOURCES =		\
+#	test-over-under.C		\
+#	test-generic.h			\
+#	test-common.h
 
 test_quad_matrix_SOURCES =		\
 	test-quad-matrix.C		\

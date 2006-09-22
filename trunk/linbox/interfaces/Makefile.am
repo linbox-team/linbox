@@ -1,3 +1,3 @@
 if LINBOX_HAVE_MAPLE
-SUBDIRS=maple
+SUBDIRS=driver maple
 endif

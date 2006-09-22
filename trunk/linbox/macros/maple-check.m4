@@ -36,7 +36,7 @@ AC_ARG_ENABLE(shared,
               [have_shared="no"])
 
 if test -n "$MAPLE_HOME_PATH" ; then
-min_maple_version=ifelse([$1], ,7.0,$1)
+min_maple_version=ifelse([$1], ,9.0,$1)
 AC_MSG_CHECKING(for MAPLE >= $min_maple_version)
 fi
 
@@ -71,21 +71,35 @@ do
 		else
 			maple_found="yes"
 			if test $have_shared = "yes"; then
-				AC_MSG_RESULT(found)	
-				LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${MAPLE_BIN}:${LIB_DIR}"
-				LD_RUN_PATH="${LD_RUN_PATH}:${MAPLE_BIN}:${LIB_DIR}"
-				export LD_LIBRARY_PATH
-				export LD_RUN_PATH
-				MAPLE_LIBS="-L${MAPLE_BIN} -lmaplec -lstdc++"
-				MAPLE_CFLAGS="-I${MAPLE_HOME}/extern/include"				
-				cp -f interfaces/maple/lbmaple.mpl.head interfaces/maple/lbmaple.mpl
-				echo "\"${LIB_DIR}/liblbmaple.so\"; " >> interfaces/maple/lbmaple.mpl
-				cat interfaces/maple/lbmaple.mpl.tail >> interfaces/maple/lbmaple.mpl
-       				AC_SUBST(MAPLE_LIBS)
-				AC_SUBST(MAPLE_CFLAGS)
-				AC_DEFINE(HAVE_MAPLE,1,[Define if MAPLE is installed])
-				HAVE_MAPLE=yes
-				break
+				${MAPLE_HOME}/bin/maple macros/maple-check-version.mpl > /dev/null
+				MAPLE_VERSION=`cat maple_version.txt`
+
+				if test ${MAPLE_VERSION} -lt 9; then
+					AC_MSG_RESULT(problem)
+					echo " your version of Maple is too old, at least version 9 is recquired. Disabling."
+					break
+				else			
+					AC_MSG_RESULT(found)	
+					LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${MAPLE_BIN}:${LIB_DIR}"
+					LD_RUN_PATH="${LD_RUN_PATH}:${MAPLE_BIN}:${LIB_DIR}"
+					export LD_LIBRARY_PATH
+					export LD_RUN_PATH
+					MAPLE_LIBS="-L${MAPLE_BIN} -lmaplec -lstdc++"
+					MAPLE_CFLAGS="-I${MAPLE_HOME}/extern/include"				
+					cp -f interfaces/maple/lbmaple.mpl.head interfaces/maple/lbmaple.mpl
+					echo "\"${LIB_DIR}/liblbmaple.so\"; " >> interfaces/maple/lbmaple.mpl
+					cat interfaces/maple/lbmaple.mpl.tail >> interfaces/maple/lbmaple.mpl
+       					AC_SUBST(MAPLE_LIBS)
+					AC_SUBST(MAPLE_CFLAGS)
+					AC_SUBST(MAPLE_HOME)
+					AC_SUBST(MAPLE_VERSION)
+					if test ${MAPLE_VERSION} -ge 10 	; then
+						AC_DEFINE_UNQUOTED(MAPLE_GMP_ACCESS,, [define is the version of Maple have access function to gmp data])	
+					fi
+					AC_DEFINE(HAVE_MAPLE,1,[Define if MAPLE is installed])
+					HAVE_MAPLE=yes
+					break
+				fi
 			else			
 				AC_MSG_RESULT(problem)
 				echo " you need to give option --enable-shared to allow Maple interfacing. Disabling."
@@ -99,6 +113,8 @@ if test "x$maple_found" = "xno" ; then
 fi
 
 AM_CONDITIONAL(LINBOX_HAVE_MAPLE, test "x$HAVE_MAPLE" = "xyes")
+
+
 
 
 ])
