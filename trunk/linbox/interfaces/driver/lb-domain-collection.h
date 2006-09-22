@@ -45,12 +45,12 @@ private:
 public:
 	DomainKey(const LinBox::integer &p, const char* name) 
 		: pfirst(new LinBox::integer(p)), psecond(new const char*(name)), counter(new size_t(0)), autogc(false) 
-	{std::cout<<"creating domain at "<<this<<" of type "<<name<<" - "<<p<<"\n";}
+	{}
 
 	DomainKey(const DomainKey &k, bool gc = false) 
-		: pfirst(k.pfirst), psecond(k.psecond), counter(k.counter), autogc(gc) {(*counter)++;std::cout<<"creating domain ("<<this<<")\n";}
+		: pfirst(k.pfirst), psecond(k.psecond), counter(k.counter), autogc(gc) {(*counter)++;}
 
-	~DomainKey() {std::cout<<"call delete on ("<<this<<")\n";
+	~DomainKey() {
 		if (autogc){
 			extern void deleteDomain(const DomainKey &key);
 			if ((*counter) == 0) 
@@ -60,7 +60,7 @@ public:
 			
 		}
 		else{ 		
-			if ((*counter) == 0) { std::cout<<"deleting domain at ("<<this<<") of type"<<*psecond<<" - "<<*pfirst<<"\n"; delete counter; delete pfirst; delete psecond;}
+			if ((*counter) == 0) { delete counter; delete pfirst; delete psecond;}
 			else (*counter)--;	
 		}
 	}	
@@ -75,7 +75,7 @@ public:
 			
 		}
 		else{ 		
-			if ((*counter) == 0) {  std::cout<<"deleting domain in = ("<<this<<")\n"; delete counter; delete pfirst; delete psecond;}
+			if ((*counter) == 0) {  delete counter; delete pfirst; delete psecond;}
 			else (*counter)--;	
 		}
 		 

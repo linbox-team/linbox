@@ -117,9 +117,7 @@ class DeleteBlackboxFunctor{
 public:	
 	template<class Blackbox>
 	void operator() (void *, Blackbox *B) const {
-		std::cout<<"freeing blackbox...";
 		delete B;		
-		std::cout<<"done\n";
 	}
 };
 
@@ -151,7 +149,7 @@ void deleteBlackbox (const BlackboxKey &key){
 /*******************************
  * API to collect all blackbox *
  *******************************/
-void collectBlackbox(){std::cout<<blackbox_hashtable.size()<<" blackbox to collect\n";
+void collectBlackbox(){
 	DeleteBlackboxFunctor Fct;
 	BlackboxTable::iterator it= blackbox_hashtable.begin();
 	for (; it != blackbox_hashtable.end(); ++it){std::cout<<"bb to delete: "<<it->second->info()<<"\n";
@@ -162,9 +160,7 @@ void collectBlackbox(){std::cout<<blackbox_hashtable.size()<<" blackbox to colle
 #ifdef __LINBOX_NO_GC_EXCEPTION
 		} catch (lb_runtime_error &t) {std::cout<<"LinBox exception catched\n"; exit(0);}
 #endif
-		std::cout<<"call blackbox abstract destructor...";
 		delete it->second;
-		std::cout<<"done\n";
 		blackbox_hashtable.erase(it);
 	}
 }
@@ -225,15 +221,14 @@ void collectVector(){
 }
 
 
-
 /***********************************************
  * API to collect all data allocated by LinBox *
  **********************************************/
-void LinBoxCollect(){std::cout<<"starting to collect\n";
-	collectVector();    std::cout<<"vector collected\n";
-	collectBlackbox();  std::cout<<"blackbox collected\n";
-	collectElement();   std::cout<<"element collected\n";
-	collectDomain();    std::cout<<"domain collected\n";
+void LinBoxCollect(){
+	collectVector();   
+	collectBlackbox();  
+	collectElement();   
+	collectDomain();    
 } 
 
 

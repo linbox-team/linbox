@@ -163,7 +163,7 @@ public:
 
 	BlackboxEnvelope(void *p, const DomainKey &k, const char *info) : ptr(p), key(k, true), _info(info) {}
 
-	~BlackboxEnvelope(){std::cout<<"deleting blackbox\n";} 
+	~BlackboxEnvelope(){}
 
 	BlackboxAbstract* clone() const {
 		CopyBlackboxFunctor Fct;
