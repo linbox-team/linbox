@@ -139,7 +139,6 @@ linbox-config
 examples/Makefile
 examples/fields/Makefile
 examples/Readme-make
-examples/solver/Makefile
 gmp++/Makefile
 doc/Makefile
 linbox/Makefile
@@ -161,7 +160,9 @@ linbox/vector/Makefile
 tests/Makefile
 tests/data/Makefile
 interfaces/Makefile
+interfaces/driver/Makefile
 interfaces/maple/Makefile
+interfaces/maple/new/Makefile
 macros/Makefile
 ])
 

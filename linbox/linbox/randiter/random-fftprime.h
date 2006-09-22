@@ -38,9 +38,9 @@ namespace LinBox {
 			: _bits(bits)
                 {
 			if (! seed) 
-				RandomPrime::setSeed( BaseTimer::seed() );
+				RandomFFTPrime::setSeed( BaseTimer::seed() );
 			else
-				RandomPrime::setSeed( seed );
+				RandomFFTPrime::setSeed( seed );
                 }
 	  
 		// define the prime type

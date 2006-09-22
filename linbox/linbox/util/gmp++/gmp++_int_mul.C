@@ -83,6 +83,13 @@ Integer& Integer::axpyin(Integer& res, const Integer& a, const Integer& x)
     return res;
 }
 
+Integer& Integer::amxy(Integer& res, const Integer& a, const Integer& x, const Integer& b)
+{
+    if (isZero(b) || isZero(x)) return res=a;
+    mpz_mul( (mpz_ptr)&res.gmp_rep, (mpz_ptr)&b.gmp_rep, (mpz_ptr)&x.gmp_rep);
+    mpz_sub( (mpz_ptr)&res.gmp_rep, (mpz_ptr)&a.gmp_rep, (mpz_ptr)&res.gmp_rep);
+    return res;
+}
 
 Integer& Integer::axmy(Integer& res, const Integer& a, const Integer& x, const Integer& b)
 {

@@ -7,6 +7,7 @@ pkgincludesub_HEADERS = \
 	ffpack_charpoly_kgfast.inl    \
 	ffpack_ludivine.inl		\
 	ffpack_minpoly.inl		\
-	ffpack_minpoly_construct.inl	
+	ffpack_minpoly_construct.inl	\
+	ffpack_charpoly_danilevski.inl 	
 
 EXTRA_DIST = ffpack.doxy

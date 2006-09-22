@@ -24,7 +24,7 @@
 #ifndef __LINBOX_MATPOLY_MULT
 #define __LINBOX_MATPOLY_MULT
 
-#include <NTL/lzz_pX.h>
+#include <linbox/randiter/random-fftprime.h>
 #include <linbox/algorithms/blas-domain.h>
 #include <linbox/matrix/matrix-domain.h>
 #include <linbox/util/error.h>
@@ -75,7 +75,31 @@ namespace LinBox {
 		}
 	};
 
+	
+	template <class Field, class Polynomial>
+	class ClassicMulDomain {
+	private:
+		Field                       _F;
+		BlasMatrixDomain<Field>   _BMD;
+		MatrixDomain<Field>        _MD;
 
+	public:
+		
+		ClassicMulDomain(const Field &F) : _F(F), _BMD(F), _MD(F) {}
+		
+		void mul(Polynomial &a, const Polynomial &b, const Polynomial &c) {
+			
+			size_t deg =  b.size()+c.size()-1;
+			linbox_check(a.size() >= deg);
+
+			for (size_t i=0;i<b.size();++i){
+				for (size_t j=0;j<c.size();++j)
+					_BMD.axpyin(a[i+j],b[i],c[j]);
+			}
+		}
+
+		
+	};
 
 	template <class Field, class Polynomial>
 	class KaratsubaMulDomain {
@@ -297,14 +321,88 @@ namespace LinBox {
 				FFTDomainBase fftdomain(_F);
 				fftdomain.mul(a, b, c);
 			}
-			else {
-				std::cout<<"not yet hanled\n";
-				// compute with extra fftprimes
+			else {				
+				// computation done using CRT and few fft primes
+				
+				// get number of bits of feasible fft prime
 				int k= b[0].coldim();
 				size_t n=k;
 				size_t ln=0;
 				while ( k>0) {k>>=1; ln++;}
-				size_t bit = (53-ln)>>1;
+				
+				// taking primes greater than current prime
+				size_t bit = std::max((53-ln)>>1, _p.bitsize());
+
+				// get number of necessary primes				
+				integer ibound = n * _p * _p * std::max(b.size(), c.size());
+				integer primesprod=1; size_t nbrprimes=1;
+				RandomFFTPrime fftprime(bit);
+				std::vector<integer> lprimes(10); lprimes.resize(nbrprimes);
+				lprimes[0] = fftprime.randomPrime();				
+				primesprod = lprimes[0];
+				while (primesprod < ibound) {
+					++nbrprimes;
+					lprimes.resize(nbrprimes);				
+					do {lprimes[nbrprimes-1] = fftprime.randomPrime();} while (primesprod % lprimes[nbrprimes-1] == 0);					
+					primesprod *= lprimes[nbrprimes-1]; 
+				}
+#ifdef FFT_TIMING
+				std::cout<<"num of primes "<<nbrprimes<<"\n";
+#endif
+				// allocate fftprime fields
+				Field f_i[nbrprimes];
+
+				// allocate polynomial matrices for multimodular results
+				Polynomial a_i[nbrprimes];
+				const Coefficient Zero(a[0].rowdim(),a[0].coldim());
+
+
+				// set fftprimes, fftdomains, polynomial matrix results
+				for (size_t i=0; i< nbrprimes; ++i){
+					f_i[i] = Field(lprimes[i]);
+					FFTDomainBase fftdomain(f_i[i]);					
+					a_i[i] = Polynomial(a.size(), Zero);
+					fftdomain.mul(a_i[i], b ,c);				
+				}
+				
+				LinBox::Timer chrono;
+				chrono.start();
+				// reconstruct the solution modulo the original prime
+				if (nbrprimes < 2) {
+					for (size_t k=0;k<a.size();++k)
+						for (size_t i=0;i<a[0].rowdim();++i)
+							for (size_t j=0;j<a[0].coldim();++j){
+								_F.init(a[k].refEntry(i,j), a_i[0][k].getEntry(i,j));
+							}
+				}
+				else {
+					integer crt[nbrprimes];
+					Element crt_inv[nbrprimes], tmp;
+					crt_inv[nbrprimes];
+					for (size_t i=0;i<nbrprimes; ++i){
+						crt[i]=primesprod/lprimes[i];
+						f_i[i].init(tmp,crt[i]);
+						f_i[i].inv(crt_inv[i], tmp);
+					}
+					
+					integer res,acc;
+					for (size_t k=0;k<deg;++k)
+						for (size_t i=0;i<a[0].rowdim();++i)
+							for (size_t j=0;j<a[0].coldim();++j){
+								acc= integer(0);
+								for (size_t l=0;l<nbrprimes; ++l){  							
+									f_i[l].mul(tmp, a_i[l][k].getEntry(i,j), crt_inv[l]);  
+									res= f_i[l].convert(res,tmp);
+									acc+= res*crt[l];
+									if (acc > primesprod)
+										acc-= primesprod;
+								}
+								_F.init(a[k].refEntry(i,j), acc);
+							}
+				}
+#ifdef FFT_TIMING
+				chrono.stop();std::cout<<"reconstruction time: "<<chrono<<"\n";
+#endif
 			}			
 		}
 
@@ -328,16 +426,90 @@ namespace LinBox {
 				fftdomain.midproduct(a, b, c);
 			}
 			else {
-				std::cout<<"not yet hanled\n";
-				// compute with extra fftprimes
+				// computation done using CRT and few fft primes
+				
+				// get number of bits of feasible fft prime
 				int k= b[0].coldim();
 				size_t n=k;
 				size_t ln=0;
 				while ( k>0) {k>>=1; ln++;}
-				size_t bit = (53-ln)>>1;
-			}			
+				
+				// taking primes greater than current prime
+				size_t bit = std::max((53-ln)>>1, _p.bitsize());
 
-			
+				// get number of necessary primes				
+				integer ibound = n * _p * _p * std::max(b.size(), c.size());
+				integer primesprod=1; size_t nbrprimes=1;
+				RandomFFTPrime fftprime(bit);
+				std::vector<integer> lprimes(10); lprimes.resize(nbrprimes);
+				lprimes[0] = fftprime.randomPrime();				
+				primesprod = lprimes[0];
+				while (primesprod < ibound) {
+					++nbrprimes;
+					lprimes.resize(nbrprimes);				
+					do {lprimes[nbrprimes-1] = fftprime.randomPrime();} while (primesprod % lprimes[nbrprimes-1] == 0);					
+					primesprod *= lprimes[nbrprimes-1]; 
+				}
+				
+#ifdef FFT_TIMING			
+				std::cout<<"num of primes "<<nbrprimes<<"\n";
+#endif				
+
+				// allocate fftprime fields
+				Field f_i[nbrprimes];
+
+				// allocate polynomial matrices for multimodular results
+				Polynomial a_i[nbrprimes];
+				const Coefficient Zero(a[0].rowdim(),a[0].coldim());
+
+
+				// set fftprimes, fftdomains, polynomial matrix results
+				for (size_t i=0; i< nbrprimes; ++i){
+					f_i[i] = Field(lprimes[i]);
+					FFTDomainBase fftdomain(f_i[i]);					
+					a_i[i] = Polynomial(a.size(), Zero);
+					fftdomain.midproduct(a_i[i], b ,c);				
+				}
+				
+				LinBox::Timer chrono;
+				chrono.start();
+				// reconstruct the solution modulo the original prime
+				if (nbrprimes < 2) {
+					for (size_t k=0;k<a.size();++k)
+						for (size_t i=0;i<a[0].rowdim();++i)
+							for (size_t j=0;j<a[0].coldim();++j){
+								_F.init(a[k].refEntry(i,j), a_i[0][k].getEntry(i,j));
+							}
+				}
+				else {
+					integer crt[nbrprimes];
+					Element crt_inv[nbrprimes], tmp;
+					crt_inv[nbrprimes];
+					for (size_t i=0;i<nbrprimes; ++i){
+						crt[i]=primesprod/lprimes[i];
+						f_i[i].init(tmp,crt[i]);
+						f_i[i].inv(crt_inv[i], tmp);
+					}
+					
+					integer res,acc;
+					for (size_t k=0;k<a.size();++k)
+						for (size_t i=0;i<a[0].rowdim();++i)
+							for (size_t j=0;j<a[0].coldim();++j){
+								acc= integer(0);
+								for (size_t l=0;l<nbrprimes; ++l){  							
+									f_i[l].mul(tmp, a_i[l][k].getEntry(i,j), crt_inv[l]);  
+									res= f_i[l].convert(res,tmp);
+									acc+= res*crt[l];
+									if (acc > primesprod)
+										acc-= primesprod;
+								}
+								_F.init(a[k].refEntry(i,j), acc);
+							}
+				}
+#ifdef FFT_TIMING			
+				chrono.stop();std::cout<<"reconstruction time: "<<chrono<<"\n";
+#endif	
+			}		
 		}
 	};
 
@@ -409,8 +581,11 @@ namespace LinBox {
 			size_t deg     = b.size()+c.size()-1;
 			size_t lpts = 0; 
 			size_t pts =1; while (pts < deg) { pts= pts<<1; ++lpts; }
-			
-			
+
+#ifdef FFT_TIMING			
+			std::cout<<"FFT: points "<<pts<<"\n";
+#endif			
+		
 			if (_p%pts != 1) {
 				std::cout<<"Error the prime is not a FFTPrime or it has too small power of 2\n";
 				throw LinboxError("LinBox ERROR: bad FFT Prime\n");
@@ -582,8 +757,7 @@ namespace LinBox {
 			}
 #ifdef FFT_TIMING
 			chrono.stop();
-			std::cout<<"FFT: order and scale the result : "<<chrono.usertime()<<"\n\n";			
-			std::cout<<"FFT multiplications: "<<pts<<"\n";
+			std::cout<<"FFT: order and scale the result : "<<chrono.usertime()<<"\n\n";					
 #endif
 		}
 

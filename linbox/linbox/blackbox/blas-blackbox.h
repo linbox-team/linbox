@@ -125,8 +125,14 @@ namespace LinBox {
 					      this->_Zero,
 					      &y[0],1);  
 			
-			else
+			else {
 				_MD. vectorMul (y, *this, x);
+				//typename BlasMatrix<Element>::ConstRowIterator i = this->rowBegin ();
+				//typename Vector1::iterator j = y.begin ();
+				
+				//for (; j != y.end (); ++j, ++i)
+				//	_VD.dot (*j, *i, x);
+			}
 			return y;
 		}
 
@@ -213,8 +219,8 @@ namespace LinBox {
 	protected:
 		
 		const Field                 & _F;  
-		const MatrixDomain<Field>   & _MD; 
-		const VectorDomain<Field>   & _VD; 
+		MatrixDomain<Field>    _MD; 
+		VectorDomain<Field>    _VD;  
 		size_t                _row,_col;
 		Element              _One,_Zero;
 		bool                  _use_fflas;

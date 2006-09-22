@@ -25,5 +25,8 @@ pkgincludesub_HEADERS=\
 	prime-stream.h			\
 	field-axpy.h			\
 	matrix-stream.h			\
-	matrix-stream.inl
+	matrix-stream.inl		\
+	mpicpp.h			\
+	mpicpp.inl
+
 EXTRA_DIST = util.doxy
