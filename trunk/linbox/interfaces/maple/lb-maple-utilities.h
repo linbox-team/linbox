@@ -167,7 +167,7 @@ extern "C" {
 #endif		
 	}
 
-	static void M_DECL DisposeBlackboxKey   (ALGEB key){std::cout<<"garbage collect blackbox\n";
+	static void M_DECL DisposeBlackboxKey   (ALGEB key){
 #ifdef __LB_PRINT_GC
 		MaplePrintf(lb_kv, "Maple Garbage collected a LinBox Blackbox\n");
 #endif
