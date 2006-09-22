@@ -2,7 +2,7 @@ pkgincludesubdir=$(includedir)/interfaces/maple/new
 
 INCLUDES=-I$(top_srcdir) -I.
 
-AM_CXXFLAGS = -O2 -DDISABLE_COMMENTATOR -I../../driver $(GMP_CFLAGS) $(NTL_CFLAGS) $(ATLAS_CFLAGS) $(MAPLE_CFLAGS) $(GIVARO_CFLAGS)
+AM_CXXFLAGS = -O2 -DDISABLE_COMMENTATOR -I../driver $(GMP_CFLAGS) $(NTL_CFLAGS) $(ATLAS_CFLAGS) $(MAPLE_CFLAGS) $(GIVARO_CFLAGS)
 
 lib_LTLIBRARIES=liblbmaple.la 
 
