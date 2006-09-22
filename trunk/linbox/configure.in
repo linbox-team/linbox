@@ -162,7 +162,6 @@ tests/data/Makefile
 interfaces/Makefile
 interfaces/driver/Makefile
 interfaces/maple/Makefile
-interfaces/maple/new/Makefile
 macros/Makefile
 ])
 
