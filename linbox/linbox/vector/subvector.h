@@ -9,7 +9,7 @@
  *
  * Written by William J. Turner <wjturner@acm.org>
  * Mods by -bds 
- * Maintainer: -bds 
+ * Maintained by: -bds <saunders@udel.edu> 
  * (where there is missing or buggy function, please contact me rather than workaround)
  */
 
