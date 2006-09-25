@@ -77,8 +77,7 @@ NONCOMPLIANT_TESTS =	\
 # this allows _SOURCES entry to remain
 # except for "make dist"
 NONEXISTING_TESTS =
-#NONEXISTING_TESTS =		\
-#	test-solutions
+#NONEXISTING_TESTS = test-solutions
 #
 #test_solutions_SOURCES=    \
 #	test-common.h	\
@@ -92,8 +91,8 @@ FAILING_TESTS =		\
         test-zo                 \
         test-quad-matrix        \
 	test-la-block-lanczos    
-#       test-over-under         \
-#       test-side-by-side       \
+#       test-over-under         
+#       test-side-by-side       
 
 USE_NONCOMPILING_TESTS = 
 USE_FAILING_TESTS = 
