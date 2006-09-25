@@ -86,9 +86,6 @@ do
 					export LD_RUN_PATH
 					MAPLE_LIBS="-L${MAPLE_BIN} -lmaplec -lstdc++"
 					MAPLE_CFLAGS="-I${MAPLE_HOME}/extern/include"				
-					cp -f interfaces/maple/lbmaple.mpl.head interfaces/maple/lbmaple.mpl
-					echo "\"${LIB_DIR}/liblbmaple.so\"; " >> interfaces/maple/lbmaple.mpl
-					cat interfaces/maple/lbmaple.mpl.tail >> interfaces/maple/lbmaple.mpl
        					AC_SUBST(MAPLE_LIBS)
 					AC_SUBST(MAPLE_CFLAGS)
 					AC_SUBST(MAPLE_HOME)
