@@ -7,14 +7,16 @@
 #ifndef __LINBOX_CRA_H
 #define __LINBOX_CRA_H
 
-#define MPICH_IGNORE_CXX_SEEK
 #include "linbox/util/timer.h"
 #include <stdlib.h>
 #include "linbox/integer.h"
 #include "linbox/solutions/methods.h"
 #include <vector>
 //#include "backend_lib.h"
+#ifdef __LINBOX_HAVE_MPI
+#define MPICH_IGNORE_CXX_SEEK
 #include "linbox/util/mpicpp.h"
+#endif
 
 //#include <linbox/util/timer.h>
 
@@ -119,7 +121,7 @@ namespace LinBox {
             initialize(EARLY, n, 0.0);
         }
 #ifdef __LINBOX_HAVE_MPI
-/**
+/*
 /////  effective?   
    ChineseRemainder(const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD, bool b=false, const size_t n=1){
             boinc = b;
