@@ -188,7 +188,7 @@ class SparseMatrixBase
 	 * @param  m  row dimension
 	 * @param  n  column dimension
 	 */
-        SparseMatrixBase (size_t m, size_t n);
+        SparseMatrixBase (size_t m, size_t n): _A(0), _m(0), _n(0) {};
 
 
 	/** Constructor from a MatrixStream
