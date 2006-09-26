@@ -149,6 +149,9 @@ class GMPRationalField : public FieldInterface
 
 		mpz_div (n, n, d);
 
+		/* Shouldn't there be something like this? We'll assume integer is gmp integers.
+		x.set_mpz(n);
+		*/
 		x = integer::zero;
 
 		// Really bad, but I know of no other general way to do this
@@ -178,24 +181,11 @@ class GMPRationalField : public FieldInterface
 		return x;
 	}
     
-	/** Cardinality.
-	 * Return integer representing cardinality of the field.
-	 * Returns a non-negative integer for all fields with finite
-	 * cardinality, and returns -1 to signify a field of infinite 
-	 * cardinality.
-	 * @return constant reference to integer representing cardinality 
-	 *	       of the field
-	 */
+	/// is infinite (signified by -1 here)
 	integer &cardinality (integer &c) const 
 	{ return c = _cardinality; }
 
-	/** Characteristic.
-	 * Return integer representing characteristic of the field.
-	 * Returns a positive integer to all fields with finite characteristic,
-	 * and returns 0 to signify a field of infinite characteristic.
-	 * @return constant reference to integer representing characteristic 
-	 * 	       of the field.
-	 */
+	/// of the rationals is 0.
 	integer &characteristic (integer &c) const
 	{ return c = _characteristic; }
 

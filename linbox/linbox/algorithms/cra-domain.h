@@ -158,6 +158,7 @@ namespace LinBox {
             }
         }   
 
+#ifdef __LINBOX_HAVE_MPI
       
       /*
         void operator() (int *res, Communicator *Comm) {
@@ -267,7 +268,7 @@ namespace LinBox {
             }
 */
         }
-
+#endif
 
             /** \brief The CRA loop
             

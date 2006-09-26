@@ -792,6 +792,7 @@ template <class Element, class Row>
 void SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag >
 	::setEntry (size_t i, size_t j, const Element &value) 
 {
+	while (_A.size() < i + 1) _A.push_back(Row());
 	Row &v = _A[i];
 	typename Row::first_type::iterator iter;
 

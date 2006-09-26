@@ -13,6 +13,29 @@
 namespace LinBox
 {
   
+  /*
+  // for GF(3^10), apply to packvec will do adds with periodic normalizations
+  template<>
+  template<Field>
+  Packvec<typename Field::Accumulator>& ZeroOne<Field>::apply<Packvec<typename Field::Accumulator>, Packvec<typename Field::Accumulator> >
+  (Pacvec<typename Field::Accumulator>& y,
+   Pacvec<typename Field::Accumulator>& x)
+  {	return y; }
+
+  // more stuff for paley graphs
+  template<class OutVector, class InVector>
+  template<>
+  OutVector & ZeroOne<Special3_10Field>::apply(OutVector & y, const InVector & x) const
+  {
+  	typedef Special3_10Field Field;
+  	typedef typename Packvec<Field::Accumulator> Vector;
+	Vector xx, yy;
+	field().convert(xx, x);
+	apply(yy, xx);
+	field().convert(y, yy);
+  }
+  */
+
   template<class Field>
   template<class OutVector, class InVector>
   OutVector & ZeroOne<Field>::apply(OutVector & y, const InVector & x) const
