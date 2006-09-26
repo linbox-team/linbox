@@ -191,8 +191,8 @@ if test "x$blas_found" = "xyes"; then
 	ifelse([$2], , :, [$2])
 
 elif test -n "$blas_problem"; then
-	AC_MSG_RESULT(problem)
-	echo "Sorry, your BLAS are not working. Disabling."
+	AC_MSG_RESULT(not working)
+	#echo "Sorry, your BLAS are not working. Disabling."
 elif test "x$blas_found" = "xno" ; then	
 	AC_MSG_RESULT(not found)
 fi	

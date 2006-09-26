@@ -17,6 +17,14 @@ AC_MSG_CHECKING([best threshold for Strassen-Winograd matrix multiplication])
 CXXFLAGS="${BACKUP_CXXFLAGS} -I`pwd` ${BLAS_CFLAGS} ${GMP_CFLAGS}  ${GIVARO_CFLAGS} ${CBLAS_FLAG}" 
 LIBS="${BACKUP_LIBS} ${BLAS_LIBS} ${GMP_LIBS}" 
 
+
+echo   " #define __LINBOX_INT8  $LINBOX_INT8  	 
+	 #define __LINBOX_INT16 $LINBOX_INT16 	 
+	 #define __LINBOX_INT32 $LINBOX_INT32 	 
+	 #define __LINBOX_INT64 $LINBOX_INT64 	 
+" > linbox-config.h 
+
+
 AC_TRY_RUN([	#define LinBoxSrcOnly
 		#include <iostream>
 		#define __LINBOX_CONFIGURATION
@@ -97,11 +105,13 @@ AC_TRY_RUN([	#define LinBoxSrcOnly
 	AC_MSG_RESULT(cross compilation)
 	strassen_opti="no"
 	break
+	\rm -f linbox-config,h 2>&1 > /dev/null
 	])
 
 fi;
 ],[
 AC_MSG_RESULT(no)
+\rm -r linbox-config.h  2>&1 > /dev/null
 ])
 
 ])
