@@ -2,7 +2,7 @@
 /* author: B. David Saunders and Zhendong Wan*/
 // parallelized for BOINC computing by Bryan Youse
 // ======================================================================= //
-// Time-stamp: <15 Jul 05 18:53:10 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <26 Sep 06 13:40:13 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_CRA_H
 #define __LINBOX_CRA_H
@@ -100,8 +100,10 @@ namespace LinBox {
         Integer               Table0;
         bool                       Occupation0; //used anywhere?
         bool               boinc;
+#ifdef __LINBOX_HAVE_MPI
         Communicator               *commPtr;
         unsigned int               numprocs;
+#endif
         std::vector< unsigned long >      randv;
         std::vector< double >           dSizes;
         std::vector< LazyProduct >      Modulo;
@@ -116,6 +118,7 @@ namespace LinBox {
         ChineseRemainder(const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD, const size_t n=1) : Modulo0(0) {
             initialize(EARLY, n, 0.0);
         }
+#ifdef __LINBOX_HAVE_MPI
 /**
 /////  effective?   
    ChineseRemainder(const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD, bool b=false, const size_t n=1){
@@ -129,6 +132,7 @@ namespace LinBox {
             numprocs = commPtr->size();
             initialize(EARLY, n, 0.0);
    }
+#endif
         ChineseRemainder(const double BOUND) : Modulo0(0) {
             initialize(0, 0, BOUND);
         }
