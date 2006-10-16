@@ -1,6 +1,7 @@
 # Check for BLAS
 # Copyright Pascal Giorgi 2005
 
+
 dnl LB_CHECK_BLAS ([MINIMUM-VERSION [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl
 dnl Test for BLAS and define BLAS_LIBS
