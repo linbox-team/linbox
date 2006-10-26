@@ -414,6 +414,7 @@ namespace LinBox {
 					tUpdateSerie.clear();
 					tUpdateSerie.start();
 #endif
+					
 					// Compute Serie2 = x^(-degree1).Sigma.PowerSerie mod x^degree2
 					std::vector<Coefficient> Serie2(degree1+1,ZeroSerie);										
 					ComputeNewSerie(Serie2,Sigma1,PowerSerie, degree1, degree2);
@@ -455,7 +456,7 @@ namespace LinBox {
 			m = PowerSerie[0].rowdim();
 			n = PowerSerie[0].coldim();
 
-			// Set some useful constants
+			// Set some useful constants 
 			const Coefficient Zero(m,m);
 			Element one, zero;
 			_F.init(one,1UL);
@@ -470,13 +471,31 @@ namespace LinBox {
 			SigmaBase[0]=Identity;
 			
 			// Keep track on Sigma Base's row degree
-			std::vector<size_t> degree(m,0);
-			for (size_t i=0;i<n;++i)
-				degree[i]=0;
+			// I adjust the degree with the maximal difference between defects
+			// this is just to be sure to catch degree increase according to elimination process
+			int min_defect, max_defect;
+			min_defect = max_defect = defect[0];
+			for (size_t i=0;i<m;++i){
+				if ( defect[i] > max_defect)
+					max_defect = defect[i];
+				if ( defect[i] < min_defect)
+					min_defect = defect[i];
+			}
+			std::vector<size_t> degree(m,max_defect-min_defect);
+		
 			
+			// Discrepancy
+			Coefficient Discrepancy(m,n);
+
+			Timer chrono;
+			double tSigmaUp, tResidueUp, tSigmaSh, tResidueSh, tLQUP, tPerm;
+			tSigmaUp= tResidueUp= tSigmaSh= tResidueSh= tLQUP= tPerm =0.;
 
 			// Compute the minimal Sigma Base of the PowerSerie up to length
 			for (size_t k=0; k< length; ++k) {
+
+			
+				chrono.start();
 
 				// compute BPerm1 such that BPerm1.defect is in increasing order
 				std::vector<size_t> Perm1(m);			
@@ -489,20 +508,42 @@ namespace LinBox {
 							idx_min=j;												
 					std::swap(defect[i], defect[idx_min]);				
 					Perm1[i]=idx_min;
-				}					
+				}				
 				BlasPermutation BPerm1(Perm1);
+				
+				// permute row degree
+				for (size_t i=0;i<m;++i)
+					std::swap(degree[i], degree[Perm1[i]]);	
+	
+				chrono.stop();
+				tPerm+=chrono.usertime();
+				chrono.clear();
+				chrono.start();
 
 				// Apply Bperm1 to the current SigmaBase
 				for (size_t i=0;i<SigmaBase.size();++i)
 					_BMD.mulin_right(BPerm1,SigmaBase[i]);
-
-				// Compute Discrepancy
-				Coefficient Discrepancy(m,n);								
+			
+				chrono.stop();
+				tSigmaUp+=chrono.usertime();
+				chrono.clear();
+				chrono.start();
+								
+				// Compute Discrepancy			
 				_BMD.mul(Discrepancy,SigmaBase[0],PowerSerie[k]);
 				for (size_t i=1;i<SigmaBase.size();i++){
 					_BMD.axpyin(Discrepancy,SigmaBase[i],PowerSerie[k-i]);
 				}
-				
+
+				chrono.stop();
+				tResidueUp+=chrono.usertime();
+				chrono.clear();
+				chrono.start();
+
+				//std::cout<<"MBasis: Discrepancy\n";  
+				//Discrepancy.write(std::cout,_F);
+			
+
 				// Compute LQUP of Discrepancy
 				LQUPMatrix<Field> LQUP(_F,Discrepancy);
 
@@ -512,19 +553,31 @@ namespace LinBox {
 
 				// get the transposed permutation of Q from LQUP
 				BlasPermutation Qt =LQUP.getQ();
+			
 
 				// Compute the inverse of L
 				TriangularBlasMatrix<Element> invL(m, m, BlasTag::low, BlasTag::unit);
 				FFPACK::trinv_left(_F,m,L.getPointer(),L.getStride(),invL.getWritePointer(),invL.getStride());
 
+
+				chrono.stop();
+				tLQUP+=chrono.usertime();
+				chrono.clear();
+				chrono.start();
+
 				// Update Sigma by L^(-1)
 				// Sigma = L^(-1) . Sigma
 				for (size_t i=0;i<SigmaBase.size();++i) 
 					_BMD.mulin_right(invL,SigmaBase[i]);
+			
+				chrono.stop();
+				tSigmaUp+=chrono.usertime();
+				chrono.clear();
+				chrono.start();
 
 				//std::cout<<"BaseBis"<<k<<":=";
 				//write_maple(F,SigmaBase);
-				// Increase by degree and defect according to row choosen as pivot in LQUP
+				// Increase  degree and defect according to row choosen as pivot in LQUP
 				for (size_t i=0;i<n;++i){
 					defect[*(Qt.getPointer()+i)]++;
 					degree[*(Qt.getPointer()+i)]++;
@@ -536,9 +589,9 @@ namespace LinBox {
 						max_degree=degree[*(Qt.getPointer()+i)];
 				}	
 			
-		
+				
 				size_t size=SigmaBase.size();
-				if (SigmaBase.size()<= max_degree+1)
+				if (SigmaBase.size()<= max_degree)
 					{					
 						SigmaBase.resize(size+1,Zero);					
 						size++;
@@ -553,38 +606,53 @@ namespace LinBox {
 					for (size_t l=0;l<m;++l)
 						_F.assign(SigmaBase[0].refEntry(*(Qt.getPointer()+i),l),zero);
 				}
+				chrono.stop();
+				tSigmaSh+=chrono.usertime();
+				chrono.clear();
+				chrono.start();
+	
+				//write_maple("SS1",SigmaBase);			
 			}
+			//write_maple("Sigma1",SigmaBase);
+			std::cout<<"\n MBASIS timing:\n ";
+			std::cout<<"Permutation   : "<<tPerm<<"s \n";
+			std::cout<<"LQUP + L^-1   : "<<tLQUP<<"s \n";
+			std::cout<<"Sigma Up      : "<<tSigmaUp<<"s \n";
+			std::cout<<"Residue Up    : "<<tResidueUp<<"s \n";
+			std::cout<<"Sigma Shift   : "<<tSigmaSh<<"s \n";
+			std::cout<<"Residue Shift : "<<tResidueSh<<"s \n";
 		}
 
 
 		// Multiply a Power Serie by a Sigma Base.
-		// only affect coefficients of the Power Serie between degree1 and degree2
+		// only affect coefficients of the Power Serie between degree1 and degree1+degree2
 		void ComputeNewSerie(std::vector<Coefficient>          &NewSerie, 
 				     const std::vector<Coefficient>   &SigmaBase, 
 				     const std::vector<Coefficient>    &OldSerie,
 				     size_t                              degree1,
 				     size_t                              degree2){						
 			
-
 			// degree1 >= degree2
 			//size_t size = 2*degree1 + 1;
 					
 			const Coefficient ZeroSerie (OldSerie[0].rowdim(), OldSerie[0].coldim());
 			const Coefficient ZeroBase  (SigmaBase[0].rowdim(), SigmaBase[0].coldim());
-
+			
 			// Work on a copy of the old  Serie (increase size by one for computation of middle product)
 			std::vector<Coefficient> Serie(OldSerie.size()+1,ZeroSerie);
 			for (size_t i=0;i< OldSerie.size();++i)
 				Serie[i] = OldSerie[i];
 
+			//  ** try to not use a Copy **
 			// Work on a copy of the Sigma Base 
-			std::vector<Coefficient> Sigma(SigmaBase.size());
-			for (size_t i=0;i<SigmaBase.size();++i){
-				Sigma[i] = SigmaBase[i];
-			}
-			
+			//std::vector<Coefficient> Sigma(SigmaBase.size());
+			//for (size_t i=0;i<SigmaBase.size();++i){
+			//	Sigma[i] = SigmaBase[i];
+			//}
+		
+
 			PolynomialMatrixDomain<Field, std::vector<Coefficient> > PM_domain(_F);
-			PM_domain.midproduct(NewSerie, Sigma, Serie);
+			PM_domain.midproduct(NewSerie, SigmaBase, Serie);
 		}
 		
 
@@ -1062,6 +1130,405 @@ namespace LinBox {
 					for (size_t k=0;k<m;k++) 
 						_F.assign(Approx2[j].refEntry(i,k), SigmaBase[j].getEntry(i,k));				
 		}
+
+
+
+
+
+		// Computation of a minimal Sigma Base of a Power Serie up to length
+		// algorithm is from Giorgi, Jeannerod and Villard  ISSAC'03		
+		void new_M_Basis(std::vector<Coefficient>     &SigmaBase,
+				 std::vector<Coefficient>    &PowerSerie, 
+				 size_t                           length, 
+				 std::vector<size_t>             &defect) {
+
+			// Get the dimension of matrices inside 
+			// the Matrix Power Serie
+			size_t m,n;
+			m = PowerSerie[0].rowdim();
+			n = PowerSerie[0].coldim();
+
+			// Set some useful constants
+			const Coefficient Zeromm(m,m);
+			const Coefficient Zeromn(m,n);
+			Element one, zero;
+			_F.init(one,1UL);
+			_F.init(zero,0UL);
+			
+			// Reserve memory for the Sigma Base  
+			SigmaBase.reserve(length+1);
+			SigmaBase.resize(1);
+			
+			// set SigmaBase[0] to Identity
+			Coefficient Identity(m,m);
+			for (size_t i=0;i< m;++i)
+				Identity.setEntry(i,i,one);
+			SigmaBase[0]=Identity;
+			
+			// Define Truncated Residual
+			std::vector<Coefficient>  Residual(length+1, Zeromn);
+			
+			// Set Truncated Residual to PowerSerie mod X^length
+			for (size_t k=0;k<length; ++k)
+				Residual[k] = PowerSerie[k];
+
+			// Define Discrepancy 
+			Coefficient Discrepancy(m,n);
+			
+			// Row degree of SigmaBase
+			// Keep track on Sigma Base's row degree
+			// I adjust the degree with the maximal difference between defects
+			// this is just to be sure to catch degree increase according to elimination process
+			int min_defect, max_defect;
+			min_defect = max_defect = defect[0];
+			for (size_t i=0;i<m;++i){
+				if ( defect[i] > max_defect)
+					max_defect = defect[i];
+				if ( defect[i] < min_defect)
+					min_defect = defect[i];
+			}
+			std::vector<size_t> degree(m,max_defect-min_defect);
+
+			//write_maple("PowerSerie",PowerSerie);		
+
+			Timer chrono;
+			double tSigmaUp, tResidueUp, tSigmaSh, tResidueSh, tLQUP, tPerm;
+			tSigmaUp= tResidueUp= tSigmaSh= tResidueSh= tLQUP= tPerm =0.;
+
+			// Compute the minimal Sigma Base of the PowerSerie up to length
+			for (size_t k=0; k< length; ++k) {
+				
+
+
+				// set Discrepancy to Residual[k] 
+				// -> can be optimized by directly using Residual[k]
+				Discrepancy = Residual[k];
+
+
+				chrono.start();
+				// compute BPerm1 such that BPerm1.defect is in increasing order				
+				std::vector<size_t> Perm1(m);			
+				for (size_t i=0;i<m;++i)
+					Perm1[i]=i;			
+				for (size_t i=0;i<m;++i) {
+					size_t idx_min=i;
+					for (size_t j=i+1;j<m;++j) 
+						if (defect[j]< defect[idx_min]) 
+							idx_min=j;												
+					std::swap(defect[i], defect[idx_min]);				
+					Perm1[i]=idx_min;
+				}
+
+				// permute row degree
+				for (size_t i=0;i<m;++i)
+					if ( i != Perm1[i])
+						std::swap(degree[i], degree[Perm1[i]]);	
+
+			
+				//std::cout<<"Perm1:=[ ";
+				//for (size_t i=0;i<m;++i)
+				//	std::cout<<Perm1[i]<<" , ";
+				//std::cout<<"\n";
+				
+				BlasPermutation BPerm1(Perm1);
+							
+				// Apply Bperm1 to the Discrepancy
+				_BMD.mulin_right(BPerm1, Discrepancy);
+ 
+				std::cout<<"new MBasis: Discrepancy\n";  
+				Discrepancy.write(std::cout,_F);				
+				
+				chrono.stop();
+				tPerm+=chrono.usertime();
+				chrono.clear();
+				chrono.start();
+
+				// Compute LQUP of Discrepancy
+				LQUPMatrix<Field> LQUP(_F,Discrepancy);
+
+				// Get L from LQUP
+				TriangularBlasMatrix<Element> L(m, m, BlasTag::low, BlasTag::unit);
+				LQUP.getL(L);
+		       
+				std::cout<<"L:\n";
+				L.write(std::cout, _F);
+
+				// get the transposed permutation of Q from LQUP
+				BlasPermutation Qt =LQUP.getQ();
+			
+				//std::cout<<"qT:=[ ";
+				//for (size_t i=0;i<m;++i)
+				//	std::cout<<*(Qt.getPointer()+i)<<" , ";
+				//std::cout<<"\n";
+				
+			
+
+
+				// Compute the inverse of L
+				TriangularBlasMatrix<Element> invL(m, m, BlasTag::low, BlasTag::unit);
+	 			//BlasMatrix<Element> invL(m,m);
+				FFPACK::trinv_left(_F,m,L.getPointer(),L.getStride(),invL.getWritePointer(),invL.getStride());
+ 
+
+				//invL.write(std::cout,_F);
+				// use permutation Q to put all pivots in generic rank profile
+				//TransposedBlasMatrix<BlasPermutation> Q(Qt);
+				//_BMD.mulin_left(invL, Q);				
+				//_BMD.mulin_right(Qt,invL);
+				//invL.write(std::cout,_F);
+
+				//BlasMatrix<Element> invl_T(invL, 0, 0, n, n);
+				//BlasMatrix<Element> invl_B(invL, n, 0, m-n, n);
+
+
+				//invl_T.write(std::cout,_F);
+				//invl_B.write(std::cout,_F);
+
+				chrono.stop();
+				tLQUP+=chrono.usertime();
+				chrono.clear();
+				chrono.start();
+
+				// Update SigmaBase with L^(-1).BPerm1		
+				// new strategy: split invL by its top part and bottom part 
+				for (size_t i=0;i<SigmaBase.size();++i) {
+					_BMD.mulin_right(BPerm1, SigmaBase[i]);
+					_BMD.mulin_right(invL,SigmaBase[i]);				
+					// opimization follow
+					// BlasMatrix<Element> S_T(SigmaBase[i], 0,0,n,m);
+					// BlasMatrix<Element> S_L(SigmaBase[i], n,0,m-n,m);
+					// _BMD.axpyin(S_L, invl_B, S_T);
+					//_BMD.mulin_right(invl_T, S_T);					
+				}
+			
+				chrono.stop();
+				tSigmaUp+=chrono.usertime();
+				chrono.clear();
+				chrono.start();
+
+				// Update  Residual with L^(-1).BPerm1 (only monomials greater than k-1)
+				for (size_t i=k;i<length;++i){
+					_BMD.mulin_right(BPerm1,Residual[i]);
+					_BMD.mulin_right(invL,Residual[i]);
+					// opimization follow
+					// BlasMatrix<Element> R_T(Residual[i], 0,0,n,n);
+					// BlasMatrix<Element> R_L(Residual[i], n,0,m-n,n);
+					// _BMD.axpyin(R_L, invl_B, R_T);
+					//_BMD.mulin_right(invl_T, R_T);										
+				}
+				
+				chrono.stop();
+				tResidueUp+=chrono.usertime();
+				chrono.clear();
+				chrono.start();
+
+				//  Calculate the new degree of SigmaBase (looking only pivot's row)
+				size_t max_degree=degree[*(Qt.getPointer())];
+				for (size_t i=1;i<n;++i) {
+					if (degree[*(Qt.getPointer()+i)]>max_degree)
+						max_degree=degree[*(Qt.getPointer()+i)];
+				}	
+			
+				// Resize SigmaBase if necessary
+				size_t size=SigmaBase.size();
+				if (SigmaBase.size()<= max_degree+1)
+					{					
+						SigmaBase.resize(size+1,Zeromm);					
+						size++;
+					}		
+
+				//write_maple("Sigma",SigmaBase);
+		
+				// Mulitply by x the rows of SigmaBase involved as pivot 
+				for (size_t i=0;i<n;++i){
+					for (int j= (int) size-2;j>=0; --j){						
+						for (size_t l=0;l<m;++l)
+							_F.assign(SigmaBase[j+1].refEntry(*(Qt.getPointer()+i),l), SigmaBase[j].getEntry(*(Qt.getPointer()+i),l));			
+					}
+					for (size_t l=0;l<m;++l)
+						_F.assign(SigmaBase[0].refEntry(*(Qt.getPointer()+i),l),zero);
+				}
+				
+				chrono.stop();
+				tSigmaSh+=chrono.usertime();
+				chrono.clear();
+				chrono.start();
+				
+				// Mulitply by x the rows of Residual involved as pivot 				
+				for (size_t i=0;i<n;++i){
+					for (int j= (int) length-2;j>= (int) k; j--){
+						for (size_t l=0;l<n;++l) 
+							_F.assign(Residual[j+1].refEntry(*(Qt.getPointer()+i),l), Residual[j].getEntry(*(Qt.getPointer()+i),l));
+					}					
+				}
+				
+				chrono.stop();
+				tResidueSh+=chrono.usertime();
+				chrono.clear();
+				
+		
+				// Increase defect according to row index choosen as pivot 				
+				for (size_t i=0;i<n;++i){
+					defect[*(Qt.getPointer()+i)]++;	
+					degree[*(Qt.getPointer()+i)]++;
+				}							
+			}
+			//write_maple("Sigma",SigmaBase);
+			std::cout<<"\n NEW MBASIS timing:\n ";
+			std::cout<<"Permutation   : "<<tPerm<<"s \n";
+			std::cout<<"LQUP + L^-1   : "<<tLQUP<<"s \n";
+			std::cout<<"Sigma Up      : "<<tSigmaUp<<"s \n";
+			std::cout<<"Residue Up    : "<<tResidueUp<<"s \n";
+			std::cout<<"Sigma Shift   : "<<tSigmaSh<<"s \n";
+			std::cout<<"Residue Shift : "<<tResidueSh<<"s \n";
+		}
+
+
+		void new_PM_Basis(std::vector<Coefficient>     &SigmaBase,
+				  std::vector<Coefficient>    &PowerSerie, 
+				  size_t                           degree, 
+				  std::vector<size_t>             &defect) {
+						
+			size_t m,n;
+			m = PowerSerie[0].rowdim();
+			n = PowerSerie[0].coldim();
+			Element one;
+			_F.init(one,1UL);
+			const Coefficient ZeroSigma(m,m);
+			const Coefficient ZeroSerie(m,n);
+			PowerSerie.resize(degree, ZeroSerie);	
+
+			if (degree == 0) {
+				Coefficient Identity(m,m);
+				for (size_t i=0;i< m;++i)
+					Identity.setEntry(i,i,one);
+				SigmaBase[0]=Identity;
+			}
+			else {
+				if (degree == 1) {
+					M_Basis(SigmaBase, PowerSerie, degree, defect);
+				}
+				else {
+					PolynomialMatrixDomain<Field, std::vector<Coefficient> > PM_domain(_F);
+					
+					size_t degree1,degree2;
+					degree1 = (degree >> 1) + (degree & 1);				
+					degree2 = degree - degree1;									
+					
+					//write_maple("\n\nPowerSerie", PowerSerie);
+
+					// Compute Sigma Base of half degree
+					std::vector<Coefficient> Sigma1(degree1,ZeroSigma);
+					std::vector<Coefficient> Serie1(degree1);
+					for (size_t i=0;i< degree1;++i)
+						Serie1[i] = PowerSerie[i];
+					
+					//write_maple("Serie1", Serie1);
+				
+					new_PM_Basis(Sigma1, Serie1, degree1, defect);
+
+										
+					//write_maple("Sigma1", Sigma1);
+					
+					Sigma1.resize(degree1+1, ZeroSigma);
+					
+					// Compute Serie2 = x^(-degree1).Sigma.PowerSerie mod x^degree2
+					std::vector<Coefficient> Serie2(degree1+1,ZeroSerie);										
+								
+					// Work on a copy of the old  Serie (increase size by one for computation of middle product)
+
+					
+					std::vector<Coefficient> Serie(2*degree1+1,ZeroSerie);					
+					for (size_t i=0;i< PowerSerie.size();++i)
+						Serie[i] = PowerSerie[i];
+					
+					PM_domain.midproduct(Serie2, Sigma1, Serie);
+					//ClassicMulDomain<Field, std::vector<Coefficient> > CM_domain(_F);
+					//CM_domain.midproduct(Serie2, Sigma1, Serie); 
+					Serie2.resize(degree2, ZeroSerie);
+
+					
+					
+					//write_maple("Serie2", Serie2);
+					
+					// Compute Sigma Base of half degree from updated Power Serie					
+					std::vector<Coefficient> Sigma2(degree2,ZeroSigma);
+					new_PM_Basis(Sigma2, Serie2, degree2, defect);
+
+					//std::cout<<"starting multiplication "<<Sigma2.size()<<" x "<<Sigma1.size()<<"...\n"; 
+
+					//write_maple("Sigma2", Sigma2);
+							
+					// Compute the whole Sigma Base through the product 
+					// of the Sigma Basis Sigma1 x Sigma2						
+				
+					
+					// Remove leading Zero coefficient of Sigma1 and Sigma2
+					size_t idx1,idx2;
+					idx1=Sigma1.size();
+					idx2=Sigma2.size();
+					while( _MD.isZero(Sigma1[idx1-1]) && idx1 >0) {idx1--;}
+					while( _MD.isZero(Sigma2[idx2-1]) && idx2 >0) {idx2--;}
+
+					//std::cout<<"zero removed: "<<Sigma1.size()-idx1+Sigma2.size()-idx2<<"\n";
+					// resize Sigma1 ad Sigma2
+					Sigma1.resize(idx1);
+					Sigma2.resize(idx2);
+					
+
+					// resize SigmaBase
+					SigmaBase.resize(Sigma1.size()+Sigma2.size()-1, ZeroSigma);
+					
+					PM_domain.mul(SigmaBase,Sigma2,Sigma1);											
+					
+				
+					//write_maple("SigmaBase", SigmaBase);
+				}
+			}
+		}
+
+
+
+
+		void write_maple(const char* name, const std::vector<Coefficient> & P) {
+			size_t m,n;
+			m = P[0].rowdim();
+			n = P[0].coldim();
+			std::cout<<"Fx:=proc(P) local i; return eval(sum(x^(i-1)*P[i],i=1..nops(P))); end proc;";
+
+			std::cout<<name<<":=Fx(["; 
+			for (size_t k=0;k<P.size()-1;++k){
+				std::cout<<"Matrix([";
+				for (size_t i=0;i<m-1;++i){
+					std::cout<<"[";
+					for (size_t j=0;j<n-1;++j)
+						_F.write(std::cout,P[k].getEntry(i,j))<<",";
+					_F.write(std::cout, P[k].getEntry(i,n-1))<<"] , ";
+				}
+				std::cout<<"[";
+				for (size_t j=0;j<n-1;++j)
+					_F.write(std::cout,P[k].getEntry(m-1,j))<<",";				
+				_F.write(std::cout, P[k].getEntry(m-1,n-1))<<"]]) , ";	
+			}
+			
+			std::cout<<"Matrix([";
+			for (size_t i=0;i<m-1;++i){
+				std::cout<<"[";
+				for (size_t j=0;j<n-1;++j)
+					_F.write(std::cout,P[P.size()-1].getEntry(i,j))<<",";
+				_F.write(std::cout, P[P.size()-1].getEntry(i,n-1))<<"] , ";
+			}
+			std::cout<<"[";
+			for (size_t j=0;j<n-1;++j)
+				_F.write(std::cout,P[P.size()-1].getEntry(m-1,j))<<",";				
+			_F.write(std::cout, P[P.size()-1].getEntry(m-1,n-1))<<"]])]); \n\n";	
+		}
+
+
+
+
+
+
 
 
 	}; // end of class SigmaBasis
