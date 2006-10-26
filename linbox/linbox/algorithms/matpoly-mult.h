@@ -28,6 +28,7 @@
 #include <linbox/algorithms/blas-domain.h>
 #include <linbox/matrix/matrix-domain.h>
 #include <linbox/util/error.h>
+#include <linbox/util/debug.h>
 #include <linbox/util/timer.h>
 #include <vector>
 
@@ -36,7 +37,9 @@
 namespace LinBox {
 
 
-#define FFT_DEG_THRESHOLD 40
+#define FFT_DEG_THRESHOLD   100
+#define KARA_DEG_THRESHOLD   10
+
 
 	template <class Field, class Polynomial>
 	class KaratsubaMulDomain;
@@ -44,15 +47,17 @@ namespace LinBox {
 	template <class _Field, class _Polynomial>
 	class FFTMulDomain;
 
-
+	template <class Field, class Polynomial>
+	class ClassicMulDomain;
 	
 	template <class Field, class Polynomial>
 	class PolynomialMatrixDomain {
 	protected:
-		KaratsubaMulDomain<Field, Polynomial>  _kara;
-		FFTMulDomain<Field, Polynomial>         _fft;
+		KaratsubaMulDomain<Field, Polynomial>     _kara;
+		FFTMulDomain<Field, Polynomial>            _fft;
+		ClassicMulDomain<Field, Polynomial>    _classic;
 	public:
-		PolynomialMatrixDomain ( const Field &F) : _kara(F), _fft(F) {}
+		PolynomialMatrixDomain ( const Field &F) : _kara(F), _fft(F), _classic(F) {}
 
 		void mul (Polynomial &a, const Polynomial &b, const Polynomial &c) {
 			size_t d = b.size()+c.size();
@@ -61,17 +66,27 @@ namespace LinBox {
 			if (d > FFT_DEG_THRESHOLD)
 				_fft.mul(a,b,c);
 			else
-				_kara.mul(a,b,c);			
+				if ( d > KARA_DEG_THRESHOLD)
+					_kara.mul(a,b,c);		
+				else
+					_classic.mul(a,b,c);
+					
 		}
 
 		void midproduct (Polynomial &a, const Polynomial &b, const Polynomial &c) {
+			linbox_check( 2*a.size() == c.size()+1);
+			linbox_check( 2*b.size() == c.size()+1);			
+
 			size_t d = b.size()+c.size();
 			size_t n = b[0].coldim();
 
 			if (d > FFT_DEG_THRESHOLD)
 				_fft.midproduct(a,b,c);
 			else
-				_kara.midproduct(a,b,c);			
+				if ( d > KARA_DEG_THRESHOLD)
+					_kara.midproduct(a,b,c);		
+				else
+					_classic.midproduct(a,b,c);
 		}
 	};
 
@@ -99,6 +114,18 @@ namespace LinBox {
 		}
 
 		
+		void midproduct (Polynomial &a, const Polynomial &b, const Polynomial &c) {
+			linbox_check( 2*a.size() == c.size()+1);
+			linbox_check( 2*b.size() == c.size()+1);
+
+			for (size_t i=0;i<b.size();++i){
+				for (size_t j=0;j<c.size();++j){					
+					if ((i+j<2*a.size()-1) && (i+j>=a.size()-1)){
+						_BMD.axpyin(a[i+j - a.size()+1],b[i],c[j]);
+					}
+				}
+			}			
+		}		
 	};
 
 	template <class Field, class Polynomial>
@@ -366,6 +393,7 @@ namespace LinBox {
 				}
 				
 				LinBox::Timer chrono;
+				double trec=0.;
 				chrono.start();
 				// reconstruct the solution modulo the original prime
 				if (nbrprimes < 2) {
@@ -399,10 +427,10 @@ namespace LinBox {
 								}
 								_F.init(a[k].refEntry(i,j), acc);
 							}
-				}
 #ifdef FFT_TIMING
 				chrono.stop();std::cout<<"reconstruction time: "<<chrono<<"\n";
 #endif
+				}
 			}			
 		}
 
