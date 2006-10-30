@@ -40,6 +40,7 @@
 #include <linbox/matrix/factorized-matrix.h>
 
 #include <linbox/algorithms/matpoly-mult.h>
+#include <linbox/algorithms/echelon-form.h>
 
 #include <linbox/util/timer.h>
 
@@ -491,6 +492,8 @@ namespace LinBox {
 			double tSigmaUp, tResidueUp, tSigmaSh, tResidueSh, tLQUP, tPerm;
 			tSigmaUp= tResidueUp= tSigmaSh= tResidueSh= tLQUP= tPerm =0.;
 
+			int cptr=0;
+
 			// Compute the minimal Sigma Base of the PowerSerie up to length
 			for (size_t k=0; k< length; ++k) {
 
@@ -534,6 +537,8 @@ namespace LinBox {
 				for (size_t i=1;i<SigmaBase.size();i++){
 					_BMD.axpyin(Discrepancy,SigmaBase[i],PowerSerie[k-i]);
 				}
+
+				cptr+=SigmaBase.size();
 
 				chrono.stop();
 				tResidueUp+=chrono.usertime();
@@ -621,6 +626,7 @@ namespace LinBox {
 			std::cout<<"Residue Up    : "<<tResidueUp<<"s \n";
 			std::cout<<"Sigma Shift   : "<<tSigmaSh<<"s \n";
 			std::cout<<"Residue Shift : "<<tResidueSh<<"s \n";
+			std::cout<<"nbr of mul in residue computation: "<<cptr<<"\n";
 		}
 
 
@@ -1195,6 +1201,9 @@ namespace LinBox {
 			double tSigmaUp, tResidueUp, tSigmaSh, tResidueSh, tLQUP, tPerm;
 			tSigmaUp= tResidueUp= tSigmaSh= tResidueSh= tLQUP= tPerm =0.;
 
+			
+			int cptr=0;
+
 			// Compute the minimal Sigma Base of the PowerSerie up to length
 			for (size_t k=0; k< length; ++k) {
 				
@@ -1203,7 +1212,7 @@ namespace LinBox {
 				// set Discrepancy to Residual[k] 
 				// -> can be optimized by directly using Residual[k]
 				Discrepancy = Residual[k];
-
+			
 
 				chrono.start();
 				// compute BPerm1 such that BPerm1.defect is in increasing order				
@@ -1234,71 +1243,71 @@ namespace LinBox {
 							
 				// Apply Bperm1 to the Discrepancy
 				_BMD.mulin_right(BPerm1, Discrepancy);
- 
-				std::cout<<"new MBasis: Discrepancy\n";  
-				Discrepancy.write(std::cout,_F);				
-				
+ 			
 				chrono.stop();
 				tPerm+=chrono.usertime();
 				chrono.clear();
 				chrono.start();
 
+
+				/* **** old version ****				   
 				// Compute LQUP of Discrepancy
-				LQUPMatrix<Field> LQUP(_F,Discrepancy);
+			 	LQUPMatrix<Field> LQUP(_F,Discrepancy);
 
 				// Get L from LQUP
 				TriangularBlasMatrix<Element> L(m, m, BlasTag::low, BlasTag::unit);
 				LQUP.getL(L);
 		       
-				std::cout<<"L:\n";
-				L.write(std::cout, _F);
-
 				// get the transposed permutation of Q from LQUP
 				BlasPermutation Qt =LQUP.getQ();
-			
-				//std::cout<<"qT:=[ ";
-				//for (size_t i=0;i<m;++i)
-				//	std::cout<<*(Qt.getPointer()+i)<<" , ";
-				//std::cout<<"\n";
-				
-			
-
-
+								
 				// Compute the inverse of L
 				TriangularBlasMatrix<Element> invL(m, m, BlasTag::low, BlasTag::unit);
-	 			//BlasMatrix<Element> invL(m,m);
-				FFPACK::trinv_left(_F,m,L.getPointer(),L.getStride(),invL.getWritePointer(),invL.getStride());
- 
+				FFPACK::trinv_left(_F,m,L.getPointer(),L.getStride(),invL.getWritePointer(),invL.getStride());				
+				*/
 
-				//invL.write(std::cout,_F);
-				// use permutation Q to put all pivots in generic rank profile
-				//TransposedBlasMatrix<BlasPermutation> Q(Qt);
-				//_BMD.mulin_left(invL, Q);				
-				//_BMD.mulin_right(Qt,invL);
-				//invL.write(std::cout,_F);
+				/* new version : use of columnReducedEchelon */			
+				
+				EchelonFormDomain<Field>  EFD(_F);			
+				size_t rank = EFD.columnReducedEchelon(Discrepancy);
+			
+			
+				// compute permutation such that all pivots are on the principal minor
+				std::vector<size_t> perm(m);
+				for (size_t i=0;i<m;++i)
+					perm[i]=i;				
+				size_t idx=0;
+				for (size_t i=0;i<rank;++i){
+					while(_F.isZero(Discrepancy.getEntry(idx,i))) idx++;
+					perm[i]=idx;
+					idx++;
+				}
+				BlasPermutation Qt(perm);						
+				TransposedBlasMatrix<BlasPermutation> Q(Qt);
 
-				//BlasMatrix<Element> invl_T(invL, 0, 0, n, n);
-				//BlasMatrix<Element> invl_B(invL, n, 0, m-n, n);
+				// put all pivots on the principal minor
+				_BMD.mulin_right(Qt, Discrepancy);
 
 
-				//invl_T.write(std::cout,_F);
-				//invl_B.write(std::cout,_F);
-
+				// Get the (m-r)*r left bottom submatrix of Reduced Echelon matrix 
+				BlasMatrix<Element> G(Discrepancy, rank, 0,m-rank,rank);
+														
 				chrono.stop();
 				tLQUP+=chrono.usertime();
 				chrono.clear();
 				chrono.start();
 
-				// Update SigmaBase with L^(-1).BPerm1		
-				// new strategy: split invL by its top part and bottom part 
+				// Update SigmaBase 
 				for (size_t i=0;i<SigmaBase.size();++i) {
 					_BMD.mulin_right(BPerm1, SigmaBase[i]);
-					_BMD.mulin_right(invL,SigmaBase[i]);				
-					// opimization follow
-					// BlasMatrix<Element> S_T(SigmaBase[i], 0,0,n,m);
-					// BlasMatrix<Element> S_L(SigmaBase[i], n,0,m-n,m);
-					// _BMD.axpyin(S_L, invl_B, S_T);
-					//_BMD.mulin_right(invl_T, S_T);					
+					//_BMD.mulin_right(invL,SigmaBase[i]);				
+
+					// try optimization
+					_BMD.mulin_right(Qt, SigmaBase[i]);
+					BlasMatrix<Element>    S_top(SigmaBase[i], 0,0,rank,m);
+					BlasMatrix<Element> S_bottom(SigmaBase[i], rank,0,m-rank,m);
+					_BMD.axmyin(S_bottom, G, S_top);
+					_BMD.mulin_right(Q, SigmaBase[i]);
 				}
 			
 				chrono.stop();
@@ -1306,15 +1315,18 @@ namespace LinBox {
 				chrono.clear();
 				chrono.start();
 
-				// Update  Residual with L^(-1).BPerm1 (only monomials greater than k-1)
-				for (size_t i=k;i<length;++i){
+				// Update  Residual (only monomials greater than k-1)
+				for (size_t i=k;i<length;++i){cptr++;
 					_BMD.mulin_right(BPerm1,Residual[i]);
-					_BMD.mulin_right(invL,Residual[i]);
-					// opimization follow
-					// BlasMatrix<Element> R_T(Residual[i], 0,0,n,n);
-					// BlasMatrix<Element> R_L(Residual[i], n,0,m-n,n);
-					// _BMD.axpyin(R_L, invl_B, R_T);
-					//_BMD.mulin_right(invl_T, R_T);										
+					//_BMD.mulin_right(invL,Residual[i]);
+
+					// try optimization
+					_BMD.mulin_right(Qt, Residual[i]);
+					 BlasMatrix<Element>    R_top(Residual[i], 0,0,rank,n);
+					 BlasMatrix<Element> R_bottom(Residual[i], rank,0,m-rank,n);
+					 _BMD.axmyin(R_bottom, G, R_top);	
+					 				
+					 _BMD.mulin_right(Q, Residual[i]);
 				}
 				
 				chrono.stop();
@@ -1328,15 +1340,14 @@ namespace LinBox {
 					if (degree[*(Qt.getPointer()+i)]>max_degree)
 						max_degree=degree[*(Qt.getPointer()+i)];
 				}	
-			
+
 				// Resize SigmaBase if necessary
-				size_t size=SigmaBase.size();
+				size_t size=SigmaBase.size(); 
 				if (SigmaBase.size()<= max_degree+1)
 					{					
 						SigmaBase.resize(size+1,Zeromm);					
 						size++;
 					}		
-
 				//write_maple("Sigma",SigmaBase);
 		
 				// Mulitply by x the rows of SigmaBase involved as pivot 
@@ -1348,12 +1359,13 @@ namespace LinBox {
 					for (size_t l=0;l<m;++l)
 						_F.assign(SigmaBase[0].refEntry(*(Qt.getPointer()+i),l),zero);
 				}
-				
+			
 				chrono.stop();
 				tSigmaSh+=chrono.usertime();
 				chrono.clear();
 				chrono.start();
 				
+
 				// Mulitply by x the rows of Residual involved as pivot 				
 				for (size_t i=0;i<n;++i){
 					for (int j= (int) length-2;j>= (int) k; j--){
@@ -1365,8 +1377,7 @@ namespace LinBox {
 				chrono.stop();
 				tResidueSh+=chrono.usertime();
 				chrono.clear();
-				
-		
+			
 				// Increase defect according to row index choosen as pivot 				
 				for (size_t i=0;i<n;++i){
 					defect[*(Qt.getPointer()+i)]++;	
@@ -1381,6 +1392,7 @@ namespace LinBox {
 			std::cout<<"Residue Up    : "<<tResidueUp<<"s \n";
 			std::cout<<"Sigma Shift   : "<<tSigmaSh<<"s \n";
 			std::cout<<"Residue Shift : "<<tResidueSh<<"s \n";
+			std::cout<<"nbr of mul in residue computation: "<<cptr<<"\n";
 		}
 
 

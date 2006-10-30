@@ -69,32 +69,19 @@ namespace LinBox {
 				for (size_t j=0;j<n;++j)
 					At.setEntry(j,i,A.getEntry(i,j));
 
-			// compute the LQUP of At
-			LQUPMatrix<Field> LQUP(_F, At);
 
-			// get L
-			BlasMatrix<Element> L(n,n);
-			TriangularBlasMatrix<Element> LL(L, BlasTag::low, BlasTag::unit );
-			LQUP.getL(LL);
-
-			
-			// permute L with Q
-			BlasPermutation Qt = LQUP.getQ();		
-			
-			TransposedBlasMatrix<BlasPermutation> Q(Qt);
-			_BMD.mulin_left(L, Q);		
-
-			// get the rank
-			rank = LQUP.getrank();
-			//std::cout<<"get transpose :"<<m<<" "<<n<<" "<<rank<<"\n";;
-			
+			rank = columnEchelon(At);
+					
 			// read the transpose of the echelon form from the rank 1st column of L
 			for (size_t i=0; i<rank;++i)
 				for (size_t j=0;j<n;++j){					
-					E.setEntry(i,j, L.getEntry(j,i));
+					E.setEntry(i,j, At.getEntry(j,i));
 				}
 			return rank;
 		}
+
+
+
 
 		// row reduced echelon form (using copy)
 		template<class Matrix>
@@ -103,54 +90,19 @@ namespace LinBox {
 			size_t m,n, rank;
 			m = A.rowdim();
 			n = A.coldim();
-			Element zero, one;
-			_F.init(zero,0);
-			_F.init(one,1);
-			
+					
 			// get the transposed of A
 			BlasMatrix<Element> At(n, m);			
 			for (size_t i=0;i<m;++i)
 				for (size_t j=0;j<n;++j)
 					At.setEntry(j,i,A.getEntry(i,j));
+	
+			rank = columnReducedEchelon(At);
 
-			// compute the LQUP of At
-			LQUPMatrix<Field> LQUP(_F, At);
-
-			// get L		
-			BlasMatrix<Element> L(n,n);	
-			TriangularBlasMatrix<Element> LL(L, BlasTag::low, BlasTag::unit );
-			LQUP.getL(LL);
-
-			// permute L such that L <- Q^t.L.Q
-			// -> gather all the pivots in the top left corner
-			BlasPermutation Qt = LQUP.getQ();
-			TransposedBlasMatrix<BlasPermutation> Q(Qt);
-			_BMD.mulin_left(L, Q);
-			_BMD.mulin_right(Qt,L);
-
-
-			// get the rank
-			rank = LQUP.getrank();
-			
-			// Update the first r columns of L by Lrr^(-1)
-			BlasMatrix<Element> Lr(L,0,0,rank,rank);
-			TriangularBlasMatrix<Element> Lrr(Lr, BlasTag::low, BlasTag::unit);
-			BlasMatrix<Element> Ln(L,rank,0,n-rank,rank);
-
-			_BMD.right_solve(Lrr, Ln);
-			for (size_t i=0;i<rank;++i){
-				for (size_t j=0;j<i;++j)
-					L.setEntry(i,j,zero);
-			}
-			
-			// permute L such that L<-Q.L
-			_BMD.mulin_right(Q,L);
-			
-
-			// read the transpose of the echelon form from the rank 1st column of L
+			// read the transpose of the echelon form from the rank 1st column of At
 			for (size_t i=0; i<rank;++i)
 				for (size_t j=0;j<n;++j)
-					E.setEntry(i,j, L.getEntry(j,i));
+					E.setEntry(i,j, At.getEntry(j,i));
 			return rank;
 		}
 			
@@ -159,74 +111,100 @@ namespace LinBox {
 		template<class Matrix>
 		int columnEchelon(Matrix &E, const Matrix& A){
 
-			size_t m,n, rank;
+			size_t m,n;
 			m = A.rowdim();
 			n = A.coldim();
-			Element zero, one;
-			_F.init(zero,0);
-			_F.init(one,1);
-
+	       
 			// copy  A in E
 			for (size_t i=0;i<m;++i)
 				for (size_t j=0;j<n;++j)
 					E.setEntry(i,j,A.getEntry(i,j));
 
-			// compute the LQUP of E
-			LQUPMatrix<Field> LQUP(_F, E);
-
-			// get the rank
-			rank = LQUP.getrank();
-					
-			// permute L with Q
-			BlasPermutation Qt = LQUP.getQ();				
-
-			// Zero out upper triangular part of E
-			for (size_t i=0;i<m;++i)
-				for (size_t j=i;j<n;++j)
-					E.setEntry(i,j,zero);
-
-			// put one inplace of pivot
-			for (size_t i=0;i<rank;++i)
-				E.setEntry(i,*(Qt.getPointer()+i),one);
-			
-			return rank;
+			return columnEchelon(E);
 		}
+
 
 		// column reduced echelon form (using copy)
 		template<class Matrix>
 		int columnReducedEchelon(Matrix &E, const Matrix& A){
-			size_t m,n, rank;
+
+			size_t m,n;
 		
 			m = A.rowdim();
 			n = A.coldim();
-			Element zero, one;
-			_F.init(zero,0);
-			_F.init(one,1);
 
 			// copy  A in E
 			for (size_t i=0;i<m;++i)
 				for (size_t j=0;j<n;++j)
 					E.setEntry(i,j,A.getEntry(i,j));
 
+			return columnReducedEchelon(E);
+		}
+		
+		// column echelon form (IN-PLACE VERSION)
+		template<class Matrix>
+		int columnEchelon(Matrix &E){
+
+			size_t m,n, rank;
+			m = E.rowdim();
+			n = E.coldim();
+			Element zero, one;
+			_F.init(zero,0);
+			_F.init(one,1);
+		
 			// compute the LQUP of E
-			LQUPMatrix<Field> LQUP(_F, E);
+			LQUPMatrix<Field> LQUP(_F, E);		
 
 			// get the rank
 			rank = LQUP.getrank();
 					
-			// permute L with Q
-			BlasPermutation Qt = LQUP.getQ();		
-			TransposedBlasMatrix<BlasPermutation> Q(Qt);
-
+			// get permutation Qt
+			BlasPermutation Qt = LQUP.getQ();				
+		
 			// Zero out upper triangular part of E
 			for (size_t i=0;i<m;++i)
 				for (size_t j=i;j<n;++j)
 					E.setEntry(i,j,zero);
 
 			// put one inplace of pivot
-			for (size_t i=0;i<rank;++i)
-				E.setEntry(i,*(Qt.getPointer()+i),one);
+			for (size_t i=0;i<rank;++i){
+				E.setEntry(*(Qt.getPointer()+i),i,one);
+			}
 			
+			return rank;
+		}
+
+		// column reduced echelon form (IN-PLACE VERSION)
+		template<class Matrix>
+		int columnReducedEchelon(Matrix &E){
+			size_t m,n, rank;
+		
+			m = E.rowdim();
+			n = E.coldim();
+			Element zero, one;
+			_F.init(zero,0);
+			_F.init(one,1);
+
+			// compute the LQUP of E
+			LQUPMatrix<Field> LQUP(_F, E);
+
+			// get the rank
+			rank = LQUP.getrank();
+		
+			BlasPermutation Qt = LQUP.getQ();		
+			TransposedBlasMatrix<BlasPermutation> Q(Qt);
+					
+			// Zero out upper triangular part of E
+			for (size_t i=0;i<m;++i)
+				for (size_t j=i;j<n;++j)
+					E.setEntry(i,j,zero);
+
+			// permute E with Qt
+			_BMD.mulin_right(Qt,E);
+
+			// put one inplace of pivot
+			for (size_t i=0;i<rank;++i)
+				E.setEntry(i,i, one);//*(Qt.getPointer()+i),one);						
 			
 			// Update the first r columns of E by Err^(-1)
 			BlasMatrix<Element> Er(E,0,0,rank,rank);
@@ -243,12 +221,8 @@ namespace LinBox {
 			// permute L such that L<-Q.E
 			_BMD.mulin_right(Q,E);
 
-
 			return rank;
-
 		}
-
-
 
 		template<class Matrix>
 		void write_maple(const char* name, const Matrix& A) {
