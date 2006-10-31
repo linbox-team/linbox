@@ -63,41 +63,18 @@ namespace LinBox {
 		std::vector<Coefficient>     &_Serie;
 		
 #ifdef _BM_TIMING
-		mutable Timer   
-		       ttNewDiscrepancy,  tNewDiscrepancy,
-			ttShiftSigma,      tShiftSigma,
-			ttApplyPerm,       tApplyPerm, 
-			ttUpdateSigma,     tUpdateSigma,
-			ttInverseL,        tInverseL,
-			ttGetPermutation,  tGetPermutation,
-			ttLQUP,            tLQUP,
-			ttDiscrepancy,     tDiscrepancy,
-			ttGetCoeff,        tGetCoeff,
-			ttCheckSequence,   tCheckSequence,
-			ttMBasis,          tMBasis,
-			ttUpdateSerie,     tUpdateSerie,
-			ttBasisMultiplication, tBasisMultiplication,
-			ttCopyingData,     tCopyingData,
+		mutable Timer ttMBasis              , tMBasis,
+			ttUpdateSerie         , tUpdateSerie,
+			ttBasisMultiplication , tBasisMultiplication,
+			ttPermutation         , tPermutation,
+			ttTransformation      , tTransformation,
+			ttSigmaUp             , tSigmaUp,
+			ttResidueUp           , tResidueUp,
+			ttSigmaSh             , tSigmaSh,
+			ttResidueSh           , tResidueSh,
 			Total;
 
-		void clearTimer() {
-			ttNewDiscrepancy.clear(); 
-			 ttShiftSigma.clear();     
-			 ttApplyPerm.clear();      
-			 ttUpdateSigma.clear();    
-			 ttInverseL.clear();       
-			 ttGetPermutation.clear(); 
-			 ttLQUP.clear();           
-			 ttDiscrepancy.clear();    
-			 ttGetCoeff.clear();       
-			 ttCheckSequence.clear();  
-			 ttMBasis.clear();
-			 ttUpdateSerie.clear();
-			 ttBasisMultiplication.clear();
-			 ttCopyingData.clear(),
-			 Total.clear();
-		}
-		
+    
 		void print(Timer& T, const  char* timer, const char* title) {
 			if (&T != &Total)
 				Total+=T;
@@ -105,29 +82,42 @@ namespace LinBox {
 				std::cout<<title<<": "<<timer;
 				for (int i=strlen(timer); i<28; i++) 
 					std::cout << ' ';
-				std::cout<<T<<std::endl;
+				double tt = (T.usertime()<0.01)? 0.01 : T.usertime();
+				std::cout<<tt<<"s. (cpu)  ["<<T.count()<<"]"<<std::endl;
 			}
 		}
 	public:
 		void printTimer() {
-			print(ttCheckSequence, "Rank of Seq[0]", "direct");
-			print(ttGetCoeff, "Compute sequence", "direct");
-			print(ttDiscrepancy, "Compute Discrepancy", "direct");
-			print(ttLQUP, "LQUP","direct");
-			print(ttGetPermutation, "Compute Permutation", "direct");
-			print(ttApplyPerm, "Apply Permutation", "direct");
-			print(ttInverseL, "Inverse of L", "direct");
-			print(ttUpdateSigma, "Update Sigma", "direct");
-			print(ttShiftSigma, "Shift Sigma by x", "direct");
-			print(ttNewDiscrepancy, "Keep half Discrepancy", "direct");
-			print(ttMBasis, "MBasis computation", "recursive");
-			print(ttUpdateSerie, "Updating Power Serie", "recursive");
-			print(ttBasisMultiplication, "Basis Multiplication", "recursive");
-			print(ttCopyingData, "Copying Data", "recursive");
+		
+			print(ttMBasis              , "MBasis computation", "recursive");
+			print(ttUpdateSerie         , "Updating Power Serie", "recursive");
+			print(ttBasisMultiplication , "Basis Multiplication", "recursive");
+			print(ttPermutation         , "Permutation"   , "iterative"); 
+			print(ttTransformation      , "Transformation", "iterative");
+			print(ttSigmaUp             , "Sigma Update"  , "iterative");        			
+			print(ttResidueUp           , "Residue Update", "iterative");     
+			print(ttSigmaSh             , "Sigma Shifting", "iterative");
+			print(ttResidueSh           , "Residue Shifting","iterative");
 			print(Total, "Total", "");
 			std::cout<<std::endl<<std::endl;
 		}
-#endif
+
+
+		void clearTimer() {
+			 ttMBasis.clear();
+			 ttUpdateSerie.clear();
+			 ttBasisMultiplication.clear();
+			 ttPermutation.clear();   
+			 ttTransformation.clear(); 
+			 ttSigmaUp.clear();     
+			 ttResidueUp.clear();     
+			 ttSigmaSh.clear();        
+			 ttResidueSh.clear(); 	 
+			 Total.clear();
+		}	
+#endif 
+
+
 	public:
 
 		SigmaBasis(const Field &F, std::vector<Coefficient> &PowerSerie) : _F(F), _BMD(F), _MD(F), _Serie(PowerSerie) 
@@ -487,19 +477,15 @@ namespace LinBox {
 			
 			// Discrepancy
 			Coefficient Discrepancy(m,n);
-
 			Timer chrono;
-			double tSigmaUp, tResidueUp, tSigmaSh, tResidueSh, tLQUP, tPerm;
-			tSigmaUp= tResidueUp= tSigmaSh= tResidueSh= tLQUP= tPerm =0.;
-
 			int cptr=0;
 
 			// Compute the minimal Sigma Base of the PowerSerie up to length
 			for (size_t k=0; k< length; ++k) {
 
-			
+#ifdef  _BM_TIMING		
 				chrono.start();
-
+#endif
 				// compute BPerm1 such that BPerm1.defect is in increasing order
 				std::vector<size_t> Perm1(m);			
 				for (size_t i=0;i<m;++i)
@@ -518,32 +504,35 @@ namespace LinBox {
 				for (size_t i=0;i<m;++i)
 					std::swap(degree[i], degree[Perm1[i]]);	
 	
+		
+#ifdef  _BM_TIMING
 				chrono.stop();
-				tPerm+=chrono.usertime();
+				ttPermutation+=chrono;
 				chrono.clear();
 				chrono.start();
-
+#endif
 				// Apply Bperm1 to the current SigmaBase
 				for (size_t i=0;i<SigmaBase.size();++i)
 					_BMD.mulin_right(BPerm1,SigmaBase[i]);
-			
+		
+#ifdef  _BM_TIMING
 				chrono.stop();
-				tSigmaUp+=chrono.usertime();
+				ttSigmaUp+=chrono;
 				chrono.clear();
 				chrono.start();
-								
+#endif				
 				// Compute Discrepancy			
 				_BMD.mul(Discrepancy,SigmaBase[0],PowerSerie[k]);
 				for (size_t i=1;i<SigmaBase.size();i++){
 					_BMD.axpyin(Discrepancy,SigmaBase[i],PowerSerie[k-i]);
 				}
-
+#ifdef  _BM_TIMING
 				cptr+=SigmaBase.size();
-
 				chrono.stop();
-				tResidueUp+=chrono.usertime();
+				ttResidueUp+=chrono;
 				chrono.clear();
 				chrono.start();
+#endif
 
 				//std::cout<<"MBasis: Discrepancy\n";  
 				//Discrepancy.write(std::cout,_F);
@@ -564,22 +553,23 @@ namespace LinBox {
 				TriangularBlasMatrix<Element> invL(m, m, BlasTag::low, BlasTag::unit);
 				FFPACK::trinv_left(_F,m,L.getPointer(),L.getStride(),invL.getWritePointer(),invL.getStride());
 
-
+#ifdef  _BM_TIMING
 				chrono.stop();
-				tLQUP+=chrono.usertime();
+				ttTransformation+=chrono;
 				chrono.clear();
 				chrono.start();
-
+#endif
 				// Update Sigma by L^(-1)
 				// Sigma = L^(-1) . Sigma
 				for (size_t i=0;i<SigmaBase.size();++i) 
 					_BMD.mulin_right(invL,SigmaBase[i]);
 			
+#ifdef  _BM_TIMING
 				chrono.stop();
-				tSigmaUp+=chrono.usertime();
+				ttSigmaUp+=chrono;
 				chrono.clear();
 				chrono.start();
-
+#endif
 				//std::cout<<"BaseBis"<<k<<":=";
 				//write_maple(F,SigmaBase);
 				// Increase  degree and defect according to row choosen as pivot in LQUP
@@ -611,22 +601,14 @@ namespace LinBox {
 					for (size_t l=0;l<m;++l)
 						_F.assign(SigmaBase[0].refEntry(*(Qt.getPointer()+i),l),zero);
 				}
+#ifdef  _BM_TIMING
 				chrono.stop();
-				tSigmaSh+=chrono.usertime();
+				ttSigmaSh+=chrono;
 				chrono.clear();
 				chrono.start();
-	
+#endif
 				//write_maple("SS1",SigmaBase);			
 			}
-			//write_maple("Sigma1",SigmaBase);
-			std::cout<<"\n MBASIS timing:\n ";
-			std::cout<<"Permutation   : "<<tPerm<<"s \n";
-			std::cout<<"LQUP + L^-1   : "<<tLQUP<<"s \n";
-			std::cout<<"Sigma Up      : "<<tSigmaUp<<"s \n";
-			std::cout<<"Residue Up    : "<<tResidueUp<<"s \n";
-			std::cout<<"Sigma Shift   : "<<tSigmaSh<<"s \n";
-			std::cout<<"Residue Shift : "<<tResidueSh<<"s \n";
-			std::cout<<"nbr of mul in residue computation: "<<cptr<<"\n";
 		}
 
 
@@ -1207,14 +1189,14 @@ namespace LinBox {
 			// Compute the minimal Sigma Base of the PowerSerie up to length
 			for (size_t k=0; k< length; ++k) {
 				
-
-
+#ifdef _BM_TIMING
+				chrono.start();
+#endif
 				// set Discrepancy to Residual[k] 
 				// -> can be optimized by directly using Residual[k]
 				Discrepancy = Residual[k];
 			
-
-				chrono.start();
+			
 				// compute BPerm1 such that BPerm1.defect is in increasing order				
 				std::vector<size_t> Perm1(m);			
 				for (size_t i=0;i<m;++i)
@@ -1243,12 +1225,12 @@ namespace LinBox {
 							
 				// Apply Bperm1 to the Discrepancy
 				_BMD.mulin_right(BPerm1, Discrepancy);
- 			
+#ifdef _BM_TIMING		
 				chrono.stop();
-				tPerm+=chrono.usertime();
+				ttPermutation+=chrono;
 				chrono.clear();
 				chrono.start();
-
+#endif
 
 				/* **** old version ****				   
 				// Compute LQUP of Discrepancy
@@ -1291,12 +1273,12 @@ namespace LinBox {
 
 				// Get the (m-r)*r left bottom submatrix of Reduced Echelon matrix 
 				BlasMatrix<Element> G(Discrepancy, rank, 0,m-rank,rank);
-														
+#ifdef _BM_TIMING													
 				chrono.stop();
-				tLQUP+=chrono.usertime();
+				ttTransformation+=chrono;
 				chrono.clear();
 				chrono.start();
-
+#endif
 				// Update SigmaBase 
 				for (size_t i=0;i<SigmaBase.size();++i) {
 					_BMD.mulin_right(BPerm1, SigmaBase[i]);
@@ -1309,14 +1291,14 @@ namespace LinBox {
 					_BMD.axmyin(S_bottom, G, S_top);
 					_BMD.mulin_right(Q, SigmaBase[i]);
 				}
-			
+#ifdef _BM_TIMING
 				chrono.stop();
-				tSigmaUp+=chrono.usertime();
+				ttSigmaUp+=chrono;
 				chrono.clear();
 				chrono.start();
-
+#endif
 				// Update  Residual (only monomials greater than k-1)
-				for (size_t i=k;i<length;++i){cptr++;
+				for (size_t i=k;i<length;++i){
 					_BMD.mulin_right(BPerm1,Residual[i]);
 					//_BMD.mulin_right(invL,Residual[i]);
 
@@ -1328,12 +1310,12 @@ namespace LinBox {
 					 				
 					 _BMD.mulin_right(Q, Residual[i]);
 				}
-				
+#ifdef _BM_TIMING
 				chrono.stop();
-				tResidueUp+=chrono.usertime();
+				ttResidueUp+=chrono;
 				chrono.clear();
 				chrono.start();
-
+#endif
 				//  Calculate the new degree of SigmaBase (looking only pivot's row)
 				size_t max_degree=degree[*(Qt.getPointer())];
 				for (size_t i=1;i<n;++i) {
@@ -1346,7 +1328,7 @@ namespace LinBox {
 				if (SigmaBase.size()<= max_degree+1)
 					{					
 						SigmaBase.resize(size+1,Zeromm);					
-						size++;
+						size++;cptr++;
 					}		
 				//write_maple("Sigma",SigmaBase);
 		
@@ -1359,12 +1341,12 @@ namespace LinBox {
 					for (size_t l=0;l<m;++l)
 						_F.assign(SigmaBase[0].refEntry(*(Qt.getPointer()+i),l),zero);
 				}
-			
+#ifdef _BM_TIMING
 				chrono.stop();
-				tSigmaSh+=chrono.usertime();
+				ttSigmaSh+=chrono;
 				chrono.clear();
 				chrono.start();
-				
+#endif
 
 				// Mulitply by x the rows of Residual involved as pivot 				
 				for (size_t i=0;i<n;++i){
@@ -1373,11 +1355,11 @@ namespace LinBox {
 							_F.assign(Residual[j+1].refEntry(*(Qt.getPointer()+i),l), Residual[j].getEntry(*(Qt.getPointer()+i),l));
 					}					
 				}
-				
+#ifdef _BM_TIMING
 				chrono.stop();
-				tResidueSh+=chrono.usertime();
+				ttResidueSh+=chrono;
 				chrono.clear();
-			
+#endif
 				// Increase defect according to row index choosen as pivot 				
 				for (size_t i=0;i<n;++i){
 					defect[*(Qt.getPointer()+i)]++;	
@@ -1385,14 +1367,7 @@ namespace LinBox {
 				}							
 			}
 			//write_maple("Sigma",SigmaBase);
-			std::cout<<"\n NEW MBASIS timing:\n ";
-			std::cout<<"Permutation   : "<<tPerm<<"s \n";
-			std::cout<<"LQUP + L^-1   : "<<tLQUP<<"s \n";
-			std::cout<<"Sigma Up      : "<<tSigmaUp<<"s \n";
-			std::cout<<"Residue Up    : "<<tResidueUp<<"s \n";
-			std::cout<<"Sigma Shift   : "<<tSigmaSh<<"s \n";
-			std::cout<<"Residue Shift : "<<tResidueSh<<"s \n";
-			std::cout<<"nbr of mul in residue computation: "<<cptr<<"\n";
+			//std::cout<<"cpt:= "<<cptr<<"\n";
 		}
 
 
@@ -1418,7 +1393,17 @@ namespace LinBox {
 			}
 			else {
 				if (degree == 1) {
-					M_Basis(SigmaBase, PowerSerie, degree, defect);
+#ifdef _BM_TIMING				
+					tMBasis.clear();
+					tMBasis.start();
+#endif
+					
+					new_M_Basis(SigmaBase, PowerSerie, degree, defect);
+
+#ifdef _BM_TIMING
+					tMBasis.stop();
+					ttMBasis += tMBasis;
+#endif			
 				}
 				else {
 					PolynomialMatrixDomain<Field, std::vector<Coefficient> > PM_domain(_F);
@@ -1431,6 +1416,8 @@ namespace LinBox {
 
 					// Compute Sigma Base of half degree
 					std::vector<Coefficient> Sigma1(degree1,ZeroSigma);
+					
+
 					std::vector<Coefficient> Serie1(degree1);
 					for (size_t i=0;i< degree1;++i)
 						Serie1[i] = PowerSerie[i];
@@ -1438,18 +1425,22 @@ namespace LinBox {
 					//write_maple("Serie1", Serie1);
 				
 					new_PM_Basis(Sigma1, Serie1, degree1, defect);
+					//new_PM_Basis(Sigma1, PowerSerie, degree1, defect);
 
-										
-					//write_maple("Sigma1", Sigma1);
-					
+					size_t S1size= Sigma1.size();
+
+#ifdef _BM_TIMING				
+					tUpdateSerie.clear();
+					tUpdateSerie.start();
+#endif
+					/*
+					//write_maple("Sigma1", Sigma1);				
 					Sigma1.resize(degree1+1, ZeroSigma);
 					
 					// Compute Serie2 = x^(-degree1).Sigma.PowerSerie mod x^degree2
 					std::vector<Coefficient> Serie2(degree1+1,ZeroSerie);										
 								
-					// Work on a copy of the old  Serie (increase size by one for computation of middle product)
-
-					
+					// Work on a copy of the old  Serie (increase size by one for computation of middle product)					
 					std::vector<Coefficient> Serie(2*degree1+1,ZeroSerie);					
 					for (size_t i=0;i< PowerSerie.size();++i)
 						Serie[i] = PowerSerie[i];
@@ -1458,9 +1449,15 @@ namespace LinBox {
 					//ClassicMulDomain<Field, std::vector<Coefficient> > CM_domain(_F);
 					//CM_domain.midproduct(Serie2, Sigma1, Serie); 
 					Serie2.resize(degree2, ZeroSerie);
-
+					*/
+					std::vector<Coefficient> Serie2(degree2,ZeroSerie);
+					UpdateSerie(Serie2, Sigma1, PowerSerie, degree1, degree2);
 					
 					
+#ifdef _BM_TIMING				
+					tUpdateSerie.stop();
+					ttUpdateSerie += tUpdateSerie;
+#endif
 					//write_maple("Serie2", Serie2);
 					
 					// Compute Sigma Base of half degree from updated Power Serie					
@@ -1474,28 +1471,88 @@ namespace LinBox {
 					// Compute the whole Sigma Base through the product 
 					// of the Sigma Basis Sigma1 x Sigma2						
 				
-					
+										
+#ifdef _BM_TIMING				
+					tBasisMultiplication.clear();
+					tBasisMultiplication.start();
+#endif	
 					// Remove leading Zero coefficient of Sigma1 and Sigma2
+					/*
 					size_t idx1,idx2;
 					idx1=Sigma1.size();
 					idx2=Sigma2.size();
 					while( _MD.isZero(Sigma1[idx1-1]) && idx1 >0) {idx1--;}
-					while( _MD.isZero(Sigma2[idx2-1]) && idx2 >0) {idx2--;}
-
+					while( _MD.isZero(Sigma2[idx2-1]) && idx2 >0) {idx2--;}					
+				
 					//std::cout<<"zero removed: "<<Sigma1.size()-idx1+Sigma2.size()-idx2<<"\n";
 					// resize Sigma1 ad Sigma2
 					Sigma1.resize(idx1);
 					Sigma2.resize(idx2);
+					*/
 					
-
-					// resize SigmaBase
+					//resize SigmaBase
 					SigmaBase.resize(Sigma1.size()+Sigma2.size()-1, ZeroSigma);
 					
-					PM_domain.mul(SigmaBase,Sigma2,Sigma1);											
+					PM_domain.mul(SigmaBase,Sigma2,Sigma1);	
+
+					// Remove leading Zero coefficient of SigmaBase
+					size_t idx;
+					idx=SigmaBase.size();
+					while( _MD.isZero(SigmaBase[idx-1]) && idx >0) {idx--;}
+					SigmaBase.resize(idx, ZeroSigma);
 					
-				
+					
+					
+#ifdef _BM_TIMING				
+					tBasisMultiplication.stop();
+					ttBasisMultiplication += tBasisMultiplication;
+#endif
 					//write_maple("SigmaBase", SigmaBase);
 				}
+			}
+		}
+
+
+		// Multiply a Power Serie by a Sigma Base.
+		// only affect coefficients of the Power Serie between degree1 and degree1+degree2-1
+		void UpdateSerie(std::vector<Coefficient>                &NewSerie, 
+				 std::vector<Coefficient>               &SigmaBase, 
+				 const std::vector<Coefficient>          &OldSerie,
+				 size_t                                    degree1,
+				 size_t                                    degree2){
+
+			size_t m,n;
+			m = OldSerie[0].rowdim();
+			n = OldSerie[0].coldim();
+			const Coefficient ZeroSigma(m,m);
+			const Coefficient ZeroSerie(m,n);
+			size_t Ssize = SigmaBase.size();
+
+			if (SigmaBase.size() < 5){
+			
+				// do the calculation by hand
+				for (size_t j=degree1;j<degree1+degree2;++j){
+					_BMD.mul(NewSerie[j-degree1], SigmaBase[0], OldSerie[j]);
+					for (size_t i=1;i<Ssize; ++i)				
+						_BMD.axpyin(NewSerie[j-degree1], SigmaBase[i], OldSerie[j-i]);
+				}						
+			}
+			else{
+				//std::cout<<"Sigma size: "<<Ssize<<" -> "<<degree1<<" -> "<<degree2<<"\n";
+				// resize to fit the requirement of middle product algorithm
+				SigmaBase.resize(degree1+1, ZeroSigma);
+				NewSerie.resize (degree1+1, ZeroSerie);				
+				std::vector<Coefficient> Serie(2*degree1+1,ZeroSerie);					
+				for (size_t i=0;i< OldSerie.size();++i)
+					Serie[i] = OldSerie[i];
+				
+				// call middle product
+				PolynomialMatrixDomain<Field, std::vector<Coefficient> > PM_domain(_F);
+				PM_domain.midproduct(NewSerie, SigmaBase, Serie);
+
+				// resize results and entries
+				NewSerie.resize(degree2, ZeroSerie);
+				SigmaBase.resize(Ssize, ZeroSigma);
 			}
 		}
 
