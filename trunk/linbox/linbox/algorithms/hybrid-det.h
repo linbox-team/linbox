@@ -185,7 +185,7 @@ namespace LinBox {
                 ChineseRemainder< myModular > cra(3UL);
                 IntegerModularDetReduced<Blackbox,MyMethod> iteration(A, M, beta,myfactor);
 
-                if (A.rowdim() < 200 ) {
+                if (A.rowdim() < 50 ) {
                     cra(d,iteration,genprime);
                     commentator.stop ( "first step", NULL, "det");
                     commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
