@@ -13,6 +13,13 @@
 #ifndef __FFLAS_H
 #define __FFLAS_H
 
+#ifndef MAX
+#define MAX(a,b) (a < b)?b:a
+#endif
+#ifndef MIN
+#define MIN(a,b) (a > b)?b:a
+#endif
+
 //#include <linbox-config.h>
 #include "linbox/field/unparametric.h"
 
@@ -322,7 +329,7 @@ namespace LinBox {
 			
 			size_t ws =0;
 			if ( (ta==FflasNoTrans)  && (tb==FflasNoTrans)) {
-				size_t kt = k;
+				size_t kt = MIN(MIN(k,m),n);
 				while (kt >= WINOTHRESHOLD){
 					ws++;
 					kt/=2;
