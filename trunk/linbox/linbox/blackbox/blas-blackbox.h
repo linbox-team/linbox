@@ -141,7 +141,7 @@ namespace LinBox {
 		{
 
 			if (_use_fflas)
-				FFLAS::fgemv( _F, FFLAS::FflasTrans, 
+				FFLAS::fgemv( this->_F, FFLAS::FflasTrans, 
 					      this->_row, this->_col,
 					      this->_One,
 					      this->_ptr, this->_stride,

@@ -69,11 +69,8 @@ namespace LinBox
 		
  		/* Computation of the integer minimal polynomial */
  		IntPoly intMinPoly;
-
-		
 		minpoly (intMinPoly, A, M);
-		
- 		if (intMinPoly.size() == n+1){
+		if (intMinPoly.size() == n+1){
 			commentator.stop ("done", NULL, "IbbCharpoly");
  			return P = intMinPoly;
 		}
@@ -81,8 +78,6 @@ namespace LinBox
  		vector<IntPoly*> intFactors;    
  		vector<unsigned long> exp;
  		IPD.factor (intFactors, exp, intMinPoly);
-				
-
 		size_t factnum = intFactors.size();
 
  		/* Choose a modular prime field */
@@ -90,7 +85,6 @@ namespace LinBox
  		integer p;
 		primeg.randomPrime (p);
  		Field F(p);
-
 
 		/* Building the structure of factors */
 		int goal = n;
@@ -149,8 +143,8 @@ namespace LinBox
 
 		return P = intCharPoly;
 	}
-	/* Algorithm computing the integer characteristic polynomial
-	 * of a blackbox.
+	/* Algorithm computing the  characteristic polynomial
+	 * of a blackbox over a prime field.
 	 */
 	template < class Blackbox >
 	GivPolynomial<typename Blackbox::Field::Element>& 
