@@ -45,6 +45,7 @@ LinBox::FFPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 			ip++;
 		*Q=0;
 		if (ip==N){ // current row is zero
+			*P=0;
 			if (N==1){
 				//while (ip<M && !F.isUnit(*(A+ip*lda))){
 				while (ip<M && F.isZero(*(A+ip*lda))){
@@ -76,13 +77,15 @@ LinBox::FFPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 			*A = *(A+ip);
 			*(A+ip) = tmp;
 		}
+		elt invpiv;
+		F.inv(invpiv, *A);
 		if ( Diag == FflasUnit )
 			// Normalisation of the row
 			for (size_t k=1; k<N; k++)
-				F.divin(*(A+k), *A);
+				F.mulin(*(A+k), invpiv);
 		else if ( N==1 )
 			while(++ip<M) 
-				F.divin(*(A+lda*ip), *A);
+				F.mulin(*(A+lda*ip), invpiv);
 		return 1;
 	}
 		
@@ -102,12 +105,11 @@ LinBox::FFPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 		} else {			
 			// Ar <- Ar.P
 			applyP (F, FflasRight, FflasTrans, Ndown, 0, R, Ar, lda, P); 
-		      
+			
 			// Ar <- Ar.U1^-1
 			ftrsm( F, FflasRight, FflasUpper, 
 			       FflasNoTrans, Diag, Ndown, R, 
 			       one, A, lda, Ar, lda);
-			
 			// An <- An - Ar*Ac
 			fgemm( F, FflasNoTrans, FflasNoTrans, Ndown, N-R, R,
 			       Mone, Ar, lda, Ac, lda, one, An, lda);
