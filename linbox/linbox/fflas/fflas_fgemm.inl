@@ -8,12 +8,6 @@
  * See COPYING for license information.
  */
 
-#ifndef MAX
-#define MAX(a,b) (a < b)?b:a
-#endif
-#ifndef MIN
-#define MIN(a,b) (a > b)?b:a
-#endif
 
 #include  <linbox/field/modular-double.h> 
 // Note:
