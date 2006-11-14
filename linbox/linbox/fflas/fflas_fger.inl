@@ -8,19 +8,19 @@
  * See COPYING for license information.
  */
 
-namespace LinBox {
-
+namespace LinBox{
+	
 template<class Field>
 inline void
-FFLAS::fger( const Field& F, const size_t M, const size_t N,
-		     const typename Field::Element alpha, 
-		     const typename Field::Element * x, const size_t incx,
-		     const typename Field::Element * y, const size_t incy, 
-		     typename Field::Element * A, const size_t lda){
+FFLAS::fger (const Field& F, const size_t M, const size_t N,
+	     const typename Field::Element alpha, 
+	     const typename Field::Element * x, const size_t incx,
+	     const typename Field::Element * y, const size_t incy, 
+	     typename Field::Element * A, const size_t lda){
 	
 	static typename Field::Element one, mone, tmp;
-	F.init( one, 1 );
-	F.init( mone, -1);
+	F.init( one, 1UL );
+	F.neg (mone, one);
 	const typename Field::Element* xi=x, *yj=y;
 	typename Field::Element* Ai=A;
 	
@@ -45,8 +45,7 @@ FFLAS::fger( const Field& F, const size_t M, const size_t N,
 				for (size_t j = 0; j < N; ++j, yj+=incy )
 					F.axpyin( *(Ai+j), tmp, *yj );
 			}
-	}
-	else{
+	} else {
 		if ( F.areEqual( alpha, one ) ){
 			for ( ; Ai < A+N; ++Ai, yj+=incy ){
 				xi = x;
