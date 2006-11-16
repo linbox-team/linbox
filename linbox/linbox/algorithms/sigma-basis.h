@@ -1183,7 +1183,7 @@ namespace LinBox {
 			double tSigmaUp, tResidueUp, tSigmaSh, tResidueSh, tLQUP, tPerm;
 			tSigmaUp= tResidueUp= tSigmaSh= tResidueSh= tLQUP= tPerm =0.;
 
-			
+			int optim=0;
 			int cptr=0;
 
 			// Compute the minimal Sigma Base of the PowerSerie up to length
@@ -1279,6 +1279,8 @@ namespace LinBox {
 				chrono.clear();
 				chrono.start();
 #endif
+				
+			
 				// Update SigmaBase 
 				for (size_t i=0;i<SigmaBase.size();++i) {
 					_BMD.mulin_right(BPerm1, SigmaBase[i]);
@@ -1322,6 +1324,8 @@ namespace LinBox {
 					if (degree[*(Qt.getPointer()+i)]>max_degree)
 						max_degree=degree[*(Qt.getPointer()+i)];
 				}	
+
+				optim+=SigmaBase.size() -max_degree-1;
 
 				// Resize SigmaBase if necessary
 				size_t size=SigmaBase.size(); 
@@ -1368,6 +1372,8 @@ namespace LinBox {
 			}
 			//write_maple("Sigma",SigmaBase);
 			//std::cout<<"cpt:= "<<cptr<<"\n";
+			//if (length > 2) 
+			//	std::cout<<"We could have remove "<<optim<<" matrix multiplication\n";
 		}
 
 
