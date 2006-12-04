@@ -51,7 +51,7 @@ size_t boundTrsm(const Field& F) {
 }
 
 template<>
-size_t boundTrsm(const Modular<double>& F) {
+size_t boundTrsm<Modular<double> >(const Modular<double>& F) {
 	integer pi;
 	F.characteristic(pi);
 	static long unsigned int p=pi;

@@ -164,9 +164,7 @@ namespace LinBox {
 		
 
 		Element &init (Element &x, const integer &y) const  {
-			x = mpz_fdiv_ui(y.get_mpz(),lmodulus );
-		
-			return x;
+			return x = (Element)mpz_fdiv_ui(y.get_mpz(),lmodulus );
 		}
 
 		inline Element& init(Element& x, double y =0) const {		  

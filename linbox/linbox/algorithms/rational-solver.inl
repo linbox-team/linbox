@@ -53,6 +53,11 @@
 
 
 #ifdef __LINBOX_BLAS_AVAILABLE
+#include <linbox/config-blas.h>
+extern "C" {
+	//#include <cblas.h>
+	//#include <clapack.h>
+}
 #include <linbox/blackbox/blas-blackbox.h>
 #include <linbox/matrix/blas-matrix.h>
 #include <linbox/algorithms/blas-domain.h>
@@ -1417,12 +1422,6 @@ namespace LinBox {
 #include <math.h>
 #include <linbox/integer.h>
 #include <linbox/algorithms/rational-reconstruction2.h>
-
-#include <linbox/config-blas.h>
-extern "C" {
-	//#include <cblas.h>
-	//#include <clapack.h>
-}
 
 namespace LinBox {
 

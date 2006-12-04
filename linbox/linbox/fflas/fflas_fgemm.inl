@@ -53,8 +53,9 @@ inline size_t FFLAS::FflasKmaxCompute (const Field& F, const size_t w,
 		}
 	return (size_t) MIN(kmax,1ULL<<31);
 }
+
 template  <> 
-inline size_t FFLAS::FflasKmaxCompute (const Modular<double>& F, const size_t w, 
+inline size_t FFLAS::FflasKmaxCompute< Modular<double> > (const Modular<double>& F, const size_t w, 
 				       const double& beta)
 {
 	double mone;

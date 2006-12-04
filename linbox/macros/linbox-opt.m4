@@ -29,8 +29,8 @@ AC_TRY_RUN([	#define LinBoxSrcOnly
 		#include <iostream>
 		#define __LINBOX_CONFIGURATION
 		#include <linbox/config-blas.h>
-		#include <linbox/fflas/fflas.h>
 		#include <linbox/field/modular-double.h>
+		#include <linbox/fflas/fflas.h>
 		#include <linbox/util/timer.h>
 
 		using namespace LinBox;
