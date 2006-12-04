@@ -352,14 +352,22 @@ namespace LinBox {
 		typedef typename Source::Element SrcElt;
 		typedef typename Target::Element Elt;
 	
-		Hom(const Source& S, const Target& T) : _source (S), _target(T){}
+            Hom(const Source& S, const Target& T) : _source (S), _target(T){ }
 		Elt& image(Elt& t, const SrcElt& s) {
 			_source. get_num (num, s);
 			_source. get_den (den, s);
-			_target. init (tmp, den);
-			_target. init (t, num);
-			_target. divin (t, tmp);
-			return t;
+                        if (den == 1) {
+                            return _target.init(t,num);
+                        } else if (num == 1) {
+                            _target.init(t,den);
+                            return _target.invin(t);
+                        } else {
+                            _target. init (tmp, den);
+                            _target. init (t, num);
+                            return _target. divin (t, tmp);
+                        }
+// 			_target. init (t, den);
+// 			return _target. invin (t);
 		}
 		SrcElt& preimage(SrcElt& s, const Elt& t) {
 			_target. convert (num, t);
