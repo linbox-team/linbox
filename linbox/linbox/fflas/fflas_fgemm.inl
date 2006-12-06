@@ -8,6 +8,7 @@
  * See COPYING for license information.
  */
 
+#include "linbox/field/modular-double.h"
 
 // Note:
 // The domain is supposed to be a field since some divisions are required for efficiency purposes

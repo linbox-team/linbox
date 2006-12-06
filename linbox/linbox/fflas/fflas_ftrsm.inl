@@ -8,6 +8,8 @@
  * See COPYING for license information.
  */
 
+#include "linbox/field/modular-double.h"
+
 namespace LinBox{
 //---------------------------------------------------------------------
 // bound
