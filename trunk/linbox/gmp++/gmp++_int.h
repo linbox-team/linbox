@@ -40,6 +40,69 @@ extern "C" {
 #ifdef __USE_ISOC99
 #    define __USE_GMPPLUSPLUS_64__
 #endif
+  //------------------------------------------------------ Friend Integer
+class Integer;
+
+int compare(const Integer& a, const Integer& b);
+int absCompare(const Integer& a, const Integer& b);
+Integer& inv (Integer& u, const Integer& a, const Integer& b);
+Integer gcd (const Integer& a, const Integer& b);
+Integer gcd (const Integer& a, const Integer& b, Integer& u, Integer& v);
+Integer& gcd (Integer& g, const Integer& a, const Integer& b);
+Integer& gcd (Integer& g, const Integer& a, const Integer& b, Integer& u, Integer& v);
+Integer pp( const Integer& P, const Integer& Q );
+Integer& lcm (Integer& g, const Integer& a, const Integer& b);
+Integer lcm (const Integer& a, const Integer& b);
+Integer& pow(Integer& Res, const Integer& n, const long l);
+Integer& pow(Integer& Res, const unsigned long n, const unsigned long l);
+Integer& pow(Integer& Res, const Integer& n, const unsigned long l);
+Integer& pow(Integer& Res, const Integer& n, const int l) ;
+
+Integer& pow(Integer& Res, const Integer& n, const unsigned int l) ;
+
+Integer pow(const Integer& n, const long l);
+Integer pow(const Integer& n, const unsigned long l);
+Integer pow(const Integer& n, const int l) ;
+Integer pow(const Integer& n, const unsigned int l);
+Integer& powmod(Integer& Res, const Integer& n, const unsigned long e, const Integer& m);
+Integer& powmod(Integer& Res, const Integer& n, const long e, const Integer& m);
+Integer& powmod(Integer& Res, const Integer& n, const unsigned int e, const Integer& m) ;
+Integer& powmod(Integer& Res, const Integer& n, const int e, const Integer& m)  ;
+
+Integer& powmod(Integer& Res, const Integer& n, const Integer& e, const Integer& m);
+Integer powmod(const Integer& n, const unsigned long e, const Integer& m);
+Integer powmod(const Integer& n, const long e, const Integer& m);
+Integer powmod(const Integer& n, const unsigned int e, const Integer& m) ;
+
+Integer powmod(const Integer& n, const int e, const Integer& m) ;
+
+Integer powmod(const Integer& n, const Integer& e, const Integer& m);
+Integer fact ( unsigned long l);
+Integer sqrt(const Integer& p);
+Integer sqrtrem(const Integer& p, Integer& rem);
+Integer& sqrt(Integer& r, const Integer& p);
+Integer& sqrtrem(Integer& r, const Integer& p, Integer& rem);
+bool root(Integer& q, const Integer&, unsigned int n);
+long logp(const Integer& a, const Integer& p) ;
+double logtwo(const Integer& a) ;
+void swap(Integer& , Integer&);
+inline int sign   (const Integer& a);
+inline int isZero (const Integer& a);
+inline int isOne  (const Integer& a);
+int isperfectpower  (const Integer& );
+Integer abs(const Integer& n);
+Integer& prevprime(Integer&, const Integer& p);
+Integer& nextprime(Integer&, const Integer& p);
+int probab_prime(const Integer& p);
+int probab_prime(const Integer& p, int r);
+int jacobi(const Integer& u, const Integer& v) ;
+int legendre(const Integer& u, const Integer& v) ;
+inline unsigned long length (const Integer& a);
+std::istream& operator >> (std::istream &i, Integer& n);
+std::ostream& operator << (std::ostream &o, const Integer& n);
+std::ostream& absOutput (std::ostream &o, const Integer& n);
+
+
 
 
   //------------------------------------------------------ Class Integer

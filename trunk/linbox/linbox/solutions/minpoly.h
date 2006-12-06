@@ -35,7 +35,6 @@
 #endif
 #include <linbox/algorithms/minpoly-integer.h>
 
-
 namespace LinBox 
 {
 	
@@ -284,7 +283,7 @@ namespace LinBox
 	*/
 }
 
-#include "linbox/field/modular.h"
+#include "linbox/field/modular-double.h"
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
