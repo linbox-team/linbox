@@ -120,6 +120,7 @@ namespace LinBox
 		double &convert (double& x, const Element &y) const
 		{return  x= (double) y;}
  
+	
 		/*- Assignment of one field base element to another.
 		 * This function assumes both field base elements have already been
 		 * constructed and initialized.
@@ -340,9 +341,9 @@ namespace LinBox
 		 */
 		Element &init (Element &x, const double &y) const
 		{ 
-		  Element tmp = (Element)y % ModularBase<Element>::_modulus;
-		  if (tmp<0) tmp += ModularBase<Element>::_modulus;
-		  return x = tmp;
+			double z = fmod(y, (double)ModularBase<Element>::_modulus);
+		  if (z < 0) z += (double) ModularBase<Element>::_modulus;
+		  return x = (Element) (z+.5);
 		}
 
 		//@}  
@@ -629,6 +630,13 @@ namespace LinBox
 			return x;
 		}
 
+		Element &init (Element &x, const double &y) const
+		{ 
+			double z = fmod(y, (double)_modulus);
+			if (z < 0) z += (double) _modulus;
+			return x = (Element) (z);
+		}
+
 		Element &add (Element &x, const Element &y, const Element &z) const
 		{
 			uint32 t = (uint32) y + (uint32) z;
@@ -778,6 +786,13 @@ namespace LinBox
 			return x;
 		}
 
+		Element &init (Element &x, const double &y) const
+		{ 
+			double z = fmod(y, (double)_modulus);
+			if (z < 0) z += (double) _modulus;
+			return x = (Element) (z);
+		}
+
 		Element &add (Element &x, const Element &y, const Element &z) const
 		{
 			uint32 t = (uint32) y + (uint32) z;
@@ -918,6 +933,13 @@ namespace LinBox
 			x = abs (y) % integer (ModularBase<Element>::_modulus);
 			if (y < 0) x = ModularBase<Element>::_modulus - x;
 			return x;
+		}
+
+		Element &init (Element &x, const double &y) const
+		{ 
+			double z = fmod(y, (double)_modulus);
+			if (z < 0) z += (double) _modulus;
+			return x = (Element) (z);
 		}
 
 		Element &add (Element &x, const Element &y, const Element &z) const
