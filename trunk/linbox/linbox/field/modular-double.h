@@ -202,7 +202,6 @@ namespace LinBox {
 			*/
 
 			if (x < 0) x += modulus;
-
 			return x;
 		}
 

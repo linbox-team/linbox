@@ -620,7 +620,7 @@ std::istream &VectorDomain<GF2>::readSpecialized (std::istream &is, const Vector
 
 	while (!isdigit (is >> c));
 
-	is.unget (c);
+	is.unget ();
 
 	for (i = x.begin (); i != x.end (); ++i)
 		is >> *i;
@@ -637,14 +637,14 @@ std::istream &VectorDomain<GF2>::readSpecialized (std::istream &is, const Vector
 
 	while (!isdigit (is >> c));
 
-	is.unget (c);
+	is.unget ();
 	x.clear ();
 
 	while (1) {
 		is >> c;
 
 		if (!isdigit (c) && c != ' ') break;
-		is.unget (c);
+		is.unget ();
 		is >> idx;
 		x.push_back (idx);
 	}
