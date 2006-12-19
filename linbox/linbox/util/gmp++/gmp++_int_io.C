@@ -1,5 +1,5 @@
 // ==========================================================================
-// $Source$
+// $Source: /var/lib/cvs/Givaro/src/kernel/gmp++/gmp++_int_io.C,v $
 // Copyright(c)'94-97 by Givaro Team
 // see the copyright file.
 // Authors: M. Samama, T. Gautier
@@ -9,9 +9,7 @@
 
 #include <iostream>
 #include <stdlib.h>
-#ifndef LinBoxSrcOnly
-#include "gmp++_int.h"
-#endif
+#include "gmp++/gmp++.h"
 
 // Sortie nonsignee : 321321 meme si n = -321321, par exemple 
 std::ostream& absOutput(std::ostream &o, const Integer&n)
@@ -44,30 +42,29 @@ std::ostream& Integer::print(std::ostream &o) const
   return o;
 } 
 
-std::string& Integer2string(std::string& s, const Integer& n, int base) {
-    unsigned long strSize = mpz_sizeinbase((mpz_ptr)&(n.gmp_rep), base) + 2;
+Integer::operator std::string () const {
+    std::string s;
+    unsigned long strSize = mpz_sizeinbase((mpz_ptr)&(gmp_rep), 10) + 2;
     char *str = new char[strSize + 2];
-    mpz_get_str(str, base, (mpz_ptr)&(n.gmp_rep));
+    mpz_get_str(str, 10, (mpz_ptr)&(gmp_rep));
     s = std::string(str);
-    delete [] str ;
+//    delete [] str ;
     return s;
 }
-Integer::operator std::string () const {
-	std::string s;
-	return Integer2string(s,*this);
-}
+
 
 
 Integer::Integer(const std::vector<mp_limb_t>& v) {
  	size_t s = v.size();
 	if (s) {
 	 	mpz_init_set_ui((mpz_ptr)&gmp_rep, v[0]);
-		Integer base(256), prod;
+		Integer base(256), prod, tmp;
 		prod = base = pow(base, (unsigned long)sizeof(mp_limb_t) );
 
 		std::vector<mp_limb_t>::const_iterator vi = v.begin();
 		for(++vi;vi != v.end();++vi) { 
-	 		*this += ( prod * (*vi) );
+			mpz_mul_ui( (mpz_ptr)&tmp.gmp_rep, (mpz_ptr)&prod.gmp_rep, *vi);
+	 		*this += tmp;
 			prod *= base;
 		}
 	} else
@@ -75,18 +72,15 @@ Integer::Integer(const std::vector<mp_limb_t>& v) {
 
 }
 
-std::vector<mp_limb_t>& Integer2vector(std::vector<mp_limb_t>& v, const Integer& n) {
-	size_t s = mpz_size( (mpz_ptr)&n.gmp_rep );
-	v.resize(s); 
-	std::vector<mp_limb_t>::iterator vi = v.begin();
-	for(mp_size_t i = 0;vi != v.end();++vi, ++i) *vi = mpz_getlimbn( (mpz_ptr)&n.gmp_rep ,i);
-	return v;
+Integer::operator std::vector<mp_limb_t> () const {
+        size_t s = mpz_size( (mpz_ptr)&(gmp_rep) );
+        std::vector<mp_limb_t> v(s);
+        std::vector<mp_limb_t>::iterator vi = v.begin();
+        for(mp_size_t i = 0;vi != v.end();++vi, ++i) *vi = mpz_getlimbn( (mpz_ptr)& (gmp_rep) ,i);
+        return v;
 }
 
-Integer::operator std::vector<mp_limb_t> () const {
-	std::vector<mp_limb_t> v;
-	return Integer2vector(v,*this);
-}
+
 
   // Entree au format de la sortie
 std::istream& operator>> (std::istream& in, Integer& a)

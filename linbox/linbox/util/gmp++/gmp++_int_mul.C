@@ -1,14 +1,12 @@
 // ==========================================================================
-// $Source$
+// $Source: /var/lib/cvs/Givaro/src/kernel/gmp++/gmp++_int_mul.C,v $
 // Copyright(c)'94-97 by Givaro Team
 // see the copyright file.
 // Authors: M. Samama, T. Gautier
 // $Id$
 // ==========================================================================
 
-#ifndef LinBoxSrcOnly
-#include "gmp++_int.h"
-#endif
+#include "gmp++/gmp++.h"
 
 
 //-------------------------------------------------- operator *
@@ -91,6 +89,7 @@ Integer& Integer::amxy(Integer& res, const Integer& a, const Integer& x, const I
     return res;
 }
 
+
 Integer& Integer::axmy(Integer& res, const Integer& a, const Integer& x, const Integer& b)
 {
     if (&res == &b) return Integer::axmyin(res,a,x);
@@ -109,8 +108,6 @@ Integer& Integer::axmyin(Integer& res, const Integer& a, const Integer& x)
     mpz_submul( (mpz_ptr)&res.gmp_rep, (mpz_ptr)&a.gmp_rep, (mpz_ptr)&x.gmp_rep);
     return res;
 }
-
-
 
 Integer& Integer::operator *= (const Integer& n)
 {

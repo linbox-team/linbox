@@ -1,5 +1,5 @@
 // ==========================================================================
-// $Source$
+// $Source: /var/lib/cvs/Givaro/src/kernel/gmp++/gmp++_int_pow.C,v $
 // Copyright(c)'94-97 by Givaro Team
 // see the copyright file.
 // Authors: JG Dumas
@@ -7,9 +7,7 @@
 // ==========================================================================
 // Description: 
 
-#ifndef LinBoxSrcOnly
-#include "gmp++_int.h"
-#endif
+#include "gmp++/gmp++.h"
 int isperfectpower(const Integer& n) {
 	return mpz_perfect_power_p((mpz_ptr)&(n.gmp_rep));
 }

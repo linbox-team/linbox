@@ -54,7 +54,7 @@ namespace LinBox {
 			size_t cbits=5;
 			size_t tresh;
 			do {				
-				tresh= 1<<(cbits);
+				tresh = 1<<(cbits);
 				size_t p = 1<<(_bits-cbits);
 				do {
 					integer::random(tmp,cbits);
@@ -74,7 +74,7 @@ namespace LinBox {
 			size_t cbits=5;
 			size_t tresh;
 			do {				
-				tresh== 1<<(cbits);
+				tresh = 1<<(cbits);
 				size_t p = 1<<(_bits-cbits);
 				do {
 					integer::random(t,cbits);

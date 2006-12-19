@@ -1,5 +1,5 @@
 // ==========================================================================
-// $Source$
+// $Source: /var/lib/cvs/Givaro/src/kernel/gmp++/gmp++_int_gcd.C,v $
 // Copyright(c)'94-97 by Givaro Team
 // see the copyright file.
 // Authors: M. Samama, T. Gautier
@@ -8,9 +8,7 @@
 // Description: 
 //
 
-#ifndef LinBoxSrcOnly
-#include "gmp++_int.h"
-#endif
+#include "gmp++/gmp++.h"
 
 // ==========================================================================
 // Computes and returns the lcm of the two integers a and b.

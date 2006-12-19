@@ -56,7 +56,7 @@ namespace LinBox {
 	protected:
 
 		double  modulus;
-		long   lmodulus;
+		unsigned long   lmodulus;
 
 		//double inv_modulus;
 		
@@ -164,7 +164,8 @@ namespace LinBox {
 		
 
 		Element &init (Element &x, const integer &y) const  {
-			return x = (Element)mpz_fdiv_ui(y.get_mpz(),lmodulus );
+// 			return x = (Element)mpz_fdiv_ui(y.get_mpz(),lmodulus );
+			return x = (Element)(y%lmodulus);
 		}
 
 		inline Element& init(Element& x, double y =0) const {		  

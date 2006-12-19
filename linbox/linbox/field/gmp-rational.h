@@ -120,7 +120,7 @@ class GMPRationalField : public FieldInterface
 	 */
 	Element &init (Element &x, const integer &y = 0) const
 	{
-		mpq_set_z (x. rep, const_cast<integer&>(y). get_mpz());
+		mpq_set_z (x. rep, SpyInteger::get_mpz(const_cast<integer&>(y)));
 		//mpq_set_si (x.rep, (signed long) y, 1L);
 		//mpq_canonicalize (x.rep);
 		return x;
@@ -620,14 +620,14 @@ class GMPRationalField : public FieldInterface
 	
 	// x = numerator of y
 	integer& get_num (integer& x, const Element& y)  const{
-		mpq_get_num (x. get_mpz(), y. rep);
+		mpq_get_num (SpyInteger::get_mpz(x), y. rep);
 		return x;
 
 	}
 
 	// x = denominator of y
 	integer& get_den (integer& x, const Element& y) const {
-		mpq_get_den (x. get_mpz(), y. rep);
+		mpq_get_den (SpyInteger::get_mpz(x), y. rep);
 		return x;
 	}
 

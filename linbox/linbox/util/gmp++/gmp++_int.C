@@ -1,9 +1,7 @@
 #ifndef __GMPplusplus_INTEGER_C__
 #define __GMPplusplus_INTEGER_C__
 
-#ifndef LinBoxSrcOnly
-#include "gmp++_int.h"
-#endif
+#include "gmp++/gmp++.h"
 
 #include "gmp++_int_cstor.C"
 #include "gmp++_int_add.C"
