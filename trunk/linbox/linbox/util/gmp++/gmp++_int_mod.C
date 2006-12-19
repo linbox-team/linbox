@@ -1,14 +1,12 @@
 // ==========================================================================
-// $Source$
+// $Source: /var/lib/cvs/Givaro/src/kernel/gmp++/gmp++_int_mod.C,v $
 // Copyright(c)'94-97 by Givaro Team
 // see the copyright file.
 // Authors: M. Samama, T. Gautier
 // $Id$
 // ==========================================================================
 
-#ifndef LinBoxSrcOnly
-#include "gmp++_int.h"
-#endif
+#include "gmp++/gmp++.h"
 
 
 //-------------------------------------------------- operator /
@@ -121,33 +119,43 @@ Integer Integer::operator % (const Integer& n) const
   return res;
 }
 
-long Integer::operator % (const unsigned long l) const 
-{
-//  if (l ==0) {
-//    GivMathDivZero("[Integer::/]: division by zero");
-//  }
-  if (isZero(*this)) return 0L;
-  Integer Res(Integer::one);   
-  mpz_tdiv_r_ui( (mpz_ptr)&(Res.gmp_rep), (mpz_ptr)&gmp_rep, l);
-//   return Integer((res.gmp_rep));
-  return Integer2long( Res );
+// long Integer::operator % (const unsigned long l) const 
+// {
+// //  if (l ==0) {
+// //    GivMathDivZero("[Integer::/]: division by zero");
+// //  }
+//   if (isZero(*this)) return 0L;
+//   Integer Res(Integer::one);   
+//   mpz_tdiv_r_ui( (mpz_ptr)&(Res.gmp_rep), (mpz_ptr)&gmp_rep, l);
+// //   return Integer((res.gmp_rep));
+//   return long( Res );
+// }
+long Integer::operator % (const unsigned long l) const {
+    return  mpz_tdiv_ui( (mpz_ptr)&gmp_rep, l);
 }
 
+// long Integer::operator % (const long l) const 
+// {
+// //  if (l ==0) {
+// //    GivMathDivZero("[Integer::/]: division by zero");
+// //  }
+//   if (isZero(*this)) return 0L;
+//   Integer Res(Integer::one);   
+//   int sgn = GMP__SGN(l);
+//   mpz_tdiv_r_ui( (mpz_ptr)&(Res.gmp_rep), (mpz_ptr)&gmp_rep, GMP__ABS(l));
+//   if (sgn <0) Res = - Res;
+//   return long( Res );
+// }
 long Integer::operator % (const long l) const 
 {
-//  if (l ==0) {
-//    GivMathDivZero("[Integer::/]: division by zero");
-//  }
-  if (isZero(*this)) return 0L;
-  Integer Res(Integer::one);   
   int sgn = GMP__SGN(l);
-  mpz_tdiv_r_ui( (mpz_ptr)&(Res.gmp_rep), (mpz_ptr)&gmp_rep, GMP__ABS(l));
-  if (sgn <0) Res = - Res;
-  return Integer2long( Res );
+  long res = mpz_tdiv_ui((mpz_ptr)&gmp_rep, GMP__ABS(l));
+  if (sgn <0) return -res;
+  else return res;
 }
 
 //Added by Dan Roche, 6-28-04
-#ifdef __USE_GMPPLUSPLUS_64__
+#ifdef __USE_64_bits__
 long long Integer::operator % (const unsigned long long l) const
 {
   if (isZero(*this)) return 0LL;

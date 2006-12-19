@@ -1,5 +1,5 @@
 // ==========================================================================
-// $Source$
+// $Source: /var/lib/cvs/Givaro/src/kernel/gmp++/gmp++_int_misc.C,v $
 // Copyright(c)'94-97 by Givaro Team
 // see the copyright file.
 // Authors: M. Samama, T. Gautier
@@ -7,12 +7,10 @@
 // ==========================================================================
 // Description: 
 
-
 #include <iostream>
 #include <math.h>
-#ifndef LinBoxSrcOnly
-#include "gmp++_int.h"
-#endif
+#include "gmp++/gmp++.h"
+
 //-------------------------------------------fact (unsigned long l)
 Integer fact ( unsigned long l) 
 {
@@ -100,14 +98,16 @@ Integer& nextprime(Integer& r, const Integer &p)
   mpz_nextprime ((mpz_ptr)&(r.gmp_rep), (mpz_ptr)&(p.gmp_rep)) ;
   return r;
 }
+
 // Copied and adapted from mpz/nextprime.c
 Integer& prevprime(Integer& r, const Integer &p)
 {
-  mpz_sub_ui ( (mpz_ptr)&(r.gmp_rep), (mpz_ptr)&(p.gmp_rep), 1L );
-  while( !mpz_probab_prime_p ( (mpz_ptr)&(p.gmp_rep), 5 ) )
-    mpz_sub_ui ( (mpz_ptr)&(r.gmp_rep), (mpz_ptr)&(p.gmp_rep), 1L );
-  return r;
+   mpz_sub_ui ( (mpz_ptr)&(r.gmp_rep), (mpz_ptr)&(p.gmp_rep), 1L );
+   while( !mpz_probab_prime_p ( (mpz_ptr)&(p.gmp_rep), 5 ) )
+   mpz_sub_ui ( (mpz_ptr)&(r.gmp_rep), (mpz_ptr)&(p.gmp_rep), 1L );
+   return r;
 }
+
 int probab_prime(const Integer &p)
 {
   return mpz_probab_prime_p ((mpz_ptr)&(p.gmp_rep),1) ;
@@ -195,17 +195,40 @@ Integer& Integer::operator >>= (unsigned long l)
 	return *this; 
 }
 
+//------------------------------------------- Bit logic
+    Integer Integer::operator^ (const Integer& a) {   // XOR
+        Integer res(*this);
+        return res ^= a;
+    }
+    Integer Integer::operator| (const Integer& a) {   // OR
+        Integer res(*this);
+        return res |= a;
+    }
+    Integer Integer::operator& (const Integer& a) {   // AND
+        Integer res(*this);
+        return res &= a;
+    }
+    Integer Integer::operator~ () const {   // 1 complement
+        Integer res;
+        mpz_com( (mpz_ptr)&(res.gmp_rep), (mpz_ptr)&(gmp_rep));
+        return res;
+    }
+    Integer& Integer::operator^= (const Integer& a) {   // XOR
+        mpz_xor( (mpz_ptr)&(gmp_rep), (mpz_ptr)&(gmp_rep), (mpz_srcptr)&(a.gmp_rep));
+        return *this;
+    }
+    Integer& Integer::operator|= (const Integer& a) {   // OR
+        mpz_ior( (mpz_ptr)&(gmp_rep), (mpz_ptr)&(gmp_rep), (mpz_srcptr)&(a.gmp_rep));
+        return *this;
+    }
+    Integer& Integer::operator&= (const Integer& a) {   // AND
+        mpz_and( (mpz_ptr)&(gmp_rep), (mpz_ptr)&(gmp_rep), (mpz_srcptr)&(a.gmp_rep));
+        return *this;
+    }
+
+
 //------------------------------------------- convert method
 //------------------------------------------- casting method
-long Integer2long  ( const Integer& n)
-{
-  return mpz_get_si ( (mpz_srcptr)&n.gmp_rep);
-}
-double Integer2double( const Integer& n)
-{
-  return mpz_get_d( (mpz_srcptr)&n.gmp_rep);
-}
-
 Integer::operator int() const {
 	return mpz_get_si ( (mpz_srcptr)&gmp_rep);
 }
@@ -218,15 +241,19 @@ Integer::operator long() const {
 Integer::operator unsigned long() const {
 	return mpz_get_ui ( (mpz_srcptr)&gmp_rep);
 }
-#ifdef __USE_GMPPLUSPLUS_64__
+#ifdef __USE_64_bits__
 Integer::operator unsigned long long() const {
 	unsigned long low = (unsigned long)(*this);
 	Integer rem;
-	mpz_tdiv_q_2exp( (mpz_ptr)&(rem.gmp_rep), (mpz_srcptr)&(gmp_rep), CHAR_BIT*sizeof(unsigned long int) );
+	short cbtuli = CHAR_BIT*sizeof(unsigned long int);
+	mpz_tdiv_q_2exp( (mpz_ptr)&(rem.gmp_rep), (mpz_srcptr)&(gmp_rep), cbtuli );
 	unsigned long high = (unsigned long)(rem);
 	unsigned long long tmp = high;
-	tmp <<= CHAR_BIT*sizeof(unsigned long int)/2 ;
-	tmp <<= CHAR_BIT*sizeof(unsigned long int)/2 ;
+//	tmp <<= CHAR_BIT*sizeof(unsigned long int) ;
+	cbtuli >>= 1;
+	tmp <<= cbtuli ;
+        tmp <<= cbtuli ;
+
 	return tmp += low;
 }
 Integer::operator long long() const {

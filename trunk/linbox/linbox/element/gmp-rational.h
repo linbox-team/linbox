@@ -35,6 +35,23 @@ namespace LinBox
 class GMPRationalField;
 class GMPRationalRandIter;
 
+// SPy to have access to protected members of integer
+struct SpyInteger {
+
+    struct InHeritsInteger : public integer {
+    protected:
+        friend struct SpyInteger;
+    };        
+    
+    static const InHeritsInteger::Rep* get_rep(const integer& i) {
+        return static_cast<const InHeritsInteger&>(i).get_rep();
+    }
+    static mpz_ptr get_mpz(integer& i) {
+        return static_cast<InHeritsInteger&>(i).get_mpz();
+    }
+};
+
+
 /** \brief elements of GMP_Rationals.
 \ingroup element
  */
@@ -118,8 +135,8 @@ class GMPRationalElement
 	GMPRationalElement (const integer &num, const integer &den) 
 	{
 		mpq_init (rep);
-		mpz_set (mpq_numref (rep), num.get_rep());
-		mpz_set (mpq_denref (rep), den.get_rep());
+		mpz_set (mpq_numref (rep), SpyInteger::get_rep(num));
+		mpz_set (mpq_denref (rep), SpyInteger::get_rep(den));
 	}
 	
 	// Added by Rich Seagraves to take care of some headaches
@@ -135,7 +152,7 @@ class GMPRationalElement
 		mpz_set_si (mpq_numref(rep), num);
 		mpz_set_si (mpq_denref(rep), integer(1));
 		*/
-		mpq_set_z(rep, num.get_rep());
+		mpq_set_z(rep, SpyInteger::get_rep(num));
 	}
 
 	mpq_ptr get_rep() {return rep;}
