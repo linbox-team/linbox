@@ -176,7 +176,6 @@ extern "C" {
             
 	int clapack_dgetri(const enum CBLAS_ORDER Order, const int N, double *A,
 			   const int lda, const int *ipiv) ;
-    
 //         {
 //             int info;
 //             double * wrk;
