@@ -56,6 +56,10 @@ extern "C" {
 	void dtrsm_ (const char*, const char*, const char*, const char*, const int*, const int*, const double*, const double*, const int*, double*, const int*);
 	void dtrmm_ (const char*, const char*, const char*, const char*, const int*, const int*, const double*, const double*, const int*, double*, const int*);
 	void dgemm_ (const char*, const char*, const int*, const int*, const int*, const double*, const double*, const int*, const double*, const int*, const double*, double*, const int*);
+
+	// LAPACK routines
+        void dgetrf_(const int *, const int *, double *, const int *, int *, int *);
+        void dgetri_(const int *, double *, const int *, const int *, double *, const int *, int *);
 }
 
 // define C wrappers
@@ -158,7 +162,28 @@ extern "C" {
 			dgemm_ ( EXT_BLAS_TRANSPOSE(TransA), EXT_BLAS_TRANSPOSE(TransB), &N, &M, &K, &alpha, B, &ldb, A, &lda, &beta, C, &ldc);
 		else
 			dgemm_ ( EXT_BLAS_TRANSPOSE(TransA), EXT_BLAS_TRANSPOSE(TransB), &M, &N, &K, &alpha, A, &lda, B, &ldb, &beta, C, &ldc);
-	}  
+	}
+
+	// LAPACK routines
+
+	int clapack_dgetrf(const enum CBLAS_ORDER Order, const int M, const int N,
+			   double *A, const int lda, int *ipiv) 
+        {
+            int info;
+            dgetrf_ ( &M, &N, A, &lda, ipiv, &info);
+            return info;
+        }
+            
+	int clapack_dgetri(const enum CBLAS_ORDER Order, const int N, double *A,
+			   const int lda, const int *ipiv) ;
+    
+//         {
+//             int info;
+//             double * wrk;
+//             int lwrk = -1; // Nothing known about block sizes
+//             dgetri_ ( &N, A, &lda, ipiv, wrk, &lwrk, &info);
+//             return info;
+//         }
 
 } 
 

@@ -31,7 +31,7 @@ namespace LinBox
 	inline ToeplitzBase<_CField,_PField>::~ToeplitzBase()
 	{
 #ifdef DBGMSGS
-		std::cout << "Toeplitz::~Toeplitz():\tDestroyed a " << rowDim << "x"<< colDim<<
+		std::cout << "Toeplitz::~Toeplitz():\tDestroyed a " << rowDim << "x"<< this->colDim<<
 			" Toeplitz matrix "<< std::endl;
 #endif
 	}//---- Destructor ---- [Tested 6/14/02 -- Works]
@@ -48,9 +48,9 @@ namespace LinBox
 		shape  =
 		sysDim =               // Default dimension is 0
 		rowDim =               // Default row dim is 0
-		colDim = 0;            // Default col dim is 0
+		this->colDim = 0;            // Default col dim is 0
 #ifdef DBGMSGS
-		std::cout << "Toeplitz::Toeplitz():\tCreated a " << rowDim << "x"<< colDim<<
+		std::cout << "Toeplitz::Toeplitz():\tCreated a " << rowDim << "x"<< this->colDim<<
 			" Toeplitz matrix "<< std::endl;
 #endif
 		
@@ -66,9 +66,9 @@ namespace LinBox
 		shape  =
 		sysDim =               // Default dimension is 0
 		rowDim =               // Default row dim is 0
-		colDim = 0;            // Default col dim is 0
+		this->colDim = 0;            // Default col dim is 0
 #ifdef DBGMSGS
-		std::cout << "Toeplitz::Toeplitz():\tCreated a " << rowDim << "x"<< colDim<<
+		std::cout << "Toeplitz::Toeplitz():\tCreated a " << rowDim << "x"<< this->colDim<<
 			" Toeplitz matrix "<< std::endl;
 #endif
 		
@@ -81,7 +81,7 @@ namespace LinBox
 	ToeplitzBase<_CField,_PField>::ToeplitzBase( const PField& PF )
 		:P(PF), K(PF.getCoeffField())
 	{
-		shape = sysDim = rowDim = colDim = 0;
+		shape = sysDim = rowDim = this->colDim = 0;
 
 	}//------ Polynomial Field constructor
 
@@ -94,21 +94,21 @@ namespace LinBox
 		:P(PF), K(PF.getCoeffField()), rowDim(m), colDim(n), pdata(p)
 	{
 		shape = 0;
-		if( n == 0 ) colDim = rowDim;
-		if( rowDim >= colDim ) sysDim = rowDim;
-		else sysDim = colDim;
+		if( n == 0 ) this->colDim = rowDim;
+		if( rowDim >= this->colDim ) sysDim = rowDim;
+		else sysDim = this->colDim;
 
-		assert( P.deg(p) <= rowDim + colDim - 2 );
+		assert( P.deg(p) <= rowDim + this->colDim - 2 );
 		
 		P.rev(rpdata, pdata);
 
 		// Account for possible trailing zeroes
-		if( P.deg(pdata) < rowDim + colDim - 2 ) {
+		if( P.deg(pdata) < rowDim + this->colDim - 2 ) {
 			Poly x;
 			P.init(x,0);
 			Element one;
 			K.init(one,1);
-			P.setCoeff(x, (rowDim + colDim - 2 - P.deg(pdata)), one);
+			P.setCoeff(x, (rowDim + this->colDim - 2 - P.deg(pdata)), one);
 			P.mulin( rpdata, x );
 		}
 
@@ -128,25 +128,25 @@ namespace LinBox
 			}
 		assert( (1 & v.size()) == 1);
 
-		P.init(pdata, v);
-		P.rev(rpdata, pdata);
+		this->P.init(this->pdata, v);
+		this->P.rev(this->rpdata, this->pdata);
 
 		// Account for possible trailing zeroes
-		if( P.deg(pdata) < v.size() - 1 ) {
+		if( this->P.deg(this->pdata) < v.size() - 1 ) {
 			Poly x;
-			P.init(x,0);
+			this->P.init(x,0);
 			Element one;
-			K.init(one,1);
-			P.setCoeff(x, (v.size() - 1 - P.deg(pdata)), one);
-			P.mulin( rpdata, x );
+			this->K.init(one,1);
+			this->P.setCoeff(x, (v.size() - 1 - this->P.deg(this->pdata)), one);
+			this->P.mulin( this->rpdata, x );
 		}
 		
-		rowDim = colDim = sysDim = (v.size()+1)/2;
+		this->rowDim = this->colDim = this->sysDim = (v.size()+1)/2;
 		
 		//data = v;
 		
 #ifdef DBGMSGS
-		std::cout << "Toeplitz::Toeplitz(F,V):\tCreated a " << rowDim << "x"<< colDim<<
+		std::cout << "Toeplitz::Toeplitz(F,V):\tCreated a " << rowDim << "x"<< this->colDim<<
 			" Toeplitz matrix "<< std::endl;
 #endif
 		
@@ -165,26 +165,26 @@ namespace LinBox
 		register unsigned int j;
 		Element temp;
 		
-		os<< rowDim << " " << colDim << " " << shape << std::endl;
-		N = rowDim + colDim -1;
+		os<< this->rowDim << " " << this->colDim << " " << this->shape << std::endl;
+		N = this->rowDim + this->colDim -1;
 
 		if ( N < 20 )             // Print small matrices in dense format
 			{
-				for (i = colDim-1; i < N; i++) 
+				for (i = this->colDim-1; i < N; i++) 
 					{
-						for ( j = 0; j < colDim ; j++)
+						for ( j = 0; j < this->colDim ; j++)
 							os << " " ;
-							K.write(os,P.getCoeff(temp,pdata,static_cast<size_t>(i-j))) ;
+							this->K.write(os,this->P.getCoeff(temp,this->pdata,static_cast<size_t>(i-j))) ;
 						os << std::endl;
 					}
 			} 
 		else 
 			{                    // Print large matrices' first row and col
 				os << "[";
-				for (size_t i = rowDim + colDim - 2; i> 0;i--)
-					K.write(os, P.getCoeff(temp,pdata,i) ) << " ";
-				K.write(os,P.getCoeff(temp,pdata,0)) << "]\n";
-				P.write(os, pdata) << std::endl;
+				for (size_t i = this->rowDim + this->colDim - 2; i> 0;i--)
+					this->K.write(os, this->P.getCoeff(temp,this->pdata,i) ) << " ";
+				this->K.write(os,this->P.getCoeff(temp,this->pdata,0)) << "]\n";
+				this->P.write(os, this->pdata) << std::endl;
 			} //[v(2n-2),....,v(0)]; where v(0) is the top right entry of the matrix
 		
 		return;
@@ -215,10 +215,10 @@ namespace LinBox
 		else 
 			{
 				std::ofstream o_fp(outFileName, std::ios::out);
-				o_fp << rowDim << " " << colDim << " " << shape << std::endl ;
+				o_fp << this->rowDim << " " << this->colDim << " " << this->shape << std::endl ;
 				o_fp << "[";
-				for (size_t i = rowDim + colDim - 2; i>= 0;i--) 
-					K.write(o_fp,P.getCoeff(temp,pdata,i))
+				for (size_t i = this->rowDim + this->colDim - 2; i>= 0;i--) 
+					this->K.write(o_fp,this->P.getCoeff(temp,this->pdata,i))
 					    << " ";
 				o_fp << "]\n";
 				
@@ -287,7 +287,7 @@ namespace LinBox
 		Toeplitz<typename _PField::CoeffField,_PField>::det
 		( Element& res ) const
 	{
-		return toeplitz_determinant( P, res, pdata, sysDim );
+		return toeplitz_determinant( this->P, res, this->pdata, this->sysDim );
 	}
 	
 	
@@ -301,32 +301,32 @@ namespace LinBox
 									   const InVector& v_in) const
 	{  
 		
-		if (v_out.size() != rowdim())
+		if (v_out.size() != this->rowdim())
 			std::cout << "\tToeplitz::apply()\t output vector not correct size, at "
-					  << v_out.size() << ". System rowdim is" <<  rowdim() << std::endl;
-		if ( v_in.size() != coldim() )
+					  << v_out.size() << ". System rowdim is" <<  this->rowdim() << std::endl;
+		if ( v_in.size() != this->coldim() )
 			std::cout << "\tToeplitz::apply()\t input vector not correct size at " 
-					  << v_in.size() << ". System coldim is" <<  coldim() << std::endl;
-		assert((v_out.size() == rowdim()) && 
-			   (v_in.size() == coldim()))  ;
+					  << v_in.size() << ". System colDim is" <<  this->coldim() << std::endl;
+		assert((v_out.size() == this->rowdim()) && 
+			   (v_in.size() == this->coldim()))  ;
 		
 		Poly pOut, pIn;
-		P.init( pIn, v_in );
+		this->P.init( pIn, v_in );
 
 #ifdef DBGMSGS
 		std::cout << "\npX in is " << pxIn << std::endl;
-		std::cout << "multiplied by " << pdata << std::endl;
+		std::cout << "multiplied by " << this->pdata << std::endl;
 #endif
 
-		P.mul(pOut, pIn, pdata);
+		this->P.mul(pOut, pIn, this->pdata);
 
 #ifdef DBGMSGS
 		std::cout <<"pxOut is " << pxOut << std::endl;
 #endif
 		
-		size_t N = rowdim();
+		size_t N = this->rowdim();
 		for( size_t i = 0; i < N; ++i )
-			P.getCoeff(v_out[i], pOut, N-1+i);
+			this->P.getCoeff(v_out[i], pOut, N-1+i);
 		
 		return v_out;
 		
@@ -344,32 +344,32 @@ namespace LinBox
 												const InVector& v_in) const
 	{  
 		
-		if (v_out.size() != coldim())
+		if (v_out.size() != this->coldim())
 			std::cout << "\tToeplitz::apply()\t output vector not correct size, at "
-					  << v_out.size() << ". System rowdim is" <<  coldim() << std::endl;
-		if ( v_in.size() != rowdim() )
+					  << v_out.size() << ". System rowDim is" <<  this->coldim() << std::endl;
+		if ( v_in.size() != this->rowdim() )
 			std::cout << "\tToeplitz::apply()\t input vector not correct size at " 
-					  << v_in.size() << ". System coldim is" <<  rowdim() << std::endl;
-		assert((v_out.size() == coldim()) && 
-			   (v_in.size() == rowdim()))  ;
+					  << v_in.size() << ". System colDim is" <<  this->rowdim() << std::endl;
+		assert((v_out.size() == this->coldim()) && 
+			   (v_in.size() == this->rowdim()))  ;
 		
 		Poly pOut, pIn;
-		P.init( pIn, v_in );
+		this->P.init( pIn, v_in );
 
 #ifdef DBGMSGS
 		std::cout << "\npX in is " << pxIn << std::endl;
-		std::cout << "multiplied by " << rpdata << std::endl;
+		std::cout << "multiplied by " << this->rpdata << std::endl;
 #endif
 
-		P.mul(pOut, pIn, rpdata);
+		this->P.mul(pOut, pIn, this->rpdata);
 
 #ifdef DBGMSGS
 		std::cout <<"pxOut is " << pxOut << std::endl;
 #endif
 		
-		size_t N = coldim();
+		size_t N = this->coldim();
 		for( size_t i = 0; i < N; ++i )
-			P.getCoeff(v_out[i], pOut, N-1+i);
+			this->P.getCoeff(v_out[i], pOut, N-1+i);
 		
 		return v_out;
 		
