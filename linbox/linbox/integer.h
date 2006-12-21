@@ -79,6 +79,9 @@ LinBox ring for use in integer matrix computation, see gmp-integers.h or ntl-ZZ.
 	    static mpz_ptr get_mpz(integer& i) {
 	        return static_cast<InHeritsInteger&>(i).get_mpz();
 	    }
+	    static mpz_ptr get_mpz(const integer& i) {
+	        return const_cast<InHeritsInteger&>(static_cast<const InHeritsInteger&>(i)).get_mpz();
+	    }
         };
 
 
