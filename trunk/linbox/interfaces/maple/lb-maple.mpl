@@ -4,7 +4,7 @@ LinBox:= module()
 	export lbDeterminant, lbRank, lbMinpoly, lbCharpoly, lbSolve, Dev:
 	option package, load=lbInit, unload=lbEnd: 
 	
-	lbpath:="/usr/local/soft/linbox-svn/lib/liblbmaple.so";
+	lbpath:="/kora/home/mosaic/jgdumas/soft/linbox-svn-mp10/lib/liblbmaple.so";
 
 	############################################################# 
 	# Function to initialize LinBox driver and LinBox interface #
