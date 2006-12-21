@@ -457,7 +457,7 @@ extern "C" {
 #ifdef  __LINBOX_MAPLE_GMP_ACCESS
 		mpz_ptr ptr = MapleToGMPInteger(kv, p);	
 		//LB_GMP_SET();		
-		mpz_set(x.get_mpz(), ptr);
+		mpz_set(LinBox::SpyInteger::get_mpz(x), ptr);
 		//LB_GMP_RESTORE();
 	
 #else
@@ -465,7 +465,7 @@ extern "C" {
 		ALGEB f  = EvalMapleStatement(kv,"proc(n) return convert(n,string);end proc;");
 		ALGEB pp = EvalMapleProc(kv, f, 1, p);
 		char *ptr = MapleToString(kv, pp);		
-		mpz_set_str(x.get_mpz(), ptr, 10);
+		mpz_set_str(LinBox::SpyInteger::get_mpz(x), ptr, 10);
 #endif
 	}
 

@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // ======================================================================= //
-// Time-stamp: <16 Jul 05 12:09:23 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <21 Dec 06 15:22:01 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_RATIONAL_CRA_H
 #define __LINBOX_RATIONAL_CRA_H
@@ -154,7 +154,7 @@ namespace LinBox {
                     std::vector<Integer>::iterator t0_it = num.begin();
                     std::vector<Integer>::const_iterator t_it = _tab_it->begin();
                     for( ; t0_it != num.end(); ++t0_it, ++t_it)
-                        normalizesmallbigreconstruct(*t0_it, Product(), *t_it, _mod_it->operator()() );
+                        this->normalizesmallbigreconstruct(*t0_it, Product(), *t_it, _mod_it->operator()() );
                     Product.mulin(*_mod_it);
                 }
             }
