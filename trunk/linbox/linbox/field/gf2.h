@@ -1,11 +1,9 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* linbox/field/gf2.h
- * Copyright (C) 2003 Bradford Hovinen
+ * Copyright (C) 2003-2007 The LinBox group
  *
- * Written by Bradford Hovinen <hovinen@cis.udel.edu>
- *
- * Evolved from modular.h by Bradford Hovinen
+ * Authors : B. Hovinen, JG Dumas, C. Pernet
  *
  * ------------------------------------
  *
@@ -405,8 +403,8 @@ class GF2 : public FieldInterface
 	BitVector::reference addin (BitVector::reference x, Element y) const
 		{ return x ^= y; }
  
-	Element& addin (std::_Bit_reference x, Element y) const
-        	{ return addin((bool&)x,y); }
+	Element& addin (std::_Bit_reference& x, Element y) const
+        	{ return addin( (bool&)x,y); }
  
 	/** Inplace Subtraction.
 	 * x -= y
@@ -422,7 +420,7 @@ class GF2 : public FieldInterface
 	BitVector::reference subin (BitVector::reference x, Element y) const
 		{ return x ^= y; }
  
-	Element& subin (std::_Bit_reference x, Element y) const
+	Element& subin (std::_Bit_reference& x, Element y) const
 		{ return subin((bool&)x, y); }
  
 	/** Inplace Multiplication.
@@ -439,7 +437,7 @@ class GF2 : public FieldInterface
 	BitVector::reference mulin (BitVector::reference x, Element y) const
 		{ return x &= y; }
     
-	Element& mulin (std::_Bit_reference x, Element y) const
+	Element& mulin (std::_Bit_reference& x, Element y) const
 		{ return mulin((bool&)x,y); }
  
 	/** Inplace Division.
@@ -507,7 +505,7 @@ class GF2 : public FieldInterface
 	BitVector::reference axpyin (BitVector::reference r, Element a, Element x) const
 		{ return r ^= a & x; }
 
-	Element& axpyin (std::_Bit_reference r, Element a, Element x) const
+	Element& axpyin (std::_Bit_reference& r, Element a, Element x) const
 		{ return axpyin((bool&)r,a,x); }
 
 	//@} Inplace Arithmetic Operations

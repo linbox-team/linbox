@@ -46,9 +46,8 @@
 #include "linbox/algorithms/rational-solver.h"
 #include "linbox/algorithms/last-invariant-factor.h"
 #include "linbox/field/PIR-modular-int32.h"
-#include "linbox/field/PIR-ntl-ZZ_p.h"
 #include "linbox/field/ntl-ZZ_p.h"
-
+#include "linbox/field/PIR-ntl-ZZ_p.h"
 // Namespace in which all LinBox library code resides
 
 //#include "linbox/algorithms/cra.h"
