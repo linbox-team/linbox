@@ -315,9 +315,7 @@ class DenseMatrixBase<Element>::ColIterator
    
 	operator ConstColIterator ()
 	{
-		ConstCol tmp;
-		tmp = *(reinterpret_cast<ConstCol *> (&_col));
-		return ConstColIterator (tmp, _stride);
+            return ConstColIterator (reinterpret_cast<ConstCol&> (_col) , _stride);
 	}
 
     private:

@@ -36,62 +36,6 @@ namespace LinBox
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
-
-	/** 
-	 * \brief long ints modulo a positive integer.
-	 * 
-	 * While NTL allows any int to serve as the modulus, only prime
-	 * moduli yield fields.  The primality of the modulus will not be checked, so
-	 * it is the programmer's responsibility to supply a prime modulus if a field is
-	 * wanted.
-	 * These specializations allow the \ref{UnparametricField} template class to be
-	 * used to wrap NTL's <tt>zz_p</tt> class as a LinBox field.
-	 * Uses nice trick for mod p via floating point.
-	\ingroup field
-	 */
-
-	struct NTL_zz_p: public UnparametricField<NTL::zz_p>
-	{
-		NTL_zz_p(integer p, size_t e = 1) 
-		: UnparametricField<NTL::zz_p>(p, e)
-		{}
-
-		NTL::zz_p& init(NTL::zz_p& x, const double& y) const
-		{
-			double z = fmod(y,NTL::zz_p::modulus());
-			if (z > 0) z += 0.5;
-			else z -= 0.5;
-			return x = NTL::to_zz_p(static_cast<long>(z)); //rounds towards 0
-		}
-
-		NTL::zz_p &init (NTL::zz_p &x, const integer &y=0) const {
-			NTL::ZZ tmp= NTL::to_ZZ(std::string(y).data());
-			return x = NTL::to_zz_p(tmp);
-		}
-
-
-            template <class ANY>
-            NTL::zz_p& init(NTL::zz_p& x, const ANY& y) const
-		{ return x = NTL::to_zz_p(static_cast<const long&>(y)); }
-
-            template <class ANY>
-            ANY& convert(ANY& x, const NTL::zz_p& y) const
-		{ return x = static_cast<ANY>(rep(y)); }
-            
-	    static inline integer getMaxModulus()
-		{ return integer( NTL_SP_BOUND ); }
-
-	    NTL::zz_p& pow( NTL::zz_p& res, const NTL::zz_p& x, long exp ) const
-	    {
-	    	NTL::power( res, x, exp );
-		return res;
-	    }
-
-	    NTL::zz_p& powin( NTL::zz_p& x, long exp ) const {
-	    	return x = NTL::power(x,exp);
-	    }
-	};
-
 /*
 	integer& FieldTraits<NTL_zz_p>::maxExponent( integer& i )
 		{ return i = integer( "4294967295" ); } // 2^32 - 1
@@ -112,7 +56,7 @@ namespace LinBox
 	 * @param y integer.
 	 */
         template <>
-                NTL::zz_p& UnparametricField<NTL::zz_p>::init(NTL::zz_p& x, const integer& y) const
+        NTL::zz_p& UnparametricField<NTL::zz_p>::init(NTL::zz_p& x, const integer& y) const
                 { return x = NTL::to_zz_p(y%NTL::zz_p::modulus()); }
 
 	/** Conversion of field element to an integer.
@@ -235,6 +179,67 @@ namespace LinBox
 		       else
 			       return x = NTL::to_zz_p(NTL::RandomBnd(static_cast<long>(_size)));
 		}
+
+
+
+	/** 
+	 * \brief long ints modulo a positive integer.
+	 * 
+	 * While NTL allows any int to serve as the modulus, only prime
+	 * moduli yield fields.  The primality of the modulus will not be checked, so
+	 * it is the programmer's responsibility to supply a prime modulus if a field is
+	 * wanted.
+	 * These specializations allow the \ref{UnparametricField} template class to be
+	 * used to wrap NTL's <tt>zz_p</tt> class as a LinBox field.
+	 * Uses nice trick for mod p via floating point.
+	\ingroup field
+	 */
+
+	struct NTL_zz_p: public UnparametricField<NTL::zz_p>
+	{
+		NTL_zz_p(integer p, size_t e = 1) 
+		: UnparametricField<NTL::zz_p>(p, e)
+		{}
+
+		NTL::zz_p& init(NTL::zz_p& x, const double& y) const
+		{
+			double z = fmod(y,NTL::zz_p::modulus());
+			if (z > 0) z += 0.5;
+			else z -= 0.5;
+			return x = NTL::to_zz_p(static_cast<long>(z)); //rounds towards 0
+		}
+
+		NTL::zz_p &init (NTL::zz_p &x, const integer &y=0) const {
+			NTL::ZZ tmp= NTL::to_ZZ(std::string(y).data());
+			return x = NTL::to_zz_p(tmp);
+		}
+
+
+            template <class ANY>
+            NTL::zz_p& init(NTL::zz_p& x, const ANY& y) const
+		{ return x = NTL::to_zz_p(static_cast<const long&>(y)); }
+
+            template <class ANY>
+            ANY& convert(ANY& x, const NTL::zz_p& y) const
+		{ return x = static_cast<ANY>(rep(y)); }
+            
+	    static inline integer getMaxModulus()
+		{ return integer( NTL_SP_BOUND ); }
+
+	    NTL::zz_p& pow( NTL::zz_p& res, const NTL::zz_p& x, long exp ) const
+	    {
+	    	NTL::power( res, x, exp );
+		return res;
+	    }
+
+	    NTL::zz_p& powin( NTL::zz_p& x, long exp ) const {
+	    	return x = NTL::power(x,exp);
+	    }
+	};
+
+
+
+
 
 } // namespace LinBox
 

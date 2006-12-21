@@ -31,7 +31,7 @@
 #include "linbox/util/xml/linbox-writer.h"
 
 #include <iostream>
-#include <std::string>
+#include <string>
 
 #endif
 
@@ -42,7 +42,8 @@ namespace LinBox{
 	template <class Ring>
 	struct ClassifyRing;
 
-	template <>
+
+ 	template <>
 	struct ClassifyRing<UnparametricField<NTL::ZZ_p> > {
 		typedef RingCategories::ModularTag categoryTag;
 	};
@@ -59,7 +60,7 @@ namespace LinBox{
 	 * These specializations allow the \ref{UnparametricField} template class to be
 	 * used to wrap NTL's {\tt ZZ\_p} class as a LinBox field.
 	 */
-    
+
 	template<>
 	UnparametricField<NTL::ZZ_p>::UnparametricField(integer q, size_t e)
 	{    
@@ -385,6 +386,7 @@ namespace LinBox{
 		}
 	}
 
+
  	/***************************************************************
          *								
          * @brief Wrapper of zz_p from NTL.	  			
@@ -492,7 +494,7 @@ namespace LinBox{
 	};
 
 
- 
+
 
 } // namespace LinBox
 
