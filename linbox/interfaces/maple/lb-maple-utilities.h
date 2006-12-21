@@ -473,7 +473,7 @@ extern "C" {
 
 	ALGEB LinBoxToGMPMaple(MKernelVector kv, const LinBox::integer &p){	
 #ifdef __LINBOX_MAPLE_GMP_ACCESS
-		return GMPIntegerToMaple(kv, p.get_mpz());
+		return GMPIntegerToMaple(kv, LinBox::SpyInteger::get_mpz(p));
 #else	
 		std::string tp(p);
 		char *ptr = new char[tp.size()+1];
