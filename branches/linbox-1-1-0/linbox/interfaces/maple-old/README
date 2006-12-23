@@ -1,0 +1,75 @@
+LinBox/Maple Interface - version 1.0 
+2-3-2003
+
+1.  What is it:
+	This is an interface between the LinBox library of functions and
+utilities for the Maple computer algebra system.  It allows you to call
+LinBox functions from a Maple session.  It is currently under
+development by Rich Seagraves at the University of Delaware.  Any ideas or
+suggestions are more than welcome.  The package is made up of a small library
+that wraps LinBox functions, and a Maple module called LinBox that contains all
+procedures and external calling definitions.  
+
+
+2.  Requirements:
+	The interface requires the following packges:
+	I.   Maple v6.0 or greater
+	II.  LinBox
+	III. GMP v3.2 or greater (for LinBox)
+	IV.  unix make utility 
+	V.   A UNIX other than Solaris (see "But I have Solaris you 
+             insensitive CLOD!!!!" below).
+
+	It is recommended you have the following
+	I.   Maple v7.0 or later
+	II.  g++ 3.0 or later (compiler on which this library was tested).
+	III. GNU make utility (gmake). 
+	
+    
+3.  Availability:
+	The interface is currently distributed as part of the LinBox package,
+available through CVS.  Please goto http://www.linalg.org/developer.html
+for information about getting the latest version of LinBox.  (Note - at
+present, the Maple interface is not available through the latest LinBox
+beta release, v0.3b.  It should be available when the next beta release of
+LinBox comes out.  Stay on the look-out and keep your fingers crossed!)
+The interface is available in the interfaces/maple directory of the 
+LinBox distribution.
+
+4.  But I have Solaris you insensitive CLOD!!!!
+	At the moment, the package has been tested under Linux and
+theoretically will work on other Unix variant systems.
+Both LinBox and this interface has had some trouble building on Solaris,
+and at present Solaris doesnot support a build feature that this interface
+needs.  If someone has had extensive experience with Solaris and would like
+to help out with this, I'd be more than happy toi recieve that help.
+
+5.  Installation:
+	The interface consists of a shared object file and a plain text
+script defining a module called LinBox.  To create the Maple interface to
+LinBox, re-run LinBox's configure script with the following additional 
+arguements:
+
+	--with-maple-prefix=MPFX --enable-shared
+
+where MPFX is the directory of a working maple installation.  Then rebuild
+LinBox with
+	make; make install
+and the interface will be built in LinBox's lib/ directory.   
+
+6.  Usage:
+	The build system will compile a shared object generate is called
+lbmaple.mpl.  In Maple, type 
+
+'read("/directory/you/install/to/lib/lbmaple.mpl");'
+
+(where /directory/you/install/to is LinBox's installation path) to get the 
+module.  Also, in the interfaces/maple directory in LinBox is a file called
+demonstration.mws which contains a demonstrational maple worksheet.
+
+7.  Wow, this interface is horrible.  What's wrong with you? :-)
+	If you really think it's that bad, why not email me and show me how
+it's done right?  I always love help.
+
+8.  Contact
+	You can contact the author, Rich Seagraves, at <seagrave@cis.udel.edu>
