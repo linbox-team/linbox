@@ -60,6 +60,8 @@ static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream
 	VectorWrapper::ensureDim (d2, stream1.dim ());
 	VectorWrapper::ensureDim (v, stream1.dim ());
 	VectorWrapper::ensureDim (w, stream2.dim ());
+// 	F.init (neg_one, 1);
+// 	F.negin (neg_one);
 	F.init (neg_one, -1);
 
 	while (stream1) {
@@ -173,9 +175,10 @@ int main (int argc, char **argv)
 		{ 'j', "-j J", "Apply test matrix to J vectors (default 1)",         TYPE_INT,     &iterations2 },
 	};
 
-	typedef UnparametricField<NTL::zz_p> Field;
+//        typedef UnparametricField<NTL::zz_p> Field;
+        typedef NTL_zz_p Field;
 	NTL::zz_p::init(q);
-	Field F;
+	Field F(q);
 	typedef vector<Field::Element> Vector;
 
 	parseArguments (argc, argv, args);

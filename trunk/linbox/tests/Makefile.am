@@ -2,7 +2,7 @@
 FACING_REALITY = 0
 INCLUDES=-I$(top_srcdir)
 #AM_LDFLAGS = -llapack -lcblas -latlas 
-AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall
+AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -O2
 #AM_CFLAGS = -g -Wall
 
 SUBDIRS = data
