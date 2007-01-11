@@ -71,8 +71,8 @@ if test -n "$BLAS_VAL"; then
 	else
 		BLAS_LIBS="$BLAS_VAL"
 	fi		
-		CXXFLAGS="${BACKUP_CXXFLAGS} ${CBLAS_FLAG}" 
-		LIBS="${BACKUP_LIBS} ${BLAS_LIBS}" 
+	CXXFLAGS="${BACKUP_CXXFLAGS} ${CBLAS_FLAG}" 
+	LIBS="${BACKUP_LIBS} ${BLAS_LIBS}" 
 
 	AC_TRY_LINK(
 	[#define __LINBOX_CONFIGURATION
@@ -332,7 +332,103 @@ if test "x$blas_found" != "xyes" ; then
 		AC_MSG_RESULT(not found)
 		ifelse([$3], , :, [$3])
 	fi
+
+
+
+
+## Check for dgetri (mainly for Goto less than 1.7)
+	AC_MSG_CHECKING(for dgetrf)
+	AC_TRY_RUN(
+	[#define __LINBOX_CONFIGURATION
+       	 #include "linbox/config-blas.h"
+	 int main () {  double a[4] = {1.,2.,3.,4.};
+			int ipiv[2];
+			clapack_dgetrf(CblasRowMajor, 2, 2, a, 2, ipiv);
+			if ( (a[0]!=2.) && (a[1]!=0.5) && (a[2]!=4.) && (a[3]!=1.))
+				return -1;
+			else
+				return 0;
+		      }
+	],[	
+	dgetrf_found="yes"	
+	break
+	],[	
+	dgetrf_problem="$problem"	
+	],[
+	break
+	])	
+
+	if test "x$dgetrf_found" = "xyes"; then
+		AC_MSG_RESULT(found)
+		AC_DEFINE(HAVE_DGETRF,1,[Define if dgetrf is available])	
+		AC_MSG_CHECKING(for dgetri)
+		AC_TRY_RUN(
+		[#define __LINBOX_CONFIGURATION
+       		 #include "linbox/config-blas.h"
+		 int main () {  double a[4] = {1.,2.,3.,4.};
+				int ipiv[2];
+				clapack_dgetrf(CblasRowMajor, 2, 2, a, 2, ipiv);
+				if ( (a[0]!=2.) && (a[1]!=0.5) && (a[2]!=4.) && (a[3]!=1.))
+					return -1;
+				clapack_dgetri(CblasRowMajor, 2, a, 2, ipiv);
+				if ( (a[0]!=-2.) && (a[1]!=1.) && (a[2]!=1.5) && (a[3]!=-0.5))
+					return -1;
+				else
+					return 0;
+			      }
+		],[	
+		dgetri_found="yes"	
+		break
+		],[	
+		dgetri_problem="autoimplement"	
+		],[
+		break
+		])
+		if test "x$dgetri_problem" = "xautoimplement"; then
+			AC_MSG_RESULT(no)
+			AC_MSG_CHECKING(for autoimplementation of dgetri)
+			AC_TRY_RUN(
+			[#define __LINBOX_CONFIGURATION
+			 #define __LINBOX_AUTOIMPLEMENT_DGETRI
+	       		 #include "linbox/config-blas.h"
+			 int main () {  double a[4] = {1.,2.,3.,4.};
+					int ipiv[2];
+					clapack_dgetrf(CblasRowMajor, 2, 2, a, 2, ipiv);
+					if ( (a[0]!=2.) && (a[1]!=0.5) && (a[2]!=4.) && (a[3]!=1.))
+						return -1;
+					clapack_dgetri(CblasRowMajor, 2, a, 2, ipiv);
+					if ( (a[0]!=-2.) && (a[1]!=1.) && (a[2]!=1.5) && (a[3]!=-0.5))
+						return -1;
+					else
+						return 0;
+				      }
+			],[	
+			dgetri_found="yes"	
+			break
+			],[	
+			dgetri_problem="$problem"	
+			],[
+			break
+			])
+			if test "x$dgetri_found" = "xyes"; then
+				AC_MSG_RESULT(working)
+				AC_DEFINE(HAVE_DGETRI,1,[Define if dgetri is available])
+				AC_DEFINE(AUTOIMPLEMENT_DGETRI,,[Enable Autoimplementation of dgetri routine with dtrti and dtrsm])
+			else
+				AC_MSG_RESULT(disabling)
+				AC_DEFINE(HAVE_DGETRI,0,[Define if dgetri is available])
+			fi				
+		
+		else
+			AC_MSG_RESULT(working)
+			AC_DEFINE(HAVE_DGETRI,1,[Define if dgetri is available])
+		fi	
+	else
+		AC_MSG_RESULT(disabling)
+		AC_DEFINE(HAVE_DGETRF,0,[Define if dgetrf is available])	
+	fi
 fi
+
 
 
 AM_CONDITIONAL(LINBOX_HAVE_BLAS, test "x$HAVE_BLAS" = "xyes")
@@ -340,6 +436,7 @@ AM_CONDITIONAL(LINBOX_HAVE_BLAS, test "x$HAVE_BLAS" = "xyes")
 CXXFLAGS=${BACKUP_CXXFLAGS}
 LIBS=${BACKUP_LIBS}
 #unset LD_LIBRARY_PATH
+
 
 ])
 
