@@ -54,10 +54,6 @@
 
 #ifdef __LINBOX_BLAS_AVAILABLE
 #include <linbox/config-blas.h>
-extern "C" {
-	//#include <cblas.h>
-	//#include <clapack.h>
-}
 #include <linbox/blackbox/blas-blackbox.h>
 #include <linbox/matrix/blas-matrix.h>
 #include <linbox/algorithms/blas-domain.h>
@@ -1412,6 +1408,8 @@ namespace LinBox {
  * Implementation the algorithm in manuscript, available at http://www.cis.udel.edu/~wan/jsc_wan.ps
  */
 
+
+
 #ifndef __RATIONAL_SOLVER2__H__
 #define __RATIONAL_SOLVER2__H__
 
@@ -1424,6 +1422,21 @@ namespace LinBox {
 #include <linbox/algorithms/rational-reconstruction2.h>
 
 namespace LinBox {
+
+#if __LINBOX_HAVE_DGETRF && __LINBOX_HAVE_DGETRI
+	template <class Ring, class Field, class RandomPrime>
+	inline int RationalSolver<Ring, Field, RandomPrime, NumericalTraits>::cblas_dgeinv(double* M, int n) {
+		enum CBLAS_ORDER order = CblasRowMajor;
+		int lda = n;
+		int P[n];
+		int ierr = clapack_dgetrf (order, n, n, M, lda, P);
+		if (ierr != 0) {
+                    std::cerr << "In RationalSolver::cblas_dgeinv Matrix is not full rank" << std::endl;
+                    return -1;
+		}
+		clapack_dgetri (order, n, M, lda, P);
+		return 0;
+	}
 
 	template <class Ring, class Field, class RandomPrime>
 	inline int RationalSolver<Ring, Field, RandomPrime, NumericalTraits>::cblas_rsol (int n, const double* M, integer* numx, integer& denx, double* b) {
@@ -1637,6 +1650,9 @@ namespace LinBox {
 		return ret;
 	}
 
+#endif
+
+
 	template <class Ring, class Field, class RandomPrime>
 	/* apply  y <- Ax */
 	inline int RationalSolver<Ring, Field, RandomPrime, NumericalTraits>::cblas_dapply (int m, int n, const double* A, const double* x, double* y) {
@@ -1720,20 +1736,6 @@ namespace LinBox {
 			}
 			*p1 = tmp;
 		}
-		return 0;
-	}
-
-	template <class Ring, class Field, class RandomPrime>
-	inline int RationalSolver<Ring, Field, RandomPrime, NumericalTraits>::cblas_dgeinv(double* M, int n) {
-		enum CBLAS_ORDER order = CblasRowMajor;
-		int lda = n;
-		int P[n];
-		int ierr = clapack_dgetrf (order, n, n, M, lda, P);
-		if (ierr != 0) {
-			printf ("Matrix is not full rank\n");
-			return -1;
-		}
-		clapack_dgetri (order, n, M, lda, P);
 		return 0;
 	}
 
