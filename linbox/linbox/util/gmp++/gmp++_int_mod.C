@@ -134,25 +134,26 @@ long Integer::operator % (const unsigned long l) const {
     return  mpz_tdiv_ui( (mpz_ptr)&gmp_rep, l);
 }
 
-// long Integer::operator % (const long l) const 
-// {
+ long Integer::operator % (const long l) const 
+ {
 // //  if (l ==0) {
 // //    GivMathDivZero("[Integer::/]: division by zero");
-// //  }
-//   if (isZero(*this)) return 0L;
-//   Integer Res(Integer::one);   
-//   int sgn = GMP__SGN(l);
-//   mpz_tdiv_r_ui( (mpz_ptr)&(Res.gmp_rep), (mpz_ptr)&gmp_rep, GMP__ABS(l));
-//   if (sgn <0) Res = - Res;
-//   return long( Res );
-// }
-long Integer::operator % (const long l) const 
-{
-  int sgn = GMP__SGN(l);
-  long res = mpz_tdiv_ui((mpz_ptr)&gmp_rep, GMP__ABS(l));
-  if (sgn <0) return -res;
-  else return res;
-}
+ //  }
+   if (isZero(*this)) return 0L;
+   Integer Res(Integer::one);   
+   int sgn = GMP__SGN(l);
+   mpz_tdiv_r_ui( (mpz_ptr)&(Res.gmp_rep), (mpz_ptr)&gmp_rep, GMP__ABS(l));
+   if (sgn <0) Res = - Res;
+   return long( Res );
+ }
+
+//long Integer::operator % (const long l) const 
+//{
+//  int sgn = GMP__SGN(l);
+//  long res = mpz_tdiv_ui((mpz_ptr)&gmp_rep, GMP__ABS(l));
+//  if (sgn <0) return -res;
+//  else return res;
+//}
 
 //Added by Dan Roche, 6-28-04
 #ifdef __USE_64_bits__
