@@ -788,6 +788,8 @@ namespace LinBox {// LinBox
 	}; // end of specialization for the class RationalSover with Dixon traits
 
 
+
+
 	/** \brief partial specialization of p-adic based solver with a hybrid Numeric/Symbolic computation
 	 *
 	 *   See the following reference for details on this implementation:
@@ -809,6 +811,8 @@ namespace LinBox {// LinBox
 
 		RationalSolver(const Ring& _r = Ring()) : r(_r) {}
 
+
+#if  __LINBOX_HAVE_DGETRF && __LINBOX_HAVE_DGETRI
 		template <class IMatrix, class OutVector, class InVector>
 		SolverReturnStatus solve(OutVector& num, Integer& den, const IMatrix& M, const InVector& b) const {
 
@@ -835,7 +839,7 @@ namespace LinBox {// LinBox
 			}
 				
 			integer threshold; threshold = 1; threshold <<= 50;
-			
+
 			if ((mentry > threshold) || (bnorm > threshold)) return SS_FAILED;
 			else {
 
@@ -874,13 +878,18 @@ namespace LinBox {// LinBox
 			}
 
 		}
+#else
+		template <class IMatrix, class OutVector, class InVector>
+		SolverReturnStatus solve(OutVector& num, Integer& den, const IMatrix& M, const InVector& b) const {
+//                     std::cerr<< "dgetrf or dgetri missing" << std::endl;
+                    return SS_FAILED;
+                }
+#endif
 
 	private:
 		//print out a vector
 		template <class Elt>
 		inline static int printvec (const Elt* v, int n);
-		// compute the inverse of a general matrix
-		inline static int cblas_dgeinv(double* M, int n);
 		/** Compute the OO-norm of a mtrix */ 
 		inline static double cblas_dOOnorm(const double* M, int m, int n);
 		/** compute the maximam of absolute value of an array*/
@@ -896,6 +905,10 @@ namespace LinBox {// LinBox
 		inline static int update_r_ll (double* r, int n, const double* M, const double* d, int shift);
 		/** compute  the hadamard bound*/
 		inline static int cblas_hbound (integer& b, int m, int n, const double* M);
+
+#if __LINBOX_HAVE_DGETRF && __LINBOX_HAVE_DGETRI
+		// compute the inverse of a general matrix
+		inline static int cblas_dgeinv(double* M, int n);
 		/* solve Ax = b 
 		 * A, the integer matrix
 		 * b, integer rhs
@@ -906,8 +919,8 @@ namespace LinBox {// LinBox
 		 * 3, incorrect answer, possible ill-conditioned.
 		 */
 		inline static int cblas_rsol (int n, const double* M, integer* numx, integer& denx, double* b);
+#endif
 	};
-
 
 
 	template<class Ring, class Field,class RandomPrime>		
@@ -951,7 +964,6 @@ namespace LinBox {// LinBox
 		template<class IMatrix, class Vector1, class Vector2>
 		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, size_t blocksize, int maxPrimes = DEFAULT_MAXPRIMES) const;         				
 	};
-
 
 }
 
