@@ -56,8 +56,11 @@ extern "C" {
 	void dtrsm_ (const char*, const char*, const char*, const char*, const int*, const int*, const double*, const double*, const int*, double*, const int*);
 	void dtrmm_ (const char*, const char*, const char*, const char*, const int*, const int*, const double*, const double*, const int*, double*, const int*);
 	void dgemm_ (const char*, const char*, const int*, const int*, const int*, const double*, const double*, const int*, const double*, const int*, const double*, double*, const int*);
+}
 
-	// LAPACK routines
+// define external link to LAPACK routines
+extern "C" {
+  
         void dgetrf_(const int *, const int *, double *, const int *, int *, int *);
         void dgetri_(const int *, double *, const int *, const int *, double *, const int *, int *);
 }
@@ -175,7 +178,8 @@ extern "C" {
         }
             
 	int clapack_dgetri(const enum CBLAS_ORDER Order, const int N, double *A,
-			   const int lda, const int *ipiv) ;
+			   const int lda, const int *ipiv);
+    
 //         {
 //             int info;
 //             double * wrk;
