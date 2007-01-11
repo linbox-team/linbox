@@ -4,7 +4,7 @@
 // Copyright(c)'2001-2007 by LinBox Team
 // see the copyright file.
 // Authors: M. Samama, T. Gautier, JG. Dumas
-// Time-stamp: <19 Dec 06 10:36:57 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <11 Jan 07 14:52:53 Jean-Guillaume.Dumas@imag.fr> 
 // ========================================================================
 // Description: 
 // Integer class definition based on Gmp (>V2.0 or 1.3.2)
@@ -190,7 +190,7 @@ public:
   template<class XXX> Integer& operator /=(const XXX& x) { return this->operator /= ( (Integer)x ); }
 
   Integer  operator % (const Integer& n) const;
-  long  operator % (const unsigned long l) const;
+  unsigned long  operator % (const unsigned long l) const;
   long  operator % (const long l) const;
   unsigned short  operator % (const unsigned short l) const { return (unsigned short) ( this->operator % ( (unsigned long)l ) ); }
   template<class XXX> XXX operator %(const XXX& x) const { return (XXX)this->operator % ( Integer(x) ); }
@@ -201,7 +201,7 @@ public:
   Integer& operator %= (const long long l) { return *this %= (Integer)l; }
   Integer& operator %= (const unsigned long long l) { return *this %= (Integer)l; }
   long long operator % (const long long l) const;
-  long long operator % (const unsigned long long l) const;
+  unsigned long long operator % (const unsigned long long l) const;
 #endif
   template<class XXX> Integer& operator %=(const XXX& x) { return this->operator %= ( (Integer)x ); }
 
