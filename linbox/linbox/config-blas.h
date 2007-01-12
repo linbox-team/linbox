@@ -61,8 +61,12 @@ extern "C" {
 // define external link to LAPACK routines
 extern "C" {
   
+#if HAVE_DGETRF
         void dgetrf_(const int *, const int *, double *, const int *, int *, int *);
+#endif
+#if HAVE_DGETRI
         void dgetri_(const int *, double *, const int *, const int *, double *, const int *, int *);
+#endif
 }
 
 // define C wrappers
@@ -169,6 +173,7 @@ extern "C" {
 
 	// LAPACK routines
 
+#if HAVE_DGETRF
 	int clapack_dgetrf(const enum CBLAS_ORDER Order, const int M, const int N,
 			   double *A, const int lda, int *ipiv) 
         {
@@ -176,17 +181,12 @@ extern "C" {
             dgetrf_ ( &M, &N, A, &lda, ipiv, &info);
             return info;
         }
-            
+#endif
+
+#if HAVE_DGETRI
 	int clapack_dgetri(const enum CBLAS_ORDER Order, const int N, double *A,
 			   const int lda, const int *ipiv);
-    
-//         {
-//             int info;
-//             double * wrk;
-//             int lwrk = -1; // Nothing known about block sizes
-//             dgetri_ ( &N, A, &lda, ipiv, wrk, &lwrk, &info);
-//             return info;
-//         }
+#endif
 
 } 
 

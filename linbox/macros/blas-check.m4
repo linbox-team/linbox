@@ -340,6 +340,7 @@ if test "x$blas_found" != "xyes" ; then
 	AC_MSG_CHECKING(for dgetrf)
 	AC_TRY_RUN(
 	[#define __LINBOX_CONFIGURATION
+	 #define HAVE_DGETRF 1
        	 #include "linbox/config-blas.h"
 	 int main () {  double a[4] = {1.,2.,3.,4.};
 			int ipiv[2];
@@ -364,6 +365,8 @@ if test "x$blas_found" != "xyes" ; then
 		AC_MSG_CHECKING(for dgetri)
 		AC_TRY_RUN(
 		[#define __LINBOX_CONFIGURATION
+		 #define HAVE_DGETRF 1
+		 #define HAVE_DGETRI 1
        		 #include "linbox/config-blas.h"
 		 int main () {  double a[4] = {1.,2.,3.,4.};
 				int ipiv[2];
@@ -390,6 +393,8 @@ if test "x$blas_found" != "xyes" ; then
 			AC_TRY_RUN(
 			[#define __LINBOX_CONFIGURATION
 			 #define __LINBOX_AUTOIMPLEMENT_DGETRI
+			 #define HAVE_DGETRF 1
+			 #define HAVE_DGETRI 1
 	       		 #include "linbox/config-blas.h"
 			 int main () {  double a[4] = {1.,2.,3.,4.};
 					int ipiv[2];
