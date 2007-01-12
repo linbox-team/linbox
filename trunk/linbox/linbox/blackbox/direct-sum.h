@@ -26,13 +26,13 @@ namespace LinBox
 	 * And similarly for apply. 
 	\ingroup blackbox
 	 */
-	template <class Blackbox1, class Blackbox2>
+	template <class _Blackbox1, class _Blackbox2>
 	class DirectSum : public BlackboxInterface
 	{
-	    public:
-            typedef DirectSum<Blackbox1, Blackbox2> Self_t;
-            typedef Blackbox1 Blackbox1_t;
-            typedef Blackbox2 Blackbox2_t;
+            typedef DirectSum<_Blackbox1, _Blackbox2> Self_t;
+        public:
+            typedef _Blackbox1 Blackbox1;
+            typedef _Blackbox2 Blackbox2;
 
 		typedef typename Blackbox1::Field Field;
 		typedef typename Blackbox1::Element Element;
@@ -161,10 +161,10 @@ namespace LinBox
                 typedef DirectSum<typename Blackbox1::template rebind<_Tp1>::other, typename Blackbox2::template rebind<_Tp2>::other> other; 
 
 		void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
-                    typename other::Blackbox1_t * A1;
-                    typename Blackbox1_t::template rebind<_Tp1> () ( A1, *(A._Ap), F);
-                    typename other::Blackbox2_t * A2;
-                    typename Blackbox2_t::template rebind<_Tp1> () ( A2, *(A._Bp), F);
+                    typename other::Blackbox1 * A1;
+                    typename Blackbox1::template rebind<_Tp1> () ( A1, *(A._Ap), F);
+                    typename other::Blackbox2 * A2;
+                    typename Blackbox2::template rebind<_Tp1> () ( A2, *(A._Bp), F);
                     Ap = new other(*A1, *A2);
                 }
 

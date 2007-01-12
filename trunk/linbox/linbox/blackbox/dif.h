@@ -4,6 +4,8 @@
  * transmuted from linbox/blackbox/sum.h by bds
  *
  * It will be desirable to keep sum.h and dif.h in sync.
+ * 
+ * Time-stamp: <12 Jan 07 10:39:40 Jean-Guillaume.Dumas@imag.fr> 
  *
  * ------------------------------------
  *
@@ -28,10 +30,13 @@ namespace LinBox
 	 *     Vector is a LinBox dense or sparse vector of field elements class.
 \ingroup blackbox
 	 */
-	template <class Blackbox1, class Blackbox2>
+	template <class _Blackbox1, class _Blackbox2>
 	class Dif : public BlackboxInterface 
 	{
+                typedef Dif<_Blackbox1, _Blackbox2> Self_t;
 	    public:
+		typedef _Blackbox1 Blackbox1;
+		typedef _Blackbox2 Blackbox2;
 	       
 		typedef typename Blackbox1::Field Field;
 		typedef typename Blackbox1::Element Element;
@@ -134,7 +139,17 @@ namespace LinBox
 
             template<typename _Tp1, typename _Tp2 = _Tp1>
             struct rebind
-            { typedef Dif<typename Blackbox1::template rebind<_Tp1>::other, typename Blackbox2::template rebind<_Tp2>::other> other; };
+            { typedef Dif<typename Blackbox1::template rebind<_Tp1>::other, typename Blackbox2::template rebind<_Tp2>::other> other;
+                
+    		void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
+                    typename other::Blackbox1 * A1;
+                    typename Blackbox1::template rebind<_Tp1> () ( A1, *(A._A_ptr), F);
+                    typename other::Blackbox2 * A2;
+                    typename Blackbox2::template rebind<_Tp1> () ( A2, *(A._B_ptr), F);
+                    Ap = new other(*A1, *A2);
+                }
+
+            };
 
 
 
