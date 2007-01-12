@@ -1,9 +1,8 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/blackbox/sum.h
- * Copyright (C) 2002 Bradford Hovinen
+ * Copyright (C) 2002 The LinBox group
  *
- * Written by Bradford Hovinen <hovinen@cis.udel.edu>
+ * Time-stamp: <12 Jan 07 10:41:03 Jean-Guillaume.Dumas@imag.fr> 
  *
  * ------------------------------------
  *
@@ -29,11 +28,13 @@ namespace LinBox
 	 * box representing A+B, i.e., Sum(A,B)x=(A+B)x=Ax+Bx
 	 * @param Vector \ref{LinBox} dense or sparse vector of field elements
 	 */
-	template <class Blackbox1, class Blackbox2>
+	template <class _Blackbox1, class _Blackbox2>
 	class Sum : public BlackboxInterface 
 	{
+                typedef Sum<_Blackbox1, _Blackbox2> Self_t;
 	    public:
-
+		typedef _Blackbox1 Blackbox1;
+		typedef _Blackbox2 Blackbox2;
 
 		typedef typename Blackbox1::Field Field;
 		typedef typename Blackbox1::Element Element;
@@ -138,7 +139,18 @@ namespace LinBox
 
             template<typename _Tp1, typename _Tp2 = _Tp1> 
             struct rebind                           
-            { typedef Sum<typename Blackbox1::template rebind<_Tp1>::other, typename Blackbox2::template rebind<_Tp2>::other> other; };
+            { typedef Sum<typename Blackbox1::template rebind<_Tp1>::other, typename Blackbox2::template rebind<_Tp2>::other> other; 
+
+    		void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
+                    typename other::Blackbox1 * A1;
+                    typename Blackbox1::template rebind<_Tp1> () ( A1, *(A._A_ptr), F);
+                    typename other::Blackbox2 * A2;
+                    typename Blackbox2::template rebind<_Tp1> () ( A2, *(A._B_ptr), F);
+                    Ap = new other(*A1, *A2);
+                }
+
+
+            };
 
 		/** Retreive row dimensions of BlackBox matrix.
 		 * This may be needed for applying preconditioners.
