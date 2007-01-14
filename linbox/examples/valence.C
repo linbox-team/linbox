@@ -27,14 +27,14 @@ int main (int argc, char **argv)
 	std::ifstream input (argv[1]);
 	if (!input) { std::cerr << "Error opening matrix file " << argv[1] << std::endl; return -1; }
 
-        GMP_Integers ZZ;
-        MatrixStream< GMP_Integers > ms( ZZ, input );
-        typedef SparseMatrix<GMP_Integers>  Blackbox;
+        PID_integer ZZ;
+        MatrixStream< PID_integer > ms( ZZ, input );
+        typedef SparseMatrix<PID_integer>  Blackbox;
         Blackbox A (ms);
         
         std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
         
-        GMP_Integers::Element val_A;
+        PID_integer::Element val_A;
 
 
         if (argc == 3) {

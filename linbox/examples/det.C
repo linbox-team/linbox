@@ -28,8 +28,12 @@ int main (int argc, char **argv)
 	if (argc <= 1 ) {
 		// For a large integer matrix test, do "bigmat <n> | det", 
 		// where <n> is a size parameter of your choice.
-		GMP_Integers ZZ;
-		SparseMatrix<GMP_Integers> A(ZZ);
+		//typedef GMP_Integers Integers;
+		typedef PID_integer Integers;
+
+                Integers ZZ;
+
+		DenseMatrix<Integers> A(ZZ);
 		A.read(cin);
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
@@ -44,17 +48,21 @@ int main (int argc, char **argv)
 		// For a small integer matrix test, do "det data/mat2.txt". 
 		// It is a 2 by 2 matrix with determinant = -2.
 
-		GMP_Integers ZZ;
+		//typedef GMP_Integers Integers;
+		typedef PID_integer Integers;		
+
+		Integers ZZ;
+
 		ifstream input (argv[1]);
 		if (!input) 
 		{ cerr << "Error opening matrix file " << argv[1] << endl; 
 			return -1; 
 		}
-		SparseMatrix<GMP_Integers> A(ZZ);
+		DenseMatrix<Integers> A(ZZ);
 		A.read(input);
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
-		GMP_Integers::Element det_A;
+		Integers::Element det_A;
 		det (det_A, A);
 
 		cout << "Determinant is ";

@@ -39,9 +39,9 @@ int main (int argc, char **argv)
 	   is an integer matrix and our concept is that we are getting the rank of that 
 	   matrix by some blackbox magic inside linbox.
 	   */
-		GMP_Integers ZZ;
-		MatrixStream<GMP_Integers> ms( ZZ, input );
-		SparseMatrix<GMP_Integers> A ( ms );
+		PID_integer ZZ;
+		MatrixStream<PID_integer> ms( ZZ, input );
+		SparseMatrix<PID_integer> A ( ms );
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
 		rank (r, A);

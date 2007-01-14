@@ -38,12 +38,12 @@ int main (int argc, char **argv)
 
 	if (argc == 2) {
 
-		GMP_Integers ZZ;
-		SparseMatrix<GMP_Integers> A (ZZ);
+		PID_integer ZZ;
+		SparseMatrix<PID_integer> A (ZZ);
 		A.read (input);
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
-		vector<GMP_Integers::Element> m_A;
+		vector<PID_integer::Element> m_A;
 		minpoly (m_A, A); 
 
 		cout << "Minimal Polynomial is ";
