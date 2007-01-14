@@ -39,8 +39,6 @@ namespace LinBox {
 	template <class Ring>
 	class ClassifyRing;
 
-	
-	
 	/// \ingroup ring
 	class PID_integer : public UnparametricField<integer> 
 	{
@@ -49,21 +47,21 @@ namespace LinBox {
 
 		typedef integer Element;
 
-		inline static Element& axpyin (integer &r, const integer& a, const integer& x){
+		inline Element& axpyin (integer &r, const integer& a, const integer& x) const {
 			return Integer::axpyin(r,a,x);
 		}
 
-		inline static bool isUnit (const Element& x) {
+		inline  bool isUnit (const Element& x) const { 
 			
 			return (x == Element(1))  || (x== Element(-1));
 		}
 
-		inline static Element& abs(Element& x, const Element& a) {
+		inline  Element& abs(Element& x, const Element& a) const {
 			x= (a>0)? a: -a;
 			return x;
 		}
 
-		inline static Element abs(const Element& a){
+		inline  Element abs(const Element& a) const {
 			return (a>0)? a: -a;
 		}
 
@@ -80,14 +78,14 @@ namespace LinBox {
 		/** @brief gcd (g, a, b)
 		 *  return g = gcd (a, b)
 		 */
-		inline static Element& gcd (Element& g, const Element& a, const Element& b) {
+		inline  Element& gcd (Element& g, const Element& a, const Element& b) const {
 			return ::gcd(g,a,b);
 		}
 	
 		/** @brief gcdin(g, b)
 		 *  return g = gcd (g, b)
 		 */
-		inline static Element& gcdin (Element& g, const Element& b) {
+		inline  Element& gcdin (Element& g, const Element& b) const {
 			gcd(g, g, b);
 			return g;
 		}
@@ -98,14 +96,14 @@ namespace LinBox {
 		 *  Euclidean algorithm applied to |a| and |b|, with the signs then
 		 *  adjusted according to the signs of a and b.
 		 */
-		inline static Element& xgcd (Element& g, Element& s, Element& t, const Element& a, const Element& b){
+		inline  Element& xgcd (Element& g, Element& s, Element& t, const Element& a, const Element& b) const {
 			return ::gcd(g,a,b,s,t);
 		}
 
 		/** @brief lcm (c, a, b)
 		 *  c = lcm (a, b)
 		 */
-		inline static Element& lcm (Element& c, const Element& a, const Element& b) {
+		inline  Element& lcm (Element& c, const Element& a, const Element& b) const {
 			
 			if ((a==Element(0)) || (b==Element(0))) return c = Element(0);
 			
@@ -126,7 +124,7 @@ namespace LinBox {
 		/** @brief lcmin (l, b)
 		 *  l = lcm (l, b)
 		 */
-		inline static Element& lcmin (Element& l, const Element& b) {
+		inline  Element& lcmin (Element& l, const Element& b) const {
 
 			if ((l==Element(0)) || (b==Element(0))) return l = Element(0);
 			
@@ -145,47 +143,48 @@ namespace LinBox {
 	
 		}
             
-                inline static void reconstructRational (Element& a, Element& b, const Element& x, const Element& m) {
+                inline  void reconstructRational (Element& a, Element& b, const Element& x, const Element& m) const {
                         RationalReconstruction(a,b, x, m, ::sqrt(m), true, true);
                 }
             
-                inline static void reconstructRational (Element& a, Element& b, const Element& x, const Element& m, const Element& bound) {
+                inline  void reconstructRational (Element& a, Element& b, const Element& x, const Element& m, const Element& bound) const {
                         RationalReconstruction(a,b, x, m, bound, true, true);
                 }
             
-                inline static long reconstructRational (Element& a, Element& b, 
+                inline  long reconstructRational (Element& a, Element& b, 
                                                         const Element& x, const Element& m, 
-                                                        const Element& a_bound, const Element& b_bound) {
+                                                        const Element& a_bound, const Element& b_bound) const {
                         RationalReconstruction(a,b,x,m,a_bound, true, false);
                         return  (b > b_bound)? 0: 1;	
                 }
-            
+           
+ 
 
 		/** @brief quo (q, x, y)
 		 *  q = floor (x/y);
 		 */
-		inline static Element& quo (Element& q, const Element& a, const Element& b) {
+		inline  Element& quo (Element& q, const Element& a, const Element& b) const {
 			return  q = a/b;
 		}
       
 		/** @brief rem (r, a, b)
 		 *  r = remindar of  a / b
 		 */
-		inline static Element& rem (Element& r, const Element& a, const Element& b)  {
+		inline  Element& rem (Element& r, const Element& a, const Element& b)  const {
 			return Integer::mod(r,a,b);
 		}	
 
 		/** @brief quoin (a, b)
 		 *  a = quotient (a, b)
 		 */
-		inline static Element& quoin (Element& a, const Element& b)  {
+		inline  Element& quoin (Element& a, const Element& b)  const {
 			return quo(a,a,b);
 		}
 
 		/** @brief quoin (a, b)
 		 *  a = quotient (a, b)
 		 */
-		inline static Element& remin (Element& a, const Element& b)  {
+		inline  Element& remin (Element& a, const Element& b)  const {
 			return rem(a,a,b);
 		}
 
@@ -194,7 +193,7 @@ namespace LinBox {
 		 * q = [a/b], r = a - b*q
 		 * |r| < |b|, and if r != 0, sign(r) = sign(b)
 		 */
-		inline static void quoRem (Element& q, Element& r, const Element& a, const Element& b) {
+		inline  void quoRem (Element& q, Element& r, const Element& a, const Element& b) const {
 			quo(q,a,b);
 			r = a - q*b;
 		}
@@ -202,7 +201,7 @@ namespace LinBox {
 		/** @brief isDivisor (a, b)
 		 *  Test if b | a.
 		 */
-		inline static bool isDivisor (const Element& a, const Element& b) {
+		inline  bool isDivisor (const Element& a, const Element& b) const {
 			Element r;
 			return rem(r,a,b)==Element(0);
 		}
@@ -213,6 +212,46 @@ namespace LinBox {
 		Element& sqrt(Element& x, const Element& y) const {
 			return ::sqrt(x,y);
 		}
+
+                inline  Element pow2(Element& z, const Element& x) const {
+                        z = 1;
+                        //cout << "max" << ULONG_MAX << "x" << x << "?" << (x < ULONG_MAX);
+                        if (x < LONG_MAX) {
+                                z<<=(long int)x;
+                                //cout << "z"<< z;
+                                return z;
+                        } else {
+                                Element n,m;
+                                quoRem(n,m,x,(Element)(LONG_MAX-1));
+                                for (int i=0; i < n; ++i) {
+                                        z <<=(long int)(LONG_MAX-1);
+                                }
+                                z <= (long int)m;
+                                return z;
+                        }
+
+                        //for (Element i=0; i < x; ++i) {
+                        //      z <<= 1;
+                        //}
+                        return z;
+                }
+
+                inline  Element log2(Element& z, const Element& x) const {
+                        //cout << "x" << x;
+                        if (x<1) return z=-1;
+                        z = 0;
+                        Element cur = x;
+                        cur >>=1;//cout << "cur" << cur;
+                        while (cur > 0) {
+                                //cout << "cur" << cur;
+                                ++z;
+                                cur >>=1;
+                        }
+                        //cout << "z" << z;
+                        return z;
+                }
+
+
 
 		// some specializations and conversions
 		double& convert(double& x, const Element& y) const
@@ -231,10 +270,10 @@ namespace LinBox {
                     // num/den \equiv f modulo m, with |num|<k and 0 < |den| \leq f/k
                     // See [von zur Gathen & Gerhard, Modern Computer Algebra, 
                     //      5.10, Cambridge Univ. Press 1999]
-                inline static void RationalReconstruction( Element& a, Element& b, 
+                inline  void RationalReconstruction( Element& a, Element& b, 
                                                           const Element& f, const Element& m, 
                                                           const Element& k, 
-                                                          bool reduce, bool recursive ) {
+                                                          bool reduce, bool recursive ) const {
 			Element x(f);
                         if (x<0) {
                         	if ((-x)>m)
@@ -252,10 +291,10 @@ namespace LinBox {
                 }
 
                 // Precondition f is suppposed positive and less than m
-                inline static bool ratrecon( Element& num, Element& den, 
+                inline  bool ratrecon( Element& num, Element& den, 
                                              const Element& f, const Element& m, 
                                              const Element& k, 
-                                             bool reduce, bool recursive ) {
+                                             bool reduce, bool recursive ) const {
                     
 // std::cerr << "RatRecon : " << f << " " << m << " " << k << std::endl;
                     
@@ -290,6 +329,11 @@ namespace LinBox {
 
                         } 
 
+                        if (den < 0) {
+                                Integer::negin(num);
+                                Integer::negin(den);
+                        }
+ 
                         if (reduce) {
     
                                 // [GG, MCA, 1999] Theorem 5.26
