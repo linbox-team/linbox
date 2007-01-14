@@ -227,6 +227,84 @@ whether zero or not, by rational solving.
 				
 				return lif;
 			}
+
+                        template<class IMatrix, class Vector>
+                        Integer& lastInvariantFactor1(Integer& lif, Vector& r_num, const IMatrix& A) const {
+                                //cout << "enetering lif\n";
+                                SolverReturnStatus tmp;
+
+                                if (r_num.size()!=A. coldim()) return lif=0;
+                                Integer r_den;
+                                std::vector<Integer> b(A.rowdim());
+                                typename std::vector<Integer>::iterator b_p;
+                                typename Vector::const_iterator Prime_p;
+
+                                Integer pri, quo, rem;
+
+                                // assign b to be a random vector
+                                for (b_p = b.begin(); b_p != b.end(); ++ b_p) {
+                                        * b_p = rand() % 268435456 - 134217728; // may need to change to use ring's random gen.
+                                        // dpritcha, 2004-07-26
+                                }
+                                //report <<"try to solve Ax = b over Ring";
+                                // try to solve Ax = b over Ring
+                                //cout << "trying to solve\n";
+                                tmp = solver.solveNonsingular(r_num, r_den, A, b);
+                                // If no solution found
+                                if (tmp != SS_OK) {
+                                        //r.init (lif, 0);
+                                        //break;
+                                        return lif=0;
+                                }
+                                //report << "r_den: "<< r_den;
+
+                                r. lcmin (lif, r_den);
+
+                                return lif;
+                        }
+
+                        template<class Vector>
+                        Integer& bonus(Integer& bonus, const Integer r1_den,const Integer r2_den, Vector& r1_num, Vector& r2_num) const {
+                                if (bonus==0) bonus=1;
+                                if (r1_num.size() != r2_num.size()) return bonus=0;
+                                Integer g, d, a11, a12, a21, a22, c_bonus, l, c_l;
+                                typename std::vector<Integer>::iterator num1_p, num2_p;
+                                std::vector<Integer> r1 (r1_num. size());
+                                std::vector<Integer> r2 (r2_num. size());
+                                typename std::vector<Integer>::iterator r1_p, r2_p;
+                                r. init (l, 0);
+                                int i;
+                                for (i = 0; i < 20; ++ i) {
+                                        for (r1_p = r1. begin(), r2_p = r2. begin(); r1_p != r1. end(); ++ r1_p, ++ r2_p) {
+                                                r. init (*r1_p, rand());
+                                                r. init (*r2_p, rand());
+                                        }
+                                        r. init (a11, 0); r. init (a12, 0); r. init (a21, 0); r. init (a22, 0);
+                                        for (r1_p = r1. begin(), num1_p = r1_num. begin(); r1_p != r1. end(); ++ r1_p, ++ num1_p)
+                                                r. axpyin (a11, *r1_p, *num1_p);
+                                        for (r1_p = r1. begin(), num2_p = r2_num. begin(); r1_p != r1. end(); ++ r1_p, ++ num2_p)
+                                                r. axpyin (a12, *r1_p, *num2_p);
+                                        for (r2_p = r2. begin(), num1_p = r1_num. begin(); r2_p != r2. end(); ++ r2_p, ++ num1_p)
+                                                r. axpyin (a21, *r2_p, *num1_p);
+                                        for (r2_p = r2. begin(), num2_p = r2_num. begin(); r2_p != r2. end(); ++ r2_p, ++ num2_p)
+                                                r. axpyin (a22, *r2_p, *num2_p);
+                                        // g = gcd (a11, a12, a21, a22)
+                                        r. gcd (g, a11, a12); r. gcdin (g, a21); r. gcdin (g, a22);
+                                        // d = a11 a22 - a12 a21
+                                        r. mul (d, a12, a21); r. negin (d); r. axpyin (d, a11, a22);
+                                        if (! r. isZero (g)) r. div (c_l, d, g);
+                                        r. gcdin (l, c_l);
+                                }
+                                if (!r. isZero (l) ) {
+                                        r. gcd (c_bonus, r1_den, r2_den);
+                                        r. gcdin (l, c_bonus);
+                                        r. divin (c_bonus, l);
+                                }
+
+                                r. lcmin (bonus, c_bonus);
+                                return bonus;
+                        }
+
 			
 			/** \brief Compute the last invariant factor.
 			 */
