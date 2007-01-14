@@ -23,35 +23,37 @@
 #ifndef __HYBRID_DET_H
 #define __HYBRID_DET_H
 
-#include "linbox/blackbox/diagonal.h"
-#include "linbox/blackbox/compose.h"
-#include "linbox/solutions/methods.h"
+//#include "linbox/blackbox/diagonal.h"
+//#include "linbox/blackbox/compose.h"
+//#include "linbox/solutions/methods.h"
 #include "linbox/blackbox/dense.h"
-
-#include "linbox/blackbox/blas-blackbox.h"
-#include "linbox/matrix/blas-matrix.h"
-#include "linbox/algorithms/blackbox-container.h"
-#include "linbox/algorithms/blackbox-container-symmetric.h"
-#include "linbox/algorithms/massey-domain.h"
-#include "linbox/algorithms/blas-domain.h"
-#include "linbox/vector/vector-traits.h"
-#include "linbox/util/prime-stream.h"
-#include "linbox/util/debug.h"
+#include "linbox/blackbox/sparse.h"
+//#include "linbox/blackbox/blas-blackbox.h"
+//#include "linbox/matrix/blas-matrix.h"
+//#include "linbox/algorithms/blackbox-container.h"
+//#include "linbox/algorithms/blackbox-container-symmetric.h"
+//#include "linbox/algorithms/massey-domain.h"
+//#include "linbox/algorithms/blas-domain.h"
+//#include "linbox/vector/vector-traits.h"
+//#include "linbox/util/prime-stream.h"
+//#include "linbox/util/debug.h"
 
 //#include "linbox/solutions/solve.h"
-#include "linbox/field/gmp-rational.h"
-#include "linbox/field/gmp-integers.h"
+//#include "linbox/field/gmp-rational.h"
+//#include "linbox/field/gmp-integers.h"
 #include "linbox/field/PID-integer.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/rational-solver.h"
 #include "linbox/algorithms/last-invariant-factor.h"
-#include "linbox/field/PIR-modular-int32.h"
-#include "linbox/field/ntl-ZZ_p.h"
-#include "linbox/field/PIR-ntl-ZZ_p.h"
+//#include "linbox/field/PIR-modular-int32.h"
+//#include "linbox/field/PIR-ntl-ZZ_p.h"
+//#include "linbox/field/ntl-ZZ_p.h"
+
 // Namespace in which all LinBox library code resides
 
 //#include "linbox/algorithms/cra.h"
-#include "linbox/field/modular.h"
+//#include "linbox/field/modular.h"
+#include "linbox/field/modular-double.h"
 //#include "linbox/field/givaro-zpz.h"
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/randiter/random-prime.h"
@@ -59,13 +61,8 @@
 
 #include "linbox/solutions/det.h"
 
-
-
 namespace LinBox {
-
-       
-
-         
+   
         template <class Blackbox, class MyMethod>
         struct IntegerModularDetReduced {      
         private:
@@ -79,7 +76,7 @@ namespace LinBox {
             size_t iter_count;
             size_t iter_count2;
             typename Vector<PID_integer>::Dense moduli;
-            
+
         public:
 
             typename Vector<PID_integer>::Dense primes;
@@ -90,26 +87,27 @@ namespace LinBox {
             size_t iterations2() {
                 return iter_count2;
             }
-            
-                    
-            
-                //	    int iter_count;
-                //	    int iter_count2;
-                //	    Vector <PID_integer>:: Dense moduli;
-                //	    Vector <PID_integer>:: Dense primes;
-            
+
+
+
+                //          int iter_count;
+                //          int iter_count2;
+                //          Vector <PID_integer>:: Dense moduli;
+                //          Vector <PID_integer>:: Dense primes;
+
             IntegerModularDetReduced(const Blackbox& b, const MyMethod& n, const integer& divisor, const size_t& f)
-                    : A(b), M(n), beta(divisor), factor(f) {                
+                    : A(b), M(n), beta(divisor), factor(f) {
                 moduli.resize(factor);
                 primes.resize(factor);
+                iter_count = 0;
+                iter_count2 = 0;
 
             }
-            
+
             template<typename Field>
             typename Field::Element& operator()(typename Field::Element& d, const Field& F) {
-                
+
                 if (beta > 1) {
-                    ++this->iter_count2;
                     if (iter_count2 < factor) {
                         Field D(primes[iter_count2]);
                         typename Field::Element pbeta;
@@ -118,15 +116,16 @@ namespace LinBox {
                         D.init(pbeta, beta);
                         D.init(current_moduli, moduli[iter_count2]);
                         D.div(kbeta, current_moduli,pbeta);
+                        ++this->iter_count2;
                         return d=kbeta;
                     }
                 }
-                
+
                 typedef typename Blackbox::template rebind<Field>::other FBlackbox;
                 FBlackbox * Ap;
                 MatrixHom::map(Ap, A, F);
                 det( d, *Ap, M);
-                
+
                 if (beta > 1) {
                     typename Field::Element y;
                     F.init(y,beta);
@@ -134,7 +133,7 @@ namespace LinBox {
                 }
 
                 delete Ap;
-	
+
                 if (iter_count < factor) {
                     moduli[iter_count] = d;
                 }
@@ -143,25 +142,25 @@ namespace LinBox {
                 return d;
             }
 
-            void Beta(Integer& b) { beta = b; }
+            void Beta(Integer& b) { beta = b; iter_count2=0;}
 
         };
-	
-	/** \brief Compute the determinant of A over the integers
-	 *
-	 * The determinant of a linear operator A, represented as a
-	 * black box, is computed over the integers.
-         * 
+
+        /** \brief Compute the determinant of A over the integers
+         *
+         * The determinant of a linear operator A, represented as a
+         * black box, is computed over the integers.
+         *
          * This variant is a hybrid between Last Invariant Factor and Chinese Remaindering
          * It performs several determinants mod primes
          * Then switches to the LIF method, producing a factor of det.
          * It then comes back to the CRA if necessary to compute
          * the remaining (usually small) factor of the determinant.
-	 *
-	 * @param d Field element into which to store the result
-	 * @param A Black box of which to compute the determinant
+         *
+         * @param d Field element into which to store the result
+         * @param A Black box of which to compute the determinant
          * @param tag explicit over the integers
-	 * @param M may be a Method::BlasElimination (default) or a Method::Wiedemann.
+         * @param M may be a Method::BlasElimination (default) or a Method::Wiedemann.
          \ingroup solutions
         */
         template <class Blackbox, class MyMethod>
@@ -170,30 +169,45 @@ namespace LinBox {
                                                         const RingCategories::IntegerTag          &tag,
                                                         const MyMethod                            &M)
             {
+                commentator.setReportStream(std::cout);
                 typedef Modular<double> myModular;
+                typedef typename Blackbox::Field Integers;
+                typedef typename Integers::Element Integer;
+
                 commentator.start ("Integer Determinant - hybrid version ", "det");
-                size_t myfactor=6;
-                size_t early_counter = 0;
+                size_t myfactor=5;
+                size_t early_counter=0;
+
+            	//double a = 0.0;//0.28;//0.0013//if time(lif)/time(10lu) < a * log(lif) then calculate bonus
 
                 Integer lif = 1;
                 Integer bonus = 1;
                 Integer beta = 1;
                 d=1;
+		
+		double p_size = 26-(int)ceil(log((double)A.rowdim())*0.7213475205);
 
-                RandomPrime genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
+                RandomPrime genprime( (Integer)p_size );
+		//cout << "prime size: " << p_size << "\n";
                 ChineseRemainder< myModular > cra(3UL);
                 IntegerModularDetReduced<Blackbox,MyMethod> iteration(A, M, beta,myfactor);
 
-                if (A.rowdim() < 50 ) {
-                    cra(d,iteration,genprime);
-                    commentator.stop ( "first step", NULL, "det");
-                    commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
-                        << "Iterations done " << iteration.iterations() << "\n";
-                } else { 
-                    Integer p;
-                    Integer res;
-                    while ( early_counter < myfactor && !cra.terminated() ) {
-                        genprime.randomPrime(p);
+                //if (A.rowdim() < 200 ) {
+                //    cra(d,iteration,genprime);
+                //    commentator.stop ( "first step", NULL, "det");
+                //    commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+                //        << "Iterations done " << iteration.iterations() << "\n";
+                //} else { 
+                Integer p;
+                Integer res;
+
+		Timer BT;
+		double time1, time2;
+		BT.start();
+		
+                while ( early_counter < myfactor && !cra.terminated() ) {
+			genprime.randomPrime(p);
+			while (cra.noncoprime(p)) genprime.randomPrime(p);
                         myModular D(p);
                         iteration.primes[early_counter] = p;
                             //		prime(p, early_counter);
@@ -201,74 +215,460 @@ namespace LinBox {
                         D.init(r,0);
                         cra.progress( D, iteration(r, D));
                         ++early_counter; 
-                    }
+                }
+		
+		BT.stop();
+		time1 = BT.usertime()/myfactor;
+		if (time1 < 0) time1 = 0;
+                cra.result(res);
 
-                    cra.result(res);
-
-                    if (early_counter < myfactor) {
-                            /* determinant found */
-                        commentator.stop ( "first step", NULL, "det");
+                if (early_counter < myfactor) {
+                    /* determinant found */
+			cout << myfactor << "\n";
+			commentator.stop ( "first step", NULL, "det");
                         commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
                             << "Iterations done " << iteration.iterations()<< "\n";
                         return d=res;
-                    }
+                }
+		cout << "no very early termination \n";
+		/* turn to LU when matrix size small - not to be used at the moment */ 
+		//if (A.rowdim() < 50 ) {
+                //while ( !cra.terminated() ) {
+		//	genprime.randomPrime(p);
+                //        myModular D(p);
+                //        iteration.primes[early_counter] = p;
+                            //		prime(p, early_counter);
+                //        myModular::Element r;
+                //        D.init(r,0);
+                //        cra.progress( D, iteration(r, D));
+                //        ++early_counter; 
+                //}
+		//commentator.stop ( "zero step", NULL, "det");
+		//commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+                //        << "Iterations done " << iteration.iterations() << "\n";
+		//return d;
+		//}
 		
-                    RandomPrime genprime1( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
-                    PID_integer ZZ;
-                    RationalSolver < PID_integer , myModular, RandomPrime, DixonTraits > RSolver(ZZ, genprime1); 
+                //RandomPrime genprime1( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
+                //Integers ZZ;
+                //RationalSolver < Integers , myModular, RandomPrime, DixonTraits > RSolver(A. field(), genprime); 
+		RationalSolver < Integers , myModular, RandomPrime, DixonTraits > RSolver;
+		
+		typename Vector<Integers>:: Dense r_num1 (A. coldim());
+		
+                LastInvariantFactor < Integers ,RationalSolver < Integers, myModular, RandomPrime, DixonTraits > >  LIF(RSolver);
 
-                    LastInvariantFactor < PID_integer ,RationalSolver < PID_integer, Modular<double>, RandomPrime, DixonTraits > >  LIF(RSolver);
-                    LIF.lastInvariantFactor_Bonus(lif, bonus, A);	
+		BT.start();
+		if (LIF.lastInvariantFactor1(lif, r_num1, A)==0) {
+			//if (lif==0) {
+			d = 0;
+			commentator.stop ("is 0", NULL, "det");
+			return d;
+		}
+		BT.stop();
+		time2 = BT.usertime();
+		if (time2 < 0) time2 =0;
+
+		//commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+                //            << "5 LU time: " << time1 << " LIF time: " << time2 << ")\n";
+		cout << "lif calculated\n";
+                //LIF.lastInvariantFactor_Bonus(lif, bonus, A);	
 	
-                    if (lif==0) {
-                        d = 0;
-                        commentator.stop ("done", NULL, "det");
-                        return d;
-                    }
-
-                    if (bonus == 1) {
-                        d = lif;
-                        commentator.stop ("done", NULL, "det");
-                        return d;
-                    }
+                //if (lif==0) {
+		//	d = 0;
+		//      commentator.stop ("done", NULL, "det");
+                //        return d;
+		//}
+ 
+                //if (bonus == 1) {
+		//	d = lif;
+                //        commentator.stop ("done", NULL, "det");
+                //        return d;
+                //}
                         
-                    beta = lif*bonus;
-                    iteration.Beta(beta);
+                beta = lif*bonus;
+                iteration.Beta(beta);
 
-                    RandomPrime genprime2( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
-                    ChineseRemainder< Modular<double> > cra2(3UL);
-                    Integer k = 1;
+                //RandomPrime genprime2( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
+                ChineseRemainder< Modular<double> > cra2(3UL);
+                Integer k = 1;
 
-                    early_counter = 0;
-                    while ( early_counter < myfactor && !cra2.terminated() ) {
+                early_counter = 0;
+                while ( early_counter < myfactor && !cra2.terminated() ) {
                         myModular D(iteration.primes[early_counter]);
                         myModular::Element r;
                         D.init(r,0);
                         cra2.progress( D, iteration(r, D));
                         ++early_counter; 
-                    }
-
-                    if (early_counter < myfactor) {
-                            /* determinant found */
-                        k = cra2.result(res);
-                    }
-                    else {
-                            /* enter the cra loop */
-                        cra2(k,iteration, genprime);
-                    }
-
-                    commentator.stop ("second step", NULL, "det");
-                    commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
-                        << "Iterations done " << iteration.iterations() << "(" 
-                        << iteration.iterations2() << " )\n";
-                    d = k*beta;
-
                 }
 
-                return d ;
+                if (early_counter < myfactor) {
+                            /* determinant found */
+			k = cra2.result(res);
+			commentator.stop ("second step ", NULL, "det");
+			commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+                            << "Iterations done " << iteration.iterations()<< "(" << iteration.iterations2() << ")\n";
+			
+                }
+                else  if (0/* time2 < a*log2(lif)*time1/p_size*/) {
+			typename Vector<Integers>:: Dense r_num2 (A. coldim());
+			Integer lif2=1;
+			LIF.lastInvariantFactor1(lif2,r_num2,A);
+			LIF.bonus(bonus,lif, lif2, r_num1,r_num2);
+			
+			//lif2 = lif;
+			if ((bonus > 1) || (lif2 != lif)) {
+				//cout << "lif: " <<lif <<",\n     "<< lif2<< "przed\n";
+				lif = lcm(lif, lif2);
+				//cout << "lif: " <<lif << "po";
+				beta=lif*bonus;
+				iteration.Beta(beta);
+				//iteration.Restart2() // included in Beta();
+				//iteration.Moduli(moduli);
+				//iteration.Primes(primes);
+				k=1;
+			        ChineseRemainder< Modular<double> > cra3(3UL);
+
+				early_counter = 0;
+				while ( (early_counter < myfactor) && (!cra3.terminated() )) {
+					myModular D(iteration.primes[early_counter]);
+					myModular::Element r;
+					D.init(r,0);
+					cra3.progress( D, iteration(r, D));
+					++early_counter;
+					//iteration.Inc();
+				}
+
+				if (early_counter < myfactor) {
+					/* determinant found based on the initial LU */
+					cra3.result(k);
+					commentator.stop ("third step - recalc", NULL, "det");
+					commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+						<< "Iterations done " << iteration.iterations()<<"(" << iteration.iterations2() << ")\n";
+						//<< "bonus size " << log2(bonus) << "\n";
+					
+				} else {
+					/* enter the cra loop */
+					//cra3(k,iteration, genprime);
+					while (!cra3.terminated()) {
+						genprime.randomPrime(p);
+						while (cra3.noncoprime(p)) genprime.randomPrime(p);
+						myModular D(p);
+						myModular::Element r;
+						D.init(r,0);
+						cra3.progress( D, iteration(r, D));			
+					}
+					cra3.result(k);
+				       	commentator.stop ("third step, bonus > 1", NULL, "det");
+					commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+						<< "Iterations done " << iteration.iterations()<< "(" << iteration.iterations2() << ")\n";
+                                                //<< "bonus size " << log2(bonus) << "\n";
+				}
+			} else {
+				//cra2(k,iteration, genprime);
+				while (!cra2.terminated()) {
+					genprime.randomPrime(p);
+					while (cra2.noncoprime(p)) genprime.randomPrime(p);
+					myModular D(p);
+					myModular::Element r;
+					D.init(r,0);
+					cra2.progress( D, iteration(r, D));
+				}
+				cra2.result(k);
+				commentator.stop ("third step, bonus = 1", NULL, "det");
+				commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+					<< "Iterations done " << iteration.iterations()<< "(" << iteration.iterations2() << ")\n";		
+			}
+		} else {
+				while (!cra2.terminated()) {
+					genprime.randomPrime(p);
+					while (cra2.noncoprime(p)) genprime.randomPrime(p);
+					myModular D(p);
+					myModular::Element r;
+					D.init(r,0);
+					cra2.progress( D, iteration(r, D));
+				}
+				cra2.result(k);
+				commentator.stop ("second step+", NULL, "det");
+				commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+					<< "Iterations done " << iteration.iterations()<< "(" << iteration.iterations2() << ")\n";
+
+                           /* enter the cra loop */
+                        //cra2(k,iteration, genprime);
+                }
+
+                //commentator.stop ("second step", NULL, "det");
+                //commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+                //        << "Iterations done " << iteration.iterations() << "(" 
+                //        << iteration.iterations2() << " )\n";
+		d = k*beta;
+		
+		Integer tmp;
+		
+                commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+                            << "1 LU time: " << time1 << " LIF time: " << time2 << ")\n";
+		commentator.report(Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+                        << "det/lif " << k<< "\n";
+		//commentator.report(Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+		//	<< "determinant size " << Integers::log2(tmp,abs(d))<< " lif size "<< Integers::log2(tmp,beta) << "\n";
+
+		return d ;
 	
+	    }
+/*   
+        template <class Integers, class MyMethod>
+        typename Integers::Element & lif_cra_det (typename Integers::Element         &d,
+                                                        const SparseMatrix<Integers >                            &A,
+                                                        const RingCategories::IntegerTag          &tag,
+                                                        const MyMethod                            &M)
+            {
+
+                commentator.setReportStream(std::cout);
+                typedef Modular<double> myModular;
+                //typedef PID_integer Integers;
+                typedef typename Integers::Element Integer;
+
+                commentator.start ("Integer Determinant - hybrid version for sparse matrices", "det");
+                size_t myfactor=5;
+                size_t early_counter=0;
+
+                //double a = 0.0;//0.28;//0.0013i			//if time(lif)/time(10lu) < a * log(lif) then calculate bonus
+
+                Integer lif = 1;
+                Integer bonus = 1;
+                Integer beta = 1;
+                d=1;
+
+                double p_size = 26-(int)ceil(log((double)A.rowdim())*0.7213475205);
+
+                RandomPrime genprime( (Integer)p_size );
+                cout << "prime size: " << p_size << "\n"; 
+                ChineseRemainder< myModular > cra(3UL);
+                IntegerModularDetReduced<SparseMatrix<Integers >,MyMethod> iteration(A, M, beta,myfactor);
+
+                //if (A.rowdim() < 200 ) {
+                //    cra(d,iteration,genprime);
+                //    commentator.stop ( "first step", NULL, "det");
+                //    commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+                //        << "Iterations done " << iteration.iterations() << "\n";
+                //} else {
+                Integer p;
+                Integer res;
+
+                Timer BT;
+                double time1, time2;
+                BT.start();
+
+                while ( early_counter < myfactor && !cra.terminated() ) {
+                        genprime.randomPrime(p);
+                        while (cra.noncoprime(p)) genprime.randomPrime(p);
+                        myModular D(p);
+                        iteration.primes[early_counter] = p;
+                            //          prime(p, early_counter);
+                        myModular::Element r;
+                        D.init(r,0);
+                        cra.progress( D, iteration(r, D));
+                        ++early_counter;
+                }
+
+                BT.stop();
+                time1 = BT.usertime()/myfactor;
+                if (time1 < 0) time1 = 0;
+                cra.result(res);
+
+                if (early_counter < myfactor) {
+                     //determinant found 
+                        commentator.stop ( "first step", NULL, "det");
+                        commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+                            << "Iterations done " << iteration.iterations()<< "\n";
+                        return d=res;
+                }
+                //cout << "no very early termination \n";
+                // turn to LU when matrix size small - not to be used at the moment 
+                //if (A.rowdim() < 50 ) {
+                //while ( !cra.terminated() ) {
+                //      genprime.randomPrime(p);
+                //        myModular D(p);
+                //        iteration.primes[early_counter] = p;
+                            //          prime(p, early_counter);
+                //        myModular::Element r;
+                //        D.init(r,0);
+                //        cra.progress( D, iteration(r, D));
+                //        ++early_counter;
+                //}
+                //commentator.stop ( "zero step", NULL, "det");
+                //commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+                //        << "Iterations done " << iteration.iterations() << "\n";
+                //return d;
+                //}
+
+                //RandomPrime genprime1( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
+                //Integers ZZ;
+                typedef RationalSolver < Integers , myModular, RandomPrime, BlockHankelTraits > Solver;
+		Solver RSolver(A. field(), genprime);
+
+                typename Vector<Integers>:: Dense r_num1 (A. coldim());
+
+                LastInvariantFactor < Integers ,Solver >  LIF(RSolver);
+
+                BT.start();
+                if (LIF.lastInvariantFactor1(lif, r_num1, A)==0) {
+                        //if (lif==0) {
+                        d = 0;
+                        commentator.stop ("is 0", NULL, "det");
+                        return d;
+                }
+                BT.stop();
+                time2 = BT.usertime();
+                if (time2 < 0) time2 =0;
+
+                //commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+                //            << "5 LU time: " << time1 << " LIF time: " << time2 << ")\n";
+                //cout << "lif calculated\n";
+                //LIF.lastInvariantFactor_Bonus(lif, bonus, A);
+
+                //if (lif==0) {
+                //      d = 0;
+                //      commentator.stop ("done", NULL, "det");
+                //        return d;
+                //}
+
+                //if (bonus == 1) {
+                //      d = lif;
+                //        commentator.stop ("done", NULL, "det");
+                //        return d;
+                //}
+
+                beta = lif*bonus;
+                iteration.Beta(beta);
+
+                //RandomPrime genprime2( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
+                ChineseRemainder< Modular<double> > cra2(3UL);
+                Integer k = 1;
+
+                early_counter = 0;
+                while ( early_counter < myfactor && !cra2.terminated() ) {
+                        myModular D(iteration.primes[early_counter]);
+                        myModular::Element r;
+                        D.init(r,0);
+                        cra2.progress( D, iteration(r, D));
+                        ++early_counter;
+                }
+
+                if (early_counter < myfactor) {
+                            // determinant found 
+                        k = cra2.result(res);
+                        commentator.stop ("second step ", NULL, "det");
+                        commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+                            << "Iterations done " << iteration.iterations()<< "(" << iteration.iterations2() << ")\n";
+
+                }
+                else  if (0) { //time2 < a*log2(lif)*time1/p_size) {
+                        typename Vector<Integers>:: Dense r_num2 (A. coldim());
+                        Integer lif2=1;
+                        LIF.lastInvariantFactor1(lif2,r_num2,A);
+                        LIF.bonus(bonus,lif, lif2, r_num1,r_num2);
+
+                        //lif2 = lif;
+                        if ((bonus > 1) || (lif2 != lif)) {
+                                //cout << "lif: " <<lif <<",\n     "<< lif2<< "przed\n";
+                                lif = lcm(lif, lif2);
+                                //cout << "lif: " <<lif << "po";
+                                beta=lif*bonus;
+                                iteration.Beta(beta);
+                                //iteration.Restart2() // included in Beta();
+                                //iteration.Moduli(moduli);
+                                //iteration.Primes(primes);
+                                k=1;
+                                ChineseRemainder< Modular<double> > cra3(3UL);
+
+                                early_counter = 0;
+                                while ( (early_counter < myfactor) && (!cra3.terminated() )) {
+                                        myModular D(iteration.primes[early_counter]);
+                                        myModular::Element r;
+                                        D.init(r,0);
+                                        cra3.progress( D, iteration(r, D));
+                                        ++early_counter;
+                                        //iteration.Inc();
+                                }
+
+                                if (early_counter < myfactor) {
+                                        // determinant found based on the initial LU 
+                                        cra3.result(k);
+                                        commentator.stop ("third step - recalc", NULL, "det");
+                                        commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+                                                << "Iterations done " << iteration.iterations()<<"(" << iteration.iterations2() << ")\n";
+                                                //<< "bonus size " << log2(bonus) << "\n";
+
+                                } else {
+                                        // enter the cra loop 
+                                        //cra3(k,iteration, genprime);
+                                        while (!cra3.terminated()) {
+                                                genprime.randomPrime(p);
+                                                while (cra3.noncoprime(p)) genprime.randomPrime(p);
+                                                myModular D(p);
+                                                myModular::Element r;
+                                                D.init(r,0);
+                                                cra3.progress( D, iteration(r, D));
+                                        }
+                                        cra3.result(k);
+                                        commentator.stop ("third step, bonus > 1", NULL, "det");
+                                        commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+                                                << "Iterations done " << iteration.iterations()<< "(" << iteration.iterations2() << ")\n";
+                                                //<< "bonus size " << log2(bonus) << "\n";
+                                }
+                        } else {
+                                //cra2(k,iteration, genprime);
+                                while (!cra2.terminated()) {
+                                        genprime.randomPrime(p);
+                                        while (cra2.noncoprime(p)) genprime.randomPrime(p);
+                                        myModular D(p);
+                                        myModular::Element r;
+                                        D.init(r,0);
+                                        cra2.progress( D, iteration(r, D));
+                                }
+                                cra2.result(k);
+                                commentator.stop ("third step, bonus = 1", NULL, "det");
+                                commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+                                        << "Iterations done " << iteration.iterations()<< "(" << iteration.iterations2() << ")\n";
+                        }
+                } else {
+                                while (!cra2.terminated()) {
+                                        genprime.randomPrime(p);
+                                        while (cra2.noncoprime(p)) genprime.randomPrime(p);
+                                        myModular D(p);
+                                        myModular::Element r;
+                                        D.init(r,0);
+                                        cra2.progress( D, iteration(r, D));
+                                }
+                                cra2.result(k);
+                                commentator.stop ("second step+", NULL, "det");
+                                commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+                                        << "Iterations done " << iteration.iterations()<< "(" << iteration.iterations2() << ")\n";
+
+                           // enter the cra loop 
+                        //cra2(k,iteration, genprime);
+                }
+
+                //commentator.stop ("second step", NULL, "det");
+                //commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+                //        << "Iterations done " << iteration.iterations() << "("
+                //        << iteration.iterations2() << " )\n";
+                d = k*beta;
+
+                Integer tmp;
+
+                commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+                            << "1 LU time: " << time1 << " LIF time: " << time2 << ")\n";
+                commentator.report(Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+                        << "det/lif " << k<< "\n";
+                //commentator.report(Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+                //        << "determinant size " << Integers::log2(tmp,abs(d))<< " lif size "<< Integers::log2(tmp,beta) << "\n";
+
+                return d ;
+
             }
-    
+*/ 
 } // end of LinBox namespace
 #endif // __HYBRID_DET_H
 
