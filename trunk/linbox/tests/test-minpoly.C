@@ -313,10 +313,10 @@ std::cout << "Elimination" << std::endl;
 	if (!testNilpotentMinpoly (F, n, Method::Elimination())) pass = false;
 
 // /////////////// integer part //////////////////
-	typedef vector<GMP_Integers::Element> ZDenseVector;
-	typedef SparseMatrix<GMP_Integers>::Row ZSparseVector;
+	typedef vector<PID_integer::Element> ZDenseVector;
+	typedef SparseMatrix<PID_integer>::Row ZSparseVector;
 	//typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
-	GMP_Integers Z;
+	PID_integer Z;
 	srand (time (NULL));
 
 	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
@@ -325,10 +325,10 @@ std::cout << "Elimination" << std::endl;
 
 	cout << endl << "Wiedemann minimal polynomial of an integer matrix test suite" << endl;
 
-	RandomDenseStream<GMP_Integers, ZDenseVector, NonzeroRandIter<GMP_Integers> >
-		zv_stream (Z, NonzeroRandIter<GMP_Integers> (Z, GMP_Integers::RandIter (Z)), n, numVectors);
-	RandomSparseStream<GMP_Integers, ZSparseVector, NonzeroRandIter<GMP_Integers> >
-		zA_stream (Z, NonzeroRandIter<GMP_Integers> (Z, GMP_Integers::RandIter (Z)), (double) k / (double) n, n, n);
+	RandomDenseStream<PID_integer, ZDenseVector, NonzeroRandIter<PID_integer> >
+		zv_stream (Z, NonzeroRandIter<PID_integer> (Z, PID_integer::RandIter (Z)), n, numVectors);
+	RandomSparseStream<PID_integer, ZSparseVector, NonzeroRandIter<PID_integer> >
+		zA_stream (Z, NonzeroRandIter<PID_integer> (Z, PID_integer::RandIter (Z)), (double) k / (double) n, n, n);
 
             // Hybrid
 	//no symmetrizing

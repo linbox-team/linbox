@@ -30,6 +30,7 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
+#include "linbox/field/PID-integer.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/vector/stream.h"
 #include "linbox/util/field-axpy.h"

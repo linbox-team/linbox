@@ -21,6 +21,7 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
+#include "linbox/field/PID-integer.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/scalar-matrix.h"
@@ -213,8 +214,8 @@ int main (int argc, char **argv)
 
 
 	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) 
-	<< "over GMP_Integers" << endl; 
-       GMP_Integers R;
+	<< "over PID_integer" << endl; 
+        PID_integer R;
 	if (!testRankMethods (R, n, iterations, sparsity)) pass = false;
 
 	return pass ? 0 : -1;

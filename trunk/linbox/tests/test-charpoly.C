@@ -294,10 +294,10 @@ int main (int argc, char **argv)
 	if (!testIdentityCharpoly  (F, n, true)) pass = false;
 	//need other tests...
 
-	typedef vector<GMP_Integers::Element> ZDenseVector;
-	typedef SparseMatrix<GMP_Integers>::Row ZSparseVector;
+	typedef vector<PID_integer::Element> ZDenseVector;
+	typedef SparseMatrix<PID_integer>::Row ZSparseVector;
 	typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
-	UnparametricField<integer>  Z;
+	PID_integer  Z;
 	srand (time (NULL));
 
 	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
@@ -306,10 +306,10 @@ int main (int argc, char **argv)
 
 	cout << endl << "Black box characteristic polynomial of an integer matrix test suite" << endl;
 
-	RandomDenseStream<GMP_Integers, ZDenseVector, NonzeroRandIter<GMP_Integers> >
-		zv_stream (Z, NonzeroRandIter<GMP_Integers> (Z, GMP_Integers::RandIter (Z)), n, numVectors);
-	RandomSparseStream<GMP_Integers, SparseVector, NonzeroRandIter<GMP_Integers> >
-		zA_stream (Z, NonzeroRandIter<GMP_Integers> (Z, GMP_Integers::RandIter (Z)), (double) k / (double) n, n, n);
+	RandomDenseStream<PID_integer, ZDenseVector, NonzeroRandIter<PID_integer> >
+		zv_stream (Z, NonzeroRandIter<PID_integer> (Z, PID_integer::RandIter (Z)), n, numVectors);
+	RandomSparseStream<PID_integer, SparseVector, NonzeroRandIter<PID_integer> >
+		zA_stream (Z, NonzeroRandIter<PID_integer> (Z, PID_integer::RandIter (Z)), (double) k / (double) n, n, n);
 
 	//no symmetrizing
 	if (!testIdentityCharpoly  (Z, n)) pass = false;
