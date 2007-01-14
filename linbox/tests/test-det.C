@@ -20,6 +20,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
 #include "linbox/field/gmp-integers.h"
+#include "linbox/field/PID-integer.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/dense.h"
@@ -301,8 +302,8 @@ bool testIntegerDet (size_t n, int iterations)
 
 	for (int i = 0; i < iterations; ++i) {
 		commentator.startIteration (i);
-		GMP_Integers R;
-		SparseMatrix<GMP_Integers> A (R, n, n);
+		PID_integer R;
+		SparseMatrix<PID_integer> A (R, n, n);
 
 	 	integer pi = 1L;
  		integer det_A_wiedemann, det_A_symm_wied, det_A_blas_elimination;
@@ -377,8 +378,8 @@ bool testIntegerDetGen (size_t n, int iterations)
 
 	for (int i = 0; i < iterations; ++i) {
 		commentator.startIteration (i);
-		GMP_Integers R;
-		SparseMatrix<GMP_Integers> A (R, n, n);
+		PID_integer R;
+		SparseMatrix<PID_integer> A (R, n, n);
 
 	 	integer pi = 1L;
  		integer det_A, det_A_H, det_A_B, det_A_E;

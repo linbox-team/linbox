@@ -114,7 +114,7 @@ int main (int argc, char **argv)
 
 //	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 
-    GMP_Integers R;
+    PID_integer R;
         
 	if (!testIsPosDef(R, n, iterations, sparsity)) pass = false;
 
