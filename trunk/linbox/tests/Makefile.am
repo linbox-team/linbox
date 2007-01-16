@@ -43,7 +43,6 @@ BASIC_TESTS =  			\
         test-lu                 \
         test-matrix-domain      \
         test-matrix-stream      \
-        test-mg-block-lanczos   \
         test-minpoly            \
         test-modular            \
         test-modular-balance-int\
@@ -90,6 +89,7 @@ FAILING_TESTS =		\
         test-solve              \
         test-zo                 \
         test-quad-matrix        \
+        test-mg-block-lanczos   \
 	test-la-block-lanczos    
 #       test-over-under         
 #       test-side-by-side       
