@@ -53,20 +53,20 @@ namespace LinBox
 	 * These types allow us to use template specialization to use different 
 	 * code for different types of vectors.
 	 */
-	struct VectorCategories
-	{
-		struct GenericVectorTag {};
+        struct VectorCategories
+        {
+                struct GenericVectorTag { friend std::ostream& operator<< (std::ostream& o, const GenericVectorTag& t) { return o << "GenericVectorTag"; } };
 
-		// This are valid for GF2 only
-		struct DenseZeroOneVectorTag : public GenericVectorTag {};
-		struct SparseZeroOneVectorTag : public GenericVectorTag {};
+                // This are valid for GF2 only
+                struct DenseZeroOneVectorTag : public GenericVectorTag { friend std::ostream& operator<< (std::ostream& o, const DenseZeroOneVectorTag& t) { return o << "DenseZeroOneVectorTag"; } };
+                struct SparseZeroOneVectorTag : public GenericVectorTag { friend std::ostream& operator<< (std::ostream& o, const SparseZeroOneVectorTag& t) { return o << "SparseZeroOneVectorTag"; } };
 
-		// These are valid for all fields
-		struct DenseVectorTag : public SparseZeroOneVectorTag {};
-		struct SparseSequenceVectorTag : public GenericVectorTag {};
-		struct SparseAssociativeVectorTag : public GenericVectorTag {};
-		struct SparseParallelVectorTag : public GenericVectorTag {};
-	};
+                // These are valid for all fields
+                struct DenseVectorTag : public SparseZeroOneVectorTag { friend std::ostream& operator<< (std::ostream& o, const DenseVectorTag& t) { return o << "DenseVectorTag"; } };
+                struct SparseSequenceVectorTag : public GenericVectorTag { friend std::ostream& operator<< (std::ostream& o, const SparseSequenceVectorTag& t) { return o << "SparseSequenceVectorTag"; } };
+                struct SparseAssociativeVectorTag : public GenericVectorTag { friend std::ostream& operator<< (std::ostream& o, const SparseAssociativeVectorTag& t) { return o << "SparseAssociativeVectorTag"; } };
+                struct SparseParallelVectorTag : public GenericVectorTag { friend std::ostream& operator<< (std::ostream& o, const SparseParallelVectorTag& t) { return o << "SparseParallelVectorTag"; } };
+        };
 
 	// Helper structure used for various STL's sorts (std::list::sort and std::stable_sort) 
 	// for comparison of two pairs of elements (by their first elements)

@@ -25,6 +25,17 @@
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/matrix/matrix-domain.h"
 
+
+template<typename Vector>
+std::ostream& afficheVector (std::ostream& o, const Vector& C) {
+          for(typename Vector::const_iterator refs =  C.begin();
+                                refs != C.end() ;
+                                      ++refs )
+                          o << (*refs) << " " ;
+            return o;
+}
+
+
 namespace LinBox 
 { 
 
@@ -205,8 +216,8 @@ class VectorDomain<GF2> : private virtual VectorDomainBase<GF2>, private DotProd
 	template <class Vector1, class Vector2>
 	bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
 				  VectorCategories::DenseZeroOneVectorTag,
-				  VectorCategories::DenseZeroOneVectorTag) const
-		{ return v1 == v2; }
+				  VectorCategories::DenseZeroOneVectorTag) const;
+	
 	template <class Vector1, class Vector2>
 	bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
 				  VectorCategories::DenseZeroOneVectorTag,
@@ -219,8 +230,8 @@ class VectorDomain<GF2> : private virtual VectorDomainBase<GF2>, private DotProd
 	template <class Vector1, class Vector2>
 	bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
 				  VectorCategories::SparseZeroOneVectorTag,
-				  VectorCategories::SparseZeroOneVectorTag) const
-		{ return v1 == v2; }
+				  VectorCategories::SparseZeroOneVectorTag) const;
+    
 
 	template <class Vector>
 	bool isZeroSpecialized (const Vector &v, VectorCategories::DenseZeroOneVectorTag) const;
@@ -233,7 +244,7 @@ class VectorDomain<GF2> : private virtual VectorDomainBase<GF2>, private DotProd
 	inline Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
 					 VectorCategories::DenseZeroOneVectorTag,
 					 VectorCategories::DenseZeroOneVectorTag) const
-		{ std::copy (v.begin (), v.end (), res.begin ()); return res; }
+		{ std::copy (v.wordBegin (), v.wordEnd (), res.wordBegin ()); return res; }
 	template <class Vector1, class Vector2>
 	Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
 				  VectorCategories::SparseZeroOneVectorTag,
@@ -381,6 +392,21 @@ class VectorDomain<GF2> : private virtual VectorDomainBase<GF2>, private DotProd
 };
 
 // Specialization of RandomDenseStream
+template<size_t bitsize> struct MTrandomInt {
+    template<typename M32Twister>
+    unsigned __LINBOX_INT32 operator() (M32Twister& MT) const {
+        return MT.randomInt();
+    }
+};    
+
+template<> struct MTrandomInt<64> {
+    template<typename M32Twister>
+    unsigned __LINBOX_INT64 operator() (M32Twister& MT) const {
+        unsigned __LINBOX_INT64 tmp = MT.randomInt();
+        tmp <<=32;
+        return tmp += MT.randomInt();
+    }
+};
 
 class RandomDenseStreamGF2 : public VectorStream<BitVector>
 {
@@ -399,8 +425,11 @@ class RandomDenseStreamGF2 : public VectorStream<BitVector>
 			return v;
 
 		for (i = v.wordBegin (); i != v.wordEnd (); i++)
-			*i = _MT.randomInt ();
-
+			*i = MTrandomInt<__LINBOX_BITSOF_LONG>()(_MT);
+                
+                const size_t zeroing = __LINBOX_BITSOF_LONG - (v.size() % __LINBOX_BITSOF_LONG);
+                *(v.wordRbegin()) <<= zeroing;
+                *(v.wordRbegin()) >>= zeroing;
 		return v;
 	}
 
@@ -491,26 +520,20 @@ inline bool &DotProductDomain<GF2>::dotSpecializedDD
 {
 	linbox_check (v1.size () == v2.size ());
 
-	uint32 t = 0;
-	uint32 mask;
+	unsigned long t = 0;
 	typename Vector1::const_word_iterator i = v1.wordBegin ();
 	typename Vector2::const_word_iterator j = v2.wordBegin ();
 
 	while (i != v1.wordEnd () - 1)
 		t ^= *i++ & *j++;
-
-	mask = (1 << (v1.size () & 31)) - 1;
-	if (mask == 0) mask = 0xffffffff;
-
-	t ^= *i & *j & mask;
-
-	t ^= (t >> 16);
-	t ^= (t >> 8);
-	t ^= (t >> 4);
-	t ^= (t >> 2);
-	t ^= (t >> 1);
-
-	return res = bool (t & 1);
+        
+        const size_t zeroing = __LINBOX_BITSOF_LONG - (v1.size() % __LINBOX_BITSOF_LONG);
+        unsigned long lastdot = *i & *j;
+        lastdot <<= zeroing;
+        lastdot >>= zeroing;
+        
+        t ^= lastdot;
+        return res = __LINBOX_PARITY(t);
 }
 
 template <class Vector1, class Vector2>
@@ -535,28 +558,8 @@ inline BitVector::reference DotProductDomain<GF2>::dotSpecializedDD
 	 const Vector1 &v1,
 	 const Vector2 &v2) const
 {
-	linbox_check (v1.size () == v2.size ());
-
-	uint32 t = 0;
-	uint32 mask;
-	typename Vector1::const_word_iterator i = v1.wordBegin ();
-	typename Vector2::const_word_iterator j = v2.wordBegin ();
-
-	while (i != v1.wordEnd () - 1)
-		t ^= *i++ & *j++;
-
-	mask = (1 << (v1.size () & 31)) - 1;
-	if (mask == 0) mask = 0xffffffff;
-
-	t ^= *i & *j & mask;
-
-	t ^= (t >> 16);
-	t ^= (t >> 8);
-	t ^= (t >> 4);
-	t ^= (t >> 2);
-	t ^= (t >> 1);
-
-	return res = bool (t & 1);
+    bool tmp;
+    return res = dotSpecializedDD(tmp, v1, v2);
 }
 
 template <class Vector1, class Vector2>
@@ -579,14 +582,24 @@ template <class Vector>
 std::ostream &VectorDomain<GF2>::writeSpecialized (std::ostream &os, const Vector &x,
 						   VectorCategories::DenseZeroOneVectorTag) const
 {
-	typename Vector::const_iterator i;
+	
+
+// TO BE REMOVED
+	os << "writeSpec DenseZO, of size " << x.size() << ' ';
 
 	os << "[ ";
 
-	for (i = x.begin (); i != x.end (); ++i)
+	for (typename Vector::const_iterator i = x.begin (); i != x.end (); ++i)
 		os << *i << ' ';
 
 	os << ']';
+
+	os << "( ";
+
+	for (typename Vector::const_word_iterator i = x.wordBegin (); i != x.wordEnd (); ++i)
+		os << *i << ' ';
+
+	os << ')';
 
 	return os;
 }
@@ -598,6 +611,8 @@ std::ostream &VectorDomain<GF2>::writeSpecialized (std::ostream &os, const Vecto
 	typename Vector::const_iterator i;
 	size_t idx = 0;
 
+// TO BE REMOVED
+	os << "writeSpec SparseZO, of size " << x.size() << ' ';
 	os << "[ ";
 
 	for (i = x.begin (); i != x.end (); ++i) {
@@ -677,6 +692,24 @@ bool VectorDomain<GF2>::areEqualSpecialized (const Vector1 &v1, const Vector2 &v
 	return true;
 }
 
+template <class Vector1, class Vector2>
+bool VectorDomain<GF2>::areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
+					     VectorCategories::DenseZeroOneVectorTag,
+					     VectorCategories::DenseZeroOneVectorTag) const
+{
+	typename Vector1::const_word_iterator i = v1.wordBegin ();
+	typename Vector2::const_word_iterator j = v2.wordBegin ();
+	for (; j != v2.wordEnd (); ++j, ++i)
+		if (*i != *j) return false;
+	return true;
+}
+
+template <class Vector1, class Vector2>
+bool VectorDomain<GF2>::areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
+					     VectorCategories::SparseZeroOneVectorTag,
+					     VectorCategories::SparseZeroOneVectorTag) const
+{ return v1 == v2;}
+
 template <class Vector>
 bool VectorDomain<GF2>::isZeroSpecialized (const Vector &v,
 					   VectorCategories::DenseZeroOneVectorTag) const
@@ -710,13 +743,14 @@ Vector1 &VectorDomain<GF2>::copySpecialized (Vector1 &res, const Vector2 &v,
 					     VectorCategories::DenseZeroOneVectorTag,
 					     VectorCategories::SparseZeroOneVectorTag) const
 {
-	typename Vector2::const_iterator i;
-
+    	size_t sparsesize = *(v.rbegin());
+    	if (sparsesize > res.size()) res.resize( *(v.rbegin()) );
 	std::fill (res.wordBegin (), res.wordEnd (), 0);
 
-	for (i = v.begin (); i != v.end (); ++i)
-		res[*i] = 1;
-
+	for (typename Vector2::const_iterator i = v.begin (); 
+             i != v.end (); 
+             ++i)
+        	res[*i] = true;
 	return res;
 }
 

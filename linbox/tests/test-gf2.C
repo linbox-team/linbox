@@ -35,7 +35,7 @@ static bool testDotProductGF2 (const GF2 &F, const char *desc,
 			       VectorStream<Vector<GF2>::Dense> &stream1,
 			       VectorStream<Vector<GF2>::Dense> &stream2) 
 {
-	LinBox::commentator.start ("Testing GF2 dot product (dense/sense)", "testDotProduct", stream1.size ());
+	LinBox::commentator.start ("Testing GF2 dot product (dense/dense)", "testDotProduct", stream1.size ());
 
 	bool ret = true;
 

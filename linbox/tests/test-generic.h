@@ -1615,10 +1615,10 @@ static bool testDotProduct (Field &F, const char *text, LinBox::VectorStream<Vec
 				  LinBox::VectorWrapper::constRef<Field> (v2, j));
 
 		std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
-		report << "Input vector 1:  ";
+		report << "Input vector 1 of size " << v1.size() << ":  ";
 		VD.write (report, v1) << std::endl;
 
-		report << "Input vector 2:  ";
+		report << "Input vector 2 of size " << v2.size() << ":  ";
 		VD.write (report, v2) << std::endl;
 
 		timer.start ();
@@ -1701,10 +1701,10 @@ static bool testAddMul (Field &F, const char *text, LinBox::VectorStream<Vector>
 		do r.random (a); while (F.isZero (a));
 
 		std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-		report << "Input vector 1:  ";
+		report << "Input vector 1 of size " << v1.size() << ":  ";
 		VD.write (report, v1) << std::endl;
 
-		report << "Input vector 2:  ";
+		report << "Input vector 2 of size " << v2.size() << ":  ";
 		VD.write (report, v2) << std::endl;
 
 		report << "Element a:  ";
@@ -1804,10 +1804,10 @@ static bool testSubMul (Field &F, const char *text, LinBox::VectorStream<Vector>
 		do r.random (a); while (F.isZero (a));
 
 		std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-		report << "Input vector 1:  ";
+		report << "Input vector 1 of size " << v1.size() << ":  ";
 		VD.write (report, v1) << std::endl;
 
-		report << "Input vector 2:  ";
+		report << "Input vector 2 of size " << v2.size() << ":  ";
 		VD.write (report, v2) << std::endl;
 
 		report << "Element a:  ";
@@ -1905,10 +1905,10 @@ static bool testAXPY (Field &F, const char *text, LinBox::VectorStream<Vector> &
 		do r.random (a); while (F.isZero (a));
 
 		std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-		report << "Input vector 1:  ";
+		report << "Input vector 1 of size " << v1.size() << ":  ";
 		VD.write (report, v1) << std::endl;
 
-		report << "Input vector 2:  ";
+		report << "Input vector 2 of size " << v2.size() << ":  ";
 		VD.write (report, v2) << std::endl;
 
 		report << "Element a:  ";
