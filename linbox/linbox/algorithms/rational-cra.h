@@ -175,7 +175,7 @@ namespace LinBox {
 		
         Integer& iterativeratrecon(Integer& u1, Integer& new_den, const Integer& old_den, const Integer& m1, const Integer& s) {
             Integer a;
-            PID_integer::reconstructRational(a, new_den, u1*=old_den, m1, s);
+            _ZZ.reconstructRational(a, new_den, u1*=old_den, m1, s);
             return u1=a;
         }
 
@@ -186,7 +186,7 @@ namespace LinBox {
             D.characteristic( nextm );
             Modulo0 *= nextm;
             Integer a, b;
-            PID_integer::reconstructRational(a, b, Table0, Modulo0);
+            _ZZ.reconstructRational(a, b, Table0, Modulo0);
             if ((a == Numer0) && (b == Denom0))
                 ++occurency;
             else {
@@ -199,7 +199,7 @@ namespace LinBox {
         void First_Early_progress (const Domain& D, const DomainElement& e) {
             D.characteristic( Modulo0 );
             D.convert(Table0, e);
-            PID_integer::reconstructRational(Numer0, Denom0, Table0, Modulo0);
+            _ZZ.reconstructRational(Numer0, Denom0, Table0, Modulo0);
         }
 
         template<template<class T> class Vect>
