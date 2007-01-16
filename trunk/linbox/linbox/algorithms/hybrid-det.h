@@ -224,13 +224,13 @@ namespace LinBox {
 
                 if (early_counter < myfactor) {
                     /* determinant found */
-			cout << myfactor << "\n";
+			commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) << myfactor << "\n";
 			commentator.stop ( "first step", NULL, "det");
                         commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
                             << "Iterations done " << iteration.iterations()<< "\n";
                         return d=res;
                 }
-		cout << "no very early termination \n";
+		commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) << "no very early termination \n";
 		/* turn to LU when matrix size small - not to be used at the moment */ 
 		//if (A.rowdim() < 50 ) {
                 //while ( !cra.terminated() ) {
@@ -271,7 +271,7 @@ namespace LinBox {
 
 		//commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
                 //            << "5 LU time: " << time1 << " LIF time: " << time2 << ")\n";
-		cout << "lif calculated\n";
+		commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) << "lif calculated\n";
                 //LIF.lastInvariantFactor_Bonus(lif, bonus, A);	
 	
                 //if (lif==0) {
@@ -442,7 +442,7 @@ namespace LinBox {
                 double p_size = 26-(int)ceil(log((double)A.rowdim())*0.7213475205);
 
                 RandomPrime genprime( (Integer)p_size );
-                cout << "prime size: " << p_size << "\n"; 
+                commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) << "prime size: " << p_size << "\n"; 
                 ChineseRemainder< myModular > cra(3UL);
                 IntegerModularDetReduced<SparseMatrix<Integers >,MyMethod> iteration(A, M, beta,myfactor);
 
