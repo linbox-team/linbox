@@ -213,7 +213,7 @@ namespace LinBox {
 			return ::sqrt(x,y);
 		}
 
-                inline  Element pow2(Element& z, const Element& x) const {
+                inline  Element powtwo(Element& z, const Element& x) const {
                         z = 1;
                         //cout << "max" << ULONG_MAX << "x" << x << "?" << (x < ULONG_MAX);
                         if (x < LONG_MAX) {
@@ -236,7 +236,7 @@ namespace LinBox {
                         return z;
                 }
 
-                inline  Element log2(Element& z, const Element& x) const {
+                inline  Element logtwo(Element& z, const Element& x) const {
                         //cout << "x" << x;
                         if (x<1) return z=-1;
                         z = 0;
