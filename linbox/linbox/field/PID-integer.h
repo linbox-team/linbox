@@ -277,20 +277,26 @@ namespace LinBox {
 			Element x(f);
                         if (x<0) {
                         	if ((-x)>m)
-                            		x %=m;
+                            		x %= m;
                         	if (x<0)
                             		x += m;
                     	} else {
                         	if (x>m)
                             		x %= m;
                     	}
-                        bool res = ratrecon(a,b,x,m,k, reduce, recursive);
-                        if (recursive)
+
+                        if (x == 0) {
+                            a = 0;
+                            b = 1;
+                        } else {
+                            bool res = ratrecon(a,b,x,m,k, reduce, recursive);
+                            if (recursive)
                                 for( Element newk = k + 1; (!res) && (newk<f) ; ++newk)
-                                        res = ratrecon(a,b,x,m,newk,reduce, true);
+                                    res = ratrecon(a,b,x,m,newk,reduce, true);
+                        }
                 }
 
-                // Precondition f is suppposed positive and less than m
+                // Precondition f is suppposed strictly positive and strictly less than m
                 inline  bool ratrecon( Element& num, Element& den, 
                                              const Element& f, const Element& m, 
                                              const Element& k, 
@@ -303,7 +309,6 @@ namespace LinBox {
                         r0=m;
                         t0=0;
                         num=f;
-                        if (f<0) num+= m;
                         den=1;
                         while(num>=k)
                         {
@@ -318,7 +323,7 @@ namespace LinBox {
 //                             u *= q;
 //                             num -= u;	// num <-- r0-q*num
 			    Integer::axmyin(num,u,q);
-                            if (num == 0) break;
+                            if (num == 0) return false;
                             
                             u = den;
                             den = t0;  	// num <-- r0
