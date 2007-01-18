@@ -72,7 +72,7 @@ namespace LinBox {
 		BlasBlackbox () {}
 
 		BlasBlackbox (const Field& F) :  _F(F), _MD(F), _VD(F) 
-		{ _F.init(_One,1UL), _F.init(_Zero,0UL);}
+		{ _F.init(_One,1UL), _F.init(_Zero,0UL);_use_fflas=false;}
 
 		BlasBlackbox (const Field& F, size_t m, size_t n) 
 			: BlasMatrix<Element> (m,n),  _F(F), _MD(F), _VD(F), _row(m) , _col(n) 
@@ -90,6 +90,7 @@ namespace LinBox {
 		{
 			ms.getRows(_row);
 			ms.getColumns(_col);
+			_use_fflas= checkBlasApply(_F, _col);
 		}
 		
 
@@ -116,7 +117,9 @@ namespace LinBox {
 		template <class Vector1, class Vector2> 
 		Vector1&  apply (Vector1& y, const Vector2& x) const 
 		{
-			if (_use_fflas)
+			
+			if (_use_fflas){
+       
 				FFLAS::fgemv( _F, FFLAS::FflasNoTrans, 
 					      this->_row, this->_col,
 					      this->_One,
@@ -124,9 +127,10 @@ namespace LinBox {
 					      &x[0],1,
 					      this->_Zero,
 					      &y[0],1);  
-			
+			}			
 			else {
 				_MD. vectorMul (y, *this, x);
+
 				//typename BlasMatrix<Element>::ConstRowIterator i = this->rowBegin ();
 				//typename Vector1::iterator j = y.begin ();
 				
