@@ -12,6 +12,8 @@
 		c) Add a  --with-lapack option which must find dgetrf AND dgetri in a classical lapack (we thus provide clapack_dgetri and clapack_dgetrf
 		   within config-blas.h) or which finds clapack_dgetri AND clapack_dgetrf (e.g. in ATLAS).
 		d) For this to work directly with Goto: we provide dgetri using dgetrf and dtrtri and dtrsm of Goto. 
+---> OK, JGD 13.01.2007
+---> there remains to implement a dgetri for GotoBLAS in order to enable Zhendong's numerical solver
 
 3) gmp++ must be totally independent of Linbox and Givaro, add in LinBox and Givaro files to handle differences
 ---> OK, JGD 21.12.2006
@@ -31,11 +33,12 @@
 9) document matrices and vectors formats (links to web tutorial, provide data examples)
 
 10) uniformly distributed random integers ! (in checks)
+---> OK
 
 11) add irreducibility test in added constructor of Givaro GFq
 
 12) Maple interface and LinBox drivers
----> quite OK, Pascal.
+---> OK, 18.01.2007, Pascal.
 
 13) check valence solutions
 
@@ -48,4 +51,6 @@ NEW CODE (Algorithms, Solutions, Checks must be provided plus exceptions for non
 16) sigma base, polynomial matrix multiplication, sparse rational solver, block Hankel/Toeplitz blackbox
 16b) Parallel rank
 17) Smith form
+
 18) hybrid determinant
+---> OK, Anna 10.01.2007
