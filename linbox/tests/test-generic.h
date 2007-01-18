@@ -1418,14 +1418,15 @@ bool testRandomIterator (const Field &F, const char *text,
 
 	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
 
-	/* This test either passes or runs forever */
-	for (int i = 1; 
-	     !  testRandomIteratorStep (F, text, num_trials, num_categories, hist_len) ;
+	/* This test either passes or runs 13 times */
+	int i = 1; for ( ; 
+	     (!  testRandomIteratorStep (F, text, num_trials, num_categories, hist_len)) && (i< 14);
 	     ++i ){
-		if (0 == i % 10)  
+		if (0 == (i % 6))  
 			report << "Warning! Probable failure of uniformity" << std::endl;
 		};
-
+        if (i > 13)
+            report << "WARNING: uniformity of " << text << "::RandIter (random generator) has to be checked" << std::endl;
 	LinBox::commentator.stop (MSG_STATUS (true), (const char *) 0, "testRandomIterator");
 	return true;
 
@@ -1476,17 +1477,19 @@ bool testRandomIteratorStep (const Field &F,
 		F.assign (x_prev2, x_prev);
 		F.assign (x_prev, x);
 
-		iter.random (x);
+                integer ix, id;
+		F.convert(ix, iter.random (x));
 
-		categories1[x % num_categories]++;
-		categories2[(unsigned int) (double (x) / double (card) * num_categories)]++;
+   
+		categories1[ix % num_categories]++;
+		categories2[(unsigned int) (double (ix) / double (card) * num_categories)]++;
 
 		typename std::list<typename Field::Element>::iterator x_queue_iter = x_queue.begin ();
 		diff_cat_iter = diff_categories.begin ();
 
 		for (; x_queue_iter != x_queue.end (); ++x_queue_iter, ++diff_cat_iter) {
-			F.sub (d, *x_queue_iter, x);
-			(*diff_cat_iter)[d % num_categories]++;
+			F.convert(id, F.sub (d, *x_queue_iter, x));
+			(*diff_cat_iter)[id % num_categories]++;
 		}
 
 		x_queue.push_front (x);
@@ -1501,7 +1504,7 @@ bool testRandomIteratorStep (const Field &F,
 		chi_squared += pow (double (categories1[i]) -
 				    double (num_trials) / double (num_categories), 2);
 
-	p = chiSquaredCDF (chi_squared * num_categories / num_trials, num_categories - 1);
+	p = chiSquaredCDF (chi_squared * (double)num_categories / (double)num_trials, (double)num_categories - 1.0);
 
 	report << "Test of distribution uniformity (low-order): chi^2 = "
 	       << chi_squared * num_categories / num_trials << std::endl;
