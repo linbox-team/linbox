@@ -33,6 +33,8 @@
 #include "test-common.h"
 #include "test-generic.h"
 
+#define TEST_ARCHETYPES 1
+
 using namespace LinBox;
 
 int main (int argc, char **argv)
@@ -41,12 +43,19 @@ int main (int argc, char **argv)
 	static size_t n = 10000;
 	static int iterations = 10;
 	static int e;
+	static int trials = 1000000;
+	static int categories = 100;
+	static int hist_level = 1;
+
 
         static Argument args[] = {
                 { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 10733)", TYPE_INTEGER, &q },
                 { 'e', "-e E", "Use GF(q^e) for the extension field [1] (default 2)",  TYPE_INT,     &e },
 		{ 'n', "-n N", "Set dimension of test vectors to NxN (default 10000)", TYPE_INT,     &n },
 		{ 'i', "-i I", "Perform each test for I iterations (default 10)",      TYPE_INT,     &iterations },
+		{ 't', "-t T", "Number of trials for the random iterator test (default 1000000)", TYPE_INT, &trials },
+		{ 'c', "-c C", "Number of categories for the random iterator test (default 100)", TYPE_INT, &categories },
+		{ 'H', "-H H", "History level for random iterator test (default 1)", TYPE_INT, &hist_level },
                 { '\0' }
         };
 
@@ -72,28 +81,33 @@ int main (int argc, char **argv)
 	if (!runFieldTests (F4, "32749", iterations, n, false)) pass = false;
 	if (!runFieldTests (F5, "65521", iterations, n, false)) pass = false;
 
-#if 0
+	if (!testRandomIterator (F1,  "GivaroZpz<Unsigned32>(2)", trials, categories, hist_level)) pass = false;
+	if (!testRandomIterator (F2,  "GivaroZpz<Unsigned32>(10733)", trials, categories, hist_level)) pass = false;
+	if (!testRandomIterator (F3,  "GivaroZpz<Unsigned32>(3)", trials, categories, hist_level)) pass = false;
+	if (!testRandomIterator (F4,  "GivaroZpz<Unsigned32>(32749)", trials, categories, hist_level)) pass = false;
+	if (!testRandomIterator (F5,  "GivaroZpz<Unsigned32>(65521)", trials, categories, hist_level)) pass = false;
+
+#if TEST_ARCHETYPES
 
 	FieldArchetype K1(new GivaroZpz<Std16> (101));
-	cout<<"coco\n";
 	if (!testField<FieldArchetype> (K1, "Testing archetype with envelope of GivaroZpz<Std16> field"))
 		pass = false;
 #endif
 
-#if 0
+#if TEST_ARCHETYPES
 	FieldArchetype K2(new GivaroZpz<Unsigned32>(101));
 	if (!testField<FieldArchetype> (K2, "Testing archetype with envelope of GivaroZpz<Unsigned32> field"))
 		pass = false;
 #endif
 
-#if 0
+#if TEST_ARCHETYPES
 	FieldArchetype K3(new GivaroZpz<Log16>(101));
 
 	if (!testField<FieldArchetype> (K3, "Testing archetype with envelope of GivaroZpz<Log16> field"))
 		pass = false;
 #endif
 
-#if 0
+#if TEST_ARCHETYPES
 	FieldArchetype K4(new GivaroGfq(101,1));
 
 	if (!testField<FieldArchetype> (K4, "Testing archetype with envelope of GivaroGfq prime field"))
