@@ -14,4 +14,4 @@ bin_SCRIPTS=linbox-config
 
 include_HEADERS=linbox-config.h HACKING
 
-VERSION=1.0.2
+VERSION=1.0.3
