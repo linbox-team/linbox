@@ -166,7 +166,7 @@ extern "C" {
 			 const double beta, double *C, const int ldc) 
 	{   
 		if (Order == CblasRowMajor)
-			dgemm_ ( EXT_BLAS_TRANSPOSE(TransA), EXT_BLAS_TRANSPOSE(TransB), &N, &M, &K, &alpha, B, &ldb, A, &lda, &beta, C, &ldc);
+			dgemm_ ( EXT_BLAS_TRANSPOSE(TransB), EXT_BLAS_TRANSPOSE(TransA), &N, &M, &K, &alpha, B, &ldb, A, &lda, &beta, C, &ldc);
 		else
 			dgemm_ ( EXT_BLAS_TRANSPOSE(TransA), EXT_BLAS_TRANSPOSE(TransB), &M, &N, &K, &alpha, A, &lda, B, &ldb, &beta, C, &ldc);
 	}
