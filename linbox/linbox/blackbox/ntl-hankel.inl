@@ -1,4 +1,4 @@
-/* C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
+/* C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4  */
 
 /*-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
  *    ntl-hankel.inl     NTL_Hankel.cpp file 
@@ -73,12 +73,11 @@ namespace LinBox
 		this->colDim = (1+v.size())/2;
 		this->sysDim = (1+v.size())/2;
 		
-		this->data = v;
 		this->pdata.SetMaxLength( v.size());
 		//		rpdata.SetMaxLength( v.size());
 		for (unsigned int i=0; i< v.size(); i++) 
 		{
-			SetCoeff( this->pdata, i, v[i]);
+			this->P.setCoeff( this->pdata, i, v[i]);
 			//SetCoeff( rpdata, i, v[v.size()-1-i]);
 		}
 		
@@ -100,27 +99,24 @@ namespace LinBox
 		register size_t i, N, j;
 		
 		os<< this->rowDim << " " << this->colDim << " " << this->shape << std::endl;
-		N = this->data.size() - 1;
+		N = (this->rowDim-1)<<1;
 		
 		if ( N < 20 ) {            // Print small matrices in dense format
+                    Element tmp;
 			for (i = N ; i >= this->colDim-1; i--) {
 				for ( j = 0; j < this->colDim ; j++)
-					os << " " << this->data[i-j] ;
+					os << " " << this->P.getCoeff(tmp, this->pdata,i-j) ;
 				os << std::endl;
 			}
 		} 
 		else {
 			// Print large matrices' first row and col
-			os << this->rowDim << " " << this->colDim << " " << this->shape << std::endl ;
-			os << "[";
-			for (int i=this->data.size()-1; i>= 0;i--)
-				os << this->data[i] << " ";
-			os << "]\n";
-			os << this->pdata << std::endl;
+			os << "<Hankel<";
+			this->P.write(os, this->pdata) << ">>\n";
 		} //[v(2n-2),....,v(0)]; where v(0) is the top right entry of the matrix
 		
 		return;
-	} //---- print()----- [Tested 6/14/02 -- Works]
+	} //---- print()----- 
 	
 	
 	
@@ -150,9 +146,8 @@ namespace LinBox
 		else { 
 			std::ofstream o_fp(outFileName, std::ios::out);
 			o_fp << this->rowDim << " " << this->colDim << " " << this->shape << std::endl ;
-			o_fp << "[";
-			for (i=this->data.size()-1; i>= 0;i--) o_fp << this->data[i] << " ";
-			o_fp << "]\n";
+			o_fp << "<Hankel<";
+			this->P.write(o_fp, this->pdata) << ">>\n";
 			
 			o_fp.close();
 		}
@@ -168,16 +163,18 @@ namespace LinBox
 	template <class Field>
 	void Hankel<Field>::setToUniModLT()
 	{
-		int L = this->data.size()-1;
+                int L = (this->rowDim-1)<<1;
 		this->shape = this->UnimodLT;
 
-		long zero = 0;  // needed for NTL initialization of a polynomial coeff
+                Element one,zero;
+                this->K.init(one,1);
+                this->K.init(zero,0);
 		for (int i=this->rowDim-1; i <= L; i++ ) {
-			this->K.init(this->data[i],0);     // zero out the below-diagonal entries 
-			SetCoeff(this->pdata,i,zero);
+			// zero out the below-diagonal entries 
+                    this->P.setCoeff(this->pdata,i,zero);
 		}
-		this->K.init(this->data[this->rowDim-1],1);          // set the antidiagonal to 1
-		SetCoeff( this->pdata, this->rowDim-1);       // update the corresponding coeff of this->pdata
+                    // set the antidiagonal to 1
+		this->P.setCoeff( this->pdata, this->rowDim-1, one);       // update the corresponding coeff of this->pdata
 		//reverse(rpdata,this->pdata);        // no need to construct the transpose
 		return;
 	}// 
@@ -194,15 +191,17 @@ namespace LinBox
 	{
 		this->shape = this->UnimodUT;
 		
-		long zero = 0;  // needed for NTL initialization of a polynomial coeff
+                Element one,zero;
+                this->K.init(one,1);
+                this->K.init(zero,0);
 
 		for (size_t i=0; i < this->rowDim-1; i++ ) {
-			this->K.init(this->data[i],0);     // zero out the below-antidiagonal entries 
-			SetCoeff(this->pdata, i , zero);
+			// zero out the below-antidiagonal entries 
+                    this->P.setCoeff(this->pdata, i , zero);
 		}
 
-		this->K.init(this->data[this->rowDim-1],1);      // set antidiagonal to 1
-		SetCoeff(this->pdata,this->rowDim-1);      // update the corresponding coeff of this->pdata
+                    // set antidiagonal to 1
+		this->P.setCoeff(this->pdata,this->rowDim-1, one);      // update the corresponding coeff of this->pdata
 		//reverse(rpdata,this->pdata);    // no need to construct the transpose
 		
 		return;
@@ -221,10 +220,10 @@ namespace LinBox
 										  const InVector& v_in) const
 	{  
 		if (v_out.size() != this->rowdim())
-			std::cout << "\tToeplitz::apply()\t output vector not correct size, at "
+			std::cout << "\tHankel::apply()\t output vector not correct size, at "
 					  << v_out.size() << ". System rowdim is" <<  this->rowdim() << std::endl;
 		if ( v_out.size() != v_in.size())
-			std::cout << "\tToeplitz::apply()\t input vector not correct size at " 
+			std::cout << "\tHankel::apply()\t input vector not correct size at " 
 					  << v_in.size() << ". System coldim is" <<  this->coldim() << std::endl;
 		assert((v_out.size() == this->rowdim()) && 
 			   (v_in.size() == this->coldim()))  ;
@@ -232,7 +231,7 @@ namespace LinBox
 		NTL::ZZ_pX pxOut, pxIn;
 		pxIn.SetMaxLength( v_in.size()-1);
 		for (unsigned int i=0; i< v_in.size(); i++)
-			SetCoeff( pxIn, i, v_in[i]);
+			this->P.setCoeff( pxIn, i, v_in[i]);
 		
 #ifdef DBGMSGS
 		std::cout << "\npX in is " << pxIn << std::endl;
@@ -245,7 +244,7 @@ namespace LinBox
 #endif
 		int N = this->rowdim();
 		for ( int i= 0; i < N; i++) 
-			GetCoeff(v_out[N-1-i], pxOut, N-1+i);
+			this->P.getCoeff(v_out[N-1-i], pxOut, N-1+i);
 		
 		return v_out;
 		

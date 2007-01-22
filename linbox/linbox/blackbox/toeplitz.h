@@ -21,6 +21,17 @@
 #include <linbox/field/ntl-ZZ_pX.h>
 #endif
 
+#define SPARSE    0X1    // 0001
+#define DENSE     0X2    // 0010
+#define DIAGONAL  0X4    // 0100
+#define TOEPLITZ  0X8    // 1000
+#define HANKEL    0XC    // 1100
+#define UNIMOD_UT 0XA    // 1010 -- unimodular upper triang. Toeplitz
+#define UNIMOD_LT 0X9    // 1001 -- unimodular lower triang. Toeplitz
+#define UNIMOD_UH 0XE    // 1110 -- unimodular upper triang. Hankel
+#define UNIMOD_LH 0XD    // 1101 -- unimodular lower triang. Hankel
+#define BLKVECTOR 0X10
+
 //#define DBGMSGS 1
 
 /*-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -94,9 +105,6 @@ namespace LinBox
 		static const int UnimodLT=2;
 		int shape;                // Helps us deduce what our shape is
 		//std::vector<NTL::ZZ_p> data;    // The vector of coeffs of the polynomial
-
-
-
 
 		/* These were only used by the XML stuff and are more or less
 		 * obsolete with the presence of polynomial fields.

@@ -61,7 +61,8 @@ namespace LinBox
 	 *----    Zero Parameter Constructor    
 	 *----------------------------------------------------------------*/
 	template <class _CField, class _PField>
-	ToeplitzBase<_CField, _PField>::ToeplitzBase()
+	ToeplitzBase<_CField, _PField>::ToeplitzBase() 
+                : P(0), K(0)
 	{
 		shape  =
 		sysDim =               // Default dimension is 0
