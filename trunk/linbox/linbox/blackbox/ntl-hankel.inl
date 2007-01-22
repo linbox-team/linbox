@@ -43,7 +43,7 @@ namespace LinBox
 	template <class Field>
 	Hankel<Field>::Hankel() 
 	{
-		this->shape  = HANKEL;
+		this->shape.shape(BlackboxSpecifier::HANKEL);
 #ifdef DBGMSGS
 		std::cout << "Hankel::Hankel():\tCreated a " << this->rowDim << "x"<< this->colDim<<
 			" Hankel matrix "<< std::endl;
@@ -98,7 +98,7 @@ namespace LinBox
 	{
 		register size_t i, N, j;
 		
-		os<< this->rowDim << " " << this->colDim << " " << this->shape << std::endl;
+		os<< this->rowDim << " " << this->colDim << " " << this->shape.shape() << std::endl;
 		N = (this->rowDim-1)<<1;
 		
 		if ( N < 20 ) {            // Print small matrices in dense format
@@ -145,7 +145,7 @@ namespace LinBox
 			print();    // Print to stdout if no file is specified
 		else { 
 			std::ofstream o_fp(outFileName, std::ios::out);
-			o_fp << this->rowDim << " " << this->colDim << " " << this->shape << std::endl ;
+			o_fp << this->rowDim << " " << this->colDim << " " << this->shape.shape() << std::endl ;
 			o_fp << "<Hankel<";
 			this->P.write(o_fp, this->pdata) << ">>\n";
 			
@@ -164,7 +164,7 @@ namespace LinBox
 	void Hankel<Field>::setToUniModLT()
 	{
                 int L = (this->rowDim-1)<<1;
-		this->shape = this->UnimodLT;
+		this->shape.shape(BlackboxSpecifier::UNIMOD_LT);
 
                 Element one,zero;
                 this->K.init(one,1);
@@ -189,7 +189,7 @@ namespace LinBox
 	template <class Field>
 	void Hankel<Field>::setToUniModUT()
 	{
-		this->shape = this->UnimodUT;
+		this->shape.shape(BlackboxSpecifier::UNIMOD_UT);
 		
                 Element one,zero;
                 this->K.init(one,1);
