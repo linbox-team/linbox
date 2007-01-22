@@ -45,10 +45,10 @@ namespace LinBox
 	ToeplitzBase<_CField, _PField>::ToeplitzBase(const Field& F)
 	:P(F), K(F)
 	{
-		shape  =
 		sysDim =               // Default dimension is 0
 		rowDim =               // Default row dim is 0
 		this->colDim = 0;            // Default col dim is 0
+                shape.shape(BlackboxSpecifier::TOEPLITZ);
 #ifdef DBGMSGS
 		std::cout << "Toeplitz::Toeplitz():\tCreated a " << rowDim << "x"<< this->colDim<<
 			" Toeplitz matrix "<< std::endl;
@@ -64,10 +64,10 @@ namespace LinBox
 	ToeplitzBase<_CField, _PField>::ToeplitzBase() 
                 : P(0), K(0)
 	{
-		shape  =
 		sysDim =               // Default dimension is 0
 		rowDim =               // Default row dim is 0
 		this->colDim = 0;            // Default col dim is 0
+                shape.shape(BlackboxSpecifier::TOEPLITZ);
 #ifdef DBGMSGS
 		std::cout << "Toeplitz::Toeplitz():\tCreated a " << rowDim << "x"<< this->colDim<<
 			" Toeplitz matrix "<< std::endl;
@@ -82,7 +82,8 @@ namespace LinBox
 	ToeplitzBase<_CField,_PField>::ToeplitzBase( const PField& PF )
 		:P(PF), K(PF.getCoeffField())
 	{
-		shape = sysDim = rowDim = this->colDim = 0;
+		sysDim = rowDim = this->colDim = 0;
+                shape.shape(BlackboxSpecifier::TOEPLITZ);
 
 	}//------ Polynomial Field constructor
 
@@ -94,7 +95,7 @@ namespace LinBox
 		( const PField& PF, const Poly& p, size_t m, size_t n )
 		:P(PF), K(PF.getCoeffField()), rowDim(m), colDim(n), pdata(p)
 	{
-		shape = 0;
+                shape.shape(BlackboxSpecifier::TOEPLITZ);
 		if( n == 0 ) this->colDim = rowDim;
 		if( rowDim >= this->colDim ) sysDim = rowDim;
 		else sysDim = this->colDim;
@@ -166,7 +167,7 @@ namespace LinBox
 		register unsigned int j;
 		Element temp;
 		
-		os<< this->rowDim << " " << this->colDim << " " << this->shape << std::endl;
+		os<< this->rowDim << " " << this->colDim << " " << this->shape.shape() << std::endl;
 		N = this->rowDim + this->colDim -1;
 
 		if ( N < 20 )             // Print small matrices in dense format
@@ -216,7 +217,7 @@ namespace LinBox
 		else 
 			{
 				std::ofstream o_fp(outFileName, std::ios::out);
-				o_fp << this->rowDim << " " << this->colDim << " " << this->shape << std::endl ;
+				o_fp << this->rowDim << " " << this->colDim << " " << this->shape.shape() << std::endl ;
 				o_fp << "[";
 				for (size_t i = this->rowDim + this->colDim - 2; i>= 0;i--) 
 					this->K.write(o_fp,this->P.getCoeff(temp,this->pdata,i))
@@ -249,7 +250,7 @@ namespace LinBox
 		P.setCoeff(pdata,sysDim-1,one);
 		P.setCoeff(rpdata,sysDim-1,one);
 
-		shape = UnimodUT;
+		shape.shape(BlackboxSpecifier::UNIMOD_UT);
 		return;
 	}// [UNCOMMENTED PART Tested 6/14/02 -- Works]
 	
@@ -275,7 +276,7 @@ namespace LinBox
 		P.setCoeff(pdata,sysDim-1,one);
 		P.setCoeff(rpdata,sysDim-1,one);
 
-		shape = UnimodUT;
+		shape.shape(BlackboxSpecifier::UNIMOD_LT);
 		return;
 	}// [UNCOMMENTED PART Tested 6/14/02 -- Works]
 

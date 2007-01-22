@@ -40,6 +40,22 @@
 
 namespace LinBox
 {
+// JGD 22.01.2007 : adapted from Lidzhade Fhulu's
+    template <typename EnumT, typename BaseEnumT>
+    struct InheritEnum {
+        InheritEnum() {}
+        InheritEnum(EnumT e) : enum_(e) {}
+        InheritEnum(BaseEnumT e) : baseEnum_(e) {}
+        explicit InheritEnum( int val ) : enum_(static_cast<EnumT>(val)) {}
+        operator EnumT() const { return enum_; }
+    private:
+        union { 
+            EnumT enum_;
+            BaseEnumT baseEnum_;
+        };
+};
+
+
 
 	struct Specifier {
 		/** Whether the system is known to be singular or nonsingular */
@@ -68,6 +84,23 @@ namespace LinBox
 			NO_PRECONDITIONER, BUTTERFLY, SPARSE, TOEPLITZ, SYMMETRIZE, PARTIAL_DIAGONAL, PARTIAL_DIAGONAL_SYMMETRIZE, FULL_DIAGONAL, DENSE
 		};
 
+                /** Other shapes : 
+                 *  UNIMOD_UT -- unimodular upper triang. Toeplitz
+                 *  UNIMOD_LT -- unimodular lower triang. Toeplitz
+                 *  UNIMOD_UH -- unimodular upper triang. Hankel
+                 *  UNIMOD_LH -- unimodular lower triang. Hankel
+                 **/
+            	enum BlackboxShape {
+                	DIAGONAL = 15, HANKEL, UNIMOD_UT, UNIMOD_LT,  UNIMOD_UH,  UNIMOD_LH,  BLKVECTOR
+            	};
+
+            	/** Shape of a Blackbox
+                 *  Precontioner shapes and 
+                 *  other blackbox shape are 
+                 *  combined
+                 **/ 
+            	typedef InheritEnum<BlackboxShape, Preconditioner> Shape;
+
 		/** Whether the rank of the system is known (otherwise its value) */
 		enum {
 			RANK_UNKNOWN = 0
@@ -83,11 +116,11 @@ namespace LinBox
 			CERTIFY = true, DONT_CERTIFY = false
 		};
 
-		enum PivotStrategy {
+		/** Linear-time pivoting or not for eliminations */
+                enum PivotStrategy {
 			PIVOT_LINEAR, PIVOT_NONE
 		};
-
-
+            
 		Specifier ( ) 
 			: _preconditioner(NO_PRECONDITIONER),
 			  _rank(RANK_UNKNOWN),
@@ -98,6 +131,7 @@ namespace LinBox
 			  _ett(DEFAULT_EARLY_TERM_THRESHOLD),
 			  _blockingFactor(16),
 			  _strategy(PIVOT_LINEAR),
+                          _shape(SPARSE),
 			  _provensuccessprobability( 0.0 )
 #ifdef __LINBOX_HAVE_MPI
 			  , _communicatorp( 0 )
@@ -114,6 +148,7 @@ namespace LinBox
 			_ett( s._ett),
 			_blockingFactor( s._blockingFactor),
 			_strategy( s._strategy),
+                        _shape( s._shape),
 			_provensuccessprobability( s._provensuccessprobability)
 #ifdef __LINBOX_HAVE_MPI
 			, _communicatorp(s._communicatorp)
@@ -135,6 +170,7 @@ namespace LinBox
 		unsigned long  earlyTermThreshold () const { return _ett; }
 		unsigned long  blockingFactor () const { return _blockingFactor; }
 		PivotStrategy strategy () const { return _strategy; }
+            	Shape shape () const { return _shape; }
 		double trustability ()   const  { return _provensuccessprobability; }
 		bool checkResult    ()    const       { return _checkResult; }
 #ifdef __LINBOX_HAVE_MPI
@@ -157,6 +193,7 @@ namespace LinBox
 		void maxTries       (unsigned long n)  { _maxTries = n; }
 		void blockingFactor (unsigned long b)  { _blockingFactor = b; }
 		void strategy (PivotStrategy strategy) { _strategy = strategy; }
+		void shape (Shape s) { _shape = s; }
 		void trustability   (double p)         { _provensuccessprobability = p; }
 		void checkResult    (bool s)           { _checkResult = s; }
 #ifdef __LINBOX_HAVE_MPI
@@ -173,7 +210,8 @@ namespace LinBox
 		unsigned long  _maxTries;
 		unsigned long  _ett;
 		unsigned long  _blockingFactor;
-		PivotStrategy _strategy;
+		PivotStrategy  _strategy;
+            	Shape          _shape;
 		double         _provensuccessprobability;
 		bool           _checkResult;
 #ifdef __LINBOX_HAVE_MPI
