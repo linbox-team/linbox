@@ -55,6 +55,7 @@ pkgincludesub_HEADERS = \
 	minpoly-integer.h	\
 	sigma-basis.h		\
 	matpoly-mult.h		\
-	echelon-form.h
+	echelon-form.h		\
+	toeplitz-det.h
 
 EXTRA_DIST = algorithms.doxy
