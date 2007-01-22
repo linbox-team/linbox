@@ -42,8 +42,8 @@ BASIC_HDRS =			\
 	block-hankel-inverse.h	
 
 NTL_HDRS =			\
-	ntl-toeplitz.h ntl-hankel.h ntl-sylvester.h \
-	ntl-toeplitz.inl ntl-hankel.inl ntl-sylvester.inl
+	toeplitz.h ntl-hankel.h ntl-sylvester.h \
+	toeplitz.inl ntl-hankel.inl ntl-sylvester.inl
 
 GIVARO_HDRS = 
 

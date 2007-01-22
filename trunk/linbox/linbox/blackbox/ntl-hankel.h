@@ -12,7 +12,7 @@
 #define NTL_HANKEL_H
 
 #include <linbox/blackbox/blackbox-interface.h>
-#include "ntl-toeplitz.h" // we inherit everything from ntl-toeplitz
+#include "toeplitz.h" // we inherit everything from ntl-toeplitz
 
 //#define DBGMSGS 1
 
