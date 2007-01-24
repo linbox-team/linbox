@@ -137,7 +137,9 @@ unsigned long Integer::operator % (const unsigned long l) const {
     else {
         Integer Neg;
         mpz_neg( (mpz_ptr)&(Neg.gmp_rep), (mpz_ptr)&gmp_rep );
-        return (l-mpz_tdiv_ui( (mpz_ptr)&(Neg.gmp_rep), l));
+        unsigned long res = mpz_tdiv_ui( (mpz_ptr)&(Neg.gmp_rep), l);
+        if (res > 0UL) return (l-res);
+        else return 0UL;
     }
 }
 
