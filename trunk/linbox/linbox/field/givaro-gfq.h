@@ -81,7 +81,7 @@ namespace LinBox
 
 	template<>
 	integer& FieldTraits<GivaroGfq>::maxExponent( integer& i )
-		{ return i = 20; } // Cardinality must be < 2^20
+		{ return i = 20; } // Cardinality must be <= 2^20
 
 
   /** wrapper of Givaro's GFqDom<int32>  class 
