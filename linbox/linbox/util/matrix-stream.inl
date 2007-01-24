@@ -377,7 +377,7 @@ bool MatrixStream<Field>::getRows(size_t& m) {
 	if( readers.empty() ) return false;
 
 	bool mSet = false;
-	size_t tempM;
+	size_t tempM(0);
 	MatrixStreamError tError;
 	for( typename RVector::iterator iter = readers.begin();
 	     iter != readers.end(); ) {
@@ -415,7 +415,7 @@ bool MatrixStream<Field>::getColumns(size_t& n) {
 	if( readers.empty() ) return false;
 
 	bool nSet = false;
-	size_t tempN;
+	size_t tempN(0);
 	MatrixStreamError tError;
 	for( typename RVector::iterator iter = readers.begin();
 	     iter != readers.end(); ) {

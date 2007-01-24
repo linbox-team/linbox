@@ -58,14 +58,19 @@ int main (int argc, char **argv)
                     if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
 
 
+                        // Using the adpative LinBox Solution
+                        // rank(r,B);
+                    
 			// using BlackBoxes
                     Method::Blackbox MBB;
                     MBB.certificate(true);
                     rank(r, B, MBB);
                     cout << "Rank is " << r << endl;
 
-			// using Sparse Elimination
-                    rankin (r, B);                    
+			// using in place Sparse Elimination with linear pivoting
+		    Method::SparseElimination SE;
+		    SE.strategy(Specifier::PIVOT_LINEAR);
+                    rankin (r, B, SE);                    
                     if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
                     cout << "Rank is " << r << endl;
 

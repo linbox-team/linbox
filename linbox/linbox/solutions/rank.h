@@ -12,6 +12,7 @@
 #include "linbox/field/modular.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
+#include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/permutation.h"
@@ -201,7 +202,9 @@ namespace LinBox {
             MasseyDomain<Field, BlackboxContainerSymmetric<Field, BlackBox1> > WD (&TF, M.earlyTermThreshold ());
             std::vector<typename Field::Element> phi;
             WD.pseudo_minpoly (phi, res);
-                
+            commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Pseudo Minpoly degree: " << res << std::endl;
+               
+            commentator.start ("Monte Carlo certification", "trace");
             typename Field::Element t, p2; F.init(p2, 0UL);
             trace(t, B);            
             if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
@@ -210,6 +213,7 @@ namespace LinBox {
             int logn = 2*(unsigned long)floor( log( (double)A.rowdim() ) );
             bool tryagain = (! F.areEqual( t, p2 ));
             while( tryagain ) {
+                commentator.stop ("fail", NULL, "trace");
 
 //                 Permutation<Field> P(A.rowdim(), F);          
 //                 for (i = 0; i < A.rowdim (); ++i)
@@ -240,6 +244,8 @@ namespace LinBox {
                 MasseyDomain<Field, BlackboxContainerSymmetric<Field, BlackBox1> > WD (&TF, M.earlyTermThreshold ());
                 
                 WD.pseudo_minpoly (phi, rk);
+                commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Permuted pseudo Minpoly degree: " << res << std::endl;
+                commentator.start ("Monte Carlo certification", "trace");
                 if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
                 
                 trace(t, B);
@@ -254,6 +260,7 @@ namespace LinBox {
             commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "symm permutations : " << nbperm << std::endl;
             nbperm = 0;
             while(tryagain) {
+                commentator.stop ("fail", NULL, "trace");
 //             F.write( F.write( commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
 //                               << "end trace: ", t) << ", p2: ", p2) << std::endl;
                 typename Field::RandIter r (F);
@@ -277,6 +284,8 @@ namespace LinBox {
                 MasseyDomain<Field, BlackboxContainerSymmetric<Field, BlackBoxBAB> > WD (&TF, M.earlyTermThreshold ());
                 
                 WD.pseudo_minpoly (phi, rk);
+                commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Butterfly pseudo Minpoly degree: " << res << std::endl;
+                commentator.start ("Monte Carlo certification", "trace");
                 if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
                 
                 trace(t, PAP);
@@ -294,7 +303,8 @@ namespace LinBox {
             
             commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "butterflies : " << nbperm << std::endl;
 
-           commentator.stop ("done", NULL, "rank");
+            commentator.stop ("success", NULL, "trace");
+            commentator.stop ("done", NULL, "rank");
             
             return res;
         } else {
@@ -330,6 +340,8 @@ namespace LinBox {
                 
             std::vector<typename Field::Element> phi;
             WD.pseudo_minpoly (phi, res);
+            commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Pseudo Minpoly degree: " << res << std::endl;
+            commentator.start ("Monte Carlo certification", "trace");
 
             typename Field::Element t, p2; F.init(p2, 0UL);
             trace(t, B);            
@@ -339,6 +351,7 @@ namespace LinBox {
             int logn = 2*(unsigned long)floor( log( (double)A.rowdim() ) );
             bool tryagain = (! F.areEqual( t, p2 ));
             while( tryagain ) {
+                commentator.stop ("fail", NULL, "trace");
                 Permutation<Field> P(A.rowdim(), F);          
                 for (i = 0; i < A.rowdim (); ++i)
                     P.permute( rand() % A.rowdim() , rand() % A.rowdim() );
@@ -367,6 +380,8 @@ namespace LinBox {
                 MasseyDomain<Field, BlackboxContainerSymmetric<Field, Blackbox1> > MD (&TF, M.earlyTermThreshold ());
                 
                 MD.pseudo_minpoly (phi, rk);
+                commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Permuted pseudo Minpoly degree: " << rk << std::endl;
+                commentator.start ("Monte Carlo certification", "trace");
                 if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
                 
                 trace(t, B);
@@ -380,6 +395,7 @@ namespace LinBox {
             commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "permutations : " << nbperm << std::endl;
             nbperm = 0;
             while(tryagain) {
+                commentator.stop ("fail", NULL, "trace");
                 typename Field::RandIter r (F);
                 typename CekstvSwitch<Field>::Factory factory (r);
                 typedef Butterfly<Field, CekstvSwitch<Field> > ButterflyP;
@@ -407,6 +423,8 @@ namespace LinBox {
                 MasseyDomain<Field, BlackboxContainerSymmetric<Field, Blackbox1> > MD (&TF, M.earlyTermThreshold ());
                 
                 MD.pseudo_minpoly (phi, rk);
+                commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Butterfly pseudo Minpoly degree: " << rk << std::endl;
+                commentator.start ("Monte Carlo certification", "trace");
                 if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
                 
                 trace(t, B);
@@ -418,25 +436,13 @@ namespace LinBox {
                 ++nbperm;
             }
             commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "butterflies : " << nbperm << std::endl;
+            commentator.stop ("success", NULL, "trace");
             commentator.stop ("done", NULL, "rank");
             
             return res;
         }
 
     }
-
-/* Don't know why this is here?  Conflicts with def in matrix/sparse.h
-    template<class T, template <class T> class Container>
-    std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
-        o << "[";
-        for(typename Container<T>::const_iterator refs = C.begin();
-            refs != C.end() ;
-            ++refs )
-            o << (*refs) << " " ;
-        return o << "]";
-    }
-	*/
-
 
 	/// M may be <code>Method::SparseElimination()</code>.
     template <class Field>
@@ -450,7 +456,36 @@ namespace LinBox {
         return rankin(r, A1, tag, M);
     }
     
-	/// M may be <code>Method::SparseElimination()</code>.
+    template <class Field, class Method>
+    unsigned long &rankin (unsigned long                   &r,
+                           SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq>  &A,
+                         const Method    &M)
+    {  return rankin(r, A, typename FieldTraits<Field>::categoryTag(), M); 
+    }
+
+
+   template <class Blackbox, class Ring>
+    unsigned long &rankin (unsigned long                     &r,
+                           Blackbox &A,
+                           const RingCategories::IntegerTag    &tag,
+                           const Method::SparseElimination     &M)
+    {
+        commentator.start ("Integer Rank", "rank");
+        typedef Modular<double> Field;
+        integer mmodulus; 
+        FieldTraits<Field>::maxModulus(mmodulus);
+        RandomPrime genprime( (long) floor (log((double)mmodulus) ) );
+        genprime.randomPrime( mmodulus );
+        typedef typename Blackbox::template rebind< Field >::other FBlackbox;
+        FBlackbox * Ap;
+        MatrixHom::map(Ap, A, Field(mmodulus) );
+        commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Integer Rank is done modulo " << mmodulus << std::endl;
+        rankin(r, *Ap, RingCategories::ModularTag(), M);
+        delete Ap;
+        commentator.stop ("done", NULL, "rank");
+        return r;
+    }
+    
     template <class Field>
     unsigned long &rankin (unsigned long                       &r,
                            SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq>  &A,
@@ -459,13 +494,11 @@ namespace LinBox {
     {
         commentator.start ("Sparse Elimination Rank", "rank");
         GaussDomain<Field> GD ( A.field() );
-		//not working.  Seems to be problem with PIVOT_LINEAR. -bds 2006may30
-        //GD.rankin (r, A, M.strategy ());
-        GD.rankin (r, A, Specifier::PIVOT_NONE);
+        GD.rankin (r, A, M.strategy ());
         commentator.stop ("done", NULL, "rank");
         return r;
     }
-    
+
 	// Change of representation to be able to call the sparse elimination
     template <class Blackbox>
     unsigned long &rank (unsigned long                       &r,
@@ -551,7 +584,7 @@ namespace LinBox {
         FBlackbox * Ap;
         MatrixHom::map(Ap, A, Field(mmodulus) );
         commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Integer Rank is done modulo " << mmodulus << std::endl;
-        rank(r, *Ap, M);
+        rank(r, *Ap, RingCategories::ModularTag(), M);
         delete Ap;
         commentator.stop ("done", NULL, "rank");
         return r;
