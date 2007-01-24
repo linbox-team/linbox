@@ -226,7 +226,6 @@ std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
 	::read (SparseMatrixBase<Element, Row> &A, std::istream &is, const Field &F,
 		FileFormatTag format)
 {
-
 	char buf[80];
 	buf[0]=0;
 	char c;

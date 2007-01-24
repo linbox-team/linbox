@@ -172,7 +172,7 @@ namespace LinBox
 	void eliminate (Vector              &lignecourante,
 			const Vector        &lignepivot,
 			const unsigned long &indcol,
-			const unsigned long &indpermut,
+			const long &indpermut,
 			D                   &columns);
 
             //-----------------------------------------
@@ -185,7 +185,7 @@ namespace LinBox
 	void eliminate (Vector              &lignecourante,
 			const Vector        &lignepivot,
 			const unsigned long &indcol,
-			const unsigned long &indpermut);
+			const long &indpermut);
 
             //-----------------------------------------
             // Dense elimination using a pivot row :
@@ -196,7 +196,7 @@ namespace LinBox
 	void Upper (Vector       &lignecur,
 		    const Vector &lignepivot,
 		    unsigned long indcol,
-		    unsigned long indpermut);
+		    long indpermut);
 
             //-----------------------------------------
             // Dense elimination using a pivot row :
@@ -206,7 +206,7 @@ namespace LinBox
 	void LU (Vector       &lignecur,
 		 const Vector &lignepivot,
 		 unsigned long indcol,
-		 unsigned long indpermut);
+		 long indpermut);
 
             //------------------------------------------
             // Looking for a non-zero pivot in a row 
@@ -216,21 +216,21 @@ namespace LinBox
             // 2. Column density is minimum for this row
             //------------------------------------------
 	template <class Vector, class D>
-	void SparseFindPivot (Vector &lignepivot, unsigned long &indcol, unsigned long &indpermut, D &columns);
+	void SparseFindPivot (Vector &lignepivot, unsigned long &indcol, long &indpermut, D &columns);
 
             //------------------------------------------
             // Looking for a non-zero pivot in a row 
             // No reordering
             //------------------------------------------
 	template <class Vector>
-	void SparseFindPivot (Vector &lignepivot, unsigned long &indcol, unsigned long &indpermut);
+	void SparseFindPivot (Vector &lignepivot, unsigned long &indcol, long &indpermut);
 
             //------------------------------------------
             // Looking for a non-zero pivot in a row  
             // Dense search
             //------------------------------------------
 	template <class Vector>
-	void FindPivot (Vector &lignepivot, unsigned long &k, unsigned long &indpermut);
+	void FindPivot (Vector &lignepivot, unsigned long &k, long &indpermut);
 
     };
 

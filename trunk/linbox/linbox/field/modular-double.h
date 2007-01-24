@@ -157,6 +157,7 @@ namespace LinBox {
 
 		std::istream &read (std::istream &is, Element &x) const {
 			integer tmp;
+                            // JGD : should'nt it be double tmp ???
 			is >> tmp;
 			init(x,tmp); 
 			return is;
