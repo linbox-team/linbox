@@ -116,7 +116,7 @@ namespace LinBox
 	for(int32 i=1;i<k;++i) pl*=(int32)p;
 	if(!FieldTraits<GivaroGfq>::goodModulus(p)) 
 		throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus be between 2 and 2^15 and prime");
-	else if(pl>=(1<<20)) throw PreconditionFailed(__FUNCTION__,__LINE__,"cardinality must be < 2^20");
+	else if(pl>(1<<20)) throw PreconditionFailed(__FUNCTION__,__LINE__,"cardinality must be < 2^20");
 
 	}
 
