@@ -3,7 +3,6 @@
 \brief Determinant of sparse matrix over Z or Zp.
 \ingroup examples
 */
-#define __LINBOX_HAVE_MPI
 
 //#include "linbox-config.h"
 #include <iostream>
@@ -30,20 +29,24 @@ int main (int argc, char **argv)
 		// For a large integer matrix test, do "bigmat <n> | det", 
 		// where <n> is a size parameter of your choice.
 
+		int process = 0;
+#ifdef __LINBOX_HAVE_MPI
    		Communicator C(&argc, &argv);
+			process = C.rank();
+#endif
 
 			GMP_Integers ZZ;
 			GMP_Integers::Element det_A;
 			SparseMatrix<GMP_Integers> A(ZZ);
-      if(argc <= 1 || C.rank() == 0){
-         std::cout << "# of processes = " << C.size() << std::endl;
+      if(argc <= 1 || process == 0){
+         // std::cout << "# of processes = " << C.size() << std::endl;
 			A.read(cin);
 			cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
        }
 			//GMP_Integers::Element det_A;
 			
-			if(argc == 2)
-				det(det_A, A, C);
+			if(argc == 2);
+				//det(det_A, A, C);
 			else
 				det (det_A, A);
 
@@ -60,8 +63,10 @@ int main (int argc, char **argv)
 
 		//  set up parallel code object
 	   Communicator *Cptr = NULL;
-		if (argc ==3)
+#ifdef __LINBOX_HAVE_MPI
+		if (argc == 3)
 			Cptr = new Communicator(&argc, &argv);
+#endif
 
 		GMP_Integers ZZ;
 		ifstream input (argv[1]);
@@ -72,27 +77,37 @@ int main (int argc, char **argv)
 
 		SparseMatrix<GMP_Integers> A(ZZ);
 		A.read(input);
+#ifdef __LINBOX_HAVE_MPI
 		if(argc == 2 || !Cptr->rank())
+#endif
 		   cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
 		GMP_Integers::Element det_A;
 
+#ifdef __LINBOX_HAVE_MPI
 		//  call parallel det with cra if applicable
 		if(argc == 3)
 		   cra_det (det_A, A, RingCategories::IntegerTag(), Method::Hybrid(*Cptr), Cptr);
 		else
+#endif
 			det(det_A, A);
 
+#ifdef __LINBOX_HAVE_MPI
 		//  if not using parallel or if parent process in
 		//  parallel, report the determinant
       if(argc == 2 || Cptr->rank() == 0){ 
+#endif
 			cout << "Determinant is ";
 			ZZ.write(cout, det_A) << endl;
+#ifdef __LINBOX_HAVE_MPI
 		}
+#endif
 
+#ifdef __LINBOX_HAVE_MPI
 		//  tie up parallel loose ends if necessary
 		if(argc == 3)
 			MPI_Finalize();
+#endif
 	}
 
 	else if (argc == 3) { 

@@ -6,7 +6,7 @@
 #else
 #include <iterator>
 
-// problem of mpi in C++
+// problem of mpi(ch2) in C++
 #undef SEEK_SET 
 #undef SEEK_CUR 
 #undef SEEK_END 
