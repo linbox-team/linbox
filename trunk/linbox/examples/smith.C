@@ -309,7 +309,7 @@ cout << "about to resize" << endl;
 		M. resize (rdim, cdim);
 cout << "resized" << endl;
 
-		int val;
+		integer val;
 
 		if (format == "dense" ) {
 
