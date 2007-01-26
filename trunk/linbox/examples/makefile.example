@@ -1,0 +1,64 @@
+# Makefile for LinBox's examples/ directory
+
+###########################################
+# this section constructed at configure time (sets compiler, flags, header locations, library locations)
+
+# basic terms
+compiler=g++
+mpicompiler=mpicxx -D__LINBOX_HAVE_MPI
+flags=-g -Wall -DLinBoxSrcOnly 
+linboxincludes=-I..
+
+# package headers locations.  The default is to look in /usr/include and /usr/local/include
+gmpincludes= 
+blasincludes= 
+ntlincludes= 
+givaroincludes=
+
+# package library locations.  Default is to look in /usr/lib and /usr/local/lib
+gmplibdir=
+blaslibdir=
+ntllibdir= 
+givarolibdir=
+
+###########################################
+# Below this point the makefile is fixed.
+###########################################
+
+# add flags so linker can get the libfilename right
+gmplibs=$(gmplibdir) -lgmp -lgmpxx
+blaslibs=$(blaslibdir) -lcblas -llapack -latlas
+ntllibs=$(ntllibdir) -lntl
+givarolibs=$(givarolibdir) -lgivaro
+
+includes=-I. $(linboxincludes) $(gmpincludes) $(blasincludes) $(ntlincludes) $(givaroincludes)
+libs=$(gmplibs) $(blaslibs) $(ntllibs) $(givarolibs)
+
+###########################################
+# rules to make targets
+
+# generic rule for any test program
+%:%.C 
+	$(compiler) $(flags) $*.C -o $* $(includes) $(libs)
+
+# particular rule for some program using different setup from the generic one
+test-rank: test-rank.C test-generic.h # dependence on linbox sources also wanted
+	g++ test-rank.C -o test-rank $(blasincludes) $(blaslibs)
+
+minpoly: minpoly.C ../linbox/solutions/methods.h ../linbox/solutions/minpoly.h ../linbox/algorithms/cra-domain.h
+	$(mpicompiler) $(flags) minpoly.C -o minpoly $(includes) $(libs)
+
+det: det.C ../linbox/solutions/methods.h ../linbox/solutions/det.h ../linbox/algorithms/cra-domain.h
+	$(mpicompiler) $(flags) det.C -o det $(includes) $(libs)
+
+det2: det
+	./bigmat 50 > file
+	mpirun -np 2 ./det file -p
+	rm file
+
+run: minpoly file
+	mpirun -np 1 ./minpoly file
+
+clean:
+
+	rm test-det test-bitonic-sort test-rank a.out *.o

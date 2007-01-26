@@ -5,8 +5,6 @@
 //  define these functions as having default parameters,
 //  as mpicxx compiler was having trouble with this
 
-#include <math.h>
-
 namespace LinBox {
 
 Communicator::Communicator(MPI_Comm comm = MPI_COMM_NULL)
@@ -44,7 +42,7 @@ MPI_Comm Communicator::mpi_communicator()
 template < class Ptr >
 void Communicator::send( Ptr b, Ptr e, int dest, int tag = 0)
 {
-	MPI_Send( &b[0], 
+	MPI_Send( &*b, 
 	(e - b)*sizeof(typename Ptr::value_type), 
 	MPI_BYTE,
 	dest, 
@@ -143,14 +141,14 @@ void Communicator::recv( X& b, int dest /*, int tag = 0*/)
 }
 
 template < class X >
-void Communicator::buffer_attach(X& b)
+void Communicator::buffer_attach(X b)
 {  
-   MPI_Buffer_attach( malloc(min(sizeof(X) * 2), 60)  ,
-   sizeof(X) * 2 );
+   MPI_Buffer_attach( malloc(sizeof(X) *  60) ,
+   sizeof(X) * 60 );
 }
 
 template < class X >
-int Communicator::buffer_detach(X& b, int *size)
+int Communicator::buffer_detach(X &b, int *size)
 {  return MPI_Buffer_detach( &b,
    size);
 }
@@ -158,6 +156,12 @@ int Communicator::buffer_detach(X& b, int *size)
 template < class Ptr, class Function_object >
 void Communicator::reduce( Ptr bloc, Ptr eloc, Ptr bres, Function_object binop, int root)
 {}
+
+   /// member access
+
+MPI_Status Communicator::get_stat(){
+   return stat;
+}
 
 }// namespace LinBox
 #endif // __MPICPP_INL_

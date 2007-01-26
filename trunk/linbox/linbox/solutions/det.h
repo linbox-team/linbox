@@ -36,6 +36,7 @@
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/prime-stream.h"
 #include "linbox/util/debug.h"
+#include "linbox/util/mpicpp.h"
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
@@ -361,27 +362,34 @@ namespace LinBox {
 	typename Blackbox::Field::Element &cra_det (typename Blackbox::Field::Element         &d,
 						    const Blackbox                            &A,
 						    const RingCategories::IntegerTag          &tag,
-						    const MyMethod                            &M)
+						    const MyMethod                            &M,
+							 Communicator 										 *C = NULL)
 	{
-		commentator.start ("Integer Determinant", "det");
+	   //  if no parallelism or if this is the parent process
+		//  begin the verbose output
+	   if(!C || C->rank() == 0)
+			commentator.start ("Integer Determinant", "det");
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
 		RandomPrime genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
 		ChineseRemainder< Modular<double> > cra(3UL);
 		IntegerModularDet<Blackbox,MyMethod> iteration(A, M);
 		integer dd; // use of integer due to non genericity of cra. PG 2005-08-04
-
-#ifdef __LINBOX_HAVE_MPI
-		Communicator* C = M.communicatorp();
-		std::cout << "using cra_det with C = " << int(C) << " and dd = " << dd << std::endl;
-                cra(dd, iteration, genprime, C);
-#else
-		cra(dd, iteration, genprime);
-#endif
-		A.field().init(d, dd); // convert the result from integer to original type
-		commentator.stop ("done", NULL, "det");
+		//Communicator* C = M.communicatorp();
+		//  if no parallelism or if parent process
+		if(!C || !C->rank()){
+			//  if parallel, report size of parallel world
+			if(C) std::cout << "C->size()... " << C->size() << std::endl;
+			std::cout << "using cra_det With C = " << int(C) 
+						 << " and dd = " << dd << std::endl;
+		}
+		//  will call regular cra if C=0
+		cra(dd, iteration, genprime, C);
+		if(!C || C->rank() == 0){
+			A.field().init(d, dd); // convert the result from integer to original type
+			commentator.stop ("done", NULL, "det");
+		}
 		return d;
 	}
-
 
 } // end of LinBox namespace
 
@@ -407,13 +415,12 @@ namespace LinBox {
 } // end of LinBox namespace
 
 #ifdef __LINBOX_HAVE_MPI
-# include "linbox/util/mpicpp.h"
 namespace LinBox {
     
 	template <class Blackbox>
 	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d,
 						const Blackbox                            &A,
-						const Communicator						&C)
+						/*const*/ Communicator						&C)
 	{
 		return det(d, A, Method::Hybrid(C));
 	}
