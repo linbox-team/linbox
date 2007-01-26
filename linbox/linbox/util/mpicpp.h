@@ -1,5 +1,6 @@
 #ifndef __MPICPP_H_
 #define __MPICPP_H_
+
 #ifndef __LINBOX_HAVE_MPI
  typedef int Communicator; 
 #else
@@ -10,6 +11,7 @@
 #undef SEEK_CUR 
 #undef SEEK_END 
 #include <mpi.h>
+
 
 namespace LinBox {
 /* Idea:  Only use ssend for send.
@@ -67,9 +69,13 @@ int rank();
 
 	template < class X >
 	void recv( X& b, int dest /*, int tag = 0*/);
+/*
+   template < vector < class X > >
+	void send( X& b, int dest );
+*/
 
 	template < class X >
-	void buffer_attach( X &b);
+	void buffer_attach( X b);
 
 	template < class X >
 	int buffer_detach( X &b, int *size);
@@ -79,7 +85,10 @@ int rank();
 	template < class Ptr, class Function_object >
 	void reduce( Ptr bloc, Ptr eloc, Ptr bres, Function_object binop, int root);
 
-    protected:
+    // member access
+	MPI_Status get_stat();
+	 
+   protected:
 	MPI_Comm _mpi_comm; // MPI's handle for the communicator
 	bool _mpi_boss; // true of an MPI initializing communicator
                        // There is at most one initializing communicator.
