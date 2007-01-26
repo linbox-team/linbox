@@ -51,7 +51,7 @@ minpoly: minpoly.C ../linbox/solutions/methods.h ../linbox/solutions/minpoly.h .
 det: det.C ../linbox/solutions/methods.h ../linbox/solutions/det.h ../linbox/algorithms/cra-domain.h
 	$(mpicompiler) $(flags) det.C -o det $(includes) $(libs)
 
-det2: det
+det2: det bigmat
 	./bigmat 50 > file
 	mpirun -np 2 ./det file -p
 	rm file
