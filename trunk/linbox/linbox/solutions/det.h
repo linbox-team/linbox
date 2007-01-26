@@ -362,12 +362,17 @@ namespace LinBox {
 	typename Blackbox::Field::Element &cra_det (typename Blackbox::Field::Element         &d,
 						    const Blackbox                            &A,
 						    const RingCategories::IntegerTag          &tag,
-						    const MyMethod                            &M,
-							 Communicator 										 *C = NULL)
+						    const MyMethod                            &M
+#ifdef __LINBOX_HAVE_MPI
+							 ,Communicator 										 *C = NULL
+#endif
+																								)
 	{
 	   //  if no parallelism or if this is the parent process
 		//  begin the verbose output
+#ifdef __LINBOX_HAVE_MPI
 	   if(!C || C->rank() == 0)
+#endif
 			commentator.start ("Integer Determinant", "det");
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
 		RandomPrime genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
@@ -375,6 +380,7 @@ namespace LinBox {
 		IntegerModularDet<Blackbox,MyMethod> iteration(A, M);
 		integer dd; // use of integer due to non genericity of cra. PG 2005-08-04
 		//Communicator* C = M.communicatorp();
+		/*
 		//  if no parallelism or if parent process
 		if(!C || !C->rank()){
 			//  if parallel, report size of parallel world
@@ -382,12 +388,22 @@ namespace LinBox {
 			std::cout << "using cra_det With C = " << int(C) 
 						 << " and dd = " << dd << std::endl;
 		}
+		*/
 		//  will call regular cra if C=0
+#ifdef __LINBOX_HAVE_MPI
 		cra(dd, iteration, genprime, C);
+#else
+		cra(dd, iteration, genprime);
+#endif
+
+#ifdef __LINBOX_HAVE_MPI
 		if(!C || C->rank() == 0){
+#endif
 			A.field().init(d, dd); // convert the result from integer to original type
 			commentator.stop ("done", NULL, "det");
+#ifdef __LINBOX_HAVE_MPI
 		}
+#endif
 		return d;
 	}
 

@@ -149,6 +149,7 @@ namespace LinBox {
             }
         }   
 
+#ifdef __LINBOX_HAVE_MPI
             /** \brief The CRA loop
             
             termination condition.
@@ -250,7 +251,7 @@ namespace LinBox {
                 return this->Full_result(res);
             }
         }
-
+#endif
 
             /** \brief The CRA loop
             
@@ -298,6 +299,7 @@ namespace LinBox {
             }
         }
 
+#ifdef __LINBOX_HAVE_MPI
         template<template <class T> class Vect, class Function, class RandPrime>
         Vect<Integer> & operator() (Vect<Integer>& res, Function& Iteration, RandPrime& genprime, Communicator *Comm) {
 				//  if there is no communicator or if there is only one process,
@@ -381,7 +383,7 @@ namespace LinBox {
                 return this->Full_result(res);
             }
 			}
-
+#endif
 
         template<template <class T> class Vect, class Function, class RandPrime>
         Vect<Integer> & operator() (Vect<Integer>& res, Function& Iteration, RandPrime& genprime) {
