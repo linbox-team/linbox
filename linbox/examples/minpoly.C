@@ -3,6 +3,7 @@
 \brief Minimal polynomial of a sparse matrix.
 \ingroup examples
 */
+
 #include <iostream>
 
 #include "linbox/field/modular-double.h"
@@ -36,29 +37,17 @@ int main (int argc, char **argv)
 	if (!input) { cerr << "Error opening matrix file " << argv[1] << endl; return -1; }
 
 	if (argc == 2) {
-	   int process = 0;
-	   
-		Method::Blackbox M;
-#ifdef __LINBOX_HAVE_MPI
-      Communicator C(&argc, &argv);
-		process = C.rank();
-		M.communicatorp(&C);
-#endif
 
-		GMP_Integers ZZ;
-		SparseMatrix<GMP_Integers> A (ZZ);
+		PID_integer ZZ;
+		SparseMatrix<PID_integer> A (ZZ);
 		A.read (input);
+		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
-		if(process == 0)
-			cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
+		vector<PID_integer::Element> m_A;
+		minpoly (m_A, A); 
 
-		vector<GMP_Integers::Element> m_A;
-		minpoly (m_A, A, M); 
-
-      if(process == 0){
-			cout << "Minimal Polynomial is ";
-			printPolynomial (ZZ, m_A);
-		}
+		cout << "Minimal Polynomial is ";
+		printPolynomial (ZZ, m_A);
 	}
 	if (argc == 3) { 
 
