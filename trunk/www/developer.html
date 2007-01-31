@@ -86,8 +86,9 @@
 	    </tr>
 
 	    <tr>
-	      <td><tt>macros/</tt></td>
-	      <td>Files to assist the build system</td>
+	      <td><tt>interfaces/</tt></td>
+	      <td>Interfaces to LinBox from other systems.  
+		At this writing there is a Maple interface.</td>
 	    </tr>
 
 	    <tr>
@@ -149,6 +150,12 @@
 	      <td><tt>util/</tt></td>
 	      <td>Scripts and other miscellaneous items, mostly for making library maintenance easier</td>
 	    </tr>
+
+	    <tr>
+	      <td><tt>macros/</tt></td>
+	      <td>Files to assist the build system</td>
+	    </tr>
+
 	  </table>
 
 	  <p>
@@ -174,11 +181,12 @@
 
 	      <p>
 		You will need <a href="http://subversion.tigris.org/">Subversion</a> installed.
+		Also you will need to know how to do a svn login.
 	      </p>
 
 	      <p>
 		You will need GNU Autoconf, GNU Automake, GNU Libtool,
-		and the GNU multiprecision library (GMP) to compile
+		the GNU multiprecision library (GMP), and a BLAS implementation to compile
 		LinBox. Make sure the bin directories of the first
 		three of those are all in your PATH, e.g. if you have
 		Libtool installed in /usr/local/algebra/libtool, make
@@ -197,7 +205,7 @@
 	      </p>
 
 	      <p>
-		Of the four tools mentioned, only GMP is
+		Of the four tools mentioned, only GMP and BLAS are 
 		required if you are installing from a tarball. GNU
 		Autoconf, GNU Automake, and GNU Libtool are only
 		required for users of Subversion and those individuals
@@ -318,9 +326,11 @@
 	    submit some addition or modification, your code is
 	    welcome. Please email a patch
         (use '<tt>svn diff</tt>' to form a patch)
-        to us and we will consider including it. Or, even better,
-        attach your patch to a ticket in
+        to us and we will consider including it. 
+<!-- trac not functional
+        Or, even better, attach your patch to a ticket in
         <a href="http://linbox.eschew.org/trac/">our Trac database</a>.
+-->
         
 	  </p>
 
@@ -487,6 +497,10 @@ namespace LinBox
 		licensing. Additional documentation would be useful. You
 		may use any of the files in this library as a template.
 	      </p>
+	      <p>
+		Key objects must have documentation comments to be processed by doxygen in the creation of our online documentation system.  In the 
+              <a href="docs.html">reference manual</a>, see the section documenting doc itself for guidelines on these comments.
+	      </p>
 	    </li>
 	  </ol>
 
@@ -554,7 +568,7 @@ namespace LinBox
             <p>
             For <strong>major</strong> changes only:
 	        Add an entry to linbox/ChangeLog detailing the IDEAS
-            that are different in LinBox's architecture or implementation.
+            that are different in LinBox's architecture or implementation as a result of your change.
             </p>
             <p>
             Small modifications, file renamings, and so on do not
@@ -621,17 +635,6 @@ test_sparse_matrix_SOURCES = 		\
 	    </li>
 
 	    <li>
-	      Open <tt>linbox/ChangeLog</tt> and add a block of
-	      the following format:
-
-	      <pre>
-2002-02-03  Bradford Hovinen  &lt;bghovinen@math.uwaterloo.ca&gt;
-
-	* tests/Makefile.am (BASIC_TESTS): Added &lt;test&gt;
-	      </pre>
-	    </li>
-
-	    <li>
 	      Add the file to Subversion with "<tt>svn add &lt;test-source&gt;</tt>"
 	    </li>
 
@@ -660,7 +663,7 @@ test_sparse_matrix_SOURCES = 		\
 	  Comments? Bug reports? Please contact us at <a href="mailto:linbox@yahoogroups.com">linbox@yahoogroups.com</a><br>
 	  This page's URL: <a href="http://www.linalg.org/developer.html">http://www.linalg.org/developer.html</a><br>
 	  Page created: 4 August 2002<br>
-	  Page last updated: 1 July 2006<br>
+	  Page last updated: January 2007<br>
 	</td>
       </tr>
     </table>
