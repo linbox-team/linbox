@@ -4,7 +4,6 @@
  \ingroup examples
 */
 
-
 // Warning : example under development.
 // integer computation must be completed
 #include <iostream>
@@ -16,14 +15,6 @@
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/blas-blackbox.h"
 using namespace std;
-template<class T, template <class T> class Container>
-std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
-	for(typename Container<T>::const_iterator refs =  C.begin();
-	    refs != C.end() ;
-	    ++refs )
-		o << (*refs) << " " ;
-	return o << std::endl;
-}
 
 #include "linbox/solutions/charpoly.h"
 #include "linbox/ring/givaro-polynomial.h"
@@ -36,9 +27,33 @@ std::ostream& printPolynomial (std::ostream& out, const Field &F, const Polynomi
 	for (int i = v.size () - 1; i >= 0; i--) {
 		F.write (out, v[i]);
 		if (i > 0)
-			out << " x^" << i << " + ";
+			out << " X^" << i << " + ";
 	}
 	return out;
+}
+template <class Field, class Polynomial>
+std::ostream& prettyprintIntegerPolynomial (std::ostream& out, const Field &F, const Polynomial &v) 
+{
+  size_t n = v.size()-1;
+  if (n == 0) {
+    F.write(out, v[0]);
+  } else {
+    if(v[n] != 0) {
+      F.write(out, v[n]) << "*X^" << n;
+      for (int i = n - 1; i > 0; i--) {
+	  if (v[i] != 0) {
+	    if (v[i] >0) out << " + ";
+	    F.write (out, v[i]) << "*X";
+	    if (i > 1) out << '^' << i;
+	  }
+      }
+      if (v[0] != 0) {
+	if (v[i] >0) out << " + ";
+	F.write(out, v[0]);
+      }
+    }
+  }
+  return out;
 }
 template <class Field, class Factors, class Exponents>
 std::ostream& printFactorization (std::ostream& out, const Field &F, const Factors &f, const Exponents& exp) 
@@ -46,8 +61,9 @@ std::ostream& printFactorization (std::ostream& out, const Field &F, const Facto
   typename Factors::const_iterator itf = f.begin();
   typename Exponents::const_iterator ite = exp.begin();
   for ( ; itf != f.end(); ++itf, ++ite) {
-    printPolynomial(out << '(', F, *(*itf)) << ')';
+    prettyprintIntegerPolynomial(out << '(', F, *(*itf)) << ')';
     if (*ite > 1) out << '^' << *ite;
+    out << endl;
   }
   return out;
 }
@@ -87,7 +103,7 @@ int main (int argc, char **argv)
 		  vector<unsigned long> exp;
 		  IntPolRing IPD(ZZ);
 		  IPD.factor (intFactors, exp, c_A);
-		  printFactorization(cout << intFactors.size() << " integer factors:" << endl, ZZ, intFactors, exp) << endl;
+		  printFactorization(cout << intFactors.size() << " integer polynomial factors:" << endl, ZZ, intFactors, exp) << endl;
 		}
 #endif
 	}
