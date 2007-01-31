@@ -35,8 +35,8 @@
       <blockquote><tt>> cd linbox</tt>
 	<br><tt>> ./configure [--prefix=&lt;inst. dir.> --with-package=&lt;location> --enable-feature]</tt></blockquote>
       <a href="http://swox.com/gmp">Gmp</a> is required (preferably compiled with the "--enable-cxx" option) and its location
-      must be specified &lt;gmp location> is not a standard location such as
-      <tt>/usr</tt> or <tt>/usr/loca</tt>l:
+      must be specified &lt;gmp location> if not at a standard location such as
+      <tt>/usr</tt> or <tt>/usr/local</tt>:
       <blockquote><tt>>&nbsp;./configure --with-gmp= &lt;gmp location>
 	  [...]</tt></blockquote>
       A source of BLAS (e.g. Fortran <a href="http://www.tacc.utexas.edu/resources/software">Goto</a> or C <a href="http://math-atlas.sourceforge.net/">Atlas</a>) 
@@ -92,7 +92,7 @@ is also required and its location
 	      <td> not yet used </td>
 	    </tr>
 	    <tr>
-	      <td> <a href="http://www.maplesoft.com/"> Maple </a></td>
+	      <td> <a href="http://www.maplesoft.com/"> Maple (> v9) </a></td>
 	      <td> <tt> --enable-shared --with-maple= &lt;maple-directory>&nbsp; </tt></td>
 	      <td> used to create an interface with Maple.</td>
 	    </tr>
@@ -134,7 +134,7 @@ is also required and its location
 	</blockquote>
 	<p><b> 3.4.</b> Here is a full example:
 	<blockquote>
-	<tt>./configure --prefix=/home/jgdumas/linbox-1.1 --with-givaro=/home/jgdumas/givaro-3.2.6 --with-ntl=/home/jgdumas/ntl-5.4 --with-gmp=/home/jgdumas/gmp-4.2.1 --with-blas="-L/usr/local/soft/GotoBLAS -lgoto -lpthread" --with-maple=/usr/local/soft/maple --enable-optimization --enable-shared --disable-static</tt>
+	<tt>./configure --prefix=/usr/local/soft/linbox-1.1 --with-givaro=/usr/local/soft/givaro-3.2.6 --with-ntl=/usr/local/soft/ntl-5.4 --with-gmp=/usr/local/soft/gmp-4.2.1 --with-blas="-L/usr/local/soft/GotoBLAS -lgoto -lpthread" --with-maple=/usr/local/soft/maple --enable-optimization --enable-shared --disable-static</tt>
       </blockquote>
     </blockquote>
     
