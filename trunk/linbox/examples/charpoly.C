@@ -48,7 +48,7 @@ std::ostream& prettyprintIntegerPolynomial (std::ostream& out, const Field &F, c
 	  }
       }
       if (v[0] != 0) {
-	if (v[i] >0) out << " + ";
+	if (v[0] >0) out << " + ";
 	F.write(out, v[0]);
       }
     }
