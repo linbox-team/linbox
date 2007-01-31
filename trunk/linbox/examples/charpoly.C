@@ -31,14 +31,25 @@ std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
 using namespace LinBox;
 
 template <class Field, class Polynomial>
-void printPolynomial (const Field &F, const Polynomial &v) 
+std::ostream& printPolynomial (std::ostream& out, const Field &F, const Polynomial &v) 
 {
 	for (int i = v.size () - 1; i >= 0; i--) {
-		F.write (cout, v[i]);
+		F.write (out, v[i]);
 		if (i > 0)
-			cout << " x^" << i << " + ";
+			out << " x^" << i << " + ";
 	}
-	cout << endl;
+	return out;
+}
+template <class Field, class Factors, class Exponents>
+std::ostream& printFactorization (std::ostream& out, const Field &F, const Factors &f, const Exponents& exp) 
+{
+  typename Factors::const_iterator itf = f.begin();
+  typename Exponents::const_iterator ite = exp.begin();
+  for ( ; itf != f.end(); ++itf, ++ite) {
+    printPolynomial(out << '(', F, *(*itf)) << ')';
+    if (*ite > 1) out << '^' << *ite;
+  }
+  return out;
 }
 
 int main (int argc, char **argv)
@@ -65,7 +76,20 @@ int main (int argc, char **argv)
 
 
 		cout << "Characteristic Polynomial is ";
-		printPolynomial (ZZ, c_A);
+		printPolynomial (cout, ZZ, c_A) << endl;
+
+#ifdef __LINBOX_HAVE_NTL
+		cout << "Do you want a factorization (y/n) ? ";
+		char tmp;
+		cin >> tmp;
+		if (tmp == 'y' || tmp == 'Y') {
+		  vector<IntPolRing::Element*> intFactors;    
+		  vector<unsigned long> exp;
+		  IntPolRing IPD(ZZ);
+		  IPD.factor (intFactors, exp, c_A);
+		  printFactorization(cout << intFactors.size() << " integer factors:" << endl, ZZ, intFactors, exp) << endl;
+		}
+#endif
 	}
 	if (argc == 3) { 
 
@@ -78,7 +102,7 @@ int main (int argc, char **argv)
 		GivPolynomial<Field::Element> c_B;
 		charpoly (c_B, B);
 		cout << "Characteristic Polynomial is ";
-		printPolynomial (F, c_B);
+		printPolynomial (cout, F, c_B) << endl;
 	}
 
 	return 0;
