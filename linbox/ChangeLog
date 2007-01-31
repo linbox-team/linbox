@@ -1,3 +1,7 @@
+2007-01-31 bds 
+	* This entry is just to record that version 1.1.0 has been released by 
+	  Jean-Guillaume Dumas and the current svn version is just a couple of 
+	  steps from the release version.
 2006-08-08 bds 
 	* examples/det.C, solutions/det.h, methods.h modified in preparation for
 	* mpi based paralle cra loop in algorithms/cra-domain.h (by Bryan Youse).
