@@ -318,7 +318,18 @@ namespace LinBox {
 	{
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for minimal polynomial computation\n");
+
+#ifdef __LINBOX_HAVE_MPI
+		if(!M.communicatorp() || (M.communicatorp())->rank() == 0) 
+			commentator.start ("Integer Minpoly", "Iminpoly");
+		else{
+			commentator.setMaxDepth(0);
+			commentator.setMaxDetailLevel(0);
+			commentator.setPrintParameters(0, 0, 0);
+		}
+#else
 		commentator.start ("Integer Minpoly", "Iminpoly");
+#endif
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
 		RandomPrime genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
 		ChineseRemainder< Modular<double> > cra(3UL,A.coldim());
@@ -333,7 +344,11 @@ namespace LinBox {
 		P.resize(PP.size());
 		for (typename Polynomial::iterator it= P.begin(); it != P.end(); ++it, ++i)
 			A.field().init(*it, PP[i]);
-		commentator.stop ("done", NULL, "Iminpoly");
+
+#ifdef __LINBOX_HAVE_MPI
+		if(!M.communicatorp() || (M.communicatorp())->rank() == 0) 
+#endif
+			commentator.stop ("done", NULL, "Iminpoly");
 		return P;
 	}
 	
