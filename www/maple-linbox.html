@@ -42,15 +42,255 @@
 	Please see the LinBox distribution for details.
 <p>
 	This replaces an older Maple-LinBox package (version 0.3).
-<!--
+
 	
 	  <h2>Maple-LinBox Package</h2>
 
-	  <p>Version 0.3</p>
+	  <p>Version 1.0 developed by Pascal Giorgi,<br/>
+	    any questions and comments should be post to <a href="mailto:pascal.giorgi@univ-perp.fr"> pascal.giorgi@univ-perp.fr</a> 
+	    </p>
 
-	  <h3>What is it</h3>
 
+	    <h3>Table of Contents</h3>
+
+	    <ol style="list-style: upper-roman;">
+	      <li><a href="#description">Description</a></li>
+	      <li><a href="#requirements">Requirements</a></li>
+	      <li><a href="#compilation">Compilation and Installation</a></li>	      
+	      <li><a href="#usage">Usage</a></li>
+	      <li><a href="#performances">Performances</a></li>
+	       <li><a href="#bugs">Known bugs</a></li>
+	    </ol>
+
+	  <a name="description"></a> 
+          <h3>Description</h3>
 	  <p>
+	    The new Maple-LinBox package enables LinBox computation within Maple session. In particular,
+            you can simply call LinBox functionalities (e.g. Determinant, Rank, Minimal Polynomial,...)
+            on Maple matrices. Both computation over the integers and over small prime fields 
+            (i.e. at most 26 bits) are currently available. The speedup of LinBox against LinearAlgebra Maple's module is tremendous.
+	   it allows for instance the computation of an integer determinant of 400x400 dense matrix with entries lying in [1..100] in only 
+	   1.7s on PIV-3.2Ghz while Maple computation turns out to need 536s.
+           </p>
+
+
+          <a name="requirements"></a>
+	   <h3>Requirements</h3>
+            <p>
+            This package requires at least version 9 of Maple and version 1.1 of LinBox.
+            All requirements of LinBox library are still necessary to compile the interface.
+            Currently, our interface only supports Linux based system. 
+            This is especially due to calling function convention. 
+            A Windows compliant version of the interface is still under progress.
+            The interface has not been yet tested on MAC based system. Any report would be appreciated.
+            </p>
+            <p>
+            In summary, you need
+	    <ol>
+	     <li>Maple v9.0 or greater</li>
+	     <li>LinBox 1.1 or greater</li>
+	     <li>all LinBox dependencies</li>
+	     <li>Linux based system</li>
+	    </ol>
+           </p>
+	    <a name="compilation"></a>
+           <h3>Compilation and installation</h3>
+            <p> 
+            In order to enable the Maple-LinBox package during LinBox installation,
+	    you have to specify the installation directory of Maple to the configure script with the option <tt>--with-maple</tt>.
+            An example of installation enabling LinBox-Maple interface will look like:
+	    <blockquote>
+	    <tt>./configure --with-maple=Maple_installation_path --enable-shared</tt>
+	    </blockquote>
+            The flag <tt>--enable-shared</tt> is mandatory to enable the compilation of LinBox-Maple interface.
+            Due to the heaviness of the generated library, you can turn off the static compilation of LinBox to save
+            half of the compilation time. This can be achieved with the <tt>--disable-static</tt> option given 
+            to the configure script.
+            <p>
+
+            <p>
+            Once you get LinBox compiled and installed, you need to add the newly created LinBox-Maple module to 
+            Maple module knowledge. This is achieved by adding the path of the LinBox-Maple module to the "libname" variable of Maple.
+            You can do this permanently by setting this variable in your <tt>.mapleinit</tt> file
+            located in your home directory (file can be created if it does not exist). This file should contain
+            <blockquote>
+	    <tt> libname:="LINBOX_PATH/lib/LinBoxMaple", libname:</tt>
+	    </blockquote>
+            where you would have replaced  <tt>LINBOX_PATH</tt> by the installation path of the LinBox library.
+            </p>
+	    <a name="usage"></a>
+	    <h3>Usage</h3>
+	    <p>
+	      You can access the Linbox-Maple functionalities in your Maple session in loading the LinBox Module with the command line <tt>with(LinBox);</tt>
+	      Hence, you get access to five solutions to exact linear algebra problem. namely 
+	      <ul>
+	      <li><tt>lbDeterminant</tt> -> Determinant computation</li>
+	      <li><tt>lbRank</tt> -> Rank computation </li>
+	      <li><tt>lbMinpoly</tt> -> Minimal Polynomial computation </li>
+	      <li><tt>lbCharpoly</tt> -> Characteristic Polynomial computation </li>
+	      <li><tt>lbSolving</tt> -> Linear System solving </li>
+	    </ul>
+	    For all these functions, you have access to either a computation over the integer or over a small prime field.
+	    Here is some examples of use:
+	    <blockquote left-margin="-10px">
+	      <tt>A:=Matrix(100,rand(1..100));</tt><br/>
+	      <tt>b:=Vector(100,rand(1..100));</tt><br/><br/>
+
+	      <tt>#determinant of A</tt><br/>
+	      <tt>d1:=lbDeterminant(A); # over the integer </tt><br/>
+	      <tt>d2:=lbDeterminant(65521,A); # over GF(65521)</tt><br/><br/>
+
+	      <tt>#characteristic polynomial of A</tt><br/>
+	      <tt>P1:=lbCharpoly(A,'x'); # over the integer</tt><br/>
+	      <tt>P2:=lbCharpoly(65521,A,'x'); # over GF(65521)</tt><br/><br/>
+
+	      <tt># resolution of Ax=b</tt><br/>
+	      <tt>x1:=lbSolving(A,b); # over the integer</tt><br/>
+	      <tt>x2:=lbSolving(65521,A,b); # over GF(65521)</tt><br/><br/>
+	      <tt> ...</tt>
+	      </blockquote>
+	    </p>
+
+
+	    
+	    <a name="performances"></a>
+	    <h3>Performances</h3>
+	    <p>
+	      you can find below some performance comparisons between our LinBox-Maple interface and LinearAlgebra module of Maple.
+	      The matrices are dense with integers coefficient lying in [1..100]. Computation are done on a PIV-3.2Ghz, 1Gb RAM.
+	     
+	      <table>
+	      <tr>
+		  <td>
+		    <table border="1" cellpadding="1" cellspacing="1" class="PerformanceTable" >
+		      <caption>
+			<b>Determinant</b>
+		      </caption>
+		      <thead>
+			<tr class="Header" style="text-align: center;">  
+			  <td> n </td> <td>50 </td> <td>100 </td> <td>200</td> <td>400</td>
+			</tr> 
+		      </thead>
+		      <tbody>
+			<tr>
+			  <td> Maple </td> <td> 0.214s</td> <td>1.609s</td> <td> 16.073s</td> <td> 536.533s</td>
+			</tr>	
+			<tr>
+			  <td> LinBox</td> <td> 0.014s</td> <td> 0.094s</td> <td> 0.502s</td> <td> 1.771s</td>
+			</tr>	
+			<tr >
+			  <td > speedup </td> <td class="Fastest"> 15.28</td> <td class="Fastest"> 17.11</td> <td class="Fastest" > 32.01</td> <td class="Fastest">302.95 </td>
+			</tr>
+		      <tbody>
+		    </table>
+		  </td>
+		  <td>
+    <table border="1" cellpadding="1" cellspacing="1" class="PerformanceTable" >
+		      <caption>
+			<b>Rang</b>
+		      </caption>
+		      <thead>
+			<tr class="Header" style="text-align: center;">  
+			  <td> n </td> <td>50 </td> <td>100 </td> <td>200</td> <td>400</td>
+			</tr> 
+		      </thead>
+		      <tbody>
+			<tr>
+			  <td> Maple </td> <td> 0.463s</td> <td>1.439s</td> <td> 17.104s</td> <td> 542.702s</td>
+			</tr>	
+			<tr>
+			  <td> LinBox</td> <td> 0.006s</td> <td> 0.016s</td> <td> 0.083s</td> <td> 0.298s</td>
+			</tr>	
+			<tr >
+			  <td > speedup </td> <td class="Fastest"> 77.16</td> <td class="Fastest"> 89.93</td> <td class="Fastest" > 206.07</td> <td class="Fastest">1821.14 </td>
+			</tr>
+		      <tbody>
+		    </table>
+		  </td>
+		</tr>
+      <tr>
+		  <td>
+		    <table border="1" cellpadding="1" cellspacing="1" class="PerformanceTable" >
+		      <caption>
+			<b>System Solving</b>
+		      </caption>
+		      <thead>
+			<tr class="Header" style="text-align: center;">  
+			  <td> n </td> <td>50 </td> <td>100 </td> <td>200</td> <td>400</td>
+			</tr> 
+		      </thead>
+		      <tbody>
+			<tr>
+			  <td> Maple </td> <td> 0.331s</td> <td>0.886s</td> <td> 4.126s</td> <td> 52.002s</td>
+			</tr>	
+			<tr>
+			  <td> LinBox</td> <td> 0.013s</td> <td> 0.053s</td> <td> 0.398s</td> <td> 2.552s</td>
+			</tr>	
+			<tr >
+			  <td > speedup </td> <td class="Fastest"> 25.46</td> <td class="Fastest"> 16,71</td> <td class="Fastest" > 10.36</td> <td class="Fastest">20.37 </td>
+			</tr>
+		      <tbody>
+		    </table>
+		  </td>
+		  <td>
+    <table border="1" cellpadding="1" cellspacing="1" class="PerformanceTable" >
+		      <caption>
+			<b>Characteristic Polynomial</b>
+		      </caption>
+		      <thead>
+			<tr class="Header" style="text-align: center;">  
+			  <td> n </td> <td>20 </td> <td>40 </td> <td>80</td> <td>160</td>
+			</tr> 
+		      </thead>
+		      <tbody>
+			<tr>
+			  <td> Maple </td> <td> 0.121s</td> <td>2.223s</td> <td> 40.434s</td> <td> 906.416s</td>
+			</tr>	
+			<tr>
+			  <td> LinBox</td> <td> 0.007s</td> <td> 0.018s</td> <td> 0.143s</td> <td> 1.336s</td>
+			</tr>	
+			<tr >
+			  <td > speedup </td> <td class="Fastest"> 17.28</td> <td class="Fastest"> 123.50</td> <td class="Fastest" > 282.75</td> <td class="Fastest">678.45 </td>
+			</tr>
+		      <tbody>
+		    </table>
+		  </td>
+		</tr>
+	    </table>
+	    </p>
+
+
+	    <a name="bugs"></a>
+	    <h3>Known bugs</h3>
+	    <p>
+	      Unfortunately, some bugs introduce in Maple API lead to problem in our interface.
+	      In particular, you can find below a list of known bugs in our interface due to Maple bugs:
+	       <ol>
+	     <li> <b>Maple v9.0</b>: the <tt>with(LinBox);</tt> leads to an error in loading the module. 
+		This is due to a non re-evaluation of the Maple define_external when loading module. 
+		The only alternative, to my knowledge, to fix this problem for our LinBox interface is to replace the 
+		<tt>with(LinBox);</tt> command with
+		<blockquote>
+		  <tt>read("LINBOX_PATH/lib/lb-maple.mpl");Dev:-lbStart();</tt>.
+		</blockquote>
+		Here again, the LINBOX_PATH variable should be replaced by the LinBox installation path.
+		This alternative should work but is not fully satisfying. Any idea would be helpful on this.
+	     </li><br/>
+	     <li> <b>Maple v10.0 </b>: our interface is unfortunately suffering from a conversion error
+		in low level function of Maple API. In particular, the conversion of immediate negative integers 
+		are bugged and always returns zero. Therefore, right now negative integer greater than <tt>-2^31+1</tt>
+		on (32 bits machine) or <tt>-2^63+1</tt> on (64 bits machine) are not supported. Hopefully, this problem should 
+		be fixed in newer Maple release. We are working hard to find a good solution for this problem in our interface.
+	     </li><br/>
+	     <li> <b> Givaro dependency</b>: it appears that Givaro library is mandatory to compile the LinBox-Maple interface in LinBox 1.1.
+		We are working on this to make the interface independent from Givaro. The current solution is to download and install Givaro
+		to make our interface working properly. The Givaro library is available at <a href="http://ljk.imag.fr/CASYS/LOGICIELS/givaro/"> Givaro download</a>.		
+	     </li><br/>
+	    
+	    </ol>
+	    </p>
+	    
+<!-- 
 	    This is an interface between the LinBox library of
 	    functions and utilities for the Maple computer algebra
 	    system.  It allows you to call LinBox functions from a
@@ -181,7 +421,24 @@
 	  Page created: 8 August 2002<br>
 	  Page last updated: 21 September 2002<br>
 -->
-	</td>
+   <tr>
+	<td colspan="2" id="BottomPart">
+	  <hr>
+
+	  <a href="http://validator.w3.org/check/referer">
+	    <img src="http://validator.w3.org/images/vh40"
+		 alt="Valid HTML 4.0!">
+	  </a>
+
+	  <a href="http://jigsaw.w3.org/css-validator">
+	    <img src="http://jigsaw.w3.org/css-validator/images/vcss.gif" 
+		 alt="Valid CSS!">
+	  </a>
+	    Page prepared by Pascal Giorgi <a href="mailto:pascal.giorgi@univ-perp.fr">&lt;<i>pascal.giorgi@univ-perp.fr</i>&gt;</a>,<br>
+	  This page's URL: <a href="http://www.linalg.org/maple-linbox.html">http://www.linalg.org/maple-linbox.html</a><br>
+	  Page created: 1 February 2007<br>
+	  Page last updated: 1 February 2007<br>
+	  </td>
       </tr>
     </table>
   </body>
