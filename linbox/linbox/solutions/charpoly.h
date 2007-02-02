@@ -25,10 +25,17 @@
 #define __CHARPOLY_H
 
 
+#ifdef __LINBOX_HAVE_GIVARO
+// BBcharpoly without givaropolynomials is not yet implemented
 #include "linbox/algorithms/bbcharpoly.h"
+#include "linbox/algorithms/cia.h"
+#endif
 #include "linbox/solutions/methods.h"
 #include "linbox/util/debug.h"
 #include "linbox/field/field-traits.h"
+#include "linbox/blackbox/blas-blackbox.h"
+#include "linbox/matrix/blas-matrix.h"
+#include "linbox/algorithms/blas-domain.h"
 
 // Namespace in which all LinBox library code resides
 
@@ -74,7 +81,6 @@ namespace LinBox
 	}
 }
 
-#include "linbox/algorithms/cia.h"
 
 namespace LinBox
 {
@@ -144,7 +150,7 @@ namespace LinBox
 		return BMD.charpoly (P, static_cast<BlasMatrix<typename Blackbox::Field::Element> >(BBB));
 	}
 
-#ifdef __LINBOX_HAVE_NTL
+#if __LINBOX_HAVE_NTL && __LINBOX_HAVE_GIVARO
 	/** @brief Compute the characteristic polynomial over {\bf Z}
 	 *
 	 * Compute the characteristic polynomial of a matrix using dense 
@@ -184,6 +190,7 @@ namespace LinBox
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
 		return blackboxcharpoly (P, A, tag, M);
 	}
+
 
 #else
 }
@@ -273,7 +280,11 @@ namespace LinBox {
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
 
+#ifdef __LINBOX_HAVE_GIVARO
 		return blackboxcharpoly (P, A, tag, M);
+#else
+		return charpoly(P, A, tag, Method::BlasElimination());
+#endif
 	}
 	
 
