@@ -263,7 +263,7 @@
 	    <a name="bugs"></a>
 	    <h3>Known bugs</h3>
 	    <p>
-	      Unfortunately, some bugs introduce in Maple API lead to problem in our interface.
+	      Unfortunately, some bugs present in Maple API lead to problem in our interface.
 	      In particular, you can find below a list of known bugs in our interface due to Maple bugs:
 	       <ol>
 	     <li> <b>Maple v9.0</b>: the <tt>with(LinBox);</tt> leads to an error in loading the module. 
@@ -281,10 +281,6 @@
 		are bugged and always returns zero. Therefore, right now negative integer greater than <tt>-2^31+1</tt>
 		on (32 bits machine) or <tt>-2^63+1</tt> on (64 bits machine) are not supported. Hopefully, this problem should 
 		be fixed in newer Maple release. We are working hard to find a good solution for this problem in our interface.
-	     </li><br/>
-	     <li> <b> Givaro dependency</b>: it appears that Givaro library is mandatory to compile the LinBox-Maple interface in LinBox 1.1.
-		We are working on this to make the interface independent from Givaro. The current solution is to download and install Givaro
-		to make our interface working properly. The Givaro library is available at <a href="http://ljk.imag.fr/CASYS/LOGICIELS/givaro/"> Givaro download</a>.		
 	     </li><br/>
 	    
 	    </ol>
