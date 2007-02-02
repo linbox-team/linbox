@@ -25,10 +25,9 @@
 #define __CHARPOLY_H
 
 
-#ifdef __LINBOX_HAVE_GIVARO
+#if __LINBOX_HAVE_GIVARO
 // BBcharpoly without givaropolynomials is not yet implemented
 #include "linbox/algorithms/bbcharpoly.h"
-#include "linbox/algorithms/cia.h"
 #endif
 #include "linbox/solutions/methods.h"
 #include "linbox/util/debug.h"
@@ -151,6 +150,10 @@ namespace LinBox
 	}
 
 #if __LINBOX_HAVE_NTL && __LINBOX_HAVE_GIVARO
+}
+
+#include "linbox/algorithms/cia.h"
+namespace LinBox {
 	/** @brief Compute the characteristic polynomial over {\bf Z}
 	 *
 	 * Compute the characteristic polynomial of a matrix using dense 
