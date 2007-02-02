@@ -28,6 +28,7 @@
 #include <iostream>
 #include <lb-driver.h>
 #include <lb-maple-utilities.h>
+#include <linbox/util/timer.h>
 
 extern "C"{
 #include <maplec.h>
@@ -143,26 +144,42 @@ extern "C" {
 	 **********************************/
 	ALGEB lbCreateBlackboxFromMatrix(MKernelVector kv, ALGEB A, const LinBox::integer &p){
 		
-		std::stringstream *buffer= new std::stringstream();;
-		
+	
 		
 		RTableSettings setting;
 		RTableGetSettings(kv,&setting,A);
 		size_t m,n;
 		m = RTableUpperBound(kv, A, 1);	
 		n = RTableUpperBound(kv, A, 2);
+
 	
+		std::stringstream *buffer= new std::stringstream();//std::string(buffer_data, m*n));
+
+		//LinBox::Timer chrono;
+		//chrono.start();
 		if (setting.storage == RTABLE_RECT)
 			DenseMatrixToBuffer(kv, A, *buffer, m, n, setting);
 		else
-			SparseMatrixToBuffer(kv, A, *buffer, m, n, setting);	
-				
+			if (setting.storage == RTABLE_SPARSE)
+				SparseMatrixToBuffer(kv, A, *buffer, m, n, setting);	
+			else
+				MapleRaiseError(kv, "Matrix storage must be either dense or sparse");
+		//chrono.stop();
+
+		//std::ofstream FILE("MAPLE_FILE.TXT");
+		//FILE<<buffer->str()<<"\n";
+		//FILE.close();
+
+		//std::cout<<"buffering in <- : "<<chrono;
+		//chrono.clear();
+		//chrono.start();
 		LB_GMP_SET();	
 		const DomainKey   *Dkey = &createDomain(p);
 		const BlackboxKey *Bkey = &createBlackbox(*Dkey, *buffer); 
 		deleteDomain (*Dkey);
 		LB_GMP_RESTORE();
-		
+		//chrono.stop();
+		//std::cout<<"buffering out -> : "<<chrono;
 		delete buffer;
 		
 	
