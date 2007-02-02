@@ -16,7 +16,7 @@ LinBox:= module()
 	lbInit := proc() printf("  LinBox/Maple Interface Package beta version 1.0 \n  by Pascal Giorgi (pascal.giorgi@univ-perp.fr)\n");			 
 			 lbStart();
 		  end proc;
-	lbEnd  := proc() end proc; #lbStop();end proc;  
+	lbEnd  := proc() end proc;#lbStop();end proc;  
 
 
 #####################################################################
@@ -154,7 +154,9 @@ LinBox:= module()
 		      end if;		 		   
 		      d   := Dev:-lbDeterminant(A);		     		     
 		      det := Dev:-lbConvertElement(d); 
-		      print("conversion time:",t);
+		      if (printlevel>1) then
+			      print("conversion time:",t);
+		      end if;
 		      return det;			      
 		end;
 
@@ -178,7 +180,9 @@ LinBox:= module()
 		      else
 			    error("invalid argument",args[1], "must be a Matrix");
 		      end if;
-		      print("conversion time:",t);
+		      if (printlevel>1) then
+			      print("conversion time:",t);
+		      end if;
 		      return Dev:-lbRank(A);			      
 		end;
 
@@ -213,7 +217,9 @@ LinBox:= module()
 			error("invalid argument",args[1], "must be a Matrix");
 		      end if;
 		      p:= Dev:-lbMinpoly(A); 
-		      print("conversion time:",t);
+		      if (printlevel>1) then
+			      print("conversion time:",t);
+		      end if;
 		      return Dev:-lbConvertPolynomial(p,symb);	 
 		end;
 
@@ -248,7 +254,9 @@ LinBox:= module()
 			error("invalid argument",args[1], "must be a Matrix");
 		      end if;
 		      p:= Dev:-lbCharpoly(A); 
-		      print("conversion time:",t);
+		      if (printlevel>1) then
+			      print("conversion time:",t);
+		      end if;
 		      return Dev:-lbConvertPolynomial(p,symb);			      
 		end;
 
@@ -284,7 +292,9 @@ LinBox:= module()
 		      fi;		      
 		      x:= Dev:-lbSolve(A,b);
 		      y:=Dev:-lbConvertVector(x); 
-		      print("conversion time:",t);
+		      if (printlevel>1) then
+			      print("conversion time:",t);
+		      end if;
 		      return y;			      
 		end;	
 end module:

@@ -523,15 +523,16 @@ extern "C" {
 						buffer<<data[idx_c(i,j,n)]<<"\n";
 		}
 		if (setting.data_type == RTABLE_INTEGER32){buffer<<"\n";
-			INTEGER32 *data = (INTEGER32*) RTableDataBlock(kv,A);
+			INTEGER32 *data = (INTEGER32*) RTableDataBlock(kv,A);		
 			if (setting.order == RTABLE_FORTRAN)			
 				for (size_t i=0;i<m; ++i)
 					for (size_t j=0;j<n;++j)
 						buffer<<data[idx_fortran(i,j,m)]<<"\n";
 			else
 				for (size_t i=0;i<m; ++i)
-					for (size_t j=0;j<n;++j)
+					for (size_t j=0;j<n;++j){
 						buffer<<data[idx_c(i,j,n)]<<"\n";
+					}
 		}
 		if (setting.data_type == RTABLE_INTEGER64){buffer<<"\n";
 			INTEGER64 *data = (INTEGER64*) RTableDataBlock(kv,A);
@@ -566,12 +567,13 @@ extern "C" {
 					for (size_t j=0;j<n;++j)
 						buffer<<data[idx_c(i,j,n)]<<"\n";
 		}
-		if (setting.data_type == RTABLE_DAG){	buffer<<" M\n";		
+		if (setting.data_type == RTABLE_DAG){	buffer<<" \n";		
 			RTableData tmp;	
 			LinBox::integer ibuf;
 			for (size_t i=1;i<m+1; ++i){index[0]=(M_INT)i;
 				for (size_t j=1;j<n+1;++j){index[1]=(M_INT)j;
-					buffer<<i<<" "<<j<<" ";	tmp=RTableSelect(kv, A, index);				
+				//buffer<<i<<" "<<j<<" ";
+					tmp=RTableSelect(kv, A, index);				
 					GMPMapleToLinBox(ibuf, kv,tmp.dag);
 					buffer<<ibuf<<"\n";
 				}
@@ -585,74 +587,69 @@ extern "C" {
 	}
 
 	void SparseMatrixToBuffer (MKernelVector kv, ALGEB A, std::ostream &buffer, size_t m, size_t n, RTableSettings &setting) {
-	
-		RTableData tmp;	
 		
 		buffer<<m<<" "<<n<<" M \n";
-		M_INT index[2];
-		if (setting.data_type == RTABLE_INTEGER8){
+		
+		// special case for DAG data type
+		if (setting.data_type == RTABLE_DAG){
+			LinBox::integer ibuf;	
+			M_INT index[2];
 			for (size_t i=1;i<m+1; ++i){index[0]=(M_INT)i;
-				for (size_t j=1;j<n+1;++j){  
+				for (size_t j=1;j<n+1;++j){
 					index[1]=(M_INT)j;
-					buffer<<i<<" "<<j<<" ";	tmp=RTableSelect(kv, A, index);
-					buffer<<tmp.int8<<"\n";
+					RTableData tmp=RTableSelect(kv, A, index);				
+					GMPMapleToLinBox(ibuf, kv,tmp.dag);
+					if (ibuf != 0)
+						buffer<<i<<" "<<j<<" "<<ibuf<<"\n";
+				}
+			}		
+		}
+		else {
+			M_INT numelem;
+			NAG_INT *row, *col;
+			row = RTableSparseIndexRow(kv, A, 1);
+			col = RTableSparseIndexRow(kv, A, 2);
+			numelem = RTableNumElements(kv,A);
+
+			if (setting.data_type == RTABLE_INTEGER8){
+				INTEGER8 *data = (INTEGER8*) RTableDataBlock(kv,A);
+				for (M_INT i=0;i<numelem;++i){
+					buffer<<row[i]<<" "<<col[i]<<" "<<data[i]<<"\n";
+				}
+			}
+			if (setting.data_type == RTABLE_INTEGER16){
+				INTEGER16 *data = (INTEGER16*) RTableDataBlock(kv,A);
+				for (M_INT i=0;i<numelem;++i){
+					buffer<<row[i]<<" "<<col[i]<<" "<<data[i]<<"\n";
+				}
+			}
+			if (setting.data_type == RTABLE_INTEGER32){
+				INTEGER32 *data = (INTEGER32*) RTableDataBlock(kv,A);
+				for (M_INT i=0;i<numelem;++i){
+					buffer<<row[i]<<" "<<col[i]<<" "<<data[i]<<"\n";
+				}
+			}
+			if (setting.data_type == RTABLE_INTEGER64){
+				INTEGER64 *data = (INTEGER64*) RTableDataBlock(kv,A);
+				for (M_INT i=0;i<numelem;++i){
+					buffer<<row[i]<<" "<<col[i]<<" "<<data[i]<<"\n";
+				}
+			}
+			if (setting.data_type == RTABLE_FLOAT32){
+				FLOAT32 *data = (FLOAT32*) RTableDataBlock(kv,A);
+				for (M_INT i=0;i<numelem;++i){
+					buffer<<row[i]<<" "<<col[i]<<" "<<data[i]<<"\n";
+				}
+			}
+			if (setting.data_type == RTABLE_FLOAT64){
+				FLOAT64 *data = (FLOAT64*) RTableDataBlock(kv,A);
+				for (M_INT i=0;i<numelem;++i){
+					buffer<<row[i]<<" "<<col[i]<<" "<<data[i]<<"\n";
 				}
 			}	
+			if ((setting.data_type == RTABLE_COMPLEX)|| (setting.data_type == RTABLE_CXDAG))
+				MapleRaiseError(kv, "data type format in the matrix is not yet recognized by LinBox ");
 		}
-		if (setting.data_type == RTABLE_INTEGER16){
-			for (size_t i=1;i<m+1; ++i){index[0]=(M_INT)i;
-				for (size_t j=1;j<n+1;++j){index[1]=(M_INT)j;
-					buffer<<i<<" "<<j<<" ";	tmp=RTableSelect(kv, A, index);
-					buffer<<tmp.int16<<"\n";
-				}
-			}
-		}
-		if (setting.data_type == RTABLE_INTEGER32){
-			for (size_t i=1;i<m+1; ++i){index[0]=(M_INT)i;
-				for (size_t j=1;j<n+1;++j){index[1]=(M_INT)j;
-					buffer<<i<<" "<<j<<" ";	tmp=RTableSelect(kv, A, index);
-					buffer<<tmp.int32<<"\n";					
-				}				
-			}
-		}
-		if (setting.data_type == RTABLE_INTEGER64){
-			for (size_t i=1;i<m+1; ++i){index[0]=(M_INT)i;
-				for (size_t j=1;j<n+1;++j){index[1]=(M_INT)j;
-					buffer<<i<<" "<<j<<" ";	tmp=RTableSelect(kv, A, index);
-					buffer<<tmp.int64<<"\n";
-				}
-			}
-		}
-		if (setting.data_type == RTABLE_FLOAT32){
-			for (size_t i=1;i<m+1; ++i){index[0]=(M_INT)i;
-				for (size_t j=1;j<n+1;++j){index[1]=(M_INT)j;
-					buffer<<i<<" "<<j<<" ";	tmp=RTableSelect(kv, A, index);
-					buffer<<tmp.float32<<"\n";
-				}
-			}
-		}
-		if (setting.data_type == RTABLE_FLOAT64){
-
-			for (size_t i=1;i<m+1; ++i){index[0]=(M_INT)i;
-				for (size_t j=1;j<n+1;++j){index[1]=(M_INT)j;
-					buffer<<i<<" "<<j<<" ";	tmp=RTableSelect(kv, A, index);
-					buffer<<tmp.float64<<"\n";
-				}
-			}
-		}
-		if (setting.data_type == RTABLE_DAG){
-			LinBox::integer ibuf;
-			for (size_t i=1;i<m+1; ++i){index[0]=(M_INT)i;
-				for (size_t j=1;j<n+1;++j){index[1]=(M_INT)j;
-					buffer<<i<<" "<<j<<" ";	tmp=RTableSelect(kv, A, index);				
-					GMPMapleToLinBox(ibuf, kv,tmp.dag);
-					buffer<<ibuf<<"\n";
-				}
-			}
-		}
-		if ((setting.data_type == RTABLE_COMPLEX)|| (setting.data_type == RTABLE_CXDAG))
-			MapleRaiseError(kv, "data type format in the matrix is not yet recognized by LinBox ");
-		
 		buffer<<" 0 0 0 \n";
 	}
 	
