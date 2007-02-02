@@ -25,7 +25,10 @@
 
 
 #include <linbox/solutions/charpoly.h>
+#ifdef __LINBOX_HAVE_GIVARO
 #include "linbox/ring/givaro-polynomial.h"
+#endif
+
 
 #include <lb-charpoly.h>
 #include <lb-blackbox-function.h>
@@ -50,6 +53,7 @@ public:
 	void operator() (Result &res, Blackbox *B) const {
 		typedef typename Blackbox::Field Field;
 		typedef typename Field::Element Element;
+#ifdef __LINBOX_HAVE_GIVARO
 		// use givpolynomial du to non genericity of charpoly over integer
 		typename LinBox::GivPolynomialRing<Field, Dense>::Element pol;
 		LinBox::charpoly(pol, *B, meth);
@@ -59,6 +63,10 @@ public:
 		phi->resize(pol.size());
 		for (size_t i=0; i< pol.size(); ++i)
 			B->field().assign((*phi)[i], pol[i]);
+#else
+		throw lb_runtime_error("LinBox ERROR: charpoly computation requires Givaro library, computation impossible)\n");
+#endif
+		
 	}
 };
 
