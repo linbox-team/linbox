@@ -11,8 +11,7 @@ AC_DEFUN([LB_CHECK_BLAS],
 
 AC_ARG_WITH(blas,
 	    [  --with-blas=<lib>|yes|no 
-					   Use BLAS library. 
-					   If argument is no, you do not have the library installed on your machine (set as default).
+					   Use BLAS library. This library is mandatory for LinBox compilation. 					  
 					   If argument is yes or <empty> that means the library is reachable with the standard
 					   search path (/usr or /usr/local).
 	 				   Otherwise you give the <path> to the directory which contain the library. 	       		
