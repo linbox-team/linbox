@@ -25,7 +25,7 @@
 #define __CHARPOLY_H
 
 
-#if __LINBOX_HAVE_GIVARO
+#ifdef __LINBOX_HAVE_GIVARO
 // BBcharpoly without givaropolynomials is not yet implemented
 #include "linbox/algorithms/bbcharpoly.h"
 #endif
