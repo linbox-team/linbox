@@ -380,7 +380,7 @@ namespace LinBox {
 		ChineseRemainder< Modular<double> > cra(3UL);
 		IntegerModularDet<Blackbox,MyMethod> iteration(A, M);
 		integer dd; // use of integer due to non genericity of cra. PG 2005-08-04
-		//Communicator* C = M.communicatorp();
+
 		/*
 		//  if no parallelism or if parent process
 		if(!C || !C->rank()){
@@ -393,18 +393,16 @@ namespace LinBox {
 		//  will call regular cra if C=0
 #ifdef __LINBOX_HAVE_MPI
 		cra(dd, iteration, genprime, C);
-#else
-		cra(dd, iteration, genprime);
-#endif
-
-#ifdef __LINBOX_HAVE_MPI
 		if(!C || C->rank() == 0){
-#endif
 			A.field().init(d, dd); // convert the result from integer to original type
 			commentator.stop ("done", NULL, "det");
-#ifdef __LINBOX_HAVE_MPI
 		}
+#else
+		cra(dd, iteration, genprime);
+		A.field().init(d, dd); // convert the result from integer to original type
+		commentator.stop ("done", NULL, "det");
 #endif
+
 		return d;
 	}
 
