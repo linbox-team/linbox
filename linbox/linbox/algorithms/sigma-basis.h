@@ -45,6 +45,9 @@
 #include <linbox/util/timer.h>
 
 
+//#define OPTMIZED_SIGMA_UPDATE 
+
+
 namespace LinBox {
 
 
@@ -1175,7 +1178,14 @@ namespace LinBox {
 				if ( defect[i] < min_defect)
 					min_defect = defect[i];
 			}
-			std::vector<size_t> degree(m,max_defect-min_defect);
+			//std::vector<size_t> degree(m,max_defect-min_defect);
+			std::vector<size_t> degree(m);
+			size_t max_diff= max_defect-min_defect;
+			for (size_t i=0;i<m;++i)
+				degree[i]= defect[i]-min_defect;
+
+
+			std::vector<size_t> row_degree(m,0);
 
 			//write_maple("PowerSerie",PowerSerie);		
 
@@ -1183,19 +1193,148 @@ namespace LinBox {
 			double tSigmaUp, tResidueUp, tSigmaSh, tResidueSh, tLQUP, tPerm;
 			tSigmaUp= tResidueUp= tSigmaSh= tResidueSh= tLQUP= tPerm =0.;
 
+			std::vector<size_t> triv_column(m,0);
+			std::vector<size_t> PermPivots(m);
+			for (size_t i=0;i<m;++i)
+				PermPivots[i]=i;
+
 			int optim=0;
 			int cptr=0;
+			double updis=0.;
+
+			bool UseTrivial=true;
+
+			//std::cout<<"defect: ";
+			//for (size_t i=0;i<m;++i)
+			//	std::cout<<defect[i]<<", ";
+			//std::cout<<"\n";
 
 			// Compute the minimal Sigma Base of the PowerSerie up to length
 			for (size_t k=0; k< length; ++k) {
+		
+				/*
+				std::cout<<"row degree: ";
+				for (size_t i=0;i<m;++i)
+					std::cout<<degree[i]<<", ";
+				std::cout<<"\n";
+				write_maple("Sigma",SigmaBase);
+				*/
 				
 #ifdef _BM_TIMING
 				chrono.start();
 #endif
+				// Compute the number of trivial column in SigmaBase
+				int nbr_triv=0;			       
+				for (size_t i=0;i<m;i++) if (triv_column[i]==0) nbr_triv++;
+
+
+#ifdef DISCREPANCY_OPTIM
+				// Compute a Permutation to put all trivial columns of SigmaBase to right part of it
+				std::vector<size_t> PermTrivial(m);
+				bool PTrivial=true;
+				if (nbr_triv > 0) {
+					size_t idx_triv, idx_nontriv;
+					idx_nontriv = 0; idx_triv = m-nbr_triv;
+										
+					for (size_t i=0;i<m;++i){
+						if (triv_column[i]!=0){
+							PermTrivial[i]=idx_nontriv;
+							if (i!=idx_nontriv) PTrivial=false;
+							idx_nontriv++;
+						}
+						else {						
+							PermTrivial[i]=idx_triv;
+							if (i!=idx_triv) PTrivial=false;
+							idx_triv++;
+						}
+					}
+				}
+
+				BlasPermutation PPP (PermTrivial);
+				TransposedBlasMatrix<BlasPermutation> PPPT(PPP);
+				
 				// set Discrepancy to Residual[k] 
 				// -> can be optimized by directly using Residual[k]
-				Discrepancy = Residual[k];
-			
+				//Discrepancy = Residual[k];					
+
+
+				BlasMatrix<Element> Db    (Discrepancy,m-nbr_triv,0,nbr_triv,n);
+				// Compute Discrepancy using convolution
+				if (nbr_triv > m){ 					
+					if (k==0){
+						_MD.copy(Discrepancy, PowerSerie[0]);
+					}
+					else {	
+						BlasPermutation PPiv (PermPivots);
+						TransposedBlasMatrix<BlasPermutation> PPivT(PPiv);
+				
+						if (!PTrivial){
+							_BMD.mulin_left(SigmaBase[0], PPP);
+							_BMD.mulin_right(PPPT, PowerSerie[k]);					
+						}
+						_BMD.mulin_right(PPivT,SigmaBase[0]);
+						
+						BlasMatrix<Element> SBl   (SigmaBase[0],0,0,m,m-nbr_triv);
+						BlasMatrix<Element> PSt   (PowerSerie[k],0,0,m-nbr_triv,n);
+						BlasMatrix<Element> PSb   (PowerSerie[k],m-nbr_triv,0,nbr_triv,n);
+					
+						Timer Dchrono;
+						Dchrono.start();
+						_BMD.mul (Discrepancy,SBl,PSt);
+						if (k%2 == 0)
+							_MD.addin(Db,PSb);							
+						else
+							_MD.subin(Db,PSb);																							
+						Dchrono.stop();
+						updis+= Dchrono.usertime();
+						
+						_BMD.mulin_right(PPiv,SigmaBase[0]);				
+						if (!PTrivial){
+							_BMD.mulin_right(PPP, PowerSerie[k]);
+							_BMD.mulin_left(SigmaBase[0], PPPT);
+						}
+						
+						for (size_t i=1;i<SigmaBase.size();i++){
+							if (!PTrivial){
+								_BMD.mulin_left(SigmaBase[i], PPP);
+								_BMD.mulin_right(PPPT, PowerSerie[k-i]);
+							}
+							_BMD.mulin_right(PPivT,SigmaBase[i]);
+
+							BlasMatrix<Element> SBli   (SigmaBase[i],0,0,m,m-nbr_triv);
+							BlasMatrix<Element> PSti   (PowerSerie[k-i],0,0,m-nbr_triv,n);
+							BlasMatrix<Element> PSbi   (PowerSerie[k-i],m-nbr_triv,0,nbr_triv,n);
+							Dchrono.clear();
+							Dchrono.start();					       
+							_BMD.axpyin  (Discrepancy,SBli,PSti);
+							Dchrono.stop();
+							updis+= Dchrono.usertime();
+							_BMD.mulin_right(PPiv,SigmaBase[i]);
+							if (!PTrivial){
+								_BMD.mulin_right(PPP, PowerSerie[k-i]);
+								_BMD.mulin_left(SigmaBase[i], PPPT);											
+							}
+						}
+						_BMD.mulin_right(PPiv,Discrepancy);
+					}
+				}
+				else{
+#endif			
+					_BMD.mul(Discrepancy,SigmaBase[0],PowerSerie[k]);
+					for (size_t i=1;i<SigmaBase.size();i++){
+						_BMD.axpyin(Discrepancy,SigmaBase[i],PowerSerie[k-i]);
+					}
+#ifdef DISCREPANCY_OPTIM
+				}
+#endif
+				
+
+#ifdef _BM_TIMING
+				chrono.stop();
+				ttResidueUp+=chrono;
+				chrono.clear();
+				chrono.start();
+#endif			
 			
 				// compute BPerm1 such that BPerm1.defect is in increasing order				
 				std::vector<size_t> Perm1(m);			
@@ -1210,21 +1349,24 @@ namespace LinBox {
 					Perm1[i]=idx_min;
 				}
 
-				// permute row degree
+				// permute degree and row degree
 				for (size_t i=0;i<m;++i)
-					if ( i != Perm1[i])
+					if ( i < Perm1[i]){
 						std::swap(degree[i], degree[Perm1[i]]);	
+						std::swap(row_degree[i], row_degree[Perm1[i]]);	
+						if (k!=0)
+							std::swap(PermPivots[i], PermPivots[Perm1[i]]);
+					}
 
-			
-				//std::cout<<"Perm1:=[ ";
-				//for (size_t i=0;i<m;++i)
-				//	std::cout<<Perm1[i]<<" , ";
-				//std::cout<<"\n";
-				
+				if (k==0)
+					for (size_t i=0;i<m;++i)
+						PermPivots[i]=Perm1[i];									
+
 				BlasPermutation BPerm1(Perm1);
-							
+
 				// Apply Bperm1 to the Discrepancy
-				_BMD.mulin_right(BPerm1, Discrepancy);
+				_BMD.mulin_right(BPerm1, Discrepancy);	
+							
 #ifdef _BM_TIMING		
 				chrono.stop();
 				ttPermutation+=chrono;
@@ -1232,24 +1374,7 @@ namespace LinBox {
 				chrono.start();
 #endif
 
-				/* **** old version ****				   
-				// Compute LQUP of Discrepancy
-			 	LQUPMatrix<Field> LQUP(_F,Discrepancy);
-
-				// Get L from LQUP
-				TriangularBlasMatrix<Element> L(m, m, BlasTag::low, BlasTag::unit);
-				LQUP.getL(L);
-		       
-				// get the transposed permutation of Q from LQUP
-				BlasPermutation Qt =LQUP.getQ();
-								
-				// Compute the inverse of L
-				TriangularBlasMatrix<Element> invL(m, m, BlasTag::low, BlasTag::unit);
-				FFPACK::trinv_left(_F,m,L.getPointer(),L.getStride(),invL.getWritePointer(),invL.getStride());				
-				*/
-
-				/* new version : use of columnReducedEchelon */			
-				
+				/* new version : use of columnReducedEchelon */							
 				EchelonFormDomain<Field>  EFD(_F);			
 				size_t rank = EFD.columnReducedEchelon(Discrepancy);
 			
@@ -1264,12 +1389,21 @@ namespace LinBox {
 					perm[i]=idx;
 					idx++;
 				}
+			
 				BlasPermutation Qt(perm);						
 				TransposedBlasMatrix<BlasPermutation> Q(Qt);
 
+				// detect trivial permutation (Q=Qt=Identity)
+				bool QisTrivial=true;
+				size_t Qidx=0;
+				while(QisTrivial && (Qidx <m)){
+					if (perm[Qidx] != Qidx)
+						QisTrivial=false;
+					Qidx++;
+				}				
+
 				// put all pivots on the principal minor
 				_BMD.mulin_right(Qt, Discrepancy);
-
 
 				// Get the (m-r)*r left bottom submatrix of Reduced Echelon matrix 
 				BlasMatrix<Element> G(Discrepancy, rank, 0,m-rank,rank);
@@ -1279,26 +1413,272 @@ namespace LinBox {
 				chrono.clear();
 				chrono.start();
 #endif
-				
+	
 			
+								    				
+				// compute size of trivial part of SigmaBase
+				size_t rsize, lsize;
+				rsize=0;
+				if (nbr_triv>rank)
+					rsize=nbr_triv-rank;
+				lsize=m-rsize;
+
+				//std::cout<<"rsize: "<<rsize<<"\n";
+
+				// compute maximal degree of first rank-th row of SigmaBase
+				
+				size_t maxs=0;  
+				for(size_t d=0;d<rank;++d)
+					maxs=std::max(maxs, degree[*(Qt.getPointer()+d)]);				
+				maxs=std::min(maxs, SigmaBase.size()-1);
+				
+				//Discrepancy.write(std::cout,_F);
+
+			
+#ifndef OPTMIZED_SIGMA_UPDATE				
+				// Compute a Permutation to put all trivial columns of SigmaBase to right part of it
+				std::vector<size_t> PermTrivial(m);
+				bool PTrivial=true;
+				for(size_t i=0;i<m;++i)
+					if (PermPivots[i]>i)
+						std::swap(triv_column[i], triv_column[PermPivots[i]]);
+
+				if (nbr_triv > rank) {
+					size_t idx_triv, idx_nontriv;
+					idx_nontriv = 0; idx_triv = m-nbr_triv;
+										
+					for (size_t i=0;i<m;++i){
+						if (triv_column[i]!=0){
+							PermTrivial[i]=idx_nontriv;
+							if (i!=idx_nontriv) PTrivial=false;
+							idx_nontriv++;
+						}
+						else {						
+							PermTrivial[i]=idx_triv;
+							if (i!=idx_triv) PTrivial=false;
+							idx_triv++;
+						}
+					}
+				}
+				for(int i=m-1;i>=0;--i)
+					if (PermPivots[i]>i)
+						std::swap(triv_column[i], triv_column[PermPivots[i]]);
+				
+				// Modify Permutation of trivial columns to incorporate pivot columns
+				if (nbr_triv>rank){
+					for(size_t i=0;i<m;++i)
+						std::swap(PermTrivial[i], PermTrivial[*(Qt.getPointer()+i)]);								
+				}
+			
+				/*
+				std::cout<<"PermTrivial: ";
+				for (size_t i=0;i<m;++i)
+					std::cout<<PermTrivial[i]<<", ";
+				std::cout<<"\n";
+				*/
+
+				BlasPermutation PTr (PermTrivial);
+				TransposedBlasMatrix<BlasPermutation> PTrT(PTr);
+				//BlasPermutation PPP (PermTrivial);
+				//TransposedBlasMatrix<BlasPermutation> PPPT(PPP);
+				BlasPermutation PPiv (PermPivots);
+				TransposedBlasMatrix<BlasPermutation> PPivT(PPiv);
+
+
+				/*
+				std::cout<<"MAXS: "<<maxs<<"\n\n ******************\n";
+				
+				std::cout<<"Perm1: ";
+				for (size_t i=0;i<m;++i)
+					std::cout<<Perm1[i]<<", ";
+				std::cout<<"\n";
+				
+				write_maple("Sigma",SigmaBase);
+				//Discrepancy.write(std::cout,_F);
+
+			
+
+				std::cout<<"trivial: ";
+				for (size_t i=0;i<m;++i)
+					std::cout<<triv_column[i]<<", ";
+				std::cout<<"\n";
+				
+				SigmaBase[0].write(std::cout,_F);
+				_BMD.mulin_right(BPerm1, SigmaBase[0]);			
+				SigmaBase[0].write(std::cout,_F);			
+				_BMD.mulin_left(SigmaBase[0],PPiv);
+				SigmaBase[0].write(std::cout,_F);
+				_BMD.mulin_left(SigmaBase[0], PTr);				
+				SigmaBase[0].write(std::cout,_F);
+				_BMD.mulin_left(SigmaBase[0], PTrT);
+				_BMD.mulin_left(SigmaBase[0],PPivT);
+				TransposedBlasMatrix<BlasPermutation> BPerm1T(BPerm1);
+				_BMD.mulin_right(BPerm1T, SigmaBase[0]);
+				*/
+
 				// Update SigmaBase 
+				for (size_t i=0;i<maxs+1;++i) {	
+					//SigmaBase[0].write(std::cout,_F);
+					// permute SigmaBase
+					_BMD.mulin_right(BPerm1, SigmaBase[i]);
+													
+					if (!QisTrivial){
+						_BMD.mulin_right(Qt, SigmaBase[i]);					
+					}
+																				
+					if (nbr_triv > rank){
+						_BMD.mulin_left(SigmaBase[i],PPivT);
+						_BMD.mulin_left(SigmaBase[i], PTr);
+					}
+												
+					
+					// apply transformation to SigmaBase
+				 	//BlasMatrix<Element>    S_top(SigmaBase[i], 0,0,rank,m);
+				 	//BlasMatrix<Element> S_bottom(SigmaBase[i], rank,0,m-rank,m);	
+					//_BMD.axmyin(S_bottom, G, S_top); 			
+											
+					BlasMatrix<Element> S_top_left    (SigmaBase[i], 0,0,rank,lsize);
+					BlasMatrix<Element> S_bottom_left (SigmaBase[i], rank,0,m-rank,lsize);
+					//if (i==0){						
+					//	S_bottom_left.write(std::cout,_F);
+					//}
+					// deal with the left part of S_bottom
+					_BMD.axmyin(S_bottom_left, G, S_top_left);
+					//if (i==0){						
+					//	S_bottom_left.write(std::cout,_F);
+					//}
+				
+					
+					// deal with the right part of S_bottom
+					if (rsize > 0){	
+						BlasMatrix<Element> S_bottom_right(SigmaBase[i],rank,lsize,m-rank, rsize);
+						_MD.negin(S_bottom_right);
+					}
+					
+					// undo the permutation on sigmaBase
+					if (nbr_triv > rank){
+						_BMD.mulin_left(SigmaBase[i], PTrT);
+						_BMD.mulin_left(SigmaBase[i],PPiv);
+					}
+
+					if (!QisTrivial)
+					 _BMD.mulin_right(Q, SigmaBase[i]);
+					//if (i==0){						
+					//	S_bottom_left.write(std::cout,_F);
+					//}					
+				} 		
+				
+				for (size_t i=maxs+1;i<SigmaBase.size();++i) {
+					// permute SigmaBase
+					_BMD.mulin_right(BPerm1, SigmaBase[i]);
+					if (!QisTrivial)
+						_BMD.mulin_right(Qt, SigmaBase[i]);					
+					
+					// apply transformation to SigmaBase
+					BlasMatrix<Element> S_bottom(SigmaBase[i], rank,0,m-rank,m);				
+				 	_MD.negin(S_bottom);
+
+					// undo the permutation on sigmaBase
+					if (!QisTrivial)
+					 _BMD.mulin_right(Q, SigmaBase[i]);					
+				} 				
+		
+#else		  
+				/*********************************/
+				/* OPTIMIZATION Update SigmaBase */
+				/*********************************/
+				
+				// Permute SigmaBase
 				for (size_t i=0;i<SigmaBase.size();++i) {
 					_BMD.mulin_right(BPerm1, SigmaBase[i]);
-					//_BMD.mulin_right(invL,SigmaBase[i]);				
-
-					// try optimization
-					_BMD.mulin_right(Qt, SigmaBase[i]);
-					BlasMatrix<Element>    S_top(SigmaBase[i], 0,0,rank,m);
-					BlasMatrix<Element> S_bottom(SigmaBase[i], rank,0,m-rank,m);
-					_BMD.axmyin(S_bottom, G, S_top);
-					_BMD.mulin_right(Q, SigmaBase[i]);
+					if (!QisTrivial)
+						_BMD.mulin_right(Qt, SigmaBase[i]);
+					if (nbr_triv > rank)
+						_BMD.mulin_left(SigmaBase[i], PTr);
 				}
+		 						
+				// split G into Gk of dimension r x r				
+				size_t q = (m-rank) / rank;
+				size_t q_last= (m-rank) % rank;
+							
+				for (size_t l=0;l<q;++l){					
+					// get kth part of G
+					BlasMatrix<Element> Gk(G,l*rank,0,rank,rank);
+
+					// get maximal degree of kth part of sigma base
+					size_t maxk=0;
+					for(size_t d=(l+1)*rank;d<(l+2)*rank;++d)
+						maxk=std::max(maxk, degree[*(Qt.getPointer()+d)]);
+					maxk=std::min(maxk,SigmaBase.size()-1);
+
+					for (size_t i=0;i<maxs+1;++i){
+						BlasMatrix<Element> S_top_left (SigmaBase[i], 0,0,rank,lsize);
+						BlasMatrix<Element> S_bottom   (SigmaBase[i], rank,0,m-rank,m);
+						
+						// deal with the left part of kth slice of S_bottom
+						BlasMatrix<Element> Sbk_left (S_bottom,l*rank,0,rank, lsize);					
+						_BMD.axmyin(Sbk_left, Gk, S_top_left);	
+						
+						// deal with the right part of kth slice of S_bottom
+						if (rsize > 0){
+							BlasMatrix<Element> Sbk_right(S_bottom,l*rank,lsize,rank, rsize);
+							_MD.negin(Sbk_right);
+						}
+					} 
+					for (size_t i=maxs+1;i<maxk+1;++i){
+						BlasMatrix<Element> S_bottom(SigmaBase[i], rank,0,m-rank,m);
+						BlasMatrix<Element> Sbk(S_bottom,l*rank,0,rank, m);
+						_MD.negin(Sbk);
+					} 
+				}		
+				if( q_last > 0) {
+					// get last part of G
+					BlasMatrix<Element> G_last(G,q*rank,0,q_last,rank);
+
+					size_t maxk=0;
+					for(size_t d=m-q_last;d<m;++d)
+						maxk=std::max(maxk, degree[*(Qt.getPointer()+d)]);
+					maxk=std::min(maxk,SigmaBase.size()-1);
+					for (size_t i=0;i<maxs+1;++i){
+						BlasMatrix<Element> S_top_left (SigmaBase[i], 0,0,rank,lsize);
+					 	BlasMatrix<Element> S_bottom   (SigmaBase[i], rank,0,m-rank,m);
+						
+						// deal with the left part of kth slice of S_bottom
+					 	BlasMatrix<Element> Sb_last_left (S_bottom,q*rank,0,q_last, lsize);					
+					 	_BMD.axmyin(Sb_last_left, G_last, S_top_left);	
+						
+						// deal with the right part of kth slice of S_bottom
+					 	if (rsize > 0){
+							BlasMatrix<Element> Sb_last_right(S_bottom,q*rank,lsize,q_last, rsize);
+						 	_MD.negin(Sb_last_right);
+						}
+						
+					} 
+					for (size_t i=maxs+1;i<maxk+1;++i){
+						BlasMatrix<Element> S_bottom(SigmaBase[i], rank,0,m-rank,m);
+						BlasMatrix<Element> Sb_last(S_bottom,q*rank,0,q_last, m);
+						_MD.negin(Sb_last);
+					}				
+				} 
+						
+				// undo Permutation of sigma Base
+				for (size_t i=0;i<SigmaBase.size();++i) {
+					if (nbr_triv > rank)
+						_BMD.mulin_left(SigmaBase[i], PTrT);
+					if (!QisTrivial)
+						_BMD.mulin_right(Q, SigmaBase[i]);				
+				}						
+#endif
+				// END OF OPTIMIZATION
+			
+	
 #ifdef _BM_TIMING
 				chrono.stop();
 				ttSigmaUp+=chrono;
 				chrono.clear();
 				chrono.start();
-#endif
+#endif			
+				/*
 				// Update  Residual (only monomials greater than k-1)
 				for (size_t i=k;i<length;++i){
 					_BMD.mulin_right(BPerm1,Residual[i]);
@@ -1311,21 +1691,20 @@ namespace LinBox {
 					 _BMD.axmyin(R_bottom, G, R_top);	
 					 				
 					 _BMD.mulin_right(Q, Residual[i]);
-				}
+				}	
+				*/
 #ifdef _BM_TIMING
 				chrono.stop();
 				ttResidueUp+=chrono;
 				chrono.clear();
 				chrono.start();
-#endif
+#endif			
 				//  Calculate the new degree of SigmaBase (looking only pivot's row)
 				size_t max_degree=degree[*(Qt.getPointer())];
-				for (size_t i=1;i<n;++i) {
+				for (size_t i=1;i<rank;++i) {
 					if (degree[*(Qt.getPointer()+i)]>max_degree)
 						max_degree=degree[*(Qt.getPointer()+i)];
-				}	
-
-				optim+=SigmaBase.size() -max_degree-1;
+				}					
 
 				// Resize SigmaBase if necessary
 				size_t size=SigmaBase.size(); 
@@ -1334,10 +1713,9 @@ namespace LinBox {
 						SigmaBase.resize(size+1,Zeromm);					
 						size++;cptr++;
 					}		
-				//write_maple("Sigma",SigmaBase);
-		
+					
 				// Mulitply by x the rows of SigmaBase involved as pivot 
-				for (size_t i=0;i<n;++i){
+				for (size_t i=0;i<rank;++i){
 					for (int j= (int) size-2;j>=0; --j){						
 						for (size_t l=0;l<m;++l)
 							_F.assign(SigmaBase[j+1].refEntry(*(Qt.getPointer()+i),l), SigmaBase[j].getEntry(*(Qt.getPointer()+i),l));			
@@ -1351,29 +1729,38 @@ namespace LinBox {
 				chrono.clear();
 				chrono.start();
 #endif
-
+				/*
 				// Mulitply by x the rows of Residual involved as pivot 				
-				for (size_t i=0;i<n;++i){
+				for (size_t i=0;i<rank;++i){
 					for (int j= (int) length-2;j>= (int) k; j--){
 						for (size_t l=0;l<n;++l) 
 							_F.assign(Residual[j+1].refEntry(*(Qt.getPointer()+i),l), Residual[j].getEntry(*(Qt.getPointer()+i),l));
 					}					
 				}
+				*/
 #ifdef _BM_TIMING
 				chrono.stop();
 				ttResidueSh+=chrono;
 				chrono.clear();
 #endif
 				// Increase defect according to row index choosen as pivot 				
-				for (size_t i=0;i<n;++i){
+				for (size_t i=0;i<rank;++i){
 					defect[*(Qt.getPointer()+i)]++;	
 					degree[*(Qt.getPointer()+i)]++;
-				}							
+					row_degree[*(Qt.getPointer()+i)]++;
+					triv_column[PermPivots[*(Qt.getPointer()+i)]]++;					
+				}											
 			}
+			//std::cout<<"row degree: ";
+			//for (size_t i=0;i<m;++i)
+			//	std::cout<<degree[i]<<", ";
+			//std::cout<<"\n";
+
 			//write_maple("Sigma",SigmaBase);
 			//std::cout<<"cpt:= "<<cptr<<"\n";
 			//if (length > 2) 
-			//	std::cout<<"We could have remove "<<optim<<" matrix multiplication\n";
+			//	std::cout<<"permformed :"<<optim<<" s x s matrix multiplication\n";
+			//std::cout<<"updsi time: "<<updis<<"s \n";
 		}
 
 
@@ -1403,8 +1790,10 @@ namespace LinBox {
 					tMBasis.clear();
 					tMBasis.start();
 #endif
-					
-					new_M_Basis(SigmaBase, PowerSerie, degree, defect);
+					//write_maple("nPowerSerie", PowerSerie);
+					//new_M_Basis(SigmaBase, PowerSerie, degree, defect);
+					M_Basis(SigmaBase, PowerSerie, degree, defect);
+					//write_maple("\nSigmaBase", SigmaBase);
 
 #ifdef _BM_TIMING
 					tMBasis.stop();
@@ -1563,7 +1952,26 @@ namespace LinBox {
 		}
 
 
+		void write_maple(const char* name, const Coefficient & C) {
+			size_t m,n;
+			m = C.rowdim();
+			n = C.coldim();
+			std::cout<<"Fx:=proc(P) local i; return eval(sum(x^(i-1)*P[i],i=1..nops(P))); end proc;";
 
+			std::cout<<name<<":=Fx(["; 
+			std::cout<<"Matrix([";
+			for (size_t i=0;i<m-1;++i){
+				std::cout<<"[";
+				for (size_t j=0;j<n-1;++j)
+					_F.write(std::cout,C.getEntry(i,j))<<",";
+				_F.write(std::cout,C.getEntry(i,n-1))<<"] , ";
+			}
+			std::cout<<"[";
+			for (size_t j=0;j<n-1;++j)
+				_F.write(std::cout,C.getEntry(m-1,j))<<",";				
+			_F.write(std::cout, C.getEntry(m-1,n-1))<<"]])]); ";
+
+		}
 
 		void write_maple(const char* name, const std::vector<Coefficient> & P) {
 			size_t m,n;
