@@ -149,7 +149,7 @@ namespace LinBox
 		return BMD.charpoly (P, static_cast<BlasMatrix<typename Blackbox::Field::Element> >(BBB));
 	}
 
-#if __LINBOX_HAVE_NTL && __LINBOX_HAVE_GIVARO
+#if defined(__LINBOX_HAVE_NTL) && defined(__LINBOX_HAVE_GIVARO)
 }
 
 #include "linbox/algorithms/cia.h"
