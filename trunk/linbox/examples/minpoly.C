@@ -58,6 +58,7 @@ int main (int argc, char **argv)
 		B.read (input);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
 
+
 		vector<Field::Element> m_B;
 		minpoly (m_B, B);
 

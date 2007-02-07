@@ -2,21 +2,20 @@
 /* author: B. David Saunders and Zhendong Wan*/
 // parallelized for BOINC computing by Bryan Youse
 // ======================================================================= //
-// Time-stamp: <26 Sep 06 13:40:13 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <15 Jul 05 18:53:10 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_CRA_H
 #define __LINBOX_CRA_H
 
+#define MPICH_IGNORE_CXX_SEEK
 #include "linbox/util/timer.h"
 #include <stdlib.h>
 #include "linbox/integer.h"
 #include "linbox/solutions/methods.h"
 #include <vector>
+#include <utility>
 //#include "backend_lib.h"
-#ifdef __LINBOX_HAVE_MPI
-#define MPICH_IGNORE_CXX_SEEK
 #include "linbox/util/mpicpp.h"
-#endif
 
 //#include <linbox/util/timer.h>
 
@@ -101,11 +100,8 @@ namespace LinBox {
         Integer               Modulo0;
         Integer               Table0;
         bool                       Occupation0; //used anywhere?
-        bool               boinc;
-#ifdef __LINBOX_HAVE_MPI
         Communicator               *commPtr;
         unsigned int               numprocs;
-#endif
         std::vector< unsigned long >      randv;
         std::vector< double >           dSizes;
         std::vector< LazyProduct >      Modulo;
@@ -120,21 +116,14 @@ namespace LinBox {
         ChineseRemainder(const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD, const size_t n=1) : Modulo0(0) {
             initialize(EARLY, n, 0.0);
         }
-#ifdef __LINBOX_HAVE_MPI
-/*
-/////  effective?   
-   ChineseRemainder(const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD, bool b=false, const size_t n=1){
-            boinc = b;
-            initialize(EARLY, n, 0.0);
-   }
-   */
 
-   ChineseRemainder(Communicator *c = NULL, const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD, const size_t n=1) : Modulo0(0) {
+		  ChineseRemainder(Communicator *c = NULL, const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD,
+		                   const size_t n=1) : Modulo0(0) {
             commPtr = c;
             numprocs = commPtr->size();
             initialize(EARLY, n, 0.0);
-   }
-#endif
+		  }
+
         ChineseRemainder(const double BOUND) : Modulo0(0) {
             initialize(0, 0, BOUND);
         }
@@ -161,35 +150,8 @@ namespace LinBox {
         }   
 
 #ifdef __LINBOX_HAVE_MPI
-      
-      /*
-        void operator() (int *res, Communicator *Comm) {
-            Integer p;
-
-            int procs = Comm->size();
-            int mpi_rank = Comm->rank();
-
-                    //  parent process
-                    if(!mpi_rank){
-                       for(int i=1; i<procs; i++){
-                          Comm->send(p, i); 
-                          Comm->recv(p, i);
-                          cout << "Received p from [" << i << "]" << std::endl;
-                       }
-                    }
-                    else{
-                       Comm->recv(p, 0);
-                       Domain D(p); 
-                       DomainElement r; D.init(r);
-                       Comm->send(p, 0);
-                    }
-        }
-   */
-
             /** \brief The CRA loop
             
-            Given a function to generate residues mod a single prime, this loop produces the residues 
-            resulting from the Chinese remainder process on sufficiently many primes to meet the 
             termination condition.
          
             \param F - Function object of two arguments, F(r, p), given prime p it outputs residue(s) r.
@@ -198,66 +160,86 @@ namespace LinBox {
             Warning - we won't detect bad primes.
          
             \param genprime - RandIter object for generating primes.
+				\param Comm - Pointer to Communicator object to delegate parallelism using MPI
             \result res - an integer
             */
         template<class Function, class RandPrime>
         Integer & operator() (Integer& res, Function& Iteration, RandPrime& genprime, Communicator *Comm) {
-            if(Comm == 0)
+		  		//  defer to standard CRA loop if no parallel usage is desired
+            if(Comm == 0 || Comm->size() == 1)
 					return this->operator()(res, Iteration, genprime);
-					
+
             Integer p;
-/*
+
             int procs = Comm->size();
             int process = Comm->rank();
 
             if (EARLY_TERM_THRESHOLD) {
 				    //  parent process
-// PAR
-                if(!process){
+                if(process == 0 ){
+					     //  create an array to store primes
+				        int primes[procs - 1];
                     genprime.randomPrime(p);
-                    Domain D(p); 
-                    DomainElement r; D.init(r);
-                    //this->Early_progress( D, Iteration(r, D) );
-					    for(int i=1; i<procs; i++){
-                    	genprime.randomPrime(p);
-                    	while(this->Early_noncoprimality(p) )
-                    	  genprime.randomPrime(p);
-						  	Comm->send(p, i);
-						 }
-						 int idle_process = 0;
-                	while( ! this->Early_terminated() ){
-						   if(idle_process){
-							   genprime.randomPrime(p);
-							   Comm->send(p, idle_process);
-							}
-							Comm->recv(r, MPI_ANY_SOURCE);
-							idle_process = (Comm->stat).MPI_SOURCE;
-							this->Early_progress( D, r );
-						}
-
-						std::cout << "EARLY TERMINATION REACHED..." << std::endl;
-						//  termination messages
-						for(int i=1; i<procs; i++){
-						   Comm->buffer_attach(0);
-							Comm->bsend(0, i);
-						}
-						
+                    DomainElement r; 
+						  //  send each child process a new prime to work on
+					     for(int i=1; i<procs; i++){
+                     	genprime.randomPrime(p);
+                    	   while(this->Early_noncoprimality(p) )
+                    	     genprime.randomPrime(p);
+								primes[i - 1] = p;
+						  	   Comm->send(primes[i - 1], i);
+						  }
+						  int idle_process = 0;
+						  bool first_time = true;
+						  int poison_pills_left = procs - 1;
+						  //  loop until all execution is complete
+                	  while( poison_pills_left > 0 ){
+						  		//  receive sub-answers from child procs
+						   	Comm->recv(r, MPI_ANY_SOURCE);
+								idle_process = (Comm->get_stat()).MPI_SOURCE;
+                 		   Domain D(primes[idle_process - 1]); 
+								//  assimilate results
+							if(first_time){
+									this->First_Early_progress(D, r);
+									first_time = false;
+								}
+								else
+									this->Early_progress( D, r );
+								//  queue a new prime if applicable
+								if(! this->Early_terminated()){
+								   genprime.randomPrime(p);
+									primes[idle_process - 1] = p;
+								}
+								//  otherwise, queue a poison pill
+								else{
+									primes[idle_process - 1] = 0;
+									poison_pills_left--;
+								}
+								//  send the prime or poison pill
+								Comm->send(primes[idle_process - 1], idle_process);
+						 	}  // end while
                   return this->Early_result(res);
-					 }
+					 }  // end if(parent process)
 					 //  child processes
 					 else{
+					     int pp;
                     while(true){ 
-						     Comm->recv(p, 0);
-						     if(!p)
+						     //  receive the prime to work on, stop
+							  //  if signaled a zero
+						     Comm->recv(pp, 0);
+						     if(pp == 0)
 							     break;
-                    	  Domain D(p);
+                    	  Domain D(pp);
                        DomainElement r; D.init(r);
                     	  Iteration(r, D);
-							  Comm->buffer_attach(r);
-							  Comm->bsend(r, 0);
+							  //Comm->buffer_attach(rr);
+							  // send the results
+							  Comm->send(r, 0);
 						  }
+						  return res;
                 }
             } else {
+				    if(process == 0)
                 while( ! this->Full_terminated() ) {
                     genprime.randomPrime(p);
                     while(this->Full_noncoprimality(p) )
@@ -268,7 +250,6 @@ namespace LinBox {
                 }
                 return this->Full_result(res);
             }
-*/
         }
 #endif
 
@@ -318,7 +299,91 @@ namespace LinBox {
             }
         }
 
+#ifdef __LINBOX_HAVE_MPI
+        template<template <class T> class Vect, class Function, class RandPrime>
+        Vect<Integer> & operator() (Vect<Integer>& res, Function& Iteration, RandPrime& genprime, Communicator *Comm) {
+				//  if there is no communicator or if there is only one process,
+				//  then proceed normally (without parallel)
+		  		if(Comm == 0 || Comm->size() == 1)
+					return this->operator()(res, Iteration, genprime);
 
+            Integer p;
+				int procs = Comm->size();
+				int process = Comm->rank();
+				Vect<DomainElement> r;
+
+            if (EARLY_TERM_THRESHOLD) {
+					  //  parent propcess
+					  if(process == 0){
+				        int primes[procs - 1];
+					     genprime.randomPrime(p);
+						  Domain D(p);
+						  //  for each slave process...
+						  for(int i=1; i<procs; i++){
+						     //  generate a new prime
+						     genprime.randomPrime(p);
+							  while(this->Early_noncoprimality(p) )
+							     genprime.randomPrime(p);
+							  //  fix the array of currently sent primes
+							  primes[i - 1] = p;	
+							  //  send the prime to a slave process
+							  Comm->send(primes[i - 1], i);
+						  }
+						  this->First_Early_progress( D, Iteration(r, D) ); 
+						  int idle_process = 0;
+						  int poison_pills_left = procs - 1;
+						  while(poison_pills_left > 0 ){
+						     //  receive the beginnin and end of a vector in heapspace
+						     Comm->recv(r.begin(), r.end(), MPI_ANY_SOURCE, 0);
+							  //  determine which process sent answer 
+							  //  and give them a new prime
+							  idle_process = (Comm->get_stat()).MPI_SOURCE;
+							  Domain D(primes[idle_process - 1]);
+							  this->Early_progress(D, r);
+							  //  if still working, queue a prime
+							  if(! this->Early_terminated()){
+							     genprime.randomPrime(p);
+								  primes[idle_process - 1] = p;
+							  }
+							  //  otherwise, queue a poison pill
+							  else{
+							     primes[idle_process - 1] = 0;
+								  poison_pills_left--;
+							  }
+							  //  send the prime or poison
+							  Comm->send(primes[idle_process - 1], idle_process);
+						  }  // while
+					     return this->Early_result(res);	
+						}
+						//  child process
+						else{
+						   int pp;
+							//  get a prime, compute, send back start and end
+							//  of heap addresses 
+					   	while(true){
+							   Comm->recv(pp, 0);
+								if(pp == 0)
+									break;
+								Domain D(pp);
+								Iteration(r, D);
+								Comm->send(r.begin(), r.end(), 0, 0);
+							}
+							return res;
+						}
+            } else {
+				    if(process == 0)
+                while( ! this->Full_terminated() ) {
+                    genprime.randomPrime(p);
+                    while(this->Full_noncoprimality(p) )
+                        genprime.randomPrime(p);
+                    Domain D(p); 
+                    Vect<DomainElement> r; 
+                    this->Full_progress( D, Iteration(r, D) );
+                }
+                return this->Full_result(res);
+            }
+			}
+#endif
 
         template<template <class T> class Vect, class Function, class RandPrime>
         Vect<Integer> & operator() (Vect<Integer>& res, Function& Iteration, RandPrime& genprime) {

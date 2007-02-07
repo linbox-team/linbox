@@ -84,6 +84,8 @@ namespace LinBox
 			     const Blackbox &A)    
 	{        return minpoly (P, A, Method::Hybrid());    }
 
+
+
 	// The minpoly with Hybrid Method 
 	template<class Polynomial, class Blackbox>
 	Polynomial &minpoly (
