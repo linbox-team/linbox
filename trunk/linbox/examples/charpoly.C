@@ -102,10 +102,12 @@ int main (int argc, char **argv)
 		char tmp;
 		cin >> tmp;
 		if (tmp == 'y' || tmp == 'Y') {
+                  commentator.start("Integer Polynomial factorization by NTL", "NTLfac");
 		  vector<IntPolRing::Element*> intFactors;    
 		  vector<unsigned long> exp;
 		  IntPolRing IPD(ZZ);
 		  IPD.factor (intFactors, exp, c_A);
+                  commentator.stop("done", NULL, "NTLfac");
 		  printFactorization(cout << intFactors.size() << " integer polynomial factors:" << endl, ZZ, intFactors, exp) << endl;
 		}
 #endif
