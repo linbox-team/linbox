@@ -3,7 +3,6 @@
 \brief Minimal polynomial of a sparse matrix.
 \ingroup examples
 */
-
 #include <iostream>
 
 #include "linbox/field/modular-double.h"
@@ -37,17 +36,29 @@ int main (int argc, char **argv)
 	if (!input) { cerr << "Error opening matrix file " << argv[1] << endl; return -1; }
 
 	if (argc == 2) {
+	   int process = 0;
+	   
+		Method::Blackbox M;
+#ifdef __LINBOX_HAVE_MPI
+      Communicator C(&argc, &argv);
+		process = C.rank();
+		M.communicatorp(&C);
+#endif
 
-		PID_integer ZZ;
-		SparseMatrix<PID_integer> A (ZZ);
+		GMP_Integers ZZ;
+		SparseMatrix<GMP_Integers> A (ZZ);
 		A.read (input);
-		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
-		vector<PID_integer::Element> m_A;
-		minpoly (m_A, A); 
+		if(process == 0)
+			cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
-		cout << "Minimal Polynomial is ";
-		printPolynomial (ZZ, m_A);
+		vector<GMP_Integers::Element> m_A;
+		minpoly (m_A, A, M); 
+
+      if(process == 0){
+			cout << "Minimal Polynomial is ";
+			printPolynomial (ZZ, m_A);
+		}
 	}
 	if (argc == 3) { 
 
@@ -57,7 +68,6 @@ int main (int argc, char **argv)
 		SparseMatrix<Field> B (F);
 		B.read (input);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
-
 
 		vector<Field::Element> m_B;
 		minpoly (m_B, B);
