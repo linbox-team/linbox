@@ -61,7 +61,7 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 	VectorDomain<Field> VD (F);
 
 	Vector d(n);
-	typename Field::Element pi, phi_wiedemann, phi_symm_wied, phi_blas_elimination;
+	typename Field::Element pi, phi_wiedemann, phi_symm_wied, phi_blas_elimination, phi_sparseelim;
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
@@ -107,7 +107,10 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 		det (phi_blas_elimination, D,  Method::BlasElimination ());
 		F.write (report << "Computed determinant (BlasElimination) : ", phi_blas_elimination) << endl;
 
-		if (!F.areEqual (pi, phi_wiedemann) || !F.areEqual (pi, phi_blas_elimination) || !F.areEqual(pi, phi_symm_wied)) {
+		det (phi_sparseelim, D,  Method::SparseElimination ());
+		F.write (report << "Computed determinant (SparseElimination) : ", phi_sparseelim) << endl;
+
+		if (!F.areEqual (pi, phi_wiedemann) || !F.areEqual (pi, phi_blas_elimination) || !F.areEqual(pi, phi_symm_wied)|| !F.areEqual(pi, phi_sparseelim)) {
 			ret = false;
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Computed determinant is incorrect" << endl;
@@ -149,7 +152,7 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 	size_t j;
 
 	Vector d(n);
-	typename Field::Element pi, phi_wiedemann, phi_symm_wied, phi_blas_elimination;
+	typename Field::Element pi, phi_wiedemann, phi_symm_wied, phi_blas_elimination, phi_sparseelim;
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
@@ -180,21 +183,26 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 		Method::Wiedemann WiedemannChoice;
 		det (phi_wiedemann, D,  WiedemannChoice);
                 WiedemannChoice.symmetric(Specifier::SYMMETRIC);
-		det (phi_symm_wied, D,  WiedemannChoice);
-		det (phi_blas_elimination, D,  Method::BlasElimination ());
-		
-
 		report << "Computed determinant (Wiedemann) : ";
 		F.write (report, phi_wiedemann);
 		report << endl;
+
+		det (phi_symm_wied, D,  WiedemannChoice);
 		report << "Computed determinant (Symmetric Wiedemann) : ";
 		F.write (report, phi_symm_wied);
 		report << endl;
+
+		det (phi_blas_elimination, D,  Method::BlasElimination ());
 		report << "Computed determinant (BlasElimination) : ";
 		F.write (report, phi_blas_elimination);
 		report << endl;
 
-		if (!F.areEqual (pi, phi_wiedemann) || !F.areEqual (pi, phi_blas_elimination) || !F.areEqual(pi, phi_symm_wied)) {
+		det (phi_sparseelim, D,  Method::SparseElimination ());
+		report << "Computed determinant (SparseElimination) : ";
+		F.write (report, phi_sparseelim);
+		report << endl;
+
+		if (!F.areEqual (pi, phi_wiedemann) || !F.areEqual (pi, phi_blas_elimination) || !F.areEqual(pi, phi_symm_wied) || !F.areEqual(pi, phi_sparseelim)) {
 			ret = false;
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Computed determinant is incorrect" << endl;
@@ -235,7 +243,7 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
 	size_t j;
 
 	Vector d(n);
-	typename Field::Element phi_wiedemann, phi_symm_wied, phi_blas_elimination;
+	typename Field::Element phi_wiedemann, phi_symm_wied, phi_blas_elimination, phi_sparseelim;
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
@@ -254,21 +262,27 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
 
                  Method::Wiedemann WiedemannChoice;
 		det (phi_wiedemann, D,  WiedemannChoice);
-                WiedemannChoice.symmetric(Specifier::SYMMETRIC);
-		det (phi_symm_wied, D,  WiedemannChoice);
-		det (phi_blas_elimination, D,  Method::BlasElimination ());
-
 		report << "Computed determinant (Wiedemann) : ";
 		F.write (report, phi_wiedemann);
 		report << endl;
+
+                WiedemannChoice.symmetric(Specifier::SYMMETRIC);
+		det (phi_symm_wied, D,  WiedemannChoice);
 		report << "Computed determinant (Symmetric Wiedemann) : ";
 		F.write (report, phi_symm_wied);
 		report << endl;
+
+		det (phi_blas_elimination, D,  Method::BlasElimination ());
 		report << "Computed determinant (BlasElimination) : ";
 		F.write (report, phi_blas_elimination);
 		report << endl;
 
-		if (!F.isZero (phi_wiedemann) || !F.isZero (phi_blas_elimination) || !F.isZero (phi_symm_wied) ) {
+		det (phi_sparseelim, D,  Method::SparseElimination ());
+		report << "Computed determinant (SparseElimination) : ";
+		F.write (report, phi_sparseelim);
+		report << endl;
+
+		if (!F.isZero (phi_wiedemann) || !F.isZero (phi_blas_elimination) || !F.isZero (phi_symm_wied)  || !F.isZero (phi_sparseelim) ) {
 			ret = false;
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Computed determinant is incorrect" << endl;

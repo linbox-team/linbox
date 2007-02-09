@@ -188,7 +188,7 @@ class SparseMatrixBase
 	 * @param  m  row dimension
 	 * @param  n  column dimension
 	 */
-        SparseMatrixBase (size_t m, size_t n): _A(0), _m(0), _n(0) {};
+        SparseMatrixBase (size_t m, size_t n): _A(m), _m(m), _n(n) {};
 
 
 	/** Constructor from a MatrixStream
@@ -201,6 +201,10 @@ class SparseMatrixBase
 	 */
 	SparseMatrixBase (const SparseMatrixBase<Element, Row, Trait> &A);
 
+	/** Convert constructor.
+	 */
+    	template<class VectorType>
+	SparseMatrixBase (const SparseMatrixBase<Element, VectorType, Trait> &A);
 	/** Destructor. */
 	~SparseMatrixBase () {}
 
@@ -214,6 +218,15 @@ class SparseMatrixBase
 	 */
 	size_t coldim () const { return _n; }
 
+	/** Retreive number of elements in the matrix.
+	 * @return integer number of elements of SparseMatrixBase matrix.
+	 */
+	size_t size () const { 
+            size_t s(0);
+            for(typename Rep::const_iterator it = _A.begin(); it != _A.end(); ++it)
+                s+= LinBox::RawVector<_Element>::size(*it);
+            return s;
+        }
 	/** Read a matrix from the given input stream using field read/write
 	 * @param is Input stream from which to read the matrix
 	 * @param F Field with which to read
@@ -355,6 +368,8 @@ class SparseMatrixBase
 	Rep               _A;
 	size_t            _m;
 	size_t            _n;
+
+    	template<class F, class R, class T> friend class SparseMatrixBase;
 };
 
 /* Specialization for sparse sequence vectors */
@@ -384,10 +399,25 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 	SparseMatrixBase (const SparseMatrixBase<Element, Row> &A)
 		: _A (A._A), _m (A._m), _n (A._n) {}
 
+    	template<class VectorType>
+	SparseMatrixBase (const SparseMatrixBase<Element, VectorType> &A)
+		: _A(A._m), _m (A._m), _n (A._n) {
+            typename Rep::iterator meit = this->_A.begin();
+            typename SparseMatrixBase<Element, VectorType>::Rep::const_iterator copit = A._A.begin();
+            for( ; meit != this->_A.end(); ++meit, ++copit)
+                LinBox::RawVector<Element>::convert(*meit, *copit);
+        }
+
 	~SparseMatrixBase () {}
 
 	size_t rowdim () const { return _m; }
 	size_t coldim () const { return _n; }
+	size_t size () const { 
+            size_t s(0);
+            for(typename Rep::const_iterator it = _A.begin(); it != _A.end(); ++it)
+                s+= LinBox::RawVector<_Element>::size(*it);
+            return s;
+        }
 
 	template <class Field>
 	std::istream &read (std::istream &is, const Field &F, FileFormatTag format = FORMAT_DETECT)
@@ -668,6 +698,8 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 	Rep               _A;
 	size_t            _m;
 	size_t            _n;
+
+    	template<class F, class R, class T> friend class SparseMatrixBase;
 };
 
 /* Specialization for sparse associative vectors */
@@ -690,6 +722,16 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 		: _A (m), _m (m), _n (n) {}
 	SparseMatrixBase (const SparseMatrixBase<Element, Row> &A)
 		: _A (A._A), _m (A._m), _n (A._n) {}
+
+    	template<class VectorType>
+	SparseMatrixBase (const SparseMatrixBase<Element, VectorType> &A)
+		: _A(A.m), _m (A._m), _n (A._n) {
+            typename Rep::iterator meit = this->_A.begin();
+            typename SparseMatrixBase<Element, VectorType>::Rep::const_iterator copit = A._A.begin();
+            for( ; meit != this->_A.end(); ++meit, ++copit)
+                LinBox::RawVector<Element>::convert(*meit, *copit);
+        }
+
 	/** Constructor from a MatrixStream
 	 */
 	template <class Field>
@@ -698,6 +740,12 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 
 	size_t rowdim () const { return _m; }
 	size_t coldim () const { return _n; }
+	size_t size () const { 
+            size_t s(0);
+            for(typename Rep::const_iterator it = _A.begin(); it != _A.end(); ++it)
+                s+= LinBox::RawVector<_Element>::size(*it);
+            return s;
+        }
 
 	template <class Field>
 	std::istream &read (std::istream &is, const Field &F, FileFormatTag format = FORMAT_DETECT)
@@ -956,6 +1004,8 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 	Rep               _A;
 	size_t            _m;
 	size_t            _n;
+
+    	template<class F, class R, class T> friend class SparseMatrixBase;
 };
 
 /* Specialization for sparse parallel vectors */
@@ -978,6 +1028,15 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 		: _A (m), _m (m), _n (n) {}
 	SparseMatrixBase (const SparseMatrixBase<Element, Row> &A)
 		: _A (A._A), _m (A._m), _n (A._n) {}
+    
+    	template<class VectorType>
+	SparseMatrixBase (const SparseMatrixBase<Element, VectorType> &A)
+		: _A(A.m), _m (A._m), _n (A._n) {
+            typename Rep::iterator meit = this->_A.begin();
+            typename SparseMatrixBase<Element, VectorType>::Rep::const_iterator copit = A._A.begin();
+            for( ; meit != this->_A.end(); ++meit, ++copit)
+                LinBox::RawVector<Element>::convert(*meit, *copit);
+        }
 
 	/** Constructor from a MatrixStream
 	 */
@@ -988,6 +1047,12 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 
 	size_t rowdim () const { return _m; }
 	size_t coldim () const { return _n; }
+	size_t size () const { 
+            size_t s(0);
+            for(typename Rep::const_iterator it = _A.begin(); it != _A.end(); ++it)
+                s+= LinBox::RawVector<_Element>::size(*it);
+            return s;
+        }
 
 	template <class Field>
 	std::istream &read (std::istream &is, const Field &F, FileFormatTag format = FORMAT_DETECT)
@@ -1258,6 +1323,8 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 	Rep               _A;
 	size_t            _m;
 	size_t            _n;
+
+    	template<class F, class R, class T> friend class SparseMatrixBase;
 };
 
 template <class Element, class Row>

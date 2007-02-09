@@ -78,27 +78,53 @@ namespace LinBox
             ///     
 	template <class Matrix> unsigned long& rankin(unsigned long &rank,
                                                       Matrix        &A,
-                                                      SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR,
-                                                      bool           storrows = false);
+                                                      SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR);
             ///
         template <class Matrix> unsigned long& rankin(unsigned long &rank,
                                                       Matrix        &A,
                                                       unsigned long  Ni,
                                                       unsigned long  Nj,
-						      SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR,
-                                                      bool           storrows = false);
+						      SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR);
             ///        
 	template <class Matrix> unsigned long& rank(unsigned long &rank,
                                                     const Matrix        &A,
-                                                    SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR,
-                                                    bool           storrows = false);
+                                                    SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR);
             ///        
         template <class Matrix> unsigned long& rank(unsigned long &rank,
                                                     const Matrix        &A,
                                                     unsigned long  Ni,
                                                     unsigned long  Nj,
-                                                    SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR,
-                                                    bool           storrows = false);
+                                                    SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR);
+            //@}
+
+            /** @name det
+                Callers of the different determinant routines\\
+                -/ The "in" suffix indicates in place computation\\
+                -/ Without Ni, Nj, the Matrix parameter must be a vector of sparse 
+                row vectors, NOT storing any zero.\\
+                -/ Calls {@link rankinLinearPivoting rankinLinearPivoting} (by default) or {@link rankinNoReordering rankinNoReordering}
+            */
+            //@{
+            ///     
+	template <class Matrix> Element& detin(Element &determinant,
+                                               Matrix        &A,
+                                               SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR);
+            ///
+        template <class Matrix> Element& detin(Element &determinant,
+                                               Matrix        &A,
+                                               unsigned long  Ni,
+                                               unsigned long  Nj,
+                                               SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR);
+            ///        
+	template <class Matrix> Element& det(Element &determinant,
+                                             const Matrix        &A,
+                                             SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR);
+            ///        
+        template <class Matrix> Element& det(Element &determinant,
+                                             const Matrix        &A,
+                                             unsigned long  Ni,
+                                             unsigned long  Nj,
+                                             SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR);
             //@}
 
 
@@ -114,18 +140,18 @@ namespace LinBox
 
                 The Matrix parameter must meet the LinBox sparse matrix interface.
                 [check details].
-                The storrows indicates whether the algorithm must keep already computed rows.
+                The computedet indicates whether the algorithm must compute the determionant as it goes
 
                 @ref [Jean-Guillaume Dumas and Gilles Villard, 
                 Computing the rank of sparse matrices over finite fields.
                 In Ganzha et~al. CASC'2002, pages 47--62.]
             */
 	template <class Matrix>
-	unsigned long& rankinLinearPivoting (unsigned long &rank,
-                                             Matrix        &A,
-                                             unsigned long Ni, 
-                                             unsigned long Nj,
-                                             bool           storrows = false);
+	unsigned long& InPlaceLinearPivoting (unsigned long &rank,
+                                              Element& determinant,
+                                              Matrix        &A,
+                                              unsigned long Ni, 
+                                              unsigned long Nj);
 
 
             /** \brief Sparse Gaussian elimination without reordering. 
@@ -140,7 +166,7 @@ namespace LinBox
 
             */
 	template <class Matrix>
-	unsigned long& rankinNoReordering (unsigned long &rank, Matrix &LigneA, unsigned long Ni, unsigned long Nj);
+	unsigned long& NoReordering (unsigned long &rank, Element& determinant, Matrix &LigneA, unsigned long Ni, unsigned long Nj);
 
             /** \brief Dense in place LU factorization without reordering
 
@@ -216,14 +242,14 @@ namespace LinBox
             // 2. Column density is minimum for this row
             //------------------------------------------
 	template <class Vector, class D>
-	void SparseFindPivot (Vector &lignepivot, unsigned long &indcol, long &indpermut, D &columns);
+	void SparseFindPivot (Vector &lignepivot, unsigned long &indcol, long &indpermut, D &columns, Element& determinant);
 
             //------------------------------------------
             // Looking for a non-zero pivot in a row 
             // No reordering
             //------------------------------------------
 	template <class Vector>
-	void SparseFindPivot (Vector &lignepivot, unsigned long &indcol, long &indpermut);
+	void SparseFindPivot (Vector &lignepivot, unsigned long &indcol, long &indpermut, Element& determinant);
 
             //------------------------------------------
             // Looking for a non-zero pivot in a row  

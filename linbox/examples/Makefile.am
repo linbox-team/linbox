@@ -7,7 +7,7 @@ LDADD = $(top_builddir)/linbox/liblinbox.la $(EX_LDADD)
 
 SUBDIRS=fields 
 
-EXAMPLES=rank det minpoly valence solve dot-product echelon
+EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet sparseelimrank
 GIVARONTL_EXAMPLES=smith charpoly graph-charpoly
 if LINBOX_HAVE_NTL
 if LINBOX_HAVE_GIVARO
@@ -35,6 +35,8 @@ minpoly_SOURCES = minpoly.C
 valence_SOURCES = valence.C
 solve_SOURCES = solve.C
 echelon_SOURCES=echelon.C
+sparseelimdet_SOURCES=sparseelimdet.C
+sparseelimrank_SOURCES=sparseelimrank.C
 LINBOX=@prefix@
 
 # no /bin if LinBox is uncompiled

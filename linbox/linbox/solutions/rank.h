@@ -39,8 +39,6 @@
 // Namespace in which all LinBox library code resides
 namespace LinBox {
 
-	
-    const int BlasBound = 1 << 26;
 
 	/** 
             Compute the rank of a linear transform A over a field by selected method. 
@@ -68,7 +66,7 @@ namespace LinBox {
  			     const Blackbox                          &A,
 			     const RingCategories::RationalTag     &tag,
  			     const Method                           &M){
-		throw LinboxError("LinBox ERROR: rank is not yet define over a rational domain");
+		throw LinboxError("LinBox ERROR: rank is not yet defined over a rational domain");
 	}
 
 
@@ -179,7 +177,7 @@ namespace LinBox {
         typename Field::RandIter iter (F);
             
         if (M.symmetric()) {
-            commentator.start ("Symmetric Rank", "rank");
+            commentator.start ("Symmetric Rank", "srank");
 		
                 
             std::vector<typename Field::Element> d1;
@@ -304,12 +302,12 @@ namespace LinBox {
             commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "butterflies : " << nbperm << std::endl;
 
             commentator.stop ("success", NULL, "trace");
-            commentator.stop ("done", NULL, "rank");
+            commentator.stop ("done", NULL, "srank");
             
             return res;
         } else {
                 
-            commentator.start ("Rank", "rank");
+            commentator.start ("Rank", "wrank");
 
             std::vector<typename Field::Element> d1, d2;
             size_t i;
@@ -437,7 +435,7 @@ namespace LinBox {
             }
             commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "butterflies : " << nbperm << std::endl;
             commentator.stop ("success", NULL, "trace");
-            commentator.stop ("done", NULL, "rank");
+            commentator.stop ("done", NULL, "wrank");
             
             return res;
         }
@@ -470,7 +468,7 @@ namespace LinBox {
                            const RingCategories::IntegerTag    &tag,
                            const Method::SparseElimination     &M)
     {
-        commentator.start ("Integer Rank", "rank");
+        commentator.start ("Integer Rank", "irank");
         typedef Modular<double> Field;
         integer mmodulus; 
         FieldTraits<Field>::maxModulus(mmodulus);
@@ -482,7 +480,7 @@ namespace LinBox {
         commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Integer Rank is done modulo " << mmodulus << std::endl;
         rankin(r, *Ap, RingCategories::ModularTag(), M);
         delete Ap;
-        commentator.stop ("done", NULL, "rank");
+        commentator.stop ("done", NULL, "irank");
         return r;
     }
     
@@ -492,10 +490,10 @@ namespace LinBox {
                            const RingCategories::ModularTag    &tag,
                            const Method::SparseElimination     &M) 
     {
-        commentator.start ("Sparse Elimination Rank", "rank");
+        commentator.start ("Sparse Elimination Rank", "serank");
         GaussDomain<Field> GD ( A.field() );
         GD.rankin (r, A, M.strategy ());
-        commentator.stop ("done", NULL, "rank");
+        commentator.stop ("done", NULL, "serank");
         return r;
     }
 
@@ -523,7 +521,7 @@ namespace LinBox {
                          const Method::BlasElimination  &M) 
     {
         
-        commentator.start ("Blas Rank", "rank");
+        commentator.start ("Blas Rank", "blasrank");
         typedef typename Blackbox::Field Field;
         const Field F = A.field();
         integer a, b; F.characteristic(a); F.cardinality(b);
@@ -532,7 +530,7 @@ namespace LinBox {
         BlasMatrix<typename Field::Element> B(A);
         BlasMatrixDomain<Field> D(F);
         r = D.rank(B);
-        commentator.stop ("done", NULL, "rank");
+        commentator.stop ("done", NULL, "blasrank");
         return r;
     }
 
@@ -560,11 +558,11 @@ namespace LinBox {
                            const Method::BlasElimination  &M) 
     {
 
-        commentator.start ("BlasBB Rank", "rank");
+        commentator.start ("BlasBB Rank", "blasbbrank");
         const Field F = A.field();
         BlasMatrixDomain<Field> D(F);
         r = D.rankin(static_cast< BlasMatrix<typename Field::Element>& >(A));
-        commentator.stop ("done", NULL, "rank");
+        commentator.stop ("done", NULL, "blasbbrank");
         return r;
     }
 
@@ -574,7 +572,7 @@ namespace LinBox {
                          const RingCategories::IntegerTag          &tag,
                          const MyMethod                           &M)
     {
-        commentator.start ("Integer Rank", "rank");
+        commentator.start ("Integer Rank", "iirank");
         typedef Modular<double> Field;
         integer mmodulus; 
         FieldTraits<Field>::maxModulus(mmodulus);
@@ -586,7 +584,7 @@ namespace LinBox {
         commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Integer Rank is done modulo " << mmodulus << std::endl;
         rank(r, *Ap, RingCategories::ModularTag(), M);
         delete Ap;
-        commentator.stop ("done", NULL, "rank");
+        commentator.stop ("done", NULL, "iirank");
         return r;
     }
 } // LinBox
@@ -617,8 +615,6 @@ namespace LinBox {
                     FBlackbox * Ap;
                     MatrixHom::map(Ap, A, EF );
                     rank(r, *Ap, tag, Method::Wiedemann(m));
-                    commentator.stop ("done", NULL, "extend");
-                    return r;
                 }
             } else {
                 unsigned long extend = (unsigned long)FF_EXPONENT_MAX(c,(integer)LINBOX_EXTENSION_DEGREE_MAX);
@@ -629,13 +625,11 @@ namespace LinBox {
                     FBlackbox * Ap;
                     MatrixHom::map(Ap, A, EF );
                     rank(r, *Ap, tag, Method::Wiedemann(m));
-                    commentator.stop ("done", NULL, "extend");
-                    return r;
                 }
             }
-        }
+        } else
+            rank(r, A, tag, Method::Wiedemann(m)); 
         commentator.stop ("done", NULL, "extend");
-        rank(r, A, tag, Method::Wiedemann(m)); 
         return r; 
     }
 }
