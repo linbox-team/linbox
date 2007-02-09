@@ -1,6 +1,6 @@
 AC_PREREQ(2.50)
 AC_INIT(linbox/linbox.doxy)
-AM_INIT_AUTOMAKE(linbox, 1.1.2)
+AM_INIT_AUTOMAKE(linbox, 1.1.3)
 AM_CONFIG_HEADER(config.h)
 AX_PREFIX_CONFIG_H(linbox-config.h, __LINBOX)
 
