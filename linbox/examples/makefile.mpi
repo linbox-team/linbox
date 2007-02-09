@@ -51,17 +51,16 @@ test-rank: test-rank.C test-generic.h # dependence on linbox sources also wanted
 minpoly: minpoly.C ../linbox/solutions/methods.h ../linbox/solutions/minpoly.h ../linbox/algorithms/cra-domain.h
 	$(mpicompiler) $(flags) minpoly.C -o minpoly $(includes) $(libs)
 
-det: det.C ../linbox/solutions/methods.h ../linbox/solutions/det.h ../linbox/algorithms/cra-domain.h
-	$(mpicompiler) $(flags) det.C -o det $(includes) $(libs)
+mpidet: mpidet.C ../linbox/solutions/methods.h ../linbox/solutions/det.h ../linbox/algorithms/cra-domain.h
+	$(mpicompiler) $(flags) mpidet.C -o mpidet $(includes) $(libs)
 
-det2: det bigmat
-	./bigmat 50 > file
-	mpirun -np 2 ./det file -p
+mpidet2: mpidet bigmat
+	./bigmat 200 > file
+	mpiexec C ./mpidet file
 	rm file bigmat
 
 run: minpoly file
 	mpirun -np 1 ./minpoly file
 
 clean:
-
-	rm test-det test-bitonic-sort test-rank a.out *.o
+	rm mpidet minpoly test-det test-bitonic-sort test-rank a.out *.o
