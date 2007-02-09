@@ -4,7 +4,7 @@
  * Copyright (C) 1999 Jean-Guillaume Dumas
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <24 Jan 07 19:45:30 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <09 Feb 07 11:25:51 Jean-Guillaume.Dumas@imag.fr> 
  *
  * -----------------------------------------------------------
  * 2003-02-02  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
@@ -474,10 +474,11 @@ namespace LinBox
 
     template <class _Field>
     template <class Vector, class D>
-    void GaussDomain<_Field>::SparseFindPivot (Vector        &lignepivot,
-                                               unsigned long &indcol,
-                                               long &indpermut,
-                                               D             &columns)
+    void GaussDomain<_Field>::SparseFindPivot (Vector        	&lignepivot,
+                                               unsigned long 	&indcol,
+                                               long 		&indpermut,
+                                               D             	&columns,
+                                               Element		&determinant)
     {
  //        std::cerr << "SFP BEG : lignepivot: [";
 //         for(typename Vector::const_iterator refs =  lignepivot.begin();
@@ -488,6 +489,7 @@ namespace LinBox
 	typedef typename Vector::value_type E;    
 
 	long nj =  lignepivot.size ();
+        bool pivoting = false;
 
 	if (nj > 0) {
             indpermut = lignepivot[0].first;
@@ -502,6 +504,7 @@ namespace LinBox
             }
 
             if (p != 0) {
+                pivoting = true;
                 if (indpermut == static_cast<long>(indcol)) {
                     Element ttm;
                     _F.assign (ttm, lignepivot[p].second);
@@ -519,10 +522,14 @@ namespace LinBox
                 }
             }
 
-            if (indpermut != static_cast<long>(indcol))
+            _F.mulin(determinant, lignepivot[0].second);
+            if (indpermut != static_cast<long>(indcol)) {
                     // no need to decrement/increment, already done during the search
                 lignepivot[0].first = indcol;
+                pivoting = true;
+            }
 
+            if (pivoting) _F.negin(determinant);
             ++indcol;
 	} else
             indpermut = -1;
@@ -536,14 +543,17 @@ namespace LinBox
 
     template <class _Field>
     template <class Vector>
-    void GaussDomain<_Field>::SparseFindPivot (Vector &lignepivot, unsigned long &indcol, long &indpermut)
+    void GaussDomain<_Field>::SparseFindPivot (Vector &lignepivot, unsigned long &indcol, long &indpermut, Element& determinant)
     {
 	long nj = lignepivot.size ();
 
 	if (nj > 0) {
             indpermut = lignepivot[0].first;
-            if (indpermut != static_cast<long>(indcol))
+            _F.mulin(determinant, lignepivot[0].second);
+            if (indpermut != static_cast<long>(indcol)){
                 lignepivot[0].first = indcol;
+                _F.negin(determinant);
+            }
             ++indcol;
 	} else
             indpermut = -1;
@@ -577,11 +587,11 @@ namespace LinBox
 
     template <class _Field>
     template <class Matrix>
-    unsigned long& GaussDomain<_Field>::rankinLinearPivoting (unsigned long &res,
-                                                              Matrix        &LigneA,
-                                                              unsigned long  Ni,
-                                                              unsigned long  Nj,
-                                                              const bool           storrows)
+    unsigned long& GaussDomain<_Field>::InPlaceLinearPivoting (unsigned long &res,
+                                                              Element        &determinant,
+                                                              Matrix         &LigneA,
+                                                              unsigned long   Ni,
+                                                              unsigned long   Nj)
     {
 	typedef typename Matrix::Row        Vector;
 	typedef typename Vector::value_type E;    
@@ -591,7 +601,7 @@ namespace LinBox
             // With reordering (D is a density type. Density is allocated here)
             //    long Ni = LigneA.n_row (), Nj = LigneA.n_col ();
 	commentator.start ("Gaussian elimination with reordering",
-			   "GaussDomain::rankinLinearPivoting", Ni);
+			   "IPLR", Ni);
 	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
             << "Gaussian elimination on " << Ni << " x " << Nj << " matrix" << std::endl;
 
@@ -599,6 +609,7 @@ namespace LinBox
 	long long nbelem = 0;
 #endif
 
+        _F.init(determinant,1UL);
 	Vector Vzer (0);
             // allocation of the column density
         std::vector<size_t> col_density (Nj);
@@ -618,7 +629,6 @@ namespace LinBox
 #else
 	long sstep = 1000;
 #endif
-    
             // Elimination steps with reordering
 	for (long k = 0; k < last; ++k) {
             unsigned long l;
@@ -648,6 +658,7 @@ namespace LinBox
                         }
 
                     if (p != k) {
+                        _F.negin(determinant);
                         Vector vtm = LigneA[k];
                         LigneA[k] = LigneA[p];
                         LigneA[p] = vtm;
@@ -655,25 +666,22 @@ namespace LinBox
 		    
 //                     LigneA.write(std::cerr << "BEF, k:" << k << ", indcol:" << indcol << ", c:" << c)<<std::endl;
                     
-                    SparseFindPivot (LigneA[k], indcol, c, col_density);
+                    SparseFindPivot (LigneA[k], indcol, c, col_density, determinant);
 //                     LigneA.write(std::cerr << "PIV, k:" << k << ", indcol:" << indcol << ", c:" << c)<<std::endl;
                     if (c != -1)
                         for (l = k + 1; l < Ni; ++l)
-                        {
-                            eliminate (LigneA[l], LigneA[k],
-                                       indcol, c, col_density);
-                        }
+                            eliminate (LigneA[l], LigneA[k], indcol, c, col_density);
                     
 //                     LigneA.write(std::cerr << "AFT " )<<std::endl;
 #ifdef __LINBOX_COUNT__
                     nbelem += LigneA[k].size ();
 #endif
-                    if (! storrows) LigneA[k] = Vzer;
+                    LigneA[k] = Vzer;
                 }
 	    	    
             }//for k
 
-            SparseFindPivot (LigneA[last], indcol, c);
+            SparseFindPivot (LigneA[last], indcol, c, determinant);
             
 #ifdef __LINBOX_COUNT__
             nbelem += LigneA[last].size ();
@@ -694,19 +702,26 @@ namespace LinBox
             
             integer card;
             
+            if ((res < Ni) || (res < Nj))
+                _F.init(determinant,0UL);
+            _F.write(commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT) 
+                     << "Determinant : ", determinant)
+                     << " over GF (" << _F.cardinality (card) << ")" << std::endl;
+            
             commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT) 
 		<< "Rank : " << res
-		<< " over GF (" << _F.cardinality (card) << ")" << std::endl;
-            commentator.stop ("done", 0, "GaussDomain::rankinLinearPivoting");
+		<< " over GF (" << card << ")" << std::endl;
+            commentator.stop ("done", 0, "IPLR");
             return res;
         }
 
         template <class _Field>
             template <class Matrix>
-            unsigned long& GaussDomain<_Field>::rankinNoReordering (unsigned long &res,
-                                                                    Matrix        &LigneA,
-                                                                    unsigned long  Ni,
-                                                                    unsigned long  Nj)
+            unsigned long& GaussDomain<_Field>::NoReordering (unsigned long &res,
+                                                              Element       &determinant,
+                                                              Matrix        &LigneA,
+                                                              unsigned long  Ni,
+                                                              unsigned long  Nj)
             {
                     // Requirements : SLA is an array of sparse rows
                     // IN PLACE.
@@ -714,7 +729,7 @@ namespace LinBox
                     //     long Ni = SLA.n_row (), Nj = SLA.n_col ();
                     //    long Ni = LigneA.n_row (), Nj = LigneA.n_col ();
                 commentator.start ("Gaussian elimination (no reordering)",
-                                   "GaussDomain::rankinNoReordering", Ni);
+                                   "NoRe", Ni);
                 commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) 
                     << "Gaussian elimination on " << Ni << " x " << Nj << " matrix" << std::endl;
 
@@ -727,7 +742,7 @@ namespace LinBox
 #endif
                 Vector Vzer (0);
  
-
+                _F.init(determinant,1UL);
                 long last = Ni - 1;
                 long c;
                 unsigned long indcol (0);
@@ -739,10 +754,11 @@ namespace LinBox
                     unsigned long l;
 
                     if (!LigneA[k].empty ()) {
-			SparseFindPivot (LigneA[k], indcol, c);
+			SparseFindPivot (LigneA[k], indcol, c, determinant);
 			if (c !=  -1)
                             for (l = k + 1; l < Ni; ++l)
                                 eliminate (LigneA[l], LigneA[k], indcol, c);
+                        
 #ifdef __LINBOX_COUNT__
 			nbelem += LigneA[k].size ();
 #endif
@@ -750,7 +766,7 @@ namespace LinBox
                     }
                 }
 
-                SparseFindPivot ( LigneA[last], indcol, c );
+                SparseFindPivot ( LigneA[last], indcol, c, determinant);
 
 #ifdef __LINBOX_COUNT__
                 nbelem += LigneA[last].size ();
@@ -760,12 +776,19 @@ namespace LinBox
     
                 res = indcol;
 
+                if ((res < Ni) || (res < Nj))
+                    _F.init(determinant,0UL);
+
                 integer card;
 
+                _F.write(commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT) 
+                         << "Determinant : ", determinant)
+                         << " over GF (" << _F.cardinality (card) << ")" << std::endl;
+                
                 commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT) 
                     << "Rank : " << res
-                    << " over GF (" << _F.cardinality (card) << ")" << std::endl;
-                commentator.stop ("done", 0, "GaussDomain::rankinNoReordering");
+                    << " over GF (" << card << ")" << std::endl;
+                commentator.stop ("done", 0, "NoRe");
                 return res;
             }
 
@@ -822,23 +845,22 @@ namespace LinBox
                                                                                Matrix        &A,
                                                                                unsigned long  Ni,
                                                                                unsigned long  Nj,
-                                                                               SparseEliminationTraits::PivotStrategy   reord,
-                                                                               bool           storrows) 
+                                                                               SparseEliminationTraits::PivotStrategy   reord) 
             {
+                Element determinant;
                 if (reord == SparseEliminationTraits::PIVOT_NONE)
-                    return rankinNoReordering(rank, A,  Ni, Nj);
+                    return NoReordering(rank, determinant, A,  Ni, Nj);
                 else
-                    return rankinLinearPivoting(rank, A,  Ni, Nj, storrows);
+                    return InPlaceLinearPivoting(rank, determinant, A,  Ni, Nj);
             }
 
    
         template <class _Field>
             template <class Matrix> unsigned long& GaussDomain<_Field>::rankin(unsigned long &rank,
                                                                                Matrix        &A,
-                                                                               SparseEliminationTraits::PivotStrategy   reord,
-                                                                               bool           storrows) 
+                                                                               SparseEliminationTraits::PivotStrategy   reord) 
             {
-                return rankin(rank, A,  A.rowdim (), A.coldim (), reord, storrows);
+                return rankin(rank, A,  A.rowdim (), A.coldim (), reord);
             }
 
    
@@ -846,10 +868,9 @@ namespace LinBox
         template <class _Field>
             template <class Matrix> unsigned long& GaussDomain<_Field>::rank(unsigned long &rank,
                                                                              const Matrix        &A,
-                                                                             SparseEliminationTraits::PivotStrategy   reord,
-                                                                             bool           storrows) 
+                                                                             SparseEliminationTraits::PivotStrategy   reord) 
             {
-                return rank(rank, A,  A.rowdim (), A.coldim (), reord, storrows);
+                return rank(rank, A,  A.rowdim (), A.coldim (), reord);
             }
 
         template <class _Field>
@@ -857,18 +878,72 @@ namespace LinBox
                                                                              const Matrix        &A,
                                                                              unsigned long  Ni,
                                                                              unsigned long  Nj,
-                                                                             SparseEliminationTraits::PivotStrategy   reord,
-                                                                             bool           storrows) 
+                                                                             SparseEliminationTraits::PivotStrategy   reord) 
             {
                 Matrix CopyA(Ni);
                 for(unsigned long i = 0; i < Ni; ++i)
                     CopyA[i] = A[i];
+                Element determinant;
                 if (reord == SparseEliminationTraits::PIVOT_NONE)
-                    return rankNoReordering(rank, CopyA,  Ni, Nj);
+                    return NoReordering(rank, determinant, CopyA,  Ni, Nj);
                 else {
-                    return rankinLinearPivoting(rank, CopyA,  Ni, Nj, storrows);
+                    return InPlaceLinearPivoting(rank, determinant, CopyA,  Ni, Nj);
                 }
     
+            }
+
+
+        template <class _Field>
+            template <class Matrix> typename GaussDomain<_Field>::Element& GaussDomain<_Field>::detin(Element        &determinant,
+                                                                                                      Matrix        &A,
+                                                                                                      unsigned long  Ni,
+                                                                                                      unsigned long  Nj,
+                                                                                                      SparseEliminationTraits::PivotStrategy   reord) 
+            {
+                unsigned long rank;
+                if (reord == SparseEliminationTraits::PIVOT_NONE)
+                    NoReordering(rank, determinant, A,  Ni, Nj);
+                else
+                    InPlaceLinearPivoting(rank, determinant, A,  Ni, Nj);
+                return determinant;
+            }
+
+   
+        template <class _Field>
+            template <class Matrix> typename GaussDomain<_Field>::Element& GaussDomain<_Field>::detin(Element &determinant,
+                                                                                                      Matrix  &A,
+                                                                                                      SparseEliminationTraits::PivotStrategy   reord) 
+            {
+                return detin(determinant, A,  A.rowdim (), A.coldim (), reord);
+            }
+
+   
+
+        template <class _Field>
+            template <class Matrix> typename GaussDomain<_Field>::Element& GaussDomain<_Field>::det(Element        &determinant,
+                                                                                           const Matrix   &A,
+                                                                                           SparseEliminationTraits::PivotStrategy   reord) 
+            {
+                return det(determinant, A,  A.rowdim (), A.coldim (), reord);
+            }
+
+        template <class _Field>
+            template <class Matrix> typename GaussDomain<_Field>::Element& GaussDomain<_Field>::det(Element       &determinant,
+                                                                                           const Matrix  &A,
+                                                                                           unsigned long  Ni,
+                                                                                           unsigned long  Nj,
+                                                                                           SparseEliminationTraits::PivotStrategy   reord) 
+            {
+                Matrix CopyA(Ni);
+                for(unsigned long i = 0; i < Ni; ++i)
+                    CopyA[i] = A[i];
+                unsigned long rank;
+                if (reord == SparseEliminationTraits::PIVOT_NONE)
+                    NoReordering(rank, determinant, CopyA,  Ni, Nj);
+                else {
+                    InPlaceLinearPivoting(rank, determinant, CopyA,  Ni, Nj);
+                }
+                return determinant;
             }
 
 

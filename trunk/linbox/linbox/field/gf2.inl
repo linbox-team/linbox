@@ -1014,14 +1014,13 @@ namespace LinBox
 // Specialization of Gauss Domain for GF2
         template <>
 	template <class Matrix>
-	unsigned long& GaussDomain<GF2>::rankinLinearPivoting (unsigned long &rank,
-                                             Matrix        &A,
-                                             unsigned long Ni, 
-                                             unsigned long Nj,
-                                             bool           storrows)
+	unsigned long& GaussDomain<GF2>::InPlaceLinearPivoting (unsigned long &rank,
+                                                                Element       &determinant,
+                                                                Matrix        &A,
+                                                                unsigned long Ni, 
+                                                                unsigned long Nj)
 {
-
-
+    throw LinboxError("LinBox ERROR: rank for GF2 not YET implemented\n");
     return rank;
 }
 

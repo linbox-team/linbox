@@ -75,6 +75,7 @@ class SparseMatrix : public BlackboxInterface, public SparseMatrixBase<typename 
 	typedef _Field Field;
 	typedef typename Field::Element Element;
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Row Row;
+	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Rep Rep;
         typedef SparseMatrix<_Field, _Row> Self_t;
     
 
@@ -135,6 +136,13 @@ class SparseMatrix : public BlackboxInterface, public SparseMatrixBase<typename 
 	/** Copy constructor
 	 */
 	SparseMatrix (const SparseMatrix<Field, Row> &B)
+		: SparseMatrixBase<Element, _Row> (B), _F (B._F), _VD (B._F), _MD (B._F), _AT (*this)
+	{ }
+
+	/** Row type Converter constructor
+	 */
+        template<class VectorType>
+	SparseMatrix (const SparseMatrix<Field, VectorType> &B)
 		: SparseMatrixBase<Element, _Row> (B), _F (B._F), _VD (B._F), _MD (B._F), _AT (*this)
 	{ }
 
@@ -264,6 +272,8 @@ class SparseMatrix : public BlackboxInterface, public SparseMatrixBase<typename 
 	MatrixDomain<Field>                     _MD;     // Matrix domain for matrix operations
 
 	TransposeMatrix<SparseMatrix<_Field, _Row> > _AT;
+
+    	template<class F, class R> friend class SparseMatrix;
 };
 
 /** Sparse matrix factory

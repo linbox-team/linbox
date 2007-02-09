@@ -124,7 +124,7 @@ namespace LinBox {
                 typedef typename Blackbox::template rebind<Field>::other FBlackbox;
                 FBlackbox * Ap;
                 MatrixHom::map(Ap, A, F);
-                det( d, *Ap, M);
+                detin( d, *Ap, M);
 
                 if (beta > 1) {
                     typename Field::Element y;

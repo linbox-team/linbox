@@ -161,20 +161,20 @@ namespace LinBox
 		 * structure
 		 */
 
-		Preconditioner preconditioner ()     const { return _preconditioner; }
-		size_t         rank ()               const { return _rank; }
-		SingularState  singular ()           const { return _singular; }
-		bool           symmetric ()          const { return _symmetric; }
-		bool           certificate ()        const { return _certificate; }
-		unsigned long  maxTries ()           const { return _maxTries; }
-		unsigned long  earlyTermThreshold () const { return _ett; }
-		unsigned long  blockingFactor () const { return _blockingFactor; }
-		PivotStrategy strategy () const { return _strategy; }
-            	Shape shape () const { return _shape; }
-		double trustability ()   const  { return _provensuccessprobability; }
-		bool checkResult    ()    const       { return _checkResult; }
+		Preconditioner	preconditioner ()	const { return _preconditioner; }
+		size_t		rank ()			const { return _rank; }
+		SingularState	singular ()		const { return _singular; }
+		bool		symmetric ()		const { return _symmetric; }
+		bool		certificate ()		const { return _certificate; }
+		unsigned long	maxTries ()		const { return _maxTries; }
+		unsigned long	earlyTermThreshold ()	const { return _ett; }
+		unsigned long	blockingFactor ()	const { return _blockingFactor; }
+		PivotStrategy	strategy ()		const { return _strategy; }
+            	Shape		shape ()		const { return _shape; }
+		double		trustability ()		const { return _provensuccessprobability; }
+		bool		checkResult ()		const { return _checkResult; }
 #ifdef __LINBOX_HAVE_MPI
-		Communicator* communicatorp    ()    const       { return _communicatorp; }
+		Communicator* communicatorp ()		const { return _communicatorp; }
 #endif
 
 
@@ -193,11 +193,11 @@ namespace LinBox
 		void maxTries       (unsigned long n)  { _maxTries = n; }
 		void blockingFactor (unsigned long b)  { _blockingFactor = b; }
 		void strategy (PivotStrategy strategy) { _strategy = strategy; }
-		void shape (Shape s) { _shape = s; }
+		void shape          (Shape s)          { _shape = s; }
 		void trustability   (double p)         { _provensuccessprobability = p; }
 		void checkResult    (bool s)           { _checkResult = s; }
 #ifdef __LINBOX_HAVE_MPI
-		void communicatorp   (Communicator* cp) { _communicatorp = cp; }
+		void communicatorp  (Communicator* cp) { _communicatorp = cp; }
 #endif
 
 
@@ -314,9 +314,8 @@ namespace LinBox
 		 *
 		 * @param strategy Pivoting strategy to use
 		 */
-		SparseEliminationTraits (PivotStrategy strategy = PIVOT_LINEAR) 
-		{ Specifier::_strategy = (strategy) ;}
-		SparseEliminationTraits( const Specifier& S) :  Specifier(S) {}   
+		SparseEliminationTraits (PivotStrategy strategy = PIVOT_LINEAR) { Specifier::_strategy = (strategy) ;}
+		SparseEliminationTraits( const EliminationSpecifier& S) :  Specifier(S) {}   
 	};
 
 
@@ -409,7 +408,7 @@ namespace LinBox
 		typedef BlockLanczosTraits	BlockLanczos;
 		typedef SparseEliminationTraits	SparseElimination;       
 		typedef NumericalTraits		Numerical;
-		typedef BlasEliminationTraits 	BlasElimination;
+            	typedef BlasEliminationTraits 	BlasElimination;
 		typedef NonBlasEliminationTraits NonBlasElimination;
 		typedef DixonTraits             Dixon;
 		typedef BlockHankelTraits       BlockHankel;

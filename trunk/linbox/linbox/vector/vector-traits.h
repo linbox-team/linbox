@@ -361,24 +361,65 @@ namespace LinBox
 	 */
 
 	template <class Element>
-	class RawVector 
+	struct RawVector 
 	{
-	    public:
-		typedef std::vector<Element> Dense;
-		typedef std::pair<std::vector<size_t>, std::vector<Element> > Sparse;
-		typedef std::vector<std::pair<size_t, Element> > SparseSeq;
-		typedef std::map<size_t, Element> SparseMap;
-		typedef std::pair<std::vector<size_t>, std::vector<Element> > SparsePar;
-	};
+            typedef std::vector<Element> Dense;
+            typedef std::pair<std::vector<size_t>, std::vector<Element> > Sparse;
+            typedef std::vector<std::pair<size_t, Element> > SparseSeq;
+            typedef std::map<size_t, Element> SparseMap;
+            typedef std::pair<std::vector<size_t>, std::vector<Element> > SparsePar;
+            
+            template<class VType> static size_t size(const VType& d) { return d.size(); }        
+            static size_t size(const Sparse& d) { return d.first.size(); }        
+//             static size_t size(const SparsePar& d) { return d.first.size(); }      
+
+            template<class VType>
+            static VType& convert(VType& u, const VType& v) { return u = v; }
+            
+            static Dense& convert(Dense& u, const SparseSeq& v) {
+                for(typename SparseSeq::const_iterator sit = v.begin(); sit != v.end(); ++sit) {
+                    if (sit->first > u.size()) u.resize(sit->first);
+                    u[sit->first] = sit->second;
+                }
+                return u;
+            }
+            static Sparse& convert(Sparse& u, const SparseSeq& v) {
+                u.first.resize(v.size());
+                u.second.resize(v.size());
+                typename SparseSeq::const_iterator ssit = v.begin();
+                std::vector<size_t>::iterator vit = u.first.begin();
+                typename std::vector<Element>::iterator eit = u.second.begin();
+                for(; ssit != v.end(); ++ssit, ++vit, ++eit) {
+                    *vit = ssit->first;
+                    *eit = ssit->second;
+                }
+                return u;
+            }
+             static SparseSeq& convert(SparseSeq& u, const Sparse& v) {
+                u.resize(v.first.size());
+                typename SparseSeq::iterator ssit = u.begin();
+                std::vector<size_t>::const_iterator vit = v.first.begin();
+                typename std::vector<Element>::const_iterator eit = v.second.begin();
+                for(; ssit != u.end(); ++ssit, ++vit, ++eit) {
+                    ssit->first = *vit;
+                    ssit->second = *eit;
+                }
+                return u;
+            }
+                  
+                // TODO : other convertions
+            
+  	};
 
 	template <class Field>
 	struct Vector : public RawVector<typename Field::Element>
 	{
+            typedef typename Field::Element Element;
+            
             template<class U>
             struct rebind {
                 typedef Vector<U> other;
             };
-            
 	};
 
  
