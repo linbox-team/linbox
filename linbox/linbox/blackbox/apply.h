@@ -339,7 +339,7 @@ namespace LinBox {
 			LinBox::integer maxChunkVal = 1;
  			maxChunkVal <<= 53;
  			maxChunkVal /= (prime-1) * _n;
- 			chunk_size = maxChunkVal.bitsize();		
+ 			chunk_size = maxChunkVal.bitsize();	
 			use_chunks = (chunk_size >= 16);		
 			//std::cout<<"max bit= "<<maxBitSize<<" "<<maxValue.size_in_base(4)*2<<"\n";std::cout<<"max value= "<<maxValue<<"\n";
 			if (use_chunks){//std::cout<<"Matrix Qadic\n";
@@ -388,7 +388,7 @@ namespace LinBox {
 					use_neg=false;			
 				}
 				else num_chunks =(maxBitSize) / chunk_size+ (((maxBitSize % chunk_size) > 0)? 1:0);
-				
+				//num_chunks = 1;
 				if (num_chunks ==1) use_neg= false;				
 
 				//if (use_neg) num_chunks++; //the leading chunk will be negative
@@ -400,7 +400,6 @@ namespace LinBox {
 				shift= use_neg? maxValue : integer(0);
 
 				create_MatrixQadic(_D, _M, chunks, num_chunks, shift);
-
 
 #ifdef DEBUG_CHUNK_SETUP			
 				cout<<endl;
@@ -487,9 +486,8 @@ namespace LinBox {
 		}
 	
 
-			
+//#define DEBUG_CHUNK_APPLY			
 		Vector& applyV(Vector& y, Vector& x, Vector &b) const {//applyV 		
-
 
 #ifdef DEBUG_CHUNK_APPLY
 			std::cout << "x: ";
@@ -503,17 +501,19 @@ namespace LinBox {
 			switch(_switcher) {//switch
 			
 			case Classic:	
-			
 				_MD.vectorMul (y, _M, x);			
 				break;
 				
 			case MatrixQadic:
 				{// mqadic
+//temp fix
+//                                _MD.vectorMul (y, _M, x);
+//                                break;
+
 					double* dx = new double[_n];
 					for (size_t i=0; i<_n; i++) {
 						_D.convert(dx[i], x[i]);
 					}
-					
 					if (num_chunks == 1) {
 						double *ctd = new double[_m];
 						cblas_dgemv(CblasRowMajor, CblasNoTrans, _m, _n,
@@ -525,6 +525,7 @@ namespace LinBox {
 						
 					}
 					else {
+
 						//rc: number of vectors to recombine
 						//(the idea is that to compute a polynomial in the base 2^chunksize
 						// with <= 53 bits in each coefficient, we can instead OR nonoverlapping blocks
@@ -569,7 +570,8 @@ namespace LinBox {
 								std::cout<<integer(*(ctd+j))<<",";
 							std::cout<<std::endl;					       
 #endif			
-							//	if (!use_neg || i<num_chunks-1)
+							
+							//if (!use_neg || i<num_chunks-1)
 							for (size_t j=0; j<_n; j++) {
 								// up to 53 bits will be ored-in, to be summed later
 								unsigned char* bitDest = combined;
@@ -579,9 +581,7 @@ namespace LinBox {
 								*((long long*) bitDest) |= mask; 
 							}
 						}
-						
 						delete[] dx;
-						
 						for (size_t i=0; i<_n; i++) {
 							LinBox::integer result, tmp;
 							/*
@@ -600,7 +600,6 @@ namespace LinBox {
 							}
 							_D.init(y[i], result);
 						}
-						
 						// shift back the result
 						if (use_neg) {
 							Element acc;
@@ -612,7 +611,6 @@ namespace LinBox {
 							for (size_t i=0;i<y.size();++i)
 								_D.subin(y[i], acc);
 						}
-						
 						delete[] combined;
 						delete[] ctd;
 					}
@@ -621,7 +619,6 @@ namespace LinBox {
 						
 			case VectorQadic:
 				{
-					
 #ifdef TIMING_APPLY
 					Timer chrono;
 					chrono.clear();
@@ -1060,13 +1057,13 @@ namespace LinBox {
 				tmpsize    = tmp.size();
 				tmpbitsize = tmp.bitsize();
 
-				if (tmp ==0)
+				if (tmp ==0) {
 					*pdbl=0;
-				else  
+				} else  
 					if (tmp > 0) {
 					
-		
-#if LINBOX_SIZE_OF_LONG == 8
+if (sizeof(long)==8 ) {		
+//#if LINBOX_SIZE_OF_LONG == 8
 						// specialization for 64bits integer limbs
 						for (j=0; j<tmpsize-1; j++) {
 							*pdbl        =  tmp[j]        & 0xFFFF;
@@ -1089,7 +1086,8 @@ namespace LinBox {
 						}
 						if ((tmpbitsize - j*64) > 48 ) 
 							*pdbl = (tmp[tmpsize-1] >> 48)& 0xFFFF;
-#else	     	    						
+} else {
+//#else	     	    						
 						// specialization for 32bits integer limbs	   	    
 						for (j=0; j<tmpsize-1; j++) {
 							*pdbl      = tmp[j] &  0xFFFF;
@@ -1103,7 +1101,8 @@ namespace LinBox {
 						else {
 							*pdbl      = tmp[tmpsize-1] & 0xFFFF;								
 						}						
-#endif						
+}
+//#endif						
 					}
 					else {
 						++tmp;
