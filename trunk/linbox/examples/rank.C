@@ -18,6 +18,7 @@
 using namespace LinBox;
 using namespace std;
 
+/// rank or rank mod p
 int main (int argc, char **argv)
 {
     commentator.setMaxDetailLevel (-1);
@@ -45,37 +46,38 @@ int main (int argc, char **argv)
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
 		rank (r, A);
-
-		cout << "Rank is " << r << endl;
 	}
 	if (argc == 3) { 
 		double q = atof(argv[2]);
-                    typedef Modular<double> Field;
-                    Field F(q);
-		    MatrixStream<Field> ms( F, input );
-                    SparseMatrix<Field, Vector<Field>::SparseSeq > B (ms);
-                    cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
-                    if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
+		typedef Modular<double> Field;
+		Field F(q);
+		MatrixStream<Field> ms( F, input );
+		SparseMatrix<Field, Vector<Field>::SparseSeq > B (ms);
+		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
+		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
 
-
-                        // Using the adpative LinBox Solution
-                        // rank(r,B);
+		// Using the adpative LinBox Solution
+		rank(r,B);
                     
-			// using BlackBoxes
-                    Method::Blackbox MBB;
-                    MBB.certificate(true);
-                    rank(r, B, MBB);
-                    cout << "Rank is " << r << endl;
+		// using BlackBoxes
+		/*
+		Method::Blackbox MBB;
+		MBB.certificate(true);
+		rank(r, B, MBB);
+		*/
 
-			// using in place Sparse Elimination with linear pivoting
-		    Method::SparseElimination SE;
-		    SE.strategy(Specifier::PIVOT_LINEAR);
-                    rankin (r, B, SE);                    
-                    if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
-                    cout << "Rank is " << r << endl;
+		// using in place Sparse Elimination with linear pivoting
+		
+		/*
+		Method::SparseElimination SE;
+		SE.strategy(Specifier::PIVOT_LINEAR);
+		rankin (r, B, SE);                    
+		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
+		*/
 
 
 	}
 
+	cout << "Rank is " << r << endl;
 	return 0;
 }
