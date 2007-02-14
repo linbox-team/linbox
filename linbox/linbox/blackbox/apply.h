@@ -1062,8 +1062,9 @@ namespace LinBox {
 				} else  
 					if (tmp > 0) {
 					
-if (sizeof(long)==8 ) {		
-//#if LINBOX_SIZE_OF_LONG == 8
+//if (sizeof(long)==8 ) {		
+#if __LINBOX_SIZEOF_LONG  == 8
+
 						// specialization for 64bits integer limbs
 						for (j=0; j<tmpsize-1; j++) {
 							*pdbl        =  tmp[j]        & 0xFFFF;
@@ -1086,8 +1087,8 @@ if (sizeof(long)==8 ) {
 						}
 						if ((tmpbitsize - j*64) > 48 ) 
 							*pdbl = (tmp[tmpsize-1] >> 48)& 0xFFFF;
-} else {
-//#else	     	    						
+//} else {
+#else	     	    						
 						// specialization for 32bits integer limbs	   	    
 						for (j=0; j<tmpsize-1; j++) {
 							*pdbl      = tmp[j] &  0xFFFF;
@@ -1101,12 +1102,12 @@ if (sizeof(long)==8 ) {
 						else {
 							*pdbl      = tmp[tmpsize-1] & 0xFFFF;								
 						}						
-}
-//#endif						
+//}
+#endif						
 					}
 					else {
 						++tmp;
-#if LINBOX_SIZE_OF_LONG == 8
+#if __LINBOX_SIZEOF_LONG == 8
 						// specialization for 64bits integer limbs
 						for (j=0; j<tmpsize-1; j++) {
 							*pdbl        = 0xFFFF ^ ( tmp[j]        & 0xFFFF);
@@ -1202,7 +1203,7 @@ if (sizeof(long)==8 ) {
 					if (tmp > 0) {
 					
 		
-#if LINBOX_SIZE_OF_LONG == 8
+#if __LINBOX_SIZEOF_LONG == 8
 						// specialization for 64bits integer limbs
 						for (j=0; j<tmpsize-1; j++) {
 							*pdbl     =  tmp[j]        & 0xFFFF;
@@ -1243,7 +1244,7 @@ if (sizeof(long)==8 ) {
 					}
 					else {
 						++tmp;
-#if LINBOX_SIZE_OF_LONG == 8
+#if __LINBOX_SIZEOF_LONG == 8
 						// specialization for 64bits integer limbs
 						for (j=0; j<tmpsize-1; j++) {
 							*pdbl     = 0xFFFF ^ ( tmp[j]        & 0xFFFF);
@@ -1340,7 +1341,7 @@ if (sizeof(long)==8 ) {
 					if (tmp > 0) {
 					
 		
-#if LINBOX_SIZE_OF_LONG == 8
+#if __LINBOX_SIZEOF_LONG == 8
 						// specialization for 64bits integer limbs
 						for (j=0; j<tmpsize-1; j++) {
 							*pdbl     =  tmp[j] & 0xFFFFFFFF;
@@ -1361,7 +1362,7 @@ if (sizeof(long)==8 ) {
 					}
 					else {
 						++tmp;
-#if LINBOX_SIZE_OF_LONG == 8
+#if __LINBOX_SIZEOF_LONG == 8
 						// specialization for 64bits integer limbs
 						for (j=0; j<tmpsize; j++) {
 							*pdbl     = 0xFFFFFFFF ^ ( tmp[j] & 0xFFFFFFFF);
