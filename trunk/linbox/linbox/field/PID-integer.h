@@ -334,19 +334,19 @@ namespace LinBox {
 
                         } 
 
-                        if (den < 0) {
-                                Integer::negin(num);
-                                Integer::negin(den);
-                        }
+//                        if (den < 0) {
+//                                Integer::negin(num);
+//                                Integer::negin(den);
+//                        }
  
                         if (reduce) {
     
                                 // [GG, MCA, 1999] Theorem 5.26
                                 // (i)
-                            if (den < 0) {
-                                Integer::negin(num);
-                                Integer::negin(den);
-                            }
+//                            if (den < 0) {
+//                                Integer::negin(num);
+//                                Integer::negin(den);
+//                            }
 
                                 // (ii)
                             Element gg;
@@ -371,7 +371,8 @@ namespace LinBox {
                                     den = t0;
                                 }
                                 
-                                if (t0 > m/k) {
+//                                if (t0 > m/k) {
+				if (den > m/k) {
                                     if (!recursive) 
                                         std::cerr 
                                             << "*** Error *** No rational reconstruction of " 
@@ -405,6 +406,12 @@ namespace LinBox {
                                 }
                             }
                         }
+                       // (i)
+                       if (den < 0) {
+	                       Integer::negin(num);
+                               Integer::negin(den);
+                       }
+
 // std::cerr << "RatRecon End " << num << "/" << den << std::endl;
                         return true;    
                 }
