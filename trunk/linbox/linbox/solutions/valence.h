@@ -10,6 +10,8 @@
 #define __LINBOX_VALENCE_H__
 
 #include <vector>
+#include <linbox/blackbox/transpose.h>
+
 #include <linbox/solutions/minpoly.h>
 
 namespace LinBox 
