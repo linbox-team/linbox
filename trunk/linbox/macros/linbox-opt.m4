@@ -50,8 +50,11 @@ AC_TRY_RUN([	#define LinBoxSrcOnly
 		    A[i]=2.;		  
 	  	  }
     
-		  std::ofstream outlog("config.log", std::ios_base::app);
-		  outlog << std::endl;
+		  std::ofstream outlog;
+		  outlog.open("config.log", std::ofstream::out | std::ofstream::app);
+		  outlog << std::endl 
+			 << "Threshold for finite field Strassen-Winograd matrix multiplication"
+			 << std::endl;
 		  do {    
 		    chrono.start();	
 		    FFLAS::fgemm(F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
