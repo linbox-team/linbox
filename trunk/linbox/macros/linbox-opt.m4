@@ -27,6 +27,7 @@ echo   " #define __LINBOX_INT8  $LINBOX_INT8
 
 AC_TRY_RUN([	#define LinBoxSrcOnly
 		#include <iostream>
+		#include <fstream>
 		#define __LINBOX_CONFIGURATION
 		#include <linbox/config-blas.h>
 		#include <linbox/field/modular-double.h>
@@ -49,19 +50,37 @@ AC_TRY_RUN([	#define LinBoxSrcOnly
 		    A[i]=2.;		  
 	  	  }
     
+		  std::ofstream outlog("config.log", std::ios_base::app);
+		  outlog << std::endl;
 		  do {    
 		    chrono.start();	
 		    FFLAS::fgemm(F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 				 n, n, n, 1., A, n, A, n, 0., C, n, 0);
 		    chrono.stop();
-		std::cout << std::endl << "fgemm " << n << "x" << n << ": " << chrono.usertime() << " s, " << (2.0/chrono.usertime()*n/100.0*n/100.0*n/100.0) << " Mffops" << std::endl;
+		    std::cout << std::endl 
+			      << "fgemm " << n << "x" << n << ": " 
+			      << chrono.usertime() << " s, " 
+                              << (2.0/chrono.usertime()*n/100.0*n/100.0*n/100.0) << " Mffops" 
+			      << std::endl;
+		    outlog << std::endl 
+			      << "fgemm " << n << "x" << n << ": " 
+			      << chrono.usertime() << " s, " 
+                              << (2.0/chrono.usertime()*n/100.0*n/100.0*n/100.0) << " Mffops" 
+			      << std::endl;
 		    basetime= chrono.usertime();
 		    chrono.clear();
 		    chrono.start();	
 		    FFLAS::fgemm(F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 				 n, n, n, 1., A, n, A, n, 0., C, n, 1);
 		    chrono.stop();
-		std::cout << "1Wino " << n << "x" << n << ": " << chrono.usertime() << " s, " << (2.0/chrono.usertime()*n/100.0*n/100.0*n/100.0) << " Mffops" << std::endl;
+		    std::cout << "1Wino " << n << "x" << n << ": " 
+			      << chrono.usertime() << " s, " 
+			      << (2.0/chrono.usertime()*n/100.0*n/100.0*n/100.0) << " Mffops" 
+			      << std::endl;
+		    outlog << "1Wino " << n << "x" << n << ": " 
+			      << chrono.usertime() << " s, " 
+			      << (2.0/chrono.usertime()*n/100.0*n/100.0*n/100.0) << " Mffops" 
+			      << std::endl;
 		    time= chrono.usertime();
         
 		    if (basetime > time ){ 
@@ -84,6 +103,10 @@ AC_TRY_RUN([	#define LinBoxSrcOnly
 		  std::ofstream out("WinoThreshold");
 		  out<<nbest;
 		  out.close();
+
+		  outlog << "defined __LINBOX_STRASSEN_OPTIMIZATION" << std::endl
+			 << "defined __LINBOX_WINOTHRESHOLD to " << nbest << "" << std::endl;
+	          outlog.close();
 
 		  delete[] A;		 
 		  delete[] C;  
