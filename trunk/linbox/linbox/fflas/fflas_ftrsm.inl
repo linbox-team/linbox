@@ -59,16 +59,16 @@ size_t boundTrsm<Modular<double> >(const Modular<double>& F) {
 	static long unsigned int p=pi;
 	static size_t nmax =
 		//(F.balanced) ?
-		bound_compute_balanced(pi);
-		//: bound_compute(pi);
+		//bound_compute_balanced(pi);
+		bound_compute(pi);
 			      
 	if (p == pi) 
 		return nmax;
 	else 
 		return nmax=
 			//(F.balanced) ?
-			bound_compute_balanced(p=pi);
-	                // : bound_compute(p=pi);
+			//bound_compute_balanced(p=pi);
+	                 bound_compute(p=pi);
 }
 
 

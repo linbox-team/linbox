@@ -72,9 +72,9 @@ inline size_t FFLAS::FflasKmaxCompute< Modular<double> > (const Modular<double>&
 			for (size_t i=0; i < w; ++i) 	ex *= 3;
 			long long c;
 			//if (F.balanced)
-			c = (p-1)*(ex)/2; // balanced representation
+			//c = (p-1)*(ex)/2; // balanced representation
 				//else
-			//c = (p-1)*(1+ex)/2; // positive representation
+			c = (p-1)*(1+ex)/2; // positive representation
 			kmax =  ( (1ULL << DOUBLE_MANTISSA) /c/c + 1)*(1ULL << w);
 			if (kmax ==  ( 1ULL << w))
 				kmax = 2;
