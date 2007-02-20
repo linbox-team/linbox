@@ -105,17 +105,6 @@ namespace LinBox
 	}
 
 
-	// The charpoly with Hybrid Method on DenseMatrix
-	// Forces the elminination method
-	template<class Polynomial, class Field, class DomainCategory>
-	Polynomial &charpoly (Polynomial                 &P, 
-			      const DenseMatrix<Field>   &A,
-			      const DomainCategory       &tag,
-			      const Method::Hybrid       &M)
-	{
-		return charpoly(P, A, tag, Method::Blackbox(M));
-	}
-
 	// The charpoly with Elimination Method 
 	template<class Polynomial, class Blackbox, class DomainCategory>
 	Polynomial &charpoly (Polynomial                &P, 
@@ -149,7 +138,8 @@ namespace LinBox
 		return BMD.charpoly (P, static_cast<BlasMatrix<typename Blackbox::Field::Element> >(BBB));
 	}
 
-#if defined(__LINBOX_HAVE_NTL) && defined(__LINBOX_HAVE_GIVARO)
+#if 0
+	//#if defined(__LINBOX_HAVE_NTL) && defined(__LINBOX_HAVE_GIVARO)
 }
 
 #include "linbox/algorithms/cia.h"
@@ -238,7 +228,7 @@ namespace LinBox {
 		commentator.start ("Integer BlackBox Charpoly : No NTL installation -> chinese remaindering", "IbbCharpoly");
 		
 		RandomPrime genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
-		ChineseRemainder< Modular<double> > cra(3UL,A.coldim());
+		ChineseRemainder< Modular<double> > cra(1UL,A.coldim());
 		IntegerModularCharpoly<Blackbox,Method::Blackbox> iteration(A, M);
 		cra(P, iteration, genprime);
 		commentator.stop ("done", NULL, "Iminpoly");
@@ -256,7 +246,7 @@ namespace LinBox {
 		commentator.start ("Integer Dense Charpoly : No NTL installation -> chinese remaindering", "IbbCharpoly");
 		
 		RandomPrime genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
-		ChineseRemainder< Modular<double> > cra(3UL,A.coldim());
+		ChineseRemainder< Modular<double> > cra(1UL,A.coldim());
 		IntegerModularCharpoly<Blackbox,Method::BlasElimination> iteration(A, M);
 		cra(P, iteration, genprime);
 		commentator.stop ("done", NULL, "Iminpoly");
