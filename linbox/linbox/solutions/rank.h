@@ -113,9 +113,9 @@ namespace LinBox {
         const Field& F = A.field();
         integer a, b; F.characteristic(a); F.cardinality(b);
         if (a == b && a < LinBox::BlasBound)
-            return rank(r, A, tag, Method::BlasElimination(m));
-        else
-            return rank(r, A, tag, Method::NonBlasElimination( m ));
+		return rank(r, A, tag, Method::BlasElimination(m));
+	else
+		return rank(r, A, tag, Method::NonBlasElimination( m ));
     }
 
 

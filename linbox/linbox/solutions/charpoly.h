@@ -243,7 +243,7 @@ namespace LinBox {
 		if (max<-min) 
 			max=-min;
 		size_t n=A.coldim();		
-		double hadamarcp = n/2.0*(log(double(n))+2*log(double(max))+0.21163275)/log(2);
+		double hadamarcp = n/2.0*(log(double(n))+2*log(double(max))+0.21163275)/log(2.0);
 
 		ChineseRemainder< Modular<double> > cra(hadamarcp);		
 
@@ -280,7 +280,7 @@ namespace LinBox {
 		if (max<-min) 
 			max=-min;
 		size_t n=A.coldim();
-		double hadamarcp = n/2.0*(log(double(n))+2*log(double(max))+0.21163275)/log(2);
+		double hadamarcp = n/2.0*(log(double(n))+2*log(double(max))+0.21163275)/log(2.0);
 
 		
 		ChineseRemainder< Modular<double> > cra(hadamarcp);
