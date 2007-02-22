@@ -231,7 +231,7 @@ namespace LinBox {
 
 		typename Blackbox::ConstRawIterator it = A.rawBegin();
 		typename Blackbox::ConstRawIterator it_end = A.rawEnd();
-		integer max = 0,min=0;
+		integer max = 1,min=0;
 		while( it != it_end ){
 			//      cerr<<"it="<<(*it)<<endl;
 			if (max < (*it))
@@ -268,7 +268,7 @@ namespace LinBox {
 
 		typename Blackbox::ConstRawIterator it = A.rawBegin();
 		typename Blackbox::ConstRawIterator it_end = A.rawEnd();
-		integer max = 0,min=0;
+		integer max = 1,min=0;
 		while( it != it_end ){
 			//      cerr<<"it="<<(*it)<<endl;
 			if (max < (*it))

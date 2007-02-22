@@ -86,9 +86,8 @@ int main (int argc, char **argv)
 	if (argc == 2) {
 
 		UnparametricField<integer> ZZ;
-		SparseMatrix<UnparametricField<integer> > A (ZZ);
+		DenseMatrix<UnparametricField<integer> > A (ZZ);
 		A.read (input);
-		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 		typedef GivPolynomialRing<UnparametricField<integer>,Dense> IntPolRing;
 		IntPolRing::Element c_A;
 		charpoly (c_A, A);
@@ -117,7 +116,7 @@ int main (int argc, char **argv)
 		typedef Modular<double> Field;
 		double q = atof(argv[2]);
 		Field F(q);
-		SparseMatrix<Field> B (F);
+		DenseMatrix<Field> B (F);
 		B.read (input);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
 		GivPolynomial<Field::Element> c_B;
