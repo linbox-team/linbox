@@ -191,6 +191,7 @@ namespace LinBox
 		void symmetric      (bool s)           { _symmetric = s; }
 		void certificate    (bool s)           { _certificate = s; }
 		void maxTries       (unsigned long n)  { _maxTries = n; }
+		void earlyTermThreshold (unsigned long e) { _ett = e; }
 		void blockingFactor (unsigned long b)  { _blockingFactor = b; }
 		void strategy (PivotStrategy strategy) { _strategy = strategy; }
 		void shape          (Shape s)          { _shape = s; }
