@@ -10,7 +10,7 @@ AC_DEFUN([LB_CHECK_BLAS],
 [
 
 AC_ARG_WITH(blas,
-	    [  --with-blas=<lib>|yes|no 
+	    [  --with-blas=<lib>|yes 
 					   Use BLAS library. This library is mandatory for LinBox compilation. 					  
 					   If argument is yes or <empty> that means the library is reachable with the standard
 					   search path (/usr or /usr/local).
@@ -18,7 +18,7 @@ AC_ARG_WITH(blas,
 	     ],
 	     [if test "$withval" = yes ; then
 			BLAS_HOME_PATH="${DEFAULT_CHECKING_PATH}"
-	      elif test "$withval" != no ; then
+	      else
 			BLAS_HOME_PATH="$withval"
 			BLAS_VAL="$withval"
 	     fi],
