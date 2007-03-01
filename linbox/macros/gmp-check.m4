@@ -78,6 +78,9 @@ for GMP_HOME in ${GMP_HOME_PATH}
 					],[
 						AC_MSG_RESULT(no)
 						AC_DEFINE(GMP_NO_CXX,1,[Define if GMP has no <gmpxx.h>])
+						gmp_found="no"
+						unset GMP_CFLAGS
+						unset GMP_LIBS	
 						GMP_VERSION="-DGMP_NO_CXX"
 						AC_SUBST(GMP_VERSION)
 					],[
