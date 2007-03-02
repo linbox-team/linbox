@@ -58,7 +58,7 @@ class BaseTimer {
 	BaseTimer& operator -= (const BaseTimer & T) { return *this = *this - T; };
 
     public:
-	double _start_t;  // time as of start ()
+	//double _start_t;  // time as of start ()
 	double _t;        // time  
 };
 
