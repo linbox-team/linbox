@@ -100,7 +100,7 @@ LB_CHECK_GMP(,,[
 echo '*******************************************************************************'
 echo ' ERROR: GMP not found!'
 echo
-echo ' GMP version 3.1.1 or greater is required for this library to compile. Please'
+echo ' GMP version 3.1.1 or greater with --enable-cxx is required for this library to compile. Please'
 echo ' make sure GMP is installed and specify its location with the option'
 echo ' --with-gmp=<prefix> when running configure.'
 echo '*******************************************************************************'

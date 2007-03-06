@@ -9,7 +9,7 @@ AC_DEFUN([LB_CHECK_GMP],
 [
 
 AC_ARG_WITH(gmp,
-		[  --with-gmp= <path>|yes|no
+		[  --with-gmp= <path>|yes
 	   				   Use GMP library. This library is mandatory for LinBox compilation. 
 					   If argument is yes or <empty> that means the library is reachable with the standard
 					   search path "/usr" or "/usr/local"  (set as default).
@@ -76,6 +76,7 @@ for GMP_HOME in ${GMP_HOME_PATH}
 						GMP_LIBS="$GMP_LIBS -lgmpxx"
 						AC_SUBST(GMP_VERSION)
 					],[
+						gmp_found="no"	
 						AC_MSG_RESULT(no)
 						AC_DEFINE(GMP_NO_CXX,1,[Define if GMP has no <gmpxx.h>])
 						gmp_found="no"
