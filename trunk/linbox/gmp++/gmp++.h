@@ -2,14 +2,16 @@
 #define _GMPplusplus_H_
 // ========================================================================
 // LinBox version of gmp++.h
-// Time-stamp: <19 Dec 06 10:49:28 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <08 Mar 07 14:07:29 Jean-Guillaume.Dumas@imag.fr> 
 // ========================================================================
+#include <linbox-config.h>
 
 #ifndef __DONOTUSE_64__
 #define __USE_64_bits__
 #endif
 
-#if !defined(GMP_VERSION_3) && !defined(GMP_NO_CXX)
+#if !defined(GMP_VERSION_3) && !defined(GMP_NO_CXX) && !defined(__LINBOX_GMP_NO_CXX) && !defined(__LINBOX_GMP_VERSION_3)
+// gmpxx.h defines __GMP_PLUSPLUS__
 #include <gmpxx.h>
 #endif
 
