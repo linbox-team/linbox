@@ -39,7 +39,7 @@ int main (int argc, char **argv)
 
         if (argc == 3) {
             Transpose<Blackbox> T(&A);
-            if (argv[2] == "-ata") {
+            if (strcmp(argv[2],"-aat")) {
                 Compose< Transpose<Blackbox>, Blackbox > C (&T, &A);
                 std::cout << "A^T A is " << C.rowdim() << " by " << C.coldim() << std::endl;
                 valence(val_A, C);
