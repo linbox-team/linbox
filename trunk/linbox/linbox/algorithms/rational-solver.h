@@ -233,9 +233,9 @@ namespace LinBox {// LinBox
 		 * @param rp  , a RandomPrime generator, set by default		 
 		 */
 		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE), const WiedemannTraits& traits=WiedemannTraits()) : 
-			_R(r), _genprime(rp), _traits(traits){
+			_R(r), _genprime(rp), _traits(traits) {
 			
-			_prime=_genprime.randomPrime();
+			++_genprime; _prime=*_genprime;
 #ifdef RSTIMING
 			clearTimers();
 #endif
@@ -413,7 +413,7 @@ namespace LinBox {// LinBox
 		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE), const BlockWiedemannTraits& traits=BlockWiedemannTraits()) : 
 			_R(r), _genprime(rp), _traits(traits){
 			
-			_prime=_genprime.randomPrime();
+			++_genprime; _prime=*_genprime;
 #ifdef RSTIMING
 			clearTimers();
 #endif
@@ -558,7 +558,7 @@ namespace LinBox {// LinBox
 		
 	protected:
 		
-		RandomPrime                     _genprime;
+		mutable RandomPrime                     _genprime;
 		mutable Prime                   _prime;
 		Ring                            _R; 
 #ifdef RSTIMING
@@ -591,7 +591,7 @@ namespace LinBox {// LinBox
 		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) : 
 			lastCertificate(r, 0), _genprime(rp), _R(r) 
 		{
-			_prime=_genprime.randomPrime(); 
+			++_genprime; _prime=*_genprime; 
 #ifdef RSTIMING
 			clearTimers();
 #endif
@@ -712,7 +712,7 @@ namespace LinBox {// LinBox
 
 		Ring getRing() const {return _R;}
 
-		void chooseNewPrime() const {_prime = _genprime.randomPrime();}
+		void chooseNewPrime() const { ++_genprime; _prime = *_genprime; }
 
 #ifdef RSTIMING
 		void clearTimers() const

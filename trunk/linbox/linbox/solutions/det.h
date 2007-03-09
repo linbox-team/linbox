@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/solutions/det.h
  * Copyright (C) 2001, 2002 LinBox
- * Time-stamp: <09 Feb 07 17:13:46 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <09 Mar 07 16:51:06 Jean-Guillaume.Dumas@imag.fr> 
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -490,6 +490,7 @@ namespace LinBox
 #include "linbox/field/modular.h"
 //#include "linbox/field/givaro-zpz.h"
 #include "linbox/algorithms/cra-domain.h"
+#include "linbox/algorithms/cra-early-single.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
 
@@ -552,10 +553,10 @@ namespace LinBox {
 #ifdef __LINBOX_HAVE_MPI
 	   if(!C || C->rank() == 0)
 #endif
+		IntegerModularDet<Blackbox, MyMethod> iteration(A, M);
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
-		RandomPrime genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
-		ChineseRemainder< Modular<double> > cra(3UL);
-		IntegerModularDet<Blackbox,MyMethod> iteration(A, M);
+		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
+		ChineseRemainder< EarlySingleCRA< Modular<double> > > cra(4UL);
 		integer dd; // use of integer due to non genericity of cra. PG 2005-08-04
 
 		/*

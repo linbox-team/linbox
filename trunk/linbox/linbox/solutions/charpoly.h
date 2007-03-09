@@ -138,9 +138,10 @@ namespace LinBox
 		return BMD.charpoly (P, static_cast<BlasMatrix<typename Blackbox::Field::Element> >(BBB));
 	}
 
-#if 0
-	//#if defined(__LINBOX_HAVE_NTL) && defined(__LINBOX_HAVE_GIVARO)
 }
+
+	//#if 0
+#if defined(__LINBOX_HAVE_NTL) && defined(__LINBOX_HAVE_GIVARO)
 
 #include "linbox/algorithms/cia.h"
 namespace LinBox {
@@ -186,7 +187,8 @@ namespace LinBox {
 
 
 #else
-}
+
+
 #include "linbox/field/modular.h"
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/randiter/random-prime.h"
@@ -227,7 +229,7 @@ namespace LinBox {
 
 		commentator.start ("Integer BlackBox Charpoly : No NTL installation -> chinese remaindering", "IbbCharpoly");
 		
-		RandomPrime genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
+		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
 
 		typename Blackbox::ConstRawIterator it = A.rawBegin();
 		typename Blackbox::ConstRawIterator it_end = A.rawEnd();
@@ -245,7 +247,7 @@ namespace LinBox {
 		size_t n=A.coldim();		
 		double hadamarcp = n/2.0*(log(double(n))+2*log(double(max))+0.21163275)/log(2.0);
 
-		ChineseRemainder< Modular<double> > cra(hadamarcp);		
+		ChineseRemainder< FullMultipCRA<Modular<double> > > cra(hadamarcp);		
 
 		IntegerModularCharpoly<Blackbox,Method::Blackbox> iteration(A, M);
 		cra(P, iteration, genprime);
@@ -263,7 +265,7 @@ namespace LinBox {
 
 		commentator.start ("Integer Dense Charpoly : No NTL installation -> chinese remaindering", "IbbCharpoly");
 		
-		RandomPrime genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
+		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
 
 
 		typename Blackbox::ConstRawIterator it = A.rawBegin();
@@ -283,7 +285,7 @@ namespace LinBox {
 		double hadamarcp = n/2.0*(log(double(n))+2*log(double(max))+0.21163275)/log(2.0);
 
 		
-		ChineseRemainder< Modular<double> > cra(hadamarcp);
+		ChineseRemainder< FullMultipCRA<Modular<double> > > cra(hadamarcp);
 		IntegerModularCharpoly<Blackbox,Method::BlasElimination> iteration(A, M);
 		cra(P, iteration, genprime);
 		commentator.stop ("done", NULL, "Iminpoly");

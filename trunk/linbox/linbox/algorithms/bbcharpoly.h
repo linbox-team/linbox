@@ -81,10 +81,9 @@ namespace LinBox
 		size_t factnum = intFactors.size();
 
  		/* Choose a modular prime field */
- 		RandomPrime primeg (28);
- 		integer p;
-		primeg.randomPrime (p);
- 		Field F(p);
+ 		RandomPrimeIterator primeg (28);
+		++primeg;
+ 		Field F(*primeg);
 
 		/* Building the structure of factors */
 		int goal = n;

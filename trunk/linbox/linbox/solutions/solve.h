@@ -366,8 +366,8 @@ namespace LinBox
 		
 		typedef Modular<double> Field;
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
-		RandomPrime genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
-		RationalSolver<Ring, Field, RandomPrime, DixonTraits> rsolve(A.field(), genprime); 			
+		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
+		RationalSolver<Ring, Field, RandomPrimeIterator, DixonTraits> rsolve(A.field(), genprime); 			
 		SolverReturnStatus status = SS_OK;
 
 		// if singularity unknown and matrix is square, we try nonsingular solver
@@ -459,8 +459,8 @@ namespace LinBox
 		
 		typedef Modular<double> Field;
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
-		RandomPrime genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
-		RationalSolver<Ring, Field, RandomPrime, DixonTraits> rsolve(A.field(), genprime); 			
+		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
+		RationalSolver<Ring, Field, RandomPrimeIterator, DixonTraits> rsolve(A.field(), genprime); 			
 		SolverReturnStatus status = SS_OK;
 
 		// if singularity unknown and matrix is square, we try nonsingular solver
@@ -676,7 +676,7 @@ namespace LinBox {
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
 		commentator.start ("Integer CRA Solve", "Isolve");
-		RandomPrime genprime( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)); 
+		RandomPrimeIterator genprime( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)); 
 		//         RationalRemainder< Modular<double> > rra((double)
 		//                                                  ( A.coldim()/2.0*log((double) A.coldim()) ) );
 	
