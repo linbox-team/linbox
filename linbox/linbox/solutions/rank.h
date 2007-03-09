@@ -42,12 +42,11 @@ namespace LinBox {
 
 	/** 
             Compute the rank of a linear transform A over a field by selected method. 
-
             For very large and/or very sparse matrices the Wiedemann method will be faster
             (and is memory efficient).
             For some sparse matrices SparseElimination may outperform Wiedemann.
             For small or dense matrices BlasElimination will be faster.
-		\param r - output rank of A.
+	    \param r - output rank of A.
             \param - input A linear transform, member of any blackbox class.
             \param - input M may be a Method::Wiedemann (the default), a Method::BlasElimination, or a Method::SparseElimination..
             \returns  reference to r.
@@ -472,11 +471,11 @@ namespace LinBox {
         typedef Modular<double> Field;
         integer mmodulus; 
         FieldTraits<Field>::maxModulus(mmodulus);
-        RandomPrime genprime( (long) floor (log((double)mmodulus) ) );
-        genprime.randomPrime( mmodulus );
+        RandomPrimeIterator genprime( (long) floor (log((double)mmodulus) ) );
+        ++genprime;
         typedef typename Blackbox::template rebind< Field >::other FBlackbox;
         FBlackbox * Ap;
-        MatrixHom::map(Ap, A, Field(mmodulus) );
+        MatrixHom::map(Ap, A, Field(*genprime) );
         commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Integer Rank is done modulo " << mmodulus << std::endl;
         rankin(r, *Ap, RingCategories::ModularTag(), M);
         delete Ap;
@@ -576,11 +575,11 @@ namespace LinBox {
         typedef Modular<double> Field;
         integer mmodulus; 
         FieldTraits<Field>::maxModulus(mmodulus);
-        RandomPrime genprime( (long) floor (log((double)mmodulus) ) );
-        genprime.randomPrime( mmodulus );
+        RandomPrimeIterator genprime( (long) floor (log((double)mmodulus) ) );
+        ++genprime;
         typedef typename Blackbox::template rebind< Field >::other FBlackbox;
         FBlackbox * Ap;
-        MatrixHom::map(Ap, A, Field(mmodulus) );
+        MatrixHom::map(Ap, A, Field(*genprime) );
         commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Integer Rank is done modulo " << mmodulus << std::endl;
         rank(r, *Ap, RingCategories::ModularTag(), M);
         delete Ap;

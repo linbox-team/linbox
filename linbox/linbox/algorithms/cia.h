@@ -55,10 +55,9 @@ namespace LinBox
 		size_t nf = intFactors.size();
 
 		/* One modular characteristic polynomial computation */
-		RandomPrime primeg (22);
-		integer p;
-		primeg.randomPrime (p);
-		Field F(p);
+		RandomPrimeIterator primeg (22);
+		++primeg;
+		Field F(*primeg);
 		FBlackbox * fbb;
 		MatrixHom::map<Field,Blackbox> (fbb, A, F);
 		charpoly ( fieldCharPoly, *fbb, M);

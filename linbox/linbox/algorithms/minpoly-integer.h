@@ -16,7 +16,7 @@
 //#include <linbox/solutions/minpoly.h>
 #include <linbox/util/commentator.h>
 #include <linbox/ffpack/ffpack.h>
-#include <linbox/algorithms/cra-domain.h>
+#include <linbox/algorithms/cra-early-multip.h>
 
 namespace LinBox {
 
@@ -85,10 +85,10 @@ namespace LinBox {
 		integer mmodulus; 
 		FieldTraits<Field>::maxModulus(mmodulus);
 		long bits = (long) floor (log((double)mmodulus)/M_LN2);
-		RandomPrime primeg(bits); integer  prime;
+		RandomPrimeIterator primeg(bits); 
 		for (int i = 0; i < n_try; ++ i) {
-			primeg. randomPrime (prime);
-			Field F(prime);
+			++primeg;
+			Field F(*primeg);
 			MatrixHom::map (fbb, M, F);
 			//LinBox::minpoly (fp, *fbb); delete fbb;
 			minpoly (fp, *fbb); delete fbb;
@@ -122,18 +122,24 @@ namespace LinBox {
 		FieldTraits<Field>::maxModulus(mmodulus);
 		long bits = (long) floor (log((double)mmodulus)/M_LN2);
 
-		RandomPrime primeg(bits); integer prime;
+		RandomPrimeIterator primeg(bits); 
 		FBlackbox* fbb; 
 		FPoly fp (degree + 1);
 		typename FPoly::iterator fp_p;
 		y.resize (degree + 1);
 
-                ChineseRemainder< _Field > cra(3UL, degree+1);
+                EarlyMultipCRA< _Field > cra(3UL);
+                do {
+                    ++primeg;
+                    Field F(*primeg);
+                    MatrixHom::map (fbb, M, F);
+                    minpoly (fp, *fbb); delete fbb;  
+                    cra.initialize(F, fp);
+                } while( (int)fp.size() - 1 != degree); // Test for Bad primes                
+
 		while(! cra.terminated()) {
-                    primeg. randomPrime(prime);
-                    while(cra.noncoprime(prime))
-                        primeg. randomPrime(prime);   
-                    Field F(prime);
+                    ++primeg; while(cra.noncoprime(*primeg)) ++primeg;   
+                    Field F(*primeg);
                     MatrixHom::map (fbb, M, F);
                     minpoly (fp, *fbb); delete fbb;  
                     if ((int)fp.size() - 1 != degree) {
@@ -143,7 +149,7 @@ namespace LinBox {
                     }
                     cra.progress(F, fp);
 		}
-			
+                
 		cra. result (y);
                     // commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) <<  "Number of primes needed: " << cra. steps() << std::endl;
 		return y;
@@ -161,17 +167,24 @@ namespace LinBox {
 		FieldTraits<Field>::maxModulus(mmodulus);
 		long bits = (long) floor (log((double)mmodulus)/M_LN2);
 
-		RandomPrime primeg(bits); integer prime;
+		RandomPrimeIterator primeg(bits); 
 		FBlackbox* fbb; 
 		FPoly fp (degree + 1);
 		typename FPoly::iterator fp_p;
 		y.resize (degree + 1);
-                ChineseRemainder< _Field > cra(3UL, degree+1);
+
+                EarlyMultipCRA< _Field > cra(3UL);
+                do {
+                    ++primeg;
+                    Field F(*primeg);
+                    MatrixHom::map (fbb, M, F);
+                    minpolySymmetric (fp, *fbb); delete fbb;  
+                    cra.initialize(F, fp);
+                } while( (int)fp.size() - 1 != degree); // Test for Bad primes                
+
 		while(! cra.terminated()) {
-                    primeg. randomPrime(prime); 
-                    while(cra.noncoprime(prime))
-                        primeg. randomPrime(prime);   
-                    Field F(prime); 
+                    ++primeg; while(cra.noncoprime(*primeg)) ++primeg;   
+                    Field F(*primeg); 
                     MatrixHom::map (fbb, M, F); 
                     minpolySymmetric (fp, *fbb); delete fbb;
                     if ((int)fp.size() - 1 != degree) {
@@ -226,7 +239,7 @@ namespace LinBox {
 		FieldTraits<Field>::maxModulus(mmodulus);
 		long bit1 = (long) floor (log((double)mmodulus)/M_LN2);
 		long bit2 = (long) floor (log(sqrt(double(4503599627370496LL/n)))/M_LN2);
-		RandomPrime primeg(bit1 < bit2 ? bit1 : bit2); integer prime;
+		RandomPrimeIterator primeg(bit1 < bit2 ? bit1 : bit2);
 		Element* FA = new Element [n*n];
 		Element* X = new Element [n*(n+1)];
 		size_t* Perm = new size_t[n];
@@ -234,12 +247,24 @@ namespace LinBox {
 		typename DenseMatrix<Ring>::ConstRawIterator raw_p;
 		std::vector<Element> poly (degree + 1);
 		typename std::vector<Element>::iterator poly_ptr;
-                ChineseRemainder< _Field > cra(3UL, degree+1);
+
+                EarlyMultipCRA< _Field > cra(3UL);
+                do {
+                    ++primeg; while(cra.noncoprime(*primeg)) ++primeg;   
+                    Field F(*primeg);
+                    for (p = FA, raw_p = M. rawBegin(); 
+                         p != FA + (n*n); ++ p, ++ raw_p)
+                        
+                        F. init (*p, *raw_p);
+                    
+                    FFPACK::MinPoly( F, poly, n, FA, n, X, n, Perm);
+
+                    cra.initialize(F, poly);
+                } while( poly. size() != degree + 1) ; // Test for Bad primes
+
 		while (! cra. terminated()) {
-                    primeg. randomPrime(prime);
-                    while(cra.noncoprime(prime))
-                        primeg. randomPrime(prime);   
-                    Field F(prime);
+                    ++primeg; while(cra.noncoprime(*primeg)) ++primeg;   
+                    Field F(*primeg);
                     for (p = FA, raw_p = M. rawBegin(); 
                          p != FA + (n*n); ++ p, ++ raw_p)
                         
@@ -277,12 +302,12 @@ namespace LinBox {
 		FieldTraits<Field>::maxModulus(mmodulus);
 		long bit1 = (long) floor (log((double)mmodulus)/M_LN2);
 		long bit2 = (long) floor (log(sqrt(double(4503599627370496LL/n)))/M_LN2);
-		RandomPrime primeg(bit1 < bit2 ? bit1 : bit2); integer prime;
+		RandomPrimeIterator primeg(bit1 < bit2 ? bit1 : bit2); 
 		
 		typename DenseMatrix<Ring>::ConstRawIterator raw_p;
 		for (int i = 0; i < n_try; ++ i) {
-			primeg. randomPrime(prime);
-			Field F(prime);
+			++primeg;
+			Field F(*primeg);
 			for (p = FA, raw_p = M. rawBegin(); 
 				 p!= FA + (n*n); ++ p, ++ raw_p)
 				F. init (*p, *raw_p);

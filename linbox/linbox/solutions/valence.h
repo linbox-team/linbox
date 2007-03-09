@@ -3,7 +3,7 @@
 // Copyright (C)  1999, Linbox project
 // Givaro / Athapascan-1
 // Valence computation
-// Time-stamp: <15 Jul 05 13:56:57 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <09 Mar 07 18:34:05 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 // Modified by Z. Wan to fit in linbox
 #ifndef __LINBOX_VALENCE_H__
@@ -78,6 +78,7 @@ namespace LinBox
 
 #include "linbox/field/modular.h"
 #include "linbox/algorithms/cra-domain.h"
+#include "linbox/algorithms/cra-early-single.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
 
@@ -110,8 +111,8 @@ namespace LinBox {
                                                     const MyMethod                     &M)
     {
         commentator.start ("Integer Valence", "Ivalence");
-        RandomPrime genprime( 26 ); 
-        ChineseRemainder< Modular<double> > cra(3UL);
+        RandomPrimeIterator genprime( 26 ); 
+        ChineseRemainder< EarlySingleCRA< Modular<double> > > cra(3UL);
         IntegerModularValence<Blackbox,MyMethod> iteration(A, M);
         cra(V, iteration, genprime);
         commentator.stop ("done", NULL, "Ivalence");
@@ -224,10 +225,9 @@ class Valence {
 		typedef typename MatrixHomTrait<Blackbox, Field>::value_type FBlackbox;
 		FBlackbox* Ap;
 		int n_bit = (int)(log((double)Field::getMaxModulus()) / M_LN2 - 2);
-		unsigned long d; long m;
-    	RandomPrime g(n_bit); Field::Element v;
-		m = g. randomPrime ();
-		Field F(m);
+		unsigned long d; 
+                RandomPrimeIterator g(n_bit); Field::Element v;
+		++g; Field F(*g);
 		MatrixHom::map (Ap, A, F);
 		one_valence(v, d, *Ap); delete Ap;
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -248,22 +248,22 @@ class Valence {
 		typedef typename MatrixHomTrait<Blackbox, Field>::value_type FBlackbox;
 		FBlackbox* Ap;
 		int n_bit = (int)(log((double)Field::getMaxModulus()) / M_LN2 - 2);
-    	RandomPrime rg(n_bit);
+                RandomPrimeIterator rg(n_bit);
 		std::vector<integer> Lv, Lm;
-		unsigned long d1; long m; Field::Element v; integer im = 1;
+		unsigned long d1; Field::Element v; integer im = 1;
 		//compute an upper bound for val.
 		integer bound; cassini (bound, A); bound = pow (bound, d); bound *= 2;
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 			<< "Bound for valence: " << bound << std::endl;
 
 		do {
-			m = rg. randomPrime ();
-			Field F(m);
+			++rg;
+			Field F(*rg);
 			MatrixHom::map (Ap, A, F);
 			one_valence(v, d1, *Ap); delete Ap;
 			if (d1 == d) {
-				im *= m;
-				Lm. push_back (integer(m)); Lv. push_back (integer(v));
+				im *= *rg;
+				Lm. push_back ( *rg ); Lv. push_back (integer(v));
 			}
 		} while (im < bound);
 
