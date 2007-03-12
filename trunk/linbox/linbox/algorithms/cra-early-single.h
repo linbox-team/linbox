@@ -1,5 +1,5 @@
 // ======================================================================= //
-// Time-stamp: <09 Mar 07 18:03:05 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <12 Mar 07 19:38:55 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_CRA_EARLY_SINGLE_H
 #define __LINBOX_CRA_EARLY_SINGLE_H
@@ -32,7 +32,8 @@ namespace LinBox {
     public:
 
         EarlySingleCRA(const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD)
-                : primeProd_(1UL), nextM_(1UL), occurency_(0), EARLY_TERM_THRESHOLD(EARLY-1) {}
+                : primeProd_(1UL), nextM_(1UL), occurency_(0), EARLY_TERM_THRESHOLD(EARLY-1) {
+        }
 
 //         EarlySingleCRA(const Self_t& c) 
 //                 : primeProd_(c.primeProd_),
@@ -42,22 +43,22 @@ namespace LinBox {
 //                   EARLY_TERM_THRESHOLD(c.EARLY_TERM_THRESHOLD) {}
         
 
-        void initialize (const Domain& D, const DomainElement& e) {
+        virtual void initialize (const Domain& D, const DomainElement& e) {
             D.characteristic( primeProd_ );
             nextM_ = 1UL;
             D.convert( residue_, e);
             occurency_ = 1;
         }
 
-        Integer& result(Integer& d) {
+        virtual Integer& result(Integer& d) {
             return d=residue_;
         }
         
-        bool terminated() {
+        virtual bool terminated() {            
             return occurency_>EARLY_TERM_THRESHOLD;
         }
 
-        void progress (const Domain& D, const DomainElement& e) {
+        virtual void progress (const Domain& D, const DomainElement& e) {
                 // Precondition : initialize has been called once before
             primeProd_ *= nextM_; 
             D.characteristic( nextM_ );
@@ -92,10 +93,14 @@ namespace LinBox {
             }
         }
 
-        bool noncoprime(const Integer& i) const {
+        virtual bool noncoprime(const Integer& i) const {
             Integer g;
             return (gcd(g, i, primeProd_) != 1) ;
         }
+
+
+        virtual ~EarlySingleCRA() {}
+
     };
 
     

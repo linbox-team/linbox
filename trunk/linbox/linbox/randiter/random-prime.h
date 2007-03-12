@@ -1,6 +1,6 @@
 /* -*- mode:C++ -*- */
 /*  File: primeiter.h
- *  Time-stamp: <09 Mar 07 16:29:32 Jean-Guillaume.Dumas@imag.fr> 
+ *  Time-stamp: <12 Mar 07 18:35:26 Jean-Guillaume.Dumas@imag.fr> 
  */
 #ifndef __RANDOM_PRIME_ITERATOR_H__
 #define __RANDOM_PRIME_ITERATOR_H__
@@ -24,6 +24,10 @@ namespace LinBox {
                     RandomPrimeIterator::setSeed( BaseTimer::seed() );
                 else
                     RandomPrimeIterator::setSeed( seed );
+
+                integer::random(_prime,_bits-1);
+                _prime = _shift - _prime;
+                nextprime( _prime, _prime);
             }
 	  
             // define the prime type

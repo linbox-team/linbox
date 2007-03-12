@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // ======================================================================= //
-// Time-stamp: <09 Mar 07 19:43:22 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <12 Mar 07 19:40:17 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_RATIONAL_CRA_H
 #define __LINBOX_RATIONAL_CRA_H
@@ -34,7 +34,7 @@ namespace LinBox {
         
     public:
         template<class Param>
-        RationalRemainder(const Param& b) : Builder_(b) {}
+        RationalRemainder(const Param& b) : Builder_(b) { }
 
            /** \brief The Rational CRA loop
 				
@@ -59,7 +59,7 @@ namespace LinBox {
             Builder_.initialize( D, Iteration(r, D) );				
             while( ! Builder_.terminated() ) {
                 ++genprime; while(Builder_.noncoprime(*genprime) ) ++genprime;
-                Domain D(p); 
+                Domain D(*genprime); 
                 DomainElement r; D.init(r);
                 Builder_.progress( D, Iteration(r, D) );
             }
@@ -73,8 +73,8 @@ namespace LinBox {
             Vect<DomainElement> r; 
             Builder_.initialize( D, Iteration(r, D) );				
             while( ! Builder_.terminated() ) {
-                ++genprime; while(Builder_.Early_noncoprimality(*genprime) ) ++genprime;
-                Domain D(p); 
+                ++genprime; while(Builder_.noncoprime(*genprime) ) ++genprime;
+                Domain D(*genprime); 
                 Vect<DomainElement> r; 
                 Builder_.progress( D, Iteration(r, D) );
             }

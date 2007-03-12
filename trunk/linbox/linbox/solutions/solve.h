@@ -390,7 +390,7 @@ namespace LinBox
 					break;					
 				case DixonTraits::DIOPHANTINE:
 					{ 
-						DiophantineSolver<RationalSolver<Ring,Field,RandomPrime, DixonTraits> > dsolve(rsolve);
+						DiophantineSolver<RationalSolver<Ring,Field,RandomPrimeIterator, DixonTraits> > dsolve(rsolve);
 						status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
 										(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
                                         }
@@ -423,7 +423,7 @@ namespace LinBox
 				
 			case DixonTraits::DIOPHANTINE:
 				{
-					DiophantineSolver<RationalSolver<Ring,Field,RandomPrime, DixonTraits> > dsolve(rsolve);
+					DiophantineSolver<RationalSolver<Ring,Field,RandomPrimeIterator, DixonTraits> > dsolve(rsolve);
 					status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
 									(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
                                 }
@@ -482,7 +482,7 @@ namespace LinBox
 								       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 					break;					
 				case DixonTraits::DIOPHANTINE:
-					DiophantineSolver<RationalSolver<Ring,Field,RandomPrime, DixonTraits> > dsolve(rsolve);
+					DiophantineSolver<RationalSolver<Ring,Field,RandomPrimeIterator, DixonTraits> > dsolve(rsolve);
 					status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
 									(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 					break;					
@@ -511,7 +511,7 @@ namespace LinBox
 				break;
 				
 			case DixonTraits::DIOPHANTINE:
-				DiophantineSolver<RationalSolver<Ring,Field,RandomPrime, DixonTraits> > dsolve(rsolve);
+				DiophantineSolver<RationalSolver<Ring,Field,RandomPrimeIterator, DixonTraits> > dsolve(rsolve);
 				status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
 								(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 				break;
@@ -627,6 +627,7 @@ namespace LinBox
 
 #include "linbox/field/modular.h"
 #include "linbox/algorithms/rational-cra.h"
+#include "linbox/algorithms/rational-cra-early-multip.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
 #include "linbox/vector/vector-traits.h"
@@ -680,7 +681,7 @@ namespace LinBox {
 		//         RationalRemainder< Modular<double> > rra((double)
 		//                                                  ( A.coldim()/2.0*log((double) A.coldim()) ) );
 	
-		RationalRemainder< Modular<double> > rra(3UL, A.coldim());
+		RationalRemainder< EarlyMultipRatCRA< Modular<double> > > rra(3UL);
 		IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
 
 		// use of integer due to non genericity of rra (PG 2005-09-01)

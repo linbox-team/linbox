@@ -1,5 +1,5 @@
 // ======================================================================= //
-// Time-stamp: <09 Mar 07 20:20:12 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <12 Mar 07 19:38:54 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_CRA_EARLY_MULTIP_H
 #define __LINBOX_CRA_EARLY_MULTIP_H
@@ -19,7 +19,7 @@
 namespace LinBox {
     
     template<class Domain_Type>
-    struct EarlyMultipCRA : public virtual EarlySingleCRA<Domain_Type>, public virtual FullMultipCRA<Domain_Type> {
+    struct EarlyMultipCRA : public EarlySingleCRA<Domain_Type>, public FullMultipCRA<Domain_Type> {
         typedef Domain_Type			Domain;
         typedef typename Domain::Element DomainElement;
         typedef EarlyMultipCRA<Domain> 		Self_t;
@@ -33,7 +33,7 @@ namespace LinBox {
     public:
 
         EarlyMultipCRA(const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD)
-                : EarlySingleCRA<Domain>(EARLY), FullMultipCRA<Domain>(0.0) {}
+                : EarlySingleCRA<Domain>(EARLY), FullMultipCRA<Domain>() {}
 
 
      
