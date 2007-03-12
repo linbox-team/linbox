@@ -1,6 +1,6 @@
 /*
  * Written by Zhendong Wan  <wan@mail.eecis.udel.edu> 
- * Time-stamp: <11 Jan 07 18:21:58 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <12 Mar 07 19:45:32 Jean-Guillaume.Dumas@imag.fr> 
  */
 
 #ifndef __LINBOX_RATIONAL_SOLVER_ADAPTIVE_H
@@ -18,12 +18,12 @@ namespace LinBox {
             static SolverReturnStatus solveNonsingular(OutVector& num, typename IRing::Element& den, const DenseMatrix<IRing>& M, const InVector& b) {
                 linbox_check ((M. rowdim() == M. coldim()) && (b.size() == M.rowdim()) && (num. size() ==M.coldim()));
                 typedef Modular<int32> Field;
-                RationalSolver<IRing, Field, RandomPrime, NumericalTraits> numerical_solver;
+                RationalSolver<IRing, Field, RandomPrimeIterator, NumericalTraits> numerical_solver;
                 SolverReturnStatus ret;
                 ret = numerical_solver. solve(num, den, M, b);
                 
                 if (ret != SS_OK) {
-                    RationalSolver<IRing, Field, RandomPrime> solver;
+                    RationalSolver<IRing, Field, RandomPrimeIterator> solver;
                     std::vector<typename IRing::Element> Ib; Ib.reserve(b.size());
                     typename IRing::Element tmp;
                     for(typename InVector::const_iterator biter = b.begin();
@@ -43,12 +43,12 @@ namespace LinBox {
             static SolverReturnStatus solveNonsingular(OutVector& num, typename IRing::Element& den, const DenseMatrix<IRing>& M, const Container<typename IRing::Element> & b) {
                 linbox_check ((M. rowdim() == M. coldim()) && (b.size() == M.rowdim()) && (num. size() ==M.coldim()));
                 typedef Modular<int32> Field;
-                RationalSolver<IRing, Field, RandomPrime, NumericalTraits> numerical_solver;
+                RationalSolver<IRing, Field, RandomPrimeIterator, NumericalTraits> numerical_solver;
                 SolverReturnStatus ret;
                 ret = numerical_solver. solve(num, den, M, b);
                 
                 if (ret != SS_OK) {
-                    RationalSolver<IRing, Field, RandomPrime> solver;
+                    RationalSolver<IRing, Field, RandomPrimeIterator> solver;
                     ret = solver. solve(num, den, M, b);
                 }
                 

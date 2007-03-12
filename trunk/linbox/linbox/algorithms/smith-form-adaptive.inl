@@ -353,8 +353,8 @@ namespace LinBox {
 		typedef Modular<int> Field;
 		integer Val; Field::Element v; unsigned long degree;
 		typename MatrixHomTrait<Matrix, Field>::value_type* Ap;
-		RandomPrime rg ((int)(log( (double)(Field::getMaxModulus()) ) / M_LN2 - 2));
-		Field F (rg. randomPrime()); 
+		RandomPrimeIterator rg ((int)(log( (double)(Field::getMaxModulus()) ) / M_LN2 - 2));
+		Field F (*rg); 
 		MatrixHom::map (Ap, A, F);
 		Valence::one_valence (v, degree, *Ap);
 		delete Ap;
@@ -469,8 +469,8 @@ namespace LinBox {
 		typedef Modular<int> Field;
 		integer Val; Field::Element v; unsigned long degree;
 		typename MatrixHomTrait<DenseMatrix<IRing>, Field>::value_type* Ap;
-		RandomPrime rg ((int)(log( (double)(Field::getMaxModulus()) ) / M_LN2 - 2));
-		Field F (rg. randomPrime()); MatrixHom::map (Ap, A, F);
+		RandomPrimeIterator rg ((int)(log( (double)(Field::getMaxModulus()) ) / M_LN2 - 2));
+		Field F (*rg); MatrixHom::map (Ap, A, F);
 		Valence::one_valence (v, degree, *Ap);
 		delete Ap;
 		report <<"   Degree of minial polynomial of AA^T = " << degree << '\n';

@@ -23,7 +23,7 @@ namespace LinBox
 
 	/** Compute the rank of an integer matrix in place over a finite field by Gaussian elimination.
 	 */
-	template<class _Ring, class _Field, class _RandomPrime = RandomPrime>
+	template<class _Ring, class _Field, class _RandomPrime = RandomPrimeIterator>
 	class MatrixRank {
 
 	public:
@@ -33,7 +33,7 @@ namespace LinBox
 
 		Ring r;
 
-		_RandomPrime rp;
+		mutable _RandomPrime rp;
 
 		MatrixRank(const Ring& _r = Ring(), const _RandomPrime& _rp = _RandomPrime() ) : r(_r), rp (_rp) {}
 
@@ -43,7 +43,7 @@ namespace LinBox
 		template<class IMatrix>
 		long rank(const IMatrix& A) const {
 
-			Field F (rp.randomPrime());
+			Field F (*rp);
 
 			DenseMatrix<Field>* Ap;
 
@@ -61,7 +61,7 @@ namespace LinBox
 		template <class Row>
 		long rank(const SparseMatrix<Ring, Row>& A) const {
 
-			Field F (rp.randomPrime());
+			Field F (*rp);
 			typename MatrixHomTrait<SparseMatrix<Ring, Row>, Field>::value_type* Ap;
 			MatrixHom::map (Ap, A, F);
 			long result;
