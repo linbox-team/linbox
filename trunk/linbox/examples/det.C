@@ -1,5 +1,5 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-/**  * Time-stamp: <09 Feb 07 17:20:55 Jean-Guillaume.Dumas@imag.fr>
+/**  * Time-stamp: <09 Mar 07 17:05:49 Jean-Guillaume.Dumas@imag.fr>
  */
 /**\file examples/det.C examples/det.C
 \brief Determinant of sparse matrix over Z or Zp.
@@ -21,6 +21,10 @@ using namespace std;
 
 int main (int argc, char **argv)
 {
+    commentator.setMaxDetailLevel (-1);
+    commentator.setMaxDepth (-1);
+    commentator.setReportStream (std::cerr);
+
 
 	if (argc > 3) {
 		cerr << "Usage: det <matrix-file-in-supported-format> [<p>]" << endl;

@@ -38,27 +38,29 @@ int main (int argc, char **argv)
 	if (argc == 2) {
 	   int process = 0;
 	   
-		Method::Blackbox M;
+           Method::Blackbox M;
 #ifdef __LINBOX_HAVE_MPI
-      Communicator C(&argc, &argv);
-		process = C.rank();
-		M.communicatorp(&C);
+           Communicator C(&argc, &argv);
+           process = C.rank();
+           M.communicatorp(&C);
 #endif
-
-		PID_integer ZZ;
-		SparseMatrix<PID_integer> A (ZZ);
-		A.read (input);
-
-		if(process == 0)
-			cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
-
-		vector<PID_integer::Element> m_A;
-		minpoly (m_A, A, M); 
-
-      if(process == 0){
-			cout << "Minimal Polynomial is ";
-			printPolynomial (ZZ, m_A);
-		}
+           
+           PID_integer ZZ;
+           SparseMatrix<PID_integer> A (ZZ);
+           A.read (input);
+           
+           if(process == 0)
+               cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
+           
+           vector<PID_integer::Element> m_A;
+           minpoly (m_A, A, M); 
+           
+           
+           
+           if(process == 0){
+               cout << "Minimal Polynomial is ";
+               printPolynomial (ZZ, m_A);
+           }
 	}
 	if (argc == 3) { 
 
