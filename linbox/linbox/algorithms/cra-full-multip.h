@@ -1,5 +1,5 @@
 // ======================================================================= //
-// Time-stamp: <09 Mar 07 18:54:23 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <12 Mar 07 19:38:54 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_CRA_FULL_MULTIP_H
 #define __LINBOX_CRA_FULL_MULTIP_H
@@ -30,7 +30,7 @@ namespace LinBox {
        
 
     public:
-        FullMultipCRA(const double b) : LOGARITHMIC_UPPER_BOUND(b) {}
+        FullMultipCRA(const double b=0.0) : LOGARITHMIC_UPPER_BOUND(b) {}
         
         template<template<class T> class Vect>
         void initialize (const Domain& D, const Vect<DomainElement>& e) {

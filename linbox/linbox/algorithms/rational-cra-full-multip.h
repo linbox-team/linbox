@@ -1,9 +1,9 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // ======================================================================= //
-// Time-stamp: <09 Mar 07 20:20:11 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <12 Mar 07 18:42:58 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
-#ifndef __LINBOX_RATIONAL_CRA_H
-#define __LINBOX_RATIONAL_CRA_H
+#ifndef __LINBOX_RATIONAL_FULL_MULTIP_CRA_H
+#define __LINBOX_RATIONAL_FULL_MULTIP_CRA_H
 
 #include "linbox/field/PID-integer.h"
 #include "linbox/algorithms/cra-full-multip.h"
@@ -34,7 +34,7 @@ namespace LinBox {
         using Father_t::RadixOccupancy_;
         
 
-        FullMultipRatCRA(const double BOUND) : Father_t(BOUND) {}
+        FullMultipRatCRA(const double BOUND = 0.0) : Father_t(BOUND) {}
 
 		
         template<template<class T> class Vect>
