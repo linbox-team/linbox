@@ -324,7 +324,7 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations) {
 				F.assign (*(L+i*n+j), zero );
 		}
 		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, m, 
-				  0, m, L, m, Q);
+				  0, r, L, m, Q);
 		for (size_t i=0; i<m; ++i)
 			F.assign( *(L+i*n+i), one);
 		for (size_t i=0; i<m; ++i){
@@ -341,7 +341,7 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations) {
 		//		write_field (F, cerr<<"UP"<<endl, U, m, n, n);
 		// C = Q*C
 		FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, n, 
-				  0, m, U, n, Q);
+				  0, r, U, n, Q);
 		//		write_field (F, cerr<<"QUP"<<endl, U, m, n, n);
 
 		// A = L*C
