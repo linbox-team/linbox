@@ -29,6 +29,7 @@ AC_TRY_RUN([	#define LinBoxSrcOnly
 		#include <iostream>
 		#include <fstream>
 		#define __LINBOX_CONFIGURATION
+		#define _LINBOX_CONFIG_H
 		#include <linbox/config-blas.h>
 		#include <linbox/field/modular-double.h>
 		#include <linbox/fflas/fflas.h>
