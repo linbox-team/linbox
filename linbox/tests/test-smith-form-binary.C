@@ -195,7 +195,7 @@ int main(int argc, char** argv) {
 
 	typedef Modular<LinBox::int32> Field;
 
-	typedef RationalSolver<Ring, Field, LinBox::RandomPrime> Solver;
+	typedef RationalSolver<Ring, Field, LinBox::RandomPrimeIterator> Solver;
 
 	typedef LastInvariantFactor<Ring, Solver> LIF;
 
