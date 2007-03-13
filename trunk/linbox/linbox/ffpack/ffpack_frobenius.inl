@@ -131,12 +131,8 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 				}
 			Polynomial P (dK [i]+1);
 			F.assign(P[dK[i]], one);
-			cerr<<"Recovery in preconditionning P =";
-			for (size_t j=0; j < dK [i]; ++j){
+			for (size_t j=0; j < dK [i]; ++j)
 				F.neg (P [dK [i]-j-1], *(K2b + i*ldk + (offset-j)));
-				cerr<<" "<<P[dK[i]-j-1];
-			}
-			cerr<<endl;
 			frobeniusForm.push_front(P);
 			offset -= dK [i];
 			Ncurr -= dK [i];
