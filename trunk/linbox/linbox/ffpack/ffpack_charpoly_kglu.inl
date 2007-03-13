@@ -1,16 +1,15 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/ffpack/ffpack_charpoly_kglu.inl
- * Copyright (C) 2003 Clement Pernet
+/* ffpack/ffpack_charpoly_kglu.inl
+ * Copyright (C) 2005 Clement Pernet
  *
  * Written by Clement Pernet <Clement.Pernet@imag.fr>
  *
  * See COPYING for license information.
  */
 
-// removes zero dimension blocks
 template<class Field>
-size_t LinBox::FFPACK::updateD(const Field& F, size_t * d, size_t k,
+size_t FFPACK::updateD(const Field& F, size_t * d, size_t k,
 			       std::vector<std::vector<typename Field::Element> >& minpt){
 	size_t ind=0, i=0;
 	while(i<k){
@@ -30,7 +29,7 @@ size_t LinBox::FFPACK::updateD(const Field& F, size_t * d, size_t k,
 
 // Compute the new d after a LSP ( d[i] can be zero )
 template<class Field>
-size_t LinBox::FFPACK::newD( const Field& F, size_t * d, bool& KeepOn, 
+size_t FFPACK::newD( const Field& F, size_t * d, bool& KeepOn, 
 			       const size_t l, const size_t N, 
 			       typename Field::Element * X,
 			       const size_t * Q,
@@ -69,13 +68,6 @@ size_t LinBox::FFPACK::newD( const Field& F, size_t * d, bool& KeepOn,
 			KeepOn = true;
 	} // Invariant: sum(d[i],i=0..k-1) = n
 	
-#if DEBUG==2
-	cerr<<"newD"<<endl;
-	cerr<<"k="<<ind<<endl;
-	cerr<<"d=";
-	for (j=0;j<i;++j) cerr<<d[j]<<" ";
-	cerr<<endl;
-#endif
 	return i;
 }
 
@@ -85,7 +77,7 @@ size_t LinBox::FFPACK::newD( const Field& F, size_t * d, bool& KeepOn,
 //---------------------------------------------------------------------
 template <class Field, class Polynomial>
 std::list<Polynomial>&
-LinBox::FFPACK::KellerGehrig( const Field& F, std::list<Polynomial>& charp, const size_t N,
+FFPACK::KellerGehrig( const Field& F, std::list<Polynomial>& charp, const size_t N,
 				const typename Field::Element * A, const size_t lda ){
 	
 	
@@ -108,8 +100,8 @@ LinBox::FFPACK::KellerGehrig( const Field& F, std::list<Polynomial>& charp, cons
 	typename Polynomial::iterator it;
 	size_t i=0, l=1, j, k=N,  cpt, newRowNb, nrowX, ind;
 	bool  KeepOn;
-	F.init( one, 1UL);
-	F.init( zero, 0UL);
+	F.init( one, 1.0);
+	F.init( zero, 0.0);
 
 	for ( i=0; i<N; ++i)
 		dv[i] = dold[i] = d[i] = 1;

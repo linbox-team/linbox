@@ -1,13 +1,12 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/fflas/fflas_fdot.inl
+/* fflas_fdot.inl
  * Copyright (C) 2005 Clement Pernet
  *
  * Written by Clement Pernet <Clement.Pernet@imag.fr>
  *
  * See COPYING for license information.
  */
-namespace LinBox{
 // Default implementation
 // Specializations should be written
 // to increase efficiency
@@ -34,4 +33,4 @@ FFLAS::fdot( const DoubleDomain& F, const size_t N,
 	
 	return cblas_ddot( N, x, incx, y, incy );
 }
-}//namespace LinBox
+
