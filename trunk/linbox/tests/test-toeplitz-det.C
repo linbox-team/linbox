@@ -24,7 +24,7 @@ int main() {
 	bool pass = true;
 #ifdef __LINBOX_HAVE_NTL
 	srandom(time(0));
-	RandomPrime rp;
+	RandomPrimeIterator rp;
 	NTL_zz_p::RandIter rand;
 	report << "\tUsing random primes and square matrices of size 2 to " << N_BOUND << endl;
 	int toDel = 0;
@@ -40,9 +40,8 @@ int main() {
 		}
 		size_t n;
 		do { n = random() % N_BOUND; } while( n < 2 );
-		integer modulus = rp.randomPrime();
 
-		NTL_zz_p CF( modulus );
+		NTL_zz_p CF( *rp );
 		NTL_zz_pX PF(CF);
 		
 		DenseMatrix<NTL_zz_p> A(CF,n,n);
