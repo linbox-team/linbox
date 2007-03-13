@@ -1102,8 +1102,7 @@ namespace LinBox {
 			size_t n = A.coldim();
 			P.clear();
 			linbox_check( n == A.rowdim());
-			FFPACK::CharPoly( F, P, n, A.getPointer(), A.getStride(),
-					    FFPACK::FfpackLUK);
+			FFPACK::CharPoly( F, P, n, A.getPointer(), A.getStride());
 			return P;
 		}
 	};
