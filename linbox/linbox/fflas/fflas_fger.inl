@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/fflas/fflas_fger.inl
+/* fflas/fflas_fger.inl
  * Copyright (C) 2005 Clement Pernet
  *
  * Written by Clement Pernet <Clement.Pernet@imag.fr>
@@ -8,8 +8,6 @@
  * See COPYING for license information.
  */
 
-namespace LinBox{
-	
 template<class Field>
 inline void
 FFLAS::fger (const Field& F, const size_t M, const size_t N,
@@ -81,4 +79,3 @@ FFLAS::fger( const DoubleDomain& D, const size_t M, const size_t N,
 	
 	cblas_dger( CblasRowMajor, M, N, alpha, x, incx, y, incy, A, lda );
 }
-}//namespace LinBox

@@ -9,7 +9,9 @@ pkgincludesub_HEADERS = \
 	fflas_fdot.inl			\
 	fflas_ftrsm.inl			\
 	fflas_ftrmm.inl			\
-	fflas_ftrsv.inl			
+	fflas_ftrsv.inl			\
+	fflas_fcopy.inl			\
+	fflas_bounds.inl
 
 EXTRA_DIST = fflas.doxy
 

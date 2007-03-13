@@ -1,6 +1,6 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+//* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/ffpack/ffpack_charpoly_danilevski.inl
+/* ffpack/ffpack_charpoly_danilevski.inl
  * Copyright (C) 2005 Clement Pernet
  *
  * Written by Clement Pernet <Clement.Pernet@imag.fr>
@@ -19,11 +19,11 @@
 
 template <class Field, class Polynomial>
 std::list<Polynomial>&
-LinBox::FFPACK::Danilevski (const Field& F, std::list<Polynomial>& charp, 
+FFPACK::Danilevski (const Field& F, std::list<Polynomial>& charp, 
 			    const size_t N, typename Field::Element * A, 
 			    const size_t lda){	
 	static typename Field::Element one, mone;
-	F.init(one, 1UL);
+	F.init(one, 1.0);
 	F.neg(mone, one);
 	charp.clear();
 	size_t dtot=0;
@@ -63,7 +63,6 @@ LinBox::FFPACK::Danilevski (const Field& F, std::list<Polynomial>& charp,
 			}
 		}
 		if (i==N){// completed one companion block
-		
 			d = k+1-dtot;
 			typename Field::Element *Ai = A+k+dtot*lda;
 			Polynomial * P = new Polynomial(d+1);

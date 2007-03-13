@@ -1,13 +1,13 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/fflas/fflas_ftrsv.inl
+/* fflas/fflas_ftrsv.inl
  * Copyright (C) 2005 Clement Pernet
  *
  * Written by Clement Pernet <Clement.Pernet@imag.fr>
  *
  * See COPYING for license information.
  */
-namespace LinBox{
+
 //---------------------------------------------------------------------
 // ftrsv: TRiangular System solve with vector
 // Computes  X <- op(A^-1).X
@@ -86,4 +86,3 @@ FFLAS::ftrsv (const Field& F, const enum FFLAS_UPLO Uplo,
 		}
 	}
 }
-}//namespace LinBox

@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/ffpack/ffpack_charpoly_kgfast.inl
+/* ffpack/ffpack_charpoly_kgfast.inl
  * Copyright (C) 2004 Clement Pernet
  *
  * Written by Clement Pernet <Clement.Pernet@imag.fr>
@@ -19,16 +19,16 @@
 
 template <class Field, class Polynomial>
 int
-LinBox::FFPACK::KGFast ( const Field& F, std::list<Polynomial>& charp, 
+FFPACK::KGFast ( const Field& F, std::list<Polynomial>& charp, 
 			   const size_t N,
 			   typename Field::Element * A, const size_t lda,
 			   size_t * kg_mc, size_t* kg_mb, size_t* kg_j ){
 	
 	//std::cerr<<"Dans KGFast"<<std::endl;
 	static typename Field::Element one, zero, mone;
-	F.init(one, 1UL);
+	F.init(one, 1.0);
 	F.neg(mone, one);
-	F.init(zero, 0UL);
+	F.init(zero, 0.0);
 	size_t mc=N>>1; // Matrix A is transformed into a mc_Frobenius form
         size_t mb=N-mc;
 	size_t r;
@@ -197,28 +197,22 @@ LinBox::FFPACK::KGFast ( const Field& F, std::list<Polynomial>& charp,
 
 template<class Field>
 void 
-LinBox::FFPACK::fgemv_kgf( const Field& F,  const size_t N, 
+FFPACK::fgemv_kgf( const Field& F,  const size_t N, 
 			     const typename Field::Element * A, const size_t lda,
 			     const typename Field::Element * X, const size_t incX,
 			     typename Field::Element * Y, const size_t incY, 
 			     const size_t kg_mc, const size_t kg_mb, const size_t kg_j ){
 
 	typename Field::Element one, zero;
-	F.init(one, 1UL);
-	F.init(zero, 0UL);
-
+	F.init(one, 1.0);
+	F.init(zero, 0.0);
 	size_t lambda = MAX(N-kg_mb-kg_mc*(kg_j+1),0);
-
 	// Y1 <- X2
 	fcopy ( F, lambda, Y, incY, X+(kg_mb+kg_mc)*incX, incX );
-
 	// Y2 <- X.B
 	fgemv( F, FflasTrans, N, kg_mb, one, A+N-kg_mc-kg_mb, lda, X, incX, zero, Y+lambda*incY, incY );
-
 	// Y3 <- X3
 	fcopy ( F, kg_j*kg_mc, Y+(lambda+kg_mb)*incY, incY, X+(lambda+kg_mb+kg_mc)*incX, incX );
-	
 	// Y4 <- X.C
 	fgemv( F, FflasTrans, N, kg_mc, one, A+N-kg_mc, lda, X, incX, zero, Y+(N-kg_mc)*incY, incY );
-
 }

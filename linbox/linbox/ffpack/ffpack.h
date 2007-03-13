@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/ffpack/ffpack.h
- * Copyright (C) 2003 Clement Pernet
+/* ffpack.h
+ * Copyright (C) 2005 Clement Pernet
  *
  * Written by Clement Pernet <Clement.Pernet@imag.fr>
  *
@@ -10,26 +10,21 @@
 
 #ifndef __FFPACK_H
 #define __FFPACK_H
-//#define DEBUG 2
-template<class Field>
-std::ostream& write_field (const Field& F, std::ostream& os, const typename Field::Element* A, size_t M, size_t N, size_t lda){
-	os<<"----------------------------\n";
-	for (size_t i=0;i<M;i++){
-		for (size_t j=0;j<N;j++)
-			F.write(os,*(A+j+i*lda))<<",";
-		os<<std::endl;
-	}
-	return os<<"----------------------------\n";
-}
 
-
+#ifdef _LINBOX_CONFIG_H
 #include "linbox/fflas/fflas.h"
-//#include <linbox/../examples/Matio.h>
+#else
+#include "fflas.h"
+#endif
+
 #include <list>
 #include <vector>
 
+#ifdef _LINBOX_CONFIG_H
 namespace LinBox{
+#endif
 
+#define __FFPACK_LUDIVINE_CUTOFF 100
 	/**
 	 * \brief Set of elimination based routines for dense linear algebra with matrices over finite prime field of characteristic less than 2^26.
 	 *
@@ -39,6 +34,7 @@ namespace LinBox{
 	 * level routines based on elimination.
 	 \ingroup ffpack
 	 */
+
 class FFPACK : public FFLAS {
 	
 	
@@ -50,9 +46,12 @@ public:
 				   FfpackKG=2,
 				   FfpackHybrid=3,
 				   FfpackKGFast=4,
-				   FfpackHybrid2=5,
-				   FfpackDanilevski=6,
-				   FfpackKGFastG=7};
+				   FfpackDanilevski=5,
+				   FfpackArithProg=6,
+				   FfpackKGFastG=7
+	};
+	
+	class CharpolyFailed{};
 	
 	enum FFPACK_MINPOLY_TAG { FfpackDense=1,
 				    FfpackKGF=2 };
@@ -65,44 +64,54 @@ public:
 	 * @param A input matrix
 	 * @param lda leading dimension of A
 	 */
-	
+	/// using LQUP factorization.
 	template <class Field>
 	static size_t 
 	Rank( const Field& F, const size_t M, const size_t N,
-	      typename Field::Element * A, const size_t lda){
+	      typename Field::Element * A, const size_t lda)
+	{
 		size_t *P = new size_t[N];
 		size_t *Q = new size_t[M];
-		size_t R = LUdivine( F, FflasUnit, M, N, A, lda, P, Q, FfpackLQUP);
+		size_t R = LUdivine( F, FflasNonUnit, M, N, A, lda, P, Q, FfpackLQUP);
 		delete[] Q;
 		delete[] P;
 		return R;
  	}
 
-	//---------------------------------------------------------------------
-	// IsSingular: return true if A is singular ( A is modified)
-	// ( using rank computation with early termination ) 
-	//---------------------------------------------------------------------
-	
-	/// \brief  using rank computation with early termination. 
+	/**
+	 * Returns true if the given matrix is singular.
+	 * The method is a block elimination with early termination
+	 * The input matrix is modified. 
+	 * @param M row dimension of the matrix
+	 * @param N column dimension of the matrix
+	 * @param A input matrix
+	 * @param lda leading dimension of A
+	 */
+	/// using LQUP factorization  with early termination. 
 	template <class Field>
 	static bool 
 	IsSingular( const Field& F, const size_t M, const size_t N,
-		    typename Field::Element * A, const size_t lda){
-		
+		    typename Field::Element * A, const size_t lda)
+	{
 		size_t *P = new size_t[N];
 		size_t *Q = new size_t[M];
-		bool singular  = !LUdivine( F, FflasNonUnit, M, N, A, lda, P, Q, FfpackSingular);
+		bool singular  = !LUdivine( F, FflasNonUnit, M, N, A, lda, 
+					    P, Q, FfpackSingular);
 		
 		delete[] P;
 		delete[] Q;
 		return singular;
  	}
 	
-	//---------------------------------------------------------------------
-	// Det: return det(A)
-	// ( using LQUP factorization  with early termination ) 
-	//---------------------------------------------------------------------
-	
+	/**
+	 * Returns the determinant of the given matrix.
+	 * The method is a block elimination with early termination
+	 * The input matrix is modified. 
+	 * @param M row dimension of the matrix
+	 * @param N column dimension of the matrix
+	 * @param A input matrix
+	 * @param lda leading dimension of A
+	 */
 	///  using LQUP factorization  with early termination. 
 	template <class Field>
 	static typename Field::Element
@@ -115,17 +124,16 @@ public:
 		size_t *Q = new size_t[M];
 		singular  = !LUdivine( F, FflasNonUnit, M, N, A, lda, P, Q, FfpackSingular);
 		if (singular){
-			F.init(det,0);
+			F.init(det,0.0);
 			delete[] P;
 			delete[] Q; 
 			return det;
 		}
 		else{
-			F.init(det,1);
+			F.init(det,1.0);
 			typename Field::Element *Ai=A;
 			for (; Ai < A+ M*lda+N; Ai+=lda+1 )
 				F.mulin( det, *Ai );
-
 			int count=0;
 			for (size_t i=0;i<N;++i)
 				if (P[i] != i) ++count;
@@ -137,21 +145,30 @@ public:
 		delete[] Q; 
 		return det;
  	}
-	//---------------------------------------------------------------------
-	// Solve ( using LQUP factorization  ) 
-	//---------------------------------------------------------------------
-	
+
+	/**
+	 * Solve the system Ax=b, using LQUP factorization and
+	 * two triangular system resolutions.
+	 * The input matrix is modified. 
+	 * @param M row dimension of the matrix
+	 * @param A input matrix
+	 * @param lda leading dimension of A
+	 * @param x solution vector
+	 * @param incX increment of x
+	 * @param b right hand side vector
+	 * @param incB increment of b
+	 */
 	/// Solve linear system using LQUP factorization. 
 	template <class Field>
 	static typename Field::Element*
 	Solve( const Field& F, const size_t M,
-		typename Field::Element * A, const size_t lda,
-		typename Field::Element * x, const int incx,
-		const typename Field::Element * b, const int incb ){
-		
+	       typename Field::Element * A, const size_t lda,
+	       typename Field::Element * x, const int incx,
+	       const typename Field::Element * b, const int incb )
+	{
 		typename Field::Element one, zero;
-		F.init(one,1);
-		F.init(zero,0);
+		F.init(one,1.0);
+		F.init(zero,0.0);
 
 		size_t *P = new size_t[M];
 		size_t *rowP = new size_t[M];
@@ -178,10 +195,19 @@ public:
 		}
  	}
 	
-	//---------------------------------------------------------------------
-	// Invert ( using LQUP factorization  ) 
-	//---------------------------------------------------------------------
-	
+	/**
+	 * Invert the given matrix or computes its nullity if it is singular.
+	 * The standart 8/3n^3 algorithm is used.
+	 * The input matrix is modified. 
+	 * @param M order of the matrix
+	 * @param A input matrix
+	 * @param lda leading dimension of A
+	 * @param X inverse of A
+	 * @param ldx leading dimension of X
+	 * @param nullity dimension of the kernel of A
+	 */
+	/// Invert a matrix or return its nullity
+
 	template <class Field>
 	static typename Field::Element*
 	Invert( const Field& F, const size_t M,
@@ -190,8 +216,8 @@ public:
 		int& nullity) 
 	{
 		typename Field::Element one, zero;
-		F.init (one,1);
-		F.init (zero,0);
+		F.init (one,1.0);
+		F.init (zero,0.0);
 
 		size_t *P = new size_t[M];
 		size_t *rowP = new size_t[M];
@@ -220,6 +246,18 @@ public:
 		return X;
 	}
 	
+	/**
+	 * Invert the given matrix or computes its nullity if it is singular.
+	 * An improved 2n^3 algorithm is used.
+	 * The input matrix is modified. 
+	 * @param M order of the matrix
+	 * @param A input matrix
+	 * @param lda leading dimension of A
+	 * @param X inverse of A
+	 * @param ldx leading dimension of X
+	 * @param nullity dimension of the kernel of A
+	 */
+	/// Invert a matrix or return its nullity
 	template <class Field>
 	static typename Field::Element*
 	Invert2( const Field& F, const size_t M,
@@ -228,8 +266,8 @@ public:
 		 int& nullity){
 		
 		typename Field::Element one, zero;
-		F.init(one,1);
-		F.init(zero,0);
+		F.init(one,1.0);
+		F.init(zero,0.0);
 
 		size_t *P = new size_t[M];
 		size_t *rowP = new size_t[M];
@@ -246,7 +284,6 @@ public:
 					F.assign(*(X+i*ldx+j), zero);
 			// X = L^-1 in n^3/3
 			invL( F, M, A, lda, X, ldx );
-
 			// X = Q^-1.X is not necessary since Q = Id
 			
 			// X = U^-1.X
@@ -282,8 +319,8 @@ public:
 				      typename Field::Element * X, const size_t ldx){
 		
 		typename Field::Element one, zero;
-		F.init(one,1);
-		F.init(zero,0);
+		F.init(one,1.0);
+		F.init(zero,0.0);
 
 		// upper entries are okay, just need to move up bottom ones
 		const size_t* srcRow = QtPointer;
@@ -312,25 +349,50 @@ public:
 	//---------------------------------------------------------------------
 	template <class Field>
 	static size_t 
-	TURBO( const Field& F, const size_t M, const size_t N,		
-	       typename Field::Element * NW, const size_t ld1,
-	       typename Field::Element * NE, const size_t ld2,
-	       typename Field::Element * SW, const size_t ld3,
-	       typename Field::Element * SE, const size_t ld4	 );
-
-	//---------------------------------------------------------------------
-	// LUdivine: LUP factorisation of A 
-	// P is the permutation matrix stored in an array of indexes
-	//---------------------------------------------------------------------
-	
+	TURBO (const Field& F, const size_t M, const size_t N,
+	       typename Field::Element* A, const size_t lda, size_t * P, size_t * Q, const size_t cutoff);
+		
+	/** 
+	 * Compute the LQUP factorization of the given matrix using
+	 * a block agorithm and return its rank. 
+	 * The permutations P and Q are represented
+	 * using LAPACK's convention.
+	 * @param Diag  precise whether U should have a unit diagonal or not
+	 * @param M matrix row dimension
+	 * @param N matrix column dimension
+	 * @param A input matrix
+	 * @param lda leading dimension of A
+	 * @param P the column permutation
+	 * @param Q the row permutation
+	 * @param LuTag flag for setting the earling termination if the matrix
+	 * is singular
+	 */
+	/// LQUP factorization.	
 	template <class Field>
 	static size_t 
-	LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
+	LUdivine (const Field& F, const enum FFLAS_DIAG Diag,
 		  const size_t M, const size_t N,
 		  typename Field::Element * A, const size_t lda,
-		  size_t* P, size_t* Q, const enum FFPACK_LUDIVINE_TAG LuTag=FfpackLQUP);
+		  size_t* P, size_t* Q,
+		  const enum FFPACK_LUDIVINE_TAG LuTag=FfpackLQUP,
+		  const size_t cutoff=__FFPACK_LUDIVINE_CUTOFF);
+
+// 	template <class Field>
+// 	static size_t 
+// 	LUdivine_block (const Field& F, const enum FFLAS_DIAG Diag,
+// 			const size_t M, const size_t N,
+// 			typename Field::Element * A, const size_t lda,
+// 			size_t* P, size_t* Q,
+// 			const enum FFPACK_LUDIVINE_TAG LuTag=FfpackLQUP,
+// 			const size_t cutoff=2);
         
-	
+	template <class Field>
+	static size_t 
+	LUdivine_small (const Field& F, const enum FFLAS_DIAG Diag,
+			const size_t M, const size_t N,
+			typename Field::Element * A, const size_t lda,
+			size_t* P, size_t* Q, const enum FFPACK_LUDIVINE_TAG LuTag=FfpackLQUP);
+       	
 	// Apply a permutation submatrix of P (between ibeg and iend) to a matrix
 	// to (iend-ibeg) vectors of size M stored in A (as column for NoTrans 
 	// and rows for Trans)
@@ -391,7 +453,7 @@ public:
 	static std::list<Polynomial>&
 	CharPoly( const Field& F, std::list<Polynomial>& charp, const size_t N,
 		  typename Field::Element * A, const size_t lda,
-		  const enum FFPACK_CHARPOLY_TAG CharpTag= FfpackHybrid);
+		  const enum FFPACK_CHARPOLY_TAG CharpTag= FfpackArithProg);
 	
 	//---------------------------------------------------------------------
 	// MinPoly: Compute the minimal polynomial of (A,v) using an LUP 
@@ -409,7 +471,7 @@ public:
 
 
 	// Solve L X = B or X L = B in place
-	// L is M*M if Side == FflasLeft and N*N if Side == FflasRigt, B is M*N.
+	// L is M*M if Side == FflasLeft and N*N if Side == FflasRight, B is M*N.
 	// Only the R non trivial column of L are stored in the M*R matrix L
 	// Requirement :  so that L could  be expanded in-place
 	template<class Field>
@@ -421,26 +483,28 @@ public:
 		 typename Field::Element * B, const size_t ldb ){
 		
 		 typename Field::Element one, zero;
-		F.init(one, 1);
-		F.init(zero, 0);
+		F.init(one, 1.0);
+		F.init(zero, 0.0);
+		size_t LM = (Side == FflasRight)?N:M;
 		for (int i=R-1; i>=0; --i){
 			if (  Q[i] > (size_t) i){
 				//for (size_t j=0; j<=Q[i]; ++j)
 				//F.init( *(L+Q[i]+j*ldl), 0 );
-				fcopy( F, M-Q[i]-1, L+Q[i]*(ldl+1)+ldl,ldl, L+(Q[i]+1)*ldl+i, ldl );
-				for ( size_t j=Q[i]*ldl; j<M*ldl; j+=ldl)
+				//cerr<<"1 deplacement "<<i<<"<-->"<<Q[i]<<endl;
+				fcopy( F, LM-Q[i]-1, L+Q[i]*(ldl+1)+ldl,ldl, L+(Q[i]+1)*ldl+i, ldl );
+				for ( size_t j=Q[i]*ldl; j<LM*ldl; j+=ldl)
 					F.assign( *(L+i+j), zero );
 			}
 		}
 		ftrsm( F, Side, FflasLower, FflasNoTrans, FflasUnit, M, N, one, L, ldl , B, ldb);
-		
+		//write_field(F,cerr<<"dans solveLB "<<endl,L,N,N,ldl);
 		// Undo the permutation of L
 		for (size_t i=0; i<R; ++i){
 			if ( Q[i] > (size_t) i){
 				//for (size_t j=0; j<=Q[i]; ++j)
 				//F.init( *(L+Q[i]+j*ldl), 0 );
-				fcopy( F, M-Q[i]-1, L+(Q[i]+1)*ldl+i, ldl, L+Q[i]*(ldl+1)+ldl,ldl );
-				for ( size_t j=Q[i]*ldl; j<M*ldl; j+=ldl)
+				fcopy( F, LM-Q[i]-1, L+(Q[i]+1)*ldl+i, ldl, L+Q[i]*(ldl+1)+ldl,ldl );
+				for ( size_t j=Q[i]*ldl; j<LM*ldl; j+=ldl)
 					F.assign( *(L+Q[i]+j), zero );
 			}
 		} 
@@ -460,8 +524,8 @@ public:
 
 		
 		typename Field::Element Mone, one;
-		F.init( Mone, -1 );
-		F.init( one, 1 );
+		F.init( Mone, -1.0 );
+		F.init( one, 1.0 );
 		typename Field::Element * Lcurr,* Rcurr,* Bcurr;
 		size_t ib, k, Ldim;
 		//cerr<<"In solveLB"<<endl;
@@ -487,18 +551,20 @@ public:
 		else{ // Side == FflasRight
 			int j=R-1;
 			while ( j >=0 ) {
+				//cerr<<"j="<<j<<endl;
 				k = ib = Q[j];
 				while ( (j>=0) &&  (Q[j] == k)  ) {--k;--j;}
 				Ldim = ib-k;
+				//cerr<<"Ldim, ib, k, N = "<<Ldim<<" "<<ib<<" "<<k<<" "<<N<<endl;
 				Lcurr = L + j+1 + (k+1)*ldl;
 				Bcurr = B + ib;
 				Rcurr = Lcurr + Ldim*ldl;
-				fgemm( F, FflasNoTrans, FflasNoTrans, M, N-ib-1, Ldim, Mone, Bcurr, ldb, Rcurr, ldl,  one, Bcurr-Ldim, ldb);
+				fgemm (F, FflasNoTrans, FflasNoTrans, M,  Ldim, N-ib-1, Mone, Bcurr, ldb, Rcurr, ldl,  one, Bcurr-Ldim, ldb);
 				//cerr<<"j avant="<<j<<endl;
 				//cerr<<"k, ib, j, R "<<k<<" "<<ib<<" "<<j<<" "<<R<<endl;
 				//cerr<<"M,k="<<M<<" "<<k<<endl;
 				//cerr<<" ftrsm with M, N="<<Ldim<<" "<<N<<endl;
-				ftrsm( F, Side, FflasLower, FflasNoTrans, FflasUnit, M, Ldim, one, Lcurr, ldl , Bcurr-Ldim, ldb );
+				ftrsm (F, Side, FflasLower, FflasNoTrans, FflasUnit, M, Ldim, one, Lcurr, ldl , Bcurr-Ldim, ldb );
 				//cerr<<"M,k="<<M<<" "<<k<<endl;
 				//cerr<<" fgemm with M, N, K="<<M-k<<" "<<N<<" "<<Ldim<<endl;
 			}
@@ -511,6 +577,52 @@ public:
 		invL(F,N,L,ldl,X,ldx);
 	}
 	
+	template <class Field>
+	static size_t KrylovElim( const Field& F, const size_t M, const size_t N,		
+				  typename Field::Element * A, const size_t lda, size_t*P, 
+				  size_t *Q, const size_t deg, size_t *iterates, size_t * inviterates, const size_t maxit,size_t virt);
+
+	template <class Field>
+	static size_t  SpecRankProfile (const Field& F, const size_t M, const size_t N,
+					 typename Field::Element * A, const size_t lda, const size_t deg, size_t *rankProfile);
+	template <class Field, class Polynomial>
+	static std::list<Polynomial>&
+	CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm, 
+			   const size_t N, typename Field::Element * A, const size_t lda, const size_t c);
+	template <class Field>
+	static void CompressRows (Field& F, const size_t M,
+				  typename Field::Element * A, const size_t lda,
+				  typename Field::Element * tmp, const size_t ldtmp,
+				  const size_t * d, const size_t nb_blocs);
+
+	template <class Field>
+	static void CompressRowsQK (Field& F, const size_t M,
+				  typename Field::Element * A, const size_t lda,
+				  typename Field::Element * tmp, const size_t ldtmp,
+				  const size_t * d,const size_t deg, const size_t nb_blocs);
+
+	template <class Field>
+	static void DeCompressRows (Field& F, const size_t M, const size_t N,
+					    typename Field::Element * A, const size_t lda,
+					    typename Field::Element * tmp, const size_t ldtmp,
+					    const size_t * d, const size_t nb_blocs);
+	template <class Field>
+	static void DeCompressRowsQK (Field& F, const size_t M, const size_t N,
+					    typename Field::Element * A, const size_t lda,
+					    typename Field::Element * tmp, const size_t ldtmp,
+					    const size_t * d, const size_t deg, const size_t nb_blocs);
+	
+	template <class Field>
+	static void CompressRowsQA (Field& F, const size_t M,
+					    typename Field::Element * A, const size_t lda,
+					    typename Field::Element * tmp, const size_t ldtmp,
+					    const size_t * d, const size_t nb_blocs);
+	template <class Field>
+	static void DeCompressRowsQA (Field& F, const size_t M, const size_t N,
+					      typename Field::Element * A, const size_t lda,
+					      typename Field::Element * tmp, const size_t ldtmp,
+					      const size_t * d, const size_t nb_blocs);
+	
 
 protected:
 	
@@ -522,8 +634,8 @@ protected:
 	      typename Field::Element * X, const size_t ldx ){
 		//assumes X2 is initialized to 0
 		typename Field::Element mone, one;
-		F.init(one,1UL);
-		F.init(mone,-1);
+		F.init(one,1.0);
+		F.init(mone,-1.0);
 		
 		if (N == 1){
 			F.assign(*X, one);
@@ -540,18 +652,10 @@ protected:
 			// recursive call for X11
 			// X11 = L11^-1
 			invL( F, N1, L11, ldl, X11, ldx );
-#if DEBUG==2
-			cerr<<"Apres invl1 L11^-1="<<endl;
-			write_field(F,cerr,X11,N1,N1,N);
-#endif
 
 			// recursive call for X11
 			// X22 = L22^-1
 			invL( F, N2, L22, ldl, X22, ldx );
-#if DEBUG==2
-			cerr<<"Apres invl2 L22^-1="<<endl;
-			write_field(F,cerr,X22,N1,N1,N);
-#endif
 			
 			// Copy L21 into X21
 			for ( size_t i=0; i<N2; ++i)
@@ -565,16 +669,8 @@ protected:
 				for (size_t j=0; j<N1; ++j)
 					F.negin(*(X21+i*ldx+j));
 
-#if DEBUG==2
-			cerr<<"Apres trmm1 X21^-1="<<endl;
-			write_field(F,cerr,X21,N2,N1,N);
-#endif
 			// X21 = X22^-1 . X21
 			ftrmm( F, FflasLeft, FflasLower, FflasNoTrans, FflasUnit, N2, N1, one, X22, ldx, X21, ldx );
-#if DEBUG==2
-			cerr<<"Apres trmm2 X21^-1="<<endl;
-			write_field(F,cerr,X21,N2,N1,N);
-#endif
 		}
 	}
 		
@@ -619,6 +715,8 @@ protected:
 		}
 	}
 
+	
+
 	//---------------------------------------------------------------------
 	// LUdivine_construct: (Specialisation of LUdivine)
 	// LUP factorisation of X, the Krylov base matrix of A^t and v, in A.
@@ -653,6 +751,13 @@ protected:
 		 typename Field::Element * A, const size_t lda, 
 		 size_t * kg_mc, size_t* kg_mc, size_t* kg_j );
 
+	template <class Field, class Polynomial>
+	static std::list<Polynomial>&
+	KGFast_generalized (const Field& F, std::list<Polynomial>& charp, 
+			    const size_t N,
+			    typename Field::Element * A, const size_t lda);
+
+
 	template<class Field>
 	static void 
 	fgemv_kgf( const Field& F,  const size_t N, 
@@ -665,9 +770,8 @@ protected:
 	static std::list<Polynomial>& 
 	LUKrylov( const Field& F, std::list<Polynomial>& charp, const size_t N,
 		  typename Field::Element * A, const size_t lda,
-		  typename Field::Element * U, const size_t ldu,
-		  const enum FFPACK_CHARPOLY_TAG CharpTag);
-
+		  typename Field::Element * U, const size_t ldu);
+	
 	template <class Field, class Polynomial>
 	static std::list<Polynomial>&
 	Danilevski (const Field& F, std::list<Polynomial>& charp, 
@@ -678,23 +782,18 @@ protected:
 	LUKrylov_KGFast( const Field& F, std::list<Polynomial>& charp, const size_t N,
 			 typename Field::Element * A, const size_t lda,
 			 typename Field::Element * X, const size_t ldx);
-
-// 	template <class Field, class Polynomial>
-// 	static std::list<Polynomial>&
-// 	KGFast_generalized ( const Field& F, std::list<Polynomial>& charp, 
-// 			     const size_t N,
-// 			     typename Field::Element * A, const size_t lda);
-
-		
 };
 
+#include "ffpack_ludivine.inl"
+#include "ffpack_minpoly.inl"
+#include "ffpack_charpoly_kglu.inl"
+#include "ffpack_charpoly_kgfast.inl"
+#include "ffpack_charpoly_kgfastgeneralized.inl"
+#include "ffpack_charpoly_danilevski.inl"
+#include "ffpack_charpoly.inl"
+#include "ffpack_krylovelim.inl"
+#include "ffpack_frobenius.inl"
+#ifdef _LINBOX_CONFIG_H
 }
-#include "linbox/ffpack/ffpack_ludivine.inl"
-#include "linbox/ffpack/ffpack_minpoly.inl"
-#include "linbox/ffpack/ffpack_charpoly_kglu.inl"
-#include "linbox/ffpack/ffpack_charpoly_kgfast.inl"
-#include "linbox/ffpack/ffpack_charpoly_danilevski.inl"
-//#include "linbox/ffpack/ffpack_charpoly_kgfastgeneralized.inl"
-#include "linbox/ffpack/ffpack_charpoly.inl"
-
+#endif
 #endif // __FFPACK_H
