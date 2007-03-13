@@ -37,7 +37,7 @@ const int maxpretty = 35;
 
 const char* pretty(const char* a) {
 
-	string msg(a);
+	 string msg(a);
 	string blank("     ");
 	blank+=a;
 	int msgsize= maxpretty - blank.size();
@@ -175,7 +175,6 @@ static bool testRank (const Field& F,size_t n, int iterations) {
      
 		// compute the rank of A
 		unsigned int rank= BMD.rankin(A);
-                
 		if (rank!=r)
 			ret=false;
 	}
@@ -239,7 +238,7 @@ static bool testDet (const Field& F,size_t n, int iterations) {
     
 		// compute the determinant of A
 		Element det= BMD.detin(A);
-    
+
 		if (!F.areEqual(det,d))
 			ret=false;
 	}

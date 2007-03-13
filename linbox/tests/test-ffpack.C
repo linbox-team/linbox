@@ -19,7 +19,6 @@
 using namespace LinBox;
 
 const int maxpretty = 35;
-
 const char* pretty(const char* a) {
 
 	string msg(a);
@@ -122,8 +121,7 @@ static bool testTURBO (const Field& F,size_t n, int iterations) {
 
 	unsigned int r;
 	bool ret = true;
-	size_t no2 = n>>1;
-	
+		
 	for (int k=0;k<iterations; ++k) {
     
 		mycommentator.progress(k);
@@ -158,9 +156,12 @@ static bool testTURBO (const Field& F,size_t n, int iterations) {
 			      one, L, n, S, n, zero, A, n );
 		
 		// compute the rank of A
+		size_t * P = new size_t[n];
+		size_t * Q = new size_t[n];
 		unsigned int rank= FFPACK::TURBO( F, n, n, 
-						    A, n, A+no2,n, 
-						    A+no2*n, n, A+no2*(n+1), n );
+						  A,n, P, Q, 100);
+// 						  A, n, A+no2,n, 
+// 						    A+no2*n, n, A+no2*(n+1), n );
                 
 		if (rank!=r)
 			ret=false;
@@ -354,10 +355,10 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations) {
 					ret=false;
 				}
 		if (!ret){
-			write_field(F,std::cerr<<"A="<<endl,A,m,n,n);
-			write_field(F,std::cerr<<"Abis="<<endl,Abis,m,n,n);
-			write_field(F,std::cerr<<"B="<<endl,B,m,n,n);
-			write_field(F,std::cerr<<"C="<<endl,C,m,n,n);
+// 			write_field(F,std::cerr<<"A="<<endl,A,m,n,n);
+// 			write_field(F,std::cerr<<"Abis="<<endl,Abis,m,n,n);
+// 			write_field(F,std::cerr<<"B="<<endl,B,m,n,n);
+// 			write_field(F,std::cerr<<"C="<<endl,C,m,n,n);
 		}
 
 
@@ -504,17 +505,20 @@ static bool testCharPoly (const Field& F, size_t n, int iterations) {
 		}
 		P.clear();
 
-		FFPACK::CharPoly( F, P, n, A, n );
+		FFPACK::CharPoly (F, P, n, A, n);
 	
 
 		typename list<Polynomial>::const_iterator P_it = P.begin();
 		while (P_it != P.end()){
-			if ( P_it->size() !=2 )
+			if ( P_it->size() !=2 ){
 				ret = false;
-			if ( !F.areEqual(P_it->operator[](0), mone) )
+			}
+			if ( !F.areEqual(P_it->operator[](0), mone) ){
 				ret = false;
-			if ( !F.areEqual(P_it->operator[](1), one) )
+			}
+			if ( !F.areEqual(P_it->operator[](1), one) ){
 				ret = false;
+			}
 			
 			P_it++;
 		}
@@ -630,8 +634,8 @@ static bool testInv (const Field& F,size_t n, int iterations) {
 			if ( !F.areEqual(*(L+i),*(Id+i)) || !F.areEqual(*(S+i),*(Id+i)) ) 
 				ret =false;
 		if (!ret){
-			write_field (F, cerr<<"ID1="<<endl, L, n,n,n);
-			write_field (F, cerr<<"ID2="<<endl, S, n,n,n);
+			// write_field (F, cerr<<"ID1="<<endl, L, n,n,n);
+// 			write_field (F, cerr<<"ID2="<<endl, S, n,n,n);
 
 		}
 		delete[] A;
