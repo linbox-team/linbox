@@ -19,6 +19,9 @@ pkgincludesub_HEADERS = \
 	cra.h					\
 	cra-domain.h				\
 	rational-cra.h				\
+	cra-early-multip.h			\
+	cra-early-single.h			\
+	cra-full-multip.h			\
 	blas-domain.h				\
 	blas-domain.inl				\
 	bitonic-sort.h				\
