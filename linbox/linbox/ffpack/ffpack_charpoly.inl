@@ -56,11 +56,11 @@ FFPACK::CharPoly (const Field& F, std::list<Polynomial>& charp, const size_t N,
 				CharpolyArithProg (F, charp, N, A, lda, 30);
 			}
 			catch (CharpolyFailed){
-				if (attempts<2)
+				if (attempts++ < 2)
 					cont = true;
 				else
-					CharPoly(F, charp, N, A, lda, FfpackLUK);
-
+					return CharPoly(F, charp, N, A, lda, FfpackLUK);
+				
 			}
 		} while (cont);
 		return charp;

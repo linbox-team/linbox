@@ -36,14 +36,14 @@ inline size_t DotProdBoundCompute (const Field& F, const size_t w,
 			size_t ex=1;
 			for (size_t i=0; i < w; ++i) 	ex *= 3;
 			//FFLAS_INT_TYPE c = (p-1)*(ex)/2; //bound for a centered representation
-			FFLAS_INT_TYPE c = (p-1)*(1+ex)/2;
+			long long c = (p-1)*(1+ex)/2;
 			kmax =  lround(( double(1ULL << DOUBLE_MANTISSA) /double(c*c) + 1)*(1 << w));
 			if (kmax ==  ( 1ULL << w))
 				kmax = 2;
 		}
 		else{
-			FFLAS_INT_TYPE c = p-1;
-			FFLAS_INT_TYPE cplt=0;
+			long long c = p-1;
+			long long cplt=0;
 			if (!F.isZero (beta))
 				if (F.isOne (beta) || F.areEqual (beta, mone))
 					cplt = c;
@@ -81,8 +81,8 @@ inline size_t DotProdBoundCompute (const Modular<double>& F, const size_t w,
 				kmax = 2;
 		}
 		else{
-			FFLAS_INT_TYPE c = p-1;
-			FFLAS_INT_TYPE cplt=0;
+			long long c = p-1;
+			long long cplt=0;
 			if (!F.isZero (beta))
 				if (F.isOne (beta) || F.areEqual (beta, mone))
 					cplt = c;
@@ -165,7 +165,7 @@ size_t FFLAS::TRSMBound (const Modular<double>& F) {
 	static size_t nmax = bound_compute(pi);
 #else
 	static size_t nmax = (F.balanced) ? bound_compute_balanced(pi) : bound_compute(pi);
-#endif	
+#endif			      
 	if (p == pi) 
 		return nmax;
 	else
