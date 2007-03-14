@@ -22,6 +22,7 @@ pkgincludesub_HEADERS = \
 	cra-early-multip.h			\
 	cra-early-single.h			\
 	cra-full-multip.h			\
+	lazy-product.h				\
 	blas-domain.h				\
 	blas-domain.inl				\
 	bitonic-sort.h				\
