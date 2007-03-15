@@ -16,13 +16,16 @@ pkgincludesub_HEADERS = \
 	gauss.h					\
 	gauss.inl				\
 	dense-container.h			\
-	cra.h					\
+	cra-mpi.h					\
 	cra-domain.h				\
-	rational-cra.h				\
 	cra-early-multip.h			\
 	cra-early-single.h			\
 	cra-full-multip.h			\
 	lazy-product.h				\
+	rational-cra.h				\
+	rational-cra-early-multip.h		\
+	rational-cra-early-single.h		\
+	rational-cra-full-multip.h		\
 	blas-domain.h				\
 	blas-domain.inl				\
 	bitonic-sort.h				\

@@ -1,5 +1,5 @@
 // ======================================================================= //
-// Time-stamp: <12 Mar 07 19:38:55 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <15 Mar 07 17:04:48 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_CRA_EARLY_SINGLE_H
 #define __LINBOX_CRA_EARLY_SINGLE_H
@@ -83,7 +83,7 @@ namespace LinBox {
                 
                 Integer tmp(res);
                 tmp -= nextM_;
-                if (absCompare(res,tmp)>0) res = tmp;
+                if (absCompare(res,tmp)>0) res = tmp; // Normalize
                 
                 res *= primeProd_;	// res <-- (e-u0)( m0^{-1} mod nextM_ ) m0	
                     			// and res <= (m0.nextM_-m0)
@@ -95,7 +95,7 @@ namespace LinBox {
 
         virtual bool noncoprime(const Integer& i) const {
             Integer g;
-            return (gcd(g, i, primeProd_) != 1) ;
+            return ( (gcd(g, i, nextM_) != 1) || (gcd(g, i, primeProd_) != 1) );
         }
 
 
