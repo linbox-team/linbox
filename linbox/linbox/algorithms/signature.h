@@ -3,7 +3,7 @@
 
 #include <linbox/field/modular-double.h>
 #include <linbox/field/modular-int32.h>
-#include <linbox/algorithms/cra.h>
+#include <linbox/algorithms/cra-early-multip.h>
 #include <linbox/ffpack/ffpack.h>
 #include <linbox/randiter/random-prime.h>
 #include <linbox/matrix/blas-matrix.h>
@@ -176,62 +176,85 @@ private:
 		size_t* P_p, * PQ_p;
 
 		Field::Element* p; Field::Element tmp;
-//                ChineseRemainder< EarlyMultipCRA< Field > > cra(3UL);
-                
-		CRA<Integer> cra; 
-                cra. initialize (n, 1);
+		EarlyMultipCRA< Field > cra(3UL);
+
 		Integer m = 1;
-		std::vector<Integer> v(n);
+		std::vector<Field::Element> v(n);
 		size_t j = 0;
+		Field K2;
+		bool faithful = true;
+		typename Matrix::ConstRawIterator raw_p;
+
+		do {
+		// get a prime. 
+		// Compute mod that prime. Accumulate into v with CRA. 
+		++primeg ; while(cra.noncoprime(*primeg)) ++primeg; 
+		Field K1(*primeg); 
+		K2 = K1;
+
+		//clog << "Computing blackbox matrix mod " << prime;
+		for (p = FA, raw_p = M. rawBegin(); p != FA + (n*n); ++ p, ++ raw_p)
+		  K1. init (*p, *raw_p);
+
+		//clog << "\rComputing lup mod " << prime << ". ";
+		FFPACK::LUdivine(K1, FFLAS::FflasNonUnit, n, n, FA, n, P, PQ, FFPACK::FfpackLQUP);
+
+		faithful = true;
+		for ( j = 0, P_p = P, PQ_p = PQ; j < n; ++ j, ++ P_p, ++ PQ_p) 
+		  if ((*P_p != j) || (*PQ_p != j))  {
+		    faithful = false;
+		    break;
+		  }
+
+		} while(! faithful);
+		K2. init (tmp, 1UL);
+
+		typename std::vector<Field::Element>::iterator vp;
+		for (j = 0, vp = v.begin(); vp != v.end(); ++j, ++vp) {
+		  K2.mulin(tmp, *(FA + (j * n + j)));
+		  K2.assign(*vp, tmp);
+		}
+		cra. initialize(K2, v); 
+
 		while (! cra.terminated() ){
 			// get a prime. 
-			// Compute minpoly mod that prime. Accumulate into v with CRA. 
-			++primeg;
-			//std::cout <<"Random prime:= " << prime << '\n';
-			if (m % (*primeg) == 0) {//repeated prime
-				//std::clog << "Repeated prime.\n";
-				continue;
-			}
-			m *= *primeg;
-			Field K(*primeg); 
-			//clog << "Computing blackbox matrix mod " << prime;
-			typename Matrix::ConstRawIterator raw_p;
-			for (p = FA, raw_p = M. rawBegin(); p != FA + (n*n); ++ p, ++ raw_p)
-				K. init (*p, *raw_p);
+		   ++primeg; while(cra.noncoprime(*primeg)) ++primeg; 
+		  Field K(*primeg); 
+		  //clog << "Computing blackbox matrix mod " << prime;
+		  for (p = FA, raw_p = M. rawBegin(); p != FA + (n*n); ++ p, ++ raw_p)
+		    K. init (*p, *raw_p);
+		  
+		  //clog << "\rComputing lup mod " << prime << ". ";
+		  FFPACK::LUdivine(K, FFLAS::FflasNonUnit, n, n, FA, n, P, PQ, FFPACK::FfpackLQUP);
+		  
+		  faithful = true;
+		  for ( j = 0, P_p = P, PQ_p = PQ; j < n; ++ j, ++ P_p, ++ PQ_p) 
+		    if ((*P_p != j) || (*PQ_p != j))  {
+		      faithful = false;
+		      break;
+		    }
+		  
+		  if (!faithful) {
+		    //std::cout << "Not a faithful prime\n";
+		    continue;
+		  }
+		  
+		  K. init (tmp, 1UL);
 
-			//clog << "\rComputing lup mod " << prime << ". ";
-			FFPACK::LUdivine(K, FFLAS::FflasNonUnit, n, n, FA, n, P, PQ, FFPACK::FfpackLQUP);
-
-			bool faithful = true;
-			for ( j = 0, P_p = P, PQ_p = PQ; j < n; ++ j, ++ P_p, ++ PQ_p) 
-				if ((*P_p != j) || (*PQ_p != j))  {
-					faithful = false;
-					break;
-			}
-
-			if (!faithful) {
-				//std::cout << "Not a faithful prime\n";
-				continue;
-			}
-
-			K. init (tmp, 1);
-
-			typename std::vector<Integer>::iterator vp;
-			for (j = 0, vp = v.begin(); vp != v.end(); ++j, ++vp) {
-				K. mulin (tmp, *(FA + (j * n + j)));
-				K. convert (*vp, tmp);
-			}
-			//std::cout << "Faithful image:[";
-			//for (int l = 0; l < v. size(); ++ l)
-				//std::cout << v[l] << ", ";
-			//std::cout << "]\n";
-			cra. progress(*primeg, v); 
+		  for (j = 0, vp = v.begin(); vp != v.end(); ++j, ++vp) {
+		    K.mulin(tmp, *(FA + (j * n + j)));
+		    K.assign(*vp, tmp);
+		  }
+// 		  std::cout << "Faithful image:[";
+// 		  for (int l = 0; l < v. size(); ++ l)
+// 		  std::cout << v[l] << ", ";
+// 		  std::cout << "]\n";
+		  cra. progress(K, v); 
 		}
-
+		
 		delete[] FA; delete P; delete PQ; 
 		//std::cout << "Compute the final answer.\n";
 		cra.result(out);
-
 		return out;
 	}
 
