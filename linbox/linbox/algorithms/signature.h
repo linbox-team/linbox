@@ -23,7 +23,7 @@ public:
 
 	template <class Matrix>
 	static bool isPosDef (const Matrix& M, const BLAS_LPM_Method& meth) {
-		RandomPrime::setSeed(time(0));
+		RandomPrimeIterator::setSeed(time(0));
 		size_t n = M. rowdim();
 		std::vector<int> P;
 		symmetricLU (P, M);
@@ -67,7 +67,7 @@ public:
 	
 	template <class Matrix>
 	static bool isPosSemiDef (const Matrix& M, const BLAS_LPM_Method& meth) {
-		RandomPrime::setSeed(time(0));
+		RandomPrimeIterator::setSeed(time(0));
 		size_t n = M. rowdim();
 		std::vector<int> P;
 		size_t r = rank_random (M);
@@ -169,28 +169,31 @@ private:
 		FieldTraits<Field>::maxModulus(mmodulus);
 		long bit1 = (long) floor (log((double)mmodulus)/M_LN2);
 		long bit2 = (long) floor (log(sqrt(double(4503599627370496LL/n)))/M_LN2);
-		RandomPrime primeg(bit1 < bit2 ? bit1 : bit2); 
+		RandomPrimeIterator primeg(bit1 < bit2 ? bit1 : bit2); 
 
 		Field::Element* FA = new Field::Element[n*n];
 		size_t* P= new size_t[n], *PQ = new size_t[n];
 		size_t* P_p, * PQ_p;
 
 		Field::Element* p; Field::Element tmp;
-		CRA<Integer> cra; cra. initialize (n, 1);
-		Integer m = 1, prime;
+//                ChineseRemainder< EarlyMultipCRA< Field > > cra(3UL);
+                
+		CRA<Integer> cra; 
+                cra. initialize (n, 1);
+		Integer m = 1;
 		std::vector<Integer> v(n);
 		size_t j = 0;
 		while (! cra.terminated() ){
 			// get a prime. 
 			// Compute minpoly mod that prime. Accumulate into v with CRA. 
-			primeg. randomPrime(prime);
+			++primeg;
 			//std::cout <<"Random prime:= " << prime << '\n';
-			if (m % prime == 0) {//repeated prime
+			if (m % (*primeg) == 0) {//repeated prime
 				//std::clog << "Repeated prime.\n";
 				continue;
 			}
-			m *= prime;
-			Field K(prime); 
+			m *= *primeg;
+			Field K(*primeg); 
 			//clog << "Computing blackbox matrix mod " << prime;
 			typename Matrix::ConstRawIterator raw_p;
 			for (p = FA, raw_p = M. rawBegin(); p != FA + (n*n); ++ p, ++ raw_p)
@@ -222,7 +225,7 @@ private:
 			//for (int l = 0; l < v. size(); ++ l)
 				//std::cout << v[l] << ", ";
 			//std::cout << "]\n";
-			cra. progress(prime, v); 
+			cra. progress(*primeg, v); 
 		}
 
 		delete[] FA; delete P; delete PQ; 
@@ -241,9 +244,8 @@ private:
 		typedef Modular<int32> Field;
 		typedef Field::Element Element;
 		typedef DenseMatrix<Field> FMatrix;
-		RandomPrime primeg(20);
-		integer p; primeg. randomPrime(p);
-		Field F (p);
+		RandomPrimeIterator primeg(20);
+		Field F (*primeg);
 		FMatrix* FM;
 		//std::cout << "Random prime " << p << "\n";
 		
@@ -339,15 +341,13 @@ private:
 		FieldTraits<Field>::maxModulus(mmodulus);
 		long bit1 = (long) floor (log((double)mmodulus)/M_LN2);
 		long bit2 = (long) floor (log(sqrt(double(4503599627370496LL/n)))/M_LN2);
-		RandomPrime primeg(bit1 < bit2 ? bit1 : bit2); 
+		RandomPrimeIterator primeg(bit1 < bit2 ? bit1 : bit2); 
 
 		Field::Element* FA = new Field::Element[n*n], *p;
 
-		Integer prime;
 		// get a prime. 
 		// Compute the rank mod that prime. Accumulate into v with CRA. 
-		primeg. randomPrime(prime);
-		Field K(prime); 
+		Field K(*primeg); 
 
 		typename Matrix::ConstRawIterator raw_p;
 		for (p = FA, raw_p = M. rawBegin(); p != FA + (n*n); ++ p, ++ raw_p)
