@@ -172,7 +172,8 @@ namespace LinBox
       for (; q != ip.end(); ++q, ++p)
 	if (i != q->first)
 	  {
-	    for (Index j = i; j < (q+1)->first; j++)//difference may be more than 1
+	    //for (Index j = i; j < (q+1)->first; j++)//difference may be more than 1
+	    for (Index j = i; j < q->first; j++)//difference may be more than 1
 	      _indexP.push_back(p);
 	    i = q->first; //we should change i after the for loop, otherwise the 
 	                  //for loop will not run at all
@@ -257,19 +258,22 @@ namespace LinBox
      */
     std::istream &read (std::istream &is)
     {
+      char v0;
       std::vector<std::pair<Index, Index> > indexPairs;
       Index r, c; 
       Element v;
-      //MatrixStream<Field> S(_F, is);
+      MatrixStream<Field> S(_F, is);
       long count = 0;
       
-      /*
+      // /*
+	  S.getDimensions( _rowdim, _coldim );
+      std::cout << " -- read: row dimension is " << _rowdim << " and column dimension is " <<_coldim << endl;
       while (S.nextTriple(r, c, v) )
 	{ 
 	  indexPairs.push_back(std::pair<Index,Index>(static_cast<Index>(r), static_cast<Index>(c)));
 	  ++count;
 	}
-      */
+      /*
       char v0;
       is >> _rowdim >> _coldim >> v0;
       std::cout << " -- read: row dimension is " << _rowdim << " and column dimension is " <<_coldim << endl;
@@ -279,13 +283,14 @@ namespace LinBox
 	  indexPairs.push_back(std::pair<Index,Index>(static_cast<Index>(r), static_cast<Index>(c)));
 	  ++count;
 	}
+	*/
       std::cout << " -- read: " << count << std::endl;
       
       //S.getRows(_rowdim); S.getColumns(_coldim);
       init(indexPairs);
       return is;
     }
-    std::ostream& write(std::ostream& out =std::cout) const
+    std::ostream& write(std::ostream& out =  std::cout) const
     {
       out << "ZeroOne Matrix: _index.size() " << _index.size();
       out << ", _indexP.size() " << _indexP.size();
@@ -342,6 +347,7 @@ namespace LinBox
        
 }//End of LinBox
 
-#include "zo.inl"
+//#include "zo.inl"
+#include "zoi.inl"
 
 #endif // __ZERO_ONE_H
