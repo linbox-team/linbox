@@ -182,8 +182,8 @@ class Valence {
 		}
 
         r = _aat_diag + (integer)sqrt( _aat_radius * _aat_radius1 );
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-			std::cout << "Cassini bound (AAT) =: " << r << std::endl;
+	commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	//std::cout << "Cassini bound (AAT) =: " << r << std::endl;
 		//commentator. stop ("done", NULL, "cassini");
 		return r;
     }   
@@ -231,7 +231,7 @@ class Valence {
 		MatrixHom::map (Ap, A, F);
 		one_valence(v, d, *Ap); delete Ap;
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-			std::cout<<"degree of minpoly of AAT: " << d << std::endl;
+		//std::cout<<"degree of minpoly of AAT: " << d << std::endl;
 		valence (val, d, A);
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 			<< "Integer valence =: " << val << std::endl;
