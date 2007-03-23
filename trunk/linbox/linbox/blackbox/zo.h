@@ -96,31 +96,31 @@ namespace LinBox
     ZeroOne(const ZeroOne<Field>& A) // better keep the commented out statements below for later debugging
       : _F(A._F), _index(A._index), _rowdim(A._rowdim), _coldim(A._coldim), sorted(A.sorted)
     {
-      //cout << " copy constructor of zero-one matrix: A.rowdim = "  << A._rowdim << " A.coldim = " << A._coldim << endl;
+      //std::cout << " copy constructor of zero-one matrix: A.rowdim = "  << A._rowdim << " A.coldim = " << A._coldim << std::endl;
       //ZeroOne(A._F, A._index, A._indexP, A._rowdim, A._coldim, A.sorted);
-      //cout << " copy constructor of zero-one matrix: rowdim = " << _rowdim << " coldim = " << _coldim << endl;
+      //std::cout << " copy constructor of zero-one matrix: rowdim = " << _rowdim << " coldim = " << _coldim << std::endl;
       _indexP.push_back( _index.begin() );
       IndexVector::iterator i = _index.begin();
       PointerVector::iterator j = A._indexP.begin();
       for( ++j; j < A._indexP.end(); ++j )
 	{
-	  //cout << *j - *(j-1) << endl;
+	  //std::cout << *j - *(j-1) << std::endl;
 	  _indexP.push_back( i + ( *j - *(j-1) ) );
-	  //std::cout << " stupid test here " << (*_indexP.begin()) - _index.begin() << endl;
-	  //cout << " the size of _indexP now is " << _indexP.size() << endl;
+	  //std::cout << " stupid test here " << (*_indexP.begin()) - _index.begin() << std::endl;
+	  //std::cout << " the size of _indexP now is " << _indexP.size() << std::endl;
 	  i = _indexP.back();
-	  //cout << " the last element points to the position " << _indexP.back() - *_indexP.begin() << endl;
+	  //std::cout << " the last element points to the position " << _indexP.back() - *_indexP.begin() << std::endl;
 	}
       //_indexP.push_back(_index.end());
-      //cout << &_index << " "; 
-      //std::cout << &(*_index.begin()) << endl;
-      //cout << endl;
+      //std::cout << &_index << " "; 
+      //std::cout << &(*_index.begin()) << std::endl;
+      //std::cout << std::endl;
     }
 
    //switching the way in which the matrix is sorted
     void switch_sort() const
     {
-      //std::cout << " -- switch_sort: " << endl;
+      //std::cout << " -- switch_sort: " << std::endl;
       Index dim;
 
       if( sorted ) dim = _coldim;
@@ -267,7 +267,7 @@ namespace LinBox
       
       // /*
 	  S.getDimensions( _rowdim, _coldim );
-      std::cout << " -- read: row dimension is " << _rowdim << " and column dimension is " <<_coldim << endl;
+      std::cout << " -- read: row dimension is " << _rowdim << " and column dimension is " <<_coldim << std::endl;
       while (S.nextTriple(r, c, v) )
 	{ 
 	  indexPairs.push_back(std::pair<Index,Index>(static_cast<Index>(r), static_cast<Index>(c)));
@@ -276,10 +276,10 @@ namespace LinBox
       /*
       char v0;
       is >> _rowdim >> _coldim >> v0;
-      std::cout << " -- read: row dimension is " << _rowdim << " and column dimension is " <<_coldim << endl;
+      std::cout << " -- read: row dimension is " << _rowdim << " and column dimension is " <<_coldim << std::endl;
       while (is >> r >> c >> v)
 	{
-	  if ( r == 0 && c == 0 && v == 0 ) {std::cout << " -- read: reach the end" << endl;break;}
+	  if ( r == 0 && c == 0 && v == 0 ) {std::cout << " -- read: reach the end" << std::endl;break;}
 	  indexPairs.push_back(std::pair<Index,Index>(static_cast<Index>(r), static_cast<Index>(c)));
 	  ++count;
 	}
