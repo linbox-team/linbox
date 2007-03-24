@@ -7,9 +7,9 @@
 
 #include <iostream>
 
+//#include "linbox/field/modular.h"
 #include "linbox/field/modular-double.h"
 #include "linbox/field/gf2.h"
-#include "linbox/field/gmp-integers.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/zero-one.h"
 #include "linbox/solutions/rank.h"
@@ -48,15 +48,17 @@ int main (int argc, char **argv)
 		rank (r, A);
 	}
 	if (argc == 3) { 
-		double q = atof(argv[2]);
-		typedef Modular<double> Field;
+		int q = atoi(argv[2]);
+		//double q = atof(argv[2]);
+		typedef Modular<int> Field;
+		//typedef Modular<double> Field;
 		Field F(q);
 		MatrixStream<Field> ms( F, input );
 		SparseMatrix<Field, Vector<Field>::SparseSeq > B (ms);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
 		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
 
-		// Using the adpative LinBox Solution
+		// Using the adaptive LinBox Solution
 		rank(r,B);
                     
 		// using BlackBoxes
