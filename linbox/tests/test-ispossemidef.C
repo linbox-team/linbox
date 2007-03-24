@@ -17,7 +17,6 @@
 #include <cstdio>
 
 #include "linbox/util/commentator.h"
-#include "linbox/field/gmp-integers.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/dense.h"
 #include "linbox/solutions/is-positive-semidefinite.h"

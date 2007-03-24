@@ -10,7 +10,6 @@
 
 #include "linbox-config.h"
 #include "linbox/field/modular.h"
-#include "linbox/field/gmp-integers.h"
 #include "linbox/field/PID-integer.h"
 #include <linbox/util/error.h>
 

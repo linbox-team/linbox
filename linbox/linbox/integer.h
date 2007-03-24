@@ -30,7 +30,7 @@ namespace LinBox
 	 * It is a wrapper of GMP integers.  Arithmetic operations are via
 C++ infix operator forms (eg. a*b) . It is for ``casual'' uses such as characteristics and
 cardinalities and when initializing field elements.  The integers are also represented as a 
-LinBox ring for use in integer matrix computation, see gmp-integers.h or ntl-ZZ.h.
+LinBox ring for use in integer matrix computation, see pid-integers.h or ntl-ZZ.h.
 	 */ 
 	typedef Integer integer;
 

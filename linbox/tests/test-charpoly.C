@@ -22,8 +22,6 @@ std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
 	return o << std::endl;
 }
 
-//#include "linbox/field/modular.h"
-#include <linbox/field/gmp-integers.h>
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/util/commentator.h"

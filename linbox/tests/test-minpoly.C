@@ -23,7 +23,6 @@
 #include <cstdio>
 
 #include "linbox/field/modular.h"
-#include <linbox/field/gmp-integers.h>
 #include "linbox/blackbox/sparse.h"
 #include "linbox/util/commentator.h"
 #include "linbox/solutions/minpoly.h"

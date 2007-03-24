@@ -168,9 +168,6 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations)
 	return ret;
 }
 
-#include "linbox/field/gmp-integers.h"
-
-
 int main (int argc, char **argv)
 {
 

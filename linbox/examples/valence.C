@@ -7,7 +7,6 @@
 #include <iostream>
 
 #include "linbox/field/modular-double.h"
-#include "linbox/field/gmp-integers.h"
 #include "linbox/blackbox/transpose.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/sparse.h"

@@ -21,7 +21,6 @@ std::ostream& operator<< (std::ostream& o, const std::vector<std::pair<size_t, T
 
 #include "linbox/field/modular-double.h"
 #include "linbox/field/gf2.h"
-#include "linbox/field/gmp-integers.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/zero-one.h"
 #include "linbox/solutions/rank.h"
