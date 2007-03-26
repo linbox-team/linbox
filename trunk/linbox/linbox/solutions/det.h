@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/solutions/det.h
  * Copyright (C) 2001, 2002 LinBox
- * Time-stamp: <09 Mar 07 16:51:06 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <26 Mar 07 11:35:24 Jean-Guillaume.Dumas@imag.fr> 
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -517,26 +517,6 @@ namespace LinBox {
 	};
     
 
-	template <class Blackbox>
-	struct IntegerModularDet<Blackbox, Method::SparseElimination> {       
-		const Blackbox &A;
-		const Method::SparseElimination &M;
-        
-		IntegerModularDet(const Blackbox& b, const Method::SparseElimination& n) 
-			: A(b), M(n) {}
-        
-        
-		template<typename Field>
-		typename Field::Element& operator()(typename Field::Element& d, const Field& F) const {
-			SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq> * Ap;
-			MatrixHom::map(Ap, A, F);
-			modularsparsedetin( d, *Ap, M);
-			delete Ap;
-			return d;
-		}
-	};
-    
-
 	template <class Blackbox, class MyMethod>
 	typename Blackbox::Field::Element &cra_det (typename Blackbox::Field::Element         &d,
 						    const Blackbox                            &A,
@@ -588,9 +568,9 @@ namespace LinBox {
 
 #ifdef __LINBOX_HAVE_NTL
 # include "linbox/algorithms/hybrid-det.h"
-# define CRA_DET lif_cra_det
+# define SOLUTION_CRA_DET lif_cra_det
 #else
-# define CRA_DET cra_det
+# define SOLUTION_CRA_DET cra_det
 #endif
 
 namespace LinBox {
@@ -603,7 +583,7 @@ namespace LinBox {
 	{
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for determinant computation\n");
-		return CRA_DET(d, A, tag, M);
+		return SOLUTION_CRA_DET(d, A, tag, M);
 	}    
 
 
