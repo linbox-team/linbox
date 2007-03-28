@@ -385,7 +385,11 @@ public:
 // 			size_t* P, size_t* Q,
 // 			const enum FFPACK_LUDIVINE_TAG LuTag=FfpackLQUP,
 // 			const size_t cutoff=2);
-        
+
+	
+	template<bool AreEq>
+	class callLUdivine_small;
+	
 	template <class Field>
 	static size_t 
 	LUdivine_small (const Field& F, const enum FFLAS_DIAG Diag,
