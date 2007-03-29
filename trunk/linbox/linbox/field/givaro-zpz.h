@@ -171,8 +171,12 @@ namespace LinBox
 		 * @param y integer.
 		 */  
 		Element &init (Element &x , const integer &y = 0) const
-		{ 
-			ZpzDom<TAG>::init (x, (long) (y% integer(this->_p))); 
+		{
+			//
+			//	AU 28/03/07 no cast to long allows to use ZpzDom<integer> 
+			//
+			//ZpzDom<TAG>::init (x, (long) (y% integer(this->_p))); 
+			ZpzDom<TAG>::init (x, (y% integer(this->_p)));
 			return x;
 		}
 
