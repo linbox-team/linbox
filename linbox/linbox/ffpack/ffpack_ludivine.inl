@@ -255,7 +255,7 @@ FFPACK::LUdivine (const Field& F, const enum FFLAS_DIAG Diag,
 	F.init(zero,0.0);
 	size_t MN = MIN(M,N);
 
-	if ((M < cutoff) && (N < 2*cutoff)) // the coeff 2 is experimentally determine!
+	if ((M < cutoff) && (N < 2*cutoff)) // the coeff 2 is experimentally determined!
 		return LUdivine_small (F, Diag, M, N, A, lda, P, Q, LuTag);
 	else if (MN == 1){
 		size_t ip=0;
