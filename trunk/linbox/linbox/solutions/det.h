@@ -489,7 +489,13 @@ namespace LinBox
 
 #include "linbox/field/modular.h"
 //#include "linbox/field/givaro-zpz.h"
-#include "linbox/algorithms/cra-domain.h"
+
+#ifdef __LINBOX_HAVE_KAAPI //use the kaapi version instead of the usual version if this macro is defined
+    #include "linbox/algorithms/cra-kaapi.h"
+#else
+    #include "linbox/algorithms/cra-domain.h"
+#endif
+
 #include "linbox/algorithms/cra-early-single.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"

@@ -1,3 +1,5 @@
+SUBDIRS=kaapi
 if LINBOX_HAVE_MAPLE
-SUBDIRS=driver maple
+SUBDIRS+=driver maple
 endif
+

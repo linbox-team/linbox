@@ -1,4 +1,4 @@
-SUBDIRS=gmp++ linbox macros tests examples interfaces doc
+SUBDIRS=gmp++ linbox macros tests interfaces doc
 
 doc:doc/linbox-html/index.html
 
