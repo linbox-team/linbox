@@ -16,7 +16,8 @@ pkgincludesub_HEADERS = \
 	gauss.h					\
 	gauss.inl				\
 	dense-container.h			\
-	cra-mpi.h					\
+	cra-mpi.h				\
+	cra-kaapi.h				\
 	cra-domain.h				\
 	cra-early-multip.h			\
 	cra-early-single.h			\
