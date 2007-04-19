@@ -86,8 +86,7 @@ namespace LinBox {
                     domains,
                     domains+nb_primes,
                     domainelements,
-                    residue,
-                    a1::SetLocal
+                    residue
                 );
 
                 // when it's done, analyze the result
