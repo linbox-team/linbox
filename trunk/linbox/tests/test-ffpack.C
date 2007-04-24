@@ -19,7 +19,7 @@
 using namespace LinBox;
 
 const int maxpretty = 35;
-const char* pretty(const char* a) {
+const char* pretty(string a) {
 
 	string msg(a);
 	string blank("     ");
@@ -85,10 +85,12 @@ static bool testRank (const Field& F,size_t n, int iterations) {
 		//  compute A=LS
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
 			      one, L, n, S, n, zero, A, n );
-		
+		delete[] L;
+		delete[] S;
+
 		// compute the rank of A
 		unsigned int rank= FFPACK::Rank( F, n, n, A, n);
-                
+                delete[] A;
 		if (rank!=r)
 			ret=false;
 	}
@@ -155,6 +157,8 @@ static bool testTURBO (const Field& F,size_t n, int iterations) {
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
 			      one, L, n, S, n, zero, A, n );
 		
+		delete[] L;
+		delete[] S;
 		// compute the rank of A
 		size_t * P = new size_t[n];
 		size_t * Q = new size_t[n];
@@ -162,7 +166,11 @@ static bool testTURBO (const Field& F,size_t n, int iterations) {
 						  A,n, P, Q, 100);
 // 						  A, n, A+no2,n, 
 // 						    A+no2*n, n, A+no2*(n+1), n );
-                
+
+		delete[] P;
+		delete[] Q;
+		delete[] A;
+
 		if (rank!=r)
 			ret=false;
 	}
@@ -232,10 +240,15 @@ static bool testDet (const Field& F,size_t n, int iterations) {
 		//  compute A=LS
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
 			      one, L, n, S, n, zero, A, n );
+		delete[] L;
+		delete[] S;
+
 
 		// compute the determinant of A
 		Element det= FFPACK::Det( F, n, n, A, n);
-    
+    		delete[] A;
+
+
 		if (!F.areEqual(det,d))
 			ret=false;
 	}
@@ -273,7 +286,6 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations) {
 		
 		
 		Element * A = new Element[m*n];
-		Element * Abis = new Element[m*n];
 		Element * B = new Element[m*m];
 		Element * C = new Element[m*n];
 		
@@ -302,7 +314,10 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations) {
 		// A = B*C
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m, n, m,
 			      one, B, m, C, n, zero, A, n );
-			
+		delete[] B;
+		delete[] C;
+
+		Element * Abis = new Element[m*n];
 		for (size_t i=0; i<m*n; ++i)
 			*(Abis+i) = *(A+i);
 
@@ -344,16 +359,21 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations) {
 				  0, r, U, n, Q);
 		//		write_field (F, cerr<<"QUP"<<endl, U, m, n, n);
 
+		delete[] P;
+		delete[] Q;
 		// A = L*C
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m, n, m,
 			      one, L, m, U, n, zero, A, n );
-		
+		delete[] L;
+		delete[] U;
 		
 		for (size_t i = 0; i < m;++i)
 			for (size_t j = 0; j < n; ++j)
 				if (!F.areEqual( *(A+i*n+j), *(Abis+i*n+j))){
 					ret=false;
 				}
+		delete[] A;
+		delete[] Abis;
 		if (!ret){
 // 			write_field(F,std::cerr<<"A="<<endl,A,m,n,n);
 // 			write_field(F,std::cerr<<"Abis="<<endl,Abis,m,n,n);
@@ -583,8 +603,6 @@ static bool testInv (const Field& F,size_t n, int iterations) {
    
 
 		Element * A = new Element[n*n];
-		Element * Ab = new Element[n*n];
-		Element * invA = new Element[n*n];
 		Element * L = new Element[n*n];
 		Element * S = new Element[n*n];
 
@@ -615,7 +633,9 @@ static bool testInv (const Field& F,size_t n, int iterations) {
 
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
 			      one, L, n, S, n, zero, A, n );
-      
+
+		Element * Ab = new Element[n*n];
+		Element * invA = new Element[n*n];
 		for (size_t i = 0; i<n*n; ++i)
 			F.assign( *(Ab+i), *(A+i) );
 		// compute the inverse of A
@@ -638,12 +658,11 @@ static bool testInv (const Field& F,size_t n, int iterations) {
 // 			write_field (F, cerr<<"ID2="<<endl, S, n,n,n);
 
 		}
+		delete[] L;
+		delete[] S;
 		delete[] A;
 		delete[] Ab;
 		delete[] invA;
-		delete[] L;
-		delete[] S;
-		
 	}
 	delete[] Id;
 	
@@ -712,6 +731,7 @@ static bool testapplyP (const Field& F,size_t n, int iterations) {
 				ret =false;
 		delete[] A;
 		delete[] Ab;
+		delete[] P;
 	}
 	
 	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testApplyP");
@@ -734,9 +754,9 @@ int main(int argc, char** argv){
 	static int iterations =5;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 256)",       TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INTEGER, &q }, 
-		{ 'i', "-i I", "Perform each test for I iterations (default 10)",           TYPE_INT,     &iterations },
+		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 200)",       TYPE_INT,     &n },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 65521)", TYPE_INTEGER, &q }, 
+		{ 'i', "-i I", "Perform each test for I iterations (default 5)",           TYPE_INT,     &iterations },
 	};
 
 	parseArguments (argc, argv, args);
