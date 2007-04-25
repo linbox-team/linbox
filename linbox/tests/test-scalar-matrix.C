@@ -28,7 +28,7 @@ int main (int argc, char **argv)
 	static int iterations = 1;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)",        TYPE_INT,     &n },
+		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 20)",        TYPE_INT,     &n },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INTEGER, &q },
 		{ 'i', "-i I", "Perform each test for I iterations (default 1)",          TYPE_INT,     &iterations },
 	};

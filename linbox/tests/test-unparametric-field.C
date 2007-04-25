@@ -30,7 +30,6 @@ using namespace LinBox;
 
 int main (int argc, char **argv)
 {
-	static integer q = 2147483647U;
 	static size_t n = 10000;
 	static int iterations = 1 ;
 

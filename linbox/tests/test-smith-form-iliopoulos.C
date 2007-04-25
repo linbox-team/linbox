@@ -253,11 +253,11 @@ int main(int argc, char** argv) {
                                                                                                         
         static size_t n = 20;
                                                                                                         
-        static int iterations = 20;
+        static int iterations = 5;
                                                                                                         
         static Argument args[] = {
                 { 'n', "-n N", "Set order of test matrices to N (default 20)",  TYPE_INT,     &n },
-                { 'i', "-i I", "Perform each test for I iterations (default 10)"
+                { 'i', "-i I", "Perform each test for I iterations (default 5)"
 ,           TYPE_INT,     &iterations },
         };
                                                                                                         

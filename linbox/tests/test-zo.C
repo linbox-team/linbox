@@ -15,12 +15,12 @@
 int main(int argc, char **argv) {
   bool pass = true;
   uint32 prime = 31337;
-  static size_t n = 100, iter = 1;
+  static size_t n = 100, iter = 5;
 
   static Argument args[] = 
     {{ 'n', "-n N", "Set dimension of test matrix to NxN (default 100)", TYPE_INT, &n }, 
      { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 31337)", TYPE_INT, &prime }, 
-     { 'i', "-i I", "Perform each test for I iterations (default 1)", TYPE_INT, &iter}};
+     { 'i', "-i I", "Perform each test for I iterations (default 5)", TYPE_INT, &iter}};
 
   parseArguments(argc, argv, args);
 

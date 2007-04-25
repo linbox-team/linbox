@@ -170,13 +170,13 @@ int main(int argc, char** argv) {
                                                                                                          
         bool pass = true;
                                                                                                         
-        static size_t n =3; 
+        static size_t n =10; 
                                                                                                         
         static int iterations = 2;
                                                                                                         
         static Argument args[] = {
                 { 'n', "-n N", "Set order of test matrices to N (default 10)",  TYPE_INT,     &n },
-                { 'i', "-i I", "Perform each test for I iterations (default 10)"
+                { 'i', "-i I", "Perform each test for I iterations (default 2)"
 ,           TYPE_INT,     &iterations },
         };
                                                                                                         

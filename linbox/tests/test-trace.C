@@ -274,10 +274,10 @@ int main (int argc, char **argv)
 {
 	bool pass = true;
 
-	//static size_t n = 256;
-	static size_t n = 10;
+	static size_t n = 256;
+	//static size_t n = 10;
 	static integer q = 101;
-	static int iterations = 1;
+	static int iterations = 10;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 256)", TYPE_INT,     &n },

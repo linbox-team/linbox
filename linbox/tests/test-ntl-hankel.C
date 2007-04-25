@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
   static long q = 2147483647;
 
 
-  static int iterations = 1;
+  static int iterations = 10;
   
   static Argument args[] = {
     { 'n', "-n N", "Set dimension of test matrices to NxN (default 10)",        TYPE_INT,     &n },
