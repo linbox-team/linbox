@@ -742,7 +742,7 @@ int main (int argc, char **argv)
 	static size_t r = 20;
 	static size_t N = 16;
 	static integer q = 2147483647U;
-	static int iterations = 2;
+	static int iterations = 5;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set column dimension of test matrices to N (default 100)",  TYPE_INT,     &n },
@@ -750,7 +750,7 @@ int main (int argc, char **argv)
 		{ 'r', "-r R", "Set singular system rank to R (default 20)",                TYPE_INT,     &r },
 		{ 'N', "-N N", "Set blocking factor to N (default 16)",                      TYPE_INT,     &N },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 10)",           TYPE_INT,     &iterations },
+		{ 'i', "-i I", "Perform each test for I iterations (default 5)",           TYPE_INT,     &iterations },
 	};
 
 	typedef Modular<LinBox::uint32> Field;

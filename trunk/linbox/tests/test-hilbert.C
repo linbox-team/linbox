@@ -24,12 +24,12 @@ int main (int argc, char **argv)
 
 	static size_t n = 10;
 	static integer q = 2147483647U;
-	static int iterations = 1;
+	static int iterations = 10;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)",        TYPE_INT,     &n },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 100)",          TYPE_INT,     &iterations },
+		{ 'i', "-i I", "Perform each test for I iterations (default 10)",          TYPE_INT,     &iterations },
 	};
 
 	parseArguments (argc, argv, args);

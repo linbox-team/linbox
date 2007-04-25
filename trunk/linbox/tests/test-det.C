@@ -464,7 +464,7 @@ int main (int argc, char **argv)
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)", TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 101)", TYPE_INTEGER, &q },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 4093)", TYPE_INTEGER, &q },
 		{ 'i', "-i I", "Perform each test for I iterations (default 10)",    TYPE_INT,     &iterations },
 	};
 

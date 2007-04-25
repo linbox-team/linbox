@@ -18,7 +18,7 @@ using namespace LinBox;
 int main (int argc, char **argv)
 {
 	static integer q1("18446744073709551557");
-	static integer q2 = 65521;
+	static integer q2 = 2147483647;
 	static integer q3 = 65521U;
 	static int q4 = 101;
 	static size_t n = 10000;

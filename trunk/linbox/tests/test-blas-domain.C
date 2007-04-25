@@ -1141,9 +1141,9 @@ int main(int argc, char **argv) {
 	static int iterations =3;
 	
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 256)",       TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INTEGER, &q }, 
-		{ 'i', "-i I", "Perform each test for I iterations (default 10)",           TYPE_INT,     &iterations },
+		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 400)",       TYPE_INT,     &n },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 65521)", TYPE_INTEGER, &q }, 
+		{ 'i', "-i I", "Perform each test for I iterations (default 3)",           TYPE_INT,     &iterations },
 	};
 
 	parseArguments (argc, argv, args);

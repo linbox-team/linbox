@@ -166,11 +166,11 @@ bool testRandom(const Ring& R,
 int main(int argc, char** argv) {
                                                                                                         
 	bool pass = true;
-	static size_t n =3; 
-	static int iterations = 2;
+	static size_t n =50; 
+	static int iterations = 5;
 	static Argument args[] = {
-		{ 'n', "-n N", "Set order of test matrices to N (default 10)",  TYPE_INT,  &n },
-		{ 'i', "-i I", "Perform each test for I iterations (default 10)", TYPE_INT, &iterations }
+		{ 'n', "-n N", "Set order of test matrices to N (default 50)",  TYPE_INT,  &n },
+		{ 'i', "-i I", "Perform each test for I iterations (default 5)", TYPE_INT, &iterations }
 		};
 
 	parseArguments (argc, argv, args);
