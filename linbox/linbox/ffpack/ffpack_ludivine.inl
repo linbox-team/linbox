@@ -61,7 +61,6 @@ public:
 		size_t colp;
 		size_t R = 0;
 		size_t k = 0;
-		size_t kmax = DotProdBound (F, 0, one) -1; // the max number of delayed operations
 		while ((rowp<M) && (k<N)){
 
 			//Find non zero pivot
@@ -876,7 +875,7 @@ FFPACK::TURBO (const Field& F, const size_t M, const size_t N,
 	for (size_t i=0; i<M; ++i)
 		fcopy (F, N, A+i*lda, 1, R+i*ldr,1);
 	
-	//delete[] Q;
+	delete[] R;
 	// Necessaire:
 	// 1 traiter les flaswp manquants
 	// Facultatif:
