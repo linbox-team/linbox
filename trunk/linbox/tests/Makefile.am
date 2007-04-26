@@ -40,7 +40,6 @@ BASIC_TESTS =  			\
         test-inverse            \
         test-isposdef           \
         test-ispossemidef       \
-        test-lu                 \
         test-matrix-domain      \
         test-matrix-stream      \
         test-minpoly            \
@@ -383,9 +382,6 @@ test_param_fuzzy_SOURCES =	        \
 	test-param-fuzzy.C	        \
 	test-generic.h		        \
 	test-common.h
-
-test_lu_SOURCES =                       \
-	test-lu.C			 
 
 #test_side_by_side_SOURCES =		\
 #	test-side-by-side.C		\
