@@ -429,8 +429,8 @@ namespace LinBox
                                 }
 				break;
 				
-			default:
-				break;
+			//default:
+			//	break;
 			}		
 		default:			    
 			break;
@@ -450,7 +450,7 @@ namespace LinBox
 	 */
 	template <class Vector, class Ring> 
 	Vector& solve(Vector& x, typename Ring::Element &d, const DenseMatrix<Ring>& A, const Vector& b, 
-		      const RingCategories::IntegerTag tag, const Method::Dixon& m)
+		      const RingCategories::IntegerTag tag, Method::Dixon& m)
 	{  
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
@@ -486,8 +486,8 @@ namespace LinBox
 					status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
 									(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 					break;					
-				default:
-					break;
+				//default:
+				//	break;
 				}			
 				break;
 			}
@@ -516,8 +516,8 @@ namespace LinBox
 								(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 				break;
 				
-			default:
-				break;
+			//default:
+			//	break;
 			}		
 		default:			    
 			break;
