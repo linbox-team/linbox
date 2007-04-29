@@ -7,6 +7,7 @@
  *
  * See COPYING for license information.
  */
+#include <math.h>
 
 #ifndef __FFLAS_H
 #define __FFLAS_H
@@ -36,6 +37,7 @@ namespace LinBox {
 #endif
 
 #define DOUBLE_MANTISSA 53
+#define FLOAT_MANTISSA 24
 	
 class FFLAS {
 
@@ -45,7 +47,12 @@ public:
 	enum FFLAS_DIAG      { FflasNonUnit=131, FflasUnit=132 };
 	enum FFLAS_SIDE      { FflasLeft=141, FflasRight = 142 };
 	
+	typedef UnparametricField<float> FloatDomain;
+
 	typedef UnparametricField<double> DoubleDomain;
+
+
+	
 	
 //---------------------------------------------------------------------
 // Level 1 routines
@@ -149,7 +156,7 @@ public:
 	/**
 	   @brief ftrsv: TRiangular System solve with Vector
 	   Computes  X <- op(A^-1).X\\
-	   size of X is m
+	   size of X is N
 	*/
 	template<class Field>
 	static void
@@ -222,20 +229,21 @@ public:
 	 * Automitically set Winograd recursion level
 	 */
 	template<class Field>
-	static typename Field::Element* fgemm (const Field& F,
-					       const enum FFLAS_TRANSPOSE ta,
-					       const enum FFLAS_TRANSPOSE tb,
-					       const size_t m,
-					       const size_t n,
-					       const size_t k,
-					       const typename Field::Element alpha,
-					       const typename Field::Element* A, 
-					       const size_t lda,
-					       const typename Field::Element* B,
-					       const size_t ldb, 
-					       const typename Field::Element beta,
-					       typename Field::Element* C, 
-					       const size_t ldc){
+	static typename Field::Element*
+	fgemm (const Field& F,
+	       const enum FFLAS_TRANSPOSE ta,
+	       const enum FFLAS_TRANSPOSE tb,
+	       const size_t m,
+	       const size_t n,
+	       const size_t k,
+	       const typename Field::Element alpha,
+	       const typename Field::Element* A, 
+	       const size_t lda,
+	       const typename Field::Element* B,
+	       const size_t ldb, 
+	       const typename Field::Element beta,
+	       typename Field::Element* C, 
+	       const size_t ldc){
 		size_t ws =0;
 		if ( (ta==FflasNoTrans)  && (tb==FflasNoTrans)) {
 			size_t kt = MIN(MIN(k,m),n);
@@ -303,6 +311,23 @@ protected:
 				F.convert(*(Si+j),*(Ei+j));
 			}
 		}
+	//---------------------------------------------------------------------
+	// Finite Field matrix => float matrix
+	//---------------------------------------------------------------------
+	template<class Field>
+	static void MatF2MatFl (const Field& F,
+				FloatDomain::Element* S, const size_t lds,
+				const typename Field::Element* E,
+				const size_t lde,const size_t m, const size_t n){
+		
+		const typename Field::Element* Ei = E;
+		FloatDomain::Element *Si=S;
+		size_t j; 
+		for (; Ei < E+lde*m; Ei+=lde, Si += lds)
+			for ( j=0; j<n; ++j){
+				F.convert(*(Si+j),*(Ei+j));
+			}
+		}
 	
 	//---------------------------------------------------------------------
 	// Finite Field matrix => double matrix
@@ -317,6 +342,25 @@ protected:
 		
 		const typename Field::Element* Ei = E;
 		typename DoubleDomain::Element* Si = S;
+		size_t i=0, j;
+		for ( ; i<m;++i, Ei+=lde, Si+=lds)
+			for ( j=i; j<n;++j)
+				F.convert(*(Si+j),*(Ei+j));
+	}
+
+	//---------------------------------------------------------------------
+	// Finite Field matrix => float matrix
+	// Special design for upper-triangular matrices
+	//---------------------------------------------------------------------
+	template<class Field>
+	static void MatF2MatFl_Triangular (const Field& F,
+					   typename FloatDomain::Element* S, const size_t lds,
+					   const typename Field::Element* const E,
+					   const size_t lde,
+					   const size_t m, const size_t n){
+		
+		const typename Field::Element* Ei = E;
+		typename FloatDomain::Element* Si = S;
 		size_t i=0, j;
 		for ( ; i<m;++i, Ei+=lde, Si+=lds)
 			for ( j=i; j<n;++j)
@@ -341,6 +385,24 @@ protected:
 		}
 	}
 
+	//---------------------------------------------------------------------
+	// float matrix => Finite Field matrix
+	//---------------------------------------------------------------------
+	template<class Field>
+	static void MatFl2MatF (const Field& F,
+				typename Field::Element* S, const size_t lds,
+				const typename FloatDomain::Element* E, const size_t lde,
+				const size_t m, const size_t n){
+		
+		typename Field::Element* Si = S;
+		const FloatDomain::Element* Ei =E;
+		size_t j;
+		for ( ; Si < S+m*lds; Si += lds, Ei+= lde){
+			for ( j=0; j<n;++j)
+				F.init( *(Si+j), *(Ei+j) );
+		}
+	}
+
 	/** @brief Bound for the delayed modulus matrix multiplication
 	 *
 	 *  @param F  - the finite field
@@ -356,6 +418,13 @@ protected:
 	static size_t DotProdBound (const Field& F, const size_t w,
 				    const typename Field::Element& beta);
 
+	template <class Field>
+	static size_t DotProdBoundCompute (const Field& F, const size_t w,
+					   const typename Field::Element& beta);
+	
+	template <class Element>
+	class callDotProdBoundCompute;
+
 	/** @brief Bound for the delayed modulus triangular system solving
 	 *
 	 *  @param F  - the finite field
@@ -367,7 +436,9 @@ protected:
 	 */
 	template <class Field>
 	static size_t TRSMBound (const Field& F);
-	
+
+	template <class Element>
+	class callTRSMBound;
 
 	template <class Field>
 	static void DynamicPealing( const Field& F, 
@@ -428,16 +499,18 @@ protected:
 			      const typename Field::Element beta,
 			      typename Field::Element * C, const size_t ldc,
 			      const size_t kmax, const size_t w);
-	template<bool AreEq>
+
+
+	template<class Element>
 	class callWinoMain;
 
-	template<bool AreEq>
+	template<class Element>
 	class callClassicMatmul;
 
-	template<bool AreEq>
+	template<class Element>
 	class callFsquare;
 
-	template<bool AreEq>
+	template<class Element>
 	class callMatVectProd;
 		
 	// Specialized routines for ftrsm
@@ -462,34 +535,34 @@ protected:
 					 typename Field::Element * A, const size_t lda,
 					 typename Field::Element * B, const size_t ldb, 
 					 const size_t nmax);
-	template<bool AreEq>
+	template<class Element>
 	class callFtrsmLeftLowNoTrans;
 	
-	template<bool AreEq>
+	template<class Element>
 	class callFtrsmRightUpNoTrans;
 	
-	template<bool AreEq>
+	template<class Element>
 	class callFtrmmLeftUpNoTrans;
 	
-	template<bool AreEq>
+	template<class Element>
 	class callFtrmmLeftUpTrans;
 
-	template<bool AreEq>
+	template<class Element>
 	class callFtrmmLeftLowNoTrans;		
 
-	template<bool AreEq>
+	template<class Element>
 	class callFtrmmLeftLowTrans;		
 
-	template<bool AreEq>
+	template<class Element>
 	class callFtrmmRightUpNoTrans;		
 
-	template<bool AreEq>
+	template<class Element>
 	class callFtrmmRightUpTrans;		
 
-	template<bool AreEq>
+	template<class Element>
 	class callFtrmmRightLowNoTrans;		
 
-	template<bool AreEq>
+	template<class Element>
 	class callFtrmmRightLowTrans;		
 	
 	template<class Field>

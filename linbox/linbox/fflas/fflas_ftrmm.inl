@@ -79,10 +79,10 @@ FFLAS::ftrmmLeftUpNoTrans (const Field& F, const enum FFLAS_DIAG Diag,
 			   const typename Field::Element * A, const size_t lda,
 			   typename Field::Element * B, const size_t ldb, 
 			   const size_t nmax) {
-	callFtrmmLeftUpNoTrans<AreEqual<typename Field::Element,double>::value> () (F,Diag,M,N,A,lda,B,ldb,nmax);
+	callFtrmmLeftUpNoTrans<typename Field::Element> () (F,Diag,M,N,A,lda,B,ldb,nmax);
 }
-template <>
-class FFLAS::callFtrmmLeftUpNoTrans<false>{
+template <class Element>
+class FFLAS::callFtrmmLeftUpNoTrans{
 public:
 	template<class Field>
 	void operator() (const Field& F, const enum FFLAS_DIAG Diag, 
@@ -114,7 +114,7 @@ public:
 };
 	
 template <>
-class FFLAS::callFtrmmLeftUpNoTrans<true>{
+class FFLAS::callFtrmmLeftUpNoTrans<double>{
 public:
 	template<class Field>
 	void operator() (const Field& F, const enum FFLAS_DIAG Diag, 
@@ -140,6 +140,33 @@ public:
 	}
 };
 	
+template <>
+class FFLAS::callFtrmmLeftUpNoTrans<float>{
+public:
+	template<class Field>
+	void operator() (const Field& F, const enum FFLAS_DIAG Diag, 
+			 const size_t M, const size_t N,
+			 const typename Field::Element * A, const size_t lda,
+			 typename Field::Element * B, const size_t ldb, 
+			 const size_t nmax) {
+		if (M < nmax) {
+			cblas_strmm (CblasRowMajor, CblasLeft, CblasUpper, CblasNoTrans,
+				     (CBLAS_DIAG) Diag, M, N, 1.0, A, lda, B, ldb);
+			for (size_t i = 0; i < M; ++i)
+				for (size_t j = 0; j < N; ++j)
+					F.init (*(B+i*ldb+j),*(B+i*ldb+j));
+		} else{
+			size_t Mup=M>>1;
+			size_t Mdown = M-Mup;
+			this->operator()(F, Diag, Mup, N, A, lda, B, ldb, nmax);
+			fgemm( F, FflasNoTrans, FflasNoTrans, Mup, N, Mdown, 1.0,
+			       A+Mup, lda, B+Mup*ldb, ldb, 1.0, B, ldb);
+			this->operator()(F, Diag, Mdown, N, A+Mup*(lda+1), lda, 
+					    B+Mup*ldb, ldb, nmax);
+		}
+	}
+};
+	
 template<class Field>
 inline void
 FFLAS::ftrmmLeftUpTrans (const Field& F, const enum FFLAS_DIAG Diag, 
@@ -148,11 +175,11 @@ FFLAS::ftrmmLeftUpTrans (const Field& F, const enum FFLAS_DIAG Diag,
 			 typename Field::Element * B, const size_t ldb,
 			 const size_t nmax) 
 {
-	callFtrmmLeftUpTrans<AreEqual<typename Field::Element,double>::value> () (F,Diag,M,N,A,lda,B,ldb,nmax);
+	callFtrmmLeftUpTrans<typename Field::Element> () (F,Diag,M,N,A,lda,B,ldb,nmax);
 }
 
-template <>
-class FFLAS::callFtrmmLeftUpTrans<false>{
+template <class Element>
+class FFLAS::callFtrmmLeftUpTrans{
 public:
 	template<class Field>
 	void operator() (const Field& F, const enum FFLAS_DIAG Diag, 
@@ -184,7 +211,7 @@ public:
 };
 	
 template <>
-class FFLAS::callFtrmmLeftUpTrans<true>{
+class FFLAS::callFtrmmLeftUpTrans<double>{
 public:
 	template<class Field>
 	void operator () (const Field& F, const enum FFLAS_DIAG Diag, 
@@ -208,6 +235,31 @@ public:
 		}
 	}
 };
+template <>
+class FFLAS::callFtrmmLeftUpTrans<float>{
+public:
+	template<class Field>
+	void operator () (const Field& F, const enum FFLAS_DIAG Diag, 
+			  const size_t M, const size_t N,
+			  const typename Field::Element * A, const size_t lda,
+			  typename Field::Element * B, const size_t ldb,
+			  const size_t nmax) {
+		if (M < nmax) {
+			cblas_strmm (CblasRowMajor, CblasLeft, CblasUpper, CblasTrans,
+				     (CBLAS_DIAG) Diag, M, N, 1.0, A, lda, B, ldb);
+			for (size_t i = 0; i < M; ++i)
+				for (size_t j = 0; j < N; ++j)
+					F.init (*(B+i*ldb+j),*(B+i*ldb+j));
+		} else {
+			size_t Mup=M>>1;
+			size_t Mdown = M-Mup;
+			this->operator () (F, Diag, Mup, N, A, lda, B, ldb, nmax);
+			fgemm( F, FflasTrans, FflasNoTrans, Mup, N, Mdown, 1.0, 
+			       A+Mup*lda, lda, B+Mup*ldb, ldb, 1.0, B, ldb);
+			this->operator() (F, Diag, Mdown, N, A+Mup*(lda+1), lda, B+Mup*ldb, ldb, nmax);
+		}
+	}
+};
 	
 template<class Field>
 inline void
@@ -216,11 +268,11 @@ FFLAS::ftrmmLeftLowNoTrans (const Field& F, const enum FFLAS_DIAG Diag,
 			    const typename Field::Element * A, const size_t lda,
 			    typename Field::Element * B, const size_t ldb, 
 			    const size_t nmax){
-	callFtrmmLeftLowNoTrans<AreEqual<typename Field::Element,double>::value>()(F,Diag,M,N,A,lda,B,ldb,nmax);
+	callFtrmmLeftLowNoTrans<typename Field::Element>()(F,Diag,M,N,A,lda,B,ldb,nmax);
 }
 
-template <>
-class FFLAS::callFtrmmLeftLowNoTrans<false>{
+template <class Element>
+class FFLAS::callFtrmmLeftLowNoTrans{
 public:
 	template<class Field>
 	void operator() (const Field& F, const enum FFLAS_DIAG Diag, 
@@ -251,9 +303,8 @@ public:
 		}
 	}
 };
-
 template<>
-class FFLAS::callFtrmmLeftLowNoTrans<true>{
+class FFLAS::callFtrmmLeftLowNoTrans<double>{
 public:
 	template<class Field>
 	void operator ()(const Field& F, const enum FFLAS_DIAG Diag, 
@@ -277,6 +328,32 @@ public:
 		}
 	}
 };
+
+template<>
+class FFLAS::callFtrmmLeftLowNoTrans<float>{
+public:
+	template<class Field>
+	void operator ()(const Field& F, const enum FFLAS_DIAG Diag, 
+			 const size_t M, const size_t N,
+			 const typename Field::Element * A, const size_t lda,
+			 typename Field::Element * B, const size_t ldb, const size_t nmax){
+		if ( M < nmax ){
+			cblas_strmm (CblasRowMajor, CblasLeft, CblasLower, CblasNoTrans,
+				     (CBLAS_DIAG) Diag, M, N, 1.0, A, lda, B, ldb);
+			for (size_t i = 0; i < M; ++i)
+				for (size_t j = 0; j < N; ++j)
+					F.init (*(B+i*ldb+j),*(B+i*ldb+j));
+		} else {
+			size_t Mup=M>>1;
+			size_t Mdown = M-Mup;
+			this->operator()(F, Diag, Mdown, N, A+Mup*(lda+1), lda,
+					 B+Mup*ldb, ldb, nmax);
+			fgemm (F, FflasNoTrans, FflasNoTrans, Mdown, N, Mup,
+			       1.0, A+Mup*lda, lda, B, ldb, 1.0, B+Mup*ldb, ldb);
+			this->operator()(F, Diag, Mup, N, A, lda, B, ldb, nmax);
+		}
+	}
+};
 	
 template<class Field>
 inline void 
@@ -285,11 +362,11 @@ FFLAS::ftrmmLeftLowTrans (const Field& F, const enum FFLAS_DIAG Diag,
 			  const typename Field::Element * A, const size_t lda,
 			  typename Field::Element * B, const size_t ldb,
 			  const size_t nmax){
-	callFtrmmLeftLowTrans<AreEqual<typename Field::Element, double>::value> () (F,Diag,M,N,A,lda,B,ldb,nmax);
+	callFtrmmLeftLowTrans<typename Field::Element> () (F,Diag,M,N,A,lda,B,ldb,nmax);
 }
 
-template <>
-class FFLAS::callFtrmmLeftLowTrans<false>{
+template <class Element>
+class FFLAS::callFtrmmLeftLowTrans{
 public:
 	template<class Field>
 	void operator () (const Field& F, const enum FFLAS_DIAG Diag, 
@@ -322,7 +399,7 @@ public:
 };
 	
 template <>
-class FFLAS::callFtrmmLeftLowTrans<true>{
+class FFLAS::callFtrmmLeftLowTrans<double>{
 public:
 	template<class Field>
 	void operator() (const Field& F, const enum FFLAS_DIAG Diag, 
@@ -347,6 +424,32 @@ public:
 		}
 	}
 };
+template <>
+class FFLAS::callFtrmmLeftLowTrans<float>{
+public:
+	template<class Field>
+	void operator() (const Field& F, const enum FFLAS_DIAG Diag, 
+			 const size_t M, const size_t N,
+			 const typename Field::Element * A, const size_t lda,
+			 typename Field::Element * B, const size_t ldb,
+			 const size_t nmax){
+		if ( M < nmax ) {
+			cblas_strmm (CblasRowMajor, CblasLeft, CblasLower, CblasTrans,
+				     (CBLAS_DIAG) Diag, M, N, 1.0, A, lda, B, ldb);
+			for (size_t i = 0; i < M; ++i)
+				for (size_t j = 0; j < N; ++j)
+					F.init (*(B+i*ldb+j),*(B+i*ldb+j));
+		} else {
+			size_t Mup=M>>1;
+			size_t Mdown = M-Mup;
+			ftrmmLeftLowTrans (F, Diag, Mdown, N, A+Mup*(lda+1), lda,
+					   B+Mup*ldb, ldb, nmax);
+			fgemm (F, FflasTrans, FflasNoTrans, Mdown, N, Mup,
+			       1.0, A+Mup, lda, B, ldb, 1.0, B+Mup*ldb, ldb);
+			ftrmmLeftLowTrans( F, Diag, Mup, N, A, lda, B, ldb, nmax);
+		}
+	}
+};
 
 template<class Field>
 inline void 
@@ -355,11 +458,11 @@ FFLAS::ftrmmRightUpNoTrans (const Field& F, const enum FFLAS_DIAG Diag,
 			    const typename Field::Element * A, const size_t lda,
 			    typename Field::Element * B, const size_t ldb, 
 			    const size_t nmax) {
-	callFtrmmRightUpNoTrans<AreEqual<typename Field::Element,double>::value>()(F,Diag,M,N,A,lda,B,ldb,nmax);
+	callFtrmmRightUpNoTrans<typename Field::Element>()(F,Diag,M,N,A,lda,B,ldb,nmax);
 }
 
-template <>
-class FFLAS::callFtrmmRightUpNoTrans<false>{
+template <class Element>
+class FFLAS::callFtrmmRightUpNoTrans{
 public:
 	
 	template<class Field>
@@ -393,7 +496,7 @@ public:
 };
 
 template <>
-class FFLAS::callFtrmmRightUpNoTrans<true>{
+class FFLAS::callFtrmmRightUpNoTrans<double>{
 public:
 	
 	template<class Field>
@@ -418,6 +521,32 @@ public:
 		}
 	}
 };
+template <>
+class FFLAS::callFtrmmRightUpNoTrans<float>{
+public:
+	
+	template<class Field>
+	void operator()(const Field& F, const enum FFLAS_DIAG Diag, 
+			const size_t M, const size_t N,
+			const typename Field::Element * A, const size_t lda,
+			typename Field::Element * B, const size_t ldb, const size_t nmax){
+		if ( N < nmax ){
+			cblas_strmm (CblasRowMajor, CblasRight, CblasUpper, CblasNoTrans,
+				     (CBLAS_DIAG)Diag, M, N, 1.0, A, lda, B, ldb);
+			for (size_t i=0; i< M; ++i)
+				for (size_t j=0; j<N; ++j)
+					F.init(*(B+i*ldb+j),*(B+i*ldb+j));
+		} else {
+			size_t Nup=N>>1;
+			size_t Ndown = N-Nup;
+			this->operator ()( F, Diag, M, Ndown, A+Nup*(lda+1), lda, 
+					     B+Nup, ldb, nmax);
+			fgemm( F, FflasNoTrans, FflasNoTrans, M, Ndown, Nup,
+			       1.0, B, ldb, A+Nup, lda, 1.0, B+Nup, ldb);
+			this->operator ()( F, Diag, M, Nup, A, lda, B, ldb, nmax);
+		}
+	}
+};
 
 template<class Field>
 inline void
@@ -426,11 +555,11 @@ FFLAS::ftrmmRightUpTrans (const Field& F, const enum FFLAS_DIAG Diag,
 			  const typename Field::Element * A, const size_t lda,
 			  typename Field::Element * B, const size_t ldb,
 			  const size_t nmax){
-	callFtrmmRightUpTrans<AreEqual<typename Field::Element,double>::value>() (F,Diag,M,N,A,lda,B,ldb,nmax);
+	callFtrmmRightUpTrans<typename Field::Element>() (F,Diag,M,N,A,lda,B,ldb,nmax);
 }
 
-template <>
-class FFLAS::callFtrmmRightUpTrans<false>{
+template <class Element>
+class FFLAS::callFtrmmRightUpTrans{
 public:
 	template<class Field>
 	void operator() (const Field& F, const enum FFLAS_DIAG Diag, 
@@ -464,7 +593,7 @@ public:
 };
 
 template <>
-class FFLAS::callFtrmmRightUpTrans<true>{
+class FFLAS::callFtrmmRightUpTrans<double>{
 public:
 	template<class Field>
 	void operator () (const Field& F, const enum FFLAS_DIAG Diag, 
@@ -490,6 +619,33 @@ public:
 		}
 	}
 };
+template <>
+class FFLAS::callFtrmmRightUpTrans<float>{
+public:
+	template<class Field>
+	void operator () (const Field& F, const enum FFLAS_DIAG Diag, 
+			  const size_t M, const size_t N,
+			  const typename Field::Element * A, const size_t lda,
+			  typename Field::Element * B, const size_t ldb,
+			  const size_t nmax){
+		if (N < nmax) {
+			cblas_strmm (CblasRowMajor, CblasRight, CblasUpper, CblasTrans,
+				     (CBLAS_DIAG) Diag, M, N, 1.0, A, lda, B, ldb);
+			for (size_t i=0; i< M; ++i)
+				for (size_t j=0; j<N; ++j)
+					F.init (*(B+i*ldb+j),*(B+i*ldb+j));
+		}
+		else{
+			size_t Nup=N>>1;
+			size_t Ndown = N-Nup;
+			this->operator()( F, Diag, M, Ndown, A+Nup*(lda+1), lda, 
+					   B+Nup, ldb, nmax);
+			fgemm( F, FflasNoTrans, FflasTrans, M, Ndown, Nup, 
+			       1.0, B, ldb, A+Nup*lda, lda, 1.0, B+Nup, ldb);
+			this->operator()( F, Diag, M, Nup, A, lda, B, ldb, nmax);
+		}
+	}
+};
 	
 template<class Field>
 inline void
@@ -498,10 +654,10 @@ FFLAS::ftrmmRightLowNoTrans (const Field& F, const enum FFLAS_DIAG Diag,
 			     const typename Field::Element * A, const size_t lda,
 			     typename Field::Element * B, const size_t ldb, 
 			     const size_t nmax){
-	callFtrmmRightLowNoTrans<AreEqual<typename Field::Element,double>::value>() (F,Diag,M,N,A,lda,B,ldb,nmax);
+	callFtrmmRightLowNoTrans<typename Field::Element>() (F,Diag,M,N,A,lda,B,ldb,nmax);
 }
-template <>
-class FFLAS::callFtrmmRightLowNoTrans<false>{
+template <class Element>
+class FFLAS::callFtrmmRightLowNoTrans{
 public:
 	template<class Field>
 	void operator() (const Field& F, const enum FFLAS_DIAG Diag, 
@@ -534,7 +690,7 @@ public:
 };
 
 template <>
-class FFLAS::callFtrmmRightLowNoTrans<true>{
+class FFLAS::callFtrmmRightLowNoTrans<double>{
 public:
 	template<class Field>
 	void operator () (const Field& F, const enum FFLAS_DIAG Diag, 
@@ -563,6 +719,36 @@ public:
 		}
 	}
 };
+template <>
+class FFLAS::callFtrmmRightLowNoTrans<float>{
+public:
+	template<class Field>
+	void operator () (const Field& F, const enum FFLAS_DIAG Diag, 
+			  const size_t M, const size_t N,
+			  const typename Field::Element * A, const size_t lda,
+			  typename Field::Element * B, const size_t ldb,
+			  const size_t nmax){
+		typename Field::Element one;
+		F.init(one, 1.0);
+		if (N < nmax) {
+			cblas_strmm (CblasRowMajor, CblasRight, CblasLower, CblasNoTrans,
+				     (CBLAS_DIAG) Diag, M, N, 1.0, A, lda, B, ldb);
+			for (size_t i=0; i< M; ++i)
+				for (size_t j=0; j<N; ++j)
+					F.init(*(B+i*ldb+j),*(B+i*ldb+j));			
+			
+		}
+		else{
+			size_t Nup=N>>1;
+			size_t Ndown = N-Nup;
+			this->operator() (F, Diag, M, Nup, A, lda, B, ldb, nmax);
+			fgemm (F, FflasNoTrans, FflasNoTrans, M, Nup, Ndown,
+			       one, B+Nup, ldb, A+Nup*lda, lda, one, B, ldb);
+			this->operator() (F, Diag, M, Ndown, A+Nup*(lda+1), lda, 
+					      B+Nup, ldb, nmax);
+		}
+	}
+};
 
 template<class Field>
 inline void
@@ -571,11 +757,11 @@ FFLAS::ftrmmRightLowTrans (const Field& F, const enum FFLAS_DIAG Diag,
 			   const typename Field::Element * A, const size_t lda,
 			   typename Field::Element * B, const size_t ldb, 
 			   const size_t nmax){
-	callFtrmmRightLowTrans<AreEqual<typename Field::Element,double>::value>() (F,Diag,M,N,A,lda,B,ldb,nmax);
+	callFtrmmRightLowTrans<typename Field::Element>() (F,Diag,M,N,A,lda,B,ldb,nmax);
 }
 
-template <>
-class FFLAS::callFtrmmRightLowTrans<false>{
+template <class Element>
+class FFLAS::callFtrmmRightLowTrans{
 public:
 	template<class Field>
 	void operator () (const Field& F, const enum FFLAS_DIAG Diag, 
@@ -607,7 +793,7 @@ public:
 	}
 };
 template<>
-class FFLAS::callFtrmmRightLowTrans<true>{
+class FFLAS::callFtrmmRightLowTrans<double>{
 public:
 	template<class Field>
 	void operator () (const Field& F, const enum FFLAS_DIAG Diag, 
@@ -618,6 +804,33 @@ public:
 	
 		if (N < nmax) {
 			cblas_dtrmm (CblasRowMajor, CblasRight, CblasLower, CblasTrans,
+				     (CBLAS_DIAG) Diag, M, N, 1.0, A, lda, B, ldb);
+			for (size_t i=0; i< M; ++i)
+				for (size_t j=0; j<N; ++j)
+					F.init(*(B+i*ldb+j),*(B+i*ldb+j));			
+			
+		} else{
+			size_t Nup=N>>1;
+			size_t Ndown = N-Nup;
+			this->operator() (F, Diag, M, Nup, A, lda, B, ldb, nmax);
+			fgemm (F, FflasNoTrans, FflasTrans, M, Nup, Ndown, 1.0, 
+			       B+Nup, ldb, A+Nup, lda, 1.0, B, ldb);
+			this->operator() (F, Diag, M, Ndown, A+Nup*(lda+1), lda, B+Nup, ldb, nmax);
+		}
+	}
+};
+template<>
+class FFLAS::callFtrmmRightLowTrans<float>{
+public:
+	template<class Field>
+	void operator () (const Field& F, const enum FFLAS_DIAG Diag, 
+			  const size_t M, const size_t N,
+			  const typename Field::Element * A, const size_t lda,
+			  typename Field::Element * B, const size_t ldb, 
+			  const size_t nmax){
+	
+		if (N < nmax) {
+			cblas_strmm (CblasRowMajor, CblasRight, CblasLower, CblasTrans,
 				     (CBLAS_DIAG) Diag, M, N, 1.0, A, lda, B, ldb);
 			for (size_t i=0; i< M; ++i)
 				for (size_t j=0; j<N; ++j)

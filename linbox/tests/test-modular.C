@@ -68,6 +68,7 @@ int main (int argc, char **argv)
 	Modular<uint32> F_uint32 ((uint32) q2);
 	Modular<uint16> F_uint16 ((uint16) q3);
 	Modular<uint8> F_uint8 ((uint8) q4);
+	Modular<float> F_float ((float) q4);
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
@@ -77,6 +78,7 @@ int main (int argc, char **argv)
 	if (!runFieldTests (F_uint32,  "Modular<uint32>",  iterations, n, false)) pass = false;
 	if (!runFieldTests (F_uint16,  "Modular<uint16>",  iterations, n, false)) pass = false;
 	if (!runFieldTests (F_uint8,  "Modular<uint8>",  iterations, n, false)) pass = false;
+	if (!runFieldTests (F_float,  "Modular<float>",  iterations, n, false)) pass = false;
 
 	//if (!testRandomIterator (F_integer, "Modular<integer>", trials, categories, hist_level)) pass = false;
 	if (!testRandomIterator (F_uint32,  "Modular<uint32>", trials, categories, hist_level)) pass = false;

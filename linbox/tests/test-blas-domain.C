@@ -35,16 +35,16 @@ using namespace LinBox;
 
 const int maxpretty = 35;
 
-const char* pretty(const char* a) {
+string blank;
 
-	 string msg(a);
-	string blank("     ");
-	blank+=a;
+const char* pretty(string a) {
+
+	blank = "     " + a;
 	int msgsize= maxpretty - blank.size();
 	string dot(".");
 	for (int i=0;i<msgsize ;++i)
-		blank+=dot;
-	return blank.data();
+		 blank+=dot;
+	 return blank.c_str();
 }
 
 
@@ -106,19 +106,19 @@ static bool testMulAdd (const Field& F, size_t n, int iterations) {
 		
 		if (!MD.isZero(R))
 			ret=false;
-			
+
 		// compute z = beta.y + alpha.A*x
+
 		BMD.muladd(z,beta,y,alpha,A,x);
-		
+
 		MD.vectorMul(t,A,x);
 		for (size_t i=0;i<n;++i){
 		  F.mulin(t[i],alpha);
 		  F.axpyin(t[i],beta,y[i]);
 		}
-		
+
 		if (!VD.areEqual(t,z))
 			ret=false;
-
 	}
 	
 	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testMulAdd");
@@ -628,7 +628,6 @@ static bool testPermutation (const Field& F, size_t m, int iterations) {
 		// Test C==A
 		if (!MD.areEqual(A,C))
 			ret=false;
-
 		/*
 		 * Test P.P^t.A == A
 		 */
@@ -652,8 +651,6 @@ static bool testPermutation (const Field& F, size_t m, int iterations) {
 		if (!MD.areEqual(A,C))
 			ret=false;
 
-
-
 		/*
 		 * Test a.P.P^t == a
 		 */
@@ -665,6 +662,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations) {
 		// Test c==a
 		if (!VD.areEqual(a,c))
 			ret=false;
+
 		/*
 		 * Test a.P^t.P == a
 		 */
@@ -676,7 +674,6 @@ static bool testPermutation (const Field& F, size_t m, int iterations) {
 		// Test c==a
 		if (!VD.areEqual(a,c))
 			ret=false;
-
 		/*
 		 * Test P.P^t.a == a
 		 */
@@ -688,6 +685,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations) {
 		// Test c==a
 		if (!VD.areEqual(a,c))
 			ret=false;
+
 		/*
 		 * Test P^t.P.a == a
 		 */
@@ -699,7 +697,6 @@ static bool testPermutation (const Field& F, size_t m, int iterations) {
 		// Test c==a
 		if (!VD.areEqual(a,c))
 			ret=false;
-
 
 
 		/*
@@ -777,7 +774,6 @@ static bool testPermutation (const Field& F, size_t m, int iterations) {
 			
 		if (!MD.areEqual(D,B))
 			ret=false;
-		
 		/*
 		 * Test P.A.(P^t.A)^-1.B == B
 		 */
@@ -1004,7 +1000,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations) {
 			ret = false;
 		if ( !F.areEqual(P[1], one) )
 			ret = false;
-		
+
 		// Test MinPoly(a*In) = X-a
 		G.random(tmp);
 		
@@ -1018,8 +1014,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations) {
 			ret = false;
 		if ( !F.areEqual(P[1], one) )
 			ret = false;
-		
-		
+
 		for (size_t i=0;i<n-1;++i){
 			for (size_t j=0; j<i+1; ++j)
 				A.setEntry(i,j,zero);
@@ -1039,6 +1034,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations) {
 				ret = false;
 		if ( !F.areEqual(P[n], one) )
 			ret = false;
+
 	}
 
 	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testMinPoly");
@@ -1132,6 +1128,7 @@ std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
 int main(int argc, char **argv) {
 
 	typedef Modular<double> Field;
+	//typedef Modular<float> Field;
         
 
 	bool pass = true;
