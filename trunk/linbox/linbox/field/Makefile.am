@@ -19,6 +19,7 @@ BASIC_HDRS =			\
 	modular-balance-int.h	\
 	modular-balance-int32.h	\
 	modular-double.h	\
+	modular-float.h		\
 	gf2.h			\
 	gf2.inl			\
 	hom.h			\
