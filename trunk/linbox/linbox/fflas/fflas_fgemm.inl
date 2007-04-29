@@ -23,27 +23,9 @@
 // An alternative has to be written for finite rings if necessary
 
 // Classic Multiplication over double
-template  <> 
-inline  void FFLAS::ClassicMatmul (const DoubleDomain& F, 
-				   const enum FFLAS_TRANSPOSE ta,
-				   const enum FFLAS_TRANSPOSE tb,
-				   const size_t m, const size_t n,const size_t k,
-				   const DoubleDomain::Element alpha,
-				   const DoubleDomain::Element * Ad, const size_t lda,
-				   const DoubleDomain::Element * Bd, const size_t ldb,
-				   const DoubleDomain::Element beta,
-				   DoubleDomain::Element * Cd, const size_t ldc, 
-				   const size_t kmax)
-{
-	cblas_dgemm (CblasRowMajor, (enum CBLAS_TRANSPOSE) ta, (enum CBLAS_TRANSPOSE) tb,
-		     m, n, k, (DoubleDomain::Element) alpha,
-		     Ad, lda, Bd, ldb, (DoubleDomain::Element) beta,Cd, ldc);
-}
-
-
 // Classic multiplication over a finite field
 template  < class Field > 
-void FFLAS::ClassicMatmul (const Field& F,  
+inline void FFLAS::ClassicMatmul (const Field& F,  
 			   const enum FFLAS_TRANSPOSE ta,
 			   const enum FFLAS_TRANSPOSE tb,
 			   const size_t m, const size_t n,const size_t k,
@@ -54,11 +36,48 @@ void FFLAS::ClassicMatmul (const Field& F,
 			   typename Field::Element* C, const size_t ldc,
 			   const size_t kmax)
 {
-	callClassicMatmul<AreEqual<typename Field::Element,double>::value> (F,ta,tb,m,n,k,alpha,A,lda,B,ldb,beta,C,ldc,kmax);
+	callClassicMatmul<typename Field::Element>() (F,ta,tb,m,n,k,alpha,A,lda,B,ldb,beta,C,ldc,kmax);
 }
 
-template<>
-class FFLAS::callClassicMatmul<false>{
+template  <> 
+inline void FFLAS::ClassicMatmul (const DoubleDomain& F, 
+				  const enum FFLAS_TRANSPOSE ta,
+				  const enum FFLAS_TRANSPOSE tb,
+				  const size_t m, const size_t n,const size_t k,
+				  const DoubleDomain::Element alpha,
+				  const DoubleDomain::Element * Ad, const size_t lda,
+				  const DoubleDomain::Element * Bd, const size_t ldb,
+				  const DoubleDomain::Element beta,
+				  DoubleDomain::Element * Cd, const size_t ldc,
+				  const size_t kmax)
+{
+	cblas_dgemm (CblasRowMajor, (enum CBLAS_TRANSPOSE) ta, (enum CBLAS_TRANSPOSE) tb,
+		     m, n, k, (DoubleDomain::Element) alpha,
+		     Ad, lda, Bd, ldb, (DoubleDomain::Element) beta,Cd, ldc);
+}
+
+template  <> 
+inline void FFLAS::ClassicMatmul (const FloatDomain& F, 
+				  const enum FFLAS_TRANSPOSE ta,
+				  const enum FFLAS_TRANSPOSE tb,
+				  const size_t m, const size_t n,const size_t k,
+				  const FloatDomain::Element alpha,
+				  const FloatDomain::Element * Ad, const size_t lda,
+				  const FloatDomain::Element * Bd, const size_t ldb,
+				  const FloatDomain::Element beta,
+				  FloatDomain::Element * Cd, const size_t ldc,
+				  const size_t kmax)
+{
+	cblas_sgemm (CblasRowMajor, (enum CBLAS_TRANSPOSE) ta, (enum CBLAS_TRANSPOSE) tb,
+		     m, n, k, (FloatDomain::Element) alpha,
+		     Ad, lda, Bd, ldb, (FloatDomain::Element) beta,Cd, ldc);
+}
+
+
+
+
+template<class Element>
+class FFLAS::callClassicMatmul{
 public:
 	template  < class Field >
 	void operator() (const Field& F,  
@@ -206,7 +225,7 @@ public:
 };
 
 template <>
-class FFLAS::callClassicMatmul<true>{
+class FFLAS::callClassicMatmul<double>{
 public:
 	template <class Field>
 	void operator() (const Field & F,  
@@ -270,6 +289,77 @@ public:
 	
 		if ((!F.areEqual (one, alpha)) && (!F.areEqual (Mone, alpha))) {
 			for (double * Ci = C; Ci < C+m*ldc; Ci += ldc)
+				for (size_t j = 0; j < n; ++j) 
+					F.mulin (* (Ci + j), alpha);
+		}
+	}
+};
+
+template <>
+class FFLAS::callClassicMatmul<float>{
+public:
+	template <class Field>
+	void operator() (const Field & F,  
+			 const enum FFLAS_TRANSPOSE ta,
+			 const enum FFLAS_TRANSPOSE tb,
+			 const size_t m, const size_t n,const size_t k,
+			 const float alpha, 
+			 const float * A, const size_t lda,
+			 const float * B, const size_t ldb,
+			 const float beta,
+			 float* C, const size_t ldc, 
+			 const size_t kmax) {
+		static  float Mone, one;
+		F.init(one, 1.0);
+		F.neg(Mone, one);
+		float _alpha, _beta;
+		// To ensure the initial computation with beta
+		size_t k2 = MIN(k,kmax-1);
+		size_t nblock = k / (kmax-1);
+		size_t remblock = k % (kmax-1);
+		if (!remblock) {
+			remblock = kmax-1;
+			--nblock;
+		}
+		if (F.areEqual (Mone, beta)) 
+			_beta = -1.0;
+		else
+			_beta = beta;
+
+		if (F.areEqual (Mone, alpha))
+			_alpha = -1.0;
+		else{
+			_alpha = 1.0;
+			if (! F.areEqual (one, alpha)) {
+				// Compute y = A*x + beta/alpha.y
+				// and after y *= alpha
+				F.divin (_beta, alpha);
+			}
+		}
+		size_t shiftA, shiftB;
+		if (ta == FflasTrans) 
+			shiftA = k2*lda;
+		else
+			shiftA = k2;
+		if (tb == FflasTrans)
+			shiftB = k2;
+		else 
+			shiftB = k2*ldb;
+		ClassicMatmul (FloatDomain(), ta, tb, m, n, remblock, _alpha, A+nblock*shiftA, lda,
+			       B+nblock*shiftB, ldb, _beta, C, ldc, kmax);
+		for (float * Ci = C; Ci != C+m*ldc; Ci += ldc)
+			for (size_t j=0; j < n;++j)
+				F.init(*(Ci+j),*(Ci+j));
+		for (size_t i = 0; i < nblock; ++i) {
+			ClassicMatmul (FloatDomain(), ta, tb, m, n, k2, _alpha, A+i*shiftA, lda,
+				       B+i*shiftB, ldb, one, C, ldc, kmax);
+			for (float * Ci = C; Ci != C+m*ldc; Ci += ldc)
+				for (size_t j=0; j < n;++j)
+					F.init(*(Ci+j),*(Ci+j));
+		}
+	
+		if ((!F.areEqual (one, alpha)) && (!F.areEqual (Mone, alpha))) {
+			for (float * Ci = C; Ci < C+m*ldc; Ci += ldc)
 				for (size_t j = 0; j < n; ++j) 
 					F.mulin (* (Ci + j), alpha);
 		}
@@ -487,6 +577,25 @@ inline  void FFLAS::WinoMain (const DoubleDomain& D,
 		DynamicPealing (D, ta, tb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, kmax);
 	}
 }
+template <> 
+inline  void FFLAS::WinoMain (const FloatDomain& F, 
+			      const enum FFLAS_TRANSPOSE ta,
+			      const enum FFLAS_TRANSPOSE tb,
+			      const size_t m, const size_t n, const size_t k,
+			      const FloatDomain::Element alpha,
+			      const FloatDomain::Element * A, const size_t lda,
+			      const FloatDomain::Element * B, const size_t ldb,
+			      const FloatDomain::Element beta,
+			      FloatDomain::Element * C, const size_t ldc,
+			      const size_t kmax, const size_t w) {
+	
+	if (w <= 0) 
+		ClassicMatmul (F, ta, tb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, kmax);
+	else{
+		WinoCalc (F, ta, tb, m/2, n/2, k/2, alpha, A, lda, B, ldb, beta, C, ldc, kmax, w); 
+		DynamicPealing (F, ta, tb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, kmax);
+	}
+}
 
 template < class Field >
 inline void  FFLAS::WinoMain (const Field& F, 
@@ -500,11 +609,11 @@ inline void  FFLAS::WinoMain (const Field& F,
 			      typename Field::Element * C, const size_t ldc,
 			      const size_t kmax, const size_t w)
 {
-	callWinoMain<AreEqual<typename Field::Element, double>::value>() (F,ta,tb,m,n,k,alpha,A,lda,B,ldb,beta,C,ldc,kmax,w);
+	callWinoMain<typename Field::Element>() (F,ta,tb,m,n,k,alpha,A,lda,B,ldb,beta,C,ldc,kmax,w);
 }
 
-template <>
-class FFLAS::callWinoMain<false>{
+template <class Element>
+class FFLAS::callWinoMain{
 public:
 	template  < class Field > 
 	void operator() (const Field& F, 
@@ -524,7 +633,7 @@ public:
 		F.neg(mone, one);
 	
 		if (w  <= 0) // Winograd - >  Classic
-			callClassicMatmul<false> () (F, ta, tb, m, n, k, alpha, A, lda, B, ldb,
+			callClassicMatmul<typename Field::Element> () (F, ta, tb, m, n, k, alpha, A, lda, B, ldb,
 						    beta, C, ldc, kmax);
 		else {
 			if (k < kmax) { // switch on double
@@ -586,7 +695,7 @@ public:
 
 
 template <>
-class FFLAS::callWinoMain<true>{
+class FFLAS::callWinoMain<double>{
 public:
 	template <class Field>
 	void operator() (const Field & F, 
@@ -600,7 +709,7 @@ public:
 			 double * C, const size_t ldc,
 			 const size_t kmax, const size_t w) {
 		if (w <= 0) 
-			callClassicMatmul<true> () (F, ta, tb, m, n, k, 
+			callClassicMatmul<double> () (F, ta, tb, m, n, k, 
 						 alpha, A, lda, B, ldb, beta, C, ldc, kmax);
 		else {
 			if (k < kmax) { // switch on double
@@ -649,6 +758,69 @@ public:
 	}
 };
 
+template <>
+class FFLAS::callWinoMain<float>{
+public:
+	template <class Field>
+	void operator() (const Field & F, 
+			 const enum FFLAS_TRANSPOSE ta,
+			 const enum FFLAS_TRANSPOSE tb,
+			 const size_t m, const size_t n, const size_t k,
+			 const float alpha,
+			 const float* A, const size_t lda,
+			 const float* B, const size_t ldb,
+			 const float beta,
+			 float * C, const size_t ldc,
+			 const size_t kmax, const size_t w) {
+		if (w <= 0) 
+			callClassicMatmul<float> () (F, ta, tb, m, n, k, 
+						 alpha, A, lda, B, ldb, beta, C, ldc, kmax);
+		else {
+			if (k < kmax) { // switch on float
+				// Temporary float matrices
+				FloatDomain::Element _alpha, _beta;
+			
+				_beta = beta;
+				if (F.areEqual (-1.0, alpha)) {
+					_alpha = -1.0;
+				}
+				else{
+					// Compute C = A*B + beta/alpha.C and then C *= alpha
+					if (! F.areEqual (1.0, alpha)) {
+						F.divin (_beta, alpha);
+					}
+					_alpha = 1.0;
+				}
+			
+				size_t ma, ka, kb, nb; //mb, na;
+				if (ta == FflasTrans) { ma = k; ka = m; }
+				else { ma = m; ka = k; }
+				if (tb == FflasTrans) { kb = n; nb = k; }
+				else {  kb = k; nb = n; }
+		
+				// recursive call
+				WinoMain (FloatDomain(), ta, tb, m, n, k, 
+					  _alpha, A, lda, B, ldb, _beta, C, ldc, kmax, w);
+				// Conversion float = >  GFq
+				for (float * Ci = C; Ci != C+m*ldc; Ci+=ldc)
+					for (size_t j = 0; j < n; ++j)
+						F.init (*(Ci + j), *(Ci + j));
+			
+				if (!F.areEqual (1.0, alpha) && !F.areEqual (-1.0, alpha)) {
+					// Fix-up: compute C *= alpha
+					for (float* Ci=C; Ci < C+m*ldc; Ci+=ldc)
+						for (size_t j=0; j < n; ++j) 
+							F.mulin (* (Ci + j), alpha);
+				}
+				// Temporary float matrices destruction
+			}
+			else{
+				WinoCalc (F, ta, tb, m/2, n/2, k/2, alpha, A, lda, B, ldb, beta, C, ldc, kmax,w);
+				DynamicPealing (F, ta, tb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, kmax);
+			}
+		}
+	}
+};
 
 template  < class Field > 
 inline void
@@ -779,11 +951,11 @@ FFLAS::fsquare (const Field& F,
 		const typename Field::Element* A, const size_t lda,
 		const typename Field::Element beta,
 		typename Field::Element* C, const size_t ldc) {
-	return callFsquare<AreEqual<typename Field::Element, double>::value> () (F,ta,n,alpha,A,lda,beta,C,ldc);
+	return callFsquare<typename Field::Element> () (F,ta,n,alpha,A,lda,beta,C,ldc);
 }
 
 template <>
-class FFLAS::callFsquare<true>{
+class FFLAS::callFsquare<double>{
 public:
 	template <class Field> 
 	double * operator () (const Field & F,
@@ -812,9 +984,39 @@ public:
 		return C;
 	}
 };
+template <>
+class FFLAS::callFsquare<float>{
+public:
+	template <class Field> 
+	float * operator () (const Field & F,
+			      const enum FFLAS_TRANSPOSE ta,
+			      const size_t n, const float alpha,
+			      const float* A, const size_t lda,
+			      const float beta,
+			      float* C, const size_t ldc) {
+		if (C==A) {
+			float * Ad = new float[n*n];
+			for (size_t i=0; i < n; ++i)
+				fcopy (F, n,Ad+i*n, 1, A+i*lda, 1);
+			fgemm (F, ta, ta, n, n, n, alpha, Ad, n, Ad, n,
+			       beta, C, ldc);
+			delete[] Ad;
+		}
+		else
+			fgemm (F, ta, ta, n, n, n, alpha, A, lda, A, lda,
+			       beta, C, ldc);		
+		// Conversion float = >  Finite Field
+		size_t i;
+		float *Ci;
+		for (i=0, Ci=C ; i < n;++i, Ci+=ldc)
+			for (size_t j=0; j < n;++j)
+				F.init(*(Ci+j),*(Ci+j));
+		return C;
+	}
+};
 
-template<>
-class FFLAS::callFsquare<false>{
+template<class Element>
+class FFLAS::callFsquare{
 public:
 	template < class Field >
 	typename Field::Element* operator () (const Field& F,

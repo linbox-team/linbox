@@ -18,17 +18,17 @@
 
 using namespace LinBox;
 
+string blank;
+
 const int maxpretty = 35;
 const char* pretty(string a) {
 
-	string msg(a);
-	string blank("     ");
-	blank+=a;
+	blank = "     " + a;
 	int msgsize= maxpretty - blank.size();
 	string dot(".");
 	for (int i=0;i<msgsize ;++i)
 		blank+=dot;
-	return blank.data();
+	return blank.c_str();
 }
 
 /*
@@ -744,6 +744,7 @@ int main(int argc, char** argv){
 	// Choice of the finite field representation
 	//typedef GivaroZpz<Std32> Field;
 	typedef Modular<double> Field;
+	//typedef Modular<float> Field;
 	//typedef Modular<LinBox::uint32> Field;
 	//------------------------------------------------------------------------
 

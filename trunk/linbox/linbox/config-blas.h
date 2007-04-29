@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-/* linbox/algorithms/lifting-container-base.h
+/* config-blas.h
  * Copyright (C) 2005  Pascal Giorgi
- *
+ *               2007  Clement Pernet
  * Written by Pascal Giorgi <pgiorgi@uwaterloo.ca>
  *
  * This library is free software; you can redistribute it and/or
@@ -24,9 +24,9 @@
 #ifndef __LINBOX_CONFIG_BLAS
 #define __LINBOX_CONFIG_BLAS
 
-#ifndef __LINBOX_CONFIGURATION
-#include <linbox-config.h>
-#endif
+// #ifndef __LINBOX_CONFIGURATION
+// #include <linbox-config.h>
+// #endif
 
  
 
@@ -50,11 +50,15 @@ extern "C" {
 
 	// level 2 routines
 	void dgemv_ (const char*, const int*, const int*, const double*, const double*, const int*, const double*, const int*, const double*, double*, const int*);
+	void sgemv_ (const char*, const int*, const int*, const float*, const float*, const int*, const float*, const int*, const float*, float*, const int*);
 	void dger_  (const int*, const int*, const double*, const double*, const int*, const double*, const int*, double*, const int*);
 
 	// level 3 routines
 	void dtrsm_ (const char*, const char*, const char*, const char*, const int*, const int*, const double*, const double*, const int*, double*, const int*);
+	void strsm_ (const char*, const char*, const char*, const char*, const int*, const int*, const float*, const float*, const int*, float*, const int*);
 	void dtrmm_ (const char*, const char*, const char*, const char*, const int*, const int*, const double*, const double*, const int*, double*, const int*);
+	void strmm_ (const char*, const char*, const char*, const char*, const int*, const int*, const float*, const float*, const int*, float*, const int*);
+	void sgemm_ (const char*, const char*, const int*, const int*, const int*, const float*, const float*, const int*, const float*, const int*, const float*, float*, const int*);
 	void dgemm_ (const char*, const char*, const int*, const int*, const int*, const double*, const double*, const int*, const double*, const int*, const double*, double*, const int*);
 }
 
@@ -127,6 +131,14 @@ extern "C" {
 		else
 			dgemv_ ( EXT_BLAS_TRANSPOSE(TransA), &M, &N, &alpha, A, &lda, X, &incX, &beta, Y, &incY);
 	}
+	void cblas_sgemv(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const int M, const int N, const float alpha, 
+			 const float *A, const int lda, const float *X, const int incX, const float beta, float *Y, const int incY)
+	{
+		if (Order == CblasRowMajor)
+			sgemv_ ( EXT_BLAS_TRANSPOSE_tr(TransA), &N, &M, &alpha, A, &lda, X, &incX, &beta, Y, &incY);
+		else
+			sgemv_ ( EXT_BLAS_TRANSPOSE(TransA), &M, &N, &alpha, A, &lda, X, &incX, &beta, Y, &incY);
+	}
   
 	void cblas_dger(const enum CBLAS_ORDER Order, const int M, const int N, const double alpha, const double *X, const int incX,
 			const double *Y, const int incY, double *A, const int lda)
@@ -150,6 +162,15 @@ extern "C" {
 		else
 			dtrsm_ ( EXT_BLAS_SIDE(Side), EXT_BLAS_UPLO(Uplo), EXT_BLAS_TRANSPOSE(TransA), EXT_BLAS_DIAG(Diag), &M, &N, &alpha, A, &lda, B, &ldb);
 	}
+	void cblas_strsm(const enum CBLAS_ORDER Order, const enum CBLAS_SIDE Side, const enum CBLAS_UPLO Uplo, const enum CBLAS_TRANSPOSE TransA,
+			 const enum CBLAS_DIAG Diag, const int M, const int N, const float alpha, const float *A, const int lda,
+			 float *B, const int ldb)
+	{  
+		if (Order == CblasRowMajor) 
+			strsm_ ( EXT_BLAS_SIDE_tr(Side), EXT_BLAS_UPLO_tr(Uplo), EXT_BLAS_TRANSPOSE(TransA), EXT_BLAS_DIAG(Diag), &N, &M, &alpha, A, &lda, B, &ldb); 
+		else
+			strsm_ ( EXT_BLAS_SIDE(Side), EXT_BLAS_UPLO(Uplo), EXT_BLAS_TRANSPOSE(TransA), EXT_BLAS_DIAG(Diag), &M, &N, &alpha, A, &lda, B, &ldb);
+	}
   
 	void cblas_dtrmm(const enum CBLAS_ORDER Order, const enum CBLAS_SIDE Side, const enum CBLAS_UPLO Uplo, const enum CBLAS_TRANSPOSE TransA,
 			 const enum CBLAS_DIAG Diag, const int M, const int N, const double alpha, const double *A, const int lda,
@@ -160,6 +181,15 @@ extern "C" {
 		else
 			dtrmm_ ( EXT_BLAS_SIDE(Side), EXT_BLAS_UPLO(Uplo), EXT_BLAS_TRANSPOSE(TransA), EXT_BLAS_DIAG(Diag), &M, &N, &alpha, A, &lda, B, &ldb);
 	}
+	void cblas_strmm(const enum CBLAS_ORDER Order, const enum CBLAS_SIDE Side, const enum CBLAS_UPLO Uplo, const enum CBLAS_TRANSPOSE TransA,
+			 const enum CBLAS_DIAG Diag, const int M, const int N, const float alpha, const float *A, const int lda,
+			 float *B, const int ldb)
+	{  
+		if (Order == CblasRowMajor)
+			strmm_ ( EXT_BLAS_SIDE_tr(Side), EXT_BLAS_UPLO_tr(Uplo), EXT_BLAS_TRANSPOSE(TransA), EXT_BLAS_DIAG(Diag), &N, &M, &alpha, A, &lda, B, &ldb);
+		else
+			strmm_ ( EXT_BLAS_SIDE(Side), EXT_BLAS_UPLO(Uplo), EXT_BLAS_TRANSPOSE(TransA), EXT_BLAS_DIAG(Diag), &M, &N, &alpha, A, &lda, B, &ldb);
+	}
   
 	void cblas_dgemm(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N,
 			 const int K, const double alpha, const double *A, const int lda, const double *B, const int ldb,
@@ -169,6 +199,15 @@ extern "C" {
 			dgemm_ ( EXT_BLAS_TRANSPOSE(TransB), EXT_BLAS_TRANSPOSE(TransA), &N, &M, &K, &alpha, B, &ldb, A, &lda, &beta, C, &ldc);
 		else
 			dgemm_ ( EXT_BLAS_TRANSPOSE(TransA), EXT_BLAS_TRANSPOSE(TransB), &M, &N, &K, &alpha, A, &lda, B, &ldb, &beta, C, &ldc);
+	}
+	void cblas_sgemm(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N,
+			 const int K, const float alpha, const float *A, const int lda, const float *B, const int ldb,
+			 const float beta, float *C, const int ldc) 
+	{   
+		if (Order == CblasRowMajor)
+			sgemm_ ( EXT_BLAS_TRANSPOSE(TransB), EXT_BLAS_TRANSPOSE(TransA), &N, &M, &K, &alpha, B, &ldb, A, &lda, &beta, C, &ldc);
+		else
+			sgemm_ ( EXT_BLAS_TRANSPOSE(TransA), EXT_BLAS_TRANSPOSE(TransB), &M, &N, &K, &alpha, A, &lda, B, &ldb, &beta, C, &ldc);
 	}
 
 	// LAPACK routines
@@ -225,6 +264,9 @@ extern "C" {
 
 	void cblas_dgemv(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const int M, const int N, const double alpha, 
 			 const double *A, const int lda, const double *X, const int incX, const double beta, double *Y, const int incY);
+
+	void cblas_sgemv(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const int M, const int N, const float alpha, 
+			 const float *A, const int lda, const float *X, const int incX, const float beta, float *Y, const int incY);
   
 	void cblas_dger(const enum CBLAS_ORDER Order, const int M, const int N, const double alpha, const double *X, const int incX,
 			const double *Y, const int incY, double *A, const int lda);
@@ -236,13 +278,24 @@ extern "C" {
 			 const enum CBLAS_DIAG Diag, const int M, const int N, const double alpha, const double *A, const int lda,
 			 double *B, const int ldb);
   
+	void cblas_strsm(const enum CBLAS_ORDER Order, const enum CBLAS_SIDE Side, const enum CBLAS_UPLO Uplo, const enum CBLAS_TRANSPOSE TransA,
+			 const enum CBLAS_DIAG Diag, const int M, const int N, const float alpha, const float *A, const int lda,
+			 float *B, const int ldb);
+  
 	void cblas_dtrmm(const enum CBLAS_ORDER Order, const enum CBLAS_SIDE Side, const enum CBLAS_UPLO Uplo, const enum CBLAS_TRANSPOSE TransA,
 			 const enum CBLAS_DIAG Diag, const int M, const int N, const double alpha, const double *A, const int lda,
 			 double *B, const int ldb);
   
+	void cblas_strmm(const enum CBLAS_ORDER Order, const enum CBLAS_SIDE Side, const enum CBLAS_UPLO Uplo, const enum CBLAS_TRANSPOSE TransA,
+			 const enum CBLAS_DIAG Diag, const int M, const int N, const float alpha, const float *A, const int lda,
+			 float *B, const int ldb);
+  
 	void cblas_dgemm(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N,
 			 const int K, const double alpha, const double *A, const int lda, const double *B, const int ldb,
 			 const double beta, double *C, const int ldc) ;
+	void cblas_sgemm(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N,
+			 const int K, const float alpha, const float *A, const int lda, const float *B, const int ldb,
+			 const float beta, float *C, const int ldc) ;
 
 	// LAPACK routines
 

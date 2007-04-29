@@ -29,6 +29,12 @@ FFLAS::fgemv (const Field& F, const enum FFLAS_TRANSPOSE TransA,
  	F.neg(mone,one);
  	F.init(zero,0UL);
 
+	if (F.isZero (alpha)){
+		for  (typename Field::Element * Yi = Y; Yi != Y+((TransA == FflasNoTrans)?M:N)*incY; Yi+=incY)
+			F.mulin(*Yi, beta);
+		return;
+	}
+	
 	static size_t kmax = DotProdBound (F, 0, beta)-1;
 
 	if (kmax > 1) {
@@ -120,11 +126,11 @@ FFLAS::MatVectProd (const Field& F, const enum FFLAS_TRANSPOSE TransA,
 			const typename Field::Element * X, const size_t incX,
 			const typename Field::Element beta,
 			typename Field::Element * Y, const size_t incY){
-	callMatVectProd<AreEqual<typename Field::Element,double>::value>() (F,TransA,M,N,alpha,A,lda,X,incX,beta,Y,incY);
+	callMatVectProd<typename Field::Element>() (F,TransA,M,N,alpha,A,lda,X,incX,beta,Y,incY);
 }
 
-template <>
-class FFLAS::callMatVectProd<false>{
+template <class Element>
+class FFLAS::callMatVectProd{
 public:
 	template<class Field>
 	void operator () (const Field& F, const enum FFLAS_TRANSPOSE TransA, 
@@ -200,7 +206,7 @@ public:
 };
 
 template<>
-class FFLAS::callMatVectProd<true>{
+class FFLAS::callMatVectProd<double>{
 public:
 	template<class Field>
 	void operator () (const Field& F, const enum FFLAS_TRANSPOSE TransA, 
@@ -247,6 +253,55 @@ public:
 };
 
 
+template<>
+class FFLAS::callMatVectProd<float>{
+public:
+	template<class Field>
+	void operator () (const Field& F, const enum FFLAS_TRANSPOSE TransA, 
+			  const size_t M, const size_t N,
+			  const float alpha, 
+			  const float * A, const size_t lda,
+			  const float * X, const size_t incX,
+			  const float beta,
+			  float * Y, const size_t incY){
+	
+		static  float Mone, one;
+		F.init(one, 1UL);	
+		F.neg(Mone, one);
+		float _alpha, _beta;
+
+		if  (F.areEqual (Mone, beta))
+			_beta = -1.0;
+		else
+			_beta = beta;
+
+		if (F.areEqual (Mone, alpha)){
+			_alpha = -1.0;
+		}
+		else{
+			_alpha = 1.0;
+			if (! F.areEqual (one, alpha)){
+				// Compute y = A*x + beta/alpha.y
+				// and after y *= alpha
+				F.divin (_beta, alpha);
+			}
+		}
+	
+		cblas_sgemv (CblasRowMajor, (enum CBLAS_TRANSPOSE) TransA, M, N, 
+			     _alpha, A, lda, X, incX, _beta, Y, incY);
+	
+		for  (float * Yi = Y; Yi != Y+((TransA == FflasNoTrans)?M:N)*incY; Yi+=incY)
+			F.init (*Yi, *Yi);
+	
+		if ( (!F.areEqual (one, alpha)) && (!F.areEqual (Mone, alpha))){
+			// Fix-up: compute y *= alpha
+			for (float* Yi = Y; Yi != Y+((TransA == FflasNoTrans)?M:N)*incY; Yi += incY)
+				F.mulin (*Yi , alpha);
+		}
+	}
+};
+
+
 
 template<>
 inline void
@@ -259,5 +314,19 @@ FFLAS::fgemv (const DoubleDomain& D, const enum FFLAS_TRANSPOSE TransA,
 		      DoubleDomain::Element * Y, const size_t incY)
 {
 	cblas_dgemv (CblasRowMajor, (enum CBLAS_TRANSPOSE) TransA, M, N, 
+		     alpha, A, lda, X, incX, beta, Y, incY);
+}
+
+template<>
+inline void
+FFLAS::fgemv (const FloatDomain& F, const enum FFLAS_TRANSPOSE TransA, 
+		      const size_t M, const size_t N,
+		      const FloatDomain::Element  alpha, 
+		      const FloatDomain::Element * A, const size_t lda,
+		      const FloatDomain::Element * X, const size_t incX,
+		      const FloatDomain::Element beta,
+		      FloatDomain::Element * Y, const size_t incY)
+{
+	cblas_sgemv (CblasRowMajor, (enum CBLAS_TRANSPOSE) TransA, M, N, 
 		     alpha, A, lda, X, incX, beta, Y, incY);
 }

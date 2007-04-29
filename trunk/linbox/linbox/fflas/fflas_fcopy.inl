@@ -20,11 +20,3 @@ FFLAS::fcopy (const Field& F, const size_t N,
 		F.assign(*Xi,*Yi);
 }
 
-// template<>
-// inline void
-// FFLAS::fcopy (const Modular<double>& F, const size_t N, 
-// 	      double * X, const size_t incX,
-// 	      const double * Y, const size_t incY ){
-	
-// 	cblas_dcopy(N,Y,incY,X,incX);
-// }
