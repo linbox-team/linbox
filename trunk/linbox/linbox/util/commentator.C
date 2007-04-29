@@ -365,9 +365,9 @@ namespace LinBox
 	void Commentator::setMessageClassStream (const char *msg_class, std::ostream &stream) 
 	{
                 //temporarily fixed the bug in test-commentator, left memory leaking.
-                //MessageClass *old_msg_class = _messageClasses[msg_class];
+                MessageClass *old_msg_class = _messageClasses[msg_class];
                 cloneMessageClass (msg_class, msg_class, stream);
-                //delete old_msg_class;
+                delete old_msg_class;
 
 	}
 
@@ -566,8 +566,8 @@ namespace LinBox
 
 	bool MessageClass::isPrinted (unsigned long depth, unsigned long level, const char *fn)
 	{
-		if (checkConfig (_configuration[""], depth, level))
-			return true;
+ 		if (checkConfig (_configuration[""], depth, level))
+ 			return true;
 		else if (fn != (const char *) 0)
 			return checkConfig (_configuration[fn], depth, level);
 		else
@@ -666,7 +666,7 @@ namespace LinBox
 			_indent_next = false;
 		}
 
-		for (idx = 0; text[idx] != '\n' && idx < m; ++idx);
+		for (idx = 0; (idx < m) &&(text[idx] != '\n') ; ++idx);
 
 		while (idx < m) {
 			_stream.write (text, idx + 1);
