@@ -32,15 +32,58 @@
 
 template<class Field>
 inline size_t
+FFPACK::LUdivine_gauss( const Field& F, const FFLAS_DIAG Diag,
+			const size_t M, const size_t N,		
+			typename Field::Element * A, const size_t lda, size_t*P, 
+			size_t *Q, const FFPACK_LUDIVINE_TAG LuTag){
+	static typename Field::Element mone,one,zero;
+	F.init(one,1.0);
+	F.init(zero,0.0);
+	F.neg (mone, one);
+	size_t MN = MIN(M,N);
+	typename Field::Element * Acurr = A;
+	size_t r = 0;
+	
+	for (size_t k = 0; k < MN; ++k){
+		size_t p = r;
+		Acurr = A+k*lda+r;
+		while ((p < N) && F.isZero (*(Acurr++)))
+			p++;
+		if (p < N){
+			P[r] = p;
+			if (r < k){
+				fcopy (F, N-r, (A + r*(lda+1)), 1, (A+k*lda+r),1);
+				Acurr = A+r+k*lda;
+				for (size_t i=r; i<N; ++i)
+					F.assign(*(Acurr++),zero);
+			}
+			
+			fswap (F, M, A+r, lda, A+p, lda);
+			Q[r] = k;
+			r++;
+		}
+		if (k+1<M){
+			ftrsv (F, FflasUpper, FflasTrans, FflasNonUnit, r, A, lda, A+(k+1)*lda, 1);
+			fgemv (F, FflasTrans, r, N-r, mone, A+r, lda, A+(k+1)*lda, 1, one, A+(k+1)*lda+r, 1);
+		} else
+			return r;
+	}
+			
+	return r;
+}
+
+
+template<class Field>
+inline size_t
 FFPACK::LUdivine_small( const Field& F, const FFLAS_DIAG Diag,
 			const size_t M, const size_t N,		
 			typename Field::Element * A, const size_t lda, size_t*P, 
 			size_t *Q, const FFPACK_LUDIVINE_TAG LuTag){
-	return callLUdivine_small <AreEqual<typename Field::Element, double>::value> ()
+	return callLUdivine_small <typename Field::Element> ()
 		(F, Diag, M, N, A, lda, P, Q, LuTag);
 }
-template<>
-class FFPACK::callLUdivine_small<false>{
+template<class Element>
+class FFPACK::callLUdivine_small {
 public:
 	template <class Field>
 	inline size_t 
@@ -61,6 +104,7 @@ public:
 		size_t colp;
 		size_t R = 0;
 		size_t k = 0;
+		//size_t kmax = DotProdBound (F, 0, one) -1; // the max number of delayed operations
 		while ((rowp<M) && (k<N)){
 
 			//Find non zero pivot
@@ -133,8 +177,9 @@ public:
 		return R;
 	}
 };
+
 template<>
-class FFPACK::callLUdivine_small<true>{
+class FFPACK::callLUdivine_small<double>{
 public:
 	template <class Field>
 	inline size_t 
@@ -156,7 +201,112 @@ public:
 		size_t R = 0;
 		size_t k = 0;
 		size_t delay =0;
-		size_t kmax = DotProdBound (F, 0, one) -1; // the max number of delayed operations
+		size_t kmax = DotProdBound (F, 0, one, FflasDouble) -1; // the max number of delayed operations
+		while ((rowp<M) && (k<N)){
+
+			//Find non zero pivot
+			colp = k;
+			Acurr = Aini;
+			while ((F.isZero(*Acurr)) || (F.isZero (F.init (*Acurr, *Acurr))))
+				if (++colp == N){
+					if (rowp==M-1)
+						break;
+					colp=k; ++rowp;
+					Acurr = Aini += lda;
+				}
+				else
+					++Acurr;
+		
+			if ((rowp == M-1)&&(colp == N))
+				break;
+			R++;
+			P[k] = colp;
+			Q[k] = rowp;
+
+			// Permutation of the pivot column
+			fswap (F, M, A+k, lda, A + colp , lda);
+
+			//Normalization
+			elt invpiv;
+			F.init(*Aini,*Aini);
+			F.inv (invpiv,*Aini);
+
+			for (size_t j=1; j<N-k; ++j)
+				if (!F.isZero(*(Aini+j)))
+					F.init(*(Aini+j), *(Aini+j));
+			for (size_t i=lda; i<(M-rowp)*lda; i+=lda)
+				if (!F.isZero(*(Aini+i)))
+					F.init(*(Aini+i), *(Aini+i));
+
+
+			if (Diag == FflasUnit) {
+				for (size_t j=1; j<N-k; ++j)
+					if (!F.isZero(*(Aini+j)))
+						F.mulin (*(Aini+j),invpiv);
+			} else 
+				for (size_t i=lda; i<(M-rowp)*lda; i+=lda)
+					if (!F.isZero(*(Aini+i)))
+						F.mulin (*(Aini+i),invpiv);
+		
+			if (delay++ >= kmax){ // Reduction has to be done
+				delay = 0;
+				for (size_t i=1; i<M-rowp; ++i)
+					for (size_t j=1; j<N-k; ++j)
+						F.init(	*(Aini+i*lda+j),*(Aini+i*lda+j));
+			}
+			//Elimination
+			for (size_t i=1; i<M-rowp; ++i)
+				for (size_t j=1; j<N-k; ++j)
+					*(Aini+i*lda+j) -= *(Aini+i*lda) * *(Aini+j);
+			//Or equivalently, but without delayed ops :
+			//fger (F, M-rowp-1, N-k-1, mone, Aini+lda, lda, Aini+1, 1, Aini+(lda+1), lda);
+		
+			Aini += lda+1; ++rowp; ++k;
+		}
+
+		// Compression the U matrix
+		size_t l;
+		if (Diag == FflasNonUnit){
+			Aini = A;
+			l = N;
+		} else {
+			Aini = A+1;
+			l=N-1;
+		}
+		for (size_t i=0; i<R; ++i, Aini += lda+1) {
+			if (Q[i] > i){
+				fcopy (F, l-i, Aini, 1, Aini+(Q[i]-i)*lda, 1);
+				for (size_t j=0; j<l-i; ++j)
+					F.assign (*(Aini+(Q[i]-i)*lda+j), zero);
+			}
+		}
+		return R;
+	}
+};
+template<>
+class FFPACK::callLUdivine_small<float>{
+public:
+	template <class Field>
+	inline size_t 
+	operator()( const Field& F, const FFLAS_DIAG Diag,
+		    const size_t M, const size_t N,		
+		    typename Field::Element * A, const size_t lda, size_t*P, 
+		    size_t *Q, const FFPACK_LUDIVINE_TAG LuTag){
+
+		if ( !(M && N) ) return 0;
+		typedef typename Field::Element elt;
+		elt mone,zero,one;;
+		F.init (one, 1.0);
+		F.neg(mone, one);
+		F.init (zero, 0.0);
+		elt * Aini = A;
+		elt * Acurr;
+		size_t rowp = 0;
+		size_t colp;
+		size_t R = 0;
+		size_t k = 0;
+		size_t delay =0;
+		size_t kmax = DotProdBound (F, 0, one, FflasFloat) -1; // the max number of delayed operations
 		while ((rowp<M) && (k<N)){
 
 			//Find non zero pivot
@@ -876,6 +1026,7 @@ FFPACK::TURBO (const Field& F, const size_t M, const size_t N,
 		fcopy (F, N, A+i*lda, 1, R+i*ldr,1);
 	
 	delete[] R;
+	//delete[] Q;
 	// Necessaire:
 	// 1 traiter les flaswp manquants
 	// Facultatif:
