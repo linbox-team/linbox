@@ -346,6 +346,13 @@ namespace LinBox
 		  return x = (Element) (z+.5);
 		}
 
+		Element &init (Element &x, const float &y) const
+		{ 
+			float z = fmod(y, (float)ModularBase<Element>::_modulus);
+		  if (z < 0) z += (float) ModularBase<Element>::_modulus;
+		  return x = (Element) (z+.5);
+		}
+
 		//@}  
 		/*- @name Arithmetic Operations
 		 * @brief see \ref{FieldArchetype} for member specs.
