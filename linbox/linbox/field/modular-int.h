@@ -1,3 +1,4 @@
+
 // use of modular-int.h is now deprecated.  Use modular-int32.h.
 #include <linbox/field/modular-int32.h>
 
@@ -124,6 +125,10 @@ namespace LinBox
 		double & convert (double &x, const Element &y) const { 
 			return x = (double) y;
 		}
+
+		float & convert (float &x, const Element &y) const { 
+			return x = (float) y;
+		}
 		
 		std::ostream &write (std::ostream &os) const {
 			return os << "int mod " << modulus;
@@ -160,9 +165,17 @@ namespace LinBox
 			return x;
 		}
 
+		// C.Pernet: Is this init reliable?
 		Element &init (Element &x, const double &y) const  { 
 		  double z = fmod(y, (double)modulus);
 		  if (z < 0) z += (double)modulus;
+		  z += 0.5;
+		  return x = static_cast<long>(z); //rounds towards 0
+		}
+
+		Element &init (Element &x, const float &y) const  { 
+		  double z = fmod(y, (float)modulus);
+		  if (z < 0) z += (float)modulus;
 		  z += 0.5;
 		  return x = static_cast<long>(z); //rounds towards 0
 		}

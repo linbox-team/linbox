@@ -35,7 +35,7 @@ FFLAS::fgemv (const Field& F, const FFLAS_TRANSPOSE TransA,
 		return;
 	}
 	
-	static size_t kmax = DotProdBound (F, 0, beta)-1;
+	static size_t kmax = DotProdBound (F, 0, beta, FflasDouble)-1;
 
 	if (kmax > 1) {
 		if  (TransA == FflasNoTrans) {

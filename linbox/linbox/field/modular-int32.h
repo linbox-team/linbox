@@ -124,6 +124,10 @@ namespace LinBox
 		double &convert (double &x, const Element &y) const { 
 			return x = (double) y;
 		}
+
+		float &convert (float &x, const Element &y) const { 
+			return x = (float) y;
+		}
 		
 		std::ostream &write (std::ostream &os) const {
 			return os << "int32 mod " << modulus;
@@ -153,10 +157,17 @@ namespace LinBox
 			return is;
                 }
 		
-
+		// C. Pernet: Is this init reliable??
 		Element &init (Element & x, const double &y) const {
 		  double z = fmod(y, (double)modulus);
 		  if (z < 0) z += (double)modulus;
+		  z += 0.5;
+		  return x = static_cast<long>(z); //rounds towards 0
+		}
+
+		Element &init (Element & x, const float &y) const {
+		  float z = fmod(y, (float)modulus);
+		  if (z < 0) z += (float)modulus;
 		  z += 0.5;
 		  return x = static_cast<long>(z); //rounds towards 0
 		}

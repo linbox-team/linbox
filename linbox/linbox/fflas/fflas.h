@@ -28,14 +28,21 @@ namespace LinBox {
 #else
 #include "config-blas.h"
 #include "unparametric.h"
-#endif\
+#endif
 	
 #ifndef __LINBOX_STRASSEN_OPTIMIZATION
-#define WINOTHRESHOLD 750
+#define WINOTHRESHOLD 400
 #else
 #define WINOTHRESHOLD __LINBOX_WINOTHRESHOLD
 #endif
 
+// Thresholds determining which floating point representation to use,
+// depending on the cardinality of the finite field. This is only used when
+// the element representation is not a floating point type.
+#define FLOAT_DOUBLE_THRESHOLD_0 430
+#define FLOAT_DOUBLE_THRESHOLD_1 350
+#define FLOAT_DOUBLE_THRESHOLD_2 175
+	
 #define DOUBLE_MANTISSA 53
 #define FLOAT_MANTISSA 24
 	
@@ -46,9 +53,16 @@ public:
 	enum FFLAS_UPLO      { FflasUpper=121, FflasLower=122 };
 	enum FFLAS_DIAG      { FflasNonUnit=131, FflasUnit=132 };
 	enum FFLAS_SIDE      { FflasLeft=141, FflasRight = 142 };
-	
-	typedef UnparametricField<float> FloatDomain;
 
+	/* Determine the type of the element representation for Matrix Mult kernel
+	 * FflasDouble: to use the double precision BLAS
+	 * FflasFloat: to use the single precison BLAS
+	 * FflasFloat: for any other domain, that can not be converted to floating point integers
+	 */
+	enum FFLAS_BASE      { FflasDouble = 151, FflasFloat = 152, FflasGeneric = 153};
+
+	/* Representations of Z with floating point elements*/
+	typedef UnparametricField<float> FloatDomain;
 	typedef UnparametricField<double> DoubleDomain;
 
 
@@ -220,7 +234,16 @@ public:
 	       const typename Field::Element* B, const size_t ldb, 
 	       const typename Field::Element beta,
 	       typename Field::Element* C, const size_t ldc,
-	       const size_t wl);
+	       const size_t w){
+
+		if (!(m && n && k)) return C;
+		
+		FFLAS_BASE base = BaseCompute (F, w);
+
+		WinoMain (F, ta, tb, m, n, k, alpha, A, lda, B, ldb, beta,
+				 C, ldc, DotProdBound (F, w, beta, base), w, base);
+		return C;
+		};
 	
 	/** @brief  Field GEneral Matrix Multiply 
 	 * 
@@ -244,16 +267,18 @@ public:
 	       const typename Field::Element beta,
 	       typename Field::Element* C, 
 	       const size_t ldc){
-		size_t ws =0;
-		if ( (ta==FflasNoTrans)  && (tb==FflasNoTrans)) {
-			size_t kt = MIN(MIN(k,m),n);
-			while (kt >= WINOTHRESHOLD){
-				ws++;
-				kt/=2;
-			}
-		}
-		return fgemm(F, ta, tb, m, n, k, alpha, A, lda, B, ldb,
-			     beta, C, ldc, ws);
+
+		if (!(m && n && k)) return C;
+
+		size_t w, kmax=0;
+ 		FFLAS_BASE base;
+
+		setMatMulParam<typename Field::Element> ()(F, MIN(MIN(m,n),k), beta,
+							   w, base, kmax);
+
+		WinoMain (F, ta, tb, m, n, k, alpha, A, lda, B, ldb, beta,
+			  C, ldc, kmax, w, base);
+		return C;
 	}
 	
 	//---------------------------------------------------------------------
@@ -416,14 +441,22 @@ protected:
 	 */
 	template <class Field>
 	static size_t DotProdBound (const Field& F, const size_t w,
-				    const typename Field::Element& beta);
+				    const typename Field::Element& beta,
+				    const FFLAS_BASE base);
 
 	template <class Field>
 	static size_t DotProdBoundCompute (const Field& F, const size_t w,
-					   const typename Field::Element& beta);
+					   const typename Field::Element& beta,
+					   const FFLAS_BASE base);
 	
-	template <class Element>
-	class callDotProdBoundCompute;
+
+	template <class Field>
+	static FFLAS_BASE BaseCompute (const Field& F, const size_t w);
+	
+	static size_t WinoSteps (const size_t m);
+	
+	// 	template <class Element>
+// 	class callDotProdBoundCompute;
 
 	/** @brief Bound for the delayed modulus triangular system solving
 	 *
@@ -439,6 +472,11 @@ protected:
 
 	template <class Element>
 	class callTRSMBound;
+
+	/** @brief Set the optimal parameters for the Matrix Multiplication
+	 */
+	template <class Element>
+	class setMatMulParam;
 
 	template <class Field>
 	static void DynamicPealing( const Field& F, 
@@ -472,7 +510,7 @@ protected:
 				  const typename Field::Element * B, const size_t ldb,
 				  const typename Field::Element beta,
 				  typename Field::Element * C, const size_t ldc, 
-				  const size_t kmax );
+				  const size_t kmax, const FFLAS_BASE base );
     
 	// Winograd Multiplication  alpha.A(n*k) * B(k*m) + beta . C(n*m)
 	// WinoCalc performs the 22 Winograd operations
@@ -486,7 +524,7 @@ protected:
 			      const typename Field::Element* B,const size_t ldb,
 			      const typename Field::Element beta,
 			      typename Field::Element * C, const size_t ldc,
-			      const size_t kmax, const size_t w);
+			      const size_t kmax, const size_t w, const FFLAS_BASE base);
 	
 	template<class Field>
 	static void WinoMain (const Field& F, 
@@ -498,7 +536,7 @@ protected:
 			      const typename Field::Element* B,const size_t ldb,
 			      const typename Field::Element beta,
 			      typename Field::Element * C, const size_t ldc,
-			      const size_t kmax, const size_t w);
+			      const size_t kmax, const size_t w, const FFLAS_BASE base);
 
 
 	template<class Element>

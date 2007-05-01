@@ -387,12 +387,18 @@ public:
 // 			const size_t cutoff=2);
 
 	
-	template<bool AreEq>
+	template<class Element>
 	class callLUdivine_small;
 	
 	template <class Field>
 	static size_t 
 	LUdivine_small (const Field& F, const FFLAS_DIAG Diag,
+			const size_t M, const size_t N,
+			typename Field::Element * A, const size_t lda,
+			size_t* P, size_t* Q, const FFPACK_LUDIVINE_TAG LuTag=FfpackLQUP);
+	template <class Field>
+	static size_t 
+	LUdivine_gauss (const Field& F, const FFLAS_DIAG Diag,
 			const size_t M, const size_t N,
 			typename Field::Element * A, const size_t lda,
 			size_t* P, size_t* Q, const FFPACK_LUDIVINE_TAG LuTag=FfpackLQUP);
@@ -457,7 +463,7 @@ public:
 	static std::list<Polynomial>&
 	CharPoly( const Field& F, std::list<Polynomial>& charp, const size_t N,
 		  typename Field::Element * A, const size_t lda,
-		  const FFPACK_CHARPOLY_TAG CharpTag= FfpackArithProg);
+		  const FFPACK_CHARPOLY_TAG CharpTag= FfpackLUK);
 	
 	//---------------------------------------------------------------------
 	// MinPoly: Compute the minimal polynomial of (A,v) using an LUP 

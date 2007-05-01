@@ -184,7 +184,7 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 		polyList.clear();
 
 		// Recursive call on the complementary subspace
-		CharpolyArithProg (F, polyList, Nrest, Arec, ldarec, 2);
+		CharpolyArithProg (F, polyList, Nrest, Arec, ldarec, c);
 		delete[] Arec;
 		frobeniusForm.merge(polyList);
 	}

@@ -29,7 +29,7 @@ FFLAS::ftrmm(const Field& F, const FFLAS_SIDE Side,
 	
 	typename Field::Element zero;
 	F.init(zero, 0.0);
-	size_t nmax = DotProdBound (F, 0, zero);
+	size_t nmax = DotProdBound (F, 0, zero, FflasDouble);
 	if ( Side==FflasLeft ){
 		if ( Uplo==FflasUpper){
 			if (TransA == FflasNoTrans){
