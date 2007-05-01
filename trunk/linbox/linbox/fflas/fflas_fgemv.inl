@@ -16,7 +16,7 @@
 //---------------------------------------------------------------------
 template<class Field>
 inline void 
-FFLAS::fgemv (const Field& F, const enum FFLAS_TRANSPOSE TransA, 
+FFLAS::fgemv (const Field& F, const FFLAS_TRANSPOSE TransA, 
 	      const size_t M, const size_t N,
 	      const typename Field::Element alpha, 
 	      const typename Field::Element * A, const size_t lda,
@@ -119,7 +119,7 @@ FFLAS::fgemv (const Field& F, const enum FFLAS_TRANSPOSE TransA,
 // Assumes that the condition k(p-1)^2 <2^53 is satisfied
 template<class Field>
 inline void 
-FFLAS::MatVectProd (const Field& F, const enum FFLAS_TRANSPOSE TransA, 
+FFLAS::MatVectProd (const Field& F, const FFLAS_TRANSPOSE TransA, 
 			const size_t M, const size_t N,
 			const typename Field::Element alpha, 
 			const typename Field::Element * A, const size_t lda,
@@ -133,7 +133,7 @@ template <class Element>
 class FFLAS::callMatVectProd{
 public:
 	template<class Field>
-	void operator () (const Field& F, const enum FFLAS_TRANSPOSE TransA, 
+	void operator () (const Field& F, const FFLAS_TRANSPOSE TransA, 
 			  const size_t M, const size_t N,
 			  const typename Field::Element alpha, 
 			  const typename Field::Element * A, const size_t lda,
@@ -186,7 +186,7 @@ public:
 			for (typename Field::Element* Yi = Y; Yi != Y+Yl*incY; Yi+=incY, Ydi++)
 				F.convert (*(Ydi), *Yi);
 
-		cblas_dgemv (CblasRowMajor, (enum CBLAS_TRANSPOSE) TransA, M, N, alphad, Ad, N, Xd, 1, 
+		cblas_dgemv (CblasRowMajor, (CBLAS_TRANSPOSE) TransA, M, N, alphad, Ad, N, Xd, 1, 
 			     betad, Yd, 1);
 
 		Ydi=Yd;
@@ -209,7 +209,7 @@ template<>
 class FFLAS::callMatVectProd<double>{
 public:
 	template<class Field>
-	void operator () (const Field& F, const enum FFLAS_TRANSPOSE TransA, 
+	void operator () (const Field& F, const FFLAS_TRANSPOSE TransA, 
 			  const size_t M, const size_t N,
 			  const double alpha, 
 			  const double * A, const size_t lda,
@@ -238,7 +238,7 @@ public:
 			}
 		}
 	
-		cblas_dgemv (CblasRowMajor, (enum CBLAS_TRANSPOSE) TransA, M, N, 
+		cblas_dgemv (CblasRowMajor, (CBLAS_TRANSPOSE) TransA, M, N, 
 			     _alpha, A, lda, X, incX, _beta, Y, incY);
 	
 		for  (double * Yi = Y; Yi != Y+((TransA == FflasNoTrans)?M:N)*incY; Yi+=incY)
@@ -257,7 +257,7 @@ template<>
 class FFLAS::callMatVectProd<float>{
 public:
 	template<class Field>
-	void operator () (const Field& F, const enum FFLAS_TRANSPOSE TransA, 
+	void operator () (const Field& F, const FFLAS_TRANSPOSE TransA, 
 			  const size_t M, const size_t N,
 			  const float alpha, 
 			  const float * A, const size_t lda,
@@ -287,7 +287,7 @@ public:
 			}
 		}
 	
-		cblas_sgemv (CblasRowMajor, (enum CBLAS_TRANSPOSE) TransA, M, N, 
+		cblas_sgemv (CblasRowMajor, (CBLAS_TRANSPOSE) TransA, M, N, 
 			     _alpha, A, lda, X, incX, _beta, Y, incY);
 	
 		for  (float * Yi = Y; Yi != Y+((TransA == FflasNoTrans)?M:N)*incY; Yi+=incY)
@@ -305,7 +305,7 @@ public:
 
 template<>
 inline void
-FFLAS::fgemv (const DoubleDomain& D, const enum FFLAS_TRANSPOSE TransA, 
+FFLAS::fgemv (const DoubleDomain& D, const FFLAS_TRANSPOSE TransA, 
 		      const size_t M, const size_t N,
 		      const DoubleDomain::Element  alpha, 
 		      const DoubleDomain::Element * A, const size_t lda,
@@ -313,13 +313,13 @@ FFLAS::fgemv (const DoubleDomain& D, const enum FFLAS_TRANSPOSE TransA,
 		      const DoubleDomain::Element beta,
 		      DoubleDomain::Element * Y, const size_t incY)
 {
-	cblas_dgemv (CblasRowMajor, (enum CBLAS_TRANSPOSE) TransA, M, N, 
+	cblas_dgemv (CblasRowMajor, (CBLAS_TRANSPOSE) TransA, M, N, 
 		     alpha, A, lda, X, incX, beta, Y, incY);
 }
 
 template<>
 inline void
-FFLAS::fgemv (const FloatDomain& F, const enum FFLAS_TRANSPOSE TransA, 
+FFLAS::fgemv (const FloatDomain& F, const FFLAS_TRANSPOSE TransA, 
 		      const size_t M, const size_t N,
 		      const FloatDomain::Element  alpha, 
 		      const FloatDomain::Element * A, const size_t lda,
@@ -327,6 +327,6 @@ FFLAS::fgemv (const FloatDomain& F, const enum FFLAS_TRANSPOSE TransA,
 		      const FloatDomain::Element beta,
 		      FloatDomain::Element * Y, const size_t incY)
 {
-	cblas_sgemv (CblasRowMajor, (enum CBLAS_TRANSPOSE) TransA, M, N, 
+	cblas_sgemv (CblasRowMajor, (CBLAS_TRANSPOSE) TransA, M, N, 
 		     alpha, A, lda, X, incX, beta, Y, incY);
 }

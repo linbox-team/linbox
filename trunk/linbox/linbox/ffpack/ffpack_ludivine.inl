@@ -18,10 +18,10 @@
 
 // template <class Field>
 // inline size_t 
-// FFPACK::LUdivine (const Field& F, const enum FFLAS_DIAG Diag,
+// FFPACK::LUdivine (const Field& F, const FFLAS_DIAG Diag,
 // 		  const size_t M, const size_t N,		
 // 		  typename Field::Element * A, const size_t lda, size_t*P, 
-// 		  size_t *Q, const enum FFPACK_LUDIVINE_TAG LuTag, const size_t cutoff){
+// 		  size_t *Q, const FFPACK_LUDIVINE_TAG LuTag, const size_t cutoff){
 
 // 	if (MIN(M,N) < cutoff)
 // 		return LUdivine_small (F, Diag, M, N, A, lda, P, Q, LuTag);
@@ -32,10 +32,10 @@
 
 template<class Field>
 inline size_t
-FFPACK::LUdivine_small( const Field& F, const enum FFLAS_DIAG Diag,
+FFPACK::LUdivine_small( const Field& F, const FFLAS_DIAG Diag,
 			const size_t M, const size_t N,		
 			typename Field::Element * A, const size_t lda, size_t*P, 
-			size_t *Q, const enum FFPACK_LUDIVINE_TAG LuTag){
+			size_t *Q, const FFPACK_LUDIVINE_TAG LuTag){
 	return callLUdivine_small <AreEqual<typename Field::Element, double>::value> ()
 		(F, Diag, M, N, A, lda, P, Q, LuTag);
 }
@@ -44,10 +44,10 @@ class FFPACK::callLUdivine_small<false>{
 public:
 	template <class Field>
 	inline size_t 
-	operator()( const Field& F, const enum FFLAS_DIAG Diag,
+	operator()( const Field& F, const FFLAS_DIAG Diag,
 		    const size_t M, const size_t N,		
 		    typename Field::Element * A, const size_t lda, size_t*P, 
-		    size_t *Q, const enum FFPACK_LUDIVINE_TAG LuTag){
+		    size_t *Q, const FFPACK_LUDIVINE_TAG LuTag){
 
 		if ( !(M && N) ) return 0;
 		typedef typename Field::Element elt;
@@ -138,10 +138,10 @@ class FFPACK::callLUdivine_small<true>{
 public:
 	template <class Field>
 	inline size_t 
-	operator()( const Field& F, const enum FFLAS_DIAG Diag,
+	operator()( const Field& F, const FFLAS_DIAG Diag,
 		    const size_t M, const size_t N,		
 		    typename Field::Element * A, const size_t lda, size_t*P, 
-		    size_t *Q, const enum FFPACK_LUDIVINE_TAG LuTag){
+		    size_t *Q, const FFPACK_LUDIVINE_TAG LuTag){
 
 		if ( !(M && N) ) return 0;
 		typedef typename Field::Element elt;
@@ -241,10 +241,10 @@ public:
 
 template <class Field>
 inline size_t 
-FFPACK::LUdivine (const Field& F, const enum FFLAS_DIAG Diag,
+FFPACK::LUdivine (const Field& F, const FFLAS_DIAG Diag,
 		  const size_t M, const size_t N,		
 		  typename Field::Element * A, const size_t lda, size_t*P, 
-		  size_t *Q, const enum FFPACK_LUDIVINE_TAG LuTag, const size_t cutoff){
+		  size_t *Q, const FFPACK_LUDIVINE_TAG LuTag, const size_t cutoff){
 	
 	if ( !(M && N) ) return 0;
 	typedef typename Field::Element elt;
@@ -375,12 +375,12 @@ FFPACK::LUdivine (const Field& F, const enum FFLAS_DIAG Diag,
 
 template <class Field>
 size_t
-FFPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
+FFPACK::LUdivine_construct( const Field& F, const FFLAS_DIAG Diag,
 				      const size_t M, const size_t N,
 				      const typename Field::Element * A, const size_t lda,
 				      typename Field::Element * X, const size_t ldx,
 				      typename Field::Element * u, size_t* P,
-				      bool computeX, const enum FFPACK_MINPOLY_TAG MinTag = FfpackDense,
+				      bool computeX, const FFPACK_MINPOLY_TAG MinTag = FfpackDense,
 				      const size_t kg_mc =0, const size_t kg_mb=0, const size_t kg_j=0){
 
 	static typename Field::Element Mone, one, zero;

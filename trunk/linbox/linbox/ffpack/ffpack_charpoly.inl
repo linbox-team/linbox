@@ -12,7 +12,7 @@ template <class Field, class Polynomial>
 std::list<Polynomial>&
 FFPACK::CharPoly (const Field& F, std::list<Polynomial>& charp, const size_t N,
 		  typename Field::Element * A, const size_t lda,
-		  const enum FFPACK_CHARPOLY_TAG CharpTag){
+		  const FFPACK_CHARPOLY_TAG CharpTag){
 	switch (CharpTag) {
 	case FfpackLUK:{
 		typename Field::Element * X = new typename Field::Element[N*(N+1)];

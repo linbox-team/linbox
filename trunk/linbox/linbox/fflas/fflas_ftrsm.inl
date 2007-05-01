@@ -17,10 +17,10 @@
 //---------------------------------------------------------------------
 template<class Field>
 inline void
-FFLAS::ftrsm (const Field& F, const enum FFLAS_SIDE Side,
-	      const enum FFLAS_UPLO Uplo, 
-	      const enum FFLAS_TRANSPOSE TransA,
-	      const enum FFLAS_DIAG Diag, 
+FFLAS::ftrsm (const Field& F, const FFLAS_SIDE Side,
+	      const FFLAS_UPLO Uplo, 
+	      const FFLAS_TRANSPOSE TransA,
+	      const FFLAS_DIAG Diag, 
 	      const size_t M, const size_t N,
 	      const typename Field::Element alpha,
 	      typename Field::Element * A, const size_t lda,
@@ -72,7 +72,7 @@ FFLAS::ftrsm (const Field& F, const enum FFLAS_SIDE Side,
 
 template<class Field>
 inline void 
-FFLAS::ftrsmLeftUpNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+FFLAS::ftrsmLeftUpNoTrans(const Field& F, const FFLAS_DIAG Diag, 
 			  const size_t M, const size_t N,
 			  const typename Field::Element alpha,
 			  const typename Field::Element * A, const size_t lda,
@@ -102,7 +102,7 @@ FFLAS::ftrsmLeftUpNoTrans(const Field& F, const enum FFLAS_DIAG Diag,
 
 template<class Field>
 inline void
-FFLAS::ftrsmLeftUpTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+FFLAS::ftrsmLeftUpTrans(const Field& F, const FFLAS_DIAG Diag, 
 		      const size_t M, const size_t N,
 		      const typename Field::Element alpha,
 		      const typename Field::Element * A, const size_t lda,
@@ -132,7 +132,7 @@ FFLAS::ftrsmLeftUpTrans(const Field& F, const enum FFLAS_DIAG Diag,
 
 template<class Field>
 inline void
-FFLAS::ftrsmLeftLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+FFLAS::ftrsmLeftLowNoTrans(const Field& F, const FFLAS_DIAG Diag, 
 			   const size_t M, const size_t N,
 			   const typename Field::Element alpha,
 			   typename Field::Element * A, const size_t lda,
@@ -149,7 +149,7 @@ template<>
 class FFLAS::callFtrsmLeftLowNoTrans<double>{
 public:
 	template <class Field>
-	void operator ()(const Field& F, const enum FFLAS_DIAG Diag, 
+	void operator ()(const Field& F, const FFLAS_DIAG Diag, 
 			 const size_t M, const size_t N,
 			 const typename Field::Element alpha,
 			 typename Field::Element * A, const size_t lda,
@@ -207,7 +207,7 @@ template<>
 class FFLAS::callFtrsmLeftLowNoTrans<float>{
 public:
 	template <class Field>
-	void operator ()(const Field& F, const enum FFLAS_DIAG Diag, 
+	void operator ()(const Field& F, const FFLAS_DIAG Diag, 
 			 const size_t M, const size_t N,
 			 const typename Field::Element alpha,
 			 typename Field::Element * A, const size_t lda,
@@ -265,7 +265,7 @@ template<class Element>
 class FFLAS::callFtrsmLeftLowNoTrans{
 public:
 	template <class Field>
-	void operator()(const Field& F, const enum FFLAS_DIAG Diag, 
+	void operator()(const Field& F, const FFLAS_DIAG Diag, 
 			const size_t M, const size_t N,
 			const typename Field::Element alpha,
 			typename Field::Element * A, const size_t lda,
@@ -328,7 +328,7 @@ public:
 
 template<class Field>
 inline void 
-FFLAS::ftrsmLeftLowTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+FFLAS::ftrsmLeftLowTrans(const Field& F, const FFLAS_DIAG Diag, 
 		       const size_t M, const size_t N,
 		       const typename Field::Element alpha,
 		       const typename Field::Element * A, const size_t lda,
@@ -359,7 +359,7 @@ FFLAS::ftrsmLeftLowTrans(const Field& F, const enum FFLAS_DIAG Diag,
 
 template<class Field>
 inline void
-FFLAS::ftrsmRightUpNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+FFLAS::ftrsmRightUpNoTrans(const Field& F, const FFLAS_DIAG Diag, 
 			   const size_t M, const size_t N,
 			   const typename Field::Element alpha,
 			   typename Field::Element * A, const size_t lda,
@@ -372,7 +372,7 @@ template <class Element>
 class FFLAS::callFtrsmRightUpNoTrans{
 public:
 	template<class Field>
-	void operator() (const Field& F, const enum FFLAS_DIAG Diag, 
+	void operator() (const Field& F, const FFLAS_DIAG Diag, 
 			 const size_t M, const size_t N,
 			 const typename Field::Element alpha,
 			 typename Field::Element * A, const size_t lda,
@@ -436,7 +436,7 @@ template <>
 class FFLAS::callFtrsmRightUpNoTrans<double>{
 public:
 	template<class Field>
-	void operator() (const Field& F, const enum FFLAS_DIAG Diag, 
+	void operator() (const Field& F, const FFLAS_DIAG Diag, 
 			 const size_t M, const size_t N, const typename Field::Element alpha,
 			 typename Field::Element * A, const size_t lda,
 			 typename Field::Element * B, const size_t ldb, const size_t nmax){
@@ -498,7 +498,7 @@ template <>
 class FFLAS::callFtrsmRightUpNoTrans<float>{
 public:
 	template<class Field>
-	void operator() (const Field& F, const enum FFLAS_DIAG Diag, 
+	void operator() (const Field& F, const FFLAS_DIAG Diag, 
 			 const size_t M, const size_t N, const typename Field::Element alpha,
 			 typename Field::Element * A, const size_t lda,
 			 typename Field::Element * B, const size_t ldb, const size_t nmax){
@@ -560,7 +560,7 @@ public:
 
 template<class Field>
 inline void
-FFLAS::ftrsmRightUpTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+FFLAS::ftrsmRightUpTrans(const Field& F, const FFLAS_DIAG Diag, 
 		       const size_t M, const size_t N,
 		       const typename Field::Element alpha,
 		       const typename Field::Element * A, const size_t lda,
@@ -591,7 +591,7 @@ FFLAS::ftrsmRightUpTrans(const Field& F, const enum FFLAS_DIAG Diag,
 
 template<class Field>
 inline void
-FFLAS::ftrsmRightLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+FFLAS::ftrsmRightLowNoTrans(const Field& F, const FFLAS_DIAG Diag, 
 			  const size_t M, const size_t N,
 			  const typename Field::Element alpha,
 			  const typename Field::Element * A, const size_t lda,
@@ -621,7 +621,7 @@ FFLAS::ftrsmRightLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag,
 
 template<class Field>
 inline void
-FFLAS::ftrsmRightLowTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+FFLAS::ftrsmRightLowTrans(const Field& F, const FFLAS_DIAG Diag, 
 			  const size_t M, const size_t N,
 			  const typename Field::Element alpha,
 			  const typename Field::Element * A, const size_t lda,

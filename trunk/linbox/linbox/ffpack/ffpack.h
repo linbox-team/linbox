@@ -370,20 +370,20 @@ public:
 	/// LQUP factorization.	
 	template <class Field>
 	static size_t 
-	LUdivine (const Field& F, const enum FFLAS_DIAG Diag,
+	LUdivine (const Field& F, const FFLAS_DIAG Diag,
 		  const size_t M, const size_t N,
 		  typename Field::Element * A, const size_t lda,
 		  size_t* P, size_t* Q,
-		  const enum FFPACK_LUDIVINE_TAG LuTag=FfpackLQUP,
+		  const FFPACK_LUDIVINE_TAG LuTag=FfpackLQUP,
 		  const size_t cutoff=__FFPACK_LUDIVINE_CUTOFF);
 
 // 	template <class Field>
 // 	static size_t 
-// 	LUdivine_block (const Field& F, const enum FFLAS_DIAG Diag,
+// 	LUdivine_block (const Field& F, const FFLAS_DIAG Diag,
 // 			const size_t M, const size_t N,
 // 			typename Field::Element * A, const size_t lda,
 // 			size_t* P, size_t* Q,
-// 			const enum FFPACK_LUDIVINE_TAG LuTag=FfpackLQUP,
+// 			const FFPACK_LUDIVINE_TAG LuTag=FfpackLQUP,
 // 			const size_t cutoff=2);
 
 	
@@ -392,10 +392,10 @@ public:
 	
 	template <class Field>
 	static size_t 
-	LUdivine_small (const Field& F, const enum FFLAS_DIAG Diag,
+	LUdivine_small (const Field& F, const FFLAS_DIAG Diag,
 			const size_t M, const size_t N,
 			typename Field::Element * A, const size_t lda,
-			size_t* P, size_t* Q, const enum FFPACK_LUDIVINE_TAG LuTag=FfpackLQUP);
+			size_t* P, size_t* Q, const FFPACK_LUDIVINE_TAG LuTag=FfpackLQUP);
        	
 	// Apply a permutation submatrix of P (between ibeg and iend) to a matrix
 	// to (iend-ibeg) vectors of size M stored in A (as column for NoTrans 
@@ -406,8 +406,8 @@ public:
 	template<class Field>
 	static void 
 	applyP( const Field& F, 
-		const enum FFLAS_SIDE Side,
-		const enum FFLAS_TRANSPOSE Trans,
+		const FFLAS_SIDE Side,
+		const FFLAS_TRANSPOSE Trans,
 		const size_t M, const int ibeg, const int iend,
 		typename Field::Element * A, const size_t lda, const size_t * P ){
 		
@@ -457,7 +457,7 @@ public:
 	static std::list<Polynomial>&
 	CharPoly( const Field& F, std::list<Polynomial>& charp, const size_t N,
 		  typename Field::Element * A, const size_t lda,
-		  const enum FFPACK_CHARPOLY_TAG CharpTag= FfpackArithProg);
+		  const FFPACK_CHARPOLY_TAG CharpTag= FfpackArithProg);
 	
 	//---------------------------------------------------------------------
 	// MinPoly: Compute the minimal polynomial of (A,v) using an LUP 
@@ -470,7 +470,7 @@ public:
 	MinPoly( const Field& F, Polynomial& minP, const size_t N,
 		 const typename Field::Element *A, const size_t lda,
 		 typename Field::Element* X, const size_t ldx, size_t* P,
-		 const enum FFPACK_MINPOLY_TAG MinTag,
+		 const FFPACK_MINPOLY_TAG MinTag,
 		 const size_t kg_mc, const size_t kg_mb, const size_t kg_j );
 
 
@@ -480,7 +480,7 @@ public:
 	// Requirement :  so that L could  be expanded in-place
 	template<class Field>
 	static void
-	solveLB( const Field& F, const enum FFLAS_SIDE Side,
+	solveLB( const Field& F, const FFLAS_SIDE Side,
 		 const size_t M, const size_t N, const size_t R, 
 		 typename Field::Element * L, const size_t ldl, 
 		 const size_t * Q,
@@ -519,7 +519,7 @@ public:
 	// Only the R non trivial column of L are stored in the M*R matrix L
 	template<class Field>
 	static void
-	solveLB2( const Field& F, const enum FFLAS_SIDE Side,
+	solveLB2( const Field& F, const FFLAS_SIDE Side,
 		  const size_t M, const size_t N, const size_t R, 
 		  typename Field::Element * L, const size_t ldl, 
 		  const size_t * Q,
@@ -736,12 +736,12 @@ protected:
 	
 	template <class Field>
 	static size_t
-	LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
+	LUdivine_construct( const Field& F, const FFLAS_DIAG Diag,
 			    const size_t M, const size_t N,
 			    const typename Field::Element * A, const size_t lda,
 			    typename Field::Element * X, const size_t ldx,
 			    typename Field::Element * u, size_t* P,
-			    bool computeX, const enum FFPACK_MINPOLY_TAG MinTag,
+			    bool computeX, const FFPACK_MINPOLY_TAG MinTag,
 			    const size_t kg_mc, const size_t kg_mb, const size_t kg_j );
 		
 	template <class Field, class Polynomial>
