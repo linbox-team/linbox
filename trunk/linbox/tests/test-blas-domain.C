@@ -1128,13 +1128,14 @@ std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
 int main(int argc, char **argv) {
 
 	typedef Modular<double> Field;
+	//typedef Modular<int> Field;
 	//typedef Modular<float> Field;
         
 
 	bool pass = true;
 
 	static size_t n = 400;
-	static integer q = 65521U;
+	static integer q = 1000003U;
 	static int iterations =3;
 	
 	static Argument args[] = {
