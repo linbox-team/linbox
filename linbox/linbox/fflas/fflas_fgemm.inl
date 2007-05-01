@@ -26,8 +26,8 @@
 // Classic multiplication over a finite field
 template  < class Field > 
 inline void FFLAS::ClassicMatmul (const Field& F,  
-			   const enum FFLAS_TRANSPOSE ta,
-			   const enum FFLAS_TRANSPOSE tb,
+			   const FFLAS_TRANSPOSE ta,
+			   const FFLAS_TRANSPOSE tb,
 			   const size_t m, const size_t n,const size_t k,
 			   const typename Field::Element alpha,
 			   const typename Field::Element * A, const size_t lda,
@@ -41,8 +41,8 @@ inline void FFLAS::ClassicMatmul (const Field& F,
 
 template  <> 
 inline void FFLAS::ClassicMatmul (const DoubleDomain& F, 
-				  const enum FFLAS_TRANSPOSE ta,
-				  const enum FFLAS_TRANSPOSE tb,
+				  const FFLAS_TRANSPOSE ta,
+				  const FFLAS_TRANSPOSE tb,
 				  const size_t m, const size_t n,const size_t k,
 				  const DoubleDomain::Element alpha,
 				  const DoubleDomain::Element * Ad, const size_t lda,
@@ -51,15 +51,15 @@ inline void FFLAS::ClassicMatmul (const DoubleDomain& F,
 				  DoubleDomain::Element * Cd, const size_t ldc,
 				  const size_t kmax)
 {
-	cblas_dgemm (CblasRowMajor, (enum CBLAS_TRANSPOSE) ta, (enum CBLAS_TRANSPOSE) tb,
+	cblas_dgemm (CblasRowMajor, (CBLAS_TRANSPOSE) ta, (CBLAS_TRANSPOSE) tb,
 		     m, n, k, (DoubleDomain::Element) alpha,
 		     Ad, lda, Bd, ldb, (DoubleDomain::Element) beta,Cd, ldc);
 }
 
 template  <> 
 inline void FFLAS::ClassicMatmul (const FloatDomain& F, 
-				  const enum FFLAS_TRANSPOSE ta,
-				  const enum FFLAS_TRANSPOSE tb,
+				  const FFLAS_TRANSPOSE ta,
+				  const FFLAS_TRANSPOSE tb,
 				  const size_t m, const size_t n,const size_t k,
 				  const FloatDomain::Element alpha,
 				  const FloatDomain::Element * Ad, const size_t lda,
@@ -68,7 +68,7 @@ inline void FFLAS::ClassicMatmul (const FloatDomain& F,
 				  FloatDomain::Element * Cd, const size_t ldc,
 				  const size_t kmax)
 {
-	cblas_sgemm (CblasRowMajor, (enum CBLAS_TRANSPOSE) ta, (enum CBLAS_TRANSPOSE) tb,
+	cblas_sgemm (CblasRowMajor, (CBLAS_TRANSPOSE) ta, (CBLAS_TRANSPOSE) tb,
 		     m, n, k, (FloatDomain::Element) alpha,
 		     Ad, lda, Bd, ldb, (FloatDomain::Element) beta,Cd, ldc);
 }
@@ -80,16 +80,16 @@ template<class Element>
 class FFLAS::callClassicMatmul{
 public:
 	template  < class Field >
-	void operator() (const Field& F,  
-			 const enum FFLAS_TRANSPOSE ta,
-			 const enum FFLAS_TRANSPOSE tb,
-			 const size_t m, const size_t n,const size_t k,
-			 const typename Field::Element alpha,
-			 const typename Field::Element * A, const size_t lda,
-			 const typename Field::Element * B, const size_t ldb,
-			 const typename Field::Element beta,
-			 typename Field::Element* C, const size_t ldc,
-			 const size_t kmax) {
+	 void operator() (const Field& F,  
+			  const FFLAS_TRANSPOSE ta,
+			  const FFLAS_TRANSPOSE tb,
+			  const size_t m, const size_t n,const size_t k,
+			  const typename Field::Element alpha,
+			  const typename Field::Element * A, const size_t lda,
+			  const typename Field::Element * B, const size_t ldb,
+			  const typename Field::Element beta,
+			  typename Field::Element* C, const size_t ldc,
+			  const size_t kmax) {
 		static  typename Field::Element Mone;
 		static  typename Field::Element one;
 		static  typename Field::Element zero;
@@ -229,8 +229,8 @@ class FFLAS::callClassicMatmul<double>{
 public:
 	template <class Field>
 	void operator() (const Field & F,  
-			 const enum FFLAS_TRANSPOSE ta,
-			 const enum FFLAS_TRANSPOSE tb,
+			 const FFLAS_TRANSPOSE ta,
+			 const FFLAS_TRANSPOSE tb,
 			 const size_t m, const size_t n,const size_t k,
 			 const double alpha, 
 			 const double * A, const size_t lda,
@@ -300,8 +300,8 @@ class FFLAS::callClassicMatmul<float>{
 public:
 	template <class Field>
 	void operator() (const Field & F,  
-			 const enum FFLAS_TRANSPOSE ta,
-			 const enum FFLAS_TRANSPOSE tb,
+			 const FFLAS_TRANSPOSE ta,
+			 const FFLAS_TRANSPOSE tb,
 			 const size_t m, const size_t n,const size_t k,
 			 const float alpha, 
 			 const float * A, const size_t lda,
@@ -371,8 +371,8 @@ public:
 // Computation of the 22 Winograd's operations
 template < class Field > 
 inline void FFLAS::WinoCalc (const Field& F, 
-			     const enum FFLAS_TRANSPOSE ta,
-			     const enum FFLAS_TRANSPOSE tb,
+			     const FFLAS_TRANSPOSE ta,
+			     const FFLAS_TRANSPOSE tb,
 			     const size_t mr, const size_t nr, const size_t kr,
 			     const typename Field::Element alpha,
 			     const typename Field::Element* A,const size_t lda,
@@ -560,8 +560,8 @@ inline void FFLAS::WinoCalc (const Field& F,
 // for matrices over double
 template <> 
 inline  void FFLAS::WinoMain (const DoubleDomain& D, 
-			      const enum FFLAS_TRANSPOSE ta,
-			      const enum FFLAS_TRANSPOSE tb,
+			      const FFLAS_TRANSPOSE ta,
+			      const FFLAS_TRANSPOSE tb,
 			      const size_t m, const size_t n, const size_t k,
 			      const DoubleDomain::Element alpha,
 			      const DoubleDomain::Element * A, const size_t lda,
@@ -579,8 +579,8 @@ inline  void FFLAS::WinoMain (const DoubleDomain& D,
 }
 template <> 
 inline  void FFLAS::WinoMain (const FloatDomain& F, 
-			      const enum FFLAS_TRANSPOSE ta,
-			      const enum FFLAS_TRANSPOSE tb,
+			      const FFLAS_TRANSPOSE ta,
+			      const FFLAS_TRANSPOSE tb,
 			      const size_t m, const size_t n, const size_t k,
 			      const FloatDomain::Element alpha,
 			      const FloatDomain::Element * A, const size_t lda,
@@ -599,8 +599,8 @@ inline  void FFLAS::WinoMain (const FloatDomain& F,
 
 template < class Field >
 inline void  FFLAS::WinoMain (const Field& F, 
-			      const enum FFLAS_TRANSPOSE ta,
-			      const enum FFLAS_TRANSPOSE tb,
+			      const FFLAS_TRANSPOSE ta,
+			      const FFLAS_TRANSPOSE tb,
 			      const size_t m, const size_t n, const size_t k,
 			      const typename Field::Element alpha,
 			      const typename Field::Element* A,const size_t lda,
@@ -617,8 +617,8 @@ class FFLAS::callWinoMain{
 public:
 	template  < class Field > 
 	void operator() (const Field& F, 
-			 const enum FFLAS_TRANSPOSE ta,
-			 const enum FFLAS_TRANSPOSE tb,
+			 const LinBox::FFLAS::FFLAS_TRANSPOSE ta,
+			 const FFLAS_TRANSPOSE tb,
 			 const size_t m, const size_t n, const size_t k,
 			 const typename Field::Element alpha,
 			 const typename Field::Element* A,const size_t lda,
@@ -699,8 +699,8 @@ class FFLAS::callWinoMain<double>{
 public:
 	template <class Field>
 	void operator() (const Field & F, 
-			 const enum FFLAS_TRANSPOSE ta,
-			 const enum FFLAS_TRANSPOSE tb,
+			 const FFLAS_TRANSPOSE ta,
+			 const FFLAS_TRANSPOSE tb,
 			 const size_t m, const size_t n, const size_t k,
 			 const double alpha,
 			 const double* A, const size_t lda,
@@ -763,8 +763,8 @@ class FFLAS::callWinoMain<float>{
 public:
 	template <class Field>
 	void operator() (const Field & F, 
-			 const enum FFLAS_TRANSPOSE ta,
-			 const enum FFLAS_TRANSPOSE tb,
+			 const FFLAS_TRANSPOSE ta,
+			 const FFLAS_TRANSPOSE tb,
 			 const size_t m, const size_t n, const size_t k,
 			 const float alpha,
 			 const float* A, const size_t lda,
@@ -825,8 +825,8 @@ public:
 template  < class Field > 
 inline void
 FFLAS::DynamicPealing (const Field& F, 
-		       const enum FFLAS_TRANSPOSE ta,
-		       const enum FFLAS_TRANSPOSE tb,
+		       const FFLAS_TRANSPOSE ta,
+		       const FFLAS_TRANSPOSE tb,
 		       const size_t m, const size_t n, const size_t k,
 		       const typename Field::Element alpha, 
 		       const typename Field::Element* A, const size_t lda,
@@ -926,8 +926,8 @@ FFLAS::DynamicPealing (const Field& F,
 template < class Field > 
 inline  typename Field::Element* 
 FFLAS::fgemm (const Field& F,
-	      const enum FFLAS_TRANSPOSE ta,
-	      const enum FFLAS_TRANSPOSE tb,
+	      const FFLAS_TRANSPOSE ta,
+	      const FFLAS_TRANSPOSE tb,
 	      const size_t m, const size_t n, const size_t k,
 	      const typename Field::Element alpha,
 	      const typename Field::Element* A, const size_t lda,
@@ -946,7 +946,7 @@ FFLAS::fgemm (const Field& F,
 template < class Field > 
 inline  typename Field::Element*
 FFLAS::fsquare (const Field& F,
-		const enum FFLAS_TRANSPOSE ta,
+		const FFLAS_TRANSPOSE ta,
 		const size_t n, const typename Field::Element alpha,
 		const typename Field::Element* A, const size_t lda,
 		const typename Field::Element beta,
@@ -959,7 +959,7 @@ class FFLAS::callFsquare<double>{
 public:
 	template <class Field> 
 	double * operator () (const Field & F,
-			      const enum FFLAS_TRANSPOSE ta,
+			      const FFLAS_TRANSPOSE ta,
 			      const size_t n, const double alpha,
 			      const double* A, const size_t lda,
 			      const double beta,
@@ -989,7 +989,7 @@ class FFLAS::callFsquare<float>{
 public:
 	template <class Field> 
 	float * operator () (const Field & F,
-			      const enum FFLAS_TRANSPOSE ta,
+			      const FFLAS_TRANSPOSE ta,
 			      const size_t n, const float alpha,
 			      const float* A, const size_t lda,
 			      const float beta,
@@ -1020,7 +1020,7 @@ class FFLAS::callFsquare{
 public:
 	template < class Field >
 	typename Field::Element* operator () (const Field& F,
-					      const enum FFLAS_TRANSPOSE ta,
+					      const FFLAS_TRANSPOSE ta,
 					      const size_t n, const typename Field::Element alpha,
 					      const typename Field::Element* A, const size_t lda,
 					      const typename Field::Element beta,
@@ -1043,8 +1043,8 @@ public:
 			MatF2MatD (F, Cd, n, C, ldc, n, n); 
 	
 		// Call to the blas Multiplication 
-		cblas_dgemm (CblasRowMajor, (enum CBLAS_TRANSPOSE)ta,
-			     (enum CBLAS_TRANSPOSE)ta, n, n, n, 
+		cblas_dgemm (CblasRowMajor, (CBLAS_TRANSPOSE)ta,
+			     (CBLAS_TRANSPOSE)ta, n, n, n, 
 			     (DoubleDomain::Element) alphad, Ad, n, Ad, n,
 			     (DoubleDomain::Element) betad, Cd, n);
 		// Conversion double = >  Finite Field
