@@ -120,6 +120,8 @@ namespace LinBox
 		double &convert (double& x, const Element &y) const
 		{return  x= (double) y;}
  
+		float &convert (float& x, const Element &y) const
+		{return  x= (float) y;}
 	
 		/*- Assignment of one field base element to another.
 		 * This function assumes both field base elements have already been
@@ -323,6 +325,13 @@ namespace LinBox
 		 * @param y integer.
 		 */
 		Element &init (Element &x, const integer &y = 0) const
+		{ 
+		  x = y % ModularBase<Element>::_modulus;
+		  if (x < 0) x += ModularBase<Element>::_modulus;
+		  return x;
+		}
+
+		Element &init (Element &x, const int y ) const
 		{ 
 		  x = y % ModularBase<Element>::_modulus;
 		  if (x < 0) x += ModularBase<Element>::_modulus;
