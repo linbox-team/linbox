@@ -169,7 +169,7 @@ namespace LinBox
 
 		/** Default destructor
 		 */
-		virtual ~Commentator () {}
+		virtual ~Commentator ();
 
 		/** @name Reporting facilities
 		 */
