@@ -37,6 +37,8 @@ class BaseTimer {
 		MSPSEC = 1000000  // microsecond per second
 	};
 
+        BaseTimer() {_start_t = 0;}
+
 	// -- Clear timer :
 	inline void clear() { _t = 0; }
 
@@ -93,8 +95,10 @@ class SysTimer : public BaseTimer {
 
 
 class Timer {
-    public :
-
+public :
+	
+	Timer() { rt.clear(); ut.clear(); st.clear(); _count = 0; }
+	
 	// Clear timer :
 	void clear(); 
 

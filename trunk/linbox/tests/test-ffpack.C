@@ -71,7 +71,10 @@ static bool testRank (const Field& F,size_t n, int iterations) {
 			for (size_t j=i+1;j<n;++j)     
 				G.random(*(S+i*n+j));
 		}
-     
+		for (size_t i=r;i<n;++i){
+			for (size_t j=0;j<n;++j)
+				F.assign(*(S+j+i*n),zero);
+		}			
 		// create L as a lower triangular matrix with nonzero elements on the diagonal
 		for (size_t i=0;i<n;++i){
 			for (size_t j=0;j<i;++j)
