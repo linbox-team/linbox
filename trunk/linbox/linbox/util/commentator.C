@@ -106,6 +106,12 @@ namespace LinBox
 		registerMessageClass (INTERNAL_DESCRIPTION, _report);
 	}
 
+	Commentator::~Commentator() {
+		std::map <const char *, MessageClass *, LessThanString>::iterator i;
+		for (i = _messageClasses.begin (); i != _messageClasses.end (); ++i) 
+			delete i->second;
+	}
+
 	void Commentator::start (const char *description, const char *fn, unsigned long len) 
 	{
 		if (fn == (const char *) 0 && _activities.size () > 0)
