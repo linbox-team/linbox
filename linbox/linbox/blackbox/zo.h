@@ -347,7 +347,6 @@ namespace LinBox
        
 }//End of LinBox
 
-//#include "zo.inl"
-#include "zoi.inl"
+#include "zo.inl"
 
 #endif // __ZERO_ONE_H

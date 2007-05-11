@@ -113,7 +113,10 @@ else
 		CBLAS="yes"
 		CBLAS_FLAG="-D__LINBOX_HAVE_CBLAS"
 	
-		if test -r "$BLAS_HOME/lib/libcblas.a"; then
+		if test -r "/System/Library/Frameworks/Accelerate.framework"; then
+			BLAS_LIBS="-Wl,-framework -Wl,Accelerate"
+		elif test -r "$BLAS_HOME/lib/libcblas.a"; then
+
 			ATLAS_NEEDED=`nm -u $BLAS_HOME/lib/libcblas.a | grep ATL`
 			if test -n "$ATLAS_NEEDED"; then
 				ATLAS_LIBS="-llapack -lcblas -latlas"	
