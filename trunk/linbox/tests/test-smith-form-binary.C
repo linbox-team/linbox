@@ -28,7 +28,7 @@ bool testRandom(const Ring& R,
 
     std::ostringstream str;
         
-	str << "Testing Smith Form bingary(EGV++):";
+	str << "Testing Smith Form binary(EGV++):";
 
         commentator.start (str.str ().c_str (), "testSmithform");//, stream1.m ());
 
