@@ -266,10 +266,15 @@ namespace LinBox
      * @param x field base Element to contain output (reference returned).
      * @param y integer.
      */  
-    Element& init(Element& x , const integer& y) const
-	  { return GFqDom<int32>::init( x,int32(y % (integer) _q));}
+    Element& init(Element& x , const integer& y = 0) const
+	  { return GFqDom<int32>::init( x, int32(y % (integer) _q));}
       
-    Element& init(Element& x , const double y=0.0) const
+          // TO BE OPTIMIZED
+    Element& init(Element& x , const float y) const
+      { return GFqDom<int32>::init( x, (double)y);}
+
+      template<class YYY>
+    Element& init(Element& x , const YYY& y) const
       { return GFqDom<int32>::init( x, y);}
 
      /** Conversion of field base Element to an integer.
@@ -285,7 +290,16 @@ namespace LinBox
 //	return x = *(new integer(GFqDom<int32>::convert(tmp,y)));
 	return x = integer(GFqDom<int32>::convert(tmp,y));
       }
-    double& convert(double& x, const Element& y) const
+          // TO BE OPTIMIZED
+    float& convert(float& x, const Element& y) const
+      {
+          double tmp;
+          GFqDom<int32>::convert( tmp, y);
+          return x = (float)tmp;
+      }
+
+      template<class XXX>
+    XXX& convert(XXX& x, const Element& y) const
       {
 	return GFqDom<int32>::convert( x, y);
       }
