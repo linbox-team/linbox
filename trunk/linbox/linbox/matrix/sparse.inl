@@ -714,13 +714,15 @@ void SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag >
 	typename Row::iterator iter;
 
 	if (v.size () == 0) {
-		v.push_back (std::pair <size_t, Element> (j, value));
+		v.push_back (std::pair <size_t, Element> (j, value));                
 	} else {
 		iter = std::lower_bound (v.begin (), v.end (), j, VectorWrapper::CompareSparseEntries<Element> ());
 
 		if (iter == v.end () || iter->first != j)
 			iter = v.insert (iter, std::pair <size_t, Element> (j, value));
-	}
+                else
+                    	iter->second = value;
+ 	}
 }
 
 template <class Element, class Row>
@@ -804,7 +806,8 @@ void SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag >
 		if (iter == v.first.end () || *iter != j) {
 			iter = v.first.insert (iter, j);
 			v.second.insert (v.second.begin () + (iter - v.first.begin ()), value);
-		}
+		} else
+                    	*(v.second.begin () + (iter - v.first.begin ())) = value;
 	}
 }
 
