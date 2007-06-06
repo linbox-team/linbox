@@ -27,7 +27,7 @@
 using namespace std;
 
 template <class Field>
-typename Field::Element expt (const Field &F, typename Field::Element &res, const typename Field::Element &a, LinBox::integer &n) 
+typename Field::Element& expt (const Field &F, typename Field::Element &res, const typename Field::Element &a, LinBox::integer &n) 
 {
 	if (n == 0) {
 		F.init (res, 1);
@@ -48,44 +48,45 @@ typename Field::Element expt (const Field &F, typename Field::Element &res, cons
 	return res;
 }
 
-/// @name Generic field tests
-//@{
-/** Generic test 1: Test of field operations
+bool reportError(string rep, bool& flag)
+{
+	ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR);
+	report << "ERROR: " << rep << endl;
+	return flag = false;
+}
+
+/** Check each field or ring operation.
  *
  * Test various field operations
  *
  * F - Field over which to perform computations
  * title - String to use as the descriptive title of this test
+ * fieldp - use true if inv and div must work for all nonzero denominators
  *
  * Return true on success and false on failure
  */
 
 template<class Field>
-bool testField (Field &F, const char *title) 
+bool testField (Field &F, const char *title, bool fieldp = true) 
 {
 	typename Field::Element zero, one, two, three;
 	typename Field::Element a, b, c, d, e, f;
 
 	commentator.start (title, "testField", 5);
 
-	ostream &report = commentator.report (LinBox::Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
+	ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Field self description: " << F.write (report) << endl;
 	//	report << "field Element 2: " << F.write (report, two) << endl;
 
 	LinBox::integer n, m;
-	bool pass = true, part_pass;
+	bool pass = true, part_pass = true;
 
 	commentator.start ("\t--Testing characteristic/cardinality match");
-	part_pass = true;
 
 	F.characteristic (n); 
 	F.cardinality (m);
 
-	if (n > 0 && !isPower (m, n)) {
-		pass = part_pass = false; 
-		commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Characteristic, cardinality mismatch" << endl;
-	}
+	if (n > 0 && !isPower (m, n)) part_pass = reportError("Characteristic, cardinality mismatch", pass);
 
 	commentator.stop (MSG_STATUS (part_pass));
 	commentator.progress ();
@@ -99,29 +100,10 @@ bool testField (Field &F, const char *title)
 	F.init (zero, 0);
 	F.init (one, 1);
 
-	if (!F.isZero (zero)) {
-		pass = part_pass = false;
-		commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: isZero (0) is false" << endl;
-	}
-
-	if (F.isZero (one)) {
-		pass = part_pass = false;
-		commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: isZero (1) is true" << endl;
-	}
-
-	if (F.isOne (zero)) {
-		pass = part_pass = false;
-		commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: isOne (0) is true" << endl;
-	}
-
-	if (!F.isOne (one)) {
-		pass = part_pass = false;
-		commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: isOne (1) is false" << endl;
-	}
+	if (!F.isZero (zero)) part_pass = reportError( "isZero (0) is false", pass);
+	if (F.isZero (one)) part_pass = reportError( "isZero (1) is true", pass);
+	if (F.isOne (zero)) part_pass = reportError( "isOne (0) is true", pass);
+	if (!F.isOne (one)) part_pass = reportError( "isOne (1) is false", pass);
 
 	commentator.stop (MSG_STATUS (part_pass));
 	commentator.progress ();
@@ -134,23 +116,13 @@ bool testField (Field &F, const char *title)
 	else
 		n -= 1;
 
-	F.init (a, n);  
 	
-	{
-		ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-		report << "Initial value: " << n << endl;
-		report << "Result of conversion: ";
-		F.write (report, a);
-		report << endl;
-	}
+	report << "Initial integer: " << n << endl;
+	F.init (a, n);  F.write ( report << "Result of init: ", a) << endl;
 
-	F.convert (m, a); 
+	F.convert (m, a); report << "Result of convert: " << m << endl;
 
-	if (m != n) {
-		pass = part_pass = false;
-		commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: F.convert (m, F.init (a, n)) != n" << endl;
-	}
+	if (m != n) part_pass = reportError( "F.convert (m, F.init (a, n)) != n", pass);
 
 	commentator.stop (MSG_STATUS (part_pass));
 	commentator.progress ();
@@ -165,122 +137,58 @@ bool testField (Field &F, const char *title)
 	F.init (d, n-2);
 	F.init (e, 3);
 
-	F.add (a, three, two); 
+	F.add (a, three, two); F.write (report << "Result of 2 + 3: ", a) << endl;
 	F.assign (d, three);
-	F.addin (d, two);
+	F.addin (d, two); F.write (report << "Result of 2 + 3 (inplace): ", d) << endl;
 
-	{
-		ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-		report << "Result of 2 + 3: ";
-		F.write (report, a);
-		report << endl;
+	if (!F.areEqual (a, F.init (f, 5)) || !F.areEqual (d, a)) 
+		part_pass = reportError( "Results of add are incorrect", pass);
 
-		report << "Result of 2 + 3 (inplace): ";
-		F.write (report, d);
-		report << endl;
-	}
-
-	if (!F.areEqual (a, F.init (f, 5)) || !F.areEqual (d, a)) {
-		pass = part_pass = false;
-		commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Results of add are incorrect" << endl;
-	}
-
-	F.neg (a, two); 
+	F.neg (a, two); F.write (report << "Result of -2: ", a) << endl;
 	F.assign (d, two);
-	F.negin (d);
+	F.negin (d); F.write (report << "Result of -2 (inplace): ", d) << endl;
+	F.init (f, -2); F.write( report << "-2 via init: ", f) << endl;
 
-	{
-		ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-		report << "Result of -2: ";
-		F.write (report, a);
-		report << endl;
+	if (!F.areEqual (a, f) || !F.areEqual (d, a)) 
+		part_pass = reportError( "Results of neg are incorrect", pass);
 
-		report << "Result of -2 (inplace): ";
-		F.write (report, d);
-		report << endl;
-	}
-
-	if (!F.areEqual (a, F.init (f, -2)) || !F.areEqual (d, a)) {
-		pass = part_pass = false;
-		ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR);
-		report << "ERROR: Results of neg are incorrect (";
-		F.write (report, f);
-		report << ")" << endl;
-	}
-
-	F.sub (a, three, two);
+	F.sub (a, three, two); F.write (report << "Result of 3 - 2: ", a) << endl;
 	F.init (d, 3);
-	F.subin (d, two);
+	F.subin (d, two); F.write (report << "Result of 3 - 2 (inplace): ", d) << endl;
 
-	if (!F.areEqual (a, one) || !F.areEqual (d, a)) {
-		pass = part_pass = false;
-		commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Results of sub are incorrect" << endl;
-	}
+	if (!F.areEqual (a, one) || !F.areEqual (d, a)) 
+		part_pass = reportError( "Results of neg sub incorrect", pass);
 
-	F.mul (a, two, three);
+	F.mul (a, two, three); F.write (report << "Result of 2 * 3: ", a) << endl;
 	F.assign (d, two);
-	F.mulin (d, three);
+	F.mulin (d, three); F.write (report << "Result of 2 * 3 (inplace): ", d) << endl;
 	F.init (f, 6);
 
-	if (!F.areEqual (a, f) || !F.areEqual (d, a)) {
-		pass = part_pass = false;
-		commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Results of mul are incorrect" << endl;
-	}
+	if (!F.areEqual (a, f) || !F.areEqual (d, a)) 
+		part_pass = reportError( "Results of mul incorrect", pass);
 
-	F.inv (a, one);
+	F.inv (a, one); F.write (report << "Result of inverting 1: ", a) << endl;
 	F.assign (d, one);
-	F.invin (d);
+	F.invin (d); F.write (report << "Result of inverting 1 (inplace): ", d) << endl;
 
-	if (!F.areEqual (a, one) || !F.areEqual (d, a)) {
-		pass = part_pass = false;
-		F.write( F.write( F.write( 
-                    commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-                         << "ERROR: Results of inv are incorrect : 1/", one)
-                         << " != ", a) 
-                         << " or != ", d) << endl;
-	}
+	if (!F.areEqual (a, one) || !F.areEqual (d, a)) 
+		part_pass = reportError( "Results of inv incorrect", pass);
 
-        F.write( commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR) << " two : ", two) << ", is zero ? : " << F.isZero(two) << std::endl;
-        
-	if ( ! F.isZero(two) )
-	{
-	        F.div (a, two, two);
-		ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-		report << "Result of 2/2: ";
-		F.write (report, a);
-		report << endl;
-	        if (!F.areEqual (a, one) ) {
-		    pass = part_pass = false;
-		    report << "ERROR: Result of div is incorrect" << endl;
-	        }
-	}
+	if ( F.isZero(two) ) F.assign(f, three); else F.assign(f, two);
+	F.div (a, f, f); F.write ( report << "Result of f/f: ", a) << endl;
+	F.assign(d, f);
+	F.divin (d, f); F.write ( report << "Result of f/f (inplace): ", d) << endl;
 
-        F.write( commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR) << " three : ", three) << ", is zero ? : " << F.isZero(three) << std::endl;
-	if ( ! F.isZero(three) ) {
-		F.assign (d, three);
-		F.divin (d, three);
-		ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-		report << "Result of 3/3: ";
-		F.write (report, d);
-		report << endl;
-		if (!F.areEqual (d, one)) {
-		    pass = part_pass = false;
-		    report << "ERROR: Result of divin is incorrect" << endl;
-		}
-	}
+	if (!F.areEqual (a, one) || !F.areEqual (d, a)) 
+		part_pass = reportError( "Results of div incorrect", pass);
 
-	F.axpy (a, two, three, two); 
+	F.axpy (a, two, three, two); F.write ( report << "Result of axpy 2*3 + 2: ", a) << endl;
 	F.assign (d, two);
-	F.axpyin (d, two, three);
+	F.axpyin (d, two, three); F.write ( report << "Result of axpy 2*3 + 2 (inplace): ", d) << endl;
+	F.init (f, 8);
 
-	if ( !F.areEqual (a, F.init (f, 8)) || !F.areEqual (d, a) ) {
-		pass = part_pass = false;
-		commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Resutls of axpy are incorrect" << endl;
-	}
+	if ( !F.areEqual (a, f) || !F.areEqual (d, a) ) 
+		part_pass = reportError( "Results of axpy incorrect", pass);
 
 	commentator.stop (MSG_STATUS (part_pass));
 	commentator.progress ();
@@ -291,31 +199,29 @@ bool testField (Field &F, const char *title)
 	// 2^101 - 1 vs 1 + 2 + 4 + ... + 2^100
 
 	F.init (a, 1);
-	F.init (b, 2);
+	F.init (b, 1);
 	F.init (c, 0);
 	
+	n = 101;
+	expt(F, a, two, n);
+	F.subin (a, one); F.write( report << "using expt, 2^101 - 1: ", a) << endl;
+
 	for (int i = 1; i <= 101; ++i) {
-		F.addin (c, a);
-		F.mulin (a, b);
-	}
-	F.init (f, 1);
-	F.subin (a, f);
-
-	if (!F.areEqual (a, c)) {
-		pass = part_pass = false;
-		commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Results are incorrect using mul/add" << endl;
+		F.addin (c, b);
+		F.mulin (b, two);
 	}
 
+	if (!F.areEqual (a, c)) 
+		part_pass = reportError( "2^101 - 1 != 1 + 2 + .. + 2^100", pass);
+
+	// 1 + 2*(1 + 2*( ... (1) ... )), 100 times.
 	F.assign (d, one);
 	for (int i = 1; i < 101; ++i)
-		F.axpy (d, two, d, one);
+	{	F.axpy (b, two, d, one); F.assign(d, b); }
+    F.write( report << "using axpy, 1 + 2(1 + ... + 2(1)...), with 100 '+'s: ", d) << endl;
 
-	if (!F.areEqual (a, d)) {
-		pass = part_pass = false;
-		commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Results are incorrect using axpy" << endl;
-	}
+	if (!F.areEqual (a, d)) 
+	part_pass = reportError( "2^101 - 1 != 1 + 2(1 + ... + 2(1)...), with 100 '+'s: ", pass);
 
 	commentator.stop (MSG_STATUS (part_pass));
 	commentator.progress ();
@@ -349,11 +255,10 @@ bool testFieldNegation (const Field &F, const char *name, unsigned int iteration
 	commentator.start (str.str ().c_str (), "testFieldNegation", iterations);
 
 	typename Field::Element a, neg_a, neg_a_a, zero;
+	F.init(a); F.init(neg_a); F.init(neg_a_a); F.init (zero, 0);
 	typename Field::RandIter r (F);
 
 	bool ret = true;
-
-	F.init (zero, 0);
 
 	for (unsigned int i = 0; i < iterations; i++) {
 		commentator.startIteration (i);
@@ -374,11 +279,7 @@ bool testFieldNegation (const Field &F, const char *name, unsigned int iteration
 		report << "a + -a = ";
 		F.write (report, neg_a_a) << endl;
 
-		if (!F.areEqual (neg_a_a, zero)) {
-			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: a + -a != 0" << endl;
-			ret = false;
-		}
+		if (!F.areEqual (neg_a_a, zero)) reportError("a + -a != 0" , ret);
 
 		commentator.stop ("done");
 		commentator.progress ();
@@ -425,11 +326,7 @@ bool testFieldInversion (const Field &F, const char *name, unsigned int iteratio
 
 		report << "a a^{-1} = ";  F.write (report, aainv) << endl;
 
-		if (!F.areEqual (aainv, one)) {
-			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: a a^-1 != 1" << endl;
-			ret = false;
-		}
+		if (!F.areEqual (aainv, one)) reportError("a a^-1 != 1", ret);
 
 		commentator.stop ("done");
 		commentator.progress ();
@@ -490,11 +387,8 @@ bool testFieldAxioms (const Field &F, const char *name, unsigned int iterations)
 
 		report << "b * c + a * c = ";
 		F.write (report, bc_ac) << endl;
-		if (!F.areEqual (a_bc, ac_bc) || !F.areEqual (a_bc, ca_b) || !F.areEqual (a_bc, bc_ac)) {
-			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Results are not equal" << endl;
-			ret = false;
-		}
+		if (!F.areEqual (a_bc, ac_bc) || !F.areEqual (a_bc, ca_b) || !F.areEqual (a_bc, bc_ac)) 
+			reportError("Results are not equal", ret);
 
 		commentator.stop ("done");
 		commentator.progress ();
@@ -547,11 +441,7 @@ bool testFieldAssociativity (const Field &F, const char *name, unsigned int iter
 		report << "a + (b + c) = ";
 		F.write (report, a_bc) << endl;
 
-		if (!F.areEqual (ab_c, a_bc)) {
-			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Results are not equal" << endl;
-			ret = false;
-		}
+		if (!F.areEqual (ab_c, a_bc)) reportError( "Results are not equal", ret);
 
 		F.mul (a_b, a, b);
 		F.mul (ab_c, a_b, c);
@@ -564,11 +454,7 @@ bool testFieldAssociativity (const Field &F, const char *name, unsigned int iter
 		report << "a * (b * c) = ";
 		F.write (report, a_bc) << endl;
 
-		if (!F.areEqual (ab_c, a_bc)) {
-			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Results are not equal" << endl;
-			ret = false;
-		}
+		if (!F.areEqual (ab_c, a_bc)) reportError( "Results are not equal", ret);
 
 		commentator.stop ("done");
 		commentator.progress ();
@@ -639,11 +525,7 @@ bool testGeometricSummation (const Field &F, const char *name, unsigned int iter
 		report << "(a^n - 1) / (a - 1) = ";
 		F.write (report, a_n) << endl;
 
-		if (!F.areEqual (k, a_n)) {
-			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Field elements are not equal" << endl;
-			ret = false;
-		}
+		if (!F.areEqual (k, a_n)) reportError("Field elements are not equal", ret);
 
 		commentator.stop ("done");
 		commentator.progress ();
@@ -698,11 +580,7 @@ bool testFieldCharacteristic (const Field &F, const char *name, unsigned int ite
 		report << "p a = ";
 		F.write (report, sigma) << endl;
 
-		if (!F.isZero (sigma)) {
-			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: p a != 0" << endl;
-			ret = false;
-		}
+		if (!F.isZero (sigma)) reportError("p a != 0", ret);
 
 		commentator.stop ("done");
 		commentator.progress ();
@@ -728,11 +606,10 @@ bool testFreshmansDream (const Field &F, const char *name, unsigned int iteratio
 	commentator.start (str.str ().c_str (), "testFreshmansDream", iterations);
 
 	LinBox::integer c, j;
-	typename Field::Element cp; F.init(cp, c);
 
 	F.characteristic (c);
 
-	if (F.isZero (cp)) {
+	if (c == 0) {
 		commentator.stop ("skipping", "Field characteristic is 0, so this test makes no sense", "testFreshmansDream");
 		return true;
 	}
@@ -777,11 +654,7 @@ bool testFreshmansDream (const Field &F, const char *name, unsigned int iteratio
 		F.write (report, a_p_b_p);
 		report << endl;
 
-		if (!F.areEqual (a_b_p, a_p_b_p)) {
-			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: (a + b)^p != a^p + b^p" << endl;
-			ret = false;
-		}
+		if (!F.areEqual (a_b_p, a_p_b_p)) reportError("(a + b)^p != a^p + b^p", ret);
 
 		commentator.stop ("done");
 		commentator.progress ();
@@ -798,15 +671,22 @@ bool testFreshmansDream (const Field &F, const char *name, unsigned int iteratio
 /** Generic test 7: Consistency of in-place and out-of-place arithmetic
  *
  * Generates random elements 'a' and 'b' and performs all basic arithmetic
- * operations in-place and out-of-place, checking for consistency
+ * operations in-place and out-of-place, checking for consistency.
+ *
+ * Div and inv are checked in a separate function.
  */
 
 template <class Field>
 bool testArithmeticConsistency (const Field &F, const char *name, unsigned int iterations)
+{  return testRingArithmeticConsistency(F, name, iterations) 
+	   && testInvDivConsistency(F, name, iterations); 
+}
+template <class Field>
+bool testRingArithmeticConsistency (const Field &F, const char *name, unsigned int iterations)
 {
 	std::ostringstream str;
 	str << "\t--Testing " << name << " in-place/out-of-place arithmetic consistency" << ends;
-	commentator.start (str.str ().c_str (), "testArithmeticConsistency", iterations);
+	commentator.start (str.str ().c_str (), "testRingArithmeticConsistency", iterations);
 
 	bool ret = true;
 
@@ -836,11 +716,7 @@ bool testArithmeticConsistency (const Field &F, const char *name, unsigned int i
 		F.write (report, c1) << ", (in-place) ";
 		F.write (report, c2) << endl;
 
-		if (!F.areEqual (c1, c2)) {
-			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Consistency failure for addition" << endl;
-			ret = false;
-		}
+		if (!F.areEqual (c1, c2)) reportError("Consistency failure for addition", ret);
 
 		F.sub (c1, a, b);
 		F.assign (c2, a);
@@ -850,11 +726,7 @@ bool testArithmeticConsistency (const Field &F, const char *name, unsigned int i
 		F.write (report, c1) << ", (in-place) ";
 		F.write (report, c2) << endl;
 
-		if (!F.areEqual (c1, c2)) {
-			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Consistency failure for subtraction" << endl;
-			ret = false;
-		}
+		if (!F.areEqual (c1, c2)) reportError("Consistency failure for subtraction", ret);
 
 		F.neg (c1, a);
 		F.assign (c2, a);
@@ -864,11 +736,7 @@ bool testArithmeticConsistency (const Field &F, const char *name, unsigned int i
 		F.write (report, c1) << ", (in-place) ";
 		F.write (report, c2) << endl;
 
-		if (!F.areEqual (c1, c2)) {
-			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Consistency failure for negation" << endl;
-			ret = false;
-		}
+		if (!F.areEqual (c1, c2)) reportError("Consistency failure for negation", ret);
 
 		F.mul (c1, a, b);
 		F.assign (c2, a);
@@ -878,11 +746,43 @@ bool testArithmeticConsistency (const Field &F, const char *name, unsigned int i
 		F.write (report, c1) << ", (in-place) ";
 		F.write (report, c2) << endl;
 
-		if (!F.areEqual (c1, c2)) {
-			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Consistency failure for multiplication" << endl;
-			ret = false;
-		}
+		if (!F.areEqual (c1, c2)) reportError("Consistency failure for multiplication", ret);
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRingArithmeticConsistency");
+
+	return ret;
+}
+
+template <class Field>
+bool testInvDivConsistency (const Field &F, const char *name, unsigned int iterations)
+{
+    std::ostringstream str;
+    str << "\t--Testing " << name << " in-place/out-of-place inv and div consistency" << ends;
+    commentator.start (str.str ().c_str (), "testInvDivConsistency", iterations);
+
+    bool ret = true;
+
+    typename Field::RandIter r (F);
+    typename Field::Element a, b, c1, c2;
+
+    for (unsigned int i = 0; i < iterations; i++) {
+        commentator.startIteration (i);
+
+        r.random (a); r.random (b);
+
+		// This should be immaterial, since we have already "proven" commutativity
+		if (F.isZero (a) && !F.isZero (b))
+		std::swap (a, b);
+
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Random elements a = ";
+		F.write (report, a) << ", b = ";
+		F.write (report, b) << endl;
+
 
 		if (!F.isZero (a)) {
 			F.div (c1, b, a);
@@ -893,11 +793,7 @@ bool testArithmeticConsistency (const Field &F, const char *name, unsigned int i
 			F.write (report, c1) << ", (in-place) ";
 			F.write (report, c2) << endl;
 
-			if (!F.areEqual (c1, c2)) {
-				commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-					<< "ERROR: Consistency failure for division" << endl;
-				ret = false;
-			}
+		if (!F.areEqual (c1, c2)) reportError("Consistency failure for division", ret);
 
 			F.inv (c1, a);
 			F.assign (c2, a);
@@ -907,18 +803,14 @@ bool testArithmeticConsistency (const Field &F, const char *name, unsigned int i
 			F.write (report, c1) << ", (in-place) ";
 			F.write (report, c2) << endl;
 
-			if (!F.areEqual (c1, c2)) {
-				commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-					<< "ERROR: Consistency failure for inversion" << endl;
-				ret = false;
-			}
+		if (!F.areEqual (c1, c2)) reportError("Consistency failure for inversion", ret);
 		}
 
 		commentator.stop ("done");
 		commentator.progress ();
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testArithmeticConsistency");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testInvDivConsistency");
 
 	return ret;
 }
@@ -965,11 +857,7 @@ bool testAxpyConsistency (const Field &F, const char *name, unsigned int iterati
 		F.write (report, c2) << ", (in-place) ";
 		F.write (report, c3) << endl;
 
-		if (!F.areEqual (c1, c2) || !F.areEqual (c1, c3)) {
-			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Consistency failure for axpy" << endl;
-			ret = false;
-		}
+		if (!F.areEqual (c1, c2) || !F.areEqual (c1, c3)) reportError("Consistency failure for axpy", ret);
 
 		commentator.stop ("done");
 		commentator.progress ();
@@ -1011,19 +899,32 @@ bool testRanditerBasic(const Field &F, const char *name, unsigned int iterations
 /* Convenience function to run all of the field tests on a given field */
 
 template <class Field>
-bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, size_t n, bool runCharacteristicTest) 
+bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, size_t n, bool runCharacteristicTest = true) 
+// n is not used.
+{	ostringstream str;
+
+	str << "\t--Testing " << desc << " field" << ends;
+	commentator.start (str.str ().c_str (), "runFieldTests", runCharacteristicTest ? 11 : 10);
+    bool ret =  runBasicRingTests(F, desc, iterations, runCharacteristicTest)
+		     && testInvDivConsistency(F, desc, iterations) 
+		     && testFieldInversion (F, desc, iterations);
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "runFieldTests");
+	return ret;
+}
+
+template <class Field>
+bool runBasicRingTests (const Field &F, const char *desc, unsigned int iterations, bool runCharacteristicTest = true) 
 {
 	bool pass = true;
-	ostringstream str1, str2;
+	ostringstream str;
 
-	str1 << "\t--Testing " << desc << " field" << ends;
-	str2 << "\t--Testing " << desc << " FieldAXPY" << ends;
+	str << "\t--Testing " << desc << " ring" << ends;
 
-	commentator.start (str1.str ().c_str (), "runFieldTests", runCharacteristicTest ? 11 : 10);
+	commentator.start (str.str ().c_str (), "runFieldTests", runCharacteristicTest ? 11 : 10);
 	
-	if (!testField                 (F, str1.str ().c_str ()))                pass = false; commentator.progress ();
+	if (!testField                 (F, str.str ().c_str ()))                pass = false; commentator.progress ();
 	if (!testFieldNegation         (F, desc, iterations))                    pass = false; commentator.progress ();
-	if (!testFieldInversion        (F, desc, iterations))                    pass = false; commentator.progress ();
+	//if (!testFieldInversion        (F, desc, iterations))                    pass = false; commentator.progress ();
 	if (!testFieldAxioms           (F, desc, iterations))                    pass = false; commentator.progress ();
 	if (!testFieldAssociativity    (F, desc, iterations))                    pass = false; commentator.progress ();
 
@@ -1036,7 +937,7 @@ bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, s
 
 	if (!testGeometricSummation    (F, desc, iterations, 100))               pass = false; commentator.progress ();
 	if (!testFreshmansDream        (F, desc, iterations))                    pass = false; commentator.progress ();
-	if (!testArithmeticConsistency (F, desc, iterations))                    pass = false; commentator.progress ();
+	if (!testRingArithmeticConsistency (F, desc, iterations))                    pass = false; commentator.progress ();
 	if (!testAxpyConsistency       (F, desc, iterations))                    pass = false; commentator.progress ();
 	if (!testRanditerBasic       (F, desc, iterations))                    pass = false; commentator.progress ();
 
@@ -1044,7 +945,6 @@ bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, s
 
 	return pass;
 }
-//@}
 
 /// @name Generic field tests
 //@{
@@ -1160,12 +1060,8 @@ bool testRandomIteratorStep (const Field &F,
 	       << chi_squared * num_categories / num_trials << std::endl;
 	report << "Test of distribution uniformity (low-order):     p = " << p << std::endl;
 
-	if (p < 0.05 || p > 0.95) {
-		LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Random iterator's values do not appear to be uniformly distributed"
-			<< std::endl;
-		ret = false;
-	}
+	if (p < 0.05 || p > 0.95) 
+		reportError("Random iterator's values do not appear to be uniformly distributed", ret);
 
 	chi_squared = 0.0;
 
@@ -1179,12 +1075,8 @@ bool testRandomIteratorStep (const Field &F,
 	       << chi_squared * num_categories / num_trials << std::endl;
 	report << "Test of distribution uniformity (high-order):     p = " << p << std::endl;
 
-	if (p < 0.05 || p > 0.95) {
-		LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Random iterator's values do not appear to be uniformly distributed"
-			<< std::endl;
-		ret = false;
-	}
+	if (p < 0.05 || p > 0.95) 
+		reportError("Consistency failure for addition", ret);
 
 	diff_cat_iter = diff_categories.begin ();
 
@@ -1203,12 +1095,8 @@ bool testRandomIteratorStep (const Field &F,
 		       << chi_squared * num_categories / num_trials << std::endl;
 		report << "Test of " << idx + 1 << " spacing:     p = " << p << std::endl;
 
-		if (p < 0.05 || p > 0.95) {
-			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Difference values do not appear to be uniformly distributed"
-				<< std::endl;
-			ret = false;
-		}
+		if (p < 0.05 || p > 0.95) 
+			reportError("Difference values do not appear to be uniformly distributed", ret);
 	}
 
 	//LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomIteratorStep");
