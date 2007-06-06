@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/solutions/det.h
  * Copyright (C) 2001, 2002 LinBox
- * Time-stamp: <26 Mar 07 11:35:24 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <06 Jun 07 15:35:18 Jean-Guillaume.Dumas@imag.fr> 
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -205,7 +205,7 @@ namespace LinBox
 		Field F = A.field();
 		
 		if(M.symmetric()) {
-			commentator.start ("Symmetric Determinant", "sdet");
+			commentator.start ("Symmetric Wiedemann Determinant", "sdet");
 			linbox_check (A.coldim () == A.rowdim ());       
 			Polynomial               phi;
 			unsigned long            deg;
@@ -262,7 +262,7 @@ namespace LinBox
                     
 			return d;                   
 		} else {
-			commentator.start ("Determinant", "wdet");
+			commentator.start ("Wiedemann Determinant", "wdet");
 			linbox_check (A.coldim () == A.rowdim ());
                     
 			Polynomial               phi;
