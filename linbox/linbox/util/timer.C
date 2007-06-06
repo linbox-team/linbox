@@ -127,7 +127,7 @@ void UserTimer::stop()
 	getrusage (RUSAGE_SELF, &tmp1) ;
 	// user time
 	_t = (double) tmp1.ru_utime.tv_sec +
-		((double) tmp1.ru_utime.tv_usec)/ (double)MSPSEC - _t ;
+		((double) tmp1.ru_utime.tv_usec)/ (double)MSPSEC - _start_t ;
 }
 
 
