@@ -42,7 +42,9 @@ typename Field::Element& expt (const Field &F, typename Field::Element &res, con
 	} else {
 		n /= 2;
 		expt (F, res, a, n);
-		F.mulin (res, res);
+                typename Field::Element tmp;
+                F.init(tmp);
+		res = F.mul (tmp, res, res);
 	}
 
 	return res;
@@ -70,7 +72,10 @@ template<class Field>
 bool testField (Field &F, const char *title, bool fieldp = true) 
 {
 	typename Field::Element zero, one, two, three;
+	F.init(zero, 0); F.init(one, 1); F.init(two, 2); F.init(three, 3);
+
 	typename Field::Element a, b, c, d, e, f;
+	F.init(a); F.init(b); F.init(c); F.init(d); F.init(e); F.init(f);
 
 	commentator.start (title, "testField", 5);
 
@@ -96,9 +101,6 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 
 	commentator.start ("\t--Testing correctness of 0 and 1");
 	part_pass = true;
-
-	F.init (zero, 0);
-	F.init (one, 1);
 
 	if (!F.isZero (zero)) part_pass = reportError( "isZero (0) is false", pass);
 	if (F.isZero (one)) part_pass = reportError( "isZero (1) is true", pass);
@@ -129,9 +131,6 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 
 	commentator.start ("\t--Testing field arithmetic");
 	part_pass = true;
-
-	F.init (two, 2);
-	F.init (three, 3);
 
 	F.init (b, n-2);
 	F.init (d, n-2);
@@ -303,11 +302,12 @@ bool testFieldInversion (const Field &F, const char *name, unsigned int iteratio
 	commentator.start (str.str ().c_str (), "testFieldInversion", iterations);
 
 	typename Field::Element a, ainv, aainv, one;
+        F.init (a); F.init (ainv); F.init (aainv);
+	F.init (one, 1);
 	typename Field::RandIter r (F);
 
 	bool ret = true;
 
-	F.init (one, 1);
 
 	for (unsigned int i = 0; i < iterations; i++) {
 		commentator.startIteration (i);
@@ -337,20 +337,26 @@ bool testFieldInversion (const Field &F, const char *name, unsigned int iteratio
 	return ret;
 }
 
-/** @brief Generic test 7: Commutativity and distributivity of addition and multiplication
+/** @brief Generic test 7a: Distributivity of multiplication over addition
 
  * Given random field elements 'a', 'b', and 'c', checks that
- * (a + b) * c = a * c + b * c = c * (a + b) = b * c + a * c
+ * (a + b) * c = a * c + b * c  and  c * (a + b) = c * a + c * b
  */
 
+
 template <class Field>
-bool testFieldAxioms (const Field &F, const char *name, unsigned int iterations) 
+bool testFieldDistributivity(const Field &F, const char *name, unsigned int iterations) 
 {
 	std::ostringstream str;
-	str << "\t--Testing " << name << " commutativity, distributivity" << ends;
-	commentator.start (str.str ().c_str (), "testFieldAxioms", iterations);
+	str << "\t--Testing " << name << " distributivity" << ends;
+	commentator.start (str.str ().c_str (), "testFieldDistributivity", iterations);
 
-	typename Field::Element a, b, c, a_b, a_bc, ac, bc, ac_bc, ca_b, bc_ac;
+	typename Field::Element a, b, c, a_b, a_bc, ac, bc, ac_bc, ca_b, ca, cb, ca_cb;
+        F.init (a); F.init (b); F.init (c); 
+        F.init (a_b); F.init (a_bc); F.init (ac); F.init (bc);
+        F.init (ac_bc); 
+		F.init (ca_b); F.init (ca); F.init (cb); F.init (ca_cb); 
+        
 	typename Field::RandIter r (F);
 
 	bool ret = true;
@@ -368,13 +374,15 @@ bool testFieldAxioms (const Field &F, const char *name, unsigned int iterations)
 		F.write (report, b) << ", c = ";
 		F.write (report, c) << endl;
 
-		F.add (a_b, a, b);
-		F.mul (a_bc, a_b, c);
-		F.mul (ca_b, c, a_b);
-		F.mul (ac, a, c);
-		F.mul (bc, b, c);
-		F.add (ac_bc, ac, bc);
-		F.add (bc_ac, bc, ac);
+		F.add (a_b, a, b);//a + b
+		F.mul (a_bc, a_b, c);//(a+b)*c
+		F.mul (ca_b, c, a_b);//c*(a+b)
+		F.mul (ac, a, c); //a*c
+		F.mul (bc, b, c); //b*c
+		F.mul (ca, c, a); //c*a
+		F.mul (cb, c, b); //c*b
+		F.add (ac_bc, ac, bc); //a*c + b*c
+		F.add (ca_cb, ca, cb); //c*a + c*b
 
 		report << "(a + b) * c = ";
 		F.write (report, a_bc) << endl;
@@ -385,21 +393,95 @@ bool testFieldAxioms (const Field &F, const char *name, unsigned int iterations)
 		report << "c * (a + b) = ";
 		F.write (report, ca_b) << endl;
 
-		report << "b * c + a * c = ";
-		F.write (report, bc_ac) << endl;
-		if (!F.areEqual (a_bc, ac_bc) || !F.areEqual (a_bc, ca_b) || !F.areEqual (a_bc, bc_ac)) 
-			reportError("Results are not equal", ret);
+		report << "c * a + c * b = ";
+		F.write (report, ca_cb) << endl;
+		if (!F.areEqual (a_bc, ac_bc) || !F.areEqual (ca_b, ca_cb)) 
+			reportError("Operations were not distributative", ret);
 
 		commentator.stop ("done");
 		commentator.progress ();
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFieldAxioms");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFieldDistributivity");
 
 	return ret;
 }
 
-/** Generic test 7: Associativity of addition and multiplication
+
+/** @brief Generic test 7b: Commutativity of multiplication and addition
+
+ * Given random field elements 'a', 'b', checks that
+ * a*b = b*a
+ * a+b = b+a
+ */
+
+
+template <class Field>
+bool testFieldCommutativity (const Field &F, const char *name, unsigned int iterations) 
+{
+	std::ostringstream str;
+	str << "\t--Testing " << name << " commutativity," << ends;
+	commentator.start (str.str ().c_str (), "testFieldCommutativity", iterations);
+
+	typename Field::Element a, b, ab, ba, a_b, b_a;
+        F.init (a); F.init (b);
+        F.init (ab); F.init (ba);
+        F.init (a_b); F.init (b_a);
+
+        
+	typename Field::RandIter r (F);
+
+	bool ret = true;
+
+	for (unsigned int i = 0; i < iterations; i++) {
+		commentator.startIteration (i);
+
+		r.random (a);
+		r.random (b);
+
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Random elements a = ";
+		F.write (report, a) << ", b = ";
+		F.write (report, b) << endl;
+
+		F.mul (ab, a, b);
+		F.mul (ba, b, a);
+
+		report << "a*b = ";
+		F.write (report, ab) << endl;
+
+		report << "b*a = ";
+		F.write (report, ba) << endl;
+
+		if (!F.areEqual (ab, ba)) 
+			reportError("Multiplication was not commutative", ret);
+
+
+		F.add (a_b, a, b);
+		F.add (b_a, b, a);
+
+		report << "a+b = ";
+		F.write (report, a_b) << endl;
+
+		report << "b+a = ";
+		F.write (report, b_a) << endl;
+
+		if (!F.areEqual (a_b, b_a)) 
+			reportError("Addition was not commutative", ret);
+
+
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFieldCommutativity");
+
+	return ret;
+}
+
+
+/** Generic test 7c: Associativity of addition and multiplication
  *
  * Given random field elements 'a', 'b', and 'c', checks that
  * (a * b) * c = a * (b * c) and (a + b) + c = a + (b + c)
@@ -413,6 +495,8 @@ bool testFieldAssociativity (const Field &F, const char *name, unsigned int iter
 	commentator.start (str.str ().c_str (), "testFieldAssociativity", iterations);
 
 	typename Field::Element a, b, c, a_b, b_c, a_bc, ab_c;
+        F.init (a); F.init (b); F.init (c);
+        F.init (a_b); F.init (b_c); F.init (a_bc); F.init (ab_c);
 	typename Field::RandIter r (F);
 
 	bool ret = true;
@@ -484,6 +568,7 @@ bool testGeometricSummation (const Field &F, const char *name, unsigned int iter
 
 	F.init (zero, 0);
 	F.init (one, 1);
+        F.init (a); F.init (a_n); F.init (k);
 
 	bool ret = true;
 
@@ -557,7 +642,8 @@ bool testFieldCharacteristic (const Field &F, const char *name, unsigned int ite
 
 	F.characteristic (p);
 	F.init (zero, 0);
-
+        F.init (a); F.init (sigma);
+        
 	bool ret = true;
 
 	ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
@@ -574,6 +660,7 @@ bool testFieldCharacteristic (const Field &F, const char *name, unsigned int ite
 
 		F.assign (sigma, zero);
 
+// suggestion: make this run in time O(lg(p)), then take the conditional out of the run...Tests
 		for (j = 0; j < p; j += 1)
 			F.addin (sigma, a);
 
@@ -618,6 +705,9 @@ bool testFreshmansDream (const Field &F, const char *name, unsigned int iteratio
 
 	typename Field::RandIter r (F);
 	typename Field::Element a, b, a_b, a_b_p, a_p, b_p, a_p_b_p;
+
+        F.init (a); F.init (b); F.init (a_b);
+        F.init (a_b_p); F.init (a_p); F.init (b_p); F.init (a_p_b_p);
 
 	for (unsigned int i = 0; i < iterations; i++) {
 		commentator.startIteration (i);
@@ -692,6 +782,7 @@ bool testRingArithmeticConsistency (const Field &F, const char *name, unsigned i
 
 	typename Field::RandIter r (F);
 	typename Field::Element a, b, c1, c2;
+        F.init (a); F.init (b); F.init (c1); F.init (c2);
 
 	for (unsigned int i = 0; i < iterations; i++) {
 		commentator.startIteration (i);
@@ -768,6 +859,7 @@ bool testInvDivConsistency (const Field &F, const char *name, unsigned int itera
 
     typename Field::RandIter r (F);
     typename Field::Element a, b, c1, c2;
+    F.init (a); F.init (b); F.init (c1); F.init (c2);
 
     for (unsigned int i = 0; i < iterations; i++) {
         commentator.startIteration (i);
@@ -832,6 +924,8 @@ bool testAxpyConsistency (const Field &F, const char *name, unsigned int iterati
 
 	typename Field::RandIter r (F);
 	typename Field::Element a, x, y, c1, c2, c3;
+        F.init (a); F.init (x); F.init (y); 
+        F.init (c1); F.init (c2); F.init (c3);
 
 	for (unsigned int i = 0; i < iterations; i++) {
 		commentator.startIteration (i);
@@ -879,10 +973,11 @@ bool testRanditerBasic(const Field &F, const char *name, unsigned int iterations
 	bool ret=false;
 	std::ostringstream str;
 	str << "\t--Testing " << name << " randiter basic operation " << ends;
-	commentator.start (str.str ().c_str (), "testAxpyConsistency", iterations);
+	commentator.start (str.str ().c_str (), "testRanditerBasic", iterations);
 
 	typename Field::RandIter r (F);
 	typename Field::Element a;
+        F.init (a);
 
 	for (unsigned int i = 0; i < iterations; i++) {
 		r.random (a);
@@ -907,7 +1002,9 @@ bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, s
 	commentator.start (str.str ().c_str (), "runFieldTests", runCharacteristicTest ? 11 : 10);
     bool ret =  runBasicRingTests(F, desc, iterations, runCharacteristicTest)
 		     && testInvDivConsistency(F, desc, iterations) 
-		     && testFieldInversion (F, desc, iterations);
+		     && testFieldInversion (F, desc, iterations)
+   		     && testFieldCommutativity (F, desc, iterations)
+			 && testFreshmansDream(F, desc, iterations);
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "runFieldTests");
 	return ret;
 }
@@ -924,8 +1021,7 @@ bool runBasicRingTests (const Field &F, const char *desc, unsigned int iteration
 	
 	if (!testField                 (F, str.str ().c_str ()))                pass = false; commentator.progress ();
 	if (!testFieldNegation         (F, desc, iterations))                    pass = false; commentator.progress ();
-	//if (!testFieldInversion        (F, desc, iterations))                    pass = false; commentator.progress ();
-	if (!testFieldAxioms           (F, desc, iterations))                    pass = false; commentator.progress ();
+	if (!testFieldDistributivity           (F, desc, iterations))                    pass = false; commentator.progress ();
 	if (!testFieldAssociativity    (F, desc, iterations))                    pass = false; commentator.progress ();
 
 	if (runCharacteristicTest) {
@@ -936,7 +1032,6 @@ bool runBasicRingTests (const Field &F, const char *desc, unsigned int iteration
 	}
 
 	if (!testGeometricSummation    (F, desc, iterations, 100))               pass = false; commentator.progress ();
-	if (!testFreshmansDream        (F, desc, iterations))                    pass = false; commentator.progress ();
 	if (!testRingArithmeticConsistency (F, desc, iterations))                    pass = false; commentator.progress ();
 	if (!testAxpyConsistency       (F, desc, iterations))                    pass = false; commentator.progress ();
 	if (!testRanditerBasic       (F, desc, iterations))                    pass = false; commentator.progress ();

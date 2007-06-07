@@ -93,8 +93,9 @@ void printHelpMessage (const char *program, Argument *args, bool printDefaults =
 	std::cout << "  -h or -?  Display this message" << std::endl;
 	std::cout << "For boolean switches, the argument may be omitted, meaning the switch should be ON" << std::endl;
 	std::cout << std::endl;
-	std::cout << "If <report file> is not given, then no detailed reporting is done. This is" << std::endl;
-	std::cout << "suitable if you wish only to determine whether the tests succeeded." << std::endl;
+	std::cout << "If <report file> is '-' the report is written to std output.  If <report file> is" << std::endl; 
+	std::cout << "not given, then no detailed reporting is done. This is suitable if you wish only" << std::endl;
+	std::cout << "to determine whether the tests succeeded." << std::endl;
 	std::cout << std::endl;
 	std::cout << "[1] N.B. This program does not verify the primality of Q, and does not use a" << std::endl;
 	std::cout << "    field extension in the event that Q=p^n, n > 1" << std::endl;
@@ -124,7 +125,12 @@ void parseArguments (int argc, char **argv, Argument *args, bool printDefaults)
 
 	for (i = 1; i < argc; i++) {
 		if (argv[i][0] == '-') {
-			if (argv[i][1] == 'h' || argv[i][1] == '?') {
+			if (argv[i][1] == 0) {
+			commentator.setReportStream (cout);
+			std::cout << "Writing report data to cout (intermingled with brief report)" << std::endl << std::endl;
+			std::cout.flush ();
+			}
+			else if (argv[i][1] == 'h' || argv[i][1] == '?') {
 				printHelpMessage (argv[0], args, printDefaults);
 				exit (1);
 			}

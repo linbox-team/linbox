@@ -49,6 +49,7 @@ BASIC_TESTS =  			\
         test-modular-double     \
         test-modular-int        \
         test-modular-short      \
+		test-block-ring			\
         test-moore-penrose      \
         test-randiter-nonzero   \
         test-rank               \
@@ -193,6 +194,11 @@ test_commentator_SOURCES =		\
 test_modular_SOURCES =			\
 	test-modular.C			\
 	test-generic.h			\
+	test-common.h
+
+test_block_ring_SOURCES =			\
+	test-block-ring.C			\
+	test-field.h			\
 	test-common.h
 
 test_hom_SOURCES =			\
