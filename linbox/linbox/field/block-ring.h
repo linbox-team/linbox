@@ -3,7 +3,7 @@
 /* linbox/fields/blas-ring.h
  * Copyright (C) 2007 LinBox Team
  *
- * Written by JP May, D. Saunders, Z. Wan
+ * Written by JP May, with tweaks by D. Saunders, Z. Wan
  *
  * See COPYING for license information.
  */
