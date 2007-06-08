@@ -26,8 +26,9 @@
 #include "linbox/field/gf2.h"
 #include "linbox/field/modular.h"
 
-#include "test-generic.h"
-#include "test-vector-domain.h"
+#include "test-generic-for-quad.h"
+// #include "test-generic.h"
+// #include "test-vector-domain.h"
 
 using namespace LinBox;
 
