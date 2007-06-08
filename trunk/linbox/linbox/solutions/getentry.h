@@ -78,14 +78,6 @@ typename BB::Field::Element& getEntry(typename BB::Field::Element& x, const BB& 
 { return getEntry(x, A, i, j, Method::Blackbox(m)); 
 }
 
-/*
- * Copyright (C) 2001, 2002 Bradford Hovinen
- *
- * Written by Bradford Hovinen <hovinen@cis.udel.edu>
- *
- * ------------------------------------
- * See COPYING for license information.
- */
 
 	/** Compute the getEntry of a linear operator A, represented as a black
 	 * box. This class is parameterized by the black box type so that it can
