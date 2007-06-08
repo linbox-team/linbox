@@ -265,7 +265,7 @@ class SparseMatrix : public BlackboxInterface, public SparseMatrixBase<typename 
 	 */
 	const Field& field () const { return _F;}
 
-    private:
+    protected:
 
 	const Field                             _F;      // Field used for all arithmetic
 	VectorDomain<Field>                     _VD;     // Vector domain for matrix operations
