@@ -170,7 +170,7 @@ namespace LinBox {
 			return x = (Element)(y%lmodulus);
 		}
 
-		inline Element& init(Element& x, float y =0) const {		  
+		inline Element& init(Element& x, float y =0.0) const {		  
 
 			//float tmp = y;
 
@@ -208,7 +208,7 @@ namespace LinBox {
 			return x;
 		}
 
-		inline Element& init(Element& x, double y =0) const {		  
+		inline Element& init(Element& x, double y) const {		  
 
 			x = fmod (y, double(modulus));
 
@@ -216,14 +216,14 @@ namespace LinBox {
 			return x;
 		}
 
-		inline Element& init(Element& x, unsigned long y =0) const {		  
+		inline Element& init(Element& x, unsigned long y) const {		  
 
 			x = fmod (float(y), modulus);
 
 			if (x < 0) x += modulus;
 			return x;
 		}
-		inline Element& init(Element& x, int y =0) const {		  
+		inline Element& init(Element& x, int y) const {		  
 
 			x = fmod (float(y), modulus);
 
