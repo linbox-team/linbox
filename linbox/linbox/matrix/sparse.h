@@ -1031,7 +1031,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
     
     	template<class VectorType>
 	SparseMatrixBase (const SparseMatrixBase<Element, VectorType> &A)
-		: _A(A.m), _m (A._m), _n (A._n) {
+		: _A(A._m), _m (A._m), _n (A._n) {
             typename Rep::iterator meit = this->_A.begin();
             typename SparseMatrixBase<Element, VectorType>::Rep::const_iterator copit = A._A.begin();
             for( ; meit != this->_A.end(); ++meit, ++copit)
