@@ -1092,12 +1092,12 @@ namespace LinBox {
 	};
 
 	template<>
-	template< class Field,  class Polynomial, template<class Polynomial> class Container >
-	class BlasMatrixDomainCharpoly< Field,  Polynomial, Container, BlasMatrix<typename Field::Element > > {
+	template< class Field,  class ContPol >
+	class BlasMatrixDomainCharpoly< Field,  ContPol, BlasMatrix<typename Field::Element > > {
 	public:
-		Container<Polynomial>& operator() ( const Field                                &F,
-						    Container<Polynomial>                      &P,
-						    const BlasMatrix<typename Field::Element > &A) const{
+            ContPol& operator() ( const Field                                	&F,
+                                  ContPol                     			&P,
+                                  const BlasMatrix<typename Field::Element > 	&A) const{
 
 			size_t n = A.coldim();
 			P.clear();
