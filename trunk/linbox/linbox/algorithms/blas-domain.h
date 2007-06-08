@@ -217,10 +217,10 @@ namespace LinBox {
 		Polynomial&  operator() (const Field &F, Polynomial& P, const Matrix& A) const;
 	};
 
-	template< class Field, class Polynomial, template<class> class Container, class Matrix>
+	template< class Field, class ContPol, class Matrix>
 	class BlasMatrixDomainCharpoly {
 	public:
-		typedef Container<Polynomial> ContPol;
+//		typedef Container<Polynomial> ContPol;
 		
 		ContPol&  operator() (const Field &F, ContPol& P, const Matrix& A) const;
 	};
@@ -440,7 +440,7 @@ namespace LinBox {
 			commentator.start ("Modular Dense Charpoly ", "MDCharpoly");
 			std::list<Polynomial> P_list;
 			P_list.clear();
-			BlasMatrixDomainCharpoly<Field, Polynomial, std::list, Matrix >()(_F,P_list,A);
+			BlasMatrixDomainCharpoly<Field, std::list<Polynomial>, Matrix >()(_F,P_list,A);
 			
 
 			Polynomial tmp(A.rowdim()+1);
@@ -460,7 +460,7 @@ namespace LinBox {
 		
  		template <class Polynomial, class Matrix >
  		std::list<Polynomial>& charpoly( std::list<Polynomial>& P, const Matrix& A ) const{
- 			return BlasMatrixDomainCharpoly<Field, Polynomial, std::list, Matrix >()(_F,P,A);
+ 			return BlasMatrixDomainCharpoly<Field, std::list<Polynomial>, Matrix >()(_F,P,A);
  		}
 		
 	
