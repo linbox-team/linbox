@@ -517,7 +517,7 @@ class BlockRing : public FieldInterface
 	// wrapped read and write element
 	std::ostream& write(std::ostream& os, const Element& A) const 
 	{
-		return (A.matrix)->write(os << endl, _F);
+		return (A.matrix)->write(os << std::endl, _F);
 	}
 	
 	
