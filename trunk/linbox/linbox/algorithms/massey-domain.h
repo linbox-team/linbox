@@ -34,6 +34,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/vector/reverse.h"
 #include "linbox/vector/subvector.h"
+#include "linbox/vector/vector-domain.h"
 #include "linbox/util/timer.h"
 
 namespace LinBox 
@@ -185,7 +186,7 @@ class MasseyDomain {
 
 		integer card;
 
-		commentator.start ("Massey", "LinBox::MasseyDomain::massey", END);
+		commentator.start ("Massey", "masseyd", END);
 
 		// ====================================================
 		// Sequence and iterator initialization
@@ -314,7 +315,8 @@ class MasseyDomain {
 #endif // INCLUDE_TIMING
 		}
 
-		commentator.stop ("Done", "Done", "LinBox::MasseyDomain::massey");
+                commentator.stop ("done", NULL, "masseyd");
+//		commentator.stop ("Done", "Done", "LinBox::MasseyDomain::massey");
 
 		return L;
 	}
