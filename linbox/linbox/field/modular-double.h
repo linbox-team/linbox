@@ -226,6 +226,10 @@ namespace LinBox {
 			return x == 1.; 
 		}
 
+		inline bool isMinusOne (const Element &x) const {
+			return (x == modulus-1.); 
+		}
+
 		inline Element &add (Element &x, const Element &y, const Element &z) const {
 			x = y + z;
 			if ( x >= modulus ) x -= modulus;
@@ -357,14 +361,22 @@ namespace LinBox {
 		}
 	  
             inline Element& mulacc (const Element &a, const Element &x) {
-                Element tmp= a*x;	
-                return accumulate(tmp);
+//                 Element tmp= a*x;	
+//                 return accumulate(tmp);
+                return accumulate(a*x);
             }
             
             inline Element& accumulate (const Element &tmp) {   
                 _y += tmp;
                 if (_y > _bound)
                     return _y = fmod (_y, _F.modulus);
+                else
+                    return _y;
+            }
+            inline Element& subumulate (const Element &tmp) {   
+                _y -= tmp;
+                if (_y < 0)
+                    return _y += _F.modulus;
                 else
                     return _y;
             }
@@ -382,6 +394,14 @@ namespace LinBox {
 		inline void reset() {
 			_y = 0.;
 		}
+            
+            inline Element& set (const Element &tmp) {   
+                _y = tmp;
+                if (_y > _bound)
+                    return _y = fmod (_y, _F.modulus);
+                else
+                    return _y;
+            }
 	  
 	private:
 	  
