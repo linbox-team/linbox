@@ -1064,9 +1064,9 @@ bool testRandomIterator (const Field &F, const char *text,
 
 	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
 
-	/* This test either passes or runs forever */
+	/* This test either passes or runs a lot of times */
 	for (int i = 1; 
-	     !  testRandomIteratorStep (F, text, num_trials, num_categories, hist_len) ;
+	     (!  testRandomIteratorStep (F, text, num_trials, num_categories, hist_len)) && (i < 20) ;
 	     ++i ){
 		if (0 == i % 10)  
 			report << "Warning! Probable failure of uniformity" << std::endl;
