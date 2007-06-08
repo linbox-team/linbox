@@ -124,7 +124,7 @@ namespace LinBox
 			return Montgomery<Std32>::init( x,long(y % (integer)_p));
 		}
       
-		Element& init(Element& x , const double y=0.0) const
+		Element& init(Element& x , const double y) const
 		{ return Montgomery<Std32>::init( x, y);}
 
 		/** Conversion of field base element to an integer.
