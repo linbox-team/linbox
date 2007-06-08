@@ -206,8 +206,9 @@ namespace LinBox
 		linbox_check (_activities.top () != (Activity *) 0);
 
 		Activity *act = _activities.top ();
+                Timer tmp = act->_timer;
 		act->_timer.stop ();
-
+                
 		if (k == -1)
 			act->_progress++;
 		else
@@ -227,6 +228,7 @@ namespace LinBox
 
 		if (_show_progress && isPrinted (_activities.size () - 1, LEVEL_IMPORTANT, BRIEF_REPORT, act->_fn))
 			updateActivityReport (*act);
+                act->_timer = tmp;
 	}
 
 	std::ostream &Commentator::report (long level, const char *msg_class) 
