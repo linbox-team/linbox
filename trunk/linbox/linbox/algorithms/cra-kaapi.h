@@ -14,13 +14,15 @@
 #include "linbox/util/timer.h"
 #include "linbox/integer.h"
 #include "linbox/solutions/methods.h"
-#include "linbox/kaapi/algorithms.h"
+
+#include "linbox/kaapi/communicate.h"
+
 namespace LinBox {
 
     /**************************************************************************************************
      * CRA loop subroutine
      * given a function and a prime, this returns the residue by applying given function
-     * this must be thread safe
+     * this must be thread safe and communicable
      * \param p Prime Integer
      * \param f function used to compute residue
      * \return the residue
@@ -28,14 +30,15 @@ namespace LinBox {
     template<class Function, class Domain >
     struct Residue {
 
-        Function& f;
-        Residue(Function& ff): f(ff) {}
-        Residue(const Residue<Function,Domain>&r ) : f(r.f) {}
+        Function *_f;
+        Residue(): _f(0) {}
+        Residue(Function& ff): _f(&ff) {}
+        Residue(const Residue<Function,Domain>&r ) : _f(r._f) {}
     
         typename Domain::Element operator()(Domain D) {
             typename Domain::Element d;
             D.init(d);
-            return f(d,D);
+            return (*_f)(d,D);
         }
     };
 
@@ -121,5 +124,22 @@ namespace LinBox {
 
     };
 
+}
+
+/*
+ * marshalling operator, 
+ * WARNING: those are dummy ones, the real ones are *really* hard to implement because of BlackBoxes
+ * whose interface is hidden and does not make it easy to be communicable
+ */
+
+template<class Function, class Domain > 
+a1::OStream& operator<<( a1::OStream& out, const LinBox::Residue<Function, Domain>&  ) {
+	return out ;
+}
+
+template<class Function, class Domain > 
+a1::IStream& operator>>( a1::IStream& in,  LinBox::Residue<Function, Domain>&  )
+{
+    return in;
 }
 #endif

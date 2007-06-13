@@ -9,6 +9,8 @@
 /*
  * to be  compiled with kaapi library **svn sources**, available at http://gforge.inria.fr
  * g++ -o atahdet athadet.C  $(pkg-config --cflags --libs kaapi) -g3 $( linbox-config --cflags --libs)
+ * or
+ * g++ -o atahdet athadet.C  $KAAPI_CPPFLAGS $KAAPI_LDFLAGS -g3 $( linbox-config --cflags --libs)
  */
 #define __LINBOX_HAVE_KAAPI
 
