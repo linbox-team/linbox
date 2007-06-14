@@ -65,11 +65,14 @@ extern "C" {
 // define external link to LAPACK routines
 extern "C" {
   
-#if HAVE_DGETRF
+#if  __LINBOX_HAVE_DGETRF
         void dgetrf_(const int *, const int *, double *, const int *, int *, int *);
 #endif
-#if HAVE_DGETRI
+#if  __LINBOX_HAVE_DGETRI
         void dgetri_(const int *, double *, const int *, const int *, double *, const int *, int *);
+#endif
+#if  __LINBOX_HAVE_DTRTRI
+        void dtrtri_(const char *, const char *, const int *, double *, const int *, int *);
 #endif
 }
 
@@ -212,7 +215,7 @@ extern "C" {
 
 	// LAPACK routines
 
-#if HAVE_DGETRF
+#if  __LINBOX_HAVE_DGETRF
 	int clapack_dgetrf(const enum CBLAS_ORDER Order, const int M, const int N,
 			   double *A, const int lda, int *ipiv) 
         {
@@ -222,10 +225,45 @@ extern "C" {
         }
 #endif
 
-#if HAVE_DGETRI
+#if  __LINBOX_HAVE_DGETRI
 	int clapack_dgetri(const enum CBLAS_ORDER Order, const int N, double *A,
-			   const int lda, const int *ipiv);
+			   const int lda, const int *ipiv)
+	{
+		int info;
+		double *work;	
+#ifndef __LINBOX_AUTOIMPLEMENT_DGETRI	
+		dgetri_ (&N, A, &lda, ipiv, work, (int*)-1,  &info);
+#else
+		work= new double[N*N];
+		dtrtri_("U","U", N, A, lda, info);
+		if (*info > 0) 
+			return 0;
+		for (int i=0;i<N;++i)
+			for(int j=i;j<N;++j)
+				{
+					work[i+j*N]=A[i*N+j];
+					A[i*N+j]=0.0;
+				}		
+		dtrsm_ ("L", "U", "T", "U", &N, &N, (int*)1., &work, &N, A, &N);
 #endif
+		return info;	
+	}
+#endif
+
+#if  __LINBOX_HAVE_DTRTRI
+	int clapack_dtrtri(const enum CBLAS_ORDER Order,const enum CBLAS_UPLO Uplo,
+			   const enum CBLAS_DIAG Diag,const int N, double *A, const int lda)
+	{
+		int info;
+		if (Order == CblasRowMajor)
+			dgetri_ (EXT_BLAS_UPLO_tr(Uplo), EXT_BLAS_DIAG(Diag), &N, A, &lda, &info);
+		else
+			dgetri_ (EXT_BLAS_UPLO(Uplo), EXT_BLAS_DIAG(Diag), &N, A, &lda, &info);
+		
+		return info;		
+	}
+#endif
+
 
 } 
 
@@ -303,8 +341,8 @@ extern "C" {
 			   double *A, const int lda, int *ipiv);
 	int clapack_dgetri(const enum CBLAS_ORDER Order, const int N, double *A,
 			   const int lda, const int *ipiv);
-
-
+	int clapack_dtrtri(const enum CBLAS_ORDER Order,const enum CBLAS_UPLO Uplo,
+			   const enum CBLAS_DIAG Diag,const int N, double *A, const int lda);
 }
 #endif
 
