@@ -25,17 +25,6 @@
 #include <NTL/ZZ_p.h>
 
 
-#ifdef __LINBOX_XMLENABLED
-
-#include "linbox/util/xml/linbox-reader.h"
-#include "linbox/util/xml/linbox-writer.h"
-
-#include <iostream>
-#include <string>
-
-#endif
-
-
 // Namespace in which all LinBox library code resides
 namespace LinBox{ 
 
@@ -93,61 +82,6 @@ namespace LinBox{
 	//@} doc of NTL_ZZ_p
 
 	//@{
-
-#ifdef __LINBOX_XMLENABLED
-	template <> UnparametricField<NTL::ZZ_p>::UnparametricField(Reader &R)
-	{
-
-		NTL::ZZ m;
-		Integer base(256);
-		long e;
-		unsigned char* byteArray;
-
-		if(!R.expectTagName("field") || !R.expectChildTag()) return;
-		R.traverseChild();
-
-		if(!R.expectTagName("finite") || !R.expectChildTag()) return;
-		R.traverseChild();
-
-		if(!R.expectTagName("characteristic") || !R.expectChildTag()) return;
-		R.traverseChild();
-		if(!R.expectTagNum(m)) return;
-		R.upToParent();
-
-
-		R.upToParent();
-		if(R.getNextChild()) {
-			R.traverseChild();
-
-			if(!R.expectTagName("extension") || !R.expectChildTextNum(e)) return;
-			if(e > 1) {
-				R.setErrorString("Tried to extend prime field.");
-				R.setErrorCode(Reader::OTHER);
-				return;
-			}
-			R.upToParent();
-			R.getPrevChild();
-		}
-
-		R.upToParent();
-		NTL::ZZ_p::init(m);
-
-		byteArray = new unsigned char[(size_t) NumBytes(m)];
-		BytesFromZZ(byteArray, m, NumBytes(m));
-
-		_p = Integer(0);
-		for(long i = NumBytes(m) - 1; i >= 0; --i) {
-			_p *= base;
-			_p += Integer(byteArray[i]);
-		}
-
-		delete [] byteArray;
-
-		_card = _p;
-
-	}
-		
-#endif
 
 	/** Conversion of field element to an integer.
 	 * This function assumes the output field element x has already been
@@ -251,81 +185,6 @@ namespace LinBox{
 	{ return x = NTL::inv(x); }
 
 
-#ifdef __LINBOX_XMLENABLED
-	template <> bool UnparametricField<NTL::ZZ_p>::toTag(Writer &W) const
-	{
-		std::string s;
-		W.setTagName("field");
-		W.setAttribute("implDetail", "ntl-ZZp");
-		W.setAttribute("cardinality", Writer::numToString(s, NTL::ZZ_p::modulus()));
-
-		W.addTagChild();
-		W.setTagName("finite");
-
-		W.addTagChild();
-		W.setTagName("characteristic");
-		W.addNum(NTL::ZZ_p::modulus());
-		W.upToParent();
-
-		W.upToParent();
-
-		return true;
-	}
-
-
-	template <> std::ostream &UnparametricField<NTL::ZZ_p>::write(std::ostream &out) const
-	{
-		Writer W;
-		if( toTag(W))
-			W.write(out);
-		
-		return out;
-	}
-
-
-
-	template <> bool UnparametricField<NTL::ZZ_p>::toTag(Writer &W, const Element &e) const
-	{
-		std::string s;
-		W.setTagName("cn");
-		W.addDataChild(Writer::numToString(s, e));
-		
-		return true;
-	}
-
-	template <> std::ostream &UnparametricField<NTL::ZZ_p>::write(std::ostream &out, const Element &e) const
-	{
-		Writer W;
-		if( toTag(W, e))
-			W.write(out);
-
-		return out;
-	}
-
-
-
-	template <> bool UnparametricField<NTL::ZZ_p>::fromTag(Reader &R, Element &e) const
-	{
-		if(!R.expectTagName("cn") || !R.expectChildTextNum(e)) return false;
-
-		return true;
-	}
-
-	template <> std::istream &UnparametricField<NTL::ZZ_p>::read(std::istream &in, Element &e) const {
-		Reader R(in);
-		if( !fromTag(R, e)) {
-			in.setstate(std::istream::failbit);
-			if(!R.initalized())
-				in.setstate(std::istream::badbit);
-		}
-		return in;
-	}
-
-
-#else
-
-
-
 	/** Print field.
 	 * @return output stream to which field is written.
 	 * @param  os  output stream to which field is written.
@@ -335,8 +194,6 @@ namespace LinBox{
 		return os << "unparameterized field NTL::ZZ_p with p = " 
 			  << NTL::ZZ_p::modulus(); 
 	}
-
-#endif
 
 	/// Constructor for random field element generator
 	template <> 
@@ -360,18 +217,6 @@ namespace LinBox{
 		// Seed random number generator
 		NTL::SetSeed(NTL::to_ZZ(static_cast<long>(_seed)));
 	}
-
-#ifdef __LINBOX_XMLENABLED
-	template <> UnparametricRandIter<NTL::ZZ_p>::UnparametricRandIter(Reader &R) {
-		if(!R.expectTagName("randiter")) return;
-		if(!R.expectAttributeNum("seed", _seed) || !R.expectAttributeNum("size", _size)) return;
-
-		if(_seed == integer(0)) _seed = integer(time(NULL));
-
-		NTL::SetSeed(NTL::to_ZZ(static_cast<long>(_seed)));
-	}
-#endif
-
 
 
 	/// Random field element creator.
