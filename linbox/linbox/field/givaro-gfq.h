@@ -30,17 +30,6 @@
 #include "linbox-config.h"
 
 
-#ifdef __LINBOX_XMLENABLED
-
-#include "linbox/util/xml/linbox-reader.h"
-#include "linbox/util/xml/linbox-writer.h"
-
-#include <iostream>
-#include <string>
-#include <vector>
-
-#endif
-
 //------------------------------------
 // Files of Givaro library
 
@@ -111,8 +100,6 @@ namespace LinBox
       GFqDom<int32>(static_cast<UTT>(int32(p)), static_cast<UTT>(int32(k))) {
 	//enforce that the cardinality must be <2^16, for givaro-gfq
 	int32 pl=p;
-	// Rich Seagraves 7-16-03: Line removed to take care of compile warning
-	//	long kl=k; 
 	for(int32 i=1;i<k;++i) pl*=(int32)p;
 	if(!FieldTraits<GivaroGfq>::goodModulus(p)) 
 		throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus be between 2 and 2^15 and prime");
@@ -129,8 +116,6 @@ namespace LinBox
 
         //enforce that the cardinality must be <2^16, for givaro-gfq
         int32 pl=p;
-        // Rich Seagraves 7-16-03: Line removed to take care of compile warning
-        //      long kl=k;
         for(int32 i=1;i<k;++i) pl*=(int32)p;
         if(!FieldTraits<GivaroGfq>::goodModulus(p)) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus be between 2 and 2^15 and prime");
         else if(pl>=(1<<16)) throw PreconditionFailed(__FUNCTION__,__LINE__,"cardinality must be < 2^16");
@@ -181,53 +166,6 @@ namespace LinBox
     }
 
     
-#ifdef __LINBOX_XMLENABLED
-    // XML LinBox::Reader constructor
-    GivaroGfq(LinBox::Reader &R)
-    {
-	    integer p, n;
-
-	    if(!R.expectTagName("field") || !R.expectChildTag()) return;
-	    R.traverseChild();
-
-	    if(!R.expectTagName("finite") || !R.expectChildTag()) return;
-	    R.traverseChild();
-
-	    if(!R.expectTagName("characteristic") || !R.expectChildTag()) return;
-	    R.traverseChild();
-	    if(!R.expectTagNum(p));
-	    R.upToParent();
-
-	    if(R.getNextChild()) {
-		    if(!R.expectChildTag()) return;
-		    R.traverseChild();
-
-		    if(!R.expectTagName("extension") || !R.expectChildTag()) return;
-		    R.traverseChild();
-		    if(!R.expectTagNum(n)) return;
-		    R.upToParent();
-
-		    R.upToParent();
-		    R.getPrevChild();
-	    }
-	    else {
-		    n = Integer(1);
-	    }
-	    R.upToParent();
-	    R.upToParent();
-
-	    // now try building using the above constructor.  Note, NO
-	    // ATTEMPT IS MADE TO CATCH THE ERROR THIS METHOD CAN THROW, 
-	    // IT IS ALLOWED TO PASS THROUGH
-	    //
-	    GivaroGfq oth(p, n);
-	    *this = oth;
-
-	    return;
-    }
-#endif
-
-
     /** Characteristic.
      * Return integer representing characteristic of the domain.
      * Returns a positive integer to all domains with finite characteristic,
@@ -306,101 +244,6 @@ namespace LinBox
 
     //bool isZero(const Element& x) const { return GFqDom<int32>::isZero(x); }
 
-
-#ifdef __LINBOX_XMLENABLED
-
-	  std::ostream &write(std::ostream &os) const
-	  {
-		  LinBox::Writer W;
-		  if( toTag(W) )
-			  W.write(os);
-
-		  return os;
-	  }
-
-	  bool toTag(LinBox::Writer &W) const
-	  {
-		  std::string s;
-		  int32 card = GFqDom<int32>::size();
-		  size_t i = 0;
-
-		  W.setTagName("field");
-		  W.setAttribute("implDetail", "givaro-gfq");
-		  W.setAttribute("cardinality", LinBox::Writer::numToString(s, card));
-
-		  W.addTagChild();
-		  W.setTagName("finite");
-
-		  W.addTagChild();
-		  W.setTagName("characteristic");
-		  W.addNum(GFqDom<int32>::characteristic());
-		  W.upToParent();
-		  W.addTagChild();
-		  W.setTagName("extension");
-
-		  while(card > 1) {
-			  card /= GFqDom<int32>::characteristic();
-			  ++i;
-		  }
-		  W.addNum(i);
-		  W.upToParent();
-
-		  W.upToParent();
-
-		  return true;
-	  }
-
-
-	  // Special Note:  In LinBox, all Elements of a field will be written
-	  // in the following manner:  for e in ZZp[x] with 
-	  // e = a0 + a1x + a2x^2 + ..., e is represented as:
-	  // "<cn>n</cn>" where n = a0 + a1 * p + a2 * p^2 + ...
-	  // 
-	  std::ostream &write(std::ostream &os, const Element &e) const
-	  {
-		  LinBox::Writer W;
-		  if( toTag(W, e))
-			  W.write(os);
-
-		  return os;
-	  }
-
-	  bool toTag(LinBox::Writer &W, const Element &e) const
-	  {
-		  std::string s;
-		  int32 rep = _log2pol[ (unsigned int32) e];
-
-		  W.setTagName("cn");
-		  W.addDataChild(LinBox::Writer::numToString(s, rep));
-		  
-		  return true;
-	  }
-
-	  std::istream &read(std::istream &is, Element &e) const
-	  {
-		  LinBox::Reader R(is);
-		  if( !fromTag(R, e)) {
-			  is.setstate(std::istream::failbit);
-			  if(!R.initalized())
-				  is.setstate(std::istream::badbit);
-		  }
-
-		  return is;
-	  }
-
-	  bool fromTag(LinBox::Reader &R, Element &e) const
-	  {
-		  unsigned int32 i;
-
-		  if(!R.expectTagName("cn") || !R.expectChildTextNum(i))
-			  return false;
-
-		  e = _pol2log[i];
-		  return true;
-	  }
-			  
-
-#endif
 
   }; // class GivaroGfq
  
