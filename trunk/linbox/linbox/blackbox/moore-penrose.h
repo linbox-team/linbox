@@ -48,6 +48,11 @@ namespace LinBox
 	 * This implementation assumes that A already has a nonsingular
 	 * principal r x r minor. It is the caller's responsibility to ensure
 	 * that that condition holds.
+	 * 
+	 * Given MoorePenrose M(A, r), and vector b, we have that M.apply(u, b) provides 
+	 * the least norm, least squares solution x = u to Ax = b.
+	 *
+	 * TODO: remove the requirement that lpm is nonsingular.  Specialize for dense matrices.
 	 */
 	template <class Blackbox>
 	class MoorePenrose : public BlackboxInterface
