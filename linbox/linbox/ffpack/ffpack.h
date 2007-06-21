@@ -26,9 +26,11 @@ namespace LinBox{
 
 #define __FFPACK_LUDIVINE_CUTOFF 100
 	/**
-	 * \brief Set of elimination based routines for dense linear algebra with matrices over finite prime field of characteristic less than 2^26.
+	 * \brief Set of elimination based routines for dense linear algebra
+	 * with matrices over finite prime field of characteristic less than 2^26.
 	 *
-	 *  This class only provides a set of static member functions. No instantiation is allowed.
+	 *  This class only provides a set of static member functions.
+	 *  No instantiation is allowed.
 	 *
 	 * It enlarges the set of BLAS routines of the class FFLAS, with higher 
 	 * level routines based on elimination.
@@ -196,59 +198,30 @@ public:
  	}
 	
 	/**
-	 * Invert the given matrix or computes its nullity if it is singular.
-	 * The standart 8/3n^3 algorithm is used.
-	 * The input matrix is modified. 
+	 * Invert the given matrix in place
+	 * or computes its nullity if it is singular.
+	 * An inplace 2n^3 algorithm is used.
 	 * @param M order of the matrix
 	 * @param A input matrix
 	 * @param lda leading dimension of A
-	 * @param X inverse of A
-	 * @param ldx leading dimension of X
 	 * @param nullity dimension of the kernel of A
 	 */
 	/// Invert a matrix or return its nullity
-
 	template <class Field>
 	static typename Field::Element*
-	Invert( const Field& F, const size_t M,
+	Invert (const Field& F, const size_t M,
 		typename Field::Element * A, const size_t lda,
-		typename Field::Element * X, const size_t ldx,
-		int& nullity) 
-	{
-		typename Field::Element one, zero;
-		F.init (one,1.0);
-		F.init (zero,0.0);
-
-		size_t *P = new size_t[M];
-		size_t *rowP = new size_t[M];
+		int& nullity){
 		
-		nullity = M - LUdivine( F, FflasNonUnit, M, M, A, lda, P, rowP, FfpackLQUP);
-		if (nullity > 0){
-			delete[] P; 
-			delete[] rowP; 
+		if ((nullity = M - ReducedColumnEchelonForm (F, M, A, lda) ) > 0)
 			return NULL;
-		}
-		// Improvement: construct X=P^1 directly
-		for (size_t i=0;i<M;++i)
-			for (size_t j=0; j<M;++j)
-				if (i==j)
-					F.assign( *(X+i*ldx+j), one);
-				else
-					F.assign( *(X+i*ldx+j), zero);
-		
-		applyP( F, FflasRight, FflasTrans, M, 0, M, X, ldx, P );
-		ftrsm(F, FflasRight, FflasUpper, FflasNoTrans, FflasNonUnit, M, M, one, 
-		      A, lda , X, ldx);
-		ftrsm(F, FflasRight, FflasLower, FflasNoTrans, FflasUnit, M, M, one, 
-		      A, lda , X, ldx);
-		delete[] P;
-		delete[] rowP;
-		return X;
+		else
+			return A;
 	}
 	
 	/**
 	 * Invert the given matrix or computes its nullity if it is singular.
-	 * An improved 2n^3 algorithm is used.
+	 * An 2n^3 algorithm is used.
 	 * The input matrix is modified. 
 	 * @param M order of the matrix
 	 * @param A input matrix
@@ -272,23 +245,49 @@ public:
 		size_t *P = new size_t[M];
 		size_t *rowP = new size_t[M];
 		
+		Timer t1;
+		t1.clear();
+		t1.start();
+
 		nullity = M - LUdivine( F, FflasNonUnit, M, M, A, lda, P, rowP, FfpackLQUP);
+
+		t1.stop();
+		//cerr<<"LU --> "<<t1.usertime()<<endl;
+		
 		if (nullity > 0){
 			delete[] P;
 			delete[] rowP; 
 			return NULL;
 		} else {
 			// Initializing X to 0
+			t1.clear();
+			t1.start();
 			for (size_t i=0; i<M; ++i)
 				for (size_t j=0; j<M;++j)
 					F.assign(*(X+i*ldx+j), zero);
+
 			// X = L^-1 in n^3/3
-			invL( F, M, A, lda, X, ldx );
-			// X = Q^-1.X is not necessary since Q = Id
+ 			ftrtri (F, FflasLower, FflasUnit, M, A, lda);
+			for (size_t i=0; i<M; ++i){
+				for (size_t j=i; j<M; ++j)
+					F.assign(*(X +i*ldx+j),zero);
+				F.assign (*(X+i*(ldx+1)), one);
+			}
+			for (size_t i=1; i<M; ++i)
+ 				fcopy (F, i, (X+i*ldx), 1, (A+i*lda), 1);
+			t1.stop();
+			//cerr<<"U^-1 --> "<<t1.usertime()<<endl;
+
+			//invL( F, M, A, lda, X, ldx );
+		       // X = Q^-1.X is not necessary since Q = Id
 			
 			// X = U^-1.X
+			t1.clear();
+			t1.start();
 			ftrsm( F, FflasLeft, FflasUpper, FflasNoTrans, FflasNonUnit, 
 			       M, M, one, A, lda , X, ldx);
+			t1.stop();
+			//cerr<<"ftrsm --> "<<t1.usertime()<<endl;
 
 			// X = P^-1.X
 			applyP( F, FflasLeft, FflasTrans, M, 0, M, X, ldx, P ); 
@@ -300,7 +299,7 @@ public:
  	}
 
 	/** 
-	 *  LQUPtoInverseOfFullRankMinor
+	 * LQUPtoInverseOfFullRankMinor
 	 * Suppose A has been factorized as L.Q.U.P, with rank r.
 	 * Then Qt.A.Pt has an invertible leading principal r x r submatrix
 	 * This procedure efficiently computes the inverse of this minor and puts it into X.
@@ -333,8 +332,11 @@ public:
 			}
 		
 		// X <- (Qt.L.Q)^(-1)
-		invL( F, rank, A_factors, lda, X, ldx); 
-
+		//invL( F, rank, A_factors, lda, X, ldx); 
+		ftrtri (F, FflasLower, FflasUnit, rank, A_factors, lda);
+		for (size_t i=0; i<rank; ++i)
+			fcopy (F, rank, A_factors+i*lda, 1, X+i*ldx,1);
+		
 		// X = U^-1.X
 		ftrsm( F, FflasLeft, FflasUpper, FflasNoTrans, 
 		       FflasNonUnit, rank, rank, one, A_factors, lda, X, ldx); 
@@ -363,7 +365,7 @@ public:
 	 * @param A input matrix
 	 * @param lda leading dimension of A
 	 * @param P the column permutation
-	 * @param Q the row permutation
+	 * @param Qt the transpose of the row permutation Q
 	 * @param LuTag flag for setting the earling termination if the matrix
 	 * is singular
 	 */
@@ -373,18 +375,9 @@ public:
 	LUdivine (const Field& F, const FFLAS_DIAG Diag,
 		  const size_t M, const size_t N,
 		  typename Field::Element * A, const size_t lda,
-		  size_t* P, size_t* Q,
+		  size_t* P, size_t* Qt,
 		  const FFPACK_LUDIVINE_TAG LuTag=FfpackLQUP,
 		  const size_t cutoff=__FFPACK_LUDIVINE_CUTOFF);
-
-// 	template <class Field>
-// 	static size_t 
-// 	LUdivine_block (const Field& F, const FFLAS_DIAG Diag,
-// 			const size_t M, const size_t N,
-// 			typename Field::Element * A, const size_t lda,
-// 			size_t* P, size_t* Q,
-// 			const FFPACK_LUDIVINE_TAG LuTag=FfpackLQUP,
-// 			const size_t cutoff=2);
 
 	
 	template<class Element>
@@ -396,6 +389,7 @@ public:
 			const size_t M, const size_t N,
 			typename Field::Element * A, const size_t lda,
 			size_t* P, size_t* Q, const FFPACK_LUDIVINE_TAG LuTag=FfpackLQUP);
+
 	template <class Field>
 	static size_t 
 	LUdivine_gauss (const Field& F, const FFLAS_DIAG Diag,
@@ -403,12 +397,173 @@ public:
 			typename Field::Element * A, const size_t lda,
 			size_t* P, size_t* Q, const FFPACK_LUDIVINE_TAG LuTag=FfpackLQUP);
        	
-	// Apply a permutation submatrix of P (between ibeg and iend) to a matrix
-	// to (iend-ibeg) vectors of size M stored in A (as column for NoTrans 
-	// and rows for Trans)
-	// Side==FflasLeft for row permutation Side==FflasRight for a column 
-	// permutation
-	// Trans==FflasTrans for the inverse permutation of P
+
+
+	/**
+	 * Compute the inverse of a triangular matrix.
+	 * @param Uplo whether the matrix is upper of lower triangular
+	 * @param Diag whether the matrix if unit diagonal
+	 * 
+	 */
+	 template<class Field>
+	 static void
+	 ftrtri (const Field& F, const FFLAS_UPLO Uplo, const FFLAS_DIAG Diag,
+		 const size_t N, typename Field::Element * A, const size_t lda){
+
+		 static typename Field::Element one;
+		 static typename Field::Element mone;
+		 F.init(one,1.0);
+		 F.init(mone,-1.0);
+		 if (N == 1){
+			 if (Diag == FflasNonUnit)
+				 F.invin (*A);
+		 } else {
+			 size_t N1 = N/2;
+			 size_t N2 = N - N1;
+			 ftrtri (F, Uplo, Diag, N1, A, lda);
+			 ftrtri (F, Uplo, Diag, N2, A + N1*(lda+1), lda);
+			 if (Uplo == FflasUpper){
+				 ftrmm (F, FflasLeft, Uplo, FflasNoTrans, Diag, N1, N2,
+					one, A, lda, A + N1, lda);
+				 ftrmm (F, FflasRight, Uplo, FflasNoTrans, Diag, N1, N2,
+					mone, A + N1*(lda+1), lda, A + N1, lda);
+			 } else {
+				 ftrmm (F, FflasLeft, Uplo, FflasNoTrans, Diag, N2, N1,
+					one, A + N1*(lda+1), lda, A + N1*lda, lda);
+				 ftrmm (F, FflasRight, Uplo, FflasNoTrans, Diag, N2, N1,
+					mone, A, lda, A + N1*lda, lda);
+			 }
+		 }
+	 }
+
+
+	/**
+	 * Compute the product UL of the upper, resp lower triangular matrices U and L
+	 * stored one above the other in the square matrix A.
+	 * The matrix U is supposed to be unit diagonal
+	 * 
+	 */
+	template<class Field>
+	static void
+	ftrtrm (const Field& F, const size_t N, typename Field::Element * A, const size_t lda){
+		
+		typename Field::Element one;
+		F.init(one,1.0);
+
+		 if (N == 1)
+			return;
+		size_t N1 = N/2;
+		size_t N2 = N-N1;
+		
+		ftrtrm (F, N1, A, lda);
+		
+		fgemm (F, FflasNoTrans, FflasNoTrans, N1, N1, N2, one,
+		       A+N1, lda, A+N1*lda, lda, one, A, lda);
+		
+		ftrmm (F, FflasRight, FflasLower, FflasNoTrans, FflasNonUnit, N1, N2, one, A + N1*(lda+1), lda, A + N1, lda);
+		
+		ftrmm (F, FflasLeft, FflasUpper, FflasNoTrans, FflasUnit, N2, N1, one, A + N1*(lda+1), lda, A + N1*lda, lda);
+		
+		ftrtrm (F, N2, A + N1*(lda+1), lda);
+		
+	}
+
+	/**
+	 * Compute the Column Echelon form of the input matrix in-place.
+	 * 
+	 * After the computation A = [ M \ V ] such that AU = C is a column echelon
+	 * decomposition of A, with U = P^T [  V (+Ir) ] and C = M //+ Q [ Ir   ]
+	 *                                  [ 0 In-r   ]           //    [    0 ]
+	 * Qt = Q^T
+	 */
+	template <class Field>
+	static size_t
+	ColumnEchelonForm (const Field& F, const size_t M, const size_t N,
+			   typename Field::Element * A, const size_t lda,
+			   size_t* P, size_t* Qt){
+
+		typename Field::Element one, mone;
+		F.init (one, 1.0);
+		F.neg (mone, one);
+		size_t r;
+
+		Timer t1;
+		t1.clear();
+		t1.start();
+		r = LUdivine (F, FflasUnit, M, N, A, lda, P, Qt);
+		t1.stop();
+		//cerr<<"LU --> "<<t1.usertime()<<endl;
+		
+		Timer t2;
+		t2.clear();
+		t2.start();
+		ftrtri (F, FflasUpper, FflasUnit, r, A, lda);
+
+
+		ftrmm (F, FflasLeft, FflasUpper, FflasNoTrans, FflasUnit, r, N-r,
+		       mone, A, lda, A+r, lda);
+
+		t2.stop();
+		//cerr<<"U^-1 --> "<<t2.usertime()<<endl;
+
+		return r;
+	}
+
+	/**
+	 * Compute the Reduced Column Echelon form of the input matrix in-place.
+	 * 
+	 * After the computation A = [  V  ] such that AU = R is a reduced column echelon
+	 *                           [ M 0 ]
+	 * decomposition of A, where U = P^T [ V      ] and R = Q [ Ir   ]
+	 *                                   [ 0 In-r ]           [ M  0 ]
+	 * Qt = Q^T
+	 */
+	template <class Field>
+	static size_t
+	ReducedColumnEchelonForm (const Field& F, const size_t M, const size_t N,
+				  typename Field::Element * A, const size_t lda,
+				  size_t* P, size_t* Qt){
+		
+		typename Field::Element one, mone;
+		F.init (one, 1.0);
+		F.neg (mone, one);
+		size_t r;
+
+		r = ColumnEchelonForm (F, M, N, A, lda, P, Qt);
+			
+		Timer t1;
+		t1.clear();
+		t1.start();
+
+		// M = Q^T M 
+		for (int i=0; i<r; ++i){
+			if ( Qt[i]> (size_t) i ){
+				fswap( F, i+1, 
+				       A + Qt[i]*lda, 1, 
+				       A + i*lda, 1 );
+			}
+		}
+		
+		ftrtri (F, FflasLower, FflasNonUnit, r, A, lda);
+		
+		ftrmm (F, FflasRight, FflasLower, FflasNoTrans, FflasNonUnit, M-r, r,
+		       one, A, lda, A+r*lda, lda);
+
+		ftrtrm (F, r, A, lda);
+		t1.stop();
+		//cerr<<"U^-1L^-1 --> "<<t1.usertime()<<endl;	   
+		
+		return r;
+
+	}
+	
+	/** Apply a permutation submatrix of P (between ibeg and iend) to a matrix
+	 * to (iend-ibeg) vectors of size M stored in A (as column for NoTrans 
+	 * and rows for Trans)
+	 * Side==FflasLeft for row permutation Side==FflasRight for a column 
+	 * permutation
+	 * Trans==FflasTrans for the inverse permutation of P
+	 */
 	template<class Field>
 	static void 
 	applyP( const Field& F, 
@@ -455,22 +610,23 @@ public:
 			}
 			
 	}
-	//---------------------------------------------------------------------
-	// CharPoly: Compute the characteristic polynomial of A using Krylov
-	// Method, and LUP factorization of the Krylov Base
-	//---------------------------------------------------------------------
+	
+	/**
+	 * Compute the characteristic polynomial of A using Krylov
+	 * Method, and LUP factorization of the Krylov matrix
+	 */
 	template <class Field, class Polynomial>
 	static std::list<Polynomial>&
 	CharPoly( const Field& F, std::list<Polynomial>& charp, const size_t N,
 		  typename Field::Element * A, const size_t lda,
 		  const FFPACK_CHARPOLY_TAG CharpTag= FfpackLUK);
 	
-	//---------------------------------------------------------------------
-	// MinPoly: Compute the minimal polynomial of (A,v) using an LUP 
-	// factorization of the Krylov Base (v, Av, .., A^kv)
-	// U,X must be (n+1)*n
-	// U contains the Krylov matrix and X, its LSP factorization
-	//---------------------------------------------------------------------
+	/**
+	 * Compute the minimal polynomial of (A,v) using an LUP 
+	 * factorization of the Krylov Base (v, Av, .., A^kv)
+	 * U,X must be (n+1)*n
+	 * U contains the Krylov matrix and X, its LSP factorization
+	 */
 	template <class Field, class Polynomial>
 	static Polynomial&
 	MinPoly( const Field& F, Polynomial& minP, const size_t N,
@@ -500,14 +656,14 @@ public:
 			if (  Q[i] > (size_t) i){
 				//for (size_t j=0; j<=Q[i]; ++j)
 				//F.init( *(L+Q[i]+j*ldl), 0 );
-				//cerr<<"1 deplacement "<<i<<"<-->"<<Q[i]<<endl;
+				//std::cerr<<"1 deplacement "<<i<<"<-->"<<Q[i]<<endl;
 				fcopy( F, LM-Q[i]-1, L+Q[i]*(ldl+1)+ldl,ldl, L+(Q[i]+1)*ldl+i, ldl );
 				for ( size_t j=Q[i]*ldl; j<LM*ldl; j+=ldl)
 					F.assign( *(L+i+j), zero );
 			}
 		}
 		ftrsm( F, Side, FflasLower, FflasNoTrans, FflasUnit, M, N, one, L, ldl , B, ldb);
-		//write_field(F,cerr<<"dans solveLB "<<endl,L,N,N,ldl);
+		//write_field(F,std::cerr<<"dans solveLB "<<endl,L,N,N,ldl);
 		// Undo the permutation of L
 		for (size_t i=0; i<R; ++i){
 			if ( Q[i] > (size_t) i){
@@ -581,10 +737,14 @@ public:
 		}
 	}
 
+
 	template<class Field>
 	static void trinv_left( const Field& F, const size_t N, const typename Field::Element * L, const size_t ldl,
 				typename Field::Element * X, const size_t ldx ){
-		invL(F,N,L,ldl,X,ldx);
+		for (size_t i=0; i<N; ++i)
+			fcopy (F, N, L+i*ldl, 1, X+i*ldx, 1);
+		ftrtri (F, FflasLower, FflasUnit, N, X, ldx);
+		//invL(F,N,L,ldl,X,ldx);
 	}
 	
 	template <class Field>
@@ -599,6 +759,7 @@ public:
 	static std::list<Polynomial>&
 	CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm, 
 			   const size_t N, typename Field::Element * A, const size_t lda, const size_t c);
+
 	template <class Field>
 	static void CompressRows (Field& F, const size_t M,
 				  typename Field::Element * A, const size_t lda,
@@ -638,53 +799,54 @@ protected:
 	
 
 	// Inversion of a lower triangular matrix with a unit diagonal
-	template<class Field>
-	static void 
-	invL( const Field& F, const size_t N, const typename Field::Element * L, const size_t ldl,
-	      typename Field::Element * X, const size_t ldx ){
-		//assumes X2 is initialized to 0
-		typename Field::Element mone, one;
-		F.init(one,1.0);
-		F.init(mone,-1.0);
+// 	template<class Field>
+// 	static void 
+// 	invL( const Field& F, const size_t N, const typename Field::Element * L, const size_t ldl,
+// 	      typename Field::Element * X, const size_t ldx ){
+// 		//assumes X2 is initialized to 0
+// 		typename Field::Element mone, one;
+// 		F.init(one,1.0);
+// 		F.init(mone,-1.0);
 		
-		if (N == 1){
-			F.assign(*X, one);
-		}
-		else{
-			size_t N1 = N >> 1;
-			size_t N2 = N-N1;
-			typename Field::Element * X11 = X;
-			const typename Field::Element * L11 = L;
-			typename Field::Element * X21 = X+N1*ldx;
-			const typename Field::Element * L21 = L+N1*ldl;
-			typename Field::Element * X22 = X21+N1;
-			const typename Field::Element * L22 = L21+N1;
-			// recursive call for X11
-			// X11 = L11^-1
-			invL( F, N1, L11, ldl, X11, ldx );
+// 		if (N == 1){
+// 			F.assign(*X, one);
+// 		}
+// 		else{
+// 			size_t N1 = N >> 1;
+// 			size_t N2 = N-N1;
+// 			typename Field::Element * X11 = X;
+// 			const typename Field::Element * L11 = L;
+// 			typename Field::Element * X21 = X+N1*ldx;
+// 			const typename Field::Element * L21 = L+N1*ldl;
+// 			typename Field::Element * X22 = X21+N1;
+// 			const typename Field::Element * L22 = L21+N1;
+// 			// recursive call for X11
+// 			// X11 = L11^-1
+// 			invL( F, N1, L11, ldl, X11, ldx );
 
-			// recursive call for X11
-			// X22 = L22^-1
-			invL( F, N2, L22, ldl, X22, ldx );
+// 			// recursive call for X11
+// 			// X22 = L22^-1
+// 			invL( F, N2, L22, ldl, X22, ldx );
 			
-			// Copy L21 into X21
-			for ( size_t i=0; i<N2; ++i)
-				fcopy( F, N1, X21+i*ldx, 1, L21+i*ldl, 1 );
+// 			// Copy L21 into X21
+// 			for ( size_t i=0; i<N2; ++i)
+// 				fcopy( F, N1, X21+i*ldx, 1, L21+i*ldl, 1 );
 
-			// X21 = X21 . -X11^-1 (pascal 2004-10-12, make the negation
-			// after the multiplication, problem in ftrmm)
-			ftrmm (F, FflasRight, FflasLower, FflasNoTrans, FflasUnit, 
-			       N2, N1, one, X11, ldx, X21, ldx );
-			for (size_t i=0; i<N2; ++i)
-				for (size_t j=0; j<N1; ++j)
-					F.negin(*(X21+i*ldx+j));
+// 			// X21 = X21 . -X11^-1 (pascal 2004-10-12, make the negation
+// 			// after the multiplication, problem in ftrmm)
+// 			ftrmm (F, FflasRight, FflasLower, FflasNoTrans, FflasUnit, 
+// 			       N2, N1, mone, X11, ldx, X21, ldx );
+// // 			for (size_t i=0; i<N2; ++i)
+// // 				for (size_t j=0; j<N1; ++j)
+// // 					F.negin(*(X21+i*ldx+j));
 
-			// X21 = X22^-1 . X21
-			ftrmm( F, FflasLeft, FflasLower, FflasNoTrans, FflasUnit, N2, N1, one, X22, ldx, X21, ldx );
-		}
-	}
+// 			// X21 = X22^-1 . X21
+// 			ftrmm( F, FflasLeft, FflasLower, FflasNoTrans, FflasUnit, N2, N1, one, X22, ldx, X21, ldx );
+// 		}
+// 	}
 		
-		// Compute the new d after a LSP ( d[i] can be zero )
+	// Subroutine for Keller-Gehrig charpoly algorithm
+	// Compute the new d after a LSP ( d[i] can be zero )
 	template<class Field>
 	static size_t 
 	newD( const Field& F, size_t * d, bool& KeepOn,

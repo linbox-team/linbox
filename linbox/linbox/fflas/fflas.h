@@ -31,7 +31,7 @@ namespace LinBox {
 #endif
 	
 #ifndef __LINBOX_STRASSEN_OPTIMIZATION
-#define WINOTHRESHOLD 400
+#define WINOTHRESHOLD 200
 #else
 #define WINOTHRESHOLD __LINBOX_WINOTHRESHOLD
 #endif
@@ -238,7 +238,7 @@ public:
 
 		if (!(m && n && k)) return C;
 		
-		FFLAS_BASE base = BaseCompute (F, w);
+		FFLAS_BASE base = BaseCompute<typename Field::Element> ()(F, w);
 
 		WinoMain (F, ta, tb, m, n, k, alpha, A, lda, B, ldb, beta,
 				 C, ldc, DotProdBound (F, w, beta, base), w, base);
@@ -450,9 +450,6 @@ protected:
 					   const FFLAS_BASE base);
 	
 
-	template <class Field>
-	static FFLAS_BASE BaseCompute (const Field& F, const size_t w);
-	
 	static size_t WinoSteps (const size_t m);
 	
 	// 	template <class Element>
@@ -477,6 +474,9 @@ protected:
 	 */
 	template <class Element>
 	class setMatMulParam;
+
+	template <class Element>
+	class BaseCompute;
 
 	template <class Field>
 	static void DynamicPealing( const Field& F, 

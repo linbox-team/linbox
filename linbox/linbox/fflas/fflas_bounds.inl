@@ -241,7 +241,7 @@ class FFLAS::setMatMulParam {
 
 		w = ks;
 		
-		base = BaseCompute (F, w);
+		base = BaseCompute<typename Field::Element> ()(F, w);
 		kmax = DotProdBound (F, w, beta, base);
 	}
 };
@@ -299,28 +299,48 @@ inline size_t FFLAS::WinoSteps (const size_t m) {
 }
 
 
-template <class Field>
-inline FFLAS::FFLAS_BASE FFLAS::BaseCompute (const Field& F, const size_t w){
-
-	FFLAS_INT_TYPE pi;
-	F.characteristic(pi);
-	FFLAS_BASE base;
-	switch (w) {
-	case 0: base = (pi < FLOAT_DOUBLE_THRESHOLD_0)? FflasFloat : FflasDouble;
-		break;
-	case 1:  base = (pi < FLOAT_DOUBLE_THRESHOLD_1)? FflasFloat : FflasDouble;
-		break;
-	case 2:  base = (pi < FLOAT_DOUBLE_THRESHOLD_2)? FflasFloat : FflasDouble;
-		break;
-	default: base = FflasDouble;
-		break;
+template <class Element>
+class FFLAS::BaseCompute {
+public:
+	template <class Field>
+	FFLAS::FFLAS_BASE operator() (const Field& F, const size_t w){
+		
+		FFLAS_INT_TYPE pi;
+		F.characteristic(pi);
+		FFLAS_BASE base;
+		switch (w) {
+		case 0: base = (pi < FLOAT_DOUBLE_THRESHOLD_0)? FflasFloat : FflasDouble;
+			break;
+		case 1:  base = (pi < FLOAT_DOUBLE_THRESHOLD_1)? FflasFloat : FflasDouble;
+			break;
+		case 2:  base = (pi < FLOAT_DOUBLE_THRESHOLD_2)? FflasFloat : FflasDouble;
+			break;
+		default: base = FflasDouble;
+			break;
+		}
+		//cerr<<"base = "<<base<<endl;
+		return base;
+		// 	case 0: return (pi < FLOAT_DOUBLE_THRESHOLD_0)? FflasFloat : FflasDouble;
+		// 	case 1: return (pi < FLOAT_DOUBLE_THRESHOLD_1)? FflasFloat : FflasDouble;
+		// 	case 2: return (pi < FLOAT_DOUBLE_THRESHOLD_2)? FflasFloat : FflasDouble;
+		// 	default: return FflasDouble;
 	}
-	//cerr<<"base = "<<base<<endl;
-	return base;
-// 	case 0: return (pi < FLOAT_DOUBLE_THRESHOLD_0)? FflasFloat : FflasDouble;
-// 	case 1: return (pi < FLOAT_DOUBLE_THRESHOLD_1)? FflasFloat : FflasDouble;
-// 	case 2: return (pi < FLOAT_DOUBLE_THRESHOLD_2)? FflasFloat : FflasDouble;
-// 	default: return FflasDouble;
-	
-}
+};
 
+template<>
+class FFLAS::BaseCompute<double> {
+public:
+	template <class Field>
+	FFLAS::FFLAS_BASE operator() (const Field& F, const size_t w){
+		return FflasDouble;
+	}
+};
+
+template<>
+class FFLAS::BaseCompute<float> {
+public:
+	template <class Field>
+	FFLAS::FFLAS_BASE operator() (const Field& F, const size_t w){
+		return FflasFloat;
+	}
+};

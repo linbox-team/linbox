@@ -485,163 +485,326 @@ inline void FFLAS::WinoCalc (const Field& F,
 	const typename Field::Element * B11=B, *B12, *B21, *B22;
 	typename Field::Element * C11=C, *C12=C+nr, *C21=C+mr*ldc, *C22=C+nr+mr*ldc;
 	
-	if (ta == FflasTrans) {
-		A21 = A + mr;
-		A12 = A + kr*lda;
-		A22 = A12 + mr;
-		imaxa = kr;
-		ldx2 = jmaxa = mr;
-	} else {
-		A12 = A + kr;
-		A21 = A + mr*lda;
-		A22 = A21 + kr;
-		imaxa = mr;
-		ldx2 = jmaxa = kr;
-	}
-	if (tb == FflasTrans) {
-		B21 = B + kr;
-		B12 = B + nr*ldb;
-		B22 = B12 + kr;
-		imaxb = nr;
-		jmaxb = kr;
-		ldx3 = x3rd;
-	} else {
-		B12 = B + nr;
-		B21 = B + kr*ldb;
-		B22 = B21 + nr;
-		imaxb = kr;
-		ldx3 = jmaxb = nr;
-	}
-	// Three temporary submatrices are required
-	typename Field::Element* X1 = new typename Field::Element[mr*nr];
-	typename Field::Element* X2 = new typename Field::Element[mr*kr];
-	typename Field::Element* X3 = new typename Field::Element[x3rd*nr];
 
-	// P2 = alpha . A12 * B21 + beta . C11  in C11
-	WinoMain (F, ta, tb, mr, nr, kr, alpha, A12, lda, B21, ldb, beta, C11, ldc, kmax,w-1,base);
-	
-	// T3 = B22 - B12 in X3
-	d12 = B12; d22 = B22; dx3 = X3;
-	for (i=0; i < imaxb; ++i, d12+=ldb, d22+=ldb, dx3+=ldx3) {
-		for (j=0;j < jmaxb;++j)
-			F.sub (*(dx3+j), *(d22 + j), *(d12 + j));
-		
-	}
-
-	// S3 = A11 - A21 in X2 
-	d11 = A11; d21 = A21; dx2 = X2; 
-	for (size_t i = 0; i < imaxa; ++i, d11 += lda, d21 += lda, dx2 += ldx2)
-		for (size_t j = 0; j < jmaxa; ++j)
-			F.sub (*(dx2+j), *(d11 + j), *(d21 + j));
-
-	if (!F.isZero(beta)) {
-		// C22 = C22 - C12 if beta != 0
-		d12c = C12;
-		d22c = C22;
-		for (size_t i = 0; i <  mr; ++i, d12c += ldc, d22c += ldc)
-			for (size_t j = 0; j < nr; ++j)
-				F.subin (*(d22c + j), *(d12c + j));
-
-		// C21 = C21 - C22
-		d21c = C21;
-		d22c = C22;
-		for (size_t i = 0; i <  mr; ++i, d22c += ldc, d21c += ldc)
-			for (size_t j = 0; j < nr; ++j)
-				F.subin (*(d21c + j), *(d22c + j));
-	}
-
-	// P7 = alpha . S3 * T3 + beta . C22 in C22
-	WinoMain (F, ta, tb, mr, nr, kr, alpha, X2, ldx2, X3, ldx3, beta, C22, ldc, kmax, w-1,base);
-
-	// T1 = B12 - B11 in X3
-	d11 = B11; d12 = B12; dx3 = X3;
-	for (size_t i = 0; i < imaxb; ++i, d11 += ldb, d12 += ldb, dx3 += ldx3) {
-		for (size_t j = 0; j < jmaxb; ++j)
-			F.sub (*(dx3 + j), *(d12 + j), *(d11 + j));
-	}
-
-	// S1 = A21 + A22 in X2
-	d21 = A21; d22 = A22; dx2 = X2;
-	for (size_t i = 0; i < imaxa; ++i, d21+=lda, d22+=lda, dx2+=ldx2) {
-		for (size_t j=0;j < jmaxa;++j)
-			F.add(*(dx2+j),* (d21 + j),*(d22 + j));
-	}
-
-	// P5 = alpha . S1*T1 + beta . C12 in C12
-	WinoMain (F, ta, tb, mr, nr, kr, alpha, X2, ldx2, X3, ldx3, beta, C12, ldc, kmax, w-1,base);
-
-	// T2 = B22 - T1 in X3
-	d22 = B22; dx3 = X3;
-	for (size_t i = 0; i < imaxb; ++i, d22+=ldb, dx3+=ldx3) {
-		for (size_t j = 0; j < jmaxb; ++j)
-			F.sub (*(dx3+j), *(d22 + j), *(dx3+j));
-	}
-	
-	// S2 = S1 - A11 in X2
-	d11 = A11; dx2 = X2;
-	for (size_t i = 0; i < imaxa; ++i, d11+=lda, dx2+=ldx2) {
-		for (size_t j = 0; j < jmaxa; ++j)
-			F.subin (*(dx2+j), *(d11 + j));
-	}
-
-	// P6 = alpha . S2 * T2 in X1
-	WinoMain (F, ta, tb, mr, nr, kr, alpha, X2, ldx2, X3, ldx3, zero, X1, nr, kmax, w-1,base);
-
-	// T4 = T2 - B21 in X3
-	d21 = B21;dx3=X3;
-	for (size_t i = 0; i < imaxb; ++i, d21+=ldb, dx3+=ldx3) {
-		for (size_t j = 0; j < jmaxb; ++j)
-			F.subin (*(dx3+j),* (d21 + j));
-	}
-	
-	// S4 = A12 -S2 in X2 
-	d12 = A12; dx2 = X2;
-	for (size_t i = 0; i < imaxa; ++i, d12 += lda, dx2 += ldx2) {
-		for (size_t j = 0; j < jmaxa; ++j)
-			F.sub (*(dx2+j), *(d12 + j), *(dx2+j));
-	}
-
-	// P4 = alpha . A22 * T4 - beta . C21 in C21
-	WinoMain (F, ta, tb, mr, nr, kr, alpha, A22, lda, X3, ldx3, mbeta, C21, ldc, kmax, w-1,base);
-
-	// P1 = alpha . A11 * B11 in X3
-	WinoMain (F, ta, tb, mr, nr, kr, alpha, A11, lda, B11, ldb, zero, X3, nr, kmax, w-1,base);
-
-	//  U1 = P2 + P1 in C11	
-	d11c = C11; dx3 = X3; 
-	for (size_t i = 0; i < mr; ++i, d11c += ldc, dx3 += nr)
-		for (size_t j = 0; j < nr; ++j)
-			F.addin (*(d11c + j), *(dx3 + j));
-
-	// U2 = P1 + P6 in tmpU2  and
-	// U3 = P7 + U2 in tmpU3  and 
-	// U7 = P5 + U3 in C22    and
-	// U4 = P5 + U2 in C12    and
-	// U6 = U3 - P4 in C21    and
-	d12c = C12; dx1=X1; dx3=X3; d21c = C21; d22c = C22; 
-	for (size_t i = 0; i < mr; 
-	      ++i, d12c += ldc, dx1 += nr, dx3 += nr, d22c+=ldc, d21c += ldc) {
-		for (size_t j=0;j < nr;++j) {
-			F.add (tmpU2, *(dx3 + j), *(dx1 + j));    // temporary U2 = P1 + P6
-			F.add (tmpU3, tmpU2, *(d22c + j));      // temporary U3 = U2 + P7
-			F.add (*(d22c + j), *(d12c + j), tmpU3);  // U7 = P5 + U3 in C22
-			F.addin (*(d12c + j), tmpU2);             // U4 = P5 + U2 in C12
-			F.sub (*(d21c + j), tmpU3, *(d21c + j)); // U6 = U3 - P4 in C21
+	if (F.isZero(beta)){
+		size_t x1rd = MAX(nr,kr);
+		size_t ldx1;
+		if (ta == FflasTrans) {
+			A21 = A + mr;
+			A12 = A + kr*lda;
+			A22 = A12 + mr;
+			imaxa = kr;
+			jmaxa = mr;
+			ldx1 = mr;
+		} else {
+			A12 = A + kr;
+			A21 = A + mr*lda;
+			A22 = A21 + kr;
+			imaxa = mr;
+			jmaxa = kr;
+			ldx1  = x1rd;
 		}
+		if (tb == FflasTrans) {
+			B21 = B + kr;
+			B12 = B + nr*ldb;
+			B22 = B12 + kr;
+			imaxb = nr;
+			jmaxb = kr;
+			ldx2 = kr;
+		} else {
+			B12 = B + nr;
+			B21 = B + kr*ldb;
+			B22 = B21 + nr;
+			imaxb = kr;
+			ldx2 = jmaxb = nr;
+		}
+
+			
+		// Two temporary submatrices are required
+		typename Field::Element* X1 = new typename Field::Element[mr*x1rd];
+		typename Field::Element* X2 = new typename Field::Element[kr*nr];
+ 		
+		// T3 = B22 - B12 in X2
+		d12 = B12; d22 = B22; dx2 = X2;
+		for (size_t i=0; i < imaxb; ++i, d12+=ldb, d22+=ldb, dx2+=ldx2) {
+			for (size_t j=0;j < jmaxb;++j)
+				F.sub (*(dx2+j), *(d22 + j), *(d12 + j));
+		}
+
+		// S3 = A11 - A21 in X1
+		d11 = A11; d21 = A21; dx1 = X1;
+		for (size_t i = 0; i < imaxa; ++i, d11 += lda, d21 += lda, dx1 += ldx1)
+			for (size_t j = 0; j < jmaxa; ++j)
+				F.sub (*(dx1+j), *(d11 + j), *(d21 + j));
+
+		// P7 = alpha . S3 * T3  in C21
+		WinoMain (F, ta, tb, mr, nr, kr, alpha, X1, ldx1, X2, ldx2, zero, C21, ldc, kmax, w-1, base);
+
+		// T1 = B12 - B11 in X2
+		//		fgemsub (F, imaxb, jmaxb, X2, ldx2, B12, ldb, B11, ldb);
+
+		d11 = B11; d12 = B12; dx2 = X2;
+		for (size_t i = 0; i < imaxb; ++i, d11 += ldb, d12 += ldb, dx2 += ldx2) {
+			for (size_t j = 0; j < jmaxb; ++j)
+				F.sub (*(dx2 + j), *(d12 + j), *(d11 + j));
+		}
+
+		// S1 = A21 + A22 in X1
+
+		d21 = A21; d22 = A22; dx1 = X1;
+		for (size_t i = 0; i < imaxa; ++i, d21+=lda, d22+=lda, dx1+=ldx1) {
+			for (size_t j=0;j < jmaxa;++j)
+				F.add(*(dx1+j),* (d21 + j),*(d22 + j));
+		}
+
+		// P5 = alpha . S1*T1 in C22
+		WinoMain (F, ta, tb, mr, nr, kr, alpha, X1, ldx1, X2, ldx2, zero, C22, ldc, kmax, w-1, base);
+
+		// T2 = B22 - T1 in X2
+		d22 = B22; dx2 = X2;
+		for (size_t i = 0; i < imaxb; ++i, d22+=ldb, dx2+=ldx2) {
+			for (size_t j = 0; j < jmaxb; ++j)
+				F.sub (*(dx2+j), *(d22 + j), *(dx2+j));
+		}
+
+		// S2 = S1 - A11 in X1
+		d11 = A11; dx1 = X1;
+		for (size_t i = 0; i < imaxa; ++i, d11+=lda, dx1+=ldx1) {
+			for (size_t j = 0; j < jmaxa; ++j)
+				F.subin (*(dx1+j), *(d11 + j));
+		}
+		//write_field(F, cerr<<"S2 = "<<endl, X1, imaxa, jmaxa, ldx1);
+
+		// P6 = alpha . S2 * T2 in C12
+		WinoMain (F, ta, tb, mr, nr, kr, alpha, X1, ldx1, X2, ldx2, zero, C12, ldc, kmax, w-1, base);
+
+		// S4 = A12 -S2 in X1
+		d12 = A12; dx1 = X1;
+		for (size_t i = 0; i < imaxa; ++i, d12 += lda, dx1 += ldx1) {
+			for (size_t j = 0; j < jmaxa; ++j)
+				F.sub (*(dx1+j), *(d12 + j), *(dx1+j));
+		}
+		//write_field(F, cerr<<"S4 = "<<endl, X1, imaxa, jmaxa, ldx1);
+
+		// P3 = alpha . S4*B22 in C11
+		WinoMain (F, ta, tb, mr, nr, kr, alpha, X1, ldx1, B22, ldb, zero, C11, ldc, kmax, w-1, base);
+		//write_field(F, cerr<<"P3 = "<<endl, C11, mr, nr, ldc);
+		
+		// P1 = alpha . A11 * B11 in X1
+		WinoMain (F, ta, tb, mr, nr, kr, alpha, A11, lda, B11, ldb, zero, X1, nr, kmax, w-1, base);
+
+	
+
+		// U2 = P1 + P6 in tmpU2  and
+		// U3 = P7 + U2 in tmpU3  and
+		// U7 = P5 + U3 in C22    and
+		// U4 = P5 + U2 in C12    and
+		// U6 = U3 - P4 in C21    and
+		d12c = C12; dx1=X1; d21c = C21; d22c = C22;
+		for (size_t i = 0; i < mr;
+		     ++i, d12c += ldc, dx1 += nr, d22c+=ldc, d21c += ldc) {
+			for (size_t j=0;j < nr;++j) { 
+				F.addin ( *(d12c + j), *(dx1 + j));    // U2 = P1 + P6
+				F.addin ( *(d21c+j), *(d12c+j));      //  U3 = U2 + P7 
+				F.addin (*(d12c + j), *(d22c+j));   // U4 = P5 + U2 in C12
+				F.addin (*(d22c + j), *(d21c+j));  // U7 = P5 + U3 in C22
+			} 
+		}
+
+		// U5 = P3 + U4 in C12
+		d12c = C12; d11 = C11;
+		for (size_t i = 0; i < mr; ++i, d12c += ldc, d11 += ldc)
+			for (size_t j = 0; j < nr; ++j)
+				F.addin (*(d12c + j), *(d11 + j));                                                                                           
+		// T4 = T2 - B21 in X2
+		d21 = B21;dx2=X2;
+		for (size_t i = 0; i < imaxb; ++i, d21+=ldb, dx2+=ldx2) {
+			for (size_t j = 0; j < jmaxb; ++j)
+				F.subin (*(dx2+j),* (d21 + j));
+		}
+		//write_field(F, cerr<<"T4 = "<<endl, X2, imaxb, jmaxb, ldx2);
+
+		// P4 = alpha . A22 * T4 in C11
+		WinoMain (F, ta, tb, mr, nr, kr, alpha, A22, lda, X2, ldx2, zero, C11, ldc, kmax, w-1, base);
+		//write_field(F, cerr<<"P4 = "<<endl, C11, mr, nr, ldc);
+		
+		// U6 = U3 - P4 in C21
+		d21c = C21; d11c = C11;
+		for (size_t i = 0; i < mr; ++i, d21c += ldc, d11c += ldc)
+			for (size_t j = 0; j < nr; ++j)
+				F.subin (*(d21c + j), *(d11c + j));
+		
+		// P2 = alpha . A12 * B21  in C11
+		WinoMain (F, ta, tb, mr, nr, kr, alpha, A12, lda, B21, ldb, zero, C11, ldc, kmax,w-1, base);
+
+		//  U1 = P2 + P1 in C11
+		d11c = C11; dx1 = X1;
+		for (size_t i = 0; i < mr; ++i, d11c += ldc, dx1 += nr)
+			for (size_t j = 0; j < nr; ++j)
+				F.addin (*(d11c + j), *(dx1 + j));
+
+		delete[] X1;
+		delete[] X2;
+	
+	} else {
+		// Three temporary submatrices are required
+		typename Field::Element* X1 = new typename Field::Element[mr*nr];
+		typename Field::Element* X2 = new typename Field::Element[mr*kr];
+		typename Field::Element* X3 = new typename Field::Element[x3rd*nr];
+
+		if (ta == FflasTrans) {
+			A21 = A + mr;
+			A12 = A + kr*lda;
+			A22 = A12 + mr;
+			imaxa = kr;
+			ldx2 = jmaxa = mr;
+		} else {
+			A12 = A + kr;
+			A21 = A + mr*lda;
+			A22 = A21 + kr;
+			imaxa = mr;
+			ldx2 = jmaxa = kr;
+		}
+		if (tb == FflasTrans) {
+			B21 = B + kr;
+			B12 = B + nr*ldb;
+			B22 = B12 + kr;
+			imaxb = nr;
+			jmaxb = kr;
+			ldx3 = x3rd;
+		} else {
+			B12 = B + nr;
+			B21 = B + kr*ldb;
+			B22 = B21 + nr;
+			imaxb = kr;
+			ldx3 = jmaxb = nr;
+		}
+		// P2 = alpha . A12 * B21 + beta . C11  in C11
+		WinoMain (F, ta, tb, mr, nr, kr, alpha, A12, lda, B21, ldb, beta, C11, ldc, kmax,w-1,base);
+	
+		// T3 = B22 - B12 in X3
+		d12 = B12; d22 = B22; dx3 = X3;
+		for (i=0; i < imaxb; ++i, d12+=ldb, d22+=ldb, dx3+=ldx3) {
+			for (j=0;j < jmaxb;++j)
+				F.sub (*(dx3+j), *(d22 + j), *(d12 + j));
+		
+		}
+
+		// S3 = A11 - A21 in X2 
+		d11 = A11; d21 = A21; dx2 = X2; 
+		for (size_t i = 0; i < imaxa; ++i, d11 += lda, d21 += lda, dx2 += ldx2)
+			for (size_t j = 0; j < jmaxa; ++j)
+				F.sub (*(dx2+j), *(d11 + j), *(d21 + j));
+
+		if (!F.isZero(beta)) {
+			// C22 = C22 - C12 if beta != 0
+			d12c = C12;
+			d22c = C22;
+			for (size_t i = 0; i <  mr; ++i, d12c += ldc, d22c += ldc)
+				for (size_t j = 0; j < nr; ++j)
+					F.subin (*(d22c + j), *(d12c + j));
+
+			// C21 = C21 - C22
+			d21c = C21;
+			d22c = C22;
+			for (size_t i = 0; i <  mr; ++i, d22c += ldc, d21c += ldc)
+				for (size_t j = 0; j < nr; ++j)
+					F.subin (*(d21c + j), *(d22c + j));
+		}
+
+		// P7 = alpha . S3 * T3 + beta . C22 in C22
+		WinoMain (F, ta, tb, mr, nr, kr, alpha, X2, ldx2, X3, ldx3, beta, C22, ldc, kmax, w-1,base);
+
+		// T1 = B12 - B11 in X3
+		d11 = B11; d12 = B12; dx3 = X3;
+		for (size_t i = 0; i < imaxb; ++i, d11 += ldb, d12 += ldb, dx3 += ldx3) {
+			for (size_t j = 0; j < jmaxb; ++j)
+				F.sub (*(dx3 + j), *(d12 + j), *(d11 + j));
+		}
+
+		// S1 = A21 + A22 in X2
+		d21 = A21; d22 = A22; dx2 = X2;
+		for (size_t i = 0; i < imaxa; ++i, d21+=lda, d22+=lda, dx2+=ldx2) {
+			for (size_t j=0;j < jmaxa;++j)
+				F.add(*(dx2+j),* (d21 + j),*(d22 + j));
+		}
+
+		// P5 = alpha . S1*T1 + beta . C12 in C12
+		WinoMain (F, ta, tb, mr, nr, kr, alpha, X2, ldx2, X3, ldx3, beta, C12, ldc, kmax, w-1,base);
+
+		// T2 = B22 - T1 in X3
+		d22 = B22; dx3 = X3;
+		for (size_t i = 0; i < imaxb; ++i, d22+=ldb, dx3+=ldx3) {
+			for (size_t j = 0; j < jmaxb; ++j)
+				F.sub (*(dx3+j), *(d22 + j), *(dx3+j));
+		}
+	
+		// S2 = S1 - A11 in X2
+		d11 = A11; dx2 = X2;
+		for (size_t i = 0; i < imaxa; ++i, d11+=lda, dx2+=ldx2) {
+			for (size_t j = 0; j < jmaxa; ++j)
+				F.subin (*(dx2+j), *(d11 + j));
+		}
+
+		// P6 = alpha . S2 * T2 in X1
+		WinoMain (F, ta, tb, mr, nr, kr, alpha, X2, ldx2, X3, ldx3, zero, X1, nr, kmax, w-1,base);
+
+		// T4 = T2 - B21 in X3
+		d21 = B21;dx3=X3;
+		for (size_t i = 0; i < imaxb; ++i, d21+=ldb, dx3+=ldx3) {
+			for (size_t j = 0; j < jmaxb; ++j)
+				F.subin (*(dx3+j),* (d21 + j));
+		}
+	
+		// S4 = A12 -S2 in X2 
+		d12 = A12; dx2 = X2;
+		for (size_t i = 0; i < imaxa; ++i, d12 += lda, dx2 += ldx2) {
+			for (size_t j = 0; j < jmaxa; ++j)
+				F.sub (*(dx2+j), *(d12 + j), *(dx2+j));
+		}
+
+		// P4 = alpha . A22 * T4 - beta . C21 in C21
+		WinoMain (F, ta, tb, mr, nr, kr, alpha, A22, lda, X3, ldx3, mbeta, C21, ldc, kmax, w-1,base);
+
+		// P1 = alpha . A11 * B11 in X3
+		WinoMain (F, ta, tb, mr, nr, kr, alpha, A11, lda, B11, ldb, zero, X3, nr, kmax, w-1,base);
+
+		//  U1 = P2 + P1 in C11	
+		d11c = C11; dx3 = X3; 
+		for (size_t i = 0; i < mr; ++i, d11c += ldc, dx3 += nr)
+			for (size_t j = 0; j < nr; ++j)
+				F.addin (*(d11c + j), *(dx3 + j));
+
+		// U2 = P1 + P6 in tmpU2  and
+		// U3 = P7 + U2 in tmpU3  and 
+		// U7 = P5 + U3 in C22    and
+		// U4 = P5 + U2 in C12    and
+		// U6 = U3 - P4 in C21    and
+		d12c = C12; dx1=X1; dx3=X3; d21c = C21; d22c = C22; 
+		for (size_t i = 0; i < mr; 
+		     ++i, d12c += ldc, dx1 += nr, dx3 += nr, d22c+=ldc, d21c += ldc) {
+			for (size_t j=0;j < nr;++j) {
+				F.add (tmpU2, *(dx3 + j), *(dx1 + j));    // temporary U2 = P1 + P6
+				F.add (tmpU3, tmpU2, *(d22c + j));      // temporary U3 = U2 + P7
+				F.add (*(d22c + j), *(d12c + j), tmpU3);  // U7 = P5 + U3 in C22
+				F.addin (*(d12c + j), tmpU2);             // U4 = P5 + U2 in C12
+				F.sub (*(d21c + j), tmpU3, *(d21c + j)); // U6 = U3 - P4 in C21
+			}
+		}
+		// P3 = alpha . S4*B22 in X1
+		WinoMain (F, ta, tb, mr, nr, kr, alpha, X2, ldx2, B22, ldb, zero, X1, nr, kmax, w-1,base);
+
+		// U5 = P3 + U4 in C12
+		d12c = C12; dx1 = X1; 
+		for (size_t i = 0; i < mr; ++i, d12c += ldc, dx1 += nr)
+			for (size_t j = 0; j < nr; ++j)
+				F.addin (*(d12c + j), *(dx1 + j));
+
+		delete[] X1;
+		delete[] X2;
+		delete[] X3;
 	}
-	// P3 = alpha . S4*B22 in X1
-	WinoMain (F, ta, tb, mr, nr, kr, alpha, X2, ldx2, B22, ldb, zero, X1, nr, kmax, w-1,base);
-
-	// U5 = P3 + U4 in C12
-	d12c = C12; dx1 = X1; 
-	for (size_t i = 0; i < mr; ++i, d12c += ldc, dx1 += nr)
-		for (size_t j = 0; j < nr; ++j)
-			F.addin (*(d12c + j), *(dx1 + j));
-
-	delete[] X1;
-	delete[] X2;
-	delete[] X3;
-} 
+}
 
 
 // Control the switch with classic multiplication
