@@ -498,14 +498,26 @@ FFPACK::LUdivine (const Field& F, const FFLAS_DIAG Diag,
 			Q[i] += Nup;
 		if (R < Nup){
 			// Permutation of the 0 rows
-			for ( size_t i = Nup, j = R ; i < Nup + R2; ++i, ++j){
-				fcopy( F, N - j, A + j*(lda + 1), 1, A + i*lda + j, 1);
-				for (typename Field::Element *Ai = A + i*lda + j;
-				     Ai != A + i*lda + N; ++Ai)
-					F.assign (*Ai, zero);
-				size_t t = Q[j];
-				Q[j]=Q[i];
-				Q[i] = t;
+			if (Diag == FflasNonUnit){
+				for ( size_t i = Nup, j = R ; i < Nup + R2; ++i, ++j){
+					fcopy( F, N - j, A + j*(lda + 1), 1, A + i*lda + j, 1);
+					for (typename Field::Element *Ai = A + i*lda + j;
+					     Ai != A + i*lda + N; ++Ai)
+						F.assign (*Ai, zero);
+					size_t t = Q[j];
+					Q[j]=Q[i];
+					Q[i] = t;
+				}
+			} else {
+				for ( size_t i = Nup, j = R+1 ; i < Nup + R2; ++i, ++j){
+					fcopy( F, N - j, A + (j-1)*lda + j, 1, A + i*lda + j, 1);
+					for (typename Field::Element *Ai = A + i*lda + j;
+					     Ai != A + i*lda + N; ++Ai)
+						F.assign (*Ai, zero);
+					size_t t = Q[j-1];
+					Q[j-1]=Q[i];
+					Q[i] = t;
+				}
 			}
 		}
 		return R + R2;
@@ -523,7 +535,7 @@ FFPACK::LUdivine (const Field& F, const FFLAS_DIAG Diag,
 // nUsedRowX is the number of Krylov vectors already triangularized
 //---------------------------------------------------------------------
 
-template <class Field>
+	template <class Field>
 size_t
 FFPACK::LUdivine_construct( const Field& F, const FFLAS_DIAG Diag,
 				      const size_t M, const size_t N,
