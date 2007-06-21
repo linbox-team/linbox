@@ -212,13 +212,31 @@ public:
 	Invert (const Field& F, const size_t M,
 		typename Field::Element * A, const size_t lda,
 		int& nullity){
-		
-		if ((nullity = M - ReducedColumnEchelonForm (F, M, A, lda) ) > 0)
+
+		size_t * P = new size_t[M];
+		size_t * Q = new size_t[M];
+		nullity = M - ReducedColumnEchelonForm (F, M, M, A, lda, P, Q);
+		applyP (F, FflasLeft, FflasTrans, M, 0, M, A, lda, P); 
+
+		if (nullity > 0)
 			return NULL;
 		else
 			return A;
 	}
-	
+
+	template <class Field>
+	static typename Field::Element*
+	Invert (const Field& F, const size_t M,
+		typename Field::Element * A, const size_t lda,
+		typename Field::Element * X, const size_t ldx,
+		int& nullity){
+		
+		Invert (F,  M, A, lda, nullity);
+		for (size_t i=0; i<M; ++i)
+			fcopy (F, M, X+i*ldx, 1, A+i*lda,1);
+		return X;
+		
+	}
 	/**
 	 * Invert the given matrix or computes its nullity if it is singular.
 	 * An 2n^3 algorithm is used.
@@ -536,7 +554,7 @@ public:
 		t1.start();
 
 		// M = Q^T M 
-		for (int i=0; i<r; ++i){
+		for (size_t i=0; i<r; ++i){
 			if ( Qt[i]> (size_t) i ){
 				fswap( F, i+1, 
 				       A + Qt[i]*lda, 1, 
