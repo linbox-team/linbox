@@ -40,15 +40,6 @@
 #include "linbox/randiter/mersenne-twister.h"
 #include "linbox-config.h"
 
-#ifdef __LINBOX_XMLENABLED
-
-#include "linbox/util/xml/linbox-reader.h"
-#include "linbox/util/xml/linbox-writer.h"
-
-#include <string>
-
-#endif
-
 namespace LinBox 
 { 
 
@@ -100,27 +91,6 @@ namespace LinBox
 			srand (_seed);
 		}
 
-#ifdef __LINBOX_XMLENABLED
-		// XML LinBox::Reader constructor
-		GenericRandIter(LinBox::Reader &R) : _F(R.Down(1))
-		{
-			if(R.haveError()) return;
-			R.Up(1);
-			if(!R.expectTagName("randiter")) return;
-			if(!R.expectAttributeNum("seed", _seed) || !R.expectAttributeNum("size", _size)) return;
-
-			if(_seed == 0) _seed = time(NULL);
-
-			// re-seed the random number generator
-			srand(_seed);
-
-			return;
-
-		}
-#endif
-
-
-
 		GenericRandIter (const GenericRandIter<Field> &R) 
 			: _F (R._F), _size (R._size), _seed (R._seed) {}
 
@@ -158,34 +128,6 @@ namespace LinBox
 			random (tmp);
 			return (a = ElementEnvelope <Field> (tmp));
 		}
-
-#ifdef __LINBOX_XMLENABLED
-
-		std::ostream &write(std::ostream &os) const
-		{
-			LinBox::Writer W;
-			if( toTag(W))
-				W.write(os);
-
-			return os;
-		}
-
-
-		bool toTag(LinBox::Writer &W) const
-		{
-			std::string s;
-			W.setTagName("randiter");
-			W.setAttribute("seed", LinBox::Writer::numToString(s, _seed));
-			W.setAttribute("size", LinBox::Writer::numToString(s, _size));
-
-			W.addTagChild();
-			if(!_F.toTag(W)) return false;
-			W.upToParent();
-
-			return true;
-		}
-#endif
-
 
 	    private:
 

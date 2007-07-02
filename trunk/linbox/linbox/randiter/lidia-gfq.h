@@ -64,20 +64,6 @@ namespace LinBox
 	  
 	}
 
-#ifdef __LINBOX_XMLENABLED
-
-      // XML LinBox::Reader constructor
-      LidiaGfqRandIter(LinBox::Reader &R) : GF(R.Down(1))
-      {
-	      R.Up(1);
-	      if(!R.expectTagName("randiter")) return;
-	      if(!R.expectAtteributeNum("size", _size) || !R.expectAttributeNum("seed", _seed)) return;
-
-	      return;
-      }
-#endif
-
-      
       LidiaGfqRandIter(const LidiaGfqRandIter& R)
 	: _size(R._size), _seed(R._seed), GF(R.GF) {}
       
@@ -124,36 +110,6 @@ namespace LinBox
 	}
       
       LidiaGfqRandIter(void) : _size(0), _seed(0) { time(NULL); }
-      
-#ifdef __LINBOX_XMLENABLED
-      // XML writing rand-iter object
-
-      std::ostream &write(std::ostream &os) const
-      {
-
-	      LinBox::Writer W;
-	      if( toTag(W) )
-		      W.write(os);
-
-	      return os;
-      }
-
-      bool toTag(LinBox::Writer &W) const
-      {
-	      std::string s;
-
-	      W.setTagName("randiter");
-	      W.setAttribute("size", LinBox::Writer::numToString(s, _size));
-	      W.setAttribute("seed", LinBox::Writer::numToString(s, _seed));
-
-	      W.addTagChild();
-	      if(!GF.toTag(W)) return false;
-	      W.upToParent();
-
-	      return true;
-      }
-#endif
-
       
     private:
       

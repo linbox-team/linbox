@@ -43,8 +43,8 @@ namespace LinBox
 	 * draw the random elements from, and the second being a seed for the 
 	 * random number generator.
 	 * It is also required to contain a copy constructor, a destructor, and
-	 * an operator () which acts on a reference to a field element.  In this 
-	 * operator (), the random element is placed into the input field element 
+	 * random() which acts on a reference to a field element.  
+	 * The random value is written to the argument
 	 * and also returned as a reference.
 	 */
 	class RandIterAbstract

@@ -15,7 +15,7 @@
  * Header file for implementation of the Mersenne twister pseudo-random number
  * generator, crated by Makoto Matsumoto and Takuji Nishimura. Further
  * information on the Mersenne Twister can be found at
- * http://www.math.keio.ac.jp/~matumoto/emt.html
+ * http://www.math.keio.ac.jp/~matsumoto/emt.html [ dead link.  -bds 2007feb]
  *
  * This forms the basic underlying algorithm for most psuedo-random number
  * generation in LinBox.

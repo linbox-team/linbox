@@ -96,21 +96,6 @@ namespace LinBox
 		UnparametricRandIter(const UnparametricRandIter& R)
 			: _size(R._size), _seed(R._seed) {}
 
-#ifdef __LINBOX_XMLENABLED
-
-		UnparametricRandIter(Reader &R) 
-		{
-			if(!R.expectTagName("randiter")) return;
-			if(!R.expectAttributeNum("seed", _seed) || !R.expectAttributeNum("size", _size)) return;
-
-			if(_seed == 0) _seed = integer(time(NULL));
-
-			srand(static_cast<long>(_seed));
-
-		}
-#endif
-
-
 		/** Destructor.
 		 * This destructs the random field element generator object.
 		 * In this implementation, this destroys the generator by deleting 
@@ -162,28 +147,6 @@ namespace LinBox
 		/// Default constructor
 		UnparametricRandIter(void) : _size(0), _seed(0) { time(NULL); }
 		
-#ifdef __LINBOX_XMLENABLED
-		ostream &write(ostream &os) const
-		{
-			Writer W;
-			if( toTag(W) )
-				W.write(os);
-
-			return os;
-		}
-
-		bool toTag(Writer &W) const
-		{
-			string s;
-
-			W.setTagName("randiter");
-			W.setAttribute("seed", Writer::numToString(s, _seed));
-			W.setAttribute("size", Writer::numToString(s, _size));
-
-			return true;
-		}
-#endif
-
 		//@}
 
 	private:

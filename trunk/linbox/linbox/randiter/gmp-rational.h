@@ -31,16 +31,6 @@
 #include "linbox/element/envelope.h"
 #include "linbox-config.h"
 
-#ifdef __LINBOX_XMLENABLED
-
-#include "linbox/util/xml/linbox-reader.h"
-#include "linbox/util/xml/linbox-writer.h"
-
-#include <iostream>
-#include <string>
-
-#endif
-
 #include <sys/time.h>
 #include <stdlib.h>
 
@@ -154,31 +144,6 @@ class GMPRationalRandIter
 		random (tmp);
 		return (a = ElementEnvelope <GMPRationalField> (tmp));
 	}
-
-#ifdef __LINBOX_XMLENABLED
-	std::ostream &write(std::ostream &os) const
-	{
-		LinBox::Writer W;
-		if( toTag(W))
-			W.write(os);
-
-		return os;
-	}
-
-	bool toTag(LinBox::Writer &W) const
-	{
-		std::string s;
-		W.setTagName("randiter");
-		W.setAttribute("seed", LinBox::Writer::numToString(s, _seed));
-		W.setAttribute("size", LinBox::Writer::numToString(s, _size));
-
-		W.addTagChild();
-		if(!_F.toTag(W)) return false;
-		W.upToParent();
-
-		return true;
-	}
-#endif
 
     private:
 
