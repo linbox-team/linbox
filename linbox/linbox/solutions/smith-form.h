@@ -134,7 +134,7 @@ namespace LinBox
 		return S;
     }
 
-	/*
+#if 0
 	// The smithForm with Elimination Method 
     template<class Output, class Ring>
     Output &smithForm(Output & S, 
@@ -162,7 +162,9 @@ namespace LinBox
 		}
 
     }
+#endif
 
+#if 0
 	// The smithForm with BlackBox Method 
     template<class Output, class Blackbox>
     Output &smithForm(Output & S, 
@@ -172,7 +174,7 @@ namespace LinBox
     {
 		// this will be binary search smith form (EGV')
     }
-	*/
+#endif
     
 
 } // end of LinBox namespace

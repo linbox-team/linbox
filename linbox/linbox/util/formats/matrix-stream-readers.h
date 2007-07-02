@@ -14,9 +14,9 @@
 	addReader( new MatrixMarketReader<Field>() );		\
 	addReader( new MapleDense1Reader<Field>() );		\
 	addReader( new MapleSparse1Reader<Field>() );		\
-	addReader( new SparseRowReader<Field>() );		\
 	addReader( new SMSReader<Field>() );			\
-	addReader( new DenseReader<Field>() );
+	addReader( new DenseReader<Field>() );			\
+	addReader( new SparseRowReader<Field>() );		
 
 #include "sms.h"
 #include "maple-dense1.h"

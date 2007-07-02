@@ -239,7 +239,7 @@ namespace LinBox {
 	public:
 		typedef typename Field::Element         Element;
 		
-	private:
+	protected:
     
 		const Field  & _F;
 		Element _One;

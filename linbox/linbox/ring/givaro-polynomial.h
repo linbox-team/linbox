@@ -135,7 +135,6 @@ GivPolynomialRing< NTL_ZZ , Dense>::factor<std::vector<GivPolynomial<NTL::ZZ>* >
 		NTL::factor (c, ntlfactors, f);
 			
 		NTL::ZZ t; 
-		NTL_ZZ NTLIntDom;
 		factors.resize(ntlfactors.length());
 		exp.resize(ntlfactors.length());
 		for (int i= 0; i<ntlfactors.length(); ++i) {
