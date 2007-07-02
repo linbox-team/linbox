@@ -203,6 +203,9 @@ class DenseMatrix : public BlackboxInterface, public DenseMatrixBase<typename _F
 	const Field &field () const
 		{ return _F;}
 
+	Field &field () 
+		{ return _F;}
+
 	/*- @name Input and output
 	 */
 
@@ -309,7 +312,8 @@ class DenseMatrix : public BlackboxInterface, public DenseMatrixBase<typename _F
 
     protected:
 
-	const Field          _F;
+	//const Field          _F;
+	Field          _F;
 	MatrixDomain<Field>   _MD;
 	TransposeMatrix<DenseMatrix<Field> > _AT;
 };

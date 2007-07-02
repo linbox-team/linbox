@@ -131,6 +131,12 @@ namespace LinBox
  
             };
 
+		std::ostream& write(std::ostream& out)
+		{	out << "diag(";
+		 	for (typename std::vector<Element>::iterator p = _v.begin(); p != _v.end(); ++p)
+				_F.write(out, *p) << ", ";
+			return out << "\b\b)";
+		}
 
 	    private:
 

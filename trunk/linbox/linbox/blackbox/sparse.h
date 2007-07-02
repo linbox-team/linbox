@@ -46,16 +46,6 @@
 #include <linbox/field/hom.h>
 #include <linbox/field/rebind.h>
 
-#ifdef __LINBOX_XMLENABLED
-
-#include "linbox/util/xml/linbox-reader.h"
-#include "linbox/util/xml/linbox-writer.h"
-
-#include <iostream>
-#include <string>
-
-#endif
-
 namespace LinBox
 {
 
