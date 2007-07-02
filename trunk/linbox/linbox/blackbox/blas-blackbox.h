@@ -32,7 +32,6 @@
 #include <linbox/field/hom.h>
 #include <linbox/field/multimod-field.h>
 #include <linbox/util/matrix-stream.h>
-#include <linbox/matrix/transpose.h>
 
 namespace LinBox {
 	
@@ -160,7 +159,6 @@ namespace LinBox {
 				for (; j != y.end (); ++j, ++i)
 					_VD.dot (*j, x, *i);
 			}
-			//_MD.vectorMul (y, TransposeMatrix<BlasBlackbox<Field> > (*this), x);
       
 			return y;
 		}  
@@ -188,6 +186,7 @@ namespace LinBox {
 
 
 		const Field &field() const  {return _F;}
+		Field &field() {return const_cast<Field&>(_F);}
 		
 		/*
 		  std::vector<Element>& apply(std::vector<Element>& y, const std::vector<Element>& x) const {

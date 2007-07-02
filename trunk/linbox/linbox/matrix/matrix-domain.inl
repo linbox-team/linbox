@@ -13,7 +13,7 @@
 #ifndef __MATRIX_DOMAIN_INL
 #define __MATRIX_DOMAIN_INL
 
-#include "linbox/matrix/transpose.h"
+#include "linbox/matrix/transpose-matrix.h"
 
 namespace LinBox
 {

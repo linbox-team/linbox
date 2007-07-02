@@ -110,6 +110,8 @@ class MatrixDomain : public MVProductDomain<Field>
 	 */
 	const Field &field () const
 		{ return _F; }
+	Field &field () 
+		{ return _F; }
 
 	/** Print matrix.
 	 * @param  os  Output stream to which matrix is written.
