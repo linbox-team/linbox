@@ -175,11 +175,11 @@ namespace LinBox
 		 * @param x output field element.
 		 * @param n input integer.
 		 */
-		Element &init (Element &x, const integer &y = 0 ) const
+		Element &init (Element &x, const integer &n = 0 ) const
 		{
 			if (x._elem_ptr != 0) delete x._elem_ptr;
 			x._elem_ptr = _elem_ptr->clone ();
-			_field_ptr->init (*x._elem_ptr, y);
+			_field_ptr->init (*x._elem_ptr, n);
 			return x;
 		}
   
@@ -189,20 +189,15 @@ namespace LinBox
 		However, if x is in the prime subfield, the integer n returned is such 
 		that an init from n will reproduce x.  Most often, 0 &leq; n &lt; characteristic.
 
-		 * This function assumes the output field element x
-		 * has already been constructed, but that it is not
-		 * already initialized. In this archetype, this
-		 * means the <tt> _elem_ptr</tt> of y exists, and that
-		 * it is not the null pointer.
 		 *
-		 * @return reference to x.
+		 * @return reference to n.
 		 * @param n output integer.
 		 * @param x input field element.
 		 */
-		integer &convert (integer &x, const Element &y = 0) const
+		integer &convert (integer &n, const Element &y = 0) const
 		{
-			_field_ptr->convert (x, *y._elem_ptr);
-			return x;
+			_field_ptr->convert (n, *y._elem_ptr);
+			return n;
 		}
     
 		/** \brief  Assignment of one field element to another.

@@ -35,15 +35,6 @@
 #include "linbox-config.h"
 #include <linbox/field/field-traits.h>
 
-#ifdef __LINBOX_XMLENABLED
-
-#include "linbox/util/xml/linbox-reader.h"
-#include "linbox/util/xml/linbox-writer.h"
-
-#include <iostream>
-
-#endif
-
 namespace LinBox 
 {
 	/** \brief Unparameterized field adapter.
@@ -107,53 +98,6 @@ namespace LinBox
 		/// construct this field as copy of F.
 		UnparametricField (const UnparametricField &F) : _p(F._p), _card(F._card){}
     
-		/** XML constructor
-		 * Takes in an XML reader and attempts to convert the
-		 * XML representation over to a valid field.  As this class
-		 * is mostly a wrapper for a particular field type, the
-		 * XML does little more than encode the cardinality of this
-		 * field, and perhaps the characteristic
-		 *
-		 */
-#ifdef __LINBOX_XMLENABLED
-
-		// The default XML constructor for the unparametric field
-		// Doesn't really do anything to set the characteristic and
-		// cardinality of the field.  This constructor will not carry
-		// over to template specializations of this field, so
-		// this constructor must be overloaded
-		//
-		UnparametricField(LinBox::Reader &R)
-		{
-			if(!R.expectTagName("field")) return;
-			if(!R.expectAttributeNum("cardinality", _card)) return;
-			if(!R.expectChildTag()) return;
-			R.traverseChild();
-
-			// infinite fields
-			if(R.checkTagName("integer") || R.checkTagName("rational") || R.checkTagName("real")) {
-				_p =   Integer(0);
-				R.upToParent();
-			}
-			// finite fields
-			else if(R.checkTagName("finite")) {
-				if(!R.expectChildTag()) return;
-				R.traverseChild();
-				if(!R.expectTagName("characteristic") || !R.expectChildTextNum(_p)) return;
-				R.upToParent();
-				R.upToParent();
-			}
-			else if(!R.expectTagName("unknown"))
-				return;
-			else {
-				if(!R.expectChildTag()) return;
-				R.traverseChild();
-				if(!R.expectTagName("characteristic") || !R.expectChildTextNum(_p)) return;
-				return;
-			}
-		}
-#endif
-
 		/// 
 		~UnparametricField () {}
     
@@ -282,8 +226,6 @@ namespace LinBox
  
 		//@} Inplace Arithmetic Operations
 
-#ifndef __LINBOX_XMLENABLED
-    
 		/** @name Input/Output Operations */
 		//@{
     
@@ -314,95 +256,6 @@ namespace LinBox
 		std::istream &read (std::istream &is, Element &x) const { return is >> x; }
     
 		//@}
-#else // These are the XML writing methods.  They presume nothing about what 
-      // the field is, but merely write stuff out.  Note, for the elements,
-      // the writer relies on the operator<< function of the ostringstream
-      // class to produce a proper std::string for use with the XML
-
-		
-		std::ostream &write(std::ostream &out) const 
-		{
-			LinBox::Writer W;
-			if( toTag(W))
-				W.write(out);
-
-			return out;
-		}
-
-		std::ostream &write(std::ostream &out, const Element &e) const 
-		{
-			LinBox::Writer W;
-			if( toTag(W, e))
-				W.write(out);
-
-			return out;
-              }
-			
-		// for this function, the type of the field is unknown, so
-		// just print an unknown field
-		bool toTag(LinBox::Writer &W) const
-		{
-			std::string s;
-			W.setTagName("field");
-			W.setAttribute("cardinality", LinBox::Writer::numToString(s, _card));
-			W.setAttribute("implDetail", "unknown");
-
-			W.addTagChild();
-			W.setTagName("unknown");
-
-			W.addTagChild();
-			W.setTagName("characteristic");
-			W.addDataChild(LinBox::Writer::numToString(s, _p));
-			W.upToParent();
-			
-			W.upToParent();
-
-			return true;
-		}
-
-		bool toTag(LinBox::Writer &W, const Element &e) const
-		{
-			std::string s;
-
-			W.setTagName("cn");
-
-			// use the ostrinstream operator<<, let the C++
-			// constructor sort it out.  If Element is a built-in 
-			// type,this works.  If it isn't, you should have
-			// made a template specialization.  Sorry :-)
-
-			W.addDataChild(LinBox::Writer::numToString(s, e));
-
-			return true;
-		}
-
-		std::istream &read(std::istream &in, Element &e) const
-		{
-			LinBox::Reader R(in);
-			if( !fromTag(R, e)) {
-				in.setstate(std::istream::failbit);
-				if(!R.initalized()) {
-					in.setstate(std::istream::badbit);
-				}
-			}
-
-			return in;
-		}
-
-		// this is the "shot-in-the-dark" method of element
-		// initalization.  Essentially, read in the element tag and
-		// attempt to write 
-		bool fromTag(LinBox::Reader &R, Element &e) const
-		{
-			std::string s;
-			if(!R.expectTagName("cn") || !R.expectChildTextNum(s)) return false;
-
-			return true;
-		}
-
-			
-#endif
-
     
 		//@} Common Object Interface
     

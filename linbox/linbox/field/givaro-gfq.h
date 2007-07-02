@@ -165,7 +165,6 @@ namespace LinBox
 
     }
 
-    
     /** Characteristic.
      * Return integer representing characteristic of the domain.
      * Returns a positive integer to all domains with finite characteristic,
@@ -225,7 +224,6 @@ namespace LinBox
     integer& convert(integer& x, const Element& y) const
       {
 	int32 tmp;	
-//	return x = *(new integer(GFqDom<int32>::convert(tmp,y)));
 	return x = integer(GFqDom<int32>::convert(tmp,y));
       }
           // TO BE OPTIMIZED
@@ -247,7 +245,6 @@ namespace LinBox
 
   }; // class GivaroGfq
  
-
 
 } // namespace LinBox
 

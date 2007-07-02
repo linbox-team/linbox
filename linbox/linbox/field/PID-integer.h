@@ -263,7 +263,7 @@ namespace LinBox {
 		integer& convert(integer& x, const Element& y) const
 		{ return x=y;}
       
-		Element& init(Element& x, const integer& y) const 
+		Element& init(Element& x, const integer& y = 0) const 
 		{ return x=y;}
         protected:
                     // Rational number reconstruction: 
