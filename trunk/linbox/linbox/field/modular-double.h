@@ -152,7 +152,7 @@ namespace LinBox {
 		}
 		
 		std::ostream &write (std::ostream &os, const Element &x) const {
-			return os << x;
+			return os << (int)x;
 		}
 
 		std::istream &read (std::istream &is, Element &x) const {
