@@ -12,17 +12,7 @@
 #include "linbox/util/debug.h"
 #include "linbox/util/field-axpy.h"
 #include <linbox/blackbox/blackbox-interface.h>
-
-#ifdef __LINBOX_XMLENABLED
-// For LinBox __LINBOX_XML support.  For more information, check
-// linbox/util/xml/README
-
-#include "linbox/util/xml/linbox-reader.h"
-#include "linbox/util/xml/linbox-writer.h"
-
-#include <iostream>
-
-#endif
+#include <linbox/field/hom.h>
 
 #include <vector>
 
@@ -43,6 +33,8 @@ namespace LinBox {
 		public:
 		typedef _Field Field;
 		typedef typename Field::Element Element;
+	    typedef TriplesBB<Field> Self_t;
+
 
 		// Default constructor.
 		TriplesBB() {}
@@ -65,11 +57,6 @@ namespace LinBox {
 		// Copy Constructor
 		TriplesBB(const TriplesBB<Field> &);
 
-
-#ifdef __LINBOX_XMLENABLED
-		TriplesBB(LinBox::Reader &);
-#endif
-
 		// Assignment operator for use in STL map
 		const TriplesBB<Field> & operator=(const TriplesBB<Field> & );
 
@@ -82,20 +69,30 @@ namespace LinBox {
 
 		size_t coldim() const { return _cols; }
 
-                    template<typename _Tp1> 
-                    struct rebind 
-                    { typedef TriplesBB<_Tp1> other; };
+        template<typename _Tp1> 
+        struct rebind { 
+			typedef TriplesBB<_Tp1> other; 
+			void operator() (other *& Ap, const Self_t& A, const _Tp1& F)
+			{
+				Hom <Self_t::Field, _Tp1> hom( A.field(), F);
+
+				typedef typename _Tp1::Element otherElt;
+				typedef typename std::vector<otherElt> othervec;
+				typedef typename std::vector<Element> selfvec;
+				typedef typename othervec::iterator otheriter;
+				typedef typename selfvec::iterator selfiter;
+				otheriter vp_p; selfiter v_p;
+
+				othervec values_mapped(A._values.size());
+				for (v_p = A._values.begin(), vp_p = values_mapped.begin(); 
+				     v_p != A._values.end(); ++ v_p, ++ vp_p)
+					hom.image (*vp_p, *v_p);
+				Ap = new other(F, values_mapped, A._RowV, A._ColV, A._rows, A._cols, A._RowSortFlag, A._ColSortFlag);
+			}
+		};
 
 		/* Returns number of non-zero entries */
 		size_t size() const { return _values.size(); }
-
-		// only if XML reading & writing are enabled 
-#ifdef __LINBOX_XMLENABLED
-		// XML in & out functions
-		std::ostream &write(std::ostream &) const;
-		bool toTag(LinBox::Writer &) const;
-
-#endif
 
 		// Add entry function, element e is added in the i,j position.  Zero based?
 		void addEntry(const Element & e, const size_t i, const size_t j);
@@ -199,163 +196,6 @@ namespace LinBox {
 			_ColSortFlag ( In._ColSortFlag )
 		{ }
 
-#ifdef __LINBOX_XMLENABLED
-
-	template<class Field>
-		TriplesBB<Field>::TriplesBB(LinBox::Reader &R) : _F(R.Down(1))
-		{
-			size_t i;
-			Element e;
-			_RowSortFlag = _ColSortFlag = false;
-			R.Up(1);
-
-
-			if(!R.expectTagName("MatrixOver")) return;
-
-			if(!R.expectAttributeNum("rows", _rows) || !R.expectAttributeNum("cols", _cols)) return;
-
-			if(!R.expectChildTag()) return;
-
-			R.traverseChild();
-			if(!R.expectTagName("field")) return;
-			R.upToParent();
-
-			if(!R.getNextChild()) {
-				R.setErrorString("Couldn't find matrix description in <matrix> tag");
-				R.setErrorCode(LinBox::Reader::OTHER);
-				return;
-			}
-			R.traverseChild();
-	 
-
-			// three divergent cases.  By default, a TriplesBB
-			// can be a sparseMatrix, a diag, or a scalar
-			// This is the code for each
-			//
-			if(R.checkTagName("diag")) {
-				if(!R.expectChildTag()) return;
-				R.traverseChild();
-				if(!R.expectTagName("entry") 
-				   || !R.expectTagNumVector(_values)) 
-					return;
-		 
-				_RowV.clear();
-				_ColV.clear();
-				if( _rows <= _cols) 
-					for(i = 0; i < _rows; ++i) {
-						_RowV.push_back(i);
-						_ColV.push_back(i);
-					}
-				else
-					for(i = 0; i < _cols; ++i) {
-						_RowV.push_back(i);
-						_ColV.push_back(i);
-					}
-			}
-			else if(R.checkTagName("scalar")) {
-				if(!R.expectChildTag()) return;
-				R.traverseChild();
-				if(!R.expectTagNum(e)) return;
-				R.upToParent();
-
-				_RowV.clear();
-				_ColV.clear();
-				if(_rows <= _cols)
-					for(i = 0; i < _rows; ++i) {
-						_RowV.push_back(i);
-						_ColV.push_back(i);
-						_values.push_back(e);
-					}		
-				else
-					for(i = 0; i < _cols; ++i) {
-						_RowV.push_back(i);
-						_ColV.push_back(i);
-						_values.push_back(e);
-					}
-			}
-			else if(R.checkTagName("zero-one")) {
-				if(!R.expectChildTag()) return;
-				R.traverseChild();
-				if(!R.expectTagName("index") || !R.expectTagNumVector(_RowV)) return;
-				R.upToParent();
-
-				if(!R.getNextChild()) {
-					R.setErrorString("Couldn't find column indices for zero-one matrix");
-					R.setErrorCode(LinBox::Reader::OTHER);
-					return;
-				}
-
-				if(!R.expectChildTag()) return;
-
-				R.traverseChild();
-				if(!R.expectTagName("index") || !R.expectTagNumVector(_ColV)) return;
-				R.upToParent();
-
-				R.upToParent();
-
-				_values.clear();
-				_F.init(e, 1);
-				for(i = 0; i < _RowV.size(); ++i) {
-					_values.push_back(e);
-				}
-		 
-				if(_faxpy.size() != _max(_rows, _cols))
-					_faxpy.resize(_max(_rows, _cols), FieldAXPY<Field>(_F));
-
-			}
-
-
-			else if(!R.expectTagName("sparseMatrix"))
-				return;
-			else {
-		 
-				if(!R.expectChildTag()) return;
-				R.traverseChild();
-				if(!R.expectTagName("index") 
-				   || !R.expectTagNumVector(_RowV)) 
-					return;
-				R.upToParent();
-		 
-				if(!R.getNextChild() ) {
-					R.setErrorString("Couldn't find columnar indices in sparse matrix");
-					R.setErrorCode(LinBox::Reader::OTHER);
-					return;
-				}
-
-				if(!R.expectChildTag()) 
-					return;
-				R.traverseChild();
-				if(!R.expectTagName("index")
-				   || !R.expectTagNumVector(_ColV))
-					return;
-				R.upToParent();
-
-				if(!R.getNextChild()) {
-					R.setErrorString("Couldn't find matrix entries in sparse matrix");
-					R.setErrorCode(LinBox::Reader::OTHER);
-					return;
-				}
-			 
-				if( !R.expectChildTag())
-					return;
-				R.traverseChild();
-				if(!R.expectTagName("entry") 
-				   || !R.expectTagNumVector(_values))
-					return;
-
-				R.upToParent();
-				R.upToParent();
-
-			}
-			// now we have to reset the _faxby object
-			if(_faxpy.size() != _max(_rows, _cols)) 
-				_faxpy.resize(_max(_rows, _cols), FieldAXPY<Field>(_F));
-
-			return;
-		}
-
-#endif
-
 
 	template<class Field>
 		const TriplesBB<Field> & TriplesBB<Field>::operator=(const TriplesBB<Field> & rhs)
@@ -426,58 +266,6 @@ namespace LinBox {
   
 
 		}
-
-#ifdef __LINBOX_XMLENABLED
-
-	// Takes in an std::ostream and tries to write to it
-	template<class Field, class Vector>
-		std::ostream &TriplesBB<Field, Vector>::write(std::ostream &o) const {
-		LinBox::Writer W;
-		if( toTag(W) ) 
-			W.write(o);
-
-		return o;
-	}
-
-	template<class Field, class Vector>
-		bool TriplesBB<Field, Vector>::toTag(LinBox::Writer &W) const {
-		string buffer;
-
-		W.setTagName("MatrixOver");
-		W.setAttribute("rows", LinBox::Writer::numToString(buffer, _rows));
-		W.setAttribute("cols", LinBox::Writer::numToString(buffer, _cols));
-		W.setAttribute("implDetail", "triples");
-
-		W.addTagChild();
-		_F.toTag(W);
-		W.upToParent();
-
-		W.addTagChild();
-		W.setTagName("sparseMatrix");
-		
-		W.addTagChild();
-		W.setTagName("index");
-		W.addNumericalList(_RowV, true);
-		W.upToParent();
-
-		W.addTagChild();
-		W.setTagName("index");
-		W.addNumericalList(_ColV, true);
-		W.upToParent();
-	 
-		W.addTagChild();
-		W.setTagName("entry");
-		W.addNumericalList(_values);
-		W.upToParent();
-
-		W.upToParent();
-
-		return true;
-	}
-
-#endif
-
-
 
 
 	/* addEntry method.  Allows user to add entries on the fly.  Meant to be used

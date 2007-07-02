@@ -306,6 +306,8 @@ namespace LinBox
     size_t nnz() const { return _index.size(); };
     
     
+	typedef MatrixCategories::BlackboxTag MatrixCategory;
+
   protected:
 
     Field _F; // The field used by this class
