@@ -53,10 +53,6 @@ namespace LinBox
 		NonzeroRandIter (const NonzeroRandIter& R)
 			: _F (R._F), _r (R._r) {}
 
-#ifdef __LINBOX_XMLENABLED
-		NonzeroRandIter(LinBox::Reader &R) : _F(R.Down(1)), _r(R.Up(1)) {}
-#endif
-
 		~NonzeroRandIter() 
 			{}
 
@@ -89,19 +85,6 @@ namespace LinBox
 			random (tmp);
 			return (a = ElementEnvelope <Field> (tmp));
 		}
-
-#ifdef __LINBOX_XMLENABLED
-		ostream &write(ostream &os) const 
-		{
-			return _r.write(os);
-		}
-
-		bool toTag(LinBox::Writer &W) const
-		{
-			return _r.toTag(W);
-		}
-#endif
-
 
 	    private:
 

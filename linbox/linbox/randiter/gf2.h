@@ -39,19 +39,6 @@
 namespace LinBox 
 { 
 
-/** Random field base element generator.
- * This encapsulated class is a generator of random field base elements for 
- * the encapsulating field.
- * It is required to contain constructors from a field object and
- * two integers.  The first integer being a cardinality of a set to 
- * draw the random elements from, and the second being a seed for the 
- * random number generator.
- * It is also required to contain a copy constructor, a destructor, and
- * an operator () which acts on a reference to a field base element.  In this 
- * operator (), the random element is placed into the input field base element 
- * and also returned as a reference.
- */
-
 class GF2RandIter
 {
     public:
@@ -80,38 +67,7 @@ class GF2RandIter
 		_MT.setSeed (_seed);
 	}
 
-	/** Copy constructor.
-	 * Constructs ModularRandIter object by copying the random field
-	 * element generator.
-	 * This is required to allow generator objects to be passed by value
-	 * into functions.
-	 * @param  R ModularRandIter object.
-	 */
 	GF2RandIter (const GF2RandIter &R) {}
-
-#ifdef __LINBOX_XMLENABLED
-	GF2RandIter(LinBox::Reader &R)
-	{
-		long seed, size;
-		R.Up(1);
-
-		if(!R.expectTagName("randiter")) return;
-		if(!R.expectAttributeNum("seed", seed) || !R.expectAttributeNum("size", size)) return;
-
-		if(size != 2) {
-			R.setErrorString("Got GF(2) randiter w/ size not 2");
-			R.setErrorCode(LinBox::Reader::OTHER);
-			return;
-		}
-		if(seed == 0) seed == time(NULL);
-		_MT.setSeed(seed);
-
-		return;
-	}
-#endif	       
-
-	
-
 
 	/** Destructor.
 	 * This destructs the random field element generator object.
@@ -166,27 +122,6 @@ class GF2RandIter
 		random (tmp);
 		return (a = ElementEnvelope <GF2> (tmp));
 	}
-
-#ifdef __LINBOX_XMLENABLED
-	std::ostream &write(std::ostream &os) const
-	{
-		LinBox::Writer W;
-		if( toTag(W))
-			W.write(os);
-
-		return os;
-	}
-
-	bool toTag(LinBox::Writer &W) const
-	{
-		W.setTagName("randiter");
-		W.setAttribute("seed", "0");
-		W.setAttribute("size", "2");
-		
-		return true;
-	}
-#endif
-
 
     private:
 

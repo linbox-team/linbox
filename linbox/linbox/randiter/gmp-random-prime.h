@@ -28,7 +28,9 @@ namespace LinBox {
 			return test;
 		}
 
-		inline integer randomPrime( integer& p ) {
+		// I believe reference returned is appropriate. -bds
+		//inline integer randomPrime( integer& p ) {
+		inline integer& randomPrime( integer& p ) {
 			do integer::nonzerorandom( p, max );
 			while( !probab_prime( p, 10 ) );
 			return p;
