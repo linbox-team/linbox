@@ -5,7 +5,7 @@ BASIC_HDRS =			\
 	matrix-category.h	\
 	sparse.h		\
 	sparse.inl		\
-	transpose.h		\
+	transpose-matrix.h		\
 	dense.h  		\
 	dense.inl		\
 	dense-submatrix.h	\
