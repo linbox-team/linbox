@@ -43,8 +43,9 @@ class DenseReader :public MatrixStreamReader<Field> {
 			    !this->readObject( this->_m ) ||
 			    !this->readWhiteSpace() ||
 			    !this->readObject( this->_n ) ||
-			    !this->readWhiteSpace(temp) ||
-			    temp == 0 ) return NO_FORMAT;
+			    //!this->readWhiteSpace(temp) ||
+			    //temp == 0 ) return NO_FORMAT;
+			    !this->readBreaks() ) return NO_FORMAT;
 		} catch( MatrixStreamError e ) { return e; }
 		if( this->_m < 1 || this->_n < 1 ) return BAD_FORMAT;
 		this->knowM = this->knowN = true;

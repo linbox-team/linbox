@@ -1,7 +1,8 @@
 /* MatrixStreamReader for sms matrix format
  * Dan Roche, 1-12-05
- * This file should not be included directly.  Rather, include it in
- * linbox/blackbox/matrix-stream-readers.h
+ * 1st line: "50 60 M" // #rows #cols letter-M
+ * Subsequent lines: i j v // row index, col index, value
+ * last line: 0 0 0
  */
 
 #ifndef __SMS_H

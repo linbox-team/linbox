@@ -16,3 +16,5 @@
 // correctly
 
 static int dummy;
+
+void foobar(){}
