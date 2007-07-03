@@ -15,8 +15,6 @@
  *
  * See COPYING for license information.
  *
- * This file implements the C++ interface to commentators (for 
- * providing runtime commentary to the user)
  */
 
 #ifndef __LINBOX_TIMER_H

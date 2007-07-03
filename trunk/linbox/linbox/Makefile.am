@@ -6,14 +6,11 @@ BASIC_HDRS =				\
 	integer.h	integer.inl	\
 	config-blas.h
 
-NTL_HDRS =				\
-	ntl.h
+NTL_HDRS =
 
-GIVARO_HDRS =				\
-	givaro.h
+GIVARO_HDRS =
 
-LIDIA_HDRS =				\
-	lidia.h
+LIDIA_HDRS =
 
 if LINBOX_HAVE_NTL
 USE_NTL_HDRS = $(NTL_HDRS)
