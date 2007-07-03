@@ -1,6 +1,6 @@
 SUBDIRS=gmp++ linbox macros tests interfaces doc
 
-doc:doc/linbox-html/index.html
+docs:doc/linbox-html/index.html
 
 doc/linbox-html/index.html:
 	(cd doc; make docs)
