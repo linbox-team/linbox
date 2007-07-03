@@ -378,6 +378,10 @@ static Integer& divmod   (Integer& q, unsigned long& r, const Integer& n1, const
 
   std::ostream& print( std::ostream& o ) const;
   
+    int sign() const {return priv_sign(); } // but figure out the friend sign()
+
+    mpz_ptr get_mpz() {return (mpz_ptr)&gmp_rep;}
+
 protected:
 
     typedef MP_INT Rep;
@@ -385,7 +389,7 @@ protected:
     Rep gmp_rep;
 
     int priv_sign() const;
-    mpz_ptr get_mpz() {return (mpz_ptr)&gmp_rep;}
+    //mpz_ptr get_mpz() {return (mpz_ptr)&gmp_rep;}
     const Rep* get_rep() const { return &gmp_rep; }
 
     // -- Creates a new Integer from a size sz and a array of unsigned long d 
