@@ -1,5 +1,7 @@
 INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/gmp++ ${GMP_VERSION}
 
+AM_CFLAGS=-Wall -O2
+
 noinst_LTLIBRARIES=libgmpxx.la
 
 libgmpxx_la_SOURCES=\
