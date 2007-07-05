@@ -25,7 +25,7 @@ int main (int argc, char **argv)
 
     if (argc < 2 || argc > 4) {
         cerr << "Usage: solve <matrix-file-in-supported-format> [<dense-vector-file>] [<p>]" << endl;
-        return -1;
+        return 0;
     }
     srand48( BaseTimer::seed() );
 
