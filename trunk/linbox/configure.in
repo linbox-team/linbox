@@ -2,12 +2,14 @@ AC_PREREQ(2.50)
 AC_INIT(linbox/linbox.doxy)
 AM_INIT_AUTOMAKE(linbox, 1.1.3)
 AM_CONFIG_HEADER(config.h)
-AX_PREFIX_CONFIG_H(linbox-config.h, __LINBOX)
+#AX_PREFIX_CONFIG_H(linbox-config.h, __LINBOX)
+AX_PREFIX_CONFIG_H(linbox/linbox-config.h, __LINBOX)
 
 AM_MAINTAINER_MODE
 
 # Give a sane default for CFLAGS and CXXFLAGS
-DEFAULT_CFLAGS="-O2 -Wall"
+# The sane thing is to define the flags differenly in tests, examples, interfaces, etc.  -bds
+#DEFAULT_CFLAGS="-O2 -Wall"
 
 CFLAGS=${CFLAGS:-$DEFAULT_CFLAGS}
 CXXFLAGS=${CXXFLAGS:-$DEFAULT_CFLAGS}
@@ -130,8 +132,9 @@ LB_OPT
 LB_DOC
 
 
-CXXFLAGS="${GMP_CFLAGS} ${NTL_CFLAGS} ${GIVARO_CFLAGS} ${SACLIB_CFLAGS} ${CXXFLAGS}"
-AC_SUBST(CXXFLAGS)
+# this is bogus so far as I can tell.  -bds
+#CXXFLAGS="${GMP_CFLAGS} ${NTL_CFLAGS} ${GIVARO_CFLAGS} ${SACLIB_CFLAGS} ${CXXFLAGS}"
+#AC_SUBST(CXXFLAGS)
 
 AC_OUTPUT([
 Makefile

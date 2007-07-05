@@ -1,5 +1,7 @@
 pkgincludesubdir=$(pkgincludedir)/randiter
 
+AM_CPPFLAGS=-Wall -O2
+
 BASIC_HDRS =				\
 	abstract.h			\
 	archetype.h			\

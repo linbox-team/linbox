@@ -1,6 +1,8 @@
 
 INCLUDES=-I$(top_srcdir)
 
+AM_CFLAGS=-Wall -O2
+
 SUBDIRS=gmp++ formats
 
 pkgincludesubdir=$(pkgincludedir)/util
