@@ -1,9 +1,16 @@
 
-INCLUDES=-I$(top_srcdir)
+#INCLUDES=-I$(top_srcdir)
 
+#if LinBoxSrcOnly
 AM_CPPFLAGS=-g -DLinBoxSrcOnly $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) 
+LINBOX_LIBS= 
+#else
+#AM_CPPFLAGS=-g $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) 
+#LINBOX_LIBS= $(top_builddir)/linbox/liblinbox.la 
+#endif
+
 EX_LDADD = $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) 
-LDADD = $(top_builddir)/linbox/liblinbox.la $(EX_LDADD)
+LDADD = $(LINBOX_LIBS) $(EX_LDADD)
 
 SUBDIRS=fields 
 
