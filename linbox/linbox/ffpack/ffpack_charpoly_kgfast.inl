@@ -54,7 +54,7 @@ FFPACK::KGFast ( const Field& F, std::list<Polynomial>& charp,
 			size_t * P = new size_t[mc];
 			size_t * Q = new size_t[mc];
 
-			if ( (r = LUdivine( F, FflasNonUnit, mc, mc, 
+			if ( (r = LUdivine( F, FflasNonUnit, FflasNoTrans, mc, mc, 
 					    LUP, mc, P, Q, FfpackLQUP)) < mc ){
 				* kg_mc = mc;
 				* kg_mb = mb;

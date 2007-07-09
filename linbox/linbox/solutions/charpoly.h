@@ -104,7 +104,27 @@ namespace LinBox
 		return charpoly(P, A, tag, Method::BlasElimination(M));
 	}
 
-
+	// The charpoly with Hybrid Method 
+	template<class Polynomial, class Domain, class DomainCategory>
+	Polynomial &charpoly (Polynomial            &P, 
+			      const SparseMatrix<Domain>  &A,
+			      const DomainCategory  &tag,
+			      const Method::Hybrid  &M)
+	{
+		// not yet a hybrid
+		return charpoly(P, A, tag, Method::Blackbox(M));
+	}
+	// The charpoly with Hybrid Method 
+	template<class Polynomial, class Domain, class DomainCategory>
+	Polynomial &charpoly (Polynomial            &P, 
+			      const DenseMatrix<Domain> &A,
+			      const DomainCategory  &tag,
+			      const Method::Hybrid  &M)
+	{
+		// not yet a hybrid
+		return charpoly(P, A, tag, Method::BlasElimination(M));
+	}
+	
 	// The charpoly with Elimination Method 
 	template<class Polynomial, class Blackbox, class DomainCategory>
 	Polynomial &charpoly (Polynomial                &P, 
@@ -140,7 +160,7 @@ namespace LinBox
 
 }
 
-	//#if 0
+//	#if 0
 #if defined(__LINBOX_HAVE_NTL) && defined(__LINBOX_HAVE_GIVARO)
 
 #include "linbox/algorithms/cia.h"

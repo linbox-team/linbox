@@ -65,8 +65,8 @@ namespace LinBox {
 			linbox_check( A.rowdim() == Ainv.rowdim());
 			linbox_check( A.coldim() == Ainv.coldim());			
 			int nullity;
-			FFPACK::Invert2(F,A.rowdim(),A.getPointer(),A.getStride(),
-					Ainv.getPointer(),Ainv.getStride(),nullity);
+			FFPACK::Invert(F,A.rowdim(),A.getPointer(),A.getStride(),
+				       Ainv.getPointer(),Ainv.getStride(),nullity);
 			return nullity;
 		}
 		
@@ -96,7 +96,7 @@ namespace LinBox {
 			int nullity, defrank=0;
 			
 			for (size_t i=0;i<F.size();++i){
-				FFPACK::Invert2(F.getBase(i),A.rowdim(), A.getMatrix(i)->getPointer(),A.getMatrix(i)->getStride(),
+				FFPACK::Invert(F.getBase(i),A.rowdim(), A.getMatrix(i)->getPointer(),A.getMatrix(i)->getStride(),
 						Ainv.getMatrix(i)->getPointer(),Ainv.getMatrix(i)->getStride(),nullity);
 				defrank+=nullity;
 			}
@@ -177,8 +177,8 @@ namespace LinBox {
 			linbox_check( A.rowdim() == Ainv.rowdim());
 			linbox_check( A.coldim() == Ainv.coldim());			
 			int nullity;
-			FFPACK::Invert2(F,A.rowdim(),A.getPointer(),A.getStride(),
-					Ainv.getPointer(),Ainv.getStride(),nullity);
+			FFPACK::Invert (F, A.rowdim(), A.getPointer(), A.getStride(),
+				       Ainv.getPointer(),Ainv.getStride(),nullity);
 			return nullity;
 		}
 		
@@ -194,7 +194,7 @@ namespace LinBox {
 			BlasMatrix<typename Field::Element> tmp(A);
 			return (*this)(F,tmp);
 		}	
-
+ 
 		inline unsigned int 
 		operator() (const Field                           &F,
 			    BlasMatrix<typename Field::Element>   &A) const{
