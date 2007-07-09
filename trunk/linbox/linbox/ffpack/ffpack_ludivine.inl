@@ -16,20 +16,6 @@
 #endif
 
 
-// template <class Field>
-// inline size_t 
-// FFPACK::LUdivine (const Field& F, const FFLAS_DIAG Diag,
-// 		  const size_t M, const size_t N,		
-// 		  typename Field::Element * A, const size_t lda, size_t*P, 
-// 		  size_t *Q, const FFPACK_LUDIVINE_TAG LuTag, const size_t cutoff){
-
-// 	if (MIN(M,N) < cutoff)
-// 		return LUdivine_small (F, Diag, M, N, A, lda, P, Q, LuTag);
-// 	else
-// 		return TURBO (F, M, N, A, lda, P, Q, cutoff);
-// }
-
-
 template<class Field>
 inline size_t
 FFPACK::LUdivine_gauss( const Field& F, const FFLAS_DIAG Diag,
@@ -75,19 +61,19 @@ FFPACK::LUdivine_gauss( const Field& F, const FFLAS_DIAG Diag,
 
 template<class Field>
 inline size_t
-FFPACK::LUdivine_small( const Field& F, const FFLAS_DIAG Diag,
+FFPACK::LUdivine_small( const Field& F, const FFLAS_DIAG Diag, const FFLAS_TRANSPOSE trans,
 			const size_t M, const size_t N,		
 			typename Field::Element * A, const size_t lda, size_t*P, 
 			size_t *Q, const FFPACK_LUDIVINE_TAG LuTag){
 	return callLUdivine_small <typename Field::Element> ()
-		(F, Diag, M, N, A, lda, P, Q, LuTag);
+		(F, Diag, trans, M, N, A, lda, P, Q, LuTag);
 }
 template<class Element>
 class FFPACK::callLUdivine_small {
 public:
 	template <class Field>
 	inline size_t 
-	operator()( const Field& F, const FFLAS_DIAG Diag,
+	operator()( const Field& F, const FFLAS_DIAG Diag, const FFLAS_TRANSPOSE trans,
 		    const size_t M, const size_t N,		
 		    typename Field::Element * A, const size_t lda, size_t*P, 
 		    size_t *Q, const FFPACK_LUDIVINE_TAG LuTag){
@@ -183,7 +169,7 @@ class FFPACK::callLUdivine_small<double>{
 public:
 	template <class Field>
 	inline size_t 
-	operator()( const Field& F, const FFLAS_DIAG Diag,
+	operator()( const Field& F, const FFLAS_DIAG Diag,  const FFLAS_TRANSPOSE trans,
 		    const size_t M, const size_t N,		
 		    typename Field::Element * A, const size_t lda, size_t*P, 
 		    size_t *Q, const FFPACK_LUDIVINE_TAG LuTag){
@@ -288,7 +274,7 @@ class FFPACK::callLUdivine_small<float>{
 public:
 	template <class Field>
 	inline size_t 
-	operator()( const Field& F, const FFLAS_DIAG Diag,
+	operator()( const Field& F, const FFLAS_DIAG Diag, const FFLAS_TRANSPOSE trans,
 		    const size_t M, const size_t N,		
 		    typename Field::Element * A, const size_t lda, size_t*P, 
 		    size_t *Q, const FFPACK_LUDIVINE_TAG LuTag){
@@ -391,7 +377,7 @@ public:
 
 template <class Field>
 inline size_t 
-FFPACK::LUdivine (const Field& F, const FFLAS_DIAG Diag,
+FFPACK::LUdivine (const Field& F, const FFLAS_DIAG Diag, const FFLAS_TRANSPOSE trans,
 		  const size_t M, const size_t N,		
 		  typename Field::Element * A, const size_t lda, size_t*P, 
 		  size_t *Q, const FFPACK_LUDIVINE_TAG LuTag, const size_t cutoff){
@@ -404,37 +390,51 @@ FFPACK::LUdivine (const Field& F, const FFLAS_DIAG Diag,
 	F.init(zero,0.0);
 	size_t MN = MIN(M,N);
 
-	if ((M < cutoff) && (N < 2*cutoff)) // the coeff 2 is experimentally determined!
-		return LUdivine_small (F, Diag, M, N, A, lda, P, Q, LuTag);
+	size_t incRow, incCol, rowDim, colDim;
+	if (trans == FflasTrans){
+		incRow = 1;
+		incCol = lda;
+		colDim = M;
+		rowDim = N; 
+	} else {
+		incRow = lda;
+		incCol = 1;
+		colDim = N;
+		rowDim = M;
+	}
+	
+	if ((rowDim < cutoff) && (colDim < 2*cutoff)) // the coeff 2 is experimentally determined!
+		return LUdivine_small (F, Diag, trans, M, N, A, lda, P, Q, LuTag);
 	else if (MN == 1){
 		size_t ip=0;
 		//while (ip<N && !F.isUnit(*(A+ip)))ip++;
-		while (F.isZero (*(A+ip)))
-			if (++ip == N)
+		while (F.isZero (*(A+ip*incCol)))
+			if (++ip == colDim)
 				break;
 		*Q=0;
-		if (ip==N){ // current row is zero
+		if (ip == colDim){ // current row is zero
 			*P=0;
-			if (N==1){
+			if (colDim == 1){
 				//while (ip<M && !F.isUnit(*(A+ip*lda))){
-				while (ip<M && F.isZero(*(A+ip*lda))){
+				while (ip<rowDim && F.isZero(*(A + ip*incRow))){
 					Q[ip]=ip;
 					ip++;
 				}
-				if (ip==M) {return 0;}
+				if (ip == rowDim) {return 0;}
 				else{
 					size_t oldip = ip;
 					if ( Diag == FflasNonUnit ){
 						elt invpiv;
-						F.inv(invpiv,*(A+ip*lda));
-						while(++ip<M) 
-							F.mulin(*(A+lda*ip), invpiv);
+						F.inv(invpiv,*(A+ip*incRow));
+						while(++ip<rowDim) 
+							F.mulin(*(A + ip*incRow), invpiv);
+						elt tmp;
+						F.assign(tmp, *(A+oldip*incRow));
+						F.assign( *(A+oldip*incRow), *A);
+						F.assign( *A, tmp);
 					}
 					*Q=oldip; 
-					elt tmp;
-					F.assign(tmp, *(A+oldip*lda));
-					F.assign( *(A+oldip*lda), *A);
-					F.assign( *A, tmp);
+					
 					return 1;
 				}
 			}
@@ -444,75 +444,122 @@ FFPACK::LUdivine (const Field& F, const FFLAS_DIAG Diag,
 		if (ip!=0){
 			// swap the pivot
 			typename Field::Element tmp=*A;
-			*A = *(A+ip);
-			*(A+ip) = tmp;
+			*A = *(A + ip*incCol);
+			*(A + ip*incCol) = tmp;
 		}
 		elt invpiv;
 		F.inv(invpiv, *A);
 		if ( Diag == FflasUnit ){
 			// Normalisation of the row
-			for (size_t k=1; k<N; k++)
-				F.mulin(*(A+k), invpiv);
+			for (size_t k=1; k<colDim; k++)
+				F.mulin(*(A+k*incCol), invpiv);
 		}
-		else if ( N==1 )
-			while(++ip<M) 
-				F.mulin(*(A+lda*ip), invpiv);
+		else if ( colDim==1 )
+			while(++ip<rowDim) 
+				F.mulin(*(A + ip*incRow), invpiv);
 		return 1;
 	} else { // MN>1
-		size_t Nup = M>>1;
-		size_t Ndown =  M - Nup;
+		size_t Nup = rowDim >> 1;
+		size_t Ndown =  rowDim - Nup;
 		// Recursive call on NW
 		//cerr<<"LUdivine1..";
-		size_t R = LUdivine (F, Diag, Nup, N, A, lda, P, Q, LuTag, cutoff);
+
 		//cerr<<"done"<<endl;
-		typename Field::Element *Ar = A + Nup*lda; // SW
-		typename Field::Element *Ac = A + R;     // NE
-		typename Field::Element *An = Ar + R;    // SE
-		if (!R){
-			if (LuTag == FfpackSingular ) 
+		size_t R, R2;
+		if (trans == FflasTrans){
+			//cerr<<"LUdivine1..."<<endl;
+			R = LUdivine (F, Diag, trans, colDim, Nup, A, lda, P, Q, LuTag, cutoff);
+			//cerr<<"done"<<endl;
+			typename Field::Element *Ar = A + Nup*incRow; // SW
+			typename Field::Element *Ac = A + R*incCol;     // NE
+			typename Field::Element *An = Ar + R*incCol;    // SE
+			if (!R){
+				if (LuTag == FfpackSingular ) 
+					return 0;
+			} else {			
+				applyP (F, FflasLeft, FflasNoTrans, Ndown, 0, R, Ar, lda, P); 
+				// Ar <- L1^-1 Ar
+				//write_field(F,cerr<<"Avant ftrsm"<<endl, A, M, N, lda);
+				ftrsm( F, FflasLeft, FflasLower, 
+				       FflasNoTrans, Diag, R, Ndown,  
+				       one, A, lda, Ar, lda);
+				// An <- An - Ac*Ar
+				//write_field(F,cerr<<"Avant fgemm"<<endl, A, M, N, lda);
+				fgemm( F, FflasNoTrans, FflasNoTrans, colDim-R, Ndown, R,
+				       Mone, Ac, lda, Ar, lda, one, An, lda);
+				//write_field(F,cerr<<"Apres fgemm"<<endl, A, M, N, lda);
+							
+			}
+			// Recursive call on SE
+			// cerr<<"LUdivine2..";
+// 			write_field(F,cerr<<"Apres mise a jour"<<endl, A, M, N, lda);
+			
+			R2 = LUdivine (F, Diag, trans, colDim-R, Ndown, An, lda, P + R, Q + Nup, LuTag, cutoff);
+			//cerr<<"done"<<endl;
+			for (size_t i = R; i < R + R2; ++i)
+				P[i] += R;
+			if (R2)
+				// An <- An.P2
+				applyP (F, FflasLeft, FflasNoTrans, Nup, R, R+R2, A, lda, P); 
+			else if (LuTag == FfpackSingular)
 				return 0;
-		} else {			
-			// Ar <- Ar.P
-			applyP (F, FflasRight, FflasTrans, Ndown, 0, R, Ar, lda, P); 
-			// Ar <- Ar.U1^-1
- 			ftrsm( F, FflasRight, FflasUpper, 
- 			       FflasNoTrans, Diag, Ndown, R, 
- 			       one, A, lda, Ar, lda);
-			 // An <- An - Ar*Ac
-			  fgemm( F, FflasNoTrans, FflasNoTrans, Ndown, N-R, R,
-				 Mone, Ar, lda, Ac, lda, one, An, lda);
+			
+		} else{
+			R = LUdivine (F, Diag, trans, Nup, colDim, A, lda, P, Q, LuTag, cutoff);
+			typename Field::Element *Ar = A + Nup*incRow; // SW
+			typename Field::Element *Ac = A + R*incCol;     // NE
+			typename Field::Element *An = Ar + R*incCol;    // SE
+			if (!R){
+				if (LuTag == FfpackSingular ) 
+					return 0;
+			} else {			
+				// Ar <- Ar.P
+				
+				applyP (F, FflasRight, FflasTrans, Ndown, 0, R, Ar, lda, P); 
+				// Ar <- Ar.U1^-1
+				ftrsm( F, FflasRight, FflasUpper, 
+				       FflasNoTrans, Diag, Ndown, R, 
+				       one, A, lda, Ar, lda);
+				// An <- An - Ar*Ac
+				fgemm( F, FflasNoTrans, FflasNoTrans, Ndown, colDim-R, R,
+				       Mone, Ar, lda, Ac, lda, one, An, lda);
+				// Recursive call on SE
+			}
+			// cerr<<"LUdivine2..";
+// 			write_field(F,cerr<<"Apres mise a jour"<<endl, A, M, N, lda);
+			R2=LUdivine (F, Diag, trans, Ndown, N-R, An, lda,P+R, Q+Nup, LuTag, cutoff);
+			//cerr<<"done"<<endl;
+			for (size_t i = R; i < R + R2; ++i)
+				P[i] += R;
+			if (R2)
+				// An <- An.P2
+				applyP (F, FflasRight, FflasTrans, Nup, R, R+R2, A, lda, P); 
+			else if (LuTag == FfpackSingular)
+				return 0;
+			
 		}
-		// Recursive call on SE
-		//cerr<<"LUdivine2..";
-		size_t R2=LUdivine (F, Diag, Ndown, N-R, An, lda,P+R, Q+Nup, LuTag, cutoff);
-		//cerr<<"done"<<endl;
-		for (size_t i = R; i < R + R2; ++i)
-			P[i] += R;
-		if (R2)
-			// An <- An.P2
-			applyP (F, FflasRight, FflasTrans, Nup, R, R+R2, A, lda, P); 
-		else if (LuTag == FfpackSingular)
-			return 0;
 		// Non zero row permutations
-		for (size_t i = Nup; i < M; i++)
+		for (size_t i = Nup; i < rowDim; i++)
 			Q[i] += Nup;
 		if (R < Nup){
 			// Permutation of the 0 rows
 			if (Diag == FflasNonUnit){
 				for ( size_t i = Nup, j = R ; i < Nup + R2; ++i, ++j){
-					fcopy( F, N - j, A + j*(lda + 1), 1, A + i*lda + j, 1);
-					for (typename Field::Element *Ai = A + i*lda + j;
-					     Ai != A + i*lda + N; ++Ai)
-						F.assign (*Ai, zero);
+					fcopy( F, colDim - j, A + j * (lda + 1), incCol, A + i*incRow + j*incCol, incCol);
+ 					for (typename Field::Element *Ai = A + i*incRow + j*incCol;
+ 					     Ai != A + i*incRow + colDim*incCol; Ai+=incCol)
+ 						F.assign (*Ai, zero);
 					size_t t = Q[j];
 					Q[j]=Q[i];
 					Q[i] = t;
 				}
 			} else {
 				for ( size_t i = Nup, j = R+1 ; i < Nup + R2; ++i, ++j){
-					fcopy( F, N - j, A + (j-1)*lda + j, 1, A + i*lda + j, 1);
-					for (typename Field::Element *Ai = A + i*lda + j;
-					     Ai != A + i*lda + N; ++Ai)
+					fcopy( F, colDim - j,
+					       A + (j-1)*incRow + j*incCol, incCol,
+					       A + i*incRow + j*incCol, incCol);
+					for (typename Field::Element *Ai = A + i*incRow + j*incCol;
+					     Ai != A + i*incRow + colDim*incCol; Ai+=incCol)
 						F.assign (*Ai, zero);
 					size_t t = Q[j-1];
 					Q[j-1]=Q[i];
@@ -682,7 +729,7 @@ FFPACK::TURBO (const Field& F, const size_t M, const size_t N,
 // 	Timer tim;
 // 	tim.clear();
 // 	tim.start();
-	q1 = LUdivine( F, FflasNonUnit, mloc, no2, NW, ld1, P1, Q1, FfpackLQUP, cutoff);
+	q1 = LUdivine( F, FflasNonUnit, FflasNoTrans, mloc, no2, NW, ld1, P1, Q1, FfpackLQUP, cutoff);
 	
 // 	tim.stop();
 // 	cerr<<"LQUP1:"<<tim.realtime()<<std::endl;
@@ -756,7 +803,7 @@ FFPACK::TURBO (const Field& F, const size_t M, const size_t N,
 	//Step 2: E1 = L2.Q2.U2.P2
 	mloc = M-mo2;
 	nloc = N-no2;
-	q2 = LUdivine( F, FflasNonUnit, mloc, nloc, SE, ld4, P2, Q2, FfpackLQUP, cutoff);
+	q2 = LUdivine( F, FflasNonUnit, FflasNoTrans, mloc, nloc, SE, ld4, P2, Q2, FfpackLQUP, cutoff);
 #if DEBUG
 	std::cerr<<"  E1 = L2.Q2.U2.P2"<<std::endl;
 	write_field(F,std::cerr,SE,M-mo2,N-no2,ld4);	
@@ -818,7 +865,7 @@ FFPACK::TURBO (const Field& F, const size_t M, const size_t N,
 	//Step 3: F2 = L3.Q3.U3.P3
 	mloc = M-mo2-q2;
 	nloc = no2-q1;
-	q3 = LUdivine( F, FflasNonUnit, mloc, nloc, SW+q2*ld3+q1, ld3, P1+q1, Q2+q2, FfpackLQUP, cutoff);
+	q3 = LUdivine( F, FflasNonUnit, FflasNoTrans, mloc, nloc, SW+q2*ld3+q1, ld3, P1+q1, Q2+q2, FfpackLQUP, cutoff);
 	
 	// Updating P1,Q2
 	for (size_t i=q1;i<no2;++i)
@@ -830,7 +877,7 @@ FFPACK::TURBO (const Field& F, const size_t M, const size_t N,
 	mloc = mo2-q1;
 	nloc = N-no2-q2;
 
-	q3b = LUdivine( F, FflasNonUnit, mloc, nloc, NE+q1*ld2+q2, ld2, P2+q2, Q1+q1, FfpackLQUP, cutoff);
+	q3b = LUdivine( F, FflasNonUnit, FflasNoTrans, mloc, nloc, NE+q1*ld2+q2, ld2, P2+q2, Q1+q1, FfpackLQUP, cutoff);
 	
 	// Updating P2, Q1
 	for (size_t i = q2; i < q2+q3b; ++i)
@@ -907,7 +954,7 @@ FFPACK::TURBO (const Field& F, const size_t M, const size_t N,
 		// size_t * rP4 = new size_t[mloc];
 // 		for (size_t j=0;j<mo2-q1;++j)
 // 			rP4[j]=0;
-		q4 = LUdivine( F, FflasNonUnit, mloc, nloc, NW+(q1+q3b)*ld1+q1+q3, ld1, P1+q1+q3, Q1+q1+q3b, FfpackLQUP, cutoff);
+		q4 = LUdivine( F, FflasNonUnit, FflasNoTrans, mloc, nloc, NW+(q1+q3b)*ld1+q1+q3, ld1, P1+q1+q3, Q1+q1+q3b, FfpackLQUP, cutoff);
 
 		// Updating P
 		for (size_t i=q1+q3;i<q1+q3+q4;++i)

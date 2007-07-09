@@ -141,7 +141,7 @@ FFPACK::KGFast_generalized (const Field& F, std::list<Polynomial>& charp,
 			for (size_t i=0; i<lambda+me;++i)
 				Q[i]=0;
 
-			size_t r = LUdivine (F, FflasNonUnit, lambda + me, ncols, LUP, ncols, 
+			size_t r = LUdivine (F, FflasNonUnit, FflasNoTrans, lambda + me, ncols, LUP, ncols, 
 					   P, Q, FfpackLQUP);
 #if DEBUG
 			std::cerr<<"..done"<<std::endl;

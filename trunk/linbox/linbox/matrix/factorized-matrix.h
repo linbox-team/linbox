@@ -146,7 +146,7 @@ namespace LinBox{
 			  _n(A.coldim()), _alloc(true)  {
 			//std::cerr<<"Je passe par le constructeur const"<<std::endl;
 
-			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit, _m, _n, 
+			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans, _m, _n, 
 						 _LU.getPointer(),_LU.getStride(), 
 						 _P.getWritePointer(), _Q.getWritePointer(), FFPACK::FfpackLQUP );
 			
@@ -157,7 +157,7 @@ namespace LinBox{
 			: _F(F), _LU(A) , _P(A.coldim()), _Q(A.rowdim()), 
 			  _m(A.rowdim()), _n(A.coldim()), _alloc(false) {
 			//std::cerr<<"Je passe par le constructeur non const"<<std::endl;
-			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit, _m, _n, 
+			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, _m, _n, 
 						 _LU.getPointer(),_LU.getStride(), 
 						 _P.getWritePointer(), _Q.getWritePointer(), FFPACK::FfpackLQUP );
 			
@@ -169,7 +169,7 @@ namespace LinBox{
 			  _P(A.coldim()), _Q(A.rowdim()), _m(A.rowdim()),
 			  _n(A.coldim()), _alloc(true)  {
 			
-			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit, _m, _n, 
+			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans,  _m, _n, 
 						 _LU.getPointer(),_LU.getStride(), 
 						 _P.getWritePointer(), _Q.getWritePointer(), FFPACK::FfpackLQUP );
 		}
@@ -179,7 +179,7 @@ namespace LinBox{
 			: _F(A.field()), _LU(static_cast<BlasMatrix<Element>&> (A)) , _P(A.coldim()), _Q(A.rowdim()), 
 			  _m(A.rowdim()), _n(A.coldim()), _alloc(false) {
 			
-			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit, _m, _n, 
+			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans, _m, _n, 
 						 _LU.getPointer(),_LU.getStride(), 
 						 _P.getWritePointer(), _Q.getWritePointer(), FFPACK::FfpackLQUP );
 		}
