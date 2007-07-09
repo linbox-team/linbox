@@ -7,11 +7,11 @@ doc/linbox-html/index.html:
 
 examples:examples/dot-product
 
-examples/dot-product:linbox-config.h
-	(cd examples; make examples)
+#examples/dot-product:linbox-config.h
+#	(cd examples; make examples)
 
 bin_SCRIPTS=linbox-config
 
-include_HEADERS=linbox-config.h HACKING
+include_HEADERS= HACKING
 
 VERSION=1.1.3
