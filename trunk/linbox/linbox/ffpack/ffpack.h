@@ -855,7 +855,7 @@ public:
 	static void trinv_left( const Field& F, const size_t N, const typename Field::Element * L, const size_t ldl,
 				typename Field::Element * X, const size_t ldx ){
 		for (size_t i=0; i<N; ++i)
-			fcopy (F, N, L+i*ldl, 1, X+i*ldx, 1);
+			fcopy (F, N, X+i*ldx, 1, L+i*ldl, 1);
 		ftrtri (F, FflasLower, FflasUnit, N, X, ldx);
 		//invL(F,N,L,ldl,X,ldx);
 	}
