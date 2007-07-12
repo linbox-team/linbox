@@ -38,7 +38,7 @@ class DenseReader :public MatrixStreamReader<Field> {
 
 	MatrixStreamError initImpl() {
 		try {
-			int temp=0;
+		  //int temp=0;
 			if( !this->readSomeWhiteSpace() ||
 			    !this->readObject( this->_m ) ||
 			    !this->readWhiteSpace() ||
