@@ -260,7 +260,9 @@ namespace LinBox
 				 Preconditioner preconditioner = SPARSE,
 				 SingularState  singular       = SINGULARITY_UNKNOWN,
 				 bool           certificate    = CERTIFY,
-				 unsigned long  maxTries       = 100)
+				 unsigned long  maxTries       = 100,
+				 bool           checkResult    = true
+				 )
 
 		{ Specifier::_preconditioner = preconditioner;
 			Specifier::_rank =(rank);
@@ -269,6 +271,7 @@ namespace LinBox
 			Specifier::_certificate =(certificate);
 			Specifier::_maxTries =(maxTries);
 			Specifier::_ett =(thres);
+			Specifier::_checkResult = (checkResult);
 		}
 
 		WiedemannTraits( const Specifier& S) :  Specifier(S) {}   
