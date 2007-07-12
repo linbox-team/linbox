@@ -697,7 +697,8 @@ namespace LinBox {
 #ifdef RSTIMING
 		ttNonsingularSolve.update(re, lc);
 #endif	
-		
+		if (F!=NULL)
+			delete F;
 		return SS_OK;
 	}
 
