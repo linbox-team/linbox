@@ -74,9 +74,9 @@ namespace LinBox {
 			typedef TriplesBB<_Tp1> other; 
 			void operator() (other *& Ap, const Self_t& A, const _Tp1& F)
 			{
-				Hom <Self_t::Field, _Tp1> hom( A.field(), F);
+			  Hom <typename Self_t::Field, _Tp1> hom( A.field(), F);
 
-				typedef typename _Tp1::Element otherElt;
+			  typedef typename _Tp1::Element otherElt;
 				typedef typename std::vector<otherElt> othervec;
 				typedef typename std::vector<Element> selfvec;
 				typedef typename othervec::iterator otheriter;
