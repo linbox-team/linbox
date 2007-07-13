@@ -328,8 +328,8 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations) {
 		size_t * Q = new size_t[m];
 		
 // 		write_field (F, cerr<<"A="<<endl, A, m, n, n);
-		size_t r = FFPACK::LUdivine( F, FFLAS::FflasNonUnit, m, n, 
-					     A, n, P, Q, FFPACK::FfpackLQUP);
+		size_t r = FFPACK::LUdivine( F, FFLAS::FflasNonUnit, FFLAS::FflasNoTrans,
+					     m, n, A, n, P, Q, FFPACK::FfpackLQUP);
 // 		write_field (F, cerr<<"LQUP(A)="<<endl, A, m, n, n);
 
 		Element * L = new Element[m*m];
