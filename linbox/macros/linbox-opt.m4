@@ -14,7 +14,7 @@ if test "x$HAVE_BLAS" = "xyes" ;then
 AC_MSG_CHECKING([best threshold for Strassen-Winograd matrix multiplication])
 
 
-CXXFLAGS="${BACKUP_CXXFLAGS} -I`pwd` ${BLAS_CFLAGS} ${GMP_CFLAGS}  ${GIVARO_CFLAGS} ${CBLAS_FLAG}" 
+CXXFLAGS="${BACKUP_CXXFLAGS} -I`pwd` -I`pwd`/linbox ${BLAS_CFLAGS} ${GMP_CFLAGS}  ${GIVARO_CFLAGS} ${CBLAS_FLAG}" 
 LIBS="${BACKUP_LIBS} ${BLAS_LIBS} ${GMP_LIBS}" 
 
 
@@ -22,14 +22,14 @@ echo   " #define __LINBOX_INT8  $LINBOX_INT8
 	 #define __LINBOX_INT16 $LINBOX_INT16 	 
 	 #define __LINBOX_INT32 $LINBOX_INT32 	 
 	 #define __LINBOX_INT64 $LINBOX_INT64 	 
-" > linbox-config.h 
+" > linbox/linbox-config.h 
 
 
 AC_TRY_RUN([	#define LinBoxSrcOnly
 		#include <iostream>
 		#include <fstream>
 		#define __LINBOX_CONFIGURATION
-		#define _LINBOX_CONFIG_H
+		#define _LINBOX_LINBOX_CONFIG_H
 		#include <linbox/config-blas.h>
 		#include <linbox/field/modular-double.h>
 		#include <linbox/fflas/fflas.h>
@@ -132,13 +132,13 @@ AC_TRY_RUN([	#define LinBoxSrcOnly
 	AC_MSG_RESULT(cross compilation)
 	strassen_opti="no"
 	break
-	\rm -f linbox-config,h 2>&1 > /dev/null
+	\rm -f linbox/linbox-config,h 2>&1 > /dev/null
 	])
 
 fi;
 ],[
 AC_MSG_RESULT(no)
-\rm -r linbox-config.h  2>&1 > /dev/null
+\rm -f linbox/linbox-config.h  2>&1 > /dev/null
 ])
 
 ])
