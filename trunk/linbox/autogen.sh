@@ -34,17 +34,26 @@ DIE=0
 (automake --version) < /dev/null > /dev/null 2>&1 || {
 	echo
 	echo "You must have automake installed to compile $PROJECT."
-	echo "Get ftp://sourceware.cygnus.com/pub/automake/automake-1.4.tar.gz"
-	echo "(or a newer version if it is available)"
-	DIE=1
+        echo "Download the appropriate package for your distribution,"
+        echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
+ 	DIE=1
+ }
+ 
+(libtool --version) < /dev/null > /dev/null 2>&1 || {
+        echo
+        echo "You must have libtool installed to compile $PROJECT."
+        echo "Download the appropriate package for your distribution,"
+        echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
+        DIE=1
 }
+
 
 (grep "^AM_PROG_LIBTOOL" configure.in >/dev/null) && {
   (libtool --version) < /dev/null > /dev/null 2>&1 || {
     echo
-    echo "**Error**: You must have \`libtool' installed to compile $PROJECT."
-    echo "Get ftp://ftp.gnu.org/pub/gnu/libtool-1.2d.tar.gz"
-    echo "(or a newer version if it is available)"
+    echo "You must have libtool installed to compile $PROJECT."
+    echo "Download the appropriate package for your distribution,"
+    echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
     DIE=1
   }
 }
@@ -53,9 +62,9 @@ grep "^AM_GNU_GETTEXT" configure.in >/dev/null && {
   grep "sed.*POTFILES" $srcdir/configure.in >/dev/null || \
   (gettext --version) < /dev/null > /dev/null 2>&1 || {
     echo
-    echo "**Error**: You must have \`gettext' installed to compile $PROJECT."
-    echo "Get ftp://alpha.gnu.org/gnu/gettext-0.10.35.tar.gz"
-    echo "(or a newer version if it is available)"
+    echo "You must have gettext installed to compile $PROJECT."
+    echo "Download the appropriate package for your distribution,"
+    echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
     DIE=1
   }
 }
