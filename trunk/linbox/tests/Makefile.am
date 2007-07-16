@@ -1,6 +1,6 @@
 # FACING_REALITY is used anywhere?
 FACING_REALITY = 0
-INCLUDES=-I$(top_srcdir)
+INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/linbox
 #AM_LDFLAGS = -llapack -lcblas -latlas 
 AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -O2 
 #AM_CFLAGS = -g -Wall
