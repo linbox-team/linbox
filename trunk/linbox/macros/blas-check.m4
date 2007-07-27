@@ -66,6 +66,19 @@ if test -n "$BLAS_VAL"; then
 				ATLAS_LIBS="-lcblas -llapack"
 			fi		
 			BLAS_LIBS="-L${BLAS_VAL} $ATLAS_LIBS" 
+                elif test -r "$BLAS_VAL/include/mkl_cblas.h"; then
+			case `./config.guess` in
+				i686-*linux-gnu)
+					MKL_ARCH=32;
+					;;
+				x86_64-*-linux-gnu)
+					MKL_ARCH=em64t;
+					;;
+				*)
+					echo "Sorry unsupported arch, please complain in linbox-use discussion group";
+					;;
+			esac	
+                        BLAS_LIBS="-L${BLAS_VAL}/lib/${MKL_ARCH}/ -lmkl_lapack64 -lmkl -lvml -lguide"
 		fi
 	else
 		BLAS_LIBS="$BLAS_VAL"
