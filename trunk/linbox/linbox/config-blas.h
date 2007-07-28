@@ -237,7 +237,11 @@ extern "C" {
 		double *work;	
 
 #ifndef __LINBOX_AUTOIMPLEMENT_DGETRI
-		dgetri_ (&N, A, &lda, ipiv, work, (int*)-1,  &info);		
+		// the optimum size of work can be determinted via the 
+		// Lapack function ilaenv. 
+		work= new double[N];
+		dgetri_ (&N, A, &lda, ipiv, work, &N,  &info);
+		delete[] work;
 #else
 		work= new double[N*N];
 		dtrtri_("U","N", &N, A, &lda, &info);
