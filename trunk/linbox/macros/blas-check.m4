@@ -274,14 +274,17 @@ if test "x$blas_found" != "xyes" ; then
 		do
 			CBLAS="no"
 			CBLAS_FLAG=""
-	
-			if test -r "$BLAS_HOME/lib/libblas.a"; then
+
+			if test -r "$BLAS_HOME/lib64/libblas.a" && test -r "$BLAS_HOME/lib64/liblapack.a" ; then
+				BLAS_LIBS="-L${BLAS_HOME}/lib64 -llapack -lblas"
+			elif test -r "$BLAS_HOME/lib/libblas.a" && test -r "$BLAS_HOME/lib/liblapack.a" ; then
+				BLAS_LIBS="-L${BLAS_HOME}/lib -llapack -lblas"
+			elif test -r "$BLAS_HOME/lib/libblas.a"; then
 				if test "x$BLAS_HOME" = "x/usr" -o "x$BLAS_HOME" = "/usr/local" ; then
  					BLAS_LIBS="-lblas"
 				else
 					BLAS_LIBS="-L${BLAS_HOME}/lib  -lblas"
 				fi
-
 			elif test -r "$BLAS_HOME/libblas.a"; then
 				BLAS_LIBS="-L${BLAS_HOME} -lblas"
 			fi 
@@ -351,7 +354,7 @@ if test "x$blas_found" != "xyes" ; then
 
 
 
-## Check for dgetri (mainly for Goto less than 1.7)
+## Check for dgetrf (mainly for Goto less than 1.7)
 	AC_MSG_CHECKING(for dgetrf)
 	AC_TRY_RUN(
 	[#define __LINBOX_CONFIGURATION
@@ -382,7 +385,7 @@ if test "x$blas_found" != "xyes" ; then
 		#AC_DEFINE(HAVE_DGETRF,0,[Define if dgetrf is available])	
 	fi
 	
-## Check for dgetri (mainly for Goto less than 1.7)
+## Check for dtrtri (mainly for Goto less than 1.7)
 	AC_MSG_CHECKING(for dtrtri)
 	AC_TRY_RUN(
 	[#define __LINBOX_CONFIGURATION
