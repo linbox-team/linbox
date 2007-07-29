@@ -31,13 +31,33 @@ class DenseReader :public MatrixStreamReader<Field> {
 	    } catch( MatrixStreamError e ) { return e; }
 	    if( ++currentCol == this->_n ) {
 	    	++currentRow;
-		currentCol = 0;
+			currentCol = 0;
 	    }
 	    return GOOD;
 	}
 
 	MatrixStreamError initImpl() {
-		try {
+		bool retGood;
+
+        try {
+                char c;
+                if( !this->readSomeWhiteSpace() ||
+                !this->readObject( this->_m ) ||
+                !this->readWhiteSpace() ||
+                    !this->readObject( this->_n ) ||
+                !this->readWhiteSpace() ) return NO_FORMAT;
+            this->knowM = this->knowN = true;
+            c = this->sin->get();
+            if( c != 'D' && c != 'd') return NO_FORMAT;
+			retGood = this->readBreaks();
+        } catch( MatrixStreamError e ) {
+            return e;
+        }
+
+		if( this->_m < 1 || this->_n < 1 ) return BAD_FORMAT;
+		
+		
+	/*
 		  //int temp=0;
 			if( !this->readSomeWhiteSpace() ||
 			    !this->readObject( this->_m ) ||
@@ -49,8 +69,10 @@ class DenseReader :public MatrixStreamReader<Field> {
 		} catch( MatrixStreamError e ) { return e; }
 		if( this->_m < 1 || this->_n < 1 ) return BAD_FORMAT;
 		this->knowM = this->knowN = true;
+	*/
 		currentRow = currentCol = 0;
-		return GOOD;
+		if (retGood) return GOOD;
+		else return NO_FORMAT;
 	}
 
     public:

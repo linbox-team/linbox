@@ -28,13 +28,15 @@ class SMSReader :public MatrixStreamReader<Field> {
 		bool retGood;
 		
 		try {
+				char c;
 		    	if( !this->readSomeWhiteSpace() ||
 			    !this->readObject( this->_m ) ||
 			    !this->readWhiteSpace() ||
 		    	    !this->readObject( this->_n ) ||
 			    !this->readWhiteSpace() ) return NO_FORMAT;
 			this->knowM = this->knowN = true;
-			if( this->sin->get() != 'M' ) return NO_FORMAT;
+			c = this->sin->get(); 
+			if( c != 'M' && c != 'm') return NO_FORMAT;
 			retGood = this->readBreaks();
 		} catch( MatrixStreamError e ) {
 			return e;

@@ -14,8 +14,8 @@ char* matrixNames[nMatrices] = {
 				"data/sms.matrix",
 				"data/matrix-market-array.matrix",
 				"data/maple-sparse1.matrix",
-                    		"data/maple-dense1.matrix",
-                    		"data/generic-dense.matrix",
+				"data/maple-dense1.matrix",
+				"data/generic-dense.matrix",
 				"data/sparse-row.matrix",
 				"data/matrix-market-coordinate.matrix"
 			       };
@@ -24,17 +24,17 @@ const size_t rowDim = 11;
 const size_t colDim = 11;
 int nonZeros = 33;
 integer matrix[rowDim][colDim] = {
-                           {0, 0, 2, 3, 0, 0, 0, 0, 0, 1, 0},
-                           {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			   {2, 0, 0, 1, -1, 0, 0, 0, 0, 0, 6},
-			   {3, 0, 1, 4, 0, 0, 12, 0, 0, -13, 0},
-			   {0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0},
-			   {0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0},
-			   {0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0},
-			   {0, 0, 0, 0, 0, 1, 0, 500, 400, 300, 200},
-			   {0, 0, 0, 0, 0, 0, 0, 400, 0, 0, 0},
-			   {1, 0, 0, -13, 0, 1, 0, 300, 0, 10, 1},
-			   {0, 0, 6, 0, 0, 0, 0, 200, 0, 1, 0} };
+				{0, 0, 2, 3, 0, 0, 0, 0, 0, 1, 0},
+				{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+				{2, 0, 0, 1, -1, 0, 0, 0, 0, 0, 6},
+				{3, 0, 1, 4, 0, 0, 12, 0, 0, -13, 0},
+				{0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0},
+				{0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0},
+				{0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0},
+				{0, 0, 0, 0, 0, 1, 0, 500, 400, 300, 200},
+				{0, 0, 0, 0, 0, 0, 0, 400, 0, 0, 0},
+				{1, 0, 0, -13, 0, 1, 0, 300, 0, 10, 1},
+				{0, 0, 6, 0, 0, 0, 0, 200, 0, 1, 0} };
 typedef UnparametricField<integer> TestField;
 TestField f;
 
