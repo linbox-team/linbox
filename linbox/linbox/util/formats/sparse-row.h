@@ -26,11 +26,13 @@ class SparseRowReader :public MatrixStreamReader<Field> {
 
 	MatrixStreamError initImpl() {
 		try {
-			if( !this->readSomeWhiteSpace() ||
-			    !this->readObject( this->_m ) ||
-			    !this->readWhiteSpace() ||
-			    !this->readObject( this->_n ) ||
-			    !this->readWhiteSpace() ) return NO_FORMAT;
+			if( !this->readSomeWhiteSpace() || 
+			    !this->readObject( this->_m ) || 
+			    !this->readWhiteSpace() || 
+			    !this->readObject( this->_n ) 
+				|| !this->readWhiteSpace() 
+			  )  
+				return NO_FORMAT;
 			this->knowM = this->knowN = true;
 			if( this->sin->get() != 'S' ||
 			    !this->readBreaks() ) return NO_FORMAT;
