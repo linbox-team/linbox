@@ -59,18 +59,18 @@ namespace LinBox {
         }
 
         
-        template<class Int, template <class T> class Vect, class Function, class PrimeIterator>
-        Vect<Int> & operator() (Vect<Int>& res, Function& Iteration, PrimeIterator& primeiter) {
+      template<class Int, template <class, class> class Vect, template <class> class Alloc, class Function, class PrimeIterator>
+	  Vect<Int,Alloc<Int> > & operator() (Vect<Int,Alloc<Int> >& res, Function& Iteration, PrimeIterator& primeiter) {
             
             ++primeiter; 
             Domain D(*primeiter); 
-            Vect<DomainElement> r; 
+            Vect<DomainElement, Alloc<DomainElement> > r; 
             Builder_.initialize( D, Iteration(r, D) );
 
             while( ! Builder_.terminated() ) {
                 ++primeiter; while(Builder_.noncoprime(*primeiter) ) ++primeiter; 
                 Domain D(*primeiter); 
-                Vect<DomainElement> r; 
+                Vect<DomainElement, Alloc<DomainElement> > r; 
                 Builder_.progress( D, Iteration(r, D) );
             }
             return Builder_.result(res);
