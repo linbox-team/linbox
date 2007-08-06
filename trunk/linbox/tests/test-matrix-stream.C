@@ -9,12 +9,12 @@
 
 using namespace LinBox;
 
-const int nMatrices = 7;
+const int nMatrices = 5;
 char* matrixNames[nMatrices] = {
 				"data/sms.matrix",
 				"data/matrix-market-array.matrix",
-				"data/maple-sparse1.matrix",
-				"data/maple-dense1.matrix",
+				//"data/maple-sparse1.matrix",
+				//"data/maple-dense1.matrix",
 				"data/generic-dense.matrix",
 				"data/sparse-row.matrix",
 				"data/matrix-market-coordinate.matrix"
@@ -100,7 +100,9 @@ int main() {
 		int nzCount = nonZeros;
 		size_t m, n;
 		integer v;
-		if(!ms.getDimensions(m,n)) fail = failThis = true;
+		if(!ms.getDimensions(m,n)) {
+			fail = failThis = true;
+		}
 		if( !failThis && m != rowDim ) {
 			std::cout << "Wrong rowDim in " << matrixNames[i]
 			     << ", format " << ms.getFormat() << std::endl
@@ -144,7 +146,9 @@ int main() {
 				break;
 			}
 		}
-		if( ms.getError() != END_OF_MATRIX ) failThis = true;
+		if( ms.getError() != END_OF_MATRIX ) {
+			failThis = true;
+		}
 		if( !failThis && nzCount > 0 ) {
 			std::cout << "Not enough entries in " << matrixNames[i]
 			     << ", format " << ms.getFormat() << std::endl;

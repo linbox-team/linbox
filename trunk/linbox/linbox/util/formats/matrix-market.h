@@ -8,11 +8,12 @@
 #define __FORMAT_MATRIX_MARKET_H
 
 #include <string>
-#include <cctype>
+#include <sstream>
 #include <linbox/util/matrix-stream.h>
 
 namespace LinBox__FORMAT_MATRIX_MARKET_H
-	{ const char* name = "Matrix Market Format"; }
+	{ const char* name = "Matrix Market Format";
+	  const char* shortname = "mm"; }
 
 namespace LinBox {
 
@@ -38,8 +39,52 @@ class MatrixMarketReader :public MatrixStreamReader<Field> {
 	bool array;
 	bool pattern;
 	bool symmetric;
+
+	MatrixStreamError readHeader() {
+	        //Skip comments
+		this->ms->readWhiteSpace();
+		while( !this->sin->eof() && this->sin->peek() == '%' ) {
+			char c;
+			while( this->sin->get(c) ) {
+				if( c == '\n' || c == '\r' ) {
+					this->sin->putback(c);
+					break;
+				}
+			}
+			this->ms->readWhiteSpace();
+		}
+
+		*(this->sin) >> this->_m;
+		this->ms->readWhiteSpace();
+		*(this->sin) >> this->_n;
+		this->ms->readWhiteSpace();
+		if( !array ) {
+			*(this->sin) >> entriesLeft;
+			this->ms->readWhiteSpace();
+		}
+
+	        if( this->sin->eof() ) return END_OF_FILE;
+	        if( !this->sin->good() ) return BAD_FORMAT;
+
+		this->knowM = this->knowN = true;
+		currentCol = currentRow = 1;
+
+		if( symmetric && (this->_m != this->_n) ) return BAD_FORMAT;
+		if( this->_m < 1 || this->_n < 1 ) return BAD_FORMAT;
+		if( !array && (entriesLeft < 0 || 
+		    (size_t)entriesLeft > this->_m*this->_n ) )
+		    return BAD_FORMAT;
+
+		return GOOD;
+	}
+
     protected:
     	MatrixStreamError nextTripleImpl( size_t& m, size_t& n, Element& v ) {
+		if( currentCol == 0 && currentRow == 0 ) {
+			MatrixStreamError mse = readHeader();
+			if( mse != GOOD ) return mse;
+		}
+
 		if( array ) {
 			if( currentCol == this->_n+1 ) return END_OF_MATRIX;
 			n = currentCol;
@@ -49,78 +94,78 @@ class MatrixMarketReader :public MatrixStreamReader<Field> {
 				currentRow = (symmetric ? currentCol : 1);
 			}
 		}
-		else if( --entriesLeft < 0 ) return END_OF_MATRIX;
+		else {
+			if( --entriesLeft < 0 ) return END_OF_MATRIX;
 
-		try {
-		    if( !this->readBreaks() ||
-		     (  !array &&
-		      ( !this->readObject(m) ||
-			!this->readWhiteSpace() ||
-			!this->readObject(n) ||
-		       (!pattern &&
-		        !this->readWhiteSpace()))) ||
-		     (  !pattern &&
-		        !readElement(v)  ) ) return BAD_FORMAT;
+			this->ms->readWhiteSpace();
+			*(this->sin) >> m;
+			if( this->sin->eof() ) return END_OF_FILE;
+			if( !this->sin->good() ) return BAD_FORMAT;
+
+			this->ms->readWhiteSpace();
+			*(this->sin) >> n;
+			if( this->sin->eof() ) return END_OF_FILE;
+			if( !this->sin->good() ) return BAD_FORMAT;
 		}
-		catch( MatrixStreamError e ) {return e;}
+
 		if( pattern ) this->ms->getField().init(v,(integer)1);
+		else {
+			this->ms->readWhiteSpace();
+			this->ms->getField().read(*(this->sin),v);
+			if( this->sin->eof() ) return END_OF_FILE;
+			if( !this->sin->good() ) return BAD_FORMAT;
+		}
+
 		--m;
 		--n;
 		if( m < 0 || m >= this->_m || n < 0 || n >= this->_n )
 			return BAD_FORMAT;
 		if( symmetric && (m != n) ) saveTriple(n,m,v);
+
 		return GOOD;
 	}
 
-	MatrixStreamError initImpl() {
-	    std::string s;
-	    try {
-		if( !this->readObject(s) ||
-		    (s != "%%MatrixMarket") ||
-		    !this->readWhiteSpace() ||
-		    !this->readObject(s) ||
-		    !equalCaseInsensitive(s,"matrix") ||
-		    !this->readWhiteSpace() ||
-		    !this->readObject(s) ) return NO_FORMAT;
+	MatrixStreamError initImpl( char* firstLine ) {
+		std::string st(firstLine);
+		std::stringstream stin(st);
+
+	   	if( stin.get() != '%' || stin.get() != '%' )
+	    		return NO_FORMAT;
+	        if( !stin.good() ) return NO_FORMAT;
+
+		std::string s;
+		stin >> s;
+	        if( !stin.good() ) return NO_FORMAT;
+		if( !equalCaseInsensitive(s,"MatrixMarket") ) return NO_FORMAT;
+	    
+		stin >> s;
+	        if( !stin.good() ) return BAD_FORMAT;
+		if( !equalCaseInsensitive(s,"matrix") ) return BAD_FORMAT;
+
+		stin >> s;
+	        if( !stin.good() ) return BAD_FORMAT;
 		if( equalCaseInsensitive(s,"array") ) array = true;
 		else if( equalCaseInsensitive(s,"coordinate") ) array = false;
-		else return NO_FORMAT;
-		if( !this->readWhiteSpace() ||
-		    !this->readObject(s) ) return NO_FORMAT;
+		else return BAD_FORMAT;
+
+		stin >> s;
+	        if( !stin.good() ) return BAD_FORMAT;
 		pattern = equalCaseInsensitive(s,"pattern");
-		if( !this->readWhiteSpace() ||
-		    !this->readObject(s) ) return NO_FORMAT;
+
+		stin >> s;
+	        if( !stin.eof() && !stin.good() ) return BAD_FORMAT;
 		if( equalCaseInsensitive(s,"symmetric") ) symmetric = true;
 		else if( equalCaseInsensitive(s,"general") ) symmetric = false;
-		else return NO_FORMAT;
-		if( !this->readBreaks() ) return NO_FORMAT;
-		char c;
-		this->sin->get(c);
-		while( c == '%' ) {
-		    if( !this->readUntil('\n') ) return NO_FORMAT;
-		    this->sin->get(c);
-		    if( this->sin->eof() ) {
-		    	if( !this->moreData() ) return END_OF_FILE;
-			this->sin->get(c);
-		    }
-		}
-		this->sin->putback(c);
-		if( !this->readSomeWhiteSpace(true) ||
-		    !this->readObject(this->_m) ||
-		    !this->readWhiteSpace() ||
-		    !this->readObject(this->_n) ) return NO_FORMAT;
-		this->knowM = true;
-		this->knowN = true;
-		if( !array && !( this->readWhiteSpace() && this->readObject(entriesLeft) ) )
-			return NO_FORMAT;
-	    } catch( MatrixStreamError e ) { return e; }
-	    if( array && pattern ) return BAD_FORMAT;
-	    if( symmetric && (this->_m != this->_n) ) return BAD_FORMAT;
-	    if( this->_m < 1 || this->_n < 1 ) return BAD_FORMAT;
-	    if( !array && (entriesLeft < 0 || (size_t)entriesLeft > this->_m*this->_n ) )
-		return BAD_FORMAT;
-	    currentRow = currentCol = 1;
-	    return GOOD;
+		else return BAD_FORMAT;
+
+		stin >> s;
+		if( !stin.eof() ) return BAD_FORMAT;
+
+		if( array && pattern ) return BAD_FORMAT;
+
+		currentRow = currentCol = 0;
+
+		return GOOD;
 	}
 
     public:
@@ -133,6 +178,9 @@ class MatrixMarketReader :public MatrixStreamReader<Field> {
 	
 	const char* getName() const 
 		{ return LinBox__FORMAT_MATRIX_MARKET_H::name; }
+	
+	const char* shortName() const 
+		{ return LinBox__FORMAT_MATRIX_MARKET_H::shortname; }
 };
 
 }

@@ -8,7 +8,8 @@
 #define __FORMAT_DENSE_H
 
 namespace LinBox__FORMAT_DENSE_H
-	{ const char* name = "Generic Dense Format"; }
+	{ const char* name = "Generic Dense Format";
+	  const char* shortname = "dense"; }
 
 namespace LinBox {
 
@@ -20,59 +21,48 @@ class DenseReader :public MatrixStreamReader<Field> {
     	size_t currentRow, currentCol;
     protected:
 
+    	MatrixStreamError initImpl(char* firstLine) {
+		char* restLine;
+
+		// Read m
+		this->_m = strtoul(firstLine,&restLine,0);
+		if( this->_m == 0 && restLine == firstLine )
+			return NO_FORMAT;
+		firstLine = restLine;
+
+		// Read n
+		this->_n = strtoul(firstLine,&restLine,0);
+		if( this->_n == 0 && restLine == firstLine )
+			return NO_FORMAT;
+		firstLine = restLine;
+
+		// Check whitespace for rest of line
+		++firstLine;
+		while( *firstLine && isspace(*firstLine) )
+			++firstLine;
+		if( *firstLine ) return BAD_FORMAT;
+
+		this->knowM = this->knowN = true;
+
+		currentRow = currentCol = 0;
+		return GOOD;
+	}
+
 	MatrixStreamError nextTripleImpl( size_t& m, size_t& n, Element& v ) {
 	    if( currentRow == this->_m ) return END_OF_MATRIX;
 	    m = currentRow;
 	    n = currentCol;
-	    try {
-		if( (currentCol || currentRow) && !this->readWhiteSpace(true) )
-			return BAD_FORMAT;
-		if( !readElement(v) ) return BAD_FORMAT;
-	    } catch( MatrixStreamError e ) { return e; }
+
+	    this->ms->readWhiteSpace();
+	    this->ms->getField().read(*(this->sin),v);
+	    if( this->sin->eof() ) return END_OF_FILE;
+	    if( !this->sin->good() ) return BAD_FORMAT;
+	    
 	    if( ++currentCol == this->_n ) {
 	    	++currentRow;
-			currentCol = 0;
+		currentCol = 0;
 	    }
 	    return GOOD;
-	}
-
-	MatrixStreamError initImpl() {
-		bool retGood;
-
-        try {
-                char c;
-                if( !this->readSomeWhiteSpace() ||
-                !this->readObject( this->_m ) ||
-                !this->readWhiteSpace() ||
-                    !this->readObject( this->_n ) ||
-                !this->readWhiteSpace() ) return NO_FORMAT;
-            this->knowM = this->knowN = true;
-            c = this->sin->get();
-            if( c != 'D' && c != 'd') return NO_FORMAT;
-			retGood = this->readBreaks();
-        } catch( MatrixStreamError e ) {
-            return e;
-        }
-
-		if( this->_m < 1 || this->_n < 1 ) return BAD_FORMAT;
-		
-		
-	/*
-		  //int temp=0;
-			if( !this->readSomeWhiteSpace() ||
-			    !this->readObject( this->_m ) ||
-			    !this->readWhiteSpace() ||
-			    !this->readObject( this->_n ) ||
-			    //!this->readWhiteSpace(temp) ||
-			    //temp == 0 ) return NO_FORMAT;
-			    !this->readBreaks() ) return NO_FORMAT;
-		} catch( MatrixStreamError e ) { return e; }
-		if( this->_m < 1 || this->_n < 1 ) return BAD_FORMAT;
-		this->knowM = this->knowN = true;
-	*/
-		currentRow = currentCol = 0;
-		if (retGood) return GOOD;
-		else return NO_FORMAT;
 	}
 
     public:
@@ -83,6 +73,9 @@ class DenseReader :public MatrixStreamReader<Field> {
 	bool isSparse() const { return false; }
     	
 	const char* getName() const { return LinBox__FORMAT_DENSE_H::name; }
+	
+	const char* shortName() const 
+		{ return LinBox__FORMAT_DENSE_H::shortname; }
 
 };
 
