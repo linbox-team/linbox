@@ -8,68 +8,81 @@
 #ifndef __SMS_H
 #define __SMS_H
 
-#include <sstream>
+#include <cstdlib>
 
-namespace LinBox__SMS_H 
-	{ const char* name = "SMS Sparse Integer Matrix Format"; }
+namespace LinBox__SMS_H
+	{ const char* name = "SMS Sparse Integer Matrix Format";
+	  const char* shortname = "sms"; }
 
 namespace LinBox {
 
-template <class Field>
+template<class Field>
 class SMSReader :public MatrixStreamReader<Field> {
     public:
     	typedef typename MatrixStreamReader<Field>::Element Element;
     private:
-	int _base;
-	
+    	int _base;
+
     protected:
 
-	MatrixStreamError initImpl() {
-		bool retGood;
-		
-		try {
-				char c;
-		    	if( !this->readSomeWhiteSpace() ||
-			    !this->readObject( this->_m ) ||
-			    !this->readWhiteSpace() ||
-		    	    !this->readObject( this->_n ) ||
-			    !this->readWhiteSpace() ) return NO_FORMAT;
-			this->knowM = this->knowN = true;
-			c = this->sin->get(); 
-			if( c != 'M' && c != 'm') return NO_FORMAT;
-			retGood = this->readBreaks();
-		} catch( MatrixStreamError e ) {
-			return e;
-		}
+	MatrixStreamError initImpl(char* firstLine) {
+		char* restLine;
 
-		if( this->_m < 1 || this->_n < 1 ) return BAD_FORMAT;
+		// Read m
+		this->_m = strtoul(firstLine,&restLine,0);
+		if( this->_m == 0 && restLine == firstLine )
+			return NO_FORMAT;
+		firstLine = restLine;
 
-		if( retGood) return GOOD;
-		else return NO_FORMAT;
+		// Read n
+		this->_n = strtoul(firstLine,&restLine,0);
+		if( this->_n == 0 && restLine == firstLine )
+			return NO_FORMAT;
+		firstLine = restLine;
+
+		// Read "M"
+		while( *firstLine && isspace(*firstLine) )
+			++firstLine;
+		if( !(*firstLine) || ((*firstLine) != 'M' &&
+		                      (*firstLine) != 'm'   ) )
+			return NO_FORMAT;
+
+		// Check whitespace for rest of line
+		++firstLine;
+		while( *firstLine && isspace(*firstLine) )
+			++firstLine;
+		if( *firstLine ) return BAD_FORMAT;
+
+		this->knowM = this->knowN = true;
+
+		return GOOD;
 	}
 
 	MatrixStreamError nextTripleImpl( size_t& m, size_t& n, Element& v ) {
-		bool retGood;
-		
-		try {
-			if( !this->readSomeWhiteSpace() ||
-			    !this->readObject( m ) ||
-			    !this->readWhiteSpace() ||
-			    !this->readObject( n ) ||
-			    !this->readWhiteSpace() ||
-			    !readElement( v ) ) return BAD_FORMAT;
-			if( m == 0 && n == 0 && this->ms->getField().isZero(v) )
-				return END_OF_MATRIX;
-			retGood = this->readBreaks();
-		} catch( MatrixStreamError e ) { return e; }
+		this->ms->readWhiteSpace();
+	        *(this->sin) >> m;
+	        if( this->sin->eof() ) return END_OF_FILE;
+	        if( !this->sin->good() ) return BAD_FORMAT;
+       
+		this->ms->readWhiteSpace();
+	        *(this->sin) >> n;
+	        if( this->sin->eof() ) return END_OF_FILE;
+	        if( !this->sin->good() ) return BAD_FORMAT;
+       
+		this->ms->readWhiteSpace();
+	        this->ms->getField().read(*(this->sin),v);
+	        if( this->sin->eof() ) return END_OF_FILE;
+	        if( !this->sin->good() ) return BAD_FORMAT;
+
+		if( m == 0 && n == 0 ) return END_OF_MATRIX;
 
 		m -= _base;
 		n -= _base;
-		if( m < 0 || m >= this->_m || n < 0 || n >= this->_n )
-			return BAD_FORMAT;
 
-		if( retGood ) return GOOD;
-		else return BAD_FORMAT;
+		if( m < 0 || m >= this->_m ||
+		    n < 0 || n >= this->_n ) return BAD_FORMAT;
+
+		return GOOD;
 	}
 
     public:
@@ -77,12 +90,13 @@ class SMSReader :public MatrixStreamReader<Field> {
 		_base = base;
 	}
 
-	const char* getName() const { return LinBox__SMS_H::name; }
+	const char* getName() const {return LinBox__SMS_H::name;}
+	const char* shortName() const
+	{ return LinBox__SMS_H::shortname; }
 
 	bool isSparse() const { return true; }
-
 };
 
 }
 
-#endif
+#endif // __FORMAT_SPARSE_ROW_H

@@ -11,16 +11,12 @@
  */
 
 #define __MATRIX_STREAM_READERDEFS \
-	addReader( new MatrixMarketReader<Field>() );		\
-	addReader( new MapleDense1Reader<Field>() );		\
-	addReader( new MapleSparse1Reader<Field>() );		\
-	addReader( new SMSReader<Field>() );			\
-	addReader( new DenseReader<Field>() );			\
-	addReader( new SparseRowReader<Field>() );		
+	addReader( new SMSReader<Field>() ); \
+	addReader( new SparseRowReader<Field>() ); \
+	addReader( new MatrixMarketReader<Field>() ); \
+	addReader( new DenseReader<Field>() );
 
 #include "sms.h"
-#include "maple-dense1.h"
-#include "maple-sparse1.h"
 #include "sparse-row.h"
 #include "generic-dense.h"
 #include "matrix-market.h"

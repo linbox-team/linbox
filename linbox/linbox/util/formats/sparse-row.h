@@ -8,8 +8,11 @@
 #ifndef __FORMAT_SPARSE_ROW_H
 #define __FORMAT_SPARSE_ROW_H
 
+#include <cstdlib>
+
 namespace LinBox__FORMAT_SPARSE_ROW_H
-	{ const char* name = "Sparse Row Format"; }
+	{ const char* name = "Sparse Row Format";
+	  const char* shortname = "sparserow"; }
 
 namespace LinBox {
 
@@ -20,49 +23,70 @@ class SparseRowReader :public MatrixStreamReader<Field> {
     private:
     	int _base;
 	size_t currentRow, colsLeft;
-	bool begin;
 
     protected:
 
-	MatrixStreamError initImpl() {
-		try {
-			if( !this->readSomeWhiteSpace() || 
-			    !this->readObject( this->_m ) || 
-			    !this->readWhiteSpace() || 
-			    !this->readObject( this->_n ) 
-				|| !this->readWhiteSpace() 
-			  )  
-				return NO_FORMAT;
-			this->knowM = this->knowN = true;
-			if( this->sin->get() != 'S' ||
-			    !this->readBreaks() ) return NO_FORMAT;
+	MatrixStreamError initImpl(char* firstLine) {
+		char* restLine;
 
-		} catch( MatrixStreamError e ) { return e; }
-		if( this->_m < 1 || this->_n < 1 ) return BAD_FORMAT;
+		// Read m
+		this->_m = strtoul(firstLine,&restLine,0);
+		if( this->_m == 0 && restLine == firstLine )
+			return NO_FORMAT;
+		firstLine = restLine;
+
+		// Read n
+		this->_n = strtoul(firstLine,&restLine,0);
+		if( this->_n == 0 && restLine == firstLine )
+			return NO_FORMAT;
+		firstLine = restLine;
+
+		// Read "S"
+		while( *firstLine && isspace(*firstLine) )
+			++firstLine;
+		if( !(*firstLine) || ((*firstLine) != 'S' &&
+		                      (*firstLine) != 's'   ) )
+			return NO_FORMAT;
+
+		// Check whitespace for rest of line
+		++firstLine;
+		while( *firstLine && isspace(*firstLine) )
+			++firstLine;
+		if( *firstLine ) return BAD_FORMAT;
+
+		this->knowM = this->knowN = true;
+
 		currentRow = -1;
 		colsLeft = 0;
-		begin = true;
 		return GOOD;
 	}
 
 	MatrixStreamError nextTripleImpl( size_t& m, size_t& n, Element& v ) {
-		try {
-			while( colsLeft == 0 ) {
-			  if( ++currentRow == this->_m ) return END_OF_MATRIX;
-				if( begin ) begin = false;
-				else if( !this->readBreaks() ) return BAD_FORMAT;
-				if( !this->readObject( colsLeft ) ) return BAD_FORMAT;
-			}
-			if( !this->readWhiteSpace() ||
-			    !this->readObject(n) ||
-			    !this->readWhiteSpace() ||
-			    !this->readElement(v) ) return BAD_FORMAT;
-			n -= _base;
-			m = currentRow;
-			--colsLeft;
-		} catch( MatrixStreamError e ) { return e; }
+	        while( colsLeft == 0 ) {
+	          	if( ++currentRow == this->_m ) return END_OF_MATRIX;
+			this->ms->readWhiteSpace();
+	          	*(this->sin) >> colsLeft;
+	          	if( this->sin->eof() ) return END_OF_FILE;
+	          	if( !this->sin->good() ) return BAD_FORMAT;
+	        }
+       
+		this->ms->readWhiteSpace();
+	        *(this->sin) >> n;
+	        if( this->sin->eof() ) return END_OF_FILE;
+	        if( !this->sin->good() ) return BAD_FORMAT;
+       
+		this->ms->readWhiteSpace();
+	        this->ms->getField().read(*(this->sin),v);
+	        if( this->sin->eof() ) return END_OF_FILE;
+	        if( !this->sin->good() ) return BAD_FORMAT;
+
+		n -= _base;
+		m = currentRow;
+		--colsLeft;
+
 		if( m < 0 || m >= this->_m ||
 		    n < 0 || n >= this->_n ) return BAD_FORMAT;
+
 		return GOOD;
 	}
 
@@ -73,9 +97,10 @@ class SparseRowReader :public MatrixStreamReader<Field> {
 	}
 
 	const char* getName() const {return LinBox__FORMAT_SPARSE_ROW_H::name;}
+	const char* shortName() const
+	{ return LinBox__FORMAT_SPARSE_ROW_H::shortname; }
 
 	bool isSparse() const { return true; }
-
 };
 
 }
