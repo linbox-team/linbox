@@ -70,9 +70,10 @@ class SMSReader :public MatrixStreamReader<Field> {
 	        if( !this->sin->good() ) return BAD_FORMAT;
        
 		this->ms->readWhiteSpace();
+		if( this->sin->eof() ) return END_OF_FILE;
 	        this->ms->getField().read(*(this->sin),v);
-	        if( this->sin->eof() ) return END_OF_FILE;
-	        if( !this->sin->good() ) return BAD_FORMAT;
+	        if( this->sin->eof() ) this->atEnd = true;
+	        else if( !this->sin->good() ) return BAD_FORMAT;
 
 		if( m == 0 && n == 0 ) return END_OF_MATRIX;
 
