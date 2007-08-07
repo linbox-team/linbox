@@ -288,24 +288,26 @@ namespace LinBox {
 		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
 
 
-		typename Blackbox::ConstRawIterator it = A.rawBegin();
-		typename Blackbox::ConstRawIterator it_end = A.rawEnd();
-		integer max = 1,min=0;
-		while( it != it_end ){
-			//      cerr<<"it="<<(*it)<<endl;
-			if (max < (*it))
-				max = *it; 
-			if ( min > (*it))
-				min = *it;
-			it++;
-		}
-		if (max<-min) 
-			max=-min;
-		size_t n=A.coldim();
-		double hadamarcp = n/2.0*(log(double(n))+2*log(double(max))+0.21163275)/log(2.0);
+// 		typename Blackbox::ConstRawIterator it = A.rawBegin();
+// 		typename Blackbox::ConstRawIterator it_end = A.rawEnd();
+// 		integer max = 1,min=0;
+// 		while( it != it_end ){
+// 			//      cerr<<"it="<<(*it)<<endl;
+// 			if (max < (*it))
+// 				max = *it; 
+// 			if ( min > (*it))
+// 				min = *it;
+// 			it++;
+// 		}
+// 		if (max<-min) 
+// 			max=-min;
+// 		size_t n=A.coldim();
+// 		double hadamarcp = n/2.0*(log(double(n))+2*log(double(max))+0.21163275)/log(2.0);
 
 		
-		ChineseRemainder< FullMultipCRA<Modular<double> > > cra(hadamarcp);
+//		ChineseRemainder< FullMultipCRA<Modular<double> > > cra(hadamarcp);
+
+		ChineseRemainder< EarlyMultipCRA<Modular<double> > > cra(3UL);
 		IntegerModularCharpoly<Blackbox,Method::BlasElimination> iteration(A, M);
 		cra(P, iteration, genprime);
 		commentator.stop ("done", NULL, "Iminpoly");
