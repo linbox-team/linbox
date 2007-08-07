@@ -49,7 +49,7 @@ BASIC_TESTS =  			\
         test-modular-double     \
         test-modular-int        \
         test-modular-short      \
-		test-block-ring			\
+	test-block-ring			\
         test-moore-penrose      \
         test-randiter-nonzero   \
         test-rank               \
@@ -61,8 +61,7 @@ BASIC_TESTS =  			\
         test-trace              \
         test-triplesbb          \
         test-vector-domain      \
-        test-zero-one 
-
+	test-zero-one 
 # tests of components not adhering to LinBox requirements.
 NONCOMPLIANT_TESTS =	\
 	test-unparametric-field	\
@@ -235,6 +234,7 @@ test_subvector_SOURCES = 		\
 
 test_vector_domain_SOURCES = 		\
 	test-vector-domain.C		\
+	test-vector-domain.h		\
 	test-common.h
 
 test_matrix_domain_SOURCES = 		\
@@ -259,6 +259,8 @@ test_scalar_matrix_SOURCES = 		\
 	test-common.h
 
 test_butterfly_SOURCES = 		\
+	test-vector-domain.h		\
+	test-blackbox.h			\
 	test-butterfly.C		\
 	test-generic.h			\
 	test-common.h
@@ -401,6 +403,7 @@ test_param_fuzzy_SOURCES =	        \
 
 test_quad_matrix_SOURCES =		\
 	test-quad-matrix.C		\
+	test-generic-for-quad.h		\
 	test-generic.h			\
 	test-common.h
 

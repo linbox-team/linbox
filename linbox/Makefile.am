@@ -1,4 +1,4 @@
-SUBDIRS=gmp++ linbox macros tests interfaces doc
+SUBDIRS=gmp++ linbox macros tests interfaces doc examples
 
 docs:doc/linbox-html/index.html
 
@@ -14,4 +14,4 @@ bin_SCRIPTS=linbox-config
 
 include_HEADERS= HACKING
 
-VERSION=1.1.3
+VERSION=1.1.4
