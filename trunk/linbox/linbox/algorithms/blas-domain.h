@@ -29,7 +29,7 @@
 #include <vector>
 #include <linbox/ffpack/ffpack.h>
 #include <linbox/fflas/fflas.h>
-#include <linbox/blackbox/permutation.h>
+//#include <linbox/blackbox/permutation.h>
 #include <linbox/matrix/blas-matrix.h>
 #include <linbox/util/debug.h>
 
