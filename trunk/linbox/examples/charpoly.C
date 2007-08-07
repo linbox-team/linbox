@@ -84,11 +84,11 @@ int main (int argc, char **argv)
 	if (!input) { cerr << "Error opening matrix file " << argv[1] << endl; return -1; }
 
 	if (argc == 2) {
-
-		UnparametricField<integer> ZZ;
-		DenseMatrix<UnparametricField<integer> > A (ZZ);
+		
+		PID_integer ZZ;
+		DenseMatrix<PID_integer > A (ZZ);
 		A.read (input);
-		typedef GivPolynomialRing<UnparametricField<integer>,Dense> IntPolRing;
+		typedef GivPolynomialRing<PID_integer,Dense> IntPolRing;
 		IntPolRing::Element c_A;
 		charpoly (c_A, A);
 
