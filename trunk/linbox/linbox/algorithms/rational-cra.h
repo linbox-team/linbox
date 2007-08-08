@@ -66,16 +66,16 @@ namespace LinBox {
             return Builder_.result(num, den);
         }
 
-        template<template <class T> class Vect, class Function, class RandPrimeIterator>
-        Vect<Integer> & operator() (Vect<Integer>& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime) {
+	    template<template <class, class> class Vect, template <class> class Alloc,  class Function, class RandPrimeIterator>
+	    Vect<Integer, Alloc<Integer> > & operator() (Vect<Integer, Alloc<Integer> >& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime) {
             ++genprime;
             Domain D(*genprime); 
-            Vect<DomainElement> r; 
+            Vect<DomainElement, Alloc<DomainElement> > r; 
             Builder_.initialize( D, Iteration(r, D) );				
             while( ! Builder_.terminated() ) {
                 ++genprime; while(Builder_.noncoprime(*genprime) ) ++genprime;
                 Domain D(*genprime); 
-                Vect<DomainElement> r; 
+                Vect<DomainElement, Alloc<DomainElement> > r; 
                 Builder_.progress( D, Iteration(r, D) );
             }
             return Builder_.result(num, den);
