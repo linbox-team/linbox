@@ -37,8 +37,8 @@ namespace LinBox {
         FullMultipRatCRA(const double BOUND = 0.0) : Father_t(BOUND) {}
 
 		
-        template<template<class T> class Vect>
-        Vect<Integer>& result (Vect<Integer> &num, Integer& den){
+	    template<template<class, class> class Vect, template <class> class Alloc>
+	    Vect<Integer, Alloc<Integer> >& result (Vect<Integer, Alloc<Integer> > &num, Integer& den){
             num.resize( (Father_t::RadixResidues_.front()).size() );
             std::vector< LazyProduct >::iterator 			_mod_it = Father_t::RadixPrimeProd_.begin();
             std::vector< std::vector< Integer > >::iterator _tab_it = Father_t::RadixResidues_.begin();
