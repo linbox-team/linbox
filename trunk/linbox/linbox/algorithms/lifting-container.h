@@ -427,7 +427,7 @@ namespace LinBox {
 				// compute v2 = _A * digit				
 				IVector v2 (_lc._A.coldim());
 				_lc._MAD.applyV(v2,digit, _res);
-											
+
 #ifdef RSTIMING
 				_lc.tRingApply.stop();
 				_lc.ttRingApply += _lc.tRingApply;

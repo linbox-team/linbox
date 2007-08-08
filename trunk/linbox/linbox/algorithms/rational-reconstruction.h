@@ -319,7 +319,7 @@ public:
 					std::cout << "ERROR in reconstruction ?\n" << std::endl;
 #ifdef DEBUG_RR
 					std::cout<<" try to reconstruct :\n";
-					std::cout<<"approximation: "<<*iter_approx<<std::endl;
+					//	std::cout<<"approximation: "<<*iter_approx<<std::endl;
 					std::cout<<"modulus: "<<modulus<<std::endl;
 					std::cout<<"numbound: "<<numbound<<std::endl;
 					std::cout<<"denbound: "<<denbound<<std::endl;

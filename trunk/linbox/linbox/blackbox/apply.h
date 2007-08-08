@@ -331,7 +331,7 @@ namespace LinBox {
 				}			
 			}
 			size_t bit, dbit;
-			bit=tmp.bitsize();
+			bit=maxValue.bitsize();
 			dbit= maxValue.size_in_base(4)*2;
 			maxBitSize= ((dbit-bit)>1)? dbit: bit;
 						
@@ -381,7 +381,6 @@ namespace LinBox {
 					maxValue= maxValue<<1;
 					maxBitSize+=1;
 				}
-
 				// compute the number of chunk
 				if (maxValue*prime*_M.coldim() < integer("9007199254740992")){
 					num_chunks=1;
@@ -402,16 +401,16 @@ namespace LinBox {
 				create_MatrixQadic(_D, _M, chunks, num_chunks, shift);
 
 #ifdef DEBUG_CHUNK_SETUP			
-				cout<<endl;
-				cout << num_chunks << " chunks of "<< chunk_size << " bits each" << endl;
-				if (!use_neg) cout << "not ";
-				cout << "using negative leading chunk" << endl;
-				cout << "Contents of chunks: " << endl;
+				std::cout<<std::endl;
+				std::cout << num_chunks << " chunks of "<< chunk_size << " bits each" << std::endl;
+				if (!use_neg) std::cout << "not ";
+				std::cout << "using negative leading chunk" << std::endl;
+				std::cout << "Contents of chunks: " << std::endl;
 				for (size_t i=0; i<num_chunks; i++) {
-					cout << "chunk " << i << endl;
+					std::cout << "chunk " << i << std::endl;
 					for (size_t j=0; j<_m*_n; j++) {
-						cout << static_cast<long long>(chunks[i*_m*_n+j]);
-						if ((j+1)%_n) cout << ' '; else cout << endl;
+						std::cout << static_cast<long long>(chunks[i*_m*_n+j]);
+						if ((j+1)%_n) std::cout << ' '; else std::cout << std::endl;
 					}
 				}
 #endif			       
