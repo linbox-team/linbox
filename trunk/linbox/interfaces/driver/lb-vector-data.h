@@ -39,7 +39,7 @@ extern VectorTable vector_hashtable;
  * Functor to determine domain in Abstract Vectors *
  ***************************************************/
 
-template<template<class Element> class Vector, class Functor>
+template<template<class Element, class Alloc=std::allocator<Element> > class Vector, class Functor>
 class VectorSpecFunctor{
 	const Functor &fct;
 	void *ptr;
@@ -48,7 +48,7 @@ public:
 	
 	template<class Domain, class Result>
 	void  operator() (Result& res, Domain *d) const {
-		fct(res, static_cast<Vector<typename Domain::Element>*> (ptr));
+		fct(res, static_cast<Vector<typename Domain::Element, std::allocator<typename Domain::Element> >*> (ptr));
 	} 
 };
 
@@ -120,7 +120,7 @@ public:
  * Functors to rebind Vectors *
  ******************************/
 
-template<template<class T> class Vector>
+template<template<class T, class Alloc=std::allocator<T> > class Vector>
 class RebindVectorFunctor{
 	void            *&ptr;
 public:
@@ -151,7 +151,7 @@ public:
  * Vector Envelope to be compliant with Vector Abstract *
  ********************************************************/
 
-template<template<class Element> class Vector> 
+template<template<class Element, class Alloc=std::allocator<Element> > class Vector> 
 class VectorEnvelope : public VectorAbstract {
 protected:
 	void         *ptr;
@@ -206,7 +206,7 @@ public:
  * Functors to construct Vectors *
  *********************************/
 
-template<template<class T> class Vector>
+template<template<class T, class Allocator=std::allocator<T> > class Vector>
 class CreateVectorFunctor{
 	size_t &_dim;
 public:
@@ -220,7 +220,7 @@ public:
 	}
 };
 
-template<template<class T> class Vector>
+template<template<class T, class Allocator=std::allocator<T> > class Vector>
 class CreateVectorFromStreamFunctor{	
 	std::istream &in;
 public:
@@ -245,7 +245,7 @@ public:
  * Vector construction function used in the Factory *
  ******************************************************/
 
-template<template<class T> class Vector>
+template<template<class T, class Allocator=std::allocator<T> > class Vector>
 VectorAbstract* constructVector_from_size(const DomainKey &k, size_t n, const char* info){
 	CreateVectorFunctor<Vector> fct(n);
 	void *bb;
@@ -254,7 +254,7 @@ VectorAbstract* constructVector_from_size(const DomainKey &k, size_t n, const ch
 	return bbe;
 }
 
-template<template<class T> class Vector>
+template<template<class T, class Allocator=std::allocator<T> > class Vector>
 VectorAbstract* constructVector_from_stream (const DomainKey &k, std::istream &in, const char *info){
 	CreateVectorFromStreamFunctor<Vector> fct(in);
 	void *v;
