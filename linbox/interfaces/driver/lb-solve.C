@@ -28,6 +28,7 @@
 #include <lb-solve.h>
 #include <lb-blackbox-function.h>
 #include <lb-vector-function.h>
+#include <lb-blackbox.h>
 #include <lb-vector.h>
 #include <lb-domain.h>
 #include <lb-garbage.h>
@@ -200,7 +201,19 @@ void lb_solve(const VectorKey &res, const BlackboxKey &Bkey, const VectorKey &Vk
  *****************************************************/
 
 const VectorKey&  lb_solve(const BlackboxKey &Bkey, const VectorKey &Vkey) {	
-	const VectorKey *res = &copyVector(Vkey);
+
+	BlackboxTable::iterator it = blackbox_hashtable.find(Bkey);
+	if (it == blackbox_hashtable.end())
+		throw lb_runtime_error("LinBox ERROR: blackbox does not exist (solving impossible)\n");	
+	const DomainKey *Dkey = &it->second->getDomainKey();
+
+	std::pair<size_t,size_t> dim;
+	dim = getBlackboxDimension(Bkey);
+	size_t coldim = dim.second;
+
+	//const VectorKey *res = &copyVector(Vkey);
+	const VectorKey *res = &createVector(*Dkey, coldim);
+
 	lb_solve(*res, Bkey, Vkey);
 	return *res;
 }
