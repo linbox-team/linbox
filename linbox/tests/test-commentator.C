@@ -34,9 +34,9 @@ using namespace std;
 
 void outputReportStrings () 
 {
-	static char *classes[] =
+	static const char *classes[] =
 		{ INTERNAL_DESCRIPTION, INTERNAL_WARNING, INTERNAL_ERROR };
-	static char *levels[] =
+	static const char *levels[] =
 		{ "LEVEL_ALWAYS     ", "LEVEL_IMPORTANT  ", "LEVEL_NORMAL     ", "LEVEL_UNIMPORTANT" };
 
 	for (unsigned int i = 0; i < sizeof (classes) / sizeof (char *); ++i)

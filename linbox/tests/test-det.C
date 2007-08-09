@@ -474,7 +474,7 @@ int main (int argc, char **argv)
 	cout << endl << "Determinant test suite" << endl;
 
 	// Make sure some more detailed messages get printed
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	if (!testDiagonalDet1        (F, n, iterations)) pass = false;

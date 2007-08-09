@@ -5,7 +5,7 @@
  * Copyright (C) June 2004 Dan Roche, part of LinBox, GNU LGPL. See COPYING for license.
  */
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "linbox/util/timer.h"
 // #include "linbox/field/givaro-gfq.h"
 
@@ -231,6 +231,7 @@ int64 getOps(int unit) {
 	double b = 1.3;
 	UserTimer opsClock;
 	opsClock.clear();
+	long double c;
 	while( opsClock.time() < unit ) {
 		ops *= 2;
 		i = 0;
@@ -240,6 +241,13 @@ int64 getOps(int unit) {
 			b *= b;
 		}
 		opsClock.stop();
+		// random code to prevent optimization of the loop
+		if (a<b)
+			b=a;
+		else
+			b = 2*a;
+		c = a+b;
+
 	}
 	return ops;
 }
@@ -262,7 +270,7 @@ void printTimings( double* timings, bool fulltest = false ) {
 }
 
 template <class Field>
-void doTest(char* name, integer& p, integer& exp, int64& iter, bool fulltest = false) {
+void doTest(const char* name, integer& p, integer& exp, int64& iter, bool fulltest = false) {
 	static double mops[11];
 	if( FieldTraits<Field>::goodModulus( p ) &&
 	    FieldTraits<Field>::goodExponent( exp ) ) {
@@ -314,7 +322,9 @@ int main(int argc, char** argv) {
     doTest< Modular<int16> >( "Modular<int16>", prime, exp, iterations, fulltest );
     doTest< Modular<int32> >( "Modular<int32>", prime, exp, iterations, fulltest );
     doTest< Modular<int> >( "Modular<int>", prime, exp, iterations, fulltest );
-    doTest< Modular<double> >( "Modular<double>", prime, exp, iterations, fulltest );
+    //doTest< Modular<double> >( "Modular<double>", prime, exp, iterations, fulltest );
+    //doTest< Modular<float> >( "Modular<float>", prime, exp, iterations, fulltest );
+
 #ifdef __LINBOX_HAVE_NTL
     doTest< NTL_zz_p >( "NTL_zz_p", prime, exp, iterations, fulltest );
     doTest< NTL_PID_zz_p >( "NTL_PID_zz_p", prime, exp, iterations, fulltest ); 

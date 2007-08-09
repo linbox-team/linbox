@@ -38,8 +38,8 @@ enum ArgumentType {
 struct Argument 
 {
 	char             c;
-	char            *example;
-	char            *helpString;
+	const char            *example;
+	const char            *helpString;
 	ArgumentType     type;
 	void            *data;
 };
