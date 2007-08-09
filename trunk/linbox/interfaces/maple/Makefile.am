@@ -12,7 +12,6 @@ liblbmaple_la_LDFLAGS=$(GMP_LIBS) $(NTL_LIBS) $(BLAS_LIBS) $(MAPLE_LIBS) $(GIVAR
 
 pkginclude_HEADERS =lb-maple.h lb-maple-utilities.h
 
-EXTRA_DIST= lb-maple-path.sh lb-maple.mpl
 
 install-data-local: 
 	sh lb-maple-path.sh "$(libdir)/liblbmaple.so"
