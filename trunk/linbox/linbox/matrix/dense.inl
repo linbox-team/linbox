@@ -329,25 +329,8 @@ template <class Field>
 DenseMatrixBase<_Element>::DenseMatrixBase( MatrixStream<Field>& ms )
 	:_rep(0), _rows(0), _cols(0), _ptr(NULL)
 {
-	if( !ms.getColumns( _cols ) )
+	if( !ms.getArray(_rep) || !ms.getRows(_rows) || !ms.getColumns(_cols) )
 		throw ms.reportError(__FUNCTION__,__LINE__);
-	size_t i, j;
-	Element val;
-	while( ms.nextTriple( i, j, val ) ) {
-		if( i >= _rows ) {
-			_rows = i + 1;
-			_rep.resize( _rows * _cols );
-		}
-		setEntry( i, j, val );
-	}
-	if( ms.getError() != END_OF_MATRIX )
-		throw ms.reportError( __FUNCTION__, __LINE__ );
-	if( !ms.getRows( i ) )
-		throw ms.reportError( __FUNCTION__, __LINE__ );
-	if( i > _rows ) {
-		_rows = i;
-		_rep.resize( _rows * _cols );
-	}
 	_ptr = &_rep[0];
 }
 

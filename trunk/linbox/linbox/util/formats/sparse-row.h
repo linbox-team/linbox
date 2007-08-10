@@ -26,33 +26,34 @@ class SparseRowReader :public MatrixStreamReader<Field> {
 
     protected:
 
-	MatrixStreamError initImpl(char* firstLine) {
+	MatrixStreamError initImpl(const char* firstLine) {
 		char* restLine;
+		int i = 0;
 
 		// Read m
 		this->_m = strtoul(firstLine,&restLine,0);
 		if( this->_m == 0 && restLine == firstLine )
 			return NO_FORMAT;
-		firstLine = restLine;
+		i = restLine - firstLine;
 
 		// Read n
-		this->_n = strtoul(firstLine,&restLine,0);
-		if( this->_n == 0 && restLine == firstLine )
+		this->_n = strtoul(firstLine+i,&restLine,0);
+		if( this->_n == 0 && restLine == firstLine+i )
 			return NO_FORMAT;
-		firstLine = restLine;
+		i = restLine - firstLine;
 
 		// Read "S"
-		while( *firstLine && isspace(*firstLine) )
-			++firstLine;
-		if( !(*firstLine) || ((*firstLine) != 'S' &&
-		                      (*firstLine) != 's'   ) )
+		while( firstLine[i] && isspace(firstLine[i]) )
+			++i;
+		if( !firstLine[i] || (firstLine[i] != 'S' &&
+		                      firstLine[i] != 's'   ) )
 			return NO_FORMAT;
 
 		// Check whitespace for rest of line
-		++firstLine;
-		while( *firstLine && isspace(*firstLine) )
-			++firstLine;
-		if( *firstLine ) return BAD_FORMAT;
+		++i;
+		while( firstLine[i] && isspace(firstLine[i]) )
+			++i;
+		if( firstLine[i] ) return BAD_FORMAT;
 
 		this->knowM = this->knowN = true;
 

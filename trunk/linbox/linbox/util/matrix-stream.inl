@@ -1,5 +1,4 @@
 #include "linbox/util/formats/matrix-stream-readers.h"
-#include <cstdlib>
 
 namespace LinBox {
 
@@ -44,7 +43,7 @@ void MatrixStreamReader<Field>::saveTriple(size_t m, size_t n, const Element& v 
 
 template<class Field>
 MatrixStreamError MatrixStreamReader<Field>::init
-	(char* firstLine, std::istream* i, MatrixStream<Field>* m )
+	(const char* firstLine, std::istream* i, MatrixStream<Field>* m )
 {
 	if( !i || !m || !firstLine ) throw "Bad istream or MatrixStream";
 	sin = i;
@@ -69,6 +68,33 @@ MatrixStreamError MatrixStreamReader<Field>::nextTriple
 	n = savedTriples.front().first.second;
 	v = savedTriples.front().second;
 	savedTriples.pop();
+	return GOOD;
+}
+
+template<class Field>
+MatrixStreamError MatrixStreamReader<Field>::getArray
+	(std::vector<Element> &array)
+{
+	MatrixStreamError mse = GOOD;
+	size_t c = 0,loc,i,j;
+	Element v;
+
+	while( true ) {
+		mse = nextTriple(i,j,v);
+		if( mse > GOOD ) break;
+		if( i > 0 ) {
+			mse = getColumns(c);
+			if( mse > GOOD ) break;
+		}
+		loc = i*c+j;
+		if( loc >= array.size() )
+			array.resize(c ? (i+1)*c : loc+1);
+		array[loc] = v;
+	}
+	if( mse > END_OF_MATRIX ) return mse;
+	mse = getRows(j);
+	if( mse > END_OF_MATRIX ) return mse;
+	if( array.size() < j*c ) array.resize(j*c);
 	return GOOD;
 }
 
@@ -131,13 +157,14 @@ void MatrixStream<Field>::init() {
 	}
 
 	//Get first line
-	firstLine = (char*)calloc(FIRST_LINE_LIMIT,sizeof(char));
+	firstLine = new char[FIRST_LINE_LIMIT];
 	in.getline(firstLine,FIRST_LINE_LIMIT);
+	firstLine[in.gcount()] = '\0';
 
 	//Initialize readers
 	currentError = NO_FORMAT;
 	__MATRIX_STREAM_READERDEFS
-	free( firstLine );
+	delete firstLine;
 
 	if( !reader ) return;
 	else if( currentError > GOOD )
@@ -161,7 +188,7 @@ void MatrixStream<Field>::addReader( MatrixStreamReader<Field>* r ) {
 
 template<class Field>
 MatrixStream<Field>::MatrixStream(const Field& fld, std::istream& i )
-	:reader(NULL),in(i),f(fld)
+	:reader(NULL),in(i),readAnythingYet(false),f(fld)
 {
 	init();
 	if( currentError > GOOD ) throw currentError;
@@ -175,10 +202,27 @@ bool MatrixStream<Field>::nextTriple(size_t& m, size_t& n, Element& v) {
 		currentError = reader->nextTriple(m,n,v);
 	} while( f.isZero(v) && currentError == GOOD );
 
-	if( currentError != GOOD )
+	if( currentError != GOOD ) {
 		errorLineNumber = lineNumber;
+		return false;
+	}
 
-	return( currentError == GOOD );
+	readAnythingYet = true;
+	return true;
+}
+
+template<class Field>
+bool MatrixStream<Field>::getArray(std::vector<Element> &array) {
+	if( currentError > GOOD || readAnythingYet ) return false;
+	currentError = reader->getArray(array);
+	
+	if( currentError != GOOD ) {
+		errorLineNumber = lineNumber;
+		return false;
+	}
+
+	readAnythingYet = true;
+	return true;
 }
 
 template<class Field>
