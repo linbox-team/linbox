@@ -1,20 +1,22 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 #include <linbox/field/unparametric.h>
 #include <linbox/util/matrix-stream.h>
 #include <linbox/integer.h>
 #include <linbox/blackbox/dense.h>
 #include <linbox/blackbox/sparse.h>
+#include <linbox/blackbox/blas-blackbox.h>
 
 using namespace LinBox;
 
-const int nMatrices = 5;
-char* matrixNames[nMatrices] = {
+const int nMatrices = 7;
+const char* matrixNames[nMatrices] = {
 				"data/sms.matrix",
 				"data/matrix-market-array.matrix",
-				//"data/maple-sparse1.matrix",
-				//"data/maple-dense1.matrix",
+				"data/maple-sparse1.matrix",
+				"data/maple-dense1.matrix",
 				"data/generic-dense.matrix",
 				"data/sparse-row.matrix",
 				"data/matrix-market-coordinate.matrix"
@@ -59,23 +61,16 @@ bool testBlackBox( const char* filename, const char* BBName ) {
 		return true;
 	}
 	bool fail = false;
-	int count = 0;
-	for( typename BB::RawIndexedIterator iter = m.rawIndexedBegin();
-	     iter != m.rawIndexedEnd();
-	     ++iter ) {
-		if( matrix[iter.rowIndex()][iter.colIndex()] != *iter ) {
-			std::cout << "Invalid entry in " << BBName << " at index ("
-			     << iter.rowIndex() << "," << iter.colIndex() << ")" << std::endl
-			     << "Got " << *iter << ", should be "
-			     << matrix[iter.rowIndex()][iter.colIndex()] << std::endl;
-			fail = true;
+	for( size_t i = 0; i < rowDim; ++i ) {
+		for( size_t j = 0; j < colDim; ++j ) {
+			if( m.getEntry(i,j) != matrix[i][j] ) {
+				std::cout << "Invalid entry in " << BBName << " at index ("
+				     << i << "," << j << ")" << std::endl
+				     << "Got " << m.getEntry(i,j) << ", should be "
+				     << matrix[i][j] << std::endl;
+				fail = true;
+			}
 		}
-		if( *iter != 0 ) ++count;
-	}
-	if( !fail && count != nonZeros ) {
-		std::cout << "Not enough entries in " << BBName << std::endl
-		     << "Got " << count << ", should be " << nonZeros << std::endl;
-		fail = true;
 	}
 	return fail;
 }
@@ -101,6 +96,8 @@ int main() {
 		size_t m, n;
 		integer v;
 		if(!ms.getDimensions(m,n)) {
+			std::cout << "Error getting dimensions in "
+			          << matrixNames[i] << std::endl;
 			fail = failThis = true;
 		}
 		if( !failThis && m != rowDim ) {
@@ -159,6 +156,35 @@ int main() {
 			     << ", format " << ms.getFormat() << std::endl;
 			fail = failThis = true;
 		}
+
+		fin.seekg(0,std::ios::beg);
+		MatrixStream<TestField> ms2(f,fin);
+		std::vector<TestField::Element> array;
+		ms2.getArray(array);
+		if( array.size() != rowDim*colDim ) {
+			std::cout << "Array given wrong size in " << matrixNames[i]
+			     << ", format " << ms2.getFormat() << std::endl
+			     << "Got " << array.size() << ", should be "
+			     << rowDim*colDim << std::endl;
+			fail = failThis = true;
+		}
+		for( m = 0; m < rowDim; ++m ) {
+			for( n = 0; n < colDim; ++n ) {
+				if( array[m*colDim+n] != matrix[m][n] ) {
+					std::cout << "Invalid entry in getArray of "
+						  << matrixNames[i]
+						  << ", format " << ms2.getFormat()
+						  << std::endl
+						  << "Got " << array[m*colDim+n] 
+						  << " at index (" << m
+						  << "," << n << "), should be "
+						  << matrix[m][n] << std::endl;
+					fail = failThis = true;
+					break;
+				}
+			}
+		}
+
 		if( failThis ) {
 			std::cout << "Test failed for " << matrixNames[i]
 			     << ", format " << ms.getFormat() << std::endl
@@ -172,6 +198,9 @@ int main() {
 	  ) fail = true;
 	if( 	testBlackBox< SparseMatrix<TestField> >
 			( matrixNames[0], "Sparse BlackBox Matrix" )
+	  ) fail = true;
+	if( 	testBlackBox< BlasBlackbox<TestField> >
+			( matrixNames[0], "BLAS BlackBox Matrix" )
 	  ) fail = true;
 	
 	if( fail ) {

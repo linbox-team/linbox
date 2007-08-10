@@ -14,9 +14,11 @@
 	addReader( new SMSReader<Field>() ); \
 	addReader( new SparseRowReader<Field>() ); \
 	addReader( new MatrixMarketReader<Field>() ); \
+	addReader( new MapleReader<Field>() ); \
 	addReader( new DenseReader<Field>() );
 
 #include "sms.h"
 #include "sparse-row.h"
 #include "generic-dense.h"
 #include "matrix-market.h"
+#include "maple.h"

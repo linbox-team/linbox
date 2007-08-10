@@ -125,7 +125,7 @@ class MatrixMarketReader :public MatrixStreamReader<Field> {
 		return GOOD;
 	}
 
-	MatrixStreamError initImpl( char* firstLine ) {
+	MatrixStreamError initImpl( const char* firstLine ) {
 		std::string st(firstLine);
 		std::stringstream stin(st);
 

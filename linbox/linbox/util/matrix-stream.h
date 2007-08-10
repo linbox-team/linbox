@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include <queue>
+#include <vector>
 
 namespace LinBox { // namespace in which all LinBox code resides
 
@@ -102,7 +103,7 @@ class MatrixStreamReader {
      * @return A MatrixStreamError indicating the success or failure of the
      *         operation
      */
-	virtual MatrixStreamError initImpl(char* firstLine) = 0;
+	virtual MatrixStreamError initImpl(const char* firstLine) = 0;
 
     /** A protected constructor that is called automatically when subclasses
      * are instantiated. */
@@ -131,12 +132,20 @@ class MatrixStreamReader {
 
     /** Initialize this MatrixStreamReader.  Calls the initImpl method of the
       * subclass. */
-	MatrixStreamError init( char*, std::istream*, MatrixStream<Field>* );
+	MatrixStreamError init(const char*,std::istream*,MatrixStream<Field>*);
 
     /** Get the next triple of row index, column index, value and store it into
      * the three referenced variables.  Uses the nextTripleImpl method of the
      * subclass. */
 	MatrixStreamError nextTriple( size_t&, size_t&, Element& );
+
+    /** Get the whole matrix as a dense (row-major) array of elements.
+     * By default, this implementation just repeatedly calls nextTriple to
+     * read in the whole matrix. Subclasses of dense formats should override
+     * this behavior.
+     * @param array The array to fill with entries. May be resized as needed.
+     */
+    	virtual MatrixStreamError getArray( std::vector<Element> &array );
 
     /** Reads the next triple from the subclass nextTripleImpl method and saves
      * it to the savedTriples std::queue rather than returning it.  The error
@@ -188,6 +197,9 @@ class MatrixStream {
     /** The line number on which the last error occurred */
 	int errorLineNumber;
 
+    /** True once any read functions have been called. */
+    	bool readAnythingYet;
+
     /** The Field to use in reading elements. */
 	const Field& f;
 
@@ -225,6 +237,11 @@ class MatrixStream {
      * @return true iff the read succeeded.
      */
 	bool nextTriple( size_t&, size_t&, Element& );
+
+    /** Get the whole matrix as a dense (row-major) array of elements.
+     * @param array The array to fill with entries. May be resized as needed.
+     */
+    	bool getArray( std::vector<Element> &array );
 
     /** Get the number of rows in the matrix and store it in the given size_t.
      * @return true iff the operation succeeded.
