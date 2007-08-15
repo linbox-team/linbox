@@ -95,11 +95,11 @@ public:
 template<class Blackbox, class Method>
 class SolvePartialFunctor{
 protected:
-	Blackbox         *_B;
+	Blackbox         *_BB;
 	const Method   &meth;
 public:
 	
-	SolvePartialFunctor (Blackbox *B, const Method &m) : _B(B), meth(m) {}
+	SolvePartialFunctor (Blackbox *B, const Method &m) : _BB(B), meth(m) {}
 	
 	template<class Vector>
 	void operator()(const VectorKey& Vkey, Vector *res) const {
@@ -107,7 +107,7 @@ public:
 		if (it == vector_hashtable.end())
 			throw lb_runtime_error("LinBox ERROR: right hand side vector does not exist (solving impossible)\n");
 		
-		SolvePartialFunctor<Blackbox, Method> fct(_B, meth);
+		SolvePartialFunctor<Blackbox, Method> fct(_BB, meth);
 		VectorFunction::call(*res, Vkey, fct);		
 	}
 
@@ -117,7 +117,7 @@ public:
 		typedef typename Vector::value_type       VElement;
 		typedef typename Result::value_type       RElement;
 		typedef typename LinBox::FieldTraits<typename Blackbox::Field>::categoryTag categoryTag;
-		LaunchSolveFunctor<RElement, BElement, VElement, categoryTag>()(res, _B, v, meth);
+		LaunchSolveFunctor<RElement, BElement, VElement, categoryTag>()(res, _BB, v, meth);
 	}
 };
 
