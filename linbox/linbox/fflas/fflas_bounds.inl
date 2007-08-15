@@ -14,6 +14,14 @@
 #define FFLAS_INT_TYPE long unsigned int
 #endif
 
+#if defined(__sun) && defined(__SunOS_5_9)
+#define lround(x) my_lround(x)
+static long my_lround(double x)
+{
+        return (long) ((x) >= 0 ? (x) + 0.5 : (x) - 0.5);}
+
+#endif
+
 //---------------------------------------------------------------------
 // DotProdBound :
 // Computes the maximal dimension k so that the product A*B+beta.C over Z,
