@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://quickstart.samples" xmlns:axis2="http://quickstart.samples" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ns="http://quickstart.samples/xsd" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://quickstart.samples/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:element name="determinant">
+<xs:complexType>
+<xs:sequence>
+<xs:element name="matrix" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="determinantResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element name="return" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="rank">
+<xs:complexType>
+<xs:sequence>
+<xs:element name="matrix" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="rankResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element name="return" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="trace">
+<xs:complexType>
+<xs:sequence>
+<xs:element name="matrix" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="traceResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element name="return" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="valence">
+<xs:complexType>
+<xs:sequence>
+<xs:element name="matrix" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="valenceResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element name="return" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+</xs:schema>
+  </wsdl:types>
+  <wsdl:message name="valenceMessage">
+    <wsdl:part name="part1" element="ns:valence">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="rankMessage">
+    <wsdl:part name="part1" element="ns:rank">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="traceResponseMessage">
+    <wsdl:part name="part1" element="ns:traceResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="traceMessage">
+    <wsdl:part name="part1" element="ns:trace">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="rankResponseMessage">
+    <wsdl:part name="part1" element="ns:rankResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="determinantResponseMessage">
+    <wsdl:part name="part1" element="ns:determinantResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="valenceResponseMessage">
+    <wsdl:part name="part1" element="ns:valenceResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="determinantMessage">
+    <wsdl:part name="part1" element="ns:determinant">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="TransferAgentPortType">
+    <wsdl:operation name="determinant">
+      <wsdl:input message="axis2:determinantMessage" wsaw:Action="urn:determinant">
+    </wsdl:input>
+      <wsdl:output message="axis2:determinantResponseMessage" wsaw:Action="urn:determinant">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="rank">
+      <wsdl:input message="axis2:rankMessage" wsaw:Action="urn:rank">
+    </wsdl:input>
+      <wsdl:output message="axis2:rankResponseMessage" wsaw:Action="urn:rank">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="trace">
+      <wsdl:input message="axis2:traceMessage" wsaw:Action="urn:trace">
+    </wsdl:input>
+      <wsdl:output message="axis2:traceResponseMessage" wsaw:Action="urn:trace">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="valence">
+      <wsdl:input message="axis2:valenceMessage" wsaw:Action="urn:valence">
+    </wsdl:input>
+      <wsdl:output message="axis2:valenceResponseMessage" wsaw:Action="urn:valence">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="TransferAgentSOAP12Binding" type="axis2:TransferAgentPortType">
+    <soap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="determinant">
+      <soap12:operation soapAction="urn:determinant" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="rank">
+      <soap12:operation soapAction="urn:rank" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="trace">
+      <soap12:operation soapAction="urn:trace" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="valence">
+      <soap12:operation soapAction="urn:valence" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="TransferAgentSOAP11Binding" type="axis2:TransferAgentPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="determinant">
+      <soap:operation soapAction="urn:determinant" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="rank">
+      <soap:operation soapAction="urn:rank" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="trace">
+      <soap:operation soapAction="urn:trace" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="valence">
+      <soap:operation soapAction="urn:valence" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="TransferAgent">
+    <wsdl:port name="TransferAgentSOAP11port" binding="axis2:TransferAgentSOAP11Binding">
+      <soap:address location="http://localhost:8080/axis2/services/TransferAgent"/>
+    </wsdl:port>
+    <wsdl:port name="TransferAgentSOAP12port" binding="axis2:TransferAgentSOAP12Binding">
+      <soap12:address location="http://localhost:8080/axis2/services/TransferAgent"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
