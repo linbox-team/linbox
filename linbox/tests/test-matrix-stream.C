@@ -144,7 +144,7 @@ int main() {
 			}
 		}
 		if( ms.getError() != END_OF_MATRIX ) {
-			failThis = true;
+			fail = failThis = true;
 		}
 		if( !failThis && nzCount > 0 ) {
 			std::cout << "Not enough entries in " << matrixNames[i]
@@ -157,19 +157,30 @@ int main() {
 			fail = failThis = true;
 		}
 
+		if( failThis ) {
+			std::cout << "Test failed for " << matrixNames[i]
+			     << ", format " << ms.getFormat() << std::endl
+			     << "Error code: " << ms.getError()
+			     << ", line number: " << ms.getLineNumber() << std::endl;
+			continue;
+		}
+
 		fin.seekg(0,std::ios::beg);
 		MatrixStream<TestField> ms2(f,fin);
 		std::vector<TestField::Element> array;
-		ms2.getArray(array);
-		if( array.size() != rowDim*colDim ) {
+		if( !ms2.getArray(array) ) {
+			ms2.reportError("Problem with getArray",ms2.getLineNumber());
+			fail = failThis = true;
+		}
+		if( !failThis && array.size() != rowDim*colDim ) {
 			std::cout << "Array given wrong size in " << matrixNames[i]
 			     << ", format " << ms2.getFormat() << std::endl
 			     << "Got " << array.size() << ", should be "
 			     << rowDim*colDim << std::endl;
 			fail = failThis = true;
 		}
-		for( m = 0; m < rowDim; ++m ) {
-			for( n = 0; n < colDim; ++n ) {
+		for( m = 0; !failThis && m < rowDim; ++m ) {
+			for( n = 0; !failThis && n < colDim; ++n ) {
 				if( array[m*colDim+n] != matrix[m][n] ) {
 					std::cout << "Invalid entry in getArray of "
 						  << matrixNames[i]
@@ -187,9 +198,9 @@ int main() {
 
 		if( failThis ) {
 			std::cout << "Test failed for " << matrixNames[i]
-			     << ", format " << ms.getFormat() << std::endl
-			     << "Error code: " << ms.getError()
-			     << ", line number: " << ms.getLineNumber() << std::endl;
+			     << ", format " << ms2.getFormat() << std::endl
+			     << "Error code: " << ms2.getError()
+			     << ", line number: " << ms2.getLineNumber() << std::endl;
 		}
 	}
 
