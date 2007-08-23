@@ -129,9 +129,12 @@ class MapleReader :public MatrixStreamReader<Field> {
 	
 	MatrixStreamError readWhite() {
 		if( stin ) {
-			while( !stin->eof() && isspace(stin->peek()) )
+			int peekVal = stin->peek();
+			while( stin->good() && isspace(peekVal) ) {
 				stin->get();
-			if( stin->eof() ) {
+				peekVal = stin->peek();
+			}
+			if( !stin->good() || peekVal < 0 ) {
 				delete stin;
 				stin = NULL;
 			}
