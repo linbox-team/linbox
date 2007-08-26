@@ -45,8 +45,8 @@ const char* pretty(string a) {
 		 blank+=dot;
 	 return blank.c_str();
 }
-#define mycommentator commentator
 
+#define mycommentator commentator
 
 template <class Field>
 static bool testMulAdd (const Field& F, size_t n, int iterations) {
@@ -55,9 +55,9 @@ static bool testMulAdd (const Field& F, size_t n, int iterations) {
 	typedef typename Field::RandIter   RandIter;
 	typedef BlasMatrix<Element>          Matrix;
 
-	//Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	//Commentator mycommentator (std::cout);
+	//mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	//mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	mycommentator.start (pretty("Testing muladd"),"testMulAdd",iterations);
 	
 	RandIter G(F);
@@ -138,9 +138,9 @@ static bool testRank (const Field& F,size_t n, int iterations) {
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
 
-	//Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	//Commentator mycommentator (std::cout);
+	//mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	//mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	mycommentator.start (pretty("Testing rank"),"testRank",iterations);
 
 	RandIter G(F);
@@ -195,9 +195,9 @@ static bool testDet (const Field& F,size_t n, int iterations) {
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
   
-	//Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	//Commentator mycommentator (std::cout);
+	//mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	//mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	mycommentator.start (pretty("Testing determinant"),"testDet",iterations);
 
 	RandIter G(F);
@@ -259,9 +259,9 @@ static bool testInv (const Field& F,size_t n, int iterations) {
 	typedef typename Field::RandIter RandIter;
 	typedef  BlasMatrix<Element> Matrix;
   
-	//Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	//Commentator mycommentator (std::cout);
+	//mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	//mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	mycommentator.start (pretty("Testing inverse"),"testInv",iterations);
 
 	RandIter G(F);
@@ -331,9 +331,9 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
 	typedef TriangularBlasMatrix<Element>   TriangularMatrix;
 	typedef typename Field::RandIter                RandIter;
 
-	//Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	//Commentator mycommentator (std::cout);
+	//mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	//mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	mycommentator.start (pretty("Testing triangular solver"),"testTriangularSolve",iterations);
 
 	RandIter G(F);
@@ -443,10 +443,10 @@ static bool testSolve (const Field& F, size_t m, size_t n, int iterations) {
 	typedef BlasMatrix<Element>                       Matrix;
 	typedef typename Field::RandIter                RandIter;
 
-	//Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator.start (pretty("Testing solver"),"testTriangularSolve",iterations);
+	//Commentator mycommentator (std::cout);
+	//mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	//mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	mycommentator.start (pretty("Testing solver"),"testSolve",iterations);
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G); 
@@ -544,7 +544,7 @@ static bool testSolve (const Field& F, size_t m, size_t n, int iterations) {
 
 	}
 
-	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testTriangularSolve");
+	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testSolve");
     
 	return ret;
 }
@@ -560,9 +560,9 @@ static bool testPermutation (const Field& F, size_t m, int iterations) {
 	typedef BlasMatrix<Element>                       Matrix;
 	typedef typename Field::RandIter                RandIter;
 
-	//Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	//Commentator mycommentator (std::cout);
+	//mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	//mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	mycommentator.start (pretty("Testing permutations"),"testPermutation",iterations);
 
 	RandIter G(F);
@@ -850,7 +850,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations) {
 		if (!MD.areEqual(D,B))
 			ret=false;
 	}
-	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testLQUP");
+	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testPermutation");
 	
 	return ret;
 }
@@ -865,9 +865,9 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations) {
 	typedef BlasMatrix<Element>                       Matrix;
 	typedef typename Field::RandIter                RandIter;
 
-	//Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	//Commentator mycommentator (std::cout);
+	//mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	//mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	mycommentator.start (pretty("Testing LQUP factorization"),"testLQUP",iterations);
 
 	RandIter G(F);
@@ -968,9 +968,10 @@ static bool testMinPoly (const Field& F, size_t n, int iterations) {
 	typedef BlasMatrix<Element>                       Matrix;
 	typedef typename Field::RandIter                RandIter;
 	typedef vector<Element>                       Polynomial;
-	//Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+
+	//Commentator mycommentator (std::cout);
+	//mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	//mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	mycommentator.start (pretty("Testing minpoly"),"testMinPoly",iterations);
 	Element tmp, one, zero,mone;
 	RandIter G(F);
@@ -1048,9 +1049,9 @@ static bool testCharPoly (const Field& F, size_t n, int iterations) {
 	typedef BlasMatrix<Element>                       Matrix;
 	typedef typename Field::RandIter                RandIter;
 	typedef vector<Element>                       Polynomial;
-	//Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+
+	//Commentator mycommentator (std::cout);
+	//mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	mycommentator.start (pretty("Testing charpoly"),"testCharPoly",iterations);
 	Element tmp, one, zero,mone;
 	RandIter G(F);
@@ -1126,10 +1127,13 @@ std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
 }
 
 int main(int argc, char **argv) {
+	commentator.setBriefReportStream (cout);
+	commentator.getMessageClass (BRIEF_REPORT).setMaxDepth (2);
+	commentator.getMessageClass (BRIEF_REPORT).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	static size_t n = 40;
+	static size_t n = 400;
 	static integer q = 1000003U;
-	static int iterations = 1; 
+	static int iterations = 3;
 	
     static Argument args[] = {
         { 'n', "-n N", "Set dimension of test matrices to NxN", TYPE_INT,     &n },
@@ -1140,6 +1144,7 @@ int main(int argc, char **argv) {
 
 	parseArguments (argc, argv, args);
 
+	commentator.setBriefReportStream (cout);
 	typedef Modular<double> Field;
 	//typedef Modular<int> Field;
 	//typedef Modular<float> Field;
@@ -1151,13 +1156,12 @@ int main(int argc, char **argv) {
 	srand (time (NULL));
 
     
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (20);
+	//commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_IMPORTANT);
 
-	commentator.start("BlasMatrixDomain test suite", "BlasMatrixDomain");
+	commentator.start("BlasMatrixDomain benchmark", "BlasMatrixDomain");
 
-	//std::cout << "no blas tests for now" << std::endl;
-	// no slow test while I work on io
+
 	if (!testMulAdd (F,n,iterations)) pass=false;
  	if (!testRank (F, n, iterations))   pass = false;   
  	if (!testDet  (F, n, iterations)) pass = false;
@@ -1168,9 +1172,8 @@ int main(int argc, char **argv) {
  	if (!testLQUP (F,n,n,iterations)) pass=false;
  	if (!testMinPoly (F,n,iterations)) pass=false;
 	if (!testCharPoly (F,n,iterations)) pass=false;
-	//
 	
-	commentator.stop("BlasMatrixDomain test suite"); 
+	commentator.stop("done", 0, "BlasMatrixDomain"); 
 	return pass ? 0 : -1;
 }
   

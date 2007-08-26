@@ -24,8 +24,8 @@ std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
 
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/scalar-matrix.h"
-#include "linbox/util/commentator.h"
 #include "linbox/solutions/charpoly.h"
+#include "linbox/util/commentator.h"
 #include "linbox/ring/givaro-polynomial.h"
 #include "linbox/vector/stream.h"
 
@@ -257,11 +257,12 @@ int main (int argc, char **argv)
 	static int k = 3;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 100)",                 TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 33554467)",          TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 10)",                    TYPE_INT,     &iterations },
-		{ 'v', "-v V", "Use V test vectors for the random charpoly tests (default 100)",      TYPE_INT,     &numVectors },
-		{ 'k', "-k K", "K nonzero Elements per row in sparse random apply test (default 3)", TYPE_INT,     &k },
+		{ 'n', "-n N", "Set dimension of test matrices to NxN.",                 TYPE_INT,     &n },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].",          TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations.",                    TYPE_INT,     &iterations },
+		{ 'v', "-v V", "Use V test vectors for the random charpoly tests.",      TYPE_INT,     &numVectors },
+		{ 'k', "-k K", "K nonzero Elements per row in sparse random apply test.", TYPE_INT,     &k },
+		{ '\0' }
 	};
 
 

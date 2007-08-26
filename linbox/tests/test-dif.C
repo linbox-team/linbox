@@ -161,14 +161,15 @@ int main (int argc, char **argv)
 
 	static size_t n = 10;
 	static integer q = 101;
-	static int iterations1 = 100;
+	static int iterations1 = 2; // was 100
 	static int iterations2 = 1;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)", TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 101)", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 100)",   TYPE_INT,     &iterations1 },
-		{ 'j', "-j J", "Apply test matrix to J vectors (default 1)",         TYPE_INT,     &iterations2 },
+		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations.",   TYPE_INT,     &iterations1 },
+		{ 'j', "-j J", "Apply test matrix to J vectors.",         TYPE_INT,     &iterations2 },
+		{ '\0' }
 	};
 
 	typedef Modular<int32> Field;
@@ -176,7 +177,7 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Field F (101);
 
-	cout << endl << "Matrix dif black box test suite" << endl;
+	commentator.start("Matrix dif black box test suite", "dif");
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
@@ -185,5 +186,6 @@ int main (int argc, char **argv)
 
 	if (!testZeroApply (F, stream1, stream2)) pass = false;
 
+	commentator.stop("Matrix dif black box test suite");
 	return pass ? 0 : -1;
 }

@@ -256,16 +256,17 @@ int main (int argc, char **argv)
 
 	static size_t n = 10;
 	static integer q = 2147483647U;
-	static int iterations = 10;
-	static int numVectors = 100;
+	static int iterations = 1;
+	static int numVectors = 1;
 	static int k = 3;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)",                 TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)",          TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 10)",                    TYPE_INT,     &iterations },
-		{ 'v', "-v V", "Use V test vectors for the random minpoly tests (default 100)",      TYPE_INT,     &numVectors },
-		{ 'k', "-k K", "K nonzero Elements per row in sparse random apply test (default 3)", TYPE_INT,     &k },
+		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
+		{ 'v', "-v V", "Use V test vectors for the random minpoly tests.", TYPE_INT,     &numVectors },
+		{ 'k', "-k K", "K nonzero Elements per row in sparse random apply test.", TYPE_INT,     &k },
+		{ '\0' }
 	};
 
 
@@ -283,8 +284,7 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	cout << endl << "Wiedemann minimal polynomial of a matrix over a prime field test suite" << endl;
-
+	commentator.start("Wiedemann prime field minpoly test suite", "Wminpoly");
 	RandomDenseStream<Field, DenseVector, NonzeroRandIter<Field> >
 		v_stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, numVectors);
 	RandomSparseStream<Field, SparseVector, NonzeroRandIter<Field> >
@@ -299,17 +299,22 @@ int main (int argc, char **argv)
 	if (!testIdentityMinpoly  (F, n, true)) pass = false;
 	//need other tests...
 
-	cout << endl << "minimal polynomial (basic methods) of a matrix over a prime field test suite" << endl;
+	commentator.stop("Wiedemann prime field minpoly test suite");
 
-std::cout << "Hybrid" << std::endl;
+	commentator.start("Hybrid prime field minpoly test suite", "Hminpoly");
 	if (!testIdentityMinpoly  (F, n, false,  Method::Hybrid())) pass = false;
 	if (!testNilpotentMinpoly (F, n, Method::Hybrid())) pass = false;
-std::cout << "Blackbox" << std::endl;
+	commentator.stop("Hybrid prime field minpoly test suite");
+
+	commentator.start("Blackbox prime field minpoly test suite", "Bminpoly");
 	if (!testIdentityMinpoly  (F, n, false,  Method::Blackbox())) pass = false;
 	if (!testNilpotentMinpoly (F, n, Method::Blackbox())) pass = false;
-std::cout << "Elimination" << std::endl;
+	commentator.stop("Blackbox prime field minpoly test suite");
+
+	commentator.start("Elimination prime field minpoly test suite", "Eminpoly");
 	if (!testIdentityMinpoly  (F, n, false,  Method::Elimination())) pass = false;
 	if (!testNilpotentMinpoly (F, n, Method::Elimination())) pass = false;
+	commentator.stop("Elimination prime field minpoly test suite");
 
 // /////////////// integer part //////////////////
 	typedef vector<PID_integer::Element> ZDenseVector;
@@ -322,7 +327,7 @@ std::cout << "Elimination" << std::endl;
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	cout << endl << "Wiedemann minimal polynomial of an integer matrix test suite" << endl;
+	commentator.start("Wiedemann integer minpoly test suite", "WIminpoly");
 
 	RandomDenseStream<PID_integer, ZDenseVector, NonzeroRandIter<PID_integer> >
 		zv_stream (Z, NonzeroRandIter<PID_integer> (Z, PID_integer::RandIter (Z)), n, numVectors);
@@ -339,17 +344,22 @@ std::cout << "Elimination" << std::endl;
 	// symmetrizing
 	if (!testIdentityMinpoly  (Z, n, true)) pass = false;
 
-	cout << endl << "minimal polynomial (basic methods) of an integer matrix test suite" << endl;
+	commentator.stop("Wiedemann integer minpoly test suite");
 
-std::cout << "Hybrid" << std::endl;
+	commentator.start("Hybrid integer minpoly test suite", "HIminpoly");
 	if (!testIdentityMinpoly  (Z, n, false,  Method::Hybrid())) pass = false;
 	if (!testNilpotentMinpoly (Z, n, Method::Hybrid())) pass = false;
-std::cout << "Blackbox" << std::endl;
+	commentator.stop("Hybrid integer minpoly test suite");
+
+	commentator.start("Blackbox integer minpoly test suite", "BIminpoly");
 	if (!testIdentityMinpoly  (Z, n, false,  Method::Blackbox())) pass = false;
 	if (!testNilpotentMinpoly (Z, n, Method::Blackbox())) pass = false;
-std::cout << "Elimination" << std::endl;
+	commentator.stop("Blackbox integer minpoly test suite");
+
+	commentator.start("Elimination integer minpoly test suite", "EIminpoly");
 	if (!testIdentityMinpoly  (Z, n, false,  Method::Elimination())) pass = false;
 	if (!testNilpotentMinpoly (Z, n, Method::Elimination())) pass = false;
+	commentator.stop("Elimination integer minpoly test suite");
 
 	return pass ? 0 : -1;
 }

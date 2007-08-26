@@ -745,12 +745,13 @@ int main (int argc, char **argv)
 	static int iterations = 5;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set column dimension of test matrices to N (default 100)",  TYPE_INT,     &n },
-		{ 'm', "-m M", "Set row dimension of test matrices to M (default 100)",     TYPE_INT,     &m },
-		{ 'r', "-r R", "Set singular system rank to R (default 20)",                TYPE_INT,     &r },
-		{ 'N', "-N N", "Set blocking factor to N (default 16)",                      TYPE_INT,     &N },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 5)",           TYPE_INT,     &iterations },
+		{ 'n', "-n N", "Set column dimension of test matrices to N.", TYPE_INT,     &n },
+		{ 'm', "-m M", "Set row dimension of test matrices to M.", TYPE_INT,     &m },
+		{ 'r', "-r R", "Set singular system rank to R.", TYPE_INT,     &r },
+		{ 'N', "-N N", "Set blocking factor to N.", TYPE_INT,     &N },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
+		{ '\0' }
 	};
 
 	typedef Modular<LinBox::uint32> Field;
@@ -758,14 +759,14 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Field F (q);
 
-	std::cout << "Solve test suite" << std::endl << std::endl;
+	commentator.start("Solve test suite", "solve");
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
 	commentator.getMessageClass (TIMING_MEASURE).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	commentator.getMessageClass (PROGRESS_REPORT).setMaxDepth (5);
-	commentator.getMessageClass (BRIEF_REPORT).setMaxDepth (4);
+	//commentator.getMessageClass (BRIEF_REPORT).setMaxDepth (4);
 
 	RandomDenseStream<Field> stream1 (F, n, iterations), stream2 (F, n, iterations);
 	RandomDenseStream<Field> stream3 (F, r, iterations), stream4 (F, r, iterations);
@@ -816,7 +817,8 @@ int main (int argc, char **argv)
     if ( ! testBasicMethodsSolve (F, n) ) 
 		pass = false;
 
-    std::cout << (pass ? "passed" : "FAILED" ) << std::endl;
+	commentator.stop("solve test suite");
+    //std::cout << (pass ? "passed" : "FAILED" ) << std::endl;
 
 	return pass ? 0 : -1;
 }

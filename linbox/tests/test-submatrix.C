@@ -218,10 +218,11 @@ int main (int argc, char **argv)
 	static int N = 1;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)", TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 101)", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 100)",   TYPE_INT,     &iterations },
-		{ 'N', "-N N", "Perform each test on N vectors (default 1)",         TYPE_INT,     &N },
+		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
+		{ 'N', "-N N", "Perform each test on N vectors.", TYPE_INT,     &N },
+		{ '\0' }
 	};
 
 	typedef Modular<uint32> Field;
@@ -229,7 +230,7 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Field F (q);
 
-	cout << endl << "Submatrix matrix black box test suite" << endl;
+	commentator.start("Submatrix black box test suite", "Submatrix");
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
@@ -245,5 +246,6 @@ int main (int argc, char **argv)
 	if (!testRandomLinearity (F, A_stream, v1_stream, v2_stream)) pass = false;
 	if (!testRandomTranspose (F, A_stream, v1_stream, v2_stream)) pass = false;
 
+	commentator.stop("Submatrix black box test suite");
 	return pass ? 0 : -1;
 }

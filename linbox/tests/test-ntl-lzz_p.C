@@ -38,19 +38,18 @@ int main (int argc, char **argv)
 {
         static integer q = 1073741789;
 	static size_t n = 10000;
-	static int iterations = 10;
+	static int iterations = 1;
 
         static Argument args[] = {
-                { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 1073741789)", TYPE_INTEGER, &q },
-		{ 'n', "-n N", "Set dimension of test vectors to NxN (default 10000)",      TYPE_INT,     &n },
-		{ 'i', "-i I", "Perform each test for I iterations (default 10)",           TYPE_INT,     &iterations },
+                { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+		{ 'n', "-n N", "Set dimension of test vectors to NxN.", TYPE_INT,     &n },
+		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
                 { '\0' }
         };
 
         parseArguments (argc, argv, args);
 
-	cout << "UnparametricField<NTL::zz_p> field test suite" << endl << endl;
-	cout.flush ();
+	commentator.start("UnparametricField<NTL::zz_p> field test suite", "UnparametricField<NTL::zz_p>");
 	bool pass = true;
 
 	//NTL::zz_p::init(q);
@@ -69,5 +68,6 @@ int main (int argc, char **argv)
 		pass = false;
 #endif
 
+	commentator.stop("UnparametricField<NTL::zz_p> field test suite");
 	return pass ? 0 : -1;
 }

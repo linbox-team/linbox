@@ -12,12 +12,14 @@ int main(int argc, char **argv) {
   bool pass = true;
   uint32 prime = 31337;
   size_t *rows, *cols, i;
-  static size_t n = 1000, iter = 5;
+  static size_t n = 1000, iter = 1;
 
   static Argument args[] = {
-    { 'n', "-n N", "Set dimension of test matrix to NxN (default 1000)", TYPE_INT, &n },
-    { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 31337)", TYPE_INT, &prime },
-    { 'i', "-i I", "Perform each test for I iterations (default 5)", TYPE_INT, &iter}};
+    { 'n', "-n N", "Set dimension of test matrix to NxN.", TYPE_INT, &n },
+    { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INT, &prime },
+    { 'i', "-i I", "Perform each test for I iterations.", TYPE_INT, &iter},
+	{ '\0' }
+  };
 
   parseArguments(argc, argv, args);
 
@@ -46,12 +48,13 @@ int main(int argc, char **argv) {
 */
 
 
-  std::cout << std::endl << "ZeroOne matrix blackbox test suite" << std::endl;
+	commentator.start("ZeroOne matrix blackbox test suite", "ZeroOne");
 
   pass = pass && testBlackbox(afield, testMatrix);
   
   delete [] rows;
   delete [] cols;
 
+	commentator.stop("ZeroOne matrix blackbox test suite");
   return pass ? 0 : -1;
 }

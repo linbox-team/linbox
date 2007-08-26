@@ -34,35 +34,28 @@ using namespace LinBox;
 
 int main (int argc, char **argv)
 {
-	static integer q1("18446744073709551557");
-	static integer q2 = 2147483647;
-	static integer q3 = 65521U;
-	static int q4 = 101;
-	static size_t n = 10000;
-	static int iterations = 10;
-	static int trials = 1000000;
+	static integer q = 127;
+	static size_t n = 300;
+	static int iterations = 1;
+	static int trials = 100000;
 	static int categories = 100;
 	static int hist_level = 1;
 
 	static Argument args[] = {
-		{ 'K', "-K Q", "Operate over the \"field\" GF(Q) [1] for integer modulus (default 18446744073709551557)", TYPE_INTEGER, &q1 },
-		{ 'Q', "-Q Q", "Operate over the \"field\" GF(Q) [1] for uint32 modulus (default 2147483647)", TYPE_INTEGER, &q2 },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] for uint16 modulus (default 65521)", TYPE_INTEGER, &q3 },
-		{ 'p', "-p P", "Operate over the \"field\" GF(Q) [1] for uint8 modulus (default 101)", TYPE_INT, &q4 },
-		{ 'n', "-n N", "Set dimension of test vectors to NxN (default 10000)",      TYPE_INT,     &n },
-		{ 'i', "-i I", "Perform each test for I iterations (default 10)",           TYPE_INT,     &iterations },
-		{ 't', "-t T", "Number of trials for the random iterator test (default 1000000)", TYPE_INT, &trials },
-		{ 'c', "-c C", "Number of categories for the random iterator test (default 100)", TYPE_INT, &categories },
-		{ 'H', "-H H", "History level for random iterator test (default 1)", TYPE_INT, &hist_level },
+		{ 'p', "-p Q", "Operate over the \"field\" GF(Q) [1] for integer modulus.", TYPE_INTEGER, &q },
+		{ 'n', "-n N", "Set dimension of test vectors to NxN.", TYPE_INT,     &n },
+		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
+		{ 't', "-t T", "Number of trials for the random iterator test.", TYPE_INT, &trials },
+		{ 'c', "-c C", "Number of categories for the random iterator test.", TYPE_INT, &categories },
+		{ 'H', "-H H", "History level for random iterator test.", TYPE_INT, &hist_level },
 		{ '\0' }
 	};
 
 	parseArguments (argc, argv, args);
 
-	cout << endl << "Modular<int8> field test suite" << endl;
-	cout.flush ();
+	commentator.start("Modular<int8> field test suite", "Modular<int8>");
 	bool pass = true;
-	Modular<int8> F(127);
+	Modular<int8> F(q);
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
@@ -71,5 +64,6 @@ int main (int argc, char **argv)
 	if (!runFieldTests (F,  "Modular<byte>",  iterations, n, false)) pass = false;
 	if (!testRandomIterator (F,  "Modular<byte>", trials, categories, hist_level)) pass = false;
 
+	commentator.stop("Modular<int8> field test suite");
 	return pass ? 0 : -1;
 }

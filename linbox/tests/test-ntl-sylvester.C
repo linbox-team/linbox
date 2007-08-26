@@ -29,17 +29,18 @@ int main(int argc, char* argv[])
 					       INTERNAL_DESCRIPTION );
     bool pass = true;
   
-  static size_t n = 9000;
-  static long q = 2147483647;
+  static size_t n = 1000;
+  static long q = 134217689;
   //   q = 101;
   static int iterations = 1;
   
   static Argument args[] = {
-    { 'n', "-n N", "Set dimension of test matrices to NxN (default 9000)", TYPE_INT, &n },
-    { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", 
+    { 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT, &n },
+    { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", 
                     TYPE_INT, &q },
-    { 'i', "-i I", "Perform each test for I iterations (default 10)",
+    { 'i', "-i I", "Perform each test for I iterations.", 
                     TYPE_INT, &iterations },
+	{ '\0' }
   };
   
   parseArguments (argc, argv, args);
@@ -57,9 +58,8 @@ int main(int argc, char* argv[])
   report <<  "Dimension (m+n) is " << m+n << std::endl;
   NTL::ZZ_p::init(modulus); // NOTE: This is essential for using NTL
   
-  cout  <<"====>\tSylvester matrix black box test suite" << endl;
-  cout  <<"Dimension(m+n)= " << m+n << "\t modulus= " << q << endl;
-  report <<"====>\tSylvester matrix black box test suite" << endl;
+	commentator.start("Sylvester black box test suite", "Sylvester");
+  report <<"Dimension(m+n)= " << m+n << "\t modulus= " << q << endl;
 
   typedef LinBox::UnparametricField<NTL::ZZ_p> Field;
   typedef Field::Element element;
@@ -137,10 +137,10 @@ int main(int argc, char* argv[])
     report << odata[i] << " ";
 
   pass = testBlackbox(F, TT);
-  cout <<"<====\tDone Sylvester matrix black box test suite" << endl;
   report <<"<====\tDone Sylvester matrix black box test suite" << endl;
 
 
+	commentator.stop("Sylvester black box test suite");
   return pass ? 0 : -1;
 
 }

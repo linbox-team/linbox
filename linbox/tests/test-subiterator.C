@@ -10,9 +10,10 @@ int main(int argc, char** argv)
    static Argument args[] = {
    };
    parseArguments (argc, argv, args);
-   cout << endl << "Subiterator test suite" << endl;
+	commentator.start("Subiterator test suite", "Subiterator");
 
    bool pass = test();
+	commentator.stop("Subiterator test suite");
    return pass? 0 : -1;
 }
 

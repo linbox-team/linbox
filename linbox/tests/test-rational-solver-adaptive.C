@@ -144,14 +144,14 @@ int main(int argc, char** argv) {
 
 	bool pass = true;
  
-        static size_t n = 100;
+        static size_t n = 10;
                 
-	static int iterations = 10;
+	static int iterations = 1;
  
         static Argument args[] = {
-                { 'n', "-n N", "Set order of test matrices to N (default 100)",  TYPE_INT,     &n },
-		{ 'i', "-i I", "Perform each test for I iterations (default 10)"
-,           TYPE_INT,     &iterations },
+                { 'n', "-n N", "Set order of test matrices to N.", TYPE_INT, &n },
+		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT, &iterations },
+		{ '\0' }
         };
 
 

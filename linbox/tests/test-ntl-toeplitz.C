@@ -23,14 +23,15 @@ int main(int argc, char* argv[])
   
   bool pass = true;
   
-  static size_t n = 10000;
+  static size_t n = 1000;
   static long q = 2147483647;
-  static int iterations = 10;
+  static int iterations = 1;
   
   static Argument args[] = {
-    { 'n', "-n N", "Set dimension of test matrices to NxN (default 10000)",        TYPE_INT,     &n },
-    { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INT, &q },
-    { 'i', "-i I", "Perform each test for I iterations (default 10)",          TYPE_INT,     &iterations },
+    { 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
+    { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INT, &q },
+    { 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
+	{ '\0' }
   };
   
   parseArguments (argc, argv, args);
@@ -47,9 +48,8 @@ int main(int argc, char* argv[])
   report <<  "The modulus is " << q << std::endl;
   //NTL::ZZ_p::init(modulus); // NOTE: This is essential for using NTL
 
-  cout  <<"====>\t Toeplitz matrix black box test suite" << endl;
-  //cout  <<"     \tDimension= " << n << "\t modulus= " << modulus << endl;
-  cout  <<"     \tDimension= " << n << "\t modulus= " << q << endl;
+	commentator.start("Toeplitz black box test suite", "Toeplitz");
+  report  <<"     \tDimension= " << n << "\t modulus= " << q << endl;
   
   typedef NTL_ZZ_p Field;
   typedef Field::Element element;
@@ -109,7 +109,7 @@ int main(int argc, char* argv[])
   //TT.print();
   
   pass = testBlackbox<Field,  LinBox::Toeplitz<Field> >(F, TT);
-  cout <<"<====\tDone Toeplitz  matrix black box test suite" << endl;  
+	commentator.stop("Toeplitz black box test suite");
   return pass ? 0 : -1;
 }
 

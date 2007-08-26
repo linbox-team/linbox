@@ -173,17 +173,22 @@ int main(int argc, char** argv) {
 	static size_t n =3; 
 	static int iterations = 2;
 	static Argument args[] = {
-		{ 'n', "-n N", "Set order of test matrices to N (default 10)",  TYPE_INT,  &n },
-		{ 'i', "-i I", "Perform each test for I iterations (default 10)", TYPE_INT, &iterations }
+		{ 'n', "-n N", "Set order of test matrices to N.", TYPE_INT,  &n },
+		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT, &iterations },
+		{ '\0' }
 		};
 
 	parseArguments (argc, argv, args);
 	typedef NTL_ZZ      Ring;
 	Ring R;
-	std::cout << std::endl << "Smith form function test suite:\n";
+
+	commentator.start("Smith form test suite", "Smith");
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
+
 	RandomDenseStream<Ring> s1 (R, n, iterations);
 	if (!testRandom(R, s1)) pass = false;
+
+	commentator.stop("Smith form test suite");
 	return pass ? 0 : -1;
                                                                                                         
 }

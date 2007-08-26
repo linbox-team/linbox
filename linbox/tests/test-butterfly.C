@@ -285,16 +285,17 @@ int main (int argc, char **argv)
 {
 	bool pass = true;
 
-	static size_t n = 1000;
+	static size_t n = 100;
 	static integer q = 2147483647U;
-	static int iterations = 10;
-	static int k = 100;
+	static int iterations = 1; // was 10
+	static int k = 10;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 1000)",      TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 10)",           TYPE_INT,     &iterations },
-		{ 'k', "-k K", "K nonzero elements in random vectors (default 100)",        TYPE_INT,     &k },
+		{ 'n', "-n N", "Set dimension of test matrices to NxN.",      TYPE_INT,     &n },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations.",           TYPE_INT,     &iterations },
+		{ 'k', "-k K", "K nonzero elements in random vectors.",        TYPE_INT,     &k },
+    	{ '\0' }
 	};
 
 	typedef Modular<LinBox::uint32> Field;
@@ -306,7 +307,7 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	cout << endl << "Butterfly preconditioner test suite" << endl;
+	commentator.start("Butterfly preconditioner test suite", "butterfly preconditioner");
 
 	RandomSparseStream<Field, Vector<Field>::Sparse, NonzeroRandIter<Field> >
 		stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)),
@@ -319,5 +320,6 @@ int main (int argc, char **argv)
 	if (!testRandomLinearity (F, v1_stream, v2_stream)) pass = false;
 	if (!testRandomTranspose (F, v1_stream, v2_stream)) pass = false;
 
+	commentator.stop("butterfly preconditioner test suite");
 	return pass ? 0 : -1;
 }

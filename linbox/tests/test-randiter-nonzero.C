@@ -84,8 +84,9 @@ int main (int argc, char **argv)
 	static int iterations = 1000;
 
 	static Argument args[] = {
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 101)", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 1000)",  TYPE_INT,     &iterations },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
+		{ '\0' }
 	};
 
 	parseArguments (argc, argv, args);
@@ -93,13 +94,13 @@ int main (int argc, char **argv)
 
 	srand (time (NULL));
 
-	cout << endl << "Nonzero random iterator test suite" << endl;
-	cout.flush ();
+	commentator.start("Nonzero random iterator test suite", "NonzeroRandIter");
 
 	commentator.setBriefReportParameters (Commentator::OUTPUT_CONSOLE, false, false, false);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
 	if (!testNonzeroRandom (F, iterations)) pass = false;
 
+	commentator.stop("Nonzero random iterator test suite");
 	return pass ? 0 : -1;
 }

@@ -1436,18 +1436,19 @@ int main (int argc, char **argv)
 {
 	bool pass = true;
 
-	static long n = 100;
-	static long m = 100;
-	static long k = 20;
+	static long n = 50;
+	static long m = 50;
+	static long k = 10;
 	static integer q = 2147483647U;
-	static int iterations = 100;
+	static int iterations = 1;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set row of test matrices to N (default 100)",                           TYPE_INT,     &n },
-		{ 'm', "-m M", "Set column of test vectors to M (default 100)",                         TYPE_INT,     &m },
-		{ 'k', "-k K", "K nonzero elements per row/column in sparse matrices (default 20)",     TYPE_INT,     &k },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] for uint32 modulus (default 2147483647)", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 100)",                      TYPE_INT,     &iterations },
+		{ 'n', "-n N", "Set row of test matrices to N.", TYPE_INT,     &n },
+		{ 'm', "-m M", "Set column of test vectors to M.", TYPE_INT,     &m },
+		{ 'k', "-k K", "K nonzero elements per row/column in sparse matrices.", TYPE_INT,     &k },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] for uint32 modulus.", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
+		{ '\0' }
 	};
 
 	parseArguments (argc, argv, args);
@@ -1457,8 +1458,7 @@ int main (int argc, char **argv)
 
 	Field F (q);
 
-	cout << endl << "Matrix domain test suite" << endl;
-	cout.flush ();
+	commentator.start("Matrix domain test suite", "MatrixDomain");
 
 	commentator.setBriefReportParameters (Commentator::OUTPUT_CONSOLE, false, false, false);
 	commentator.getMessageClass (BRIEF_REPORT).setMaxDepth (2);
@@ -1524,5 +1524,6 @@ int main (int argc, char **argv)
 			       MatrixTraits<TransposeMatrix<SparseMatrixBase<Element> > >::MatrixCategory ()))
 		pass = false;
 
+	commentator.stop("Matrix domain test suite");
 	return pass ? 0 : -1;
 }

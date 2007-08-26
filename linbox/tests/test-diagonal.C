@@ -280,12 +280,13 @@ int main (int argc, char **argv)
 
 	static size_t n = 10;
 	static integer q = 2147483647U;
-	static int iterations = 100;
+	static int iterations = 2; // was 100
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)",        TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 100)",          TYPE_INT,     &iterations },
+		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
+		{ '\0' }
 	};
 
 	typedef Modular<LinBox::uint32> Field; //C.Pernet: avoids confusion with givaro::uint32
@@ -296,7 +297,7 @@ int main (int argc, char **argv)
 
 	srand (time (NULL));
 
-	cout << endl << "Diagonal matrix black box test suite" << endl;
+	commentator.start("Diagonal matrix black box test suite", "diagonal");
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
@@ -315,6 +316,7 @@ int main (int argc, char **argv)
 	LinBox::Diagonal<Field> D(F, 10, iter);
 	pass = pass && testBlackbox(F, D);
 
+	commentator.stop("diagonal matrix black box test suite");
 
 	return pass ? 0 : -1;
 }

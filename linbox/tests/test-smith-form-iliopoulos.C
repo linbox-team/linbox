@@ -253,12 +253,12 @@ int main(int argc, char** argv) {
                                                                                                         
         static size_t n = 20;
                                                                                                         
-        static int iterations = 5;
+        static int iterations = 1;
                                                                                                         
         static Argument args[] = {
-                { 'n', "-n N", "Set order of test matrices to N (default 20)",  TYPE_INT,     &n },
-                { 'i', "-i I", "Perform each test for I iterations (default 5)"
-,           TYPE_INT,     &iterations },
+                { 'n', "-n N", "Set order of test matrices to N.", TYPE_INT,     &n },
+                { 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
+				{ '\0' }
         };
                                                                                                         
                                                                                                         
@@ -268,7 +268,7 @@ int main(int argc, char** argv) {
                                                                                                         
         Ring R;
 
-	std::cout << std::endl << "Ilioloulos Elimination test suite:\n";
+	commentator.start("Ilioloulos Smith Form test suite", "Ilioloulos");
 
         commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
@@ -276,6 +276,7 @@ int main(int argc, char** argv) {
                                                                                                         
         if (!testRandom(R, s1)) pass = false;
                                                                                                         
+	commentator.stop("Ilioloulos Smith Form test suite");
         return pass ? 0 : -1;
                                                                                                         
 }

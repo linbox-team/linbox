@@ -26,15 +26,14 @@ int main (int argc, char **argv)
 	static int iterations = 1;
 
         static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test vectors to NxN (default 10000)", TYPE_INT,     &n },
-		{ 'i', "-i I", "Perform each test for I iterations (default 1)",       TYPE_INT,     &iterations },
+		{ 'n', "-n N", "Set dimension of test vectors to NxN.", TYPE_INT,     &n },
+		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
                 { '\0' }
         };
 
         parseArguments (argc, argv, args);
 
-	cout << "UnparametricField<NTL::RR> field test suite" << endl << endl;
-	cout.flush ();
+	commentator.start("UnparametricField<NTL::RR> field test suite", "UnparametricField<NTL::RR>");
 	bool pass = true;
 
 	UnparametricField<NTL::RR> F;
@@ -51,7 +50,11 @@ int main (int argc, char **argv)
 		pass = false;
 #endif
 
+	commentator.stop("UnparametricField<NTL::RR> field test suite");
 	// We're going to allow failed tests here because the floating-point
-	// approximation tends to screw things up anyway
+	// approximation tends to screw things up anyway.
+
+	// -bds:  Well, compilation is checked at least.  Work needed: A meaningful test is falsifyable.
+
 	return 0;
 }

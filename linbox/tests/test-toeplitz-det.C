@@ -8,6 +8,8 @@
 #include <linbox/solutions/det.h>
 #include <linbox/blackbox/dense.h>
 #include <linbox/randiter/random-prime.h>
+#include <linbox/util/commentator.h>
+#include "test-common.h"
 #include <cstdlib>
 #include <ctime>
 #include <linbox/integer.h>
@@ -15,29 +17,27 @@
 using namespace std;
 using namespace LinBox;
 
-const int N_BOUND = 1000;
-const int N_REPS = 100;
+int main(int argc, char* argv[]) {
+	static size_t N_BOUND = 100;
+	static Argument args[] = {
+    	{ 'n', "-n N", "Set dimension limit of test matrices to NxN.", TYPE_INT,     &N_BOUND },
+		{ '\0' }
+	};
 
-int main() {
-	ostream& report = cout;
-	report << "======> Testing Toeplitz Determinant" << endl;
+	parseArguments (argc, argv, args);
+
+	commentator.start("Toeplitz determinant test suite", "Toeplitz det");
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+
+	ostream& report = commentator.report();
 	bool pass = true;
 #ifdef __LINBOX_HAVE_NTL
 	srandom(time(0));
 	RandomPrimeIterator rp;
 	NTL_zz_p::RandIter rand;
 	report << "\tUsing random primes and square matrices of size 2 to " << N_BOUND << endl;
-	int toDel = 0;
-	report << '\t';
-	for( int i = 0; pass && i < N_REPS; ++i ) {
-		if( !(i % (N_REPS/100)) ) {
-			int percentDone = (100*i)/N_REPS;
-			for( int j = 0; j < toDel; ++j ) report.put(8);
-			report << percentDone << "%";
-			report.flush();
-			toDel = 3;
-			if( percentDone < 10 ) --toDel;
-		}
+	//for( int i = 0; pass && i < 2; ++i ) {
 		size_t n;
 		do { n = random() % N_BOUND; } while( n < 2 );
 
@@ -64,15 +64,19 @@ int main() {
 		Toeplitz<NTL_zz_p,NTL_zz_pX> T( PF, poly, n );
 
 		NTL_zz_p::Element res1, res2;
+		//det(res1,A);
 		det(res1,T);
 		det(res2,T);
 		
 		if( res1 != res2 ) pass = false;
-	}
+	//}
+#else 
+	report << "No test, because no NTL." << endl;
 #endif
 	report << endl;
 	if( pass ) report << "<====== Passed!" << endl;
 	else report << "<====== Failed!" << endl;
+	commentator.stop("toeplitz determinant test suite");
 	return (pass ? 0 : 1);
 
 #if 0
@@ -104,6 +108,7 @@ int main() {
 	NTL_ZZ_pX::Coeff res;
 	toeplitz_determinant( F, res, T, 4 );
 	*/
-	cout << res << endl;
+	//cout << res << endl;
+	commentator.stop("toeplitz determinant test suite");
 #endif
 }

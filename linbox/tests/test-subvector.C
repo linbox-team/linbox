@@ -23,12 +23,13 @@ int main(int argc, char** argv)
     static size_t n = 8;
     static Argument args[] = 
     {
- 	{ 'n', "-n N", "Set size of vector to N (default 8)"}
+ 		{ 'n', "-n N", "Set size of vector to N.", TYPE_INT, &n},
+		{ '\0' }
     };
     parseArguments (argc, argv, args);
  
     // start testing
-    cout << endl << "Subvector test suite" << endl;
+	commentator.start("Subvector test suite", "Subvector");
     bool pass = true;
  
     // call tests
@@ -37,6 +38,7 @@ int main(int argc, char** argv)
     pass = testSubvector<Field> (F, n);
  
     // finish
+	commentator.stop("Subvector test suite");
     return pass? 0 : -1;
 }
 

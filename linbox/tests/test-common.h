@@ -358,7 +358,7 @@ interpolatePoly (const Field                            &F,
 	return f;
 }
 
-void parseArguments (int argc, char **argv, Argument *args, bool printDefaults = false);
+void parseArguments (int argc, char **argv, Argument *args, bool printDefaults = true);
 
 /** writes the values of all arguments, preceded by the programName */
 std::ostream& writeCommandString (std::ostream& os, Argument *args, char* programName);

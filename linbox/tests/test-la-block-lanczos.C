@@ -227,11 +227,11 @@ int main (int argc, char **argv)
 	static int N = 16;
 
 	static Argument args[] = {
-		{ 'i', "-i I", "Number of iterations (default 5)", TYPE_INT, &i },
-		{ 'n', "-n N", "Dimension of test matrix (default 10)", TYPE_INT, &n },
-		{ 'k', "-k K", "K nonzero entries per row in test matrix (default 5)", TYPE_INT, &k },
-		{ 'N', "-N N", "Blocking factor (default 16)", TYPE_INT, &N },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2)", TYPE_INT, &q },
+		{ 'i', "-i I", "Number of iterations.", TYPE_INT, &i },
+		{ 'n', "-n N", "Dimension of test matrix.", TYPE_INT, &n },
+		{ 'k', "-k K", "K nonzero entries per row in test matrix.", TYPE_INT, &k },
+		{ 'N', "-N N", "Blocking factor.", TYPE_INT, &N },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INT, &q },
 		{ '\0', NULL, NULL, TYPE_NONE, NULL }
 	};
 

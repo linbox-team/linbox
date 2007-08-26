@@ -43,7 +43,7 @@ typename Field::Element& expt (const Field &F, typename Field::Element &res, con
 		n /= 2;
 		expt (F, res, a, n);
                 typename Field::Element tmp;
-                F.init(tmp);
+                F.init(tmp,0);
 		res = F.mul (tmp, res, res);
 	}
 
@@ -75,7 +75,7 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	F.init(zero, 0); F.init(one, 1); F.init(two, 2); F.init(three, 3);
 
 	typename Field::Element a, b, c, d, e, f;
-	F.init(a); F.init(b); F.init(c); F.init(d); F.init(e); F.init(f);
+	F.init(a,0); F.init(b,0); F.init(c,0); F.init(d,0); F.init(e,0); F.init(f,0);
 
 	commentator.start (title, "testField", 5);
 
@@ -254,7 +254,7 @@ bool testFieldNegation (const Field &F, const char *name, unsigned int iteration
 	commentator.start (str.str ().c_str (), "testFieldNegation", iterations);
 
 	typename Field::Element a, neg_a, neg_a_a, zero;
-	F.init(a); F.init(neg_a); F.init(neg_a_a); F.init (zero, 0);
+	F.init(a,0); F.init(neg_a,0); F.init(neg_a_a,0); F.init (zero, 0);
 	typename Field::RandIter r (F);
 
 	bool ret = true;
@@ -302,7 +302,7 @@ bool testFieldInversion (const Field &F, const char *name, unsigned int iteratio
 	commentator.start (str.str ().c_str (), "testFieldInversion", iterations);
 
 	typename Field::Element a, ainv, aainv, one;
-        F.init (a); F.init (ainv); F.init (aainv);
+        F.init (a,0); F.init (ainv,0); F.init (aainv,0);
 	F.init (one, 1);
 	typename Field::RandIter r (F);
 
@@ -352,10 +352,10 @@ bool testFieldDistributivity(const Field &F, const char *name, unsigned int iter
 	commentator.start (str.str ().c_str (), "testFieldDistributivity", iterations);
 
 	typename Field::Element a, b, c, a_b, a_bc, ac, bc, ac_bc, ca_b, ca, cb, ca_cb;
-        F.init (a); F.init (b); F.init (c); 
-        F.init (a_b); F.init (a_bc); F.init (ac); F.init (bc);
-        F.init (ac_bc); 
-		F.init (ca_b); F.init (ca); F.init (cb); F.init (ca_cb); 
+        F.init (a,0); F.init (b,0); F.init (c,0); 
+        F.init (a_b,0); F.init (a_bc,0); F.init (ac,0); F.init (bc,0);
+        F.init (ac_bc,0); 
+		F.init (ca_b,0); F.init (ca,0); F.init (cb,0); F.init (ca_cb,0); 
         
 	typename Field::RandIter r (F);
 
@@ -424,9 +424,9 @@ bool testFieldCommutativity (const Field &F, const char *name, unsigned int iter
 	commentator.start (str.str ().c_str (), "testFieldCommutativity", iterations);
 
 	typename Field::Element a, b, ab, ba, a_b, b_a;
-        F.init (a); F.init (b);
-        F.init (ab); F.init (ba);
-        F.init (a_b); F.init (b_a);
+        F.init (a,0); F.init (b,0);
+        F.init (ab,0); F.init (ba,0);
+        F.init (a_b,0); F.init (b_a,0);
 
         
 	typename Field::RandIter r (F);
@@ -495,8 +495,8 @@ bool testFieldAssociativity (const Field &F, const char *name, unsigned int iter
 	commentator.start (str.str ().c_str (), "testFieldAssociativity", iterations);
 
 	typename Field::Element a, b, c, a_b, b_c, a_bc, ab_c;
-        F.init (a); F.init (b); F.init (c);
-        F.init (a_b); F.init (b_c); F.init (a_bc); F.init (ab_c);
+        F.init (a,0); F.init (b,0); F.init (c,0);
+        F.init (a_b,0); F.init (b_c,0); F.init (a_bc,0); F.init (ab_c,0);
 	typename Field::RandIter r (F);
 
 	bool ret = true;
@@ -568,7 +568,7 @@ bool testGeometricSummation (const Field &F, const char *name, unsigned int iter
 
 	F.init (zero, 0);
 	F.init (one, 1);
-        F.init (a); F.init (a_n); F.init (k);
+        F.init (a,0); F.init (a_n,0); F.init (k,0);
 
 	bool ret = true;
 
@@ -642,7 +642,7 @@ bool testFieldCharacteristic (const Field &F, const char *name, unsigned int ite
 
 	F.characteristic (p);
 	F.init (zero, 0);
-        F.init (a); F.init (sigma);
+        F.init (a,0); F.init (sigma,0);
         
 	bool ret = true;
 
@@ -706,8 +706,8 @@ bool testFreshmansDream (const Field &F, const char *name, unsigned int iteratio
 	typename Field::RandIter r (F);
 	typename Field::Element a, b, a_b, a_b_p, a_p, b_p, a_p_b_p;
 
-        F.init (a); F.init (b); F.init (a_b);
-        F.init (a_b_p); F.init (a_p); F.init (b_p); F.init (a_p_b_p);
+        F.init (a,0); F.init (b,0); F.init (a_b,0);
+        F.init (a_b_p,0); F.init (a_p,0); F.init (b_p,0); F.init (a_p_b_p,0);
 
 	for (unsigned int i = 0; i < iterations; i++) {
 		commentator.startIteration (i);
@@ -782,7 +782,7 @@ bool testRingArithmeticConsistency (const Field &F, const char *name, unsigned i
 
 	typename Field::RandIter r (F);
 	typename Field::Element a, b, c1, c2;
-        F.init (a); F.init (b); F.init (c1); F.init (c2);
+        F.init (a,0); F.init (b,0); F.init (c1,0); F.init (c2,0);
 
 	for (unsigned int i = 0; i < iterations; i++) {
 		commentator.startIteration (i);
@@ -859,7 +859,7 @@ bool testInvDivConsistency (const Field &F, const char *name, unsigned int itera
 
     typename Field::RandIter r (F);
     typename Field::Element a, b, c1, c2;
-    F.init (a); F.init (b); F.init (c1); F.init (c2);
+    F.init (a,0); F.init (b,0); F.init (c1,0); F.init (c2,0);
 
     for (unsigned int i = 0; i < iterations; i++) {
         commentator.startIteration (i);
@@ -924,8 +924,8 @@ bool testAxpyConsistency (const Field &F, const char *name, unsigned int iterati
 
 	typename Field::RandIter r (F);
 	typename Field::Element a, x, y, c1, c2, c3;
-        F.init (a); F.init (x); F.init (y); 
-        F.init (c1); F.init (c2); F.init (c3);
+        F.init (a,0); F.init (x,0); F.init (y,0); 
+        F.init (c1,0); F.init (c2,0); F.init (c3,0);
 
 	for (unsigned int i = 0; i < iterations; i++) {
 		commentator.startIteration (i);
@@ -977,8 +977,9 @@ bool testRanditerBasic(const Field &F, const char *name, unsigned int iterations
 
 	typename Field::RandIter r (F);
 	typename Field::Element a;
-        F.init (a);
+        F.init (a,0);
 
+	if (iterations < 20) iterations = 20;
 	for (unsigned int i = 0; i < iterations; i++) {
 		r.random (a);
 		if ( ! F.isZero(a) ) {ret = true; break;}

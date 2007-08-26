@@ -31,10 +31,11 @@ int main (int argc, char **argv)
 	static int iterations2 = 1;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)", TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 101)", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 100)",   TYPE_INT,     &iterations1 },
-		{ 'j', "-j J", "Apply test matrix to J vectors (default 1)",         TYPE_INT,     &iterations2 },
+		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations.",   TYPE_INT,     &iterations1 },
+		{ 'j', "-j J", "Apply test matrix to J vectors.",         TYPE_INT,     &iterations2 },
+		{ '\0' }
 	};
 
 	typedef Modular<uint32> Field;
@@ -44,7 +45,9 @@ int main (int argc, char **argv)
 	Field F (q);
 	Field::Element k;
 
-	cout << endl << "black box direct sum test suite" << endl;
+	commentator.start("DirectSum black box test suite", "direct sum");
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	F.init(k, 5);
 	ScalarMatrix<Field> B(F, 10, k);
@@ -57,5 +60,6 @@ int main (int argc, char **argv)
 	pass = pass && testBlackbox(F, D);
 	//pass = pass && testSmallBlackbox(F, A);
 
+	commentator.stop("DirectSum black box test suite");
 	return pass ? 0 : -1;
 }

@@ -42,9 +42,9 @@ int main (int argc, char **argv)
 	static int iterations = 10;
 
         static Argument args[] = {
-                { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 10733)", TYPE_INTEGER, &q },
-		{ 'n', "-n N", "Set dimension of test vectors to NxN (default 10000)", TYPE_INT,     &n },
-		{ 'i', "-i I", "Perform each test for I iterations (default 10)",      TYPE_INT,     &iterations },
+                { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+		{ 'n', "-n N", "Set dimension of test vectors to NxN.", TYPE_INT,     &n },
+		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
                 { '\0' }
         };
 

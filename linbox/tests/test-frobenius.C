@@ -31,10 +31,11 @@ int main (int argc, char **argv)
   static int iterations2 = 1;
   
   static Argument args[] = {
-    { 'n', "-n N", "Set dimension of test matrices to NxN (default 10)", TYPE_INT,     &n },
-    { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 101)", TYPE_INTEGER, &q },
-    { 'i', "-i I", "Perform each test for I iterations (default 100)",   TYPE_INT,     &iterations1 },
-    { 'j', "-j J", "Apply test matrix to J vectors (default 1)",         TYPE_INT,     &iterations2 },
+    { 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
+    { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+    { 'i', "-i I", "Perform each test for I iterations.",   TYPE_INT,     &iterations1 },
+    { 'j', "-j J", "Apply test matrix to J vectors.",         TYPE_INT,     &iterations2 },
+	{ '\0' }
   };
   
   typedef Modular<uint32> Field;
@@ -63,11 +64,12 @@ int main (int argc, char **argv)
   for ( size_t ideg=0; ideg < pdeg; ++ideg) r.random(plist[2][ideg]);
   F.init(plist[2][pdeg],1);
 
-  cout << endl << "black box frobenius-form test suite" << endl;
+	commentator.start("Frobenius form black box test suite", "frobenius");
   Frobenius<Field>  A(F, plist.begin(), plist.end());
 
   pass = pass && testBlackbox(F, A);
   //pass = pass && testSmallBlackbox(F, A);
   
+	commentator.stop("Frobenius form black box test suite");
   return pass ? 0 : -1;
 }

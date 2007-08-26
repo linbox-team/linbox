@@ -544,18 +544,20 @@ int main (int argc, char **argv)
 	static size_t n = 10;
 	static size_t m = 10;
 	static integer q = 101;
-	static int iterations = 100;
+	static int iterations = 1;
 	static int k = 3;
 	static int N = 20;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set column dimension of test matrices to N (default 10)",            TYPE_INT,     &n },
-		{ 'm', "-m M", "Set row dimension of test matrices to M (default 10)",               TYPE_INT,     &m },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 101)",                 TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 100)",                   TYPE_INT,     &iterations },
-		{ 'k', "-k K", "K nonzero Elements per row in sparse random apply test (default 3)", TYPE_INT,     &k },
-		{ 'N', "-N N", "N nonzero Elements in sparse random apply test (default 20)",        TYPE_INT,     &N }
+		{ 'n', "-n N", "Set column dimension of test matrices to N.", TYPE_INT,     &n },
+		{ 'm', "-m M", "Set row dimension of test matrices to M.", TYPE_INT,     &m },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
+		{ 'k', "-k K", "K nonzero Elements per row in sparse random apply test.", TYPE_INT,     &k },
+		{ 'N', "-N N", "N nonzero Elements in sparse random apply test.", TYPE_INT,     &N },
+		{ '\0' }
 	};
+	parseArguments (argc, argv, args);
 
 	typedef	Modular<uint32> Field;
 	typedef Field::Element  Element;
@@ -565,13 +567,12 @@ int main (int argc, char **argv)
 	typedef std::map <size_t, Element> SparseMapVector;
 	typedef std::pair <std::vector<size_t>, std::vector<Element> > SparseParVector;
 
-	parseArguments (argc, argv, args);
 	Field F (q);
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	cout << endl << "Sparse matrix black box test suite" << endl;
+	commentator.start("Sparse matrix black box test suite", "Sparse");
 
 	RandomSparseStream<Field, SparseSeqVector>
 		stream1 (F, (double) k / (double) n, n, m);
@@ -584,5 +585,6 @@ int main (int argc, char **argv)
 	if (!runSparseMatrixTests (F, "sparse associative", iterations, stream2)) pass = false;
 	if (!runSparseMatrixTests (F, "sparse parallel",    iterations, stream3)) pass = false;
 
+	commentator.stop("Sparse matrix black box test suite");
 	return pass ? 0 : -1;
 }

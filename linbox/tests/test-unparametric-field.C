@@ -34,8 +34,8 @@ int main (int argc, char **argv)
 	static int iterations = 1 ;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test vectors to NxN (default 10000)", TYPE_INT,     &n },
-		{ 'i', "-i I", "Perform each test for I iterations (default 1)",       TYPE_INT,     &iterations },
+		{ 'n', "-n N", "Set dimension of test vectors to NxN.", TYPE_INT,     &n },
+		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
 		{ '\0' }
 	};
 

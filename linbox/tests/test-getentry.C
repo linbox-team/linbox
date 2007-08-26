@@ -234,9 +234,10 @@ int main (int argc, char **argv)
 	static int iterations = 10;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)", TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 101)",  TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 10)",     TYPE_INT,     &iterations },
+		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].",  TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations.",     TYPE_INT,     &iterations },
+		{ '\0' }
 	};
 
 	typedef Modular<int32> Field;
@@ -245,8 +246,8 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Field F (q);
 
-	cout << endl << "Black box getEntry test suite" << endl;
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator.start("getEntry solution test suite", "getEntry");
 
 	RandomDenseStream<Field, Vector> stream (F, n, iterations);
 
@@ -255,5 +256,6 @@ int main (int argc, char **argv)
 	if (!testDenseMatrixgetEntry (F, n)) pass = false;
 	if (!testDiagonalgetEntry (F, stream)) pass = false;
 
+	commentator.stop("getEntry solution test suite");
 	return pass ? 0 : -1;
 }
