@@ -218,7 +218,7 @@ namespace LinBox
 		 *           call to stop (). It is optional, and has no other
 		 *           effect.
 		 */
-		void stop (const char *msg,
+		void stop (const char *msg = MSG_DONE,
 			   const char *long_msg = (const char *) 0,
 			   const char *fn = (const char *) 0);
 
@@ -249,7 +249,7 @@ namespace LinBox
 		 * @param msg_class Type of message
 		 * @return A reference to the stream to which to output data
 		 */
-		std::ostream &report (long level, const char *msg_class);
+		std::ostream &report (long level = LEVEL_IMPORTANT, const char *msg_class = INTERNAL_DESCRIPTION);
 
 		/** Indent to the correct column on the given string
 		 */
