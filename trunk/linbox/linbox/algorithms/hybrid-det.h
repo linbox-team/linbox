@@ -169,7 +169,7 @@ namespace LinBox {
                                                         const RingCategories::IntegerTag          &tag,
                                                         const MyMethod                            &M)
             {
-                commentator.setReportStream(std::cout);
+                //commentator.setReportStream(std::cout);
                 typedef Modular<double> myModular;
                 typedef typename Blackbox::Field Integers;
                 typedef typename Integers::Element Integer;
@@ -422,7 +422,7 @@ namespace LinBox {
                                                         const MyMethod                            &M)
             {
 
-                commentator.setReportStream(std::cout);
+                //commentator.setReportStream(std::cout);
                 typedef Modular<double> myModular;
                 //typedef PID_integer Integers;
                 typedef typename Integers::Element Integer;

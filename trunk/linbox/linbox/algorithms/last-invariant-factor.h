@@ -237,7 +237,7 @@ whether zero or not, by rational solving.
                                 Integer r_den;
                                 std::vector<Integer> b(A.rowdim());
                                 typename std::vector<Integer>::iterator b_p;
-                                typename Vector::const_iterator Prime_p;
+                                //typename Vector::const_iterator Prime_p;
 
                                 Integer pri, quo, rem;
 

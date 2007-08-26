@@ -356,7 +356,7 @@ namespace LinBox
                     A1.setEntry(i,j,getEntry(tmp, A, i, j));
             GaussDomain<Field> GD ( A1.field() );
             GD.detin (d, A1, M.strategy ());
-            commentator.stop ("done", NULL, "SEdet");
+            commentator.stop ("done", NULL, "SEDet");
             return d;
            
         }
