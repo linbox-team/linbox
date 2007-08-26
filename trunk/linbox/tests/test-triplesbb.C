@@ -37,16 +37,17 @@ int main (int argc, char **argv)
 	static int iterations = 10;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 200)",        TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 10)",          TYPE_INT,     &iterations },
+		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
+		{ '\0' }
 	};
 
 	parseArguments (argc, argv, args);
 
 	srand (time (NULL));
 
-	cout << endl << "Transpose of triplesbb matrix black box test suite" << endl;
+	commentator.start("triplesbb black box test suite", "triplesbb");
 
 	typedef Modular<uint32> Field;
 	typedef Field::Element Element;
@@ -91,5 +92,6 @@ int main (int argc, char **argv)
 	for(size_t i = 0; i < rowP.size(); ++i) C.addEntry(values[i], rowP[i], colP[i]);
 	pass = pass && testBlackbox<Field, Blackbox>(F, C);
 
+	commentator.stop("triplesbb black box test suite");
 	return pass ? 0 : -1;
 }

@@ -183,17 +183,18 @@ int main (int argc, char **argv)
         static double sparsity = 0.05;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 80)",       TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 65519)", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 2)",           TYPE_INT,     &iterations },
-                { 's', "-s S", "Sparse matrices with density S (default 0.05)",           TYPE_DOUBLE,     &sparsity },
+		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
+        { 's', "-s S", "Sparse matrices with density S.", TYPE_DOUBLE,     &sparsity },
+		{ '\0' }
 	};
 
 	parseArguments (argc, argv, args);
 
 	srand (time (NULL));
 
-	cout << endl << "Black box rank test suite" << endl;
+	commentator.start("rank solution test suite", "rank");
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 
@@ -215,5 +216,6 @@ int main (int argc, char **argv)
         PID_integer R;
 	if (!testRankMethods (R, n, iterations, sparsity)) pass = false;
 
+	commentator.stop("rank solution test suite");
 	return pass ? 0 : -1;
 }

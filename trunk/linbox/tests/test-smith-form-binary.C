@@ -170,14 +170,14 @@ int main(int argc, char** argv) {
                                                                                                          
         bool pass = true;
                                                                                                         
-        static size_t n =10; 
+        static size_t n =5; 
                                                                                                         
-        static int iterations = 2;
+        static int iterations = 1;
                                                                                                         
         static Argument args[] = {
-                { 'n', "-n N", "Set order of test matrices to N (default 10)",  TYPE_INT,     &n },
-                { 'i', "-i I", "Perform each test for I iterations (default 2)"
-,           TYPE_INT,     &iterations },
+            { 'n', "-n N", "Set order of test matrices to N.", TYPE_INT,     &n },
+            { 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
+			{ '\0' }
         };
                                                                                                         
                                                                                                         
@@ -187,7 +187,7 @@ int main(int argc, char** argv) {
                                                                                               
         Ring R;
 
-	std::cout << std::endl << "EGV++ algorithm test suite:\n";
+	commentator.start("SmithFormBinary test suite", "SmithFormBinary");
 
         commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
@@ -211,6 +211,7 @@ int main(int argc, char** argv) {
 
 	if (!testRandom(R, sf, s1)) pass = false;
                                                                                                         
+	commentator.stop("SmithFormBinary test suite");
         return pass ? 0 : -1;
                                                                                                         
 }

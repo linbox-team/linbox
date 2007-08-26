@@ -22,20 +22,20 @@ using namespace LinBox;
 
 int main (int argc, char **argv)
 {
-    static integer q = 10733;
 	static size_t n = 10;
+    static integer q = 10733;
 	static int iterations = 2;
 
     static Argument args[] = {
-            { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 10733)", TYPE_INTEGER, &q },
-	{ 'n', "-n N", "Set dimension of blocks to N (default 10)", TYPE_INT,     &n },
-	{ 'i', "-i I", "Perform each test for I iterations (default 2)",      TYPE_INT,     &iterations },
-            { '\0' }
+	{ 'n', "-n N", "Set dimension of blocks to N.", TYPE_INT,     &n },
+    { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+	{ 'i', "-i I", "Perform each test for I iterations.",      TYPE_INT,     &iterations },
+    { '\0' }
     };
 
     parseArguments (argc, argv, args);
 
-	std::cout << endl << "block-ring test suite" << std::endl;
+	commentator.start("block-ring test suite", "block-ring");
 	bool pass = true;
 	
 	typedef Modular<int> Field1;  
@@ -55,6 +55,8 @@ int main (int argc, char **argv)
 
 	if (!runBasicRingTests(R1, "BlockRing of Modular<int>", iterations)) pass = false;
 	if (!runBasicRingTests(R2, "BlockRing of Modular<double>", iterations)) pass = false;
+
+	commentator.stop("block-ring test suite");
 	return pass ? 0 : -1;
         
 }

@@ -244,21 +244,23 @@ int main (int argc, char **argv)
 
 	static size_t n = 100;
 	static integer q = 101;
-	static int iterations = 5;
+	static int iterations = 1;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 100)", TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 101)",  TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 5)",     TYPE_INT,     &iterations },
+		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
+		{ '\0' }
 	};
+
+	parseArguments (argc, argv, args);
 
 	typedef NTL_PID_zz_p Ring;
 	typedef vector<Ring::Element> Vector;
 
-	parseArguments (argc, argv, args);
 	Ring R (536870912);
 
-	cout << endl << "Random dense matrix local smith test suite" << endl;
+	commentator.start("Local Smith Form test suite", "LocalSmith");
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
@@ -272,6 +274,7 @@ int main (int argc, char **argv)
 		stream2 (R2, n, iterations);
 	if (!testLocalSmith<Local2_32> (R2, stream2)) pass = false;
 
+	commentator.stop("Local Smith Form test suite");
 	return pass ? 0 : -1;
 }
 

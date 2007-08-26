@@ -83,7 +83,7 @@ void runTestActivity (bool reportStrings)
 
 static bool testPrimaryOutput () 
 {
-	cout << "Testing primary output...";
+	//cout << "Testing primary output...";
 
 	bool ret = true;
 
@@ -112,7 +112,7 @@ static bool testPrimaryOutput ()
 	commentator.setPrintParameters (10, Commentator::LEVEL_UNIMPORTANT, "function3");
 	runTestActivity (true);
 
-	cout << (ret ? "passed" : "FAILED") << endl;
+	//cout << (ret ? "passed" : "FAILED") << endl;
 
 	return ret;
 }
@@ -124,7 +124,7 @@ static bool testPrimaryOutput ()
 
 static bool testBriefReport () 
 {
-	cout << "Testing brief report...";
+	//cout << "Testing brief report...";
 
 	bool ret = true;
 
@@ -134,7 +134,10 @@ static bool testBriefReport ()
 	commentator.setBriefReportParameters (Commentator::OUTPUT_CONSOLE, true, true, true);
 
 	commentator.getMessageClass (BRIEF_REPORT).setMaxDepth (1);
+	//cout << "about to ran a testactivity" << endl;
 	runTestActivity (false);
+
+	//cout << "ran a testactivity" << endl;
 
 	commentator.getMessageClass (BRIEF_REPORT).setMaxDepth (2);
 	runTestActivity (false);
@@ -153,7 +156,7 @@ static bool testBriefReport ()
 	commentator.getMessageClass (BRIEF_REPORT).setMaxDepth (3);
 	runTestActivity (false);
 
-	cout << (ret ? "passed" : "FAILED") << endl;
+	//cout << (ret ? "passed" : "FAILED") << endl;
 
 	return ret;
 }
@@ -168,10 +171,12 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	cout << endl << "Commentator test suite" << endl;
+	commentator.start("Commentator test suite", "commentator");
 
 	if (!testPrimaryOutput ()) pass = false;
 	if (!testBriefReport ()) pass = false;
 
+	commentator.stop("commentator test suite");
+	//cout << (pass ? "passed" : "FAILED") << endl;
 	return pass ? 0 : -1;
 }

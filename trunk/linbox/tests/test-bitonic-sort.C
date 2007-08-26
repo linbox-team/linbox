@@ -23,13 +23,11 @@ class Comparator {
 
 };
 
-bool testRandom (int s, int iteration) {
+bool testRandom (std::ostream& report, int s, int iteration) {
  
 	using namespace std;
 	
         commentator.start ("test bitonic sort", "test bitonic sort", iteration);
-
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);  
 
 	bool iter_passed = true;
 	bool ret = true;
@@ -123,22 +121,25 @@ int main(int argc, char** argv) {
                                                                                                         
         static size_t n = 512;
                                                                                                         
-        static int iterations = 10;
+        static int iterations = 2;
                                                                                                         
         static Argument args[] = {
-                { 'n', "-n N", "Set size of sequnce to N (default 512, must be power of 2)",  TYPE_INT,     &n },
-                { 'i', "-i I", "Perform each test for I iterations (default 10)"
+                { 'n', "-n N", "Set size of sequence to N.  N must be a power of 2)",  TYPE_INT,     &n },
+                { 'i', "-i I", "Perform each test for I iterations"
 ,           TYPE_INT,     &iterations },
+				{ '\0' }
         };
                                                                                                         
                                                                                                         
         parseArguments (argc, argv, args);
                                                                                                         
-	std::cout << std::endl << "Sort network test suite:\n";
+	commentator.start("Sort network test suite", "bitonic sort");
+	std::ostream& report = commentator.report();
+    commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-        commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
-
-	if (!testRandom(n, iterations)) pass = false;
+	if (!testRandom(report, n, iterations)) pass = false;
+	commentator.stop("sort network test suite");
 
         return pass ? 0 : -1;
                                                                                                         

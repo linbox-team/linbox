@@ -126,6 +126,7 @@ void parseArguments (int argc, char **argv, Argument *args, bool printDefaults)
 	for (i = 1; i < argc; i++) {
 		if (argv[i][0] == '-') {
 			if (argv[i][1] == 0) {
+			commentator.setBriefReportStream (cout);
 			commentator.setReportStream (cout);
 			std::cout << "Writing report data to cout (intermingled with brief report)" << std::endl << std::endl;
 			std::cout.flush ();
@@ -174,6 +175,7 @@ void parseArguments (int argc, char **argv, Argument *args, bool printDefaults)
 				break;
 			}
 		} else {
+		    commentator.setBriefReportStream(cout);
 			commentator.setDefaultReportFile (argv[i]);
 			std::cout << "Writing report data to " << argv[i] << std::endl << std::endl;
 			std::cout.flush ();

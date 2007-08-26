@@ -22,16 +22,17 @@ int main(int argc, char* argv[])
   
   bool pass = true;
   
-  static size_t n = 10000;
+  static size_t n = 1000;
   static long q = 2147483647;
 
 
-  static int iterations = 10;
+  static int iterations = 1;
   
   static Argument args[] = {
-    { 'n', "-n N", "Set dimension of test matrices to NxN (default 10)",        TYPE_INT,     &n },
-    { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INT, &q },
-    { 'i', "-i I", "Perform each test for I iterations (default 10)",          TYPE_INT,     &iterations },
+    { 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
+    { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INT, &q },
+    { 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
+	{ '\0' }
   };
   
   parseArguments (argc, argv, args);
@@ -47,8 +48,8 @@ int main(int argc, char* argv[])
   NTL::ZZ_p::init(modulus); // NOTE: This is essential for using NTL
   
 
-  cout << "====>\t Hankel matrix black box test suite N=" << 
-    n << " \tq= " << q <<   endl ;
+	commentator.start("Hankel black box test test suite", "Hankel");
+  report << "\tn= " <<  n << " \tq= " << q <<   endl ;
 
   typedef LinBox::UnparametricField<NTL::ZZ_p> Field;
   typedef Field::Element element;
@@ -109,8 +110,8 @@ int main(int argc, char* argv[])
       TT.print(report);
   
   pass = testBlackbox<Field, LinBox::Hankel<Field> >(F, TT);
-  cout <<"<====\tDone Hankel matrix black box test suite" << endl;
 
+	commentator.stop("Hankel black box test test suite");
   return pass ? 0 : -1;
   
 }

@@ -45,26 +45,26 @@ int main (int argc, char **argv)
 	static size_t n = 10000;
 	static int iterations = 10;
 	static int e = 3;
-	static int trials = 1000000;
+	static int trials = 100000;
 	static int categories = 100;
 	static int hist_level = 1;
 
 
         static Argument args[] = {
-                { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 10733)", TYPE_INTEGER, &q },
-                { 'e', "-e E", "Use GF(q^e) for the extension field [1] (default q^3)",  TYPE_INT,     &e },
-		{ 'n', "-n N", "Set dimension of test vectors to NxN (default 10000)", TYPE_INT,     &n },
-		{ 'i', "-i I", "Perform each test for I iterations (default 10)",      TYPE_INT,     &iterations },
-		{ 't', "-t T", "Number of trials for the random iterator test (default 1000000)", TYPE_INT, &trials },
-		{ 'c', "-c C", "Number of categories for the random iterator test (default 100)", TYPE_INT, &categories },
-		{ 'H', "-H H", "History level for random iterator test (default 1)", TYPE_INT, &hist_level },
-                { '\0' }
+                { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+                { 'e', "-e E", "Use GF(q^e) for the extension field [1].",  TYPE_INT,     &e },
+		{ 'n', "-n N", "Set dimension of test vectors to NxN.", TYPE_INT,     &n },
+		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
+		{ 't', "-t T", "Number of trials for the random iterator test.", TYPE_INT, &trials },
+		{ 'c', "-c C", "Number of categories for the random iterator test.", TYPE_INT, &categories },
+		{ 'H', "-H H", "History level for random iterator test.", TYPE_INT, &hist_level },
+        { '\0' }
         };
 
         parseArguments (argc, argv, args);
 
-	cout << endl << "GivaroZpz<Std16> field test suite" << endl;
-	cout.flush ();
+	//cout << endl << "GivaroZpz<Std16> field test suite" << endl;
+	//cout.flush ();
 	bool pass = true;
 	
 	GivaroZpz<Std16> F1 (q);

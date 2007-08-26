@@ -28,18 +28,17 @@ using namespace LinBox;
 int main (int argc, char **argv)
 {
 	static size_t n = 1000;
-	static int iterations = 10;
+	static int iterations = 1;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test vectors to NxN (default 1000)", TYPE_INT, &n },
-		{ 'i', "-i I", "Perform each test for I iterations (default 10)",     TYPE_INT, &iterations },
+		{ 'n', "-n N", "Set dimension of test vectors to NxN.", TYPE_INT, &n },
+		{ 'i', "-i I", "Perform each test for I iterations.",     TYPE_INT, &iterations },
 		{ '\0' }
 	};
 
 	parseArguments (argc, argv, args);
 
-	cout << endl << "GMP rational field test suite" << endl;
-	cout.flush ();
+	commentator.start("GMP rational field test suite", "GMPRationalField");
 	bool pass = true;
 
 	GMPRationalField F;
@@ -50,5 +49,6 @@ int main (int argc, char **argv)
 
 	if (!runFieldTests (F,  "GMP Rational",  iterations, n, false)) pass = false;
 
+	commentator.stop("GMP rational field test suite");
 	return pass ? 0 : -1;
 }

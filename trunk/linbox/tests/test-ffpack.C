@@ -753,14 +753,15 @@ int main(int argc, char** argv){
 
 	bool pass = true;
 
-	static size_t n = 200;
+	static size_t n = 130;
 	static integer q = 65521;
-	static int iterations =5;
+	static int iterations =1;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 200)",       TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 65521)", TYPE_INTEGER, &q }, 
-		{ 'i', "-i I", "Perform each test for I iterations (default 5)",           TYPE_INT,     &iterations },
+		{ 'n', "-n N", "Set dimension of test matrices to NxN.",       TYPE_INT,     &n },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q }, 
+		{ 'i', "-i I", "Perform each test for I iterations.",           TYPE_INT,     &iterations },
+		{ '\0' }
 	};
 
 	parseArguments (argc, argv, args);
@@ -771,8 +772,7 @@ int main(int argc, char** argv){
 	
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	commentator.start("ffpack Test suite");
-	std::cerr<<endl<<endl;
+	commentator.start("ffpack test suite", "ffpack");
 
  	if (!testLUdivine (F, n,n, iterations)) pass=false;
  	if (!testRank (F, n, iterations))   pass = false;   
@@ -783,8 +783,7 @@ int main(int argc, char** argv){
   	if (!testMinPoly (F,n,iterations)) pass=false;
 	if (!testCharPoly (F,n,iterations)) pass=false;
 	
-	std::cerr<<"\nffpack Test suite...";
-	commentator.stop(MSG_STATUS(pass),"ffpack Test suite");
+	commentator.stop(MSG_STATUS(pass),"ffpack test suite");
     
 	return pass ? 0 : -1;
 }

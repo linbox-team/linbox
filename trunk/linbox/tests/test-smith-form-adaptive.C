@@ -166,21 +166,23 @@ bool testRandom(const Ring& R,
 int main(int argc, char** argv) {
                                                                                                         
 	bool pass = true;
-	static size_t n =50; 
-	static int iterations = 5;
+	static size_t n = 35; 
+	static int iterations = 1;
 	static Argument args[] = {
-		{ 'n', "-n N", "Set order of test matrices to N (default 50)",  TYPE_INT,  &n },
-		{ 'i', "-i I", "Perform each test for I iterations (default 5)", TYPE_INT, &iterations }
+		{ 'n', "-n N", "Set order of test matrices to N.", TYPE_INT,  &n },
+		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT, &iterations },
+		{ '\0' }
 		};
 
 	parseArguments (argc, argv, args);
 	typedef NTL_ZZ      Ring;
 	Ring R;
-	std::cout << std::endl << "EGV++ algorithm test suite:\n";
+	commentator.start("EGV++ algorithm test suite", "EGV++");
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 	RandomDenseStream<Ring> s1 (R, n, iterations);
 	SmithFormAdaptive sf;
 	if (!testRandom(R, sf, s1)) pass = false;
+	commentator.stop("EGV++ algorithm test suite");
 	return pass ? 0 : -1;
                                                                                                         
 }

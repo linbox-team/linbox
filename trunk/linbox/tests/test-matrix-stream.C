@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include "test-common.h"
 #include <linbox/field/unparametric.h>
 #include <linbox/util/matrix-stream.h>
 #include <linbox/integer.h>
@@ -11,16 +12,15 @@
 
 using namespace LinBox;
 
-const int nMatrices = 7;
-const char* matrixNames[nMatrices] = {
-				"data/sms.matrix",
-				"data/matrix-market-array.matrix",
-				"data/maple-sparse1.matrix",
-				"data/maple-dense1.matrix",
-				"data/generic-dense.matrix",
-				"data/sparse-row.matrix",
-				"data/matrix-market-coordinate.matrix"
-			       };
+/* 
+I would like to see a matrix writer that 
+writes sms format and generic dense format.  
+Then we could have a self contained test that 
+checks the write/read cycle without depending on preexisting data files.
+
+...but data files illustrating formats that we intend to read but not write would continue to be used.
+-bds
+*/
 
 const size_t rowDim = 11;
 const size_t colDim = 11;
@@ -41,73 +41,49 @@ typedef UnparametricField<integer> TestField;
 TestField f;
 
 template <class BB>
-bool testBlackBox( const char* filename, const char* BBName ) {
-	std::cout << "\tTesting " << BBName << std::endl;
-	std::ifstream fin( filename );
-	if( !fin ) {
-		std::cout << "Could not open " << filename << std::endl;
-		return true;
-	}
-	MatrixStream<TestField > ms(f, fin);
-	BB m( ms );
-	if( m.rowdim() != rowDim ) {
-		std::cout << "Wrong rowDim in " << BBName << std::endl
-		     << "Got " << m.rowdim() << ", should be " << rowDim << std::endl;
-		return true;
-	}
-	if( m.coldim() != colDim ) {
-		std::cout << "Wrong colDim in " << BBName << std::endl
-		     << "Got " << m.coldim() << ", should be " << colDim << std::endl;
-		return true;
-	}
-	bool fail = false;
-	for( size_t i = 0; i < rowDim; ++i ) {
-		for( size_t j = 0; j < colDim; ++j ) {
-			if( m.getEntry(i,j) != matrix[i][j] ) {
-				std::cout << "Invalid entry in " << BBName << " at index ("
-				     << i << "," << j << ")" << std::endl
-				     << "Got " << m.getEntry(i,j) << ", should be "
-				     << matrix[i][j] << std::endl;
-				fail = true;
-			}
-		}
-	}
-	return fail;
-}
+bool testBlackBox( std::ostream& out, const char* filename, const char* BBName ) ;
+bool testMatrixStream(std::ostream& out) {
+	std::vector<char*> matrixNames;
+	matrixNames. push_back("data/sms.matrix");
+	matrixNames.push_back("data/matrix-market-array.matrix");
+	matrixNames.push_back("data/maple-sparse1.matrix");
+	matrixNames.push_back("data/maple-dense1.matrix");
+	matrixNames.push_back("data/generic-dense.matrix");
+	matrixNames.push_back("data/sparse-row.matrix");
+	matrixNames.push_back("data/matrix-market-coordinate.matrix");
 
-int main() {
 	bool fail = false;
 	bool failThis;
-	std::cout << "Testing matrix-stream..." << std::endl;
+	commentator.start("Testing matrix-stream...", "matrix stream", 1);
 
-	for (int i = 0; i < 19; ++i) {matrix[2][2] *= 10; matrix[2][2] += 8; }
+	for (size_t i = 0; i < 19; ++i) {matrix[2][2] *= 10; matrix[2][2] += 8; }
 
-	for( int i = 0; i < nMatrices; ++i ) {
+	for( size_t i = 0; i < matrixNames.size(); ++i ) {
 		failThis = false;
 		std::ifstream fin(matrixNames[i]);
 		if( !fin ) {
-			std::cout << "Could not open " << matrixNames[i] << std::endl;
+			out << "Could not open " << matrixNames[i] << std::endl;
 			fail = true;
 			continue;
 		}
-		std::cout << "\tTesting " << matrixNames[i] << std::endl;
+		out << "\tTesting " << matrixNames[i] << std::endl;
 		MatrixStream<TestField > ms(f,fin);
 		int nzCount = nonZeros;
 		size_t m, n;
 		integer v;
 		if(!ms.getDimensions(m,n)) {
-			std::cout << "Error getting dimensions in "
-			          << matrixNames[i] << std::endl;
+			out << "Error getting dimensions in "
+			    << matrixNames[i] << std::endl;
 			fail = failThis = true;
 		}
 		if( !failThis && m != rowDim ) {
-			std::cout << "Wrong rowDim in " << matrixNames[i]
+			out << "Wrong rowDim in " << matrixNames[i]
 			     << ", format " << ms.getFormat() << std::endl
 			     << "Got " << m << ", should be " << rowDim << std::endl;
 			fail = failThis = true;
 		}
 		if( !failThis && n != colDim ) {
-			std::cout << "Wrong colDim in " << matrixNames[i]
+			out << "Wrong colDim in " << matrixNames[i]
 			     << ", format " << ms.getFormat() << std::endl
 			     << "Got " << n << ", should be " << colDim << std::endl;
 			fail = failThis = true;
@@ -115,7 +91,7 @@ int main() {
 		while( !failThis && ms.nextTriple(m,n,v) ) {
 			if(!f.isZero(v)) --nzCount;
 			if( m >= rowDim ) {
-				std::cout << "Row index out of bounds in "
+				out << "Row index out of bounds in "
 				     << matrixNames[i]
 				     << ", format " << ms.getFormat() << std::endl
 				     << "Got " << m << ", should be less than "
@@ -124,7 +100,7 @@ int main() {
 				break;
 			}
 			if( n >= colDim ) {
-				std::cout << "Column index out of bounds in "
+				out << "Column index out of bounds in "
 				     << matrixNames[i]
 				     << ", format " << ms.getFormat() << std::endl
 				     << "Got " << n << ", should be less than "
@@ -133,7 +109,7 @@ int main() {
 				break;
 			}
 			if( matrix[m][n] != v ) {
-				std::cout << "Invalid entry in "
+				out << "Invalid entry in "
 				     << matrixNames[i]
 				     << ", format " << ms.getFormat() << std::endl
 				     << "Got " << v << " at index (" << m
@@ -147,12 +123,12 @@ int main() {
 			fail = failThis = true;
 		}
 		if( !failThis && nzCount > 0 ) {
-			std::cout << "Not enough entries in " << matrixNames[i]
+			out << "Not enough entries in " << matrixNames[i]
 			     << ", format " << ms.getFormat() << std::endl;
 			fail = failThis = true;
 		}
 		if( !failThis && nzCount < 0 ) {
-			std::cout << "Duplicate entries in " << matrixNames[i]
+			out << "Duplicate entries in " << matrixNames[i]
 			     << ", format " << ms.getFormat() << std::endl;
 			fail = failThis = true;
 		}
@@ -173,7 +149,7 @@ int main() {
 			fail = failThis = true;
 		}
 		if( !failThis && array.size() != rowDim*colDim ) {
-			std::cout << "Array given wrong size in " << matrixNames[i]
+			out << "Array given wrong size in " << matrixNames[i]
 			     << ", format " << ms2.getFormat() << std::endl
 			     << "Got " << array.size() << ", should be "
 			     << rowDim*colDim << std::endl;
@@ -182,7 +158,7 @@ int main() {
 		for( m = 0; !failThis && m < rowDim; ++m ) {
 			for( n = 0; !failThis && n < colDim; ++n ) {
 				if( array[m*colDim+n] != matrix[m][n] ) {
-					std::cout << "Invalid entry in getArray of "
+					out << "Invalid entry in getArray of "
 						  << matrixNames[i]
 						  << ", format " << ms2.getFormat()
 						  << std::endl
@@ -197,7 +173,7 @@ int main() {
 		}
 
 		if( failThis ) {
-			std::cout << "Test failed for " << matrixNames[i]
+			out << "Test failed for " << matrixNames[i]
 			     << ", format " << ms2.getFormat() << std::endl
 			     << "Error code: " << ms2.getError()
 			     << ", line number: " << ms2.getLineNumber() << std::endl;
@@ -205,19 +181,78 @@ int main() {
 	}
 
 	if( 	testBlackBox< DenseMatrix<TestField> >
-			( matrixNames[0], "Dense BlackBox Matrix" )
+			( out, matrixNames[0], "Dense BlackBox Matrix" )
 	  ) fail = true;
 	if( 	testBlackBox< SparseMatrix<TestField> >
-			( matrixNames[0], "Sparse BlackBox Matrix" )
+			( out, matrixNames[0], "Sparse BlackBox Matrix" )
 	  ) fail = true;
 	if( 	testBlackBox< BlasBlackbox<TestField> >
-			( matrixNames[0], "BLAS BlackBox Matrix" )
+			( out, matrixNames[0], "BLAS BlackBox Matrix" )
 	  ) fail = true;
 	
-	if( fail ) {
-		std::cout << "FAIL: matrix-stream" << std::endl;
-		return 1;
+	if( fail )	out << "FAIL: matrix-stream" << std::endl; 
+	else 		out << "matrix-stream Passed" << std::endl;
+	return !fail;
+}
+
+template <class BB>
+bool testBlackBox( std::ostream& out, const char* filename, const char* BBName ) {
+	out << "\tTesting " << BBName << std::endl;
+	std::ifstream fin( filename );
+	if( !fin ) {
+		out << "Could not open " << filename << std::endl;
+		return true;
 	}
-	std::cout << "matrix-stream Passed" << std::endl;
-	return 0;
+	MatrixStream<TestField > ms(f, fin);
+	BB m( ms );
+	if( m.rowdim() != rowDim ) {
+		out << "Wrong rowDim in " << BBName << std::endl
+		     << "Got " << m.rowdim() << ", should be " << rowDim << std::endl;
+		return true;
+	}
+	if( m.coldim() != colDim ) {
+		out << "Wrong colDim in " << BBName << std::endl
+		     << "Got " << m.coldim() << ", should be " << colDim << std::endl;
+		return true;
+	}
+	bool fail = false;
+	for( size_t i = 0; i < rowDim; ++i ) {
+		for( size_t j = 0; j < colDim; ++j ) {
+			if( m.getEntry(i,j) != matrix[i][j] ) {
+				out << "Invalid entry in " << BBName << " at index ("
+				     << i << "," << j << ")" << std::endl
+				     << "Got " << m.getEntry(i,j) << ", should be "
+				     << matrix[i][j] << std::endl;
+				fail = true;
+			}
+		}
+	}
+	return fail;
+}
+
+int main(int argc, char* argv[]){
+/*
+    static size_t n = 10;
+    static integer q = 4093U;
+    static int iterations = 2;
+
+*/
+    static Argument args[] = {
+	/*
+    { 'n', "-n N", "Set dimension of test matrices to NxN", TYPE_INT,     &n },
+	{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1]", TYPE_INTEGER, &q },
+	{ 'i', "-i I", "Perform each test for I iterations",    TYPE_INT,     &iterations },
+	{ '\0' }
+	*/
+	};
+
+	parseArguments (argc, argv, args);
+
+	commentator.start("Matrix stream test suite", "matrix stream", 1);
+	std::ostream& report = commentator.report();
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	bool pass = testMatrixStream(report);
+	commentator.stop("matrix stream test suite");
+	return pass ? 0 : -1;
 }

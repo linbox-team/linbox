@@ -116,12 +116,13 @@ int main (int argc, char **argv)
 	static int iterations = 2;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test vectors to N (default 100)",   TYPE_INT,     &n },
-		{ 'K', "-K Q", "Operate over the \"field\" GF(Q) [1] for integer modulus (default 18446744073709551557)", TYPE_INTEGER, &q1 },
-		{ 'Q', "-Q Q", "Operate over the \"field\" GF(Q) [1] for uint32 modulus (default 2147483647)", TYPE_INTEGER, &q2 },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] for uint16 modulus (default 65521)", TYPE_INTEGER, &q3 },
-		{ 'p', "-p P", "Operate over the \"field\" GF(P) [1] for uint8 modulus (default 101)", TYPE_INTEGER, &q4 },
-		{ 'i', "-i I", "Perform each test for I iterations (default 2)",   TYPE_INT,     &iterations },
+		{ 'n', "-n N", "Set dimension of test vectors to N.", TYPE_INT,     &n },
+		{ 'K', "-K Q", "Operate over the \"field\" GF(Q) [1] for integer modulus.", TYPE_INTEGER, &q1 },
+		{ 'Q', "-Q Q", "Operate over the \"field\" GF(Q) [1] for uint32 modulus.", TYPE_INTEGER, &q2 },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] for uint16 modulus.", TYPE_INTEGER, &q3 },
+		{ 'p', "-p P", "Operate over the \"field\" GF(P) [1] for uint8 modulus.", TYPE_INTEGER, &q4 },
+		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
+		{ '\0' }
 	};
 
 	parseArguments (argc, argv, args);
@@ -131,8 +132,7 @@ int main (int argc, char **argv)
 	Modular<uint16> F_uint16 ((uint16) q3);
 	Modular<uint8> F_uint8 ((uint8) q4);
 
-	cout << endl << "Vector domain test suite" << endl;
-	cout.flush ();
+	commentator.start("Vector domain test suite", "VectorDomain");
 
 	commentator.setBriefReportParameters (Commentator::OUTPUT_CONSOLE, false, false, false);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
@@ -144,5 +144,6 @@ int main (int argc, char **argv)
 	if (!testVectorDomain (F_uint16, "Modular <uint16>", n, iterations)) pass = false;
 	if (!testVectorDomain (F_uint8, "Modular <uint8>", n, iterations)) pass = false;
 
+	commentator.stop("Vector domain test suite");
 	return pass ? 0 : -1;
 }

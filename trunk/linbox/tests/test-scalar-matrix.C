@@ -28,16 +28,17 @@ int main (int argc, char **argv)
 	static int iterations = 1;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 20)",        TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 1)",          TYPE_INT,     &iterations },
+		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
+		{ '\0' }
 	};
 
 	parseArguments (argc, argv, args);
 
 	srand (time (NULL));
 
-	cout << endl << "Scalar matrix black box test suite" << endl;
+	commentator.start("Scalar black box test suite", "Scalar");
 
 	typedef Modular<uint32> Field;
 
@@ -52,8 +53,9 @@ int main (int argc, char **argv)
 	Blackbox B (F, n, d); // Test a small one.
 	pass = pass && testBlackbox(F, B);
 
-	Blackbox C (F, 100000, d); // Test a large one.
-	pass = pass && testBlackbox(F, C);
+	//Blackbox C (F, 100000, d); // Test a large one.
+	//pass = pass && testBlackbox(F, C);
 
+	commentator.stop("Scalar black box test suite");
 	return pass ? 0 : -1;
 }

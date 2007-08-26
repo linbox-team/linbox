@@ -152,12 +152,13 @@ int main(int argc, char** argv) {
         
         static size_t n = 10;
         
-	static int iterations = 4;
+	static int iterations = 1;
         
         static Argument args[] = {
-                { 'n', "-n N", "Set order of test matrices to N (default 10)",  TYPE_INT,     &n },
-                { 'i', "-i I", "Perform each test for I iterations (default 4)"
-,           TYPE_INT,     &iterations },
+                { 'n', "-n N", "Set order of test matrices to N.", TYPE_INT,     &n },
+                { 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
+				{ '\0' }
+
         };
 	
 	parseArguments (argc, argv, args);
@@ -166,7 +167,7 @@ int main(int argc, char** argv) {
                                         
         Ring R;
 
-	std::cout << std::endl << "Last invariant factor test suite:\n";
+	commentator.start("Last invariant factor test suite", "LIF");
 
         commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
@@ -182,5 +183,6 @@ int main(int argc, char** argv) {
 
 	if (!testRandom(R, lif, s1)) pass = false;
                               
+	commentator.stop("Last invariant factor test suite");
         return pass ? 0 : -1;
 }

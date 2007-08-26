@@ -27,9 +27,10 @@ int main (int argc, char **argv)
 	static int iterations = 10;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)",        TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 10)",          TYPE_INT,     &iterations },
+		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
+		{ '\0' }
 	};
 
 	parseArguments (argc, argv, args);
@@ -38,7 +39,7 @@ int main (int argc, char **argv)
 
 	srand (time (NULL));
 
-	cout << endl << "Hilbert matrix blackbox test suite" << endl;
+	commentator.start("Hilbert matrix blackbox test suite", "Hilbert");
 
 	typedef vector<Field::Element> Vector;
 	typedef Hilbert<Field> BB;
@@ -46,5 +47,6 @@ int main (int argc, char **argv)
 
 	pass = pass && testBlackbox (F, A);
 
+	commentator.stop("Hilbert matrix blackbox test suite");
 	return pass ? 0 : -1;
 }

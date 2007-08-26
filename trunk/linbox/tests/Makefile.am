@@ -1,5 +1,3 @@
-# FACING_REALITY is used anywhere?
-FACING_REALITY = 0
 INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/linbox
 #AM_LDFLAGS = -llapack -lcblas -latlas 
 AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -O2 
@@ -24,6 +22,7 @@ BASIC_TESTS =  			\
 	test-blas-domain	\
         test-butterfly          \
         test-commentator        \
+        test-charpoly			\
         test-companion          \
         test-dense              \
         test-det                \
@@ -83,6 +82,7 @@ NONEXISTING_TESTS =
 #
 
 NONCOMPILING_TESTS =  		
+#		test-inertia			
 
 FAILING_TESTS =		\
         test-solve              \
@@ -100,8 +100,9 @@ USE_FAILING_TESTS =
 #USE_FAILING_TESTS += $(FAILING_TESTS)
 
 # a benchmarker, not to be included in check.
-BENCHMARK_TESTS = 		\
-	test-fields		
+BENCHMARKS = 		\
+	benchmark-fields		\
+	benchmark-blas-domain
 
 # historical tests, no longer in use
 #	test-nag-sparse		  replaced by tripplesbb
@@ -119,7 +120,6 @@ BENCHMARK_TESTS = 		\
 #	Compose is tested in test-butterfly
 
 GIVARO_TESTS =			\
-	test-charpoly		\
 	test-givaro-zpz		\
 	test-givaro-zpzuns
 
@@ -179,7 +179,7 @@ EXTRA_PROGRAMS = \
 	$(NTL_TESTS)		\
 	$(ATLAS_TESTS)		\
 	$(LIDIA_TESTS)		\
-	$(BENCHMARK_TESTS) 		\
+	$(BENCHMARKS) 		\
 	$(NONEXISTING_TESTS)	\
 	$(NONCOMPILING_TESTS)	\
 	$(NONCOMPLIANT_TESTS)	\
@@ -288,6 +288,10 @@ test_triplesbb_SOURCES =		\
 	test-generic.h			\
 	test-common.h
 
+#test_inertia_SOURCES =		\
+#	test-inertia.C		\
+#	test-common.h
+
 test_hilbert_SOURCES =			\
 	test-hilbert.C	test-generic.h	\
 	test-common.h
@@ -331,7 +335,6 @@ test_rank_SOURCES =			\
 test_solve_SOURCES =			\
 	test-solve.C			\
 	test-common.h
-
 
 test_direct_sum_SOURCES =		\
 	test-direct-sum.C		\
@@ -494,9 +497,13 @@ test_smith_form_adaptive_SOURCES=    \
 	test-common.h	\
 	test-smith-form-adaptive.C
 
-test_fields_SOURCES=    \
+benchmark_fields_SOURCES=    \
 	test-common.h	\
-	test-fields.C
+	benchmark-fields.C
+
+benchmark_blas_domain_SOURCES=		\
+	test-common.h   \
+	benchmark-blas-domain.C
 
 test_isposdef_SOURCES=    \
 	test-common.h	\

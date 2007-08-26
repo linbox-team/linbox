@@ -428,10 +428,11 @@ int main (int argc, char **argv)
 	static int N = 1;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)",        TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 100)",          TYPE_INT,     &iterations },
-		{ 'N', "-N N", "Apply Vandermonde inverse to N vectors (default 1)",        TYPE_INT,     &N },
+		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
+		{ 'N', "-N N", "Apply Vandermonde inverse to N vectors.", TYPE_INT,     &N },
+		{ '\0' }
 	};
 
 	typedef Modular<LinBox::uint32> Field; //C.Pernet: avoids confusion with givaro::uint32
@@ -442,8 +443,7 @@ int main (int argc, char **argv)
 
 	srand (time (NULL));
 
-	cout << endl << "Black box inverse test suite" << endl;
-	
+	commentator.start("Inverse black box test suite", "Inverse");
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 
@@ -455,5 +455,6 @@ int main (int argc, char **argv)
 	if (!testDiagonalInverse    (F, stream1)) pass = false;
 	if (!testRandomTranspose    (F, stream1, stream2)) pass = false;
 
+	commentator.stop("Inverse black box test suite");
 	return pass ? 0 : -1;
 }

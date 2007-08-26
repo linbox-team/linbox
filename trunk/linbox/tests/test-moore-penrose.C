@@ -331,12 +331,13 @@ int main (int argc, char **argv)
 	static int k = 1;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set row dimension of test matrices to N (default 100)",     TYPE_INT,     &n },
-		{ 'm', "-m M", "Set column dimension of test matrices to M (default 100)",  TYPE_INT,     &m },
-		{ 'r', "-r R", "Set rank of test matrices to R (default 10)",               TYPE_INT,     &r },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 100)",          TYPE_INT,     &iterations },
-		{ 'k', "-k K", "Apply random Moore-Penrose to K vectors (default 1)",       TYPE_INT,     &k },
+		{ 'n', "-n N", "Set row dimension of test matrices to N.", TYPE_INT,     &n },
+		{ 'm', "-m M", "Set column dimension of test matrices to M.", TYPE_INT,     &m },
+		{ 'r', "-r R", "Set rank of test matrices to R.", TYPE_INT,     &r },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
+		{ 'k', "-k K", "Apply random Moore-Penrose to K vectors.", TYPE_INT,     &k },
+		{ '\0' }
 	};
 
 	typedef Modular<LinBox::uint32> Field;  //C.Pernet: avoids confusion with givaro::uint32
@@ -348,7 +349,7 @@ int main (int argc, char **argv)
 
 	srand (time (NULL));
 
-	cout << endl << "MoorePenrose black box test suite" << endl;
+	commentator.start("MoorePenrose black box test suite", "MoorePenrose");
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_IMPORTANT);
@@ -365,5 +366,6 @@ int main (int argc, char **argv)
 	if (!testRandomApply2 (F, n, m, r, iterations, stream2)) pass = false;
 #endif
 
+	commentator.stop("MoorePenrose black box test suite");
 	return pass ? 0 : -1;
 }

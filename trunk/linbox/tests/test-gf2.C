@@ -219,25 +219,24 @@ static bool testDotProductGF2 (const GF2 &F, const char *desc,
 
 int main (int argc, char **argv)
 {
-	static unsigned int n = 10000;
-	static int iterations = 10;
-	static int trials = 1000000;
+	static unsigned int n = 1000;
+	static int iterations = 2;
+	static int trials = 100000;
 	static int categories = 100;
 	static int hist_level = 1;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test vectors to NxN (default 10000)",      TYPE_INT,     &n },
-		{ 'i', "-i I", "Perform each test for I iterations (default 10)",           TYPE_INT,     &iterations },
-		{ 't', "-t T", "Number of trials for the random iterator test (default 1000000)", TYPE_INT, &trials },
-		{ 'c', "-c C", "Number of categories for the random iterator test (default 100)", TYPE_INT, &categories },
-		{ 'H', "-H H", "History level for random iterator test (default 1)", TYPE_INT, &hist_level },
+		{ 'n', "-n N", "Set dimension of test vectors to NxN.",      TYPE_INT,     &n },
+		{ 'i', "-i I", "Perform each test for I iterations.",           TYPE_INT,     &iterations },
+		{ 't', "-t T", "Number of trials for the random iterator test.", TYPE_INT, &trials },
+		{ 'c', "-c C", "Number of categories for the random iterator test.", TYPE_INT, &categories },
+		{ 'H', "-H H", "History level for random iterator test.", TYPE_INT, &hist_level },
 		{ '\0' }
 	};
 
 	parseArguments (argc, argv, args);
 
-	cout << "GF2 field test suite" << endl << endl;
-	cout.flush ();
+	commentator.start("GF2 field test suite", "GF2");
 	bool pass = true;
 
 	GF2 F;
@@ -297,5 +296,6 @@ int main (int argc, char **argv)
 		pass = false;
 #endif
 
+	commentator.stop("GF2 field test suite");
 	return pass ? 0 : -1;
 }
