@@ -83,7 +83,8 @@ namespace LinBox
 		: cnull (new nullstreambuf), _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
 		  _show_timing (true), _show_progress (true), _show_est_time (true)
 	{
-		registerMessageClass (BRIEF_REPORT,         std::clog, 1, LEVEL_IMPORTANT);
+		//registerMessageClass (BRIEF_REPORT,         std::clog, 1, LEVEL_IMPORTANT);
+		registerMessageClass (BRIEF_REPORT,         _report, 1, LEVEL_IMPORTANT);
 		registerMessageClass (PROGRESS_REPORT,      _report);
 		registerMessageClass (TIMING_MEASURE,       _report);
 		registerMessageClass (TIMING_ESTIMATE,      _report);
@@ -96,6 +97,7 @@ namespace LinBox
 		: cnull (new nullstreambuf), _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
 		  _show_timing (true), _show_progress (true), _show_est_time (true)
 	{
+		registerMessageClass (BRIEF_REPORT,         out, 1, LEVEL_IMPORTANT);
 		registerMessageClass (BRIEF_REPORT,         out, 1, LEVEL_IMPORTANT);
 		registerMessageClass (PROGRESS_REPORT,      _report);
 		registerMessageClass (TIMING_MEASURE,       _report);
@@ -118,7 +120,8 @@ namespace LinBox
 			fn = _activities.top ()->_fn;
 
 		if (isPrinted (_activities.size () + 1, LEVEL_IMPORTANT, INTERNAL_DESCRIPTION, fn))
-			report (LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "Starting activity: " << description << std::endl;
+			report (LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) //<< "Starting activity: " 
+			<< description << std::endl;
 
 		Activity *new_act = new Activity (description, fn, len);
 
@@ -177,7 +180,11 @@ namespace LinBox
 		_activities.pop ();
 
 		if (isPrinted (_activities.size (), LEVEL_IMPORTANT, BRIEF_REPORT, fn))
+		{
+		//std::cout << "calling finishA ";
 			finishActivityReport (*top_act, msg);
+			//std::cout << std::endl;
+		}
 
 		if (isPrinted (_activities.size () + 1, LEVEL_IMPORTANT, INTERNAL_DESCRIPTION, fn)) {
 			std::ostream &output = report (LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -464,11 +471,12 @@ namespace LinBox
 
 	void Commentator::finishActivityReport (Activity &activity, const char *msg) 
 	{
+	//std::cout << "finishA " << _show_progress << _show_timing << std::endl;
 		MessageClass &messageClass = getMessageClass (BRIEF_REPORT);
 		unsigned int i;
 
 		if (_format == OUTPUT_CONSOLE) {
-			if (!messageClass.isPrinted (_activities.size () + 1, LEVEL_IMPORTANT, activity._fn)) {
+			if (!messageClass.isPrinted (_activities.size () + 1, LEVEL_UNIMPORTANT, activity._fn)) {
 				if (_show_progress)
 					for (i = 0; i < _last_line_len; i++)
 						messageClass._stream << '\b';
@@ -484,7 +492,8 @@ namespace LinBox
 				for (i = 0; i < _activities.size (); i++)
 					messageClass._stream << "  ";
 
-				messageClass._stream << "Done: " << msg;
+				messageClass._stream << msg;
+				//messageClass._stream << "Done: " << msg;
 
 				if (_show_timing)
 					messageClass._stream << " (" << activity._timer.usertime () << " s)" << std::endl;
@@ -575,11 +584,26 @@ namespace LinBox
 	bool MessageClass::isPrinted (unsigned long depth, unsigned long level, const char *fn)
 	{
  		if (checkConfig (_configuration[""], depth, level))
+		{	//std::cout << " fn=\"\", d " << depth << ", l " << level << " false" << std::endl;
  			return true;
+		}
 		else if (fn != (const char *) 0)
-			return checkConfig (_configuration[fn], depth, level);
+			//return checkConfig (_configuration[fn], depth, level);
+			{ bool ans = checkConfig (_configuration[fn], depth, level);
+			  if (ans) 
+		 		{	//std::cout << " fn=" << fn << ", d " << depth << ", l " << level << " true" << std::endl;
+			 		return true;
+		 		}
+			  else
+		 		{	//std::cout << " fn=" << fn << ", d " << depth << ", l " << level << " false" << std::endl;
+			 		return false;
+		 		}
+		 	}
+
 		else
+		{	//std::cout << " fn=0, d " << depth << ", l " << level << " false" << std::endl;
 			return false;
+		}
 	}
 
 	MessageClass::MessageClass (const Commentator &comm,
