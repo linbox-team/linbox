@@ -325,9 +325,9 @@ namespace LinBox {
 		if(!M.communicatorp() || (M.communicatorp())->rank() == 0) 
 			commentator.start ("Integer Minpoly", "Iminpoly");
 		else{
-			commentator.setMaxDepth(0);
-			commentator.setMaxDetailLevel(0);
-			commentator.setPrintParameters(0, 0, 0);
+			//commentator.setMaxDepth(0);
+			//commentator.setMaxDetailLevel(0);
+			//commentator.setPrintParameters(0, 0, 0);
 		}
 #else
 		commentator.start ("Integer Minpoly", "Iminpoly");

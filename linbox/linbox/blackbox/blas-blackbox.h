@@ -208,6 +208,8 @@ namespace LinBox {
 		 */
 		std::istream &read (std::istream &file){
 			return this->read(file, _F);
+			//return DenseSubmatrix<Element>::read(file, _F);
+
 		}
 
 		/** Write the blackbox to an output stream

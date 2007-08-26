@@ -69,8 +69,13 @@ namespace LinBox
     // constructor for use by ZOQuad.  Needs work.
     ZeroOne
     (const Field& F, IndexVector& index, PointerVector& indexP, Index rowdim, Index coldim, bool sortedBy)
-      : _F(F), _index(index), _rowdim(rowdim), _coldim(coldim), sorted(sortedBy)
+      : _F(F), _index(index), _indexP(indexP), _rowdim(rowdim), _coldim(coldim), sorted(sortedBy)
     {
+	  ptrdiff_t diff = _index.begin() - index.begin();
+	  for (size_t i = 0; i <= _rowdim; ++i)
+	     _indexP[i] += diff;
+
+    /*
       _indexP.push_back( _index.begin() );
       IndexVector::iterator i = _index.begin();
       PointerVector::iterator j = indexP.begin();
@@ -79,6 +84,7 @@ namespace LinBox
 	  _indexP.push_back( i + ( *j - *(j-1) ) );
 	  i = _indexP.back();
 	}
+	*/
     }
 
     /** The real constructor /todo give docs here
@@ -248,7 +254,7 @@ namespace LinBox
       void operator() (other *& Ap,
 		       const Self_t& A, 
 		       const _Tp1& F) {
-	Ap = new other(F, A._indexP, A._index, A._rowdim, A._coldim);
+	Ap = new other(F, A._index, A._indexP, A._rowdim, A._coldim, A.sorted);
       }
     };
     
@@ -258,7 +264,6 @@ namespace LinBox
      */
     std::istream &read (std::istream &is)
     {
-      char v0;
       std::vector<std::pair<Index, Index> > indexPairs;
       Index r, c; 
       Element v;
@@ -349,6 +354,10 @@ namespace LinBox
        
 }//End of LinBox
 
+#ifdef _RUNOPENMP
+#include "zoi.inl"
+#else
 #include "zo.inl"
+#endif
 
 #endif // __ZERO_ONE_H
