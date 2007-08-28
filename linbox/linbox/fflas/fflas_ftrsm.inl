@@ -13,7 +13,7 @@
 // ftrsm: TRiangular System solve with matrix
 // Computes  B <- alpha.op(A^-1).B,  B <- alpha.B.op(A^-1)
 // B is M*N, A is M*M if Side==FflasLeft, N*N if Side==FflasRight
-// Warning :Assumes alpha==1
+// Warning : unsafe with Trans ==  FflasTrans (debugging in progress)
 //---------------------------------------------------------------------
 template<class Field>
 inline void
@@ -28,623 +28,653 @@ FFLAS::ftrsm (const Field& F, const FFLAS_SIDE Side,
 {
 	if (!M || !N ) return; 
 
-	size_t nmax = TRSMBound<Field> (F);
-
+		
 	if ( Side==FflasLeft ){
 		if ( Uplo==FflasUpper){
-			
 			if (TransA == FflasNoTrans){
-				ftrsmLeftUpNoTrans(F,Diag,M,N,alpha,A,lda,B,ldb);
+				if (Diag == FflasUnit)
+					ftrsmLeftUpperNoTransUnit<typename Field::Element> ()(F,M,N,A,lda,B,ldb);
+				else
+					ftrsmLeftUpperNoTransNonUnit<typename Field::Element>()(F,M,N,A,lda,B,ldb);
+			} else {
+				if (Diag == FflasUnit)
+					ftrsmLeftUpperTransUnit<typename Field::Element>()(F,M,N,A,lda,B,ldb);
+				else
+					ftrsmLeftUpperTransNonUnit<typename Field::Element>()(F,M,N,A,lda,B,ldb);
 			}
-			else{
-				ftrsmLeftUpTrans(F,Diag,M,N,alpha,A,lda,B,ldb);
-			}
-		}
-		else{
+		} else {
 			if (TransA == FflasNoTrans){
-				ftrsmLeftLowNoTrans(F,Diag,M,N,alpha,A,lda,B,ldb, nmax);
-			}
-			else{
-				ftrsmLeftLowTrans(F,Diag,M,N,alpha,A,lda,B,ldb);
+				if (Diag == FflasUnit)
+					ftrsmLeftLowerNoTransUnit<typename Field::Element>()(F,M,N,A,lda,B,ldb);
+				else
+					ftrsmLeftLowerNoTransNonUnit<typename Field::Element>()(F,M,N,A,lda,B,ldb);
+			} else {
+				if (Diag == FflasUnit)
+					ftrsmLeftLowerTransUnit<typename Field::Element>()(F,M,N,A,lda,B,ldb);
+				else
+					ftrsmLeftLowerTransNonUnit<typename Field::Element>()(F,M,N,A,lda,B,ldb);
 			}
 		}
-	}
-	else{
-	if ( Uplo==FflasUpper){
+	} else {
+		if ( Uplo == FflasUpper){
 			if (TransA == FflasNoTrans){
-				ftrsmRightUpNoTrans(F,Diag,M,N,alpha,A,lda,B,ldb,nmax);
+				if (Diag == FflasUnit)
+					ftrsmRightUpperNoTransUnit<typename Field::Element>()(F,M,N,A,lda,B,ldb);
+				else
+					ftrsmRightUpperNoTransNonUnit<typename Field::Element>()(F,M,N,A,lda,B,ldb);
+			} else {
+				if (Diag == FflasUnit)
+					ftrsmRightUpperTransUnit<typename Field::Element>()(F,M,N,A,lda,B,ldb);
+				else
+					ftrsmRightUpperTransNonUnit<typename Field::Element>()(F,M,N,A,lda,B,ldb);
 			}
-			else{
-				ftrsmRightUpTrans(F,Diag,M,N,alpha,A,lda,B,ldb);
-			}
-		}
-		else{
+		} else {
 			if (TransA == FflasNoTrans){
-				ftrsmRightLowNoTrans(F,Diag,M,N,alpha,A,lda,B,ldb);
-			}
-			else{
-				ftrsmRightLowTrans(F,Diag,M,N,alpha,A,lda,B,ldb);
+				if (Diag == FflasUnit)
+					ftrsmRightLowerNoTransUnit<typename Field::Element>()(F,M,N,A,lda,B,ldb);
+				else
+					ftrsmRightLowerNoTransNonUnit<typename Field::Element>()(F,M,N,A,lda,B,ldb);
+			} else {
+				if (Diag == FflasUnit)
+					ftrsmRightLowerTransUnit<typename Field::Element>()(F,M,N,A,lda,B,ldb);
+				else
+					ftrsmRightLowerTransNonUnit<typename Field::Element>()(F,M,N,A,lda,B,ldb);
 			}
 		}
 	}
+	if (!F.isOne(alpha))
+		for (size_t i=0; i< M; ++i)
+			for (size_t j=0; j<N; ++j)
+				F.mulin(*(B+i*ldb+j),alpha);
 	
 }
 
-template<class Field>
-inline void 
-FFLAS::ftrsmLeftUpNoTrans(const Field& F, const FFLAS_DIAG Diag, 
-			  const size_t M, const size_t N,
-			  const typename Field::Element alpha,
-			  const typename Field::Element * A, const size_t lda,
-			  typename Field::Element * B, const size_t ldb){
-	static typename Field::Element Mone;
-	static typename Field::Element one;
-	F.init(Mone, -1.0);
-	F.init(one, 1.0);
-	if ( M==1 ){
-		if (Diag == FflasNonUnit ){
-			typename Field::Element inv;
-			F.inv(inv, *A);
-			fscal(F, N, inv, B, 1);
-		}
-	}
-	else{
-		size_t Mup=M>>1;
-		size_t Mdown = M-Mup;
-		ftrsmLeftUpNoTrans( F, Diag, Mdown, N, alpha, 
-				    A+Mup*(lda+1), lda, B+Mup*ldb, ldb);
-		fgemm( F, FflasNoTrans, FflasNoTrans, Mup, N, Mdown, Mone,
-		       A+Mup, lda, B+Mup*ldb, ldb, alpha, B, ldb);
-		ftrsmLeftUpNoTrans( F, Diag, Mup, N, one, A, lda, B, ldb);
-	}
+#define __FFLAS__GENERIC
+#define __FFLAS__LEFT
+#define __FFLAS__UP
+#define __FFLAS__NOTRANSPOSE
+#define __FFLAS__NONUNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__GENERIC
+#undef __FFLAS__LEFT
+#undef __FFLAS__UP
+#undef __FFLAS__NOTRANSPOSE
+#undef __FFLAS__NONUNIT
 
-}
+#define __FFLAS__GENERIC
+#define __FFLAS__LEFT
+#define __FFLAS__UP
+#define __FFLAS__NOTRANSPOSE
+#define __FFLAS__UNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__GENERIC
+#undef __FFLAS__LEFT
+#undef __FFLAS__UP
+#undef __FFLAS__NOTRANSPOSE
+#undef __FFLAS__UNIT
 
-template<class Field>
-inline void
-FFLAS::ftrsmLeftUpTrans(const Field& F, const FFLAS_DIAG Diag, 
-		      const size_t M, const size_t N,
-		      const typename Field::Element alpha,
-		      const typename Field::Element * A, const size_t lda,
-		      typename Field::Element * B, const size_t ldb){
+#define __FFLAS__GENERIC
+#define __FFLAS__LEFT
+#define __FFLAS__UP
+#define __FFLAS__TRANSPOSE
+#define __FFLAS__NONUNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__GENERIC
+#undef __FFLAS__LEFT
+#undef __FFLAS__UP
+#undef __FFLAS__TRANSPOSE
+#undef __FFLAS__NONUNIT
 
-	static typename Field::Element Mone;
-	static typename Field::Element one;
-	F.init(Mone, -1.0);
-	F.init(one, 1.0);
-	if ( M==1 ){
-		if (Diag == FflasNonUnit ){
-			typename Field::Element inv;
-			F.inv(inv, *A);
-			fscal(F, N, inv, B, 1);
-		}
-	}
-	else{
-		size_t Mup=M>>1;
-		size_t Mdown = M-Mup;
-		ftrsmLeftUpTrans( F, Diag, Mdown, N, alpha, 
-				  A+Mup*(lda+1), lda, B+Mup*ldb, ldb);
-		fgemm( F, FflasTrans, FflasNoTrans, Mup, N, Mdown, Mone, 
-		       A+Mup*lda, lda, B+Mup*ldb, ldb, alpha, B, ldb);
-		ftrsmLeftUpTrans( F, Diag, Mup, N, one, A, lda, B, ldb);
-	}
-}
-
-template<class Field>
-inline void
-FFLAS::ftrsmLeftLowNoTrans(const Field& F, const FFLAS_DIAG Diag, 
-			   const size_t M, const size_t N,
-			   const typename Field::Element alpha,
-			   typename Field::Element * A, const size_t lda,
-			   typename Field::Element * B, const size_t ldb, const size_t nmax){
-
-	callFtrsmLeftLowNoTrans<typename Field::Element>() (F,Diag,M,N,alpha,A,lda,B,ldb,nmax);
-}
+#define __FFLAS__GENERIC
+#define __FFLAS__LEFT
+#define __FFLAS__UP
+#define __FFLAS__TRANSPOSE
+#define __FFLAS__UNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__GENERIC
+#undef __FFLAS__LEFT
+#undef __FFLAS__UP
+#undef __FFLAS__TRANSPOSE
+#undef __FFLAS__UNIT
 
 
+#define __FFLAS__GENERIC
+#define __FFLAS__LEFT
+#define __FFLAS__LOW
+#define __FFLAS__NOTRANSPOSE
+#define __FFLAS__NONUNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__GENERIC
+#undef __FFLAS__LEFT
+#undef __FFLAS__LOW
+#undef __FFLAS__NOTRANSPOSE
+#undef __FFLAS__NONUNIT
 
-	// Implementation of Ftrsmleftlownotrans on a Field with a
-	// double floating point representation
-template<>
-class FFLAS::callFtrsmLeftLowNoTrans<double>{
-public:
-	template <class Field>
-	void operator ()(const Field& F, const FFLAS_DIAG Diag, 
-			 const size_t M, const size_t N,
-			 const typename Field::Element alpha,
-			 typename Field::Element * A, const size_t lda,
-			 typename Field::Element * B, const size_t ldb, const size_t nmax){
-		
-		static typename Field::Element Mone;
-		static typename Field::Element one;
-		F.init(one, 1.0);
-		F.neg(Mone, one);
-		
-		if ( M <= nmax ){ 
-			typename Field::Element inv;
-			if (Diag == FflasNonUnit ){
-				//Normalization of A and correction of B
-				typename Field::Element * Ai = A;
-				typename Field::Element * Bi = B;
-				for (size_t i=0; i<M; ++i){
-					F.inv( inv, *(Ai+i) );
-					fscal(F, i, inv, Ai, 1 );
-					fscal(F, N, inv, Bi, 1 );
-					Ai += lda; Bi+=ldb;
-					
-				}
-			}
-			
-			cblas_dtrsm(  CblasRowMajor, CblasLeft, CblasLower, CblasNoTrans,
-				      CblasUnit, M, N, alpha, A, lda, B, ldb );
-			for (size_t i=0; i< M; ++i)
-				for (size_t j=0; j<N; ++j)
-					F.init(*(B+i*ldb+j),*(B+i*ldb+j));
-			
-			if (Diag == FflasNonUnit ){
-				//Denormalization of A
-				typename Field::Element *  Ai=A;
-				for (size_t i=0; i<M; ++i){
-					fscal( F, i, *(Ai+i), Ai, 1 );
-					Ai += lda;
-				}
-			}
-		}
-		else{
-			size_t Mup=M>>1;
-			size_t Mdown = M-Mup;
-			this->operator()( F, Diag, Mup, N, alpha, A, lda, B, ldb, nmax);
-			fgemm( F, FflasNoTrans, FflasNoTrans, Mdown, N, Mup,
-			       Mone, A+Mup*lda, lda, B, ldb, alpha, B+Mup*ldb, ldb);
-			this->operator()( F, Diag, Mdown, N, one, 
-					  A+Mup*(lda+1), lda, B+Mup*ldb, ldb, nmax);
-		}
-		
-	}
-};
+#define __FFLAS__GENERIC
+#define __FFLAS__LEFT
+#define __FFLAS__LOW
+#define __FFLAS__NOTRANSPOSE
+#define __FFLAS__UNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__GENERIC
+#undef __FFLAS__LEFT
+#undef __FFLAS__LOW
+#undef __FFLAS__NOTRANSPOSE
+#undef __FFLAS__UNIT
 
-template<>
-class FFLAS::callFtrsmLeftLowNoTrans<float>{
-public:
-	template <class Field>
-	void operator ()(const Field& F, const FFLAS_DIAG Diag, 
-			 const size_t M, const size_t N,
-			 const typename Field::Element alpha,
-			 typename Field::Element * A, const size_t lda,
-			 typename Field::Element * B, const size_t ldb, const size_t nmax){
-		
-		static typename Field::Element Mone;
-		static typename Field::Element one;
-		F.init(one, 1.0);
-		F.neg(Mone, one);
-		
-		if ( M <= nmax ){ 
-			typename Field::Element inv;
-			if (Diag == FflasNonUnit ){
-				//Normalization of A and correction of B
-				typename Field::Element * Ai = A;
-				typename Field::Element * Bi = B;
-				for (size_t i=0; i<M; ++i){
-					F.inv( inv, *(Ai+i) );
-					fscal(F, i, inv, Ai, 1 );
-					fscal(F, N, inv, Bi, 1 );
-					Ai += lda; Bi+=ldb;
-					
-				}
-			}
-			
-			cblas_strsm(  CblasRowMajor, CblasLeft, CblasLower, CblasNoTrans,
-				      CblasUnit, M, N, alpha, A, lda, B, ldb );
-			for (size_t i=0; i< M; ++i)
-				for (size_t j=0; j<N; ++j)
-					F.init(*(B+i*ldb+j),*(B+i*ldb+j));
-			
-			if (Diag == FflasNonUnit ){
-				//Denormalization of A
-				typename Field::Element *  Ai=A;
-				for (size_t i=0; i<M; ++i){
-					fscal( F, i, *(Ai+i), Ai, 1 );
-					Ai += lda;
-				}
-			}
-		}
-		else{
-			size_t Mup=M>>1;
-			size_t Mdown = M-Mup;
-			this->operator()( F, Diag, Mup, N, alpha, A, lda, B, ldb, nmax);
-			fgemm( F, FflasNoTrans, FflasNoTrans, Mdown, N, Mup,
-			       Mone, A+Mup*lda, lda, B, ldb, alpha, B+Mup*ldb, ldb);
-			this->operator()( F, Diag, Mdown, N, one, 
-					  A+Mup*(lda+1), lda, B+Mup*ldb, ldb, nmax);
-		}
-		
-	}
-};
+#define __FFLAS__GENERIC
+#define __FFLAS__LEFT
+#define __FFLAS__LOW
+#define __FFLAS__TRANSPOSE
+#define __FFLAS__NONUNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__GENERIC
+#undef __FFLAS__LEFT
+#undef __FFLAS__LOW
+#undef __FFLAS__TRANSPOSE
+#undef __FFLAS__NONUNIT
 
-template<class Element>
-class FFLAS::callFtrsmLeftLowNoTrans{
-public:
-	template <class Field>
-	void operator()(const Field& F, const FFLAS_DIAG Diag, 
-			const size_t M, const size_t N,
-			const typename Field::Element alpha,
-			typename Field::Element * A, const size_t lda,
-			typename Field::Element * B, const size_t ldb, const size_t nmax){
-		
-		static typename Field::Element Mone;
-		static typename Field::Element one;
-		F.init(Mone, -1.0);
-		F.init(one, 1.0);
-		if ( M <= nmax ){
-			typename Field::Element inv;
-			if (Diag == FflasNonUnit ){
-				//Normalization of A and correction of B
-				// A<-DA, B<-DB
-				typename Field::Element * Ai = A;
-				typename Field::Element * Bi = B;
-				for (size_t i=0; i<M; ++i){
-					F.inv( inv, *(Ai+i) );
-					fscal(F, i, inv, Ai, 1 );
-					fscal(F, N, inv, Bi, 1 );
-					Ai += lda; Bi+=ldb;
-				}
-			}
-			double alphad;
-			if (F.areEqual(alpha, Mone))
-				alphad = -1.0;
-			else
-				F.convert( alphad, alpha );
-			DoubleDomain::Element * Ad = new DoubleDomain::Element[M*M];
-			DoubleDomain::Element * Bd = new DoubleDomain::Element[M*N];
-			MatF2MatD( F, Ad, N, A, lda, M, M );
-			MatF2MatD( F, Bd, N, B, ldb, M, N );
-			cblas_dtrsm(  CblasRowMajor, CblasLeft, CblasLower, CblasNoTrans,
-				      CblasUnit, M, N, alphad, Ad, M, Bd, N );
-			delete[] Ad;
-			MatD2MatF( F, B, ldb, Bd, N, M, N );
-			delete[] Bd;
-			if (Diag == FflasNonUnit ){
-				//Denormalization of A
-				// A-> D^(-1)A
-				typename Field::Element *  Ai=A;
-				for (size_t i=0; i<M; ++i){
-					fscal( F, i, *(Ai+i), Ai, 1 );
-					Ai += lda;
-				}
-			}
-		}
-		else{
-			size_t Mup=M>>1;
-			size_t Mdown = M-Mup;
-			this->operator()( F, Diag, Mup, N, alpha, A, lda, B, ldb, nmax);
-			fgemm( F, FflasNoTrans, FflasNoTrans, Mdown, N, Mup,
-			       Mone, A+Mup*lda, lda, B, ldb, alpha, B+Mup*ldb, ldb);
-			this->operator()( F, Diag, Mdown, N, one, 
-					  A+Mup*(lda+1), lda, B+Mup*ldb, ldb, nmax);
-		}
-	}
-};
-
-
-template<class Field>
-inline void 
-FFLAS::ftrsmLeftLowTrans(const Field& F, const FFLAS_DIAG Diag, 
-		       const size_t M, const size_t N,
-		       const typename Field::Element alpha,
-		       const typename Field::Element * A, const size_t lda,
-		       typename Field::Element * B, const size_t ldb){
-
-	static typename Field::Element Mone;
-	static typename Field::Element one;
-	F.init(Mone, -1.0);
-	F.init(one, 1.0);
-	if ( M==1 ){
-		if (Diag == FflasNonUnit ){
-			typename Field::Element inv;
-			F.inv(inv, *A);
-			fscal(F, N, inv, B, 1);
-		}
-	}
-	else{
-		size_t Mup=M>>1;
-		size_t Mdown = M-Mup;
-		ftrsmLeftLowTrans( F, Diag, Mup, N, alpha, A, lda, B, ldb);
-		fgemm( F, FflasTrans, FflasNoTrans, Mdown, N, Mup,
-		       Mone, A+Mup, lda, B, ldb, alpha, B+Mup*ldb, ldb);
-		ftrsmLeftLowTrans( F, Diag, Mdown, N, one, 
-				   A+Mup*(lda+1), lda, B+Mup*ldb, ldb);
-	}
-}
-
-
-template<class Field>
-inline void
-FFLAS::ftrsmRightUpNoTrans(const Field& F, const FFLAS_DIAG Diag, 
-			   const size_t M, const size_t N,
-			   const typename Field::Element alpha,
-			   typename Field::Element * A, const size_t lda,
-			   typename Field::Element * B, const size_t ldb, const size_t nmax){
-
-	callFtrsmRightUpNoTrans<typename Field::Element>() (F,Diag,M,N,alpha,A,lda,B,ldb,nmax);
-}
-
-template <class Element>
-class FFLAS::callFtrsmRightUpNoTrans{
-public:
-	template<class Field>
-	void operator() (const Field& F, const FFLAS_DIAG Diag, 
-			 const size_t M, const size_t N,
-			 const typename Field::Element alpha,
-			 typename Field::Element * A, const size_t lda,
-			 typename Field::Element * B, const size_t ldb, const size_t nmax){
-	
-		static typename Field::Element Mone;
-		static typename Field::Element one;
-		F.init(Mone, -1.0);
-		F.init(one, 1.0);
-		
-		if ( N <= nmax ){
-			typename Field::Element inv;
-			if (Diag == FflasNonUnit){
-				//Normalization of A and B
-				typename Field::Element *  Ai = A, * Bi = B;
-				for (size_t i=0; i<N; ++i){
-					F.inv( inv, *(Ai+i*lda) );
-					fscal( F, i, inv, Ai, lda );
-					fscal( F, M, inv, Bi, ldb );
-					Ai++;
-					Bi++;
-				}
-			}
-			double alphad;
-			if (F.areEqual(alpha, Mone))
-				alphad = -1.0;
-			else
-				F.convert( alphad, alpha );
-			DoubleDomain::Element * Ad = new DoubleDomain::Element[N*N];
-			DoubleDomain::Element * Bd = new DoubleDomain::Element[M*N];
-			MatF2MatD( F, Ad, N, A, lda, N, N );
-			MatF2MatD( F, Bd, N, B, ldb, M, N );
-			cblas_dtrsm(  CblasRowMajor, CblasRight, CblasUpper, CblasNoTrans,
-				      CblasUnit, M, N, alphad, Ad, N, Bd, N );
-			delete[] Ad;
-			MatD2MatF( F, B, ldb, Bd, N, M, N );
-			delete[] Bd;
-			if (Diag == FflasNonUnit ){
-				//Denormalization of A
-				typename Field::Element *  Ai=A;
-				for (size_t i=0; i<N; ++i){
-					fscal( F, i, *(Ai+i*lda), Ai, lda );
-					Ai++;
-				}	
-			}
-		}
-		else{
-			size_t Nup=N>>1;
-			size_t Ndown = N-Nup;
-			operator()( F, Diag, M, Nup, alpha, A, lda, B, ldb, nmax);
-			fgemm( F, FflasNoTrans, FflasNoTrans, M, Ndown, Nup,
-			       Mone, B, ldb, A+Nup, lda, alpha, B+Nup, ldb);
-			operator()( F, Diag, M, Ndown, one, 
-				    A+Nup*(lda+1), lda, B+Nup, ldb, nmax);
-		}
-	
-	}
-};
-
-template <>
-class FFLAS::callFtrsmRightUpNoTrans<double>{
-public:
-	template<class Field>
-	void operator() (const Field& F, const FFLAS_DIAG Diag, 
-			 const size_t M, const size_t N, const typename Field::Element alpha,
-			 typename Field::Element * A, const size_t lda,
-			 typename Field::Element * B, const size_t ldb, const size_t nmax){
-		
-		static typename Field::Element Mone;
-		static typename Field::Element one;
-		F.init(one, 1.0);
-		F.neg(Mone,one);
-		if ( N <= nmax ){
-			typename Field::Element inv;
-			if (Diag == FflasNonUnit ){
-				//Normalization of A and B
-				typename Field::Element *  Ai = A, * Bi = B;
-				for (size_t i=0; i<N; ++i){
-					F.inv( inv, *(Ai+i*lda) );
-					fscal( F, i, inv, Ai, lda );
-					fscal( F, M, inv, Bi, ldb );
-					Ai++;
-					Bi++;
-				}
-			}
-			cblas_dtrsm(  CblasRowMajor, CblasRight, CblasUpper, CblasNoTrans,
-				      CblasUnit, M, N, alpha, A, lda, B, ldb );
-			for (size_t i=0; i< M; ++i)
-				for (size_t j=0; j<N; ++j){
-					F.init(*(B+i*ldb+j),*(B+i*ldb+j));
-				
-				}
-			if (Diag == FflasNonUnit ){
-				//Denormalization of A
-				typename Field::Element *  Ai=A;
-				for (size_t i=0; i<N; ++i){
-					fscal( F, i, *(Ai+i*lda), Ai, lda );
-					Ai++;
-				}
-				//Correction on B
-				// Ai =A;
-				// 			typename Field::Element *Bi=B;
-				// 			for (size_t i=0; i<N; ++i){
-				// 				F.inv( inv, *Ai);
-				// 				fscal( F, M, inv, Bi, ldb );
-				// 				Ai += lda+1; Bi++;
-				// 			}
-			}
-		}
-		else{
-			size_t Nup=N>>1;
-			size_t Ndown = N-Nup;
-			this->operator()( F, Diag, M, Nup, alpha, A, lda, B, ldb, nmax);
-			fgemm( F, FflasNoTrans, FflasNoTrans, M, Ndown, Nup,
-			       Mone, B, ldb, A+Nup, lda, alpha, B+Nup, ldb);
-			this->operator()( F, Diag, M, Ndown, one, 
-					  A+Nup*(lda+1), lda, B+Nup, ldb, nmax);
-		}
-	}
-};
-
-template <>
-class FFLAS::callFtrsmRightUpNoTrans<float>{
-public:
-	template<class Field>
-	void operator() (const Field& F, const FFLAS_DIAG Diag, 
-			 const size_t M, const size_t N, const typename Field::Element alpha,
-			 typename Field::Element * A, const size_t lda,
-			 typename Field::Element * B, const size_t ldb, const size_t nmax){
-		
-		static typename Field::Element Mone;
-		static typename Field::Element one;
-		F.init(one, 1.0);
-		F.neg(Mone,one);
-		if ( N <= nmax ){
-			typename Field::Element inv;
-			if (Diag == FflasNonUnit ){
-				//Normalization of A and B
-				typename Field::Element *  Ai = A, * Bi = B;
-				for (size_t i=0; i<N; ++i){
-					F.inv( inv, *(Ai+i*lda) );
-					fscal( F, i, inv, Ai, lda );
-					fscal( F, M, inv, Bi, ldb );
-					Ai++;
-					Bi++;
-				}
-			}
-			cblas_strsm(  CblasRowMajor, CblasRight, CblasUpper, CblasNoTrans,
-				      CblasUnit, M, N, alpha, A, lda, B, ldb );
-			for (size_t i=0; i< M; ++i)
-				for (size_t j=0; j<N; ++j){
-					F.init(*(B+i*ldb+j),*(B+i*ldb+j));
-				
-				}
-			if (Diag == FflasNonUnit ){
-				//Denormalization of A
-				typename Field::Element *  Ai=A;
-				for (size_t i=0; i<N; ++i){
-					fscal( F, i, *(Ai+i*lda), Ai, lda );
-					Ai++;
-				}
-				//Correction on B
-				// Ai =A;
-				// 			typename Field::Element *Bi=B;
-				// 			for (size_t i=0; i<N; ++i){
-				// 				F.inv( inv, *Ai);
-				// 				fscal( F, M, inv, Bi, ldb );
-				// 				Ai += lda+1; Bi++;
-				// 			}
-			}
-		}
-		else{
-			size_t Nup=N>>1;
-			size_t Ndown = N-Nup;
-			this->operator()( F, Diag, M, Nup, alpha, A, lda, B, ldb, nmax);
-			fgemm( F, FflasNoTrans, FflasNoTrans, M, Ndown, Nup,
-			       Mone, B, ldb, A+Nup, lda, alpha, B+Nup, ldb);
-			this->operator()( F, Diag, M, Ndown, one, 
-					  A+Nup*(lda+1), lda, B+Nup, ldb, nmax);
-		}
-	}
-};
+#define __FFLAS__GENERIC
+#define __FFLAS__LEFT
+#define __FFLAS__LOW
+#define __FFLAS__TRANSPOSE
+#define __FFLAS__UNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__GENERIC
+#undef __FFLAS__LEFT
+#undef __FFLAS__LOW
+#undef __FFLAS__TRANSPOSE
+#undef __FFLAS__UNIT
 
 
 
-template<class Field>
-inline void
-FFLAS::ftrsmRightUpTrans(const Field& F, const FFLAS_DIAG Diag, 
-		       const size_t M, const size_t N,
-		       const typename Field::Element alpha,
-		       const typename Field::Element * A, const size_t lda,
-		       typename Field::Element * B, const size_t ldb){
-	
-	static typename Field::Element Mone;
-	static typename Field::Element one;
-	F.init(Mone, -1.0);
-	F.init(one, 1.0);
-	if ( N==1 ){
-		if (Diag == FflasNonUnit ){
-			typename Field::Element inv;
-			F.inv(inv, *A);
-			fscal(F, M, inv, B, ldb);
-		}
-	}
-	else{	
-		size_t Nup=N>>1;
-		size_t Ndown = N-Nup;
-		ftrsmRightUpTrans( F, Diag, M, Nup, alpha, A, lda, B, ldb);
-		fgemm( F, FflasNoTrans, FflasTrans, M, Ndown, Nup, Mone, 
-		       B, ldb, A+Nup*lda, lda, alpha, B+Nup, ldb);
-		ftrsmRightUpTrans( F, Diag, M, Ndown, one, 
-				   A+Nup*(lda+1), lda, B+Nup, ldb);
-	}
-}
+#define __FFLAS__GENERIC
+#define __FFLAS__RIGHT
+#define __FFLAS__UP
+#define __FFLAS__NOTRANSPOSE
+#define __FFLAS__NONUNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__GENERIC
+#undef __FFLAS__RIGHT
+#undef __FFLAS__UP
+#undef __FFLAS__NOTRANSPOSE
+#undef __FFLAS__NONUNIT
+
+#define __FFLAS__GENERIC
+#define __FFLAS__RIGHT
+#define __FFLAS__UP
+#define __FFLAS__NOTRANSPOSE
+#define __FFLAS__UNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__GENERIC
+#undef __FFLAS__RIGHT
+#undef __FFLAS__UP
+#undef __FFLAS__NOTRANSPOSE
+#undef __FFLAS__UNIT
+
+#define __FFLAS__GENERIC
+#define __FFLAS__RIGHT
+#define __FFLAS__UP
+#define __FFLAS__TRANSPOSE
+#define __FFLAS__NONUNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__GENERIC
+#undef __FFLAS__RIGHT
+#undef __FFLAS__UP
+#undef __FFLAS__TRANSPOSE
+#undef __FFLAS__NONUNIT
+
+#define __FFLAS__GENERIC
+#define __FFLAS__RIGHT
+#define __FFLAS__UP
+#define __FFLAS__TRANSPOSE
+#define __FFLAS__UNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__GENERIC
+#undef __FFLAS__RIGHT
+#undef __FFLAS__UP
+#undef __FFLAS__TRANSPOSE
+#undef __FFLAS__UNIT
 
 
-template<class Field>
-inline void
-FFLAS::ftrsmRightLowNoTrans(const Field& F, const FFLAS_DIAG Diag, 
-			  const size_t M, const size_t N,
-			  const typename Field::Element alpha,
-			  const typename Field::Element * A, const size_t lda,
-			  typename Field::Element * B, const size_t ldb){
-	
-	static typename Field::Element Mone;
-	static typename Field::Element one;
-	F.init(Mone, -1.0);
-	F.init(one, 1.0);
-	if ( N==1 ){
-		if (Diag == FflasNonUnit ){
-			typename Field::Element inv;
-			F.inv(inv, *A);
-			fscal(F, M, inv, B, ldb);
-		}
-	}
-	else{	
-		size_t Nup=N>>1;
-		size_t Ndown = N-Nup;
-		ftrsmRightLowNoTrans( F, Diag, M, Ndown, alpha, 
-				      A+Nup*(lda+1), lda, B+Nup, ldb);
-		fgemm( F, FflasNoTrans, FflasNoTrans, M, Nup, Ndown,
-		       Mone, B+Nup, ldb, A+Nup*lda, lda, alpha, B, ldb);
-		ftrsmRightLowNoTrans( F, Diag, M, Nup, one, A, lda, B, ldb);
-	}
-}
+#define __FFLAS__GENERIC
+#define __FFLAS__RIGHT
+#define __FFLAS__LOW
+#define __FFLAS__NOTRANSPOSE
+#define __FFLAS__NONUNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__GENERIC
+#undef __FFLAS__RIGHT
+#undef __FFLAS__LOW
+#undef __FFLAS__NOTRANSPOSE
+#undef __FFLAS__NONUNIT
 
-template<class Field>
-inline void
-FFLAS::ftrsmRightLowTrans(const Field& F, const FFLAS_DIAG Diag, 
-			  const size_t M, const size_t N,
-			  const typename Field::Element alpha,
-			  const typename Field::Element * A, const size_t lda,
-			  typename Field::Element * B, const size_t ldb){
-	
-	static typename Field::Element Mone;
-	static typename Field::Element one;
-	F.init(Mone, -1.0);
-	F.init(one, 1.0);
-	if ( N==1 ){
-		if (Diag == FflasNonUnit ){
-			typename Field::Element inv;
-			F.inv(inv, *A);
-			fscal(F, M, inv, B, ldb);
-		}
-	}
-	else{
-		size_t Nup=N>>1;
-		size_t Ndown = N-Nup;
-		ftrsmRightLowTrans( F, Diag, M, Ndown, alpha, 
-				    A+Nup*(lda+1), lda, B+Nup, ldb);
-		fgemm( F, FflasNoTrans, FflasTrans, M, Nup, Ndown, Mone, 
-		       B+Nup, ldb, A+Nup, lda, alpha, B, ldb);
-		ftrsmRightLowTrans( F, Diag, M, Nup, one, A, lda, B, ldb);
-	}
-}
+#define __FFLAS__GENERIC
+#define __FFLAS__RIGHT
+#define __FFLAS__LOW
+#define __FFLAS__NOTRANSPOSE
+#define __FFLAS__UNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__GENERIC
+#undef __FFLAS__RIGHT
+#undef __FFLAS__LOW
+#undef __FFLAS__NOTRANSPOSE
+#undef __FFLAS__UNIT
+
+#define __FFLAS__GENERIC
+#define __FFLAS__RIGHT
+#define __FFLAS__LOW
+#define __FFLAS__TRANSPOSE
+#define __FFLAS__NONUNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__GENERIC
+#undef __FFLAS__RIGHT
+#undef __FFLAS__LOW
+#undef __FFLAS__TRANSPOSE
+#undef __FFLAS__NONUNIT
+
+#define __FFLAS__GENERIC
+#define __FFLAS__RIGHT
+#define __FFLAS__LOW
+#define __FFLAS__TRANSPOSE
+#define __FFLAS__UNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__GENERIC
+#undef __FFLAS__RIGHT
+#undef __FFLAS__LOW
+#undef __FFLAS__TRANSPOSE
+#undef __FFLAS__UNIT
+//==
+
+#define __FFLAS__DOUBLE
+#define __FFLAS__LEFT
+#define __FFLAS__UP
+#define __FFLAS__NOTRANSPOSE
+#define __FFLAS__NONUNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__DOUBLE
+#undef __FFLAS__LEFT
+#undef __FFLAS__UP
+#undef __FFLAS__NOTRANSPOSE
+#undef __FFLAS__NONUNIT
+
+#define __FFLAS__DOUBLE
+#define __FFLAS__LEFT
+#define __FFLAS__UP
+#define __FFLAS__NOTRANSPOSE
+#define __FFLAS__UNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__DOUBLE
+#undef __FFLAS__LEFT
+#undef __FFLAS__UP
+#undef __FFLAS__NOTRANSPOSE
+#undef __FFLAS__UNIT
+
+#define __FFLAS__DOUBLE
+#define __FFLAS__LEFT
+#define __FFLAS__UP
+#define __FFLAS__TRANSPOSE
+#define __FFLAS__NONUNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__DOUBLE
+#undef __FFLAS__LEFT
+#undef __FFLAS__UP
+#undef __FFLAS__TRANSPOSE
+#undef __FFLAS__NONUNIT
+
+#define __FFLAS__DOUBLE
+#define __FFLAS__LEFT
+#define __FFLAS__UP
+#define __FFLAS__TRANSPOSE
+#define __FFLAS__UNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__DOUBLE
+#undef __FFLAS__LEFT
+#undef __FFLAS__UP
+#undef __FFLAS__TRANSPOSE
+#undef __FFLAS__UNIT
+
+
+#define __FFLAS__DOUBLE
+#define __FFLAS__LEFT
+#define __FFLAS__LOW
+#define __FFLAS__NOTRANSPOSE
+#define __FFLAS__NONUNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__DOUBLE
+#undef __FFLAS__LEFT
+#undef __FFLAS__LOW
+#undef __FFLAS__NOTRANSPOSE
+#undef __FFLAS__NONUNIT
+
+#define __FFLAS__DOUBLE
+#define __FFLAS__LEFT
+#define __FFLAS__LOW
+#define __FFLAS__NOTRANSPOSE
+#define __FFLAS__UNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__DOUBLE
+#undef __FFLAS__LEFT
+#undef __FFLAS__LOW
+#undef __FFLAS__NOTRANSPOSE
+#undef __FFLAS__UNIT
+
+#define __FFLAS__DOUBLE
+#define __FFLAS__LEFT
+#define __FFLAS__LOW
+#define __FFLAS__TRANSPOSE
+#define __FFLAS__NONUNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__DOUBLE
+#undef __FFLAS__LEFT
+#undef __FFLAS__LOW
+#undef __FFLAS__TRANSPOSE
+#undef __FFLAS__NONUNIT
+
+#define __FFLAS__DOUBLE
+#define __FFLAS__LEFT
+#define __FFLAS__LOW
+#define __FFLAS__TRANSPOSE
+#define __FFLAS__UNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__DOUBLE
+#undef __FFLAS__LEFT
+#undef __FFLAS__LOW
+#undef __FFLAS__TRANSPOSE
+#undef __FFLAS__UNIT
+
+
+
+#define __FFLAS__DOUBLE
+#define __FFLAS__RIGHT
+#define __FFLAS__UP
+#define __FFLAS__NOTRANSPOSE
+#define __FFLAS__NONUNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__DOUBLE
+#undef __FFLAS__RIGHT
+#undef __FFLAS__UP
+#undef __FFLAS__NOTRANSPOSE
+#undef __FFLAS__NONUNIT
+
+#define __FFLAS__DOUBLE
+#define __FFLAS__RIGHT
+#define __FFLAS__UP
+#define __FFLAS__NOTRANSPOSE
+#define __FFLAS__UNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__DOUBLE
+#undef __FFLAS__RIGHT
+#undef __FFLAS__UP
+#undef __FFLAS__NOTRANSPOSE
+#undef __FFLAS__UNIT
+
+#define __FFLAS__DOUBLE
+#define __FFLAS__RIGHT
+#define __FFLAS__UP
+#define __FFLAS__TRANSPOSE
+#define __FFLAS__NONUNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__DOUBLE
+#undef __FFLAS__RIGHT
+#undef __FFLAS__UP
+#undef __FFLAS__TRANSPOSE
+#undef __FFLAS__NONUNIT
+
+#define __FFLAS__DOUBLE
+#define __FFLAS__RIGHT
+#define __FFLAS__UP
+#define __FFLAS__TRANSPOSE
+#define __FFLAS__UNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__DOUBLE
+#undef __FFLAS__RIGHT
+#undef __FFLAS__UP
+#undef __FFLAS__TRANSPOSE
+#undef __FFLAS__UNIT
+
+
+#define __FFLAS__DOUBLE
+#define __FFLAS__RIGHT
+#define __FFLAS__LOW
+#define __FFLAS__NOTRANSPOSE
+#define __FFLAS__NONUNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__DOUBLE
+#undef __FFLAS__RIGHT
+#undef __FFLAS__LOW
+#undef __FFLAS__NOTRANSPOSE
+#undef __FFLAS__NONUNIT
+
+#define __FFLAS__DOUBLE
+#define __FFLAS__RIGHT
+#define __FFLAS__LOW
+#define __FFLAS__NOTRANSPOSE
+#define __FFLAS__UNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__DOUBLE
+#undef __FFLAS__RIGHT
+#undef __FFLAS__LOW
+#undef __FFLAS__NOTRANSPOSE
+#undef __FFLAS__UNIT
+
+#define __FFLAS__DOUBLE
+#define __FFLAS__RIGHT
+#define __FFLAS__LOW
+#define __FFLAS__TRANSPOSE
+#define __FFLAS__NONUNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__DOUBLE
+#undef __FFLAS__RIGHT
+#undef __FFLAS__LOW
+#undef __FFLAS__TRANSPOSE
+#undef __FFLAS__NONUNIT
+
+#define __FFLAS__DOUBLE
+#define __FFLAS__RIGHT
+#define __FFLAS__LOW
+#define __FFLAS__TRANSPOSE
+#define __FFLAS__UNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__DOUBLE
+#undef __FFLAS__RIGHT
+#undef __FFLAS__LOW
+#undef __FFLAS__TRANSPOSE
+#undef __FFLAS__UNIT
+
+
+#define __FFLAS__FLOAT
+#define __FFLAS__LEFT
+#define __FFLAS__UP
+#define __FFLAS__NOTRANSPOSE
+#define __FFLAS__NONUNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__FLOAT
+#undef __FFLAS__LEFT
+#undef __FFLAS__UP
+#undef __FFLAS__NOTRANSPOSE
+#undef __FFLAS__NONUNIT
+
+#define __FFLAS__FLOAT
+#define __FFLAS__LEFT
+#define __FFLAS__UP
+#define __FFLAS__NOTRANSPOSE
+#define __FFLAS__UNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__FLOAT
+#undef __FFLAS__LEFT
+#undef __FFLAS__UP
+#undef __FFLAS__NOTRANSPOSE
+#undef __FFLAS__UNIT
+
+#define __FFLAS__FLOAT
+#define __FFLAS__LEFT
+#define __FFLAS__UP
+#define __FFLAS__TRANSPOSE
+#define __FFLAS__NONUNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__FLOAT
+#undef __FFLAS__LEFT
+#undef __FFLAS__UP
+#undef __FFLAS__TRANSPOSE
+#undef __FFLAS__NONUNIT
+
+#define __FFLAS__FLOAT
+#define __FFLAS__LEFT
+#define __FFLAS__UP
+#define __FFLAS__TRANSPOSE
+#define __FFLAS__UNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__FLOAT
+#undef __FFLAS__LEFT
+#undef __FFLAS__UP
+#undef __FFLAS__TRANSPOSE
+#undef __FFLAS__UNIT
+
+
+#define __FFLAS__FLOAT
+#define __FFLAS__LEFT
+#define __FFLAS__LOW
+#define __FFLAS__NOTRANSPOSE
+#define __FFLAS__NONUNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__FLOAT
+#undef __FFLAS__LEFT
+#undef __FFLAS__LOW
+#undef __FFLAS__NOTRANSPOSE
+#undef __FFLAS__NONUNIT
+
+#define __FFLAS__FLOAT
+#define __FFLAS__LEFT
+#define __FFLAS__LOW
+#define __FFLAS__NOTRANSPOSE
+#define __FFLAS__UNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__FLOAT
+#undef __FFLAS__LEFT
+#undef __FFLAS__LOW
+#undef __FFLAS__NOTRANSPOSE
+#undef __FFLAS__UNIT
+
+#define __FFLAS__FLOAT
+#define __FFLAS__LEFT
+#define __FFLAS__LOW
+#define __FFLAS__TRANSPOSE
+#define __FFLAS__NONUNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__FLOAT
+#undef __FFLAS__LEFT
+#undef __FFLAS__LOW
+#undef __FFLAS__TRANSPOSE
+#undef __FFLAS__NONUNIT
+
+#define __FFLAS__FLOAT
+#define __FFLAS__LEFT
+#define __FFLAS__LOW
+#define __FFLAS__TRANSPOSE
+#define __FFLAS__UNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__FLOAT
+#undef __FFLAS__LEFT
+#undef __FFLAS__LOW
+#undef __FFLAS__TRANSPOSE
+#undef __FFLAS__UNIT
+
+
+
+#define __FFLAS__FLOAT
+#define __FFLAS__RIGHT
+#define __FFLAS__UP
+#define __FFLAS__NOTRANSPOSE
+#define __FFLAS__NONUNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__FLOAT
+#undef __FFLAS__RIGHT
+#undef __FFLAS__UP
+#undef __FFLAS__NOTRANSPOSE
+#undef __FFLAS__NONUNIT
+
+#define __FFLAS__FLOAT
+#define __FFLAS__RIGHT
+#define __FFLAS__UP
+#define __FFLAS__NOTRANSPOSE
+#define __FFLAS__UNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__FLOAT
+#undef __FFLAS__RIGHT
+#undef __FFLAS__UP
+#undef __FFLAS__NOTRANSPOSE
+#undef __FFLAS__UNIT
+
+#define __FFLAS__FLOAT
+#define __FFLAS__RIGHT
+#define __FFLAS__UP
+#define __FFLAS__TRANSPOSE
+#define __FFLAS__NONUNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__FLOAT
+#undef __FFLAS__RIGHT
+#undef __FFLAS__UP
+#undef __FFLAS__TRANSPOSE
+#undef __FFLAS__NONUNIT
+
+#define __FFLAS__FLOAT
+#define __FFLAS__RIGHT
+#define __FFLAS__UP
+#define __FFLAS__TRANSPOSE
+#define __FFLAS__UNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__FLOAT
+#undef __FFLAS__RIGHT
+#undef __FFLAS__UP
+#undef __FFLAS__TRANSPOSE
+#undef __FFLAS__UNIT
+
+
+#define __FFLAS__FLOAT
+#define __FFLAS__RIGHT
+#define __FFLAS__LOW
+#define __FFLAS__NOTRANSPOSE
+#define __FFLAS__NONUNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__FLOAT
+#undef __FFLAS__RIGHT
+#undef __FFLAS__LOW
+#undef __FFLAS__NOTRANSPOSE
+#undef __FFLAS__NONUNIT
+
+#define __FFLAS__FLOAT
+#define __FFLAS__RIGHT
+#define __FFLAS__LOW
+#define __FFLAS__NOTRANSPOSE
+#define __FFLAS__UNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__FLOAT
+#undef __FFLAS__RIGHT
+#undef __FFLAS__LOW
+#undef __FFLAS__NOTRANSPOSE
+#undef __FFLAS__UNIT
+
+#define __FFLAS__FLOAT
+#define __FFLAS__RIGHT
+#define __FFLAS__LOW
+#define __FFLAS__TRANSPOSE
+#define __FFLAS__NONUNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__FLOAT
+#undef __FFLAS__RIGHT
+#undef __FFLAS__LOW
+#undef __FFLAS__TRANSPOSE
+#undef __FFLAS__NONUNIT
+
+#define __FFLAS__FLOAT
+#define __FFLAS__RIGHT
+#define __FFLAS__LOW
+#define __FFLAS__TRANSPOSE
+#define __FFLAS__UNIT
+#include "fflas_ftrsm_src.inl"
+#undef __FFLAS__FLOAT
+#undef __FFLAS__RIGHT
+#undef __FFLAS__LOW
+#undef __FFLAS__TRANSPOSE
+#undef __FFLAS__UNIT

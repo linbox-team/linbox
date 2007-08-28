@@ -11,7 +11,7 @@
 #ifndef __FFPACK_H
 #define __FFPACK_H
 
-#ifdef _LINBOX_LINBOX_CONFIG_H
+#ifdef _LINBOX_CONFIG_H
 #include "linbox/fflas/fflas.h"
 #else
 #include "fflas.h"
@@ -20,7 +20,7 @@
 #include <list>
 #include <vector>
 
-#ifdef _LINBOX_LINBOX_CONFIG_H
+#ifdef _LINBOX_CONFIG_H
 namespace LinBox{
 #endif
 
@@ -268,13 +268,13 @@ public:
 		size_t *P = new size_t[M];
 		size_t *rowP = new size_t[M];
 		
-		Timer t1;
-		t1.clear();
-		t1.start();
+		// Timer t1;
+// 		t1.clear();
+// 		t1.start();
 
 		nullity = M - LUdivine( F, FflasNonUnit, FflasNoTrans, M, M, A, lda, P, rowP, FfpackLQUP);
 
-		t1.stop();
+// 		t1.stop();
 		//cerr<<"LU --> "<<t1.usertime()<<endl;
 		
 		if (nullity > 0){
@@ -283,8 +283,8 @@ public:
 			return NULL;
 		} else {
 			// Initializing X to 0
-			t1.clear();
-			t1.start();
+// 			t1.clear();
+// 			t1.start();
 			for (size_t i=0; i<M; ++i)
 				for (size_t j=0; j<M;++j)
 					F.assign(*(X+i*ldx+j), zero);
@@ -298,18 +298,18 @@ public:
 			}
 			for (size_t i=1; i<M; ++i)
  				fcopy (F, i, (X+i*ldx), 1, (A+i*lda), 1);
-			t1.stop();
+// 			t1.stop();
 			//cerr<<"U^-1 --> "<<t1.usertime()<<endl;
 
 			//invL( F, M, A, lda, X, ldx );
 		       // X = Q^-1.X is not necessary since Q = Id
 			
-			// X = U^-1.X
-			t1.clear();
-			t1.start();
+ 			// X = U^-1.X
+// 			t1.clear();
+//			t1.start();
 			ftrsm( F, FflasLeft, FflasUpper, FflasNoTrans, FflasNonUnit, 
 			       M, M, one, A, lda , X, ldx);
-			t1.stop();
+//			t1.stop();
 			//cerr<<"ftrsm --> "<<t1.usertime()<<endl;
 
 			// X = P^-1.X
@@ -511,23 +511,23 @@ public:
 		F.neg (mone, one);
 		size_t r;
 
-		Timer t1;
-		t1.clear();
-		t1.start();
+		// Timer t1;
+// 		t1.clear();
+// 		t1.start();
 		r = LUdivine (F, FflasUnit, FflasNoTrans, M, N, A, lda, P, Qt);
-		t1.stop();
+		// t1.stop();
 		//cerr<<"LU --> "<<t1.usertime()<<endl;
 		
-		Timer t2;
-		t2.clear();
-		t2.start();
+		// Timer t2;
+// 		t2.clear();
+// 		t2.start();
 		ftrtri (F, FflasUpper, FflasUnit, r, A, lda);
 
 
 		ftrmm (F, FflasLeft, FflasUpper, FflasNoTrans, FflasUnit, r, N-r,
 		       mone, A, lda, A+r, lda);
 
-		t2.stop();
+		// t2.stop();
 		//cerr<<"U^-1 --> "<<t2.usertime()<<endl;
 
 		return r;
@@ -552,23 +552,23 @@ public:
 		F.neg (mone, one);
 		size_t r;
 
-		Timer t1;
-		t1.clear();
-		t1.start();
+		// Timer t1;
+// 		t1.clear();
+// 		t1.start();
 		r = LUdivine (F, FflasUnit, FflasTrans,  M, N, A, lda, P, Qt);
-		t1.stop();
+		// t1.stop();
 		//cerr<<"LU --> "<<t1.usertime()<<endl;
 		
-		Timer t2;
-		t2.clear();
-		t2.start();
+		// Timer t2;
+// 		t2.clear();
+// 		t2.start();
 		ftrtri (F, FflasLower, FflasUnit, r, A, lda);
 
 
 		ftrmm (F, FflasRight, FflasLower, FflasNoTrans, FflasUnit, M-r, r,
 		       mone, A, lda, A+r*lda, lda);
 
-		t2.stop();
+		// t2.stop();
 		//cerr<<"U^-1 --> "<<t2.usertime()<<endl;
 
 		return r;
@@ -596,9 +596,9 @@ public:
 
 		r = ColumnEchelonForm (F, M, N, A, lda, P, Qt);
 			
-		Timer t1;
-		t1.clear();
-		t1.start();
+// 		Timer t1;
+// 		t1.clear();
+// 		t1.start();
 
 		// M = Q^T M 
 		for (size_t i=0; i<r; ++i){
@@ -615,7 +615,7 @@ public:
 		       one, A, lda, A+r*lda, lda);
 
 		ftrtrm (F, FflasUnit, r, A, lda);
-		t1.stop();
+// 		t1.stop();
 		//cerr<<"U^-1L^-1 --> "<<t1.usertime()<<endl;	   
 		
 		return r;
@@ -644,9 +644,9 @@ public:
 
 		r = RowEchelonForm (F, M, N, A, lda, P, Qt);
 			
-		Timer t1;
-		t1.clear();
-		t1.start();
+// 		Timer t1;
+// 		t1.clear();
+// 		t1.start();
 		// M = M Q^T 
 		for (int i=0; i<r; ++i){
 			if ( Qt[i]> (size_t) i ){
@@ -663,7 +663,7 @@ public:
 		
 		ftrtrm (F, FflasNonUnit, r, A, lda);
 		
-		t1.stop();
+// 		t1.stop();
 		//cerr<<"U^-1L^-1 --> "<<t1.usertime()<<endl;	   
 		
 		return r;
@@ -1078,7 +1078,7 @@ protected:
 #include "ffpack_charpoly.inl"
 #include "ffpack_krylovelim.inl"
 #include "ffpack_frobenius.inl"
-#ifdef _LINBOX_LINBOX_CONFIG_H
+#ifdef _LINBOX_CONFIG_H
 }
 #endif
 #endif // __FFPACK_H

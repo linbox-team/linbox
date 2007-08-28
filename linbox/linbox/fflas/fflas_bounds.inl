@@ -8,18 +8,10 @@
  * See COPYING for license information.
  */
 
-#ifdef _LINBOX_LINBOX_CONFIG_H
+#ifdef _LINBOX_CONFIG_H
 #define FFLAS_INT_TYPE Integer
 #else
 #define FFLAS_INT_TYPE long unsigned int
-#endif
-
-#if defined(__sun) && defined(__SunOS_5_9)
-#define lround(x) my_lround(x)
-static long my_lround(double x)
-{
-        return (long) ((x) >= 0 ? (x) + 0.5 : (x) - 0.5);}
-
 #endif
 
 //---------------------------------------------------------------------
@@ -49,7 +41,7 @@ inline size_t FFLAS::DotProdBoundCompute (const Field& F, const size_t w,
 			for (size_t i=0; i < w; ++i) 	ex *= 3;
 			//FFLAS_INT_TYPE c = (p-1)*(ex)/2; //bound for a centered representation
 			long long c;
-#ifndef _LINBOX_LINBOX_CONFIG_H
+#ifndef _LINBOX_CONFIG_H
 			if (F.balanced)
 				c = (p-1)*(ex)/2; // balanced representation
 			else
@@ -183,7 +175,7 @@ public:
 		FFLAS_INT_TYPE pi;
 		F.characteristic(pi);
 		static FFLAS_INT_TYPE p=pi;
-#ifdef _LINBOX_LINBOX_CONFIG_H
+#ifdef _LINBOX_CONFIG_H
 		static size_t nmax = bound_compute_double(pi);
 #else
 		static size_t nmax = (F.balanced) ? bound_compute_double_balanced(pi) : bound_compute_double(pi);
@@ -191,10 +183,10 @@ public:
 		if (p == pi) 
 			return nmax;
 		else
-#ifdef _LINBOX_LINBOX_CONFIG_H
+#ifdef _LINBOX_CONFIG_H
 			return nmax= bound_compute_double (p=pi); //(F.balanced) ? bound_compute_balanced(p=pi) : bound_compute(p=pi);
 #else
-        	return (F.balanced) ? bound_compute_double_balanced(p=pi) : bound_compute_double(p=pi);
+        	return nmax = (F.balanced) ? bound_compute_double_balanced(p=pi) : bound_compute_double(p=pi);
 #endif
 	}
 };
@@ -207,7 +199,7 @@ public:
 		FFLAS_INT_TYPE pi;
 		F.characteristic(pi);
 		static FFLAS_INT_TYPE p=pi;
-#ifdef _LINBOX_LINBOX_CONFIG_H
+#ifdef _LINBOX_CONFIG_H
 		static size_t nmax = bound_compute_float(pi);
 #else
 		static size_t nmax = (F.balanced) ? bound_compute_float_balanced(pi) : bound_compute_float(pi);
@@ -215,10 +207,10 @@ public:
 		if (p == pi) 
 			return nmax;
 		else
-#ifdef _LINBOX_LINBOX_CONFIG_H
+#ifdef _LINBOX_CONFIG_H
 			return nmax= bound_compute_float (p=pi); //(F.balanced) ? bound_compute_balanced(p=pi) : bound_compute(p=pi);
 #else
-        	return (F.balanced) ? bound_compute_float_balanced(p=pi) : bound_compute_float(p=pi);
+        	return nmax = (F.balanced) ? bound_compute_float_balanced(p=pi) : bound_compute_float(p=pi);
 #endif
 	}
 };
