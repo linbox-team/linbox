@@ -520,7 +520,7 @@ inline void FFLAS::WinoCalc (const Field& F,
 
 			
 		// Two temporary submatrices are required
-		typename Field::Element* X1 = new typename Field::Element[mr*x1rd];
+
 		typename Field::Element* X2 = new typename Field::Element[kr*nr];
  		
 		// T3 = B22 - B12 in X2
@@ -530,7 +530,7 @@ inline void FFLAS::WinoCalc (const Field& F,
 				F.sub (*(dx2+j), *(d22 + j), *(d12 + j));
 		}
 
-		// S3 = A11 - A21 in X1
+		typename Field::Element* X1 = new typename Field::Element[mr*x1rd];		// S3 = A11 - A21 in X1
 		d11 = A11; d21 = A21; dx1 = X1;
 		for (size_t i = 0; i < imaxa; ++i, d11 += lda, d21 += lda, dx1 += ldx1)
 			for (size_t j = 0; j < jmaxa; ++j)
@@ -620,12 +620,14 @@ inline void FFLAS::WinoCalc (const Field& F,
 			for (size_t j = 0; j < jmaxb; ++j)
 				F.subin (*(dx2+j),* (d21 + j));
 		}
+
 		//write_field(F, cerr<<"T4 = "<<endl, X2, imaxb, jmaxb, ldx2);
 
 		// P4 = alpha . A22 * T4 in C11
 		WinoMain (F, ta, tb, mr, nr, kr, alpha, A22, lda, X2, ldx2, zero, C11, ldc, kmax, w-1, base);
 		//write_field(F, cerr<<"P4 = "<<endl, C11, mr, nr, ldc);
-		
+
+		delete[] X2;		
 		// U6 = U3 - P4 in C21
 		d21c = C21; d11c = C11;
 		for (size_t i = 0; i < mr; ++i, d21c += ldc, d11c += ldc)
@@ -642,7 +644,6 @@ inline void FFLAS::WinoCalc (const Field& F,
 				F.addin (*(d11c + j), *(dx1 + j));
 
 		delete[] X1;
-		delete[] X2;
 	
 	} else {
 		// Three temporary submatrices are required
@@ -1350,6 +1351,88 @@ FFLAS::DynamicPealing (const Field& F,
 }
 
 
+	// Unsafe matmul over Z
+	// For internal usage only (or use it with care)
+	template<>
+	inline double* 
+	FFLAS::fgemm<UnparametricField<double> > ( const UnparametricField<double>& F,
+					     const FFLAS_TRANSPOSE ta,
+					     const FFLAS_TRANSPOSE tb,
+					     const size_t m,
+					     const size_t n,
+					     const size_t k,
+					     const double alpha,
+					     const double* A, const size_t lda,
+					     const double* B, const size_t ldb, 
+					     const double beta,
+					     double* C, const size_t ldc,
+					     const size_t w){
+
+		if (!(m && n && k)) return C;
+		
+		//FFLAS_BASE base = BaseCompute<typename Field::double> ()(F, w);
+
+		WinoMain (F, ta, tb, m, n, k, alpha, A, lda, B, ldb, beta,
+			  C, ldc, k+1, w, FflasDouble);
+		return C;
+	}
+
+	template<>
+	inline float* 
+	FFLAS::fgemm<UnparametricField<float> > ( const UnparametricField<float>& F,
+						  const FFLAS_TRANSPOSE ta,
+						  const FFLAS_TRANSPOSE tb,
+						  const size_t m,
+						  const size_t n,
+						  const size_t k,
+						  const float alpha,
+						  const float* A, const size_t lda,
+						  const float* B, const size_t ldb, 
+						  const float beta,
+						  float* C, const size_t ldc,
+						  const size_t w){
+		
+		if (!(m && n && k)) return C;
+		
+		//FFLAS_BASE base = BaseCompute<typename Field::float> ()(F, w);
+
+		WinoMain (F, ta, tb, m, n, k, alpha, A, lda, B, ldb, beta,
+			  C, ldc, k+1, w, FflasFloat);
+		return C;
+		}
+	
+	template<>
+	inline double* 
+	FFLAS::fgemm<UnparametricField<double> > ( const UnparametricField<double>& F,
+					     const FFLAS_TRANSPOSE ta,
+					     const FFLAS_TRANSPOSE tb,
+					     const size_t m,
+					     const size_t n,
+					     const size_t k,
+					     const double alpha,
+					     const double* A, const size_t lda,
+					     const double* B, const size_t ldb, 
+					     const double beta,
+					     double* C, const size_t ldc){
+		return fgemm (F, ta, tb, m, n ,k, alpha, A, lda, B, ldb, beta, C, ldc, WinoSteps (MIN(m,MIN(k,n))));
+	}
+
+	template<>
+	inline float* 
+	FFLAS::fgemm<UnparametricField<float> > ( const UnparametricField<float>& F,
+						  const FFLAS_TRANSPOSE ta,
+						  const FFLAS_TRANSPOSE tb,
+						  const size_t m,
+						  const size_t n,
+						  const size_t k,
+						  const float alpha,
+						  const float* A, const size_t lda,
+						  const float* B, const size_t ldb, 
+						  const float beta,
+						  float* C, const size_t ldc){
+		return fgemm (F, ta, tb, m, n ,k, alpha, A, lda, B, ldb, beta, C, ldc, WinoSteps (MIN(m,MIN(k,n))));
+	}
+	
 	
 template < class Field > 
 inline  typename Field::Element*
