@@ -41,10 +41,10 @@ static bool testRank (const Field& F,size_t n, int iterations) {
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
 
-	Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator.start (pretty("Testing rank"),"testRank",iterations);
+	//Commentator commentator;
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator.start (pretty("Testing rank"),"testRank",iterations);
 
 	Element one, zero;
 	F.init( one, 1UL);
@@ -57,7 +57,7 @@ static bool testRank (const Field& F,size_t n, int iterations) {
 	
 	for (int k=0;k<iterations; ++k) {
     
-		mycommentator.progress(k);
+		commentator.progress(k);
 		Element * A = new Element[n*n];
 		Element * S = new Element[n*n];
 		Element * L = new Element[n*n];
@@ -98,7 +98,7 @@ static bool testRank (const Field& F,size_t n, int iterations) {
 			ret=false;
 	}
   	
-	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testRank");
+	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testRank");
     
 	return ret;
 }
@@ -113,10 +113,10 @@ static bool testTURBO (const Field& F,size_t n, int iterations) {
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
 
-	Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator.start (pretty("Testing TURBO"),"testTURBO",iterations);
+	//Commentator commentator;
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator.start (pretty("Testing TURBO"),"testTURBO",iterations);
 
 	Element one, zero;
 	F.init( one, 1UL);
@@ -129,7 +129,7 @@ static bool testTURBO (const Field& F,size_t n, int iterations) {
 		
 	for (int k=0;k<iterations; ++k) {
     
-		mycommentator.progress(k);
+		commentator.progress(k);
 		Element * A = new Element[n*n];
 		Element * S = new Element[n*n];
 		Element * L = new Element[n*n];
@@ -178,7 +178,7 @@ static bool testTURBO (const Field& F,size_t n, int iterations) {
 			ret=false;
 	}
   	
-	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testTURBO");
+	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testTURBO");
     
 	return ret;
 }
@@ -194,10 +194,10 @@ static bool testDet (const Field& F,size_t n, int iterations) {
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
   
-	Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator.start (pretty("Testing determinant"),"testDet",iterations);
+	//Commentator commentator;
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator.start (pretty("Testing determinant"),"testDet",iterations);
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G); 
@@ -209,7 +209,7 @@ static bool testDet (const Field& F,size_t n, int iterations) {
 	
 	for (int k=0;k<iterations;++k) {
 		
-		mycommentator.progress(k);
+		commentator.progress(k);
 
 		G.random(d);
 		
@@ -256,7 +256,7 @@ static bool testDet (const Field& F,size_t n, int iterations) {
 			ret=false;
 	}
   
-	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testDet");
+	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testDet");
     
 	return ret;
 }
@@ -270,10 +270,10 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations) {
 	typedef typename Field::Element                  Element;
 	typedef typename Field::RandIter                RandIter;
 
-	Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator.start (pretty("Testing LQUP factorization"),"testLQUP",iterations);
+	//Commentator commentator;
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator.start (pretty("Testing LQUP factorization"),"testLQUP",iterations);
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G); 
@@ -285,7 +285,7 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations) {
 	
 	for (int k=0;k<iterations;++k) {
     
-		mycommentator.progress(k);    
+		commentator.progress(k);    
 		
 		
 		Element * A = new Element[m*n];
@@ -387,7 +387,7 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations) {
 
 	}
 
-	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testLQUP");
+	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testLQUP");
     
 	return ret;
 }
@@ -397,10 +397,10 @@ static bool testMinPoly (const Field& F, size_t n, int iterations) {
 	typedef typename Field::Element                  Element;
 	typedef typename Field::RandIter                RandIter;
 	typedef vector<Element>                       Polynomial;
-	Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator.start (pretty("Testing minpoly"),"testMinPoly",iterations);
+	//Commentator commentator;
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator.start (pretty("Testing minpoly"),"testMinPoly",iterations);
 	Element tmp, one, zero,mone;
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G); 
@@ -412,7 +412,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations) {
 			
 	for (int k=0;k<iterations;++k) {
     
-		mycommentator.progress(k);    
+		commentator.progress(k);    
 		
 		Element * A = new Element[n*n];
 		Element * X = new Element[n*(n+1)];
@@ -489,7 +489,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations) {
 		delete[] Perm;
 	}
 
-	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testMinPoly");
+	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testMinPoly");
 	
 	return ret;
 }
@@ -499,10 +499,10 @@ static bool testCharPoly (const Field& F, size_t n, int iterations) {
 	typedef typename Field::Element                  Element;
 	typedef typename Field::RandIter                RandIter;
 	typedef vector<Element>                       Polynomial;
-	Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator.start (pretty("Testing charpoly"),"testCharPoly",iterations);
+	//Commentator commentator;
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator.start (pretty("Testing charpoly"),"testCharPoly",iterations);
 	Element tmp, one, zero,mone;
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G); 
@@ -513,7 +513,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations) {
 	
 	for (int k=0;k<iterations;++k) {
     
-		mycommentator.progress(k);    
+		commentator.progress(k);    
 
 		Element * A = new Element[n*n];
 		
@@ -570,7 +570,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations) {
 		delete[] A;
 	}
 
-	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testCharPoly");
+	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testCharPoly");
 	
 	return ret;
 }
@@ -581,10 +581,10 @@ static bool testInv (const Field& F,size_t n, int iterations) {
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
   
-	Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator.start (pretty("Testing inverse"),"testInv",iterations);
+	//Commentator commentator;
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator.start (pretty("Testing inverse"),"testInv",iterations);
 	
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G); 
@@ -602,7 +602,7 @@ static bool testInv (const Field& F,size_t n, int iterations) {
 	}
 	for (int k=0;k<iterations;++k) {
     
-		mycommentator.progress(k);
+		commentator.progress(k);
    
 
 		Element * A = new Element[n*n];
@@ -669,7 +669,7 @@ static bool testInv (const Field& F,size_t n, int iterations) {
 	}
 	delete[] Id;
 	
-	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testInv");
+	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testInv");
     
 	return ret;
 }
@@ -680,10 +680,10 @@ static bool testapplyP (const Field& F,size_t n, int iterations) {
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
   
-	Commentator mycommentator;
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	mycommentator.start (pretty("Testing applyP"),"testapplyP",iterations);
+	//Commentator commentator;
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator.start (pretty("Testing applyP"),"testapplyP",iterations);
 	
 	RandIter G(F);
 	Element zero,one,tmp,tmp2;
@@ -696,7 +696,7 @@ static bool testapplyP (const Field& F,size_t n, int iterations) {
 	
 	for (int k=0;k<iterations;++k) {
 		
-		mycommentator.progress(k);
+		commentator.progress(k);
 		
 
 		Element * A = new Element[n*n];
@@ -737,7 +737,7 @@ static bool testapplyP (const Field& F,size_t n, int iterations) {
 		delete[] P;
 	}
 	
-	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testApplyP");
+	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testApplyP");
     
 	return ret;
 }
