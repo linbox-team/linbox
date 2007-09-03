@@ -302,7 +302,7 @@ namespace LinBox {
                                              const Element& k, 
                                              bool reduce, bool recursive ) const {
                     
-// std::cerr << "RatRecon : " << f << " " << m << " " << k << std::endl;
+			//std::cerr << "RatRecon : " << f << " " << m << " " << k << std::endl;
                     
 
                         Element  r0, t0, q, u;
@@ -354,8 +354,8 @@ namespace LinBox {
                                 
                                 Element ganum, gar2;
                                 for( q = 1, ganum = r0-num, gar2 = r0 ; (ganum >= k) || (gar2<k); ++q ) {
-                                    ganum -= num;
-                                    gar2 -= num;
+					ganum -= num;
+					gar2 -= num;
                                 }
                                 
 //                             r0 -= q * num;

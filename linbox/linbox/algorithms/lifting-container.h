@@ -113,6 +113,7 @@ namespace LinBox {
 
 	template < class Ring, class Blackbox>
 	void BoundBlackbox (const Ring& R, typename Ring::Element& H_col_sqr, typename Ring::Element& short_col_sqr, const Blackbox& A) {
+
 		typedef typename Ring::Element Integer;
 		Integer one,zero,sqsum;
 		size_t m,n;
@@ -123,12 +124,14 @@ namespace LinBox {
 		R.init(H_col_sqr, 1);
 		typename std::vector<Integer>::const_iterator iter;
 		std::vector<Integer> e(n,zero),tmp(m);
+	
 		for (size_t i=0;i<n;i++){
 			e[i]=one;
 			A.apply(tmp,e);
 			sqsum=zero;
-			for (iter=tmp.begin();iter!=tmp.end();++iter)
+			for (iter=tmp.begin();iter!=tmp.end();++iter){
 				sqsum += (*iter)*(*iter);
+			}
 			R.mulin(H_col_sqr, sqsum);
 			if (i==0 || sqsum < short_col_sqr) 
 				short_col_sqr = sqsum;
@@ -617,7 +620,7 @@ namespace LinBox {
 				typename IVector::const_iterator iter = residu.begin();
 				for ( ;iter != residu. end(); ++iter, ++iter_p)
 					//_F. init (*iter_p, this->_R.convert(tmp,*iter));
-					hom.image(*iter_p, *iter);
+					hom.image(*iter_p, *iter);//std::cout<<*iter_p<<"= "<< *iter<<" mod "<<this->_p<<"\n";}
 			}			
 #ifdef RSTIMING
 			tGetDigitConvert.stop();
@@ -638,6 +641,7 @@ namespace LinBox {
 			{
 				typename FVector::const_iterator iter_p = _digit_p.begin(); 
 				typename IVector::iterator iter = digit.begin();
+				
 				for ( ; iter_p!= _digit_p.end(); ++iter_p, ++iter)
 					//this->_R.init(*iter, _F.convert(tmp,*iter_p));
 					hom.preimage(*iter, *iter_p);

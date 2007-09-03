@@ -333,7 +333,7 @@ namespace LinBox {
 			size_t bit, dbit;
 			bit=maxValue.bitsize();
 			dbit= maxValue.size_in_base(4)*2;
-			maxBitSize= ((dbit-bit)>1)? dbit: bit;
+			maxBitSize= ((dbit-bit)>0)? dbit: bit;
 						
 			// Check Qadic matrix reprentation possibility			
 			LinBox::integer maxChunkVal = 1;
@@ -341,7 +341,7 @@ namespace LinBox {
  			maxChunkVal /= (prime-1) * _n;
  			chunk_size = maxChunkVal.bitsize();	
 			use_chunks = (chunk_size >= 16);		
-			//std::cout<<"max bit= "<<maxBitSize<<" "<<maxValue.size_in_base(4)*2<<"\n";std::cout<<"max value= "<<maxValue<<"\n";
+			std::cout<<"max bit= "<<maxBitSize<<" "<<maxValue.size_in_base(4)*2<<"\n";std::cout<<"max value= "<<maxValue<<"\n";
 			if (use_chunks){//std::cout<<"Matrix Qadic\n";
 				_switcher= MatrixQadic;
 				
@@ -402,9 +402,11 @@ namespace LinBox {
 
 #ifdef DEBUG_CHUNK_SETUP			
 				std::cout<<std::endl;
+				std::cout<<"max bit= "<<maxBitSize<<std::endl;
 				std::cout << num_chunks << " chunks of "<< chunk_size << " bits each" << std::endl;
 				if (!use_neg) std::cout << "not ";
 				std::cout << "using negative leading chunk" << std::endl;
+				std::cout << "shift is : "<<shift<<std::endl;
 				std::cout << "Contents of chunks: " << std::endl;
 				for (size_t i=0; i<num_chunks; i++) {
 					std::cout << "chunk " << i << std::endl;

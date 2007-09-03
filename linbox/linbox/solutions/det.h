@@ -117,12 +117,12 @@ namespace LinBox
 						const Method::Hybrid			&M)
 	{
 		// not yet a hybrid
-		/*
-		  if (useBB(A)) 
-		  return det(d, A, tag, Method::Blackbox(M));
-		  else
-		*/
-		return det(d, A, tag, Method::Elimination(M));
+		
+		if (useBB(A)) 
+			return det(d, A, tag, Method::Blackbox(M));
+		else
+		
+			return det(d, A, tag, Method::Elimination(M));
 	}
 	template<class Blackbox>
 	typename Blackbox::Field::Element &detin (typename Blackbox::Field::Element	&d, 
@@ -572,8 +572,8 @@ namespace LinBox {
 
 } // end of LinBox namespace
 
-#if 0
-//#ifdef __LINBOX_HAVE_NTL
+//#if 0
+#ifdef __LINBOX_HAVE_NTL
 # include "linbox/algorithms/hybrid-det.h"
 # define SOLUTION_CRA_DET lif_cra_det
 #else

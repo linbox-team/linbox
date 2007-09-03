@@ -648,7 +648,7 @@ namespace LinBox {
 				std::cout<< "p = ";
 				F->write(std::cout);
 				std::cout<<" A mod p :=\n";
-				FMP->write(std::cout,*F);
+				FMP->write(std::cout);
 #endif				
 			
 				if (!checkBlasPrime(_prime)){
@@ -686,7 +686,7 @@ namespace LinBox {
 
 #ifdef DEBUG_DIXON
 		std::cout<<"A^-1 mod p :=\n";
-		FMP->write(std::cout,*F);
+		FMP->write(std::cout);
 #endif		
 
 		typedef DixonLiftingContainer<Ring,Field,IMatrix,BlasBlackbox<Field> > LiftingContainer;		
