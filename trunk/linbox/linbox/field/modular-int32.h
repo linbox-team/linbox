@@ -180,7 +180,7 @@ namespace LinBox
 		}
 
 		Element &init (Element &x, const integer &y) const  {
-			x = y % modulus;
+		        x = y % modulus;
 			if (x < 0) x += modulus;
 			return x;
 		}
