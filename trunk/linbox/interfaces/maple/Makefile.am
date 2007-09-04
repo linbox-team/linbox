@@ -1,6 +1,6 @@
 pkgincludesubdir=$(includedir)/interfaces/maple/new
 
-INCLUDES=-I$(top_srcdir) -I.
+INCLUDES=-I$(top_srcdir) -I. -I../../linbox
 
 AM_CXXFLAGS = -O2 -DDISABLE_COMMENTATOR -I../driver $(GMP_CFLAGS) $(NTL_CFLAGS) $(ATLAS_CFLAGS) $(MAPLE_CFLAGS) $(GIVARO_CFLAGS)
 
