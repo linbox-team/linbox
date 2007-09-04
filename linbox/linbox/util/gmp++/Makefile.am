@@ -1,4 +1,4 @@
-INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/gmp++ -I$(top_srcdir)/linbox ${GMP_VERSION}
+INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/gmp++ -I$(top_srcdir)/linbox ${GMP_CFLAGS} ${GMP_VERSION}
 
 AM_CFLAGS=-Wall -O2
 

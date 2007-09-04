@@ -1,6 +1,6 @@
 pkgincludesubdir=$(includedir)/interfaces/driver
 
-INCLUDES=-I$(top_srcdir) -I.
+INCLUDES=-I$(top_srcdir) -I. -I../../linbox
 
 AM_CXXFLAGS = -O2 -DDISABLE_COMMENTATOR $(GMP_CFLAGS) $(BLAS_CFLAGS) $(GIVARO_CFLAGS)
 
