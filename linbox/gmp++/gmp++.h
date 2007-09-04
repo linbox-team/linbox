@@ -4,7 +4,9 @@
 // LinBox version of gmp++.h
 // Time-stamp: <08 Mar 07 14:07:29 Jean-Guillaume.Dumas@imag.fr> 
 // ========================================================================
-#include <linbox-config.h>
+#include <linbox-config.h
+#include <string.h>
+#include <limits.h>
 
 #ifndef __DONOTUSE_64__
 #define __USE_64_bits__
@@ -21,7 +23,7 @@ extern "C" {
 #endif
 
 #include "gmp.h"
-
+  
 #ifdef GMP_VERSION_3
 }
 #endif
