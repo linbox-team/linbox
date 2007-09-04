@@ -19,6 +19,7 @@ docs:
 	cp ../HACKING linbox-html
 
 install-doc :
+	mkdir $(docdir)
 	cp -r linbox-html $(docdir)/linbox-html
 	cp linbox.html $(docdir)/linbox.html
 
