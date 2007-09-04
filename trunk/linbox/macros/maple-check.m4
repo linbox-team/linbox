@@ -107,6 +107,7 @@ done
 
 if test "x$maple_found" = "xno" ; then
 	AC_MSG_RESULT(not found)
+	AC_DEFINE(HAVE_MAPLE,0)
 fi
 
 AM_CONDITIONAL(LINBOX_HAVE_MAPLE, test "x$HAVE_MAPLE" = "xyes")

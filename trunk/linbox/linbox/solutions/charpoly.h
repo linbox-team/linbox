@@ -211,6 +211,8 @@ namespace LinBox {
 
 #include "linbox/field/modular.h"
 #include "linbox/algorithms/cra-domain.h"
+#include "linbox/algorithms/cra-full-multip.h"
+#include "linbox/algorithms/cra-early-multip.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
 
@@ -271,7 +273,7 @@ namespace LinBox {
 
 		IntegerModularCharpoly<Blackbox,Method::Blackbox> iteration(A, M);
 		cra(P, iteration, genprime);
-		commentator.stop ("done", NULL, "Iminpoly");
+		commentator.stop ("done", NULL, "Icharpoly");
 		return P;
 	}
 	template < class Polynomial,class Blackbox >
@@ -310,7 +312,7 @@ namespace LinBox {
 		ChineseRemainder< EarlyMultipCRA<Modular<double> > > cra(3UL);
 		IntegerModularCharpoly<Blackbox,Method::BlasElimination> iteration(A, M);
 		cra(P, iteration, genprime);
-		commentator.stop ("done", NULL, "Iminpoly");
+		commentator.stop ("done", NULL, "Icharpoly");
 		return P;
 	}
 

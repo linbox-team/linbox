@@ -1,4 +1,4 @@
-INCLUDES=-I$(top_srcdir)/linbox
+INCLUDES=-I$(top_srcdir)/linbox $(GMP_CFLAGS)
 pkgincludesubdir=$(pkgincludedir)/randiter
 
 AM_CPPFLAGS=-Wall -O2
