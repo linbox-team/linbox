@@ -11,7 +11,7 @@
 #ifndef __FFPACK_H
 #define __FFPACK_H
 
-#ifdef _LINBOX_CONFIG_H
+#ifdef _LINBOX_LINBOX_CONFIG_H
 #include "linbox/fflas/fflas.h"
 #else
 #include "fflas.h"
@@ -20,7 +20,7 @@
 #include <list>
 #include <vector>
 
-#ifdef _LINBOX_CONFIG_H
+#ifdef _LINBOX_LINBOX_CONFIG_H
 namespace LinBox{
 #endif
 
@@ -1078,7 +1078,7 @@ protected:
 #include "ffpack_charpoly.inl"
 #include "ffpack_krylovelim.inl"
 #include "ffpack_frobenius.inl"
-#ifdef _LINBOX_CONFIG_H
+#ifdef _LINBOX_LINBOX_CONFIG_H
 }
 #endif
 #endif // __FFPACK_H
