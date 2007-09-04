@@ -4,7 +4,7 @@
 // LinBox version of gmp++.h
 // Time-stamp: <08 Mar 07 14:07:29 Jean-Guillaume.Dumas@imag.fr> 
 // ========================================================================
-#include <linbox-config.h
+#include <linbox-config.h>
 #include <string.h>
 #include <limits.h>
 
