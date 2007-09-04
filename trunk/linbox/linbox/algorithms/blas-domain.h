@@ -52,24 +52,24 @@ namespace LinBox {
 	class BlasMatrixDomainMulAdd {
 	public:
 		Operand1 &operator() (const Field &F, 
-				     Operand1 &D,
-				     const typename Field::Element &beta, const Operand1 &C,
-				     const typename Field::Element &alpha, const Operand2 &A, const Operand3 &B) const;
+				      Operand1 &D,
+				      const typename Field::Element &beta, const Operand1 &C,
+				      const typename Field::Element &alpha, const Operand2 &A, const Operand3 &B) const;
 
 		Operand1 &operator() (const Field &F,
-				     const typename Field::Element &beta, const Operand1 &C,
-				     const typename Field::Element &alpha, const Operand2 &A, const Operand3 &B) const;
+				      const typename Field::Element &beta, Operand1 &C,
+				      const typename Field::Element &alpha, const Operand2 &A, const Operand3 &B) const;
 
 
 		// allowing disymetry of Operand2 and Operand3 (only if different type)
 		Operand1 &operator() (const Field &F, 
-				     Operand1 &D,
-				     const typename Field::Element &beta, const Operand1 &C,
-				     const typename Field::Element &alpha, const Operand3 &A, const Operand2 &B) const;
+				      Operand1 &D,
+				      const typename Field::Element &beta, const Operand1 &C,
+				      const typename Field::Element &alpha, const Operand3 &A, const Operand2 &B) const;
 
 		Operand1 &operator() (const Field &F,
-				     const typename Field::Element &beta, const Operand1 &C,
-				     const typename Field::Element &alpha, const Operand3 &A, const Operand2 &B) const;
+				      const typename Field::Element &beta, Operand1 &C,
+				      const typename Field::Element &alpha, const Operand3 &A, const Operand2 &B) const;
 
 
 		
