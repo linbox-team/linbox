@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
 #ifndef __LINBOX_MODULAR_INT32_H
 #define __LINBOX_MODULAR_INT32_H
 
@@ -109,31 +111,31 @@ namespace LinBox
 		}
 
 	
-		integer &cardinality (integer &c) const{ 
+		inline integer &cardinality (integer &c) const{ 
 			return c = modulus;
 		}
 
-		integer &characteristic (integer &c) const {
+		inline integer &characteristic (integer &c) const {
 			return c = modulus; 
 		}
 
-		integer &convert (integer &x, const Element &y) const { 
+		inline integer &convert (integer &x, const Element &y) const { 
 			return x = y;
 		}
 		
-		double &convert (double &x, const Element &y) const { 
+		inline double &convert (double &x, const Element &y) const { 
 			return x = (double) y;
 		}
 
-		float &convert (float &x, const Element &y) const { 
+		inline float &convert (float &x, const Element &y) const { 
 			return x = (float) y;
 		}
 		
-		std::ostream &write (std::ostream &os) const {
+		inline std::ostream &write (std::ostream &os) const {
 			return os << "int32 mod " << modulus;
 		}
 		
-		std::istream &read (std::istream &is) {
+		inline std::istream &read (std::istream &is) {
 			is >> modulus; 
 			modulusinv = 1 /((double) modulus );
                         if(modulus <= 1) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
@@ -146,40 +148,36 @@ namespace LinBox
 			return is;
 		}
 		
-		std::ostream &write (std::ostream &os, const Element &x) const {
+		inline std::ostream &write (std::ostream &os, const Element &x) const {
 			return os << x;
 		}
 
-		std::istream &read (std::istream &is, Element &x) const {
+		inline std::istream &read (std::istream &is, Element &x) const {
 			integer tmp;
 			is >> tmp;
 			init(x,tmp); 
 			return is;
                 }
 		
-		// C. Pernet: Is this init reliable??
-		Element &init (Element & x, const double &y) const {
+		inline Element &init (Element & x, const double &y) const {
 		  double z = fmod(y, (double)modulus);
 		  if (z < 0) z += (double)modulus;
-		  z += 0.5;
+		  //z += 0.5; // C Pernet Sounds nasty and not necessary
 		  return x = static_cast<long>(z); //rounds towards 0
 		}
 
-		Element &init (Element & x, const float &y) const {
-		  float z = fmod(y, (float)modulus);
-		  if (z < 0) z += (float)modulus;
-		  z += 0.5;
-		  return x = static_cast<long>(z); //rounds towards 0
+		inline Element &init (Element & x, const float &y) const {
+		  return init(x , (double) y);
 		}
 
 		template<class Element1>
-		Element &init (Element & x, const Element1 &y) const {
+		inline Element &init (Element & x, const Element1 &y) const {
 			x = y % modulus;
 			if (x < 0) x += modulus;
 			return x;
 		}
 
-		Element &init (Element &x, const integer &y) const  {
+		inline Element &init (Element &x, const integer &y) const  {
 		        x = y % modulus;
 			if (x < 0) x += modulus;
 			return x;

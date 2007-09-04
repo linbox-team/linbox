@@ -1475,11 +1475,11 @@ namespace LinBox
 	};
 
 	template <>
-	  std::ostream& ModularBase<Integer>::write (std::ostream &os) const 
+	inline std::ostream& ModularBase<Integer>::write (std::ostream &os) const 
 	  { return os << "GMP integers mod " << _modulus; }
 
 	template <>
-	  integer& Modular<integer>::init (integer& x, const double& y) const 
+	inline integer& Modular<integer>::init (integer& x, const double& y) const 
 	  {
 	    integer tmp = (integer)y % _modulus;
 	    if (tmp<0) tmp += _modulus;
