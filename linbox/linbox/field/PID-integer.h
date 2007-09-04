@@ -209,7 +209,7 @@ namespace LinBox {
 		/** @brief sqrt(x,y)
 		 *  x=floor(sqrt(y))
 		 */
-		Element& sqrt(Element& x, const Element& y) const {
+		inline Element& sqrt(Element& x, const Element& y) const {
 			return ::sqrt(x,y);
 		}
 
@@ -254,23 +254,23 @@ namespace LinBox {
 
 
 		// some specializations and conversions
-		double& convert(double& x, const Element& y) const
+		inline double& convert(double& x, const Element& y) const
 		{ return x= (double)y;}
 
-		Element& init(Element& x, const double& y) const 
+		inline Element& init(Element& x, const double& y) const 
 		{ return x=Element(y);}
       
-		integer& convert(integer& x, const Element& y) const
+		inline integer& convert(integer& x, const Element& y) const
 		{ return x=y;}
       
-		Element& init(Element& x, const integer& y = 0) const 
+		inline Element& init(Element& x, const integer& y = 0) const 
 		{ return x=y;}
         protected:
                     // Rational number reconstruction: 
                     // num/den \equiv f modulo m, with |num|<k and 0 < |den| \leq f/k
                     // See [von zur Gathen & Gerhard, Modern Computer Algebra, 
                     //      5.10, Cambridge Univ. Press 1999]
-                inline  void RationalReconstruction( Element& a, Element& b, 
+                inline void RationalReconstruction( Element& a, Element& b, 
                                                           const Element& f, const Element& m, 
                                                           const Element& k, 
                                                           bool reduce, bool recursive ) const {
@@ -423,7 +423,7 @@ namespace LinBox {
 		typedef RingCategories::IntegerTag categoryTag;
 	};
 	template<>
-	std::ostream &UnparametricField<integer>::write (std::ostream &os) const
+	inline std::ostream &UnparametricField<integer>::write (std::ostream &os) const
 	{ return os << "unparam<integer>"; }
 
 	/*
