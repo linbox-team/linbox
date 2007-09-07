@@ -341,7 +341,7 @@ namespace LinBox {
  			maxChunkVal /= (prime-1) * _n;
  			chunk_size = maxChunkVal.bitsize();	
 			use_chunks = (chunk_size >= 16);		
-			std::cout<<"max bit= "<<maxBitSize<<" "<<maxValue.size_in_base(4)*2<<"\n";std::cout<<"max value= "<<maxValue<<"\n";
+			//std::cout<<"max bit= "<<maxBitSize<<" "<<maxValue.size_in_base(4)*2<<"\n";std::cout<<"max value= "<<maxValue<<"\n";
 			if (use_chunks){//std::cout<<"Matrix Qadic\n";
 				_switcher= MatrixQadic;
 				
