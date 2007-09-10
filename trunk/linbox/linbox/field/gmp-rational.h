@@ -21,7 +21,7 @@
 #include "linbox/integer.h"
 #include "linbox/field/field-interface.h"
 #include "linbox/element/gmp-rational.h"
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 #include <linbox/field/field-traits.h>
 

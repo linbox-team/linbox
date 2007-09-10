@@ -1,7 +1,7 @@
 #ifndef __READER_BLACKBOX_FACTORY
 #define __READER_BLACKBOX_FACTORY
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include "linbox-reader.h"
 #include "linbox/blackbox/archetype.h"

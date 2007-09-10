@@ -5,7 +5,7 @@
 /* balance representation for modular<int> field, [-p/2,p/2], p is odd. 
  */
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "linbox/integer.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/field/field-interface.h"

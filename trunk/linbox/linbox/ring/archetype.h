@@ -37,7 +37,7 @@
 #include "linbox/randiter/envelope.h"
 #include "linbox/randiter/archetype.h"
 #include "linbox/integer.h"
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include "linbox/util/error.h"
 

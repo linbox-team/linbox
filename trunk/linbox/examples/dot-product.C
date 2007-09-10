@@ -14,7 +14,7 @@
 
 // Copyright (C) 2002 Bradford Hovinen
 // See COPYING for license information.
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include <iostream>
 

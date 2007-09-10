@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include <iostream>
 #include <fstream>

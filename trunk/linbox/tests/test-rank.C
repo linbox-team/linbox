@@ -12,7 +12,7 @@
  * Public License. See COPYING for more information.
  */
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include <iostream>
 #include <fstream>

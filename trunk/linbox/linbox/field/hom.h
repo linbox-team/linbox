@@ -8,7 +8,7 @@
 #ifndef __HOM_H
 #define __HOM_H
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "linbox/field/modular.h"
 #include "linbox/field/PID-integer.h"
 #include <linbox/util/error.h>

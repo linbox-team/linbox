@@ -16,7 +16,7 @@
 #ifndef __LA_BLOCK_LANCZOS_INL
 #define __LA_BLOCK_LANCZOS_INL
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include <iostream>
 #include <cassert>

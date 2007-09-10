@@ -41,7 +41,7 @@
 #include "linbox/element/envelope.h"
 #include "linbox/util/commentator.h"
 #include "linbox/randiter/mersenne-twister.h"
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 namespace LinBox 
 { 

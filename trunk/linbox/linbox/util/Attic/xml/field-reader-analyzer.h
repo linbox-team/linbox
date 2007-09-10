@@ -114,7 +114,7 @@ namespace LinBox {
 
 
 // include just about every field in LinBox :-)
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include "linbox/field/gf2.h"
 #include "linbox/field/modular.h"

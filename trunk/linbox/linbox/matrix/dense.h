@@ -44,7 +44,7 @@
 #include "linbox/vector/subvector.h"
 #include "linbox/vector/stream.h"
 #include "linbox/matrix/matrix-domain.h"
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "linbox/util/matrix-stream.h"
 #include "linbox/field/hom.h"
 

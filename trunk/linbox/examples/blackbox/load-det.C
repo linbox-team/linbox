@@ -11,7 +11,7 @@
  * filename is given on the command line.
  */
 //@{
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include <fstream>
 #include <vector>

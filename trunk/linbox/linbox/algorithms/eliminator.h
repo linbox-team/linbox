@@ -16,7 +16,7 @@
 #ifndef __ELIMINATOR_H
 #define __ELIMINATOR_H
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include <vector>
 

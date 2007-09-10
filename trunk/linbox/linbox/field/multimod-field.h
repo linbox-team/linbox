@@ -17,7 +17,7 @@
 #define __LINBOX_MULTIMOD_FIELD_H
 
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "linbox/integer.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/field/field-interface.h"

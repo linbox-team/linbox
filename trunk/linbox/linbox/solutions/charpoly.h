@@ -183,7 +183,8 @@ namespace LinBox {
 	{
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
-		return cia (P, A, M);
+		GivPolynomial<typename Blackbox::Field::Element> Pg;
+		return P = cia (Pg, A, M);
 	}
 
 	/** Compute the characteristic polynomial over {\bf Z}
@@ -202,7 +203,8 @@ namespace LinBox {
 	{
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
-		return blackboxcharpoly (P, A, tag, M);
+		GivPolynomial<typename Blackbox::Field::Element> Pg;
+		return P = blackboxcharpoly (Pg, A, tag, M);
 	}
 
 
@@ -337,7 +339,8 @@ namespace LinBox {
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
 
 #ifdef __LINBOX_HAVE_GIVARO
-		return blackboxcharpoly (P, A, tag, M);
+		GivPolynomial<typename Blackbox::Field::Element> Pg;
+		return P = blackboxcharpoly (Pg, A, tag, M);
 #else
 		return charpoly(P, A, tag, Method::BlasElimination());
 #endif

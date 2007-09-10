@@ -4,7 +4,7 @@
 #include <NTL/ZZ_pE.h>
 #include <NTL/ZZ.h>
 #include <time.h>
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include <linbox/field/field-traits.h>
 
 #ifdef __LINBOX_XMLENABLED

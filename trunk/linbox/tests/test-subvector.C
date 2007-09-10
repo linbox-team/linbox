@@ -4,7 +4,7 @@
  * Evolved from Will Turner's test-subvector.cpp  -bds
  */
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include <linbox/util/commentator.h>
 #include <linbox/field/unparametric.h>

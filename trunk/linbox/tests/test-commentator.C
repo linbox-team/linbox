@@ -17,7 +17,7 @@
  * (specified on the command line) for any anomolies.
  */
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include <iostream>
 #include <fstream>

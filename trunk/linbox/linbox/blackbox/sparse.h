@@ -36,7 +36,7 @@
 #ifndef __BLACKBOX_SPARSE_H
 #define __BLACKBOX_SPARSE_H
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "linbox/blackbox/blackbox-interface.h"
 #include "linbox/matrix/sparse.h"
 #include "linbox/vector/vector-domain.h"

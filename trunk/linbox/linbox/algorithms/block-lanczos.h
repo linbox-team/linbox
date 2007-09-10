@@ -16,7 +16,7 @@
 #ifndef __BLOCK_LANCZOS_H
 #define __BLOCK_LANCZOS_H
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include <vector>
 

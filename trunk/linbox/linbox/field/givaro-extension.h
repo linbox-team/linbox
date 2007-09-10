@@ -19,7 +19,7 @@
 #include <linbox/field/field-traits.h>
 #include <linbox/field/field-interface.h>
 #include <linbox/util/debug.h>
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include <linbox/field/field-traits.h>
 #include <linbox/field/givaro-gfq.h>
 
