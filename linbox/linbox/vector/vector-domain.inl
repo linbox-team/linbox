@@ -31,7 +31,7 @@
 #ifndef __FIELD_VECTOR_DOMAIN_C
 #define __FIELD_VECTOR_DOMAIN_C
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include <iostream>
 #include <cctype>

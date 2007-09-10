@@ -15,7 +15,7 @@
 #include <vector>
 #include "linbox/vector/vector-traits.h"
 #include "linbox/solutions/methods.h"  // for shape
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include <linbox/blackbox/blackbox-interface.h>
 
 #ifdef __LINBOX_HAVE_NTL

@@ -17,7 +17,7 @@
 #include <fstream> 
 // ---------------------------------------------
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 // Use of Gmp based LinBox integers 
 #include "linbox/integer.h"

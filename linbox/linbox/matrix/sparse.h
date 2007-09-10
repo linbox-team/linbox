@@ -48,7 +48,7 @@
 #include <iostream>
 #include <algorithm>
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "linbox/blackbox/factory.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"

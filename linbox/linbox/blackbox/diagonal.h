@@ -23,7 +23,7 @@
 #include <vector>
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "linbox/field/hom.h"
 
 // Namespace in which all LinBox library code resides

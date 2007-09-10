@@ -18,7 +18,7 @@
 #include <time.h>
 #include "linbox/field/unparametric.h"
 #include "linbox/randiter/unparametric.h"
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include <linbox/field/field-traits.h>
 #include <linbox/integer.h>
 

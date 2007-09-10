@@ -24,7 +24,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/randiter/mersenne-twister.h"
 #include "linbox/vector/bit-vector.h"
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #ifdef __LINBOX_XMLENABLED
 

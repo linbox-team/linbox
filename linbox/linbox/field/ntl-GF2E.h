@@ -34,7 +34,7 @@
 #include <NTL/GF2XFactoring.h>
 #include <NTL/GF2E.h>
 #include <time.h>
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include <linbox/field/field-traits.h>
 
 namespace LinBox {

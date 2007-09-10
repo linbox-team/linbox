@@ -28,7 +28,7 @@
  * providing runtime commentary to the user)
  */
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include <string>
 #include <sstream>

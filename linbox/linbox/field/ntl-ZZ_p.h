@@ -16,7 +16,7 @@
 #define __FIELD_NTL_ZZ_p_H
 
 #include <sys/time.h>
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include "linbox/field/unparametric.h"
 #include "linbox/randiter/unparametric.h"

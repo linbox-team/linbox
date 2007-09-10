@@ -2,7 +2,6 @@ AC_PREREQ(2.50)
 AC_INIT(linbox/linbox.doxy)
 AM_INIT_AUTOMAKE(linbox, 1.1.4)
 AM_CONFIG_HEADER(config.h)
-#AX_PREFIX_CONFIG_H(linbox-config.h, __LINBOX)
 AX_PREFIX_CONFIG_H(linbox/linbox-config.h, __LINBOX)
 
 AM_MAINTAINER_MODE

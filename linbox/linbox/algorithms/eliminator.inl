@@ -16,7 +16,7 @@
 #ifndef __ELIMINATOR_INL 
 #define __ELIMINATOR_INL
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include <iostream>
 

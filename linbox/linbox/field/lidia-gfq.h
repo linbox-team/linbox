@@ -29,7 +29,7 @@
 #include "linbox/integer.h"
 #include <linbox/field/field-interface.h>
 #include "linbox/randiter/lidia-gfq.h"
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include <linbox/field/field-traits.h>
 
 #ifdef __LINBOX_XMLENABLED

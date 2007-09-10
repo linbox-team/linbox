@@ -7,7 +7,7 @@ doc/linbox-html/index.html:
 
 examples:examples/dot-product
 
-#examples/dot-product:linbox-config.h
+#examples/dot-product:linbox/linbox-config.h
 #	(cd examples; make examples)
 
 bin_SCRIPTS=linbox-config

@@ -6,7 +6,7 @@
  * See COPYING for license information.
  */
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include <iostream>
 #include <iomanip>
@@ -26,7 +26,7 @@ std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/solutions/charpoly.h"
 #include "linbox/util/commentator.h"
-#include "linbox/ring/givaro-polynomial.h"
+//#include "linbox/ring/givaro-polynomial.h"
 #include "linbox/vector/stream.h"
 
 #include "test-common.h"
@@ -44,14 +44,28 @@ using namespace LinBox;
  * Return true on success and false on failure
  */
 
+template <class Dom, class Polynomial>
+typename Dom::Element eval (const Dom& D,
+			    typename Dom::Element& value,
+			    const Polynomial& P,
+			    const typename Dom::Element x){
+	typename Dom::Element tmp = P[P.size()-1];
+	for (int i = P.size()-2; i >= 0; --i){
+		D.mulin (tmp, x);
+		D.addin (tmp, P[i]);
+	}
+	return value = tmp; 
+}
+
 template <class Dom>
 static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false) 
 {
 	typedef typename Dom::Element Element;
 	typedef vector<Element> Vector;
 	typedef ScalarMatrix<Dom> Blackbox;
-	typedef GivPolynomialRing<Dom, Dense> PolDom;
-	typedef typename PolDom::Element Polynomial;
+	//typedef GivPolynomialRing<Dom, Dense> PolDom;
+	//typedef typename PolDom::Element Polynomial;
+	typedef Vector Polynomial;
 
 	commentator.start ("Testing identity Charpoly", "testIdentityCharpoly");
 
@@ -59,7 +73,7 @@ static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 	Element one; Z.init(one, 1);
 	Element negone; Z.init(negone, -1);
 
-	PolDom IPD(Z);
+	//PolDom IPD(Z);
 
 	Blackbox A (Z, n, one);
 
@@ -74,13 +88,13 @@ static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 	// partial check - just that charpoly has right values at 0, 1, -1.
 	Element val, val2, neg2, pow2;
 	// value at 1 should be zero
-	IPD.eval(val, phi, one);
+	eval(Z, val, phi, one);
 	if (! Z.isZero(val) ) ret = false;
 	// value at zero should be (-1)^n
 	val = (n % 2 == 0) ? one : negone;
 	if (! Z.areEqual(val, phi[0])) ret = false;
 	// value at -1 should be (-2)^n
-	IPD.eval(val2, phi, negone);
+	eval(Z, val2, phi, negone);
 	Z.mulin(val2, val);
 	Z.init(neg2, -2); Z.init(pow2, 1);
 	for (size_t i = 0; i < n; ++i) Z.mulin(pow2, neg2);
@@ -111,8 +125,9 @@ template <class Field>
 static bool testNilpotentCharpoly (Field &F, size_t n)
 {
 	typedef vector <typename Field::Element> Vector;
-	typedef GivPolynomialRing<Field, Dense> PolDom;
-	typedef typename PolDom::Element Polynomial;
+// 	typedef GivPolynomialRing<Field, Dense> PolDom;
+// 	typedef typename PolDom::Element Polynomial;
+	typedef Vector Polynomial;
 	typedef pair <vector <size_t>, vector <typename Field::Element> > Row;
 	typedef SparseMatrix <Field> Blackbox;
 
@@ -172,8 +187,9 @@ bool testRandomCharpoly (Field                 &F,
 			VectorStream<Row>    &A_stream,
 			VectorStream<Vector> &v_stream)
 {
-	typedef GivPolynomialRing<Field, Dense> PolDom;
-	typedef typename PolDom::Element Polynomial;
+	//typedef GivPolynomialRing<Field, Dense> PolDom;
+	//typedef typename PolDom::Element Polynomial;
+	typedef std::vector<typename Field::Element> Polynomial;
 	typedef SparseMatrix <Field> Blackbox;
 
 	commentator.start ("Testing sparse random charpoly", "testRandomCharpoly", iterations);

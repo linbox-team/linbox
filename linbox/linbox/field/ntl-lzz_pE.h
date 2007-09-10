@@ -32,7 +32,7 @@
 #include <NTL/lzz_pXFactoring.h>
 #include <NTL/lzz_pE.h>
 #include <time.h>
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include <linbox/field/field-traits.h>
 
 

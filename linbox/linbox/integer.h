@@ -17,7 +17,7 @@
 #ifndef __INTEGER_H
 #define __INTEGER_H
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include "gmp++/gmp++.h"
 

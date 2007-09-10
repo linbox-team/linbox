@@ -36,7 +36,7 @@
 #ifndef __DENSE_SUBMATRIX_H
 #define __DENSE_SUBMATRIX_H
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include "linbox/util/debug.h"
 #include "linbox/matrix/dense.h"

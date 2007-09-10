@@ -20,7 +20,7 @@
  *  - VectorDomain needs subin, addin, etc. with multiple vector representations
  */
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #include <iostream>
 #include <fstream>

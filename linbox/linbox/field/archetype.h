@@ -47,7 +47,7 @@
 #include "linbox/randiter/abstract.h"
 #include "linbox/randiter/envelope.h"
 #include "linbox/integer.h"
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 
 #ifdef __LINBOX_XMLENABLED
 

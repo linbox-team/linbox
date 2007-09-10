@@ -20,7 +20,7 @@
 #define __FIELD_GIVARO_ZPZ
 
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "linbox/integer.h"
 #include "linbox/field/field-interface.h"
 #include "linbox/util/debug.h"

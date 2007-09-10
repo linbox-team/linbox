@@ -8,7 +8,7 @@
 #ifndef __TRIPLESBB_H
 #define __TRIPLESBB_H
 
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 #include "linbox/util/field-axpy.h"
 #include <linbox/blackbox/blackbox-interface.h>

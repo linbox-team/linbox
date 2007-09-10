@@ -9,7 +9,7 @@
  */
 // Copyright (C) 2004 Clément Pernet
 // See COPYING for license information.
-#include "linbox-config.h"
+#include "linbox/linbox-config.h"
 #define DISP 0
 #define DEBUG 0
 #include <fstream>
