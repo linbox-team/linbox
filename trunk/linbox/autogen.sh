@@ -131,7 +131,7 @@ do
 	autoheader
       fi
       echo "Running automake --gnu $am_opt ..."
-      automake --add-missing --gnu $am_opt
+      automake -c --add-missing --gnu $am_opt
       echo "Running autoconf ..."
       autoconf
     )
