@@ -265,10 +265,10 @@ int main (int argc, char **argv)
 
 	std::cout<<setprecision(8);
 	std::cerr<<setprecision(8);
-	static size_t n = 100;
+	static size_t n = 50;
 	//static integer q = 11U;
 	static integer q = 33554467U;
-	static int iterations = 10;
+	static int iterations = 1;
 	static int numVectors = 100;
 	static int k = 3;
 
@@ -295,7 +295,8 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	cout << endl << "Black box characteristic polynomial of a matrix over a prime field test suite" << endl;
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	report << endl << "Black box characteristic polynomial of a matrix over a prime field test suite" << endl;
 
 	RandomDenseStream<Field, DenseVector, NonzeroRandIter<Field> >
 		v_stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, numVectors);
@@ -319,7 +320,7 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	cout << endl << "Black box characteristic polynomial of an integer matrix test suite" << endl;
+	report << endl << "Black box characteristic polynomial of an integer matrix test suite" << endl;
 
 	RandomDenseStream<PID_integer, ZDenseVector, NonzeroRandIter<PID_integer> >
 		zv_stream (Z, NonzeroRandIter<PID_integer> (Z, PID_integer::RandIter (Z)), n, numVectors);

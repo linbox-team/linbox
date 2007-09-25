@@ -61,7 +61,7 @@ namespace LinBox
  		typedef multimap<unsigned long,FM*> FactPoly;
 		typedef typename FactPoly::iterator FactPolyIterator;
 		multimap<FM*,bool> leadingBlocks;
-		typename multimap<FM*,bool>::iterator lead_it; 
+		//typename multimap<FM*,bool>::iterator lead_it; 
  		FactPoly factCharPoly;
  		size_t n = A.coldim();
 
@@ -160,7 +160,7 @@ namespace LinBox
 		typedef std::multimap<unsigned long,FactorMult<Polynomial>* > FactPoly;
 		typedef typename FactPoly::iterator FactPolyIterator;
 		multimap<FactorMult<Polynomial>*,bool> leadingBlocks;
-		typename multimap<FactorMult<Polynomial>*,bool>::iterator lead_it; 
+		//typename multimap<FactorMult<Polynomial>*,bool>::iterator lead_it; 
 
 		Field F = A.field();
 		PolyDom PD (F);
