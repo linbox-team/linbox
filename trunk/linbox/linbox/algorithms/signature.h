@@ -252,7 +252,9 @@ private:
 		  cra. progress(K, v); 
 		}
 		
-		delete[] FA; delete P; delete PQ; 
+		delete[] FA;
+		delete[] P;
+		delete[] PQ; 
 		//std::cout << "Compute the final answer.\n";
 		cra.result(out);
 		return out;
@@ -378,7 +380,7 @@ private:
 
 		long r = FFPACK::Rank( K, n, n, FA, n);
 
-		delete FA;
+		delete[] FA;
 		return r;
 
 	}

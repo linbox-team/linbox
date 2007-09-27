@@ -164,7 +164,7 @@ void MatrixStream<Field>::init() {
 	//Initialize readers
 	currentError = NO_FORMAT;
 	__MATRIX_STREAM_READERDEFS
-	delete firstLine;
+	delete[] firstLine;
 
 	if( !reader ) return;
 	else if( currentError > GOOD )
