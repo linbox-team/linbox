@@ -1,3 +1,6 @@
+2007-09-28 cpernet
+	* Add support for more general dense system solving:
+	  The system can be rectangular (over/underdetermined), singular.	
 2007-09-07 bds
 	* This changelog is being widely ignored.  Today buildbot test is on.
 2007-01-31 bds 
