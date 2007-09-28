@@ -13,8 +13,8 @@
 #endif
 
 //---------------------------------------------------------------------
-// CharpolyArithProg: Las Vegas algorithm to compute the Charpoly normal
-// form over a large field (Z/pZ, s.t.  p > 2n^2)
+// CharpolyArithProg: Las Vegas algorithm to compute the Charpoly 
+// over a large field (Z/pZ, s.t.  p > 2n^2)
 //---------------------------------------------------------------------
 template <class Field, class Polynomial>
 std::list<Polynomial>&

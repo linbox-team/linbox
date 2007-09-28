@@ -65,6 +65,10 @@ class LinboxMathDivZero : public LinboxMathError {
 	LinboxMathDivZero (const char* msg) : LinboxMathError (msg) {};
 };
 
+class LinboxMathInconsistentSystem : public LinboxMathError {
+ public:
+	LinboxMathInconsistentSystem (const char* msg) : LinboxMathError (msg) {};
+};
 
 // -- Exception thrown in input of data structure 
 class LinboxBadFormat : public LinboxError {
