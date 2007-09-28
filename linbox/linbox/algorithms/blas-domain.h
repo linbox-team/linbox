@@ -397,31 +397,33 @@ namespace LinBox {
 		
 		/*
 		 * Solvers for Matrix (respecting BlasMatrix interface) 
-		 * with right or left Operand hand side
+		 * with Operand as right or left hand side
 		 */ 
 
-		// non-singular linear solve with matrix right hand side 
+		// inear solve with matrix right hand side 
 		// AX=B
 		template <class Operand, class Matrix>
 		Operand& left_solve (Operand& X, const Matrix& A, const Operand& B) const {
 			return BlasMatrixDomainLeftSolve<Field,Operand,Matrix>()(_F,X,A,B);
 		}
 		
-		// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+		// linear solve with matrix right hand side, the result is stored in-place in B
+		// A must be square
 		// AX=B , (B<-X)
 		template <class Operand,class Matrix>
 		Operand& left_solve (const Matrix& A, Operand& B) const {
 			return BlasMatrixDomainLeftSolve<Field,Operand,Matrix>()(_F,A,B);
 		}
 		
-		// non-singular linear solve with matrix right hand side 
+		// linear solve with matrix right hand side 
 		// XA=B
 		template <class Operand, class Matrix>
 		Operand& right_solve (Operand& X, const Matrix& A, const Operand& B) const {
 			return BlasMatrixDomainRightSolve<Field,Operand,Matrix>()(_F,X,A,B);
 		}
 		
-		// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+		// linear solve with matrix right hand side, the result is stored in-place in B
+		// A must be square
 		// XA=B , (B<-X)
 		template <class Operand, class Matrix>
 		Operand& right_solve (const Matrix& A, Operand& B) const {

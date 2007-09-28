@@ -29,6 +29,8 @@ namespace LinBox{
 // with different thresholds.
 // TransPosed version has to be implemented too.
 #define __FFPACK_LUDIVINE_CUTOFF 0
+	
+#define __FFPACK_CHARPOLY_THRESHOLD 30
 
 	/**
 	 * \brief Set of elimination based routines for dense linear algebra
@@ -55,13 +57,12 @@ public:
 				   FfpackKGFast=4,
 				   FfpackDanilevski=5,
 				   FfpackArithProg=6,
-				   FfpackKGFastG=7
-	};
+				   FfpackKGFastG=7};
 	
 	class CharpolyFailed{};
 	
 	enum FFPACK_MINPOLY_TAG { FfpackDense=1,
-				    FfpackKGF=2 };
+				  FfpackKGF=2};
 
 	/** 
 	 * Computes the rank of the given matrix using a LQUP factorization.
@@ -79,7 +80,8 @@ public:
 	{
 		size_t *P = new size_t[N];
 		size_t *Q = new size_t[M];
-		size_t R = LUdivine( F, FflasNonUnit, FflasNoTrans, M, N, A, lda, P, Q, FfpackLQUP);
+		size_t R = LUdivine (F, FflasNonUnit, FflasNoTrans, M, N,
+				     A, lda, P, Q, FfpackLQUP);
 		delete[] Q;
 		delete[] P;
 		return R;
@@ -102,8 +104,8 @@ public:
 	{
 		size_t *P = new size_t[N];
 		size_t *Q = new size_t[M];
-		bool singular  = !LUdivine( F, FflasNonUnit, FflasNoTrans, M, N, A, lda, 
-					    P, Q, FfpackSingular);
+		bool singular  = !LUdivine (F, FflasNonUnit, FflasNoTrans, M, N,
+					    A, lda, P, Q, FfpackSingular);
 		
 		delete[] P;
 		delete[] Q;
@@ -129,7 +131,8 @@ public:
 		bool singular;
 		size_t *P = new size_t[N];
 		size_t *Q = new size_t[M];
-		singular  = !LUdivine( F, FflasNonUnit, FflasNoTrans,  M, N, A, lda, P, Q, FfpackSingular);
+		singular  = !LUdivine (F, FflasNonUnit, FflasNoTrans,  M, N,
+				       A, lda, P, Q, FfpackSingular);
 		if (singular){
 			F.init(det,0.0);
 			delete[] P;
@@ -154,6 +157,366 @@ public:
  	}
 
 	/**
+	 * Solve the system A X = B or X A = B, using the LQUP decomposition of A
+	 * already computed inplace with LUdivine(FflasNoTrans, FflasNonUnit).
+	 * Version for A square.
+	 * If A is rank deficient, a solution is returned if the system is consistent,
+	 * Otherwise an info is 1
+	 * 
+	 * @param Side Determine wheter the resolution is left or right looking.
+	 * @param M row dimension of B
+	 * @param N col dimension of B
+	 * @param R rank of A
+	 * @param A input matrix
+	 * @param lda leading dimension of A
+	 * @param P column permutation of the LQUP decomposition of A
+ 	 * @param Q column permutation of the LQUP decomposition of A
+	 * @param B Right/Left hand side matrix. Initially stores B, finally stores the solution X.
+	 * @param ldb leading dimension of B
+	 * @info Succes of the computation: 0 if successfull, >0 if system is inconsistent
+	 */
+	template <class Field>
+	static void
+	fgetrs (const Field& F,
+		const FFLAS_SIDE Side,
+		const size_t M, const size_t N, const size_t R,
+		typename Field::Element *A, const size_t lda,
+		const size_t *P, const size_t *Q,
+		typename Field::Element *B, const size_t ldb,
+		int * info){
+
+		static typename Field::Element zero, one, mone;
+		F.init (zero, 0.0);
+		F.init (one, 1.0);
+		F.neg(mone, one);
+		*info =0;
+		if (Side == FflasLeft) { // Left looking solve A X = B
+
+			solveLB2 (F, FflasLeft, M, N, R, A, lda, Q, B, ldb);
+
+			applyP (F, FflasLeft, FflasNoTrans, N, 0, R, B, ldb, Q);
+
+			bool consistent = true;
+			for (size_t i = R; i < M; ++i)
+				for (size_t j = 0; j < N; ++j)
+					if (!F.isZero (*(B + i*ldb + j)))
+						consistent = false;
+			if (!consistent) {
+				std::cerr<<"System is inconsistent"<<std::endl;
+				*info = 1;
+			}
+			// The last rows of B are now supposed to be 0
+			//			for (size_t i = R; i < M; ++i)
+			// 				for (size_t j = 0; j < N; ++j)
+			// 					*(B + i*ldb + j) = zero;
+
+			ftrsm (F, FflasLeft, FflasUpper, FflasNoTrans, FflasNonUnit, 
+			       R, N, one, A, lda , B, ldb);
+			
+			applyP (F, FflasLeft, FflasTrans, N, 0, R, B, ldb, P);
+			
+		} else { // Right Looking X A = B
+
+			applyP (F, FflasRight, FflasTrans, M, 0, R, B, ldb, P);
+			
+			ftrsm (F, FflasRight, FflasUpper, FflasNoTrans, FflasNonUnit, 
+			       M, R, one, A, lda , B, ldb);
+
+			fgemm (F, FflasNoTrans, FflasNoTrans, M, N-R, R, one,
+			       B, ldb, A+R, lda, mone, B+R, ldb);
+
+			bool consistent = true;
+			for (size_t i = 0; i < M; ++i)
+				for (size_t j = R; j < N; ++j)
+					if (!F.isZero (*(B + i*ldb + j)))
+						consistent = false;
+			if (!consistent) {
+				std::cerr<<"System is inconsistent"<<std::endl;
+				*info = 1;
+			}
+			// The last cols of B are now supposed to be 0
+
+			applyP (F, FflasRight, FflasNoTrans, M, 0, R, B, ldb, Q);
+
+			solveLB2 (F, FflasRight, M, N, R, A, lda, Q, B, ldb);
+		}
+	}
+	
+	/**
+	 * Solve the system A X = B or X A = B, using the LQUP decomposition of A
+	 * already computed inplace with LUdivine(FflasNoTrans, FflasNonUnit).
+	 * Version for A rectangular.
+	 * If A is rank deficient, a solution is returned if the system is consistent,
+	 * Otherwise an info is 1
+	 * 
+	 * @param Side Determine wheter the resolution is left or right looking.
+	 * @param M row dimension of A
+	 * @param N col dimension of A
+	 * @param NRHS number of columns (if Side = FflasLeft) or row (if Side = FflasRight) of the matrices X and B
+	 * @param R rank of A
+	 * @param A input matrix
+	 * @param lda leading dimension of A
+	 * @param P column permutation of the LQUP decomposition of A
+ 	 * @param Q column permutation of the LQUP decomposition of A
+	 * @param X solution matrix
+	 * @param ldx leading dimension of X
+	 * @param B Right/Left hand side matrix. 
+	 * @param ldb leading dimension of B
+	 * @param info Succes of the computation: 0 if successfull, >0 if system is inconsistent
+	 */
+	template <class Field>
+	static typename Field::Element *
+	fgetrs (const Field& F,
+		const FFLAS_SIDE Side,
+		const size_t M, const size_t N, const size_t NRHS, const size_t R,
+		typename Field::Element *A, const size_t lda,
+		const size_t *P, const size_t *Q,
+		typename Field::Element *X, const size_t ldx,
+		const typename Field::Element *B, const size_t ldb,
+		int * info) {
+
+		static typename Field::Element zero, one, mone;
+		F.init (zero, 0.0);
+		F.init (one, 1.0);
+		F.neg(mone, one);
+		*info =0;
+		
+		typename Field::Element* W;
+		size_t ldw;
+
+		if (Side == FflasLeft) { // Left looking solve A X = B
+			
+			// Initializing X to 0 (to be optimized)
+			for (size_t i = 0; i <N; ++i)
+				for (size_t j=0; j< NRHS; ++j)
+					F.assign (*(X+i*ldx+j), zero);
+
+			if (M > N){ // Cannot copy B into X
+				W = new typename Field::Element [M*NRHS];
+				ldw = NRHS;
+				for (size_t i=0; i < M; ++i)
+					fcopy (F, NRHS, W + i*ldw, 1, B + i*ldb, 1);
+			       
+				solveLB2 (F, FflasLeft, M, NRHS, R, A, lda, Q, W, ldw);
+				
+				applyP (F, FflasLeft, FflasNoTrans, N, 0, R, W, ldw, Q);
+
+				bool consistent = true;
+				for (size_t i = R; i < M; ++i)
+					for (size_t j = 0; j < NRHS; ++j)
+						if (!F.isZero (*(W + i*ldw + j)))
+							consistent = false;
+				if (!consistent) {
+					std::cerr<<"System is inconsistent"<<std::endl;
+					*info = 1;
+					return X;
+				}
+				// Here the last rows of W are supposed to be 0
+				
+				ftrsm (F, FflasLeft, FflasUpper, FflasNoTrans, FflasNonUnit, 
+				       R, NRHS, one, A, lda , W, ldw);
+			
+				for (size_t i=0; i < R; ++i)
+					fcopy (F, NRHS, X + i*ldx, 1, W + i*ldw, 1);
+
+				delete[] W;
+				applyP (F, FflasLeft, FflasTrans, NRHS, 0, R, X, ldx, P);
+				
+			} else { // Copy B to X directly
+				for (size_t i=0; i < M; ++i)
+					fcopy (F, NRHS, X + i*ldx, 1, B + i*ldb, 1);
+			       
+				solveLB2 (F, FflasLeft, M, NRHS, R, A, lda, Q, X, ldx);
+				
+				applyP (F, FflasLeft, FflasNoTrans, N, 0, R, X, ldx, Q);
+
+				bool consistent = true;
+				for (size_t i = R; i < M; ++i)
+					for (size_t j = 0; j < NRHS; ++j)
+						if (!F.isZero (*(X + i*ldx + j)))
+							consistent = false;
+				if (!consistent) {
+					std::cerr<<"System is inconsistent"<<std::endl;
+					*info = 1;
+					return X;
+				}
+				// Here the last rows of W are supposed to be 0
+								
+				ftrsm (F, FflasLeft, FflasUpper, FflasNoTrans, FflasNonUnit, 
+				       R, NRHS, one, A, lda , X, ldx);
+			
+				applyP (F, FflasLeft, FflasTrans, NRHS, 0, R, X, ldx, P);
+			}
+
+			return X;
+			
+		} else { // Right Looking X A = B
+
+			for (size_t i = 0; i <NRHS; ++i)
+				for (size_t j=0; j< M; ++j)
+					F.assign (*(X+i*ldx+j), zero);
+
+			if (M < N) {
+				W = new typename Field::Element [NRHS*N];
+				ldw = N;
+				for (size_t i=0; i < NRHS; ++i)
+					fcopy (F, N, W + i*ldw, 1, B + i*ldb, 1);
+
+				applyP (F, FflasRight, FflasTrans, NRHS, 0, R, W, ldw, P);
+			
+				ftrsm (F, FflasRight, FflasUpper, FflasNoTrans, FflasNonUnit, 
+				       NRHS, R, one, A, lda , W, ldw);
+				
+				fgemm (F, FflasNoTrans, FflasNoTrans, NRHS, N-R, R, one,
+				       W, ldw, A+R, lda, mone, W+R, ldw);
+
+				bool consistent = true;
+				for (size_t i = 0; i < NRHS; ++i)
+					for (size_t j = R; j < N; ++j)
+						if (!F.isZero (*(W + i*ldw + j)))
+							consistent = false;
+				if (!consistent) {
+					std::cerr<<"System is inconsistent"<<std::endl;
+					*info = 1;
+					return X;
+				}
+				// The last N-R cols of W are now supposed to be 0
+				for (size_t i=0; i < NRHS; ++i)
+					fcopy (F, R, X + i*ldx, 1, W + i*ldb, 1);
+
+				applyP (F, FflasRight, FflasNoTrans, NRHS, 0, R, X, ldx, Q);
+
+				solveLB2 (F, FflasRight, NRHS, M, R, A, lda, Q, X, ldx);
+				
+			} else {
+				for (size_t i=0; i < NRHS; ++i)
+					fcopy (F, N, X + i*ldx, 1, B + i*ldb, 1);
+				
+				applyP (F, FflasRight, FflasTrans, NRHS, 0, R, X, ldx, P);
+			
+				ftrsm (F, FflasRight, FflasUpper, FflasNoTrans, FflasNonUnit, 
+				       NRHS, R, one, A, lda , X, ldx);
+				
+				fgemm (F, FflasNoTrans, FflasNoTrans, NRHS, N-R, R, one,
+				       X, ldx, A+R, lda, mone, X+R, ldx);
+
+				bool consistent = true;
+				for (size_t i = 0; i < NRHS; ++i)
+					for (size_t j = R; j < N; ++j)
+						if (!F.isZero (*(X + i*ldx + j)))
+							consistent = false;
+				if (!consistent) {
+					std::cerr<<"System is inconsistent"<<std::endl;
+					*info = 1;
+					return X;
+				}
+				// The last N-R cols of W are now supposed to be 0
+
+				applyP (F, FflasRight, FflasNoTrans, NRHS, 0, R, X, ldx, Q);
+				
+				solveLB2 (F, FflasRight, NRHS, M, R, A, lda, Q, X, ldx);
+				
+			}
+			return X;
+		}
+	}
+	/**
+	 * @brief Square system solver
+	 * @param Field The computation domain
+	 * @param Side Determine wheter the resolution is left or right looking
+	 * @param M row dimension of B
+	 * @param N col dimension of B
+	 * @param A input matrix
+	 * @param lda leading dimension of A
+	 * @param P column permutation of the LQUP decomposition of A
+ 	 * @param Q column permutation of the LQUP decomposition of A
+	 * @param B Right/Left hand side matrix. Initially contains B, finally contains the solution X.
+	 * @param ldb leading dimension of B
+	 * @param info Success of the computation: 0 if successfull, >0 if system is inconsistent
+ 	 * @return the rank of the system
+ 	 * 
+	 * Solve the system A X = B or X A = B.
+	 * Version for A square.
+	 * If A is rank deficient, a solution is returned if the system is consistent,
+	 * Otherwise an info is 1
+	 */
+	template <class Field>
+	static size_t 
+	fgesv (const Field& F,
+	       const FFLAS_SIDE Side,
+	       const size_t M, const size_t N,
+	       typename Field::Element *A, const size_t lda,
+	       typename Field::Element *B, const size_t ldb,
+	       int * info){
+
+		size_t Na;
+		if (Side == FflasLeft)
+			Na = M;
+		else
+			Na = N;
+		
+		size_t* P = new size_t[Na];
+		size_t* Q = new size_t[Na];
+
+		size_t R = LUdivine (F, FflasNonUnit, FflasNoTrans, Na, Na, A, lda, P, Q, FfpackLQUP);
+
+		fgetrs (F, Side, M, N, R, A, lda, P, Q, B, ldb, info);
+		
+		delete[] P;
+		delete[] Q;
+
+		return R;
+	}
+	
+	/**
+	 * @brief Rectangular system solver
+	 * @param Field The computation domain
+	 * @param Side Determine wheter the resolution is left or right looking
+	 * @param M row dimension of A
+	 * @param N col dimension of A
+	 * @param NRHS number of columns (if Side = FflasLeft) or row (if Side = FflasRight) of the matrices X and B
+	 * @param A input matrix
+	 * @param lda leading dimension of A
+	 * @param P column permutation of the LQUP decomposition of A
+ 	 * @param Q column permutation of the LQUP decomposition of A
+	 * @param B Right/Left hand side matrix. Initially contains B, finally contains the solution X.
+	 * @param ldb leading dimension of B
+	 * @info Success of the computation: 0 if successfull, >0 if system is inconsistent
+ 	 * @return the rank of the system
+ 	 * 
+	 * Solve the system A X = B or X A = B.
+	 * Version for A square.
+	 * If A is rank deficient, a solution is returned if the system is consistent,
+	 * Otherwise an info is 1
+	 */
+	template <class Field>
+	static size_t 
+	fgesv (const Field& F,
+	       const FFLAS_SIDE Side,
+	       const size_t M, const size_t N, const size_t NRHS,
+	       typename Field::Element *A, const size_t lda,
+	       typename Field::Element *X, const size_t ldx,
+	       const typename Field::Element *B, const size_t ldb,
+	       int * info){
+
+		size_t Nb,Mb;
+		if (Side == FflasLeft){Nb = NRHS; Mb = N;}
+		else {Nb = M; Mb = NRHS;}
+		
+		size_t* P = new size_t[N];
+		size_t* Q = new size_t[M];
+
+		size_t R = LUdivine (F, FflasNonUnit, FflasNoTrans, M, N, A, lda, P, Q, FfpackLQUP);
+
+		fgetrs (F, Side, M, N, NRHS, R, A, lda, P, Q, X, ldx, B, ldb, info);
+		
+		delete[] P;
+		delete[] Q;
+
+		return R;
+	}
+	
+	/**
 	 * Solve the system Ax=b, using LQUP factorization and
 	 * two triangular system resolutions.
 	 * The input matrix is modified. 
@@ -171,8 +534,7 @@ public:
 	Solve( const Field& F, const size_t M,
 	       typename Field::Element * A, const size_t lda,
 	       typename Field::Element * x, const int incx,
-	       const typename Field::Element * b, const int incb )
-	{
+	       const typename Field::Element * b, const int incb ){
 		typename Field::Element one, zero;
 		F.init(one,1.0);
 		F.init(zero,0.0);
@@ -761,7 +1123,7 @@ public:
 		 const size_t * Q,
 		 typename Field::Element * B, const size_t ldb ){
 		
-		 typename Field::Element one, zero;
+		typename Field::Element one, zero;
 		F.init(one, 1.0);
 		F.init(zero, 0.0);
 		size_t LM = (Side == FflasRight)?N:M;
@@ -806,46 +1168,40 @@ public:
 		F.init( Mone, -1.0 );
 		F.init( one, 1.0 );
 		typename Field::Element * Lcurr,* Rcurr,* Bcurr;
-		size_t ib, k, Ldim;
-		//cerr<<"In solveLB"<<endl;
+		size_t ib,  Ldim;
+		int k;
 		if ( Side == FflasLeft ){
 			size_t j = 0;
 			while ( j<R ) {
 				k = ib = Q[j];
-				//cerr<<"j avant="<<j<<endl;
-				while ( (Q[j] == k) && (j<R) ) {k++;j++;}
+				while ((j<R) && ( (int) Q[j] == k)  ) {k++;j++;}
 				Ldim = k-ib;
-				//cerr<<"k, ib, j, R "<<k<<" "<<ib<<" "<<j<<" "<<R<<endl;
-				//cerr<<"M,k="<<M<<" "<<k<<endl;
-				//cerr<<" ftrsm with M, N="<<Ldim<<" "<<N<<endl;
 				Lcurr = L + j-Ldim + ib*ldl;
 				Bcurr = B + ib*ldb;
 				Rcurr = Lcurr + Ldim*ldl;
-				ftrsm( F, Side, FflasLower, FflasNoTrans, FflasUnit, Ldim, N, one, Lcurr, ldl , Bcurr, ldb );
-				//cerr<<"M,k="<<M<<" "<<k<<endl;
-				//cerr<<" fgemm with M, N, K="<<M-k<<" "<<N<<" "<<Ldim<<endl;
-				fgemm( F, FflasNoTrans, FflasNoTrans, M-k, N, Ldim, Mone, Rcurr , ldl, Bcurr, ldb, one, Bcurr+Ldim*ldb, ldb);
+
+				ftrsm( F, Side, FflasLower, FflasNoTrans, FflasUnit, Ldim, N, one,
+				       Lcurr, ldl , Bcurr, ldb );
+
+				fgemm( F, FflasNoTrans, FflasNoTrans, M-k, N, Ldim, Mone,
+				       Rcurr , ldl, Bcurr, ldb, one, Bcurr+Ldim*ldb, ldb);
 			}
 		}
 		else{ // Side == FflasRight
 			int j=R-1;
-			while ( j >=0 ) {
-				//cerr<<"j="<<j<<endl;
+			while ( j >= 0 ) {
 				k = ib = Q[j];
-				while ( (j>=0) &&  (Q[j] == k)  ) {--k;--j;}
+				while ( (j >= 0) &&  ( (int)Q[j] == k)  ) {--k;--j;}
 				Ldim = ib-k;
-				//cerr<<"Ldim, ib, k, N = "<<Ldim<<" "<<ib<<" "<<k<<" "<<N<<endl;
 				Lcurr = L + j+1 + (k+1)*ldl;
-				Bcurr = B + ib;
+				Bcurr = B + ib+1;
 				Rcurr = Lcurr + Ldim*ldl;
-				fgemm (F, FflasNoTrans, FflasNoTrans, M,  Ldim, N-ib-1, Mone, Bcurr, ldb, Rcurr, ldl,  one, Bcurr-Ldim, ldb);
-				//cerr<<"j avant="<<j<<endl;
-				//cerr<<"k, ib, j, R "<<k<<" "<<ib<<" "<<j<<" "<<R<<endl;
-				//cerr<<"M,k="<<M<<" "<<k<<endl;
-				//cerr<<" ftrsm with M, N="<<Ldim<<" "<<N<<endl;
-				ftrsm (F, Side, FflasLower, FflasNoTrans, FflasUnit, M, Ldim, one, Lcurr, ldl , Bcurr-Ldim, ldb );
-				//cerr<<"M,k="<<M<<" "<<k<<endl;
-				//cerr<<" fgemm with M, N, K="<<M-k<<" "<<N<<" "<<Ldim<<endl;
+
+				fgemm (F, FflasNoTrans, FflasNoTrans, M,  Ldim, N-ib-1, Mone,
+				       Bcurr, ldb, Rcurr, ldl,  one, Bcurr-Ldim, ldb);
+
+				ftrsm (F, Side, FflasLower, FflasNoTrans, FflasUnit, M, Ldim, one,
+				       Lcurr, ldl , Bcurr-Ldim, ldb );
 			}
 		}
 	}
@@ -910,54 +1266,7 @@ public:
 
 protected:
 	
-
-	// Inversion of a lower triangular matrix with a unit diagonal
-// 	template<class Field>
-// 	static void 
-// 	invL( const Field& F, const size_t N, const typename Field::Element * L, const size_t ldl,
-// 	      typename Field::Element * X, const size_t ldx ){
-// 		//assumes X2 is initialized to 0
-// 		typename Field::Element mone, one;
-// 		F.init(one,1.0);
-// 		F.init(mone,-1.0);
-		
-// 		if (N == 1){
-// 			F.assign(*X, one);
-// 		}
-// 		else{
-// 			size_t N1 = N >> 1;
-// 			size_t N2 = N-N1;
-// 			typename Field::Element * X11 = X;
-// 			const typename Field::Element * L11 = L;
-// 			typename Field::Element * X21 = X+N1*ldx;
-// 			const typename Field::Element * L21 = L+N1*ldl;
-// 			typename Field::Element * X22 = X21+N1;
-// 			const typename Field::Element * L22 = L21+N1;
-// 			// recursive call for X11
-// 			// X11 = L11^-1
-// 			invL( F, N1, L11, ldl, X11, ldx );
-
-// 			// recursive call for X11
-// 			// X22 = L22^-1
-// 			invL( F, N2, L22, ldl, X22, ldx );
-			
-// 			// Copy L21 into X21
-// 			for ( size_t i=0; i<N2; ++i)
-// 				fcopy( F, N1, X21+i*ldx, 1, L21+i*ldl, 1 );
-
-// 			// X21 = X21 . -X11^-1 (pascal 2004-10-12, make the negation
-// 			// after the multiplication, problem in ftrmm)
-// 			ftrmm (F, FflasRight, FflasLower, FflasNoTrans, FflasUnit, 
-// 			       N2, N1, mone, X11, ldx, X21, ldx );
-// // 			for (size_t i=0; i<N2; ++i)
-// // 				for (size_t j=0; j<N1; ++j)
-// // 					F.negin(*(X21+i*ldx+j));
-
-// 			// X21 = X22^-1 . X21
-// 			ftrmm( F, FflasLeft, FflasLower, FflasNoTrans, FflasUnit, N2, N1, one, X22, ldx, X21, ldx );
-// 		}
-// 	}
-		
+	
 	// Subroutine for Keller-Gehrig charpoly algorithm
 	// Compute the new d after a LSP ( d[i] can be zero )
 	template<class Field>

@@ -53,7 +53,7 @@ FFPACK::CharPoly (const Field& F, std::list<Polynomial>& charp, const size_t N,
 		bool cont = false;
 		do{
 			try {
-				CharpolyArithProg (F, charp, N, A, lda, 30);
+				CharpolyArithProg (F, charp, N, A, lda, __FFPACK_CHARPOLY_THRESHOLD);
 			}
 			catch (CharpolyFailed){
 				if (attempts++ < 2)

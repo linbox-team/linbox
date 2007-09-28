@@ -100,53 +100,40 @@ namespace LinBox{
 	class FactorizedMatrixLeftSolve<Field, BlasMatrix<typename Field::Element> > {
 	public:
 		
-		BlasMatrix<typename Field::Element>& operator() ( const Field& F, 
-								  const LQUPMatrix<Field>& A,
-								  BlasMatrix<typename Field::Element>& X,
-								  const BlasMatrix<typename Field::Element>& B ) const{
-			linbox_check( A.coldim() == A.rowdim() ); 
-			linbox_check( A.coldim() == B.rowdim() );
-			linbox_check( A.getrank() == B.rowdim() );
+		BlasMatrix<typename Field::Element>& operator() (const Field& F, 
+								 const LQUPMatrix<Field>& A,
+								 BlasMatrix<typename Field::Element>& X,
+								 const BlasMatrix<typename Field::Element>& B) const{
+			linbox_check (A.coldim() == X.rowdim());
+			linbox_check (A.rowdim() == B.rowdim());
+			linbox_check (B.coldim() == X.coldim());
+			int info;
 			
-			X = B;
-			return (*this)( F, A, X );
+			FFPACK::fgetrs (F, FFLAS::FflasLeft, A.rowdim(), A.coldim(), B.coldim(), A.getrank(),
+					A.getPointer(), A.getStride(), A.getP().getPointer(), A.getQ().getPointer(),
+					X.getPointer(), X.getStride(),
+					B.getPointer(), B.getStride(), &info);
+			if (info > 0)
+				throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
+			
+			return X;
 		}
 		
-		BlasMatrix<typename Field::Element>& operator() ( const Field& F, 
-								  const LQUPMatrix<Field>& A,
-								  BlasMatrix<typename Field::Element>& B ) const{
+		BlasMatrix<typename Field::Element>& operator() (const Field& F, 
+								 const LQUPMatrix<Field>& A,
+								 BlasMatrix<typename Field::Element>& B) const{
 			
-			size_t m = B.rowdim();
-			size_t n = B.coldim();
-			linbox_check( A.coldim() == A.rowdim() ); 
-			linbox_check( A.coldim() == m );
-			linbox_check( A.getrank() == m );
+			int info;
+			linbox_check (A.coldim() == A.rowdim()); 
+			linbox_check (A.coldim() == B.rowdim());
 			
-			typename Field::Element one, zero;
-			F.init( one, 1UL );
-			F.init( zero, 0UL);
-			
-			
-			// Inversion of L
-			// Q = Id since A is invertible
-			FFLAS::ftrsm( F, FFLAS::FflasLeft, FFLAS::FflasLower, 
-				      FFLAS::FflasNoTrans, FFLAS::FflasUnit, 
-				      m, n, one,
-				      A.getPointer(), A.getStride(), 
-				      B.getPointer(), B.getStride() );
-			
-			// Inversion of U
-			FFLAS::ftrsm( F, FFLAS::FflasLeft, FFLAS::FflasUpper, 
-				      FFLAS::FflasNoTrans, FFLAS::FflasNonUnit, 
-				      m, n, one,
-				      A.getPointer(), A.getStride(), 
-				      B.getPointer(), B.getStride() );
-			
-			// Inversion of P
-			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, 
-					n, 0, m, 
-					B.getPointer(), B.getStride(), A.getP().getPointer() );
-			
+			FFPACK::fgetrs (F, FFLAS::FflasLeft, B.rowdim(), B.coldim(), A.getrank(),
+					A.getPointer(), A.getStride(),
+					A.getP().getPointer(), A.getQ().getPointer(),
+					B.getPointer(), B.getStride(), &info);
+			if (info > 0)
+				throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
+
 			return B;
 		}
 	}; // end of class FactorizedMatrixLeftSolve
@@ -159,48 +146,42 @@ namespace LinBox{
 								  const LQUPMatrix<Field>& A,
 								  BlasMatrix<typename Field::Element>& X,
 								  const BlasMatrix<typename Field::Element>& B ) const{
+			linbox_check (A.rowdim() == X.coldim());
+			linbox_check (A.coldim() == B.coldim());
+			linbox_check (B.rowdim() == X.rowdim());
+			int info;
 			
-			linbox_check( A.coldim() == A.rowdim() ); 
-			linbox_check( A.coldim() == B.rowdim() );
-			linbox_check( A.getrank() == B.rowdim() );
+			FFPACK::fgetrs (F, FFLAS::FflasRight, A.rowdim(), A.coldim(), B.rowdim(), A.getrank(),
+					A.getPointer(), A.getStride(),
+					A.getP().getPointer(), A.getQ().getPointer(),
+					X.getPointer(), X.getStride(),
+					B.getPointer(), B.getStride(), &info);
+			if (info > 0)
+				throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
 
-			X = B;
-			return (*this)( F, A, X );
+			return X;
 		}
-
+		
 		BlasMatrix<typename Field::Element>& operator() ( const Field& F, 
-								 const LQUPMatrix<Field>& A, 
-								 BlasMatrix<typename Field::Element>& B ) const{
+								  const LQUPMatrix<Field>& A,
+								  BlasMatrix<typename Field::Element>& B ) const{
 			
-			size_t m = B.rowdim();
-			size_t n = B.coldim();
+			int info;
+			linbox_check (A.coldim() == A.rowdim()); 
+			linbox_check (A.rowdim() == B.coldim());
 			
-			linbox_check( A.coldim() == A.rowdim() ); 
-			linbox_check( A.rowdim() == n );
-			linbox_check( A.getrank() == n );
+			FFPACK::fgetrs (F, FFLAS::FflasRight, B.rowdim(), B.coldim(), A.getrank(),
+					A.getPointer(), A.getStride(),
+					A.getP().getPointer(), A.getQ().getPointer(),
+					B.getPointer(), B.getStride(), &info);
+			if (info > 0)
+				throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
 
-			typename Field::Element one;
-			F.init( one, 1UL );
-			
-			// Inversion of P
-			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans, 
-					  m, 0, n, B.getPointer(), B.getStride(), A.getP().getPointer() );
-			
-			// Inversion of U
-			FFLAS::ftrsm( F, FFLAS::FflasRight, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit, 
-				      m, n, one,
-				      A.getPointer(), A.getStride(), 
-				      B.getPointer(), B.getStride() );
-			
-			// Inversion of L
-			// Q = Id since A is invertible
-			FFLAS::ftrsm( F, FFLAS::FflasRight, FFLAS::FflasLower, FFLAS::FflasNoTrans, FFLAS::FflasUnit, 
-				      m, n, one,
-				      A.getPointer(), A.getStride(), 
-				      B.getPointer(), B.getStride() );
-			return B;	
+			return B;
 		}
+		
 	}; // end of class FactorizedMatrixRightSolve
+	
 
 	template <class Field> 
 	class FactorizedMatrixLeftLSolve<Field, BlasMatrix<typename Field::Element> > {
@@ -209,7 +190,7 @@ namespace LinBox{
 								  const LQUPMatrix<Field>& A,
 								  BlasMatrix<typename Field::Element>& X,
 								  const BlasMatrix<typename Field::Element>& B ) const{
-			linbox_check( A.rowdim() == B.rowdim() );
+			linbox_check (A.rowdim() == B.rowdim());
 			X = B;
 			return  (*this)(F, A, X); 
 		}
@@ -218,17 +199,13 @@ namespace LinBox{
 								  const LQUPMatrix<Field>& A,
 								  BlasMatrix<typename Field::Element>& B ) const{
 		
-			linbox_check( A.rowdim() == B.rowdim() );
-			size_t m = B.rowdim();
-			size_t n = B.coldim();
-			size_t r = A.getrank();
-			if ( A.rowdim() <= A.coldim() ) {
-				FFPACK::solveLB( F, FFLAS::FflasLeft, m, n, r, A.getPointer(), A.getStride(), 
-						   A.getQ().getPointer(), B.getPointer(), B.getStride() );
-			}
-			else
-				FFPACK::solveLB2( F, FFLAS::FflasLeft, m, n, r, A.getPointer(), A.getStride(), 
-						    A.getQ().getPointer(), B.getPointer(), B.getStride() );
+			linbox_check (A.rowdim() == B.rowdim());
+
+			FFPACK::solveLB2 (F, FFLAS::FflasLeft, B.rowdim(), B.coldim(), A.getrank(),
+					  A.getPointer(), A.getStride(), 
+					  A.getQ().getPointer(),
+					  B.getPointer(), B.getStride());
+
 			return B;
 		}
 	}; // end of class FactorizedMatrixLeftLSolve
@@ -236,30 +213,24 @@ namespace LinBox{
 	template <class Field> 
 	class FactorizedMatrixRightLSolve<Field, BlasMatrix<typename Field::Element> > {
 	public:
-		BlasMatrix<typename Field::Element>& operator() ( const Field& F, 
-								  const LQUPMatrix<Field>& A,
-								  BlasMatrix<typename Field::Element>& X,
-								  const BlasMatrix<typename Field::Element>& B ) const{
-			linbox_check( A.rowdim() == B.coldim() );
+		BlasMatrix<typename Field::Element>& operator() (const Field& F, 
+								 const LQUPMatrix<Field>& A,
+								 BlasMatrix<typename Field::Element>& X,
+								 const BlasMatrix<typename Field::Element>& B) const{
+			linbox_check (A.rowdim() == B.coldim());
 			X = B;
 			return  (*this)( F, A, X );
 		}
 		
-		BlasMatrix<typename Field::Element>& operator() ( const Field& F, 
-								  const BlasMatrix<typename Field::element>& A,
-								  BlasMatrix<typename Field::Element>& B ) const{
+		BlasMatrix<typename Field::Element>& operator() (const Field& F, 
+								 const BlasMatrix<typename Field::element>& A,
+								 BlasMatrix<typename Field::Element>& B) const{
 			
 			linbox_check( A.rowdim() == B.coldim() );
-			size_t m = B.rowdim();
-			size_t n = B.coldim();
-			size_t r = A.getrank();
-			if ( A.rowdim() <= A.coldim() ) {
-				FFPACK::solveLB( F, FFLAS::FflasRight, m, n, r, A.getPointer(), A.getStride(), 
-						   A.getQ().getPointer(), B.getPointer(), B.getStride() );
-			}
-			else
-				FFPACK::solveLB2( F, FFLAS::FflasRight, m, n, r, A.getPointer(), A.getStride(), 
-						    A.getQ().getPointer(), B.getPointer(), B.getStride() );
+
+			FFPACK::solveLB2 (F, FFLAS::FflasRight, B.rowdim(), B.coldim(), A.getrank(),
+					  A.getPointer(), A.getStride(), 
+					  A.getQ().getPointer(), B.getPointer(), B.getStride());
 			return B;	
 		}
 	}; // end of class FactorizedMatrixRightLsolve
@@ -273,22 +244,64 @@ namespace LinBox{
 								  BlasMatrix<typename Field::Element>& X,
 								  const BlasMatrix<typename Field::Element>& B ) const{
 			
-			linbox_check( A.getrank() == B.rowdim() );
-			X = B;
-			return (*this)( F, A, X );
+			linbox_check (A.coldim() == X.rowdim());
+			linbox_check (B.coldim() == X.coldim());
+			linbox_check (A.rowdim() == B.rowdim());
+			
+			bool consistent = true;
+			size_t ldb = B.getStride();
+			size_t ldx = X.getStride();
+			typename Field::Element * Bp = B.getPointer();
+			typename Field::Element * Xp = X.getPointer();
+			typename Field::Element zero,one;
+			F.init(zero, 0UL);
+			F.init(one, 1UL);
+			
+			for (size_t i = A.getrank(); i < B.rowdim(); ++i)
+				for (size_t j = 0; j < B.coldim(); ++j)
+					if (!F.isZero (*(Bp + i*ldb + j)))
+						consistent = false;
+			if (!consistent) 
+				throw  LinboxMathInconsistentSystem ("Linear system is inconsistent");
+			
+			// The last rows of B are now supposed to be 0
+
+			for (size_t i=0; i < A.getrank(); ++i)
+				FFLAS::fcopy (F, B.coldim(), Xp + i*ldx, 1, Bp + i*ldx,1);
+			
+			FFLAS::ftrsm (F, FFLAS::FflasLeft, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit, 
+				      A.getrank(), X.coldim(), one, A.getPointer(), A.getStride(), X.getPointer(), X.getStride());
+
+			for (size_t i=A.getrank(); i < X.rowdim(); ++i)
+				for (size_t j = 0; j < X.coldim(); ++j)
+					F.assign (*(Xp + i*ldx + j), zero);
+			
+			return X;
+			
 		}
 		BlasMatrix<typename Field::Element>& operator() ( const Field& F, 
 								  const BlasMatrix<typename Field::Element>& A, 
 								  BlasMatrix<typename Field::Element>& B ) const{
 			
-			linbox_check( A.getrank() == B.rowdim() );
+			linbox_check (A.coldim() == A.rowdim());
+			linbox_check (A.coldim() == B.rowdim());
+			typename Field::Element one,zero;
+			typename Field::Element * Bp = B.getPointer();
+			size_t ldb = B.getStride();
+			F.init(one, 1UL);
+			F.init(zero, 0UL);
+			bool consistent = true;
 			
-			typename Field::Element one;
-			F.init( one, 1UL );
-			
-			FFLAS::ftrsm( F, FFLAS::FflasLeft, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit,
-				      A.getrank(), B.coldim(), one, 
-				      A.getPointer(), A.getStride(), B.getPointer(), B.getStride() );
+			for (size_t i = A.getrank(); i < B.rowdim(); ++i)
+				for (size_t j = 0; j < B.coldim(); ++j)
+					if (!F.isZero (*(Bp + i*ldb + j)))
+						consistent = false;
+			if (!consistent) 
+				throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
+
+			FFLAS::ftrsm (F, FFLAS::FflasLeft, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit, 
+				      A.getrank(), B.coldim(), one, A.getPointer(), A.getStride(), Bp, ldb);
+
 			return B;
 		}
 		
@@ -301,21 +314,91 @@ namespace LinBox{
 								  const LQUPMatrix<Field>& A, 
 								  BlasMatrix<typename Field::Element>& X, 
 								  const BlasMatrix<typename Field::Element>& B ) const{
-			linbox_check( A.getrank() == B.coldim() );
-			X = B;
-			return (*this)( F, A, X );
+			linbox_check (X.coldim() == A.rowdim());
+			linbox_check (X.rowdim() == B.rowdim());
+			linbox_check (A.coldim() == B.coldim());
+			typename Field::Element one,zero;
+			F.init(one, 1UL);
+			F.init(zero, 0UL);
+			typename Field::Element * Bp = B.getPointer();
+			typename Field::Element * Xp = X.getPointer();
+			size_t R = A.getrank();
+			size_t ldb = B.getStride();
+			size_t ldx = X.getStride();
+			
+			for (size_t i = 0; i < X.getrowdim(); ++i)
+				FFLAS::fcopy (F, R, Xp + i*ldx, 1, Bp + i*ldb,1);
+
+			FFLAS::ftrsm (F, FFLAS::FflasRight, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit, 
+			       X.rowdim(), R, one, A.getPointer(), A.getStride(), X.getPointer(), X.getStride());
+
+			bool consistent = true;
+			if (B.coldim() > X.coldim()) {
+				typename Field::Element* W = new typename Field::Element [B.rowdim() * (B.coldim() - R)];
+				size_t ldw = B.rowdim();
+				
+				FFLAS::fgemm (F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
+					      X.rowdim(), B.coldim() - R, R,
+					      one, Xp, X.getStride(), A.getPointer() + R, A.getStride,
+					      zero, W, ldw);
+				
+				for (size_t i = 0; i < B.rowdim(); ++i)
+					for (size_t j = 0; j < B.coldim()-R; ++j)
+						if (!F.areEqual (*(W + i*ldw + j), *(Bp + R + i*ldb +j)))
+							consistent = false;
+				delete[] W;
+			} else {
+				FFLAS::fgemm (F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
+					      X.rowdim(), B.coldim() - R, R,
+					      one, Xp, X.getStride(), A.getPointer() + R, A.getStride,
+					      zero, Xp + R, X.getStride());
+				
+				for (size_t i = 0; i < B.rowdim(); ++i)
+					for (size_t j = R; j < B.coldim(); ++j)
+						if (!F.areEqual (*(X + i*ldx + j), *(Bp + i*ldb +j)))
+							consistent = false;
+			}
+			if (!consistent)
+				throw  LinboxMathInconsistentSystem ("Linear system is inconsistent");
+
+			for (size_t i = 0; i < X.rowdim(); ++i)
+				for (size_t j = R; j < X.coldim(); ++j)
+					F.assign (*(Xp + i*ldx + j), zero);
+			return X;
 		}
 
 		BlasMatrix<typename Field::Element>& operator() ( const Field& F, 
 								  const LQUPMatrix<Field>& A, 
 								  BlasMatrix<typename Field::Element>& B ) const{
-			linbox_check( A.getrank() == B.coldim() );
-			typename Field::Element one;
-			F.init( one, 1UL );
+			linbox_check (A.coldim() == A.rowdim());
+			linbox_check (B.coldim() == A.rowdim());
+
+			typename Field::Element one,zero,mone;
+			F.init (one, 1UL);
+			F.neg (mone,one);
+			F.init (zero, 0UL);
+			typename Field::Element * Bp = B.getPointer();
+			size_t ldb = B.getStride();
+			size_t R = A.getrank();
 			
-			FFLAS::ftrsm( F, FFLAS::FflasRight, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit, 
-				      B.rowdim(), A.getrank(), one, A.getPointer(), A.getStride(), B.getPointer(), B.getStride() );	
+			FFLAS::ftrsm (F, FFLAS::FflasRight, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit, 
+				      B.rowdim(), R, one, A.getPointer(), A.getStride(), B.getPointer(), B.getStride());
+
+			FFLAS::fgemm (F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
+				      B.rowdim(), B.coldim() - R, R,
+				      one, Bp, B.getStride(), A.getPointer() + R, A.getStride,
+				      mone, Bp + R, B.getStride());
+
+			bool consistent = true;
+			for (size_t i = 0; i < B.rowdim(); ++i)
+				for (size_t j = R; j < B.coldim(); ++j)
+					if (!F.isZero (*(Bp + i*ldb + j)))
+						consistent = false;
+			if (!consistent)
+				throw  LinboxMathInconsistentSystem ("Linear system is inconsistent");
+
 			return B;
+
 		}
 	}; // end of class FactorizedMatrixRightUSolve
 
@@ -331,82 +414,34 @@ namespace LinBox{
 								   const LQUPMatrix<Field>& A, 
 								   std::vector<typename Field::Element>& x,
 								   const std::vector<typename Field::Element>& b ) const{
-			//linbox_check( A.coldim() == A.rowdim() );
-			//linbox_check( A.rowdim() == b.size() );
-			//linbox_check( A.getrank() == A.rowdim() );
-			
-			x = b;
-			return (*this)( F, A, x );
+			linbox_check (A.coldim() == x.size());
+			linbox_check (A.rowdim() == b.size());
+			int info;
+
+			FFPACK::fgetrs (F, FFLAS::FflasLeft, A.rowdim(), A.coldim(), 1, A.getrank(),
+					A.getPointer(), A.getStride(), A.getP().getPointer(), A.getQ().getPointer(),
+					&x[0], 1, &b[0], 1, &info);
+			if (info > 0)
+				throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
+
+			return x;
 		}
 		
 		std::vector<typename Field::Element>& operator() ( const Field& F, 
 								   const LQUPMatrix<Field>& A, 
 								   std::vector<typename Field::Element>& b ) const{
 			
+			int info;
+			linbox_check (A.coldim() == A.rowdim()); 
+			linbox_check (A.coldim() == b.size());
 			
-			size_t m, n, r;
-			m = A.rowdim();
-			n = A.coldim();
-			r = A.getrank(); 
-			typename Field::Element zero;
-			F.init(zero, 0UL);
-			linbox_check( m <= n ); 
-							       
-			typename Field::Element one;
-			F.init( one, 1UL );
-			
-			if ((r==m)&&(m==n)) {
-				linbox_check( m == b.size() );
-				
-				// Inversion of L
-				// Q = Id since A is invertible
-				FFLAS::ftrsv( F, FFLAS::FflasLower, FFLAS::FflasNoTrans, FFLAS::FflasUnit, 
-					      b.size(), A.getPointer(), A.getStride(), &b[0], 1 );
-				
-				// Inversion of U
-				FFLAS::ftrsv( F, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit, 
-					      b.size(), A.getPointer(), A.getStride(), &b[0], 1 );
-							
-				// Inversion of P
-				FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, 
-						1, 0, b.size(), &b[0], 1, A.getP().getPointer() );				
-			}
-			else {	
-				b.resize(n,zero);
-		
-				// b:= L^(-1).b 
-				FFLAS::ftrsv( F, FFLAS::FflasLower, FFLAS::FflasNoTrans, FFLAS::FflasUnit, 
-					      m, A.getPointer(), A.getStride(), &b[0], 1 );
-				
-				bool consistent=true;					
-				if (r < m){
-					// b:= Q^t.b
-					FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, 
-							1, 0, m, &b[0], 1, A.getQ().getPointer() );
-					
-					// check consistency
-					for (size_t i=r;i<m;++i)
-						if (!F.isZero(b[i])){
-							consistent=false;
-							break;
-						}
-				}
-			
-				if (consistent){
-					// b:= Ur^(-1).b with Ur the rxr leading minor of U
-					FFLAS::ftrsv( F, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit, 
-						      r, A.getPointer(), A.getStride(), &b[0], 1 );
-														
-					// b:= P^t.b
-					FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, 
-							1, 0, n, &b[0], 1, A.getP().getPointer() );
-				}
-				else{
-					for (size_t i=0;i<n;++i)
-						F.assign(b[i], zero);	
-				}				
-			}
-			
+			FFPACK::fgetrs (F, FFLAS::FflasLeft, b.size(), 1, A.getrank(),
+					A.getPointer(), A.getStride(),
+					A.getP().getPointer(), A.getQ().getPointer(),
+					&b[0], 1, &info);
+			if (info > 0)
+				throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
+
 			return b;
 		}
 	}; // end of class FactorizedMatrixLeftSolve
@@ -419,34 +454,36 @@ namespace LinBox{
 								   const LQUPMatrix<Field>& A, 
 								   std::vector<typename Field::Element>& x,
 								   const std::vector<typename Field::Element>& b ) const{
-			linbox_check( A.coldim() == A.rowdim() ); 
-			linbox_check( A.rowdim() == b.size() );
-			linbox_check( A.getrank() == A.rowdim() );
+			linbox_check (A.rowdim() == x.size());
+			linbox_check (A.coldim() == b.size());
+			int info;
 			
-			x = b;
-			return (*this)( F, A, x );
+			FFPACK::fgetrs (F, FFLAS::FflasRight, A.rowdim(), A.coldim(), 1, A.getrank(),
+					A.getPointer(), A.getStride(),
+					A.getP().getPointer(), A.getQ().getPointer(),
+					&x[0], x.size(), &b[0], b.size(), &info);
+			if (info > 0)
+				throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
+
+			return x;
 		}
 		
 		std::vector<typename Field::Element>& operator() ( const Field& F, 
 								   const LQUPMatrix<Field>& A, 
 								   std::vector<typename Field::Element>& b ) const{
 			
-			typename Field::Element one;
-			F.init( one, 1UL );
+			int info;
+			linbox_check (A.coldim() == A.rowdim()); 
+			linbox_check (A.rowdim() == B.size());
 			
-			// Inversion of P
-			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans, 
-					  1, 0, b.size(), &b[0], 1, A.getP().getPointer() );
-			
-			// Inversion of U
-			FFLAS::ftrsv( F, FFLAS::FflasUpper, FFLAS::FflasTrans, FFLAS::FflasNonUnit, 
-				      b.size(), A.getPointer(), A.getStride(), &b[0], 1 );
-			
-			// Inversion of L
-			// Q = Id since A is invertible
-			FFLAS::ftrsv( F, FFLAS::FflasLower, FFLAS::FflasTrans, FFLAS::FflasUnit, 
-				      b.size(), A.getPointer(), A.getStride(), &b[0], 1 );
-			return b;	
+			FFPACK::fgetrs (F, FFLAS::FflasRight, 1, b.size(), A.getrank(),
+					A.getPointer(), A.getStride(),
+					A.getP().getPointer(), A.getQ().getPointer(),
+					&b[0], b.size(), &info);
+			if (info > 0)
+				throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
+
+			return b;
 		}
 	}; // end of class FactorizedMatrixRightSolve
 
@@ -465,6 +502,14 @@ namespace LinBox{
 		std::vector<typename Field::Element>& operator() ( const Field& F, 
 								   const LQUPMatrix<Field>& A,
 								   std::vector<typename Field::Element>& b ) const{
+			linbox_check (A.rowdim() == b.size());
+
+			FFPACK::solveLB2 (F, FFLAS::FflasLeft, b.size(), 1, A.getrank(),
+					  A.getPointer(), A.getStride(), 
+					  A.getQ().getPointer(), &b[0], 1);
+
+			return b;
+
 			size_t n = b.size(); // bds: b not B
 			linbox_check( A.rowdim() == n );
 			size_t r = A.getrank();
@@ -496,19 +541,11 @@ namespace LinBox{
 		std::vector<typename Field::Element>& operator() ( const Field& F, 
 								   const LQUPMatrix<Field>& A,
 								   std::vector<typename Field::Element>& b ) const{
-			size_t n = b.size();
-			linbox_check( A.rowdim() == n );
-			size_t r = A.getrank();
-			
-			// To be changed: solveLB is designed for matrices, not for vectors
-			if ( A.rowdim() <= A.coldim() ) {
-				FFPACK::solveLB( F, FFLAS::FflasRight, 1, n, r, A.getPointer(), A.getStride(), 
-						   A.getQ().getPointer(), b.getPointer(), b.getStride() );
-			}
-			else
-				FFPACK::solveLB2( F, FFLAS::FflasRight, 1, n, r, A.getPointer(), A.getStride(), 
-							//bds: A.getQ not getQ
-						    A.getQ().getPointer(), b.getPointer(), b.getStride() );
+			linbox_check (A.rowdim() == b.size());
+
+			FFPACK::solveLB2 (F, FFLAS::FflasRight, 1, b.size(),  A.getrank(),
+					  A.getPointer(), A.getStride(), 
+					  A.getQ().getPointer(), &b[0], b.size());
 			return b;	
 		}
 	}; // end of class FactorizedMatrixRightLsolve
@@ -520,19 +557,56 @@ namespace LinBox{
 								   const LQUPMatrix<Field>& A, 
 								   std::vector<typename Field::Element>& x,
 								   const std::vector<typename Field::Element>& b ) const{
-			linbox_check( A.getrank() == b.size() );
-			x = b;
-			return (*this)( F, A, x );
+			linbox_check (A.coldim() == x.size());
+			linbox_check (A.rowdim() == b.size());
+			
+			bool consistent = true;
+			typename Field::Element * bp = &b[0];           ;
+			typename Field::Element * xp = &x[0];
+			typename Field::Element zero,one;
+			F.init(zero, 0UL);
+			F.init(one, 1UL);
+			
+			for (size_t i = A.getrank(); i < b.size(); ++i)
+				if (!F.isZero (b[i]))
+					consistent = false;
+			if (!consistent) 
+				throw  LinboxMathInconsistentSystem ("Linear system is inconsistent");
+			
+			// The last rows of B are now supposed to be 0
+
+			for (size_t i=0; i < A.getrank(); ++i)
+				F.assign (x[i], b[i]);
+			
+			FFLAS::ftrsv (F, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit, 
+				      A.getrank(), A.getPointer(), A.getStride(), xp, 1);
+
+			for (size_t i=A.getrank(); i < x.size(); ++i)
+				F.assign (x[i], zero);
+			return x;
+			
 		}
 		
 		std::vector<typename Field::Element>& operator() ( const Field& F, 
 								   const LQUPMatrix<Field>& A,
 								   std::vector<typename Field::Element>& b ) const{
 			
-			linbox_check( A.getrank() == b.size() );
-			FFLAS::ftrsv( F, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit,
-				      b.size(), A.getPointer(), A.getStride(), &b[0], 1 );
-			//return b, by Z. W
+			linbox_check (A.coldim() == A.rowdim());
+			linbox_check (A.coldim() == b.size());
+			typename Field::Element one,zero;
+			F.init(one, 1UL);
+			F.init(zero, 0UL);
+			bool consistent = true;
+			
+			for (size_t i = A.getrank(); i < b.size(); ++i)
+				if (!F.isZero (b[i]))
+					consistent = false;
+			if (!consistent) 
+				throw  LinboxMathInconsistentSystem ("Linear system is inconsistent");
+
+			FFLAS::ftrsv (F, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit, 
+				      A.getrank(), A.getPointer(), A.getStride(), &b[0], 1);
+
 			return b;
 		}
 
@@ -545,16 +619,80 @@ namespace LinBox{
 								   const LQUPMatrix<Field>& A, 
 								   std::vector<typename Field::Element>& x,
 								   const std::vector<typename Field::Element>& b ) const{
-			linbox_check( A.getrank() == b.size() );
-			x = b;
-			return (*this)( F, A, x );
+			linbox_check (X.size() == A.rowdim());
+			linbox_check (A.coldim() == b.size());
+			typename Field::Element one,zero;
+			F.init(one, 1UL);
+			F.init(zero, 0UL);
+			typename Field::Element * bp = b.getPointer();
+			typename Field::Element * xp = x.getPointer();
+			size_t R = A.getrank();
+			
+			for (size_t i = 0; i < R; ++i)
+				F.assign (x[i], b[i]);
+			
+			FFLAS::ftrsv (F, FFLAS::FflasUpper, FFLAS::FflasTrans, FFLAS::FflasNonUnit, 
+				      R, A.getPointer(), A.getStride(), xp, 1);
+
+			bool consistent = true;
+			if (b.size() > x.size()) {
+				typename Field::Element* W = new typename Field::Element [b.size() - R];
+
+				FFLAS::fgemv (F, FFLAS::FflasTrans,
+					      R, b.size() - R, 
+					      one, A.getPointer() + R, A.getStride, xp, 1, 
+					      zero, W, 1);
+			
+				for (size_t i = 0; i < b.size() - R; ++i)
+					if (!F.areEqual (W[i], b[i + R]))
+						consistent = false;
+				delete[] W;
+			} else {
+				FFLAS::fgemv (F, FFLAS::FflasTrans,
+					      R, b.size() - R,
+					      one, A.getPointer() + R, A.getStride, xp, 1, 
+					      zero, xp + R, 1);
+			
+				for (size_t i = R; i < b.size(); ++i)
+					if (!F.areEqual (x[i], b[i]))
+						consistent = false;
+			}
+
+			if (!consistent)
+				throw  LinboxMathInconsistentSystem ("Linear system is inconsistent");
+
+			for (size_t j = R; j < x.size(); ++j)
+				F.assign (x[j], zero);
+			return x;
 		}
 		std::vector<typename Field::Element>& operator() ( const Field& F, 
 								   const LQUPMatrix<Field>& A,
 								   std::vector<typename Field::Element>& b ) const{
-			linbox_check( A.rowdim() == b.size() );
-			FFLAS::ftrsv( F, FFLAS::FflasUpper, FFLAS::FflasTrans, FFLAS::FflasNonUnit, 
-				      b.size(), A.getPointer(), A.getStride(), &b[0], 1 );
+			linbox_check (A.coldim() == A.rowdim());
+			linbox_check (b.size() == A.rowdim());
+
+			typename Field::Element one,zero,mone;
+			F.init (one, 1UL);
+			F.neg (mone,one);
+			F.init (zero, 0UL);
+			typename Field::Element * bp = &b[0];
+			size_t R = A.getrank();
+			
+			FFLAS::ftrsv (F, FFLAS::FflasUpper, FFLAS::FflasTrans, FFLAS::FflasNonUnit, 
+				      R, one, A.getPointer(), A.getStride(), bp, 1);
+
+			FFLAS::fgemv (F, FFLAS::FflasTrans,
+				      R, b.size() - R,
+				      one, A.getPointer() + R, A.getStride, bp, 1,
+				      mone, bp + R, 1);
+
+			bool consistent = true;
+			for (size_t j = R; j < b.size(); ++j)
+				if (!F.isZero (b[j]))
+					consistent = false;
+			if (!consistent)
+				throw  LinboxMathInconsistentSystem ("Linear system is inconsistent");
+
 			return b;
 		}
 	}; // end of class FactorizedMatrixRightUSolve
