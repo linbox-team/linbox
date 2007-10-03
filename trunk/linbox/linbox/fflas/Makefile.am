@@ -8,7 +8,9 @@ pkgincludesub_HEADERS = \
 	fflas_faxpy.inl			\
 	fflas_fdot.inl			\
 	fflas_ftrsm.inl			\
+	fflas_ftrsm_src.inl		\
 	fflas_ftrmm.inl			\
+	fflas_ftrmm_src.inl		\
 	fflas_ftrsv.inl			\
 	fflas_fcopy.inl			\
 	fflas_bounds.inl
