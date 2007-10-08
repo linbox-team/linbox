@@ -24,7 +24,7 @@
 #ifndef __LINBOXX__RECONSTRUCTION_H__
 #define __LINBOXX__RECONSTRUCTION_H__
 
-#include <linbox-config.h>
+#include <linbox/linbox-config.h>
 #include <linbox/util/debug.h>
 
 //#define DEBUG_RR

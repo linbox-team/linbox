@@ -281,10 +281,9 @@ void doTest(const char* name, integer& p, integer& exp, int64& iter, bool fullte
 		printTimings( mops, fulltest);
 		std::cout << std::endl;
 	} 
-	/* else {
-		std::cout << std::setw(20) << name << ": " << p << "^" << exp << " is out of range";
-    		std::cout << std::endl;
-	}*/
+	else {
+		std::cout << std::setw(20) << name << ": " << p << "^" << exp << " is out of range" << std::endl;
+	}
 }
 
 int main(int argc, char** argv) {

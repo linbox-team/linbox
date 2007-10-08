@@ -1,5 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
+///////////  deprecated -- this is replaced by benchmark-fields.C ///////////
 /* tests/test-fields.C
  * Written by Dan Roche
  * Copyright (C) June 2004 Dan Roche, part of LinBox, GNU LGPL. See COPYING for license.

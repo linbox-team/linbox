@@ -46,7 +46,7 @@
 #include <linbox/fflas/fflas.h>
 #include <linbox/solutions/methods.h>
 #include <linbox/util/debug.h>
-#include <linbox-config.h>
+#include <linbox/linbox-config.h>
 #include <linbox/field/multimod-field.h>
 #include <linbox/blackbox/block-hankel-inverse.h>
 
