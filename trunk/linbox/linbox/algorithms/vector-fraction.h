@@ -23,7 +23,7 @@
 #ifndef __LINBOX_VECTOR_FRACTION_H
 #define __LINBOX_VECTOR_FRACTION_H
 
-#include <linbox-config.h>
+#include <linbox/linbox-config.h>
 #include <stdio.h>
 #include <linbox/vector/vector-traits.h>
 #undef _D

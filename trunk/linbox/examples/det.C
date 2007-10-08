@@ -11,6 +11,7 @@
 
 #include "linbox/field/modular-double.h"
 #include "linbox/blackbox/sparse.h"
+#include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/solutions/det.h"
 #include "linbox/util/matrix-stream.h"
 
@@ -42,7 +43,7 @@ int main (int argc, char **argv)
 		{ cerr << "Error opening matrix file " << argv[1] << endl; 
 			return -1; 
 		}
-		DenseMatrix<Integers> A(ZZ);
+		BlasBlackbox<Integers> A(ZZ);
 		A.read(input);
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 

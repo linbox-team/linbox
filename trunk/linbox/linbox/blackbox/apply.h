@@ -10,7 +10,7 @@
 #ifndef __LINBOX_APPLY_H__
 #define __LINBOX_APPLY_H__
 
-#include <linbox-config.h>
+#include <linbox/linbox-config.h>
 #include <linbox/integer.h>
 #include <linbox/util/debug.h>
 #include <linbox/field/multimod-field.h>
