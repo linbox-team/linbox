@@ -22,17 +22,17 @@ namespace LinBox
 	 * @param Type of coefficients
 \ingroup element
 	 */
-template <typename T>
-class GivPolynomial : public givvector<T>
+template <typename T, class Alloc=std::allocator<T> >
+class GivPolynomial : public givvector<T, Alloc>
 {
-	typedef GivPolynomial<T> Self_t;
+	typedef GivPolynomial<T, Alloc > Self_t;
 public:
   
-	GivPolynomial () : givvector<T>() {}
+	GivPolynomial () : givvector<T, Alloc>() {}
 	
-	GivPolynomial (size_t s) : givvector<T>(s) {}
-	GivPolynomial (const std::vector<T>& p) : givvector<T>(p, givWithCopy()) {}
-	GivPolynomial (const givvector<T>& p) : givvector<T>(p, givWithCopy()) {}
+	GivPolynomial (size_t s) : givvector<T, Alloc>(s) {}
+	GivPolynomial (const std::vector<T,Alloc>& p) : givvector<T,Alloc >(p, givWithCopy()) {}
+	GivPolynomial (const givvector<T,Alloc>& p) : givvector<T,Alloc >(p, givWithCopy()) {}
 
 	template<typename X>
 	struct rebind
