@@ -309,6 +309,7 @@ public:
 				if (!consistent) {
 					std::cerr<<"System is inconsistent"<<std::endl;
 					*info = 1;
+					delete[] W;
 					return X;
 				}
 				// Here the last rows of W are supposed to be 0
@@ -347,7 +348,6 @@ public:
 			
 				applyP (F, FflasLeft, FflasTrans, NRHS, 0, R, X, ldx, P);
 			}
-
 			return X;
 			
 		} else { // Right Looking X A = B
@@ -378,12 +378,13 @@ public:
 				if (!consistent) {
 					std::cerr<<"System is inconsistent"<<std::endl;
 					*info = 1;
+					delete[] W;
 					return X;
 				}
 				// The last N-R cols of W are now supposed to be 0
 				for (size_t i=0; i < NRHS; ++i)
 					fcopy (F, R, X + i*ldx, 1, W + i*ldb, 1);
-
+				delete[] W;
 				applyP (F, FflasRight, FflasNoTrans, NRHS, 0, R, X, ldx, Q);
 
 				solveLB2 (F, FflasRight, NRHS, M, R, A, lda, Q, X, ldx);
