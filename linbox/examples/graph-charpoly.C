@@ -41,16 +41,15 @@ void printPolynomial(const Field& F, const Polynomial& P){
 }
 
 
-typedef ZeroOne<UnparametricField<integer> > Matrix;
-typedef GivPolynomialRing<UnparametricField<integer>,Dense> IntPolRing;
+typedef ZeroOne<PID_integer> Matrix;
+typedef GivPolynomialRing<PID_integer,Dense> IntPolRing;
 
 int main (int argc, char **argv)
 {
 	commentator.getMessageClass (BRIEF_REPORT).setMaxDepth (2);
 	commentator.getMessageClass (BRIEF_REPORT).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 	
-	cout<<setprecision(8);
-	cerr<<setprecision(8);
+
 	if (argc != 2) {
 		cerr << "Usage: graph-charpoly <matrix-file-in-SMS-format>" <<endl;
 		return -1;
@@ -62,7 +61,8 @@ int main (int argc, char **argv)
 	  return -1; 
 	}
 	
-	UnparametricField<integer> ZZ;
+	//UnparametricField<integer> ZZ;
+	PID_integer ZZ;
 	Matrix A;
 	A.read (input);
 	commentator.report(1, BRIEF_REPORT)<< "A is " << A.rowdim() << " by " << A.coldim() << endl;
