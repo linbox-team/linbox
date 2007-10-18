@@ -402,6 +402,7 @@ namespace LinBox
 			default:
                                 break;
 			}
+			break;
 			
 		case Specifier::NONSINGULAR:
 			rsolve.solveNonsingular(x, d, A, b, false ,m.maxTries());
@@ -436,13 +437,13 @@ namespace LinBox
 			break;
 		}
 
-		
-		if ( status == SS_INCONSISTENT ) {  // we will return the zero vector
-			typename Ring::Element zero; A.field().init(zero, 0);
-			for (typename Vector::iterator i = x.begin(); i != x.end(); ++i) *i = zero;
-		}
 		commentator.stop("done", NULL, "solving");
 
+		if ( status == SS_INCONSISTENT ) {  
+			throw LinboxMathInconsistentSystem("Linear system is inconsistent");
+//			typename Ring::Element zero; A.field().init(zero, 0);
+// 			for (typename Vector::iterator i = x.begin(); i != x.end(); ++i) *i = zero;
+		}
 		return x;
 	}	
 
@@ -462,7 +463,6 @@ namespace LinBox
 		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
 		RationalSolver<Ring, Field, RandomPrimeIterator, DixonTraits> rsolve(A.field(), genprime); 			
 		SolverReturnStatus status = SS_OK;
-
 		// if singularity unknown and matrix is square, we try nonsingular solver
 		switch ( m.singular() ) {
 		case Specifier::SINGULARITY_UNKNOWN:
@@ -523,12 +523,12 @@ namespace LinBox
 			break;
 		}
 
-		
-		if ( status == SS_INCONSISTENT ) {  // we will return the zero vector
-			typename Ring::Element zero; A.field().init(zero, 0);
-			for (typename Vector::iterator i = x.begin(); i != x.end(); ++i) *i = zero;
-		}
 		commentator.stop("done", NULL, "solving");
+		if ( status == SS_INCONSISTENT ) {  
+			throw LinboxMathInconsistentSystem("Linear system is inconsistent");
+// 			typename Ring::Element zero; A.field().init(zero, 0);
+// 			for (typename Vector::iterator i = x.begin(); i != x.end(); ++i) *i = zero;
+		}
 		return x;	
 	}	
 
@@ -677,6 +677,7 @@ namespace LinBox {
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
 		commentator.start ("Integer CRA Solve", "Isolve");
+
 		RandomPrimeIterator genprime( 26 -(int)ceil(log((double)A.rowdim())*0.7213475205)); 
 		//         RationalRemainder< Modular<double> > rra((double)
 		//                                                  ( A.coldim()/2.0*log((double) A.coldim()) ) );
