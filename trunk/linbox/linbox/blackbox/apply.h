@@ -313,7 +313,9 @@ namespace LinBox {
 			_apply.clear();
 			_convert_data.clear();
 			_convert_result.clear();
-
+#ifdef __LINBOX_HAVE_BIG_ENDIAN
+			_switcher= Classic;	
+#else
 			// compute the magnitude in bit of the matrix
 			// check if at least one entry in the matrix is negative
 			LinBox::integer tmp=0, maxValue=0;
@@ -477,7 +479,8 @@ namespace LinBox {
 				break;
 						
 			}
-		
+	
+#endif	
 #ifdef DEBUG_CHUNK_APPLY 
 			std::cout<<"A: \n";
 			_M.write(std::cout);
