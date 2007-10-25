@@ -1095,7 +1095,7 @@ public:
 	static std::list<Polynomial>&
 	CharPoly( const Field& F, std::list<Polynomial>& charp, const size_t N,
 		  typename Field::Element * A, const size_t lda,
-		  const FFPACK_CHARPOLY_TAG CharpTag= FfpackLUK);
+		  const FFPACK_CHARPOLY_TAG CharpTag= FfpackArithProg);
 	
 	/**
 	 * Compute the minimal polynomial of (A,v) using an LUP 
