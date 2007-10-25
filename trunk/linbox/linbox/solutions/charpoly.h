@@ -25,10 +25,7 @@
 #define __CHARPOLY_H
 
 
-#ifdef __LINBOX_HAVE_GIVARO
-// BBcharpoly without givaropolynomials is not yet implemented
-#include "linbox/algorithms/bbcharpoly.h"
-#endif
+
 #include "linbox/solutions/methods.h"
 #include "linbox/util/debug.h"
 #include "linbox/field/field-traits.h"
@@ -36,6 +33,10 @@
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/algorithms/blas-domain.h"
 
+#ifdef __LINBOX_HAVE_GIVARO
+// BBcharpoly without givaropolynomials is not yet implemented
+#include "linbox/algorithms/bbcharpoly.h"
+#endif
 // Namespace in which all LinBox library code resides
 
 namespace LinBox
