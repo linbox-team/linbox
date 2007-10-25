@@ -143,6 +143,21 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to random field element
 		 */
+		Element &nonzerorandom (Element &a) const
+		{
+			//return a = rand() % (_F.modulus -1) + 1; }
+
+			// CPernet: stupidly slow, but now way to get _F.modulus without changing the interface
+			while (_F.isZero (random(a)));
+			return a;
+		}
+
+		/** Random field element creator.
+		 * This returns a random field element from the information supplied
+		 * at the creation of the generator.
+		 * Required by abstract base class.
+		 * @return reference to random field element
+		 */
 		ElementAbstract &random (ElementAbstract &a) const
 		{
 			Element tmp;

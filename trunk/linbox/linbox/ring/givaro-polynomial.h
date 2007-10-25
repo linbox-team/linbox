@@ -159,7 +159,7 @@ GivPolynomialRing<Modular<double>,Dense>::factor (std::vector<GivPolynomial<doub
 	integer charac;
 	_domain.characteristic(charac);
 	double p = charac;
-	Poly1FactorDom<Modular<double>,Dense> PFD(*this);
+	Poly1FactorDom<Modular<double>,Dense, Modular<double>::RandIter> PFD(*this, Modular<double>::RandIter(_domain));
 	std::vector<givvector<double> > factors2;
 	PFD.CZfactor ( factors2, exp, static_cast<givvector<double> >(P),p);
 
