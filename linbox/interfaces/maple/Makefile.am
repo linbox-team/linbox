@@ -1,3 +1,4 @@
+if LINBOX_HAVE_MAPLE
 pkgincludesubdir=$(includedir)/interfaces/maple/new
 
 INCLUDES=-I$(top_srcdir) -I. -I../../linbox
@@ -20,3 +21,4 @@ install-data-local:
 install-data-hook:
 	cd $(libdir) && \
 	$(MAPLE_HOME)/bin/maple lb-maple.mpl 2>&1 > /dev/null
+endif
