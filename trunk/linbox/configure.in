@@ -1,10 +1,13 @@
 AC_PREREQ(2.50)
-AC_INIT(linbox/linbox.doxy)
-AM_INIT_AUTOMAKE(linbox, 1.1.4)
-AM_CONFIG_HEADER(config.h)
+#AC_INIT(linbox/linbox.doxy)
+AC_INIT(linbox, 1.1.4,linbox-use@googlegroups.com) 
+AM_INIT_AUTOMAKE([1.8 gnu no-dependencies])
+AM_CONFIG_HEADER([config.h])
 AX_PREFIX_CONFIG_H(linbox/linbox-config.h, __LINBOX)
 
 AM_MAINTAINER_MODE
+AM_DEP_TRACK
+AM_OUTPUT_DEPENDENCY_COMMANDS 
 
 # Give a sane default for CFLAGS and CXXFLAGS
 # The sane thing is to define the flags differenly in tests, examples, interfaces, etc.  -bds
