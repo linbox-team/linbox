@@ -43,7 +43,7 @@ TestField f;
 template <class BB>
 bool testBlackBox( std::ostream& out, const char* filename, const char* BBName ) ;
 bool testMatrixStream(std::ostream& out) {
-	std::vector<char*> matrixNames;
+        std::vector<const char *> matrixNames;
 	matrixNames. push_back("data/sms.matrix");
 	matrixNames.push_back("data/matrix-market-array.matrix");
 	matrixNames.push_back("data/maple-sparse1.matrix");
