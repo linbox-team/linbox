@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 
 bool test()
 {
-	char* title = "Subiterator test";
+	const char* title = "Subiterator test";
 	commentator.start(title, title, 1);
 	ostream &report = commentator.report 
 		(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
