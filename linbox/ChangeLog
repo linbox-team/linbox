@@ -1,3 +1,11 @@
+2008-10-27 cpernet
+	linbox-1.1.4 has been released including the following most important
+	changes:
+	* lots of memory leaks fixed 
+	* better compliance with BLAS
+	* increased system solver functionalities (rectangular, rank deficient
+	matrices)
+	* support for g++/gcc v4.2
 2007-09-28 cpernet
 	* Add support for more general dense system solving:
 	  The system can be rectangular (over/underdetermined), singular.	
