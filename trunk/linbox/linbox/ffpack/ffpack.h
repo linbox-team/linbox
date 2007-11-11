@@ -191,7 +191,7 @@ public:
 		F.neg(mone, one);
 		*info =0;
 		if (Side == FflasLeft) { // Left looking solve A X = B
-
+			
 			solveLB2 (F, FflasLeft, M, N, R, A, lda, Q, B, ldb);
 
 			applyP (F, FflasLeft, FflasNoTrans, N, 0, R, B, ldb, Q);
@@ -285,7 +285,7 @@ public:
 		size_t ldw;
 
 		if (Side == FflasLeft) { // Left looking solve A X = B
-			
+
 			// Initializing X to 0 (to be optimized)
 			for (size_t i = 0; i <N; ++i)
 				for (size_t j=0; j< NRHS; ++j)
@@ -299,7 +299,7 @@ public:
 			       
 				solveLB2 (F, FflasLeft, M, NRHS, R, A, lda, Q, W, ldw);
 				
-				applyP (F, FflasLeft, FflasNoTrans, N, 0, R, W, ldw, Q);
+				applyP (F, FflasLeft, FflasNoTrans, NRHS, 0, R, W, ldw, Q);
 
 				bool consistent = true;
 				for (size_t i = R; i < M; ++i)
@@ -326,10 +326,10 @@ public:
 			} else { // Copy B to X directly
 				for (size_t i=0; i < M; ++i)
 					fcopy (F, NRHS, X + i*ldx, 1, B + i*ldb, 1);
-			       
+				
 				solveLB2 (F, FflasLeft, M, NRHS, R, A, lda, Q, X, ldx);
 				
-				applyP (F, FflasLeft, FflasNoTrans, N, 0, R, X, ldx, Q);
+				applyP (F, FflasLeft, FflasNoTrans, NRHS, 0, R, X, ldx, Q);
 
 				bool consistent = true;
 				for (size_t i = R; i < M; ++i)

@@ -805,7 +805,7 @@ int main (int argc, char **argv)
 
 	if (!testRandomSolve (F, A_stream, stream1, "Lanczos", traits1))
 		pass = false;
-#endif
+
 
 	Method::BlockLanczos traits2;
 	traits2.preconditioner (Method::BlockLanczos::FULL_DIAGONAL);
@@ -813,7 +813,7 @@ int main (int argc, char **argv)
 
 	if (!testRandomSolve (F, A_stream, stream1, "Block Lanczos", traits2))
 		pass = false;
-
+#endif
     if ( ! testBasicMethodsSolve (F, n) ) 
 		pass = false;
 
