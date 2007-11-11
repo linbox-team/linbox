@@ -583,13 +583,10 @@ public:
 
 		size_t * P = new size_t[M];
 		size_t * Q = new size_t[M];
-		nullity = M - ReducedColumnEchelonForm (F, M, M, A, lda, P, Q);
-		applyP (F, FflasLeft, FflasTrans, M, 0, M, A, lda, P); 
-
-		if (nullity > 0)
-			return NULL;
-		else
-			return A;
+		size_t R =  ReducedColumnEchelonForm (F, M, M, A, lda, P, Q);
+		nullity = M - R;
+		applyP (F, FflasLeft, FflasTrans, M, 0, R, A, lda, P); 
+		return A;
 	}
 
 	template <class Field>
