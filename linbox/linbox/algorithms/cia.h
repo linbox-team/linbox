@@ -61,6 +61,7 @@ namespace LinBox
 		FBlackbox * fbb;
 		MatrixHom::map<Field,Blackbox> (fbb, A, F);
 		charpoly ( fieldCharPoly, *fbb, M);
+		delete fbb;
 		/* Determination of the multiplicities */
 		FieldPolyDom FPD (F);
 		std::vector<FieldPoly> fieldFactors (nf);
