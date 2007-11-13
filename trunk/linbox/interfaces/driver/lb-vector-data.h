@@ -39,7 +39,7 @@ extern VectorTable vector_hashtable;
  * Functor to determine domain in Abstract Vectors *
  ***************************************************/
 
-template<template<class Element, class Alloc=std::allocator<Element> > class Vector, class Functor>
+template<template<class , class> class Vector, class Functor, template <class> class Alloc=std::allocator>
 class VectorSpecFunctor{
 	const Functor &fct;
 	void *ptr;
@@ -48,7 +48,7 @@ public:
 	
 	template<class Domain, class Result>
 	void  operator() (Result& res, Domain *d) const {
-		fct(res, static_cast<Vector<typename Domain::Element, std::allocator<typename Domain::Element> >*> (ptr));
+		fct(res, static_cast<Vector<typename Domain::Element, Alloc<typename Domain::Element> >*> (ptr));
 	} 
 };
 
@@ -120,7 +120,7 @@ public:
  * Functors to rebind Vectors *
  ******************************/
 
-template<template<class T, class Alloc=std::allocator<T> > class Vector>
+template<template<class, class> class Vector, template <class> class Alloc=std::allocator>
 class RebindVectorFunctor{
 	void            *&ptr;
 public:
@@ -135,8 +135,8 @@ public:
 	
 	template<class DomainSource, class DomainTarget>
 	void operator()(DomainSource &res, DomainTarget *D) const {
-		Vector<typename DomainSource::Element> *v_source= static_cast<Vector<typename DomainSource::Element> * >  (ptr);				
-		Vector<typename DomainTarget::Element> *v_target= new Vector<typename DomainTarget::Element>(v_source->size());
+		Vector<typename DomainSource::Element,Alloc<typename DomainSource::Element> > *v_source= static_cast<Vector<typename DomainSource::Element,Alloc<typename DomainSource::Element> > * >  (ptr);				
+	Vector<typename DomainTarget::Element,Alloc<typename DomainTarget::Element> > *v_target= new Vector<typename DomainTarget::Element,Alloc<typename DomainTarget::Element> >(v_source->size());
 
 		LinBox::Hom<DomainSource, DomainTarget> hom(res, *D);
 		for (size_t i=0;i<v_source->size();++i)
@@ -206,7 +206,7 @@ public:
  * Functors to construct Vectors *
  *********************************/
 
-template<template<class T, class Allocator=std::allocator<T> > class Vector>
+template<template<class, class> class Vector, template <class> class Alloc=std::allocator>
 class CreateVectorFunctor{
 	size_t &_dim;
 public:
@@ -216,11 +216,11 @@ public:
 	void operator()(void *&res, Domain *D) const {		
 		typename Domain::Element zero;
 		D->init(zero, 0UL);
-		res = new Vector<typename Domain::Element>(_dim, zero);	
+		res = new Vector<typename Domain::Element, Alloc<typename Domain::Element> >(_dim, zero);	
 	}
 };
 
-template<template<class T, class Allocator=std::allocator<T> > class Vector>
+template<template<class,class> class Vector, template <class> class Alloc=std::allocator>
 class CreateVectorFromStreamFunctor{	
 	std::istream &in;
 public:
@@ -231,8 +231,8 @@ public:
 		size_t n;
 		LinBox::integer tmp;
 		in>>n;
-		Vector<typename Domain::Element> * v = new Vector<typename Domain::Element>(n);
-		typename Vector<typename Domain::Element>::iterator it = v->begin();
+		Vector<typename Domain::Element, Alloc<typename Domain::Element> > * v = new Vector<typename Domain::Element, Alloc<typename Domain::Element> >(n);
+		typename Vector<typename Domain::Element,Alloc<typename Domain::Element> >::iterator it = v->begin();
 		for (; it != v->end(); ++it){
 			in>>tmp;
 			D->init(*it, tmp);
