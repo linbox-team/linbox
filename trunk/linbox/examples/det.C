@@ -43,7 +43,8 @@ int main (int argc, char **argv)
 		{ cerr << "Error opening matrix file " << argv[1] << endl; 
 			return -1; 
 		}
-		BlasBlackbox<Integers> A(ZZ);
+		MatrixStream< Integers> ms ( ZZ, input );
+		BlasBlackbox<Integers> A(ms);
 		A.read(input);
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
