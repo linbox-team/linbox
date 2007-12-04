@@ -1341,7 +1341,7 @@ protected:
 	static int
 	KGFast ( const Field& F, std::list<Polynomial>& charp, const size_t N,
 		 typename Field::Element * A, const size_t lda, 
-		 size_t * kg_mc, size_t* kg_mc, size_t* kg_j );
+		 size_t * kg_mc, size_t* kg_mb, size_t* kg_j );
 
 	template <class Field, class Polynomial>
 	static std::list<Polynomial>&
