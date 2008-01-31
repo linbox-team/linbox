@@ -34,9 +34,13 @@ namespace LinBox
 \ingroup util
 */
 class LinboxError {
-    public:
-	LinboxError (const char* msg = 0) 
-		: strg (msg) {};
+	const static size_t max_error_string = 256;
+public:
+	LinboxError (const char* msg = 0) {
+		strncpy(strg, msg, max_error_string);
+		strg[max_error_string-1] = 0;
+	};
+
 
 	// -- virtual print of the error message
 	virtual std::ostream &print (std::ostream &o) const
@@ -49,10 +53,10 @@ class LinboxError {
 	static void throw_error (const LinboxError &err)
 		{ throw err; }
 
-    	virtual ~LinboxError() { delete strg; }        
+    	virtual ~LinboxError() {}        
 
     protected:
-	const char* strg;  
+	char strg[max_error_string]; 
 };
 
 class LinboxMathError : public LinboxError {
