@@ -41,7 +41,7 @@ typedef UnparametricField<integer> TestField;
 TestField f;
 
 template <class BB>
-bool testBlackBox( std::ostream& out, const char* filename, const char* BBName ) ;
+bool testMatrix( std::ostream& out, const char* filename, const char* BBName ) ;
 bool testMatrixStream(std::ostream& out) {
         std::vector<const char *> matrixNames;
 	matrixNames. push_back("data/sms.matrix");
@@ -180,13 +180,13 @@ bool testMatrixStream(std::ostream& out) {
 		}
 	}
 
-	if( 	testBlackBox< DenseMatrix<TestField> >
+	if( 	testMatrix< DenseMatrix<TestField> >
 			( out, matrixNames[0], "Dense BlackBox Matrix" )
 	  ) fail = true;
-	if( 	testBlackBox< SparseMatrix<TestField> >
+	if( 	testMatrix< SparseMatrix<TestField> >
 			( out, matrixNames[0], "Sparse BlackBox Matrix" )
 	  ) fail = true;
-	if( 	testBlackBox< BlasBlackbox<TestField> >
+	if( 	testMatrix< BlasBlackbox<TestField> >
 			( out, matrixNames[0], "BLAS BlackBox Matrix" )
 	  ) fail = true;
 	
@@ -196,7 +196,7 @@ bool testMatrixStream(std::ostream& out) {
 }
 
 template <class BB>
-bool testBlackBox( std::ostream& out, const char* filename, const char* BBName ) {
+bool testMatrix( std::ostream& out, const char* filename, const char* BBName ) {
 	out << "\tTesting " << BBName << std::endl;
 	std::ifstream fin( filename );
 	if( !fin ) {

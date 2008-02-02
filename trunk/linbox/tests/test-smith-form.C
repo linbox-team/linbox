@@ -16,7 +16,7 @@ bool testRandom(const Ring& R,
  
 	std::ostringstream str;
         
-	str << "Testing the smithForm functioin in solutions directory:\n";
+	str << "Testing the smithForm function in solutions directory:\n";
 
         commentator.start (str.str ().c_str (), "testRandom");//, stream1.m ());
 

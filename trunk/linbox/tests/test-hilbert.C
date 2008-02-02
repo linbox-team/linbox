@@ -45,7 +45,7 @@ int main (int argc, char **argv)
 	typedef Hilbert<Field> BB;
 	BB A (F, n);
 
-	pass = pass && testBlackbox (F, A);
+	pass = pass && testBlackbox (A);
 
 	commentator.stop("Hilbert matrix blackbox test suite");
 	return pass ? 0 : -1;

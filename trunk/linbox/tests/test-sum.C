@@ -207,10 +207,10 @@ int main (int argc, char **argv)
 	typedef ScalarMatrix<Field> Blackbox;
 
 	Sum <Blackbox, Blackbox> A (D1, D2);
-	pass = pass && testBlackbox(F, A);
+	pass = pass && testBlackbox(A);
 
 	Sum <Blackbox, Blackbox> Aref (&D1, &D2);
-	pass = pass && testBlackbox(F, Aref);
+	pass = pass && testBlackbox(Aref);
 
 	commentator.stop("Sum black box test suite");
 	return pass ? 0 : -1;

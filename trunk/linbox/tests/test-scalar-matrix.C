@@ -13,7 +13,7 @@
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/scalar-matrix.h"
 
-#include "test-generic.h"
+#include "test-blackbox.h"
 
 using namespace LinBox;
 
@@ -48,13 +48,13 @@ int main (int argc, char **argv)
 
 	typedef ScalarMatrix <Field> Blackbox;
 	Blackbox A; // Test the default constructor
-	pass = pass && testBlackbox(F, A);
+	pass = pass && testBlackbox(A);
 
 	Blackbox B (F, n, d); // Test a small one.
-	pass = pass && testBlackbox(F, B);
+	pass = pass && testBlackbox(B);
 
 	//Blackbox C (F, 100000, d); // Test a large one.
-	//pass = pass && testBlackbox(F, C);
+	//pass = pass && testBlackbox(C);
 
 	commentator.stop("Scalar black box test suite");
 	return pass ? 0 : -1;

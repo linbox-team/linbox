@@ -34,8 +34,9 @@
 using namespace std;
 
 // Generic tests for black boxes 
+/// testBlackbox combines testTranspose and testLinearity
 
-/** Generic Blackbox test 1: (u^T A) v = u^T (A v).
+/** Random check that (u^T A) v = u^T (A v).
  *
  * Take the given black box and compute u^T A v via <A^T u, v> and <u, Av> for
  * randomly chosen u and v. Check whether the results are equal. In theory, this
@@ -66,7 +67,8 @@ testTranspose (Field                             &F,
 	LinBox::VectorWrapper::ensureDim (v, A.coldim ());
 	LinBox::VectorWrapper::ensureDim (Av, A.rowdim ());
 
-	LinBox::VectorDomain <Field> VD (F);
+	LinBox::VectorDomain <Field> VD (A.field());
+	//LinBox::VectorDomain <Field> VD (F);
 	typename Field::Element r1, r2;
 	ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Blackbox transpose test [that u^T(Av) == (uA)^T v]" << std::endl;
@@ -198,77 +200,26 @@ testLinearity (Field                             &F,
 	return ret;
 }
 
-/** Generic blackbox test 3: compare to a dense matrix.
- *
- * An equivalent dense matrix B is obtained with n applies.
- * Then it's behaviour is compared to A's.
- *
- * F - Field over which to perform computations
- * A - Black box of which to compute the dense representation
- */
-template <class Field, class Blackbox> 
-static bool 
-testSmallBlackbox(Field& F, Blackbox& A)
-{
-	size_t m = A.rowdim(), n = A.coldim();
-	typedef std::vector<typename Field::Element> Vector;
-
-	// e for cols of identity
-	typename Field::Element zero, one; 
-	F.init(zero, 0); F.init(one, 1);
-	Vector e(n, zero);
-	Vector v(m);
-
-	// construct dense matrix
-	LinBox::DenseMatrix<Field> B(F, m, n);
-	for(size_t j = 0; j < n; ++j)
-	{	e[(n + j-1)%n] = zero;
-		e[j] = one;
-		A.apply(v, e);
-		for (size_t i = 0; i < m; ++i) B.setEntry(i, j, v[i]);
-	}
-
-// really, you have to look at B to see if it is what is intended, else this is just another linearity test.
-
-	// display B in report
-	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-	B.write(report);
-
-	// compare blackbox A and dense B on random vector
-	int iterations = 1; // could be higher if cardinality is small.
-	LinBox::RandomDenseStream<Field, Vector> stream (F, n, iterations);
-	Vector y(m), z(m), x(n);
-	stream.next(x);
-	A.apply(y, x); B.apply(z, x);
-
-	// display x, y, z in report
-	LinBox::VectorDomain<Field> VD(F); 
-	VD.write(report, x); report << " is x" << endl;
-	VD.write(report, y); report << " is y" << endl;
-	VD.write(report, z); report << " is z" << endl;
-
-	return VD.areEqual(y, z);
-}
-
 /** Generic blackbox test 4: combination of tests
  * 
  * Call testTranspose and testLinearity.
  * If large, time apply and applyTranspose.
  * if small, call testSmallBlackbox.
  */
-template <class Field, class BB> 
+template <class BB> 
 static bool 
-testBlackbox(Field& F, BB &A)
+//testBlackbox(Field& F, BB &A)
+testBlackbox(BB &A)
 {
-	size_t smallThresh = 20; // Below it do dense matrix comparison.
 	size_t largeThresh = 2000; // Above it do timing of apply and applyTr.
+	typedef typename BB::Field Field;
 	typedef std::vector<typename Field::Element> DenseVector;
 	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "testBlackbox on " << A.rowdim() << " by " << A.coldim() << " matrix." << endl;
 	
-	
 	LinBox::commentator.setMaxDepth(-1);
 	bool ret = true;
+	typename BB::Field F = A.field();
 
 	/* timing tests */   // I changed the order of all tests. Timing now is the first set of tests and then linearity and transpose
 	{
@@ -295,7 +246,7 @@ testBlackbox(Field& F, BB &A)
 	} // timing test block
 	
 #if 1 
-	size_t iterations = 1; 
+	size_t iterations = 2; 
 	LinBox::commentator.start ("\t--Testing A(ax+y) = a(Ax) + (Ay)", 
 							   "testLinearity", 1);
 	typename Field::RandIter r(F);
@@ -312,13 +263,7 @@ testBlackbox(Field& F, BB &A)
 	LinBox::commentator.start ("\t--Testing u^T(Av) = (u^T A)v", 
 							   "testTranspose", 1);
 	
-	r.random(x);
-	r.random(x);
 	LinBox::RandomDenseStream<Field, DenseVector> stream3 (F, r, A.rowdim(), iterations); 
-	r.random(x);
-	r.random(x);
-	r.random(x);
-	r.random(x);
 	LinBox::RandomDenseStream<Field, DenseVector> stream4 (F, r, A.coldim(), iterations); 
 
 	ret = ret && testTranspose (F, A, stream3, stream4); 
@@ -327,18 +272,6 @@ testBlackbox(Field& F, BB &A)
 	
 #endif
 	
-	/*  Testing against constructed dense matrix doesn't really add much.  
-	    May be useful to see the matrix in the report.
-	*/
-	if (A.rowdim() <= smallThresh && A.coldim() <= smallThresh)
-		{
-			LinBox::commentator.start ("\t--Testing A behaves like Dense A", 
-									   "testSmallBlackbox", 1);
-			ret = ret && testSmallBlackbox(F, A);
-			LinBox::commentator.stop (MSG_STATUS (ret), 
-									  (const char *) 0, "testSmallBlackbox");
-		}
-
 	return ret;
 }
  
