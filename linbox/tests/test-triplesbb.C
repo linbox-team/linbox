@@ -71,11 +71,11 @@ int main (int argc, char **argv)
 
 	Blackbox A(F, values, rowP, colP, n, n);
 
-	pass = pass && testBlackbox<Field,Blackbox>(F, A);
+	pass = pass && testBlackbox(A);
 
 	Transpose<Blackbox> B(&A);
 
-	pass = pass && testBlackbox<Field,Transpose<Blackbox> >(F, B);
+	pass = pass && testBlackbox(B);
 
 	Vector x(n), y(n), z(n);
 	for(int i = 0; i < 5; ++i) x[i] = i;
@@ -90,7 +90,7 @@ int main (int argc, char **argv)
 
 	Blackbox C(F, n, n);
 	for(size_t i = 0; i < rowP.size(); ++i) C.addEntry(values[i], rowP[i], colP[i]);
-	pass = pass && testBlackbox<Field, Blackbox>(F, C);
+	pass = pass && testBlackbox(C);
 
 	commentator.stop("triplesbb black box test suite");
 	return pass ? 0 : -1;

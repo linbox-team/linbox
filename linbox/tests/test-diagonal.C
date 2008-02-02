@@ -314,7 +314,7 @@ int main (int argc, char **argv)
 
         Field::RandIter iter(F);
 	LinBox::Diagonal<Field> D(F, 10, iter);
-	pass = pass && testBlackbox(F, D);
+	pass = pass && testBlackbox(D);
 
 	commentator.stop("diagonal matrix black box test suite");
 

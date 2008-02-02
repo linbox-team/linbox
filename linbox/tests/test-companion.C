@@ -52,11 +52,11 @@ int main (int argc, char **argv)
 
 	Blackbox A (F, p);
 
-	pass = pass && testBlackbox<Field, Blackbox>(F, A);
+	pass = pass && testBlackbox(A);
 
 	Blackbox B (F, n);
 
-	pass = pass && testBlackbox<Field, Blackbox>(F, B);
+	pass = pass && testBlackbox(B);
 
 	commentator.stop("companion matrix black box test suite");
 

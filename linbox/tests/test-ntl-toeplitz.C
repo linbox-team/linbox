@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
   //  report << "The Upper Triangular matrix is: " << std::endl;
   //TT.print();
   
-  pass = testBlackbox<Field,  LinBox::Toeplitz<Field> >(F, TT);
+  pass = testBlackbox(TT);
 	commentator.stop("Toeplitz black box test suite");
   return pass ? 0 : -1;
 }

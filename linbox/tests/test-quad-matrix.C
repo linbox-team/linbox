@@ -50,7 +50,7 @@ int main (int argc, char **argv)
 
        	//ScalarMatrix<Field> A (F, n, d); // a small identity.
         //BlackBox AA(A);
-	//pass = pass && testBlackbox(F, AA);
+	//pass = pass && testBlackbox(AA);
 
 	size_t *rows, *cols, i;
 	const size_t npr = n / 10000;
@@ -98,9 +98,7 @@ int main (int argc, char **argv)
 
 	//BB.write(cout) << endl; //just writes the sizes of the strips.
 
-	pass = pass && testBlackbox(F, BB);
-	// ..or the following call can be used with a little mod of test-generic-for-quad.h in test-blackbox().
-	//pass = pass && testBlackbox(F, BB, B); 
+	pass = pass && testBlackbox(BB);
 
 	return pass ? 0 : -1;
 }

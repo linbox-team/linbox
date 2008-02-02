@@ -1,6 +1,7 @@
 INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/linbox
 #AM_LDFLAGS = -llapack -lcblas -latlas 
-AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -O2 
+#AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -O2 
+AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall 
 #AM_CFLAGS = -g -Wall
 
 SUBDIRS = data
@@ -87,6 +88,7 @@ NONCOMPILING_TESTS =
 FAILING_TESTS =		\
         test-solve              \
         test-zo                 \
+        test-CSR	            \
         test-quad-matrix        \
         test-mg-block-lanczos   \
 	test-la-block-lanczos    
@@ -234,8 +236,7 @@ test_subvector_SOURCES = 		\
 
 test_vector_domain_SOURCES = 		\
 	test-vector-domain.C		\
-	test-vector-domain.h		\
-	test-common.h
+	test-vector-domain.h		
 
 test_matrix_domain_SOURCES = 		\
 	test-matrix-domain.C		\
@@ -350,6 +351,10 @@ test_companion_SOURCES =		\
 	test-companion.C		\
 	test-generic.h			\
 	test-common.h
+
+test_CSR_SOURCES =		\
+	test-CSR.C		\
+	test-blackbox.h
 
 test_inverse_SOURCES =			\
 	test-inverse.C			\

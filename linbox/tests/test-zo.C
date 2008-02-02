@@ -58,8 +58,8 @@ int main(int argc, char **argv) {
 
   std::cout << std::endl << "ZeroOne matrix blackbox test suite" << std::endl;
 
-  pass = pass && testBlackbox(afield, testMatrix);
-  //bool pass2 = testBlackbox(afield, testMat);
+  pass = pass && testBlackbox(testMatrix);
+  //bool pass2 = testBlackbox(testMat);
   
   //delete [] rows;
   //delete [] cols;

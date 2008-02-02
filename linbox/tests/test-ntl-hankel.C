@@ -109,7 +109,7 @@ int main(int argc, char* argv[])
       TT.setToUniModUT();
       TT.print(report);
   
-  pass = testBlackbox<Field, LinBox::Hankel<Field> >(F, TT);
+  pass = testBlackbox(TT);
 
 	commentator.stop("Hankel black box test test suite");
   return pass ? 0 : -1;
