@@ -82,7 +82,7 @@ namespace LinBox
 		Diagonal(const Field F, const std::vector<typename Field::Element>& v);
 
         // construct random nonsingular n by n diagonal matrix.
-		Diagonal(const Field F, const size_t n);
+		Diagonal(const Field F, const size_t n, bool nonsing=true);
 
 		Diagonal(const Field F, const size_t n, typename Field::RandIter& iter);
 
@@ -95,6 +95,9 @@ namespace LinBox
 		size_t rowdim(void) const { return _n; } 
 
 		size_t coldim(void) const { return _n; } 
+
+		void random();
+		void randomNonsingular();
 
 		/// \brief the field of the entries
 		const Field& field() const{ return _F; }
@@ -305,14 +308,21 @@ namespace LinBox
 		: _F(F), _n(v.size()), _v(v)
 	{}
 
+
 	template <class _Field>
 	inline Diagonal<_Field, VectorCategories::DenseVectorTag>
-		::Diagonal(const Field F, const size_t n)
+		::Diagonal(const Field F, const size_t n, bool nonsing)
 	: _F(F), _n(n), _v(n)
 	{   typename Field::RandIter r(F);
 		typedef typename std::vector<typename Field::Element>::iterator iter;
-		for (iter i = _v.begin(); i < _v.end(); ++i) 
-			while (_F.isZero(r.random(*i)));
+		if (nonsing)
+		randomNonsingular();
+		//for (iter i = _v.begin(); i < _v.end(); ++i) 
+		//	while (_F.isZero(r.random(*i)));
+		else
+		random();
+		//for (iter i = _v.begin(); i < _v.end(); ++i) 
+		//	r.random(*i);
 	}
 
 
@@ -320,9 +330,28 @@ namespace LinBox
 	inline Diagonal<Field, VectorCategories::DenseVectorTag >
 		::Diagonal(const Field F, const size_t n, typename Field::RandIter& iter)
 		: _F(F), _n(n), _v(n)
-	{	for (typename std::vector<typename Field::Element>::iterator 
-				i = _v.begin(); i != _v.end(); ++i) 
-			iter.random(*i); 
+	{	//for (typename std::vector<typename Field::Element>::iterator 
+		//		i = _v.begin(); i != _v.end(); ++i) 
+		//	iter.random(*i); 
+		random();
+	}
+
+	template <class _Field>
+	inline void Diagonal<_Field, VectorCategories::DenseVectorTag>
+		::random()
+	{   typename Field::RandIter r(_F);
+		typedef typename std::vector<typename Field::Element>::iterator iter;
+		for (iter i = _v.begin(); i < _v.end(); ++i) 
+			r.random(*i);
+	}
+
+	template <class _Field>
+	inline void Diagonal<_Field, VectorCategories::DenseVectorTag>
+		::randomNonsingular()
+	{   typename Field::RandIter r(_F);
+		typedef typename std::vector<typename Field::Element>::iterator iter;
+		for (iter i = _v.begin(); i < _v.end(); ++i) 
+			while (_F.isZero(r.random(*i)));
 	}
 
 	template <class Field>

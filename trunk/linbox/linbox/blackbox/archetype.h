@@ -199,11 +199,6 @@ matrix transpose times vector product. )
 
 #endif
 
-#ifdef __LINBOX_XMLENABLED
-		virtual std::ostream &write(std::ostream &) const = 0;
-		virtual bool toTag(LinBox::Writer &W) const = 0;
-#endif
-
 	}; // BlackBox Archetype
 
 } // namespace LinBox
