@@ -79,7 +79,7 @@ class MatrixMarketReader :public MatrixStreamReader<Field> {
 	}
 
     protected:
-    	MatrixStreamError nextTripleImpl( size_t& m, size_t& n, Element& v ) {
+    	MatrixStreamError nextTripleImpl( size_t& i, size_t& j, Element& v ) {
 		if( currentCol == 0 && currentRow == 0 ) {
 			MatrixStreamError mse = readHeader();
 			if( mse != GOOD ) return mse;
@@ -87,8 +87,8 @@ class MatrixMarketReader :public MatrixStreamReader<Field> {
 
 		if( array ) {
 			if( currentCol == this->_n+1 ) return END_OF_MATRIX;
-			n = currentCol;
-			m = currentRow;
+			j = currentCol;
+			i = currentRow;
 			if( ++currentRow == this->_m+1 ) {
 				++currentCol;
 				currentRow = (symmetric ? currentCol : 1);
@@ -98,12 +98,12 @@ class MatrixMarketReader :public MatrixStreamReader<Field> {
 			if( --entriesLeft < 0 ) return END_OF_MATRIX;
 
 			this->ms->readWhiteSpace();
-			*(this->sin) >> m;
+			*(this->sin) >> i;
 			if( this->sin->eof() ) return END_OF_FILE;
 			if( !this->sin->good() ) return BAD_FORMAT;
 
 			this->ms->readWhiteSpace();
-			*(this->sin) >> n;
+			*(this->sin) >> j;
 			if( this->sin->eof() ) return END_OF_FILE;
 			if( !this->sin->good() ) return BAD_FORMAT;
 		}
@@ -116,11 +116,11 @@ class MatrixMarketReader :public MatrixStreamReader<Field> {
 			if( !this->sin->good() ) return BAD_FORMAT;
 		}
 
-		--m;
-		--n;
-		if( m < 0 || m >= this->_m || n < 0 || n >= this->_n )
+		--i;
+		--j;
+		if( i < 0 || i >= this->_m || j < 0 || j >= this->_n )
 			return BAD_FORMAT;
-		if( symmetric && (m != n) ) saveTriple(n,m,v);
+		if( symmetric && (i != j) ) saveTriple(j,i,v);
 
 		return GOOD;
 	}

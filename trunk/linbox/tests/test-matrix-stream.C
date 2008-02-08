@@ -42,157 +42,147 @@ TestField f;
 
 template <class BB>
 bool testMatrix( std::ostream& out, const char* filename, const char* BBName ) ;
-bool testMatrixStream(std::ostream& out) {
-        std::vector<const char *> matrixNames;
-	matrixNames. push_back("data/sms.matrix");
-	matrixNames.push_back("data/matrix-market-array.matrix");
-	matrixNames.push_back("data/maple-sparse1.matrix");
-	matrixNames.push_back("data/maple-dense1.matrix");
-	matrixNames.push_back("data/generic-dense.matrix");
-	matrixNames.push_back("data/sparse-row.matrix");
-	matrixNames.push_back("data/matrix-market-coordinate.matrix");
+bool testMatrixStream(const string& matfile) {
 
-	bool fail = false;
-	bool failThis;
-	commentator.start("Testing matrix-stream...", "matrix stream", 1);
+	bool pass = true;
+	commentator.start("Testing matrix-stream...", matfile.c_str());
+	std::ostream& out = commentator.report();
 
-	for (size_t i = 0; i < 19; ++i) {matrix[2][2] *= 10; matrix[2][2] += 8; }
-
-	for( size_t i = 0; i < matrixNames.size(); ++i ) {
-		failThis = false;
-		std::ifstream fin(matrixNames[i]);
-		if( !fin ) {
-			out << "Could not open " << matrixNames[i] << std::endl;
-			fail = true;
-			continue;
+	std::ifstream fin(matfile.c_str());
+	if( !fin ) {
+		out << "Could not open " << matfile << std::endl;
+		pass = false;
 		}
-		out << "\tTesting " << matrixNames[i] << std::endl;
-		MatrixStream<TestField > ms(f,fin);
-		int nzCount = nonZeros;
-		size_t m, n;
-		integer v;
-		if(!ms.getDimensions(m,n)) {
-			out << "Error getting dimensions in "
-			    << matrixNames[i] << std::endl;
-			fail = failThis = true;
-		}
-		if( !failThis && m != rowDim ) {
-			out << "Wrong rowDim in " << matrixNames[i]
+	out << "\tTesting " << matfile << std::endl;
+	MatrixStream<TestField > ms(f,fin);
+	int nzCount = nonZeros;
+	size_t i, j;
+	integer v;
+	if(!ms.getDimensions(i,j)) {
+		out << "Error getting dimensions in "
+		    << matfile << std::endl;
+		pass = false;
+	}
+	if( pass && i != rowDim ) {
+		out << "Wrong rowDim in " << matfile
+		     << ", format " << ms.getFormat() << std::endl
+		     << "Got " << i << ", should be " << rowDim << std::endl;
+		pass = false;
+	}
+	if( pass && j != colDim ) {
+		out << "Wrong colDim in " << matfile
+		     << ", format " << ms.getFormat() << std::endl
+		     << "Got " << j << ", should be " << colDim << std::endl;
+		pass = false;
+	}
+	while( pass && ms.nextTriple(i,j,v) ) {
+		if(!f.isZero(v)) --nzCount;
+		if( i >= rowDim ) {
+			out << "Row index out of bounds in "
+			     << matfile
 			     << ", format " << ms.getFormat() << std::endl
-			     << "Got " << m << ", should be " << rowDim << std::endl;
-			fail = failThis = true;
+			     << "Got " << i << ", should be less than "
+			     << rowDim << std::endl;
+			pass = false;
+			break;
 		}
-		if( !failThis && n != colDim ) {
-			out << "Wrong colDim in " << matrixNames[i]
+		if( j >= colDim ) {
+			out << "Column index out of bounds in "
+			     << matfile
 			     << ", format " << ms.getFormat() << std::endl
-			     << "Got " << n << ", should be " << colDim << std::endl;
-			fail = failThis = true;
+			     << "Got " << j << ", should be less than "
+			     << colDim << std::endl;
+			pass = false;
+			break;
 		}
-		while( !failThis && ms.nextTriple(m,n,v) ) {
-			if(!f.isZero(v)) --nzCount;
-			if( m >= rowDim ) {
-				out << "Row index out of bounds in "
-				     << matrixNames[i]
-				     << ", format " << ms.getFormat() << std::endl
-				     << "Got " << m << ", should be less than "
-				     << rowDim << std::endl;
-				fail = failThis = true;
+		if( matrix[i][j] != v ) {
+			out << "Invalid entry in "
+			     << matfile
+			     << ", format " << ms.getFormat() << std::endl
+			     << "Got " << v << " at index (" << i
+			     << "," << j << "), should be "
+			     << matrix[i][j] << std::endl;
+			pass = false;
+			break;
+		}
+	}
+	if( ms.getError() != END_OF_MATRIX ) {
+		pass = false;
+	}
+	if( pass && nzCount > 0 ) {
+		out << "Not enough entries in " << matfile
+		     << ", format " << ms.getFormat() << std::endl;
+		pass = false;
+	}
+	if( pass && nzCount < 0 ) {
+		out << "Duplicate entries in " << matfile
+		     << ", format " << ms.getFormat() << std::endl;
+		pass = false;
+	}
+
+	if( !pass ) {
+		out << "Test failed for " << matfile
+		     << ", format " << ms.getFormat() << std::endl
+		     << "Error code: " << ms.getError()
+		     << ", line number: " << ms.getLineNumber() << std::endl;
+		pass = false;
+	}
+
+	fin.seekg(0,std::ios::beg);
+	MatrixStream<TestField> ms2(f,fin);
+	std::vector<TestField::Element> array;
+	if( !ms2.getArray(array) ) {
+		ms2.reportError("Problem with getArray",ms2.getLineNumber());
+		pass = false;
+	}
+	if( pass && array.size() != rowDim*colDim ) {
+		out << "Array given wrong size in " << matfile
+		     << ", format " << ms2.getFormat() << std::endl
+		     << "Got " << array.size() << ", should be "
+		     << rowDim*colDim << std::endl;
+		pass = false;
+	}
+	for( i = 0; pass && i < rowDim; ++i ) {
+		for( j = 0; pass && j < colDim; ++j ) {
+			if( array[i*colDim+j] != matrix[i][j] ) {
+				out << "Invalid entry in getArray of "
+					  << matfile
+					  << ", format " << ms2.getFormat()
+					  << std::endl
+					  << "Got " << array[i*colDim+j] 
+					  << " at index (" << i
+					  << "," << j << "), should be "
+					  << matrix[i][j] << std::endl;
+				pass = false;
 				break;
 			}
-			if( n >= colDim ) {
-				out << "Column index out of bounds in "
-				     << matrixNames[i]
-				     << ", format " << ms.getFormat() << std::endl
-				     << "Got " << n << ", should be less than "
-				     << colDim << std::endl;
-				fail = failThis = true;
-				break;
-			}
-			if( matrix[m][n] != v ) {
-				out << "Invalid entry in "
-				     << matrixNames[i]
-				     << ", format " << ms.getFormat() << std::endl
-				     << "Got " << v << " at index (" << m
-				     << "," << n << "), should be "
-				     << matrix[m][n] << std::endl;
-				fail = failThis = true;
-				break;
-			}
-		}
-		if( ms.getError() != END_OF_MATRIX ) {
-			fail = failThis = true;
-		}
-		if( !failThis && nzCount > 0 ) {
-			out << "Not enough entries in " << matrixNames[i]
-			     << ", format " << ms.getFormat() << std::endl;
-			fail = failThis = true;
-		}
-		if( !failThis && nzCount < 0 ) {
-			out << "Duplicate entries in " << matrixNames[i]
-			     << ", format " << ms.getFormat() << std::endl;
-			fail = failThis = true;
-		}
-
-		if( failThis ) {
-			std::cout << "Test failed for " << matrixNames[i]
-			     << ", format " << ms.getFormat() << std::endl
-			     << "Error code: " << ms.getError()
-			     << ", line number: " << ms.getLineNumber() << std::endl;
-			continue;
-		}
-
-		fin.seekg(0,std::ios::beg);
-		MatrixStream<TestField> ms2(f,fin);
-		std::vector<TestField::Element> array;
-		if( !ms2.getArray(array) ) {
-			ms2.reportError("Problem with getArray",ms2.getLineNumber());
-			fail = failThis = true;
-		}
-		if( !failThis && array.size() != rowDim*colDim ) {
-			out << "Array given wrong size in " << matrixNames[i]
-			     << ", format " << ms2.getFormat() << std::endl
-			     << "Got " << array.size() << ", should be "
-			     << rowDim*colDim << std::endl;
-			fail = failThis = true;
-		}
-		for( m = 0; !failThis && m < rowDim; ++m ) {
-			for( n = 0; !failThis && n < colDim; ++n ) {
-				if( array[m*colDim+n] != matrix[m][n] ) {
-					out << "Invalid entry in getArray of "
-						  << matrixNames[i]
-						  << ", format " << ms2.getFormat()
-						  << std::endl
-						  << "Got " << array[m*colDim+n] 
-						  << " at index (" << m
-						  << "," << n << "), should be "
-						  << matrix[m][n] << std::endl;
-					fail = failThis = true;
-					break;
-				}
-			}
-		}
-
-		if( failThis ) {
-			out << "Test failed for " << matrixNames[i]
-			     << ", format " << ms2.getFormat() << std::endl
-			     << "Error code: " << ms2.getError()
-			     << ", line number: " << ms2.getLineNumber() << std::endl;
 		}
 	}
 
-	if( 	testMatrix< DenseMatrix<TestField> >
-			( out, matrixNames[0], "Dense BlackBox Matrix" )
-	  ) fail = true;
-	if( 	testMatrix< SparseMatrix<TestField> >
-			( out, matrixNames[0], "Sparse BlackBox Matrix" )
-	  ) fail = true;
-	if( 	testMatrix< BlasBlackbox<TestField> >
-			( out, matrixNames[0], "BLAS BlackBox Matrix" )
-	  ) fail = true;
+	if( !pass ) {
+		out << "Test failed for " << matfile
+		     << ", format " << ms2.getFormat() << std::endl
+		     << "Error code: " << ms2.getError()
+		     << ", line number: " << ms2.getLineNumber() << std::endl;
+	}
+
+/* later
+	if( !testMatrix< DenseMatrix<TestField> >
+			( out, matfile[0], "Dense BlackBox Matrix" )
+	  ) pass = false;
+	if( !testMatrix< SparseMatrix<TestField> >
+			( out, matfile[0], "Sparse BlackBox Matrix" )
+	  ) pass = false;
+	if( !testMatrix< BlasBlackbox<TestField> >
+			( out, matfile[0], "BLAS BlackBox Matrix" )
+	  ) pass = false;
 	
-	if( fail )	out << "FAIL: matrix-stream" << std::endl; 
+*/
+	if( !pass )	out << "FAIL: matrix-stream" << std::endl; 
 	else 		out << "matrix-stream Passed" << std::endl;
-	return !fail;
+	commentator.stop(ms.getFormat());
+	//commentator.stop(MSG_STATUS(pass));
+	return pass;
 }
 
 template <class BB>
@@ -201,21 +191,21 @@ bool testMatrix( std::ostream& out, const char* filename, const char* BBName ) {
 	std::ifstream fin( filename );
 	if( !fin ) {
 		out << "Could not open " << filename << std::endl;
-		return true;
+		return false;
 	}
 	MatrixStream<TestField > ms(f, fin);
 	BB m( ms );
 	if( m.rowdim() != rowDim ) {
 		out << "Wrong rowDim in " << BBName << std::endl
 		     << "Got " << m.rowdim() << ", should be " << rowDim << std::endl;
-		return true;
+		return false;
 	}
 	if( m.coldim() != colDim ) {
 		out << "Wrong colDim in " << BBName << std::endl
 		     << "Got " << m.coldim() << ", should be " << colDim << std::endl;
-		return true;
+		return false;
 	}
-	bool fail = false;
+	bool pass = true;
 	for( size_t i = 0; i < rowDim; ++i ) {
 		for( size_t j = 0; j < colDim; ++j ) {
 			if( m.getEntry(i,j) != matrix[i][j] ) {
@@ -223,11 +213,11 @@ bool testMatrix( std::ostream& out, const char* filename, const char* BBName ) {
 				     << i << "," << j << ")" << std::endl
 				     << "Got " << m.getEntry(i,j) << ", should be "
 				     << matrix[i][j] << std::endl;
-				fail = true;
+				pass = false;
 			}
 		}
 	}
-	return fail;
+	return pass;
 }
 
 int main(int argc, char* argv[]){
@@ -248,11 +238,19 @@ int main(int argc, char* argv[]){
 
 	parseArguments (argc, argv, args);
 
-	commentator.start("Matrix stream test suite", "matrix stream", 1);
-	std::ostream& report = commentator.report();
+	for (size_t i = 0; i < 19; ++i) {matrix[2][2] *= 10; matrix[2][2] += 8; }
+
+	commentator.start("Matrix stream test suite", "matrix stream");
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
-	bool pass = testMatrixStream(report);
-	commentator.stop("matrix stream test suite");
+	bool pass = true;
+	pass = pass && testMatrixStream("data/sms.matrix");
+	pass = pass && testMatrixStream("data/matrix-market-array.matrix");
+	pass = pass && testMatrixStream("data/maple-sparse1.matrix");
+	pass = pass && testMatrixStream("data/maple-dense1.matrix");
+	pass = pass && testMatrixStream("data/generic-dense.matrix");
+	pass = pass && testMatrixStream("data/sparse-row.matrix");
+	pass = pass && testMatrixStream("data/matrix-market-coordinate.matrix");
+	commentator.stop(MSG_STATUS(pass));
 	return pass ? 0 : -1;
 }

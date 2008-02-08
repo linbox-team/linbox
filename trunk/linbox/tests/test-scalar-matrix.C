@@ -56,6 +56,6 @@ int main (int argc, char **argv)
 	//Blackbox C (F, 100000, d); // Test a large one.
 	//pass = pass && testBlackbox(C);
 
-	commentator.stop("Scalar black box test suite");
+	commentator.stop(MSG_STATUS(pass));
 	return pass ? 0 : -1;
 }
