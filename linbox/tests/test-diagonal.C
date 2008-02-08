@@ -95,7 +95,7 @@ static bool testIdentityApply (Field &F, VectorStream<Vector> &stream)
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Vectors are not equal" << endl;
 
-		commentator.stop ("done");
+		commentator.stop (MSG_STATUS (ret));
 		commentator.progress ();
 	}
 
@@ -169,7 +169,7 @@ static bool testRandomMinpoly (Field &F, VectorStream<Vector> &stream)
 			ret = false;
 		}
 
-		commentator.stop ("done");
+		commentator.stop (MSG_STATUS(ret));
 		commentator.progress ();
 	}
 
@@ -316,7 +316,7 @@ int main (int argc, char **argv)
 	LinBox::Diagonal<Field> D(F, 10, iter);
 	pass = pass && testBlackbox(D);
 
-	commentator.stop("diagonal matrix black box test suite");
+	commentator.stop (MSG_STATUS (pass));
 
 	return pass ? 0 : -1;
 }

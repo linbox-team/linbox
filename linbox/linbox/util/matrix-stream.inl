@@ -6,30 +6,19 @@ template<class Field>
 bool MatrixStream<Field>::readWhiteSpace()
 {
 	char c;
-	in.get(c);
-
-	while(true) {
-		if( in.eof() ) {
-			return false;
-		}
-
-		switch(c) {
-		    case '\n':
-			++lineNumber;
-		    case '\r':
-		    	if( in.peek() != '\n' ) ++lineNumber;
-		    case ' ':
-		    case '\t':
-		    case '\v':
-		    case '\f':
-			break;
-		    default:
-		    	in.putback(c);
+	while(in.get(c)) {
+		if (isspace(c))
+			switch(c) {
+			    case '\n': ++lineNumber; break;
+		    	case '\r': if( in.peek() != '\n' ) ++lineNumber; break;
+			}
+		else {
+    		in.putback(c);
 			return true;
 		}
 
-		in.get(c);
 	}
+	return false; // because eof or read error.
 }
 
 template<class Field>
