@@ -8,6 +8,8 @@
 #ifndef __TRIPLESBB_H
 #define __TRIPLESBB_H
 
+#include <algorithm>
+using std::max;
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 #include "linbox/util/field-axpy.h"
@@ -17,7 +19,6 @@
 #include <vector>
 
 namespace LinBox {
-
 
 	/** \brief wrapper for NAG Sparse Matrix format.
 	 *
@@ -124,9 +125,6 @@ namespace LinBox {
 		template<class OutVector, class InVector>
 		void _apply(OutVector &, const InVector &, std::vector<size_t>::const_iterator, std::vector<size_t>::const_iterator) const;
 
-		// small util function that determines the larger of two input size_t's
-		size_t _max(size_t s1, size_t s2) const { return s1 > s2 ? s1 : s2; }
-
 		/* STL vector of FieldAXPY objects.  Supports delayed modding out, a feature
 		 * which contributes a significant speed boost when performing apply &
 		 * applyTranspose calculations over a field of multi-precision integers
@@ -160,7 +158,7 @@ namespace LinBox {
 									size_t cols, 
 									bool RowSortFlag, 
 									bool ColSortFlag) :
-		_F(F), _values(values), _RowV(RowV), _ColV(ColV), _rows(rows), _cols(cols), _faxpy(_max(rows,cols), FieldAXPY<Field>(F)), _RowSortFlag(RowSortFlag), _ColSortFlag(ColSortFlag)
+		_F(F), _values(values), _RowV(RowV), _ColV(ColV), _rows(rows), _cols(cols), _faxpy(max(rows,cols), FieldAXPY<Field>(F)), _RowSortFlag(RowSortFlag), _ColSortFlag(ColSortFlag)
 		{}
 
 	/* Better constructor that only takes the field, m, n and recommended
@@ -168,24 +166,22 @@ namespace LinBox {
 	 * (reduce the number of memory management moves).  Meant to be used in
 	 * conjuction with the addEntry() method
 	 */
-
 	template<class Field>
 		TriplesBB<Field>::TriplesBB( Field F, size_t rows, size_t cols, size_t res):
-		_F(F), _rows(rows), _cols(cols), _faxpy( _max(rows, cols), FieldAXPY<Field>(F)), _RowSortFlag(false), _ColSortFlag(false)
+		_F(F), _rows(rows), _cols(cols), _faxpy( max(rows, cols), FieldAXPY<Field>(F)), _RowSortFlag(false), _ColSortFlag(false)
 		{
 			if(res != 0) {
 				_values.reserve(res);
 				_RowV.reserve(res);
 				_ColV.reserve(res);
 			}
-
 		}
 
 
 
 	template<class Field>
 		TriplesBB<Field>::TriplesBB(const TriplesBB<Field> &In) :
-		_faxpy( _max(In._rows, In._cols), FieldAXPY<Field>(In._F)),
+		_faxpy( max(In._rows, In._cols), FieldAXPY<Field>(In._F)),
 			_F ( In._F ),
 			_values ( In._values ),
 			_RowV ( In._RowV ),
