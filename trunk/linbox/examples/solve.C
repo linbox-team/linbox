@@ -1,3 +1,4 @@
+// contains temp mods not to be checked in.
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /**\file examples/solve.C
 \brief Solving of sparse matrix over Z or Zp.
@@ -69,7 +70,7 @@ int main (int argc, char **argv)
         double q = atof(argv[ModComp]);
         Field F(q);
         MatrixStream< Field > ms ( F, input );
-        SparseMatrix<Field> A (ms); // A.write(std::cout);
+        SparseMatrix<Field> A (ms);  A.write(std::cout);
         cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
             
         std::vector<Field::Element> X( A.coldim()),B(A.rowdim());

@@ -45,8 +45,7 @@ int main (int argc, char **argv)
 		}
 		MatrixStream< Integers> ms ( ZZ, input );
 		BlasBlackbox<Integers> A(ms);
-		A.read(input);
-		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
+		cout << "Matrix is " << A.rowdim() << " by " << A.coldim() << endl;
 
 		Integers::Element det_A;
 		det (det_A, A);
@@ -67,7 +66,7 @@ int main (int argc, char **argv)
 		}
 		MatrixStream< Field > ms ( F, input );
 		SparseMatrix<Field> B (ms);
-		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
+		cout << "Matrix is " << B.rowdim() << " by " << B.coldim() << endl;
 
 		Field::Element det_B;
 		det (det_B, B);
