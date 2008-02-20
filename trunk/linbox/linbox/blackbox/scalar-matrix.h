@@ -86,7 +86,7 @@ namespace LinBox
 		{
 			//typename VectorTraits<InVector>::VectorCategory t;
 			//return _app (y, x, t);
-			return _app (y, x, *new VectorCategories::DenseVectorTag);
+			return _app (y, x, VectorCategories::DenseVectorTag());
 		}
 
 		/** Application of BlackBox matrix transpose.
