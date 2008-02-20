@@ -526,7 +526,7 @@ namespace LinBox {
 						for (size_t i=0;i<_n;++i)
 							_D.init(y[i],ctd[i]);
 						delete[] ctd;
-						
+						delete[] dx;
 					}
 					else {
 
