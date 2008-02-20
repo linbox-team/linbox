@@ -737,8 +737,8 @@ namespace LinBox
 
 	class Commentator {
 	    public: 
-		inline Commentator () : cnull (new nullstreambuf) {}
-		inline virtual ~Commentator () {}
+		inline Commentator () : cnull (new nullstreambuf()) {}
+		inline ~Commentator () {delete &cnull;}
 		inline void start (const char *description, const char *fn = (const char *) 0, unsigned long len = 0) {}
 		inline void startIteration (unsigned int iter, unsigned long len = 0) {}
 		inline void stop (const char *msg, const char *long_msg = (const char *) 0, const char *fn = (const char *) 0) {}
@@ -799,7 +799,8 @@ namespace LinBox
 	    private:
 		// Null std::ostream prints nothing
 		struct nullstreambuf : public std::streambuf {
-			nullstreambuf () {};
+			nullstreambuf () {};	
+			~nullstreambuf () {};
 			inline std::streampos seekoff (std::streambuf::off_type, std::ios::seekdir, std::ios::openmode) { return 0; }
 			inline std::streampos seekpos (std::streambuf::pos_type, std::ios::openmode) { return 0; }
 			inline std::streampos sys_seek (std::streambuf::off_type, std::ios::seekdir) { return 0; }
