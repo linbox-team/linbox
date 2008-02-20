@@ -627,10 +627,11 @@ namespace LinBox {
 		
 			// if input matrix A is different one.
 			if (!oldMatrix) {
-		
+				
 				//delete IMP;
 		
-				delete FMP;
+				// Could delete a non allocated matrix -> segfault
+				//delete FMP;
 		
 				IMP = &A;					
 		
@@ -690,13 +691,17 @@ namespace LinBox {
 #endif		
 
 		typedef DixonLiftingContainer<Ring,Field,IMatrix,BlasBlackbox<Field> > LiftingContainer;		
-		LiftingContainer lc(_R, *F, A, *FMP, b, _prime);		
+		LiftingContainer lc(_R, *F, A, *FMP, b, _prime);
 		RationalReconstruction<LiftingContainer > re(lc);
-
-		if (!re.getRational(num, den, 0)) return SS_FAILED;
+		if (!re.getRational(num, den, 0)){
+			delete FMP;
+			return SS_FAILED;
+		}
 #ifdef RSTIMING
 		ttNonsingularSolve.update(re, lc);
 #endif	
+		delete FMP;
+
 		if (F!=NULL)
 			delete F;
 		return SS_OK;
