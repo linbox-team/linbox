@@ -60,7 +60,7 @@ namespace LinBox
 		Field F(*primeg);
 		FBlackbox * fbb;
 		MatrixHom::map<Field,Blackbox> (fbb, A, F);
-		charpoly ( fieldCharPoly, *fbb, M);
+		charpoly (fieldCharPoly, *fbb, M);
 		delete fbb;
 		/* Determination of the multiplicities */
 		FieldPolyDom FPD (F);
@@ -96,6 +96,8 @@ namespace LinBox
 			IPD.pow( P, *intFactors[i], multip[i] );
 			IPD.mulin( intCharPoly, P );
 		}
+		for (size_t i = 0; i < nf; ++i)
+			delete intFactors[i];
 		commentator.stop ("done", NULL, "CIA");
 
 		return P = intCharPoly;
