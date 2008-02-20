@@ -12,6 +12,7 @@ AM_CXXFLAGS +=$(NTL_CFLAGS)
 
 lib_LTLIBRARIES=liblbdriver.la 
 
+
 liblbdriver_la_SOURCES= lb-element.C 	\
 			lb-domain.C 	\
 			lb-blackbox.C 	\
@@ -34,8 +35,32 @@ pkginclude_HEADERS=\
 		lb-element-collection.h  	\
 		lb-polynomial.h         	\
 		lb-vector-data.h		\
-		lb-blackbox-collection.h  lb-charpoly.h           lb-domain-functor.h    lb-element-data.h        lb-rank.h               lb-vector-function.h 	\
-		lb-blackbox-data.h        lb-det.h                lb-domain.h            lb-element.h             lb-solve.h              lb-vector-functor.h	\
-		lb-blackbox-function.h    lb-domain-abstract.h    lb-domain-type.h       lb-garbage.h             lb-utilities.h          lb-vector.h		\
-		lb-blackbox-functor.h     lb-domain-collection.h  lb-driver.h            lb-interface.h           lb-vector-abstract.h    lb-vector-type.h	\
-		lb-blackbox.h             lb-domain-data.h        lb-element-abstract.h  lb-minpoly.h             lb-vector-collection.h			
+		lb-blackbox-collection.h 	\
+		lb-charpoly.h			\
+	        lb-domain-functor.h		\
+		lb-element-data.h		\
+		lb-rank.h			\
+		lb-vector-function.h	 	\
+		lb-blackbox-data.h      	\
+		lb-det.h                	\
+		lb-domain.h 			\
+		lb-element.h			\
+		lb-solve.h			\
+		lb-vector-functor.h		\
+		lb-blackbox-function.h		\
+		lb-domain-abstract.h		\
+		lb-domain-type.h		\
+		lb-garbage.h			\
+		lb-utilities.h          	\
+		lb-vector.h			\
+		lb-blackbox-functor.h		\
+		lb-domain-collection.h		\
+		lb-driver.h			\
+		lb-interface.h			\
+		lb-vector-abstract.h		\
+		lb-vector-type.h		\
+		lb-blackbox.h			\
+		lb-domain-data.h		\
+		lb-element-abstract.h		\
+		lb-minpoly.h			\
+		lb-vector-collection.h			
