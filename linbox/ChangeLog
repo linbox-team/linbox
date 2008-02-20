@@ -1,4 +1,7 @@
-2008-10-27 cpernet
+2008_02-20 cpernet
+	linbox-1.1.5 released: many minor fixes, mostly memleaks. Drivers are
+	back to the source code, and shared libraries are enabled by default.
+2007-10-27 cpernet
 	linbox-1.1.4 has been released including the following most important
 	changes:
 	* lots of memory leaks fixed 
