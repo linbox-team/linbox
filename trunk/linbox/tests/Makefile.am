@@ -88,7 +88,6 @@ NONCOMPILING_TESTS =
 FAILING_TESTS =		\
         test-solve              \
         test-zo                 \
-        test-CSR	            \
         test-quad-matrix        \
         test-mg-block-lanczos   \
 	test-la-block-lanczos    
@@ -351,10 +350,6 @@ test_companion_SOURCES =		\
 	test-companion.C		\
 	test-generic.h			\
 	test-common.h
-
-test_CSR_SOURCES =		\
-	test-CSR.C		\
-	test-blackbox.h
 
 test_inverse_SOURCES =			\
 	test-inverse.C			\
