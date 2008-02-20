@@ -527,9 +527,9 @@ namespace LinBox {
         linbox_check( a == b );
         linbox_check( a < LinBox::BlasBound);
         BlasMatrix<typename Field::Element> B(A);
-        BlasMatrixDomain<Field> D(F);
+	BlasMatrixDomain<Field> D(F);
         r = D.rank(B);
-        commentator.stop ("done", NULL, "blasrank");
+	commentator.stop ("done", NULL, "blasrank");
         return r;
     }
 
