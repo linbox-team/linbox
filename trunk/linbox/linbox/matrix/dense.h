@@ -110,6 +110,7 @@ class DenseMatrixBase
 		: _rep (M._rep),_rows (M._rows), _cols (M._cols), _ptr(&_rep[0])
 	{}
 
+	~DenseMatrixBase(){}
 	///
 	DenseMatrixBase& operator= (const DenseMatrixBase& M) {
 		(*this)._rep  = M._rep;
