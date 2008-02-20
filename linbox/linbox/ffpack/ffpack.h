@@ -586,6 +586,8 @@ public:
 		size_t R =  ReducedColumnEchelonForm (F, M, M, A, lda, P, Q);
 		nullity = M - R;
 		applyP (F, FflasLeft, FflasTrans, M, 0, R, A, lda, P); 
+		delete [] P;
+		delete [] Q;
 		return A;
 	}
 
