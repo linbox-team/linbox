@@ -440,40 +440,44 @@ if test "x$blas_found" != "xyes" ; then
 	break
 	])
 
-	if test "x$dgetri_problem" = "xautoimplement" -a "x$dtrtri_found" = "xyes"; then
-		AC_MSG_RESULT(no)
-		AC_MSG_CHECKING(for autoimplementation of dgetri)
-		AC_TRY_RUN(
-		[#define __LINBOX_CONFIGURATION
-		 #define __LINBOX_AUTOIMPLEMENT_DGETRI
-		 #define __LINBOX_HAVE_DGETRI 
-		 #define __LINBOX_HAVE_DTRTRI
-	 	 #include "linbox/config-blas.h"
-		 int main () {  double a[4] = {2.,0.5,4.,1.};
-				int ipiv[2] = {2,2};				
-				clapack_dgetri(CblasRowMajor, 2, a, 2, ipiv);
-				if ( (a[0]!=-2.) && (a[1]!=1.) && (a[2]!=1.5) && (a[3]!=-0.5))
-					return -1;
-				else
-					return 0;
-			      }
-		],[	
-		dgetri_found="yes"	
-		break
-		],[	
-		dgetri_problem="$problem"	
-		],[
-		break
-		])
-		if test "x$dgetri_found" = "xyes"; then
-			AC_MSG_RESULT(working)
-			AC_DEFINE(HAVE_DGETRI,1,[Define if dgetri is available])
-			AC_DEFINE(AUTOIMPLEMENT_DGETRI,,[Enable Autoimplementation of dgetri routine with dtrti and dtrsm])
-		else
+	if test "x$dgetri_problem" = "xautoimplement"; then
+		if test "x$dtrtri_found" = "xyes"; then
+			AC_MSG_RESULT(no)
+			AC_MSG_CHECKING(for autoimplementation of dgetri)
+			AC_TRY_RUN(
+			[#define __LINBOX_CONFIGURATION
+		 	 #define __LINBOX_AUTOIMPLEMENT_DGETRI
+		 	 #define __LINBOX_HAVE_DGETRI 
+		 	 #define __LINBOX_HAVE_DTRTRI
+	 	 	 #include "linbox/config-blas.h"
+		 	 int main () {  double a[4] = {2.,0.5,4.,1.};
+					int ipiv[2] = {2,2};				
+					clapack_dgetri(CblasRowMajor, 2, a, 2, ipiv);
+					if ( (a[0]!=-2.) && (a[1]!=1.) && (a[2]!=1.5) && (a[3]!=-0.5))
+						return -1;
+					else
+						return 0;
+				      }
+			],[	
+			dgetri_found="yes"	
+			break
+			],[	
+			dgetri_problem="$problem"	
+			],[
+			break
+			])
+			if test "x$dgetri_found" = "xyes"; then
+				AC_MSG_RESULT(working)
+				AC_DEFINE(HAVE_DGETRI,1,[Define if dgetri is available])
+				AC_DEFINE(AUTOIMPLEMENT_DGETRI,,[Enable Autoimplementation of dgetri routine with dtrti and dtrsm])
+			else
+				AC_MSG_RESULT(disabling)
+				AC_DEFINE(HAVE_DGETRI,0,[Define if dgetri is available])
+			fi				
+		else	
 			AC_MSG_RESULT(disabling)
-			#AC_DEFINE(HAVE_DGETRI,0,[Define if dgetri is available])
-		fi				
-		
+			AC_DEFINE(HAVE_DGETRI,0,[Define if dgetri is available])
+		fi
 	else
 		AC_MSG_RESULT(working)
 		AC_DEFINE(HAVE_DGETRI,1,[Define if dgetri is available])
