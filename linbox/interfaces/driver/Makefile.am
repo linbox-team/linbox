@@ -1,3 +1,4 @@
+if LINBOX_COMPILE_DRIVERS
 pkgincludesubdir=$(includedir)/interfaces/driver
 
 INCLUDES=-I$(top_srcdir) -I. -I../../linbox
@@ -64,3 +65,4 @@ pkginclude_HEADERS=\
 		lb-element-abstract.h		\
 		lb-minpoly.h			\
 		lb-vector-collection.h			
+endif
