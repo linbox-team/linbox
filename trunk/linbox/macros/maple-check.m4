@@ -116,3 +116,20 @@ AM_CONDITIONAL(LINBOX_HAVE_MAPLE, test "x$HAVE_MAPLE" = "xyes")
 
 
 ])
+
+#Enables the compilation of the drivers
+AC_DEFUN([LB_DRIVER],
+[
+AC_MSG_CHECKING([whether to compile the drivers])
+
+AC_ARG_ENABLE(drivers, [ --enable-drivers	Enable the compilation of the drivers],
+[
+AC_MSG_RESULT(yes)
+compile_drivers="yes"
+],[
+AC_MSG_RESULT(no)
+compile_drivers="no"
+])
+AM_CONDITIONAL(LINBOX_COMPILE_DRIVERS, test "x$compile_drivers" = "xyes" -o LINBOX_HAVE_MAPLE)
+])
+
