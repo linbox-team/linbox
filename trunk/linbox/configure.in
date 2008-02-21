@@ -18,6 +18,8 @@ CXXFLAGS=${CXXFLAGS:-$DEFAULT_CFLAGS}
 
 AM_ACLOCAL_INCLUDE(macros)
 
+# work around to fix the backward compatibility issue of automake 1.10 with 1.9 (pb with MKDIR_P)
+AC_SUBST([MKDIR_P])
 AC_PROG_CC
 AC_PROG_CXX
 AC_STDC_HEADERS
@@ -105,6 +107,7 @@ AC_DEFINE_UNQUOTED(INT64, $LINBOX_INT64, Canonical 64-bit data type)
 
 # Feature checks
 LB_MISC
+LB_DRIVER
 
 AC_LANG_CPLUSPLUS
 LB_CHECK_GMP(,,[
