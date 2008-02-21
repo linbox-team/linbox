@@ -476,7 +476,7 @@ if test "x$blas_found" != "xyes" ; then
 			fi				
 		else	
 			AC_MSG_RESULT(disabling)
-			AC_DEFINE(HAVE_DGETRI,0,[Define if dgetri is available])
+			#AC_DEFINE(HAVE_DGETRI,0,[Define if dgetri is available])
 		fi
 	else
 		AC_MSG_RESULT(working)
