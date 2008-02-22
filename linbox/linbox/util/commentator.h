@@ -738,7 +738,7 @@ namespace LinBox
 	class Commentator {
 	    public: 
 		inline Commentator () : cnull (new nullstreambuf()) {}
-		inline ~Commentator () {delete &cnull;}
+		inline ~Commentator () {}
 		inline void start (const char *description, const char *fn = (const char *) 0, unsigned long len = 0) {}
 		inline void startIteration (unsigned int iter, unsigned long len = 0) {}
 		inline void stop (const char *msg, const char *long_msg = (const char *) 0, const char *fn = (const char *) 0) {}
