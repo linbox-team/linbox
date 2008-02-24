@@ -20,7 +20,7 @@ The copyright and licensing (GNU LGPL)info of %LinBox is in <a href="COPYING">CO
 
 To install from a distribution, the usual <em> configure, make</em> sequence applies.
 See <a href="install-dist.html">configuring and installing</a> for more details.  
-To install a development version from the SVN repository see the <a href="developer.html">developer info</a>.
+To install a development version from the SVN repository see the <a href="install-dev.html">developer info</a>.
 The generic Free Software Foundation <a href="INSTALL">INSTALL</a> may also be of use.
 
 Project %LinBox (http://linalg.org)
