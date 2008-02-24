@@ -132,20 +132,20 @@ namespace LinBox
       str >> m >> n >> k;
       _rows = m;
       _cols = n;
-      _nnz = k;
-      _rowP = new size_t[k];//cerr<<A.coldim()<<" "<<A.rowdim()<<endl;
-      _colP = new size_t[k];//cerr<<A.coldim()<<" "<<A.rowdim()<<endl;
+	  std::vector<size_t> rowP, colP;
       size_t x;
-      size_t l=0;
-      while (is >> i) {
-	if (i == 0 || i == (size_t) -1) {is >> j; is >> x; break;}
-	is >> j;
-	is >> x;
-	if (x == 1UL) {
-	  _rowP[l] = i-1;
-	  _colP[l++] = j-1;
-	}
-      }
+      while (is >> i >> j >> x) {
+		if (i == 0 || i == (size_t) -1) break;
+		if (x == 1UL) {
+	  		rowP.push_back(i-1);
+	  		colP.push_back(j-1);
+		}
+	  }
+	  _nnz = rowP.size();
+	  _rowP = new size_t[_nnz];
+	  _colP = new size_t[_nnz];
+	  copy(rowP.begin(), rowP.end(), _rowP);
+	  copy(colP.begin(), colP.end(), _colP);
       return is;
     }
  
