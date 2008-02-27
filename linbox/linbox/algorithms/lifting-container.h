@@ -102,6 +102,12 @@ namespace LinBox {
 			   typename Ring::Element& short_col_sqr, const DenseMatrixBase<typename Ring::Element>& A) {
 		SpecialBound(R, H_col_sqr, short_col_sqr, A);
 	}
+	template <class Ring>
+
+	void BoundBlackbox(const Ring& R, typename Ring::Element& H_col_sqr, 
+			   typename Ring::Element& short_col_sqr, const BlasBlackbox<Ring>& A) {
+		SpecialBound(R, H_col_sqr, short_col_sqr, A);
+	}
 
 	// in other solvers we generally use BlasBlackbox which inherits from DenseSubmatrix
 	template <class Ring>
