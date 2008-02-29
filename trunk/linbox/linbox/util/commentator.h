@@ -76,6 +76,7 @@
 #define LVL_BLABLA =  10,
 #define LVL_NEVER  =  (2*PRINT_EVERYTHING)
 
+#ifndef DISABLE_COMMENTATOR
 namespace LinBox 
 {
 	// Forward declaration
@@ -709,10 +710,14 @@ namespace LinBox
 	extern  Commentator commentator;
 }
 
-#ifdef DISABLE_COMMENTATOR
-#  define Commentator CommentatorDisabled
-#  define MessageClass MessageClassDisabled
-#  define commentator commentatorDisabled
+#ifdef LinBoxSrcOnly
+#include <linbox/util/commentator.C>
+#endif
+
+#else //DISABLE_COMMENTATOR
+//#  define Commentator CommentatorDisabled
+//#  define MessageClass MessageClassDisabled
+//#  define commentator commentatorDisabled
 
 // This provides a "null" commentator that should compile totally out of the
 // program when DISABLE_COMMENTATOR is defined. All code making use of the
@@ -738,7 +743,8 @@ namespace LinBox
 	class Commentator {
 	    public: 
 		inline Commentator () : cnull (new nullstreambuf()) {}
-		inline ~Commentator () {}
+		//inline ~Commentator () {}
+		//inline ~Commentator () { delete cnull; }
 		inline void start (const char *description, const char *fn = (const char *) 0, unsigned long len = 0) {}
 		inline void startIteration (unsigned int iter, unsigned long len = 0) {}
 		inline void stop (const char *msg, const char *long_msg = (const char *) 0, const char *fn = (const char *) 0) {}
@@ -816,10 +822,5 @@ namespace LinBox
 }
 
 #endif // DISABLE_COMMENTATOR
-#ifdef LinBoxSrcOnly
-#ifndef DISABLE_COMMENTATOR
-#include <linbox/util/commentator.C>
-#endif
-#endif
 
 #endif // __COMMENTATOR_H
