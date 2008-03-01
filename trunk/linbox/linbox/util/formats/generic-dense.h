@@ -8,8 +8,8 @@
 #define __FORMAT_DENSE_H
 
 namespace LinBox__FORMAT_DENSE_H
-	{ const char* name = "Generic Dense Format";
-	  const char* shortname = "dense"; }
+	{ static const char* name = "Generic Dense Format";
+	  static const char* shortname = "dense"; }
 
 namespace LinBox {
 

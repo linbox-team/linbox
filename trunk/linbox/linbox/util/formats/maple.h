@@ -19,8 +19,8 @@
 #include <linbox/util/matrix-stream.h>
 
 namespace LinBox__FORMAT_MAPLE_H
-	{ const char* name = "Maple Text Format";
-	  const char* shortname = "maple"; }
+	{ static const char* name = "Maple Text Format";
+	  static const char* shortname = "maple"; }
 
 namespace LinBox {
 
