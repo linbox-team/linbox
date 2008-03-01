@@ -40,6 +40,7 @@ namespace LinBox
 
 		size_t* P = new size_t[N];
 		size_t* Qt = new size_t[N-1];
+		
 		FFPACK::LUdivine (F, FFLAS::FflasUnit, FFLAS::FflasNoTrans, N-1, N,
 				  A, lda, P, Qt);
 		typename Field::Element d;
@@ -98,6 +99,9 @@ namespace LinBox
 			F.init(s2p, _s2);
 			MatrixHom::map(Ap, _A, F);
 			const size_t N = _A.coldim();
+			//Timer tim;
+			//tim.clear();
+			//tim.start();
 			doubleDetModp (F,  N, dd[0], dd[1],
 				       Ap->getPointer(), Ap->getStride(),
 				       Ap->getPointer() + (N-1) * Ap->getStride(), 1,
@@ -105,7 +109,8 @@ namespace LinBox
 
 			F.divin (dd[0], s1p);
 			F.divin (dd[1], s2p);
-
+			//tim.stop();
+			//std::cerr<<"doubleDetModp took "<<tim.usertime()<<std::endl;
 			delete Ap;
 			return dd;
 		}
@@ -215,21 +220,21 @@ namespace LinBox
 		if (proof) {
 			integer bound;
 			double logbound;
-			Timer t_hd,t_cra;
-			t_hd.clear();
-			t_hd.start();
+			//Timer t_hd,t_cra;
+			//t_hd.clear();
+			//t_hd.start();
 			HadamardBound (bound, A);
 			logbound = (logtwo (bound) - logtwo (MIN(abs(s1),abs(s2))))*0.693147180559945;
-			t_hd.stop();
+			//t_hd.stop();
 			//std::cerr<<"Hadamard bound = : "<<logbound<<" in "<<t_hd.usertime()<<"s"<<std::endl;
 
 			ChineseRemainder <FullMultipCRA <Modular <double> > > cra(logbound);
 
-			t_hd.clear();
-			t_cra.start();
+			//t_hd.clear();
+			//t_cra.start();
 			cra (dd, iteration, genprime);
-			t_cra.stop();
-			std::cerr<<"CRA : "<<t_cra.usertime()<<"s"<<std::endl;
+			//t_cra.stop();
+			//std::cerr<<"CRA : "<<t_cra.usertime()<<"s"<<std::endl;
 
 		} else {
 			ChineseRemainder <EarlyMultipCRA <Modular<double> > > cra(4UL);
@@ -274,9 +279,9 @@ namespace LinBox
 		std::vector<typename BlackBox::Field::Element> c(N);
 		for (size_t i=0; i<N; ++i)
 			c[i] = A.getEntry (N, i);
-		Timer tim;
-		// tim.clear();
- 		//tim.start();
+		//Timer tim;
+		//tim.clear();
+		//tim.start();
 		solve (x1, den1, B, c);
 		//tim.stop();
 		//std::cerr<<"Solve took "<<tim.usertime()<<std::endl;
