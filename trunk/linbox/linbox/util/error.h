@@ -44,7 +44,7 @@ public:
 
 	// -- virtual print of the error message
 	virtual std::ostream &print (std::ostream &o) const
-		{ return o << strg ; }
+	{ return o << strg<<std::endl ; }
   
 	// -- non virtual output operator
 	friend std::ostream &operator << (std::ostream &o, const LinboxError &E);
