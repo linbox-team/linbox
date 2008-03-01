@@ -5,7 +5,8 @@ pkgincludesub_HEADERS = \
 	blackbox-container-symmetric.h		\
 	blackbox-container-symmetrize.h		\
 	blackbox-container-base.h		\
-	bbsolve.h		\
+	bbsolve.h				\
+	double-det.h				\
 	massey-domain.h				\
 	wiedemann.h	wiedemann.inl		\
 	lanczos.h	lanczos.inl		\
