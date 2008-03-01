@@ -176,6 +176,22 @@ namespace LinBox {
 					this->_M->setEntry(i-i0, j-j0, *iter_value);  
 			}
 		}
+		// Copy data according to Matrix container structure (allow submatrix)
+		template <class Matrix>
+		void createBlasMatrix (const Matrix& A, const size_t i0,const size_t j0,const size_t m, const size_t n, MatrixContainerCategory::BlasContainer)
+		{
+		
+			typename Matrix::ConstRawIterator         iter_value = A.rawBegin();
+			typename Matrix::ConstRawIndexedIterator  iter_index = A.rawIndexedBegin();
+		
+			for (;iter_value != A.rawEnd(); ++iter_value,++iter_index){
+				size_t i,j;
+				i=iter_index.rowIndex();
+				j=iter_index.colIndex();
+				if (( i >= i0) && (i< i0+m) && (j >= j0) && (j < j0+n))
+					this->_M->setEntry(i-i0, j-j0, *iter_value);  
+			}
+		}
 
 
 		// Copy data according to blackbox structure (allow submatrix)
