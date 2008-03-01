@@ -73,7 +73,7 @@ namespace LinBox {
 		BlasBlackbox (const Field& F) :  _F(F), _MD(F), _VD(F) 
 		{ _F.init(_One,1UL), _F.init(_Zero,0UL);_use_fflas=false;}
 
-		BlasBlackbox (const Field& F, size_t m, size_t n) 
+		BlasBlackbox (const Field& F, const size_t m, const size_t n) 
 			: BlasMatrix<Element> (m,n),  _F(F), _MD(F), _VD(F), _row(m) , _col(n) 
 		{ 
 			_F.init(_One,1UL), _F.init(_Zero,0UL);
@@ -82,7 +82,6 @@ namespace LinBox {
 				_F.init(*it, 0);
 			_use_fflas= checkBlasApply(_F, _col);
 		}
-
 
 		BlasBlackbox(MatrixStream<Field> &ms)
 			: BlasMatrix<Element> (ms), _F(ms.getField()), _MD(ms.getField()), _VD(ms.getField()) 
@@ -108,7 +107,12 @@ namespace LinBox {
 		BlasBlackbox (const BlasBlackbox<Field>& M)
 			: BlasMatrix< Element> (M), _F(M._F), _MD(M._F), _VD(M._F), 
 			  _row(M._row), _col(M._col), _One(M._One), _Zero(M._Zero) {_use_fflas= checkBlasApply(_F, _col);}
+
+		BlasBlackbox (const BlasBlackbox<Field>& M, const size_t i0, const size_t j0, const size_t m, const size_t n)
+			: BlasMatrix< Element> (M,i0,j0,m,n), _F(M._F), _MD(M._F), _VD(M._F), 
+			  _row(m), _col(n), _One(M._One), _Zero(M._Zero) {_use_fflas= checkBlasApply(_F, _col);}
 		
+
 		BlasBlackbox (const Field &F, const BlasBlackbox<Field>& M)
 			: BlasMatrix< Element> (M), _F(M._F), _MD(M._F), _VD(F),
 			  _row(M._row), _col(M._col), _One(M._One), _Zero(M._Zero) {_use_fflas= checkBlasApply(_F, _col);}
@@ -176,7 +180,7 @@ namespace LinBox {
                         Hom<Field, _Tp1> hom(A. field(), F);
                         for (A_p = A. rawBegin(), Ap_p = Ap -> rawBegin();
                              A_p != A. rawEnd(); ++ A_p, ++ Ap_p) 
-                            hom.image (*Ap_p, *A_p);
+				hom.image (*Ap_p, *A_p);
                     }
                 };
 
