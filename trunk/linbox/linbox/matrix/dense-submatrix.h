@@ -160,7 +160,7 @@ class DenseSubmatrix
             void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
                 Ap = new other(A.rowdim(), A.coldim());
                 typename Self_t::ConstRawIterator         iter_value = A.rawBegin();
-                typename Self_t::ConstRawIndexedIterator  iter_index = A.rawIndexedBegin();
+                typename Self_t::ConstRawIndexedIterator  iter_index = A.rawIndexBegin();
                 typename _Tp1::Element tmp;
                 for (;iter_value != A.rawEnd(); ++iter_value,++iter_index){
                     F.init(  tmp, *iter_value ); 
@@ -257,12 +257,12 @@ class DenseSubmatrix
 	 */
 
         class RawIndexedIterator;
-        typedef const RawIndexedIterator ConstRawIndexedIterator;
+        class ConstRawIndexedIterator;
 
-        RawIndexedIterator rawIndexBegin();
-        RawIndexedIterator rawIndexEnd();   
-	ConstRawIndexedIterator rawIndexBegin() const;
-        ConstRawIndexedIterator rawIndexEnd() const;   
+        RawIndexedIterator rawIndexedBegin();
+        RawIndexedIterator rawIndexedEnd();   
+	ConstRawIndexedIterator rawIndexedBegin() const;
+        ConstRawIndexedIterator rawIndexedEnd() const;   
 
 	/** Retrieve a reference to a row
 	 * @param i Row index
