@@ -68,12 +68,12 @@
 namespace LinBox {
 	
 	template <class Prime>
-	bool checkBlasPrime(const Prime p) {
+	inline bool checkBlasPrime(const Prime p) {
 		return p < Prime(67108863);
 	}
 
 	template<>
-	bool checkBlasPrime(const std::vector<integer> p){
+	inline bool checkBlasPrime(const std::vector<integer> p){
 		bool tmp=true;
 		for (size_t i=0;i<p.size();++i)
 			if  (p[i] >= integer(67108863)) {tmp=false;break;}

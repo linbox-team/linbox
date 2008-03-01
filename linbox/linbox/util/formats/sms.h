@@ -11,8 +11,8 @@
 #include <cstdlib>
 
 namespace LinBox__SMS_H
-	{ const char* name = "SMS Sparse Integer Matrix Format";
-	  const char* shortname = "sms"; }
+	{ static const char* name = "SMS Sparse Integer Matrix Format";
+	  static const char* shortname = "sms"; }
 
 namespace LinBox {
 

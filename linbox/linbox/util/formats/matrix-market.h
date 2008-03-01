@@ -12,8 +12,8 @@
 #include <linbox/util/matrix-stream.h>
 
 namespace LinBox__FORMAT_MATRIX_MARKET_H
-	{ const char* name = "Matrix Market Format";
-	  const char* shortname = "mm"; }
+	{ static const char* name = "Matrix Market Format";
+	  static const char* shortname = "mm"; }
 
 namespace LinBox {
 
@@ -21,7 +21,7 @@ namespace LinBox {
 class integer;
 #endif
 
-bool equalCaseInsensitive(const std::string s1, const char* s2) {
+static bool equalCaseInsensitive(const std::string s1, const char* s2) {
 	int len = s1.size();
 	int counter = 0;
 	while( counter < len && s2[counter] != '\0' &&

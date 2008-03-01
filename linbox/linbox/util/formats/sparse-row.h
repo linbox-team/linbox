@@ -11,8 +11,8 @@
 #include <cstdlib>
 
 namespace LinBox__FORMAT_SPARSE_ROW_H
-	{ const char* name = "Sparse Row Format";
-	  const char* shortname = "sparserow"; }
+	{ static const char* name = "Sparse Row Format";
+	  static const char* shortname = "sparserow"; }
 
 namespace LinBox {
 

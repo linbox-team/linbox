@@ -173,7 +173,7 @@ namespace LinBox
 	};
 
 	template<>
-	long MatrixInverse::matrixInverseIn(const MultiModDouble& F, BlasBlackbox<MultiModDouble>& A) {
+	inline long MatrixInverse::matrixInverseIn(const MultiModDouble& F, BlasBlackbox<MultiModDouble>& A) {
 		throw LinboxError("LinBox ERROR: use of MultiModDouble with too large moduli is not allowed at this time\n");
 		return 0;
 	}
