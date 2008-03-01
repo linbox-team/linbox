@@ -221,7 +221,7 @@ namespace LinBox
 			HadamardBound (bound, A);
 			logbound = (logtwo (bound) - logtwo (MIN(abs(s1),abs(s2))))*0.693147180559945;
 			t_hd.stop();
-			std::cerr<<"Hadamard bound = : "<<logbound<<" in "<<t_hd.usertime()<<"s"<<std::endl;
+			//std::cerr<<"Hadamard bound = : "<<logbound<<" in "<<t_hd.usertime()<<"s"<<std::endl;
 
 			ChineseRemainder <FullMultipCRA <Modular <double> > > cra(logbound);
 
@@ -274,13 +274,23 @@ namespace LinBox
 		std::vector<typename BlackBox::Field::Element> c(N);
 		for (size_t i=0; i<N; ++i)
 			c[i] = A.getEntry (N, i);
+		Timer tim;
+		// tim.clear();
+ 		//tim.start();
 		solve (x1, den1, B, c);
+		//tim.stop();
+		//std::cerr<<"Solve took "<<tim.usertime()<<std::endl;
+		
 		den1 = den1;
 		// Should work:
 		// den (y[n]) = den (-den1/x[n]) = x[n] 
 		den2 = -x1[N-1];
-
+		//tim.clear();
+		//tim.start();
 		doubleDetGivenDivisors (A, d1, d2, den1, den2, proof);
+		//tim.stop();
+		//std::cerr<<"CRA "<<(proof?"Determinist":"Probablistic")
+		//	 <<" took "<<tim.usertime()<<std::endl;
 	}
 }
 
