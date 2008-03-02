@@ -683,6 +683,218 @@ public:
 		}	
  	}
 
+	/** RowRankProfile
+	 * Computes the row rank profile of A.
+	 *
+	 * @param A: input matrix of dimension 
+	 * @param rklprofile: return the rank profile as an array of row indexes, of dimension r=rank(A)
+	 *
+	 * rkprofile is allocated during the computation.
+	 * Returns R
+	 */
+	template <class Field>
+	static size_t RowRankProfile (const Field& F, const size_t M, const size_t N,
+				      typename Field::Element* A, const size_t lda, size_t* rkprofile){
+		size_t *P = new size_t[N];
+		size_t *Q = new size_t[M];
+		size_t R;
+
+		R = LUdivine (F, FflasNonUnit, FflasNoTrans, M, N, A, lda, P, Q);
+		rkprofile = new size_t[R];
+
+		for (size_t i=0; i<R; ++i)
+			rkprofile[i] = Q[i];
+		delete[] P;
+		delete[] Q;
+		return R;
+	}
+
+	/** ColumnRankProfile
+	 * Computes the column rank profile of A.
+	 *
+	 * @param A: input matrix of dimension 
+	 * @param rklprofile: return the rank profile as an array of row indexes, of dimension r=rank(A)
+	 *
+	 * A is modified 
+	 * rkprofile is allocated during the computation.
+	 * Returns R
+	 */
+	template <class Field>
+	static size_t ColumnRankProfile (const Field& F, const size_t M, const size_t N,
+					 typename Field::Element* A, const size_t lda, size_t* rkprofile){
+		size_t *P = new size_t[N];
+		size_t *Q = new size_t[M];
+		size_t R;
+
+		R = LUdivine (F, FflasNonUnit, FflasTrans, M, N, A, lda, P, Q);
+		rkprofile = new size_t[R];
+
+		for (size_t i=0; i<R; ++i)
+			rkprofile[i] = Q[i];
+		delete[] P;
+		delete[] Q;
+		return R;
+	}
+
+	/** RowRankProfileSubmatrixIndices
+	 * Computes the indices of the submatrix r*r X of A whose rows correspond to
+	 * the row rank profile of A.
+	 *
+	 * @param A: input matrix of dimension 
+	 * @param rowindices: array of the row indices of X in A
+	 * @param colindices: array of the col indices of X in A
+	 *
+	 * rowindices and colindices are allocated during the computation. 
+	 * A is modified 
+	 * Returns R
+	 */
+	template <class Field>
+	static size_t RowRankProfileSubmatrixIndices (const Field& F,
+						      const size_t M, const size_t N,
+						      typename Field::Element* A,
+						      const size_t lda,
+						      size_t*& rowindices,
+						      size_t*& colindices,
+						      size_t& R){
+		size_t *P = new size_t[N];
+		size_t *Q = new size_t[M];
+
+		R = LUdivine (F, FflasNonUnit, FflasNoTrans, M, N, A, lda, P, Q);
+		rowindices = new size_t[M];
+		colindices = new size_t[N];
+		for (size_t i=0; i<R; ++i){
+			rowindices [i] = Q [i];
+		}
+		for (size_t i=0; i<N; ++i)
+			colindices [i] = i;
+		size_t tmp;
+		for (size_t i=0; i<R; ++i){
+			if (i != P[i]){
+				tmp = colindices[i];
+				colindices[i] = colindices[P[i]];
+				colindices[P[i]] = tmp;
+			}
+		}
+				
+		delete[] P;
+		delete[] Q;
+
+		return R;
+	}
+
+	/** ColRankProfileSubmatrixIndices
+	 * Computes the indices of the submatrix r*r X of A whose columns correspond to
+	 * the column rank profile of A.
+	 *
+	 * @param A: input matrix of dimension 
+	 * @param rowindices: array of the row indices of X in A
+	 * @param colindices: array of the col indices of X in A
+	 *
+	 * rowindices and colindices are allocated during the computation. 
+	 * A is modified 
+	 * Returns R
+	 */
+	template <class Field>
+	static size_t ColRankProfileSubmatrixIndices (const Field& F,
+						      const size_t M, const size_t N,
+						      typename Field::Element* A,
+						      const size_t lda,
+						      size_t*& rowindices,
+						      size_t*& colindices,
+						      size_t& R){
+		size_t *P = new size_t[M];
+		size_t *Q = new size_t[N];
+
+		R = LUdivine (F, FflasNonUnit, FflasTrans, M, N, A, lda, P, Q);
+		rowindices = new size_t[M];
+		colindices = new size_t[N];
+		for (size_t i=0; i<R; ++i)
+			colindices [i] = Q [i];
+
+		for (size_t i=0; i<N; ++i)
+			rowindices [i] = i;
+
+		size_t tmp;
+		for (size_t i=0; i<R; ++i){
+			if (i != P[i]){
+				tmp = rowindices[i];
+				rowindices[i] = rowindices[P[i]];
+				rowindices[P[i]] = tmp;
+			}
+		}
+		delete[] P;
+		delete[] Q;
+
+		return R;
+	}
+
+	/** RowRankProfileSubmatrix
+	 * Compute the r*r submatrix X of A, by picking the row rank profile rows of A
+	 * 
+	 * @param A: input matrix of dimension M x N
+	 * @param X: the output matrix
+	 *
+	 * A is not modified
+	 * X is allocated during the computation.
+	 * Returns R
+	 */
+	template <class Field>
+	static size_t RowRankProfileSubmatrix (const Field& F,
+					       const size_t M, const size_t N,
+					       typename Field::Element* A,
+					       const size_t lda,
+					       typename Field::Element*& X, size_t& R){
+		
+		size_t * rowindices, * colindices;
+
+		typename Field::Element * A2 = MatCopy (F, M, N, A, lda);
+		
+		RowRankProfileSubmatrixIndices (F, M, N, A2, N, rowindices, colindices, R);
+
+		X = new typename Field::Element[R*R];
+		for (size_t i=0; i<R; ++i)
+			for (size_t j=0; j<R; ++j)
+				F.assign (*(X + i*R + j), *(A + rowindices[i]*lda + colindices[j]));
+		delete[] A2;
+		delete[] rowindices;
+		delete[] colindices;
+		return R;
+	}
+
+
+	/** ColRankProfileSubmatrix
+	 * Compute the r*r submatrix X of A, by picking the row rank profile rows of A
+	 * 
+	 * @param A: input matrix of dimension M x N
+	 * @param X: the output matrix
+	 *
+	 * A is not modified
+	 * X is allocated during the computation.
+	 * Returns R
+	 */
+	
+	template <class Field>
+	static size_t ColRankProfileSubmatrix (const Field& F, const size_t M, const size_t N,
+					       typename Field::Element* A, const size_t lda,
+					       typename Field::Element*& X, size_t& R){
+		
+		size_t * rowindices, * colindices;
+		
+		typename Field::Element * A2 = MatCopy (F, M, N, A, lda);
+		
+		ColRankProfileSubmatrixIndices (F, M, N, A2, N, rowindices, colindices, R);
+		
+		X = new typename Field::Element[R*R];
+		for (size_t i=0; i<R; ++i)
+			for (size_t j=0; j<R; ++j)
+				F.assign (*(X + i*R + j), *(A + rowindices[i]*lda + colindices[j]));
+		delete[] A2;
+		delete[] colindices;
+		delete[] rowindices;
+		return R;
+	}
+
+	
 	/** 
 	 * LQUPtoInverseOfFullRankMinor
 	 * Suppose A has been factorized as L.Q.U.P, with rank r.
@@ -776,7 +988,7 @@ public:
 			size_t* P, size_t* Q, const FFPACK_LUDIVINE_TAG LuTag=FfpackLQUP);
 
 	template <class Field>
-	static size_t 
+	static size_t
 	LUdivine_gauss (const Field& F, const FFLAS_DIAG Diag,
 			const size_t M, const size_t N,
 			typename Field::Element * A, const size_t lda,
@@ -1223,7 +1435,7 @@ public:
 
 	template <class Field>
 	static size_t  SpecRankProfile (const Field& F, const size_t M, const size_t N,
-					 typename Field::Element * A, const size_t lda, const size_t deg, size_t *rankProfile);
+					typename Field::Element * A, const size_t lda, const size_t deg, size_t *rankProfile);
 	template <class Field, class Polynomial>
 	static std::list<Polynomial>&
 	CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm, 
