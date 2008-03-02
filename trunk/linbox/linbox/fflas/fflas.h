@@ -31,7 +31,7 @@ namespace LinBox {
 #endif
 	
 #ifndef __LINBOX_STRASSEN_OPTIMIZATION
-#define WINOTHRESHOLD 400
+#define WINOTHRESHOLD 1000
 #else
 #define WINOTHRESHOLD __LINBOX_WINOTHRESHOLD
 #endif
@@ -239,9 +239,10 @@ public:
 		if (!(m && n && k)) return C;
 		
 		FFLAS_BASE base = BaseCompute<typename Field::Element> ()(F, w);
-
+		size_t d = DotProdBound (F, w, beta, base);
+		//std::cerr<<"d = "<<d<<std::endl;
 		WinoMain (F, ta, tb, m, n, k, alpha, A, lda, B, ldb, beta,
-				 C, ldc, DotProdBound (F, w, beta, base), w, base);
+				 C, ldc, d, w, base);
 		return C;
 		};
 	
@@ -297,6 +298,23 @@ public:
 						 const typename Field::Element beta,
 						 typename Field::Element* C, 
 						 const size_t ldc);
+	/**
+	 * MatCopy
+	 * Makes a copy of the matrix M into a new allocated space.
+	 */
+	template<class Field>
+	static typename Field::Element* MatCopy (const Field& F,
+						 const size_t M, const size_t N,
+						 const typename Field::Element * A,
+						 const size_t lda){
+
+		typename Field::Element * C = new typename Field::Element[M*N];
+		for (size_t i = 0; i < N; ++i)
+			for (size_t j = 0; j < N; ++j)
+				F.assign(*(C + i*N + j),*(A + i*lda + j));
+		return C;
+	}
+	
 protected:
 
 	// Prevents the instantiation of the class

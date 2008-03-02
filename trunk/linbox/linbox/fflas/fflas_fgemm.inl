@@ -530,6 +530,7 @@ inline void FFLAS::WinoCalc (const Field& F,
 				F.sub (*(dx2+j), *(d22 + j), *(d12 + j));
 		}
 
+		// S3 = A11 - A21 in X1
 		typename Field::Element* X1 = new typename Field::Element[mr*x1rd];		// S3 = A11 - A21 in X1
 		d11 = A11; d21 = A21; dx1 = X1;
 		for (size_t i = 0; i < imaxa; ++i, d11 += lda, d21 += lda, dx1 += ldx1)
