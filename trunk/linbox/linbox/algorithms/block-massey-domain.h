@@ -51,9 +51,6 @@
 //#define __PRINT_SEQUENCE
 #define _BM_TIMING
 
-static int print_count=1;
-
-
 namespace LinBox 
 {
 
