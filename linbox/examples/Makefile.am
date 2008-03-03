@@ -19,7 +19,7 @@ LDADD = $(BLAS_LIBS) $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS)
 
 SUBDIRS=fields 
 
-EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet sparseelimrank checksolve doubledet det-test
+EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet sparseelimrank checksolve doubledet
 GIVARONTL_EXAMPLES=smith charpoly graph-charpoly
 if LINBOX_HAVE_NTL
 if LINBOX_HAVE_GIVARO
@@ -39,7 +39,6 @@ doubledet_SOURCES= doubledet.C
 #linbox_program_SOURCES = \
 #	linbox-program.C
 
-det_test_SOURCES = det-test.C
 
 checksolve_SOURCES = checksolve.C
 charpoly_SOURCES = charpoly.C Matio.h
