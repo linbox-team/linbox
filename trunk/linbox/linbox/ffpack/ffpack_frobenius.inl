@@ -45,7 +45,9 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 	for (size_t i = 0; i < noc; ++i)
  		for (size_t j = 0; j < N; ++j)
  			g.random( *(K + i*ldk +j) );
-
+	for (size_t i = 0; i < noc; ++i)
+		g.nonzerorandom (*(K + i*ldk +i));
+	
 	// Computing the bloc Krylov matrix [U AU .. A^(c-1) U]^T
 	for (size_t i = 1; i<c; ++i)
 		fgemm( F, FflasNoTrans, FflasTrans,  noc, N, N, one,
@@ -79,9 +81,9 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 		size_t d = 0;
 		while ( (d<c) && (row_idx<R) && (Qk[row_idx] == i)) {i++; row_idx++; d++;}
 		if (d > dold){
-			std::cerr << "FAIL in preconditionning phase:"
-			     << " degree sequence is not monotonically not increasing"
-			     << std::endl;
+			// std::cerr << "FAIL in preconditionning phase:"
+			//           << " degree sequence is not monotonically not increasing"
+			// 	     << std::endl;
 			throw CharpolyFailed();
 		}
 		dK[k] = dold = d;
@@ -126,7 +128,7 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 		if (dK[i] >= 1){ 
 			for (size_t j = offset+1; j<R; ++j)
 				if (!F.isZero(*(K2b + i*ldk + j))){
-					std::cerr<<"FAIL C != 0 in preconditionning"<<std::endl;
+					//std::cerr<<"FAIL C != 0 in preconditionning"<<std::endl;
 					throw CharpolyFailed();
 				}
 			Polynomial P (dK [i]+1);
@@ -223,7 +225,7 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 			rp[i] = 0;
 		size_t R = SpecRankProfile (F, Ma, Ncurr, Arp, ldarp, deg-1, rp);
 		if (R < Ncurr){
-			std::cerr<<"FAIL R<Ncurr"<<std::endl;
+			//std::cerr<<"FAIL R<Ncurr"<<std::endl;
 			throw CharpolyFailed();
 		}
 
@@ -239,7 +241,7 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 			while ( /*(g<Ncurr ) &&*/ (rp[g] == rp_val) && (it_idx < deg ));
 			if ((block_idx)&&(it_idx > dK[block_idx-1])){
 				throw CharpolyFailed();
-				std::cerr<<"FAIL d non decroissant"<<std::endl;
+				//std::cerr<<"FAIL d non decroissant"<<std::endl;
 				//exit(-1);
 			}
 			dK[block_idx++] = it_idx;
@@ -311,7 +313,7 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 		size_t *Q=new size_t[Mk];
 		if (LUdivine (F, FflasNonUnit, FflasNoTrans, Mk, Mk , K2 + (Ncurr-Mk)*ldk, ldk, P, Q, FfpackLQUP) < Mk){
 			// should never happen (not a LAS VEGAS check)
-			std::cerr<<"FAIL R2 < MK"<<std::endl;
+			//std::cerr<<"FAIL R2 < MK"<<std::endl;
 			//			exit(-1);
 		}
 		ftrsm (F, FflasLeft, FflasLower, FflasNoTrans, FflasUnit, Mk, Mk, one,
@@ -352,7 +354,7 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 		for (size_t i= offset+1; i<oldNcurr; ++i)
 			for (size_t j=0; j<nb_full_blocks+1; ++j){
 				if (!F.isZero( *(K+i*ldk+j) )){
-					std::cerr<<"FAIL C != 0"<<std::endl;
+					//std::cerr<<"FAIL C != 0"<<std::endl;
 					throw CharpolyFailed();
 				}
 			}
