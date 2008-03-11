@@ -47,8 +47,9 @@ int main (int argc, char **argv)
 	F.init (d, -1);
 
 	typedef ScalarMatrix <Field> Blackbox;
-	Blackbox A; // Test the default constructor
-	pass = pass && testBlackbox(A);
+	// C Pernet: why is the default constructor even public?
+	// Blackbox A; // Test the default constructor
+	//pass = pass && testBlackbox(A);
 
 	Blackbox B (F, n, d); // Test a small one.
 	pass = pass && testBlackbox(B);
