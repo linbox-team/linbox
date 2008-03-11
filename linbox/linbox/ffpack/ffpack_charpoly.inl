@@ -51,6 +51,12 @@ FFPACK::CharPoly (const Field& F, std::list<Polynomial>& charp, const size_t N,
 	case FfpackArithProg:{
 		size_t attempts=0;
 		bool cont = false;
+		FFLAS_INT_TYPE p;
+		F.characteristic(p);
+		// Heuristic condition (the pessimistic theoretical one being p<2n^2.
+		if (p < N)
+			return CharPoly (F, charp, N, A, lda, FfpackLUK);
+
 		do{
 			try {
 				CharpolyArithProg (F, charp, N, A, lda, __FFPACK_CHARPOLY_THRESHOLD);
