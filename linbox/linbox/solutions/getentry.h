@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/solutions/trace.h
+/* linbox/solutions/getentry.h
  *  Evolved from an earlier one by Bradford Hovinen <hovinen@cis.udel.edu>
  *  -bds
  *
