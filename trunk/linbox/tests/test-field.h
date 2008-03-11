@@ -251,7 +251,9 @@ bool testFieldNegation (const Field &F, const char *name, unsigned int iteration
 {
 	std::ostringstream str;
 	str << "\t--Testing " << name << " negation" << ends;
-	commentator.start (str.str ().c_str (), "testFieldNegation", iterations);
+	char * st = new char[str.str().size()];
+	strcpy (st, str.str().c_str());
+	commentator.start (st, "testFieldNegation", iterations);
 
 	typename Field::Element a, neg_a, neg_a_a, zero;
 	F.init(a,0); F.init(neg_a,0); F.init(neg_a_a,0); F.init (zero, 0);
@@ -285,7 +287,7 @@ bool testFieldNegation (const Field &F, const char *name, unsigned int iteration
 	}
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFieldNegation");
-
+	delete[] st;
 	return ret;
 }
 
@@ -299,7 +301,9 @@ bool testFieldInversion (const Field &F, const char *name, unsigned int iteratio
 {
 	std::ostringstream str;
 	str << "\t--Testing " << name << " inversion" << ends;
-	commentator.start (str.str ().c_str (), "testFieldInversion", iterations);
+	char * st = new char[str.str().size()];
+	strcpy (st, str.str().c_str());
+	commentator.start (st, "testFieldInversion", iterations);
 
 	typename Field::Element a, ainv, aainv, one;
         F.init (a,0); F.init (ainv,0); F.init (aainv,0);
@@ -333,7 +337,7 @@ bool testFieldInversion (const Field &F, const char *name, unsigned int iteratio
 	}
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFieldInversion");
-
+	delete[] st;
 	return ret;
 }
 
@@ -349,7 +353,9 @@ bool testFieldDistributivity(const Field &F, const char *name, unsigned int iter
 {
 	std::ostringstream str;
 	str << "\t--Testing " << name << " distributivity" << ends;
-	commentator.start (str.str ().c_str (), "testFieldDistributivity", iterations);
+	char * st = new char[str.str().size()];
+	strcpy (st, str.str().c_str());
+	commentator.start (st, "testFieldDistributivity", iterations);
 
 	typename Field::Element a, b, c, a_b, a_bc, ac, bc, ac_bc, ca_b, ca, cb, ca_cb;
         F.init (a,0); F.init (b,0); F.init (c,0); 
@@ -403,7 +409,7 @@ bool testFieldDistributivity(const Field &F, const char *name, unsigned int iter
 	}
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFieldDistributivity");
-
+	delete[] st;
 	return ret;
 }
 
@@ -421,7 +427,9 @@ bool testFieldCommutativity (const Field &F, const char *name, unsigned int iter
 {
 	std::ostringstream str;
 	str << "\t--Testing " << name << " commutativity," << ends;
-	commentator.start (str.str ().c_str (), "testFieldCommutativity", iterations);
+	char * st = new char[str.str().size()];
+	strcpy (st, str.str().c_str());
+	commentator.start (st, "testFieldCommutativity", iterations);
 
 	typename Field::Element a, b, ab, ba, a_b, b_a;
         F.init (a,0); F.init (b,0);
@@ -476,7 +484,7 @@ bool testFieldCommutativity (const Field &F, const char *name, unsigned int iter
 	}
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFieldCommutativity");
-
+	delete[] st;
 	return ret;
 }
 
@@ -492,7 +500,9 @@ bool testFieldAssociativity (const Field &F, const char *name, unsigned int iter
 {
 	std::ostringstream str;
 	str << "\t--Testing " << name << " associativity" << ends;
-	commentator.start (str.str ().c_str (), "testFieldAssociativity", iterations);
+	char * st = new char[str.str().size()];
+	strcpy (st, str.str().c_str());
+	commentator.start (st, "testFieldAssociativity", iterations);
 
 	typename Field::Element a, b, c, a_b, b_c, a_bc, ab_c;
         F.init (a,0); F.init (b,0); F.init (c,0);
@@ -545,7 +555,7 @@ bool testFieldAssociativity (const Field &F, const char *name, unsigned int iter
 	}
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFieldAssociativity");
-
+	delete[] st;
 	return ret;
 }
 
@@ -561,7 +571,9 @@ bool testGeometricSummation (const Field &F, const char *name, unsigned int iter
 {
 	std::ostringstream str;
 	str << "\t--Testing " << name << " geometric summation" << ends;
-	commentator.start (str.str ().c_str (), "testGeometricSummation", iterations);
+	char * st = new char[str.str().size()];
+	strcpy (st, str.str().c_str());
+	commentator.start (st, "testGeometricSummation", iterations);
 
 	typename Field::Element a, a_n, k, zero, one;
 	typename Field::RandIter r (F);
@@ -617,7 +629,7 @@ bool testGeometricSummation (const Field &F, const char *name, unsigned int iter
 	}
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testGeometricSummation");
-
+	delete[] st;
 	return ret;
 }
 
@@ -634,7 +646,9 @@ bool testFieldCharacteristic (const Field &F, const char *name, unsigned int ite
 {
 	std::ostringstream str;
 	str << "\t--Testing " << name << " characteristic" << ends;
-	commentator.start (str.str ().c_str (), "testFieldCharacteristic", iterations);
+	char * st = new char[str.str().size()];
+	strcpy (st, str.str().c_str());
+	commentator.start (string(str.str()).c_str(), "testFieldCharacteristic", iterations);
 
 	LinBox::integer p, j;
 	typename Field::Element a, sigma, zero;
@@ -674,7 +688,7 @@ bool testFieldCharacteristic (const Field &F, const char *name, unsigned int ite
 	}
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFieldCharacteristic");
-
+	delete[] st;
 	return ret;
 }
 
@@ -690,7 +704,9 @@ bool testFreshmansDream (const Field &F, const char *name, unsigned int iteratio
 {
 	std::ostringstream str;
 	str << "\t--Testing " << name << " Freshman's Dream" << ends;
-	commentator.start (str.str ().c_str (), "testFreshmansDream", iterations);
+	char * st = new char[str.str().size()];
+	strcpy (st, str.str().c_str());
+	commentator.start (string(str.str()).c_str(), "testFreshmansDream", iterations);
 
 	LinBox::integer c, j;
 
@@ -751,7 +767,7 @@ bool testFreshmansDream (const Field &F, const char *name, unsigned int iteratio
 	}
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFreshmansDream");
-
+	delete[]  st;
 	return ret;
 }
 
@@ -776,7 +792,9 @@ bool testRingArithmeticConsistency (const Field &F, const char *name, unsigned i
 {
 	std::ostringstream str;
 	str << "\t--Testing " << name << " in-place/out-of-place arithmetic consistency" << ends;
-	commentator.start (str.str ().c_str (), "testRingArithmeticConsistency", iterations);
+	char * st = new char[str.str().size()];
+	strcpy (st, str.str().c_str());
+	commentator.start (st, "testRingArithmeticConsistency", iterations);
 
 	bool ret = true;
 
@@ -844,7 +862,7 @@ bool testRingArithmeticConsistency (const Field &F, const char *name, unsigned i
 	}
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRingArithmeticConsistency");
-
+	delete[] st;
 	return ret;
 }
 
@@ -853,7 +871,9 @@ bool testInvDivConsistency (const Field &F, const char *name, unsigned int itera
 {
     std::ostringstream str;
     str << "\t--Testing " << name << " in-place/out-of-place inv and div consistency" << ends;
-    commentator.start (str.str ().c_str (), "testInvDivConsistency", iterations);
+	char * st = new char[str.str().size()];
+	strcpy (st, str.str().c_str());
+	commentator.start (st, "testInvDivConsistency", iterations);
 
     bool ret = true;
 
@@ -903,7 +923,7 @@ bool testInvDivConsistency (const Field &F, const char *name, unsigned int itera
 	}
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testInvDivConsistency");
-
+	delete[] st;
 	return ret;
 }
 
@@ -918,7 +938,9 @@ bool testAxpyConsistency (const Field &F, const char *name, unsigned int iterati
 {
 	std::ostringstream str;
 	str << "\t--Testing " << name << " axpy/add-mul consistency" << ends;
-	commentator.start (str.str ().c_str (), "testAxpyConsistency", iterations);
+	char * st = new char[str.str().size()];
+	strcpy (st, str.str().c_str());
+	commentator.start (st, "testAxpyConsistency", iterations);
 
 	bool ret = true;
 
@@ -958,7 +980,7 @@ bool testAxpyConsistency (const Field &F, const char *name, unsigned int iterati
 	}
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testAxpyConsistency");
-
+	delete[] st;
 	return ret;
 }
 
@@ -973,41 +995,47 @@ bool testRanditerBasic(const Field &F, const char *name, unsigned int iterations
 	bool ret=false;
 	std::ostringstream str;
 	str << "\t--Testing " << name << " randiter basic operation " << ends;
-	commentator.start (str.str ().c_str (), "testRanditerBasic", iterations);
+	char * st = new char[str.str().size()];
+	strcpy (st, str.str().c_str());
+	commentator.start (st, "testRanditerBasic", iterations);
 
-	typename Field::RandIter r (F);
-	typename Field::Element a;
-        F.init (a,0);
+	 typename Field::RandIter r (F);
+	 typename Field::Element a;
+		 F.init (a,0);
 
-	if (iterations < 20) iterations = 20;
-	for (unsigned int i = 0; i < iterations; i++) {
-		r.random (a);
-		if ( ! F.isZero(a) ) {ret = true; break;}
+	 if (iterations < 20) iterations = 20;
+	 for (unsigned int i = 0; i < iterations; i++) {
+		 r.random (a);
+		 if ( ! F.isZero(a) ) {ret = true; break;}
 
-	}
+	 }
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRanditerBasic");
+	 commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRanditerBasic");
+	 delete[] st;
+	 return ret;
+ }
 
-	return ret;
-}
+ 
+ /* Convenience function to run all of the field tests on a given field */
 
-
-/* Convenience function to run all of the field tests on a given field */
+ template <class Field>
+ bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, size_t n, bool runCharacteristicTest = true) 
+ // n is not used.
+ {	ostringstream str;
 
-template <class Field>
-bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, size_t n, bool runCharacteristicTest = true) 
-// n is not used.
-{	ostringstream str;
+	 str << "\t--Testing " << desc << " field" << ends;
+	 char * st = new char[str.str().size()];
+	 strcpy (st, str.str().c_str());
+	 commentator.start (st, "runFieldTests");
+	 bool ret =  runBasicRingTests(F, desc, iterations, runCharacteristicTest)
+		 && testInvDivConsistency(F, desc, iterations) 
+		 && testFieldInversion (F, desc, iterations)
+		 && testFieldCommutativity (F, desc, iterations)
+		 && testFreshmansDream(F, desc, iterations);
 
-	str << "\t--Testing " << desc << " field" << ends;
-	commentator.start (str.str ().c_str (), "runFieldTests", runCharacteristicTest ? 11 : 10);
-    bool ret =  runBasicRingTests(F, desc, iterations, runCharacteristicTest)
-		     && testInvDivConsistency(F, desc, iterations) 
-		     && testFieldInversion (F, desc, iterations)
-   		     && testFieldCommutativity (F, desc, iterations)
-			 && testFreshmansDream(F, desc, iterations);
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "runFieldTests");
-	return ret;
+	 commentator.stop (MSG_STATUS (ret));
+	 delete[] st;
+	 return ret;
 }
 
 template <class Field>
@@ -1017,10 +1045,12 @@ bool runBasicRingTests (const Field &F, const char *desc, unsigned int iteration
 	ostringstream str;
 
 	str << "\t--Testing " << desc << " ring" << ends;
+	char * st = new char[str.str().size()];
+	strcpy (st, str.str().c_str());
 
-	commentator.start (str.str ().c_str (), "runFieldTests", runCharacteristicTest ? 11 : 10);
+	commentator.start (st, "runBasicRingTests", runCharacteristicTest ? 11 : 10);
 	
-	if (!testField                 (F, str.str ().c_str ()))                pass = false; commentator.progress ();
+	if (!testField                 (F, string(str.str()).c_str()))                pass = false; commentator.progress ();
 	if (!testFieldNegation         (F, desc, iterations))                    pass = false; commentator.progress ();
 	if (!testFieldDistributivity           (F, desc, iterations))                    pass = false; commentator.progress ();
 	if (!testFieldAssociativity    (F, desc, iterations))                    pass = false; commentator.progress ();
@@ -1037,8 +1067,8 @@ bool runBasicRingTests (const Field &F, const char *desc, unsigned int iteration
 	if (!testAxpyConsistency       (F, desc, iterations))                    pass = false; commentator.progress ();
 	if (!testRanditerBasic       (F, desc, iterations))                    pass = false; commentator.progress ();
 
-	commentator.stop (MSG_STATUS (pass), (const char *) 0, "runFieldTests");
-
+	commentator.stop (MSG_STATUS (pass), (const char *) 0, "runBasicRingTests");
+	delete[] st;
 	return pass;
 }
 
@@ -1060,8 +1090,10 @@ bool testRandomIterator (const Field &F, const char *text,
 	std::ostringstream str;
 
 	str << "\t--Testing " << text << "::RandIter" << std::ends;
+	char * st = new char[str.str().size()];
+	strcpy (st, str.str().c_str());
 
-	LinBox::commentator.start (str.str ().c_str (), "testRandomIterator");
+	LinBox::commentator.start (st, "testRandomIterator");
 
 	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
 
@@ -1074,6 +1106,8 @@ bool testRandomIterator (const Field &F, const char *text,
 		};
 
 	LinBox::commentator.stop (MSG_STATUS (true), (const char *) 0, "testRandomIterator");
+
+	delete[] st;
 	return true;
 
 }
