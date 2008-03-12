@@ -1143,7 +1143,7 @@ bool testRandomIteratorStep (const Field &F,
 	F.cardinality (card);
 
 	typename Field::RandIter iter (F);
-	typename Field::Element x, x_prev, x_prev2, d;
+	typename Field::Element x,  d;
 
 	std::list<std::vector<int> >::iterator diff_cat_iter;
 
@@ -1154,10 +1154,7 @@ bool testRandomIteratorStep (const Field &F,
 	// C++ ints. Otherwise, I don't know how to place the numbers into
 	// categories in any well-defined manner.
 	for (i = 0; i < num_trials; ++i) {
-		F.assign (x_prev2, x_prev);
-		F.assign (x_prev, x);
-
-                integer ix, id;
+		integer ix, id;
 		F.convert(ix, iter.random (x));
 
    
