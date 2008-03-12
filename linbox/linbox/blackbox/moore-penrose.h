@@ -105,18 +105,17 @@ namespace LinBox
 
 		/** Destructor
 		 */
-		virtual ~MoorePenrose ()
+		~MoorePenrose ()
 		{
-// 			delete _GGTinv;
-// 			delete _FTFinv;
-// 			delete _GGT;
-// 			delete _FTF;
-// 			delete _GT;
-// 			delete _FT;
-// 			delete _G;
-// 			delete _F;
-// 			delete _A;
-// 			delete _B1;
+			delete _GGTinv;
+			delete _FTFinv;
+			delete _GGT;
+			delete _FTF;
+			delete _GT;
+			delete _FT;
+			delete _G;
+			delete _F;
+			delete _B1;
 		}
 
 	
