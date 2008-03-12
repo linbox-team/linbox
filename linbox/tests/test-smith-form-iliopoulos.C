@@ -146,6 +146,7 @@ bool testRandom(const Ring& R,
 					
 					R.assign (*p1, NTL::rep((*Ap)[i][i]));
 			}
+			delete Ap;
 		}
 
 		else {
@@ -182,6 +183,8 @@ bool testRandom(const Ring& R,
  
 					R.init (*p1, (*Ap)[i][i]);
 			}
+			delete Ap;
+						
 		}
 			
 		typename std::vector<typename Ring::Element>::iterator p1, p2;
