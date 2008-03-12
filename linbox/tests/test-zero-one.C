@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
 
   // "arrow" matrix
   for(i = 0; i < n; i++) { rows[i] = 0; cols[i] = i; } // first row
-  for(i = 0; i < n; i++) { rows[n+i] = i; cols[i] = 0; } // first col
+  for(i = 0; i < n; i++) { rows[n+i] = i; cols[n+i] = 0; } // first col
   for(i = 0; i < n; i++) { rows[2*n+i] = i; cols[2*n+i] = i; } // diag
   Matrix testMatrix(afield, rows, cols, n, n, 3*n - 2);
 
