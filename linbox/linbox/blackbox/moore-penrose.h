@@ -33,8 +33,6 @@
 #include "linbox/util/debug.h"
 #include "linbox/util/error.h"
 
-#undef _G
-
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
@@ -78,11 +76,11 @@ namespace LinBox
 		{
 			_B1 = new Submatrix<Blackbox> (_A, 0, 0, rank, rank);
 			_F = new Submatrix<Blackbox> (_A, 0, 0, _A->rowdim (), rank);
-			_G = new Submatrix<Blackbox> (_A, 0, 0, rank, _A->coldim ());
+			_GG = new Submatrix<Blackbox> (_A, 0, 0, rank, _A->coldim ());
 			_FT = new Transpose<Submatrix<Blackbox> > (_F);
-			_GT = new Transpose<Submatrix<Blackbox> > (_G);
+			_GT = new Transpose<Submatrix<Blackbox> > (_GG);
 			_FTF = new Compose<Transpose<Submatrix<Blackbox> >,Submatrix<Blackbox> > (_FT, _F);
-			_GGT = new Compose<Submatrix<Blackbox>, Transpose<Submatrix<Blackbox> > > (_G, _GT);
+			_GGT = new Compose<Submatrix<Blackbox>, Transpose<Submatrix<Blackbox> > > (_GG, _GT);
 			_FTFinv = new Inverse<Compose<Transpose<Submatrix<Blackbox> >,Submatrix<Blackbox> > > ( _FTF);
 			_GGTinv = new Inverse<Compose<Submatrix<Blackbox>, Transpose<Submatrix<Blackbox> > > > ( _GGT);
 		}
@@ -93,7 +91,7 @@ namespace LinBox
 			: _A (A._A),
 			_B1 (A._B1),
 			_F (A._F),
-			_G (A._G),
+			_GG (A._GG),
 			_FT (A._FT),
 			_GT (A._GT),
 			_FTF (A._FTF),
@@ -113,7 +111,7 @@ namespace LinBox
 			delete _FTF;
 			delete _GT;
 			delete _FT;
-			delete _G;
+			delete _GG;
 			delete _F;
 			delete _B1;
 		}
@@ -138,7 +136,7 @@ namespace LinBox
 			_FTFinv->apply (_z2, _z1);
 			_B1->apply (_z1, _z2);
 			_GGTinv->apply (_z2, _z1);
-			_G->applyTranspose (y, _z2);
+			_GG->applyTranspose (y, _z2);
 
 			return y;
 		}
@@ -157,7 +155,7 @@ namespace LinBox
 			InVector _z1 (_rank);
 			InVector _z2 (_rank);
 
-			_G->apply (_z1, x);
+			_GG->apply (_z1, x);
 			_GGTinv->applyTranspose (_z2, _z1);
 			_B1->applyTranspose (_z1, _z2);
 			_FTFinv->applyTranspose (_z2, _z1);
@@ -188,7 +186,7 @@ namespace LinBox
 		const Blackbox  *_A;
 		Submatrix<Blackbox>  *_B1;
 		Submatrix<Blackbox>  *_F;
-		Submatrix<Blackbox>  *_G;
+		Submatrix<Blackbox>  *_GG;
 		Transpose<Submatrix<Blackbox> >  *_FT;
 		Transpose<Submatrix<Blackbox> >  *_GT;
 		Compose<Transpose<Submatrix<Blackbox> >,Submatrix<Blackbox> >  *_FTF;
