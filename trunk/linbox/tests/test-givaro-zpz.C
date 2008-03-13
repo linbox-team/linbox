@@ -101,30 +101,38 @@ int main (int argc, char **argv)
 
 #if TEST_ARCHETYPES
 
-	FieldArchetype K1(new GivaroZpz<Std16> (101));
+	GivaroZpz<Std16> * K1g = new GivaroZpz<Std16> (101);
+	FieldArchetype K1(K1g);
 	if (!testField<FieldArchetype> (K1, "Testing archetype with envelope of GivaroZpz<Std16> field"))
 		pass = false;
+	delete K1g;
 #endif
 
 #if TEST_ARCHETYPES
-	FieldArchetype K2(new GivaroZpz<Std32>(101));
+	GivaroZpz<Std32> * K2g = new GivaroZpz<Std32>(101);
+	FieldArchetype K2(K2g);
 
 	if (!testField<FieldArchetype> (K2, "Testing archetype with envelope of GivaroZpz<Std32> field"))
 		pass = false;
+	delete K2g;
 #endif
 
 #if TEST_ARCHETYPES
-	FieldArchetype K3(new GivaroZpz<Log16>(101));
+	GivaroZpz<Log16> * K3g = new GivaroZpz<Log16>(101);
+	FieldArchetype K3(K3g);
 
 	if (!testField<FieldArchetype> (K3, "Testing archetype with envelope of GivaroZpz<Log16> field"))
 		pass = false;
+	delete K3g;
 #endif
 
 #if TEST_ARCHETYPES
-	FieldArchetype K4(new GivaroGfq(101,1));
+	GivaroGfq * K4g = new GivaroGfq (101,1);
+	FieldArchetype K4(K4g);
 
 	if (!testField<FieldArchetype> (K4, "Testing archetype with envelope of GivaroGfq prime field"))
 		pass = false;
+	delete K4g;
 #endif
 
 
