@@ -147,19 +147,19 @@ class GMPRationalField : public FieldInterface
 		mpq_get_num (n, y.rep);
 		mpq_get_den (d, y.rep);
 
-		mpz_div (n, n, d);
+		mpz_divexact (x.get_mpz(), n, d);
 
 		/* Shouldn't there be something like this? We'll assume integer is gmp integers.
 		x.set_mpz(n);
 		*/
-		x = integer::zero;
+// 		x = integer::zero;
 
-		// Really bad, but I know of no other general way to do this
-		while (mpz_sgn (n) != 0) {
-			// We need to be ready for multiple word sizes and so on here...
-			x = (x << (sizeof (unsigned long) << 3)) + mpz_get_ui (n);
-			mpz_tdiv_q_2exp (n, n, sizeof (unsigned long) << 3);
-		}
+// 		// Really bad, but I know of no other general way to do this
+// 		while (mpz_sgn (n) != 0) {
+// 			// We need to be ready for multiple word sizes and so on here...
+// 			x = (x << (sizeof (unsigned long) << 3)) + mpz_get_ui (n);
+// 			mpz_tdiv_q_2exp (n, n, sizeof (unsigned long) << 3);
+// 		}
 
 		return x;
 	}
