@@ -122,7 +122,8 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	report << "Initial integer: " << n << endl;
 	F.init (a, n);  F.write ( report << "Result of init: ", a) << endl;
 
-	F.convert (m, a); report << "Result of convert: " << m << endl;
+	F.convert (m, a);
+	report << "Result of convert: " << m << endl;
 
 	if (m != n) part_pass = reportError( "F.convert (m, F.init (a, n)) != n", pass);
 
@@ -706,7 +707,7 @@ bool testFreshmansDream (const Field &F, const char *name, unsigned int iteratio
 	str << "\t--Testing " << name << " Freshman's Dream" << ends;
 	char * st = new char[str.str().size()];
 	strcpy (st, str.str().c_str());
-	commentator.start (string(str.str()).c_str(), "testFreshmansDream", iterations);
+	commentator.start (st, "testFreshmansDream", iterations);
 
 	LinBox::integer c, j;
 
@@ -714,6 +715,7 @@ bool testFreshmansDream (const Field &F, const char *name, unsigned int iteratio
 
 	if (c == 0) {
 		commentator.stop ("skipping", "Field characteristic is 0, so this test makes no sense", "testFreshmansDream");
+		delete[] st;
 		return true;
 	}
 
@@ -771,7 +773,7 @@ bool testFreshmansDream (const Field &F, const char *name, unsigned int iteratio
 	return ret;
 }
 
-
+
 /* Tests of field features */ 
 
 /** Generic test 7: Consistency of in-place and out-of-place arithmetic
