@@ -79,6 +79,7 @@ FFPACK::CharPoly (const Field& F, std::list<Polynomial>& charp, const size_t N,
 		break;
 	}
 	}
+	return charp;
 }
 
 template <class Field, class Polynomial>
