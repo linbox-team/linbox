@@ -23,9 +23,7 @@ bool testRandomSolve (const Ring& R,
 
 	std::ostringstream str;
 	
-        str << "Testing Nonsingular Random Diagonal solve ";
-
-	commentator.start (str.str ().c_str (),"testNonsingularRandomDiagonalSolve", stream1.size());// "testNonsingularRandomMatrixSolve", stream1.m ());
+	commentator.start ("Testing Nonsingular Random Diagonal solve ","testNonsingularRandomDiagonalSolve", stream1.size());// "testNonsingularRandomMatrixSolve", stream1.m ());
 
 	bool ret = true;
 
