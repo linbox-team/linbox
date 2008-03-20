@@ -1,0 +1,18 @@
+/** \defgroup randiter linbox/randiter 
+
+Random Iterator Generators
+
+  All \Ref{LinBox} random iterator generators must implement the 
+  random iterator generator common object interface 
+  as it is defined in the random iterator generator
+  {@link RandIterArchetype archetype}.  
+  This interface consists of the methods required of all \Ref{LinBox} 
+  random iterator generators.
+
+  @see Archetypes
+
+*/
+//@{
+  //@Include *.h
+//@}
+

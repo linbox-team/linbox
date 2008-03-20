@@ -1,0 +1,154 @@
+/** \defgroup solutions linbox/solutions
+
+These are problem oriented drivers providing simple interfaces to the
+linear algebra %algorithms.  The arguments to each are discussed in detail in the 
+documentation of each function. The optional method parameter is discussed in general
+terms just below the list.
+<ul>
+<li> <code>rank(r, A[, method])</code> r gets rank of A
+<li><code>determinant(d, A[, method])</code> d gets determinant of A
+<li><code>solve(x, A, b[, method[, status]])</code> get x such that Ax = b, random solution if sigular and consistent, x = 0 if inconsistent (also inconsistency is indicated in the status).  
+The method parameter may include specifications that can make the computation faster.  
+These include symmetry, nonsingularity, and that an arbitrary solution is acceptable rather than a random sample.
+<li><code>minpoly(m, A[, method, status])</code> m gets minimal polynomial of A
+<li><code>charpoly(c, A[, method, status])</code> c gets characteristic polynomial of A
+<li><code>smithForm(S, A[, method])</code> S gets Smith Normal Form of A. 
+Smith form is unitarily equivalent to A and is diag(s<sub>1</sub> .. s<sub>n</sub>) such that 
+s<sub>i</sub> | s<sub>i+1</sub>.
+\todo its multipliers? its output form variants?
+</li>
+
+<li><code>frobeniusForm(F, A, method, status)</code> F gets Frobenius (Rational) normal form of A. 
+Frobenius form is similar to A and is a direct sum of companion matrices C<sub>f<sub>i</sub></sub> such that, f<sub>i</sub> divides f<sub>i+1</sub>.
+
+\todo primary form?  Relative primary form of A?  Primary form is similar to A and finest which
+is a direct sum of companion matrices C<sub>f<sub>i</sub></sub> such that, for all i, j, gcd(f<sub>i</sub>, f<sub>j</sub>) = 1 or f<sub>i</sub>
+or f<sub>j</sub>. Relative primary form is coarsest such decomposition.
+
+<li><code>signature(s, A, method)</code>
+<li><code>bool isPositiveDefinite(A, method_symm)</code>
+<li><code>bool isPositiveSemidefinite(A, method_symm)</code>
+</ul>
+<p>
+The algorithms are actively under development, and there is an algorithm choice
+to be made for each function.  The choice is determined by an optional argument
+to the function which is a method object.  The class of the method object determines the 
+approach used and data in the object may help determine algorithm variants at run time.
+This makes it easy to try out and compare several approaches for a given matrix.
+<p>
+The first method classes to consider are the Blackbox, Elimination, and Hybrid classes.  
+Blackbox and Elimination methods may be used for virtually every solution function.
+<p>
+The Elimination class provides access to algorithms based on dense or sparse elimination
+and the algorithms take advantage of the numeric BLAS routines when the underlying field
+or ring is the integers or a prime field of appropriate cardinality.
+<p>
+The Blackbox class provides functions which are space efficient and are particularly
+effective for very large and very sparse systems.  They are also fast and useful for structured 
+systems such as Toeplitz, Hankel, Vandermonde, etc.  Currently in %LinBox 
+the superfast methods for structured matrices are not implemented.
+<p>
+The Hybrid class chooses Blackbox, Elimination, or a mix of them based on matrix properties
+checked at runtime.  It is the default method.
+Thus for each problem (e.g. rank)
+the function call without a method, <code>rank(r, A)</code>, is equivalent to a call
+using the default Hybrid object, <code>rank(r, A, Method::Hybrid())</code>.  
+<p>
+Hybrid algorithms are under development and not in final form.
+The method used under the Hybrid designation may be a sophisticated hybrid algorithm, 
+a very basic one, or simply our guess of the most widely useful of the available algorithms.
+The basic hybrid method is to use the elimination approach if the matrix is small
+or in a dense representation, and a blackbox method otherwise.  A dense representation
+is one which inherits from DenseMatrix or BlasMatrix.  Small means both row and column
+dimensions are less than 10<sup>3</sup>.  <!-- What value really?  -->
+The threshold values can be changed in 
+the hybrid method object. For instance <code>Hybrid h; h.setSmallThreshold(5000); rank(r, A, h)</code>.
+<p>
+Additional method classes exist to focus in greater detail on the method.  For instance, 
+in the Blackbox situation there are the Wiedemann, BlockWiedemann, Lanczos, and BlockLanczos
+approaches, to name a few.  Actually, For each solution function, the Blackbox class simply 
+chooses from among these the best one as currently implemented.  They may be used specifically
+to override that default.  Thus <code>rank(r, A, Blackbox())</code> uses the Wiedemann method.
+But <code>rank(r, A, BlockLanczos())</code> could be called as well. 
+\todo this may soon be reversed, in fact.
+
+Also choice of 
+preconditioner may be possible either at runtime by putting an indicator in the method object
+or at compile time by using a more special class of method such as BlockWiedemannButterfly.
+<p>
+Other method classes focus on algorithms attuned to specific matrix properties.  For instance,
+there may be HybridSymmetric, EliminationSymmetric, and BlackboxSymmetric.  Using these method
+choices, several functions are about twice as fast as those where the symmetry is unspecified.
+To get the same effect as a runtime choice, objects of the basic method classes may contain
+an indicator of symmetry, <code>Method::Elimination e; e.setSymmetric(); rank(r, A, e)</code>.
+
+<!-- TODO I'd prefer to say that indicating symmetry is done in the matrix:
+specialize for classes that only hold symmetric matrices, otherwise check symmetry with two
+apply's (apply and applyTranspose give same result on a random vector x). 
+-->
+
+<p>
+Not every implemented algorithm is available through solution functions and their methods,
+but this is a good starting point.  See \ref algorithms for the other possibilities.
+<p>
+If the status parameter is given, it is used for output of side information.  For instance
+the solve function will set it's isConsistent() property indicating whether or not the system
+was found to be consistent.  Also an upper bound on the probability of error is given by 
+errorBound().  
+In the future, it may even provide consistency certificates and cofactors for normal forms.
+
+*/
+
+/* sketch of the classes and methods as envisioned for version 1.0.
+
+rank with Blackbox is using symmetrizing Wiedemann
+  Standard Wiedemann if the field is finite and large
+  Standard Wiedemann mod a random wordsize prime if the field/ring is Q/Z
+  Wiedemann over an extension field if the field is finite and small.
+
+rank with Elimination is 
+  blas lu with pivoting over prime field, not too small nor too big
+  blas lu mod a random wordsize prime if the field/ring is Q/Z
+  elementwise lu with pivoting for small or large prime field and nonprime field.
+ 
+rank with Hybrid is using introspecive method when reinstated.  Until then basic hybrid.
+  Elimination::rank if the matrix is small (< 10k) or dense (by type)
+  Blackbox::rank, otherwise.
+
+BlackboxSymmetric::rank is using symmetric Wiedemann
+
+EliminationSymmetric::rank is using a symmetric LU.
+
+StandardSymmetric is using at first simple then later sophisticated hybrids
+of BlackboxSymmetric and EliminationSymmetric.
+
+The Symmetric classes are providing signature(), isPositiveDefinite(), is PositiveSemidefinite(),
+but not the unsymmetric classes.
+
+The system should allow compile time specialization by class of blackbox and class of field.
+The system should allow runtime specialization by matrix size, by other matrix properties
+either discovered or provided by the caller, and by properties of the underlying field/ring
+of computation.
+The system should encourage reasonable split between solutions dir and algorithms dir.
+In general, the code in solutions directory should not get too involved.  I suppose 
+a solutions header could even be:
+solutions/my-solutions-class.h
+
+About LU.  I am not sure LU,LPUQ LDL^T and similar factorizations should be provided
+in the solutions directory.  My favorite view is that the blackbox wrapper of 
+a dense or sparse (mutable) matrix can also wrap the factorization.  Thus, when any 
+function is called which needs the matrix factored, the factorization is done.  But the 
+blackbox apply still works as if the factorization hasn't happened.  However if another
+function needing the factorization is called, the time for factorization is saved.  In 
+particular the blackbox matrix inverse is cheap after the first call in which the factorization
+is done.
+
+Back to listing methods:
+
+minpoly is probabilistic, whether by blackbox or elim methods (random vector, Keller-Gehrig)
+For small primes wiedemann should use lcm of several tries until nothing new is added
+(a form of early termination).  I don't believe this is implemented yet.
+
+Blackbox::solve(x, A, b) is Blackbox::nullspaceRandom(y, [A b]), then
+return x_i = y_i/y_n, for i in 0..n-1.
+*/
