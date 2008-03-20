@@ -1,17 +1,46 @@
-SUBDIRS=gmp++ linbox macros tests interfaces doc examples
+INCLUDES=-I$(top_srcdir)
 
-docs:doc/linbox-html/index.html
+SUBDIRS=util element field randiter vector matrix blackbox switch algorithms solutions fflas ffpack ring
 
-doc/linbox-html/index.html:
-	(cd doc; make docs)
+BASIC_HDRS =				\
+	integer.h	integer.inl	\
+	config-blas.h	linbox-config.h
 
-examples:examples/dot-product
+NTL_HDRS =
 
-#examples/dot-product:linbox/linbox-config.h
-#	(cd examples; make examples)
+GIVARO_HDRS =
 
-bin_SCRIPTS=linbox-config
+LIDIA_HDRS =
 
-include_HEADERS= HACKING
+if LINBOX_HAVE_NTL
+USE_NTL_HDRS = $(NTL_HDRS)
+endif
 
-VERSION=1.1.5
+if LINBOX_HAVE_GIVARO
+USE_GIVARO_HDRS = $(GIVARO_HDRS)
+endif
+
+if LINBOX_HAVE_LIDIA
+USE_LIDIA_HDRS = $(LIDIA_HDRS)
+endif
+
+pkginclude_HEADERS =			\
+	$(BASIC_HDRS)			\
+	$(USE_NTL_HDRS)			\
+	$(USE_GIVARO_HDRS)		\
+	$(USE_LIDIA_HDRS)
+
+EXTRA_DIST =				\
+	$(NTL_HDRS)			\
+	$(GIVARO_HDRS)			\
+	$(LIDIA_HDRS)			\
+	linbox.doxy			\
+	archetypes.doxy
+
+lib_LTLIBRARIES=liblinbox.la
+
+liblinbox_la_SOURCES = dummy.C
+
+liblinbox_la_LIBADD = \
+	util/libutil.la		\
+	randiter/libranditer.la
