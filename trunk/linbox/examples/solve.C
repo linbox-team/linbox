@@ -94,17 +94,6 @@ int main (int argc, char **argv)
                 
         Timer chrono; 
 
-            // BlasElimination
-        chrono.start();		
-        solve (X, A, B, Method::BlasElimination());
-        chrono.stop();
-		
-        std::cout << "(BlasElimination) Solution is [";
-        for(std::vector<Field::Element>::const_iterator it=X.begin();it != X.end(); ++it)
-            F.write(cout, *it) << " ";
-        std::cout << "]" << std::endl;		
-        std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<< std::endl;
-
             // Wiedemann 
         chrono.clear();
         chrono.start();		
@@ -117,6 +106,16 @@ int main (int argc, char **argv)
         std::cout << "]" << std::endl;		
         std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<<std::endl;;
 		
+            // BlasElimination
+        chrono.start();		
+        solve (X, A, B, Method::BlasElimination());
+        chrono.stop();
+		
+        std::cout << "(BlasElimination) Solution is [";
+        for(std::vector<Field::Element>::const_iterator it=X.begin();it != X.end(); ++it)
+            F.write(cout, *it) << " ";
+        std::cout << "]" << std::endl;		
+        std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<< std::endl;
 		
 //             // Lanczos
 //         chrono.clear();
@@ -177,19 +176,6 @@ int main (int argc, char **argv)
                 
 	
         Timer chrono; 
-
-            // BlasElimination
-        chrono.start();
-        solve (X, d, A, B, Method::BlasElimination());
-        chrono.stop();
-
-        std::cout << "(BlasElimination) Solution is [";
-        for(std::vector<PID_integer::Element>::const_iterator it=X.begin();it != X.end(); ++it)
-            ZZ.write(cout, *it) << " ";
-        std::cout << "] / ";
-        ZZ.write(std::cout, d)<< std::endl;		
-        std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
-
 		
             // Wiedemann
         chrono.start();
@@ -201,6 +187,18 @@ int main (int argc, char **argv)
             ZZ.write(cout, *it) << " ";
         std::cout << "] / ";
         ZZ.write(std::cout, d) << std::endl;		
+        std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
+
+            // BlasElimination
+        chrono.start();
+        solve (X, d, A, B, Method::BlasElimination());
+        chrono.stop();
+
+        std::cout << "(BlasElimination) Solution is [";
+        for(std::vector<PID_integer::Element>::const_iterator it=X.begin();it != X.end(); ++it)
+            ZZ.write(cout, *it) << " ";
+        std::cout << "] / ";
+        ZZ.write(std::cout, d)<< std::endl;		
         std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
 
 
