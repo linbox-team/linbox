@@ -3,6 +3,7 @@
  */
 
 #include <linbox/field/ntl-ZZ.h>
+#include <linbox/field/PID-integer.h>
 #include <time.h>
 #include <linbox/randiter/random-prime.h>
 #include <linbox/util/commentator.h>
@@ -175,14 +176,20 @@ int main(int argc, char** argv) {
 		};
 
 	parseArguments (argc, argv, args);
-	typedef NTL_ZZ      Ring;
-	Ring R;
-	commentator.start("EGV++ algorithm test suite", "EGV++");
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
-	RandomDenseStream<Ring> s1 (R, n, iterations);
 	SmithFormAdaptive sf;
-	if (!testRandom(R, sf, s1)) pass = false;
-	commentator.stop("EGV++ algorithm test suite");
+
+	commentator.start("Smith form adaptive algorithm test suite", "EGV++");
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
+
+	typedef NTL_ZZ Ring; Ring R;
+	RandomDenseStream<Ring> s1 (R, n, iterations);
+	pass = testRandom(R, sf, s1); 
+
+	typedef PID_integer Ring2; Ring2 S;
+	RandomDenseStream<Ring2> s2 (S, n, iterations);
+	pass = pass && testRandom(S, sf, s2); 
+
+	commentator.stop(MSG_STATUS(pass));
 	return pass ? 0 : -1;
                                                                                                         
 }
