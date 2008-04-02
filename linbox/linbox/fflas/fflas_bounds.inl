@@ -49,7 +49,7 @@ inline size_t FFLAS::DotProdBoundCompute (const Field& F, const size_t w,
 			size_t ex=1;
 			for (size_t i=0; i < w; ++i) 	ex *= 3;
 			//FFLAS_INT_TYPE c = (p-1)*(ex)/2; //bound for a centered representation
-			long long c;
+			FFLAS_INT_TYPE c;
 #ifndef _LINBOX_LINBOX_CONFIG_H
 			if (F.balanced)
 				c = (p-1)*(ex)/2; // balanced representation
@@ -61,8 +61,8 @@ inline size_t FFLAS::DotProdBoundCompute (const Field& F, const size_t w,
 				kmax = 2;
 		}
 		else{
-			long long c = p-1;
-			long long cplt=0;
+			FFLAS_INT_TYPE c = p-1;
+		        FFLAS_INT_TYPE cplt=0;
 			if (!F.isZero (beta))
 				if (F.isOne (beta) || F.areEqual (beta, mone))
 					cplt = c;
@@ -105,11 +105,11 @@ inline size_t FFLAS::DotProdBound (const Field& F, const size_t w,
 // TRSMBound
 // Computes nmax s.t. (p-1)/2*(p^{nmax-1} + (p-2)^{nmax-1}) < 2^53
 //---------------------------------------------------------------------
-inline size_t bound_compute_double(const long long pi) {
+inline size_t bound_compute_double(const FFLAS_INT_TYPE pi) {
 	
-	long long p=pi,p1=1,p2=1;
-	size_t nmax=1;
-	double max = ( (  1ULL<<(DOUBLE_MANTISSA+1) )/(p-1));
+	FFLAS_INT_TYPE p=pi,p1=1,p2=1;
+	size_t nmax = 1;
+	FFLAS_INT_TYPE max = ( FFLAS_INT_TYPE(  1ULL<<(DOUBLE_MANTISSA+1) )/(p-1));
 	while ( (p1 + p2) < max ){
 		p1*=p;
 		p2*=p-2;
@@ -118,22 +118,22 @@ inline size_t bound_compute_double(const long long pi) {
 	nmax--;
 	return nmax;
 }
-inline size_t bound_compute_double_balanced(const long long pi) {
+inline size_t bound_compute_double_balanced(const FFLAS_INT_TYPE pi) {
 	
-	long long p=(pi+1)/2,p1=1;
+	FFLAS_INT_TYPE p=(pi+1)/2,p1=1;
 	size_t nmax=0;
-	double max = ( (  1ULL<<(DOUBLE_MANTISSA))/(p-1));
+	FFLAS_INT_TYPE max = ( FFLAS_INT_TYPE(  1ULL<<(DOUBLE_MANTISSA))/(p-1));
 	while ( (p1) < max ){
 		p1*=p;
 		nmax++;
 	}
 	return nmax;
 }
-inline size_t bound_compute_float(const long long pi) {
+inline size_t bound_compute_float(const FFLAS_INT_TYPE pi) {
 	
-	long long p=pi,p1=1,p2=1;
+	FFLAS_INT_TYPE p=pi,p1=1,p2=1;
 	size_t nmax=1;
-	double max = ( (  1ULL<<(FLOAT_MANTISSA+1) )/(p-1));
+	FFLAS_INT_TYPE max = (FFLAS_INT_TYPE(   1ULL<<(FLOAT_MANTISSA+1) )/(p-1));
 	while ( (p1 + p2) < max ){
 		p1*=p;
 		p2*=p-2;
@@ -142,11 +142,11 @@ inline size_t bound_compute_float(const long long pi) {
 	nmax--;
 	return nmax;
 }
-inline size_t bound_compute_float_balanced(const long long pi) {
+inline size_t bound_compute_float_balanced(const FFLAS_INT_TYPE pi) {
 	
-	long long p=(pi+1)/2,p1=1;
+	FFLAS_INT_TYPE p=(pi+1)/2,p1=1;
 	size_t nmax=0;
-	double max = ( (  1ULL<<(FLOAT_MANTISSA))/(p-1));
+	FFLAS_INT_TYPE max = ( FFLAS_INT_TYPE(  1ULL<<(FLOAT_MANTISSA))/(p-1));
 	while ( (p1) < max ){
 		p1*=p;
 		nmax++;
