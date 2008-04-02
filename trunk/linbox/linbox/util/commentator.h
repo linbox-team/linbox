@@ -817,7 +817,8 @@ namespace LinBox
 	};
 
 	// Default global commentator
-	static Commentator commentator;
+	 Commentator commentator;
+	//static Commentator commentator;
 }
 
 #endif // DISABLE_COMMENTATOR
