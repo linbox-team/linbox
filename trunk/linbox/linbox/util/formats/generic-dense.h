@@ -7,9 +7,11 @@
 #ifndef __FORMAT_DENSE_H
 #define __FORMAT_DENSE_H
 
+/*
 namespace LinBox__FORMAT_DENSE_H
 	{ static const char* name = "Generic Dense Format";
 	  static const char* shortname = "dense"; }
+	  */
 
 namespace LinBox {
 
@@ -73,10 +75,10 @@ class DenseReader :public MatrixStreamReader<Field> {
 
 	bool isSparse() const { return false; }
     	
-	const char* getName() const { return LinBox__FORMAT_DENSE_H::name; }
+	const char* getName() const { return "Generic Dense Format"; }//LinBox__FORMAT_DENSE_H::name; }
 	
 	const char* shortName() const 
-		{ return LinBox__FORMAT_DENSE_H::shortname; }
+		{ return "dense"; }//LinBox__FORMAT_DENSE_H::shortname; }
 
 };
 

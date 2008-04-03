@@ -10,9 +10,11 @@
 
 #include <cstdlib>
 
+/*
 namespace LinBox__FORMAT_SPARSE_ROW_H
 	{ static const char* name = "Sparse Row Format";
 	  static const char* shortname = "sparserow"; }
+	  */
 
 namespace LinBox {
 
@@ -97,9 +99,9 @@ class SparseRowReader :public MatrixStreamReader<Field> {
 		currentRow = colsLeft = -1;
 	}
 
-	const char* getName() const {return LinBox__FORMAT_SPARSE_ROW_H::name;}
+	const char* getName() const {return "Sparse Row Format"; }//LinBox__FORMAT_SPARSE_ROW_H::name;}
 	const char* shortName() const
-	{ return LinBox__FORMAT_SPARSE_ROW_H::shortname; }
+	{ return "sparserow"; }//LinBox__FORMAT_SPARSE_ROW_H::shortname; }
 
 	bool isSparse() const { return true; }
 };

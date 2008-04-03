@@ -11,9 +11,11 @@
 #include <sstream>
 #include <linbox/util/matrix-stream.h>
 
+/*
 namespace LinBox__FORMAT_MATRIX_MARKET_H
 	{ static const char* name = "Matrix Market Format";
 	  static const char* shortname = "mm"; }
+	  */
 
 namespace LinBox {
 
@@ -177,10 +179,10 @@ class MatrixMarketReader :public MatrixStreamReader<Field> {
 	bool isSparse() const { return !array; }
 	
 	const char* getName() const 
-		{ return LinBox__FORMAT_MATRIX_MARKET_H::name; }
+		{ return "Matrix Market Format"; }// LinBox__FORMAT_MATRIX_MARKET_H::name; }
 	
 	const char* shortName() const 
-		{ return LinBox__FORMAT_MATRIX_MARKET_H::shortname; }
+		{ return "mm"; }// LinBox__FORMAT_MATRIX_MARKET_H::shortname; }
 };
 
 }
