@@ -51,7 +51,7 @@ namespace LinBox
 
 		typedef UnparametricField<uint32>::Element Element;
 		typedef enum {_min=0,_max=32} Exponent; // enum?
-		Exponent& init(Exponent& a) { return a = 32; }
+		//Exponent& init(Exponent& a) { return a = 32; }
 			
 		Local2_32 (int p=2, int exp=32) :UnparametricField<uint32>(p,exp) {
 			if(p != 2) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be 2");
