@@ -10,9 +10,11 @@
 
 #include <cstdlib>
 
+/*
 namespace LinBox__SMS_H
 	{ static const char* name = "SMS Sparse Integer Matrix Format";
 	  static const char* shortname = "sms"; }
+	  */
 
 namespace LinBox {
 
@@ -92,9 +94,9 @@ class SMSReader :public MatrixStreamReader<Field> {
 		_base = base;
 	}
 
-	const char* getName() const {return LinBox__SMS_H::name;}
+	const char* getName() const {return "SMS Sparse Integer Matrix Format"; }//LinBox__SMS_H::name;}
 	const char* shortName() const
-	{ return LinBox__SMS_H::shortname; }
+	{ return "sms"; }//LinBox__SMS_H::shortname; }
 
 	bool isSparse() const { return true; }
 };

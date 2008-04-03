@@ -18,9 +18,11 @@
 #include <sstream>
 #include <linbox/util/matrix-stream.h>
 
+/*
 namespace LinBox__FORMAT_MAPLE_H
 	{ static const char* name = "Maple Text Format";
 	  static const char* shortname = "maple"; }
+	  */
 
 namespace LinBox {
 
@@ -428,11 +430,12 @@ class MapleReader :public MatrixStreamReader<Field> {
 	bool isSparse() const { return !array; }
 	
 	const char* getName() const 
-		{ return LinBox__FORMAT_MAPLE_H::name; }
+		{ return "Maple Text Format"; }// LinBox__FORMAT_MAPLE_H::name; }
 	
 	const char* shortName() const 
-		{ return LinBox__FORMAT_MAPLE_H::shortname; }
+		{ return "maple"; }// LinBox__FORMAT_MAPLE_H::shortname; }
 };
+
 
 }
 
