@@ -12,6 +12,4 @@ examples:examples/dot-product
 
 bin_SCRIPTS=linbox-config
 
-include_HEADERS= HACKING
-
 VERSION=1.1.5
