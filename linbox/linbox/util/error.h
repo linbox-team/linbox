@@ -24,6 +24,7 @@
 #ifndef __UTIL_ERROR_H
 #define __UTIL_ERROR_H
 
+#include <cstring>
 #include <iostream>
 
 namespace LinBox
