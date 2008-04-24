@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // ======================================================================= //
-// Time-stamp: <15 Mar 07 17:20:44 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <24 Apr 08 09:43:38 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_CRA_FULL_MULTIP_H
 #define __LINBOX_CRA_FULL_MULTIP_H
@@ -87,9 +87,14 @@ public:
 				// The loop will try to put it on the upper shelf
 				std::vector<Integer>::iterator      ri_it = ri.begin();
 				std::vector<Integer>::const_iterator t_it= _tab_it->begin();
-				for( ; ri_it != ri.end(); ++ri_it, ++ t_it)
-					smallbigreconstruct(*ri_it, mi(), *t_it, _mod_it->operator()()); 
+                                
+                                Integer invm; inv(invm, _mod_it->operator()(), mi());
+				for( ; ri_it != ri.end(); ++ri_it, ++ t_it) 
+                                    equalreconstruct(*ri_it, mi(), *t_it, _mod_it->operator()(), invm); 
+
+                                    // Product (lazy) computation
 				mi.mulin(*_mod_it);
+
 				di += *_dsz_it;
 				*_occ_it = false;
 			} else {
@@ -151,11 +156,25 @@ public:
 				// We need to combine it with the actual value of the result
 				std::vector<Integer>::iterator t0_it = d.begin();
 				std::vector<Integer>::const_iterator t_it = _tab_it->begin();
+                                Integer invprod; 
+                                precomputeInvProd(invprod, Product(), _mod_it->operator()() );
+
 				for( ; t0_it != d.end(); ++t0_it, ++t_it)
-					normalizesmallbigreconstruct(*t0_it, Product(), *t_it, _mod_it->operator()() );
+                                    smallbigreconstruct(*t0_it, *t_it, invprod);
+                                
+                                    // Overall product computation
 				Product.mulin(*_mod_it);
+
+                                    // Moding out and normalization
+                                for(t0_it = d.begin();t0_it != d.end(); ++t0_it) {
+                                    *t0_it %= Product();
+                                    Integer tmp(*t0_it);
+                                    normalize(*t0_it, tmp, Product());
+                                }
+                                
 			}
 		}
+
 		// We put it also the final prime product in the first shelf of products
 		// JGD : should we also put the result 
 		//       in the first shelf of residues and resize it to 1
@@ -200,16 +219,28 @@ public:
 	
 protected:
 	
-	Integer& smallbigreconstruct(Integer& u1, const Integer& m1, const Integer& u0, const Integer& m0) {
-		Integer tmp=u1;
-		inv(u1, m0, m1);      // res <-- m0^{-1} mod m1
-		tmp -= u0;            // tmp <-- (u1-u0)
-		u1 *= tmp;            // res <-- (u1-u0)( m0^{-1} mod m1 )   
-		u1 %= m1;      	  // res <  m1 
-		u1 *= m0;             // res <-- (u1-u0)( m0^{-1} mod m1 ) m0      and res <= (m0m1-m0)
-		return u1 += u0;      // res <-- u0 + (u1-u0)( m0^{-1} mod m1 ) m0 and res <  m0m1
-	}
-	
+    Integer& equalreconstruct(Integer& u1, const Integer& m1, const Integer& u0, const Integer& m0, const Integer& invm) {
+        u1 -= u0;	  // u1 <-- (u1-u0)
+        u1 *= invm;       // u1 <-- (u1-u0)( m0^{-1} mod m1 )
+        u1 %= m1;         // u1 <-- ( (u1-u0) m0^{-1} ) mod m1
+        u1 *= m0;         // u1 <-- (u1-u0)( m0^{-1} mod m1 ) m0 
+        return u1 += u0;  // u1 <-- u0 + (u1-u0)( m0^{-1} mod m1 ) m0
+    }
+    
+    
+
+    Integer& precomputeInvProd(Integer& res, const Integer& m1, const Integer& m0) {
+        inv(res, m0, m1);
+        return res *= m0; // res <-- (m0^{-1} mod m1) m0
+    }
+
+    Integer& smallbigreconstruct(Integer& u1, const Integer& u0, const Integer& invprod) {
+        u1 -= u0;	  // u1 <-- (u1-u0)
+        u1 *= invprod;    // u1 <-- (u1-u0)( m0^{-1} mod m1 ) m0 
+        return u1 += u0;  // u1 <-- u0 + (u1-u0)( m0^{-1} mod m1 ) m0
+    }
+    
+        
 	Integer& normalize(Integer& u1, Integer& tmp, const Integer& m1) {
 		if (u1 < 0)
 			tmp += m1;
@@ -218,16 +249,6 @@ protected:
 		return ((absCompare(u1,tmp) > 0)? u1 = tmp : u1 );
 	}
 	
-	Integer& normalizesmallbigreconstruct(Integer& u1, const Integer& m1, const Integer& u0, const Integer& m0) {
-		Integer tmp=u1;
-		inv(u1, m0, m1);	// res <-- m0^{-1} mod m1
-		tmp -= u0;      	// tmp <-- (u1-u0)
-		u1 *= tmp;      	// res <-- (u1-u0)( m0^{-1} mod m1 )   
-		u1 %= m1;
-		normalize(u1, tmp=u1, m1);         // Normalization
-		u1 *= m0;          // res <-- (u1-u0)( m0^{-1} mod m1 ) m0       and res <= (m0m1-m0)
-		return u1 += u0;   // res <-- u0 + (u1-u0)( m0^{-1} mod m1 ) m0  and res <  m0m1
-	}
 	
 	Integer& fieldreconstruct(Integer& res, const Domain& D1, const DomainElement& u1, const Integer& r0, const Integer& P0) {
 		DomainElement u0, m0; D1.init(u0, r0);
