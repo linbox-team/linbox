@@ -277,7 +277,7 @@ namespace LinBox {
 
 		IntegerModularCharpoly<Blackbox,Method::Blackbox> iteration(A, M);
 		cra.operator() (P, iteration, genprime);
-		commentator.stop ("done", NULL, "Icharpoly");
+		commentator.stop ("done", NULL, "IbbCharpoly");
 		return P;
 	}
 	template < class Polynomial,class Blackbox >
@@ -316,7 +316,7 @@ namespace LinBox {
 		ChineseRemainder< EarlyMultipCRA<Modular<double> > > cra(3UL);
 		IntegerModularCharpoly<Blackbox,Method::BlasElimination> iteration(A, M);
 		cra(P, iteration, genprime);
-		commentator.stop ("done", NULL, "Icharpoly");
+		commentator.stop ("done", NULL, "IbbCharpoly");
 		return P;
 	}
 
