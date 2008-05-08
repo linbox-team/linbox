@@ -14,7 +14,8 @@
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/quad-matrix.h"
 
-#include "test-generic-for-quad.h"
+#include "test-blackbox.h"
+//#include "test-generic-for-quad.h"
 
 using namespace LinBox;
 
@@ -39,8 +40,6 @@ int main (int argc, char **argv)
 
 	srand (time (NULL));
 
-	//cout << endl << "Scalar matrix black box test suite" << endl;
-
 	typedef Modular<uint32> Field;
 	typedef ZOQuad <Field> BlackBox;
 
@@ -57,13 +56,13 @@ int main (int argc, char **argv)
 	rows = new size_t[npr * n];
 	cols = new size_t[npr * n];
 
-#if 1
-	// "arrow" matrix
 	/*
+	// "arrow" matrix
 	for(i = 0; i < n; i++) { rows[i] = 0; cols[i] = i; }
 	for(i = 0; i < n - 1; i++) { rows[n+2*i] = i + 1; cols[n+2*i] = 0; rows[n+2*i+1] = i + 1; cols[n+2*i+1] = i + 1; }
 	ZeroOne<Field> B(F, rows, cols, n, n, 3 * n - 2);
 	*/
+
 	// random 3 per row matrix
 	for(i = 0; i < n; i++) 
 		{
@@ -80,7 +79,8 @@ int main (int argc, char **argv)
 			//std::cout << std::endl;
 		}
 	ZeroOne<Field> B(F, rows, cols, n, n, npr * n );
-#else
+
+	/*
 	ZeroOne<Field> B(F);
 	//ifstream mat_in("data/m133.b3.200200x200200.sms");
 	//ifstream mat_in("data/n4c6.b9.186558x198895.sms");
@@ -88,13 +88,12 @@ int main (int argc, char **argv)
 	//ifstream mat_in("data/iso333");
 	ifstream mat_in("../examples/iso334");
 	B.read(mat_in);
-	//LinBox::Transpose<Matrix> testMat(testMatrix);
-#endif	
+	*/
 
 	//std::cout << " -- main: " << B.rowdim() << " " << B.coldim() << " " << B.nnz() << std::endl;
 	//std::cout << " -- main: ZOQuad matrix blackbox test suite" << std::endl;
 
-        BlackBox BB(B);
+    BlackBox BB(B);
 
 	//BB.write(cout) << endl; //just writes the sizes of the strips.
 

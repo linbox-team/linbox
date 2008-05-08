@@ -208,7 +208,6 @@ testLinearity (Field                             &F,
  */
 template <class BB> 
 static bool 
-//testBlackbox(Field& F, BB &A)
 testBlackbox(BB &A)
 {
 	size_t largeThresh = 2000; // Above it do timing of apply and applyTr.
@@ -247,14 +246,13 @@ testBlackbox(BB &A)
 	
 #if 1 
 	size_t iterations = 2; 
-	LinBox::commentator.start ("\t--Testing A(ax+y) = a(Ax) + (Ay)", 
-							   "testLinearity", 1);
 	typename Field::RandIter r(F);
 	LinBox::RandomDenseStream<Field, DenseVector> stream1 (F, r, A.rowdim(), iterations); 
 	typename Field::Element x; 
 	r.random(x);
 	LinBox::RandomDenseStream<Field, DenseVector> stream2 (F, r, A.coldim(), iterations); 
 
+	LinBox::commentator.start ("\t--Testing A(ax+y) = a(Ax) + (Ay)", "testLinearity", 1);
 	ret = ret && testLinearity (F, A, stream1, stream2);
 	
 	LinBox::commentator.stop (MSG_STATUS (ret), 

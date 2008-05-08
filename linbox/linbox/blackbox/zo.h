@@ -72,7 +72,7 @@ namespace LinBox
       : _F(F), _index(index), _indexP(indexP), _rowdim(rowdim), _coldim(coldim), sorted(sortedBy)
     {
 	  ptrdiff_t diff = _index.begin() - index.begin();
-	  for (size_t i = 0; i <= _rowdim; ++i)
+	  for (size_t i = 0; i < _indexP.size(); ++i)
 	     _indexP[i] += diff;
 
     /*
