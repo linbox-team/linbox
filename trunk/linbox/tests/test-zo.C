@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <set>
 #include <utility>
 
 #include "linbox/blackbox/zo.h"
@@ -10,17 +11,16 @@
 
 
 #include "test-common.h"
-#include "test-generic.h"
+#include "test-blackbox.h"
 
 int main(int argc, char **argv) {
   bool pass = true;
   uint32 prime = 31337;
-  static size_t n = 100, iter = 5;
+  static size_t n = 100000;
 
   static Argument args[] = 
     {{ 'n', "-n N", "Set dimension of test matrix to NxN.", TYPE_INT, &n }, 
      { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INT, &prime }, 
-     { 'i', "-i I", "Perform each test for I iterations.", TYPE_INT, &iter},
 	 { '\0'}
 	};
 
@@ -32,17 +32,41 @@ int main(int argc, char **argv) {
 
   Field afield(prime);
 
-#if 1
+  /* 
+  // "arrow" matrix
   size_t *rows, *cols, i;
   rows = new size_t[3 * n + 1 - 2];
   cols = new size_t[3 * n + 1 - 2];
 
-  // "arrow" matrix
   for(i = 0; i < n; i++) { rows[i] = 0; cols[i] = i; } // first row
   for(i = 0; i < n - 1; i++) 
     { rows[n+2*i] = i + 1; cols[n+2*i] = 0; rows[n+2*i+1] = i + 1; cols[n+2*i+1] = i + 1; } // first col and the diag
   Matrix testMatrix(afield, rows, cols, n, n, 3 * n - 2);
-#else
+  */
+
+// random 3 per row matrix
+	size_t *rows, *cols, i;
+	const size_t npr = n / 10000;
+	rows = new size_t[npr * n];
+	cols = new size_t[npr * n];
+
+    for(i = 0; i < n; i++)
+        {
+            set<size_t> a;
+            while( a.size() < npr )
+                a.insert(rand()%n);
+            size_t j = 0;
+            for(set<size_t>::iterator iter = a.begin(); j < npr; ++j, ++iter)
+                {
+                    rows[npr*i+j] = i;
+                    cols[npr*i+j] = *iter;
+                    //std::cout << rows[npr*i+j] << ", ";
+                }
+            //std::cout << std::endl;
+        }
+    ZeroOne<Field> testMatrix(afield, rows, cols, n, n, npr * n );
+
+  /*
   Matrix testMatrix(afield);
   //ifstream mat_in("data/m133.b3.200200x200200.sms");
   ifstream mat_in("data/n4c6.b9.186558x198895.sms");
@@ -50,7 +74,7 @@ int main(int argc, char **argv) {
   //testMatrix.read(mat_in);
   testMatrix.read(cin);
   //LinBox::Transpose<Matrix> testMat(testMatrix);
-#endif
+  */
 
   //print out the dimensions and the number of non-zero entries of the matrix
   std::cout << testMatrix.rowdim() << " " << testMatrix.coldim() << " " << testMatrix.nnz() << std::endl;

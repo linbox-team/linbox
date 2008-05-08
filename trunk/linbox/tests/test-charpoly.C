@@ -266,8 +266,8 @@ int main (int argc, char **argv)
 	std::cout<<setprecision(8);
 	std::cerr<<setprecision(8);
 	static size_t n = 50;
-	//static integer q = 11U;
-	static integer q = 33554467U;
+	static integer q = 33554467U; 
+	//static integer q = 1000003U; // 33554467U; 
 	static int iterations = 1;
 	static int numVectors = 100;
 	static int k = 3;
@@ -284,7 +284,8 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	typedef Modular<double> Field;
+	typedef Modular<int> Field;
+	//typedef Modular<double> Field;
 	typedef vector<Field::Element> DenseVector;
 	typedef SparseMatrix<Field>::Row SparseVector;
 	//typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;

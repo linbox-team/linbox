@@ -47,10 +47,10 @@ namespace LinBox {
  \ingroup blackbox
 
 */
-	template <typename Field>
+	template <typename _Field>
 	class ZOQuad
 	{
-		//friend class ZeroOne<Field>;
+		//friend class ZeroOne<_Field>;
 		enum BBtype {zo, sbs, ou};
 		const void* _BBp;	
 		BBtype _tag;
@@ -58,8 +58,9 @@ namespace LinBox {
 		static const unsigned int smallThreshold = 60000;
 
 	protected:
-		Field _F;
+		_Field _F;
     public:
+		typedef _Field Field;
 		
 		typedef size_t Index;
 		typedef std::vector<Index> IndexVector;
