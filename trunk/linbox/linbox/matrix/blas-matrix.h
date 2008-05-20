@@ -36,14 +36,14 @@ namespace LinBox {
 	template<class Element>
 	class BlasMatrix;
 	
-	template <class Field>
-	class MatrixContainerTrait<BlasMatrix<typename Field::Element> > {
+	template <class Element>
+	class MatrixContainerTrait<BlasMatrix<Element> > {
 	public:
 		typedef MatrixContainerCategory::BlasContainer Type;
 	};
 	
-	template <class Field>
-	class MatrixContainerTrait<const BlasMatrix<typename Field::Element> > {
+	template <class Element>
+	class MatrixContainerTrait<const BlasMatrix<Element> > {
 	public:
 		typedef MatrixContainerCategory::BlasContainer Type;
 	};
