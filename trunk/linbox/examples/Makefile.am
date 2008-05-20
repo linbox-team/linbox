@@ -60,4 +60,4 @@ LINBOX_BIN=@bindir@
 
 # for compilation of new examples
 %:%.C 
-	$(CXX) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS)  $*.C -c
+	$(CXX) $(CXXFLAGS) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $(LDADD) $*.C -o $@
