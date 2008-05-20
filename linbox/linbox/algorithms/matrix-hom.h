@@ -35,8 +35,8 @@ namespace LinBox {
 	};
 	*/
 
-	template <class Ring, class Field>
-	struct MatrixHomTrait<DenseMatrixBase<typename Ring::Element>, Field> {
+	template <class RingElement, class Field>
+	struct MatrixHomTrait<DenseMatrixBase<RingElement>, Field> {
 		typedef DenseMatrixBase<typename Field::Element> value_type;
 	};
 	template <class Ring, class Field>
