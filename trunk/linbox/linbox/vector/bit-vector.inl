@@ -397,7 +397,7 @@ inline BitVector::const_reference BitVector::front (void) const
 
 inline BitVector::reference BitVector::back (void)
 {
-	if (_size & __LINBOX_POS_ALL_ONES == 0UL)
+	if ( (_size & __LINBOX_POS_ALL_ONES) == 0UL)
 		return reference (_v.end (), 0UL);
 	else
 		return reference (_v.end () - 1UL, _size & __LINBOX_POS_ALL_ONES);
@@ -405,7 +405,7 @@ inline BitVector::reference BitVector::back (void)
 
 inline BitVector::const_reference BitVector::back (void) const
 {
-	if (_size & __LINBOX_POS_ALL_ONES == 0UL)
+	if ( (_size & __LINBOX_POS_ALL_ONES) == 0UL)
 		return const_reference (_v.end (), 0UL);
 	else
 		return const_reference (_v.end () - 1UL, _size & __LINBOX_POS_ALL_ONES);
