@@ -38,7 +38,7 @@ class LinboxError {
 	const static size_t max_error_string = 256;
 public:
 	LinboxError (const char* msg = 0) {
-		strncpy(strg, msg, max_error_string);
+		std::strncpy(strg, msg, max_error_string);
 		strg[max_error_string-1] = 0;
 	};
 
