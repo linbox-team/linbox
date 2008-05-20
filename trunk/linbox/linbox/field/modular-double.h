@@ -347,7 +347,7 @@ namespace LinBox {
 		typedef Modular<double> Field;
 	  
 		FieldAXPY (const Field &F) : _F (F) , //_invmod(1./_F.modulus), 
-					     _y(0.) , _bound( (double) (1 << 53 - (int) (_F.modulus*_F.modulus))) {}
+					     _y(0.) , _bound( (double) ((1ULL << 53) - (int) (_F.modulus*_F.modulus))) {}
 	  
 		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F),// _invmod(faxpy._invmod) ,
 		_y(faxpy._y), _bound(faxpy._bound) {}
@@ -422,7 +422,7 @@ namespace LinBox {
 	public:	  
 		typedef double Element;	  
 		DotProductDomain (const Modular<double> &F)
-			: VectorDomainBase<Modular<double> > (F), _bound( (double) (1<<53 - (int) (_F.modulus*_F.modulus)))//, _invmod(1./_F.modulus) 
+			: VectorDomainBase<Modular<double> > (F), _bound( (double) ( (1ULL<<53) - (int) (_F.modulus*_F.modulus)))//, _invmod(1./_F.modulus) 
 			{
 				_nmax= (size_t)floor((double(1<<26)* double(1<<26)*2.)/ (_F.modulus * _F.modulus));
 			}
