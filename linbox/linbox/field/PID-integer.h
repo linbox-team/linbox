@@ -154,8 +154,11 @@ namespace LinBox {
                 inline  long reconstructRational (Element& a, Element& b, 
                                                         const Element& x, const Element& m, 
                                                         const Element& a_bound, const Element& b_bound) const {
-                        RationalReconstruction(a,b,x,m,a_bound, true, false);
-                        return  (b > b_bound)? 0: 1;	
+                    Element bound = x/b_bound;
+                    // if (bound>a_bound) std::cerr << "a_bound: " << a_bound << ", x/b_bound: " << bound << std::endl;
+                    
+                    RationalReconstruction(a,b,x,m, (bound>a_bound?bound:a_bound), true, false);
+                    return  (b > b_bound)? 0: 1;	
                 }
            
  
