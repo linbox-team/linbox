@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/solutions/det.h
  * Copyright (C) 2001, 2002 LinBox
- * Time-stamp: <06 Jun 07 15:35:18 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <20 May 08 13:36:45 Jean-Guillaume.Dumas@imag.fr> 
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -300,7 +300,7 @@ namespace LinBox
                     
 			F.div (d, phi[0], pi);
                     
-			if (deg & 1 == 1)
+			if ( (deg & 1) == 1)
 				F.negin (d);
                     
                   
