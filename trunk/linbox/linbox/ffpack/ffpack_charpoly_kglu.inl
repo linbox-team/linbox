@@ -13,12 +13,13 @@ size_t FFPACK::updateD(const Field& F, size_t * d, size_t k,
 			       std::vector<std::vector<typename Field::Element> >& minpt){
 	size_t ind=0, i=0;
 	while(i<k){
-		if (d[i])
+		if (d[i]) {
 			if (ind<i){
 				d[ind] = d[i];
 				minpt[ind++] = minpt[i];
 			}
 			else ind++;
+		}
 		i++;
 	}
 	for (i=ind; i<k; ++i)
