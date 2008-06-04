@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // ======================================================================= //
-// Time-stamp: <24 Apr 08 10:01:34 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <23 Apr 08 19:28:37 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_CRA_FULL_MULTIP_H
 #define __LINBOX_CRA_FULL_MULTIP_H
@@ -88,12 +88,17 @@ public:
 				std::vector<Integer>::iterator      ri_it = ri.begin();
 				std::vector<Integer>::const_iterator t_it= _tab_it->begin();
                                 
-                                Integer invm; inv(invm, _mod_it->operator()(), mi());
+                                Integer invprod; precomputeInvProd(invprod, mi(), _mod_it->operator()());
 				for( ; ri_it != ri.end(); ++ri_it, ++ t_it) 
-                                    equalreconstruct(*ri_it, mi(), *t_it, _mod_it->operator()(), invm); 
+                                    smallbigreconstruct(*ri_it, *t_it, invprod); 
 
                                     // Product (lazy) computation
 				mi.mulin(*_mod_it);
+
+                                    // Moding out
+                                for(ri_it = ri.begin() ; ri_it != ri.end(); ++ri_it) {
+                                    *ri_it %= mi();
+                                }
 
 				di += *_dsz_it;
 				*_occ_it = false;
@@ -156,17 +161,18 @@ public:
 				// We need to combine it with the actual value of the result
 				std::vector<Integer>::iterator t0_it = d.begin();
 				std::vector<Integer>::const_iterator t_it = _tab_it->begin();
-
-                                Integer invm; inv(invm, _mod_it->operator()(), Product());
+                                Integer invprod; 
+                                precomputeInvProd(invprod, Product(), _mod_it->operator()() );
 
 				for( ; t0_it != d.end(); ++t0_it, ++t_it)
-                                    smallbigreconstruct(*t0_it, Product(), *t_it, _mod_it->operator()(), invm);
+                                    smallbigreconstruct(*t0_it, *t_it, invprod);
                                 
                                     // Overall product computation
 				Product.mulin(*_mod_it);
 
                                     // Moding out and normalization
                                 for(t0_it = d.begin();t0_it != d.end(); ++t0_it) {
+                                    *t0_it %= Product();
                                     Integer tmp(*t0_it);
                                     normalize(*t0_it, tmp, Product());
                                 }
@@ -218,26 +224,14 @@ public:
 	
 protected:
 	
-    Integer& equalreconstruct(Integer& u1, const Integer& m1, const Integer& u0, const Integer& m0, const Integer& invm) {
-        u1 -= u0;	  // u1 <-- (u1-u0)
-        u1 *= invm;       // u1 <-- (u1-u0)( m0^{-1} mod m1 )
-        u1 %= m1;         // u1 <-- ( (u1-u0)m0^{-1} ) mod m1
-        u1 *= m0;         // u1 <-- (u1-u0)( m0^{-1} mod m1 ) m0 
-        return u1 += u0;  // u1 <-- u0 + (u1-u0)( m0^{-1} mod m1 ) m0
-    }
-    
-    
-
     Integer& precomputeInvProd(Integer& res, const Integer& m1, const Integer& m0) {
         inv(res, m0, m1);
         return res *= m0; // res <-- (m0^{-1} mod m1) m0
     }
 
-    Integer& smallbigreconstruct(Integer& u1, const Integer& m1, const Integer& u0, const Integer& m0, const Integer& invm) {
+    Integer& smallbigreconstruct(Integer& u1, const Integer& u0, const Integer& invprod) {
         u1 -= u0;	  // u1 <-- (u1-u0)
-        u1 *= invm;       // u1 <-- (u1-u0)( m0^{-1} mod m1 )
-        u1 %= m1;         // u1 <-- ( (u1-u0)m0^{-1} ) mod m1
-        u1 *= m0;         // u1 <-- (u1-u0)( m0^{-1} mod m1 ) m0 
+        u1 *= invprod;    // u1 <-- (u1-u0)( m0^{-1} mod m1 ) m0 
         return u1 += u0;  // u1 <-- u0 + (u1-u0)( m0^{-1} mod m1 ) m0
     }
     
