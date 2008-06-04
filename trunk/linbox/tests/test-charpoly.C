@@ -95,7 +95,6 @@ static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 	if (! Z.areEqual(val, phi[0])) ret = false;
 	// value at -1 should be (-2)^n
 	eval(Z, val2, phi, negone);
-	Z.mulin(val2, val);
 	Z.init(neg2, -2); Z.init(pow2, 1);
 	for (size_t i = 0; i < n; ++i) Z.mulin(pow2, neg2);
 	if (! Z.areEqual(val2, pow2)) ret = false;
