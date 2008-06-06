@@ -23,11 +23,16 @@
 #ifdef _LINBOX_LINBOX_CONFIG_H 
 #include "linbox/config-blas.h"
 #include "linbox/field/unparametric.h"
-
+#include "linbox/field/modular-double.h"
+#include "linbox/field/modular-float.h"
+#include "linbox/field/modular-balanced-double.h"
+#include "linbox/field/modular-balanced-float.h"
 namespace LinBox {
 #else
 #include "config-blas.h"
-#include "unparametric.h"
+#include "fflas-ffpack/unparametric.h"
+#include "fflas-ffpack/modular-positive.h"
+#include "fflas-ffpack/modular-balanced.h"
 #endif
 	
 #ifndef __LINBOX_STRASSEN_OPTIMIZATION
@@ -57,7 +62,7 @@ public:
 	/* Determine the type of the element representation for Matrix Mult kernel
 	 * FflasDouble: to use the double precision BLAS
 	 * FflasFloat: to use the single precison BLAS
-	 * FflasFloat: for any other domain, that can not be converted to floating point integers
+	 * FflasGeneric: for any other domain, that can not be converted to floating point integers
 	 */
 	enum FFLAS_BASE      { FflasDouble = 151, FflasFloat = 152, FflasGeneric = 153};
 
@@ -237,12 +242,20 @@ public:
 	       const size_t w){
 
 		if (!(m && n && k)) return C;
+
+		if (F.isZero (alpha)){
+			for (size_t i = 0; i<m; ++i)
+				fscal(F, n, beta, C + i*ldc, 1);
+			return C;
+		}
 		
-		FFLAS_BASE base = BaseCompute<typename Field::Element> ()(F, w);
-		size_t d = DotProdBound (F, w, beta, base);
-		//std::cerr<<"d = "<<d<<std::endl;
+		size_t kmax = 0;
+		size_t winolevel = w;
+		FFLAS_BASE base;
+		MatMulParameters (F, MIN(MIN(m,n),k), beta, kmax, base,
+				  winolevel, true);
 		WinoMain (F, ta, tb, m, n, k, alpha, A, lda, B, ldb, beta,
-				 C, ldc, d, w, base);
+				 C, ldc, kmax, winolevel, base);
 		return C;
 		};
 	
@@ -261,21 +274,22 @@ public:
 	       const size_t n,
 	       const size_t k,
 	       const typename Field::Element alpha,
-	       const typename Field::Element* A, 
-	       const size_t lda,
-	       const typename Field::Element* B,
-	       const size_t ldb, 
+	       const typename Field::Element* A, const size_t lda,
+	       const typename Field::Element* B, const size_t ldb, 
 	       const typename Field::Element beta,
-	       typename Field::Element* C, 
-	       const size_t ldc){
+	       typename Field::Element* C, const size_t ldc){
 
 		if (!(m && n && k)) return C;
-
-		size_t w, kmax=0;
+		if (F.isZero (alpha)){
+			for (size_t i = 0; i<m; ++i)
+				fscal(F, n, beta, C + i*ldc, 1);
+			return C;
+		}
+		
+		size_t w, kmax;
  		FFLAS_BASE base;
 
-		setMatMulParam<typename Field::Element> ()(F, MIN(MIN(m,n),k), beta,
-							   w, base, kmax);
+		MatMulParameters (F, MIN(MIN(m,n),k), beta, kmax, base, w);
 
 		WinoMain (F, ta, tb, m, n, k, alpha, A, lda, B, ldb, beta,
 			  C, ldc, kmax, w, base);
@@ -446,55 +460,102 @@ protected:
 		}
 	}
 
-	/** @brief Bound for the delayed modulus matrix multiplication
+	/**
+	 * MatMulParameters
 	 *
-	 *  @param F  - the finite field
-	 *  @param w  - the number of recursive levels of Winograds algorithm being used
-	 *  @param beta - for the computation of C <- AB + beta C
+	 * \brief Computes the threshold parameters for the cascade
+	 *        Matmul algorithm
 	 *
-	 *  Compute the maximal dimension k, such that a matrix multiplication (m,k)x(k,n)
-	 *  can be performed over Z without overflow of the 53 bits of the double
-	 *  mantissa.
-	 *  See [Dumas, Gautier, Pernet ISSAC'2002]
+	 * 
+	 * \param F Finite Field/Ring of the computation.
+	 * \param k Common dimension of A and B, in the product A x B
+	 * \param bet Computing AB + beta C
+	 * \param delayedDim Returns the size of blocks that can be multiplied
+	 *                   over Z with no overflow
+	 * \param base Returns the type of BLAS representation to use
+	 * \param winoRecLevel Returns the number of recursion levels of
+	 *                     Strassen-Winograd's algorithm to perform
+	 * \param winoLevelProvided tells whether the user forced the number of
+	 *                          recursive level of Winograd's algorithm
+	 *
+	 * See [Dumas, Giorgi, Pernet, arXiv cs/0601133]
+	 * http://arxiv.org/abs/cs.SC/0601133
 	 */
 	template <class Field>
-	static size_t DotProdBound (const Field& F, const size_t w,
-				    const typename Field::Element& beta,
-				    const FFLAS_BASE base);
+	static void MatMulParameters (const Field& F,
+				      const size_t k,
+				      const typename Field::Element& beta,
+				      size_t& delayedDim,
+				      FFLAS_BASE& base,
+				      size_t& winoRecLevel,
+				      bool winoLevelProvided=false);
 
+	
+	/**
+	 * DotprodBound
+	 *
+	 * \brief  computes the maximal size for delaying the modular reduction
+	 *         in a dotproduct
+	 *
+	 * This is the default version assuming a conversion to a positive modular representation
+	 * 
+	 * \param F Finite Field/Ring of the computation
+	 * \param winoRecLevel Number of recusrive Strassen-Winograd levels (if any, 0 otherwise)
+	 * \param beta Computing AB + beta C
+	 * \param base Type of floating point representation for delayed modular computations
+	 * 
+	 */
 	template <class Field>
-	static size_t DotProdBoundCompute (const Field& F, const size_t w,
-					   const typename Field::Element& beta,
-					   const FFLAS_BASE base);
+	static size_t DotProdBound (const Field& F,
+			     const size_t w, 
+			     const typename Field::Element& beta,
+			     const FFLAS_BASE base);
 	
 
+	/**
+	 * Internal function for the bound computation
+	 * Generic implementation for positive representations
+	 */
+	template <class Field>
+	static double computeFactor (const Field& F, const size_t w);
+	
+
+	/**
+	 * Winosteps
+	 *
+	 * \brief Computes the number of recursive levels to perform
+	 *
+	 * \param m the common dimension in the product AxB
+	 */
 	static size_t WinoSteps (const size_t m);
 	
-	// 	template <class Element>
-// 	class callDotProdBoundCompute;
-
-	/** @brief Bound for the delayed modulus triangular system solving
+	/**
+	 * BaseCompute
 	 *
-	 *  @param F  - the finite field
+	 * \brief Determines the type of floating point representation to convert to,
+	 *        for BLAS computations
+	 * \param F Finite Field/Ring of the computation
+	 * \param w Number of recursive levels in Winograd's algorithm
+	 */
+	template <class Field>
+	static FFLAS_BASE BaseCompute (const Field& F, const size_t w);
+		
+	/**
+	 * TRSMBound
+	 *
+	 * \brief  computes the maximal size for delaying the modular reduction
+	 *         in a triangular system resolution
 	 *
 	 *  Compute the maximal dimension k, such that a unit diagonal triangular
 	 *  system of dimension k can be solved over Z without overflow of the
-	 *  53 bits of the double mantissa.
-  	 *  See [Dumas, Giorgi, Pernet ISSAC'2004]
+	 *  underlying floating point representation.
+  	 *  See [Dumas, Giorgi, Pernet 06, arXiv:cs/0601133 ]
+	 * 
+	 * \param F Finite Field/Ring of the computation
+	 * 
 	 */
 	template <class Field>
 	static size_t TRSMBound (const Field& F);
-
-	template <class Element>
-	class callTRSMBound;
-
-	/** @brief Set the optimal parameters for the Matrix Multiplication
-	 */
-	template <class Element>
-	class setMatMulParam;
-
-	template <class Element>
-	class BaseCompute;
 
 	template <class Field>
 	static void DynamicPealing( const Field& F, 
@@ -556,19 +617,6 @@ protected:
 			      typename Field::Element * C, const size_t ldc,
 			      const size_t kmax, const size_t w, const FFLAS_BASE base);
 
-
-	template<class Element>
-	class callWinoMain;
-
-	template<class Element>
-	class callClassicMatmul;
-
-	template<class Element>
-	class callFsquare;
-
-	template<class Element>
-	class callMatVectProd;
-		
 	// Specialized routines for ftrsm
 	template <class Element>
 	class ftrsmLeftUpperNoTransNonUnit;

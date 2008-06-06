@@ -38,24 +38,22 @@ FFPACK::CharPoly (const Field& F, std::list<Polynomial>& charp, const size_t N,
 	}
  	case FfpackKGFastG:{
  		return KGFast_generalized (F, charp, N, A, lda);
- 		break;
- 	}
+	}
 	case FfpackHybrid:{
 		typename Field::Element * X = new typename Field::Element[N*(N+1)];
 		LUKrylov_KGFast (F, charp, N, A, lda, X, N);
 		delete[] X;
 		return charp;
-		break;
 	}
-
 	case FfpackArithProg:{
 		size_t attempts=0;
 		bool cont = false;
 		FFLAS_INT_TYPE p;
 		F.characteristic(p);
 		// Heuristic condition (the pessimistic theoretical one being p<2n^2.
-		if (p < (unsigned long) N)
+		if ((unsigned long) (p) < N)
 			return CharPoly (F, charp, N, A, lda, FfpackLUK);
+
 		do{
 			try {
 				CharpolyArithProg (F, charp, N, A, lda, __FFPACK_CHARPOLY_THRESHOLD);
@@ -69,17 +67,14 @@ FFPACK::CharPoly (const Field& F, std::list<Polynomial>& charp, const size_t N,
 			}
 		} while (cont);
 		return charp;
-		break;
 	}
 	default:{
 		typename Field::Element * X = new typename Field::Element[N*(N+1)];
 		LUKrylov (F, charp, N, A, lda, X, N);
 		delete[] X;
 		return charp;
-		break;
 	}
 	}
-	return charp;
 }
 
 template <class Field, class Polynomial>

@@ -42,11 +42,12 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 
 	// Picking a random noc x N block vector U^T
 	typename Field::RandIter g (F);
+	typename Field::NonZeroRandIter nzg (F,g);
 	for (size_t i = 0; i < noc; ++i)
  		for (size_t j = 0; j < N; ++j)
  			g.random( *(K + i*ldk +j) );
 	for (size_t i = 0; i < noc; ++i)
-		g.nonzerorandom (*(K + i*ldk +i));
+		nzg.random (*(K + i*ldk +i));
 	
 	// Computing the bloc Krylov matrix [U AU .. A^(c-1) U]^T
 	for (size_t i = 1; i<c; ++i)

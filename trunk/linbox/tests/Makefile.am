@@ -44,7 +44,7 @@ BASIC_TESTS =  			\
         test-matrix-stream      \
         test-minpoly            \
         test-modular            \
-        test-modular-balance-int\
+        test-modular-balanced-int\
         test-modular-byte       \
         test-modular-double     \
         test-modular-int        \
@@ -439,8 +439,8 @@ test_modular_byte_SOURCES =		\
 	test-generic.h			\
 	test-common.h
 
-test_modular_balance_int_SOURCES =             \
-        test-modular-balance-int.C             \
+test_modular_balanced_int_SOURCES =             \
+        test-modular-balanced-int.C             \
         test-generic.h                  \
         test-common.h
 

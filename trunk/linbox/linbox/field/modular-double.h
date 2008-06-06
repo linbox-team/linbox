@@ -26,6 +26,8 @@
 #include "linbox/util/debug.h"
 #include <math.h>
 #include <linbox/field/field-traits.h>
+#include "linbox/randiter/nonzero.h"
+#include "linbox/randiter/modular.h"
 
 
 
@@ -35,8 +37,12 @@ namespace LinBox {
 	
 	template< class Element >
 	class Modular;
+
 	template< class Element >
 	class ModularRandIter;
+
+	template< class Field, class RandIter >
+	class NonzeroRandIter;
 
 	template <class Ring>
 	struct ClassifyRing; 
@@ -67,6 +73,7 @@ namespace LinBox {
 			       
 		typedef double Element;
 		typedef ModularRandIter<double> RandIter;
+		typedef NonzeroRandIter<Modular<double>, ModularRandIter<double> > NonZeroRandIter;
 
 		static ClassifyRing<Modular<double> >::categoryTag getCategory() {return ClassifyRing<Modular<double> >::categoryTag();}
 		
@@ -335,7 +342,7 @@ namespace LinBox {
 		}
 
 		static inline double getMaxModulus()
-			{ return 94906265.0; } // floor( 2^26.5 )
+			{ return 67108864.0; } // 2^26 
 		
 	};
 
@@ -484,6 +491,5 @@ namespace LinBox {
 	};
 }
 
-#include "linbox/randiter/modular.h"
 
 #endif

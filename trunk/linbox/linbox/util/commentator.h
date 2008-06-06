@@ -707,7 +707,7 @@ namespace LinBox
 	};
 
 	// Default global commentator
-	extern  Commentator commentator;
+	extern Commentator commentator;
 }
 
 #ifdef LinBoxSrcOnly
@@ -817,7 +817,7 @@ namespace LinBox
 	};
 
 	// Default global commentator
-	 Commentator commentator;
+	Commentator commentator;
 	//static Commentator commentator;
 }
 
