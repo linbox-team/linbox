@@ -1,4 +1,4 @@
-SUBDIRS=driver kaapi maple
+SUBDIRS=driver kaapi maple sage
 
 
 

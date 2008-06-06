@@ -1,6 +1,6 @@
 AC_PREREQ(2.50)
 #AC_INIT(linbox/linbox.doxy)
-AC_INIT(linbox, 1.1.5,linbox-use@googlegroups.com) 
+AC_INIT(linbox, 1.1.6rc0,linbox-use@googlegroups.com) 
 AM_INIT_AUTOMAKE([1.8 gnu no-dependencies])
 AM_CONFIG_HEADER([config.h])
 AX_PREFIX_CONFIG_H(linbox/linbox-config.h, __LINBOX)
@@ -126,6 +126,7 @@ LB_CHECK_GIVARO
 LB_CHECK_SACLIB
 LB_CHECK_LIDIA
 LB_CHECK_MAPLE
+LB_CHECK_SAGE
 #LB_CHECK_ATLAS
 LB_CHECK_BLAS(,,[
 echo ''
@@ -178,6 +179,7 @@ interfaces/Makefile
 interfaces/driver/Makefile
 interfaces/maple/Makefile
 interfaces/kaapi/Makefile
+interfaces/sage/Makefile
 macros/Makefile
 ])
 
