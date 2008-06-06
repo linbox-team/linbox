@@ -6,9 +6,9 @@
 
 #include "linbox/linbox-config.h"
 
-#include <linbox/util/commentator.h>
-#include <linbox/field/unparametric.h>
-#include <linbox/vector/subvector.h>
+#include "linbox/util/commentator.h"
+#include "linbox/field/unparametric.h"
+#include "linbox/vector/subvector.h"
 
 #include "test-common.h"
 
@@ -53,7 +53,7 @@ template <class Field>
 static bool testSubvector(Field &F, size_t n) 
 {
 	// commentator setup
-	char* title = "Subvector test";
+	const char *  title = "Subvector test";
 	commentator.start(title, title, 1);
 	ostream &report = commentator.report 
 		(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);

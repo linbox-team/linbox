@@ -232,8 +232,8 @@ void delayed (const Field& F, const size_t M, const size_t N,
 }
 template <class Field>
 void operator () (const Field& F, const size_t M, const size_t N,
-			  typename Field::Element * A, const size_t lda,
-			  typename Field::Element * B, const size_t ldb) {
+		  typename Field::Element * A, const size_t lda,
+		  typename Field::Element * B, const size_t ldb) {
 	
 	if (!M || !N ) return;
 		
@@ -248,9 +248,9 @@ void operator () (const Field& F, const size_t M, const size_t N,
 #ifdef __FFLAS__DOUBLE
 				    FflasDouble);
 #else
-                                    FflasFloat);
+	                            FflasFloat);
 #endif
-	ndel = (ndel / nblas)*nblas;
+        ndel = (ndel / nblas)*nblas;
 	size_t nsplit = ndel;
 	size_t nbblocsplit = (__FFLAS__Na-1) / nsplit;
 	size_t nrestsplit = ((__FFLAS__Na-1) % nsplit) +1;

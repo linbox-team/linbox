@@ -432,7 +432,7 @@ BitVector &BitVector::operator = (const Container &v)
 	if (v.size () & __LINBOX_POS_ALL_ONES) {
 		*j = 0UL;
 
-		for (idx = 0UL; idx < v.size () & __LINBOX_POS_ALL_ONES; ++idx) {
+		for (idx = 0UL; idx < (v.size () & __LINBOX_POS_ALL_ONES); ++idx) {
 			*j <<= 1UL;
 			*j |= *i & 1UL;
 		}

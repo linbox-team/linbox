@@ -637,7 +637,7 @@ FFPACK::LUdivine_construct( const Field& F, const FFLAS_DIAG Diag,
 			typename Field::Element * Xc = X + Nup;     //  NE
 			typename Field::Element * Xn = Xr + Nup;    //  SE
 			typename Field::Element * Xi = Xr;
-			if ( computeX ) {
+			if ( computeX ){
 				if (MinTag == FfpackDense)
 					for (size_t i=0; i< Ndown; ++i, Xi+=ldx){
 						fgemv(F, FflasNoTrans, N, N, one, 
@@ -650,9 +650,9 @@ FFPACK::LUdivine_construct( const Field& F, const FFLAS_DIAG Diag,
   							   kg_mc, kg_mb, kg_j );
 						fcopy(F, N, u,1,Xi, 1);
 					}
-			} 
+			}
 			// Apply the permutation on SW
-		applyP( F, FflasRight, FflasTrans, Ndown, 0, R, Xr, ldx, P); 
+			applyP( F, FflasRight, FflasTrans, Ndown, 0, R, Xr, ldx, P); 
 			// Triangular block inversion of NW and apply to SW
 			// Xr <- Xr.U1^-1
 			ftrsm( F, FflasRight, FflasUpper, FflasNoTrans, Diag,

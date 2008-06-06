@@ -10,7 +10,7 @@ BASIC_HDRS =				\
 	gmp-rational.h			\
 	param-fuzzy.h			\
 	modular.h			\
-	modular-balance.h		\
+	modular-balanced.h		\
 	unparametric.h			\
 	gf2.h				\
 	nonzero.h			\

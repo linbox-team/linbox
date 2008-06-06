@@ -207,7 +207,7 @@ std::ostream& writeCommandString (std::ostream& os, Argument *args, char* progra
 
 bool isPower (integer n, integer m)
 {
-	return (n == 1) || ((n % m) == 0) && isPower (n/m, m);
+	return (n == 1) || (((n % m) == 0) && isPower (n/m, m));
 }
 
 inline double incompleteGamma (double a, double x, double tol) 
