@@ -4,6 +4,7 @@
 #define __LINBOX_MODULAR__INT16_H
 
 
+#include "math.h"				
 #include "linbox/linbox-config.h"
 #include "linbox/integer.h"
 #include "linbox/vector/vector-domain.h"

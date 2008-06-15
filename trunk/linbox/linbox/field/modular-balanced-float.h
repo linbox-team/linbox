@@ -167,7 +167,7 @@ namespace LinBox {
 		}
 		
 		std::ostream &write (std::ostream &os) const {
-			return os << "float mod " << (int)modulus;
+			return os << "float mod " << int(modulus);
 		}
 		
 		std::istream &read (std::istream &is) {
@@ -184,7 +184,7 @@ namespace LinBox {
 		}
 		
 		std::ostream &write (std::ostream &os, const Element &x) const {
-			return os << (int)x;
+			return os << int(x);
 		}
 
 		std::istream &read (std::istream &is, Element &x) const {
@@ -265,8 +265,8 @@ namespace LinBox {
 		inline Element &inv (Element &x, const Element &y) const {
 			// The extended Euclidean algoritm 
 			int x_int, y_int, q, tx, ty, temp;
-			x_int = (int) modulus;
-			y_int = (int) (y < 0.) ? y + modulus : y;
+			x_int = int (modulus);
+			y_int = (y < 0.) ? int(y + modulus) : int(y);
 			tx = 0; 
 			ty = 1;
 		  

@@ -284,8 +284,8 @@ namespace LinBox {
 		inline Element &inv (Element &x, const Element &y) const {
 			// The extended Euclidean algoritm 
 			int x_int, y_int, q, tx, ty, temp;
-			x_int = (int) modulus;
-			y_int = (int) y;
+			x_int = int (modulus);
+			y_int = int (y);
 			tx = 0; 
 			ty = 1;
 		  
