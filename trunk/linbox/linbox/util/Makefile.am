@@ -1,9 +1,8 @@
-
 INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/linbox
 
 AM_CFLAGS=-Wall -O2
 
-SUBDIRS=gmp++ formats
+SUBDIRS=formats
 
 pkgincludesubdir=$(pkgincludedir)/util
 
@@ -16,8 +15,8 @@ libutil_la_SOURCES=	\
 	commentator.C	\
 	debug.C
 
-libutil_la_LIBADD=	\
-	gmp++/libgmpxx.la
+#libutil_la_LIBADD=	\
+#	gmp++/libgmpxx.la
 
 pkgincludesub_HEADERS=\
 	debug.h				\
