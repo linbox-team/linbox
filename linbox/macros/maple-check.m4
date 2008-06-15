@@ -17,7 +17,7 @@ AC_DEFUN([LB_DRIVER],
 [
 AC_MSG_CHECKING([whether to compile the drivers])
 
-AC_ARG_ENABLE(drivers, [ --enable-drivers	Enable the compilation of the drivers],
+AC_ARG_ENABLE(drivers, [  --enable-drivers Enable the compilation of the drivers],
 [
 AC_MSG_RESULT(yes)
 compile_drivers="yes"
@@ -33,10 +33,12 @@ AC_DEFUN([LB_CHECK_MAPLE],
 [
 
 AC_ARG_WITH(maple,
-	    [ --with-maple=<path>|yes|no 
-					   Use Maple library. 
-					   If argument is no, you do not have the library installed on your machine (set as default).
-					   If argument is yes or <empty> that means the library is  well installed and so reachable.				   	 				   Otherwise you give the <path> to the directory which contains the Software. 
+[ --with-maple=<path>|yes|no Use Maple library. If argument is no, you do not 
+  			    have the library installed on your machine (set as 
+			    default). If argument is yes or <empty> that means 
+			    the library is well installed and so reachable.
+			    Otherwise you give the <path> to the directory which
+			    contains the Software. 
 	    ],
             [if test "$withval" = yes ; then
 		MAPLE_HOME_PATH="${DEFAULT_CHECKING_PATH} unknown"	
@@ -46,9 +48,7 @@ AC_ARG_WITH(maple,
 	    [])
 
 AC_ARG_ENABLE(shared,
-	      [ --enable-shared 	  
-				    	   Check for shared compilation (needed by --with-maple)
-	      ],
+[  --enable-shared Check for shared compilation (needed by --with-maple)],
 	      [have_shared="$enableval"],
               [have_shared="no"])
 
@@ -132,18 +132,3 @@ AM_CONDITIONAL(LINBOX_COMPILE_DRIVERS, test "x$compile_drivers" = "xyes" -o "x$H
 
 ])
 
-
-AC_DEFUN([LB_CHECK_SAGE],
-[
-AC_MSG_CHECKING([whether to compile the sage interface])
-
-AC_ARG_ENABLE(sage, [ --enable-sage	Enable the compilation of the sage interface],
-[
-AC_MSG_RESULT(yes)
-sage_interface="yes"
-],[
-AC_MSG_RESULT(no)
-sage_interface="no"
-])
-AM_CONDITIONAL(LINBOX_HAVE_SAGE, test "x$sage_interface" = "xyes")
-])

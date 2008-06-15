@@ -2,7 +2,8 @@ AC_DEFUN([LB_OPT],
 [
 AC_MSG_CHECKING([whether to use run time optimization])
 
-AC_ARG_ENABLE(optimization, [--enable-optimization  Enable run time optimization in LinBox code],
+AC_ARG_ENABLE(optimization, 
+[  --enable-optimization  Enable run time optimization in LinBox code],
 [
 AC_MSG_RESULT(yes)
 

@@ -7,6 +7,7 @@ EXTRA_DIST=\
 	lidia-check.m4		\
 	atlas-check.m4		\
 	maple-check.m4		\
+	sage-check.m4		\
 	expat-check.m4		\
 	config-header.m4	\
 	linbox-misc.m4		\
