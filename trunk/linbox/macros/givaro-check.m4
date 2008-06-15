@@ -16,21 +16,21 @@ AC_DEFUN([LB_CHECK_GIVARO],
 [
 
 AC_ARG_WITH(givaro,
-	    [  --with-givaro=<path>|yes|no 
-					   Use Givaro library. 
-					   If argument is no, you do not have the library installed on your machine (set as default).
-					   If argument is yes or <empty> that means the library is reachable with the standard
-					   search path (/usr or /usr/local).
-	 				   Otherwise you give the <path> to the directory which contain the library. 
-	     ],
+[  --with-givaro=<path>|yes Use Givaro library. This library is mandatory for 
+                           LinBox compilation. If argument is yes or <empty> 
+			   that means the library is reachable with the standard
+			   search path (/usr or /usr/local). Otherwise you give 
+			   the <path> to the directory which contain the 
+			   library.
+],		  
 	     [if test "$withval" = yes ; then
 			GIVARO_HOME_PATH="${DEFAULT_CHECKING_PATH}"
 	      elif test "$withval" != no ; then
 			GIVARO_HOME_PATH="$withval ${DEFAULT_CHECKING_PATH}"
 	     fi],
-	     [])
+	     [GIVARO_HOME_PATH="${DEFAULT_CHECKING_PATH}"])
 
-min_givaro_version=ifelse([$1], ,3.0,$1)
+min_givaro_version=ifelse([$1], ,3.2.10,$1)
 
 
 dnl Check for existence
@@ -38,9 +38,7 @@ dnl Check for existence
 BACKUP_CXXFLAGS=${CXXFLAGS}
 BACKUP_LIBS=${LIBS}
 
-if test -n "$GIVARO_HOME_PATH" ; then
 AC_MSG_CHECKING(for GIVARO >= $min_givaro_version)
-fi
 
 for GIVARO_HOME in ${GIVARO_HOME_PATH} 
  do	
