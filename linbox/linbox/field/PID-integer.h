@@ -28,6 +28,8 @@
 #ifndef __PID_INTEGER_H
 #define __PID_INTEGER_H
 
+#include <limits.h>			    
+#include <iostream>
 #include <linbox/integer.h>
 #include <linbox/field/unparametric.h>
 #include <linbox/field/field-traits.h>
