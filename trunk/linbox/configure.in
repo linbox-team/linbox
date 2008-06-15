@@ -122,7 +122,17 @@ exit 1
 ])
 
 LB_CHECK_NTL
-LB_CHECK_GIVARO
+LB_CHECK_GIVARO(,,[
+echo '*******************************************************************************'
+echo ' ERROR: GIVARO not found!'
+echo
+echo ' GIVARO version 3.2.10 or greater is required for this library to compile. Please'
+echo ' make sure GIVARO is installed and specify its location with the option'
+echo ' --with-givaro=<prefix> when running configure.'
+echo '*******************************************************************************'
+exit 1
+exit 1
+])
 LB_CHECK_SACLIB
 LB_CHECK_LIDIA
 LB_CHECK_MAPLE
@@ -155,7 +165,6 @@ linbox-config
 examples/Makefile
 examples/fields/Makefile
 examples/Readme-make
-gmp++/Makefile
 doc/Makefile
 linbox/Makefile
 linbox/algorithms/Makefile
@@ -170,7 +179,6 @@ linbox/ring/Makefile
 linbox/solutions/Makefile
 linbox/switch/Makefile
 linbox/util/Makefile
-linbox/util/gmp++/Makefile
 linbox/util/formats/Makefile
 linbox/vector/Makefile
 tests/Makefile
