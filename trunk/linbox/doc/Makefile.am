@@ -4,6 +4,8 @@ INSTALL_TARGETS = install-doc
 endif
 docdir=$(LINBOX_DOC_PATH)
 
+man1_MANS = linbox-config.1 
+
 all all-local: $(USE_TARGETS)
 
 install install-data-local: $(INSTALL_TARGETS)
@@ -16,7 +18,6 @@ docs:
 	cp ../INSTALL linbox-html
 	cp ../COPYING linbox-html
 	cp ../AUTHORS linbox-html
-	cp ../HACKING linbox-html
 
 install-doc :
 	mkdir $(docdir)
