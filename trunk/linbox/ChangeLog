@@ -1,3 +1,11 @@
+2008-06-10 cpernet
+	* Upgrade fflas-ffpack to v1.3.3 (safer and tighter bounds, bug
+	fixes,...)
+	* Design changes for balanced finite field implementations
+	* Improve efficiency of  Chinese Remainder Algorithm
+	* Add new interface to Sage
+	* bugs and documentation fixes
+	* remove gmp++ from LinBox, and thus make Givaro a necessary package
 2008_03-02 cpernet
 	linbox-1.1.5 released: 
 	* drivers are back to the source code,
