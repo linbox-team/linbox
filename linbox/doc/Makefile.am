@@ -31,7 +31,8 @@ EXTRA_DIST=\
 	install-dist.html	\
 	Doxyfile		\
 	doc.doxy		\
-	mainpage.doxy
+	mainpage.doxy		\
+	linbox-config.1 
 
 
 clean-local:
