@@ -16,7 +16,7 @@ AC_MSG_CHECKING([best threshold for Strassen-Winograd matrix multiplication])
 
 
 CXXFLAGS="${BACKUP_CXXFLAGS} -I`pwd` -I`pwd`/linbox ${BLAS_CFLAGS} ${GMP_CFLAGS}  ${GIVARO_CFLAGS} ${CBLAS_FLAG}" 
-LIBS="${BACKUP_LIBS} ${BLAS_LIBS} ${GMP_LIBS}" 
+LIBS="${BACKUP_LIBS} ${BLAS_LIBS} ${GMP_LIBS} ${GIVARO_LIBS}" 
 
 
 echo   " #define __LINBOX_INT8  $LINBOX_INT8  	 
@@ -29,9 +29,10 @@ echo   " #define __LINBOX_INT8  $LINBOX_INT8
 AC_TRY_RUN([	#define LinBoxSrcOnly
 		#include <iostream>
 		#include <fstream>
-		#define __LINBOX_CONFIGURATION
 		#define _LINBOX_LINBOX_CONFIG_H
+		#define __LINBOX_CONFIGURATION
 		#include <linbox/config-blas.h>
+		#include <linbox/linbox-config.h>
 		#include <linbox/field/modular-double.h>
 		#include <linbox/fflas/fflas.h>
 		#include <linbox/util/timer.h>
