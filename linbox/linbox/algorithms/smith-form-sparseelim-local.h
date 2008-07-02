@@ -282,8 +282,8 @@ namespace LinBox
 // Rank calculators, defining row strategy
 // ------------------------------------------------------
 
-        template<class Modulo, class BB, class D, template<class X> class Container>
-        void gauss_rankin(Modulo FMOD, Modulo PRIME, Container<size_t>& ranks, BB& LigneA, const size_t Ni, const size_t Nj, const D& density_trait) {
+        template<class Modulo, class BB, class D, class Container>
+        void gauss_rankin(Modulo FMOD, Modulo PRIME, Container& ranks, BB& LigneA, const size_t Ni, const size_t Nj, const D& density_trait) {
             ranks.resize(0);
 
             typedef typename BB::Row Vecteur;
@@ -397,19 +397,20 @@ namespace LinBox
 
         }
 
-        template<class Modulo, class BB, class D, template<class X> class Container>
-        void prime_power_rankin (Modulo FMOD, Modulo PRIME, Container<size_t>& ranks, BB& SLA, const size_t Ni, const size_t Nj, const D& density_trait){
+        template<class Modulo, class BB, class D, class Container>
+        void prime_power_rankin (Modulo FMOD, Modulo PRIME, Container& ranks, BB& SLA, const size_t Ni, const size_t Nj, const D& density_trait){
             gauss_rankin(FMOD,PRIME,ranks, SLA, Ni, Nj, density_trait);
         }
 
-       template<template<class X> class Container, class Matrix>
-       Container<std::pair<size_t,size_t> >& operator()(Container<std::pair<size_t,size_t> >& L, Matrix& A, size_t FMOD, size_t PRIME) { 
-           Container<size_t> ranks;
+
+       template<class Matrix, template<class, class> class Container, template<class> class Alloc>
+       Container<std::pair<size_t,size_t>, Alloc<std::pair<size_t,size_t> > >& operator()(Container<std::pair<size_t,size_t>, Alloc<std::pair<size_t,size_t> > >& L, Matrix& A, size_t FMOD, size_t PRIME) { 
+           Container<size_t, Alloc<size_t> > ranks;
            prime_power_rankin( FMOD, PRIME, ranks, A, A.rowdim(), A.coldim(), std::vector<size_t>());
            L.resize( 0 ) ;
            size_t MOD = 1;
            size_t num = 0, diff;
-           for( typename Container<size_t>::const_iterator it = ranks.begin(); it != ranks.end(); ++it) {
+           for( typename Container<size_t, Alloc<size_t> >::const_iterator it = ranks.begin(); it != ranks.end(); ++it) {
                diff = *it-num;
                if (diff > 0)
                    L.push_back( std::pair<size_t,size_t>(*it-num,MOD) );
