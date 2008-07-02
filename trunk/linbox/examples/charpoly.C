@@ -10,6 +10,7 @@
 #include <iomanip>
 #include "Matio.h"
 
+#include "linbox/util/timer.h"
 #include "linbox/field/modular-double.h"
 #include "linbox/field/unparametric.h"
 #include "linbox/blackbox/sparse.h"
@@ -73,7 +74,8 @@ std::ostream& printFactorization (std::ostream& out, const Field &F, const Facto
 
 int main (int argc, char **argv)
 {
-	cout<<setprecision(8);
+	commentator.setMaxDetailLevel(-1);
+ 	cout<<setprecision(8);
 	cerr<<setprecision(8);
 	if (argc < 2 || argc > 3) {
 		cerr << "Usage: charpoly <matrix-file-in-SMS-format> [<p>]" << endl;
@@ -90,11 +92,14 @@ int main (int argc, char **argv)
 		A.read (input);
 		typedef GivPolynomialRing<PID_integer,Dense> IntPolRing;
 		IntPolRing::Element c_A;
-		charpoly (c_A, A);
 
+                Timer tim; tim.clear();tim.start();
+                charpoly (c_A, A);
+                tim.stop();
 
 		cout << "Characteristic Polynomial is ";
 		printPolynomial (cout, ZZ, c_A) << endl;
+                cout << tim << endl;
 
 #ifdef __LINBOX_HAVE_NTL
 		cout << "Do you want a factorization (y/n) ? ";
@@ -105,9 +110,13 @@ int main (int argc, char **argv)
 		  vector<IntPolRing::Element*> intFactors;    
 		  vector<unsigned long> exp;
 		  IntPolRing IPD(ZZ);
+                  tim.start();
 		  IPD.factor (intFactors, exp, c_A);
+                  tim.stop();
                   commentator.stop("done", NULL, "NTLfac");
 		  printFactorization(cout << intFactors.size() << " integer polynomial factors:" << endl, ZZ, intFactors, exp) << endl;
+                  cout << tim << endl;
+
 		}
 #endif
 	}
