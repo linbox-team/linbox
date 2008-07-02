@@ -57,7 +57,7 @@ namespace LinBox
 			      const RingCategories::RationalTag& tag,
 			      const Method::Hybrid& M)
 	{
-		throw LinboxError("LinBox ERROR: charpoly is not yet define over a rational domain");
+		throw LinboxError("LinBox ERROR: charpoly is not yet defined over a rational domain");
 	}
 
         /** \brief  ...using an optional Method parameter
