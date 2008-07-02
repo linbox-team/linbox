@@ -1,6 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-/** \file examples/rank.C
-\brief Rank of sparse matrix over Z or Zp.
+/** \file examples/sparseelimdet.C
+ * Time-stamp: <26 Mar 07 11:46:03 Jean-Guillaume.Dumas@imag.fr>
+\brief Gaussian elimination determinant of sparse matrix over Z or Zp.
 \ingroup examples
 */
 //#include "linbox-config.h"
