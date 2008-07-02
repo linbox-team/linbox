@@ -159,7 +159,11 @@ namespace LinBox
 		         { return x = integer (static_cast<int> (y)); }
 		
 		double &convert (double& x, const Element& y) const
-		{ return x = (double) y; }
+		{ return x = static_cast<double>(y); }
+
+		template<class Type>
+		Type &convert (Type& x, const Element& y) const
+		{ return x = static_cast<Type>(y); }
 		
 
 		/** Initialization of field base element from an integer.
