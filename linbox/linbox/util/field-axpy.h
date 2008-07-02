@@ -105,7 +105,7 @@ namespace LinBox
 			_F.init(_y,0);
 		}
 
-	    private:
+	    protected:
 
 		/// Field in which arithmetic is done
 		/// Not sure why it must be mutable, but the compiler complains otherwise
