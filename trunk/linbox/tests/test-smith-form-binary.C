@@ -165,6 +165,9 @@ bool testRandom(const Ring& R,
 	  return ret;
 
 }
+#ifdef __LINBOX_HAVE_NTL
+#include "linbox/field/ntl-ZZ.h"
+#endif
 
 int main(int argc, char** argv) {
                                                                                                          
@@ -182,12 +185,18 @@ int main(int argc, char** argv) {
                                                                                                         
                                                                                                         
         parseArguments (argc, argv, args);
+        
+        {
+            
                                                                                                         
-       	typedef PID_integer Ring;
+        typedef PID_integer Ring;
+        
                                                                                               
         Ring R;
 
 	commentator.start("SmithFormBinary test suite", "SmithFormBinary");
+	std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	report << std::endl << "EGV++ algorithm test suite with LinBox/Givaro PID:\n";
 
         commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
@@ -210,7 +219,42 @@ int main(int argc, char** argv) {
 	sf. setLIFThreshold  (30);
 
 	if (!testRandom(R, sf, s1)) pass = false;
+        }
+        
+#ifdef __LINBOX_HAVE_NTL
+        {
+            
                                                                                                         
+        typedef NTL_ZZ Ring;
+
+        Ring R;
+
+	report << std::endl << "EGV++ algorithm test suite with NTL_ZZ :\n";
+
+        commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
+
+        RandomDenseStream<Ring> s1 (R, n, iterations);
+
+	typedef Modular<LinBox::int32> Field;
+
+	typedef RationalSolver<Ring, Field, LinBox::RandomPrimeIterator> Solver;
+
+	typedef LastInvariantFactor<Ring, Solver> LIF;
+
+	typedef OneInvariantFactor<Ring, LIF, SCompose, RandomMatrix>  OIF;
+
+	typedef SmithFormBinary<Ring, OIF, MatrixRank<Ring, Field > > SF;
+
+	SF sf;
+	
+	sf.  setOIFThreshold (30);
+
+	sf. setLIFThreshold  (30);
+
+	if (!testRandom(R, sf, s1)) pass = false;
+        }
+#endif
+
 	commentator.stop("SmithFormBinary test suite");
         return pass ? 0 : -1;
                                                                                                         
