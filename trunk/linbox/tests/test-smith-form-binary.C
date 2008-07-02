@@ -186,6 +186,9 @@ int main(int argc, char** argv) {
                                                                                                         
         parseArguments (argc, argv, args);
         
+	commentator.start("SmithFormBinary test suite", "SmithFormBinary");
+	std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+
         {
             
                                                                                                         
@@ -194,8 +197,6 @@ int main(int argc, char** argv) {
                                                                                               
         Ring R;
 
-	commentator.start("SmithFormBinary test suite", "SmithFormBinary");
-	std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << std::endl << "EGV++ algorithm test suite with LinBox/Givaro PID:\n";
 
         commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
