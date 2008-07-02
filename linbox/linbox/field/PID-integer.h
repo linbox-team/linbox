@@ -53,6 +53,10 @@ namespace LinBox {
 			return Integer::axpyin(r,a,x);
 		}
 
+                inline Element& axmyin (integer &r, const integer& a, const integer& x) const {
+                        return Integer::axmyin(r,a,x);
+                }
+
 		inline  bool isUnit (const Element& x) const { 
 			
 			return (x == Element(1))  || (x== Element(-1));
