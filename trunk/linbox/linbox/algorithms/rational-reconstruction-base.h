@@ -491,7 +491,7 @@ protected:
 		QMatrix<Ring > maxQ(_Z);
 		
 		if (!fastQMaxEEA (ai,bi,ci,di,m,log_m,x,powtwo(powh,log_m+1), log_m+1,queueMax,maxQ)) {
-			cout << "false\n" << flush;
+			//cout << "false\n" << flush;
 			return false;
 		}
 		
@@ -543,10 +543,10 @@ protected:
                         QMatrix<Ring> newQ(_Z,ai,bi,ci,di,qinext);
                         QMatrix<Ring> top(_Z);
                         if (queueMax.pushpop(top, newQ)) {
-				cout << "1new max " << top.q << "\n" << flush;
+				//cout << "1new max " << top.q << "\n" << flush;
                                 if (maxQ.q < top.q) maxQ = top;
                         }
-			cout << "EEA" << qinext << ",";
+			//cout << "EEA" << qinext << ",";
 			//++i;
 			//ainext = ai*qinext + bi;
 			//_Z.axpy(ainext, ai,qinext,bi);
@@ -572,7 +572,7 @@ protected:
 			        cur_rinext = rinext;
 			        cur_ainext = r0+1;
 				cur_qinext = cur_ainext;//infinity
-				cout << "->1E:" << cur_ri << " " << cur_rinext <<" " <<  cur_ainext << "\n"<< flush;
+				//cout << "->1E:" << cur_ri << " " << cur_rinext <<" " <<  cur_ainext << "\n"<< flush;
 				return true;
 			}
 
@@ -585,13 +585,13 @@ protected:
 		cur_rinext = rinext;
 		cur_ainext = ainext;
 		cur_qinext = qinext;	
-		cout << "->2E:" << cur_ri << " " << cur_rinext <<" " <<  cur_ainext << "\n"<< flush;
+		//cout << "->2E:" << cur_ri << " " << cur_rinext <<" " <<  cur_ainext << "\n"<< flush;
 		return true;
 	}
 	
 	bool fastQMaxEEA(Element& ai,Element& bi, Element& ci, Element& di, const Element& m, const size_t d, const Element& n, const Element& powh, const size_t& h, myQueue<Ring >&  queueMax, QMatrix<Ring>& maxQ) {
 		
-		cout << m << " " << n << " " << powh << "\n" << flush;
+		//cout << m << " " << n << " " << powh << "\n" << flush;
 		
 		ai=Element(1);
 		di=Element(1);
@@ -608,16 +608,16 @@ protected:
 			//QMatrix<Ring> newQ(_Z,1,1,1,0,1);
 			QMatrix<Ring> top(_Z);
 			if (queueMax.pushpop(top, newQ)) {
-				cout << "2new max " << top.q << "\n"<< flush;
+				//cout << "2new max " << top.q << "\n"<< flush;
 				if (maxQ.q < top.q) maxQ = top;
 			}
-			cout << "m=n1" << ",";
+			//cout << "m=n1" << ",";
 			return true;
 		}
 
 		if (powh < 1) return false; //should not happen
 		if (n < 2) {
-			cout << "n=1\n"<< flush;
+			//cout << "n=1\n"<< flush;
 			                 //n==1 -> Q1=(m,1//1,0)
 		                         //n==0 -> Q1=infinity
 			cur_ri = m;
@@ -641,7 +641,7 @@ protected:
 				//	cout << "3new max " << top.q << "\n"<< flush;
 					if (maxQ.q < top.q) maxQ = top;
 				}
-				cout << "n=1" << m << ",";
+				//cout << "n=1" << m << ",";
 				
 				return true;
 			}
@@ -649,7 +649,7 @@ protected:
 		}
 
 		if (h < 1) {
-			cout << "h < 1" << flush;
+			//cout << "h < 1" << flush;
 			//quo(qinext,m,n); 
 			//if (qinext==1) { return (1,1,1,0) or (1,0,0,1)
 			if ((n << 1) > m) {
@@ -663,10 +663,10 @@ protected:
 				//QMatrix<Ring> newQ(_Z,1,1,1,0,1);
 				QMatrix<Ring> top(_Z);
 				if (queueMax.pushpop(top, newQ)) {
-					cout << "4new max " << top.q << "\n"<< flush;
+					//cout << "4new max " << top.q << "\n"<< flush;
 					if (maxQ.q < top.q) maxQ = top;
 				}
-				cout << "h=01" << ",";
+				//cout << "h=01" << ",";
 
 			} else {
 				//we do not have to treat identity;
@@ -688,10 +688,10 @@ protected:
 		//		cout << d << " " << log_n << " "  << h << "\n"<< flush;
 
 		if (2*h+1 < d) {
-			cout << "choice1"<< flush;
+			//cout << "choice1"<< flush;
 			//if (2*h+1 <= log_n) {
 		  if (true) {	
-			cout << ".1\n"<< flush;
+			//cout << ".1\n"<< flush;
 			size_t lambda = d-2*h-1;
 
 			Element aistar, bistar, cistar, distar;
@@ -743,12 +743,12 @@ C.mul_counter+=4;
 				cur_qinext = cur_ainext;
 			}
 
-			cout << "\n2 backward steps\n"<< flush;
-			cout << "->1:" << cur_ri << " " << cur_rinext <<" " <<  cur_ainext << "->\n"<< flush;
+			//cout << "\n2 backward steps\n"<< flush;
+			//cout << "->1:" << cur_ri << " " << cur_rinext <<" " <<  cur_ainext << "->\n"<< flush;
 
 		   }
 		} else if (h <= d-1) {
-			cout << "choice2\n"<< flush;
+			//cout << "choice2\n"<< flush;
 			Element a1,a2,b1,b2,c1,c2,d1,d2;
                         a1=a2=d1=d2=1;
                         b1=b2=c1=c2=0;
@@ -779,10 +779,10 @@ C.mul_counter+=4;
                                 QMatrix<Ring> newQ(_Z,ai,bi,ci,di,cur_qinext);
                                 QMatrix<Ring> top(_Z);
                                 if (queueMax.pushpop(top, newQ)) {
-                                        cout << "6new max " << top.q << "\n";
+                                        //cout << "6new max " << top.q << "\n";
                                         if (maxQ.q < top.q) maxQ = top;
                                 }
-				cout << "2step1:" << cur_qinext << ",";
+				//cout << "2step1:" << cur_qinext << ",";
 
 
 				log_m = rinext.bitsize()-1;
@@ -829,7 +829,7 @@ C.mul_counter+=4;
 			} else {
 				//do not add matrix
 				ai = a1; bi = b1; ci=c1; di = d1;
-				cout << "End2\n"<< flush;
+				//cout << "End2\n"<< flush;
 				return 1;
 			}
 
@@ -858,7 +858,7 @@ C.mul_counter+=4;
 				cur_ri = -cur_ri;
 				cur_rinext = -cur_rinext;
 			}
-			cout << "->2:" << cur_ri << " " << cur_rinext << " " << cur_ainext << "->\n"<< flush;
+			//cout << "->2:" << cur_ri << " " << cur_rinext << " " << cur_ainext << "->\n"<< flush;
 			if (cur_rinext>0) {
 				_Z.quo(cur_qinext,cur_ri,cur_rinext);
 ++C.div_counter;
@@ -911,21 +911,21 @@ C.mul_counter+=4;
 					}
 					QMatrix<Ring > top(_Z);
 					if (queueMax.pushpop(top, Q)) {
-						cout << "8new max " << top.q << "\n"<< flush;
+						//cout << "8new max " << top.q << "\n"<< flush;
 						if (maxQ.q < top.q) maxQ = top;
 					}
-					cout << "queue" << Q.q << ",";
+					//cout << "queue" << Q.q << ",";
 
 					//else: queueMax may contain invalid matrices, but if Q.q is max then Q is correct
 				}
 			}
-			cout << "\n" << K << " backward steps\n"<< flush;
-			cout << "->End:" << cur_ri << " " << cur_rinext << " " << cur_ainext << "\n"<< flush;
+			//cout << "\n" << K << " backward steps\n"<< flush;
+			//cout << "->End:" << cur_ri << " " << cur_rinext << " " << cur_ainext << "\n"<< flush;
                         return 1;
 			//}                               
 
 		} else {//h=d, h = d+1;
-			cout << "choice3\n"<< flush;
+			//cout << "choice3\n"<< flush;
 			Element hh = powh;
 			size_t log_hh = h;
 			hh = powh >> 1;
@@ -935,7 +935,7 @@ C.mul_counter+=4;
 			}
 			if (!fastQMaxEEA(ai,bi,ci,di,m,d,n,hh, d-1,queueMax,maxQ)) return 0;
 
-				cout << "->3:" << cur_ri << " " << cur_rinext << " " << cur_ainext << "->\n"<< flush;
+				//cout << "->3:" << cur_ri << " " << cur_rinext << " " << cur_ainext << "->\n"<< flush;
 		}
 		
 		Element ri = cur_ri;
@@ -949,8 +949,8 @@ C.mul_counter+=4;
                 ////ri = m*di - n*bi;
                 ////rinext = -m*ci + n*ai;
                 if (rinext==0) {
-			cout << "\n0 forward steps\n";
-			cout << "->End1:" << cur_ri << " " << cur_rinext << " " << cur_ainext << "\n";
+			//cout << "\n0 forward steps\n";
+			//cout << "->End1:" << cur_ri << " " << cur_rinext << " " << cur_ainext << "\n";
 			return 1;
 		}
                 //if (ri < 0) {
@@ -980,8 +980,8 @@ C.mul_counter+=4;
 				cur_rinext = rinext;
 				cur_ainext = ainext;
 				cur_qinext = qinext;
-				cout << "\n" << K << " forward steps\n"<< flush;
-				cout << "->End2:" << cur_ri << " " << cur_rinext << " " << cur_ainext << "\n"<< flush;
+				//cout << "\n" << K << " forward steps\n"<< flush;
+				//cout << "->End2:" << cur_ri << " " << cur_rinext << " " << cur_ainext << "\n"<< flush;
 
 				return 1;
 			}
@@ -991,10 +991,10 @@ C.mul_counter+=4;
                                 QMatrix<Ring > Q(_Z,ai,bi,ci,di,qinext);
                                 QMatrix<Ring > top(_Z);
                                 if (queueMax.pushpop(top, Q)) {
-                                        cout << "9new max " << top.q << "\n"<< flush;
+                                        //cout << "9new max " << top.q << "\n"<< flush;
                                         if (maxQ.q < top.q) maxQ = top;
                                 }
-				cout << "End" << qinext << ",";
+				//cout << "End" << qinext << ",";
 
 
 				bi = ai;
@@ -1018,8 +1018,8 @@ C.mul_counter+=4;
 					cur_rinext = rinext;
 					cur_ainext = m+1;
 					cur_qinext = m+1;
-					cout << "\n" << K << " forward steps\n"<< flush;
-					cout << "->End3:" << cur_ri << " " << cur_rinext << " " << cur_ainext << "\n"<< flush;
+					//cout << "\n" << K << " forward steps\n"<< flush;
+					//cout << "->End3:" << cur_ri << " " << cur_rinext << " " << cur_ainext << "\n"<< flush;
 					return 1;
 				}
                                         //++counter;
@@ -1082,7 +1082,7 @@ protected:
 		    q = r0;
 		    _Z.divin(q,a);        // r0/num
 ++C.div_counter;
-			cout << r0<< " " << a << " " <<  q << ",";
+			//cout << r0<< " " << a << " " <<  q << ",";
 		    if (q > qmax) {
 			    //cout << r0<< " " << a << " " <<  q << ",";
 			    amax = a;
