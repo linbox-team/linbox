@@ -204,7 +204,8 @@ namespace LinBox
 		class CompareSparseEntries
 		{
 		    public:
-			inline bool operator () (const std::pair <size_t, T> &i, const size_t j) const
+                        template<typename PairType>
+			inline bool operator () (const PairType &i, const size_t j) const
 				{ return i.first < j; }
 		};
 
