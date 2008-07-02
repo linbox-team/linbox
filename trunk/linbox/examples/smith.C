@@ -38,7 +38,6 @@ using namespace std;
 
 #include "linbox/field/unparametric.h"
 #include "linbox/field/local2_32.h"
-#include "linbox/field/ntl-ZZ.h"
 //#include "linbox/field/PIR-modular-int32.h"
 //#include "linbox/algorithms/2local-smith.h"
 #include "linbox/algorithms/smith-form-local.h"
@@ -50,14 +49,16 @@ using namespace std;
 #include "linbox/blackbox/dense.h"
 
 using namespace LinBox;
-#ifndef BIG
-#include "linbox/field/PIR-modular-int32.h"
-typedef PIRModular<LinBox::int32> PIR;
-#else
+
+#if __LINBOX_HAVE_NTL
+#include "linbox/field/ntl-ZZ.h"
 #include "linbox/field/PIR-ntl-ZZ_p.h"
 typedef PIR_ntl_ZZ_p PIR;
+#else
+// #ifndef BIG
+#include "linbox/field/PIR-modular-int32.h"
+typedef PIRModular<LinBox::int32> PIR;
 #endif
-
 
 
 template<class PIR>
@@ -99,6 +100,7 @@ int main(int argc, char* argv[]) {
 
 	if (algo == "adaptive")
 	{   
+#if __LINBOX_HAVE_NTL
 		typedef NTL_ZZ Ints;
 		Ints Z;
 	    DenseMatrix<Ints> M(Z);
@@ -118,6 +120,9 @@ int main(int argc, char* argv[]) {
 	    cout << "# adaptive, Ints, n = " << n << endl;
 
 	    cout << "T" << n << "adaptive" << m << " := ";
+#else
+	    cerr << "Sorry NTL required for adaptive smith form" << std::endl;
+#endif
 
 	}
 	else if (algo == "ilio") { 
