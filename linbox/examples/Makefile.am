@@ -60,4 +60,4 @@ LINBOX_BIN=@bindir@
 
 # for compilation of new examples
 %:%.C 
-	$(CXX) $(CXXFLAGS) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $(LDADD) $*.C -o $@
+	$(CXX) $(CXXFLAGS) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $@ $(LDADD) $(top_srcdir)/linbox/.libs/liblinbox.a
