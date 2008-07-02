@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 #include <iostream>
-#include <queue>
+#include <deque>
 
 #ifndef __LINBOXX__RECONSTRUCTION_BASE_H__
 #define __LINBOXX__RECONSTRUCTION_BASE_H__
@@ -107,11 +107,14 @@ public:
 template <class Ring>
 class RationalReconstructionBase
 {
-public:
+protected:
 	Ring _Z;
+	OpCounter C;
+public:
+	//Ring _Z;
 	typedef typename Ring::Element Element;
 	
-	OpCounter C;
+	//OpCounter C;
 
 	RationalReconstructionBase(const Ring& Z): _Z(Z) {}
 	RationalReconstructionBase(const RationalReconstructionBase<Ring>& RR): _Z(RR._Z) {}
@@ -133,6 +136,8 @@ class WangRationalReconstruction: public RationalReconstructionBase<Ring>
 protected:
 	bool _reduce;
 	bool _recursive;
+	Ring _Z;
+	OpCounter C;
 public:
 	Ring _Z;
 	typedef typename Ring::Element Element;
@@ -387,9 +392,9 @@ public:
 			return false;
 			++_size;
 		} else {
-			if (!empty()) {
-				top = front();
-				pop_front();
+			if (!this->empty()) {
+				top = this->front();
+				this->pop_front();
 				push_back(bottom);
 				
 			} else {
@@ -400,10 +405,10 @@ public:
 	}
 	
 	QMatrix& clearmax(QMatrix& max1) {
-		while (!empty()) {
-			QMatrix max2(front());
+		while (!this->empty()) {
+			QMatrix max2(this->front());
 			if (max2.q > max1.q) return max1=max2;
-			pop_front();
+			this->pop_front();
 		}
 	}
 };
@@ -413,11 +418,13 @@ class MaxQFastRationalReconstruction: public RationalReconstructionBase<Ring>
 {
 protected:
 	size_t _threshold;
+	Ring _Z;
+	OpCounter C;	
 
 typedef typename Ring::Element Element;
 public:
 
-	MaxQFastRationalReconstruction(const Ring& Z): RationalReconstructionBase<Ring>(Z) {		
+	MaxQFastRationalReconstruction(const Ring& Z): RationalReconstructionBase<Ring>(Z), _Z(Z) {		
 		_threshold = __FASTRR_DEFAULT_THRESHOLD;
 		if (_threshold <5) _threshold=5; 
 	}
@@ -676,7 +683,7 @@ protected:
 			return classicQMaxEEA(ai,bi,ci,di,m,n,powh,queueMax,maxQ);
 		}
 
-		size_t log_n = n.bitsize()-1;
+		//size_t log_n = n.bitsize()-1;
 
 		//		cout << d << " " << log_n << " "  << h << "\n"<< flush;
 
@@ -1033,6 +1040,9 @@ C.mul_counter+=4;
 template <class Ring>
 class MaxQClassicRationalReconstruction: public RationalReconstructionBase<Ring>
 {
+protected:
+        Ring _Z;
+        OpCounter C;
 typedef typename Ring::Element Element;
 public:
 
@@ -1121,6 +1131,8 @@ class WangFastRationalReconstruction: public RationalReconstructionBase<Ring>
 
 typedef typename Ring::Element Element;
 protected:
+        Ring _Z;
+        OpCounter C;
 	size_t _threshold;
 
 public:
@@ -1758,6 +1770,8 @@ C.mul_counter+=4;
 template <class Ring>
 class WangClassicRationalReconstruction: public RationalReconstructionBase<Ring>
 {
+        Ring _Z;
+        OpCounter C;
 	bool _reduce;
 	bool _recursive;
 	typedef typename Ring::Element Element;
@@ -1782,7 +1796,7 @@ public:
 	}
 
 	bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound) {	
-		bool res;
+		bool res = false;
 
 		if (x == 0) {
 		    a = 0;
