@@ -556,13 +556,31 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 	ConstRawIterator rawEnd () const
 		{ return ConstRawIterator (_A.end (), _A.back ().end (), _A.end ()); }
 
+
+
+        /* Generic trait for iterators without type */
+    template<typename U>
+    struct IteratorValueType {
+        typedef typename U::value_type value_type;
+    };
+    
+    template<typename X>
+    struct IteratorValueType<const X*> {
+        typedef X value_type;
+    };
+
+        /* Generic trait for iterators without type */
+
+
+
 	template <class RepIterator, class RowIdxIterator>
 	class _RawIndexedIterator
 	{
 	    public:
 // 		// typedef std::pair<size_t, size_t> value_type;
 // 		typedef typename RowIdxIterator/*::value_type*/::second_type value_type;
-		typedef typename RowIdxIterator::value_type::second_type value_type;
+// 		typedef typename RowIdxIterator::value_type::second_type value_type;
+            typedef typename IteratorValueType< RowIdxIterator >::value_type::second_type value_type;
 
 		_RawIndexedIterator (size_t idx, const RepIterator &i, const RowIdxIterator &j, const RepIterator &A_end)
 			: _i (i), _j (j), _A_end (A_end), _r_index (idx)

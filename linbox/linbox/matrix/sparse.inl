@@ -710,16 +710,17 @@ template <class Element, class Row>
 void SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag >
 	::setEntry (size_t i, size_t j, const Element &value) 
 {
+        typedef typename Row::value_type value_type;
 	Row &v = _A[i];
 	typename Row::iterator iter;
-
+        
 	if (v.size () == 0) {
-		v.push_back (std::pair <size_t, Element> (j, value));                
+		v.push_back ( value_type(j, value));                
 	} else {
 		iter = std::lower_bound (v.begin (), v.end (), j, VectorWrapper::CompareSparseEntries<Element> ());
 
 		if (iter == v.end () || iter->first != j)
-			iter = v.insert (iter, std::pair <size_t, Element> (j, value));
+			iter = v.insert (iter, value_type(j, value));
                 else
                     	iter->second = value;
  	}
