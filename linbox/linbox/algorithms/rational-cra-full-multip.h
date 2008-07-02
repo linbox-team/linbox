@@ -74,9 +74,18 @@ namespace LinBox {
                 if (*_occ_it) {
                     std::vector<Integer>::iterator t0_it = num.begin();
                     std::vector<Integer>::const_iterator t_it = _tab_it->begin();
+		    Integer invprod;
+                    precomputeInvProd(invprod, Product(), _mod_it->operator()() );
                     for( ; t0_it != num.end(); ++t0_it, ++t_it)
-                        this->normalizesmallbigreconstruct(*t0_it, Product(), *t_it, _mod_it->operator()() );
+                        this->smallbigreconstruct(*t0_it, *t_it, invprod );
                     Product.mulin(*_mod_it);
+
+		    // Moding out and normalization
+                    for(t0_it = num.begin();t0_it != num.end(); ++t0_it) {
+                        *t0_it %= Product();
+                        Integer tmp(*t0_it);
+                        normalize(*t0_it, tmp, Product());
+                    }
                 }
             }
             den = 1;
