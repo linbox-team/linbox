@@ -1,3 +1,4 @@
+#include <cstring>
 #include <stdio.h>
 #include <stdlib.h>
 // Reading and writing matrices over double
