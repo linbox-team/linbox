@@ -75,7 +75,7 @@ namespace LinBox {
                     std::vector<Integer>::iterator t0_it = num.begin();
                     std::vector<Integer>::const_iterator t_it = _tab_it->begin();
 		    Integer invprod;
-                    precomputeInvProd(invprod, Product(), _mod_it->operator()() );
+                    this->precomputeInvProd(invprod, Product(), _mod_it->operator()() );
                     for( ; t0_it != num.end(); ++t0_it, ++t_it)
                         this->smallbigreconstruct(*t0_it, *t_it, invprod );
                     Product.mulin(*_mod_it);
@@ -84,7 +84,7 @@ namespace LinBox {
                     for(t0_it = num.begin();t0_it != num.end(); ++t0_it) {
                         *t0_it %= Product();
                         Integer tmp(*t0_it);
-                        normalize(*t0_it, tmp, Product());
+                        this->normalize(*t0_it, tmp, Product());
                     }
                 }
             }
