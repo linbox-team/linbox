@@ -4,7 +4,7 @@
  * Copyright (C) 1999 Jean-Guillaume Dumas
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <09 Feb 07 11:25:51 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <23 May 08 09:52:20 Jean-Guillaume.Dumas@imag.fr> 
  *
  * -----------------------------------------------------------
  * 2003-02-02  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
@@ -152,10 +152,12 @@ namespace LinBox
 
                             _F.mul (tmp, headcoeff, lignepivot[l].second);
 
-                            if (! _F.isZero (tmp)) {
+//                             if (! _F.isZero (tmp)) {
                                 ++columns[j_piv];
                                 construit[j++] = E (j_piv, tmp);
-                            }
+//                             } else 
+//                                 std::cerr << "NEVER HAPPENED" << std::endl;
+                      
                         }
 
                         l++;
@@ -345,8 +347,10 @@ namespace LinBox
                         } else {
                             Element tmp;
                             _F.mul (tmp, headcoeff, lignepivot[l].second);
-                            if (! _F.isZero (tmp))
+//                             if (! _F.isZero (tmp))
                                 construit[j++] = E (j_piv, tmp);
+//                             else
+//                                 std::cerr << "NEVER HAPPENED" << std::endl;
                         }
                         l++;
                     }
@@ -480,7 +484,8 @@ namespace LinBox
                                                D             	&columns,
                                                Element		&determinant)
     {
- //        std::cerr << "SFP BEG : lignepivot: [";
+ 
+//        std::cerr << "SFP BEG : lignepivot: [";
 //         for(typename Vector::const_iterator refs =  lignepivot.begin();
 //             refs != lignepivot.end() ;
 //             ++refs )
@@ -489,6 +494,7 @@ namespace LinBox
 	typedef typename Vector::value_type E;    
 
 	long nj =  lignepivot.size ();
+
         bool pivoting = false;
 
 	if (nj > 0) {
@@ -646,11 +652,15 @@ namespace LinBox
 
                     commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
                         << "Fillin (" << indcol << "/" << Ni << ") = "
-                        << sl << std::endl;
+                        << sl 
+                        << " (" << double(sl)*100.0/double(Ni-k)/double(Nj-k) << "%, "
+                        << double(sl)/double(Ni-k) << " avg)"
+                        << std::endl;
 #endif 
                 }
 	    
                 if (s) {
+                        // Row permutation for the sparsest row
                     for (l = k + 1; l < Ni; ++l)
                         if (((sl = LigneA[l].size ()) < s) && (sl)) {
                             s = sl;
@@ -695,7 +705,8 @@ namespace LinBox
                 sl += LigneA[l].size ();
             
             commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
-                << "Fillin (" << indcol << "/" << Ni << ") = " << sl << std::endl;
+                << "Fillin (" << indcol << "/" << Ni << ") = " << sl 
+                << std::endl;
 #endif
             
             res = indcol;
