@@ -1,6 +1,6 @@
 // ======================================================================= // (C) Linbox 2000
 // Pair of I and T : struct { column index, value }
-// Time-stamp: <19 Sep 03 11:00:25 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <23 May 08 13:21:05 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= 
 #ifndef _LIN_PAIR_H_
 #define _LIN_PAIR_H_
@@ -9,66 +9,63 @@
 // ---------------------------------------------------
 //
 /// Pair of I and T : struct { column index, value }
-template<class T, class I = unsigned long> class Pair {
+template<class I, class T> class Pair {
 public:
-    typedef Pair<T, I> Self_t;
+    typedef Pair<I, T> Self_t;
     typedef T                      Type_t;
-
+    typedef I                      first_type;
+    typedef T                      second_type;
+    
 //    ~Pair() {};
     Pair() {};
 
-    Pair(const I jj, const T& val) :_j(jj),_value(val){};
-    Pair(const Self_t& p) :_j(p._j),_value(p._value){};
+    Pair(const I jj, const T& val) :first(jj),second(val){};
+    Pair(const Self_t& p) :first(p.first),second(p.second){};
 
 
-    T getvalue() const { return _value; };
+    T getvalue() const { return second; };
 
-    I getindex() const { return _j; };
-    I j() const { return _j; };
+    I getindex() const { return first; };
+    I j() const { return first; };
     
-    T affect(const T& val) { return _value = val; };
-    T change_value(const T& val) { return _value = val; };
+    T affect(const T& val) { return second = val; };
+    T change_value(const T& val) { return second = val; };
    
-    I change_j(const I jj) { return _j = jj; };      
-    I change_index(const I jj) { return _j = jj; };      
+    I change_j(const I jj) { return first = jj; };      
+    I change_index(const I jj) { return first = jj; };      
             
             
     Self_t assign(const T& val) {
-        _value = val;
+        second = val;
         return *this;
     };      
             
     Self_t assign(const I jj, const T& val) {
-        _value = val;
-        _j = jj;
+        second = val;
+        first = jj;
         return *this;
     };      
             
-    I decr() { return --_j; };      
-    I operator--() { return --_j; };      
-    I operator--(int) { return _j--; };      
-    I incr() { return ++_j; };      
-    I operator++() { return ++_j; };      
-    I operator++(int) { return _j++; };      
+    I decr() { return --first; };      
+    I operator--() { return --first; };      
+    I operator--(int) { return first--; };      
+    I incr() { return ++first; };      
+    I operator++() { return ++first; };      
+    I operator++(int) { return first++; };      
             
-    friend inline std::istream& operator>> (std::istream& is, Pair<T, I>& a) {
-        I jj;
-        T val;
-        is >> jj >> val;
-        a._value=val; a._j=jj;
-//         a = Pair<T, I>(jj,val);
+    friend inline std::istream& operator>> (std::istream& is, Pair<I, T>& a) {
+        is >> a.first >> a.second;
         return is;
-};
+    }
     
-    friend inline std::ostream& operator<< (std::ostream& o, const Pair<T, I> a){
-//         return o << a.j() << " " << a.getvalue()  ;
-        return o << a._j << " " << a._value ;
-};
+    friend inline std::ostream& operator<< (std::ostream& o, const Pair<I, T> a){
+        return o << a.first << " " << a.second ;
+    }
     
 
-private:
-    I _j;
-    T _value;
+public:
+    I first;
+    T second;
 };
 
 
