@@ -24,124 +24,97 @@
 namespace LinBox 
 {
 
+namespace GetEntryTags 
+{	struct GenericBB{};	struct Local{};	
+	struct SpecialCDB{}; struct SpecialCBD{}; struct SpecialCDD{}; 
+}; // namespace GetEntryTags
+
+template<class BB> struct GetEntryCategory { typedef GetEntryTags::GenericBB Tag; };
+
 /** \brief
  * Getting the i,j entry of the blackbox.
  */
 template <class BB> 
 typename BB::Field::Element& getEntry(typename BB::Field::Element& x, const BB& A, const size_t i, const size_t j)
-{ return getEntry(x, A, i, j, Method::Hybrid()); }
-
-// Any BBs that offer a local getEntry can specialize the BB class for the Hybrid method.
-/** \brief our best guess
-
-Hybrid method will choose based on matrix size and type
-*/
-
-template <class BB> 
-typename BB::Field::Element& getEntry(typename BB::Field::Element& x, const BB& A, const size_t i, const size_t j, 
-		const Method::Hybrid& m)
-{ return getEntry(x, A, i, j, Method::Blackbox(m)); }
-
-// DenseMatrix specialization
-template <class Field> 
-typename Field::Element& getEntry(typename Field::Element& x, const DenseMatrix<Field>& A, const size_t i, const size_t j, 
-		const Method::Hybrid& m)
-{	
-	return A.getEntry(x,i,j);
+{ 
+	typename GetEntryCategory<BB>::Tag t; 
+	return getEntry(x, A, i, j, t);
 }
 
-// SparseMatrix specialization
-template <class Field> 
-typename Field::Element& getEntry(typename Field::Element& x, const SparseMatrix<Field>& A, const size_t i, const size_t j, 
-				  const Method::Hybrid& m)
+/// To ignore methods
+template <class BB, class Method> 
+typename BB::Field::Element& getEntry(typename BB::Field::Element& x, const BB& A, const size_t i, const size_t j, Method & m)
+{ return getEntry(x, A, i, j);	}
+
+// Generic BBs require use of apply.
+template <class BB> 
+typename BB::Field::Element& getEntry(typename BB::Field::Element& x, const BB& A, const size_t i, const size_t j, typename GetEntryTags::GenericBB t)
 {
-	return A.getEntry(x,i,j);
+	typedef typename BB::Field Field;
+	typedef typename Field::Element Elt;
+	typedef std::vector<Elt> Vector;
+
+	const Field& F = A.field();
+	Elt zero; F.init(zero, 0UL);
+	Vector v(A.coldim(), zero), w(A.rowdim(), zero);
+	for (typename Vector::iterator it = v.begin (); it != v.end (); ++it)
+		F.assign (*it, zero);
+	F.init(v[j],1UL);
+	A.apply (w, v);
+	F.assign (x, VectorWrapper::constRef<Field, Vector> (w, i));
+	return x;
 }
 
-// scalar matrix specialization 
-template <class Field>
-typename Field::Element & getEntry(typename Field::Element & x, const ScalarMatrix<Field>& A, const size_t i, const size_t j, const Method::Hybrid& m) 
-{ return A.getEntry(x, i, j); }
+// BBs that offer a local getEntry.
+template<class Field> struct GetEntryCategory<DenseMatrix<Field> > { typedef GetEntryTags::Local Tag; };
+template<class Field> struct GetEntryCategory<SparseMatrix<Field> > { typedef GetEntryTags::Local Tag; };
+template<class Field, class Trait> struct GetEntryCategory<Diagonal<Field, Trait> > { typedef GetEntryTags::Local Tag; };
+template<class Field> struct GetEntryCategory<ScalarMatrix<Field> > { typedef GetEntryTags::Local Tag; };
 
-
-// diagonal specialization 
-template <class Field, class Trait>
-typename Field::Element & getEntry(typename Field::Element & x, const Diagonal<Field, Trait>& A, const size_t i, const size_t j, const Method::Hybrid& m) 
-{ return A.getEntry(x, i, j); }
-
-/** \brief our elimination (a fake in this case)
-
-Elimination method will go to blackbox.
-*/
 template <class BB> 
-typename BB::Field::Element& getEntry(typename BB::Field::Element& x, const BB& A, const size_t i, const size_t j, const Method::Elimination& m)
-{ return getEntry(x, A, i, j, Method::Blackbox(m)); 
-}
-
-
-	/** Compute the getEntry of a linear operator A, represented as a black
-	 * box. This class is parameterized by the black box type so that it can
-	 * be specialized for different black boxes.
-	 */
-
-	template <class Blackbox>
-	typename Blackbox::Field::Element &getEntry (typename Blackbox::Field::Element &res,
-					const Blackbox          &A, const size_t i, const size_t j, 
-					const Method::Blackbox& m)
-	{
-
-		typedef typename Blackbox::Field Field;
-		typedef std::vector<typename Field::Element> Vector;
-		Vector v, w;
-		VectorWrapper::ensureDim (v, A.coldim ());
-		VectorWrapper::ensureDim (w, A.rowdim ());
-		const Field& F = A.field();
-		typename Field::Element zero; F.init(zero, 0UL);
-		typename Vector::iterator it;
-		for (it = v.begin (); it != v.end (); ++it)
-			F.assign (*it, zero);
-		F.init(v[j],1UL);
-		F.init (res, 0);
-		A.apply (w, v);
-		F.assign (res, VectorWrapper::constRef<Field, Vector> (w, i));
-		return res;
-	}
-
-
-
-
+typename BB::Field::Element& getEntry(typename BB::Field::Element& x, const BB& A, const size_t i, const size_t j, typename GetEntryTags::Local t )
+{ return A.getEntry(x, i, j); }
 
 // Compose< Diagonal, BB > specialization
-template <class Field, class Trait, class BlackBox> 
-typename Field::Element& getEntry(typename Field::Element& t, const Compose<Diagonal<Field, Trait>, BlackBox>& A, const size_t i, const size_t j, const Method::Hybrid& m)
+template <class Field, class Trait, class BB> 
+struct GetEntryCategory<Compose<Diagonal<Field, Trait>,BB> > { typedef GetEntryTags::SpecialCDB Tag; };
+
+template <class Field, class Trait, class BB> 
+typename Field::Element& getEntry(typename Field::Element& x, const Compose<Diagonal<Field, Trait>, BB>& A, const size_t i, const size_t j, GetEntryTags::SpecialCDB t)
 {
     typename Field::Element y;
     getEntry(y, *(A.getLeftPtr()), i, i);
-    getEntry(t, *(A.getRightPtr()), i, j);
-    return A.field().mulin(t, y);
+    getEntry(x, *(A.getRightPtr()), i, j);
+    return A.field().mulin(x, y);
 }
 
 // Compose< BB, Diagonal > specialization
-template <class BlackBox, class Field, class Trait> 
-typename Field::Element& getEntry(typename Field::Element& t, const Compose<BlackBox, Diagonal<Field, Trait> >& A, const size_t i, const size_t j, const Method::Hybrid& m)
+template <class BB, class Field, class Trait> 
+struct GetEntryCategory<Compose<BB, Diagonal<Field, Trait> > > { typedef GetEntryTags::SpecialCBD Tag; };
+
+template <class BB, class Field, class Trait> 
+typename Field::Element& getEntry(typename Field::Element& x, const Compose<BB, Diagonal<Field, Trait> >& A, const size_t i, const size_t j, GetEntryTags::SpecialCBD t)  
 {
     typename Field::Element y;
     getEntry(y, *(A.getLeftPtr()), i, j);
-    getEntry(t, *(A.getRightPtr()), j, j);
-    return A.field().mulin(t, y);
+    getEntry(x, *(A.getRightPtr()), j, j);
+    return A.field().mulin(x, y);
 }
 
 // Compose< Diagonal, Diagonal > specialization
 template <class Field, class T1, class T2> 
-typename Field::Element& getEntry(typename Field::Element& t, const Compose<Diagonal<Field,T1>, Diagonal<Field, T2> >& A, const size_t i, const size_t j, const Method::Hybrid& m)
+struct GetEntryCategory<Compose<Diagonal<Field, T1>,Diagonal<Field, T2> > > { typedef GetEntryTags::SpecialCDD Tag; };
+
+template <class Field, class T1, class T2> 
+typename Field::Element& getEntry(typename Field::Element& x, const Compose<Diagonal<Field,T1>, Diagonal<Field, T2> >& A, const size_t i, const size_t j, typename GetEntryTags::SpecialCDD t)
 {
     if (i != j) 
-        return A.field().init(t, 0UL);
+        return A.field().init(x, 0UL);
     else {
         typename Field::Element y;
         getEntry(y, *(A.getLeftPtr()), i, i);
-        getEntry(t, *(A.getRightPtr()), j, j);
-        return A.field().mulin(t, y);
+        getEntry(x, *(A.getRightPtr()), j, j);
+        return A.field().mulin(x, y);
     }
 }
 
