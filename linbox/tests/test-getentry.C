@@ -22,6 +22,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular-int32.h"
 #include "linbox/solutions/getentry.h"
+#include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/sparse.h"
@@ -30,17 +31,25 @@
 
 using namespace LinBox;
 
-/* Test 1: getEntry of random diagonal matrix
- *
- * Construct a random diagonal matrix and check that its computed getEntry is the
- * correct i,j element
- *
- * F - Field over which to perform computations
- * stream - Stream that comprises source of diagonal vectors
- *
- * Return true on success and false on failure
- */
-
+/* getEntry of generic blackbox matrix */
+template <class Field>
+bool testGenericBBgetEntry (const Field &F, size_t n)
+{
+	bool ret = true;
+    typename Field::Element s, x, z;
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	F.init(x, 0);
+	F.init(s, 2);
+	F.init(z, 0);
+	ScalarMatrix<Field> B(F, n, s);
+	getEntry(x, B, 0, n-1, typename GetEntryTags::GenericBB() ); 
+	if (n > 1 && !F.isZero(x)) ret = false;
+	getEntry(x, B, 0, 0, typename GetEntryTags::GenericBB() );
+	if ( !F.areEqual(s, x)) ret = false;
+	if (!ret) report << "testGenericBBgetEntry failure" << std::endl;
+	return ret;
+}
+/* getEntry of scalar matrix */
 template <class Field>
 bool testScalarMatrixgetEntry (const Field &F, size_t n)
 {
@@ -48,7 +57,7 @@ bool testScalarMatrixgetEntry (const Field &F, size_t n)
 	commentator.start ("Testing scalar matrix getEntry", "", 1);
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "scalarmatrix getEntry test (using specialization)" << endl;
-    	typename Field::Element s, t, r, th; 
+    typename Field::Element s, t, r, th; 
 	F.init(r, 0);
 	F.init(s, 2);
 	F.init(th, 2);
@@ -70,6 +79,7 @@ bool testScalarMatrixgetEntry (const Field &F, size_t n)
 	return ret;
 }
 
+/* getEntry of sparse matrix */
 template <class Field>
 bool testSparseMatrixgetEntry (const Field &F, size_t n)
 {
@@ -116,6 +126,7 @@ bool testSparseMatrixgetEntry (const Field &F, size_t n)
 	return ret;
 }
 
+/* getEntry of dense matrix */
 template <class Field>
 static bool testDenseMatrixgetEntry (const Field &F, size_t n)
 {
@@ -160,6 +171,7 @@ static bool testDenseMatrixgetEntry (const Field &F, size_t n)
 	return ret;
 }
 
+/* getEntry of diagonal matrix */
 template <class Field>
 static bool testDiagonalgetEntry (const Field &F, VectorStream<vector<typename Field::Element> > &stream) 
 {
@@ -224,6 +236,42 @@ static bool testDiagonalgetEntry (const Field &F, VectorStream<vector<typename F
 	return ret;
 }
 
+/* getEntry of composed blackbox with diagonal component*/
+template <class Field>
+bool testSpecialCDgetEntry (const Field &F, size_t n)
+{
+	bool ret = true;
+	typedef typename Field::Element Elt;
+	typedef ScalarMatrix<Field> BB;
+	typedef Diagonal<Field> DD;
+    Elt s, x, t, u;
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	F.init(x, 0);
+	F.init(s, 2);
+	F.init(t, 0);
+	F.init(u, 0);
+	F.mul(u, s, t);
+	BB B(F, n, s);
+	vector<Elt> d(n, t);
+	DD D(F, d);
+	Compose<DD, BB> CDB (D, B);
+	Compose<BB, DD> CBD (B, D);
+	Compose<DD, DD> CDD (D, D);
+	getEntry(x, CDB, 0, n-1);
+	if (n > 1 && !F.isZero(x)) ret = false;
+	getEntry(x, CDB, 0, 0);
+	if ( !F.areEqual(u, x)) ret = false;
+	getEntry(x, CBD, 0, n-1);
+	if (n > 1 && !F.isZero(x)) ret = false;
+	getEntry(x, CBD, 0, 0);
+	if ( !F.areEqual(u, x)) ret = false;
+	getEntry(x, CDD, 0, n-1);
+	if (n > 1 && !F.isZero(x)) ret = false;
+	getEntry(x, CDD, 0, 0);
+	if ( !F.areEqual(F.mul(u,t,t), x)) ret = false;
+	if (!ret) report << "testSpecialCDgetEntry failure" << std::endl;
+	return ret;
+}
 int main (int argc, char **argv)
 {
 	bool pass = true;
@@ -251,10 +299,12 @@ int main (int argc, char **argv)
 
 	RandomDenseStream<Field, Vector> stream (F, n, iterations);
 
+	if (!testGenericBBgetEntry (F, n)) pass = false;
 	if (!testScalarMatrixgetEntry (F, n)) pass = false;
 	if (!testSparseMatrixgetEntry (F, n)) pass = false;
 	if (!testDenseMatrixgetEntry (F, n)) pass = false;
 	if (!testDiagonalgetEntry (F, stream)) pass = false;
+	if (!testSpecialCDgetEntry (F, n)) pass = false;
 
 	commentator.stop("getEntry solution test suite");
 	return pass ? 0 : -1;
