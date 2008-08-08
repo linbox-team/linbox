@@ -48,24 +48,13 @@
 #include "linbox/randiter/envelope.h"
 #include "linbox/integer.h"
 #include "linbox/linbox-config.h"
-
-#ifdef __LINBOX_XMLENABLED
-
-#include "linbox/util/xml/linbox-reader.h"
-#include "linbox/util/xml/linbox-writer.h"
-
-#include <iostream>
-#include <string>
-
-#endif
-
 #include "linbox/util/error.h"
 
 namespace LinBox
 {
 	// Forward declarations
 	class RandIterArchetype;
-
+:
 	/** \brief field specification and archetypical instance.
 	\ingroup field
 	 *
