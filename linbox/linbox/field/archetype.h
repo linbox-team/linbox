@@ -54,7 +54,6 @@ namespace LinBox
 {
 	// Forward declarations
 	class RandIterArchetype;
-:
 	/** \brief field specification and archetypical instance.
 	\ingroup field
 	 *
