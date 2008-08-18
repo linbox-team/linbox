@@ -11,6 +11,11 @@
         <outputActionMapping>http://quickstart.samples/TransferAgentPortType/getPriceResponse</outputActionMapping>
     </operation>
 
+    <operation name="estimateRankTime" mep="http://www.w3.org/2004/08/wsdl/in-out">
+        <actionMapping>urn:estimateRankTime</actionMapping>
+        <outputActionMapping>http://quickstart.samples/TransferAgentPortType/getPriceResponse</outputActionMapping>
+    </operation>
+
     <operation name="determinant" mep="http://www.w3.org/2004/08/wsdl/in-out">
         <actionMapping>urn:det</actionMapping>
         <outputActionMapping>http://quickstart.samples/TransferAgentPortType/getPriceResponse</outputActionMapping>
@@ -25,10 +30,14 @@
         <actionMapping>urn:trace</actionMapping>
         <outputActionMapping>http://quickstart.samples/TransferAgentPortType/getPriceResponse</outputActionMapping>
     </operation>
+
+    <operation name="smithNormalForm" mep="http://www.w3.org/2004/08/wsdl/in-out">
+        <actionMapping>urn:smithNormalForm</actionMapping>
+        <outputActionMapping>http://quickstart.samples/TransferAgentPortType/getPriceResponse</outputActionMapping>
+    </operation>
+
+    <operation name="getMachineSpecs" mep="http://www.w3.org/2004/08/wsdl/in-out">
+        <actionMapping>urn:getMachineSpecs</actionMapping>
+        <outputActionMapping>http://quickstart.samples/TransferAgentPortType/getPriceResponse</outputActionMapping>
+    </operation>
 </service>
-
-
-
-
-<!--        <messageReceiver mep="http://www.w3.org/2004/08/wsdl/in-only"
-                         class="samples.quickstart.service.adb.TransferAgentMessageReceiverInOnly"/>-->
