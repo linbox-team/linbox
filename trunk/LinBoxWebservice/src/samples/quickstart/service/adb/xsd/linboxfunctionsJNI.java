@@ -13,8 +13,11 @@ class linboxfunctionsJNI {
   public final static native String detFiles(String jarg1);
   public final static native boolean rank(long jarg1, long jarg2);
   public final static native String rankFiles(String jarg1);
+  public final static native int estimateRankTime(String jarg1);
   public final static native boolean val(long jarg1, long jarg2);
   public final static native String valFiles(String jarg1);
   public final static native boolean trace(long jarg1, long jarg2);
   public final static native String traceFiles(String jarg1);
+  public final static native boolean smithNormalForm(long jarg1, long jarg2);
+  public final static native String smithNormalFormFiles(String jarg1);
 }

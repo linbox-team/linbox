@@ -25,6 +25,10 @@ public class linboxfunctions {
     return linboxfunctionsJNI.rankFiles(matfile);
   }
 
+  public static int estimateRankTime(String matfile) {
+    return linboxfunctionsJNI.estimateRankTime(matfile);
+  }
+
   public static boolean val(SWIGTYPE_p_std__istream matrix_in, SWIGTYPE_p_std__ostream trace_out) {
     return linboxfunctionsJNI.val(SWIGTYPE_p_std__istream.getCPtr(matrix_in), SWIGTYPE_p_std__ostream.getCPtr(trace_out));
   }
@@ -39,6 +43,14 @@ public class linboxfunctions {
 
   public static String traceFiles(String matfile) {
     return linboxfunctionsJNI.traceFiles(matfile);
+  }
+
+  public static boolean smithNormalForm(SWIGTYPE_p_std__istream matrix_in, SWIGTYPE_p_std__ostream snf_out) {
+    return linboxfunctionsJNI.smithNormalForm(SWIGTYPE_p_std__istream.getCPtr(matrix_in), SWIGTYPE_p_std__ostream.getCPtr(snf_out));
+  }
+
+  public static String smithNormalFormFiles(String matfile) {
+    return linboxfunctionsJNI.smithNormalFormFiles(matfile);
   }
 
 }
