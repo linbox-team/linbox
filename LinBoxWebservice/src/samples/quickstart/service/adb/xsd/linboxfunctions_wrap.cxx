@@ -165,10 +165,13 @@ extern bool det(std::istream& matrix_in, std::ostream& det_out);
 extern char* detFiles(char *matfile);
 extern bool rank(std::istream& matrix_in, std::ostream& rank_out);
 extern char* rankFiles(char *matfile);
+extern int estimateRankTime(char *matfile);
 extern bool val(std::istream& matrix_in, std::ostream& val_out);
 extern char* valFiles(char *matfile);
 extern bool trace(std::istream& matrix_in, std::ostream& trace_out);
 extern char* traceFiles(char *matfile);
+extern bool smithNormalForm(std::istream& matrix_in, std::ostream& snf_out);
+extern char* smithNormalFormFiles(char *matfile);
 
 
 #ifdef __cplusplus
@@ -277,6 +280,30 @@ JNIEXPORT jstring JNICALL Java_samples_quickstart_service_adb_xsd_linboxfunction
 }
 
 
+JNIEXPORT jint JNICALL Java_samples_quickstart_service_adb_xsd_linboxfunctionsJNI_estimateRankTime(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+    jint jresult = 0 ;
+    char *arg1 = (char *) 0 ;
+    int result;
+    
+    (void)jenv;
+    (void)jcls;
+    {
+        arg1 = 0;
+        if (jarg1) {
+            arg1 = (char *)jenv->GetStringUTFChars(jarg1, 0);
+            if (!arg1) return 0;
+        }
+    }
+    result = (int)estimateRankTime(arg1);
+    
+    jresult = (jint)result; 
+    {
+        if (arg1) jenv->ReleaseStringUTFChars(jarg1, arg1); 
+    }
+    return jresult;
+}
+
+
 JNIEXPORT jboolean JNICALL Java_samples_quickstart_service_adb_xsd_linboxfunctionsJNI_val(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
     jboolean jresult = 0 ;
     std::istream *arg1 = 0 ;
@@ -368,6 +395,57 @@ JNIEXPORT jstring JNICALL Java_samples_quickstart_service_adb_xsd_linboxfunction
         }
     }
     result = (char *)traceFiles(arg1);
+    
+    {
+        if(result) jresult = jenv->NewStringUTF(result); 
+    }
+    {
+        if (arg1) jenv->ReleaseStringUTFChars(jarg1, arg1); 
+    }
+    return jresult;
+}
+
+
+JNIEXPORT jboolean JNICALL Java_samples_quickstart_service_adb_xsd_linboxfunctionsJNI_smithNormalForm(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
+    jboolean jresult = 0 ;
+    std::istream *arg1 = 0 ;
+    std::ostream *arg2 = 0 ;
+    bool result;
+    
+    (void)jenv;
+    (void)jcls;
+    arg1 = *(std::istream **)(void *)&jarg1;
+    if(!arg1) {
+        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::istream & reference is null");
+        return 0;
+    } 
+    arg2 = *(std::ostream **)(void *)&jarg2;
+    if(!arg2) {
+        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::ostream & reference is null");
+        return 0;
+    } 
+    result = (bool)smithNormalForm(*arg1,*arg2);
+    
+    jresult = (jboolean)result; 
+    return jresult;
+}
+
+
+JNIEXPORT jstring JNICALL Java_samples_quickstart_service_adb_xsd_linboxfunctionsJNI_smithNormalFormFiles(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+    jstring jresult = 0 ;
+    char *arg1 = (char *) 0 ;
+    char *result;
+    
+    (void)jenv;
+    (void)jcls;
+    {
+        arg1 = 0;
+        if (jarg1) {
+            arg1 = (char *)jenv->GetStringUTFChars(jarg1, 0);
+            if (!arg1) return 0;
+        }
+    }
+    result = (char *)smithNormalFormFiles(arg1);
     
     {
         if(result) jresult = jenv->NewStringUTF(result); 
