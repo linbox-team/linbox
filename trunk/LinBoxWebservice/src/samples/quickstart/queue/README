@@ -1,0 +1,9 @@
+1) Run 'ant generate.middleman,' 'ant generate.user.client'
+2) Start RMI registry with /opt/jdk1.5.0_05/bin/rmiregistry
+3) Start QueueManager in /home/fendt/LinBoxWebservice/build/middleman/build/classes with (in that directory):
+	java -Djava.rmi.server.codebase=file:/home/fendt/LinBoxWebservice/build/middleman/build/classes/ QueueManager
+	***** REMEMBER TRAILING SLASH ******
+
+4) Run user client, eg 
+	ant run.uder.client -Darg1=rank -Darg2=matrices/mat2.txt
+
