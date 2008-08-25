@@ -52,8 +52,8 @@ are done.  The following contains the step that were taken to install the server
   <li> Currently only configured for Fendt's directory on "hmrg.pc.cis.udel.edu"</li>
   <li> Web service resides in /home/fendt/apache-tomcat-6.0.13/webapps/
   axis2/WEB-INF/services </li>
-  <li> Apache is currently listening on port 80.  This is verified in
-  <apache-dir>/WEB-INF/server.xml  The "Connector port" is set to 80.  This
+  <li> Apache is currently listening on port 8080.  This is verified in
+  <apache-dir>/WEB-INF/server.xml  The "Connector port" is set to 8080.  This
   is at line ~50. </li>
   <li> Apache startup/shutdown locations: <br>
       STARTUP: /home/fendt/apache-tomcat-6.0.13/bin/startup.sh <br>
@@ -90,7 +90,7 @@ the web service will use. </li>
   service.</li>
   <li>Start up Apache with ./home/fendt/apache-tomcat-6.0.13/bin/startup.sh</li>
   <li>The web service is now installed in the "services" directory on Apache,
-  is listening on port 80, and ready for client calls.</li>
+  is listening on port 8080, and ready for client calls.</li>
 </ol>
 
 <a href="http://www.linalg.org/webservice/LinBoxWebserviceInfo.html#contents">
@@ -202,7 +202,7 @@ compute the answer. <br> <br>
 
   <li>Set AXIS2_HOME to /usa/fendt/axis2-1.2</li>
 
-  <li>Change port to 80, in tomcat's conf/server.xml at line 50</li>
+  <li>Change port to 8080, in tomcat's conf/server.xml at line 50</li>
 </ol>
 
 <b>Setting up the web client</b>
