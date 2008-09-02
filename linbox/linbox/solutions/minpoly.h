@@ -26,6 +26,7 @@
 
 #include "linbox/algorithms/blackbox-container.h"
 #include "linbox/algorithms/blackbox-container-symmetric.h"
+#include "linbox/blackbox/squarize.h"
 #include "linbox/algorithms/massey-domain.h"     // massey recurring sequence solver
 #include "linbox/algorithms/blas-domain.h"
 #include "linbox/solutions/methods.h"
@@ -55,7 +56,7 @@ namespace LinBox
 			     const RingCategories::RationalTag& tag,
 			     const MyMethod& M)
 	{
-		throw LinboxError("LinBox ERROR: minpoly is not yet define over a rational domain");
+		throw LinboxError("LinBox ERROR: minpoly is not yet defined over a rational domain");
 	}
  
 
@@ -139,14 +140,24 @@ namespace LinBox
 			     const RingCategories::ModularTag          &tag,
 			     const Method::BlasElimination& M)
 	{
-	    	if (A.coldim() != A.rowdim())
-			throw LinboxError("LinBox ERROR: matrix must be square for minimal polynomial computation\n");
-
-		BlasBlackbox< typename Blackbox::Field > BBB (A);
-		BlasMatrixDomain< typename Blackbox::Field > BMD (BBB.field());
-		return BMD.minpoly (P, static_cast<const BlasMatrix<typename Blackbox::Field::Element>& >(BBB));
+            commentator.start ("Convertion to BLAS Minimal polynomial", "blasconvert");
+            
+            if (A.coldim() != A.rowdim()) {
+                commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "Squarize matrix" << std::endl;
+                Squarize<Blackbox> B(&A);              
+                BlasBlackbox< typename Blackbox::Field > BBB (B);
+                BlasMatrixDomain< typename Blackbox::Field > BMD (BBB.field());
+                commentator.stop ("done", NULL, "blasconvert");
+       
+                return BMD.minpoly (P, static_cast<const BlasMatrix<typename Blackbox::Field::Element>& >(BBB));
+            } else {
+                BlasBlackbox< typename Blackbox::Field > BBB (A);
+                BlasMatrixDomain< typename Blackbox::Field > BMD (BBB.field());
+                commentator.stop ("done", NULL, "blasconvert");
+                return BMD.minpoly (P, static_cast<const BlasMatrix<typename Blackbox::Field::Element>& >(BBB));
+            }
 	}
-
+    
 	// The minpoly with BlackBox Method 
 	template<class Polynomial, class Blackbox>
 	Polynomial &minpoly (
@@ -219,19 +230,26 @@ namespace LinBox
 			     RingCategories::ModularTag tag,
 			     const Method::Wiedemann& M = Method::Wiedemann ())
 	{
-		if (A.coldim() != A.rowdim())
-			throw LinboxError("LinBox ERROR: matrix must be square for minimal polynomial computation\n");
-
 		typedef typename Blackbox::Field Field;
 		typename Field::RandIter i (A.field());
 		unsigned long            deg;
 
 		commentator.start ("Wiedemann Minimal polynomial", "minpoly");
 
-		BlackboxContainer<Field, Blackbox> TF (&A, A.field(), i);
-		MasseyDomain< Field, BlackboxContainer<Field, Blackbox> > WD (&TF, M.earlyTermThreshold ());
-
-		WD.minpoly (P, deg);
+                if (A.coldim() != A.rowdim()) {
+                    commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "Virtually squarize matrix" << std::endl;
+                    
+                    Squarize<Blackbox> B(&A);
+                    BlackboxContainer<Field, Squarize<Blackbox> > TF (&B, A.field(), i);
+                    MasseyDomain< Field, BlackboxContainer<Field, Squarize<Blackbox> > > WD (&TF, M.earlyTermThreshold ());
+                    
+                    WD.minpoly (P, deg);                    
+                } else {
+                    BlackboxContainer<Field, Blackbox> TF (&A, A.field(), i);
+                    MasseyDomain< Field, BlackboxContainer<Field, Blackbox> > WD (&TF, M.earlyTermThreshold ());
+                    
+                    WD.minpoly (P, deg);
+                }
 
 #ifdef INCLUDE_TIMING
 		commentator.report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
@@ -303,12 +321,12 @@ namespace LinBox {
         
 		template<typename Polynomial, typename Field>
 		Polynomial& operator()(Polynomial& P, const Field& F) const {
-			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
-			FBlackbox * Ap;
-			MatrixHom::map(Ap, A, F);
-			minpoly( P, *Ap, typename FieldTraits<Field>::categoryTag(), M);
-			delete Ap;
-			return P;
+                    typedef typename Blackbox::template rebind<Field>::other FBlackbox;
+                    FBlackbox * Ap;
+                    MatrixHom::map(Ap, A, F);
+                    minpoly( P, *Ap, typename FieldTraits<Field>::categoryTag(), M);
+                    delete Ap;
+                    return P;
 		}            
 	};
 
@@ -318,8 +336,8 @@ namespace LinBox {
                              const RingCategories::IntegerTag   &tag,
                              const MyMethod                     &M)
 	{
-		if (A.coldim() != A.rowdim())
-			throw LinboxError("LinBox ERROR: matrix must be square for minimal polynomial computation\n");
+//             if (A.coldim() != A.rowdim())
+//                     throw LinboxError("LinBox ERROR: matrix must be square for minimal polynomial computation\n");
 
 #ifdef __LINBOX_HAVE_MPI
 		if(!M.communicatorp() || (M.communicatorp())->rank() == 0) 

@@ -647,7 +647,11 @@ Vector1 &MatrixDomain<Field>::mulRowSpecialized (Vector1 &w, const Matrix &A, co
 	typename Matrix::ConstRowIterator i = A.rowBegin ();
 	typename Vector1::iterator j = w.begin ();
 
-	for (; j != w.end (); ++j, ++i)
+            // JGD 02.09.2008 : when sizes differ
+            // A must decide if dot is possible, not w 
+// 	for (; j != w.end (); ++j, ++i)
+// 		_VD.dot (*j, v, *i);
+	for (; i != A.rowEnd (); ++j, ++i)
 		_VD.dot (*j, v, *i);
 
 	return w;

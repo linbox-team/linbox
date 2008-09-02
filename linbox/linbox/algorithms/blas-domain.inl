@@ -1077,17 +1077,21 @@ namespace LinBox {
 	class BlasMatrixDomainMinpoly< Field, Polynomial, BlasMatrix<typename Field::Element > > {
 	public:
 		Polynomial& operator() (const Field &F, Polynomial& P, const BlasMatrix<typename Field::Element >& A) const{
+                    commentator.start ("Modular Dense Minpoly ", "MDMinpoly");
+                    
+                    size_t n = A.coldim();
+                    linbox_check( n == A.rowdim());
+                    typename Field::Element * X = new typename Field::Element[n*(n+1)];
+                    size_t *Perm = new size_t[n];
+                    for ( size_t i=0; i<n; ++i)
+                        Perm[i] = 0;
+                    FFPACK::MinPoly( F, P, n, A.getPointer(), A.getStride(), X, n, Perm);
+                    commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "minpoly with " << P.size() << " coefficients" << std::endl;
 
-			size_t n = A.coldim();
-			linbox_check( n == A.rowdim());
-			typename Field::Element * X = new typename Field::Element[n*(n+1)];
-			size_t *Perm = new size_t[n];
-			for ( size_t i=0; i<n; ++i)
-				Perm[i] = 0;
-			FFPACK::MinPoly( F, P, n, A.getPointer(), A.getStride(), X, n, Perm);
-			delete[] Perm;
-			delete[] X;
-			return P;
+                    delete[] Perm;
+                    delete[] X;
+                    commentator.stop ("done",NULL,"MDMinpoly");
+                    return P;
 		}
 	};
 
