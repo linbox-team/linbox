@@ -26,6 +26,12 @@ void printPolynomial (const Field &F, const Polynomial &v)
 int main (int argc, char **argv)
 {
 
+
+        commentator.setMaxDetailLevel (-1);
+
+        commentator.setMaxDepth (-1);
+        commentator.setReportStream (std::cerr);
+
 	if (argc < 2 || argc > 3) {
 		cerr << "Usage: minpoly <matrix-file-in-SMS-format> [<p>]" << endl;
 		return -1;
@@ -54,12 +60,18 @@ int main (int argc, char **argv)
            vector<PID_integer::Element> m_A;
            minpoly (m_A, A, M); 
            
-           
-           
            if(process == 0){
                cout << "Minimal Polynomial is ";
                printPolynomial (ZZ, m_A);
            }
+
+//            minpoly (m_A, A, Method::BlasElimination() );
+           
+//            if(process == 0){
+//                cout << "Minimal Polynomial is ";
+//                printPolynomial (ZZ, m_A);
+//            }
+           
 	}
 	if (argc == 3) { 
 
@@ -75,6 +87,11 @@ int main (int argc, char **argv)
 
 		cout << "Minimal Polynomial is ";
 		printPolynomial (F, m_B);
+                
+//                 minpoly (m_A, A, Method::BlasElimination() );
+//  		cout << "Minimal Polynomial is ";
+// 		printPolynomial (F, m_B);
+                
 	}
 
 	return 0;

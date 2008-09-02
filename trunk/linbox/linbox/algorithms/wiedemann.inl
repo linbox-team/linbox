@@ -46,6 +46,7 @@
 #include "linbox/blackbox/transpose.h"
 #include "linbox/algorithms/blackbox-container.h"
 #include "linbox/algorithms/blackbox-container-symmetric.h"
+//#include "linbox/algorithms/blackbox-container-generic.h"
 #include "linbox/algorithms/massey-domain.h" 
 #include "linbox/switch/cekstv.h"
 #include "linbox/solutions/rank.h"
@@ -69,6 +70,7 @@ namespace LinBox
 		commentator.start ("Solving linear system (Wiedemann)", "WiedemannSolver::solve");
 
 		WiedemannTraits::SingularState singular = _traits.singular ();
+                if (A.rowdim() != A.coldim() ) _traits.singular (singular = WiedemannTraits::SINGULAR);
 		ReturnStatus status = FAILED;
 
 		unsigned int tries = _traits.maxTries ();
@@ -251,7 +253,7 @@ namespace LinBox
 			VectorWrapper::ensureDim (z, A.rowdim ());
 
 			for (int i = m_A.size () - 1; --i > 0;) {
-				if ((m_A.size () - i) & 0xff == 0)
+				if ((m_A.size () - i) & (0xff == 0))
 					commentator.progress (m_A.size () - i);
 
 				A.apply (z, x);
@@ -440,20 +442,19 @@ namespace LinBox
 
 		{
 			commentator.start ("Preparing right hand side");
-
+                        
 			stream >> v;
-
 			A.apply (Avpb, v);
 			_VD.addin (Avpb, b);
 
-			if (P != NULL) {
-				VectorWrapper::ensureDim (PAvpb, A.rowdim ());
-				P->apply (PAvpb, Avpb);
-				_VD.copy (bp, PAvpb, 0, r);
+                        if (P != NULL) {
+                            VectorWrapper::ensureDim (PAvpb, A.rowdim ());
+                            P->apply (PAvpb, Avpb);
+                            _VD.copy (bp, PAvpb, 0, r);
 			} else {
-				_VD.copy (bp, Avpb, 0, r);
+                            _VD.copy (bp, Avpb, 0, r);
 			}
-
+                        
 			commentator.stop ("done");
 		}
 
