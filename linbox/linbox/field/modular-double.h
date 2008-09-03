@@ -429,9 +429,10 @@ namespace LinBox {
 	public:	  
 		typedef double Element;	  
 		DotProductDomain (const Modular<double> &F)
-			: VectorDomainBase<Modular<double> > (F), _bound( (double) ( (1ULL<<53) - (int) (_F.modulus*_F.modulus)))//, _invmod(1./_F.modulus) 
+			: VectorDomainBase<Modular<double> > (F), _bound( (double) ( (1ULL<<53) - (int) (F.modulus*F.modulus)))//, _invmod(1./_F.modulus) 
 			{
-				_nmax= (size_t)floor((double(1<<26)* double(1<<26)*2.)/ (_F.modulus * _F.modulus));
+				_nmax= (size_t)floor((double(1<<26)* double(1<<26)*2.)/ (F.modulus * F.modulus));
+                                _nmax = (_nmax>0?_nmax:1);
 			}
 	  
 	protected:
@@ -478,7 +479,7 @@ namespace LinBox {
 				for (;i< v1.first.size()- _nmax ;i=i+_nmax){
 					for (size_t j=i;j<i+_nmax;++j)
 						y += v1.second[j] * v2[v1.first[j]];
-					t+=fmod(y, _F.modulus);
+					t+=fmod(y, this->_F.modulus);
 					y=0.;							
 				}
 				for (;i < v1.first.size();++i)
