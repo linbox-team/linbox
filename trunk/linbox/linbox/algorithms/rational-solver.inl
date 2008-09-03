@@ -1319,7 +1319,7 @@ namespace LinBox {
 	(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, size_t blocksize, int maxPrimes) const {
 
 		linbox_check(A.rowdim() == A.coldim());
-		linbox_check(n % blocksize == 0);
+		linbox_check(A.rowdim() % blocksize == 0);
 		
 		typedef typename Field::Element Element;
 
