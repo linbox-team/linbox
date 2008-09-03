@@ -244,12 +244,20 @@ namespace LinBox
                     MasseyDomain< Field, BlackboxContainer<Field, Squarize<Blackbox> > > WD (&TF, M.earlyTermThreshold ());
                     
                     WD.minpoly (P, deg);                    
-                } else {
-                    BlackboxContainer<Field, Blackbox> TF (&A, A.field(), i);
-                    MasseyDomain< Field, BlackboxContainer<Field, Blackbox> > WD (&TF, M.earlyTermThreshold ());
+                } else if (M.symmetric ()) {
+                    typedef BlackboxContainerSymmetric<Field, Blackbox> BBContainerSym;
+                    BBContainerSym TF (&A, A.field(), i);
+                    MasseyDomain< Field, BBContainerSym > WD (&TF, M.earlyTermThreshold ());
+                    
+                    WD.minpoly (P, deg);
+		} else {
+                    typedef BlackboxContainer<Field, Blackbox> BBContainer;
+                    BBContainer TF (&A, A.field(), i);
+                    MasseyDomain< Field, BBContainer > WD (&TF, M.earlyTermThreshold ());
                     
                     WD.minpoly (P, deg);
                 }
+
 
 #ifdef INCLUDE_TIMING
 		commentator.report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
