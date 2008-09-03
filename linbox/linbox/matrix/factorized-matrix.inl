@@ -474,7 +474,7 @@ namespace LinBox{
 			
 			int info;
 			linbox_check (A.coldim() == A.rowdim()); 
-			linbox_check (A.rowdim() == B.size());
+			linbox_check (A.rowdim() == b.size());
 			
 			FFPACK::fgetrs (F, FFLAS::FflasRight, 1, b.size(), A.getrank(),
 					A.getPointer(), A.getStride(),
@@ -619,7 +619,7 @@ namespace LinBox{
 								   const LQUPMatrix<Field>& A, 
 								   std::vector<typename Field::Element>& x,
 								   const std::vector<typename Field::Element>& b ) const{
-			linbox_check (X.size() == A.rowdim());
+			linbox_check (x.size() == A.rowdim());
 			linbox_check (A.coldim() == b.size());
 			typename Field::Element one,zero;
 			F.init(one, 1UL);
