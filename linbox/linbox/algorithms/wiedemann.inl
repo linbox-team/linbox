@@ -40,6 +40,7 @@
 #include <vector>
 #include <algorithm>
 
+#include "linbox/solutions/minpoly.h"
 #include "linbox/algorithms/wiedemann.h"
 #include "linbox/blackbox/submatrix.h"
 #include "linbox/blackbox/butterfly.h"
@@ -185,41 +186,44 @@ namespace LinBox
 		bool       ret = true;
 
 		{
-			commentator.start ("Computing minimal polynomial");
+                    minpoly(m_A, A, _traits);
+                    
 
-			unsigned long  deg;
+// 			commentator.start ("Computing minimal polynomial");
 
-			if (!_traits.symmetric ()) {
-				typedef BlackboxContainer<Field, Blackbox> BBContainer;
+// 			unsigned long  deg;
 
-				if (useRandIter) {
-					BBContainer                      TF (&A, _F, _randiter);
-					MasseyDomain<Field, BBContainer> WD (&TF);
+// 			if (!_traits.symmetric ()) {
+// 				typedef BlackboxContainer<Field, Blackbox> BBContainer;
 
-					WD.minpoly (m_A, deg);
-				} else {
-					BBContainer                      TF (&A, _F, b);
-					MasseyDomain<Field, BBContainer> WD (&TF);
+// 				if (useRandIter) {
+// 					BBContainer                      TF (&A, _F, _randiter);
+// 					MasseyDomain<Field, BBContainer> WD (&TF);
 
-					WD.minpoly (m_A, deg);
-				}
-			} else {
-				typedef BlackboxContainerSymmetric<Field, Blackbox> BBContainer;
+// 					WD.minpoly (m_A, deg);
+// 				} else {
+// 					BBContainer                      TF (&A, _F, b);
+// 					MasseyDomain<Field, BBContainer> WD (&TF);
 
-				if (useRandIter) {
-					BBContainer                      TF (&A, _F, _randiter);
-					MasseyDomain<Field, BBContainer> WD (&TF);
+// 					WD.minpoly (m_A, deg);
+// 				}
+// 			} else {
+// 				typedef BlackboxContainerSymmetric<Field, Blackbox> BBContainer;
 
-					WD.minpoly (m_A, deg);
-				} else {
-					BBContainer                      TF (&A, _F, b);
-					MasseyDomain<Field, BBContainer> WD (&TF);
+// 				if (useRandIter) {
+// 					BBContainer                      TF (&A, _F, _randiter);
+// 					MasseyDomain<Field, BBContainer> WD (&TF);
 
-					WD.minpoly (m_A, deg);
-				}
-			}
+// 					WD.minpoly (m_A, deg);
+// 				} else {
+// 					BBContainer                      TF (&A, _F, b);
+// 					MasseyDomain<Field, BBContainer> WD (&TF);
 
-			commentator.stop ("done");
+// 					WD.minpoly (m_A, deg);
+// 				}
+// 			}
+
+// 			commentator.stop ("done");
 		}
 
 		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
@@ -446,7 +450,6 @@ namespace LinBox
 			stream >> v;
 			A.apply (Avpb, v);
 			_VD.addin (Avpb, b);
-
                         if (P != NULL) {
                             VectorWrapper::ensureDim (PAvpb, A.rowdim ());
                             P->apply (PAvpb, Avpb);
