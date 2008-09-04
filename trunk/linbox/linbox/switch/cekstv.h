@@ -58,6 +58,7 @@ class CekstvSwitch
 
 	/// Typedef
 	typedef typename Field::Element Element;
+	typedef CekstvSwitch<Field> Self_t;
 	typedef CekstvSwitchFactory<Field> Factory;
 
 	/** Constructor from a field and a field element.
@@ -95,6 +96,22 @@ class CekstvSwitch
 	 * @param y reference to second element to be switched
 	 */
 	bool applyTranspose (const Field &F, Element &x, Element &y) const;
+
+
+        template<typename _Tp1>
+        struct rebind
+        { 
+            typedef CekstvSwitch<_Tp1> other;
+
+                // special rebind operator() with two fields, 
+                // indeed local field is not stored in the switch
+            void operator() (other *& Ap, const Self_t& A, const _Tp1& T, const Field& F) {
+                typename _Tp1::Element u;
+                Hom<Field, _Tp1>(F,T).image(u, A._a);
+                Ap = new other(u);
+            }
+        };
+    
 
    private:
 

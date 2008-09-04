@@ -58,7 +58,6 @@ namespace LinBox {
 		 * The default behaviour goes through integers.
 		 */
 		Elt& image(Elt& t, const SrcElt& s) {
-                    integer tmp;
                     return _target.init(t, _source.convert(tmp,s));
                 }
 
@@ -70,13 +69,13 @@ namespace LinBox {
 		 * The default behaviour goes through integers.
 		 */
 		SrcElt& preimage(SrcElt& s, const Elt& t) {
-                    integer tmp;
                     return _source.init(s, _target.convert(tmp,t));
                 }
 		const Source& source() { return _source;}
 		const Target& target() { return _target;}
 
 	private:
+            integer tmp;
 		Source _source;
 		Target _target;
 	}; // end Hom 
@@ -332,7 +331,6 @@ namespace LinBox {
 		const Target& target() { return _target;}
 
 	protected:
-		integer tmp;
 		Source _source;
 		Target _target;
 	}; // end Hom 

@@ -597,7 +597,7 @@ namespace LinBox {
     template <class Blackbox>
     unsigned long &rank (unsigned long                   &r,
                          const Blackbox                  &A,
-                         const  RingCategories::ModularTag                   &tag,
+                         const RingCategories::ModularTag                   &tag,
                          const Method::Blackbox& m)
     {  
         commentator.start ("BB Rank", "extend");
@@ -614,7 +614,8 @@ namespace LinBox {
                     FBlackbox * Ap;
                     MatrixHom::map(Ap, A, EF );
                     rank(r, *Ap, tag, Method::Wiedemann(m));
-                }
+                } else
+                    rank(r, A, tag, Method::Wiedemann(m)); 
             } else {
                 unsigned long extend = (unsigned long)FF_EXPONENT_MAX(c,(integer)LINBOX_EXTENSION_DEGREE_MAX);
                 if (extend > 1) {
@@ -624,7 +625,8 @@ namespace LinBox {
                     FBlackbox * Ap;
                     MatrixHom::map(Ap, A, EF );
                     rank(r, *Ap, tag, Method::Wiedemann(m));
-                }
+                } else
+                    rank(r, A, tag, Method::Wiedemann(m)); 
             }
         } else
             rank(r, A, tag, Method::Wiedemann(m)); 

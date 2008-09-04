@@ -354,7 +354,7 @@ public:
 				phi[dp-i] = phi[0];
 			}
 			phi[0] = phi[dp];
-			_F.init (phi[dp], 1);
+			_F.init (phi[dp], 1UL);
 		}
                 return L;
 	}
@@ -368,7 +368,7 @@ public:
 			for (long i = dp >> 1; i > 0; --i)
 				std::swap (phi[i], phi[dp-i]);
 			phi[0] = phi[dp];
-			_F.init (phi[dp], 1);
+			_F.init (phi[dp], 1UL);
 		}
 	}
 };

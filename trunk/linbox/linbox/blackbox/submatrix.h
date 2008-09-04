@@ -74,9 +74,11 @@ namespace LinBox
 	class Submatrix<Blackbox, VectorCategories::DenseVectorTag >
 	: public BlackboxInterface {
 	    public:
-		typedef typename Blackbox::Field Field; 
-
+		typedef typename Blackbox::Field Field;
 		typedef typename Field::Element Element;
+            	typedef Blackbox Blackbox_t;
+                typedef Submatrix<Blackbox, VectorCategories::DenseVectorTag > Self_t;
+            
 		/** Constructor from field and dense vector of field elements.
 		 * @param BB   Black box from which to extract the submatrix
 		 * @param row  First row of the submatrix to extract (1.._BB->rowdim ())
@@ -146,7 +148,16 @@ namespace LinBox
 
             template<typename _Tp1> 
             struct rebind                           
-            { typedef Submatrix< typename Blackbox::template rebind<_Tp1>::other, VectorCategories::DenseVectorTag> other; };
+            { 
+                typedef Submatrix< typename Blackbox::template rebind<_Tp1>::other, VectorCategories::DenseVectorTag> other; 
+
+                void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
+                    typename other::Blackbox_t * A1;
+                    typename Blackbox_t::template rebind<_Tp1> () ( A1, *(A._BB), F);
+                    Ap = new other(A1, A._row, A._col, A._rowdim, A._coldim);
+                }
+
+            };
 
 
 
@@ -195,6 +206,8 @@ namespace LinBox
 	public:
 
 		typedef _Field Field;
+            	typedef Submatrix<DenseMatrix<_Field>, VectorCategories::DenseVectorTag> Self_t;
+            	typedef DenseSubmatrix<typename _Field::Element> Father_t;
 
 	private:
 		
@@ -335,7 +348,17 @@ namespace LinBox
 
             template<typename _Tp1> 
             struct rebind                           
-            { typedef Submatrix<DenseMatrix<_Tp1>, VectorCategories::DenseVectorTag> other; };
+            { 
+                typedef Submatrix<DenseMatrix<_Tp1>, VectorCategories::DenseVectorTag> other;
+
+                void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
+                    
+                    typename other::Father_t A1;
+                    typename Father_t::template rebind<_Tp1> () ( A1, static_cast<Father_t>(A), F);
+                    Ap = new other(A1, A._row, A._col, A._rowdim, A._coldim);
+                }
+
+            };
 	};
 
 	//@}
