@@ -131,7 +131,7 @@ namespace LinBox
 		 * @param  MD VectorDomain object.
 		 */
 		VectorDomain (const VectorDomain &VD)
-			: DotProductDomain<Field> (VD._F), VectorDomainBase<Field> (VD._F)
+			: VectorDomainBase<Field> (VD._F), DotProductDomain<Field> (VD._F)
 		{}
     
 		/** Assignment operator.

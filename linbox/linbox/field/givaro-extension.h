@@ -126,7 +126,7 @@ namespace LinBox
         template<class RandIter> Rep& random(RandIter& g, Rep& r, const Rep& b) const { return r = g() ; }
         template<class RandIter> Rep& nonzerorandom(RandIter& g, Rep& r) const { return r = g() ; }
         template<class RandIter> Rep& nonzerorandom(RandIter& g, Rep& r, long s) const { return r = g() ; }
-        template<class RandIter> Rep& nonzerorandom(RandIter& g, Rep& r, const Rep& b) const { return r = g() ; }
+       template<class RandIter> Rep& nonzerorandom(RandIter& g, Rep& r, const Rep& b) const { return r = g() ; }
 
     };
         
@@ -255,7 +255,7 @@ namespace LinBox
 		 *
 		 * The default behaviour is a no-op.
 		 */
-		Elt& image(Elt& t, const SrcElt& s) {return _target.assign(t, s);}
+		Elt& image(Elt& t, const SrcElt& s) const {return _target.assign(t, s);}
 
 		/** If possible, preimage(s,t) assigns a value to s such that 
 		 * the image of s is t.  Otherwise behaviour is unspecified.
@@ -264,12 +264,12 @@ namespace LinBox
 		 *
 		 * The default behaviour is a no-op.
 		 */
-		SrcElt& preimage(SrcElt& s, const Elt& t) {
-                    return _target.getEntry(s, Degree(0), t);
+		SrcElt& preimage(SrcElt& s, const Elt& t) const {
+                    return _target.convert(s, t);
                 }
 
-		const Source& source() { return _source;}
-		const Target& target() { return _target;}
+		const Source& source() const { return _source;}
+		const Target& target() const { return _target;}
 
 	private:
 		Source _source;

@@ -120,7 +120,7 @@ namespace LinBox {
 		/** @brief
 		 *  Convert y to an Element.
 		 */
-		static inline integer& convert (integer& x, const Element& y){ 
+		inline integer& convert (integer& x, const Element& y) const { 
 			bool neg=false;
 			if (sign(y) <0)
 				neg=true;
@@ -142,7 +142,7 @@ namespace LinBox {
 			return x;
 		}
 	  
-		static inline double& convert (double& x, const Element& y){
+		inline double& convert (double& x, const Element& y) const {
 			return x=NTL::to_double(y);
 		}
 

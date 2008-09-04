@@ -186,44 +186,10 @@ namespace LinBox
 		bool       ret = true;
 
 		{
-                    minpoly(m_A, A, _traits);
-                    
-
-// 			commentator.start ("Computing minimal polynomial");
-
-// 			unsigned long  deg;
-
-// 			if (!_traits.symmetric ()) {
-// 				typedef BlackboxContainer<Field, Blackbox> BBContainer;
-
-// 				if (useRandIter) {
-// 					BBContainer                      TF (&A, _F, _randiter);
-// 					MasseyDomain<Field, BBContainer> WD (&TF);
-
-// 					WD.minpoly (m_A, deg);
-// 				} else {
-// 					BBContainer                      TF (&A, _F, b);
-// 					MasseyDomain<Field, BBContainer> WD (&TF);
-
-// 					WD.minpoly (m_A, deg);
-// 				}
-// 			} else {
-// 				typedef BlackboxContainerSymmetric<Field, Blackbox> BBContainer;
-
-// 				if (useRandIter) {
-// 					BBContainer                      TF (&A, _F, _randiter);
-// 					MasseyDomain<Field, BBContainer> WD (&TF);
-
-// 					WD.minpoly (m_A, deg);
-// 				} else {
-// 					BBContainer                      TF (&A, _F, b);
-// 					MasseyDomain<Field, BBContainer> WD (&TF);
-
-// 					WD.minpoly (m_A, deg);
-// 				}
-// 			}
-
-// 			commentator.stop ("done");
+                        // Make it just Blackbox trait and not wiedemann:
+                        // Might need extension field for minpoly
+                        // Might also also use better method than Wiedemann ...
+                    minpoly(m_A, A,RingCategories::ModularTag(),  Method::Blackbox(_traits) );
 		}
 
 		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);

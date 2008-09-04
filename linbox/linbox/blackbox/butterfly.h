@@ -65,8 +65,14 @@ class Butterfly : public BlackboxInterface
 {
     public:
 	typedef _Field Field;
-
+    	typedef Butterfly<_Field, Switch> Self_t;
 	typedef typename Field::Element Element;
+
+	/** No-Op Constructor 
+         */
+    	Butterfly (const Field &F, size_t n) : _F (F), _VD (F), _n (n) {}
+    
+  
 
 	/** Constructor from an integer and a switch object.
 	 * The switch object is an object that is applied
@@ -117,12 +123,29 @@ class Butterfly : public BlackboxInterface
 	template<class OutVector, class InVector>
 	OutVector& applyTranspose (OutVector& y, const InVector& x) const;
 
-    template<typename _Tp1, typename _Sw1 = Switch>
+    template<typename _Tp1, typename _Sw1 = typename Switch::template rebind<_Tp1>::other>
     struct rebind
-    { typedef Butterfly<_Tp1, _Sw1> other; };
+    { 
+        typedef Butterfly<_Tp1, _Sw1> other;
 
-
-    
+        void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
+            other LAp(F,A._n);
+            LAp.n_vec() = A.n_vec();
+            LAp.l_vec() = A.l_vec();
+            LAp.indices() = A.indices();
+            
+            typename std::vector<Switch>::const_iterator sit = A.switchesBegin();
+            
+            for( ; sit != A.switchesEnd(); ++sit) {
+                _Sw1 * newsw;
+                typename Switch::template rebind<_Tp1>() (newsw, *sit, F, A._F);
+                LAp.switches().push_back( *newsw );
+            }
+            Ap = new other(LAp);
+        }  
+    };
+      
+   
 
 	/*- Retreive row dimensions of BlackBox matrix.
 	 * This may be needed for applying preconditioners.
@@ -141,7 +164,22 @@ class Butterfly : public BlackboxInterface
 
 	const Field& field() const {return _F;}
 
+
+        // Required for rebind
+        // Don't know how to tell that rebind should be friend ...
+    	std::vector<size_t> n_vec() const { return this->_n_vec; }
+        std::vector<size_t> l_vec() const { return this->_l_vec; }
+    	std::vector< std::pair< size_t, size_t > > indices() const { return this->_indices; }
+    	std::vector<size_t>& n_vec() { return this->_n_vec; }
+        std::vector<size_t>& l_vec() { return this->_l_vec; }
+    	std::vector< std::pair< size_t, size_t > >& indices() { return this->_indices; }
+    	typename std::vector<Switch>::const_iterator switchesBegin() const { return this->_switches.begin();}
+     	typename std::vector<Switch>::const_iterator switchesEnd() const { return this->_switches.end(); }
+    	std::vector<Switch>& switches() { return _switches; }
+    
+
     private:
+
 
 	// Field over which we are working
 	const Field _F;
