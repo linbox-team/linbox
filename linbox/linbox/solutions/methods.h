@@ -126,7 +126,7 @@ namespace LinBox
 			  _rank(RANK_UNKNOWN),
 			  _singular(SINGULARITY_UNKNOWN),
 			  _symmetric(NON_SYMMETRIC),
-			  _certificate(DONT_CERTIFY),
+			  _certificate(CERTIFY),
 			  _maxTries(1),
 			  _ett(DEFAULT_EARLY_TERM_THRESHOLD),
 			  _blockingFactor(16),
