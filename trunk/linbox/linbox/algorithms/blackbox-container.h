@@ -65,7 +65,15 @@ class BlackboxContainer : public BlackboxContainerBase<Field, _Blackbox> {
 	BlackboxContainer(const Blackbox * D, const Field &F, RandIter &g) 
 		: BlackboxContainerBase<Field, Blackbox> (D, F)
 	{
-		init (g); w = this->u;
+		this->casenumber = 1;
+		this->u.resize (this->_BB->coldim ());
+		for (long i = this->u.size (); i--;)
+			g.random (this->u[i]);
+		this->w.resize (this->_BB->coldim ());
+		for (long i = this->w.size (); i--;)
+			g.random (this->w[i]);
+		this->v.resize (this->_BB->rowdim ());
+		this->_VD.dot (this->_value, this->u, this->w);
 #ifdef INCLUDE_TIMING
 		_applyTime = _dotTime = 0.0;
 #endif

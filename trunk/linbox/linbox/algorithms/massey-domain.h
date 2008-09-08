@@ -211,6 +211,7 @@ class MasseyDomain {
 
 		_F.assign (b, One);
 
+
 		for (long N = 0; N < END && x < (long) EARLY_TERM_THRESHOLD; ++N, ++_iter) {
 			if (!(N % COMMOD)) 
 				commentator.progress (N);
@@ -220,7 +221,8 @@ class MasseyDomain {
 			// Discrepancy computation
 			// 
 			S[N] = *_iter; 
-
+                        
+			// 
 #ifdef INCLUDE_TIMING
 			timer.start ();
 #endif // INCLUDE_TIMING
@@ -363,13 +365,13 @@ public:
 	void minpoly (Polynomial &phi, unsigned long &rank, bool full_poly = true) {
             long dp = massey (phi, full_poly);
             rank = v_degree(phi) - v_val (phi);
-		if (phi.size () > 0) {
-			phi.resize (dp+1);
-			for (long i = dp >> 1; i > 0; --i)
-				std::swap (phi[i], phi[dp-i]);
-			phi[0] = phi[dp];
-			_F.init (phi[dp], 1UL);
-		}
+            if (phi.size () > 0) {
+                phi.resize (dp+1);
+                for (long i = dp >> 1; i > 0; --i)
+                    std::swap (phi[i], phi[dp-i]);
+                phi[0] = phi[dp];
+                _F.init (phi[dp], 1UL);
+            }
 	}
 };
  

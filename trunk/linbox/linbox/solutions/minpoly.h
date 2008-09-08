@@ -96,7 +96,7 @@ namespace LinBox
 			     const Method::Hybrid& M)
 	{
 		// not yet a hybrid
-		return minpoly(P, A, tag, Method::Wiedemann(M));
+		return minpoly(P, A, tag, Method::Blackbox(M));
 	}
 
 	// The minpoly with Hybrid Method on DenseMatrix
@@ -207,7 +207,6 @@ namespace LinBox {
                         FBlackbox * Ap;
                         MatrixHom::map(Ap, A, EF );
                         std::vector< typename GivaroGfq::Element > eP;
-
                         minpoly(eP, *Ap, tag, Method::Wiedemann(M));
 
                         return PreMap<Field, GivaroGfq >(F,EF)(P, eP);
@@ -229,7 +228,8 @@ namespace LinBox {
 			     const RingCategories::ModularTag          &tag,
 			     const Method::Blackbox& M)
 	{
-		return minpoly(P, A, tag, Method::Wiedemann (M));
+            commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << " WARNING, no extension available, returning only a factor of the minpoly\n";
+            return minpoly(P, A, tag, Method::Wiedemann (M));
 	}
 }
 #endif

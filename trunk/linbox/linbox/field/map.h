@@ -2,7 +2,7 @@
 #define _LinBox_Map_H
 // ==========================================================================
 // Authors: JGD
-// Time-stamp: <03 Sep 08 15:29:31 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <08 Sep 08 14:23:02 Jean-Guillaume.Dumas@imag.fr> 
 // ==========================================================================
 #include "linbox/field/hom.h"
 
@@ -57,8 +57,9 @@ struct PreMap {
         typename ContainerSourceElement::iterator src_it(src.begin());
         typename ContainerTargetElement::const_iterator tgt_it(tgt.begin());
         
-        for( ; tgt_it != tgt.end(); ++src_it, ++tgt_it)
+        for( ; tgt_it != tgt.end(); ++src_it, ++tgt_it) {
             this->_hom.preimage (*src_it, *tgt_it);
+        }
 
         return src;
     }
