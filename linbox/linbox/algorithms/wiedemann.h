@@ -52,9 +52,140 @@
 #include "linbox/vector/vector-domain.h"
 #include "linbox/solutions/methods.h"
 
+#include "linbox/algorithms/blackbox-container.h"
+#include "linbox/algorithms/blackbox-container-symmetric.h"
+
+// massey recurring sequence solver
+#include "linbox/algorithms/massey-domain.h"     
+
 namespace LinBox 
 {
 
+
+	template<class Polynomial, class Blackbox>
+	Polynomial &minpoly (Polynomial& P,
+			     const Blackbox& A,
+			     RingCategories::ModularTag tag,
+			     const Method::Wiedemann& M = Method::Wiedemann ())
+	{
+		typedef typename Blackbox::Field Field;
+		typename Field::RandIter i (A.field());
+		unsigned long            deg;
+
+		commentator.start ("Wiedemann Minimal polynomial", "minpoly");
+
+                if (A.coldim() != A.rowdim()) {
+                    commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "Virtually squarize matrix" << std::endl;
+                    
+                    Squarize<Blackbox> B(&A);
+                    BlackboxContainer<Field, Squarize<Blackbox> > TF (&B, A.field(), i);
+                    MasseyDomain< Field, BlackboxContainer<Field, Squarize<Blackbox> > > WD (&TF, M.earlyTermThreshold ());
+                    
+                    WD.minpoly (P, deg);                    
+                } else if (M.symmetric ()) {
+                    typedef BlackboxContainerSymmetric<Field, Blackbox> BBContainerSym;
+                    BBContainerSym TF (&A, A.field(), i);
+                    MasseyDomain< Field, BBContainerSym > WD (&TF, M.earlyTermThreshold ());
+                    
+                    WD.minpoly (P, deg);
+		} else {
+                    typedef BlackboxContainer<Field, Blackbox> BBContainer;
+                    BBContainer TF (&A, A.field(), i);
+                    MasseyDomain< Field, BBContainer > WD (&TF, M.earlyTermThreshold ());
+                    
+                    WD.minpoly (P, deg);
+                }
+
+
+#ifdef INCLUDE_TIMING
+		commentator.report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
+			<< "Time required for applies:      " << TF.applyTime () << endl;
+		commentator.report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
+			<< "Time required for dot products: " << TF.dotTime () << endl;
+		commentator.report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
+			<< "Time required for discrepency:  " << WD.discrepencyTime () << endl;
+		commentator.report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
+			<< "Time required for LSR fix:      " << WD.fixTime () << endl;
+#endif // INCLUDE_TIMING
+
+		commentator.stop ("done", NULL, "minpoly");
+
+		return P;
+	}
+}
+
+#ifdef __LINBOX_HAVE_GIVARO
+#define LINBOX_EXTENSION_DEGREE_MAX 20
+
+#include "linbox/blackbox/sparse.h"
+#include "linbox/field/modular.h"
+#include "linbox/algorithms/matrix-hom.h"
+#include "linbox/field/givaro-extension.h"
+#include "linbox/field/map.h"
+
+namespace LinBox {  
+	// The minpoly with BlackBox Method 
+	template<class Polynomial, class Blackbox>
+	Polynomial &minpoly (
+			     Polynomial         &P, 
+			     const Blackbox                            &A,
+			     const RingCategories::ModularTag          &tag,
+			     const Method::ExtensionWiedemann& M)
+	{
+            typedef typename Blackbox::Field Field;
+            const Field& F = A.field();
+            integer a,c; F.cardinality(a); F.characteristic(c);
+            if (a != c) {
+                unsigned long extend = (unsigned long)FF_EXPONENT_MAX(a,(integer)LINBOX_EXTENSION_DEGREE_MAX);
+                if (extend > 1) {
+                    commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Extension of degree " << extend << std::endl;
+                    GivaroExtension<Field> EF( F, extend);
+                    typedef typename Blackbox::template rebind< GivaroExtension<Field>  >::other FBlackbox;
+                    FBlackbox * Ap;
+                    MatrixHom::map(Ap, A, EF );
+                    std::vector< typename GivaroExtension<Field>::Element > eP;
+                    
+                    minpoly(eP, *Ap, tag, Method::Wiedemann(M));
+                    
+                    return PreMap<Field, GivaroExtension<Field> >(F,EF)(P, eP);
+                } else
+                    return minpoly(P, A, tag, Method::Wiedemann(M)); 
+                
+            } else {
+                unsigned long extend = (unsigned long)FF_EXPONENT_MAX(c,(integer)LINBOX_EXTENSION_DEGREE_MAX);
+                if (extend > 1) {
+                    commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Word size extension : " << extend << std::endl;
+                    GivaroGfq EF( (unsigned long)c, extend);                    
+                    typedef typename Blackbox::template rebind< GivaroGfq >::other FBlackbox;
+                    FBlackbox * Ap;
+                    MatrixHom::map(Ap, A, EF );
+                    std::vector< typename GivaroGfq::Element > eP;
+                    minpoly(eP, *Ap, tag, Method::Wiedemann(M));
+                    
+                    return PreMap<Field, GivaroGfq >(F,EF)(P, eP);
+                    
+                } else
+                    return minpoly(P, A, tag, Method::Wiedemann(M)); 
+            }
+        }
+}
+#else
+namespace LinBox {
+	// The minpoly with BlackBox Method 
+	template<class Polynomial, class Blackbox>
+	Polynomial &minpoly (
+			     Polynomial         &P, 
+			     const Blackbox                            &A,
+			     const RingCategories::ModularTag          &tag,
+			     const Method::ExtensionWiedemann& M)
+	{
+            commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << " WARNING, no extension available, returning only a factor of the minpoly\n";
+            return minpoly(P, A, tag, Method::Wiedemann (M));
+	}
+}
+#endif
+
+namespace LinBox {
 /** \brief Linear system solvers based on Wiedemann's method.
  * 
  * This class encapsulates all of the functionality for linear system
