@@ -277,6 +277,25 @@ namespace LinBox
 		WiedemannTraits( const Specifier& S) :  Specifier(S) {}   
 	};
     
+	struct WiedemannExtensionTraits : public WiedemannTraits {
+		WiedemannExtensionTraits (
+				 bool           symmetric      = NON_SYMMETRIC,
+				 unsigned long  thres          = DEFAULT_EARLY_TERM_THRESHOLD,
+				 size_t         rank           = RANK_UNKNOWN,
+				 Preconditioner preconditioner = SPARSE,
+				 SingularState  singular       = SINGULARITY_UNKNOWN,
+				 bool           certificate    = CERTIFY,
+				 unsigned long  maxTries       = 100,
+				 bool           checkResult    = true
+				 )
+                        : WiedemannTraits(symmetric,thres,rank,preconditioner,singular,certificate,maxTries,checkResult) 
+                {}
+		WiedemannExtensionTraits( const Specifier& S) :  WiedemannTraits(S) {}   
+	};
+    
+
+
+
 	struct LanczosTraits : public Specifier {
 		/** Constructor
 		 *
@@ -408,6 +427,7 @@ namespace LinBox
 		typedef BlackboxSpecifier	Blackbox;
 		typedef EliminationSpecifier	Elimination;
 		typedef WiedemannTraits		Wiedemann;
+		typedef WiedemannExtensionTraits ExtensionWiedemann;
 		typedef LanczosTraits		Lanczos;
 		typedef BlockLanczosTraits	BlockLanczos;
 		typedef SparseEliminationTraits	SparseElimination;       

@@ -386,6 +386,7 @@ int main (int argc, char **argv)
 	if (q > 5 && q % 2 != 0 && q % 3 != 0 && q % 5 != 0 )
 	{
 	typedef Modular<LinBox::uint32> Field;
+// 	typedef Modular<double> Field;
 	Field F (q);
 	srand (time (NULL));
 
