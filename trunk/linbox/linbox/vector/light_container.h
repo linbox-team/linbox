@@ -1,6 +1,6 @@
 // =================================================================== //
 // LightContainer : std::vector like container
-// Time-stamp: <11 Sep 08 14:59:12 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <11 Sep 08 17:16:17 Jean-Guillaume.Dumas@imag.fr> 
 // =================================================================== //
 #ifndef __Light_Container__ 
 #define __Light_Container__
@@ -8,6 +8,9 @@
 #include <iostream>
 #include <cstdlib>
 #include "linbox/util/contracts.h"
+
+namespace LinBox 
+{
 
 template<typename Elem> struct LightContainer {
 private:
@@ -135,5 +138,29 @@ protected:
     }
 
 };  
+
+
+#include "linbox/vector/vector-traits.h"
+
+
+    // Specialization for LightContainer
+template <class Element>
+struct VectorTraits< LightContainer<Element> >
+{ 
+    typedef LightContainer<Element> VectorType;
+    typedef typename VectorCategories::DenseVectorTag VectorCategory; 
+};
+
+    // Specialization for LightContainer of pairs of size_t and elements
+template <class Element> 
+struct VectorTraits< LightContainer< std::pair<size_t, Element> > >
+{ 
+    typedef LightContainer< std::pair<size_t, Element> > VectorType;
+    typedef typename VectorCategories::SparseSequenceVectorTag VectorCategory; 
+    
+    static void sort (VectorType& v) { std::stable_sort(v.begin(), v.end(), SparseSequenceVectorPairLessThan<Element>()); }
+};
+
+}
 
 #endif
