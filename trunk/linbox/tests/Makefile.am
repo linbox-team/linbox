@@ -52,6 +52,7 @@ BASIC_TESTS =  			\
 	test-block-ring			\
         test-moore-penrose      \
         test-randiter-nonzero   \
+        test-qlup               \
         test-rank               \
         test-scalar-matrix      \
         test-sparse             \
@@ -330,6 +331,10 @@ test_det_SOURCES = 			\
 
 test_rank_SOURCES =			\
 	test-rank.C			\
+	test-common.h
+
+test_qlup_SOURCES =			\
+	test-qlup.C			\
 	test-common.h
 
 test_solve_SOURCES =			\

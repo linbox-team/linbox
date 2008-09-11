@@ -30,6 +30,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/field/archetype.h"
 #include "linbox/vector/vector-domain.h"
+#include "linbox/matrix/sparse.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/matrix/archetype.h"
 #include "linbox/solutions/methods.h"
@@ -146,8 +147,18 @@ namespace LinBox
                 Computing the rank of sparse matrices over finite fields.
                 In Ganzha et~al. CASC'2002, pages 47--62.]
             */
+	template <class Matrix, class Perm>
+	unsigned long& QLUPin(unsigned long &rank,
+                              Element& determinant,
+                              Perm          &Q,
+                              Matrix	    &LigneL,
+                              Matrix        &LigneA,
+                              Perm	    &P,
+                              unsigned long Ni, 
+                              unsigned long Nj);
+
 	template <class Matrix>
-	unsigned long& InPlaceLinearPivoting (unsigned long &rank,
+	unsigned long& InPlaceLinearPivoting(unsigned long &rank,
                                               Element& determinant,
                                               Matrix        &A,
                                               unsigned long Ni, 
@@ -195,12 +206,25 @@ namespace LinBox
             // Vector is a vector of Pair (lin_pair.h)
             //-----------------------------------------
 	template <class Vector, class D>
+	void eliminate (Element             & headpivot,
+                        Vector              &lignecourante,
+			const Vector        &lignepivot,
+			const unsigned long indcol,
+			const long indpermut,
+			const unsigned long npiv,
+			D                   &columns);
+
+	template <class Vector, class D>
 	void eliminate (Vector              &lignecourante,
 			const Vector        &lignepivot,
 			const unsigned long &indcol,
 			const long &indpermut,
 			D                   &columns);
 
+        template <class Vector>
+        void permute (Vector              &lignecourante,
+                      const unsigned long &indcol,
+                      const long &indpermut);
             //-----------------------------------------
             // Sparse elimination using a pivot row :
             // lc <-- lc - lc[k]/lp[0] * lp 
@@ -243,14 +267,14 @@ namespace LinBox
             //------------------------------------------
 	template <class Vector, class D>
 	void SparseFindPivot (Vector &lignepivot, unsigned long &indcol, long &indpermut, D &columns, Element& determinant);
-
+	
             //------------------------------------------
             // Looking for a non-zero pivot in a row 
             // No reordering
             //------------------------------------------
 	template <class Vector>
 	void SparseFindPivot (Vector &lignepivot, unsigned long &indcol, long &indpermut, Element& determinant);
-
+	
             //------------------------------------------
             // Looking for a non-zero pivot in a row  
             // Dense search
@@ -263,5 +287,9 @@ namespace LinBox
 } // namespace LinBox
 
 #include "linbox/algorithms/gauss.inl"
+#include "linbox/algorithms/gauss-pivot.inl"
+#include "linbox/algorithms/gauss-elim.inl"
+#include "linbox/algorithms/gauss-rank.inl"
+#include "linbox/algorithms/gauss-det.inl"
 
 #endif // __GAUSS_H
