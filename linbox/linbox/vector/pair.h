@@ -1,6 +1,7 @@
-// ======================================================================= // (C) Linbox 2000
+// ======================================================================= 
+// (C) Linbox 2000
 // Pair of I and T : struct { column index, value }
-// Time-stamp: <23 May 08 13:21:05 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <11 Sep 08 14:21:05 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= 
 #ifndef _LIN_PAIR_H_
 #define _LIN_PAIR_H_

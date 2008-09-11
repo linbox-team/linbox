@@ -44,6 +44,8 @@
 #define __MATRIX_SPARSE_H
 
 #include <vector>
+#define _SP_BB_VECTOR_ std::vector
+
 #include <utility>
 #include <iostream>
 #include <algorithm>
@@ -176,7 +178,7 @@ class SparseMatrixBase
 	typedef _Element Element;
 	typedef _Row Row;
 	typedef const Row ConstRow;
-	typedef typename std::vector<Row> Rep;
+	typedef typename _SP_BB_VECTOR_<Row> Rep;
 
 	template<typename _Tp1, typename _R1 = typename Rebind<_Row,_Tp1>::other >
         struct rebind
@@ -382,7 +384,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 	typedef _Element Element;
 	typedef _Row Row;
 	typedef const Row ConstRow;
-	typedef std::vector<Row> Rep;
+	typedef _SP_BB_VECTOR_<Row> Rep;
 
 	template<typename _Tp1, typename _R1 = typename Rebind<_Row,_Tp1>::other >
         struct rebind
@@ -730,7 +732,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 	typedef _Element Element;
 	typedef _Row Row;
 	typedef const Row ConstRow;
-	typedef std::vector<Row> Rep;
+	typedef _SP_BB_VECTOR_<Row> Rep;
 
 	template<typename _Tp1, typename _R1 = typename Rebind<_Row,_Tp1>::other >
         struct rebind
@@ -1036,7 +1038,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 	typedef _Element Element;
 	typedef _Row Row;
 	typedef const Row ConstRow;
-	typedef std::vector<Row> Rep;
+	typedef _SP_BB_VECTOR_<Row> Rep;
 
 	template<typename _Tp1, typename _R1 = typename Rebind<_Row,_Tp1>::other >
         struct rebind

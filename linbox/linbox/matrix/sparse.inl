@@ -356,7 +356,7 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, Trait>
 			os << "; ";
 		}
 
-		os << "]" << std::endl;
+		os << "]";
 
 		break;
 
@@ -390,7 +390,7 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, Trait>
 			os << " ]";
 		}
 
-		os << "]" << std::endl;
+		os << "]";
 
 		break;
 
@@ -533,7 +533,7 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, VectorCategories::SparsePara
 			os << "]";
 		}
 
-		os << "]" << std::endl;
+		os << "]";
 
 		break;
 
@@ -562,7 +562,7 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, VectorCategories::SparsePara
 			os << "; ";
 		}
 
-		os << "]" << std::endl;
+		os << "]";
 
 		break;
 
@@ -590,7 +590,7 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, VectorCategories::SparsePara
 				os << ' ';
 			}
 
-			os << ']' << std::endl;
+			os << ']';
 		}
 
 		break;
