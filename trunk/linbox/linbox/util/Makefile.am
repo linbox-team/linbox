@@ -22,6 +22,7 @@ pkgincludesub_HEADERS=\
 	debug.h				\
 	error.h				\
 	commentator.h 			\
+	contracts.h 			\
 	timer.h				\
 	prime-stream.h			\
 	field-axpy.h			\

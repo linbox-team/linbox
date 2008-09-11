@@ -1,6 +1,6 @@
 // =================================================================== //
 // LightContainer : std::vector like container
-// Time-stamp: <11 Sep 08 17:16:17 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <11 Sep 08 19:13:07 Jean-Guillaume.Dumas@imag.fr> 
 // =================================================================== //
 #ifndef __Light_Container__ 
 #define __Light_Container__
@@ -8,6 +8,8 @@
 #include <iostream>
 #include <cstdlib>
 #include "linbox/util/contracts.h"
+#include "linbox/vector/vector-traits.h"
+
 
 namespace LinBox 
 {
@@ -112,11 +114,10 @@ public:
 
     friend std::ostream& operator<< (std::ostream& o, const Self_t& C) {
         o << '[';
-        for(const_iterator refs =  C.begin();
-            refs != C.end() ;
-            ++refs )
-            o << (*refs) << ' ';
-        return o << ']';
+        const_iterator refs =  C.begin();
+        for( ; refs != (C.end()-1) ; ++refs )
+            o << (*refs) << ',';
+        return o << (*refs) << ']';
     }
 
 
@@ -140,9 +141,6 @@ protected:
 };  
 
 
-#include "linbox/vector/vector-traits.h"
-
-
     // Specialization for LightContainer
 template <class Element>
 struct VectorTraits< LightContainer<Element> >
@@ -161,6 +159,6 @@ struct VectorTraits< LightContainer< std::pair<size_t, Element> > >
     static void sort (VectorType& v) { std::stable_sort(v.begin(), v.end(), SparseSequenceVectorPairLessThan<Element>()); }
 };
 
-}
+} // namespace LinBox
 
 #endif
