@@ -16,6 +16,10 @@ pkgincludesub_HEADERS = \
 	eliminator.h	eliminator.inl		\
 	gauss.h					\
 	gauss.inl				\
+	gauss-det.inl				\
+	gauss-rank.inl				\
+	gauss-elim.inl				\
+	gauss-pivot.inl				\
 	dense-container.h			\
 	cra-mpi.h				\
 	cra-kaapi.h				\

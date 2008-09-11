@@ -5,6 +5,7 @@ EXTRA_DIST=			\
 
 pkgincludesub_HEADERS=		\
 	pair.h			\
+	light_container.h			\
 	sparse.h		\
 	vector-traits.h		\
 	subvector.h		\

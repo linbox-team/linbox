@@ -91,7 +91,7 @@ namespace LinBox
                  *  UNIMOD_LH -- unimodular lower triang. Hankel
                  **/
             	enum BlackboxShape {
-                	DIAGONAL = 15, HANKEL, UNIMOD_UT, UNIMOD_LT,  UNIMOD_UH,  UNIMOD_LH,  BLKVECTOR
+                    DIAGONAL = 15, HANKEL, UNIMOD_UT, UNIMOD_LT,  UNIMOD_UH,  UNIMOD_LH,  BLKVECTOR, TRI_SUP, TRI_INF
             	};
 
             	/** Shape of a Blackbox
