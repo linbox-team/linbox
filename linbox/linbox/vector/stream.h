@@ -256,7 +256,7 @@ class RandomDenseStream<Field, _Vector, RandIter, VectorCategories::DenseVectorT
 	{
 		typename Vector::iterator i;
 
-		if (_m > 0 && _j++ >= _m)
+		if ( (_m > 0) && (_j++ >= _m) )
 			return v;
 
 		for (i = v.begin (); i != v.end (); i++)

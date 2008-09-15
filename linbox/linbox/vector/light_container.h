@@ -1,6 +1,6 @@
 // =================================================================== //
 // LightContainer : std::vector like container
-// Time-stamp: <11 Sep 08 19:13:07 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <15 Sep 08 14:11:27 Jean-Guillaume.Dumas@imag.fr> 
 // =================================================================== //
 #ifndef __Light_Container__ 
 #define __Light_Container__
@@ -79,9 +79,10 @@ public:
     }
     iterator begin() { return _container; }
     iterator end() { return _finish; }
-    Elem& front() { return *_container; }
     const_iterator begin() const { return const_iterator(_container); }
     const_iterator end() const { return const_iterator(_finish); }
+    Elem& front() { return *_container; }
+    const Elem& front() const { return *_container; }
 
     void push_back(const Elem& c) {
         STATE( size_t  oldsize = size() );
