@@ -441,7 +441,7 @@ namespace LinBox
 
 	template<class BB>
 	bool useBB(const BB& A) 
-	{  return A.coldim() > 1000 && A.rowdim() > 1000;
+	{  return (A.coldim() > 1000) && (A.rowdim() > 1000);
 	}
 
 	template<class Field>

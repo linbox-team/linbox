@@ -13,6 +13,7 @@
 #include <algorithm>
 
 // must fix this list...
+#include "linbox/algorithms/gauss.h"
 #include "linbox/algorithms/wiedemann.h"
 #include "linbox/algorithms/rational-solver.h"
 #include "linbox/algorithms/diophantine-solver.h"
@@ -103,6 +104,28 @@ namespace LinBox
 		//	return solve(x, A, b, 
 		//			typename FieldTraits<typename BB::Field>::categoryTag(), 
 		//			Method::NonBlasElimination(m)); 
+	}
+
+	template <class Vector, class Field> 
+	Vector& solvein(Vector& x, SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq>& A, const Vector& b, const Method::SparseElimination& m)
+	{
+            commentator.start ("Sparse Elimination Solve In Place", "sesolvein");
+            GaussDomain<Field> GD ( A.field() );
+            GD.solvein(x, A, b);
+            commentator.stop ("done", NULL, "sesolvein");
+            return x;
+	}
+
+	// Change of representation to be able to call the sparse elimination
+	template <class Vector, class Blackbox> 
+	Vector& solve(Vector& x, const Blackbox& A, const Vector& b, 
+                      const Method::SparseElimination& m)
+	{
+            typedef typename Blackbox::Field Field;
+            typedef SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq> SparseBB;
+            SparseBB * SpA;
+            MatrixHom::map(SpA, A, A.field());
+            return solvein(x, *SpA, b, m);
 	}
 
 	template <class Vector, class Field> 
