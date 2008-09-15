@@ -1,6 +1,6 @@
 // =================================================================== //
 // SparseElimination elimination routines
-// Time-stamp: <11 Sep 08 15:00:24 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <15 Sep 08 14:45:46 Jean-Guillaume.Dumas@imag.fr> 
 // =================================================================== //
 #ifndef __GAUSS_ELIM_INL
 #define __GAUSS_ELIM_INL
@@ -8,7 +8,7 @@
 namespace LinBox 
 {
     template <class _Field>
-    template <class Vector> void 
+    template <class Vector> inline void 
     GaussDomain<_Field>::permute (Vector              &lignecourante,
                                   const unsigned long &indcol,
                                   const long &indpermut)
@@ -89,7 +89,7 @@ namespace LinBox
 
     
     template <class _Field>
-    template <class Vector, class D> void 
+    template <class Vector, class D> inline void 
     GaussDomain<_Field>::eliminate (Vector              &lignecourante,
                                     const Vector        &lignepivot,
                                     const unsigned long &indcol,
@@ -302,7 +302,7 @@ namespace LinBox
     
 
     template <class _Field>
-    template <class Vector, class D> void  
+    template <class Vector, class D> inline void  
     GaussDomain<_Field>::eliminate (Element             &headpivot,
                                     Vector              &lignecourante,
                                     const Vector        &lignepivot,
@@ -520,7 +520,7 @@ namespace LinBox
 
 
     template <class _Field>
-    template <class Vector> void 
+    template <class Vector> inline void 
     GaussDomain<_Field>::eliminate (Vector              &lignecourante,
                                     const Vector        &lignepivot,
                                     const unsigned long &indcol,

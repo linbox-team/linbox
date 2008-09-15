@@ -1,6 +1,6 @@
 // =================================================================== //
 // SparseElimination determinant calls
-// Time-stamp: <11 Sep 08 13:27:00 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <15 Sep 08 14:45:47 Jean-Guillaume.Dumas@imag.fr> 
 // =================================================================== //
 #ifndef __GAUSS_DET_INL
 #define __GAUSS_DET_INL
@@ -8,7 +8,7 @@
 namespace LinBox 
 {
     template <class _Field>
-    template <class Matrix> typename GaussDomain<_Field>::Element& 
+    template <class Matrix> inline typename GaussDomain<_Field>::Element& 
     GaussDomain<_Field>::detin(Element        &determinant,
                                Matrix        &A,
                                unsigned long  Ni,
@@ -25,7 +25,7 @@ namespace LinBox
 
    
     template <class _Field>
-    template <class Matrix> typename GaussDomain<_Field>::Element& 
+    template <class Matrix> inline typename GaussDomain<_Field>::Element& 
     GaussDomain<_Field>::detin(Element &determinant,
                                Matrix  &A,
                                SparseEliminationTraits::PivotStrategy   reord) 
@@ -36,7 +36,7 @@ namespace LinBox
    
 
     template <class _Field>
-    template <class Matrix> typename GaussDomain<_Field>::Element& 
+    template <class Matrix> inline typename GaussDomain<_Field>::Element& 
     GaussDomain<_Field>::det(Element        &determinant,
                              const Matrix   &A,
                              SparseEliminationTraits::PivotStrategy   reord) 
@@ -45,7 +45,7 @@ namespace LinBox
     }
 
     template <class _Field>
-    template <class Matrix> typename GaussDomain<_Field>::Element& 
+    template <class Matrix> inline typename GaussDomain<_Field>::Element& 
     GaussDomain<_Field>::det(Element       &determinant,
                              const Matrix  &A,
                              unsigned long  Ni,

@@ -35,13 +35,11 @@
 
 using namespace LinBox;
 
-// tests 1 and 2 were certain diagonals - now deemed unnecessary.  -bds 2005Mar15
-/* Test 3: Rank of a random sparse matrix
+/* Test 1: LQUP decomposition of a random sparse matrix
  *
- * Constructs a random sparse matrix and computes its rank using Gaussian
- * elimination (direct and blas) and Wiedemann's algorithm. Checks that the results match.
+ * Constructs a random sparse matrix and computes its QLUP decomposition
+ * using Sparse Gaussian elimination. Checks that the results match.
  */
-
 template <class Field>
 bool testQLUP(const Field &F, size_t n, unsigned int iterations, double sparsity = 0.05) 
 {
@@ -54,15 +52,17 @@ bool testQLUP(const Field &F, size_t n, unsigned int iterations, double sparsity
 	unsigned long Nj = n;
 	typename Field::RandIter generator (F);
 
+	RandomSparseStream<Field, Sparse_Vector<typename Field::Element> > stream (F, generator, sparsity, n, n);
+
 	for (size_t i = 0; i < iterations; ++i) {
 		commentator.startIteration (i);
 
-		RandomSparseStream<Field, Sparse_Vector<typename Field::Element> > stream (F, generator, sparsity, n, n);
 		
+		stream.reset();
 
 		Blackbox A (F, stream);
 
-		std::ostream & report = commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);	
+		std::ostream & report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);	
 
 		F.write( report ) << endl; 
 		A.write( report,FORMAT_MAPLE ) << endl;
@@ -137,17 +137,90 @@ bool testQLUP(const Field &F, size_t n, unsigned int iterations, double sparsity
 	return res;
 }
 
-/* Test 4: Rank of zero and identity matrices by Wiedemann variants
+/* Test 2: LQUP solve of a random sparse matrix and a random dense vector
  *
+ * Constructs a random sparse matrix and computes its QLUP decomposition
+ * using Sparse Gaussian elimination. 
+ * Then solve using the decomposition and checks that the results match.
  */
+template <class Field>
+bool testQLUPsolve(const Field &F, size_t n, unsigned int iterations, double sparsity = 0.05) 
+{
+	bool res = true;
+	typedef SparseMatrix<Field, Sparse_Vector<typename Field::Element> > Blackbox;
 
+	commentator.start ("Testing Sparse elimination qlup solve", "testQLUPsolve", iterations);
+
+	unsigned long Ni = n;
+	unsigned long Nj = n;
+	typename Field::RandIter generator (F);
+	RandomSparseStream<Field, Sparse_Vector<typename Field::Element> > stream (F, generator, sparsity, n, n);
+		
+
+	for (size_t i = 0; i < iterations; ++i) {
+		commentator.startIteration (i);
+
+		stream.reset();
+		Blackbox A (F, stream);
+
+		std::ostream & report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);	
+
+		F.write( report ) << endl; 
+		A.write( report, FORMAT_MAPLE ) << endl;
+
+		std::vector<typename Field::Element> u(Nj), v(Ni), x(Nj), y(Ni);
+		for(typename std::vector<typename Field::Element>::iterator it=u.begin();it!=u.end();++it) 
+			generator.random (*it);
+
+		A.apply(v,u);
+
+
+		Method::SparseElimination SE;
+		SE.strategy(Specifier::PIVOT_LINEAR);
+		GaussDomain<Field> GD ( F );
+		
+		Blackbox CopyA ( A );
+
+		GD.solvein(x, A, v);
+		
+		CopyA.apply(y, x);
+        
+		VectorDomain<Field> VD(F);
+        
+		
+		if (! VD.areEqual(v,y)) {
+			res=false;
+			
+			report << "ERROR : matrix(" << v.size() << ",1,[";
+			for(typename std::vector<typename Field::Element>::const_iterator itu=v.begin(); itu!=v.end();++itu)
+				report << *itu << ',';
+			report << "]);\n[";
+			for(typename std::vector<typename Field::Element>::const_iterator itv=x.begin(); itv!=x.end();++itv)
+				report << *itv << ' ';
+			report << "]  !=  [";
+			for(typename std::vector<typename Field::Element>::const_iterator itw=y.begin(); itw!=y.end();++itw)
+				report << *itw << ' ';
+			report << "]" << std::endl;
+			
+		}
+            		
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	commentator.stop (MSG_STATUS (res), (const char *) 0, "testQLUPsolve");
+
+	return res;
+}
 
 
 int main (int argc, char **argv)
 {
 
-//     commentator.setMaxDetailLevel( 100000 );
-//     commentator.setMaxDepth( 100000 );
+	commentator.setMaxDepth (-1);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+// 	commentator.setMaxDetailLevel( 100000 );
+// 	commentator.setMaxDepth( 100000 );
    
 	bool pass = true;
 
@@ -170,24 +243,20 @@ int main (int argc, char **argv)
 	srand (time (NULL));
 
 	commentator.start("QLUP  test suite", "qlup");
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 
 	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 	<< "over Modular<uint32>" << endl; 
 	Modular<LinBox::uint32> F (q);
 	if (!testQLUP (F, n, iterations, sparsity)) pass = false;
+	if (!testQLUPsolve (F, n, iterations, sparsity)) pass = false;
+
 
 	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) 
 	<< "over Modular<double>" << endl; 
 	Modular<double> G (q);
 	if (!testQLUP (G, n, iterations, sparsity)) pass = false;
+	if (!testQLUPsolve (G, n, iterations, sparsity)) pass = false;
 
-
-// 	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) 
-// 	<< "over PID_integer" << endl; 
-//         PID_integer R;
-// 	if (!testRankMethods (R, n, iterations, sparsity)) pass = false;
 
 	commentator.stop("QLUP test suite");
 	return pass ? 0 : -1;

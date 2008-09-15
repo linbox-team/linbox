@@ -2,7 +2,7 @@
  * Copyright (C) 1999 Jean-Guillaume Dumas
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <11 Sep 08 14:57:31 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <15 Sep 08 15:02:46 Jean-Guillaume.Dumas@imag.fr> 
  *
  * See COPYING for license information.
  */
@@ -27,7 +27,7 @@
 namespace LinBox 
 {
     template <class _Field>
-    template <class Matrix, class Perm> unsigned long& 
+    template <class Matrix, class Perm> inline unsigned long& 
     GaussDomain<_Field>::QLUPin (unsigned long &rank,
                                  Element       &determinant,
                                  Perm          &Q,
@@ -168,6 +168,13 @@ namespace LinBox
 	}//for k
 
 	SparseFindPivot ( LigneA[last], rank, c, determinant);
+        if (c != -1) {
+            if ( c != (static_cast<long>(rank)-1) ) {
+                P.permute(rank-1,c);
+                for (long ll=0      ; ll < last ; ++ll)
+                    permute( LigneA[ll], rank, c);
+            }
+        }
             
         E one(last,Eone);
         LigneL[last].push_back(one);
@@ -192,7 +199,7 @@ namespace LinBox
             _F.init(determinant,0UL);
         
         integer card;
-        _F.write(commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT) 
+        _F.write(commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT) 
                  << "Determinant : ", determinant)
                  << " over GF (" << _F.cardinality (card) << ")" << std::endl;
         
@@ -205,7 +212,7 @@ namespace LinBox
 //             LigneA.write(rep << "U:= ", FORMAT_MAPLE) << ':' << std::endl;
 //             P.write(rep << "P:= ", FORMAT_MAPLE) << ':' << std::endl;
         
-        commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT) 
+        commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT) 
             << "Rank : " << rank
             << " over GF (" << card << ")" << std::endl;
         commentator.stop ("done", 0, "IPLR");
@@ -216,7 +223,7 @@ namespace LinBox
     }
         
     template <class _Field>
-    template <class Matrix> unsigned long& 
+    template <class Matrix> inline unsigned long& 
     GaussDomain<_Field>::InPlaceLinearPivoting (unsigned long &res,
                                                 Element        &determinant,
                                                 Matrix         &LigneA,
@@ -352,7 +359,7 @@ namespace LinBox
     }
 
     template <class _Field>
-    template <class Matrix> unsigned long& 
+    template <class Matrix> inline unsigned long& 
     GaussDomain<_Field>::NoReordering (unsigned long &res,
                                                        Element       &determinant,
                                        Matrix        &LigneA,
@@ -430,7 +437,7 @@ namespace LinBox
 
 
     template <class _Field>
-    template<class Vector> void 
+    template<class Vector> inline void 
     GaussDomain<_Field>::Upper (Vector        &lignecur,
                                 const Vector  &lignepivot,
                                 unsigned long  indcol,
@@ -460,7 +467,7 @@ namespace LinBox
     }
 
     template <class _Field>
-    template <class Vector> void 
+    template <class Vector> inline void 
     GaussDomain<_Field>::LU (Vector        &lignecur,
                              const Vector  &lignepivot,
                              unsigned long  indcol,
@@ -487,7 +494,7 @@ namespace LinBox
 
 
     template <class _Field>
-    template <class Matrix> unsigned long &
+    template <class Matrix> inline unsigned long &
     GaussDomain<_Field>::upperin (unsigned long &res, Matrix &A)
     {
             // Requirements : A is an array of rows
@@ -510,7 +517,7 @@ namespace LinBox
     }
 
     template <class _Field>
-    template <class Matrix> unsigned long &
+    template <class Matrix> inline unsigned long &
     GaussDomain<_Field>::LUin (unsigned long &res, Matrix &A)
     {
             // Requirements : A is an array of rows
