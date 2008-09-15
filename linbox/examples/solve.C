@@ -44,7 +44,6 @@ int main (int argc, char **argv)
     if (argc == 3) {
         invect.open (argv[2], std::ifstream::in);
         if (!invect) { 
-            cerr << "Creating a random {-1,1} vector " << endl;
             createB = true;
             ModComp = 2;
         } else {
@@ -57,7 +56,6 @@ int main (int argc, char **argv)
         ModComp = 3;
         invect.open (argv[2], std::ifstream::in);
         if (!invect) { 
-            cerr << "Creating a random {-1,1} vector " << endl;
             createB = true;
         } else
             createB = false;
@@ -70,17 +68,20 @@ int main (int argc, char **argv)
         double q = atof(argv[ModComp]);
         Field F(q);
         MatrixStream< Field > ms ( F, input );
-        SparseMatrix<Field> A (ms);  A.write(std::cout);
+        SparseMatrix<Field> A (ms);  // A.write(std::cout);
         cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
             
         std::vector<Field::Element> X( A.coldim()),B(A.rowdim());
         if (createB) {
-            for(std::vector<Field::Element>::iterator it=B.begin();
-                it != B.end(); ++it)
+            cerr << "Creating a random {-1,1} vector " << endl;
+            std::vector<Field::Element> U( A.coldim() );
+            for(std::vector<Field::Element>::iterator it=U.begin();
+                it != U.end(); ++it)
                 if (drand48() <0.5)
-                    *it = -1;
+                    F.init(*it,-1);
                 else
-                    *it = 1;
+                    F.init(*it,1);
+            A.apply(B,U);
         } else {
             for(std::vector<Field::Element>::iterator it=B.begin();
                 it != B.end(); ++it)
@@ -94,6 +95,29 @@ int main (int argc, char **argv)
                 
         Timer chrono; 
 
+            // Sparse Elimination 
+        chrono.clear();
+        chrono.start();		
+        solve (X, A, B, Method::SparseElimination());
+        chrono.stop();
+		
+        std::cout << "(Sparse Gauss) Solution is [";
+        for(std::vector<Field::Element>::const_iterator it=X.begin();it != X.end(); ++it)
+            F.write(cout, *it) << " ";
+        std::cout << "]" << std::endl;		
+        std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<<std::endl;;
+		
+           // BlasElimination
+        chrono.start();		
+        solve (X, A, B, Method::BlasElimination());
+        chrono.stop();
+		
+        std::cout << "(BlasElimination) Solution is [";
+        for(std::vector<Field::Element>::const_iterator it=X.begin();it != X.end(); ++it)
+            F.write(cout, *it) << " ";
+        std::cout << "]" << std::endl;		
+        std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<< std::endl;
+		
             // Wiedemann 
         chrono.clear();
         chrono.start();		
@@ -106,18 +130,7 @@ int main (int argc, char **argv)
         std::cout << "]" << std::endl;		
         std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<<std::endl;;
 		
-            // BlasElimination
-        chrono.start();		
-        solve (X, A, B, Method::BlasElimination());
-        chrono.stop();
-		
-        std::cout << "(BlasElimination) Solution is [";
-        for(std::vector<Field::Element>::const_iterator it=X.begin();it != X.end(); ++it)
-            F.write(cout, *it) << " ";
-        std::cout << "]" << std::endl;		
-        std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<< std::endl;
-		
-//             // Lanczos
+ //             // Lanczos
 //         chrono.clear();
 //         chrono.start();		
 //         solve (X, A, B, Method::Lanczos());
@@ -155,6 +168,7 @@ int main (int argc, char **argv)
         std::vector<PID_integer::Element> X( A.coldim()),B(A.rowdim());
 
         if (createB) {
+            cerr << "Creating a random {-1,1} vector " << endl;
             for(std::vector<PID_integer::Element>::iterator it=B.begin();
                 it != B.end(); ++it)
                 if (drand48() <0.5)

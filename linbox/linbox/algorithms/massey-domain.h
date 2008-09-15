@@ -207,7 +207,7 @@ class MasseyDomain {
 		long L = 0;
 		Element b, d, Ds;
 		long x = 1, b_deg = 0, c_deg = 0, l_deg;
-		long COMMOD = (END > 25) ? (END / 25) : 1;
+		long COMMOD = (END > 40) ? (END / 20) : 2;                
 
 		_F.assign (b, One);
 
