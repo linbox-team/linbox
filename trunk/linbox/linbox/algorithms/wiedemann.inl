@@ -86,24 +86,24 @@ namespace LinBox
 			switch (singular) {
 			case WiedemannTraits::SINGULARITY_UNKNOWN:
 				{
-					switch (solveNonsingular (A, x, b, true)) {
+                                    switch (solveNonsingular (A, x, b, true)) {
 					case OK:
-						status = OK;
-						break;
+                                            status = OK;
+                                            break;
 
 					case FAILED:
-						break;
+                                            break;
 
-					case SINGULAR:
-						commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
-							<< "System found to be singular. Reverting to nonsingular solver." << std::endl;
-						singular = WiedemannTraits::SINGULAR;
-						break;
-
-					default:
-						throw LinboxError ("Bad return value from solveNonsingular");
-					}
-					break;
+                                        case SINGULAR:
+                                            commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+                                                << "System found to be singular. Reverting to nonsingular solver." << std::endl;
+                                            tries = _traits.maxTries ();
+                                            singular = WiedemannTraits::SINGULAR;
+                                            break;
+                                        default:
+                                            throw LinboxError ("Bad return value from solveNonsingular");
+                                    }
+                                    break;
 				}
 
 			case WiedemannTraits::NONSINGULAR:
@@ -193,8 +193,11 @@ namespace LinBox
 		}
 
 		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
-		report << "Minimal polynomial coefficients: ";
-		_VD.write (report, m_A) << std::endl;
+                report << "Minimal polynomial of degree " << (m_A.size()-1) << std::endl;
+                if (m_A.size() < 50) {
+                    report << "Minimal polynomial coefficients: ";
+                    _VD.write (report, m_A) << std::endl;
+                }
 
 		if (_F.isZero (m_A.front ())) {
 			commentator.stop ("singular", "System found to be singular",
@@ -239,8 +242,15 @@ namespace LinBox
 
 			if (_VD.areEqual (z, b))
 				ret = true;
-			else
+			else {
+                            std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);	
+                            _VD.write(report << "x is ", x) << std::endl;
+                            _VD.write(report << "b is ", b) << std::endl;
+                            _VD.write(report << "Ax is " , z) << std::endl;
+                            
 				ret = false;
+                                
+                        }
 
 			commentator.stop (MSG_STATUS (ret));
 		}
