@@ -151,11 +151,22 @@ namespace LinBox
 	unsigned long& QLUPin(unsigned long &rank,
                               Element& determinant,
                               Perm          &Q,
-                              Matrix	    &LigneL,
-                              Matrix        &LigneA,
+                              Matrix	    &L,
+                              Matrix        &U,
                               Perm	    &P,
                               unsigned long Ni, 
                               unsigned long Nj);
+
+        template <class Matrix, class Perm, class Vector1, class Vector2> 
+        Vector1& solve(Vector1& x, unsigned long rank, const Perm& Q, const Matrix& L, 
+                       const Matrix& U, const Perm& P, const Vector2& b);
+        
+
+	template <class Matrix, class Vector1, class Vector2>
+	Vector1& solvein(Vector1& x,
+                         Matrix        &A,
+                         const Vector2& b);
+
 
 	template <class Matrix>
 	unsigned long& InPlaceLinearPivoting(unsigned long &rank,
@@ -286,9 +297,10 @@ namespace LinBox
 
 } // namespace LinBox
 
-#include "linbox/algorithms/gauss.inl"
 #include "linbox/algorithms/gauss-pivot.inl"
 #include "linbox/algorithms/gauss-elim.inl"
+#include "linbox/algorithms/gauss-solve.inl"
+#include "linbox/algorithms/gauss.inl"
 #include "linbox/algorithms/gauss-rank.inl"
 #include "linbox/algorithms/gauss-det.inl"
 

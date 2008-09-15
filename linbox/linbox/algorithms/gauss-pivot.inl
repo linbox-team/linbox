@@ -1,6 +1,6 @@
 // =================================================================== //
 // SparseElimination search for pivots 
-// Time-stamp: <11 Sep 08 13:44:32 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <15 Sep 08 14:42:33 Jean-Guillaume.Dumas@imag.fr> 
 // =================================================================== //
 #ifndef __GAUSS_PIVOT_INL
 #define __GAUSS_PIVOT_INL
@@ -9,7 +9,7 @@ namespace LinBox
 {
 
     template <class _Field>
-    template <class Vector, class D> void 
+    template <class Vector, class D> inline void 
     GaussDomain<_Field>::SparseFindPivot (Vector        	&lignepivot,
                                           unsigned long 	&indcol,
                                           long 		&indpermut,
@@ -80,7 +80,7 @@ namespace LinBox
 
 
     template <class _Field>
-    template <class Vector> void 
+    template <class Vector> inline void 
     GaussDomain<_Field>::SparseFindPivot (Vector &lignepivot, 
                                           unsigned long &indcol, 
                                           long &indpermut, 
@@ -102,7 +102,7 @@ namespace LinBox
     }
 
     template <class _Field>
-    template <class Vector> void 
+    template <class Vector> inline void 
     GaussDomain<_Field>::FindPivot (Vector &lignepivot, 
                                     unsigned long &k, 
                                     long &indpermut)
