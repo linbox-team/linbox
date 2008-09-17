@@ -26,6 +26,7 @@
 #define __BLAS_MATRIX_H
 
 
+#include <linbox/solutions/getentry.h>
 #include <linbox/matrix/dense.h>
 #include <linbox/matrix/dense-submatrix.h>
 #include <linbox/util/debug.h>
@@ -54,12 +55,14 @@ namespace LinBox {
 	class BlasMatrix : public DenseSubmatrix<_Element> {
 		
 	public:
-		typedef _Element Element;
+            typedef _Element Element;
+            typedef typename DenseSubmatrix<_Element>::Element * pointer;
+            
 
 	protected:        
 		size_t   _stride;
 		bool      _alloc;
-		Element    *_ptr; 		
+		pointer  _ptr; 		
 		 
 	public:
 
@@ -259,9 +262,9 @@ namespace LinBox {
 			return *this;
 		}
 		
-		Element* getPointer() const  {return _ptr;}
+		pointer getPointer() const  {return _ptr;}
 
-		Element* getWritePointer() {return _ptr;}
+		pointer getWritePointer() {return _ptr;}
 
 		size_t getStride() const {return _stride;}	
 
@@ -309,15 +312,47 @@ namespace LinBox {
 				}
 			case BlasTag::low:
 				{
-					for (size_t i=0;i<A.rowdim();++i)
-						for (size_t j=0;j<=i;++j)
-							this->setEntry(i,j,A.getEntry(i,j));
-					break;
+                                    for (size_t i=0;i<A.rowdim();++i) {
+                                        for (size_t j=0;j<=i;++j)
+                                            this->setEntry(i,j,A.getEntry(i,j));
+                                    }
+                                    
+                                    break;
 				}
 			default:
 				throw LinboxError ("Error in copy constructor of TriangularBlasMatrix (incorrect argument)");
 			}
 		}		
+
+            template<class Matrix>
+            TriangularBlasMatrix (const Matrix& A, BlasTag::uplo x=BlasTag::up, BlasTag::diag y= BlasTag::nonunit)
+                    : BlasMatrix<Element>(A.rowdim(),A.coldim()), _uplo(x), _diag(y) {
+                switch (x) {
+                    case BlasTag::up:
+                    {
+                        for (size_t i=0;i<A.rowdim();++i){
+                            for (size_t j=i;j<A.coldim();++j) {
+                                Element tmp;
+                                this->setEntry(i,j,getEntry(tmp, A,i,j));
+                            }
+                        }
+                        break;
+                    }
+                    case BlasTag::low:
+                    {
+                        for (size_t i=0;i<A.rowdim();++i) {
+                            for (size_t j=0;j<=i;++j) {
+                                Element tmp;
+                                this->setEntry(i,j,getEntry(tmp, A,i,j));
+                            }
+                        }
+                        
+                        break;
+                    }
+                    default:
+                        throw LinboxError ("Error in copy constructor of TriangularBlasMatrix (incorrect argument)");
+                }
+            }		
 
 		BlasTag::uplo getUpLo() const { return _uplo;}
 
