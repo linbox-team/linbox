@@ -444,7 +444,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 	Element       &refEntry (size_t i, size_t j);
 	const Element &getEntry (size_t i, size_t j) const;
 	Element       &getEntry (Element &x, size_t i, size_t j) const
-			{ x = getEntry (i, j); return x; }
+			{ return x = getEntry (i, j); }
 
 	typedef typename Rep::iterator RowIterator;
 	typedef typename Rep::const_iterator ConstRowIterator;
@@ -787,7 +787,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 	void           setEntry (size_t i, size_t j, const Element &value) { _A[i][j] = value; }
 	Element       &refEntry (size_t i, size_t j)                       { return _A[i][j]; }
 	const Element &getEntry (size_t i, size_t j) const;
-	Element       &getEntry (Element &x, size_t i, size_t j) const     { x = _A[i][j]; return x; }
+	Element       &getEntry (Element &x, size_t i, size_t j) const     { return x = _A[i][j];}
 
 	typedef typename Rep::iterator RowIterator;
 	typedef typename Rep::const_iterator ConstRowIterator;
@@ -1095,7 +1095,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 	Element       &refEntry (size_t i, size_t j);
 	const Element &getEntry (size_t i, size_t j) const;
 	Element       &getEntry (Element &x, size_t i, size_t j) const
-			{ x = getEntry (i, j); return x; }
+			{ return x = getEntry (i, j); }
 
 	typedef typename Rep::iterator RowIterator;
 	typedef typename Rep::const_iterator ConstRowIterator;
