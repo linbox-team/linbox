@@ -12,6 +12,8 @@
 #define __BIT_VECTOR_INL
 
 #include <stdexcept>
+#include <vector>
+
 
 #include "linbox/vector/vector-traits.h"
 #include "linbox/vector/bit-vector.h"
@@ -84,6 +86,7 @@ class BitVector::reference
     private:
 	friend class iterator;
 	friend class const_iterator;
+	friend class const_reference;
 
 	unsigned long neg_mask_word (void) { return *_word & ~(1UL << _pos); }
 	unsigned long get_bit ()           { return *_word & (1UL << _pos); }
@@ -101,6 +104,12 @@ std::ostream &operator << (std::ostream &os, BitVector::reference &a)
 class BitVector::const_reference
 {
     public:
+
+	const_reference (BitVector::reference r)
+		: _word (r._word), _pos (r._pos) {}
+
+	const_reference (std::vector<unsigned long>::iterator word, uint8 position)
+		: _word (word), _pos (position) {}
 
 	const_reference (std::vector<unsigned long>::const_iterator word, uint8 position)
 		: _word (word), _pos (position) {}
@@ -120,7 +129,8 @@ class BitVector::const_reference
 std::ostream &operator << (std::ostream &os, BitVector::const_reference &a) 
 	{ os << bool (a); return os; }
 
-class BitVector::iterator : public std::iterator <std::random_access_iterator_tag, bool>
+// class BitVector::iterator : public std::iterator <std::random_access_iterator_tag, bool>
+class BitVector::iterator : public std::_Bit_iterator
 {
     public:
 
@@ -207,6 +217,9 @@ class BitVector::iterator : public std::iterator <std::random_access_iterator_ta
 		{ return *(*this + i); }
 
 	reference operator * () 
+		{ return _ref; }
+
+	const_reference operator * () const 
 		{ return _ref; }
 
 	bool operator == (const iterator &c) const 
