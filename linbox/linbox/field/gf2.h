@@ -102,8 +102,26 @@ class GF2 : public FieldInterface
 	 * @param x field base element to contain output (reference returned).
 	 * @param y integer.
 	 */
-	Element &init (Element &x, const integer &y = 0) const
-		{ return x = long (y) & 1; }
+	Element &init (Element &x, const int &y = 0) const
+		{ return x = y & 1; }
+
+	Element &init (Element &x, const unsigned int &y = 0) const
+		{ return x = y & 1; }
+
+	Element &init (Element &x, const long &y = 0) const
+		{ return x = y & 1; }
+
+	Element &init (Element &x, const unsigned long &y = 0) const
+		{ return x = y & 1; }
+
+	Element &init (Element &x, const float &y) const
+		{ return x = static_cast<unsigned char>(y) & 1; }
+
+	Element &init (Element &x, const double &y) const
+		{ return x = static_cast<unsigned char>(y) & 1; }
+
+	Element &init (Element &x, const integer &y) const
+		{ return x = static_cast<long>(y) & 1; }
 
 	BitVector::reference init (BitVector::reference x, const integer &y = 0) const
 		{ return x = long (y) & 1; }
@@ -120,6 +138,24 @@ class GF2 : public FieldInterface
 	 */
 	integer &convert (integer &x, Element y) const
 		{ return x = y; }
+ 
+	unsigned int &convert (unsigned int &x, Element y) const
+		{ return x = static_cast<unsigned int>(y); }
+ 
+	int &convert (int &x, Element y) const
+		{ return x = static_cast<int>(y); }
+ 
+	unsigned long &convert (unsigned long &x, Element y) const
+		{ return x = static_cast<unsigned long>(y); }
+ 
+	long &convert (long &x, Element y) const
+		{ return x = static_cast<int>(y); }
+ 
+	float &convert (float &x, Element y) const
+		{ return x = static_cast<float>(y); }
+ 
+	double &convert (double &x, Element y) const
+		{ return x = static_cast<double>(y); }
  
 	/** Assignment of one field base element to another.
 	 * This function assumes both field base elements have already been

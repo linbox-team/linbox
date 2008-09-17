@@ -848,6 +848,25 @@ class MatrixDomain<GF2>
 	MatrixDomain (const GF2 &F) : _VD (F) {}
 
 	template <class Vector1, class Matrix, class Vector2>
+	Vector1 &vectorMul (Vector1 &w, const Matrix &A, const Vector2 &v) const
+        { return mulSpecialized (w, A, v, typename MatrixTraits<Matrix>::MatrixCategory ()); }
+
+	template <class Vector1, class Matrix, class Vector2>
+	Vector1 &mulSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+				 MatrixCategories::RowMatrixTag) const
+		{ return mulRowSpecialized (w, A, v, typename VectorTraits<Vector1>::VectorCategory ()); }
+	template <class Vector1, class Matrix, class Vector2>
+	Vector1 &mulSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+				 MatrixCategories::ColMatrixTag) const
+		{ return mulColSpecialized (w, A, v,
+					    typename VectorTraits<Vector1>::VectorCategory (),
+					    typename VectorTraits<Vector2>::VectorCategory ()); }
+	template <class Vector1, class Matrix, class Vector2>
+	Vector1 &mulSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+				 MatrixCategories::RowColMatrixTag) const
+		{ return mulRowSpecialized (w, A, v, typename VectorTraits<Vector1>::VectorCategory ()); }
+
+	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
 				    VectorCategories::DenseZeroOneVectorTag) const;
 	template <class Vector1, class Matrix, class Vector2>
