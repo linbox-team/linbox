@@ -104,6 +104,7 @@ class BitVector
 	typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
 	typedef iterator    pointer;
+	typedef const_iterator    const_pointer;
 
 	inline iterator                    begin      (void);
 	inline const_iterator              begin      (void) const;
