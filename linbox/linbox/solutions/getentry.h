@@ -48,7 +48,7 @@ typename BB::Field::Element& getEntry(typename BB::Field::Element& x, const BB& 
 
 // Generic BBs require use of apply.
 template <class BB> 
-typename BB::Field::Element& getEntry(typename BB::Field::Element& x, const BB& A, const size_t i, const size_t j, typename GetEntryTags::GenericBB t)
+typename BB::Field::Element& getEntry(typename BB::Field::Element& x, const BB& A, const size_t i, const size_t j, GetEntryTags::GenericBB t)
 {
 	typedef typename BB::Field Field;
 	typedef typename Field::Element Elt;
@@ -73,7 +73,7 @@ template<class Field, class Trait> struct GetEntryCategory<Diagonal<Field, Trait
 template<class Field> struct GetEntryCategory<ScalarMatrix<Field> > { typedef GetEntryTags::Local Tag; };
 
 template <class BB> 
-typename BB::Field::Element& getEntry(typename BB::Field::Element& x, const BB& A, const size_t i, const size_t j, typename GetEntryTags::Local t )
+typename BB::Field::Element& getEntry(typename BB::Field::Element& x, const BB& A, const size_t i, const size_t j, GetEntryTags::Local t )
 { return A.getEntry(x, i, j); }
 
 // Compose< Diagonal, BB > specialization
@@ -107,7 +107,7 @@ template <class Field, class T1, class T2>
 struct GetEntryCategory<Compose<Diagonal<Field, T1>,Diagonal<Field, T2> > > { typedef GetEntryTags::SpecialCDD Tag; };
 
 template <class Field, class T1, class T2> 
-typename Field::Element& getEntry(typename Field::Element& x, const Compose<Diagonal<Field,T1>, Diagonal<Field, T2> >& A, const size_t i, const size_t j, typename GetEntryTags::SpecialCDD t)
+typename Field::Element& getEntry(typename Field::Element& x, const Compose<Diagonal<Field,T1>, Diagonal<Field, T2> >& A, const size_t i, const size_t j, GetEntryTags::SpecialCDD t)
 {
     if (i != j) 
         return A.field().init(x, 0UL);
