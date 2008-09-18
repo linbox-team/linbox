@@ -2,7 +2,7 @@
  * Copyright (C) 1999 Jean-Guillaume Dumas
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <15 Sep 08 15:02:46 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <18 Sep 08 16:05:28 Jean-Guillaume.Dumas@imag.fr> 
  *
  * See COPYING for license information.
  */
@@ -152,7 +152,7 @@ namespace LinBox
                     for (ll = k+1; ll < static_cast<long>(Ni); ++ll) {
                         E hc; hc.first=rank-1;
                         eliminate (hc.second, LigneA[ll], *LigneA_k, rank, c, npiv, col_density);
-                        LigneL[ll].push_back(hc);
+                        if(! _F.isZero(hc.second)) LigneL[ll].push_back(hc);
                     }
                 }
                 
