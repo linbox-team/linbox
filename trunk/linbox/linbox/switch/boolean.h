@@ -49,6 +49,7 @@ class BooleanSwitch
 {
     public:
 
+	typedef BooleanSwitch Self_t;
 	typedef BooleanSwitchFactory Factory;
 
 	/** Constructor from an STL vector of booleans.
@@ -94,7 +95,19 @@ class BooleanSwitch
 			     typename Field::Element &x,
 			     typename Field::Element &y) const;
 
-    private:
+        template<typename _Tp1>
+        struct rebind
+        { 
+            typedef BooleanSwitch other;
+
+                // special rebind operator() with two fields, 
+                // indeed local field is not stored in the switch
+            void operator() (other *& Ap, const Self_t& A, const _Tp1& T) {
+                Ap = new other(A._s);
+            }
+        };
+    
+    protected:
 
 	bool _s;
 
