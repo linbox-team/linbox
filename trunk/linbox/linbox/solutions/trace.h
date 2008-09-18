@@ -24,10 +24,10 @@ template<class BB> struct TraceCategory;
 
 namespace TraceTags { struct Generic{}; struct Local{}; };
 
-template<class BB> struct TraceCategory		{ typedef typename TraceTags::Generic Tag; };
+template<class BB> struct TraceCategory		{ typedef TraceTags::Generic Tag; };
 
 template<class Field>
-struct TraceCategory<ScalarMatrix<Field> > 	{ typedef typename TraceTags::Local Tag; };
+struct TraceCategory<ScalarMatrix<Field> > 	{ typedef TraceTags::Local Tag; };
 
 //template<class Field, class PD>
 //struct TraceCategory<Toeplitz<Field,PD> >	{ typedef typename TraceTags::Local Tag; };
