@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* ffpack/ffpack_krylovelim.inl
- * Copyright (C) 2006 Clement Pernet
+ * Copyright (C) 2007 Clement Pernet
  *
  * Written by Clement Pernet <Clement.Pernet@imag.fr>
  *
@@ -168,6 +168,10 @@ FFPACK::SpecRankProfile (const Field& F, const size_t M, const size_t N,
 #if DEBUG
 						std::cerr<<"FAIL itere dependant intercale"<<std::endl;
 #endif
+						delete[] P;
+						delete[] Q;
+						delete[] iterates;
+						delete[] inviterates;
 						throw CharpolyFailed();
 					}
 #if DEBUG

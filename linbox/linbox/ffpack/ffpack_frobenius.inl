@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/ffpack/ffpack_charpoly_kgfast.inl
- * Copyright (C) 2006 Clement Pernet
+/* linbox/ffpack/ffpack_frobenius.inl
+ * Copyright (C) 2007 Clement Pernet
  *
  * Written by Clement Pernet <cpernet@uwaterloo.ca>
  *
@@ -48,12 +48,12 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
  			g.random( *(K + i*ldk +j) );
 	for (size_t i = 0; i < noc; ++i)
 		nzg.random (*(K + i*ldk +i));
-	
+
 	// Computing the bloc Krylov matrix [U AU .. A^(c-1) U]^T
-	for (size_t i = 1; i<c; ++i)
+	for (size_t i = 1; i<c; ++i){
 		fgemm( F, FflasNoTrans, FflasTrans,  noc, N, N, one,
 		       K+(i-1)*noc*ldk, ldk, A, lda, zero, K+i*noc*ldk, ldk);
-
+	}
 	// K2 <- K (re-ordering)
 	size_t w_idx = 0;
 	for (size_t i=0; i<noc; ++i)
@@ -63,15 +63,16 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 	// Copying K <- K2
 	for (size_t i=0; i<noc*c; ++i)
 		fcopy (F, N, (K+i*ldk), 1, K2+i*ldk, 1);
-	
+
 	size_t * Pk = new size_t[N];
-	size_t * Qk = new size_t[c*noc];
-	for (size_t i=0; i<c*noc; ++i)
+	size_t * Qk = new size_t[N];
+	for (size_t i=0; i<N; ++i)
 		Qk[i] = 0;
 	for (size_t i=0; i<N; ++i)
 		Pk[i] = 0;
-	size_t R = LUdivine(F, FflasNonUnit, FflasNoTrans, noc*c, N, K, ldk, Pk, Qk, FfpackLQUP);
-
+	
+	size_t R = LUdivine(F, FflasNonUnit, FflasNoTrans, N, N, K, ldk, Pk, Qk, FfpackLQUP);
+			
 	size_t row_idx = 0;
 	size_t i=0;
 	size_t dold = c;
@@ -85,38 +86,43 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 			// std::cerr << "FAIL in preconditionning phase:"
 			//           << " degree sequence is not monotonically not increasing"
 			// 	     << std::endl;
+			delete[] rp; delete[] K;
+			delete[] Pk; delete[] Qk; delete[] dA; delete[] dK;
 			throw CharpolyFailed();
 		}
 		dK[k] = dold = d;
 		Mk++;
 		if (d == c)
 			nb_full_blocks++;
-		if (row_idx < noc*c)
+		if (row_idx < N)
 			i = Qk[row_idx];
 	}
 
 	// Selection of the last iterate of each block
+
+	typename Field::Element * K3 = new typename Field::Element[Mk*N];
+	typename Field::Element * K4 = new typename Field::Element[Mk*N];
 	size_t bk_idx = 0;
 	for (size_t i = 0; i < Mk; ++i){
-		fcopy (F, N, (K2+i*ldk), 1, (K2 + (bk_idx + dK[i]-1)*ldk), 1);
+		fcopy (F, N, (K3+i*ldk), 1, (K2 + (bk_idx + dK[i]-1)*ldk), 1);
 		bk_idx += c;
 	}
-	typename Field::Element* K2b = K2+Mk*ldk;
+	delete[] K2;
 
 	// K <- K A^T 
-	fgemm( F, FflasNoTrans, FflasTrans, Mk, N, N, one,  K2, ldk, A, lda, zero, K2b, ldk);
+	fgemm( F, FflasNoTrans, FflasTrans, Mk, N, N, one,  K3, ldk, A, lda, zero, K4, ldk);
 
 	// K <- K P^T
-	applyP (F, FflasRight, FflasTrans, Mk, 0, R, K2b, ldk, Pk);
+	applyP (F, FflasRight, FflasTrans, Mk, 0, R, K4, ldk, Pk);
 
 	// K <- K U^-1
-	ftrsm (F, FflasRight, FflasUpper, FflasNoTrans, FflasNonUnit, Mk, R, one, K, ldk, K2b, ldk);
+	ftrsm (F, FflasRight, FflasUpper, FflasNoTrans, FflasNonUnit, Mk, R, one, K, ldk, K4, ldk);
 
 	// L <-  Q^T L
 	applyP(F, FflasLeft, FflasNoTrans, N, 0, R, K, ldk, Qk);
 
 	// K <- K L^-1
-	ftrsm (F, FflasRight, FflasLower, FflasNoTrans, FflasUnit, Mk, R, one, K, ldk, K2b, ldk);
+	ftrsm (F, FflasRight, FflasLower, FflasNoTrans, FflasUnit, Mk, R, one, K, ldk, K4, ldk);
 
 	//undoing permutation on L
 	applyP(F, FflasLeft, FflasTrans, N, 0, R, K, ldk, Qk);
@@ -125,28 +131,42 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 	size_t Ma = Mk;
 	size_t Ncurr = R;
 	size_t offset = Ncurr-1;
-	for (size_t i=Mk-1; i>=nb_full_blocks+1;  --i)
+	for (size_t i=Mk-1; i>=nb_full_blocks+1;  --i){
 		if (dK[i] >= 1){ 
 			for (size_t j = offset+1; j<R; ++j)
-				if (!F.isZero(*(K2b + i*ldk + j))){
+				if (!F.isZero(*(K4 + i*ldk + j))){
 					//std::cerr<<"FAIL C != 0 in preconditionning"<<std::endl;
+					delete[] K3; delete[] K4; delete[] K;
+					delete[] Pk; delete[] Qk; delete[] rp;
+					delete[] dA; delete[] dK;
 					throw CharpolyFailed();
 				}
 			Polynomial P (dK [i]+1);
 			F.assign(P[dK[i]], one);
 			for (size_t j=0; j < dK [i]; ++j)
-				F.neg (P [dK [i]-j-1], *(K2b + i*ldk + (offset-j)));
+				F.neg (P [dK [i]-j-1], *(K4 + i*ldk + (offset-j)));
 			frobeniusForm.push_front(P);
 			offset -= dK [i];
 			Ncurr -= dK [i];
 			Ma--;
 		}
+	}
 	Mk = Ma;
 
 	if (R<N){
-// 		std::cerr<<"Preconditionning failed; missing rank = "<<N-R
-// 			 <<" completing the Krylov matrix"
-// 			 <<std::endl;
+		for (size_t i=0; i<nb_full_blocks + 1; ++i)
+			for (size_t j=R; j<N; ++j){
+				if (!F.isZero( *(K4+i*ldk+j) )){
+					delete[] K3; delete[] K4; delete[] K;
+					delete[] Pk; delete[] Qk; delete[] rp;
+					delete[] dA; delete[] dK;
+					throw CharpolyFailed();
+				}
+			}
+		
+		//std::cerr<<"Preconditionning failed; missing rank = "<<N-R
+		//	 <<" completing the Krylov matrix"
+		//	 <<std::endl;
 		size_t Nrest = N-R;
 		typename Field::Element * K21 = K + R*ldk;
 		typename Field::Element * K22 = K21 + R;
@@ -166,7 +186,7 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 
 		// K2_ = K2_ . P^t (=  ( P A^t P^t )2_ ) 
 		applyP( F, FflasRight, FflasTrans, Nrest, 0, R, K21, ldk, Pk);
-		
+
 		// K21 = K21 . S1^-1
 		ftrsm (F, FflasRight, FflasUpper, FflasNoTrans, FflasNonUnit, Nrest, R,
 		       one, K, ldk, K21, ldk);  
@@ -187,7 +207,7 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 		polyList.clear();
 
 		// Recursive call on the complementary subspace
-		CharpolyArithProg (F, polyList, Nrest, Arec, ldarec, c);
+		CharPoly(F, polyList, Nrest, Arec, ldarec);
 		delete[] Arec;
 		frobeniusForm.merge(polyList);
 	}
@@ -206,16 +226,17 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 	
 	for (size_t i=0; i < Ncurr; ++i)
  		for (size_t j=0; j<Ma; ++j)
-			*(K+i*ldk+j) = *(Ac + i*Ma +j) = *(K2b + i + (j)*ldk);
+			*(K+i*ldk+j) = *(Ac + i*Ma +j) = *(K4 + i + (j)*ldk);
+	delete[] K4;
 
 	size_t block_idx, it_idx, rp_val;
 
 	// Main loop of the arithmetic progession
 	while ((nb_full_blocks >= 1) && (Mk > 1)) {
 		delete[] K;
-		delete[] K2;
+		delete[] K3;
 		K = new typename Field::Element[Ncurr*Ma];
-		K2 = new typename Field::Element[Ncurr*Ma];
+		K3 = new typename Field::Element[Ncurr*Ma];
 		ldk = Ma;
  
 		// Computation of the rank profile
@@ -224,9 +245,18 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 				*(Arp + j*ldarp + Ncurr-i-1) = *(Ac + i*ldac + j);
 		for (size_t i=0; i<2*Ncurr; ++i)
 			rp[i] = 0;
-		size_t R = SpecRankProfile (F, Ma, Ncurr, Arp, ldarp, deg-1, rp);
+		size_t R;
+		try{
+			R = SpecRankProfile (F, Ma, Ncurr, Arp, ldarp, deg-1, rp);
+		} catch (CharpolyFailed){
+			delete[] Arp; delete[] Ac; delete[] K; delete[] K3;
+			delete[] rp; delete[] dA; delete[] dK;
+			throw CharpolyFailed();
+		}
 		if (R < Ncurr){
 			//std::cerr<<"FAIL R<Ncurr"<<std::endl;
+			delete[] Arp; delete[] Ac; delete[] K; delete[] K3;
+			delete[] rp; delete[] dA; delete[] dK;
 			throw CharpolyFailed();
 		}
 
@@ -241,6 +271,8 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 			do {g++; rp_val++; it_idx++;}
 			while ( /*(g<Ncurr ) &&*/ (rp[g] == rp_val) && (it_idx < deg ));
 			if ((block_idx)&&(it_idx > dK[block_idx-1])){
+				delete[] Arp; delete[] Ac;delete[] K; delete[] K3;
+				delete[] rp; delete[] dA; delete[] dK;
 				throw CharpolyFailed();
 				//std::cerr<<"FAIL d non decroissant"<<std::endl;
 				//exit(-1);
@@ -269,10 +301,10 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 			pos += dA[i];
 		}
 
-		// Copying K2 <- K
+		// Copying K3 <- K
 		for (size_t i=0; i<Mk; ++i)
-			fcopy (F, Ncurr, K2+i, ldk, K+i, ldk);
-		CompressRowsQK (F, Mk, K2 + nb_full_blocks*(deg-1)*ldk, ldk,
+			fcopy (F, Ncurr, K3+i, ldk, K+i, ldk);
+		CompressRowsQK (F, Mk, K3 + nb_full_blocks*(deg-1)*ldk, ldk,
 				Arp, ldarp, dK+nb_full_blocks, deg, Mk-nb_full_blocks);
 
 		// K <- PA K
@@ -312,18 +344,18 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 		// K <- K^-1 K
 		size_t *P=new size_t[Mk];
 		size_t *Q=new size_t[Mk];
-		if (LUdivine (F, FflasNonUnit, FflasNoTrans, Mk, Mk , K2 + (Ncurr-Mk)*ldk, ldk, P, Q, FfpackLQUP) < Mk){
+		if (LUdivine (F, FflasNonUnit, FflasNoTrans, Mk, Mk , K3 + (Ncurr-Mk)*ldk, ldk, P, Q, FfpackLQUP) < Mk){
 			// should never happen (not a LAS VEGAS check)
 			//std::cerr<<"FAIL R2 < MK"<<std::endl;
 			//			exit(-1);
 		}
 		ftrsm (F, FflasLeft, FflasLower, FflasNoTrans, FflasUnit, Mk, Mk, one,
-		       K2 + (Ncurr-Mk)*ldk, ldk, K+(Ncurr-Mk)*ldk, ldk);
+		       K3 + (Ncurr-Mk)*ldk, ldk, K+(Ncurr-Mk)*ldk, ldk);
 		ftrsm (F, FflasLeft, FflasUpper, FflasNoTrans, FflasNonUnit, Mk, Mk, one,
-		       K2+(Ncurr-Mk)*ldk, ldk, K+(Ncurr-Mk)*ldk, ldk);
+		       K3+(Ncurr-Mk)*ldk, ldk, K+(Ncurr-Mk)*ldk, ldk);
 		applyP (F, FflasLeft, FflasTrans, Mk, 0, Mk, K+(Ncurr-Mk)*ldk,ldk, P);
 		fgemm (F, FflasNoTrans, FflasNoTrans, Ncurr-Mk, Mk, Mk, mone,
-		       K2, ldk, K+(Ncurr-Mk)*ldk,ldk, one, K, ldk);
+		       K3, ldk, K+(Ncurr-Mk)*ldk,ldk, one, K, ldk);
 		delete[] P;
 		delete[] Q;
 		
@@ -356,13 +388,15 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 			for (size_t j=0; j<nb_full_blocks+1; ++j){
 				if (!F.isZero( *(K+i*ldk+j) )){
 					//std::cerr<<"FAIL C != 0"<<std::endl;
+					delete[] rp; delete[] Arp; delete[] Ac;
+					delete[] K; delete[] K3;
+					delete[] dA; delete[] dK;
 					throw CharpolyFailed();
 				}
 			}
 		
 		// A <- K
-		delete[] Ac;
-		delete[] Arp;
+		delete[] Ac; delete[] Arp;
 		Ac = new typename Field::Element[Ncurr*Mk];
 		ldac = Mk;
 		Arp = new typename Field::Element[Ncurr*Mk];
@@ -380,13 +414,8 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 	for (size_t j=0; j < dK[0]; ++j)
 		F.neg( Pl[j], *(K  + j*ldk));
 	frobeniusForm.push_front(Pl);
-	delete[] rp;
-	delete[] Arp;
-	delete[] Ac;
-	delete[] K;
-	delete[] K2;
-	delete[] dA;
-	delete[] dK;
+	delete[] rp; delete[] Arp; delete[] Ac; delete[] K; delete[] K3;
+	delete[] dA; delete[] dK;
 	return frobeniusForm;
 }
 
