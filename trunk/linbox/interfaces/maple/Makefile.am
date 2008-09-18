@@ -9,7 +9,7 @@ lib_LTLIBRARIES=liblbmaple.la
 
 liblbmaple_la_SOURCES= lb-maple.C
 
-liblbmaple_la_LDFLAGS=$(GMP_LIBS) $(NTL_LIBS) $(BLAS_LIBS) $(MAPLE_LIBS) $(GIVARO_LIBS) $(top_srcdir)/interfaces/driver/liblbdriver.la -Wl,-zmuldefs
+liblbmaple_la_LDFLAGS=$(GIVARO_LIBS) $(GMP_LIBS) $(NTL_LIBS) $(BLAS_LIBS) $(MAPLE_LIBS) $(top_srcdir)/interfaces/driver/liblbdriver.la -Wl,-zmuldefs
 
 pkginclude_HEADERS =lb-maple.h lb-maple-utilities.h
 
