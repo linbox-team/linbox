@@ -25,6 +25,7 @@ BASIC_HDRS =			\
 	gf2.h			\
 	gf2.inl			\
 	hom.h			\
+	map.h			\
 	PIR-modular-int.h	\
 	PIR-modular-int32.h	\
 	local2_32.h		\

@@ -7,6 +7,7 @@ BASIC_HDRS =			\
 	hilbert.h		\
 	compose.h		\
 	permutation.h		\
+	squarize.h		\
 	sparse1.h		\
 	sparse.h		\
 	sparse.inl		\

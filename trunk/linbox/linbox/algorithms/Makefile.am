@@ -18,8 +18,10 @@ pkgincludesub_HEADERS = \
 	gauss.inl				\
 	gauss-det.inl				\
 	gauss-rank.inl				\
+	gauss-solve.inl				\
 	gauss-elim.inl				\
 	gauss-pivot.inl				\
+	triangular-solve.h			\
 	dense-container.h			\
 	cra-mpi.h				\
 	cra-kaapi.h				\
