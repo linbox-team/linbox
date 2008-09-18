@@ -26,7 +26,7 @@ liblbdriver_la_SOURCES= lb-element.C 	\
 			lb-charpoly.C 	\
 			lb-solve.C 	
 
-liblbdriver_la_LDFLAGS=$(GMP_LIBS) $(NTL_LIBS) $(BLAS_LIBS) $(GIVARO_LIBS) $(top_srcdir)/linbox/liblinbox.la -Wl,-zmuldefs
+liblbdriver_la_LDFLAGS=$(GIVARO_LIBS) $(GMP_LIBS) $(NTL_LIBS) $(BLAS_LIBS) $(top_srcdir)/linbox/liblinbox.la -Wl,-zmuldefs
 
 pkginclude_HEADERS=\
 		lb-driver.h	\

@@ -12,5 +12,5 @@ pkginclude_HEADERS = linbox-sage.h
 
 #liblinboxsage_la_LIBADD = -llinbox $(BLAS_LIBS)
 
-liblinboxsage_la_LDFLAGS = $(GMP_LIBS) $(NTL_LIBS) $(BLAS_LIBS) $(MAPLE_LIBS) $(GIVARO_LIBS)  -version-info 0:0:0 #-Wl,-zmuldefs
+liblinboxsage_la_LDFLAGS =  $(GIVARO_LIBS) $(GMP_LIBS) $(NTL_LIBS) $(BLAS_LIBS) $(MAPLE_LIBS)  -version-info 0:0:0 #-Wl,-zmuldefs
 endif
