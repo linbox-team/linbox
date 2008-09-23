@@ -30,7 +30,7 @@ AC_ARG_WITH(givaro,
 	     fi],
 	     [GIVARO_HOME_PATH="${DEFAULT_CHECKING_PATH}"])
 
-min_givaro_version=ifelse([$1], ,3.2.10,$1)
+min_givaro_version=ifelse([$1], ,3.2.12,$1)
 
 
 dnl Check for existence
