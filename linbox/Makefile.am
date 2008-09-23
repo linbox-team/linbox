@@ -12,4 +12,4 @@ examples:examples/dot-product
 
 bin_SCRIPTS=linbox-config
 
-VERSION=1.1.6rc0
+VERSION=1.1.6

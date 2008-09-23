@@ -1,6 +1,6 @@
 AC_PREREQ(2.50)
 #AC_INIT(linbox/linbox.doxy)
-AC_INIT(linbox, 1.1.6rc0,linbox-use@googlegroups.com) 
+AC_INIT(linbox, 1.1.6,linbox-use@googlegroups.com) 
 AM_INIT_AUTOMAKE([1.8 gnu no-dependencies])
 AM_CONFIG_HEADER([config.h])
 AX_PREFIX_CONFIG_H(linbox/linbox-config.h, __LINBOX)
@@ -130,7 +130,6 @@ echo ' GIVARO version 3.2.10 or greater is required for this library to compile.
 echo ' Please make sure GIVARO is installed and specify its location with the'
 echo ' option --with-givaro=<prefix> when running configure.'
 echo '*******************************************************************************'
-exit 1
 exit 1
 ])
 LB_CHECK_SACLIB
