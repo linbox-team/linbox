@@ -362,7 +362,8 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 10;
-	static integer q = 2147483647U;
+	//static integer q = 2147483647U;
+	static integer q = 1000003; // ok for both Modular<int> and Modular<double>
 	static int iterations = 1;
 	static int numVectors = 1;
 	static int k = 3;
@@ -385,8 +386,9 @@ int main (int argc, char **argv)
 // /////////////// finite field part //////////////////
 	if (q > 5 && q % 2 != 0 && q % 3 != 0 && q % 5 != 0 )
 	{
-	typedef Modular<LinBox::uint32> Field;
-// 	typedef Modular<double> Field;
+	//typedef Modular<LinBox::uint32> Field;
+	//typedef Modular<int> Field;
+	typedef Modular<double> Field;
 	Field F (q);
 	srand (time (NULL));
 
