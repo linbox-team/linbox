@@ -422,6 +422,16 @@ namespace LinBox
 
 		//@} Implementation-Specific Methods
     
+		template <class Vector>
+		Vector& random(Vector& v)
+		{
+			typename Field::RandIter r(field());
+
+			typedef typename Vector::iterator iterator;
+			for (iterator p = v.begin(); p != v.end(); ++p) r.random(*p);
+			return v;
+		}
+
 	protected:
 
 		// Specialized function implementations

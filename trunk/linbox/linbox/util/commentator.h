@@ -83,13 +83,6 @@ namespace LinBox
 	class MessageClass;
 	class Commentator;
 
-	// Utility object needed for associative containers
-	struct LessThanString
-	{
-		bool operator () (const char *str1, const char *str2) const 
-			{ return strcmp (str1, str2) < 0; }
-	};
-
 	// \class ActivityState commentator.h linbox/util/commentator.h
 	/** 
 	 * \brief used by commentator
@@ -527,9 +520,10 @@ namespace LinBox
 
 		/** Use this stream to disable a message class entirely
 		 */
-		std::ostream cnull;
+		std::ofstream cnull;
 
 	    private:
+		/*
 		// Null std::ostream prints nothing
 		struct nullstreambuf : public std::streambuf {
 			nullstreambuf() {};
@@ -540,6 +534,7 @@ namespace LinBox
 			std::streamsize showmanyc () {return 0;}
 			void imbue(const std::locale &loc) {}
 		};
+		*/
 
 	    protected:
 		struct StepsAndTime {
@@ -566,7 +561,7 @@ namespace LinBox
 
 		std::stack<Activity *>           _activities;      // Stack of activity structures
 
-		std::map<const char *, MessageClass *, LessThanString>
+		std::map<const char *, MessageClass *>
 			                         _messageClasses;
 		EstimationMethod                 _estimationMethod;     // Activity estimator
 
@@ -667,7 +662,7 @@ namespace LinBox
 		bool isPrinted (unsigned long depth, unsigned long level, const char *fn = (const char *) 0);
 
 	    private:
-		typedef std::map <const char *, std::list<std::pair <unsigned long, unsigned long> >, LessThanString> Configuration;
+		typedef std::map <const char *, std::list<std::pair <unsigned long, unsigned long> > > Configuration;
 
 		class smartStreambuf : public std::streambuf 
 		{
@@ -742,7 +737,8 @@ namespace LinBox
 
 	class Commentator {
 	    public: 
-		inline Commentator () : cnull (new nullstreambuf) {}
+		//inline Commentator () : cnull (new nullstreambuf) {}
+		inline Commentator () : cnull ("/dev/null") {}
 		inline  ~Commentator () {}
 		inline void start (const char *description, const char *fn = (const char *) 0, unsigned long len = 0) {}
 		inline void startIteration (unsigned int iter, unsigned long len = 0) {}
@@ -799,9 +795,10 @@ namespace LinBox
 		inline void report (const char *msg, long msglevel, const char *msgclass) {}
 		inline bool printed (long msglevel, const char *msgclass) { return false; }
 
-		std::ostream cnull;
+		std::ofstream cnull;
 
 	    private:
+		/*
 		// Null std::ostream prints nothing
 		struct nullstreambuf : public std::streambuf {
 			nullstreambuf () {};
@@ -812,6 +809,7 @@ namespace LinBox
 			inline std::streamsize showmanyc () { return 0; }
 			inline void imbue (const std::locale &loc) {}
 		};
+		*/
 
 		MessageClass _msgcls;
 	};
