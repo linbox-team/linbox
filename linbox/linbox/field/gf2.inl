@@ -194,9 +194,6 @@ class VectorDomain<GF2> : private virtual VectorDomainBase<GF2>, private DotProd
 		: VectorDomainBase<GF2> (F), DotProductDomain<GF2> (F)
 	{}
 
-    protected:
-
-// -bds: some kind of permissiveness allowed this to work?
 
 	// Specialized function implementations
 	template <class Vector> 
@@ -1031,7 +1028,6 @@ class Diagonal<GF2, VectorTraits<Vector<GF2>::Dense>::VectorCategory>
 namespace LinBox 
 { 
 // Specialization of Gauss Domain for GF2
-        template <>
 	template <class Matrix>
 	unsigned long& GaussDomain<GF2>::InPlaceLinearPivoting (unsigned long &rank,
                                                                 Element       &determinant,
