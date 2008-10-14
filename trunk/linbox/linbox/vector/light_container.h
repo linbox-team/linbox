@@ -112,7 +112,7 @@ public:
     }
     
     
-
+/*
     friend std::ostream& operator<< (std::ostream& o, const Self_t& C) {
         o << '[';
         const_iterator refs =  C.begin();
@@ -120,6 +120,21 @@ public:
             o << (*refs) << ',';
         return o << (*refs) << ']';
     }
+    friend std::ostream& operator<< (std::ostream& o, const Self_t& C) {
+        o << '[';
+        for(const_iterator refs =  C.begin(); refs != C.end() ; ++refs )
+            o << (*refs) << ',';
+        return o << ']';
+    }
+*/
+    friend std::ostream& operator<< (std::ostream& o, const Self_t& C) {
+        o << '[';
+        for(size_t i=0; i<(C.size()-1); ++i) 
+            o << C[i] << ',';
+        return o << C[C.size()-1] << ']';
+    }
+
+
 
 
 protected:
