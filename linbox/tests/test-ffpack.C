@@ -337,7 +337,11 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations) {
 	
 		for (size_t i=0; i<m; ++i){
 			for (size_t j = 0; j < i; ++j)
-				F.assign (*(L+i*m+j), *(A+i*n+j) );
+				if (j<n)
+					F.assign (*(L+i*m+j), *(A+i*n+j) );
+				else
+					F.assign (*(L+i*m+j), zero );
+					    
 			for (size_t j = i; j < m; ++j)
 				F.assign (*(L+i*m+j), zero );
 		}
@@ -347,7 +351,8 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations) {
 			F.assign( *(L+i*m+i), one);
 		for (size_t i=0; i<m; ++i){
 			for (size_t j=0; j<i; ++j)
-				F.assign( *(U+i*n+j), zero );
+				if (j<n)
+					F.assign( *(U+i*n+j), zero );
 			for (size_t j=i; j<n; ++j)
 				F.assign( *(U+i*n+j), *(A+i*n+j) );
 		}
