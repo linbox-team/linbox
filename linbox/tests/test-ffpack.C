@@ -337,14 +337,14 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations) {
 	
 		for (size_t i=0; i<m; ++i){
 			for (size_t j = 0; j < i; ++j)
-				F.assign (*(L+i*n+j), *(A+i*n+j) );
-			for (size_t j = i; j < n; ++j)
-				F.assign (*(L+i*n+j), zero );
+				F.assign (*(L+i*m+j), *(A+i*n+j) );
+			for (size_t j = i; j < m; ++j)
+				F.assign (*(L+i*m+j), zero );
 		}
 		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, m, 
 				  0, r, L, m, Q);
 		for (size_t i=0; i<m; ++i)
-			F.assign( *(L+i*n+i), one);
+			F.assign( *(L+i*m+i), one);
 		for (size_t i=0; i<m; ++i){
 			for (size_t j=0; j<i; ++j)
 				F.assign( *(U+i*n+j), zero );
@@ -754,11 +754,13 @@ int main(int argc, char** argv){
 	bool pass = true;
 
 	static size_t n = 130;
+	static size_t m = 130;
 	static integer q = 65521;
 	static int iterations =1;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN.",       TYPE_INT,     &n },
+		{ 'n', "-n N", "Set dimension of test matrices to MxN.",       TYPE_INT,     &n },
+		{ 'm', "-m M", "Set dimension of test matrices to MxN.",       TYPE_INT,     &m },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q }, 
 		{ 'i', "-i I", "Perform each test for I iterations.",           TYPE_INT,     &iterations },
 		{ '\0' }
@@ -774,14 +776,14 @@ int main(int argc, char** argv){
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	commentator.start("ffpack test suite", "ffpack");
 
- 	if (!testLUdivine (F, n,n, iterations)) pass=false;
- 	if (!testRank (F, n, iterations))   pass = false;   
- 	if (!testDet (F, n, iterations))   pass = false;   
-  	if (!testTURBO (F, n, iterations))   pass = false;   
-  	if (!testapplyP  (F, n, iterations)) pass = false;
-  	if (!testInv  (F, n, iterations)) pass = false;
-  	if (!testMinPoly (F,n,iterations)) pass=false;
-	if (!testCharPoly (F,n,iterations)) pass=false;
+ 	if (!testLUdivine (F, m,n, iterations)) pass=false;
+  	if (!testRank (F, n, iterations))   pass = false;   
+  	if (!testDet (F, n, iterations))   pass = false;   
+   	if (!testTURBO (F, n, iterations))   pass = false;   
+   	if (!testapplyP  (F, n, iterations)) pass = false;
+   	if (!testInv  (F, n, iterations)) pass = false;
+   	if (!testMinPoly (F,n,iterations)) pass=false;
+ 	if (!testCharPoly (F,n,iterations)) pass=false;
 	
 	commentator.stop(MSG_STATUS(pass),"ffpack test suite");
     
