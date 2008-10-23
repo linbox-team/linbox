@@ -736,7 +736,6 @@ public:
 			
 			size_t R = LUdivine (F, FflasNonUnit, FflasTrans, M, N, A, lda, P, Qt);
 			
-			write_field (F,cerr<<"LU="<<endl,A,M,N,lda);
 			ldn = M;
 			NSdim = M-R;
 			NS = new typename Field::Element [NSdim*ldn];
@@ -750,8 +749,6 @@ public:
 					F.assign (*(NS+i*ldn+j), zero);
 				F.assign (*(NS + i*ldn + i+R), one);
 			}
-			std::cerr<<"NSdim, M = "<<NSdim<<" "<<M<<std::endl;
-			write_field (F,cerr<<"NS="<<endl,NS,NSdim,M,ldn);
  			applyP (F, FflasRight, FflasNoTrans, NSdim, 0, R, NS, ldn, P);
 			delete [] P;
 			delete [] Qt;
