@@ -683,10 +683,86 @@ public:
 		}	
  	}
 
+
+	/** NullSpaceBasis
+	 * Computes a basis of the Left/Right nullspace of the matrix A
+	 * return the dimension of the nullspace.
+	 * 
+	 * @param A: input matrix of dimension M x N, A is modified
+	 * @param NS: output matrix of dimension N x NSdim (allocated here)
+	 * @param NSdim: the dimension of the Nullspace (N-rank(A))
+	 * 
+	 */
+	template <class Field>
+	static size_t NullSpaceBasis (const Field& F, const FFLAS_SIDE Side,
+				      const size_t M, const size_t N,
+				      typename Field::Element* A, const size_t lda,
+				      typename Field::Element*& NS, size_t& ldn,
+				      size_t& NSdim){
+
+		typename Field::Element one, zero,mone;
+		F.init(one, 1.0);
+		F.init(zero, 0.0);
+		F.neg(mone, one);
+		
+		if (Side == FflasRight) { // Right NullSpace
+			size_t* P = new size_t[N];
+			size_t* Qt = new size_t[M];
+
+			size_t R = LUdivine (F, FflasNonUnit, FflasNoTrans, M, N, A, lda, P, Qt);
+
+			ldn = N-R;
+			NSdim = ldn;
+			NS = new typename Field::Element [N*ldn];
+
+			for (size_t i=0; i<R; ++i)
+				fcopy (F, ldn, NS + i*ldn, 1, A + R + i*lda, 1);
+
+ 			ftrsm (F, FflasLeft, FflasUpper, FflasNoTrans, FflasNonUnit, R, ldn,
+ 			       mone, A, lda, NS, ldn);
+
+			for (size_t i=R; i<N; ++i){
+				for (size_t j=0; j < ldn; ++j)
+					F.assign (*(NS+i*ldn+j), zero);
+				F.assign (*(NS + i*ldn + i-R), one);
+			}
+ 			applyP (F, FflasLeft, FflasTrans, NSdim, 0, R, NS, ldn, P);
+			delete [] P;
+			delete [] Qt;
+			return N-R;
+		} else { // Left NullSpace
+		 	size_t* P = new size_t[M];
+			size_t* Qt = new size_t[N];
+			
+			size_t R = LUdivine (F, FflasNonUnit, FflasTrans, M, N, A, lda, P, Qt);
+			
+			write_field (F,cerr<<"LU="<<endl,A,M,N,lda);
+			ldn = M;
+			NSdim = M-R;
+			NS = new typename Field::Element [NSdim*ldn];
+			for (size_t i=0; i<NSdim; ++i)
+				fcopy (F, R, NS + i*ldn, 1, A + (R + i)*lda, 1);
+ 			ftrsm (F, FflasRight, FflasLower, FflasNoTrans, FflasNonUnit, NSdim, R,
+			       mone, A, lda, NS, ldn);
+
+			for (size_t i=0; i<NSdim; ++i){
+				for (size_t j=R; j < M; ++j)
+					F.assign (*(NS+i*ldn+j), zero);
+				F.assign (*(NS + i*ldn + i+R), one);
+			}
+			std::cerr<<"NSdim, M = "<<NSdim<<" "<<M<<std::endl;
+			write_field (F,cerr<<"NS="<<endl,NS,NSdim,M,ldn);
+ 			applyP (F, FflasRight, FflasNoTrans, NSdim, 0, R, NS, ldn, P);
+			delete [] P;
+			delete [] Qt;
+			return N-R;
+		}
+	}
+		
 	/** RowRankProfile
 	 * Computes the row rank profile of A.
 	 *
-	 * @param A: input matrix of dimension 
+	 * @param A: input matrix of dimension M x N
 	 * @param rklprofile: return the rank profile as an array of row indexes, of dimension r=rank(A)
 	 *
 	 * rkprofile is allocated during the computation.
