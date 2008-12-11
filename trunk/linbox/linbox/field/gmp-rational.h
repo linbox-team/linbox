@@ -637,6 +637,7 @@ class GMPRationalField : public FieldInterface
 
 }; // class GMPRationalField
 
+/*  use GMPRationalField::read() and GMPRationalField::write(), not these operators.
 std::ostream &operator << (std::ostream &os, GMPRationalElement &elt)
 {
 	GMPRationalField field;
@@ -652,6 +653,7 @@ std::istream &operator >> (std::istream &is, GMPRationalElement &elt)
 	field.read (is, elt);
 	return is;
 }
+*/
 
 } // namespace LinBox
 
