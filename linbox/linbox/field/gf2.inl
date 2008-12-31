@@ -1024,6 +1024,7 @@ class Diagonal<GF2, VectorTraits<Vector<GF2>::Dense>::VectorCategory>
 
 
 
+#if 0
 #include <linbox/algorithms/gauss.h>
 namespace LinBox 
 { 
@@ -1040,5 +1041,6 @@ namespace LinBox
 }
 
 } // namespace LinBox
+#endif //0
 
 #endif // __FIELD_GF2_INL

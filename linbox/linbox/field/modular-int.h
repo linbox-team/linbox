@@ -103,7 +103,7 @@ namespace LinBox
 
 		Modular(const Modular<int>& mf) : modulus(mf.modulus),modulusinv(mf.modulusinv),_two64(mf._two64){}
 
-		const Modular &operator=(const Modular<int> &F) {
+		Modular &operator=(const Modular<int> &F) {
 			modulus = F.modulus;
 			modulusinv = F.modulusinv;
 			_two64 = F._two64;

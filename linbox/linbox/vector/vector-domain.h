@@ -64,6 +64,12 @@ namespace LinBox
 			: _F (F), accu(F)
 		{}
 
+		VectorDomainBase& operator= (const VectorDomainBase& VD)
+		{	_F = VD._F;
+			accu = VD.accu;
+			return *this;
+		}
+
 	protected:
 		Field _F;
 		mutable FieldAXPY<Field> accu;
@@ -138,7 +144,7 @@ namespace LinBox
 		 * Assigns VectorDomain object MD to field.
 		 * @param  MD VectorDomain object.
 		 */
-		VectorDomain &operator = (const VectorDomain &VD) const
+		VectorDomain &operator = (const VectorDomain &VD) 
 			{ VectorDomainBase<Field>::_F = VD._F; VectorDomainBase<Field>::accu = VD.accu; return *this; }
 
 		/** Retrieve the underlying field
