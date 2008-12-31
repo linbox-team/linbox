@@ -161,8 +161,8 @@ class DenseMatrix : public BlackboxInterface, public DenseMatrixBase<typename _F
 		(*this)._rep  = M._rep;
 		(*this)._rows = M._rows;
 		(*this)._cols = M._cols;
-		(*this)._MD   = M._MD;
-		const_cast<Field&>((*this)._F)    = M._F;
+		(*this)._MD   = const_cast<MatrixDomain<Field>&>(M._MD);
+		(*this)._F    = const_cast<Field&>(M._F);
 		return (*this);
 	}
 

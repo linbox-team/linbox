@@ -103,6 +103,12 @@ class MatrixDomain : public MVProductDomain<Field>
 	///
 	MatrixDomain (const Field &F) : _F (F), _VD (F) {}
 
+	MatrixDomain& operator= (const MatrixDomain& MD)
+	{ _F = MD._F; 
+	  _VD = MD._VD; 
+	  return *this; 
+	}
+
 	/** Retrieve the underlying field
 	 * Return a reference to the field that this matrix domain
 	 * object uses
@@ -965,7 +971,7 @@ class MatrixDomain : public MVProductDomain<Field>
 					       MatrixCategories::ColMatrixTag) const
 		{ return permuteColsByCol (A, P_start, P_end); }
 
-	const Field         &_F;
+	Field         _F;
 	VectorDomain<Field>  _VD;
 };
 
