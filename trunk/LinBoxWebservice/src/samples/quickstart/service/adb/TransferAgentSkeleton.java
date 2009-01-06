@@ -18,12 +18,14 @@ public class TransferAgentSkeleton implements TransferAgentSkeletonInterface
     static 
     {
 	// Loads the linbox functions that will be used
-	java.lang.System.load("/home/fendt/apache-tomcat-6.0.13/webapps/axis2/WEB-INF/services/liblinboxfunctions.so");
+	//	java.lang.System.load("/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/liblinboxfunctions.so");
     }
 
     public RankResponse rank(Rank param0)
     {
 	try{
+
+	java.lang.System.load("/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/liblinboxfunctions.so");
 	    // ONLY FOR A TEST
 	    //	    Thread.currentThread().sleep(1000 * 15);
 
@@ -37,6 +39,7 @@ public class TransferAgentSkeleton implements TransferAgentSkeletonInterface
 	    
 	    // The answer determined by the linbox function library
 	    r = linboxfunctions.rankFiles(str);
+	    // r = "test";
 
 	    // Create a new response that can be called by the client
 	    RankResponse res = new RankResponse();
@@ -68,6 +71,8 @@ public class TransferAgentSkeleton implements TransferAgentSkeletonInterface
     public EstimateRankTimeResponse estimateRankTime(EstimateRankTime param0)
     {
 	try{
+	java.lang.System.load("/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/liblinboxfunctions.so");
+
 	    String str = param0.getMatrix();
 	    str = URLDecoder.decode(str, "US-ASCII");
 
@@ -115,6 +120,8 @@ public class TransferAgentSkeleton implements TransferAgentSkeletonInterface
     public DeterminantResponse determinant(Determinant param1)
     {
 	try{
+	java.lang.System.load("/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/liblinboxfunctions.so");
+
 	    // Gets the matrix from the 'Determinant' object and converts it 
 	    // from UTF8 back to ASCII
 	    String str = param1.getMatrix();
@@ -150,6 +157,7 @@ public class TransferAgentSkeleton implements TransferAgentSkeletonInterface
     public ValenceResponse valence(Valence param2)
     {
 	try{
+	java.lang.System.load("/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/liblinboxfunctions.so");
 	    // Gets the matrix from the 'Valence' object and converts it from
 	    // UTF8 back to ASCII
 	    String str = param2.getMatrix();
@@ -185,6 +193,7 @@ public class TransferAgentSkeleton implements TransferAgentSkeletonInterface
     public TraceResponse trace(Trace param3)
     {
 	try{
+	java.lang.System.load("/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/liblinboxfunctions.so");
 	    // Gets the matrix from the 'Trace' object and converts it from
 	    // UTF8 back to ASCII
 	    String str = param3.getMatrix();
@@ -220,8 +229,9 @@ public class TransferAgentSkeleton implements TransferAgentSkeletonInterface
     public SmithNormalFormResponse smithNormalForm(SmithNormalForm param3)
     {
 	try{
-	    // Gets the matrix from the 'SmithNormalForm' object and converts it from
-	    // UTF8 back to ASCII
+	    java.lang.System.load("/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/liblinboxfunctions.so");
+	    // Gets the matrix from the 'SmithNormalForm' object and converts it
+	    //  from UTF8 back to ASCII
 	    String str = param3.getMatrix();
 	    str = URLDecoder.decode(str, "US-ASCII");
 
@@ -235,7 +245,7 @@ public class TransferAgentSkeleton implements TransferAgentSkeletonInterface
 
 	    // Set the return value to be the answer that was comoputed
 	    res.set_return(snf);
-
+	    
 	    // Return the response object
 	    return res;
 	    }

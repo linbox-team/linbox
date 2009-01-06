@@ -15,8 +15,8 @@ import java.net.*;
 import samples.quickstart.middleman.QueueRequest;
 import samples.quickstart.clients.OperationTimeEstimator;
 
-import samples.quickstart.service.adb.TransferAgentTransferAgentHttpportStub;
-import samples.quickstart.service.adb.TransferAgentTransferAgentHttpportCallbackHandler;
+import samples.quickstart.service.adb.TransferAgentStub;
+import samples.quickstart.service.adb.TransferAgentCallbackHandler;
 
 public class QueueManager implements QueueRequest
 {
@@ -40,7 +40,7 @@ public class QueueManager implements QueueRequest
     static int[] finished;
     
     // A connection to the 'Transfer Agent' web service
-    static TransferAgentTransferAgentHttpportStub stub;
+    static TransferAgentStub stub;
 
     // The number of operations in the queue;
     static int numOps;
@@ -68,14 +68,14 @@ public class QueueManager implements QueueRequest
 
 	try {
 	    // Create the stub that will connect to the LinBox web service
-	    stub = new TransferAgentTransferAgentHttpportStub("http://hmrg.pc.cis.udel.edu:2000/axis2/services/TransferAgent");
+	    stub = new TransferAgentStub("http://hmrg.pc.cis.udel.edu:2000/axis2/services/TransferAgent");
 
 	    // Create an operation time estimator object
 	    ote = new OperationTimeEstimator();
 
 	/*
 	    // For getting the machine specs from the computing machine
-	    TransferAgentTransferAgentHttpportStub.GetMachineSpecsResponse 
+	    TransferAgentTransferAgentSOAP11PortStub.GetMachineSpecsResponse 
 		res = stub.getMachineSpecs();
 
 	    specs = res.get_return();
@@ -115,16 +115,20 @@ public class QueueManager implements QueueRequest
 
 	// Do a quick time estimate
 
+	/*
 	String estimate = ote.estimateTime(matrixOp, matrix, false);
 
 	timeEstimate[ID] = 
 	    Double.parseDouble(estimate);
+
 
 	QueueEntry t = q.findEntry(ID);
 
 	t.setEstimatedComputationTime(estimate);
 
 	System.out.println("Estimate for " + ID + ":" + estimate);
+
+	*/
 
 	System.out.println("**************************************");
 	System.out.println("New entry into queue:\n");
@@ -183,19 +187,19 @@ public class QueueManager implements QueueRequest
 		    getTimeEstimate(s[1], "rank", answerLocation);
 
 		    // Creates a 'Rank' object
-		    TransferAgentTransferAgentHttpportStub.Rank req = 
-			new TransferAgentTransferAgentHttpportStub.Rank();
+		    TransferAgentStub.Rank req = 
+			new TransferAgentStub.Rank();
 
 		    // Set the parameter- the user's matrix
 		    req.setMatrix(s[1]);
 
 		    // The callback handler that will listen for the web
 		    // service to give back an answer
-		    TransferAgentTransferAgentHttpportCallbackHandler 
+		    TransferAgentCallbackHandler 
 			callBackHandler=
-			new TransferAgentTransferAgentHttpportCallbackHandler()
+			new TransferAgentCallbackHandler()
 			{
-			    public void receiveResultrank(TransferAgentTransferAgentHttpportStub.RankResponse res)
+			    public void receiveResultrank(TransferAgentStub.RankResponse res)
 			    {
 				// Store the user's answer
 				answers[answerLocation] = res.get_return();
@@ -217,7 +221,10 @@ public class QueueManager implements QueueRequest
 			    
 			    public void receiveErrorrank(Exception e)
 			    {
-				answers[answerLocation] = "Error in handler";
+				e.printStackTrace();
+
+				answers[answerLocation] = e.getMessage();
+				    //"Error in handler";
 
 				// We finished the computation
 				finished[answerLocation] = 1;
@@ -240,19 +247,19 @@ public class QueueManager implements QueueRequest
 		    processing = true;
 
 		    // Creates a 'Determinant' object
-		    TransferAgentTransferAgentHttpportStub.Determinant req = 
-		      new TransferAgentTransferAgentHttpportStub.Determinant();
+		    TransferAgentStub.Determinant req = 
+		      new TransferAgentStub.Determinant();
 
-		    // Set the parameter- the user's matrix
+		    // Set the parameter- the SOAP11Ps matrix
 		    req.setMatrix(s[1]);
 
 		    // The callback handler that will listen for the web
 		    // service to give back an answer
-		    TransferAgentTransferAgentHttpportCallbackHandler 
+		    TransferAgentCallbackHandler 
 			callBackHandler=
-			new TransferAgentTransferAgentHttpportCallbackHandler()
+			new TransferAgentCallbackHandler()
 			{
-			    public void receiveResultdeterminant(TransferAgentTransferAgentHttpportStub.DeterminantResponse res)
+			    public void receiveResultdeterminant(TransferAgentStub.DeterminantResponse res)
 			    {
 				// Store the user's answer
 				answers[answerLocation] = res.get_return();
@@ -303,19 +310,19 @@ public class QueueManager implements QueueRequest
 		    processing = true;
 
 		    // Creates a 'Trace' object
-		    TransferAgentTransferAgentHttpportStub.Trace req = 
-			new TransferAgentTransferAgentHttpportStub.Trace();
+		    TransferAgentStub.Trace req = 
+			new TransferAgentStub.Trace();
 
 		    // Set the parameter- the user's matrix
 		    req.setMatrix(s[1]);
 
 		    // The callback handler that will listen for the web
 		    // service to give back an answer
-		    TransferAgentTransferAgentHttpportCallbackHandler 
+		    TransferAgentCallbackHandler 
 			callBackHandler=
-			new TransferAgentTransferAgentHttpportCallbackHandler()
+			new TransferAgentCallbackHandler()
 			{
-			    public void receiveResulttrace(TransferAgentTransferAgentHttpportStub.TraceResponse res)
+			    public void receiveResulttrace(TransferAgentStub.TraceResponse res)
 			    {
 				// Store the user's answer
 				answers[answerLocation] = res.get_return();
@@ -362,19 +369,19 @@ public class QueueManager implements QueueRequest
 		    processing = true;
 
 		    // Creates a 'Valence' object
-		    TransferAgentTransferAgentHttpportStub.Valence req = 
-			new TransferAgentTransferAgentHttpportStub.Valence();
+		    TransferAgentStub.Valence req = 
+			new TransferAgentStub.Valence();
 
 		    // Set the parameter- the user's matrix
 		    req.setMatrix(s[1]);
 
 		    // The callback handler that will listen for the web
 		    // service to give back an answer
-		    TransferAgentTransferAgentHttpportCallbackHandler 
+		    TransferAgentCallbackHandler 
 			callBackHandler=
-			new TransferAgentTransferAgentHttpportCallbackHandler()
+			new TransferAgentCallbackHandler()
 			{
-			    public void receiveResultvalence(TransferAgentTransferAgentHttpportStub.ValenceResponse res)
+			    public void receiveResultvalence(TransferAgentStub.ValenceResponse res)
 			    {
 				// Store the user's answer
 				answers[answerLocation] = res.get_return();
@@ -421,20 +428,20 @@ public class QueueManager implements QueueRequest
 		    processing = true;
 
 		    // Creates a 'SNF' object
-		    TransferAgentTransferAgentHttpportStub.SmithNormalForm 
+		    TransferAgentStub.SmithNormalForm 
 			req = new 
-		      TransferAgentTransferAgentHttpportStub.SmithNormalForm();
+		      TransferAgentStub.SmithNormalForm();
 
 		    // Set the parameter- the user's matrix
 		    req.setMatrix(s[1]);
 
 		    // The callback handler that will listen for the web
 		    // service to give back an answer
-		    TransferAgentTransferAgentHttpportCallbackHandler 
+		    TransferAgentCallbackHandler 
 			callBackHandler=
-			new TransferAgentTransferAgentHttpportCallbackHandler()
+			new TransferAgentCallbackHandler()
 			{
-			    public void receiveResultsmithNormalForm(TransferAgentTransferAgentHttpportStub.SmithNormalFormResponse res)
+			    public void receiveResultsmithNormalForm(TransferAgentStub.SmithNormalFormResponse res)
 			    {
 				// Store the user's answer
 				answers[answerLocation] = res.get_return();
@@ -457,6 +464,7 @@ public class QueueManager implements QueueRequest
 			   public void receiveErrorsmithNormalForm(Exception e)
 			    {
 				answers[answerLocation] = "Error in handler";
+				System.out.println("Error in handler:SNF");
 			    
 				// We finished the computation
 				finished[answerLocation] = 1;
@@ -530,16 +538,16 @@ public class QueueManager implements QueueRequest
 		if (operation.equalsIgnoreCase("rank"))
 		    {
 			// Create an EstimateRankTime object
-			TransferAgentTransferAgentHttpportStub.EstimateRankTime
+			TransferAgentStub.EstimateRankTime
 			    req = new 
-			    TransferAgentTransferAgentHttpportStub.
+			    TransferAgentStub.
 			    EstimateRankTime();
 			
 			// Set the parameters
 			req.setMatrix(matrix);
 			
 			// Create the response and get the estimate
-			TransferAgentTransferAgentHttpportStub.
+			TransferAgentStub.
 			    EstimateRankTimeResponse
 			    res = stub.estimateRankTime(req);
 			

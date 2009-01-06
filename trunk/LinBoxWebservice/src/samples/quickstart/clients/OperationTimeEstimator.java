@@ -292,8 +292,8 @@ public class OperationTimeEstimator
 	String[] temp = matrix.split("%0A|%0D|\\+");
 
 	// The rows and columns of the matrix
-	int m = -1;
-	int n = -1;
+	double m = -1;
+	double n = -1;
 
 	boolean pastM = false;
 	boolean firstSet = true;
@@ -303,10 +303,10 @@ public class OperationTimeEstimator
 	int count = 1;
 
 	// The largest entry
-	int d = -1;
+	double d = -1;
 
 	// The number of non zero entries
-	double s = 0;
+	int s = 0;
 	
 	for (int j = 0; j < temp.length; j++)	
 	    {	   
@@ -315,14 +315,14 @@ public class OperationTimeEstimator
 		// Set m
 		if (m == -1 && !temp[j].equals(""))
 		    {
-			m = Integer.parseInt(temp[j]);
+			m = Double.parseDouble(temp[j]);
 			System.out.println("M is " + m);
 		    }
 		
 		// Set n
 		else if (n == -1 && m != -1 && !temp[j].equals(""))
 		    {
-			n = Integer.parseInt(temp[j]);
+			n = Double.parseDouble(temp[j]);
 			System.out.println("N is " + n);
 		    }
 		
@@ -359,9 +359,12 @@ public class OperationTimeEstimator
 			// matrix be the largest
 			else if (firstSet == true)
 			    {
+
 				firstSet = false;
-				d = Math.abs(Integer.
-					     parseInt(temp[j]));
+
+				// @@@@@@@@ ERROR HERE
+				d = Math.abs(Double.
+					     parseDouble(temp[j]));
 				count = 1;
 				
 				s++;
@@ -371,8 +374,8 @@ public class OperationTimeEstimator
 			// it is the new largest
 			else if (firstSet == false)
 			    {
-				int tempD = 
-				    Integer.parseInt(temp[j]);
+				double tempD = 
+				    Double.parseDouble(temp[j]);
 
 				if (Math.abs(tempD) > d)
 				    d = Math.abs(tempD);
@@ -389,24 +392,29 @@ public class OperationTimeEstimator
 	Double tempDouble = Math.log(d) / Math.log(2);
 	d = tempDouble.intValue() + 1;
 
-	System.out.println("D is " + d);
+
+	int d1 = (int)d;
+	int m1 = (int)m;
+	int n1 = (int)n;
+
+	System.out.println("D is " + d1);
 	System.out.println("S is " + s);
 
 
 	if (operation.equalsIgnoreCase("rank"))
-	    estimate = rankCost(m,n,s,d);
+	    estimate = rankCost(m1,n1,s,d1);
 	
 	else if (operation.equalsIgnoreCase("determinant"))
-	    estimate = detCost(m,n,s,d);
+	    estimate = detCost(m1,n1,s,d1);
 
 	else if (operation.equalsIgnoreCase("valence"))
-	    estimate = valenceCost(m,n,s,d);
+	    estimate = valenceCost(m1,n1,s,d1);
 
 	else if (operation.equalsIgnoreCase("trace"))
-	    estimate = traceCost(m,n,s,d);
+	    estimate = traceCost(m1,n1,s,d1);
 
 	else if (operation.equalsIgnoreCase("smithNormalForm"))
-	    estimate = smithformCost(m,n,s,d);
+	    estimate = smithformCost(m1,n1,s,d1);
 
 	else
 	    return "No time estimate available for " + operation;
