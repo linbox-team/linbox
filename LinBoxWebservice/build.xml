@@ -24,7 +24,7 @@
     <property name="build.dir" value="build"/>
 
     <!-- This is the name of your webapps's services directory -->
-    <property name="webapp.dir" value="/home/fendt/apache-tomcat-6.0.13/webapps/axis2/WEB-INF/services"/>
+    <property name="webapp.dir" value="/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services"/>
 
     <path id="axis2.classpath">
         <fileset dir="${AXIS2_HOME}/lib">

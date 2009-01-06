@@ -23,26 +23,16 @@
 using namespace std;
 
 #include "linbox/blackbox/dense.h"
+//#include "linbox/pipes.h" // iostream form of det, rank, etc.
 #include "linbox/solutions/det.h"
 #include "linbox/solutions/rank.h"
 #include "linbox/solutions/valence.h"
 #include "linbox/solutions/trace.h"
 #include "linbox/field/PID-integer.h"
 #include "linbox/algorithms/smith-form-adaptive.h"
+#include "linbox/util/error.h"
 
-// @@@@@@@@@@@@@@@@@@@@@@@@ Customize these variables
-
-static char dfile[100] = "/home/fendt/apache-tomcat-6.0.13/webapps/axis2/WEB-INF/services/Det_Response.txt";
-
-static char rfile[100] = "/home/fendt/apache-tomcat-6.0.13/webapps/axis2/WEB-INF/services/Rank_Response.txt";
-
-static char vfile[100] = "/home/fendt/apache-tomcat-6.0.13/webapps/axis2/WEB-INF/services/Val_Response.txt";
-
-static char tfile[100] = "/home/fendt/apache-tomcat-6.0.13/webapps/axis2/WEB-INF/services/Trace_Response.txt";
-
-static char sfile[100] = "/home/fendt/apache-tomcat-6.0.13/webapps/axis2/WEB-INF/services/SNF_Response.txt";
-
-static int MAX_ANSWER_CHARACTERS = 500000;
+static char sfile[100]= "/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/SNF_Response.txt";
 //-----------------------------------------------------------------------------
 
 bool det(std::istream& matrix_in, std::ostream& det_out)
@@ -54,50 +44,33 @@ bool det(std::istream& matrix_in, std::ostream& det_out)
 	A.read(matrix_in);
 	
 	Integers::Element det_A;
-	LinBox::det (det_A, A);
+	try {
+	  LinBox::det (det_A, A);
+	} catch (LinBox::LinboxError e) { return false; }
 	
 	ZZ.write(det_out, det_A) << std::endl;
 	
 	return true;
 }
 
-char* detFiles(char* matfile)
+const char* detFiles(char* matfile)
 {
   // Open the output stream
-  std::ofstream output (dfile);
+  ostringstream output;
 
   string s(matfile);
   istringstream iss(s);
 
   // If there is a problem, return false, otherwise return true
   if (!iss || !output || !det(iss, output))
-    return "Error in detFiles";
-
-  output.close();
+    return const_cast<char*>("Error in detFiles");
   
-  char line[MAX_ANSWER_CHARACTERS];
-  char* result;
-  
-  ifstream f(dfile);
-  
-  if (f.is_open())
-    {
-      f.getline(line, MAX_ANSWER_CHARACTERS);
-      result = line;
-      f.close();
-      
-      remove(dfile);
-      return result;
-    }
-	else
-	  {
-	    remove(dfile);
-	    return "Error in opening file";
-	  }
+  return output.str().c_str();
 }
 
 bool rank(std::istream& matrix_in, std::ostream& rank_out)
 {
+
   typedef LinBox::PID_integer Integers;		
   Integers ZZ;
   
@@ -112,93 +85,56 @@ bool rank(std::istream& matrix_in, std::ostream& rank_out)
   return true;
 }
 
-char* rankFiles(char* matfile)
+const char* rankFiles(char* matfile)
 {	
-  // Open the output stream
-  std::ofstream output (rfile);
+  ostringstream output;
 
   string s(matfile);
   istringstream iss(s);
 
-  
   // If there is a problem, return false, otherwise return true
-   if (!iss || !output || !rank(iss, output))
-     return "Error in rankFiles";
+  if (!iss || !output || !rank(iss, output))
+    return const_cast<char*>("Error in rankFiles");
 
-  output.close();
-  
-  char line[MAX_ANSWER_CHARACTERS];
-  char* result;
-
-  ifstream f(rfile);
-  if (f.is_open())
-    {
-      f.getline(line, MAX_ANSWER_CHARACTERS);
-      result = line;
-      f.close();
-      remove(rfile);
-      return result;
-    }
-  else
-    {
-      remove(rfile);
-      return "Error in opening file";
-    }
+  return output.str().c_str();
 }
 
-double estimateRankTime(char* matfile)
+int estimateRankTime(char* matfile)
 {
-  return 2.3;
+  return rand();
 }
 
 bool val(std::istream& matrix_in, std::ostream& val_out)
 {
-  typedef LinBox::PID_integer Integers;
+  typedef LinBox::PID_integer Integers;		
   Integers ZZ;
   
-  LinBox::MatrixStream< Integers > ms(ZZ, matrix_in);
+  LinBox::MatrixStream<Integers> ms(ZZ, matrix_in);
   typedef LinBox::SparseMatrix<Integers> Blackbox;
   Blackbox A(ms);
-  
+
   Integers::Element val_A;
   LinBox::valence(val_A, A);
-  
+
   val_out << val_A << std::endl;
+
+  return true;
 }
 
 
 
-char* valFiles(char* matfile)
+const char* valFiles(char* matfile)
 {	
-  // Open the output stream
-  std::ofstream output (vfile);
+  ostringstream output;
 
   string s(matfile);
   istringstream iss(s);
 
   // If there is a problem, return false, otherwise return true
   if (!iss || !output || !val(iss, output))
-    return "Error in valFiles";
-  
-  output.close();
-  
-  char line[MAX_ANSWER_CHARACTERS];
-  char* result;
-  
-  ifstream f(vfile);
-  if (f.is_open())
-    {
-      f.getline(line, MAX_ANSWER_CHARACTERS);
-      result = line;
-      f.close();
-      remove(vfile);
-      return result;
-    }
-  else
-    {
-      remove(vfile);
-      return "Error in opening file";
-    }
+    return const_cast<char*>("Error in valFiles");
+
+  return output.str().c_str();
 }
 
 
@@ -221,43 +157,25 @@ bool trace(std::istream& matrix_in, std::ostream& trace_out)
 }
 
 
-char* traceFiles(char* matfile)
+const char* traceFiles(char* matfile)
 {	
-  // Open the output stream
-  std::ofstream output (tfile);
+  ostringstream output;
 
   string s(matfile);
   istringstream iss(s);
 
   // If there is a problem, return false, otherwise return true
   if (!iss || !output || !trace(iss, output))
-    return "Error in traceFiles";
+    return const_cast<char*>("Error in traceFiles");
 
-  output.close();
-  
-  char line[MAX_ANSWER_CHARACTERS];
-  char* result;
-  
-  ifstream f(tfile);
-  if (f.is_open())
-    {
-      f.getline(line, MAX_ANSWER_CHARACTERS);
-      result = line;
-      f.close();
-      remove(tfile);
-      return result;
-    }
-  else
-    {
-      remove(tfile);
-      return "Error in opening file";
-    }
+  return output.str().c_str();
 }
 
 
 
 bool smithNormalForm(std::istream& matrix_in, std::ostream& snf_out)
 {
+  /*
   typedef LinBox::PID_integer Integers;
   //    typedef Integers::Element integer;
   Integers Z;
@@ -276,17 +194,9 @@ bool smithNormalForm(std::istream& matrix_in, std::ostream& snf_out)
     Z.write(snf_out, *p) << " ";
 
   snf_out << ")" << endl;
+  */
 
-
-
-
-
-
-
-  //  snf_out << "snf test";
-
-
-
+  snf_out << "SNF stub" << endl;
 
   /*
   typedef LinBox::PID_integer Integers;		
@@ -309,31 +219,45 @@ bool smithNormalForm(std::istream& matrix_in, std::ostream& snf_out)
     ZZ.write(snf_out << ", [", p->first) << ", " << p->second << "]";
   snf_out << ")" << endl;
   */
+
   return true;
 }
 
 
-char* smithNormalFormFiles(char* matfile)
+const char* smithNormalFormFiles(char* matfile)
 {	
-  // Open the output stream
-  std::ofstream output (sfile);
+  ostringstream output;
 
   string s(matfile);
   istringstream iss(s);
 
   // If there is a problem, return false, otherwise return true
   if (!iss || !output || !smithNormalForm(iss, output))
-    return "Error in smithNormalFormFiles";
+    return const_cast<char*>("Error in snfFiles");
+
+  return output.str().c_str();
+
+
+    //  return const_cast<char*>("A test of SNF");
+
+  /*
+ std:ofstream output(sfile);
+
+  string s(matfile);
+  istringstream iss(s);
+
+  if (!iss || !output || !smithNormalForm(iss, output))
+    return const_cast<char*>("Error in snfFiles");
 
   output.close();
-  
-  char line[MAX_ANSWER_CHARACTERS];
+
+  char line[500000];
   char* result;
-  
+
   ifstream f(sfile);
   if (f.is_open())
     {
-      f.getline(line, MAX_ANSWER_CHARACTERS);
+      f.getline(line, 500000);
       result = line;
       f.close();
       remove(sfile);
@@ -342,6 +266,7 @@ char* smithNormalFormFiles(char* matfile)
   else
     {
       remove(sfile);
-      return "Error in opening file";
+      return const_cast<char*>("Error in opening file");
     }
+  */
 }

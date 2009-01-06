@@ -5,9 +5,8 @@
 package samples.quickstart.clients;
 
 
-import samples.quickstart.middleman.TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub;
-import samples.quickstart.service.adb.TransferAgentTransferAgentHttpportStub;
-import samples.quickstart.middleman.TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortCallbackHandler;
+import samples.quickstart.middleman.TransferAgentMiddlemanStub;
+import samples.quickstart.middleman.TransferAgentMiddlemanCallbackHandler;
 import java.io.*;
 import java.net.*;
 
@@ -27,7 +26,7 @@ public class TransferAgentUserClient {
 	try
 	    {
 		// Connects to the web service
-		TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub stub = new TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub("http://hmrg.pc.cis.udel.edu:2000/axis2/services/TransferAgentMiddleman");
+		TransferAgentMiddlemanStub stub = new TransferAgentMiddlemanStub("http://hmrg.pc.cis.udel.edu:2000/axis2/services/TransferAgentMiddleman");
 		
 		long soTime = 60 * 60 * 1000; // 1 hour
 		stub._getServiceClient().getOptions().
@@ -46,7 +45,7 @@ public class TransferAgentUserClient {
 	
     }
 
-    public static void request(TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub tastub, String[] args)
+    public static void request(TransferAgentMiddlemanStub tastub, String[] args)
     {
 	try{
 	    String str = null;
@@ -96,9 +95,9 @@ public class TransferAgentUserClient {
 	    if (args[0].equalsIgnoreCase("rank")){
 
 	       // Creates an ID_Request object
-	       TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.
+	       TransferAgentMiddlemanStub.
 		   EnqueueAndGetID ereq = new 
-		   TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.
+		   TransferAgentMiddlemanStub.
 		   EnqueueAndGetID();
 
 	      // Set the ID_Request parameters
@@ -106,7 +105,7 @@ public class TransferAgentUserClient {
 	      ereq.setOperation("rank");
 
 	      // Create the response and get the ID
-	      TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.
+	      TransferAgentMiddlemanStub.
 		  EnqueueAndGetIDResponse eres = tastub.enqueueAndGetID(ereq);
 	      int ID = eres.get_return();
 
@@ -115,9 +114,9 @@ public class TransferAgentUserClient {
 
 	      if (ID > 0) {
 		// Creates a 'Rank' object
-	      final TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.
+	      final TransferAgentMiddlemanStub.
 		    Requestrank req = new 
-		    TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.
+		    TransferAgentMiddlemanStub.
 		    Requestrank();
 
 		// Set the parameter of the 'Rank' object- the ID
@@ -127,10 +126,10 @@ public class TransferAgentUserClient {
 		// listening for the result to be asynchronously sent back
 		// from the web service and will print the result to the
 		// screen
-		final TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortCallbackHandler 
+		final TransferAgentMiddlemanCallbackHandler 
 		    callBackHandler = 
-		    new TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortCallbackHandler() {
-			public void receiveResultrequestrank(TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.RequestrankResponse res)
+		    new TransferAgentMiddlemanCallbackHandler() {
+			public void receiveResultrequestrank(TransferAgentMiddlemanStub.RequestrankResponse res)
 			{
 			    System.out.println("Rank is:    " + 
 					       res.get_return());
@@ -170,9 +169,9 @@ public class TransferAgentUserClient {
 	    else if (args[0].equalsIgnoreCase("determinant")){
 
 	       // Creates an ID_Request object
-	       TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.
+	       TransferAgentMiddlemanStub.
 		   EnqueueAndGetID ereq = new 
-		   TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.
+		   TransferAgentMiddlemanStub.
 		   EnqueueAndGetID();
 
 	      // Set the ID_Request parameters
@@ -180,23 +179,23 @@ public class TransferAgentUserClient {
 	      ereq.setOperation("determinant");
 
 	      // Create the response and get the ID
-	      TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.
+	      TransferAgentMiddlemanStub.
 		  EnqueueAndGetIDResponse eres = tastub.enqueueAndGetID(ereq);
 	      int ID = eres.get_return();
 
 	      System.out.println("Your ID is: " + ID + "\n");
 
 
-	      if (ID != -1) {
+	      if (ID > 0) {
 
-		TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.Requestdeterminant req = 
-		    new TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.Requestdeterminant();
+		TransferAgentMiddlemanStub.Requestdeterminant req = 
+		    new TransferAgentMiddlemanStub.Requestdeterminant();
 		req.setRequestID(ID);
 
-		TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortCallbackHandler 
+		TransferAgentMiddlemanCallbackHandler 
 		    callBackHandler = 
-		    new TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortCallbackHandler() {
-			public void receiveResultrequestdeterminant(TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.RequestdeterminantResponse res)
+		    new TransferAgentMiddlemanCallbackHandler() {
+			public void receiveResultrequestdeterminant(TransferAgentMiddlemanStub.RequestdeterminantResponse res)
 			{
 			    System.out.println("Determinant is:    " + 
 					       res.get_return());
@@ -231,9 +230,9 @@ public class TransferAgentUserClient {
 	    else if (args[0].equalsIgnoreCase("valence")){
 
 	       // Creates an ID_Request object
-	       TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.
+	       TransferAgentMiddlemanStub.
 		   EnqueueAndGetID ereq = new 
-		   TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.
+		   TransferAgentMiddlemanStub.
 		   EnqueueAndGetID();
 
 	      // Set the ID_Request parameters
@@ -241,22 +240,22 @@ public class TransferAgentUserClient {
 	      ereq.setOperation("valence");
 
 	      // Create the response and get the ID
-	      TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.
+	      TransferAgentMiddlemanStub.
 		  EnqueueAndGetIDResponse eres = tastub.enqueueAndGetID(ereq);
 	      int ID = eres.get_return();
 
 	      System.out.println("Your ID is: " + ID + "\n");
 
 
-	      if (ID != -1) {
-		TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.Requestvalence req = 
-		    new TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.Requestvalence();
+	      if (ID > 0) {
+		TransferAgentMiddlemanStub.Requestvalence req = 
+		    new TransferAgentMiddlemanStub.Requestvalence();
 		req.setRequestID(ID);
 
-		TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortCallbackHandler 
+		TransferAgentMiddlemanCallbackHandler 
 		    callBackHandler = 
-		    new TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortCallbackHandler() {
-			public void receiveResultrequestvalence(TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.RequestvalenceResponse res)
+		    new TransferAgentMiddlemanCallbackHandler() {
+			public void receiveResultrequestvalence(TransferAgentMiddlemanStub.RequestvalenceResponse res)
 			{
 			    System.out.println("Valence is:    " + 
 					       res.get_return());
@@ -291,9 +290,9 @@ public class TransferAgentUserClient {
 	    else if (args[0].equalsIgnoreCase("trace")){
 
 	       // Creates an ID_Request object
-	       TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.
+	       TransferAgentMiddlemanStub.
 		   EnqueueAndGetID ereq = new 
-		   TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.
+		   TransferAgentMiddlemanStub.
 		   EnqueueAndGetID();
 
 	      // Set the ID_Request parameters
@@ -301,23 +300,23 @@ public class TransferAgentUserClient {
 	      ereq.setOperation("determinant");
 
 	      // Create the response and get the ID
-	      TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.
+	      TransferAgentMiddlemanStub.
 		  EnqueueAndGetIDResponse eres = tastub.enqueueAndGetID(ereq);
 	      int ID = eres.get_return();
 
 	      System.out.println("Your ID is: " + ID + "\n");
 
 
-	      if (ID != -1) {
-		TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.Requesttrace req = 
-		    new TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.Requesttrace();
+	      if (ID > 0) {
+		TransferAgentMiddlemanStub.Requesttrace req = 
+		    new TransferAgentMiddlemanStub.Requesttrace();
 
 		req.setRequestID(ID);
 
-		TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortCallbackHandler 
+		TransferAgentMiddlemanCallbackHandler 
 		    callBackHandler = 
-		    new TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortCallbackHandler() {
-			public void receiveResultrequesttrace(TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.RequesttraceResponse res)
+		    new TransferAgentMiddlemanCallbackHandler() {
+			public void receiveResultrequesttrace(TransferAgentMiddlemanStub.RequesttraceResponse res)
 			{
 			    System.out.println("Trace is:    " + 
 					       res.get_return());
@@ -354,9 +353,9 @@ public class TransferAgentUserClient {
 	    else if (args[0].equalsIgnoreCase("smithNormalForm")){
 
 	       // Creates an ID_Request object
-	       TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.
+	       TransferAgentMiddlemanStub.
 		   EnqueueAndGetID ereq = new 
-		   TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.
+		   TransferAgentMiddlemanStub.
 		   EnqueueAndGetID();
 
 	      // Set the ID_Request parameters
@@ -364,23 +363,23 @@ public class TransferAgentUserClient {
 	      ereq.setOperation("smithNormalForm");
 
 	      // Create the response and get the ID
-	      TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.
+	      TransferAgentMiddlemanStub.
 		  EnqueueAndGetIDResponse eres = tastub.enqueueAndGetID(ereq);
 	      int ID = eres.get_return();
 
 	      System.out.println("Your ID is: " + ID + "\n");
 
 
-	      if (ID != -1) {
-		TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.RequestsmithNormalForm req = 
-		    new TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.RequestsmithNormalForm();
+	      if (ID > 0) {
+		TransferAgentMiddlemanStub.RequestsmithNormalForm req = 
+		    new TransferAgentMiddlemanStub.RequestsmithNormalForm();
 
 		req.setRequestID(ID);
 
-		TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortCallbackHandler 
+		TransferAgentMiddlemanCallbackHandler 
 		    callBackHandler = 
-		    new TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortCallbackHandler() {
-			public void receiveResultrequestsmithNormalForm(TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.RequestsmithNormalFormResponse res)
+		    new TransferAgentMiddlemanCallbackHandler() {
+			public void receiveResultrequestsmithNormalForm(TransferAgentMiddlemanStub.RequestsmithNormalFormResponse res)
 			{
 			    System.out.println("SNF is:    " + 
 					       res.get_return());
@@ -412,7 +411,7 @@ public class TransferAgentUserClient {
 	    else if (args[0].equalsIgnoreCase("queueStatus")){
 
 		// Get the answer back
-		TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.CountOperationsInQueueResponse res = tastub.countOperationsInQueue();
+		TransferAgentMiddlemanStub.CountOperationsInQueueResponse res = tastub.countOperationsInQueue();
 
 		System.out.println("There are " + res.get_return() +
 				   " operations currently in the queue");
@@ -422,10 +421,10 @@ public class TransferAgentUserClient {
 
 	    // ***************************************************************
 	    else if (args[0].equalsIgnoreCase("checkID")){
-		TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.CheckID req = new TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.CheckID();
+		TransferAgentMiddlemanStub.CheckID req = new TransferAgentMiddlemanStub.CheckID();
 		req.setID(Integer.parseInt(args[1]));
 
-		TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.CheckIDResponse res = tastub.checkID(req);
+		TransferAgentMiddlemanStub.CheckIDResponse res = tastub.checkID(req);
 
 		System.out.println("There are " + res.get_return() +
 				   " operations in line in front of yours.");
@@ -436,10 +435,10 @@ public class TransferAgentUserClient {
 	    
 	    // ***************************************************************
 	    else if (args[0].equalsIgnoreCase("getTimeEstimate")){
-		TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.GetTimeEstimate req = new TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.GetTimeEstimate();
+		TransferAgentMiddlemanStub.GetTimeEstimate req = new TransferAgentMiddlemanStub.GetTimeEstimate();
 		req.setRequestID(Integer.parseInt(args[1]));
 
-		TransferAgentMiddlemanTransferAgentMiddlemanSOAP11PortStub.GetTimeEstimateResponse res = tastub.getTimeEstimate(req);
+		TransferAgentMiddlemanStub.GetTimeEstimateResponse res = tastub.getTimeEstimate(req);
 
 		if (res.get_return()[0] < 0)
 		    {

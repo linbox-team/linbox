@@ -1,12 +1,16 @@
 LBFLAGS=-enable-shared -DLinBoxSrcOnly -DHAVE_CONFIG_H -D__LINBOX_HAVE_CBLAS -DDISABLE_COMMENTATOR -DBIG
-LDPLACES=-llapack -lcblas -latlas -lntl /usr/lib/libgmpxx.so /usr/lib/libgmp.so -L/usr/lib/gcc-lib/i386-redhat-linux/3.2.2 -L/usr/lib/gcc-lib/i386-redhat-linux/3.2.2/../../.. -lstdc++ -lm -lc -lgcc_s /usr/local/lib/libgivaro.a
+LDPLACES=-lstdc++ -lm -lc -lgcc_s -lntl /usr/lib/libgmpxx.so /usr/lib/libgmp.so /usr/local/lib/libgivaro.so -L/usr/lib/sse2 -latlas -lblas -L/usr/lib/sse2/atlas -llapack
+
+#-lstdc++ -lm -lc -lgcc_s -lntl /usr/lib/libgmpxx.so /usr/lib/libgmp.so /usr/lib/libgivaro.so -L/usr/lib/sse2/ -latlas -L/usr/lib/sse2/atlas -llapack -lcblas 
 
 liblinboxfunctions.so: linboxfunctions.o linboxfunctions_wrap.o
 	gcc -shared linboxfunctions.o linboxfunctions_wrap.o -o liblinboxfunctions.so ${LDPLACES}
 
 linboxfunctions.o: linboxfunctions.C 
-	gcc -fpic ${LBFLAGS} -c linboxfunctions.C -I/opt/jdk1.5.0_05/include -I/opt/jdk1.5.0_05/include/linux  -I/home/fendt/linbox/
+	gcc -fpic ${LBFLAGS} -c linboxfunctions.C -I/usr/lib/jvm/java-6-sun/include -I/usr/lib/jvm/java-6-sun/include/linux  -I/home/fendt/linbox/
 
 linboxfunctions_wrap.o: linboxfunctions_wrap.cxx 
-	gcc -fpic ${LBFLAGS} -c linboxfunctions_wrap.cxx -I/opt/jdk1.5.0_05/include -I/opt/jdk1.5.0_05/include/linux  -I/home/fendt/linbox/
+	gcc -fpic ${LBFLAGS} -c linboxfunctions_wrap.cxx -I/usr/lib/jvm/java-6-sun/include -I/usr/lib/jvm/java-6-sun/include/linux  -I/home/fendt/linbox/
 
+clean: 
+	rm *.o *.so *.a
