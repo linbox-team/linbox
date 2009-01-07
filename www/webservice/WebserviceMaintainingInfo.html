@@ -50,14 +50,14 @@ are done.  The following contains the step that were taken to install the server
 <b>Some things to note:</b>
 <ul>
   <li> Currently only configured for Fendt's directory on "hmrg.pc.cis.udel.edu"</li>
-  <li> Web service resides in /home/fendt/apache-tomcat-6.0.13/webapps/
+  <li> Web service resides in /home/fendt/apache-tomcat-6.0.18/webapps/
   axis2/WEB-INF/services </li>
-  <li> Apache is currently listening on port 8080.  This is verified in
-  <apache-dir>/WEB-INF/server.xml  The "Connector port" is set to 8080.  This
+  <li> Apache is currently listening on port 2000.  This is verified in
+  <apache-dir>/WEB-INF/server.xml  The "Connector port" is set to 2000.  This
   is at line ~50. </li>
   <li> Apache startup/shutdown locations: <br>
-      STARTUP: /home/fendt/apache-tomcat-6.0.13/bin/startup.sh <br>
-      SHUTDOWN: /home/fendt/apache-tomcat-6.0.13/bin/shutdown.sh </li>
+      STARTUP: /home/fendt/apache-tomcat-6.0.18/bin/startup.sh <br>
+      SHUTDOWN: /home/fendt/apache-tomcat-6.0.18/bin/shutdown.sh </li>
 </ul>
 
 
@@ -65,9 +65,9 @@ are done.  The following contains the step that were taken to install the server
 <b>Requirements:</b>
 <ul>
   <li> Apache Ant 1.7.0 </li> 
-  <li> Apache Tomcat 6.0.13 </li>
-  <li> Axis2 1.2 installed under Tomcat </li>
-  <li> JDK version 1.5.0_05 </li>
+  <li> Apache Tomcat 6.0.18 </li>
+  <li> Axis2 1.4.1 installed under Tomcat </li>
+  <li> JDK version 1.6.0_07 </li>
   <li> SWIG version 1.3.31 (For updating LinBox functionality) </li>
   <li> LinBoxWebservice directory </li>
   <li> LinBox computational library itself</li>
@@ -77,10 +77,10 @@ are done.  The following contains the step that were taken to install the server
 
 <ol>
   <li>Install Ant, Tomcat, Axis2, and Java</li>
-  <li>Set CATALINA_HOME to Tomcat directory (eg /home/fendt/apache-tomcat-6.0.13)</li>
-  <li>Set AXIS2_HOME to Axis 2 directory (eg /home/fendt/axis2-1.2)</li>
+  <li>Set CATALINA_HOME to Tomcat directory (eg /home/fendt/apache-tomcat-6.0.18)</li>
+  <li>Set AXIS2_HOME to Axis 2 directory (eg /home/fendt/axis2-1.4.1)</li>
   <li>Set ANT_HOME to Ant directory (eg /home/fendt/apache-ant-1.7.0)</li>
-  <li>Set JAVA_HOME to Java directory (eg /opt/jdk1.5.0_05)</li>
+  <li>Set JAVA_HOME to Java directory (eg /usr/lib/jvm/java-6-sun)</li>
   <li>Make sure Apache is shut down.</li>
   <li> Svn and configure the LinBox library.  This was done on hmrg.pc.cis.
 udel.edu in the directory /home/fendt/linbox.  This is the copy of LinBox that
@@ -88,9 +88,9 @@ the web service will use. </li>
   <li> Copy the LinBoxWebservice directory, located at /home/fendt/LinBoxWebservice. </li>
   <li>In LinBoxWebservice directory, type "ant generate.service" to ready the
   service.</li>
-  <li>Start up Apache with ./home/fendt/apache-tomcat-6.0.13/bin/startup.sh</li>
+  <li>Start up Apache with ./home/fendt/apache-tomcat-6.0.18/bin/startup.sh</li>
   <li>The web service is now installed in the "services" directory on Apache,
-  is listening on port 8080, and ready for client calls.</li>
+  is listening on port 2000, and ready for client calls.</li>
 </ol>
 
 <a href="http://www.linalg.org/webservice/LinBoxWebserviceInfo.html#contents">
@@ -105,17 +105,17 @@ a client activity on any computer, be it an online web form or a stand alone pro
 <b>Requirements:</b>
 <ul>
   <li> Apache Ant 1.7.0 </li> 
-  <li> Axis2 1.2, unzipped
-  <li> JDK version 1.5.0_05 </li>
+  <li> Axis2 1.4.1, unzipped
+  <li> Java version 1.6.0_07 </li>
   <li> LinBoxWebservice directory </li>
 </ul>
 
 <b>Setup:</b>
 <ol>
   <li>Install Ant, Axis2, and Java</li>
-  <li>Set AXIS2_HOME to Axis 2 directory (eg /home/fendt/axis2-1.2)</li>
+  <li>Set AXIS2_HOME to Axis 2 directory (eg /home/fendt/axis2-1.4.1)</li>
   <li>Set ANT_HOME to Ant directory (eg /home/fendt/apache-ant-1.7.0)</li>
-  <li>Set JAVA_HOME to Java directory (eg /opt/jdk1.5.0_05)</li>
+  <li>Set JAVA_HOME to Java directory (eg /usr/lib/jvm/java-6-sun)</li>
   <li> Copy the LinBoxWebservice directory, located at /home/fendt/LinBoxWebservice. </li>
 </ol>
 
@@ -269,8 +269,6 @@ Return to top</a><br>
 <b> Relocating the LinBox Function .so</b>
 <ol>
   <li>In makefile, set the path to the LinBox library, eg "-I/home/fendt/linbox"</li>
-  <li>In linboxfunctions.C, change the paths of "i" and "o" variables to the services directory of your web server, eg "/home/fendt/apache-tomcat-6.0.13/webapps/axis2/WEB-INF/services"</li>
-  <li>Also in linboxfunctions.C: Change the paths of "dfile," "rfile," "vfile," "tfile," and other variables to reflect the new path of the services directory.</li>
   <li>Follow compilation instructions as above</li>
 </ol>
 
@@ -382,10 +380,10 @@ Copy the LinBoxWebservice directory as before.  Then in that directory:
 <ol>
 	<li>Generate the LinBox web service with ant generate.service</li>
 	<li>Generate the middleman web service with ant generate.middleman</li>
-	<li> Start up apache with /home/fendt/apache-tomcat-6.0.13/bin/startup.sh </li>
+	<li> Start up apache with /home/fendt/apache-tomcat-6.0.18/bin/startup.sh </li>
 	<li>Generate the user client with ant generate.user.client</li>
 	<li>Generate the queue client with ant generate.queue.client</li>
-	<li>Start up RMI with /opt/jdk1.5.0_05/bin/rmiregistry</li>
+	<li>Start up RMI with /usr/lib/jvm/java-6-sun/bin/rmiregistry</li>
 	<li>Start the queue client with ant run.queue.client</li>
 	<li>Start the queue client with ant run.user.client</li>
 	<li>You can now make web service calls with the user client (see list of functions above).</li>
