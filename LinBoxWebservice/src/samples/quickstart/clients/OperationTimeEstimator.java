@@ -362,7 +362,6 @@ public class OperationTimeEstimator
 
 				firstSet = false;
 
-				// @@@@@@@@ ERROR HERE
 				d = Math.abs(Double.
 					     parseDouble(temp[j]));
 				count = 1;

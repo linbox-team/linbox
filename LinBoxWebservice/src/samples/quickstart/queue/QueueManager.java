@@ -115,7 +115,6 @@ public class QueueManager implements QueueRequest
 
 	// Do a quick time estimate
 
-	/*
 	String estimate = ote.estimateTime(matrixOp, matrix, false);
 
 	timeEstimate[ID] = 
@@ -127,8 +126,6 @@ public class QueueManager implements QueueRequest
 	t.setEstimatedComputationTime(estimate);
 
 	System.out.println("Estimate for " + ID + ":" + estimate);
-
-	*/
 
 	System.out.println("**************************************");
 	System.out.println("New entry into queue:\n");
@@ -613,7 +610,7 @@ public class QueueManager implements QueueRequest
 			Thread.currentThread().sleep(1000);
 			secsSinceCall++;
 
-			if (secsSinceCall % 10 >= 0)
+			if (secsSinceCall % 5 == 0)
 			{
 			    System.out.println("It has been " + 
 				       secsSinceCall + 
