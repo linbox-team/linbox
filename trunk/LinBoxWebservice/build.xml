@@ -20,19 +20,22 @@
    <!-- *********************** Variables and Paths *********************** -->
     <property environment="env"/>
     <property name="AXIS2_HOME" value="${env.AXIS2_HOME}"/>
-    <property name="AXIS2_HOME" value="${env.AXIS2_HOME}"/>
     <property name="build.dir" value="build"/>
 
     <!-- This is the name of your webapps's services directory -->
     <property name="webapp.dir" value="/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services"/>
 
+    <property name="properties.dir" value="/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/classes"/>
+
     <path id="axis2.classpath">
+      <pathelement path="${properties.dir}"/>
         <fileset dir="${AXIS2_HOME}/lib">
             <include name="*.jar"/>
         </fileset>
     </path>
 
     <path id="client.class.path">
+      <pathelement path="${properties.dir}"/>
         <fileset dir="${AXIS2_HOME}/lib">
             <include name="*.jar"/>
         </fileset>
@@ -42,6 +45,7 @@
     </path>
 
     <path id="server.class.path">
+      <pathelement path="${properties.dir}"/>
         <fileset dir="${AXIS2_HOME}/lib">
             <include name="*.jar"/>
         </fileset>
@@ -115,7 +119,6 @@
                    packageName="samples.quickstart.service.adb"
                    language="java"
                    databindingName="adb"
-
                    serverside="true"
                    serverSideInterface="true"
                    namespaceToPackages="http://quickstart.samples/xsd=samples.quickstart.service.adb.xsd"
@@ -465,7 +468,7 @@
            <arg line="${arg1}"/>
            <arg line="${arg2}"/>
            <arg line="${arg3}"/>
-             <classpath refid="client.class.path"/>
+           <classpath refid="client.class.path"/>
         </java>
 
 

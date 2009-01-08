@@ -32,7 +32,7 @@ using namespace std;
 #include "linbox/algorithms/smith-form-adaptive.h"
 #include "linbox/util/error.h"
 
-static char sfile[100]= "/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/SNF_Response.txt";
+//static char sfile[100]= "/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/SNF_Response.txt";
 //-----------------------------------------------------------------------------
 
 bool det(std::istream& matrix_in, std::ostream& det_out)
