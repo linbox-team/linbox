@@ -40,4 +40,8 @@
         <actionMapping>urn:getMachineSpecs</actionMapping>
         <outputActionMapping>http://quickstart.samples/TransferAgentPortType/getPriceResponse</outputActionMapping>
     </operation>
+
+    <transports>
+      <transport>http</transport>
+    </transports>
 </service>

@@ -73,7 +73,8 @@ public class TransferAgentUserClient {
 		
 		// Converts the matrix to UTF8 encoding
 		str = URLEncoder.encode(str, "UTF-8");
-		
+
+
 		// Optional, displays what the matrix file looks like in UTF8
 		//System.out.println(str);
 	    }
@@ -89,6 +90,15 @@ public class TransferAgentUserClient {
 			}
 		}
 
+
+
+
+	    // Gets the user's IP address
+	    InetAddress IP =
+		InetAddress.getLocalHost();
+	    String IPaddress = IP.getHostAddress();
+
+
 	    // ***************************************************************
 	    // ************* RANK ********************************************
 	    // ***************************************************************
@@ -103,6 +113,7 @@ public class TransferAgentUserClient {
 	      // Set the ID_Request parameters
 	      ereq.setMatrix(str);
 	      ereq.setOperation("rank");
+	      ereq.setRequestIP(IPaddress);
 
 	      // Create the response and get the ID
 	      TransferAgentMiddlemanStub.
@@ -121,7 +132,8 @@ public class TransferAgentUserClient {
 
 		// Set the parameter of the 'Rank' object- the ID
 		req.setRequestID(ID);
-		
+
+
 		// Extends the default 'Callback Handler'.  This will be
 		// listening for the result to be asynchronously sent back
 		// from the web service and will print the result to the
@@ -177,6 +189,7 @@ public class TransferAgentUserClient {
 	      // Set the ID_Request parameters
 	      ereq.setMatrix(str);
 	      ereq.setOperation("determinant");
+	      ereq.setRequestIP(IPaddress);
 
 	      // Create the response and get the ID
 	      TransferAgentMiddlemanStub.
@@ -191,6 +204,7 @@ public class TransferAgentUserClient {
 		TransferAgentMiddlemanStub.Requestdeterminant req = 
 		    new TransferAgentMiddlemanStub.Requestdeterminant();
 		req.setRequestID(ID);
+
 
 		TransferAgentMiddlemanCallbackHandler 
 		    callBackHandler = 
@@ -238,6 +252,7 @@ public class TransferAgentUserClient {
 	      // Set the ID_Request parameters
 	      ereq.setMatrix(str);
 	      ereq.setOperation("valence");
+	      ereq.setRequestIP(IPaddress);
 
 	      // Create the response and get the ID
 	      TransferAgentMiddlemanStub.
@@ -251,6 +266,7 @@ public class TransferAgentUserClient {
 		TransferAgentMiddlemanStub.Requestvalence req = 
 		    new TransferAgentMiddlemanStub.Requestvalence();
 		req.setRequestID(ID);
+
 
 		TransferAgentMiddlemanCallbackHandler 
 		    callBackHandler = 
@@ -298,6 +314,7 @@ public class TransferAgentUserClient {
 	      // Set the ID_Request parameters
 	      ereq.setMatrix(str);
 	      ereq.setOperation("determinant");
+	      ereq.setRequestIP(IPaddress);
 
 	      // Create the response and get the ID
 	      TransferAgentMiddlemanStub.
@@ -312,6 +329,7 @@ public class TransferAgentUserClient {
 		    new TransferAgentMiddlemanStub.Requesttrace();
 
 		req.setRequestID(ID);
+
 
 		TransferAgentMiddlemanCallbackHandler 
 		    callBackHandler = 
@@ -361,6 +379,7 @@ public class TransferAgentUserClient {
 	      // Set the ID_Request parameters
 	      ereq.setMatrix(str);
 	      ereq.setOperation("smithNormalForm");
+	      ereq.setRequestIP(IPaddress);
 
 	      // Create the response and get the ID
 	      TransferAgentMiddlemanStub.
@@ -375,6 +394,7 @@ public class TransferAgentUserClient {
 		    new TransferAgentMiddlemanStub.RequestsmithNormalForm();
 
 		req.setRequestID(ID);
+
 
 		TransferAgentMiddlemanCallbackHandler 
 		    callBackHandler = 

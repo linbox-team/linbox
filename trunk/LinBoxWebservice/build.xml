@@ -27,8 +27,11 @@
 
     <property name="properties.dir" value="/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/classes"/>
 
+    <property name="conf.dir" value="/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/conf"/>
+
     <path id="axis2.classpath">
       <pathelement path="${properties.dir}"/>
+      <pathelement path="${conf.dir}"/>
         <fileset dir="${AXIS2_HOME}/lib">
             <include name="*.jar"/>
         </fileset>
@@ -94,7 +97,8 @@
         <java2wsdl className="samples.quickstart.service.adb.TransferAgent"
                    outputLocation="${build.dir}"
                    targetNamespace="http://quickstart.samples"
-                   schemaTargetNamespace="http://quickstart.samples/xsd">
+                   schemaTargetNamespace="http://quickstart.samples/xsd"
+		   locationURI="http://hmrg.pc.cis.udel.edu:2000/axis2/services/TransferAgent">
             <classpath>
                 <pathelement path="${axis2.classpath}"/>
                 <pathelement location="${build.dir}/classes"/>
@@ -198,7 +202,8 @@
      <java2wsdl className="samples.quickstart.middleman.TransferAgentMiddleman"
                    outputLocation="${build.dir}"
                    targetNamespace="http://quickstart.samples"
-                   schemaTargetNamespace="http://quickstart.samples/xsd">
+                   schemaTargetNamespace="http://quickstart.samples/xsd"
+		   locationURI="http://hmrg.pc.cis.udel.edu:2000/axis2/services/TransferAgent">
             <classpath>
                 <pathelement path="${axis2.classpath}"/>
                 <pathelement location="${build.dir}/classes"/>

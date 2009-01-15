@@ -66,6 +66,7 @@ const char* detFiles(char* matfile)
     return const_cast<char*>("Error in detFiles");
   
   return output.str().c_str();
+  
 }
 
 bool rank(std::istream& matrix_in, std::ostream& rank_out)
@@ -125,6 +126,40 @@ bool val(std::istream& matrix_in, std::ostream& val_out)
 
 const char* valFiles(char* matfile)
 {	
+  /*
+ std:ofstream output(sfile);
+
+  string s(matfile);
+  istringstream iss(s);
+
+  if (!iss || !output || !smithNormalForm(iss, output))
+    return const_cast<char*>("Error in snfFiles");
+
+  output.close();
+
+  char line[500000];
+  char* result;
+
+  ifstream f(sfile);
+  if (f.is_open())
+    {
+      f.getline(line, 500000);
+      result = line;
+      f.close();
+      remove(sfile);
+      return result;
+    }
+  else
+    {
+      remove(sfile);
+      return const_cast<char*>("Error in opening file");
+    }
+  */
+
+
+
+
+  /*
   ostringstream output;
 
   string s(matfile);
@@ -135,6 +170,7 @@ const char* valFiles(char* matfile)
     return const_cast<char*>("Error in valFiles");
 
   return output.str().c_str();
+  */
 }
 
 
@@ -175,28 +211,31 @@ const char* traceFiles(char* matfile)
 
 bool smithNormalForm(std::istream& matrix_in, std::ostream& snf_out)
 {
-  /*
+#if 0
   typedef LinBox::PID_integer Integers;
   //    typedef Integers::Element integer;
-  Integers Z;
+  Integers ZZ;
   typedef LinBox::DenseMatrix<Integers> Matrix;
 
-  Matrix A(Z);
+  Matrix A(ZZ);
   A.read(matrix_in);
 
   vector<Integers::Element> ans(min(A.rowdim(), A.coldim()));
-  LinBox::SmithFormAdaptive::smithForm(ans, A);
+  //LinBox::SmithFormAdaptive::smithForm(ans, A);
 
   snf_out << "(";
   for (vector<Integers::Element>::iterator p = ans.begin();
        p != ans.end();
        ++p)
-    Z.write(snf_out, *p) << " ";
+       ZZ.write(snf_out, *p) << " ";
 
   snf_out << ")" << endl;
-  */
 
-  snf_out << "SNF stub" << endl;
+#endif
+
+	string s;
+  matrix_in >> s;
+    snf_out << "SNF stub: " << s <<  endl;
 
   /*
   typedef LinBox::PID_integer Integers;		
@@ -240,33 +279,5 @@ const char* smithNormalFormFiles(char* matfile)
 
     //  return const_cast<char*>("A test of SNF");
 
-  /*
- std:ofstream output(sfile);
 
-  string s(matfile);
-  istringstream iss(s);
-
-  if (!iss || !output || !smithNormalForm(iss, output))
-    return const_cast<char*>("Error in snfFiles");
-
-  output.close();
-
-  char line[500000];
-  char* result;
-
-  ifstream f(sfile);
-  if (f.is_open())
-    {
-      f.getline(line, 500000);
-      result = line;
-      f.close();
-      remove(sfile);
-      return result;
-    }
-  else
-    {
-      remove(sfile);
-      return const_cast<char*>("Error in opening file");
-    }
-  */
 }
