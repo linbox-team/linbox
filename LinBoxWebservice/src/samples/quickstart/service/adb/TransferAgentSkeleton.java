@@ -132,6 +132,21 @@ public class TransferAgentSkeleton implements TransferAgentSkeletonInterface
 	    // The answer determined by the linbox function library
 	    d = linboxfunctions.detFiles(str);
 
+
+
+	    try{
+	    Writer output = null;
+	    File file = new File("/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/Det_output3.txt");
+	    output = new BufferedWriter(new FileWriter(file));
+	    output.write(d);
+	    output.close();
+	    }catch(Exception e){}
+
+
+
+
+
+
 	    // Create a new response that can be called by the client
 	    DeterminantResponse res = new DeterminantResponse();
 

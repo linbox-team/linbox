@@ -32,25 +32,26 @@ using namespace std;
 #include "linbox/algorithms/smith-form-adaptive.h"
 #include "linbox/util/error.h"
 
-//static char sfile[100]= "/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/SNF_Response.txt";
+static char dfile[100]= "/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/Det_Response.txt";
+static char dfile2[100]= "/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/Det_Response2.txt";
 //-----------------------------------------------------------------------------
 
 bool det(std::istream& matrix_in, std::ostream& det_out)
 {
-	typedef LinBox::PID_integer Integers;		
-	Integers ZZ;
-	
-	LinBox::DenseMatrix<Integers> A(ZZ);
-	A.read(matrix_in);
-	
-	Integers::Element det_A;
-	try {
-	  LinBox::det (det_A, A);
-	} catch (LinBox::LinboxError e) { return false; }
-	
-	ZZ.write(det_out, det_A) << std::endl;
-	
-	return true;
+  typedef LinBox::PID_integer Integers;		
+  Integers ZZ;
+  
+  LinBox::DenseMatrix<Integers> A(ZZ);
+  A.read(matrix_in);
+  
+  Integers::Element det_A;
+  try {
+    LinBox::det (det_A, A);
+  } catch (LinBox::LinboxError e) { return false; }
+  
+  ZZ.write(det_out, det_A) << std::endl;
+  
+  return true;
 }
 
 const char* detFiles(char* matfile)
@@ -64,9 +65,20 @@ const char* detFiles(char* matfile)
   // If there is a problem, return false, otherwise return true
   if (!iss || !output || !det(iss, output))
     return const_cast<char*>("Error in detFiles");
+
+
+  // FOR DEBUGGING
+  ofstream output2(dfile);  
+  ofstream output3(dfile2);
+  output2 << "Part 1 " << output.str();
+  output3 << "Part 2 " << output.str().c_str();
+  output2.close();
+  output3.close();
   
+
   return output.str().c_str();
-  
+
+
 }
 
 bool rank(std::istream& matrix_in, std::ostream& rank_out)
@@ -126,40 +138,6 @@ bool val(std::istream& matrix_in, std::ostream& val_out)
 
 const char* valFiles(char* matfile)
 {	
-  /*
- std:ofstream output(sfile);
-
-  string s(matfile);
-  istringstream iss(s);
-
-  if (!iss || !output || !smithNormalForm(iss, output))
-    return const_cast<char*>("Error in snfFiles");
-
-  output.close();
-
-  char line[500000];
-  char* result;
-
-  ifstream f(sfile);
-  if (f.is_open())
-    {
-      f.getline(line, 500000);
-      result = line;
-      f.close();
-      remove(sfile);
-      return result;
-    }
-  else
-    {
-      remove(sfile);
-      return const_cast<char*>("Error in opening file");
-    }
-  */
-
-
-
-
-  /*
   ostringstream output;
 
   string s(matfile);
@@ -170,7 +148,7 @@ const char* valFiles(char* matfile)
     return const_cast<char*>("Error in valFiles");
 
   return output.str().c_str();
-  */
+
 }
 
 
@@ -279,5 +257,38 @@ const char* smithNormalFormFiles(char* matfile)
 
     //  return const_cast<char*>("A test of SNF");
 
+
+
+
+
+  /*
+ std:ofstream output(sfile);
+
+  string s(matfile);
+  istringstream iss(s);
+
+  if (!iss || !output || !smithNormalForm(iss, output))
+    return const_cast<char*>("Error in snfFiles");
+
+  output.close();
+
+  char line[500000];
+  char* result;
+
+  ifstream f(sfile);
+  if (f.is_open())
+    {
+      f.getline(line, 500000);
+      result = line;
+      f.close();
+      remove(sfile);
+      return result;
+    }
+  else
+    {
+      remove(sfile);
+      return const_cast<char*>("Error in opening file");
+    }
+  */
 
 }
