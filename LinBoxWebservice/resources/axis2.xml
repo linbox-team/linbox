@@ -136,7 +136,7 @@
     <!-- ================================================= -->
     <transportReceiver name="http"
                        class="org.apache.axis2.transport.http.SimpleHTTPServer">
-        <parameter name="port">2000</parameter>
+        <parameter name="port">8080</parameter>
         <!-- Here is the complete list of supported parameters (see example settings further below):
             port: the port to listen on (default 6060)
             hostname:  if non-null, url prefix used in reply-to endpoint references                                 (default null)
@@ -151,7 +151,8 @@
                                   note that no such threads can exist with default unbounded request queue
             threadKeepAliveTimeUnit:  TimeUnit of value in threadKeepAliveTime (default SECONDS)                    (default SECONDS)
         -->
-        <!-- <parameter name="hostname">http://www.myApp.com/ws</parameter> -->
+<!--        <parameter name="hostname">http://hmrg.pc.cis.udel.edu/ws</parameter>-->
+<!--        <parameter name="hostname">http://www.myApp.com/ws</parameter>-->
         <!-- <parameter name="originServer">My-Server/1.1</parameter>           -->
 <!--        <parameter name="requestTimeout">1</parameter>-->
         <!-- <parameter name="requestTcpNoDelay">false</parameter>                   -->

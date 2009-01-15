@@ -105,7 +105,8 @@ public class OperationTimeEstimator
 	if (r == 0) r = m;
 	double F = 1; // minpoly fudge factor.
 
-	return isDense(m,n,s) ? F*E*d*m*n*r : F*d*(C*s + D*n)*r;
+	return isDense(m,n,s) ? Math.ceil(F*E*d*m*n*r) : 
+	    Math.ceil(F*d*(C*s + D*n)*r);
     }
 
     // ************************************************************************
@@ -126,7 +127,8 @@ public class OperationTimeEstimator
 	if (r == 0) r = m;
 	double F = 1; // det fudge factor.
 	
-	return isDense(m,n,s) ? F*d*E*m*n*r : F*d*minpolyCost(m, n, s, d, m);
+	return isDense(m,n,s) ? Math.ceil(F*d*E*m*n*r) : 
+	    Math.ceil(F*d*minpolyCost(m, n, s, d, m));
     }
 
     // ************************************************************************
@@ -146,14 +148,15 @@ public class OperationTimeEstimator
 
 	if (r == 0) r = m;
 	double F = 2; // rank fudge factor.
-	return isDense(m,n,s) ? F*E*m*n*r : F*minpolyCost(m, n, s, 1, m);
+	return isDense(m,n,s) ? Math.ceil(F*E*m*n*r) : 
+	    Math.ceil(F*minpolyCost(m, n, s, 1, m));
     }
 
     // ************************************************************************
     double valenceCost (int m, int n, double s, int d)
     { 
 	double F = 1; // valence fudge factor.
-	return F*minpolyCost(m,n,s,d, 0); 
+	return Math.ceil(F*minpolyCost(m,n,s,d, 0)); 
     }
 
 
@@ -172,7 +175,7 @@ public class OperationTimeEstimator
 		n = temp;
 	    }
 	
-	return F*C*d*m;
+	return Math.ceil(F*C*d*m);
     }
 
     // ************************************************************************
@@ -194,7 +197,7 @@ public class OperationTimeEstimator
 	if (r == 0) r = m;
 	
 	// cubic when m = n = r.  When structure is rich expect m^3.5 or even m^4.
-	return F*E*d*m*n*r;  // future tuning...
+	return Math.ceil(F*E*d*m*n*r);  // future tuning...
     }
 
  // ************************************************************************
@@ -216,8 +219,8 @@ public class OperationTimeEstimator
 
 	if (r == 0) r = m;
 	
-	return isDense(m,n,s) ? F*d*E*m*n*r : 
-	    BBfactor*F*d*minpolyCost(m, n, s, d, m);
+	return isDense(m,n,s) ? Math.ceil(F*d*E*m*n*r) : 
+	    Math.ceil(BBfactor*F*d*minpolyCost(m, n, s, d, m));
     }
 
  // ************************************************************************

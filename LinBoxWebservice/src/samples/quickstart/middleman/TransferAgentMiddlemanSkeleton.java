@@ -96,7 +96,7 @@ public class TransferAgentMiddlemanSkeleton implements TransferAgentMiddlemanSke
 	    QueueRequest r = (QueueRequest)registry.lookup("QueueRequest");
 
 
-	    String IP = "100";
+	    String IP = param0.getRequestIP();
 	    String op = param0.getOperation();
 	    String matrix = param0.getMatrix();
 	    int requestID;

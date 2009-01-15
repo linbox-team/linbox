@@ -9,6 +9,12 @@ liblinboxfunctions.so: linboxfunctions.o linboxfunctions_wrap.o
 linboxfunctions.o: linboxfunctions.C 
 	gcc -fpic ${LBFLAGS} -c linboxfunctions.C -I/usr/lib/jvm/java-6-sun/include -I/usr/lib/jvm/java-6-sun/include/linux  -I/home/fendt/linbox/
 
+test-smith.o: test-smith.C linboxfunctions.C makefile 
+	g++ -fpic ${LBFLAGS} -c test-smith.C -I/home/fendt/linbox/
+
+test-smith: test-smith.o  makefile
+	g++ -shared test-smith.o ${LDPLACES}
+
 linboxfunctions_wrap.o: linboxfunctions_wrap.cxx 
 	gcc -fpic ${LBFLAGS} -c linboxfunctions_wrap.cxx -I/usr/lib/jvm/java-6-sun/include -I/usr/lib/jvm/java-6-sun/include/linux  -I/home/fendt/linbox/
 

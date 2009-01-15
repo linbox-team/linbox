@@ -6,12 +6,13 @@ package samples.quickstart.middleman;
 
 public class TransferAgentMiddleman
 {
-    public int enqueueAndGetID(String matrix, String operation)
+    public int enqueueAndGetID(String matrix, String operation, 
+			       String requestIP)
     {
 	return -1;
     }
 
-    public String requestrank(int requestID)
+    public String requestrank(int requestID, String requestIP)
     {
 	return "Rank answer";
     }
@@ -22,22 +23,22 @@ public class TransferAgentMiddleman
 	return answer;
     }
 
-    public String requestdeterminant(int requestID)
+    public String requestdeterminant(int requestID, String requestIP)
     {
 	return "Det answer";
     }
 
-    public String requestvalence(int requestID)
+    public String requestvalence(int requestID, String requestIP)
     {
 	return "Valence answer";
     }
 
-    public String requesttrace(int requestID)
+    public String requesttrace(int requestID, String requestIP)
     {
 	return "Trace answer";
     }
 
-    public String requestsmithNormalForm(int requestID)
+    public String requestsmithNormalForm(int requestID, String requestIP)
     {
 	return "SNF answer";
     }
