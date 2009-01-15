@@ -267,9 +267,6 @@ public class QueueManager implements QueueRequest
 				// We are no longer processing a reuqest
 				processing = false;
 
-				// We are no longer processing a reuqest
-				processing = false;
-
 				System.out.println("Answer to operation " + 
 						   answerLocation + " was " +
 						   res.get_return());
