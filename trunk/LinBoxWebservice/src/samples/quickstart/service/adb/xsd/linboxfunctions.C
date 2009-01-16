@@ -67,16 +67,26 @@ const char* detFiles(char* matfile)
     return const_cast<char*>("Error in detFiles");
 
 
+
+
   // FOR DEBUGGING
   ofstream output2(dfile);  
   ofstream output3(dfile2);
-  output2 << "Part 1 " << output.str();
-  output3 << "Part 2 " << output.str().c_str();
+
+  string answer = output.str();
+  output2 << "Part 1 " << answer;
+
+  const char* a = answer.c_str();
+  output3 << "Part 2 " << a;
+
   output2.close();
   output3.close();
-  
 
-  return output.str().c_str();
+
+
+  
+  return a;
+  //return (output.str().c_str());
 
 
 }
