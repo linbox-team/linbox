@@ -34,6 +34,8 @@ using namespace std;
 
 static char dfile[100]= "/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/Det_Response.txt";
 static char dfile2[100]= "/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/Det_Response2.txt";
+
+static ostringstream output;
 //-----------------------------------------------------------------------------
 
 bool det(std::istream& matrix_in, std::ostream& det_out)
@@ -49,15 +51,15 @@ bool det(std::istream& matrix_in, std::ostream& det_out)
     LinBox::det (det_A, A);
   } catch (LinBox::LinboxError e) { return false; }
   
-  ZZ.write(det_out, det_A) << std::endl;
+  ZZ.write(det_out, det_A);// << std::endl;
   
   return true;
 }
 
 const char* detFiles(char* matfile)
 {
-  // Open the output stream
-  ostringstream output;
+  output.clear();
+  output.str("");
 
   string s(matfile);
   istringstream iss(s);
