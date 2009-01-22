@@ -286,7 +286,7 @@
      <!-- Move the web service to the web containter -->
 
         <copy file="${build.dir}/middleman/build/lib/Middleman.aar"
-              toDir="/home/www/usa/linbox/${webapp.dir}"
+              toDir="/home/www/usa/linbox/apache-tomcat-6.0.13/webapps/axis2/WEB-INF/services"
               overwrite="yes">    
         </copy>
     </target>
@@ -396,7 +396,7 @@
 
       <!-- Generate the java from the wsdl retrieved from the web service-->
 
-      <get src="http://linalg.org:8080/axis2/services/TransferAgent?wsdl"
+      <get src="http://hmrg.pc.cis.udel.edu:2000/axis2/services/TransferAgent?wsdl"
            dest="${build.dir}/TransferAgent.wsdl"/>
 
 
