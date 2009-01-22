@@ -26,7 +26,8 @@ public class TransferAgentUserClient {
 	try
 	    {
 		// Connects to the web service
-		TransferAgentMiddlemanStub stub = new TransferAgentMiddlemanStub("http://hmrg.pc.cis.udel.edu:2000/axis2/services/TransferAgentMiddleman");
+		//		TransferAgentMiddlemanStub stub = new TransferAgentMiddlemanStub("http://hmrg.pc.cis.udel.edu:2000/axis2/services/TransferAgentMiddleman");
+		TransferAgentMiddlemanStub stub = new TransferAgentMiddlemanStub("http://linalg.org:8080/axis2/services/TransferAgentMiddleman");
 		
 		long soTime = 60 * 60 * 1000; // 1 hour
 		stub._getServiceClient().getOptions().
