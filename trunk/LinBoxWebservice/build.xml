@@ -48,6 +48,7 @@
     </path>
 
     <path id="client.class.path">
+      <pathelement path="/home/www/usa/linbox/apache-tomcat-6.0.13/webapps/axis2/WEB-INF/classes"/>
       <pathelement path="/home/fendt/${properties.dir}"/>
         <fileset dir="${AXIS2_HOME}/lib">
             <include name="*.jar"/>
