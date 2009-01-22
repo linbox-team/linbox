@@ -37,9 +37,11 @@
         </fileset>
     </path>
 
+
+
     <path id="linalg.axis2.classpath">
-      <pathelement path="/home/www/usa/linbox/${properties.dir}"/>
-      <pathelement path="/home/www/usa/linbox/${conf.dir}"/>
+      <pathelement path="/home/www/usa/linbox/apache-tomcat-6.0.13/webapps/axis2/WEB-INF/classes"/>
+      <pathelement path="/home/www/usa/linbox/apache-tomcat-6.0.13/webapps/axis2/WEB-INF/conf"/>
         <fileset dir="${AXIS2_HOME}/lib">
             <include name="*.jar"/>
         </fileset>
@@ -178,7 +180,9 @@
 
 
    <!-- *********************** Compile.middleman ************************* -->
-    <target name="compile.middleman">
+    <target name="compile.middleman" depends="clean, prepare">
+
+         <delete file="/home/www/usa/apache-tomcat-6.0.13/webapps/axis2/WEB-INF/services/Middleman.aar"/>
 
         <javac debug="on"
                fork="true"
@@ -187,9 +191,6 @@
                classpathref="linalg.axis2.classpath"
            includes="samples/quickstart/middleman/TransferAgentMiddleman.java">
         </javac>
-
-        <mkdir dir="${build.dir}/middleman/build/classes/samples/quickstart/middleman"/>
-
     </target>
 
    <!-- ******************* Generate.middleman.WSDL *********************** -->
@@ -201,7 +202,8 @@
                    outputLocation="${build.dir}"
                    targetNamespace="http://quickstart.samples"
                    schemaTargetNamespace="http://quickstart.samples/xsd"
-		   locationURI="http://hmrg.pc.cis.udel.edu:2000/axis2/services/TransferAgent">
+		   locationURI="http://linalg.org:8080/axis2/services/TransferAgent">
+
             <classpath>
                 <pathelement path="${linalg.axis2.classpath}"/>
                 <pathelement location="${build.dir}/classes"/>
