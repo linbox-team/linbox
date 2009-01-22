@@ -127,18 +127,21 @@ public class TransferAgentSkeleton implements TransferAgentSkeletonInterface
 	    String str = param1.getMatrix();
 	    str = URLDecoder.decode(str, "US-ASCII");
 
-	    String d;
-	    
+	    String d = "default";
+
 	    // The answer determined by the linbox function library
 	    d = linboxfunctions.detFiles(str);
-
-
-
+	    
 	    try{
 	    Writer output = null;
-	    File file = new File("/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/Det_output3.txt");
+	    File file = new File("/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/Det_output4.txt");
 	    output = new BufferedWriter(new FileWriter(file));
-	    output.write(d);
+	    output.write("Answer is ");
+	    if (d.length() == 0)
+		output.write("null");
+	    else
+		output.write(d);
+	    output.write(".");
 	    output.close();
 	    }catch(Exception e){}
 

@@ -56,41 +56,34 @@ bool det(std::istream& matrix_in, std::ostream& det_out)
   return true;
 }
 
-const char* detFiles(char* matfile)
+const char* detFiles(char* mat)
 {
   output.clear();
   output.str("");
 
-  string s(matfile);
+  string s(mat);
   istringstream iss(s);
 
   // If there is a problem, return false, otherwise return true
   if (!iss || !output || !det(iss, output))
     return const_cast<char*>("Error in detFiles");
-
-
-
-
+ 
   // FOR DEBUGGING
   ofstream output2(dfile);  
   ofstream output3(dfile2);
 
-  string answer = output.str();
-  output2 << "Part 1 " << answer;
+  string p = output.str();
+  output2 << "Part 1 " << p;
 
-  const char* a = answer.c_str();
+  const char* a = p.c_str();
   output3 << "Part 2 " << a;
 
   output2.close();
   output3.close();
-
-
-
   
   return a;
   //return (output.str().c_str());
-
-
+ 
 }
 
 bool rank(std::istream& matrix_in, std::ostream& rank_out)
