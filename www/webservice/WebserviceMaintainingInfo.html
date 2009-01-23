@@ -379,7 +379,7 @@ the original StandAlone or Dependent clients.
 
 <br><br>
 <h3> To Run the Service With the New Model </h3>
-Copy the LinBoxWebservice directory as before.  Then in that directory:
+[OUTDATED, USE THE INSTRUCTION FROM THE WINTER, BELOW] Copy the LinBoxWebservice directory as before.  Then in that directory:
 <ol>
 	<li>Generate the LinBox web service with ant generate.service</li>
 	<li>Generate the middleman web service with ant generate.middleman</li>
@@ -400,7 +400,7 @@ Copy the LinBoxWebservice directory as before.  Then in that directory:
 Return to top</a><br><br>
 
 
-<a name="winter"><h2><u>New to Winter '09</u></h2></a> <br>
+<a name="winter"><h2><u>New to Winter '09</u></h2></a>
 <ul>
 <li>
 At the end of the summer, the hmrg computer was updated to Ubuntu, and this caused some things to stop 
@@ -425,9 +425,30 @@ A warning:
 <br>
 occured when running the queue and user clients.  This was solved by adding the directory containing a log4j file to the runtime directory in the Ant file.</li>
 
+<li>
+The TransferAgentMiddleman web service and the queue client were moved over to linalg.org from hmrg.  Everything still works.
+<li>
 
+<li>
+Sometimes when the answer is too larged (>50 digits or so), the service will return a null pointer instead of the answer.  This does not cause the service to crash, nor does it happen all of the time.  The problem was traced to a specific area in the Swig auto-generated code.  Perhaps Java is garbage collecting the memory before it is returned.  This is a significant bug.
+</li>
+</ul>
 
+The command line client can now be run as follows:<br>
 
+Copy the LinBoxWebservice directory to hmrg and linalg.  Then
+<ol>
+        <li>Shut down apache on hmrg with /home/fendt/apache-tomcat-6.0.18/bin/shutdown.sh </li>
+	<li>Generate the LinBox web service on hmrg with ant generate.service</li>
+	<li> Start up apache on hmrg with /home/fendt/apache-tomcat-6.0.18/bin/startup.sh </li>
+	<li>Generate the middleman web service on linalg with ant generate.middleman</li>
+	<li>Generate the queue client on linalg with ant generate.queue.client</li>
+	<li>Generate the user client on hmrg with ant generate.user.client</li>
+	<li>Start up RMI on linalg with //usr/jdk/jdk1.5.0_15/bin/rmiregistry</li>
+	<li>Start the queue client on linalg with ant run.queue.client</li>
+	<li>Start the queue client on hmrg with ant run.user.client</li>
+	<li>You can now make web service calls on hmrg with the user client (see list of functions above).</li>
+</ol>
 <a href="http://www.linalg.org/webservice/WebserviceMaintainingInfo.html#contents">
 Return to top</a><br><br>
 
