@@ -394,34 +394,33 @@ Copy the LinBoxWebservice directory as before.  Then in that directory:
 
 
 
-
+<br>
 <a href="http://www.linalg.org/webservice/LinBoxWebserviceInfo.html#contents">
 Return to top</a><br><br>
 
 
 <a name="winter"><h2><u>New to Winter '09</u></h2></a> <br>
-<br>
 <ul>
 <li>
-At the end of the summer, the hmrg computer wsa updated to Ubuntu, and this caused some things to stop 
+At the end of the summer, the hmrg computer was updated to Ubuntu, and this caused some things to stop 
 working in the service.  During this winter, I fixed these issues, and both the queued command line 
 server and the web client are running.</li>
 
 <li>
-The wrapper code for LinBox no longer writes the answer to a file and then immediately opens and sends the answer.  It writes directly to a ostringstream instead.</li>
+The wrapper code for LinBox no longer writes the answer to a file and then immediately opens and sends back the answer.  It writes directly to a ostringstream instead.</li>
 
 <li>
 Axis2 was upgraded to version 1.4.  This helped with the issue above, but introduced a new warning:
 <br>
-[WARN] Unable to generate EPR for the transport : http
+<b>[WARN] Unable to generate EPR for the transport : http</b>
 <br>
 This is seen during the wsdl generation of the middleman and TransferAgent services.  It is uncertain that this warning has any effect.</li>
 
 <li>
 A warning:
 <br>
-     [java] log4j:WARN No appenders could be found for logger (org.apache.axis2.description.AxisService).
-     [java] log4j:WARN Please initialize the log4j system properly.
+<b>     [java] log4j:WARN No appenders could be found for logger (org.apache.axis2.description.AxisService).
+<br>    [java] log4j:WARN Please initialize the log4j system properly.</b>
 <br>
 occured when running the queue and user clients.  This was solved by adding the directory containing a log4j file to the runtime directory in the Ant file.</li>
 
