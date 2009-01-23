@@ -23,25 +23,17 @@
     <property name="build.dir" value="build"/>
 
     <!-- This is the name of your webapps's services directory -->
-    <property name="webapp.dir" value="apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services"/>
+    <property name="webapp.dir" value="/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services"/>
 
-    <property name="properties.dir" value="apache-tomcat-6.0.18/webapps/axis2/WEB-INF/classes"/>
+    <property name="properties.dir" value="/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/classes"/>
 
-    <property name="conf.dir" value="apache-tomcat-6.0.18/webapps/axis2/WEB-INF/conf"/>
+    <property name="conf.dir" value="/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/conf"/>
 
     <path id="axis2.classpath">
-      <pathelement path="/home/fendt/${properties.dir}"/>
-      <pathelement path="/home/fendt/${conf.dir}"/>
-        <fileset dir="${AXIS2_HOME}/lib">
-            <include name="*.jar"/>
-        </fileset>
-    </path>
-
-
-
-    <path id="linalg.axis2.classpath">
       <pathelement path="/home/www/usa/linbox/apache-tomcat-6.0.13/webapps/axis2/WEB-INF/classes"/>
       <pathelement path="/home/www/usa/linbox/apache-tomcat-6.0.13/webapps/axis2/WEB-INF/conf"/>
+      <pathelement path="${properties.dir}"/>
+      <pathelement path="${conf.dir}"/>
         <fileset dir="${AXIS2_HOME}/lib">
             <include name="*.jar"/>
         </fileset>
@@ -59,7 +51,7 @@
     </path>
 
     <path id="server.class.path">
-      <pathelement path="/home/fendt/${properties.dir}"/>
+      <pathelement path="${properties.dir}"/>
         <fileset dir="${AXIS2_HOME}/lib">
             <include name="*.jar"/>
         </fileset>
@@ -74,9 +66,9 @@
    <!-- *********************** Clean *********************** -->
     <target name="clean">
         <delete dir="${build.dir}"/>
-         <delete file="/home/fendt/${webapp.dir}/TransferAgent.aar"/>
-         <delete file="/home/fendt/${webapp.dir}/Middleman.aar"/>
-         <delete file="/home/fendt/${webapp.dir}/liblinboxfunctions.so"/>
+         <delete file="${webapp.dir}/TransferAgent.aar"/>
+         <delete file="/home/www/usa/linbox/apache-tomcat-6.0.13/webapps/axis2/WEB-INF/classes/Middleman.aar"/>
+         <delete file="${webapp.dir}/liblinboxfunctions.so"/>
      </target>
 
    <!-- *********************** Prepare ********************************** -->
@@ -168,10 +160,10 @@
      <!-- Move the web service and the linbox library to the web containter -->
 
         <copy file="${build.dir}/service/build/lib/TransferAgent.aar"
-              toDir="/home/fendt/${webapp.dir}"
+              toDir="${webapp.dir}"
               overwrite="yes">    
         </copy>
-        <copy toDir="/home/fendt/${webapp.dir}" failonerror="false">
+        <copy toDir="${webapp.dir}" failonerror="false">
             <fileset dir="${basedir}/src/samples/quickstart/service/adb/xsd">
                 <include name="liblinboxfunctions.so"/>
             </fileset>
@@ -189,7 +181,7 @@
                fork="true"
                destdir="${build.dir}/classes"
                srcdir="${basedir}/src"
-               classpathref="linalg.axis2.classpath"
+               classpathref="axis2.classpath"
            includes="samples/quickstart/middleman/TransferAgentMiddleman.java">
         </javac>
     </target>
@@ -198,7 +190,7 @@
     <target name="generate.middleman.wsdl" depends="compile.middleman">
         <taskdef name="java2wsdl"
                  classname="org.apache.ws.java2wsdl.Java2WSDLTask"
-                 classpathref="linalg.axis2.classpath"/>
+                 classpathref="axis2.classpath"/>
      <java2wsdl className="samples.quickstart.middleman.TransferAgentMiddleman"
                    outputLocation="${build.dir}"
                    targetNamespace="http://quickstart.samples"
@@ -206,7 +198,7 @@
 		   locationURI="http://linalg.org:8080/axis2/services/TransferAgent">
 
             <classpath>
-                <pathelement path="${linalg.axis2.classpath}"/>
+                <pathelement path="${axis2.classpath}"/>
                 <pathelement location="${build.dir}/classes"/>
             </classpath>
         </java2wsdl>
@@ -223,7 +215,7 @@
 
         <taskdef name="wsdl2java"
                  classname="org.apache.axis2.tool.ant.AntCodegenTask"
-                 classpathref="linalg.axis2.classpath"/>
+                 classpathref="axis2.classpath"/>
         <wsdl2java wsdlFilename="${build.dir}/TransferAgentMiddleman.wsdl"
                    output="${build.dir}/middleman"
                    packageName="samples.quickstart.middleman"
@@ -267,7 +259,7 @@
 
         <taskdef name="wsdl2java"
                  classname="org.apache.axis2.tool.ant.AntCodegenTask"
-                 classpathref="linalg.axis2.classpath"/>
+                 classpathref="axis2.classpath"/>
        <wsdl2java wsdlfilename="${build.dir}/TransferAgent.wsdl"
                    output="${build.dir}/middleman"
                    packageName="samples.quickstart.service.adb"
@@ -485,7 +477,7 @@
 
         <taskdef name="wsdl2java"
                  classname="org.apache.axis2.tool.ant.AntCodegenTask"
-                 classpathref="linalg.axis2.classpath"/>
+                 classpathref="axis2.classpath"/>
        <wsdl2java wsdlfilename="${build.dir}/TransferAgent.wsdl"
                    output="${build.dir}/client"
                    packageName="samples.quickstart.service.adb"
