@@ -10,7 +10,7 @@
 </head>
 <body>
 
-<h1>Using the LinBox Webservice</h1>
+<h1>Using the Webform Portal to the LinBox Webservice</h1>
 
 <h2> <u>Overview </h2></u> <br>
 LinBox is a "C++ template library for exact,
@@ -48,10 +48,13 @@ wish to perform.  The current choices are:
   <li><b>Rank</b>, the maximal number of linearly independent columns or rows of the matrix.</li>
   <li><b>Determinant</b>, given an <b>n x n</b> matrix <b>A</b> where <i>det(A) </i>= &Sigma; <sub> (i1i2...iN) </sub>&plusmn; a<sub>i<sub>1</sub></sub>a<sub>i<sub>2</sub></sub>...a<sub>i<sub>n</sub></sub>
 </li>
-  <li><b>Valence</b></li>
   <li><b>Trace</b>, the sum of the elements on the main diagonal of the matrix.</li>
   <li><b>Smith Normal Form</b></li>
+  <li><b>Valence</b></li>
 </ul>
+
+</label valence>
+By LinBox tradition we use the name <i> valence </i> for the lowest degree nonzero coefficient of the minimal polynomial of the matrix.  By blackbox methods, the valence may be computed more cheaply than the full minimal polynomial.  The valence contains all those primes which occur in the largest invariant factor of the matrix.
 
 Then enter a matrix.  You can either upload a matrix file or input the matrix by hand.  Click submit to perform the calculation.  Note that if you incorrectly enter matrix data then LinBox may not be able to complete the operation.  <br>
 <br>
