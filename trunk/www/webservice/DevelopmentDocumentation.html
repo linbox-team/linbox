@@ -1,0 +1,461 @@
+<!-- Matthew Fendt Summer '07 to Winter'08
+     Information about the setup of the LinBox Web service
+-->
+
+
+<html>
+<head>
+<title> Maintaining the LinBox Webservice</title>
+<link rel="stylesheet" href="linbox.css" title="linbox" type="text/css">
+</head>
+<body>
+
+<h1> Maintaining the LinBox Webservice</h1>
+
+On this page I document exactly how the LinBox web service was
+developed and how it may be updated and maintained.  If you have any further
+questions, feel free to email me at matt.fendt@gmail.com.  Please prefix the
+subject line of your email with [LINBOX]. <br>
+-- Matthew Fendt, January 2008
+
+<br>
+<br>
+
+<a name ="contents"><h2><u>Page Contents</u></h2></a>
+
+<a href="http://www.linalg.org/webservice/WebserviceMaintainingInfo.html#server">
+Building the Server</a><br>
+
+<a href="http://www.linalg.org/webservice/WebserviceMaintainingInfo.html#client">
+Building the Clients</a><br>
+
+<a href="http://www.linalg.org/webservice/WebserviceMaintainingInfo.html#linalg">
+The linalg Client</a><br>
+
+<a href="http://www.linalg.org/webservice/WebserviceMaintainingInfo.html#update">
+Updating and Maintaining the Service</a><br>
+
+<a href="http://www.linalg.org/webservice/WebserviceMaintainingInfo.html#summer">
+New to Summer '08</a><br>
+
+<a href="http://www.linalg.org/webservice/WebserviceMaintainingInfo.html#winter">
+New to Winter '09</a><br>
+
+<br>
+<br>
+
+<a name="server"><h2><u>Building the Server</u></h2></a> <br>
+A "server" is the computer on which the web service will be hosted.  
+It is also where the LinBox library is installed and where the computations 
+are done.  The following contains the step that were taken to install the server on hmrg.
+<br><br>
+
+<b>Some things to note:</b>
+<ul>
+  <li> Currently only configured for Fendt's directory on "hmrg.pc.cis.udel.edu"</li>
+  <li> Web service resides in /home/fendt/apache-tomcat-6.0.18/webapps/
+  axis2/WEB-INF/services </li>
+  <li> Apache is currently listening on port 2000.  This is verified in
+  <apache-dir>/WEB-INF/server.xml  The "Connector port" is set to 2000.  This
+  is at line ~50. </li>
+  <li> Apache startup/shutdown locations: <br>
+      STARTUP: /home/fendt/apache-tomcat-6.0.18/bin/startup.sh <br>
+      SHUTDOWN: /home/fendt/apache-tomcat-6.0.18/bin/shutdown.sh </li>
+</ul>
+
+
+
+<b>Requirements:</b>
+<ul>
+  <li> Apache Ant 1.7.0 </li> 
+  <li> Apache Tomcat 6.0.18 </li>
+  <li> Axis2 1.4.1 installed under Tomcat </li>
+  <li> JDK version 1.6.0_07 </li>
+  <li> SWIG version 1.3.31 (For updating LinBox functionality) </li>
+  <li> LinBoxWebservice directory </li>
+  <li> LinBox computational library itself</li>
+</ul>
+
+<b>Setup:</b>
+
+<ol>
+  <li>Install Ant, Tomcat, Axis2, and Java</li>
+  <li>Set CATALINA_HOME to Tomcat directory (eg /home/fendt/apache-tomcat-6.0.18)</li>
+  <li>Set AXIS2_HOME to Axis 2 directory (eg /home/fendt/axis2-1.4.1)</li>
+  <li>Set ANT_HOME to Ant directory (eg /home/fendt/apache-ant-1.7.0)</li>
+  <li>Set JAVA_HOME to Java directory (eg /usr/lib/jvm/java-6-sun)</li>
+  <li>Make sure Apache is shut down.</li>
+  <li> Svn and configure the LinBox library.  This was done on hmrg.pc.cis.
+udel.edu in the directory /home/fendt/linbox.  This is the copy of LinBox that
+the web service will use. </li>
+  <li> Copy the LinBoxWebservice directory, located at /home/fendt/LinBoxWebservice. </li>
+  <li>In LinBoxWebservice directory, type "ant generate.service" to ready the
+  service.</li>
+  <li>Start up Apache with ./home/fendt/apache-tomcat-6.0.18/bin/startup.sh</li>
+  <li>The web service is now installed in the "services" directory on Apache,
+  is listening on port 2000, and ready for client calls.</li>
+</ol>
+
+<a href="http://www.linalg.org/webservice/WebserviceMaintainingInfo.html#contents">
+Return to top</a><br>
+<br>
+<br>
+
+<a name="client"><h2><u>Building the Clients</u></h2></a> <br>
+A "client" is any computer that gives information to a "server" computer in order to find the result of a computation.  The following can be done to install 
+a client activity on any computer, be it an online web form or a stand alone program. <br> <br>
+
+<b>Requirements:</b>
+<ul>
+  <li> Apache Ant 1.7.0 </li> 
+  <li> Axis2 1.4.1, unzipped
+  <li> Java version 1.6.0_07 </li>
+  <li> LinBoxWebservice directory </li>
+</ul>
+
+<b>Setup:</b>
+<ol>
+  <li>Install Ant, Axis2, and Java</li>
+  <li>Set AXIS2_HOME to Axis 2 directory (eg /home/fendt/axis2-1.4.1)</li>
+  <li>Set ANT_HOME to Ant directory (eg /home/fendt/apache-ant-1.7.0)</li>
+  <li>Set JAVA_HOME to Java directory (eg /usr/lib/jvm/java-6-sun)</li>
+  <li> Copy the LinBoxWebservice directory, located at /home/fendt/LinBoxWebservice. </li>
+</ol>
+
+There are currently four different kinds of clients that can be installed:
+<ol>
+	<li>A stand-alone client that is run from the command line 
+		(TransferAgentStandalontClient).</li>
+	<li>A dependent client that relies on another class to receive the answer
+		(TransferAgentDependentClient).  An example of this second client 
+		is the linalg client.</li>
+ 	<li>	A prototype client that does not call LinBox directly, but rather waits in a
+		queue to be processed (TransferAgentUserClient).  This is still being
+		developed.</li>
+	<li>	A prototype client that listends for enqueue messages and makes the calls to
+		LinBox.  This is still being developed.</li>
+</ol>
+<br><br>
+
+<b>To Install and Run the Stand Alone Client:</b>
+<ol>
+  <li>In the LinBoxWebservice directory, type "ant generate.standalone.client"</li>
+  <li>The client can now be run in the LinBoxWebservice directory, for example: "ant run.standalone.client 
+	-Darg1=rank -Darg2=matrices/mat2.txt"</li>
+</ol>
+
+<b>To Install and Run the Dependent Client:</b>
+<ol>
+  <li>In the LinBoxWebservice directory, type "ant generate.dependent.client"</li>
+  <li>The class is compiled to LinBoxWebservice/build/client/build/classes/samples/
+quickstart/clients/TransferAgentDependentClient.class and can be imported by other classes.</li>
+</ol>
+
+<b>To Install and Run the Experimental User Client:</b>
+<ol>
+  <li>In the LinBoxWebservice directory, type "ant generate.user.client"</li>
+  <li>The client can now be run in the LinBoxWebservice directory, for example: "ant 
+	run.user.client -Darg1=rank -Darg2=matrices/mat2.txt"</li>
+</ol>
+
+<b>To Install and Run the Experimental Queue Client:</b>
+<ol>
+  <li>In the LinBoxWebservice directory, type "ant generate.queue.client"</li>
+  <li>The client can now be run in the LinBoxWebservice directory, for example: "ant 
+	run.queue.client"</li>
+</ol>
+
+<a href="http://www.linalg.org/webservice/WebserviceMaintainingInfo.html#contents">
+Return to top</a><br>
+<br>
+<br>
+
+
+
+
+
+<a name="linalg"><h2><u>The linalg Client</u></h2></a> <br>
+The linalg client is a particular instance of the dependent client build
+described above.  The client is hosted on linalg and processes data from a
+web form on linalg.org.  The client then sends the data to hmrg to
+compute the answer. <br> <br>
+
+<b>Getting the software</b>
+<ol>
+  <li>Get LinBoxWebservice directory from fendt@hmrg to desired location, eg
+   /usa/fendt/LinBoxWebservice</li>
+
+  <li>Unzip axi2-1.2.zip, to eg /usa/fendt/axis2-1.2</li>
+
+  <li>Unzip commons-fileupload-1.2-bin.zip, to eg /home/www/usa/linbox</li>
+
+  <li>Unzip commons-io-1.3.2-bin.zip, to eg /home/www/usa/linbox</li>
+
+  <li> The zip files for 3) and 4) are found on the apache web site, www.apache.org.
+
+  <li>Install tomcat in /home/www/usa/linbox/apache-tomcat-6.0.13</li>
+</ol>
+
+<b>Modifying the software</b>
+
+<ol>
+  <li>Set JAVA_HOME variable to /usr/jdk/jdk1.5.0_07  NOTE: The service will not work if
+	this variable is set to an older version of Java.  If the service is not working,
+	check to see if there is a newer version of Java.</li>
+
+  <li>Set AXIS2_HOME to /usa/fendt/axis2-1.2</li>
+
+  <li>Change port to 8080, in tomcat's conf/server.xml at line 50</li>
+</ol>
+
+<b>Setting up the web client</b>
+<ol>
+  <li>Make the following directories in /home/www/usa/linbox/apache-tomcat-6.0.13/webapps/ROOT/WEB-INF/</li>
+
+    - lib <br>
+    - classes/samples/quickstart/service/adb <br>
+    - classes/samples/quickstart/clients <br>
+
+  <li>Run "ant.generate.dependent.client" in LinBoxWebservice directory</li>
+
+  <li>Copy build/client/build/classes/samples/quickstart/clients/TransferAgentDependentClient.class to /home/www/usa/linbox/apache-tomcat-6.0.13/webapps/ROOT/WEB-INF/classes/samples/quickstart/clients</li>
+
+  <li>Copy all files from build/client/build/classes/samples/quickstart/service/adb/ to  /home/www/usa/linbox/apache-tomcat-6.0.13/webapps/ROOT/WEB-INF/classes/samples/quickstart/service/adb</li>
+
+  <li>Copy build/client/build/lib/Services-test-client.jar to /home/www/usa/linbox/apache-tomcat-6.0.13/webapps/ROOT/WEB-INF/lib</li>
+
+  <li>Copy commons-io-1.3.2.jar to /home/www/usa/linbox/apache-tomcat-6.0.13/webapps/ROOT/WEB-INF/lib</li>
+
+  <li>Copy commons-fileupload-1.2.jar to /home/www/usa/linbox/apache-tomcat-6.0.13/webapps/ROOT/WEB-INF/lib</li>
+
+  <li>Copy "LinalgComputingClient.jsp" and "SubmitComputation.jsp" to /home/www/usa/linbox/apache-tomcat-6.0.13/webapps/ROOT/</li>
+</ol>
+
+
+<b>Running the web client</b>
+<ol>
+  <li>Make sure the web service on hmrg is running!!!</li>
+
+  <li>Start up tomcat.</li>
+
+  <li>The web client is ready to go.  Note that when tomcat is first started up
+that the web page may need to be "reloaded" several times before the service
+starts running.</li>
+
+  <li>If you manage to kill my service on linalg, you may need to restart the 
+web service on hmrg before the linalg web client can work again. :)</li>
+</ol>
+
+<a href="http://www.linalg.org/webservice/WebserviceMaintainingInfo.html#contents">
+Return to top</a><br>
+<br>
+<br>
+
+
+
+
+
+
+
+
+
+<a name="update"><h2><u>Updating and Maintaining the Service</u></h2></a> <br>
+<b> Compilation of LinBox Functional .so From Default Directory on Hmrg</b>
+<ol>
+  <li>cd to /home/fendt/LinBoxWebservice/src/samples/quickstart/service/adb/xsd</li>
+  <li>In makefile: Make sure that the path of the LinBox library is correct.  
+  It is currently -I/home/fendt/linbox </li>
+  <li>Type "make liblinboxfunctions.so"</li>
+  <li>The .so should be ready to be used.</li>
+</ol>
+
+<b> Relocating the LinBox Function .so</b>
+<ol>
+  <li>In makefile, set the path to the LinBox library, eg "-I/home/fendt/linbox"</li>
+  <li>Follow compilation instructions as above</li>
+</ol>
+
+<b>To Add Additional LinBox Functionality</b>
+<ol>
+  <li>In linboxfunctions.i: Add both the computation function, eg <ul><li>extern bool det(std::istream& matrix_in, std::ostream& det_out)</li></ul> and the
+   i/o function, eg <ul><li>extern char* detFiles(char *matfile)</li></ul> both inside and 
+   outside the %{ ... %} block</li>
+
+  <li>In linboxfunctions.C: Update the "Currently supported methods" section,
+   #include the appropriate files from the linbox library, and add the
+   appropriate "file" variable.  Add new computation and i/o function.</li>
+
+  <li>Run the .i file through SWIG (swig -java -c++ -package 
+   samples.quickstart.service.adb.xsd linboxfunctions.i).
+   This will generate the necessary interfacing for the C++ linbox code to work
+   with the Java web service.</li>
+
+  <li>Type "make liblinboxfunctions.so"</li>
+
+  <li>The .so should be ready to be used.  Note that if only "linboxfunctions.C" needs to be changed, step 3 can be ommited.</li>
+
+  <li>The resources/META-INF/services.xml file needs to be updated; add a new "operation" tag to the file.</li>
+
+  <li>The service should be reinstalled on hmrg so that the new service is added.</li>
+  <li>The client code also needs to be updated to accomidate the new functionality.</li>
+</ol>
+
+
+<a href="http://www.linalg.org/webservice/WebserviceMaintainingInfo.html#contents">
+Return to top</a><br>
+<br>
+<br>
+
+
+<a name="summer"><h2><u>New to Summer '08</u></h2></a> <br>
+<br>
+Previously, the web service calls could only be done synchronously and one at a time.  I have changed this
+so that they are asynchronous and the service can handle more than one request at a time.  I did this
+by seperating the model into three parts: The client, the middleman/queue, and the service.
+<br><br>
+The <b>client</b> is now called the TransferAgentUserClient.  It does not call the LinBox service directly, but
+rather calls the middleman (which itself is a web service).  It is asynchronous and currently has the
+following functions:
+<ul>
+	<li><b>Rank</b></li>
+		<ul>
+		<li>Run with ant run.user.client -Darg1=rank -Darg2=(matrix-file)</li>
+		</ul>
+	<li><b>Determinant</b></li>
+		<ul>
+		<li>Run with ant run.user.client -Darg1=determinant -Darg2=(matrix-file)</li>
+		</ul>
+	<li><b>Trace</b></li>
+		<ul>
+		<li>Run with ant run.user.client -Darg1=trace -Darg2=(matrix-file)</li>
+		</ul>
+	<li><b>Valence</b></li>
+		<ul>
+		<li>Run with ant run.user.client -Darg1=valence -Darg2=(matrix-file)</li>
+		</ul>
+	<li><b>SmithNormalForm</b></li>
+		<ul>
+		<li>Run with ant run.user.client -Darg1=smithNormalForm -Darg2=(matrix-file)</li>
+		</ul>
+	<li><b>QueueStatus</b>, which checks how many operations are currently waiting in the queue</li>
+		<ul>
+		<li>Run with ant run.user.client -Darg1=queuestatus</li>
+		</ul>
+	<li><b>CheckID</b>, which checks the number of operations that are in front of your operation
+		in the queue.</li>
+		<ul>
+		<li>Run with ant run.user.client -Darg1=checkID -Darg2=(your-operation-ID)</li>
+		</ul>
+	<li><b>GetTimeEstimate</b>, which returns an estimate of how long your operation will take to compute,
+		and how long until it will be returned to you.</li>
+		<ul>
+		<li>Run with ant run.user.client -Darg1=gettimeestimate -Darg2=(your-operation-ID)</li>
+		</ul>
+	<li><b>EstimateLength</b>, which does a quick calculation on how long your operation will take.
+		This does not call a web service, but executes a small program on the user's side.</li>
+		<ul>
+		<li>Run with ant run.user.client -Darg1=estimatelength -Darg2=(matrix-file) -Darg3=(operation)</li>
+		</ul>
+	</ul>
+
+<br><br>
+The <b>middleman</b> is a new intermediate web service.  It is what the user will now call instead of the
+original web service.  When it recieves a request, it enqueues the request in a queue.  It then
+waits for the queue manager to give it back the answer.  When it does, the middleman returns
+the answer to the user.
+
+<br><br>
+The <b>Queue client</b> (also called the Queue manager) is first run before any LinBox calls are made.
+It creates a persistant queue which holds the middleman's web service calls.  The Queue client then
+dequeues from the queue and calls the original LinBox web service.  When it gets the answer back from
+the LinBox web service, it stores the information for the middleman to retrieve.  Note that the
+middleman web service and the Queue client must be on the same machine, because they communication
+via Java RMI.  However, these two do not have to be on the same machine as the LinBox web service,
+since the Queue client and the LinBox web service communicate via web service calls.
+
+<br><br>
+The <b>LinBox web service</b> is virtually unchanged.  It is simply called by the Queue client instead of 
+the original StandAlone or Dependent clients.
+
+<br><br>
+[OUTDATED, USE THE INSTRUCTION FROM THE WINTER, BELOW] Copy the LinBoxWebservice directory as before.  Then in that directory:
+<ol>
+	<li>Generate the LinBox web service with ant generate.service</li>
+	<li>Generate the middleman web service with ant generate.middleman</li>
+	<li> Start up apache with /home/fendt/apache-tomcat-6.0.18/bin/startup.sh </li>
+	<li>Generate the user client with ant generate.user.client</li>
+	<li>Generate the queue client with ant generate.queue.client</li>
+	<li>Start up RMI with /usr/lib/jvm/java-6-sun/bin/rmiregistry</li>
+	<li>Start the queue client with ant run.queue.client</li>
+	<li>Start the queue client with ant run.user.client</li>
+	<li>You can now make web service calls with the user client (see list of functions above).</li>
+</ol>
+
+
+
+<br>
+<br>
+<a href="http://www.linalg.org/webservice/WebserviceMaintainingInfo.html#contents">
+Return to top</a><br><br>
+
+
+<a name="winter"><h2><u>New to Winter '09</u></h2></a>
+<ul>
+<li>
+At the end of the summer, the hmrg computer was updated to Ubuntu, and this caused some things to stop 
+working in the service.  During this winter, I fixed these issues, and both the queued command line 
+server and the web client are running.</li>
+
+<li>
+The wrapper code for LinBox no longer writes the answer to a file and then immediately opens and sends back the answer.  It writes directly to a ostringstream instead.</li>
+
+<li>
+Axis2 was upgraded to version 1.4.  This helped with the issue above, but introduced a new warning:
+<br>
+<b>[WARN] Unable to generate EPR for the transport : http</b>
+<br>
+This is seen during the wsdl generation of the middleman and TransferAgent services.  It is uncertain that this warning has any effect.</li>
+
+<li>
+A warning:
+<br>
+<b>     [java] log4j:WARN No appenders could be found for logger (org.apache.axis2.description.AxisService).
+<br>    [java] log4j:WARN Please initialize the log4j system properly.</b>
+<br>
+occured when running the queue and user clients.  This was solved by adding the directory containing a log4j file to the runtime directory in the Ant file.</li>
+
+<li>
+The TransferAgentMiddleman web service and the queue client were moved over to linalg.org from hmrg.  Everything still works.
+<li>
+
+<li>
+Sometimes when the answer is too larged (>50 digits or so), the service will return a null pointer instead of the answer.  This does not cause the service to crash, nor does it happen all of the time.  The problem was traced to a specific area in the Swig auto-generated code.  Perhaps Java is garbage collecting the memory before it is returned.  This is a significant bug.
+</li>
+</ul>
+
+The command line client can now be run as follows:<br>
+
+<h3> To Run the Service With the New Model </h3>
+
+Copy the LinBoxWebservice directory to hmrg and linalg.  Then
+<ol>
+        <li>Shut down apache on hmrg with /home/fendt/apache-tomcat-6.0.18/bin/shutdown.sh </li>
+	<li>Generate the LinBox web service on hmrg with ant generate.service</li>
+	<li> Start up apache on hmrg with /home/fendt/apache-tomcat-6.0.18/bin/startup.sh </li>
+	<li>Generate the middleman web service on linalg with ant generate.middleman</li>
+	<li>Generate the queue client on linalg with ant generate.queue.client</li>
+	<li>Generate the user client on hmrg with ant generate.user.client</li>
+	<li>Start up RMI on linalg with //usr/jdk/jdk1.5.0_15/bin/rmiregistry</li>
+	<li>Start the queue client on linalg with ant run.queue.client</li>
+	<li>Start the queue client on hmrg with ant run.user.client</li>
+	<li>You can now make web service calls on hmrg with the user client (see list of functions above).</li>
+</ol>
+<a href="http://www.linalg.org/webservice/WebserviceMaintainingInfo.html#contents">
+Return to top</a><br><br>
+
+<a href="http://www.linalg.org/servers.html">Return to server page</a><br><br>
+<br>
+</body>
+</html>
+
+
