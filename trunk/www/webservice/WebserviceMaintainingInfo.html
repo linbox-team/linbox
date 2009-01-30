@@ -1,4 +1,4 @@
-<!-- Matthew Fendt Summer '07 to Winter'08
+<!-- Matthew Fendt Summer '07 to Winter'09
      Information about the setup of the LinBox Web service
 -->
 
@@ -16,12 +16,18 @@ On this page I document exactly how the LinBox web service was
 developed and how it may be updated and maintained.  If you have any further
 questions, feel free to email me at matt.fendt@gmail.com.  Please prefix the
 subject line of your email with [LINBOX]. <br>
--- Matthew Fendt, January 2008
+-- Matthew Fendt, January 2009
 
 <br>
 <br>
 
 <a name ="contents"><h2><u>Page Contents</u></h2></a>
+
+a href="http://www.linalg.org/webservice/WebserviceMaintainingInfo.html#overview">
+Overview</a><br>
+
+a href="http://www.linalg.org/webservice/WebserviceMaintainingInfo.html#howitworks">
+How the Webservice Works</a><br>
 
 <a href="http://www.linalg.org/webservice/WebserviceMaintainingInfo.html#server">
 Building the Server</a><br>
@@ -43,6 +49,78 @@ New to Winter '09</a><br>
 
 <br>
 <br>
+
+
+
+<a name="overview"><h2><u>Overview</u></h2></a> <br>
+LinBox is a "C++ template library for exact,
+high-performance linear algebra computation with dense, sparse, and structured
+matrices over the integers and over finite fields."  <b>LinBox can be used to
+perform massive matrix computations</b> that programs like Matlab and Maple 
+could not solve.  Furthermore, LinBox is constantly being updated and improved,
+with special considerations for potential users. <br> <br>
+
+However, this power comes with a price.  It is not always practical or
+desirable to download the entire LinBox library, as the entire download may
+not be necessary for only a few computations.  Also, since LinBox is constantly
+in flux, the users would need to stay up to date with the frequent downloads.
+Finally, since LinBox is a "template library," it is not always easy
+for the user to run a program and quickly get an answer.  This prompted the
+need for another way of using LinBox. <br> <br>
+
+The creation of a web service for LinBox <b> makes it easy to use the LinBox
+library.</b>  A web service is "a software system designed to support 
+interoperable Machine to Machine interaction over a network" (Wikipedia).  The web service
+solves the above problems with LinBox.  First and foremost, the user <b> no
+longer needs to download the entire LinBox library</b> to perform a 
+computation.  He or she simply needs to install the client code that accesses
+the web service. Second, the web service's copy of LinBox  will be able to be
+updated without any worry from the user.  Finally, the web service provides
+several different methods that the user can simply input the data and receive
+an answer.
+
+
+<a href="http://www.linalg.org/webservice/WebserviceMaintainingInfo.html#contents">
+Return to top</a><br>
+<br>
+<br>
+
+
+<a name="overview"><h2><u>Overview</u></h2></a> <br>
+The web service can be thought of in terms of three clouds:
+<ul>
+<li>  The first cloud consists of all of the user clients.  They are on various
+machines, and have downloaded the client code that allows them to access the
+LinBox webservice.  These clients make calls to a intermediate webservice
+called a middleman, which enqueues their requests for processing.</li>
+<li> The second cloud consists of two things running on the same machine.  The
+first is the middleman webservice, which is called by the clients.  The second
+is another client, called a "Queue Client," which processes the requests which
+got added to the queue when the user clients called the middleman webservice.
+This queue client then calls the actual LinBox webservice.</li>
+<li> The final cloud consists of one or more servers on some number of machines.
+These servers host the actual LinBox webservice that the queue client calls.
+The answer is computed and given back to the queue client, which then gives
+the answer back to the user client.</li>
+</ul>
+
+The purpose of the extra intermediate webservice and the queue is so that users
+can asynchronously call the webservice, and their requests can be processed in
+an orderly manner.  If the user was allowed to call the webservice directly
+(which is how the webform works at this time), no other user could call the
+service until the first call was finished processing.
+
+
+
+
+
+
+
+<a href="http://www.linalg.org/webservice/WebserviceMaintainingInfo.html#contents">
+Return to top</a><br>
+<br>
+<br>
+
 
 <a name="server"><h2><u>Building the Server</u></h2></a> <br>
 A "server" is the computer on which the web service will be hosted.  
