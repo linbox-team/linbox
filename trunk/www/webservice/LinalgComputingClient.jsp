@@ -23,13 +23,20 @@ Check back frequently for more developments!
 
 <form action="SubmitComputation.jsp" method="post" 
 	enctype="multipart/form-data">
+  <p><input type="radio" name="operation" value="Rank">Rank<br>
+    <input type="radio" name="operation" value="Determinant">Determinant<br>
+    <input type="radio" name="operation" value="Valence">Valence<br>
+    <input type="radio" name="operation" value="Trace">Trace<br>
+</p></fomr>
+
+<!--
 <p><select name="operation">
 <option>Rank</option>
 <option>Determinant</option>
 <option>Valence</option>
 <option>Trace</option>
 </select></p>
-
+-->
 
 
 <!-- ******** Upload the matrix ********* -->
