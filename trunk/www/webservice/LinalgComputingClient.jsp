@@ -13,7 +13,7 @@
 
 <h1> Linalg Computing Client </h1>
 
-This is the ever-growing online computing client situated on linalg.org.
+This is the ever-growing webform computing client situated on linalg.org.
 Check back frequently for more developments!
 
 
