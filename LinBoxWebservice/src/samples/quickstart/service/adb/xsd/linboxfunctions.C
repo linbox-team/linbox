@@ -8,7 +8,7 @@
 // 2) rank
 // 3) trace
 // 4) valence
-// 5) Smith normal form
+// 5) Smith normal form -- problem with LinBox right now?
 
 
 #include <iostream>
@@ -33,90 +33,117 @@ using namespace std;
 #include "linbox/util/error.h"
 
 static char dfile[100]= "/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/Det_Response.txt";
-static char dfile2[100]= "/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/Det_Response2.txt";
+static char rfile[100]= "/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/Rank_Response.txt";
+static char tfile[100]= "/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/Trace_Response.txt";
+static char vfile[100]= "/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/Val_Response.txt";
+static char snffile[100]= "/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/SNF_Response.txt";
 
-static ostringstream output;
 //-----------------------------------------------------------------------------
 
 bool det(std::istream& matrix_in, std::ostream& det_out)
 {
-  typedef LinBox::PID_integer Integers;		
-  Integers ZZ;
-  
-  LinBox::DenseMatrix<Integers> A(ZZ);
-  A.read(matrix_in);
-  
-  Integers::Element det_A;
   try {
+    typedef LinBox::PID_integer Integers;		
+    Integers ZZ;
+    
+    LinBox::DenseMatrix<Integers> A(ZZ);
+    A.read(matrix_in);
+    
+    Integers::Element det_A;
+    
     LinBox::det (det_A, A);
-  } catch (LinBox::LinboxError e) { return false; }
   
-  ZZ.write(det_out, det_A);// << std::endl;
+    ZZ.write(det_out, det_A) << std::endl;
+  } 
+  
+  catch (...) { return false; }
   
   return true;
 }
 
-const char* detFiles(char* mat)
+char* detFiles(char* mat)
 {
-  output.clear();
-  output.str("");
+ std:ofstream output(dfile);
 
   string s(mat);
   istringstream iss(s);
 
-  // If there is a problem, return false, otherwise return true
   if (!iss || !output || !det(iss, output))
-    return const_cast<char*>("Error in detFiles");
- 
-  // FOR DEBUGGING
-  ofstream output2(dfile);  
-  ofstream output3(dfile2);
+    return const_cast<char*>("Error in computing determinant");
+  output.close();
 
-  string p = output.str();
-  output2 << "Part 1 " << p;
+  char line[5000];
+  char* result;
 
-  const char* a = p.c_str();
-  output3 << "Part 2 " << a;
-
-  output2.close();
-  output3.close();
-  
-  return a;
-  //return (output.str().c_str());
- 
+  ifstream f(dfile);
+  if (f.is_open())
+    {
+      f.getline(line, 5000);
+      result = line;
+      f.close();
+      remove(dfile);
+      return result;
+    }
+  else
+    {
+      remove(dfile);
+      return const_cast<char*>("Error in opening file");
+    }
 }
 
 bool rank(std::istream& matrix_in, std::ostream& rank_out)
 {
+  try {
+    typedef LinBox::PID_integer Integers;		
+    Integers ZZ;
+    
+    LinBox::DenseMatrix<Integers> A(ZZ);
+    A.read(matrix_in);
+    
+    unsigned long rank_A;
 
-  typedef LinBox::PID_integer Integers;		
-  Integers ZZ;
+    LinBox::rank (rank_A, A);
+    rank_out << rank_A << std::endl;  
+  } 
   
-  LinBox::DenseMatrix<Integers> A(ZZ);
-  A.read(matrix_in);
-  
-  unsigned long rank_A;
-  LinBox::rank (rank_A, A);
-  
-  rank_out << rank_A << std::endl;
+  catch (...) { return false; }
   
   return true;
+
 }
 
-const char* rankFiles(char* matfile)
+const char* rankFiles(char* mat)
 {	
-  ostringstream output;
+ std:ofstream output(rfile);
 
-  string s(matfile);
+  string s(mat);
   istringstream iss(s);
 
-  // If there is a problem, return false, otherwise return true
   if (!iss || !output || !rank(iss, output))
-    return const_cast<char*>("Error in rankFiles");
+    return const_cast<char*>("Error in computing rank");
+  output.close();
 
-  return output.str().c_str();
+  char line[5000];
+  char* result;
+
+  ifstream f(rfile);
+  if (f.is_open())
+    {
+      f.getline(line, 5000);
+      result = line;
+      f.close();
+      remove(rfile);
+      return result;
+    }
+  else
+    {
+      remove(rfile);
+      return const_cast<char*>("Error in opening file");
+    }
 }
 
+// @@@@@@@@@@ Just a stub for now.  The idea is that LinBox will be able to 
+// give us updated time estimates as the computation is taking place.
 int estimateRankTime(char* matfile)
 {
   return rand();
@@ -124,77 +151,118 @@ int estimateRankTime(char* matfile)
 
 bool val(std::istream& matrix_in, std::ostream& val_out)
 {
-  typedef LinBox::PID_integer Integers;		
-  Integers ZZ;
-  
-  LinBox::MatrixStream<Integers> ms(ZZ, matrix_in);
-  typedef LinBox::SparseMatrix<Integers> Blackbox;
-  Blackbox A(ms);
+  try {
+    typedef LinBox::PID_integer Integers;		
+    Integers ZZ;
+    
+    LinBox::MatrixStream<Integers> ms(ZZ, matrix_in);
+    typedef LinBox::SparseMatrix<Integers> Blackbox;
+    Blackbox A(ms);
 
-  Integers::Element val_A;
-  LinBox::valence(val_A, A);
+    Integers::Element val_A;
+   
+    LinBox::valence(val_A, A);
+    
+    val_out << val_A << std::endl;
+  } 
 
-  val_out << val_A << std::endl;
+  catch (...) 
+    { return false; }
 
   return true;
 }
 
 
 
-const char* valFiles(char* matfile)
+const char* valFiles(char* mat)
 {	
-  ostringstream output;
+ std:ofstream output(vfile);
 
-  string s(matfile);
+  string s(mat);
   istringstream iss(s);
 
-  // If there is a problem, return false, otherwise return true
   if (!iss || !output || !val(iss, output))
-    return const_cast<char*>("Error in valFiles");
+    return const_cast<char*>("Error in computing valence");
+  output.close();
 
-  return output.str().c_str();
+  char line[5000];
+  char* result;
 
+  ifstream f(vfile);
+  if (f.is_open())
+    {
+      f.getline(line, 5000);
+      result = line;
+      f.close();
+      remove(vfile);
+      return result;
+    }
+  else
+    {
+      remove(vfile);
+      return const_cast<char*>("Error in opening file");
+    }
 }
-
 
 
 
 bool trace(std::istream& matrix_in, std::ostream& trace_out)
 {
-  typedef LinBox::PID_integer Integers;		
-  Integers ZZ;
+  try {
+    typedef LinBox::PID_integer Integers;		
+    Integers ZZ;
+    
+    LinBox::DenseMatrix<Integers> A(ZZ);
+    A.read(matrix_in);
+    
+    Integers::Element trace_A;
+    
+    
+    LinBox::trace(trace_A, A);
+    ZZ.write(trace_out, trace_A) << std::endl;
+  } 
 
-  LinBox::DenseMatrix<Integers> A(ZZ);
-  A.read(matrix_in);
-  
-  Integers::Element trace_A;
-  LinBox::trace(trace_A, A);
-
-  ZZ.write(trace_out, trace_A) << std::endl;
+  catch (...) { return false; }
 
   return true;
 }
 
 
-const char* traceFiles(char* matfile)
+const char* traceFiles(char* mat)
 {	
-  ostringstream output;
+ std:ofstream output(tfile);
 
-  string s(matfile);
+  string s(mat);
   istringstream iss(s);
 
-  // If there is a problem, return false, otherwise return true
   if (!iss || !output || !trace(iss, output))
-    return const_cast<char*>("Error in traceFiles");
+    return const_cast<char*>("Error in computing trace");
+  output.close();
 
-  return output.str().c_str();
+  char line[5000];
+  char* result;
+
+  ifstream f(tfile);
+  if (f.is_open())
+    {
+      f.getline(line, 5000);
+      result = line;
+      f.close();
+      remove(tfile);
+      return result;
+    }
+  else
+    {
+      remove(tfile);
+      return const_cast<char*>("Error in opening file");
+    }
 }
 
 
 
 bool smithNormalForm(std::istream& matrix_in, std::ostream& snf_out)
 {
-#if 0
+  /*
   typedef LinBox::PID_integer Integers;
   //    typedef Integers::Element integer;
   Integers ZZ;
@@ -213,12 +281,9 @@ bool smithNormalForm(std::istream& matrix_in, std::ostream& snf_out)
        ZZ.write(snf_out, *p) << " ";
 
   snf_out << ")" << endl;
+  */
 
-#endif
-
-	string s;
-  matrix_in >> s;
-    snf_out << "SNF stub: " << s <<  endl;
+	snf_out << "SNF stub" << endl;
 
   /*
   typedef LinBox::PID_integer Integers;		
@@ -246,54 +311,32 @@ bool smithNormalForm(std::istream& matrix_in, std::ostream& snf_out)
 }
 
 
-const char* smithNormalFormFiles(char* matfile)
+const char* smithNormalFormFiles(char* mat)
 {	
-  ostringstream output;
+ std:ofstream output(snffile);
 
-  string s(matfile);
-  istringstream iss(s);
-
-  // If there is a problem, return false, otherwise return true
-  if (!iss || !output || !smithNormalForm(iss, output))
-    return const_cast<char*>("Error in snfFiles");
-
-  return output.str().c_str();
-
-
-    //  return const_cast<char*>("A test of SNF");
-
-
-
-
-
-  /*
- std:ofstream output(sfile);
-
-  string s(matfile);
+  string s(mat);
   istringstream iss(s);
 
   if (!iss || !output || !smithNormalForm(iss, output))
     return const_cast<char*>("Error in snfFiles");
-
   output.close();
 
-  char line[500000];
+  char line[5000];
   char* result;
 
-  ifstream f(sfile);
+  ifstream f(snffile);
   if (f.is_open())
     {
-      f.getline(line, 500000);
+      f.getline(line, 5000);
       result = line;
       f.close();
-      remove(sfile);
+      remove(snffile);
       return result;
     }
   else
     {
-      remove(sfile);
+      remove(snffile);
       return const_cast<char*>("Error in opening file");
     }
-  */
-
 }

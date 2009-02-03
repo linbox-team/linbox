@@ -203,7 +203,7 @@ static void SWIGUNUSED SWIG_JavaThrowException(JNIEnv *jenv, SWIG_JavaExceptionC
 	#include <fstream>
 
 extern bool det(std::istream& matrix_in, std::ostream& det_out);
-extern const char* detFiles(char *mat);
+extern char* detFiles(char *mat);
 extern bool rank(std::istream& matrix_in, std::ostream& rank_out);
 extern const char* rankFiles(char *mat);
 extern int estimateRankTime(char *mat);
@@ -256,26 +256,7 @@ SWIGEXPORT jstring JNICALL Java_samples_quickstart_service_adb_xsd_linboxfunctio
     if (!arg1) return 0;
   }
   result = (char *)detFiles(arg1);
-
-
-
-static char dfile[100]= "/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/Det_Response99.txt";
- std::ofstream output(dfile);  
- output << "Answer: " << result;
-
-
-
-
-
-
-  if(result) 
-    {
-      jresult = jenv->NewStringUTF((const char *)result);
-      output << "is not null?";
-    }
-  else jresult = jenv->NewStringUTF((const char *)"Error");
-
-  output.close();
+  if(result) jresult = jenv->NewStringUTF((const char *)result);
   if (arg1) jenv->ReleaseStringUTFChars(jarg1, (const char *)arg1);
   return jresult;
 }
