@@ -31,6 +31,7 @@ using namespace std;
 #include "linbox/field/PID-integer.h"
 #include "linbox/algorithms/smith-form-adaptive.h"
 #include "linbox/util/error.h"
+#include "linbox/util/matrix-stream.h"
 
 static char dfile[100]= "/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/Det_Response.txt";
 static char rfile[100]= "/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/Rank_Response.txt";
@@ -96,9 +97,10 @@ bool rank(std::istream& matrix_in, std::ostream& rank_out)
   try {
     typedef LinBox::PID_integer Integers;		
     Integers ZZ;
+	MatrixStream<Integers> ms(ZZ, matrix_in);
     
-    LinBox::DenseMatrix<Integers> A(ZZ);
-    A.read(matrix_in);
+    LinBox::DenseMatrix<Integers> A(ms);
+    //A.read(matrix_in);
     
     unsigned long rank_A;
 
