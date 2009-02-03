@@ -97,7 +97,7 @@ bool rank(std::istream& matrix_in, std::ostream& rank_out)
   try {
     typedef LinBox::PID_integer Integers;		
     Integers ZZ;
-	MatrixStream<Integers> ms(ZZ, matrix_in);
+    LinBox::MatrixStream<Integers> ms(ZZ, matrix_in);
     
     LinBox::DenseMatrix<Integers> A(ms);
     //A.read(matrix_in);
