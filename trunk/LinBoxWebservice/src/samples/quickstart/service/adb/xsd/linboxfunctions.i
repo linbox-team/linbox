@@ -4,7 +4,7 @@
 	#include <fstream>
 
 extern bool det(std::istream& matrix_in, std::ostream& det_out);
-extern const char* detFiles(char *mat);
+extern char* detFiles(char *mat);
 extern bool rank(std::istream& matrix_in, std::ostream& rank_out);
 extern const char* rankFiles(char *mat);
 extern int estimateRankTime(char *mat);
@@ -17,7 +17,7 @@ extern const char* smithNormalFormFiles(char *mat);
 %}
 
 extern bool det(std::istream& matrix_in, std::ostream& det_out);
-extern const char* detFiles(char *mat);
+extern char* detFiles(char *mat);
 extern bool rank(std::istream& matrix_in, std::ostream& rank_out);
 extern const char* rankFiles(char *mat);
 extern int estimateRankTime(char *matfile);

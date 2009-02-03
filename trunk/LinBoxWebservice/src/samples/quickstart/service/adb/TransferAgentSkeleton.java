@@ -39,7 +39,6 @@ public class TransferAgentSkeleton implements TransferAgentSkeletonInterface
 	    
 	    // The answer determined by the linbox function library
 	    r = linboxfunctions.rankFiles(str);
-	    // r = "test";
 
 	    // Create a new response that can be called by the client
 	    RankResponse res = new RankResponse();
@@ -127,28 +126,10 @@ public class TransferAgentSkeleton implements TransferAgentSkeletonInterface
 	    String str = param1.getMatrix();
 	    str = URLDecoder.decode(str, "US-ASCII");
 
-	    String d = "default";
+	    String d;
 
 	    // The answer determined by the linbox function library
 	    d = linboxfunctions.detFiles(str);
-	    
-	    try{
-	    Writer output = null;
-	    File file = new File("/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/Det_output4.txt");
-	    output = new BufferedWriter(new FileWriter(file));
-	    output.write("Answer is ");
-	    if (d.length() == 0)
-		output.write("null");
-	    else
-		output.write(d);
-	    output.write(".");
-	    output.close();
-	    }catch(Exception e){}
-
-
-
-
-
 
 	    // Create a new response that can be called by the client
 	    DeterminantResponse res = new DeterminantResponse();
@@ -161,11 +142,11 @@ public class TransferAgentSkeleton implements TransferAgentSkeletonInterface
 	    }
 
 	
-	catch(UnsupportedEncodingException e)
+	catch(Exception e)
 	    {
 		// If the parameter is in an unsupported form, cannot perform
 		// the computation
-		String d = "Unsupported";
+		String d = "There was an error in computing the determinant";
 		DeterminantResponse res = new DeterminantResponse();
 		res.set_return(d);
 		return res;
