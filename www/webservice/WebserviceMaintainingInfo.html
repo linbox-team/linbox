@@ -275,9 +275,6 @@ working in the service.  During this winter, I fixed these issues, and both the 
 server and the web client are running.</li>
 
 <li>
-The wrapper code for LinBox no longer writes the answer to a file and then immediately opens and sends back the answer.  It writes directly to a ostringstream instead.</li>
-
-<li>
 Axis2 was upgraded to version 1.4.  This helped with the issue above, but introduced a new warning:
 <br>
 <b>[WARN] Unable to generate EPR for the transport : http</b>
@@ -294,11 +291,8 @@ occured when running the queue and user clients.  This was solved by adding the 
 
 <li>
 The TransferAgentMiddleman web service and the queue client were moved over to linalg.org from hmrg.  Everything still works.
-<li>
-
-<li>
-Sometimes when the answer is too larged (>50 digits or so), the service will return a null pointer instead of the answer.  This does not cause the service to crash, nor does it happen all of the time.  The problem was traced to a specific area in the Swig auto-generated code.  Perhaps Java is garbage collecting the memory before it is returned.  This is a significant bug.
 </li>
+
 </ul>
 
 <a href="http://www.linalg.org/webservice/WebserviceMaintainingInfo.html#contents">
