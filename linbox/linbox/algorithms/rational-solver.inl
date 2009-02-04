@@ -755,7 +755,6 @@ namespace LinBox {
 			typedef DixonLiftingContainer<Ring, Field, 
 				BlasBlackbox<Ring>, BlasBlackbox<Field> > LiftingContainer;
 		
-
 			// checking size of system
 			linbox_check(A.rowdim() == b.size());
 		
@@ -772,8 +771,7 @@ namespace LinBox {
 			VectorDomain<Ring> VDR(_R);
 
 			BlasBlackbox<Ring> A_check(_R, A); // used to check answer later
-			//  			BlasMatrix<Integer> A_jonx(A);
-
+		
 			// TAS_xxx stands for Transpose Augmented System (A|b)t
 			// this provides a factorization (A|b) = TAS_Pt . TAS_Ut . TAS_Qt . TAS_Lt
 			// such that    
@@ -788,8 +786,6 @@ namespace LinBox {
 
 			for (size_t i=0;i<A.rowdim();++i)
 				for (size_t j=0;j<A.coldim();++j)
-					//F.init(TAS_factors->refEntry(j,i),_R.convert(tmp,A.getEntry(i,j)));
-					//Hmap.image(TAS_factors->refEntry(j,i),A.getEntry(i,j));
 					TAS_factors->setEntry(j,i, Ap->getEntry(i,j));
 					
 			delete Ap;
@@ -797,7 +793,6 @@ namespace LinBox {
 			for (size_t i=0;i<A.rowdim();++i){
 				typename Field::Element tmpe;
 				F.init(tmpe);
-				//Hmap.image(TAS_factors->refEntry(A.coldim(),i), b[i]);
 				F.init(tmpe,_R.convert(tmp,b[i]));
 				TAS_factors->setEntry(A.coldim(),i, tmpe);
 			}
@@ -808,8 +803,7 @@ namespace LinBox {
 #endif
 			LQUPMatrix<Field>* TAS_LQUP = new LQUPMatrix<Field>(F, *TAS_factors);
 			size_t TAS_rank = TAS_LQUP->getrank();
-			// 			std::cout << "tas-rank: " << TAS_rank << std::endl;
-			
+						
 			// check consistency. note, getQ returns Qt.
 			BlasPermutation TAS_P = TAS_LQUP->getP();
 			BlasPermutation TAS_Qt = TAS_LQUP->getQ();
@@ -919,15 +913,10 @@ namespace LinBox {
 					for (size_t j=0; j<rank; j++)
 						_R.assign(At_minor.refEntry(j, i), A.getEntry(srcRow[i], srcCol[j]));
 #ifdef DEBUG_INC
-				At_minor.write(std::cout << "At_minor:" << std::endl, _R);
-				Atp_minor_inv->write(std::cout << "Atp_minor_inv:" << std::endl, F);
+				At_minor.write(std::cout << "At_minor:" << std::endl);//, _R);
+				Atp_minor_inv->write(std::cout << "Atp_minor_inv:" << std::endl);//, F);
 				std::cout << "zt: "; for (size_t i=0; i<rank; i++) std::cout << zt[i] <<' '; std::cout << std::endl;
 #endif
-				//BlasBlackbox<Ring>  BBAt_minor(_R, At_minor);
-				//BlasBlackbox<Field> BBAtp_minor_inv(F, *Atp_minor_inv);
-				//BlasMatrix<Integer>  BBAt_minor( At_minor);
-				//BlasMatrix<Element>  BBAtp_minor_inv( *Atp_minor_inv);
-
 #ifdef RSTIMING
 				tCheckConsistency.stop();
 				ttCheckConsistency += tCheckConsistency;
@@ -946,8 +935,6 @@ namespace LinBox {
 				ttConsistencySolve.update(re, lc);
 				tCheckConsistency.start();
 #endif
-				//delete Atp_minor_inv;
-				
 				VectorFraction<Ring> cert(_R, short_num. size());
 				cert. numer = short_num;
 				cert. denom = short_den;
@@ -1241,7 +1228,7 @@ namespace LinBox {
 				ttCertSetup += tCertSetup;
 #endif
 				//LiftingContainer lc2(_R, F, BBA_minor, BBA_inv, q, _prime);
-				LiftingContainer lc2(_R, F, BBA_minor, *Ap_minor_inv, q, _prime);
+				LiftingContainer lc2(_R, F, A_minor, *Ap_minor_inv, q, _prime);
 
 				RationalReconstruction<LiftingContainer> re(lc2);
 				Vector1 u_num(rank); Integer u_den;
