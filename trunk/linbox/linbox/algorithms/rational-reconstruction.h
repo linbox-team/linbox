@@ -27,8 +27,8 @@
 #include <linbox/linbox-config.h>
 #include <linbox/util/debug.h>
 
-//#define DEBUG_RR
-//#define DEBUG_RR_BOUNDACCURACY
+#define DEBUG_RR
+#define DEBUG_RR_BOUNDACCURACY
 #define DEF_THRESH 50
 
 #ifdef __LINBOX_HAVE_NTL

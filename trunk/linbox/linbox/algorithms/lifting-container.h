@@ -437,6 +437,14 @@ namespace LinBox {
 				IVector v2 (_lc._A.coldim());
 				_lc._MAD.applyV(v2,digit, _res);
 
+#ifdef DEBUG_LC
+				
+				//_A.write(std::cout<<"\n _A :\n"); 
+				std::cout<<"\n A * digit "<<_position<<": ";
+				for (size_t i=0;i<v2.size();++i)
+					std::cout<<v2[i]<<",";
+
+#endif
 #ifdef RSTIMING
 				_lc.tRingApply.stop();
 				_lc.ttRingApply += _lc.tRingApply;
@@ -592,7 +600,7 @@ namespace LinBox {
 			for (size_t i=0; i< _digit_p.size(); ++i)
 				_F.init(_digit_p[i]);
 			
-			//Ap.write(std::cout,F);
+			//
 #ifdef RSTIMING
 			ttGetDigit.clear();
 			ttGetDigitConvert.clear();
@@ -600,6 +608,12 @@ namespace LinBox {
 #ifdef DEBUG_LC
 			std::cout<<"Primes: ";
 			_F.write(std::cout);
+			std::cout<<"\n Matrix: \n";
+			A.write(std::cout);
+			std::cout<<"\n Matrix mod p: \n";
+			Ap.write(std::cout);
+			std::cout<<"\n Matrix LCBASE: \n";
+			LiftingContainerBase<Ring,IMatrix>::_A.write(std::cout);
 #endif
 
 		}
