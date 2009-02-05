@@ -113,16 +113,23 @@ public class QueueManager implements QueueRequest
 
 	finished[ID] = 0;
 
+	String estimate;
 	// Do a quick time estimate
+	estimate = ote.estimateTime(matrixOp, matrix, false);
 
-	String estimate = ote.estimateTime(matrixOp, matrix, false);
+	try {
+	    timeEstimate[ID] = 
+		Double.parseDouble(estimate);
+	}
 
-	timeEstimate[ID] = 
-	    Double.parseDouble(estimate);
+	catch (Exception e)
+	    {
+		estimate = "-1";
+		timeEstimate[ID] = 
+		    Double.parseDouble(estimate);
+	    }
 
-
-	QueueEntry t = q.findEntry(ID);
-
+	QueueEntry t = q.findEntry(ID);	    
 	t.setEstimatedComputationTime(estimate);
 
 	System.out.println("Estimate for " + ID + ":" + estimate);
