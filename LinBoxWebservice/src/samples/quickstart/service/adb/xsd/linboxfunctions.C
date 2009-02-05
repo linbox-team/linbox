@@ -38,7 +38,6 @@ static char rfile[100]= "/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/
 static char tfile[100]= "/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/Trace_Response.txt";
 static char vfile[100]= "/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/Val_Response.txt";
 static char snffile[100]= "/home/fendt/apache-tomcat-6.0.18/webapps/axis2/WEB-INF/services/SNF_Response.txt";
-
 //-----------------------------------------------------------------------------
 
 bool det(std::istream& matrix_in, std::ostream& det_out)
@@ -46,9 +45,10 @@ bool det(std::istream& matrix_in, std::ostream& det_out)
   try {
     typedef LinBox::PID_integer Integers;		
     Integers ZZ;
-    
+
+    // LinBox::MatrixStream<Integers> ms(ZZ, matrix_in);    
     LinBox::DenseMatrix<Integers> A(ZZ);
-    A.read(matrix_in);
+       A.read(matrix_in);
     
     Integers::Element det_A;
     
@@ -64,7 +64,8 @@ bool det(std::istream& matrix_in, std::ostream& det_out)
 
 char* detFiles(char* mat)
 {
- std:ofstream output(dfile);
+  // std:ofstream output(dfile);
+  ofstream output(dfile);
 
   string s(mat);
   istringstream iss(s);
@@ -116,7 +117,8 @@ bool rank(std::istream& matrix_in, std::ostream& rank_out)
 
 const char* rankFiles(char* mat)
 {	
- std:ofstream output(rfile);
+  // std:ofstream output(rfile);
+  ofstream output(rfile);
 
   string s(mat);
   istringstream iss(s);
@@ -213,9 +215,10 @@ bool trace(std::istream& matrix_in, std::ostream& trace_out)
   try {
     typedef LinBox::PID_integer Integers;		
     Integers ZZ;
-    
-    LinBox::DenseMatrix<Integers> A(ZZ);
-    A.read(matrix_in);
+
+    //LinBox::MatrixStream<Integers> ms(ZZ, matrix_in);    
+        LinBox::DenseMatrix<Integers> A(ZZ);
+        A.read(matrix_in);
     
     Integers::Element trace_A;
     

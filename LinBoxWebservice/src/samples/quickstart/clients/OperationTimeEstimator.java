@@ -288,6 +288,7 @@ public class OperationTimeEstimator
     public String estimateTime(String operation, String matrix, 
 			       boolean detailedEstimate)
     {
+	try {
 	// The estimated time
 	double estimate;
 
@@ -428,6 +429,12 @@ public class OperationTimeEstimator
 	// The answer in seconds
 	else 
 	    return Double.toString(estimate);
+	}
+	
+	catch (Exception e)
+	    {
+		return "-1";
+	    }
     }
 }
 
