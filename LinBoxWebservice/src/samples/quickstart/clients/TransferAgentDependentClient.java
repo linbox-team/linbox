@@ -19,6 +19,10 @@ public class TransferAgentDependentClient {
 		// running on port 2000 of hmrg
 		TransferAgentTransferAgentHttpportStub stub = new TransferAgentTransferAgentHttpportStub("http://hmrg.pc.cis.udel.edu:2000/axis2/services/TransferAgent");
 
+		long soTime = 60 * 60 * 1000; // 1 hour
+		tub._getServiceClient().
+		    getOptions().setTimeOutInMilliSeconds(soTime);
+
 	    String str;
 
 
