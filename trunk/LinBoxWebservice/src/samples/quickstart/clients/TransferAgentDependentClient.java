@@ -4,7 +4,7 @@
 
 package samples.quickstart.clients;
 
-import samples.quickstart.service.adb.TransferAgentTransferAgentHttpportStub;
+import samples.quickstart.service.adb.TransferAgentStub;
 import java.io.*;
 import java.net.*;
 
@@ -17,10 +17,10 @@ public class TransferAgentDependentClient {
 	    {
 		// Creates the stub that will connect to the Linbox web service
 		// running on port 2000 of hmrg
-		TransferAgentTransferAgentHttpportStub stub = new TransferAgentTransferAgentHttpportStub("http://hmrg.pc.cis.udel.edu:2000/axis2/services/TransferAgent");
+		TransferAgentStub stub = new TransferAgentStub("http://hmrg.pc.cis.udel.edu:2000/axis2/services/TransferAgent");
 
 		long soTime = 60 * 60 * 1000; // 1 hour
-		tub._getServiceClient().
+		stub._getServiceClient().
 		    getOptions().setTimeOutInMilliSeconds(soTime);
 
 	    String str;
@@ -60,15 +60,15 @@ public class TransferAgentDependentClient {
 	    // If the desired operation is 'rank,' calls the Rank function
 	    // of the stub class
 	    if (op.equalsIgnoreCase("rank")){
-		TransferAgentTransferAgentHttpportStub.Rank req = 
-		    new TransferAgentTransferAgentHttpportStub.Rank();
+		TransferAgentStub.Rank req = 
+		    new TransferAgentStub.Rank();
 		req.setMatrix(str);
 		
 		// Asks for the answer back. Note that this call is not blocked
 		// so the program could run for a while before it asks for the 
 		// answer.
-		//TransferAgentTransferAgentHttpportStub.RankResponse res = 
-		//    stub.rank(req);
+		TransferAgentStub.RankResponse res = 
+		    stub.rank(req);
 
 		return res.get_return();
 	    }
@@ -76,15 +76,15 @@ public class TransferAgentDependentClient {
 	    // If the desired operation is 'determinant,' calls the Determinant
 	    // function of the stub class
 	    else if (op.equalsIgnoreCase("determinant")){
-		TransferAgentTransferAgentHttpportStub.Determinant req = 
-		    new TransferAgentTransferAgentHttpportStub.Determinant();
+		TransferAgentStub.Determinant req = 
+		    new TransferAgentStub.Determinant();
 		req.setMatrix(str);
 		
 		// Asks for the anwser back. Note that this call is not blocked
 		// so the program could run for a while before it asks for the 
 		// answer.
-		//TransferAgentTransferAgentHttpportStub.DeterminantResponse res=
-		//  stub.determinant(req);
+		TransferAgentStub.DeterminantResponse res=
+		    stub.determinant(req);
 
 		return res.get_return();
 	    }
@@ -92,15 +92,15 @@ public class TransferAgentDependentClient {
 	    // If the desired operation is 'valence,' calls the Valence
 	    // function of the stub class
 	    else if (op.equalsIgnoreCase("valence")){
-		TransferAgentTransferAgentHttpportStub.Valence req = 
-		    new TransferAgentTransferAgentHttpportStub.Valence();
+		TransferAgentStub.Valence req = 
+		    new TransferAgentStub.Valence();
 		req.setMatrix(str);
 		
 		// Asks for the answer back. Note that this call is not blocked
 		// so the program could run for a while before it asks for the 
 		// answer.
-		//TransferAgentTransferAgentHttpportStub.ValenceResponse res = 
-		//  stub.valence(req);
+		TransferAgentStub.ValenceResponse res = 
+		    stub.valence(req);
 
 		return res.get_return();
 	    }
@@ -108,15 +108,15 @@ public class TransferAgentDependentClient {
 	    // If the desired operation is 'trace,' calls the Trace
 	    // function of the stub class
 	    else if (op.equalsIgnoreCase("trace")){
-		TransferAgentTransferAgentHttpportStub.Trace req = 
-		    new TransferAgentTransferAgentHttpportStub.Trace();
+		TransferAgentStub.Trace req = 
+		    new TransferAgentStub.Trace();
 		req.setMatrix(str);
 		
 		// Asks for the answer back. Note that this call is not blocked
 		// so the program could run for a while before it asks for the 
 		// answer.
-		//TransferAgentTransferAgentHttpportStub.TraceResponse res = 
-		//  stub.trace(req);
+		TransferAgentStub.TraceResponse res = 
+		    stub.trace(req);
 
 		return res.get_return();
 	    }
@@ -124,16 +124,15 @@ public class TransferAgentDependentClient {
 	    // If the desired operation is 'smithNormalForm,' calls the
 	    // SmithNormalForm function of the stub class
 	    else if (op.equalsIgnoreCase("smithNormalForm")){
-		TransferAgentTransferAgentHttpportStub.SmithNormalForm req = 
-		    new TransferAgentTransferAgentHttpportStub.SmithNormalForm();
+		TransferAgentStub.SmithNormalForm req = 
+		    new TransferAgentStub.SmithNormalForm();
 		req.setMatrix(str);
 		
 		// Asks for the answer back. Note that this call is not blocked
 		// so the program could run for a while before it asks for the 
 		// answer.
-		//TransferAgentTransferAgentHttpportStub.
-		//  SmithNormalFormResponse res = 
-		//  stub.smithNormalForm(req);
+		TransferAgentStub.SmithNormalFormResponse res = 
+		  stub.smithNormalForm(req);
 
 		return res.get_return();
 	    }
