@@ -5,10 +5,14 @@
 package samples.quickstart.clients;
 
 import samples.quickstart.service.adb.TransferAgentStub;
+import samples.quickstart.service.adb.TransferAgentCallbackHandler;
+import org.apache.axis2.client.async.AxisCallback;
 import java.io.*;
 import java.net.*;
 
 public class TransferAgentDependentClient {
+
+    static String result;
 
     public static String request(String op, String matrix, File f, 
 				 int sentAsFile)
@@ -56,7 +60,6 @@ public class TransferAgentDependentClient {
 	    // Converts the matrix to UTF8 encoding
 	    str = URLEncoder.encode(str, "UTF-8");
 
-
 	    // If the desired operation is 'rank,' calls the Rank function
 	    // of the stub class
 	    if (op.equalsIgnoreCase("rank")){
@@ -64,13 +67,14 @@ public class TransferAgentDependentClient {
 		    new TransferAgentStub.Rank();
 		req.setMatrix(str);
 		
-		// Asks for the answer back. Note that this call is not blocked
+		// Asks for the anwser back. Note that this call is not blocked
 		// so the program could run for a while before it asks for the 
 		// answer.
-		TransferAgentStub.RankResponse res = 
+		TransferAgentStub.RankResponse res=
 		    stub.rank(req);
 
 		return res.get_return();
+
 	    }
 	    
 	    // If the desired operation is 'determinant,' calls the Determinant

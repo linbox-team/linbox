@@ -46,9 +46,9 @@ bool det(std::istream& matrix_in, std::ostream& det_out)
     typedef LinBox::PID_integer Integers;		
     Integers ZZ;
 
-    // LinBox::MatrixStream<Integers> ms(ZZ, matrix_in);    
-    LinBox::DenseMatrix<Integers> A(ZZ);
-       A.read(matrix_in);
+    LinBox::MatrixStream<Integers> ms(ZZ, matrix_in);    
+    LinBox::DenseMatrix<Integers> A(ms);
+    //A.read(matrix_in);
     
     Integers::Element det_A;
     
@@ -98,8 +98,8 @@ bool rank(std::istream& matrix_in, std::ostream& rank_out)
   try {
     typedef LinBox::PID_integer Integers;		
     Integers ZZ;
-    LinBox::MatrixStream<Integers> ms(ZZ, matrix_in);
-    
+
+    LinBox::MatrixStream<Integers> ms(ZZ, matrix_in);    
     LinBox::DenseMatrix<Integers> A(ms);
     //A.read(matrix_in);
     
@@ -216,9 +216,9 @@ bool trace(std::istream& matrix_in, std::ostream& trace_out)
     typedef LinBox::PID_integer Integers;		
     Integers ZZ;
 
-    //LinBox::MatrixStream<Integers> ms(ZZ, matrix_in);    
-        LinBox::DenseMatrix<Integers> A(ZZ);
-        A.read(matrix_in);
+    LinBox::MatrixStream<Integers> ms(ZZ, matrix_in);    
+    LinBox::DenseMatrix<Integers> A(ms);
+    //    A.read(matrix_in);
     
     Integers::Element trace_A;
     
