@@ -124,7 +124,7 @@ const char* rankFiles(char* mat)
   istringstream iss(s);
 
   if (!iss || !output || !rank(iss, output))
-    return const_cast<char*>("Error in computing rank");
+    return const_cast<char*>("Error in computing the rank");
   output.close();
 
   char line[5000];
