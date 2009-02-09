@@ -81,7 +81,7 @@ namespace LinBox {
 				typedef typename std::vector<otherElt> othervec;
 				typedef typename std::vector<Element> selfvec;
 				typedef typename othervec::iterator otheriter;
-				typedef typename selfvec::iterator selfiter;
+				typedef typename selfvec::const_iterator selfiter;
 				otheriter vp_p; selfiter v_p;
 
 				othervec values_mapped(A._values.size());
