@@ -561,7 +561,13 @@ namespace LinBox
 
 		std::stack<Activity *>           _activities;      // Stack of activity structures
 
-		std::map<const char *, MessageClass *>
+            	struct C_str_Less {
+                    bool operator() (const char* x, const char * y) const {
+                        return strcmp(x,y)<0;
+                    }
+                };
+
+		std::map<const char *, MessageClass *, C_str_Less>
 			                         _messageClasses;
 		EstimationMethod                 _estimationMethod;     // Activity estimator
 
