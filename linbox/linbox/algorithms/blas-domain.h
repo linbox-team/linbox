@@ -482,6 +482,29 @@ namespace LinBox {
 			
 		}
 
+
+        public:
+            
+	/** Print matrix.
+	 * @param  os  Output stream to which matrix is written.
+	 * @param  A   Matrix.
+	 * @returns reference to os.
+	 */
+	template <class Matrix>
+	inline std::ostream &write (std::ostream &os, const Matrix &A) const
+		{ return A.write (os, _F); }
+
+	/** Read matrix
+	 * @param  is  Input stream from which matrix is read.
+	 * @param  A   Matrix.
+	 * @returns reference to is.
+	 */
+	template <class Matrix>
+	inline std::istream &read (std::istream &is, Matrix &A) const
+		{ return A.read (is, _F); }
+
+
+
 		
 	}; /* end of class BlasMatrixDomain */
 
