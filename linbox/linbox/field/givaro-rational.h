@@ -49,10 +49,23 @@ namespace LinBox
     typedef  Rational Element;
     
 
-    Element& init(Element& x , const integer& y = 0) const
+    Element& init(Element& x , const integer& y) const
 	  { return x=Rational(y);}
 
+    template<class XX>
+    Element& init(Element& x , const XX& y) const
+	  { return x=Rational(y);}
 
+    Element& assign(Element& x , const Rational& y) const
+          { return x=y;}
+
+    // x = numerator of y
+    integer& get_num (integer& x, const Element& y)  const
+	  { return x = y.nume(); }
+
+    // x = denominator of y
+    integer& get_den (integer& x, const Element& y) const 
+          { return x = y.deno(); }
 
 
   }; // class 

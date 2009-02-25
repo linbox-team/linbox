@@ -65,7 +65,11 @@ namespace LinBox {
  			     const Blackbox                          &A,
 			     const RingCategories::RationalTag     &tag,
  			     const Method                           &M){
-		throw LinboxError("LinBox ERROR: rank is not yet defined over a rational domain");
+            commentator.start ("Rational Rank", "Rrank");
+                // Same mapping as the integer one
+            rank(r, A, RingCategories::IntegerTag(), M);
+            commentator.stop ("done", NULL, "Rrank");
+            return r;
 	}
 
 
@@ -476,7 +480,7 @@ namespace LinBox {
         typedef typename Blackbox::template rebind< Field >::other FBlackbox;
         FBlackbox * Ap;
         MatrixHom::map(Ap, A, Field(*genprime) );
-        commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Integer Rank is done modulo " << mmodulus << std::endl;
+        commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Integer Rank is done modulo " << *genprime << std::endl;
         rankin(r, *Ap, RingCategories::ModularTag(), M);
         delete Ap;
         commentator.stop ("done", NULL, "irank");
@@ -528,6 +532,9 @@ namespace LinBox {
         linbox_check( a < LinBox::BlasBound);
         BlasMatrix<typename Field::Element> B(A);
 	BlasMatrixDomain<Field> D(F);
+        D.write(std::cerr << "blasMAtrix: ", B) << std::endl;
+        
+        
         r = D.rank(B);
 	commentator.stop ("done", NULL, "blasrank");
         return r;
@@ -580,7 +587,7 @@ namespace LinBox {
         typedef typename Blackbox::template rebind< Field >::other FBlackbox;
         FBlackbox * Ap;
         MatrixHom::map(Ap, A, Field(*genprime) );
-        commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Integer Rank is done modulo " << mmodulus << std::endl;
+        commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Integer Rank is done modulo " << *genprime << std::endl;
         rank(r, *Ap, RingCategories::ModularTag(), M);
         delete Ap;
         commentator.stop ("done", NULL, "iirank");
