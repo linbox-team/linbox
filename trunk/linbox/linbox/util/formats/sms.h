@@ -43,11 +43,15 @@ class SMSReader :public MatrixStreamReader<Field> {
 			return NO_FORMAT;
 		i = restLine - firstLine;
 
-		// Read "M"
+		// Read "M" or "R" or "P"
 		while( firstLine[i] && isspace(firstLine[i]) )
 			++i;
 		if( !firstLine[i] || (firstLine[i] != 'M' &&
-		                      firstLine[i] != 'm'   ) )
+		                      firstLine[i] != 'm' &&
+		                      firstLine[i] != 'R' &&
+		                      firstLine[i] != 'r' &&
+		                      firstLine[i] != 'P' &&
+		                      firstLine[i] != 'p'   ) )
 			return NO_FORMAT;
 
 		// Check whitespace for rest of line
