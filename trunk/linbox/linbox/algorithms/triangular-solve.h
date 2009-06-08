@@ -2,7 +2,7 @@
  * (C) LinBox 2008
  * Triangular Solve
  * See COPYING for license information.
- * Time-stamp: <18 Sep 08 17:49:04 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <08 Jun 09 09:21:03 Jean-Guillaume.Dumas@imag.fr> 
  * ===================================================================
  */
 #ifndef __TRI_SOLVE_INL
@@ -92,7 +92,7 @@ namespace LinBox
                                  const _Matrix  &L,
                                  const Vector2& b)
     {
-        linbox_check( b.size() == U.coldim() );
+        linbox_check( b.size() == L.coldim() );
         typedef _Matrix Matrix;
         typedef typename Matrix::Field Field;
         const Field& F = L.field();
