@@ -148,7 +148,7 @@ namespace LinBox {
                     
                     minpoly(eP, *Ap, tag, Method::Wiedemann(M));
                     
-                   
+                    delete Ap;
                     return PreMap<Field, GivaroExtension<Field> >(F,EF)(P, eP);
                 } else
                     return minpoly(P, A, tag, Method::Wiedemann(M)); 
@@ -163,6 +163,7 @@ namespace LinBox {
                     MatrixHom::map(Ap, A, EF );
                     std::vector< typename GivaroGfq::Element > eP;
                     minpoly(eP, *Ap, tag, Method::Wiedemann(M));
+                    delete Ap;
                     return PreMap<Field, GivaroGfq >(F,EF)(P, eP);
                     
                 } else
