@@ -1,9 +1,15 @@
+
+/*********
+
+let C be the cyclic shift matrix with 1 on the 1,n position and along the first subdiagonal.
+
+This matrix is 2C + 3I. It has 2 nonzero entries per row and per column.
+It is an n by n matrix whose determinant is considerably less than the 
+Hadamard bound.
+
+********/
 #include <iostream>
 using namespace std;
-
-
-// Makes an n by n matrix whose determinant is considerably less than the 
-// Hadamard bound.
 
 int main(int argc, char* argv[])
 {

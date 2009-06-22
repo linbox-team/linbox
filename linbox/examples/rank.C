@@ -6,6 +6,7 @@
 //#include "linbox-config.h"
 
 #include <iostream>
+#include <sstream>
 
 //#include "linbox/field/modular.h"
 #include "linbox/field/modular-double.h"
@@ -47,11 +48,23 @@ int main (int argc, char **argv)
 
 		rank (r, A);
 	}
-	if (argc == 3) { 
-		int q = atoi(argv[2]);
-		//double q = atof(argv[2]);
-		typedef Modular<int> Field;
-		//typedef Modular<double> Field;
+	if (argc == 3) { // rank mod a prime 
+		/* 
+		//for prime greater than wordsize:
+	    stringstream qstr(argv[2]);
+		integer q;
+		qstr >> q;
+		typedef Modular<integer> Field;
+		*/
+		/* 
+		//to use doubles, prime < 2^{23}
+		double q = atof(argv[2]);
+		typedef Modular<double> Field;
+		*/
+		//to use ints, prime < 2^{31}
+		int32 q = atoi(argv[2]);
+		typedef Modular<int32> Field;
+
 		Field F(q);
 		MatrixStream<Field> ms( F, input );
 		SparseMatrix<Field, Vector<Field>::SparseSeq > B (ms);
