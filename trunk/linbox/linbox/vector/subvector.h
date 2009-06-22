@@ -44,6 +44,7 @@ class Subvector //: public Vector // for types
 	// should allocator_type even be offered?
 	//include <memory>
 	//typedef allocator<value_type>	allocator_type;
+	typedef typename VectorCategories::DenseVectorTag VectorCategory;
     
 	typedef size_t                                              size_type;
 	typedef typename std::iterator_traits<Iterator>::difference_type difference_type;

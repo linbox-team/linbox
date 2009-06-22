@@ -3,7 +3,7 @@
 /* linbox/field/gf2.inl
  * Copyright (C) 2003 Bradford Hovinen
  *
- * Written by Bradford Hovinen <hovinen@cis.udel.edu>
+ * Written by Bradford Hovinen, Dumas, bds
  *
  * ------------------------------------
  *
