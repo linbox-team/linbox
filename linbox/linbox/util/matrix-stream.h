@@ -225,6 +225,9 @@ class MatrixStream {
     /** Destructor */
 	~MatrixStream() { delete reader; }
 	
+    /** re initialize after one matrix is read. */
+	void newmatrix();
+
     /** Read some white space (if there is any). Using this method is preferable
      * to letting the input stream handle whitespace skipping because this 
      * method will update the line number when breaks are encountered.

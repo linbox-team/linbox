@@ -184,6 +184,14 @@ MatrixStream<Field>::MatrixStream(const Field& fld, std::istream& i )
 }
 
 template<class Field>
+void MatrixStream<Field>::newmatrix()
+{
+    readAnythingYet = false;
+    init();
+    if( currentError > GOOD ) throw currentError;
+}
+
+template<class Field>
 bool MatrixStream<Field>::nextTriple(size_t& m, size_t& n, Element& v) {
 	if( currentError > GOOD ) return false;
 
