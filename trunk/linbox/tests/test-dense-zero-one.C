@@ -1,0 +1,74 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
+/* tests/test-dense-zero-one.C
+ * using generic testBlackbox  -bds
+ */
+
+#include "linbox/linbox-config.h"
+
+#include <iostream>
+#include <fstream>
+#include <vector>
+
+#include "linbox/field/modular-int.h"
+#include "linbox/blackbox/dense-zero-one.h"
+
+#include "test-blackbox.h"
+
+using namespace LinBox;
+
+int main (int argc, char **argv)
+{
+	ofstream report;
+
+	bool pass = true;
+
+	static size_t n = 20;
+	static integer q = 2147483647U;
+	static int iterations = 1;
+
+	static Argument args[] = {
+		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
+		{ '\0' }
+	};
+
+	parseArguments (argc, argv, args);
+
+	srand (time (NULL));
+
+	commentator.start("Scalar black box test suite", "Scalar");
+
+	typedef Modular<uint32> Field;
+
+	Field F (q);
+	Field::Element d; 
+	F.init (d, -1);
+
+	typedef DenseZeroOne<Field> Blackbox;
+	// C Pernet: why is the default constructor even public?
+	// Blackbox A; // Test the default constructor
+	//pass = pass && testBlackbox(A);
+
+	Blackbox B (F, n, n); // Test a small one.
+	for (size_t i = 0; i < n; ++i) 
+		for (size_t j = 0; j < n; ++j) {
+			uint64 x = static_cast<uint64>(rand()%2);
+			B.setEntry(i,j,x);
+		}
+	B.write(commentator.report() << "B is " << std::endl);
+	pass = pass && testBlackbox(B);
+	
+	Blackbox C(B);
+	pass = pass && testBlackbox(C);
+	vector<Blackbox::PackedUnit> v;
+	Blackbox D(F, n, n, v);
+	pass = pass && testBlackbox(D);
+	
+	//Blackbox C (F, 100000, d); // Test a large one.
+	//pass = pass && testBlackbox(C);
+
+	commentator.stop(MSG_STATUS(pass));
+	return pass ? 0 : -1;
+}
