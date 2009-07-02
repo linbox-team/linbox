@@ -62,6 +62,7 @@ BASIC_TESTS =  			\
         test-trace              \
         test-triplesbb          \
         test-vector-domain      \
+	test-dense-zero-one     \
 	test-zero-one 
 # tests of components not adhering to LinBox requirements.
 NONCOMPLIANT_TESTS =	\
@@ -513,6 +514,10 @@ benchmark_blas_domain_SOURCES=		\
 test_isposdef_SOURCES=    \
 	test-common.h	\
 	test-isposdef.C
+
+test_dense_zero_one_SOURCES=   \
+	test-blackbox.h \
+	test-dense-zero-one.C
 
 test_ispossemidef_SOURCES=    \
 	test-common.h	\
