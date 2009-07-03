@@ -2,7 +2,7 @@
 
 /* linbox/blackbox/dense-zero-one.h
  * 
- * Written by Nick Messina <nmessina@mail.eecis.udel.edu>
+ * Nick Messina <nmessina@mail.eecis.udel.edu>
  *
  * -----------------------------------------------------
  *
@@ -92,26 +92,30 @@ namespace LinBox
 
 	//Apply Variants
 	
-		//Speedup:
-		//instead of using getEntry, walk through each PackedUnit
-	
 		//apply, y := Ax, matrix-vector product
 		//should there be both handled and handleless apply?
 
-		//handleless apply
+		// handleless apply
 		template <class OutVector, class InVector>
 		OutVector & apply(OutVector & y, const InVector & x) const 
 		{
 		 	Element sum = 0;
-			Element a;
-			for(size_t i = 0; i != _rows; ++i){
-				for(size_t j = 0; j != _cols; ++j){
-					_F.axpyin(sum, getEntry(a,i,j), x[j]); 
+			std::vector<PackedUnit>::const_iterator p = _rep.begin();
+			typename InVector::const_iterator xp = x.begin();
+
+			for(size_t yi = 0; yi != _rows; ++yi){
+				for(; p != _rep.begin() + ((yi+1) * (_rep.size()/_rows)); ++p){
+					for(PackedUnit mask = (static_cast<PackedUnit>(1)<<63); (mask!=0)&&(xp!=x.end()); mask>>=1){
+						if(mask & (*p))
+							_F.addin(sum, (*xp));
+						++xp;
+					}
 				}
-				y[i] = sum;
+				y[yi] = sum;
 				sum = 0;
+				xp = x.begin();
 			}
-		
+
 			return y;
 		}
 
@@ -123,7 +127,7 @@ namespace LinBox
 		template <class OutVector, class InVector>
 		OutVector & applyTranspose(OutVector & y, const InVector & x) const 
 		{
-		 	Element sum = 0;
+			Element sum = 0;
 			Element a;
 			for(size_t j = 0; j != _cols; ++j){
 				for(size_t i = 0; i != _rows; ++i){

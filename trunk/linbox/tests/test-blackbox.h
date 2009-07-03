@@ -245,7 +245,7 @@ testBlackbox(BB &A)
 	} // timing test block
 	
 #if 1 
-	size_t iterations = 2; 
+	size_t iterations = 1; 
 	typename Field::RandIter r(F);
 	LinBox::RandomDenseStream<Field, DenseVector> stream1 (F, r, A.rowdim(), iterations); 
 	typename Field::Element x; 
