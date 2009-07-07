@@ -129,7 +129,7 @@ class DenseSubmatrix<Element>::RawIterator
 
 	bool operator != (const RawIterator& r) const
 	{
-		return (_cur != r._cur) || (_c_dim != r._c_dim) || (_stride != r._stride) || (_c_idx != r._c_idx);
+		return (_c_dim != r._c_dim) || (_stride != r._stride) || (_c_idx != r._c_idx);
 	} 
 
 	Element& operator * ()
@@ -382,7 +382,7 @@ class DenseSubmatrix<Element>::RawIndexedIterator
 
 	bool operator != (const RawIndexedIterator& r) const
 	{
-		return ((_cur != r._cur) || (_c_idx != r._c_idx) || (_r_idx != r._r_idx) ||(_stride != r._stride) || (_c_dim != r._c_dim) );
+		return ((_c_idx != r._c_idx) || (_r_idx != r._r_idx) ||(_stride != r._stride) || (_c_dim != r._c_dim) );
 	}
     
 	const Element& operator*() const {return *_cur;}
@@ -498,10 +498,19 @@ class DenseSubmatrix<Element>::ConstRawIndexedIterator
 
 	bool operator != (const ConstRawIndexedIterator& r) const
 	{
-		return ((_cur != r._cur) || (_c_idx != r._c_idx) || (_r_idx != r._r_idx) ||(_stride != r._stride) || (_c_dim != r._c_dim) );
+		return ((_c_idx != r._c_idx) || (_r_idx != r._r_idx) ||(_stride != r._stride) || (_c_dim != r._c_dim) );
 	}
 	
 	const Element& operator*() const {return *_cur;}
+
+
+    	friend std::ostream& operator<<(std::ostream& out, const ConstRawIndexedIterator m) {
+            return out /* << m._cur << ' ' */
+                       << m._stride << ' '
+                       << m._c_dim << ' '
+                       << m._r_idx << ' ' 
+                       << m._c_idx;
+        }    
 
     protected:
 	typename DenseMatrixBase<Element>::ConstRawIterator _cur;
