@@ -62,8 +62,8 @@ int main (int argc, char **argv)
 		typedef Modular<double> Field;
 		*/
 		//to use ints, prime < 2^{31}
-		int32 q = atoi(argv[2]);
-		typedef Modular<int32> Field;
+		LinBox::int32 q = atoi(argv[2]);
+		typedef Modular<LinBox::int32> Field;
 
 		Field F(q);
 		MatrixStream<Field> ms( F, input );
