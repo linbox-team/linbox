@@ -159,15 +159,14 @@ class DenseSubmatrix
 
             void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
 
-                DenseMatrixBase<typename _Tp1::Element> M(A.rowdim(), A.coldim());
+                Ap = new DenseMatrixBase<typename _Tp1::Element>(A.rowdim(), A.coldim());
                 typename Self_t::ConstRawIterator         iter_value = A.rawBegin();
-                typename Self_t::ConstRawIndexedIterator  iter_index = A.rawIndexBegin();
+                typename Self_t::ConstRawIndexedIterator  iter_index = A.rawIndexedBegin();
                 typename _Tp1::Element tmp;
                 for (;iter_value != A.rawEnd(); ++iter_value,++iter_index){
                     F.init(  tmp, *iter_value ); 
-                    M.setEntry(iter_index.rowIndex(), iter_index.colIndex(),tmp);
+                    Ap->setEntry(iter_index.rowIndex(), iter_index.colIndex(),tmp);
                 }
-                Ap = new other(M);
            }
         };
 
