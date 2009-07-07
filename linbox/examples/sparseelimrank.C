@@ -56,7 +56,7 @@ int main (int argc, char **argv)
 		SparseMatrix<PID_integer> A ( ms );
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
-		rank (r, A);
+		rank (r, A, Method::SparseElimination() );
 
 		cout << "Rank is " << r << endl;
 	}
