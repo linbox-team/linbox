@@ -415,6 +415,17 @@ namespace LinBox
 
 	};
     
+	struct BlasExtensionTraits : public BlasEliminationTraits {
+            	BlasExtensionTraits (bool           certificate    = CERTIFY,
+                                     unsigned long  maxTries       = 100,
+                                     bool           checkResult    = true
+                                     )
+                        : BlasEliminationTraits() 
+                {}
+            	BlasExtensionTraits( const Specifier& S) :  BlasEliminationTraits(S) {}   
+	};
+    
+
 	struct NonBlasEliminationTraits : public Specifier {
 		NonBlasEliminationTraits() {}
 		NonBlasEliminationTraits( const Specifier& S) :  Specifier(S) {}   
@@ -433,6 +444,7 @@ namespace LinBox
 		typedef SparseEliminationTraits	SparseElimination;       
 		typedef NumericalTraits		Numerical;
             	typedef BlasEliminationTraits 	BlasElimination;
+		typedef BlasExtensionTraits ExtensionBlasElimination;
 		typedef NonBlasEliminationTraits NonBlasElimination;
 		typedef DixonTraits             Dixon;
 		typedef BlockHankelTraits       BlockHankel;
