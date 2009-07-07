@@ -225,7 +225,7 @@ class MatrixStream {
     /** Destructor */
 	~MatrixStream() { delete reader; }
 	
-    /** re initialize after one matrix is read. */
+    /** Re initiliaze after one matrix has been read. */
 	void newmatrix();
 
     /** Read some white space (if there is any). Using this method is preferable
