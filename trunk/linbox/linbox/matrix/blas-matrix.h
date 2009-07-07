@@ -57,7 +57,7 @@ namespace LinBox {
 	public:
             typedef _Element Element;
             typedef typename DenseSubmatrix<_Element>::Element * pointer;
-            
+            typedef BlasMatrix<Element> Self_t;
 
 	protected:        
 		size_t   _stride;
@@ -242,6 +242,25 @@ namespace LinBox {
 			}
 		}
 
+                // Rebind operator
+	template<typename _Tp1>
+        struct rebind
+        { 
+            typedef BlasMatrix<typename _Tp1::Element> other; 
+
+            void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
+
+                Ap = new BlasMatrix<typename _Tp1::Element>(A.rowdim(), A.coldim());
+                typename Self_t::ConstRawIterator         iter_value = A.rawBegin();
+                typename Self_t::ConstRawIndexedIterator  iter_index = A.rawIndexedBegin();
+                typename _Tp1::Element tmp;
+                for (;iter_value != A.rawEnd(); ++iter_value,++iter_index){
+                    F.init(  tmp, *iter_value ); 
+                    Ap->setEntry(iter_index.rowIndex(), iter_index.colIndex(),tmp);
+                }
+           }
+        };
+
 
 		// operator = (copying data)
 		BlasMatrix<Element>& operator= (const BlasMatrix<Element>& A) {		       		
@@ -264,7 +283,7 @@ namespace LinBox {
 		
 		pointer getPointer() const  {return _ptr;}
 
-		pointer getWritePointer() {return _ptr;}
+		pointer& getWritePointer() {return _ptr;}
 
 		size_t getStride() const {return _stride;}	
 
