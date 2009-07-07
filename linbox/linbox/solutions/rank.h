@@ -532,9 +532,6 @@ namespace LinBox {
         linbox_check( a < LinBox::BlasBound);
         BlasMatrix<typename Field::Element> B(A);
 	BlasMatrixDomain<Field> D(F);
-        D.write(std::cerr << "blasMAtrix: ", B) << std::endl;
-        
-        
         r = D.rank(B);
 	commentator.stop ("done", NULL, "blasrank");
         return r;
@@ -588,6 +585,7 @@ namespace LinBox {
         FBlackbox * Ap;
         MatrixHom::map(Ap, A, Field(*genprime) );
         commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Integer Rank is done modulo " << *genprime << std::endl;
+        
         rank(r, *Ap, RingCategories::ModularTag(), M);
         delete Ap;
         commentator.stop ("done", NULL, "iirank");
