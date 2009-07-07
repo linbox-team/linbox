@@ -4,6 +4,16 @@
 \ingroup examples
 */
 #include <iostream>
+template <class Field, class Polynomial>
+void printPolynomial (const Field &F, const Polynomial &v) 
+{
+	for (int i = v.size () - 1; i >= 0; i--) {
+		F.write (std::cout, v[i]);
+		if (i > 0)
+			std::cout << " x^" << i << " + ";
+	}
+	std::cout << std::endl;
+}
 
 #include "linbox/field/modular-double.h"
 #include "linbox/blackbox/sparse.h"
@@ -12,16 +22,6 @@
 using namespace LinBox;
 using namespace std;
 
-template <class Field, class Polynomial>
-void printPolynomial (const Field &F, const Polynomial &v) 
-{
-	for (int i = v.size () - 1; i >= 0; i--) {
-		F.write (cout, v[i]);
-		if (i > 0)
-			cout << " x^" << i << " + ";
-	}
-	cout << endl;
-}
 
 int main (int argc, char **argv)
 {
