@@ -1,5 +1,5 @@
 // ======================================================================= //
-// Time-stamp: <02 Sep 08 19:01:57 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <07 Jul 09 13:35:17 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_CRA_H
 #define __LINBOX_CRA_H
@@ -12,6 +12,11 @@
 
 namespace LinBox {
     
+    template<class Function, class Element> struct CRATemporaryVectorTrait {
+        typedef std::vector<Element> Type_t;
+    };        
+
+
     template<class CRABase>
     struct ChineseRemainder {
         typedef typename CRABase::Domain	Domain;
@@ -42,8 +47,8 @@ namespace LinBox {
              * 
              * \result res - an integer
              */
-        template<class Int, class Function, class PrimeIterator>
-        Int& operator() (Int& res, Function& Iteration, PrimeIterator& primeiter) {
+        template<class Function, class PrimeIterator>
+        Integer& operator() (Integer& res, Function& Iteration, PrimeIterator& primeiter) {
             commentator.start ("Modular iteration", "mmcrait");
             ++primeiter; 
             Domain D(*primeiter); 
@@ -63,21 +68,21 @@ namespace LinBox {
         }
         
         
-      template<class Int, template <class, class> class Vect, template <class> class Alloc, class Function, class PrimeIterator>
-	  Vect<Int,Alloc<Int> > & operator() (Vect<Int,Alloc<Int> >& res, Function& Iteration, PrimeIterator& primeiter) {
+      template<class Iterator, class Function, class PrimeIterator>
+	  Iterator& operator() (Iterator& res, Function& Iteration, PrimeIterator& primeiter) {
           commentator.start ("Modular vectorized iteration", "mmcravit");
           
           ++primeiter; 
           Domain D(*primeiter); 
           commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
-          Vect<DomainElement, Alloc<DomainElement> > r; 
+          typename CRATemporaryVectorTrait<Function, DomainElement>::Type_t r; 
           Builder_.initialize( D, Iteration(r, D) );
           
           while( ! Builder_.terminated() ) {
               ++primeiter; while(Builder_.noncoprime(*primeiter) ) ++primeiter; 
               Domain D(*primeiter); 
               commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
-              Vect<DomainElement, Alloc<DomainElement> > r; 
+              typename CRATemporaryVectorTrait<Function, DomainElement>::Type_t r; 
               Builder_.progress( D, Iteration(r, D) );
           }
           commentator.stop ("done", NULL, "mmcravit");
