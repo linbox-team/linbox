@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // ======================================================================= //
-// Time-stamp: <23 Apr 08 19:28:37 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <07 Jul 09 13:41:14 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_CRA_FULL_MULTIP_H
 #define __LINBOX_CRA_FULL_MULTIP_H
@@ -27,11 +27,12 @@ protected:
 	std::vector< LazyProduct >      	RadixPrimeProd_;
 	std::vector< std::vector<Integer> >    	RadixResidues_;
 	std::vector< bool >             	RadixOccupancy_;
-	double                			LOGARITHMIC_UPPER_BOUND;
+	const double				LOGARITHMIC_UPPER_BOUND;
+    	double					totalsize;
 	
 	
 public:
-	FullMultipCRA(const double b=0.0) : LOGARITHMIC_UPPER_BOUND(b) {}
+	FullMultipCRA(const double b=0.0) : LOGARITHMIC_UPPER_BOUND(b), totalsize(0.0) {}
         
 	template< template<class, class> class Vect, template <class> class Alloc>
 	void initialize (const Domain& D, const Vect<DomainElement, Alloc<DomainElement> >& e) {
@@ -57,10 +58,13 @@ public:
 			typename Vect<DomainElement, Alloc<DomainElement> >::const_iterator  e_it = e.begin();
 			std::vector<Integer>::iterator       ri_it = ri.begin();
 			std::vector<Integer>::const_iterator t0_it = _tab_it->begin();
-			for( ; e_it != e.end(); ++e_it, ++ri_it, ++ t0_it)
-				fieldreconstruct(*ri_it, D, *e_it, *t0_it, (*_mod_it).operator()() );
+                        DomainElement invP0; precomputeInvP0(invP0, D, _mod_it->operator()() );
+			for( ; ri_it != ri.end(); ++e_it, ++ri_it, ++ t0_it)
+				fieldreconstruct(*ri_it, D, *e_it, *t0_it, invP0, (*_mod_it).operator()() );
 			Integer tmp; D.characteristic(tmp);
-			di = *_dsz_it + log(double(tmp)); 
+                        double ltp = log(double(tmp));
+			di = *_dsz_it + ltp;
+                        totalsize += ltp;
 			mi.mulin(tmp);
 			mi.mulin(*_mod_it);
 			*_occ_it = false;
@@ -68,8 +72,10 @@ public:
 			// Lower shelf is free
 			// Put the new residue here and exit
 			Integer tmp; D.characteristic(tmp);
+                        double ltp = log(double(tmp));
 			_mod_it->initialize(tmp);
-			*_dsz_it = log(double(tmp));
+			*_dsz_it = ltp;
+                        totalsize += ltp;
 			typename Vect<DomainElement, Alloc<DomainElement> >::const_iterator e_it = e.begin();
 			_tab_it->resize(e.size());
 			std::vector<Integer>::iterator t0_it= _tab_it->begin();
@@ -191,22 +197,7 @@ public:
 	}
 	
 	bool terminated() {
-		double logm(0.0);
-		std::vector< double >::iterator _dsz_it = RadixSizes_.begin();
-		std::vector< bool >::iterator _occ_it = RadixOccupancy_.begin();
-		for( ; _occ_it != RadixOccupancy_.end() ; ++_dsz_it, ++_occ_it) {
-			if (*_occ_it) {
-				logm = *_dsz_it;
-				++_dsz_it; ++_occ_it;
-				break;
-			}
-		}
-		for( ; _occ_it != RadixOccupancy_.end() ; ++_dsz_it, ++_occ_it) {
-			if (*_occ_it) {
-				logm += *_dsz_it;
-			}
-		}
-		return logm > LOGARITHMIC_UPPER_BOUND;
+            	return totalsize > LOGARITHMIC_UPPER_BOUND;
 	}
 	
 	
@@ -226,8 +217,13 @@ protected:
 	
     Integer& precomputeInvProd(Integer& res, const Integer& m1, const Integer& m0) {
         inv(res, m0, m1);
-        return res *= m0; // res <-- (m0^{-1} mod m1) m0
+        return res *= m0; // res <-- (m0^{-1} mod m1)*m0
     }
+
+    DomainElement& precomputeInvP0(DomainElement& invP0, const Domain& D1, const Integer& P0) {
+        return D1.invin( D1.init(invP0, P0) ); // res <-- (P0^{-1} mod m1)
+    }
+            
 
     Integer& smallbigreconstruct(Integer& u1, const Integer& u0, const Integer& invprod) {
         u1 -= u0;	  // u1 <-- (u1-u0)
@@ -245,25 +241,23 @@ protected:
 	}
 	
 	
-	Integer& fieldreconstruct(Integer& res, const Domain& D1, const DomainElement& u1, const Integer& r0, const Integer& P0) {
-		DomainElement u0, m0; D1.init(u0, r0);
+	Integer& fieldreconstruct(Integer& res, const Domain& D1, const DomainElement& u1, const Integer& r0, const DomainElement& invP0, const Integer& P0) {
+		DomainElement u0; D1.init(u0, r0);
 		if (D1.areEqual(u1, u0))
 			return res=r0;
 		else
-			return fieldreconstruct(res, D1, u1, u0, D1.init(m0, P0), r0, P0);
+			return fieldreconstruct(res, D1, u1, u0, r0, invP0, P0);
 	}
 	
-	Integer& fieldreconstruct(Integer& res, const Domain& D1, const DomainElement& u1, DomainElement& u0, DomainElement& m0, const Integer& r0, const Integer& P0) {
+	Integer& fieldreconstruct(Integer& res, const Domain& D1, const DomainElement& u1, DomainElement& u0, const Integer& r0, const DomainElement& invP0, const Integer& P0) {
 		// u0 and m0 are modified
 		D1.negin(u0);   	// u0 <-- -u0
 		D1.addin(u0,u1);   	// u0 <-- u1-u0
-		D1.invin(m0);   	// m0 <-- m0^{-1} mod m1
-		D1.mulin(u0, m0);   // u0 <-- (u1-u0)( m0^{-1} mod m1 )
-		D1.convert(res, u0);// res <-- (u1-u0)( m0^{-1} mod m1 )         and res <  m1
+		D1.mulin(u0, invP0);    // u0 <-- (u1-u0)( m0^{-1} mod m1 )
+		D1.convert(res, u0);    // res <-- (u1-u0)( m0^{-1} mod m1 )         and res <  m1
 		res *= P0;      	// res <-- (u1-u0)( m0^{-1} mod m1 ) m0      and res <= (m0m1-m0)
 		return res += r0;	// res <-- u0 + (u1-u0)( m0^{-1} mod m1 ) m0 and res <  m0m1
 	}
-	
 	
 };
 	
