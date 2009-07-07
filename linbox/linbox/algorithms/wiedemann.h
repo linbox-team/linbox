@@ -95,19 +95,19 @@ namespace LinBox
                     MasseyDomain< Field, BBContainer > WD (&TF, M.earlyTermThreshold ());
                     
                     WD.minpoly (P, deg);
+#ifdef INCLUDE_TIMING
+		commentator.report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
+			<< "Time required for applies:      " << TF.applyTime () << std::endl;
+		commentator.report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
+			<< "Time required for dot products: " << TF.dotTime () << std::endl;
+		commentator.report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
+			<< "Time required for discrepency:  " << WD.discrepencyTime () << std::endl;
+		commentator.report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
+			<< "Time required for LSR fix:      " << WD.fixTime () << std::endl;
+#endif // INCLUDE_TIMING
                 }
 
 
-#ifdef INCLUDE_TIMING
-		commentator.report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
-			<< "Time required for applies:      " << TF.applyTime () << endl;
-		commentator.report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
-			<< "Time required for dot products: " << TF.dotTime () << endl;
-		commentator.report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
-			<< "Time required for discrepency:  " << WD.discrepencyTime () << endl;
-		commentator.report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
-			<< "Time required for LSR fix:      " << WD.fixTime () << endl;
-#endif // INCLUDE_TIMING
 
 		commentator.stop ("done", NULL, "minpoly");
 
@@ -116,7 +116,9 @@ namespace LinBox
 }
 
 #ifdef __LINBOX_HAVE_GIVARO
+#ifndef LINBOX_EXTENSION_DEGREE_MAX
 #define LINBOX_EXTENSION_DEGREE_MAX 20
+#endif
 
 #include "linbox/blackbox/sparse.h"
 #include "linbox/field/modular.h"
