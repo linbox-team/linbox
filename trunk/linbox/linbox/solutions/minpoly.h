@@ -34,7 +34,9 @@
 
 #ifdef __LINBOX_HAVE_MPI
 #include "linbox/util/mpicpp.h"
+#include "linbox/algorithms/cra-mpi.h"
 #endif
+
 #include "linbox/algorithms/minpoly-integer.h"
 
 namespace LinBox 
@@ -220,7 +222,8 @@ namespace LinBox {
 //                     throw LinboxError("LinBox ERROR: matrix must be square for minimal polynomial computation\n");
 
 #ifdef __LINBOX_HAVE_MPI
-		if(!M.communicatorp() || (M.communicatorp())->rank() == 0) 
+		Communicator *c = M.communicatorp();
+		if(!c || c->rank() == 0) 
 			commentator.start ("Integer Minpoly", "Iminpoly");
 		else{
 			//commentator.setMaxDepth(0);
@@ -232,12 +235,13 @@ namespace LinBox {
 #endif
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
 		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
-		ChineseRemainder< EarlyMultipCRA<Modular<double> > > cra(3UL);
 		IntegerModularMinpoly<Blackbox,MyMethod> iteration(A, M);
 		std::vector<integer> PP; // use of integer du to non genericity of cra. PG 2005-08-04
 #ifdef __LINBOX_HAVE_MPI
-		cra(PP, iteration, genprime, M.communicatorp());
+		MPIChineseRemainder< EarlyMultipCRA<Modular<double> > > cra(3UL, c);
+		cra(PP, iteration, genprime);
 #else
+		ChineseRemainder< EarlyMultipCRA<Modular<double> > > cra(3UL);
 		cra(PP, iteration, genprime);
 #endif
 		size_t i =0;
@@ -246,7 +250,7 @@ namespace LinBox {
 			A.field().init(*it, PP[i]);
 
 #ifdef __LINBOX_HAVE_MPI
-		if(!M.communicatorp() || (M.communicatorp())->rank() == 0) 
+		if(c || c->rank() == 0) 
 #endif
 			commentator.stop ("done", NULL, "Iminpoly");
 		return P;

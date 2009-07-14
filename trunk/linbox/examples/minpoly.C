@@ -25,14 +25,15 @@ using namespace std;
 
 int main (int argc, char **argv)
 {
-
-
         commentator.setMaxDetailLevel (-1);
-
         commentator.setMaxDepth (-1);
         commentator.setReportStream (std::cerr);
-
-	if (argc < 2 || argc > 3) {
+		  
+		  int a = argc;
+		  while(a--){
+			  cerr << "argv[" << a << "] = " << argv[a] << endl;
+		  }
+	if (argc < 2) {
 		cerr << "Usage: minpoly <matrix-file-in-SMS-format> [<p>]" << endl;
 		return -1;
 	}
@@ -40,7 +41,7 @@ int main (int argc, char **argv)
 	ifstream input (argv[1]);
 	if (!input) { cerr << "Error opening matrix file " << argv[1] << endl; return -1; }
 
-	if (argc == 2) {
+	if (argc != 3) {
 	   int process = 0;
 	   
            Method::Blackbox M;
@@ -73,8 +74,7 @@ int main (int argc, char **argv)
 //            }
            
 	}
-	if (argc == 3) { 
-
+	else{
 		typedef Modular<double> Field;
 		double q = atof(argv[2]);
 		Field F(q);

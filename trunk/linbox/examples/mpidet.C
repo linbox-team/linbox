@@ -18,7 +18,7 @@ using namespace std;
 int main (int argc, char **argv)
 {
 #ifdef __LINBOX_HAVE_MPI
-	if (argc != 2) {
+	if (argc < 2) {
 		cerr << "Usage: det <matrix-file-in-supported-format>" << endl;
 		return -1;
 	}
