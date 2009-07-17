@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /** \file examples/sparseelimrank.C
- * Time-stamp: <26 Mar 07 11:46:18 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <17 Jul 09 14:08:44 Jean-Guillaume.Dumas@imag.fr>
 \brief Gaussian elimination Rank of sparse matrix over Z or Zp.
 \ingroup examples
 */
@@ -26,6 +26,7 @@ std::ostream& operator<< (std::ostream& o, const std::vector<std::pair<size_t, T
 #include "linbox/blackbox/zero-one.h"
 #include "linbox/solutions/rank.h"
 #include "linbox/util/matrix-stream.h"
+#include "linbox/field/givaro-rational.h"
 
 using namespace LinBox;
 using namespace std;
@@ -51,14 +52,14 @@ int main (int argc, char **argv)
 	   is an integer matrix and our concept is that we are getting the rank of that 
 	   matrix by some blackbox magic inside linbox.
 	   */
-		PID_integer ZZ;
-		MatrixStream<PID_integer> ms( ZZ, input );
-		SparseMatrix<PID_integer> A ( ms );
-		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
+            LinBox::GivaroRational ZZ;
+            MatrixStream<GivaroRational> ms( ZZ, input );
+            SparseMatrix<GivaroRational> A ( ms );
+            cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
-		rank (r, A, Method::SparseElimination() );
+            rank (r, A, Method::SparseElimination() );
 
-		cout << "Rank is " << r << endl;
+            cout << "Rank is " << r << endl;
 	}
 	if (argc == 3) { 
 		double q = atof(argv[2]);

@@ -74,4 +74,39 @@ namespace LinBox
 
 } // namespace LinBox
 
+
+// Specialization of homomorphism for basefield
+#include "linbox/field/hom.h"
+namespace LinBox 
+{
+	template<class _Target>
+	class Hom<GivaroRational, _Target> {
+
+	public:
+		typedef GivaroRational Source;
+		typedef _Target Target;
+		typedef typename Source::Element SrcElt;
+		typedef typename Target::Element Elt;
+	
+		Hom(const Source& S, const Target& T) : _source (S), _target (T) {}
+		inline Elt& image(Elt& t, const SrcElt& s) {
+                    	_target. init (t, s.nume());
+                    	Elt tmp; _target.init(tmp, s.deno());
+                    	return _target.divin(t,tmp);
+		}
+		inline SrcElt& preimage(SrcElt& s, const Elt& t) {
+                    	Integer tmp;
+			_target. convert (tmp, t);
+			return s= Rational(tmp);
+		}
+		const Source& source() { return _source;}
+		const Target& target() { return _target;}
+
+	protected:
+		Source _source;
+		Target _target;
+	}; // end Hom 
+
+}
+
 #endif // __GIVARO_RATIONAL_H
