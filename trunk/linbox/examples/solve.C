@@ -3,7 +3,6 @@
 /**\file examples/solve.C
 \brief Solving of sparse matrix over Z or Zp.
 \ingroup examples
-//
 */
 //#include "linbox-config.h"
 #include <iostream>
