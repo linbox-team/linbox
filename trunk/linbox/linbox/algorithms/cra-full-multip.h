@@ -29,11 +29,44 @@ protected:
 	std::vector< bool >             	RadixOccupancy_;
 	const double				LOGARITHMIC_UPPER_BOUND;
     	double					totalsize;
-	
-	
+
 public:
 	FullMultipCRA(const double b=0.0) : LOGARITHMIC_UPPER_BOUND(b), totalsize(0.0) {}
-        
+
+	Integer& getModulus(Integer& m) {
+                std::vector<Integer> r; result(r);
+                return m=RadixPrimeProd_.front()();
+        }
+
+	template<template<class> class Vect>
+	Vect<Integer>& getResidue(Vect<Integer>& r) {
+		result(r);
+	        return r;
+	}
+
+        template<template<class T> class Vect>
+        void initialize (const Integer& D, const Vect<Integer>& e) {
+		RadixSizes_.resize(1);
+		RadixPrimeProd_.resize(1);
+		RadixResidues_.resize(1);
+	        RadixOccupancy_.resize(1); RadixOccupancy_.front() = false;
+            
+                std::vector< double >::iterator  _dsz_it = RadixSizes_.begin();
+	        std::vector< LazyProduct >::iterator _mod_it = RadixPrimeProd_.begin();
+		std::vector< std::vector<Integer> >::iterator _tab_it = RadixResidues_.begin();
+		std::vector< bool >::iterator    _occ_it = RadixOccupancy_.begin();
+                _mod_it->initialize(D);
+                *_dsz_it = log(double(D));
+		
+		typename Vect<Integer>::const_iterator e_it = e.begin();
+		_tab_it->resize(e.size());
+		std::vector<Integer>::iterator t0_it= _tab_it->begin();
+		for( ; e_it != e.end(); ++e_it, ++ t0_it)
+			*t0_it = *e_it;
+		*_occ_it = true;
+		return;
+	}
+
 	template< template<class, class> class Vect, template <class> class Alloc>
 	void initialize (const Domain& D, const Vect<DomainElement, Alloc<DomainElement> >& e) {
 		RadixSizes_.resize(1);
@@ -42,7 +75,66 @@ public:
 		RadixOccupancy_.resize(1); RadixOccupancy_.front() = false;
 		progress(D, e);
 	}
-        
+
+	/* Used in the case where D is a big Integer and Domain cannot be constructed */
+        template<template<class T> class Vect>
+	void progress (const Integer& D, const Vect<Integer>& e) {
+	        std::vector< double >::iterator  _dsz_it = RadixSizes_.begin();
+		std::vector< LazyProduct >::iterator _mod_it = RadixPrimeProd_.begin();
+		std::vector< std::vector<Integer> >::iterator _tab_it = RadixResidues_.begin();
+		std::vector< bool >::iterator    _occ_it = RadixOccupancy_.begin();
+		std::vector<Integer> ri(e.size()); LazyProduct mi; double di;
+		if (*_occ_it) {
+			typename Vect<Integer>::const_iterator  e_it = e.begin();
+			std::vector<Integer>::iterator       ri_it = ri.begin();
+			std::vector<Integer>::const_iterator t0_it = _tab_it->begin();
+			Integer invprod; precomputeInvProd(invprod, D, _mod_it->operator()());
+			for( ; e_it != e.end(); ++e_it, ++ri_it, ++ t0_it) {
+				*ri_it =* e_it;
+				smallbigreconstruct(*ri_it,  *t0_it, invprod );
+			}
+			Integer tmp = D;
+			di = *_dsz_it + log(double(tmp));
+			mi.mulin(tmp);
+			mi.mulin(*_mod_it);
+			*_occ_it = false;
+		} else {
+			Integer tmp = D;
+			_mod_it->initialize(tmp);
+			*_dsz_it = log(double(tmp));
+			typename Vect<Integer>::const_iterator e_it = e.begin();
+			_tab_it->resize(e.size());
+			std::vector<Integer>::iterator t0_it= _tab_it->begin();
+			for( ; e_it != e.end(); ++e_it, ++ t0_it)
+				*t0_it = *e_it;
+			*_occ_it = true;
+			return;
+		}
+		for(++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it ; _occ_it != RadixOccupancy_.end() ; ++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it) {
+			if (*_occ_it) {
+				std::vector<Integer>::iterator      ri_it = ri.begin();
+				std::vector<Integer>::const_iterator t_it= _tab_it->begin();
+				Integer invprod; precomputeInvProd(invprod, mi(), _mod_it->operator()());
+				for( ; ri_it != ri.end(); ++ri_it, ++ t_it)
+					smallbigreconstruct(*ri_it, *t_it, invprod);
+				mi.mulin(*_mod_it);
+				di += *_dsz_it;
+				*_occ_it = false;
+			} else {
+				*_dsz_it = di;
+				*_mod_it = mi;
+				*_tab_it = ri;
+				*_occ_it = true;
+				return;
+			}
+		}
+
+		RadixSizes_.push_back( di );
+		RadixResidues_.push_back( ri );
+		RadixPrimeProd_.push_back( mi );
+		RadixOccupancy_.push_back ( true );
+	}
+
 	template< template<class, class> class Vect, template <class> class Alloc>
 	void progress (const Domain& D, const Vect<DomainElement, Alloc<DomainElement> >& e) {
 		// Radix shelves
@@ -148,7 +240,7 @@ public:
 					// We normalize the result and output it
 					for( ; t0_it != d.end(); ++t0_it, ++t_it)
 						normalize(*t0_it = *t_it, *t_it, _mod_it->operator()());
-					RadixPrimeProd_.resize(1);
+					//RadixPrimeProd_.resize(1);
 					return d;
 				} else {
 					// There are other shelves
@@ -193,14 +285,19 @@ public:
 		//       in case result is not the last call (more progress to go) ?
 		RadixPrimeProd_.resize(1);
 		RadixPrimeProd_.front() = Product;
+		RadixSizes_.resize(1);
+                RadixSizes_.front() = log((double)Product());
+		RadixResidues_.resize(1);
+		RadixResidues_.front() = d;
+		RadixOccupancy_.resize(1);
+		RadixOccupancy_.front() = true;
+		
 		return d;
 	}
 	
 	bool terminated() {
             	return totalsize > LOGARITHMIC_UPPER_BOUND;
 	}
-	
-	
 	
 	bool noncoprime(const Integer& i) const {
 		std::vector< LazyProduct >::const_iterator _mod_it = RadixPrimeProd_.begin();
