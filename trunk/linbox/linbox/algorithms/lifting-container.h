@@ -41,6 +41,8 @@
 #include <linbox/blackbox/block-hankel-inverse.h>
 #include <linbox/algorithms/blas-domain.h>
 #include <linbox/field/hom.h>
+#include <linbox/matrix/transpose-matrix.h>
+#include <linbox/blackbox/transpose.h>
 //#include <linbox/algorithms/vector-hom.h>
 #undef _U
 
