@@ -39,7 +39,6 @@
 #include "linbox/solutions/charpoly.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/diagonal.h"
-#include "linbox/blackbox/apply.h"
 
 namespace LinBox
 {
