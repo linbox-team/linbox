@@ -52,7 +52,12 @@ BASIC_TESTS =  			\
 	test-block-ring			\
         test-moore-penrose      \
         test-randiter-nonzero   \
-        test-qlup               \
+	test-rational-matrix-factory \
+	test-rational-reconstruction-base \
+	test-rat-solve		\
+	test-rat-charpoly	\
+	test-rat-minpoly	\
+	test-qlup               \
         test-rank               \
         test-scalar-matrix      \
         test-sparse             \
@@ -226,6 +231,26 @@ test_unparametric_field_SOURCES =	\
 test_randiter_nonzero_SOURCES =		\
 	test-randiter-nonzero.C		\
 	test-common.h
+
+test_rational_matrix_factory_SOURCES =  \
+	test-rational-matrix-factory.C  \
+	test-common.h
+
+test_rational_reconstruction_base_SOURCES =  \
+	test-rational-reconstruction-base.C  \
+	test-common.h
+
+test_rat_solve_SOURCES = 		\
+	test-rat-solve.C		\
+	test-common.h
+
+test_rat_charpoly_SOURCES =                \
+        test-rat-charpoly.C                \
+        test-common.h
+
+test_rat_minpoly_SOURCES =                \
+        test-rat-minpoly.C                \
+        test-common.h
 
 test_subiterator_SOURCES = 		\
 	test-subiterator.C		\
