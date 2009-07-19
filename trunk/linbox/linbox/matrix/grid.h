@@ -70,101 +70,25 @@ public:
 	vector<int> colOcc;
 	//vector<Element> colGcd;
 
-	//bool comp(size_t x, size_t y) const {if (rowOcc[x]<rowOcc[y]) return true; else return false;}
-
 	queue<size_t> Q; //change to priority queue?
-	//priority_queue<size_t> QQ(comp);	
 	vector<GridElement<Element>*> A; 	//vector of row heads
 	vector<GridElement<Element>*> AT;	//vector of column heads
 	
-
 /* 
- * reads the matrix from the file, deletes mC[i]=1 columns
- * sets row/col Occ and Gcd
+ * Creates Grid from file using read procedure 
  * file is sorted in sms format	
  */
 	Grid (Field F, istream& in, vector<int>& mR, vector<int>& mC): _F(F) {
 		read(F, in, mR, mC); 
 		in >> _m >> _n;
-/*
-//int t= _m;
-//_m = _n;
-//_n = t;
-		rowOcc.resize(_m);
-		colOcc.resize(_n);
-		//rowGcd.resize(_m,0);
-		//colGcd.resize(_n,0);
-		A.resize(_m, NULL);
-		AT.resize(_n, NULL);
-	
-		mR.resize(_m);
-		mC.resize(_n);
-	
-		char c;
-		do in >> c; while (isspace (c));
-		
-		vector<GridElement<Element>*> ends(_n, NULL);
-
-        	if (c == 'M') {
-                	size_t i, i_prev, j, j_prev;
-                	i_prev = 0;
-                	j_prev = 0;
-
-                	Element x, x_prev; x_prev = 0; x=0;
-                	while (in >> i) {
-                        	in >> j;
-
-//int t = i; i=j; j=t;
-                        	if ( (i > _m) || (j > _n) ) {
-                                	cout << "InvalidMatrixInput \n"<< flush;
-					return;
-				}
-                        	F.read(in, x);
-                        	if ((j > 0) && (F.isZero(x))) continue;
-                        	if ((j > 0) && (mC[j-1]==1)){
-                                	continue;       //mC are to be ignored;
-                        	}
-                        	//std::cout << i << " " <<  j << " " << x << "\n";
-                        	if ((i!=0) && (j !=0 )) {
-					ijElement<Element> X(i-1,j-1,x);
-					ends[j-1] = addElement(ends[j-1], X);
-				}
-                        	//if ((i != i_prev)) {
-                                	//if ((i_prev>0) && (rowOcc[i_prev-1]==1)) {
-                                        ////cout << "1 row" << i_prev << "\n";
-					//	cout << "Adding " << i_prev-1 << " to Q\n" << flush;
-                                        //	Q.push(i_prev-1);
-                                	//}
-                                	//size_t i_max = i;
-                                	//size_t i_min = i_prev+1;
-                                	//if (i_max==0) i_max = _m+1;
-                                	//for (size_t k=i_min; k < i_max;++k) {
-                                        ////cout << "0 rows" << k << "\n";
-                                        //	mR[k-1] = 2;
-                                	//}
-                                	//i_prev = i;
-                        	//}
-                        	if ((i==0) && (j ==0 )) break;
-			}
-			for (int k=0; k < rowOcc.size(); ++k) {
-				//if (rowOcc[k]>0) cout << k+1 << " " <<rowGcd[k]<< "\n" << flush;
-				if ((rowOcc[k]==1) && (colGcd[A[k]->getJ()]==abs(A[k]->getX()))) {
-                                	//cout << "1 row" << i_prev << "\n";
-                                       	cout << "Adding " << k+1 << " to Q\n" << flush;
-                                        Q.push(k);
-                               	}
-			}
-
-			//for (int k=0; k < colOcc.size(); ++k) {
-			//	if (colOcc[k]>0) cout << k+1 << " " << colGcd[k]<< "\n" << flush;
-			//}
-
-                }
-		mC.clear();
-		mC.resize(_n,0);
-*/
 	}
 
+
+/*
+ * reads the matrix from the file, deletes mC[i]=1 columns
+ * sets row/col Occ and Gcd
+ * file is sorted in sms format
+ */
 	void read(Field F, istream& in, vector<int>& mR, vector<int>& mC) {
                 in >> _m >> _n;
 /* !!! */
@@ -204,41 +128,19 @@ public:
                                 if ((j > 0) && (mC[j-1]==1)){
                                         continue;       //mC are to be ignored;
                                 }
-                                //std::cout << i << " " <<  j << " " << x << "\n";
                                 if ((i!=0) && (j !=0 )) {
                                         ijElement<Element> X(i-1,j-1,x);
                                         ends[j-1] = addElement(ends[j-1], X);
                                 }
-                                //if ((i != i_prev)) {
-                                        //if ((i_prev>0) && (rowOcc[i_prev-1]==1)) {
-                                        ////cout << "1 row" << i_prev << "\n";
-                                        //      cout << "Adding " << i_prev-1 << " to Q\n" << flush;
-                                        //      Q.push(i_prev-1);
-                                        //}
-                                        //size_t i_max = i;
-                                        //size_t i_min = i_prev+1;
-                                        //if (i_max==0) i_max = _m+1;
-                                        //for (size_t k=i_min; k < i_max;++k) {
-                                        ////cout << "0 rows" << k << "\n";
-                                        //      mR[k-1] = 2;
-                                        //}
-                                        //i_prev = i;
-                                //}
                                 if ((i==0) && (j ==0 )) break;
                         }
                         for (int k=0; k < rowOcc.size(); ++k) {
-                                //if (rowOcc[k]>0) cout << k+1 << " " <<rowGcd[k]<< "\n" << flush;
                                 if ((rowOcc[k]==1) && (/*colGcd[A[k]->getJ()]*/1==abs(A[k]->getX()))) {
                                         //cout << "1 row" << i_prev << "\n";
-                                        cout << "Adding " << k+1 << " to Q\n" << flush;
+                                        //cout << "Adding " << k+1 << " to Q\n" << flush;
                                         Q.push(k);
                                 }
                         }
-/*
-                        for (int k=0; k < colOcc.size(); ++k) {
-                                if (colOcc[k]>0) cout << k+1 << " " << colGcd[k]<< "\n" << flush;
-                        }
-*/
                 }
                 mC.clear();
                 mC.resize(_n,0);
@@ -273,7 +175,7 @@ public:
 		while (tmp != NULL) {
 			--rowOcc[tmp->getI()];
 			if (rowOcc[tmp->getI()] ==1) {
-				cout << "Adding " << tmp->getI()+1 << " to Q\n" << flush;
+				//cout << "Adding " << tmp->getI()+1 << " to Q\n" << flush;
 				if ( 1/*colGcd[A[tmp->getI()]->getJ()]*/ == abs (A[tmp->getI()]->getX()))
 					Q.push(tmp->getI());
 			}
@@ -301,19 +203,11 @@ public:
         }	
 
 /* 
- * add a new Grid Element after (at ''up'') of the given GridElement
+ * adds a new Grid Element after (at ''up'') the given GridElement
  * if lower==NULL Y should be the lowest element of the column	
  * returns a pointer to the new element
  */
 	GridElement<Element>* addElement(GridElement<Element>* lower, ijElement<Element>& Y) {
-		//if (lower->getJ() != Y.j) {
-		//	cout << "dupa\n" << flush;
-		//} else if (lower->getI() >= Y.i) {
-		//	cout << "dupa2\n" << flush;
-		//}
-		//cout << "Add " << Y.i << Y.j << Y.x ;
-		//if (lower != NULL) cout << " after "<< lower->getI() << lower->getJ() << lower->getX() << "\n";
-		//else cout << " at begining\n";
 		++rowOcc[Y.i];
 		++colOcc[Y.j];
 		//rowGcd[Y.i]=gcd(rowGcd[Y.i], Y.x);
@@ -382,7 +276,6 @@ public:
         	Element x,x1,x2;
         	x1=1;x2=1;x=0;
 
-        	//init = rank;
         	while (1) {
                 	pivotFound =false;
                 	if (ini>=mR.size()) ini=0;
@@ -422,13 +315,9 @@ public:
                 	//pivotFound =false;
                 	if (pivotFound) {
                         	if (abs(x1)>1) cout << "adds " << x1 << "to the diagonal\n" << flush;
-                        	//cout << "rank before elimination " << rank << "\n";
-                        	//int init = rank;
                         	mC[j1]=1;
                         	++rank;
                         	mR[row2]=1;
-                        	//A[row2].clear();
-                        	//Asize[row2]=0;
                         	_F.init(x, -x2/x1);
                         	//cout << "found " << j1 << "," << x2 << "," << j2 << "," << x2 << "\n"<< flush;
                         	////cout << "reducing column " << j2+1 << " by  (" << j1+1 << "," << x << "}\n" << flush;
@@ -447,14 +336,12 @@ public:
 					Element y; _F.init(y, p1->getX());
 					Element z;
 					if ((p2next!= NULL) && (p2next->getI()==p1->getI()) ) {
-						//update
 						//cout << "updating " << p2next->getI() << " row" << flush;
 						_F.init (z, x*y)	;
 						_F.addin(z, p2next->getX());
 						if (z==0) {
 							//cout << ".....deleting \n" << flush;
 							p2next = deleteElement(p2next);	
-							//if (p2 != NULL) p2 = p2->down;
 						} else {
 							//cout << ".....new value\n" << flush;
 							p2next->setElement(z);
@@ -462,7 +349,6 @@ public:
 							p2next = p2next->up;
 						}	  
 					} else {
-						//add
 						//cout << "adding " << p1->getI() << " row\n" << flush;
 						_F.init(z, x*y); 
 						ijElement<Element> X(p1->getI(), j2, z);
@@ -480,7 +366,7 @@ public:
 						i = Q.front();
 					}
 					if (!Q.empty()) {
-						cout << "Adding " << i+1 << " to Q \n" << flush;
+						//cout << "Adding " << i+1 << " to Q \n" << flush;
 			               		reduce(rank, S, mR, mC,os);
 						break;
 					}
@@ -493,7 +379,6 @@ public:
 				int init_rank = rank;
 		        	while  (1) {
 		                	while (i < _m) {
-						//cout << rowOcc[i] << flush;
 						if (rowOcc[i]==0) ++i;
                 		        	else if (rowOcc[i]<S)  break;
 		                  		else ++i;
@@ -508,10 +393,8 @@ public:
 					vector<pair< size_t, GridElement<Element>*> > j_pts ;
 					vector<pair< Element, GridElement<Element>*> > jnext_pts ;
 					while (r_p != NULL) {
-						//cout << r_p->getJ()+1<< "col," << r_p->getX() << "el" << " ColGcd="<< colGcd[r_p->getJ()] <<"\n" << flush;
 						if ((colOcc[r_p->getJ()] < _m+1) && (colOcc[r_p->getJ()] < min_col)) {
 							if ((abs(r_p->getX()) == 1/*rowGcd[i]*/) && (abs(r_p->getX())==1/*colGcd[r_p->getJ()]*/)) {
-								//cout << "agrees " <<flush; 
 								if (j != -1) {
 									j_pts.push_back(pair<size_t, GridElement<Element>*>  (j, NULL) );
 									jnext_pts.push_back(pair<Element, GridElement<Element>*>  (x1, AT[j]));
@@ -534,10 +417,8 @@ public:
 					j_pts.resize(rowOcc[i]-1);
 					jnext_pts.resize(rowOcc[i]-1);
 					if (j < 0) {
-						//cout << " not applicable" << flush; 
 						++i; continue; 
 					}
-					//else {cout << " Elimination of column " << j+1 << endl << flush;}
 
 		                	if ((abs(x1) == 1/*rowGcd[i]*/) && (abs(x1)==1/*colGcd[j]*/)) {
                 		        	if (abs(x1) > 1) cout << "adds " << x1 << "to the diagonal\n"<<flush;
@@ -556,8 +437,6 @@ public:
 							for (; p2 != j_pts.end(); ++p2, ++p2next) {
 								//cout << "eliminating column " << p2->first << "\n" << flush;
 								Element x; _F.init(x, -(p2next->first)/x1);
-								//GridElement<Element>* p2 = j_pts[k].second;
-								//GridElement<Element>* p2next = jnext_pts[k].second;
 							
 		                                        	while (p2next->second != NULL) {
                 		                                	if (p2next->second->getI() >= p1->getI()) break;
@@ -567,14 +446,12 @@ public:
                 		                        	Element y; _F.init(y, p1->getX());
                                 		        	Element z;
                                         			if ((p2next->second!= NULL) && (p2next->second->getI()==p1->getI()) ) {
-		                                                	//update
                 		                                	//cout << "updating " << p2next->second->getI() << " row" << flush;
                                 		                	_F.init (z, x*y)        ;
                                                 			_F.addin(z, p2next->second->getX());
 		                                                	if (z==0) {
                 		                                        	//cout << ".....deleting \n" << flush;
                                 		                        	p2next->second = deleteElement(p2next->second);
-                                                		        	//if (p2->second != NULL) p2->second = p2->second->down;
 		                                                	} else {		
                 		                                        	//cout << ".....new value\n" << flush;
                                 		                        	p2next->second->setElement(z);
@@ -582,7 +459,6 @@ public:
                                                         			p2next->second = p2next->second->up;
 		                                                	}
                 		                        	} else {
-                                		                	//add
                                                 			//cout << "adding " << p1->getI() << " row\n" << flush;
 		                                                	_F.init(z, x*y);
                 		                                	ijElement<Element> X(p1->getI(), p2->first, z);
@@ -593,7 +469,6 @@ public:
 						}
 		                	}
 					++i;
-					if (i%20000==0) cout << "at row " << i << " rank " << rank << "\n" << flush;
 		                	if (!Q.empty()) {
                                         	size_t k = Q.front();
                                         	while (rowOcc[k] != 1) {
@@ -602,12 +477,10 @@ public:
                                                 	k = Q.front();
                                         	}
                                         	if (!Q.empty()) {
-							cout << "breaking at " << i << " row\n" << flush;
-                		        	//cout << "2 row found at " << i2+1 <<"\n";
+							//cout << "breaking at " << i << " row\n" << flush;
                         				break;
 						}
 		                	}
-                			//++i;
         			}
 
 		        	if ((!Q.empty()) || (rank - init_rank > 100)) {
