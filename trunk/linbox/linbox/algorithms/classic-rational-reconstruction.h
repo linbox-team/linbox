@@ -48,11 +48,11 @@ namespace LinBox {
 		typedef typename Ring::Element Element;
 		
 		ClassicRationalReconstruction(const Ring& Z, const bool reduce = true, const bool recursive = false): RReconstructionBase<Ring>(Z), 
-			_reduce(reduce), _recursive (recursive)
+			_reduce(reduce), _recursive (recursive), _Z(Z)
 		{}
 		
 		ClassicRationalReconstruction<Ring> (const ClassicRationalReconstruction<Ring>& RR): RReconstructionBase<Ring>(RR._Z),
-			_reduce(RR._reduce), _recursive(RR._recursive)
+			_reduce(RR._reduce), _recursive(RR._recursive), _Z(RR._Z)
 		{}
 		
 		~ClassicRationalReconstruction() {}
@@ -221,9 +221,9 @@ namespace LinBox {
 		const Ring _Z;
 		typedef typename Ring::Element Element;
 		
-		ClassicMaxQRationalReconstruction(const Ring& Z, const bool reduce = true, const bool recursive = false):ClassicRationalReconstruction<Ring>(Z,reduce,recursive) {}
+		ClassicMaxQRationalReconstruction(const Ring& Z, const bool reduce = true, const bool recursive = false):ClassicRationalReconstruction<Ring>(Z,reduce,recursive), _Z(Z)  {}
 		
-		ClassicMaxQRationalReconstruction(const ClassicMaxQRationalReconstruction<Ring>& RR): ClassicRationalReconstruction<Ring>(RR) {}
+		ClassicMaxQRationalReconstruction(const ClassicMaxQRationalReconstruction<Ring>& RR): ClassicRationalReconstruction<Ring>(RR), _Z(RR._Z) {}
 		
 		~ClassicMaxQRationalReconstruction() {}
 		

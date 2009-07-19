@@ -46,7 +46,7 @@ public:
 	const Ring _Z;
 	typedef typename Ring::Element Element;
 	
-	FastRationalReconstruction(const Ring& Z): RReconstructionBase<Ring>(Z) {
+	FastRationalReconstruction(const Ring& Z): RReconstructionBase<Ring>(Z), _Z(Z) {
 		_threshold = __FASTRR_DEFAULT_THRESHOLD;
 		if (_threshold < 2) _threshold = 2;
 	}
@@ -699,7 +699,7 @@ protected:
 		const Ring _Z;
 		typedef typename Ring::Element Element;
 		
-		FastMaxQRationalReconstruction(const Ring& Z): FastRationalReconstruction<Ring>(Z) {}
+		FastMaxQRationalReconstruction(const Ring& Z): FastRationalReconstruction<Ring>(Z), _Z(Z) {}
 		
 		bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m) const {
 			bool res = fastQMaxReconstructRational(a,b,x,m);
