@@ -50,7 +50,7 @@ namespace LinBox
  			       const MyMethod        &M);
 	
 
-	//error handler for rational domain
+/*	//error handler for rational domain
 	template <class Blackbox, class Polynomial>
 	Polynomial &charpoly (Polynomial& P,
 			      const Blackbox& A,
@@ -59,7 +59,7 @@ namespace LinBox
 	{
 		throw LinboxError("LinBox ERROR: charpoly is not yet defined over a rational domain");
 	}
-
+*/
         /** \brief  ...using an optional Method parameter
 	    \param P - the output characteristic polynomial.  If the polynomial 
 	    is of degree d, this random access container has size d+1, the 0-th 
@@ -79,11 +79,6 @@ namespace LinBox
 			      const MyMethod     & M){
 		return charpoly( P, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), M);
 	}
-}
-
-
-namespace LinBox
-{
 
 	/// \brief ...using default method
 	template<class Blackbox, class Polynomial>
@@ -94,10 +89,10 @@ namespace LinBox
 	}
 
 	// The charpoly with Hybrid Method 
-	template<class Polynomial, class Blackbox, class DomainCategory>
+	template<class Polynomial, class Blackbox>
 	Polynomial &charpoly (Polynomial            &P, 
 			      const Blackbox        &A,
-			      const DomainCategory  &tag,
+			      const RingCategories::ModularTag  &tag,
 			      const Method::Hybrid  &M)
 	{
 		// not yet a hybrid
@@ -106,20 +101,20 @@ namespace LinBox
 	}
 
 	// The charpoly with Hybrid Method 
-	template<class Polynomial, class Domain, class DomainCategory>
+	template<class Polynomial, class Domain>
 	Polynomial &charpoly (Polynomial            &P, 
 			      const SparseMatrix<Domain>  &A,
-			      const DomainCategory  &tag,
+			      const RingCategories::ModularTag  &tag,
 			      const Method::Hybrid  &M)
 	{
 		// not yet a hybrid
 		return charpoly(P, A, tag, Method::Blackbox(M));
 	}
 	// The charpoly with Hybrid Method 
-	template<class Polynomial, class Domain, class DomainCategory>
+	template<class Polynomial, class Domain>
 	Polynomial &charpoly (Polynomial            &P, 
 			      const DenseMatrix<Domain> &A,
-			      const DomainCategory  &tag,
+			      const RingCategories::ModularTag  &tag,
 			      const Method::Hybrid  &M)
 	{
 		// not yet a hybrid
@@ -127,10 +122,10 @@ namespace LinBox
 	}
 	
 	// The charpoly with Elimination Method 
-	template<class Polynomial, class Blackbox, class DomainCategory>
+	template<class Polynomial, class Blackbox>
 	Polynomial &charpoly (Polynomial                &P, 
 			      const Blackbox            &A,
-			      const DomainCategory      &tag,
+			      const RingCategories::ModularTag      &tag,
 			      const Method::Elimination &M)
 	{
 		return charpoly(P, A, tag, Method::BlasElimination(M));
@@ -161,7 +156,38 @@ namespace LinBox
 
 }
 
-//	#if 0
+#include "linbox/algorithms/matrix-hom.h"
+
+#include "linbox/algorithms/rational-cra2.h"
+#include "linbox/algorithms/varprec-cra-early-multip.h"
+#include "linbox/algorithms/charpoly-rational.h"
+
+namespace LinBox {
+	template <class Blackbox, class MyMethod>
+	struct IntegerModularCharpoly {       
+		const Blackbox &A;
+		const MyMethod &M;
+		
+		IntegerModularCharpoly(const Blackbox& b, const MyMethod& n) 
+			: A(b), M(n) {}
+		
+		template<typename Polynomial, typename Field>
+		Polynomial& operator()(Polynomial& P, const Field& F) const {
+			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
+			FBlackbox * Ap;
+			MatrixHom::map(Ap, A, F);
+			charpoly( P, *Ap, typename FieldTraits<Field>::categoryTag(), M);
+			integer p;
+			F.characteristic(p);
+			//std::cerr<<"Charpoly(A) mod "<<p<<" = "<<P;
+
+			delete Ap;
+			return P;
+		}            
+	};
+}
+
+//#if 0
 #if defined(__LINBOX_HAVE_NTL) && defined(__LINBOX_HAVE_GIVARO)
 
 #include "linbox/algorithms/cia.h"
@@ -219,6 +245,10 @@ namespace LinBox {
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
 
+//#include "linbox/algorithms/rational-cra2.h"
+//#include "linbox/algorithms/varprec-cra-early-multip.h"
+//#include "linbox/algorithms/charpoly-rational.h"
+/*
 namespace LinBox {
 	template <class Blackbox, class MyMethod>
 	struct IntegerModularCharpoly {       
@@ -242,7 +272,7 @@ namespace LinBox {
 			return P;
 		}            
 	};
-       
+*/       
 	template < class Polynomial,class Blackbox >
 	Polynomial& charpoly (Polynomial                       & P, 
 			      const Blackbox                   & A,
@@ -347,8 +377,39 @@ namespace LinBox {
 		return charpoly(P, A, tag, Method::BlasElimination());
 #endif
 	}
-	
 
-}
+	template < class Blackbox, class Polynomial, class MyMethod>
+        Polynomial &charpoly (Polynomial& P, const Blackbox& A,
+                               const RingCategories::RationalTag& tag, const MyMethod& M)
+        {
+	        commentator.start ("Rational Charpoly", "Rcharpoly");
 
-#endif // __CHARPOLY_H
+		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
+		RationalRemainder2< VarPrecEarlyMultipCRA<Modular<double> > > rra(3UL);
+		IntegerModularCharpoly<Blackbox,MyMethod> iteration(A, M);
+
+		std::vector<Integer> PP; // use of integer due to non genericity of cra. PG 2005-08-04
+		Integer den;
+		rra(PP,den, iteration, genprime);
+		size_t i =0;
+		P.resize(PP.size());
+		for (typename Polynomial::iterator it= P.begin(); it != P.end(); ++it, ++i)
+			A.field().init(*it, PP[i],den);
+
+		commentator.stop ("done", NULL, "Rcharpoly");
+
+		return P;
+	}
+
+	template < class Field, template <class> class Polynomial, class MyMethod>
+	Polynomial<typename Field::Element> &charpoly (Polynomial<typename Field::Element>& P, const DenseMatrix<Field>& A,
+				const RingCategories::RationalTag& tag, const MyMethod& M)
+	{
+		commentator.start ("Dense Rational Charpoly", "Rcharpoly");
+		rational_charpoly(P,A,M);
+
+		commentator.stop ("done", NULL, "Rcharpoly");
+		return P;
+	}
+} // end of LinBox namespace
+#endif // __MINPOLY_H
