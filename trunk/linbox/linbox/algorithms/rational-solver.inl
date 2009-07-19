@@ -596,15 +596,16 @@ namespace LinBox {
 		int trials = 0, notfr;
 
 		// history sensitive data for optimal reason
-		static const IMatrix* IMP = 0;
+		static const IMatrix* IMP;
 		
-		static BlasBlackbox<Field>* FMP;
-		Field *F=NULL;
+		static BlasBlackbox<Field>* FMP = NULL;
+		static Field *F=NULL;
 
 		do {
-			if (trials == maxPrimes) return SS_SINGULAR;			
-			if (trials != 0) chooseNewPrime();
-			trials++;
+
+			//if (trials == maxPrimes) return SS_SINGULAR;			
+			//if (trials != 0) chooseNewPrime();
+			//trials++;
 #ifdef DEBUG_DIXON
 			//std::cout << "_prime: "<<_prime<<"\n";
 			std::cout<<"A:=\n";
@@ -627,7 +628,10 @@ namespace LinBox {
 		
 			// if input matrix A is different one.
 			if (!oldMatrix) {
-				
+				if (trials == maxPrimes) return SS_SINGULAR;
+                                if (trials != 0) chooseNewPrime();
+                                trials++;
+
 				//delete IMP;
 		
 				// Could delete a non allocated matrix -> segfault
@@ -635,6 +639,7 @@ namespace LinBox {
 		
 				IMP = &A;					
 		
+				if (F != NULL) delete F;
 				F= new Field (_prime);					
 		
 				//FMP = new BlasBlackbox<Field>(*F, A.rowdim(),A.coldim());
@@ -653,6 +658,7 @@ namespace LinBox {
 #endif				
 			
 				if (!checkBlasPrime(_prime)){
+					if (FMP != NULL) delete FMP;
 					FMP = new BlasBlackbox<Field>(*F, A.rowdim(),A.coldim());
 					notfr = MatrixInverse::matrixInverseIn(*F,*FMP);
 				}
@@ -665,11 +671,11 @@ namespace LinBox {
 					tNonsingularInv.start();
 #endif				
 					BMDF.invin(*invA, *FMP, notfr); //notfr <- nullity
-					delete FMP;
+					if (FMP != NULL) delete FMP;
 					FMP = invA;
-					// 					std::cout << "notfr = " << notfr << std::endl;
-					// 					std::cout << "inverse mod p: " << std::endl;
-					// 					FMP->write(std::cout, *F);
+					//std::cout << "notfr = " << notfr << std::endl;
+					//std::cout << "inverse mod p: " << std::endl;
+					//FMP->write(std::cout, *F);
 #ifdef RSTIMING
 					tNonsingularInv.stop();
 					ttNonsingularInv += tNonsingularInv;
@@ -694,16 +700,15 @@ namespace LinBox {
 		LiftingContainer lc(_R, *F, A, *FMP, b, _prime);
 		RationalReconstruction<LiftingContainer > re(lc);
 		if (!re.getRational(num, den, 0)){
-			delete FMP;
+			//delete FMP;
 			return SS_FAILED;
 		}
 #ifdef RSTIMING
 		ttNonsingularSolve.update(re, lc);
 #endif	
-		delete FMP;
-
-		if (F!=NULL)
-			delete F;
+		//delete FMP;
+		//if (F!=NULL)
+		//	delete F;
 		return SS_OK;
 	}
 
