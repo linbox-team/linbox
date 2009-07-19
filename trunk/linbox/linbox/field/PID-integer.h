@@ -33,7 +33,7 @@
 #include <linbox/integer.h>
 #include <linbox/field/unparametric.h>
 #include <linbox/field/field-traits.h>
-
+#include <linbox/field/gmp-rational.h>
 
 
 namespace LinBox {
@@ -56,6 +56,10 @@ namespace LinBox {
                 inline Element& axmyin (integer &r, const integer& a, const integer& x) const {
                         return Integer::axmyin(r,a,x);
                 }
+
+		inline Element& axpy (integer &r, const integer& a, const integer& x, const integer& y) const {
+	                return Integer::axpy(r,a,x,y);//r = ax+y
+	        }
 
 		inline  bool isUnit (const Element& x) const { 
 			
@@ -224,9 +228,9 @@ namespace LinBox {
 
                 inline  Element powtwo(Element& z, const Element& x) const {
                         z = 1;
-                        //cout << "max" << ULONG_MAX << "x" << x << "?" << (x < ULONG_MAX);
-                        if (x < LONG_MAX) {
-                                z<<=(long int)x;
+                        if (x < 0) return z;
+			if (x < ULONG_MAX) {
+                                z<<=(unsigned long int)x;
                                 //cout << "z"<< z;
                                 return z;
                         } else {
@@ -246,8 +250,10 @@ namespace LinBox {
                 }
 
                 inline  Element logtwo(Element& z, const Element& x) const {
-                        //cout << "x" << x;
-                        if (x<1) return z=-1;
+                        z = x.bitsize()-1;
+	                return z;
+			/* 
+			if (x<1) return z=-1;
                         z = 0;
                         Element cur = x;
                         cur >>=1;//cout << "cur" << cur;
@@ -258,6 +264,7 @@ namespace LinBox {
                         }
                         //cout << "z" << z;
                         return z;
+			*/
                 }
 
 
@@ -274,6 +281,15 @@ namespace LinBox {
       
 		inline Element& init(Element& x, const integer& y = 0) const 
 		{ return x=y;}
+		/* 
+		 * aniau@astronet.pl 06/2009 initialization form GMPRationalElement
+		 */ 
+		inline Element& init(Element& x, const GMPRationalElement& q) const
+	        {
+	                GMPRationalField Q;
+	                Q.convert(x,q);
+	                return x;
+	        }
         protected:
                     // Rational number reconstruction: 
                     // num/den \equiv f modulo m, with |num|<k and 0 < |den| \leq f/k
