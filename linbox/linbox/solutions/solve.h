@@ -25,6 +25,9 @@
 #include "linbox/solutions/methods.h"
 #include "linbox/algorithms/bbsolve.h"
 
+#include "linbox/algorithms/rational-cra2.h"
+#include "linbox/algorithms/varprec-cra-early-multip.h"
+
 namespace LinBox 
 {
 
@@ -202,25 +205,47 @@ namespace LinBox
 		throw LinboxError("bad use of integer API solver\n");
 		
 	} 
-
-	// error handler for non defined solver over rational domain
+/*
 	template <class RatVector, class Vector, class BB, class MethodTraits> 
 	Vector& solve(RatVector& x, const BB& A, const Vector& b, 
 		      const RingCategories::RationalTag & tag, 
 		      const MethodTraits& m)
-	{ 
-		throw LinboxError("LinBox ERROR: solver not yet defined over rational domain");
+	{
+                if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
+	                throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
+
+		commentator.start ("Rational CRA Solve", "Rsolve");
+		size_t bits = 26 -(int)ceil(log((double)A.rowdim())*0.7213475205);
+		RandomPrimeIterator genprime( bits);
+
+		RationalRemainder2< VarPrecEarlyMultipCRA< Modular<double> > > rra(3UL);//using default RR method
+		IntegerModularSolve<BB,Vector,MethodTraits > iteration(A, b, m);
+                integer den;
+		std::vector< integer > num(A.coldim());
+		
+		rra(num, den, iteration, genprime);
+
+		typename RatVector::iterator it_x= x.begin();
+		typename std::vector<integer>::const_iterator it_num= num.begin();
+
+		for (; it_x != x.end(); ++it_x, ++it_num){
+			integer g = gcd( *it_num, den);
+			*it_x = typename RatVector::value_type(*it_num/g, den/g);
+		}
+
+		commentator.stop ("done", NULL, "Rsolve");
+		return x;
 	}
-	
+*/	
 	// error handler for non defined solver over rational domain
-	template <class Vector, class BB, class MethodTraits> 
+/*	template <class Vector, class BB, class MethodTraits> 
 	Vector& solve(Vector& x, const BB& A, const Vector& b, 
 		      const RingCategories::RationalTag & tag, 
 		      const MethodTraits& m)
 	{ 
 		throw LinboxError("LinBox ERROR: solver not yet defined over rational domain");
 	}
-	
+*/	
 	
 	/*
 	 * 1st integer solver API :
@@ -749,6 +774,56 @@ namespace LinBox {
 		commentator.stop ("done", NULL, "Rsolve");
 		return x;
 	}
+
+        template <class RatVector, class Vector, class BB, class MethodTraits>
+        RatVector& solve(RatVector& x, const BB& A, const Vector& b,
+		              const RingCategories::RationalTag & tag,
+		              const MethodTraits& m)
+	{
+		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
+			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
+		commentator.start ("Rational CRA Solve", "Rsolve");
+		size_t bits = 26 -(int)ceil(log((double)A.rowdim())*0.7213475205);
+		RandomPrimeIterator genprime( bits);
+	        RationalRemainder2< VarPrecEarlyMultipCRA< Modular<double> > > rra(3UL);//using default RR method
+		IntegerModularSolve<BB,Vector,MethodTraits > iteration(A, b, m);
+		integer den;
+		std::vector< integer > num(A.coldim());
+                rra(num, den, iteration, genprime);
+                typename RatVector::iterator it_x= x.begin();
+                typename std::vector<integer>::const_iterator it_num= num.begin();
+                for (; it_x != x.end(); ++it_x, ++it_num){
+			integer g = gcd( *it_num, den);
+			*it_x = typename RatVector::value_type(*it_num/g, den/g);
+		}
+                commentator.stop ("done", NULL, "Rsolve");
+                return x;
+	}
+
+	template <class RatVector, class BB, class MethodTraits>
+	        RatVector& solve(RatVector& x, const BB& A, const RatVector& b,
+		              const RingCategories::RationalTag & tag,
+		              const MethodTraits& m)
+		{
+			if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
+				throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
+			commentator.start ("Rational CRA Solve", "Rsolve");
+			size_t bits = 26 -(int)ceil(log((double)A.rowdim())*0.7213475205);
+			RandomPrimeIterator genprime( bits);
+			RationalRemainder2< VarPrecEarlyMultipCRA< Modular<double> > > rra(3UL);//using default RR method
+			IntegerModularSolve<BB,RatVector,MethodTraits > iteration(A, b, m);
+			integer den;
+			std::vector< integer > num(A.coldim());
+			rra(num, den, iteration, genprime);
+			typename RatVector::iterator it_x= x.begin();
+			typename std::vector<integer>::const_iterator it_num= num.begin();
+			for (; it_x != x.end(); ++it_x, ++it_num){
+				integer g = gcd( *it_num, den);
+				*it_x = typename RatVector::value_type(*it_num/g, den/g);
+			}
+			commentator.stop ("done", NULL, "Rsolve");
+			return x;
+		}
     
 } // LinBox
 

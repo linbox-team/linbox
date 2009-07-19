@@ -576,6 +576,9 @@ namespace LinBox {
 # define SOLUTION_CRA_DET cra_det
 #endif
 
+#include "linbox/algorithms/rational-cra2.h"
+#include "linbox/algorithms/varprec-cra-early-single.h"
+#include "linbox/algorithms/det-rational.h"
 namespace LinBox {
     
 	template <class Blackbox, class MyMethod>
@@ -589,15 +592,46 @@ namespace LinBox {
 		return SOLUTION_CRA_DET(d, A, tag, M);
 	}    
 
-
-	//error handler for rational domain
-	template< class Blackbox, class DetMethod> 
-	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d, 
+	template< class Blackbox, class MyMethod>
+	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d,
 						const Blackbox                            &A,
 						const RingCategories::RationalTag       &tag,
-						const DetMethod                          &M)
+						const MyMethod                          &M)
 	{
-		throw LinboxError("LinBox ERROR: determinant is not yet defined over a rational domain");
+		if (A.coldim() != A.rowdim())
+			throw LinboxError("LinBox ERROR: matrix must be square for determinant computation\n");
+
+		commentator.start ("Rational Determinant", "rdet");
+
+		Integer num,den;
+
+		IntegerModularDet<Blackbox, MyMethod> iteration(A, M);
+		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
+		RationalRemainder2< VarPrecEarlySingleCRA< Modular<double> > > rra(4UL);
+
+		rra(num,den, iteration, genprime);
+
+		A.field().init(d, num,den); // convert the result from integer to original type
+
+		commentator.stop ("done", NULL, "rdet");
+		return d;
+	}	
+
+	template<class Field, class MyMethod>
+	typename Field::Element &det (typename Field::Element                 &d,
+					const DenseMatrix<Field>                &A,
+					const RingCategories::RationalTag       &tag,
+					const MyMethod                          &M)
+	{
+		if (A.coldim() != A.rowdim())
+			throw LinboxError("LinBox ERROR: matrix must be square for determinant computation\n");
+		
+		commentator.start ("Dense Rational Determinant", "rdet");
+
+		rational_det(d,A,M);
+
+		commentator.stop ("done", NULL, "rdet");
+		return d;
 	}
 
 } // end of LinBox namespace

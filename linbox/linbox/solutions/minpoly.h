@@ -51,8 +51,7 @@ namespace LinBox
 			     const Blackbox& A,
 			     const DomainCategory& tag,
 			     const MyMethod& M);
-
-	//error handler for rational domain
+/*
 	template < class Blackbox, class Polynomial, class MyMethod>
 	Polynomial &minpoly (Polynomial& P,
 			     const Blackbox& A,
@@ -61,7 +60,7 @@ namespace LinBox
 	{
 		throw LinboxError("LinBox ERROR: minpoly is not yet defined over a rational domain");
 	}
- 
+*/
 
         /** \brief  ...using an optional Method parameter
 	    \param P - the output minimal polynomial.  If the polynomial is
@@ -190,6 +189,10 @@ namespace LinBox
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
 
+#include "linbox/algorithms/rational-cra2.h"
+#include "linbox/algorithms/varprec-cra-early-multip.h"
+#include "linbox/algorithms/minpoly-rational.h"
+
 namespace LinBox {
    
 	template <class Blackbox, class MyMethod>
@@ -255,6 +258,38 @@ namespace LinBox {
 			commentator.stop ("done", NULL, "Iminpoly");
 		return P;
 	}
-	
+
+	template < class Blackbox, class Polynomial, class MyMethod>
+        Polynomial &minpoly (Polynomial& P, const Blackbox& A,
+                               const RingCategories::RationalTag& tag, const MyMethod& M)
+        {
+	        commentator.start ("Rational Minpoly", "Rminpoly");
+
+		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
+		RationalRemainder2< VarPrecEarlyMultipCRA<Modular<double> > > rra(3UL);
+		IntegerModularMinpoly<Blackbox,MyMethod> iteration(A, M);
+
+		std::vector<Integer> PP; // use of integer due to non genericity of cra. PG 2005-08-04
+		Integer den;
+		rra(PP,den, iteration, genprime);
+		size_t i =0;
+		P.resize(PP.size());
+		for (typename Polynomial::iterator it= P.begin(); it != P.end(); ++it, ++i)
+			A.field().init(*it, PP[i],den);
+
+		commentator.stop ("done", NULL, "Rminpoly");
+
+		return P;
+	}
+
+	template < class Field, template<class> class Polynomial, class MyMethod>
+	Polynomial<typename Field::Element> &minpoly (Polynomial<typename Field::Element>& P, const DenseMatrix<Field>& A,
+				const RingCategories::RationalTag& tag, const MyMethod& M)
+	{
+		commentator.start ("Dense Rational Minpoly", "Rminpoly");
+
+		rational_minpoly(P,A,M);
+		return P;
+	}
 } // end of LinBox namespace
 #endif // __MINPOLY_H
