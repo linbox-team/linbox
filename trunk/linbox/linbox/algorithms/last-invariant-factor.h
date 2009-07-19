@@ -229,7 +229,7 @@ whether zero or not, by rational solving.
 			}
 
                         template<class IMatrix, class Vector>
-                        Integer& lastInvariantFactor1(Integer& lif, Vector& r_num, const IMatrix& A) const {
+                        Integer& lastInvariantFactor1(Integer& lif, Vector& r_num, const IMatrix& A, const bool oldMatrix=false) const {
                                 //cout << "enetering lif\n";
                                 SolverReturnStatus tmp;
 
@@ -249,7 +249,7 @@ whether zero or not, by rational solving.
                                 //report <<"try to solve Ax = b over Ring";
                                 // try to solve Ax = b over Ring
                                 //cout << "trying to solve\n";
-                                tmp = solver.solveNonsingular(r_num, r_den, A, b);
+                                tmp = solver.solveNonsingular(r_num, r_den, A, b,oldMatrix);
                                 // If no solution found
                                 if (tmp != SS_OK) {
                                         //r.init (lif, 0);
@@ -259,7 +259,15 @@ whether zero or not, by rational solving.
                                 //report << "r_den: "<< r_den;
 
                                 r. lcmin (lif, r_den);
-
+				if (r_den != lif) {
+                                	Integer den,t;
+                                	r. lcm(den,r_den,lif);
+                                	r. div(t, den, r_den);
+                                	typename std::vector<Integer>::iterator num_p = r_num.begin();
+                                	for (; num_p != r_num. end(); ++num_p) {
+	                                	r. mulin(*num_p, t);
+					}	
+				}
                                 return lif;
                         }
 
