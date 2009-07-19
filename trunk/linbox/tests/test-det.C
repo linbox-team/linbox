@@ -20,6 +20,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
 #include "linbox/field/PID-integer.h"
+#include "linbox/field/gmp-rational.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/dense.h"
@@ -460,6 +461,129 @@ bool testIntegerDetGen (size_t n, int iterations)
 	return ret;
 }
 
+/* Test 6: Rational determinant by generic methods
+ *
+ * Construct a random nonsingular diagonal sparse matrix and compute its
+ * determinant over Z
+ *
+ * n - Dimension to which to make matrix
+ * iterations - Number of iterations to run
+ *
+ * Returns true on success and false on failure
+ */
+
+bool testRationalDetGen (size_t n, int iterations) 
+{
+ 	commentator.start ("Testing rational determinant, generic methods", "testRationalDeterminantGeneric", iterations);
+
+	bool ret = true;
+
+	for (int i = 0; i < iterations; ++i) {
+		commentator.startIteration (i);
+		GMPRationalField Q;
+		SparseMatrix<GMPRationalField > A (Q, n, n);
+		DenseMatrix <GMPRationalField > BB(Q, n, n);
+
+	 	GMPRationalField::Element pi(1,1);
+ 		GMPRationalField::Element det_A, det_B,det_A_H, det_B_H, det_A_B, det_B_B, det_A_E, det_B_E;
+
+ 		for (unsigned int j = 0; j < n; ++j) {
+			integer tmp_n;
+	 		integer tmp_d;
+			integer::nonzerorandom (tmp_n, 20*i + 1);
+ 			integer::nonzerorandom (tmp_d, 20*i + 1);
+			GMPRationalField::Element tmp;
+			Q.init(tmp,tmp_n,tmp_d);
+			A.setEntry(j,j,tmp);
+			BB.setEntry(j,j,tmp);
+		 	Q.mulin (pi, tmp);
+ 		}
+
+	 	if (i % 2) {
+	 		Q.negin(A. refEntry(1,1));
+			Q.negin(BB.refEntry(1,1));
+	 		Q.negin(pi);
+	 	}
+                              
+	 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+ 		
+	 	report << "True determinant: ";  Q.write(report,pi); report << endl;
+ 		
+                det (det_A, A);
+ 	 	report << "Computed rational determinant (Default): "; Q.write(report, det_A); report << endl;
+		if (!Q.areEqual(det_A ,pi)){
+	 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+	 			<< "ERROR: Default Computed determinant is incorrect" << endl;
+	 		ret = false;
+	 	}
+
+                det (det_A_H, A, Method::Hybrid());
+	 	report << "Computed rational determinant (Hybrid): "; Q.write(report, det_A_H); report << endl;
+		if (!Q.areEqual(det_A_H ,pi)){
+	 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+	 			<< "ERROR: Hybrid Computed determinant is incorrect" << endl;
+	 		ret = false;
+	 	}
+ 		
+                det (det_A_B, A, Method::Blackbox());
+	 	report << "Computed rational determinant (Blackbox): "; Q.write(report, det_A_B); report<< endl;
+		if (!Q.areEqual(det_A_B , pi)){
+	 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+	 			<< "ERROR: Blackbox Computed determinant is incorrect" << endl;
+	 		ret = false;
+	 	}
+ 		
+                det (det_A_E, A, Method::Elimination());
+	 	report << "Computed rational determinant (Elimination): "; Q.write(report, det_A_E); report << endl;
+		if (!Q.areEqual(det_A_E ,pi)){
+	 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+	 			<< "ERROR: Elimination Computed determinant is incorrect" << endl;
+	 		ret = false;
+	 	}
+		
+		det (det_B, BB);
+ 	 	report << "Computed rational determinant (Default): "; Q.write(report, det_A); report << endl;
+		if (!Q.areEqual(det_B ,pi)){
+	 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+	 			<< "ERROR: (Dense) Default Computed determinant is incorrect" << endl;
+	 		ret = false;
+	 	}
+
+                det (det_B_H, BB, Method::Hybrid());
+	 	report << "Computed rational determinant (Hybrid): "; Q.write(report, det_A_H); report << endl;
+		if (!Q.areEqual(det_B_H ,pi)){
+	 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+	 			<< "ERROR: (Dense) Hybrid Computed determinant is incorrect" << endl;
+	 		ret = false;
+	 	}
+		det (det_B_B, BB, Method::Blackbox());
+	 	report << "Computed rational determinant (Blackbox): "; Q.write(report, det_A_B); report<< endl;
+		if (!Q.areEqual(det_B_B , pi)){
+	 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+	 			<< "ERROR: (Dense) Blackbox Computed determinant is incorrect" << endl;
+	 		ret = false;
+	 	}
+		
+		det (det_B_E, BB, Method::Elimination());
+	 	report << "Computed rational determinant (BlasElimination): "; Q.write(report, det_A_E); report << endl;
+		if (!Q.areEqual(det_B_E ,pi)){
+	 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+	 			<< "ERROR: (Dense) Elimination Computed determinant is incorrect" << endl;
+	 		ret = false;
+	 	}
+
+
+		commentator.stop ("done");
+	 	commentator.progress ();
+	 	//commentator.progress (i, iterations);
+ 	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRationalDeterminantGeneric");
+
+	return ret;
+}
+
+
 int main (int argc, char **argv)
 {
 	bool pass = true;
@@ -489,6 +613,7 @@ int main (int argc, char **argv)
 	if (!testSingularDiagonalDet (F, n, iterations)) pass = false;
 	if (!testIntegerDet          (n, iterations)) pass = false;
 	if (!testIntegerDetGen          (n, iterations)) pass = false;
+	if (!testRationalDetGen          (n, iterations)) pass = false;
 
 	commentator.stop("determinant test suite");
 	return pass ? 0 : -1;
