@@ -125,6 +125,18 @@ class GMPRationalField : public FieldInterface
 		//mpq_canonicalize (x.rep);
 		return x;
 	}
+
+	/*
+	 * aniau@astronet.pl: 06/2009 Initialization of field element from numerator and denominator
+	 * */
+	Element &init (Element &x, const integer &num, const integer &den) const
+	{
+		init(x,num);
+		Element y;
+	        init(y,den);
+	        divin(x,y);
+	        return x;
+	}
   
 	/** Conversion of field element to an integer.
 	 * This function assumes the output field element x has already been 
@@ -522,6 +534,8 @@ class GMPRationalField : public FieldInterface
 	 * FIXME: Avoid the magical limit on size here
 	 * FIXME: Right now it skips over everything until it finds something that
 	 * looks like a number. Is this really the correct policy?
+	 *
+	 * aniau@astronet.pl: 06/2009: supports scientific E/e notation for decimal fractions
 	 */
 	std::istream &read (std::istream &is, Element &x) const
 	{
@@ -531,7 +545,7 @@ class GMPRationalField : public FieldInterface
 
 		do {
 			is.get (endc);
-		} while (is && !isdigit (endc) && endc != '-' && endc != '.');		
+		} while (is && !isdigit (endc) && endc != '-' && endc != '.' &&  endc !='e' && endc != 'E');		
 
 		buffer[i]=endc;
 		
@@ -568,8 +582,13 @@ class GMPRationalField : public FieldInterface
 			buffer[i - 1] = '\0';
 
 			mpz_set_str (mpq_denref (x.rep), buffer, 10);
+			mpq_canonicalize (x.rep);
+			return is;
+		} else {
+			 mpz_set_si (mpq_denref (x.rep), 1L);
 		}
-		else if (endc == '.' && !found_space) {
+
+		if (endc == '.' && !found_space) {
 			Element decimal_part;
 
 			mpz_set_si (mpq_denref (x.rep), 1L);
@@ -592,10 +611,42 @@ class GMPRationalField : public FieldInterface
 			mpq_canonicalize (decimal_part.rep);
 
 			mpq_add (x.rep, x.rep, decimal_part.rep);
+
+			do {
+				is.get (endc);
+			} while (is && endc == ' ') ;
 		}
+		
+		if ((endc == 'e') || (endc == 'E')) {
+	                is.get(endc);
+	                bool minus = false;
+                        if (endc == '-') {
+                                minus = true;
+                        } else if (endc == '+') {
+                                minus = false;
+                        } else {
+	                        is.putback(endc);
+                        }
+
+	                i=0;
+	                do {
+		                is.get (buffer[i++]);
+		        } while (isdigit (buffer[i-1]) && i < 65536);
+		        is.putback(buffer[i-1]);
+		        buffer[i-1] = '\0';
+
+			integer pow(buffer), powten=1;
+
+			for (integer it=0; it< pow; ++it) powten *=10;
+                        if (minus) {
+	                        div(x,x,powten);
+	                } else {
+	                        mul(x,x,powten);
+	                }
+                }
 		else {
 			is.putback (endc);
-			mpz_set_si (mpq_denref (x.rep), 1L);
+		//	mpz_set_si (mpq_denref (x.rep), 1L);
 		}
 
 		mpq_canonicalize (x.rep);
@@ -634,6 +685,15 @@ class GMPRationalField : public FieldInterface
 	int sign (const Element& x) const {
 		return mpq_sgn (x. rep);
 	}
+	
+	//bitsize as sum of bitsizes of numerator and denominator
+        integer& bitsize(integer& bs, const Element q) const {
+                integer y; get_den(y,q);
+                integer x; get_num(x,q);
+                bs = x.bitsize() + y.bitsize();
+                return bs;
+        }
+
 
 }; // class GMPRationalField
 
