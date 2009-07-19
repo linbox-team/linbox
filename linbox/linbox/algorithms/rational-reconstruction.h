@@ -23,12 +23,15 @@
 
 #ifndef __LINBOXX__RECONSTRUCTION_H__
 #define __LINBOXX__RECONSTRUCTION_H__
+#include <linbox/algorithms/rational-reconstruction-base.h>
+#include <linbox/algorithms/classic-rational-reconstruction.h>
+//#include <linbox/algorithms/fast-rational-reconstruction.h>
 
 #include <linbox/linbox-config.h>
 #include <linbox/util/debug.h>
 
-#define DEBUG_RR
-#define DEBUG_RR_BOUNDACCURACY
+//#define DEBUG_RR
+//#define DEBUG_RR_BOUNDACCURACY
 #define DEF_THRESH 50
 
 #ifdef __LINBOX_HAVE_NTL
@@ -45,13 +48,11 @@ extern "C" {
 #include <linbox/algorithms/short-vector.h>
 #endif
 
-
-namespace LinBox {
-
-	
+namespace LinBox {	
 
 	/// \brief Limited doc so far.  Used, for instance, after LiftingContainer.
-template< class _LiftingContainer >
+template< class _LiftingContainer,
+	  class RatRecon = RReconstruction<typename _LiftingContainer::Ring, ClassicMaxQRationalReconstruction<typename _LiftingContainer::Ring> > >
 class RationalReconstruction {
 		
 public:
@@ -65,8 +66,7 @@ public:
 #ifdef RSTIMING
 	mutable Timer tRecon, ttRecon;	
 	mutable int _num_rec;
-#endif	
-		
+#endif		
 	// data
 protected:
 		
@@ -80,12 +80,13 @@ protected:
 	int _threshold;
 	
 public:
-			
+	RatRecon RR;
+
 	/** \brief Constructor 
 	 *  maybe use different ring than the ring in lcontainer
 	 */
 	RationalReconstruction (const LiftingContainer& lcontainer, const Ring& r = Ring(), int THRESHOLD =DEF_THRESH) : 
-		_lcontainer(lcontainer), _r(r), _threshold(THRESHOLD) {
+		_lcontainer(lcontainer), _r(r), _threshold(THRESHOLD), RR(_r) {
 			
 		//if ( THRESHOLD < DEF_THRESH) _threshold = DEF_THRESH;
 	}
@@ -965,6 +966,193 @@ public:
 
 	} // end of getRational3
 
+/*
+ * early terminated analog of getRational3
+ */ 
+
+	template<class Vector1>
+        bool getRationalET(Vector1& num, Integer& den, const Integer& den_app =1) const {
+                //cout << "ET p ading lifting using ClassicMaxQRationalReconstruction by default or given RReconstruction\n";
+#ifdef RSTIMING
+		ttRecon.clear();
+		tRecon.start();
+		_num_rec = 0;
+#endif
+		
+		linbox_check(num.size() == (size_t)_lcontainer.size());
+	
+		Integer init_den = den_app;
+		if (den > 0) lcm(init_den,den,den_app);
+			_r. init (den, 1);
+#ifdef DEBUG_RR
+		cout << "debug: den " << den;
+#endif
+		Integer prime = _lcontainer.prime();                    // prime used for lifting
+		Vector digit(_lcontainer.size());                       // to store next digit
+		Integer modulus;                                        // store modulus (power of prime)
+		Integer prev_modulus;                                   // store previous modulus
+		_r.init(modulus, 0);
+		std::vector<Integer> zz(_lcontainer.size(), modulus);   // stores each truncated p-adic approximation
+		_r.init(modulus, 1);
+		
+		size_t len = _lcontainer.length(); // should be ceil(log(2*numbound*denbound)/log(prime))
+#ifdef DEBUG_RR
+		std::cout << "nbound, dbound:" << _lcontainer.numbound() << ",  " << _lcontainer.denbound() << std::endl;
+#endif
+		
+		typename Vector::iterator num_p;
+		typename std::vector<Integer>::iterator zz_p;
+		typename Vector::iterator digit_p;
+		
+		size_t i = 0;
+		typename LiftingContainer::const_iterator iter = _lcontainer.begin();	
+		
+		bool gotAll = false; //set to true if all values are reconstructed on a particular step
+		bool terminated = false; // set to true if same values are reconstructed and confirmed (reconstructed twice)
+#ifdef RSTIMING		
+		long counter=0;//counts number of RR
+#endif	
+		// do until getting all answera
+		while ((i < len) && (!terminated)) {
+			++ i;		
+#ifdef DEBUG_RR		
+			std::cout<<"i: "<<i<<std::endl;
+#endif
+#ifdef RSTIMING
+			tRecon.stop();
+			ttRecon += tRecon;
+			_num_rec +=counter;
+			counter = 0;
+#endif
+			// get next p-adic digit
+			bool nextResult = iter.next(digit);
+			if (!nextResult) {
+				std::cout << "ERROR in lifting container. Are you using <double> ring with large norm?" << std::endl;
+				return false;
+			}
+#ifdef RSTIMING
+			tRecon.start();
+#endif			
+			// preserve the old modulus
+			_r.assign (prev_modulus, modulus);
+
+			// upate _modulus *= _prime
+			_r.mulin (modulus,  prime);
+
+			// update truncated p-adic approximation
+			for ( digit_p = digit.begin(), zz_p = zz.begin(); digit_p != digit.end(); ++ digit_p, ++ zz_p) 
+				_r.axpyin(*zz_p, prev_modulus, *digit_p);
+#ifdef DEBUG_RR
+			std::cout<<"approximation mod p^"<<i<<" : \n";
+			std::cout<<"[";
+			for (size_t j=0;j< zz.size( )-1;j++)
+				std::cout<<zz[j]<<",";
+			std::cout<<zz.back()<<"]\n";
+			std::cout<<"digit:\n";				
+			for (size_t j=0;j< digit.size();++j)
+				std::cout<<digit[j]<<",";
+			std::cout<<std::endl;
+#endif			
+			if ((!gotAll) && (i % _threshold != 0) && (i + _threshold < len)) continue;
+			if ((!gotAll) && (!RR.scheduled(i-1)) && (i + _threshold < len)) continue;
+
+			if (gotAll) {
+				terminated = true;
+				for ( zz_p = zz.begin(), num_p = num.begin(); zz_p != zz.end();  ++ zz_p, ++ num_p) {
+					Integer a = *num_p;   
+					Integer bx= *zz_p; _r. mulin (bx, den); _r. remin(bx, modulus);
+					Integer _bx = bx-modulus;
+					if (!_r.areEqual(a,bx) && !_r.areEqual(a,_bx)) {
+						terminated = false; 
+						break;
+					}
+				}
+				if (terminated) break;
+			}
+
+			gotAll = true;
+			_r. assign (den, init_den);
+			for ( zz_p = zz.begin(), num_p = num.begin();
+			      zz_p != zz.end();  ++ zz_p, ++ num_p) {
+
+				Integer tmp_den=0;
+				Integer zz_p_den (*zz_p);
+				_r. mulin (zz_p_den,den);
+				_r. remin (zz_p_den,modulus);
+				bool tmp = RR.reconstructRational(*num_p, tmp_den, zz_p_den, modulus); 
+#ifdef RSTIMING
+++counter;
+#endif
+				if (tmp) {
+					linbox_check (!_r.isZero(tmp_den));
+					if (! _r. isOne (tmp_den)) {
+						_r. mulin (den, tmp_den);
+						for (typename Vector::iterator tmp_p = num. begin (); tmp_p != num_p; ++ tmp_p)
+							_r. mulin (*tmp_p, tmp_den);	
+					}
+				}
+				else {
+					gotAll = false;
+					break;
+				}	
+			}
+		}	
+
+		// if last iteration - reconstruct the result using num and den bounds
+		if (i == len) {
+			den = 1;
+			for ( zz_p = zz.begin(), num_p = num.begin();
+			      zz_p != zz.end(); ++ zz_p, ++ num_p) {
+			
+				Integer tmp_den;
+                                Integer zz_p_den (*zz_p);
+                                _r. mulin (zz_p_den,den);
+                                _r. remin (zz_p_den,modulus);
+
+				bool tmp = RR.reconstructRational(*num_p, tmp_den, zz_p_den, modulus, _lcontainer.numbound(), _lcontainer.denbound()); 
+#ifdef RSTIMING
+++counter;
+#endif
+				if (tmp) {
+					linbox_check (!_r.isZero(tmp_den));
+					if (! _r. isOne (tmp_den)) {
+						_r. mulin (den, tmp_den);
+						for (typename Vector::iterator tmp_p = num. begin (); tmp_p != num_p; ++ tmp_p)
+							_r. mulin (*tmp_p, tmp_den);
+					}
+				}
+				else {
+					cout << "ERROR in reconstruction ?\n" << flush;
+				}
+		
+			}
+		} 		
+#ifdef RSTIMING
+		tRecon.stop();
+		ttRecon += tRecon;
+		_num_rec +=counter;
+		counter = 0;
+#endif	
+#ifdef DEBUG_RR_BOUNDACCURACY
+		//std::cout << "Computed " << i << " digits out of estimated " << len << std::endl;
+#endif
+		Integer g;
+		Integer abs_num_p(0);
+		_r. init (g, 0);
+		_r. gcdin (g, den);
+		for (num_p = num. begin(); num_p != num. end(); ++ num_p) { 
+			_r. gcdin (g, *num_p);
+		}	
+
+		if (!_r. isOne (g) && !_r. isZero(g)) {
+			for (num_p = num. begin(); num_p != num. end(); ++ num_p)
+				_r. divin (*num_p, g);
+			_r. divin (den, g);
+		}
+		//std::cerr << "Computed num, den of size " << sizeN << ", " << sizeD << "\n By " << i << " digits out of estimated " << len << std::endl;
+		return true; //lifted ok, assuming size was correct
+ 		
+	}
 
 
 #ifdef __LINBOX_HAVE_NTL
