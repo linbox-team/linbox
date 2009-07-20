@@ -68,9 +68,17 @@ public:
 	VarPrecEarlyMultipCRA(const unsigned long EARLY = DEFAULT_EARLY_TERM_THRESHOLD, const double b=0.0, 
 			      const std::vector<Integer>& vf = std::vector<Integer>(0), 
 			      const std::vector<Integer>& vm = std::vector<Integer>(0)): 
-		EarlySingleCRA<Domain>(EARLY), FullMultipCRA<Domain>(b), vfactor_(vf), vmultip_(vm) { }
+		EarlySingleCRA<Domain>(EARLY), FullMultipCRA<Domain>(b), vfactor_(vf), vmultip_(vm) {
+			for (int i=0; i < vfactor_.size(); ++i) {
+				if (vfactor_[i]==0) vfactor_[i]=1;
+			}
+		}
 
-	VarPrecEarlyMultipCRA(VarPrecEarlyMultipCRA& other): EarlySingleCRA<Domain>(other.EARLY_TERM_THRESHOLD), FullMultipCRA<Domain>(other.LOGARITHMIC_UPPER_BOUND), vfactor_(other.vfactor_), vmultip_(other.vmultip_) { } 
+	VarPrecEarlyMultipCRA(VarPrecEarlyMultipCRA& other): EarlySingleCRA<Domain>(other.EARLY_TERM_THRESHOLD), FullMultipCRA<Domain>(other.LOGARITHMIC_UPPER_BOUND), vfactor_(other.vfactor_), vmultip_(other.vmultip_) { 
+		for (int i=0; i < vfactor_.size(); ++i) {
+			if (vfactor_[i]==0) vfactor_[i]=1;
+		}
+	} 
 
 	int getThreshold(int& t) {return t = EarlySingleCRA<Domain>::EARLY_TERM_THRESHOLD;}	
 
@@ -364,6 +372,9 @@ public:
 		typename Vect<Integer>::const_iterator itf, itm, itf2, itm2;
 
 		vfactor_ = vf;
+		for (int i=0; i < vfactor_.size(); ++i) {
+                        if (vfactor_[i]==0) vfactor_[i]=1;	//if factor ==0 set no factor
+                }
 		vmultip_ = vm;
 					
 		Vect<Integer> e(vfactor_.size());
@@ -458,8 +469,9 @@ protected:
 
 		for (; it != vf.end(); ++it) {
 			DomainElement z,i;
+			D.init(z,1);
 			D.init(i,*it);
-			D.inv(z,i);
+			if (!D.isZero(i)) D.inv(z,i); 
 			vz.push_back(z);
 		}
 		return vz;
@@ -472,8 +484,8 @@ protected:
                 typename Vect2::const_iterator it = vf.begin();
 
                 for (; it != vf.end(); ++it) {
-                	Integer z;
-			inv(z,*it,D);
+                	Integer z=1;
+			if ((*it) != 0) inv(z,*it,D);
 			vz.push_back(z);
 		}
 		return vz;
