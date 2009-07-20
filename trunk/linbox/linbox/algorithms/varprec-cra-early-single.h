@@ -64,10 +64,10 @@ typedef Rationals::Element Quotient;
 		Integer multip_;
 	
 		VarPrecEarlySingleCRA(const unsigned long EARLY = DEFAULT_EARLY_TERM_THRESHOLD, const double b=0.0, const Integer& f=Integer(1), const Integer& m=Integer(1)): 
-			EarlySingleCRA<Domain>(EARLY), FullMultipCRA<Domain>(b), factor_(f), multip_(m) { }
+			EarlySingleCRA<Domain>(EARLY), FullMultipCRA<Domain>(b), factor_(f), multip_(m) { if (factor_ == 0 ) factor_ = 1;}
 
 		VarPrecEarlySingleCRA(const VarPrecEarlySingleCRA& other) :
-                        EarlySingleCRA<Domain>(other.EARLY_TERM_THRESHOLD), FullMultipCRA<Domain>(other.LOGARITHMIC_UPPER_BOUND), factor_(other.factor_), multip_(other.multip_) { }
+                        EarlySingleCRA<Domain>(other.EARLY_TERM_THRESHOLD), FullMultipCRA<Domain>(other.LOGARITHMIC_UPPER_BOUND), factor_(other.factor_), multip_(other.multip_) {factor_ = 1; }
 
 		int getThreshold(int& t) {return t = EarlySingleCRA<Domain>::EARLY_TERM_THRESHOLD;}
 
@@ -233,6 +233,7 @@ typedef Rationals::Element Quotient;
 
 			factor_ = f;
 			multip_ = m;
+			if (factor_==0) {factor_ = 1;}//no factor if factor==0
 			
 			Integer e=0;
 			
