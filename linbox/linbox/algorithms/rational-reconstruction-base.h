@@ -131,11 +131,14 @@ bool scheduled(const int i) const {
 			} else {
 				if (x_in > m) x_in %= m;
 			}
-
-			res = res && _RR.reconstructRational(*it_a, new_den,x_in,m);
+			if (x_in > 0) res = res && _RR.reconstructRational(*it_a, new_den,x_in,m);
+			else {
+				res = true;
+				*it_a = 0;
+				new_den = 1;
+			}
 			if (!res) return res;
 			else {
-				//cout << *it_a << " / " << new_den << "rr" << endl << flush;
 				if (new_den > 1) {
 					for (it2_a = a.begin(); it2_a != it_a; ++it2_a) {
 						*it2_a *=new_den;
@@ -158,8 +161,12 @@ bool scheduled(const int i) const {
 			} else {
 				if (x_in > m) x_in %= m;
 			}
-			//cout << x_in << " mod " << m << "\n";
-			res = res && _RR.reconstructRational(a[i], new_den,x_in,m);
+			if (x_in > 0) res = res && _RR.reconstructRational(a[i], new_den,x_in,m);
+			else {
+				res = true;
+				*it_a = 0;
+				new_den = 1;
+			}
 			if (!res) return res;
 			else {
 				//cout << a[i] << "/" << b*new_den << "\n"; 
@@ -192,7 +199,10 @@ bool scheduled(const int i) const {
 			if (x>m)
 				x_in %= m;
 		}
-		bool res= _RR.reconstructRational(a,b,x_in,m);
+
+		bool res;
+		if (x_in >0) res = _RR.reconstructRational(a,b,x_in,m);
+		else { a = 0; b =1; res = true;}
 		//_RR.write(cout);
 		return res;
 	}
@@ -209,7 +219,9 @@ bool scheduled(const int i) const {
 			if (x>m)
 				x_in %= m;
 		}
-		bool res= _RR.reconstructRational(a,b,x_in,m,a_bound);
+		bool res;
+		if (x_in >0) res = _RR.reconstructRational(a,b,x_in,m,a_bound);
+		else { a = 0; b =1; res = true;}
 		//_RR.write(cout);
 		return res;
 	}
@@ -227,7 +239,8 @@ bool scheduled(const int i) const {
 				x_in %= m;
 		}
 		Element bound = x_in/b_bound;
-		_RR.reconstructRational(a,b,x,m,(bound>a_bound?bound:a_bound));
+		if (x_in > 0) _RR.reconstructRational(a,b,x_in,m,(bound>a_bound?bound:a_bound));
+		else  { a = 0; b =1; }
 		bool res=  (b > b_bound)? false: true;
 		//_RR.write(cout);
 		return res;
