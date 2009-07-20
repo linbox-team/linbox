@@ -35,7 +35,7 @@ using namespace LinBox;
 
 static bool testNonsingularRatIntSolve (size_t n, int iterations) 
 {
-	commentator.start ("Testing nonsingular solve ", "testNonsingularRatIntSolve", iterations);
+	commentator.start ("Testing nonsingular solve with integer vector", "testNonsingularRatIntSolve", iterations);
 
 	bool ret = true;
 	int i;
@@ -54,16 +54,15 @@ static bool testNonsingularRatIntSolve (size_t n, int iterations)
 		for (j=0; j < n; ++j) {
 			integer tmp_n, tmp_d, tmp_b;
 			GMPRationalField::Element tmp;
-			tmp_n = (integer) rand() % (5*(i +1)) + 1;
-			tmp_d = (integer) rand() % (5*(i +1)) + 1;
-			tmp_b = (integer) rand() % (20*(i + 1));
+			tmp_n = (integer) rand() % (2*(i + 1)) + 1;
+			tmp_d = (integer) rand() % (2*(i + 1)) + 1;
+			tmp_b = (integer) rand() % (2*(i + 1)) ;
 			Q.init(tmp, tmp_n,tmp_d);
 			A.setEntry(j,j,tmp);
 			b[j]= tmp_b;
 			if ( ( i%2) && (j % 2)) integer::negin(b[j]);
 			Q.init(true_x[j] , b[j] * tmp_d, tmp_n);
 		}
-			
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		solve (x, A, b);
@@ -94,7 +93,7 @@ static bool testNonsingularRatIntSolve (size_t n, int iterations)
 
 static bool testNonsingularRatRatSolve (size_t n, int iterations) 
 {
-	commentator.start ("Testing nonsingular solve ", "testNonsingularRatRatSolve", iterations);
+	commentator.start ("Testing nonsingular solve with rational vector", "testNonsingularRatRatSolve", iterations);
 
 	bool ret = true;
 	int i;
@@ -113,10 +112,14 @@ static bool testNonsingularRatRatSolve (size_t n, int iterations)
 		for (j=0; j < n; ++j) {
 			integer tmp_n, tmp_d, tmp_bn, tmp_bd;
 			GMPRationalField::Element tmp,tmpb;
-			integer::nonzerorandom(tmp_n, 5*(i + 1));
-			integer::nonzerorandom(tmp_d, 5*(i + 1));
-			integer::random(tmp_bn, 5*(i + 1));
-			integer::nonzerorandom(tmp_bd, 5*(i +1));
+			tmp_n = (integer) rand() % (2*(i + 1)) + 1;
+			tmp_d = (integer) rand() % (2*(i + 1)) + 1;
+			tmp_bn = (integer) rand() % (2*(i + 1)) ;
+			tmp_bd = (integer) rand() % (2*(i + 1)) + 1;
+			//integer::nonzerorandom(tmp_n, 2*(i + 1) );
+			//integer::nonzerorandom(tmp_d, 2*(i + 1) );
+			//integer::random(tmp_bn, 2*(i + 1));
+			//integer::nonzerorandom(tmp_bd, 2*(i +1) );
 			if ( ( i%2) && (j % 2)) integer::negin(tmp_bn);
 			Q.init(tmp, tmp_n,tmp_d);
 			A.setEntry(j,j,tmp);
@@ -151,7 +154,7 @@ int main (int argc, char **argv)
 {
 	bool pass = true;
 
-	static size_t n = 50;
+	static size_t n = 10;
 	static int iterations = 2;
 
 	static Argument args[] = {
