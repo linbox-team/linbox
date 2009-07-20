@@ -251,6 +251,9 @@ template<class RatCRABase, class RatRecon = RReconstruction<PID_integer, Classic
 					Vect<Integer> r ; Builder_.getResidue(r);
 					if (RR_.reconstructRational(num,den,r,M) ) {
 						Vect<Integer> vnum(num),vden(m_in.size(),den);
+						for (int i=0; i < vnum.size(); ++ i) {
+							if (vnum[i]==0) vnum[i] = 1; // no prec
+						}
 						Builder_.productin(vnum, f_in); Builder_.productin(vden,m_in);
 						Builder_.changePreconditioner(vnum,vden) ;
 						int k ; Builder_.getThreshold(k);
