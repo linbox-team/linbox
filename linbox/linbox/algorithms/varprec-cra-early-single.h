@@ -97,7 +97,7 @@ typedef Rationals::Element Quotient;
 			FullMultipCRA<Domain>::initialize(D, v);
 		}
 
-		void initialize (const Domain& D, DomainElement& e) {
+		void initialize (const Domain& D, const DomainElement& e) {
                         DomainElement z;
                         D.init(z,factor_);
                         D.invin(z);
@@ -128,7 +128,6 @@ typedef Rationals::Element Quotient;
 
                         std::vector<Integer> v;
 			v.push_back(e);
-
 			FullMultipCRA<Domain>::progress(D, v);
 		}
 		
