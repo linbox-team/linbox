@@ -211,18 +211,18 @@ template<class RatCRABase, class RatRecon = RReconstruction<PID_integer, Classic
 	    else return false;
         }
 
-	    template<template <class> class Vect,  class Function, class RandPrimeIterator>
-	    Vect<Integer> & operator() (Vect<Integer>& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime) {
+	    template<template <class, class> class Vect, template<class> class Alloc,  class Function, class RandPrimeIterator>
+	    Vect<Integer, Alloc<Integer> > & operator() (Vect<Integer, Alloc<Integer> >& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime) {
 	    	++IterCounter;
             	++genprime;
             	Domain D(*genprime); 
-            	Vect<DomainElement > r; 
+            	Vect<DomainElement, Alloc<DomainElement>  > r; 
             	Builder_.initialize( D, Iteration(r, D) );
 
             	int coprime =0;
 	    	int maxnoncoprime = 1000;
 
-		Vect<Integer> f_in,m_in;
+		Vect<Integer, Alloc<Integer> > f_in,m_in;
             	Builder_.getPreconditioner(f_in,m_in);
 
             	//while( ! Builder_.terminated() ) {
@@ -241,16 +241,16 @@ template<class RatCRABase, class RatRecon = RReconstruction<PID_integer, Classic
 
 
 			Domain D(*genprime); 
-                	Vect<DomainElement> r; 
+                	Vect<DomainElement, Alloc<DomainElement> > r; 
                		Builder_.progress( D, Iteration(r, D) );
 
 			if (RR_.scheduled(IterCounter-1) || Builder_.terminated()) {
 				Integer M ; Builder_.getModulus(M);
 				if ( Builder_.terminated() ) {//early or full termination occurred, check reconstruction of the whole vector
 					//early or full termination
-					Vect<Integer> r ; Builder_.getResidue(r);
+					Vect<Integer, Alloc<Integer> > r ; Builder_.getResidue(r);
 					if (RR_.reconstructRational(num,den,r,M) ) {
-						Vect<Integer> vnum(num),vden(m_in.size(),den);
+						Vect<Integer, Alloc<Integer> > vnum(num),vden(m_in.size(),den);
 						for (int i=0; i < vnum.size(); ++ i) {
 							if (vnum[i]==0) vnum[i] = 1; // no prec
 						}
@@ -273,7 +273,7 @@ template<class RatCRABase, class RatRecon = RReconstruction<PID_integer, Classic
 					Integer r ; Builder_.getResidue(r);
 					Integer n,d;
 					if (RR_.reconstructRational(n,d,r,M)) {
-						Vect<Integer> vden(m_in.size(),d);
+						Vect<Integer, Alloc<Integer> > vden(m_in.size(),d);
 						Builder_.productin(vden,m_in);
 						Builder_.changePreconditioner(f_in,vden); 
 						int k; Builder_.getThreshold(k);
@@ -298,19 +298,19 @@ template<class RatCRABase, class RatRecon = RReconstruction<PID_integer, Classic
  * progress for k>=0 iterations
  * run until terminated if k <0
  */
-	template<template <class> class Vect, class Function, class RandPrimeIterator>
-	bool operator() (const int k, Vect<Integer >& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime) {
+	template<template <class, class> class Vect, template<class> class Alloc, class Function, class RandPrimeIterator>
+	bool operator() (const int k, Vect<Integer, Alloc<Integer>  >& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime) {
     	    if ((IterCounter==0) && (k != 0)) {
 		++IterCounter;
         	++genprime;
 		Domain D(*genprime); 
-    	        Vect<DomainElement > r;
+    	        Vect<DomainElement, Alloc<DomainElement>  > r;
     		Builder_.initialize( D, Iteration(r, D) );				
 	    }            
             int coprime =0;
 	    int maxnoncoprime = 1000;
 
-            Vect<Integer > f_in,m_in;
+            Vect<Integer, Alloc<Integer>  > f_in,m_in;
             Builder_.getPreconditioner(f_in,m_in);
             for (int i=0; ((k<0) && Builder_.terminated()) || (i <k); ++i ) {
                 //++IterCounter;
@@ -326,7 +326,7 @@ template<class RatCRABase, class RatRecon = RReconstruction<PID_integer, Classic
 		}
 		coprime = 0;
 		Domain D(*genprime); 
-                Vect<DomainElement > r; 
+                Vect<DomainElement, Alloc<DomainElement>  > r; 
                 Builder_.progress( D, Iteration(r, D) );
 		//if (RR_.scheduled(IterCounter-1)) {
 			++IterCounter;
