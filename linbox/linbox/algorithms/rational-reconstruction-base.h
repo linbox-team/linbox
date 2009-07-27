@@ -111,12 +111,13 @@ bool scheduled(const int i) const {
 	return true;
 }
 
-	template <template <class> class Vect>
-	const bool reconstructRational(Vect<Element>& a, Element& b, Vect<Element>& x, Element m, const int inc = 1) {
+	template <class Vect>
+	const bool reconstructRational(Vect& a, Element& b, const Vect& x, const Element m, const int inc = 1) const {
 		++RecCounter;
 		b = 1;
 		if (a.size() != x.size()) return false;
-		typename Vect<Element>::iterator it_a,it_x, it2_a;
+		typename Vect::iterator it_a,it2_a;
+		typename Vect::const_iterator it_x;
 		bool res = true;
 		Element new_den, old_den;
 		old_den = 1;
