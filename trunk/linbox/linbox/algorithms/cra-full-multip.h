@@ -44,8 +44,9 @@ public:
 	        return r;
 	}
 
-        template<template<class T> class Vect>
-        void initialize (const Integer& D, const Vect<Integer>& e) {
+        //template<template<class> class Vect>
+	template<class Vect>
+        void initialize (const Integer& D, const Vect& e) {
 		RadixSizes_.resize(1);
 		RadixPrimeProd_.resize(1);
 		RadixResidues_.resize(1);
@@ -58,7 +59,7 @@ public:
                 _mod_it->initialize(D);
                 *_dsz_it = log(double(D));
 		
-		typename Vect<Integer>::const_iterator e_it = e.begin();
+		typename Vect::const_iterator e_it = e.begin();
 		_tab_it->resize(e.size());
 		std::vector<Integer>::iterator t0_it= _tab_it->begin();
 		for( ; e_it != e.end(); ++e_it, ++ t0_it)
