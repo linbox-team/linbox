@@ -85,12 +85,12 @@ public:
 	Integer& getModulus(Integer& m) {EarlySingleCRA<Domain>::getModulus(m);return m;}
 	Integer& getResidue(Integer& r) {EarlySingleCRA<Domain>::getResidue(r);return r;}
 	
-	template<template<class> class Vect>
-	Vect<Integer>& getResidue(Vect<Integer>& r) {
-		Vect<Integer> z,vf, vm;
+	template<class Vect>
+	Vect& getResidue(Vect& r) {
+		Vect z,vf, vm;
                 FullMultipCRA<Domain>::result(z);
 		
-		typename Vect<Integer>::const_iterator it,itf,itm;
+		typename Vect::const_iterator it,itf,itm;
 	        Integer M; getModulus(M);
 	        getPreconditioner(vf,vm);
 
@@ -103,8 +103,8 @@ public:
 		return r;
 	}
 
-	template<template<class T> class Vect>
-	void initialize (const Integer& D, const Vect<Integer>& e) {
+	template<class Vect>
+	void initialize (const Integer& D, const Vect& e) {
 		srand48(BaseTimer::seed());
 		vfactor_.resize( e.size(),1 );
 		vmultip_.resize( e.size(),1 );
@@ -125,8 +125,8 @@ public:
 		FullMultipCRA<Domain>::initialize(D, e);
 	}
 
-	template<template<class> class Vect>
-	void initialize (const Domain& D, Vect<DomainElement>& e) {
+	template<class Vect>
+	void initialize (const Domain& D, Vect& e) {
 		srand48(BaseTimer::seed());
 		vfactor_.resize( e.size(),1 );
 		vmultip_.resize( e.size(),1 );
@@ -147,8 +147,8 @@ public:
 		FullMultipCRA<Domain>::initialize(D, e);
 	}
 
-	template<template<class> class Vect>
-	void progress (const Integer& D, const Vect<Integer>& e) {
+	template<class Vect>
+	void progress (const Integer& D, const Vect& e) {
 
 	        // Could be much faster
 	        // - do not compute twice the product of moduli
@@ -167,8 +167,8 @@ public:
 		FullMultipCRA<Domain>::progress(D, e);
 	}
 		
-	template<template<class> class Vect>	
-        void progress (const Domain& D, const Vect< DomainElement>& e) {
+	template<class Vect>	
+        void progress (const Domain& D, const Vect& e) {
 		//z = (e/ factor mod D) 
                	// Could be much faster
 		// - do not compute twice the product of moduli
@@ -204,11 +204,11 @@ public:
 	//	return m=EarlySingleCRA<Domain>::multip_;
 	//}
 
-	template<template<class> class Vect>
-	Vect<Integer>& getFactor(Vect<Integer>& vf) const {
+	template<class Vect>
+	Vect& getFactor(Vect& vf) const {
 		//Integer f = getFactor(f);
 		vf.clear();// vf.resize(vfactor_.size());
-		typename Vect<Integer>::const_iterator it = vfactor_.begin();
+		typename Vect::const_iterator it = vfactor_.begin();
 		for (;it != vfactor_.end(); ++it) {
 			vf.push_back((*it));
 		}
@@ -216,11 +216,11 @@ public:
 	}
 
 
-	template<template<class> class Vect>
-        Vect<Integer>& getMultip(Vect<Integer>& vm) const {
+	template<class Vect>
+        Vect& getMultip(Vect& vm) const {
 		//Integer m = getMultip(m);
 		vm.clear(); //vm.resize(vmultip_ .size());
-		typename Vect<Integer>::const_iterator it = vmultip_.begin();
+		typename Vect::const_iterator it = vmultip_.begin();
                 for (;it != vmultip_.end(); ++it) {
 	                vm.push_back((*it));
 	        }
@@ -232,8 +232,8 @@ public:
 	//	return getFactor(f);	
 	//}
 
-	template<template<class> class Vect>
-        Vect<Integer>& getPreconditioner(Vect<Integer>& vf, Vect<Integer>& vm) const {
+	template<class Vect>
+        Vect& getPreconditioner(Vect& vf, Vect& vm) const {
 		getMultip(vm);
 		getFactor(vf);
 		return vf;
@@ -243,14 +243,14 @@ public:
 	//	return q = EarlySingleCRA<Domain>::getPreconditioner(q);
 	//}
 
-	template<template<class> class Vect>
-	Vect<Quotient>& getPreconditioner(Vect<Quotient>& vq) const {
+	template<template<class, class> class Vect, template<class> class Alloc>
+	Vect<Quotient, Alloc<Quotient> >& getPreconditioner(Vect<Quotient, Alloc<Quotient> >& vq) const {
 		
-		Vect<Integer> vf,vm;
+		Vect<Integer, Alloc<Integer> > vf,vm;
 	        getPreconditioner(vf,vm);
 		vq.clear();
 
-		typename Vect<Integer>::const_iterator itf, itm;
+		typename Vect<Integer, Alloc<Integer> >::const_iterator itf, itm;
 		for (itf = vf.begin(), itm=vm.begin() ; itf != vf.end(); ++itf,++itm) {
 			vq.push_back(Quotient(*itm,*itf));
 		}
@@ -258,22 +258,22 @@ public:
 		return vq;
 	}
 
-	template<template<class> class Vect>
-	Vect<Integer>& result(Vect<Integer>& r) {
+	template<template<class, class> class Vect, template<class> class Alloc>
+	Vect<Integer, Alloc<Integer> >& result(Vect<Integer, Alloc<Integer> >& r) {
 		if ((FullMultipCRA<Domain>::LOGARITHMIC_UPPER_BOUND> 1.0) && ( FullMultipCRA<Domain>::terminated() )) {
 			FullMultipCRA<Domain>::result(r);
 			return r ;
 		} else {
 			//Integer M; getModulus(m);
-			Vect<Integer> z,vf, vm;
+			Vect<Integer, Alloc<Integer> > z,vf, vm;
 			FullMultipCRA<Domain>::result(z);
 			
-			typename Vect<Integer>::const_iterator it,itf,itm;
+			typename Vect<Integer, Alloc<Integer> >::const_iterator it,itf,itm;
 
 			Integer M; getModulus(M);
 			getPreconditioner(vf,vm);
 
-			Vect<Integer> residue;
+			Vect<Integer, Alloc<Integer> > residue;
 			getResidue(residue);
 			//vector of residues
 
@@ -289,23 +289,23 @@ public:
 		}
 	}
 
-	template<template<class> class Vect>
-	Vect<Integer>& result(Vect<Integer>& num, Integer& den) {
+	template<template<class,class> class Vect, template<class> class Alloc>
+	Vect<Integer, Alloc<Integer> >& result(Vect<Integer, Alloc<Integer> >& num, Integer& den) {
 		if ((FullMultipCRA<Domain>::LOGARITHMIC_UPPER_BOUND> 1.0) && ( FullMultipCRA<Domain>::terminated() )) {
 			FullMultipCRA<Domain>::result(num);
 			den = 1;
 			return num;
 		} else {
-			Vect<Integer> z,vf, vm;
+			Vect<Integer, Alloc<Integer> > z,vf, vm;
 			FullMultipCRA<Domain>::result(z);//vector of non prec results
 
-			typename Vect<Integer>::const_iterator it,itf,itm;
-			typename Vect<Integer>::iterator itt;
+			typename Vect<Integer, Alloc<Integer> >::const_iterator it,itf,itm;
+			typename Vect<Integer, Alloc<Integer> >::iterator itt;
 
 			Integer M; getModulus(M);
 			getPreconditioner(vf,vm);
 
-			Vect<Integer> residue;//vector of residues
+			Vect<Integer, Alloc<Integer> > residue;//vector of residues
 			getResidue(residue);
 
 			num.clear();
@@ -329,27 +329,27 @@ public:
 		}
 	}
  
-	template<template<class> class Vect>
-	Vect<Quotient>& result(Vect<Quotient>& q) {
+	template<template<class, class> class Vect, template<class> class Alloc>
+	Vect<Quotient, Alloc<Quotient> >& result(Vect<Quotient, Alloc<Quotient> >& q) {
 		q.clear();
 		if ((FullMultipCRA<Domain>::LOGARITHMIC_UPPER_BOUND> 1.0) && ( FullMultipCRA<Domain>::terminated() )) {
 	       		std::vector<Integer> vz;
 	               	FullMultipCRA<Domain>::result(vz);
 
-			typename Vect<Integer>::const_iterator it = vz.begin();
+			typename Vect<Integer, Alloc<Integer> >::const_iterator it = vz.begin();
 			for (; it!= vz.end(); ++it) {
 				q.push_back(Quotient(*it,1UL));	
 			}
 	        	return q;
 		} else {
-			Vect<Integer> z,vf, vm;
+			Vect<Integer, Alloc<Integer> > z,vf, vm;
                         FullMultipCRA<Domain>::result(z);
-			typename Vect<Integer>::const_iterator it = z.begin(),itf,itm;
+			typename Vect<Integer, Alloc<Integer> >::const_iterator it = z.begin(),itf,itm;
 
 			Integer M; getModulus(M);
 	                getPreconditioner(vf,vm);
 
-			Vect<Integer> residue;//vector of residues
+			Vect<Integer, Alloc<Integer> > residue;//vector of residues
                         inverse(residue, vf, M);
                         normproductin(residue, z, M);
                         normproductin(residue, vm, M);
@@ -364,12 +364,12 @@ public:
 	}
 	
 
-	template<template<class> class Vect>
-	bool changePreconditioner(const Vect<Integer>& vf, const Vect<Integer>& vm) {
+	template<class Vect>
+	bool changePreconditioner(const Vect& vf, const Vect& vm) {
 		//Warning does not detect unchanged preconditioners !!!
 		//if ((factor_ == f) && (multip_==m)) return EarlySingleCRA<Domain>::terminated();
 		
-		typename Vect<Integer>::const_iterator itf, itm, itf2, itm2;
+		typename Vect::const_iterator itf, itm, itf2, itm2;
 
 		vfactor_ = vf;
 		for (int i=0; i < vfactor_.size(); ++i) {
@@ -377,7 +377,7 @@ public:
                 }
 		vmultip_ = vm;
 					
-		Vect<Integer> e(vfactor_.size());
+		Vect e(vfactor_.size());
 			
 		//clear CRAEarlySingle;
 		EarlySingleCRA<Domain>::occurency_ = 0;
@@ -401,7 +401,7 @@ public:
 			++shelf;
 			if (*_occ_it) {
 				Integer D = _mod_it->operator()();
-				Vect<Integer> e(vfactor_.size());
+				Vect e(vfactor_.size());
 				inverse(e,vfactor_,D);
 				productin(e,*_tab_it,D);
 				productin(e,vmultip_,D);
@@ -438,12 +438,12 @@ public:
 	}
 
 protected:
-	template <template<class> class Vect1, class Vect2>
+	template <template<class> class Alloc, template<class, class> class Vect1, class Vect2>
         DomainElement& dot (DomainElement& z, const Domain& D,
-        		const Vect1<DomainElement >& v1,
+        		const Vect1<DomainElement, Alloc<DomainElement> >& v1,
 			const Vect2& v2) {
 	        D.init(z,0); DomainElement tmp;
-	        typename Vect1<DomainElement>::const_iterator v1_p;
+	        typename Vect1<DomainElement, Alloc<DomainElement> >::const_iterator v1_p;
 		typename Vect2::const_iterator v2_p;
 	
 		for (v1_p  = v1. begin(), v2_p = v2. begin();v1_p != v1. end();++ v1_p, ++ v2_p)
@@ -451,10 +451,10 @@ protected:
 		return z;
 	}
 
-	template <template<class T> class Vect1, class Vect2>
-        Integer& dot (Integer& z, const Integer& D, const Vect1<Integer>& v1, const Vect2& v2) {
+	template <template<class> class Alloc, template<class, class> class Vect1, class Vect2>
+        Integer& dot (Integer& z, const Integer& D, const Vect1<Integer, Alloc<Integer> >& v1, const Vect2& v2) {
 	        z = 0;
-	        typename Vect1<Integer>::const_iterator v1_p;
+	        typename Vect1<Integer, Alloc<Integer> >::const_iterator v1_p;
 	        typename Vect2::const_iterator v2_p;
 	        for (v1_p  = v1. begin(), v2_p = v2. begin(); v1_p != v1. end(); ++ v1_p, ++ v2_p) {
 			z = (z + (*v1_p)*(*v2_p))%D;
@@ -462,8 +462,8 @@ protected:
 		return z;
 	}
 
-	template<template <class> class Vect1, class Vect2> 
-        Vect1<DomainElement>& inverse(Vect1<DomainElement>& vz,const Vect2 vf, const Domain D) {
+	template<class Vect1, class Vect2> 
+        Vect1& inverse(Vect1& vz,const Vect2 vf, const Domain D) {
 		vz.clear();
 		typename Vect2::const_iterator it = vf.begin();
 
@@ -478,8 +478,8 @@ protected:
 
 	}
 
-	template<template<class> class Vect1, class Vect2>
-	Vect1<Integer>& inverse(Vect1<Integer>& vz,const Vect2& vf, const Integer& D) {
+	template<class Vect1, class Vect2>
+	Vect1& inverse(Vect1& vz,const Vect2& vf, const Integer& D) {
                 vz.clear();
                 typename Vect2::const_iterator it = vf.begin();
 
@@ -491,9 +491,9 @@ protected:
 		return vz;
 	}	
 public:
-	template<template <class> class Vect1, class Vect2>
-	Vect1<DomainElement>& productin(Vect1<DomainElement>& vz, const Vect2 vm, const Domain D) {
-		typename Vect1<DomainElement>::iterator v1_p;
+	template<class Vect1, class Vect2>
+	Vect1& productin(Vect1& vz, const Vect2 vm, const Domain D) {
+		typename Vect1::iterator v1_p;
                 typename Vect2::const_iterator v2_p;
 
 		for (v1_p  = vz. begin(), v2_p = vm. begin(); v1_p != vz. end(); ++ v1_p, ++ v2_p) {
@@ -505,9 +505,9 @@ public:
 	}
 
 
-	template<template <class T> class Vect1, class Vect2>
-	Vect1<Integer>& productin(Vect1<Integer>& vz, const Vect2 vm, const Integer& D) {
-		typename Vect1<Integer>::iterator v1_p;
+	template<class Vect1, class Vect2>
+	Vect1& productin(Vect1& vz, const Vect2 vm, const Integer& D) {
+		typename Vect1::iterator v1_p;
 		typename Vect2::const_iterator v2_p;
 
 		for (v1_p  = vz. begin(), v2_p = vm. begin(); v1_p != vz. end(); ++ v1_p, ++ v2_p) {
@@ -517,9 +517,9 @@ public:
 		return vz;
 	}
 
-	template<template <class T> class Vect1, class Vect2>
-        Vect1<Integer>& normproductin(Vect1<Integer>& vz, const Vect2 vm, const Integer& D) {
-                typename Vect1<Integer>::iterator v1_p;
+	template<class Vect1, class Vect2>
+        Vect1& normproductin(Vect1& vz, const Vect2 vm, const Integer& D) {
+                typename Vect1::iterator v1_p;
                 typename Vect2::const_iterator v2_p;
                 for (v1_p  = vz. begin(), v2_p = vm. begin(); v1_p != vz. end(); ++ v1_p, ++ v2_p) {
                         *v1_p = (*v1_p) * (*v2_p);
@@ -530,9 +530,9 @@ public:
 	        return vz;
 	}
 
-	template<template <class T> class Vect1, class Vect2>
-	        Vect1<Integer>& productin(Vect1<Integer>& vz, const Vect2 vm) {
-                typename Vect1<Integer>::iterator v1_p;
+	template<class Vect1, class Vect2>
+	        Vect1& productin(Vect1& vz, const Vect2 vm) {
+                typename Vect1::iterator v1_p;
                 typename Vect2::const_iterator v2_p;
 
 		for (v1_p  = vz. begin(), v2_p = vm. begin(); v1_p != vz. end(); ++ v1_p, ++ v2_p) {

@@ -650,7 +650,7 @@ protected:
 	class myQueue: public deque<QMatrix<Ring > > {
 	public:
 		typedef typename Ring::Element Element;
-		typedef QMatrix<Ring> QMatrix;
+		typedef QMatrix<Ring> QMatrix_;
 		
 		size_t _maxSize;
 		size_t _size;
@@ -660,7 +660,7 @@ protected:
 			_size = 0;
 		}
 		
-		bool pushpop(QMatrix& top, const QMatrix& bottom) {
+		bool pushpop(QMatrix_& top, const QMatrix_& bottom) {
 			if (_size+1 < _maxSize) {
 				push_back(bottom);
 				return false;
@@ -678,9 +678,9 @@ protected:
 			}
 		}
 		
-		QMatrix& clearmax(QMatrix& max1) {
+		QMatrix_& clearmax(QMatrix_& max1) {
 			while (!this->empty()) {
-				QMatrix max2(this->front());
+				QMatrix_ max2(this->front());
 				if (max2.q > max1.q) return max1=max2;
 				this->pop_front();
 			}
