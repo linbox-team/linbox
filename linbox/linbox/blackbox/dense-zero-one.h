@@ -100,10 +100,7 @@ namespace LinBox
 
 	//Apply Variants
 	
-		//apply, y := Ax, matrix-vector product
-		//should there be both handled and handleless apply?
-
-		// handleless apply
+		// matrix-vector product
 		template <class OutVector, class InVector>
 		OutVector & apply(OutVector & y, const InVector & x) const 
 		{
@@ -129,10 +126,7 @@ namespace LinBox
 		}
 
 
-		//applyTranspose, y := xA, vector-matrix product
-		//should there be both handled and handleless apply?
-
-		//handleless applyTranspose
+		//vector-matrix product
 		template <class OutVector, class InVector>
 		OutVector & applyTranspose(OutVector & y, const InVector & x) const 
 		{
@@ -213,10 +207,8 @@ namespace LinBox
 
 		
 		//Unpacking apply
-
-		Block & unpackingApply(Block & Out, Block & In)
+		Block & unpackingApply(Block & Out, Block & In, const size_t U = 1024)
 		{
-			const size_t U = 1024;
 			_MD.zero(Out);
 			Block A, B, C;
 			size_t iend, jend, kend;
@@ -225,13 +217,13 @@ namespace LinBox
 				if(i + U >= _rows) iend = _rows - i;
 				else iend = U;
 
-				for(size_t j = 0; j < _cols; j += U){
-					if (j + U >= _cols) jend = _cols - j;
+				for(size_t j = 0; j < In.coldim(); j += U){
+					if (j + U >= In.coldim()) jend = In.coldim() - j;
 					else jend = U;
 
 					Out.subBlock(C,i,j,iend,jend);
-					for(size_t k = 0; k < In.coldim(); k += U){
-						if(k + U >= In.coldim()) kend = In.coldim() - k; 
+					for(size_t k = 0; k < _cols; k += U){
+						if(k + U >= _cols) kend = _cols - k; 
 						else kend = U;
 
 						expandBlock(A,i,k,iend,kend);
@@ -244,11 +236,10 @@ namespace LinBox
 			return Out;
 		} 
 
-		//Unpacking applyTranspose
 
-		Block & unpackingApplyTranspose(Block & Out, Block & In)
+		//Unpacking applyTranspose
+		Block & unpackingApplyTranspose(Block & Out, Block & In, const size_t U = 1024)
 		{
-			const size_t U = 1024;
 			_MD.zero(Out);
 			Block A, B, C;
 			size_t iend, jend, kend;
@@ -257,18 +248,18 @@ namespace LinBox
 				if(i + U >= In.rowdim()) iend = In.rowdim() - i;
 				else iend = U;
 
-				for(size_t j = 0; j < In.coldim(); j += U){
-					if (j + U >= In.coldim) jend = In.coldim() - j;
+				for(size_t j = 0; j < _cols; j += U){
+					if (j + U >= _cols) jend = _cols - j;
 					else jend = U;
 
 					Out.subBlock(C,i,j,iend,jend);
-					for(size_t k = 0; k < _cols; k += U){
-						if(k + U >= _cols) kend = _cols - k; 
+					for(size_t k = 0; k < _rows; k += U){
+						if(k + U >= _rows) kend = _rows - k; 
 						else kend = U;
 
-						expandBlock(A,k,j,iend,kend);
-						In.subBlock(B,i,k,kend,jend);
-						_MD.axpyin(C, A, B);
+						expandBlock(A,k,j,kend,jend);
+						In.subBlock(B,i,k,iend,kend);
+						_MD.axpyin(C, B, A);
 					}
 				}
 			}
@@ -276,7 +267,7 @@ namespace LinBox
 			return Out;
 		}
 		
-		
+
 		size_t rowdim() const {return _rows;}
 
 		size_t coldim() const {return _cols;}
