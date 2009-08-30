@@ -284,6 +284,9 @@ namespace LinBox
 
         template<class Modulo, class BB, class D, class Container>
         void gauss_rankin(Modulo FMOD, Modulo PRIME, Container& ranks, BB& LigneA, const size_t Ni, const size_t Nj, const D& density_trait) {
+        commentator.start ("Gaussian elimination with reordering modulo a prime power",
+                           "PRGE", Ni);
+
             ranks.resize(0);
 
             typedef typename BB::Row Vecteur;
@@ -323,11 +326,13 @@ namespace LinBox
             long c;
             unsigned long indcol(0);
             unsigned long ind_pow = 1;
-            unsigned long maxout = Ni/1000; maxout = (maxout<10 ? 10 : (maxout>100 ? 100 : maxout) );
+            unsigned long maxout = Ni/100; maxout = (maxout<10 ? 10 : (maxout>1000 ? 1000 : maxout) );
             unsigned long thres = Ni/maxout; thres = (thres >0 ? thres : 1);
 
 
             for (unsigned long k=0; k<last;++k) {
+            if ( ! (k % maxout) ) commentator.progress (k);
+
 
                 unsigned long p=k;
                 for(;;) {
@@ -336,7 +341,8 @@ namespace LinBox
                     std::multimap< long, long > psizes; 
                     for(p=k; p<Ni; ++p)
                         psizes.insert( psizes.end(), std::pair<long,long>( LigneA[p].size(), p) );
-                        /*
+                        
+/*
 #ifdef  GIVARO_PRANK_OUT   
                     std::cerr << "------------  ordered rows -----------" << std::endl;
                     for( std::multimap< long, long >::const_iterator iter = psizes.begin(); iter != psizes.end(); ++iter) {
@@ -344,7 +350,7 @@ namespace LinBox
                     }
                     std::cerr << "--------------------------------------" << std::endl;
 #endif
-                        */
+*/
 
                     for( typename std::multimap< long, long >::const_iterator iter = psizes.begin(); iter != psizes.end(); ++iter) {
                         p = (*iter).second;
@@ -394,6 +400,7 @@ namespace LinBox
 #ifdef GIVARO_JRANK_OUT
             std::cerr << "Rank mod " << (unsigned long)FMOD << " : " << indcol << std::endl;
 #endif
+	commentator.stop ("done", 0, "IPLR");
 
         }
 
