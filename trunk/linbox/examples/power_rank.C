@@ -44,7 +44,9 @@ int main (int argc, char **argv)
                 PowerGaussDomain< Field > PGD( F );
                 std::vector<std::pair<size_t,size_t> > local;
 
+		Timer tq; tq.clear(); tq.start();
                 PGD(local, B, q, p);    
+		tq.stop();
 
                 
                 std::cout << "Local Smith Form : ("; 
@@ -52,6 +54,9 @@ int main (int argc, char **argv)
                      p != local.end(); ++p) 
                     std::cout << p->first << " " << p->second << ", "; 
                 cout << ")" << endl; 
+
+
+		std::cerr << tq << std::endl;
  	}
 
 	return 0;
