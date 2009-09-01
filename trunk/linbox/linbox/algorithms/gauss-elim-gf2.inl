@@ -1,6 +1,6 @@
 // =================================================================== //
 // SparseElimination elimination routines over GF2
-// Time-stamp: <18 Sep 08 19:11:38 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <01 Sep 09 15:32:17 Jean-Guillaume.Dumas@imag.fr> 
 // =================================================================== //
 #ifndef __GAUSS_ELIM_GF2_INL
 #define __GAUSS_ELIM_GF2_INL

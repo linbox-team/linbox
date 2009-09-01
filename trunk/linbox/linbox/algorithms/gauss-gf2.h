@@ -1,9 +1,8 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/algorithms/gauss-gf2.h
  * Copyright (C) 2009 The LinBox group
  *
- * Time-stamp: <01 Sep 09 19:19:06 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <01 Sep 09 15:32:06 Jean-Guillaume.Dumas@imag.fr> 
  *
  * See COPYING for license information.
  *

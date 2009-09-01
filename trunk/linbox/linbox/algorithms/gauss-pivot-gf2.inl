@@ -1,6 +1,6 @@
 // =================================================================== //
 // SparseElimination search for pivots over GF2
-// Time-stamp: <18 Sep 08 19:11:44 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <01 Sep 09 15:32:35 Jean-Guillaume.Dumas@imag.fr> 
 // =================================================================== //
 #ifndef __GAUSS_PIVOT_GF2_INL
 #define __GAUSS_PIVOT_GF2_INL

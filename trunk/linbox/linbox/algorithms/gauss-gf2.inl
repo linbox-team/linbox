@@ -1,8 +1,7 @@
 /* linbox/algorithms/gauss-gf2.inl
- * Copyright (C) 1999 Jean-Guillaume Dumas
+ * Copyright (C) 2009 The LinBox group
  *
- * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <18 Aug 09 18:57:31 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <01 Sep 09 15:31:54 Jean-Guillaume.Dumas@imag.fr> 
  *
  * See COPYING for license information.
  */
