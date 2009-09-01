@@ -21,6 +21,11 @@ pkgincludesub_HEADERS = \
 	gauss-solve.inl				\
 	gauss-elim.inl				\
 	gauss-pivot.inl				\
+	gauss-gf2.h				\
+	gauss-gf2.inl				\
+	gauss-elim-gf2.inl			\
+	gauss-rank-gf2.inl			\
+        gauss-pivot-gf2.inl			\
 	triangular-solve.h			\
 	dense-container.h			\
 	cra-mpi.h				\
