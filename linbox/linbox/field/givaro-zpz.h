@@ -137,7 +137,7 @@ namespace LinBox
 		 * @return integer representing characteristic of the domain.
 		 */
 		integer &characteristic (integer &c) const
-			{ return c = integer (static_cast<int> (ZpzDom<TAG>::size ())); }
+			{ return c = integer (ZpzDom<TAG>::size ()); }
 		long characteristic() const
 			{return static_cast<int>(ZpzDom<TAG>::size());}
 
@@ -146,7 +146,7 @@ namespace LinBox
 		 * @return integer representing cardinality of the domain
 		 */
 		integer &cardinality (integer &c) const
-			{ return c = integer (static_cast<int> (ZpzDom<TAG>::size ())); }
+			{ return c = integer (ZpzDom<TAG>::size ()); }
 
 		/** Conversion of field base element to an integer.
 		 * This function assumes the output field base element x has already been
