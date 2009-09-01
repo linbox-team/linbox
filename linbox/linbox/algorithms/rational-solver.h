@@ -886,7 +886,7 @@ namespace LinBox {// LinBox
                 }
 #endif
 
-	private:
+	public:
 		//print out a vector
 		template <class Elt>
 		inline static int printvec (const Elt* v, int n);

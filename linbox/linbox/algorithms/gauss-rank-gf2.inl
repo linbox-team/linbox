@@ -1,6 +1,6 @@
 // =================================================================== //
 // SparseElimination rank calls over GF2
-// Time-stamp: <11 Sep 08 13:26:46 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <01 Sep 09 15:31:30 Jean-Guillaume.Dumas@imag.fr> 
 // =================================================================== //
 #ifndef __GAUSS_RANK_GF2_INL
 #define __GAUSS_RANK_GF2_INL
