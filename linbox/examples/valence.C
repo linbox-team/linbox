@@ -17,6 +17,10 @@ using namespace LinBox;
 
 int main (int argc, char **argv)
 {
+    commentator.setMaxDetailLevel (-1);
+    commentator.setMaxDepth (-1);
+    commentator.setReportStream (std::cerr);
+
 
 	if (argc < 2 || argc > 3) {
 		std::cerr << "Usage: valence <matrix-file-in-supported-format> [-ata|-aat]" << std::endl;
