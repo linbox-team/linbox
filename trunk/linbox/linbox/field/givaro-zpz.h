@@ -156,7 +156,7 @@ namespace LinBox
 		 * @param y constant field base element.
 		 */
 		integer &convert (integer &x, const Element &y) const
-		         { return x = integer (static_cast<int> (y)); }
+		         { return x = integer (y); }
 		
 		double &convert (double& x, const Element& y) const
 		{ return x = static_cast<double>(y); }
