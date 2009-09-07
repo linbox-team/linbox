@@ -7,9 +7,9 @@
 
 namespace LinBox 
 {
-    template <class Matrix> unsigned long& 
+    template <class SparseSeqMatrix> unsigned long& 
     GaussDomain<GF2>::rankin(unsigned long &rank,
-                                Matrix        &A,
+                                SparseSeqMatrix        &A,
                                 unsigned long  Ni,
                                 unsigned long  Nj,
                                 SparseEliminationTraits::PivotStrategy   reord) 
@@ -22,9 +22,9 @@ namespace LinBox
     }
 
    
-    template <class Matrix> unsigned long& 
+    template <class SparseSeqMatrix> unsigned long& 
     GaussDomain<GF2>::rankin(unsigned long &rank,
-                                Matrix        &A,
+                                SparseSeqMatrix        &A,
                                 SparseEliminationTraits::PivotStrategy   reord) 
     {
         return rankin(rank, A,  A.rowdim (), A.coldim (), reord);
@@ -32,22 +32,22 @@ namespace LinBox
 
    
 
-    template <class Matrix> unsigned long& 
+    template <class SparseSeqMatrix> unsigned long& 
     GaussDomain<GF2>::rank(unsigned long &rank,
-                              const Matrix        &A,
+                              const SparseSeqMatrix        &A,
                               SparseEliminationTraits::PivotStrategy   reord) 
     {
         return rank(rank, A,  A.rowdim (), A.coldim (), reord);
     }
 
-    template <class Matrix> unsigned long& 
+    template <class SparseSeqMatrix> unsigned long& 
     GaussDomain<GF2>::rank(unsigned long &rank,
-                              const Matrix        &A,
+                              const SparseSeqMatrix        &A,
                               unsigned long  Ni,
                               unsigned long  Nj,
                               SparseEliminationTraits::PivotStrategy   reord) 
     {
-        Matrix CopyA(Ni);
+        SparseSeqMatrix CopyA(Ni);
         for(unsigned long i = 0; i < Ni; ++i)
             CopyA[i] = A[i];
         return rankin(rank, CopyA, Ni, Nj, reord);
