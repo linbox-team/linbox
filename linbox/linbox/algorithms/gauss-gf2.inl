@@ -7,7 +7,7 @@
  */
 #ifndef __GAUSS_GF2_INL
 #define __GAUSS_GF2_INL
-// Matrix is container< container< size_t > >
+// SparseSeqMatrix is container< container< size_t > >
 
 #include "linbox/algorithms/gauss.h"
 #include "linbox/util/commentator.h"
@@ -22,10 +22,10 @@
 namespace LinBox 
 {
         // Specialization over GF2
-        template <class Matrix> inline unsigned long& 
+        template <class SparseSeqMatrix> inline unsigned long& 
         GaussDomain<GF2>::InPlaceLinearPivoting (unsigned long &rank,
                                   bool          &determinant,
-                                  Matrix        &LigneA,
+                                  SparseSeqMatrix        &LigneA,
                                   unsigned long Ni,
                                   unsigned long Nj)
     {
@@ -65,7 +65,7 @@ namespace LinBox
 #endif
             // Elimination steps with reordering
 
-        typename Matrix::iterator LigneA_k = LigneA.begin(), LigneA_p;
+        typename SparseSeqMatrix::iterator LigneA_k = LigneA.begin(), LigneA_p;
 	for (long k = 0; k < last; ++k, ++LigneA_k) {
             long p = k, s = 0;
 
@@ -180,12 +180,12 @@ namespace LinBox
     }
         
         // Specialization over GF2
-        template <class Matrix, class Perm> inline unsigned long& 
+        template <class SparseSeqMatrix, class Perm> inline unsigned long& 
         GaussDomain<GF2>::QLUPin (unsigned long &rank,
                                   bool          &determinant,
                                   Perm          &Q,
-                                  Matrix        &LigneL,
-                                  Matrix        &LigneA,
+                                  SparseSeqMatrix        &LigneL,
+                                  SparseSeqMatrix        &LigneA,
                                   Perm          &P,
                                   unsigned long Ni,
                                   unsigned long Nj)
@@ -194,7 +194,7 @@ namespace LinBox
         linbox_check( P.coldim() == P.rowdim() );
         linbox_check( Q.coldim() == LigneL.size() );
 
-	typedef typename Matrix::value_type Vector;
+	typedef typename SparseSeqMatrix::value_type Vector;
 	typedef typename Vector::value_type E;    
 
             // Requirements : LigneA is an array of sparse rows
@@ -216,7 +216,7 @@ namespace LinBox
         std::vector<size_t> col_density (Nj);
 
 
-        for(typename Matrix::iterator LigneL_it = LigneL.begin() ;
+        for(typename SparseSeqMatrix::iterator LigneL_it = LigneL.begin() ;
             LigneL_it != LigneL.end(); ++LigneL_it)
             LigneL_it->reserve(16);
 
@@ -239,7 +239,7 @@ namespace LinBox
 #endif
             // Elimination steps with reordering
 
-        typename Matrix::iterator LigneA_k = LigneA.begin(), LigneA_p;
+        typename SparseSeqMatrix::iterator LigneA_k = LigneA.begin(), LigneA_p;
 	for (long k = 0; k < last; ++k, ++LigneA_k) {
             long p = k, s = 0;
 

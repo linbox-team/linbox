@@ -6,7 +6,7 @@
  *
  * See COPYING for license information.
  *
- * Matrix is container< container< size_t > > 
+ * SparseSeqMatrix is container< container< size_t > > 
  * as e.g. linbox/blackbox/zo-gf2.h
  */
 // ========================================================================= //
@@ -19,6 +19,7 @@
 #include "linbox/field/gf2.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/algorithms/gauss.h"
+#include "linbox/blackbox/zo-gf2.h"
 
 namespace LinBox 
 {
@@ -28,6 +29,9 @@ namespace LinBox
     public:
 	typedef GF2 Field;
 	typedef Field::Element Element;
+
+	 // Preferred Matrix type
+	typedef ZeroOne<GF2> Matrix;
 
     public:
 
@@ -47,34 +51,34 @@ namespace LinBox
             /** @name rank
                 Callers of the different rank routines\\
                 -/ The "in" suffix indicates in place computation\\
-                -/ Without Ni, Nj, the Matrix parameter must be a vector of sparse 
+                -/ Without Ni, Nj, the SparseSeqMatrix parameter must be a vector of sparse 
                 row vectors, NOT storing any zero.\\
                 -/ Calls {@link rankinLinearPivoting rankinLinearPivoting} (by default) or {@link rankinNoReordering rankinNoReordering}
             */
             //@{
             ///     
             ///
-        template <class Matrix> unsigned long& rankin(unsigned long &rank,
-                                                      Matrix        &A,
+        template <class SparseSeqMatrix> unsigned long& rankin(unsigned long &rank,
+                                                      SparseSeqMatrix        &A,
                                                       unsigned long  Ni,
                                                       unsigned long  Nj,
 						      SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) ;
 
             ///        
-    template <class Matrix> unsigned long& rankin(unsigned long &rank,
-                                		  Matrix        &A,
+    template <class SparseSeqMatrix> unsigned long& rankin(unsigned long &rank,
+                                		  SparseSeqMatrix        &A,
                                 		  SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR);
 
             ///        
-        template <class Matrix> unsigned long& rank(unsigned long &rank,
-                                                    const Matrix        &A,
+        template <class SparseSeqMatrix> unsigned long& rank(unsigned long &rank,
+                                                    const SparseSeqMatrix        &A,
                                                     unsigned long  Ni,
                                                     unsigned long  Nj,
                                                     SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) ;
 
             ///        
-	template <class Matrix> unsigned long& rank(unsigned long &rank,
-                                                    const Matrix        &A,
+	template <class SparseSeqMatrix> unsigned long& rank(unsigned long &rank,
+                                                    const SparseSeqMatrix        &A,
                                                     SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) ;
 
             //@}
@@ -82,28 +86,28 @@ namespace LinBox
             /** @name det
                 Callers of the different determinant routines\\
                 -/ The "in" suffix indicates in place computation\\
-                -/ Without Ni, Nj, the Matrix parameter must be a vector of sparse 
+                -/ Without Ni, Nj, the SparseSeqMatrix parameter must be a vector of sparse 
                 row vectors, NOT storing any zero.\\
                 -/ Calls {@link LinearPivoting } (by default) or {@link NoReordering}
             */
             //@{
             ///     
-	template <class Matrix> Element& detin(Element &determinant,
-                                               Matrix        &A,
+	template <class SparseSeqMatrix> Element& detin(Element &determinant,
+                                               SparseSeqMatrix        &A,
                                                SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR);
             ///
-        template <class Matrix> Element& detin(Element &determinant,
-                                               Matrix        &A,
+        template <class SparseSeqMatrix> Element& detin(Element &determinant,
+                                               SparseSeqMatrix        &A,
                                                unsigned long  Ni,
                                                unsigned long  Nj,
                                                SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR);
             ///        
-	template <class Matrix> Element& det(Element &determinant,
-                                             const Matrix        &A,
+	template <class SparseSeqMatrix> Element& det(Element &determinant,
+                                             const SparseSeqMatrix        &A,
                                              SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR);
             ///        
-        template <class Matrix> Element& det(Element &determinant,
-                                             const Matrix        &A,
+        template <class SparseSeqMatrix> Element& det(Element &determinant,
+                                             const SparseSeqMatrix        &A,
                                              unsigned long  Ni,
                                              unsigned long  Nj,
                                              SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR);
@@ -120,7 +124,7 @@ namespace LinBox
                 eliminate (..., density)
                 </pre>
 
-                The Matrix parameter must meet the LinBox sparse matrix interface.
+                The SparseSeqMatrix parameter must meet the LinBox sparse matrix interface.
                 [check details].
                 The computedet indicates whether the algorithm must compute the determionant as it goes
 
@@ -128,35 +132,35 @@ namespace LinBox
                 Computing the rank of sparse matrices over finite fields.
                 In Ganzha et~al. CASC'2002, pages 47--62.]
             */
-	template <class Matrix, class Perm>
+	template <class SparseSeqMatrix, class Perm>
 	unsigned long& QLUPin(unsigned long &rank,
                               Element& determinant,
                               Perm          &Q,
-                              Matrix	    &L,
-                              Matrix        &U,
+                              SparseSeqMatrix	    &L,
+                              SparseSeqMatrix        &U,
                               Perm	    &P,
                               unsigned long Ni, 
                               unsigned long Nj);
 
-        template <class Matrix, class Perm, class Vector1, class Vector2> 
-        Vector1& solve(Vector1& x, unsigned long rank, const Perm& Q, const Matrix& L, 
-                       const Matrix& U, const Perm& P, const Vector2& b);
+        template <class SparseSeqMatrix, class Perm, class Vector1, class Vector2> 
+        Vector1& solve(Vector1& x, unsigned long rank, const Perm& Q, const SparseSeqMatrix& L, 
+                       const SparseSeqMatrix& U, const Perm& P, const Vector2& b);
         
 
-	template <class Matrix, class Vector1, class Vector2>
+	template <class SparseSeqMatrix, class Vector1, class Vector2>
 	Vector1& solvein(Vector1& x,
-                         Matrix        &A,
+                         SparseSeqMatrix        &A,
                          const Vector2& b);
 
 
-	template <class Matrix>
+	template <class SparseSeqMatrix>
 	unsigned long& InPlaceLinearPivoting(unsigned long &rank,
                                               Element& determinant,
-                                              Matrix        &A,
+                                              SparseSeqMatrix        &A,
                                               unsigned long Ni, 
                                               unsigned long Nj);
-	template <class Matrix>
-        unsigned long& NoReordering (unsigned long &rank, Element& determinant, Matrix &LigneA, unsigned long Ni, unsigned long Nj) {
+	template <class SparseSeqMatrix>
+        unsigned long& NoReordering (unsigned long &rank, Element& determinant, SparseSeqMatrix &LigneA, unsigned long Ni, unsigned long Nj) {
 		std::cerr << "Sparse elimination over GF2 without reordering not implemented" << std::endl;
 		return rank;
 	}
