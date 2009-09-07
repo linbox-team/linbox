@@ -28,6 +28,7 @@ BASIC_HDRS =			\
 	frobenius.h		\
 	zero-one.h		\
 	zero-one.inl		\
+	zo-gf2.h     zo-gf2.inl \
 	triplesbb.h		\
 	apply.h			\
 	submatrix-traits.h	\
