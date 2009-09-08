@@ -132,9 +132,9 @@ namespace LinBox
 
 		/** Copy constructor.
 		 * Constructs VectorDomain object by copying the domain.
-		 * This is required to allow matrix domain objects to be passed
+		 * This is required to allow vector domain objects to be passed
 		 * by value into functions.
-		 * @param  MD VectorDomain object.
+		 * @param  VD VectorDomain object.
 		 */
 		VectorDomain (const VectorDomain &VD)
 			: VectorDomainBase<Field> (VD._F), DotProductDomain<Field> (VD._F)
@@ -148,7 +148,7 @@ namespace LinBox
 			{ VectorDomainBase<Field>::_F = VD._F; VectorDomainBase<Field>::accu = VD.accu; return *this; }
 
 		/** Retrieve the underlying field
-		 * Return a reference to the field that this matrix domain
+		 * Return a reference to the field that this vector domain
 		 * object uses
 		 * @return reference to field
 		 */
