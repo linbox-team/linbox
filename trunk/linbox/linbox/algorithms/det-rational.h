@@ -36,7 +36,7 @@
 #include "linbox/algorithms/rational-reconstruction-base.h"
 #include "linbox/algorithms/classic-rational-reconstruction.h"
 #include "linbox/solutions/det.h"
-#include "linbox/blackbox/apply.h"
+//#include "linbox/blackbox/apply.h"
 #include "linbox/algorithms/last-invariant-factor.h"
 #include "linbox/algorithms/rational-solver.h"
 
