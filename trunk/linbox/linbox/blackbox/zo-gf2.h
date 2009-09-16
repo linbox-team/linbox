@@ -2,7 +2,7 @@
 /* linbox/blackbox/zo-gf2.h
  * Copyright (C) 2009 The LinBox group
  *
- * Time-stamp: <04 Sep 09 16:00:15 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <16 Sep 09 16:01:34 Jean-Guillaume.Dumas@imag.fr> 
  *
  * See COPYING for license information.
  *
@@ -54,11 +54,10 @@ namespace LinBox
 	Element& getEntry(Element&, size_t i, size_t j) const ;
 
         template<class OutVector, class InVector>
-        OutVector& apply(OutVector& y, const InVector& x) const; // y = Ax;
+        OutVector& apply(OutVector& y, const InVector& x) const; // y = A x
     
         template<class OutVector, class InVector>
-        OutVector& applyTranspose(OutVector& y, const InVector& x) const; // y = ATx
-    
+        OutVector& applyTranspose(OutVector& y, const InVector& x) const; // y = A^T x    
 
             /** Read the matrix from a stream in ANY format
              *  entries are read as "long int" and set to 1 if they are odd,

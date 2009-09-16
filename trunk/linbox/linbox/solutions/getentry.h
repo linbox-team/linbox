@@ -19,7 +19,6 @@
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/diagonal.h"
-#include "linbox/blackbox/zo-gf2.h"
 #include "linbox/solutions/methods.h"
 
 namespace LinBox 
@@ -72,7 +71,6 @@ template<class A, class B> struct GetEntryCategory<SparseMatrix<A,B> > { typedef
 template<class A, class B, class C> struct GetEntryCategory<SparseMatrixBase<A,B,C> > { typedef GetEntryTags::Local Tag; };
 template<class Field, class Trait> struct GetEntryCategory<Diagonal<Field, Trait> > { typedef GetEntryTags::Local Tag; };
 template<class Field> struct GetEntryCategory<ScalarMatrix<Field> > { typedef GetEntryTags::Local Tag; };
-template<> struct GetEntryCategory<ZeroOne<GF2> > { typedef GetEntryTags::Local Tag; };
 
 template <class BB> 
 typename BB::Field::Element& getEntry(typename BB::Field::Element& x, const BB& A, const size_t i, const size_t j, GetEntryTags::Local t )

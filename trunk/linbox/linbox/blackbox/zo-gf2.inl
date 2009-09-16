@@ -41,6 +41,19 @@ inline OutVector & ZeroOne<GF2>::apply(OutVector & y, const InVector & x) const 
 }
 */
     
+template<class OutVector, class InVector>
+inline OutVector & ZeroOne<GF2>::applyTranspose(OutVector & y, const InVector & x) const {
+    std::fill(y.begin(),y.end(),false);
+    typename InVector::const_iterator xit = x.begin();
+    Self_t::const_iterator row = this->begin();
+    for( ; row != this->end(); ++row, ++xit) {
+        for(typename Self_t::Row_t::const_iterator loc = row->begin(); loc != row->end(); ++loc) {
+            _F.addin(y[*loc],*xit);
+        }
+    }
+    return y;
+}
+    
 
 inline void ZeroOne<GF2>::setEntry(size_t i, size_t j, const Element& v) {
 	if (! _F.isZero(v) ) {
@@ -65,7 +78,7 @@ inline const ZeroOne<GF2>::Element& ZeroOne<GF2>::getEntry(size_t i, size_t j) c
 	const Row_t& rowi = this->operator[](i);
 	Row_t::const_iterator there = std::lower_bound(rowi.begin(), rowi.end(), j);
 	if (there != rowi.end() )
-		return *there;
+		return reinterpret_cast<const ZeroOne<GF2>::Element&>(*there);
 	else
 		return zero;
 }
@@ -98,4 +111,12 @@ inline std::ostream& ZeroOne<GF2>::write (std::ostream& out, FileFormatTag forma
 	return out << "0 0 0" << std::endl;
 }
 
+}; // end of namespace LinBox
+
+
+// Specialization of getentry
+#include "linbox/solutions/getentry.h"
+namespace LinBox
+{
+template<> struct GetEntryCategory<ZeroOne<GF2> > { typedef GetEntryTags::Local Tag; };
 }; // end of namespace LinBox

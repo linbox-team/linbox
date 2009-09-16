@@ -63,19 +63,13 @@ namespace LinBox
             };
             
                 // These are valid for GF2 only
-            struct DenseZeroOneVectorTag : public GenericVectorTag { 
-                friend std::ostream& operator<< (std::ostream& o, 
-                                                 const DenseZeroOneVectorTag& t) { 
-                    return o << "DenseZeroOneVectorTag"; 
-                } 
-            };
+
             struct SparseZeroOneVectorTag : public GenericVectorTag { 
                 friend std::ostream& operator<< (std::ostream& o, 
                                                  const SparseZeroOneVectorTag& t) { 
                     return o << "SparseZeroOneVectorTag"; 
                 } 
             };
-
                 // These are valid for all fields
             struct DenseVectorTag : public SparseZeroOneVectorTag { 
                     // Inherits from SparseZeroOneVectorTag:
@@ -110,6 +104,12 @@ namespace LinBox
                 friend std::ostream& operator<< (std::ostream& o, 
                                                  const SparseParallelVectorTag& t) { 
                     return o << "SparseParallelVectorTag"; 
+                } 
+            };
+            struct DenseZeroOneVectorTag : public DenseVectorTag { 
+                friend std::ostream& operator<< (std::ostream& o, 
+                                                 const DenseZeroOneVectorTag& t) { 
+                    return o << "DenseZeroOneVectorTag"; 
                 } 
             };
 
