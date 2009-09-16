@@ -22,10 +22,13 @@
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
 #include "linbox/field/PID-integer.h"
+#include "linbox/field/givaro-zpz.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/direct-sum.h"
+#include "linbox/algorithms/gauss.h"
+#include "linbox/algorithms/gauss-gf2.h"
 #include "linbox/solutions/rank.h"
 
 #include "test-common.h"
@@ -38,6 +41,7 @@ using namespace LinBox;
  * Constructs a random sparse matrix and computes its rank using Gaussian
  * elimination (direct and blas) and Wiedemann's algorithm. Checks that the results match.
  */
+
 
 template <class Field>
 bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double sparsity = 0.05) 
@@ -106,6 +110,80 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double s
 	return ret;
 }
 
+bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double sparsity = 0.05) 
+{
+	typedef ZeroOne<GF2> Blackbox;
+	typedef SparseMatrix<Modular<double>,Vector<Modular<double> >::SparseSeq> MdBlackbox;
+	Modular<double> MdF2(2);
+	GF2::Element one; Modular<double>::Element mdone;
+	F2.init(one,true);
+	MdF2.init(mdone,1UL);
+
+
+	commentator.start ("Testing elimination-based and blackbox rank over GF2", "testRankMethodsGF2", iterations);
+
+	bool ret = true;
+	unsigned int i;
+
+	unsigned long rank_blackbox, rank_elimination, rank_hybrid, rank_sparse;
+	//unsigned long rank_Wiedemann, rank_elimination, rank_blas_elimination;
+
+	GF2::RandIter ri (F2);
+
+	for (i = 0; i < iterations; ++i) {
+		commentator.startIteration (i);
+
+		Blackbox A(F2,n,n);
+		MdBlackbox B(MdF2,n,n);
+		for(size_t ii=0; ii<n;++ii) {
+			for(size_t jj=0; jj<n; ++jj) {
+				if (drand48()<sparsity) {
+					A.setEntry(ii,jj,one);
+					B.setEntry(ii,jj,mdone);
+				}
+			}
+		}
+
+		F2.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)) << endl; 
+		B.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION),FORMAT_GUILLAUME ) << endl; 
+		A.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION),FORMAT_GUILLAUME ) << endl; 
+
+/*
+		rank (rank_blackbox, A, Method::Blackbox ());
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "blackbox rank " << rank_blackbox << endl;
+
+		rank (rank_hybrid, A, Method::Hybrid());
+		if (rank_blackbox != rank_hybrid) {
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: blackbox rank != hybrid rank " << rank_hybrid << endl;
+			ret = false;
+		}
+		rankin (rank_elimination, A, Method::Elimination());
+		if (rank_blackbox != rank_elimination) {
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: blackbox rank != elimination rank " << rank_elimination << endl;
+			ret = false;
+		}
+*/
+		
+		rankin (rank_elimination, A, Method::SparseElimination());
+		rankin (rank_sparse, B, Method::SparseElimination());
+
+		if (rank_elimination != rank_sparse) {
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: blackbox rank != sparse rank " << rank_sparse << endl;
+			ret = false;
+		}
+		
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testEliminationRank");
+
+	return ret;
+}
 /* Test 4: Rank of zero and identity matrices by Wiedemann variants
  *
  */
@@ -179,6 +257,7 @@ int main (int argc, char **argv)
 	static size_t n = 80;
 	static integer q = 65519U;
 	//static integer q = 1000003U;
+	static integer bigQ("12345678901234567890123456789012345678901234568119");
 	static int iterations = 2;
         static double sparsity = 0.05;
 
@@ -207,14 +286,25 @@ int main (int argc, char **argv)
 	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) 
 	<< "over Modular<int>" << endl; 
 	Modular<double> G (q);
-    if (!testRankMethods (G, n, iterations, sparsity)) pass = false;
+    	if (!testRankMethods (G, n, iterations, sparsity)) pass = false;
 	if (!testZeroAndIdentRank (G, n, 1)) pass = false;
-
 
 	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) 
 	<< "over PID_integer" << endl; 
         PID_integer R;
 	if (!testRankMethods (R, n, iterations, sparsity)) pass = false;
+
+	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) 
+	<< "over GivaroZpz<Integer>" << endl; 
+        GivaroZpz<Integer> Gq(bigQ);
+	if (!testRankMethods (Gq, n, iterations, sparsity)) pass = false;
+	if (!testZeroAndIdentRank (Gq, n, 1)) pass = false;
+
+	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) 
+	<< "over GF2" << endl; 
+        GF2 F2;
+	if (!testRankMethodsGF2 (F2, n, iterations, sparsity)) pass = false;
+
 
 	commentator.stop("rank solution test suite");
 	return pass ? 0 : -1;
