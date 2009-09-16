@@ -10,6 +10,7 @@
 #ifndef __ZO_GF2_H
 #define __ZO_GF2_H
 
+#include <algorithm>
 #include "linbox/field/gf2.h"
 #include "linbox/field/unparametric.h"
 #include "linbox/util/matrix-stream.h"
@@ -36,13 +37,21 @@ namespace LinBox
 
         const GF2 _F;
 
-        ZeroOne() {}
         ZeroOne(const GF2& F) {}
+        ZeroOne(const GF2& F, const size_t m) : Father_t(m), _rowdim(m), _coldim(m) {}
+        ZeroOne(const GF2& F, const size_t m, const size_t n) : Father_t(m), _rowdim(m), _coldim(n) {}
+
+        ZeroOne() {}
         ZeroOne(const size_t m) : Father_t(m), _rowdim(m), _coldim(m) {}
         ZeroOne(const size_t m, const size_t n) : Father_t(m), _rowdim(m), _coldim(n) {}
             
         size_t rowdim() const { return _rowdim; }
         size_t coldim() const { return _coldim; }
+
+
+	void setEntry(size_t i, size_t j, const Element& v) ;
+	const Element& getEntry(size_t i, size_t j) const ;
+	Element& getEntry(Element&, size_t i, size_t j) const ;
 
         template<class OutVector, class InVector>
         OutVector& apply(OutVector& y, const InVector& x) const; // y = Ax;
@@ -57,21 +66,34 @@ namespace LinBox
              *  @param is Input stream from which to read the matrix
              *  @return Reference to input stream 
              */
-        std::istream &read (std::istream &is) {
-		// Reads a long int and take it mod 2 afterwards (v&1)
-            UnparametricField<long> Ints;
-            MatrixStream<UnparametricField<long> > S(Ints, is);
-            S.getDimensions( _rowdim, _coldim );
-            this->resize(_rowdim);
-            Index r, c; 
-            long v;
-            while( S.nextTriple(r, c, v) ) {
-                if (v&1) this->operator[](r).push_back(c);
-            }
-            return is;
-        }
+        std::istream &read (std::istream &is) ;
+	std::ostream& write (std::ostream& out, FileFormatTag format) const ;
    
         const Field& field() const { return _F; }
+
+    template<typename _Tp1>
+    struct rebind
+    {
+      typedef ZeroOne<_Tp1> other;
+      void operator() (other *& Ap,
+                       const Self_t& A,
+                       const _Tp1& F) {
+	size_t nnz(0);
+	for(Father_t::const_iterator ro=A.begin(); ro!= A.end(); ++ro)
+		nnz+=ro->size();
+	size_t * rowP = new size_t[nnz], * colP = new size_t[nnz];
+	size_t cur=0;
+	for(size_t i=0; i<A.rowdim(); ++i) {
+		for( Row_t::const_iterator it=A[i].begin(); it != A[i].end() ; ++it, ++cur) {
+			rowP[cur] = i;
+			colP[cur] = *it;
+		}
+	}
+
+        Ap = new other(F, rowP, colP, A.rowdim(), A.coldim(), nnz, true, true);
+      }
+    };
+
 
     private:
         size_t _rowdim, _coldim;
