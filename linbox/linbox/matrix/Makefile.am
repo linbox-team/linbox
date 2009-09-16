@@ -13,7 +13,6 @@ BASIC_HDRS =			\
 	dense-rows-matrix.h	\
 	matrix-domain.h		\
 	matrix-domain.inl	\
-	matrix-category.h	\
 	blas-matrix.h		\
 	factorized-matrix.h	\
 	factorized-matrix.inl	
