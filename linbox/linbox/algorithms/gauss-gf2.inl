@@ -42,7 +42,6 @@ namespace LinBox
 	long long nbelem = 0;
 #endif
 
-        bool Eone = true;
         determinant = true;
             // allocation of the column density
         std::vector<size_t> col_density (Nj);
@@ -65,7 +64,7 @@ namespace LinBox
 #endif
             // Elimination steps with reordering
 
-        typename SparseSeqMatrix::iterator LigneA_k = LigneA.begin(), LigneA_p;
+        typename SparseSeqMatrix::iterator LigneA_k = LigneA.begin();
 	for (long k = 0; k < last; ++k, ++LigneA_k) {
             long p = k, s = 0;
 
@@ -159,7 +158,7 @@ namespace LinBox
             << std::endl;
 #endif
         
-        if ((rank < Ni) || (rank < Nj))
+        if ((rank < Ni) || (rank < Nj) || (Ni == 0) || (Nj == 0))
             determinant = false;
         
         integer card;
@@ -210,7 +209,6 @@ namespace LinBox
 	long long nbelem = 0;
 #endif
 
-        bool Eone = true;
         determinant = true;
             // allocation of the column density
         std::vector<size_t> col_density (Nj);
@@ -239,7 +237,7 @@ namespace LinBox
 #endif
             // Elimination steps with reordering
 
-        typename SparseSeqMatrix::iterator LigneA_k = LigneA.begin(), LigneA_p;
+        typename SparseSeqMatrix::iterator LigneA_k = LigneA.begin();
 	for (long k = 0; k < last; ++k, ++LigneA_k) {
             long p = k, s = 0;
 
@@ -342,7 +340,7 @@ namespace LinBox
             << std::endl;
 #endif
         
-        if ((rank < Ni) || (rank < Nj))
+        if ((rank < Ni) || (rank < Nj) || (Ni == 0) || (Nj == 0))
             determinant = false;
         
         integer card;
