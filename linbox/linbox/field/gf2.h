@@ -440,8 +440,8 @@ class GF2 : public FieldInterface
 	BitVector::reference addin (BitVector::reference x, Element y) const
 		{ return x ^= y; }
  
-	Element& addin (std::_Bit_reference& x, Element y) const
-        	{ return addin( (bool&)x,y); }
+	std::_Bit_reference addin (std::_Bit_reference x, Element y) const
+        	{ return x = x ^ y; }
  
 	/** Inplace Subtraction.
 	 * x -= y
@@ -457,8 +457,8 @@ class GF2 : public FieldInterface
 	BitVector::reference subin (BitVector::reference x, Element y) const
 		{ return x ^= y; }
  
-	Element& subin (std::_Bit_reference& x, Element y) const
-		{ return subin((bool&)x, y); }
+	std::_Bit_reference subin (std::_Bit_reference x, Element y) const
+		{ return x = x ^ y; }
  
 	/** Inplace Multiplication.
 	 * x *= y
@@ -542,8 +542,26 @@ class GF2 : public FieldInterface
 	BitVector::reference axpyin (BitVector::reference r, Element a, Element x) const
 		{ return r ^= a & x; }
 
-	Element& axpyin (std::_Bit_reference& r, Element a, Element x) const
-		{ return axpyin((bool&)r,a,x); }
+	std::_Bit_reference axpyin (std::_Bit_reference r, Element a, Element x) const
+		{ return r = r ^ (a & x); }
+
+	Element &axpyin (Element &r, const std::_Bit_reference a, Element x) const
+		{ return r ^= a & x; }
+
+	std::_Bit_reference axpyin (std::_Bit_reference r, const std::_Bit_reference a, Element x) const
+		{ return r = r ^ (a & x); }
+
+	Element &axpyin (Element &r, Element a, const std::_Bit_reference x) const
+		{ return r ^= a & static_cast<bool>(x); }
+
+	std::_Bit_reference axpyin (std::_Bit_reference r, Element a, const std::_Bit_reference x) const
+		{ return r = r ^ (a & static_cast<bool>(x)); }
+
+	Element &axpyin (Element &r, const std::_Bit_reference a, const std::_Bit_reference x) const
+		{ return r ^= a & static_cast<bool>(x); }
+
+	std::_Bit_reference axpyin (std::_Bit_reference r, const std::_Bit_reference a, const std::_Bit_reference x) const
+		{ return r = r ^ (a & static_cast<bool>(x)); }
 
 	//@} Inplace Arithmetic Operations
 

@@ -125,7 +125,7 @@ bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double
 	bool ret = true;
 	unsigned int i;
 
-	unsigned long rank_blackbox, rank_elimination, rank_hybrid, rank_sparse;
+	unsigned long rank_blackbox, rank_elimination, rank_sparselimination, rank_sparse;
 	//unsigned long rank_Wiedemann, rank_elimination, rank_blas_elimination;
 
 	GF2::RandIter ri (F2);
@@ -148,31 +148,31 @@ bool testRankMethodsGF2(const GF2& F2, size_t n, unsigned int iterations, double
 		B.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION),FORMAT_GUILLAUME ) << endl; 
 		A.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION),FORMAT_GUILLAUME ) << endl; 
 
-/*
+
 		rank (rank_blackbox, A, Method::Blackbox ());
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "blackbox rank " << rank_blackbox << endl;
 
-		rank (rank_hybrid, A, Method::Hybrid());
-		if (rank_blackbox != rank_hybrid) {
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: blackbox rank != hybrid rank " << rank_hybrid << endl;
-			ret = false;
-		}
-		rankin (rank_elimination, A, Method::Elimination());
+		rank (rank_elimination, B, Method::BlasElimination());
 		if (rank_blackbox != rank_elimination) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: blackbox rank != elimination rank " << rank_elimination << endl;
+				<< "ERROR: blackbox rank != BLAS elimination rank " << rank_elimination << endl;
 			ret = false;
 		}
-*/
+
+		rankin (rank_sparselimination, A, Method::SparseElimination());
+		if (rank_blackbox != rank_sparselimination) {
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: blackbox rank != sparse elimination GF2 rank " << rank_elimination << endl;
+			ret = false;
+		}
+
 		
-		rankin (rank_elimination, A, Method::SparseElimination());
 		rankin (rank_sparse, B, Method::SparseElimination());
 
-		if (rank_elimination != rank_sparse) {
+		if (rank_sparselimination != rank_sparse) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: blackbox rank != sparse rank " << rank_sparse << endl;
+				<< "ERROR: rank sparse elimination GF2 != sparse rank " << rank_sparse << endl;
 			ret = false;
 		}
 		

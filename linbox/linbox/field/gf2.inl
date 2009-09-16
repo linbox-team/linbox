@@ -1013,6 +1013,16 @@ class Diagonal<GF2, VectorTraits<Vector<GF2>::Dense>::VectorCategory>
 	size_t rowdim () const { return _v.size (); } 
 	size_t coldim () const { return _v.size (); } 
 
+                /** Get an entry and store it in the given value
+                 * @param x Element in which to store result
+                 * @param i Row index
+                 * @param j Column index
+                 * @return Reference to x
+                 */
+        Element &getEntry (Element &x, size_t i, size_t j) const {
+                return (i==j?x=this->_v[i]:x=false);
+        }
+
     private:
 
 	// Bit vector of elements
@@ -1022,25 +1032,76 @@ class Diagonal<GF2, VectorTraits<Vector<GF2>::Dense>::VectorCategory>
 
 } // namespace LinBox
 
-
-
-#if 0
-#include <linbox/algorithms/gauss.h>
+#include "linbox/switch/cekstv.h"
 namespace LinBox 
 { 
-// Specialization of Gauss Domain for GF2
-	template <class Matrix>
-	unsigned long& GaussDomain<GF2>::InPlaceLinearPivoting (unsigned long &rank,
-                                                                Element       &determinant,
-                                                                Matrix        &A,
-                                                                unsigned long Ni, 
-                                                                unsigned long Nj)
+// Specialization of Butterfly switch object 
+template <>
+class CekstvSwitch<GF2>
 {
-    throw LinboxError("LinBox ERROR: rank for GF2 not YET implemented\n");
-    return rank;
-}
+    public:
+    	typedef GF2 Field;
+	/// Typedef
+	typedef Field::Element Element;
+	typedef CekstvSwitch<Field> Self_t;
+	typedef CekstvSwitchFactory<Field> Factory;
+
+	/** Constructor from a field and a field element.
+	 * @param F field in which arithmetic is done
+	 * @param switches vector of switches
+	 */
+	CekstvSwitch (const Field::Element &a)
+		: _a (a) 
+	{}
+
+	~CekstvSwitch () {}
+
+	bool apply (const Field &F, Element &x, Element &y) const {
+            F.axpyin (x, _a, y);
+            F.addin (y, x);
+            return true;
+        }
+    
+	bool applyTranspose (const Field &F, Element &x, Element &y) const {
+            F.addin (x, y);
+            F.axpyin (y, _a, x);
+            return true;
+        }
+
+	bool apply (const Field &F, std::_Bit_reference x, std::_Bit_reference y) const {
+            F.axpyin (x, _a, y);
+            F.addin (y, x);
+            return true;
+        }
+    
+	bool applyTranspose (const Field &F, std::_Bit_reference x, std::_Bit_reference y) const {
+            F.addin (x, y);
+            F.axpyin (y, _a, x);
+            return true;
+        }
+
+        template<typename _Tp1>
+        struct rebind
+        { 
+            typedef CekstvSwitch<_Tp1> other;
+
+                // special rebind operator() with two fields, 
+                // indeed local field is not stored in the switch
+            void operator() (other *& Ap, const Self_t& A, const _Tp1& T, const Field& F) {
+                typename _Tp1::Element u;
+                Hom<Field, _Tp1>(F,T).image(u, A._a);
+                Ap = new other(u);
+            }
+        };
+    
+
+   private:
+
+	// Parameter of this 2x2 block
+	Field::Element _a;
+};
+
 
 } // namespace LinBox
-#endif //0
 
 #endif // __FIELD_GF2_INL
