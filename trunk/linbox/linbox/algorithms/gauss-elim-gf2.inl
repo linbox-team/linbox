@@ -145,7 +145,6 @@ namespace LinBox
                     unsigned long m = j_head + 1;
 
                         // A[i,k] <-- - A[i,k] / A[k,k]
-                    bool headcoeff = true;
                     headpivot = true;
                     --columns[lignecourante[j_head] ];
         
@@ -172,25 +171,10 @@ namespace LinBox
 
                             // if A[i,j]!=0, then A[i,j] <-- A[i,j] - A[i,k]*A[k,j]
                         if ((m < nj) && (lignecourante[m] == j_piv)) {
-//                             Element tmp;
-//                             _F.axpy (tmp, headcoeff, lignepivot[l].second,
-//                                      lignecourante[m].second);
-// now is always 0
-//                             if (! _F.isZero (tmp)) {
-//                                 _F.assign (lignecourante[m].second, tmp);
-//                                 construit[j++] = lignecourante[m++];
-//                             } else
                                 --columns[lignecourante[m++]];
                         } else {
-//                             Element tmp;
-//                             _F.mul (tmp, headcoeff, lignepivot[l].second);
-// now is always 1
-//                             if (! _F.isZero (tmp)) {
                             ++columns[j_piv];
                             construit[j++] = E (j_piv);
-//                             } else 
-//                                 std::cerr << "NEVER HAPPENED" << std::endl;
-                      
                         }
 
                         ++l;
