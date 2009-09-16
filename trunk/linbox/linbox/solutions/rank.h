@@ -23,6 +23,7 @@
 #include "linbox/algorithms/blackbox-container.h"
 #include "linbox/algorithms/massey-domain.h"
 #include "linbox/algorithms/gauss.h"
+#include "linbox/algorithms/gauss-gf2.h"
 #include "linbox/algorithms/blas-domain.h"
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/switch/cekstv.h"
@@ -498,6 +499,24 @@ namespace LinBox {
         GD.rankin (r, A, M.strategy ());
         commentator.stop ("done", NULL, "serank");
         return r;
+    }
+
+    unsigned long &rankin (unsigned long                       &r,
+                           GaussDomain<GF2>::Matrix    &A,
+                           const Method::SparseElimination     &M) 
+    {
+        commentator.start ("Sparse Elimination Rank over GF2", "serankmod2");
+        GaussDomain<GF2> GD ( A.field() );
+        GD.rankin (r, A, Specifier::PIVOT_LINEAR);
+        commentator.stop ("done", NULL, "serankmod2");
+        return r;
+    }
+
+    unsigned long &rankin (unsigned long                       &r,
+                           GaussDomain<GF2>::Matrix    &A,
+                           const RingCategories::ModularTag    &tag,
+                           const Method::SparseElimination     &M) {
+	return rankin(r, A, M);
     }
 
 	// Change of representation to be able to call the sparse elimination
