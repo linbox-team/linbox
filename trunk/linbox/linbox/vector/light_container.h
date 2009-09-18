@@ -83,6 +83,8 @@ public:
     const_iterator end() const { return const_iterator(_finish); }
     Elem& front() { return *_container; }
     const Elem& front() const { return *_container; }
+    Elem& back() { return *(_finish-1); }
+    const Elem& back() const { return *(_finish-1); }
 
     void push_back(const Elem& c) {
         STATE( size_t  oldsize = size() );
@@ -90,6 +92,13 @@ public:
         *(_finish) = c; ++_finish; 
 
         ENSURE( size() == (oldsize+1) );
+        ENSURE( allocated >= size() );
+    }
+    void pop_back() {
+        STATE( size_t  oldsize = size() );
+        REQUIRE( oldsize >= 1 );
+        --_finish;
+        ENSURE( size() == (oldsize-1) );
         ENSURE( allocated >= size() );
     }
 
