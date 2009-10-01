@@ -42,8 +42,8 @@ namespace LinBox
 	 * of a blackbox.
 	 */
 	template < class Blackbox >
-	GivPolynomial<typename Blackbox::Field::Element>&
-	blackboxcharpoly (GivPolynomial<typename Blackbox::Field::Element> & P, 
+	typename GivPolynomialRing<typename Blackbox::Field>::Element&
+	blackboxcharpoly (typename GivPolynomialRing<typename Blackbox::Field>::Element & P, 
 			  const Blackbox                   & A,
 			  const RingCategories::IntegerTag & tag,
 			  const Method::Blackbox           & M)
@@ -54,8 +54,8 @@ namespace LinBox
  		typedef Modular<uint32> Field;
  		typedef typename Blackbox::template rebind<Field>::other FieldBlackbox;
  		typedef GivPolynomialRing<typename Blackbox::Field, Dense> IntPolyDom;
- 		typedef GivPolynomial<typename Blackbox::Field::Element> IntPoly;
- 		typedef GivPolynomial<typename Field::Element> FieldPoly;
+ 		typedef typename IntPolyDom::Element IntPoly;
+ 		typedef GivPolynomialRing<Field>::Element FieldPoly;
  		// Set of factors-multiplicities sorted by degree
  		typedef FactorMult<FieldPoly,IntPoly> FM;
  		typedef multimap<unsigned long,FM*> FactPoly;
@@ -146,8 +146,8 @@ namespace LinBox
 	 * of a blackbox over a prime field.
 	 */
 	template < class Blackbox >
-	GivPolynomial<typename Blackbox::Field::Element>& 
-	blackboxcharpoly (GivPolynomial<typename Blackbox::Field::Element> & P, 
+	typename GivPolynomialRing<typename Blackbox::Field>::Element& 
+	blackboxcharpoly (typename GivPolynomialRing<typename Blackbox::Field>::Element & P, 
 			  const Blackbox                                   & A,
 			  const RingCategories::ModularTag                 & tag,
 			  const Method::Blackbox           & M)

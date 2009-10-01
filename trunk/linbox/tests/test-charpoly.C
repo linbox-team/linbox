@@ -63,9 +63,9 @@ static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 	typedef typename Dom::Element Element;
 	typedef vector<Element> Vector;
 	typedef ScalarMatrix<Dom> Blackbox;
-	//typedef GivPolynomialRing<Dom, Dense> PolDom;
-	//typedef typename PolDom::Element Polynomial;
-	typedef Vector Polynomial;
+	typedef GivPolynomialRing<Dom, Dense> PolDom;
+	typedef typename PolDom::Element Polynomial;
+	//typedef Vector Polynomial;
 
 	commentator.start ("Testing identity Charpoly", "testIdentityCharpoly");
 
