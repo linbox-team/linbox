@@ -192,6 +192,23 @@ namespace LinBox {
 
 #include "linbox/algorithms/cia.h"
 namespace LinBox {
+
+	template < class Polynomial, class Blackbox, class MyMethod >
+	Polynomial& charpoly (Polynomial                       & P, 
+			      const Blackbox                   & A,
+			      const RingCategories::IntegerTag & tag,
+			      const MyMethod		       & M) 
+	{
+		commentator.start ("Dense Integer Charpoly", "Icharpoly");
+                if ( (A.rowdim() < 1000) && (A.coldim() <1000) )
+                    charpoly(P, A, tag, Method::BlasElimination() );
+                else
+                    charpoly(P, A, tag, Method::Blackbox() );
+		commentator.stop ("done", NULL, "Icharpoly");
+		return P;
+	}
+
+
 	/** @brief Compute the characteristic polynomial over {\bf Z}
 	 *
 	 * Compute the characteristic polynomial of a matrix using dense 
@@ -210,7 +227,7 @@ namespace LinBox {
 	{
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
-		GivPolynomial<typename Blackbox::Field::Element> Pg;
+		typename GivPolynomialRing<typename Blackbox::Field>::Element Pg;
 		return P = cia (Pg, A, M);
 	}
 
@@ -230,7 +247,7 @@ namespace LinBox {
 	{
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
-		GivPolynomial<typename Blackbox::Field::Element> Pg;
+		typename GivPolynomialRing<typename Blackbox::Field>::Element Pg;
 		return P = blackboxcharpoly (Pg, A, tag, M);
 	}
 
@@ -371,7 +388,7 @@ namespace LinBox {
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
 
 #ifdef __LINBOX_HAVE_GIVARO
-		GivPolynomial<typename Blackbox::Field::Element> Pg;
+		typename GivPolynomialRing<typename Blackbox::Field>::Element Pg;
 		return P = blackboxcharpoly (Pg, A, tag, M);
 #else
 		return charpoly(P, A, tag, Method::BlasElimination());

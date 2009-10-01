@@ -289,6 +289,13 @@ namespace LinBox {
 	                GMPRationalField Q;
 	                return Q.convert(x,q);
 	        }
+            
+            inline std::ostream &write (std::ostream &os) const
+                { return os << "PID_integer extends unparam<integer>"; }
+            
+            inline std::ostream &write (std::ostream &os, const Integer& I) const
+                { return os << I; }
+
         protected:
                     // Rational number reconstruction: 
                     // num/den \equiv f modulo m, with |num|<k and 0 < |den| \leq f/k
@@ -440,9 +447,6 @@ namespace LinBox {
                         return true;    
                 }
             
-            inline std::ostream &write (std::ostream &os) const
-                { return os << "PID_integer extends unparam<integer>"; }
-
 	}; //end of class PID_integer
 
 	template<>

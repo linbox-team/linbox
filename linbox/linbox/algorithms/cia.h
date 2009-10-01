@@ -38,8 +38,8 @@ namespace LinBox
 		typedef BlasBlackbox<Field> FBlackbox;
 		typedef GivPolynomialRing<typename Blackbox::Field, Dense> IntPolyDom;
 		typedef GivPolynomialRing<Field, Dense> FieldPolyDom;
-		typedef typename GivPolynomialRing<typename Blackbox::Field, Dense>::Element IntPoly;
-		typedef typename GivPolynomialRing<Field, Dense>::Element FieldPoly;
+		typedef typename IntPolyDom::Element IntPoly;
+		typedef typename FieldPolyDom::Element FieldPoly;
 
 		IntPolyDom IPD(intRing);
 		
