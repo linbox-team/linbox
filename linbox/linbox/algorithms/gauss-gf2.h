@@ -2,7 +2,7 @@
 /* linbox/algorithms/gauss-gf2.h
  * Copyright (C) 2009 The LinBox group
  *
- * Time-stamp: <01 Sep 09 15:32:06 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <01 Oct 09 11:39:38 Jean-Guillaume.Dumas@imag.fr> 
  *
  * See COPYING for license information.
  *
@@ -213,5 +213,6 @@ namespace LinBox
 #include "linbox/algorithms/gauss-pivot-gf2.inl"
 #include "linbox/algorithms/gauss-elim-gf2.inl"
 #include "linbox/algorithms/gauss-rank-gf2.inl"
+#include "linbox/algorithms/gauss-solve-gf2.inl"
 
 #endif // __GAUSS_GF2_H
