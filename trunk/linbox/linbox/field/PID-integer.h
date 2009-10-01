@@ -287,8 +287,7 @@ namespace LinBox {
 		inline Element& init(Element& x, const GMPRationalElement& q) const
 	        {
 	                GMPRationalField Q;
-	                Q.convert(x,q);
-	                return x;
+	                return Q.convert(x,q);
 	        }
         protected:
                     // Rational number reconstruction: 
@@ -440,6 +439,9 @@ namespace LinBox {
 // std::cerr << "RatRecon End " << num << "/" << den << std::endl;
                         return true;    
                 }
+            
+            inline std::ostream &write (std::ostream &os) const
+                { return os << "PID_integer extends unparam<integer>"; }
 
 	}; //end of class PID_integer
 
@@ -447,9 +449,7 @@ namespace LinBox {
 	struct ClassifyRing<PID_integer> {
 		typedef RingCategories::IntegerTag categoryTag;
 	};
-	template<>
-	inline std::ostream &UnparametricField<integer>::write (std::ostream &os) const
-	{ return os << "unparam<integer>"; }
+
 
 	/*
 	// Specialization for Homomorphism

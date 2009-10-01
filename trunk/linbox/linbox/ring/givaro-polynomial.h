@@ -11,8 +11,8 @@
 #define __GIVAROPOLYNOMIAL_H
 
 #include <iostream>
-#include "givaro/givpoly1.h"
-#include "givaro/givpoly1factor.h"
+#include <givaro/givpoly1.h>
+#include <givaro/givpoly1factor.h>
 #include "linbox/integer.h"
 #include "linbox/field/unparametric.h"
 #include "linbox/element/givaro-polynomial.h"
@@ -27,7 +27,7 @@ namespace LinBox
 	 *
 	 * @param Polynomial type, e.g. std::vector<Field::Element>
 	 */
-template <class Domain, class StorageTag>
+template <class Domain, class StorageTag=Dense>
 class GivPolynomialRing : public Poly1Dom<Domain,StorageTag>
 {
 public:
@@ -42,6 +42,9 @@ public:
 	GivPolynomialRing (const Domain& D)
 		: Poly1Dom<Domain,StorageTag>(D, Indeter()){}
 
+	GivPolynomialRing (const Domain& D, const Indeter& I)
+		: Poly1Dom<Domain,StorageTag>(D, I){}
+
 	template<class PolyCont>
 	PolyCont& factor (PolyCont& factors, 
 			  std::vector<unsigned long>& exp,
@@ -54,39 +57,40 @@ public:
 }
 #include "linbox/field/ntl-ZZ.h"
 #include "NTL/ZZXFactoring.h"
-namespace LinBox{
+namespace LinBox {
 template <>
 template <>
 std::vector<GivPolynomial<integer>* >& 
 GivPolynomialRing<UnparametricField<integer>,Dense>::factor (std::vector<GivPolynomial<integer>* >& factors, 
 							     std::vector<unsigned long>& exp,
-							     const GivPolynomial<integer> &P)
-{
-		NTL::ZZXFac_InitNumPrimes = 1;
-		NTL::ZZX f;
-		for (size_t i = 0; i < P.size(); ++i){
-			NTL::SetCoeff (f, i, NTL::to_ZZ((std::string( P[i] )).c_str()) );
-		}
-		NTL::vec_pair_ZZX_long ntlfactors;
-		NTL::ZZ c;
-		NTL::factor (c, ntlfactors, f);
-			
-		NTL::ZZ t; 
-		NTL_ZZ NTLIntDom;
-		factors.resize(ntlfactors.length());
-		exp.resize(ntlfactors.length());
-		for (int i= 0; i<ntlfactors.length(); ++i) {
-			factors[i] = new GivPolynomial<integer>( deg(ntlfactors[i].a)+1 );
-			for(int j = 0; j <= deg(ntlfactors[i].a); ++j) {
-				NTL::GetCoeff(t,ntlfactors[i].a,j);
-				NTLIntDom.convert( factors[i]->operator[](j), t );
-			}
-			exp[i] = ntlfactors[i].b;
-		}
-		return factors;
+							     const GivPolynomial<integer> &P) {
+    NTL::ZZXFac_InitNumPrimes = 1;
+    NTL::ZZX f;
+    for (size_t i = 0; i < P.size(); ++i){
+        NTL::SetCoeff (f, i, NTL::to_ZZ((std::string( P[i] )).c_str()) );
+    }
+    NTL::vec_pair_ZZX_long ntlfactors;
+    NTL::ZZ c;
+    NTL::factor (c, ntlfactors, f);
+    
+    NTL::ZZ t; 
+    NTL_ZZ NTLIntDom;
+    factors.resize(ntlfactors.length());
+    exp.resize(ntlfactors.length());
+    for (int i= 0; i<ntlfactors.length(); ++i) {
+        factors[i] = new GivPolynomial<integer>( deg(ntlfactors[i].a)+1 );
+        for(int j = 0; j <= deg(ntlfactors[i].a); ++j) {
+            NTL::GetCoeff(t,ntlfactors[i].a,j);
+            NTLIntDom.convert( factors[i]->operator[](j), t );
+        }
+        exp[i] = ntlfactors[i].b;
+    }
+    return factors;
+}
 }
 
 #include <linbox/field/PID-integer.h>
+namespace LinBox {
 template <>
 template <>
 std::vector<GivPolynomial<integer>* >& 
