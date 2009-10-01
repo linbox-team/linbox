@@ -25,8 +25,12 @@
 #define __PERMUTATION_H
 
 #include <utility>
-#include "linbox/vector/light_container.h"
-
+#ifndef __LINBOX_PERMUTATION_STORAGE
+// #include "linbox/vector/light_container.h"
+// #define __LINBOX_PERMUTATION_STORAGE LightContainer< long >
+#include <vector>
+#define __LINBOX_PERMUTATION_STORAGE std::vector< long >
+#endif
 
 #include "linbox/util/debug.h"
 #include "linbox/linbox-config.h"
@@ -52,7 +56,7 @@ namespace LinBox
         \ingroup blackbox
         * @param Storage \ref{LinBox} dense or sparse vector of field elements
         */
-    template<class _Field, class Storage = LightContainer< long > >
+    template<class _Field, class Storage = __LINBOX_PERMUTATION_STORAGE >
     class Permutation : public  BlackboxInterface 
     {
         const _Field& _F;
@@ -230,7 +234,7 @@ namespace LinBox
             typename Field::Element one, zero; _F.init(one,1UL);_F.init(zero,0UL);
             os << "[";
             bool firstrow=true;
-            size_t nmu = _indices.size()-1;
+            long nmu = _indices.size()-1;
             for (typename Storage::const_iterator it=_indices.begin(); it!=_indices.end(); ++it) {
                 if (firstrow) {
                     os << "[";
@@ -238,14 +242,14 @@ namespace LinBox
                 } else 
                     os << ", [";
                            
-                size_t i=0;
+                long i=0;
                 for( ; i< *it ; ++i) {
                     _F.write(os, zero);
                     if (i < nmu) os << ',';
                 }
                 _F.write(os, one);
                 if (i < nmu) os << ',';
-                for(++i ; i< _indices.size() ; ++i) {
+                for(++i ; i< static_cast<long>(_indices.size()) ; ++i) {
                     _F.write(os, zero);
                     if (i < nmu) os << ',';
                 }

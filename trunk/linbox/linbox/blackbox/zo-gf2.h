@@ -2,7 +2,7 @@
 /* linbox/blackbox/zo-gf2.h
  * Copyright (C) 2009 The LinBox group
  *
- * Time-stamp: <16 Sep 09 16:01:34 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <01 Oct 09 14:01:34 Jean-Guillaume.Dumas@imag.fr> 
  *
  * See COPYING for license information.
  *
@@ -14,6 +14,7 @@
 #include "linbox/field/gf2.h"
 #include "linbox/field/unparametric.h"
 #include "linbox/util/matrix-stream.h"
+#include "linbox/vector/stream.h"
 #include "linbox/blackbox/zero-one.h"
 #include "linbox/vector/light_container.h"
 
@@ -44,6 +45,11 @@ namespace LinBox
         ZeroOne() {}
         ZeroOne(const size_t m) : Father_t(m), _rowdim(m), _coldim(m) {}
         ZeroOne(const size_t m, const size_t n) : Father_t(m), _rowdim(m), _coldim(n) {}
+
+        ZeroOne(const GF2& F, VectorStream<Row_t>& stream) : Father_t(stream.m()), _rowdim(stream.m()), _coldim(stream.n()) {
+            for (Father_t::iterator row=begin(); row != end(); ++row)
+                stream >> *row;
+        }        
             
         size_t rowdim() const { return _rowdim; }
         size_t coldim() const { return _coldim; }
@@ -66,7 +72,7 @@ namespace LinBox
              *  @return Reference to input stream 
              */
         std::istream &read (std::istream &is) ;
-	std::ostream& write (std::ostream& out, FileFormatTag format) const ;
+	std::ostream& write (std::ostream& out, FileFormatTag format=FORMAT_GUILLAUME) const ;
    
         const Field& field() const { return _F; }
 

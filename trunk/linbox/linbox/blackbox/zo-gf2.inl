@@ -100,15 +100,41 @@ inline std::istream &ZeroOne<GF2>::read (std::istream &is) {
 }
 
 inline std::ostream& ZeroOne<GF2>::write (std::ostream& out, FileFormatTag format) const {
-	if (format != FORMAT_GUILLAUME) 
-	out << "Format other than SMS not implemented" << std::endl;
+    if (format == FORMAT_GUILLAUME) {
 	out << _rowdim << ' ' << _coldim << " M\n";
 	for(size_t i=0; i<_rowdim; ++i) {
-		const Row_t& rowi = this->operator[](i);
-		for(Row_t::const_iterator it=rowi.begin(); it != rowi.end(); ++it)
-			out << (i+1) << ' ' << (*it+1) << " 1\n";
+            const Row_t& rowi = this->operator[](i);
+            for(Row_t::const_iterator it=rowi.begin(); it != rowi.end(); ++it)
+                out << (i+1) << ' ' << (*it+1) << " 1\n";
 	}
 	return out << "0 0 0" << std::endl;
+    } else if (format == FORMAT_MAPLE) {
+        out << '[';
+        bool firstrow=true;
+        for (const_iterator i = begin (); i != end (); ++i) {
+            if (firstrow) {
+                out << '[';
+                firstrow =false;
+            } else 
+                out << ", [";
+            
+            Row_t::const_iterator j = i->begin ();
+            for (long j_idx = 0; j_idx < static_cast<long>(_coldim); j_idx++) {
+                if (j == i->end () || j_idx != static_cast<long>(*j) )
+                    out << '0';
+                else {
+                    out << '1';
+                    ++j;
+                }
+                if (j_idx < (static_cast<long>(_coldim)-1) )
+                    out << ',';
+            }
+
+            out << ']';
+        }
+        return out << ']';
+    } else
+        return out << "ZeroOne over GF(2), format other than SMS or Maple not implemented" << std::endl;
 }
 
 }; // end of namespace LinBox
