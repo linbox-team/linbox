@@ -456,6 +456,10 @@ class RandomSparseStreamGF2 : public VectorStream<_Vector>
 		: _MT (seed), _n (n), _m (m), _j (0)
 	{ setP (p); }
 
+    	RandomSparseStreamGF2 (const GF2 &F, const GF2RandIter& r, double p, size_t n, size_t m = 0)
+		: _MT (r.getMT()), _n (n), _m (m), _j (0)
+	{ setP (p); }
+
 	Vector &get (Vector &v);
 
 	size_t size () const { return _m; }
