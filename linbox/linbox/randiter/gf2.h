@@ -123,6 +123,9 @@ class GF2RandIter
 		return (a = ElementEnvelope <GF2> (tmp));
 	}
 
+    MersenneTwister& getMT() { return _MT; }
+    const MersenneTwister& getMT() const { return _MT; }
+
     private:
 
 	MersenneTwister _MT;
