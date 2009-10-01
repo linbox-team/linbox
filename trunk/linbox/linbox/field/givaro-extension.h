@@ -1,6 +1,4 @@
-
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/field/givaro-gfq.h
  * Copyright (C) 2005 JGD
  *
@@ -35,14 +33,15 @@
 
 #endif
 
-//------------------------------------
+//---------------------------------------------
 // Files of Givaro library
-
-
 #include <givaro/givextension.h>
 #include <givaro/giv_randiter.h>
-//------------------------------------
+//---------------------------------------------
+// To convert linbox fields to Givaro interface
+#include <linbox/field/givaro-field.h>
 
+//---------------------------------------------
 // Namespace in which all LinBox code resides
 namespace LinBox 
 { 
@@ -77,133 +76,8 @@ namespace LinBox
 	}
     };
 
-  /** 
-  \brief give LinBox fields an allure of Givaro Fields
-  \ingroup field
 
-   *  This class adds the necessary requirements allowing 
-   *  the construction of an extension of a LinBox field.
-   */ 
-    template< class BaseField >
-    struct GivaroField : public BaseField 
-    {
-        typedef typename BaseField::Element TT;
-        typedef typename Signed_Trait<TT>::unsigned_type UTT;
-        typedef TT Rep;
-        typedef GivaroField<BaseField> Self_t;
-        typedef Rep Element;
-        typedef UTT Residu_t;
-
-        Element zero, one;
-        GivaroField(const BaseField& bf) : BaseField(bf) {
-            this->init(zero,0UL);
-            this->init(one, 1UL);
-        }
-
-
-            // -- amxy: r <- c - a * b mod p
-        Rep& amxy (Rep& r, const Rep a, const Rep b, const Rep c) const {
-            Rep tmp;
-            this->mul(tmp, a, b);
-            this->assign(r,c);
-            return this->subin(r,tmp);
-        }
-
-        bool areNEqual ( const Rep a, const Rep b) const {
-            return ! this->areEqual(a,b);
-        }
-
-            // Access to the modulus, characteristic, size, exponent
-        UTT residu() const { integer c; BaseField::characteristic(c); return UTT(c); }
-        UTT characteristic() const  { integer c; BaseField::characteristic(c); return UTT(c); }
-        UTT cardinality() const  { integer c; BaseField::cardinality(c); return UTT(c); }
-        UTT exponent() const { return 1; }
-        UTT size() const  { integer c; BaseField::cardinality(c); return UTT(c); }
-
-
-            // ----- random generators
-        template<class RandIter> Rep& random(RandIter& g, Rep& r) const { return r = g() ; }
-        template<class RandIter> Rep& random(RandIter& g, Rep& r, long s) const { return r = g() ; }
-        template<class RandIter> Rep& random(RandIter& g, Rep& r, const Rep& b) const { return r = g() ; }
-        template<class RandIter> Rep& nonzerorandom(RandIter& g, Rep& r) const { return r = g() ; }
-        template<class RandIter> Rep& nonzerorandom(RandIter& g, Rep& r, long s) const { return r = g() ; }
-       template<class RandIter> Rep& nonzerorandom(RandIter& g, Rep& r, const Rep& b) const { return r = g() ; }
-
-    };
-        
-  /** 
-  \brief give LinBox fields an allure of Givaro Fields
-  \ingroup field
-
-   *  This class adds the necessary requirements allowing 
-   *  the construction of an extension of a LinBox field.
-   */ 
-    template<>
-    struct GivaroField<LinBox::GF2> : public LinBox::GF2
-    {
-        typedef LinBox::GF2 BaseField;
-        typedef BaseField::Element TT;
-        typedef Signed_Trait<TT>::unsigned_type UTT;
-        typedef TT Rep;
-        typedef GivaroField<BaseField> Self_t;
-        typedef Rep Element;
-        typedef UTT Residu_t;
-
-        Element zero, one;
-        GivaroField(const BaseField& bf) : BaseField(bf) {
-            this->init(zero,0UL);
-            this->init(one, 1UL);
-        }
-
-
-            // -- amxy: r <- c - a * b mod p
-        Rep& amxy (Rep& r, const Rep a, const Rep b, const Rep c) const {
-            Rep tmp;
-            this->mul(tmp, a, b);
-            this->assign(r,c);
-            return this->subin(r,tmp);
-        }
-        std::_Bit_reference amxy (std::_Bit_reference r, const Rep a, const Rep b, const Rep c) const {
-            Rep tmp;
-            this->mul(tmp, a, b);
-            this->assign(r,c);
-            return this->subin(r,tmp);
-        }
-
-        bool areNEqual ( const Rep a, const Rep b) const {
-            return ! this->areEqual(a,b);
-        }
-
-            // Access to the modulus, characteristic, size, exponent
-        UTT residu() const { integer c; BaseField::characteristic(c); return UTT(c); }
-        UTT characteristic() const  { integer c; BaseField::characteristic(c); return UTT(c); }
-        UTT cardinality() const  { integer c; BaseField::cardinality(c); return UTT(c); }
-        UTT exponent() const { return 1; }
-        UTT size() const  { integer c; BaseField::cardinality(c); return UTT(c); }
-
-
-            // ----- random generators
-        template<class RandIter> Rep& random(RandIter& g, Rep& r) const { return r = g() ; }
-        template<class RandIter> Rep& random(RandIter& g, Rep& r, long s) const { return r = g() ; }
-        template<class RandIter> Rep& random(RandIter& g, Rep& r, const Rep& b) const { return r = g() ; }
-        template<class RandIter> Rep& nonzerorandom(RandIter& g, Rep& r) const { return r = g() ; }
-        template<class RandIter> Rep& nonzerorandom(RandIter& g, Rep& r, long s) const { return r = g() ; }
-        template<class RandIter> Rep& nonzerorandom(RandIter& g, Rep& r, const Rep& b) const { return r = g() ; }
-
-        template<class RandIter> std::_Bit_reference random(RandIter& g, std::_Bit_reference r) const { return r = g() ; }
-        template<class RandIter> std::_Bit_reference random(RandIter& g, std::_Bit_reference r, long s) const { return r = g() ; }
-        template<class RandIter> std::_Bit_reference random(RandIter& g, std::_Bit_reference r, const std::_Bit_reference b) const { return r = g() ; }
-        template<class RandIter> std::_Bit_reference nonzerorandom(RandIter& g, std::_Bit_reference r) const { return r = g() ; }
-        template<class RandIter> std::_Bit_reference nonzerorandom(RandIter& g, std::_Bit_reference r, long s) const { return r = g() ; }
-        template<class RandIter> std::_Bit_reference nonzerorandom(RandIter& g, std::_Bit_reference r, const Rep& b) const { return r = g() ; }
-        template<class RandIter> std::_Bit_reference nonzerorandom(RandIter& g, std::_Bit_reference r, const std::_Bit_reference b) const { return r = g() ; }
-
-    };
-        
-        
-        
-
-  /** This template class is define just to be in phase with the LinBox
+  /** This template class is defined to be in phase with the LinBox
    *  archetype.
    *  Most of all methods are inherited from Extension  class
    *  of Givaro.
