@@ -79,7 +79,7 @@ namespace LinBox
 #include "linbox/field/hom.h"
 namespace LinBox 
 {
-	template<class _Target>
+	template <class _Target>
 	class Hom<GivaroRational, _Target> {
 
 	public:
@@ -88,16 +88,55 @@ namespace LinBox
 		typedef typename Source::Element SrcElt;
 		typedef typename Target::Element Elt;
 	
-		Hom(const Source& S, const Target& T) : _source (S), _target (T) {}
-		inline Elt& image(Elt& t, const SrcElt& s) {
-                    	_target. init (t, s.nume());
-                    	Elt tmp; _target.init(tmp, s.deno());
-                    	return _target.divin(t,tmp);
+            Hom(const Source& S, const Target& T) : _source (S), _target(T){ }
+            Elt& image(Elt& t, const SrcElt& s) {
+                _source. get_num (num, s);
+                _source. get_den (den, s);
+                if (den == 1) {
+                    return _target.init(t,num);
+                } else if (num == 1) {
+                    _target.init(t,den);
+                    return _target.invin(t);
+                } else {
+                    _target. init (tmp, den);
+                    _target. init (t, num);
+                    return _target. divin (t, tmp);
+                }
+// 			_target. init (t, den);
+// 			return _target. invin (t);
+            }
+            SrcElt& preimage(SrcElt& s, const Elt& t) {
+                _target. convert (num, t);
+                _source. init (s, num);
+                return s;
+            }
+            const Source& source() { return _source;}
+            const Target& target() { return _target;}
+            
+	protected:
+		integer num, den;
+		Elt tmp;
+		Source _source;
+		Target _target;
+	}; // end Hom 
+
+	template <>
+	class Hom<GivaroRational,GivaroRational> {
+
+	public:
+		typedef GivaroRational Source;
+		typedef Source Target;
+		typedef Source::Element SrcElt;
+		typedef Target::Element Elt;
+	
+		Hom(const Source& S, const Target& T) : _source (S), _target(T){}
+		Elt& image(Elt& t, const SrcElt& s) {
+			_target.assign(t, s);
+			return t;
 		}
-		inline SrcElt& preimage(SrcElt& s, const Elt& t) {
-                    	Integer tmp;
-			_target. convert (tmp, t);
-			return s= Rational(tmp);
+		SrcElt& preimage(SrcElt& s, const Elt& t) {
+			_source.assign(s, t);
+			return s;
 		}
 		const Source& source() { return _source;}
 		const Target& target() { return _target;}
@@ -106,7 +145,6 @@ namespace LinBox
 		Source _source;
 		Target _target;
 	}; // end Hom 
-
 }
 
 #endif // __GIVARO_RATIONAL_H
