@@ -195,7 +195,7 @@ namespace LinBox
             << std::endl;
 #endif
         
-        if ((rank < Ni) || (rank < Nj))
+        if ((rank < Ni) || (rank < Nj) || (Ni == 0) || (Nj == 0))
             _F.init(determinant,0UL);
         
         integer card;
@@ -345,8 +345,9 @@ namespace LinBox
             
         integer card;
             
-        if ((res < Ni) || (res < Nj))
+        if ((res < Ni) || (res < Nj) || (Ni == 0) || (Nj == 0))
             _F.init(determinant,0UL);
+
         _F.write(commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT) 
                  << "Determinant : ", determinant)
                  << " over GF (" << _F.cardinality (card) << ")" << std::endl;
@@ -420,6 +421,7 @@ namespace LinBox
         res = indcol;
 
         if ((res < Ni) || (res < Nj))
+        if ((res < Ni) || (res < Nj) || (Ni == 0) || (Nj == 0))
             _F.init(determinant,0UL);
 
         integer card;
