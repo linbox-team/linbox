@@ -19,11 +19,10 @@ test-common.C
 # Note that among the available groups are NONCOMPILING_TESTS and FAILING_TESTS, which
 # will be ignored by "make check" and can be temporary storage for problematic tests.
 BASIC_TESTS =  			\
-        test-bitonic-sort       \
+	test-bitonic-sort\
 	test-blas-domain	\
         test-butterfly          \
         test-commentator        \
-        test-charpoly			\
         test-companion          \
         test-dense              \
         test-det                \
@@ -53,12 +52,6 @@ BASIC_TESTS =  			\
         test-moore-penrose      \
         test-randiter-nonzero   \
 	test-rational-matrix-factory \
-	test-rational-reconstruction-base \
-	test-rat-solve		\
-	test-rat-charpoly	\
-	test-rat-minpoly	\
-	test-qlup               \
-        test-rank               \
         test-scalar-matrix      \
         test-sparse             \
         test-subiterator        \
@@ -89,6 +82,12 @@ NONEXISTING_TESTS =
 #
 
 NONCOMPILING_TESTS =  		
+	test-rat-solve		\
+	test-rat-minpoly	\
+	test-qlup               \
+        test-rank               \
+	test-rat-charpoly	\
+	test-charpoly
 #		test-inertia			
 
 FAILING_TESTS =		\
@@ -139,9 +138,7 @@ NTL_TESTS = 				\
 	test-ntl-hankel   		\
 	test-ntl-sylvester		\
 	test-sum			\
-	test-smith-form			\
 	test-smith-form-iliopoulos	\
-	test-smith-form-adaptive	\
 	test-smith-form-binary		\
 	test-rational-solver		\
 	test-rational-solver-adaptive	\
@@ -236,9 +233,10 @@ test_rational_matrix_factory_SOURCES =  \
 	test-rational-matrix-factory.C  \
 	test-common.h
 
-test_rational_reconstruction_base_SOURCES =  \
-	test-rational-reconstruction-base.C  \
-	test-common.h
+#	test-rational-reconstruction-base \
+#test_rational_reconstruction_base_SOURCES =  \
+#	test-rational-reconstruction-base.C  \
+#	test-common.h
 
 test_rat_solve_SOURCES = 		\
 	test-rat-solve.C		\
@@ -483,9 +481,11 @@ test_smith_form_binary_SOURCES=    \
 	test-common.h	\
 	test-smith-form-binary.C
 
-test_smith_form_SOURCES=    \
-	test-common.h	\
-	test-smith-form.C
+# NTL test
+#	test-smith-form			\
+#test_smith_form_SOURCES=    \
+#	test-common.h	\
+#	test-smith-form.C
 
 test_last_invariant_factor_SOURCES=    \
 	test-common.h	\
@@ -524,9 +524,11 @@ test_rational_solver_adaptive_SOURCES = \
 	test-rational-solver-adaptive.C \
 	test-common.h
 
-test_smith_form_adaptive_SOURCES=    \
-	test-common.h	\
-	test-smith-form-adaptive.C
+# NTL test
+#	test-smith-form-adaptive	\
+#test_smith_form_adaptive_SOURCES=    \
+#	test-common.h	\
+#	test-smith-form-adaptive.C
 
 benchmark_fields_SOURCES=    \
 	test-common.h	\
@@ -544,6 +546,6 @@ test_dense_zero_one_SOURCES=   \
 	test-blackbox.h \
 	test-dense-zero-one.C
 
-test_ispossemidef_SOURCES=    \
+test_ispossemidef_SOURCES=\
 	test-common.h	\
 	test-ispossemidef.C

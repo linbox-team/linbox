@@ -104,7 +104,7 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 10;
-	static int iterations = 2;
+	static int iterations = 1;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set column dimension of test matrices to N.", TYPE_INT,     &n },
