@@ -1,7 +1,6 @@
-
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* tests/test-rank.C
+/* tests/test-qlup.C
  * Copyright (C) The LinBox group
  *
  * -----------------------------------------------------
