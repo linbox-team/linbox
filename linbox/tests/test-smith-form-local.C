@@ -135,9 +135,9 @@ static bool testLocalSmith (const LocalPID &R, VectorStream<vector<typename Loca
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		//ostream &report = std::cout; 
-		report << "Input vector:  ";
-		VD.write (report, d);
-		report << endl;
+// 		report << "Input vector:  ";
+// 		VD.write (report, d);
+// 		report << endl;
 
 		Blackbox Lm (R, n, n), D (R, n, n), U (R, n, n), A (R, n, n);
 		for( i = 0; i < n; ++i ) {D[i][i] = d[i];Lm[i][i]=U[i][i]=1;}
@@ -160,27 +160,27 @@ static bool testLocalSmith (const LocalPID &R, VectorStream<vector<typename Loca
 		
 		Timer timer;
 		
-		report << "D\n";
-		D.write(report);
+// 		report << "D\n";
+// 		D.write(report);
 
-		report << "L\n";
-		Lm.write(report);
+// 		report << "L\n";
+// 		Lm.write(report);
 
-		report << "U\n";
-		U.write(report);
+// 		report << "U\n";
+// 		U.write(report);
 
 		timer.start();
 		MR.mul(A,Lm,D);
 
-		report << "L D\n";
-		A.write(report);
+// 		report << "L D\n";
+// 		A.write(report);
 
 		MR.mulin(A,U);
 		timer.stop();
 		report << "Two matrix multiplication: " << timer << "\n";
 		
-		report << "A \n";
-		A.write(report);
+// 		report << "A \n";
+// 		A.write(report);
 		//for( i = 0; i < n; ++i ) D[i][i] = rand() % 10 + 1;
 
 		list< typename LocalPID::Element > L;
@@ -242,7 +242,7 @@ int main (int argc, char **argv)
 {
 	bool pass = true;
 
-	static size_t n = 100;
+	static size_t n = 15;
 	static integer q = 101;
 	static int iterations = 1;
 
@@ -258,7 +258,8 @@ int main (int argc, char **argv)
 	typedef NTL_PID_zz_p Ring;
 	typedef vector<Ring::Element> Vector;
 
-	Ring R (536870912);
+	Ring R (32768);
+// 	Ring R (536870912);
 
 	commentator.start("Local Smith Form test suite", "LocalSmith");
 

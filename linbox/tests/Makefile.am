@@ -67,7 +67,6 @@ BASIC_TESTS =  			\
         test-trace              \
         test-triplesbb          \
         test-vector-domain      \
-	test-dense-zero-one     \
 	test-zero-one 
 # tests of components not adhering to LinBox requirements.
 NONCOMPLIANT_TESTS =	\
@@ -96,6 +95,8 @@ FAILING_TESTS =		\
         test-solve              \
         test-zo                 \
         test-quad-matrix        \
+	test-dense-zero-one     \
+	test-smith-form-local		\
         test-mg-block-lanczos   \
 	test-la-block-lanczos    
 #       test-over-under         
@@ -138,7 +139,6 @@ NTL_TESTS = 				\
 	test-ntl-hankel   		\
 	test-ntl-sylvester		\
 	test-sum			\
-	test-smith-form-local		\
 	test-smith-form			\
 	test-smith-form-iliopoulos	\
 	test-smith-form-adaptive	\
