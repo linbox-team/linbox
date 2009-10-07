@@ -349,7 +349,7 @@ public:
 		_num_rec=counter;
 #endif
 		return true; //lifted ok
-	}
+	} // end of getRational1
 	
 	/** \brief Reconstruct a vector of rational numbers
 	 *  from p-adic digit vector sequence.
@@ -678,7 +678,7 @@ public:
 					
 			_r.mul(x,x1,x2);
 		}
-	}
+	} // end of getRational2
 
 
 	/** \brief Reconstruct a vector of rational numbers
@@ -1152,7 +1152,7 @@ public:
 		//std::cerr << "Computed num, den of size " << sizeN << ", " << sizeD << "\n By " << i << " digits out of estimated " << len << std::endl;
 		return true; //lifted ok, assuming size was correct
  		
-	}
+	} // end of getRationalET
 
 
 #ifdef __LINBOX_HAVE_NTL
@@ -1804,7 +1804,7 @@ public:
 #endif	
 		return true;
 
-	} // end of getRational4
+	} // end of getRational5
 
 
 	/* 

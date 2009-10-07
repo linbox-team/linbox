@@ -165,7 +165,7 @@ int main (int argc, char **argv)
 
 	static size_t n = 10;
 	static integer q = 101;
-	static int iterations1 = 10;
+	static int iterations1 = 2;
 	static int iterations2 = 1;
 
 	static Argument args[] = {

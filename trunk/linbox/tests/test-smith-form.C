@@ -3,7 +3,10 @@
  */
 
 #include <time.h>
+#ifdef __LINBOX_HAVE_NTL
 #include <linbox/field/ntl-ZZ.h>
+#endif
+#include <linbox/field/PID-integer.h>
 #include <linbox/util/commentator.h>
 #include <linbox/vector/stream.h>
 #include "test-common.h"
@@ -81,8 +84,6 @@ bool testRandom(const Ring& R,
 			L.apply(*col_p, tmp2);
 			R.init(e[i],0);
 		}
-
-		
 		
 		typename Vector::iterator x_p; 
 		std::vector<integer> xi(A. rowdim());
@@ -99,10 +100,8 @@ bool testRandom(const Ring& R,
 
 		for (x_p = x. begin(), xi_p = xi. begin(); x_p != x. end(); ++ x_p, ++ xi_p)
 			A. field (). init (*x_p, *xi_p);
-       
 		
 		report << "Computed Smith form: \n";
-		
 		VD. write (report, x);
 		
 		report << '\n';
@@ -110,61 +109,39 @@ bool testRandom(const Ring& R,
 		typename std::vector<typename Ring::Element>::iterator p1, p2;
 		typename Ring::Element g;
 		
-		
 		for (p1 = d.begin(); p1 != d.end(); ++ p1) {
-			
 			for ( p2 = p1 + 1; p2 != d.end(); ++ p2) {
-				
 				if (R. isUnit(*p1))  break;
- 
 				else if (R. isZero (*p2)) continue;
-				
-				else if (R. isZero (*p1)) {
-                                                std::swap (*p1, *p2);
-				}
-				
-				else {
+				else if (R. isZero (*p1)) std::swap (*p1, *p2);
+				else { // (*p1, *p2) <-- (g, *p1 * *p2 / g), where g = gcd(*p1, *p2)
 					R. gcd (g, *p1, *p2);
-					
 					R. divin (*p2, g);
-					
 					R. mulin (*p2, *p1);
-					
 					R. assign (*p1, g);
 				}
 			}
 		}
-		
 
 		report << "Expected smith form:\n";
-		
-		VD.write (report, d);
-
-		report << '\n';
+		VD.write (report, d) << endl;
 
 		if (!VD.areEqual (d, x))
-			
 			ret = iter_passed = false;
-		
-                if (!iter_passed) 
-			
-                        commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+
+		if (!iter_passed) 
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Computed Smith form is incorrect" << endl;
 			
-		
-
-                commentator.stop ("done");
-
-                commentator.progress ();
-		
+		commentator.stop ("done");
+		commentator.progress ();
 	 }
 	 
-	 //stream1.reset ();
+	//stream1.reset ();
 	  	  
-	  commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandom");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandom");
                                                                                                         
-	  return ret;
-
+	return ret;
 }
 
 int main(int argc, char** argv) {
@@ -179,7 +156,11 @@ int main(int argc, char** argv) {
 		};
 
 	parseArguments (argc, argv, args);
+#ifdef __LINBOX_HAVE_NTL
 	typedef NTL_ZZ      Ring;
+#else
+	typedef PID_integer      Ring;
+#endif
 	Ring R;
 
 	commentator.start("Smith form test suite", "Smith");
