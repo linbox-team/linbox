@@ -11,7 +11,7 @@
  * See COPYING for license information
  */
 
-// some things currently commented out
+// something currently commented out
 #include "linbox/linbox-config.h"
 
 #include <iostream>
