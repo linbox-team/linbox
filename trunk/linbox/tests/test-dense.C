@@ -20,7 +20,9 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
+#include "linbox/matrix/dense.h"
 #include "linbox/blackbox/dense.h"
+#include "linbox/matrix/dense-submatrix.h"
 
 #include "test-common.h"
 #include "test-generic.h"
@@ -44,6 +46,8 @@ template <class Field>
 static bool testIdentity (Field &F, long n, int iterations) 
 {
 	typedef typename Vector<Field>::Dense Vector;
+	typedef DenseMatrixBase <typename Field::Element> Base;
+	typedef DenseSubmatrix <typename Field::Element> Matrix;
 	typedef DenseMatrix <Field> Blackbox;
 
 	commentator.start ("Testing identity apply", "testIdentity", iterations);
@@ -53,7 +57,11 @@ static bool testIdentity (Field &F, long n, int iterations)
 
 	int i, j;
 
-	Blackbox I (F, n, n);
+	Blackbox I(F, n, n);
+	Matrix K(I);
+	typename Field::Element x; F.init(x);
+	F.write(std::cout, K.getEntry(x, i, j)) << std::endl;
+	//Matrix L(K);
 	typename Field::Element one;
 
 	F.init (one, 1);
@@ -79,7 +87,11 @@ static bool testIdentity (Field &F, long n, int iterations)
 		printVector<Field> (F, report, v);
 
 		I.apply (w, v);
+		printVector<Field> (F, report, w);
 
+		Base J (I);
+		Blackbox K(F, J);
+		K.apply (w, v);
 		report << "Output vector: ";
 		printVector<Field> (F, report, w);
 
@@ -287,7 +299,7 @@ int main (int argc, char **argv)
 	static size_t n = 10;
 	static integer q = 101;
 	static int iterations = 2; // was 100
-	static int N = 1;
+	//static int N = 1;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
@@ -311,9 +323,9 @@ int main (int argc, char **argv)
 	RandomDenseStream<Field> v2_stream (F, n, iterations);
 
 	if (!testIdentity    (F, n, iterations)) pass = false;
-	if (!testVandermonde (F, n, iterations, N)) pass = false;
-	if (!testRandomLinearity (F, A_stream, v1_stream, v2_stream)) pass = false;
-	if (!testRandomTranspose (F, A_stream, v1_stream, v2_stream)) pass = false;
+	//if (!testVandermonde (F, n, iterations, N)) pass = false;
+	//if (!testRandomLinearity (F, A_stream, v1_stream, v2_stream)) pass = false;
+	//if (!testRandomTranspose (F, A_stream, v1_stream, v2_stream)) pass = false;
 
 	commentator.stop("dense matrix black box test suite");
 	return pass ? 0 : -1;
