@@ -1,6 +1,6 @@
 /* MatrixStreamReader for sms matrix format
  * Dan Roche, 1-12-05
- * 1st line: "50 60 M" // #rows #cols letter-M
+ * 1st line: "50 60 X" // #rows #cols a letter (e.g M, I, R, P ...)
  * Subsequent lines: i j v // row index, col index, value
  * last line: 0 0 0
  */
@@ -43,11 +43,13 @@ class SMSReader :public MatrixStreamReader<Field> {
 			return NO_FORMAT;
 		i = restLine - firstLine;
 
-		// Read "M" or "R" or "P"
+		// Read "M" or "R" or "P" or "I"
 		while( firstLine[i] && isspace(firstLine[i]) )
 			++i;
 		if( !firstLine[i] || (firstLine[i] != 'M' &&
 		                      firstLine[i] != 'm' &&
+		                      firstLine[i] != 'I' &&
+		                      firstLine[i] != 'i' &&
 		                      firstLine[i] != 'R' &&
 		                      firstLine[i] != 'r' &&
 		                      firstLine[i] != 'P' &&
