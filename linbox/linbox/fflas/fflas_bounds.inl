@@ -239,9 +239,10 @@ inline size_t FFLAS::TRSMBound (const Modular<double>& F){
 
 	FFLAS_INT_TYPE pi;
 	F.characteristic(pi);
-	unsigned long long p = pi, p1 = 1, p2 = 1;
+	unsigned long p(pi);
+        unsigned long long p1(1UL), p2(1UL);
 	size_t nmax = 0;
-	unsigned long long max = ( (1ULL << (DOUBLE_MANTISSA + 1) ) / (p - 1));
+	unsigned long long max = ( (1ULL << (DOUBLE_MANTISSA + 1) ) / ((unsigned long long)(p - 1)));
 	while ( (p1 + p2) < max ){
 		p1*=p;
 		p2*=p-2;
@@ -261,9 +262,10 @@ inline size_t FFLAS::TRSMBound (const Modular<float>& F){
 
 	FFLAS_INT_TYPE pi;
 	F.characteristic(pi);
-	unsigned long long p = pi, p1 = 1, p2 = 1;
+	unsigned long p(pi);
+        unsigned long long p1(1UL), p2(1UL);
 	size_t nmax = 0;
-	unsigned long long max = ( (1ULL << (FLOAT_MANTISSA + 1) ) / (p - 1));
+	unsigned long long max = ( (1ULL << (FLOAT_MANTISSA + 1) ) / ((unsigned long long)(p - 1)));
 	while ( (p1 + p2) < max ){
 		p1*=p;
 		p2*=p-2;
@@ -282,7 +284,8 @@ inline size_t FFLAS::TRSMBound (const ModularBalanced<double>& F){
 
 	FFLAS_INT_TYPE pi;
 	F.characteristic (pi);
-	unsigned long long p = (pi + 1) / 2, p1 = 1;
+	unsigned long p= (pi + 1) / 2;
+        unsigned long long p1(1UL);
 	size_t nmax = 0;
 	unsigned long long max = ((1ULL << (DOUBLE_MANTISSA + 1)) / ((unsigned long long)(p - 1)));
 	while (p1 < max){
@@ -302,9 +305,10 @@ inline size_t FFLAS::TRSMBound (const ModularBalanced<float>& F){
 
 	FFLAS_INT_TYPE pi;
 	F.characteristic (pi);
-	unsigned long long p = (pi + 1) / 2, p1 = 1;
+	unsigned long p = (pi + 1) / 2;
+        unsigned long long p1(1UL);
 	size_t nmax = 0;
-	unsigned long long max = ((1ULL << (FLOAT_MANTISSA + 1)) / ((unsigned long long) (pi - 1)));
+	unsigned long long max = ((1ULL << (FLOAT_MANTISSA + 1)) / ((unsigned long long) (p - 1)));
 	while (p1 < max){
 		p1 *= p;
 		nmax++;
