@@ -36,6 +36,10 @@ namespace LinBox
         typedef UTT Residu_t;
 
         Element zero, one;
+        GivaroField() : BaseField() {
+            this->init(zero,0UL);
+            this->init(one, 1UL);
+        }
         GivaroField(const BaseField& bf) : BaseField(bf) {
             this->init(zero,0UL);
             this->init(one, 1UL);
@@ -79,12 +83,12 @@ namespace LinBox
 
 
             // ----- random generators
-        template<class RandIter> Rep& random(RandIter& g, Rep& r) const { return r = g() ; }
-        template<class RandIter> Rep& random(RandIter& g, Rep& r, long s) const { return r = g() ; }
-        template<class RandIter> Rep& random(RandIter& g, Rep& r, const Rep& b) const { return r = g() ; }
-        template<class RandIter> Rep& nonzerorandom(RandIter& g, Rep& r) const { return r = g() ; }
-        template<class RandIter> Rep& nonzerorandom(RandIter& g, Rep& r, long s) const { return r = g() ; }
-       template<class RandIter> Rep& nonzerorandom(RandIter& g, Rep& r, const Rep& b) const { return r = g() ; }
+        template<class RandIter> Rep& random(RandIter& g, Rep& r) const { return this->init(r,g()) ; }
+        template<class RandIter> Rep& random(RandIter& g, Rep& r, long s) const { return this->init(r,g()) ; }
+        template<class RandIter> Rep& random(RandIter& g, Rep& r, const Rep& b) const { return this->init(r,g()) ; }
+        template<class RandIter> Rep& nonzerorandom(RandIter& g, Rep& r) const { do { this->init(r,g()); } while( this->isZero(r) ); return r; }
+        template<class RandIter> Rep& nonzerorandom(RandIter& g, Rep& r, long s) const { do { this->init(r,g()); } while( this->isZero(r) ); return r; }
+       template<class RandIter> Rep& nonzerorandom(RandIter& g, Rep& r, const Rep& b) const { do { this->init(r,g()); } while( this->isZero(r) ); return r; }
 
     };
         
@@ -126,6 +130,35 @@ namespace LinBox
             this->assign(r,c);
             return this->subin(r,tmp);
         }
+
+
+            // -- maxpy: r <- y - a * x
+        Rep& maxpy (Rep& r, const Rep a, const Rep x, const Rep y) const {
+            Rep tmp; this->mul(tmp, a, x);
+            return this->sub(r,y,tmp);
+        }
+        std::_Bit_reference maxpy (std::_Bit_reference r, const Rep a, const Rep x, const Rep y) const {
+            Rep tmp; this->mul(tmp, a, x);
+            return this->sub(r,y,tmp);
+        }
+            // -- axmyin: r <- r - a * x 
+        Rep& axmyin (Rep& r, const Rep a, const Rep x) const {
+            Rep tmp; this->mul(tmp, a, x);
+            return this->subin(r,tmp);
+        }
+        std::_Bit_reference axmyin (std::_Bit_reference r, const Rep a, const Rep x) const {
+            Rep tmp; this->mul(tmp, a, x);
+            return this->subin(r,tmp);
+        }
+            // -- maxpyin: r <- r - a * x
+        Rep& maxpyin (Rep& r, const Rep a, const Rep x) const {
+	    return axmyin(r,a,x);
+        }
+        std::_Bit_reference maxpyin (std::_Bit_reference r, const Rep a, const Rep x) const {
+	    return axmyin(r,a,x);
+        }
+
+ 
 
         bool areNEqual ( const Rep a, const Rep b) const {
             return ! this->areEqual(a,b);

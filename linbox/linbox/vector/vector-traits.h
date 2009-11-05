@@ -106,6 +106,7 @@ namespace LinBox
                     return o << "SparseParallelVectorTag"; 
                 } 
             };
+
             struct DenseZeroOneVectorTag : public DenseVectorTag { 
                 friend std::ostream& operator<< (std::ostream& o, 
                                                  const DenseZeroOneVectorTag& t) { 

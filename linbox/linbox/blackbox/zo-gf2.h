@@ -2,7 +2,7 @@
 /* linbox/blackbox/zo-gf2.h
  * Copyright (C) 2009 The LinBox group
  *
- * Time-stamp: <01 Oct 09 14:01:34 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <05 Nov 09 10:34:40 Jean-Guillaume.Dumas@imag.fr> 
  *
  * See COPYING for license information.
  *
@@ -15,6 +15,7 @@
 #include "linbox/field/unparametric.h"
 #include "linbox/util/matrix-stream.h"
 #include "linbox/vector/stream.h"
+#include "linbox/matrix/sparse.h"
 #include "linbox/blackbox/zero-one.h"
 #include "linbox/vector/light_container.h"
 
@@ -50,6 +51,14 @@ namespace LinBox
             for (Father_t::iterator row=begin(); row != end(); ++row)
                 stream >> *row;
         }        
+
+        ZeroOne(const Self_t& A) : Father_t(static_cast<const Father_t&>(A)), _rowdim(A._rowdim), _coldim(A._coldim) {}
+
+        ZeroOne(const GF2& F, size_t* rowP, size_t* colP, const size_t m, const size_t n, const size_t nnz, const bool notused=true,const bool notused2=true) : Father_t(m), _rowdim(m), _coldim(n) {
+            for(size_t k=0; k<nnz; ++k) 
+                this->operator[](rowP[k]).push_back(colP[k]);
+        }
+
             
         size_t rowdim() const { return _rowdim; }
         size_t coldim() const { return _coldim; }

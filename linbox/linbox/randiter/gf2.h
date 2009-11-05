@@ -123,6 +123,10 @@ class GF2RandIter
 		return (a = ElementEnvelope <GF2> (tmp));
 	}
 
+
+	uint32& random (uint32& a)  const
+		{ return a = _MT.randomInt(); }
+
     MersenneTwister& getMT() { return _MT; }
     const MersenneTwister& getMT() const { return _MT; }
 

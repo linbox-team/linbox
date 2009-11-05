@@ -242,6 +242,22 @@ class VectorDomain<GF2> : private virtual VectorDomainBase<GF2>, private DotProd
 					 VectorCategories::DenseZeroOneVectorTag,
 					 VectorCategories::DenseZeroOneVectorTag) const
 		{ std::copy (v.wordBegin (), v.wordEnd (), res.wordBegin ()); return res; }
+
+	template <class Vector1, class Vector2>
+	inline Vector1 &copySpecialized (Vector1 &res, const Vector2 &v, size_t i, size_t len, VectorCategories::DenseZeroOneVectorTag) const
+	{
+		std::copy (v.begin (), (len == 0) ? v.end () : v.begin () + len, res.begin () + i);
+		return res;
+	}
+	template <class Vector1, class Vector2>
+	inline Vector1 &copySpecialized (Vector1 &res, const Vector2 &v, size_t i, size_t len, VectorCategories::DenseVectorTag) const
+	{
+		std::copy (v.begin (), (len == 0) ? v.end () : v.begin () + len, res.begin () + i);
+		return res;
+	}
+
+
+
 	template <class Vector1, class Vector2>
 	Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
 				  VectorCategories::SparseZeroOneVectorTag,

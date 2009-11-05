@@ -14,6 +14,7 @@
 
 // must fix this list...
 #include "linbox/algorithms/gauss.h"
+#include "linbox/algorithms/gauss-gf2.h"
 #include "linbox/algorithms/wiedemann.h"
 #include "linbox/algorithms/rational-solver.h"
 #include "linbox/algorithms/diophantine-solver.h"
@@ -119,6 +120,7 @@ namespace LinBox
             return x;
 	}
 
+
 	// Change of representation to be able to call the sparse elimination
 	template <class Vector, class Blackbox> 
 	Vector& solve(Vector& x, const Blackbox& A, const Vector& b, 
@@ -127,6 +129,30 @@ namespace LinBox
             typedef typename Blackbox::Field Field;
             typedef SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq> SparseBB;
             SparseBB * SpA;
+            MatrixHom::map(SpA, A, A.field());
+            return solvein(x, *SpA, b, m);
+	}
+
+	template <class Vector> 
+	Vector& solvein(Vector& x, 
+                        GaussDomain<GF2>::Matrix    &A,
+                        const Vector& b, 
+                        const Method::SparseElimination& m)
+	{
+            commentator.start ("Sparse Elimination Solve In Place over GF2", "GF2sesolvein");
+            GaussDomain<GF2> GD ( A.field() );
+            GD.solvein(x, A, b);
+            commentator.stop ("done", NULL, "GF2sesolvein");
+            return x;
+	}
+	template <class Vector> 
+	Vector& solve(Vector& x,
+                      GaussDomain<GF2>::Matrix    &A,
+                      const Vector& b, 
+                      const Method::SparseElimination& m)
+	{
+                // We make a copy
+            GaussDomain<GF2>::Matrix * SpA;
             MatrixHom::map(SpA, A, A.field());
             return solvein(x, *SpA, b, m);
 	}

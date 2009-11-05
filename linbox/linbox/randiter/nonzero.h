@@ -66,7 +66,8 @@ namespace LinBox
 			return *this;
 		}
 
-		Element &random (Element &a)  const
+                template<class Elt>
+		Elt &random (Elt &a)  const
 		{
 			do _r.random (a); while (_F.isZero (a));
 			return a;
