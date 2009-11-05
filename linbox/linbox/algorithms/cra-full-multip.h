@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // ======================================================================= //
-// Time-stamp: <07 Jul 09 13:41:14 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <13 Oct 09 12:51:41 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_CRA_FULL_MULTIP_H
 #define __LINBOX_CRA_FULL_MULTIP_H
@@ -35,7 +35,7 @@ public:
 
 	Integer& getModulus(Integer& m) {
                 std::vector<Integer> r; result(r);
-                return m=RadixPrimeProd_.front()();
+                return m=RadixPrimeProd_.back()();
         }
 
 	template<template<class> class Vect>
