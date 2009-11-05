@@ -195,6 +195,32 @@ namespace LinBox
 	}; // template <Vector> class Submatrix
 	
 
+	/** Specialization for dense ZeroOne vectors */
+	template <class Blackbox>
+	class Submatrix<Blackbox, VectorCategories::DenseZeroOneVectorTag >
+	: public Submatrix<Blackbox, VectorCategories::DenseVectorTag> {
+	    public:
+		typedef typename Blackbox::Field Field;
+		typedef typename Field::Element Element;
+            	typedef Blackbox Blackbox_t;
+                typedef Submatrix<Blackbox, VectorCategories::DenseZeroOneVectorTag > Self_t;
+                typedef Submatrix<Blackbox, VectorCategories::DenseVectorTag > Father_t;
+            
+		/** Constructor from field and dense vector of field elements.
+		 * @param BB   Black box from which to extract the submatrix
+		 * @param row  First row of the submatrix to extract (1.._BB->rowdim ())
+		 * @param col  First column of the submatrix to extract (1.._BB->coldim ())
+		 * @param rowdim Row dimension
+		 * @param coldim Column dimension
+		 */
+		Submatrix (const Blackbox *BB,
+			   size_t          row,
+			   size_t          col,
+			   size_t          rowdim,
+			   size_t          coldim)
+			: Father_t(BB,row,col,rowdim,coldim) {}
+        };
+
 	template <class Field>
 	class DenseMatrix;
 

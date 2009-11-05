@@ -140,23 +140,32 @@ class GF2 : public FieldInterface
 	integer &convert (integer &x, Element y) const
 		{ return x = y; }
  
-	unsigned int &convert (unsigned int &x, Element y) const
-		{ return x = static_cast<unsigned int>(y); }
+        std::_Bit_reference convert (std::_Bit_reference x, Element y) const {
+            return x = y;
+        }
+
+    	template<class XXX> 
+        XXX& convert (XXX& x, Element y) const {
+            return x = static_cast<XXX>(y);
+        }
+            
+// 	unsigned int &convert (unsigned int &x, Element y) const
+// 		{ return x = static_cast<unsigned int>(y); }
  
-	int &convert (int &x, Element y) const
-		{ return x = static_cast<int>(y); }
+// 	int &convert (int &x, Element y) const
+// 		{ return x = static_cast<int>(y); }
  
-	unsigned long &convert (unsigned long &x, Element y) const
-		{ return x = static_cast<unsigned long>(y); }
+// 	unsigned long &convert (unsigned long &x, Element y) const
+// 		{ return x = static_cast<unsigned long>(y); }
  
-	long &convert (long &x, Element y) const
-		{ return x = static_cast<int>(y); }
+// 	long &convert (long &x, Element y) const
+// 		{ return x = static_cast<int>(y); }
  
-	float &convert (float &x, Element y) const
-		{ return x = static_cast<float>(y); }
+// 	float &convert (float &x, Element y) const
+// 		{ return x = static_cast<float>(y); }
  
-	double &convert (double &x, Element y) const
-		{ return x = static_cast<double>(y); }
+// 	double &convert (double &x, Element y) const
+// 		{ return x = static_cast<double>(y); }
  
 	/** Assignment of one field base element to another.
 	 * This function assumes both field base elements have already been
@@ -570,6 +579,129 @@ class GF2 : public FieldInterface
 }; // class GF2
 
 } // namespace LinBox
+
+
+
+
+// Specialization of homomorphism for basefield
+#include "linbox/field/hom.h"
+#include "linbox/field/givaro-extension.h"
+namespace LinBox 
+{
+
+    template <>
+    class Hom<GF2,GF2> {
+        
+    public:
+        typedef GF2 Target;
+        typedef GF2 Source;
+        typedef Source::Element SrcElt;
+        typedef Target::Element Elt;
+	
+        Hom(const Source& S, const Target& T) : _source (S){}
+        Elt& image(Elt& t, const SrcElt& s) {
+            return _source.assign (t, s);
+        }
+        SrcElt& preimage(SrcElt& s, const Elt& t) {
+            return _source.assign (s, t);
+        }
+        const Source& source() { return _source;}
+        const Target& target() { return _source;}
+        
+    protected:
+        Source _source;
+    };
+
+    template<class Target > 
+    class Hom<GF2, Target > 
+    {   public:
+        typedef GF2 Source;
+        typedef typename GF2::Element SrcElt;
+        typedef typename Target::Element Elt;
+
+        Hom(const Source& S, const Target& T) : _source(S), _target(T){ }
+        Elt& image(Elt& t, const SrcElt& s) {
+            return _source.convert(t,s);
+        }
+        SrcElt& preimage(SrcElt& s, const Elt& t) {
+            return _target.convert(s,t);
+        }
+        std::_Bit_reference preimage(std::_Bit_reference s, const Elt& t) const {
+            int ts;
+            return s = _target.convert(ts, t);
+        }
+
+        const Source& source() { return _source;}
+        const Target& target() { return _target;}
+
+    private:
+        Source _source;
+        Target _target;
+    }; // end Hom 
+
+
+
+    template<>
+    class Hom < GF2, GivaroExtension<GF2> >
+    {
+        typedef GF2 Source;
+        typedef GivaroExtension<GF2> Target;
+    public:
+        typedef Source::Element SrcElt;
+        typedef Target::Element Elt;
+
+            //Hom(){}
+            /**
+             * Construct a homomorphism from a specific source ring S and target 
+             * field T with Hom(S, T).  The default behaviour is error.  
+             * Specializations define all actual homomorphisms.
+             */
+        Hom(const Source& S, const Target& T) : _source(S), _target(T){}
+
+            /** 
+             * image(t, s) implements the homomorphism, assigning the 
+             * t the value of the image of s under the mapping.
+             *
+             * The default behaviour is a no-op.
+             */
+        Elt& image(Elt& t, const SrcElt& s) const {return _target.assign(t,s);}
+           
+            /** If possible, preimage(s,t) assigns a value to s such that 
+             * the image of s is t.  Otherwise behaviour is unspecified.
+             * An error may be thrown, a conventional value may be set, or
+             * an arb value set.
+             *
+             * The default behaviour is a no-op.
+             */
+        SrcElt& preimage(SrcElt& s, const Elt& t) const {
+            return _target.convert(s, t);
+        }
+        std::_Bit_reference preimage(std::_Bit_reference s, const Elt& t) const {
+            bool ts;
+            return s = _target.convert(ts, t);
+        }
+
+        const Source& source() const { return _source;}
+        const Target& target() const { return _target;}
+
+    private:
+        Source _source;
+        Target _target;
+    }; // end Hom 
+}
+
+// #include <bits/stl_bvector.h>
+// JGD 05.11.2009 : it should be in bits/stl_bvector.h  ...
+namespace std {
+    void swap(_Bit_reference __x, _Bit_reference __y)
+    {
+      bool __tmp = __x;
+      __x = __y;
+      __y = __tmp;
+    }
+}
+
+
 
 #include "linbox/randiter/gf2.h"
 #include "linbox/field/gf2.inl"
