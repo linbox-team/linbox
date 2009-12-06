@@ -80,6 +80,7 @@ namespace LinBox
 		return charpoly( P, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), M);
 	}
 
+
 	/// \brief ...using default method
 	template<class Blackbox, class Polynomial>
 	Polynomial &charpoly (Polynomial        & P, 
@@ -99,6 +100,18 @@ namespace LinBox
 		//return charpoly(P, A, tag, Method::Blackbox(M));
 		return charpoly(P, A, tag, Method::BlasElimination(M));
 	}
+
+		// The charpoly with Hybrid Method 
+	template<class Blackbox, class Polynomial>
+	Polynomial &charpoly (Polynomial            &P, 
+			      const Blackbox  &A,
+			      const RingCategories::IntegerTag  &tag,
+			      const Method::Hybrid  &M)
+	{
+		// not yet a hybrid
+		return charpoly(P, A, tag, Method::Blackbox(M));
+	}
+
 
 	// The charpoly with Hybrid Method 
 	template<class Polynomial, class Domain>
@@ -185,11 +198,11 @@ namespace LinBox {
 			return P;
 		}            
 	};
-}
+
 
 //#if 0
 #if defined(__LINBOX_HAVE_NTL) && defined(__LINBOX_HAVE_GIVARO)
-
+}
 #include "linbox/algorithms/cia.h"
 namespace LinBox {
 
@@ -253,7 +266,7 @@ namespace LinBox {
 
 
 #else
-
+}
 
 #include "linbox/field/modular.h"
 #include "linbox/algorithms/cra-domain.h"
@@ -261,6 +274,8 @@ namespace LinBox {
 #include "linbox/algorithms/cra-early-multip.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
+
+namespace LinBox {
 
 //#include "linbox/algorithms/rational-cra2.h"
 //#include "linbox/algorithms/varprec-cra-early-multip.h"
@@ -327,6 +342,8 @@ namespace LinBox {
 		commentator.stop ("done", NULL, "IbbCharpoly");
 		return P;
 	}
+
+	
 	template < class Polynomial,class Blackbox >
 	Polynomial& charpoly (Polynomial                       & P, 
 			      const Blackbox                   & A,
@@ -367,9 +384,9 @@ namespace LinBox {
 		return P;
 	}
 
+
 #endif	
 
-	
 	/** Compute the characteristic polynomial over <bold>Z</bold><sub>p</sub>.
 	 *
 	 * Compute the characteristic polynomial of a matrix, represented via 
@@ -428,5 +445,5 @@ namespace LinBox {
 		commentator.stop ("done", NULL, "Rcharpoly");
 		return P;
 	}
-} // end of LinBox namespace
+	} // end of LinBox namespace
 #endif // __MINPOLY_H
