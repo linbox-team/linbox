@@ -16,7 +16,7 @@ AC_MSG_CHECKING([best threshold for Strassen-Winograd matrix multiplication])
 
 
 CXXFLAGS="${BACKUP_CXXFLAGS} -I`pwd` -I`pwd`/linbox ${BLAS_CFLAGS} ${GMP_CFLAGS}  ${GIVARO_CFLAGS} ${CBLAS_FLAG}" 
-LIBS="${BACKUP_LIBS} ${BLAS_LIBS} ${GMP_LIBS} ${GIVARO_LIBS}" 
+LIBS="${BACKUP_LIBS} ${BLAS_LIBS} ${GIVARO_LIBS} ${GMP_LIBS} " 
 
 
 echo   " #define __LINBOX_INT8  $LINBOX_INT8  	 
