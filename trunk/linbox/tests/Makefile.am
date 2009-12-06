@@ -51,6 +51,7 @@ BASIC_TESTS =  			\
 	test-block-ring			\
         test-moore-penrose      \
         test-randiter-nonzero   \
+        test-rank               \
 	test-rational-matrix-factory \
         test-scalar-matrix      \
         test-sparse             \
@@ -60,7 +61,15 @@ BASIC_TESTS =  			\
         test-trace              \
         test-triplesbb          \
         test-vector-domain      \
-	test-zero-one 
+	test-rat-solve		\
+	test-rat-minpoly	\
+	test-qlup               \
+        test-zo                 \
+	test-zero-one \
+        test-solve              \
+        test-quad-matrix        \
+	test-charpoly
+	
 # tests of components not adhering to LinBox requirements.
 NONCOMPLIANT_TESTS =	\
 	test-unparametric-field	\
@@ -69,37 +78,26 @@ NONCOMPLIANT_TESTS =	\
 
 #These need clapack
 #test-rational-solver-adaptive
-#test-smith-form-adaptive  
 
 # this allows _SOURCES entry to remain
 # except for "make dist"
-NONEXISTING_TESTS =
-#NONEXISTING_TESTS = test-solutions
-#
-#test_solutions_SOURCES=    \
-#	test-common.h	\
-#	test-solutions.C
-#
+#NONEXISTING_TESTS =
+NONEXISTING_TESTS = test-solutions
+
+test_solutions_SOURCES=    \
+	test-common.h	\
+	test-solutions.C
+
 
 NONCOMPILING_TESTS =  		
-	test-rat-solve		\
-	test-rat-minpoly	\
-	test-qlup               \
-        test-rank               \
-	test-rat-charpoly	\
-	test-charpoly
-#		test-inertia			
+	test-dense-zero-one     \
+        test-mg-block-lanczos
 
 FAILING_TESTS =		\
-        test-solve              \
-        test-zo                 \
-        test-quad-matrix        \
-	test-dense-zero-one     \
+	test-rat-charpoly	\
 	test-smith-form-local		\
-        test-mg-block-lanczos   \
-	test-la-block-lanczos    
-#       test-over-under         
-#       test-side-by-side       
+		test-smith-form-adaptive \  
+	test-la-block-lanczos
 
 USE_NONCOMPILING_TESTS = 
 USE_FAILING_TESTS = 
@@ -313,10 +311,6 @@ test_triplesbb_SOURCES =		\
 	test-generic.h			\
 	test-common.h
 
-#test_inertia_SOURCES =		\
-#	test-inertia.C		\
-#	test-common.h
-
 test_hilbert_SOURCES =			\
 	test-hilbert.C	test-generic.h	\
 	test-common.h
@@ -423,16 +417,6 @@ test_param_fuzzy_SOURCES =	        \
 	test-generic.h		        \
 	test-common.h
 
-#test_side_by_side_SOURCES =		\
-#	test-side-by-side.C		\
-#	test-generic.h			\
-#	test-common.h
-
-#test_over_under_SOURCES =		\
-#	test-over-under.C		\
-#	test-generic.h			\
-#	test-common.h
-
 test_quad_matrix_SOURCES =		\
 	test-quad-matrix.C		\
 	test-generic-for-quad.h		\
@@ -483,9 +467,9 @@ test_smith_form_binary_SOURCES=    \
 
 # NTL test
 #	test-smith-form			\
-#test_smith_form_SOURCES=    \
-#	test-common.h	\
-#	test-smith-form.C
+test_smith_form_SOURCES=    \
+	test-common.h	\
+	test-smith-form.C
 
 test_last_invariant_factor_SOURCES=    \
 	test-common.h	\
@@ -526,9 +510,9 @@ test_rational_solver_adaptive_SOURCES = \
 
 # NTL test
 #	test-smith-form-adaptive	\
-#test_smith_form_adaptive_SOURCES=    \
-#	test-common.h	\
-#	test-smith-form-adaptive.C
+test_smith_form_adaptive_SOURCES=    \
+	test-common.h	\
+	test-smith-form-adaptive.C
 
 benchmark_fields_SOURCES=    \
 	test-common.h	\
