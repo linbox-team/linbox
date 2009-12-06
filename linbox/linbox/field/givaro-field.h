@@ -12,7 +12,7 @@
 #include <linbox/integer.h>
 #include <linbox/field/field-traits.h>
 #include <linbox/field/field-interface.h>
-
+#include "givaro/givconfig.h"
 namespace LinBox 
 { 
 
