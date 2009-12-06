@@ -118,15 +118,11 @@ namespace LinBox {
 			if ((a==Element(0)) || (b==Element(0))) return c = Element(0);
 			
 			else {
-				Element g;
-			
-				gcd (g, a, b);
-				
+				Element g;			
+				gcd (g, a, b);				
 				c= a*b;
 				c /= g;
-
-				c=abs (c);
-			
+				c=abs (c);			
 				return c;
 			}
 		}
@@ -139,18 +135,13 @@ namespace LinBox {
 			if ((l==Element(0)) || (b==Element(0))) return l = Element(0);
 			
 			else {
-				Element g;
-			
-				gcd (g, l, b);
-				
+				Element g;			
+				gcd (g, l, b);				
 				l*= b;
 				l/= g;
-
-				l=abs (l);
-			
+				l=abs (l);			
 				return l;
-			}
-	
+			}	
 		}
             
                 inline  void reconstructRational (Element& a, Element& b, const Element& x, const Element& m) const {
@@ -162,13 +153,13 @@ namespace LinBox {
                 }
             
                 inline  long reconstructRational (Element& a, Element& b, 
-                                                        const Element& x, const Element& m, 
-                                                        const Element& a_bound, const Element& b_bound) const {
-                    Element bound = x/b_bound;
-                    // if (bound>a_bound) std::cerr << "a_bound: " << a_bound << ", x/b_bound: " << bound << std::endl;
-                    
-                    RationalReconstruction(a,b,x,m, (bound>a_bound?bound:a_bound), true, false);
-                    return  (b > b_bound)? 0: 1;	
+						  const Element& x, const Element& m, 
+						  const Element& a_bound, const Element& b_bound) const {
+			Element bound = x/b_bound;
+			// if (bound>a_bound) std::cerr << "a_bound: " << a_bound << ", x/b_bound: " << bound << std::endl;
+			
+			RationalReconstruction(a,b,x,m, (bound>a_bound?bound:a_bound), true, false);
+			return  (b > b_bound)? 0: 1;	
                 }
            
  
@@ -302,9 +293,9 @@ namespace LinBox {
                     // See [von zur Gathen & Gerhard, Modern Computer Algebra, 
                     //      5.10, Cambridge Univ. Press 1999]
                 inline void RationalReconstruction( Element& a, Element& b, 
-                                                          const Element& f, const Element& m, 
-                                                          const Element& k, 
-                                                          bool reduce, bool recursive ) const {
+						    const Element& f, const Element& m, 
+						    const Element& k, 
+						    bool reduce, bool recursive ) const {
 			Element x(f);
                         if (x<0) {
                         	if ((-x)>m)
@@ -315,15 +306,15 @@ namespace LinBox {
                         	if (x>m)
                             		x %= m;
                     	}
-
+			
                         if (x == 0) {
-                            a = 0;
-                            b = 1;
+				a = 0;
+				b = 1;
                         } else {
-                            bool res = ratrecon(a,b,x,m,k, reduce, recursive);
-                            if (recursive)
-                                for( Element newk = k + 1; (!res) && (newk<f) ; ++newk)
-                                    res = ratrecon(a,b,x,m,newk,reduce, true);
+				bool res = ratrecon(a,b,x,m,k, reduce, recursive);
+				if (recursive)
+					for( Element newk = k + 1; (!res) && (newk<f) ; ++newk)
+						res = ratrecon(a,b,x,m,newk,reduce, true);
                         }
                 }
 
@@ -333,64 +324,41 @@ namespace LinBox {
                                              const Element& k, 
                                              bool reduce, bool recursive ) const {
                     
-			//std::cerr << "RatRecon : " << f << " " << m << " " << k << std::endl;
-                    
-
+			//std::cerr << "RatRecon : " << f << " " << m << " " << k << std::endl;                   
                         Element  r0, t0, q, u;
                         r0=m;
                         t0=0;
                         num=f;
                         den=1;
                         while(num>=k)
-                        {
-        
+                        {     
                             q = r0;
-                            q /= num;        // r0/num
-                            
-
+                            q /= num;   // r0/num                            
                             u = num;
                             num = r0;  	// num <-- r0
                             r0 = u;	// r0 <-- num
-//                             u *= q;
-//                             num -= u;	// num <-- r0-q*num
 			    Integer::axmyin(num,u,q);
                             if (num == 0) return false;
                             
                             u = den;
                             den = t0;  	// num <-- r0
                             t0 = u;	// r0 <-- num
-//                             u *= q;
-//                             den -= u;	// num <-- r0-q*num
 			    Integer::axmyin(den,u,q);
-
                         } 
 
-//                        if (den < 0) {
-//                                Integer::negin(num);
-//                                Integer::negin(den);
-//                        }
- 
                         if (reduce) {
-    
-                                // [GG, MCA, 1999] Theorem 5.26
-                                // (i)
-//                            if (den < 0) {
-//                                Integer::negin(num);
-//                                Integer::negin(den);
-//                            }
-
+				// [GG, MCA, 1999] Theorem 5.26
+                                				
                                 // (ii)
                             Element gg;
                             if (gcd(gg,num,den) != 1) {
                                 
                                 Element ganum, gar2;
-                                for( q = 1, ganum = r0-num, gar2 = r0 ; (ganum >= k) || (gar2<k); ++q ) {
+                                for( q = 1, ganum = r0-num, gar2 = r0 ; (ganum < k) && (gar2>=k); ++q ) {std::cout<<".";
 					ganum -= num;
 					gar2 -= num;
                                 }
                                 
-//                             r0 -= q * num;
-//                             t0 -= q * den;
                                 Integer::axmyin(r0,q,num);
                                 Integer::axmyin(t0,q,den);
                                 
