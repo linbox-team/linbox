@@ -64,10 +64,8 @@ BASIC_TESTS =  			\
 	test-rat-solve		\
 	test-rat-minpoly	\
 	test-qlup               \
-        test-zo                 \
 	test-zero-one \
         test-solve              \
-        test-quad-matrix        \
 	test-charpoly
 	
 # tests of components not adhering to LinBox requirements.
@@ -88,6 +86,9 @@ test_solutions_SOURCES=    \
 	test-common.h	\
 	test-solutions.C
 
+DUBIOUS_TESTS = \
+        test-quad-matrix        \
+        test-zo
 
 NONCOMPILING_TESTS =  	\
 	test-dense-zero-one     \
