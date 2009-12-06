@@ -254,11 +254,11 @@ int main (int argc, char **argv)
    
 	bool pass = true;
 
-	static size_t n = 80;
+	static size_t n = 40;
 	static integer q = 65519U;
 	//static integer q = 1000003U;
 	static integer bigQ("12345678901234567890123456789012345678901234568119");
-	static int iterations = 2;
+	static int iterations = 1;
         static double sparsity = 0.05;
 
 	static Argument args[] = {

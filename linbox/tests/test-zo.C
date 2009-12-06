@@ -77,10 +77,10 @@ int main(int argc, char **argv) {
   */
 
   //print out the dimensions and the number of non-zero entries of the matrix
-  std::cout << testMatrix.rowdim() << " " << testMatrix.coldim() << " " << testMatrix.nnz() << std::endl;
+  //std::cout << testMatrix.rowdim() << " " << testMatrix.coldim() << " " << testMatrix.nnz() << std::endl;
 
 
-  std::cout << std::endl << "ZeroOne matrix blackbox test suite" << std::endl;
+  //std::cout << std::endl << "ZeroOne matrix blackbox test suite" << std::endl;
 
   pass = pass && testBlackbox(testMatrix);
   //bool pass2 = testBlackbox(testMat);

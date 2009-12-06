@@ -2,7 +2,7 @@
  *  Author: Zhendong Wan
  */
 
-#include <linbox/field/ntl-ZZ.h>
+//#include <linbox/field/ntl-ZZ.h>
 #include <linbox/field/PID-integer.h>
 #include <time.h>
 #include <linbox/randiter/random-prime.h>
@@ -181,7 +181,8 @@ int main(int argc, char** argv) {
 	commentator.start("Smith form adaptive algorithm test suite", "EGV++");
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
-	typedef NTL_ZZ Ring; Ring R;
+	//typedef NTL_ZZ Ring; Ring R;
+	typedef PID_integer Ring; Ring R;
 	RandomDenseStream<Ring> s1 (R, n, iterations);
 	pass = testRandom(R, sf, s1); 
 
