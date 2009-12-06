@@ -354,7 +354,7 @@ namespace LinBox {
                             if (gcd(gg,num,den) != 1) {
                                 
                                 Element ganum, gar2;
-                                for( q = 1, ganum = r0-num, gar2 = r0 ; (ganum < k) && (gar2>=k); ++q ) {std::cout<<".";
+                                for( q = 1, ganum = r0-num, gar2 = r0 ; (ganum < k) && (gar2>=k); ++q ) {
 					ganum -= num;
 					gar2 -= num;
                                 }
