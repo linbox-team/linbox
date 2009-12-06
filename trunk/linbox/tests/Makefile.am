@@ -89,7 +89,7 @@ test_solutions_SOURCES=    \
 	test-solutions.C
 
 
-NONCOMPILING_TESTS =  		
+NONCOMPILING_TESTS =  	\
 	test-dense-zero-one     \
         test-mg-block-lanczos
 
