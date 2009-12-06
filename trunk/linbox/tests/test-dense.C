@@ -60,8 +60,8 @@ static bool testIdentity (Field &F, long n, int iterations)
 
 	Blackbox I(F, n, n);
 	Matrix K(I);
-	typename Field::Element x; F.init(x);
-	F.write(std::cout, K.getEntry(x, i, j)) << std::endl;
+	//typename Field::Element x; F.init(x);
+	//F.write(std::cout, K.getEntry(x, i, j)) << std::endl;
 	//Matrix L(K);
 	typename Field::Element one;
 
