@@ -20,7 +20,6 @@
 #include "linbox/linbox-config.h"
 #include <linbox/field/field-traits.h>
 #include <linbox/field/givaro-gfq.h>
-#include <linbox/field/gf2.h>
 
 #ifdef __LINBOX_XMLENABLED
 
