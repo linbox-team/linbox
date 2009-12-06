@@ -9,6 +9,7 @@
 
 #ifndef __FIELD_GIVARO_FIELD
 #define __FIELD_GIVARO_FIELD
+#include <givaro/givconfig.h>
 #include <linbox/integer.h>
 #include <linbox/field/field-traits.h>
 #include <linbox/field/field-interface.h>

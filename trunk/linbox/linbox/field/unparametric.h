@@ -300,14 +300,14 @@ namespace LinBox
 		//@{
     
 		/** The field's element type.
-		 * Type K must provide a default constructor, 
+		 * Type double must provide a default constructor, 
 		 * a copy constructor, a destructor, and an assignment operator.
 		 */
 
-		typedef K Element;    
+		typedef double Element;    
 
 		/// Type of random field element generators.
-		typedef UnparametricRandIter<K> RandIter;
+		typedef UnparametricRandIter<double> RandIter;
 
 		/** @name Field Object Basics.
 		 */
@@ -345,7 +345,6 @@ namespace LinBox
 
 		Element &init (Element &x, const double &t) const 
 			{ return x = static_cast<const Element&> (t); }
-
     
 		/// x :=  y.  Caution: it is via cast to long.  Good candidate for specialization.
 		integer &convert (integer &x, const Element &y) const 
@@ -499,21 +498,21 @@ namespace LinBox
 		/** Constructor from field object.
 		 * @param  A unparameterized field object
 		 */
-		UnparametricField (const K &A) {} 
+		UnparametricField (const double &A) {} 
     
 		/** Constant access operator.
 		 * @return constant reference to field object
 		 */
-		const K &operator () (void) const { return Element (); }
+		const double operator () (void) const { return Element (); }
     
 		/** Access operator.
 		 * @return reference to field object
 		 */
-		K &operator () (void) { return Element (); }
+		double operator () (void) { return Element (); }
     
 		//@} Implementation-Specific Methods
 
-	}; // template <class K> class UnparametricField
+	}; // template <class double> class UnparametricField
 
 
 
