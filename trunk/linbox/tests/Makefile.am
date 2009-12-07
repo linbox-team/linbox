@@ -96,8 +96,8 @@ NONCOMPILING_TESTS =  	\
 
 FAILING_TESTS =		\
 	test-rat-charpoly	\
-	test-smith-form-local		\
-		test-smith-form-adaptive \  
+	test-smith-form-local	\
+	test-smith-form-adaptive \
 	test-la-block-lanczos
 
 USE_NONCOMPILING_TESTS = 
@@ -187,6 +187,7 @@ EXTRA_PROGRAMS = \
 	$(NONEXISTING_TESTS)	\
 	$(NONCOMPILING_TESTS)	\
 	$(NONCOMPLIANT_TESTS)	\
+	$(DUBIOUS_TESTS)	\
 	$(FAILING_TESTS)
 
 
