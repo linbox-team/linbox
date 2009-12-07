@@ -26,6 +26,7 @@
 #include "linbox/util/debug.h"
 #include <math.h>
 #include <linbox/field/field-traits.h>
+#include "linbox/randiter/nonzero.h"
 
 
 
@@ -37,6 +38,9 @@ namespace LinBox {
 	class Modular;
 	template< class Element >
 	class ModularRandIter;
+
+	template< class Field, class RandIter >
+	class NonzeroRandIter;
 
 	template <class Ring>
 	struct ClassifyRing; 
@@ -67,6 +71,7 @@ namespace LinBox {
 			       
 		typedef float Element;
 		typedef ModularRandIter<float> RandIter;
+		typedef NonzeroRandIter<Modular<float>, ModularRandIter<float> > NonZeroRandIter;
 
 		static ClassifyRing<Modular<float> >::categoryTag getCategory() {return ClassifyRing<Modular<float> >::categoryTag();}
 		
