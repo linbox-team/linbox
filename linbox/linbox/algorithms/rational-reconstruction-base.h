@@ -59,7 +59,7 @@ struct RReconstruction
 protected: 
   Ring _Z;
   RRBase _RR;
-  mutable int RecCounter;
+  mutable size_t RecCounter;
   const RReconstructionSchedule& _M;
   const size_t THRESHOLD_;
   const size_t rbound_;
@@ -89,7 +89,7 @@ public:
 
 int getCounter() { return RecCounter;}
 
-bool scheduled(const int i) const {
+bool scheduled(const size_t i) const {
 	//if (RecCounter ==0)  return true;
 	if (i < rbound_) return false; //skip first rbound iterations
 	if (_M == INCREMENTAL) {
@@ -101,7 +101,7 @@ bool scheduled(const int i) const {
 		else return false;
 	}
 	else if (_M == GEOMETRIC) {
-		if ((1 << RecCounter) < i) return true;
+		if ((1UL << RecCounter) < i) return true;
 		else return false;        
 	}
 	else if (_M == CERTIFIED) {

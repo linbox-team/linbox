@@ -128,7 +128,7 @@ typedef typename Rationals::Element Quotient;
 	Integer& denominator(Integer& di, const int i) const {
 	  if (denAi[i]==1) {   
 		typedef typename QMatrix::ConstRow::const_iterator EltIterator;
-		for (int j=0; j < _A->coldim(); ++j) {
+		for (size_t j=0; j < _A->coldim(); ++j) {
 			Integer d; Q.get_den(d,_A->getEntry(i,j));
 			lcm(denAi[i],denAi[i],d);
 		}
@@ -190,15 +190,15 @@ typedef typename Rationals::Element Quotient;
 /*
  * optimization: computes normAprim, normAprim, rationalNormat the same time
  */
-	Integer &getNorms(Integer& ratnorm, Integer& normaprim, Integer& normatilde) const {
+	Integer getNorms(Integer& ratnorm, Integer& normaprim, Integer& normatilde) const {
 		typedef typename QMatrix::ConstRow::const_iterator EltIterator;
 		ratnorm = 0L; normaprim=0L; normatilde= 0L;
 		Integer da=1L;
 		std::vector<integer> di(_A->rowdim(),1L);
 
-		for (int i=0; i < _A->rowdim(); ++i)  {
+		for (size_t i=0; i < _A->rowdim(); ++i)  {
 		   if (denAi[i]==1) { 	
-			for (int j=0; j < _A->coldim(); ++j ) {
+			for (size_t j=0; j < _A->coldim(); ++j ) {
 		        	Integer d ; Q.get_den(d,_A->getEntry(i,j));
 				lcm(denAi[i],denAi[i],d);
 			}
@@ -208,8 +208,8 @@ typedef typename Rationals::Element Quotient;
 		}
 		da = denA;
 
-		for (int i=0; i < _A->rowdim(); ++i )  {
-			for (int j=0; j < _A->coldim(); ++j ) {
+		for (size_t i=0; i < _A->rowdim(); ++i )  {
+			for (size_t j=0; j < _A->coldim(); ++j ) {
 				Integer n ; Q.get_num(n,_A->getEntry(i,j));
 				Integer d ; Q.get_den(d,_A->getEntry(i,j));
 				
@@ -250,8 +250,8 @@ typedef typename Rationals::Element Quotient;
 		Integer da; denominator(da);
 		Aprim.resize(_A->rowdim(),_A->coldim());
 
-                for( int i=0; i < _A->rowdim(); ++i) {
-			for (int j=0; j < _A->coldim(); ++j) {
+                for( size_t i=0; i < _A->rowdim(); ++i) {
+			for (size_t j=0; j < _A->coldim(); ++j) {
 		                Quotient  q =  _A->getEntry(i,j);
 			        Integer n ; Q.get_num(n,q);
 			        Integer d ; Q.get_den(d,q);
@@ -273,10 +273,10 @@ typedef typename Rationals::Element Quotient;
 
 		Atilde.resize(_A->rowdim(),_A->coldim());
 	        std::vector<integer> di(_A->rowdim());
-	        for (int i=0; i < _A->rowdim(); ++i) denominator(di[i],i);
+	        for (size_t i=0; i < _A->rowdim(); ++i) denominator(di[i],i);
 		           
-		for( int i=0; i < _A->rowdim(); ++i) {
-                        for (int j=0; j < _A->coldim(); ++j) {
+		for( size_t i=0; i < _A->rowdim(); ++i) {
+                        for (size_t j=0; j < _A->coldim(); ++j) {
                         	Quotient  q = _A->getEntry(i,j);
 	                        Integer n ; Q.get_num(n,q);
         	                Integer d ; Q.get_den(d,q);
@@ -295,8 +295,8 @@ typedef typename Rationals::Element Quotient;
 	 */
 	size_t getOmega(size_t& o, size_t& ro) const {
 		if (omega ==0 ) {
-		    for( int i=0; i < _A->rowdim(); ++i) {
-                        for (int j=0; j < _A->coldim(); ++j) {
+		    for( size_t i=0; i < _A->rowdim(); ++i) {
+                        for (size_t j=0; j < _A->coldim(); ++j) {
 				Quotient  q =  _A->getEntry(i,j);
 				Integer n ; Q.get_num(n,q);
  		                Integer d ; Q.get_den(d,q);

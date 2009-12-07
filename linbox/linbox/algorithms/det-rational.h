@@ -138,13 +138,13 @@ struct MyIntegerModularDet {
 template <class Blackbox>
 typename Blackbox::Field::Element& corrections(Blackbox& IntBB, typename Blackbox::Field::Element& f) {
 	f = 1;
-	for (int j=0; j < IntBB.coldim(); ++j) {
+	for (size_t j=0; j < IntBB.coldim(); ++j) {
 		Integer g = 0;
-		for (int i=0; i < IntBB.rowdim(); ++i) {
+		for (size_t i=0; i < IntBB.rowdim(); ++i) {
 			gcd(g,g,IntBB.getEntry(i,j));
 		}
 		f*=g;
-		for (int i=0; i < IntBB.rowdim(); ++i) {
+		for (size_t i=0; i < IntBB.rowdim(); ++i) {
 			Integer x = IntBB.getEntry(i,j);
 		        IntBB.setEntry(i,j,x/g);
 		}
@@ -196,7 +196,7 @@ MyModularDet<MyRationalModularDet<DenseMatrix<Rationals > , MyMethod>,
 RReconstruction<PID_integer, ClassicMaxQRationalReconstruction<PID_integer> > RR;
 
 Integer dd; // use of integer due to non genericity of cra. PG 2005-08-04
-int k = 4;
+size_t k = 4;
 t1.clear();
 t2.clear();
 t1.start();
@@ -220,12 +220,12 @@ if (t1.time() < t2.time()) {
 //switch: LIF
 vector<typename PID_integer::Element> v(A.rowdim()), r(A.rowdim());
 ++genprime;
-for(int i=0; i < v.size(); ++i) {
+for(size_t i=0; i < v.size(); ++i) {
 	v[i] = rand() % (*genprime) ;
 }
 t2.clear();
 t2.start();
-for (int i=0; i < k; ++i)
+for (size_t i=0; i < k; ++i)
 	Atilde.apply(r,v);
 t2.stop();
 s2 = t2.time();
@@ -264,7 +264,7 @@ while (! cra(k,dd, iteration, genprime)) {
 	bool rrterm = false;
 
 t1.start();
-	if (rrterm = RR.reconstructRational(num,den,res1,m)) {
+ if ((rrterm = RR.reconstructRational(num,den,res1,m))) {
 		t1.stop();
 		cra.changePreconditioner(num*M,den*F);
 	        if (cra(5,dd,iteration,genprime) ) {
@@ -275,7 +275,7 @@ t1.start();
 	} else 	{//we use num approx by lif
 		t1.stop();
 		t2.start();
-		if (rrterm = RR.reconstructRational(num,den,res,m)) {
+		if ((rrterm = RR.reconstructRational(num,den,res,m))) {
 			t2.stop();
 			cra.changePreconditioner(num*M,den*F*lif);
 			if (cra(5,dd,iteration,genprime) ) {
