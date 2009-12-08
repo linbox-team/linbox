@@ -43,7 +43,7 @@ class SmithFormLocal{
 	template<class Matrix>
 	std::list<Elt>& smithStep(std::list<Elt>& L, Elt& d, Matrix& A, const LocalPID& R) {
 
-	    //std::cout << "Dimension: " << A.rowdim() << " " << A.coldim() <<"\n";
+//std::cout << "Dimension: " << A.rowdim() << " " << A.coldim() <<"\n";
 	    if ( A.rowdim() == 0 || A.coldim() == 0 ) return L;
 
 	    Elt g; R.init(g, 0);
@@ -75,7 +75,7 @@ class SmithFormLocal{
 
 	        // eliminate step - crude and for dense only - fix later
 			// Want to use a block method or "left looking" elimination.
-			//std::cout << " Value of A[0][0]: " << *(A.rowBegin() -> begin()) <<"\n";
+//std::cout << " Value of A[0][0]: " << *(A.rowBegin() -> begin()) <<"\n";
 			Elt f; R.inv(f, *(A.rowBegin()->begin() ) );
 			R.negin(f);
 			// normalize first row to -1, ...

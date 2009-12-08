@@ -69,6 +69,10 @@ template<class I1, class Lp> void distinct (I1 a, I1 b, Lp& c);
 template <class I> void display(I b, I e);
 
 int main(int argc, char* argv[]) {
+        //LinBox::commentator.setMaxDetailLevel (-1);
+        //LinBox::commentator.setMaxDepth (-1);
+        //LinBox::commentator.setReportStream (std::cerr);
+
 
 	if (argc < 5) {
 	

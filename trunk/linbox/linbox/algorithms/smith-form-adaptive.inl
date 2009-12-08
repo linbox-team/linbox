@@ -197,6 +197,7 @@ namespace LinBox {
 		for (sev_p = sev. begin(), prime_p = prime; sev_p != sev. begin() + NPrime; ++ sev_p, ++ prime_p) {
 			int extra = 1;
 			do {
+
 				if ((*prime_p == 2) && (*sev_p < 32)) extra = 32 - *sev_p;
 				integer m = 1;
 				for (int i = 0; i < *sev_p + extra; ++ i) m *= * prime_p;

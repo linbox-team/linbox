@@ -2,10 +2,11 @@
 #define __LINBOX_PP_GAUSS_H__
 // ========================================================================= //
 // (C) Givaro Team 1999
-// Time-stamp: <30 Mar 06 17:47:04 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <08 Dec 09 21:34:35 Jean-Guillaume.Dumas@imag.fr> 
 // ========================================================================= //
 
 #include <map>
+#include <givaro/givconfig.h> // for Signed_Trait
 #include <linbox/algorithms/gauss.h>
 
 namespace LinBox 
@@ -181,7 +182,7 @@ namespace LinBox
             typedef typename Field::Element F;
             typedef typename Vecteur::value_type E;
     
-            typedef unsigned long UModulo;
+	    typedef typename Signed_Trait<Modulo>::unsigned_type UModulo;
 
             unsigned long k = indcol - 1;
             unsigned long nj =  lignecourante.size() ;
@@ -400,7 +401,7 @@ namespace LinBox
 #ifdef GIVARO_JRANK_OUT
             std::cerr << "Rank mod " << (unsigned long)FMOD << " : " << indcol << std::endl;
 #endif
-	commentator.stop ("done", 0, "IPLR");
+	commentator.stop ("done", 0, "PRGE");
 
         }
 
@@ -410,8 +411,8 @@ namespace LinBox
         }
 
 
-       template<class Matrix, template<class, class> class Container, template<class> class Alloc>
-       Container<std::pair<size_t,size_t>, Alloc<std::pair<size_t,size_t> > >& operator()(Container<std::pair<size_t,size_t>, Alloc<std::pair<size_t,size_t> > >& L, Matrix& A, size_t FMOD, size_t PRIME) { 
+        template<class Modulo, class Matrix, template<class, class> class Container, template<class> class Alloc>
+       Container<std::pair<size_t,size_t>, Alloc<std::pair<size_t,size_t> > >& operator()(Container<std::pair<size_t,size_t>, Alloc<std::pair<size_t,size_t> > >& L, Matrix& A, Modulo FMOD, Modulo PRIME) { 
            Container<size_t, Alloc<size_t> > ranks;
            prime_power_rankin( FMOD, PRIME, ranks, A, A.rowdim(), A.coldim(), std::vector<size_t>());
            L.resize( 0 ) ;

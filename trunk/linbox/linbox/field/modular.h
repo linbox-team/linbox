@@ -314,6 +314,10 @@ namespace LinBox
 		}
 		public:
 
+		static inline Element getMaxModulus()
+                { return Element((1ULL<<(sizeof(Element)*8-1))-1); } 
+
+
 		/*- Initialization of field base element from an integer.
 		 * Behaves like C++ allocator construct.
 		 * This function assumes the output field base element x has already been
