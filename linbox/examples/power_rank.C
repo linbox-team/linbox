@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-#include "linbox/field/modular-int32.h"
+#include "linbox/field/givaro-zpz.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/algorithms/smith-form-sparseelim-local.h"
 
@@ -31,9 +31,9 @@ int main (int argc, char **argv)
 	long unsigned int r;
 
 	if (argc == 4) { 
-		int32 p = atoi(argv[2]);
-		int32 q = atoi(argv[3]);
-                typedef Modular<int32> Field;
+            LinBox::int64 p = atoi(argv[2]);
+            LinBox::int64 q = atoi(argv[3]);
+                typedef GivaroZpz<Std64> Field;
                 Field F(q);
                 MatrixStream<Field> ms( F, input );
                 SparseMatrix<Field, Vector<Field>::SparseSeq > B (ms);

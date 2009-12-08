@@ -20,7 +20,7 @@ LDADD = $(NTL_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) $(GMP_LIBS)
 
 SUBDIRS=fields 
 
-EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet sparseelimrank checksolve doubledet
+EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet sparseelimrank checksolve doubledet smithvalence
 GIVARONTL_EXAMPLES=smith charpoly graph-charpoly
 if LINBOX_HAVE_NTL
 if LINBOX_HAVE_GIVARO
@@ -51,6 +51,7 @@ minpoly_SOURCES = minpoly.C
 valence_SOURCES = valence.C
 solve_SOURCES = solve.C
 echelon_SOURCES=echelon.C
+smithvalence_SOURCES=smithvalence.C
 sparseelimdet_SOURCES=sparseelimdet.C
 sparseelimrank_SOURCES=sparseelimrank.C
 LINBOX=@prefix@

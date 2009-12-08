@@ -28,6 +28,8 @@
 //-------------------------------------
 // Files of Givaro library
 #include <givaro/givzpz16std.h>
+#include <givaro/givzpz64std.h>
+#include <givaro/givzpz32uns.h>
 #include <givaro/givzpz32std.h>
 #include <givaro/givzpz16table1.h>
 #include <givaro/giv_randiter.h>
@@ -193,14 +195,16 @@ namespace LinBox
 			return x = static_cast<long>(z); //rounds towards 0
 		}
 			
-		static int getMaxModulus();
+		static uint64 getMaxModulus();
 
 	}; // class GivaroZpz<TAG>
 
     
-	template <> int GivaroZpz<Std32>::getMaxModulus() { return 65535; } // 2^16-1
-	template <> int GivaroZpz<Std16>::getMaxModulus() { return 255; }   // 2^8-1
-	template <> int GivaroZpz<Log16>::getMaxModulus() { return 32767; } // 2^15 - 1
+	template <> uint64 GivaroZpz<Std32>::getMaxModulus() { return 46339; } // 2^15.5-1
+	template <> uint64 GivaroZpz<Std64>::getMaxModulus() { return 3037000499ULL; } // 2^15.5-1
+	template <> uint64 GivaroZpz<Unsigned32>::getMaxModulus() { return 65535; } // 2^16-1
+	template <> uint64 GivaroZpz<Std16>::getMaxModulus() { return 255; }   // 2^8-1
+	template <> uint64 GivaroZpz<Log16>::getMaxModulus() { return 32767; } // 2^15 - 1
  
 	/** Specialisation of the convert function for the zech log representation
 	 *	of givaro-zpz (GivaroZpz<Log16>.
