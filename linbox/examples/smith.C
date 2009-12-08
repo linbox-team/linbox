@@ -101,7 +101,8 @@ int main(int argc, char* argv[]) {
 	if (algo == "adaptive")
 	{   
 #if __LINBOX_HAVE_NTL
-		typedef NTL_ZZ Ints;
+// 		typedef NTL_ZZ Ints;
+                typedef PID_integer Ints;
 		Ints Z;
 	    DenseMatrix<Ints> M(Z);
 	    Mat(M, Z, n, src, file, format);
