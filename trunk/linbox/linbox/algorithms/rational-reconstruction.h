@@ -210,6 +210,7 @@ public:
 		// Do until it meets early termination conditions.
 		int step = 0;
 		//std::cout << "length:= " << len << '\n';
+		//std::cout << "threshold is: "<< _threshold<<std::endl;
 		typename LVector::iterator digits_p = digits. begin();
 
 		
@@ -246,7 +247,7 @@ public:
 			}
 			
 			if ((step % _threshold) == 0) {
-
+				
 				//std::cout << "Previous (Current) modulus: " << pmodulus << "( " << modulus << ")\n";
 				dot (tmp, r1, dig); _r. remin (tmp, prime); _r. axpyin (c1, tmp, pmodulus);
 				//std::cout << "r1 * digit: " << tmp << '\n';
@@ -260,9 +261,7 @@ public:
 				//Early termination condition is met.
 				
 				if(_r. isZero (rem1) && _r. isZero (rem2)) {
-					
-					//std::cout << "Early termination happens:\n";
-					
+					//std::cout << "Early termination happens:\n";					
 					break;
 				}
 				
@@ -271,7 +270,7 @@ public:
 					status = _r.reconstructRational(tmp_num, tmp_den, c1, modulus, numbound, denbound);
 					if(status) {
 						_r. assign (c1_den, tmp_den); _r. assign (c1_num, tmp_num);
-					}
+					}					
 				}
 				
 				if (!_r. isZero (rem2)) {
@@ -293,12 +292,12 @@ public:
 		}
 		
 		//std::cout << "Numbound (Denbound): " << numbound << ", " << denbound << '\n';
-		//std::cout << "Answer mod(" << modulus << "): "; print (res);
+		//std::cout << "Answer mod(" << modulus << "): ";// print (res);
 
 #ifdef RSTIMING	
 		tRecon.start();
 #endif	
-		//std::cout << "Start rational reconstruction:\n";
+		std::cout << "Start rational reconstruction:\n";
 		typename Vector::iterator num_p; typename IVector::iterator res_p;
 		Integer tmp_res, neg_res, abs_neg, l, g;
 		_r. init (den, 1);
