@@ -34,7 +34,7 @@
 
 #include <linbox/blackbox/sparse.h>
 
-#include "linbox/element/givaro-polynomial.h"
+//#include "linbox/element/givaro-polynomial.h"
 
 #include <linbox/matrix/blas-matrix.h>
 #include <linbox/matrix/sparse.h>
@@ -142,7 +142,7 @@ void linbox_modn_dense_minpoly(mod_int modulus, mod_int **mp, size_t* degree, si
 
     DenseMatrix<ModInt> A(linbox_new_modn_matrix( modulus, matrix, m, m));
 
-    GivPolynomial<ModInt::Element> m_A;
+    std::vector<ModInt::Element> m_A;
 
     if (do_minpoly) 
 	minpoly(m_A, A);
