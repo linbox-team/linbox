@@ -6,15 +6,17 @@
 //#include "linbox-config.h"
 #include <iostream>
 
+#include "linbox/field/gf2.h"
 #include "linbox/field/modular-double.h"
+#include "linbox/field/givaro-zpz.h"
+#include "linbox/field/field-traits.h"
 #include "linbox/blackbox/transpose.h"
 #include "linbox/blackbox/compose.h"
-#include "linbox/field/field-traits.h"
 #include "linbox/blackbox/sparse.h"
+#include "linbox/solutions/rank.h"
 #include "linbox/solutions/valence.h"
-#include "linbox/util/matrix-stream.h"
-#include "linbox/field/givaro-zpz.h"
 #include "linbox/algorithms/smith-form-sparseelim-local.h"
+#include "linbox/util/matrix-stream.h"
 
 #include <givaro/givintnumtheo.h>
 
@@ -31,15 +33,31 @@ unsigned long& TempLRank(unsigned long& r, char * filename, const Field& F) {
     return r;
 }
     
+unsigned long& TempLRank(unsigned long& r, char * filename, const LinBox::GF2& F2) {
+    std::ifstream input(filename);
+    LinBox::ZeroOne<LinBox::GF2> A;
+    A.read(input);
+    input.close();
+    LinBox::Timer tim; tim.start();
+    LinBox::rankin(r, A, LinBox::Method::SparseElimination() );
+    tim.stop();
+    F2.write(std::cout << "Rank over ") << " is " << r << ' ' << tim << std::endl;
+    return r;
+}
+    
 
 
 unsigned long& LRank(unsigned long& r, char * filename, Integer p) 
 {
+
     Integer maxmod16; LinBox::FieldTraits<LinBox::GivaroZpz<Std16> >::maxModulus(maxmod16);
     Integer maxmod32; LinBox::FieldTraits<LinBox::GivaroZpz<Unsigned32> >::maxModulus(maxmod32);
     Integer maxmod53; LinBox::FieldTraits<LinBox::Modular<double> >::maxModulus(maxmod53);
     Integer maxmod64; LinBox::FieldTraits<LinBox::GivaroZpz<Std64> >::maxModulus(maxmod64);
-    if (p <= maxmod16) {
+    if (p == 2) {
+        LinBox::GF2 F2;
+        return TempLRank(r, filename, F2);
+    } else if (p <= maxmod16) {
         typedef LinBox::GivaroZpz<Std16> Field;
         Field F(p);
         return TempLRank(r, filename, F);
@@ -66,9 +84,9 @@ unsigned long& LRank(unsigned long& r, char * filename, Integer p)
 std::vector<size_t>& PRank(std::vector<size_t>& ranks, char * filename, Integer p, size_t e, size_t intr) 
 {
     Integer maxmod;
-    LinBox::FieldTraits<LinBox::Modular<int64> >::maxModulus(maxmod);
+    LinBox::FieldTraits<LinBox::GivaroZpz<Std64> >::maxModulus(maxmod);
     if (p <= maxmod) {
-        typedef LinBox::Modular<int64> Ring;
+        typedef LinBox::GivaroZpz<Std64> Ring;
         int64 lp(p);
         Integer q = pow(p,e); int64 lq(q);
         if (q > Integer(lq)) {
@@ -170,11 +188,12 @@ int main (int argc, char **argv)
         smith.push_back(PairIntRk(coprimeV, coprimeR));
 //         std::cerr << "Rank mod " << coprimeV << " is " << coprimeR << std::endl;
 
-	std::cout << "Some factors: ";
-	bool complete = FTD.set(Moduli, exponents, val_A, 5000);
+	std::cout << "Some factors (5000 factoring loop bound): ";
+	FTD.set(Moduli, exponents, val_A, 5000);
+        std::vector<size_t>::const_iterator eit=exponents.begin();
 	for(std::vector<Integer>::const_iterator mit=Moduli.begin();
-	    mit != Moduli.end(); ++mit)
-		std::cout << *mit << ' ';
+	    mit != Moduli.end(); ++mit,++eit)
+            std::cout << *mit << '^' << *eit << ' ';
 	std::cout << std::endl;
 	
 
@@ -188,12 +207,17 @@ int main (int argc, char **argv)
 
         std::vector<Integer> SmithDiagonal(coprimeR,Integer(1));
 
-        std::vector<size_t>::const_iterator eit=exponents.begin();
+        eit=exponents.begin();
         std::vector<PairIntRk>::const_iterator sit=smith.begin();
         for( ++sit; sit != smith.end(); ++sit, ++eit) {
             if (sit->second != coprimeR) {                
-                std::vector<size_t> ranks; 
-                PRank(ranks, argv[1], sit->first, *eit, coprimeR);
+                std::vector<size_t> ranks;
+                if (*eit > 1) {
+                    PRank(ranks, argv[1], sit->first, *eit, coprimeR);
+                } else {
+                    ranks.push_back(sit->second);
+                }
+                if (ranks.size() == 1) ranks.push_back(coprimeR);
                 std::vector<size_t>::const_iterator rit=ranks.begin();
                 unsigned long modrank = *rit;
                 for(++rit; rit!= ranks.end(); ++rit) {
