@@ -19,7 +19,6 @@ using namespace std;
 
 #include "linbox/solutions/charpoly.h"
 #include "linbox/ring/givaro-polynomial.h"
-#include "linbox/element/givaro-polynomial.h"
 using namespace LinBox;
 
 template <class Field, class Polynomial>
@@ -128,7 +127,7 @@ int main (int argc, char **argv)
 		DenseMatrix<Field> B (F);
 		B.read (input);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
-		GivPolynomial<Field::Element> c_B;
+		GivPolynomialRing<Field,Dense>::Element c_B;
 		charpoly (c_B, B);
 		cout << "Characteristic Polynomial is ";
 		printPolynomial (cout, F, c_B) << endl;
