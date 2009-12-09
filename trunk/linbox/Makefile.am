@@ -1,4 +1,5 @@
 SUBDIRS=linbox macros tests interfaces doc examples
+#ACLOCAL_AM_FLAGS=-I m4
 
 docs:doc/linbox-html/index.html
 
@@ -12,4 +13,4 @@ examples:examples/dot-product
 
 bin_SCRIPTS=linbox-config
 
-VERSION=1.1.6
+VERSION=1.1.7rc0
