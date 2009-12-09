@@ -1,6 +1,6 @@
 AC_PREREQ(2.50)
 #AC_INIT(linbox/linbox.doxy)
-AC_INIT(linbox, 1.1.6,linbox-use@googlegroups.com) 
+AC_INIT(linbox, 1.1.7rc0,linbox-use@googlegroups.com) 
 AM_INIT_AUTOMAKE([1.8 gnu no-dependencies])
 AM_CONFIG_HEADER([config.h])
 AX_PREFIX_CONFIG_H(linbox/linbox-config.h, __LINBOX)
