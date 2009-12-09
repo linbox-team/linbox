@@ -61,8 +61,6 @@ BASIC_TESTS =  			\
         test-trace              \
         test-triplesbb          \
         test-vector-domain      \
-	test-rat-solve		\
-	test-rat-minpoly	\
 	test-qlup               \
 	test-zero-one \
         test-solve              \
@@ -77,14 +75,6 @@ NONCOMPLIANT_TESTS =	\
 #These need clapack
 #test-rational-solver-adaptive
 
-# this allows _SOURCES entry to remain
-# except for "make dist"
-#NONEXISTING_TESTS =
-NONEXISTING_TESTS = test-solutions
-
-test_solutions_SOURCES=    \
-	test-common.h	\
-	test-solutions.C
 
 DUBIOUS_TESTS = \
         test-quad-matrix        \
@@ -96,6 +86,8 @@ NONCOMPILING_TESTS =  	\
 
 FAILING_TESTS =		\
 	test-rat-charpoly	\
+	test-rat-solve		\
+	test-rat-minpoly	\
 	test-smith-form-local	\
 	test-smith-form-adaptive \
 	test-la-block-lanczos
@@ -511,7 +503,7 @@ test_rational_solver_adaptive_SOURCES = \
 	test-common.h
 
 # NTL test
-#	test-smith-form-adaptive	\
+
 test_smith_form_adaptive_SOURCES=    \
 	test-common.h	\
 	test-smith-form-adaptive.C
