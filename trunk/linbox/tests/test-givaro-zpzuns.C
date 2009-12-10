@@ -43,7 +43,7 @@ int main (int argc, char **argv)
 	static size_t n = 10000;
 	static int iterations = 10;
 	static int e;
-	static int trials = 100000;
+	static int trials = 1000;
 	static int categories = 100;
 	static int hist_level = 1;
 
