@@ -58,6 +58,9 @@ namespace LinBox
         template <>
         NTL::zz_p& UnparametricField<NTL::zz_p>::init(NTL::zz_p& x, const integer& y) const
                 { return x = NTL::to_zz_p(y%NTL::zz_p::modulus()); }
+        template <>
+        NTL::zz_p& UnparametricField<NTL::zz_p>::init(NTL::zz_p& x, const double& y) const
+        { return x = NTL::to_zz_p(static_cast<const long&>(y)%NTL::zz_p::modulus()); }
 
 	/** Conversion of field element to an integer.
 	 * This function assumes the output field element x has already been

@@ -120,6 +120,12 @@ namespace LinBox {
 		x=NTL::to_zz_pE(static_cast<long>(y));
 		return x;
 	}
+	template<>
+	NTL::zz_pE& UnparametricField<NTL::zz_pE>::init (NTL::zz_pE &x, const double &y) const
+	{
+		x=NTL::to_zz_pE(static_cast<long>(y));
+		return x;
+	}
 	
 	template<>
 	integer& UnparametricField<NTL::zz_pE>::convert (integer& x, const NTL::zz_pE &y) const	{
