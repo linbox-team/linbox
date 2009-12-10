@@ -108,7 +108,13 @@ namespace LinBox
       x=NTL::to_ZZ_pE(static_cast<long>(y));
       return x;
     }
-  
+   template<>
+    NTL::ZZ_pE& UnparametricField<NTL::ZZ_pE>::init (NTL::ZZ_pE &x, const double &y) const
+    {
+      x=NTL::to_ZZ_pE(static_cast<long>(y));
+      return x;
+    }
+ 
   template<>
     bool UnparametricField<NTL::ZZ_pE>::isZero (const NTL::ZZ_pE& a) const
     {

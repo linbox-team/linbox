@@ -117,7 +117,14 @@ namespace LinBox {
 		x=NTL::to_GF2E(static_cast<long>(y));
 		return x;
 	}
+	template<>
+	NTL::GF2E& UnparametricField<NTL::GF2E>::init (NTL::GF2E &x, const double &y) const
+	{
+		x=NTL::to_GF2E(static_cast<long>(y));
+		return x;
+	}
 	
+
 	template<>
 	integer& UnparametricField<NTL::GF2E>::convert (integer& x, const NTL::GF2E &y) const	{
 		NTL::GF2X poly = rep(y);

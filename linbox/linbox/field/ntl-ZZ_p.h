@@ -76,6 +76,11 @@ namespace LinBox{
 	{
 		return x = NTL::to_ZZ_p( NTL::to_ZZ( (static_cast<const std::string>(y)).c_str() ) );
 	}
+	template <>
+	NTL::ZZ_p& UnparametricField<NTL::ZZ_p>::init(NTL::ZZ_p& x, const double& y) const
+	{
+            return x = NTL::to_ZZ_p( NTL::to_ZZ(static_cast<const long&>(y) ) );
+	}
 
 
   
