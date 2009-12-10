@@ -62,10 +62,10 @@ BASIC_TESTS =  			\
         test-triplesbb          \
         test-vector-domain      \
 	test-qlup               \
-	test-zero-one \
+	test-zero-one           \
         test-solve              \
 	test-charpoly
-	
+
 # tests of components not adhering to LinBox requirements.
 NONCOMPLIANT_TESTS =	\
 	test-unparametric-field	\
@@ -139,7 +139,8 @@ NTL_TESTS = 				\
 LIDIA_TESTS =			\
 	test-lidia-gfq
 
-ATLAS_TESTS = 
+ATLAS_TESTS =        \
+	test-optimization
 
 if LINBOX_HAVE_NTL
 USE_NTL_TESTS = $(NTL_TESTS)
@@ -472,6 +473,10 @@ test_last_invariant_factor_SOURCES=    \
 test_smith_form_local_SOURCES=    \
 	test-common.h	\
 	test-smith-form-local.C
+
+test_optimization_SOURCES=    \
+        test-common.h   \
+        test-optimization.C
 
 test_bitonic_sort_SOURCES=    \
         test-common.h   \
