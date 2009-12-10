@@ -329,6 +329,15 @@ public:
 		return C;
 	}
 	
+	/**
+	 * Winosteps
+	 *
+	 * \brief Computes the number of recursive levels to perform
+	 *
+	 * \param m the common dimension in the product AxB
+	 */
+	static size_t WinoSteps (const size_t m);
+	
 protected:
 
 	// Prevents the instantiation of the class
@@ -520,15 +529,6 @@ protected:
 	static double computeFactor (const Field& F, const size_t w);
 	
 
-	/**
-	 * Winosteps
-	 *
-	 * \brief Computes the number of recursive levels to perform
-	 *
-	 * \param m the common dimension in the product AxB
-	 */
-	static size_t WinoSteps (const size_t m);
-	
 	/**
 	 * BaseCompute
 	 *
