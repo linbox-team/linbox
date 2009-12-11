@@ -72,7 +72,6 @@ namespace LinBox {
 		
 	};
 
-	template <>	
 	class BlasMatrixDomainInv<MultiModDouble,BlasBlackbox<MultiModDouble> > {
 	public:
 		int operator() (const MultiModDouble                   &F, 
@@ -1095,7 +1094,6 @@ namespace LinBox {
 		}
 	};
 
-	template<>
 	template< class Field,  class ContPol >
 	class BlasMatrixDomainCharpoly< Field,  ContPol, BlasMatrix<typename Field::Element > > {
 	public:

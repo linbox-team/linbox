@@ -471,7 +471,6 @@ namespace LinBox {
 		Matrix& _M;
 	};
 	
-	template<>
 	template< class Matrix >
 	class TransposedBlasMatrix< TransposedBlasMatrix< Matrix > > : public Matrix {
 		
