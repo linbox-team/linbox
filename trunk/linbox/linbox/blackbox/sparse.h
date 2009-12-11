@@ -388,7 +388,6 @@ class SparseMatrixFactory : public BlackboxFactory<Field,SparseMatrix<Field,Row>
 	} 
 };
 
-template<>
 template <class Field, class _Row>
 struct MatrixTraits< SparseMatrix<Field, _Row> >
 { 
@@ -396,7 +395,6 @@ struct MatrixTraits< SparseMatrix<Field, _Row> >
 	typedef MatrixCategories::RowMatrixTag MatrixCategory;
 };
 
-template<>
 template <class Field, class _Row>
 struct MatrixTraits< const SparseMatrix<Field, _Row> >
 { 
