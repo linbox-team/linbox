@@ -102,7 +102,7 @@ LVector &LanczosSolver<Field, LVector>::solve (const Blackbox &A, LVector &x, co
 
 			stream >> d1;
 			Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D (_F, d1);
-			Compose<Blackbox, Diagonal<Field, typename VectorTraits<Vector>::VectorCategory> > B (&A, &D);
+			Compose<Blackbox, Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> > B (&A, &D);
 
 			report << "Random D: ";
 			_VD.write (report, d1) << std::endl;
