@@ -72,6 +72,9 @@ namespace LinBox {
 		
 	};
 
+#ifndef __INTEL_COMPILER
+        template <>
+#endif
 	class BlasMatrixDomainInv<MultiModDouble,BlasBlackbox<MultiModDouble> > {
 	public:
 		int operator() (const MultiModDouble                   &F, 
@@ -1094,6 +1097,9 @@ namespace LinBox {
 		}
 	};
 
+#ifndef __INTEL_COMPILER
+        template <>
+#endif
 	template< class Field,  class ContPol >
 	class BlasMatrixDomainCharpoly< Field,  ContPol, BlasMatrix<typename Field::Element > > {
 	public:
