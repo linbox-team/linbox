@@ -57,10 +57,10 @@ unsigned long& LRank(unsigned long& r, char * filename, Integer p)
     if (p == 2) {
         LinBox::GF2 F2;
         return TempLRank(r, filename, F2);
-    } else if (p <= maxmod16) {
-        typedef LinBox::GivaroZpz<Std16> Field;
-        Field F(p);
-        return TempLRank(r, filename, F);
+//     } else if (p <= maxmod16) {
+//         typedef LinBox::GivaroZpz<Std16> Field;
+//         Field F(p);
+//         return TempLRank(r, filename, F);
     } else if (p <= maxmod32) {
         typedef LinBox::GivaroZpz<Unsigned32> Field;
         Field F(p);
@@ -212,12 +212,20 @@ int main (int argc, char **argv)
         for( ++sit; sit != smith.end(); ++sit, ++eit) {
             if (sit->second != coprimeR) {                
                 std::vector<size_t> ranks;
+                ranks.push_back(sit->second);
                 if (*eit > 1) {
                     PRank(ranks, argv[1], sit->first, *eit, coprimeR);
                 } else {
-                    ranks.push_back(sit->second);
+                    PRank(ranks, argv[1], sit->first, 2, coprimeR);
                 }
                 if (ranks.size() == 1) ranks.push_back(coprimeR);
+                for(size_t expo = *eit<<1; ranks.back() < coprimeR; expo<<=1) {
+                    PRank(ranks, argv[1], sit->first, expo, coprimeR);
+                    if (ranks.size() < expo) {
+                        std::cerr << "Larger prime power not yet implemented" << std::endl;
+                        break;
+                    }
+                }
                 std::vector<size_t>::const_iterator rit=ranks.begin();
                 unsigned long modrank = *rit;
                 for(++rit; rit!= ranks.end(); ++rit) {
