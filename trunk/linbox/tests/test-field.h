@@ -76,11 +76,6 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 
 	typename Field::Element zero, one, two, three;
 	F.init(zero, 0); F.init(one, 1); F.init(two, 2); F.init(three, 3);
-	F.write(report << "zero is: ",zero) << " (in memory: " << zero << ')' << std::endl;
-	F.write(report << "one is: ",one) << " (in memory: " << one << ')' << std::endl;
-	F.write(report << "two is: ",two) << " (in memory: " << two << ')' << std::endl;
-	F.write(report << "three is: ",three) << " (in memory: " << three << ')' << std::endl;
-
 
 	typename Field::Element a, b, c, d, e, f;
 	F.init(a,0); F.init(b,0); F.init(c,0); F.init(d,0); F.init(e,0); F.init(f,0);
@@ -110,13 +105,11 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 
 	if (!F.isZero (zero)) {
 		part_pass = reportError( "isZero (0) is false", pass);
-		F.write(report << "zero is: ",zero) << " (in memory: " << zero << ')' << std::endl;
 	}
 	if (F.isZero (one)) part_pass = reportError( "isZero (1) is true", pass);
 	if (F.isOne (zero)) part_pass = reportError( "isOne (0) is true", pass);
 	if (!F.isOne (one)) {
 		part_pass = reportError( "isOne (1) is false", pass);
-		F.write(report << "one is: ",one) << " (in memory: " << one << ')' << std::endl;
 	}
 
 
