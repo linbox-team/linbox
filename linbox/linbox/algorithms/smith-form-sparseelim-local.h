@@ -324,7 +324,7 @@ namespace LinBox
             Vecteur Vzer(0);
 
             unsigned long last = Ni-1;
-            long c;
+            long c(0);
             unsigned long indcol(0);
             unsigned long ind_pow = 1;
             unsigned long maxout = Ni/100; maxout = (maxout<10 ? 10 : (maxout>1000 ? 1000 : maxout) );
