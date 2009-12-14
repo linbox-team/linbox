@@ -60,7 +60,7 @@ namespace LinBox
                 { return x = NTL::to_zz_p(y%NTL::zz_p::modulus()); }
         template <>
         NTL::zz_p& UnparametricField<NTL::zz_p>::init(NTL::zz_p& x, const double& y) const
-        { return x = NTL::to_zz_p(static_cast<const long&>(y)%NTL::zz_p::modulus()); }
+        {   return x = NTL::to_zz_p((long)(y)%NTL::zz_p::modulus()); }
 
 	/** Conversion of field element to an integer.
 	 * This function assumes the output field element x has already been
@@ -220,11 +220,11 @@ namespace LinBox
 
             template <class ANY>
             NTL::zz_p& init(NTL::zz_p& x, const ANY& y) const
-		{ return x = NTL::to_zz_p(static_cast<const long&>(y)); }
+	        { return x = NTL::to_zz_p((long)(y)); }
 
             template <class ANY>
             ANY& convert(ANY& x, const NTL::zz_p& y) const
-		{ return x = static_cast<ANY>(rep(y)); }
+		{ return x = (ANY)(rep(y)); }
             
 	    static inline integer getMaxModulus()
 		{ return integer( NTL_SP_BOUND ); }

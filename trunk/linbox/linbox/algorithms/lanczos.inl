@@ -28,14 +28,14 @@ namespace LinBox
 
 #ifdef DETAILED_TRACE
 
-template <class Field, class Vector>
-void traceReport (std::ostream &out, VectorDomain<Field> &VD, const char *text, size_t iter, const Vector &v)
+template <class Field, class LVector>
+void traceReport (std::ostream &out, VectorDomain<Field> &VD, const char *text, size_t iter, const LVector &v)
 {
 	out << text << " [" << iter << "]: ";
 	VD.write (out, v) << std::endl;
 }
 
-template <class Field, class Vector>
+template <class Field, class LVector>
 void traceReport (std::ostream &out, const Field &F, const char *text, size_t iter, const typename Field::Element &a)
 {
 	out << text << " [" << iter << "]: ";
@@ -44,19 +44,19 @@ void traceReport (std::ostream &out, const Field &F, const char *text, size_t it
 
 #else
 
-template <class Field, class Vector>
-inline void traceReport (std::ostream &out, VectorDomain<Field> &VD, const char *text, size_t iter, const Vector &v)
+template <class Field, class LVector>
+inline void traceReport (std::ostream &out, VectorDomain<Field> &VD, const char *text, size_t iter, const LVector &v)
 {}
 
-template <class Field, class Vector>
+template <class Field, class LVector>
 void traceReport (std::ostream &out, const Field &F, const char *text, size_t iter, const typename Field::Element &a)
 {}
 
 #endif
 
-template <class Field, class Vector>
+template <class Field, class LVector>
 template <class Blackbox>
-Vector &LanczosSolver<Field, Vector>::solve (const Blackbox &A, Vector &x, const Vector &b) 
+LVector &LanczosSolver<Field, LVector>::solve (const Blackbox &A, LVector &x, const LVector &b) 
 {
 	linbox_check ((x.size () == A.coldim ()) &&
 		      (b.size () == A.rowdim ()));
@@ -64,14 +64,14 @@ Vector &LanczosSolver<Field, Vector>::solve (const Blackbox &A, Vector &x, const
 	commentator.start ("Solving linear system (Lanczos)", "LanczosSolver::solve");
 
 	bool success = false;
-	Vector d1, d2, b1, b2, bp, y, Ax, ATAx, ATb;
+	LVector d1, d2, b1, b2, bp, y, Ax, ATAx, ATb;
 
 	VectorWrapper::ensureDim (_w[0], A.coldim ());
 	VectorWrapper::ensureDim (_w[1], A.coldim ());
 	VectorWrapper::ensureDim (_Aw, A.coldim ());
 
 	NonzeroRandIter<Field> real_ri (_F, _randiter);
-	RandomDenseStream<Field, Vector, NonzeroRandIter<Field> > stream (_F, real_ri, A.coldim ());
+	RandomDenseStream<Field, LVector, NonzeroRandIter<Field> > stream (_F, real_ri, A.coldim ());
 
 	for (unsigned int i = 0; !success && i < _traits.maxTries (); ++i) {
 		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
@@ -101,7 +101,7 @@ Vector &LanczosSolver<Field, Vector>::solve (const Blackbox &A, Vector &x, const
 			VectorWrapper::ensureDim (y, A.coldim ());
 
 			stream >> d1;
-			Diagonal<Field, typename VectorTraits<Vector>::VectorCategory> D (_F, d1);
+			Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D (_F, d1);
 			Compose<Blackbox, Diagonal<Field, typename VectorTraits<Vector>::VectorCategory> > B (&A, &D);
 
 			report << "Random D: ";
@@ -120,10 +120,10 @@ Vector &LanczosSolver<Field, Vector>::solve (const Blackbox &A, Vector &x, const
 			VectorWrapper::ensureDim (bp, A.coldim ());
 
 			stream >> d1;
-			Diagonal<Field, typename VectorTraits<Vector>::VectorCategory> D (_F, d1);
+			Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D (_F, d1);
 			Transpose<Blackbox> AT (&A);
-			Compose<Diagonal<Field, typename VectorTraits<Vector>::VectorCategory>, Blackbox> B1 (&D, &A);
-			Compose<Transpose<Blackbox>, Compose<Diagonal<Field, typename VectorTraits<Vector>::VectorCategory>, Blackbox> > B (&AT, &B1);
+			Compose<Diagonal<Field, typename VectorTraits<LVector>::VectorCategory>, Blackbox> B1 (&D, &A);
+			Compose<Transpose<Blackbox>, Compose<Diagonal<Field, typename VectorTraits<LVector>::VectorCategory>, Blackbox> > B (&AT, &B1);
 
 			report << "Random D: ";
 			_VD.write (report, d1) << std::endl;
@@ -146,27 +146,27 @@ Vector &LanczosSolver<Field, Vector>::solve (const Blackbox &A, Vector &x, const
 			VectorWrapper::ensureDim (y, A.coldim ());
 
 			stream >> d1 >> d2;
-			Diagonal<Field, typename VectorTraits<Vector>::VectorCategory> D1 (_F, d1);
-			Diagonal<Field, typename VectorTraits<Vector>::VectorCategory> D2 (_F, d2);
+			Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D1 (_F, d1);
+			Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> D2 (_F, d2);
 			Transpose<Blackbox> AT (&A);
 
 			Compose<Blackbox, 
-				    Diagonal<Field, typename VectorTraits<Vector>::VectorCategory> > B1 (&A, &D1);
+				    Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> > B1 (&A, &D1);
 
-			Compose<Diagonal<Field, typename VectorTraits<Vector>::VectorCategory>,
+			Compose<Diagonal<Field, typename VectorTraits<LVector>::VectorCategory>,
 				    Compose<Blackbox, 
-				    Diagonal<Field, typename VectorTraits<Vector>::VectorCategory> > > B2 (&D2, &B1);
+				    Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> > > B2 (&D2, &B1);
 			
 			Compose<Transpose<Blackbox>, 
-				    Compose<Diagonal<Field, typename VectorTraits<Vector>::VectorCategory>, 
+				    Compose<Diagonal<Field, typename VectorTraits<LVector>::VectorCategory>, 
 				    Compose<Blackbox, 
-				    Diagonal<Field, typename VectorTraits<Vector>::VectorCategory> > > > B3 (&AT, &B2);
+				    Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> > > > B3 (&AT, &B2);
 
-			Compose<Diagonal<Field, typename VectorTraits<Vector>::VectorCategory>, 
+			Compose<Diagonal<Field, typename VectorTraits<LVector>::VectorCategory>, 
 				    Compose<Transpose<Blackbox>, 
-				    Compose<Diagonal<Field, typename VectorTraits<Vector>::VectorCategory>, 
+				    Compose<Diagonal<Field, typename VectorTraits<LVector>::VectorCategory>, 
 				    Compose<Blackbox, 
-				    Diagonal<Field, typename VectorTraits<Vector>::VectorCategory> > > > > B (&D1, &B3);
+				    Diagonal<Field, typename VectorTraits<LVector>::VectorCategory> > > > > B (&D1, &B3);
 			    
 			report << "Random D_1: ";
 			_VD.write (report, d1) << std::endl;
@@ -238,9 +238,9 @@ Vector &LanczosSolver<Field, Vector>::solve (const Blackbox &A, Vector &x, const
 	}
 }
 
-template <class Field, class Vector>
+template <class Field, class LVector>
 template<class Blackbox>
-bool LanczosSolver<Field, Vector>::iterate (const Blackbox &A, Vector &x, const Vector &b) 
+bool LanczosSolver<Field, LVector>::iterate (const Blackbox &A, LVector &x, const LVector &b) 
 {
 	commentator.start ("Lanczos iteration", "LanczosSolver::iterate", A.coldim ());
 
@@ -261,7 +261,7 @@ bool LanczosSolver<Field, Vector>::iterate (const Blackbox &A, Vector &x, const 
 	_VD.subin (_w[0], _w[0]);
 
 	// Get a random vector _w[1]
-	RandomDenseStream<Field, Vector> stream (_F, _randiter, A.coldim ());
+	RandomDenseStream<Field, LVector> stream (_F, _randiter, A.coldim ());
 	stream >> _w[1];
 
 	std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);

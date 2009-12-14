@@ -71,7 +71,7 @@ namespace LinBox
 		{ return x = NTL::to_RR(static_cast<const long&>(y)); }
 	template <>
 		NTL::RR& UnparametricField<NTL::RR>::init(NTL::RR& x, const double& y) const
-		{ return x = NTL::to_RR(static_cast<const long&>(y)); }
+		{ return x = NTL::to_RR((long)(y)); }
 
 	/** Conversion of field element to an integer.
 	 * This function assumes the output field element x has already been

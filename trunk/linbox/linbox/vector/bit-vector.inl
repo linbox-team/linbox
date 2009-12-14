@@ -332,13 +332,13 @@ class BitVector::const_iterator : public std::iterator <std::random_access_itera
 	bool operator == (const const_iterator &c) const 
 		{ return (_ref._word == c._ref._word) && (_ref._pos == c._ref._pos); }
 
-	bool operator == (const iterator &c) const 
-		{ return (_ref._word == c._ref._word) && (_ref._pos == c._ref._pos); }
+	bool operator == (const BitVector::iterator &c) const 
+		{ return (this->_ref._word == c._ref._word) && (this->_ref._pos == c._ref._pos); }
 
 	bool operator != (const const_iterator &c) const 
 		{ return (_ref._word != c._ref._word) || (_ref._pos != c._ref._pos); }
 
-	bool operator != (const iterator &c) const 
+	bool operator != (const BitVector::iterator &c) const 
 		{ return (_ref._word != c._ref._word) || (_ref._pos != c._ref._pos); }
 
     private:
