@@ -63,7 +63,7 @@ int main (int argc, char **argv)
 	
 	//UnparametricField<integer> ZZ;
 	PID_integer ZZ;
-	Matrix A;
+	Matrix A(ZZ);
 	A.read (input);
 	commentator.report(1, BRIEF_REPORT)<< "A is " << A.rowdim() << " by " << A.coldim() << endl;
 	
