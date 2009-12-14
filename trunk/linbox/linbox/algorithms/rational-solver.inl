@@ -542,9 +542,10 @@ namespace LinBox {
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>	
 	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solve 
-	(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, const bool old, int maxPrimes, const SolverLevel level ) const {
+	(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, const bool old, int maxP, const SolverLevel level ) const {
 
 		SolverReturnStatus status;	
+		int maxPrimes=maxP;
 		while (maxPrimes > 0){
 #ifdef SKIP_NONSINGULAR
 			switch (SS_SINGULAR) {
