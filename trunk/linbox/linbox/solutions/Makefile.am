@@ -12,6 +12,7 @@ pkgincludesub_HEADERS=		\
 	is-positive-semidefinite.h  \
 	charpoly.h		\
 	valence.h	\
+	nullspace.h	\
 	smith-form.h
 
 EXTRA_DIST = solutions.doxy

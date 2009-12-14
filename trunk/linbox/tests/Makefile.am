@@ -64,6 +64,7 @@ BASIC_TESTS =  			\
 	test-qlup               \
 	test-zero-one           \
         test-solve              \
+	test-nullspace		\
 	test-charpoly
 
 # tests of components not adhering to LinBox requirements.
@@ -477,6 +478,10 @@ test_smith_form_local_SOURCES=    \
 test_optimization_SOURCES=    \
         test-common.h   \
         test-optimization.C
+
+test_nullspace_SOURCES=    \
+        test-common.h   \
+        test-nullspace.C
 
 test_bitonic_sort_SOURCES=    \
         test-common.h   \
