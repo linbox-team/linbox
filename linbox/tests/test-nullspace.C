@@ -329,20 +329,23 @@ int main(int argc, char** argv)
 
 	//commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	//commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	//commentator.start("NullSpace test suite", "nullspace");
+	commentator.start("NullSpace test suite", "nullspace");
+
+	std::ostream& report = commentator.report();
     
-	cout << "\t \033[1;35m>>>\033[0;m \t testing left kernel" << endl ;
+	report << "\t \033[1;35m>>>\033[0;m \t testing left kernel" << endl ;
 	if (!testNullSpaceBasis (F, m,n,r, iterations, false))
 		pass=false;
-	if (pass) cout << "\t \033[1;36m<<<\033[0;m \t left kernel passed :)" << endl; else {cout << "\t \033[1;31m!!!\033[0;m \t left kernel failed :(" << endl ; exit(-1);}
-	cout << "\t \033[1;35m>>>\033[0;m \t testing right kernel" << endl ;
+	if (pass) report << "\t \033[1;36m<<<\033[0;m \t left kernel passed :)" << endl; else {report << "\t \033[1;31m!!!\033[0;m \t left kernel failed :(" << endl ; exit(-1);}
+	report << "\t \033[1;35m>>>\033[0;m \t testing right kernel" << endl ;
 	if (!testNullSpaceBasis (F, m,n,r, iterations, true))
 		pass=false;
-	if (pass) cout << "\t \033[1;36m<<<\033[0;m \t right kernel passed :)" << endl; else {cout << "\t \033[1;31m!!!\033[0;m \t right kernel failed :(" << endl ; exit(-1);}
+	if (pass) report << "\t \033[1;36m<<<\033[0;m \t right kernel passed :)" << endl; else {report << "\t \033[1;31m!!!\033[0;m \t right kernel failed :(" << endl ; exit(-1);}
 
-	cout << "\033[1;32m +++ ALL MY TESTS PASSED +++\033[0;m" << endl;
+	report << "\033[1;32m +++ ALL MY TESTS PASSED +++\033[0;m" << endl;
 
 
+	commentator.stop("NullSpace test suite");
 	return (pass ? 0 : -1);
 }/*}}}*/
 
