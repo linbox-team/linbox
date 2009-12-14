@@ -471,6 +471,9 @@ namespace LinBox {
 		Matrix& _M;
 	};
 	
+#ifndef __INTEL_COMPILER
+	template <>
+#endif
 	template< class Matrix >
 	class TransposedBlasMatrix< TransposedBlasMatrix< Matrix > > : public Matrix {
 		

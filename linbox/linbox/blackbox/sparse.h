@@ -388,6 +388,9 @@ class SparseMatrixFactory : public BlackboxFactory<Field,SparseMatrix<Field,Row>
 	} 
 };
 
+#ifndef __INTEL_COMPILER
+template <>
+#endif
 template <class Field, class _Row>
 struct MatrixTraits< SparseMatrix<Field, _Row> >
 { 
