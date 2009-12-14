@@ -169,7 +169,7 @@ namespace LinBox
   }
  
   template<class Field>
-  ZeroOne<Field>::ZeroOne() { srand( time(NULL) ); dynamic = false;}
+  ZeroOne<Field>::ZeroOne(const Field& F) : _F(F) { srand( time(NULL) ); dynamic = false;}
     
   
   template<class Field>

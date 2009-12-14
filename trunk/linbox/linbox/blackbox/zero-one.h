@@ -53,7 +53,7 @@ namespace LinBox
     typedef typename _Field::Element Element;
     
     // Default constructor, do nothing.
-    ZeroOne();
+    ZeroOne(const Field& F);
     // The real constructor /todo give docs here
     ZeroOne(Field F, Index* rowP, Index* colP, Index rows, Index cols, Index NNz, bool rowSort = false, bool colSort = false);
     // Destructor, once again do nothing
