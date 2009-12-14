@@ -51,18 +51,18 @@ unsigned long& LRank(unsigned long& r, char * filename, Integer p)
 {
 
     Integer maxmod16; LinBox::FieldTraits<LinBox::GivaroZpz<Std16> >::maxModulus(maxmod16);
-    Integer maxmod32; LinBox::FieldTraits<LinBox::GivaroZpz<Unsigned32> >::maxModulus(maxmod32);
+    Integer maxmod32; LinBox::FieldTraits<LinBox::GivaroZpz<Std32> >::maxModulus(maxmod32);
     Integer maxmod53; LinBox::FieldTraits<LinBox::Modular<double> >::maxModulus(maxmod53);
     Integer maxmod64; LinBox::FieldTraits<LinBox::GivaroZpz<Std64> >::maxModulus(maxmod64);
     if (p == 2) {
         LinBox::GF2 F2;
         return TempLRank(r, filename, F2);
-//     } else if (p <= maxmod16) {
-//         typedef LinBox::GivaroZpz<Std16> Field;
-//         Field F(p);
-//         return TempLRank(r, filename, F);
+    } else if (p <= maxmod16) {
+        typedef LinBox::GivaroZpz<Std16> Field;
+        Field F(p);
+        return TempLRank(r, filename, F);
     } else if (p <= maxmod32) {
-        typedef LinBox::GivaroZpz<Unsigned32> Field;
+        typedef LinBox::GivaroZpz<Std32> Field;
         Field F(p);
         return TempLRank(r, filename, F);
     } else if (p <= maxmod53) {
