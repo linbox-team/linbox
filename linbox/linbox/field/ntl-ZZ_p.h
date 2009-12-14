@@ -79,7 +79,7 @@ namespace LinBox{
 	template <>
 	NTL::ZZ_p& UnparametricField<NTL::ZZ_p>::init(NTL::ZZ_p& x, const double& y) const
 	{
-            return x = NTL::to_ZZ_p( NTL::to_ZZ(static_cast<const long&>(y) ) );
+            return x = NTL::to_ZZ_p( NTL::to_ZZ((long)(y) ) );
 	}
 
 
@@ -318,11 +318,11 @@ namespace LinBox{
 
 		template <class ANY> //dpritcha--FIX
 		NTL::ZZ_p& init(NTL::ZZ_p& x, const ANY& y) const
-		{ return x = NTL::to_ZZ_p(static_cast<const long&>(y)); }
+		{ return x = NTL::to_ZZ_p((long)(y)); }
 
 		template <class ANY>
 		ANY& convert(ANY& x, const NTL::ZZ_p& y) const
-		{ return x = static_cast<ANY>(rep(y)); }
+		{ return x = (ANY)(rep(y)); }
 
 		static inline integer getMaxModulus()
 		{ return integer( -1 ); }

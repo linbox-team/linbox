@@ -69,10 +69,10 @@ public:
 	RReconstruction(const Ring& Z=Ring(), const RReconstructionSchedule M = GEOMETRIC, size_t T=DEF_RR_THRESH, size_t b= 0):_Z(Z), _RR(Z), _M(M), THRESHOLD_(T), rbound_(b) {
 		RecCounter =0;
 	        if (_M == QUADRATIC) {
-			RecCounter = (int)sqrt(rbound_);//RecCounter^2 < rbound_ <=(RecCounter+1)^2
+			RecCounter = (int)sqrt((double)rbound_);//RecCounter^2 < rbound_ <=(RecCounter+1)^2
 	        }		
 	        else if (_M == GEOMETRIC) {
-			RecCounter = log(rbound_) ;//2^RecCounter < rbound_ <=2^(RecCounter+1)
+			RecCounter = log((double)rbound_) ;//2^RecCounter < rbound_ <=2^(RecCounter+1)
 		}
 	}
 

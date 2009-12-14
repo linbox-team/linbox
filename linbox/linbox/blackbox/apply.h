@@ -996,7 +996,9 @@ namespace LinBox {
 
 	};
 	
+#ifndef __INTEL_COMPILER
 	template<>
+#endif
 	template <class Domain>
 	class MatrixApplyDomain<Domain, BlasMatrix<typename Domain::Element> > : public BlasMatrixApplyDomain<Domain, BlasMatrix<typename Domain::Element> > {
 
@@ -1006,7 +1008,9 @@ namespace LinBox {
 		
 	};
 
+#ifndef __INTEL_COMPILER
 	template<>
+#endif
 	template <class Domain>
 	class MatrixApplyDomain<Domain, DenseMatrix<Domain> > : public BlasMatrixApplyDomain<Domain, DenseMatrix<Domain> > {
 		
@@ -1016,7 +1020,9 @@ namespace LinBox {
 	};
 	
 	
+#ifndef __INTEL_COMPILER
 	template<>
+#endif
 	template <class Domain>
 	class MatrixApplyDomain<Domain, BlasBlackbox<Domain> > : 
 		public BlasMatrixApplyDomain<Domain, BlasBlackbox<Domain> > {

@@ -312,7 +312,10 @@ namespace LinBox
         }; 
 
 		template <class Matrix> struct MatrixTraits;
+
+#ifndef __INTEL_COMPILER
 		template<>
+#endif
 		template <class BB1, class BB2>
 		struct MatrixTraits< DirectSum<BB1, BB2> >
 		{
@@ -320,7 +323,9 @@ namespace LinBox
 	    	typedef MatrixCategories::BlackboxTag MatrixCategory;
 		};
 		                                                                                                
-																										template<>
+#ifndef __INTEL_COMPILER
+		template<>
+#endif
 		template <class BB1, class BB2>
 		struct MatrixTraits< const DirectSum<BB1, BB2> >
 		{
