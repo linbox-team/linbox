@@ -7,6 +7,7 @@ pkgincludesub_HEADERS = \
 	blackbox-container-base.h		\
 	bbsolve.h				\
 	double-det.h				\
+	det-rational.h				\
 	massey-domain.h				\
 	wiedemann.h	wiedemann.inl		\
 	lanczos.h	lanczos.inl		\
@@ -38,6 +39,7 @@ pkgincludesub_HEADERS = \
 	cra-full-multip.h			\
 	lazy-product.h				\
 	rational-cra.h				\
+	rational-cra2.h				\
 	rational-cra-early-multip.h		\
 	rational-cra-early-single.h		\
 	rational-cra-full-multip.h		\
@@ -61,6 +63,8 @@ pkgincludesub_HEADERS = \
 	matrix-hom.h				\
 	matrix-rank.h				\
 	rational-reconstruction.h		\
+	rational-reconstruction-base.h		\
+	classic-rational-reconstruction.h	\
 	rational-solver.h			\
 	rational-solver.inl			\
 	diophantine-solver.h			\
@@ -71,10 +75,14 @@ pkgincludesub_HEADERS = \
 	smith-form-sparseelim-local.h		\
 	rational-reconstruction2.h		\
 	rational-solver-adaptive.h		\
+	varprec-cra-early-single.h		\
+	varprec-cra-early-multip.h		\
 	vector-fraction.h	\
 	cia.h			\
 	bbcharpoly.h		\
+	charpoly-rational.h	\
 	minpoly-integer.h	\
+	minpoly-rational.h	\
 	sigma-basis.h		\
 	matpoly-mult.h		\
 	echelon-form.h		\
