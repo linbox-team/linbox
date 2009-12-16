@@ -31,7 +31,7 @@ int main (int argc, char ** argv) {
     A = new double[nmax*nmax];
     C = new double[nmax*nmax];
     for (size_t i=0; i<nmax*nmax;++i){
-        A[i]=random() % 17;
+        A[i]=rand() % 17;
     }
 
     do {

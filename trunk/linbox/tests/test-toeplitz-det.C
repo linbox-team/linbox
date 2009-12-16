@@ -33,13 +33,13 @@ int main(int argc, char* argv[]) {
 	ostream& report = commentator.report();
 	bool pass = true;
 #ifdef __LINBOX_HAVE_NTL
-	srandom(time(0));
+	srand(time(0));
 	RandomPrimeIterator rp;
 	NTL_zz_p::RandIter rand;
 	report << "\tUsing random primes and square matrices of size 2 to " << N_BOUND << endl;
 	//for( int i = 0; pass && i < 2; ++i ) {
 		size_t n;
-		do { n = random() % N_BOUND; } while( n < 2 );
+		do { n = rand() % N_BOUND; } while( n < 2 );
 
 		NTL_zz_p CF( *rp );
 		NTL_zz_pX PF(CF);
