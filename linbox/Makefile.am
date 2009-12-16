@@ -6,10 +6,10 @@ docs:doc/linbox-html/index.html
 doc/linbox-html/index.html:
 	(cd doc; make docs)
 
-examples:examples/dot-product
+examples:
+	(cd examples; make examples)
 
-#examples/dot-product:linbox/linbox-config.h
-#	(cd examples; make examples)
+.PHONY:examples
 
 bin_SCRIPTS=linbox-config
 
