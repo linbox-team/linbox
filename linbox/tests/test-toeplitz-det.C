@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
 #ifdef __LINBOX_HAVE_NTL
 	srand(time(0));
 	RandomPrimeIterator rp;
-	NTL_zz_p::RandIter rand;
+	NTL_zz_p::RandIter randit;
 	report << "\tUsing random primes and square matrices of size 2 to " << N_BOUND << endl;
 	//for( int i = 0; pass && i < 2; ++i ) {
 		size_t n;
@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
 		size_t r,c;
 
 		for( int diff = 1 - ((int)n); diff <= ((int)n) - 1; ++diff ) {
-			rand.random(temp);
+			randit.random(temp);
 			PF.setCoeff(poly,(size_t)(diff + n - 1), temp );
 			r = c = 0;
 			if( diff < 0 ) c = (size_t)(diff*-1);
