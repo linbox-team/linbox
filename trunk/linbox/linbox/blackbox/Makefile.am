@@ -42,7 +42,8 @@ BASIC_HDRS =			\
 	block-hankel.h		\
 	block-toeplitz.h	\
 	block-hankel-inverse.h	\
-	jit-matrix.h
+	jit-matrix.h		\
+	rational-matrix-factory.h
 
 NTL_HDRS =			\
 	toeplitz.h ntl-hankel.h ntl-sylvester.h \

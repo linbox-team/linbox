@@ -4,6 +4,9 @@ AC_INIT(linbox, 1.1.7rc0,linbox-use@googlegroups.com)
 AM_INIT_AUTOMAKE([1.8 gnu no-dependencies])
 AM_CONFIG_HEADER([config.h])
 AX_PREFIX_CONFIG_H(linbox/linbox-config.h, __LINBOX)
+AC_PATH_PROG(RM, rm, $FALSE)
+RM="$RM -f"
+
 
 AM_MAINTAINER_MODE
 AM_DEP_TRACK
