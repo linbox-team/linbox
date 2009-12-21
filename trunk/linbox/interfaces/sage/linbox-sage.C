@@ -189,13 +189,9 @@ void linbox_modn_dense_minpoly (double modulus, double *& mp, size_t& degree, si
 	
 }
 
-<<<<<<< .mine
 template<>
 void linbox_modn_dense_minpoly (float modulus, float *& mp, size_t& degree, size_t n,
 				float *matrix) {
-=======
-    std::vector<ModInt::Element> m_A;
->>>>>>> .r3267
 
 	Modular<float> F(modulus);
 	std::vector<float> minP;
