@@ -24,14 +24,8 @@
 
 #ifndef __LINBOX_SAGE_H
 #define __LINBOX_SAGE_H
-#ifdef __cplusplus
-#define EXTERN extern "C"
-#else 
-#define EXTERN
-#endif
 
 #include<stddef.h>
-typedef size_t mod_int; 
 
 #include <cstdlib>
 #include <vector>
@@ -42,39 +36,54 @@ typedef size_t mod_int;
  
 *****************************************************************/
 
-EXTERN int linbox_modn_dense_echelonize(mod_int modulus,  
-					mod_int** matrix, size_t nrows, size_t ncols);
+// Element could be either double or float
 
+template<class Element>
+unsigned long linbox_modn_dense_echelonize (Element modulus, Element* matrix,
+				  size_t nrows, size_t ncols);
 
-EXTERN void linbox_modn_dense_minpoly(mod_int modulus, mod_int **mp, size_t* degree, 
-				      size_t n, mod_int **matrix, int do_minpoly);
+template <class Element>
+void linbox_modn_dense_minpoly (Element modulus, Element * &mp, size_t& degree, 
+				size_t n, Element * matrix);
+template <class Element>
+void linbox_modn_dense_charpoly (Element modulus, Element * &cp, size_t n, Element * matrix);
 
-EXTERN void linbox_modn_dense_delete_array(mod_int *f);
+template <class Element>
+void linbox_modn_dense_delete_array (Element *f);
 
-EXTERN void linbox_modn_dense_delete_dbl_array(double *f);
+template <class Element>
+void linbox_modn_dense_matrix_matrix_multiply (Element modulus, Element * ans,
+					      Element *A, Element *B,
+					      size_t m, size_t n, size_t k); 
 
-EXTERN int linbox_modn_dense_matrix_matrix_multiply(mod_int modulus, mod_int **ans,
-						    mod_int **A, mod_int **B,
-						    size_t A_nr, size_t A_nc, size_t B_nr, size_t B_nc); 
+template <class Element>
+void linbox_modn_dense_matrix_matrix_general_multiply (Element modulus,
+						       Element * ans,
+						       Element alpha, Element beta,
+						       Element *A, Element *B,
+						       size_t m, size_t n, size_t k); 
+template <class Element>
+unsigned long linbox_modn_dense_rank (Element modulus, Element* matrix, size_t nrows, size_t ncols);
 
-EXTERN int linbox_modn_dense_rank(mod_int modulus,  
-				  mod_int** matrix, size_t nrows, size_t ncols);
+template<class Element>
+Element linbox_modn_dense_det (Element modulus, Element* matrix, size_t nrows, size_t ncols);
 
-EXTERN mod_int linbox_modn_dense_det(mod_int modulus,  
-				     mod_int** matrix, size_t nrows, size_t ncols);
+template<class Element>
+unsigned long linbox_modn_dense_col_rankprofile_submatrix (Element modulus,
+							   Element* matrix,
+							   Element* outmatrix,
+							   size_t& rank,
+							   size_t nrows, size_t ncols);
 
-EXTERN int linbox_modn_dense_col_rankprofile_submatrix (mod_int modulus,
-							mod_int** matrix,
-							double ** outmatrix,
-							size_t* rank,
-							size_t nrows, size_t ncols);
-EXTERN int linbox_modn_dense_col_rankprofile_submatrix_indices (mod_int modulus,
-								mod_int** matrix,
-								size_t ** row_idx,
-								size_t ** col_idx,
-								size_t * rank,
-								size_t nrows,
-								size_t ncols);
+template <class Element>
+unsigned long linbox_modn_dense_col_rankprofile_submatrix_indices (Element modulus,
+								   Element* matrix,
+								   size_t *& row_idx,
+								   size_t *& col_idx,
+								   size_t & rank,
+								   size_t nrows,
+								   size_t ncols);
+
 /*****************************************************************
 
   Dense over ZZ
@@ -83,48 +92,46 @@ EXTERN int linbox_modn_dense_col_rankprofile_submatrix_indices (mod_int modulus,
  
 /* linbox_minpoly allocates space for minpoly, so you have to call linbox_delete_array
    to free it up afterwards. */
-EXTERN void linbox_integer_dense_minpoly_hacked(mpz_t** minpoly, size_t* degree, 
-                  size_t n, mpz_t** matrix, int do_minpoly);
-EXTERN void linbox_integer_dense_minpoly(mpz_t** minpoly, size_t* degree, 
-                  size_t n, mpz_t** matrix);
-EXTERN void linbox_integer_dense_charpoly(mpz_t** charpoly, size_t* degree, 
-                  size_t n, mpz_t** matrix);
-EXTERN void linbox_integer_dense_delete_array(mpz_t* f);
+
+void linbox_integer_dense_minpoly (mpz_t*& minpoly, size_t& degree, 
+				   size_t n, mpz_t* matrix);
+
+void linbox_integer_dense_charpoly (mpz_t*& minpoly, size_t& degree, 
+				    size_t n, mpz_t* matrix);
+
+void linbox_integer_dense_delete_array (mpz_t* f);
 
 /* ans must be a pre-allocated and pre-initialized array of GMP ints. */
-EXTERN int linbox_integer_dense_matrix_matrix_multiply(mpz_t** ans, mpz_t **A, mpz_t **B,
-			      size_t A_nr, size_t A_nc, size_t B_nr, size_t B_nc);
+int linbox_integer_dense_matrix_matrix_multiply (mpz_t* ans, mpz_t *A, mpz_t *B,
+						 size_t m, size_t n, size_t k);
 
-EXTERN unsigned long linbox_integer_dense_rank(mpz_t** matrix, size_t nrows,
-					       size_t ncols);
+unsigned long linbox_integer_dense_rank(mpz_t* matrix, size_t nrows, size_t ncols);
 
-EXTERN  void linbox_integer_dense_det(mpz_t ans, mpz_t** matrix, size_t nrows,
-				      size_t ncols);
+void linbox_integer_dense_det(mpz_t ans, mpz_t* matrix, size_t nrows, size_t ncols);
 
-EXTERN void linbox_integer_dense_smithform(mpz_t **v, 
-					   mpz_t **matrix, 
-					   size_t nrows, size_t ncols);
+void linbox_integer_dense_smithform(mpz_t *&v, mpz_t *matrix, size_t nrows, size_t ncols);
 
-EXTERN void linbox_integer_dense_double_det (mpz_t ans1, mpz_t ans2, mpz_t **a,
-					     mpz_t ** b, mpz_t **c, size_t n, int proof);
+void linbox_integer_dense_double_det (mpz_t ans1, mpz_t ans2, mpz_t **a,
+				      mpz_t ** b, mpz_t **c, size_t n, int proof);
+
 /*****************************************************************
 
   Sparse over Z/nZ
  
 *****************************************************************/
 
-
-EXTERN unsigned long linbox_modn_sparse_matrix_rank(mod_int modulus, 
-						    size_t numrows, 
-						    size_t numcols, 
-						    void *rows,
-						    int reorder);
-
-EXTERN std::vector<unsigned int> linbox_modn_sparse_matrix_solve(mod_int modulus, 
-								 size_t numrows, 
-								 size_t numcols,  
-								 void *a, 
-								 void *b,
-								 int method);
+template <class Element>
+unsigned long linbox_modn_sparse_matrix_rank(Element modulus, 
+					     size_t numrows, 
+					     size_t numcols, 
+					     void *rows,
+					     int reorder);
+template<class Element>
+std::vector<Element> linbox_modn_sparse_matrix_solve(Element modulus, 
+						     size_t numrows, 
+						     size_t numcols,  
+						     void *a, 
+						     void *b,
+						     int method);
 
 #endif // __LINBOX_SAGE_H
