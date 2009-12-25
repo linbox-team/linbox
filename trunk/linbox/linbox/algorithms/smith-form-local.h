@@ -53,7 +53,7 @@ class SmithFormLocal{
 
         	for (q = p->begin(); q != p->end(); ++q) {
        	       	R.gcdin(g, *q);
-		    	if ( R.isUnit(g) ) break;
+		    	if ( R.isUnit(g) ) {R.divin(g, g); break; }
 			}
 
 			if ( R.isUnit(g) ) break;
@@ -75,7 +75,6 @@ class SmithFormLocal{
 
 	        // eliminate step - crude and for dense only - fix later
 			// Want to use a block method or "left looking" elimination.
-//std::cout << " Value of A[0][0]: " << *(A.rowBegin() -> begin()) <<"\n";
 			Elt f; R.inv(f, *(A.rowBegin()->begin() ) );
 			R.negin(f);
 			// normalize first row to -1, ...

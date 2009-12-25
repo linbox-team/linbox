@@ -32,7 +32,7 @@ int main (int argc, char **argv)
 
 	if (argc == 2 ) {
 	
-		// For a small integer matrix test, do "det data/mat2.txt". 
+		// For a small integer matrix test, do "det data/mat2S". 
 		// It is a 2 by 2 matrix with determinant = -2.
 
 		typedef PID_integer Integers;		

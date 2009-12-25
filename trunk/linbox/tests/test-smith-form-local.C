@@ -18,7 +18,8 @@
 #include "test-common.h"
 
 #include "linbox/util/commentator.h"
-#include "linbox/field/ntl-pid-lzz_p.h"
+#include "linbox/field/PIR-modular-int32.h"
+//#include "linbox/field/PIR-modular-double.h"
 #include "linbox/field/local2_32.h"
 #include "linbox/blackbox/dense.h"
 #include "linbox/algorithms/smith-form-local.h"
@@ -39,27 +40,28 @@ using namespace LinBox;
  * Return true on success and false on failure
  */
 
-template <class LocalPID>
+template <class LocalPIR>
 class foobar {
 	public:
-	typedef typename LocalPID::Element first_argument_type;
-	typedef LocalPID second_argument_type;
+	typedef typename LocalPIR::Element first_argument_type;
+	typedef LocalPIR second_argument_type;
 	typedef void result_type;
-	void operator()(typename LocalPID::Element& d, const LocalPID& R) const
+	void operator()(typename LocalPIR::Element& d, const LocalPIR& R) const
 	{ 
-		typename LocalPID::Element x = d;
-		R.gcd(d, x, x);
+		typename LocalPIR::Element x = d;
+		if (R.isUnit(d)) R.divin(d, d);
+		else R.gcd(d, x, x);
 	}
 };
 template<>
 class foobar<LinBox::Local2_32> {
 public:
-	typedef LinBox::Local2_32 LocalPID;
+	typedef LinBox::Local2_32 LocalPIR;
 	
-	typedef LocalPID::Element first_argument_type;
-	typedef LocalPID second_argument_type;
+	typedef LocalPIR::Element first_argument_type;
+	typedef LocalPIR second_argument_type;
 	typedef void result_type;
-	void operator()(LocalPID::Element& d, const LocalPID& R) const
+	void operator()(LocalPIR::Element& d, const LocalPIR& R) const
 	{
 
 
@@ -79,46 +81,50 @@ public:
 	}
 };
 				
-template <class LocalPID>
+template <class LocalPIR>
 class pplt
 {   public:
-	pplt(LocalPID R) : _R_(R){}
-	bool operator() (typename LocalPID::Element a, typename LocalPID::Element b)
+	pplt(LocalPIR R) : _R_(R){}
+	bool operator() (typename LocalPIR::Element a, typename LocalPIR::Element b)
 	{  
 	       if ( b == 0 ) return true;
        	       else if ( a == 0 ) return false;
 	       else return a <= b;
  	}		
     //protected:
-        LocalPID _R_;
+        LocalPIR _R_;
 };
 
+/*
 template<>
 class pplt<LinBox::NTL_PID_zz_p> {
 public:
-	typedef LinBox::NTL_PID_zz_p LocalPID;
+	typedef LinBox::NTL_PID_zz_p LocalPIR;
 	
-	pplt(LocalPID R) : _R_(R){}
-	bool operator() (LocalPID::Element a, LocalPID::Element b)
+	pplt(LocalPIR R) : _R_(R){}
+	bool operator() (LocalPIR::Element a, LocalPIR::Element b)
 	{  
 	       if ( b == 0 ) return true;
        	       else if ( a == 0 ) return false;
 	       else return NTL::rep(a) <= NTL::rep(b);
  	}		
     //protected:
-        LocalPID _R_;
+        LocalPIR _R_;
 };
+*/
 
-template <class LocalPID>
-static bool testLocalSmith (const LocalPID &R, VectorStream<vector<typename LocalPID::Element> > &stream) 
+template <class LocalPIR>
+static bool testLocalSmith (const LocalPIR &R, VectorStream<vector<typename LocalPIR::Element> > &stream, string s) 
 {
-	typedef vector <typename LocalPID::Element> Vector;
-	typedef typename LocalPID::Element Elt;
-	typedef DenseMatrix<LocalPID> Blackbox;
+	typedef vector <typename LocalPIR::Element> Vector;
+	typedef typename LocalPIR::Element Elt;
+	typedef DenseMatrix<LocalPIR> Blackbox;
 
 	commentator.start ("Testing local smith on random dense matrices", "testLocalSmith", stream.m ());
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	report << s << endl;
 
-	VectorDomain<LocalPID> VD (R);
+	VectorDomain<LocalPIR> VD (R);
 
 	bool ret = true;
 	size_t i;
@@ -133,11 +139,9 @@ static bool testLocalSmith (const LocalPID &R, VectorStream<vector<typename Loca
 
 		stream.next (d);
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-		//ostream &report = std::cout; 
-// 		report << "Input vector:  ";
-// 		VD.write (report, d);
-// 		report << endl;
+ 		report << "Input vector:  ";
+ 		VD.write (report, d);
+ 		report << endl;
 
 		Blackbox Lm (R, n, n), D (R, n, n), U (R, n, n), A (R, n, n);
 		for( i = 0; i < n; ++i ) {D[i][i] = d[i];Lm[i][i]=U[i][i]=1;}
@@ -156,35 +160,21 @@ static bool testLocalSmith (const LocalPID &R, VectorStream<vector<typename Loca
 			       U[i][j] = 0;
 		       }
 
-		MatrixDomain<LocalPID> MR(R);
+		MatrixDomain<LocalPIR> MR(R);
 		
 		Timer timer;
 		
-// 		report << "D\n";
-// 		D.write(report);
-
-// 		report << "L\n";
-// 		Lm.write(report);
-
-// 		report << "U\n";
-// 		U.write(report);
-
 		timer.start();
 		MR.mul(A,Lm,D);
-
-// 		report << "L D\n";
-// 		A.write(report);
 
 		MR.mulin(A,U);
 		timer.stop();
 		report << "Two matrix multiplication: " << timer << "\n";
 		
-// 		report << "A \n";
-// 		A.write(report);
 		//for( i = 0; i < n; ++i ) D[i][i] = rand() % 10 + 1;
 
-		list< typename LocalPID::Element > L;
-		SmithFormLocal< LocalPID > SmithForm;
+		list< typename LocalPIR::Element > L;
+		SmithFormLocal< LocalPIR > SmithForm;
 		timer.start();
 		SmithForm( L, A, R );
 		timer.stop();
@@ -199,11 +189,11 @@ static bool testLocalSmith (const LocalPID &R, VectorStream<vector<typename Loca
 		    report << *p << ", ";
 		report << "\b\b]" << endl;
 
-		pplt<LocalPID> lt(R);
+		pplt<LocalPIR> lt(R);
 		report << "normalize done" << endl;
 		report.flush();
 
-		for_each(d.begin(), d.end(), bind2nd(foobar<LocalPID>(), R));
+		for_each(d.begin(), d.end(), bind2nd(foobar<LocalPIR>(), R));
 		timer.start();
 		stable_sort(d.begin(), d.end(), lt);
 		timer.stop();
@@ -242,7 +232,7 @@ int main (int argc, char **argv)
 {
 	bool pass = true;
 
-	static size_t n = 15;
+	static size_t n = 2;
 	static integer q = 101;
 	static int iterations = 1;
 
@@ -255,7 +245,8 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	typedef NTL_PID_zz_p Ring;
+	typedef PIRModular<int32> Ring;
+	//typedef PIRModular<dense> Ring;
 	typedef vector<Ring::Element> Vector;
 
 	Ring R (32768);
@@ -267,13 +258,13 @@ int main (int argc, char **argv)
 
 	RandomDenseStream<Ring, Vector> stream (R, n, iterations);
 
-	if (!testLocalSmith<Ring> (R, stream)) pass = false;
+	if (!testLocalSmith<Ring> (R, stream, "PIRModular<int32>")) pass = false;
 
 	// power of 2 test
 	Local2_32 R2;
 	RandomDenseStream<Local2_32, vector<Local2_32::Element> > 
 		stream2 (R2, n, iterations);
-	if (!testLocalSmith<Local2_32> (R2, stream2)) pass = false;
+	if (!testLocalSmith<Local2_32> (R2, stream2, "Local2_32")) pass = false;
 
 	commentator.stop("Local Smith Form test suite");
 	return pass ? 0 : -1;

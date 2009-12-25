@@ -105,14 +105,15 @@ namespace LinBox {
 		else {
 			report << "      Compute local smith at " << p <<'^' << e << " using PIRModular<int32>\n";
 			long m = 1; int i = 0; for (i = 0; i < e; ++ i) m *= p;
-			PIRModular <int32> R(m);
-			DenseMatrix <PIRModular<int32> >* A_local; 
-			SmithFormLocal <PIRModular<int32> > SF;
-			std::list <PIRModular<int32>::Element> l; 
+			typedef PIRModular<int32> PIR;
+			PIR R(m);
+			DenseMatrix <PIR>* A_local; 
+			SmithFormLocal <PIR> SF;
+			std::list <PIR::Element> l; 
 			MatrixHom::map (A_local, A, R);
 			SF (l, *A_local, R);
 			delete A_local;
-			std::list <PIRModular<int32>::Element>::iterator l_p;
+			std::list <PIR::Element>::iterator l_p;
 			std::vector <integer>::iterator s_p;
 			for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() + order; ++ s_p, ++ l_p)
 				*s_p = *l_p;
@@ -168,7 +169,7 @@ namespace LinBox {
 		else
 			compute_local_big (s, A, p, e);
 
-		// nomralize the answer
+		// normalize the answer
 		for (std::vector<integer>::iterator p = s. begin(); p != s. end(); ++ p)
 			*p = gcd (*p, m);
 	}

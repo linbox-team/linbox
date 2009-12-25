@@ -46,12 +46,8 @@ class SmithFormLocal<Local2_32>
 	std::list<Elt>& 
 	smithStep(std::list<Elt>& L, Elt& d, Matrix& A, const LocalPID& R)
 	{
-	    //std::cout << "Dimension: " << A.rowdim() << " " << A.coldim() <<"\n";
-	    if ( A.rowdim() == 0 || A.coldim() == 0 ) 
-		return L;
-
-	    //std::cout << "Matrix:\n";
-	    //A.write(std::cout);
+		if ( A.rowdim() == 0 || A.coldim() == 0 ) 
+			return L;
 
 	    LocalPID::Exponent g = LocalPID::Exponent(32); //R.init(g, 0); // must change to 2^31 maybe.
 	    typename Matrix::RowIterator p;
