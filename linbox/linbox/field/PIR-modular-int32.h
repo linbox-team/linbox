@@ -454,7 +454,7 @@ namespace LinBox
 				(const VectorDomain<PIRModular<int32> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const
 				{
 					return mulColDenseSpecialized
-						(VD, w, A, v, VectorTraits<typename Matrix::Column>::VectorCategory ());
+						(VD, w, A, v, typename VectorTraits<typename Matrix::Column>::VectorCategory ());
 				}
 
 		private:

@@ -5,20 +5,20 @@
  \author bds & zw
 
 Various Smith form algorithms may be used for matrices over the 
-integers or over Z_m.  If the modulus is greater than 2^32, the "-DBIG"
-compilation option must be used.
+integers or over Z_m.  Moduli greater than 2^32 are not supported.
 Several types of example matrices may be constructed or matrix read from file.
 Run the program with no arguments for a synopsis of the 
 command line parameters.
 
-For the "adaptive" method, the matrix must be over the NTL_ZZ representation of 
-the integers.  
+For the "adaptive" method, the matrix must be over the integers.  
+This is expected to work best for large matrices.
 
 For the "2local" method, the computation is done mod 2^32.
 
 For the "local" method, the modulus must be a prime power.
 
 For the "ilio" method, the modulus may be arbitrary composite.
+If the modulus is a multiple of the integer determinant, the intege Smith form is obtained.  Determinant plus ilio may be best for smaller matrices.
 
 This example was used during the design process of the adaptive algorithm.
 */
@@ -38,27 +38,16 @@ using namespace std;
 
 #include "linbox/field/unparametric.h"
 #include "linbox/field/local2_32.h"
-//#include "linbox/field/PIR-modular-int32.h"
-//#include "linbox/algorithms/2local-smith.h"
+#include "linbox/field/PIR-modular-int32.h"
 #include "linbox/algorithms/smith-form-local.h"
 #include "linbox/algorithms/smith-form-local2.h"
-//#include "linbox/algorithms/local-smith.h"
 #include <linbox/algorithms/smith-form-iliopoulos.h>
-//#include "linbox/algorithms/iliopoulos-elimination.h"
 #include "linbox/algorithms/smith-form-adaptive.h"
 #include "linbox/blackbox/dense.h"
 
 using namespace LinBox;
 
-#if __LINBOX_HAVE_NTL
-#include "linbox/field/ntl-ZZ.h"
-#include "linbox/field/PIR-ntl-ZZ_p.h"
-typedef PIR_ntl_ZZ_p PIR;
-#else
 // #ifndef BIG
-#include "linbox/field/PIR-modular-int32.h"
-typedef PIRModular<LinBox::int32> PIR;
-#endif
 
 
 template<class PIR>
@@ -69,10 +58,7 @@ template<class I1, class Lp> void distinct (I1 a, I1 b, Lp& c);
 template <class I> void display(I b, I e);
 
 int main(int argc, char* argv[]) {
-        //LinBox::commentator.setMaxDetailLevel (-1);
-        //LinBox::commentator.setMaxDepth (-1);
-        //LinBox::commentator.setReportStream (std::cerr);
-
+	typedef PIRModular<LinBox::int32> PIR;
 
 	if (argc < 5) {
 	
@@ -104,9 +90,7 @@ int main(int argc, char* argv[]) {
 
 	if (algo == "adaptive")
 	{   
-#if __LINBOX_HAVE_NTL
-// 		typedef NTL_ZZ Ints;
-                typedef PID_integer Ints;
+        typedef PID_integer Ints;
 		Ints Z;
 	    DenseMatrix<Ints> M(Z);
 	    Mat(M, Z, n, src, file, format);
@@ -125,9 +109,6 @@ int main(int argc, char* argv[]) {
 	    cout << "# adaptive, Ints, n = " << n << endl;
 
 	    cout << "T" << n << "adaptive" << m << " := ";
-#else
-	    cerr << "Sorry NTL required for adaptive smith form" << std::endl;
-#endif
 
 	}
 	else if (algo == "ilio") { 
@@ -189,10 +170,25 @@ int main(int argc, char* argv[]) {
 
                 PGD(local, B, m, (int)p);    
 
+                typedef list< Field::Element > List;
+				List L;
+				for ( std::vector<std::pair<size_t,size_t> >::iterator 
+					  p = local.begin(); p != local.end(); ++p) {
+					for(size_t i = 0; i < p->first; ++i) L.push_back(p->second);
+				}
+				size_t m = (B.rowdim() > B.coldim() ? B.coldim() : B.rowdim());
+				for (size_t i = L.size(); i < m; ++i) L.push_back(0);
+
+                list<pair<Field::Element, size_t> > pl;
+                
+                distinct(L.begin(), L.end(), pl);
                 
                 std::cout << "#";
                 
-                display(local.begin(), local.end());
+                //display(local.begin(), local.end());
+                display(pl.begin(), pl.end());
+           		cout << "# local, PowerGaussDomain<int32>(" << m << "), n = " << n << endl;
+           
             } else {
 
                 PIR R(m);
@@ -220,12 +216,11 @@ int main(int argc, char* argv[]) {
                 cout << "#";
                 
                 display(p.begin(), p.end());
-            }
-           
                 
-           cout << "# local, PIR-Modular-int32(" << m << "), n = " << n << endl;
+           		cout << "# local, PIR-Modular-int32(" << m << "), n = " << n << endl;
            
-           cout << "T" << n << "local" << m << " := ";
+            }
+           	cout << "T" << n << "local" << m << " := ";
 	}
 
 	else if (algo == "2local") { 
@@ -292,7 +287,6 @@ int main(int argc, char* argv[]) {
   Also "tref" and file with format "kdense"
 */
 template <class PIR>
-
 void Mat(DenseMatrix<PIR>& M, PIR& R, int n, 
 			string src, string file, string format) {
 
@@ -315,9 +309,7 @@ void Mat(DenseMatrix<PIR>& M, PIR& R, int n,
 
 		in >> rdim >> cdim;
 
-cout << "about to resize" << endl;
 		M. resize (rdim, cdim);
-cout << "resized" << endl;
 
 		integer val;
 
@@ -341,7 +333,6 @@ cout << "resized" << endl;
 			char mark;
 
 			in >> mark;
-cout << "got into sparse" << endl;
 
 			LinBox::integer val;
 
@@ -356,7 +347,6 @@ cout << "got into sparse" << endl;
 				R. init (M[i-1][j-1], val);
 
 			} while (true);
-cout << "got through sparse input" << endl;
 
 		}
 		  //Krattenthaler's q^e matrices, given by exponent
@@ -510,8 +500,6 @@ void scramble(DenseMatrix<Ring>& M)
 		}
 
 		std::ofstream out("matrix", std::ios::out);
-
-		//M. write(std::cout);
 
 		out << n << " " << n << "\n";
 

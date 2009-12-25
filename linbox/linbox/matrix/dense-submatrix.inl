@@ -129,7 +129,7 @@ class DenseSubmatrix<Element>::RawIterator
 
 	bool operator != (const RawIterator& r) const
 	{
-		return (_c_dim != r._c_dim) || (_stride != r._stride) || (_c_idx != r._c_idx);
+		return (_cur != r._cur || _c_dim != r._c_dim) || (_stride != r._stride) || (_c_idx != r._c_idx);
 	} 
 
 	Element& operator * ()
