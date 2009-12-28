@@ -18,7 +18,7 @@
 #include "../linbox/solutions/nullspace.h"
 #include <vector>
 #include "./test-common.h"
-#include "Matio.h" // write_field ;
+//#include "Matio.h" // write_field ;
 
 using namespace LinBox;
 
@@ -195,7 +195,7 @@ static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank,
 		RandomMatrixWithRank(F,A,m,n,rank);
 
 #ifdef DEBUG_1
-		write_field (F, std::cout<<"A0 :="<<endl, A, m, n, ld_a,true);
+		    //write_field (F, std::cout<<"A0 :="<<endl, A, m, n, ld_a,true);
 #endif
 		Element * Abis = new Element[m*n]; // copie de A
 		for (size_t i=0; i<m*n; ++i)
@@ -232,7 +232,7 @@ static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank,
 		assert(ld_ker == ld_k) ;
 #ifdef DEBUG_1
 		cout << "ker_dim : " << ker_dim << endl;
-		write_field (F, std::cout<<"Kernel is V:= "<<endl, Kern, wd_ker, ld_ker, ld_ker, true);
+		    //write_field (F, std::cout<<"Kernel is V:= "<<endl, Kern, wd_ker, ld_ker, ld_ker, true);
 		cout << "test1 ok" << endl;
 #endif
 		size_t ld_n = (a_droite)?ker_dim:ld_a;
@@ -263,7 +263,7 @@ static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank,
 		for (size_t i = 0 ; i < wd_n ; ++i ){
 			for (size_t j = 0 ; j < ld_n ; ++j ) {
 				if (!F.isZero(*(NullMat + j+i*ld_n)) ){
-					write_field (F, std::cout<<"faux : (3) NullMat pas nulle. "<<std::endl, NullMat, wd_n, ld_n, ld_n, true);
+					    //	write_field (F, std::cout<<"faux : (3) NullMat pas nulle. "<<std::endl, NullMat, wd_n, ld_n, ld_n, true);
 					delete[] NullMat ;
 					ret = false;
 					break;

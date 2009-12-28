@@ -13,4 +13,4 @@ examples:
 
 bin_SCRIPTS=linbox-config
 
-VERSION=1.1.7rc0
+VERSION=1.1.7rc1
