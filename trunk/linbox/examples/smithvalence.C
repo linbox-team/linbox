@@ -130,8 +130,8 @@ int main (int argc, char **argv)
 //     commentator.setReportStream (std::cerr);
 
 
-	if (argc < 2 || argc > 3) {
-		std::cerr << "Usage: valence <matrix-file-in-supported-format> [-ata|-aat]" << std::endl;
+	if (argc < 2 || argc > 4) {
+		std::cerr << "Usage: valence <matrix-file-in-supported-format> [-ata|-aat|valence] [coprime]" << std::endl;
 		return -1;
 	}
 
@@ -149,16 +149,19 @@ int main (int argc, char **argv)
         PID_integer::Element val_A;
 
         Timer chrono; chrono.start();
-        if (argc == 3) {
+        if (argc >= 3) {
             Transpose<Blackbox> T(&A);
-            if (strcmp(argv[2],"-aat")) {
+            if (strcmp(argv[2],"-ata") == 0) {
                 Compose< Transpose<Blackbox>, Blackbox > C (&T, &A);
                 std::cout << "A^T A is " << C.rowdim() << " by " << C.coldim() << std::endl;
                 valence(val_A, C);
-            } else {
+            } else if (strcmp(argv[2],"-aat") == 0) {
                 Compose< Blackbox, Transpose<Blackbox> > C (&A, &T);
                 std::cout << "A A^T is " << C.rowdim() << " by " << C.coldim() << std::endl;
                 valence(val_A, C);                
+            } else {
+                std::cout << "Suppose primes are contained in " << argv[2] << std::endl;
+                val_A = Integer(argv[2]);
             }
         } else {
             if (A.rowdim() != A.coldim()) {
@@ -176,12 +179,20 @@ int main (int argc, char **argv)
 
         typedef std::pair<Integer,unsigned long> PairIntRk;
         std::vector< PairIntRk > smith;
+        
 
 	Integer coprimeV=2;
+        if (argc >= 4) {
+            coprimeV = Integer(argv[3]);
+        }
 	while ( gcd(val_A,coprimeV) > 1 ) {
 		FTD.nextprimein(coprimeV);
 	}
 
+        if (argc >= 4) {
+            std::cout << "Suppose " << argv[3] << " is coprime with Smith form" << std::endl;
+        }
+        
 	std::cout << "Integer rank: " << std::endl;
 	
 	unsigned long coprimeR; LRank(coprimeR, argv[1], coprimeV);
