@@ -196,6 +196,7 @@ int main (int argc, char **argv)
             std::cout << *mit << '^' << *eit << ' ';
 	std::cout << std::endl;
 	
+        std::vector<Integer> SmithDiagonal(coprimeR,Integer(1));
 
 
 	for(std::vector<Integer>::const_iterator mit=Moduli.begin();
@@ -203,14 +204,15 @@ int main (int argc, char **argv)
             unsigned long r; LRank(r, argv[1], *mit);
 //             std::cerr << "Rank mod " << *mit << " is " << r << std::endl;
             smith.push_back(PairIntRk(*mit, r));
+            for(size_t i=r; i < coprimeR; ++i)
+                SmithDiagonal[i] *= *mit;
 	}
 
-        std::vector<Integer> SmithDiagonal(coprimeR,Integer(1));
 
         eit=exponents.begin();
         std::vector<PairIntRk>::const_iterator sit=smith.begin();
         for( ++sit; sit != smith.end(); ++sit, ++eit) {
-            if (sit->second != coprimeR) {                
+            if (sit->second != coprimeR) {  
                 std::vector<size_t> ranks;
                 ranks.push_back(sit->second);
                 if (*eit > 1) {
@@ -219,7 +221,7 @@ int main (int argc, char **argv)
                     PRank(ranks, argv[1], sit->first, 2, coprimeR);
                 }
                 if (ranks.size() == 1) ranks.push_back(coprimeR);
-                for(size_t expo = *eit<<1; ranks.back() < coprimeR; expo<<=1) {
+                for(size_t expo = (*eit)<<1; ranks.back() < coprimeR; expo<<=1) {
                     PRank(ranks, argv[1], sit->first, expo, coprimeR);
                     if (ranks.size() < expo) {
                         std::cerr << "Larger prime power not yet implemented" << std::endl;
@@ -229,7 +231,8 @@ int main (int argc, char **argv)
                 std::vector<size_t>::const_iterator rit=ranks.begin();
                 unsigned long modrank = *rit;
                 for(++rit; rit!= ranks.end(); ++rit) {
-                    for(size_t i=modrank; i<*rit; ++i)
+                    if ((*rit)>= coprimeR) break;
+                    for(size_t i=(*rit); i < coprimeR; ++i)
                         SmithDiagonal[i] *= sit->first;
                     modrank = *rit;
                 }
