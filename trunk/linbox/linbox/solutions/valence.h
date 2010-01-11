@@ -76,7 +76,8 @@ namespace LinBox
 
 }
 
-#include "linbox/field/modular.h"
+#include "linbox/field/modular-double.h"
+#include "linbox/field/givaro-zpz.h"
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/algorithms/cra-early-single.h"
 #include "linbox/randiter/random-prime.h"
@@ -95,11 +96,16 @@ namespace LinBox {
         
         template<typename Field>
 	typename Field::Element& operator()(typename Field::Element& v, const Field& F) const {
+        commentator.start ("Modular Valence", "Mvalence");
+	std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+        F.write(report) << std::endl;
             typedef typename Blackbox::template rebind<Field>::other FBlackbox;
             FBlackbox * Ap;
             MatrixHom::map(Ap, A, F);
             valence( v, *Ap, M);
             delete Ap;
+        F.write( F.write(report << "one valence: ", v) << " mod " ) << std::endl;;
+        commentator.stop ("done", NULL, "Mvalence");
             return v;
         }            
     };
@@ -111,8 +117,13 @@ namespace LinBox {
                                                     const MyMethod                     &M)
     {
         commentator.start ("Integer Valence", "Ivalence");
+#if __LINBOX_SIZEOF_LONG == 8
+        RandomPrimeIterator genprime( 31 ); 
+        ChineseRemainder< EarlySingleCRA< GivaroZpz<Std64> > > cra(3UL);
+#else
         RandomPrimeIterator genprime( 26 ); 
         ChineseRemainder< EarlySingleCRA< Modular<double> > > cra(3UL);
+#endif
         IntegerModularValence<Blackbox,MyMethod> iteration(A, M);
         cra(V, iteration, genprime);
         commentator.stop ("done", NULL, "Ivalence");
