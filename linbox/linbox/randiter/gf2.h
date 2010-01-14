@@ -64,7 +64,7 @@ class GF2RandIter
 		long _seed = seed;
 
 		if (_seed == 0) _seed = time (NULL);
-		_MT.setSeed (_seed);
+		MT.setSeed (_seed);
 	}
 
 	GF2RandIter (const GF2RandIter &R) {}
@@ -88,7 +88,7 @@ class GF2RandIter
 	 * @return reference to random field element
 	 */
 	bool &random (bool &a)  const
-		{ return a = _MT.randomIntRange (0, 2); }
+		{ return a = MT.randomIntRange (0, 2); }
 
 	/** Random field element creator.
 	 * This returns a random field element from the information supplied
@@ -97,7 +97,7 @@ class GF2RandIter
 	 * @return reference to random field element
 	 */
 	BitVector::reference random (BitVector::reference a)  const
-		{ return a = _MT.randomIntRange (0, 2); }
+		{ return a = MT.randomIntRange (0, 2); }
 
 
 	/** Random field element creator.
@@ -107,7 +107,7 @@ class GF2RandIter
 	 * @return reference to random field element
 	 */
 	std::_Bit_reference random (std::_Bit_reference a)  const
-		{ return a = _MT.randomIntRange (0, 2); }
+		{ return a = MT.randomIntRange (0, 2); }
 
 	/** Random field element creator.
 	 * This returns a random field element from the information supplied
@@ -125,14 +125,14 @@ class GF2RandIter
 
 
 	uint32& random (uint32& a)  const
-		{ return a = _MT.randomInt(); }
+		{ return a = MT.randomInt(); }
 
-    MersenneTwister& getMT() { return _MT; }
-    const MersenneTwister& getMT() const { return _MT; }
+    MersenneTwister& getMT() { return MT; }
+    const MersenneTwister& getMT() const { return MT; }
 
     private:
 
-	MersenneTwister _MT;
+	MersenneTwister MT;
 
 }; // class GF2RandIter
 
