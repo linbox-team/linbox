@@ -427,7 +427,7 @@ class RandomDenseStreamGF2 : public VectorStream<BitVector>
 	typedef BitVector Vector;
 
 	RandomDenseStreamGF2 (const GF2 &F, uint32 seed, size_t n, size_t m = 0)
-		: _MT (seed), _n (n), _m (m), _j (0)
+		: MT (seed), _n (n), _m (m), _j (0)
 	{}
 
 	Vector &get (Vector &v) 
@@ -438,7 +438,7 @@ class RandomDenseStreamGF2 : public VectorStream<BitVector>
 			return v;
 
 		for (i = v.wordBegin (); i != v.wordEnd (); i++)
-			*i = MTrandomInt<__LINBOX_BITSOF_LONG>()(_MT);
+			*i = MTrandomInt<__LINBOX_BITSOF_LONG>()(MT);
                 
                 const size_t zeroing = __LINBOX_BITSOF_LONG - (v.size() % __LINBOX_BITSOF_LONG);
                 *(v.wordRbegin()) <<= zeroing;
@@ -453,7 +453,7 @@ class RandomDenseStreamGF2 : public VectorStream<BitVector>
 	void reset () { _j = 0; }
 
     private:
-	MersenneTwister _MT;
+	MersenneTwister MT;
 	size_t          _n;
 	size_t          _m;
 	size_t          _j;
@@ -469,11 +469,11 @@ class RandomSparseStreamGF2 : public VectorStream<_Vector>
 	typedef _Vector Vector;
 
 	RandomSparseStreamGF2 (const GF2 &F, uint32 seed, double p, size_t n, size_t m = 0)
-		: _MT (seed), _n (n), _m (m), _j (0)
+		: MT (seed), _n (n), _m (m), _j (0)
 	{ setP (p); }
 
     	RandomSparseStreamGF2 (const GF2 &F, const GF2RandIter& r, double p, size_t n, size_t m = 0)
-		: _MT (r.getMT()), _n (n), _m (m), _j (0)
+		: MT (r.getMT()), _n (n), _m (m), _j (0)
 	{ setP (p); }
 
 	Vector &get (Vector &v);
@@ -492,7 +492,7 @@ class RandomSparseStreamGF2 : public VectorStream<_Vector>
 	}
 
     private:
-	MersenneTwister _MT;
+	MersenneTwister MT;
 	size_t _n;
 	double _p;
 	double _1_log_1mp;
@@ -513,7 +513,7 @@ _Vector &RandomSparseStreamGF2<_Vector>::get (_Vector &v)
 	v.clear ();
 
 	while (1) {
-		val = (double) _MT.randomDouble ();
+		val = (double) MT.randomDouble ();
 		skip = (int) (ceil (log (val) * _1_log_1mp));
 
 		if (skip <= 0)
