@@ -2,7 +2,7 @@
 /* linbox/algorithms/gauss-gf2.h
  * Copyright (C) 2009 The LinBox group
  *
- * Time-stamp: <21 Jan 10 15:07:55 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <21 Jan 10 15:41:42 Jean-Guillaume.Dumas@imag.fr> 
  *
  * See COPYING for license information.
  *
@@ -143,8 +143,11 @@ namespace LinBox
                               unsigned long Nj) const;
 
         template <class SparseSeqMatrix, class Perm, class Vector1, class Vector2> 
-        Vector1& solve(Vector1& x, unsigned long rank, const Perm& Q, const SparseSeqMatrix& L, 
-                       const SparseSeqMatrix& U, const Perm& P, const Vector2& b) const;
+        Vector1& solve(Vector1& x, unsigned long rank, const Perm& Q, const SparseSeqMatrix& L, const SparseSeqMatrix& U, const Perm& P, const Vector2& b) const;
+        
+
+        template <class SparseSeqMatrix, class Perm, class Vector1, class Vector2> 
+        Vector1& solve(Vector1& x, Vector1& w, unsigned long rank, const Perm& Q, const SparseSeqMatrix& L, const SparseSeqMatrix& U, const Perm& P, const Vector2& b) const;
         
 
 	template <class SparseSeqMatrix, class Vector1, class Vector2>

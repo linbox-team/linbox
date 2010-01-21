@@ -2,7 +2,7 @@
  * Copyright (C) LinBox 2008 
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <21 Jan 10 15:04:05 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <21 Jan 10 15:42:29 Jean-Guillaume.Dumas@imag.fr> 
  *
  * See COPYING for license information.
  */
@@ -20,13 +20,9 @@ namespace LinBox
 
     template <class _Field>
     template <class Matrix, class Perm, class Vector1, class Vector2> inline Vector1& 
-    GaussDomain<_Field>::solve(Vector1& x, unsigned long rank, const Perm& Q, const Matrix& L, const Matrix& U, const Perm& P, const Vector2& b)  const {
+    GaussDomain<_Field>::solve(Vector1& x, Vector1& w, unsigned long rank, const Perm& Q, const Matrix& L, const Matrix& U, const Perm& P, const Vector2& b)  const {
         
         Vector2 y(U.rowdim()), v(U.rowdim());
-        Vector1 w(U.coldim());
-        typename _Field::RandIter generator(_F);
-        for(typename Vector1::iterator it=w.begin()+rank;it!=w.end();++it)
-            generator.random( *it );
         
         Q.applyTranspose(y, b);
         
@@ -35,6 +31,20 @@ namespace LinBox
         upperTriangularSolve(w, U, v);
 
         return P.applyTranspose(x, w);
+    }
+
+    template <class _Field>
+    template <class Matrix, class Perm, class Vector1, class Vector2> inline Vector1& 
+    GaussDomain<_Field>::solve(Vector1& x, unsigned long rank, const Perm& Q, const Matrix& L, const Matrix& U, const Perm& P, const Vector2& b)  const {
+        
+            // Random solution is in output
+        Vector1 w(U.coldim());
+        typename _Field::RandIter generator(_F);
+        for(typename Vector1::iterator it=w.begin()+rank;it!=w.end();++it)
+            generator.random( *it );
+
+
+        return this->solve(x, w, rank, Q, L, U, P, b);
     }
 
     template <class _Field>
