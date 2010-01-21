@@ -214,10 +214,10 @@ namespace LinBox {// LinBox
 		typedef std::vector<Element>              FPolynomial;
 
 	protected:
-		Ring                    _R;
-		RandomPrime      _genprime;
-		mutable Prime       _prime;
-		WiedemannTraits    _traits;
+		Ring                       _R;
+		mutable RandomPrime _genprime;
+		mutable Prime          _prime;
+		WiedemannTraits       _traits;
 	 
 #ifdef RSTIMING
 		mutable Timer  tNonsingularSetup,   ttNonsingularSetup,
@@ -330,6 +330,9 @@ namespace LinBox {// LinBox
 			return os;
 		}
 #endif
+
+		void chooseNewPrime() const { ++_genprime; _prime = *_genprime; }
+
 	}; // end of specialization for the class RationalSover with Wiedemann traits
 
 
@@ -627,7 +630,7 @@ namespace LinBox {// LinBox
 		 *   SS_INCONSISTENT - system appreared inconsistent. certificate is in lastCertificate if (level >= SL_CERTIFIED)
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, const bool = false, 
+		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, const bool s = false, 
 					 const int maxPrimes = DEFAULT_MAXPRIMES, const SolverLevel level = SL_DEFAULT) const;
 		
 		/** overload so that the bool 'oldMatrix' argument is not accidentally set to true */
@@ -922,6 +925,9 @@ namespace LinBox {// LinBox
 #endif
 	};
 
+	/*****************
+	 * BLOCK HANKEL
+	 *****************/
 
 	template<class Ring, class Field,class RandomPrime>		
  	class RationalSolver<Ring, Field, RandomPrime, BlockHankelTraits> 
@@ -964,8 +970,56 @@ namespace LinBox {// LinBox
 		template<class IMatrix, class Vector1, class Vector2>
 		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, size_t blocksize, int maxPrimes = DEFAULT_MAXPRIMES) const;         				
 	};
+	
+
+	
+	/*****************
+	 * SPARSE LU
+	 *****************/
+	template<class Ring, class Field,class RandomPrime>		
+ 	class RationalSolver<Ring, Field, RandomPrime, SparseEliminationTraits> 
+	{
+	public:
+		typedef Ring                                 RingType;
+		typedef typename Ring::Element               Integer;
+		typedef typename Field::Element              Element;
+		typedef typename RandomPrime::Prime_Type     Prime;
+	
+	protected:
+		RandomPrime                     _genprime;
+		mutable Prime                   _prime;
+		Ring                            _R; 
+
+	public:
+		
+
+		/** Constructor
+		 * @param r   , a Ring, set by default
+		 * @param rp  , a RandomPrime generator, set by default		 
+		 */
+		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) : 
+			 _genprime(rp), _R(r) 
+		{
+			_prime=_genprime.randomPrime(); 
+		}
+    
+		
+		/** Constructor, trying the prime p first
+		 * @param p   , a Prime
+		 * @param r   , a Ring, set by default
+		 * @param rp  , a RandomPrime generator, set by default		 
+		 */
+		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) : 
+			_genprime(rp), _prime(p), _R(r) {}
+
+
+		// solve non singular system
+		template<class IMatrix, class Vector1, class Vector2>
+		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;         				
+	};
 
 }
+
 
 #include <linbox/algorithms/rational-solver.inl>
 

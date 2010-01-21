@@ -35,6 +35,7 @@
 #include <linbox/algorithms/massey-domain.h>
 #include <linbox/algorithms/blackbox-block-container.h>
 #include <linbox/algorithms/block-massey-domain.h>
+#include <linbox/algorithms/gauss.h>
 #include <linbox/blackbox/blas-blackbox.h>
 #include <linbox/vector/vector-domain.h>
 #include <linbox/blackbox/compose.h>
@@ -380,7 +381,7 @@ namespace LinBox {
 			std::cout<<" norms computed, p = "<<_p<<"\n";
 			std::cout<<" N = "<<N<<", D = "<<D<<", length = "<<_length<<"\n";
 			std::cout<<"A:=\n";
-			_A.write(std::cout);
+			//_A.write(std::cout);
 			std::cout<<"b:=\n";
 			for (size_t i=0;i<_b.size();++i) std::cout<<_b[i]<<" , ";
 			std::cout<<std::endl;
@@ -1360,6 +1361,99 @@ namespace LinBox {
 		}
 		
 	}; // end of class BlockHankelLiftingContainer
+
+
+	
+	/*
+	 * SparseLULiftingContainer
+	 */
+
+	template <class _Ring, class _Field, class _IMatrix, class _FMatrix>
+	class SparseLULiftingContainer : public LiftingContainerBase< _Ring, _IMatrix> {
+
+	public:
+		typedef _Field                               Field;
+		typedef _Ring                                 Ring;
+		typedef _IMatrix                           IMatrix;		
+		typedef _FMatrix                           FMatrix;	
+		typedef typename Field::Element            Element;
+		typedef typename IMatrix::Element          Integer;
+		typedef std::vector<Integer>               IVector;
+		typedef std::vector<Element>               FVector;
+
+	protected:
+		
+		const FMatrix&                       _L;
+		const FMatrix&                       _U;
+		const Permutation<_Field>&           _Q;
+		const Permutation<_Field>&           _P;
+		unsigned long                     _rank;
+		Field                                _F;
+		mutable FVector                  _res_p;
+		mutable FVector                _digit_p;
+		GaussDomain<Field>                  _GD;
+
+		
+	public:
+
+
+		template <class Prime_Type, class VectorIn>
+		SparseLULiftingContainer (const Ring&        R, 
+					 const Field&       F, 
+					 const IMatrix&     A,
+					 const FMatrix&     L,
+					 const Permutation<_Field>& Q,
+					 const FMatrix&     U,
+					 const Permutation<_Field>& P,
+					 unsigned long   rank,
+					 const VectorIn&    b, 
+					 const Prime_Type&  p)
+			: LiftingContainerBase<Ring,IMatrix> (R,A,b,p), _L(L),_Q(Q),_U(U), _P(P), _rank(rank),
+			  _F(F), _res_p(b.size()), _digit_p(A.coldim()), _GD(F)
+		{
+			for (size_t i=0; i< _res_p.size(); ++i)
+				_F.init(_res_p[i]);
+			for (size_t i=0; i< _digit_p.size(); ++i)
+				_F.init(_digit_p[i]);						
+		}
+		
+		
+		virtual ~SparseLULiftingContainer() {}
+
+		// return the field
+		const Field& field() const { return _F; }
+
+	protected:
+		
+		virtual IVector& nextdigit(IVector& digit, const IVector& residu) const {		
+
+			// compute residu mod p
+			Hom<Ring, Field> hom(this->_R, _F);
+			{
+				typename FVector::iterator iter_p = _res_p.begin();
+				typename IVector::const_iterator iter = residu.begin();
+				for ( ;iter != residu. end(); ++iter, ++iter_p)
+					hom.image(*iter_p, *iter);
+			}			
+		
+			// solve the system mod p using L.Q.U.P Factorization
+			_GD.solve(_digit_p, _rank, _Q,_L,_U,_P, _res_p);			
+		
+			
+			// promote new solution mod p to integers
+			{
+				typename FVector::const_iterator iter_p = _digit_p.begin(); 
+				typename IVector::iterator iter = digit.begin();
+				for ( ; iter_p!= _digit_p.end(); ++iter_p, ++iter)
+					//this->_R.init(*iter, _F.convert(tmp,*iter_p));
+					hom.preimage(*iter, *iter_p);
+			}
+
+			return digit;
+		}
+		
+	}; // end of class SparseLULiftingContainer
+
 
 
 } // end of namespace LinBox
