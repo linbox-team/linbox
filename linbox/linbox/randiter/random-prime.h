@@ -49,6 +49,9 @@ namespace LinBox {
         Prime_Type &operator *  () { 
             return _prime;
         }
+        Prime_Type & randomPrime() { 
+            return _prime;
+        }
        
             /** @brief setSeed (unsigned long ul)
              *  Set the random seed to be ul.
