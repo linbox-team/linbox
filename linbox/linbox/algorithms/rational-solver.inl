@@ -37,6 +37,7 @@
 #include <linbox/algorithms/rational-reconstruction.h>
 #include <linbox/algorithms/matrix-inverse.h>
 #include <linbox/algorithms/matrix-hom.h>
+#include <linbox/algorithms/gauss.h>
 #include <linbox/algorithms/blackbox-container.h>
 #include <linbox/algorithms/massey-domain.h>
 #include <linbox/algorithms/blackbox-block-container.h>
@@ -590,7 +591,7 @@ namespace LinBox {
 	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solveNonsingular 
 	(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, bool oldMatrix, int maxPrimes) const {
 
-	
+		cout<<"DIXON\n\n\n\n";
 #ifdef DEBUG_DIXON
 		std::cout << "entering nonsingular solver\n";
 #endif
@@ -700,7 +701,7 @@ namespace LinBox {
 		typedef DixonLiftingContainer<Ring,Field,IMatrix,BlasBlackbox<Field> > LiftingContainer;		
 		LiftingContainer lc(_R, *F, A, *FMP, b, _prime);
 		RationalReconstruction<LiftingContainer > re(lc);
-		if (!re.getRational(num, den, 0)){
+		if (!re.getRational(num, den,0)){
 			//delete FMP;
 			return SS_FAILED;
 		}
@@ -1395,7 +1396,49 @@ namespace LinBox {
 
 
 
+	/*
+	 * Specialization for Sparse Elimination method
+	 */
+	
+	// solve non singular system using Sparse LU
+	// max prime is not use. only check with one prime
 
+	template <class Ring, class Field, class RandomPrime>
+	template <class IMatrix, class Vector1, class Vector2>	
+	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,SparseEliminationTraits>::solveNonsingular 
+	(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes) const {
+
+		linbox_check(A.rowdim() == A.coldim());
+		
+		typedef typename Field::Element Element;
+
+		// reduce the matrix mod p
+		Field F(_prime);
+		typedef typename IMatrix::template rebind<Field>::other FMatrix;
+		FMatrix *Ap;
+		typename IMatrix::template rebind<Field>()( Ap, A, F);
+		
+		// compute LQUP Factorization
+		Permutation<Field> P,Q;
+		FMatrix L;
+		unsigned long rank;
+		Element det;
+
+		GaussDomain<Field> GD(F);
+		GD.QLUPin(rank,det,Q,L,*Ap,P,Ap->rowdim(), A->coldim());
+		if (rank != A.rowdim())
+			{throw LinboxError ("ERROR in DIXON SparseLU: singular matrix or bad prime");}
+
+
+		typedef SparseLULiftingContainer<Ring,Field,IMatrix,FMatrix> LiftingContainer;		
+		LiftingContainer lc(_R, F, A, L, Q, *Ap, P, rank, b, _prime);		
+		RationalReconstruction<LiftingContainer > re(lc);
+		
+		if (!re.getRational(num, den, 0)) 
+			return SS_FAILED;
+		else
+			return SS_OK;
+	}
 
 } //end of namespace LinBox
 
