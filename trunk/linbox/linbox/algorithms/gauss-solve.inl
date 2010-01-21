@@ -2,7 +2,7 @@
  * Copyright (C) LinBox 2008 
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <21 Jan 10 15:58:41 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <21 Jan 10 17:01:22 Jean-Guillaume.Dumas@imag.fr> 
  *
  * See COPYING for license information.
  */
@@ -61,6 +61,25 @@ namespace LinBox
         Permutation<Field> P(A.coldim(),_F);
 
         this->QLUPin(rank, det, Q, L, A, P, A.rowdim(), A.coldim() );
+
+        if (! randomsol) {
+                // Sets solution values to 0 for coldim()-rank columns
+                // Therefore, prune unnecessary elements 
+                // in those last columns of U
+            for(typename Matrix::RowIterator row=A.rowBegin();
+                row != A.rowEnd(); ++row) {
+                if (row->size()) {
+                    size_t ns=0;
+                    for(typename Matrix::Row::iterator it = row->begin();
+                        it != row->end(); ++it, ++ns) {
+                        if (it->first >= rank) {
+                            row->resize(ns);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
 
         return this->solve(x, rank, Q, L, A, P, b, randomsol);
     }
