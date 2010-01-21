@@ -191,7 +191,7 @@ int main (int argc, char **argv)
 	
         Timer chrono; 
 		
-            // Wiedemann
+	// Wiedemann
         chrono.start();
         solve (X, d, A, B, Method::Wiedemann());
         chrono.stop();
@@ -203,12 +203,24 @@ int main (int argc, char **argv)
         ZZ.write(std::cout, d) << std::endl;		
         std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
 
-            // BlasElimination
+	// BlasElimination
         chrono.start();
         solve (X, d, A, B, Method::BlasElimination());
         chrono.stop();
 
         std::cout << "(BlasElimination) Solution is [";
+        for(std::vector<PID_integer::Element>::const_iterator it=X.begin();it != X.end(); ++it)
+            ZZ.write(cout, *it) << " ";
+        std::cout << "] / ";
+        ZZ.write(std::cout, d)<< std::endl;		
+        std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
+
+	// Sparse Elimination
+        chrono.start();
+        solve (X, d, A, B, Method::SparseElimination());
+        chrono.stop();
+
+        std::cout << "(SparseElimination) Solution is [";
         for(std::vector<PID_integer::Element>::const_iterator it=X.begin();it != X.end(); ++it)
             ZZ.write(cout, *it) << " ";
         std::cout << "] / ";
