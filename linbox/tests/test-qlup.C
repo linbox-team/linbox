@@ -153,6 +153,7 @@ bool testQLUPsolve(const Field &F, size_t n, unsigned int iterations, double spa
 	typename Field::RandIter generator (F);
 	RandStream stream (F, generator, sparsity, n, n);
 		
+        GF2 F2; GF2::RandIter bitgenerator(F2); GF2::Element randomsolve;
 
 	for (size_t i = 0; i < iterations; ++i) {
 		commentator.startIteration (i);
@@ -178,7 +179,8 @@ bool testQLUPsolve(const Field &F, size_t n, unsigned int iterations, double spa
 		
 		Blackbox CopyA ( A );
 
-		GD.solvein(x, A, v);
+		GD.solvein(x, A, v, bitgenerator.random(randomsolve) );
+                report << "Random solving: " << randomsolve << std::endl;
 		
 		CopyA.apply(y, x);
         
