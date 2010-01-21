@@ -407,7 +407,8 @@ namespace LinBox
 	
 	// input matrix is a BlasBlackbox (no copy)
 	template <class Vector, class Ring> 
-	Vector& solve(Vector& x, typename Ring::Element &d, const BlasBlackbox<Ring>& A, const Vector& b, 
+	Vector& solve(Vector& x, typename Ring::Element &d, 
+                      const BlasBlackbox<Ring>& A, const Vector& b, 
 		      const RingCategories::IntegerTag & tag, 
 		      const Method::BlasElimination& m)
 	{ 
@@ -417,12 +418,25 @@ namespace LinBox
 
 	// input matrix is a DenseMatrix (no copy)
 	template <class Vector, class Ring> 
-	Vector& solve(Vector& x, typename Ring::Element &d, const DenseMatrix<Ring>& A, const Vector& b, 
+	Vector& solve(Vector& x, typename Ring::Element &d, 
+                      const DenseMatrix<Ring>& A, const Vector& b, 
 		      const RingCategories::IntegerTag & tag, 
 		      const Method::BlasElimination& m)
 	{ 
 		Method::Dixon mDixon(m);
 		return solve(x, d, A, b, tag, mDixon);
+	}
+
+	// input matrix is a SparseMatrix (no copy)
+	template <class Vect, class Ring> 
+	Vect& solve(Vect& x, typename Ring::Element &d, 
+                    const SparseMatrix<Ring, typename Vector<Ring>::SparseSeq>& A, 
+                    const Vect& b, 
+                    const RingCategories::IntegerTag & tag, 
+                    const Method::SparseElimination& m)
+	{ 
+            Method::Dixon mDixon(m);
+            return solve(x, d, A, b, tag, mDixon);
 	}
 
 
@@ -605,6 +619,107 @@ namespace LinBox
 		}
 		return x;	
 	}	
+
+
+
+	/** \brief solver specialization with the 2nd API and DixonTraits over integer (no copying)
+	 */
+	template <class Vect, class Ring> 
+	Vect& solve(Vect& x, typename Ring::Element &d, 
+                    const SparseMatrix<Ring, typename Vector<Ring>::SparseSeq> & A,
+                    const Vect& b, 
+                    const RingCategories::IntegerTag tag, 
+                    Method::Dixon& m)
+	{ 
+		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
+			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
+
+		commentator.start ("Padic Integer Sparse Elimination Solving", "solving");
+		
+		typedef Modular<double> Field;
+		// 0.7213475205 is an upper approximation of 1/(2log(2))
+		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
+		RationalSolver<Ring, Field, RandomPrimeIterator, SparseEliminationTraits> rsolve(A.field(), genprime); 			
+		SolverReturnStatus status = SS_OK;
+
+		// if singularity unknown and matrix is square, we try nonsingular solver
+		switch ( m.singular() ) {
+		case Specifier::SINGULARITY_UNKNOWN:
+			switch (A.rowdim() == A.coldim() ? 
+				status=rsolve.solveNonsingular(x, d, A, b,m.maxTries()) : SS_SINGULAR) {				
+			case SS_OK:
+				m.singular(Specifier::NONSINGULAR);				
+				break;					
+// 			case SS_SINGULAR:
+// 				switch (m.solution()){
+// 				case DixonTraits::DETERMINIST:
+// 					status= rsolve.monolithicSolve(x, d, A, b, false, false, m.maxTries(), 
+// 								       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
+// 					break;					
+// 				case DixonTraits::RANDOM:
+// 					status= rsolve.monolithicSolve(x, d, A, b, false, true, m.maxTries(), 
+// 								       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
+// 					break;					
+// 				case DixonTraits::DIOPHANTINE:
+// 					{ 
+// 						DiophantineSolver<RationalSolver<Ring,Field,RandomPrimeIterator, DixonTraits> > dsolve(rsolve);
+// 						status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
+// 										(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
+//                                         }
+//                                         break;					
+// 				default:
+// 					break;
+// 				}			
+// 				break;
+			default:
+                                break;
+			}
+			break;
+			
+		case Specifier::NONSINGULAR:
+			rsolve.solveNonsingular(x, d, A, b, m.maxTries());
+			break;
+			    
+		case Specifier::SINGULAR:
+// 			switch (m.solution()){
+// 			case DixonTraits::DETERMINIST:
+// 				status= rsolve.monolithicSolve(x, d, A, b, 
+// 							       false, false, m.maxTries(), 
+// 							       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
+// 				break;
+				
+// 			case DixonTraits::RANDOM:
+// 				status= rsolve.monolithicSolve(x, d, A, b, 
+// 							       false, true, m.maxTries(), 
+// 							       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
+// 				break;
+				
+// 			case DixonTraits::DIOPHANTINE:
+// 				{
+// 					DiophantineSolver<RationalSolver<Ring,Field,RandomPrimeIterator, DixonTraits> > dsolve(rsolve);
+// 					status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
+// 									(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
+//                                 }
+// 				break;
+				
+// 			//default:
+// 			//	break;
+// 			}		
+		default:			    
+			break;
+		}
+
+		commentator.stop("done", NULL, "solving");
+
+		if ( status == SS_INCONSISTENT ) {  
+			throw LinboxMathInconsistentSystem("Linear system is inconsistent");
+//			typename Ring::Element zero; A.field().init(zero, 0);
+// 			for (typename Vect::iterator i = x.begin(); i != x.end(); ++i) *i = zero;
+		}
+		return x;
+	}	
+
+
 
 	/*
 	  struct BlasEliminationCRASpecifier;

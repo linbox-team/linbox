@@ -1419,13 +1419,13 @@ namespace LinBox {
 		typename IMatrix::template rebind<Field>()( Ap, A, F);
 		
 		// compute LQUP Factorization
-		Permutation<Field> P,Q;
-		FMatrix L;
+		Permutation<Field> P(A.coldim(),F),Q(A.rowdim(),F);
+		FMatrix L(F, A.rowdim(), A.rowdim());
 		unsigned long rank;
 		Element det;
 
 		GaussDomain<Field> GD(F);
-		GD.QLUPin(rank,det,Q,L,*Ap,P,Ap->rowdim(), A->coldim());
+		GD.QLUPin(rank,det,Q,L,*Ap,P,Ap->rowdim(), Ap->coldim());
 		if (rank != A.rowdim())
 			{throw LinboxError ("ERROR in DIXON SparseLU: singular matrix or bad prime");}
 
