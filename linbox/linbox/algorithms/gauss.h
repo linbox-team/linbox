@@ -159,8 +159,10 @@ namespace LinBox
                               unsigned long Nj) const;
 
         template <class Matrix, class Perm, class Vector1, class Vector2> 
-        Vector1& solve(Vector1& x, unsigned long rank, const Perm& Q, const Matrix& L, 
-                       const Matrix& U, const Perm& P, const Vector2& b)  const;
+        Vector1& solve(Vector1& x, unsigned long rank, const Perm& Q, const Matrix& L, const Matrix& U, const Perm& P, const Vector2& b)  const;
+        
+        template <class Matrix, class Perm, class Vector1, class Vector2> 
+        Vector1& solve(Vector1& x, Vector1& w, unsigned long rank, const Perm& Q, const Matrix& L, const Matrix& U, const Perm& P, const Vector2& b)  const;
         
 
 	template <class Matrix, class Vector1, class Vector2>
