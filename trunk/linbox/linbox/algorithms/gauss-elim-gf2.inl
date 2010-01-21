@@ -1,6 +1,6 @@
 // =================================================================== //
 // SparseElimination elimination routines over GF2
-// Time-stamp: <01 Sep 09 15:32:17 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <21 Jan 10 15:08:59 Jean-Guillaume.Dumas@imag.fr> 
 // =================================================================== //
 #ifndef __GAUSS_ELIM_GF2_INL
 #define __GAUSS_ELIM_GF2_INL
@@ -10,7 +10,7 @@ namespace LinBox
     template <class Vector> inline void 
     GaussDomain<GF2>::permuteBinary (Vector              &lignecourante,
                                      const unsigned long &indcol,
-                                     const long &indpermut)
+                                     const long &indpermut) const
     {
     	const unsigned long k = indcol - 1;
 
@@ -89,7 +89,7 @@ namespace LinBox
                                  const unsigned long indcol,
                                  const long indpermut,
                                  const unsigned long npiv,
-                                 D                   &columns)
+                                 D                   &columns) const
     {
 
 	typedef typename Vector::value_type E;

@@ -1,6 +1,6 @@
 // =================================================================== //
 // SparseElimination search for pivots over GF2
-// Time-stamp: <01 Sep 09 15:32:35 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <21 Jan 10 15:08:59 Jean-Guillaume.Dumas@imag.fr> 
 // =================================================================== //
 #ifndef __GAUSS_PIVOT_GF2_INL
 #define __GAUSS_PIVOT_GF2_INL
@@ -12,7 +12,7 @@ namespace LinBox
                                              unsigned long 	&indcol,
                                              long 		&indpermut,
                                              D             	&columns,
-                                             bool		&determinant)
+                                             bool		&determinant) const
     {
  
 //        std::cerr << "SFP BEG : lignepivot: [";
@@ -73,7 +73,7 @@ namespace LinBox
     GaussDomain<GF2>::SparseFindPivotBinary (Vector &lignepivot, 
                                              unsigned long &indcol, 
                                              long &indpermut, 
-                                             bool& determinant)
+                                             bool& determinant) const
     {
 	long nj = lignepivot.size ();
 

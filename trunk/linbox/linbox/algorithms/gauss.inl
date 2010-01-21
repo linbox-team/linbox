@@ -2,7 +2,7 @@
  * Copyright (C) 1999 Jean-Guillaume Dumas
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <18 Sep 08 18:57:31 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <21 Jan 10 15:06:41 Jean-Guillaume.Dumas@imag.fr> 
  *
  * See COPYING for license information.
  */
@@ -35,7 +35,7 @@ namespace LinBox
                                  Matrix        &LigneA,
                                  Perm          &P,
                                  unsigned long Ni,
-                                 unsigned long Nj)
+                                 unsigned long Nj) const
     {
         linbox_check( Q.coldim() == Q.rowdim() );
         linbox_check( P.coldim() == P.rowdim() );
@@ -228,7 +228,7 @@ namespace LinBox
                                                 Element        &determinant,
                                                 Matrix         &LigneA,
                                                 unsigned long   Ni,
-                                                unsigned long   Nj)
+                                                unsigned long   Nj) const
     {
         typedef typename Matrix::Row        Vector;
         typedef typename Vector::value_type E;    
@@ -365,7 +365,7 @@ namespace LinBox
                                                        Element       &determinant,
                                        Matrix        &LigneA,
                                        unsigned long  Ni,
-                                       unsigned long  Nj)
+                                       unsigned long  Nj) const
     {
             // Requirements : SLA is an array of sparse rows
             // IN PLACE.
@@ -443,7 +443,7 @@ namespace LinBox
     GaussDomain<_Field>::Upper (Vector        &lignecur,
                                 const Vector  &lignepivot,
                                 unsigned long  indcol,
-                                long  indpermut)
+                                long  indpermut) const
     {
         static typename _Field::Element zero = _F.init(zero);
         
@@ -473,7 +473,7 @@ namespace LinBox
     GaussDomain<_Field>::LU (Vector        &lignecur,
                              const Vector  &lignepivot,
                              unsigned long  indcol,
-                             long  indpermut)
+                             long  indpermut) const
     {
         long n = lignecur.size ();
         long k = indcol - 1;
@@ -497,7 +497,7 @@ namespace LinBox
 
     template <class _Field>
     template <class Matrix> inline unsigned long &
-    GaussDomain<_Field>::upperin (unsigned long &res, Matrix &A)
+    GaussDomain<_Field>::upperin (unsigned long &res, Matrix &A) const
     {
             // Requirements : A is an array of rows
             // In place (A is modified)
@@ -520,7 +520,7 @@ namespace LinBox
 
     template <class _Field>
     template <class Matrix> inline unsigned long &
-    GaussDomain<_Field>::LUin (unsigned long &res, Matrix &A)
+    GaussDomain<_Field>::LUin (unsigned long &res, Matrix &A) const
     {
             // Requirements : A is an array of rows
             // In place (A is modified)

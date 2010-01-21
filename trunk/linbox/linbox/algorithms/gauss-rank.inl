@@ -1,6 +1,6 @@
 // =================================================================== //
 // SparseElimination rank calls
-// Time-stamp: <11 Sep 08 13:26:46 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <21 Jan 10 15:07:06 Jean-Guillaume.Dumas@imag.fr> 
 // =================================================================== //
 #ifndef __GAUSS_RANK_INL
 #define __GAUSS_RANK_INL
@@ -13,7 +13,7 @@ namespace LinBox
                                 Matrix        &A,
                                 unsigned long  Ni,
                                 unsigned long  Nj,
-                                SparseEliminationTraits::PivotStrategy   reord) 
+                                SparseEliminationTraits::PivotStrategy   reord)  const
     {
         Element determinant;
         if (reord == SparseEliminationTraits::PIVOT_NONE)
@@ -27,7 +27,7 @@ namespace LinBox
     template <class Matrix> unsigned long& 
     GaussDomain<_Field>::rankin(unsigned long &rank,
                                 Matrix        &A,
-                                SparseEliminationTraits::PivotStrategy   reord) 
+                                SparseEliminationTraits::PivotStrategy   reord)  const
     {
         return rankin(rank, A,  A.rowdim (), A.coldim (), reord);
     }
@@ -38,7 +38,7 @@ namespace LinBox
     template <class Matrix> unsigned long& 
     GaussDomain<_Field>::rank(unsigned long &rank,
                               const Matrix        &A,
-                              SparseEliminationTraits::PivotStrategy   reord) 
+                              SparseEliminationTraits::PivotStrategy   reord)  const
     {
         return rank(rank, A,  A.rowdim (), A.coldim (), reord);
     }
@@ -49,7 +49,7 @@ namespace LinBox
                               const Matrix        &A,
                               unsigned long  Ni,
                               unsigned long  Nj,
-                              SparseEliminationTraits::PivotStrategy   reord) 
+                              SparseEliminationTraits::PivotStrategy   reord)  const
     {
         Matrix CopyA(Ni);
         for(unsigned long i = 0; i < Ni; ++i)

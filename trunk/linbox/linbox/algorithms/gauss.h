@@ -67,7 +67,7 @@ namespace LinBox
 
             /** accessor for the field of computation
              */
-        const Field &field () { return _F; }
+        const Field &field () const { return _F; }
 
             /** @name rank
                 Callers of the different rank routines\\
@@ -80,23 +80,23 @@ namespace LinBox
             ///     
 	template <class Matrix> unsigned long& rankin(unsigned long &rank,
                                                       Matrix        &A,
-                                                      SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR);
+                                                      SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
             ///
         template <class Matrix> unsigned long& rankin(unsigned long &rank,
                                                       Matrix        &A,
                                                       unsigned long  Ni,
                                                       unsigned long  Nj,
-						      SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR);
+						      SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
             ///        
 	template <class Matrix> unsigned long& rank(unsigned long &rank,
                                                     const Matrix        &A,
-                                                    SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR);
+                                                    SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
             ///        
         template <class Matrix> unsigned long& rank(unsigned long &rank,
                                                     const Matrix        &A,
                                                     unsigned long  Ni,
                                                     unsigned long  Nj,
-                                                    SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR);
+                                                    SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
             //@}
 
             /** @name det
@@ -110,23 +110,23 @@ namespace LinBox
             ///     
 	template <class Matrix> Element& detin(Element &determinant,
                                                Matrix        &A,
-                                               SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR);
+                                               SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
             ///
         template <class Matrix> Element& detin(Element &determinant,
                                                Matrix        &A,
                                                unsigned long  Ni,
                                                unsigned long  Nj,
-                                               SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR);
+                                               SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
             ///        
 	template <class Matrix> Element& det(Element &determinant,
                                              const Matrix        &A,
-                                             SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR);
+                                             SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
             ///        
         template <class Matrix> Element& det(Element &determinant,
                                              const Matrix        &A,
                                              unsigned long  Ni,
                                              unsigned long  Nj,
-                                             SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR);
+                                             SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
             //@}
 
 
@@ -156,17 +156,17 @@ namespace LinBox
                               Matrix        &U,
                               Perm	    &P,
                               unsigned long Ni, 
-                              unsigned long Nj);
+                              unsigned long Nj) const;
 
         template <class Matrix, class Perm, class Vector1, class Vector2> 
         Vector1& solve(Vector1& x, unsigned long rank, const Perm& Q, const Matrix& L, 
-                       const Matrix& U, const Perm& P, const Vector2& b);
+                       const Matrix& U, const Perm& P, const Vector2& b)  const;
         
 
 	template <class Matrix, class Vector1, class Vector2>
 	Vector1& solvein(Vector1& x,
                          Matrix        &A,
-                         const Vector2& b);
+                         const Vector2& b)  const;
 
 
 	template <class Matrix>
@@ -174,7 +174,7 @@ namespace LinBox
                                               Element& determinant,
                                               Matrix        &A,
                                               unsigned long Ni, 
-                                              unsigned long Nj);
+                                              unsigned long Nj) const;
 
 
             /** \brief Sparse Gaussian elimination without reordering. 
@@ -189,14 +189,14 @@ namespace LinBox
 
             */
 	template <class Matrix>
-	unsigned long& NoReordering (unsigned long &rank, Element& determinant, Matrix &LigneA, unsigned long Ni, unsigned long Nj);
+	unsigned long& NoReordering (unsigned long &rank, Element& determinant, Matrix &LigneA, unsigned long Ni, unsigned long Nj) const;
 
             /** \brief Dense in place LU factorization without reordering
 
                 Using : FindPivot and LU
             */
 	template <class Matrix>
-	unsigned long &LUin (unsigned long &rank, Matrix &A);
+	unsigned long &LUin (unsigned long &rank, Matrix &A) const;
 
 
             /** \brief Dense in place Gaussian elimination without reordering
@@ -204,7 +204,7 @@ namespace LinBox
                 Using : FindPivot and LU
             */
 	template <class Matrix>
-	unsigned long &upperin (unsigned long &rank, Matrix &A);
+	unsigned long &upperin (unsigned long &rank, Matrix &A) const;
         
 
 
@@ -224,19 +224,19 @@ namespace LinBox
 			const unsigned long indcol,
 			const long indpermut,
 			const unsigned long npiv,
-			D                   &columns);
+			D                   &columns) const;
 
 	template <class Vector, class D>
 	void eliminate (Vector              &lignecourante,
 			const Vector        &lignepivot,
 			const unsigned long &indcol,
 			const long &indpermut,
-			D                   &columns);
+			D                   &columns) const;
 
         template <class Vector>
         void permute (Vector              &lignecourante,
                       const unsigned long &indcol,
-                      const long &indpermut);
+                      const long &indpermut) const;
             //-----------------------------------------
             // Sparse elimination using a pivot row :
             // lc <-- lc - lc[k]/lp[0] * lp 
@@ -247,7 +247,7 @@ namespace LinBox
 	void eliminate (Vector              &lignecourante,
 			const Vector        &lignepivot,
 			const unsigned long &indcol,
-			const long &indpermut);
+			const long &indpermut) const;
 
             //-----------------------------------------
             // Dense elimination using a pivot row :
@@ -258,7 +258,7 @@ namespace LinBox
 	void Upper (Vector       &lignecur,
 		    const Vector &lignepivot,
 		    unsigned long indcol,
-		    long indpermut);
+		    long indpermut) const;
 
             //-----------------------------------------
             // Dense elimination using a pivot row :
@@ -268,7 +268,7 @@ namespace LinBox
 	void LU (Vector       &lignecur,
 		 const Vector &lignepivot,
 		 unsigned long indcol,
-		 long indpermut);
+		 long indpermut) const;
 
             //------------------------------------------
             // Looking for a non-zero pivot in a row 
@@ -278,21 +278,21 @@ namespace LinBox
             // 2. Column density is minimum for this row
             //------------------------------------------
 	template <class Vector, class D>
-	void SparseFindPivot (Vector &lignepivot, unsigned long &indcol, long &indpermut, D &columns, Element& determinant);
+	void SparseFindPivot (Vector &lignepivot, unsigned long &indcol, long &indpermut, D &columns, Element& determinant) const;
 	
             //------------------------------------------
             // Looking for a non-zero pivot in a row 
             // No reordering
             //------------------------------------------
 	template <class Vector>
-	void SparseFindPivot (Vector &lignepivot, unsigned long &indcol, long &indpermut, Element& determinant);
+	void SparseFindPivot (Vector &lignepivot, unsigned long &indcol, long &indpermut, Element& determinant) const;
 	
             //------------------------------------------
             // Looking for a non-zero pivot in a row  
             // Dense search
             //------------------------------------------
 	template <class Vector>
-	void FindPivot (Vector &lignepivot, unsigned long &k, long &indpermut);
+	void FindPivot (Vector &lignepivot, unsigned long &k, long &indpermut) const;
 
     };
 

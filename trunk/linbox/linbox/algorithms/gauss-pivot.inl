@@ -1,6 +1,6 @@
 // =================================================================== //
 // SparseElimination search for pivots 
-// Time-stamp: <18 Sep 08 19:11:44 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <21 Jan 10 15:09:38 Jean-Guillaume.Dumas@imag.fr> 
 // =================================================================== //
 #ifndef __GAUSS_PIVOT_INL
 #define __GAUSS_PIVOT_INL
@@ -14,7 +14,7 @@ namespace LinBox
                                           unsigned long 	&indcol,
                                           long 		&indpermut,
                                           D             	&columns,
-                                          Element		&determinant)
+                                          Element		&determinant) const
     {
  
 //        std::cerr << "SFP BEG : lignepivot: [";
@@ -84,7 +84,7 @@ namespace LinBox
     GaussDomain<_Field>::SparseFindPivot (Vector &lignepivot, 
                                           unsigned long &indcol, 
                                           long &indpermut, 
-                                          Element& determinant)
+                                          Element& determinant) const
     {
 	long nj = lignepivot.size ();
 
@@ -105,7 +105,7 @@ namespace LinBox
     template <class Vector> inline void 
     GaussDomain<_Field>::FindPivot (Vector &lignepivot, 
                                     unsigned long &k, 
-                                    long &indpermut)
+                                    long &indpermut) const
     { 
             // Dense lignepivot
 	long n = lignepivot.size ();

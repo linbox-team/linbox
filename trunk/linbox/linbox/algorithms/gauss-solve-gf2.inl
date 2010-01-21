@@ -2,7 +2,7 @@
  * Copyright (C) LinBox 2009
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <01 Oct 09 15:36:37 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <21 Jan 10 15:08:58 Jean-Guillaume.Dumas@imag.fr> 
  *
  * See COPYING for license information.
  */
@@ -22,7 +22,7 @@ namespace LinBox
     Vector1& GaussDomain<GF2>::solve(Vector1& x, unsigned long rank, 
                    const Perm& Q, const SparseSeqMatrix& L, 
                    const SparseSeqMatrix& U, const Perm& P, 
-                   const Vector2& b) {
+                   const Vector2& b) const {
         
         Vector2 y(U.rowdim()), v(U.rowdim());
         Vector1 w(U.coldim());
@@ -43,7 +43,7 @@ namespace LinBox
     template <class SparseSeqMatrix, class Vector1, class Vector2>
     Vector1& GaussDomain<GF2>::solvein(Vector1& x,
                      SparseSeqMatrix        &A,
-                     const Vector2& b) {
+                     const Vector2& b) const {
         
         typename GF2::Element det;
         unsigned long rank;

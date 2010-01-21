@@ -1,7 +1,7 @@
 /* linbox/algorithms/gauss-gf2.inl
  * Copyright (C) 2009 The LinBox group
  *
- * Time-stamp: <01 Sep 09 15:31:54 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <21 Jan 10 15:08:12 Jean-Guillaume.Dumas@imag.fr> 
  *
  * See COPYING for license information.
  */
@@ -27,7 +27,7 @@ namespace LinBox
                                   bool          &determinant,
                                   SparseSeqMatrix        &LigneA,
                                   unsigned long Ni,
-                                  unsigned long Nj)
+                                  unsigned long Nj) const
     {
             // Requirements : LigneA is an array of sparse rows
             // In place (LigneA is modified)
@@ -187,7 +187,7 @@ namespace LinBox
                                   SparseSeqMatrix        &LigneA,
                                   Perm          &P,
                                   unsigned long Ni,
-                                  unsigned long Nj)
+                                  unsigned long Nj) const
     {
         linbox_check( Q.coldim() == Q.rowdim() );
         linbox_check( P.coldim() == P.rowdim() );
