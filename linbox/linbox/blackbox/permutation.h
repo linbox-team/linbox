@@ -56,13 +56,16 @@ namespace LinBox
         \ingroup blackbox
         * @param Storage \ref{LinBox} dense or sparse vector of field elements
         */
-    template<class _Field, class Storage = __LINBOX_PERMUTATION_STORAGE >
+    template<class _Field, class _Storage = __LINBOX_PERMUTATION_STORAGE >
     class Permutation : public  BlackboxInterface 
     {
         const _Field& _F;
     public:
-        typedef _Field         Field;
-        typedef typename Field::Element Element;
+        typedef Permutation<_Field, _Storage>	Self_t;
+        typedef _Storage 			Storage;
+        typedef _Field         		Field;
+        typedef typename Field::Element 	Element;
+
             /** Constructor from a vector of indices
              * This constructor creates a permutation matrix based on a vector of indices
              * @param indices Vector of indices representing the permutation
@@ -164,9 +167,16 @@ namespace LinBox
             }
 
 
+
         template<typename _Tp1>
         struct rebind
-        { typedef Permutation<_Tp1, Storage> other; };
+        { 
+            typedef Permutation<_Tp1, Storage> other; 
+            void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
+                Ap = new other(A.rowdim(), F);
+                Ap->setStorage( A.getStorage() );
+            }
+        };
 
 
 
@@ -260,6 +270,8 @@ namespace LinBox
         }
 #endif
 
+        Storage& setStorage(const Storage& s) { return _indices=s; }
+        const Storage& getStorage() const { return _indices; }
 
     private:
             // Vector of indices
