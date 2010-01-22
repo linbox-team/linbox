@@ -1455,7 +1455,7 @@ namespace LinBox {
 		typedef SparseLULiftingContainer<Ring,Field,IMatrix,FMatrix> LiftingContainer;		
 		LiftingContainer lc(_R, F, A, L, Q, *Ap, P, rank, b, _prime);		
 		RationalReconstruction<LiftingContainer > re(lc);
-		
+
 		if (!re.getRational(num, den, 0)) 
 			return SS_FAILED;
 		else
