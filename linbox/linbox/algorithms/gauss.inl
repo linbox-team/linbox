@@ -2,7 +2,7 @@
  * Copyright (C) 1999 Jean-Guillaume Dumas
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <21 Jan 10 15:06:41 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <22 Jan 10 18:03:53 Jean-Guillaume.Dumas@imag.fr> 
  *
  * See COPYING for license information.
  */
@@ -206,7 +206,8 @@ namespace LinBox
         for(std::deque<std::pair<size_t,size_t> >::const_iterator it = invQ.begin(); it!=invQ.end();++it)
             Q.permute( it->first, it->second );
         
-        
+            
+//             std::ostream& rep = commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT);
 //             Q.write(rep << "Q:= ", FORMAT_MAPLE) << ':' << std::endl;
 //             LigneL.write(rep << "L:= ", FORMAT_MAPLE) << ':' << std::endl;
 //             LigneA.write(rep << "U:= ", FORMAT_MAPLE) << ':' << std::endl;
