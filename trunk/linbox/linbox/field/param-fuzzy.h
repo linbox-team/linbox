@@ -101,8 +101,10 @@ namespace LinBox
 		 * @param x field base element to contain output (reference returned).
 		 * @param y integer.
 		 */
-		Element &init (Element &x, const integer &y) const
+		Element &init (Element &x, const integer &y = 0) const
 			{ return x = static_cast<double> (y); }
+		Element &init (Element &x, const double &y) const
+			{ return x = y; }
  
 		/** Conversion of field base element to a template class T.
 		 * This function assumes the output field base element x has already been
@@ -113,6 +115,8 @@ namespace LinBox
 		 */
 		integer &convert (integer &x, const Element &y) const
 			{ return x = static_cast<integer> (y); }
+		double &convert (double &x, const Element &y) const
+			{ return x = y; }
  
 		/** Assignment of one field base element to another.
 		 * This function assumes both field base elements have already been
