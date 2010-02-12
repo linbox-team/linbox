@@ -176,7 +176,7 @@ int main (int argc, char **argv)
 		{ 'k', "-k K", "K nonzero entries per row in test matrix.", TYPE_INT, &k },
 		{ 'N', "-N N", "Blocking factor.", TYPE_INT, &N },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INT, &q },
-		{ '\0', NULL, NULL, TYPE_NONE, NULL }
+		{ '\0', NULL, NULL, TYPE_NONE, NULL },
 		{ '\0' }
 	};
 
@@ -185,7 +185,7 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Field F (q);
 
-	std::cout << "Montgomery block Lanczos test suite" << std::endl << std::endl;
+	commentator.start("Montgomery block Lanczos test suite");
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
@@ -197,8 +197,10 @@ int main (int argc, char **argv)
 	RandomDenseStream<Field> y_stream (F, n, i);
 
 	if (!testRandomSolve (F, A_stream, y_stream, N)) pass=false;;
-	std::cout << "	Skipping Sample Nullspace test (which has mem problems)" << std::endl;
+	commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) 
+		<< "	Skipping Sample Nullspace test (which has mem problems)" << std::endl;
 	//if (!testSampleNullspace (F, A_stream, N, i)) pass=false;;
 
+	commentator.stop("Montgomery block Lanczos test suite");
 	return pass ? 0 : -1;
 }
