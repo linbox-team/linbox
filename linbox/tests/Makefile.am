@@ -1,7 +1,8 @@
 INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/linbox
 #AM_LDFLAGS = -llapack -lcblas -latlas 
 #AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -O2 
-AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall 
+AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall
+#AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -D__LINBOX_HAVE_DGETRF -D__LINBOX_HAVE_DGETRI 
 #AM_CFLAGS = -g -Wall
 
 SUBDIRS = data
@@ -65,6 +66,7 @@ BASIC_TESTS =  			\
 	test-zero-one           \
         test-solve              \
 	test-nullspace		\
+        test-mg-block-lanczos	\
 	test-charpoly
 
 # tests of components not adhering to LinBox requirements.
@@ -82,8 +84,7 @@ DUBIOUS_TESTS = \
         test-zo
 
 NONCOMPILING_TESTS =  	\
-	test-dense-zero-one     \
-        test-mg-block-lanczos
+	test-dense-zero-one     
 
 FAILING_TESTS =		\
 	test-rat-charpoly	\
