@@ -25,6 +25,7 @@
 
 //#define DEBUG_LC
 //#define LC_CHECK_DIVISION
+#undef _L
 
 #include <vector>
 
