@@ -124,6 +124,9 @@ namespace LinBox
 			return x = y;
 		}
 		
+		inline int32 &convert (int32 &x, const Element &y) const { 
+			return x = y;
+		}
 		inline double &convert (double &x, const Element &y) const { 
 			return x = (double) y;
 		}
