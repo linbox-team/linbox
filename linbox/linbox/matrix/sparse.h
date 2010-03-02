@@ -43,8 +43,10 @@
 #ifndef __MATRIX_SPARSE_H
 #define __MATRIX_SPARSE_H
 
+#ifndef _SP_BB_VECTOR_
 #include <vector>
 #define _SP_BB_VECTOR_ std::vector
+#endif
 
 #include <utility>
 #include <iostream>
