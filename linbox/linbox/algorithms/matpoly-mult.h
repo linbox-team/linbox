@@ -377,10 +377,10 @@ namespace LinBox {
 				std::cout<<"num of primes "<<nbrprimes<<"\n";
 #endif
 				// allocate fftprime fields
-				Field f_i[nbrprimes];
+				Field * f_i = new Field[nbrprimes];
 
 				// allocate polynomial matrices for multimodular results
-				Polynomial a_i[nbrprimes];
+				Polynomial * a_i = new Polynomial[nbrprimes];
 				const Coefficient Zero(a[0].rowdim(),a[0].coldim());
 
 
@@ -404,8 +404,9 @@ namespace LinBox {
 							}
 				}
 				else {
-					integer crt[nbrprimes];
-					Element crt_inv[nbrprimes], tmp;
+					integer * crt = new integer[nbrprimes];
+					Element * crt_inv = new Element[nbrprimes];
+					Element tmp;
 					crt_inv[nbrprimes];
 					for (size_t i=0;i<nbrprimes; ++i){
 						crt[i]=primesprod/lprimes[i];
@@ -430,7 +431,11 @@ namespace LinBox {
 #ifdef FFT_TIMING
 				chrono.stop();std::cout<<"reconstruction time: "<<chrono<<"\n";
 #endif
+				delete [] crt;
+				delete [] crt_inv;
 				}
+			delete [] f_i;
+			delete [] a_i;
 			}			
 		}
 
@@ -484,10 +489,10 @@ namespace LinBox {
 #endif				
 
 				// allocate fftprime fields
-				Field f_i[nbrprimes];
+				Field * f_i = new Field[nbrprimes];
 
 				// allocate polynomial matrices for multimodular results
-				Polynomial a_i[nbrprimes];
+				Polynomial * a_i = new Polynomial[nbrprimes];
 				const Coefficient Zero(a[0].rowdim(),a[0].coldim());
 
 
@@ -510,8 +515,9 @@ namespace LinBox {
 							}
 				}
 				else {
-					integer crt[nbrprimes];
-					Element crt_inv[nbrprimes], tmp;
+					integer * crt = new integer[nbrprimes];
+					Element * crt_inv = new Element[nbrprimes];
+					Element tmp;
 					crt_inv[nbrprimes];
 					for (size_t i=0;i<nbrprimes; ++i){
 						crt[i]=primesprod/lprimes[i];
@@ -533,10 +539,14 @@ namespace LinBox {
 								}
 								_F.init(a[k].refEntry(i,j), acc);
 							}
+				delete [] crt;
+				delete [] crt_inv;
 				}
 #ifdef FFT_TIMING			
 				chrono.stop();std::cout<<"reconstruction time: "<<chrono<<"\n";
 #endif	
+			delete [] f_i;
+			delete [] a_i;
 			}		
 		}
 	};
