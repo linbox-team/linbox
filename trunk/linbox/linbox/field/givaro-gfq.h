@@ -94,6 +94,10 @@ namespace LinBox
      */	
     typedef GIV_randIter< GFqDom<int32>, LinBox::integer >  RandIter;
 
+    /** Empty Constructor 
+     */
+    GivaroGfq() : GFqDom<int32>() { }
+
     /** Constructor from an integer
      *  this constructor use the ZpzDom<TAG> constructor
      */
