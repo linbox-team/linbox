@@ -683,6 +683,8 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 			{ return _r_index; }
 		size_t colIndex () const
 			{ return _c_index; }
+		const value_type &value() const
+			{ return _j->second; }
 
 	    private:
 		RepIterator _i;
