@@ -27,7 +27,7 @@ namespace LinBox
 #define __LINBOX_BITSOF_LONG_MUN 31
 #define __LINBOX_LOGOF_SIZE 5
 #define __LINBOX_POS_ALL_ONES 0x1F
-const unsigned long __LINBOX_ALL_ONES = static_cast<const unsigned long>(-1);
+const unsigned long __LINBOX_ALL_ONES = static_cast<unsigned long>(-1);
 #define __LINBOX_PARITY(s) ParallelParity(s)
 
     bool ParallelParity(unsigned long t) {
@@ -43,7 +43,7 @@ const unsigned long __LINBOX_ALL_ONES = static_cast<const unsigned long>(-1);
 #define __LINBOX_BITSOF_LONG_MUN 63
 #define __LINBOX_LOGOF_SIZE 6
 #define __LINBOX_POS_ALL_ONES 0x3F
-const unsigned long __LINBOX_ALL_ONES = static_cast<const unsigned long>(-1);
+const unsigned long __LINBOX_ALL_ONES = static_cast<unsigned long>(-1);
 #define __LINBOX_PARITY(s) ParallelParity(s)
 
     bool ParallelParity(unsigned long t) {
