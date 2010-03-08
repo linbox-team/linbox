@@ -52,9 +52,16 @@ namespace LinBox
     Element& init(Element& x , const integer& y) const
 	  { return x=Rational(y);}
 
+    Element& init(Element& x , const integer& n,const integer& d) const
+	  { return x=Rational(n,d);}
+
     template<class XX>
     Element& init(Element& x , const XX& y) const
 	  { return x=Rational(y);}
+
+    integer& convert(integer& i, const Element& r) const 
+          { return i=r.nume(); }
+      
 
     Element& assign(Element& x , const Rational& y) const
           { return x=y;}
