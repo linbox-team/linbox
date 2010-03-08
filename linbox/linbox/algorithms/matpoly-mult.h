@@ -39,6 +39,10 @@ namespace LinBox {
 
 #define FFT_DEG_THRESHOLD   100
 #define KARA_DEG_THRESHOLD   10
+#ifndef FFT_PRIME_SEED
+// random seed
+#define FFT_PRIME_SEED 0
+#endif
 
 
 	template <class Field, class Polynomial>
@@ -61,7 +65,6 @@ namespace LinBox {
 
 		void mul (Polynomial &a, const Polynomial &b, const Polynomial &c) {
 			size_t d = b.size()+c.size();
-			size_t n = b[0].coldim();
 
 			if (d > FFT_DEG_THRESHOLD)
 				_fft.mul(a,b,c);
@@ -78,7 +81,6 @@ namespace LinBox {
 			linbox_check( 2*b.size() == c.size()+1);			
 
 			size_t d = b.size()+c.size();
-			size_t n = b[0].coldim();
 
 			if (d > FFT_DEG_THRESHOLD)
 				_fft.midproduct(a,b,c);
@@ -104,8 +106,9 @@ namespace LinBox {
 		
 		void mul(Polynomial &a, const Polynomial &b, const Polynomial &c) {
 			
-			size_t deg =  b.size()+c.size()-1;
-			linbox_check(a.size() >= deg);
+// 			size_t deg =  b.size()+c.size()-1;
+// 			linbox_check(a.size() >= deg);
+			linbox_check(a.size() >= (b.size()+c.size()-1));
 
 			for (size_t i=0;i<b.size();++i){
 				for (size_t j=0;j<c.size();++j)
@@ -186,8 +189,8 @@ namespace LinBox {
 			}
 			else {
 				size_t degA_low, degA_high, degB_low, degB_high, half_degA, half_degB, degSplit;
-				half_degA= (degA & 1) + degA >>1;
-				half_degB= (degB & 1) + degB >>1;
+				half_degA= (degA & 1) + (degA >>1);
+				half_degB= (degB & 1) + (degB >>1);
 				degSplit= (half_degA > half_degB) ? half_degA : half_degB;
 				
 				degB_low = (degB < degSplit) ? degB : degSplit;
@@ -363,7 +366,7 @@ namespace LinBox {
 				// get number of necessary primes				
 				integer ibound = n * _p * _p * std::max(b.size(), c.size());
 				integer primesprod=1; size_t nbrprimes=1;
-				RandomFFTPrime fftprime(bit);
+				RandomFFTPrime fftprime(bit, FFT_PRIME_SEED);
 				std::vector<integer> lprimes(10); lprimes.resize(nbrprimes);
 				lprimes[0] = fftprime.randomPrime();				
 				primesprod = lprimes[0];
@@ -393,7 +396,6 @@ namespace LinBox {
 				}
 				
 				LinBox::Timer chrono;
-				double trec=0.;
 				chrono.start();
 				// reconstruct the solution modulo the original prime
 				if (nbrprimes < 2) {
@@ -407,7 +409,6 @@ namespace LinBox {
 					integer * crt = new integer[nbrprimes];
 					Element * crt_inv = new Element[nbrprimes];
 					Element tmp;
-					crt_inv[nbrprimes];
 					for (size_t i=0;i<nbrprimes; ++i){
 						crt[i]=primesprod/lprimes[i];
 						f_i[i].init(tmp,crt[i]);
@@ -473,7 +474,7 @@ namespace LinBox {
 				// get number of necessary primes				
 				integer ibound = n * _p * _p * std::max(b.size(), c.size());
 				integer primesprod=1; size_t nbrprimes=1;
-				RandomFFTPrime fftprime(bit);
+				RandomFFTPrime fftprime(bit, FFT_PRIME_SEED);
 				std::vector<integer> lprimes(10); lprimes.resize(nbrprimes);
 				lprimes[0] = fftprime.randomPrime();				
 				primesprod = lprimes[0];
@@ -518,7 +519,6 @@ namespace LinBox {
 					integer * crt = new integer[nbrprimes];
 					Element * crt_inv = new Element[nbrprimes];
 					Element tmp;
-					crt_inv[nbrprimes];
 					for (size_t i=0;i<nbrprimes; ++i){
 						crt[i]=primesprod/lprimes[i];
 						f_i[i].init(tmp,crt[i]);
@@ -588,7 +588,7 @@ namespace LinBox {
 			for (;;) {
 				_gen = rand() % _pl; if (_gen <= 0) continue;
 				
-				z = 1; for (size_t i=0;i<m;++i) z = z*_gen % _pl;
+				z = 1; for (long i=0;i<m;++i) z = z*_gen % _pl;
 				if (z == 1) continue;
 				
 				//_gen = z;
@@ -630,7 +630,6 @@ namespace LinBox {
 			}
 			
 			long w ;
-			long accu;
 			// find a pseudo nth primitive root of unity
 			for (;;) {
 						
@@ -652,7 +651,7 @@ namespace LinBox {
 				for (;;) {
 					_gen = rand() % _pl; if (_gen <= 0) continue;
 					
-					zz = 1; for (size_t i=0;i<mm;++i) zz = zz*_gen % _pl;
+					zz = 1; for (long i=0;i<mm;++i) zz = zz*_gen % _pl;
 					if (zz == 1) continue;
 					
 					jj = 0;
@@ -703,7 +702,7 @@ namespace LinBox {
 
 			// compute reverse bit ordering
 			size_t revbit[pts];
-			for (long i = 0, j = 0; i < pts; i++, j = RevInc(j, lpts))
+			for (long i = 0, j = 0; i < static_cast<long>(pts); i++, j = RevInc(j, lpts))
 				revbit[i]=j;
 			
 			// set the data
@@ -822,7 +821,6 @@ namespace LinBox {
 			}
 			
 			long w ;
-			long accu;
 			// find a pseudo nth primitive root of unity
 			for (;;) {
 						
@@ -844,7 +842,7 @@ namespace LinBox {
 				for (;;) {
 					_gen = rand() % _pl; if (_gen <= 0) continue;
 					
-					zz = 1; for (size_t i=0;i<mm;++i) zz = zz*_gen % _pl;
+					zz = 1; for (long i=0;i<mm;++i) zz = zz*_gen % _pl;
 					if (zz == 1) continue;
 					
 					jj = 0;
@@ -892,7 +890,7 @@ namespace LinBox {
 
 			// compute reverse bit ordering
 			size_t revbit[pts];
-			for (long i = 0, j = 0; i < pts; i++, j = RevInc(j, lpts))
+			for (long i = 0, j = 0; i < static_cast<long>(pts); i++, j = RevInc(j, lpts))
 				revbit[i]=j;
 		
 			// set the data
