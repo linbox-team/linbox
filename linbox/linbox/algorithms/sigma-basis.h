@@ -467,7 +467,7 @@ namespace LinBox {
 			// Keep track on Sigma Base's row degree
 			// I adjust the degree with the maximal difference between defects
 			// this is just to be sure to catch degree increase according to elimination process
-			int min_defect, max_defect;
+			size_t min_defect, max_defect;
 			min_defect = max_defect = defect[0];
 			for (size_t i=0;i<m;++i){
 				if ( defect[i] > max_defect)
@@ -481,7 +481,7 @@ namespace LinBox {
 			// Discrepancy
 			Coefficient Discrepancy(m,n);
 			Timer chrono;
-			int cptr=0;
+                       int cptr=0;
 
 			// Compute the minimal Sigma Base of the PowerSerie up to length
 			for (size_t k=0; k< length; ++k) {
