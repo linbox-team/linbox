@@ -81,7 +81,7 @@ class BitVector::reference
 		{ *_word ^= v & (1UL << _pos); return *this; }
 
 	operator bool (void) const
-		{ return (*_word >> _pos) & 1UL; return *this; }
+		{ return (*_word >> _pos) & 1UL; }
 
     private:
 	friend class iterator;
