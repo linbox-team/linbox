@@ -22,7 +22,7 @@ FFPACK::LUdivine_gauss( const Field& F, const FFLAS_DIAG Diag,
 			const size_t M, const size_t N,		
 			typename Field::Element * A, const size_t lda, size_t*P, 
 			size_t *Q, const FFPACK_LUDIVINE_TAG LuTag){
-	static typename Field::Element mone,one,zero;
+	typename Field::Element mone,one,zero;
 	F.init(one,1.0);
 	F.init(zero,0.0);
 	F.neg (mone, one);
@@ -384,7 +384,7 @@ FFPACK::LUdivine (const Field& F, const FFLAS_DIAG Diag, const FFLAS_TRANSPOSE t
 	
 	if ( !(M && N) ) return 0;
 	typedef typename Field::Element elt;
-	static elt Mone, one, zero;
+	elt Mone, one, zero;
 	F.init(Mone, -1.0);
 	F.init(one,1.0);
 	F.init(zero,0.0);
@@ -577,7 +577,7 @@ FFPACK::LUdivine_construct( const Field& F, const FFLAS_DIAG Diag,
 				      bool computeX, const FFPACK_MINPOLY_TAG MinTag = FfpackDense,
 				      const size_t kg_mc =0, const size_t kg_mb=0, const size_t kg_j=0){
 
-	static typename Field::Element Mone, one, zero;
+            typename Field::Element Mone, one, zero;
 	F.init(Mone, -1.0);
 	F.init(one, 1.0);
 	F.init(zero,0.0);
@@ -690,7 +690,7 @@ FFPACK::TURBO (const Field& F, const size_t M, const size_t N,
 
 	if ( !(M && N) ) return 0;
 	typedef typename Field::Element elt;
-	static elt Mone, one, zero;
+	elt Mone, one, zero;
 	F.init(Mone, -1.0);
 	F.init(one,1.0);
 	F.init(zero,0.0);
