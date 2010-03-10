@@ -481,7 +481,9 @@ namespace LinBox {
 			// Discrepancy
 			Coefficient Discrepancy(m,n);
 			Timer chrono;
-                       int cptr=0;
+#ifdef  _BM_TIMING		
+                        int cptr=0;
+#endif
 
 			// Compute the minimal Sigma Base of the PowerSerie up to length
 			for (size_t k=0; k< length; ++k) {
