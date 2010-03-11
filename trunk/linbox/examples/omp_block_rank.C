@@ -1,7 +1,7 @@
 /* omp_block_rank.C
  * Copyright (C) 2010 The LinBox Group
  * Block Wiedemann Rank with OpenMP
- * Time-stamp: <10 Mar 10 11:36:54 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <11 Mar 10 17:03:30 Jean-Guillaume.Dumas@imag.fr>
  * See COPYING for license information.
  */
 #include <iostream>
@@ -203,8 +203,8 @@ void WhisartTraceTranspose(
     const LinBox::Diagonal<Field>& ExtD, 
     const BB& A, 
     const LinBox::Diagonal<Field>& InD) {
-        // Trace of ExtD B InD B^T ExtD
-        // is sum ExtD_i^2 B_{i,j} InD_j
+        // Trace of ExtD B^T  InD B ExtD
+        // is sum ExtD_j^2 B_{i,j} InD_i
     F.init(trace, 0);
     for(typename BB::ConstRawIndexedIterator it = A.rawIndexedBegin();
         it != A.rawIndexedEnd(); ++it) {
@@ -325,7 +325,7 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
     if (M>N) {
 #pragma omp parallel for firstprivate(B) schedule(static)
         for(int j=0; j<nb; ++j) {
-            std::vector< typename Field::Element > v(S),w(S); 
+            std::vector< typename Field::Element > v(S),u(S),w(R); 
             std::vector< typename Field::Element > colonne(nb);
 
             LM.apply(colonne, LV[j]);
@@ -336,9 +336,9 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
                     // BlackBox Apply
                 D2.apply(w,LV[j]);	
                 B.apply(v,w);		
-                D1.apply(w,v);		
-                B.applyTranspose(v,w);	
-                D2.apply(LV[j],v);	
+                D1.apply(u,v);		
+                B.applyTranspose(w,u);	
+                D2.apply(LV[j],w);	
 
                     // Dot products
                 LM.apply(colonne, LV[j]);
@@ -350,7 +350,7 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
     } else {
 #pragma omp parallel for firstprivate(B) schedule(static)
         for(int j=0; j<nb; ++j) {
-            std::vector< typename Field::Element > v(S),w(S); 
+            std::vector< typename Field::Element > v(S),u(S),w(R); 
             std::vector< typename Field::Element > colonne(nb);
 
             LM.apply(colonne, LV[j]);
@@ -361,9 +361,9 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
                     // BlackBox Apply
                 D2.apply(w,LV[j]);	
                 B.applyTranspose(v,w);		
-                D1.apply(w,v);		
-                B.apply(v,w);	
-                D2.apply(LV[j],v);	
+                D1.apply(u,v);		
+                B.apply(w,u);	
+                D2.apply(LV[j],w);	
 
                     // Dot products
                 LM.apply(colonne, LV[j]);
