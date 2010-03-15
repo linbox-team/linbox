@@ -39,8 +39,8 @@
 namespace LinBox {
 
 
-#define FFT_DEG_THRESHOLD   100
-#define KARA_DEG_THRESHOLD   10
+#define FFT_DEG_THRESHOLD   64
+#define KARA_DEG_THRESHOLD  10
 #ifndef FFT_PRIME_SEED
 // random seed
 #define FFT_PRIME_SEED 0
@@ -67,7 +67,8 @@ namespace LinBox {
 
 		void mul (Polynomial &a, const Polynomial &b, const Polynomial &c) {
 			size_t d = b.size()+c.size();
-
+			Timer multime;
+			multime.start();
 			if (d > FFT_DEG_THRESHOLD)
 				_fft.mul(a,b,c);
 			else
@@ -75,6 +76,8 @@ namespace LinBox {
 					_kara.mul(a,b,c);		
 				else
 					_classic.mul(a,b,c);
+			multime.stop();
+			std::cout<<"time of mul "<<b.size()<<"x"<<c.size()<<" : "<<multime<<std::endl;
 					
 		}
 
@@ -83,7 +86,8 @@ namespace LinBox {
 			linbox_check( 2*b.size() == c.size()+1);			
 
 			size_t d = b.size()+c.size();
-
+			Timer multime;
+			multime.start();
 			if (d > FFT_DEG_THRESHOLD)
 				_fft.midproduct(a,b,c);
 			else
@@ -91,6 +95,8 @@ namespace LinBox {
 					_kara.midproduct(a,b,c);		
 				else
 					_classic.midproduct(a,b,c);
+			multime.stop();
+			std::cout<<"time of midp "<<b.size()<<"x"<<c.size()<<" : "<<multime<<std::endl;
 		}
 	};
 
@@ -111,7 +117,6 @@ namespace LinBox {
 // 			size_t deg =  b.size()+c.size()-1;
 // 			linbox_check(a.size() >= deg);
 			linbox_check(a.size() >= (b.size()+c.size()-1));
-
 			for (size_t i=0;i<b.size();++i){
 				for (size_t j=0;j<c.size();++j)
 					_BMD.axpyin(a[i+j],b[i],c[j]);
@@ -715,10 +720,7 @@ namespace LinBox {
 			for (size_t i=0;i<c.size();++i)
 				fft_c[i]=c[i];
 				//fft_c[revbit[i]]=c[i];
-			
-
-	
-		
+						
 			
 #ifdef FFT_TIMING
 			chrono.stop();
@@ -726,68 +728,13 @@ namespace LinBox {
 			chrono.clear();
 			chrono.start();
 #endif
-			// compute the DFT of b and c using FFT
-#ifdef __LINBOX_HAVE_OPENMP
-
-			// do blocking on the matrix b and c to perform FFT in parallel on each block
-			long nump=omp_get_max_threads();
-			long nb_bsize=m%nump;
-			long bsize =m/nump+(nb_bsize?1:0);
-			long lbsize=m/nump;
-#pragma omp parallel for firstprivate(pts,pow_w) shared(fft_b, fft_c) schedule(static)		
+			// compute the DFT of b and c using FFT (parallel if __LINBOX_HAVE_OPENMP)
+			launch_FFT(fft_b, pts, pow_w);
+			launch_FFT(fft_c, pts, pow_w);	
 			
-			for (int i=0;i<nump;i++){
-				std::vector<DenseSubmatrix<Element> > block(fft_b.size());
-				int row_idx,row_size;
-				if (i>=nb_bsize) {
-					row_size= lbsize;
-					row_idx = nb_bsize*bsize+  (i-nb_bsize)*lbsize;
-				}
-				else {
-					row_size= bsize;
-					row_idx = i*bsize;
-				}								
-				for (int j=0;j<fft_b.size();j++)
-					block[j]=DenseSubmatrix<Element>(fft_b[j],row_idx,0,row_size,k);
-				FFT(block,pts,pow_w);				
-			}
-
-			nb_bsize=k%nump;
-			bsize =k/nump+(nb_bsize?1:0);
-			lbsize=k/nump;
-#pragma omp parallel for firstprivate(pts,pow_w) shared(fft_c) schedule(static)		
-			for (int i=0;i<nump;i++){
-				std::vector<DenseSubmatrix<Element> > block(fft_c.size());
-				int row_idx,row_size;
-				if (i>=nb_bsize) {
-					row_size=lbsize;
-					row_idx = nb_bsize*bsize+  (i-nb_bsize)*lbsize;
-				}
-				else {
-					row_size= bsize;
-					row_idx = i*bsize;
-				}
-				
-				for (int j=0;j<fft_b.size();j++)
-					block[j]=DenseSubmatrix<Element>(fft_c[j],row_idx,0,row_size,n);
-				FFT(block,pts,pow_w);				
-			}		
-#else
-			FFT(fft_b, pts, pow_w);	
-			FFT(fft_c, pts, pow_w);			       	       
-			//iterative_FFT(fft_b, pts, lpts, pow_w);
-			//iterative_FFT(fft_c, pts, lpts, pow_w);
-#endif
-
-			
-
 #ifdef FFT_TIMING
 			chrono.stop();		       
-#ifdef __LINBOX_HAVE_OPENMP
 			std::cout<<"FFT: DFT of inputs              : "<<chrono
-#else
-			std::cout<<"FFT: DFT of inputs              : "<<chrono.usertime()
-#endif
 				 <<" = "<<fftcopy<<" (copy), "<<fftadd<<" (add), "<<fftmul<<" (mul)\n";
 			fftcopy=fftadd=fftmul=0.;
 			chrono.clear();
@@ -802,11 +749,8 @@ namespace LinBox {
 
 #ifdef FFT_TIMING
 			chrono.stop();
-#ifdef __LINBOX_HAVE_OPENMP
-			std::cout<<"FFT: componentwise mul          : "<<chrono<<"\n";
-#else	
+	
 			std::cout<<"FFT: componentwise mul          : "<<chrono.usertime()<<"\n";
-#endif
 			chrono.clear();
 			chrono.start();	
 #endif
@@ -833,41 +777,12 @@ namespace LinBox {
 	
 
 			// compute the DFT inverse of fft_a
-#ifdef __LINBOX_HAVE_OPENMP
-			// do blocking on the matrix a to perform FFT inverse in parallel on each block
-			nump=omp_get_max_threads();
-			nb_bsize=m%nump;
-			bsize   =m/nump+(nb_bsize?1:0);
-			lbsize  =m/nump;
-#pragma omp parallel for firstprivate(pts,pow_inv_w) shared(fft_a) schedule(static)		
-			for (int i=0;i<nump;i++){
-				std::vector<DenseSubmatrix<Element> > block(fft_a.size());
-				int row_idx,row_size;
-				if (i>=nb_bsize) {
-					row_size=lbsize;
-					row_idx = nb_bsize*bsize+  (i-nb_bsize)*lbsize;
-				}
-				else {
-					row_size= bsize;
-					row_idx = i*bsize;
-				}
-				
-				for (int j=0;j<fft_a.size();j++)
-					block[j]=DenseSubmatrix<Element>(fft_a[j],row_idx,0,row_size,n);
-				FFT(block,pts,pow_inv_w);				
-			}
-#else
-			FFT(fft_a, pts, pow_inv_w);			
-#endif	
-		//iterative_FFT(fft_a, pts, lpts, pow_inv_w);			
+			launch_FFT(fft_a, pts, pow_inv_w);			
+			//iterative_FFT(fft_a, pts, lpts, pow_inv_w);			
 	
 #ifdef FFT_TIMING	
 			chrono.stop();
-#ifdef __LINBOX_HAVE_OPENMP
 			std::cout<<"FFT: DFT inverse                : "<<chrono
-#else
-			std::cout<<"FFT: DFT inverse                : "<<chrono.usertime()
-#endif
 				 <<" = "<<fftcopy<<" (copy), "<<fftadd<<" (add), "<<fftmul<<" (mul)\n";
 			chrono.clear();
 			chrono.start();	
@@ -877,7 +792,9 @@ namespace LinBox {
 			Element inv_pts;
 			_F.init(inv_pts, pts);
 			_F.invin(inv_pts);
-
+#ifdef __LINBOX_HAVE_OPENMP
+#pragma omp parallel for shared(fft_a,revbit,inv_pts) schedule(static)
+#endif
 			for (size_t i=0; i< deg; ++i){
 				a[i] = fft_a[revbit[i]];
 				_MD.mulin(a[i], inv_pts);
@@ -993,55 +910,9 @@ namespace LinBox {
 				fft_c[i]=c[i];
 			
 
-			// compute the DFT of b and DFT^-1 of c
-#ifdef __LINBOX_HAVE_OPENMP
-			// do blocking on the matrix b and c to perform FFT in parallel on each block
-			long nump=omp_get_max_threads();
-			long nb_bsize=m%nump;
-			long bsize   =m/nump+(nb_bsize?1:0);
-			long lbsize  =m/nump;
-#pragma omp parallel for firstprivate(pts,pow_w) shared(fft_b, fft_c) schedule(static)					
-			for (int i=0;i<nump;i++){
-				std::vector<DenseSubmatrix<Element> > block(fft_b.size());
-				int row_idx,row_size;
-				if (i>=nb_bsize) {
-					row_size=lbsize;
-					row_idx = nb_bsize*bsize+  (i-nb_bsize)*lbsize;
-				}
-				else {
-					row_size= bsize;
-					row_idx = i*bsize;
-				}
-				
-				for (int j=0;j<fft_b.size();j++)
-					block[j]=DenseSubmatrix<Element>(fft_b[j],row_idx,0,row_size,k);
-				FFT(block,pts,pow_w);				
-			}
-
-			nb_bsize=k%nump;
-			bsize   =k/nump+(nb_bsize?1:0);
-			lbsize  =k/nump;
-#pragma omp parallel for firstprivate(pts,pow_inv_w) shared(fft_c) schedule(static)		
-			for (int i=0;i<nump;i++){
-				std::vector<DenseSubmatrix<Element> > block(fft_c.size());
-				int row_idx,row_size;
-				if (i>=nb_bsize) {
-					row_size=lbsize;
-					row_idx = nb_bsize*bsize+  (i-nb_bsize)*lbsize;
-				}
-				else {
-					row_size= bsize;
-					row_idx = i*bsize;
-				}
-				
-				for (int j=0;j<fft_b.size();j++)
-					block[j]=DenseSubmatrix<Element>(fft_c[j],row_idx,0,row_size,n);
-				FFT(block,pts,pow_inv_w);				
-			}		
-#else
-			FFT(fft_b, pts, pow_w);							       	
-			FFT(fft_c, pts, pow_inv_w);
-#endif
+			// compute the DFT of b and DFT^-1 of c (parallel if __LINBOX_HAVE_OPENMP)
+			launch_FFT(fft_b, pts, pow_w);							       	
+			launch_FFT(fft_c, pts, pow_inv_w);
 
 			// do the multiplication componentwise
 
@@ -1064,40 +935,18 @@ namespace LinBox {
 					}					
 				}
 			}
-			// compute the DFT  of fft_a
-#ifdef __LINBOX_HAVE_OPENMP
-			// do blocking on the matrix a to perform FFT  in parallel on each block
-			nump=omp_get_max_threads();
-			nb_bsize=m%nump;
-			bsize =m/nump+(nb_bsize?1:0);
-			lbsize=m/nump;
-#pragma omp parallel for firstprivate(pts,pow_w) shared(fft_a) schedule(static)		
-			for (int i=0;i<nump;i++){
-				std::vector<DenseSubmatrix<Element> > block(fft_a.size());
-				int row_idx,row_size;
-				if (i>=nb_bsize) {
-					row_size=lbsize;
-					row_idx = nb_bsize*bsize+  (i-nb_bsize)*lbsize;
-				}
-				else {
-					row_size= bsize;
-					row_idx = i*bsize;
-				}
-				
-				for (int j=0;j<fft_a.size();j++)
-					block[j]=DenseSubmatrix<Element>(fft_a[j],row_idx,0,row_size,n);
-				FFT(block,pts,pow_w);				
-			}
-#else			
-			// compute the DFT of fft_a
-			FFT(fft_a, pts, pow_w);			
-#endif		
+
+			// compute the DFT of fft_a (parallel if __LINBOX_HAVE_OPENMP)
+			launch_FFT(fft_a, pts, pow_w);			
+			
 			
 			// set the result according to bitreverse ordering and multiply by 1/pts
 			Element inv_pts;
 			_F.init(inv_pts, pts);
 			_F.invin(inv_pts);
-
+#ifdef __LINBOX_HAVE_OPENMP
+#pragma omp parallel for shared(fft_a,revbit,inv_pts) schedule(static)
+#endif
 			for (size_t i=0; i< a.size(); ++i){
 				a[i] = fft_a[revbit[i]];
 				_MD.mulin(a[i], inv_pts);
@@ -1158,6 +1007,41 @@ namespace LinBox {
 				_F.sub(bptr[i], tmp, bptr[i]);
 			}
 		}
+
+		
+		template <class Polynomial>
+		inline void launch_FFT (Polynomial &fft, size_t pts, const std::vector<Element> &pow_w){
+#ifdef __LINBOX_HAVE_OPENMP
+			// do blocking (by row) on the matrix coefficient to perform FFT in parallel on each block 
+			size_t m,n;
+			m=fft[0].rowdim();
+			n=fft[0].coldim();			
+			long nump=omp_get_max_threads();
+			long nb_bsize=m%nump;
+			long bsize   =m/nump+(nb_bsize?1:0);
+			long lbsize  =m/nump;
+#pragma omp parallel for firstprivate(pts) shared(fft,pow_w) schedule(static)					
+			for (int i=0;i<nump;i++){
+				std::vector<DenseSubmatrix<Element> > block(fft.size());
+				int row_idx,row_size;
+				if (i>=nb_bsize) {
+					row_size=lbsize;
+					row_idx = nb_bsize*bsize+  (i-nb_bsize)*lbsize;
+				}
+				else {
+					row_size= bsize;
+					row_idx = i*bsize;
+				}
+				
+				for (int j=0;j<fft.size();j++)
+					block[j]=DenseSubmatrix<Element>(fft[j],row_idx,0,row_size,n);
+				FFT(block,pts,pow_w);				
+			}
+#else
+			// call directly FFT code
+			FFT(fft,pts,pow_w);
+#endif	
+	}
 
 		template <class Polynomial>
 		void FFT (Polynomial &fft, size_t n, const std::vector<Element> &pow_w, size_t idx_w=1, size_t shift=0){

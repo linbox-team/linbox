@@ -361,7 +361,8 @@ namespace LinBox {
 		// according to a vector of defect.
 		// algorithm is from Giorgi, Jeannerod and Villard  ISSAC'03
 		//
-		// SigmaBase must be already allocated with degree+1 elements		
+		// SigmaBase must be already allocated with degree+1 elements
+#define MBASIS_THRESHOLD 16		
 		void PM_Basis(std::vector<Coefficient>     &SigmaBase,
 			      std::vector<Coefficient>    &PowerSerie, 
 			      size_t                           degree, 
@@ -382,7 +383,7 @@ namespace LinBox {
 				SigmaBase[0]=Identity;
 			}
 			else {
-				if (degree == 1) {
+				if (degree <= MBASIS_THRESHOLD) {
 #ifdef _BM_TIMING				
 					tMBasis.clear();
 					tMBasis.start();
