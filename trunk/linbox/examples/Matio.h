@@ -198,3 +198,11 @@ std::ostream& write_field(const Field& F,std::ostream& c,
   return c << std::endl;
   //#endif
 }
+// Displays a matrix
+template<class Field>
+std::ostream& write_field(const Field& F,std::ostream& c, 
+		     const typename Field::Element* E,
+		     int n, int m, int id, bool){
+    return write_field(F,c,E,n,m,id);
+}
+
