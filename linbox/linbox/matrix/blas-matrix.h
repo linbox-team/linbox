@@ -282,10 +282,10 @@ namespace LinBox {
 		}
 		
 		pointer getPointer() const  {return _ptr;}
-
 		pointer& getWritePointer() {return _ptr;}
 
 		size_t getStride() const {return _stride;}	
+		size_t& getWriteStride() {return _stride;}	
 
 	}; // end of class BlasMatrix
 
