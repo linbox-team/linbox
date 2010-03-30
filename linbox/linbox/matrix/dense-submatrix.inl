@@ -74,7 +74,8 @@ DenseSubmatrix<Element>::DenseSubmatrix (const DenseSubmatrix<Element> &SM,
 template <class Element>
 DenseSubmatrix<Element>::DenseSubmatrix (const DenseSubmatrix<Element> &SM)
 	: _M (SM._M), _beg_row (SM._beg_row), _end_row (SM._end_row), _beg_col (SM._beg_col), _end_col (SM._end_col)
-{}
+{
+}
 
 template <class Element>
 DenseSubmatrix<Element>& DenseSubmatrix<Element>::operator=(const DenseSubmatrix<Element> &SM)
@@ -644,8 +645,6 @@ std::ostream &DenseSubmatrix<Element>::write (std::ostream &os, const Field& fie
 	}
 
 	if (mapleFormat) os << ']';
-	os << std::endl;
-
 	return os;
 }
 
