@@ -494,6 +494,10 @@ namespace LinBox {
 	inline std::ostream &write (std::ostream &os, const Matrix &A) const
 		{ return A.write (os, _F); }
 
+	template <class Matrix>
+	inline std::ostream &write (std::ostream &os, const Matrix &A, bool maple_format) const
+		{ return A.write (os, _F, maple_format); }
+
 	/** Read matrix
 	 * @param  is  Input stream from which matrix is read.
 	 * @param  A   Matrix.
