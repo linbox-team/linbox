@@ -40,7 +40,7 @@ namespace LinBox {
 
 
 #define FFT_DEG_THRESHOLD   64
-#define KARA_DEG_THRESHOLD  10
+#define KARA_DEG_THRESHOLD  65 //10
 #ifndef FFT_PRIME_SEED
 // random seed
 #define FFT_PRIME_SEED 0
@@ -67,8 +67,8 @@ namespace LinBox {
 
 		void mul (Polynomial &a, const Polynomial &b, const Polynomial &c) {
 			size_t d = b.size()+c.size();
-			Timer multime;
-			multime.start();
+			//Timmer multime;
+			//multime.start();
 			if (d > FFT_DEG_THRESHOLD)
 				_fft.mul(a,b,c);
 			else
@@ -76,8 +76,8 @@ namespace LinBox {
 					_kara.mul(a,b,c);		
 				else
 					_classic.mul(a,b,c);
-			multime.stop();
-			std::cout<<"time of mul "<<b.size()<<"x"<<c.size()<<" : "<<multime<<std::endl;
+			//multime.stop();
+			//std::cout<<"time of mul "<<b.size()<<"x"<<c.size()<<" : "<<multime<<std::endl;
 					
 		}
 
@@ -86,8 +86,8 @@ namespace LinBox {
 			linbox_check( 2*b.size() == c.size()+1);			
 
 			size_t d = b.size()+c.size();
-			Timer multime;
-			multime.start();
+			//Timer multime;
+			//multime.start();
 			if (d > FFT_DEG_THRESHOLD)
 				_fft.midproduct(a,b,c);
 			else
@@ -95,8 +95,8 @@ namespace LinBox {
 					_kara.midproduct(a,b,c);		
 				else
 					_classic.midproduct(a,b,c);
-			multime.stop();
-			std::cout<<"time of midp "<<b.size()<<"x"<<c.size()<<" : "<<multime<<std::endl;
+			//multime.stop();
+			//std::cout<<"time of midp "<<b.size()<<"x"<<c.size()<<" : "<<multime<<std::endl;
 		}
 	};
 
@@ -742,21 +742,38 @@ namespace LinBox {
 #endif
 			// do the multiplication componentwise
 #ifdef __LINBOX_HAVE_OPENMP
-#pragma omp parallel for shared(fft_a,fft_b,fft_c) schedule(static)
+#ifdef FFT_TIMING
+			LinBox::Timer chrono_mul[omp_get_max_threads()], chrono_mul_t[omp_get_max_threads()];
 #endif
-			for (size_t i=0;i<pts;++i)
-				_BMD.mul(fft_a[i], fft_b[i], fft_c[i]);
+		
+#pragma omp parallel for shared(fft_a,fft_b,fft_c) private(i) schedule(dynamic)
+#endif			
+			for (long i=0;i<pts;++i)
+#ifdef FFT_TIMING
+#ifdef __LINBOX_HAVE_OPENMP
+				{chrono_mul[omp_get_thread_num()].start();
+#endif
+#endif 
+			_BMD.mul(fft_a[i], fft_b[i], fft_c[i]);								
 
 #ifdef FFT_TIMING
 			chrono.stop();
-	
-			std::cout<<"FFT: componentwise mul          : "<<chrono.usertime()<<"\n";
+
+#ifdef __LINBOX_HAVE_OPENMP
+			chrono_mul[omp_get_thread_num()].stop();chrono_mul_t[omp_get_thread_num()]+=chrono_mul[omp_get_thread_num()];}	
+			for (size_t i=0;i<omp_get_max_threads();i++)
+				std::cout<<"FFT: componentwise mul thread["<<i<<"] -> "<<chrono_mul_t[i]<<std::endl;
+#endif						
+			std::cout<<"FFT: componentwise mul total      : "<<chrono<<"\n";
 			chrono.clear();
 			chrono.start();	
 #endif
 			
 			Element swapping;
 			// reorder the term in the FFT according to reverse bit ordering
+#ifdef __LINBOX_HAVE_OPENMP
+#pragma omp parallel for shared(fft_a,revbit) schedule(static)
+#endif			
 			for (size_t i=0; i< pts; ++i){
 				if (revbit[i]>i){
 					typename Coefficient::RawIterator it_a1=fft_a[i].rawBegin();
@@ -768,9 +785,11 @@ namespace LinBox {
 					}					
 				}
 			}
+			
+			
 #ifdef FFT_TIMING
 			chrono.stop();
-			std::cout<<"FFT: reverse bit ordering       : "<<chrono.usertime()<<"\n";
+			std::cout<<"FFT: reverse bit ordering       : "<<chrono<<"\n";
 			chrono.clear();
 			chrono.start();	
 #endif
@@ -793,16 +812,18 @@ namespace LinBox {
 			_F.init(inv_pts, pts);
 			_F.invin(inv_pts);
 #ifdef __LINBOX_HAVE_OPENMP
-#pragma omp parallel for shared(fft_a,revbit,inv_pts) schedule(static)
+#pragma omp parallel for //shared(a,fft_a,revbit,inv_pts) schedule(static)
 #endif
-			for (size_t i=0; i< deg; ++i){
-				a[i] = fft_a[revbit[i]];
-				_MD.mulin(a[i], inv_pts);
+			for (long i=0; i< deg; ++i){
+				//a[i] = fft_a[revbit[i]];
+				//_MD.mulin(a[i], inv_pts);
+				_MD.mul(a[i],fft_a[revbit[i]],inv_pts);
 			}
 #ifdef FFT_TIMING
 			chrono.stop();
 			std::cout<<"FFT: order and scale the result : "<<chrono.usertime()<<"\n\n";					
 #endif
+
 		}
 
 		// middle product: a[0..n-1] = (b.c)[n..2n-1]
@@ -919,7 +940,7 @@ namespace LinBox {
 #ifdef __LINBOX_HAVE_OPENMP
 #pragma omp parallel for shared(fft_a,fft_b,fft_c) schedule(static)
 #endif
-			for (size_t i=0;i<pts;++i)
+			for (long i=0;i<pts;++i)
 				_BMD.mul(fft_a[i], fft_b[i], fft_c[i]);
 						
 			Element swapping;
@@ -947,13 +968,13 @@ namespace LinBox {
 #ifdef __LINBOX_HAVE_OPENMP
 #pragma omp parallel for shared(fft_a,revbit,inv_pts) schedule(static)
 #endif
-			for (size_t i=0; i< a.size(); ++i){
+			for (long i=0; i< a.size(); ++i){
 				a[i] = fft_a[revbit[i]];
 				_MD.mulin(a[i], inv_pts);
 			}			
 		}
 
-	protected:
+		//protected:
 
 		inline long RevInc(long a, long k)
 		{
@@ -971,11 +992,11 @@ namespace LinBox {
 			return a;
 		}
 
-
-		void Butterfly (Coefficient &A, Coefficient &B, const Element &alpha) {
-			typename Coefficient::RawIterator it_a= A.rawBegin();
-			typename Coefficient::RawIterator it_b= B.rawBegin();
-			Element tmp;Timer chrono;
+		template<class Coeff>
+		inline void Butterfly (Coeff &A, Coeff &B, const Element &alpha) {
+			typename Coeff::RawIterator it_a= A.rawBegin();
+			typename Coeff::RawIterator it_b= B.rawBegin();
+			Element tmp;
 			for (; it_a != A.rawEnd(); ++it_a, ++it_b){
 				_F.assign(tmp,*it_a);
 				_F.addin(*it_a, *it_b);
@@ -995,7 +1016,7 @@ namespace LinBox {
 			}
 		}
 
-			       
+
 		void myAddSub(Coefficient &A, Coefficient &B) {
 			size_t n2 = A.rowdim()*A.coldim();
 			Element *aptr = A.getPointer();
@@ -1010,7 +1031,7 @@ namespace LinBox {
 
 		
 		template <class Polynomial>
-		inline void launch_FFT (Polynomial &fft, size_t pts, const std::vector<Element> &pow_w){
+		void launch_FFT (Polynomial &fft, size_t pts, const std::vector<Element> &pow_w){
 #ifdef __LINBOX_HAVE_OPENMP
 			// do blocking (by row) on the matrix coefficient to perform FFT in parallel on each block 
 			size_t m,n;
@@ -1020,14 +1041,19 @@ namespace LinBox {
 			long nb_bsize=m%nump;
 			long bsize   =m/nump+(nb_bsize?1:0);
 			long lbsize  =m/nump;
-#pragma omp parallel for firstprivate(pts) shared(fft,pow_w) schedule(static)					
+
+#pragma omp parallel for shared(fft) schedule(dynamic)					
 			for (int i=0;i<nump;i++){
+#ifdef FFT_TIMING
+				LinBox::Timer chrono1,chrono2;
+				chrono1.start();		
+#endif
 				std::vector<DenseSubmatrix<Element> > block(fft.size());
 				int row_idx,row_size;
 				if (i>=nb_bsize) {
 					row_size=lbsize;
 					row_idx = nb_bsize*bsize+  (i-nb_bsize)*lbsize;
-				}
+				} 
 				else {
 					row_size= bsize;
 					row_idx = i*bsize;
@@ -1035,7 +1061,17 @@ namespace LinBox {
 				
 				for (int j=0;j<fft.size();j++)
 					block[j]=DenseSubmatrix<Element>(fft[j],row_idx,0,row_size,n);
+
+#ifdef FFT_TIMING
+				chrono1.stop();
+				chrono2.start();
+#endif
 				FFT(block,pts,pow_w);				
+
+#ifdef FFT_TIMING
+				chrono2.stop();
+				std::cout<<"thread["<<omp_get_thread_num()<<"]: "<<chrono2<<"( "<<chrono1<<" )"<<std::endl;
+#endif
 			}
 #else
 			// call directly FFT code
@@ -1049,52 +1085,29 @@ namespace LinBox {
 			if (n != 1){
 
 				size_t n2= n>>1;
-				size_t mn= fft[0].rowdim()* fft[0].coldim();
-				Coefficient tmp(fft[0].rowdim(), fft[0].coldim());
-				Timer chrono;
-				
-				
-				chrono.clear();
-				chrono.start();
-				_MD.copy(tmp, fft[shift]);
-				chrono.stop();
-				fftcopy+=chrono.usertime();
-				chrono.clear();
-				chrono.start();
-				_MD.addin(fft[shift],fft[shift+n2]);			
-				_MD.sub(fft[shift+n2], tmp, fft[shift+n2]);
+				//size_t mn= fft[0].rowdim()* fft[0].coldim();
+				//Coefficient tmp(fft[0].rowdim(), fft[0].coldim());
+			
+				//_MD.copy(tmp, fft[shift]);
+				//_MD.addin(fft[shift],fft[shift+n2]);			
+				//_MD.sub(fft[shift+n2], tmp, fft[shift+n2]);
 				//myAddSub(fft[shift],fft[shift+n2]);
-				chrono.stop();
-				fftadd+=chrono.usertime();
-				
+				Element one;_F.init(one,integer(1));
+				Butterfly(fft[shift],fft[shift+n2],one);
 
 				for (size_t i=1; i< n2; ++i){		
-					//Butterfly(fft[shift+i],fft[shift+i+n2],pow_w[idx_w*i]); 
+					Butterfly(fft[shift+i],fft[shift+i+n2],pow_w[idx_w*i]); 
 					
-					chrono.clear();
-					chrono.start();
-					_MD.copy(tmp, fft[shift+i]);
-					chrono.stop();
-					fftcopy+=chrono.usertime();
-					chrono.clear();
-					chrono.start();
-					_MD.addin(fft[shift+i],fft[shift+i+n2]);					
-					_MD.sub(fft[shift+i+n2], tmp, fft[shift+i+n2]);
+					//_MD.copy(tmp, fft[shift+i]);
+					//_MD.addin(fft[shift+i],fft[shift+i+n2]);					
+					//_MD.sub(fft[shift+i+n2], tmp, fft[shift+i+n2]);
 					//myAddSub(fft[shift+i],fft[shift+i+n2]);
-					chrono.stop();
-					fftadd+=chrono.usertime();
-					chrono.clear();
-					chrono.start();					
-					_MD.mulin(fft[shift+i+n2],  pow_w[idx_w*i]);
-					//FFLAS::fscal(_F, mn, pow_w[idx_w*i], fft[shift+i+n2].getPointer(), 1);
-					chrono.stop();
-					fftmul+=chrono.usertime();
 					
-				}
-				
-				FFT(fft, n2, pow_w, idx_w<<1, shift);
-				
-				FFT(fft, n2, pow_w, idx_w<<1, shift+n2);							
+					//_MD.mulin(fft[shift+i+n2],  pow_w[idx_w*i]);
+					//FFLAS::fscal(_F, mn, pow_w[idx_w*i], fft[shift+i+n2].getPointer(), 1);
+				}				
+				FFT(fft, n2, pow_w, idx_w<<1, shift);				
+				FFT(fft, n2, pow_w, idx_w<<1, shift+n2);						
 			}
 		}
 			
