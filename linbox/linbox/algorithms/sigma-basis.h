@@ -401,7 +401,7 @@ namespace LinBox {
 
 					// Compute Sigma Base of half degree
 					std::vector<Coefficient> Sigma1(degree1+1,ZeroSigma);
-					std::vector<Coefficient> Serie1(degree1+1);
+					std::vector<Coefficient> Serie1(degree1+1,ZeroSerie);
 					for (size_t i=0;i< degree1+1;++i)
 						Serie1[i] = PowerSerie[i];
 					PM_Basis(Sigma1, Serie1, degree1, defect);
@@ -411,7 +411,7 @@ namespace LinBox {
 #endif
 					
 					// Compute Serie2 = x^(-degree1).Sigma.PowerSerie mod x^degree2
-					std::vector<Coefficient> Serie2(degree1+1,ZeroSerie);										
+					std::vector<Coefficient> Serie2(degree2+1,ZeroSerie);										
 					ComputeNewSerie(Serie2,Sigma1,PowerSerie, degree1, degree2);
 #ifdef _BM_TIMING				
 					tUpdateSerie.stop();
