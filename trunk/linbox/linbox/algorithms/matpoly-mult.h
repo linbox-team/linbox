@@ -72,8 +72,8 @@ namespace LinBox {
 		void mul (Polynomial1 &a, const Polynomial2 &b, const Polynomial3 &c) {
 			size_t d = b.size()+c.size();
 			linbox_check(a.size() >= (b.size()+c.size()-1));
-			Timer mul;
-			mul.start();
+			//Timer mul;
+			//mul.start();
 			if (d > FFT_DEG_THRESHOLD)
 				_fft.mul(a,b,c);
 			else
@@ -81,11 +81,13 @@ namespace LinBox {
 					_kara.mul(a,b,c);		
 				else
 					_classic.mul(a,b,c);
+			/*
 			mul.stop();multime+=mul;
 			std::cout.width(30);
 			std::cout<<"mul "<<b.size()<<"x"<<c.size()<<" : ";		
 			std::cout.precision(3);
 			std::cout<<mul.usertime()<<std::endl;
+			*/
 		}
 		
 		template< class Polynomial1, class Polynomial2, class Polynomial3>
@@ -95,8 +97,8 @@ namespace LinBox {
 
 			size_t d = b.size()+c.size();
 			
-			Timer mul;
-			mul.start();
+			//Timer mul;
+			//mul.start();
 			if (d > FFT_DEG_THRESHOLD)
 				_fft.midproduct(a,b,c);
 			else
@@ -104,8 +106,13 @@ namespace LinBox {
 					_kara.midproduct(a,b,c);		
 				else
 					_classic.midproduct(a,b,c);
+			/*
 			mul.stop();multime+=mul;
-			//std::cout<<"time of midp "<<b.size()<<"x"<<c.size()<<" : "<<multime<<std::endl;
+			std::cout.width(30);
+			std::cout<<"mul "<<b.size()<<"x"<<c.size()<<" : ";		
+			std::cout.precision(3);
+			std::cout<<mul.usertime()<<std::endl;	
+			*/
 		}
 	};
 
