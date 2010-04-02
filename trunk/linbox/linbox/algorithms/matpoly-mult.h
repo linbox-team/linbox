@@ -40,35 +40,40 @@ namespace LinBox {
 
 
 #define FFT_DEG_THRESHOLD   64
-#define KARA_DEG_THRESHOLD  65 //10
+#define KARA_DEG_THRESHOLD  10
 #ifndef FFT_PRIME_SEED
-// random seed
+	// random seed
 #define FFT_PRIME_SEED 0
 #endif
 
 
-	template <class Field, class Polynomial>
+	template <class Field>
 	class KaratsubaMulDomain;
 
-	template <class _Field, class _Polynomial>
+	template <class _Field>
 	class FFTMulDomain;
 
-	template <class Field, class Polynomial>
+	template <class Field>
 	class ClassicMulDomain;
 	
-	template <class Field, class Polynomial>
+	template <class Field>
 	class PolynomialMatrixDomain {
 	protected:
-		KaratsubaMulDomain<Field, Polynomial>     _kara;
-		FFTMulDomain<Field, Polynomial>            _fft;
-		ClassicMulDomain<Field, Polynomial>    _classic;
+		KaratsubaMulDomain<Field>     _kara;
+		FFTMulDomain<Field>            _fft;
+		ClassicMulDomain<Field>    _classic;
+		
 	public:
-		PolynomialMatrixDomain ( const Field &F) : _kara(F), _fft(F), _classic(F) {}
+		Timer multime;
+		
+		PolynomialMatrixDomain ( const Field &F) : _kara(F), _fft(F), _classic(F) {multime.clear();}
 
-		void mul (Polynomial &a, const Polynomial &b, const Polynomial &c) {
+		template< class Polynomial1, class Polynomial2, class Polynomial3>
+		void mul (Polynomial1 &a, const Polynomial2 &b, const Polynomial3 &c) {
 			size_t d = b.size()+c.size();
-			//Timmer multime;
-			//multime.start();
+			linbox_check(a.size() >= (b.size()+c.size()-1));
+			Timer mul;
+			mul.start();
 			if (d > FFT_DEG_THRESHOLD)
 				_fft.mul(a,b,c);
 			else
@@ -76,18 +81,22 @@ namespace LinBox {
 					_kara.mul(a,b,c);		
 				else
 					_classic.mul(a,b,c);
-			//multime.stop();
-			//std::cout<<"time of mul "<<b.size()<<"x"<<c.size()<<" : "<<multime<<std::endl;
-					
+			mul.stop();multime+=mul;
+			std::cout.width(30);
+			std::cout<<"mul "<<b.size()<<"x"<<c.size()<<" : ";		
+			std::cout.precision(3);
+			std::cout<<mul.usertime()<<std::endl;
 		}
-
-		void midproduct (Polynomial &a, const Polynomial &b, const Polynomial &c) {
+		
+		template< class Polynomial1, class Polynomial2, class Polynomial3>
+		void midproduct (Polynomial1 &a, const Polynomial2 &b, const Polynomial3 &c) {
 			linbox_check( 2*a.size() == c.size()+1);
 			linbox_check( 2*b.size() == c.size()+1);			
 
 			size_t d = b.size()+c.size();
-			//Timer multime;
-			//multime.start();
+			
+			Timer mul;
+			mul.start();
 			if (d > FFT_DEG_THRESHOLD)
 				_fft.midproduct(a,b,c);
 			else
@@ -95,27 +104,26 @@ namespace LinBox {
 					_kara.midproduct(a,b,c);		
 				else
 					_classic.midproduct(a,b,c);
-			//multime.stop();
+			mul.stop();multime+=mul;
 			//std::cout<<"time of midp "<<b.size()<<"x"<<c.size()<<" : "<<multime<<std::endl;
 		}
 	};
 
 	
-	template <class Field, class Polynomial>
+	template <class Field>
 	class ClassicMulDomain {
 	private:
 		Field                       _F;
 		BlasMatrixDomain<Field>   _BMD;
 		MatrixDomain<Field>        _MD;
-
+		
 	public:
 		
 		ClassicMulDomain(const Field &F) : _F(F), _BMD(F), _MD(F) {}
 		
-		void mul(Polynomial &a, const Polynomial &b, const Polynomial &c) {
+		template< class Polynomial1, class Polynomial2, class Polynomial3>
+		void mul(Polynomial1 &a, const Polynomial2 &b, const Polynomial3 &c) {
 			
-// 			size_t deg =  b.size()+c.size()-1;
-// 			linbox_check(a.size() >= deg);
 			linbox_check(a.size() >= (b.size()+c.size()-1));
 			for (size_t i=0;i<b.size();++i){
 				for (size_t j=0;j<c.size();++j)
@@ -123,11 +131,11 @@ namespace LinBox {
 			}
 		}
 
-		
-		void midproduct (Polynomial &a, const Polynomial &b, const Polynomial &c) {
+		template< class Polynomial1, class Polynomial2, class Polynomial3>
+		void midproduct (Polynomial1 &a, const Polynomial2 &b, const Polynomial3 &c) {
 			linbox_check( 2*a.size() == c.size()+1);
 			linbox_check( 2*b.size() == c.size()+1);
-
+			
 			for (size_t i=0;i<b.size();++i){
 				for (size_t j=0;j<c.size();++j){					
 					if ((i+j<2*a.size()-1) && (i+j>=a.size()-1)){
@@ -137,20 +145,12 @@ namespace LinBox {
 			}			
 		}		
 	};
-
-	template <class Field, class Polynomial>
+	
+	
+	
+	template<class _Field>
 	class KaratsubaMulDomain {
 	public:
-		void mul(Polynomial &a, const Polynomial &b, const Polynomial &c) {
-			throw LinboxError("LinBox Error: no specialization available for Karatsuba multiplication\n");
-		}
-	};
-
-	template<class _Field, class _Matrix>
-	class KaratsubaMulDomain<_Field, std::vector<_Matrix> > {
-	public:
-		typedef std::vector<_Matrix>       Polynomial;
-		typedef _Matrix                  Coefficient;
 		typedef _Field                         Field;
 	private:
 		Field                       _F;
@@ -158,30 +158,35 @@ namespace LinBox {
 		MatrixDomain<Field>        _MD;
 		size_t                    _mul;
 	public:
-
+		
 		KaratsubaMulDomain(const Field &F) : _F(F), _BMD(F), _MD(F) {_mul=0;}
-
-		void mul(Polynomial &a, const Polynomial &b, const Polynomial &c) {
+		
+		template< class Polynomial1, class Polynomial2, class Polynomial3>
+		void mul(Polynomial1 &a, const Polynomial2 &b, const Polynomial3 &c) {			
+			linbox_check(a.size() >= (b.size()+c.size()-1));
 			Karatsuba_mul(a, 0, b, 0, b.size(), c, 0, c.size());
 		}
 		
-
-		void midproduct(Polynomial &a, const Polynomial &b, const Polynomial &c) {
+		template< class Polynomial1, class Polynomial2, class Polynomial3>
+		void midproduct(Polynomial1 &a, const Polynomial2 &b, const Polynomial3 &c) {
 			linbox_check( 2*a.size() == c.size()+1);
 			linbox_check( 2*b.size() == c.size()+1);
-			midproduct_Karatsuba(a, b, c);
+			midproduct_Karatsuba(a, b, c);		
 		}
 		
 
 	protected:
-		void Karatsuba_mul(std::vector<Coefficient> &C, size_t shiftC,
-				   const std::vector<Coefficient> &A, size_t shiftA, size_t degA,
-				   const std::vector<Coefficient> &B, size_t shiftB, size_t degB){
+		
+		template< class Polynomial1, class Polynomial2, class Polynomial3>		
+		void Karatsuba_mul(Polynomial1 &C, size_t shiftC,
+				   const Polynomial2 &A, size_t shiftA, size_t degA,
+				   const Polynomial3 &B, size_t shiftB, size_t degB){
 			
+			typedef  typename Polynomial1::value_type Coefficient;			       
 			const Coefficient ZeroC(C[0].rowdim(), C[0].coldim());
 			const Coefficient ZeroA(A[0].rowdim(), A[0].coldim());
 			const Coefficient ZeroB(B[0].rowdim(), B[0].coldim());
-			
+						
 			if ((degA == 1) || (degB == 1)) {
 				
 				if ((degA == 1) && (degB == 1))
@@ -209,12 +214,10 @@ namespace LinBox {
 				// multiply low degrees
 				Karatsuba_mul(C, shiftC, A, shiftA, degA_low, B, shiftB, degB_low);   
 				
-
 				// multiply high degrees (only if they are both different from zero)
-				if ((degA_high !=0) && (degB_high != 0)) {	
+				if ((degA_high !=0) && (degB_high != 0)) 	
 					Karatsuba_mul(C, shiftC+(degSplit << 1), A, shiftA+degSplit, degA_high, B, shiftB+degSplit, degB_high);
-				}
-				
+								
 				// allocate space for summation of low and high degrees
 				std::vector<Coefficient> A_tmp(degA_low,ZeroA);
 				std::vector<Coefficient> B_tmp(degB_low,ZeroB);
@@ -234,7 +237,6 @@ namespace LinBox {
 					for (size_t i=0;i<degB_high;++i)
 						_MD.addin(B_tmp[i],B[shiftB+degSplit+i]);
 				
-
 				//  multiply the sums
 				Karatsuba_mul(C_tmp, 0, A_tmp, 0, degA_low, B_tmp, 0, degB_low);
 				
@@ -256,8 +258,8 @@ namespace LinBox {
 
 
 
-
-		void midproduct_Karatsuba(std::vector<Coefficient> &C, const std::vector<Coefficient> &A, const std::vector<Coefficient> &B){
+		template< class Polynomial1, class Polynomial2, class Polynomial3>
+		void midproduct_Karatsuba(Polynomial1 &C, const Polynomial2 &A, const Polynomial3 &B){
 		
 			if (A.size() == 1){
 				_BMD.mul(C[0],A[0],B[0]);
@@ -265,14 +267,16 @@ namespace LinBox {
 			else {				
 				size_t k0= A.size()>>1;
 				size_t k1= A.size()-k0;
+			
+				typedef  typename Polynomial1::value_type Coefficient;			       
+				const Coefficient ZeroC(C[0].rowdim(), C[0].coldim());
+				const Coefficient ZeroA(A[0].rowdim(), A[0].coldim());
+				const Coefficient ZeroB(B[0].rowdim(), B[0].coldim());
+			
+				std::vector<Coefficient> alpha(k1,ZeroC), beta(k1,ZeroC), gamma(k0,ZeroC);
+				std::vector<Coefficient> A_low(k0,ZeroA), A_high(k1,ZeroA);
+				std::vector<Coefficient> B1(2*k1-1,ZeroB), B2(2*k1-1,ZeroB);
 
-				size_t m = B[0].rowdim();
-				size_t n = B[0].coldim();
-
-				const Coefficient Zero(m,n);
-				std::vector<Coefficient> alpha(k1,Zero), beta(k1,Zero), gamma(k0,Zero);
-				std::vector<Coefficient> A_low(k0), A_high(k1), B1(2*k1-1), B2(2*k1-1);
-				
 				for (size_t i=0;i<k0;++i)
 					A_low[i] = A[i];
 
@@ -297,7 +301,7 @@ namespace LinBox {
 					midproduct_Karatsuba(beta, A_high, B2);
 				}				
 				
-				std::vector<Coefficient> B3(2*k0-1,Zero);
+				std::vector<Coefficient> B3(2*k0-1,ZeroB);
 				for (size_t i=0;i<2*k0-1;++i)
 					_MD.add(B3[i],B[i+2*k1],B[i+k1]);
 				
@@ -315,18 +319,16 @@ namespace LinBox {
 
 	}; // end of class KaratsubaMulDomain<Field, Matrix>
 
-	template <class _Field, class _Polynomial>
+	template <class _Field>
 	class SpecialFFTMulDomain;
 
 	// FFT domain for every prime
-	template <class _Field, class _Polynomial>
+	template <class _Field>
 	class FFTMulDomain {
 	public:
-		typedef _Field                                          Field;
-		typedef typename Field::Element                       Element;
-		typedef _Polynomial                                Polynomial;
-		typedef typename Polynomial::value_type           Coefficient;	
-		typedef SpecialFFTMulDomain<Field, Polynomial>  FFTDomainBase;
+		typedef _Field                              Field;
+		typedef typename Field::Element           Element;
+		typedef SpecialFFTMulDomain<Field>  FFTDomainBase;
 
 	private:
 		Field                _F; 
@@ -347,11 +349,18 @@ namespace LinBox {
 				do { p=p>>1; _fftsize++;} while(!(p&0x0001));
 			}								
 		}
-
-		void mul(Polynomial &a, const Polynomial &b, const Polynomial &c) {
+		
+		template< class Polynomial1, class Polynomial2, class Polynomial3>
+		void mul(Polynomial1 &a, const Polynomial2 &b, const Polynomial3 &c) {
+			linbox_check(a.size() >= (b.size()+c.size()-1));
 			size_t deg     = b.size()+c.size()-1;
 			size_t lpts = 0; 
 			size_t pts =1; while (pts < deg) { pts= pts<<1; ++lpts; }
+
+			typedef  typename Polynomial1::value_type Coefficient;			       
+			const Coefficient ZeroC(c[0].rowdim(), c[0].coldim());
+			const Coefficient ZeroA(a[0].rowdim(), a[0].coldim());
+			const Coefficient ZeroB(b[0].rowdim(), b[0].coldim());
 			
 			// check if fft prime and good enough
 			if (lpts < _fftsize){
@@ -390,15 +399,14 @@ namespace LinBox {
 				Field * f_i = new Field[nbrprimes];
 
 				// allocate polynomial matrices for multimodular results
-				Polynomial * a_i = new Polynomial[nbrprimes];
-				const Coefficient Zero(a[0].rowdim(),a[0].coldim());
-
-
+				std::vector<Coefficient> * a_i = new std::vector<Coefficient>[nbrprimes];
+				
 				// set fftprimes, fftdomains, polynomial matrix results
 				for (size_t i=0; i< nbrprimes; ++i){
 					f_i[i] = Field(lprimes[i]);
 					FFTDomainBase fftdomain(f_i[i]);					
-					a_i[i] = Polynomial(a.size(), Zero);
+					a_i[i] = std::vector<Coefficient>(a.size(), ZeroA);
+					// does not work if original field representation is not Fp seen as integers mod p
 					fftdomain.mul(a_i[i], b ,c);				
 				}
 				
@@ -437,17 +445,18 @@ namespace LinBox {
 								_F.init(a[k].refEntry(i,j), acc);
 							}
 #ifdef FFT_TIMING
-				chrono.stop();std::cout<<"reconstruction time: "<<chrono<<"\n";
+					chrono.stop();std::cout<<"reconstruction time: "<<chrono<<"\n";
 #endif
-				delete [] crt;
-				delete [] crt_inv;
+					delete [] crt;
+					delete [] crt_inv;
 				}
-			delete [] f_i;
-			delete [] a_i;
+				delete [] f_i;
+				delete [] a_i;
 			}			
 		}
-
-		void midproduct(Polynomial &a, const Polynomial &b, const Polynomial &c) {
+		
+		template< class Polynomial1, class Polynomial2, class Polynomial3>
+		void midproduct(Polynomial1 &a, const Polynomial2 &b, const Polynomial3 &c) {
 			linbox_check(2*a.size() == c.size()+1 );
 			linbox_check(2*b.size() == c.size()+1 );
 			linbox_check(b[0].coldim() == c[0].rowdim());
@@ -455,7 +464,9 @@ namespace LinBox {
 			size_t m = b[0].rowdim();
 			size_t k = b[0].coldim();
 			size_t n = c[0].coldim();
-			const Coefficient AZero(m,n), BZero(m,k), CZero(k,n);
+
+			typedef  typename Polynomial1::value_type Coefficient;			       
+			const Coefficient ZeroA(m,n), ZeroB(m,k), ZeroC(k,n);
 
 			size_t deg  = c.size()+1;
 			size_t lpts = 0; 
@@ -500,15 +511,14 @@ namespace LinBox {
 				Field * f_i = new Field[nbrprimes];
 
 				// allocate polynomial matrices for multimodular results
-				Polynomial * a_i = new Polynomial[nbrprimes];
-				const Coefficient Zero(a[0].rowdim(),a[0].coldim());
-
-
+				std::vector<Coefficient> * a_i = new std::vector<Coefficient>[nbrprimes];
+				
 				// set fftprimes, fftdomains, polynomial matrix results
 				for (size_t i=0; i< nbrprimes; ++i){
 					f_i[i] = Field(lprimes[i]);
 					FFTDomainBase fftdomain(f_i[i]);					
-					a_i[i] = Polynomial(a.size(), Zero);
+					a_i[i] = std::vector<Coefficient>(a.size(), ZeroA);
+					// does not work if original field representation is not Fp seen as integers mod p
 					fftdomain.midproduct(a_i[i], b ,c);				
 				}
 				
@@ -546,29 +556,26 @@ namespace LinBox {
 								}
 								_F.init(a[k].refEntry(i,j), acc);
 							}
-				delete [] crt;
-				delete [] crt_inv;
+					delete [] crt;
+					delete [] crt_inv;
 				}
 #ifdef FFT_TIMING			
 				chrono.stop();std::cout<<"reconstruction time: "<<chrono<<"\n";
 #endif	
-			delete [] f_i;
-			delete [] a_i;
+				delete [] f_i;
+				delete [] a_i;
 			}		
 		}
 	};
 
 	
 	// FFT Domain when prime is a FFT prime
-	template <class _Field, class _Polynomial>
+	template <class _Field>
 	class SpecialFFTMulDomain {
 	public:
 		typedef _Field                                    Field;
 		typedef typename Field::Element                 Element;
-		typedef _Polynomial                          Polynomial;
-		typedef typename Polynomial::value_type     Coefficient;
-
-
+		
 	private:
 		Field                      _F;
 		integer                    _p;
@@ -609,8 +616,9 @@ namespace LinBox {
 					break;
 			}
 		}
-
-		void mul(Polynomial &a, const Polynomial &b, const Polynomial &c) {
+		
+		template< class Polynomial1, class Polynomial2, class Polynomial3>
+		void mul(Polynomial1 &a, const Polynomial2 &b, const Polynomial3 &c) {
 #ifdef FFT_TIMING			
 			Timer chrono;
 			chrono.start();
@@ -621,7 +629,8 @@ namespace LinBox {
 			size_t m = b[0].rowdim();
 			size_t k = b[0].coldim();
 			size_t n = c[0].coldim();
-			const Coefficient AZero(m,n), BZero(m,k), CZero(k,n);
+			typedef  typename Polynomial1::value_type Coefficient;	
+			const Coefficient ZeroA(m,n), ZeroB(m,k), ZeroC(k,n);
 
 			size_t deg     = b.size()+c.size()-1;
 			size_t lpts = 0; 
@@ -630,7 +639,6 @@ namespace LinBox {
 #ifdef FFT_TIMING			
 			std::cout<<"FFT: points "<<pts<<"\n";
 #endif			
-		
 			if (_p%pts != 1) {
 				std::cout<<"Error the prime is not a FFTPrime or it has too small power of 2\n";
 				throw LinboxError("LinBox ERROR: bad FFT Prime\n");
@@ -638,12 +646,9 @@ namespace LinBox {
 			
 			long w ;
 			// find a pseudo nth primitive root of unity
-			for (;;) {
-						
+			for (;;) {						
 				// compute the nth primitive root
 				w=  (long) ::powmod(_gen, _pl>>lpts, _p);
-				//std::cout<<w<<" : "<<_gen<<"\n"<<(_pl>>lpts)<<"\n";
-
 				if ((w !=1) && (w != _pl-1))
 					break;
 
@@ -713,14 +718,17 @@ namespace LinBox {
 				revbit[i]=j;
 			
 			// set the data
-			std::vector<Coefficient> fft_a(pts, AZero), fft_b(pts, BZero), fft_c(pts,CZero);
+			std::vector<Coefficient> fft_a(pts, ZeroA), fft_b(pts, ZeroB), fft_c(pts,ZeroC);
 			for (size_t i=0;i<b.size();++i)
 				fft_b[i]=b[i];
-				//fft_b[revbit[i]]=b[i];
+			for (size_t i=b.size();i<pts;++i)
+				fft_b[i]=ZeroB;			
 			for (size_t i=0;i<c.size();++i)
 				fft_c[i]=c[i];
-				//fft_c[revbit[i]]=c[i];
-						
+			for (size_t i=c.size();i<pts;++i)
+				fft_c[i]=ZeroC;
+
+			
 			
 #ifdef FFT_TIMING
 			chrono.stop();
@@ -743,26 +751,24 @@ namespace LinBox {
 			// do the multiplication componentwise
 #ifdef __LINBOX_HAVE_OPENMP
 #ifdef FFT_TIMING
-			LinBox::Timer chrono_mul[omp_get_max_threads()], chrono_mul_t[omp_get_max_threads()];
+			//LinBox::Timer chrono_mul[omp_get_max_threads()], chrono_mul_t[omp_get_max_threads()];
 #endif
 		
 #pragma omp parallel for shared(fft_a,fft_b,fft_c) private(i) schedule(dynamic)
 #endif			
 			for (long i=0;i<pts;++i)
-#ifdef FFT_TIMING
-#ifdef __LINBOX_HAVE_OPENMP
-				{chrono_mul[omp_get_thread_num()].start();
-#endif
-#endif 
-			_BMD.mul(fft_a[i], fft_b[i], fft_c[i]);								
-
+				// #ifdef FFT_TIMING
+				// #ifdef __LINBOX_HAVE_OPENMP
+				// 				{chrono_mul[omp_get_thread_num()].start();
+				// #endif
+				// #endif 
+				_BMD.mul(fft_a[i], fft_b[i], fft_c[i]);							  
 #ifdef FFT_TIMING
 			chrono.stop();
-
 #ifdef __LINBOX_HAVE_OPENMP
-			chrono_mul[omp_get_thread_num()].stop();chrono_mul_t[omp_get_thread_num()]+=chrono_mul[omp_get_thread_num()];}	
-			for (size_t i=0;i<omp_get_max_threads();i++)
-				std::cout<<"FFT: componentwise mul thread["<<i<<"] -> "<<chrono_mul_t[i]<<std::endl;
+			//chrono_mul[omp_get_thread_num()].stop();chrono_mul_t[omp_get_thread_num()]+=chrono_mul[omp_get_thread_num()];}	
+			//for (size_t i=0;i<omp_get_max_threads();i++)
+			//std::cout<<"FFT: componentwise mul thread["<<i<<"] -> "<<chrono_mul_t[i]<<std::endl;
 #endif						
 			std::cout<<"FFT: componentwise mul total      : "<<chrono<<"\n";
 			chrono.clear();
@@ -770,10 +776,12 @@ namespace LinBox {
 #endif
 			
 			Element swapping;
+			
+			
 			// reorder the term in the FFT according to reverse bit ordering
-#ifdef __LINBOX_HAVE_OPENMP
-#pragma omp parallel for shared(fft_a,revbit) schedule(static)
-#endif			
+			// #ifdef __LINBOX_HAVE_OPENMP
+			// #pragma omp parallel for shared(fft_a,revbit) private(Element) schedule(runtime)
+			// #endif						
 			for (size_t i=0; i< pts; ++i){
 				if (revbit[i]>i){
 					typename Coefficient::RawIterator it_a1=fft_a[i].rawBegin();
@@ -811,9 +819,11 @@ namespace LinBox {
 			Element inv_pts;
 			_F.init(inv_pts, pts);
 			_F.invin(inv_pts);
-#ifdef __LINBOX_HAVE_OPENMP
-#pragma omp parallel for //shared(a,fft_a,revbit,inv_pts) schedule(static)
-#endif
+			
+			// #ifdef __LINBOX_HAVE_OPENMP
+			// #pragma omp parallel for shared(a,fft_a,revbit,inv_pts) schedule(stati
+			// #endif
+			
 			for (long i=0; i< deg; ++i){
 				//a[i] = fft_a[revbit[i]];
 				//_MD.mulin(a[i], inv_pts);
@@ -823,26 +833,27 @@ namespace LinBox {
 			chrono.stop();
 			std::cout<<"FFT: order and scale the result : "<<chrono.usertime()<<"\n\n";					
 #endif
-
+				
 		}
-
+			
 		// middle product: a[0..n-1] = (b.c)[n..2n-1]
-		void midproduct (Polynomial &a, const Polynomial &b, const Polynomial &c) {
+		template< class Polynomial1, class Polynomial2, class Polynomial3>
+		void midproduct (Polynomial1 &a, const Polynomial2 &b, const Polynomial3 &c) {
 			
 			linbox_check(2*a.size() == c.size()+1 );
 			linbox_check(2*b.size() == c.size()+1 );
 			linbox_check(b[0].coldim() == c[0].rowdim());
-
+			
 			size_t m = b[0].rowdim();
 			size_t k = b[0].coldim();
 			size_t n = c[0].coldim();
-			const Coefficient AZero(m,n), BZero(m,k), CZero(k,n);
+			typedef  typename Polynomial1::value_type Coefficient;	
+			const Coefficient ZeroA(m,n), ZeroB(m,k), ZeroC(k,n);
 
 			size_t deg  = c.size()+1;
 			size_t lpts = 0; 
 			size_t pts =1; while (pts < deg) { pts= pts<<1; ++lpts; }
-			
-			
+						
 			if (_p%pts != 1) {
 				std::cout<<"Error the prime is not a FFTPrime or it has too small power of 2\n";
 				throw LinboxError("LinBox ERROR: bad FFT Prime\n");
@@ -882,7 +893,7 @@ namespace LinBox {
 					if (jj == kk) 
 						break;
 				}
-		 	}
+			}
 
 			long inv_w;
 
@@ -922,14 +933,16 @@ namespace LinBox {
 				revbit[i]=j;
 		
 			// set the data
-			std::vector<Coefficient> fft_a(pts, AZero), fft_b(pts, BZero), fft_c(pts,CZero);
-			// reverse b
+			std::vector<Coefficient> fft_a(pts, ZeroA), fft_b(pts, ZeroB), fft_c(pts, ZeroC);
 			for (size_t i=0;i<b.size();++i)
-				fft_b[i]=b[b.size()-i-1];
-						
+				fft_b[i]=b[b.size()-i-1];// reverse b
+			for (size_t i=b.size();i<pts;++i)
+				fft_b[i]=ZeroB;;			
 			for (size_t i=0;i<c.size();++i)
 				fft_c[i]=c[i];
-			
+			for (size_t i=c.size();i<pts;++i)
+				fft_c[i]=ZeroC;
+
 
 			// compute the DFT of b and DFT^-1 of c (parallel if __LINBOX_HAVE_OPENMP)
 			launch_FFT(fft_b, pts, pow_w);							       	
@@ -938,13 +951,16 @@ namespace LinBox {
 			// do the multiplication componentwise
 
 #ifdef __LINBOX_HAVE_OPENMP
-#pragma omp parallel for shared(fft_a,fft_b,fft_c) schedule(static)
+#pragma omp parallel for shared(fft_a,fft_b,fft_c) schedule(dynamic)
 #endif
 			for (long i=0;i<pts;++i)
 				_BMD.mul(fft_a[i], fft_b[i], fft_c[i]);
 						
 			Element swapping;
 			// reorder the term in the FFT according to reverse bit ordering
+// #ifdef __LINBOX_HAVE_OPENMP
+// #pragma omp parallel for shared(fft_a,revbit,inv_pts) schedule(runtime)
+// #endif
 			for (size_t i=0; i< pts; ++i){
 				if (revbit[i]>i){
 					typename Coefficient::RawIterator it_a1=fft_a[i].rawBegin();
@@ -965,13 +981,13 @@ namespace LinBox {
 			Element inv_pts;
 			_F.init(inv_pts, pts);
 			_F.invin(inv_pts);
-#ifdef __LINBOX_HAVE_OPENMP
-#pragma omp parallel for shared(fft_a,revbit,inv_pts) schedule(static)
-#endif
-			for (long i=0; i< a.size(); ++i){
+// #ifdef __LINBOX_HAVE_OPENMP
+// #pragma omp parallel for shared(fft_a,revbit,inv_pts) schedule(static)
+// #endif
+				for (long i=0; i< a.size(); ++i){
 				a[i] = fft_a[revbit[i]];
 				_MD.mulin(a[i], inv_pts);
-			}			
+				}			
 		}
 
 		//protected:
@@ -1006,7 +1022,7 @@ namespace LinBox {
 		}
 
 
-	       
+		template<class Coefficient>
 		void my(Coefficient &A, const Coefficient &B) {
 			size_t n2 = A.rowdim()*A.coldim();
 			Element       *aptr = A.getPointer();
@@ -1015,8 +1031,8 @@ namespace LinBox {
 				aptr[i]+= bptr[i];
 			}
 		}
-
-
+		
+		template<class Coefficient>
 		void myAddSub(Coefficient &A, Coefficient &B) {
 			size_t n2 = A.rowdim()*A.coldim();
 			Element *aptr = A.getPointer();
@@ -1077,7 +1093,7 @@ namespace LinBox {
 			// call directly FFT code
 			FFT(fft,pts,pow_w);
 #endif	
-	}
+		}
 
 		template <class Polynomial>
 		void FFT (Polynomial &fft, size_t n, const std::vector<Element> &pow_w, size_t idx_w=1, size_t shift=0){
@@ -1112,8 +1128,10 @@ namespace LinBox {
 		}
 			
 		// fft entries are already in bit reverse order
+		template< class Polynomial>
 		void iterative_FFT (Polynomial &fft, size_t n, size_t ln, const std::vector<Element> &pow_w){
 
+			typedef  typename Polynomial::value_type Coefficient;
 			Coefficient tmp(fft[0].rowdim(), fft[0].coldim());
 			
 			if (ln == 0)

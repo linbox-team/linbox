@@ -41,7 +41,7 @@
 
 #include <linbox/algorithms/matpoly-mult.h>
 #include <linbox/algorithms/echelon-form.h>
-
+#include <linbox/vector/subvector.h>
 #include <linbox/util/timer.h>
 
 
@@ -64,6 +64,7 @@ namespace LinBox {
 		BlasMatrixDomain<Field>         _BMD;
 		MatrixDomain<Field>              _MD;
 		std::vector<Coefficient>     &_Serie;
+		PolynomialMatrixDomain<Field > PM_domain;
 		
 #ifdef _BM_TIMING
 		mutable Timer ttMBasis              , tMBasis,
@@ -123,7 +124,7 @@ namespace LinBox {
 
 	public:
 
-		SigmaBasis(const Field &F, std::vector<Coefficient> &PowerSerie) : _F(F), _BMD(F), _MD(F), _Serie(PowerSerie) 
+		SigmaBasis(const Field &F, std::vector<Coefficient> &PowerSerie) : _F(F), _BMD(F), _MD(F), _Serie(PowerSerie), PM_domain(F)
 		{
 #ifdef  _BM_TIMING
 			clearTimer();
@@ -362,11 +363,14 @@ namespace LinBox {
 		// algorithm is from Giorgi, Jeannerod and Villard  ISSAC'03
 		//
 		// SigmaBase must be already allocated with degree+1 elements
+		// PowerSerie must have at least degree+1 element
 #define MBASIS_THRESHOLD 16		
-		void PM_Basis(std::vector<Coefficient>     &SigmaBase,
-			      std::vector<Coefficient>    &PowerSerie, 
-			      size_t                           degree, 
-			      std::vector<size_t>             &defect) {
+	
+		template <class Polynomial1, class Polynomial2>
+		void PM_Basis(Polynomial1      &SigmaBase,
+			      Polynomial2     &PowerSerie, 
+			      size_t               degree, 
+			      std::vector<size_t> &defect) {
 						
 			size_t m,n;
 			m = PowerSerie[0].rowdim();
@@ -375,7 +379,7 @@ namespace LinBox {
 			_F.init(one,1UL);
 			const Coefficient ZeroSigma(m,m);
 			const Coefficient ZeroSerie(m,n);
-
+		
 			if (degree == 0) {
 				Coefficient Identity(m,m);
 				for (size_t i=0;i< m;++i)
@@ -385,65 +389,66 @@ namespace LinBox {
 			else {
 				if (degree <= MBASIS_THRESHOLD) {
 #ifdef _BM_TIMING				
-					tMBasis.clear();
-					tMBasis.start();
-#endif
-					M_Basis(SigmaBase, PowerSerie, degree, defect);
+					tMBasis.clear();tMBasis.start();
+#endif 
+					M_Basis(SigmaBase, PowerSerie, degree, defect);				
 #ifdef _BM_TIMING
-					tMBasis.stop();
-					ttMBasis += tMBasis;
+					tMBasis.stop();	ttMBasis += tMBasis;
 #endif			
 				}
 				else {
 					size_t degree1,degree2;
 					degree1 = (degree >> 1) + (degree & 1);
-					degree2 = degree - degree1;									
-
+					degree2 = degree - degree1;
+									
 					// Compute Sigma Base of half degree
 					std::vector<Coefficient> Sigma1(degree1+1,ZeroSigma);
+					
 					std::vector<Coefficient> Serie1(degree1+1,ZeroSerie);
 					for (size_t i=0;i< degree1+1;++i)
 						Serie1[i] = PowerSerie[i];
+
+					//Subvector<typename Polynomial2::iterator> Serie1(PowerSerie.begin(),PowerSerie.begin()+degree1);					
 					PM_Basis(Sigma1, Serie1, degree1, defect);
-#ifdef _BM_TIMING				
-					tUpdateSerie.clear();
-					tUpdateSerie.start();
+#ifdef _BM_TIMING			
+					tUpdateSerie.clear();tUpdateSerie.start();
 #endif
-					
 					// Compute Serie2 = x^(-degree1).Sigma.PowerSerie mod x^degree2
-					std::vector<Coefficient> Serie2(degree2+1,ZeroSerie);										
-					ComputeNewSerie(Serie2,Sigma1,PowerSerie, degree1, degree2);
+					// degree1 instead degree2 for using middle product computation
+					std::vector<Coefficient> Serie2(degree1+1,ZeroSerie);	
+					
+					PM_domain.midproduct(Serie2,Sigma1,PowerSerie);
+					Serie2.resize(degree2+1);				
 #ifdef _BM_TIMING				
-					tUpdateSerie.stop();
-					ttUpdateSerie += tUpdateSerie;
-#endif
-					// Compute Sigma Base of half degree from updated Power Serie					
+					tUpdateSerie.stop();ttUpdateSerie += tUpdateSerie;
+#endif					
+					// Compute Sigma Base of half degree from updated Power Serie
 					std::vector<Coefficient> Sigma2(degree2+1,ZeroSigma);
+					
 					PM_Basis(Sigma2, Serie2, degree2, defect);
 						
 #ifdef _BM_TIMING				
-					tBasisMultiplication.clear();
-					tBasisMultiplication.start();
+					tBasisMultiplication.clear();tBasisMultiplication.start();
 #endif
-					// Compute the whole Sigma Base through the product 
-					// of the Sigma Basis Sigma1 x Sigma2										
-					MulSigmaBasis(SigmaBase,Sigma2,Sigma1);						
+					// Compute the whole Sigma Base: SigmaBase= Sigma1 x Sigma2	
+					PM_domain.mul(SigmaBase,Sigma2,Sigma1);						
 #ifdef _BM_TIMING				
-					tBasisMultiplication.stop();
-					ttBasisMultiplication += tBasisMultiplication;
+					tBasisMultiplication.stop();ttBasisMultiplication += tBasisMultiplication;
 #endif
-
-				}
+ 				}
 			}
 		}
 
 
+		void print_multime() {std::cout<<"multime: "<<PM_domain.multime<<std::endl;}
+
 		// Computation of a minimal Sigma Base of a Power Serie up to length
 		// algorithm is from Giorgi, Jeannerod and Villard  ISSAC'03		
-		void M_Basis(std::vector<Coefficient>     &SigmaBase,
-			     std::vector<Coefficient>    &PowerSerie, 
-			     size_t                           length, 
-			     std::vector<size_t>             &defect) {
+		template <class Polynomial1, class Polynomial2>
+		void M_Basis(Polynomial1        &SigmaBase,
+			     Polynomial2        PowerSerie, 
+			     size_t                 length, 
+			     std::vector<size_t>   &defect) {
 
 			// Get the dimension of matrices inside 
 			// the Matrix Power Serie
@@ -620,22 +625,23 @@ namespace LinBox {
 
 		// Multiply a Power Serie by a Sigma Base.
 		// only affect coefficients of the Power Serie between degree1 and degree1+degree2
-		void ComputeNewSerie(std::vector<Coefficient>          &NewSerie, 
-				     const std::vector<Coefficient>   &SigmaBase, 
-				     const std::vector<Coefficient>    &OldSerie,
-				     size_t                              degree1,
-				     size_t                              degree2){						
+		inline void ComputeNewSerie(std::vector<Coefficient>          &NewSerie, 
+					    const std::vector<Coefficient>   &SigmaBase, 
+					    const std::vector<Coefficient>    &OldSerie,
+					    size_t                              degree1,
+					    size_t                              degree2){						
 			
 			// degree1 >= degree2
 			//size_t size = 2*degree1 + 1;
 					
-			const Coefficient ZeroSerie (OldSerie[0].rowdim(), OldSerie[0].coldim());
-			const Coefficient ZeroBase  (SigmaBase[0].rowdim(), SigmaBase[0].coldim());
+			//const Coefficient ZeroSerie (OldSerie[0].rowdim(), OldSerie[0].coldim());
+			//const Coefficient ZeroBase  (SigmaBase[0].rowdim(), SigmaBase[0].coldim());
 			
 			// Work on a copy of the old  Serie (increase size by one for computation of middle product)
-			std::vector<Coefficient> Serie(OldSerie.size()+1,ZeroSerie);
-			for (size_t i=0;i< OldSerie.size();++i)
-				Serie[i] = OldSerie[i];
+			//std::vector<Coefficient> Serie(OldSerie.size()+1);
+			//for (size_t i=0;i< OldSerie.size();++i)
+			//	Serie[i] = OldSerie[i];			
+			//Serie[OldSerie.size()]=ZeroSerie;
 
 			//  ** try to not use a Copy **
 			// Work on a copy of the Sigma Base 
@@ -645,8 +651,7 @@ namespace LinBox {
 			//}
 		
 
-			PolynomialMatrixDomain<Field, std::vector<Coefficient> > PM_domain(_F);
-			PM_domain.midproduct(NewSerie, SigmaBase, Serie);
+			PM_domain.midproduct(NewSerie, SigmaBase, OldSerie);
 		}
 		
 
@@ -668,11 +673,7 @@ namespace LinBox {
 		// Multiply two Sigma Basis
 		void MulSigmaBasis(std::vector<Coefficient> &C, 
 				   std::vector<Coefficient> &A,
-				   std::vector<Coefficient> &B){
-
-			PolynomialMatrixDomain<Field, std::vector<Coefficient> > PM_domain(_F);
-			PM_domain.mul(C,A,B);			
-		}			
+				   std::vector<Coefficient> &B){PM_domain.mul(C,A,B);}
 		
 		
 		void PadeApproximant (std::vector<Coefficient>            &Approx, 
@@ -1804,8 +1805,6 @@ namespace LinBox {
 #endif			
 				}
 				else {
-					PolynomialMatrixDomain<Field, std::vector<Coefficient> > PM_domain(_F);
-					
 					size_t degree1,degree2;
 					degree1 = (degree >> 1) + (degree & 1);				
 					degree2 = degree - degree1;									
@@ -1945,7 +1944,6 @@ namespace LinBox {
 					Serie[i] = OldSerie[i];
 				
 				// call middle product
-				PolynomialMatrixDomain<Field, std::vector<Coefficient> > PM_domain(_F);
 				PM_domain.midproduct(NewSerie, SigmaBase, Serie);
 
 				// resize results and entries
