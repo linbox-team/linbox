@@ -5,7 +5,7 @@
  * Naive parallel chinese remaindering
  * Launch NN iterations in parallel, where NN=omp_get_max_threads()
  * Then synchronization and termintation test.
- * Time-stamp: <30 Mar 10 15:27:09 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <10 Apr 10 12:10:22 Jean-Guillaume.Dumas@imag.fr> 
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,6 +27,8 @@
 // commentator is not thread safe
 #define DISABLE_COMMENTATOR
 #include "linbox/algorithms/cra-domain-seq.h"
+#include <set>
+#include <vector>
 
 namespace LinBox {
 
@@ -34,33 +36,27 @@ namespace LinBox {
     struct ChineseRemainderOMP : public ChineseRemainderSeq<CRABase> {
         typedef typename CRABase::Domain	Domain;
         typedef typename CRABase::DomainElement	DomainElement;
+        typedef ChineseRemainderSeq<CRABase>    Father_t;
+
         template<class Param>
-        ChineseRemainderOMP(const Param& b) : ChineseRemainderSeq<CRABase>(b) {}
+        ChineseRemainderOMP(const Param& b) : Father_t(b) {}
         
-	ChineseRemainderOMP(const CRABase& b) : ChineseRemainderSeq<CRABase>(b) {}
+	ChineseRemainderOMP(const CRABase& b) : Father_t(b) {}
         
         template<class Function, class PrimeIterator>
         Integer& operator() (Integer& res, Function& Iteration, PrimeIterator& primeiter) {
+            size_t NN = omp_get_max_threads();
+            std::cerr << "Blocs: " << NN << " iterations." << std::endl;
 // commentator.start ("Parallel OMP Modular iteration", "mmcrait");
-	    if (this->IterCounter==0) {
-		++primeiter; 
-		++this->IterCounter;
-            	Domain D(*primeiter); 
-// commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
-            	DomainElement r; D.init(r);
-            	this->Builder_.initialize( D, Iteration(r, D) );
-            }
+            if (NN == 1) return Father_t::operator()(res,Iteration,primeiter);
 
 	    int coprime =0;
 	    int maxnoncoprime = 1000;
-std::cerr << "Blocs: " << omp_get_max_threads() << " iterations." << std::endl;
 
-            while( ! this->Builder_.terminated() ) {
-                size_t NN = omp_get_max_threads();
-                std::vector<DomainElement> ROUNDresidues(NN);
-                std::vector<Domain> ROUNDdomains(NN);
-                for(size_t i=0;i<NN;++i) {
-                    ++primeiter; ++this->IterCounter;
+	    if (this->IterCounter==0) {
+                std::set<Integer> coprimeset;
+                while(coprimeset.size() < NN) {
+                    ++primeiter; 
                     while(this->Builder_.noncoprime(*primeiter) ) {
 			++primeiter;
 			++coprime;
@@ -70,17 +66,64 @@ std::cerr << "Blocs: " << omp_get_max_threads() << " iterations." << std::endl;
 			}
                     }
                     coprime =0;
-                    ROUNDdomains[i] = Domain(*primeiter); 
-// commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime[" << i << "]: " << *primeiter << std::endl;
-                    ROUNDdomains[i].init(ROUNDresidues[i]);
+                    coprimeset.insert(*primeiter);
                 }
+                std::vector<Domain> ROUNDdomains; ROUNDdomains.reserve(NN);
+                std::vector<DomainElement> ROUNDresidues(NN);
+                typename std::vector<DomainElement>::iterator resit=ROUNDresidues.begin();
+                for(std::set<Integer>::const_iterator coprimesetiter = coprimeset.begin(); coprimesetiter != coprimeset.end(); ++coprimesetiter,++resit) {
+// std::cerr << "With prime: " << *coprimesetiter << std::endl;
+                    ROUNDdomains.push_back( Domain(*coprimesetiter) );
+                    ROUNDdomains.back().init( *resit );
+                }
+                
 #pragma omp parallel for
                 for(size_t i=0;i<NN;++i) {
                     Iteration(ROUNDresidues[i], ROUNDdomains[i]);
                 }
+#pragma omp barrier
+                ++this->IterCounter;
+            	this->Builder_.initialize( ROUNDdomains[0],ROUNDresidues[0]);
+                for(size_t i=1;i<NN;++i) {
+                    ++this->IterCounter;
+                    this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
+                }
+// commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
+            }
 
+            while( ! this->Builder_.terminated() ) {
+std::cerr << "Computed: " << this->IterCounter << " primes." << std::endl;
+                size_t NN = omp_get_max_threads();
+                std::set<Integer> coprimeset;
+                while(coprimeset.size() < NN) {
+                    ++primeiter; 
+                    while(this->Builder_.noncoprime(*primeiter) ) {
+			++primeiter;
+			++coprime;
+			if (coprime > maxnoncoprime) {
+                            std::cout << "you are running out of primes. " << maxnoncoprime << " coprime primes found";
+				return this->Builder_.result(res);
+			}
+                    }
+                    coprime =0;
+                    coprimeset.insert(*primeiter);
+                }
+                std::vector<Domain> ROUNDdomains; ROUNDdomains.reserve(NN);
+                std::vector<DomainElement> ROUNDresidues(NN);
+                typename std::vector<DomainElement>::iterator resit=ROUNDresidues.begin();
+                for(std::set<Integer>::const_iterator coprimesetiter = coprimeset.begin(); coprimesetiter != coprimeset.end(); ++coprimesetiter,++resit) {
+// std::cerr << "With prime: " << *coprimesetiter << std::endl;
+                    ROUNDdomains.push_back( Domain(*coprimesetiter) );
+                    ROUNDdomains.back().init( *resit );
+                }
+                
+#pragma omp parallel for
+                for(size_t i=0;i<NN;++i) {
+                    Iteration(ROUNDresidues[i], ROUNDdomains[i]);
+                }
 #pragma omp barrier
                 for(size_t i=0;i<NN;++i) {
+                    ++this->IterCounter;
                     this->Builder_.progress( ROUNDdomains[i],ROUNDresidues[i]);
                 }
             }
