@@ -391,16 +391,19 @@ namespace LinBox {
 #ifdef _BM_TIMING				
 					tMBasis.clear();tMBasis.start();
 #endif 
-					M_Basis(SigmaBase, PowerSerie, degree, defect);				
+					M_Basis(SigmaBase, PowerSerie, degree, defect);	 
 #ifdef _BM_TIMING
 					tMBasis.stop();	ttMBasis += tMBasis;
 #endif			
 				}
 				else {
-					size_t degree1,degree2;
-					degree1 = (degree >> 1) + (degree & 1);
+					size_t degree1,degree2,shift;
+					shift=(degree & 1);
+					degree1 = (degree >> 1) + shift;
 					degree2 = degree - degree1;
-									
+						
+					
+			
 					// Compute Sigma Base of half degree
 					std::vector<Coefficient> Sigma1(degree1+1,ZeroSigma);
 					
@@ -416,9 +419,13 @@ namespace LinBox {
 					// Compute Serie2 = x^(-degree1).Sigma.PowerSerie mod x^degree2
 					// degree1 instead degree2 for using middle product computation
 					std::vector<Coefficient> Serie2(degree1+1,ZeroSerie);	
+				
+					//if (2*Sigma1.size()-1 !=  PowerSerie.size()) 
+					//std::cerr<<"marche pas\n";
 					
-					PM_domain.midproduct(Serie2,Sigma1,PowerSerie);
-					Serie2.resize(degree2+1);				
+					//PM_domain.midproduct(Serie2,Sigma1,PowerSerie);
+					ComputeNewSerie(Serie2,Sigma1,PowerSerie, degree1, degree2);
+					
 #ifdef _BM_TIMING				
 					tUpdateSerie.stop();ttUpdateSerie += tUpdateSerie;
 #endif					
@@ -625,23 +632,24 @@ namespace LinBox {
 
 		// Multiply a Power Serie by a Sigma Base.
 		// only affect coefficients of the Power Serie between degree1 and degree1+degree2
-		inline void ComputeNewSerie(std::vector<Coefficient>          &NewSerie, 
-					    const std::vector<Coefficient>   &SigmaBase, 
-					    const std::vector<Coefficient>    &OldSerie,
-					    size_t                              degree1,
-					    size_t                              degree2){						
+		template<class Polynomial1, class Polynomial2,class Polynomial3>
+		inline void ComputeNewSerie(Polynomial1          &NewSerie, 
+					    const Polynomial2   &SigmaBase, 
+					    const Polynomial3    &OldSerie,
+					    size_t                 degree1,
+					    size_t                 degree2){						
 			
 			// degree1 >= degree2
 			//size_t size = 2*degree1 + 1;
 					
-			//const Coefficient ZeroSerie (OldSerie[0].rowdim(), OldSerie[0].coldim());
+			const Coefficient ZeroSerie (OldSerie[0].rowdim(), OldSerie[0].coldim());
 			//const Coefficient ZeroBase  (SigmaBase[0].rowdim(), SigmaBase[0].coldim());
 			
 			// Work on a copy of the old  Serie (increase size by one for computation of middle product)
-			//std::vector<Coefficient> Serie(OldSerie.size()+1);
-			//for (size_t i=0;i< OldSerie.size();++i)
-			//	Serie[i] = OldSerie[i];			
-			//Serie[OldSerie.size()]=ZeroSerie;
+			std::vector<Coefficient> Serie(OldSerie.size()+1, ZeroSerie);
+			for (size_t i=0;i< OldSerie.size();++i)
+				Serie[i] = OldSerie[i];			
+			Serie[OldSerie.size()]=ZeroSerie;
 
 			//  ** try to not use a Copy **
 			// Work on a copy of the Sigma Base 
@@ -651,7 +659,7 @@ namespace LinBox {
 			//}
 		
 
-			PM_domain.midproduct(NewSerie, SigmaBase, OldSerie);
+			PM_domain.midproduct(NewSerie, SigmaBase, Serie);
 		}
 		
 

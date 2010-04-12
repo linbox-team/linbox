@@ -40,7 +40,7 @@ namespace LinBox {
 
 
 #define FFT_DEG_THRESHOLD   64
-#define KARA_DEG_THRESHOLD  10
+#define KARA_DEG_THRESHOLD  1
 #ifndef FFT_PRIME_SEED
 	// random seed
 #define FFT_PRIME_SEED 0
@@ -96,7 +96,7 @@ namespace LinBox {
 			linbox_check( 2*b.size() == c.size()+1);			
 
 			size_t d = b.size()+c.size();
-			
+			//std::cout<<"midp "<<a.size()<<" = "<<b.size()<<" x "<<c.size()<<"...\n"; 
 			//Timer mul;
 			//mul.start();
 			if (d > FFT_DEG_THRESHOLD)
@@ -106,6 +106,32 @@ namespace LinBox {
 					_kara.midproduct(a,b,c);		
 				else
 					_classic.midproduct(a,b,c);
+			//std::cout<<"done\n";
+			/*
+			mul.stop();multime+=mul;
+			std::cout.width(30);
+			std::cout<<"mul "<<b.size()<<"x"<<c.size()<<" : ";		
+			std::cout.precision(3);
+			std::cout<<mul.usertime()<<std::endl;	
+			*/
+		}
+
+		template< class Polynomial1, class Polynomial2, class Polynomial3>
+		void midproductgen (Polynomial1 &a, const Polynomial2 &b, const Polynomial3 &c) {
+			linbox_check( a.size()+b.size() == c.size()+1);
+			
+			size_t d = b.size()+c.size();
+			//std::cout<<"midp "<<a.size()<<" = "<<b.size()<<" x "<<c.size()<<"...\n"; 
+			//Timer mul;
+			//mul.start();
+			if (d > FFT_DEG_THRESHOLD)
+				_fft.midproductgen(a,b,c);
+			else
+				if ( d > KARA_DEG_THRESHOLD)
+					_kara.midproductgen(a,b,c);		
+				else
+					_classic.midproductgen(a,b,c);
+			//std::cout<<"done\n";
 			/*
 			mul.stop();multime+=mul;
 			std::cout.width(30);
@@ -150,6 +176,19 @@ namespace LinBox {
 					}
 				}
 			}			
+		}
+
+		template< class Polynomial1, class Polynomial2, class Polynomial3>
+		void midproductgen (Polynomial1 &a, const Polynomial2 &b, const Polynomial3 &c) {
+			linbox_check(a.size()+b.size() == c.size()+1);
+		
+			for (size_t i=0;i<b.size();++i){
+				for (size_t j=0;j<c.size();++j){					
+					if ((i+j>=a.size()-1) && (i+j<=c.size()-1)){
+						_BMD.axpyin(a[i+j - a.size()+1],b[i],c[j]);
+					}
+				}
+			}			
 		}		
 	};
 	
@@ -178,9 +217,14 @@ namespace LinBox {
 		void midproduct(Polynomial1 &a, const Polynomial2 &b, const Polynomial3 &c) {
 			linbox_check( 2*a.size() == c.size()+1);
 			linbox_check( 2*b.size() == c.size()+1);
-			midproduct_Karatsuba(a, b, c);		
+			midproduct_Karatsuba(a, b, c);	
 		}
 		
+		template< class Polynomial1, class Polynomial2, class Polynomial3>
+		void midproductgen(Polynomial1 &a, const Polynomial2 &b, const Polynomial3 &c) {
+			linbox_check(a.size()+b.size() == c.size()+1);
+			midproduct_Karatsubagen(a, b, c);	
+		}
 
 	protected:
 		
@@ -264,7 +308,6 @@ namespace LinBox {
 		}	
 
 
-
 		template< class Polynomial1, class Polynomial2, class Polynomial3>
 		void midproduct_Karatsuba(Polynomial1 &C, const Polynomial2 &A, const Polynomial3 &B){
 		
@@ -281,7 +324,7 @@ namespace LinBox {
 				const Coefficient ZeroB(B[0].rowdim(), B[0].coldim());
 			
 				std::vector<Coefficient> alpha(k1,ZeroC), beta(k1,ZeroC), gamma(k0,ZeroC);
-				std::vector<Coefficient> A_low(k0,ZeroA), A_high(k1,ZeroA);
+				std::vector<Coefficient> A_low(k0, ZeroA), A_high(k1,ZeroA);
 				std::vector<Coefficient> B1(2*k1-1,ZeroB), B2(2*k1-1,ZeroB);
 
 				for (size_t i=0;i<k0;++i)
@@ -320,6 +363,74 @@ namespace LinBox {
 				for (size_t i=0;i<k0;++i){
 					C[k1+i]=gamma[i];
 					_MD.addin(C[k1+i],beta[i]);
+				}
+			}
+		}
+
+		template< class Polynomial1, class Polynomial2, class Polynomial3>
+		void midproduct_Karatsubagen(Polynomial1 &C, const Polynomial2 &A, const Polynomial3 &B){
+		
+			if (A.size() == 1){
+				for (size_t i=0;i<B.size();i++)
+					_BMD.mul(C[i],A[0],B[i]);
+			}
+			else {	
+				size_t dA=A.size();
+				size_t dB=B.size();
+				size_t Ak0= dA>>1;
+				size_t Ak1= dA-Ak0;
+				size_t Bk0= (dB+1-dA)>>1;
+				size_t Bk1= dB+1-dA-Bk0;
+				std::cout<<C.size()<<" "<<A.size()<<" "<<B.size()<<"("<<Bk0<<","<<Bk1<<")\n";
+				
+				typedef  typename Polynomial1::value_type Coefficient;			       
+				const Coefficient ZeroC(C[0].rowdim(), C[0].coldim());
+				const Coefficient ZeroA(A[0].rowdim(), A[0].coldim());
+				const Coefficient ZeroB(B[0].rowdim(), B[0].coldim());
+			
+				std::vector<Coefficient> A_low(Ak0,ZeroA), A_high(Ak1,ZeroA);
+				std::vector<Coefficient> alpha(Bk1,ZeroC), beta(Bk1,ZeroC), gamma(Bk0,ZeroC);		      	
+				std::vector<Coefficient> B1(Ak1+Bk1-1,ZeroB), B2(Ak1+Bk1-1,ZeroB), B3(Ak0+Bk0-1, ZeroB);;
+				
+
+				for (size_t i=0;i<Ak0;++i)
+					A_low[i] = A[i];
+
+				for (size_t i=Ak0;i<dA;++i)
+					A_high[i-Ak0] = A[i];
+
+				for (size_t i=0;i<Ak1+Bk1-1;++i){
+					B1[i] = B[i];
+					B2[i] = B[i+Ak1];
+					_MD.addin(B1[i],B2[i]);
+				}		
+				midproduct_Karatsubagen(alpha, A_high, B1);			
+
+				if (Ak0 == Ak1) {
+					for (size_t i=0;i<Ak1;++i)
+						_MD.subin(A_high[i],A_low[i]);
+					midproduct_Karatsubagen(beta, A_high, B2);					
+				}
+				else {
+					for (size_t i=1;i<Ak1;++i)
+						_MD.subin(A_high[i],A_low[i-1]);
+					midproduct_Karatsubagen(beta, A_high, B2);
+				}				
+				
+				
+				if (Bk0>0) {
+					for (size_t i=0;i<Ak0+Bk0-1;++i)
+						_MD.add(B3[i],B[i+Ak0+Bk1],B[i+Ak0]);				
+					midproduct_Karatsubagen(gamma, A_low, B3);
+				}
+			
+
+				for (size_t i=0;i<Bk1;++i)
+					_MD.sub(C[i],alpha[i],beta[i]);
+				
+				for (size_t i=0;i<Bk0;++i){
+					C[Bk1+i]=gamma[i];
+					_MD.addin(C[Bk1+i],beta[i]);
 				}
 			}
 		}
@@ -849,6 +960,160 @@ namespace LinBox {
 			
 			linbox_check(2*a.size() == c.size()+1 );
 			linbox_check(2*b.size() == c.size()+1 );
+			linbox_check(b[0].coldim() == c[0].rowdim());
+			
+			size_t m = b[0].rowdim();
+			size_t k = b[0].coldim();
+			size_t n = c[0].coldim();
+			typedef  typename Polynomial1::value_type Coefficient;	
+			const Coefficient ZeroA(m,n), ZeroB(m,k), ZeroC(k,n);
+
+			size_t deg  = c.size()+1;
+			size_t lpts = 0; 
+			size_t pts =1; while (pts < deg) { pts= pts<<1; ++lpts; }
+						
+			if (_p%pts != 1) {
+				std::cout<<"Error the prime is not a FFTPrime or it has too small power of 2\n";
+				throw LinboxError("LinBox ERROR: bad FFT Prime\n");
+			}
+			
+			long w ;
+			// find a pseudo nth primitive root of unity
+			for (;;) {
+						
+				// compute the nth primitive root
+				w=  (long) ::powmod(_gen, _pl>>lpts, _p);
+				//std::cout<<w<<" : "<<_gen<<"\n"<<(_pl>>lpts)<<"\n";
+
+				if ((w !=1) && (w != _pl-1))
+					break;
+
+				// find a pseudo primitive element of the multiplicative group _p-1
+				long mm = _pl - 1;
+				long kk = 0;srand(time(NULL));
+				while ((mm & 1) == 0) {
+					mm = mm >> 1;
+					kk++;
+				}
+				long yy,zz,jj;
+				for (;;) {
+					_gen = rand() % _pl; if (_gen <= 0) continue;
+					
+					zz = 1; for (long i=0;i<mm;++i) zz = zz*_gen % _pl;
+					if (zz == 1) continue;
+					
+					jj = 0;
+					do {
+						yy = zz;
+						zz = yy*yy % _pl;
+						jj++;
+					} while (jj != kk && zz != 1);				
+					if (jj == kk) 
+						break;
+				}
+			}
+
+			long inv_w;
+
+			// compute w^(-1) mod p using extended euclidean algorithm 
+			long x_int, y_int, q, tx, ty, temp;
+			x_int = (long) _p;
+			y_int = (long) w;
+			tx = 0; ty = 1;
+			while (y_int != 0) {
+				q = x_int / y_int; // integer quotient
+				temp = y_int; y_int = x_int - q * y_int;
+				x_int = temp;
+				temp = ty; ty = tx - q * ty;
+				tx = temp;
+			}			
+			if (tx < 0) tx += (long) _p;			
+			inv_w = tx;
+	
+			
+			Element _w, _inv_w;
+			_F.init(_w,w);
+			_F.init(_inv_w, inv_w); 
+			std::vector<Element> pow_w(pts);
+			std::vector<Element> pow_inv_w(pts);
+			
+			// compute power of w and w^(-1)
+			_F.init(pow_w[0],1);
+			_F.init(pow_inv_w[0],1);
+			for (size_t i=1;i<pts;++i){
+				_F.mul(pow_w[i], pow_w[i-1], _w);
+				_F.mul(pow_inv_w[i], pow_inv_w[i-1], _inv_w);				
+			}
+
+			// compute reverse bit ordering
+			size_t revbit[pts];
+			for (long i = 0, j = 0; i < static_cast<long>(pts); i++, j = RevInc(j, lpts))
+				revbit[i]=j;
+		
+			// set the data
+			std::vector<Coefficient> fft_a(pts, ZeroA), fft_b(pts, ZeroB), fft_c(pts, ZeroC);
+			for (size_t i=0;i<b.size();++i)
+				fft_b[i]=b[b.size()-i-1];// reverse b
+			for (size_t i=b.size();i<pts;++i)
+				fft_b[i]=ZeroB;;			
+			for (size_t i=0;i<c.size();++i)
+				fft_c[i]=c[i];
+			for (size_t i=c.size();i<pts;++i)
+				fft_c[i]=ZeroC;
+
+
+			// compute the DFT of b and DFT^-1 of c (parallel if __LINBOX_HAVE_OPENMP)
+			launch_FFT(fft_b, pts, pow_w);							       	
+			launch_FFT(fft_c, pts, pow_inv_w);
+
+			// do the multiplication componentwise
+
+#ifdef __LINBOX_HAVE_OPENMP
+#pragma omp parallel for shared(fft_a,fft_b,fft_c) schedule(dynamic)
+#endif
+			for (long i=0;i<pts;++i)
+				_BMD.mul(fft_a[i], fft_b[i], fft_c[i]);
+						
+			Element swapping;
+			// reorder the term in the FFT according to reverse bit ordering
+// #ifdef __LINBOX_HAVE_OPENMP
+// #pragma omp parallel for shared(fft_a,revbit,inv_pts) schedule(runtime)
+// #endif
+			for (size_t i=0; i< pts; ++i){
+				if (revbit[i]>i){
+					typename Coefficient::RawIterator it_a1=fft_a[i].rawBegin();
+					typename Coefficient::RawIterator it_a2=fft_a[revbit[i]].rawBegin();
+					for (; it_a1 != fft_a[i].rawEnd(); ++it_a1, ++it_a2){
+						_F.assign(swapping,*it_a1);
+						_F.assign(*it_a1, *it_a2);
+						_F.assign(*it_a2,swapping);
+					}					
+				}
+			}
+
+			// compute the DFT of fft_a (parallel if __LINBOX_HAVE_OPENMP)
+			launch_FFT(fft_a, pts, pow_w);			
+			
+			
+			// set the result according to bitreverse ordering and multiply by 1/pts
+			Element inv_pts;
+			_F.init(inv_pts, pts);
+			_F.invin(inv_pts);
+// #ifdef __LINBOX_HAVE_OPENMP
+// #pragma omp parallel for shared(fft_a,revbit,inv_pts) schedule(static)
+// #endif
+				for (long i=0; i< a.size(); ++i){
+				a[i] = fft_a[revbit[i]];
+				_MD.mulin(a[i], inv_pts);
+				}			
+		}
+
+
+// unbalanced middle product: a[0..n-1] = (b.c)[n..n+m-1]
+		template< class Polynomial1, class Polynomial2, class Polynomial3>
+		void midproductgen (Polynomial1 &a, const Polynomial2 &b, const Polynomial3 &c) {
+			
+			linbox_check(a.size()+b.size() == c.size()+1 );
 			linbox_check(b[0].coldim() == c[0].rowdim());
 			
 			size_t m = b[0].rowdim();
