@@ -578,6 +578,11 @@ public:
 
 	size_t colIndex () const
 	{ return _c_index; }
+
+	const Element &value () const
+        { return *(_begin + (_r_index * _dim + _c_index)); }
+
+	
 };
 
 template <class Element>

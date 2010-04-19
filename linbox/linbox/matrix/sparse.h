@@ -991,6 +991,8 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 			{ return _r_index; }
 		size_t colIndex () const
 			{ return _c_index; }
+		const value_type &value() const
+			{ return *_j; }
 
 	    private:
 		RepIterator _i;
@@ -1296,19 +1298,21 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 			return tmp;
 		}
 
- 		const value_type &operator * () const
- 		    { return *(_i->second.begin () + _c_index); }
+//  		const value_type &operator * () const
+//  		    { return *(_i->second.begin () + _c_index); }
 		value_type &operator * ()
 		    { return (value_type&)(_i->second)[_value_index]; }
-		value_type *operator -> ()
-			{ return &(*(_i->second.begin () + _c_index)); }
- 		const value_type *operator -> () const
- 			{ return &(*(_i->second.begin () + _c_index)); }
+// 		value_type *operator -> ()
+// 			{ return &(*(_i->second.begin () + _c_index)); }
+//  		const value_type *operator -> () const
+//  			{ return &(*(_i->second.begin () + _c_index)); }
 
 		size_t rowIndex () const
 			{ return _r_index; }
 		size_t colIndex () const
 			{ return _c_index; }
+ 		const value_type &value () const 
+                { return (value_type&)(_i->second)[_value_index]; }
 
 	    private:
 		RepIterator _i;
