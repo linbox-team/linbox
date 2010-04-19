@@ -1,7 +1,7 @@
 /* omp_block_rank.C
  * Copyright (C) 2010 The LinBox Group
  * Block Wiedemann Rank with OpenMP
- * Time-stamp: <19 Apr 10 17:26:37 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <19 Apr 10 17:28:37 Jean-Guillaume.Dumas@imag.fr>
  * See COPYING for license information.
  */
 #include <iostream>
@@ -265,13 +265,14 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
     
     Blackbox B (ms);
     
-    cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
+    std::cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
     long M = B.rowdim() ;
     long N = B.coldim();
     long R = (M<N?M:N);
     long S = (M>N?M:N);
     
     long nb = (argc>3 ? atoi(argv[3]) : omp_get_max_threads() );
+    std::cout << "block size: " << nb << endl;
     
     chrono.start(); 
     std::vector< std::vector< typename Field::Element > > LV(nb);
