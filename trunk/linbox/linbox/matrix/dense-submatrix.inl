@@ -394,6 +394,8 @@ class DenseSubmatrix<Element>::RawIndexedIterator
 
 	size_t colIndex () const { return _c_idx; }
 
+	const Element& value () const {return *_cur;}
+
      protected:
 	typename DenseMatrixBase<Element>::RawIterator _cur;
 	size_t _stride;
