@@ -1,12 +1,9 @@
 /* omp_block_rank.C
  * Copyright (C) 2010 The LinBox Group
  * Block Wiedemann Rank with OpenMP
- * Time-stamp: <19 Apr 10 17:50:36 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <19 Apr 10 18:38:33 Jean-Guillaume.Dumas@imag.fr>
  * See COPYING for license information.
  */
-
-#define __LINBOX_Whisart_Trace_H
-
 
 #include <iostream>
 #include <omp.h>
@@ -173,53 +170,54 @@ void EvalPolyMat(Array& EvalDets, const Field& F, const LinBox::BlasMatrixDomain
 //     }
 }
 
+#include "linbox/algorithms/whisart_trace.h"
+// now in LinBox
 
+// template<class Field, class BB>
+// void WhisartTrace(
+//     typename Field::Element& trace, 
+//     const Field& F, 
+//     const LinBox::Diagonal<Field>& ExtD, 
+//     const BB& A, 
+//     const LinBox::Diagonal<Field>& InD) {
+//         // Trace of ExtD B InD B^T ExtD
+//         // is sum ExtD_i^2 B_{i,j} InD_j
+//     F.init(trace, 0);
+//     for(typename BB::ConstRawIndexedIterator it = A.rawIndexedBegin();
+//         it != A.rawIndexedEnd(); ++it) {
+//         typename Field::Element tmp,e,i; F.init(tmp);F.init(e);F.init(i);
+//         F.mul(tmp,it.value(),it.value());
+//         ExtD.getEntry(e, it.rowIndex(),it.rowIndex());
+//         InD.getEntry(i, it.colIndex(),it.colIndex());
+//         F.mulin(tmp,e);
+//         F.mulin(tmp,e);
+//         F.mulin(tmp,i);
+//         F.addin(trace, tmp);
+//     }
+// }
 
-template<class Field, class BB>
-void WhisartTrace(
-    typename Field::Element& trace, 
-    const Field& F, 
-    const LinBox::Diagonal<Field>& ExtD, 
-    const BB& A, 
-    const LinBox::Diagonal<Field>& InD) {
-        // Trace of ExtD B InD B^T ExtD
-        // is sum ExtD_i^2 B_{i,j} InD_j
-    F.init(trace, 0);
-    for(typename BB::ConstRawIndexedIterator it = A.rawIndexedBegin();
-        it != A.rawIndexedEnd(); ++it) {
-        typename Field::Element tmp,e,i; F.init(tmp);F.init(e);F.init(i);
-        F.mul(tmp,it.value(),it.value());
-        ExtD.getEntry(e, it.rowIndex(),it.rowIndex());
-        InD.getEntry(i, it.colIndex(),it.colIndex());
-        F.mulin(tmp,e);
-        F.mulin(tmp,e);
-        F.mulin(tmp,i);
-        F.addin(trace, tmp);
-    }
-}
-
-template<class Field, class BB>
-void WhisartTraceTranspose(
-    typename Field::Element& trace, 
-    const Field& F, 
-    const LinBox::Diagonal<Field>& ExtD, 
-    const BB& A, 
-    const LinBox::Diagonal<Field>& InD) {
-        // Trace of ExtD B^T  InD B ExtD
-        // is sum ExtD_j^2 B_{i,j} InD_i
-    F.init(trace, 0);
-    for(typename BB::ConstRawIndexedIterator it = A.rawIndexedBegin();
-        it != A.rawIndexedEnd(); ++it) {
-        typename Field::Element tmp,e,i; F.init(tmp);F.init(e);F.init(i);
-        F.mul(tmp,it.value(),it.value());
-        ExtD.getEntry(e, it.colIndex(),it.colIndex());
-        InD.getEntry(i, it.rowIndex(),it.rowIndex());
-        F.mulin(tmp,e);
-        F.mulin(tmp,e);
-        F.mulin(tmp,i);
-        F.addin(trace, tmp);
-    }
-}
+// template<class Field, class BB>
+// void WhisartTraceTranspose(
+//     typename Field::Element& trace, 
+//     const Field& F, 
+//     const LinBox::Diagonal<Field>& ExtD, 
+//     const BB& A, 
+//     const LinBox::Diagonal<Field>& InD) {
+//         // Trace of ExtD B^T  InD B ExtD
+//         // is sum ExtD_j^2 B_{i,j} InD_i
+//     F.init(trace, 0);
+//     for(typename BB::ConstRawIndexedIterator it = A.rawIndexedBegin();
+//         it != A.rawIndexedEnd(); ++it) {
+//         typename Field::Element tmp,e,i; F.init(tmp);F.init(e);F.init(i);
+//         F.mul(tmp,it.value(),it.value());
+//         ExtD.getEntry(e, it.colIndex(),it.colIndex());
+//         InD.getEntry(i, it.rowIndex(),it.rowIndex());
+//         F.mulin(tmp,e);
+//         F.mulin(tmp,e);
+//         F.mulin(tmp,i);
+//         F.addin(trace, tmp);
+//     }
+// }
 
 template<class T>
 std::ostream& operator<< (std::ostream& o, const std::vector<T>& C) {
@@ -505,7 +503,7 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
         std::cerr << "B4: " << B4.rowdim() << "x" << B4.coldim() << std::endl;
         
 //         trace(t, B4);   
-        WhisartTraceTranspose(t, F, D2, B, D1);
+        LinBox::WhisartTraceTranspose(t, F, D2, B, D1);
 
         F.write(std::cerr << "Trace D2 B^T D1 B D2: ", t) << std::endl;
 
@@ -524,7 +522,7 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
         std::cerr << "B4: " << B4.rowdim() << "x" << B4.coldim() << std::endl;
         
 //         trace(t, B4);   
-        WhisartTrace(t, F, D2, B, D1);   
+        LinBox::WhisartTrace(t, F, D2, B, D1);   
 
         F.write(std::cerr << "Trace D2 B D1 B^T D2: ", t) << std::endl;
     }
