@@ -192,7 +192,6 @@ class SparseMatrix : public BlackboxInterface, public SparseMatrixBase<typename 
 			Ap = new other(F, A.rowdim(), A.coldim());
 	
 			typename _Tp1::Element e;
-                        Element u;
 			Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);
 			for( typename Self_t::ConstRawIndexedIterator
                                  indices = A.rawIndexedBegin();
