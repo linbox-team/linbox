@@ -1,7 +1,7 @@
 /* omp_block_rank.C
  * Copyright (C) 2010 The LinBox Group
  * Block Wiedemann Rank with OpenMP
- * Time-stamp: <11 Mar 10 17:03:30 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <19 Apr 10 17:26:37 Jean-Guillaume.Dumas@imag.fr>
  * See COPYING for license information.
  */
 #include <iostream>
@@ -271,7 +271,7 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
     long R = (M<N?M:N);
     long S = (M>N?M:N);
     
-    long nb = atoi(argv[3]);
+    long nb = (argc>3 ? atoi(argv[3]) : omp_get_max_threads() );
     
     chrono.start(); 
     std::vector< std::vector< typename Field::Element > > LV(nb);
