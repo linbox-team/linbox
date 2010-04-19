@@ -365,17 +365,17 @@ namespace LinBox {
 		// SigmaBase must be already allocated with degree+1 elements
 		// PowerSerie must have at least degree+1 element
 #define MBASIS_THRESHOLD 16		
-	
+	 
 		template <class Polynomial1, class Polynomial2>
 		void PM_Basis(Polynomial1      &SigmaBase,
-			      Polynomial2     &PowerSerie, 
+			      const Polynomial2     &PowerSerie, 
 			      size_t               degree, 
 			      std::vector<size_t> &defect) {
 						
 			size_t m,n;
 			m = PowerSerie[0].rowdim();
 			n = PowerSerie[0].coldim();
-			Element one;
+			Element one; 
 			_F.init(one,1UL);
 			const Coefficient ZeroSigma(m,m);
 			const Coefficient ZeroSerie(m,n);
@@ -386,7 +386,9 @@ namespace LinBox {
 					Identity.setEntry(i,i,one);
 				SigmaBase[0]=Identity;
 			}
+			
 			else {
+				
 				if (degree <= MBASIS_THRESHOLD) {
 #ifdef _BM_TIMING				
 					tMBasis.clear();tMBasis.start();
@@ -396,14 +398,13 @@ namespace LinBox {
 					tMBasis.stop();	ttMBasis += tMBasis;
 #endif			
 				}
+				
 				else {
 					size_t degree1,degree2,shift;
-					shift=(degree & 1);
+					shift=(degree & 0x1);
 					degree1 = (degree >> 1) + shift;
 					degree2 = degree - degree1;
-						
-					
-			
+														
 					// Compute Sigma Base of half degree
 					std::vector<Coefficient> Sigma1(degree1+1,ZeroSigma);
 					
@@ -413,6 +414,10 @@ namespace LinBox {
 
 					//Subvector<typename Polynomial2::iterator> Serie1(PowerSerie.begin(),PowerSerie.begin()+degree1);					
 					PM_Basis(Sigma1, Serie1, degree1, defect);
+					// !!! NEED TO RESIZE SIGMA1 
+					// because MBasis remove all 0 matrix from leading coefficient of SigmaBase
+					// while PM_Basis does not
+					Sigma1.resize(degree1+1,ZeroSigma);
 #ifdef _BM_TIMING			
 					tUpdateSerie.clear();tUpdateSerie.start();
 #endif
@@ -420,11 +425,13 @@ namespace LinBox {
 					// degree1 instead degree2 for using middle product computation
 					std::vector<Coefficient> Serie2(degree1+1,ZeroSerie);	
 				
-					//if (2*Sigma1.size()-1 !=  PowerSerie.size()) 
-					//std::cerr<<"marche pas\n";
+					//if (2*Sigma1.size() !=  PowerSerie.size()+1)
+					//std::cerr<<Sigma1.size()<<" "<<PowerSerie.size()<<" marche pas\n";
+					
 					
 					//PM_domain.midproduct(Serie2,Sigma1,PowerSerie);
 					ComputeNewSerie(Serie2,Sigma1,PowerSerie, degree1, degree2);
+					Serie2.resize(degree2+1);
 					
 #ifdef _BM_TIMING				
 					tUpdateSerie.stop();ttUpdateSerie += tUpdateSerie;
@@ -646,11 +653,12 @@ namespace LinBox {
 			//const Coefficient ZeroBase  (SigmaBase[0].rowdim(), SigmaBase[0].coldim());
 			
 			// Work on a copy of the old  Serie (increase size by one for computation of middle product)
+			
 			std::vector<Coefficient> Serie(OldSerie.size()+1, ZeroSerie);
 			for (size_t i=0;i< OldSerie.size();++i)
 				Serie[i] = OldSerie[i];			
 			Serie[OldSerie.size()]=ZeroSerie;
-
+			
 			//  ** try to not use a Copy **
 			// Work on a copy of the Sigma Base 
 			//std::vector<Coefficient> Sigma(SigmaBase.size());
