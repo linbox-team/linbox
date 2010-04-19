@@ -1,17 +1,19 @@
 /* omp_block_rank.C
  * Copyright (C) 2010 The LinBox Group
  * Block Wiedemann Rank with OpenMP
- * Time-stamp: <19 Apr 10 17:28:37 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <19 Apr 10 17:50:36 Jean-Guillaume.Dumas@imag.fr>
  * See COPYING for license information.
  */
+
+#define __LINBOX_Whisart_Trace_H
+
+
 #include <iostream>
 #include <omp.h>
 #include <givaro/givtimer.h>
 #include <givaro/givpoly1crt.h>
 
 #include "linbox-config.h"
-using namespace std;
-
 
 // **********************************************************
 // Variable globale pour fixer le générateurs des FFT primes
@@ -103,32 +105,32 @@ void write_sigma(const Field &_F, const char* name, const std::vector<LinBox::Bl
 	size_t m,n;
 	m = P[0].rowdim();
 	n = P[0].coldim();
-	std::cout<<name<<":=[";
+	std::cerr<<name<<":=[";
 	for (size_t k=0;k<P.size()-1;++k){
-		std::cout<<"Matrix([";
+		std::cerr<<"Matrix([";
 		for (size_t i=0;i<m-1;++i){
-			std::cout<<"[";
+			std::cerr<<"[";
 			for (size_t j=0;j<n-1;++j)
-				_F.write(std::cout,P[k].getEntry(i,j))<<",";
-			_F.write(std::cout, P[k].getEntry(i,n-1))<<"] , ";
+				_F.write(std::cerr,P[k].getEntry(i,j))<<",";
+			_F.write(std::cerr, P[k].getEntry(i,n-1))<<"] , ";
 		}
-		std::cout<<"[";
+		std::cerr<<"[";
 		for (size_t j=0;j<n-1;++j)
-			_F.write(std::cout,P[k].getEntry(m-1,j))<<",";				
-		_F.write(std::cout, P[k].getEntry(m-1,n-1))<<"]]) , ";	
+			_F.write(std::cerr,P[k].getEntry(m-1,j))<<",";				
+		_F.write(std::cerr, P[k].getEntry(m-1,n-1))<<"]]) , ";	
 	}
 			
-	std::cout<<"Matrix([";
+	std::cerr<<"Matrix([";
 	for (size_t i=0;i<m-1;++i){
-		std::cout<<"[";
+		std::cerr<<"[";
 		for (size_t j=0;j<n-1;++j)
-			_F.write(std::cout,P[P.size()-1].getEntry(i,j))<<",";
-		_F.write(std::cout, P[P.size()-1].getEntry(i,n-1))<<"] , ";
+			_F.write(std::cerr,P[P.size()-1].getEntry(i,j))<<",";
+		_F.write(std::cerr, P[P.size()-1].getEntry(i,n-1))<<"] , ";
 	}
-	std::cout<<"[";
+	std::cerr<<"[";
 	for (size_t j=0;j<n-1;++j)
-		_F.write(std::cout,P[P.size()-1].getEntry(m-1,j))<<",";				
-	_F.write(std::cout, P[P.size()-1].getEntry(m-1,n-1))<<"]])]; \n";	
+		_F.write(std::cerr,P[P.size()-1].getEntry(m-1,j))<<",";				
+	_F.write(std::cerr, P[P.size()-1].getEntry(m-1,n-1))<<"]])]; \n";	
 }
 
 
@@ -152,9 +154,9 @@ template<class Field, class Array, class Matrix>
 void EvalPolyMat(Array& EvalDets, const Field& F, const LinBox::BlasMatrixDomain<Field>& D, const std::vector<Matrix>& matminpol, const Array& Points) {
 
     const long nump = Points.size();
-    std::cout << "num procs: " << omp_get_num_procs() << std::endl;
-    std::cout << "max threads: " << omp_get_max_threads() << std::endl;
-    std::cout << "eval points: " << nump << std::endl;
+    std::cerr << "num procs: " << omp_get_num_procs() << std::endl;
+    std::cerr << "max threads: " << omp_get_max_threads() << std::endl;
+    std::cerr << "eval points: " << nump << std::endl;
 #pragma omp parallel for schedule(static)
     for(int i=0; i<nump; ++i) {
         const long degree = matminpol.size()-1;
@@ -249,7 +251,7 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
     LinBox::commentator.setMaxDepth (-1);
     LinBox::commentator.setReportStream (std::cerr);
 
-    OMPTimer chrono; chrono.clear(); 
+    OMPTimer chrono1,chrono2,chrono3,chrono4; chrono1.clear(); chrono2.clear(); chrono3.clear(); chrono4.clear(); 
     
     Integer c; F.cardinality(c);
     unsigned long seed = (argc>4?atoi(argv[4]):0);
@@ -265,16 +267,16 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
     
     Blackbox B (ms);
     
-    std::cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
+    std::cerr << "B is " << B.rowdim() << " by " << B.coldim() << endl;
     long M = B.rowdim() ;
     long N = B.coldim();
     long R = (M<N?M:N);
     long S = (M>N?M:N);
     
     long nb = (argc>3 ? atoi(argv[3]) : omp_get_max_threads() );
-    std::cout << "block size: " << nb << endl;
+    std::cerr << "block size: " << nb << endl;
     
-    chrono.start(); 
+    chrono1.start(); 
     std::vector< std::vector< typename Field::Element > > LV(nb);
     for (typename std::vector< std::vector< typename Field::Element > >::iterator it = LV.begin(); it != LV.end(); ++it) {
         it->resize(R);
@@ -290,12 +292,12 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
         }
     }
 
-    chrono.stop(); 
+    chrono1.stop(); 
 
-    std::cout << "Generated " << nb << ' ' << R << "-vectors" << std::endl;
-    std::cerr << chrono << std::endl;
+    std::cerr << "Generated " << nb << ' ' << R << "-vectors" << std::endl;
+    std::cerr << chrono1 << std::endl;
 
-    chrono.clear(); chrono.start(); 
+    chrono2.start(); 
     
     typedef LinBox::BlasMatrix<typename Field::Element>        Matrix;
     typedef std::vector<Matrix>   Polynomial;
@@ -320,8 +322,8 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
         do generator.random (d2[i]); while (F.isZero (d2[i]));
     LinBox::Diagonal<Field> D2 (F, d2);
 
-    std::cout << "num procs: " << omp_get_num_procs() << std::endl;
-    std::cout << "max threads: " << omp_get_max_threads() << std::endl;
+    std::cerr << "num procs: " << omp_get_num_procs() << std::endl;
+    std::cerr << "max threads: " << omp_get_max_threads() << std::endl;
 
     if (M>N) {
 #pragma omp parallel for firstprivate(B) schedule(static)
@@ -346,7 +348,7 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
                 for(int i=0;i<nb;++i)
                     Serie[k].setEntry(i,j,colonne[i]);
             }
-            std::cout << "Thread[" << omp_get_thread_num() << "]: Done BTB-Serie[k][" << j << ']' << std::endl;
+            std::cerr << "Thread[" << omp_get_thread_num() << "]: Done BTB-Serie[k][" << j << ']' << std::endl;
         }   
     } else {
 #pragma omp parallel for firstprivate(B) schedule(static)
@@ -372,17 +374,17 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
                     Serie[k].setEntry(i,j,colonne[i]);
 
             }
-            std::cout << "Thread[" << omp_get_thread_num() << "]: Done BBT-Serie[k][" << j << ']' << std::endl;
+            std::cerr << "Thread[" << omp_get_thread_num() << "]: Done BBT-Serie[k][" << j << ']' << std::endl;
 
         }   
     }     
 
-    chrono.stop(); 
-    std::cout << "Computed a degree " << d << ' ' << nb << 'x' << nb << "-series" << std::endl;
-    std::cerr << chrono << std::endl;
+    chrono2.stop(); 
+    std::cerr << "Computed a degree " << d << ' ' << nb << 'x' << nb << "-series" << std::endl;
+    std::cerr << chrono2 << std::endl;
 // write_sigma(F, "serie", Serie);
    
-    chrono.clear(); chrono.start();	
+    chrono3.start();	
 	// append Identity to the serie
     for (int i=0;i<nb;++i)
         F.init(Serie[0].refEntry(nb+i,i), 1);	
@@ -395,17 +397,17 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
     
     
     LinBox::SigmaBasis<Field> SB(F, Serie);	
-    std::cout<<"blockminpoly computation... ";
+    std::cerr<<"blockminpoly computation... ";
     SB.PM_Basis(Sigma, Serie, d-1, defect);	  
-    std::cout<<"done\n";
+    std::cerr<<"done\n";
 // write_sigma(F, "serie", Serie);
 // write_sigma(F, "sigma", Sigma);
     
-    std::cout<<"extracting bminpoly... ";
+    std::cerr<<"extracting bminpoly... ";
     std::vector<Matrix> LS2;
     extractLeftSigma(F, LS2, Sigma, defect, nb);	
-    std::cout<<"done\n";
-    std::cout<<"Rank of the highest degree coefficient...";
+    std::cerr<<"done\n";
+    std::cerr<<"Rank of the highest degree coefficient...";
     unsigned long rdeg;
     LinBox::BlasMatrixDomain<Field> D(F);
     rdeg = D.rank(LS2[LS2.size()-1]);
@@ -417,30 +419,30 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
     { 
         int rank =  ((LS2.size()-2)*(LS2[0].rowdim())+rdeg);
         
-        chrono.stop();
-        std::cout<<"is " << rdeg << ", done.\n";
-        std::cout << "Estimated rank: " << rank << std::endl;
+        chrono3.stop();
+        std::cerr<<"is " << rdeg << ", done.\n";
+        std::cerr << "Estimated rank: " << rank << std::endl;
     } else {
-        chrono.stop();
-        std::cout<<  "\n*** WARNING *** Insufficient information, interpolation required. You might also try again with a larger field.\n";
-        F.write(std::cout<<  "det(bm[0]): ", d0) << std::endl;
-        std::cout<<  "rk(bm[0]): " << D.rank(LS2[0])<< std::endl;
-        F.write(std::cout<<  "det(bm[" << (LS2.size()-2) << "]): ", de) << std::endl;
-        std::cout<<  "rk(bm[" << (LS2.size()-2) << "]): "<< D.rank(LS2[LS2.size()-2]) << std::endl;
-        std::cout<<  "rk(bm[" << (LS2.size()-1) << "]): "<< rdeg << std::endl;
+        chrono3.stop();
+        std::cerr<<  "\n*** WARNING *** Insufficient information, interpolation required. You might also try again with a larger field.\n";
+        F.write(std::cerr<<  "det(bm[0]): ", d0) << std::endl;
+        std::cerr<<  "rk(bm[0]): " << D.rank(LS2[0])<< std::endl;
+        F.write(std::cerr<<  "det(bm[" << (LS2.size()-2) << "]): ", de) << std::endl;
+        std::cerr<<  "rk(bm[" << (LS2.size()-2) << "]): "<< D.rank(LS2[LS2.size()-2]) << std::endl;
+        std::cerr<<  "rk(bm[" << (LS2.size()-1) << "]): "<< rdeg << std::endl;
         long def=0;
         if (F.isZero(d0)) ++def;
         if (F.isZero(de)) ++def;
         int rank =  ((LS2.size()-2-def)*(LS2[0].rowdim())+rdeg);
-        std::cout<< "*** VERY ROUGH *** rank approximation  " << rank << std::endl;
+        std::cerr<< "*** VERY ROUGH *** rank approximation  " << rank << std::endl;
     }
-    std::cout << "recursive PMBasis CPU time (s)  : " << chrono.usertime() << std::endl<<std::endl;
-    std::cerr << chrono << std::endl;
+    std::cerr << "recursive PMBasis CPU time (s)  : " << chrono3.usertime() << std::endl<<std::endl;
+    std::cerr << chrono3 << std::endl;
    
-    chrono.clear(); chrono.start();	
+    chrono4.start();	
 
 
-    std::cout<<"Interpolation of matrix minpoly determinant ...";
+    std::cerr<<"Interpolation of matrix minpoly determinant ...";
     
 // write_sigma(F, "bminpoly", LS2);
 
@@ -462,24 +464,24 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
     typename PolyCRT::Element Determinant;
     
     Interpolator.RnsToRing(Determinant, EvalDets);
-    chrono.stop();	
+    chrono4.stop();	
     
-    std::cout << "done\n";
+    std::cerr << "done\n";
 
 
-//     Interpolator.write(std::cout << "Determinant of MinPoly: ", Determinant) << std::endl;
+//     Interpolator.write(std::cerr << "Determinant of MinPoly: ", Determinant) << std::endl;
 
     Degree deg; Interpolator.getpolydom().degree(deg, Determinant);
     Degree val; Interpolator.getpolydom().val(val, Determinant);
     
 
-    F.write(std::cout, Determinant[0]) << " + ";
-    if (val > 0) F.write(std::cout<< "... + ", Determinant[val.value()]) << "Y^" << val << " + ";
-    std::cout << "... + ";
+    F.write(std::cerr, Determinant[0]) << " + ";
+    if (val > 0) F.write(std::cerr<< "... + ", Determinant[val.value()]) << "Y^" << val << " + ";
+    std::cerr << "... + ";
     if (Determinant.size() >= 2) {
-        F.write(std::cout, Determinant[Determinant.size()-2]) << "Y^" << (deg-1) << " + ";
+        F.write(std::cerr, Determinant[Determinant.size()-2]) << "Y^" << (deg-1) << " + ";
     }   
-    F.write(std::cout, Determinant[Determinant.size()-1]) << "Y^" << deg << std::endl;
+    F.write(std::cerr, Determinant[Determinant.size()-1]) << "Y^" << deg << std::endl;
     
 
     typename Field::Element t, p2; F.init(p2, 0UL);
@@ -500,12 +502,12 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
         DATD_BB 	B2(&B1, &D1);	// B2 = B1 D1 = D2 B^T D1
         DATDA_BB 	B3(&B2, &B);	// B3 = B2 B  = D2 B^T D1 B
         DATDAD_BB	B4(&B3, &D2);	// B4 = B3 D2 = D2 B^T D1 B D2
-        std::cout << "B4: " << B4.rowdim() << "x" << B4.coldim() << std::endl;
+        std::cerr << "B4: " << B4.rowdim() << "x" << B4.coldim() << std::endl;
         
 //         trace(t, B4);   
         WhisartTraceTranspose(t, F, D2, B, D1);
 
-        F.write(std::cout << "Trace D2 B^T D1 B D2: ", t) << std::endl;
+        F.write(std::cerr << "Trace D2 B^T D1 B D2: ", t) << std::endl;
 
     } else {
         typedef LinBox::Compose< LinBox::Diagonal<Field>, Blackbox > DA_BB;
@@ -519,25 +521,34 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
         AT_BB 		AT(&B);	
         DADAT_BB 	B3(&B2, &AT);	// B3 = B2 B^T= D2 B D1 B^T
         DADATD_BB	B4(&B3, &D2);	// B4 = B3 D2 = D2 B D1 B^T D2
-        std::cout << "B4: " << B4.rowdim() << "x" << B4.coldim() << std::endl;
+        std::cerr << "B4: " << B4.rowdim() << "x" << B4.coldim() << std::endl;
         
 //         trace(t, B4);   
         WhisartTrace(t, F, D2, B, D1);   
 
-        F.write(std::cout << "Trace D2 B D1 B^T D2: ", t) << std::endl;
+        F.write(std::cerr << "Trace D2 B D1 B^T D2: ", t) << std::endl;
     }
     
     if (! F.areEqual( t, p2 )) { 
-        std::cout << "*** FAILURE (" << (deg-val) << ") ***" << std::endl;
-        F.write(std::cout << "Trace: ", t) << std::endl;
-        F.write(std::cout << "Minpo: ", p2) << std::endl;
+        std::cerr << "*** FAILURE (" << (deg-val) << ") ***" << std::endl;
+        F.write(std::cerr << "Trace: ", t) << std::endl;
+        F.write(std::cerr << "Minpo: ", p2) << std::endl;
     } else {
-//         std::cout << "Degree - valuation: " << (deg-val) << std::endl;
-        std::cout << "MONTE CARLO RANK: " << (deg-val) << std::endl;
+//         std::cerr << "Degree - valuation: " << (deg-val) << std::endl;
+        std::cerr << "MONTE CARLO RANK: " << (deg-val) << std::endl;
     }
-    std::cerr << chrono << std::endl;
+    std::cerr << chrono4 << std::endl;
    
 
+
+    std::cerr << "Rank |\t Time-genvect\t Time-seq\t Time-SB\t Time-Interp |\t Total-Time" << std::endl;
+    std::cout << (deg-val) << std::scientific << setprecision(3)
+              << " |\t" << chrono1.usertime() 
+              << '\t' << chrono2.usertime() 
+              << '\t' << chrono3.usertime() 
+              << '\t' << chrono4.usertime() 
+              << " |\t" << (chrono1.usertime()+chrono2.usertime()+chrono3.usertime()+chrono4.usertime())
+              << std::endl;
     return 0;
 }
 
@@ -549,12 +560,12 @@ int main (int argc, char **argv)
     int c = (argc>2 ? atoi(argv[2]) : 65521);
     unsigned long extend = (unsigned long)FF_EXPONENT_MAX(c,(int)LINBOX_EXTENSION_DEGREE_MAX);
     if (extend > 1) {
-        std::cout << "*** WARNING *** would be best using an extension field of degree " << extend << std::endl;
+        std::cerr << "*** WARNING *** would be best using an extension field of degree " << extend << std::endl;
     }
 //     if (extend > 1) {
 //         typedef LinBox::GivaroGfq Field;
 //         Field EF( (unsigned long)c, extend);
-//         EF.write(std::cout << "Using an extension field ") << std::endl;
+//         EF.write(std::cerr << "Using an extension field ") << std::endl;
 //         return OMP_BLOCK_RANK_main(EF,argc,argv);
 //     } else {
         typedef LinBox::Modular<double> Field;
