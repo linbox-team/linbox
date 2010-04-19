@@ -25,6 +25,7 @@
 #include "linbox/algorithms/gauss.h"
 #include "linbox/algorithms/gauss-gf2.h"
 #include "linbox/algorithms/blas-domain.h"
+#include "linbox/algorithms/whisart_trace.h"
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/switch/cekstv.h"
 #include "linbox/blackbox/butterfly.h"
@@ -346,7 +347,8 @@ namespace LinBox {
             commentator.start ("Monte Carlo certification", "trace");
 
             typename Field::Element t, p2; F.init(p2, 0UL);
-            trace(t, B);            
+//             trace(t, B);
+            WhisartTraceTranspose(t, F, D1, A, D2);
             if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
                 
             int nbperm = 0; unsigned long rk;
@@ -386,7 +388,8 @@ namespace LinBox {
                 commentator.start ("Monte Carlo certification", "trace");
                 if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
                 
-                trace(t, B);
+//                 trace(t, B);
+                WhisartTraceTranspose(t, F, D1, BP, D2);
                 tryagain = (! F.areEqual( t, p2 ));
                 if (res > rk) 
                     tryagain = true;
@@ -429,7 +432,8 @@ namespace LinBox {
                 commentator.start ("Monte Carlo certification", "trace");
                 if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
                 
-                trace(t, B);
+//                 trace(t, B);
+                WhisartTraceTranspose(t, F, D1, BP, D2);
                 tryagain = (! F.areEqual( t, p2 ));
                 if (res > rk) 
                     tryagain = true;
