@@ -78,6 +78,7 @@ pkgincludesub_HEADERS = \
 	varprec-cra-early-single.h		\
 	varprec-cra-early-multip.h		\
 	vector-fraction.h	\
+	whisart_trace.h		\
 	cia.h			\
 	bbcharpoly.h		\
 	charpoly-rational.h	\
