@@ -257,7 +257,7 @@ namespace LinBox {
 
 
 		// Field accessor
-		Field& field() {return _F;}
+		const Field& field() const {return _F;}
 
 			
 		/*
@@ -350,12 +350,29 @@ namespace LinBox {
 			return Ainv;
 		}
 		
+		// Inversion 
+		template <class Matrix>
+                Matrix& invin( Matrix &Ainv, Matrix &A) const { 
+                    	BlasMatrixDomainInv<Field,Matrix>()(_F,Ainv,A);
+                        return Ainv;
+		}
+
 		// Inversion (the matrix A is modified)
 		template <class Matrix>
-		Matrix& invin( Matrix &Ainv, Matrix &A) const { 
-			BlasMatrixDomainInv<Field,Matrix>()(_F,Ainv,A);
-			return Ainv;
+		Matrix& invin(Matrix &A) const { 
+                    	Matrix tmp(A.rowdim(), A.coldim());
+                        tmp = A;
+                        BlasMatrixDomainInv<Field,Matrix>()(_F,A,tmp);
+                        return A;
 		}
+
+
+		// C = A B^{-1}  ==>  C . B = A
+		template <class Matrix>
+		Matrix& div( Matrix &C, const Matrix &A, const Matrix &B) const { 
+                    return this->right_solve(C,B,A);
+		}
+            
 
 		// Inversion w singular check
 		template <class Matrix>
