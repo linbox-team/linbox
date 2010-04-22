@@ -1,6 +1,6 @@
 // =================================================================== //
 // LightContainer : std::vector like container
-// Time-stamp: <15 Sep 08 14:11:27 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <22 Apr 10 12:27:19 Jean-Guillaume.Dumas@imag.fr> 
 // =================================================================== //
 #ifndef __Light_Container__ 
 #define __Light_Container__
@@ -120,6 +120,20 @@ public:
         return pos;
     }
     
+    iterator insert(iterator pos, const_iterator beg, const_iterator end) {
+        REQUIRE( (pos-begin()) <= (end()-begin()) );
+        REQUIRE( (pos-begin()) >= 0 );
+        if (pos == _finish) {
+            for(const_iterator iter=beg; iter != end; ++iter)
+                push_back(*iter);
+        } else {
+            for(const_iterator iter=beg; iter != end; ++iter)
+                insert(pos, *iter);
+        }
+        ENSURE( allocated >= size() );
+        return pos;
+    }
+
     
 /*
     friend std::ostream& operator<< (std::ostream& o, const Self_t& C) {
