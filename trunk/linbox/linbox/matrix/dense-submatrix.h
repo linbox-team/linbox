@@ -219,7 +219,7 @@ class DenseSubmatrix
 	 * @param j Column index
 	 * @return Reference to x
 	 */
-	Element &getEntry (Element &x, size_t i, size_t j)
+	Element &getEntry (Element &x, size_t i, size_t j) const
 		{ return _M->getEntry (x, i + _beg_row, j + _beg_col); } 
 
 	RowIterator rowBegin ();
