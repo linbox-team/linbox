@@ -34,6 +34,8 @@ pkgincludesub_HEADERS = \
 	cra-mpi.h				\
 	cra-kaapi.h				\
 	cra-domain.h				\
+	cra-domain-seq.h				\
+	cra-domain-omp.h				\
 	cra-early-multip.h			\
 	cra-early-single.h			\
 	cra-full-multip.h			\
