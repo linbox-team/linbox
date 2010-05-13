@@ -5,7 +5,7 @@
  * Naive parallel chinese remaindering
  * Launch NN iterations in parallel, where NN=omp_get_max_threads()
  * Then synchronization and termintation test.
- * Time-stamp: <10 Apr 10 12:10:22 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <13 May 10 12:06:20 Jean-Guillaume.Dumas@imag.fr> 
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -78,7 +78,7 @@ namespace LinBox {
                 }
                 
 #pragma omp parallel for
-                for(size_t i=0;i<NN;++i) {
+                for(long i=0;i<NN;++i) {
                     Iteration(ROUNDresidues[i], ROUNDdomains[i]);
                 }
 #pragma omp barrier
@@ -118,7 +118,7 @@ std::cerr << "Computed: " << this->IterCounter << " primes." << std::endl;
                 }
                 
 #pragma omp parallel for
-                for(size_t i=0;i<NN;++i) {
+                for(long i=0;i<NN;++i) {
                     Iteration(ROUNDresidues[i], ROUNDdomains[i]);
                 }
 #pragma omp barrier
