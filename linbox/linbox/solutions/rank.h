@@ -642,6 +642,7 @@ namespace LinBox {
                     FBlackbox * Ap;
                     MatrixHom::map(Ap, A, EF );
                     rank(r, *Ap, tag, Method::Wiedemann(m));
+                    delete Ap;
                 } else
                     rank(r, A, tag, Method::Wiedemann(m)); 
             } else {
@@ -653,6 +654,7 @@ namespace LinBox {
                     FBlackbox * Ap;
                     MatrixHom::map(Ap, A, EF );
                     rank(r, *Ap, tag, Method::Wiedemann(m));
+                    delete Ap;
                 } else
                     rank(r, A, tag, Method::Wiedemann(m)); 
             }
