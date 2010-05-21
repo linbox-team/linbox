@@ -324,6 +324,7 @@ namespace LinBox
                     {
 			SparseMatrix<Field> *P = NULL;
 			sfrs = findRandomSolution (A, x, b, r, P, P);
+                        delete P;
                         break;
                     }
 		default:
