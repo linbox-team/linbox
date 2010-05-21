@@ -130,7 +130,10 @@ namespace LinBox
             typedef SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq> SparseBB;
             SparseBB * SpA;
             MatrixHom::map(SpA, A, A.field());
-            return solvein(x, *SpA, b, m);
+//             return solvein(x, *SpA, b, m);
+            solvein(x, *SpA, b, m);
+            delete SpA;
+            return x;
 	}
 
 	template <class Vector> 
@@ -154,7 +157,10 @@ namespace LinBox
                 // We make a copy
             GaussDomain<GF2>::Matrix * SpA;
             MatrixHom::map(SpA, A, A.field());
-            return solvein(x, *SpA, b, m);
+//             return solvein(x, *SpA, b, m);
+            solvein(x, *SpA, b, m);
+            delete SpA;
+            return x;
 	}
 
 	template <class Vector, class Field> 
