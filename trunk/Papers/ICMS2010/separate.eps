@@ -1,7 +1,7 @@
 %!PS-Adobe-2.0 EPSF-2.0
 %%Title: separate.fig
 %%Creator: fig2dev Version 3.2 Patchlevel 5c
-%%CreationDate: Fri Jun 11 16:06:30 2010
+%%CreationDate: Fri Jun 11 16:37:06 2010
 %%BoundingBox: 0 0 522 139
 %Magnification: 1.0000
 %%EndComments
@@ -145,18 +145,6 @@ n 450 2340 m
  8730 2340 l gs col0 s gr 
 % Polyline
 15.000 slw
-gs  clippath
-832 1538 m 832 1425 l 787 1425 l 787 1538 l 787 1538 l 810 1482 l 832 1538 l cp
-eoclip
-n 810 2520 m
- 810 1440 l gs col0 s gr gr
-
-% arrowhead
-30.000 slw
-n 832 1538 m 810 1482 l 787 1538 l 810 1527 l 832 1538 l 
- cp gs 0.00 setgray ef gr  col0 s
-% Polyline
-15.000 slw
 n 645 2520 m 540 2520 540 2775 105 arcto 4 {pop} repeat
   540 2880 2325 2880 105 arcto 4 {pop} repeat
   2430 2880 2430 2625 105 arcto 4 {pop} repeat
@@ -180,6 +168,17 @@ n 4965 1890 m 4860 1890 4860 2145 105 arcto 4 {pop} repeat
   8640 2250 8640 1995 105 arcto 4 {pop} repeat
   8640 1890 4965 1890 105 arcto 4 {pop} repeat
  cp gs col0 s gr 
+% Polyline
+gs  clippath
+832 1538 m 832 1425 l 787 1425 l 787 1538 l 787 1538 l 810 1482 l 832 1538 l cp
+eoclip
+n 810 2520 m
+ 810 1440 l gs col0 s gr gr
+
+% arrowhead
+30.000 slw
+n 832 1538 m 810 1482 l 787 1538 l 810 1527 l 832 1538 l 
+ cp gs 0.00 setgray ef gr  col0 s
 /Helvetica-Bold ff 190.50 scf sf
 630 2790 m
 gs 1 -1 sc (rankDenseMatGF2) col0 sh gr
@@ -218,7 +217,7 @@ gs 1 -1 sc (Default call) col0 sh gr
 gs 1 -1 sc (User interface) col0 sh gr
 /Helvetica-Bold ff 190.50 scf sf
 630 1350 m
-gs 1 -1 sc (rank) col0 sh gr
+gs 1 -1 sc (rank\(const Mat&\)) col0 sh gr
 /Helvetica-Bold ff 190.50 scf sf
 1530 2160 m
 gs 1 -1 sc (rankDenseMatGF2) col0 sh gr
