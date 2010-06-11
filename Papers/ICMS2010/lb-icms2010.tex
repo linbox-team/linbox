@@ -141,39 +141,45 @@ Our idea is to automatize the technique of
 and link-time instantiation, while using template instantiation
 instead of void pointers.\\
 The mecanism we propose is independent of the desired method, candidate
-for separate compilation and is explained on algorithm \ref{alg:sep}.\\
+for separate compilation and is explained on algorithm \ref{alg:sep}.
 \begin{algorithm}[ht]
 \caption{C++ Automatic separate compilation wrapping}\label{alg:sep}
 \begin{algorithmic}[1]
-\REQUIRE A geenric function \texttt{func}.
-\REQUIRE A list of template parameters for separate specialization and
+\REQUIRE A generic function \texttt{func}.
+\REQUIRE Some template parameters for separate specialization and
 compilation of  \texttt{func}.
-\ENSURE A generic function \texttt{func\_separate}, calling
+\ENSURE A generic function calling
 \texttt{func} with separately compiled instantiations.
-\STATE Create two files ``func\_instantiate.hpp'' and ``func\_instantiate.cpp'';
-\STATE Add \texttt{func\_separate}, with the same template function
-specification as \texttt{func}, to ``func\_instantiate.hpp'';
+\STATE Create a header and a body files ``func\_instantiate.hpp'' and ``func\_instantiate.cpp'';
+\STATE Add a template function \texttt{func\_separate}, with the same
+specification as \texttt{func}, to the header;
+\STATE Its generic default implementation is a single line calling the
+original function \texttt{func}.\\ \COMMENT{This enables to have a
+  unified interface, even for non specialized class.}
 \FOR{each separately compiled template parameter \texttt{TParam}}
-  \STATE Add to ``func\_instantiate.hpp'', a non template specification
-  \texttt{funcTParam};
-  \STATE Add to ``func\_instantiate.cpp'', the associated body with a
+  \STATE Add  a non template specification
+  \texttt{funcTParam}, to the header file;
+  \STATE Add the associated body with a
   single line returning the instantiation of
-  \texttt{func} on a parameter of type \texttt{TParam};
-  \STATE Add to ``func\_instantiate.hpp'', an inline specialization
-  body of \texttt{func\_specialization} on a parameter of type
-  \texttt{TParam} with a single line returning \texttt{funcTParam}; 
+  \texttt{func} on a parameter of type \texttt{TParam}, to the body file;
+  \STATE Add an inline specialization
+  body of \texttt{func\_separate} on a parameter of type
+  \texttt{TParam} with a single line returning \texttt{funcTParam}, to
+  the header file; 
 \ENDFOR
-\STATE Compile ``func\_instantiate.cpp''.
+\STATE Compile the body file ``func\_instantiate.cpp''.
 \end{algorithmic}
 \end{algorithm}
+
 This Algorithm is illustrated on figure \ref{fig:sep}, where
 the function is the \texttt{rank} and the template parameter is a dense
 matrix over the finite field with two elements,
-\texttt{DenseMatrix<GF2>}.\\
+\texttt{DenseMatrix<GF2>}.
 \begin{figure}[ht]
 \includegraphics[width=\textwidth]{separate}
 \caption{Separate compilation of a rank specialization}\label{fig:sep}
 \end{figure}
+
 We show on table \ref{tab:compilation} the gains, in term of compilation time,
 obtained on two examples of \linbox: the \texttt{examples/rank.C} and
 \texttt{examples/solve.C} algorithms. Indeed without any specification
@@ -191,21 +197,20 @@ file                      &  real time   &  user time   &  sys. time  &  real ti
 \hline
  & \multicolumn{3}{|c||}{Rank}& \multicolumn{3}{|c|}{Solve}\\
 \hline
- \texttt{instantiate.o}    &   59.00s   &   58.13s   &   0.86s  &   65.38s   &   64.48s   &   0.88s \\
- \texttt{separate.o}      &\bf    8.87s   & \bf    8.53s   & \bf   0.33s  & \bf   10.17s   &  \bf   9.81s   & \bf   0.35s \\
- \texttt{separate}         &    0.52s   &    0.44s   &   0.09s  &    0.54s   &    0.42s   &   0.11s \\
+\texttt{instantiate.o} & 143.43s & 142.47s & 0.90s & 171.62s & 170.42s & 1.12s\\
+\texttt{separate.o} & \bf 18.58s & \bf 18.26s & \bf 0.30s & \bf 23.13s & \bf 22.80s & \bf 0.32s\\
+\texttt{separate} & 0.80s & 0.64s & 0.15s & 0.85s & 0.70s & 0.14s\\
 \hline
- Sep. comp.       &   68.39s   &   67.10s   &   1.28s  &   76.09s   &   74.71s   &   1.34s \\
+\texttt{Sep. comp.} & 162.81s & 161.37s & 1.35s & 195.60s & 193.92s & 1.58s\\
+\hline
+\texttt{Full comp.} & 162.02s & 160.47s & 1.21s & 191.47s & 189.52s & 1.40s\\
 \hline
 \hline
- Full comp.       &   66.91s   &   65.92s   &   0.89s  &   72.62s   &   71.35s   &   1.03s \\
-\hline
-\hline
- speed-up         &   7.1   &   7.3   &   2.1   &   6.8   &   7.0   &   2.2  \\
+\texttt{speed-up} & 8.4 & 8.5 & 2.7 & 8.0 & 8.1 & 3.0s\\
 \hline
 \end{tabular} 
 \caption{linbox/examples/\{rank,solve\}.C compilation time on an AMD
-  Athlon 3600+, 1.9GHz, with gcc 4.4.4. \texttt{instantiate.o} corresponds to the separately compiled
+  Athlon 3600+, 1.9GHz, with gcc 4.5 -O2. \texttt{instantiate.o} corresponds to the separately compiled
   instantiatiations (e.g. densegf2rank in figure \ref{fig:sep});
   \texttt{separate.o} corresponds to the user interface and generic
   implementation compilation; \texttt{separate} corresponds to the
