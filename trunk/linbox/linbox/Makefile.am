@@ -44,4 +44,4 @@ liblinbox_la_SOURCES = dummy.C
 liblinbox_la_LIBADD = \
 	util/libutil.la		\
 	randiter/libranditer.la \
-	algorithms/algorithms.la
+	algorithms/libalgorithms.la
