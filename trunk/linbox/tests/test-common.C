@@ -108,7 +108,7 @@ Argument *findArgument (Argument *args, char c)
 {
 	int i;
 
-	for (i = 0; args[i].c != '\0' && args[i].c != c; i++);
+	for (i = 0; args[i].c != '\0' && args[i].c != c; i++) ;
 
 	if (args[i].c != '\0')
 		return &(args[i]);
@@ -226,7 +226,7 @@ inline double incompleteGamma (double a, double x, double tol)
 		sigma += xn / pi;
 		xn *= x;
 		++n;
-	} while (abs (sigma - last_sigma) >= tol);
+	} while (abs (sigma - last_sigma) >= tol) ;
 
 	return sigma * xa_ex;
 }

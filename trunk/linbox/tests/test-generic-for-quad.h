@@ -1467,7 +1467,7 @@ bool testRandomIterator (const Field &F, const char *text,
 
 template <class Field>
 bool testRandomIteratorStep (const Field &F,
-			 const char *text,
+			 const char *, // text
 			 unsigned int num_trials,
 			 unsigned int num_categories,
 			 unsigned int hist_len) 

@@ -34,7 +34,7 @@ using namespace LinBox;
 using LinBox::uint16;
 using LinBox::uint32;
 
-static bool testDotProductGF2 (const GF2 &F, const char *desc,
+static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 			       VectorStream<Vector<GF2>::Dense> &stream1,
 			       VectorStream<Vector<GF2>::Dense> &stream2) 
 {
@@ -127,7 +127,7 @@ static bool testDotProductGF2 (const GF2 &F, const char *desc,
 	return ret;
 }
 
-static bool testDotProductGF2 (const GF2 &F, const char *desc,
+static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 			       VectorStream<Vector<GF2>::Dense> &stream1,
 			       VectorStream<Vector<GF2>::Sparse> &stream2) 
 {
