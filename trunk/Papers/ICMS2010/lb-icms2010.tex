@@ -25,6 +25,31 @@
 
 \section{Introduction}
 
+As a building block for a wide range of applications, computational exact linear
+algebra has to conciliate both efficiency and genericty. The goal of the 
+\linboxsp project is to address this problem by designing an efficient general-purpose
+\texttt{C++} open-source library for exact linear algebra over the integers, the
+rationals and finite fields. 
+Matrices can be either dense, sparse or black box (i.e. viewed as a linear
+operator, acting on vectors only). The library proposes a set of high level
+linear algebra solutions, such as the rank, the determinant, the solution of a
+linear system, the smith normal form, the echelon form, the characteristic
+polynomial, ... Each of these solutions involve a hybrid combination of several specialized
+algorithms depending on the domain, and the type of matrix. Over a finite field,
+the building blocks are an efficient implementation of Wiedemann and block
+Wiedemann algorithms combined with preconditioners~\cite{CEKSTV:2002:EP} for
+black box matrices, a sparse Gaussian elimination for sparse matrices and the
+BLAS based dense linear algebra techniques of the \texttt{FFLAS}
+library~\cite{DGP:2008:dlaff} for dense matrices. The solutions over the integers
+and rationals are lifted from modular computations by a Chinese remainder
+algorithm or $p$-adic lifting.
+The design based on a high genericity allow to write efficient algorithms  independently from the
+representations of domains and matrices. As a middleware, the library relies on the
+efficiency of kernel libraries such as  \texttt{GMP}\footnote{\url{http://gmplib.org/}},
+\texttt{Givaro}\footnote{\url{http://www-ljk.imag.fr/CASYS/LOGICIELS/givaro/}},
+\texttt{NTL}\footnote{\url{http://www.shoup.net/ntl/}},
+\texttt{ATLAS}\footnote{\url{http://math-atlas.sourceforge.net/}} and can be used by general
+purpose computer algebra systems such as \texttt{Sage}\footnote{\url{http://sagemath.org/}} or \texttt{Maple}\footnote{\url{http://www.maplesoft.com/}}. 
 
 \section{A lightweight memory management}
 
