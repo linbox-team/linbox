@@ -32,8 +32,7 @@
 
 namespace LinBox {
 	
-	const char* solverReturnString[] 
-	= {"OK", "FAILED", "SINGULAR", "INCONSISTENT", "BAD_PRECONDITIONER", "BAD_PRIME"};
+	extern const char* solverReturnString[6] ;
 
 	/** 
 	 * \brief DiophantineSolver<QSolver> creates a diophantine solver using a QSolver to generate rational solutions

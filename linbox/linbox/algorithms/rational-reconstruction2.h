@@ -9,7 +9,7 @@
 #include <linbox/integer.h>
 
 namespace LinBox{
-int rational_reconstruction (integer& a, integer& b, const integer& n0, const integer& d0, const integer& B) {
+inline int rational_reconstruction (integer& a, integer& b, const integer& n0, const integer& d0, const integer& B) {
 
 	integer p0, p1, p2; integer q0, q1, q2;
 	integer q, r; integer n, d;

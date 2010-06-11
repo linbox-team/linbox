@@ -56,14 +56,14 @@ namespace LinBox {
 	*/
 	
  	template <class Blackbox, class Method, class DomainCategory>
- 	unsigned long &rank (unsigned long                   &r,
+ 	inline unsigned long &rank (unsigned long                   &r,
  			     const Blackbox                  &A,
 			     const DomainCategory          &tag,
  			     const Method                   &M);
 
 	// error hanlder for rational domain
 	template <class Blackbox, class Method>
- 	unsigned long &rank (unsigned long                           &r,
+ 	inline unsigned long &rank (unsigned long                           &r,
  			     const Blackbox                          &A,
 			     const RingCategories::RationalTag     &tag,
  			     const Method                           &M){
@@ -85,7 +85,7 @@ namespace LinBox {
             \ingroup solutions
 	*/
     template <class Blackbox>
-    unsigned long &rank (unsigned long                   &r,
+    inline unsigned long &rank (unsigned long                   &r,
                          const Blackbox                  &A)
     {  return rank(r, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), Method::Hybrid()); 
     }
@@ -93,13 +93,13 @@ namespace LinBox {
 	/** A may be modified
 	*/
     template <class Matrix>
-    unsigned long &rankin (unsigned long                   &r,
+    inline unsigned long &rankin (unsigned long                   &r,
                          Matrix                  &A)
     {  return rankin(r, A, typename FieldTraits<typename Matrix::Field>::categoryTag(), Method::Elimination()); 
     }
 
     template <class Blackbox>
-    unsigned long &rank (unsigned long                   &r,
+    inline unsigned long &rank (unsigned long                   &r,
                          const Blackbox                  &A,
                          const RingCategories::ModularTag     &tag,
                          const Method::Hybrid         &m)
@@ -109,7 +109,7 @@ namespace LinBox {
     }
 
     template <class Blackbox>
-    unsigned long &rank (unsigned long                   &r,
+    inline unsigned long &rank (unsigned long                   &r,
                          const Blackbox                  &A,
                          const RingCategories::ModularTag                  &tag,
                          const Method::Elimination    &m)
@@ -125,7 +125,7 @@ namespace LinBox {
 
 
     template <class Field, class Vector>
-    unsigned long &rank (unsigned long                   &r,
+    inline unsigned long &rank (unsigned long                   &r,
                          const SparseMatrix<Field, Vector>         &A,
                          const RingCategories::ModularTag                  &tag,
                          const Method::Elimination    &m)
@@ -136,7 +136,7 @@ namespace LinBox {
 
 	// specialization of NonBlas for SparseMatrix
     template <class Blackbox>
-    unsigned long &rank (unsigned long                   &r,
+    inline unsigned long &rank (unsigned long                   &r,
                          const Blackbox                  &A,
                          const   RingCategories::ModularTag           &tag,
                          const Method::NonBlasElimination& m)
@@ -146,7 +146,7 @@ namespace LinBox {
 
 
     template <class Blackbox>
-    unsigned long &rank (unsigned long                   &r,
+    inline unsigned long &rank (unsigned long                   &r,
                          const Blackbox                  &A,
                          const  RingCategories::ModularTag                   &tag,
                          const Method::Blackbox& m);
@@ -162,7 +162,7 @@ namespace LinBox {
             \ingroup solutions
 	*/
     template <class Blackbox, class Method>
-    unsigned long &rank (unsigned long                   &r,
+    inline unsigned long &rank (unsigned long                   &r,
                          const Blackbox                  &A,
                          const Method    &M)
     {  return rank(r, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), M); 
@@ -170,7 +170,7 @@ namespace LinBox {
 
 	/// M may be <code>Method::Wiedemann()</code>.
     template <class Blackbox>
-    unsigned long &rank (unsigned long                   &res,
+    inline unsigned long &rank (unsigned long                   &res,
                          const Blackbox                  &A,
                          const RingCategories::ModularTag          &tag,
                          const Method::Wiedemann    &M) 
@@ -452,7 +452,7 @@ namespace LinBox {
 
 	/// M may be <code>Method::SparseElimination()</code>.
     template <class Field>
-    unsigned long &rank (unsigned long                       &r,
+    inline unsigned long &rank (unsigned long                       &r,
                          const SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq>  &A,
                          const RingCategories::ModularTag    &tag,
                          const Method::SparseElimination     &M) 
@@ -463,7 +463,7 @@ namespace LinBox {
     }
     
     template <class Field, class Method>
-    unsigned long &rankin (unsigned long                   &r,
+    inline unsigned long &rankin (unsigned long                   &r,
                            SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq>  &A,
                          const Method    &M)
     {  return rankin(r, A, typename FieldTraits<Field>::categoryTag(), M); 
@@ -471,7 +471,7 @@ namespace LinBox {
 
 
    template <class Blackbox, class Ring>
-    unsigned long &rankin (unsigned long                     &r,
+    inline unsigned long &rankin (unsigned long                     &r,
                            Blackbox &A,
                            const RingCategories::IntegerTag    &tag,
                            const Method::SparseElimination     &M)
@@ -493,7 +493,7 @@ namespace LinBox {
     }
     
     template <class Field>
-    unsigned long &rankin (unsigned long                       &r,
+    inline unsigned long &rankin (unsigned long                       &r,
                            SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq>  &A,
                            const RingCategories::ModularTag    &tag,
                            const Method::SparseElimination     &M) 
@@ -505,7 +505,7 @@ namespace LinBox {
         return r;
     }
 
-    unsigned long &rankin (unsigned long                       &r,
+    inline unsigned long &rankin (unsigned long                       &r,
                            GaussDomain<GF2>::Matrix    &A,
                            const Method::SparseElimination     &)//M 
     {
@@ -516,7 +516,7 @@ namespace LinBox {
         return r;
     }
 
-    unsigned long &rankin (unsigned long                       &r,
+    inline unsigned long &rankin (unsigned long                       &r,
                            GaussDomain<GF2>::Matrix    &A,
                            const RingCategories::ModularTag    &,//tag
                            const Method::SparseElimination     &M) {
@@ -525,7 +525,7 @@ namespace LinBox {
 
 	// Change of representation to be able to call the sparse elimination
     template <class Blackbox>
-    unsigned long &rank (unsigned long                       &r,
+    inline unsigned long &rank (unsigned long                       &r,
                          const Blackbox  &A,
                          const RingCategories::ModularTag    &tag,
                          const Method::SparseElimination     &M) 
@@ -541,7 +541,7 @@ namespace LinBox {
     
 	// M may be <code>Method::BlasElimination()</code>.
     template <class Blackbox>
-    unsigned long &rank (unsigned long                     &r,
+    inline unsigned long &rank (unsigned long                     &r,
                          const Blackbox                      &A,
                          const RingCategories::ModularTag          &tag,
                          const Method::BlasElimination  &M) 
@@ -564,7 +564,7 @@ namespace LinBox {
 // is this used?
 	// A is modified.
     template <class Matrix>
-    unsigned long &rankin (unsigned long                      &r,
+    inline unsigned long &rankin (unsigned long                      &r,
                            Matrix                               &A,
                            const RingCategories::ModularTag          &tag,
                            const Method::SparseElimination &M) 
@@ -578,7 +578,7 @@ namespace LinBox {
 
 	/// A is modified.
     template <class Field>
-    unsigned long &rankin (unsigned long                     &r,
+    inline unsigned long &rankin (unsigned long                     &r,
                            BlasBlackbox<Field>                 &A,
                            const RingCategories::ModularTag          &tag,
                            const Method::BlasElimination  &M) 
@@ -593,7 +593,7 @@ namespace LinBox {
     }
 
     template <class Blackbox, class MyMethod>
-    unsigned long &rank (unsigned long                     &r,
+    inline unsigned long &rank (unsigned long                     &r,
                          const Blackbox                      &A,
                          const RingCategories::IntegerTag          &tag,
                          const MyMethod                           &M)
@@ -623,7 +623,7 @@ namespace LinBox {
 #include "linbox/field/givaro-extension.h"
 namespace LinBox {
     template <class Blackbox>
-    unsigned long &rank (unsigned long                   &r,
+    inline unsigned long &rank (unsigned long                   &r,
                          const Blackbox                  &A,
                          const RingCategories::ModularTag                   &tag,
                          const Method::Blackbox& m)
@@ -667,7 +667,7 @@ namespace LinBox {
 #else
 namespace LinBox {
     template <class Blackbox>
-    unsigned long &rank (unsigned long                   &r,
+    inline unsigned long &rank (unsigned long                   &r,
                          const Blackbox                  &A,
                          const  RingCategories::ModularTag                   &tag,
                          const Method::Blackbox& m)

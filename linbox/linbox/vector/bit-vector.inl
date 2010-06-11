@@ -95,10 +95,10 @@ class BitVector::reference
 	uint8                         _pos;
 };
 
-std::istream &operator >> (std::istream &is, BitVector::reference &a) 
+inline std::istream &operator >> (std::istream &is, BitVector::reference &a) 
 	{ bool v; is >> v; a = v; return is; }
 
-std::ostream &operator << (std::ostream &os, BitVector::reference &a) 
+inline std::ostream &operator << (std::ostream &os, BitVector::reference &a) 
 	{ os << bool (a); return os; }
 
 class BitVector::const_reference
@@ -126,7 +126,7 @@ class BitVector::const_reference
 	uint8                               _pos;
 };
 
-std::ostream &operator << (std::ostream &os, BitVector::const_reference &a) 
+inline std::ostream &operator << (std::ostream &os, BitVector::const_reference &a) 
 	{ os << bool (a); return os; }
 
 // class BitVector::iterator : public std::iterator <std::random_access_iterator_tag, bool>
@@ -391,7 +391,7 @@ inline BitVector::reference BitVector::operator[] (BitVector::size_type n)
 inline BitVector::const_reference BitVector::operator[] (BitVector::size_type n) const
 	{ return *(begin () + n); }
 
-BitVector::reference BitVector::at (BitVector::size_type n)
+inline BitVector::reference BitVector::at (BitVector::size_type n)
 {
 	if (n >= _size)
 		throw std::out_of_range ("LinBox::BitVector");
@@ -399,7 +399,7 @@ BitVector::reference BitVector::at (BitVector::size_type n)
 		return (*this)[n];
 }
 
-BitVector::const_reference BitVector::at (BitVector::size_type n) const
+inline BitVector::const_reference BitVector::at (BitVector::size_type n) const
 {
 	if (n >= _size)
 		throw std::out_of_range ("LinBox::BitVector");
@@ -430,7 +430,7 @@ inline BitVector::const_reference BitVector::back (void) const
 }
 
 template<class Container>
-BitVector &BitVector::operator = (const Container &v)
+inline BitVector &BitVector::operator = (const Container &v)
 {
 	typename Container::const_iterator i;
 	typename Container::const_iterator i_end = v.begin () + (v.size () >> __LINBOX_LOGOF_SIZE);
@@ -461,10 +461,10 @@ BitVector &BitVector::operator = (const Container &v)
 	return *this;
 }
 
-void BitVector::resize (BitVector::size_type new_size, bool val)
+inline void BitVector::resize (BitVector::size_type new_size, bool val)
 	{_v.resize ((new_size >> __LINBOX_LOGOF_SIZE) + ((new_size & __LINBOX_POS_ALL_ONES) ? 1UL : 0UL), val ? __LINBOX_ALL_ONES : 0UL); _size = new_size; }
 
-bool BitVector::operator == (const BitVector &v) const
+inline bool BitVector::operator == (const BitVector &v) const
 {
 	const_word_iterator i, j;
 	unsigned long mask;

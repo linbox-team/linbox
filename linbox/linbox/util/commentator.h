@@ -825,7 +825,7 @@ namespace LinBox
 	};
 
 	// Default global commentator
-	Commentator commentator;
+	extern Commentator commentator;
 	//static Commentator commentator;
 }
 

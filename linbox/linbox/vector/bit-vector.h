@@ -30,7 +30,7 @@ namespace LinBox
 const unsigned long __LINBOX_ALL_ONES = static_cast<unsigned long>(-1);
 #define __LINBOX_PARITY(s) ParallelParity(s)
 
-    bool ParallelParity(unsigned long t) {
+    inline bool ParallelParity(unsigned long t) {
 	t ^= (t >> 16);
 	t ^= (t >> 8);
 	t ^= (t >> 4);
@@ -46,7 +46,7 @@ const unsigned long __LINBOX_ALL_ONES = static_cast<unsigned long>(-1);
 const unsigned long __LINBOX_ALL_ONES = static_cast<unsigned long>(-1);
 #define __LINBOX_PARITY(s) ParallelParity(s)
 
-    bool ParallelParity(unsigned long t) {
+    inline bool ParallelParity(unsigned long t) {
 	t ^= (t >> 32);
 	t ^= (t >> 16);
 	t ^= (t >> 8);
