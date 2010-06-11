@@ -3,6 +3,7 @@
 \usepackage{amssymb}
 \setcounter{tocdepth}{3}
 \usepackage{graphicx}
+\usepackage{calc,listings,color}
 
 \usepackage{url,xspace}
 
@@ -112,7 +113,7 @@ template<class Matrix> size_t& rank(size_t& rank, const Matrix& A) {
 a specific caller, which will instantiate the generic caller e.g,
 \begin{verbatim}
 size_t& rankOfDenseMatrixOverGF2(size_t& rank, const DenseMatrix<GF2>& A) {
-   return generic_rank(r, A);
+   return rank_implementation(r, A);
 }
 \end{verbatim}
 and then define a specialization of the user level call:
@@ -130,6 +131,12 @@ template<> size_t& rank(size_t& rank, const DenseMatrix<GF2>& A) {
 \item speeds-up external usage such as Maple, Sage interfaces:
   compilation timings ?
 \end{itemize}
+
+\begin{figure}[ht]
+\includegraphics[width=\textwidth]{separate}
+\caption{Separate compilation of a rank specialization}\label{fig:sep}
+\end{figure}
+
 
 \bibliographystyle{plain}
 \bibliography{jgdbibl} 
