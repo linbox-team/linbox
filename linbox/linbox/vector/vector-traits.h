@@ -57,7 +57,7 @@ namespace LinBox
         {
             struct GenericVectorTag { 
                 friend std::ostream& operator<< (std::ostream& o, 
-                                                 const GenericVectorTag& t) {
+                                                 const GenericVectorTag& ) {
                     return o << "GenericVectorTag"; 
                 } 
             };
@@ -66,7 +66,7 @@ namespace LinBox
 
             struct SparseZeroOneVectorTag : public GenericVectorTag { 
                 friend std::ostream& operator<< (std::ostream& o, 
-                                                 const SparseZeroOneVectorTag& t) { 
+                                                 const SparseZeroOneVectorTag& ) { 
                     return o << "SparseZeroOneVectorTag"; 
                 } 
             };
@@ -76,40 +76,40 @@ namespace LinBox
                     // This simplifies gf2 management of vectors
                     // and makes Dense vector also a generic vector
                 friend std::ostream& operator<< (std::ostream& o, 
-                                                 const DenseVectorTag& t) { 
+                                                 const DenseVectorTag& ) { 
                     return o << "DenseVectorTag"; 
                 } 
             };
             
             struct SparseVectorTag : public GenericVectorTag { 
                 friend std::ostream& operator<< (std::ostream& o, 
-                                                 const SparseVectorTag& t) { 
+                                                 const SparseVectorTag& ) { 
                     return o << "SparseVectorTag"; 
                 } 
             };
             
             struct SparseSequenceVectorTag : public SparseVectorTag { 
                 friend std::ostream& operator<< (std::ostream& o, 
-                                                 const SparseSequenceVectorTag& t) { 
+                                                 const SparseSequenceVectorTag& ) { 
                     return o << "SparseSequenceVectorTag"; 
                 } 
             };
             struct SparseAssociativeVectorTag : public SparseVectorTag { 
                 friend std::ostream& operator<< (std::ostream& o, 
-                                                 const SparseAssociativeVectorTag& t) { 
+                                                 const SparseAssociativeVectorTag& ) { 
                     return o << "SparseAssociativeVectorTag"; 
                 } 
             };
             struct SparseParallelVectorTag : public SparseVectorTag { 
                 friend std::ostream& operator<< (std::ostream& o, 
-                                                 const SparseParallelVectorTag& t) { 
+                                                 const SparseParallelVectorTag& ) { 
                     return o << "SparseParallelVectorTag"; 
                 } 
             };
 
             struct DenseZeroOneVectorTag : public DenseVectorTag { 
                 friend std::ostream& operator<< (std::ostream& o, 
-                                                 const DenseZeroOneVectorTag& t) { 
+                                                 const DenseZeroOneVectorTag& ) { 
                     return o << "DenseZeroOneVectorTag"; 
                 } 
             };

@@ -60,11 +60,11 @@ class DenseSubmatrix
 {
     public:
  
-	class RawIterator;
-	class ConstRawIterator;
+		class RawIterator ;
+		class ConstRawIterator;
 
-	typedef _Element Element;
-        typedef DenseSubmatrix<_Element> Self_t;
+		typedef _Element Element;
+		typedef DenseSubmatrix<_Element> Self_t;
     
 
 	/** \brief 
@@ -151,6 +151,11 @@ class DenseSubmatrix
 	size_t coldim () const
 		{ return _end_col - _beg_col; }
 
+	RawIterator rawBegin ();     
+	RawIterator rawEnd ();
+	ConstRawIterator rawBegin () const;       
+	ConstRawIterator rawEnd () const;  
+
 
 	template<typename _Tp1>
         struct rebind
@@ -158,15 +163,20 @@ class DenseSubmatrix
             typedef DenseSubmatrix<typename _Tp1::Element> other; 
 
             void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
-
+#if 0
                 Ap = new DenseMatrixBase<typename _Tp1::Element>(A.rowdim(), A.coldim());
-                typename Self_t::ConstRawIterator         iter_value = A.rawBegin();
-                typename Self_t::ConstRawIndexedIterator  iter_index = A.rawIndexedBegin();
+				typedef typename DenseSubmatrix<Element>::ConstRawIterator ConstRawIterator ;
+				ConstRawIterator         iter_value = A.rawBegin();
+				typename Self_t::ConstRawIndexedIterator  iter_index = A.rawIndexedBegin();
                 typename _Tp1::Element tmp;
                 for (;iter_value != A.rawEnd(); ++iter_value,++iter_index){
                     F.init(  tmp, *iter_value ); 
                     Ap->setEntry(iter_index.rowIndex(), iter_index.colIndex(),tmp);
                 }
+BB : nvcc pas content
+#endif
+		 std::cout << "?? " << std::endl;
+		 exit(-4);
            }
         };
 
@@ -240,14 +250,9 @@ class DenseSubmatrix
 	 * algorithm.
 	 */
 
-	class RawIterator;   
-	class ConstRawIterator;
+	//class RawIterator;   
+	//class ConstRawIterator;
    
-	RawIterator rawBegin ();     
-	RawIterator rawEnd ();
-	ConstRawIterator rawBegin () const;       
-	ConstRawIterator rawEnd () const;  
-
 	/** \brief
 	 *
 	 * Like the raw iterator, the indexed iterator is a method for

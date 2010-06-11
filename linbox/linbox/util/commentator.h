@@ -486,7 +486,11 @@ namespace LinBox
 		 * @param msgclass Class of message
 		 * @param time_type Type of timing to use
 		 */
-		void stop (const char *msg, long msglevel, const char *msgclass, long time_type)
+		void stop (const char *msg
+				, long //msglevel
+				, const char * //msgclass
+				, long //time_type
+				)
 			{ stop (msg); }
 
 		/** Report progress

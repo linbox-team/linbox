@@ -74,7 +74,7 @@ class BlackboxContainerBase {
 	class const_iterator {
 		BlackboxContainerBase<Field, Blackbox> &_c;
 	public:
-		const_iterator () {}
+		//const_iterator () {} // BB ??
 		const_iterator (BlackboxContainerBase<Field, Blackbox> &C) : _c (C) {}
 		const_iterator &operator ++ () { _c._launch (); return *this; }
 		const Element  &operator *  () { _c._wait ();   return _c.getvalue (); }

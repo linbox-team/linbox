@@ -229,7 +229,8 @@ namespace LinBox{
 		Element* getPointer() const { return _LU.getPointer(); }
 
 		// get a pointer to the begin of storage
-		const size_t getStride() const { return _LU.getStride(); }
+		//const size_t getStride() const { return _LU.getStride(); }
+		size_t getStride() const { return _LU.getStride(); } //BB: pas besoin
 
 		/*
 		 * Solvers with matrices or vectors

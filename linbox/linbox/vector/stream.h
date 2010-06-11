@@ -518,7 +518,7 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseAssoc
 
 		for (i = 0; i < _k; i++) {
 			_r.random (x);
-			while (!_F.isZero (v[idx = MT.randomIntRange (0, _n)]));
+			while (!_F.isZero (v[idx = MT.randomIntRange (0, _n)])) ;
 			v[idx] = x;
 		}
 

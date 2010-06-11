@@ -24,7 +24,8 @@ FFPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
 	F.init( one, 1.0 );
 	F.init( zero, 0.0 );
 	// nRow is the number of row in the krylov base already computed
-	size_t j, k, nRow = 2;
+	size_t j, k ;
+	//size_t	nRow = 2;
 	typename Polynomial::iterator it;
 	elt* Xi, *Ui;
 	typename Field::RandIter g (F);
@@ -40,7 +41,7 @@ FFPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
 		}
 	}while(KeepOn);
 
-	nRow = 1;
+	//nRow = 1;
 	// LUP factorization of the Krylov Base Matrix
 	k = LUdivine_construct (F, FflasUnit, N+1, N, A, lda, X, ldx, U, P, true,
 				MinTag, kg_mc, kg_mb, kg_j);

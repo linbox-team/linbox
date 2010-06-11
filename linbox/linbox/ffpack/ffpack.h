@@ -500,10 +500,12 @@ public:
 	       const typename Field::Element *B, const size_t ldb,
 	       int * info){
 
+		/* BB: unused
 		size_t Nb,Mb;
 		if (Side == FflasLeft){Nb = NRHS; Mb = N;}
 		else {Nb = M; Mb = NRHS;}
-		
+		*/
+
 		size_t* P = new size_t[N];
 		size_t* Q = new size_t[M];
 

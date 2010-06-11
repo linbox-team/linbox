@@ -82,9 +82,13 @@ class DenseMatrixBase
                 Ap = new other(A.rowdim(), A.coldim());
                 typename Self_t::ConstRawIterator         iter_value = A.rawBegin();
                 typename other::RawIterator               new_value = Ap->rawBegin();
-                Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);
+				/*
+                Hom<typename Self_t::Element, _Tp1> hom(A.field(), F);
                 for (;iter_value != A.rawEnd(); ++iter_value,++new_value)
                     hom. image (*new_value, *iter_value);
+					*/
+				std::cout << "field ???" << std::endl;
+				exit(-4) ; //BB c'est n'imp quoi !
             }
         };
 

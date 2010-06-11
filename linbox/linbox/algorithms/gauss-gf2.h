@@ -38,11 +38,11 @@ namespace LinBox
             /** \brief The field parameter is the domain 
              * over which to perform computations
              */
-	GaussDomain (const Field &F) {}
+	GaussDomain (const Field &) {}
 
             //Copy constructor
             /// 
-	GaussDomain (const GaussDomain &M)  {}
+	GaussDomain (const GaussDomain &)  {}
 
             /** accessor for the field of computation
              */
@@ -70,14 +70,14 @@ namespace LinBox
                                 		  SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
 
             ///        
-        template <class SparseSeqMatrix> unsigned long& rank(unsigned long &rank,
+        template <class SparseSeqMatrix> unsigned long& rank(unsigned long &rk,
                                                     const SparseSeqMatrix        &A,
                                                     unsigned long  Ni,
                                                     unsigned long  Nj,
                                                     SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const ;
 
             ///        
-	template <class SparseSeqMatrix> unsigned long& rank(unsigned long &rank,
+	template <class SparseSeqMatrix> unsigned long& rank(unsigned long &rk,
                                                     const SparseSeqMatrix        &A,
                                                     SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const ;
 
@@ -163,7 +163,7 @@ namespace LinBox
                                               unsigned long Ni, 
                                               unsigned long Nj) const;
 	template <class SparseSeqMatrix>
-        unsigned long& NoReordering (unsigned long &rank, Element& determinant, SparseSeqMatrix &LigneA, unsigned long Ni, unsigned long Nj) const {
+        unsigned long& NoReordering (unsigned long & rank, Element& , SparseSeqMatrix &, unsigned long , unsigned long ) const {
 		std::cerr << "Sparse elimination over GF2 without reordering not implemented" << std::endl;
 		return rank;
 	}

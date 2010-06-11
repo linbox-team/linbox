@@ -32,8 +32,8 @@
 namespace LinBox
 {
 
-template <class Element>
-DenseSubmatrix<Element>::DenseSubmatrix (DenseMatrixBase<Element> &M,
+template <class _Element>
+DenseSubmatrix<_Element>::DenseSubmatrix (DenseMatrixBase<_Element> &M,
 					 size_t row,
 					 size_t col,
 					 size_t rowdim,
@@ -47,14 +47,14 @@ DenseSubmatrix<Element>::DenseSubmatrix (DenseMatrixBase<Element> &M,
 } 
 
 
-template <class Element>
-DenseSubmatrix<Element>::DenseSubmatrix (DenseMatrixBase<Element> &M)
+template <class _Element>
+DenseSubmatrix<_Element>::DenseSubmatrix (DenseMatrixBase<_Element> &M)
 	: _M(&M), _beg_row(0), _end_row(M.rowdim()), _beg_col(0), _end_col(M.coldim()) {}
 
 
 
-template <class Element>
-DenseSubmatrix<Element>::DenseSubmatrix (const DenseSubmatrix<Element> &SM,
+template <class _Element>
+DenseSubmatrix<_Element>::DenseSubmatrix (const DenseSubmatrix<_Element> &SM,
 					 size_t row,
 					 size_t col,
 					 size_t rowdim,
@@ -71,14 +71,14 @@ DenseSubmatrix<Element>::DenseSubmatrix (const DenseSubmatrix<Element> &SM,
 	linbox_check (_end_col - _beg_col <= SM.coldim ());
 }
   
-template <class Element>
-DenseSubmatrix<Element>::DenseSubmatrix (const DenseSubmatrix<Element> &SM)
+template <class _Element>
+DenseSubmatrix<_Element>::DenseSubmatrix (const DenseSubmatrix<_Element> &SM)
 	: _M (SM._M), _beg_row (SM._beg_row), _end_row (SM._end_row), _beg_col (SM._beg_col), _end_col (SM._end_col)
 {
 }
 
-template <class Element>
-DenseSubmatrix<Element>& DenseSubmatrix<Element>::operator=(const DenseSubmatrix<Element> &SM)
+template <class _Element>
+DenseSubmatrix<_Element>& DenseSubmatrix<_Element>::operator=(const DenseSubmatrix<_Element> &SM)
 {
 	_M = (SM._M);
 	_beg_row = SM._beg_row;
@@ -89,13 +89,13 @@ DenseSubmatrix<Element>& DenseSubmatrix<Element>::operator=(const DenseSubmatrix
 	return *this;
 }
   
-template <class Element>
-class DenseSubmatrix<Element>::RawIterator
+template <class _Element>
+class DenseSubmatrix<_Element>::RawIterator
 {
     public:
 	RawIterator (){}
 
-	RawIterator (const typename DenseMatrixBase<Element>::RawIterator& cur,
+	RawIterator (const typename DenseMatrixBase<_Element>::RawIterator& cur,
 		     const size_t c_dim,
 		     const size_t stride,
 		     const size_t c_idx)
@@ -133,26 +133,26 @@ class DenseSubmatrix<Element>::RawIterator
 		return (_cur != r._cur || _c_dim != r._c_dim) || (_stride != r._stride) || (_c_idx != r._c_idx);
 	} 
 
-	Element& operator * ()
+	_Element& operator * ()
 		{ return *_cur; }
 
-	const Element& operator * () const
+	const _Element& operator * () const
 		{ return *_cur; }
 
     protected:
-	typename DenseMatrixBase<Element>::RawIterator _cur;
+	typename DenseMatrixBase<_Element>::RawIterator _cur;
 	size_t _c_dim;
 	size_t _stride;
 	size_t _c_idx;
 };
   
-template <class Element>
-class DenseSubmatrix<Element>::ConstRawIterator
+template <class _Element>
+class DenseSubmatrix<_Element>::ConstRawIterator
 {
     public:
 	ConstRawIterator (){}
 
-	ConstRawIterator (const typename DenseMatrixBase<Element>::ConstRawIterator& cur,
+	ConstRawIterator (const typename DenseMatrixBase<_Element>::ConstRawIterator& cur,
 		     const size_t c_dim,
 		     const size_t stride,
 		     const size_t c_idx)
@@ -190,11 +190,11 @@ class DenseSubmatrix<Element>::ConstRawIterator
 		return (_cur != r._cur) || (_c_dim != r._c_dim) || (_stride != r._stride) || (_c_idx != r._c_idx);
 	} 
 
-	const Element& operator * () const
+	const _Element& operator * () const
 		{ return *_cur; }
 
     protected:
-	typename DenseMatrixBase<Element>::ConstRawIterator _cur;
+	typename DenseMatrixBase<_Element>::ConstRawIterator _cur;
 	size_t _c_dim;
 	size_t _stride;
 	size_t _c_idx;
@@ -270,28 +270,28 @@ class DenseSubmatrix<Element>::ConstRawIterator
 // 	size_t _gap_len;
 // };
   
-template <class Element>
-typename DenseSubmatrix<Element>::RawIterator DenseSubmatrix<Element>::rawBegin ()
+template <class _Element>
+typename DenseSubmatrix<_Element>::RawIterator DenseSubmatrix<_Element>::rawBegin ()
 {
 	return RawIterator (_M->rawBegin () + _beg_row * _M->coldim () + _beg_col, 
 			    coldim (), _M->coldim (), 0);
 }
   
-template <class Element>
-typename DenseSubmatrix<Element>::RawIterator DenseSubmatrix<Element>::rawEnd ()
+template <class _Element>
+typename DenseSubmatrix<_Element>::RawIterator DenseSubmatrix<_Element>::rawEnd ()
 {
 	return RawIterator (_M->rawBegin () + _end_row * _M->coldim () + _beg_col, 
 			    coldim (), _M->coldim (), 0);
 }
-template <class Element>
-typename DenseSubmatrix<Element>::ConstRawIterator DenseSubmatrix<Element>::rawBegin () const
+template <class _Element>
+typename DenseSubmatrix<_Element>::ConstRawIterator DenseSubmatrix<_Element>::rawBegin () const
 {
 	return ConstRawIterator (_M->rawBegin () + _beg_row * _M->coldim () + _beg_col, 
 			    coldim (), _M->coldim (), 0);
 }
   
-template <class Element>
-typename DenseSubmatrix<Element>::ConstRawIterator DenseSubmatrix<Element>::rawEnd () const 
+template <class _Element>
+typename DenseSubmatrix<_Element>::ConstRawIterator DenseSubmatrix<_Element>::rawEnd () const 
 {
 	return ConstRawIterator (_M->rawBegin () + _end_row * _M->coldim () + _beg_col, 
 			    coldim (), _M->coldim (), 0);
@@ -313,13 +313,13 @@ typename DenseSubmatrix<Element>::ConstRawIterator DenseSubmatrix<Element>::rawE
 // 				 coldim (), _M->coldim () - coldim ());
 // }
 //////
-template <class Element>
-class DenseSubmatrix<Element>::RawIndexedIterator
+template <class _Element>
+class DenseSubmatrix<_Element>::RawIndexedIterator
 {   
        public:
 	RawIndexedIterator (){}
 	
-	RawIndexedIterator (const typename DenseMatrixBase<Element>::RawIterator& cur, 
+	RawIndexedIterator (const typename DenseMatrixBase<_Element>::RawIterator& cur, 
 			    size_t c_dim,
 			    size_t stride,
 			    size_t r_idx,
@@ -386,45 +386,45 @@ class DenseSubmatrix<Element>::RawIndexedIterator
 		return ((_c_idx != r._c_idx) || (_r_idx != r._r_idx) ||(_stride != r._stride) || (_c_dim != r._c_dim) );
 	}
     
-	const Element& operator*() const {return *_cur;}
+	const _Element& operator*() const {return *_cur;}
 
-	Element& operator*() {return *_cur;}
+	_Element& operator*() {return *_cur;}
 
 	size_t rowIndex () const { return _r_idx; }
 
 	size_t colIndex () const { return _c_idx; }
 
-	const Element& value () const {return *_cur;}
+	const _Element& value () const {return *_cur;}
 
      protected:
-	typename DenseMatrixBase<Element>::RawIterator _cur;
+	typename DenseMatrixBase<_Element>::RawIterator _cur;
 	size_t _stride;
 	size_t _c_dim;
 	size_t _r_idx;
 	size_t _c_idx;
 };
   
-template <class Element>
-typename DenseSubmatrix<Element>::RawIndexedIterator DenseSubmatrix<Element>::rawIndexedBegin ()
+template <class _Element>
+typename DenseSubmatrix<_Element>::RawIndexedIterator DenseSubmatrix<_Element>::rawIndexedBegin ()
 {
 	return RawIndexedIterator (_M->rawBegin () + _beg_row * _M->coldim () + _beg_col, 
-				   coldim(), _M.coldim(), 0, 0);
+				   coldim(), _M->coldim(), 0, 0);
 }
   
-template <class Element>
-typename DenseSubmatrix<Element>::RawIndexedIterator DenseSubmatrix<Element>::rawIndexedEnd ()
+template <class _Element>
+typename DenseSubmatrix<_Element>::RawIndexedIterator DenseSubmatrix<_Element>::rawIndexedEnd ()
 {
 	return RawIndexedIterator (_M->rawBegin () + _end_row * _M->coldim () + _end_col, 
-				   coldim (), _M->coldim (), rowdim()-1, coldim()-1);
+				   coldim(), _M->coldim (), rowdim()-1, coldim()-1);
 }
 
-template <class Element>
-class DenseSubmatrix<Element>::ConstRawIndexedIterator
+template <class _Element>
+class DenseSubmatrix<_Element>::ConstRawIndexedIterator
 {   
     public:
 	ConstRawIndexedIterator (){}
 
-	ConstRawIndexedIterator (const typename DenseMatrixBase<Element>::ConstRawIterator& cur, 
+	ConstRawIndexedIterator (const typename DenseMatrixBase<_Element>::ConstRawIterator& cur, 
 				 size_t c_dim,
 				 size_t stride,
 				 size_t r_idx,
@@ -504,7 +504,7 @@ class DenseSubmatrix<Element>::ConstRawIndexedIterator
 		return ((_c_idx != r._c_idx) || (_r_idx != r._r_idx) ||(_stride != r._stride) || (_c_dim != r._c_dim) );
 	}
 	
-	const Element& operator*() const {return *_cur;}
+	const _Element& operator*() const {return *_cur;}
 
 
     	friend std::ostream& operator<<(std::ostream& out, const ConstRawIndexedIterator m) {
@@ -516,87 +516,87 @@ class DenseSubmatrix<Element>::ConstRawIndexedIterator
         }    
 
     protected:
-	typename DenseMatrixBase<Element>::ConstRawIterator _cur;
+	typename DenseMatrixBase<_Element>::ConstRawIterator _cur;
 	size_t _stride;
 	size_t _c_dim;
 	size_t _r_idx;
 	size_t _c_idx;
 };
 
-template <class Element>
-typename DenseSubmatrix<Element>::ConstRawIndexedIterator DenseSubmatrix<Element>::rawIndexedBegin () const
+template <class _Element>
+typename DenseSubmatrix<_Element>::ConstRawIndexedIterator DenseSubmatrix<_Element>::rawIndexedBegin () const
 {
 	return ConstRawIndexedIterator (_M->rawBegin () + _beg_row * _M->coldim () + _beg_col, 
 					coldim(), _M->coldim(), 0, 0);
 }
   
-template <class Element>
-typename DenseSubmatrix<Element>::ConstRawIndexedIterator DenseSubmatrix<Element>::rawIndexedEnd () const
+template <class _Element>
+typename DenseSubmatrix<_Element>::ConstRawIndexedIterator DenseSubmatrix<_Element>::rawIndexedEnd () const
 {
 	return ConstRawIndexedIterator (_M->rawBegin () + _end_row * _M->coldim () + _end_col, 
 					coldim (), _M->coldim (), rowdim()-1, coldim()-1);
 }
 
 ////////  
-template <class Element>
-typename DenseSubmatrix<Element>::RowIterator DenseSubmatrix<Element>::rowBegin ()
+template <class _Element>
+typename DenseSubmatrix<_Element>::RowIterator DenseSubmatrix<_Element>::rowBegin ()
 {
 	return RowIterator (_M->rawBegin () + _beg_row * _M->coldim () + _beg_col,
 			    _end_col - _beg_col, _M->coldim ());
 }
  
-template <class Element>
-typename DenseSubmatrix<Element>::RowIterator DenseSubmatrix<Element>::rowEnd ()
+template <class _Element>
+typename DenseSubmatrix<_Element>::RowIterator DenseSubmatrix<_Element>::rowEnd ()
 {
 	return RowIterator (_M->rawBegin () + _end_row * _M->coldim () + _beg_col,
 			    _end_col - _beg_col, _M->coldim ());
 }
 
-template <class Element>
-typename DenseSubmatrix<Element>::ConstRowIterator DenseSubmatrix<Element>::rowBegin () const
+template <class _Element>
+typename DenseSubmatrix<_Element>::ConstRowIterator DenseSubmatrix<_Element>::rowBegin () const
 {
 	return ConstRowIterator (_M->rawBegin () + _beg_row * _M->coldim () + _beg_col,
 				 _end_col - _beg_col, _M->coldim ());
 }
   
-template <class Element>
-typename DenseSubmatrix<Element>::ConstRowIterator DenseSubmatrix<Element>::rowEnd () const
+template <class _Element>
+typename DenseSubmatrix<_Element>::ConstRowIterator DenseSubmatrix<_Element>::rowEnd () const
 {
 	return ConstRowIterator (_M->rawBegin () + _end_row * _M->coldim () + _beg_col,
 				 _end_col - _beg_col, _M->coldim ());
 }
 
-template <class Element>
-typename DenseSubmatrix<Element>::ColIterator DenseSubmatrix<Element>::colBegin ()
+template <class _Element>
+typename DenseSubmatrix<_Element>::ColIterator DenseSubmatrix<_Element>::colBegin ()
 {
 	return ColIterator (_M->rawBegin () + _beg_col + _beg_row * _M->coldim (),
 			    _M->coldim (), rowdim ());
 }
 
-template <class Element>
-typename DenseSubmatrix<Element>::ColIterator DenseSubmatrix<Element>::colEnd ()
+template <class _Element>
+typename DenseSubmatrix<_Element>::ColIterator DenseSubmatrix<_Element>::colEnd ()
 {
 	return ColIterator (_M->rawBegin () + _end_col + _beg_row * _M->coldim (),
 			    _M->coldim (), rowdim ());
 }
 
-template <class Element>
-typename DenseSubmatrix<Element>::ConstColIterator DenseSubmatrix<Element>::colBegin () const
+template <class _Element>
+typename DenseSubmatrix<_Element>::ConstColIterator DenseSubmatrix<_Element>::colBegin () const
 {
 	return ConstColIterator (_M->rawBegin () + _beg_col + _beg_row * _M->coldim (),
 				 _M->coldim (), rowdim ());
 }
 
-template <class Element>
-typename DenseSubmatrix<Element>::ConstColIterator DenseSubmatrix<Element>::colEnd () const
+template <class _Element>
+typename DenseSubmatrix<_Element>::ConstColIterator DenseSubmatrix<_Element>::colEnd () const
 {
 	return ConstColIterator (_M->rawBegin () + _end_col + _beg_row * _M->coldim (),
 				 _M->coldim (), rowdim ());
 }
 
-template <class Element>
+template <class _Element>
 template <class Field>
-std::istream& DenseSubmatrix<Element>::read (std::istream &file, const Field& field)
+std::istream& DenseSubmatrix<_Element>::read (std::istream &file, const Field& field)
 {
 	RawIterator p;
 
@@ -609,17 +609,17 @@ std::istream& DenseSubmatrix<Element>::read (std::istream &file, const Field& fi
 	return file;
 }
 
-template <class Element>
+template <class _Element>
 template <class Field>
-std::ostream &DenseSubmatrix<Element>::write (std::ostream &os, const Field& field, bool mapleFormat) const
+std::ostream &DenseSubmatrix<_Element>::write (std::ostream &os, const Field& field, bool mapleFormat) const
 {
 	ConstRowIterator p;
 
 	integer c;
-	int wid;
+	//int wid;
 
 	field.cardinality (c);
-	wid = (int) ceil (log ((double) c) / M_LN10);
+	//wid = (int) ceil (log ((double) c) / M_LN10); //BB : not used !
 
 	typename ConstRow::const_iterator pe;
 

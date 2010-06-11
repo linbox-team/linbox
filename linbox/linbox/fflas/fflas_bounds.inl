@@ -189,26 +189,26 @@ inline double computeFactor (const ModularBalanced<Element>& F, const size_t w){
 }
 
 template <>
-inline FFLAS::FFLAS_BASE FFLAS::BaseCompute (const Modular<double>& F,
-					     const size_t w){
+inline FFLAS::FFLAS_BASE FFLAS::BaseCompute (const Modular<double>& ,
+					     const size_t ){
 	return FflasDouble;
 }
 
 template <>
-inline FFLAS::FFLAS_BASE FFLAS::BaseCompute (const Modular<float>& F,
-					     const size_t w){
+inline FFLAS::FFLAS_BASE FFLAS::BaseCompute (const Modular<float>& ,
+					     const size_t ){
 	return FflasFloat;
 }
 
 template <>
-inline FFLAS::FFLAS_BASE FFLAS::BaseCompute (const ModularBalanced<double>& F,
-					     const size_t w){
+inline FFLAS::FFLAS_BASE FFLAS::BaseCompute (const ModularBalanced<double>& ,
+					     const size_t ){
 	return FflasDouble;
 }
 
 template <>
-inline FFLAS::FFLAS_BASE FFLAS::BaseCompute (const ModularBalanced<float>& F,
-					     const size_t w){
+inline FFLAS::FFLAS_BASE FFLAS::BaseCompute (const ModularBalanced<float>& ,
+					     const size_t ){
 	return FflasFloat;
 }
 

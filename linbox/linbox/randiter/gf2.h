@@ -57,8 +57,8 @@ class GF2RandIter
 	 * @param seed constant integer reference from which to seed random number
 	 *             generator (default = 0)
 	 */
-	GF2RandIter (const GF2 &F, 
-		     const integer &size = 0, 
+	GF2RandIter (const GF2 &, 
+		     const integer &  = 0 , 
 		     const integer &seed = 0)
 	{
 		long _seed = seed;
@@ -67,7 +67,7 @@ class GF2RandIter
 		MT.setSeed (_seed);
 	}
 
-	GF2RandIter (const GF2RandIter &R) {}
+	GF2RandIter (const GF2RandIter &) {}
 
 	/** Destructor.
 	 * This destructs the random field element generator object.
@@ -78,7 +78,7 @@ class GF2RandIter
 	 * Assigns ModularRandIter object R to generator.
 	 * @param  R ModularRandIter object.
 	 */
-	GF2RandIter &operator = (const GF2RandIter &R)
+	GF2RandIter &operator = (const GF2RandIter &)
 		{ return *this; }
  
 	/** Random field element creator.

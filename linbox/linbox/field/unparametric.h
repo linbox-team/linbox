@@ -117,7 +117,7 @@ namespace LinBox
 
 		/// x := y.  Caution: it is via cast to long.  Good candidate for specialization.
 		Element &init (Element &x, const integer &y=0) const 
-			{ return x = (const Element&) (static_cast<const long&> (y)); }
+			{ return x = (const Element&) (static_cast<const Element&> (y)); }
 		Element &init (Element &x, const double& y) const 
 			{ return x = (const Element&) (y); }
    
@@ -135,7 +135,12 @@ namespace LinBox
 			Element temp (y);
 			return x = static_cast<double> (temp); 
 		}
-    
+ 
+		float &convert (float &x, const Element &y) const 
+		{ 
+			Element temp (y);
+			return x = static_cast<float> (temp); 
+		}   
 		///
 		Element &assign (Element &x, const Element &y) const { return x = y; }
     

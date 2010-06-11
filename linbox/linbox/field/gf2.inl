@@ -25,6 +25,7 @@
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/matrix/matrix-domain.h"
 
+#include <cctype> //isdigit
 
 template<typename Vector>
 std::ostream& afficheVector (std::ostream& o, const Vector& C) {
@@ -91,7 +92,7 @@ class VectorDomain<GF2> : private virtual VectorDomainBase<GF2>, private DotProd
 		: VectorDomainBase<GF2> (VD._F), DotProductDomain<GF2> (VD._F)
 	{}
 
-	VectorDomain &operator = (const VectorDomain &VD) { return *this; }
+	VectorDomain &operator = (const VectorDomain &) { return *this; }
 
 	const GF2 &field () const { return _F; }
     
@@ -350,11 +351,11 @@ class VectorDomain<GF2> : private virtual VectorDomainBase<GF2>, private DotProd
 
 	template <class Vector1, class Vector2>
 	Vector1 &mulSpecialized (Vector1 &res, const Vector2 &x, const Element a,
-				 VectorCategories::DenseZeroOneVectorTag tag) const
+				 VectorCategories::DenseZeroOneVectorTag ) const
 		{ if (a) this->copy (res, x); else std::fill (res.wordBegin (), res.wordEnd (), 0); return res; }
 	template <class Vector1, class Vector2>
 	Vector1 &mulSpecialized (Vector1 &res, const Vector2 &x, const Element a,
-				 VectorCategories::SparseZeroOneVectorTag tag) const
+				 VectorCategories::SparseZeroOneVectorTag ) const
 		{ if (a) this->copy (res, x); else res.clear (); return res; }
 
 	template <class Vector>
@@ -364,7 +365,7 @@ class VectorDomain<GF2> : private virtual VectorDomainBase<GF2>, private DotProd
 
 	template <class Vector>
 	inline Vector &mulinSpecialized (Vector &x, const Element a,
-					 VectorCategories::SparseZeroOneVectorTag tag) const
+					 VectorCategories::SparseZeroOneVectorTag ) const
 		{ if (!a) x.clear (); return x; }
 
 	template <class Vector1, class Vector2, class Vector3>
@@ -426,7 +427,7 @@ class RandomDenseStreamGF2 : public VectorStream<BitVector>
     public:
 	typedef BitVector Vector;
 
-	RandomDenseStreamGF2 (const GF2 &F, uint32 seed, size_t n, size_t m = 0)
+	RandomDenseStreamGF2 (const GF2 &, uint32 seed, size_t n, size_t m = 0)
 		: MT (seed), _n (n), _m (m), _j (0)
 	{}
 
@@ -468,7 +469,7 @@ class RandomSparseStreamGF2 : public VectorStream<_Vector>
 	typedef GF2 Field;
 	typedef _Vector Vector;
 
-	RandomSparseStreamGF2 (const GF2 &F, uint32 seed, double p, size_t n, size_t m = 0)
+	RandomSparseStreamGF2 (const GF2 &, uint32 seed, double p, size_t n, size_t m = 0)
 		: MT (seed), _n (n), _m (m), _j (0)
 	{ setP (p); }
 
@@ -621,6 +622,8 @@ std::ostream &VectorDomain<GF2>::writeSpecialized (std::ostream &os, const Vecto
 	return os;
 }
 
+bool isdigit (std::basic_istream<char, std::char_traits<char> > &) { std::cout << "isdigit ? " << std::endl; exit(-4) ; } // BB isdigit ?
+
 template <class Vector>
 std::ostream &VectorDomain<GF2>::writeSpecialized (std::ostream &os, const Vector &x,
 						   VectorCategories::SparseZeroOneVectorTag) const
@@ -650,7 +653,7 @@ std::istream &VectorDomain<GF2>::readSpecialized (std::istream &is, const Vector
 	typename Vector::iterator i;
 	char c;
 
-	while (!isdigit (is >> c));
+	while (!isdigit (is >> c)) ;
 
 	is.unget ();
 
@@ -667,7 +670,7 @@ std::istream &VectorDomain<GF2>::readSpecialized (std::istream &is, const Vector
 	char c;
 	size_t idx;
 
-	while (!isdigit (is >> c));
+	while (!isdigit (is >> c)) ;
 
 	is.unget ();
 	x.clear ();
@@ -675,7 +678,7 @@ std::istream &VectorDomain<GF2>::readSpecialized (std::istream &is, const Vector
 	while (1) {
 		is >> c;
 
-		if (!isdigit (c) && c != ' ') break;
+		if (!std::isdigit (c) && c != ' ') break;
 		is.unget ();
 		is >> idx;
 		x.push_back (idx);
@@ -988,7 +991,7 @@ class Diagonal<GF2, VectorTraits<Vector<GF2>::Dense>::VectorCategory>
 	typedef BlackboxArchetype         Blackbox;
 	typedef bool                      Element;
 
-	Diagonal (const Field &F, const BitVector &y)
+	Diagonal (const Field &, const BitVector &y)
 		: _v (y) 
 	{}
 

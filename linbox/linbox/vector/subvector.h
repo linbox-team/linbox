@@ -50,7 +50,7 @@ class Subvector //: public Vector // for types
 	typedef typename std::iterator_traits<Iterator>::difference_type difference_type;
 	typedef typename std::iterator_traits<Iterator>::pointer	    pointer;
 	typedef typename std::iterator_traits<Iterator>::reference	    reference;
-	typedef const reference	                                    const_reference;
+	typedef const reference	                                    const_reference; 
 	typedef Iterator                                            iterator;
 	//typedef typename ConstIteratorType<Iterator>::const_iterator         const_iterator;
 
@@ -100,7 +100,7 @@ class Subvector //: public Vector // for types
 		if ( _begin <= p && p < _end ) 
 			return *p;
 		else 
-			throw std::out_of_range(); //out of range error message.
+			throw std::out_of_range("out of range"); //out of range error message.
 	}
 	
 	const_reference at(size_type n) const 
@@ -109,7 +109,7 @@ class Subvector //: public Vector // for types
 		if ( _begin <= p && p < _end)
 			return *p;
 		else 
-			throw std::out_of_range(); //out of range error message
+			throw std::out_of_range("out of range"); //out of range error message
 	}
 	
 	reference       front (void)       { return *_begin; }

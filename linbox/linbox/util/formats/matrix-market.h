@@ -120,7 +120,7 @@ class MatrixMarketReader :public MatrixStreamReader<Field> {
 
 		--i;
 		--j;
-		if( i < 0 || i >= this->_m || j < 0 || j >= this->_n )
+		if(  i >= this->_m || j >= this->_n )
 			return BAD_FORMAT;
 		if( symmetric && (i != j) ) saveTriple(j,i,v);
 

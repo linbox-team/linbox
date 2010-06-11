@@ -66,9 +66,9 @@ namespace LinBox {
 
 		typedef _Field Field;
 		typedef typename Field::Element Element;
-                typedef BlasBlackbox<_Field> Self_t;
+		typedef BlasBlackbox<_Field> Self_t;
 
-		BlasBlackbox () {}
+		//BlasBlackbox () {} // BB: ??
 
 		BlasBlackbox (const Field& F) :  _F(F), _MD(F), _VD(F) 
 		{ _F.init(_One,1UL), _F.init(_Zero,0UL);_use_fflas=false;}
@@ -175,7 +175,8 @@ namespace LinBox {
                     
                     void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
                         Ap = new other(F, A.rowdim(), A.coldim());
-                        typename Self_t::ConstRawIterator A_p;
+						typedef typename BlasMatrix<Element>::ConstRawIterator ConstRawIterator ;
+                        ConstRawIterator A_p;
                         typename other::RawIterator Ap_p;
                         Hom<Field, _Tp1> hom(A. field(), F);
                         for (A_p = A. rawBegin(), Ap_p = Ap -> rawBegin();
@@ -376,13 +377,13 @@ namespace LinBox {
 		}
 
 
-		void setEntry (size_t i, size_t j, const Element &a_ij){
+		void setEntry (size_t , size_t j, const Element &a_ij){
 			for (size_t i=0; i< _rep.size();++i)
 				_rep[i]->setEntry(i,j,a_ij[i]);
 		}
 		
 		
-		const Element& getEntry (size_t i, size_t j){		
+		const Element& getEntry (size_t , size_t j){		
 			for (size_t i=0; i< _rep.size();++i)
 				_entry[i]=_rep[i]->getEntry(i,j);
 			return _entry;

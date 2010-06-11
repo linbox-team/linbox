@@ -510,6 +510,7 @@ namespace LinBox{
 
 			return b;
 
+			/* BB: unreachable  !
 			size_t n = b.size(); // bds: b not B
 			linbox_check( A.rowdim() == n );
 			size_t r = A.getrank();
@@ -523,6 +524,7 @@ namespace LinBox{
 				FFPACK::solveLB2( F, FFLAS::FflasLeft, n, 1, r, A.getPointer(), A.getStride(), 
 						    A.getQ().getPointer(), b.getPointer(), b.getStride() );
 			return b;
+			*/
 		}
 	}; // end of class FactorizedMatrixLeftLSolve
 	

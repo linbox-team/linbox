@@ -296,7 +296,7 @@ class TransposeMatrix<Matrix, MatrixCategories::RowMatrixTag>
 	typedef typename Matrix::Row Column;
 	typedef typename Matrix::Row Col;
 
-	TransposeMatrix () {}
+	//TransposeMatrix () {}
 	TransposeMatrix (Matrix &A) : _A (A) {}
 	TransposeMatrix (const TransposeMatrix &M) : _A (M._A) {}
 

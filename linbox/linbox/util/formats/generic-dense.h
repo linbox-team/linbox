@@ -70,7 +70,7 @@ class DenseReader :public MatrixStreamReader<Field> {
 
     public:
     	DenseReader() {
-		currentRow = currentCol = -1;
+		currentRow = currentCol = (size_t) -1;
 	}
 
 	bool isSparse() const { return false; }

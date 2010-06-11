@@ -22,11 +22,11 @@ FFPACK::CharPoly (const Field& F, std::list<Polynomial>& charp, const size_t N,
 	}
 	case FfpackKG:{
 		return KellerGehrig (F, charp, N, A, lda);
-		break;
+		//break;
 	}
 	case FfpackDanilevski:{
 		return Danilevski (F, charp, N, A, lda);
-		break;
+		//break;
 	}
 	case FfpackKGFast:{
 		size_t mc, mb, j;
@@ -34,7 +34,7 @@ FFPACK::CharPoly (const Field& F, std::list<Polynomial>& charp, const size_t N,
 			std::cerr<<"NON GENERIC MATRIX PROVIDED TO KELLER-GEHRIG-FAST"<<std::endl;
 		}
 		return charp;
-		break;
+		//break;
 	}
  	case FfpackKGFastG:{
  		return KGFast_generalized (F, charp, N, A, lda);
@@ -100,7 +100,7 @@ FFPACK::LUKrylov (const Field& F, std::list<Polynomial>& charp, const size_t N,
 		if ((k==1) && F.isZero ((minP)[0])){ // minpoly is X
 			Ai = A;
 			int j = Ncurr*Ncurr;
-			while (j-- && F.isZero(*(Ai++)));
+			while (j-- && F.isZero(*(Ai++))) ;
 			if (!j){ // A is 0, CharPoly=X^n
 				minP.resize(Ncurr+1);
 				(minP)[1] = zero;
@@ -171,7 +171,7 @@ FFPACK::LUKrylov_KGFast (const Field& F, std::list<Polynomial>& charp, const siz
 		if ((k==1) && F.isZero ((*minP)[0])){ // minpoly is X
 			Ai = A;
 			int j = N*N;
-			while (j-- && F.isZero(*(Ai++)));
+			while (j-- && F.isZero(*(Ai++))) ;
 			if (!j){ // A is 0, CharPoly=X^n
 				minP->resize(N+1);
 				(*minP)[1] = zero;
@@ -192,7 +192,13 @@ FFPACK::LUKrylov_KGFast (const Field& F, std::list<Polynomial>& charp, const siz
 		elt * X22 = X21 + k;
 		
 		// Creates the matrix A
-		size_t lambda = MAX(0,N - kg_mc*(kg_j+1) - kg_mb); 
+		//size_t lambda = MAX(0,N - kg_mc*(kg_j+1) - kg_mb);  // uint >= 0 !!!
+		size_t lambda =   kg_mc*(kg_j+1) + kg_mb;
+		if (lambda > N) 
+			lambda = 0 ;	
+		else
+			lambda = N - lambda ;
+
 		size_t imax = kg_mc+kg_mb;
 		// First Id
 		for (size_t j = 0; j < lambda; ++j){

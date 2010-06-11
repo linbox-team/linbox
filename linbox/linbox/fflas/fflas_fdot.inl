@@ -27,7 +27,7 @@ FFLAS::fdot( const Field& F, const size_t N,
 
 template<>
 inline FFLAS::DoubleDomain::Element
-FFLAS::fdot( const DoubleDomain& F, const size_t N, 
+FFLAS::fdot( const DoubleDomain& , const size_t N, 
 	     const DoubleDomain::Element * x, const size_t incx,
 	     const DoubleDomain::Element * y, const size_t incy ){
 	

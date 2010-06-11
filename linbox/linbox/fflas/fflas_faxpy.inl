@@ -22,7 +22,7 @@ FFLAS::faxpy( const Field& F, const size_t N,
 
 template<>
 inline void
-FFLAS::faxpy( const DoubleDomain& D, const size_t N, 
+FFLAS::faxpy( const DoubleDomain& , const size_t N, 
 		      const DoubleDomain::Element a,
 		      const DoubleDomain::Element * x, const size_t incx,
 		      DoubleDomain::Element * y, const size_t incy ){

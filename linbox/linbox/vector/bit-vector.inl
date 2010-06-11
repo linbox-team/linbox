@@ -142,7 +142,7 @@ class BitVector::iterator : public std::_Bit_iterator
 
 	iterator () : _ref (std::vector<unsigned long>::iterator (), 0UL) {}
 	iterator (std::vector<unsigned long>::iterator word, uint8 position) : _ref (word, position) {}
-	iterator (const iterator &i) : _ref (i._ref._word, i._ref._pos) {}
+	iterator (const iterator &i) : std::_Bit_iterator(),_ref (i._ref._word, i._ref._pos) {}
 
 	iterator &operator = (const iterator &i) {
 		_ref._word = i._ref._word;
@@ -175,7 +175,12 @@ class BitVector::iterator : public std::_Bit_iterator
 		new_word += new_pos >> __LINBOX_LOGOF_SIZE;
 		new_pos &= __LINBOX_POS_ALL_ONES;
 
+#ifndef __CUDACC__
 		return iterator (new_word, new_pos);
+#else
+		std::cout << "nvcc not happy here" << std::endl;
+		exit(-4);
+#endif
 	}
 
 	iterator &operator += (difference_type i) 

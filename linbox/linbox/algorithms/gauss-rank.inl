@@ -36,11 +36,11 @@ namespace LinBox
 
     template <class _Field>
     template <class Matrix> unsigned long& 
-    GaussDomain<_Field>::rank(unsigned long &rank,
+    GaussDomain<_Field>::rank(unsigned long &rk,
                               const Matrix        &A,
                               SparseEliminationTraits::PivotStrategy   reord)  const
     {
-        return rank(rank, A,  A.rowdim (), A.coldim (), reord);
+        return rank(rk, A,  A.rowdim (), A.coldim (), reord);
     }
 
     template <class _Field>

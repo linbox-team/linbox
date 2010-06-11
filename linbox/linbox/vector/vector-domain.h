@@ -1130,27 +1130,28 @@ namespace LinBox
 			return y;
 		}
 
-		template <class Vector>
+		template<class Vector>
 		inline void swapSpecialized (Vector &v1, Vector &v2,
 					     VectorCategories::DenseVectorTag) const;
-		template <class Vector>
-		inline void swapSpecialized (Vector &v1, Vector &v2,
+
+		template<class _Vector> // BB : nvcc not happy with class Vector (and I agree :))
+		inline void swapSpecialized (_Vector &v1, _Vector &v2,
 					     VectorCategories::SparseSequenceVectorTag) const
 		{
 			typename LinBox::Vector<Field>::SparseSeq t;
 			t = v1; v1 = v2; v2 = t;
 		}
 
-		template <class Vector>
-		inline void swapSpecialized (Vector &v1, Vector &v2,
+		template <class _Vector>
+		inline void swapSpecialized (_Vector &v1, _Vector &v2,
 					     VectorCategories::SparseAssociativeVectorTag) const
 		{
 			typename LinBox::Vector<Field>::SparseMap t;
 			t = v1; v1 = v2; v2 = t;
 		}
 
-		template <class Vector>
-		inline void swapSpecialized (Vector &v1, Vector &v2,
+		template <class _Vector>
+		inline void swapSpecialized (_Vector &v1, _Vector &v2,
 					     VectorCategories::SparseParallelVectorTag) const
 		{
 			typename LinBox::Vector<Field>::SparsePar t;

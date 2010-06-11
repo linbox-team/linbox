@@ -632,7 +632,9 @@ namespace LinBox
 		config.push_back (std::pair <unsigned long, unsigned long> ((unsigned long) -1, Commentator::LEVEL_ALWAYS));
 	}
 
-	bool MessageClass::checkConfig (std::list <std::pair <unsigned long, unsigned long> > &config, unsigned long depth, unsigned long level) 
+	bool MessageClass::checkConfig (std::list <std::pair <unsigned long, unsigned long> > &config, 
+			unsigned long depth, 
+			unsigned long ) //lvl 
 	{
 		std::list <std::pair <unsigned long, unsigned long> >::iterator i;
 
@@ -704,7 +706,7 @@ namespace LinBox
 			_indent_next = false;
 		}
 
-		for (idx = 0; (idx < m) &&(text[idx] != '\n') ; ++idx);
+		for (idx = 0; (idx < m) &&(text[idx] != '\n') ; ++idx) ;
 
 		while (idx < m) {
 			_stream.write (text, idx + 1);
@@ -716,7 +718,7 @@ namespace LinBox
 				_indent_next = true;
 
 			text += idx + 1;
-			for (idx = 0; idx != '\n' && idx < m; ++idx);
+			for (idx = 0; idx != '\n' && idx < m; ++idx) ;
 		}
 
 		_stream.write (text, m);

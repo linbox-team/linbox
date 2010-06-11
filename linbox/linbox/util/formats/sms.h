@@ -89,8 +89,8 @@ class SMSReader :public MatrixStreamReader<Field> {
 		m -= _base;
 		n -= _base;
 
-		if( m < 0 || m >= this->_m ||
-		    n < 0 || n >= this->_n ) return BAD_FORMAT;
+		if( m >= this->_m ||
+		    n >= this->_n ) return BAD_FORMAT;
 
 		return GOOD;
 	}

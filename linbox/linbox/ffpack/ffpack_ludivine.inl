@@ -169,10 +169,10 @@ class FFPACK::callLUdivine_small<double>{
 public:
 	template <class Field>
 	inline size_t 
-	operator()( const Field& F, const FFLAS_DIAG Diag,  const FFLAS_TRANSPOSE trans,
+	operator()( const Field& F, const FFLAS_DIAG Diag,  const FFLAS_TRANSPOSE ,
 		    const size_t M, const size_t N,		
 		    typename Field::Element * A, const size_t lda, size_t*P, 
-		    size_t *Q, const FFPACK_LUDIVINE_TAG LuTag){
+		    size_t *Q, const FFPACK_LUDIVINE_TAG ){
 
 		if ( !(M && N) ) return 0;
 		typedef typename Field::Element elt;

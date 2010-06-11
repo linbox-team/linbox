@@ -507,7 +507,7 @@ namespace LinBox {
 
     unsigned long &rankin (unsigned long                       &r,
                            GaussDomain<GF2>::Matrix    &A,
-                           const Method::SparseElimination     &M) 
+                           const Method::SparseElimination     &)//M 
     {
         commentator.start ("Sparse Elimination Rank over GF2", "serankmod2");
         GaussDomain<GF2> GD ( A.field() );
@@ -518,7 +518,7 @@ namespace LinBox {
 
     unsigned long &rankin (unsigned long                       &r,
                            GaussDomain<GF2>::Matrix    &A,
-                           const RingCategories::ModularTag    &tag,
+                           const RingCategories::ModularTag    &,//tag
                            const Method::SparseElimination     &M) {
 	return rankin(r, A, M);
     }
