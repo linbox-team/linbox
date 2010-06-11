@@ -1,6 +1,14 @@
+/* linbox/algorithms/gauss-pivot.inl
+ * Copyright (C) 2009 The LinBox group
+ *
+ * Time-stamp: <21 Jan 10 15:09:38 Jean-Guillaume.Dumas@imag.fr> 
+ *
+ * See COPYING for license information.
+ *
+ * SparseElimination search for pivots 
+ */
+
 // =================================================================== //
-// SparseElimination search for pivots 
-// Time-stamp: <21 Jan 10 15:09:38 Jean-Guillaume.Dumas@imag.fr> 
 // =================================================================== //
 #ifndef __GAUSS_PIVOT_INL
 #define __GAUSS_PIVOT_INL

@@ -1,7 +1,12 @@
-// =================================================================== //
-// SparseElimination determinant calls
+/* linbox/algorithms/gauss-det.inl
+ * Copyright (C) 2009 The LinBox group
+ *
 // Time-stamp: <21 Jan 10 15:07:05 Jean-Guillaume.Dumas@imag.fr> 
-// =================================================================== //
+ *
+ * See COPYING for license information.
+ *
+ * SparseElimination determinant calls
+ */
 #ifndef __GAUSS_DET_INL
 #define __GAUSS_DET_INL
 

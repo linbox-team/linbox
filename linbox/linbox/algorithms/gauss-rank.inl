@@ -1,7 +1,12 @@
-// =================================================================== //
-// SparseElimination rank calls
-// Time-stamp: <21 Jan 10 15:07:06 Jean-Guillaume.Dumas@imag.fr> 
-// =================================================================== //
+/* linbox/algorithms/gauss-rank.inl
+ * Copyright (C) 2009 The LinBox group
+ *
+ * Time-stamp: <21 Jan 10 15:07:06 Jean-Guillaume.Dumas@imag.fr> 
+ *
+ * See COPYING for license information.
+ *
+ * SparseElimination rank calls
+ */
 #ifndef __GAUSS_RANK_INL
 #define __GAUSS_RANK_INL
 

@@ -1,6 +1,14 @@
+/* linbox/algorithms/gauss-rank-gf2.inl
+ * Copyright (C) 2009 The LinBox group
+ *
+ * Time-stamp: <21 Jan 10 15:08:58 Jean-Guillaume.Dumas@imag.fr> 
+ *
+ * See COPYING for license information.
+ *
+ * SparseElimination rank calls over GF2
+ */
+
 // =================================================================== //
-// SparseElimination rank calls over GF2
-// Time-stamp: <21 Jan 10 15:08:58 Jean-Guillaume.Dumas@imag.fr> 
 // =================================================================== //
 #ifndef __GAUSS_RANK_GF2_INL
 #define __GAUSS_RANK_GF2_INL
