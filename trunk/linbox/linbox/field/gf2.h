@@ -799,7 +799,7 @@ namespace LinBox
 // #include <bits/stl_bvector.h>
 // JGD 05.11.2009 : it should be in bits/stl_bvector.h  ...
 namespace std {
-    void swap(_Bit_reference __x, _Bit_reference __y)
+    inline void swap(_Bit_reference __x, _Bit_reference __y)
     {
       bool __tmp = __x;
       __x = __y;

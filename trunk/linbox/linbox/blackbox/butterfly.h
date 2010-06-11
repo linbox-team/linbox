@@ -350,7 +350,7 @@ void Butterfly<Field, Switch>::buildIndices ()
  * @param j offset of contiguous block
  * @param log reference to ostream for logging
  */
-std::vector<bool> setButterfly (const std::vector<bool>& x, 
+inline std::vector<bool> setButterfly (const std::vector<bool>& x, 
 				size_t j = 0)
 {
 	size_t n = x.size ();

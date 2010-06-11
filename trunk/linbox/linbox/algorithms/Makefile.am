@@ -1,5 +1,9 @@
 pkgincludesubdir=$(pkgincludedir)/algorithms
 
+noinst_LTLIBRARIES=libalgorithms.la
+
+libalgorithms_la_SOURCES= diophantine-solver.C
+
 pkgincludesub_HEADERS = \
 	blackbox-container.h			\
 	blackbox-container-symmetric.h		\
@@ -92,3 +96,4 @@ pkgincludesub_HEADERS = \
 	toeplitz-det.h
 
 EXTRA_DIST = algorithms.doxy
+

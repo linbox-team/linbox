@@ -100,7 +100,7 @@ template <class Domain, class Object>
 inline void MGBLTraceReport (std::ostream &out, Domain &D, const char *text, size_t iter, const Object &obj)
 {}
 
-void reportS (std::ostream &out, const std::vector<bool> &S, size_t iter) 
+inline void reportS (std::ostream &out, const std::vector<bool> &S, size_t iter) 
 {}
 
 template <class Field, class Matrix>
@@ -128,7 +128,7 @@ inline void checkAConjugacy (const MatrixDomain<Field> &MD, const Matrix &AV, co
 
 template <class Field, class Matrix>
 template <class Blackbox, class Vector>
-bool MGBlockLanczosSolver<Field, Matrix>::solve (const Blackbox &A, Vector &x, const Vector &b) 
+inline bool MGBlockLanczosSolver<Field, Matrix>::solve (const Blackbox &A, Vector &x, const Vector &b) 
 {
 	linbox_check ((x.size () == A.coldim ()) &&
 		      (b.size () == A.rowdim ()));
@@ -329,7 +329,7 @@ bool MGBlockLanczosSolver<Field, Matrix>::solve (const Blackbox &A, Vector &x, c
 
 template <class Field, class Matrix>
 template <class Blackbox, class Matrix1>
-unsigned int MGBlockLanczosSolver<Field, Matrix>::sampleNullspace (const Blackbox &A, Matrix1 &x) 
+inline unsigned int MGBlockLanczosSolver<Field, Matrix>::sampleNullspace (const Blackbox &A, Matrix1 &x) 
 {
 	linbox_check (x.rowdim () == A.coldim ());
 
@@ -507,7 +507,7 @@ unsigned int MGBlockLanczosSolver<Field, Matrix>::sampleNullspace (const Blackbo
 
 template <class Field, class Matrix>
 template <class Blackbox>
-bool MGBlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A)
+inline bool MGBlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A)
 {
 	linbox_check (_V[0].rowdim () == A.rowdim ());
 	linbox_check (_V[1].rowdim () == A.rowdim ());
@@ -841,7 +841,7 @@ bool MGBlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A)
 }
 
 template <class Field, class Matrix>
-int MGBlockLanczosSolver<Field, Matrix>::compute_Winv_S
+inline int MGBlockLanczosSolver<Field, Matrix>::compute_Winv_S
 	(Matrix        &Winv,
 	 std::vector<bool>                               &S,
 	 const Matrix  &T)
@@ -940,7 +940,7 @@ int MGBlockLanczosSolver<Field, Matrix>::compute_Winv_S
 
 template <class Field, class Matrix>
 template <class Matrix1, class Matrix2>
-Matrix1 &MGBlockLanczosSolver<Field, Matrix>::mul_SST
+inline Matrix1 &MGBlockLanczosSolver<Field, Matrix>::mul_SST
 	(Matrix1                 &BSST,
 	 const Matrix2           &B,
 	 const std::vector<bool> &S) const
@@ -968,7 +968,7 @@ Matrix1 &MGBlockLanczosSolver<Field, Matrix>::mul_SST
 
 template <class Field, class Matrix>
 template <class Matrix1, class Matrix2, class Matrix3>
-Matrix1 &MGBlockLanczosSolver<Field, Matrix>::mul
+inline Matrix1 &MGBlockLanczosSolver<Field, Matrix>::mul
 	(Matrix1                 &C,
 	 const Matrix2           &A,
 	 const Matrix3           &B,
@@ -1000,7 +1000,7 @@ Matrix1 &MGBlockLanczosSolver<Field, Matrix>::mul
 
 template <class Field, class Matrix>
 template <class Matrix1, class Matrix2>
-Matrix1 &MGBlockLanczosSolver<Field, Matrix>::mulin
+inline Matrix1 &MGBlockLanczosSolver<Field, Matrix>::mulin
 	(Matrix1                 &A,
 	 const Matrix2           &B,
 	 const std::vector<bool> &S) const
@@ -1035,7 +1035,7 @@ Matrix1 &MGBlockLanczosSolver<Field, Matrix>::mulin
 
 template <class Field, class Matrix>
 template <class Vector1, class Matrix1, class Vector2>
-Vector1 &MGBlockLanczosSolver<Field, Matrix>::vectorMul
+inline Vector1 &MGBlockLanczosSolver<Field, Matrix>::vectorMul
 	(Vector1                 &w,
 	 const Matrix1           &A,
 	 const Vector2           &v,
@@ -1059,7 +1059,7 @@ Vector1 &MGBlockLanczosSolver<Field, Matrix>::vectorMul
 
 template <class Field, class Matrix>
 template <class Vector1, class Matrix1, class Vector2>
-Vector1 &MGBlockLanczosSolver<Field, Matrix>::vectorMulTranspose
+inline Vector1 &MGBlockLanczosSolver<Field, Matrix>::vectorMulTranspose
 	(Vector1                 &w,
 	 const Matrix1           &A,
 	 const Vector2           &v,
@@ -1081,7 +1081,7 @@ Vector1 &MGBlockLanczosSolver<Field, Matrix>::vectorMulTranspose
 
 template <class Field, class Matrix>
 template <class Matrix1>
-Matrix1 &MGBlockLanczosSolver<Field, Matrix>::addIN (Matrix1 &A) const
+inline Matrix1 &MGBlockLanczosSolver<Field, Matrix>::addIN (Matrix1 &A) const
 {
 	linbox_check (A.coldim () == A.rowdim ());
 
@@ -1096,7 +1096,7 @@ Matrix1 &MGBlockLanczosSolver<Field, Matrix>::addIN (Matrix1 &A) const
 
 template <class Field, class Matrix>
 template <class Matrix1, class Matrix2>
-Matrix1 &MGBlockLanczosSolver<Field, Matrix>::addin
+inline Matrix1 &MGBlockLanczosSolver<Field, Matrix>::addin
 	(Matrix1                 &A,
 	 const Matrix2           &B,
 	 const std::vector<bool> &S) const
@@ -1115,7 +1115,7 @@ Matrix1 &MGBlockLanczosSolver<Field, Matrix>::addin
 }
 
 template <class Field, class Matrix>
-void MGBlockLanczosSolver<Field, Matrix>::permute (std::vector<size_t>     &indices,
+inline void MGBlockLanczosSolver<Field, Matrix>::permute (std::vector<size_t>     &indices,
 						 const std::vector<bool> &S) const
 {
 	size_t idx;
@@ -1140,7 +1140,7 @@ void MGBlockLanczosSolver<Field, Matrix>::permute (std::vector<size_t>     &indi
 
 template <class Field, class Matrix>
 template <class Matrix1>
-Matrix1 &MGBlockLanczosSolver<Field, Matrix>::setIN (Matrix1 &A) const 
+inline Matrix1 &MGBlockLanczosSolver<Field, Matrix>::setIN (Matrix1 &A) const 
 {
 	linbox_check (A.coldim () == A.rowdim ());
 
@@ -1162,7 +1162,7 @@ Matrix1 &MGBlockLanczosSolver<Field, Matrix>::setIN (Matrix1 &A) const
  */
 
 template <class Field, class Matrix>
-bool MGBlockLanczosSolver<Field, Matrix>::find_pivot_row
+inline bool MGBlockLanczosSolver<Field, Matrix>::find_pivot_row
 	(Matrix                    &A,
 	 size_t                     row,
 	 int                        col_offset,
@@ -1191,7 +1191,7 @@ bool MGBlockLanczosSolver<Field, Matrix>::find_pivot_row
 }
 
 template <class Field, class Matrix>
-void MGBlockLanczosSolver<Field, Matrix>::eliminate_col
+inline void MGBlockLanczosSolver<Field, Matrix>::eliminate_col
 	(Matrix                        &A,
 	 size_t                         pivot,
 	 int                            col_offset,
@@ -1222,7 +1222,7 @@ void MGBlockLanczosSolver<Field, Matrix>::eliminate_col
 }
 
 template <class Field, class Matrix>
-void MGBlockLanczosSolver<Field, Matrix>::init_temps () 
+inline void MGBlockLanczosSolver<Field, Matrix>::init_temps () 
 {
 	_VTAV.resize (_N, _N);
 	_Winv[0].resize (_N, _N);
@@ -1240,7 +1240,7 @@ void MGBlockLanczosSolver<Field, Matrix>::init_temps ()
 
 template <class Field, class Matrix>
 template <class Matrix1>
-bool MGBlockLanczosSolver<Field, Matrix>::isAlmostIdentity (const Matrix1 &M) const 
+inline bool MGBlockLanczosSolver<Field, Matrix>::isAlmostIdentity (const Matrix1 &M) const 
 {
 	linbox_check (M.rowdim () == M.coldim ());
 
@@ -1284,7 +1284,7 @@ bool MGBlockLanczosSolver<Field, Matrix>::isAlmostIdentity (const Matrix1 &M) co
 // isZero
 
 template <class Field, class Matrix>
-bool MGBlockLanczosSolver<Field, Matrix>::test_compute_Winv_S_mul (int n) const
+inline bool MGBlockLanczosSolver<Field, Matrix>::test_compute_Winv_S_mul (int n) const
 {
 	commentator.start ("Testing compute_Winv_S, mul, addIN, and isZero", "test_compute_Winv_S_mul");
 
@@ -1352,7 +1352,7 @@ bool MGBlockLanczosSolver<Field, Matrix>::test_compute_Winv_S_mul (int n) const
 // Same as above, but use mulin rather than mul
 
 template <class Field, class Matrix>
-bool MGBlockLanczosSolver<Field, Matrix>::test_compute_Winv_S_mulin (int n) const
+inline bool MGBlockLanczosSolver<Field, Matrix>::test_compute_Winv_S_mulin (int n) const
 {
 	commentator.start ("Testing compute_Winv_S, copy, mulin, addIN, and isZero", "test_compute_Winv_S_mulin");
 
@@ -1426,7 +1426,7 @@ bool MGBlockLanczosSolver<Field, Matrix>::test_compute_Winv_S_mulin (int n) cons
 // the entries on the resulting diagonal are correct.
 
 template <class Field, class Matrix>
-bool MGBlockLanczosSolver<Field, Matrix>::test_mul_SST (int n) const
+inline bool MGBlockLanczosSolver<Field, Matrix>::test_mul_SST (int n) const
 {
 	commentator.start ("Testing addin", "test_mulTranspose");
 
@@ -1441,7 +1441,7 @@ bool MGBlockLanczosSolver<Field, Matrix>::test_mul_SST (int n) const
 // the method for test_mul_SST
 
 template <class Field, class Matrix>
-bool MGBlockLanczosSolver<Field, Matrix>::test_mul_ABSST (int n) const
+inline bool MGBlockLanczosSolver<Field, Matrix>::test_mul_ABSST (int n) const
 {
 	commentator.start ("Testing addin", "test_mulTranspose");
 
@@ -1456,7 +1456,7 @@ bool MGBlockLanczosSolver<Field, Matrix>::test_mul_ABSST (int n) const
 // y> = <x, Ay>
 
 template <class Field, class Matrix>
-bool MGBlockLanczosSolver<Field, Matrix>::test_mulTranspose (int m, int n) const
+inline bool MGBlockLanczosSolver<Field, Matrix>::test_mulTranspose (int m, int n) const
 {
 	commentator.start ("Testing mulTranspose, m-v mul", "test_mulTranspose");
 
@@ -1523,7 +1523,7 @@ bool MGBlockLanczosSolver<Field, Matrix>::test_mulTranspose (int m, int n) const
 // Same as test_mul_SST, but using mulTranspose
 
 template <class Field, class Matrix>
-bool MGBlockLanczosSolver<Field, Matrix>::test_mulTranspose_ABSST (int n) const
+inline bool MGBlockLanczosSolver<Field, Matrix>::test_mulTranspose_ABSST (int n) const
 {
 	commentator.start ("Testing addin_ABSST", "test_mulTranspose_ABSST");
 
@@ -1537,7 +1537,7 @@ bool MGBlockLanczosSolver<Field, Matrix>::test_mulTranspose_ABSST (int n) const
 // Same as test_mul_ABSST, but using mulin_ABSST
 
 template <class Field, class Matrix>
-bool MGBlockLanczosSolver<Field, Matrix>::test_mulin_ABSST (int n) const
+inline bool MGBlockLanczosSolver<Field, Matrix>::test_mulin_ABSST (int n) const
 {
 	commentator.start ("Testing addin_ABSST", "test_mulin_ABSST");
 
@@ -1551,7 +1551,7 @@ bool MGBlockLanczosSolver<Field, Matrix>::test_mulin_ABSST (int n) const
 // Same as test_addin, but using test_addin_ABSST
 
 template <class Field, class Matrix>
-bool MGBlockLanczosSolver<Field, Matrix>::test_addin_ABSST (int n) const
+inline bool MGBlockLanczosSolver<Field, Matrix>::test_addin_ABSST (int n) const
 {
 	commentator.start ("Testing addin_ABSST", "test_addin_ABSST");
 
@@ -1563,7 +1563,7 @@ bool MGBlockLanczosSolver<Field, Matrix>::test_addin_ABSST (int n) const
 }
 
 template <class Field, class Matrix>
-bool MGBlockLanczosSolver<Field, Matrix>::runSelfCheck () const
+inline bool MGBlockLanczosSolver<Field, Matrix>::runSelfCheck () const
 {
 	bool ret = true;
 

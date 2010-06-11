@@ -58,11 +58,11 @@ namespace LinBox
 	class GivaroGfq;
 	
 	template<>
-	integer& FieldTraits<GivaroGfq>::maxModulus( integer& i )
+	inline integer& FieldTraits<GivaroGfq>::maxModulus( integer& i )
 		{ return i = integer( 32749 ); } // prevprime( 2^15 )
 
 	template<>
-	bool FieldTraits<GivaroGfq>::goodModulus( const integer& i ) {
+	inline bool FieldTraits<GivaroGfq>::goodModulus( const integer& i ) {
 		integer max;
 		if( i < 2 || i > FieldTraits<GivaroGfq>::maxModulus(max) )
 			return false;
@@ -70,7 +70,7 @@ namespace LinBox
 	}
 
 	template<>
-	integer& FieldTraits<GivaroGfq>::maxExponent( integer& i )
+	inline integer& FieldTraits<GivaroGfq>::maxExponent( integer& i )
 		{ return i = 20; } // Cardinality must be <= 2^20
 
 
