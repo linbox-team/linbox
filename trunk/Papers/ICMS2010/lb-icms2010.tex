@@ -138,6 +138,49 @@ template<> size_t& rank(size_t& rank, const DenseMatrix<GF2>& A) {
 \end{figure}
 
 
+\begin{table}[ht]
+\begin{tabular}{|l||r|r|r|}
+\hline
+file			& real time & user time & sys time\\
+\hline
+\hline
+rankinstantiate.o 	& 59.00s & 58.13s & 0.86s\\
+rankseparate.o 		&  8.87s &  8.53s & 0.33s\\
+rankseparate 		&  0.52s &  0.44s & 0.09s\\
+\hline
+Sep. comp.		& 68.39s & 67.10s & 1.28s\\
+\hline
+rank 			& 66.91s & 65.92s & 0.89s\\
+\hline
+speed-up		& 7.1 & 7.3 & 2.1 \\
+\hline
+\end{tabular} 
+\caption{linbox/examples/rank.C compilation time on an AMD Athlon
+  3600+, 1.9GHz}\label{tab:compsolve}
+\end{table}
+
+\begin{table}[ht]
+\begin{tabular}{|l||r|r|r|}
+\hline
+file			& real time & user time & sys time\\
+\hline
+\hline
+solveinstantiate.o 	& 65.38s & 64.48s & 0.88s\\
+solveseparate.o 	& 10.17s &  9.81s & 0.35s\\
+solveseparate 		&  0.54s &  0.42s & 0.11s\\
+\hline
+Sep. comp.		& 76.09s & 74.71s & 1.34s\\
+\hline
+solve 			& 72.62s & 71.35s & 1.03s\\
+\hline
+speed-up		& 6.8 & 7.0 & 2.2 \\
+\hline
+\end{tabular} 
+\caption{linbox/examples/solve.C compilation time on an AMD Athlon
+  3600+, 1.9GHz}\label{tab:compsolve}
+\end{table}
+
+
 \bibliographystyle{plain}
 \bibliography{jgdbibl} 
 
