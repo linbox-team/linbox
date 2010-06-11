@@ -5,6 +5,11 @@
 \usepackage{graphicx}
 \usepackage{calc,listings,color}
 
+\usepackage[ruled,nothing]{algorithm}
+\usepackage{algorithmic}
+\renewcommand{\algorithmicrequire}{{\textbf{Input:}}}
+\renewcommand{\algorithmicensure}{{\textbf{Output:}}}
+
 \usepackage{url,xspace}
 
 \newcommand{\linboxsp}{{\sc LinBox}\xspace}
@@ -86,58 +91,74 @@ Other applications (e.g. from \cite{Beaumont:2004:PMAA}) ??
 \subsection{Memory contention}
 solved (?) with multi-threaded memory allocators ...
 
-\section{Separate compilation}
-One solution for management of code bloat was given via
-\verb!Archetypes! in \cite[\S 2.1]{jgd:2002:icms}
-
-Here we propose to automatize \cite{Erlingsson:1996:issac} technique:
-
+\section{Automated Generic Separate compilation}
+\linboxsp is developped with several levels of genericity:
 \begin{itemize}
-\item For a given generic algorithm, e.g. \verb!rank!, we define the
-  generic algorithm, and its specializations, to be a generic function
-  prefixed with \verb!generic!, not supposed to be directly called. See e.g. 
-\verb!template<class Matrix> size_t& generic_rank(size_t& rank, const Matrix& A);!
-\item Next we automatically define the user interface in a caller that
-  high level users should use:
-\begin{verbatim}
-template<class Matrix> size_t& rank(size_t& rank, const Matrix& A) {
-   return generic_rank(r, A);
-}
-\end{verbatim}
-\item Then the separate compilation specialization can be defined,
-  according to a compile time decision, i.e. a macro 
-\verb!#define __LINBOX_SEPARATE_COMPILATION!
-\begin{itemize}
-\item If this macro is not set, leave as it is, it works.
-\item Otherwise, define in the library, \verb!liblinbox.a!, 
-a specific caller, which will instantiate the generic caller e.g,
-\begin{verbatim}
-size_t& rankOfDenseMatrixOverGF2(size_t& rank, const DenseMatrix<GF2>& A) {
-   return rank_implementation(r, A);
-}
-\end{verbatim}
-and then define a specialization of the user level call:
-\begin{verbatim}
-template<> size_t& rank(size_t& rank, const DenseMatrix<GF2>& A) {
-   return rankOfDenseMatrixOverGF2(r, A);
-}
-\end{verbatim}
+\item Genericity with respect to the domain of the coefficients;
+\item Genericity with respect to the data structure of the matrices;
+\item Genericity with the intermediate algorithms;
+\item ...
 \end{itemize}
-\end{itemize}
-
-\begin{itemize}
-\item thanks to inlining by compiler, the cost is a single extra
-  function call (to the pre-compiled code) and not two.
-\item speeds-up external usage such as Maple, Sage interfaces:
-  compilation timings ?
-\end{itemize}
-
+While efficient in terms of capabilities and code reusability, this
+can lengthen the compilation time and generate large executable files.\\
+For the management of code bloat \linboxsp proposes an ``archetype
+mecanism'' which enable, at the user latitude, to switch to a
+compilation against abstract classes \cite[\S 2.1]{jgd:2002:icms}.\\
+This can reduce the efficiency of the library. Therefore, we propose
+here a way to provide a generic separate compilation. This will not
+deal with code bloat, but will reduce the compilation time while
+preserving the performances.\\
+This is useful for instance when the library is used with
+unspecialized calls. This is largely the case for some interface
+wrappers to other Computer algebra systems such as {\sc Sage} or {\sc Maple}.\\
+Our idea is to automatize the technique of
+\cite{Erlingsson:1996:issac} which combines compile-time instantiation
+and link-time instantiation, while using template instantiation
+instead of void pointers.\\
+The mecanism we propose is independent of the desired method, candidate
+for separate compilation and is explained on algorithm \ref{alg:sep}.\\
+\begin{algorithm}[ht]
+\caption{C++ Automatic separate compilation wrapping}\label{alg:sep}
+\begin{algorithmic}[1]
+\REQUIRE A geenric function \texttt{func}.
+\REQUIRE A list of template parameters for separate specialization and
+compilation of  \texttt{func}.
+\ENSURE A generic function \texttt{func\_separate}, calling
+\texttt{func} with separately compiled instantiations.
+\STATE Create two files ``func\_instantiate.hpp'' and ``func\_instantiate.cpp'';
+\STATE Add \texttt{func\_separate}, with the same template function
+specification as \texttt{func}, to ``func\_instantiate.hpp'';
+\FOR{each separately compiled template parameter \texttt{TParam}}
+  \STATE Add to ``func\_instantiate.hpp'', a non template specification
+  \texttt{funcTParam};
+  \STATE Add to ``func\_instantiate.cpp'', the associated body with a
+  single line returning the instantiation of
+  \texttt{func} on a parameter of type \texttt{TParam};
+  \STATE Add to ``func\_instantiate.hpp'', an inline specialization
+  body of \texttt{func\_specialization} on a parameter of type
+  \texttt{TParam} with a single line returning \texttt{funcTParam}; 
+\ENDFOR
+\STATE Compile ``func\_instantiate.cpp''.
+\end{algorithmic}
+\end{algorithm}
+This Algorithm is illustrated on figure \ref{fig:sep}, where
+the function is the \texttt{rank} and the template parameter is a dense
+matrix over the finite field with two elements,
+\texttt{DenseMatrix<GF2>}.\\
 \begin{figure}[ht]
 \includegraphics[width=\textwidth]{separate}
 \caption{Separate compilation of a rank specialization}\label{fig:sep}
 \end{figure}
-
-
+We show on table \ref{tab:compilation} the gains, in term of compilation time,
+obtained on two examples of \linbox: the \texttt{examples/rank.C} and
+\texttt{examples/solve.C} algorithms. Indeed without any specification
+the code
+has to be generic and to invoke several specializations depending on
+run-time discovered properties of thei input. For instance the
+\texttt{solve.C} example requires at least 6 specializations for sparse
+matrices over the Integers or over a prime field, with a sparse
+elimination, or an iterative method, or a dense method if the matrix
+is small, or an hybrid method...\\ 
 \begin{table}[ht]\center
 \begin{tabular}{|l||r|r|r||r|r|r|}
 \hline
@@ -159,12 +180,41 @@ file                      &  real time   &  user time   &  sys. time  &  real ti
 \hline
 \end{tabular} 
 \caption{linbox/examples/\{rank,solve\}.C compilation time on an AMD
-  Athlon 3600+, 1.9GHz. \texttt{instantiate.o} corresponds to the separately compiled
+  Athlon 3600+, 1.9GHz, with gcc 4.4.4. \texttt{instantiate.o} corresponds to the separately compiled
   instantiatiations (e.g. densegf2rank in figure \ref{fig:sep});
   \texttt{separate.o} corresponds to the user interface and generic
   implementation compilation; \texttt{separate} corresponds to the
-  linking of both \texttt{.o} and the library.}\label{tab:compsolve}
+  linking of both \texttt{.o} and the library.}\label{tab:compilation}
 \end{table}
+
+\begin{remark} Algorithm \ref{alg:sep} has been simplified for the
+  sake of clarity. To enable a more user-friendly interface and to
+  leave it unchanged, one has to do two additional tasks:
+\begin{enumerate}
+\item Add a generic default implementation to \texttt{func\_separate}:
+ with a single line calling the orginal function \texttt{func}. This
+ enables to have a unified interface, even for non specialized class.
+\item Rename the original function and all its
+  original specializations \texttt{func\_original}; then rename also
+  the new interface simply \texttt{func}. This allows to keep the same
+  interface.
+\end{enumerate}
+\end{remark}
+
+\begin{remark} 
+With the classical inline compiler optimizations, the overhead of
+calling \texttt{rank\_separate} is limited to single supplementary
+function call. Indeed all the one line additionnal methods will be
+automatically inlined, except, of course, the one calling the separately
+compiled code.
+If this overhead is nonetheless too expensive, it suffices to enclose all the non generic specializations of
+``func\_instantiate.hpp'' by a macro test. 
+At compile time, the decision to separately
+compile or not can be taken according to the definition of this
+macro. 
+\end{remark}
+
+
 
 \bibliographystyle{plain}
 \bibliography{icms} 
