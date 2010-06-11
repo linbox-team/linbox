@@ -233,7 +233,7 @@ class BitVector::iterator : public std::_Bit_iterator
 	bool operator != (const iterator &c) const 
 		{ return (_ref._word != c._ref._word) || (_ref._pos != c._ref._pos); }
 
-    private:
+    protected:
 	friend class const_iterator;
 
 	reference _ref;
@@ -244,24 +244,25 @@ class BitVector::const_iterator : public std::iterator <std::random_access_itera
     public:
 
 	typedef std::iterator_traits<const_iterator>::iterator_category iterator_category;
-	typedef std::iterator_traits<const_iterator>::reference reference;
+	typedef std::iterator_traits<const_iterator>::reference const_reference;
 	typedef std::iterator_traits<const_iterator>::pointer pointer;
 	typedef std::iterator_traits<const_iterator>::value_type value_type;
 	typedef std::iterator_traits<const_iterator>::difference_type difference_type;
+	typedef BitVector::iterator iterator;
 
 	const_iterator () : _ref (std::vector<unsigned long>::const_iterator (), 0UL) {}
 	const_iterator (std::vector<unsigned long>::const_iterator word, uint8 position) : _ref (word, position) {}
 	const_iterator (const const_iterator &i) : _ref (i._ref._word, i._ref._pos) {}
 
 	const_iterator &operator = (const const_iterator &i) {
-		_ref._word = i._ref._word;
-		_ref._pos = i._ref._pos;
+		this->_ref._word = i._ref._word;
+		this->_ref._pos = i._ref._pos;
 		return *this;
 	}
 
 	const_iterator &operator = (const iterator &i) {
-		_ref._word = i._ref._word;
-		_ref._pos = i._ref._pos;
+		this->_ref._word = i._ref._word;
+		this->_ref._pos = i._ref._pos;
 		return *this;
 	}
 
@@ -328,10 +329,10 @@ class BitVector::const_iterator : public std::iterator <std::random_access_itera
 	difference_type operator - (const_iterator &i) const 
 		{ return (_ref._word - i._ref._word) * __LINBOX_BITSOF_LONG + (_ref._pos - i._ref._pos); }
 
-	reference operator [] (difference_type i) const
+	const_reference operator [] (difference_type i) const
 		{ return *(*this + i); }
 
-	reference operator * () const
+	const_reference operator * () const
 		{ return _ref; }
 
 	bool operator == (const const_iterator &c) const 
@@ -346,7 +347,7 @@ class BitVector::const_iterator : public std::iterator <std::random_access_itera
 	bool operator != (const BitVector::iterator &c) const 
 		{ return (_ref._word != c._ref._word) || (_ref._pos != c._ref._pos); }
 
-    private:
+    protected:
 
 	const_reference _ref;
 };
