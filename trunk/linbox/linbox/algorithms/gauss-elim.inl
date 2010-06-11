@@ -1,7 +1,12 @@
-// =================================================================== //
-// SparseElimination elimination routines
-// Time-stamp: <21 Jan 10 15:06:11 Jean-Guillaume.Dumas@imag.fr> 
-// =================================================================== //
+/* linbox/algorithms/gauss-elim.inl
+ * Copyright (C) 2009 The LinBox group
+ *
+ * Time-stamp: <21 Jan 10 15:06:11 Jean-Guillaume.Dumas@imag.fr> 
+ *
+ * See COPYING for license information.
+ *
+ * SparseElimination elimination routines
+ */
 #ifndef __GAUSS_ELIM_INL
 #define __GAUSS_ELIM_INL
 
