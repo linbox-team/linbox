@@ -221,7 +221,7 @@ void printPolynomial (Field &F, ostream &output, const Polynomial &v)
 	int i;
 	size_t val;
 
-	for (val = 0; val < v.size () && F.isZero (v[val]); val++);
+	for (val = 0; val < v.size () && F.isZero (v[val]); val++) ;
 
 	if (v.size () == 0 || val == v.size ())
 		output << "0";
