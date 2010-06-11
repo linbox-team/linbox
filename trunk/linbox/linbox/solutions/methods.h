@@ -416,9 +416,9 @@ namespace LinBox
 	};
     
 	struct BlasExtensionTraits : public BlasEliminationTraits {
-            	BlasExtensionTraits (bool           certificate    = CERTIFY,
-                                     unsigned long  maxTries       = 100,
-                                     bool           checkResult    = true
+            	BlasExtensionTraits (bool           //certificate    = CERTIFY
+									 , unsigned long  //maxTries       = 100
+									 , bool         //checkResult    = true
                                      )
                         : BlasEliminationTraits() 
                 {}

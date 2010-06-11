@@ -65,6 +65,7 @@ namespace LinBox {
 		pointer  _ptr; 		
 		 
 	public:
+		typedef typename DenseSubmatrix<_Element>::RawIterator RawIterator ; // for nvcc
 
 		BlasMatrix ()
 			: DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (0,0)),0,0,0,0), _stride(0),  _alloc(true) { _ptr = this->_M->FullIterator(); }
@@ -101,12 +102,12 @@ namespace LinBox {
 
 		
 		// Copy data according to blas container structure
-		template <class Matrix>
-		void createBlasMatrix (const Matrix& A, MatrixContainerCategory::BlasContainer)	
+		template <class _Matrix>
+		void createBlasMatrix (const _Matrix& A, MatrixContainerCategory::BlasContainer)	
 			
 		{
-			typename Matrix::ConstRawIterator         iter_value = A.rawBegin();
-			typename BlasMatrix<Element>::RawIterator  iter_addr = this->rawBegin();			
+			typename _Matrix::ConstRawIterator         iter_value = A.rawBegin();
+			RawIterator  iter_addr = this->rawBegin();			
 			for (;iter_value != A.rawEnd(); ++iter_value,++iter_addr)
 				*iter_addr = *iter_value;			
 		}
@@ -138,8 +139,8 @@ namespace LinBox {
 			F. init(zero, 0);
 			
 			std::vector<typename Field::Element> e(A.coldim(), zero), tmp(A.rowdim());
-			
-			typename BlasMatrix<Element>::ColIterator col_p;
+			typedef typename DenseSubmatrix<_Element>::ColIterator ColIterator ;
+			ColIterator col_p;
 			
 			typename BlasMatrix<Element>::Col::iterator elt_p;
 			
@@ -164,12 +165,12 @@ namespace LinBox {
 		}
 
 		// Copy data according to Matrix container structure (allow submatrix)
-		template <class Matrix>
-		void createBlasMatrix (const Matrix& A, const size_t i0,const size_t j0,const size_t m, const size_t n, MatrixContainerCategory::Container)
+		template <class _Matrix>
+		void createBlasMatrix (const _Matrix& A, const size_t i0,const size_t j0,const size_t m, const size_t n, MatrixContainerCategory::Container)
 		{
 		
-			typename Matrix::ConstRawIterator         iter_value = A.rawBegin();
-			typename Matrix::ConstRawIndexedIterator  iter_index = A.rawIndexedBegin();
+			typename _Matrix::ConstRawIterator         iter_value = A.rawBegin();
+			typename _Matrix::ConstRawIndexedIterator  iter_index = A.rawIndexedBegin();
 		
 			for (;iter_value != A.rawEnd(); ++iter_value,++iter_index){
 				size_t i,j;
@@ -251,8 +252,10 @@ namespace LinBox {
             void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
 
                 Ap = new BlasMatrix<typename _Tp1::Element>(A.rowdim(), A.coldim());
-                typename Self_t::ConstRawIterator         iter_value = A.rawBegin();
-                typename Self_t::ConstRawIndexedIterator  iter_index = A.rawIndexedBegin();
+				typedef typename DenseSubmatrix<_Element>::ConstRawIndexedIterator ConstRawIndexedIterator ;
+				typedef typename DenseSubmatrix<_Element>::ConstRawIterator ConstRawIterator ;
+                ConstRawIterator         iter_value = A.rawBegin();
+                ConstRawIndexedIterator  iter_index = A.rawIndexedBegin();
                 typename _Tp1::Element tmp;
                 for (;iter_value != A.rawEnd(); ++iter_value,++iter_index){
                     F.init(  tmp, *iter_value ); 
@@ -439,7 +442,8 @@ namespace LinBox {
 		
 		size_t* getWritePointer()  { return &_PP[0]; }
 	
-		const size_t  getOrder()  const { return _order; }
+		//const size_t  getOrder()  const { return _order; } // BB: "warning: type qualifier on return type is meaningless"
+		size_t  getOrder()  const { return _order; }
 
 		BlasPermutation& extendTrivially(const size_t newSize) {
 			if (newSize < _order) 
@@ -471,7 +475,7 @@ namespace LinBox {
 		Matrix& _M;
 	};
 	
-#ifndef __INTEL_COMPILER
+#if !defined(__INTEL_COMPILER) && !defined(__CUDACC__)
 	template <>
 #endif
 	template< class Matrix >

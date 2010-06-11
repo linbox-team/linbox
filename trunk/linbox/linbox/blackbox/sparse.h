@@ -373,7 +373,7 @@ class SparseMatrixFactory : public BlackboxFactory<Field,SparseMatrix<Field,Row>
 	} 
 };
 
-#ifndef __INTEL_COMPILER
+#if !defined(__INTEL_COMPILER) && !defined(__CUDACC__)
 template <>
 #endif
 template <class Field, class _Row>

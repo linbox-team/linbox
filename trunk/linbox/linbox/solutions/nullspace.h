@@ -465,8 +465,8 @@ namespace LinBox
 	template<class Field>
 	size_t 
 	NullSpaceBasis (const Field& F, const FFLAS::FFLAS_SIDE Side,
-			const size_t m, const size_t n,
-			typename Field::Element * A, const size_t lda,
+			const size_t & m, const size_t & n,
+			typename Field::Element * A, const size_t & lda,
 			typename Field::Element *& Ker, size_t& ldk,
 			size_t & kerdim)
 	{/*{{{*/

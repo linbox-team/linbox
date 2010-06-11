@@ -1097,7 +1097,7 @@ namespace LinBox {
 		}
 	};
 
-#ifndef __INTEL_COMPILER
+#if !defined(__INTEL_COMPILER) && !defined(__CUDACC__)
         template <>
 #endif
 	template< class Field,  class ContPol >

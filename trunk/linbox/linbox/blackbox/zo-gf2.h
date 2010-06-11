@@ -39,22 +39,22 @@ namespace LinBox
 
         const GF2 _F;
 
-        ZeroOne(const GF2& F) {}
-        ZeroOne(const GF2& F, const size_t m) : Father_t(m), _rowdim(m), _coldim(m) {}
-        ZeroOne(const GF2& F, const size_t m, const size_t n) : Father_t(m), _rowdim(m), _coldim(n) {}
+        ZeroOne(const GF2& ) {}
+        ZeroOne(const GF2& , const size_t m) : Father_t(m), _rowdim(m), _coldim(m) {}
+        ZeroOne(const GF2& , const size_t m, const size_t n) : Father_t(m), _rowdim(m), _coldim(n) {}
 
         ZeroOne() {}
         ZeroOne(const size_t m) : Father_t(m), _rowdim(m), _coldim(m) {}
         ZeroOne(const size_t m, const size_t n) : Father_t(m), _rowdim(m), _coldim(n) {}
 
-        ZeroOne(const GF2& F, VectorStream<Row_t>& stream) : Father_t(stream.m()), _rowdim(stream.m()), _coldim(stream.n()) {
+        ZeroOne(const GF2& , VectorStream<Row_t>& stream) : Father_t(stream.m()), _rowdim(stream.m()), _coldim(stream.n()) {
             for (Father_t::iterator row=begin(); row != end(); ++row)
                 stream >> *row;
         }        
 
         ZeroOne(const Self_t& A) : Father_t(static_cast<const Father_t&>(A)), _rowdim(A._rowdim), _coldim(A._coldim) {}
 
-        ZeroOne(const GF2& F, size_t* rowP, size_t* colP, const size_t m, const size_t n, const size_t nnz, const bool notused=true,const bool notused2=true) : Father_t(m), _rowdim(m), _coldim(n) {
+        ZeroOne(const GF2& , size_t* rowP, size_t* colP, const size_t m, const size_t n, const size_t nnz, const bool ,const bool) : Father_t(m), _rowdim(m), _coldim(n) { //not used
             for(size_t k=0; k<nnz; ++k) 
                 this->operator[](rowP[k]).push_back(colP[k]);
         }

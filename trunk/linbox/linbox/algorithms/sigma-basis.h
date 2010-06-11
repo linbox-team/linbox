@@ -643,8 +643,8 @@ namespace LinBox {
 		inline void ComputeNewSerie(Polynomial1          &NewSerie, 
 					    const Polynomial2   &SigmaBase, 
 					    const Polynomial3    &OldSerie,
-					    size_t                 degree1,
-					    size_t                 degree2){						
+					    size_t                 , //deg1
+					    size_t                 ){	 //deg2					
 			
 			// degree1 >= degree2
 			//size_t size = 2*degree1 + 1;
@@ -1200,7 +1200,7 @@ namespace LinBox {
 			}
 			//std::vector<size_t> degree(m,max_defect-min_defect);
 			std::vector<size_t> degree(m);
-			size_t max_diff= max_defect-min_defect;
+			//size_t max_diff= max_defect-min_defect;
 			for (size_t i=0;i<m;++i)
 				degree[i]= defect[i]-min_defect;
 
@@ -1209,20 +1209,24 @@ namespace LinBox {
 
 			//write_maple("PowerSerie",PowerSerie);		
 
+#ifdef _BM_TIMING
 			Timer chrono;
 			double tSigmaUp, tResidueUp, tSigmaSh, tResidueSh, tLQUP, tPerm;
 			tSigmaUp= tResidueUp= tSigmaSh= tResidueSh= tLQUP= tPerm =0.;
+#endif
 
 			std::vector<size_t> triv_column(m,0);
 			std::vector<size_t> PermPivots(m);
 			for (size_t i=0;i<m;++i)
 				PermPivots[i]=i;
 
-			int optim=0;
+			//int optim=0;
 			int cptr=0;
+#ifdef DISCREPANCY_OPTIM
 			double updis=0.;
+#endif
 
-			bool UseTrivial=true;
+			//bool UseTrivial=true;
 
 			//std::cout<<"defect: ";
 			//for (size_t i=0;i<m;++i)

@@ -89,7 +89,7 @@ class GMPRationalField : public FieldInterface
 	 * construct multiple field objects
 	 */
 
-	GMPRationalField (const GMPRationalField &F) 
+	GMPRationalField (const GMPRationalField &) 
 		: _cardinality (0), _characteristic (0), _zero (0), _one (1), _neg_one (-1),
 		  zero (_zero, _one), one (_one, _one), neg_one (_neg_one, _one)
 	{}
@@ -105,7 +105,7 @@ class GMPRationalField : public FieldInterface
 	 * 
 	 * Also vacuous
 	 */
-	GMPRationalField &operator= (const GMPRationalField &F)
+	GMPRationalField &operator= (const GMPRationalField &)
 	{ return *this; }
     
 	/** Initialization of field element from an integer.

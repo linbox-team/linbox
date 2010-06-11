@@ -59,7 +59,7 @@ class SparseRowReader :public MatrixStreamReader<Field> {
 
 		this->knowM = this->knowN = true;
 
-		currentRow = -1;
+		currentRow = (size_t) -1;
 		colsLeft = 0;
 		return GOOD;
 	}
@@ -87,8 +87,8 @@ class SparseRowReader :public MatrixStreamReader<Field> {
 		m = currentRow;
 		--colsLeft;
 
-		if( m < 0 || m >= this->_m ||
-		    n < 0 || n >= this->_n ) return BAD_FORMAT;
+		if(  m >= this->_m ||
+		     n >= this->_n ) return BAD_FORMAT;
 
 		return GOOD;
 	}
@@ -96,7 +96,7 @@ class SparseRowReader :public MatrixStreamReader<Field> {
     public:
     	SparseRowReader( int base = 0 ) {
 		_base = base;
-		currentRow = colsLeft = -1;
+		currentRow = colsLeft = (size_t) -1;
 	}
 
 	const char* getName() const {return "Sparse Row Format"; }//LinBox__FORMAT_SPARSE_ROW_H::name;}

@@ -874,7 +874,7 @@ namespace LinBox {
 		
 #pragma omp parallel for shared(fft_a,fft_b,fft_c) private(i) schedule(dynamic)
 #endif			
-			for (long i=0;i<pts;++i)
+			for (long i=0;i<static_cast<long>(pts);++i)
 				// #ifdef FFT_TIMING
 				// #ifdef __LINBOX_HAVE_OPENMP
 				// 				{chrono_mul[omp_get_thread_num()].start();
@@ -942,7 +942,7 @@ namespace LinBox {
 			// #pragma omp parallel for shared(a,fft_a,revbit,inv_pts) schedule(stati
 			// #endif
 			
-			for (long i=0; i< deg; ++i){
+			for (long i=0; i< static_cast<long>(deg); ++i){
 				//a[i] = fft_a[revbit[i]];
 				//_MD.mulin(a[i], inv_pts);
 				_MD.mul(a[i],fft_a[revbit[i]],inv_pts);
@@ -1071,7 +1071,7 @@ namespace LinBox {
 #ifdef __LINBOX_HAVE_OPENMP
 #pragma omp parallel for shared(fft_a,fft_b,fft_c) schedule(dynamic)
 #endif
-			for (long i=0;i<pts;++i)
+			for (long i=0;i<static_cast<long>(pts);++i)
 				_BMD.mul(fft_a[i], fft_b[i], fft_c[i]);
 						
 			Element swapping;
@@ -1102,7 +1102,7 @@ namespace LinBox {
 // #ifdef __LINBOX_HAVE_OPENMP
 // #pragma omp parallel for shared(fft_a,revbit,inv_pts) schedule(static)
 // #endif
-				for (long i=0; i< a.size(); ++i){
+				for (long i=0; i< static_cast<long>(a.size()); ++i){
 				a[i] = fft_a[revbit[i]];
 				_MD.mulin(a[i], inv_pts);
 				}			
@@ -1330,7 +1330,7 @@ namespace LinBox {
 			long bsize   =m/nump+(nb_bsize?1:0);
 			long lbsize  =m/nump;
 
-#pragma omp parallel for shared(fft) schedule(dynamic)					
+#pragma omp parallel for  schedule(dynamic)					
 			for (int i=0;i<nump;i++){
 #ifdef FFT_TIMING
 				LinBox::Timer chrono1,chrono2;
@@ -1347,7 +1347,7 @@ namespace LinBox {
 					row_idx = i*bsize;
 				}
 				
-				for (int j=0;j<fft.size();j++)
+				for (size_t j=0;j<fft.size();j++)
 					block[j]=DenseSubmatrix<Element>(fft[j],row_idx,0,row_size,n);
 
 #ifdef FFT_TIMING
@@ -1426,7 +1426,7 @@ namespace LinBox {
 			for (size_t s=2; s< ln; ++s){
 				size_t m  = 1<<s;
 				size_t m2 = 1<<(s-1);
-				size_t m4 = 1<<(s-2);		
+				//size_t m4 = 1<<(s-2);		
 
 				size_t w=(ln-s)<<1; 
 
@@ -1471,9 +1471,9 @@ namespace LinBox {
 
 
 			// top level s = ln
-			size_t m  = n;
+			//size_t m  = n;
 			size_t m2 = 1<<(ln-1);
-			size_t m4 = 1<<(ln-2);
+			//size_t m4 = 1<<(ln-2);
 				
 			
 			_MD.copy(tmp, fft[0]);

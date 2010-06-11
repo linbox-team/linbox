@@ -220,7 +220,7 @@ namespace LinBox {
                 inline  Element powtwo(Element& z, const Element& x) const {
                         z = 1;
                         if (x < 0) return z;
-			if (x < ULONG_MAX) {
+						if (x < ULONG_MAX) {
                                 z<<=(unsigned long int)x;
                                 //cout << "z"<< z;
                                 return z;
@@ -237,7 +237,7 @@ namespace LinBox {
                         //for (Element i=0; i < x; ++i) {
                         //      z <<= 1;
                         //}
-                        return z;
+                        //return z; // BB peut pas !
                 }
 
                 inline  Element logtwo(Element& z, const Element& x) const {

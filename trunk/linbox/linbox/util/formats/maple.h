@@ -70,7 +70,7 @@ class MapleReader :public MatrixStreamReader<Field> {
 		if( !cand[i] ) return GOOD;
 
 		char* pastNum;
-		if( isdigit(cand[i]) ) {
+		if( std::isdigit(cand[i]) ) {
 			this->_m = strtoul( cand+i, &pastNum, 0 );
 			if( this->_m == 0 && pastNum == cand+i )
 				return BAD_FORMAT;
@@ -92,7 +92,7 @@ class MapleReader :public MatrixStreamReader<Field> {
 		while( cand[i] && isspace(cand[i]) ) ++i;
 		if( !cand[i] ) return GOOD;
 
-		if( isdigit(cand[i]) ) {
+		if( std::isdigit(cand[i]) ) {
 			this->_n = strtoul( cand+i, &pastNum, 0 );
 			if( this->_n == 0 && pastNum == cand+i )
 				return BAD_FORMAT;
@@ -211,7 +211,7 @@ class MapleReader :public MatrixStreamReader<Field> {
 						return BAD_FORMAT;
 					break;
 				    case 1:
-				    	if( isdigit(this->sin->peek()) ) {
+				    	if( std::isdigit(this->sin->peek()) ) {
 						*(this->sin) >> this->_m;
 						if( this->sin->eof() )
 							return END_OF_FILE;
@@ -227,7 +227,7 @@ class MapleReader :public MatrixStreamReader<Field> {
 						return BAD_FORMAT;
 					break;
 				    case 3:
-				    	if( isdigit(this->sin->peek()) ) {
+				    	if( std::isdigit(this->sin->peek()) ) {
 						*(this->sin) >> this->_n;
 						if( this->sin->eof() )
 							return END_OF_FILE;

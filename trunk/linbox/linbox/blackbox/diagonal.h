@@ -158,12 +158,13 @@ namespace LinBox
 	/** 
 	\brief Specialization of Diagonal for application to sparse sequence vectors
 	 */
-	template <class Field>
-	class Diagonal<Field, VectorCategories::SparseSequenceVectorTag >
+	template <class _Field>
+	class Diagonal<_Field, VectorCategories::SparseSequenceVectorTag >
 	{
-            typedef Diagonal<Field, VectorCategories::SparseSequenceVectorTag > Self_t;
+            typedef Diagonal<_Field, VectorCategories::SparseSequenceVectorTag > Self_t;
 	    public:
 
+		typedef _Field Field;
 		typedef typename Field::Element    Element;
 
 		Diagonal(const Field F, const std::vector<typename Field::Element>& v);
@@ -230,13 +231,14 @@ namespace LinBox
 	/** 
 	\brief Specialization of Diagonal for application to sparse associative vectors
 	 */
-	template <class Field>
-	class Diagonal<Field, VectorCategories::SparseAssociativeVectorTag >
+	template <class _Field>
+	class Diagonal<_Field, VectorCategories::SparseAssociativeVectorTag >
 	{
-            typedef Diagonal<Field, VectorCategories::SparseAssociativeVectorTag > Self_t;
+            typedef Diagonal<_Field, VectorCategories::SparseAssociativeVectorTag > Self_t;
 	    public:
 
 
+		typedef _Field Field;
 		typedef typename Field::Element    Element;
 
 		Diagonal(const Field F, const std::vector<typename Field::Element>& v);
@@ -318,7 +320,7 @@ namespace LinBox
 		if (nonsing)
 		randomNonsingular();
 		//for (iter i = _v.begin(); i < _v.end(); ++i) 
-		//	while (_F.isZero(r.random(*i)));
+		//	while (_F.isZero(r.random(*i))) ;
 		else
 		random();
 		//for (iter i = _v.begin(); i < _v.end(); ++i) 
@@ -351,7 +353,7 @@ namespace LinBox
 	{   typename Field::RandIter r(_F);
 		typedef typename std::vector<typename Field::Element>::iterator iter;
 		for (iter i = _v.begin(); i < _v.end(); ++i) 
-			while (_F.isZero(r.random(*i)));
+			while (_F.isZero(r.random(*i))) ;
 	}
 
 	template <class Field>

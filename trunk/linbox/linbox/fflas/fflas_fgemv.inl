@@ -331,7 +331,7 @@ inline void FFLAS::MatVectProd (const Modular<float>& F,
 
 template<>
 inline void
-FFLAS::fgemv (const DoubleDomain& D, const FFLAS_TRANSPOSE TransA, 
+FFLAS::fgemv (const DoubleDomain& , const FFLAS_TRANSPOSE TransA, 
 	      const size_t M, const size_t N,
 	      const DoubleDomain::Element  alpha, 
 	      const DoubleDomain::Element * A, const size_t lda,
@@ -344,7 +344,7 @@ FFLAS::fgemv (const DoubleDomain& D, const FFLAS_TRANSPOSE TransA,
 
 template<>
 inline void
-FFLAS::fgemv (const FloatDomain& F, const FFLAS_TRANSPOSE TransA, 
+FFLAS::fgemv (const FloatDomain& , const FFLAS_TRANSPOSE TransA, 
 	      const size_t M, const size_t N,
 	      const FloatDomain::Element  alpha, 
 	      const FloatDomain::Element * A, const size_t lda,

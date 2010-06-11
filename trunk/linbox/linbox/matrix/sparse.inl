@@ -104,7 +104,7 @@ std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
 	Element a_ij;
 
 	while (1) {
-		do is >> c; while (is && !isdigit (c));
+		do is >> c; while (is && !std::isdigit (c));
 		if (!is) break;
 
 		is.putback (c);
@@ -207,7 +207,7 @@ std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
 				{  //processpair( j v for row i);
 					is >> j; 
 					if (j > A._n) A._n = j;
-    				do {is.get(c);} while (!isdigit(c) && c != '-' && c != '+');
+    				do {is.get(c);} while (!std::isdigit(c) && c != '-' && c != '+');
 					is.unget();
 					F.read(is, a_ij);
 			        if (!F.isZero(a_ij)) A.setEntry (i, j-1, a_ij);
@@ -217,7 +217,7 @@ std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
 			++i;
 		}
 	}
-	return is;
+	//return is; //BB: unreachable
 }
 
 template <class Element, class Row, class Trait>
@@ -241,8 +241,8 @@ std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
 				readMatlab (A, is, F, buf);
 			else
 				readPretty (A, is, F, buf);
-		} else if (isdigit (c)) {
-			do str >> c; while (str && (isspace (c) || isdigit (c)));
+		} else if (std::isdigit (c)) {
+			do str >> c; while (str && (isspace (c) || std::isdigit (c)));
 
 			if (c == 'M')
 				return readGuillaume (A, is, F, buf);
@@ -292,7 +292,7 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, Trait>
 	switch (format) {
 	    case FORMAT_DETECT:
 		throw PreconditionFailed (__FUNCTION__, __LINE__, "format != FORMAT_DETECT");
-		break;
+		//break;//BB: unreachable
 
 	    case FORMAT_TURNER:
 		// The i j v triples, with zero based indices.
@@ -453,7 +453,7 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, VectorCategories::SparsePara
 	switch (format) {
 	    case FORMAT_DETECT:
 		throw PreconditionFailed (__FUNCTION__, __LINE__, "format != FORMAT_DETECT");
-		break;
+		//break//BB: unreachable;
 
 	    case FORMAT_TURNER:
 		for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {

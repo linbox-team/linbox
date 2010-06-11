@@ -257,7 +257,7 @@ public:
 		WinoMain (F, ta, tb, m, n, k, alpha, A, lda, B, ldb, beta,
 				 C, ldc, kmax, winolevel, base);
 		return C;
-		};
+		}
 	
 	/** @brief  Field GEneral Matrix Multiply 
 	 * 
@@ -567,7 +567,7 @@ protected:
 				    const typename Field::Element* B, const size_t ldb, 
 				    const typename Field::Element beta,
 				    typename Field::Element* C, const size_t ldc, 
-				    const size_t kmax );
+				    const size_t  ); //kmax
 
 	template<class Field>
 	static void MatVectProd (const Field& F, 
@@ -579,7 +579,7 @@ protected:
 				 const typename Field::Element beta,
 				 typename Field::Element * Y, const size_t incY);
 
-	template <class Field>
+	template<class Field>
 	static void ClassicMatmul(const Field& F,  
 				  const FFLAS_TRANSPOSE ta,
 				  const FFLAS_TRANSPOSE tb,

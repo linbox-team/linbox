@@ -74,7 +74,7 @@ namespace LinBox
 			if (begin () <= p && p < end ()) 
 				return *p;
 			else
-				throw std::out_of_range(); //out of range error message.
+				throw std::out_of_range("out of range"); //out of range error message.
 		}
 
 		const_reference at(size_type n) const 
@@ -83,7 +83,7 @@ namespace LinBox
 			if (begin () <= p && p < end ())
 				return *p;
 			else 
-				throw std::out_of_range(); //out of range error message
+				throw std::out_of_range("out of range"); //out of range error message
 		}
 
 		inline reference       front (void)       { return *begin (); }

@@ -1613,7 +1613,7 @@ namespace LinBox
 		(Vector1                                 &res,
 		 const Vector2                           &x,
 		 const typename Field::Element           &a,
-		 VectorCategories::DenseVectorTag  tag) const
+		 VectorCategories::DenseVectorTag  ) const
 	{
 		typename Vector2::const_iterator i;
 		typename Vector1::iterator j;
@@ -1632,7 +1632,7 @@ namespace LinBox
 		(Vector1                                          &res,
 		 const Vector2                                    &x,
 		 const typename Field::Element                    &a,
-		 VectorCategories::SparseSequenceVectorTag  tag) const
+		 VectorCategories::SparseSequenceVectorTag  ) const
 	{
 		typename Vector2::const_iterator i;
 		Element tmp;
@@ -1654,7 +1654,7 @@ namespace LinBox
 		(Vector1                                             &res,
 		 const Vector2                                       &x,
 		 const typename Field::Element                       &a,
-		 VectorCategories::SparseAssociativeVectorTag  tag) const
+		 VectorCategories::SparseAssociativeVectorTag  ) const
 	{
 		typename Vector2::const_iterator i;
 		Element tmp;
@@ -1676,7 +1676,7 @@ namespace LinBox
 		(Vector1                                          &res,
 		 const Vector2                                    &x,
 		 const typename Field::Element                    &a,
-		 VectorCategories::SparseParallelVectorTag  tag) const
+		 VectorCategories::SparseParallelVectorTag  ) const
 	{
 		typename Vector2::first_type::const_iterator i_idx;
 		typename Vector2::second_type::const_iterator i_elt;
@@ -1702,7 +1702,7 @@ namespace LinBox
 	Vector &VectorDomain<Field>::mulinSpecialized
 		(Vector                                  &x,
 		 const typename Field::Element           &a,
-		 VectorCategories::DenseVectorTag  tag) const
+		 VectorCategories::DenseVectorTag  ) const
 	{
 		typename Vector::iterator i;
 
@@ -1717,7 +1717,7 @@ namespace LinBox
 	Vector &VectorDomain<Field>::mulinSpecialized
 		(Vector                                           &x,
 		 const typename Field::Element                    &a,
-		 VectorCategories::SparseSequenceVectorTag  tag) const
+		 VectorCategories::SparseSequenceVectorTag  ) const
 	{
 		typename Vector::iterator i;
 
@@ -1737,7 +1737,7 @@ namespace LinBox
 	Vector &VectorDomain<Field>::mulinSpecialized
 		(Vector                                              &x,
 		 const typename Field::Element                       &a,
-		 VectorCategories::SparseAssociativeVectorTag  tag) const
+		 VectorCategories::SparseAssociativeVectorTag  ) const
 	{
 		typename Vector::iterator i;
 
@@ -1757,7 +1757,7 @@ namespace LinBox
 	Vector &VectorDomain<Field>::mulinSpecialized
 		(Vector                                           &x,
 		 const typename Field::Element                    &a,
-		 VectorCategories::SparseParallelVectorTag  tag) const
+		 VectorCategories::SparseParallelVectorTag  ) const
 	{
 		typename Vector::second_type::iterator i;
 
@@ -1780,7 +1780,7 @@ namespace LinBox
 		 const Vector2                           &y,
 		 const typename Field::Element           &a,
 		 const Vector3                           &x,
-		 VectorCategories::DenseVectorTag  tag) const
+		 VectorCategories::DenseVectorTag  ) const
 	{
 		typename Vector2::const_iterator i;
 		typename Vector3::const_iterator j;
@@ -1802,7 +1802,7 @@ namespace LinBox
 		 const Vector2                                    &y,
 		 const typename Field::Element                    &a,
 		 const Vector3                                    &x,
-		 VectorCategories::SparseSequenceVectorTag  tag) const
+		 VectorCategories::SparseSequenceVectorTag  ) const
 	{
 		typename Vector2::const_iterator i;
 		typename Vector3::const_iterator j;
@@ -1842,7 +1842,7 @@ namespace LinBox
 		 const Vector2                                       &y,
 		 const typename Field::Element                       &a,
 		 const Vector3                                       &x,
-		 VectorCategories::SparseAssociativeVectorTag  tag) const
+		 VectorCategories::SparseAssociativeVectorTag  ) const
 	{
 		typename Vector2::const_iterator i;
 		typename Vector3::const_iterator j;
@@ -1878,7 +1878,7 @@ namespace LinBox
 		 const Vector2                                    &y,
 		 const typename Field::Element                    &a,
 		 const Vector3                                    &x,
-		 VectorCategories::SparseParallelVectorTag  tag) const
+		 VectorCategories::SparseParallelVectorTag  ) const
 	{
 		typename Vector2::first_type::const_iterator i_idx = y.first.begin ();
 		typename Vector3::first_type::const_iterator j_idx = x.first.begin ();
@@ -2077,8 +2077,8 @@ namespace LinBox
 		(Element                                           &res,
 		 const Vector1                                     &v1,
 		 const Vector2                                     &v2,
-		 VectorCategories::SparseSequenceVectorTag  tag1,
-		 VectorCategories::DenseVectorTag           tag2) const
+		 VectorCategories::SparseSequenceVectorTag  ,
+		 VectorCategories::DenseVectorTag           ) const
 	{
 		typename Vector1::const_iterator i;
 		
@@ -2096,8 +2096,8 @@ namespace LinBox
 		(Element                                              &res,
 		 const Vector1                                        &v1,
 		 const Vector2                                        &v2,
-		 VectorCategories::SparseAssociativeVectorTag  tag1,
-		 VectorCategories::DenseVectorTag              tag2) const
+		 VectorCategories::SparseAssociativeVectorTag  ,
+		 VectorCategories::DenseVectorTag              ) const
 	{
 		typename Vector1::const_iterator i;
 		VectorDomainBase<Field>::accu.reset();
@@ -2131,8 +2131,8 @@ namespace LinBox
 		(Element                                              &res,
 		 const Vector1                                        &v1,
 		 const Vector2                                        &v2,
-		 VectorCategories::SparseSequenceVectorTag     tag1,
-		 VectorCategories::SparseSequenceVectorTag     tag2) const
+		 VectorCategories::SparseSequenceVectorTag     ,
+		 VectorCategories::SparseSequenceVectorTag     ) const
 	{
 		typename Vector1::const_iterator i;
 		typename Vector2::const_iterator j;
@@ -2154,8 +2154,8 @@ namespace LinBox
 		(Element                                              &res,
 		 const Vector1                                        &v1,
 		 const Vector2                                        &v2,
-		 VectorCategories::SparseAssociativeVectorTag  tag1,
-		 VectorCategories::SparseSequenceVectorTag     tag2) const
+		 VectorCategories::SparseAssociativeVectorTag  ,
+		 VectorCategories::SparseSequenceVectorTag     ) const
 	{
 		typename Vector1::const_iterator i;
 		typename Vector2::const_iterator j;
@@ -2177,8 +2177,8 @@ namespace LinBox
 		(Element                                              &res,
 		 const Vector1                                        &v1,
 		 const Vector2                                        &v2,
-		 VectorCategories::SparseParallelVectorTag     tag1,
-		 VectorCategories::SparseSequenceVectorTag     tag2) const
+		 VectorCategories::SparseParallelVectorTag     ,
+		 VectorCategories::SparseSequenceVectorTag     ) const
 	{
 		typename Vector1::first_type::const_iterator i_idx = v1.first.begin ();
 		typename Vector1::second_type::const_iterator i_elt = v1.second.begin ();
@@ -2201,8 +2201,8 @@ namespace LinBox
 		(Element                                              &res,
 		 const Vector1                                        &v1,
 		 const Vector2                                        &v2,
-		 VectorCategories::SparseAssociativeVectorTag  tag1,
-		 VectorCategories::SparseAssociativeVectorTag  tag2) const
+		 VectorCategories::SparseAssociativeVectorTag  ,
+		 VectorCategories::SparseAssociativeVectorTag  ) const
 	{
 		typename Vector1::const_iterator i;
 		typename Vector2::const_iterator j;
@@ -2224,8 +2224,8 @@ namespace LinBox
 		(Element                                              &res,
 		 const Vector1                                        &v1,
 		 const Vector2                                        &v2,
-		 VectorCategories::SparseParallelVectorTag     tag1,
-		 VectorCategories::SparseAssociativeVectorTag  tag2) const
+		 VectorCategories::SparseParallelVectorTag     ,
+		 VectorCategories::SparseAssociativeVectorTag  ) const
 	{
 		typename Vector1::first_type::const_iterator i_idx = v1.first.begin ();
 		typename Vector1::second_type::const_iterator i_elt = v1.second.begin ();
@@ -2248,8 +2248,8 @@ namespace LinBox
 		(Element                                              &res,
 		 const Vector1                                        &v1,
 		 const Vector2                                        &v2,
-		 VectorCategories::SparseParallelVectorTag     tag1,
-		 VectorCategories::SparseParallelVectorTag     tag2) const
+		 VectorCategories::SparseParallelVectorTag     ,
+		 VectorCategories::SparseParallelVectorTag     ) const
 	{
 		typename Vector1::first_type::const_iterator i_idx = v1.first.begin ();
 		typename Vector1::second_type::const_iterator i_elt = v1.second.begin ();
@@ -2296,9 +2296,9 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Iterator>
-	inline Vector &VectorDomain<Field>::permuteSpecialized
-		(Vector &v, Iterator P_start, Iterator P_end,
+	template <class _Vector, class Iterator>
+	inline _Vector &VectorDomain<Field>::permuteSpecialized
+		(_Vector &v, Iterator P_start, Iterator P_end,
 		 VectorCategories::SparseSequenceVectorTag) const 
 	{
 		unsigned int max = 0;
@@ -2315,9 +2315,9 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Iterator>
-	inline Vector &VectorDomain<Field>::permuteSpecialized
-		(Vector &v, Iterator P_start, Iterator P_end,
+	template <class _Vector, class Iterator>
+	inline _Vector &VectorDomain<Field>::permuteSpecialized
+		(_Vector &v, Iterator P_start, Iterator P_end,
 		 VectorCategories::SparseAssociativeVectorTag) const 
 	{
 		unsigned int max = 0;
@@ -2334,9 +2334,9 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Iterator>
-	inline Vector &VectorDomain<Field>::permuteSpecialized
-		(Vector &v, Iterator P_start, Iterator P_end,
+	template <class _Vector, class Iterator>
+	inline _Vector &VectorDomain<Field>::permuteSpecialized
+		(_Vector &v, Iterator P_start, Iterator P_end,
 		 VectorCategories::SparseParallelVectorTag) const 
 	{
 		unsigned int max = 0;

@@ -204,7 +204,7 @@ void MersenneTwister::setSeed (uint32 seed)
 	register std::vector<uint32>::iterator s = _state.begin ();
 	register int j;
 
-	for (_left = 0, *s++ = x, j = N; --j; *s++ = (x *= 69069U) & 0xFFFFFFFFU);
+	for (_left = 0, *s++ = x, j = N; --j; *s++ = (x *= 69069U) & 0xFFFFFFFFU) ;
 }
 
 }

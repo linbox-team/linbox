@@ -82,7 +82,7 @@ class GF2 : public FieldInterface
 	 * into functions.
 	 * @param  F Modular object.
 	 */
-	GF2 (const GF2 &F) {}
+	GF2 (const GF2 &) {}
 
 	/** Assignment operator
 	 * Required by the archetype
@@ -90,7 +90,7 @@ class GF2 : public FieldInterface
 	 * @param F constant reference to Modular object
 	 * @return reference to Modular object for self
 	 */
-	const GF2 &operator = (const GF2 &F) 
+	const GF2 &operator = (const GF2 &) 
 		{ return *this; }
 
 	/** Initialization of field base element from an integer.
@@ -360,13 +360,13 @@ class GF2 : public FieldInterface
 	 * @param  y field base element.
 	 * @param  z field base element.
 	 */
-	Element &div (Element &x, Element y, Element z) const
+	Element &div (Element &x, Element y, Element ) const // z is unused!
 		{ return x = y; }
 
-	BitVector::reference div (BitVector::reference x, Element y, Element z) const
+	BitVector::reference div (BitVector::reference x, Element y, Element ) const
 		{ return x = y; }
  
-	std::_Bit_reference div (std::_Bit_reference x, Element y, Element z) const
+	std::_Bit_reference div (std::_Bit_reference x, Element y, Element ) const
 		{ return x = y; }
  
 	/** Additive Inverse (Negation).
@@ -494,13 +494,13 @@ class GF2 : public FieldInterface
 	 * @param  x field base element (reference returned).
 	 * @param  y field base element.
 	 */
-	Element &divin (Element &x, Element y) const
+	Element &divin (Element &x, Element ) const //y is unsued !
 		{ return x; }
 
-	BitVector::reference divin (BitVector::reference x, Element y) const
+	BitVector::reference divin (BitVector::reference x, Element ) const
 		{ return x; }
  
-	std::_Bit_reference divin (std::_Bit_reference x, Element y) const
+	std::_Bit_reference divin (std::_Bit_reference x, Element ) const
 		{ return x; }
  
 	/** Inplace Additive Inverse (Inplace Negation).
@@ -704,7 +704,7 @@ namespace LinBox
         typedef Source::Element SrcElt;
         typedef Target::Element Elt;
 	
-        Hom(const Source& S, const Target& T) : _source (S){}
+        Hom(const Source& S, const Target& ) : _source (S){}
         Elt& image(Elt& t, const SrcElt& s) {
             return _source.assign (t, s);
         }

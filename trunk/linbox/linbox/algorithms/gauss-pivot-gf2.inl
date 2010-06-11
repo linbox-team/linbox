@@ -12,7 +12,7 @@ namespace LinBox
                                              unsigned long 	&indcol,
                                              long 		&indpermut,
                                              D             	&columns,
-                                             bool		&determinant) const
+                                             bool		&) const //determinant
     {
  
 //        std::cerr << "SFP BEG : lignepivot: [";
@@ -73,7 +73,7 @@ namespace LinBox
     GaussDomain<GF2>::SparseFindPivotBinary (Vector &lignepivot, 
                                              unsigned long &indcol, 
                                              long &indpermut, 
-                                             bool& determinant) const
+                                             bool& ) const // determinant
     {
 	long nj = lignepivot.size ();
 

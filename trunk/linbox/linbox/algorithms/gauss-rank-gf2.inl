@@ -33,11 +33,11 @@ namespace LinBox
    
 
     template <class SparseSeqMatrix> unsigned long& 
-    GaussDomain<GF2>::rank(unsigned long &rank,
+    GaussDomain<GF2>::rank(unsigned long &rk,
                               const SparseSeqMatrix        &A,
                               SparseEliminationTraits::PivotStrategy   reord)  const
     {
-        return rank(rank, A,  A.rowdim (), A.coldim (), reord);
+        return rank(rk, A,  A.rowdim (), A.coldim (), reord);
     }
 
     template <class SparseSeqMatrix> unsigned long& 

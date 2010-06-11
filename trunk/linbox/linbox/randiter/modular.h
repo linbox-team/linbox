@@ -148,7 +148,7 @@ namespace LinBox
 			//return a = rand() % (_F.modulus -1) + 1; }
 
 			// CPernet: stupidly slow, but now way to get _F.modulus without changing the interface
-			while (_F.isZero (random(a)));
+			while (_F.isZero (random(a))) ;
 			return a;
 		}
 

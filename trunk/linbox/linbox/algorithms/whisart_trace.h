@@ -130,7 +130,7 @@ typename Field::Element& WhisartTrace(
     const Field& F, 
     const LinBox::Diagonal<Field>& ExtD, 
     const BB& A, 
-    const LinBox::Diagonal<Field>& InD, RawIndexedTags::HasRawIndexed t) {
+    const LinBox::Diagonal<Field>& InD, RawIndexedTags::HasRawIndexed ) {
         // Trace of ExtD B InD B^T ExtD
         // is sum ExtD_i^2 B_{i,j} InD_j
     F.init(tr, 0);
@@ -154,7 +154,7 @@ typename Field::Element& WhisartTraceTranspose(
     const Field& F, 
     const LinBox::Diagonal<Field>& ExtD, 
     const BB& A, 
-    const LinBox::Diagonal<Field>& InD, RawIndexedTags::HasRawIndexed t) {
+    const LinBox::Diagonal<Field>& InD, RawIndexedTags::HasRawIndexed ) {
         // Trace of ExtD B^T  InD B ExtD
         // is sum ExtD_j^2 B_{i,j} InD_i
     F.init(tr, 0);
