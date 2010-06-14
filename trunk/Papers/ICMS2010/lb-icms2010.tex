@@ -93,20 +93,54 @@ values from one field to another.
 can be specialized.
 \end{itemize}
 
-\section{Abstraction of a level for parallelism}
+\section{Software abstraction layer for parallelism}
 
-
-Efficient parallel applications must take into consideration of hardware characteristics (number of cores, memory hiearchy, ...): it time consuming or impossible for a single developer to be able to program a high performance computer algebra application, with state of the art algorithm, that will exploit all the available parallelism. 
-In order to separate the domain of expertise we have design an software abstraction layer between computer algebra algorithm and parallel implementation with automatic dynamic scheduling.
+Efficient parallel applications must take into consideration hardware
+characteristics (number of cores, memory hiearchy, ...): it is time
+consuming or impossible for a single developer to be able to
+program a high performance computer algebra application, with state of
+the art algorithm, that will exploit all the available parallelism.  
+In order to separate the domain of expertise we have designed a
+software abstraction layer between computer algebra algorithms
+and parallel implementations, with automatic dynamic scheduling.
 
 \subsection{Parallel building blocks}
-Computer algebra algorithms have three main characteristics: 1/ they are complex, a deep knowledge about the problem is required to be able to write the most efficient sequential algorithm; 2/ they may be highly irregular which impose the use, at runtime, of algorithms to balance the work load; 3/ they are generic in the sens that its easy to write a generic algorithm that will work with several input domain.
+Computer algebra algorithms have three main characteristics:
+\begin{enumerate}
+\item They are complex and require a deep knowledge of the problem in
+  order to the most efficient sequential algorithm.
+\item They may be highly irregular. This enforce a runtime usage of
+  load balancing algorithms.
+\item They are generic in the sense that it they are usually designed
+  to work generically over several input domains.
+\end{enumerate}
 
-  In the case of LinBox algorithms, we have decided to base our software abstraction, called Parallel Building Blocks (PBB), close to principle of STL (Standard Template Like) algorithms. C++ data structure in Linbox let us to have random access iterators over container which are easy to parallelism. Currently with have only defined few algorithms and the list may be extended in the futur:
-\begin{description} 
-\item [for\_each, transform, accumulate]: they are similar to the STL version except that involved operators (or function class) are required to have their return value passed by the first parameter of the function. This is mainly due because in LinBox,  objects returned by operator may have big size (\textit{e.g} a matrix) and the STL return-by-value semantic is not appropriate. 
-\end{description} 
-Note that within the incoming C++0X standard, the lambda capability of the core language will simplify the use of these parallel building blocks in true code.
+  In the case of \linboxsp algorithms, we have decided to base our
+  software abstraction, called {\em Parallel Building Blocks (PBB)},
+  on the STL algorithms (Standard Template Like) principles.
+
+  Indeed, C++ data structure in \linboxsp let us to have random access
+  iterators over containers which are naturally parallel. 
+  
+  We have already defined several algorithms STL-like and the list
+  will be extended in the near future:
+  \begin{description} 
+    
+  \item [for\_each, transform, accumulate \cite{Musser:1996:STL}:] the parallel building
+    blocks for these three algorithms are similar to the STL version 
+    except that the involved operators (or function class) given in
+    parameter are required to have their return value passed by the
+    first parameter of the function. 
+    This is mainly due to the memory model of \linboxsp, since objects
+    returned by these operator may have a large size (\textit{e.g} a
+    matrix).
+    Therefore, the STL return-by-value semantic is not appropriate. 
+  \end{description} 
+  
+  Note that within the incoming C++0X standard, the lambda capability
+  of the core language will simplify the use of these operators and
+  therefore of the parallel
+  building blocks.
 
 %\verb!transform!, etc. 
 
@@ -115,28 +149,82 @@ Note that within the incoming C++0X standard, the lambda capability of the core 
 %\item Abstraction of parallelism
 %\item Parallelism really as a plug-in
 %\end{itemize}
-The most important thing is that these algorithms may be easily parallelism on top of Open MP, %~\cite{}, 
-TBB (Thread Building Blocks)%~\cite{} 
-or Kaapi~\cite{inproceedingsgautier.gbp_ktsrsf_07} middleware, using both static scheduling or dynamic work-stealing algorithm~\cite{con-traore.trmgb_08}.
-The current implementation support OpenMP and Kaapi.
+  
+  The fundamental idea of these blocks is that at the computer algebra
+  level, the parallelization of all the loops and more generally of all
+  the STL-like algorithms will already enable:
+\begin{enumerate}
+\item Good performance: in many complex or irregular computer algebra
+  applications this coarse-grain parallelization of the inner loops of
+  the underlying linear algebra is sufficiently refined.
+\item Different implementations of the parallel blocks: this
+  abstraction allows for both a programming independent of the
+  parallel model and an evolution of the parallel environment
+  depending on the target architecture.
+\end{enumerate}
+
+The parallel blocks can be implemented using many different parallel
+environments, such as OpenMP
+\cite{Chapman:2007:openmp}; TBB (Thread Building Blocks)
+  \footnote{\url{http://www.threadingbuildingblocks.org}} or
+  Kaapi~\cite{inproceedingsgautier.gbp_ktsrsf_07}; using
+  both static or dynamic work-stealing
+  schedulers~\cite{con-traore.trmgb_08}.
+The current implementation supports both OpenMP and Kaapi.
 
 \subsection{Accumulate-while and early termination}
-  To bound the complexity of some linear algebra problems,  one of the key algorithm is to use Chinese Remaindering algorithm. The computation is done modulo a sequence of (co)prime numbers and the result is built from a sequence of residues while a condition is not satisfy~\cite{jgd:2010:crt}. The termination of the algorithm depend on the result remaindered for each residue. 
-  In order to capture such algorithm we proposed an extension of the STL algorithms called \verb+accumulate_while+:
+To bound the complexity of many linear algebra problems, one of the
+key idea is to use an accumulation with {\em early termination}.
+
+For instance, this is used in Chinese Remaindering algorithms: the
+computation is performed modulo a sequence of (co)prime numbers and
+the result is built from a sequence of residues, {\em only while} a
+condition is satisfied~\cite{jgd:2010:crt}. 
+The termination of the algorithm depend on the accumulated (here
+reconstructed) result.
+  
+In order to parallelize such algorithms, we proposed an extension of
+the STL algorithms called \verb+accumulate_while+:
 \begin{description} 
-\item [accumulate\_while]: for a sequence of length $n$, the algorithm computes $S_N = \sum_{i=0,..,N} f(input[i])$ such that $S_k, k>N$ does not satisfy a condition and  $S_k, k \leq N$ may satisfy a condition. The algorithm takes as input $input$, $f$, $+$ operator for the summation and it returns $S_N$ and $N$. This algorithm is used for early termination algorithm such as illustrated above.
+\item [accumulate\_while:] The algorithm takes an array $v$, an
+  operator $f$, an operator $+$ for the summation, and condition
+  operator.
+  For a sequence $S_k = \sum_{i=0,..,k} f( v[i])$ with 
+  $k \in \{0,N\}$, the algorithm computes and returns $n$ and $S_n$ such that 
+  $S_k, k \leq n$ does satisfy the condition and $S_k, k > N$
+  may not satisfy this condition.
 \end{description} 
+
+  This algorithm is used 
+  for the early termination Chinese remaindering algorithms of
+  \linbox. A sequential version and parallel versions with OpenMP and
+  Kaapi can be found in the \linboxsp distributions as 
+  \url{linbox/algorithms/cra-domain-*.h}.
 
 %\verb!Accumulate-while!, generalization of \cite{jgd:2010:crt},
 %specially adapted to early termination in mathematical softwares.
 %Other applications (e.g. from \cite{Beaumont:2004:PMAA}) ??
 
 
-\subsection{Memory contention}
-Most of computer algebra programs allocate dynamic memory for the intermediate computation.
-Several experiments with Linbox algorithms on multicore machine have shown that allocations are a bottleneck in the performance. 
-  An analysis of memory pattern and experimentation with 3 well known memory allocators  (ptmalloc, Hoard and TCMalloc from Google Perf Tools) have been done. Preliminary experiments on problems which are based on top of Chinese Remaindering~\cite{jgd:2010:crt} have demonstrate the advantage of TCMalloc~\cite{tcmalloc} over the others. 
-  One of the main reason is that such problems made a lot of temporary allocations that fit well the thread safe caching mechanism of TCMalloc.
+\subsection{Memory contention and thread safe allocation}
+Many computer algebra programs allocate dynamic memory for the
+intermediate computations. Several experiments with \linboxsp
+algorithms, on multicore architectures, ave shown that these
+allocations are quite often the bottleneck in the performance.
+
+An analysis of the memory pattern and experimentations with three well
+known memory allocators 
+(ptmalloc, Hoard and TCMalloc from Google Perf. Tools~\cite{tcmalloc})
+have been conducted. The goal was to decide wether the parallel
+building blocks model was suitable to high-performance exact linear
+algebra.
+
+Preliminary experiments on the Chinese remaindering {\bf accumulate\_while},
+not the easiest to parallelize, have demonstrated the advantage, in
+our setting, of TCMalloc over the others~\cite{jgd:2010:crt}.
+One of the main reason for that fact is that our problems required
+many temporary allocations. This fits precisely the thread safe caching
+mechanism of TCMalloc.
 
 \section{Automated Generic Separate compilation}
 \linboxsp is developped with several levels of genericity:
