@@ -1,7 +1,7 @@
 %!PS-Adobe-2.0 EPSF-2.0
 %%Title: separate.fig
 %%Creator: fig2dev Version 3.2 Patchlevel 5c
-%%CreationDate: Fri Jun 11 16:37:06 2010
+%%CreationDate: Mon Jun 14 18:42:42 2010
 %%BoundingBox: 0 0 522 139
 %Magnification: 1.0000
 %%EndComments
@@ -119,9 +119,6 @@ n 3428 2047 m 3372 2070 l 3428 2092 l 3417 2070 l 3428 2047 l
 n 5625 1440 m 5715 1620 l
  5805 1440 l gs col0 s gr 
 % Polyline
-n 5715 1620 m
- 6795 1890 l gs col0 s gr 
-% Polyline
 gs  clippath
 2528 1192 m 2415 1192 l 2415 1237 l 2528 1237 l 2528 1237 l 2472 1215 l 2528 1192 l cp
 eoclip
@@ -163,12 +160,6 @@ n 645 990 m 540 990 540 1335 105 arcto 4 {pop} repeat
   2430 990 645 990 105 arcto 4 {pop} repeat
  cp gs col0 s gr 
 % Polyline
-n 4965 1890 m 4860 1890 4860 2145 105 arcto 4 {pop} repeat
-  4860 2250 8535 2250 105 arcto 4 {pop} repeat
-  8640 2250 8640 1995 105 arcto 4 {pop} repeat
-  8640 1890 4965 1890 105 arcto 4 {pop} repeat
- cp gs col0 s gr 
-% Polyline
 gs  clippath
 832 1538 m 832 1425 l 787 1425 l 787 1538 l 787 1538 l 810 1482 l 832 1538 l cp
 eoclip
@@ -179,6 +170,16 @@ n 810 2520 m
 30.000 slw
 n 832 1538 m 810 1482 l 787 1538 l 810 1527 l 832 1538 l 
  cp gs 0.00 setgray ef gr  col0 s
+% Polyline
+15.000 slw
+n 4965 1800 m 4860 1800 4860 2145 105 arcto 4 {pop} repeat
+  4860 2250 8535 2250 105 arcto 4 {pop} repeat
+  8640 2250 8640 1905 105 arcto 4 {pop} repeat
+  8640 1800 4965 1800 105 arcto 4 {pop} repeat
+ cp gs col0 s gr 
+% Polyline
+n 5715 1620 m
+ 6840 1800 l gs col0 s gr 
 /Helvetica-Bold ff 190.50 scf sf
 630 2790 m
 gs 1 -1 sc (rankDenseMatGF2) col0 sh gr
@@ -194,9 +195,6 @@ gs 1 -1 sc  90.0 rot (and calls) col0 sh gr
 /Courier ff 127.00 scf sf
 540 3015 m
 gs 1 -1 sc (Separately compiled body) col0 sh gr
-/Courier ff 127.00 scf sf
-5805 1575 m
-gs 1 -1 sc  346.0 rot (Specialization) col0 sh gr
 /Helvetica-Bold ff 190.50 scf sf
 4950 1350 m
 gs 1 -1 sc (rank_separate\(const Mat&\)) col0 sh gr
@@ -206,9 +204,6 @@ gs 1 -1 sc (template<class Mat>) col0 sh gr
 /Helvetica-Bold ff 190.50 scf sf
 4950 2160 m
 gs 1 -1 sc (rank_separate\(const DenseMat<GF2>&\)) col0 sh gr
-/Courier ff 127.00 scf sf
-3555 1980 m
-gs 1 -1 sc (Specialized call) col0 sh gr
 /Courier ff 127.00 scf sf
 3330 1125 m
 gs 1 -1 sc (Default call) col0 sh gr
@@ -224,6 +219,15 @@ gs 1 -1 sc (rankDenseMatGF2) col0 sh gr
 /Courier ff 127.00 scf sf
 1485 1845 m
 gs 1 -1 sc (header) col0 sh gr
+/Courier ff 127.00 scf sf
+5805 1575 m
+gs 1 -1 sc  350.0 rot (Specialization) col0 sh gr
+/Courier ff 127.00 scf sf
+4950 1980 m
+gs 1 -1 sc (template<>) col0 sh gr
+/Courier ff 127.00 scf sf
+3555 1980 m
+gs 1 -1 sc (Specialized call) col0 sh gr
 % here ends figure;
 pagefooter
 showpage
