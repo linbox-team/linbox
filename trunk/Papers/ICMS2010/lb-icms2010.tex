@@ -94,27 +94,49 @@ can be specialized.
 \end{itemize}
 
 \section{Abstraction of a level for parallelism}
+
+
+Efficient parallel applications must take into consideration of hardware characteristics (number of cores, memory hiearchy, ...): it time consuming or impossible for a single developer to be able to program a high performance computer algebra application, with state of the art algorithm, that will exploit all the available parallelism. 
+In order to separate the domain of expertise we have design an software abstraction layer between computer algebra algorithm and parallel implementation with automatic dynamic scheduling.
+
 \subsection{Parallel building blocks}
+Computer algebra algorithms have three main characteristics: 1/ they are complex, a deep knowledge about the problem is required to be able to write the most efficient sequential algorithm; 2/ they may be highly irregular which impose the use, at runtime, of algorithms to balance the work load; 3/ they are generic in the sens that its easy to write a generic algorithm that will work with several input domain.
 
-namespace selection of algorithms like \verb!for_each!,
-\verb!transform!, etc. 
+  In the case of LinBox algorithms, we have decided to base our software abstraction, called Parallel Building Blocks (PBB), close to principle of STL (Standard Template Like) algorithms. C++ data structure in Linbox let us to have random access iterators over container which are easy to parallelism. Currently with have only defined few algorithms and the list may be extended in the futur:
+\begin{description} 
+\item [for\_each, transform, accumulate]: they are similar to the STL version except that involved operators (or function class) are required to have their return value passed by the first parameter of the function. This is mainly due because in LinBox,  objects returned by operator may have big size (\textit{e.g} a matrix) and the STL return-by-value semantic is not appropriate. 
+\end{description} 
+Note that within the incoming C++0X standard, the lambda capability of the core language will simplify the use of these parallel building blocks in true code.
 
-\begin{itemize}
-\item Transparent parallelism
-\item Abstraction of parallelism
-\item Parallelism really as a plug-in
-\end{itemize}
+%\verb!transform!, etc. 
+
+%\begin{itemize}
+%\item Transparent parallelism
+%\item Abstraction of parallelism
+%\item Parallelism really as a plug-in
+%\end{itemize}
+The most important thing is that these algorithms may be easily parallelism on top of Open MP, %~\cite{}, 
+TBB (Thread Building Blocks)%~\cite{} 
+or Kaapi~\cite{inproceedingsgautier.gbp_ktsrsf_07} middleware, using both static scheduling or dynamic work-stealing algorithm~\cite{con-traore.trmgb_08}.
+The current implementation support OpenMP and Kaapi.
 
 \subsection{Accumulate-while and early termination}
-Proposition of a new algorithm:
-\verb!Accumulate-while!, generalization of \cite{jgd:2010:crt},
-specially adapted to early termination in mathematical softwares.
+  To bound the complexity of some linear algebra problems,  one of the key algorithm is to use Chinese Remaindering algorithm. The computation is done modulo a sequence of (co)prime numbers and the result is built from a sequence of residues while a condition is not satisfy~\cite{jgd:2010:crt}. The termination of the algorithm depend on the result remaindered for each residue. 
+  In order to capture such algorithm we proposed an extension of the STL algorithms called \verb+accumulate_while+:
+\begin{description} 
+\item [accumulate\_while]: for a sequence of length $n$, the algorithm computes $S_N = \sum_{i=0,..,N} f(input[i])$ such that $S_k, k>N$ does not satisfy a condition and  $S_k, k \leq N$ may satisfy a condition. The algorithm takes as input $input$, $f$, $+$ operator for the summation and it returns $S_N$ and $N$. This algorithm is used for early termination algorithm such as illustrated above.
+\end{description} 
 
-Other applications (e.g. from \cite{Beaumont:2004:PMAA}) ??
+%\verb!Accumulate-while!, generalization of \cite{jgd:2010:crt},
+%specially adapted to early termination in mathematical softwares.
+%Other applications (e.g. from \cite{Beaumont:2004:PMAA}) ??
 
 
 \subsection{Memory contention}
-solved (?) with multi-threaded memory allocators ...
+Most of computer algebra programs allocate dynamic memory for the intermediate computation.
+Several experiments with Linbox algorithms on multicore machine have shown that allocations are a bottleneck in the performance. 
+  An analysis of memory pattern and experimentation with 3 well known memory allocators  (ptmalloc, Hoard and TCMalloc from Google Perf Tools) have been done. Preliminary experiments on problems which are based on top of Chinese Remaindering~\cite{jgd:2010:crt} have demonstrate the advantage of TCMalloc~\cite{tcmalloc} over the others. 
+  One of the main reason is that such problems made a lot of temporary allocations that fit well the thread safe caching mechanism of TCMalloc.
 
 \section{Automated Generic Separate compilation}
 \linboxsp is developped with several levels of genericity:
