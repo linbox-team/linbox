@@ -235,38 +235,35 @@ Computer algebra algorithms have three main characteristics:
 \begin{enumerate}
 \item They are complex and require a deep knowledge of the problem in
   order to the most efficient sequential algorithm.
-\item They may be highly irregular. This enforce a runtime usage of
+\item They may be highly irregular. This enforces a runtime use of
   load balancing algorithms.
 \item They are generic in the sense that it they are usually designed
-  to work generically over several input domains.
+  to work over several algebraic domains.
 \end{enumerate}
 
   In the case of \linbox algorithms, we have decided to base our
   software abstraction, called {\em Parallel Building Blocks (PBB)},
   on the STL algorithms (Standard Template Like) principles.
 
-  Indeed, C++ data structure in \linbox let us to have random access
+  Indeed, C++ data structures in \linbox let us to have random access
   iterators over containers which are naturally parallel. 
   
-  We have already defined several algorithms STL-like and the list
+  We have already defined several STL-like algorithms and the list
   will be extended in the near future:
   \begin{description} 
     
-  \item [for\_each, transform, accumulate \cite{Musser:1996:STL}:] the parallel building
-    blocks for these three algorithms are similar to the STL version 
-    except that the involved operators (or function class) given in
-    parameter are required to have their return value passed by the
-    first parameter of the function. 
-    This is mainly due to the memory model of \linbox, since objects
-    returned by these operator may have a large size (\textit{e.g} a
-    matrix).
-    Therefore, the STL return-by-value semantic is not appropriate. 
+  \item [for\_each, transform, accumulate \cite{Musser:1996:STL}:] the PBB
+    versions of these three algorithms are similar to the STL versions 
+    except that the involved operators (or function object classes) given as 
+    parameters are required to have their return value reference passed as the
+    first parameter of the function in accordance with the memory model 
+	of \linbox. 
+    The STL return-by-value semantic is not appropriate. 
   \end{description} 
   
-  Note that within the incoming C++0X standard, the lambda capability
+  Note that within the emerging C++0x standard, the lambda capability
   of the core language will simplify the use of these operators and
-  therefore of the parallel
-  building blocks.
+  therefore of the parallel building blocks.
 
 %\verb!transform!, etc. 
 
@@ -283,9 +280,9 @@ Computer algebra algorithms have three main characteristics:
 \item Good performance: in many complex or irregular computer algebra
   applications this coarse-grain parallelization of the inner loops of
   the underlying linear algebra is sufficiently refined.
-\item Different implementations of the parallel blocks: this
+\item Multiple implementations of the parallel blocks: this
   abstraction allows for both a programming independent of the
-  parallel model and an evolution of the parallel environment
+  parallel model and a selection of the parallel environment
   depending on the target architecture.
 \end{enumerate}
 
@@ -296,13 +293,13 @@ environments, such as OpenMP
   Kaapi~\cite{inproceedingsgautier.gbp_ktsrsf_07}; using
   both static or dynamic work-stealing
   schedulers~\cite{con-traore.trmgb_08}.
-The current implementation supports both OpenMP and Kaapi.
+The current implementations are built on OpenMP and Kaapi.
 
 \subsection{Accumulate-while and early termination}
 To bound the complexity of many linear algebra problems, one of the
 key idea is to use an accumulation with {\em early termination}.
 
-For instance, this is used in Chinese Remaindering algorithms: the
+For instance, this is used in Chinese Remaindering algorithms. The
 computation is performed modulo a sequence of (co)prime numbers and
 the result is built from a sequence of residues, {\em only while} a
 condition is satisfied~\cite{jgd:2010:crt}. 
@@ -312,18 +309,18 @@ reconstructed) result.
 In order to parallelize such algorithms, we proposed an extension of
 the STL algorithms called \verb+accumulate_while+:
 \begin{description} 
-\item [accumulate\_while:] The algorithm takes an array $v$, an
-  operator $f$, an operator $+$ for the summation, and condition
-  operator.
-  For a sequence $S_k = \sum_{i=0,..,k} f( v[i])$ with 
-  $k \in \{0,N\}$, the algorithm computes and returns $n$ and $S_n$ such that 
-  $S_k, k \leq n$ does satisfy the condition and $S_k, k > N$
-  may not satisfy this condition.
+\item [accumulate\_while:] The algorithm takes an array $v$ of length $N$, a unary
+  operator $f$ to be applied to each array entry, a binary operator $+$ for the accumulation, and a predicate
+  operator (giving the termination condition).
+  Let $S_k = \sum_{i=0,..,k} f( v[i])$ with 
+  $k \in \{0,N\}$, the algorithm computes and returns $n \leq N$ and $S_n$ such that 
+  $S_k, k \leq n$ may not satisfy the predicate and either $n = N$ or $S_n$
+  does satisfy the condition.
 \end{description} 
 
-  This algorithm is used 
+  This algorithm will be used 
   for the early termination Chinese remaindering algorithms of
-  \linbox. A sequential version and parallel versions with OpenMP and
+  \linbox. Though not yet using PBB and accumulate_while, a sequential version and parallel versions with OpenMP and
   Kaapi can be found in the \linbox distributions as 
   \url{linbox/algorithms/cra-domain-*.h}.
 
