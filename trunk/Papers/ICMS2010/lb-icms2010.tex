@@ -74,47 +74,101 @@ efficiency of kernel libraries such as  \texttt{GMP}\footnote{\url{http://gmplib
 \texttt{ATLAS}\footnote{\url{http://math-atlas.sourceforge.net/}} and can be used by general
 purpose computer algebra systems such as \texttt{Sage}\footnote{\url{http://sagemath.org/}} or \texttt{Maple}\footnote{\url{http://www.maplesoft.com/}}. 
 
+We will describe in the remaining of the paper a selection of ideas and
+improvements that were recently introduced for the design of the forthcoming
+major release v2.0.
+
 \section{A lightweight memory management}
 
-\subsection{Call-by-reference}
+%\subsection{Call-by-reference}
 
-Only references as argument (no value returned), first args as return
-values.
+The main objects that require memory allocation in \linbox are base field or
+ring elements, vectors, matrices, and polynomials.
+The memory management for these objects follows the same rules, trying to
+maximize the efficiency in time and space, and consequently requiring some
+efforts by  the programmer. Thus no garbage collection mechanism can be used.
 
-\verb! Matrix & Function( Matrix & result, const XXX& args); !
+The input and output types of most functions are usually template types, and can
+be either basic types, or complicated objects. Consequently, passing arguments
+by copy must be avoided as much as possible: every argument is
+passed as a reference, including the return types. More precisely the
+return value of a function is also the first argument, defined as a non const reference.
 
-example of fields \cite[\S 2.1]{jgd:2002:icms} ?
+\begin{verbatim}
+Matrix & Function( Matrix & result, const XXX& args);
+\end{verbatim}
 
-\subsection{The mother model}
+This convention was already discussed in \cite[\S 2.1]{jgd:2002:icms} for the
+design of fields and rings. This also implies a redefinition of the interface
+for \texttt{stl}-like containers, as discussed in section~\ref{ssec:parallel}.
+
+\subsection{The scope allocation model}
+
+A consequence of the above convention is that the objects returned by a function,
+have to be declared and allocated before the function call. By enforcing this
+practice, we require that the programmer always keep \textit{the handle} on the
+objects that he allocates, and is responsible for their deallocation in the same
+scope as where they were allocated. Although it is rather  restrictive for the
+programmer, it allows to  avoid the expensive use of garbage collection, and reference
+counting.
+
+Note that even if function should not allocate their return value, they are
+still free to resize them if required.
 
 
-The mother model: functions should not allocate their return values
+\begin{paragraph}{Dense Matrix allocations.}
+The objects representing dense matrices require a special care concerning  their
+allocations. Dense matrices are stored as a one dimensional array storing
+elements in the row major format : \texttt{A[i,j] = *(A+i*n+j)}. One need to be
+able to define a submatrix as a view on such an array, without allocating the
+data. Thus a first approach is to define a dense matrix class with a boolean \texttt{\_alloc}
+member, telling whether the matrix owns its data or whether it is a simple  view
+on some other matrix's data. The destructor deallocates the data only if
+\texttt{\_alloc} is \texttt{true}. This can be viewed as a simplified reference
+counting mechanism, where one assumes that the matrix initially allocated is
+always destructed after all of its sub-matrices. This convention is consistent
+with the previous consideration: the allocations and deallocations must always
+occur in the same scope.
 
-\begin{itemize}
-\item more efficient: allocations are limited
-
-\item requires more involvment by the programmer: control of the allocation
-
-\item garbage collection is simplified: reference counting with a single
-boolean, or even better (sic) by two different classes.
-Especially for thread-safety.
-\end{itemize}
+To further improve the efficiency, an alternative is to distinguish two classes:
+one for allocated matrices and the other for sub-matrix views. The genericty of
+template mechanism will allow to use these two types in the same code, without
+duplication. 
+\end{paragraph}
 
 
-\subsection{Rebind of matrices}
+\begin{paragraph}{Rebind of matrices.}
+We illustrate the scope allocation model with the use of rebind functions.
+\linbox makes use of the concept of rebinds adapted from the allocators in the
+STL. In the context of the Chinese remainder algorithm they allow to rebind a
+matrix over a integral domain (\texttt{DenseMatrix<PID\_Integer>}) to a modular
+matrix (\texttt{DenseMatrix<Modular<double> >}).
+\begin{verbatim}
+template <class Domain>
+class DenseMatrix {
+  ... 
+  template<class AnyDomain>
+  struct rebind{ 
+     typedef DenseMatrix <AnyDomain> other;
+     operator ()(other& Ap, const Self_t& A, const AnyDomain& AD){
+       // Performs the modular conversion of A to Ap over AD
+       ...
+     } 
+  }  
+\end{verbatim}
 
-mecanism of the rebind for fields adapted from STL rebind of
-allocators.
+According to the Scope allocation model, the function \texttt{operator()} in
+charge of the initialization of the matrix can not allocate any memory. This has
+to be done at the level where the rebind is called.
 
-Since rebind must not allocate, only references are given (re)
-allocation is done by the caller (and not rebind), rebind only maps
-values from one field to another.
 
 \begin{itemize}
 \item generic homomorphism 
 \verb!e.init( newelt, e.convert( Integer, oldelt) )!
 can be specialized.
 \end{itemize}
+
+\end{paragraph}
 
 \section{Software abstraction layer for parallelism}
 
@@ -127,7 +181,7 @@ In order to separate the domain of expertise we have designed a
 software abstraction layer between computer algebra algorithms
 and parallel implementations, with automatic dynamic scheduling.
 
-\subsection{Parallel building blocks}
+\subsection{Parallel building blocks}\label{ssec:parallel}
 Computer algebra algorithms have three main characteristics:
 \begin{enumerate}
 \item They are complex and require a deep knowledge of the problem in
