@@ -29,10 +29,10 @@
 \urldef\tgemail\url{Thierry.Gautier@inrialpes.fr}
 
 \author{
-J-G. Dumas\inst{1}
-\and T. Gautier\inst{2}
-\and C. Pernet\inst{2}
-\and B. D. Saunders\inst{3}
+Jean-Guillaume Dumas\inst{1}
+\and Thierry Gautier\inst{2}
+\and Cl\'ement Pernet\inst{2}
+\and B. David Saunders\inst{3}
 }
 \authorrunning{J-G. Dumas, T. Gautier, C.
   Pernet, B. D. Saunders}
@@ -41,7 +41,7 @@ Laboratoire J. Kuntzmann, Universit\'e de
 Grenoble. 51, rue des Math\'ematiques, umr CNRS 5224, bp 53X, 
 F38041 Grenoble, France, \jgdemail.
 \and
-Laboratoire LIG, Universit\'e de Grenoble. umr CNRS, 
+Laboratoire LIG, Universit\'e de Grenoble et INRIA. umr CNRS, 
 F38330 Montbonnot, France. \cpemail, \tgemail.
 \and University of Delaware, Computer and
   Information Science Department. 
@@ -68,7 +68,7 @@ and rationals are lifted from modular computations by a Chinese remainder
 algorithm or $p$-adic lifting.
 The design is based on high genericity to allow us to write efficient algorithms independent of the many 
 representations of domains and matrices. As a middleware, the library relies on the
-efficiency of kernel libraries such as  \texttt{GMP}\footnote{\url{gmplib.org,www-ljk.imag.fr/CASYS/LOGICIELS/givaro,www.shoup.net/ntl,math-atlas.sourceforge.net,sagemath.org,www.maplesoft.com}},
+efficiency of kernel libraries such as  \texttt{GMP}\footnote{\url{gmplib.org,www-ljk.imag.fr/CASYS/LOGICIELS/givaro,www.shoup.net/ntl,math-atlas.sourceforge.net,sagemath.org,www.maplesoft.com.}},
 \texttt{Givaro}\footnotemark[4],
 \texttt{NTL}\footnotemark[4],
 \texttt{ATLAS}\footnotemark[4] and can be used by general
@@ -125,14 +125,14 @@ it is in certain cases still free to resize and thus reallocate the free store m
 
 %\begin{paragraph}
 {\em Dense Matrix allocations.}
-The objects representing dense matrices require a special care
-concerning  their allocations. Dense matrices are stored as a one
-dimensional array storing elements in the row major format :
+The objects storing dense matrices require a special care
+concerning their allocations. Dense matrices are represented as a one
+dimensional array storing elements in the row major format:
 \texttt{A[i,j] = *(A+i*n+j)}.  It is important to be 
 able to define a submatrix as a view on such an array, without
 allocating the data.
-For this we propose to distinguish two classes: one for allocated
-matrices and the other for sub-matrix views. The 
+For this we propose to distinguish two classes: one for allocated (via
+constructors) matrices and the other for sub-matrix views. The 
 genericity of  the template mechanism or inheritance will allow to use
 these two types in the same code, without duplication. This allows
 also for an automatic decision about deallocation.
@@ -441,7 +441,8 @@ file                      &  real time   &  user time   &  sys. time  &  real ti
 \end{table}\vspace{-30pt}
 %
 
-{\bf Acknowledgment}
+%{\par\noindent\bf Acknowledgment}\\
+\section*{Acknowledgment}
 We thank the \linbox group and especially Brice Boyer, Pascal Giorgi,
 Erich Kaltofen, Dan Roche, Brian Youse for many useful discussions 
 in particular during the recent \linbox developer meetings in
