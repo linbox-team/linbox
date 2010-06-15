@@ -13,6 +13,8 @@
 \usepackage{url,xspace}
 
 \newcommand{\linbox}{{\sc LinBox}\xspace}
+\newcommand{\accumulatewhile}{ \textbf{accumulate\_until} }
+\newcommand{\Accumulatewhile}{ \textbf{Accumulate\_until} }
 
 \begin{document}
 
@@ -47,10 +49,10 @@ Newark / DE / 19716, USA. \bdsemail.}
 \maketitle
 \section{Introduction}
 As a building block for a wide range of applications, computational exact linear
-algebra has to conciliate both efficiency and genericity. The goal of the 
-\linbox project is to address this problem by designing an efficient general-purpose
+algebra has to conciliate efficiency and genericity. The goal of the 
+\linbox project is to address this problem in the design of an efficient general-purpose
 \texttt{C++} open-source library for exact linear algebra over the integers, the
-rationals and finite fields. 
+rationals, and finite fields. 
 Matrices can be either dense, sparse or black box (i.e. viewed as a linear
 operator, acting on vectors only). The library proposes a set of high level
 linear algebra solutions, such as the rank, the determinant, the solution of a
@@ -64,7 +66,7 @@ BLAS based dense linear algebra techniques of the \texttt{FFLAS}
 library~\cite{DGP:2008:dlaff} for dense matrices. The solutions over the integers
 and rationals are lifted from modular computations by a Chinese remainder
 algorithm or $p$-adic lifting.
-The design is based on high genericity to allow to write efficient algorithms independently from the
+The design is based on high genericity to allow us to write efficient algorithms independent of the many 
 representations of domains and matrices. As a middleware, the library relies on the
 efficiency of kernel libraries such as  \texttt{GMP}\footnote{\url{gmplib.org,www-ljk.imag.fr/CASYS/LOGICIELS/givaro,www.shoup.net/ntl,math-atlas.sourceforge.net,sagemath.org,www.maplesoft.com}},
 \texttt{Givaro}\footnotemark[4],
@@ -73,7 +75,7 @@ efficiency of kernel libraries such as  \texttt{GMP}\footnote{\url{gmplib.org,ww
 purpose computer algebra systems such as \texttt{Sage}\footnotemark[4] or \texttt{Maple}\footnotemark[4].
 
 We describe in this paper a selection of ideas and
-improvements that were recently introduced into the the design of LinBox 
+improvements that were recently introduced into the the design of \linbox
 for the forthcoming 2.0 release.
 
 \section{The lightweight founding scope allocation model}
@@ -102,7 +104,7 @@ section~\ref{ssec:parallel}.
 %
 A consequence of the above convention is that the objects returned by
 a function,
-have to be declared and initialized (in particular, memory allocated) (e.g. via constructors) before the
+have to be declared and initialized (in particular, memory allocated, e.g. via constructors) before the
 function call.
 By enforcing this
 practice, we require that the programmer keep 
@@ -116,7 +118,7 @@ are in play.
 It also allows to avoid the costs of garbage 
 collection or reference counting.
 
-Many LinBox objects involve a handle containing a reference to the free store.
+Many \linbox objects involve a handle containing a reference to the free store.
 Note that even though a function does not allocate the handle itself,
 it is in certain cases still free to resize and thus reallocate the free store memory referenced.
 
@@ -202,7 +204,7 @@ Computer algebra algorithms have three main characteristics:
   software abstraction, called {\em Parallel Building Blocks (PBB)},
   on the STL algorithms (Standard Template Like) principles.
 %
-  Indeed, C++ data structures in \linbox let us to have random access
+  Indeed, C++ data structures in \linbox let us have random access
   iterators over containers which are naturally parallel. 
 % 
   We have already defined several STL-like algorithms and the list
@@ -243,40 +245,39 @@ OpenMP\footnote{\url{openmp.org,threadingbuildingblocks.org}};
 TBB (Thread Building Blocks)
   \footnotemark[7] or
   Kaapi~\cite{inproceedingsgautier.gbp_ktsrsf_07}; using
-  both static or dynamic work-stealing
+  both static and dynamic work-stealing
   schedulers~\cite{con-traore.trmgb_08}.
 The current implementations are built on OpenMP and Kaapi.
 
-\subsection{Accumulate-while and early termination}
+\subsection{\Accumulatewhile and early termination}
 To bound the complexity of many linear algebra problems, one of the
 key idea is to use an accumulation with {\em early termination}.
 
 For instance, this is used in Chinese Remaindering algorithms. The
 computation is performed modulo a sequence of (co)prime numbers and
-the result is built from a sequence of residues, {\em only while} a
+the result is built from a sequence of residues, {\em until} a
 condition is satisfied~\cite{jgd:2010:crt}. 
 The termination of the algorithm depend on the accumulated 
 result.
   
 In order to parallelize such algorithms, we proposed an extension of
-the STL algorithms called \verb+accumulate\_while+:\\
-{\bf accumulate\_while}: the algorithm takes an array $v$ of length $N$, a unary
-  operator $f$ to be applied to each array entry and a specific binary
-  operator for the accumulation.
-  This {\em accumulator} behaves like an in place addition (\verb!+=!) and
-  returns \texttt{true} upon termination.
-  Let $S_k = \sum_{i=0,..,k} f( v[i])$ with 
-  $k \in \{0,N\}$, the algorithm computes and returns $n \leq N$ and
-  $S_n$ such that one accumulation during the computation of $S_n$
-  returned \texttt{true} and either $n = N$ or any new accumulation
-  will return \texttt{true}.
+the STL algorithms called \accumulatewhile.
+The algorithm takes an array $v$ of length $N$, a unary
+operator $f$ to be applied to each array entry and a specific binary
+update operator/predicate for the accumulation.
+This {\em accumulator} with a signature like \verb!bool accum(a, b)! behaves like an in place addition (\verb!a+=b!) and
+returns \texttt{true} to indicate sufficiently many values are accumulated.
+Let $S_k = \sum_{i=0,..,k} f( v[i])$ with 
+$k \in \{0,N\}$.  The algorithm computes and returns $n \leq N$ and
+$S_n$ such that one accumulation during the computation of $S_n$
+returned \texttt{true} or $n = N$.  In indended use, we know any additional accumulation would also return \texttt{true}.
 
-  This algorithm will be used 
-  for the early termination Chinese remaindering algorithms of
-  \linbox. Though not yet using PBB and \texttt{accumulate\_while}, a
-  sequential version and parallel versions with OpenMP and
-  Kaapi can be found in the \linbox distributions as 
-  \url{linbox/algorithms/cra-domain-*.h}.
+This algorithm will be used 
+for the early termination Chinese remaindering algorithms of
+\linbox. Though not yet using PBB and \accumulatewhile, a
+sequential version and parallel versions with OpenMP and
+Kaapi can be found in the \linbox distributions as 
+\url{linbox/algorithms/cra-domain-*.h}.
 
 %\verb!Accumulate-while!, generalization of \cite{jgd:2010:crt},
 %specially adapted to early termination in mathematical software.
@@ -299,7 +300,7 @@ algebra. We used dynamic libraries to exchange allocators for the
 experiments, but one can use them together in the \linbox library if
 needed \cite[\S 7]{kaltofen:2005:memory}.
 %
-Preliminary experiments on the Chinese remaindering {\bf accumulate\_while},
+Preliminary experiments on the Chinese remaindering,
 not the easiest to parallelize, have demonstrated the advantage, in
 our setting, of TCMalloc over the others~\cite{jgd:2010:crt}.
 One of the main reason for that fact is that our problems required
@@ -438,7 +439,8 @@ file                      &  real time   &  user time   &  sys. time  &  real ti
   mechanism.}\label{tab:compilation}
 \end{table}\vspace{-30pt}
 %
-\section*{Acknowledgment}
+
+{\bf Acknowledgment}
 We thank the \linbox group and especially Brice Boyer, Pascal Giorgi,
 Erich Kaltofen, Dan Roche, Brian Youse for many useful discussions 
 in particular during the recent \linbox developer meetings in
