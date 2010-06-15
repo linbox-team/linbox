@@ -12,13 +12,12 @@
 
 \usepackage{url,xspace}
 
-\newcommand{\linboxsp}{{\sc LinBox}\xspace}
-\newcommand{\linbox}{{\sc LinBox}}
+\newcommand{\linbox}{{\sc LinBox}\xspace}
 
 \begin{document}
 
 \mainmatter  
-\title{\linboxsp scope allocation, parallel building blocks and
+\title{\linbox scope allocation, parallel building blocks and
   separate compilation models}
 %\titlerunning{}
 
@@ -50,8 +49,8 @@ Newark / DE / 19716, USA. \bdsemail.}
 \section{Introduction}
 
 As a building block for a wide range of applications, computational exact linear
-algebra has to conciliate both efficiency and genericty. The goal of the 
-\linboxsp project is to address this problem by designing an efficient general-purpose
+algebra has to conciliate both efficiency and genericity. The goal of the 
+\linbox project is to address this problem by designing an efficient general-purpose
 \texttt{C++} open-source library for exact linear algebra over the integers, the
 rationals and finite fields. 
 Matrices can be either dense, sparse or black box (i.e. viewed as a linear
@@ -120,7 +119,7 @@ can be specialized.
 \section{Software abstraction layer for parallelism}
 
 Efficient parallel applications must take into consideration hardware
-characteristics (number of cores, memory hiearchy, ...): it is time
+characteristics (number of cores, memory hierarchy, ...): it is time
 consuming or impossible for a single developer to be able to
 program a high performance computer algebra application, with state of
 the art algorithm, that will exploit all the available parallelism.  
@@ -139,11 +138,11 @@ Computer algebra algorithms have three main characteristics:
   to work generically over several input domains.
 \end{enumerate}
 
-  In the case of \linboxsp algorithms, we have decided to base our
+  In the case of \linbox algorithms, we have decided to base our
   software abstraction, called {\em Parallel Building Blocks (PBB)},
   on the STL algorithms (Standard Template Like) principles.
 
-  Indeed, C++ data structure in \linboxsp let us to have random access
+  Indeed, C++ data structure in \linbox let us to have random access
   iterators over containers which are naturally parallel. 
   
   We have already defined several algorithms STL-like and the list
@@ -155,7 +154,7 @@ Computer algebra algorithms have three main characteristics:
     except that the involved operators (or function class) given in
     parameter are required to have their return value passed by the
     first parameter of the function. 
-    This is mainly due to the memory model of \linboxsp, since objects
+    This is mainly due to the memory model of \linbox, since objects
     returned by these operator may have a large size (\textit{e.g} a
     matrix).
     Therefore, the STL return-by-value semantic is not appropriate. 
@@ -222,7 +221,7 @@ the STL algorithms called \verb+accumulate_while+:
   This algorithm is used 
   for the early termination Chinese remaindering algorithms of
   \linbox. A sequential version and parallel versions with OpenMP and
-  Kaapi can be found in the \linboxsp distributions as 
+  Kaapi can be found in the \linbox distributions as 
   \url{linbox/algorithms/cra-domain-*.h}.
 
 %\verb!Accumulate-while!, generalization of \cite{jgd:2010:crt},
@@ -232,16 +231,18 @@ the STL algorithms called \verb+accumulate_while+:
 
 \subsection{Memory contention and thread safe allocation}
 Many computer algebra programs allocate dynamic memory for the
-intermediate computations. Several experiments with \linboxsp
+intermediate computations. Several experiments with \linbox
 algorithms, on multicore architectures, have shown that these
 allocations are quite often the bottleneck in the performance.
 
-An analysis of the memory pattern and experimentations with three well
+An analysis of the memory pattern and experiments with three well
 known memory allocators 
 (ptmalloc, Hoard and TCMalloc from Google Perf. Tools~\cite{tcmalloc})
-have been conducted. The goal was to decide wether the parallel
+have been conducted. The goal was to decide whether the parallel
 building blocks model was suitable to high-performance exact linear
-algebra.
+algebra. We used dynamic libraries to exchange allocators for the
+experiments, but one can use them together in the \linbox library if
+needed \cite[\S 7]{kaltofen:2005:memory}.
 
 Preliminary experiments on the Chinese remaindering {\bf accumulate\_while},
 not the easiest to parallelize, have demonstrated the advantage, in
@@ -251,7 +252,7 @@ many temporary allocations. This fits precisely the thread safe caching
 mechanism of TCMalloc.
 
 \section{Automated Generic Separate compilation}
-\linboxsp is developped with several levels of genericity:
+\linbox is developed with several levels of genericity:
 \begin{itemize}
 \item Genericity with respect to the domain of the coefficients;
 \item Genericity with respect to the data structure of the matrices;
@@ -260,8 +261,8 @@ mechanism of TCMalloc.
 \end{itemize}
 While efficient in terms of capabilities and code reusability, this
 can lengthen the compilation time and generate large executable files.\\
-For the management of code bloat \linboxsp proposes an ``archetype
-mecanism'' which enable, at the user latitude, to switch to a
+For the management of code bloat \linbox proposes an ``archetype
+mechanism'' which enable, at the user latitude, to switch to a
 compilation against abstract classes \cite[\S 2.1]{jgd:2002:icms}.\\
 This can reduce the efficiency of the library. Therefore, we propose
 here a way to provide a generic separate compilation. This will not
@@ -274,8 +275,9 @@ Our idea is to automatize the technique of
 \cite{Erlingsson:1996:issac} which combines compile-time instantiation
 and link-time instantiation, while using template instantiation
 instead of void pointers.\\
-The mecanism we propose is independent of the desired method, candidate
-for separate compilation and is explained on algorithm \ref{alg:sep}.
+The mechanism we propose is independent of the desired generic method,
+candidate
+for separate compilation, and is explained on algorithm \ref{alg:sep}.
 \begin{algorithm}[ht]
 \caption{C++ Automatic separate compilation wrapping}\label{alg:sep}
 \begin{algorithmic}[1]
@@ -314,61 +316,20 @@ matrix over the finite field with two elements,
 \caption{Separate compilation of a rank specialization}\label{fig:sep}
 \end{figure}
 
-We show on table \ref{tab:compilation} the gains, in term of compilation time,
-obtained on two examples of \linbox: the \texttt{examples/rank.C} and
-\texttt{examples/solve.C} algorithms. Indeed without any specification
-the code
-has to be generic and to invoke several specializations depending on
-run-time discovered properties of thei input. For instance the
-\texttt{solve.C} example requires at least 6 specializations for sparse
-matrices over the Integers or over a prime field, with a sparse
-elimination, or an iterative method, or a dense method if the matrix
-is small, or an hybrid method...\\ 
-\begin{table}[ht]\center
-\begin{tabular}{|l||r|r|r||r|r|r|}
-\hline
-file                      &  real time   &  user time   &  sys. time  &  real time   &  user time   &  sys. time \\
-\hline
- & \multicolumn{3}{|c||}{Rank}& \multicolumn{3}{|c|}{Solve}\\
-\hline
-\texttt{instantiate.o} & 143.43s & 142.47s & 0.90s & 171.62s & 170.42s & 1.12s\\
-\texttt{separate.o} & \bf 18.58s & \bf 18.26s & \bf 0.30s & \bf 23.13s & \bf 22.80s & \bf 0.32s\\
-\texttt{separate} & 0.80s & 0.64s & 0.15s & 0.85s & 0.70s & 0.14s\\
-\hline
-\texttt{Sep. comp.} & 162.81s & 161.37s & 1.35s & 195.60s & 193.92s & 1.58s\\
-\hline
-\texttt{Full comp.} & 162.02s & 160.47s & 1.21s & 191.47s & 189.52s & 1.40s\\
-\hline
-\hline
-\texttt{speed-up} & 8.4 & 8.5 & 2.7 & 8.0 & 8.1 & 3.0s\\
-\hline
-\end{tabular} 
-\caption{linbox/examples/\{rank,solve\}.C compilation time on an AMD
-  Athlon 3600+, 1.9GHz, with gcc 4.5 -O2. \texttt{instantiate.o} corresponds to the separately compiled
-  instantiatiations (e.g. densegf2rank in figure \ref{fig:sep});
-  \texttt{separate.o} corresponds to the user interface and generic
-  implementation compilation; \texttt{separate} corresponds to the
-  linking of both \texttt{.o} and the library.}\label{tab:compilation}
-\end{table}
-
+%
 \begin{remark} Algorithm \ref{alg:sep} has been simplified for the
   sake of clarity. To enable a more user-friendly interface and to
-  leave it unchanged, one has to do two additional tasks:
-\begin{enumerate}
-\item Add a generic default implementation to \texttt{func\_separate}:
- with a single line calling the orginal function \texttt{func}. This
- enables to have a unified interface, even for non specialized class.
-\item Rename the original function and all its
+  leave it unchanged, one can rename the original function and all its
   original specializations \texttt{func\_original}; then rename also
-  the new interface simply \texttt{func}. This allows to keep the same
-  interface.
-\end{enumerate}
+  the new interface (\texttt{func\_separate}) simply
+  \texttt{func}. This allows to keep the legacy
+  interface unchanged. 
 \end{remark}
 
 \begin{remark} 
 With the classical inline compiler optimizations, the overhead of
 calling \texttt{rank\_separate} is limited to single supplementary
-function call. Indeed all the one line additionnal methods will be
+function call. Indeed all the one line additional methods will be
 automatically inlined, except, of course, the one calling the separately
 compiled code.
 If this overhead is nonetheless too expensive, it suffices to enclose all the non generic specializations of
@@ -378,12 +339,51 @@ compile or not can be taken according to the definition of this
 macro. 
 \end{remark}
 
-\section*{Acknowledgment}
-We thank the \linboxsp group and especially Brice Boyer, Pascal Giorgi,
-Erich Kaltofen, Dan Roche, Brian Youse for many useful discussions 
-in particular during the recent \linboxsp developer meetings in
-Delaware and Dublin.
 
+We show on table \ref{tab:compilation} the gains, in term of compilation time,
+obtained on two examples of \linbox: the \texttt{examples/rank.C} and
+\texttt{examples/solve.C} algorithms. Indeed without any specification
+the code
+has to be generic and to invoke several specializations depending on
+run-time discovered properties of the input. For instance the
+\texttt{solve.C} example requires at least 6 specializations for sparse
+matrices over the Integers or over a prime field, with a sparse
+elimination, or an iterative method, or a dense method if the matrix
+is small, or an hybrid method...
+\begin{table}[ht]\center
+\begin{tabular}{|l||r|r|r||r|r|r|}
+\hline
+file                      &  real time   &  user time   &  sys. time  &  real time   &  user time   &  sys. time \\
+\hline
+ & \multicolumn{3}{|c||}{Rank}& \multicolumn{3}{|c|}{Solve}\\
+\hline
+\texttt{instantiate.o} & 143.43s & 142.47s & 0.90s & 171.62s & 170.42s & 1.12s\\
+\texttt{\{rank,solve\}.o} & \bf 18.58s & \bf 18.26s & \bf 0.30s & \bf 23.13s & \bf 22.80s & \bf 0.32s\\
+\texttt{link} & 0.80s & 0.64s & 0.15s & 0.85s & 0.70s & 0.14s\\
+\hline
+\texttt{Sep. comp. total} & 162.81s & 161.37s & 1.35s & 195.60s & 193.92s & 1.58s\\
+\hline
+\texttt{Full comp.} & 162.02s & 160.47s & 1.21s & 191.47s & 189.52s & 1.40s\\
+\hline
+\hline
+\texttt{speed-up} & 8.4 & 8.5 & 2.7 & 8.0 & 8.1 & 3.0s\\
+\hline
+\end{tabular} 
+\caption{linbox/examples/\{rank,solve\}.C compilation time on an AMD
+  Athlon 3600+, 1.9GHz, with gcc 4.5 -O2. \texttt{instantiate.o} corresponds to the separately compiled
+  instantiations (e.g. densegf2rank in figure \ref{fig:sep});
+  \texttt{\{rank,solve\}.o} corresponds to the user interface and generic
+  implementation compilation; \texttt{link} corresponds to the
+  linking of both \texttt{.o} and the library; \texttt{Full comp.}
+  corresponds to the compilation without the separate
+  mechanism.}\label{tab:compilation}
+\end{table}
+
+\section*{Acknowledgment}
+We thank the \linbox group and especially Brice Boyer, Pascal Giorgi,
+Erich Kaltofen, Dan Roche, Brian Youse for many useful discussions 
+in particular during the recent \linbox developer meetings in
+Delaware and Dublin.
 
 \bibliographystyle{plain}
 \bibliography{icms} 
