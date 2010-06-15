@@ -191,12 +191,12 @@ Computer algebra algorithms have three main characteristics:
 %\begin{enumerate}
 %\item
 1) they are complex and require a deep knowledge of the problem in
-  order to the most efficient sequential algorithm;
+  order to obtain the most efficient sequential algorithm;
 %\item
 2) they may be highly irregular. This enforces a runtime use of
   load balancing algorithms;
 %\item
-3) they are generic in the sense that it they are usually designed
+3) they are generic in the sense that they are usually designed
   to work over several algebraic domains.
 %\end{enumerate}
 
@@ -212,15 +212,15 @@ Computer algebra algorithms have three main characteristics:
   {\bf for\_each, transform, accumulate
     \footnote{\url{www.sgi.com/tech/stl}}}: the PBB
   versions of these algorithms are similar to the STL versions 
-  except that the involved operators (or function object classes) given as 
-  parameters are required to have their return value reference passed as the
-  first parameter of the function in accordance with the memory model 
+  except that the involved operators (or function object classes), given as 
+  parameters, are required to have their return value reference passed as the
+  first parameter of the function. This is in accordance with the memory model 
   of \linbox. 
   The STL return-by-value semantic is not appropriate. 
 %\end{description} 
-  \footnote{Within the emerging C++0x standard, the lambda
-    capability of the core language will simplify the use of these
-    operators and therefore of the parallel building blocks.}
+%   \footnote{Within the emerging C++0x standard, the lambda
+%     capability of the core language will simplify the use of these
+%     operators and therefore of the parallel building blocks.}
 %\verb!transform!, etc. 
 
 %\begin{itemize}
@@ -231,23 +231,24 @@ Computer algebra algorithms have three main characteristics:
   
   The fundamental idea of PBB is that at the computer algebra
   level, the parallelization of all the loops and more generally of all
-  the STL-like algorithms will already enable good performance and easy switching among multiple implementations.
-Regarding performance, this parallelization of the inner loops of
-the underlying linear algebra is sufficient in many cases.
-Regarding implementations, this
-abstraction provides for programming independent of the
-parallel model with selection of the parallel environment
-depending on the target architecture.
-The parallel blocks can be implemented using many different parallel
-environments, such as
-OpenMP\footnote{\url{openmp.org,threadingbuildingblocks.org}}; 
-%\cite{Chapman:2007:openmp}
-TBB (Thread Building Blocks)
+  the STL-like algorithms will already enable good performance and
+  easy switching among multiple implementations.
+  Regarding performance, this parallelization of the inner loops of
+  the underlying linear algebra is sufficient in many cases.
+  Regarding implementations, this
+  abstraction provides for programming independent of the
+  parallel model with selection of the parallel environment
+  depending on the target architecture.
+  The parallel blocks can be implemented using many different parallel
+  environments, such as
+  OpenMP\footnote{\url{openmp.org,threadingbuildingblocks.org}}; 
+  % \cite{Chapman:2007:openmp}
+  TBB (Thread Building Blocks)
   \footnotemark[7] or
   Kaapi~\cite{inproceedingsgautier.gbp_ktsrsf_07}; using
   both static and dynamic work-stealing
   schedulers~\cite{con-traore.trmgb_08}.
-The current implementations are built on OpenMP and Kaapi.
+  The current implementations are built on OpenMP and Kaapi.
 
 \subsection{\Accumulatewhile and early termination}
 To bound the complexity of many linear algebra problems, one of the
@@ -257,7 +258,7 @@ For instance, this is used in Chinese Remaindering algorithms. The
 computation is performed modulo a sequence of (co)prime numbers and
 the result is built from a sequence of residues, {\em until} a
 condition is satisfied~\cite{jgd:2010:crt}. 
-The termination of the algorithm depend on the accumulated 
+The termination of the algorithm depends on the accumulated 
 result.
   
 In order to parallelize such algorithms, we proposed an extension of
@@ -300,7 +301,7 @@ algebra. We used dynamic libraries to exchange allocators for the
 experiments, but one can use them together in the \linbox library if
 needed \cite[\S 7]{kaltofen:2005:memory}.
 %
-Preliminary experiments on the Chinese remaindering,
+Preliminary experiments on early terminated Chinese remaindering,
 not the easiest to parallelize, have demonstrated the advantage, in
 our setting, of TCMalloc over the others~\cite{jgd:2010:crt}.
 One of the main reason for that fact is that our problems required
