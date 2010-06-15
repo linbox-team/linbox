@@ -17,13 +17,13 @@
 \begin{document}
 
 \mainmatter  
-\title{\linbox scope allocation, parallel building blocks and
-  separate compilation models}
-\titlerunning{\linbox memory and parallel models}
+\title{\linbox founding scope allocation, parallel building blocks, and
+  separate compilation}
+\titlerunning{\linbox memory, parallelism, compilation models}
 
 \urldef\jgdemail\url{Jean-Guillaume.Dumas@imag.fr}
 \urldef\cpemail\url{Clement.Pernet@imag.fr}
-\urldef\bdsemail\url{saunders@cis.udel.edu}
+\urldef\bdsemail\url{saunders@udel.edu}
 \urldef\tgemail\url{Thierry.Gautier@inrialpes.fr}
 
 \author{
@@ -76,62 +76,65 @@ efficiency of kernel libraries such as  \texttt{GMP}\footnote{\url{http://gmplib
 \texttt{ATLAS}\footnote{\url{http://math-atlas.sourceforge.net/}} and can be used by general
 purpose computer algebra systems such as \texttt{Sage}\footnote{\url{http://sagemath.org/}} or \texttt{Maple}\footnote{\url{http://www.maplesoft.com/}}. 
 
-We will describe in the remaining of the paper a selection of ideas and
-improvements that were recently introduced for the design of the forthcoming
-major release v2.0.
+We describe in this paper a selection of ideas and
+improvements that were recently introduced into the the design of LinBox 
+for the forthcoming major release v2.0.
 
-\section{A lightweight memory management}
+\section{A lightweight memory management model}
 
 %\subsection{Call-by-reference}
 
 The main objects that require memory allocation in \linbox are base field or
 ring elements, vectors, matrices, and polynomials.
-The memory management for these objects follows the same rules, trying to
-maximize the efficiency in time and space, and consequently requiring some
-efforts by  the programmer. Thus no external garbage collection
-mechanism is needed.
+The memory management for all of these object types follows the same rules, organized to
+maximize efficiency in time and space, and consequently requiring some
+efforts by  the programmer. In particular no external garbage collection
+mechanism is used.
 
 The input and output types of most functions are usually template
 types, and can be either basic types, or complicated
-objects. Consequently, passing arguments by copy must be avoided as
-much as possible: every argument is passed as a reference, including
+objects. Consequently, passing arguments by value (copy) must be avoided as
+much as possible. Every argument is passed as a reference, including
 the return types. More precisely the return value of a function is
 also the first argument, defined as a non const reference. 
 
 \begin{verbatim}
-Matrix & Function( Matrix & result, const XXX& args);
+Matrix & someFunction( Matrix & result, const XXX& args);
 \end{verbatim}
 
 This convention was already presented in \cite[\S 2.1]{jgd:2002:icms} for the
-design of fields and rings. This also implies a redefinition of the interface
+design of field and ring arithmetic. It does require a redefinition of the interface
 for some \texttt{stl}-like operators, as discussed in
 section~\ref{ssec:parallel}.
 
-\subsection{The scope allocation model}
+\subsection{The founding scope allocation model}
 
 A consequence of the above convention is that the objects returned by
 a function,
-have to be declared and allocated (e.g. via constructors) before the
+have to be declared and initialized (in particular, memory allocated) (e.g. via constructors) before the
 function call.
 By enforcing this
-practice, we require that the programmer always keep 
+practice, we require that the programmer keep 
 \textit{the handle} on the
-objects that he allocates. Moreover, he is responsible for their
+objects that he allocates until all uses of the object and it's subobjects are completed. Moreover, he is responsible for object 
 deallocation in the same 
-scope as where they were allocated. 
-Although it is rather  restrictive for the
-programmer, it allows to avoid the expensive use of any garbage
-collection, not even reference counting.
+scope where it was allocated. 
+This restricts some convenient programming practices, but provides precise control of memory usage.
+This is particularly important when large, memory filling, matrices
+are in play.
+It also allows to avoid the costs of garbage 
+collection or reference counting.
 
-Note that even if the function should not allocate their return value,
-they are in some cases still free to resize them.
+Many LinBox objects involve a handle containing a reference to the free store.
+Note that even though a function does not allocate the return value handle,
+it is in some cases still free to resize and thus reallocate the free store memory referenced.
 
 
 \begin{paragraph}{Dense Matrix allocations.}
 The objects representing dense matrices require a special care concerning  their
 allocations. Dense matrices are stored as a one dimensional array storing
-elements in the row major format : \texttt{A[i,j] = *(A+i*n+j)}. One
-need to be 
+elements in the row major format : \texttt{A[i,j] = *(A+i*n+j)}. It is important
+to be 
 able to define a submatrix as a view on such an array, without allocating the
 data. Thus a first approach is to define a dense matrix class with a
 boolean \texttt{\_alloc} 
@@ -142,7 +145,7 @@ reference
 counting mechanism, where one assumes that the matrix initially allocated is
 always destructed after all of its sub-matrices. This convention is consistent
 with the previous consideration: the allocations and deallocations must always
-occur in the same scope.
+occur in the founding scope.
 
 To further improve the efficiency, an alternative is to distinguish
 two classes: 
@@ -153,16 +156,27 @@ genericty of
  thread-safety mechanism on the \texttt{\_alloc} 
 member are not required anymore.
 \end{paragraph}
-
+% It's clear we haven't resolved this!
+% I would argue that the founding scope model (mother model) implies that 
+% neither the alloc variable nor a 2 classes system is required.  
+% The programmer knows whether a matrix is created as a submatrix 
+% or as an allocating instance by what constructors or other initializers 
+% she uses.  Thus she knows which require care to deallocate in the same scope. 
+% What she doesn't necessarily get is automatic decision about delete 
+% in the destructor, may have to call an explicit "end of use" function 
+% to get the delete.  
+% So: 1) 2 class system requires an extra explicit declaration of base object.
+%	  2) alternative is to require programmer to make explicit "end of use" call on base (allocating) objects.
+%      3) alloc allows to require neither of the programmer.
 
 \begin{paragraph}{Rebind of matrices.}
-We illustrate the scope allocation model with the use of rebind
+We illustrate the founding scope allocation model with the use of rebind
 functions adapted from the allocators in the STL.
 \linbox makes use of the concept of rebinds for the mapping of data
 structures between different coefficient domains.
-For instance, in the context of the Chinese remainder algorithm they
-allow to rebind a matrix over an integral domain
-(\texttt{DenseMatrix<PID\_Integer>}) to a modular matrix
+For instance, in the context of the Chinese remainder algorithm rebinds
+allow to map a matrix over the integers of type, say,
+(\texttt{DenseMatrix<PID\_Integer>}) to a modular matrix of type, say,
 (\texttt{DenseMatrix<Modular<double> >}).
 \begin{verbatim}
 template <class Domain>
@@ -172,16 +186,17 @@ class DenseMatrix {
   template<class AnyDomain>
   struct rebind{ 
      typedef DenseMatrix <AnyDomain> other;
-     operator ()(other& Ap, const Self_t& A, const AnyDomain& AD){
-       // Performs the modular conversion of A to Ap over AD
+     operator ()(other& Ap, const Self_t& A, const AnyDomain& D){
+       // Performs the modular conversion of A to Ap over D
        ...
      } 
-  }  
+  };  
+}
 \end{verbatim}
 
-According to the Scope allocation model, the function
-\texttt{operator()} in charge of the initialization of the matrix can
-not allocate any memory. This has to be done at the level where the
+According to the founding scope allocation model, the function
+\texttt{operator()} in charge of the initialization of the matrix cannot 
+allocate any memory. This has to be done at the level where the
 rebind is called. This also requires a modification of the rebind
 operator interface of the STL: the new object is passed by reference.
 
@@ -197,23 +212,23 @@ Moreover, when natural convertions exists between domains's
 ...) this can be directly bypassed by a specilization of \texttt{Hom}.
 \end{paragraph}
 
-Overall, the scope allocation model is quite natural (the caller is
-sole responsible for the physical construction/destruction) and very
-efficient: memory is allocated a minimal number of time and
+Overall, the founding scope allocation model is quite natural (the caller is
+solely responsible for the physical construction/destruction) and very
+efficient: memory is allocated a minimal number of times and
 automatically freed by the destructor mechanism. Moreover, thread
-safety is also facilitated: memory is handled within the scope of the
-caller, and thus by the allocating thread.
+safety is facilitated: memory is handled within the scope of the
+caller, and thus by the allocating thread. % I don't buy this last sentence.
 
 \section{Software abstraction layer for parallelism}
 
 Efficient parallel applications must take into consideration hardware
-characteristics (number of cores, memory hierarchy, ...): it is time
-consuming or impossible for a single developer to be able to
+characteristics (number of cores, memory hierarchy, etc.). It is time
+consuming or impossible for a single developer to 
 program a high performance computer algebra application, with state of
-the art algorithm, that will exploit all the available parallelism.  
-In order to separate the domain of expertise we have designed a
+the art algorithms, while exploiting all the available parallelism.  
+In order to separate the domains of expertise we have designed a
 software abstraction layer between computer algebra algorithms
-and parallel implementations, with automatic dynamic scheduling.
+and parallel implementations which may employ automatic dynamic scheduling.
 
 \subsection{Parallel building blocks}\label{ssec:parallel}
 Computer algebra algorithms have three main characteristics:
