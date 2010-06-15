@@ -310,17 +310,21 @@ In order to parallelize such algorithms, we proposed an extension of
 the STL algorithms called \verb+accumulate_while+:
 \begin{description} 
 \item [accumulate\_while:] The algorithm takes an array $v$ of length $N$, a unary
-  operator $f$ to be applied to each array entry, a binary operator $+$ for the accumulation, and a predicate
-  operator (giving the termination condition).
+  operator $f$ to be applied to each array entry and a specific binary
+  operator for the accumulation.
+  This {\em accumulator} behaves like an in place addition (\verb!+=!) and
+  returns \texttt{true} upon termination.
   Let $S_k = \sum_{i=0,..,k} f( v[i])$ with 
-  $k \in \{0,N\}$, the algorithm computes and returns $n \leq N$ and $S_n$ such that 
-  $S_k, k \leq n$ may not satisfy the predicate and either $n = N$ or $S_n$
-  does satisfy the condition.
+  $k \in \{0,N\}$, the algorithm computes and returns $n \leq N$ and
+  $S_n$ such that one accumulation during the computation of $S_n$
+  returned \texttt{true} and either $n = N$ or any new accumulation
+  will return \texttt{true}.
 \end{description} 
 
   This algorithm will be used 
   for the early termination Chinese remaindering algorithms of
-  \linbox. Though not yet using PBB and accumulate_while, a sequential version and parallel versions with OpenMP and
+  \linbox. Though not yet using PBB and \texttt{accumulate\_while}, a
+  sequential version and parallel versions with OpenMP and
   Kaapi can be found in the \linbox distributions as 
   \url{linbox/algorithms/cra-domain-*.h}.
 
