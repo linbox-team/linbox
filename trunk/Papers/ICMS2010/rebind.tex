@@ -1,0 +1,47 @@
+%\begin{paragraph}
+{\em Rebind of matrices.}
+We illustrate the founding scope allocation model with the use of rebind
+functions adapted from the allocators in the STL.
+\linbox makes use of the concept of rebinds for the mapping of data
+structures between different coefficient domains.
+For instance, in the context of the Chinese remainder algorithm rebinds
+allow to map a matrix over the integers of type, say,
+(\texttt{DenseMatrix<PID\_Integer>}) to a modular matrix of type, say,
+\\(\texttt{DenseMatrix<Modular<double> >}).
+\begin{verbatim}
+template <class Domain> class DenseMatrix {
+  typedef DenseMatrix<Domain> Self_t;
+  ... 
+  template<class AnyDomain> struct rebind{ 
+     typedef DenseMatrix <AnyDomain> other;
+     operator ()(other& Ap, const Self_t& A, const AnyDomain& D){
+       // Performs the modular conversion of A to Ap over D
+       ...
+     } 
+  };  
+}
+\end{verbatim}
+According to the founding scope allocation model, the function
+\texttt{operator()} in charge of the initialization of the matrix cannot 
+allocate any memory. This has to be done at the level where the
+rebind is called. This also requires a modification of the rebind
+operator interface of the STL: the new object is passed by reference.
+
+In \linbox, these binder adaptors are enclosed
+within many data structures and make use of a generic
+converter, named \texttt{Hom} and found in \url{linbox/field/hom.h}.
+\texttt{Hom} can generically use the \linbox domain's canonical
+conversion methods methods \url{init} and \url{convert} from/to the \linbox
+Integer type: \texttt{Domain1} $\rightarrow$ \texttt{Integer}
+$\rightarrow$ \texttt{Domain2}. 
+Moreover, when natural, efficient conversions exists between domains
+(e.g. different representations of the same field or one ring embedded in another), generic \texttt{Hom} can be directly bypassed by a specialization of \texttt{Hom}.
+%\end{paragraph}
+
+Overall, the founding scope allocation model is quite natural (the caller is
+solely responsible for the physical construction/destruction) and very
+efficient: memory is allocated a minimal number of times and
+automatically freed by the destructor mechanism. Moreover, thread
+safety is facilitated: memory is handled within the scope of the
+caller, and thus by the allocating thread. % I don't buy this last sentence.
+
