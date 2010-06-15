@@ -27,14 +27,13 @@
 \urldef\tgemail\url{Thierry.Gautier@inrialpes.fr}
 
 \author{
-Jean-Guillaume Dumas\inst{1}
-\and Thierry Gautier\inst{2}
-\and Cl\'ement Pernet\inst{2}
-\and B. David Saunders\inst{3}
+J-G. Dumas\inst{1}
+\and T. Gautier\inst{2}
+\and C. Pernet\inst{2}
+\and B. D. Saunders\inst{3}
 }
 \authorrunning{J-G. Dumas, T. Gautier, C.
   Pernet, B. D. Saunders}
-
 \institute{
 Laboratoire J. Kuntzmann, Universit\'e de
 Grenoble. 51, rue des Math\'ematiques, umr CNRS 5224, bp 53X, 
@@ -45,11 +44,8 @@ F38330 Montbonnot, France. \cpemail, \tgemail.
 \and University of Delaware, Computer and
   Information Science Department. 
 Newark / DE / 19716, USA. \bdsemail.}
-
 \maketitle
-
 \section{Introduction}
-
 As a building block for a wide range of applications, computational exact linear
 algebra has to conciliate both efficiency and genericity. The goal of the 
 \linbox project is to address this problem by designing an efficient general-purpose
@@ -70,18 +66,17 @@ and rationals are lifted from modular computations by a Chinese remainder
 algorithm or $p$-adic lifting.
 The design is based on high genericity to allow to write efficient algorithms independently from the
 representations of domains and matrices. As a middleware, the library relies on the
-efficiency of kernel libraries such as  \texttt{GMP}\footnote{\url{http://gmplib.org/}},
-\texttt{Givaro}\footnote{\url{http://www-ljk.imag.fr/CASYS/LOGICIELS/givaro/}},
-\texttt{NTL}\footnote{\url{http://www.shoup.net/ntl/}},
-\texttt{ATLAS}\footnote{\url{http://math-atlas.sourceforge.net/}} and can be used by general
-purpose computer algebra systems such as \texttt{Sage}\footnote{\url{http://sagemath.org/}} or \texttt{Maple}\footnote{\url{http://www.maplesoft.com/}}. 
+efficiency of kernel libraries such as  \texttt{GMP}\footnote{\url{gmplib.org,www-ljk.imag.fr/CASYS/LOGICIELS/givaro,www.shoup.net/ntl,math-atlas.sourceforge.net,sagemath.org,www.maplesoft.com}},
+\texttt{Givaro}\footnotemark[4],
+\texttt{NTL}\footnotemark[4],
+\texttt{ATLAS}\footnotemark[4] and can be used by general
+purpose computer algebra systems such as \texttt{Sage}\footnotemark[4] or \texttt{Maple}\footnotemark[4].
 
 We describe in this paper a selection of ideas and
 improvements that were recently introduced into the the design of LinBox 
-for the forthcoming major release v2.0.
+for the forthcoming 2.0 release.
 
-\section{A lightweight memory management model}
-
+\section{The lightweight founding scope allocation model}
 %\subsection{Call-by-reference}
 
 The main objects that require memory allocation in \linbox are base field or
@@ -97,18 +92,14 @@ objects. Consequently, passing arguments by value (copy) must be avoided as
 much as possible. Every argument is passed as a reference, including
 the return types. More precisely the return value of a function is
 also the first argument, defined as a non const reference. 
-
 \begin{verbatim}
 Matrix & someFunction( Matrix & result, const XXX& args);
 \end{verbatim}
-
 This convention was already presented in \cite[\S 2.1]{jgd:2002:icms} for the
 design of field and ring arithmetic. It does require a redefinition of the interface
 for some \texttt{stl}-like operators, as discussed in
 section~\ref{ssec:parallel}.
-
-\subsection{The founding scope allocation model}
-
+%
 A consequence of the above convention is that the objects returned by
 a function,
 have to be declared and initialized (in particular, memory allocated) (e.g. via constructors) before the
@@ -132,30 +123,41 @@ it is in certain cases still free to resize and thus reallocate the free store m
 
 %\begin{paragraph}
 {\em Dense Matrix allocations.}
-The objects representing dense matrices require a special care concerning  their
-allocations. Dense matrices are stored as a one dimensional array storing
-elements in the row major format : \texttt{A[i,j] = *(A+i*n+j)}. It is important
-to be 
-able to define a submatrix as a view on such an array, without allocating the
-data. Thus a first approach is to define a dense matrix class with a
-boolean \texttt{\_alloc} 
-member, telling whether the matrix owns its data or whether it is a simple view
-on some other matrix's data. The destructor deallocates the data only if
-\texttt{\_alloc} is \texttt{true}. This can be viewed as a simplified
-reference 
-counting mechanism, where one assumes that the matrix initially allocated is
-always destructed after all of its sub-matrices. This convention is consistent
-with the previous consideration: the allocations and deallocations must always
-occur in the founding scope.
+The objects representing dense matrices require a special care
+concerning  their allocations. Dense matrices are stored as a one
+dimensional array storing elements in the row major format :
+\texttt{A[i,j] = *(A+i*n+j)}.  It is important to be 
+able to define a submatrix as a view on such an array, without
+allocating the data.
+For this we propose to distinguish two classes: one for allocated
+matrices and the other for sub-matrix views. The 
+genericity of  the template mechanism or inheritance will allow to use
+these two types in the same code, without duplication. This allows
+also for an automatic decision about deallocation.
+Other solutions includes reference counting and explicit "end of use"
+functions.
 
-To further improve the efficiency, an alternative is to distinguish
-two classes: 
-one for allocated matrices and the other for sub-matrix views. The
-genericity of 
- the template mechanism or inheritance will allow to use these two
- types in the same code, without duplication. Furthermore,
- thread-safety mechanism on the \texttt{\_alloc} 
-member are not required anymore.
+% Thus a first approach is to define a dense matrix class with a
+% boolean \texttt{\_alloc} 
+% member, telling whether the matrix owns its data or whether it is a
+% simple view 
+% on some other matrix's data. The destructor deallocates the data only if
+% \texttt{\_alloc} is \texttt{true}. This can be viewed as a simplified
+% reference counting mechanism, where one assumes that the matrix
+% initially allocated is always destructed after all of its
+% sub-matrices. This convention is consistent with the previous
+% consideration: the allocations and deallocations must always occur in
+% the founding scope.
+
+% To further improve the efficiency, an alternative is to distinguish
+% two classes: 
+% one for allocated matrices and the other for sub-matrix views. The
+% genericity of 
+%  the template mechanism or inheritance will allow to use these two
+%  types in the same code, without duplication. Furthermore,
+%  thread-safety mechanism on the \texttt{\_alloc} 
+% member are not required anymore.
+
 % It's clear we haven't resolved this!
 % I would argue that the founding scope model (mother model) implies that 
 % neither the alloc variable nor a 2 classes system is required.  
@@ -170,53 +172,7 @@ member are not required anymore.
 %      3) alloc allows to require neither of the programmer.
 %\end{paragraph}
 
-%\begin{paragraph}
-{\em Rebind of matrices.}
-We illustrate the founding scope allocation model with the use of rebind
-functions adapted from the allocators in the STL.
-\linbox makes use of the concept of rebinds for the mapping of data
-structures between different coefficient domains.
-For instance, in the context of the Chinese remainder algorithm rebinds
-allow to map a matrix over the integers of type, say,
-(\texttt{DenseMatrix<PID\_Integer>}) to a modular matrix of type, say,
-\\(\texttt{DenseMatrix<Modular<double> >}).
-\begin{verbatim}
-template <class Domain> class DenseMatrix {
-  typedef DenseMatrix<Domain> Self_t;
-  ... 
-  template<class AnyDomain> struct rebind{ 
-     typedef DenseMatrix <AnyDomain> other;
-     operator ()(other& Ap, const Self_t& A, const AnyDomain& D){
-       // Performs the modular conversion of A to Ap over D
-       ...
-     } 
-  };  
-}
-\end{verbatim}
-According to the founding scope allocation model, the function
-\texttt{operator()} in charge of the initialization of the matrix cannot 
-allocate any memory. This has to be done at the level where the
-rebind is called. This also requires a modification of the rebind
-operator interface of the STL: the new object is passed by reference.
-
-In \linbox, these binder adaptors are enclosed
-within many data structures and make use of a generic
-converter, named \texttt{Hom} and found in \url{linbox/field/hom.h}.
-\texttt{Hom} can generically use the \linbox domain's canonical
-conversion methods methods \url{init} and \url{convert} from/to the \linbox
-Integer type: \texttt{Domain1} $\rightarrow$ \texttt{Integer}
-$\rightarrow$ \texttt{Domain2}. 
-Moreover, when natural, efficient conversions exists between domains
-(e.g. different representations of the same field or one ring embedded in another), generic \texttt{Hom} can be directly bypassed by a specialization of \texttt{Hom}.
-%\end{paragraph}
-
-Overall, the founding scope allocation model is quite natural (the caller is
-solely responsible for the physical construction/destruction) and very
-efficient: memory is allocated a minimal number of times and
-automatically freed by the destructor mechanism. Moreover, thread
-safety is facilitated: memory is handled within the scope of the
-caller, and thus by the allocating thread. % I don't buy this last sentence.
-
+%\input{rebind}
 \section{Software abstraction layer for parallelism}
 
 Efficient parallel applications must take into consideration hardware
@@ -230,38 +186,39 @@ and parallel implementations which may employ automatic dynamic scheduling.
 
 \subsection{Parallel building blocks}\label{ssec:parallel}
 Computer algebra algorithms have three main characteristics:
-\begin{enumerate}
-\item They are complex and require a deep knowledge of the problem in
-  order to the most efficient sequential algorithm.
-\item They may be highly irregular. This enforces a runtime use of
-  load balancing algorithms.
-\item They are generic in the sense that it they are usually designed
+%\begin{enumerate}
+%\item
+1) they are complex and require a deep knowledge of the problem in
+  order to the most efficient sequential algorithm;
+%\item
+2) they may be highly irregular. This enforces a runtime use of
+  load balancing algorithms;
+%\item
+3) they are generic in the sense that it they are usually designed
   to work over several algebraic domains.
-\end{enumerate}
+%\end{enumerate}
 
   In the case of \linbox algorithms, we have decided to base our
   software abstraction, called {\em Parallel Building Blocks (PBB)},
   on the STL algorithms (Standard Template Like) principles.
-
+%
   Indeed, C++ data structures in \linbox let us to have random access
   iterators over containers which are naturally parallel. 
-  
+% 
   We have already defined several STL-like algorithms and the list
-  will be extended in the near future:
-  \begin{description} 
-    
-  \item [for\_each, transform, accumulate \cite{Musser:1996:STL}:] the PBB
-    versions of these three algorithms are similar to the STL versions 
-    except that the involved operators (or function object classes) given as 
-    parameters are required to have their return value reference passed as the
-    first parameter of the function in accordance with the memory model 
-	of \linbox. 
-    The STL return-by-value semantic is not appropriate. 
-  \end{description} 
-  
-  Note that within the emerging C++0x standard, the lambda capability
-  of the core language will simplify the use of these operators and
-  therefore of the parallel building blocks.
+  will be extended in the near future:\\
+  {\bf for\_each, transform, accumulate
+    \footnote{\url{www.sgi.com/tech/stl}}}: the PBB
+  versions of these algorithms are similar to the STL versions 
+  except that the involved operators (or function object classes) given as 
+  parameters are required to have their return value reference passed as the
+  first parameter of the function in accordance with the memory model 
+  of \linbox. 
+  The STL return-by-value semantic is not appropriate. 
+%\end{description} 
+  \footnote{Within the emerging C++0x standard, the lambda
+    capability of the core language will simplify the use of these
+    operators and therefore of the parallel building blocks.}
 %\verb!transform!, etc. 
 
 %\begin{itemize}
@@ -280,9 +237,11 @@ abstraction provides for programming independent of the
 parallel model with selection of the parallel environment
 depending on the target architecture.
 The parallel blocks can be implemented using many different parallel
-environments, such as OpenMP
-\cite{Chapman:2007:openmp}; TBB (Thread Building Blocks)
-  \footnote{\url{http://www.threadingbuildingblocks.org}} or
+environments, such as
+OpenMP\footnote{\url{openmp.org,threadingbuildingblocks.org}}; 
+%\cite{Chapman:2007:openmp}
+TBB (Thread Building Blocks)
+  \footnotemark[7] or
   Kaapi~\cite{inproceedingsgautier.gbp_ktsrsf_07}; using
   both static or dynamic work-stealing
   schedulers~\cite{con-traore.trmgb_08}.
@@ -300,9 +259,8 @@ The termination of the algorithm depend on the accumulated
 result.
   
 In order to parallelize such algorithms, we proposed an extension of
-the STL algorithms called \verb+accumulate\_while+:
-\begin{description} 
-\item [accumulate\_while:] The algorithm takes an array $v$ of length $N$, a unary
+the STL algorithms called \verb+accumulate\_while+:\\
+{\bf accumulate\_while}: the algorithm takes an array $v$ of length $N$, a unary
   operator $f$ to be applied to each array entry and a specific binary
   operator for the accumulation.
   This {\em accumulator} behaves like an in place addition (\verb!+=!) and
@@ -312,7 +270,6 @@ the STL algorithms called \verb+accumulate\_while+:
   $S_n$ such that one accumulation during the computation of $S_n$
   returned \texttt{true} and either $n = N$ or any new accumulation
   will return \texttt{true}.
-\end{description} 
 
   This algorithm will be used 
   for the early termination Chinese remaindering algorithms of
@@ -333,27 +290,32 @@ algorithms on multicore architectures have shown that these
 allocations are quite often the bottleneck.
 An analysis of the memory pattern and experiments with three well
 known memory allocators 
-(ptmalloc, Hoard and TCMalloc from Google Perf. Tools~\cite{tcmalloc})
+%(ptmalloc, Hoard and TCMalloc from Google
+%Perf. Tools~\cite{tcmalloc})
+(ptmalloc, Hoard and TCMalloc from Google Perf. Tools\footnote{\url{goog-perftools.sourceforge.net/doc/tcmalloc.html}})
 have been conducted. The goal was to decide whether the parallel
 building blocks model was suitable to high-performance exact linear
 algebra. We used dynamic libraries to exchange allocators for the
 experiments, but one can use them together in the \linbox library if
 needed \cite[\S 7]{kaltofen:2005:memory}.
-
+%
 Preliminary experiments on the Chinese remaindering {\bf accumulate\_while},
 not the easiest to parallelize, have demonstrated the advantage, in
 our setting, of TCMalloc over the others~\cite{jgd:2010:crt}.
 One of the main reason for that fact is that our problems required
 many temporary allocations. This fits precisely the thread safe caching
 mechanism of TCMalloc.
-
+%
 \section{Automated Generic Separate compilation}
 \linbox is developed with several kinds of genericity:
-\begin{itemize}
-\item Genericity with respect to the domain of the coefficients,
-\item Genericity with respect to the data structure of the matrices,
-\item Genericity with the intermediate algorithms.
-\end{itemize}
+%\begin{itemize}
+%\item 
+1) genericity with respect to the domain of the coefficients,
+%\item 
+2) genericity with respect to the data structure of the matrices,
+%\item 
+3) genericity with the intermediate algorithms.
+%\end{itemize}
 While this is efficient in terms of capabilities and code reusability, there is a combinatorial explosion of combinations.  Consider that each of 50 arithmetic domains may be combined with each of 50 matrix representations in each of 10 intermediate algorithm forms for a single problem as simple as matrix rank. This
 lengthens the compilation time and generates large executable files.
 
@@ -374,12 +336,12 @@ instead of void pointers.
 The mechanism we propose is independent of the desired generic method,
 the candidate
 for separate compilation, and is explained in algorithm \ref{alg:sep}.
-\begin{algorithm}[ht]
+\vspace{-10pt}\begin{algorithm}[ht]
 \caption{C++ Automatic separate compilation wrapping}\label{alg:sep}
 \begin{algorithmic}[1]
 \REQUIRE A generic function \texttt{func}.
-\REQUIRE Some template parameters \texttt{TParam} for separate specialization and
-compilation of \texttt{func}.
+\REQUIRE Template parameters \texttt{TParam} for separate
+specialization/compilation of \texttt{func}.
 \ENSURE A generic function calling
 \texttt{func} with separately compiled instantiations.
 \STATE Create a header and a body files ``func\_instantiate.hpp'' and ``func\_instantiate.cpp'';
@@ -401,52 +363,53 @@ original function \texttt{func}.\\ \COMMENT{This enables to have a
 \ENDFOR
 \STATE Compile the body file ``func\_instantiate.cpp''.
 \end{algorithmic}
-\end{algorithm}
+\end{algorithm}\vspace{-10pt}
 
 This Algorithm is illustrated on figure \ref{fig:sep}, where
 the function is the \texttt{rank} and the template parameter is a dense
-matrix over the finite field with two elements,
+matrix over $GF(2)$,
 \texttt{DenseMatrix<GF2>}.
-\begin{figure}[ht]
-\includegraphics[width=\textwidth]{separate}
-\caption{Separate compilation of a rank specialization}\label{fig:sep}
-\end{figure}
+\vspace{-10pt}\begin{figure}[ht]
+\includegraphics[width=\textwidth]{separate}\vspace{-10pt}
+\caption{Separate compilation of the rank}\label{fig:sep}
+\end{figure}\vspace{-10pt}
 
 %
-\begin{remark} Algorithm \ref{alg:sep} has been simplified for the
-  sake of clarity. To enable a more user-friendly interface and to
-  leave it unchanged, one can rename the original function and all its
+%\begin{remark} 
+  Algorithm \ref{alg:sep} has been simplified for the
+  sake of clarity. To enable a more user-friendly interface one can
+  rename the original function and all its 
   original specializations \texttt{func\_original}; then rename also
-  the new interface (\texttt{func\_separate}) simply
-  \texttt{func}. This allows to keep the legacy
-  interface unchanged. 
-\end{remark}
-
-\begin{remark} 
+  the new interface
+% (\texttt{func\_separate}) 
+ simply \texttt{func}. 
+% This allows to keep the legacy interface unchanged. 
+%\end{remark}
+%
+%\begin{remark} 
 With the classical inline compiler optimizations, the overhead of
 calling \texttt{func\_separate} is limited to single supplementary
 function call. Indeed all the one line additional methods will be
 automatically inlined, except, of course, the one calling the separately
 compiled code.
-If this overhead is nonetheless too expensive, it suffices to enclose all the non generic specializations of
+If this overhead is too expensive, it suffices to enclose all the non generic specializations of
 ``func\_instantiate.hpp'' by a macro test. 
 At compile time, the decision to separately
 compile or not can be taken according to the definition of this
 macro. 
-\end{remark}
+%\end{remark}
 
 
 We show in table \ref{tab:compilation} the gains in compilation time
-obtained on two examples from \linbox: the \texttt{examples/rank.C} and
-\texttt{examples/solve.C} algorithms. Indeed without any specification
-the generic code
-has to be ready to invoke several specializations depending on
-run-time discovered properties of the input. For instance the
-\texttt{solve.C} example requires at least 6 specializations for sparse
-matrices over the Integers or over a prime field, with a sparse
-elimination, or an iterative method, or a dense method if the matrix
-is small, or a hybrid method.
-\begin{table}[ht]\center
+obtained on two examples from \linbox: the \texttt{examples/\{rank,solve\}.C} algorithms. 
+ Indeed, without any specification
+ the code has to invoke several specializations depending on
+ run-time discovered properties of the input. For instance
+ \texttt{solve.C} requires 6 specializations for sparse
+ matrices over the Integers or over a prime field, with a sparse
+ elimination, or an iterative method, or a dense method, if the matrix
+ is small\ldots
+\vspace{-10pt}\begin{table}[ht]\center
 \begin{tabular}{|l||r|r|r||r|r|r|}
 \hline
 file                      &  real time   &  user time   &  sys. time  &  real time   &  user time   &  sys. time \\
@@ -466,22 +429,24 @@ file                      &  real time   &  user time   &  sys. time  &  real ti
 \hline
 \end{tabular} 
 \caption{linbox/examples/\{rank,solve\}.C compilation time on an AMD
-  Athlon 3600+, 1.9GHz, with gcc 4.5 -O2. \texttt{instantiate.o} corresponds to the separately compiled
+  Athlon 3600+, 1.9GHz, with gcc 4.5 -O2. \texttt{instantiate.o} contains to the separately compiled
   instantiations (e.g. densegf2rank in figure \ref{fig:sep});
-  \texttt{\{rank,solve\}.o} corresponds to the user interface and generic
-  implementation compilation; \texttt{link} corresponds to the
-  linking of both \texttt{.o} and the library; \texttt{Full comp.}
-  corresponds to the compilation without the separate
+  \texttt{\{rank,solve\}.o} contains to the user interface and generic
+  implementation compilation; \texttt{link} corresponds to the linking
+  of both \texttt{.o} and the library; \texttt{Full comp.} corresponds
+  to the compilation without the separate
   mechanism.}\label{tab:compilation}
-\end{table}
-
+\end{table}\vspace{-30pt}
+%
 \section*{Acknowledgment}
 We thank the \linbox group and especially Brice Boyer, Pascal Giorgi,
 Erich Kaltofen, Dan Roche, Brian Youse for many useful discussions 
 in particular during the recent \linbox developer meetings in
 Delaware and Dublin.
-
-\bibliographystyle{plain}
+%
+%{\begin{small}
+\bibliographystyle{abbrv}
 \bibliography{icms} 
-
+%\end{small}
+%
 \end{document}
