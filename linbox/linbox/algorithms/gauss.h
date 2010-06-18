@@ -180,6 +180,8 @@ namespace LinBox
         template <class Matrix, class Block> 
         Block& nullspacebasisin(Block& x, Matrix& A)  const;
         
+        template <class Matrix, class Block> 
+        Block& nullspacebasis(Block& x, const Matrix& A)  const;
 
 
             // Sparsest method
