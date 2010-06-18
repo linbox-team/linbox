@@ -171,10 +171,34 @@ namespace LinBox
                          const Vector2	&b, bool randomsol=false)  const;
 
 
-	template <class Matrix>
+        template <class Matrix, class Perm, class Block> 
+        Block& nullspacebasis(Block& x, 
+                              unsigned long rank, 
+                              const Matrix& U, 
+                              const Perm& P)  const ;
+
+        template <class Matrix, class Block> 
+        Block& nullspacebasisin(Block& x, Matrix& A)  const;
+        
+
+
+            // Sparsest method
+            //   erases elements while computing rank/det.
+	template <class Matrix,class Perm>
 	unsigned long& InPlaceLinearPivoting(unsigned long &rank,
                                               Element& determinant,
                                               Matrix        &A,
+                                              unsigned long Ni, 
+                                              unsigned long Nj) const;
+
+            // Same as the latter but keeps trace 
+            //   of column permutations
+            //   of remaining elements in the matrix
+	template <class Matrix,class Perm>
+	unsigned long& InPlaceLinearPivoting(unsigned long &rank,
+                                              Element& determinant,
+                                              Matrix        &A,
+                                              Perm          &P,
                                               unsigned long Ni, 
                                               unsigned long Nj) const;
 
@@ -300,10 +324,11 @@ namespace LinBox
 
 } // namespace LinBox
 
+#include "linbox/algorithms/gauss.inl"
 #include "linbox/algorithms/gauss-pivot.inl"
 #include "linbox/algorithms/gauss-elim.inl"
 #include "linbox/algorithms/gauss-solve.inl"
-#include "linbox/algorithms/gauss.inl"
+#include "linbox/algorithms/gauss-nullspace.inl"
 #include "linbox/algorithms/gauss-rank.inl"
 #include "linbox/algorithms/gauss-det.inl"
 

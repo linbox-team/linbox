@@ -2,7 +2,7 @@
  * Copyright (C) 1999 Jean-Guillaume Dumas
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <22 Jan 10 18:03:53 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <16 Jun 10 13:29:40 Jean-Guillaume.Dumas@imag.fr> 
  *
  * See COPYING for license information.
  */
@@ -20,7 +20,7 @@
 
 #ifdef __LINBOX_ALL__
 #define __LINBOX_COUNT__
-#define __LINBOX_OFTEN__
+#define __LINBOX_OFTEN__ __LINBOX_ALL__
 #define __LINBOX_FILLIN__
 #endif
 
@@ -83,7 +83,7 @@ namespace LinBox
 
 #ifdef __LINBOX_OFTEN__
 	long sstep = last/40;
-	if (sstep > 1000) sstep = 1000;
+	if (sstep > __LINBOX_OFTEN__) sstep = __LINBOX_OFTEN__;
 #else
 	long sstep = 1000;
 #endif
@@ -100,8 +100,8 @@ namespace LinBox
 #endif
                 commentator.progress (k);
 #ifdef __LINBOX_FILLIN__   
-                long sl;
-                for (sl = 0, l = 0; l < Ni; ++l)
+                long sl(0);
+                for (size_t l = 0; l < Ni; ++l)
                     sl += LigneA[l].size ();
                 
                 commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
@@ -186,8 +186,8 @@ namespace LinBox
 #endif
         
 #ifdef __LINBOX_FILLIN__  
-        long sl = 0, l = 0;
-        for (; l < Ni; ++l)
+        long sl(0);
+        for (size_t l=0; l < Ni; ++l)
             sl += LigneA[l].size ();
         
         commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
@@ -224,8 +224,8 @@ namespace LinBox
     }
         
     template <class _Field>
-    template <class Matrix> inline unsigned long& 
-    GaussDomain<_Field>::InPlaceLinearPivoting (unsigned long &res,
+    template <class Matrix, class Perm> inline unsigned long& 
+    GaussDomain<_Field>::InPlaceLinearPivoting (unsigned long &rank,
                                                 Element        &determinant,
                                                 Matrix         &LigneA,
                                                 unsigned long   Ni,
@@ -259,11 +259,11 @@ namespace LinBox
 
         long last = Ni - 1;
         long c;
-        unsigned long indcol = 0;
+        rank = 0;
 
 #ifdef __LINBOX_OFTEN__
         long sstep = last/40;
-        if (sstep > 1000) sstep = 1000;
+        if (sstep > __LINBOX_OFTEN__) sstep = __LINBOX_OFTEN__;
 #else
         long sstep = 1000;
 #endif
@@ -283,7 +283,7 @@ namespace LinBox
                     sl += LigneA[l].size ();
 
                 commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
-                    << "Fillin (" << indcol << "/" << Ni << ") = "
+                    << "Fillin (" << rank << "/" << Ni << ") = "
                     << sl 
                     << " (" << double(sl)*100.0/double(Ni-k)/double(Nj-k) << "%, "
                     << double(sl)/double(Ni-k) << " avg)"
@@ -306,13 +306,13 @@ namespace LinBox
                     LigneA[p] = vtm;
                 }
 		    
-//                     LigneA.write(std::cerr << "BEF, k:" << k << ", indcol:" << indcol << ", c:" << c)<<std::endl;
+//                     LigneA.write(std::cerr << "BEF, k:" << k << ", rank:" << rank << ", c:" << c)<<std::endl;
                     
-                SparseFindPivot (LigneA[k], indcol, c, col_density, determinant);
-//                     LigneA.write(std::cerr << "PIV, k:" << k << ", indcol:" << indcol << ", c:" << c)<<std::endl;
+                SparseFindPivot (LigneA[k], rank, c, col_density, determinant);
+//                     LigneA.write(std::cerr << "PIV, k:" << k << ", rank:" << rank << ", c:" << c)<<std::endl;
                 if (c != -1) {
                     for (l = k + 1; l < Ni; ++l) 
-                        eliminate (LigneA[l], LigneA[k], indcol, c, col_density);
+                        eliminate (LigneA[l], LigneA[k], rank, c, col_density);
                 }
                     
 //                     LigneA.write(std::cerr << "AFT " )<<std::endl;
@@ -324,7 +324,7 @@ namespace LinBox
 	    	    
 	}//for k
 
-	SparseFindPivot (LigneA[last], indcol, c, determinant);
+	SparseFindPivot (LigneA[last], rank, c, determinant);
             
 #ifdef __LINBOX_COUNT__
         nbelem += LigneA[last].size ();
@@ -333,20 +333,18 @@ namespace LinBox
 #endif
             
 #ifdef __LINBOX_FILLIN__  
-        long sl = 0, l = 0;
-        for (; l < Ni; ++l)
+        long sl(0);
+        for (size_t l=0; l < Ni; ++l)
             sl += LigneA[l].size ();
             
         commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
-            << "Fillin (" << indcol << "/" << Ni << ") = " << sl 
+            << "Fillin (" << rank << "/" << Ni << ") = " << sl 
             << std::endl;
 #endif
             
-        res = indcol;
-            
         integer card;
             
-        if ((res < Ni) || (res < Nj) || (Ni == 0) || (Nj == 0))
+        if ((rank < Ni) || (rank < Nj) || (Ni == 0) || (Nj == 0))
             _F.init(determinant,0UL);
 
         _F.write(commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT) 
@@ -354,16 +352,161 @@ namespace LinBox
                  << " over GF (" << _F.cardinality (card) << ")" << std::endl;
 
         commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT) 
-            << "Rank : " << res
+            << "Rank : " << rank
             << " over GF (" << card << ")" << std::endl;
         commentator.stop ("done", 0, "IPLR");
-        return res;
+        return rank;
+    }
+
+    template <class _Field>
+    template <class Matrix, class Perm> inline unsigned long& 
+    GaussDomain<_Field>::InPlaceLinearPivoting (unsigned long &rank,
+                                                Element        &determinant,
+                                                Matrix         &LigneA,
+                                                Perm           &P,
+                                                unsigned long   Ni,
+                                                unsigned long   Nj) const
+    {
+        typedef typename Matrix::Row        Vector;
+        typedef typename Vector::value_type E;    
+        
+            // Requirements : LigneA is an array of sparse rows
+            // In place (LigneA is modified)
+            // With reordering (D is a density type. Density is allocated here)
+            //    long Ni = LigneA.n_row (), Nj = LigneA.n_col ();
+        commentator.start ("Gaussian elimination with reordering",
+                           "IPLR", Ni);
+        _F.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+            << "Gaussian elimination on " << Ni << " x " << Nj << " matrix, over: ") << std::endl;
+        
+#ifdef __LINBOX_COUNT__
+        long long nbelem = 0;
+#endif
+
+        _F.init(determinant,1UL);
+            // allocation of the column density
+        std::vector<size_t> col_density (Nj);        
+
+            // assignment of LigneA with the domain object
+        for (unsigned long jj = 0; jj < Ni; ++jj) 
+            for (unsigned long k = 0; k < LigneA[jj].size (); k++)
+                ++col_density[LigneA[jj][k].first];
+
+        long last = Ni - 1;
+        long c;
+        rank = 0;
+
+#ifdef __LINBOX_OFTEN__
+        long sstep = last/40;
+        if (sstep > __LINBOX_OFTEN__) sstep = __LINBOX_OFTEN__;
+#else
+        long sstep = 1000;
+#endif
+            // Elimination steps with reordering
+        for (long k = 0; k < last; ++k) {
+            unsigned long l;
+            long p = k, s = LigneA[k].size (), sl;
+
+#ifdef __LINBOX_FILLIN__  
+            if ( ! (k % 100) ) {
+#else          
+            if ( ! (k % sstep) ) {
+#endif
+                commentator.progress (k);
+#ifdef __LINBOX_FILLIN__            
+                for (sl = 0, l = 0; l < Ni; ++l)
+                    sl += LigneA[l].size ();
+
+                commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
+                    << "Fillin (" << rank << "/" << Ni << ") = "
+                    << sl 
+                    << " (" << double(sl)*100.0/double(Ni-k)/double(Nj-k) << "%, "
+                    << double(sl)/double(Ni-k) << " avg)"
+                    << std::endl;
+#endif 
+            }
+	    
+            if (s) {
+                    // Row permutation for the sparsest row
+                for (l = k + 1; l < Ni; ++l)
+                    if (((sl = LigneA[l].size ()) < s) && (sl)) {
+                        s = sl;
+                        p = l;
+                    }
+
+                if (p != k) {
+                    _F.negin(determinant);
+                    Vector vtm = LigneA[k];
+                    LigneA[k] = LigneA[p];
+                    LigneA[p] = vtm;
+                }
+		    
+//                     LigneA.write(std::cerr << "BEF, k:" << k << ", rank:" << rank << ", c:" << c)<<std::endl;
+                    
+                SparseFindPivot (LigneA[k], rank, c, col_density, determinant);
+//                     LigneA.write(std::cerr << "PIV, k:" << k << ", rank:" << rank << ", c:" << c)<<std::endl;
+                if (c != -1) {
+                    if ( c != (static_cast<long>(rank)-1) )
+                        P.permute(rank-1,c);
+                        for (long ll=0; ll < k ; ++ll)
+                            permute( LigneA[ll], rank, c);
+                    
+                    for (l = k + 1; l < Ni; ++l) 
+                        eliminate (LigneA[l], LigneA[k], rank, c, col_density);
+                }
+                    
+//                     LigneA.write(std::cerr << "AFT " )<<std::endl;
+#ifdef __LINBOX_COUNT__
+                nbelem += LigneA[k].size ();
+#endif
+            }
+	    	    
+	}//for k
+
+	SparseFindPivot (LigneA[last], rank, c, determinant);
+        if ( (c != -1) && (c != (static_cast<long>(rank)-1) ) ) {
+            P.permute(rank-1,c);
+            for (long ll=0; ll < last ; ++ll)
+                permute( LigneA[ll], rank, c);
+        }
+        
+            
+#ifdef __LINBOX_COUNT__
+        nbelem += LigneA[last].size ();
+        commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
+            << "Left elements : " << nbelem << std::endl;
+#endif
+            
+#ifdef __LINBOX_FILLIN__  
+        long sl(0);
+        for (size_t l=0; l < Ni; ++l)
+            sl += LigneA[l].size ();
+            
+        commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
+            << "Fillin (" << rank << "/" << Ni << ") = " << sl 
+            << std::endl;
+#endif
+            
+        integer card;
+            
+        if ((rank < Ni) || (rank < Nj) || (Ni == 0) || (Nj == 0))
+            _F.init(determinant,0UL);
+
+        _F.write(commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT) 
+                 << "Determinant : ", determinant)
+                 << " over GF (" << _F.cardinality (card) << ")" << std::endl;
+
+        commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT) 
+            << "Rank : " << rank
+            << " over GF (" << card << ")" << std::endl;
+        commentator.stop ("done", 0, "IPLR");
+        return rank;
     }
 
     template <class _Field>
     template <class Matrix> inline unsigned long& 
     GaussDomain<_Field>::NoReordering (unsigned long &res,
-                                                       Element       &determinant,
+                                       Element       &determinant,
                                        Matrix        &LigneA,
                                        unsigned long  Ni,
                                        unsigned long  Nj) const

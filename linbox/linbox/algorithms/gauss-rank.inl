@@ -1,7 +1,7 @@
 /* linbox/algorithms/gauss-rank.inl
  * Copyright (C) 2009 The LinBox group
  *
- * Time-stamp: <21 Jan 10 15:07:06 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <15 Jun 10 17:20:20 Jean-Guillaume.Dumas@imag.fr> 
  *
  * See COPYING for license information.
  *
@@ -24,7 +24,7 @@ namespace LinBox
         if (reord == SparseEliminationTraits::PIVOT_NONE)
             return NoReordering(rank, determinant, A,  Ni, Nj);
         else
-            return InPlaceLinearPivoting(rank, determinant, A,  Ni, Nj);
+            return InPlaceLinearPivoting(rank, determinant, A, Ni, Nj);
     }
 
    
