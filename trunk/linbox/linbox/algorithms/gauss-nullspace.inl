@@ -2,7 +2,7 @@
  * Copyright (C) LinBox 2008 
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <18 Jun 10 10:39:25 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <18 Jun 10 15:08:49 Jean-Guillaume.Dumas@imag.fr> 
  *
  * See COPYING for license information.
  */
@@ -13,6 +13,7 @@
 #include "linbox/algorithms/gauss.h"
 #include "linbox/algorithms/triangular-solve.h"
 #include "linbox/blackbox/permutation.h"
+#include "linbox/vector/sparse.h"
 
 namespace LinBox 
 {
@@ -70,6 +71,7 @@ namespace LinBox
         return false;
     }
 
+        // Matrix A is upper triangularized
     template <class _Field>
     template <class Matrix, class Block> inline Block& 
     GaussDomain<_Field>::nullspacebasisin(Block& x, Matrix& A)  const {
@@ -100,6 +102,13 @@ namespace LinBox
 // A.write( std::cerr << "Ub:=", FORMAT_MAPLE ) << ';' << std::endl;
 
         return this->nullspacebasis(x, rank, A, P);
+    }
+    
+    template <class _Field>
+    template <class Matrix, class Block> inline Block& 
+    GaussDomain<_Field>::nullspacebasis(Block& x, const Matrix& A)  const {
+        SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq> A1 (A); 
+        return this->nullspacebasisin(x, A1);
     }
     
         
