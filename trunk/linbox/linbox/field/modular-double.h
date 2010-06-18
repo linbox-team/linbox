@@ -65,13 +65,16 @@ namespace LinBox {
 		unsigned long   lmodulus;
 
 		//double inv_modulus;
-		
 	public:	       
 		friend class FieldAXPY<Modular<double> >;
 		friend class DotProductDomain<Modular<double> >;
 		friend class MultiModDouble;
 			       
 		typedef double Element;
+	public:	       
+		const Element zero,one;
+            	Element mone;
+
 		typedef ModularRandIter<double> RandIter;
 		typedef NonzeroRandIter<Modular<double>, ModularRandIter<double> > NonZeroRandIter;
 
@@ -79,9 +82,10 @@ namespace LinBox {
 		
 
 
-		Modular () {}
+		Modular () : zero(0.0),one(0.0),mone(0.0){}
 
 		Modular (int32 p, int exp = 1)  : modulus((double)p), lmodulus(p)//, inv_modulus(1./(double)p) 
+, zero(0.0), one(1.0), mone(modulus-1.0)
 		{
 			if(modulus <= 1)
 				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
@@ -92,7 +96,9 @@ namespace LinBox {
 			
 		}
 
-		Modular (double p) : modulus(p), lmodulus((unsigned long)p) {
+		Modular (double p) : modulus(p), lmodulus((unsigned long)p)
+, zero(0.0), one(1.0), mone(modulus-1.0)
+{
 			if( modulus <= 1 )
 				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
 			integer max;
@@ -100,7 +106,9 @@ namespace LinBox {
 				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
 		}
 
-		Modular (long int p) :modulus((double)p), lmodulus(p) {
+		Modular (long int p) :modulus((double)p), lmodulus(p)
+, zero(0.0), one(1.0), mone(modulus-1.0)
+{
 			if( (double) modulus <= 1 )
 				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
 			integer max;
@@ -109,6 +117,7 @@ namespace LinBox {
 		}
 
 		Modular (const integer& p) : modulus((double) p), lmodulus(p) //, inv_modulus(1./(double)p)
+, zero(0.0), one(1.0), mone(modulus-1.0)
 		{
 			if(modulus <= 1)
 				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
@@ -118,11 +127,13 @@ namespace LinBox {
 		}
 
 		Modular(const Modular<double>& mf) : modulus(mf.modulus), lmodulus(mf.lmodulus)//,inv_modulus(mf.inv_modulus)
+, zero(mf.zero), one(mf.one), mone(mf.mone)
 		{}
 
 		const Modular &operator=(const Modular<double> &F) {
 			modulus = F.modulus;
 			lmodulus= F.lmodulus;
+                        mone = F.mone;
 			//inv_modulus = F.inv_modulus;
 			return *this;
 		}
