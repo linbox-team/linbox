@@ -1,7 +1,7 @@
 /* linbox/algorithms/gauss-rank-gf2.inl
  * Copyright (C) 2009 The LinBox group
  *
- * Time-stamp: <21 Jan 10 15:08:58 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <14 Jun 10 15:26:01 Jean-Guillaume.Dumas@imag.fr> 
  *
  * See COPYING for license information.
  *
@@ -23,10 +23,13 @@ namespace LinBox
                                 SparseEliminationTraits::PivotStrategy   reord)  const
     {
         Element determinant;
+        const GF2 F2;
+        Permutation<GF2> P(A.coldim(),F2);
+        
         if (reord == SparseEliminationTraits::PIVOT_NONE)
             return NoReordering(rank, determinant, A,  Ni, Nj);
         else
-            return InPlaceLinearPivoting(rank, determinant, A,  Ni, Nj);
+            return InPlaceLinearPivoting(rank, determinant, A, P, Ni, Nj);
     }
 
    

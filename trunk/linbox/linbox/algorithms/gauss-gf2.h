@@ -2,7 +2,7 @@
 /* linbox/algorithms/gauss-gf2.h
  * Copyright (C) 2009 The LinBox group
  *
- * Time-stamp: <21 Jan 10 15:54:16 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <14 Jun 10 15:36:56 Jean-Guillaume.Dumas@imag.fr> 
  *
  * See COPYING for license information.
  *
@@ -156,10 +156,11 @@ namespace LinBox
                          const Vector2& b, bool randomsol=false) const;
 
 
-	template <class SparseSeqMatrix>
+	template <class SparseSeqMatrix, class Perm>
 	unsigned long& InPlaceLinearPivoting(unsigned long &rank,
                                               Element& determinant,
                                               SparseSeqMatrix        &A,
+                                              Perm                   &P,
                                               unsigned long Ni, 
                                               unsigned long Nj) const;
 	template <class SparseSeqMatrix>

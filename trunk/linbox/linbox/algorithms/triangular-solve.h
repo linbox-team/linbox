@@ -2,7 +2,7 @@
  * (C) LinBox 2008
  * Triangular Solve
  * See COPYING for license information.
- * Time-stamp: <01 Oct 09 11:57:39 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <16 Jun 10 14:21:18 Jean-Guillaume.Dumas@imag.fr> 
  * ===================================================================
  */
 #ifndef __TRI_SOLVE_INL
@@ -85,6 +85,71 @@ namespace LinBox
         commentator.stop ("done", NULL, "utrsm");
         return x;
     }
+
+        // Suppose x and b are vectors of pairs <index,value>
+        // first rank rows of U are upper triangular and full rank
+    template <class _Matrix, class Vector1, class Vector2> Vector1&
+    upperTriangularSparseSolve (Vector1& x,
+                                unsigned long rank,
+                                const _Matrix  &U,
+                                const Vector2& b)
+    {
+        commentator.start ("SparseElim UpperTriang Sparse Solve", "uSPt");
+
+        x.resize(0);
+
+        if (b.size() != 0) {
+
+            typedef _Matrix Matrix;
+            typedef typename Matrix::Field Field;
+            const Field& F = U.field();
+
+
+
+            typename Vector2::const_iterator vec=b.begin();
+            vec += b.size(); --vec;
+
+            typename Matrix::ConstRowIterator row=U.rowBegin();
+            row += rank; --row;
+        
+            VectorDomain<Field> VD(F);
+        
+
+            long i=rank; 
+            for(--i; (vec >= b.begin()) && (i>=0); --i,--row) {
+                if (row->size()) {
+                    typename Field::Element tmp;
+                    VD.dot(tmp, *row, x); // x is sparse also
+                    F.negin(tmp);
+                    if (static_cast<long>(vec->first) == i) {
+                        F.addin(tmp,vec->second);
+                        --vec;
+                    } 
+                    if (! F.isZero(tmp)) {
+                        F.divin(tmp,row->front().second);
+                        x.insert(x.begin(), typename Vector1::value_type(i, tmp));
+                    }
+                }
+            }
+            for(; i>=0; --i,--row) {
+                if (row->size()) {
+                    typename Field::Element tmp;
+                    VD.dot(tmp, *row, x);
+                    if (! F.isZero(tmp)) {
+                        F.negin(tmp);
+                        F.divin(tmp,row->front().second);
+                        x.insert(x.begin(), typename Vector1::value_type(i, tmp));
+                    }
+                }
+            }
+        }
+//         if (! consistant) throw LinboxError ("upperTriangularSparseSolve returned INCONSISTENT");
+        
+        commentator.stop ("done", NULL, "uSPt");
+
+        return x;
+    }
+
 
     template <class _Matrix, class Vector1, class Vector2> Vector1&
     lowerTriangularUnitarySolve (Vector1& x,

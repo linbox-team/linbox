@@ -1,7 +1,7 @@
 /* linbox/algorithms/gauss-det.inl
  * Copyright (C) 2009 The LinBox group
  *
-// Time-stamp: <21 Jan 10 15:07:05 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <15 Jun 10 17:20:08 Jean-Guillaume.Dumas@imag.fr> 
  *
  * See COPYING for license information.
  *
@@ -24,7 +24,7 @@ namespace LinBox
         if (reord == SparseEliminationTraits::PIVOT_NONE)
             NoReordering(rank, determinant, A,  Ni, Nj);
         else
-            InPlaceLinearPivoting(rank, determinant, A,  Ni, Nj);
+            InPlaceLinearPivoting(rank, determinant, A, Ni, Nj);
         return determinant;
     }
 

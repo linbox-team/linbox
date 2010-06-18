@@ -1,7 +1,7 @@
 /* linbox/algorithms/gauss-gf2.inl
  * Copyright (C) 2009 The LinBox group
  *
- * Time-stamp: <21 Jan 10 15:08:12 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <15 Jun 10 16:20:16 Jean-Guillaume.Dumas@imag.fr> 
  *
  * See COPYING for license information.
  */
@@ -14,18 +14,26 @@
 #include <utility>
 
 #ifdef __LINBOX_ALL__
+#ifndef __LINBOX_COUNT__
 #define __LINBOX_COUNT__
-#define __LINBOX_OFTEN__
+#endif
+#ifndef __LINBOX_OFTEN__
+#define __LINBOX_OFTEN__  __LINBOX_ALL__
+#endif
+#ifndef __LINBOX_FILLIN__
 #define __LINBOX_FILLIN__
+#endif
 #endif
 
 namespace LinBox 
 {
         // Specialization over GF2
-        template <class SparseSeqMatrix> inline unsigned long& 
+        template <class SparseSeqMatrix, class Perm> 
+        inline unsigned long& 
         GaussDomain<GF2>::InPlaceLinearPivoting (unsigned long &rank,
                                   bool          &determinant,
                                   SparseSeqMatrix        &LigneA,
+                                  Perm           &P,
                                   unsigned long Ni,
                                   unsigned long Nj) const
     {
@@ -58,7 +66,7 @@ namespace LinBox
 
 #ifdef __LINBOX_OFTEN__
 	long sstep = last/40;
-	if (sstep > 1000) sstep = 1000;
+	if (sstep > __LINBOX_OFTEN__) sstep = __LINBOX_OFTEN__;
 #else
 	long sstep = 1000;
 #endif
@@ -75,8 +83,8 @@ namespace LinBox
 #endif
                 commentator.progress (k);
 #ifdef __LINBOX_FILLIN__   
-                long sl;
-                for (sl = 0, l = 0; l < Ni; ++l)
+                long sl(0);
+                for (size_t l = 0; l < Ni; ++l)
                     sl += LigneA[l].size ();
                 
                 commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
@@ -116,6 +124,7 @@ namespace LinBox
                 if (c != -1) {
                     long ll;
                     if ( c != (static_cast<long>(rank)-1) ) {
+                        P.permute(rank-1,c);
                         for (ll=0      ; ll < k ; ++ll)
                             permuteBinary( LigneA[ll], rank, c);
                     }
@@ -137,6 +146,7 @@ namespace LinBox
 	SparseFindPivotBinary ( LigneA[last], rank, c, determinant);
         if (c != -1) {
             if ( c != (static_cast<long>(rank)-1) ) {
+                P.permute(rank-1,c);
                 for (long ll=0      ; ll < last ; ++ll)
                     permuteBinary( LigneA[ll], rank, c);
             }
@@ -149,8 +159,8 @@ namespace LinBox
 #endif
         
 #ifdef __LINBOX_FILLIN__  
-        long sl = 0, l = 0;
-        for (; l < Ni; ++l)
+        long sl(0);
+        for (size_t l=0; l < Ni; ++l)
             sl += LigneA[l].size ();
         
         commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
@@ -231,7 +241,7 @@ namespace LinBox
 
 #ifdef __LINBOX_OFTEN__
 	long sstep = last/40;
-	if (sstep > 1000) sstep = 1000;
+	if (sstep > __LINBOX_OFTEN__) sstep = __LINBOX_OFTEN__;
 #else
 	long sstep = 1000;
 #endif
@@ -248,8 +258,8 @@ namespace LinBox
 #endif
                 commentator.progress (k);
 #ifdef __LINBOX_FILLIN__   
-                long sl;
-                for (sl = 0, l = 0; l < Ni; ++l)
+                long sl(0);
+                for (size_t l = 0; l < Ni; ++l)
                     sl += LigneA[l].size ();
                 
                 commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
@@ -331,8 +341,8 @@ namespace LinBox
 #endif
         
 #ifdef __LINBOX_FILLIN__  
-        long sl = 0, l = 0;
-        for (; l < Ni; ++l)
+        long sl(0);
+        for (size_t l=0; l < Ni; ++l)
             sl += LigneA[l].size ();
         
         commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
