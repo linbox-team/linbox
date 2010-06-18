@@ -1,5 +1,4 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* tests/test-qlup.C
  * Copyright (C) The LinBox group
  *
@@ -40,7 +39,7 @@ using namespace LinBox;
  * using Sparse Gaussian elimination. Checks that the results match.
  */
 template <class Field, class Blackbox, class RandStream >
-bool testQLUP(const Field &F, size_t n, unsigned int iterations, double sparsity = 0.05) 
+bool testQLUP(const Field &F, size_t n, unsigned int iterations, int rseed, double sparsity = 0.05) 
 {
 	bool res = true;
 
@@ -48,8 +47,8 @@ bool testQLUP(const Field &F, size_t n, unsigned int iterations, double sparsity
 
 	unsigned long Ni = n;
 	unsigned long Nj = n;
-	typename Field::RandIter generator (F);
-
+        integer card; F.cardinality(card);
+	typename Field::RandIter generator (F,card,rseed);
 	RandStream stream (F, generator, sparsity, n, n);
 
 	for (size_t i = 0; i < iterations; ++i) {
@@ -142,7 +141,7 @@ bool testQLUP(const Field &F, size_t n, unsigned int iterations, double sparsity
  * Then solve using the decomposition and checks that the results match.
  */
 template <class Field, class Blackbox, class RandStream>
-bool testQLUPsolve(const Field &F, size_t n, unsigned int iterations, double sparsity = 0.05) 
+bool testQLUPsolve(const Field &F, size_t n, unsigned int iterations, int rseed, double sparsity = 0.05) 
 {
 	bool res = true;
 
@@ -150,10 +149,11 @@ bool testQLUPsolve(const Field &F, size_t n, unsigned int iterations, double spa
 
 	unsigned long Ni = n;
 	unsigned long Nj = n;
-	typename Field::RandIter generator (F);
+        integer card; F.cardinality(card);
+	typename Field::RandIter generator (F,card,rseed);
 	RandStream stream (F, generator, sparsity, n, n);
 		
-        GF2 F2; GF2::RandIter bitgenerator(F2); GF2::Element randomsolve;
+        GF2 F2; GF2::RandIter bitgenerator(F2,2,rseed); GF2::Element randomsolve;
 
 	for (size_t i = 0; i < iterations; ++i) {
 		commentator.startIteration (i);
@@ -218,6 +218,90 @@ bool testQLUPsolve(const Field &F, size_t n, unsigned int iterations, double spa
 }
 
 
+
+/* Test 2: LQUP nullspacebasis of a random sparse matrix 
+ *
+ * Constructs a random sparse matrix and computes its QLUP decomposition
+ * using Sparse Gaussian elimination (stores only U and P). 
+ * Then solve using the decomposition and checks that the results match.
+ */
+template <class Field, class Blackbox, class RandStream>
+bool testQLUPnullspace(const Field &F, size_t n, unsigned int iterations, int rseed, double sparsity = 0.05) 
+{
+	bool res = true;
+
+	commentator.start ("Testing Sparse elimination qlup nullspacebasis", "testQLUPnullspace", iterations);
+
+	unsigned long Ni = n;
+	unsigned long Nj = n;
+        integer card; F.cardinality(card);
+	typename Field::RandIter generator (F,card,rseed);
+	RandStream stream (F, generator, sparsity, n, n, rseed);
+		
+	for (size_t i = 0; i < iterations; ++i) {
+		commentator.startIteration (i);
+
+		stream.reset();
+		Blackbox A (F, stream);
+
+		std::ostream & report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);	
+
+		F.write( report ) << endl; 
+		A.write( report, FORMAT_MAPLE ) << endl;
+
+
+		Method::SparseElimination SE;
+		SE.strategy(Specifier::PIVOT_LINEAR);
+		GaussDomain<Field> GD ( F );
+		
+		Blackbox CopyA ( A );
+                Blackbox X(F, A.coldim(), A.coldim() );
+                
+		GD.nullspacebasisin(X, CopyA );
+
+                unsigned long nullity = X.coldim();
+                
+                std::vector<typename Field::Element> u(nullity);
+                for(typename std::vector<typename Field::Element>::iterator it=u.begin();it!=u.end();++it) 
+			generator.random (*it);
+                std::vector<typename Field::Element> v(Nj);
+                X.apply(v,u);
+                report << "Random combination of the rows of the NullSpace basis" << std::endl;
+                
+		std::vector<typename Field::Element> w(Ni);
+                A.apply(w, v);
+		
+		VectorDomain<Field> VD(F);
+
+		if (! VD.isZero(w)) {
+			res=false;
+                        A.write( report, FORMAT_MAPLE ) << endl;
+			
+			report << "ERROR u: matrix(" << u.size() << ",1,[";
+			for(typename std::vector<typename Field::Element>::const_iterator itu=u.begin(); itu!=u.end();++itu)
+				report << *itu << ',';
+			report << "]);\n[";
+			report << "ERROR v: matrix(" << v.size() << ",1,[";
+			for(typename std::vector<typename Field::Element>::const_iterator itu=v.begin(); itu!=v.end();++itu)
+				report << *itu << ',';
+			report << "]);\n[";
+			for(typename std::vector<typename Field::Element>::const_iterator itv=w.begin(); itv!=w.end();++itv)
+				report << *itv << ' ';
+			report << "]  !=  0" << std::endl;
+			
+		}
+            		
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	commentator.stop (MSG_STATUS (res), (const char *) 0, "testQLUPnullspace");
+
+	return res;
+}
+
+
+
 int main (int argc, char **argv)
 {
 
@@ -259,8 +343,9 @@ int main (int argc, char **argv)
             Field F (q);
             typedef SparseMatrix<Field, Sparse_Vector<Field::Element> > Blackbox;
             typedef RandomSparseStream<Field, Sparse_Vector<Field::Element> > RandStream;
-            if (!testQLUP<Field, Blackbox, RandStream> (F, n, iterations, sparsity)) pass = false;
-            if (!testQLUPsolve<Field, Blackbox, RandStream> (F, n, iterations, sparsity)) pass = false;
+            if (!testQLUP<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity)) pass = false;
+            if (!testQLUPsolve<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity)) pass = false;
+            if (!testQLUPnullspace<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity)) pass = false;
         }
         
         {
@@ -270,8 +355,9 @@ int main (int argc, char **argv)
             Field F (q);
             typedef SparseMatrix<Field, Sparse_Vector<Field::Element> > Blackbox;
             typedef RandomSparseStream<Field, Sparse_Vector<Field::Element> > RandStream;
-            if (!testQLUP<Field, Blackbox, RandStream> (F, n, iterations, sparsity)) pass = false;
-            if (!testQLUPsolve<Field, Blackbox, RandStream> (F, n, iterations, sparsity)) pass = false;
+            if (!testQLUP<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity)) pass = false;
+            if (!testQLUPsolve<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity)) pass = false;
+            if (!testQLUPnullspace<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity)) pass = false;
         }
         
         {
@@ -282,19 +368,21 @@ int main (int argc, char **argv)
             Field F (bigQ);
             typedef SparseMatrix<Field, Sparse_Vector<Field::Element> > Blackbox;
             typedef RandomSparseStream<Field, Sparse_Vector<Field::Element> > RandStream;
-            if (!testQLUP<Field, Blackbox, RandStream> (F, n, iterations, sparsity)) pass = false;
-            if (!testQLUPsolve<Field, Blackbox, RandStream> (F, n, iterations, sparsity)) pass = false;
+            if (!testQLUP<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity)) pass = false;
+            if (!testQLUPsolve<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity)) pass = false;
+            if (!testQLUPnullspace<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity)) pass = false;
         }
  
-        commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) 
-        << "specialized over GF2>" << endl; 
-        typedef GF2 Field;
-        Field F2;
-        typedef LinBox::GaussDomain<LinBox::GF2>::Matrix Blackbox;
-        typedef RandomSparseStreamGF2<Blackbox::Row_t> RandStream;
-        if (!testQLUP<Field, Blackbox, RandStream> (F2, n, iterations, sparsity)) pass = false;
-        if (!testQLUPsolve<Field, Blackbox, RandStream> (F2, n, iterations, sparsity)) pass = false;
- 
+        {
+            commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) 
+                << "specialized over GF2>" << endl; 
+            typedef GF2 Field;
+            Field F2;
+            typedef LinBox::GaussDomain<LinBox::GF2>::Matrix Blackbox;
+            typedef RandomSparseStreamGF2<Blackbox::Row_t> RandStream;
+            if (!testQLUP<Field, Blackbox, RandStream> (F2, n, iterations, rseed, sparsity)) pass = false;
+            if (!testQLUPsolve<Field, Blackbox, RandStream> (F2, n, iterations, rseed, sparsity)) pass = false;
+        }
 
 	commentator.stop("QLUP test suite");
 	return pass ? 0 : -1;
