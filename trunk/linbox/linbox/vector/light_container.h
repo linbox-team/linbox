@@ -1,6 +1,6 @@
 // =================================================================== //
 // LightContainer : std::vector like container
-// Time-stamp: <22 Apr 10 12:27:19 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <16 Jun 10 13:04:02 Jean-Guillaume.Dumas@imag.fr> 
 // =================================================================== //
 #ifndef __Light_Container__ 
 #define __Light_Container__
@@ -109,15 +109,19 @@ public:
         REQUIRE( (pos-begin()) <= (end()-begin()) );
         REQUIRE( (pos-begin()) >= 0 );
         STATE( size_t oldsize = size() );
+        iterator newpos;
         if (pos == _finish) {
             push_back(c);
+            newpos = _finish-1;
         } else {
-            insert(pos+1, *(pos));
-            *(pos) = c;
+            if (allocated > size())
+                newpos = insertwithspace(pos,c);
+            else
+                newpos = insertwithrealloc(pos,c);
         }
         ENSURE( size() == oldsize+1 );
         ENSURE( allocated >= size() );
-        return pos;
+        return newpos;
     }
     
     iterator insert(iterator pos, const_iterator beg, const_iterator end) {
@@ -176,6 +180,47 @@ protected:
         _finish = _container + endc;
         ENSURE( allocated >= size() );
     }
+
+    iterator insertwithspace(iterator pos, const Elem& c) {
+        STATE( size_t oldsize = size() );
+        STATE( size_t oldalloc = allocated );
+        REQUIRE( (size()+1) <= allocated );
+        REQUIRE( (pos-begin()) <= (end()-begin()) );
+        REQUIRE( (pos-begin()) >= 0 );
+        if (pos == _finish) {
+            push_back(c);
+        } else {
+            insertwithspace(pos+1, *(pos));
+            *(pos) = c;
+        }
+        ENSURE( size() == oldsize+1 );
+        ENSURE( allocated >= size() );
+        ENSURE( allocated == oldalloc );
+        return pos;
+    }
+    
+    iterator insertwithrealloc(iterator pos, const Elem& c) {
+        REQUIRE( (pos-begin()) <= (end()-begin()) );
+        REQUIRE( (pos-begin()) >= 0 );
+        allocated += (allocated>>1);
+        Elem * futur = new Elem[allocated];
+        iterator newcont = futur;
+        iterator oldcont=_container;
+        for( ; oldcont != pos; ++oldcont,++newcont)
+            *newcont = *oldcont;
+        *newcont = c; 
+        iterator newpos = newcont;
+        for(++newcont ; oldcont != _finish; ++oldcont,++newcont)
+            *newcont = *oldcont;
+        size_t olds = size();
+        delete [] _container;
+        _container = futur;
+        _finish = _container + (++olds);
+        ENSURE( allocated >= size() );
+        return newpos;
+    }
+   
+
 
 };  
 
