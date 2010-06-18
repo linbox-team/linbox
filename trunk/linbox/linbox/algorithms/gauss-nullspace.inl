@@ -2,7 +2,7 @@
  * Copyright (C) LinBox 2008 
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <16 Jun 10 14:21:31 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <18 Jun 10 10:39:25 Jean-Guillaume.Dumas@imag.fr> 
  *
  * See COPYING for license information.
  */
@@ -29,15 +29,12 @@ namespace LinBox
         } else {
             unsigned long nullity = U.coldim()-rank;
             if (nullity != 0) {
-                    // compute U1 and U2T s.t. U = [ U1 | -U2T^T ]
-                Matrix U1(_F,rank,rank);
+                    // compute U2T s.t. U = [ U1 | -U2T^T ]
                 Matrix U2T(_F,nullity,rank);
 
                 for(typename Matrix::ConstRawIndexedIterator uit=U.rawIndexedBegin();
                     uit != U.rawIndexedEnd(); ++uit) {
-                    if (uit.colIndex()<rank)
-                        U1.setEntry(uit.rowIndex(),uit.colIndex(),uit.value());
-                    else
+                    if (uit.colIndex() >= rank)
                         U2T.setEntry(uit.colIndex()-rank,uit.rowIndex(),uit.value());
                 }
                 for(typename Matrix::RawIterator u2it=U2T.rawBegin();
@@ -50,7 +47,7 @@ namespace LinBox
                 for(size_t i=0; i<nullity; ++i) {
                     SparseVect W1Ti;
                         // Solve for upper part of basis
-                    upperTriangularSparseSolve(W1Ti, U1, U2T[i]);
+                    upperTriangularSparseSolve(W1Ti, rank, U, U2T[i]);
                         // Add identity for lower part
                     W1Ti.push_back( typename SparseVect::Element(rank+i, _F.one ) );
 
