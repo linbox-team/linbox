@@ -56,7 +56,7 @@ rationals, and finite fields.
 Matrices can be either dense, sparse or black box (i.e. viewed as a linear
 operator, acting on vectors only). The library proposes a set of high level
 linear algebra solutions, such as the rank, the determinant, the solution of a
-linear system, the smith normal form, the echelon form, the characteristic
+linear system, the Smith normal form, the echelon form, the characteristic
 polynomial, etc. Each of these solutions involves a hybrid combination of several specialized
 algorithms depending on the domain, and the type of matrix. Over a finite field,
 the building blocks are an efficient implementation of Wiedemann and block
@@ -95,7 +95,7 @@ much as possible. Every argument is passed as a reference, including
 the return types. More precisely the return value of a function is
 also the first argument, defined as a non const reference. 
 \begin{verbatim}
-Matrix & someFunction( Matrix & result, const XXX& args);
+Matrix& someFunction(Matrix& result, const XXX& args);
 \end{verbatim}
 This convention was already presented in \cite[\S 2.1]{jgd:2002:icms} for the
 design of field and ring arithmetic. It does require a redefinition of the interface
@@ -209,8 +209,8 @@ Computer algebra algorithms have three main characteristics:
 % 
   We have already defined several STL-like algorithms and the list
   will be extended in the near future:\\
-  {\bf for\_each, transform, accumulate
-    \footnote{\url{www.sgi.com/tech/stl}}}: the PBB
+  {\bf for\_each, transform,
+    accumulate\footnote{\url{www.sgi.com/tech/stl}}}: the PBB
   versions of these algorithms are similar to the STL versions 
   except that the involved operators (or function object classes), given as 
   parameters, are required to have their return value reference passed as the
@@ -241,10 +241,10 @@ Computer algebra algorithms have three main characteristics:
   depending on the target architecture.
   The parallel blocks can be implemented using many different parallel
   environments, such as
-  OpenMP\footnote{\url{openmp.org,threadingbuildingblocks.org}}; 
+  OpenMP\footnote{\url{openmp.org}, \url{threadingbuildingblocks.org}}; 
   % \cite{Chapman:2007:openmp}
-  TBB (Thread Building Blocks)
-  \footnotemark[7] or
+  TBB\footnotemark[7] (Thread Building Blocks)
+   or
   Kaapi~\cite{inproceedingsgautier.gbp_ktsrsf_07}; using
   both static and dynamic work-stealing
   schedulers~\cite{con-traore.trmgb_08}.
@@ -252,7 +252,7 @@ Computer algebra algorithms have three main characteristics:
 
 \subsection{\Accumulatewhile and early termination}
 To bound the complexity of many linear algebra problems, one of the
-key idea is to use an accumulation with {\em early termination}.
+key ideas is to use an accumulation with {\em early termination}.
 
 For instance, this is used in Chinese Remaindering algorithms. The
 computation is performed modulo a sequence of (co)prime numbers and
@@ -304,7 +304,7 @@ needed \cite[\S 7]{kaltofen:2005:memory}.
 Preliminary experiments on early terminated Chinese remaindering,
 not the easiest to parallelize, have demonstrated the advantage, in
 our setting, of TCMalloc over the others~\cite{jgd:2010:crt}.
-One of the main reason for that fact is that our problems required
+One of the main reasons for that fact is that our problems required
 many temporary allocations. This fits precisely the thread safe caching
 mechanism of TCMalloc.
 %
@@ -316,13 +316,13 @@ mechanism of TCMalloc.
 %\item 
 2) genericity with respect to the data structure of the matrices,
 %\item 
-3) genericity with the intermediate algorithms.
+3) genericity with respect to the intermediate algorithms.
 %\end{itemize}
 While this is efficient in terms of capabilities and code reusability, there is a combinatorial explosion of combinations.  Consider that each of 50 arithmetic domains may be combined with each of 50 matrix representations in each of 10 intermediate algorithm forms for a single problem as simple as matrix rank. This
 lengthens the compilation time and generates large executable files.
 
 For the management of code bloat \linbox has used an ``archetype
-mechanism'' which enable, at the user's option, to switch to a
+mechanism'' which enables, at the user's option, to switch to a
 compilation against abstract classes \cite[\S 2.1]{jgd:2002:icms}.
 However, this can reduce the efficiency of the library. Therefore, we propose
 here a way to provide a generic separate compilation. This will not
