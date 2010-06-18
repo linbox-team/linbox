@@ -309,7 +309,7 @@ class RandomSparseStream : public VectorStream<_Vector>
 	 * @param p Proportion of nonzero entries
 	 * @param m Number of vectors to return (0 for unlimited)
 	 */
-	RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0);
+	RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0, int seed=time (NULL));
 
 	/** Get next element
 	 * @param v Vector into which to generate random vector
@@ -361,9 +361,9 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::DenseVector
 		  MT (time (NULL))
 		{ linbox_check ((p >= 0.0) && (p <= 1.0)); _F.init (_zero, 0); }
 
-	RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0)
+	RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0, int seed=time (NULL))
 		: _F (F), _r1 (r), _r (F, _r1), _n (n), _p (p), _m (m), _j (0),
-		  MT (time (NULL))
+		  MT (seed)
 		{ linbox_check ((p >= 0.0) && (p <= 1.0)); _F.init (_zero, 0); }
 
 	Vector &get (Vector &v)
@@ -422,9 +422,9 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseSeque
 		  MT (time (NULL))
 		{ setP (p); }
 
-	RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0)
+	RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0, int seed=time (NULL))
 		: _F (F), _r1 (r), _r (F, _r1), _n (n), _p (p), _m (m), _j (0),
-		  MT (time (NULL))
+		  MT (seed)
 		{ setP (p); }
 
 	Vector &get (Vector &v) 
@@ -501,9 +501,9 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseAssoc
 		  MT (time (NULL))
 	{}
 
-	RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0)
+	RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0, int seed=time (NULL))
 		: _F (F), _r1 (F), _r (F, _r1), _n (n), _k ((long) (p * n)), _j (0), _m (m),
-		  MT (time (NULL))
+		  MT (seed)
 	{}
 
 	Vector &get (Vector &v) 
@@ -561,9 +561,9 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseParal
 		  MT (time (NULL))
 		{ setP (p); }
 
-	RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0)
+	RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0, int seed=time (NULL))
 		: _F (F), _r1 (r), _r (F, _r1), _n (n), _m (m), _j (0),
-		  MT (time (NULL))
+		  MT (seed)
 		{ setP (p); }
 
 	Vector &get (Vector &v) 
