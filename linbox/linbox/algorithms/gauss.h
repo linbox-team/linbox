@@ -186,7 +186,7 @@ namespace LinBox
 
             // Sparsest method
             //   erases elements while computing rank/det.
-	template <class Matrix,class Perm>
+	template <class Matrix>
 	unsigned long& InPlaceLinearPivoting(unsigned long &rank,
                                               Element& determinant,
                                               Matrix        &A,

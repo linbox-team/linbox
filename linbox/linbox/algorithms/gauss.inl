@@ -2,7 +2,7 @@
  * Copyright (C) 1999 Jean-Guillaume Dumas
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <16 Jun 10 13:29:40 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <18 Jun 10 15:48:38 Jean-Guillaume.Dumas@imag.fr> 
  *
  * See COPYING for license information.
  */
@@ -224,7 +224,7 @@ namespace LinBox
     }
         
     template <class _Field>
-    template <class Matrix, class Perm> inline unsigned long& 
+    template <class Matrix> inline unsigned long& 
     GaussDomain<_Field>::InPlaceLinearPivoting (unsigned long &rank,
                                                 Element        &determinant,
                                                 Matrix         &LigneA,
