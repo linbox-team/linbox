@@ -82,9 +82,13 @@ namespace LinBox
 	       
 		typedef int Element;
 		typedef ModularRandIter<int> RandIter;
+                
+                public:	       
+                    const Element zero,one;
+                    Element mone;
 
 		//default modular field,taking 65521 as default modulus
-		Modular () :modulus(65521) {
+		Modular () :modulus(65521),zero(0),one(1),mone(65520) {
 			modulusinv=1/(double)65521;
 			
 			_two64 = (int) ((uint64) (-1) % (uint64) 65521);
@@ -92,7 +96,7 @@ namespace LinBox
 			if (_two64 >= 65521) _two64 -= 65521;
 		}
 
-		Modular (int value)  : modulus(value) {
+		Modular (int value)  : modulus(value),zero(0),one(1),mone(value-1) {
 			modulusinv = 1 / ((double) value); 
 			if(value<=1) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
 			if(value>LINBOX_MAX_MODULUS) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
@@ -101,12 +105,13 @@ namespace LinBox
 			if (_two64 >= value) _two64 -= value;
 		}
 
-		Modular(const Modular<int>& mf) : modulus(mf.modulus),modulusinv(mf.modulusinv),_two64(mf._two64){}
+		Modular(const Modular<int>& mf) : modulus(mf.modulus),modulusinv(mf.modulusinv),_two64(mf._two64),zero(0),one(1),mone(mf.mone){}
 
 		Modular &operator=(const Modular<int> &F) {
 			modulus = F.modulus;
 			modulusinv = F.modulusinv;
 			_two64 = F._two64;
+                        mone = F.mone;
 			return *this;
 		}
 

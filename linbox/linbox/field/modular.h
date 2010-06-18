@@ -276,6 +276,8 @@ namespace LinBox
 	    public:
 		typedef _Element Element;
 		typedef typename ModularBase<_Element>::RandIter RandIter;
+            const Element zero,one;
+            Element mone;
 
 		/*- @name Object Management
 		 * @brief see \ref{FieldArchetype} for member specs.
@@ -285,21 +287,21 @@ namespace LinBox
 		//private:
 		/*- Default constructor.
 		 */
-		Modular () {}
+		Modular () : zero(0),one(1) {}
 
 		/*- Constructor from an element type
 		 * Sets the modulus of the field throug the static member of the 
 		 * element type.
 		 * @param modulus constant reference to integer prime modulus
 		 */
-		Modular (unsigned long modulus) : ModularBase<_Element> (modulus) {}
+		Modular (unsigned long modulus) : ModularBase<_Element> (modulus),zero(0),one(1) {}
 
 		/*- Constructor from an integer
 		 * Sets the modulus of the field throug the static member of the 
 		 * element type.
 		 * @param modulus constant reference to integer prime modulus
 		 */
-		Modular (const integer &modulus) : ModularBase<_Element> (modulus) {}
+		Modular (const integer &modulus) : ModularBase<_Element> (modulus),zero(0),one(1) {}
 
 		/* Assignment operator
 		 * Required by the archetype
@@ -624,22 +626,27 @@ namespace LinBox
 	    public:
 
 		typedef uint8 Element;
+            const Element zero,one;
+            Element mone;
 
-		Modular () : _k (0) {}
+		Modular () : zero(0),one(1),_k (0) {}
 		Modular (uint32 modulus)
 			: ModularBase<uint8> (modulus),
-			  _k (((uint64) -1LL) / ((modulus - 1) * (modulus - 1))),
-			  _pinv (1.0 / (double) ((uint8) modulus)) {}
+                    zero(0),one(1),mone(modulus-1),
+                    _k (((uint64) -1LL) / ((modulus - 1) * (modulus - 1))),
+                    _pinv (1.0 / (double) ((uint8) modulus)) {}
 		Modular (const integer &modulus)
 			: ModularBase<uint8> ((long) modulus),
-			  _k (((uint64) -1LL) / (((uint8)modulus - 1) * ((uint8)modulus - 1))),
-			  _pinv (1.0 / (double) ((uint8) modulus)) {}
+                    zero(0),one(1),mone(modulus-1),
+                    _k (((uint64) -1LL) / (((uint8)modulus - 1) * ((uint8)modulus - 1))),
+                    _pinv (1.0 / (double) ((uint8) modulus)) {}
 
 		const Modular &operator=(const Modular &F) 
 		{
 			ModularBase<uint8>::_modulus = F._modulus;
 			_k = F._k;
 			_pinv = F._pinv;
+                        mone = F.mone;
 			return *this;
 		}
 
@@ -781,13 +788,18 @@ namespace LinBox
 
 		typedef uint16 Element;
 
-		Modular () : _k (0) {}
+            const Element zero,one;
+            Element mone;
+
+		Modular () : zero(0),one(1),_k (0) {}
 		Modular (uint32 modulus)
 			: ModularBase<uint16> (modulus),
+                    zero(0),one(1),mone(modulus-1),
 			  _k (((uint64) -1LL) / ((ModularBase<Element>::_modulus - 1) * (ModularBase<Element>::_modulus - 1))),
 			  _pinv (1.0 / (double) ((uint16) ModularBase<Element>::_modulus)) {}
 		Modular (const integer &modulus)
 			: ModularBase<uint16> ((long) modulus),
+                    zero(0),one(1),mone(modulus-1),
 			  _k (((uint64) -1LL) / ((ModularBase<Element>::_modulus - 1) * (ModularBase<Element>::_modulus - 1))),
 			  _pinv (1.0 / (double) ((uint16) ModularBase<Element>::_modulus)) {}
 
@@ -937,14 +949,18 @@ namespace LinBox
 
 		typedef uint32 Element;
 
-		Modular () {}
-		Modular (uint32 modulus)  : ModularBase<uint32> (modulus) { init_two_64 (); }
-		Modular (const integer &modulus) : ModularBase<uint32> (modulus) { init_two_64 (); }
+            const Element zero,one;
+            Element mone;
+
+		Modular () :  zero(0),one(1) {}
+		Modular (uint32 modulus)  : ModularBase<uint32> (modulus),zero(0),one(1),mone(modulus-1)  { init_two_64 (); }
+		Modular (const integer &modulus) : ModularBase<uint32> (modulus),zero(0),one(1),mone(modulus-1)  { init_two_64 (); }
 
 		const Modular &operator=(const Modular &F) 
 		{
 			ModularBase<Element>::_modulus = F._modulus;
 			_two_64 = F._two_64;
+                        mone = F.mone;
 			return *this;
 		}
 

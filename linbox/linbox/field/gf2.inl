@@ -622,8 +622,6 @@ std::ostream &VectorDomain<GF2>::writeSpecialized (std::ostream &os, const Vecto
 	return os;
 }
 
-bool isdigit (std::basic_istream<char, std::char_traits<char> > &) { std::cout << "isdigit ? " << std::endl; exit(-4) ; } // BB isdigit ?
-
 template <class Vector>
 std::ostream &VectorDomain<GF2>::writeSpecialized (std::ostream &os, const Vector &x,
 						   VectorCategories::SparseZeroOneVectorTag) const
@@ -653,7 +651,7 @@ std::istream &VectorDomain<GF2>::readSpecialized (std::istream &is, const Vector
 	typename Vector::iterator i;
 	char c;
 
-	while (!isdigit (is >> c)) ;
+	do { is >> c ; } while (!std::isdigit (c));
 
 	is.unget ();
 
@@ -670,7 +668,7 @@ std::istream &VectorDomain<GF2>::readSpecialized (std::istream &is, const Vector
 	char c;
 	size_t idx;
 
-	while (!isdigit (is >> c)) ;
+	do { is >> c ; } while (!std::isdigit (c));
 
 	is.unget ();
 	x.clear ();
