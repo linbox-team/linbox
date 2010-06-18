@@ -25,6 +25,7 @@
 #include <vector> // For vectors in _col2row and _row2col
 #include <cstdlib> // For randomness in randomized quicksort
 #include <ctime>
+#include <iostream>
 
 namespace LinBox
 {
