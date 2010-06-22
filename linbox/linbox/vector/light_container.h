@@ -1,6 +1,6 @@
 // =================================================================== //
 // LightContainer : std::vector like container
-// Time-stamp: <16 Jun 10 13:04:02 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <22 Jun 10 11:56:15 Jean-Guillaume.Dumas@imag.fr> 
 // =================================================================== //
 #ifndef __Light_Container__ 
 #define __Light_Container__
@@ -138,6 +138,44 @@ public:
         return pos;
     }
 
+
+    iterator erase(iterator pos) {
+        REQUIRE( (pos-begin()) < (end()-begin()) );
+        REQUIRE( (pos-begin()) >= 0 );
+        STATE( size_t oldsize = size() );
+        iterator ppos=pos+1;
+        if ( ppos == _finish) {
+            pop_back();
+        } else {
+            *(pos)=*(ppos);
+            erase(ppos);
+        }
+        ENSURE( size() == oldsize-1 );
+        ENSURE( allocated >= size() );
+        ENSURE( _finish >= _container );
+        return pos;
+    }
+    
+    iterator erase(iterator first, iterator last) {
+        REQUIRE( (first-begin()) < (end()-begin()) );
+        REQUIRE( (last-begin()) <= (end()-begin()) );
+        REQUIRE( (last-first) > 0 );
+        REQUIRE( (first-begin()) >= 0 );
+        STATE( size_t oldsize = size() );
+        const size_t lmf = last-first;
+        if ( last == _finish) {
+            for(size_t i=0; i<lmf; ++i) pop_back();
+        } else {
+            iterator nf(first), nl(last);
+            for( ; (nf != last) && (nl != _finish); ++nf, ++nl)
+                *(nf) = *(nl);
+            erase(nf,nl);
+        }
+        ENSURE( size() == oldsize-lmf );
+        ENSURE( allocated >= size() );
+        ENSURE( _finish >= _container );
+        return first;
+    }
     
 /*
     friend std::ostream& operator<< (std::ostream& o, const Self_t& C) {
