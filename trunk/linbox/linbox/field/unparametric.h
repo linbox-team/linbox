@@ -25,6 +25,7 @@
  
 #ifndef __FIELD_UNPARAMETRIC_H
 #define __FIELD_UNPARAMETRIC_H
+#include <typeinfo>
 
 #include <string>
 #include <algorithm>
@@ -239,7 +240,7 @@ namespace LinBox
 		 * @return output stream to which field is written.
 		 * @param  os  output stream to which field is written.
 		 */
-		std::ostream &write (std::ostream &os) const { return os << "unparamterized field"; }
+		std::ostream &write (std::ostream &os) const { return os << "unparameterized field(" << sizeof(Element) <<',' << typeid(Element).name() << ')'; }
     
 		/** Read field.
 		 * @return input stream from which field is read.
