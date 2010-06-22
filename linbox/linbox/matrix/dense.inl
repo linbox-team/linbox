@@ -605,6 +605,7 @@ class DenseMatrixBase<Element>::ConstRawIndexedIterator
 	size_t _r_index;
 	size_t _c_index;
 	size_t _dim;
+    	typedef Element value_type;
 	typename Rep::const_iterator _begin;
 
     public:
@@ -694,6 +695,9 @@ class DenseMatrixBase<Element>::ConstRawIndexedIterator
 
 	size_t colIndex () const
 		{ return _c_index; }
+	
+    	const Element &value() const
+		{ return *(_begin + (_r_index * _dim + _c_index)); }
 };
 
 
