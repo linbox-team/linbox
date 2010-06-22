@@ -271,13 +271,13 @@ private:
 		typedef DenseMatrix<Field> FMatrix;
 		RandomPrimeIterator primeg(20);
 		Field F (*primeg);
-		FMatrix* FM;
+		FMatrix FM(F, IM.rowdim(), IM.coldim());
 		//std::cout << "Random prime " << p << "\n";
 		
 		Element zero; F. init (zero, 0);
 		MatrixHom::map (FM, IM, F);
 		VectorDomain<Field> VD(F);
-		FMatrix& M = *FM;
+		FMatrix& M = FM;
 
 		//typename FMatrix::RowIterator cur_r, tmp_r;
 		typedef FMatrix::Row Row;
@@ -327,8 +327,6 @@ private:
 			for (j = i + 1; j < n; ++ j)
 				F. assign (M[i][j], zero);
 		}
-
-		delete FM;
 
 		v. resize (n);
 		std::vector<int>::iterator i_p; int j;

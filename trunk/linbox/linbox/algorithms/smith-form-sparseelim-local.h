@@ -2,7 +2,7 @@
 #define __LINBOX_PP_GAUSS_H__
 // ========================================================================= //
 // (C) Givaro Team 1999
-// Time-stamp: <08 Dec 09 21:34:35 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <20 May 10 16:36:27 Jean-Guillaume.Dumas@imag.fr> 
 // ========================================================================= //
 
 #include <map>
@@ -380,6 +380,10 @@ namespace LinBox
                 if (c != -1)
                     for(unsigned long l=k + 1; l < Ni; ++l)
                         FaireElimination(MOD, LigneA[l], LigneA[k], indcol, c, col_density);
+
+
+//                 LigneA.write(cout << "step[" << k << "], pivot: " << c << std::endl) << endl;
+    
 #ifndef GIVARO_PRANK_OUT
                 LigneA[k] = Vzer;
 #endif

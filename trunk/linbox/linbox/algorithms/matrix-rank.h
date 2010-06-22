@@ -45,15 +45,13 @@ namespace LinBox
 
 			Field F (*rp);
 
-			DenseMatrix<Field>* Ap;
+			DenseMatrix<Field> Ap(F, A.rowdim(), A.coldim());
 
 			MatrixHom::map(Ap, A, F);
 
 			long result;
 
-			result = rankIn(*Ap);
-
-			delete Ap;
+			result = rankIn(Ap);
 
 			return result;
 		}
@@ -62,11 +60,9 @@ namespace LinBox
 		long rank(const SparseMatrix<Ring, Row>& A) const {
 
 			Field F (*rp);
-			typename MatrixHomTrait<SparseMatrix<Ring, Row>, Field>::value_type* Ap;
-			MatrixHom::map (Ap, A, F);
+			typename SparseMatrix<Ring, Row>::template rebind<Field>::other Ap(A, F);
 			long result;
-			result = rankIn (*Ap);
-			delete Ap;
+			result = rankIn (Ap);
 			return result;
 		}
 

@@ -1,5 +1,5 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// Time-stamp: <12 Jul 05 18:26:56 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <18 Jun 10 15:19:19 Jean-Guillaume.Dumas@imag.fr> 
 #ifndef __LINBOX_MATRIX_HOM_H__
 #define __LINBOX_MATRIX_HOM_H__
 
@@ -70,37 +70,37 @@ namespace LinBox {
 		//public:
 		
 		template<class FMatrix, class IMatrix, class Field>
-		void map (FMatrix* & Ap, const IMatrix& A, const Field& F) {
+		void map (FMatrix & Ap, const IMatrix& A, const Field& F) {
 			typename IMatrix::template rebind<Field>()( Ap, A, F);
                 }
 		
-		// construct a dense matrix over finite field, such that *Ap = A mod p, where F = Ring / <p>
+		// construct a dense matrix over finite field, such that Ap = A mod p, where F = Ring / <p>
 		template<class Field, class IMatrix>
-		void map (DenseMatrix<Field>* &Ap, const IMatrix& A, const Field& F);
+		void map (DenseMatrix<Field> &Ap, const IMatrix& A, const Field& F);
 		
-		// construct a dense matrix over finite field, such that *Ap = A mod p, where F = Ring / <p>
+		// construct a dense matrix over finite field, such that Ap = A mod p, where F = Ring / <p>
 		template<class Ring, class Field>
-		void map (DenseMatrixBase<typename Field::Element>* &Ap, const DenseMatrixBase<typename Ring::Element>& A, const Field& F){
+		void map (DenseMatrixBase<typename Field::Element> &Ap, const DenseMatrixBase<typename Ring::Element>& A, const Field& F){
 			typename DenseMatrixBase<typename Ring::Element>::template rebind<Field>()( Ap, A, F);
                 }
 		
-		// construct a sparse matrix over finite field, such that *Ap = A mod p, where F = Ring / <p>
+		// construct a sparse matrix over finite field, such that Ap = A mod p, where F = Ring / <p>
 		template<class Field, class Vect, class IMatrix>
-		void map (SparseMatrix<Field, Vect>* &Ap, const IMatrix& A, const Field &F);
+		void map (SparseMatrix<Field, Vect> &Ap, const IMatrix& A, const Field &F);
 
-		// construct a dense matrix over finite field, such that *Ap = A mod p, where F = Ring / <p>
+		// construct a dense matrix over finite field, such that Ap = A mod p, where F = Ring / <p>
 		template<class Ring, class Field>
-		void map (DenseMatrix<Field>* &Ap, const DenseMatrix<Ring>& A, const Field &F){
+		void map (DenseMatrix<Field> &Ap, const DenseMatrix<Ring>& A, const Field &F){
 			typename DenseMatrix<Ring>::template rebind<Field>()( Ap, A, F);
                 }
 
-		// construct a dense matrix over finite field, such that *Ap = A mod p, where F = Ring / <p>
+		// construct a dense matrix over finite field, such that Ap = A mod p, where F = Ring / <p>
 		template<class Ring, class Vect, class Field>
-		void map (DenseMatrix<Field>* &Ap, const SparseMatrix<Ring, Vect>& A, const Field &F);
+		void map (DenseMatrix<Field> &Ap, const SparseMatrix<Ring, Vect>& A, const Field &F);
 		
-		// construct a sparse matrix over finite field, such that *Ap = A mod p, where F = Ring / <p>
+		// construct a sparse matrix over finite field, such that Ap = A mod p, where F = Ring / <p>
 		template<class Ring, class Vect1, class Field, class Vect2>
-		void map (SparseMatrix<Field, Vect2>*& Ap, const SparseMatrix<Ring, Vect1>& A, const Field& F) {
+		void map (SparseMatrix<Field, Vect2>& Ap, const SparseMatrix<Ring, Vect1>& A, const Field& F) {
 			typename SparseMatrix<Ring,Vect1>::template rebind<Field,Vect2>()( Ap, A, F);
                 }
 
@@ -110,30 +110,30 @@ namespace LinBox {
 		template< class Field, class IMatrix, class Type>
 		class BlasBlackboxMAP {
 		public:
-			void operator() (BlasBlackbox<Field> *&Ap, const IMatrix& A, const Field& F, Type type);	       
+			void operator() (BlasBlackbox<Field> &Ap, const IMatrix& A, const Field& F, Type type);	       
 		};
 		
-		// construct a BlasBlackbox over finite fiel, such that *Ap - A mod p, where F = Ring / <p>
+		// construct a BlasBlackbox over finite fiel, such that Ap - A mod p, where F = Ring / <p>
 
 		template<class Ring, class Field>
-		void map (BlasBlackbox<Field>* &Ap, const BlasBlackbox<Ring>& A, const Field &F){
+		void map (BlasBlackbox<Field> &Ap, const BlasBlackbox<Ring>& A, const Field &F){
                     typename BlasBlackbox<Ring>::template rebind<Field>()( Ap, A, F);
                 }
 
 
 		template <class Field, class IMatrix>
-		void map (BlasBlackbox<Field> *&Ap, const IMatrix &A, const Field &F) {
+		void map (BlasBlackbox<Field> &Ap, const IMatrix &A, const Field &F) {
 			BlasBlackboxMAP<Field, IMatrix, typename MatrixContainerTrait<IMatrix>::Type> ()(Ap, A, F, typename MatrixContainerTrait<IMatrix>::Type());
 		}	
 	
 		template <class Field, class IPoly, class IMatrix>
-		void map (PolynomialBB< typename IMatrix::template rebind<Field>::other, typename IPoly::template rebind<Field>::other> *&Ap,
+		void map (PolynomialBB< typename IMatrix::template rebind<Field>::other, typename IPoly::template rebind<Field>::other> &Ap,
 				     const PolynomialBB<IMatrix, IPoly> &A, const Field & F){
 			typename PolynomialBB<IMatrix,IPoly>::template rebind<Field>() (Ap, A, F);
 		}
 
 		template <class Field, class Ring>
-		void map (ScalarMatrix<Field> *&Ap,
+		void map (ScalarMatrix<Field> &Ap,
 				     const ScalarMatrix<Ring> &A,
 				     const Field & F){
 			typename ScalarMatrix<Ring>::template rebind<Field>() (Ap, A, F);
@@ -142,9 +142,9 @@ namespace LinBox {
 	}		
 
 	template <class Field, class IMatrix>
-	void MatrixHom::map (DenseMatrix<Field>* &Ap, const IMatrix& A, const Field &F) {
+	void MatrixHom::map (DenseMatrix<Field>&Ap, const IMatrix& A, const Field &F) {
 
-		Ap = new DenseMatrix<Field>(F, A.rowdim(), A.coldim());
+// 		Ap = new DenseMatrix<Field>(F, A.rowdim(), A.coldim());
 
 		typedef typename IMatrix::Field Ring;
 
@@ -166,7 +166,7 @@ namespace LinBox {
 
 		Hom<Ring, Field> hom(A. field(), F);
 
-		for (col_p = Ap -> colBegin(), e_p = e.begin();
+		for (col_p = Ap.colBegin(), e_p = e.begin();
 		     e_p != e.end(); ++ col_p, ++ e_p) {
 			
 			r.assign(*e_p, one);
@@ -184,9 +184,9 @@ namespace LinBox {
 
 
 	template <class Field, class Vect, class IMatrix>
-	void MatrixHom::map (SparseMatrix<Field, Vect>* &Ap, const IMatrix& A, const Field &F) {
+	void MatrixHom::map (SparseMatrix<Field, Vect> &Ap, const IMatrix& A, const Field &F) {
 
-		Ap = new SparseMatrix<Field, Vect>(F, A.rowdim(), A.coldim());
+// 		Ap = new SparseMatrix<Field, Vect>(F, A.rowdim(), A.coldim());
 
 		typedef typename IMatrix::Field Ring;
 
@@ -215,7 +215,7 @@ namespace LinBox {
 			for (iter=tmp.begin(),j=0; iter != tmp.end(); ++iter,j++) {
 				hom. image (val, *iter);
 				if (!F.isZero(val)) 
-					Ap -> setEntry (j,i, val);		
+					Ap.setEntry (j,i, val);		
 			
 			}
 			r.assign(*e_p, zero);
@@ -227,13 +227,13 @@ namespace LinBox {
 
 
 	template <class Ring, class Vect, class Field>
-	void MatrixHom::map (DenseMatrix<Field>*& Ap, const SparseMatrix<Ring, Vect>& A, const Field &F) {
+	void MatrixHom::map (DenseMatrix<Field>& Ap, const SparseMatrix<Ring, Vect>& A, const Field &F) {
 	
-		Ap = new DenseMatrix<Field>(F, A.rowdim(), A.coldim());
+// 		Ap = new DenseMatrix<Field>(F, A.rowdim(), A.coldim());
 		
 		typename DenseMatrix<Field>::Element zero; F. init (zero, 0);
 		typename DenseMatrix<Field>::RawIterator raw_p;
-		for (raw_p = Ap -> rawBegin(); raw_p != Ap -> rawEnd(); ++ raw_p)
+		for (raw_p = Ap.rawBegin(); raw_p != Ap.rawEnd(); ++ raw_p)
 			F. assign (*raw_p, zero);
 		
 		typename SparseMatrix<Ring, Vect>::ConstRowIterator row_p;
@@ -255,7 +255,7 @@ namespace LinBox {
 				hom. image (e, *e_p);
 				
 				if (!F.isZero(e)) 
-					Ap -> setEntry (i, *j_p, e);		
+					Ap.setEntry (i, *j_p, e);		
 				
 			}
 		
@@ -266,9 +266,9 @@ namespace LinBox {
 		template<class Field, class IMatrix>
 		class BlasBlackboxMAP<Field, IMatrix, MatrixContainerCategory::Blackbox> {
 		public:
-			void operator() (BlasBlackbox<Field> *&Ap, const IMatrix &A,  const Field &F, MatrixContainerCategory::Blackbox type) {
+			void operator() (BlasBlackbox<Field> &Ap, const IMatrix &A,  const Field &F, MatrixContainerCategory::Blackbox type) {
 
-				Ap = new BlasBlackbox<Field>(F, A.rowdim(), A.coldim());
+// 				Ap = new BlasBlackbox<Field>(F, A.rowdim(), A.coldim());
 
 				typedef typename IMatrix::Field Ring;
 				Ring r = A.field();
@@ -287,7 +287,7 @@ namespace LinBox {
 			
 				Hom<Ring, Field> hom(A. field(), F);
 			
-				for (col_p = Ap -> colBegin(), e_p = e.begin();
+				for (col_p = Ap.colBegin(), e_p = e.begin();
 				     e_p != e.end(); ++ col_p, ++ e_p) {
 				
 					r.assign(*e_p, one);			
@@ -305,8 +305,8 @@ namespace LinBox {
 		template<class Field, class IMatrix>
 		class BlasBlackboxMAP<Field, IMatrix, MatrixContainerCategory::Container> {
 		public:
-			void operator() (BlasBlackbox<Field> *&Ap, const IMatrix &A, const Field &F, MatrixContainerCategory::Container type) {
-				Ap = new BlasBlackbox<Field>(F, A.rowdim(), A.coldim());
+			void operator() (BlasBlackbox<Field> &Ap, const IMatrix &A, const Field &F, MatrixContainerCategory::Container type) {
+// 				Ap = new BlasBlackbox<Field>(F, A.rowdim(), A.coldim());
 				Hom<typename IMatrix::Field , Field> hom(A.field(), F);
 				typename Field::Element e, zero;
 				F.init(zero,0UL);
@@ -317,10 +317,10 @@ namespace LinBox {
 					hom. image (e, A.getEntry(indices.rowIndex(),indices.colIndex()) );
 				
 					if (!F.isZero(e)) 
-						Ap -> setEntry (indices.rowIndex(), 
+						Ap.setEntry (indices.rowIndex(), 
 								indices.colIndex(), e);
 					else 
-						Ap -> setEntry (indices.rowIndex(), 
+						Ap.setEntry (indices.rowIndex(), 
 								indices.colIndex(), zero);
 				}
 
@@ -331,12 +331,12 @@ namespace LinBox {
 		template<class Field, class IMatrix>
 		class BlasBlackboxMAP<Field, IMatrix, MatrixContainerCategory::BlasContainer> {
 		public:
-			void operator() (BlasBlackbox<Field> *&Ap, const IMatrix &A, const Field &F, MatrixContainerCategory::BlasContainer type) {			
-				Ap = new BlasBlackbox<Field>(F, A.rowdim(), A.coldim());
+			void operator() (BlasBlackbox<Field> &Ap, const IMatrix &A, const Field &F, MatrixContainerCategory::BlasContainer type) {			
+// 				Ap = new BlasBlackbox<Field>(F, A.rowdim(), A.coldim());
 				Hom<typename IMatrix::Field , Field> hom(A.field(), F);
 			
 				typename IMatrix::ConstRawIterator        iterA  = A.rawBegin();
-				typename BlasBlackbox<Field>::RawIterator iterAp = Ap->rawBegin();
+				typename BlasBlackbox<Field>::RawIterator iterAp = Ap.rawBegin();
 			
 				for(; iterA != A.rawEnd(); iterA++, iterAp++)
 					hom. image (*iterAp, *iterA);
@@ -348,30 +348,30 @@ namespace LinBox {
 		template< class IMatrix>
 		class BlasBlackboxMAP<MultiModDouble, IMatrix, MatrixContainerCategory::BlasContainer > {
 		public:
-			void operator() (BlasBlackbox<MultiModDouble> *&Ap, const IMatrix &A, const MultiModDouble &F,  MatrixContainerCategory::BlasContainer type) {
-				Ap = new BlasBlackbox<MultiModDouble>(F, A.rowdim(), A.coldim());
+			void operator() (BlasBlackbox<MultiModDouble> &Ap, const IMatrix &A, const MultiModDouble &F,  MatrixContainerCategory::BlasContainer type) {
+// 				Ap = new BlasBlackbox<MultiModDouble>(F, A.rowdim(), A.coldim());
 				for (size_t i=0; i<F.size();++i)
-					MatrixHom::map(Ap->getMatrix(i), A, F.getBase(i));
+					MatrixHom::map(Ap.getMatrix(i), A, F.getBase(i));
 			}					
 		};
 		
 		template< class IMatrix>
 		class BlasBlackboxMAP<MultiModDouble, IMatrix, MatrixContainerCategory::Container > {
 		public:
-			void operator() (BlasBlackbox<MultiModDouble> *&Ap, const IMatrix &A, const MultiModDouble &F,  MatrixContainerCategory::Container type) {
-				Ap = new BlasBlackbox<MultiModDouble>(F, A.rowdim(), A.coldim());
+			void operator() (BlasBlackbox<MultiModDouble> &Ap, const IMatrix &A, const MultiModDouble &F,  MatrixContainerCategory::Container type) {
+// 				Ap = new BlasBlackbox<MultiModDouble>(F, A.rowdim(), A.coldim());
 				for (size_t i=0; i<F.size();++i)
-					MatrixHom::map(Ap->getMatrix(i), A, F.getBase(i));
+					MatrixHom::map(Ap.getMatrix(i), A, F.getBase(i));
 			}					
 		};
 		
 		template< class IMatrix>
 		class BlasBlackboxMAP<MultiModDouble, IMatrix, MatrixContainerCategory::Blackbox > {
 		public:
-			void operator() (BlasBlackbox<MultiModDouble> *&Ap, const IMatrix &A, const MultiModDouble &F,  MatrixContainerCategory::Blackbox type) {
-				Ap = new BlasBlackbox<MultiModDouble>(F, A.rowdim(), A.coldim());
+			void operator() (BlasBlackbox<MultiModDouble> &Ap, const IMatrix &A, const MultiModDouble &F,  MatrixContainerCategory::Blackbox type) {
+// 				Ap = new BlasBlackbox<MultiModDouble>(F, A.rowdim(), A.coldim());
 				for (size_t i=0; i<F.size();++i)
-					MatrixHom::map(Ap->getMatrix(i), A, F.getBase(i));
+					MatrixHom::map(Ap.getMatrix(i), A, F.getBase(i));
 			}					
 		};
 	}

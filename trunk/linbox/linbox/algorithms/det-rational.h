@@ -91,17 +91,13 @@ struct MyRationalModularDet {
 	template<typename Int, typename Field>
 	Int& operator()(Int& P, const Field& F) const {
 		typedef typename Blackbox::template rebind<Field>::other FBlackbox;
-		FBlackbox * Ap;
-		MatrixHom::map(Ap, A, F);
-		det (P, *Ap, typename FieldTraits<Field>::categoryTag(), M);
+		FBlackbox Ap(A, F);
+		det (P, Ap, typename FieldTraits<Field>::categoryTag(), M);
 		typename Field::Element e;
 		F.init(e, mul);
 		F.mulin(P,e);
 		F.init(e, div);
-		F.divin(P,e);
-		
-		delete Ap;
-		return P;
+		return F.divin(P,e);
 	}
 };
 
@@ -121,13 +117,8 @@ struct MyIntegerModularDet {
 	template<typename Int, typename Field>
 	Int& operator()(Int& P, const Field& F) const {
 		typedef typename Blackbox::template rebind<Field>::other FBlackbox;
-		FBlackbox * Ap;
-		MatrixHom::map(Ap, A, F);
-
-		det( P, *Ap, typename FieldTraits<Field>::categoryTag(), M);
-                
-		delete Ap;
-		return P;
+		FBlackbox Ap(A, F);
+		return det( P, Ap, typename FieldTraits<Field>::categoryTag(), M);
 	}
 };
 
