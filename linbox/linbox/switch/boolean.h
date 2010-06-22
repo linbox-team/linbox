@@ -100,11 +100,6 @@ class BooleanSwitch
         { 
             typedef BooleanSwitch other;
 
-                // special rebind operator() with two fields, 
-                // indeed local field is not stored in the switch
-            void operator() (other *& Ap, const Self_t& A, const _Tp1& T) {
-                Ap = new other(A._s);
-            }
         };
     
     protected:
