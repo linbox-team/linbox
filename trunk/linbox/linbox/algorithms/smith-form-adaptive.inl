@@ -47,12 +47,11 @@ namespace LinBox {
 		if (p == 2) {
 			 report << "      Compute local smith at 2^32 using special Local2_32\n";
 			 Local2_32 R;
-			 DenseMatrix <Local2_32>* A_local; 
 			 std::list <Local2_32::Element> l;
 			 SmithFormLocal<Local2_32> SF;
+			 DenseMatrix <Local2_32> A_local(R, A.rowdim(),A.coldim()); 
 			 MatrixHom::map (A_local, A, R);
-			 SF (l, *A_local, R);
-			 delete A_local;
+			 SF (l, A_local, R);
 			 std::list <Local2_32::Element>::iterator l_p;
 			 std::vector <integer>::iterator s_p;
 			 for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() + order; ++ s_p, ++ l_p) 
@@ -90,10 +89,8 @@ namespace LinBox {
 			typedef Modular<int32> Field;
 			typedef DenseMatrix<Field> FMatrix;
 			MatrixRank<typename Matrix::Field, Field> MR;
-			Field F(p); FMatrix* A_local;
-			MatrixHom::map (A_local, A, F);
-			long rank = MR. rankIn (*A_local);
-			delete A_local;
+			Field F(p); FMatrix A_local(A, F);
+			long rank = MR. rankIn (A_local);
 
 			std::vector <integer>::iterator s_p;
 			for (s_p = s. begin(); s_p != s. begin() + (long) rank; ++ s_p)
@@ -107,12 +104,11 @@ namespace LinBox {
 			long m = 1; int i = 0; for (i = 0; i < e; ++ i) m *= p;
 			typedef PIRModular<int32> PIR;
 			PIR R(m);
-			DenseMatrix <PIR>* A_local; 
+			DenseMatrix <PIR> A_local(R, A.rowdim(), A.coldim()); 
 			SmithFormLocal <PIR> SF;
 			std::list <PIR::Element> l; 
 			MatrixHom::map (A_local, A, R);
-			SF (l, *A_local, R);
-			delete A_local;
+			SF (l, A_local, R);
 			std::list <PIR::Element>::iterator l_p;
 			std::vector <integer>::iterator s_p;
 			for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() + order; ++ s_p, ++ l_p)
@@ -137,12 +133,11 @@ namespace LinBox {
 		if (1) {
 			report << "      Compute local Smith at " << p << '^' << e << " over PIR-ntl-ZZ_p\n";
 			PIR_ntl_ZZ_p R(m);
-			DenseMatrix <PIR_ntl_ZZ_p>* A_local; 
+			DenseMatrix <PIR_ntl_ZZ_p> A_local(R, A.rowdim(), A.coldim()); 
 			SmithFormLocal <PIR_ntl_ZZ_p> SF;
 			std::list <PIR_ntl_ZZ_p::Element> l; 
 			MatrixHom::map (A_local, A, R);
-			SF (l, *A_local, R);
-			delete A_local;
+			SF (l, A_local, R);
 			std::list <PIR_ntl_ZZ_p::Element>::iterator l_p;
 			std::vector <integer>::iterator s_p;
 			for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() + order; ++ s_p, ++ l_p)
@@ -235,13 +230,12 @@ namespace LinBox {
 		else if ( m <=  PIRModular<int32>::getMaxModulus() ) {
 			report << "    Elimination starts:\n";
 			PIRModular<int32> R (m);
-			DenseMatrix<PIRModular<int32> >* A_ilio;
+			DenseMatrix<PIRModular<int32> > A_ilio(R, A.rowdim(), A.coldim());
 			MatrixHom::map (A_ilio, A, R);
-			SmithFormIliopoulos::smithFormIn (*A_ilio);
+			SmithFormIliopoulos::smithFormIn (A_ilio);
 			int i; std::vector<integer>::iterator s_p;
 			for (i = 0, s_p = s. begin(); s_p != s. begin() + order; ++ i, ++ s_p)
-				R. convert(*s_p, (*A_ilio) [i][i]);
-			delete A_ilio;
+				R. convert(*s_p, A_ilio[i][i]);
 			report << "    Elimination ends.\n";
 		}
 		// else if bisection possible
@@ -267,13 +261,12 @@ namespace LinBox {
 		else {
 			report << "    Elimination start:\n";
 			PIR_ntl_ZZ_p R (m);
-			DenseMatrix<PIR_ntl_ZZ_p>* A_ilio;
+			DenseMatrix<PIR_ntl_ZZ_p> A_ilio(R, A.rowdim(), A.coldim());
 			MatrixHom::map (A_ilio, A, R);
-			SmithFormIliopoulos::smithFormIn (*A_ilio);
+			SmithFormIliopoulos::smithFormIn (A_ilio);
 			int i; std::vector<integer>::iterator s_p;
 			for (i = 0, s_p = s. begin(); s_p != s. begin() + order; ++ i, ++ s_p)
-				R. convert(*s_p, (*A_ilio) [i][i]);
-			delete A_ilio;
+                            R. convert(*s_p, A_ilio[i][i]);
 			report << "    Elimination ends.\n";
 		}
 		report << "Compuation of the k-rough part of the invariant factors finishes.\n";
@@ -354,12 +347,11 @@ namespace LinBox {
 		report <<"   Compute the degree of min poly of AA^T: \n";
 		typedef Modular<int> Field;
 		integer Val; Field::Element v; unsigned long degree;
-		typename MatrixHomTrait<Matrix, Field>::value_type* Ap;
 		RandomPrimeIterator rg ((int)(log( (double)(Field::getMaxModulus()) ) / M_LN2 - 2));
 		Field F (*rg); 
+		typename MatrixHomTrait<Matrix, Field>::value_type Ap(F, A.rowdim(), A.coldim());
 		MatrixHom::map (Ap, A, F);
-		Valence::one_valence (v, degree, *Ap);
-		delete Ap;
+		Valence::one_valence (v, degree, Ap);
 		report <<"   Degree of minimal polynomial of AA^T = " << degree << '\n';
 		// if degree is small
 		if (degree < sqrt(double(order))) {
@@ -392,10 +384,11 @@ namespace LinBox {
 		OIF oif; oif. setThreshold  (4); oif.getLastInvariantFactor().setThreshold (6);
 		typename Ring::Element _lif, _bonus; integer lif, bonus;
 		//Chnage A to DenseMatrix
-		DenseMatrix<Ring>* DA; Ring R(A. field());
-		MatrixHom::map (DA, A, R);
+		Ring R(A. field());
+		DenseMatrix<Ring> DA(R,A.rowdim(),A.coldim()); 
+                MatrixHom::map (DA, A, R);
 		do {
-			oif. oneInvariantFactor_Bonus (_lif, _bonus, *DA, (int)r);
+			oif. oneInvariantFactor_Bonus (_lif, _bonus, DA, (int)r);
 		
 			A. field(). convert (lif, _lif); A. field(). convert (bonus, _bonus);
 			//oif. oneInvariantFactor (bonus, A, (int)r);
@@ -415,7 +408,7 @@ namespace LinBox {
 		// bonus assigns to its rough part
 		bonus = gcd (bonus, r_mod);
 		std::vector<integer> smooth (order), rough (order);
-		smithFormRough (rough, *DA, bonus); delete DA;
+		smithFormRough (rough, DA, bonus);
 		smithFormSmooth (smooth, A, r, e); 
 		//fixed the rough largest invariant factor
 		if (r > 0) rough[r-1] = r_mod;
@@ -470,11 +463,11 @@ namespace LinBox {
 		report <<"   Compute the degree of min poly of AA^T: \n";
 		typedef Modular<int> Field;
 		integer Val; Field::Element v; unsigned long degree;
-		typename MatrixHomTrait<DenseMatrix<IRing>, Field>::value_type* Ap;
 		RandomPrimeIterator rg ((int)(log( (double)(Field::getMaxModulus()) ) / M_LN2 - 2));
-		Field F (*rg); MatrixHom::map (Ap, A, F);
-		Valence::one_valence (v, degree, *Ap);
-		delete Ap;
+		Field F (*rg); 
+		typename MatrixHomTrait<DenseMatrix<IRing>, Field>::value_type Ap(F,A.rowdim(),A.coldim());
+                MatrixHom::map (Ap, A, F);
+		Valence::one_valence (v, degree, Ap);
 		report <<"   Degree of minial polynomial of AA^T = " << degree << '\n';
 		// if degree is small
 		if (degree < sqrt(double(order))) {
