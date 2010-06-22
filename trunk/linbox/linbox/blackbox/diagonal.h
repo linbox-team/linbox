@@ -124,20 +124,32 @@ namespace LinBox
                         
                         Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);
 
-                        typename std::vector<typename _Tp1::Element>::iterator nit = Ap._v.begin();
-                        typename std::vector<Element>::const_iterator oit = A._v.begin();
-                        for( ; oit != A._v.end() ; ++nit, ++oit)
+                        typename std::vector<typename _Tp1::Element>::iterator nit = Ap.getData().begin();
+                        typename std::vector<Element>::const_iterator oit = A.getData().begin();
+                        for( ; oit != A.getData().end() ; ++nit, ++oit)
                             hom.image (*nit, *oit);
                     }
  
             };
 
-		std::ostream& write(std::ostream& out)
-		{	out << "diag(";
-		 	for (typename std::vector<Element>::iterator p = _v.begin(); p != _v.end(); ++p)
-				_F.write(out, *p) << ", ";
-			return out << "\b\b)";
-		}
+            template<typename _Tp1, typename _Vc1>
+            Diagonal(const Diagonal<_Tp1,_Vc1>& D, const Field& F)
+                    : _F(F), _n(D.rowdim()), _v(D.rowdim()) {
+                typename Diagonal<_Tp1,_Vc1>::template rebind<Field>() (*this, D, F);
+            }
+            
+            
+
+
+            std::ostream& write(std::ostream& out) {	
+                out << "diag(";
+                for (typename std::vector<Element>::iterator p = _v.begin(); p != _v.end(); ++p)
+                    _F.write(out, *p) << ", ";
+                return out << "\b\b)";
+            }
+
+            const std::vector<Element>& getData() const { return _v; }
+            std::vector<Element>& getData() { return _v; }
 
 	    private:
 
@@ -195,21 +207,29 @@ namespace LinBox
             template<typename _Tp1>
             struct rebind
             { typedef Diagonal<_Tp1, VectorCategories::SparseSequenceVectorTag> other; 
-                void operator() (other *& Ap, const Self_t& A, const _Tp1& F) 
+                void operator() (other & Ap, const Self_t& A, const _Tp1& F) 
                     {
-                        
-                        std::vector<typename _Tp1::Element> nv(A._v.size());
+
                         Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);
 
-                        typename std::vector<typename _Tp1::Element>::iterator nit = nv.begin();
-                        typename std::vector<Element>::const_iterator oit = A._v.begin();
-                        for( ; nit != nv.end() ; ++nit, ++oit)
+                        typename std::vector<typename _Tp1::Element>::iterator nit = Ap.getData().begin();
+                        typename std::vector<Element>::const_iterator oit = A.getData().begin();
+                        for( ; oit != A.getData().end() ; ++nit, ++oit)
                             hom.image (*nit, *oit);
-                        Ap = new other(F, nv);
                     }
  
             };
 
+            template<typename _Tp1, typename _Vc1>
+            Diagonal(const Diagonal<_Tp1,_Vc1>& D, const Field& F)
+                    : _F(F), _n(D.rowdim()), _v(D.rowdim()) {
+                typename Diagonal<_Tp1,_Vc1>::template rebind<Field>() (*this, D, F);
+            }
+            
+            
+
+            const std::vector<Element>& getData() const { return _v; }
+            std::vector<Element>& getData() { return _v; }
 
 
 	    private:
@@ -270,21 +290,28 @@ namespace LinBox
             template<typename _Tp1>
             struct rebind
             { typedef Diagonal<_Tp1, VectorCategories::SparseAssociativeVectorTag> other; 
-                void operator() (other *& Ap, const Self_t& A, const _Tp1& F) 
+                void operator() (other & Ap, const Self_t& A, const _Tp1& F) 
                     {
-                        
-                        std::vector<typename _Tp1::Element> nv(A._v.size());
                         Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);
 
-                        typename std::vector<typename _Tp1::Element>::iterator nit = nv.begin();
-                        typename std::vector<Element>::const_iterator oit = A._v.begin();
-                        for( ; nit != nv.end() ; ++nit, ++oit)
+                        typename std::vector<typename _Tp1::Element>::iterator nit = Ap.getData().begin();
+                        typename std::vector<Element>::const_iterator oit = A.getData().begin();
+                        for( ; oit != A.getData().end() ; ++nit, ++oit)
                             hom.image (*nit, *oit);
-                        Ap = new other(F, nv);
                     }
  
             };
 
+            template<typename _Tp1, typename _Vc1>
+            Diagonal(const Diagonal<_Tp1,_Vc1>& D, const Field& F)
+                    : _F(F), _n(D.rowdim()), _v(D.rowdim()) {
+                typename Diagonal<_Tp1,_Vc1>::template rebind<Field>() (*this, D, F);
+            }
+            
+            const std::vector<Element>& getData() const { return _v; }
+            std::vector<Element>& getData() { return _v; }
+
+            
 
 	    private:
 

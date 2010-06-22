@@ -5,6 +5,7 @@
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
  *
+ * Time-stamp: <22 Jun 10 15:59:39 Jean-Guillaume.Dumas@imag.fr>
  * --------------------------------------------------------
  *
  * See COPYING for license information
