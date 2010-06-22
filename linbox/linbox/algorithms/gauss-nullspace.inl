@@ -2,7 +2,7 @@
  * Copyright (C) LinBox 2008 
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * Time-stamp: <18 Jun 10 15:08:49 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <21 Jun 10 14:43:11 Jean-Guillaume.Dumas@imag.fr> 
  *
  * See COPYING for license information.
  */
@@ -10,6 +10,7 @@
 #ifndef __GAUSS_NULLSPACE_INL
 #define __GAUSS_NULLSPACE_INL
 
+#include "linbox/blackbox/sparse.h"
 #include "linbox/algorithms/gauss.h"
 #include "linbox/algorithms/triangular-solve.h"
 #include "linbox/blackbox/permutation.h"
