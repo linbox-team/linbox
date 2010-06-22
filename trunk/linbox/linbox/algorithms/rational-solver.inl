@@ -508,14 +508,14 @@ namespace LinBox {
 		//m = n = root(tmp,3); // wrong # args to root. -bds
 		m = n = root(tmproot, tmp,3);
 		m = n = tmproot;
-		std::cout<<"block factor= "<<m<<"\n";;
+// 		std::cout<<"block factor= "<<m<<"\n";;
 		typedef SparseMatrix<Field> FMatrix;		
 
 		Field F(_prime);
 		FMatrix Ap(A, F);
 		Transpose<FMatrix > Bp(Ap);
-		std::cout<<"Ap:\n";
-		Ap.write(std::cout);
+// 		std::cout<<"Ap:\n";
+// 		Ap.write(std::cout);
 		typedef BlockWiedemannLiftingContainer<Ring, Field, Transpose<IMatrix >, Transpose<FMatrix > > LiftingContainer;
 		
 		Transpose<IMatrix> B(A);
@@ -589,7 +589,7 @@ namespace LinBox {
 	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solveNonsingular 
 	(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, bool oldMatrix, int maxPrimes) const {
 
-		cout<<"DIXON\n\n\n\n";
+// 		cout<<"DIXON\n\n\n\n";
 #ifdef DEBUG_DIXON
 		std::cout << "entering nonsingular solver\n";
 #endif

@@ -96,10 +96,10 @@ namespace LinBox
 				FM* depend = NULL;
 				for (size_t j = 1; j <= exp[i]; ++j){
 					IntPoly * tmp2 = new IntPoly(*tmp);
-					FieldPoly * tmp2p;
+					FieldPoly tmp2p(tmp2->size());
 					typename IntPoly::template rebind<Field>() (tmp2p, *tmp2, F);
 
-					FFM = new FM (tmp2p, tmp2, 0, depend);
+					FFM = new FM (&tmp2p, tmp2, 0, depend);
 					factCharPoly.insert (pair<size_t, FM*> (deg, FFM));
 					factnum++;
 					depend = FFM;
@@ -113,19 +113,18 @@ namespace LinBox
 				goal -= deg-intFactors[i]->size()+1;
 				leadingBlocks.insert (pair<FM*,bool>(FFM,false));
 			} else {
-				FieldPoly * fp;
-				typename IntPoly::template rebind<Field>() (fp, *intFactors[i], F);
-				FFM = new FM (fp,intFactors[i],1,NULL);
+				FieldPoly fp( intFactors[i]->size());
+				typename IntPoly::template rebind<Field>() (fp, *(intFactors[i]), F);
+				FFM = new FM (&fp,intFactors[i],1,NULL);
 				factCharPoly.insert (pair<size_t, FM* > (intFactors[i]->size()-1, FFM));
 				leadingBlocks.insert (pair<FM*,bool>(FFM,false));
 				goal -= deg;
 			}
 		}
 		 
- 		FieldBlackbox * Ap;
- 		MatrixHom::map(Ap, A, F);
+ 		FieldBlackbox Ap(A, F);
 		
-		findMultiplicities (*Ap, factCharPoly, leadingBlocks, goal, M);
+		findMultiplicities (Ap, factCharPoly, leadingBlocks, goal, M);
 
  		// Building the integer charpoly
 		IntPoly intCharPoly (n+1);
@@ -135,7 +134,6 @@ namespace LinBox
 			IPD.pow (tmpP, *it_f->second->intP, it_f->second->multiplicity);
 			IPD.mulin (intCharPoly, tmpP);
 			delete it_f->second->intP;
-			delete it_f->second->fieldP;
 			delete it_f->second;
 		}
 		commentator.stop ("done", NULL, "IbbCharpoly");

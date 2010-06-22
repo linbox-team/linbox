@@ -118,16 +118,16 @@ bool testRandom(const Ring& R,
 			
 			PIR_ntl_ZZ_p PIR(s);
 			
-			DenseMatrix<PIR_ntl_ZZ_p>* Ap;
+			DenseMatrix<PIR_ntl_ZZ_p> Ap(PIR, A.rowdim(), A.coldim());
 			
 			MatrixHom::map (Ap, A, PIR);
 			
-			SmithFormIliopoulos::smithFormIn (*Ap);
+			SmithFormIliopoulos::smithFormIn (Ap);
 			
 			report << "Computed Smith form: \n";
 			
 			for ( unsigned int i = 0; i < A. rowdim(); ++ i)
-				report << (*Ap)[i][i] << " ";
+				report << Ap[i][i] << " ";
 			
 			report << '\n';
 			
@@ -138,15 +138,14 @@ bool testRandom(const Ring& R,
 			
 			for (p1 = x. begin(); p1 != x. end(); ++ p1, ++ i) {
 				
-				if (PIR.isZero((*Ap)[i][i])) 
+				if (PIR.isZero(Ap[i][i])) 
 					
 					R.assign (*p1, s);
 				
 				else
 					
-					R.assign (*p1, NTL::rep((*Ap)[i][i]));
+					R.assign (*p1, NTL::rep(Ap[i][i]));
 			}
-			delete Ap;
 		}
 
 		else {
@@ -155,17 +154,17 @@ bool testRandom(const Ring& R,
 		
 			PIRModular<int32> PIR(s % LINBOX_MAX_MODULUS);
 			
-			DenseMatrix<PIRModular<int32> >* Ap;
+			DenseMatrix<PIRModular<int32> > Ap(PIR, A.rowdim(), A.coldim());
 			
 			MatrixHom::map (Ap, A, PIR);
 			
-			SmithFormIliopoulos::smithFormIn (*Ap);
+			SmithFormIliopoulos::smithFormIn (Ap);
 			
 			
 			report << "Computed Smith form: \n";
  
 			for ( unsigned int i = 0; i < A. rowdim(); ++ i)
-				report << (*Ap)[i][i] << " ";
+				report << Ap[i][i] << " ";
 			
 			report << '\n';
 			
@@ -175,16 +174,14 @@ bool testRandom(const Ring& R,
 			
 			for (p1 = x. begin(); p1 != x. end(); ++ p1, ++ i) {
 				
-				if (PIR.isZero((*Ap)[i][i]))
+				if (PIR.isZero(Ap[i][i]))
 					
 					R.assign (*p1, s);
 				
 				else
  
-					R.init (*p1, (*Ap)[i][i]);
+					R.init (*p1, Ap[i][i]);
 			}
-			delete Ap;
-						
 		}
 			
 		typename std::vector<typename Ring::Element>::iterator p1, p2;
