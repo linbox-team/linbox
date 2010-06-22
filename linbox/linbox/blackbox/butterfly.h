@@ -137,9 +137,9 @@ class Butterfly : public BlackboxInterface
             typename std::vector<Switch>::const_iterator sit = A.switchesBegin();
             
             for( ; sit != A.switchesEnd(); ++sit) {
-                _Sw1 * newsw;
+                _Sw1 newsw;
                 typename Switch::template rebind<_Tp1>() (newsw, *sit, F, A._F);
-                Ap.switches().push_back( *newsw );
+                Ap.switches().push_back( newsw );
             }
 //             Ap = new other(LAp);
         }  

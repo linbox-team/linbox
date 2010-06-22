@@ -144,10 +144,11 @@ namespace LinBox {
                     commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Extension of degree " << extend << std::endl;
                     GivaroExtension<Field> EF( F, extend);
                     
-                    SparseMatrix<GivaroExtension<Field> > Ap(EF, A.rowdim(), A.coldim());
-                    MatrixHom::map(Ap, A, EF );
-                    std::vector< typename GivaroExtension<Field>::Element > eP;
+                    typedef typename Blackbox::template rebind< GivaroExtension<Field>  >::other FBlackbox;
                     
+                    FBlackbox Ap(A, EF);
+                    
+                    std::vector< typename GivaroExtension<Field>::Element > eP;
                     minpoly(eP, Ap, tag, Method::Wiedemann(M));
                     
                     return PreMap<Field, GivaroExtension<Field> >(F,EF)(P, eP);
@@ -160,8 +161,7 @@ namespace LinBox {
                     commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Word size extension : " << extend << std::endl;
                     GivaroGfq EF( (unsigned long)c, extend);                    
                     typedef typename Blackbox::template rebind< GivaroGfq >::other FBlackbox;
-                    SparseMatrix<GivaroGfq> Ap(EF, A.rowdim(), A.coldim());
-                    MatrixHom::map(Ap, A, EF );
+                    FBlackbox Ap(A, EF);                    
                     std::vector< typename GivaroGfq::Element > eP;
                     minpoly(eP, Ap, tag, Method::Wiedemann(M));
                     return PreMap<Field, GivaroGfq >(F,EF)(P, eP);

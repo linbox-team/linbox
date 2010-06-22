@@ -871,6 +871,7 @@ namespace LinBox {
 #ifdef FFT_TIMING
 			//LinBox::Timer chrono_mul[omp_get_max_threads()], chrono_mul_t[omp_get_max_threads()];
 #endif
+//std::cerr << "mul|| th: " << omp_get_max_threads() << ", pts: " << pts << ", n: " << fft_a[0].rowdim() << std::endl;
 		
 #pragma omp parallel for shared(fft_a,fft_b,fft_c) private(i) schedule(dynamic)
 #endif			
@@ -1069,6 +1070,7 @@ namespace LinBox {
 			// do the multiplication componentwise
 
 #ifdef __LINBOX_HAVE_OPENMP
+//std::cerr << "midproduct|| th: " << omp_get_max_threads() << ", pts: " << pts << ", n: " << fft_a[0].rowdim() << std::endl;
 #pragma omp parallel for shared(fft_a,fft_b,fft_c) schedule(dynamic)
 #endif
 			for (long i=0;i<static_cast<long>(pts);++i)
@@ -1223,6 +1225,8 @@ namespace LinBox {
 			// do the multiplication componentwise
 
 #ifdef __LINBOX_HAVE_OPENMP
+//std::cerr << "midproductgen|| th: " << omp_get_max_threads() << ", pts: " << pts << ", n: " << fft_a[0].rowdim() << std::endl;
+
 #pragma omp parallel for shared(fft_a,fft_b,fft_c) schedule(dynamic)
 #endif
 			for (long i=0;i<pts;++i)
@@ -1330,6 +1334,8 @@ namespace LinBox {
 			long bsize   =m/nump+(nb_bsize?1:0);
 			long lbsize  =m/nump;
 
+// std::cerr << "launch_FFT|| th: " << omp_get_max_threads() << ", nump: " << nump << ", n: " << fft.size() << std::endl;
+// #pragma omp parallel for shared(fft) schedule(dynamic)					
 #pragma omp parallel for  schedule(dynamic)					
 			for (int i=0;i<nump;i++){
 #ifdef FFT_TIMING

@@ -88,6 +88,8 @@ int main (int argc, char **argv)
                 invect >> *it;
         }
 
+//         A.write(std::cout << "A: ") << std::endl;
+
         std::cout << "B is [";
         for(std::vector<Field::Element>::const_iterator it=B.begin();it != B.end(); ++it)
             F.write(cout, *it) << " ";
