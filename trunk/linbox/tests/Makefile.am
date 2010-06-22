@@ -67,6 +67,10 @@ BASIC_TESTS =  			\
         test-solve              \
 	test-nullspace		\
         test-mg-block-lanczos	\
+	test-smith-form-binary		\
+	test-rational-solver		\
+	test-rational-solver-adaptive	\
+	test-last-invariant-factor	\
 	test-charpoly
 
 # tests of components not adhering to LinBox requirements.
@@ -132,10 +136,6 @@ NTL_TESTS = 				\
 	test-ntl-sylvester		\
 	test-sum			\
 	test-smith-form-iliopoulos	\
-	test-smith-form-binary		\
-	test-rational-solver		\
-	test-rational-solver-adaptive	\
-	test-last-invariant-factor	\
 	test-toeplitz-det
 
 LIDIA_TESTS =			\
