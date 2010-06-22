@@ -92,26 +92,24 @@ namespace LinBox
 			     const Field& F) const {
 
 			typedef typename BlackBox::template rebind<Field>::other FBlackbox;
-			FBlackbox * Ap;
 			typename Field::Element s1p, s2p;
 			dd.resize(2);
 			F.init(s1p, _s1);
 			F.init(s2p, _s2);
-			MatrixHom::map(Ap, _A, F);
+			FBlackbox Ap(_A, F);
 			const size_t N = _A.coldim();
 			//Timer tim;
 			//tim.clear();
 			//tim.start();
 			doubleDetModp (F,  N, dd[0], dd[1],
-				       Ap->getPointer(), Ap->getStride(),
-				       Ap->getPointer() + (N-1) * Ap->getStride(), 1,
-				       Ap->getPointer() + N * Ap->getStride(), 1);
+				       Ap.getPointer(), Ap.getStride(),
+				       Ap.getPointer() + (N-1) * Ap.getStride(), 1,
+				       Ap.getPointer() + N * Ap.getStride(), 1);
 
 			F.divin (dd[0], s1p);
 			F.divin (dd[1], s2p);
 			//tim.stop();
 			//std::cerr<<"doubleDetModp took "<<tim.usertime()<<std::endl;
-			delete Ap;
 			return dd;
 		}
 	};

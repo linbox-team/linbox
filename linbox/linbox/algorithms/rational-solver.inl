@@ -146,8 +146,8 @@ namespace LinBox {
 #endif			
 			_prime = prime;
 			if (F != NULL) delete F;
-			F=new Field(prime);				
-			MatrixHom::map (Ap, A, *F);
+			F=new Field(prime);
+                        Ap = new SparseMatrix<Field>(A, *F);
 			typename Field::RandIter random(*F);
 			BlackboxContainer<Field,SparseMatrix<Field> > Sequence(Ap,*F,random);
 			MasseyDomain<Field,BlackboxContainer<Field,SparseMatrix<Field> > > MD(&Sequence);
@@ -249,8 +249,8 @@ namespace LinBox {
 				delete PAQ;
 			}
 			_prime = prime;
-			F=new Field(prime);//std::cerr<<"here\n";				
-			MatrixHom::map (Ap, A, *F);//std::cerr<<"after\n";
+			F=new Field(prime);//std::cerr<<"here\n";			
+                        Ap = new FMatrix(A, *F);
 			sparseprecondition (*F,&A,PAQ,Ap,PApQ,b,Pb,P,Q,Pmodp,Qmodp);
 			typename Field::RandIter random(*F);
 			BlackboxContainer<Field,FPrecondMatrix> Sequence(PApQ,*F,random);
@@ -510,13 +510,12 @@ namespace LinBox {
 		m = n = tmproot;
 		std::cout<<"block factor= "<<m<<"\n";;
 		typedef SparseMatrix<Field> FMatrix;		
-		FMatrix *Ap;
 
 		Field F(_prime);
-		MatrixHom::map (Ap, A, F);
-		Transpose<FMatrix > Bp(*Ap);
+		FMatrix Ap(A, F);
+		Transpose<FMatrix > Bp(Ap);
 		std::cout<<"Ap:\n";
-		Ap->write(std::cout);
+		Ap.write(std::cout);
 		typedef BlockWiedemannLiftingContainer<Ring, Field, Transpose<IMatrix >, Transpose<FMatrix > > LiftingContainer;
 		
 		Transpose<IMatrix> B(A);
@@ -529,7 +528,6 @@ namespace LinBox {
 #ifdef RSTIMING		
 		ttNonsingularSolve.update(re, lc);
 #endif
-		delete Ap;		
 		
 		return SS_OK;	
 	}       
@@ -644,9 +642,9 @@ namespace LinBox {
 				if (F != NULL) delete F;
 				F= new Field (_prime);					
 		
-				//FMP = new BlasBlackbox<Field>(*F, A.rowdim(),A.coldim());
+				FMP = new BlasBlackbox<Field>(*F, A.rowdim(),A.coldim());
 			
-				MatrixHom::map (FMP, A, *F); // use MatrixHom to reduce matrix PG 2005-06-16
+				MatrixHom::map (*FMP, A, *F); // use MatrixHom to reduce matrix PG 2005-06-16
 				//typename BlasBlackbox<Field>::RawIterator iter_p  = FMP->rawBegin();
 				//typename IMatrix::ConstRawIterator iter  = A.rawBegin();
 				//for (;iter != A.rawEnd();++iter,++iter_p)
@@ -788,14 +786,13 @@ namespace LinBox {
 			BlasBlackbox<Field>* TAS_factors = new BlasBlackbox<Field>(F, A.coldim()+1, A.rowdim());
 			Hom<Ring, Field> Hmap(_R, F);
 
-			BlasBlackbox<Field> *Ap;
+			BlasBlackbox<Field> Ap(F, A.rowdim(), A.coldim());
 			MatrixHom::map(Ap, A, F);
 
 			for (size_t i=0;i<A.rowdim();++i)
 				for (size_t j=0;j<A.coldim();++j)
-					TAS_factors->setEntry(j,i, Ap->getEntry(i,j));
+					TAS_factors->setEntry(j,i, Ap.getEntry(i,j));
 					
-			delete Ap;
 
 			for (size_t i=0;i<A.rowdim();++i){
 				typename Field::Element tmpe;
@@ -1322,14 +1319,14 @@ namespace LinBox {
 		// reduce the matrix mod p
 		Field F(_prime);
 		typedef typename IMatrix::template rebind<Field>::other FMatrix;
-		FMatrix *Ap;
+		FMatrix Ap(F, A.rowdim(), A.coldim());
 		typename IMatrix::template rebind<Field>()( Ap, A, F);
 
 		// precondition Ap  with a random diagonal Matrix
 		typename Field::RandIter G(F,0,123456);
-		std::vector<Element> diag(Ap->rowdim());
+		std::vector<Element> diag(Ap.rowdim());
 		
-		for(size_t i=0;i<Ap->rowdim();++i){
+		for(size_t i=0;i<Ap.rowdim();++i){
 			do {
 				G.random(diag[i]);
 			} while(F.isZero(diag[i]));
@@ -1339,7 +1336,7 @@ namespace LinBox {
 
 		Diagonal<Field> D(F, diag);
 		
-		Compose<Diagonal<Field>, FMatrix> DAp(D,*Ap);
+		Compose<Diagonal<Field>, FMatrix> DAp(D,Ap);
 
 		size_t n = A.coldim();
 		size_t numblock = n/blocksize;
@@ -1415,7 +1412,7 @@ namespace LinBox {
 		// reduce the matrix mod p
 		Field F(_prime);
 		typedef typename IMatrix::template rebind<Field>::other FMatrix;
-		FMatrix *Ap;
+		FMatrix Ap(F, A.rowdim(), A.coldim());
 		typename IMatrix::template rebind<Field>()( Ap, A, F);
 		
 		// compute LQUP Factorization
