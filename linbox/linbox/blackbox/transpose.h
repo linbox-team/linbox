@@ -26,6 +26,19 @@
 
 #include <linbox/blackbox/blackbox-interface.h>
 
+namespace LinBox
+{
+	template <class Blackbox>
+	class Transpose;
+    
+
+	template <class Blackbox>
+	class TransposeOwner;
+}
+
+
+
+
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
@@ -48,7 +61,7 @@ namespace LinBox
 		typedef typename Blackbox::Element Element;
 
 		/** Constructor from a black box.
-		 * This constructor creates a matrix that the transpose of a black box
+		 * This constructor creates a matrix that is the transpose of a black box
 		 * matrix A
 		 * @param A_ptr pointer to black box matrix.
 		 */
@@ -56,13 +69,9 @@ namespace LinBox
 
 		Transpose (const Blackbox *A_ptr): _A_ptr(A_ptr)
 		{
-			// create new copies of matrices in dynamic memory
-			//linbox_check (A_ptr != NULL);
-			//_A_ptr = A_ptr->clone ();
 		}
 
 		/** Copy constructor.
-		 * Creates new black box objects in dynamic memory.
 		 * @param M constant reference to compose black box matrix
 		 */
 		Transpose (const Transpose<Blackbox> &M) : _A_ptr(M._A_ptr)
@@ -77,18 +86,16 @@ namespace LinBox
 		{
 		}
 
-                    template<typename _Tp1> 
-                    struct rebind 
-                    { 
-                        typedef Transpose<typename Blackbox::template rebind<_Tp1>::other> other; 
-                        void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
-                            typename other::Blackbox_t * A1;
-                            typename Blackbox_t::template rebind<_Tp1> () ( A1, *(A._A_ptr), F);
-                            Ap = new other(A1);
-                        }
-                    };
+            	template<typename _Tp1> 
+                struct rebind 
+                { 
+                    typedef TransposeOwner<typename Blackbox::template rebind<_Tp1>::other> other; 
+                    void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+                        typename Blackbox_t::template rebind<_Tp1> () ( Ap.getData(), *(A.getPtr()), F);
+                    }
+                };
 
-
+ 
 		/** Application of BlackBox matrix.
 		 * y= (A*B)*x.
 		 * Requires one vector conforming to the \ref{LinBox}
@@ -147,13 +154,153 @@ namespace LinBox
 	       
 
 		const Field& field() const {return _A_ptr->field();}
+
+		// accessors to the blackboxes
+		const Blackbox* getPtr() const {return  _A_ptr;}
 	    private:
 
-		// Pointers to A and B matrices
+		// Pointers to the matrix
 		const Blackbox *_A_ptr;
+            
 
 	}; // template <Vector> class Transpose
 
 } // namespace LinBox
+
+
+
+namespace LinBox
+{
+
+	/** \brief transpose matrix without copying.
+
+\ingroup blackbox
+
+	 * @param Vector \ref{LinBox} dense or sparse vector of field elements
+	 */
+	template <class Blackbox>
+	class TransposeOwner : public BlackboxInterface
+	{
+
+	    public:
+		typedef Blackbox Blackbox_t;
+		typedef TransposeOwner<Blackbox> Self_t;
+
+		typedef typename Blackbox::Field Field;
+		typedef typename Blackbox::Element Element;
+
+		/** Constructor from a black box.
+		 * This constructor creates a matrix that is the transpose of a black box
+		 * matrix A
+		 */
+		TransposeOwner (const Blackbox& A) : _A_data(A){}
+
+		TransposeOwner (const Blackbox *A_data): _A_data(*A_data)
+		{
+		}
+
+		/** Copy constructor.
+		 * @param M constant reference to compose black box matrix
+		 */
+		TransposeOwner (const TransposeOwner<Blackbox> &M) : _A_data(M._A_data)
+		{
+			// create new copies of matrices in dynamic memory
+			//linbox_check (M._A_data != NULL);
+			//_A_data = M._A_data.clone ();
+		}
+
+		/// Destructor
+		~TransposeOwner (void)
+		{
+		}
+
+            	template<typename _Tp1> 
+                struct rebind 
+                { 
+                    typedef TransposeOwner<typename Blackbox::template rebind<_Tp1>::other> other; 
+                    void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+                        typename Blackbox_t::template rebind<_Tp1> () ( Ap._A_data, A._A_data, F);
+                    }
+                };
+
+            	template<typename _BB, class Field>
+            	TransposeOwner (const Transpose<_BB>& T, const Field& F) 
+                        : _A_data(*(T.getPtr()), F) {
+                    typename Transpose<_BB>::template rebind<Field>()(*this,T, F);
+                }
+            	template<typename _BB, class Field>
+            	TransposeOwner (const TransposeOwner<_BB>& T, const Field& F) 
+                        : _A_data(T.getData(), F) {
+                    typename TransposeOwner<_BB>::template rebind<Field>()(*this,T, F);
+                }
+
+ 
+		/** Application of BlackBox matrix.
+		 * y= (A*B)*x.
+		 * Requires one vector conforming to the \ref{LinBox}
+		 * vector {@link Archetypes archetype}.
+		 * Required by abstract base class.
+		 * @return reference to vector y containing output.
+		 * @param  x constant reference to vector to contain input
+		 */
+		template <class Vector1, class Vector2>
+		inline Vector1 &apply (Vector1 &y, const Vector2 &x) const
+		{
+			return _A_data.applyTranspose (y, x);
+		}
+
+
+		/** Application of BlackBox matrix transpose.
+		 * y= transpose(A*B)*x.
+		 * Requires one vector conforming to the \ref{LinBox}
+		 * vector {@link Archetypes archetype}.
+		 * Required by abstract base class.
+		 * @return reference to vector y containing output.
+		 * @param  x constant reference to vector to contain input
+		 */
+		template <class Vector1, class Vector2>
+		inline Vector1 &applyTranspose (Vector1 &y, const Vector2 &x) const
+		{
+			return _A_data.apply (y, x);
+		}
+
+		/** Retreive row dimensions of BlackBox matrix.
+		 * This may be needed for applying preconditioners.
+		 * Required by abstract base class.
+		 * @return integer number of rows of black box matrix.
+		 */
+		size_t rowdim (void) const
+		{
+			return _A_data.coldim ();
+		}
+    
+		/** Retreive column dimensions of BlackBox matrix.
+		 * Required by abstract base class.
+		 * @return integer number of columns of black box matrix.
+		 */
+		size_t coldim (void) const 
+		{
+			return _A_data.rowdim ();
+		}
+	       
+
+		const Field& field() const {return _A_data.field();}
+
+		// accessors to the blackboxes without ownership
+		const Blackbox& getData() const {return  _A_data;}
+		Blackbox& getData() {return  _A_data;}
+	    private:
+		// Takes ownership of the data
+		Blackbox _A_data;
+            
+
+	};
+
+} // namespace LinBox
+
+
+
+
+
 
 #endif // __TRANSPOSE_H

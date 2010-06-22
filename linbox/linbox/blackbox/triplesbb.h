@@ -72,25 +72,31 @@ namespace LinBox {
 
         template<typename _Tp1> 
         struct rebind { 
-			typedef TriplesBB<_Tp1> other; 
-			void operator() (other *& Ap, const Self_t& A, const _Tp1& F)
-			{
-			  Hom <typename Self_t::Field, _Tp1> hom( A.field(), F);
+            typedef TriplesBB<_Tp1> other; 
+            void operator() (other & Ap, const Self_t& A, const _Tp1& F)
+                {
+                    Hom <typename Self_t::Field, _Tp1> hom( A.field(), F);
+                    
+                    typedef typename _Tp1::Element otherElt;
+                    typedef typename std::vector<otherElt> othervec;
+                    typedef typename std::vector<Element> selfvec;
+                    typedef typename othervec::iterator otheriter;
+                    typedef typename selfvec::const_iterator selfiter;
+                    otheriter vp_p; selfiter v_p;
 
-			  typedef typename _Tp1::Element otherElt;
-				typedef typename std::vector<otherElt> othervec;
-				typedef typename std::vector<Element> selfvec;
-				typedef typename othervec::iterator otheriter;
-				typedef typename selfvec::const_iterator selfiter;
-				otheriter vp_p; selfiter v_p;
+                    Ap._values.resize(A._values.size());
+                    for (v_p = A._values.begin(), vp_p = Ap._values.begin();
+                         v_p != A._values.end(); ++ v_p, ++ vp_p)
+                        hom.image (*vp_p, *v_p);
+                }
+        };
 
-				othervec values_mapped(A._values.size());
-				for (v_p = A._values.begin(), vp_p = values_mapped.begin(); 
-				     v_p != A._values.end(); ++ v_p, ++ vp_p)
-					hom.image (*vp_p, *v_p);
-				Ap = new other(F, values_mapped, A._RowV, A._ColV, A._rows, A._cols, A._RowSortFlag, A._ColSortFlag);
-			}
-		};
+        template<typename _Tp1> 
+        TriplesBB(const TriplesBB<_Tp1>& T, const Field& F) 
+                : _F(F), _values(T.size()), _RowV(T.getRows()), _ColV(T.getCols()), _rows(T.rowdim()), _cols(T.coldim()), _faxpy(max(T.getRows(),T.getCols()), FieldAXPY<Field>(F)), _RowSortFlag(T.isRowSorted()), _ColSortFlag(T.isColSorted())
+		{}
+
+
 
 		/* Returns number of non-zero entries */
 		size_t size() const { return _values.size(); }
@@ -105,6 +111,9 @@ namespace LinBox {
 		const std::vector<Element> & getData() const { return _values; }
 		const std::vector<size_t> & getRows() const { return _RowV; }
 		const std::vector<size_t> & getCols() const { return _ColV; }
+                    bool isRowSorted() { return _RowSortFlag; }
+                    bool isColSorted() { return _ColSortFlag; }
+                    
 
 		protected:
 		Field _F; // The field used by this class

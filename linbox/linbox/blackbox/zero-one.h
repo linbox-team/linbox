@@ -5,6 +5,7 @@
  *
  * Written by Rich Seagraves <seagrave@cis.udel.edu>
  * Modified by Zhendong, -bds
+ * Time-stamp: <22 Jun 10 11:58:25 Jean-Guillaume.Dumas@imag.fr> 
  *
  * ------------------------------------
  *
@@ -92,14 +93,29 @@ namespace LinBox
     struct rebind 
     { 
       typedef ZeroOne<_Tp1> other;
-      void operator() (other *& Ap,
+      void operator() (other & Ap,
 		       const Self_t& A, 
 		       const _Tp1& F) {
-	Ap = new other(F, A._rowP, A._colP, A._rows, A._cols,
-		       A._nnz, A._rowSort, A._colSort);
+              // ZeroOne does not store any field element
       }
     };
 
+    template<typename _Tp1>
+    ZeroOne(const ZeroOne<_Tp1>& Z, const Field& F) :
+            _F(F), 
+            _rows(Z.rowdim()), _cols(Z.coldim()), _nnz(Z.nnz()), 
+            _rowP(new Index[Z.nnz()]), _colP(new Index[Z.nnz()]), 
+            _rowSort(Z.isRowSorted()), _colSort(Z.isColSorted()) {
+
+            Index * rowit = _rowP;
+            Index * colit = _colP;
+
+            for(typename ZeroOne<_Tp1>::RawIndexIterator it = Z.indexBegin();
+                it != Z.indexEnd(); ++it,++rowit,++colit) {
+                *rowit = (*it).first;
+                *colit = (*it).second;
+            }
+    }
     
     /** RawIterator class.  Iterates straight through the values of the matrix
      */
@@ -164,6 +180,9 @@ namespace LinBox
 
     const Field& field() const { return _F; }
 
+      bool isRowSorted() const { return _rowSort; }
+      bool isColSorted() const { return _colSort; }
+              
 
   protected:
    

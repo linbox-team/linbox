@@ -168,24 +168,36 @@ namespace LinBox {
 		}  
 
             
-		template<typename _Tp1>
-		struct rebind
-		{
-                    typedef BlasBlackbox<_Tp1> other; 
-                    
-                    void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
-                        Ap = new other(F, A.rowdim(), A.coldim());
-						typedef typename BlasMatrix<Element>::ConstRawIterator ConstRawIterator ;
-                        ConstRawIterator A_p;
-                        typename other::RawIterator Ap_p;
-                        Hom<Field, _Tp1> hom(A. field(), F);
-                        for (A_p = A. rawBegin(), Ap_p = Ap -> rawBegin();
-                             A_p != A. rawEnd(); ++ A_p, ++ Ap_p) 
-				hom.image (*Ap_p, *A_p);
-                    }
-                };
+            template<typename _Tp1>
+            struct rebind
+            {
+                typedef BlasBlackbox<_Tp1> other; 
+                
+                void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+                    typedef typename BlasMatrix<Element>::ConstRawIterator ConstRawIterator ;
+                    ConstRawIterator A_p;
+                    typename other::RawIterator Ap_p;
+                    Hom<Field, _Tp1> hom(A. field(), F);
+                    for (A_p = A. rawBegin(), Ap_p = Ap.rawBegin();
+                         A_p != A. rawEnd(); ++ A_p, ++ Ap_p) 
+                        hom.image (*Ap_p, *A_p);
+                }
+            };
+            
+            
+            template<typename _Tp1>
+            BlasBlackbox(const BlasBlackbox<_Tp1>& M, const Field& F) 
+                    : BlasMatrix<Element>(M.rowdim(),M.coldim()), 
+                      _F(F),_MD(F),_VD(F), 
+                      _row(M.rowdim()), _col(M.coldim()),
+                      _One(F.one), _Zero(F.zero) {
+                _use_fflas = checkBlasApply(F, M.coldim());
+                typename BlasBlackbox<_Tp1>::template rebind<Field>() (*this, M, F);
+            }
+            
+                      
 
-		size_t rowdim() const {return _row;}
+            size_t rowdim() const {return _row;}
 
 		size_t coldim() const {return _col;}
 
@@ -193,19 +205,6 @@ namespace LinBox {
 		const Field &field() const  {return _F;}
 		Field &field() {return const_cast<Field&>(_F);}
 		
-		/*
-		  std::vector<Element>& apply(std::vector<Element>& y, const std::vector<Element>& x) const {
-   
-		  FFLAS::fgemv( _F, FFLAS::FflasNoTrans, 
-		  this->_row, this->_col,
-		  this->_One,
-		  _ptr, _stride,
-		  &x[0],1,
-		  this->_Zero,
-		  &y[0],1);  
-		  return y;
-		  }
-		*/
 
 
 		/** Read the blackbox from an input stream

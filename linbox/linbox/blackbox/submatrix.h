@@ -69,6 +69,16 @@ namespace LinBox
 
 	};
 
+	template <class Blackbox, class Trait = typename VectorTraits<typename LinBox::Vector<typename Blackbox::Field>::Dense >::VectorCategory>
+	class SubmatrixOwner;
+        
+}
+
+
+// Namespace in which all LinBox library code resides
+namespace LinBox
+{
+
 	/** Specialization for dense vectors */
 	template <class Blackbox>
 	class Submatrix<Blackbox, VectorCategories::DenseVectorTag >
@@ -149,12 +159,11 @@ namespace LinBox
             template<typename _Tp1> 
             struct rebind                           
             { 
-                typedef Submatrix< typename Blackbox::template rebind<_Tp1>::other, VectorCategories::DenseVectorTag> other; 
+                typedef SubmatrixOwner< typename Blackbox::template rebind<_Tp1>::other, VectorCategories::DenseVectorTag> other; 
 
-                void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
-                    typename other::Blackbox_t * A1;
-                    typename Blackbox_t::template rebind<_Tp1> () ( A1, *(A._BB), F);
-                    Ap = new other(A1, A._row, A._col, A._rowdim, A._coldim);
+                void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+                    typename Blackbox_t::template rebind<_Tp1> () ( Ap._BB_data, *(A._BB), F);
+                    
                 }
 
             };
@@ -375,13 +384,13 @@ namespace LinBox
             template<typename _Tp1> 
             struct rebind                           
             { 
-                typedef Submatrix<DenseMatrix<_Tp1>, VectorCategories::DenseVectorTag> other;
+                typedef SubmatrixOwner<DenseMatrix<_Tp1>, VectorCategories::DenseVectorTag> other;
 
-                void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
+                void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
                     
                     typename other::Father_t A1;
                     typename Father_t::template rebind<_Tp1> () ( A1, static_cast<Father_t>(A), F);
-                    Ap = new other(A1, A._row, A._col, A._rowdim, A._coldim);
+                    Ap = other(A1, A._row, A._col, A._rowdim, A._coldim);
                 }
 
             };

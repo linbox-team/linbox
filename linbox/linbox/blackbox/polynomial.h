@@ -29,6 +29,15 @@
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
+	template <class Blackbox, class Poly>
+	class PolynomialBB ;
+	template <class Blackbox, class Poly>
+	class PolynomialBBOwner ;
+}
+
+
+namespace LinBox
+{
 
 	/** \brief represent the matrix P(A) where A is a blackbox and P a polynomial
 	    
@@ -116,17 +125,13 @@ namespace LinBox
 		template<typename _Tp1, class Poly1 = typename Polynomial::template rebind<_Tp1>::other> 
 		struct rebind 
 		{ 
-			typedef PolynomialBB<typename Blackbox::template rebind<_Tp1>::other, Poly1> other;
-			
-			void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
-				typedef typename Blackbox::template rebind<_Tp1>::other FBB;
-				Poly1  * Pp;
-				FBB * BBp;
-				typename Polynomial::template rebind<_Tp1>() (Pp, A.getPolynomial(), F);
-				typename Blackbox::template rebind<_Tp1>() (BBp, A.getBlackbox(),F);
+                    typedef PolynomialBBOwner<typename Blackbox::template rebind<_Tp1>::other, Poly1> other;
 
-				Ap = new other (*BBp, *Pp);
-			}
+                    void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+                        typename Polynomial::template rebind<_Tp1>() (Ap.getDataPolynomial(), *A.getPolynomial(), F);
+                        typename Blackbox::template rebind<_Tp1>() (Ap.getDataBlackbox(), *A.getBlackbox(),F);
+
+                    }
 		};
 
 
@@ -157,8 +162,8 @@ namespace LinBox
 		}
 	       
 
-		const Polynomial& getPolynomial () const  { return *_P_ptr; }
-		const Blackbox& getBlackbox () const { return *_A_ptr; }
+		const Polynomial* getPolynomial () const  { return _P_ptr; }
+		const Blackbox* getBlackbox () const { return _A_ptr; }
 		const Field& field () const {return _A_ptr->field();}
 	    private:
 
@@ -166,6 +171,160 @@ namespace LinBox
 		const Blackbox *_A_ptr;
 		const Polynomial *_P_ptr;
 		const VectorDomain<Field> _VD;
+
+	};
+
+} // namespace LinBox
+
+// Namespace in which all LinBox library code resides
+namespace LinBox
+{
+
+	/** \brief represent the matrix P(A) where A is a blackbox and P a polynomial
+	    
+	\ingroup blackbox
+	
+	*/
+	template <class Blackbox, class Poly>
+	class PolynomialBBOwner : public BlackboxInterface
+	{
+	public:
+		
+		typedef typename Blackbox::Field Field;
+		typedef typename Blackbox::Element Element;
+		typedef Poly Polynomial;
+		typedef PolynomialBBOwner<Blackbox,Polynomial> Self_t;
+
+		/** Constructor from a black box and a polynomial.
+		 */
+		PolynomialBBOwner (const Blackbox& A, const Polynomial& P) : _A_data(A), _P_data(P), _VD(A.field()) {}
+		
+		PolynomialBBOwner (const Blackbox *A_data, const Polynomial * P_data): _A_data(*A_data), _P_data(*P_data), _VD(A_data.field())
+		{
+		}
+		
+		/** Copy constructor.
+		 * Creates new black box objects in dynamic memory.
+		 * @param M constant reference to compose black box matrix
+		 */
+		PolynomialBBOwner (const PolynomialBBOwner<Blackbox, Polynomial> &M) : _A_data(M._A_data), _P_data(M._P_data), _VD(M._VD)
+		{
+		}
+
+		/// Destructor
+		~PolynomialBBOwner (void)
+		{
+		}
+
+
+		/** Application of BlackBox matrix.
+		 * y = P(A)x
+		 * Requires one vector conforming to the \ref{LinBox}
+		 * vector {@link Archetypes archetype}.
+		 * Required by abstract base class.
+		 * @return reference to vector y containing output.
+		 * @param  x constant reference to vector to contain input
+		 */
+		template <class Vector1, class Vector2>
+		inline Vector1 &apply (Vector1 &y, const Vector2 &x) const
+		{
+			Vector2 u (x);
+			Vector2 v(u.size());
+			_VD.mul( y, x, _P_data[0] );
+			for (size_t i=1; i<_P_data.size(); ++i){
+				_A_data.apply( v, u );
+				_VD.axpyin( y, _P_data[i], v);
+				u=v;
+			}
+			return y;
+		}
+
+
+		/** Application of BlackBox matrix transpose.
+		 * y= transpose(A*B)*x.
+		 * Requires one vector conforming to the \ref{LinBox}
+		 * vector {@link Archetypes archetype}.
+		 * Required by abstract base class.
+		 * @return reference to vector y containing output.
+		 * @param  x constant reference to vector to contain input
+		 */
+		template <class Vector1, class Vector2>
+		inline Vector1 &applyTranspose (Vector1 &y, const Vector2 &x) const
+		{
+			Vector2 u( x );
+			Vector2 v(u.size());
+			_VD.mul( y, x, _P_data[0]);
+			for (size_t i=1; i<_P_data.size(); ++i){
+				_A_data.applyTranspose( v, u );
+				_VD.axpyin( y, _P_data[i], v);
+				u=v;
+			}
+			return y;
+		}
+
+		
+		template<typename _Tp1, class Poly1 = typename Polynomial::template rebind<_Tp1>::other> 
+		struct rebind 
+		{ 
+                    typedef PolynomialBBOwner<typename Blackbox::template rebind<_Tp1>::other, Poly1> other;
+
+                    void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+                        typename Polynomial::template rebind<_Tp1>() (Ap.getDataPolynomial(), A.getDataPolynomial(), F);
+                        typename Blackbox::template rebind<_Tp1>() (Ap.getDataBlackbox(), A.getDataPolynomial(),F);
+
+                    }
+		};
+
+            template<typename _BBt, typename _Polt, typename Field>
+            PolynomialBBOwner (const PolynomialBB<_BBt, _Polt> &M, const Field& F)
+                    : _VD(F),
+                      _A_data(*(M.getBlackbox()), F),
+                      _P_data(*(M.getPolynomial()), F) 
+                {
+                    typename _BBt::template rebind<Field>()(_A_data, *(M.getBlackbox()), F);
+                    typename _Polt::template rebind<Field>()(_P_data, *(M.getPolynomial()), F);
+                }
+
+            template<typename _BBt, typename _Polt, typename Field>
+            PolynomialBBOwner (const PolynomialBBOwner<_BBt, _Polt> &M, const Field& F)
+                    : _A_data(M.getDataBlackbox(), F),
+                      _P_data(M.getDataPolynomial(), F) 
+                {
+                    typename _BBt::template rebind<Field>()(_A_data, M.getDataBlackbox(), F);
+                    typename _Polt::template rebind<Field>()(_P_data, M.getDataPolynomial(), F);
+                }
+
+
+
+		/** Retreive row dimensions of BlackBox matrix.
+		 * This may be needed for applying preconditioners.
+		 * Required by abstract base class.
+		 * @return integer number of rows of black box matrix.
+		 */
+		size_t rowdim (void) const
+		{
+			return _A_data.rowdim ();
+		}
+    
+		/** Retreive column dimensions of BlackBox matrix.
+		 * Required by abstract base class.
+		 * @return integer number of columns of black box matrix.
+		 */
+		size_t coldim (void) const 
+		{
+                    return _A_data.coldim ();
+		}
+	       
+
+		const Polynomial& getDataPolynomial () const  { return _P_data; }
+		const Blackbox& getDataBlackbox () const { return _A_data; }
+		const Field& field () const {return _A_data.field();}
+	    private:
+
+		const VectorDomain<Field> _VD;
+		// Matrix A and polynomial P
+		Blackbox _A_data;
+		Polynomial _P_data;
 
 	};
 

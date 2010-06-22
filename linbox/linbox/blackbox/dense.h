@@ -155,6 +155,7 @@ class DenseMatrix : public BlackboxInterface, public DenseMatrixBase<typename _F
 		: DenseMatrixBase<Element> (M), _F (M._F), _MD (M._F), _AT (*this)
 	{}
 
+    
 	/** Assignment operator makes a complete copy.
 	 */
 	DenseMatrix<Field>& operator= (const DenseMatrix<Field>& M) {
@@ -172,16 +173,22 @@ class DenseMatrix : public BlackboxInterface, public DenseMatrixBase<typename _F
 	{ 
 		typedef DenseMatrix<_Tp1> other; 
 		
-		void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
-			Ap = new other(F, A.rowdim(), A.coldim());
+		void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+// 			Ap = new other(F, A.rowdim(), A.coldim());
 			typename Self_t::ConstRawIterator A_p;
 			typename other::RawIterator Ap_p;
 			Hom<Field, _Tp1> hom(A. field(), F);
-			for (A_p = A. rawBegin(), Ap_p = Ap -> rawBegin();
+			for (A_p = A. rawBegin(), Ap_p = Ap.rawBegin();
 			     A_p != A. rawEnd(); ++ A_p, ++ Ap_p) 
 				hom.image (*Ap_p, *A_p);
 		}
 	};
+
+    	template<typename _Tp1>
+	DenseMatrix (const DenseMatrix<_Tp1> &M, const Field& F)
+		: DenseMatrixBase<Element> (M.rowdim(),M.coldim()), _F (F), _MD (F), _AT (*this) {
+            typename DenseMatrix<_Tp1>::template rebind<Field>()(*this, M, F);
+        }
 
 
 	

@@ -5,7 +5,7 @@
  *
  * It will be desirable to keep sum.h and dif.h in sync.
  * 
- * Time-stamp: <12 Jan 07 10:39:40 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <18 Jun 10 15:28:48 Jean-Guillaume.Dumas@imag.fr> 
  *
  * ------------------------------------
  *
@@ -139,14 +139,15 @@ namespace LinBox
 
             template<typename _Tp1, typename _Tp2 = _Tp1>
             struct rebind
-            { typedef Dif<typename Blackbox1::template rebind<_Tp1>::other, typename Blackbox2::template rebind<_Tp2>::other> other;
+            { 
+                typedef Dif<
+                    typename Blackbox1::template rebind<_Tp1>::other,
+                    typename Blackbox2::template rebind<_Tp2>::other
+                > other;
                 
-    		void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
-                    typename other::Blackbox1 * A1;
-                    typename Blackbox1::template rebind<_Tp1> () ( A1, *(A._A_ptr), F);
-                    typename other::Blackbox2 * A2;
-                    typename Blackbox2::template rebind<_Tp1> () ( A2, *(A._B_ptr), F);
-                    Ap = new other(*A1, *A2);
+    		void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+                    typename Blackbox1::template rebind<_Tp1> () ( *(Ap._A_ptr), *(A._A_ptr), F);
+                    typename Blackbox2::template rebind<_Tp2> () ( *(Ap._B_ptr), *(A._B_ptr), F);
                 }
 
             };

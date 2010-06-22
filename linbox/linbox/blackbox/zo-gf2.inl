@@ -56,12 +56,19 @@ inline OutVector & ZeroOne<GF2>::applyTranspose(OutVector & y, const InVector & 
     
 
 inline void ZeroOne<GF2>::setEntry(size_t i, size_t j, const Element& v) {
-	if (! _F.isZero(v) ) {
-		Row_t& rowi = this->operator[](i);
-		rowi.insert(
-			std::lower_bound(rowi.begin(), rowi.end(), j),
-			j );
-	}	
+    Row_t& rowi = this->operator[](i);
+    Row_t::iterator there = std::lower_bound(rowi.begin(), rowi.end(), j);
+    if (! _F.isZero(v) ) {
+        if ( (there == rowi.end() ) || (*there != j) ) {
+            rowi.insert(there, j);
+            ++_nnz;
+        }
+    } else {
+        if ( (there != rowi.end() ) && (*there == j) ) {
+            rowi.erase(there);
+            --_nnz;           
+        }
+    }
 }
 
 inline ZeroOne<GF2>::Element& ZeroOne<GF2>::getEntry(Element& r, size_t i, size_t j) const {
@@ -70,17 +77,16 @@ inline ZeroOne<GF2>::Element& ZeroOne<GF2>::getEntry(Element& r, size_t i, size_
 	if (there != rowi.end() )
 		return r=*there;
 	else
-		return _F.init(r,0);
+		return r=_F.zero;
 }
 
 inline const ZeroOne<GF2>::Element& ZeroOne<GF2>::getEntry(size_t i, size_t j) const {
-	static Element zero;
 	const Row_t& rowi = this->operator[](i);
 	Row_t::const_iterator there = std::lower_bound(rowi.begin(), rowi.end(), j);
 	if (there != rowi.end() )
 		return reinterpret_cast<const ZeroOne<GF2>::Element&>(*there);
 	else
-		return zero;
+		return _F.zero;
 }
 
 inline std::istream &ZeroOne<GF2>::read (std::istream &is) {
@@ -91,8 +97,12 @@ inline std::istream &ZeroOne<GF2>::read (std::istream &is) {
 	this->resize(_rowdim);
 	Index r, c; 
 	long v;
+        _nnz = 0;
 	while( S.nextTriple(r, c, v) ) {
-		if (v&1) this->operator[](r).push_back(c);
+		if (v&1) {
+                    this->operator[](r).push_back(c);
+                    ++_nnz;
+                }
 	}
 	for(Father_t::iterator i=this->begin(); i!=this->end(); ++i)
 		std::sort(i->begin(),i->end());
@@ -137,7 +147,196 @@ inline std::ostream& ZeroOne<GF2>::write (std::ostream& out, FileFormatTag forma
         return out << "ZeroOne over GF(2), format other than SMS or Maple not implemented" << std::endl;
 }
 
+  class ZeroOne<GF2>::RawIterator
+  {	
+  public:
+    typedef Element value_type;
+    
+    RawIterator(size_t pos, Element elem) :
+      _elem(elem),_pos(pos)  {}
+    
+    RawIterator(const RawIterator &In) :
+      _elem(In._elem),_pos(In._pos) {}
+    
+    const RawIterator& operator=(const RawIterator& rhs) 
+    {
+      _pos = rhs._pos;
+      _elem = rhs._elem;
+      return *this;
+    }
+    
+        
+    bool operator==(const RawIterator &rhs) 
+    {
+      return ( _pos == rhs._pos && _elem == rhs._elem);
+    }
+    
+    bool operator!=(const RawIterator &rhs) 
+    {
+      return ( _pos != rhs._pos || _elem != rhs._elem );
+    }
+    
+    RawIterator & operator++() 
+    {
+      ++_pos;
+      return *this;
+    }
+    
+    RawIterator operator++(int) 
+    {
+      RawIterator tmp = *this;
+      _pos++;
+      return tmp;
+    }
+    
+    value_type operator*() { return _elem; }
+    
+    const value_type operator*() const { return _elem; }
+    
+  private:
+    value_type _elem;
+    size_t _pos;
+  };  
+  
+  /* STL standard Begin and End functions.  Used to get
+   * the beginning and end of the data.  So that RawIterator
+   * can be used in algorithms like a normal STL iterator.
+   */
+  ZeroOne<GF2>::RawIterator ZeroOne<GF2>::rawBegin()
+  { return RawIterator( 0, _F.one ); }
+  
+  ZeroOne<GF2>::RawIterator ZeroOne<GF2>::rawEnd() 
+  { return RawIterator( _nnz, _F.one ); }
+  
+  const ZeroOne<GF2>::RawIterator ZeroOne<GF2>::rawBegin() const
+  { return RawIterator(0, _F.one ); }
+
+  const ZeroOne<GF2>::RawIterator ZeroOne<GF2>::rawEnd() const 
+  { return RawIterator(_nnz, _F.one ); } 
+  
+  /* RawIndexIterator - Iterates through the i and j of the current element
+   * and when accessed returns an STL pair containing the coordinates
+   */
+  class ZeroOne<GF2>::RawIndexIterator 
+  {
+  public:
+    typedef std::pair<size_t, size_t> value_type;
+    
+    RawIndexIterator() {}
+    
+      RawIndexIterator(size_t rowidx, 
+                       LightContainer<LightContainer<size_t> >::const_iterator rowbeg, 
+                       LightContainer<LightContainer<size_t> >::const_iterator rowend, 
+                       size_t colidx, 
+                       LightContainer<size_t>::const_iterator colbeg)
+              : _rowbeg( LightContainer<LightContainer<size_t> >::iterator(rowbeg) ), 
+                _rowend( LightContainer<LightContainer<size_t> >::iterator(rowend) ), 
+                _colbeg( LightContainer<size_t>::iterator(colbeg) ), 
+                _row(rowidx), 
+                _col(colidx) {
+          
+          if( _rowbeg == _rowend ) return;
+          
+          while ( _colbeg == _rowbeg->end() ) {
+              
+              if (++_rowbeg == _rowend) return;
+
+              _colbeg = _rowbeg->begin();
+
+          }
+
+    }
+    
+    RawIndexIterator(const RawIndexIterator &In):
+      _rowbeg(In._rowbeg), _rowend(In._rowend), _colbeg(In._colbeg), _row(In._row), _col(In._col) {}
+    
+    const RawIndexIterator &operator=(const RawIndexIterator &rhs) 
+    {
+      _rowbeg = rhs._rowbeg;
+      _rowend = rhs._rowend;
+      _colbeg = rhs._colbeg;
+      _row = rhs._row;
+      _col = rhs._col;
+      return *this;				
+    }
+    
+    bool operator==(const RawIndexIterator &rhs) 
+    {
+      return _rowbeg == rhs._rowbeg && _colbeg == rhs._colbeg;     
+    }
+    
+    bool operator!=(const RawIndexIterator &rhs) 
+    {
+      return _rowbeg != rhs._rowbeg || _colbeg != rhs._colbeg;
+    }
+    
+    const RawIndexIterator& operator++() {
+
+        
+
+        ++_colbeg;
+        while(_colbeg == _rowbeg->end()) {
+            if (++_rowbeg == _rowend) return *this;
+            ++_row;	
+            _colbeg = _rowbeg->begin();
+        }
+        _col = *_colbeg;
+	
+
+        return *this;
+    }
+      
+    const RawIndexIterator operator++(int) 
+    {
+      RawIndexIterator tmp = *this;
+      this->operator++();
+      return tmp;
+    }
+    
+    value_type operator*() 
+    {
+      return std::pair<size_t,size_t>(_row, _col);
+    }
+    
+    const value_type operator*() const 
+    {
+      return std::pair<size_t,size_t>(_row, _col);
+    }
+  private:
+      LightContainer<LightContainer<size_t> >::iterator _rowbeg, _rowend;
+      LightContainer<size_t>::iterator _colbeg;
+      size_t _row, _col;
+  };
+  
+  ZeroOne<GF2>::RawIndexIterator ZeroOne<GF2>::indexBegin() 
+  {
+    return RawIndexIterator(0, this->begin(), this->end(), 0, this->front().begin() );
+  }
+  
+  const ZeroOne<GF2>::RawIndexIterator ZeroOne<GF2>::indexBegin() const
+  {
+    return RawIndexIterator(0, this->begin(), this->end(), 0, this->front().begin() );
+  }
+
+  ZeroOne<GF2>::RawIndexIterator ZeroOne<GF2>::indexEnd() 
+  {
+    return RawIndexIterator(_rowdim, this->end(), this->end(), this->back().size(),this->back().end() );
+  }
+
+  const ZeroOne<GF2>::RawIndexIterator ZeroOne<GF2>::indexEnd() const 
+  {
+    return RawIndexIterator(_rowdim, this->end(), this->end(), this->back().size(),this->back().end() );
+  }
+ 
+
+
+
+
 }; // end of namespace LinBox
+
+
+
+
 
 
 // Specialization of getentry
