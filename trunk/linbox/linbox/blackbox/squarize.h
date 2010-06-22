@@ -89,10 +89,8 @@ namespace LinBox
 		struct rebind 
 		{ 
                         typedef Squarize<typename Blackbox::template rebind<_Tp1>::other> other; 
-                        void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
-				typename other::Blackbox_t * A1;
-				typename Blackbox_t::template rebind<_Tp1> () ( A1, *(A._A_ptr), F);
-				Ap = new other(A1);
+                        void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+                                typename Blackbox_t::template rebind<_Tp1> () ( *(Ap._A_ptr), *(A._A_ptr), F);
                         }
 		};
 

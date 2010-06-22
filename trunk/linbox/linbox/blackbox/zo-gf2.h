@@ -2,7 +2,7 @@
 /* linbox/blackbox/zo-gf2.h
  * Copyright (C) 2009 The LinBox group
  *
- * Time-stamp: <05 Nov 09 10:34:40 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <22 Jun 10 11:57:32 Jean-Guillaume.Dumas@imag.fr> 
  *
  * See COPYING for license information.
  *
@@ -11,12 +11,12 @@
 #define __ZO_GF2_H
 
 #include <algorithm>
+#include "linbox/blackbox/zero-one.h"
 #include "linbox/field/gf2.h"
 #include "linbox/field/unparametric.h"
 #include "linbox/util/matrix-stream.h"
 #include "linbox/vector/stream.h"
 #include "linbox/matrix/sparse.h"
-#include "linbox/blackbox/zero-one.h"
 #include "linbox/vector/light_container.h"
 
 namespace LinBox 
@@ -39,22 +39,25 @@ namespace LinBox
 
         const GF2 _F;
 
-        ZeroOne(const GF2& ) {}
-        ZeroOne(const GF2& , const size_t m) : Father_t(m), _rowdim(m), _coldim(m) {}
-        ZeroOne(const GF2& , const size_t m, const size_t n) : Father_t(m), _rowdim(m), _coldim(n) {}
+        ZeroOne(const GF2& ) : _nnz(0) {}
+        ZeroOne(const GF2& , const size_t m) : Father_t(m), _rowdim(m), _coldim(m),_nnz(0) {}
+        ZeroOne(const GF2& , const size_t m, const size_t n) : Father_t(m), _rowdim(m), _coldim(n),_nnz(0) {}
 
-        ZeroOne() {}
-        ZeroOne(const size_t m) : Father_t(m), _rowdim(m), _coldim(m) {}
-        ZeroOne(const size_t m, const size_t n) : Father_t(m), _rowdim(m), _coldim(n) {}
+        ZeroOne(): _nnz(0)  {}
+        ZeroOne(const size_t m) : Father_t(m), _rowdim(m), _coldim(m),_nnz(0) {}
+        ZeroOne(const size_t m, const size_t n) : Father_t(m), _rowdim(m), _coldim(n),_nnz(0) {}
 
-        ZeroOne(const GF2& , VectorStream<Row_t>& stream) : Father_t(stream.m()), _rowdim(stream.m()), _coldim(stream.n()) {
-            for (Father_t::iterator row=begin(); row != end(); ++row)
+        ZeroOne(const GF2& , VectorStream<Row_t>& stream) : Father_t(stream.m()), _rowdim(stream.m()), _coldim(stream.n()), _nnz(0) {
+            for (Father_t::iterator row=begin(); row != end(); ++row) {
                 stream >> *row;
+		_nnz += row->size();
+            }
         }        
 
-        ZeroOne(const Self_t& A) : Father_t(static_cast<const Father_t&>(A)), _rowdim(A._rowdim), _coldim(A._coldim) {}
+        ZeroOne(const Self_t& A) : Father_t(static_cast<const Father_t&>(A)), _rowdim(A._rowdim), _coldim(A._coldim), _nnz(A._nnz) {
+        }
 
-        ZeroOne(const GF2& , size_t* rowP, size_t* colP, const size_t m, const size_t n, const size_t nnz, const bool ,const bool) : Father_t(m), _rowdim(m), _coldim(n) { //not used
+        ZeroOne(const GF2& , size_t* rowP, size_t* colP, const size_t m, const size_t n, const size_t nnz, const bool ,const bool) : Father_t(m), _rowdim(m), _coldim(n), _nnz(nnz) {
             for(size_t k=0; k<nnz; ++k) 
                 this->operator[](rowP[k]).push_back(colP[k]);
         }
@@ -89,28 +92,47 @@ namespace LinBox
     struct rebind
     {
       typedef ZeroOne<_Tp1> other;
-      void operator() (other *& Ap,
+      void operator() (other & Ap,
                        const Self_t& A,
                        const _Tp1& F) {
-	size_t nnz(0);
-	for(Father_t::const_iterator ro=A.begin(); ro!= A.end(); ++ro)
-		nnz+=ro->size();
-	size_t * rowP = new size_t[nnz], * colP = new size_t[nnz];
-	size_t cur=0;
-	for(size_t i=0; i<A.rowdim(); ++i) {
-		for( Row_t::const_iterator it=A[i].begin(); it != A[i].end() ; ++it, ++cur) {
-			rowP[cur] = i;
-			colP[cur] = *it;
-		}
-	}
-
-        Ap = new other(F, rowP, colP, A.rowdim(), A.coldim(), nnz, true, true);
+              // ZeroOne does not store any Field element
       }
     };
 
+        
+        template<typename _Tp1>
+        ZeroOne(ZeroOne<_Tp1>& A, const GF2 F2) : Father_t(A.rowdim()), _rowdim(A.rowdim()), _coldim(A.coldim()), _nnz(0) {
+            for(typename ZeroOne<_Tp1>::RawIndexIterator it = A.indexBegin();
+                it != A.indexEnd(); ++it,++_nnz) {
+                this->operator[]( it->first ).push_back( it->second );
+            }
+        }
+
+        size_t nnz() const { return _nnz; }
+        bool isRowSorted() const { return true; }
+        bool isColSorted() const { return true; }
+
+    /** RawIterator class.  Iterates straight through the values of the matrix
+     */
+    class RawIterator;
+
+    RawIterator rawBegin();
+    RawIterator rawEnd();
+    const RawIterator rawBegin() const;
+    const RawIterator rawEnd() const;
+
+     /** RawIndexIterator - Iterates through the i and j of the current element
+   * and when accessed returns an STL pair containing the coordinates
+   */
+    class RawIndexIterator;
+    RawIndexIterator indexBegin();
+    const RawIndexIterator indexBegin() const;
+    RawIndexIterator indexEnd();
+    const RawIndexIterator indexEnd() const;
+
 
     private:
-        size_t _rowdim, _coldim;
+        size_t _rowdim, _coldim, _nnz;
   };
     
 }

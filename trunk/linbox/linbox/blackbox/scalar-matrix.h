@@ -52,7 +52,7 @@ namespace LinBox
 		*/
 
 		/// Constructs an initially 0 by 0 matrix.
-		ScalarMatrix ()	:  _n(0) {}
+		ScalarMatrix ()	: _n(0) {}
 
 		/** Scalar matrix Constructor from an element.
 		 * @param F	field in which to do arithmetic.
@@ -101,16 +101,21 @@ namespace LinBox
 		template<typename _Tp1> 
 		struct rebind 
 		{ 
-			typedef ScalarMatrix<_Tp1> other; 
+                    typedef ScalarMatrix<_Tp1> other; 
 			
-			void operator() (other *& Ap, const Self_t& A, const _Tp1& F) 
+                    void operator() (other & Ap, const Self_t& A, const _Tp1& F) 
 			{
-				typename _Tp1::Element e;
-				Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);
-				hom.image (e, A._v);
-				Ap = new other(F, A.coldim(),e);
+                            Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);
+                            typename _Tp1::Element e; F.init(e);
+                            hom.image (e, A._v);
+                            Ap.setScalar(e);
 			}
 		};
+
+		template<typename _Tp1> 
+		ScalarMatrix (const ScalarMatrix<_Tp1>& S, const Field &F) : _F(F), _n(S.rowdim()) {
+                    typename ScalarMatrix<_Tp1>::template rebind<Field>() (*this, S, F);
+                }
 
 
 		size_t rowdim(void) const { return _n; }
@@ -131,6 +136,8 @@ namespace LinBox
 		}
 
 		
+            	Element& getScalar(Element& x) const { return this->_F.assign(x,this->_v); }
+            	Element& setScalar(const Element& x) { return this->_F.assign(this->_v,x); }            	
 
 	    protected:
 

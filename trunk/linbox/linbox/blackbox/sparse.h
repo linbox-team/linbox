@@ -116,6 +116,7 @@ class SparseMatrix : public BlackboxInterface, public SparseMatrixBase<typename 
 			stream >> *i;
 	}
 
+
 	/** Constructor from a MatrixStream
 	 * @param ms A matrix stream properly initialized
 	 */
@@ -188,8 +189,8 @@ class SparseMatrix : public BlackboxInterface, public SparseMatrixBase<typename 
 	struct rebind { 
 		typedef SparseMatrix<_Tp1, _Rw1> other;	
 		
-		void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
-			Ap = new other(F, A.rowdim(), A.coldim());
+		void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+// 			Ap = new other(F, A.rowdim(), A.coldim());
 	
 			typename _Tp1::Element e;
 			Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);
@@ -200,11 +201,17 @@ class SparseMatrix : public BlackboxInterface, public SparseMatrixBase<typename 
 //                             hom. image (e, A.getEntry(indices.rowIndex(),indices.colIndex()) );
                             hom. image (e, indices.value() );
                             if (!F.isZero(e)) 
-                                Ap -> setEntry (indices.rowIndex(), 
+                                Ap.setEntry (indices.rowIndex(), 
                                                 indices.colIndex(), e);
 			}
 		}
 	};
+
+    	template<typename _Tp1, typename _Rw1>
+	SparseMatrix (const SparseMatrix<_Tp1, _Rw1> &M, const Field& F)
+		: SparseMatrixBase<Element, _Row> (M.rowdim(),M.coldim()), _F (F), _VD (F), _MD (F), _AT (*this) {
+            typename SparseMatrix<_Tp1,_Rw1>::template rebind<Field,_Row>()(*this, M, F);
+        }
 
 
 

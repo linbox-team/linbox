@@ -2,7 +2,7 @@
 /* linbox/blackbox/sum.h
  * Copyright (C) 2002 The LinBox group
  *
- * Time-stamp: <12 Jan 07 10:41:03 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <18 Jun 10 15:34:50 Jean-Guillaume.Dumas@imag.fr> 
  *
  * ------------------------------------
  *
@@ -141,13 +141,10 @@ namespace LinBox
             struct rebind                           
             { typedef Sum<typename Blackbox1::template rebind<_Tp1>::other, typename Blackbox2::template rebind<_Tp2>::other> other; 
 
-    		void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
-                    typename other::Blackbox1 * A1;
-                    typename Blackbox1::template rebind<_Tp1> () ( A1, *(A._A_ptr), F);
-                    typename other::Blackbox2 * A2;
-                    typename Blackbox2::template rebind<_Tp1> () ( A2, *(A._B_ptr), F);
-                    Ap = new other(*A1, *A2);
-                }
+    		void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+                    typename Blackbox1::template rebind<_Tp1> () ( *(Ap._A_ptr), *(A._A_ptr), F);
+                    typename Blackbox2::template rebind<_Tp1> () ( *(Ap._B_ptr), *(A._B_ptr), F);
+                 }
 
 
             };

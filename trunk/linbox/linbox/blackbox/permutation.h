@@ -172,8 +172,7 @@ namespace LinBox
         struct rebind
         { 
             typedef Permutation<_Tp1, Storage> other; 
-            void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
-                Ap = new other(A.rowdim(), F);
+            void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
                 Ap->setStorage( A.getStorage() );
             }
         };

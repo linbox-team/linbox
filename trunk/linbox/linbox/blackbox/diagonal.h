@@ -119,17 +119,15 @@ namespace LinBox
             struct rebind
             { typedef Diagonal<_Tp1, VectorCategories::DenseVectorTag> other; 
 
-                void operator() (other *& Ap, const Self_t& A, const _Tp1& F) 
+                void operator() (other & Ap, const Self_t& A, const _Tp1& F) 
                     {
                         
-                        std::vector<typename _Tp1::Element> nv(A._v.size());
                         Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);
 
-                        typename std::vector<typename _Tp1::Element>::iterator nit = nv.begin();
+                        typename std::vector<typename _Tp1::Element>::iterator nit = Ap._v.begin();
                         typename std::vector<Element>::const_iterator oit = A._v.begin();
-                        for( ; nit != nv.end() ; ++nit, ++oit)
+                        for( ; oit != A._v.end() ; ++nit, ++oit)
                             hom.image (*nit, *oit);
-                        Ap = new other(F, nv);
                     }
  
             };

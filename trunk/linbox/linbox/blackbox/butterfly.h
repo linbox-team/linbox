@@ -128,23 +128,28 @@ class Butterfly : public BlackboxInterface
     { 
         typedef Butterfly<_Tp1, _Sw1> other;
 
-        void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
-            other LAp(F,A._n);
-            LAp.n_vec() = A.n_vec();
-            LAp.l_vec() = A.l_vec();
-            LAp.indices() = A.indices();
+        void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+//             other LAp(F,A._n);
+            Ap.n_vec() = A.n_vec();
+            Ap.l_vec() = A.l_vec();
+            Ap.indices() = A.indices();
             
             typename std::vector<Switch>::const_iterator sit = A.switchesBegin();
             
             for( ; sit != A.switchesEnd(); ++sit) {
                 _Sw1 * newsw;
                 typename Switch::template rebind<_Tp1>() (newsw, *sit, F, A._F);
-                LAp.switches().push_back( *newsw );
+                Ap.switches().push_back( *newsw );
             }
-            Ap = new other(LAp);
+//             Ap = new other(LAp);
         }  
     };
       
+    template<typename _Tp1, typename _Sw1>
+    Butterfly (const Butterfly<_Tp1,_Sw1>& B, const Field &F) : _F (F), _VD (F), _n (B.rowdim()) {
+        typename Butterfly<_Tp1,_Sw1>::template rebind<Field>() (*this, B, F);
+    }
+    
    
 
 	/*- Retreive row dimensions of BlackBox matrix.
