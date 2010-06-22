@@ -483,11 +483,10 @@ namespace LinBox {
         RandomPrimeIterator genprime( (long) floor (log((double)mmodulus) ) );
         ++genprime;
         typedef typename Blackbox::template rebind< Field >::other FBlackbox;
-        FBlackbox * Ap;
-        MatrixHom::map(Ap, A, Field(*genprime) );
+        Field Fp(*genprime);
+        FBlackbox Ap(A, Fp);
         commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Integer Rank is done modulo " << *genprime << std::endl;
-        rankin(r, *Ap, RingCategories::ModularTag(), M);
-        delete Ap;
+        rankin(r, Ap, RingCategories::ModularTag(), M);
         commentator.stop ("done", NULL, "irank");
         return r;
     }
@@ -532,11 +531,9 @@ namespace LinBox {
     {
         typedef typename Blackbox::Field Field;
         typedef SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq> SparseBB;
-        SparseBB * SpA;
+        SparseBB SpA(A.field(), A.rowdim(), A.coldim() );
 	MatrixHom::map(SpA, A, A.field());
-        rankin(r, *SpA, tag, M);
-        delete SpA;
-        return r;
+        return rankin(r, SpA, tag, M);
     }
     
 	// M may be <code>Method::BlasElimination()</code>.
@@ -605,12 +602,11 @@ namespace LinBox {
         RandomPrimeIterator genprime( (long) floor (log((double)mmodulus) ) );
         ++genprime;
         typedef typename Blackbox::template rebind< Field >::other FBlackbox;
-        FBlackbox * Ap;
-        MatrixHom::map(Ap, A, Field(*genprime) );
+        Field Fp(*genprime);
+        FBlackbox Ap(A, Fp );
         commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Integer Rank is done modulo " << *genprime << std::endl;
         
-        rank(r, *Ap, RingCategories::ModularTag(), M);
-        delete Ap;
+        rank(r, Ap, RingCategories::ModularTag(), M);
         commentator.stop ("done", NULL, "iirank");
         return r;
     }
@@ -618,7 +614,9 @@ namespace LinBox {
 
 
 #ifdef __LINBOX_HAVE_GIVARO
-#define LINBOX_EXTENSION_DEGREE_MAX 20
+#ifndef LINBOX_EXTENSION_DEGREE_MAX
+#define LINBOX_EXTENSION_DEGREE_MAX 19
+#endif
 
 #include "linbox/field/givaro-extension.h"
 namespace LinBox {
@@ -639,10 +637,8 @@ namespace LinBox {
                     commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Extension of degree " << extend << std::endl;
                     GivaroExtension<Field> EF( F, extend);
                     typedef typename Blackbox::template rebind< GivaroExtension<Field>  >::other FBlackbox;
-                    FBlackbox * Ap;
-                    MatrixHom::map(Ap, A, EF );
-                    rank(r, *Ap, tag, Method::Wiedemann(m));
-                    delete Ap;
+                    FBlackbox Ap(A, EF);
+                    rank(r, Ap, tag, Method::Wiedemann(m));
                 } else
                     rank(r, A, tag, Method::Wiedemann(m)); 
             } else {
@@ -651,10 +647,8 @@ namespace LinBox {
                     commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Word size extension : " << extend << std::endl;
                     GivaroGfq EF( (unsigned long)c, extend);                    
                     typedef typename Blackbox::template rebind< GivaroGfq >::other FBlackbox;
-                    FBlackbox * Ap;
-                    MatrixHom::map(Ap, A, EF );
-                    rank(r, *Ap, tag, Method::Wiedemann(m));
-                    delete Ap;
+                    FBlackbox Ap(A, EF);
+                    rank(r, Ap, tag, Method::Wiedemann(m));
                 } else
                     rank(r, A, tag, Method::Wiedemann(m)); 
             }

@@ -112,11 +112,9 @@ namespace LinBox
 		const Method::BlasElimination       &M)
     {
 		// call BlasElimination code
-		DenseMatrix<typename Blackbox::Field>* DA;
+		DenseMatrix<typename Blackbox::Field> DA(A.field(), A.rowdim(), A.coldim());
 		MatrixHom::map(DA, A, A. field());
-		bool s = Signature::isPosSemiDef(*DA, Signature::BLAS_LPM_Method() );
-		delete DA;
-		return s;
+		return Signature::isPosSemiDef(DA, Signature::BLAS_LPM_Method() );
 	}
 	
 	// the isPositiveSemiDefinite with Blas, DenseMatrix

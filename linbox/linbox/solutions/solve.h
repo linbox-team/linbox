@@ -128,12 +128,9 @@ namespace LinBox
 	{
             typedef typename Blackbox::Field Field;
             typedef SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq> SparseBB;
-            SparseBB * SpA;
+            SparseBB SpA(A.field(), A.rowdim(), A.coldim());
             MatrixHom::map(SpA, A, A.field());
-//             return solvein(x, *SpA, b, m);
-            solvein(x, *SpA, b, m);
-            delete SpA;
-            return x;
+            return solvein(x, SpA, b, m);
 	}
 
 	template <class Vector> 
@@ -155,12 +152,9 @@ namespace LinBox
                       const Method::SparseElimination& m)
 	{
                 // We make a copy
-            GaussDomain<GF2>::Matrix * SpA;
+            GaussDomain<GF2>::Matrix SpA(A.field(), A.rowdim(), A.coldim());
             MatrixHom::map(SpA, A, A.field());
-//             return solvein(x, *SpA, b, m);
-            solvein(x, *SpA, b, m);
-            delete SpA;
-            return x;
+            return solvein(x, SpA, b, m);
 	}
 
 	template <class Vector, class Field> 
@@ -843,7 +837,7 @@ namespace LinBox {
 		template<typename Field>
 		typename Rebind<Vector, Field>::other& operator()(typename Rebind<Vector, Field>::other& x, const Field& F) const {
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
-			FBlackbox * Ap;
+			FBlackbox Ap(F, A.rowdim(), A.coldim());
 			MatrixHom::map(Ap, A, F);
 
 			typedef typename Rebind<Vector, Field>::other FVector;
@@ -855,10 +849,7 @@ namespace LinBox {
 				hom.image (*Bpit, *Bit);
 
 			VectorWrapper::ensureDim (x, A.coldim());
-			solve( x, *Ap, Bp, M);
-			delete Ap;
-
-			return x;
+			return solve( x, Ap, Bp, M);
 		}            
 	};
 
