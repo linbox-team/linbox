@@ -89,13 +89,12 @@ namespace LinBox
             	template<typename _Tp1> 
                 struct rebind 
                 { 
-                    typedef TransposeOwner<typename Blackbox::template rebind<_Tp1>::other> other; 
+                    typedef TransposeOwner<typename Blackbox_t::template rebind<_Tp1>::other> other; 
                     void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
                         typename Blackbox_t::template rebind<_Tp1> () ( Ap.getData(), *(A.getPtr()), F);
                     }
                 };
-
- 
+            
 		/** Application of BlackBox matrix.
 		 * y= (A*B)*x.
 		 * Requires one vector conforming to the \ref{LinBox}

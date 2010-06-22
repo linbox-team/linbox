@@ -157,17 +157,14 @@ namespace LinBox
 
 
             template<typename _Tp1> 
-            struct rebind                           
+            struct rebind 
             { 
-                typedef SubmatrixOwner< typename Blackbox::template rebind<_Tp1>::other, VectorCategories::DenseVectorTag> other; 
-
+                typedef SubmatrixOwner<typename Blackbox_t::template rebind<_Tp1>::other, VectorCategories::DenseVectorTag> other; 
                 void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
-                    typename Blackbox_t::template rebind<_Tp1> () ( Ap._BB_data, *(A._BB), F);
-                    
+                    typename Blackbox_t::template rebind<_Tp1> Rebinder;
+                    Rebinder( Ap.getData(), *(A.getPtr()), F);
                 }
-
             };
-
 
 
 		/** Retreive _row dimensions of BlackBox matrix.
@@ -185,8 +182,15 @@ namespace LinBox
 		size_t coldim (void) const
 			{ return _coldim; }
 
+            	size_t rowfirst() const { return _row; }
+            	size_t colfirst() const { return _col; }
+            
+                     
+
 		const Field& field() const {return _BB->field();}
 
+            	const Blackbox * getPtr() const { return _BB; }
+            
 	    private:
 
 		const Blackbox *_BB;
@@ -398,5 +402,163 @@ namespace LinBox
 
 	//@}
 } // namespace LinBox
+
+
+
+
+// Namespace in which all LinBox library code resides
+namespace LinBox
+{
+
+	/** Specialization for dense vectors */
+	template <class Blackbox>
+	class SubmatrixOwner<Blackbox, VectorCategories::DenseVectorTag >
+	: public BlackboxInterface {
+	    public:
+		typedef typename Blackbox::Field Field;
+		typedef typename Field::Element Element;
+            	typedef Blackbox Blackbox_t;
+                typedef SubmatrixOwner<Blackbox_t, VectorCategories::DenseVectorTag > Self_t;
+            
+		/** Constructor from field and dense vector of field elements.
+		 * @param BB   Black box from which to extract the submatrix
+		 * @param row  First row of the submatrix to extract (1.._BB_data.rowdim ())
+		 * @param col  First column of the submatrix to extract (1.._BB_data.coldim ())
+		 * @param rowdim Row dimension
+		 * @param coldim Column dimension
+		 */
+		SubmatrixOwner (const Blackbox *BB,
+			   size_t          row,
+			   size_t          col,
+			   size_t          rowdim,
+			   size_t          coldim)
+			: _BB_data (*BB),
+			_row (row), _col (col), _rowdim (rowdim), _coldim (coldim),
+			  _z (_BB_data.coldim ()), _y (_BB_data.rowdim ())
+		{
+			linbox_check (row + rowdim <= _BB_data.rowdim ());
+			linbox_check (col + coldim <= _BB_data.coldim ());
+
+			BB->field().init (_zero, 0);
+		}
+
+		/** Destructor
+		 */
+		virtual ~SubmatrixOwner () {}
+
+		/** Application of BlackBox matrix.
+		 * y= A*x.
+		 * Requires one vector conforming to the \ref{LinBox}
+		 * vector {@link Archetypes archetype}.
+		 * Required by abstract base class.
+		 * @return reference to vector y containing output.
+		 * @param  x constant reference to vector to contain input
+		 */
+		template<class OutVector, class InVector>
+	        OutVector& apply (OutVector &y, const InVector& x) const
+	        {
+			std::fill (_z.begin (), _z.begin () + _col, _zero);
+			std::fill (_z.begin () + _col + _coldim, _z.end (), _zero);
+
+			copy (x.begin (), x.end (), _z.begin () + _col);  // Copying. Yuck.
+			_BB_data.apply (_y, _z);
+			copy (_y.begin () + _row, _y.begin () + _row + _rowdim, y.begin ());
+			return y;
+	        }
+
+		/** Application of BlackBox matrix transpose.
+		 * y= transpose(A)*x.
+		 * Requires one vector conforming to the \ref{LinBox}
+		 * vector {@link Archetypes archetype}.
+		 * Required by abstract base class.
+		 * @return reference to vector y containing output.
+		 * @param  x constant reference to vector to contain input
+		 */
+		template<class OutVector, class InVector>
+		OutVector& applyTranspose (OutVector &y, const InVector& x) const
+		{
+			std::fill (_y.begin (), _y.begin () + _row, _zero);
+			std::fill (_y.begin () + _row + _rowdim, _y.end (), _zero);
+
+			copy (x.begin (), x.end (), _y.begin () + _row);  // Copying. Yuck.
+			_BB_data.applyTranspose (_z, _y);
+			copy (_z.begin () + _col, _z.begin () + _col + _coldim, y.begin ());
+			return y;
+		}
+
+
+            template<typename _Tp1> 
+            struct rebind                           
+            { 
+                typedef SubmatrixOwner< typename Blackbox::template rebind<_Tp1>::other, VectorCategories::DenseVectorTag> other; 
+
+                void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+                    typename Blackbox_t::template rebind<_Tp1> () ( Ap.getData(), A.getData(), F);
+                    
+                }
+
+            };
+
+            	template<typename _BB, typename _Vc, class Field>
+            	SubmatrixOwner (const Submatrix<_BB, _Vc>& T, const Field& F) 
+                        : _BB_data(*(T.getPtr()), F),
+                          _row(T.rowfirst()), _col(T.colfirst()),
+                          _rowdim(T.rowdim()), _coldim(T.coldim()),
+                	_z (_BB_data.coldim ()), _y (_BB_data.rowdim ()) {
+                    typename Submatrix<_BB,_Vc>::template rebind<Field>()(*this,T, F);
+                }
+            	template<typename _BB, typename _Vc, class Field>
+            	SubmatrixOwner (const SubmatrixOwner<_BB,_Vc>& T, const Field& F) 
+                        : _BB_data(T.getData(), F), 
+                          _row(T.rowfirst()), _col(T.colfirst()), 
+                          _rowdim(T.rowdim()), _coldim(T.coldim()),
+                	_z (_BB_data.coldim ()), _y (_BB_data.rowdim ()) {
+                    typename SubmatrixOwner<_BB,_Vc>::template rebind<Field>()(*this,T, F);
+                }
+
+/** Retreive _row dimensions of BlackBox matrix.
+		 * This may be needed for applying preconditioners.
+		 * Required by abstract base class.
+		 * @return integer number of _rows of black box matrix.
+		 */
+		size_t rowdim (void) const
+			{ return _rowdim; }
+    
+		/** Retreive _column dimensions of BlackBox matrix.
+		 * Required by abstract base class.
+		 * @return integer number of _columns of black box matrix.
+		 */
+		size_t coldim (void) const
+			{ return _coldim; }
+
+            	size_t rowfirst() const { return _row; }
+            	size_t colfirst() const { return _col; }
+
+		const Field& field() const {return _BB_data.field();}
+
+		const Blackbox& getData() const {return  _BB_data;}
+		Blackbox& getData() {return  _BB_data;}
+
+	    private:
+
+		Blackbox _BB_data;
+		size_t    _row;
+		size_t    _col;
+		size_t    _rowdim;
+		size_t    _coldim;
+
+	        // Temporaries for reducing the amount of memory allocation we do
+	        mutable std::vector<Element> _z;
+	        mutable std::vector<Element> _y;
+
+		typename Field::Element _zero;
+
+	}; // template <Vector> class SubmatrixOwner
+	
+
+	//@}
+} // namespace LinBox
+
+
 
 #endif // __SUBMATRIX_H

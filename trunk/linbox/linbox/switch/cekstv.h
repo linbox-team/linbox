@@ -61,6 +61,8 @@ class CekstvSwitch
 	typedef CekstvSwitch<Field> Self_t;
 	typedef CekstvSwitchFactory<Field> Factory;
 
+	CekstvSwitch () {}
+
 	/** Constructor from a field and a field element.
 	 * @param F field in which arithmetic is done
 	 * @param switches vector of switches
@@ -105,13 +107,14 @@ class CekstvSwitch
 
                 // special rebind operator() with two fields, 
                 // indeed local field is not stored in the switch
-            void operator() (other *& Ap, const Self_t& A, const _Tp1& T, const Field& F) {
-                typename _Tp1::Element u;
-                Hom<Field, _Tp1>(F,T).image(u, A._a);
-                Ap = new other(u);
+            void operator() (other & Ap, const Self_t& A, const _Tp1& T, const Field& F) {
+                Hom<Field, _Tp1>(F,T).image(Ap.getData(), A.getData());
             }
         };
     
+    typename Field::Element& getData() { return _a; }
+    const typename Field::Element& getData() const { return _a; }
+
 
    private:
 
