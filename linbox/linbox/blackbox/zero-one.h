@@ -5,7 +5,7 @@
  *
  * Written by Rich Seagraves <seagrave@cis.udel.edu>
  * Modified by Zhendong, -bds
- * Time-stamp: <22 Jun 10 11:58:25 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <22 Jun 10 17:34:01 Jean-Guillaume.Dumas@imag.fr> 
  *
  * ------------------------------------
  *
@@ -180,9 +180,11 @@ namespace LinBox
 
     const Field& field() const { return _F; }
 
-      bool isRowSorted() const { return _rowSort; }
-      bool isColSorted() const { return _colSort; }
+    bool isRowSorted() const { return _rowSort; }
+    bool isColSorted() const { return _colSort; }
               
+    size_t nnz() const { return _nnz; };
+    
 
   protected:
    
@@ -212,8 +214,6 @@ namespace LinBox
 
      /* Non blackbox function.  Tells the number of nonzero entries
      */
-    size_t nnz() const { return _nnz; };
-    
     void rowSort() const;
     void colSort() const;
 
