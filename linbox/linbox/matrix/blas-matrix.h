@@ -206,15 +206,15 @@ namespace LinBox {
 		}
 
 
-		// Constructor from matrix (no copy)
-		BlasMatrix ( DenseMatrixBase<Element>& A )	
-			: DenseSubmatrix<Element>(A,0,0,A.rowdim(),A.coldim()), _stride(A.coldim()) , _alloc(false)
-		{ _ptr = this->_M->FullIterator();}
+// 		// Constructor from matrix (no copy)
+// 		BlasMatrix ( DenseMatrixBase<Element>& A )	
+// 			: DenseSubmatrix<Element>(A,0,0,A.rowdim(),A.coldim()), _stride(A.coldim()) , _alloc(false)
+// 		{ _ptr = this->_M->FullIterator();}
 		
-		// Constructor from matrix (no copy )
-		BlasMatrix ( DenseMatrixBase<Element>& A, const size_t i0,const size_t j0,const size_t m, const size_t n) 
-			: DenseSubmatrix<Element>(A,i0,j0,m,n), _stride(A.coldim()) , _alloc(false) 
-		{_ptr = this->_M->FullIterator();}
+// 		// Constructor from matrix (no copy )
+// 		BlasMatrix ( DenseMatrixBase<Element>& A, const size_t i0,const size_t j0,const size_t m, const size_t n) 
+// 			: DenseSubmatrix<Element>(A,i0,j0,m,n), _stride(A.coldim()) , _alloc(false) 
+// 		{_ptr = this->_M->FullIterator();}
 
 
 
@@ -226,14 +226,14 @@ namespace LinBox {
 		}
 		
 
-		// Copy Contructor of a matrix (no copy is done, just through pointer)
-		BlasMatrix(BlasMatrix<Element>& A) 
-			: DenseSubmatrix<Element>(A), _stride(A._stride), _alloc(false), _ptr(A._ptr) {}
+// 		// Copy Contructor of a matrix (no copy is done, just through pointer)
+// 		BlasMatrix(BlasMatrix<Element>& A) 
+// 			: DenseSubmatrix<Element>(A), _stride(A._stride), _alloc(false), _ptr(A._ptr) {}
 
 
-		// Copy Contructor of a submatrix (no copy is done, just through pointer)
-		BlasMatrix(BlasMatrix<Element>& A, const size_t i, const size_t j, const size_t m, const size_t n) 
-			: DenseSubmatrix<Element>(A,i,j,m,n), _stride(A._stride), _alloc(false), _ptr(A._ptr+ i*A._stride+j) {}
+// 		// Copy Contructor of a submatrix (no copy is done, just through pointer)
+// 		BlasMatrix(BlasMatrix<Element>& A, const size_t i, const size_t j, const size_t m, const size_t n) 
+// 			: DenseSubmatrix<Element>(A,i,j,m,n), _stride(A._stride), _alloc(false), _ptr(A._ptr+ i*A._stride+j) {}
 
 
 		
@@ -249,17 +249,16 @@ namespace LinBox {
         { 
             typedef BlasMatrix<typename _Tp1::Element> other; 
 
-            void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
+            void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
 
-                Ap = new BlasMatrix<typename _Tp1::Element>(A.rowdim(), A.coldim());
-				typedef typename DenseSubmatrix<_Element>::ConstRawIndexedIterator ConstRawIndexedIterator ;
-				typedef typename DenseSubmatrix<_Element>::ConstRawIterator ConstRawIterator ;
+                typedef typename DenseSubmatrix<_Element>::ConstRawIndexedIterator ConstRawIndexedIterator ;
+                typedef typename DenseSubmatrix<_Element>::ConstRawIterator ConstRawIterator ;
                 ConstRawIterator         iter_value = A.rawBegin();
                 ConstRawIndexedIterator  iter_index = A.rawIndexedBegin();
                 typename _Tp1::Element tmp;
                 for (;iter_value != A.rawEnd(); ++iter_value,++iter_index){
                     F.init(  tmp, *iter_value ); 
-                    Ap->setEntry(iter_index.rowIndex(), iter_index.colIndex(),tmp);
+                    Ap.setEntry(iter_index.rowIndex(), iter_index.colIndex(),tmp);
                 }
            }
         };
