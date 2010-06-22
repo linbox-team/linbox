@@ -3,7 +3,7 @@
 // Copyright (C)  1999, Linbox project
 // Givaro / Athapascan-1
 // Valence computation
-// Time-stamp: <21 Jun 10 13:04:24 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <22 Jun 10 16:19:52 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 // Modified by Z. Wan to fit in linbox
 #ifndef __LINBOX_VALENCE_H__
@@ -82,6 +82,7 @@ namespace LinBox
 #include "linbox/algorithms/cra-early-single.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
+#include <typeinfo>
 
 namespace LinBox {
    
@@ -100,7 +101,12 @@ namespace LinBox {
 	std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
         F.write(report) << std::endl;
             typedef typename Blackbox::template rebind<Field>::other FBlackbox;
+            report << typeid(A).name() << ", A is: " << A.rowdim() << 'x' << A.coldim() << std::endl;
+            
             FBlackbox Ap(A, F);
+
+            report << typeid(Ap).name() << ", Ap is: " << Ap.rowdim() << 'x' << Ap.coldim() << std::endl;
+
             valence( v, Ap, M);
         F.write( F.write(report << "one valence: ", v) << " mod " ) << std::endl;;
         commentator.stop ("done", NULL, "Mvalence");
