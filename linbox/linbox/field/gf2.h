@@ -53,6 +53,8 @@ struct ClassifyRing<GF2> {
 class GF2 : public FieldInterface
 {
     public:
+    const bool zero,one,mone;
+    
 
 	/** Element type
 	 */
@@ -70,8 +72,8 @@ class GF2 : public FieldInterface
  
 	/** Default constructor.
 	 */
-	GF2 () {}
-	GF2 (int p, int exp = 1) {
+	GF2 () : zero(false),one(true),mone(true) {}
+	GF2 (int p, int exp = 1) : zero(false),one(true),mone(true) {
 		if(p != 2) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be 2");
 		if(exp != 1) throw PreconditionFailed(__FUNCTION__,__LINE__,"exponent must be 1");
 	}
@@ -82,7 +84,7 @@ class GF2 : public FieldInterface
 	 * into functions.
 	 * @param  F Modular object.
 	 */
-	GF2 (const GF2 &) {}
+	GF2 (const GF2 &) : zero(false),one(true),mone(true) {}
 
 	/** Assignment operator
 	 * Required by the archetype
