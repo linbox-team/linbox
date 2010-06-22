@@ -2,6 +2,7 @@
 /* tests/test-qlup.C
  * Copyright (C) The LinBox group
  *
+ * Time-stamp: <22 Jun 10 15:59:56 Jean-Guillaume.Dumas@imag.fr>
  * -----------------------------------------------------
  *
  * This file is part of LinBox, licensed under the GNU Lesser General
