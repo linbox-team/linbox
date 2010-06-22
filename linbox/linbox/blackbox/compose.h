@@ -468,7 +468,6 @@ namespace LinBox
 		 */
 		ComposeOwner (const ComposeOwner<Blackbox1, Blackbox2>& M) 
 			:_A_data ( M.getLeftData()), _B_data ( M.getRightData())
-			//{ VectorWrapper::ensureDim (_z, _A_data.coldim ()); }
 			{ _z.resize(_A_data.coldim());}
 
 
@@ -528,7 +527,8 @@ namespace LinBox
             template<typename _BBt1, typename _BBt2, typename Field>
             ComposeOwner (const Compose<_BBt1, _BBt2> &M, const Field& F)
                     : _A_data(*(M.getLeftPtr()), F),
-                      _B_data(*(M.getRightPtr()), F) 
+                      _B_data(*(M.getRightPtr()), F),
+                      _z(_A_data.coldim())
                 {
                     typename Compose<_BBt1, _BBt2>::template rebind<Field>()(*this,M,F);
                 }
@@ -536,7 +536,8 @@ namespace LinBox
             template<typename _BBt1, typename _BBt2, typename Field>
             ComposeOwner (const ComposeOwner<_BBt1, _BBt2> &M, const Field& F)
                     : _A_data(M.getLeftData(), F),
-                      _B_data(M.getRightData(), F) 
+                      _B_data(M.getRightData(), F) ,
+                      _z(_A_data.coldim())
                 {
                     typename ComposeOwner<_BBt1, _BBt2>::template rebind<Field>()(*this,M,F);
                 }

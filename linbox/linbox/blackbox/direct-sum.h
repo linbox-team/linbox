@@ -579,14 +579,14 @@ namespace LinBox
 
         template<typename _BBt, typename Field>
         DirectSumOwner (const DirectSum<_BBt> &M, const Field& F)
-                : _VB_data( M.size() )
+                : _VB_data( M.size() ), m( M.rowdim() ), n( M.coldim())
             {
                 typename DirectSum<_BBt>::template rebind<Field>()(*this, M, F);
             }
 
         template<typename _BBt, typename Field>
         DirectSumOwner (const DirectSumOwner<_BBt> &M, const Field& F)
-                : _VB_data( M.size() )
+                : _VB_data( M.size() ), m( M.rowdim() ), n( M.coldim())
             {
                 typename DirectSumOwner<_BBt>::template rebind<Field>()(*this, M, F);
             }

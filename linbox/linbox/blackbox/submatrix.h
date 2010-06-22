@@ -108,7 +108,6 @@ namespace LinBox
 			linbox_check (row + rowdim <= _BB->rowdim ());
 			linbox_check (col + coldim <= _BB->coldim ());
 
-			BB->field().init (_zero, 0);
 		}
 
 		/** Destructor
@@ -126,8 +125,8 @@ namespace LinBox
 		template<class OutVector, class InVector>
 	        OutVector& apply (OutVector &y, const InVector& x) const
 	        {
-			std::fill (_z.begin (), _z.begin () + _col, _zero);
-			std::fill (_z.begin () + _col + _coldim, _z.end (), _zero);
+			std::fill (_z.begin (), _z.begin () + _col, _BB->field().zero);
+			std::fill (_z.begin () + _col + _coldim, _z.end (), _BB->field().zero);
 
 			copy (x.begin (), x.end (), _z.begin () + _col);  // Copying. Yuck.
 			_BB->apply (_y, _z);
@@ -146,8 +145,8 @@ namespace LinBox
 		template<class OutVector, class InVector>
 		OutVector& applyTranspose (OutVector &y, const InVector& x) const
 		{
-			std::fill (_y.begin (), _y.begin () + _row, _zero);
-			std::fill (_y.begin () + _row + _rowdim, _y.end (), _zero);
+			std::fill (_y.begin (), _y.begin () + _row, _BB->field().zero);
+			std::fill (_y.begin () + _row + _rowdim, _y.end (), _BB->field().zero);
 
 			copy (x.begin (), x.end (), _y.begin () + _row);  // Copying. Yuck.
 			_BB->applyTranspose (_z, _y);
@@ -202,8 +201,6 @@ namespace LinBox
 	        // Temporaries for reducing the amount of memory allocation we do
 	        mutable std::vector<Element> _z;
 	        mutable std::vector<Element> _y;
-
-		typename Field::Element _zero;
 
 	}; // template <Vector> class Submatrix
 	
@@ -439,7 +436,6 @@ namespace LinBox
 			linbox_check (row + rowdim <= _BB_data.rowdim ());
 			linbox_check (col + coldim <= _BB_data.coldim ());
 
-			BB->field().init (_zero, 0);
 		}
 
 		/** Destructor
@@ -457,8 +453,8 @@ namespace LinBox
 		template<class OutVector, class InVector>
 	        OutVector& apply (OutVector &y, const InVector& x) const
 	        {
-			std::fill (_z.begin (), _z.begin () + _col, _zero);
-			std::fill (_z.begin () + _col + _coldim, _z.end (), _zero);
+			std::fill (_z.begin (), _z.begin () + _col, _BB_data.field().zero);
+			std::fill (_z.begin () + _col + _coldim, _z.end (), _BB_data.field().zero);
 
 			copy (x.begin (), x.end (), _z.begin () + _col);  // Copying. Yuck.
 			_BB_data.apply (_y, _z);
@@ -477,8 +473,8 @@ namespace LinBox
 		template<class OutVector, class InVector>
 		OutVector& applyTranspose (OutVector &y, const InVector& x) const
 		{
-			std::fill (_y.begin (), _y.begin () + _row, _zero);
-			std::fill (_y.begin () + _row + _rowdim, _y.end (), _zero);
+			std::fill (_y.begin (), _y.begin () + _row, _BB_data.field().zero);
+			std::fill (_y.begin () + _row + _rowdim, _y.end (), _BB_data.field().zero);
 
 			copy (x.begin (), x.end (), _y.begin () + _row);  // Copying. Yuck.
 			_BB_data.applyTranspose (_z, _y);
@@ -550,8 +546,6 @@ namespace LinBox
 	        // Temporaries for reducing the amount of memory allocation we do
 	        mutable std::vector<Element> _z;
 	        mutable std::vector<Element> _y;
-
-		typename Field::Element _zero;
 
 	}; // template <Vector> class SubmatrixOwner
 	
