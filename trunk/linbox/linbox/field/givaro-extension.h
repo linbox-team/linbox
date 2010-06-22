@@ -1,7 +1,7 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/field/givaro-gfq.h
  * Copyright (C) 2005 JGD
  *
+ * Time-stamp: <22 Jun 10 10:02:34 Jean-Guillaume.Dumas@imag.fr>
  * ------------------------------------
  *
  * See COPYING for license information.
@@ -104,6 +104,10 @@ namespace LinBox
      *  This type is inherited from the Givaro class GFqDom<TAG>
      */	
     typedef GIV_ExtensionrandIter< Extension<GivaroField<BaseField> >, LinBox::integer >  RandIter;
+
+
+    GivaroExtension() {}
+        
 
     /** Constructor from an integer
      */
