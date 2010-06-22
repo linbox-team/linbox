@@ -81,7 +81,7 @@ namespace LinBox {
 		int degree = 0;
                 typedef typename IMatrix::template rebind<Field>::other FBlackbox;
 		typedef std::vector<Element> FPoly;
-		FBlackbox* fbb; FPoly fp;
+		FPoly fp;
 		integer mmodulus; 
 		FieldTraits<Field>::maxModulus(mmodulus);
 		long bits = (long) floor (log((double)mmodulus)/M_LN2);
@@ -89,9 +89,8 @@ namespace LinBox {
 		for (int i = 0; i < n_try; ++ i) {
 			++primeg;
 			Field F(*primeg);
-			MatrixHom::map (fbb, M, F);
-			//LinBox::minpoly (fp, *fbb); delete fbb;
-			minpoly (fp, *fbb); delete fbb;
+                        FBlackbox  fbb(M, F); 
+			minpoly (fp, fbb);
 			if (degree < ((int) fp.size() - 1)) degree = fp.size() -1;
 		}
 		return degree;
@@ -123,7 +122,6 @@ namespace LinBox {
 		long bits = (long) floor (log((double)mmodulus)/M_LN2);
 
 		RandomPrimeIterator primeg(bits); 
-		FBlackbox* fbb; 
 		FPoly fp (degree + 1);
 		typename FPoly::iterator fp_p;
 		y.resize (degree + 1);
@@ -132,16 +130,16 @@ namespace LinBox {
                 do {
                     ++primeg;
                     Field F(*primeg);
-                    MatrixHom::map (fbb, M, F);
-                    minpoly (fp, *fbb); delete fbb;  
+                    FBlackbox fbb(M, F); 
+                    minpoly (fp, fbb);
                     cra.initialize(F, fp);
                 } while( (int)fp.size() - 1 != degree); // Test for Bad primes                
 
 		while(! cra.terminated()) {
                     ++primeg; while(cra.noncoprime(*primeg)) ++primeg;   
                     Field F(*primeg);
-                    MatrixHom::map (fbb, M, F);
-                    minpoly (fp, *fbb); delete fbb;  
+                    FBlackbox fbb(M, F);
+                    minpoly (fp, fbb);
                     if ((int)fp.size() - 1 != degree) {
                         commentator.report (Commentator::LEVEL_IMPORTANT,
                                             INTERNAL_DESCRIPTION) << "Bad prime.\n";
@@ -168,7 +166,6 @@ namespace LinBox {
 		long bits = (long) floor (log((double)mmodulus)/M_LN2);
 
 		RandomPrimeIterator primeg(bits); 
-		FBlackbox* fbb; 
 		FPoly fp (degree + 1);
 		typename FPoly::iterator fp_p;
 		y.resize (degree + 1);
@@ -177,16 +174,16 @@ namespace LinBox {
                 do {
                     ++primeg;
                     Field F(*primeg);
-                    MatrixHom::map (fbb, M, F);
-                    minpolySymmetric (fp, *fbb); delete fbb;  
+                    FBlackbox fbb(M,F); 
+                    minpolySymmetric (fp, fbb);
                     cra.initialize(F, fp);
                 } while( (int)fp.size() - 1 != degree); // Test for Bad primes                
 
 		while(! cra.terminated()) {
                     ++primeg; while(cra.noncoprime(*primeg)) ++primeg;   
                     Field F(*primeg); 
-                    MatrixHom::map (fbb, M, F); 
-                    minpolySymmetric (fp, *fbb); delete fbb;
+                    FBlackbox fbb(M,F);
+                    minpolySymmetric (fp, fbb);
                     if ((int)fp.size() - 1 != degree) {
                         commentator.report (Commentator::LEVEL_IMPORTANT,
                                             INTERNAL_DESCRIPTION) << "Bad prime.\n";

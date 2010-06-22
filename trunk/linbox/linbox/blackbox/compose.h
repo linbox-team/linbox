@@ -467,7 +467,7 @@ namespace LinBox
 		 * are not copied.
 		 */
 		ComposeOwner (const ComposeOwner<Blackbox1, Blackbox2>& M) 
-			:_A_data ( M._A_data), _B_data ( M._B_data)
+			:_A_data ( M.getLeftData()), _B_data ( M.getRightData())
 			//{ VectorWrapper::ensureDim (_z, _A_data.coldim ()); }
 			{ _z.resize(_A_data.coldim());}
 
@@ -518,8 +518,8 @@ namespace LinBox
                 > other;
  
     		void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
-                    typename Blackbox1::template rebind<_Tp1> () ( Ap._A_data, A._A_data, F);
-                    typename Blackbox2::template rebind<_Tp2> () ( Ap._B_data, A._B_data, F);
+                    typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), A.getLeftData(), F);
+                    typename Blackbox2::template rebind<_Tp2> () ( Ap.getRightData(), A.getRightData(), F);
                 }
             
             };

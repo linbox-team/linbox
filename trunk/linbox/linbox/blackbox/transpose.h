@@ -201,11 +201,11 @@ namespace LinBox
 		/** Copy constructor.
 		 * @param M constant reference to compose black box matrix
 		 */
-		TransposeOwner (const TransposeOwner<Blackbox> &M) : _A_data(M._A_data)
+		TransposeOwner (const TransposeOwner<Blackbox> &M) : _A_data(M.getData())
 		{
 			// create new copies of matrices in dynamic memory
-			//linbox_check (M._A_data != NULL);
-			//_A_data = M._A_data.clone ();
+			//linbox_check (M.getData() != NULL);
+			//_A_data = M.getData().clone ();
 		}
 
 		/// Destructor
@@ -218,7 +218,7 @@ namespace LinBox
                 { 
                     typedef TransposeOwner<typename Blackbox::template rebind<_Tp1>::other> other; 
                     void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
-                        typename Blackbox_t::template rebind<_Tp1> () ( Ap._A_data, A._A_data, F);
+                        typename Blackbox_t::template rebind<_Tp1> () ( Ap.getData(), A.getData(), F);
                     }
                 };
 
