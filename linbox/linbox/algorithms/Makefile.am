@@ -4,6 +4,8 @@ noinst_LTLIBRARIES=libalgorithms.la
 
 libalgorithms_la_SOURCES= diophantine-solver.C
 
+AM_CPPFLAGS= $(CBLAS_FLAG) $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
+
 pkgincludesub_HEADERS = \
 	blackbox-container.h			\
 	blackbox-container-symmetric.h		\
