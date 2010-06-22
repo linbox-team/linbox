@@ -187,15 +187,11 @@ namespace LinBox {
 		template<typename Polynomial, typename Field>
 		Polynomial& operator()(Polynomial& P, const Field& F) const {
 			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
-			FBlackbox * Ap;
-			MatrixHom::map(Ap, A, F);
-			charpoly( P, *Ap, typename FieldTraits<Field>::categoryTag(), M);
-			integer p;
-			F.characteristic(p);
-			//std::cerr<<"Charpoly(A) mod "<<p<<" = "<<P;
-
-			delete Ap;
-			return P;
+			FBlackbox Ap(A, F);
+			return charpoly( P, Ap, typename FieldTraits<Field>::categoryTag(), M);
+// 			integer p;
+// 			F.characteristic(p);
+//			std::cerr<<"Charpoly(A) mod "<<p<<" = "<<P;
 		}            
 	};
 

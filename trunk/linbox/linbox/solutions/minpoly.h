@@ -207,11 +207,8 @@ namespace LinBox {
 		template<typename Polynomial, typename Field>
 		Polynomial& operator()(Polynomial& P, const Field& F) const {
                     typedef typename Blackbox::template rebind<Field>::other FBlackbox;
-                    FBlackbox * Ap;
-                    MatrixHom::map(Ap, A, F);
-                    minpoly( P, *Ap, typename FieldTraits<Field>::categoryTag(), M);
-                    delete Ap;
-                    return P;
+                    FBlackbox Ap(A, F);
+                    return minpoly( P, Ap, typename FieldTraits<Field>::categoryTag(), M);
 		}            
 	};
 

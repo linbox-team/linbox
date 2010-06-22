@@ -3,7 +3,7 @@
 // Copyright (C)  1999, Linbox project
 // Givaro / Athapascan-1
 // Valence computation
-// Time-stamp: <09 Mar 07 18:34:05 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <21 Jun 10 13:04:24 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 // Modified by Z. Wan to fit in linbox
 #ifndef __LINBOX_VALENCE_H__
@@ -100,10 +100,8 @@ namespace LinBox {
 	std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
         F.write(report) << std::endl;
             typedef typename Blackbox::template rebind<Field>::other FBlackbox;
-            FBlackbox * Ap;
-            MatrixHom::map(Ap, A, F);
-            valence( v, *Ap, M);
-            delete Ap;
+            FBlackbox Ap(A, F);
+            valence( v, Ap, M);
         F.write( F.write(report << "one valence: ", v) << " mod " ) << std::endl;;
         commentator.stop ("done", NULL, "Mvalence");
             return v;
@@ -234,13 +232,12 @@ class Valence {
 		commentator. start ("Valence (AAT)", "Valence");
 		typedef Modular<int32> Field;
 		typedef typename MatrixHomTrait<Blackbox, Field>::value_type FBlackbox;
-		FBlackbox* Ap;
 		int n_bit = (int)(log((double)Field::getMaxModulus()) / M_LN2 - 2);
 		unsigned long d; 
                 RandomPrimeIterator g(n_bit); Field::Element v;
 		++g; Field F(*g);
-		MatrixHom::map (Ap, A, F);
-		one_valence(v, d, *Ap); delete Ap;
+		FBlackbox Ap(A, F);
+		one_valence(v, d, Ap);
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		//std::cout<<"degree of minpoly of AAT: " << d << std::endl;
 		valence (val, d, A);
@@ -257,7 +254,6 @@ class Valence {
 
 		typedef Modular<int32> Field;
 		typedef typename MatrixHomTrait<Blackbox, Field>::value_type FBlackbox;
-		FBlackbox* Ap;
 		int n_bit = (int)(log((double)Field::getMaxModulus()) / M_LN2 - 2);
                 RandomPrimeIterator rg(n_bit);
 		std::vector<integer> Lv, Lm;
@@ -270,8 +266,8 @@ class Valence {
 		do {
 			++rg;
 			Field F(*rg);
-			MatrixHom::map (Ap, A, F);
-			one_valence(v, d1, *Ap); delete Ap;
+                        FBlackbox Ap(A, F);
+			one_valence(v, d1, Ap);
 			if (d1 == d) {
 				im *= *rg;
 				Lm. push_back ( *rg ); Lv. push_back (integer(v));
