@@ -5,6 +5,7 @@
 */
 //#include "linbox-config.h"
 #include <iostream>
+#include <omp.h>
 
 #include "linbox/field/gf2.h"
 #include "linbox/field/modular-double.h"
@@ -17,8 +18,6 @@
 #include "linbox/solutions/valence.h"
 #include "linbox/algorithms/smith-form-sparseelim-local.h"
 #include "linbox/util/matrix-stream.h"
-
-#include <omp.h>
 
 #include <givaro/givintnumtheo.h>
 
