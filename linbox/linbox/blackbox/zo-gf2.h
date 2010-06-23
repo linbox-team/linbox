@@ -2,7 +2,7 @@
 /* linbox/blackbox/zo-gf2.h
  * Copyright (C) 2009 The LinBox group
  *
- * Time-stamp: <22 Jun 10 11:57:32 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <23 Jun 10 16:02:02 Jean-Guillaume.Dumas@imag.fr> 
  *
  * See COPYING for license information.
  *
@@ -28,7 +28,7 @@ namespace LinBox
    \ingroup blackbox
   */ 
     template<>
-    struct ZeroOne<GF2> : LightContainer< LightContainer< size_t > > 
+    struct ZeroOne<GF2> : public LightContainer< LightContainer< size_t > > 
     {
         typedef LightContainer< LightContainer< size_t > > Father_t;
         typedef LightContainer< size_t > Row_t;
