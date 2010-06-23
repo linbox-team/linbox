@@ -93,7 +93,7 @@ namespace LinBox {
 	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::solve (Vector1& num, Integer& den,
 											  const IMatrix& A,
 											  const Vector2& b,
-											  const bool old=false,
+											  const bool old,
 											  int maxPrimes) const {
 		SolverReturnStatus status=SS_FAILED;
 
@@ -462,7 +462,7 @@ namespace LinBox {
 	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,BlockWiedemannTraits>::solve (Vector1& num, Integer& den,
 											       const IMatrix& A,
 											       const Vector2& b,
-											       const bool old=false,
+											       const bool old,
 											       int maxPrimes) const {
 		SolverReturnStatus status=SS_FAILED;
 		

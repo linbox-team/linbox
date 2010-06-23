@@ -203,7 +203,8 @@ namespace LinBox {// LinBox
 	 *   in Computer Sciences, pages 29-38, 1991.
 	 *
 	 */
-	template<class Ring, class Field,class RandomPrime>		
+
+	template<class Ring, class Field,class RandomPrime>
 	class RationalSolver<Ring, Field, RandomPrime, WiedemannTraits> {
 
 	public: 
@@ -257,7 +258,7 @@ namespace LinBox {// LinBox
     
 
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,const bool, int maxPrimes = DEFAULT_MAXPRIMES) const;
+		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,const bool s=false, int maxPrimes = DEFAULT_MAXPRIMES) const;
 		
 		
 		template<class IMatrix, class Vector1, class Vector2>
@@ -437,7 +438,7 @@ namespace LinBox {// LinBox
 		}
     
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,const bool, int maxPrimes = DEFAULT_MAXPRIMES) const;
+		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,const bool s=false, int maxPrimes = DEFAULT_MAXPRIMES) const;
     
 		template<class IMatrix, class Vector1, class Vector2>
 		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;         
