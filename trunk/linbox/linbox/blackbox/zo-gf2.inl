@@ -202,16 +202,16 @@ inline std::ostream& ZeroOne<GF2>::write (std::ostream& out, FileFormatTag forma
    * the beginning and end of the data.  So that RawIterator
    * can be used in algorithms like a normal STL iterator.
    */
-  ZeroOne<GF2>::RawIterator ZeroOne<GF2>::rawBegin()
+  inline ZeroOne<GF2>::RawIterator ZeroOne<GF2>::rawBegin()
   { return RawIterator( 0, _F.one ); }
   
-  ZeroOne<GF2>::RawIterator ZeroOne<GF2>::rawEnd() 
+  inline ZeroOne<GF2>::RawIterator ZeroOne<GF2>::rawEnd() 
   { return RawIterator( _nnz, _F.one ); }
   
-  const ZeroOne<GF2>::RawIterator ZeroOne<GF2>::rawBegin() const
+  inline const ZeroOne<GF2>::RawIterator ZeroOne<GF2>::rawBegin() const
   { return RawIterator(0, _F.one ); }
 
-  const ZeroOne<GF2>::RawIterator ZeroOne<GF2>::rawEnd() const 
+  inline const ZeroOne<GF2>::RawIterator ZeroOne<GF2>::rawEnd() const 
   { return RawIterator(_nnz, _F.one ); } 
   
   /* RawIndexIterator - Iterates through the i and j of the current element
@@ -308,22 +308,22 @@ inline std::ostream& ZeroOne<GF2>::write (std::ostream& out, FileFormatTag forma
       size_t _row, _col;
   };
   
-  ZeroOne<GF2>::RawIndexIterator ZeroOne<GF2>::indexBegin() 
+  inline ZeroOne<GF2>::RawIndexIterator ZeroOne<GF2>::indexBegin() 
   {
     return RawIndexIterator(0, this->begin(), this->end(), 0, this->front().begin() );
   }
   
-  const ZeroOne<GF2>::RawIndexIterator ZeroOne<GF2>::indexBegin() const
+  inline const ZeroOne<GF2>::RawIndexIterator ZeroOne<GF2>::indexBegin() const
   {
     return RawIndexIterator(0, this->begin(), this->end(), 0, this->front().begin() );
   }
 
-  ZeroOne<GF2>::RawIndexIterator ZeroOne<GF2>::indexEnd() 
+  inline ZeroOne<GF2>::RawIndexIterator ZeroOne<GF2>::indexEnd() 
   {
     return RawIndexIterator(_rowdim, this->end(), this->end(), this->back().size(),this->back().end() );
   }
 
-  const ZeroOne<GF2>::RawIndexIterator ZeroOne<GF2>::indexEnd() const 
+  inline const ZeroOne<GF2>::RawIndexIterator ZeroOne<GF2>::indexEnd() const 
   {
     return RawIndexIterator(_rowdim, this->end(), this->end(), this->back().size(),this->back().end() );
   }
