@@ -531,7 +531,7 @@ file                      &  real time   &  user time   &  sys. time  &  real ti
 \hline
 \end{tabular} 
 \caption{linbox/examples/\{rank,solve\}.C compilation time on an AMD
-  Athlon 3600+, 1.9GHz, with gcc 4.5 -O2. \texttt{instantiate.o} contains to the separately compiled
+  Athlon 3600+, 1.9GHz, with gcc-4.5 -O2. \texttt{instantiate.o} contains to the separately compiled
   instantiations (e.g. densegf2rank in figure \ref{fig:sep});
   \texttt{\{rank,solve\}.o} contains to the user interface and generic
   implementation compilation; \texttt{link} corresponds to the linking
@@ -539,6 +539,31 @@ file                      &  real time   &  user time   &  sys. time  &  real ti
   to the compilation without the separate
   mechanism.}\label{tab:compilation}
 \end{table}
+
+
+\begin{table}[ht]\center
+\begin{tabular}{|l||r|r|r||r|r|r|}
+\hline
+file                      &  real time   &  user time   &  sys. time  &  real time   &  user time   &  sys. time \\
+\hline
+ & \multicolumn{3}{|c||}{Rank}& \multicolumn{3}{|c|}{Solve}\\
+\hline
+\texttt{instantiate.o} & 46.36s & 44.47s & 1.33s & 67.32s & 63.16s & 2.20s\\
+\texttt{separate.o} & \bf 9.51s & \bf 9.13s & \bf 0.30s & \bf 9.88s & \bf 9.38s & \bf 0.30s\\
+\texttt{separate} & 0.55s & 0.34s & 0.07s & 0.97s & 0.72s & 0.08s\\
+\hline
+\texttt{Sep. comp.} & 56.42s & 53.94s & 1.70s & 78.17s & 73.26s & 2.58s\\
+\hline
+\texttt{Full comp.} & 50.60s & 46.88s & 1.90s & 70.42s & 65.55s & 2.42s\\
+\hline
+\hline
+\texttt{speed-up} & 5.0 & 5.0 & 5.1 & 6.5 & 6.5 & 6.4\\
+\hline
+\end{tabular} 
+\caption{linbox/examples/\{rank,solve\}.C compilation time on an intel
+  Xeon E5345, 2.33GHzAMD, with icc-11.1 -O2.}\label{tab:icccomp}
+\end{table}
+
 
 \section{Conclusion}
 
