@@ -257,6 +257,22 @@ they are generic in the sense that they are usually designed
   schedulers~\cite{con-traore.trmgb_08}.
   The current implementations are built on OpenMP and \kaapi.
 
+\subsection{LBA}
+\begin{algorithm}[ht]
+\caption{LinBox algorithm level}\label{alg:bbit}
+\lstset{language=C++,
+numbers=left,
+stepnumber=1,
+numbersep=5pt,
+basicstyle=\sffamily,
+keywordstyle=\sffamily\color{black}\bfseries,
+identifierstyle=\color{black}\sffamily,
+commentstyle=\color{blue},
+stringstyle=\ttfamily,
+mathescape=true}\lstinputlisting{lba.h}
+\end{algorithm}
+
+
 \subsection{\Accumulatewhile and early termination}
 To bound the complexity of many linear algebra problems, one of the
 key ideas is to use an accumulation with {\em early termination}.
