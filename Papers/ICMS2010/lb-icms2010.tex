@@ -83,10 +83,12 @@ for the forthcoming 2.0 release.
 
 The main objects that require memory allocation in \linbox are base field or
 ring elements, vectors, matrices, and polynomials.
-The memory management for all of these object types follows the same rules, organized to
-maximize efficiency in time and space, and consequently requiring some
-efforts by  the programmer. In particular no external garbage collection
-mechanism is used.
+The memory management for all of these object types follows the same
+rules, organized to maximize efficiency in time and space, and
+consequently requiring some efforts by the programmer: the allocations
+and deallocations must always occur in the founding scope.
+In particular
+no external garbage collection mechanism is used.
 
 The input and output types of most functions are usually template
 types, and can be either basic types, or complicated
@@ -117,7 +119,7 @@ This is particularly important when large, memory filling, matrices
 are in play.
 It also allows to avoid the costs of garbage 
 collection or reference counting.
-
+%
 Many \linbox objects involve a handle containing a reference to the free store.
 Note that even though a function does not allocate the handle itself,
 it is in certain cases still free to resize and thus reallocate the free store memory referenced.
