@@ -26,6 +26,7 @@ pkgincludesub_HEADERS = \
 	gauss-det.inl				\
 	gauss-rank.inl				\
 	gauss-solve.inl				\
+	gauss-nullspace.inl			\
 	gauss-elim.inl				\
 	gauss-pivot.inl				\
 	triangular-solve.h			\
