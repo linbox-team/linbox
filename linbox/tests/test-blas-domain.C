@@ -155,13 +155,15 @@ static bool testRank (const Field& F,size_t n, int iterations) {
 		mycommentator.progress(k);
 		BlasMatrix<Element> A(n,n),S(n,n), L(n,n);
      
-		r = rand() % n;
+		r = random() % n;
 		// create S as an upper triangular matrix with r nonzero rows
 		for (size_t i=0;i<r;++i){
 			S.setEntry(i,i,Gn.random(tmp));
 			for (size_t j=i+1;j<n;++j)     
 				S.setEntry(i,j,G.random(tmp));
 		}
+                BMD.write(commentator.report(), S) << std::endl;
+
      
 		// create L as a lower triangular matrix with nonzero elements on the diagonal
 		for (size_t i=0;i<n;++i){
@@ -169,12 +171,16 @@ static bool testRank (const Field& F,size_t n, int iterations) {
 				L.setEntry(i,j,G.random(tmp));
 			L.setEntry(i,i,Gn.random(tmp));
 		}
+                BMD.write(commentator.report(), L) << std::endl;
      
 		//  compute A=LS
 		BMD.mul(A,L,S);
+                BMD.write(commentator.report(), A) << std::endl;
      
 		// compute the rank of A
 		unsigned int rank= BMD.rankin(A);
+		commentator.report() << "Rank " << rank << " should be " << r << std::endl;
+
 		if (rank!=r)
 			ret=false;
 	}
