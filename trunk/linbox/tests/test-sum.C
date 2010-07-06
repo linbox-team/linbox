@@ -20,6 +20,7 @@
 #include "linbox/vector/stream.h"
 #include "linbox/field/archetype.h"
 #include "linbox/field/modular.h"
+#include "linbox/field/givaro.h"
 #include "linbox/field/ntl-lzz_p.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/blackbox/diagonal.h"
@@ -30,6 +31,20 @@
 #include "test-generic.h"
 
 using namespace LinBox;
+
+
+
+template <class Field2, class Blackbox>
+static bool testBBrebind (const Field2 &F2, const Blackbox& B) 
+{
+    typedef typename Blackbox::template rebind<Field2>::other FBlackbox;
+    
+    FBlackbox A(B, F2);
+
+    return testBlackbox(A);
+}
+
+
 
 /* Test 1: Application of zero matrix onto random vectors
  *
@@ -42,9 +57,8 @@ using namespace LinBox;
  *
  * Return true on success and false on failure
  */
-
-template <class Field, class Vector>
-static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream<Vector> &stream2) 
+template <class Field1, class Field2, class Vector>
+static bool testZeroApply (Field1 &F1, Field2 &F2, VectorStream<Vector> &stream1, VectorStream<Vector> &stream2) 
 {
 	commentator.start ("Testing zero apply", "testZeroApply", stream1.m ());
 
@@ -52,8 +66,8 @@ static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream
 	bool iter_passed = true;
 
 	Vector d1, d2, v, w, zero;
-	VectorDomain<Field> VD (F);
-	typename Field::Element neg_one;
+	VectorDomain<Field1> VD (F1);
+	typename Field1::Element neg_one;
 
 	VectorWrapper::ensureDim (zero, stream1.dim ());
 	VectorWrapper::ensureDim (d1, stream1.dim ());
@@ -62,7 +76,7 @@ static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream
 	VectorWrapper::ensureDim (w, stream2.dim ());
 // 	F.init (neg_one, 1);
 // 	F.negin (neg_one);
-	F.init (neg_one, -1);
+	F1.init (neg_one, -1);
 
 	while (stream1) {
 		commentator.startIteration (stream1.j ());
@@ -71,9 +85,9 @@ static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream
 		stream1.next (d1);
 		VD.mul (d2, d1, neg_one);
 
-		Diagonal <Field> D1 (F, d1), D2 (F, d2);
+		Diagonal <Field1> D1 (F1, d1), D2 (F1, d2);
 
-		Sum <Diagonal<Field>,Diagonal <Field> > A (&D1, &D2);
+		Sum <Diagonal<Field1>,Diagonal <Field1> > A (&D1, &D2);
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Diagonal matrix:  ";
@@ -109,6 +123,9 @@ static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream
 
 		commentator.stop ("done");
 		commentator.progress ();
+
+                ret = ret && testBBrebind(F2, A);
+                
 	}
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testZeroApply");
@@ -164,13 +181,15 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 10;
-	static integer q = 101;
+	static integer q1 = 101;
+	static integer q2 = 1009;
 	static int iterations1 = 2;
 	static int iterations2 = 1;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q1 },
+		{ 'z', "-z Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q2 },
 		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations1 },
 		{ 'j', "-j J", "Apply test matrix to J vectors.", TYPE_INT,     &iterations2 },
 		{ '\0' }
@@ -178,8 +197,11 @@ int main (int argc, char **argv)
 
 //        typedef UnparametricField<NTL::zz_p> Field;
         typedef NTL_zz_p Field;
-	NTL::zz_p::init(q);
-	Field F(q);
+// 	NTL::zz_p::init(q1); // Done in the constructor  
+	Field F1(q1);
+
+        GivaroZpz<Std32> F2(q2);
+        
 	typedef vector<Field::Element> Vector;
 
 	parseArguments (argc, argv, args);
@@ -189,12 +211,12 @@ int main (int argc, char **argv)
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
-	RandomDenseStream<Field> stream1 (F, n, iterations1), stream2 (F, n, iterations2);
+	RandomDenseStream<Field> stream1 (F1, n, iterations1), stream2 (F1, n, iterations2);
 
-	if (!testZeroApply (F, stream1, stream2)) pass = false;
+	if (!testZeroApply (F1, F2, stream1, stream2)) pass = false;
 
 	n = 10;
-	RandomDenseStream<Field> stream3 (F, n, iterations1), stream4 (F, n, iterations2);
+	RandomDenseStream<Field> stream3 (F1, n, iterations1), stream4 (F1, n, iterations2);
 
 	Vector d1(n), d2(n);
 	stream3.next (d1);
@@ -202,15 +224,16 @@ int main (int argc, char **argv)
 
 //	Diagonal <Field, Vector> D1 (F, d1), D2 (F, d2);
 
-	Field::Element d; F.init(d, 5);
-	ScalarMatrix<Field> D1(F, 10, d), D2(F, 10, d); 
+	Field::Element d; F1.init(d, 5);
+	ScalarMatrix<Field> D1(F1, 10, d), D2(F1, 10, d); 
 	typedef ScalarMatrix<Field> Blackbox;
 
 	Sum <Blackbox, Blackbox> A (D1, D2);
-	pass = pass && testBlackbox(A);
+	pass = pass && testBlackbox(A) && testBBrebind(F2, A);
+        
 
-	Sum <Blackbox, Blackbox> Aref (&D1, &D2);
-	pass = pass && testBlackbox(Aref);
+        Sum <Blackbox, Blackbox> Aref (&D1, &D2);
+	pass = pass && testBlackbox(Aref) && testBBrebind(F2, A);
 
 	commentator.stop("Sum black box test suite");
 	return pass ? 0 : -1;
