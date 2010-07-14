@@ -5,7 +5,7 @@
  * Naive parallel chinese remaindering
  * Launch NN iterations in parallel, where NN=omp_get_max_threads()
  * Then synchronization and termintation test.
- * Time-stamp: <13 May 10 12:06:20 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <14 Jul 10 11:53:21 Jean-Guillaume.Dumas@imag.fr> 
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -134,7 +134,7 @@ std::cerr << "Used: " << this->IterCounter << " primes." << std::endl;
 
 	template<class Container, class Function, class PrimeIterator>
         Container& operator() (Container& res, Function& Iteration, PrimeIterator& primeiter) {
-            typedef std::vector< DomainElement > ElementContainer;
+            typedef typename Function::ElementContainer ElementContainer;
             size_t NN = omp_get_max_threads();
             std::cerr << "Blocs: " << NN << " iterations." << std::endl;
 // commentator.start ("Parallel OMP Modular iteration", "mmcrait");
@@ -164,9 +164,9 @@ std::cerr << "Used: " << this->IterCounter << " primes." << std::endl;
                 for(std::set<Integer>::const_iterator coprimesetiter = coprimeset.begin(); coprimesetiter != coprimeset.end(); ++coprimesetiter,++resit) {
 // std::cerr << "With prime: " << *coprimesetiter << std::endl;
                     ROUNDdomains.push_back( Domain(*coprimesetiter) );
-                    for(typename ElementContainer::iterator reselit = resit->begin();
-                        reselit != resit->end(); ++reselit)
-                        ROUNDdomains.back().init( *reselit );
+//                     for(typename ElementContainer::iterator reselit = resit->begin();
+//                         reselit != resit->end(); ++reselit)
+//                         ROUNDdomains.back().init( *reselit );
                 }
                 
 #pragma omp parallel for
@@ -206,9 +206,9 @@ std::cerr << "Computed: " << this->IterCounter << " primes." << std::endl;
                 for(std::set<Integer>::const_iterator coprimesetiter = coprimeset.begin(); coprimesetiter != coprimeset.end(); ++coprimesetiter,++resit) {
 // std::cerr << "With prime: " << *coprimesetiter << std::endl;
                     ROUNDdomains.push_back( Domain(*coprimesetiter) );
-                    for(typename ElementContainer::iterator reselit = resit->begin();
-                        reselit != resit->end(); ++reselit)
-                        ROUNDdomains.back().init( *reselit );
+//                     for(typename ElementContainer::iterator reselit = resit->begin();
+//                         reselit != resit->end(); ++reselit)
+//                         ROUNDdomains.back().init( *reselit );
                 }
                 
 #pragma omp parallel for
