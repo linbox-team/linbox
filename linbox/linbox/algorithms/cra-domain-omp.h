@@ -5,7 +5,7 @@
  * Naive parallel chinese remaindering
  * Launch NN iterations in parallel, where NN=omp_get_max_threads()
  * Then synchronization and termintation test.
- * Time-stamp: <14 Jul 10 11:53:21 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <16 Jul 10 16:59:17 Jean-Guillaume.Dumas@imag.fr> 
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -134,7 +134,7 @@ std::cerr << "Used: " << this->IterCounter << " primes." << std::endl;
 
 	template<class Container, class Function, class PrimeIterator>
         Container& operator() (Container& res, Function& Iteration, PrimeIterator& primeiter) {
-            typedef typename Function::ElementContainer ElementContainer;
+            typedef typename CRATemporaryVectorTrait<Function, DomainElement>::Type_t ElementContainer;
             size_t NN = omp_get_max_threads();
             std::cerr << "Blocs: " << NN << " iterations." << std::endl;
 // commentator.start ("Parallel OMP Modular iteration", "mmcrait");
