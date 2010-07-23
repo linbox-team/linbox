@@ -58,10 +58,9 @@ namespace LinBox
 		RandomPrimeIterator primeg (22);
 		++primeg;
 		Field F(*primeg);
-		FBlackbox * fbb;
-		MatrixHom::map<Field,Blackbox> (fbb, A, F);
-		charpoly (fieldCharPoly, *fbb, M);
-		delete fbb;
+		FBlackbox fbb(F, A.rowdim(), A.coldim());
+		MatrixHom::map(fbb, A, F);
+		charpoly (fieldCharPoly, fbb, M);
 		/* Determination of the multiplicities */
 		FieldPolyDom FPD (F);
 		std::vector<FieldPoly> fieldFactors (nf);
