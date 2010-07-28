@@ -43,23 +43,38 @@ Newark / DE / 19716, USA. \bdsemail.}
 }
 
 \maketitle
+\abstract{
+To maximize efficiency in time and space, allocations and
+deallocations, in the exact linear algebra library \linbox, must
+always occur in the founding scope. This provides a simple lightweight
+allocation model. We present this model and its usage for the
+rebinding of matrices between different coefficient domains. We also
+present automatic tools to speed-up the compilation of template
+libraries and a software abstraction layer for the introduction of
+transparent parallelism at the algorithmic level.
+}
+
 \section{Introduction}
-As a building block for a wide range of applications, computational exact linear
-algebra has to conciliate efficiency and genericity. The goal of the 
-\linbox project is to address this problem in the design of an efficient general-purpose
-\texttt{C++} open-source library for exact linear algebra over the integers, the
-rationals, and finite fields. 
+As a building block for a wide range of applications, computational
+exact linear algebra has to conciliate efficiency and genericity. The
+goal of the \linbox project is to address this problem in the design
+of an efficient general-purpose \texttt{C++} open-source library for
+exact linear algebra over the integers, the rationals, and finite
+fields.
 Matrices can be either dense, sparse or black box (i.e. viewed as a linear
 operator, acting on vectors only). The library proposes a set of high level
 linear algebra solutions, such as the rank, the determinant, the solution of a
 linear system, the Smith normal form, the echelon form, the characteristic
-polynomial, etc. Each of these solutions involves a hybrid combination of several specialized
-algorithms depending on the domain, and the type of matrix. Over a finite field,
+polynomial, etc. Each of these solutions involves a hybrid combination
+of several specialized 
+algorithms depending on the domain, and the type of matrix. Over a
+finite field, 
 the building blocks are an efficient implementation of Wiedemann and block
 Wiedemann algorithms combined with preconditioners~\cite{CEKSTV:2002:EP} for
 black box matrices, a sparse Gaussian elimination for sparse matrices and the
 BLAS based dense linear algebra techniques of the \texttt{FFLAS}
-library~\cite{DGP:2008:dlaff} for dense matrices. The solutions over the integers
+library~\cite{DGP:2008:dlaff} for dense matrices. The solutions over
+the integers 
 and rationals are lifted from modular computations by a Chinese remainder
 algorithm or $p$-adic lifting.
 The design is based on high genericity to allow us to write efficient algorithms independent of the many 
@@ -107,7 +122,7 @@ function call.
 By enforcing this
 practice, we require that the programmer keep 
 \textit{the handle} on the
-objects that he allocates until all uses of the object and it's subobjects are completed. Moreover, he is responsible for object 
+objects that he allocates until all uses of the object and its subobjects are completed. Moreover, he is responsible for object 
 deallocation in the same 
 scope where it was allocated. 
 This restricts some convenient programming practices, but provides precise control of memory usage.
@@ -127,7 +142,7 @@ The objects storing dense matrices require a special care
 concerning their allocations. Dense matrices are represented as a one
 dimensional array storing elements in the row major format:
 \texttt{A[i,j] = *(A+i*n+j)}.  It is important to be 
-able to define a submatrix as a view on such an array, without
+able to define a sub-matrix as a view on such an array, without
 allocating the data.
 For this we propose to distinguish two classes: one for allocated (via
 constructors) matrices and the other for sub-matrix views. The 
@@ -160,7 +175,7 @@ functions.
 
 Remark that in this founding scope model, neither the alloc variable nor a two
 classes system is required.
-The programmer should know whether a matrix is created as a submatrix
+The programmer should know whether a matrix is created as a sub-matrix
 or as an allocating instance by what constructors or other initializers
 she uses. Thus she knows which require care to deallocate in the same scope.
 What she does not necessarily get is automatic decision about deletion
@@ -265,7 +280,7 @@ returns \texttt{true} to indicate sufficiently many values are accumulated.
 Let $S_k = \sum_{i=0,..,k} f( v[i])$ with 
 $k \in \{0,N\}$.  The algorithm computes and returns $n \leq N$ and
 $S_n$ such that one accumulation during the computation of $S_n$
-returned \texttt{true} or $n = N$.  In indended use, we know any additional accumulation would also return \texttt{true}.
+returned \texttt{true} or $n = N$.  In intended use, we know any additional accumulation would also return \texttt{true}.
 
 This algorithm will be used 
 for the early termination Chinese remaindering algorithms of
@@ -286,9 +301,7 @@ algorithms on multicore architectures have shown that these
 allocations are quite often the bottleneck.
 An analysis of the memory pattern and experiments with three well
 known memory allocators 
-%(ptmalloc, Hoard and TCMalloc from Google
-%Perf. Tools~\cite{tcmalloc})
-(ptmalloc, Hoard and TCMalloc from Google Perf. Tools\footnote{\url{goog-perftools.sourceforge.net/doc/tcmalloc.html}})
+(ptmalloc, Hoard and TCMalloc from Google Perf. Tools~\cite{tcmalloc})
 have been conducted. The goal was to decide whether the parallel
 building blocks model was suitable to high-performance exact linear
 algebra. We used dynamic libraries to exchange allocators for the
