@@ -135,13 +135,11 @@ FBlackbox Ap(A, F2);
 }
 \end{verbatim}
 
-\verb!*Owner! classes etc.
-
 Remark that for a submatrix of a class storing its elements (contrary
 to a submatrix of a blackbox containing e.g. only references), a more
 efficient rebind would only rebind the elements within the boundaries
-of the submatrix. There we thus specialize
+of the submatrix. There we use a trait to decide wether the refered
+blackbox is a storing component and in the latter case specialize
 e.g. \texttt{Submatrix<DenseMatrix<Field1> >::rebind<Field2>::other}
 to a simpler \texttt{DenseMatrix<Field2>} instead of using the
 \verb!*Owner! mechanism.
-
