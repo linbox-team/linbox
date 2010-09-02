@@ -297,7 +297,7 @@ namespace LinBox {
 
 
 		const BlasBlackbox<MultiModDouble>& operator=(const BlasBlackbox<MultiModDouble> & A){			
-			//_F   = A._F;		
+			_F   = A._F;		
 			_row = A._row;
 			_col = A._col;
 			_rep = std::vector<BlasBlackbox<Modular<double> >* >(A._rep.size());		
@@ -392,7 +392,7 @@ namespace LinBox {
 
 	protected:
 		
-		const MultiModDouble                 &_F;  
+		MultiModDouble                 _F;  
 		const std::vector<MatrixDomain<Modular<double> > >   _MD; 
 		size_t                  _row,_col;
 		Element                _One,_Zero;		

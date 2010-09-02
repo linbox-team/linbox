@@ -47,6 +47,9 @@ namespace LinBox {
 
 	public:
 
+		//PID_integer(){}
+		//PID_integer& operator=(PID_integer& K) { return *this; }
+
 		typedef integer Element;
 
 		inline Element& axpyin (integer &r, const integer& a, const integer& x) const {
