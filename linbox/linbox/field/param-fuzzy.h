@@ -102,7 +102,8 @@ namespace LinBox
 		 * @param y integer.
 		 */
 		Element &init (Element &x, const integer &y = 0) const
-			{ return x = static_cast<double> (y); }
+			{ return x = y; }
+			//{ return x = static_cast<double> (y); }
 		Element &init (Element &x, const double &y) const
 			{ return x = y; }
  
@@ -114,7 +115,7 @@ namespace LinBox
 		 * @param y constant field base element.
 		 */
 		integer &convert (integer &x, const Element &y) const
-			{ return x = static_cast<integer> (y); }
+			{ return x = y; }
 		double &convert (double &x, const Element &y) const
 			{ return x = y; }
  

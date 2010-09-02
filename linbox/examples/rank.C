@@ -35,11 +35,11 @@ int main (int argc, char **argv)
 
 	long unsigned int r;
 
-	if (argc == 2) { // rank over the integers.
+	if (argc == 2) { // rank over the rational numbers.
 
 	   /* We could pick a random prime and work mod that prime, But the point here 
 	   is that the rank function in solutions/ handles that issue.  Our matrix here 
-	   is an integer matrix and our concept is that we are getting the rank of that 
+	   is an integer or rational matrix and our concept is that we are getting the rank of that 
 	   matrix by some blackbox magic inside linbox.
 	   */
             LinBox::GivaroRational ZZ;
