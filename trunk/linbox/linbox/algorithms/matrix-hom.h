@@ -236,16 +236,24 @@ namespace LinBox {
 		for (raw_p = Ap.rawBegin(); raw_p != Ap.rawEnd(); ++ raw_p)
 			F. assign (*raw_p, zero);
 		
-		typename SparseMatrix<Ring, Vect>::ConstRowIterator row_p;
-	
-		std::vector<size_t>::const_iterator j_p;
-		
-		typename std::vector<typename Ring::Element>::const_iterator e_p;
-		
-		typename Field::Element e;
-		
-		int i = 0;
 		Hom<Ring, Field> hom(A. field(), F);
+
+                for( typename SparseMatrix<Ring, Vect>::ConstRawIndexedIterator
+                              indices = A.rawIndexedBegin();
+                              (indices != A.rawIndexedEnd()) ;
+                              ++indices ) {
+		     typename Field::Element e;
+                     hom. image (e, indices.value() );
+                     if (!F.isZero(e))
+                     Ap.setEntry (indices.rowIndex(),
+                                  indices.colIndex(), e);
+		}
+		/* 
+		typename Field::Element e;
+		typename SparseMatrix<Ring, Vect>::ConstRowIterator row_p;
+		std::vector<size_t>::const_iterator j_p;
+		typename std::vector<typename Ring::Element>::const_iterator e_p;
+		int i = 0;
 		
 		for (row_p = A.rowBegin(); row_p != A.rowEnd(); ++ row_p, ++ i)
 			for (j_p = row_p -> first. begin(), e_p = row_p -> second. begin(); 
@@ -258,7 +266,7 @@ namespace LinBox {
 					Ap.setEntry (i, *j_p, e);		
 				
 			}
-		
+		*/	
 	}	
 
 	namespace MatrixHom {
