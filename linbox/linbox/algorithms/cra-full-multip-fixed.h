@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // ======================================================================= //
-// Time-stamp: <07 Jul 09 13:56:59 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <21 Jul 10 13:36:37 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_CRA_FULL_MULTIP_FIXED_H
 #define __LINBOX_CRA_FULL_MULTIP_FIXED_H
@@ -31,14 +31,18 @@ protected:
 	
 	
 public:
-	FullMultipFixedCRA(const std::pair<size_t,double>& p ) : FullMultipCRA<Domain>(p.second), size(p.first) {}
+	FullMultipFixedCRA(const std::pair<size_t,double>& p ) : FullMultipCRA<Domain>(p.second), size(p.first) { this->initialize(); }
         
-	template<class Iterator>
-	void initialize (const Domain& D, Iterator& e) {
+	void initialize () {
 		this->RadixSizes_.resize(1);
 		this->RadixPrimeProd_.resize(1);
 		this->RadixResidues_.resize(1);
 		this->RadixOccupancy_.resize(1); this->RadixOccupancy_.front() = false;
+	}
+        
+	template<class Iterator>
+	void initialize (const Domain& D, Iterator& e) {
+		this->initialize();
 		this->progress(D, e);
 	}
         
