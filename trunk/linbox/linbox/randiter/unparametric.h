@@ -5,6 +5,7 @@
 #ifndef ___RANDITER_UNPARAMETRIC_H
 #define ___RANDITER_UNPARAMETRIC_H
 
+#include <ctime>
 #include <vector>
 
 // Namespace in which all LinBox library code resides

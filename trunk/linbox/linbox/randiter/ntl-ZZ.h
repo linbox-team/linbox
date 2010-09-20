@@ -5,6 +5,7 @@
 #ifndef ___RANDITER_NTL_ZZ_H__
 #define ___RANDITER_NTL_ZZ_H__
 
+#include <ctime>
 #include <vector>
 
 namespace LinBox {
