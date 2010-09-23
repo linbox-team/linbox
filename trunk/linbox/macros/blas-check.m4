@@ -285,6 +285,12 @@ if test "x$blas_found" != "xyes" ; then
 				else
 					BLAS_LIBS="-L${BLAS_HOME}/lib  -lblas"
 				fi
+			elif test -r "$BLAS_HOME/lib64/libblas.a"; then
+				if test "x$BLAS_HOME" = "x/usr" -o "x$BLAS_HOME" = "/usr/local" ; then
+ 					BLAS_LIBS="-lblas"
+				else
+					BLAS_LIBS="-L${BLAS_HOME}/lib64  -lblas"
+				fi
 			elif test -r "$BLAS_HOME/libblas.a"; then
 				BLAS_LIBS="-L${BLAS_HOME} -lblas"
 			fi 
