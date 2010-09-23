@@ -35,7 +35,7 @@ namespace LinBox
 
 		typename Blackbox::Field intRing = A.field();
 		typedef Modular<double> Field;
-		typedef BlasBlackbox<Field> FBlackbox;
+		typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 		typedef GivPolynomialRing<typename Blackbox::Field, Dense> IntPolyDom;
 		typedef GivPolynomialRing<Field, Dense> FieldPolyDom;
 		typedef typename IntPolyDom::Element IntPoly;
