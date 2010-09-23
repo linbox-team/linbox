@@ -96,10 +96,10 @@ namespace LinBox
 				FM* depend = NULL;
 				for (size_t j = 1; j <= exp[i]; ++j){
 					IntPoly * tmp2 = new IntPoly(*tmp);
-					FieldPoly tmp2p(tmp2->size());
-					typename IntPoly::template rebind<Field>() (tmp2p, *tmp2, F);
+					FieldPoly *tmp2p = new FieldPoly(tmp2->size());
+					typename IntPoly::template rebind<Field>() (*tmp2p, *tmp2, F);
 
-					FFM = new FM (&tmp2p, tmp2, 0, depend);
+					FFM = new FM (tmp2p, tmp2, 0, depend);
 					factCharPoly.insert (pair<size_t, FM*> (deg, FFM));
 					factnum++;
 					depend = FFM;
@@ -113,9 +113,9 @@ namespace LinBox
 				goal -= deg-intFactors[i]->size()+1;
 				leadingBlocks.insert (pair<FM*,bool>(FFM,false));
 			} else {
-				FieldPoly fp( intFactors[i]->size());
-				typename IntPoly::template rebind<Field>() (fp, *(intFactors[i]), F);
-				FFM = new FM (&fp,intFactors[i],1,NULL);
+				FieldPoly* fp=new FieldPoly(intFactors[i]->size());
+				typename IntPoly::template rebind<Field>() (*fp, *(intFactors[i]), F);
+				FFM = new FM (fp,intFactors[i],1,NULL);
 				factCharPoly.insert (pair<size_t, FM* > (intFactors[i]->size()-1, FFM));
 				leadingBlocks.insert (pair<FM*,bool>(FFM,false));
 				goal -= deg;
@@ -134,6 +134,7 @@ namespace LinBox
 			IPD.pow (tmpP, *it_f->second->intP, it_f->second->multiplicity);
 			IPD.mulin (intCharPoly, tmpP);
 			delete it_f->second->intP;
+			delete it_f->second->fieldP;
 			delete it_f->second;
 		}
 		commentator.stop ("done", NULL, "IbbCharpoly");
@@ -354,7 +355,7 @@ namespace LinBox
 			rank (r, PA,  M);
 						
 			itf->second->multiplicity =r;
-			//std::cerr<<"Rank > 1 : "<<*itf->second->fieldP<<" --> "<<r<<std::endl;
+			//std::cerr<<"Rank > 1 : "<<*itf->second->intP<<" --> "<<r<<std::endl;
 
 			factnum--;
 			itf++;
