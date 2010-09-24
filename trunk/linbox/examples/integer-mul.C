@@ -1,3 +1,27 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
+/** 
+ * examples/integer-mul.C
+ *
+ * Copyright (C) 2002, 2005, 2010 G Villard, D. Saunders 
+ *
+ * This file is part of LinBox.
+ *
+ *   LinBox is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU Lesser General Public License as
+ *   published by the Free Software Foundation, either version 2 of
+ *   the License, or (at your option) any later version.
+ *
+ *   LinBox is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Lesser General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Lesser General Public
+ *   License along with LinBox.  If not, see 
+ *   <http://www.gnu.org/licenses/>.
+ */
+
 /** \file examples/integer-mul.C
  * \author Gilles Villard
  * \brief The LinBox arbitrary precision integer type illustrated.
@@ -5,12 +29,6 @@
  *
  * class `integer' is a wrapper of GMP integers.
  */
-// ============================================================
-// (C) The Linbox Group 1999   Examples for using long integers
-// Fri Feb  8 14:00:35 MET 2002 Gilles Villard 
-// Wed Apr 17 15:41:35 MEST 2002
-// Sun Feb  9 23:15:15 MET 2003
-// ============================================================
 
 // ---------------------------------------------
 #include <iostream>

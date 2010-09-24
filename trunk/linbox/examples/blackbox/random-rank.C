@@ -1,7 +1,26 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-// Copyright (C) 2001, 2002 Bradford Hovinen
-// See COPYING for license information.
+/** 
+ * examples/blackbox/random-rank.C
+ *
+ * Copyright (C) 2001, 2002, 2010 Bradford Hovinen <hovinen@cis.udel.edu>
+ *
+ * This file is part of LinBox.
+ *
+ *   LinBox is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU Lesser General Public License as
+ *   published by the Free Software Foundation, either version 2 of
+ *   the License, or (at your option) any later version.
+ *
+ *   LinBox is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Lesser General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Lesser General Public
+ *   License along with LinBox.  If not, see 
+ *   <http://www.gnu.org/licenses/>.
+ */
 /** @name examples/blackbox/random-rank.C
  *
  * @author Bradford Hovinen <bghovinen@math.uwaterloo.ca>

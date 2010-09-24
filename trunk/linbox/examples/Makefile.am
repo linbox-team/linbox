@@ -42,8 +42,8 @@ doubledet_SOURCES= doubledet.C
 
 
 checksolve_SOURCES = checksolve.C
-charpoly_SOURCES = charpoly.C Matio.h
-graph_charpoly_SOURCES = graph-charpoly.C Matio.h
+charpoly_SOURCES = charpoly.C
+graph_charpoly_SOURCES = graph-charpoly.C
 det_SOURCES = det.C
 rank_SOURCES = rank.C
 smith_SOURCES = smith.C

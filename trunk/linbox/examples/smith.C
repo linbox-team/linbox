@@ -1,3 +1,26 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/** 
+ * examples/smith.C
+ *
+ * Copyright (C) 2005, 2010  D. Saunders, Z. Wang, J-G Dumas
+ *
+ * This file is part of LinBox.
+ *
+ *   LinBox is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU Lesser General Public License as
+ *   published by the Free Software Foundation, either version 2 of
+ *   the License, or (at your option) any later version.
+ *
+ *   LinBox is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Lesser General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Lesser General Public
+ *   License along with LinBox.  If not, see 
+ *   <http://www.gnu.org/licenses/>.
+ */
+
 /** \file examples/smith.C
 \brief mod m Smith form by elmination
 \ingroup examples
@@ -13,7 +36,7 @@ command line parameters.
 For the "adaptive" method, the matrix must be over the integers.  
 This is expected to work best for large matrices.
 
-For the "2local" method, the computation is done mod 2^32.
+For the "2local" method, the computaattion is done mod 2^32.
 
 For the "local" method, the modulus must be a prime power.
 
@@ -22,6 +45,7 @@ If the modulus is a multiple of the integer determinant, the intege Smith form i
 
 This example was used during the design process of the adaptive algorithm.
 */
+
 #include <iostream>
 #include <string>
 #include <vector>
