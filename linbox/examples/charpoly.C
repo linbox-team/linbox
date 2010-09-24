@@ -1,14 +1,32 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-/** \file examples/charpoly.C
-\brief Characteristic polynomial of matrix over Z or Zp.
- \ingroup examples
-*/
+/** 
+ * examples/charpoly.C
+ *
+ * Copyright (C) 2005, 2010 D. Saunders, C. Pernet, J-G. Dumas 
+ *
+ * This file is part of LinBox.
+ *
+ *   LinBox is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU Lesser General Public License as
+ *   published by the Free Software Foundation, either version 2 of
+ *   the License, or (at your option) any later version.
+ *
+ *   LinBox is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Lesser General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Lesser General Public
+ *   License along with LinBox.  If not, see 
+ *   <http://www.gnu.org/licenses/>.
+ */
 
-// Warning : example under development.
-// integer computation must be completed
+/** \file examples/charpoly.C
+    \brief Characteristic polynomial of matrix over Z or Zp.
+    \ingroup examples
+*/
 #include <iostream>
 #include <iomanip>
-#include "Matio.h"
 
 #include "linbox/util/timer.h"
 #include "linbox/field/modular-double.h"
@@ -59,7 +77,7 @@ std::ostream& prettyprintIntegerPolynomial (std::ostream& out, const Field &F, c
   return out;
 }
 template <class Field, class Factors, class Exponents>
-std::ostream& printFactorization (std::ostream& out, const Field &F, const Factors &f, const Exponents& exp) 
+ std::ostream& printFactorization (std::ostream& out, const Field &F, const Factors &f, const Exponents& exp) 
 {
   typename Factors::const_iterator itf = f.begin();
   typename Exponents::const_iterator ite = exp.begin();
@@ -73,7 +91,10 @@ std::ostream& printFactorization (std::ostream& out, const Field &F, const Facto
 
 int main (int argc, char **argv)
 {
-	commentator.setMaxDetailLevel(-1);
+	commentator.setMaxDetailLevel (2);
+	commentator.setMaxDepth (2);
+	commentator.setReportStream (std::cerr);
+
  	cout<<setprecision(8);
 	cerr<<setprecision(8);
 	if (argc < 2 || argc > 3) {
@@ -92,12 +113,11 @@ int main (int argc, char **argv)
 		typedef GivPolynomialRing<PID_integer,Dense> IntPolRing;
 		IntPolRing::Element c_A;
 
-                Timer tim; tim.clear();tim.start();
-                charpoly (c_A, A);
+		Timer tim; tim.clear();tim.start();charpoly (c_A, A, Method::Blackbox());
                 tim.stop();
 
 		cout << "Characteristic Polynomial is ";
-		printPolynomial (cout, ZZ, c_A) << endl;
+		    //printPolynomial (cout, ZZ, c_A) << endl;
                 cout << tim << endl;
 
 #ifdef __LINBOX_HAVE_NTL
@@ -114,8 +134,12 @@ int main (int argc, char **argv)
                   tim.stop();
                   commentator.stop("done", NULL, "NTLfac");
 		  printFactorization(cout << intFactors.size() << " integer polynomial factors:" << endl, ZZ, intFactors, exp) << endl;
-                  cout << tim << endl;
-
+		  vector<IntPolRing::Element*>::const_iterator itf = intFactors.begin();
+		  for ( ; itf != intFactors.end(); ++itf) 
+			  delete *itf;
+			  
+cout << tim << endl;
+		  
 		}
 #endif
 	}
@@ -128,9 +152,13 @@ int main (int argc, char **argv)
 		B.read (input);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
 		GivPolynomialRing<Field,Dense>::Element c_B;
+                Timer tim; tim.clear();tim.start();
 		charpoly (c_B, B);
+		tim.stop();
+		
 		cout << "Characteristic Polynomial is ";
-		printPolynomial (cout, F, c_B) << endl;
+		    //printPolynomial (cout, F, c_B) << endl;
+                cout << tim << endl;
 	}
 
 	return 0;

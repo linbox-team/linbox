@@ -1,3 +1,26 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/** 
+ * examples/fields/ex-fields-archetype.C
+ *
+ * Copyright (C) 2002, 2010 G. Villard
+ *
+ * This file is part of LinBox.
+ *
+ *   LinBox is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU Lesser General Public License as
+ *   published by the Free Software Foundation, either version 2 of
+ *   the License, or (at your option) any later version.
+ *
+ *   LinBox is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Lesser General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Lesser General Public
+ *   License along with LinBox.  If not, see 
+ *   <http://www.gnu.org/licenses/>.
+ */
+
 /** \file examples/fields/ex-field-archetype.C
  * \author Gilles Villard
  * \brief On using the field archetype to avoid code bloat.
@@ -5,12 +28,6 @@
   Use of a function compiled with the field archetype but called
   with two distinct field types.
   */
-// =========================================================
-// (C) The Linbox Group 1999
-// Examples for using fields 
-// Fri Feb  8 16:25:22 MET 2002 
-// Wed Apr 17 17:37:12 MEST 2002/ Gilles Villard
-// =========================================================
 
 // ---------------------------------------------
 #include <stdio.h>

@@ -1,4 +1,27 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
+/** 
+ * examples/doubledet.C
+ *
+ * Copyright (C) 2008, 2010 C. Pernet
+ *
+ * This file is part of LinBox.
+ *
+ *   LinBox is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU Lesser General Public License as
+ *   published by the Free Software Foundation, either version 2 of
+ *   the License, or (at your option) any later version.
+ *
+ *   LinBox is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Lesser General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Lesser General Public
+ *   License along with LinBox.  If not, see 
+ *   <http://www.gnu.org/licenses/>.
+ */
+
 #include <iostream>
 
 #include "linbox/linbox-config.h"
@@ -58,10 +81,18 @@ int main (int argc, char **argv)
 	det (db, B);
 	for (size_t j=0; j<n; ++j)
 		B.setEntry(n-1,j,A.getEntry(n,j));
+	Timer tim2;
+	tim2.clear();
+	tim2.start();
 	det(dc, B);
- 
+	tim2.stop();
+
 	if ((det1 != db) || (det2 != dc))
 		std::cerr<<"Check FAIL"<<endl;
 
+	cout<< "Det 1 = " << det1 << endl;
+	cout<< "Det 2 = "<<det2 << endl;
+	
 	cerr << "Double Det: "<<tim.usertime() << "s" << endl;
+	cerr << "Each single Det: "<<tim2.usertime() << "s" << endl;
 }
