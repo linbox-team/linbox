@@ -55,12 +55,12 @@ while test $# -gt 0; do
 	;;
 
     --cflags)
-       	echo -I${includedir} @GMP_CFLAGS@ @NTL_CFLAGS@ @GIVARO_CFLAGS@ @SACLIB_CFLAGS@ @LIDIA_CFLAGS@ 
-       	;;
+       	echo -n " -I${includedir} @GMP_CFLAGS@ @NTL_CFLAGS@ @GIVARO_CFLAGS@ @SACLIB_CFLAGS@ @LIDIA_CFLAGS@"
+	;;
 
     --libs)
-       	echo -L${libdir} -llinbox @LIDIA_LIBS@  @NTL_LIBS@ @GIVARO_LIBS@ @SACLIB_LIBS@ @GMP_LIBS@ @BLAS_LIBS@
-       	;;
+	echo -n " -L${libdir} -llinbox @LIDIA_LIBS@  @NTL_LIBS@ @GIVARO_LIBS@ @SACLIB_LIBS@ @GMP_LIBS@ @BLAS_LIBS@"
+	;;
 
     *)
 	usage
@@ -69,5 +69,6 @@ while test $# -gt 0; do
     esac
     shift
 done
+echo
 
 exit 0
