@@ -1,4 +1,5 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
 
 /* linbox/algorithms/block-massey-domain.h
  * Copyright (C) 2002 Pascal Giorgi
@@ -23,8 +24,8 @@
 
 
 
-#ifndef __MASSEY_BLOCK_DOMAIN_H
-#define __MASSEY_BLOCK_DOMAIN_H
+#ifndef __LINBOX_massey_block_domain_H
+#define __LINBOX_massey_block_domain_H
 
 #include <vector>
 #include <iostream>
@@ -86,24 +87,23 @@ namespace LinBox
 	public:
 
 #ifdef _BM_TIMING
-		mutable Timer   
-		        ttGetMinPoly,      tGetMinPoly,
-		        ttNewDiscrepancy,  tNewDiscrepancy,
-			ttShiftSigma,      tShiftSigma,
-			ttApplyPerm,       tApplyPerm, 
-			ttUpdateSigma,     tUpdateSigma,
-			ttInverseL,        tInverseL,
-			ttGetPermutation,  tGetPermutation,
-			ttLQUP,            tLQUP,
-			ttDiscrepancy,     tDiscrepancy,
-			ttGetCoeff,        tGetCoeff,
-			ttCheckSequence,   tCheckSequence,
-			ttSetup,           tSetup,
-			ttMBasis,          tMBasis,
-			ttUpdateSerie,     tUpdateSerie,
-			ttBasisMultiplication, tBasisMultiplication,
-			ttCopyingData,     tCopyingData,
-			Total;
+		mutable Timer   ttGetMinPoly;			mutable Timer     tGetMinPoly;
+		mutable Timer	ttNewDiscrepancy;		mutable Timer tNewDiscrepancy;
+		mutable Timer	ttShiftSigma;			mutable Timer tShiftSigma;
+		mutable Timer   ttApplyPerm;			mutable Timer   tApplyPerm; 
+		mutable Timer   ttUpdateSigma;			mutable Timer tUpdateSigma;
+		mutable Timer   ttInverseL;				mutable Timer tInverseL;
+		mutable Timer   ttGetPermutation;		mutable Timer tGetPermutation;
+		mutable Timer   ttLQUP;					mutable Timer          tLQUP;
+		mutable Timer   ttDiscrepancy;			mutable Timer tDiscrepancy;
+		mutable Timer   ttGetCoeff;				mutable Timer tGetCoeff;
+		mutable Timer   ttCheckSequence;		mutable Timer tCheckSequence;
+		mutable Timer   ttSetup;				mutable Timer tSetup;
+		mutable Timer   ttMBasis;				mutable Timer tMBasis;
+		mutable Timer   ttUpdateSerie;			mutable Timer tUpdateSerie;
+		mutable Timer   ttBasisMultiplication;	mutable Timer tBasisMultiplication;
+		mutable Timer   ttCopyingData;			mutable Timer tCopyingData;
+		mutable Timer   Total; 
 
 		void clearTimer() {
 			 ttGetMinPoly.clear();     
@@ -1200,4 +1200,4 @@ namespace LinBox
 	
 } // end of namespace LinBox
 	
-#endif // __MASSEY_DOMAIN_H
+#endif // __LINBOX_massey_block_domain_H
