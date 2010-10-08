@@ -1,3 +1,5 @@
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+
 /* linbox/algorithms/gauss-gf2.inl
  * Copyright (C) 2009 The LinBox group
  *
@@ -5,8 +7,8 @@
  *
  * See COPYING for license information.
  */
-#ifndef __GAUSS_GF2_INL
-#define __GAUSS_GF2_INL
+#ifndef __LINBOX_gauss_gf2_INL
+#define __LINBOX_gauss_gf2_INL
 // SparseSeqMatrix is container< container< size_t > >
 
 #include "linbox/algorithms/gauss.h"
@@ -98,7 +100,7 @@ namespace LinBox
             
             long l;
             for(l = k; l < static_cast<long>(Ni); ++l) {
-                if ( (s = LigneA[l].size()) ) {
+                if ( (s = LigneA[l].size()) != 0 ) {
                     p = l;
                     break;
                 }
@@ -380,4 +382,4 @@ namespace LinBox
 
 } // namespace LinBox
 
-#endif // __GAUSS_GF2_INL
+#endif // __LINBOX_gauss_gf2_INL
