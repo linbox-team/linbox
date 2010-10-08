@@ -1,4 +1,5 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
 
 /* linbox/blackbox/transpose.h
  * Copyright (C) 2001 Bradford Hovinen
@@ -21,8 +22,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __TRANSPOSE_H
-#define __TRANSPOSE_H
+#ifndef __LINBOX_transpose_H
+#define __LINBOX_transpose_H
 
 #include <linbox/blackbox/blackbox-interface.h>
 
@@ -165,7 +166,6 @@ namespace LinBox
 	}; // template <Vector> class Transpose
 
 } // namespace LinBox
-
 
 
 namespace LinBox

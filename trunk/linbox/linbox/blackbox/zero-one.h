@@ -1,4 +1,5 @@
 /* -*- mode: C++; style: linux -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
 
 /* linbox/blackbox/zero-one.h
  * Copyright (C) 2002 Rich Seagraves
@@ -12,8 +13,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __ZERO_ONE_H
-#define __ZERO_ONE_H
+#ifndef __LINBOX_zero_one_H
+#define __LINBOX_zero_one_H
 
 #include "linbox/integer.h"
 #include "linbox/vector/vector-traits.h"
@@ -208,8 +209,10 @@ namespace LinBox
      */
     
     Index _rows, _cols, _nnz;
-    mutable Index* _rowP, *_colP;
-    mutable bool _rowSort, _colSort; // status flags for sorting state          
+    mutable Index* _rowP ;
+	mutable Index* _colP;
+    mutable bool _rowSort ;
+	mutable bool _colSort; // status flags for sorting state          
     bool dynamic;
 
      /* Non blackbox function.  Tells the number of nonzero entries
@@ -252,5 +255,5 @@ namespace LinBox
        
 #include "linbox/blackbox/zero-one.inl"
 
-#endif // __ZERO_ONE_H
+#endif // __LINBOX_zero_one_H
 
