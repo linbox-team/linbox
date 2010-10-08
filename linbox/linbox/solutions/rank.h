@@ -1,12 +1,13 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
 
 /* linbox/solutions/rank.h
  * ------------------------------------
  * See COPYING for license information.
  */
 
-#ifndef __RANK_H
-#define __RANK_H
+#ifndef __LINBOX_rank_H
+#define __LINBOX_rank_H
 
 //#include "linbox-config.h"
 #include "linbox/field/modular.h"
@@ -673,4 +674,4 @@ namespace LinBox {
 
 
 
-#endif // __RANK_H
+#endif // __LINBOX_rank_H
