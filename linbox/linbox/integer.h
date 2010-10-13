@@ -14,8 +14,8 @@
  *
  */
 
-#ifndef __INTEGER_H
-#define __INTEGER_H
+#ifndef __LINBOX_integer_H
+#define __LINBOX_integer_H
 
 #include "linbox/linbox-config.h"
 
@@ -87,4 +87,4 @@ LinBox ring for use in integer matrix computation, see pid-integers.h or ntl-ZZ.
 
 }
 
-#endif // __INTEGER_H
+#endif // __LINBOX_integer_H
