@@ -737,12 +737,12 @@ namespace LinBox
 	    public:
 		friend class Commentator;
 
-		inline MessageClass (const char *msg_class, std::ostream &stream, unsigned long max_depth = 1, unsigned long max_level = 2) {}
+		inline MessageClass (const char *, std::ostream &, unsigned long = 1, unsigned long = 2) {}
 		inline MessageClass () {}
-		inline void setMaxDepth (long depth) {}
-		inline void setMaxDetailLevel (long level) {}
-		inline void setPrintParameters (unsigned long, unsigned long level, const char *fn) {}
-		inline bool isPrinted (unsigned long depth, unsigned long level, const char *fn = (const char *) 0) { return false; }
+		inline void setMaxDepth (long ) {}
+		inline void setMaxDetailLevel (long ) {}
+		inline void setPrintParameters (unsigned long, unsigned long , const char *) {}
+		inline bool isPrinted (unsigned long , unsigned long , const char * = (const char *) 0) { return false; }
 	};
 
 	class Commentator {
@@ -750,10 +750,10 @@ namespace LinBox
 		//inline Commentator () : cnull (new nullstreambuf) {}
 		inline Commentator () : cnull ("/dev/null") {}
 		inline  ~Commentator () {}
-		inline void start (const char *description, const char *fn = (const char *) 0, unsigned long len = 0) {}
-		inline void startIteration (unsigned int iter, unsigned long len = 0) {}
-		inline void stop (const char *msg, const char *long_msg = (const char *) 0, const char *fn = (const char *) 0) {}
-		inline void progress (long k = -1, long len = -1) {}
+		inline void start (const char *, const char * = (const char *) 0, unsigned long = 0) {}
+		inline void startIteration (unsigned int , unsigned long = 0) {}
+		inline void stop (const char *, const char * = (const char *) 0, const char * = (const char *) 0) {}
+		inline void progress (long = -1, long = -1) {}
 
 		enum MessageLevel {
 			LEVEL_ALWAYS       =  0,
@@ -762,8 +762,8 @@ namespace LinBox
 			LEVEL_UNIMPORTANT  =  3,
 		};
 
-		inline std::ostream &report (long level, const char *msg_class) { return cnull; }
-		inline void indent (std::ostream &stream) {}
+		inline std::ostream &report (long , const char *) { return cnull; }
+		inline void indent (std::ostream &) {}
 
 		enum OutputFormat
 			{ OUTPUT_CONSOLE, OUTPUT_PIPE };
@@ -779,31 +779,31 @@ namespace LinBox
 			LONG_TIMING
 		};
 
-		inline void setMaxDepth (long depth) {}
-		inline void setMaxDetailLevel (long level) {}
-		inline MessageClass &registerMessageClass (const char *msg_class, std::ostream &stream, unsigned long max_depth = 1, unsigned long max_level = 2)
+		inline void setMaxDepth (long ) {}
+		inline void setMaxDetailLevel (long ) {}
+		inline MessageClass &registerMessageClass (const char *, std::ostream &, unsigned long = 1, unsigned long = 2)
 			{ return _msgcls; }
-		inline MessageClass &cloneMessageClass (const char *new_msg_class, const char *msg_class)
+		inline MessageClass &cloneMessageClass (const char *, const char *)
 			{ return _msgcls; }
-		inline MessageClass &cloneMessageClass (const char *new_msg_class, const char *msg_class, std::ostream &stream)
+		inline MessageClass &cloneMessageClass (const char *, const char *, std::ostream &)
 			{ return _msgcls; }
-		inline MessageClass &getMessageClass (const char *msg_class)
+		inline MessageClass &getMessageClass (const char *)
 			{ return _msgcls; }
-		inline void setPrintParameters (unsigned long depth, unsigned long level, const char *fn = (const char *) 0) {}
-		inline void setBriefReportParameters (OutputFormat format, bool show_timing, bool show_progress, bool show_est_time) {}
-		inline bool isPrinted (unsigned long depth, unsigned long level, const char *msg_class, const char *fn = (const char *) 0)
+		inline void setPrintParameters (unsigned long , unsigned long , const char * = (const char *) 0) {}
+		inline void setBriefReportParameters (OutputFormat , bool , bool , bool ) {}
+		inline bool isPrinted (unsigned long , unsigned long , const char *, const char * = (const char *) 0)
 			{ return false; }
-		inline bool isPrinted (unsigned long level, const char *msg_class, const char *fn = (const char *) 0) { return false; }
-		inline bool isNullStream (const std::ostream &str) { return true; }
-		inline void setBriefReportStream (std::ostream &stream) {}
-		inline void setReportStream (std::ostream &stream) {}
-		inline void setMessageClassStream (const char *msg_class, std::ostream &stream) {}
-		inline void setDefaultReportFile (const char *filename) {}
-		inline void start (const char *id, const char *msg, long msglevel, const char *msgclass) {}
-		inline void stop (const char *msg, long msglevel, const char *msgclass, long time_type) {}
-		inline void progress (const char *msg, long msglevel, long k, long n) {}
-		inline void report (const char *msg, long msglevel, const char *msgclass) {}
-		inline bool printed (long msglevel, const char *msgclass) { return false; }
+		inline bool isPrinted (unsigned long , const char *, const char * = (const char *) 0) { return false; }
+		inline bool isNullStream (const std::ostream &) { return true; }
+		inline void setBriefReportStream (std::ostream &) {}
+		inline void setReportStream (std::ostream &) {}
+		inline void setMessageClassStream (const char *, std::ostream &) {}
+		inline void setDefaultReportFile (const char *) {}
+		inline void start (const char *, const char *, long , const char *) {}
+		inline void stop (const char *, long , const char *, long) {}
+		inline void progress (const char *, long , long , long ) {}
+		inline void report (const char *, long , const char *) {}
+		inline bool printed (long , const char *) { return false; }
 
 		std::ofstream cnull;
 

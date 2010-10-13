@@ -45,7 +45,7 @@
 #include <iostream>
 #include <cassert>
 namespace LinBox
-{
+{/*{{{*/
 
 	/** 
 	 * @brief 
@@ -506,7 +506,7 @@ namespace LinBox
                 *it=*Kert;
            return kerdim;
 	}
-} // LinBox
+} // LinBox/*}}}*/
 
 
 
