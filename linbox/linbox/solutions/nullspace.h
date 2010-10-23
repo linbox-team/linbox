@@ -1,12 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
-
-/** \file linbox/solutions/nullspace.h
- * @brief The right or left nullspace (kernel or cokernel) of a matrix A
- * @details Provides :
- *	- the nullspace of a matrix \p A
- *	- (soon) a random vector within the nullspace of \p A
- */
 /* Copyright (C) 2009 LinBox
  * Written by <brice.boyer@imag.fr>
  *
@@ -28,8 +19,15 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __DENSE_NULLSPACE_H
-#define __DENSE_NULLSPACE_H
+#ifndef __LINBOX_modulardense_nullspace_H
+#define __LINBOX_modulardense_nullspace_H
+
+/** \file linbox/solutions/nullspace.h
+ * @brief The right or left nullspace (kernel or cokernel) of a matrix A
+ * @details Provides :
+ *	- the nullspace of a matrix \p A
+ *	- (soon) a random vector within the nullspace of \p A
+ */
 
 //#include "vector-traits.h"
 //#include "linbox/blackbox/blas-blackbox.h"
@@ -510,4 +508,7 @@ namespace LinBox
 
 
 
-#endif // __DENSE_NULLSPACE_H
+#endif // __LINBOX_modulardense_nullspace_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
