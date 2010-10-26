@@ -19,7 +19,7 @@ namespace LinBox__FORMAT_MATRIX_MARKET_H
 
 namespace LinBox {
 
-#ifndef __INTEGER_H
+#ifndef __LINBOX_integer_H
 class integer;
 #endif
 

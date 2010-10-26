@@ -1,13 +1,30 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// ======================================================================= //
-// Copyright (C)  1999, Linbox project
+/* Copyright (C) 1999 LinBox
+ * Written by <Jean-Guillaume.Dumas@imag.fr> 
+ * Modified by Z. Wan to fit in linbox
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
+
 // Givaro / Athapascan-1
 // Valence computation
-// Time-stamp: <22 Jun 10 16:19:52 Jean-Guillaume.Dumas@imag.fr> 
-// ======================================================================= //
-// Modified by Z. Wan to fit in linbox
-#ifndef __LINBOX_VALENCE_H__
-#define __LINBOX_VALENCE_H__
+
+#ifndef __LINBOX_valence_H
+#define __LINBOX_valence_H
 
 #include <vector>
 #include <linbox/blackbox/transpose.h>
@@ -299,4 +316,7 @@ class Valence {
 	}
 };
 } //End of LinBox
-#endif
+#endif //__LINBOX_valence_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

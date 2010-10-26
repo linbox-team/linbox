@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* linbox/matrix/matrix-domain.inl
  * Copyright (C) 2002 Bradford Hovinen
@@ -10,8 +9,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __MATRIX_DOMAIN_INL
-#define __MATRIX_DOMAIN_INL
+#ifndef __LINBOX_matrix_domain_INL
+#define __LINBOX_matrix_domain_INL
 
 #include "linbox/matrix/transpose-matrix.h"
 
@@ -1151,4 +1150,7 @@ Matrix1& MatrixDomain::pow_horn(Matrix1& M1, const Matrix2& M2, unsigned long in
 
 } // namespace LinBox
 
-#endif // __MATRIX_DOMAIN_INL
+#endif // __LINBOX_matrix_domain_INL
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

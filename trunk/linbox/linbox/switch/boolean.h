@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/switch/boolean.h
  * Copyright (C) 1999-2001 William J Turner
  *
@@ -30,8 +28,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __BOOLEAN_H
-#define __BOOLEAN_H
+#ifndef __LINBOX_boolean_H
+#define __LINBOX_boolean_H
 
 #include <vector>
 
@@ -167,4 +165,7 @@ inline bool BooleanSwitch::applyTranspose (const Field             &F,
 
 }
 
-#endif // __BOOLEAN_H
+#endif // __LINBOX_boolean_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

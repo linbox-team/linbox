@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/vector/reverse.h
  * Copyright (C) 2002 Bradford Hovinen
  *
@@ -8,8 +6,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __REVERSE_H
-#define __REVERSE_H
+#ifndef __LINBOX_reverse_H
+#define __LINBOX_reverse_H
 
 #include "vector-traits.h"
 
@@ -136,4 +134,7 @@ namespace LinBox
 	};
 
 } // namespace LinBox
-#endif
+#endif //__LINBOX_reverse_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* linbox/blackbox/permutation.h
  * Copyright (C) 2001 Bradford Hovinen
@@ -21,8 +20,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __PERMUTATION_H
-#define __PERMUTATION_H
+#ifndef __LINBOX_bb_permutation_H
+#define __LINBOX_bb_permutation_H
 
 #include <utility>
 #ifndef __LINBOX_PERMUTATION_STORAGE
@@ -280,4 +279,7 @@ namespace LinBox
 
 } // namespace LinBox
 
-#endif // __PERMUTATION_H
+#endif // __LINBOX_bb_permutation_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

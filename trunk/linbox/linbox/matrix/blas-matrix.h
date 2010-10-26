@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/matrix/blas-matrix.h
  * Copyright (C) 2004 Pascal Giorgi, Clément Pernet
  *
@@ -22,8 +21,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __BLAS_MATRIX_H
-#define __BLAS_MATRIX_H
+#ifndef __LINBOX_blas_matrix_H
+#define __LINBOX_blas_matrix_H
 
 
 #include <linbox/solutions/getentry.h>
@@ -489,4 +488,7 @@ namespace LinBox {
 
 } // end of namespace LinBox
 
-#endif
+#endif // __LINBOX_blas_matrix_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

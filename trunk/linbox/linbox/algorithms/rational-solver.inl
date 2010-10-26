@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/algorithms/rational-solver.inl
  * Copyright (C) 2004 Pascal Giorgi
  *
@@ -21,8 +20,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LINBOX_RATIONAL_SOLVER_INL
-#define __LINBOX_RATIONAL_SOLVER_INL
+#ifndef __LINBOX_rational_solver_INL
+#define __LINBOX_rational_solver_INL
 
 
 
@@ -1838,4 +1837,7 @@ namespace LinBox {
 
 #endif
 
-#endif
+#endif //__LINBOX_rational_solver_INL
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

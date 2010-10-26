@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/blackbox/rational-reconstruction-base.h
  * Copyright (C) 2009 Anna Marszalek
  *
@@ -20,8 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LINBOX_VARPREC_CRA_MULTIP_SINGLE_H
-#define __LINBOX_VARPREC_CRA_MULTIP_SINGLE_H
+#ifndef __LINBOX_varprec_cra_multip_single_H
+#define __LINBOX_varprec_cra_multip_single_H
 
 #include "linbox/util/timer.h"
 #include <stdlib.h>
@@ -546,4 +545,7 @@ public:
 
 } //namespace LinBox
 
-#endif
+#endif //__LINBOX_varprec_cra_multip_single_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

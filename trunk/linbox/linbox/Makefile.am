@@ -3,7 +3,7 @@ INCLUDES=-I$(top_srcdir)
 SUBDIRS=util element field randiter vector matrix blackbox switch algorithms solutions fflas ffpack ring
 
 BASIC_HDRS =				\
-	integer.h	integer.inl	\
+	integer.h	\
 	config-blas.h	linbox-config.h
 
 NTL_HDRS =

@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/vector/bit-vector.h
  * Copyright (C) 2003 Bradford Hovinen
  *
@@ -8,8 +6,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __BIT_VECTOR_H
-#define __BIT_VECTOR_H
+#ifndef __LINBOX_bit_vector_H
+#define __LINBOX_bit_vector_H
 
 #include <iterator>
 #include <vector>
@@ -169,4 +167,7 @@ struct VectorTraits<BitVector>
 
 #include "linbox/vector/bit-vector.inl"
 
-#endif // __BIT_VECTOR_H
+#endif // __LINBOX_bit_vector_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

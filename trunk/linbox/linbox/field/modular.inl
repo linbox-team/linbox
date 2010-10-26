@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/field/modular.inl
  * Copyright (C) 2002 Bradford Hovinen
  * Copyright (C) 2002 Ahmet Duran
@@ -14,8 +12,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __FIELD_MODULAR_INL
-#define __FIELD_MODULAR_INL
+#ifndef __LINBOX_field_modular_INL
+#define __LINBOX_field_modular_INL
 
 //Dan Roche 7-2-04
 #ifndef __LINBOX_MIN
@@ -735,5 +733,7 @@ Vector1 &MVProductDomain<Modular<uint32> >::mulColDenseSpecialized
 
 }
 
-#endif // __FIELD_MODULAR_INL
+#endif // __LINBOX_field_modular_INL
 
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

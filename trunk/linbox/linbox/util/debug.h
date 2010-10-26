@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/util/debug.h
  * Copyright (C) 2001 Bradford Hovinen
  *
@@ -21,8 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __UTIL_DEBUG_H
-#define __UTIL_DEBUG_H
+#ifndef __LINBOX_util_debug_H
+#define __LINBOX_util_debug_H
 
 #include <iostream>
 #include <sstream>
@@ -75,4 +73,7 @@ namespace LinBox
 #include <linbox/util/debug.C>
 #endif
 
-#endif // __UTIL_DEBUG_H
+#endif // __LINBOX_util_debug_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
