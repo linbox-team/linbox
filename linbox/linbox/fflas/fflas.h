@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* fflas.h
  * Copyright (C) 2005 Clement Pernet
  *
@@ -7,10 +5,9 @@
  *
  * See COPYING for license information.
  */
-#include <math.h>
 
-#ifndef __FFLAS_H
-#define __FFLAS_H
+#ifndef __LINBOX_fflas_H
+#define __LINBOX_fflas_H
 #include <math.h>
 
 #ifndef MAX
@@ -702,5 +699,5 @@ protected:
 }
 #endif
 
-#endif // __FFLAS_H
+#endif // __LINBOX_fflas_H
 

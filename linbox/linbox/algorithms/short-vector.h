@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/algorithms/lifting-container-base.h
  * Copyright (C) 2005  Pascal Giorgi
  *
@@ -21,8 +20,8 @@
  */
 
 
-#ifndef __LINBOX_TERNARY_LATTICE_H
-#define __LINBOX_TERNARY_LATTICE_H
+#ifndef __LINBOX_ternary_lattice_H
+#define __LINBOX_ternary_lattice_H
 
 #include <iostream>
 #include <linbox/blackbox/blas-blackbox.h>
@@ -574,4 +573,7 @@ namespace LinBox {
 
 
 }// end of namespace LinBox
-#endif
+#endif //__LINBOX_ternary_lattice_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

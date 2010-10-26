@@ -1,5 +1,3 @@
-/* -*- mode: C++; style: linux; -*- */
-
 /* linbox/vector/subvector.h
  * Copyright (C) 2002 William J. Turner
  *
@@ -13,8 +11,8 @@
  * (where there is missing or buggy function, please contact me rather than workaround)
  */
 
-#ifndef __SUBVECTOR_H
-#define __SUBVECTOR_H
+#ifndef __LINBOX_subvector_H
+#define __LINBOX_subvector_H
 
 #include <linbox/vector/subiterator.h>
 #include <iterator>
@@ -217,4 +215,7 @@ namespace std {
 	}
 }
 	
-#endif
+#endif //__LINBOX_subvector_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

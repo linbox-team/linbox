@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/algorithms/blas-domain.h
  * Copyright (C) 2004 Pascal Giorgi, Clément Pernet
  *
@@ -22,8 +21,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __BLAS_MATRIX_DOMAIN_H
-#define __BLAS_MATRIX_DOMAIN_H
+#ifndef __LINBOX_blas_matrix_domain_H
+#define __LINBOX_blas_matrix_domain_H
 
 #include <iostream>
 #include <vector>
@@ -534,5 +533,7 @@ namespace LinBox {
 
 #include <linbox/algorithms/blas-domain.inl>
 
-#endif /* __BLAS_DOMAIN_H*/
+#endif /* __LINBOX_blas_matrix_domain_H */
 
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

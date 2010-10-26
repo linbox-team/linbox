@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/algorithms/cia.h
  * 
  *  Written by Clement Pernet <clement.pernet@imag.fr>
@@ -7,8 +5,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __CIA_H
-#define __CIA_H
+#ifndef __LINBOX_cia_H
+#define __LINBOX_cia_H
 
 #include "linbox/ring/givaro-polynomial.h"
 #include "linbox/field/modular.h"
@@ -103,4 +101,7 @@ namespace LinBox
 	}
 }
 
-#endif // __CIA_H
+#endif // __LINBOX_cia_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

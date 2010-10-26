@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* linbox/algorithms/sigma-basis.h
  * Copyright (C) 2005 Pascal Giorgi
@@ -23,8 +22,8 @@
 
 
 
-#ifndef __SIGMA_BASIS_H
-#define __SIGMA_BASIS_H
+#ifndef __LINBOX_sigma_basis_H
+#define __LINBOX_sigma_basis_H
 
 #include <vector>
 #include <iostream>
@@ -620,6 +619,7 @@ namespace LinBox {
 				for (size_t i=0;i<n;++i){
 					for (int j= (int) size-2;j>=0; --j){						
 						for (size_t l=0;l<m;++l)
+#warning Q[i] pour i>r ne veut rien dire...
 							_F.assign(SigmaBase[j+1].refEntry(*(Qt.getPointer()+i),l),
 								 SigmaBase[j].getEntry(*(Qt.getPointer()+i),l));			
 					}
@@ -2029,20 +2029,11 @@ namespace LinBox {
 		}
 
 
-
-
-
-
-
-
 	}; // end of class SigmaBasis
-	
-
-
-
-
-
 
 } // end of namespace LinBox
 
-#endif
+#endif //__LINBOX_sigma_basis_H
+
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */

@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/vector/subiterator.h
  * Copyright (C) 2002 William J. Turner
  *
@@ -10,8 +8,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __SUBITERATOR_H
-#define __SUBITERATOR_H
+#ifndef __LINBOX_subiterator_H
+#define __LINBOX_subiterator_H
 
 #include <iterator>
 #include <vector>
@@ -142,4 +140,7 @@ class Subiterator
 
 } // namespace LinBox
 
-#endif // __SUBITERATOR_H
+#endif // __LINBOX_subiterator_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
