@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/matrix/dense-submatrix.inl
  * Copyright (C) 2001 B. David Saunders,
  *               2001-2002 Bradford Hovinen,
@@ -22,15 +20,15 @@
  * See COPYING for license information
  */
 
-#ifndef __DENSE_SUBMATRIX_INL
-#define __DENSE_SUBMATRIX_INL
+#ifndef __LINBOX_dense_submatrix_INL
+#define __LINBOX_dense_submatrix_INL
 
 #include "linbox/util/debug.h"
 #include "linbox/matrix/dense.h"
 #include "linbox/matrix/dense-submatrix.h"
 
 namespace LinBox
-{
+{/*{{{*/
 
 template <class _Element>
 DenseSubmatrix<_Element>::DenseSubmatrix (DenseMatrixBase<_Element> &M,
@@ -650,6 +648,9 @@ std::ostream &DenseSubmatrix<_Element>::write (std::ostream &os, const Field& fi
 	return os;
 }
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
-#endif // __DENSE_SUBMATRIX_INL
+#endif // __LINBOX_dense_submatrix_INL
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

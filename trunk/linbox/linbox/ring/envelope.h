@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/ring/envelope.h
  * Written by J-G Dumas <Jean-Guillaume.Dumas@imag.fr>,
  *            Clement Pernet <Clement.Pernet@imag.fr>
@@ -22,8 +20,8 @@
  * ------------------------------------
  */
 
-#ifndef __RING_ENVELOPE_H
-#define __RING_ENVELOPE_H
+#ifndef __LINBOX_ring_envelope_H
+#define __LINBOX_ring_envelope_H
 
 #include <iostream>
 
@@ -44,7 +42,7 @@
 
 // Namespace in which all LinBox code resides
 namespace LinBox 
-{ 
+{ /*  {{{ */
 	// Forward declarations
 	template <class Ring> class RandIterEnvelope;
 
@@ -281,8 +279,11 @@ namespace LinBox
 
 	}; // class RingEnvelope
 
-} // namespace LinBox
+} /*  }}} */ // namespace LinBox
 
 #include "linbox/randiter/envelope.h"
 
-#endif // __RING_ENVELOPE_H
+#endif // __LINBOX_ring_envelope_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

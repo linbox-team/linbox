@@ -1,9 +1,30 @@
+/* Copyright (C) 2010 LinBox
+ * Written by  Pascal Giorgi
+ *
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
 /* File: src/wrapper/by_scope/field/LIDIA_randiter.h
  * Author: Pascal Giorgi for the LinBox group
  */
 
-#ifndef __RANDITER_LIDIA_GFQ
-#define __RANDITER_LIDIA_GFQ
+#ifndef __LINBOX_lidia_randiter_gfq_H
+#define __LINBOX_lidia_randiter_gfq_H
 
 #include "LiDIA/gf_element.h"
 
@@ -21,7 +42,7 @@
 #endif
 
 namespace LinBox
-{
+{/*{{{*/
 
  template<class field> class LidiaGfqRandIter
     {
@@ -123,6 +144,9 @@ namespace LinBox
 	  
     }; // class LidiaGfqRandIter
  
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
-#endif // -_LIDIA_RANDITER_GFQ
+#endif // __LINBOX_lidia_randiter_gfq_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

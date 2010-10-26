@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/matrix/sparse.inl
  * Copyright (C) 2001-2002 Bradford Hovinen
  *               1999-2001 William J Turner,
@@ -21,8 +19,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __MATRIX_SPARSE_INL
-#define __MATRIX_SPARSE_INL
+#ifndef __LINBOX_matrix_sparse_INL
+#define __LINBOX_matrix_sparse_INL
 
 #include "linbox/linbox-config.h"
 
@@ -40,7 +38,7 @@
 #include <linbox/util/commentator.h>
 
 namespace LinBox
-{
+{/*{{{*/
 
 template <class Element, class Row, class Trait>
 template <class Field>
@@ -962,6 +960,9 @@ SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag >
 	return AT;
 }
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
-#endif // __MATRIX_SPARSE_INL
+#endif // __LINBOX_matrix_sparse_INL
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

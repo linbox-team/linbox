@@ -1,3 +1,27 @@
+/* Copyright (C) 2005 LinBox
+ * Written by  Dan Roche
+ *
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
+#ifndef __LINBOX_format_maple_H
+#define __LINBOX_format_maple_H
+
 /* matrix-market-array.h
  * MatrixStreamReader for Maple-style (text) matrices.
  * The general format is Matrix(r,c,<init> [,...]),
@@ -8,23 +32,20 @@
  * and even the outer Matrix(...) part is. In any case, either the word
  * "Matrix" or two opening square brackets "[[" must be present on the
  * first line so the format can be identified.
- * Dan Roche, 1-25-05
  */
-
-#ifndef __FORMAT_MAPLE_H
-#define __FORMAT_MAPLE_H
 
 #include <string>
 #include <sstream>
 #include <linbox/util/matrix-stream.h>
 
-/*
+#if 0
 namespace LinBox__FORMAT_MAPLE_H
 	{ static const char* name = "Maple Text Format";
 	  static const char* shortname = "maple"; }
-	  */
+#endif
 
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
 
 template<class Field>
 class MapleReader :public MatrixStreamReader<Field> {
@@ -433,10 +454,13 @@ class MapleReader :public MatrixStreamReader<Field> {
 		{ return "Maple Text Format"; }// LinBox__FORMAT_MAPLE_H::name; }
 	
 	const char* shortName() const 
-		{ return "maple"; }// LinBox__FORMAT_MAPLE_H::shortname; }
+		{ return "maple"; }// LinBox__FORMAT_MAPLE_H::shortname; 
 };
 
 
-}
+}/*}}}*/
 
-#endif
+#endif // __LINBOX_format_maple_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

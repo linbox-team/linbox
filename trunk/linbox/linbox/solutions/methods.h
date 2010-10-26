@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/solutions/methods.h
  * Copyright (C) 1999, 2001 Jean-Guillaume Dumas, Bradford Hovinen
  *
@@ -25,8 +23,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __METHODS_H
-#define __METHODS_H
+#ifndef __LINBOX_method_H
+#define __LINBOX_method_H
 
 #ifndef DEFAULT_EARLY_TERM_THRESHOLD
 #  define DEFAULT_EARLY_TERM_THRESHOLD 20
@@ -507,4 +505,7 @@ namespace LinBox
 
 }
 
-#endif
+#endif // __LINBOX_method_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

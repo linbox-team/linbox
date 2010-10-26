@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/ring/ring-interface.h
  * Written by
  *  Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
@@ -8,11 +6,11 @@
  * For licensing information see COPYING
  */
 
-#ifndef __RING_INTERFACE_H
-#define __RING_INTERFACE_H
+#ifndef __LINBOX_ring_interface_H
+#define __LINBOX_ring_interface_H
 
 namespace LinBox
-{
+{/*{{{*/
 // LinBox Ring Interface
 /*
  * The LinBox {@link Rings ring} common object {@link Interfaces interface}.
@@ -60,6 +58,9 @@ namespace LinBox
 */
 };// empty class so doc++ makes a nice hierarchy.
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
-#endif // __RING_INTERFACE_H
+#endif // __LINBOX_ring_interface_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

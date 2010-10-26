@@ -1,15 +1,5 @@
-// ================================================================
-// LinBox Project 1999
-// Symmetrizing iterator (for rank computations)
-// Same left and right vector
-// A is supposed to have tranpose-vector product
-// the sequence is u^t u, (A u)^t (A u) = u^t (A^t A) u, 
-// (A^t (A u))^t (A^t (A u)) = u^t (A^t A)^2 u , etc.
-// Time-stamp: <22 Mar 03 21:16:14 Jean-Guillaume.Dumas@imag.fr> 
-// ================================================================
-
 /* linbox/algorithms/blackbox-symmetrize-iterator.h
- * Copyright (C) 1999, 2001 Jean-Guillaume Dumas
+ * Copyright (C) 1999, 2001, 2003 Jean-Guillaume Dumas
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
  *
@@ -29,8 +19,16 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __BBContainer_SYMMETRIZE_H__
-#define __BBContainer_SYMMETRIZE_H__
+#ifndef __LINBOX_bbcontainer_symmetrize_H
+#define __LINBOX_bbcontainer_symmetrize_H
+
+// ================================================================
+// Symmetrizing iterator (for rank computations)
+// Same left and right vector
+// A is supposed to have tranpose-vector product
+// the sequence is u^t u, (A u)^t (A u) = u^t (A^t A) u, 
+// (A^t (A u))^t (A^t (A u)) = u^t (A^t A)^2 u , etc.
+// ================================================================
 
 
 #include <linbox/algorithms/blackbox-container-base.h>
@@ -69,4 +67,7 @@ private:
 };
 
 
-#endif // __BBContainer_SYMMETRIZE_H__
+#endif // __LINBOX_bbcontainer_symmetrize_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

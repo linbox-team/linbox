@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/util/error.h
  * Copyright (C) 1994-1997 Givaro Team
  *
@@ -21,14 +19,14 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __UTIL_ERROR_H
-#define __UTIL_ERROR_H
+#ifndef __LINBOX_util_error_H
+#define __LINBOX_util_error_H
 
 #include <cstring>
 #include <iostream>
 
 namespace LinBox
-{
+{/*{{{*/
 
 // ------------------------------- LinboxError
 /** base class for execption handling in Givaro
@@ -81,10 +79,13 @@ class LinboxBadFormat : public LinboxError {
 	LinboxBadFormat (const char* msg) : LinboxError (msg) {};
 };
  
-}
+}/*}}}*/
 
 #ifdef LinBoxSrcOnly       // for all-source compilation
 #    include <linbox/util/error.C>
 #endif
 
-#endif // __UTIL_ERROR_H
+#endif // __LINBOX_util_error_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

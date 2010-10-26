@@ -1,5 +1,25 @@
-#ifndef __READER_BLACKBOX_FACTORY
-#define __READER_BLACKBOX_FACTORY
+/* Copyright (C) 2010 LinBox
+ *
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
+#ifndef __LINBOX_reader_blackbox_factory_H
+#define __LINBOX_reader_blackbox_factory_H
 
 #include "linbox/linbox-config.h"
 
@@ -8,7 +28,8 @@
 
 #include <string>
 
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
 
 	class UnSupportedMatrixType {};
 
@@ -56,7 +77,7 @@ namespace LinBox {
 		Reader _R;
 	};
 
-}
+}/*}}}*/
 				
 
 #include "linbox/blackbox/dense.h"
@@ -79,7 +100,8 @@ namespace LinBox {
 
 #include "field-reader-analyzer.h"
 
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
 
 
 	template<class Vector>
@@ -338,7 +360,10 @@ namespace LinBox {
 		return NULL; // or here
 	}
 
-}
+}/*}}}*/
 
 
-#endif
+#endif //__LINBOX_reader_blackbox_factory_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

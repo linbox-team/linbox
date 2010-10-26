@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/matrix/dense-rows-matrix.h
  * Copyright (C) 2003 Bradford Hovinen
  *
@@ -10,8 +8,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __DENSE_ROWS_MATRIX_H
-#define __DENSE_ROWS_MATRIX_H
+#ifndef __LINBOX_dense_rows_matrix_H
+#define __LINBOX_dense_rows_matrix_H
 
 #include <vector>
 #include <utility>
@@ -24,7 +22,7 @@
 #include "linbox/matrix/matrix-domain.h"
 
 namespace LinBox
-{
+{/*{{{*/
 
 /** Dense row-wise matrix container
  *
@@ -221,6 +219,9 @@ struct MatrixTraits< DenseRowsMatrix<Row> >
 	typedef typename MatrixCategories::RowMatrixTag<MatrixTraits<MatrixType> > MatrixCategory; 
 };
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
-#endif // __DENSE_ROWS_MATRIX_H
+#endif // __LINBOX_dense_rows_matrix_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
