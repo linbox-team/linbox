@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/randiter/archetype.h
  * Copyright (C) 1999-2001 William J Turner,
  *               2002 Bradford Hovinen
@@ -23,8 +21,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __RANDITER_ARCHETYPE_H
-#define __RANDITER_ARCHETYPE_H
+#ifndef __LINBOX_randiter_archetype_H
+#define __LINBOX_randiter_archetype_H
 
 #include "linbox/field/archetype.h"
 #include "linbox/field/abstract.h"
@@ -32,7 +30,7 @@
 #include "linbox/randiter/abstract.h"
 
 namespace LinBox
-{
+{/*{{{*/
 	class ElementArchetype;
 
 	/** \brief Random field element generator archetype.
@@ -218,6 +216,9 @@ namespace LinBox
 
 	}; // class RandIterArchetype
  
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
-#endif // __RANDITER_ARCHETYPE_H
+#endif // __LINBOX_randiter_archetype_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

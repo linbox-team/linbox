@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/matrix/matrix-category.h
  * Copyright (C) 2005 Pascal Giorgi
  *
@@ -21,8 +20,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __MATRIX_CATEGORY_H
-#define __MATRIX_CATEGORY_H
+#ifndef __LINBOX_matrix_category_H
+#define __LINBOX_matrix_category_H
 
 #include <linbox/matrix/sparse.h>
 #include <linbox/matrix/dense.h>
@@ -31,7 +30,8 @@
 #include <linbox/blackbox/dense.h>
 
 
-namespace LinBox{
+namespace LinBox
+{/*{{{*/
 
 	struct MatrixContainerCategory {
 		struct BlasContainer{};
@@ -71,6 +71,9 @@ namespace LinBox{
 		typedef MatrixContainerCategory::Container Type;
 	};
 
-}
+}/*}}}*/
 
-#endif
+#endif //__LINBOX_matrix_category_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

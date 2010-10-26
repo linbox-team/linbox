@@ -1,3 +1,26 @@
+/* Copyright (C) 2010 LinBox
+ *
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
+#ifndef __LINBOX_format_sparse_row_H
+#define __LINBOX_format_sparse_row_H
+
 /* sparse-row.h
  * MatrixStreamReader specialization for matrices in the sparse row format:
  * 1st line: "50 60 S" // #rows #cols letter-S
@@ -5,18 +28,15 @@
  * One next line for each row in matrix.
  */
 
-#ifndef __FORMAT_SPARSE_ROW_H
-#define __FORMAT_SPARSE_ROW_H
-
 #include <cstdlib>
 
-/*
+#if 0
 namespace LinBox__FORMAT_SPARSE_ROW_H
 	{ static const char* name = "Sparse Row Format";
 	  static const char* shortname = "sparserow"; }
-	  */
+#endif
 
-namespace LinBox {
+namespace LinBox {/*{{{*/
 
 template<class Field>
 class SparseRowReader :public MatrixStreamReader<Field> {
@@ -99,13 +119,16 @@ class SparseRowReader :public MatrixStreamReader<Field> {
 		currentRow = colsLeft = (size_t) -1;
 	}
 
-	const char* getName() const {return "Sparse Row Format"; }//LinBox__FORMAT_SPARSE_ROW_H::name;}
+	const char* getName() const {return "Sparse Row Format"; }//LinBox__FORMAT_SPARSE_ROW_H::name;
 	const char* shortName() const
-	{ return "sparserow"; }//LinBox__FORMAT_SPARSE_ROW_H::shortname; }
+	{ return "sparserow"; }//LinBox__FORMAT_SPARSE_ROW_H::shortname; 
 
 	bool isSparse() const { return true; }
 };
 
-}
+}/*}}}*/
 
-#endif // __FORMAT_SPARSE_ROW_H
+#endif // __LINBOX_format_sparse_row_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

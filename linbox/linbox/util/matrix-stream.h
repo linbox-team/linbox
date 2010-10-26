@@ -1,3 +1,27 @@
+/* Copyright (C) 2005 LinBox
+ * Written by Dan Roche
+ *
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
+#ifndef __LINBOX_matrix_stream_H
+#define __LINBOX_matrix_stream_H
+
 /* matrix-stream.h
  * Take a file or stream of a matrix, return (row, column, value) triples from
  * that matrix.  Automatically determine matrix format.
@@ -10,18 +34,15 @@
  *                      you look at that file.  Once you do this, the new format
  *                      will automatically be used.
  *
- * by Dan Roche, 1-12-05
  */
-
-#ifndef __MATRIX_STREAM_H
-#define __MATRIX_STREAM_H
 
 #include <iostream>
 #include <queue>
 #include <vector>
 
-namespace LinBox { // namespace in which all LinBox code resides
-
+namespace LinBox 
+{ /*{{{*/
+// namespace in which all LinBox code resides
 //  Error codes enumeration
 enum MatrixStreamError {
 	GOOD, // There is one format that has not yet encountered any errors
@@ -293,8 +314,11 @@ class MatrixStream {
 	bool isSparse() const { return reader->isSparse(); }
 }; // end of class MatrixStream
 
-} // end of namespace LinBox
+} /*}}}*/ // end of namespace LinBox
 
 #include "matrix-stream.inl"
 
-#endif // MATRIX_STREAM_H
+#endif // __LINBOX_matrix_stream_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

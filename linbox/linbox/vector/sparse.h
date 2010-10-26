@@ -1,9 +1,29 @@
-// ======================================================================= // (C) Linbox 2000
-// Sparse Vector      : vector< Pair<T> > and an additional actual size
-// Time-stamp: <15 Jun 10 15:54:43 Jean-Guillaume.Dumas@imag.fr> 
+/* linbox/solutions/minpoly.h
+ * Copyright (C) 2000, 2010 Jean-Guillaume Dumas
+ *
+ * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
 // ======================================================================= 
-#ifndef _SPARSE_VECTOR_H_
-#define _SPARSE_VECTOR_H_
+// Sparse Vector      : vector< Pair<T> > and an additional actual size
+// ======================================================================= 
+#ifndef __LINBOX_sparse_vector_H
+#define __LINBOX_sparse_vector_H
 #include <iostream>
 
 #include <linbox/vector/vector-traits.h>
@@ -26,7 +46,8 @@
 
 
 
-namespace LinBox{
+namespace LinBox
+{/*{{{*/
 // ---------------------------------------------------
 //
 /** \brief vector< Pair<T,I> > and actualsize
@@ -67,5 +88,6 @@ private:
     size_t _rsize;
 };    
 
-} //end of namespace LinBox
-#endif // _SPARSE_VECTOR_H_
+} //end of namespace LinBox/*}}}*/
+
+#endif // __LINBOX_sparse_vector_H

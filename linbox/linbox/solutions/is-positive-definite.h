@@ -1,15 +1,31 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-/* linbox/solutions/is-positive-definite.h
+/* Copyright (C) 2010 LinBox
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
-#ifndef __IS_POSITIVE_DEFINITE_H
-#define __IS_POSITIVE_DEFINITE_H
+
+#ifndef __LINBOX_is_positive_definite_H
+#define __LINBOX_is_positive_definite_H
 
 #include "linbox/util/error.h"
 #include <linbox/algorithms/matrix-hom.h>
 #include "linbox/algorithms/signature.h"
 
 namespace LinBox
-{
+{/*{{{*/
 	// for specialization with respect to the DomainCategory
     template< class Blackbox, class isPositiveDefiniteMethod, class DomainCategory>
     bool isPositiveDefinite (
@@ -128,5 +144,9 @@ namespace LinBox
 		return Signature::isPosDef(A, Signature::BLAS_LPM_Method() );
 	}
 	
-} // end of LinBox namespace
-#endif // __IS_POSITIVE_DEFINITE_H
+} // end of LinBox namespace/*}}}*/
+
+#endif // __LINBOX_is_positive_definite_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

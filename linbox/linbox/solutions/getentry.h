@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/solutions/getentry.h
  *  Evolved from an earlier one by Bradford Hovinen <hovinen@cis.udel.edu>
  *  -bds
@@ -7,8 +5,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __GETENTRY_H
-#define __GETENTRY_H
+#ifndef __LINBOX_getentry_H
+#define __LINBOX_getentry_H
 
 #include <vector>
 
@@ -122,4 +120,6 @@ typename Field::Element& getEntry(typename Field::Element& x, const Compose<Diag
 
 }
 
-#endif // __GETENTRY_H
+#endif // __LINBOX_getentry_H
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

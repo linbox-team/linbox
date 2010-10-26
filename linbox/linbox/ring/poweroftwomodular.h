@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/field/modular.h
  * Written by 
  *    Pierrick Vignard 
@@ -9,8 +7,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __POWEROFTWOMODULAR_H
-#define __POWEROFTWOMODULAR_H
+#ifndef __LINBOX_poweroftwomodular_H
+#define __LINBOX_poweroftwomodular_H
 
 #include <iostream>
 
@@ -553,4 +551,7 @@ namespace LinBox
 // #include "linbox/field/modular.inl"
 // #include "linbox/randiter/modular.h"
 
-#endif // __POWEROFTWOMODULAR_H
+#endif // __LINBOX_poweroftwomodular_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/util/field-axpy.h
  * Copyright (C) 1999-2001 William J Turner,
  *               2001 Bradford Hovinen
@@ -23,12 +21,12 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __UTIL_FIELD_AXPY_H
-#define __UTIL_FIELD_AXPY_H
+#ifndef __LINBOX_util_field_axpy_H
+#define __LINBOX_util_field_axpy_H
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
-{
+{/*{{{*/
 	/** FieldAXPY object.
 	 *
 	 * This class is used to wrap the operation y = y + a * x. It acts as an
@@ -116,6 +114,9 @@ namespace LinBox
 
 	}; // class FieldAXPY
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
-#endif // __UTIL_FIELD_AXPY_H
+#endif // __LINBOX_util_field_axpy_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

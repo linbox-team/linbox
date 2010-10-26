@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/randiter/gf2.h
  * Copyright (C) 2003 Bradford Hovinen
  *
@@ -10,8 +8,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __RANDITER_GF2_H
-#define __RANDITER_GF2_H
+#ifndef __LINBOX_randiter_gf2_H
+#define __LINBOX_randiter_gf2_H
 
 #include <iostream>
 #include <vector>
@@ -37,7 +35,7 @@
 #endif
 
 namespace LinBox 
-{ 
+{ /*{{{*/
 
 class GF2RandIter
 {
@@ -136,6 +134,9 @@ class GF2RandIter
 
 }; // class GF2RandIter
 
-} // namespace LinBox 
+} // namespace LinBox /*}}}*/
 
-#endif // __RANDITER_GF2_H
+#endif // __LINBOX_randiter_gf2_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

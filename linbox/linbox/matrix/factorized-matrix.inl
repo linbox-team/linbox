@@ -22,10 +22,11 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __FACTORIZED_MATRIX_INL
-#define __FACTORIZED_MATRIX_INL
+#ifndef __LINBOX_factorized_matrix_INL
+#define __LINBOX_factorized_matrix_INL
 
-namespace LinBox{
+namespace LinBox
+{/*{{{*/
 
 
 	// get the Matrix L
@@ -49,7 +50,7 @@ namespace LinBox{
 				L.setEntry( i, j, zero );
 		}		
 				
-		FFPACK::applyP( _F, FFLAS::FflasRight, FFLAS::FflasNoTrans, _m,0,_m, L.getWritePointer(), _m, _Q.getPointer() );
+		FFPACK::applyP( _F, FFLAS::FflasRight, FFLAS::FflasNoTrans, _m,0,_m, L.getWritePointer(), _m, _QQ.getPointer() );
 		for ( size_t i=0; i<_m; ++i )
 			L.setEntry( i, i, one );
 					
@@ -86,7 +87,7 @@ namespace LinBox{
 				S.setEntry( i, j, _LU.getEntry(i,j) );
 		}
 	
-		FFPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FflasTrans, _n, 0, _m, S.getWritePointer(), _n, _Q.getPointer() );
+		FFPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FflasTrans, _n, 0, _m, S.getWritePointer(), _n, _QQ.getPointer() );
 		return S;
 	}
 
@@ -700,7 +701,10 @@ namespace LinBox{
 	}; // end of class FactorizedMatrixRightUSolve
 
 
-} //end of namespace LinBox
+} //end of namespace LinBox/*}}}*/
 
 
-#endif
+#endif // __LINBOX_factorized_matrix_INL
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

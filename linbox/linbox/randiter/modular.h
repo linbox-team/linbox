@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/randiter/modular.h
  * Copyright (C) 1999-2005 William J Turner,
  *               2002 Bradford Hovinen
@@ -29,8 +27,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __RANDITER_MODULAR_H
-#define __RANDITER_MODULAR_H
+#ifndef __LINBOX_large_modular_randiter_H
+#define __LINBOX_large_modular_randiter_H
 
 #include <iostream>
 #include <vector>
@@ -45,7 +43,7 @@
 #include "linbox/linbox-config.h"
 
 namespace LinBox 
-{ 
+{ /*  {{{ */
 
 	/** Random field base element generator.
 	 * This encapsulated class is a generator of random field base elements for 
@@ -282,6 +280,9 @@ namespace LinBox
 				  (_r.randomIntRange (0, _size)); }
 
 	};
-} // namespace LinBox 
+} /*  }}} */ // namespace LinBox 
 
-#endif // _LARGE_MODULAR_RANDITER_
+#endif // __LINBOX_large_modular_randiter_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

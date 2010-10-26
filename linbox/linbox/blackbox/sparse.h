@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/blackbox/sparse.h
  * Copyright (C) 1999-2005 William J Turner,
  *               2001-2002 Bradford Hovinen
@@ -33,8 +31,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __BLACKBOX_SPARSE_H
-#define __BLACKBOX_SPARSE_H
+#ifndef __LINBOX_blackbox_sparse_H
+#define __LINBOX_blackbox_sparse_H
 
 #include "linbox/linbox-config.h"
 #include "linbox/blackbox/blackbox-interface.h"
@@ -47,7 +45,7 @@
 #include <linbox/field/rebind.h>
 
 namespace LinBox
-{
+{/*{{{*/
 
 /** \brief vector of sparse rows.
     
@@ -397,8 +395,11 @@ struct MatrixTraits< const SparseMatrix<Field, _Row> >
 	typedef MatrixCategories::RowMatrixTag MatrixCategory;
 };
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
 #include "linbox/blackbox/sparse.inl"
 
-#endif // __BLACKBOX_SPARSE_H
+#endif // __LINBOX_blackbox_sparse_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

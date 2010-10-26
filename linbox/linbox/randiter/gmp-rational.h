@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/randiter/gmp-rational.h
  * Copyright (C) 2001-2002 Bradford Hovinen
  *
@@ -22,8 +20,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __RANDITER_GMP_RATIONAL_H
-#define __RANDITER_GMP_RATIONAL_H
+#ifndef __LINBOX_randiter_gmp_rational_H
+#define __LINBOX_randiter_gmp_rational_H
 
 #include "linbox/field/gmp-rational.h"
 #include "linbox/element/gmp-rational.h"
@@ -156,4 +154,7 @@ class GMPRationalRandIter
  
 } // namespace LinBox
 
-#endif // __RANDITER_GMP_RANDOM_H
+#endif // __LINBOX_randiter_gmp_random_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

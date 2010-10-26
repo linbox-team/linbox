@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
-
 /* linbox/matrix/sparse.h
  * Copyright (C) 2001-2002 Bradford Hovinen
  *               1999-2001 William J Turner,
@@ -40,8 +38,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __MATRIX_SPARSE_H
-#define __MATRIX_SPARSE_H
+#ifndef __LINBOX_matrix_sparse_H
+#define __LINBOX_matrix_sparse_H
 
 #ifndef _SP_BB_VECTOR_
 #include <vector>
@@ -60,7 +58,7 @@
 #include "linbox/util/matrix-stream.h"
 
 namespace LinBox
-{
+{/*{{{*/
 	
 
 /** Exception class for invalid matrix input
@@ -1377,8 +1375,11 @@ struct MatrixTraits< const SparseMatrixBase<Element, Row, Trait> >
 	typedef typename MatrixCategories::RowMatrixTag MatrixCategory; 
 };
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
 #include "linbox/matrix/sparse.inl"
 
-#endif // __MATRIX_SPARSE_H
+#endif // __LINBOX_matrix_sparse_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

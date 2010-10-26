@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/ring/givaro-polynomial.h
  * Written by 
  * Clement Pernet
@@ -7,8 +5,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __GIVAROPOLYNOMIAL_H
-#define __GIVAROPOLYNOMIAL_H
+#ifndef __LINBOX_givaropolynomial_H
+#define __LINBOX_givaropolynomial_H
 
 #include <iostream>
 #include <givaro/givpoly1.h>
@@ -196,4 +194,7 @@ namespace LinBox {
 } // namespace LinBox
 
 
-#endif // __GIVAROPOLYNOMIAL_H
+#endif // __LINBOX_givaropolynomial_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

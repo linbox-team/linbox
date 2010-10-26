@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/ring/abstract.h
  * Written by J-G Dumas <Jean-Guillaume.Dumas@imag.fr>,
  *            Clement Pernet <Clement.Pernet@imag.fr>
@@ -20,8 +18,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __RING_ABSTRACT_H
-#define __RING_ABSTRACT_H
+#ifndef __LINBOX_ring_abstract_H
+#define __LINBOX_ring_abstract_H
 
 #include <iostream>
 
@@ -38,7 +36,7 @@
 #endif
 
 namespace LinBox 
-{ 
+{ /* {{{ */ 
 
 	/** \brief Abstract ring base class.
 	\ingroup ring 
@@ -114,6 +112,9 @@ namespace LinBox
 
 	}; // class FieldAbstract
 
-} // namespace LinBox
+} /* }}} */ // namespace LinBox
 
-#endif // __RING_ABSTRACT_H
+#endif // __LINBOX_ring_abstract_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

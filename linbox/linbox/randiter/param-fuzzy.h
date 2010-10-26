@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/randiter/param-fuzzy.h
  * Copyright (C) 1999-2001 William J Turner,
  *               2002 Bradford Hovinen
@@ -24,8 +22,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __RANDITER_PARAM_FUZZY_H
-#define __RANDITER_PARAM_FUZZY_H
+#ifndef __LINBOX_randiter_param_fuzzy_H
+#define __LINBOX_randiter_param_fuzzy_H
 
 #include <iostream>
 #include <vector>
@@ -37,7 +35,7 @@
 #include "linbox/field/param-fuzzy.h"
 
 namespace LinBox 
-{ 
+{ /*{{{*/
 
 	class ParamFuzzyRandIter
 	{
@@ -109,6 +107,9 @@ namespace LinBox
 
 	}; // class ParamFuzzyRandIter : public ParamFuzzyRandIter
 
-} // namespace LinBox 
+} // namespace LinBox /*}}}*/
 
-#endif // __PARAM_FUZZY_H
+#endif // __LINBOX_randiter_param_fuzzy_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

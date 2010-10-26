@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/matrix/dense.inl
  * Copyright (C) 2001 B. David Saunders, 
  *               2001-2002 Bradford Hovinen, 
@@ -24,8 +22,8 @@
  * See COPYING for license information
  */
 
-#ifndef __MATRIX_DENSE_INL
-#define __MATRIX_DENSE_INL
+#ifndef __LINBOX_matrix_dense_INL
+#define __LINBOX_matrix_dense_INL
 
 #include <iostream>
 #include <cmath>
@@ -34,7 +32,7 @@
 #include "linbox/util/debug.h"
 
 namespace LinBox
-{
+{/*{{{*/
 
 template <class Element>
 class DenseMatrixBase<Element>::ConstRowIterator
@@ -714,6 +712,9 @@ typename DenseMatrixBase<Element>::ConstRawIndexedIterator DenseMatrixBase<Eleme
 	return ConstRawIndexedIterator (coldim (), rowdim (), 0, _rep.begin ());
 }
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
-#endif // __MATRIX_DENSE_INL
+#endif // __LINBOX_matrix_dense_INL
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

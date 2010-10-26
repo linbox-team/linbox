@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/randiter/mersenne-twister.h
  * Copyright (C) 2002 Bradford Hovinen
  *
@@ -24,15 +22,15 @@
  * generator tests.
  */
 
-#ifndef __MERSENNE_TWISTER_H
-#define __MERSENNE_TWISTER_H
+#ifndef __LINBOX_mersenne_twister_H
+#define __LINBOX_mersenne_twister_H
 
 #include <vector>
 
 #include "linbox/integer.h"
 
 namespace LinBox
-{
+{/*{{{*/
 
 class MersenneTwister 
 {
@@ -65,9 +63,12 @@ class MersenneTwister
 	int                           _left;
 };
  
-}
+}/*}}}*/
 
 #ifdef LinBoxSrcOnly
 #include <linbox/randiter/mersenne-twister.C>
 #endif
-#endif // __MERSENNE_TWISTER_H
+#endif // __LINBOX_mersenne_twister_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

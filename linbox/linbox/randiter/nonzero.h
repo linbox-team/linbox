@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/randiter/nonzero.h
  * Copyright (C) 2001-2002 Bradford Hovinen
  *
@@ -11,8 +9,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __RANDITER_NONZERO_H
-#define __RANDITER_NONZERO_H
+#ifndef __LINBOX_randiter_nonzero_H
+#define __LINBOX_randiter_nonzero_H
 
 #include "linbox/field/archetype.h"
 #include "linbox/randiter/archetype.h"
@@ -34,7 +32,7 @@
 #endif
 
 namespace LinBox
-{
+{/*{{{*/
 	/** Random iterator for nonzero random numbers
 	 *
 	 * Wraps around an existing random iterator and ensures that the output
@@ -94,6 +92,9 @@ namespace LinBox
      
 	}; // class NonzeroRandIter
  
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
-#endif // __RANDITER_NONZERO_H
+#endif // __LINBOX_randiter_nonzero_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

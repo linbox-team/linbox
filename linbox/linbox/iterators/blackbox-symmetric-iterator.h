@@ -1,14 +1,33 @@
+/* Copyright (C) 1999 LinBox
+ * Written by <Jean-Guillaume.Dumas@imag.fr> 
+ *
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
 // ================================================================
-// LinBox Project 1999
 // Black Box iterator and container 
 // For symmetric matrix with same left and right vector
 // the sequence is u^t v, u^t A v, ...,  u^t A^n v,  
-// Time-stamp: <22 Mar 03 21:16:15 Jean-Guillaume.Dumas@imag.fr> 
 // ================================================================
 
 
-#ifndef __BBContainer_SYMMETRIC_H__
-#define __BBContainer_SYMMETRIC_H__
+#ifndef __LINBOX_bbcontainer_symmetric_H
+#define __LINBOX_bbcontainer_symmetric_H
 
 #include <LinBox/lin_rand.h>
 #include <LinBox/lin_base_bbit.h>
@@ -51,4 +70,7 @@ protected:
 };
 
 
-#endif // __BBContainer_SYMMETRIC_H__
+#endif // __LINBOX_bbcontainer_symmetric_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
