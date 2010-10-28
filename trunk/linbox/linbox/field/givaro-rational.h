@@ -3,6 +3,7 @@
  *
  * Created  Gilles Villard < Gilles.Villard@ens-lyon.fr> 
  * ven oct  8 13:30:05 CEST 2004
+ * see COPYING for licence information
  */
 
 

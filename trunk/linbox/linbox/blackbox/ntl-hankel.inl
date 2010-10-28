@@ -1,5 +1,3 @@
-/* C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4  */
-
 /*-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
  *    ntl-hankel.inl     NTL_Hankel.cpp file 
  *    Copyright (C) 2003 Austin Lobo, B. David Saunders
@@ -13,16 +11,21 @@
  *    are manipulated in fields and rings according to the arithmetic
  *    in the ntl package from V. Shoup
  *
+ *    see COPYING for license information
+ *
  *    Everything is in the Linbox namespace by virtue of the #include
  *    in ntl-Hankel.h
  *-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+*/
+
+#ifndef __LINBOX_bb_ntl_hankel_INL
+#define __LINBOX_bb_ntl_hankel_INL
 
 #include <iostream>
 #include <fstream>
 #include <NTL/ZZ_pX.h>
 
 namespace LinBox 
-{
+{/*{{{*/
 	/*-----------------------------------------------------------------
 	 *----    Destructor
 	 *----------------------------------------------------------------*/
@@ -268,4 +271,6 @@ namespace LinBox
 	
 	
 	
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
+
+#endif //__LINBOX_bb_ntl_hankel_INL

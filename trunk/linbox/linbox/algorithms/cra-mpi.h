@@ -1,13 +1,31 @@
-/* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
-/* author: B. David Saunders and Zhendong Wan*/
-// parallelized for BOINC computing by Bryan Youse
-// ======================================================================= //
-// Time-stamp: <15 Mar 07 17:41:24 Jean-Guillaume.Dumas@imag.fr> 
-// ======================================================================= //
-#ifndef __LINBOX_CRA_MPI_H
-#define __LINBOX_CRA_MPI_H
+/* Copyright (C) 2007 LinBox
+ * Written by bds and zw
+ *
+ * author: B. David Saunders and Zhendong Wan
+ * parallelized for BOINC computing by Bryan Youse
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
 
-#define MPICH_IGNORE_CXX_SEEK
+
+#ifndef __LINBOX_cra_mpi_H
+#define __LINBOX_cra_mpi_H
+
+#define MPICH_IGNORE_CXX_SEEK //BB: ???
 #include "linbox/util/timer.h"
 #include <stdlib.h>
 #include "linbox/integer.h"
@@ -17,7 +35,8 @@
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/util/mpicpp.h"
 
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
 
 	template<class CRABase>
 		struct MPIChineseRemainder {
@@ -191,6 +210,7 @@ namespace LinBox {
 					}
 				}
 		};
-}
+}/*}}}*/
 
-#endif
+#undef MPICH_IGNORE_CXX_SEEK
+#endif // __LINBOX_cra_mpi_H

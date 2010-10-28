@@ -1,11 +1,10 @@
-/* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
-
 /*-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
  *    toeplitz.inl     NTL_Toeplitz.cpp file 
  *
  *    Copyright (C) 2002 Austin Lobo, B. David Saunders
  *    Author: Austin Lobo 
- *    Linbox version 2001 and 2002 
+ *    LinBox version 2001 and 2002 
+ *    see COPYING for license information
  *
  *    This file is included in the template description of ntl-Toeplitz.h
  *    it contains the implementations of templatized member functions in the 
@@ -17,13 +16,16 @@
  *    in ntl-Toeplitz.h
  *-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+*/
 
+#ifndef __LINBOX_bb_toeplitz_INL
+#define __LINBOX_bb_toeplitz_INL
+
 #include <iostream>
 #include <fstream>
-#include <assert.h> // JGD 26.09.2003
+#include <cassert> // JGD 26.09.2003
 #include <linbox/algorithms/toeplitz-det.h>
 
 namespace LinBox 
-{
+{/*{{{*/
 	/*-----------------------------------------------------------------
 	 *----    Destructor
 	 *----------------------------------------------------------------*/
@@ -377,4 +379,6 @@ namespace LinBox
 		
 	}
 	
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
+
+#endif //__LINBOX_bb_toeplitz_INL

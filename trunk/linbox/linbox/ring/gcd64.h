@@ -1,4 +1,28 @@
-template<typename Ints> Ints GCD2E64( const Ints p) {
+/* Copyright (C) LinBox
+ *
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
+#ifndef __LINBOX_ring_gcd64_H
+#define __LINBOX_ring_gcd64_H
+
+template<typename Ints> Ints GCD2E64( const Ints p) 
+{/*{{{*/
    if( p & 4294967295UL) {
       if( p & 65535UL) {
          if( p & 255UL) {
@@ -252,4 +276,6 @@ template<typename Ints> Ints GCD2E64( const Ints p) {
          }
       }
    }
-}
+}/*}}}*/
+
+#endif //__LINBOX_ring_gcd64_H

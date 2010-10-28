@@ -1,8 +1,6 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* Copyright(c)'94-97 by Givaro Team
  * Copyright(c)'2000-2002 by LinBox Team 
- * see the copyright file.
+ * see the COPYING file for license information.
  * Created by M. Samama, T. Gautier
  *
  * Modified Jean-Guillaume.Dumas <Jean-Guillaume.Dumas@imag.fr>
@@ -22,7 +20,7 @@
 #include "gmp++/gmp++.h"
 
 namespace LinBox
-{
+{/*{{{*/
 	/** \brief This is a representation of arbitrary integers.  
 	 *
 	 * \ingroup linbox
@@ -85,6 +83,9 @@ LinBox ring for use in integer matrix computation, see pid-integers.h or ntl-ZZ.
         };
 
 
-}
+}/*}}}*/
 
 #endif // __LINBOX_integer_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

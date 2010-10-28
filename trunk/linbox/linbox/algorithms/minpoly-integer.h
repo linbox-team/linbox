@@ -1,13 +1,38 @@
-/* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
-/*better filter out repeated primes*/
-/* Compute the minpoly of a matrix over an integer ring using modular arithmetic */
-/* author: Zhendong Wan*/
+/* Copyright (C) LinBox
+ *
+ * author: Zhendong Wan
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
 
-#ifndef _LINBOX_MINPOLY_INTEGER_H__
-#define _LINBOX_MINPOLY_INTEGER_H__
+
+
+#ifndef __LINBOX_minpoly_integer_H
+#define __LINBOX_minpoly_integer_H
 
 #include <iostream>
 #include <math.h>
+
+/*! \file algorithms/minpoly-integer.h
+ * Compute the minpoly of a matrix over an integer ring using modular arithmetic 
+ * @todo better filter out repeated primes
+ */
+
+
 
 #include <linbox/field/field-traits.h>
 #include <linbox/algorithms/matrix-hom.h>
@@ -18,7 +43,8 @@
 #include <linbox/ffpack/ffpack.h>
 #include <linbox/algorithms/cra-early-multip.h>
 
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
 
 	/* compute the minpoly of a matrix over the Integer ring
 	 * via modular method over Field.
@@ -318,6 +344,6 @@ namespace LinBox {
 
 		return degree;
 	}
-} // LinBox
+} // LinBox/*}}}*/
 
-#endif
+#endif //__LINBOX_minpoly_integer_H

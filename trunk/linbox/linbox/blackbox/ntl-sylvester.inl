@@ -1,17 +1,21 @@
-/* -*- mode: C++; tab-width: 6; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /*-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *    ntl-sylvester.h
  *    Copyright (C) 2003 Austin Lobo, B. David Saunders
-
+ *
  *    Member functions for the sylvester matrix in one variable
  *    for polynomials in one variable.
  *    Linbox version 2003
+ *
+ *    See COPYING for licence information
  *-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+*/
+
+#ifndef __LINBOX_bb_ntl_sylvester_INL
+#define __LINBOX_bb_ntl_sylvester_INL
 
 #include <iostream>
 
 namespace LinBox
-{
+{/*{{{*/
 
     /*----------------------------------------------------------------------
      *    Destructor
@@ -351,4 +355,7 @@ namespace LinBox
 
 
 
-}//End, namespace LinBox
+}//End, namespace LinBox/*}}}*/
+
+
+#endif //__LINBOX_bb_ntl_sylvester_INL

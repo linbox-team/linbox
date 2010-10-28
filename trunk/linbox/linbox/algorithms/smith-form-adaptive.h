@@ -1,14 +1,38 @@
-/* Implement the adaptive algorithm for Smith form compuation
- * authors: bds and zw
+/* Copyright (C) LinBox
+ * Written by bds and zw
+ *
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
-#ifndef __LINBOX_SMITH_FORM_ADAPTIVE_H__
-#define __LINBOX_SMITH_FORM_ADAPTIVE_H__
+
+
+
+#ifndef __LINBOX_smith_form_adaptive_H
+#define __LINBOX_smith_form_adaptive_H
+
+/*! @file algorithms/smith-form-adaptive.h
+ * Implement the adaptive algorithm for Smith form computation
+ */
 
 #include <vector>
 #include <linbox/integer.h>
 #include <linbox/blackbox/dense.h>
 
-namespace LinBox {
+namespace LinBox {/*{{{*/
 
 class SmithFormAdaptive {
 	public:
@@ -71,7 +95,7 @@ class SmithFormAdaptive {
 };
 	const long SmithFormAdaptive::prime[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97};
 	const int SmithFormAdaptive::NPrime = 25;
-}
+}/*}}}*/
 
 #include <linbox/algorithms/smith-form-adaptive.inl>
-#endif
+#endif //__LINBOX_smith_form_adaptive_H

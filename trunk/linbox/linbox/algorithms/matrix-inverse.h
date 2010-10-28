@@ -1,17 +1,29 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
-/* File: matrix-inverse.h
- *  Author: Zhendong Wan
- * draft date: 09-27-2003
+/* Copyright (C) 2003 LinBox
+ * Written by Zhendong Wan
  *
  * modified by Pascal Giorgi 1/07/04
  * put the Field as template parameter 
  * and add Field F as a parameter
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
 
-#ifndef __LINBOX__MATRIX_INVERSE_H__
-#define __LINBOX__MATRIX_INVERSE_H__
+#ifndef __LINBOX_matrix_inverse_H
+#define __LINBOX_matrix_inverse_H
 
 #include <linbox/util/debug.h>
 #include <linbox/util/error.h>
@@ -19,7 +31,7 @@
 #include <algorithm>
 
 namespace LinBox 
-{    
+{/* {{{ */    
 	class MatrixInverse {
 	
 	public:
@@ -178,7 +190,7 @@ namespace LinBox
 		return 0;
 	}
 
-} // namespace LinBox
+} /*  }}} */ // namespace LinBox
 
 
-#endif
+#endif //__LINBOX_matrix_inverse_H

@@ -1,6 +1,7 @@
 /* linbox/blackbox/quad-matrix.h
  * Copyright (C) 2006 LinBox
  * Written by -bds, hui wang  
+ * see COPYING for license information
  */
 
 #ifndef __LINBOX_quad_matrix_H

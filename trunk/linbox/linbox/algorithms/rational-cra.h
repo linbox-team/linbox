@@ -1,22 +1,43 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// ======================================================================= //
-// Time-stamp: <12 Mar 07 19:40:17 Jean-Guillaume.Dumas@imag.fr> 
-// ======================================================================= //
-#ifndef __LINBOX_RATIONAL_CRA_H
-#define __LINBOX_RATIONAL_CRA_H
+/* Copyright (C) 2007 LinBox
+ * Written by JG Dumas
+ *
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
+
+#ifndef __LINBOX_rational_cra_H
+#define __LINBOX_rational_cra_H
 
 #include "linbox/field/PID-integer.h"
 
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
 
-//     template<class T, template <class T> class Container>
-//     std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
-//         for(typename Container<T>::const_iterator refs =  C.begin();
-//             refs != C.end() ;
-//             ++refs )
-//             o << (*refs) << " " ;
-//         return o << std::endl;
-//     }
+#if 0
+	template<class T, template <class T> class Container>
+		std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
+			for(typename Container<T>::const_iterator refs =  C.begin();
+					refs != C.end() ;
+					++refs )
+				o << (*refs) << " " ;
+			return o << std::endl;
+		}
+#endif
 
 
 	/** \brief Chinese remainder of rationals
@@ -81,6 +102,6 @@ namespace LinBox {
             return Builder_.result(num, den);
         }
     };
-}
+}/*}}}*/
 
-#endif
+#endif //__LINBOX_rational_cra_H

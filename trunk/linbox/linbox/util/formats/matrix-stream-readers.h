@@ -1,4 +1,27 @@
-/* matrix-stream-readers.h
+/* Copyright (C) LinBox
+ *
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
+#ifndef __LINBOX_matrix_stream_readers_H
+#define __LINBOX_matrix_stream_readers_H
+
+/*! \file matrix-stream-readers.h
  * Here is where all the formats (each of which is a subclass of
  * MatrixStreamReader) are defined, in two places:
  *
@@ -22,3 +45,5 @@
 #include "generic-dense.h"
 #include "matrix-market.h"
 #include "maple.h"
+
+#endif //__LINBOX_matrix_stream_readers_H
