@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
-
 /* linbox/tests/test-generic.h
  * Copyright (C) 2001, 2002 Bradford Hovinen
  * See COPYING for license information.
@@ -20,11 +18,13 @@
  * 2007June bds split into three files
  */
 
-#ifndef __TEST_GENERIC_H
-#define __TEST_GENERIC_H
+#ifndef __LINBOX_test_generic_H
+#define __LINBOX_test_generic_H
 
 #include "test-field.h"
 #include "test-blackbox.h"
 #include "test-vector-domain.h"
 
-#endif // __TEST_GENERIC_H
+#endif // __LINBOX_test_generic_H
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

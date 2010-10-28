@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox-sage.C
  * Copyright (C) 2007 Martin Albrecht
  *               2008 Clement Pernet
@@ -763,3 +762,5 @@ vector<unsigned int> linbox_modn_sparse_matrix_solve(mod_int p, size_t numrows, 
   }
   return X;
 }
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 
 /* linbox/algorithms/localsmith.h
  *
@@ -103,3 +102,5 @@ class SmithFormLocal{
 
 #include <linbox/algorithms/smith-form-local2.h>
 #endif // __SMITH_FORM_LOCAL_H
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

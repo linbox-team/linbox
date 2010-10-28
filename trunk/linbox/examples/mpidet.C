@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /** 
  * examples/mpidet.C
@@ -88,3 +87,5 @@ int main (int argc, char **argv)
 	cerr << "Compile with -D__LINBOX_HAVE_MPI" << endl;
 #endif
 }
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

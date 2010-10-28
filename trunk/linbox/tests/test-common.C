@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/tests/test-common.C
  * Copyright (C) 2001, 2002 Bradford Hovinen
  *
@@ -20,8 +18,8 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __TEST_COMMON_C
-#define __TEST_COMMON_C
+#ifndef __LINBOX_test_common_C
+#define __LINBOX_test_common_C
 
 
 #include "linbox/linbox-config.h"
@@ -235,5 +233,7 @@ double chiSquaredCDF (double chi_sqr, double df)
 {
 	return incompleteGamma (df / 2.0, chi_sqr / 2.0, 1e-10) / exp (gamma (df / 2.0));
 }
-#endif // __TEST_COMMON_H
+#endif // __LINBOX_test_common_C
 
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
