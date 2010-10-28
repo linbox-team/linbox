@@ -506,8 +506,6 @@ namespace LinBox
 	}
 } // LinBox/*}}}*/
 
-
-
 #endif // __LINBOX_modulardense_nullspace_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */

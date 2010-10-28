@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/field/givaro-gfq.h
  * Copyright (C) 2002 Pascal Giorgi
  *
@@ -19,8 +17,8 @@
  * You can send me a mail to get it or for others details.
  */
 
-#ifndef __FIELD_GIVARO_GFQ
-#define __FIELD_GIVARO_GFQ
+#ifndef __LINBOX_field_givaro_gfq_H
+#define __LINBOX_field_givaro_gfq_H
 
 
 #include <linbox/integer.h>
@@ -42,7 +40,7 @@
 
 // Namespace in which all LinBox code resides
 namespace LinBox 
-{ 
+{ /*{{{*/
 
 	template <class Ring>
 	struct ClassifyRing;
@@ -302,6 +300,9 @@ namespace LinBox
 
 
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
-#endif // __FIELD_GIVARO_GFQ
+#endif // __LINBOX_field_givaro_gfq_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

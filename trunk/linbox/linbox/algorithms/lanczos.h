@@ -1,7 +1,5 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/algorithms/lanczos.h
- * Copyright (C) 2002 Bradford Hovinen
+ * Copyright (C) 2002 LinBox 
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
  *
@@ -10,8 +8,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __LANCZOS_H
-#define __LANCZOS_H
+#ifndef __LINBOX_lanczos_H
+#define __LINBOX_lanczos_H
 
 #include <vector>
 #include <algorithm>
@@ -22,7 +20,7 @@
 #include "linbox/solutions/methods.h"
 
 namespace LinBox 
-{
+{/*{{{*/
 
 /** 
  \brief Solve a linear system using the conjugate Lanczos iteration.
@@ -90,8 +88,11 @@ class LanczosSolver
 	Vector                    _w[2], _Aw; // Temporaries used in the Lanczos iteration
 };
 
-}
+}/*}}}*/
 
 #include "linbox/algorithms/lanczos.inl"
 
-#endif // __LANCZOS_H
+#endif // __LINBOX_lanczos_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

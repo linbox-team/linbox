@@ -1,12 +1,10 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/field/hom.h
  * Written by David Saunders
  * See COPYING for license information.
  */
 
-#ifndef __HOM_H
-#define __HOM_H
+#ifndef __LINBOX_hom_H
+#define __LINBOX_hom_H
 
 #include "linbox/linbox-config.h"
 #include "linbox/field/modular.h"
@@ -15,9 +13,10 @@
 
 #ifdef __LINBOX_HAVE_NTL
 #include <linbox/field/ntl-ZZ.h>
-#endif
+#endif //__LINBOX_HAVE_NTL
 
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
 	/// Error object for attempt to establish a Hom that cannot exist.
 	class NoHomError {};
 
@@ -109,17 +108,15 @@ namespace LinBox {
 	}; // end Hom 
 
 
-}
+}/*}}}*/
 
-
-
-
-#ifdef __FIELD_MODULAR_H
+#ifdef __LINBOX_field_modular_H
 // including specialization to modular
 //#include "linbox/field/modular.h"
 /// Specialization to Modular<uint16> --> Modular<uint_32>.
 // Just a trial.  delete this when better examples exist.
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
 	template<> inline Hom<Modular<uint16>, Modular<uint32> >::
 	Hom(const Modular<uint16>& S, const Modular<uint32>& T ): _source(S),_target(T)
 	{
@@ -134,11 +131,12 @@ namespace LinBox {
 	template<> inline Modular<uint16>::Element& Hom<Modular<uint16>, Modular<uint32> >::
 	preimage(Modular<uint16>::Element& s, const Modular<uint32>::Element& t) { return s = t; }
 
-}// namespace LinBox
-#endif
+}// namespace LinBox/*}}}*/
+#endif //__LINBOX_field_modular_H
 
-#ifdef __FIELD_UNPARAMETRIC_H
-namespace LinBox{
+#ifdef __LINBOX_field_unparametric_H
+namespace LinBox
+{/*{{{*/
 
 	template<class _Target>
 	class Hom<UnparametricField<integer>, _Target> {
@@ -246,7 +244,7 @@ namespace LinBox{
 	}; // end Hom 
 
 
-	/*
+#if 0
 	  #ifdef __FIELD_MODULAR_H
 	  // Dan Roche mapping from UnparametricField to Modular - for integer
 	  // computations that use mod one or more primes and possibly chinese
@@ -279,13 +277,14 @@ namespace LinBox{
 	  }; // end Hom
 
 	  #endif // __FIELD_MODULAR_H
-	*/
-
-} // namespace LinBox
 #endif
 
+} // namespace LinBox/*}}}*/
+#endif //__LINBOX_field_unparametric_H
+
 #ifdef __LINBOX_HAVE_NTL
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
 
 	template<class _Target > 
 	class Hom <NTL_ZZ , _Target> {
@@ -335,11 +334,12 @@ namespace LinBox {
 		Target _target;
 	}; // end Hom 
 	
-}
-#endif
+}/*}}}*/
+#endif //__LINBOX_HAVE_NTL
 
-#ifdef __FIELD_GMP_RATIONAL_H
-namespace LinBox {
+#ifdef __LINBOX_field_gmp_rational_H
+namespace LinBox 
+{/*{{{*/
 	template <class _Target>
 	class Hom<GMPRationalField, _Target> {
 
@@ -406,12 +406,10 @@ namespace LinBox {
 		Source _source;
 		Target _target;
 	}; // end Hom 
-}
-#endif
+}/*}}}*/
+#endif //__LINBOX_field_gmp_rational_H
 
+#endif // __LINBOX_hom_H
 
-
-
-
-
-#endif // __HOM_H
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

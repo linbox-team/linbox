@@ -1,5 +1,3 @@
-
-
 /* linbox/blackbox/inverse.h
  * Copyright (C) 2001 Bradford Hovinen
  *
@@ -21,8 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __INVERSE_H
-#define __INVERSE_H
+#ifndef __LINBOX_inverse_H
+#define __LINBOX_inverse_H
 
 #include <linbox/blackbox/blackbox-interface.h>
 #include "linbox/blackbox/transpose.h"
@@ -32,7 +30,7 @@
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
-{
+{/*{{{*/
 
 	/** \brief A Blackbox for the inverse.  Not efficient if many applications are used.
 	 * \ingroup blackbox
@@ -208,6 +206,9 @@ namespace LinBox
 
 	};
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
-#endif // __INVERSE_H
+#endif // __LINBOX_inverse_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

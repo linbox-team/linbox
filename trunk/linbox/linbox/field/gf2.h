@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/field/gf2.h
  * Copyright (C) 2003-2007 The LinBox group
  *
@@ -10,8 +8,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __FIELD_GF2_H
-#define __FIELD_GF2_H
+#ifndef __LINBOX_field_gf2_H
+#define __LINBOX_field_gf2_H
 
 #include <iostream>
 #include <climits>
@@ -26,7 +24,7 @@
 
 // Namespace in which all LinBox code resides
 namespace LinBox 
-{
+{/*{{{*/
 
 class GF2RandIter;
 
@@ -580,14 +578,13 @@ class GF2 : public FieldInterface
 
 }; // class GF2
 
-} // namespace LinBox
-
+} // namespace LinBox/*}}}*/
 
 
 // Specialization of GivaroField for GF2
 #include "linbox/field/givaro-field.h"
 namespace LinBox 
-{
+{/*{{{*/
 
   /** 
   \brief give LinBox fields an allure of Givaro Fields
@@ -687,7 +684,7 @@ namespace LinBox
 
     };
     
-}
+}/*}}}*/
 
 
 
@@ -695,7 +692,7 @@ namespace LinBox
 #include "linbox/field/hom.h"
 #include "linbox/field/givaro-extension.h"
 namespace LinBox 
-{
+{/*{{{*/
 
     template <>
     class Hom<GF2,GF2> {
@@ -796,22 +793,25 @@ namespace LinBox
         Source _source;
         Target _target;
     }; // end Hom 
-}
+}/*}}}*/
 
 // #include <bits/stl_bvector.h>
-// JGD 05.11.2009 : it should be in bits/stl_bvector.h  ...
-namespace std {
+namespace std 
+{/*{{{*/
+//! @todo JGD 05.11.2009 : it should be in bits/stl_bvector.h  ...
     inline void swap(_Bit_reference __x, _Bit_reference __y)
     {
       bool __tmp = __x;
       __x = __y;
       __y = __tmp;
     }
-}
-
+}/*}}}*/
 
 
 #include "linbox/randiter/gf2.h"
 #include "linbox/field/gf2.inl"
 
-#endif // __FIELD_GF2_H
+#endif // __LINBOX_field_gf2_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

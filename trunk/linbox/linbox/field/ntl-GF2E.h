@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/field/ntl-z_pE.h
  * Copyright (C) 2004  Pascal Giorgi
  *
@@ -23,8 +22,8 @@
  */
 
 
-#ifndef __NTL_GF2E_H
-#define __NTL_GF2E_H
+#ifndef __LINBOX_ntl_gf2e_H
+#define __LINBOX_ntl_gf2e_H
 
 
 #include <linbox/util/debug.h>
@@ -37,7 +36,8 @@
 #include "linbox/linbox-config.h"
 #include <linbox/field/field-traits.h>
 
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
 
 	template <class Ring>
 	struct ClassifyRing; 
@@ -192,6 +192,9 @@ namespace LinBox {
 	}
   
 
-}
+}/*}}}*/
 
-#endif
+#endif //__LINBOX_ntl_gf2e_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

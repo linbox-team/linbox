@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/field/lidia-gfq.h
  * Copyright (C) 2002 Pascal Giorgi
  *
@@ -11,9 +9,8 @@
  */
 
 
-
-#ifndef __FIELD_LIDIA_GFQ
-#define __FIELD_LIDIA_GFQ
+#ifndef __LINBOX_lidia_gfq_H
+#define __LINBOX_lidia_gfq_H
 
 //-----------------------------------
 // Files of C/C++ library
@@ -742,4 +739,7 @@ namespace LinBox
 } // namespace LinBox
 
 
-#endif // __FIELD_LIDIA_GFQ
+#endif // __LINBOX_lidia_gfq_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/blackbox/block-toeplitz.h
  * Copyright (C) 2005 Pascal Giorgi
  *
@@ -20,10 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-
-
-#ifndef __BLOCK_TOEPLITZ_H
-#define __BLOCK_TOEPLITZ_H
+#ifndef __LINBOX_block_toeplitz_H
+#define __LINBOX_block_toeplitz_H
 
 #include <vector>
 #include <linbox/matrix/blas-matrix.h>
@@ -32,7 +29,8 @@
 #include <linbox/util/debug.h>
 #include <linbox/blackbox/block-hankel.h>
 
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
 	
 	template<class _Field>
 	class BlockToeplitz : public BlockHankel<_Field> {
@@ -49,6 +47,9 @@ namespace LinBox {
 		
 	};
 
-} // end of namespace LinBox
+} // end of namespace LinBox/*}}}*/
 
 #endif
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

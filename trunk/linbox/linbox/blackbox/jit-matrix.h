@@ -1,19 +1,18 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/blackbox/jit-matrix.h
+ * Copyright (c) LinBox
  *
  * bds, jpm
  *
  * See COPYING for license information.
  */
 
-#ifndef __JITMATRIX_H
-#define __JITMATRIX_H
+#ifndef __LINBOX_jitmatrix_H
+#define __LINBOX_jitmatrix_H
 
 #include <linbox/blackbox/blackbox-interface.h>
 
 namespace LinBox
-{
+{/*{{{*/
 
 	/** 
 
@@ -147,6 +146,9 @@ namespace LinBox
 	};
   
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
-#endif // _JITMATRIX_H
+#endif // __LINBOX_jitmatrix_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

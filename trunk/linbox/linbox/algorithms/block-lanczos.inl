@@ -1,7 +1,5 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* block-lanczos.inl
- * Copyright (C) 2002 Bradford Hovinen
+ * Copyright (C) 2002  LinBox
  *
  * Written by Bradford Hovinen <bghovinen@math.waterloo.ca>
  *
@@ -13,8 +11,8 @@
  * Function definitions for block Lanczos iteration
  */
 
-#ifndef __BLOCK_LANCZOS_INL
-#define __BLOCK_LANCZOS_INL
+#ifndef __LINBOX_block_lanczos_INL
+#define __LINBOX_block_lanczos_INL
 
 #include "linbox/linbox-config.h"
 
@@ -41,7 +39,7 @@
 #undef _N
 
 namespace LinBox 
-{
+{/*{{{*/
 
 #ifdef DETAILED_TRACE
 
@@ -1403,6 +1401,9 @@ bool BlockLanczosSolver<Field, Matrix>::runSelfCheck () const
 	return ret;
 }
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
-#endif // __BLOCK_LANCZOS_INL
+#endif // __LINBOX_block_lanczos_INL
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

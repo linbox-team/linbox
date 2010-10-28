@@ -1,14 +1,13 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/algorithms/bbchapoly.h
- * 
+ * Copyright(C) LinBox
+ * Written 
  *  by Clement Pernet <clement.pernet@imag.fr>
  *
  * See COPYING for license information.
  */
 
-#ifndef __BBCHARPOLY_H
-#define __BBCHARPOLY_H
+#ifndef __LINBOX_bbcharpoly_H
+#define __LINBOX_bbcharpoly_H
 
 #define __MAXITER 5
 #include <vector>
@@ -27,7 +26,7 @@
 #include "linbox/blackbox/polynomial.h"
 
 namespace LinBox 
-{	
+{	/*{{{*/
 	template<class FieldPoly, class IntPoly=FieldPoly>
 	class FactorMult ;
 
@@ -474,6 +473,10 @@ namespace LinBox
 		}
 	}
 
-}
+}/*}}}*/
 
+#undef __MAXITER
 #endif // __BBCHARPOLY_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

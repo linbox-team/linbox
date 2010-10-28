@@ -1,6 +1,6 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/algorithms/gauss-gf2.h
  * Copyright (C) 2009 The LinBox group
+ * Written by JG Dumas
  *
  * Time-stamp: <14 Jun 10 15:36:56 Jean-Guillaume.Dumas@imag.fr> 
  *
@@ -11,8 +11,8 @@
  */
 // ========================================================================= //
 
-#ifndef __GAUSS_GF2_H
-#define __GAUSS_GF2_H
+#ifndef __LINBOX_gauss_gf2_H
+#define __LINBOX_gauss_gf2_H
 
 #include "linbox/util/debug.h"
 #include "linbox/util/commentator.h"
@@ -22,7 +22,7 @@
 #include "linbox/blackbox/zo-gf2.h"
 
 namespace LinBox 
-{
+{/*{{{*/
 
     template <>
     class GaussDomain<GF2> {
@@ -211,7 +211,7 @@ namespace LinBox
 	void SparseFindPivotBinary (Vector &lignepivot, unsigned long &indcol, long &indpermut, Element& determinant) const;
 	
     };
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
 #include "linbox/algorithms/gauss-gf2.inl"
 #include "linbox/algorithms/gauss-pivot-gf2.inl"
@@ -219,4 +219,7 @@ namespace LinBox
 #include "linbox/algorithms/gauss-rank-gf2.inl"
 #include "linbox/algorithms/gauss-solve-gf2.inl"
 
-#endif // __GAUSS_GF2_H
+#endif // __LINBOX_gauss_gf2_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

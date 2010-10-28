@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/field/archetype.h
  * Copyright (C) 1999-2005 William J Turner,
  *               2001 Bradford Hovinen
@@ -34,8 +32,8 @@
  */
 
 
-#ifndef __FIELD_ARCHETYPE_H
-#define __FIELD_ARCHETYPE_H
+#ifndef __LINBOX_field_archetype_H
+#define __LINBOX_field_archetype_H
 
 #include <iostream>
 #include "linbox/field/field-interface.h"
@@ -51,7 +49,7 @@
 #include "linbox/util/error.h"
 
 namespace LinBox
-{
+{/*{{{*/
 	// Forward declarations
 	class RandIterArchetype;
 	/** \brief field specification and archetypical instance.
@@ -697,8 +695,11 @@ namespace LinBox
 
 	}; // class FieldArchetype
   
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
 #include "linbox/randiter/archetype.h"
 
-#endif // __FIELD_ARCHETYPE_H
+#endif // __LINBOX_field_archetype_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

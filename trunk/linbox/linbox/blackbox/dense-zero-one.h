@@ -1,16 +1,14 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/blackbox/dense-zero-one.h
- * 
- * Nick Messina <nmessina@cis.udel.edu>
+ * Copyright (c) LinBox
+ * written by Nick Messina <nmessina@cis.udel.edu>
  *
  * -----------------------------------------------------
  *
  * See COPYING for license information.
  */
 
-#ifndef __DENSE_ZERO_ONE_H
-#define __DENSE_ZERO_ONE_H
+#ifndef __LINBOX_dense_zero_one_H
+#define __LINBOX_dense_zero_one_H
 
 
 
@@ -21,11 +19,12 @@
 #include <linbox/blackbox/blackbox-interface.h>
 
 
-const size_t SIZE = sizeof(LinBox::uint64) * 8;
+//const size_t SIZE = sizeof(LinBox::uint64) * 8;
+#define SIZE  (sizeof(LinBox::uint64) * 8)
 
 
 namespace LinBox
-{
+{ /* {{{ */
 
 	template <class _MatrixDomain>
 	class DenseZeroOne : public  BlackboxInterface 
@@ -373,7 +372,10 @@ namespace LinBox
 
 	}; // class Dense01Blackbox
 
-} // namespace LinBox
+} /*  }}} */ // namespace LinBox
 
-#endif // __DENSE_ZERO_ONE_H
+#endif // __LINBOX_dense_zero_one_H
 
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

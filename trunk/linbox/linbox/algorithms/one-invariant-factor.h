@@ -1,15 +1,34 @@
-/* File: ith-invaraint-factor.h
+/* Copyright (C) LinBox
+ *
  *  Author: Zhendong Wan
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
-#ifndef __LINBOX__ITH_INVARIANT_FACTOR_H__
-#define __LINBOX__ITH_INVARIANT_FACTOR_H__
+
+#ifndef __LINBOX_ith_invariant_factor_H
+#define __LINBOX_ith_invariant_factor_H
 
 #include <linbox/util/debug.h>
 #include <linbox/algorithms/default.h>
 #include <linbox/blackbox/compose.h>
 #include <linbox/blackbox/random-matrix-traits.h>
 
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
 	
 /// \brief Limited doc so far.
 	template<class _Ring,
@@ -248,7 +267,10 @@ namespace LinBox {
 
 
 	};
-}
+}/*}}}*/
 
 
-#endif				
+#endif	//__LINBOX_ith_invariant_factor_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

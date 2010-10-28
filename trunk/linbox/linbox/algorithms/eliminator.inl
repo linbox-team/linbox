@@ -1,7 +1,5 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* eliminator.inl
- * Copyright (C) 2002, 2003 Bradford Hovinen
+ * Copyright (C) 2002, 2003 LinBox, Bradford Hovinen
  *
  * Written by Bradford Hovinen <bghovinen@math.waterloo.ca>
  *
@@ -13,8 +11,8 @@
  * Elimination code for lookahead block Lanczos
  */
 
-#ifndef __ELIMINATOR_INL 
-#define __ELIMINATOR_INL
+#ifndef __LINBOX_eliminator_INL 
+#define __LINBOX_eliminator_INL
 
 #include "linbox/linbox-config.h"
 
@@ -38,7 +36,7 @@
 #undef _T
 
 namespace LinBox 
-{
+{/*{{{*/
 
 std::ostream &reportPermutation
 	(std::ostream &out,
@@ -716,6 +714,9 @@ Eliminator<Field, Matrix>::buildMinimalPermutationFromProfile (Permutation &P, u
 	return P;
 }
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
-#endif // __ELIMINATOR_INL
+#endif // __LINBOX_eliminator_INL
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

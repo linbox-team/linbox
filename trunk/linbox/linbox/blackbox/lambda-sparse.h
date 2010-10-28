@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/blackbox/lambda-sparse.h
  * Copyright (C) 2004 Pascal Giorgi
  *
@@ -21,8 +20,8 @@
  */
 
 
-#ifndef __LINBOX_LAMBDA_SPARSE_H
-#define __LINBOX_LAMBDA_SPARSE_H
+#ifndef __LINBOX_lambda_sparse_H
+#define __LINBOX_lambda_sparse_H
 
 #include <linbox/blackbox/sparse.h>
 #include <linbox/blackbox/archetype.h>
@@ -30,7 +29,8 @@
 #include <linbox/vector/vector-traits.h>
 #include <linbox/integer.h>
 
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
 
 
 /// \ingroup blackbox
@@ -141,7 +141,10 @@ namespace LinBox {
     
   }; //end of class LambdaSparseMatrix
 
-} //end of namespace LinBox
+} //end of namespace LinBox/*}}}*/
 
-#endif
+#endif //__LINBOX_lambda_sparse_H
 
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

@@ -1,15 +1,14 @@
-/* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
-
 /* *******************************************************************
  *    ntl-hankel.h 
  * Copyright (C) 2003 Austin Lobo, B. David Saunders
  *    Template for Hankel specification for ntl Arithmetic
  *    Linbox version 2001 and 2002 from a version 
  *    Designed by A.Lobo and B.D. Saunders in 4/98
+ *    see COPYING for licence information
  *-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+*/
 
-#ifndef NTL_HANKEL_H
-#define NTL_HANKEL_H
+#ifndef __LINBOX_ntl_hankel_H
+#define __LINBOX_ntl_hankel_H
 
 #include <linbox/blackbox/blackbox-interface.h>
 #include "toeplitz.h" // we inherit everything from ntl-toeplitz
@@ -22,7 +21,7 @@
  *-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+*/
 
 namespace LinBox
-{
+{/*{{{*/
 /// \ingroup blackbox
   template <class _Field>
     class Hankel: public Toeplitz<_Field>
@@ -66,8 +65,11 @@ namespace LinBox
       
     }; //  class Hankel
   
-} // namespace Linbox
+} // namespace Linbox/*}}}*/
 
 #include <linbox/blackbox/ntl-hankel.inl>     
 
-#endif
+#endif //__LINBOX_ntl_hankel_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

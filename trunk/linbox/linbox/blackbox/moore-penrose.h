@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/blackbox/moore-penrose.h
  * Copyright (C) 2001 Bradford Hovinen
  *
@@ -21,8 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __MOORE_PENROSE_H
-#define __MOORE_PENROSE_H
+#ifndef __LINBOX_moore_penrose_H
+#define __LINBOX_moore_penrose_H
 
 #include <linbox/blackbox/blackbox-interface.h>
 #include "linbox/blackbox/submatrix.h"
@@ -35,7 +33,7 @@
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
-{
+{/*{{{*/
 
 	/** \brief Generalized inverse of a blackbox.  Efficiency concerns when many applications are used.
 	 *
@@ -197,6 +195,9 @@ namespace LinBox
 		size_t     _rank;
 	}; 
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
-#endif // __MOORE_PENROSE_H
+#endif // __LINBOX_moore_penrose_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

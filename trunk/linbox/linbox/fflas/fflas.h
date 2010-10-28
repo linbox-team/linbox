@@ -24,7 +24,8 @@
 #include "linbox/field/modular-float.h"
 #include "linbox/field/modular-balanced-double.h"
 #include "linbox/field/modular-balanced-float.h"
-namespace LinBox {
+namespace LinBox 
+{
 #else
 #include "config-blas.h"
 #include "fflas-ffpack/unparametric.h"
@@ -48,7 +49,8 @@ namespace LinBox {
 #define DOUBLE_MANTISSA 53
 #define FLOAT_MANTISSA 24
 	
-class FFLAS {
+class FFLAS 
+{/*{{{*/
 
 public:	
 	enum FFLAS_TRANSPOSE { FflasNoTrans=111, FflasTrans=112};
@@ -682,7 +684,7 @@ protected:
 	template <class Element>
 	class ftrmmRightLowerTransUnit;
 
-}; // class FFLAS
+}; // class FFLAS/*}}}*/
 
 #include "fflas_bounds.inl"
 #include "fflas_fgemm.inl"
@@ -701,3 +703,6 @@ protected:
 
 #endif // __LINBOX_fflas_H
 
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

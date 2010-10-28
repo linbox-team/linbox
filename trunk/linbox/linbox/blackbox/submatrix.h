@@ -1,6 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
-
 /* linbox/blackbox/submatrix.h
  * Copyright (C) 2001 Bradford Hovinen
  *
@@ -22,8 +19,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __SUBMATRIX_H
-#define __SUBMATRIX_H
+#ifndef __LINBOX_bb_submatrix_H
+#define __LINBOX_bb_submatrix_H
 
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
@@ -35,7 +32,7 @@
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
-{
+{/*{{{*/
 
 	/** \brief leading principal minor of existing matrix without copying.
 
@@ -398,14 +395,14 @@ namespace LinBox
 	};
 
 	//@}
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
 
 
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
-{
+{/*{{{*/
 
 	/** Specialization for dense vectors */
 	template <class Blackbox>
@@ -551,8 +548,11 @@ namespace LinBox
 	
 
 	//@}
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
 
 
-#endif // __SUBMATRIX_H
+#endif // __LINBOX_bb_submatrix_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

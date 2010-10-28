@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/randiter/multimod-randomprime.h
  * Copyright (C) 2005 Pascal Giorgi
  *
@@ -11,8 +9,8 @@
  */
 
 
-#ifndef _MULTIMOD_RANDOM_PRIME_H__
-#define _MULTIMOD_RANDOM_PRIME_H__
+#ifndef __LINBOX_multimod_random_prime_H
+#define __LINBOX_multimod_random_prime_H
 
 #include <linbox/integer.h>
 #include <linbox/util/timer.h>
@@ -100,4 +98,7 @@ namespace LinBox {
 	};
 }
 
-#endif
+#endif //__LINBOX_multimod_random_prime_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

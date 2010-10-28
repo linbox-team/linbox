@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/field/PID-double.h
  * Copyright (C) 2004 Pascal Giorgi 
  *
@@ -25,13 +24,14 @@
 
 
 
-#ifndef __PID_DOUBLE_H
-#define __PID_DOUBLE_H
+#ifndef __LINBOX_pid_double_H
+#define __LINBOX_pid_double_H
 
 #include <linbox/field/unparametric.h>
 #include <linbox/field/field-traits.h>
 
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
 
 
 	/// \ingroup ring
@@ -296,5 +296,9 @@ namespace LinBox {
 	std::ostream &UnparametricField<double>::write (std::ostream &os) const
 	{ return os << "unparam<double>"; }
 
-} //end of namespace LinBox
-#endif
+} //end of namespace LinBox/*}}}*/
+#endif //__LINBOX_pid_double_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+

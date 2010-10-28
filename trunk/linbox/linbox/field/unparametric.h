@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/field/unparametric.h
  * Copyright (C) 1999-2005 William J Turner,
  *               2001 Bradford Hovinen
@@ -23,8 +21,8 @@
  * Boston, MA 02111-1307, USA.
  */
  
-#ifndef __FIELD_UNPARAMETRIC_H
-#define __FIELD_UNPARAMETRIC_H
+#ifndef __LINBOX_field_unparametric_H
+#define __LINBOX_field_unparametric_H
 #include <typeinfo>
 
 #include <string>
@@ -37,7 +35,7 @@
 #include <linbox/field/field-traits.h>
 
 namespace LinBox 
-{
+{/*{{{*/
 	/** \brief Unparameterized field adapter.
 	\ingroup field
 
@@ -371,10 +369,11 @@ namespace LinBox
 
 	};
 	
-} // namespace LinBox
-
-
+} // namespace LinBox/*}}}*/
 
 #include "linbox/randiter/unparametric.h"
 
-#endif // __FIELD_UNPARAMETRIC_H_
+#endif // __LINBOX_field_unparametric_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

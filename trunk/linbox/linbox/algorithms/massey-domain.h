@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/algorithms/massey-domain.h
  * Copyright (C) 1999, 2001 Jean-Guillaume Dumas, Bradford Hovinen
  *
@@ -16,8 +14,8 @@
  *
  * See COPYING for license information.
  */
-#ifndef __MASSEY_DOMAIN_H
-#define __MASSEY_DOMAIN_H
+#ifndef __LINBOX_massey_domain_H
+#define __LINBOX_massey_domain_H
 
 // ======================================================================= 
 // Linbox project 1999
@@ -38,7 +36,7 @@
 #include "linbox/util/timer.h"
 
 namespace LinBox 
-{
+{/*{{{*/
 
 #ifndef MIN
 #  define MIN(a,b) ((a)<(b)?(a):(b))
@@ -375,6 +373,9 @@ public:
 	}
 };
  
-}
+}/*}}}*/
     
-#endif // __MASSEY_DOMAIN_H
+#endif // __LINBOX_massey_domain_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

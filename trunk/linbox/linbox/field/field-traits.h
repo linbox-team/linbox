@@ -1,22 +1,21 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/field/field-traits.h
  * Copyright (C) June 2004 Dan Roche
  * see COPYING for permissions etc.
  */
 
-#ifndef __FIELD_TRAITS_H
-#define __FIELD_TRAITS_H
+#ifndef __LINBOX_field_traits_H
+#define __LINBOX_field_traits_H
 
 #include <linbox/integer.h>
 
 // Namespace in which all LinBox library code resides
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
 
-/* \brief some basic information about each field or ring.  
-\ingroup field
+/*! \brief some basic information about each field or ring.  
+  \ingroup field
 
-It will try
+ * It will try
  * to take the information from the field when possible, and use defaults
  * otherwise.
  * maxModulus returns the greatest modulus that is usable for a given field, -1
@@ -69,7 +68,10 @@ struct FieldTraits
 	}
 };
 
-} // Namespace LinBox
+} // Namespace LinBox/*}}}*/
 
-#endif // __FIELD_TRAITS_H
+#endif // __LINBOX_field_traits_H
   
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

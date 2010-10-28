@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/element/abstract.h
  * Copyright (C) 1999-2001 William J Turner,
  *               2001 Bradford Hovinen
@@ -23,11 +21,11 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __ELEMENT_ABSTRACT_H
-#define __ELEMENT_ABSTRACT_H
+#ifndef __LINBOX_element_abstract_H
+#define __LINBOX_element_abstract_H
 
 namespace LinBox 
-{ 
+{ /*{{{*/
 
 	/** \brief Abstract element base class, a technicality.
 
@@ -71,7 +69,10 @@ namespace LinBox
 
 	}; // class ElementAbstract
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
-#endif // __ELEMENT_ABSTRACT_H
+#endif // __LINBOX_element_abstract_H
 
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

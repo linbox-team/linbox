@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/blackbox/butterfly.h
  * Copyright (C) 1999-2001 William J Turner,
  *               2001 Bradford Hovinen
@@ -27,8 +25,8 @@
  * See COPYING for license information
  */
 
-#ifndef __BUTTERFLY_H
-#define __BUTTERFLY_H
+#ifndef __LINBOX_butterfly_H
+#define __LINBOX_butterfly_H
 
 #include <vector>
 #include <linbox/blackbox/blackbox-interface.h>
@@ -36,7 +34,7 @@
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
-{
+{/*{{{*/
 
 /** @name Butterfly 
  * @brief Butterfly preconditioner and supporting function
@@ -671,6 +669,9 @@ inline std::vector<bool> setButterfly (const std::vector<bool>& x,
 } // std::vector<bool> setButterfly (const std::vector<bool>& x, size_t j)
 
 //@}
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
-#endif // __BUTTERFLY_H
+#endif // __LINBOX_butterfly_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

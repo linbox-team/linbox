@@ -1,14 +1,13 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/blackbox/zo-gf2.h
- * Copyright (C) 2009 The LinBox group
+ * Copyright (C) 2009,2010 The LinBox group
  *
  * Time-stamp: <23 Jun 10 16:02:02 Jean-Guillaume.Dumas@imag.fr> 
  *
  * See COPYING for license information.
  *
  */
-#ifndef __ZO_GF2_H
-#define __ZO_GF2_H
+#ifndef __LINBOX_zo_gf2_H
+#define __LINBOX_zo_gf2_H
 
 #include <algorithm>
 #include "linbox/blackbox/zero-one.h"
@@ -20,7 +19,7 @@
 #include "linbox/vector/light_container.h"
 
 namespace LinBox 
-{
+{/*{{{*/
     
  /** \brief Time and space efficient representation of sparse matrices over GF2.
    * Representation if a full row array containing vector of non-zero locations
@@ -135,7 +134,11 @@ namespace LinBox
         size_t _rowdim, _coldim, _nnz;
   };
     
-}
+}/*}}}*/
 
 #include "linbox/blackbox/zo-gf2.inl"
-#endif
+
+#endif //__LINBOX_zo_gf2_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

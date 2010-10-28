@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/field/gf2.inl
  * Copyright (C) 2003 Bradford Hovinen
  *
@@ -10,8 +8,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __FIELD_GF2_INL
-#define __FIELD_GF2_INL
+#ifndef __LINBOX_field_gf2_INL
+#define __LINBOX_field_gf2_INL
 
 #include <iostream>
 #include <time.h>
@@ -1055,7 +1053,7 @@ class Diagonal<GF2, VectorTraits<Vector<GF2>::Dense>::VectorCategory>
 
 #include "linbox/switch/cekstv.h"
 namespace LinBox 
-{ 
+{ /*{{{*/
 // Specialization of Butterfly switch object 
 template <>
 class CekstvSwitch<GF2>
@@ -1123,6 +1121,9 @@ class CekstvSwitch<GF2>
 };
 
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
-#endif // __FIELD_GF2_INL
+#endif // __LINBOX_field_gf2_INL
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

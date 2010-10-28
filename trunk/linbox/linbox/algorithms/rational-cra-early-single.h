@@ -1,14 +1,32 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// ======================================================================= //
-// Time-stamp: <12 Mar 07 19:34:19 Jean-Guillaume.Dumas@imag.fr> 
-// ======================================================================= //
-#ifndef __LINBOX_RATIONAL_EARLY_SINGLE_CRA_H
-#define __LINBOX_RATIONAL_EARLY_SINGLE_CRA_H
+/* Copyright (C) 2007 LinBox
+ * Written by <Jean-Guillaume.Dumas@imag.fr> 
+ *
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
+#ifndef __LINBOX_rational_early_single_cra_H
+#define __LINBOX_rational_early_single_cra_H
 
 #include "linbox/field/PID-integer.h"
 #include "linbox/algorithms/cra-early-single.h"
 
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
 
     template<class Domain_Type>
     struct EarlySingleRatCRA : public EarlySingleCRA<Domain_Type> {
@@ -61,6 +79,9 @@ namespace LinBox {
             return res += r0;   // res <-- u0 + (u1-u0)( m0^{-1} mod m1 ) m0 and res <  m0m1
         }
     };
-}
+}/*}}}*/
 
 #endif
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

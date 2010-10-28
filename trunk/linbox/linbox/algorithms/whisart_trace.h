@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/algorithms/cra-domain.h
  * Copyright (C) 1999-2010 The LinBox group
  *
@@ -20,8 +19,8 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __LINBOX_Whisart_Trace_H
-#define __LINBOX_Whisart_Trace_H
+#ifndef __LINBOX_whisart_trace_H
+#define __LINBOX_whisart_trace_H
 
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/transpose.h"
@@ -32,7 +31,7 @@
 #include "linbox/solutions/trace.h"
 
 namespace LinBox 
-{
+{/*{{{*/
 
 // Trait to show whether or not the BB class has a RawIndexed iterator
 template<class BB> struct RawIndexedCategory;
@@ -177,5 +176,8 @@ typename Field::Element& WhisartTraceTranspose(
 
 
  
-}
-#endif
+}/*}}}*/
+#endif //__LINBOX_whisart_trace_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

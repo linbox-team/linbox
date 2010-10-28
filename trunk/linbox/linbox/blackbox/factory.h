@@ -1,7 +1,5 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/blackbox/factory.h
- * Copyright (C) 2002 Bradford Hovinen
+ * Copyright (C) 2002  LinBox
  *
  * Written by Bradford Hovinen <bghovine@math.uwaterloo.ca>
  *
@@ -10,14 +8,14 @@
  * See COPYING for license information
  */
 
-#ifndef __BLACKBOX_FACTORY_H
-#define __BLACKBOX_FACTORY_H
+#ifndef __LINBOX_blackbox_factory_H
+#define __LINBOX_blackbox_factory_H
 
 #include "linbox/util/error.h"
 #include "linbox/vector/vector-traits.h"
 
 namespace LinBox
-{
+{/*{{{*/
 
 /** @brief A tool for computations with integer and rational matrices.
  * 
@@ -74,6 +72,9 @@ class BlackboxFactory
 
 }; // BlackboxFactory
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
-#endif // __BLACKBOX_FACTORY_H
+#endif // __LINBOX_blackbox_factory_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
