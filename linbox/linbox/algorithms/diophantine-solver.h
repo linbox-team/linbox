@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/algorithms/diophantine-solver.h
  * Copyright (C) 2004 David Pritchard
  *
@@ -21,8 +20,8 @@
  */
 
 
-#ifndef __LINBOX_DIOPHANTINE_SOLVER_H
-#define __LINBOX_DIOPHANTINE_SOLVER_H
+#ifndef __LINBOX_diophantine_solver_H
+#define __LINBOX_diophantine_solver_H
 
 #include <linbox/algorithms/rational-solver.h>
 #include <linbox/solutions/methods.h>
@@ -30,7 +29,8 @@
 #include <linbox/blackbox/lambda-sparse.h>
 #include <linbox/blackbox/compose.h>
 
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
 	
 	extern const char* solverReturnString[6] ;
 
@@ -125,7 +125,10 @@ namespace LinBox {
 						    const SolverLevel level = SL_DEFAULT);
 	};
 
-}
+}/*}}}*/
 #include <linbox/algorithms/diophantine-solver.inl>
 
-#endif
+#endif //__LINBOX_diophantine_solver_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

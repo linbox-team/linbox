@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/blackbox/block-hankel-inverse.h
  * Copyright (C) 2005 Pascal Giorgi
  *
@@ -22,8 +20,8 @@
  */
 
 
-#ifndef __BLOCK_HANKEL_INVERSE_H
-#define __BLOCK_HANKEL_INVERSE_H
+#ifndef __LINBOX_block_hankel_inverse_H
+#define __LINBOX_block_hankel_inverse_H
 
 //#define  _BM_TIMING
  
@@ -38,7 +36,8 @@
 //#define PADEMATRIX
 
 
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
 
 
 	template<class _Field>
@@ -477,6 +476,11 @@ namespace LinBox {
 
 
 
-}// end of namespace LinBox
+}// end of namespace LinBox/*}}}*/
 
-#endif
+#undef PADEMATRIX
+
+#endif //__LINBOX_block_hankel_inverse_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

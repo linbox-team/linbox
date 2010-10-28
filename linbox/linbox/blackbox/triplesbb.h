@@ -5,8 +5,8 @@
  * with mods by bds
  */
 
-#ifndef __TRIPLESBB_H
-#define __TRIPLESBB_H
+#ifndef __LINBOX_triplesbb_H
+#define __LINBOX_triplesbb_H
 
 #include <algorithm>
 using std::max;
@@ -18,7 +18,8 @@ using std::max;
 
 #include <vector>
 
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
 
 	/** \brief wrapper for NAG Sparse Matrix format.
 	 *
@@ -312,6 +313,9 @@ namespace LinBox {
 	  }
 	*/
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
-#endif // ifdef __MAPLEBB_H
+#endif // __LINBOX_triplesbb_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

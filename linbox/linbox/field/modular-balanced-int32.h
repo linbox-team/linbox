@@ -1,6 +1,31 @@
-#ifndef __LINBOX_MODULAR_INT_H
-#define __LINBOX_MODULAR_INT_H
-/* balanced representation for modular<int32> field, [-p/2,p/2], p is odd. 
+/* Copyright (C) 2009 LinBox
+ * Written by <brice.boyer@imag.fr>
+ *
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
+
+
+#ifndef __LINBOX_modular_balanced_int_H
+#define __LINBOX_modular_balanced_int_H
+
+/*! @file field/modular-balanced-int32.h
+ * @brief balanced representation for modular<int32> field, [-p/2,p/2], p is odd. 
  */
 
 #include "linbox/linbox-config.h"
@@ -25,7 +50,7 @@
 
 // Namespace in which all LinBox code resides
 namespace LinBox 
-{ 
+{ /*{{{*/
 
 	template< class Element >
 		class Modular;
@@ -521,7 +546,10 @@ namespace LinBox
 		}
 			
 	};
-}
+}/*}}}*/
 
 #include "linbox/randiter/modular.h"
-#endif
+#endif //__LINBOX_modular_balanced_int_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

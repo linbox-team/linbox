@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/element/archetype.h
  * Copyright (C) 1999-2001 William J Turner,
  *               2001 Bradford Hovinen
@@ -23,13 +21,13 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __ELEMENT_ARCHETYPE_H
-#define __ELEMENT_ARCHETYPE_H
+#ifndef __LINBOX_element_archetype_H
+#define __LINBOX_element_archetype_H
 
 #include "linbox/element/abstract.h"
 
 namespace LinBox
-{
+{/*{{{*/
 
 	// Forward declarations
 	class FieldArchetype;
@@ -152,6 +150,9 @@ namespace LinBox
 
 	}; // class element
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
-#endif // __ELEMENT_ARCHETYPE_H
+#endif // __LINBOX_element_archetype_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

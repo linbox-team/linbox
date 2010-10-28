@@ -1,18 +1,19 @@
 /* linobx/blackbox/frobenuis.h
- *
+ * Copyright(c) 2010 LinBox
  * Written by Austin Lobo <alobo@cis.udel.edu> and
  *            B.D. Saunders <saunders@cis.udel.edu>
- * See COPYING
+ * See COPYING for licence information
  */
-#ifndef __FROBENIUS_H
-#define __FROBENIUS_H
+#ifndef __LINBOX_frobenius_H
+#define __LINBOX_frobenius_H
 
 #include <linbox/blackbox/blackbox-interface.h>
 #include "linbox/blackbox/companion.h"
 #include "linbox/blackbox/direct-sum.h"
 #include <vector>
 
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
   /// \ingroup blackbox
   template <class _Field>
   class Frobenius: public BlackboxInterface, public DirectSum<Companion<_Field> >
@@ -66,5 +67,9 @@ namespace LinBox {
 
   }; // class Frobenius
   
-}// Namespace LinBox
-#endif
+}// Namespace LinBox/*}}}*/
+
+#endif //__LINBOX_frobenius_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

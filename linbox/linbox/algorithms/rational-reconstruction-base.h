@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/blackbox/rational-reconstruction-base.h
  * Copyright (C) 2009 Anna Marszalek
  *
@@ -20,8 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LINBOXX__RECONSTRUCTION_BASE_H__
-#define __LINBOXX__RECONSTRUCTION_BASE_H__
+#ifndef __LINBOX_reconstruction_base_H
+#define __LINBOX_reconstruction_base_H
 
 #define DEF_RR_THRESH  1
 
@@ -33,7 +32,8 @@
 
 using namespace std;
 
-namespace LinBox {
+namespace LinBox 
+{/*  {{{ */
 
 enum RReconstructionSchedule {
 	INCREMENTAL, QUADRATIC, GEOMETRIC, CERTIFIED
@@ -327,6 +327,11 @@ public:
 	//}
 };
 
-} //namespace LinBox
+} //namespace LinBox/*}}}*/
+
+#undef DEF_RR_THRESH
 #endif
 
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

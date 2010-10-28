@@ -1,12 +1,27 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
-/* linbox/field/local2_32.h
+/* Copyright (C) 2010 LinBox
  * written by bds, wan
  *
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LOCAL2_32_H
-#define __LOCAL2_32_H
+
+#ifndef __LINBOX_local2_32_H
+#define __LINBOX_local2_32_H
 
 #include "linbox/field/unparametric.h"
 #include "linbox/util/debug.h"
@@ -16,7 +31,7 @@
 #include <linbox/field/field-traits.h>
 
 namespace LinBox
-{
+{/*{{{*/
   
         template<typename Ring>
 	struct ClassifyRing;
@@ -302,6 +317,9 @@ namespace LinBox
 		return i == Local2_32::getMaxModulus();
 	}
 		
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
-#endif // __LOCAL2_32_H
+#endif // __LINBOX_local2_32_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/blackbox/dense.inl
  * Copyright (C) 2001 B. David Saunders, 
  *               2001-2002 Bradford Hovinen, 
@@ -24,8 +22,8 @@
  * See COPYING for license information
  */
 
-#ifndef __BLACKBOX_DENSE_INL
-#define __BLACKBOX_DENSE_INL
+#ifndef __LINBOX_blackbox_dense_INL
+#define __LINBOX_blackbox_dense_INL
 
 #include <iostream>
 #include <vector>
@@ -35,7 +33,7 @@
 #include "linbox/util/debug.h"
 
 namespace LinBox
-{
+{/*{{{*/
 
 template <class Field>
 template<class Vect1, class Vect2>
@@ -117,6 +115,9 @@ integer& DenseMatrixFactory<Field,BElement>::hadamardBound(integer& res) const {
 	return res;
 }
   
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
-#endif // __BLACKBOX_DENSE_INL
+#endif // __LINBOX_blackbox_dense_INL
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

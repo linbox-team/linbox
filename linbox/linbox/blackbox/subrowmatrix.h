@@ -1,16 +1,22 @@
-/* -*- mode: C++ -*- */
-/* Author: Zhendong wan
-*/
+/* linbox/blackbox/companion.h
+ * Copyright(c) LinBox
+ *
+ * Author: Zhendong wan
+ *
+ * See COPYING for licence information
+ */
 
-#ifndef __SUBROWMATRIX_H__
-#define __SUBROWMATRIX_H__
+
+#ifndef __LINBOX_subrowmatrix_H
+#define __LINBOX_subrowmatrix_H
 
 #include <iostream>
 #include <linbox/matrix/matrix-domain.h>
 #include <linbox/vector/vector-domain.h>
 #include <linbox/blackbox/blackbox-interface.h>
 
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
 	/** 
 	 * \brief submatrix consisting contiguous rows of a row based matrix.
 
@@ -169,5 +175,9 @@ namespace LinBox {
 		//ConstRawIterator rawEnd () const;
 	};
 	//@}
-}
-#endif
+}/*}}}*/
+
+#endif //__LINBOX_subrowmatrix_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

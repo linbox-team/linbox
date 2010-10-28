@@ -9,8 +9,8 @@
 
 
 
-#ifndef __FIELD_GIVARO_EXTENSION
-#define __FIELD_GIVARO_EXTENSION
+#ifndef __LINBOX_field_givaro_extension_H
+#define __LINBOX_field_givaro_extension_H
 
 
 #include <linbox/integer.h>
@@ -30,7 +30,7 @@
 #include <string>
 #include <vector>
 
-#endif
+#endif //__LINBOX_XMLENABLED
 
 //---------------------------------------------
 // Files of Givaro library
@@ -43,7 +43,7 @@
 //---------------------------------------------
 // Namespace in which all LinBox code resides
 namespace LinBox 
-{ 
+{ /*{{{*/
 
 	template <class Ring>
 	struct ClassifyRing;
@@ -180,14 +180,14 @@ namespace LinBox
  
 
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
 
 
 // Specialization of homomorphism for basefield
 #include "linbox/field/hom.h"
 namespace LinBox 
-{
+{/*{{{*/
     template< class BaseField>
     class Hom < BaseField, GivaroExtension<BaseField> >
 	{
@@ -232,5 +232,8 @@ namespace LinBox
 		Source _source;
 		Target _target;
     }; // end Hom 
-}
-#endif // __FIELD_GIVARO_Extension
+}/*}}}*/
+#endif // __LINBOX_field_givaro_extension_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

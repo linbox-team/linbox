@@ -1,7 +1,7 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/blackbox/dif.h
+ * Copyright (c) 2010 LinBox
  * transmuted from linbox/blackbox/sum.h by bds
+ * Modified by JG Dumas
  *
  * It will be desirable to keep sum.h and dif.h in sync.
  * 
@@ -12,8 +12,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __DIF_H
-#define __DIF_H
+#ifndef __LINBOX_dif_H
+#define __LINBOX_dif_H
 
 #include "linbox/vector/vector-domain.h"
 #include "linbox/util/debug.h"
@@ -21,7 +21,7 @@
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
-{
+{/*{{{*/
 
 	/** \brief Blackbox of a difference: C := A - B, i.e. Cx = Ax - Bx.
 
@@ -181,6 +181,9 @@ namespace LinBox
 
 	}; 
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
-#endif // __DIF_H
+#endif // __LINBOX_dif_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

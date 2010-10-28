@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 6; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /*-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *    ntl-sylvester.h
  *    Copyright (C) 2003 Austin Lobo, B. David Saunders
@@ -6,10 +5,11 @@
  *    Template for sylvester matrix specification for ntl Arithmetic,
  *    for polynomials in one variable.
  *    Linbox version 2003
+ *    See COPYING for licence information
  *-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+*/
 
-#ifndef NTL_SYLVESTER_H
-#define NTL_SYLVESTER_H
+#ifndef __LINBOX_ntl_sylvester_H
+#define __LINBOX_ntl_sylvester_H
 
 #include <iostream>
 #include <fstream>
@@ -21,7 +21,7 @@
 #include "linbox/vector/vector-traits.h"
 
 namespace LinBox 
-{
+{/*{{{*/
     /// This is a representation of the Sylvester matrix of two polynomials.
 /// \ingroup blackbox
     template <class _Field>
@@ -77,8 +77,11 @@ namespace LinBox
 
       
     };// End,   template <class Field, class Vector>
-}
+}/*}}}*/
 
 #include <linbox/blackbox/ntl-sylvester.inl>     
     
-#endif
+#endif //__LINBOX_ntl_sylvester_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

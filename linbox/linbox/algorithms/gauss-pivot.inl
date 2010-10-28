@@ -1,20 +1,17 @@
 /* linbox/algorithms/gauss-pivot.inl
- * Copyright (C) 2009 The LinBox group
- *
- * Time-stamp: <21 Jan 10 15:09:38 Jean-Guillaume.Dumas@imag.fr> 
+ * Copyright (C) 2009,2010 The LinBox group
+ * Written by JG Dumas <Jean-Guillaume.Dumas@imag.fr>
  *
  * See COPYING for license information.
  *
  * SparseElimination search for pivots 
  */
 
-// =================================================================== //
-// =================================================================== //
-#ifndef __GAUSS_PIVOT_INL
-#define __GAUSS_PIVOT_INL
+#ifndef __LINBOX_gauss_pivot_INL
+#define __LINBOX_gauss_pivot_INL
 
 namespace LinBox 
-{
+{/*{{{*/
 
     template <class _Field>
     template <class Vector, class D> inline void 
@@ -136,6 +133,9 @@ namespace LinBox
 	}
     }
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
-#endif // __GAUSS_PIVOT_INL
+#endif // __LINBOX_gauss_pivot_INL
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/blackbox/blas-blackbox.h
  * Copyright (C) 2004 Pascal Giorgi 
  *
@@ -23,8 +22,8 @@
  */
 
 
-#ifndef __BLAS_BLACKBOX_H
-#define __BLAS_BLACKBOX_H
+#ifndef __LINBOX_blas_blackbox_H
+#define __LINBOX_blas_blackbox_H
 
 #include <linbox/matrix/blas-matrix.h>
 #include <linbox/fflas/fflas.h>
@@ -33,7 +32,8 @@
 #include <linbox/field/multimod-field.h>
 #include <linbox/util/matrix-stream.h>
 
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
 	
 	template <class Field>
 	bool checkBlasApply(const Field &F, size_t n) {
@@ -412,6 +412,9 @@ namespace LinBox {
 
 
 
-} // end of namespace LinBox
+} // end of namespace LinBox/*}}}*/
 
-#endif
+#endif //__LINBOX_blas_blackbox_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

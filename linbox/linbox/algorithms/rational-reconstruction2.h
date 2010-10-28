@@ -1,14 +1,17 @@
-/*  Author Z. Wan
+/*  Copyright (c) LinBox
+ *  Author Z. Wan
  *  Modified to fit in linbox
  *  Using GMP directly
- *  Implement thte idea in the manuscript, available at http://www.cis.udel.edu/~wan/jsc_wan.ps
+ *  Implement the idea in the manuscript, available at http://www.cis.udel.edu/~wan/jsc_wan.ps
+ *  see COPYING for licence details
  */
-#ifndef __RATIONAL_RECONSTRUCTION2_H__
-#define __RATIONAL_RECONSTRUCTION2_H__
+#ifndef __LINBOX_rational_reconstruction2_H__
+#define __LINBOX_rational_reconstruction2_H__
 
 #include <linbox/integer.h>
 
-namespace LinBox{
+namespace LinBox
+{/*{{{*/
 inline int rational_reconstruction (integer& a, integer& b, const integer& n0, const integer& d0, const integer& B) {
 
 	integer p0, p1, p2; integer q0, q1, q2;
@@ -57,6 +60,9 @@ inline int rational_reconstruction (integer& a, integer& b, const integer& n0, c
 	
 	return 0;
 }
-}// LinBox
+}// LinBox/*}}}*/
 
-#endif
+#endif //__LINBOX_rational_reconstruction2_H__
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

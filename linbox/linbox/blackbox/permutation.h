@@ -1,4 +1,3 @@
-
 /* linbox/blackbox/permutation.h
  * Copyright (C) 2001 Bradford Hovinen
  *
@@ -48,7 +47,7 @@
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
-{
+{/*{{{*/
 
 	/** \brief size is n.
 
@@ -277,7 +276,7 @@ namespace LinBox
 
     }; // template <Vector> class Permutation
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
 #endif // __LINBOX_bb_permutation_H
 

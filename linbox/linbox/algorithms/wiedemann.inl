@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/algorithms/wiedemann.inl
  * Copyright (C) 2002 Zhendong Wan
  * Copyright (C) 2002 Bradford Hovinen
@@ -34,8 +32,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __WIEDEMANN_INL
-#define __WIEDEMANN_INL
+#ifndef __LINBOX_wiedemann_INL
+#define __LINBOX_wiedemann_INL
 
 #include <vector>
 #include <algorithm>
@@ -54,7 +52,7 @@
 #include "linbox/vector/stream.h"
 
 namespace LinBox 
-{
+{/*{{{*/
 
 	template <class Field>
 	template<class Blackbox, class Vector>
@@ -597,6 +595,9 @@ namespace LinBox
 		return P;
 	}
 
-}
+}/*}}}*/
 
-#endif // __WIEDEMANN_INL
+#endif // __LINBOX_wiedemann_INL
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/blackbox/rational-matrix-factory.h
  * Copyright (C) 2009 Anna Marszalek
  * 
@@ -19,8 +18,8 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __RATIONAL_DENSE_FACTORY
-#define __RATIONAL_DENSE_FACTORY
+#ifndef __LINBOX_rational_dense_factory_H
+#define __LINBOX_rational_dense_factory_H
 
 #include <linbox/blackbox/factory.h>
 #include <linbox/blackbox/dense.h>
@@ -31,7 +30,8 @@
 
 #include <vector>
 
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
 
 /*
  * aniau@astronet.pl 06/2009
@@ -312,8 +312,11 @@ typedef typename Rationals::Element Quotient;
 	}
 };
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
 #include "dense.inl"
 
-#endif 
+#endif  //__LINBOX_rational_dense_factory_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

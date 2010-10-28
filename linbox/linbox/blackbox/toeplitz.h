@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
-
 /* *******************************************************************
  *    ntl-toeplitz.h 
  *    Copyright (C) 2002 Austin Lobo, B. David Saunders
@@ -7,10 +5,12 @@
  *    Template for Toeplitz specification for ntl Arithmetic
  *    Linbox version 2001 and 2002 from a version 
  *    Designed by A.Lobo and B.D. Saunders in 4/98
+ *    see COPYING for licence information
  *-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+*/
 
-#ifndef TOEPLITZ_H
-#define TOEPLITZ_H
+#ifndef __LINBOX_toeplitz_H
+#define __LINBOX_toeplitz_H
+
 #include <iostream>
 #include <vector>
 #include "linbox/vector/vector-traits.h"
@@ -32,7 +32,7 @@
  *-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+*/
 
 namespace LinBox
-{
+{/*{{{*/
 	template <class _Field, class _PField>
 	class ToeplitzBase : public  BlackboxInterface 
 	{
@@ -203,10 +203,13 @@ namespace LinBox
 		void init_vector( const std::vector<Element>& v );
 	}; //  Toeplitz specialization
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
 #include <linbox/blackbox/toeplitz.inl>     
 // Hide the implementation; include it here because
 // older compilers want everything in one template file
 
-#endif
+#endif //__LINBOX_toeplitz_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

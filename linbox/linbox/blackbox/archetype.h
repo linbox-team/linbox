@@ -1,9 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// no file docs except where a main() is defined.
-// /** \file archetype.h linbox/blackbox/archetype.h
-// \brief apply, applytranspose, rowdim, coldim
-// */
-
 /* linbox/blackbox/archetype.h
  * Copyright (C) 1999-2005 William J Turner,
  *               2001 Bradford Hovinen
@@ -15,11 +9,11 @@
  * See COPYING for license information.
  */
 
-#ifndef __BLACKBOX_ARCHETYPE_H
-#define __BLACKBOX_ARCHETYPE_H
+#ifndef __LINBOX_blackbox_archetype_H
+#define __LINBOX_blackbox_archetype_H
 
 namespace LinBox
-{
+{/*{{{*/
 
 	/*-  Note the original archetype concept has been given 
          * up in favor of supporting template members.
@@ -201,16 +195,9 @@ matrix transpose times vector product. )
 
 	}; // BlackBox Archetype
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
-#endif // __BLACKBOX_ARCHETYPE_H
+#endif // __LINBOX_blackbox_archetype_H
 
-
-
-
-
-
-
-
-
-
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

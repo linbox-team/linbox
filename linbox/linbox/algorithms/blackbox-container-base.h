@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/algorithms/blackbox-container.h
  * Copyright (C) 1999, 2001 Jean-Guillaume Dumas
  *
@@ -21,22 +19,21 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#ifndef __LINBOX_blackbox_container_base_H
+#define __LINBOX_blackbox_container_base_H
+
 // ================================================================
-// LinBox Project 1999
 // Base ForwardIterator wrapper for BlackBoxes
 // Have to be provided :
 // - launch : launches the following computation
 // - wait   : waits for the end of the current computation
-// Time-stamp: <26 May 00 17:38:58 Jean-Guillaume.Dumas@imag.fr> 
 // ================================================================
 
-#ifndef __BLACKBOX_CONTAINER_BASE_H
-#define __BLACKBOX_CONTAINER_BASE_H
 
 #include "linbox/vector/vector-domain.h"
 
 namespace LinBox 
-{
+{/*{{{*/
 
 #ifndef MIN
 #  define MIN(a,b) ((a)<(b)?(a):(b))
@@ -160,6 +157,9 @@ class BlackboxContainerBase {
 	}
 };
  
-}
+}/*}}}*/
 
-#endif // __BLACKBOX_CONTAINER_BASE_H
+#endif // __LINBOX_blackbox_container_base_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

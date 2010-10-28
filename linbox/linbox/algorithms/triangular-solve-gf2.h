@@ -1,18 +1,19 @@
 /* ===================================================================
- * (C) LinBox 2008
+ * Copyright(C) LinBox 2008
+ * Written by Jean-Guillaume Dumas
  * Triangular Solve
  * See COPYING for license information.
  * Time-stamp: <01 Oct 09 15:38:25 Jean-Guillaume.Dumas@imag.fr> 
  * ===================================================================
  */
-#ifndef __TRI_SOLVE_GF2_INL
-#define __TRI_SOLVE_GF2_INL
+#ifndef __LINBOX_tri_solve_gf2_INL
+#define __LINBOX_tri_solve_gf2_INL
 
 #include "linbox/vector/vector-domain.h"
 #include "linbox/field/gf2.h"
 
 namespace LinBox 
-{
+{/*{{{*/
     template <class _Matrix, class Vector1, class Vector2> Vector1&
     upperTriangularSolveBinary (Vector1& x,
                           const _Matrix  &U,
@@ -116,5 +117,8 @@ namespace LinBox
         return x;
     }
 
-}
-#endif
+}/*}}}*/
+#endif //__LINBOX_tri_solve_gf2_INL
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

@@ -1,14 +1,14 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
-/* linbox/algorithms/bbsolve.h
- * (was linbox/sollutions/solve.h)
+/* Copyright (c) LinBox
+ * linbox/algorithms/bbsolve.h
+ * (was linbox/solutions/solve.h)
+ * written
  *  by Bradford Hovinen <hovinen@cis.udel.edu>
  *
  * See COPYING for license information.
  */
 
-#ifndef __BBSOLVE_H
-#define __BBSOLVE_H
+#ifndef __LINBOX_bbsolve_H
+#define __LINBOX_bbsolve_H
 
 #include <vector>
 #include <algorithm>
@@ -23,7 +23,7 @@
 #include "linbox/solutions/methods.h"
 
 namespace LinBox 
-{
+{/*{{{*/
 
 //	/** @name Solvers
 //	 * @brief Solving linear system Ax = b over the field F.
@@ -271,6 +271,9 @@ namespace LinBox
 	}
 //	//@}
 
-}
+}/*}}}*/
 
-#endif // __BBSOLVE_H
+#endif // __LINBOX_bbsolve_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

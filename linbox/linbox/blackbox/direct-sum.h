@@ -1,13 +1,27 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
-/* linbox/blackbox/direct-sum.h
- * David Saunders
+/* Copyright (C)  LinBox
+ * Written by 
+ *            David Saunders
  *
- * See COPYING about license
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __DIRECT_SUM_H
-#define __DIRECT_SUM_H
+#ifndef __LINBOX_direct_sum_H
+#define __LINBOX_direct_sum_H
 
 #include <linbox/blackbox/null-matrix.h>
 #include <linbox/vector/vector-traits.h>
@@ -17,7 +31,7 @@
 #include <linbox/vector/light_container.h>
 
 namespace LinBox
-{
+{/*{{{*/
 
     template <class Blackbox1, class Blackbox2 = Blackbox1>
     class DirectSum;
@@ -25,11 +39,11 @@ namespace LinBox
     template <class Blackbox1, class Blackbox2 = Blackbox1>
     class DirectSumOwner;
     
-}
+}/*}}}*/
 
 
 namespace LinBox
-{
+{/*{{{*/
 
 	/** \brief If C = DirectSum(A, B) and y = xA and z = wB, then (y,z) = (x,w)C.
 
@@ -363,11 +377,11 @@ namespace LinBox
     };
 																												                                                                                                
 
-}; // namespace LinBox
+}; // namespace LinBox/*}}}*/
 
 
 namespace LinBox
-{
+{/*{{{*/
 
     template <class _Blackbox1, class _Blackbox2>
     class DirectSumOwner : public BlackboxInterface
@@ -660,9 +674,10 @@ namespace LinBox
 
 
 	
-}; // namespace LinBox
+}; // namespace LinBox/*}}}*/
 
 
+#endif // __LINBOX_direct_sum_H
 
-
-#endif // __DIRECT_SUM_H
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

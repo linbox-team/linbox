@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/algorithms/lifting-container-base.h
  * Copyright (C) 2004 Zhendong Wan, Pascal Giorgi
  *
@@ -21,8 +20,9 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LINBOXX__RECONSTRUCTION_H__
-#define __LINBOXX__RECONSTRUCTION_H__
+#ifndef __LINBOX_reconstruction_H
+#define __LINBOX_reconstruction_H
+
 #include <linbox/algorithms/rational-reconstruction-base.h>
 #include <linbox/algorithms/classic-rational-reconstruction.h>
 //#include <linbox/algorithms/fast-rational-reconstruction.h>
@@ -40,6 +40,7 @@
 
 
 //#define __LINBOX_HAVE_FPLLL
+//!@bug BB: demander FPLLL comme dépendance optionnelle...
 #ifdef __LINBOX_HAVE_FPLLL
 extern "C" {
 #include </home/pgiorgi/Library/fplll-1.1/myheuristic.h>
@@ -53,7 +54,7 @@ namespace LinBox {
 	/// \brief Limited doc so far.  Used, for instance, after LiftingContainer.
 template< class _LiftingContainer,
 	  class RatRecon = RReconstruction<typename _LiftingContainer::Ring, ClassicMaxQRationalReconstruction<typename _LiftingContainer::Ring> > >
-class RationalReconstruction {
+class RationalReconstruction {/*{{{*/
 		
 public:
 	typedef _LiftingContainer                  LiftingContainer;
@@ -2126,6 +2127,10 @@ public:
 
 };
 	
-}
+}/*}}}*/
 
-#endif
+#undef DEF_THRESH
+#endif //__LINBOX_reconstruction_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

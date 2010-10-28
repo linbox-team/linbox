@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/field/envelope.h
  * Copyright (C) 1999-2001 William J Turner,
  *               2001 Bradford Hovinen
@@ -29,8 +27,8 @@
  * ------------------------------------
  */
 
-#ifndef __FIELD_ENVELOPE_H
-#define __FIELD_ENVELOPE_H
+#ifndef __LINBOX_field_envelope_H
+#define __LINBOX_field_envelope_H
 
 #include <iostream>
 
@@ -47,11 +45,11 @@
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
 
-#endif
+#endif //__LINBOX_XMLENABLED
 
 // Namespace in which all LinBox code resides
 namespace LinBox 
-{ 
+{ /*{{{*/
 	// Forward declarations
 	template <class Field> class RandIterEnvelope;
 
@@ -558,8 +556,11 @@ namespace LinBox
 
 	}; // class FieldEnvelope
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
 #include "linbox/randiter/envelope.h"
 
-#endif // __FIELD_ENVELOPE_H
+#endif // __LINBOX_field_envelope_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

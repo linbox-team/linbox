@@ -1,11 +1,10 @@
-/* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
-
 /* linbox/blackbox/quad-matrix.h
- * Copyright (C) 2006 by -bds, hui wang  
+ * Copyright (C) 2006 LinBox
+ * Written by -bds, hui wang  
  */
 
-#ifndef __QUAD_MATRIX_H
-#define __QUAD_MATRIX_H
+#ifndef __LINBOX_quad_matrix_H
+#define __LINBOX_quad_matrix_H
 
 #include <algorithm>
 #include <linbox/field/hom.h>
@@ -20,7 +19,8 @@
 //#include <linbox/blackbox/side-by-side.h>
 //#include <linbox/blackbox/over-under.h>
 
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
 
 	template <typename Field>
 	class ZeroOne;
@@ -483,5 +483,9 @@ namespace LinBox {
 	
 	// similar class OverUnder<Field>
 	
-}; //namespace LinBox 
-#endif // __QUAD_MATRIX_H
+}; //namespace LinBox /*}}}*/
+
+#endif // __LINBOX_quad_matrix_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

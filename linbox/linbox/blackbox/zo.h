@@ -1,15 +1,19 @@
-/* -*- mode: C++; style: linux -*- */
-
 /* linbox/blackbox/zo.h
+ * Copyright (c) LinBox
  * by Hui Wang, assisted by bds
  * ------------------------------------
  * See COPYING for license information.
  */
 
-// note:  We define a blackbox class of the same name as that in zero-one.h,
-// hence we use the same name here.  The two cannot be used in the same prog.
-#ifndef __ZERO_ONE_H
-#define __ZERO_ONE_H
+#ifndef __LINBOX_zero_one_H
+#define __LINBOX_zero_one_H
+
+/*! @file blackbox/zo.h
+ * We define a blackbox class of the same name as that in zero-one.h,
+ * hence we use the same name here.  
+ * @warning The two cannot be used in the same prog.
+ */
+
 
 #include "linbox/integer.h"
 //#include "linbox/vector/vector-traits.h"
@@ -27,7 +31,7 @@
 #include <ctime>
 
 namespace LinBox
-{
+{/*{{{*/
   bool revLexLess(const std::pair<size_t,size_t>& a, const std::pair<size_t,size_t> b)
   { return a.second < b.second || (b.second == a.second && a.first < b.first); }
   
@@ -352,7 +356,7 @@ namespace LinBox
   }; //ZeroOne
 
        
-}//End of LinBox
+}//End of LinBox/*}}}*/
 
 #ifdef _RUNOPENMP
 #include "zoi.inl"
@@ -360,4 +364,7 @@ namespace LinBox
 #include "zo.inl"
 #endif
 
-#endif // __ZERO_ONE_H
+#endif // __LINBOX_zero_one_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

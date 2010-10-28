@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/field/modular-float.h
  * Copyright (C) 2003 Pascal Giorgi
  *               2007 Clement Pernet
@@ -11,10 +9,8 @@
  */
 
 
-
-
-#ifndef __LINBOX_MODULAR_FLOAT_H
-#define __LINBOX_MODULAR_FLOAT_H
+#ifndef __LINBOX_modular_float_H
+#define __LINBOX_modular_float_H
 
 
 #include "linbox/linbox-config.h"
@@ -29,10 +25,9 @@
 #include "linbox/randiter/nonzero.h"
 
 
-
-
 // Namespace in which all LinBox code resides
-namespace LinBox { 
+namespace LinBox 
+{ /*{{{*/
 	
 	template< class Element >
 	class Modular;
@@ -491,8 +486,11 @@ namespace LinBox {
 			return res = y;
 		}
 	};
-}
+}/*}}}*/
 
 #include "linbox/randiter/modular.h"
 
-#endif
+#endif //__LINBOX_modular_float_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

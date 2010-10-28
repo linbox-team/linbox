@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/blackbox/transpose.h
  * Copyright (C) 2001 Bradford Hovinen
  *
@@ -21,8 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __SQUARIZE_H
-#define __SQUARIZE_H
+#ifndef __LINBOX_squarize_H
+#define __LINBOX_squarize_H
 
 #include <linbox/blackbox/blackbox-interface.h>
 
@@ -32,7 +30,7 @@
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
-{
+{/*{{{*/
 
 	/** \brief transpose matrix without copying.
 
@@ -171,6 +169,9 @@ namespace LinBox
 
 	}; // template <Vector> class Squarize
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
-#endif // __SQUARIZE_H
+#endif // __LINBOX_squarize_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

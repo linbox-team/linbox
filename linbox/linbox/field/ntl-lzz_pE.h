@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/field/ntl-z_pE.h
  * Copyright (C) 2004  Pascal Giorgi
  *
@@ -23,8 +22,8 @@
  */
 
 
-#ifndef __NTL_zz_pE_H
-#define __NTL_zz_pE_H
+#ifndef __LINBOX_ntl_zz_pe_H
+#define __LINBOX_ntl_zz_pe_H
 
 
 #include <linbox/field/unparametric.h>
@@ -36,7 +35,8 @@
 #include <linbox/field/field-traits.h>
 
 
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
 
 
 	template <class Ring>
@@ -207,6 +207,9 @@ namespace LinBox {
 	}
   
 
-}
+}/*}}}*/
 
-#endif
+#endif //__LINBOX_ntl_zz_pe_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

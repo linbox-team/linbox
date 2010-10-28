@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/blackbox/block-hankel.h
  * Copyright (C) 2005 Pascal Giorgi
  *
@@ -20,10 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-
-
-#ifndef __BLOCK_HANKEL_H
-#define __BLOCK_HANKEL_H
+#ifndef __LINBOX_bb_block_hankel_H
+#define __LINBOX_bb_block_hankel_H
 
 #include <vector>
 #include <linbox/matrix/blas-matrix.h>
@@ -33,7 +30,8 @@
 
 //#define BHANKEL_TIMER
 
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
 
 	class BlockHankelTag {
 	public:
@@ -428,6 +426,9 @@ namespace LinBox {
 		mutable Timer _Tapply, _Teval, _Tinterp, _chrono;
 	};
 
-} // end of namespace LinBox
+} // end of namespace LinBox/*}}}*/
 
-#endif
+#endif //__LINBOX_bb_block_hankel_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

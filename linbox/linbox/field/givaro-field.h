@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/field/givaro-field.h
  * Copyright (C) 2009 JGD
  *
@@ -7,15 +6,17 @@
  * See COPYING for license information.
  */
 
-#ifndef __FIELD_GIVARO_FIELD
-#define __FIELD_GIVARO_FIELD
+#ifndef __LINBOX_givaro_field_H
+#define __LINBOX_givaro_field_H
+
 #include <givaro/givconfig.h>
 #include <linbox/integer.h>
 #include <linbox/field/field-traits.h>
 #include <linbox/field/field-interface.h>
 #include <givaro/givconfig.h>
+
 namespace LinBox 
-{ 
+{ /*{{{*/
 
   /** 
   \brief give LinBox fields an allure of Givaro Fields
@@ -94,6 +95,9 @@ namespace LinBox
         
       
     
-} // end namespace LinBox
+} // end namespace LinBox/*}}}*/
 
-#endif
+#endif // __LINBOX_givaro_field_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

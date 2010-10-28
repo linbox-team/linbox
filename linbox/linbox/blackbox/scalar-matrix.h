@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
-
 /* linbox/blackbox/scalar.h
  * Copyright (C) 2002 by -bds  
  * evolved from diagonal.h written by William J Turner and Bradford Hovinen 
@@ -10,11 +8,13 @@
  * Added parametrization of VectorCategory tags by VectorTraits. See
  * vector-traits.h for more details.
  *
+ * see COPYING for licence details
+ *
  * -------------------------------
  */
 
-#ifndef __SCALAR_H
-#define __SCALAR_H
+#ifndef __LINBOX_scalar_H
+#define __LINBOX_scalar_H
 
 #include <algorithm>
 #include <linbox/field/hom.h>
@@ -25,7 +25,7 @@
 #include <linbox/blackbox/blackbox-interface.h>
 
 namespace LinBox
-{
+{/*{{{*/
 
 	/** \brief Blackbox for <tt>aI</tt>.  Use particularly for representing <tt>0</tt> and <tt>I</tt>.
 
@@ -236,5 +236,9 @@ namespace LinBox
 		return y;
 	} // sparse associative vector _app
 
-} // namespace LinBox
-#endif // __ScalarMatrix
+} // namespace LinBox/*}}}*/
+
+#endif // __LINBOX_scalar_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
