@@ -1,3 +1,6 @@
+# Copyright (c) 2010 the LinBox group
+# This file is part of LinBox
+# see COPYING for licence
 INCLUDES=-I$(top_srcdir)
 
 EXTRA_PROGRAMS = smith example ex-mat0 load-det load-minpoly load-symmetrize random-rank 

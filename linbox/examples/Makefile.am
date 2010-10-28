@@ -1,3 +1,6 @@
+# Copyright (c) 2010 the LinBox group
+# This file is part of LinBox
+# see COPYING for licence
 
 #INCLUDES=-I$(top_srcdir)
 INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/linbox
@@ -10,7 +13,8 @@ INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/linbox
 #LINBOX_LIBS= $(top_builddir)/linbox/liblinbox.la 
 #endif
 
-AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -O2 
+AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -DDEBUG -O0 
+# AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -O2 
 AM_CPPFLAGS= $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
 #LDADD = $(NTL_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) $(GMP_LIBS)  "-Wl,-enable-auto-import"
 LDADD = $(NTL_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) $(GMP_LIBS) 
@@ -21,6 +25,7 @@ LDADD = $(NTL_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) $(GMP_LIBS)
 SUBDIRS=fields 
 
 EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet sparseelimrank checksolve doubledet smithvalence
+# EXAMPLES+=nulp yabla
 GIVARONTL_EXAMPLES=smith charpoly graph-charpoly
 if LINBOX_HAVE_NTL
 if LINBOX_HAVE_GIVARO
@@ -54,6 +59,7 @@ echelon_SOURCES=echelon.C
 smithvalence_SOURCES=smithvalence.C
 sparseelimdet_SOURCES=sparseelimdet.C
 sparseelimrank_SOURCES=sparseelimrank.C
+nulp_SOURCES=nulp.C
 LINBOX=@prefix@
 
 # no /bin if LinBox is uncompiled
