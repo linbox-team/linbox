@@ -1,8 +1,14 @@
-AC_PREREQ(2.50)
-#AC_INIT(linbox/linbox.doxy)
-AC_INIT(linbox, 1.1.7rc1,linbox-use@googlegroups.com) 
+# Copyright (c) 2010 the LinBox group
+# This file is part of LinBox (and probably stolen here and there)
+# see COPYING for licence
+
+
+AC_PREREQ([2.68])
+#AC_INIT
+AC_CONFIG_SRCDIR([linbox/linbox.doxy])
+AC_INIT([linbox],[1.1.7rc1],[linbox-use@googlegroups.com]) 
 AM_INIT_AUTOMAKE([1.8 gnu no-dependencies])
-AM_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 AX_PREFIX_CONFIG_H(linbox/linbox-config.h, __LINBOX)
 AC_PATH_PROG(RM, rm, $FALSE)
 RM="$RM -f"
@@ -25,12 +31,12 @@ AM_ACLOCAL_INCLUDE(macros)
 AC_SUBST([MKDIR_P])
 AC_PROG_CC
 AC_PROG_CXX
-AC_STDC_HEADERS
+AC_HEADER_STDC
 #AC_DISABLE_SHARED
 #AC_DISABLE_STATIC
-#AM_PROG_LIBTOOL
+#LT_INIT
 # JGD 08.06.2004 : new name
-AC_PROG_LIBTOOL
+LT_INIT
 
 # Machine characteristics
 
@@ -112,7 +118,7 @@ AC_DEFINE_UNQUOTED(INT64, $LINBOX_INT64, Canonical 64-bit data type)
 LB_MISC
 LB_DRIVER
 
-AC_LANG_CPLUSPLUS
+AC_LANG([C++])
 LB_CHECK_GMP(,,[
 echo '*******************************************************************************'
 echo ' ERROR: GMP not found!'
@@ -161,7 +167,7 @@ LB_DOC
 #CXXFLAGS="${GMP_CFLAGS} ${NTL_CFLAGS} ${GIVARO_CFLAGS} ${SACLIB_CFLAGS} ${CXXFLAGS}"
 #AC_SUBST(CXXFLAGS)
 
-AC_OUTPUT([
+AC_CONFIG_FILES([
 Makefile
 linbox-config
 examples/Makefile
@@ -192,4 +198,5 @@ interfaces/kaapi/Makefile
 interfaces/sage/Makefile
 macros/Makefile
 ])
+AC_OUTPUT
 

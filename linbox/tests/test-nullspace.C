@@ -1,13 +1,13 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+/* Copyright (C) 2009 LinBox
+ * Written by <boyer.brice@gmail.com>
+ * Inspired and adapted from test-ffpack.C
+ * see COPYING for license details
+ */
 
 /** \file tests/nullspace.C
   \brief Tests the nullspace functions
   */
-/* Copyright (C) 2009 LinBox
- * Written by <boyer.brice@gmail.com>
- * Inspired and adapted from test-ffpack.C
- */
+
 #include "../linbox/linbox-config.h"
 #include <iostream>
 #include "../linbox/integer.h"
@@ -22,8 +22,6 @@
 
 using namespace LinBox;
 
-
-//#define DEBUG_1
 
 /** @brief gives a random number such that \f$0 \leq RIII < s\f$.
  * @details basic..
@@ -194,15 +192,9 @@ static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank,
 		size_t wd_a =  m ;
 		RandomMatrixWithRank(F,A,m,n,rank);
 
-#ifdef DEBUG_1
-		    //write_field (F, std::cout<<"A0 :="<<endl, A, m, n, ld_a,true);
-#endif
 		Element * Abis = new Element[m*n]; // copie de A
 		for (size_t i=0; i<m*n; ++i)
 			*(Abis+i) = *(A+i);
-#ifdef DEBUG_1
-		//write_field (F, std::cout<<"Abis="<<endl, Abis, m, n, ld_a,true);
-#endif
 		size_t ker_dim = 0 ; // or coker_dim
 		Element * Kern  = NULL;
 		size_t ld_k = 0 ;
@@ -230,17 +222,9 @@ static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank,
 		size_t ld_ker = (a_droite)?ker_dim:m ;
 		size_t wd_ker = (a_droite)?n:ker_dim ;
 		assert(ld_ker == ld_k) ;
-#ifdef DEBUG_1
-		cout << "ker_dim : " << ker_dim << endl;
-		    //write_field (F, std::cout<<"Kernel is V:= "<<endl, Kern, wd_ker, ld_ker, ld_ker, true);
-		cout << "test1 ok" << endl;
-#endif
 		size_t ld_n = (a_droite)?ker_dim:ld_a;
 		size_t wd_n = (a_droite)?wd_a:ker_dim;
 		assert(CheckRank(F,Kern,wd_ker,ld_ker,ld_ker,ker_dim)); // ...il est bien de rang plein...
-#ifdef DEBUG_1
-		cout << "test2 ok" << endl;
-#endif
 		Element * NullMat = new Element[ld_n*wd_n] ;// ...et on s'attend à ce que ça soit nul !
 		if ( a_droite){
 			FFLAS::fgemm(F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, wd_a, ld_ker, ld_a,
@@ -250,11 +234,6 @@ static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank,
 				     one,  Kern, ld_ker , Abis, ld_a, zero, NullMat, ld_n);
 		}
 
-#ifdef DEBUG_1
-		//write_field (F, std::cout<<"Kern="<<endl, Kern, wd_ker, ld_ker, ld_ker, true);
-		//write_field (F, std::cout<<"NullMat="<<endl, NullMat, wd_n, ld_n, ld_n,true);
-		cout << "ok : deleting stuff" << endl;
-#endif
 		//write_field (F, std::cout<<"A="<<endl, A, m, n, n,true);
 		//write_field (F, std::cout<<"Abis="<<endl, Abis, m, n, n, true);
 		delete[] Abis ;
@@ -272,19 +251,9 @@ static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank,
 			if (!ret)
 				break;
 		}
-		if (ret) {
-#ifdef DEBUG_1
-			cout << "test3 ok" << endl;
-			//write_field (F, std::cout<<"NullMat  nulle. "<<endl, NullMat, wd_n, ld_n, ld_n, true);
-#endif
-			delete[] NullMat ;
-		}
-		else {
-#ifdef DEBUG_1
-			cout << "test3 failed" << endl;
-#endif
-			break;
-		}
+		if (ret) delete[] NullMat ;
+		else break;
+		
 		//delete[] Kern ;
 	}
 
@@ -348,5 +317,8 @@ int main(int argc, char** argv)
 	commentator.stop("NullSpace test suite");
 	return (pass ? 0 : -1);
 }/*}}}*/
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
 
 

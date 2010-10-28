@@ -1,3 +1,6 @@
+# Copyright (c) 2010 the LinBox group
+# This file is part of LinBox
+# see COPYING for licence
 if USE_DOCPLUSPLUS_TEX
 USE_TARGETS = linbox.tex linbox.ps linbox.dvi
 endif

@@ -1,11 +1,12 @@
-/* -*- mode: C++; tab-width: 6; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /*-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *    test-ntl-sylvester.C
  *    Copyright (C) 2003 Austin Lobo, B. David Saunders
+ *    Copyright (C) LinBox
  *
  *    Tests for  Sylvester matrix specification with ntl Arithmetic,
  *    for 2 polynomials in one variable.
- *    Linbox version 2003
+ *    LinBox version 2003
+ *    see COPYING for license information
  *-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+*/
 #include <iostream>
 #include <fstream>
@@ -22,7 +23,7 @@
 using namespace std;
 
 int main(int argc, char* argv[])
-{
+{/*{{{*/
   LinBox::commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
   ostream &report = LinBox::commentator.report(
 					       LinBox::Commentator::LEVEL_IMPORTANT, 
@@ -143,5 +144,5 @@ int main(int argc, char* argv[])
 	commentator.stop("Sylvester black box test suite");
   return pass ? 0 : -1;
 
-}
+}/*}}}*/
 

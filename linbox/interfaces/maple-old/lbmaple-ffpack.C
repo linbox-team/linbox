@@ -1,3 +1,25 @@
+/* Copyright (C) LinBox
+ *
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
+
+
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 //#define DEBUG 3
@@ -20,7 +42,8 @@ extern "C"
 {  
 
   
-	ALGEB fgemm(MKernelVector kv, ALGEB* argv ) {
+	ALGEB fgemm(MKernelVector kv, ALGEB* argv ) 
+	{/*{{{*/
 
 		/* expect arguments in following order:  
 		   1- p (int prime)
@@ -139,13 +162,14 @@ extern "C"
 
 		return Matrix;
 
-	}
+	}/*}}}*/
 }
 
 
 extern "C" {
 
-	ALGEB lsp(MKernelVector kv, ALGEB* argv ) {
+	ALGEB lsp(MKernelVector kv, ALGEB* argv ) 
+	{/*{{{*/
     
 		/* expect arguments in following order:  
 		   1- p (int prime)
@@ -226,13 +250,14 @@ extern "C" {
            
 
 		return OutMatrix;
-	}
+	}/*}}}*/
 
 }
 
 extern "C" {
 
-	ALGEB rank(MKernelVector kv, ALGEB* argv ) {
+	ALGEB rank(MKernelVector kv, ALGEB* argv ) 
+	{/*{{{*/
 		/* expect arguments in following order:  
 		   1- p (int prime)
 		   2- m (int)
@@ -272,14 +297,15 @@ extern "C" {
 		int rank=FFPACK::Rank(F,m,n,A,n);
 
 		return ToMapleInteger(kv,rank);
-	}
+	}/*}}}*/
 }
 
 
 
 extern "C" {
 
-	ALGEB determinant(MKernelVector kv, ALGEB* argv ) {
+	ALGEB determinant(MKernelVector kv, ALGEB* argv ) 
+	{/*{{{*/
 		/* expect arguments in following order:  
 		   1- p (int prime)
 		   2- m (int)
@@ -316,13 +342,14 @@ extern "C" {
 		Element d=FFPACK::Det(F,m,n,A,n);
 
 		return ToMapleInteger(kv,long(d));
-	}
+	}/*}}}*/
 }
 
 
 extern "C" {
 
-	ALGEB inverse(MKernelVector kv, ALGEB* argv ) {
+	ALGEB inverse(MKernelVector kv, ALGEB* argv ) 
+	{/*{{{*/
 		/* expect arguments in following order:  
 		   1- p (int prime)
 		   2- m (int)      
@@ -400,7 +427,7 @@ extern "C" {
 		}
 
 		return Matrix;
-	}
+	}/*}}}*/
 }
 
 

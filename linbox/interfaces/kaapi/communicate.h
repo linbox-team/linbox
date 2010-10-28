@@ -1,5 +1,27 @@
-#ifndef _KAAPI_COMMUNICATE_H
-#define _KAAPI_COMMUNICATE_H
+/* Copyright (C) LinBox
+ *
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
+
+
+#ifndef __LINBOX_kaapi_communicate_H
+#define __LINBOX_kaapi_communicate_H
 
 #include <athapascan-1>
 #include "linbox/integer.h"
@@ -60,4 +82,4 @@ a1::IStream& operator>>( a1::IStream& in, LinBox::Modular<double>& m)
     return in >> m_tmp->get_modulus() >> m_tmp->get_lmodulus() ;
 }
 
-#endif
+#endif //__LINBOX_kaapi_communicate_H

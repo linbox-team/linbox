@@ -1,10 +1,28 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-//--------------------------------------------------------------------------
-//          Tests for the ffpack set of routines
-//--------------------------------------------------------------------------
-// usage: test-ffpack p A n, for n lsp factorization  
-// of A over Z/pZ
-//-------------------------------------------------------------------------
+/* Copyright (C) LinBox
+ *
+ * written by C. Pernet
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
+
+/*! @file tests/test-ffpack.C
+ * @brief Tests for the ffpack set of routines
+ * usage: test-ffpack p A n, for n lsp factorization  of A over Z/pZ
+ */
 
 #include "linbox/linbox-config.h"
 #include <iostream>
@@ -21,7 +39,8 @@ using namespace LinBox;
 string blank;
 
 const int maxpretty = 35;
-const char* pretty(string a) {
+const char* pretty(string a) 
+{/*{{{*/
 
 	blank = "     " + a;
 	int msgsize= maxpretty - blank.size();
@@ -29,14 +48,15 @@ const char* pretty(string a) {
 	for (int i=0;i<msgsize ;++i)
 		blank+=dot;
 	return blank.c_str();
-}
+}/*}}}*/
 
 /*
  *  Testing the rank of dense matrices 
  *  construct a n*n matrices of rank r and compute the rank
  */
 template <class Field>
-static bool testRank (const Field& F,size_t n, int iterations) {
+static bool testRank (const Field& F,size_t n, int iterations) 
+{/*{{{*/
 
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
@@ -101,14 +121,15 @@ static bool testRank (const Field& F,size_t n, int iterations) {
 	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testRank");
     
 	return ret;
-}
+}/*}}}*/
 
 /*
  *  Testing the rank of dense matrices using TURBO algorithm
  *  construct a n*n matrices of rank r and compute the rank
  */
 template <class Field>
-static bool testTURBO (const Field& F,size_t n, int iterations) {
+static bool testTURBO (const Field& F,size_t n, int iterations) 
+{/*{{{*/
 
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
@@ -181,7 +202,7 @@ static bool testTURBO (const Field& F,size_t n, int iterations) {
 	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testTURBO");
     
 	return ret;
-}
+}/*}}}*/
 
 
 /*
@@ -189,7 +210,8 @@ static bool testTURBO (const Field& F,size_t n, int iterations) {
  *  construct a n*n matrices of determinant d and compute the determinant
  */
 template <class Field>
-static bool testDet (const Field& F,size_t n, int iterations) {
+static bool testDet (const Field& F,size_t n, int iterations) 
+{/*{{{*/
 
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
@@ -259,13 +281,14 @@ static bool testDet (const Field& F,size_t n, int iterations) {
 	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testDet");
     
 	return ret;
-}
+}/*}}}*/
 
 /*
  * Test of the LQUP factorization routine
  */
 template <class Field>
-static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations) {
+static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations) 
+{/*{{{*/
 
 	typedef typename Field::Element                  Element;
 	typedef typename Field::RandIter                RandIter;
@@ -395,10 +418,11 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations) {
 	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testLQUP");
     
 	return ret;
-}
+}/*}}}*/
 
 template <class Field>
-static bool testMinPoly (const Field& F, size_t n, int iterations) {
+static bool testMinPoly (const Field& F, size_t n, int iterations) 
+{/*{{{*/
 	typedef typename Field::Element                  Element;
 	typedef typename Field::RandIter                RandIter;
 	typedef vector<Element>                       Polynomial;
@@ -497,10 +521,11 @@ static bool testMinPoly (const Field& F, size_t n, int iterations) {
 	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testMinPoly");
 	
 	return ret;
-}
+}/*}}}*/
 
 template <class Field>
-static bool testCharPoly (const Field& F, size_t n, int iterations) {
+static bool testCharPoly (const Field& F, size_t n, int iterations) 
+{/*{{{*/
 	typedef typename Field::Element                  Element;
 	typedef typename Field::RandIter                RandIter;
 	typedef vector<Element>                       Polynomial;
@@ -578,10 +603,11 @@ static bool testCharPoly (const Field& F, size_t n, int iterations) {
 	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testCharPoly");
 	
 	return ret;
-}
+}/*}}}*/
 
 template <class Field>
-static bool testInv (const Field& F,size_t n, int iterations) {
+static bool testInv (const Field& F,size_t n, int iterations) 
+{/*{{{*/
 
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
@@ -677,10 +703,11 @@ static bool testInv (const Field& F,size_t n, int iterations) {
 	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testInv");
     
 	return ret;
-}
+}/*}}}*/
 
 template <class Field>
-static bool testapplyP (const Field& F,size_t n, int iterations) {
+static bool testapplyP (const Field& F,size_t n, int iterations) 
+{/*{{{*/
 
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
@@ -745,9 +772,10 @@ static bool testapplyP (const Field& F,size_t n, int iterations) {
 	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testApplyP");
     
 	return ret;
-}
+}/*}}}*/
 
-int main(int argc, char** argv){
+int main(int argc, char** argv)
+{/*{{{*/
 	//-----------------------------------------------------------------------
 	// Choice of the finite field representation
 	//typedef GivaroZpz<Std32> Field;
@@ -793,7 +821,7 @@ int main(int argc, char** argv){
 	commentator.stop(MSG_STATUS(pass),"ffpack test suite");
     
 	return pass ? 0 : -1;
-}
+}/*}}}*/
 
 
 
