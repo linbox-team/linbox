@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/algorithms/cra-domain-omp.h
  * Copyright (C) 1999-2010 The LinBox group
  *
@@ -22,15 +21,16 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __LINBOX_OMP_CRA_H
-#define __LINBOX_OMP_CRA_H
+#ifndef __LINBOX_omp_cra_H
+#define __LINBOX_omp_cra_H
 // commentator is not thread safe
 #define DISABLE_COMMENTATOR
 #include "linbox/algorithms/cra-domain-seq.h"
 #include <set>
 #include <vector>
 
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
 
     template<class CRABase>
     struct ChineseRemainderOMP : public ChineseRemainderSeq<CRABase> {
@@ -229,6 +229,8 @@ std::cerr << "Used: " << this->IterCounter << " primes." << std::endl;
 
 				
     };
-}
+}/*}}}*/
 
-#endif
+#endif //__LINBOX_omp_cra_H
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/algorithms/blackbox-container.h
  * Copyright (C) 1999, 2001 Jean-Guillaume Dumas, Bradford Hovinen
  *
@@ -22,15 +20,15 @@
 // Time-stamp: <25 Jan 02 16:04:24 Jean-Guillaume.Dumas@imag.fr> 
 // ================================================================
 
-#ifndef __BLACKBOX_CONTAINER_SYMMETRIC_H
-#define __BLACKBOX_CONTAINER_SYMMETRIC_H
+#ifndef __LINBOX_blackbox_container_symmetric_H
+#define __LINBOX_blackbox_container_symmetric_H
 
 #include "linbox/randiter/archetype.h"
 
 #include "linbox/algorithms/blackbox-container.h"
 
 namespace LinBox
-{
+{/*{{{*/
 
 /// \brief See base class for doc.
 template<class Field, class _Blackbox, class RandIter = typename Field::RandIter>
@@ -76,6 +74,8 @@ class BlackboxContainerSymmetric : public BlackboxContainerBase<Field, _Blackbox
 	void _wait () {}
 };
  
-}
+}/*}}}*/
 
-#endif // __BLACKBOX_CONTAINER_SYMMETRIC_H
+#endif // __LINBOX_blackbox_container_symmetric_H
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

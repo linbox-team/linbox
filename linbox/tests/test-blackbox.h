@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
-
 /* linbox/tests/test-blackbox.h
  * Copyright (C) 2001, 2002 Bradford Hovinen
  *
@@ -16,8 +14,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __TEST_BLACKBOX_H
-#define __TEST_BLACKBOX_H
+#ifndef __LINBOX_test_blackbox_H
+#define __LINBOX_test_blackbox_H
 
 #include <iostream>
 #include <vector>
@@ -57,7 +55,7 @@ testTranspose (Field                             &F,
 			   Blackbox							 &A,
 			   LinBox::VectorStream<Vector>      &stream1,
 			   LinBox::VectorStream<Vector>      &stream2) 
-{
+{/*{{{*/
 	bool ret = true;
 
 	Vector u, v, uA, Av;
@@ -110,7 +108,7 @@ testTranspose (Field                             &F,
 	}
 
 	return ret;
-}
+}/*}}}*/
 
 /** Generic Blackbox test 2: Linearity of black boxes.
  *
@@ -130,7 +128,7 @@ testLinearity (Field                             &F,
 	       BB 				 &A,
 	       LinBox::VectorStream<Vector>      &stream1,
 	       LinBox::VectorStream<Vector>      &stream2) 
-{
+{/*{{{*/
 	bool ret = true, iter_passed;
 
 	size_t n = A.rowdim ();
@@ -198,7 +196,7 @@ testLinearity (Field                             &F,
 	}
 
 	return ret;
-}
+}/*}}}*/
 
 /** Generic blackbox test 4: combination of tests
  * 
@@ -209,7 +207,7 @@ testLinearity (Field                             &F,
 template <class BB> 
 static bool 
 testBlackbox(BB &A)
-{
+{/*{{{*/
 	size_t largeThresh = 2000; // Above it do timing of apply and applyTr.
 	typedef typename BB::Field Field;
 	typedef std::vector<typename Field::Element> DenseVector;
@@ -271,7 +269,7 @@ testBlackbox(BB &A)
 #endif
 	
 	return ret;
-}
+}/*}}}*/
  
 /** Generic blackbox test 5: test several sizes
  * 
@@ -283,7 +281,7 @@ SmallBlackbox.
 template <class Field, class Blackbox> 
 static bool 
 testBB(Field& F) 
-{
+{/*{{{*/
 	bool pass = true;
 
 	Blackbox A(10);
@@ -294,6 +292,8 @@ testBB(Field& F)
 		pass = false;
 
 	return pass;
-}
+}/*}}}*/
 
-#endif // __TEST_BLACKBOX_H
+#endif // __LINBOX_test_blackbox_H
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

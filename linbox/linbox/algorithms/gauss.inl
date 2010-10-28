@@ -11,8 +11,8 @@
 // Calcul de rang par la méthode de Gauss pivot par ligne, sur matrice creuse
 // ========================================================================= //
 
-#ifndef __GAUSS_INL
-#define __GAUSS_INL
+#ifndef __LINBOX_gauss_INL
+#define __LINBOX_gauss_INL
 
 #include "linbox/algorithms/gauss.h"
 #include "linbox/util/commentator.h"
@@ -20,12 +20,12 @@
 
 #ifdef __LINBOX_ALL__
 #define __LINBOX_COUNT__
-#define __LINBOX_OFTEN__ __LINBOX_ALL__
+#define __LINBOX_OFTEN__ __LINBOX_ALL__ // BB: ???
 #define __LINBOX_FILLIN__
 #endif
 
 namespace LinBox 
-{
+{ /*  {{{ */
     template <class _Field>
     template <class Matrix, class Perm> inline unsigned long& 
     GaussDomain<_Field>::QLUPin (unsigned long &rank,
@@ -687,6 +687,8 @@ namespace LinBox
     }
 
 
-} // namespace LinBox
+} /*  }}} */ // namespace LinBox
 
-#endif // __GAUSS_INL
+#endif // __LINBOX_gauss_INL
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

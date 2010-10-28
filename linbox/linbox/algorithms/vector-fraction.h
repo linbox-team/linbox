@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/algorithms/vector-fraction.h
  * Copyright (C) 2004 David Pritchard
  *
@@ -20,15 +19,16 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LINBOX_VECTOR_FRACTION_H
-#define __LINBOX_VECTOR_FRACTION_H
+#ifndef __LINBOX_vector_fraction_H
+#define __LINBOX_vector_fraction_H
 
 #include <linbox/linbox-config.h>
 #include <stdio.h>
 #include <linbox/vector/vector-traits.h>
 #undef _D
 
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
 	
 	/** utility function to reduce a rational pair to lowest form */
 	template<class Domain>
@@ -350,5 +350,8 @@ namespace LinBox {
 		}
 	};
 
-}
-#endif
+}/*}}}*/
+
+#endif //__LINBOX_vector_fraction_H
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

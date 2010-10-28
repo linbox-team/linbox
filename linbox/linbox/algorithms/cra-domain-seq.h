@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/algorithms/cra-domain-seq.h
  * Copyright (C) 1999-2010 The LinBox group
  *
@@ -19,8 +18,9 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __LINBOX_SEQUENTIAL_CRA_H
-#define __LINBOX_SEQUENTIAL_CRA_H
+
+#ifndef __LINBOX_sequential_cra_H
+#define __LINBOX_sequential_cra_H
 #include "linbox/util/timer.h"
 #include <stdlib.h>
 #include "linbox/integer.h"
@@ -30,7 +30,8 @@
 
 //$define CRATIMING
 
-namespace LinBox {
+namespace LinBox 
+{/*{{{*/
     
     template<class Function, class Element> struct CRATemporaryVectorTrait {
         typedef std::vector<Element> Type_t;
@@ -293,6 +294,8 @@ std::cerr << "Used: " << IterCounter << " primes." << std::endl;
 	};
 #endif
 
-}
+}/*}}}*/
 
-#endif
+#endif //__LINBOX_sequential_cra_H
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

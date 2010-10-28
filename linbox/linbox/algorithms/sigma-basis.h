@@ -1,4 +1,3 @@
-
 /* linbox/algorithms/sigma-basis.h
  * Copyright (C) 2005 Pascal Giorgi
  *
@@ -47,7 +46,7 @@
 //#define OPTMIZED_SIGMA_UPDATE 
 
 
-namespace LinBox {
+namespace LinBox {/*{{{*/
 
 
 	template<class _Field>
@@ -2047,7 +2046,9 @@ namespace LinBox {
 
 	}; // end of class SigmaBasis
 
-} // end of namespace LinBox
+} // end of namespace LinBox/*}}}*/
+
+#undef OPTMIZED_SIGMA_UPDATE
 
 #endif //__LINBOX_sigma_basis_H
 

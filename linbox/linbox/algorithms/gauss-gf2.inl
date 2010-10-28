@@ -1,4 +1,3 @@
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
 
 /* linbox/algorithms/gauss-gf2.inl
  * Copyright (C) 2009 The LinBox group
@@ -15,7 +14,7 @@
 #include "linbox/util/commentator.h"
 #include <utility>
 
-#ifdef __LINBOX_ALL__
+#ifdef __LINBOX_ALL__ //BB: ???
 #ifndef __LINBOX_COUNT__
 #define __LINBOX_COUNT__
 #endif
@@ -28,7 +27,7 @@
 #endif
 
 namespace LinBox 
-{
+{/*{{{*/
         // Specialization over GF2
         template <class SparseSeqMatrix, class Perm> 
         inline unsigned long& 
@@ -380,6 +379,8 @@ namespace LinBox
     }
 
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
 #endif // __LINBOX_gauss_gf2_INL
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

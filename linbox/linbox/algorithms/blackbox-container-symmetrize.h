@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/algorithms/blackbox-container-symmetrize.h
  * Copyright (C) 1999, 2001 Jean-Guillaume Dumas
  *
@@ -15,13 +13,13 @@
  * See COPYING for license information.
  */
 
-#ifndef __BLACKBOX_CONTAINER_SYMMETRIZE_H
-#define __BLACKBOX_CONTAINER_SYMMETRIZE_H
+#ifndef __LINBOX_blackbox_container_symmetrize_H
+#define __LINBOX_blackbox_container_symmetrize_H
 
 #include <linbox/algorithms/blackbox-container-base.h>
 
 namespace LinBox 
-{
+{/*{{{*/
 
 /** \brief Symmetrizing iterator (for rank computations).
 
@@ -70,6 +68,8 @@ namespace LinBox
 		void _wait () {}
 	};
  
-};
+}/*}}}*/
 
-#endif // __BLACKBOX_CONTAINER_SYMMETRIZE_H
+#endif // __LINBOX_blackbox_container_symmetrize_H
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

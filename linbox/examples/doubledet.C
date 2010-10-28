@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /** 
  * examples/doubledet.C
@@ -96,3 +95,5 @@ int main (int argc, char **argv)
 	cerr << "Double Det: "<<tim.usertime() << "s" << endl;
 	cerr << "Each single Det: "<<tim2.usertime() << "s" << endl;
 }
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

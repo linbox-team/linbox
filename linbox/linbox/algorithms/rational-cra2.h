@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/blackbox/rational-reconstruction-base.h
  * Copyright (C) 2009 Anna Marszalek
  *
@@ -21,8 +20,8 @@
  */
 
 
-#ifndef __LINBOX_RATIONAL2_CRA_H
-#define __LINBOX_RATIONAL2_CRA_H
+#ifndef __LINBOX_rational2_cra_H
+#define __LINBOX_rational2_cra_H
 #define CRATIMING
 
 
@@ -33,16 +32,19 @@
 
 //#define RCRATIMING
 
-namespace LinBox {
+namespace LinBox 
+{ /*  {{{  */
 
-//     template<class T, template <class T> class Container>
-//     std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
-//         for(typename Container<T>::const_iterator refs =  C.begin();
-//             refs != C.end() ;
-//             ++refs )
-//             o << (*refs) << " " ;
-//         return o << std::endl;
-//     }
+#if 0
+	 template<class T, template <class T> class Container>
+	 std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
+		 for(typename Container<T>::const_iterator refs =  C.begin();
+			 refs != C.end() ;
+			 ++refs )
+			 o << (*refs) << " " ;
+		 return o << std::endl;
+	 }
+#endif
 
 
 	/** \brief Chinese remainder of rationals
@@ -410,6 +412,11 @@ class RCRATimer {
 	};
 #endif
 
-}
+} /*  }}}  */
 
-#endif
+#undef RCRATIMING
+#undef CRATIMING
+
+#endif // __LINBOX_rational2_cra_H
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

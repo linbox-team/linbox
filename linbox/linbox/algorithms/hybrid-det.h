@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/algorithms/hybrid-det.h
  * Copyright (C) 2005 Anna Urbanska
  *
@@ -20,8 +19,9 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __HYBRID_DET_H
-#define __HYBRID_DET_H
+
+#ifndef __LINBOX_hybrid_det_H
+#define __LINBOX_hybrid_det_H
 
 //#include "linbox/blackbox/diagonal.h"
 //#include "linbox/blackbox/compose.h"
@@ -61,7 +61,8 @@
 
 #include "linbox/solutions/det.h"
 
-namespace LinBox {
+namespace LinBox 
+{/*  {{{ */
    
         template <class Blackbox, class MyMethod>
         struct IntegerModularDetReduced {      
@@ -411,7 +412,7 @@ namespace LinBox {
 		return d ;
 	
 	    }
-/*   
+#if 0
         template <class Integers, class MyMethod>
         typename Integers::Element & lif_cra_det (typename Integers::Element         &d,
                                                         const SparseMatrix<Integers >                            &A,
@@ -664,11 +665,14 @@ namespace LinBox {
                 return d ;
 
             }
-*/ 
-} // end of LinBox namespace
-#endif // __HYBRID_DET_H
+#endif
+
+} /*  }}} */ // end of LinBox namespace
+#endif // __LINBOX_hybrid_det_H
 
 
 
 
     
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

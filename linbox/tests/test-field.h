@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
-
 /* linbox/tests/test-field.h
  * Copyright (C) 2001, 2002 Bradford Hovinen
  * See COPYING for license information.
@@ -7,8 +5,8 @@
  * Extracted by bds from test-generic.h, written by Bradford Hovinen <hovinen@cis.udel.edu>
  */
 
-#ifndef __TEST_FIELD_H
-#define __TEST_FIELD_H
+#ifndef __LINBOX_test_field_H
+#define __LINBOX_test_field_H
 
 #include <iostream>
 //#include <fstream>
@@ -1238,4 +1236,6 @@ bool testRandomIteratorStep (const Field &F,
 	return ret;
 }
 //@}
-#endif // __TEST_FIELD_H
+#endif // __LINBOX_test_field_H
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

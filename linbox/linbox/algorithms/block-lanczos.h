@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* block-lanczos.h
  * Copyright (C) 2002 Bradford Hovinen
@@ -265,3 +264,5 @@ class BlockLanczosSolver
 #include "block-lanczos.inl"
 
 #endif // __BLOCK_LANCZOS_H
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
