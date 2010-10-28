@@ -1,69 +1,94 @@
+/* Copyright (C) LinBox
+ *
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
+#ifndef __LINBOX_matio_H
+#define __LINBOX_matio_H
+
+
 #include <stdio.h>
 #include <stdlib.h>
-#ifndef MATIO_H
-#define MATIO_H
 // Reading and writing matrices over double
 
+#if 0
 // Reading a matrice from a (eventually zipped) file
-/* double * read_dbl(char * mat_file,int* tni,int* tnj) { */
-/*   char *UT, *File_Name; */
-/*   int is_gzipped = 0; */
-/*   size_t s = strlen(mat_file); */
-/*   double* X; */
-/*   if ((mat_file[--s] == 'z') &&  */
-/*       (mat_file[--s] == 'g') &&  */
-/*       (mat_file[--s] == '.')) { */
-/*     is_gzipped = 1; */
-/*     File_Name = "/tmp/bbXXXXXX_"; */
-/*     mkstemp(File_Name); */
-/*     UT = new char[s+34+strlen(File_Name)]; */
-/*     sprintf(UT,"gunzip -c %s > %s", mat_file, File_Name); */
-/*     system(UT); */
-/*     sprintf(UT,"\\rm %s", File_Name); */
-/*   } else */
-/*     File_Name = mat_file; */
+ double * read_dbl(char * mat_file,int* tni,int* tnj) 
+{ /*{{{*/
+   char *UT, *File_Name; 
+   int is_gzipped = 0; 
+   size_t s = strlen(mat_file); 
+   double* X; 
+   if ((mat_file[--s] == 'z') &&  
+       (mat_file[--s] == 'g') &&  
+       (mat_file[--s] == '.')) { 
+     is_gzipped = 1; 
+     File_Name = "/tmp/bbXXXXXX_"; 
+     mkstemp(File_Name); 
+     UT = new char[s+34+strlen(File_Name)]; 
+     sprintf(UT,"gunzip -c %s > %s", mat_file, File_Name); 
+     system(UT); 
+     sprintf(UT,"\\rm %s", File_Name); 
+   } else 
+     File_Name = mat_file; 
   
-/*   FILE* FileDes = fopen(File_Name, "r"); */
-/*   if (FileDes != NULL) { */
-/*     char * tmp = new char[200];// usigned long tni, tnj; */
-/*     fscanf(FileDes,"%d %d %s\n",tni, tnj, &tmp) ; */
-/*     int n=*tni; */
-/*     int p=*tnj; */
-/*     X = new double[n*p]; */
-/*     for (int i=0;i<n*p;++i) */
-/*       X[i] = (double) 0; */
-/*     long i,j; long val; */
-/*     fscanf(FileDes,"%ld %ld %ld\n",&i, &j, &val) ; */
-/*     while(i && j) { */
-/*       X[p*(i-1)+j-1] = (double) val; */
-/*       fscanf(FileDes,"%ld %ld %ld\n",&i, &j, &val) ; */
-/*     } */
-/*   } */
+   FILE* FileDes = fopen(File_Name, "r"); 
+   if (FileDes != NULL) { 
+     char * tmp = new char[200];// usigned long tni, tnj; 
+     fscanf(FileDes,"%d %d %s\n",tni, tnj, &tmp) ; 
+     int n=*tni; 
+     int p=*tnj; 
+     X = new double[n*p]; 
+     for (int i=0;i<n*p;++i) 
+       X[i] = (double) 0; 
+     long i,j; long val; 
+     fscanf(FileDes,"%ld %ld %ld\n",&i, &j, &val) ; 
+     while(i && j) { 
+       X[p*(i-1)+j-1] = (double) val; 
+       fscanf(FileDes,"%ld %ld %ld\n",&i, &j, &val) ; 
+     } 
+   } 
   
-/*   fclose(FileDes); */
-/*   if (is_gzipped) system(UT);         */
-/*   return X; */
-/* } */
+   fclose(FileDes); 
+   if (is_gzipped) system(UT);         
+   return X; 
+ } /*}}}*/
 
-/* // Displays a matrix  */
-/* std::ostream& write_dbl(std::ostream& c,  */
-/* 		   double* E, */
-/* 		   int n, int m, int id){ */
+ // Displays a matrix  
+ std::ostream& write_dbl(std::ostream& c,  
+ 		   double* E, 
+ 		   int n, int m, int id)
+{ /*{{{*/
   
-/*   for (int i = 0; i<n;++i){ */
-/*     for (int j=0; j<m;++j) */
-/*       c << *(E+j+id*i) << " "; */
-/*     c << std::endl; */
-/*   } */
-/*   return c << std::endl; */
-/* } */
-
+   for (int i = 0; i<n;++i){ 
+     for (int j=0; j<m;++j) 
+       c << *(E+j+id*i) << " "; 
+     c << std::endl; 
+   } 
+   return c << std::endl; 
+ } /*}}}*/
+#endif
 // Reading and writing matrices over field
 
 // Reading a matrice from a (eventually zipped) file
 template<class Field>
 typename Field::Element * read_field(const Field& F,char * mat_file,int* tni,int* tnj)
-{
+{/*{{{*/
   char *UT, *File_Name;
   int is_gzipped = 0;
   size_t s = strlen(mat_file);
@@ -102,12 +127,13 @@ typename Field::Element * read_field(const Field& F,char * mat_file,int* tni,int
   fclose(FileDes);
   if (is_gzipped) system(UT);        
   return X;
-}
+}/*}}}*/
+
 template<class Field>
 void read_field4(const Field& F,char * mat_file,int* tni,int* tnj,
 		 typename Field::Element *& NW,typename Field::Element *& NE, 
 		 typename Field::Element *& SW,typename Field::Element *& SE)
-{
+{/*{{{*/
   char *UT, *File_Name;
   int is_gzipped = 0;
   size_t s = strlen(mat_file);
@@ -180,13 +206,14 @@ void read_field4(const Field& F,char * mat_file,int* tni,int* tnj,
   
   fclose(FileDes);
   if (is_gzipped) system(UT);        
-}
+}/*}}}*/
 
 // Displays a matrix
 template<class Field>
 std::ostream& write_field(const Field& F,std::ostream& c, 
 		     const typename Field::Element* E,
-		     int n, int m, int id, bool mapleFormat = false){
+		     int n, int m, int id, bool mapleFormat = false)
+{/*{{{*/
   
   double tmp;
   //#if DEBUG
@@ -206,5 +233,5 @@ std::ostream& write_field(const Field& F,std::ostream& c,
   if (mapleFormat) c << ']';
   return c << std::endl;
   //#endif
-}
-#endif
+}/*}}}*/
+#endif //__LINBOX_matio_H

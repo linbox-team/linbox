@@ -1,6 +1,3 @@
-
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* tests/test-isposdef.C
  *
  * -----------------------------------------------------
@@ -33,7 +30,7 @@ using namespace LinBox;
 
 template <class Ring>
 bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, double sparsity = 0.05) 
-{
+{/*{{{*/
 	typedef SparseMatrix<Ring> Blackbox;
 
 	commentator.start ("Testing isPositiveDefinite", "testIsPosDef", iterations);
@@ -80,12 +77,12 @@ bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, double spars
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testEliminationRank");
 
 	return ret;
-}
+}/*}}}*/
 
 
 
 int main (int argc, char **argv)
-{
+{/*{{{*/
 
 //     commentator.setMaxDetailLevel( 100000 );
 //     commentator.setMaxDepth( 100000 );
@@ -122,4 +119,7 @@ int main (int argc, char **argv)
 
 	commentator.stop("isPositiveSemiDefinite solution test suite");
 	return pass ? 0 : -1;
-}
+}/*}}}*/
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen

@@ -1,3 +1,24 @@
+/* Copyright (C) LinBox
+ *
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -12,8 +33,8 @@
 
 using namespace LinBox;
 
-/* 
-I would like to see a matrix writer that 
+/** @file tests/test-matrix-stream.C
+@todo I would like to see a matrix writer that 
 writes sms format and generic dense format.  
 Then we could have a self contained test that 
 checks the write/read cycle without depending on preexisting data files.
@@ -42,7 +63,8 @@ TestField f;
 
 template <class BB>
 bool testMatrix( std::ostream& out, const char* filename, const char* BBName ) ;
-bool testMatrixStream(const string& matfile) {
+bool testMatrixStream(const string& matfile) 
+{/*{{{*/
 
 	bool pass = true;
 	commentator.start("Testing matrix-stream...", matfile.c_str());
@@ -183,10 +205,11 @@ bool testMatrixStream(const string& matfile) {
 	commentator.stop(ms.getFormat());
 	//commentator.stop(MSG_STATUS(pass));
 	return pass;
-}
+}/*}}}*/
 
 template <class BB>
-bool testMatrix( std::ostream& out, const char* filename, const char* BBName ) {
+bool testMatrix( std::ostream& out, const char* filename, const char* BBName ) 
+{/*{{{*/
 	out << "\tTesting " << BBName << std::endl;
 	std::ifstream fin( filename );
 	if( !fin ) {
@@ -218,9 +241,10 @@ bool testMatrix( std::ostream& out, const char* filename, const char* BBName ) {
 		}
 	}
 	return pass;
-}
+}/*}}}*/
 
-int main(int argc, char* argv[]){
+int main(int argc, char* argv[])
+{/*{{{*/
 /*
     static size_t n = 10;
     static integer q = 4093U;
@@ -253,4 +277,4 @@ int main(int argc, char* argv[]){
 	pass = pass && testMatrixStream("data/matrix-market-coordinate.matrix");
 	commentator.stop(MSG_STATUS(pass));
 	return pass ? 0 : -1;
-}
+}/*}}}*/

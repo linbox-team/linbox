@@ -1,7 +1,22 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
-/* tests/test-subvector.C
+/* Copyright (C) LinBox
+ *
  * Evolved from Will Turner's test-subvector.cpp  -bds
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
 #include "linbox/linbox-config.h"
@@ -18,7 +33,7 @@ template <class Field>
 static bool testSubvector(Field &F, size_t n); 
 
 int main(int argc, char** argv)
-{	
+{	/*{{{*/
     // set up command line options
     static size_t n = 8;
     static Argument args[] = 
@@ -40,7 +55,7 @@ int main(int argc, char** argv)
     // finish
 	commentator.stop("Subvector test suite");
     return pass? 0 : -1;
-}
+}/*}}}*/
 
 /* Test Subvector class 
  * Subvector has the vector interface less those that
@@ -51,7 +66,7 @@ using namespace LinBox;
 
 template <class Field>
 static bool testSubvector(Field &F, size_t n) 
-{
+{/*{{{*/
 	// commentator setup
 	const char *  title = "Subvector test";
 	commentator.start(title, title, 1);
@@ -274,4 +289,4 @@ static bool testSubvector(Field &F, size_t n)
 	// finish
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, title);
 	return ret;
-}
+}/*}}}*/

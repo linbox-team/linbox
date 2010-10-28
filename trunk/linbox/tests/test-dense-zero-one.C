@@ -1,3 +1,25 @@
+/* Copyright (C) LinBox
+ *
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
+
+
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/algorithms/blas-domain.h"
 #include "linbox/matrix/matrix-domain.h"
@@ -10,9 +32,11 @@
 #include "linbox/util/timer.h"
 #include "test-common.h"
 
-namespace LinBox{
+namespace LinBox
+{
 template <class _Field>
-struct BlackboxDomain : public _Field {
+struct BlackboxDomain : public _Field 
+{/*{{{*/
 	// types Scalar, Block, Blackbox
 	typedef _Field Field; // transitional
 	typedef typename _Field::Element Scalar;
@@ -77,7 +101,7 @@ struct BlackboxDomain : public _Field {
 				r.random(*place);
 	}
 
-}; //BlackboxDomain
+}; //BlackboxDomain/*}}}*/
 
 } // LinBox
 
@@ -85,7 +109,8 @@ using namespace LinBox;
 using namespace std;
 
 template <class Blackbox>
-bool testAssociativity(Blackbox& A) {
+bool testAssociativity(Blackbox& A) 
+{/*{{{*/
 	typedef typename Blackbox::MatrixDomain Dom;
 	Dom MD = A.domain();
 	size_t m = A.rowdim(), n = A.coldim() - 100;
@@ -105,11 +130,11 @@ bool testAssociativity(Blackbox& A) {
 	return MD.areEqual(E,G);
 
 
-} // testAssociativity
+} // testAssociativity/*}}}*/
 
 template <class Blackbox>
 void testTiming(Blackbox & A)
-{
+{/*{{{*/
 	typedef typename Blackbox::MatrixDomain Dom;
 	typedef typename Dom::Block Block;
 
@@ -156,12 +181,12 @@ void testTiming(Blackbox & A)
 
 	cout << "End of timing tests" << endl << endl;
 
-} // testTiming
+} // testTiming/*}}}*/
 
 
 template <class Blackbox>
 void blockSizeTimingTest(Blackbox & A, size_t size)
-{
+{/*{{{*/
 	typedef typename Blackbox::MatrixDomain Dom;
 	typedef typename Dom::Block Block;
 
@@ -192,12 +217,12 @@ void blockSizeTimingTest(Blackbox & A, size_t size)
 
 	cout << endl;
 
-} //blockSizeTimingTest()
+} //blockSizeTimingTest()/*}}}*/
 
 
 template <class Blackbox>
 void stressTest (Blackbox & A)
-{
+{/*{{{*/
 	//Note that the rowdim/coldim of A must be 30000
 	typedef typename Blackbox::MatrixDomain Dom;
 	typedef typename Dom::Block Block;
@@ -226,11 +251,11 @@ void stressTest (Blackbox & A)
 	cout << "domain mul time: " << timer << endl;
 
 	cout << endl;
-}  //end stressTest()
+}  //end stressTest()/*}}}*/
 
 template <class Blackbox>
 void largeTest (Blackbox & A)
-{
+{/*{{{*/
 	//Use for large blackboxes
 	typedef typename Blackbox::MatrixDomain Dom;
 	typedef typename Dom::Block Block;
@@ -250,10 +275,11 @@ void largeTest (Blackbox & A)
 	A.unpackingApply(C,B,2048);
 	timer.stop();
 	cout << "unpacking apply time: " << timer << endl;
-}  //end largeTest
+}  //end largeTest/*}}}*/
 
 
-int main (int argc, char* argv[]) {
+int main (int argc, char* argv[]) 
+{/*{{{*/
 
 	static size_t n = 100;
         static integer f = 4093;
@@ -374,5 +400,5 @@ int main (int argc, char* argv[]) {
 		return pass ? 0 : -1;
 	}
 
-}
+}/*}}}*/
 

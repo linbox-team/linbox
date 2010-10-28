@@ -1,9 +1,10 @@
-/* -*- mode: c; style: linux -*- */
-
 /* tests/test-ntl-zz_p.cpp
  * Copyright (C) 2002 William J. Turner
+ * Copyright (C) LinBox
  *
  * Written by William J. Turner <wjturner@math.ncsu.edu>
+ *
+ * see COPYING file for license
  *
  */
 
@@ -21,7 +22,7 @@
 using namespace LinBox;
 
 int main (int argc, char **argv)
-{
+{/*{{{*/
 	static size_t n = 10000;
 	static int iterations = 1;
 
@@ -57,4 +58,4 @@ int main (int argc, char **argv)
 	// -bds:  Well, compilation is checked at least.  Work needed: A meaningful test is falsifyable.
 
 	return 0;
-}
+}/*}}}*/
