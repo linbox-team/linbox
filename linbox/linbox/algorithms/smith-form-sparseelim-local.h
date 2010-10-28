@@ -1,26 +1,47 @@
-#ifndef __LINBOX_PP_GAUSS_H__
-#define __LINBOX_PP_GAUSS_H__
-// ========================================================================= //
-// (C) Givaro Team 1999
-// Time-stamp: <20 May 10 16:36:27 Jean-Guillaume.Dumas@imag.fr> 
-// ========================================================================= //
+/* Copyright (C) Givaro Team 1999
+ * Copyright (C) LinBox
+ * Written by JG Dumas
+ *
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
+
+#ifndef __LINBOX_pp_gauss_H
+#define __LINBOX_pp_gauss_H
 
 #include <map>
 #include <givaro/givconfig.h> // for Signed_Trait
 #include <linbox/algorithms/gauss.h>
 
 namespace LinBox 
-{
+{/*{{{*/
   
-//     template<class T, template <class X> class Container>
-//     std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
-//         for(typename Container<T>::const_iterator refs =  C.begin();
-//             refs != C.end() ;
-//             ++refs )
-//             o << (*refs) << " " ;
-//         return o << std::endl;
-//     }
- 
+#if 0
+	template<class T, template <class X> class Container>
+		 std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
+			 for(typename Container<T>::const_iterator refs =  C.begin();
+					 refs != C.end() ;
+					 ++refs )
+				 o << (*refs) << " " ;
+			 return o << std::endl;
+		 }
+#endif
+
 /** \brief Repository of functions for rank modulo a prime power by elimination 
     on sparse matrices.
 */
@@ -436,6 +457,6 @@ namespace LinBox
     
 
 
-} // end of LinBox namespace
+} // end of LinBox namespace/*}}}*/
 
-#endif 
+#endif  //__LINBOX_pp_gauss_H

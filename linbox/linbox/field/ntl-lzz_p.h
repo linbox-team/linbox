@@ -1,9 +1,12 @@
 /* linbox/field/ntl-lzz_p.h
  * Copyright (C) 1999-2005 W. J. Turner,
  *               2001 Bradford Hovinen
+ * Copyright (C) LinBox
  *
  * Written by W. J. Turner <wjturner@acm.org>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
+ * 
+ * see COPYING for license information
  *
  */
 

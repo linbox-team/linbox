@@ -16,6 +16,8 @@
  * vector-implementation dependent code into VectorTraits only - as is done now
  * with the function sort.
  *
+ * see COPYING for license details
+ *
  * ------------------------------------ 
  */
 
@@ -34,7 +36,7 @@
 #include "linbox/field/rebind.h"
 
 namespace LinBox
-{
+{/*{{{*/
 
 /** @name Vector traits.
  * Vector traits are use to allow template specialization to choose different
@@ -447,7 +449,7 @@ namespace LinBox
    
 //@} Vector traits
 
-} // namespace LinBox
+} // namespace LinBox/*}}}*/
 
 #endif // __LINBOX_vector_traits_H
 

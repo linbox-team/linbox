@@ -3,6 +3,7 @@
  * definitions of many helper classes and types.  The type of interest is 
  * XMLTree.  This is used to parse and std::istream containing XML text into
  * a tree structure, and write a tree structure in XML formatting to an std::ostream
+ * GNU compatible. (?)
  */
 
 /*

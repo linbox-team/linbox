@@ -1,8 +1,27 @@
-/* not sure filename
+/* Copyright (C)  LinBox
+ *
  * authors: bds and zw
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
-#ifndef __SMITH_FORM_ADAPTIVE_H__
-#define __SMITH_FORM_ADAPTIVE_H__
+
+
+#ifndef __LINBOX_smith_form_adaptive_INL
+#define __LINBOX_smith_form_adaptive_INL
 
 #include <math.h>
 #include <vector>
@@ -32,7 +51,8 @@
 #include <linbox/field/PIR-ntl-ZZ_p.h>
 #endif
 
-namespace LinBox {
+namespace LinBox 
+{ /*  {{{  */
 
 	/* Compute the local smith form at prime p, when modular (p^e) fits in long
 	*/
@@ -547,6 +567,7 @@ namespace LinBox {
 		report << "Computation of the invariant factors ends." << std::endl;
 		//commentator. stop ("done", NULL, "Smithform");
 	}
-}
+} /*  }}}  */
 
-#endif
+#endif //__LINBOX_smith_form_adaptive_INL
+
