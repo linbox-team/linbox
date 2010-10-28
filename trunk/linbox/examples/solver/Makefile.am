@@ -1,3 +1,6 @@
+# Copyright (c) 2010 the LinBox group
+# This file is part of LinBox
+# see COPYING for licence
 INCLUDES=-I$(top_srcdir)
 
 AM_CPPFLAGS=-g $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(ATLAS_CFLAGS) 
