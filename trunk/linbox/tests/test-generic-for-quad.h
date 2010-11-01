@@ -1,4 +1,5 @@
 /* linbox/tests/test-generic-for-quad.h
+ * Copyright (C) LinBox
  *
  * Evolved from test-generic.h by Hui Wang, spring/summer 2006
  * The test-blackbox is substantially different.  
@@ -796,7 +797,7 @@ bool testFreshmansDream (const Field &F, const char *name, unsigned int iteratio
 	return ret;
 }
 
-
+
 /* Tests of field features */ 
 
 /** Generic test 7: Consistency of in-place and out-of-place arithmetic
@@ -1011,7 +1012,7 @@ bool testRanditerBasic(const Field &F, const char *name, unsigned int iterations
 	return ret;
 }
 
-
+
 /* Convenience function to run all of the field tests on a given field */
 
 template <class Field>
@@ -1050,7 +1051,7 @@ bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, s
 }
 //@}
 
-
+
 ///@name Generic tests for black boxes 
 //@{
 /** Generic Blackbox test 1: (u^T A) v = u^T (A v).
@@ -2036,4 +2037,4 @@ static bool testCopyEqual (Field &F, const char *text, LinBox::VectorStream<Vect
 
 #endif // __LINBOX_test_generic_quad_H
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

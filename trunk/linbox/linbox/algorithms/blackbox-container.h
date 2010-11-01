@@ -1,4 +1,3 @@
-
 /* linbox/algorithms/blackbox-container.h
  * Copyright (C) 1999, 2001 Jean-Guillaume Dumas, Bradford Hovinen
  *
@@ -10,8 +9,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __BLACKBOX_CONTAINER_H
-#define __BLACKBOX_CONTAINER_H
+#ifndef __LINBOX_blackbox_container_H
+#define __LINBOX_blackbox_container_H
 
 #include <linbox/randiter/archetype.h>
 #include <linbox/algorithms/blackbox-container-base.h>
@@ -140,7 +139,7 @@ class BlackboxContainer : public BlackboxContainerBase<Field, _Blackbox> {
  
 }
 
-#endif // __BLACKBOX_CONTAINER_H
+#endif // __LINBOX_blackbox_container_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

@@ -48,9 +48,11 @@ namespace LinBox
 	
 #define DOUBLE_MANTISSA 53
 #define FLOAT_MANTISSA 24
+
+//#define LB_TRTR
 	
 class FFLAS 
-{/*{{{*/
+{
 
 public:	
 	enum FFLAS_TRANSPOSE { FflasNoTrans=111, FflasTrans=112};
@@ -311,6 +313,27 @@ public:
 						 const typename Field::Element beta,
 						 typename Field::Element* C, 
 						 const size_t ldc);
+#ifdef LB_TRTR
+	// BB
+	/* B \gets alpha op(A)*B (for FFLAS_SIDE::FflasLeft)
+	* A and B are triangular, with B UpLo
+	* and op(A) = A, A^T according to TransA
+	* A and B can be (non)unit
+	* 
+	*/ 
+	template<class Field>
+	static typename Field::Element* ftrtr (const Field& F, const FFLAS_SIDE Side,
+					       const FFLAS_UPLO Uplo, 
+					       const FFLAS_TRANSPOSE TransA,
+					       const FFLAS_DIAG ADiag, 
+					       const FFLAS_DIAG BDiag, 
+					       const size_t M, 
+					       const typename Field::Element alpha,
+					       typename Field::Element * A, const size_t lda,
+					       typename Field::Element * B, const size_t ldb);
+#endif
+	
+
 	/**
 	 * MatCopy
 	 * Makes a copy of the matrix M into a new allocated space.
@@ -684,7 +707,76 @@ protected:
 	template <class Element>
 	class ftrmmRightLowerTransUnit;
 
-}; // class FFLAS/*}}}*/
+	// BB : ça peut servir...
+#ifdef LB_TRTR
+	template <class Element>
+	class ftrtrLeftUpperNoTransNonUnitNonUnit;
+	template <class Element>
+	class ftrtrLeftUpperNoTransUnitNonUnit;
+	template <class Element>
+	class ftrtrLeftUpperTransNonUnitNonUnit;
+	template <class Element>
+	class ftrtrLeftUpperTransUnitNonUnit;
+	template <class Element>
+	class ftrtrLeftLowerNoTransNonUnitNonUnit;
+	template <class Element>
+	class ftrtrLeftLowerNoTransUnitNonUnit;
+	template <class Element>
+	class ftrtrLeftLowerTransNonUnitNonUnit;
+	template <class Element>
+	class ftrtrLeftLowerTransUnitNonUnit;
+	template <class Element>
+	class ftrtrLeftUpperNoTransNonUnitUnit;
+	template <class Element>
+	class ftrtrLeftUpperNoTransUnitUnit;
+	template <class Element>
+	class ftrtrLeftUpperTransNonUnitUnit;
+	template <class Element>
+	class ftrtrLeftUpperTransUnitUnit;
+	template <class Element>
+	class ftrtrLeftLowerNoTransNonUnitUnit;
+	template <class Element>
+	class ftrtrLeftLowerNoTransUnitUnit;
+	template <class Element>
+	class ftrtrLeftLowerTransNonUnitUnit;
+	template <class Element>
+	class ftrtrLeftLowerTransUnitUnit;
+	template <class Element>
+	class ftrtrRightUpperNoTransNonUnitNonUnit;
+	template <class Element>
+	class ftrtrRightUpperNoTransUnitNonUnit;
+	template <class Element>
+	class ftrtrRightUpperTransNonUnitNonUnit;
+	template <class Element>
+	class ftrtrRightUpperTransUnitNonUnit;
+	template <class Element>
+	class ftrtrRightLowerNoTransNonUnitNonUnit;
+	template <class Element>
+	class ftrtrRightLowerNoTransUnitNonUnit;
+	template <class Element>
+	class ftrtrRightLowerTransNonUnitNonUnit;
+	template <class Element>
+	class ftrtrRightLowerTransUnitNonUnit;
+	template <class Element>
+	class ftrtrRightUpperNoTransNonUnitUnit;
+	template <class Element>
+	class ftrtrRightUpperNoTransUnitUnit;
+	template <class Element>
+	class ftrtrRightUpperTransNonUnitUnit;
+	template <class Element>
+	class ftrtrRightUpperTransUnitUnit;
+	template <class Element>
+	class ftrtrRightLowerNoTransNonUnitUnit;
+	template <class Element>
+	class ftrtrRightLowerNoTransUnitUnit;
+	template <class Element>
+	class ftrtrRightLowerTransNonUnitUnit;
+	template <class Element>
+	class ftrtrRightLowerTransUnitUnit;
+
+#endif
+
+}; // class FFLAS
 
 #include "fflas_bounds.inl"
 #include "fflas_fgemm.inl"
@@ -697,12 +789,19 @@ protected:
 #include "fflas_fdot.inl"
 #include "fflas_fcopy.inl"
 
+//BB
+#ifdef LB_TRTR
+#include "fflas_ftrtr.inl"
+#endif
+
 #ifdef _LINBOX_LINBOX_CONFIG_H
 }
 #endif
+
+#undef LB_TRTR
 
 #endif // __LINBOX_fflas_H
 
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

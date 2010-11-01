@@ -1,4 +1,3 @@
-
 /* linbox/algorithms/blackbox-block-container-base.h
  * Copyright (C) 2002 Pascal Giorgi
  *
@@ -21,11 +20,11 @@
  */
 
 
-#ifndef __BLACKBOX_BLOCK_CONTAINER_BASE_H
-#define __BLACKBOX_BLOCK_CONTAINER_BASE_H
+#ifndef __LINBOX_blackbox_block_container_base_H
+#define __LINBOX_blackbox_block_container_base_H
 
 
-#include "time.h"
+#include "time.h" // for seeding
 
 #include <linbox/blackbox/archetype.h>
 #include <linbox/matrix/blas-matrix.h>
@@ -213,6 +212,6 @@ namespace LinBox
  
 }
 
-#endif // __BLACKBOX_BLOCK_CONTAINER_BASE_H
+#endif // __LINBOX_blackbox_block_container_base_H
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

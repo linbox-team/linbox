@@ -27,7 +27,7 @@
 using namespace LinBox;
 bool test() ;
 int main(int argc, char** argv)
-{	/*{{{*/
+{	
    static Argument args[] = {
    };
    parseArguments (argc, argv, args);
@@ -36,10 +36,10 @@ int main(int argc, char** argv)
    bool pass = test();
 	commentator.stop("Subiterator test suite");
    return pass? 0 : -1;
-}/*}}}*/
+}
 
 bool test()
-{/*{{{*/
+{
 	const char* title = "Subiterator test";
 	commentator.start(title, title, 1);
 	ostream &report = commentator.report 
@@ -82,7 +82,7 @@ bool test()
 
 	commentator.stop (MSG_STATUS (res), (const char *) 0, title);
 	return res;
-}/*}}}*/
+}
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

@@ -38,7 +38,7 @@
 #include <linbox/util/commentator.h>
 
 namespace LinBox
-{/*{{{*/
+{
 
 template <class Element, class Row, class Trait>
 template <class Field>
@@ -960,9 +960,9 @@ SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag >
 	return AT;
 }
 
-} // namespace LinBox/*}}}*/
+} // namespace LinBox
 
 #endif // __LINBOX_matrix_sparse_INL
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

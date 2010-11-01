@@ -1,4 +1,5 @@
 /* linbox/ring/givaro-polynomial.h
+ * Copyright(C) LinBox
  * Written by 
  * Clement Pernet
  *
@@ -56,7 +57,8 @@ public:
 }
 #include "linbox/field/ntl-ZZ.h"
 #include "NTL/ZZXFactoring.h"
-namespace LinBox {
+namespace LinBox 
+{
     typedef GivPolynomialRing<UnparametricField<integer>,Dense> GivPolIntDense;
 
     template <>
@@ -91,7 +93,8 @@ namespace LinBox {
 }
 
 #include <linbox/field/PID-integer.h>
-namespace LinBox {
+namespace LinBox 
+{
     typedef GivPolynomialRing<PID_integer,Dense> GivPolPIDIntDense;
     template <>
     template <>
@@ -197,4 +200,4 @@ namespace LinBox {
 #endif // __LINBOX_givaropolynomial_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

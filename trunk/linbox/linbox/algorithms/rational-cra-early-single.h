@@ -26,7 +26,7 @@
 #include "linbox/algorithms/cra-early-single.h"
 
 namespace LinBox 
-{/*{{{*/
+{
 
     template<class Domain_Type>
     struct EarlySingleRatCRA : public EarlySingleCRA<Domain_Type> {
@@ -79,9 +79,9 @@ namespace LinBox
             return res += r0;   // res <-- u0 + (u1-u0)( m0^{-1} mod m1 ) m0 and res <  m0m1
         }
     };
-}/*}}}*/
+}
 
 #endif
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

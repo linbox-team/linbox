@@ -29,7 +29,7 @@
 #if 0
 // Reading a matrice from a (eventually zipped) file
  double * read_dbl(char * mat_file,int* tni,int* tnj) 
-{ /*{{{*/
+{ 
    char *UT, *File_Name; 
    int is_gzipped = 0; 
    size_t s = strlen(mat_file); 
@@ -67,13 +67,13 @@
    fclose(FileDes); 
    if (is_gzipped) system(UT);         
    return X; 
- } /*}}}*/
+ } 
 
  // Displays a matrix  
  std::ostream& write_dbl(std::ostream& c,  
  		   double* E, 
  		   int n, int m, int id)
-{ /*{{{*/
+{ 
   
    for (int i = 0; i<n;++i){ 
      for (int j=0; j<m;++j) 
@@ -81,14 +81,14 @@
      c << std::endl; 
    } 
    return c << std::endl; 
- } /*}}}*/
+ } 
 #endif
 // Reading and writing matrices over field
 
 // Reading a matrice from a (eventually zipped) file
 template<class Field>
 typename Field::Element * read_field(const Field& F,char * mat_file,int* tni,int* tnj)
-{/*{{{*/
+{
   char *UT, *File_Name;
   int is_gzipped = 0;
   size_t s = strlen(mat_file);
@@ -127,13 +127,13 @@ typename Field::Element * read_field(const Field& F,char * mat_file,int* tni,int
   fclose(FileDes);
   if (is_gzipped) system(UT);        
   return X;
-}/*}}}*/
+}
 
 template<class Field>
 void read_field4(const Field& F,char * mat_file,int* tni,int* tnj,
 		 typename Field::Element *& NW,typename Field::Element *& NE, 
 		 typename Field::Element *& SW,typename Field::Element *& SE)
-{/*{{{*/
+{
   char *UT, *File_Name;
   int is_gzipped = 0;
   size_t s = strlen(mat_file);
@@ -206,17 +206,16 @@ void read_field4(const Field& F,char * mat_file,int* tni,int* tnj,
   
   fclose(FileDes);
   if (is_gzipped) system(UT);        
-}/*}}}*/
+}
 
 // Displays a matrix
 template<class Field>
 std::ostream& write_field(const Field& F,std::ostream& c, 
-		     const typename Field::Element* E,
-		     int n, int m, int id, bool mapleFormat = false)
-{/*{{{*/
+			  const typename Field::Element* E,
+			  int n, int m, int id, bool mapleFormat = false)
+{
   
   double tmp;
-  //#if DEBUG
   if (mapleFormat) c << '[';
   for (int i = 0; i<n;++i){
     if (mapleFormat) c << '[';
@@ -232,8 +231,7 @@ std::ostream& write_field(const Field& F,std::ostream& c,
   }
   if (mapleFormat) c << ']';
   return c << std::endl;
-  //#endif
-}/*}}}*/
+}
 #endif //__LINBOX_matio_H
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

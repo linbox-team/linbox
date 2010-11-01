@@ -32,7 +32,7 @@
 #include <linbox/integer.h>
 #include <linbox/blackbox/dense.h>
 
-namespace LinBox {/*{{{*/
+namespace LinBox {
 
 class SmithFormAdaptive {
 	public:
@@ -95,9 +95,9 @@ class SmithFormAdaptive {
 };
 	const long SmithFormAdaptive::prime[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97};
 	const int SmithFormAdaptive::NPrime = 25;
-}/*}}}*/
+}
 
 #include <linbox/algorithms/smith-form-adaptive.inl>
 #endif //__LINBOX_smith_form_adaptive_H
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

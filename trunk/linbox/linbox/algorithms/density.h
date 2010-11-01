@@ -24,7 +24,7 @@
 #include <linbox/vector/vector-traits.h>
 
 namespace LinBox 
-{/*{{{*/
+{
 
 	/** \brief Estimate nonzero entries in a vector, used in parallel elimination */
 	template<class Vector>
@@ -62,9 +62,9 @@ namespace LinBox
 
 		return v.first.size();
 	}
-}/*}}}*/
+}
 
 #endif //__LINBOX_density_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

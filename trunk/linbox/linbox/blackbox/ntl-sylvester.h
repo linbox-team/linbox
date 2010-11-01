@@ -21,7 +21,7 @@
 #include "linbox/vector/vector-traits.h"
 
 namespace LinBox 
-{/*{{{*/
+{
     /// This is a representation of the Sylvester matrix of two polynomials.
 /// \ingroup blackbox
     template <class _Field>
@@ -77,11 +77,11 @@ namespace LinBox
 
       
     };// End,   template <class Field, class Vector>
-}/*}}}*/
+}
 
 #include <linbox/blackbox/ntl-sylvester.inl>     
     
 #endif //__LINBOX_ntl_sylvester_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

@@ -30,10 +30,8 @@
 
 #include <linbox/field/PID-integer.h>
 
-using namespace std;
-
 namespace LinBox 
-{/*  {{{ */
+{
 
 enum RReconstructionSchedule {
 	INCREMENTAL, QUADRATIC, GEOMETRIC, CERTIFIED
@@ -170,7 +168,7 @@ bool scheduled(const size_t i) const {
 			}
 			if (!res) return res;
 			else {
-				//cout << a[i] << "/" << b*new_den << "\n"; 
+				//std::cout << a[i] << "/" << b*new_den << "\n"; 
 				if (new_den > 1) {
 					for (int j = a.size()-1; j > i ; --j) {
                                                 a[j] *=new_den;
@@ -204,7 +202,7 @@ bool scheduled(const size_t i) const {
 		bool res;
 		if (x_in >0) res = _RR.reconstructRational(a,b,x_in,m);
 		else { a = 0; b =1; res = true;}
-		//_RR.write(cout);
+		//_RR.write(std::cout);
 		return res;
 	}
   
@@ -223,7 +221,7 @@ bool scheduled(const size_t i) const {
 		bool res;
 		if (x_in >0) res = _RR.reconstructRational(a,b,x_in,m,a_bound);
 		else { a = 0; b =1; res = true;}
-		//_RR.write(cout);
+		//_RR.write(std::cout);
 		return res;
 	}
 
@@ -243,7 +241,7 @@ bool scheduled(const size_t i) const {
 		if (x_in > 0) _RR.reconstructRational(a,b,x_in,m,(bound>a_bound?bound:a_bound));
 		else  { a = 0; b =1; }
 		bool res=  (b > b_bound)? false: true;
-		//_RR.write(cout);
+		//_RR.write(std::cout);
 		return res;
 	}
 
@@ -327,11 +325,11 @@ public:
 	//}
 };
 
-} //namespace LinBox/*}}}*/
+} //namespace LinBox
 
 #undef DEF_RR_THRESH
 #endif
 
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

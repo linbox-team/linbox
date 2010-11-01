@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* linbox/algorithms/la-block-lanczos.inl
  * Copyright 2002-2004 Bradford Hovinen
@@ -13,8 +12,8 @@
  * Function definitions for block Lanczos iteration
  */
 
-#ifndef __LA_BLOCK_LANCZOS_INL
-#define __LA_BLOCK_LANCZOS_INL
+#ifndef __LINBOX_la_block_lanczos_INL
+#define __LINBOX_la_block_lanczos_INL
 
 #include "linbox/linbox-config.h"
 
@@ -1534,4 +1533,7 @@ void LABlockLanczosSolver<Field, Matrix>::init_temps ()
 
 } // namespace LinBox
 
-#endif // __LA_BLOCK_LANCZOS_INL
+#endif // __LINBOX_la_block_lanczos_INL
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

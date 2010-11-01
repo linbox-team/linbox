@@ -26,16 +26,16 @@
 #include <linbox/vector/vector-domain.h>
 // Namespace in which all LinBox library code resides
 namespace LinBox
-{/*{{{*/
+{
 	template <class Blackbox, class Poly>
 	class PolynomialBB ;
 	template <class Blackbox, class Poly>
 	class PolynomialBBOwner ;
-}/*}}}*/
+}
 
 
 namespace LinBox
-{/*{{{*/
+{
 
 	/** \brief represent the matrix P(A) where A is a blackbox and P a polynomial
 	    
@@ -172,11 +172,11 @@ namespace LinBox
 
 	};
 
-} // namespace LinBox/*}}}*/
+} // namespace LinBox
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
-{/*{{{*/
+{
 
 	/** \brief represent the matrix P(A) where A is a blackbox and P a polynomial
 	    
@@ -326,9 +326,9 @@ namespace LinBox
 
 	};
 
-} // namespace LinBox/*}}}*/
+} // namespace LinBox
 
 #endif // __LINBOX_bb_polynomial_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

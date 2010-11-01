@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/algorithms/diophantine-solver.inl
  * Copyright (C) 2004 David Pritchard
  *
@@ -20,8 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LINBOX_DIOPHANTINE_SOLVER_INL
-#define __LINBOX_DIOPHANTINE_SOLVER_INL
+#ifndef __LINBOX_diophantine_solver_INL
+#define __LINBOX_diophantine_solver_INL
 
 #include <linbox/blackbox/dense.h>
 #include <linbox/blackbox/sparse.h>
@@ -38,7 +37,8 @@
 
 #define MONTE_CARLO_BOREDOM 21
 
-namespace LinBox {
+namespace LinBox 
+{
 
 
 	template<class QSolver>
@@ -176,4 +176,10 @@ namespace LinBox {
 	}
 	
 } //end of namespace LinBox
-#endif
+
+#undef MONTE_CARLO_BOREDOM
+
+#endif //__LINBOX_diophantine_solver_INL
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

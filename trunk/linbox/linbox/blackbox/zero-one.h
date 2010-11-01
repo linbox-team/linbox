@@ -1,5 +1,4 @@
 /* -*- mode: C++; style: linux -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
 
 /* linbox/blackbox/zero-one.h
  * Copyright (C) 2002 Rich Seagraves
@@ -257,3 +256,4 @@ namespace LinBox
 
 #endif // __LINBOX_zero_one_H
 
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

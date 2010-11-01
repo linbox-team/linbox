@@ -19,7 +19,7 @@
 #include "linbox/vector/light_container.h"
 
 namespace LinBox 
-{/*{{{*/
+{
     
  /** \brief Time and space efficient representation of sparse matrices over GF2.
    * Representation if a full row array containing vector of non-zero locations
@@ -134,11 +134,11 @@ namespace LinBox
         size_t _rowdim, _coldim, _nnz;
   };
     
-}/*}}}*/
+}
 
 #include "linbox/blackbox/zo-gf2.inl"
 
 #endif //__LINBOX_zo_gf2_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

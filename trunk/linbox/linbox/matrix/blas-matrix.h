@@ -31,7 +31,8 @@
 #include <linbox/util/debug.h>
 #include <linbox/matrix/matrix-category.h>
 
-namespace LinBox {
+namespace LinBox 
+{
 
 	template<class Element>
 	class BlasMatrix;
@@ -205,15 +206,17 @@ namespace LinBox {
 		}
 
 
-// 		// Constructor from matrix (no copy)
-// 		BlasMatrix ( DenseMatrixBase<Element>& A )	
-// 			: DenseSubmatrix<Element>(A,0,0,A.rowdim(),A.coldim()), _stride(A.coldim()) , _alloc(false)
-// 		{ _ptr = this->_M->FullIterator();}
-		
-// 		// Constructor from matrix (no copy )
-// 		BlasMatrix ( DenseMatrixBase<Element>& A, const size_t i0,const size_t j0,const size_t m, const size_t n) 
-// 			: DenseSubmatrix<Element>(A,i0,j0,m,n), _stride(A.coldim()) , _alloc(false) 
-// 		{_ptr = this->_M->FullIterator();}
+#if 0
+ 		// Constructor from matrix (no copy)
+ 		BlasMatrix ( DenseMatrixBase<Element>& A )	
+ 			: DenseSubmatrix<Element>(A,0,0,A.rowdim(),A.coldim()), _stride(A.coldim()) , _alloc(false)
+ 		{ _ptr = this->_M->FullIterator();}
+
+ 		// Constructor from matrix (no copy )
+ 		BlasMatrix ( DenseMatrixBase<Element>& A, const size_t i0,const size_t j0,const size_t m, const size_t n) 
+ 			: DenseSubmatrix<Element>(A,i0,j0,m,n), _stride(A.coldim()) , _alloc(false) 
+ 		{_ptr = this->_M->FullIterator();}
+#endif
 
 
 
@@ -224,16 +227,16 @@ namespace LinBox {
 			_ptr = this->_M->FullIterator();
 		}
 		
+#if 0
+ 		// Copy Contructor of a matrix (no copy is done, just through pointer)
+ 		BlasMatrix(BlasMatrix<Element>& A) 
+ 			: DenseSubmatrix<Element>(A), _stride(A._stride), _alloc(false), _ptr(A._ptr) {}
 
-// 		// Copy Contructor of a matrix (no copy is done, just through pointer)
-// 		BlasMatrix(BlasMatrix<Element>& A) 
-// 			: DenseSubmatrix<Element>(A), _stride(A._stride), _alloc(false), _ptr(A._ptr) {}
 
-
-// 		// Copy Contructor of a submatrix (no copy is done, just through pointer)
-// 		BlasMatrix(BlasMatrix<Element>& A, const size_t i, const size_t j, const size_t m, const size_t n) 
-// 			: DenseSubmatrix<Element>(A,i,j,m,n), _stride(A._stride), _alloc(false), _ptr(A._ptr+ i*A._stride+j) {}
-
+ 		// Copy Contructor of a submatrix (no copy is done, just through pointer)
+ 		BlasMatrix(BlasMatrix<Element>& A, const size_t i, const size_t j, const size_t m, const size_t n) 
+ 			: DenseSubmatrix<Element>(A,i,j,m,n), _stride(A._stride), _alloc(false), _ptr(A._ptr+ i*A._stride+j) {}
+#endif
 
 		
 		~BlasMatrix ()  {			
@@ -491,4 +494,4 @@ namespace LinBox {
 #endif // __LINBOX_blas_matrix_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* linbox/ffpack/ffpack_frobenius.inl
  * Copyright (C) 2007 Clement Pernet
@@ -537,3 +536,5 @@ void FFPACK::DeCompressRowsQA (Field& F, const size_t M, const size_t N,
 		fcopy (F, M, A + (w_idx--)*lda, 1, tmp + i*ldtmp, 1);
 	}
 }
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

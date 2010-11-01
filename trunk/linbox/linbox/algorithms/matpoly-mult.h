@@ -20,8 +20,8 @@
  */
 
 
-#ifndef __LINBOX_MATPOLY_MULT
-#define __LINBOX_MATPOLY_MULT
+#ifndef __LINBOX_matpoly_mult_H
+#define __LINBOX_matpoly_mult_H
 
 #include <linbox/randiter/random-fftprime.h>
 #include <linbox/algorithms/blas-domain.h>
@@ -35,7 +35,8 @@
 #endif
 //#define FFT_TIMING
 
-namespace LinBox {
+namespace LinBox 
+{
 
 
 #define FFT_DEG_THRESHOLD   64
@@ -1509,7 +1510,6 @@ namespace LinBox {
 
 } // end of namespace LinBox
 
-
-#endif
+#endif //__LINBOX_matpoly_mult_H
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

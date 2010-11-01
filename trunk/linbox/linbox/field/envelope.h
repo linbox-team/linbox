@@ -49,7 +49,7 @@
 
 // Namespace in which all LinBox code resides
 namespace LinBox 
-{ /*{{{*/
+{ 
 	// Forward declarations
 	template <class Field> class RandIterEnvelope;
 
@@ -556,11 +556,11 @@ namespace LinBox
 
 	}; // class FieldEnvelope
 
-} // namespace LinBox/*}}}*/
+} // namespace LinBox
 
 #include "linbox/randiter/envelope.h"
 
 #endif // __LINBOX_field_envelope_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

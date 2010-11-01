@@ -20,16 +20,15 @@
  */
 
 
-#ifndef __LINBOXX__CLASSIC_RECONSTRUCTION_H__
-#define __LINBOXX__CLASSIC_RECONSTRUCTION_H__
+#ifndef __LINBOX_classic_reconstruction_H
+#define __LINBOX_classic_reconstruction_H
 
 #include <iostream>
 
 #include "linbox/algorithms/rational-reconstruction-base.h"
 
-using namespace std;
-
-namespace LinBox {
+namespace LinBox 
+{ 
 
 	/*
 	 * implements classic rational reconstruction by extended euclidean algorithm,
@@ -215,7 +214,8 @@ namespace LinBox {
 	 */
 
 	template <class Ring>
-	class ClassicMaxQRationalReconstruction:public ClassicRationalReconstruction<Ring> {
+	class ClassicMaxQRationalReconstruction:public ClassicRationalReconstruction<Ring> 
+	{
 	public:
 		const Ring _Z;
 		typedef typename Ring::Element Element;
@@ -306,6 +306,6 @@ namespace LinBox {
 	};
 	
 }
-#endif
+#endif //__LINBOX_classic_reconstruction_H
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

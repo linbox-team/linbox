@@ -19,8 +19,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-
-
 #ifndef __LINBOX_sigma_basis_H
 #define __LINBOX_sigma_basis_H
 
@@ -46,7 +44,7 @@
 //#define OPTMIZED_SIGMA_UPDATE 
 
 
-namespace LinBox {/*{{{*/
+namespace LinBox {
 
 
 	template<class _Field>
@@ -77,7 +75,7 @@ namespace LinBox {/*{{{*/
 			Total;
 
 		void print(Timer& T, const  char* timer, const char* title) 
-		{/*{{{*/
+		{
 			if (&T != &Total)
 				Total+=T;
 			if (T.count() > 0) {
@@ -87,10 +85,10 @@ namespace LinBox {/*{{{*/
 				double tt = (T.usertime()<0.01)? 0.01 : T.usertime();
 				std::cout<<tt<<"s. (cpu)  ["<<T.count()<<"]"<<std::endl;
 			}
-		}/*}}}*/
+		}
 	public:
 		void printTimer() 
-		{/*{{{*/
+		{
 		
 			print(ttMBasis              , "MBasis computation", "recursive");
 			print(ttUpdateSerie         , "Updating Power Serie", "recursive");
@@ -103,10 +101,10 @@ namespace LinBox {/*{{{*/
 			print(ttResidueSh           , "Residue Shifting","iterative");
 			print(Total, "Total", "");
 			std::cout<<std::endl<<std::endl;
-		}/*}}}*/
+		}
 
 		void clearTimer() 
-		{/*{{{*/
+		{
 			 ttMBasis.clear();
 			 ttUpdateSerie.clear();
 			 ttBasisMultiplication.clear();
@@ -117,23 +115,23 @@ namespace LinBox {/*{{{*/
 			 ttSigmaSh.clear();        
 			 ttResidueSh.clear(); 	 
 			 Total.clear();
-		}	/*}}}*/
+		}	
 #endif 
 
 
 	public:
 
 		SigmaBasis(const Field &F, std::vector<Coefficient> &PowerSerie) : _F(F), _BMD(F), _MD(F), _Serie(PowerSerie), PM_domain(F)
-		{/*{{{*/
+		{
 #ifdef  _BM_TIMING
 			clearTimer();
 #endif
-		}/*}}}*/
+		}
 
 		void right_basis(std::vector<Coefficient>     &SigmaBase,
 				size_t                           degree, 
 				std::vector<size_t>             &defect) 
-		{/*{{{*/
+		{
 
 			
 			size_t length=_Serie.size();
@@ -157,12 +155,12 @@ namespace LinBox {/*{{{*/
 
 			// Compute Sigma Base up to the order degree
 			PM_Basis(SigmaBase, TransposedSerie, degree, defect);					
-		}/*}}}*/
+		}
 
 		void left_basis(std::vector<Coefficient>      &SigmaBase,
 				 size_t                           degree, 
 				 std::vector<size_t>             &defect) 
-		{/*{{{*/
+		{
 
 			const size_t m = _Serie[0].rowdim();
 			const Coefficient Zero(m, m);
@@ -172,7 +170,7 @@ namespace LinBox {/*{{{*/
 			
 			// Compute Sigma Base up to the order degree
 			PM_Basis(SigmaBase, _Serie, degree, defect);			
-		}/*}}}*/
+		}
 
 
 		void multi_left_basis(std::vector<Coefficient>      &SigmaBase1,
@@ -181,7 +179,7 @@ namespace LinBox {/*{{{*/
 				      std::vector<Coefficient>      &SigmaBase2,
 				      size_t                            degree2, 
 				      std::vector<size_t>              &defect2) 
-		{/*{{{*/
+		{
 			
 			linbox_check(degree1 < degree2);
 
@@ -211,7 +209,7 @@ namespace LinBox {/*{{{*/
 
 			// multily SigmaBase1 by Sigma
 			MulSigmaBasis(SigmaBase2,Sigma2,SigmaBase1);		
-		}/*}}}*/
+		}
 
 
 		void multi_right_basis(std::vector<Coefficient>      &SigmaBase1,
@@ -220,7 +218,7 @@ namespace LinBox {/*{{{*/
 				       std::vector<Coefficient>      &SigmaBase2,
 				       size_t                            degree2, 
 				       std::vector<size_t>              &defect2) 
-		{/*{{{*/
+		{
 			
 			linbox_check(degree1 < degree2);
 
@@ -258,7 +256,7 @@ namespace LinBox {/*{{{*/
 
 			// multily SigmaBase1 by Sigma
 			MulSigmaBasis(SigmaBase2,Sigma2,SigmaBase1);	
-		}/*}}}*/
+		}
 
 
 
@@ -276,7 +274,7 @@ namespace LinBox {/*{{{*/
 		void right_PadeMatrix (std::vector<Coefficient>            &Approx, 
 				       size_t                               degree, 
 				       std::vector<size_t>                 &defect) 
-		{/*{{{*/
+		{
 
 			size_t deg = _Serie.size();
 			size_t m   = _Serie[0].rowdim();
@@ -301,7 +299,7 @@ namespace LinBox {/*{{{*/
 				for (size_t i=0;i<m;++i)
 					for (size_t j=i;j<n;++j)
 						std::swap(Approx[k].refEntry(i,j), Approx[k].refEntry(j,i));				
-		}/*}}}*/
+		}
 
 			
 		// function to compute two right denominators from Matrix Pade Approximant at two different degrees
@@ -312,10 +310,10 @@ namespace LinBox {/*{{{*/
 					    std::vector<Coefficient>            &Approx2, 			
 					    size_t                               degree2,
 					    std::vector<size_t>                  &defect) 
-		{/*{{{*/
+		{
 			
 			MultiPadeApproximant(Approx1, degree1, Approx2, degree2, _Serie, defect);
-		}/*}}}*/
+		}
 		
 		// function to compute two right denominators from Matrix Pade Approximant at two different degrees
 		// compute Q1(x), Q2(x) such that  S(x).Q1(x) - R1(x) = O(x^degree1) and S(x).Q2(x) - R2(x) = O(x^degree2) 
@@ -325,7 +323,7 @@ namespace LinBox {/*{{{*/
 					     std::vector<Coefficient>            &Approx2, 			
 					     size_t                               degree2,
 					     std::vector<size_t>                  &defect) 
-		{/*{{{*/
+		{
 
 			size_t deg = _Serie.size();
 			size_t m   = _Serie[0].rowdim();
@@ -356,7 +354,7 @@ namespace LinBox {/*{{{*/
 				for (size_t i=0;i<m;++i)
 					for (size_t j=i;j<n;++j)
 						std::swap(Approx2[k].refEntry(i,j), Approx2[k].refEntry(j,i));				
-		}/*}}}*/
+		}
 
 		
 	public:
@@ -375,7 +373,7 @@ namespace LinBox {/*{{{*/
 			      const Polynomial2     &PowerSerie, 
 			      size_t               degree, 
 			      std::vector<size_t> &defect) 
-		{/*{{{*/
+		{
 						
 			size_t m,n;
 			m = PowerSerie[0].rowdim();
@@ -456,7 +454,7 @@ namespace LinBox {/*{{{*/
 #endif
  				}
 			}
-		}/*}}}*/
+		}
 
 
 		void print_multime() 
@@ -469,7 +467,7 @@ namespace LinBox {/*{{{*/
 			     Polynomial2        PowerSerie, 
 			     size_t                 length, 
 			     std::vector<size_t>   &defect) 
-		{/*{{{*/
+		{
 
 			// Get the dimension of matrices inside 
 			// the Matrix Power Serie
@@ -627,7 +625,7 @@ namespace LinBox {/*{{{*/
 				for (size_t i=0;i<n;++i){
 					for (int j= (int) size-2;j>=0; --j){						
 						for (size_t l=0;l<m;++l)
-#warning Q[i] pour i>r ne veut rien dire...
+//BB: #warning Q[i] pour i>r ne veut rien dire...
 							_F.assign(SigmaBase[j+1].refEntry(*(Qt.getPointer()+i),l),
 								 SigmaBase[j].getEntry(*(Qt.getPointer()+i),l));			
 					}
@@ -642,7 +640,7 @@ namespace LinBox {/*{{{*/
 #endif
 				//write_maple("SS1",SigmaBase);			
 			}
-		}/*}}}*/
+		}
 
 
 		// Multiply a Power Serie by a Sigma Base.
@@ -653,7 +651,7 @@ namespace LinBox {/*{{{*/
 					    const Polynomial3    &OldSerie,
 					    size_t                 , //deg1
 					    size_t                 )//deg2					
-		{/*{{{*/
+		{
 			
 			// degree1 >= degree2
 			//size_t size = 2*degree1 + 1;
@@ -677,7 +675,7 @@ namespace LinBox {/*{{{*/
 		
 
 			PM_domain.midproduct(NewSerie, SigmaBase, Serie);
-		}/*}}}*/
+		}
 		
 
 		void ComputeNewSerieClassic(std::vector<Coefficient>          &NewSerie, 
@@ -685,12 +683,12 @@ namespace LinBox {/*{{{*/
 					    const std::vector<Coefficient>    &OldSerie,
 					    size_t                              degree1,
 					    size_t                              degree2)
-		{/*{{{*/
+		{
 						
 			for (size_t i=0;i<degree2+1;++i)
 				for (size_t j=0;j<degree1+1;++j)
 					_BMD.axpyin(NewSerie[i],SigmaBase[j],OldSerie[degree1+i-j]);
-		}/*}}}*/
+		}
 
 
 		
@@ -707,7 +705,7 @@ namespace LinBox {/*{{{*/
 				      const std::vector<Coefficient>  &PowerSerie, 
 				      size_t                               length, 
 				      std::vector<size_t>                 &defect) 
-		{//pph/*{{{*/
+		{//pph
 			
 
 			const size_t m = PowerSerie[0].rowdim();
@@ -916,7 +914,7 @@ namespace LinBox {/*{{{*/
 						_F.assign(Approx[j].refEntry(i,k), SigmaBase[j].getEntry(i,k));	
 
 			
-		}/*}}}*/
+		}
 
 		void MultiPadeApproximant (std::vector<Coefficient>            &Approx1,
 					   size_t                               degree1,
@@ -924,7 +922,7 @@ namespace LinBox {/*{{{*/
 					   size_t                               degree2,
 					   const std::vector<Coefficient>   &PowerSerie,
 					   std::vector<size_t>                  &defect) 
-		{/*{{{*/
+		{
 					   
 
 			linbox_check(degree1 < degree2);
@@ -1153,7 +1151,7 @@ namespace LinBox {/*{{{*/
 				for (long j=0;j<=degree[i];j++) 
 					for (size_t k=0;k<m;k++) 
 						_F.assign(Approx2[j].refEntry(i,k), SigmaBase[j].getEntry(i,k));				
-		}/*}}}*/
+		}
 
 
 		// Computation of a minimal Sigma Base of a Power Serie up to length
@@ -1162,7 +1160,7 @@ namespace LinBox {/*{{{*/
 				 std::vector<Coefficient>    &PowerSerie, 
 				 size_t                           length, 
 				 std::vector<size_t>             &defect) 
-		{/*{{{*/
+		{
 
 			// Get the dimension of matrices inside 
 			// the Matrix Power Serie
@@ -1796,14 +1794,14 @@ namespace LinBox {/*{{{*/
 			//if (length > 2) 
 			//	std::cout<<"permformed :"<<optim<<" s x s matrix multiplication\n";
 			//std::cout<<"updsi time: "<<updis<<"s \n";
-		}/*}}}*/
+		}
 
 
 		void new_PM_Basis(std::vector<Coefficient>     &SigmaBase,
 				  std::vector<Coefficient>    &PowerSerie, 
 				  size_t                           degree, 
 				  std::vector<size_t>             &defect) 
-		{/*{{{*/
+		{
 						
 			size_t m,n;
 			m = PowerSerie[0].rowdim();
@@ -1939,7 +1937,7 @@ namespace LinBox {/*{{{*/
 					//write_maple("SigmaBase", SigmaBase);
 				}
 			}
-		}/*}}}*/
+		}
 
 
 		// Multiply a Power Serie by a Sigma Base.
@@ -1949,7 +1947,7 @@ namespace LinBox {/*{{{*/
 				 const std::vector<Coefficient>          &OldSerie,
 				 size_t                                    degree1,
 				 size_t                                    degree2)
-		{/*{{{*/
+		{
 
 			size_t m,n;
 			m = OldSerie[0].rowdim();
@@ -1983,11 +1981,11 @@ namespace LinBox {/*{{{*/
 				NewSerie.resize(degree2, ZeroSerie);
 				SigmaBase.resize(Ssize, ZeroSigma);
 			}
-		}/*}}}*/
+		}
 
 
 		void write_maple(const char* name, const Coefficient & C) 
-		{/*{{{*/
+		{
 			size_t m,n;
 			m = C.rowdim();
 			n = C.coldim();
@@ -2006,10 +2004,10 @@ namespace LinBox {/*{{{*/
 				_F.write(std::cout,C.getEntry(m-1,j))<<",";				
 			_F.write(std::cout, C.getEntry(m-1,n-1))<<"]])]); ";
 
-		}/*}}}*/
+		}
 
 		void write_maple(const char* name, const std::vector<Coefficient> & P) 
-		{/*{{{*/
+		{
 			size_t m,n;
 			m = P[0].rowdim();
 			n = P[0].coldim();
@@ -2041,16 +2039,16 @@ namespace LinBox {/*{{{*/
 			for (size_t j=0;j<n-1;++j)
 				_F.write(std::cout,P[P.size()-1].getEntry(m-1,j))<<",";				
 			_F.write(std::cout, P[P.size()-1].getEntry(m-1,n-1))<<"]])]); \n\n";	
-		}/*}}}*/
+		}
 
 
 	}; // end of class SigmaBasis
 
-} // end of namespace LinBox/*}}}*/
+} // end of namespace LinBox
 
 #undef OPTMIZED_SIGMA_UPDATE
 
 #endif //__LINBOX_sigma_basis_H
 
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

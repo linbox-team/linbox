@@ -31,7 +31,7 @@
 #include <linbox/vector/light_container.h>
 
 namespace LinBox
-{/*{{{*/
+{
 
     template <class Blackbox1, class Blackbox2 = Blackbox1>
     class DirectSum;
@@ -39,11 +39,11 @@ namespace LinBox
     template <class Blackbox1, class Blackbox2 = Blackbox1>
     class DirectSumOwner;
     
-}/*}}}*/
+}
 
 
 namespace LinBox
-{/*{{{*/
+{
 
 	/** \brief If C = DirectSum(A, B) and y = xA and z = wB, then (y,z) = (x,w)C.
 
@@ -377,11 +377,11 @@ namespace LinBox
     };
 																												                                                                                                
 
-}; // namespace LinBox/*}}}*/
+}; // namespace LinBox
 
 
 namespace LinBox
-{/*{{{*/
+{
 
     template <class _Blackbox1, class _Blackbox2>
     class DirectSumOwner : public BlackboxInterface
@@ -674,10 +674,10 @@ namespace LinBox
 
 
 	
-}; // namespace LinBox/*}}}*/
+}; // namespace LinBox
 
 
 #endif // __LINBOX_direct_sum_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

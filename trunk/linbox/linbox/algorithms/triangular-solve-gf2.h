@@ -13,7 +13,7 @@
 #include "linbox/field/gf2.h"
 
 namespace LinBox 
-{/*{{{*/
+{
     template <class _Matrix, class Vector1, class Vector2> Vector1&
     upperTriangularSolveBinary (Vector1& x,
                           const _Matrix  &U,
@@ -117,8 +117,8 @@ namespace LinBox
         return x;
     }
 
-}/*}}}*/
+}
 #endif //__LINBOX_tri_solve_gf2_INL
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

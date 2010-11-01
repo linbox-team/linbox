@@ -45,7 +45,7 @@
 #endif
 
 namespace LinBox
-{/*{{{*/
+{
 
 /** \brief Blackbox interface to dense matrix representation. 
 
@@ -362,11 +362,11 @@ class DenseMatrixFactory : public BlackboxFactory<Field,DenseMatrix<Field> >
 	size_t coldim() { return _A.coldim(); }
 };
 
-}/*}}}*/
+}
 
 #include "dense.inl"
 
 #endif // __LINBOX_blackbox_dense_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

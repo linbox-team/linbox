@@ -18,8 +18,8 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __LINBOX_CRA_FULL_MULTIP_H
-#define __LINBOX_CRA_FULL_MULTIP_H
+#ifndef __LINBOX_cra_full_multip_H
+#define __LINBOX_cra_full_multip_H
 
 #include "linbox/util/timer.h"
 #include <stdlib.h>
@@ -30,7 +30,8 @@
 
 #include "linbox/algorithms/lazy-product.h"
 
-namespace LinBox {
+namespace LinBox 
+{
     
 template<class Domain_Type>
 struct FullMultipCRA {
@@ -380,6 +381,6 @@ protected:
 }
 
 
-#endif
+#endif //__LINBOX_cra_full_multip_H
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

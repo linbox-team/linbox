@@ -19,8 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LINBOX_LB_MINPOLY_C
-#define __LINBOX_LB_MINPOLY_C
+#ifndef __LINBOX_lb_minpoly_C
+#define __LINBOX_lb_minpoly_C
 
 
 #include <linbox/solutions/minpoly.h>
@@ -87,4 +87,4 @@ const VectorKey& lb_minpoly(const BlackboxKey& key) {
 
 #endif
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

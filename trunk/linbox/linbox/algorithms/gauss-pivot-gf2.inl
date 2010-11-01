@@ -7,8 +7,8 @@
  *
  * SparseElimination search for pivots over GF2
  */
-#ifndef __GAUSS_PIVOT_GF2_INL
-#define __GAUSS_PIVOT_GF2_INL
+#ifndef __LINBOX_gauss_pivot_gf2_INL
+#define __LINBOX_gauss_pivot_gf2_INL
 
 namespace LinBox 
 {
@@ -20,12 +20,14 @@ namespace LinBox
                                              bool		&) const //determinant
     {
  
-//        std::cerr << "SFP BEG : lignepivot: [";
-//         for(typename Vector::const_iterator refs =  lignepivot.begin();
-//             refs != lignepivot.end() ;
-//             ++refs )
-//             std::cerr << '(' << refs->first << ';' << refs->second << ')';
-//         std::cerr << "]" << std::endl;
+#if 0
+	    std::cerr << "SFP BEG : lignepivot: [";
+	    for(typename Vector::const_iterator refs =  lignepivot.begin();
+		refs != lignepivot.end() ;
+		++refs )
+		    std::cerr << '(' << refs->first << ';' << refs->second << ')';
+	    std::cerr << "]" << std::endl;
+#endif
 	typedef typename Vector::value_type E;    
 
 	long nj =  lignepivot.size ();
@@ -95,6 +97,7 @@ namespace LinBox
 
 } // namespace LinBox
 
-#endif // __GAUSS_PIVOT_GF2_INL
+#endif // __LINBOX_gauss_pivot_gf2_INL
+
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

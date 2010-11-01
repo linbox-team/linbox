@@ -22,7 +22,7 @@
 #include "linbox/blackbox/zo-gf2.h"
 
 namespace LinBox 
-{/*{{{*/
+{
 
     template <>
     class GaussDomain<GF2> {
@@ -211,7 +211,7 @@ namespace LinBox
 	void SparseFindPivotBinary (Vector &lignepivot, unsigned long &indcol, long &indpermut, Element& determinant) const;
 	
     };
-} // namespace LinBox/*}}}*/
+} // namespace LinBox
 
 #include "linbox/algorithms/gauss-gf2.inl"
 #include "linbox/algorithms/gauss-pivot-gf2.inl"
@@ -222,4 +222,4 @@ namespace LinBox
 #endif // __LINBOX_gauss_gf2_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

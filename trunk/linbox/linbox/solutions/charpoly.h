@@ -38,7 +38,7 @@
 // Namespace in which all LinBox library code resides
 
 namespace LinBox
-{/*{{{*/
+{
 
 	// for specialization with respect to the DomainCategory
  	template< class Blackbox, class Polynomial, class MyMethod, class DomainCategory>
@@ -165,7 +165,7 @@ namespace LinBox
 		return BMD.charpoly (P, static_cast<BlasMatrix<typename Blackbox::Field::Element> >(BBB));
 	}
 
-}/*}}}*/
+}
 
 #include "linbox/algorithms/matrix-hom.h"
 
@@ -174,7 +174,7 @@ namespace LinBox
 #include "linbox/algorithms/charpoly-rational.h"
 
 namespace LinBox 
-{/*{{{*/
+{
 	template <class Blackbox, class MyMethod>
 	struct IntegerModularCharpoly {       
 		const Blackbox &A;
@@ -197,11 +197,11 @@ namespace LinBox
 
 //#if 0
 #if defined(__LINBOX_HAVE_NTL) && defined(__LINBOX_HAVE_GIVARO)
-}/*}}}*/
+}
 
 #include "linbox/algorithms/cia.h"
 namespace LinBox 
-{/*{{{*/
+{
 
 	template < class Polynomial, class Blackbox, class MyMethod >
 	Polynomial& charpoly (Polynomial                       & P, 
@@ -263,7 +263,7 @@ namespace LinBox
 
 
 #else
-}/*}}}*/
+}
 
 #include "linbox/field/modular.h"
 #include "linbox/algorithms/cra-domain.h"
@@ -273,7 +273,7 @@ namespace LinBox
 #include "linbox/algorithms/matrix-hom.h"
 
 namespace LinBox 
-{ /* {{{ */
+{ 
 
 //#include "linbox/algorithms/rational-cra2.h"
 //#include "linbox/algorithms/varprec-cra-early-multip.h"
@@ -443,8 +443,8 @@ namespace LinBox {
 		commentator.stop ("done", NULL, "Rcharpoly");
 		return P;
 	}
-} /* }}} */ // end of LinBox namespace
+}  // end of LinBox namespace
 #endif // __LINBOX_charpoly_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

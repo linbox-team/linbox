@@ -20,7 +20,7 @@
 #include "linbox/solutions/methods.h"
 
 namespace LinBox 
-{/*{{{*/
+{
 
 /** 
  \brief Solve a linear system using the conjugate Lanczos iteration.
@@ -88,11 +88,11 @@ class LanczosSolver
 	Vector                    _w[2], _Aw; // Temporaries used in the Lanczos iteration
 };
 
-}/*}}}*/
+}
 
 #include "linbox/algorithms/lanczos.inl"
 
 #endif // __LINBOX_lanczos_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

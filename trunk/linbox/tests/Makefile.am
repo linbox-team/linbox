@@ -5,7 +5,7 @@
 INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/linbox
 #AM_LDFLAGS = -llapack -lcblas -latlas 
 #AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -O2 
-AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall
+AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -DDEBUG -O0
 #AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -D__LINBOX_HAVE_DGETRF -D__LINBOX_HAVE_DGETRI 
 #AM_CFLAGS = -g -Wall
 
@@ -32,7 +32,6 @@ BASIC_TESTS =  \
         test-dense              \
         test-det                \
         test-diagonal           \
-        test-sigmabase          \
         test-dif                \
         test-direct-sum         \
         test-ffpack             \
@@ -76,7 +75,12 @@ BASIC_TESTS =  \
         test-rational-solver                \
         test-rational-solver-adaptive        \
         test-last-invariant-factor        \
-        test-charpoly
+        test-charpoly 
+#\
+#         test-sigmabase          \
+#         test-fflas 
+#         test-yabla \
+#         test-nulp 
 
 # tests of components not adhering to LinBox requirements.
 NONCOMPLIANT_TESTS =        \
@@ -546,3 +550,7 @@ test_dense_zero_one_SOURCES=   \
 test_ispossemidef_SOURCES=\
         test-common.h        \
         test-ispossemidef.C
+
+test_fflas_SOURCES = \
+        test-fflas.C
+

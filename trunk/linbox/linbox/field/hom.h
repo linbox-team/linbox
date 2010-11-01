@@ -1,4 +1,5 @@
 /* linbox/field/hom.h
+ * Copyright(C) LinBox
  * Written by David Saunders
  * See COPYING for license information.
  */
@@ -16,7 +17,7 @@
 #endif //__LINBOX_HAVE_NTL
 
 namespace LinBox 
-{/*{{{*/
+{
 	/// Error object for attempt to establish a Hom that cannot exist.
 	class NoHomError {};
 
@@ -108,7 +109,7 @@ namespace LinBox
 	}; // end Hom 
 
 
-}/*}}}*/
+}
 
 #ifdef __LINBOX_field_modular_H
 // including specialization to modular
@@ -116,7 +117,7 @@ namespace LinBox
 /// Specialization to Modular<uint16> --> Modular<uint_32>.
 // Just a trial.  delete this when better examples exist.
 namespace LinBox 
-{/*{{{*/
+{
 	template<> inline Hom<Modular<uint16>, Modular<uint32> >::
 	Hom(const Modular<uint16>& S, const Modular<uint32>& T ): _source(S),_target(T)
 	{
@@ -131,12 +132,12 @@ namespace LinBox
 	template<> inline Modular<uint16>::Element& Hom<Modular<uint16>, Modular<uint32> >::
 	preimage(Modular<uint16>::Element& s, const Modular<uint32>::Element& t) { return s = t; }
 
-}// namespace LinBox/*}}}*/
+}// namespace LinBox
 #endif //__LINBOX_field_modular_H
 
 #ifdef __LINBOX_field_unparametric_H
 namespace LinBox
-{/*{{{*/
+{
 
 	template<class _Target>
 	class Hom<UnparametricField<integer>, _Target> {
@@ -279,12 +280,12 @@ namespace LinBox
 	  #endif // __FIELD_MODULAR_H
 #endif
 
-} // namespace LinBox/*}}}*/
+} // namespace LinBox
 #endif //__LINBOX_field_unparametric_H
 
 #ifdef __LINBOX_HAVE_NTL
 namespace LinBox 
-{/*{{{*/
+{
 
 	template<class _Target > 
 	class Hom <NTL_ZZ , _Target> {
@@ -334,12 +335,12 @@ namespace LinBox
 		Target _target;
 	}; // end Hom 
 	
-}/*}}}*/
+}
 #endif //__LINBOX_HAVE_NTL
 
 #ifdef __LINBOX_field_gmp_rational_H
 namespace LinBox 
-{/*{{{*/
+{
 	template <class _Target>
 	class Hom<GMPRationalField, _Target> {
 
@@ -406,10 +407,10 @@ namespace LinBox
 		Source _source;
 		Target _target;
 	}; // end Hom 
-}/*}}}*/
+}
 #endif //__LINBOX_field_gmp_rational_H
 
 #endif // __LINBOX_hom_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

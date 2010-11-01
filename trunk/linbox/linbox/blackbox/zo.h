@@ -31,7 +31,7 @@
 #include <ctime>
 
 namespace LinBox
-{/*{{{*/
+{
   bool revLexLess(const std::pair<size_t,size_t>& a, const std::pair<size_t,size_t> b)
   { return a.second < b.second || (b.second == a.second && a.first < b.first); }
   
@@ -356,7 +356,7 @@ namespace LinBox
   }; //ZeroOne
 
        
-}//End of LinBox/*}}}*/
+}//End of LinBox
 
 #ifdef _RUNOPENMP
 #include "zoi.inl"
@@ -367,4 +367,4 @@ namespace LinBox
 #endif // __LINBOX_zero_one_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

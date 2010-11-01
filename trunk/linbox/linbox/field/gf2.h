@@ -24,7 +24,7 @@
 
 // Namespace in which all LinBox code resides
 namespace LinBox 
-{/*{{{*/
+{
 
 class GF2RandIter;
 
@@ -578,13 +578,13 @@ class GF2 : public FieldInterface
 
 }; // class GF2
 
-} // namespace LinBox/*}}}*/
+} // namespace LinBox
 
 
 // Specialization of GivaroField for GF2
 #include "linbox/field/givaro-field.h"
 namespace LinBox 
-{/*{{{*/
+{
 
   /** 
   \brief give LinBox fields an allure of Givaro Fields
@@ -684,7 +684,7 @@ namespace LinBox
 
     };
     
-}/*}}}*/
+}
 
 
 
@@ -692,7 +692,7 @@ namespace LinBox
 #include "linbox/field/hom.h"
 #include "linbox/field/givaro-extension.h"
 namespace LinBox 
-{/*{{{*/
+{
 
     template <>
     class Hom<GF2,GF2> {
@@ -793,11 +793,11 @@ namespace LinBox
         Source _source;
         Target _target;
     }; // end Hom 
-}/*}}}*/
+}
 
 // #include <bits/stl_bvector.h>
 namespace std 
-{/*{{{*/
+{
 //! @todo JGD 05.11.2009 : it should be in bits/stl_bvector.h  ...
     inline void swap(_Bit_reference __x, _Bit_reference __y)
     {
@@ -805,7 +805,7 @@ namespace std
       __x = __y;
       __y = __tmp;
     }
-}/*}}}*/
+}
 
 
 #include "linbox/randiter/gf2.h"
@@ -814,4 +814,4 @@ namespace std
 #endif // __LINBOX_field_gf2_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

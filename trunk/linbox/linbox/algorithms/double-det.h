@@ -1,13 +1,13 @@
-
 /* linbox/algorithms/doubledet.h
+ * Copyright (C) LinBox
  * 
  *  Written by Clement Pernet <clement.pernet@gmail.com>
  *
  * See COPYING for license information.
  */
 
-#ifndef __DOUBLEDET_H
-#define __DOUBLEDET_H
+#ifndef __LINBOX_doubledet_H
+#define __LINBOX_doubledet_H
 
 #include "linbox/ffpack/ffpack.h"
 #include "linbox/algorithms/matrix-hom.h"	
@@ -297,6 +297,7 @@ namespace LinBox
 }
 
 
-#endif // __DOUBLEDET_H
+#endif // __LINBOX_doubledet_H
+
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

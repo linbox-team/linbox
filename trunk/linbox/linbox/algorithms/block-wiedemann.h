@@ -1,4 +1,3 @@
-
 /* linbox/algorithms/block-wiedemann.h
  * Copyright (C) 2004 Pascal Giorgi
  *
@@ -21,8 +20,8 @@
  */
 
 
-#ifndef __BLOCK_WIEDEMANN_H
-#define __BLOCK_WIEDEMANN_H
+#ifndef __LINBOX_block_wiedemann_H
+#define __LINBOX_block_wiedemann_H
 
 #include <vector>
 
@@ -37,7 +36,8 @@
 #include <linbox/util/error.h>
 #include <linbox/util/debug.h>
 
-namespace LinBox {
+namespace LinBox 
+{
 
 	template <class _Field>
 	class BlockWiedemannSolver{
@@ -229,6 +229,6 @@ namespace LinBox {
     
 }// end of namespace LinBox
 
-#endif
+#endif //__LINBOX_block_wiedemann_H
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

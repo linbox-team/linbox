@@ -11,7 +11,7 @@
 #define __LINBOX_gauss_elim_gf2_INL
 
 namespace LinBox 
-{/*{{{*/
+{
     template <class Vector> inline void 
     GaussDomain<GF2>::permuteBinary (Vector              &lignecourante,
                                      const unsigned long &indcol,
@@ -281,9 +281,9 @@ namespace LinBox
 
 
 
-} // namespace LinBox/*}}}*/
+} // namespace LinBox
 
 #endif // __LINBOX_gauss_elim_gf2_INL
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

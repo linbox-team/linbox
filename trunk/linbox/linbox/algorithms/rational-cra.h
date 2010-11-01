@@ -26,7 +26,7 @@
 #include "linbox/field/PID-integer.h"
 
 namespace LinBox 
-{/*{{{*/
+{
 
 #if 0
 	template<class T, template <class T> class Container>
@@ -102,8 +102,8 @@ namespace LinBox
             return Builder_.result(num, den);
         }
     };
-}/*}}}*/
+}
 
 #endif //__LINBOX_rational_cra_H
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

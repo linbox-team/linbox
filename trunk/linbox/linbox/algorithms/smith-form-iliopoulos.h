@@ -28,7 +28,7 @@
 #include <linbox/blackbox/submatrix-traits.h>
 
 namespace LinBox 
-{/*{{{*/
+{
 	
 /** \brief This is Iliopoulos' algorithm do diagonalize.
 
@@ -470,9 +470,9 @@ namespace LinBox
 	};
 	
 	
-}/*}}}*/
+}
 				
 #endif //__LINBOX_smith_form_iliopoulos_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

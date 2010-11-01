@@ -1,5 +1,4 @@
-
-/* linbox/algorithms/sigma-basis.h
+/* linbox/algorithms/echelon-form.h
  * Copyright (C) 2006 Pascal Giorgi
  *
  * Written by Pascal Giorgi pascal.giorgi@univ-perp.fr
@@ -22,8 +21,8 @@
 
 
 
-#ifndef __ECHELON_FORM_H
-#define __ECHELON_FORM_H
+#ifndef __LINBOX_echelon_form_H
+#define __LINBOX_echelon_form_H
 
 #include <linbox/matrix/blas-matrix.h>
 #include <linbox/algorithms/blas-domain.h>
@@ -31,9 +30,8 @@
 #include <linbox/matrix/matrix-domain.h>
 #include <linbox/matrix/factorized-matrix.h>
 
- 
-
-namespace LinBox {
+namespace LinBox 
+{
 
 
 
@@ -249,4 +247,4 @@ namespace LinBox {
 
 #endif
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

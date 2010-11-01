@@ -40,7 +40,7 @@ string blank;
 
 const int maxpretty = 35;
 const char* pretty(string a) 
-{/*{{{*/
+{
 
 	blank = "     " + a;
 	int msgsize= maxpretty - blank.size();
@@ -48,7 +48,7 @@ const char* pretty(string a)
 	for (int i=0;i<msgsize ;++i)
 		blank+=dot;
 	return blank.c_str();
-}/*}}}*/
+}
 
 /*
  *  Testing the rank of dense matrices 
@@ -56,7 +56,7 @@ const char* pretty(string a)
  */
 template <class Field>
 static bool testRank (const Field& F,size_t n, int iterations) 
-{/*{{{*/
+{
 
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
@@ -121,7 +121,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
 	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testRank");
     
 	return ret;
-}/*}}}*/
+}
 
 /*
  *  Testing the rank of dense matrices using TURBO algorithm
@@ -129,7 +129,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
  */
 template <class Field>
 static bool testTURBO (const Field& F,size_t n, int iterations) 
-{/*{{{*/
+{
 
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
@@ -202,7 +202,7 @@ static bool testTURBO (const Field& F,size_t n, int iterations)
 	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testTURBO");
     
 	return ret;
-}/*}}}*/
+}
 
 
 /*
@@ -211,7 +211,7 @@ static bool testTURBO (const Field& F,size_t n, int iterations)
  */
 template <class Field>
 static bool testDet (const Field& F,size_t n, int iterations) 
-{/*{{{*/
+{
 
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
@@ -281,14 +281,14 @@ static bool testDet (const Field& F,size_t n, int iterations)
 	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testDet");
     
 	return ret;
-}/*}}}*/
+}
 
 /*
  * Test of the LQUP factorization routine
  */
 template <class Field>
 static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations) 
-{/*{{{*/
+{
 
 	typedef typename Field::Element                  Element;
 	typedef typename Field::RandIter                RandIter;
@@ -418,11 +418,11 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testLQUP");
     
 	return ret;
-}/*}}}*/
+}
 
 template <class Field>
 static bool testMinPoly (const Field& F, size_t n, int iterations) 
-{/*{{{*/
+{
 	typedef typename Field::Element                  Element;
 	typedef typename Field::RandIter                RandIter;
 	typedef vector<Element>                       Polynomial;
@@ -521,11 +521,11 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testMinPoly");
 	
 	return ret;
-}/*}}}*/
+}
 
 template <class Field>
 static bool testCharPoly (const Field& F, size_t n, int iterations) 
-{/*{{{*/
+{
 	typedef typename Field::Element                  Element;
 	typedef typename Field::RandIter                RandIter;
 	typedef vector<Element>                       Polynomial;
@@ -603,11 +603,11 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testCharPoly");
 	
 	return ret;
-}/*}}}*/
+}
 
 template <class Field>
 static bool testInv (const Field& F,size_t n, int iterations) 
-{/*{{{*/
+{
 
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
@@ -703,11 +703,11 @@ static bool testInv (const Field& F,size_t n, int iterations)
 	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testInv");
     
 	return ret;
-}/*}}}*/
+}
 
 template <class Field>
 static bool testapplyP (const Field& F,size_t n, int iterations) 
-{/*{{{*/
+{
 
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
@@ -772,10 +772,10 @@ static bool testapplyP (const Field& F,size_t n, int iterations)
 	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testApplyP");
     
 	return ret;
-}/*}}}*/
+}
 
 int main(int argc, char** argv)
-{/*{{{*/
+{
 	//-----------------------------------------------------------------------
 	// Choice of the finite field representation
 	//typedef GivaroZpz<Std32> Field;
@@ -821,7 +821,7 @@ int main(int argc, char** argv)
 	commentator.stop(MSG_STATUS(pass),"ffpack test suite");
     
 	return pass ? 0 : -1;
-}/*}}}*/
+}
 
 
 
@@ -837,4 +837,4 @@ int main(int argc, char** argv)
 
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

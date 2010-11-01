@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/ffpack/ffpack_minpoly_construct.inl
  * Copyright (C) 2003 Clement Pernet
  *
@@ -8,6 +6,10 @@
  * See COPYING for license information.
  */
 
+#ifndef __LINBOX_ffpack_minpoly_construct_INL
+#define __LINBOX_ffpack_minpoly_construct_INL
+
+//#define LB_DEBUG
 //---------------------------------------------------------------------
 // MinPoly: Compute the minimal polynomial of (A,v) using an LUP 
 // factorization of the Krylov Base (v, Av, .., A^kv)
@@ -18,7 +20,8 @@ Polynomial&
 LinBox::FFPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
 		const typename Field::Element *A, const size_t lda,
 		typename Field::Element* U, size_t ldu,typename Field::Element* X, size_t ldx,
-		size_t* P){
+		size_t* P)
+{
 
 	typedef typename Field::Element elt;
 	static elt one,zero;
@@ -33,7 +36,7 @@ LinBox::FFPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
 	bool KeepOn=true;
 	// Creating the Krylov Base copy matrix X where to factorize 
 	//elt * X = new elt[(N+1)*N];
-#if DEBUG==2
+#ifdef LB_DEBUG
 	for (j=0;j<(N+1)*N;j++)
 		X[j] = zero;
 #endif
@@ -78,3 +81,9 @@ LinBox::FFPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
 	delete[] m;
 	return minP;
 }
+
+#undef LB_DEBUG
+
+#endif //__LINBOX_ffpack_minpoly_construct_INL
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

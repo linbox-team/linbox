@@ -43,7 +43,7 @@
 #include <iostream>
 #include <cassert>
 namespace LinBox
-{/*{{{*/
+{
 
 	/** 
 	 * @brief 
@@ -61,7 +61,7 @@ namespace LinBox
 		  typename Field::Element * Z, const size_t ldZ, 
 		  const size_t lig1, const size_t col1, 
 		  const size_t lig2, const size_t col2)
-	{/*{{{*/
+	{
 		assert(lig1<lig2);
 		assert(col1<col2);
 		assert(col2<=ldZ);
@@ -72,7 +72,7 @@ namespace LinBox
 			for (size_t j = col1; j < col2 ; ++j) // F.assign(*(Id+i*ldI+j),zero) 
 				*(Z+i*ldZ+j) = zero ;
 		return;
-	} /*}}}*/
+	} 
 
 
 	/*! Creates identity matrix in \p F of size \p dim1 \p x \p dim2.
@@ -84,7 +84,7 @@ namespace LinBox
 		      typename Field::Element * Id, const size_t ldI, 
 		      const size_t lig1, const size_t col1, 
 		      const size_t lig2, const size_t col2)
-	{/*{{{*/
+	{
 		assert(lig1<lig2);
 		assert(col1<col2);
 		assert(col2<=ldI);
@@ -105,7 +105,7 @@ namespace LinBox
 		}
 		*(Un_ici) = one ;
 		return;
-	} /*}}}*/
+	} 
 
 
 	/*!
@@ -129,7 +129,7 @@ namespace LinBox
 			       const size_t & lda, // leading dimension
 			       //typename  Field::Element &* V ,
 			       size_t & ker_dim )
-	{ /*{{{*/
+	{ 
 		size_t *P = new size_t[N];
 		size_t *Qt = new size_t[M];
 		size_t R = FFPACK::LUdivine (F, FFLAS::FflasNonUnit, FFLAS::FflasNoTrans,
@@ -179,7 +179,7 @@ namespace LinBox
 		delete[] P;
 		return V;
 
-	}/*}}}*/
+	}
 
 	template<class Field>
 	typename Field::Element *
@@ -190,7 +190,7 @@ namespace LinBox
 				 const size_t & lda, // leading dimension
 				 //typename  Field::Element &* V ,
 				 size_t & ker_dim )
-	{ /*{{{*/
+	{ 
 		size_t *P = new size_t[M];
 		size_t *Qt = new size_t[N];
 		size_t R = FFPACK::LUdivine (F, FFLAS::FflasNonUnit, FFLAS::FflasTrans,
@@ -289,7 +289,7 @@ namespace LinBox
 		delete[] Qt ;
 		return V;
 
-	}/*}}}*/
+	}
 
 	template<class Field>
 	typename Field::Element *
@@ -300,7 +300,7 @@ namespace LinBox
 				const size_t & lda, // leading dimension
 				//typename  Field::Element &* V ,
 				size_t & coker_dim )
-	{ /*{{{*/
+	{ 
 		size_t *P = new size_t[M];
 		size_t *Qt = new size_t[N];
 		size_t R = FFPACK::LUdivine (F, FFLAS::FflasNonUnit, FFLAS::FflasTrans,
@@ -350,7 +350,7 @@ namespace LinBox
 		delete[] P;
 		return V;
 
-	}/*}}}*/
+	}
 
 	// directement à gauche (X LQUP noyau de U puis invQ invL...)
 	template<class Field>
@@ -361,7 +361,7 @@ namespace LinBox
 			      const size_t & N, // colm
 			      const size_t & lda, // leading dimension
 			      size_t & coker_dim)
-	{ /*{{{*/
+	{ 
 
 		size_t *P = new size_t[N];
 		size_t *Q = new size_t[M];
@@ -441,7 +441,7 @@ namespace LinBox
 		//write_field (F, std::cout<<"V final   ="<<std::endl, V, coker_dim, M, M,true);
 		delete[] Q ;
 		return V;
-	} /*}}}*/
+	} 
 
 	/** 
 	 * @brief Computes the kernel of a Dense matrix using \c LQUP.
@@ -467,7 +467,7 @@ namespace LinBox
 			typename Field::Element * A, const size_t & lda,
 			typename Field::Element *& Ker, size_t& ldk,
 			size_t & kerdim)
-	{/*{{{*/
+	{
 		if (Side == FFLAS::FflasRight){
 			if (m < n) 
 				Ker = RightNullspaceDirect(F,A,m,n,lda,kerdim) ;
@@ -483,7 +483,7 @@ namespace LinBox
 			ldk = m;
 		}
 		return kerdim;
-	}/*}}}*/
+	}
 
 	template<class Field>
 	size_t& 
@@ -504,9 +504,9 @@ namespace LinBox
                 *it=*Kert;
            return kerdim;
 	}
-} // LinBox/*}}}*/
+} // LinBox
 
 #endif // __LINBOX_modulardense_nullspace_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

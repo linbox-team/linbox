@@ -58,7 +58,7 @@
 #include "linbox/algorithms/massey-domain.h"     
 
 namespace LinBox 
-{/*{{{*/
+{
 
 
 	template<class Polynomial, class Blackbox>
@@ -111,7 +111,7 @@ namespace LinBox
 
 		return P;
 	}
-}/*}}}*/
+}
 
 #ifdef __LINBOX_HAVE_GIVARO
 #ifndef LINBOX_EXTENSION_DEGREE_MAX
@@ -125,7 +125,7 @@ namespace LinBox
 #include "linbox/field/map.h"
 
 namespace LinBox 
-{  /*{{{*/
+{  
 	// The minpoly with BlackBox Method 
 	template<class Polynomial, class Blackbox>
 	Polynomial &minpoly (
@@ -169,10 +169,10 @@ namespace LinBox
                     return minpoly(P, A, tag, Method::Wiedemann(M)); 
             }
         }
-}/*}}}*/
+}
 #else
 namespace LinBox 
-{/*{{{*/
+{
 	// The minpoly with BlackBox Method 
 	template<class Polynomial, class Blackbox>
 	Polynomial &minpoly (
@@ -184,11 +184,11 @@ namespace LinBox
             commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << " WARNING, no extension available, returning only a factor of the minpoly\n";
             return minpoly(P, A, tag, Method::Wiedemann (M));
 	}
-}/*}}}*/
+}
 #endif
 
 namespace LinBox 
-{/*{{{*/
+{
 /** \brief Linear system solvers based on Wiedemann's method.
  * 
  * This class encapsulates all of the functionality for linear system
@@ -341,11 +341,11 @@ class WiedemannSolver
 	VectorDomain<Field>                  _VD;
 };
 
-}/*}}}*/
+}
 
 #include "linbox/algorithms/wiedemann.inl"
 
 #endif //  __LINBOX_wiedemann_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

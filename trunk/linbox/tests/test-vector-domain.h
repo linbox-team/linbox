@@ -23,7 +23,6 @@
 #include "linbox/integer.h"
 
 #include "test-common.h" 
-//using namespace std;
 
 
 /** Test 1: Dot product of vectors
@@ -40,7 +39,7 @@
 
 template <class Field, class Vector1, class Vector2>
 static bool testDotProduct (Field &F, const char *text, LinBox::VectorStream<Vector1> &stream1, LinBox::VectorStream<Vector2> &stream2) 
-{/*{{{*/
+{
 	std::ostringstream str;
 
 	str << "\t--Testing " << text << " dot product" << std::ends;
@@ -112,7 +111,7 @@ static bool testDotProduct (Field &F, const char *text, LinBox::VectorStream<Vec
 	stream2.reset ();
 
 	return ret;
-}/*}}}*/
+}
 
 /** Test 2: Vector-vector addition, vector-scalar multiply
  *
@@ -129,7 +128,7 @@ static bool testDotProduct (Field &F, const char *text, LinBox::VectorStream<Vec
 
 template <class Field, class Vector>
 static bool testAddMul (Field &F, const char *text, LinBox::VectorStream<Vector> &stream1, LinBox::VectorStream<Vector> &stream2) 
-{/*{{{*/
+{
 	std::ostringstream str;
 
 	str << "\t--Testing " << text << " vector add, mul" << std::ends;
@@ -215,7 +214,7 @@ static bool testAddMul (Field &F, const char *text, LinBox::VectorStream<Vector>
 	stream2.reset ();
 
 	return ret;
-}/*}}}*/
+}
 
 /** Test 3: Vector-vector subtraction, vector-scalar multiply
  *
@@ -232,7 +231,7 @@ static bool testAddMul (Field &F, const char *text, LinBox::VectorStream<Vector>
 
 template <class Field, class Vector>
 static bool testSubMul (Field &F, const char *text, LinBox::VectorStream<Vector> &stream1, LinBox::VectorStream<Vector> &stream2) 
-{/*{{{*/
+{
 	std::ostringstream str;
 
 	str << "\t--Testing " << text << " vector sub, mul" << std::ends;
@@ -318,7 +317,7 @@ static bool testSubMul (Field &F, const char *text, LinBox::VectorStream<Vector>
 	stream2.reset ();
 
 	return ret;
-}/*}}}*/
+}
 
 /** Test 4: Vector-vector axpy
  *
@@ -334,7 +333,7 @@ static bool testSubMul (Field &F, const char *text, LinBox::VectorStream<Vector>
 
 template <class Field, class Vector>
 static bool testAXPY (Field &F, const char *text, LinBox::VectorStream<Vector> &stream1, LinBox::VectorStream<Vector> &stream2) 
-{/*{{{*/
+{
 	std::ostringstream str;
 	str << "\t--Testing " << text << " vector axpy" << std::ends;
 	LinBox::commentator.start (str.str ().c_str (), "testAXPY", stream1.m ());
@@ -401,7 +400,7 @@ static bool testAXPY (Field &F, const char *text, LinBox::VectorStream<Vector> &
 	stream2.reset ();
 
 	return ret;
-}/*}}}*/
+}
 
 /** Test 5: Copy and areEqual
  *
@@ -416,7 +415,7 @@ static bool testAXPY (Field &F, const char *text, LinBox::VectorStream<Vector> &
  */
 template <class Field, class Vector1, class Vector2>
 static bool testCopyEqual (Field &F, const char *text, LinBox::VectorStream<Vector1> &stream, LinBox::VectorStream<Vector2> &stream2) 
-{/*{{{*/
+{
 	std::ostringstream str;
 
 	str << "\t--Testing " << text << " vector copy, areEqual" << std::ends;
@@ -465,8 +464,8 @@ static bool testCopyEqual (Field &F, const char *text, LinBox::VectorStream<Vect
 	stream2.reset ();
 
 	return ret;
-}/*}}}*/
+}
 
 #endif // __LINBOX_test_vector_domain_H
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

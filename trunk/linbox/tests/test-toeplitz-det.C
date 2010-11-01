@@ -40,7 +40,7 @@ using namespace std;
 using namespace LinBox;
 
 int main(int argc, char* argv[]) 
-{/*{{{*/
+{
 	static size_t N_BOUND = 100;
 	static Argument args[] = {
     	{ 'n', "-n N", "Set dimension limit of test matrices to NxN.", TYPE_INT,     &N_BOUND },
@@ -134,6 +134,6 @@ int main(int argc, char* argv[])
 	//cout << res << endl;
 	commentator.stop("toeplitz determinant test suite");
 #endif
-}/*}}}*/
+}
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

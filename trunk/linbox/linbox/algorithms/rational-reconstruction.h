@@ -54,7 +54,7 @@ namespace LinBox {
 	/// \brief Limited doc so far.  Used, for instance, after LiftingContainer.
 template< class _LiftingContainer,
 	  class RatRecon = RReconstruction<typename _LiftingContainer::Ring, ClassicMaxQRationalReconstruction<typename _LiftingContainer::Ring> > >
-class RationalReconstruction {/*{{{*/
+class RationalReconstruction {
 		
 public:
 	typedef _LiftingContainer                  LiftingContainer;
@@ -2127,10 +2127,10 @@ public:
 
 };
 	
-}/*}}}*/
+}
 
 #undef DEF_THRESH
 #endif //__LINBOX_reconstruction_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

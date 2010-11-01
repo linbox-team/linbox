@@ -15,7 +15,7 @@
 #include "linbox/vector/vector-traits.h"
 
 namespace LinBox
-{/*{{{*/
+{
 
 /** @brief A tool for computations with integer and rational matrices.
  * 
@@ -72,9 +72,9 @@ class BlackboxFactory
 
 }; // BlackboxFactory
 
-} // namespace LinBox/*}}}*/
+} // namespace LinBox
 
 #endif // __LINBOX_blackbox_factory_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

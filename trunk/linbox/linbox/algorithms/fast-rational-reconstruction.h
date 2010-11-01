@@ -19,8 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LINBOXX__FAST_RECONSTRUCTION_H__
-#define __LINBOXX__FAST_RECONSTRUCTION_H__
+#ifndef __LINBOX_fast_reconstruction_H
+#define __LINBOX_fast_reconstruction_H
 
 #define __FASTRR_DEFAULT_THRESHOLD 384 
 
@@ -28,9 +28,9 @@
 #include "linbox/algorithms/rational-reconstruction-base.h"
 #include "linbox/util/timer.h"
 
-using namespace std;
 
-namespace LinBox {
+namespace LinBox 
+{ 
 
 	/*
 	 * implements fast rational reconstruction by Wan & Pan algorithm [Wan & Pan 2002],
@@ -269,7 +269,7 @@ protected:
 		bi=Element(0);
 		ci=Element(0); //Q(0)=Id
 		
-		if (powh > m) cerr << "should not happen m < powh" << flush;
+		if (powh > m) std::cerr << "should not happen m < powh" << std::flush;
 		if (m==n) {
 			cur_ri = m;
 			cur_rinext = 0;
@@ -280,14 +280,14 @@ protected:
 		}
 		
 		if (powh < 1) {
-			cerr << "wrong powh used"<< flush;
+			std::cerr << "wrong powh used"<< std::flush;
 		        cur_ri=m, cur_rinext=n;cur_ainext=m+1; cur_qinext = m+1;
 			return false; //should not happen
 		}
 		if (n < 2) {
 			//n==1 -> Q1=(m,1//1,0)
 			//n==0 -> Q1=infinity
-			if (n==0) cerr << "should not happen n=0" << flush;
+			if (n==0) std::cerr << "should not happen n=0" << std::flush;
 			cur_ri = m;
 			cur_rinext = 1;
 			cur_ainext = m;
@@ -486,8 +486,8 @@ protected:
 					prevEEA(aprev,bprev,cprev,dprev,ai,bi,ci,di);
 					ai=aprev;bi=bprev;ci=cprev;di=dprev;
 				}
-				cerr << "Error: " << K << " backward steps in step 2\n";
-                                       cerr << "->End:" << cur_ri << " " << cur_rinext << " " <<ai<<"/"<< cur_ainext << "\n"<< flush;
+				std::cerr << "Error: " << K << " backward steps in step 2\n";
+                                       std::cerr << "->End:" << cur_ri << " " << cur_rinext << " " <<ai<<"/"<< cur_ainext << "\n"<< std::flush;
                                        return false;
 			}                               
 /* //modification of Wan&Pan				
@@ -513,9 +513,9 @@ protected:
 		}
 		
 		if (qinext <=0) {
-			cout << "ERROR sth went very very wrong:" ;
-			cout << "m:" << m << " n:" << n << " h:" << powh << "\n";
-			cout << ai << " " << bi << "\n" << ci << " " << di <<"\n"; //getchar();
+			std::cout << "ERROR sth went very very wrong:" ;
+			std::cout << "m:" << m << " n:" << n << " h:" << powh << "\n";
+			std::cout << ai << " " << bi << "\n" << ci << " " << di <<"\n"; //getchar();
 			return false;
 		}
 		
@@ -742,16 +742,14 @@ protected:
 				return false;
 			}
 
-			/* 
+#if 0 
 			if (cur_rinext != 0) {
-				cout << "bad bounds - should not happen\n" << flush;
+				std::cout << "bad bounds - should not happen\n" << std::flush;
 			}
-			*/
-			/*
 			if (!queueMax.empty()) {
-				cout << "Queue is not empty\n - sth wrong" << flush;
+				std::cout << "Queue is not empty\n - sth wrong" << std::flush;
 			}
-			*/
+#endif
 			_Z.mul(n,x, maxQ.a);
 			_Z.axmyin(n,m,maxQ.c);
 			//n = x_in*ai-m*ci;
@@ -1125,7 +1123,7 @@ protected:
 					}
 				}
 				if (K >0) {
-					cout << "Error:" << K << " backward steps - should not happen\n"<< flush;
+					std::cout << "Error:" << K << " backward steps - should not happen\n"<< std::flush;
 					return false;
 				}
 				return true;
@@ -1152,9 +1150,9 @@ protected:
 			}
 			
 			if (qinext <=0) {
-				cout << "ERROR sth went very very wrong:"<< flush ;
-				cout << "m:" << m << " n:" << n << " h:" << powh << "\n"<< flush;
-				cout << ai << " " << bi << "\n" << ci << " " << di <<"\n"<< flush; //getchar();
+				std::cout << "ERROR sth went very very wrong:"<< std::flush ;
+				std::cout << "m:" << m << " n:" << n << " h:" << powh << "\n"<< std::flush;
+				std::cout << ai << " " << bi << "\n" << ci << " " << di <<"\n"<< std::flush; //getchar();
 				return false;
 			}
 			
@@ -1220,6 +1218,7 @@ protected:
 	};
 	
 }
-#endif
+
+#endif //__LINBOX_fast_reconstruction_H
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

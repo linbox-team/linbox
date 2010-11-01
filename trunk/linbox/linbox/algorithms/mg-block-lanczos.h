@@ -12,8 +12,8 @@
  * Class definitions for block Lanczos iteration
  */
 
-#ifndef __MG_BLOCK_LANCZOS_H
-#define __MG_BLOCK_LANCZOS_H
+#ifndef __LINBOX_mg_block_lanczos_H
+#define __LINBOX_mg_block_lanczos_H
 
 #include "linbox/linbox-config.h"
 #undef _T
@@ -277,6 +277,6 @@ class MGBlockLanczosSolver
 
 #include "linbox/algorithms/mg-block-lanczos.inl"
 
-#endif // __MG_BLOCK_LANCZOS_H
+#endif // __LINBOX_mg_block_lanczos_H
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

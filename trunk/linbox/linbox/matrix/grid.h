@@ -30,9 +30,8 @@
 #include "linbox/integer.h"
 
 
-using namespace std;
 namespace LinBox 
-{ /*  {{{ */
+{ 
 
 template <class Element>
 class ijElement {
@@ -144,7 +143,7 @@ public:
 /* !!! */
 //int t = i; i=j; j=t;
                                 if ( (i > _m) || (j > _n) ) {
-                                        cout << "InvalidMatrixInput \n"<< flush;
+					std::cout << "InvalidMatrixInput \n"<< std::flush;
                                         return;
                                 }
                                 F.read(in, x);
@@ -160,8 +159,8 @@ public:
                         }
                         for (int k=0; k < rowOcc.size(); ++k) {
                                 if ((rowOcc[k]==1) && (/*colGcd[A[k]->getJ()]*/1==abs(A[k]->getX()))) {
-                                        //cout << "1 row" << i_prev << "\n";
-                                        //cout << "Adding " << k+1 << " to Q\n" << flush;
+                                        //std::cout << "1 row" << i_prev << "\n";
+                                        //std::cout << "Adding " << k+1 << " to Q\n" << std::flush;
                                         Q.push(k);
                                 }
                         }
@@ -183,7 +182,7 @@ public:
 		if (Aij->up != NULL)   Aij->up->down = Aij->down;	
 		--rowOcc[Aij->getI()];
 		if (rowOcc[Aij->getI()]==1) {
-			//cout << "Adding " << Aij->getI()+1 << " to Q\n" << flush;
+			//std::cout << "Adding " << Aij->getI()+1 << " to Q\n" << std::flush;
 			if (1/*colGcd[A[Aij->getI()]->getJ()]*/ == abs (A[Aij->getI()]->getX()))
 				Q.push(Aij->getI());
 		}
@@ -199,7 +198,7 @@ public:
 		while (tmp != NULL) {
 			--rowOcc[tmp->getI()];
 			if (rowOcc[tmp->getI()] ==1) {
-				//cout << "Adding " << tmp->getI()+1 << " to Q\n" << flush;
+				//std::cout << "Adding " << tmp->getI()+1 << " to Q\n" << std::flush;
 				if ( 1/*colGcd[A[tmp->getI()]->getJ()]*/ == abs (A[tmp->getI()]->getX()))
 					Q.push(tmp->getI());
 			}
@@ -266,7 +265,7 @@ public:
  */
 
 	int reduce(int& rank, int S, vector<int>& mR, vector<int>& mC, ostream& os) {
-		cout << "rank at begin reduce " << rank << "\n" << flush;
+		std::cout << "rank at begin reduce " << rank << "\n" << std::flush;
 	        while (!Q.empty()) {
 			size_t i=Q.front();
                 	Q.pop();  
@@ -277,8 +276,8 @@ public:
                                 	mR[i]=2;
                                	} 
                                	else if (abs(x)==1/*colGcd[j]*/) {
-	                        	//cout << "Row/column "<< i+1 << "," << j+1<< "," << x << "to reduce\n" <<flush;
-				       	if (abs(x) > 1) cout << "adds " << x << "to the diagonal\n"<< flush;
+	                        	//std::cout << "Row/column "<< i+1 << "," << j+1<< "," << x << "to reduce\n" <<std::flush;
+				       	if (abs(x) > 1) std::cout << "adds " << x << "to the diagonal\n"<< std::flush;
 	                               	if (mC[j] !=1 ) {//if col not deleted then delete, update rank
 	                                	++rank; 
 		                               	mC[j]=1;
@@ -286,11 +285,11 @@ public:
 						deleteColumn(j);//do not mark 0 rows
 						//deleteRow(i);//not needed						
                                         }
-                                } //else cout << "NOT Row/column "<< i+1 << "," << j+1<< "," << x << "to reduce\n" <<flush;
+                                } //else std::cout << "NOT Row/column "<< i+1 << "," << j+1<< "," << x << "to reduce\n" <<std::flush;
 			}
 		}
 
-		cout << "Rank at end reduce/begin elimination" << rank <<"\n" << flush;
+		std::cout << "Rank at end reduce/begin elimination" << rank <<"\n" << std::flush;
         
 		size_t ini=0;
         	bool pivotFound;
@@ -305,7 +304,7 @@ public:
                 	if (ini>=mR.size()) ini=0;
                 	for (size_t i=ini; i <  mR.size(); ++i) {
                                 if (rowOcc[i]==2) {
-                                        //cout << "2 row found " << i <<"\n" << flush;
+                                        //std::cout << "2 row found " << i <<"\n" << std::flush;
                                         j1 = A[i]->getJ();
                                         _F.init(x1,A[i]->getX());
                                         j2 = A[i]->next->getJ();
@@ -338,14 +337,14 @@ public:
                 
                 	//pivotFound =false;
                 	if (pivotFound) {
-                        	if (abs(x1)>1) cout << "adds " << x1 << "to the diagonal\n" << flush;
+                        	if (abs(x1)>1) std::cout << "adds " << x1 << "to the diagonal\n" << std::flush;
                         	mC[j1]=1;
                         	++rank;
                         	mR[row2]=1;
                         	_F.init(x, -x2/x1);
-                        	//cout << "found " << j1 << "," << x2 << "," << j2 << "," << x2 << "\n"<< flush;
-                        	////cout << "reducing column " << j2+1 << " by  (" << j1+1 << "," << x << "}\n" << flush;
-                        	//cout << "row " << row2 << "\n"<<flush;
+                        	//std::cout << "found " << j1 << "," << x2 << "," << j2 << "," << x2 << "\n"<< std::flush;
+                        	////std::cout << "reducing column " << j2+1 << " by  (" << j1+1 << "," << x << "}\n" << std::flush;
+                        	//std::cout << "row " << row2 << "\n"<<std::flush;
 
 				GridElement<Element>* p1=AT[j1];
 				GridElement<Element>* p2=NULL;
@@ -360,20 +359,20 @@ public:
 					Element y; _F.init(y, p1->getX());
 					Element z;
 					if ((p2next!= NULL) && (p2next->getI()==p1->getI()) ) {
-						//cout << "updating " << p2next->getI() << " row" << flush;
+						//std::cout << "updating " << p2next->getI() << " row" << std::flush;
 						_F.init (z, x*y)	;
 						_F.addin(z, p2next->getX());
 						if (z==0) {
-							//cout << ".....deleting \n" << flush;
+							//std::cout << ".....deleting \n" << std::flush;
 							p2next = deleteElement(p2next);	
 						} else {
-							//cout << ".....new value\n" << flush;
+							//std::cout << ".....new value\n" << std::flush;
 							p2next->setElement(z);
 							p2 = p2next; 
 							p2next = p2next->up;
 						}	  
 					} else {
-						//cout << "adding " << p1->getI() << " row\n" << flush;
+						//std::cout << "adding " << p1->getI() << " row\n" << std::flush;
 						_F.init(z, x*y); 
 						ijElement<Element> X(p1->getI(), j2, z);
 						p2=addElement(p2, X);
@@ -390,13 +389,13 @@ public:
 						i = Q.front();
 					}
 					if (!Q.empty()) {
-						//cout << "Adding " << i+1 << " to Q \n" << flush;
+						//std::cout << "Adding " << i+1 << " to Q \n" << std::flush;
 			               		reduce(rank, S, mR, mC,os);
 						break;
 					}
                         	}
                 	} else {
-				cout << "Elimination of " << S-1<< " rows at rank " <<rank << "\n" << flush;
+				std::cout << "Elimination of " << S-1<< " rows at rank " <<rank << "\n" << std::flush;
        
 			 	size_t i =0;
 		        	bool tworow=false;
@@ -408,8 +407,8 @@ public:
 		                  		else ++i;
 			                }
 					if (i>=_m) break;
-					//cout << "Elimination of row " << i+1 << endl << flush; 
-					//cout << "RowGcd=" << rowGcd[i] << "\n" << flush;
+					//std::cout << "Elimination of row " << i+1 << std::endl << std::flush; 
+					//std::cout << "RowGcd=" << rowGcd[i] << "\n" << std::flush;
 					GridElement<Element>* r_p = A[i];
 					int min_col = _m+1;
 					Element x1;
@@ -445,9 +444,9 @@ public:
 					}
 
 		                	if ((abs(x1) == 1/*rowGcd[i]*/) && (abs(x1)==1/*colGcd[j]*/)) {
-                		        	if (abs(x1) > 1) cout << "adds " << x1 << "to the diagonal\n"<<flush;
-                        			//cout << "Eliminating row "<< i+1 << " by column "<< j+1 << "\n";
-		                        	//cout << "Element x" << x << "\n" << flush;
+                		        	if (abs(x1) > 1) std::cout << "adds " << x1 << "to the diagonal\n"<<std::flush;
+                        			//std::cout << "Eliminating row "<< i+1 << " by column "<< j+1 << "\n";
+		                        	//std::cout << "Element x" << x << "\n" << std::flush;
 		
 				                mR[i] = 1;
                         			mC[j] = 1;
@@ -459,7 +458,7 @@ public:
 							typename vector<pair< size_t, GridElement<Element>*> >::iterator p2 = j_pts.begin();
 							typename vector<pair< Element, GridElement<Element>*> >::iterator p2next = jnext_pts.begin();
 							for (; p2 != j_pts.end(); ++p2, ++p2next) {
-								//cout << "eliminating column " << p2->first << "\n" << flush;
+								//std::cout << "eliminating column " << p2->first << "\n" << std::flush;
 								Element x; _F.init(x, -(p2next->first)/x1);
 							
 		                                        	while (p2next->second != NULL) {
@@ -470,20 +469,20 @@ public:
                 		                        	Element y; _F.init(y, p1->getX());
                                 		        	Element z;
                                         			if ((p2next->second!= NULL) && (p2next->second->getI()==p1->getI()) ) {
-                		                                	//cout << "updating " << p2next->second->getI() << " row" << flush;
+                		                                	//std::cout << "updating " << p2next->second->getI() << " row" << std::flush;
                                 		                	_F.init (z, x*y)        ;
                                                 			_F.addin(z, p2next->second->getX());
 		                                                	if (z==0) {
-                		                                        	//cout << ".....deleting \n" << flush;
+                		                                        	//std::cout << ".....deleting \n" << std::flush;
                                 		                        	p2next->second = deleteElement(p2next->second);
 		                                                	} else {		
-                		                                        	//cout << ".....new value\n" << flush;
+                		                                        	//std::cout << ".....new value\n" << std::flush;
                                 		                        	p2next->second->setElement(z);
                                                 		        	p2->second = p2next->second;
                                                         			p2next->second = p2next->second->up;
 		                                                	}
                 		                        	} else {
-                                                			//cout << "adding " << p1->getI() << " row\n" << flush;
+                                                			//std::cout << "adding " << p1->getI() << " row\n" << std::flush;
 		                                                	_F.init(z, x*y);
                 		                                	ijElement<Element> X(p1->getI(), p2->first, z);
                                 		                	p2->second=addElement(p2->second, X);
@@ -501,7 +500,7 @@ public:
                                                 	k = Q.front();
                                         	}
                                         	if (!Q.empty()) {
-							//cout << "breaking at " << i << " row\n" << flush;
+							//std::cout << "breaking at " << i << " row\n" << std::flush;
                         				break;
 						}
 		                	}
@@ -536,7 +535,7 @@ public:
 			}
 		}
 		out << "0 0 0\n";	
-		cout << "Omega: " << Omega << "\n" << flush;
+		std::cout << "Omega: " << Omega << "\n" << std::flush;
                 rowOcc.clear();
                 colOcc.clear();
                 //rowGcd.clear();
@@ -572,8 +571,8 @@ public:
 	}
 };
 
-} /*  }}} */
+}
 
 #endif //__LINBOX_matrix_grid_H
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax
