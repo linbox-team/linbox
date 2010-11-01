@@ -57,7 +57,6 @@
 #include <linbox/field/modular.h>
 
 using namespace LinBox;
-using namespace std;
 
 /*************************************************************************
    dense modulo Z/nZ
@@ -406,11 +405,11 @@ template <class Field, class Polynomial>
 void printPolynomial (const Field &F, const Polynomial &v) 
 {
         for (int i = v.size () - 1; i >= 0; i--) {
-                F.write (cout, v[i]);
+                F.write (std::cout, v[i]);
                 if (i > 0)
-                        cout << " x^" << i << " + ";
+                        std::cout << " x^" << i << " + ";
         }
-        cout << endl;
+	std::cout << std::endl;
 }
 
 Integers ZZ;
@@ -763,4 +762,4 @@ vector<unsigned int> linbox_modn_sparse_matrix_solve(mod_int p, size_t numrows, 
   return X;
 }
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

@@ -19,8 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LINBOX_LB_BLACKBOX_COLLECTION_H
-#define __LINBOX_LB_BLACKBOX_COLLECTION_H
+#ifndef __LINBOX_lb_blackbox_collection_H
+#define __LINBOX_lb_blackbox_collection_H
 
 #include <map>
 #include <lb-blackbox-abstract.h>
@@ -46,4 +46,4 @@ typedef std::map<BlackboxKey, BlackboxAbstract*, BlackboxKeyLessThan>   Blackbox
 
 #endif
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

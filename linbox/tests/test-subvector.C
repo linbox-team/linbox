@@ -33,7 +33,7 @@ template <class Field>
 static bool testSubvector(Field &F, size_t n); 
 
 int main(int argc, char** argv)
-{	/*{{{*/
+{	
     // set up command line options
     static size_t n = 8;
     static Argument args[] = 
@@ -55,7 +55,7 @@ int main(int argc, char** argv)
     // finish
 	commentator.stop("Subvector test suite");
     return pass? 0 : -1;
-}/*}}}*/
+}
 
 /* Test Subvector class 
  * Subvector has the vector interface less those that
@@ -66,7 +66,7 @@ using namespace LinBox;
 
 template <class Field>
 static bool testSubvector(Field &F, size_t n) 
-{/*{{{*/
+{
 	// commentator setup
 	const char *  title = "Subvector test";
 	commentator.start(title, title, 1);
@@ -289,6 +289,6 @@ static bool testSubvector(Field &F, size_t n)
 	// finish
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, title);
 	return ret;
-}/*}}}*/
+}
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

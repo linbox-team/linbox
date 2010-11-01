@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* fflas/fflas_fgemv.inl
  * Copyright (C) 2005 Clement Pernet
@@ -355,3 +354,5 @@ FFLAS::fgemv (const FloatDomain& , const FFLAS_TRANSPOSE TransA,
 	cblas_sgemv (CblasRowMajor, (CBLAS_TRANSPOSE) TransA, M, N, 
 		     alpha, A, lda, X, incX, beta, Y, incY);
 }
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

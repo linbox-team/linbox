@@ -46,7 +46,7 @@ using namespace LinBox;
 template <class Ring, class Vector>
 bool testRandom(const Ring& R, 
 		LinBox::VectorStream<Vector>& stream1) 
-{/*{{{*/
+{
  
 	using namespace std;
 	
@@ -264,10 +264,10 @@ bool testRandom(const Ring& R,
                                                                                                         
 	  return ret;
 
-}/*}}}*/
+}
 
 int main(int argc, char** argv) 
-{/*{{{*/
+{
                                                                                                         
         using namespace LinBox;
                                                                                                         
@@ -301,8 +301,8 @@ int main(int argc, char** argv)
 	commentator.stop("Ilioloulos Smith Form test suite");
         return pass ? 0 : -1;
                                                                                                         
-}/*}}}*/
+}
 
 #undef int32
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

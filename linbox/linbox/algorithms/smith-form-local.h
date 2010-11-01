@@ -1,5 +1,5 @@
-
 /* linbox/algorithms/localsmith.h
+ * Copyright(C) LinBox
  *
  * Written by David Saunders
  *
@@ -8,8 +8,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __SMITH_FORM_LOCAL_H
-#define __SMITH_FORM_LOCAL_H
+#ifndef __LINBOX_smith_form_local_H
+#define __LINBOX_smith_form_local_H
 
 #include <vector>
 #include <list>
@@ -101,6 +101,6 @@ class SmithFormLocal{
 } // end LinBox
 
 #include <linbox/algorithms/smith-form-local2.h>
-#endif // __SMITH_FORM_LOCAL_H
+#endif // __LINBOX_smith_form_local_H
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

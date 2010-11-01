@@ -30,17 +30,17 @@
 #include <linbox/blackbox/blackbox-interface.h>
 
 namespace LinBox
-{/*{{{*/
+{
     template <class _Blackbox1, class _Blackbox2 = _Blackbox1>
     class Compose;
     
     template <class _Blackbox1, class _Blackbox2 = _Blackbox1>
     class ComposeOwner;
-}/*}}}*/
+}
 
 
 namespace LinBox
-{/*{{{*/
+{
 
 	/** 
 	 * \brief Blackbox of a product: C := AB, i.e. Cx := A(Bx).
@@ -374,12 +374,12 @@ namespace LinBox
 
 //@}
 
-} // namespace LinBox/*}}}*/
+} // namespace LinBox
 
 // was compose-traits.h (by Zhendong Wan)
 #include <linbox/blackbox/dense.h>
 namespace LinBox
-{/*{{{*/
+{
                                                                                                   
         /// used in ..., for example
         template<class IMatrix>
@@ -393,11 +393,11 @@ namespace LinBox
                                                                                                   
                 // define the return value type
                 typedef DenseMatrix<Field> value_type;         };
-}/*}}}*/
+}
 
 
 namespace LinBox
-{ /*  {{{ */
+{ 
 
 	/** 
 	 * \brief Blackbox of a product: C := AB, i.e. Cx := A(Bx).
@@ -579,10 +579,10 @@ namespace LinBox
 		mutable std::vector<Element> _z;
 	};
 	
-} /*  }}} */
+} 
 
 
 #endif // __LINBOX_compose_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

@@ -36,7 +36,7 @@ namespace LinBox
 {
 template <class _Field>
 struct BlackboxDomain : public _Field 
-{/*{{{*/
+{
 	// types Scalar, Block, Blackbox
 	typedef _Field Field; // transitional
 	typedef typename _Field::Element Scalar;
@@ -101,7 +101,7 @@ struct BlackboxDomain : public _Field
 				r.random(*place);
 	}
 
-}; //BlackboxDomain/*}}}*/
+}; //BlackboxDomain
 
 } // LinBox
 
@@ -110,7 +110,7 @@ using namespace std;
 
 template <class Blackbox>
 bool testAssociativity(Blackbox& A) 
-{/*{{{*/
+{
 	typedef typename Blackbox::MatrixDomain Dom;
 	Dom MD = A.domain();
 	size_t m = A.rowdim(), n = A.coldim() - 100;
@@ -130,11 +130,11 @@ bool testAssociativity(Blackbox& A)
 	return MD.areEqual(E,G);
 
 
-} // testAssociativity/*}}}*/
+} // testAssociativity
 
 template <class Blackbox>
 void testTiming(Blackbox & A)
-{/*{{{*/
+{
 	typedef typename Blackbox::MatrixDomain Dom;
 	typedef typename Dom::Block Block;
 
@@ -181,12 +181,12 @@ void testTiming(Blackbox & A)
 
 	cout << "End of timing tests" << endl << endl;
 
-} // testTiming/*}}}*/
+} // testTiming
 
 
 template <class Blackbox>
 void blockSizeTimingTest(Blackbox & A, size_t size)
-{/*{{{*/
+{
 	typedef typename Blackbox::MatrixDomain Dom;
 	typedef typename Dom::Block Block;
 
@@ -217,12 +217,12 @@ void blockSizeTimingTest(Blackbox & A, size_t size)
 
 	cout << endl;
 
-} //blockSizeTimingTest()/*}}}*/
+} //blockSizeTimingTest()
 
 
 template <class Blackbox>
 void stressTest (Blackbox & A)
-{/*{{{*/
+{
 	//Note that the rowdim/coldim of A must be 30000
 	typedef typename Blackbox::MatrixDomain Dom;
 	typedef typename Dom::Block Block;
@@ -251,11 +251,11 @@ void stressTest (Blackbox & A)
 	cout << "domain mul time: " << timer << endl;
 
 	cout << endl;
-}  //end stressTest()/*}}}*/
+}  //end stressTest()
 
 template <class Blackbox>
 void largeTest (Blackbox & A)
-{/*{{{*/
+{
 	//Use for large blackboxes
 	typedef typename Blackbox::MatrixDomain Dom;
 	typedef typename Dom::Block Block;
@@ -275,11 +275,11 @@ void largeTest (Blackbox & A)
 	A.unpackingApply(C,B,2048);
 	timer.stop();
 	cout << "unpacking apply time: " << timer << endl;
-}  //end largeTest/*}}}*/
+}  //end largeTest
 
 
 int main (int argc, char* argv[]) 
-{/*{{{*/
+{
 
 	static size_t n = 100;
         static integer f = 4093;
@@ -400,7 +400,7 @@ int main (int argc, char* argv[])
 		return pass ? 0 : -1;
 	}
 
-}/*}}}*/
+}
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

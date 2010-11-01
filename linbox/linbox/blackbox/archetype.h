@@ -13,7 +13,7 @@
 #define __LINBOX_blackbox_archetype_H
 
 namespace LinBox
-{/*{{{*/
+{
 
 	/*-  Note the original archetype concept has been given 
          * up in favor of supporting template members.
@@ -195,9 +195,9 @@ matrix transpose times vector product. )
 
 	}; // BlackBox Archetype
 
-} // namespace LinBox/*}}}*/
+} // namespace LinBox
 
 #endif // __LINBOX_blackbox_archetype_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

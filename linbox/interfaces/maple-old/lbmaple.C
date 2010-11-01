@@ -94,7 +94,7 @@ std::map<int, int> typeTable;
 extern "C"
 {
   ALGEB End(MKernelVector kv, ALGEB* args)
-  {/*{{{*/
+  {
     /* Four types of objects stored in memory */
 
     TriplesBBi* BBip;
@@ -139,7 +139,7 @@ extern "C"
     }    
     // When all objects are deleted, return
     return ToMapleNULL(kv);
-  }/*}}}*/
+  }
 }
 
 /* initBB - Backend "constructor" for Maple BlackBox objects. Takes as input 3 types of objects
@@ -155,7 +155,7 @@ extern "C"
 extern "C"
 {
   ALGEB initBB(MKernelVector kv, ALGEB* args)
-  {/*{{{*/
+  {
 
     // First get flag and key
     // IN this c
@@ -266,7 +266,7 @@ extern "C"
     }
 
     return ToMapleNULL(kv);
-  }/*}}}*/
+  }
 }
 
 
@@ -285,7 +285,7 @@ extern "C"
 
 extern "C" {
   ALGEB initV(MKernelVector kv, ALGEB* args)
-  {/*{{{*/
+  {
 
     // First get the flag and key to use.  The flag indicates what type of object was passed in
     // the key what key it should be hashed against
@@ -424,7 +424,7 @@ extern "C" {
 
     typeTable.insert(std::pair<int,int>(key,flag));
     return ToMapleNULL(kv);
-  }/*}}}*/
+  }
 }
 
 
@@ -442,7 +442,7 @@ extern "C" {
 extern "C"
 {
   ALGEB killMatrix(MKernelVector kv, ALGEB* args)
-  {/*{{{*/
+  {
     char err[] = "ERROR!  Associated blackbox object does not exist!";
     int key = MapleToInteger32(kv,args[1]), flag;
 
@@ -483,7 +483,7 @@ extern "C"
     }
 
     return ToMapleNULL(kv);
-  }/*}}}*/
+  }
 }
 
 
@@ -500,7 +500,7 @@ extern "C"
 extern "C" 
 {
   ALGEB killVector(MKernelVector kv, ALGEB* args) 
-  {/*{{{*/
+  {
     // Gets the key
     int key = MapleToInteger32(kv, args[1]), flag;
     char err[] = "ERROR! Associated Vector object does not exist!";
@@ -542,7 +542,7 @@ extern "C"
 
     // Do nothing if it isn't in there
     return ToMapleNULL(kv);
-  }/*}}}*/
+  }
 }
 
 
@@ -565,7 +565,7 @@ extern "C"
 extern "C"
 {
   ALGEB getMatrix(MKernelVector kv, ALGEB* args)
-  {/*{{{*/
+  {
     // Get the key
     int key = MapleToInteger32(kv,args[1]), flag;
     char err[] = "ERROR!  The associated BlackBox object does not exist!";
@@ -738,7 +738,7 @@ extern "C"
       MapleRaiseError(kv,err);
     
     return rtable;
-  }/*}}}*/
+  }
 }
 
 
@@ -756,7 +756,7 @@ extern "C"
 extern "C"
 {
   ALGEB getVector(MKernelVector kv, ALGEB* args)
-  {/*{{{*/
+  {
     // Get the key, declare variables
     int key = MapleToInteger32(kv,args[1]), flag;
     char err[] = "ERROR!  The associated Vector object does not exist!";
@@ -913,7 +913,7 @@ extern "C"
     }
 
     return rtable;
-  }/*}}}*/
+  }
 }
 
 
@@ -933,7 +933,7 @@ extern "C"
 extern "C"
 {
   ALGEB apply(MKernelVector kv, ALGEB* args)
-  {/*{{{*/
+  {
     // There are probably a million better random number generators, but for the moment I use this one
     int BBKey = MapleToInteger32(kv,args[1]), VKey = MapleToInteger32(kv,args[2]), bflag, vflag, nKey;
     VectorI *tempIV, newV;
@@ -1055,7 +1055,7 @@ extern "C"
     
     // If you get to this point, something has been hashed in, so return the key
     return ToMapleInteger(kv, (long) nKey);
-  }/*}}}*/
+  }
 }
 
 
@@ -1073,7 +1073,7 @@ extern "C"
 extern "C"
 {
   ALGEB applyT(MKernelVector kv, ALGEB* args)
-  {/*{{{*/
+  {
 
     int BBKey = MapleToInteger32(kv,args[1]), VKey = MapleToInteger32(kv,args[2]), bflag, vflag, nKey;
     char misMatchErr[] = "ERROR! Vector not in field of blackbox!";
@@ -1196,7 +1196,7 @@ extern "C"
     
     // If you get to this point, something has been hashed in, so return the key
     return ToMapleInteger(kv, (long) nKey);
-  }/*}}}*/
+  }
 }
 
 
@@ -1212,7 +1212,7 @@ extern "C"
 extern "C"
 {
   ALGEB rank(MKernelVector kv, ALGEB* args)
-  {/*{{{*/
+  {
     int key = MapleToInteger32(kv,args[1]), flag;
     unsigned long result;
     char err[] = "ERROR!  Associated blackbox object does not exist!";
@@ -1244,7 +1244,7 @@ extern "C"
     }
     else 
       MapleRaiseError(kv,err);
-  }/*}}}*/
+  }
 }
 
 
@@ -1258,7 +1258,7 @@ extern "C"
 extern "C" 
 {
   ALGEB det(MKernelVector kv, ALGEB* args)
-  {/*{{{*/
+  {
     char err[] = "ERROR!  Associated blackbox object does not exist!";
     int key = MapleToInteger32(kv,args[1]), flag;
     std::map<int,int>::iterator f_i;
@@ -1296,7 +1296,7 @@ extern "C"
     }
     else
       MapleRaiseError(kv, err);
-  }/*}}}*/
+  }
 }
 
 
@@ -1313,7 +1313,7 @@ extern "C"
 extern "C"
 {
 ALGEB minpoly(MKernelVector kv, ALGEB* args)
-  {/*{{{*/
+  {
     int i;
     ALGEB retlist, blank;
     char err[] = "ERROR!  Associated blackbox object does not exist!";
@@ -1367,7 +1367,7 @@ ALGEB minpoly(MKernelVector kv, ALGEB* args)
     
     return retlist;
 
-  }/*}}}*/
+  }
 }
 
 /* LiToM - Converts from a GMP integer to a Maple list of word-size chunks
@@ -1377,7 +1377,7 @@ ALGEB minpoly(MKernelVector kv, ALGEB* args)
  */
 
 ALGEB & LiToM(MKernelVector & kv, const integer & In, ALGEB & Out) 
-{/*{{{*/
+{
   // If we get lucky, this thing fits in one word, which is good, so we just
   // straight convert it
   if(In.size() == 1)
@@ -1391,7 +1391,7 @@ ALGEB & LiToM(MKernelVector & kv, const integer & In, ALGEB & Out)
 
   // Return the result for redundancy
   return Out;
-}/*}}}*/
+}
 
 /* MtoLI - conversion between long integers passed from maple into gmp integers
  * Uses Horners method. 
@@ -1402,7 +1402,7 @@ ALGEB & LiToM(MKernelVector & kv, const integer & In, ALGEB & Out)
 
 
 integer & MtoLI(MKernelVector & kv, integer & Out, const ALGEB &In)
-{/*{{{*/
+{
   // We just need 1 base.  By default, Maple breaks all integers of a certain size up into
   // mod 10000 chunks.  The chunks are put into a maple list, and then passed into code
   static integer base(10000);
@@ -1426,6 +1426,6 @@ integer & MtoLI(MKernelVector & kv, integer & Out, const ALGEB &In)
 
   // redundant
   return Out;
-}/*}}}*/
+}
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

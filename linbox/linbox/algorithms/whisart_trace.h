@@ -31,7 +31,7 @@
 #include "linbox/solutions/trace.h"
 
 namespace LinBox 
-{/*{{{*/
+{
 
 // Trait to show whether or not the BB class has a RawIndexed iterator
 template<class BB> struct RawIndexedCategory;
@@ -176,8 +176,8 @@ typename Field::Element& WhisartTraceTranspose(
 
 
  
-}/*}}}*/
+}
 #endif //__LINBOX_whisart_trace_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

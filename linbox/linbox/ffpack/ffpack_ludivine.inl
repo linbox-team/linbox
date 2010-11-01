@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* ffpack/ffpack_ludivine.inl
  * Copyright (C) 2005 Clement Pernet
  *
@@ -8,6 +6,9 @@
  * See COPYING for license information.
  */
 
+#ifndef __LINBOX_ffpack_ludivine_INL
+#define __LINBOX_ffpack_ludivine_INL
+
 #ifndef MIN
 #define MIN(a,b) (a<b)?a:b
 #endif
@@ -15,13 +16,15 @@
 #define MAX(a,b) (a<b)?b:a
 #endif
 
+//#define LB_DEBUG
 
 template<class Field>
 inline size_t
 FFPACK::LUdivine_gauss( const Field& F, const FFLAS_DIAG Diag,
 			const size_t M, const size_t N,		
 			typename Field::Element * A, const size_t lda, size_t*P, 
-			size_t *Q, const FFPACK_LUDIVINE_TAG LuTag){
+			size_t *Q, const FFPACK_LUDIVINE_TAG LuTag)
+{
 	typename Field::Element mone,one,zero;
 	F.init(one,1.0);
 	F.init(zero,0.0);
@@ -64,12 +67,15 @@ inline size_t
 FFPACK::LUdivine_small( const Field& F, const FFLAS_DIAG Diag, const FFLAS_TRANSPOSE trans,
 			const size_t M, const size_t N,		
 			typename Field::Element * A, const size_t lda, size_t*P, 
-			size_t *Q, const FFPACK_LUDIVINE_TAG LuTag){
+			size_t *Q, const FFPACK_LUDIVINE_TAG LuTag)
+{
 	return callLUdivine_small <typename Field::Element> ()
 		(F, Diag, trans, M, N, A, lda, P, Q, LuTag);
 }
+
 template<class Element>
-class FFPACK::callLUdivine_small {
+class FFPACK::callLUdivine_small 
+{
 public:
 	template <class Field>
 	inline size_t 
@@ -165,7 +171,8 @@ public:
 };
 
 template<>
-class FFPACK::callLUdivine_small<double>{
+class FFPACK::callLUdivine_small<double>
+{
 public:
 	template <class Field>
 	inline size_t 
@@ -269,8 +276,10 @@ public:
 		return R;
 	}
 };
+
 template<>
-class FFPACK::callLUdivine_small<float>{
+class FFPACK::callLUdivine_small<float>
+{
 public:
 	template <class Field>
 	inline size_t 
@@ -380,7 +389,8 @@ inline size_t
 FFPACK::LUdivine (const Field& F, const FFLAS_DIAG Diag, const FFLAS_TRANSPOSE trans,
 		  const size_t M, const size_t N,		
 		  typename Field::Element * A, const size_t lda, size_t*P, 
-		  size_t *Q, const FFPACK_LUDIVINE_TAG LuTag, const size_t cutoff){
+		  size_t *Q, const FFPACK_LUDIVINE_TAG LuTag, const size_t cutoff)
+{
 	
 	if ( !(M && N) ) return 0;
 	typedef typename Field::Element elt;
@@ -567,7 +577,7 @@ FFPACK::LUdivine (const Field& F, const FFLAS_DIAG Diag, const FFLAS_TRANSPOSE t
 // nUsedRowX is the number of Krylov vectors already triangularized
 //---------------------------------------------------------------------
 
-	template <class Field>
+template <class Field>
 size_t
 FFPACK::LUdivine_construct( const Field& F, const FFLAS_DIAG Diag,
 				      const size_t M, const size_t N,
@@ -575,7 +585,8 @@ FFPACK::LUdivine_construct( const Field& F, const FFLAS_DIAG Diag,
 				      typename Field::Element * X, const size_t ldx,
 				      typename Field::Element * u, size_t* P,
 				      bool computeX, const FFPACK_MINPOLY_TAG MinTag = FfpackDense,
-				      const size_t kg_mc =0, const size_t kg_mb=0, const size_t kg_j=0){
+				      const size_t kg_mc =0, const size_t kg_mb=0, const size_t kg_j=0)
+{
 
             typename Field::Element Mone, one, zero;
 	F.init(Mone, -1.0);
@@ -675,7 +686,8 @@ FFPACK::LUdivine_construct( const Field& F, const FFLAS_DIAG Diag,
 template <class Field>
 inline size_t 
 FFPACK::TURBO (const Field& F, const size_t M, const size_t N,
-	       typename Field::Element* A, const size_t lda, size_t * P, size_t * Q, const size_t cutoff) {
+	       typename Field::Element* A, const size_t lda, size_t * P, size_t * Q, const size_t cutoff) 
+{
 
 	size_t mo2 = (M>>1);
 	size_t no2 = (N>>1);
@@ -719,17 +731,17 @@ FFPACK::TURBO (const Field& F, const size_t M, const size_t N,
 // 	tim.stop();
 // 	cerr<<"LQUP1:"<<tim.realtime()<<std::endl;
 // 	tim.start();
-#if DEBUG
+#ifdef LB_DEBUG
 	std::cerr<<"NW= L1.Q1.U1.P1"<<std::endl;
 	write_field(F,std::cerr,NW,M,N,lda);
 #endif	
 	// B1 = L^-1.NE
-#if DEBUG
+#ifdef LB_DEBUG
 	std::cerr<<"avant B1 = L^-1.NE"<<std::endl;
 	write_field(F,std::cerr,NE,mloc,N-no2,ld2);
 #endif	
 	solveLB( F, FflasLeft, mo2, N-no2, q1, NW, ld1, Q1, NE, ld2);
-#if DEBUG
+#ifdef LB_DEBUG
 	std::cerr<<"B1 = L^-1.NE"<<std::endl;
 	write_field(F,std::cerr,NE,mloc,N-no2,ld2);
 #endif	
@@ -737,14 +749,14 @@ FFPACK::TURBO (const Field& F, const size_t M, const size_t N,
 	// NE = Q^-1.NE
 	
 	applyP( F, FflasLeft, FflasNoTrans, N-no2, 0, mo2, NE, ld2, Q1);		
-#if DEBUG
+#ifdef LB_DEBUG
 	std::cerr<<"NE=Q^-1.NE"<<std::endl;
 	write_field(F,std::cerr,NE,mloc,N-no2,ld2);
 #endif	
 
 	// SW = SW.P1
 	applyP( F, FflasRight, FflasTrans, M-mo2, 0, q1, SW, ld3, P1 );
-#if DEBUG
+#ifdef LB_DEBUG
 	std::cerr<<"SW = SW.P1"<<std::endl;
 	write_field(F,std::cerr,SW,M-mo2,no2,ld3);
 #endif	
@@ -755,7 +767,7 @@ FFPACK::TURBO (const Field& F, const size_t M, const size_t N,
 	
 	// N1 = SW_{1,q1} . U1^-1
 	ftrsm( F, FflasRight, FflasUpper, FflasNoTrans, FflasNonUnit, M-mo2, q1, one, NW, ld1 , SW, ld3 );
-#if DEBUG
+#ifdef LB_DEBUG
 	std::cerr<<" N1 = SW_{1,q1} . U1^-1"<<std::endl;
 	write_field(F,std::cerr,SW,M-mo2,no2,ld3);
 #endif	
@@ -766,7 +778,7 @@ FFPACK::TURBO (const Field& F, const size_t M, const size_t N,
 	
 	// I1 = SW_{q1+1,n} - N1.G1  
 	fgemm(F, FflasNoTrans, FflasNoTrans, M-mo2,  no2-q1, q1, Mone, SW, ld3, NW+q1, ld1, one, SW+q1, ld3);
-#if DEBUG
+#ifdef LB_DEBUG
 	std::cerr<<" I1 = SW_{q1+1,n} - N1.G1"<<std::endl;
 	write_field(F,std::cerr,SW,M-mo2,no2,ld3);
 #endif	
@@ -776,7 +788,7 @@ FFPACK::TURBO (const Field& F, const size_t M, const size_t N,
 			
 	// E1 = SE - N1.B1_{1,q1}
 	fgemm( F, FflasNoTrans, FflasNoTrans, M-mo2, N-no2, q1, Mone, SW, ld3, NE, ld2, one, SE, ld4);
-#if DEBUG
+#ifdef LB_DEBUG
 	std::cerr<<"  E1 = SE - N1.B1_{1,q1}"<<std::endl;
 	write_field(F,std::cerr,SE,M-mo2,N-no2,ld4);
 #endif	
@@ -789,7 +801,7 @@ FFPACK::TURBO (const Field& F, const size_t M, const size_t N,
 	mloc = M-mo2;
 	nloc = N-no2;
 	q2 = LUdivine( F, FflasNonUnit, FflasNoTrans, mloc, nloc, SE, ld4, P2, Q2, FfpackLQUP, cutoff);
-#if DEBUG
+#ifdef LB_DEBUG
 	std::cerr<<"  E1 = L2.Q2.U2.P2"<<std::endl;
 	write_field(F,std::cerr,SE,M-mo2,N-no2,ld4);	
 #endif	
@@ -799,20 +811,20 @@ FFPACK::TURBO (const Field& F, const size_t M, const size_t N,
 
 	// [I2;F2] = L2^-1.I1
 	solveLB( F, FflasLeft, mloc, no2-q1, q2, SE, ld4, Q2, SW+q1, ld3);
-#if DEBUG
+#ifdef LB_DEBUG
 	std::cerr<<"  [I2;F2] = L2^-1.I1"<<std::endl;
 	write_field(F,std::cerr,SW,M-mo2,no2,ld3);	
 #endif	
 	// I1 = Q2^-1.I1
 	applyP( F, FflasLeft, FflasNoTrans, no2-q1, 0, mloc, SW+q1, ld3, Q2 );
-#if DEBUG
+#ifdef LB_DEBUG
 	std::cerr<<"I1 = Q2^-1.I1"<<std::endl;
 	write_field(F,std::cerr,SW,mloc,no2,ld3);
  #endif	
 
 	// B1 = B1.P2
 	applyP( F, FflasRight, FflasTrans, mo2, 0, q2, NE, ld2, P2 );
-#if DEBUG
+#ifdef LB_DEBUG
 	std::cerr<<"B1 = B1.P2"<<std::endl;
 	write_field(F,std::cerr,NE,mo2,N-no2,ld2);
 #endif	
@@ -884,27 +896,29 @@ FFPACK::TURBO (const Field& F, const size_t M, const size_t N,
 			//no modification of L
 			solveLB2( F, FflasLeft,mloc, no2-q1, q3b, NE+q1*ld2+q2 , ld2, Q1+q1, NW+q1*(ld1+1), ld1);
 //			}
-#if DEBUG
+#ifdef LB_DEBUG
 			std::cerr<<"O2 avant="<<std::endl;
 			write_field(F,std::cerr,NW+q1*(ld1+1),mloc,no2-q1,ld1);
 #endif	
 	
 			// O2 = Q3b^-1.O2
 			applyP( F, FflasLeft, FflasNoTrans, no2-q1, 0, mloc, NW+q1*(ld1+1), ld1, Q1+q1 );
-#if DEBUG
+#ifdef LB_DEBUG
 			std::cerr<<"O2 apres="<<std::endl;
 			write_field(F,std::cerr,NW+q1*(ld1+1),mloc,no2-q1,ld1);
 #endif	
 	
 			//updating Q
-// 			size_t tmp;
-// 			for (size_t j=0;j<mo2-q1;++j)
-// 				if (rP3b[j]!=j){
-// 					//	std::cerr<<"(rP3b["<<j<<"]="<<rP3b[j]<<std::endl;
-// 					tmp = Q[j+q1];
-// 					Q[j+q1] = Q[rP3b[j]+q1];
-// 					Q[rP3b[j]+q1] = tmp;
-// 				}
+#if 0
+ 			size_t tmp;
+ 			for (size_t j=0;j<mo2-q1;++j)
+ 				if (rP3b[j]!=j){
+ 					//	std::cerr<<"(rP3b["<<j<<"]="<<rP3b[j]<<std::endl;
+ 					tmp = Q[j+q1];
+ 					Q[j+q1] = Q[rP3b[j]+q1];
+ 					Q[rP3b[j]+q1] = tmp;
+ 				}
+#endif
 				
 			// X2 = X2.P3
 			// Si plusieurs niveaux rec, remplacer X2 par [NW;I2]
@@ -1079,3 +1093,9 @@ FFPACK::TURBO (const Field& F, const size_t M, const size_t N,
 	//std::cerr<<q1<<" "<<q2<<" "<<q3<<" "<<q3b<<" "<<q4<<std::endl;
 	return q1+q2+q3+q3b+q4;
 }
+
+#undef LB_DEBUG
+#endif //__LINBOX_ffpack_ludivine_INL
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

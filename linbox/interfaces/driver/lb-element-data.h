@@ -20,8 +20,8 @@
  */
 
 
-#ifndef __LINBOX_LB_ELEMENT_DATA_H
-#define __LINBOX_LB_ELEMENT_DATA_H
+#ifndef __LINBOX_lb_element_data_H
+#define __LINBOX_lb_element_data_H
 
 #include <lb-domain-data.h>
 
@@ -80,4 +80,4 @@ EltAbstract* constructElt(const DomainKey &key){
 #endif
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

@@ -15,7 +15,7 @@
 #include "linbox/blackbox/permutation.h"
 
 namespace LinBox 
-{/*{{{*/
+{
 
 
     template <class SparseSeqMatrix, class Perm, class Vector1, class Vector2>
@@ -74,8 +74,8 @@ namespace LinBox
         return this->solve(x, rank, Q, L, A, P, b, randomsol);
     }
 
-} // namespace LinBox/*}}}*/
+} // namespace LinBox
 
 #endif // __LINBOX_gauss_solve_gf2_INL
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

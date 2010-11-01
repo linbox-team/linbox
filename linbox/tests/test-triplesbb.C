@@ -35,16 +35,16 @@
 
 template<class Vec>
 bool eqVec(const Vec& a, const Vec& b)
-{/*{{{*/
+{
 	bool good = true;
 	for (typename Vec::size_type i = 0; i < a.size(); ++i) good = good && (a[i] == b[i]);
 	return good;
-}/*}}}*/
+}
 
 using namespace LinBox;
 
 int main (int argc, char **argv)
-{/*{{{*/
+{
 	ofstream report;
 
 	bool pass = true;
@@ -111,6 +111,6 @@ int main (int argc, char **argv)
 
 	commentator.stop("triplesbb black box test suite");
 	return pass ? 0 : -1;
-}/*}}}*/
+}
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

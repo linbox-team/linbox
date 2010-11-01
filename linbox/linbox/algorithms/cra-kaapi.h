@@ -35,7 +35,7 @@
 #include "linbox/kaapi/communicate.h"
 
 namespace LinBox 
-{/*{{{*/
+{
 
     /**************************************************************************************************
      * CRA loop subroutine
@@ -142,7 +142,7 @@ namespace LinBox
 
     };
 
-}/*}}}*/
+}
 
 /*
  * marshalling operator, 
@@ -163,4 +163,4 @@ a1::IStream& operator>>( a1::IStream& in,  LinBox::Residue<Function, Domain>&  )
 #endif //__LINBOX_cra_kaapi_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

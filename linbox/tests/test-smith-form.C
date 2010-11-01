@@ -36,7 +36,7 @@
 template <class Ring, class Vector>
 bool testRandom(const Ring& R, 
 		LinBox::VectorStream<Vector>& stream1) 
-{/*{{{*/
+{
  
 	std::ostringstream str;
         
@@ -163,10 +163,10 @@ bool testRandom(const Ring& R,
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandom");
                                                                                                         
 	return ret;
-}/*}}}*/
+}
 
 int main(int argc, char** argv) 
-{/*{{{*/
+{
                                                                                                         
 	bool pass = true;
 	static size_t n =3; 
@@ -194,6 +194,6 @@ int main(int argc, char** argv)
 	commentator.stop("Smith form test suite");
 	return pass ? 0 : -1;
                                                                                                         
-}/*}}}*/
+}
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

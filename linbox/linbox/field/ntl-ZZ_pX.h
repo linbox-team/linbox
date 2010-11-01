@@ -30,7 +30,7 @@
 #include <NTL/ZZ_pX.h>
 
 namespace LinBox 
-{ // namespace in which all LinBox code resides/*{{{*/
+{ // namespace in which all LinBox code resides
 
 /** Ring (in fact, a unique factorization domain) of polynomial with
   * coefficients in class NTL_ZZ_p (integers mod a wordsize prime).
@@ -248,9 +248,9 @@ std::ostream& UnparametricField<NTL::ZZ_pX>::write( std::ostream& os ) const {
 }
 
 
-} // end of namespace LinBox/*}}}*/
+} // end of namespace LinBox
 
 #endif // __LINBOX_field_ntl_zz_px_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

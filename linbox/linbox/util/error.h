@@ -26,7 +26,7 @@
 #include <iostream>
 
 namespace LinBox
-{/*{{{*/
+{
 
 // ------------------------------- LinboxError
 /** base class for execption handling in Givaro
@@ -35,7 +35,7 @@ namespace LinBox
 class LinboxError {
 	static const size_t max_error_string = 256;
 public:
-	LinboxError (const char* msg = 0) {
+	LinboxError (const char* msg = '\0') {
 		std::strncpy(strg, msg, max_error_string);
 		strg[max_error_string-1] = 0;
 	};
@@ -79,7 +79,7 @@ class LinboxBadFormat : public LinboxError {
 	LinboxBadFormat (const char* msg) : LinboxError (msg) {};
 };
  
-}/*}}}*/
+}
 
 #ifdef LinBoxSrcOnly       // for all-source compilation
 #    include <linbox/util/error.C>
@@ -88,4 +88,4 @@ class LinboxBadFormat : public LinboxError {
 #endif // __LINBOX_util_error_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

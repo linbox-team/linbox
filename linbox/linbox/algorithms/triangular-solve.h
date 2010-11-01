@@ -1,12 +1,12 @@
 /* ===================================================================
- * (C) LinBox 2008
+ * Copyright(C) 2008 LinBox
  * Triangular Solve
  * See COPYING for license information.
  * Time-stamp: <16 Jun 10 14:21:18 Jean-Guillaume.Dumas@imag.fr> 
  * ===================================================================
  */
-#ifndef __TRI_SOLVE_INL
-#define __TRI_SOLVE_INL
+#ifndef __LINBOX_triangular_solve_H
+#define __LINBOX_triangular_solve_H
 
 #include "linbox/vector/vector-domain.h"
 
@@ -181,6 +181,7 @@ namespace LinBox
         return x;
     }
 }
-#endif
+#endif //__LINBOX_triangular_solve_H
+
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

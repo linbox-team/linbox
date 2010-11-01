@@ -20,7 +20,7 @@
 
 
 namespace LinBox 
-{/*{{{*/
+{
 
 /// The object needed to build a Hilbert matrix as a JIT matrix 
 template<typename _Field>
@@ -84,9 +84,9 @@ class Hilbert : public JIT_Matrix<_Field, Hilbert_JIT_Entry<_Field> > {
 
 
 
-}//LinBox Namespace/*}}}*/
+}//LinBox Namespace
 
 #endif //__LINBOX_hilbert_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

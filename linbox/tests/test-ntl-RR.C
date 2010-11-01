@@ -22,7 +22,7 @@
 using namespace LinBox;
 
 int main (int argc, char **argv)
-{/*{{{*/
+{
 	static size_t n = 10000;
 	static int iterations = 1;
 
@@ -58,6 +58,6 @@ int main (int argc, char **argv)
 	// -bds:  Well, compilation is checked at least.  Work needed: A meaningful test is falsifyable.
 
 	return 0;
-}/*}}}*/
+}
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

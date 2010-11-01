@@ -1,5 +1,5 @@
-
 /* tests/test-local-smith.C
+ * Copyright (C) LinBox
  *
  * Written by David Saunders 
  *
@@ -40,7 +40,8 @@ using namespace LinBox;
  */
 
 template <class LocalPIR>
-class foobar {
+class foobar 
+{
 	public:
 	typedef typename LocalPIR::Element first_argument_type;
 	typedef LocalPIR second_argument_type;
@@ -52,8 +53,10 @@ class foobar {
 		else R.gcd(d, x, x);
 	}
 };
+
 template<>
-class foobar<LinBox::Local2_32> {
+class foobar<LinBox::Local2_32> 
+{
 public:
 	typedef LinBox::Local2_32 LocalPIR;
 	
@@ -82,7 +85,8 @@ public:
 				
 template <class LocalPIR>
 class pplt
-{   public:
+{   
+public:
 	pplt(LocalPIR R) : _R_(R){}
 	bool operator() (typename LocalPIR::Element a, typename LocalPIR::Element b)
 	{  
@@ -94,9 +98,10 @@ class pplt
         LocalPIR _R_;
 };
 
-/*
+#if 0
 template<>
-class pplt<LinBox::NTL_PID_zz_p> {
+class pplt<LinBox::NTL_PID_zz_p> 
+{
 public:
 	typedef LinBox::NTL_PID_zz_p LocalPIR;
 	
@@ -110,7 +115,7 @@ public:
     //protected:
         LocalPIR _R_;
 };
-*/
+#endif
 
 template <class LocalPIR>
 static bool testLocalSmith (const LocalPIR &R, VectorStream<vector<typename LocalPIR::Element> > &stream, string s) 
@@ -270,4 +275,4 @@ int main (int argc, char **argv)
 }
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

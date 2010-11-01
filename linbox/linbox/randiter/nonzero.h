@@ -32,7 +32,7 @@
 #endif
 
 namespace LinBox
-{/*{{{*/
+{
 	/** Random iterator for nonzero random numbers
 	 *
 	 * Wraps around an existing random iterator and ensures that the output
@@ -92,9 +92,9 @@ namespace LinBox
      
 	}; // class NonzeroRandIter
  
-} // namespace LinBox/*}}}*/
+} // namespace LinBox
 
 #endif // __LINBOX_randiter_nonzero_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

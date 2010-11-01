@@ -11,7 +11,7 @@
 #include <linbox/integer.h>
 
 namespace LinBox
-{/*{{{*/
+{
 inline int rational_reconstruction (integer& a, integer& b, const integer& n0, const integer& d0, const integer& B) {
 
 	integer p0, p1, p2; integer q0, q1, q2;
@@ -60,9 +60,9 @@ inline int rational_reconstruction (integer& a, integer& b, const integer& n0, c
 	
 	return 0;
 }
-}// LinBox/*}}}*/
+}// LinBox
 
 #endif //__LINBOX_rational_reconstruction2_H__
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

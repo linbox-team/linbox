@@ -18,7 +18,7 @@
 #endif
 
 namespace LinBox
-{/*{{{*/
+{
   
   /*
   // for GF(310), apply to packvec will do adds with periodic normalizations
@@ -209,11 +209,11 @@ namespace LinBox
     return y;
   }
        
-}//End of LinBox/*}}}*/
+}//End of LinBox
 
 //#undef _ZOI_OUTERLOOP_CHUNK_SIZE
 
 #endif //__LINBOX_bb_zoi_INL
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

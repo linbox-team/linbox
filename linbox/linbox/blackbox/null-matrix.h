@@ -28,7 +28,7 @@
 #include <linbox/blackbox/blackbox-interface.h>
  
 namespace LinBox
-{/*{{{*/
+{
   
   // couldn't a null instance of one of the other classes serve as well?
 
@@ -85,9 +85,9 @@ namespace LinBox
 
 	};
 	
-} /*}}}*/
+} 
 
 #endif //__LINBOX_bb_nullmatrix_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

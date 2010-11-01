@@ -17,7 +17,7 @@
 #include "linbox/fflas/fflas.h"
 
 namespace LinBox 
-{/*{{{*/
+{
 	
 	
 /** Elements are wrapped BlasMatrix objects.
@@ -556,9 +556,9 @@ class BlockRing : public FieldInterface
 	
   }; // BlockRing
 	
-} // LinBox/*}}}*/
+} // LinBox
 
 #endif // __LINBOX_blockring_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

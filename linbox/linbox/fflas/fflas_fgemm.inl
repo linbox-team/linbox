@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* fflas/fflas_fgemm.inl
  * Copyright (C) 2005 Clement Pernet
@@ -33,11 +32,11 @@ inline void FFLAS::ClassicMatmul (const DoubleDomain& ,
 				  const DoubleDomain::Element beta,
 				  DoubleDomain::Element * Cd, const size_t ldc,
 				  const size_t , const FFLAS_BASE )
-{/*{{{*/
+{
 	cblas_dgemm (CblasRowMajor, (CBLAS_TRANSPOSE) ta, (CBLAS_TRANSPOSE) tb,
 		     m, n, k, (DoubleDomain::Element) alpha,
 		     Ad, lda, Bd, ldb, (DoubleDomain::Element) beta,Cd, ldc);
-}/*}}}*/
+}
 
 template<> 
 inline void FFLAS::ClassicMatmul (const FloatDomain& , 
@@ -50,11 +49,11 @@ inline void FFLAS::ClassicMatmul (const FloatDomain& ,
 				  const FloatDomain::Element beta,
 				  FloatDomain::Element * Cd, const size_t ldc,
 				  const size_t , const FFLAS_BASE )
-{/*{{{*/
+{
 	cblas_sgemm (CblasRowMajor, (CBLAS_TRANSPOSE) ta, (CBLAS_TRANSPOSE) tb,
 		     m, n, k, (FloatDomain::Element) alpha,
 		     Ad, lda, Bd, ldb, (FloatDomain::Element) beta,Cd, ldc);
-}/*}}}*/
+}
 
 template <>
 inline void FFLAS::ClassicMatmul (const ModularBalanced<double> & F,  
@@ -67,7 +66,7 @@ inline void FFLAS::ClassicMatmul (const ModularBalanced<double> & F,
 				  const double beta,
 				  double* C, const size_t ldc, 
 				  const size_t kmax, const FFLAS_BASE base) 
-{/*{{{*/
+{
 	double Mone, one, _alpha, _beta;
 	F.init(one, 1.0);
 	F.neg(Mone, one);
@@ -113,7 +112,7 @@ inline void FFLAS::ClassicMatmul (const ModularBalanced<double> & F,
 			for (size_t j = 0; j < n; ++j) 
 				F.mulin (* (Ci + j), alpha);
 	}
-}/*}}}*/
+}
 
 
 template <>
@@ -127,7 +126,7 @@ inline void FFLAS::ClassicMatmul (const ModularBalanced<float> & F,
 				  const float beta,
 				  float* C, const size_t ldc, 
 				  const size_t kmax, const FFLAS_BASE base) 
-{/*{{{*/
+{
 	float Mone, one, _alpha, _beta;
 	F.init(one, 1.0);
 	F.neg(Mone, one);
@@ -173,7 +172,7 @@ inline void FFLAS::ClassicMatmul (const ModularBalanced<float> & F,
 			for (size_t j = 0; j < n; ++j) 
 				F.mulin (* (Ci + j), alpha);
 	}
-}/*}}}*/
+}
 
 
 template <>
@@ -187,7 +186,7 @@ inline void FFLAS::ClassicMatmul (const Modular<double> & F,
 				  const double beta,
 				  double* C, const size_t ldc, 
 				  const size_t kmax, const FFLAS_BASE base) 
-{/*{{{*/
+{
 	double Mone, one, _alpha, _beta;
 	F.init(one, 1.0);
 	F.neg(Mone, one);
@@ -233,7 +232,7 @@ inline void FFLAS::ClassicMatmul (const Modular<double> & F,
 			for (size_t j = 0; j < n; ++j) 
 				F.mulin (* (Ci + j), alpha);
 	}
-}/*}}}*/
+}
 
 template <>
 inline void FFLAS::ClassicMatmul (const Modular<float> & F,  
@@ -246,7 +245,7 @@ inline void FFLAS::ClassicMatmul (const Modular<float> & F,
 				  const float beta,
 				  float* C, const size_t ldc, 
 				  const size_t kmax, const FFLAS_BASE base) 
-{/*{{{*/
+{
 	float Mone, one, _alpha, _beta;
 	F.init(one, 1.0);
 	F.neg(Mone, one);
@@ -292,7 +291,7 @@ inline void FFLAS::ClassicMatmul (const Modular<float> & F,
 			for (size_t j = 0; j < n; ++j) 
 				F.mulin (* (Ci + j), alpha);
 	}
-}/*}}}*/
+}
 
 
 // Classic Multiplication over double
@@ -308,7 +307,7 @@ inline void FFLAS::ClassicMatmul (const Field& F,
 				  const typename Field::Element beta,
 				  typename Field::Element* C, const size_t ldc,
 				  const size_t kmax, const FFLAS_BASE base) 
-{/*{{{*/
+{
 	typename Field::Element Mone;
 	typename Field::Element one;
 	typename Field::Element zero;
@@ -499,7 +498,7 @@ inline void FFLAS::ClassicMatmul (const Field& F,
 				for (size_t j = 0; j < n; ++j) 
 					F.mulin (*(C+i*ldc+j), alpha);
 	}
-}/*}}}*/
+}
 
 // Winograd Multiplication  A(n*k) * B(k*m) in C(n*m)
 // Computation of the 22 Winograd's operations
@@ -1690,3 +1689,5 @@ inline float * FFLAS::fsquare (const Modular<float> & F,
 				F.init(*(Ci+j),*(Ci+j));
 		return C;
 }
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

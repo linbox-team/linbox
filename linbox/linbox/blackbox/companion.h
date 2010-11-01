@@ -13,7 +13,7 @@
 #include <vector>
 
 namespace LinBox 
-{/*{{{*/
+{
 
 /** \ingroup blackbox
 \brief %Companion matrix of a monic polynomial.
@@ -96,10 +96,10 @@ struct Companion: public TriplesBB<_Field> {
 
 }; //Companion class
 
-} //LinBox/*}}}*/
+} //LinBox
 
 #endif //__LINBOX_companion_H
 
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

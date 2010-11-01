@@ -31,7 +31,7 @@ using namespace LinBox;
  * @return a reference to \p RIII
  */
 size_t & RandIntInInt ( const size_t & s, size_t & RIII, const int & seed = 0 )
-{/*{{{*/
+{
 	/*
 	 * if (seed == 0)
 	 *	srandom( (unsigned) time(NULL) );
@@ -42,19 +42,19 @@ size_t & RandIntInInt ( const size_t & s, size_t & RIII, const int & seed = 0 )
 	RIII          = (size_t) s * (alea/(RAND_MAX+1.0));
 	assert(RIII<s);
 	return RIII ;
-}/*}}}*/
+}
 
 /*! Creates a random Lapack style Permutation \p P of size \p len.
 */
 void RandomPermutation ( size_t * P, const size_t & len)
-{/*{{{*/
+{
 	size_t alea = 0 ;
 	for (size_t i = 0 ; i < len ; ++i) {
 		RandIntInInt(len-i, alea);
 		*(P+i) = i + alea ;
 	}
 	return;
-}/*}}}*/
+}
 
 
 /*! Builds a \p m x \p n random matrix of rank \p rank over field \p F.
@@ -65,7 +65,7 @@ void RandomMatrixWithRank(const Field & F,
 			  const size_t & m,
 			  const size_t & n,
 			  const size_t & rank)
-{/*{{{*/
+{
 	assert(rank <= m);
 	assert(rank <= n);
 
@@ -122,7 +122,7 @@ void RandomMatrixWithRank(const Field & F,
 	assert(CheckRank(F,A,m,n,n,rank));
 	return;
 
-}/*}}}*/
+}
 
 
 /** 
@@ -144,7 +144,7 @@ bool CheckRank( const Field & F,
 		const size_t & n, 
 		const size_t & lda, 
 		const size_t & alledged_rank)
-{/*{{{*/
+{
 	//                std::cout << " is rank truely " << alledged_rank << " ?" << std::endl;
 	typename Field::Element * Acopy = new typename Field::Element[m*n] ;
 	FFLAS::fcopy(F,m*n,Acopy,1,A,1);
@@ -152,7 +152,7 @@ bool CheckRank( const Field & F,
 	delete[] Acopy ;
 	//                std::cout << "It is " << true_rank << "." << std::endl;
 	return (alledged_rank == true_rank);
-}/*}}}*/
+}
 
 /**
  * @brief Tests the NullSpace routines
@@ -166,7 +166,7 @@ bool CheckRank( const Field & F,
  */
 template <class Field >
 static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank, int iterations, bool a_droite) 
-{/*{{{*/
+{
 	typedef typename Field::Element			Element;
 
 	//Commentator commentator;
@@ -260,11 +260,11 @@ static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank,
 	//commentator.stop(MSG_STATUS (ret), (const char *) 0, "testNullSpace");
 
 	return ret;
-}/*}}}*/
+}
 
 
 int main(int argc, char** argv)
-{/*{{{*/
+{
 	//-----------------------------------------------------------------------
 	// Choice of the finite field representation
 	//typedef GivaroZpz<Std32> Field;
@@ -316,9 +316,9 @@ int main(int argc, char** argv)
 
 	commentator.stop("NullSpace test suite");
 	return (pass ? 0 : -1);
-}/*}}}*/
+}
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
 
 
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

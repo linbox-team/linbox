@@ -1,4 +1,3 @@
-
 /* linbox/algorithms/gauss.h
  * Copyright (C) 1999 Jean-Guillaume Dumas
  *
@@ -22,8 +21,8 @@
 // Time-stamp: <03 Nov 00 19:19:06 Jean-Guillaume.Dumas@imag.fr> 
 // ========================================================================= //
 
-#ifndef __GAUSS_H
-#define __GAUSS_H
+#ifndef __LINBOX_gauss_H
+#define __LINBOX_gauss_H
 
 #include "linbox/util/debug.h"
 #include "linbox/util/commentator.h"
@@ -333,6 +332,6 @@ namespace LinBox
 #include "linbox/algorithms/gauss-rank.inl"
 #include "linbox/algorithms/gauss-det.inl"
 
-#endif // __GAUSS_H
+#endif // __LINBOX_gauss_H
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

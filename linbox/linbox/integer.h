@@ -20,7 +20,7 @@
 #include "gmp++/gmp++.h"
 
 namespace LinBox
-{/*{{{*/
+{
 	/** \brief This is a representation of arbitrary integers.  
 	 *
 	 * \ingroup linbox
@@ -83,9 +83,9 @@ LinBox ring for use in integer matrix computation, see pid-integers.h or ntl-ZZ.
         };
 
 
-}/*}}}*/
+}
 
 #endif // __LINBOX_integer_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

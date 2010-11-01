@@ -7,8 +7,8 @@
  *
  * SparseElimination elimination routines
  */
-#ifndef __GAUSS_ELIM_INL
-#define __GAUSS_ELIM_INL
+#ifndef __LINBOX_gauss_elim_INL
+#define __LINBOX_gauss_elim_INL
 
 namespace LinBox 
 {
@@ -20,12 +20,14 @@ namespace LinBox
     {
     	const unsigned long k = indcol - 1;
 
-//        std::cerr << "B PERMUTE: " << indpermut << " <--> " << k << " of  [";
-//         for(typename Vector::const_iterator refs =  lignecourante.begin();
-//             refs != lignecourante.end() ;
-//             ++refs )
-//             std::cerr << '(' << refs->first << ';' << refs->second << ')';
-//         std::cerr << "]" << std::endl;
+#if 0
+	std::cerr << "B PERMUTE: " << indpermut << " <--> " << k << " of  [";
+	 for(typename Vector::const_iterator refs =  lignecourante.begin();
+	     refs != lignecourante.end() ;
+	     ++refs )
+	     std::cerr << '(' << refs->first << ';' << refs->second << ')';
+	 std::cerr << "]" << std::endl;
+#endif
 
             // precondition indpermut != k
 	if (lignecourante.size () ) {
@@ -688,96 +690,86 @@ namespace LinBox
 
 } // namespace LinBox
 
-#endif // __GAUSS_INL
+#endif // __LINBOX_gauss_elim_INL
 
+#if 0
+template <class _Field>
+template <class Vector>
+void GaussDomain<_Field>::permute (Vector              &lignecourante,
+				   const unsigned long &indcol,
+				   const long &indpermut)
+{
+	const unsigned long k = indcol - 1;
+#if 0
+	std::cerr << "B PERMUTE: " << indpermut << " <--> " << k << " of  [";
+	for(typename Vector::const_iterator refs =  lignecourante.begin();
+	    refs != lignecourante.end() ;
+	    ++refs )
+		std::cerr << '(' << refs->first << ';' << refs->second << ')';
+	std::cerr << "]" << std::endl;
+#endif
 
+	// precondition indpermut != k
+	unsigned long nj = lignecourante.size () ;
+	if (nj > 0) {
+		Element tmp; _F.init(tmp);
+		unsigned long kin = 0;
+		for (; kin < nj; ++kin)
+			if (static_cast<long>(lignecourante[kin].first) >= k) break;
+		if (kin < nj) {
+			unsigned long pin = kin;
+			for (; pin < nj; ++pin)
+				if (static_cast<long>(lignecourante[pin].first) >= indpermut) break;
+			if ( static_cast<long>(lignecourante[kin].first) == k) {
+				if (pin < nj) {
+					if ( static_cast<long>(lignecourante[pin].first) == indpermut) {
+						// Both there
+						std::swap( lignecourante[kin].second, lignecourante[pin].second);
+					} else {
+						// Only k there
+						lignecourante[kin].first = indpermut;
+						typename Vector::value_type etmp = lignecourante[kin];
+						--pin;
+						for(size_t i=kin; i<pin; ++i)
+							lignecourante[i] = lignecourante[i+1];
+						lignecourante[pin] = etmp;            
+					}
+				} else {
+					pin = nj-1;
+					// Only k there
+					lignecourante[kin].first = indpermut;
+					typename Vector::value_type etmp = lignecourante[kin];
+					for(size_t i=kin; i<pin; ++i)
+						lignecourante[i] = lignecourante[i+1];
+					lignecourante[pin] = etmp;            
 
-
-
-
-
-
-
-
-
-
-//     template <class _Field>
-//     template <class Vector>
-//     void GaussDomain<_Field>::permute (Vector              &lignecourante,
-//                                        const unsigned long &indcol,
-//                                        const long &indpermut)
-//     {
-//     	const unsigned long k = indcol - 1;
-
-//  //        std::cerr << "B PERMUTE: " << indpermut << " <--> " << k << " of  [";
-// //         for(typename Vector::const_iterator refs =  lignecourante.begin();
-// //             refs != lignecourante.end() ;
-// //             ++refs )
-// //             std::cerr << '(' << refs->first << ';' << refs->second << ')';
-// //         std::cerr << "]" << std::endl;
-
-//             // precondition indpermut != k
-// 	unsigned long nj = lignecourante.size () ;
-// 	if (nj > 0) {
-//             Element tmp; _F.init(tmp);
-//             unsigned long kin = 0;
-//             for (; kin < nj; ++kin)
-//                 if (static_cast<long>(lignecourante[kin].first) >= k) break;
-//             if (kin < nj) {
-//                 unsigned long pin = kin;
-//                 for (; pin < nj; ++pin)
-//                     if (static_cast<long>(lignecourante[pin].first) >= indpermut) break;
-//                 if ( static_cast<long>(lignecourante[kin].first) == k) {
-//                     if (pin < nj) {
-//                         if ( static_cast<long>(lignecourante[pin].first) == indpermut) {
-//                                 // Both there
-//                             std::swap( lignecourante[kin].second, lignecourante[pin].second);
-//                         } else {
-//                                 // Only k there
-//                             lignecourante[kin].first = indpermut;
-//                             typename Vector::value_type etmp = lignecourante[kin];
-//                             --pin;
-//                             for(size_t i=kin; i<pin; ++i)
-//                                 lignecourante[i] = lignecourante[i+1];
-//                             lignecourante[pin] = etmp;            
-//                         }
-//                     } else {
-//                         pin = nj-1;
-//                             // Only k there
-//                         lignecourante[kin].first = indpermut;
-//                         typename Vector::value_type etmp = lignecourante[kin];
-//                         for(size_t i=kin; i<pin; ++i)
-//                             lignecourante[i] = lignecourante[i+1];
-//                         lignecourante[pin] = etmp;            
-                        
-//                     }
-//                 } else {
-//                     if (pin < nj) {
-//                         if ( static_cast<long>(lignecourante[pin].first) == indpermut) {
-//                                 // Only indpermut there
-//                             lignecourante[pin].first = k;
-//                             typename Vector::value_type etmp = lignecourante[pin];
-//                             for(size_t i = pin; i>kin; --i)
-//                                 lignecourante[i] = lignecourante[i-1];
-//                             lignecourante[kin] = etmp;
-//                         } // else Nobody
-//                     } // else Nobody
-//                 }
-//             } // else rien de supérieur à k dans l
-//               // donc rien à permuter
-//         }
-
-// //         std::cerr << "E PERMUTE: " << indpermut << " <--> " << k << " of  [";
-// //         for(typename Vector::const_iterator refs =  lignecourante.begin();
-// //             refs != lignecourante.end() ;
-// //             ++refs )
-// //             std::cerr << '(' << refs->first << ';' << refs->second << ')';
-// //         std::cerr << "]" << std::endl;
-
-
-
-//     }
+				}
+			} else {
+				if (pin < nj) {
+					if ( static_cast<long>(lignecourante[pin].first) == indpermut) {
+						// Only indpermut there
+						lignecourante[pin].first = k;
+						typename Vector::value_type etmp = lignecourante[pin];
+						for(size_t i = pin; i>kin; --i)
+							lignecourante[i] = lignecourante[i-1];
+						lignecourante[kin] = etmp;
+					} // else Nobody
+				} // else Nobody
+			}
+		} // else rien de supérieur à k dans l
+		// donc rien à permuter
+	}
+#if 0
+	std::cerr << "E PERMUTE: " << indpermut << " <--> " << k << " of  [";
+	for(typename Vector::const_iterator refs =  lignecourante.begin();
+	    refs != lignecourante.end() ;
+	    ++refs )
+		std::cerr << '(' << refs->first << ';' << refs->second << ')';
+	std::cerr << "]" << std::endl;
+#endif
+}
+#endif
     
             
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

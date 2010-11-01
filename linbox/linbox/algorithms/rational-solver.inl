@@ -64,7 +64,7 @@
 //#define SKIP_NONSINGULAR
 
 namespace LinBox 
-{ /* {{{ */
+{
 	
 	template <class Prime>
 	inline bool checkBlasPrime(const Prime p) {
@@ -539,15 +539,19 @@ namespace LinBox
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>	
 	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solve 
-	(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, const bool old, int maxP, const SolverLevel level ) const {
+	(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, const bool old, int maxP, const SolverLevel level ) const 
+	{
 
 		SolverReturnStatus status;	
 		int maxPrimes=maxP;
-		while (maxPrimes > 0){
+		while (maxPrimes > 0)
+		{
 #ifdef SKIP_NONSINGULAR
-			switch (SS_SINGULAR) {
+			switch (SS_SINGULAR) 
+			{
 #else
-				switch (A.rowdim() == A.coldim() ? solveNonsingular(num, den,A,b,old,maxPrimes) : SS_SINGULAR) {
+				switch (A.rowdim() == A.coldim() ? solveNonsingular(num, den,A,b,old,maxPrimes) : SS_SINGULAR) 
+				{
 #endif
 					
 				case SS_OK:
@@ -578,7 +582,7 @@ namespace LinBox
 				if (maxPrimes > 0) chooseNewPrime();
 			}
 			return SS_FAILED;
-		}
+	}
 		
 
 
@@ -1457,7 +1461,7 @@ namespace LinBox
 			return SS_OK;
 	}
 
-} /* }}} */ //end of namespace LinBox
+} //end of namespace LinBox
 
 //BB : moved the following "guarded" code in a new file, verbatim :
 #include "rational-solver2.h"
@@ -1465,4 +1469,4 @@ namespace LinBox
 #endif //__LINBOX_rational_solver_INL
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

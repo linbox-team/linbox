@@ -7,8 +7,8 @@
  *
  * SparseElimination rank calls
  */
-#ifndef __GAUSS_RANK_INL
-#define __GAUSS_RANK_INL
+#ifndef __LINBOX_gauss_rank_INL
+#define __LINBOX_gauss_rank_INL
 
 namespace LinBox 
 {
@@ -63,6 +63,6 @@ namespace LinBox
     }
 } // namespace LinBox
 
-#endif // __GAUSS_INL
+#endif // __LINBOX_gauss_rank_INL
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

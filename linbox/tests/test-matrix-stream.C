@@ -64,7 +64,7 @@ TestField f;
 template <class BB>
 bool testMatrix( std::ostream& out, const char* filename, const char* BBName ) ;
 bool testMatrixStream(const string& matfile) 
-{/*{{{*/
+{
 
 	bool pass = true;
 	commentator.start("Testing matrix-stream...", matfile.c_str());
@@ -205,11 +205,11 @@ bool testMatrixStream(const string& matfile)
 	commentator.stop(ms.getFormat());
 	//commentator.stop(MSG_STATUS(pass));
 	return pass;
-}/*}}}*/
+}
 
 template <class BB>
 bool testMatrix( std::ostream& out, const char* filename, const char* BBName ) 
-{/*{{{*/
+{
 	out << "\tTesting " << BBName << std::endl;
 	std::ifstream fin( filename );
 	if( !fin ) {
@@ -241,10 +241,10 @@ bool testMatrix( std::ostream& out, const char* filename, const char* BBName )
 		}
 	}
 	return pass;
-}/*}}}*/
+}
 
 int main(int argc, char* argv[])
-{/*{{{*/
+{
 /*
     static size_t n = 10;
     static integer q = 4093U;
@@ -277,6 +277,6 @@ int main(int argc, char* argv[])
 	pass = pass && testMatrixStream("data/matrix-market-coordinate.matrix");
 	commentator.stop(MSG_STATUS(pass));
 	return pass ? 0 : -1;
-}/*}}}*/
+}
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

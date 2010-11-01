@@ -20,8 +20,8 @@
  */
 
 
-#ifndef __LINBOX_LB_MAPLE_C
-#define __LINBOX_LB_MAPLE_C
+#ifndef __LINBOX_lb_maple_C
+#define __LINBOX_lb_maple_C
 
 #include <fstream>
 #include <iostream>
@@ -1036,4 +1036,4 @@ extern "C" {
 
 #endif
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

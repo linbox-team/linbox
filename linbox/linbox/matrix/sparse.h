@@ -58,7 +58,7 @@
 #include "linbox/util/matrix-stream.h"
 
 namespace LinBox
-{/*{{{*/
+{
 	
 
 /** Exception class for invalid matrix input
@@ -1375,11 +1375,11 @@ struct MatrixTraits< const SparseMatrixBase<Element, Row, Trait> >
 	typedef typename MatrixCategories::RowMatrixTag MatrixCategory; 
 };
 
-} // namespace LinBox/*}}}*/
+} // namespace LinBox
 
 #include "linbox/matrix/sparse.inl"
 
 #endif // __LINBOX_matrix_sparse_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

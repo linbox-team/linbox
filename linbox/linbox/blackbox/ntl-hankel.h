@@ -21,7 +21,7 @@
  *-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+*/
 
 namespace LinBox
-{/*{{{*/
+{
 /// \ingroup blackbox
   template <class _Field>
     class Hankel: public Toeplitz<_Field>
@@ -65,11 +65,11 @@ namespace LinBox
       
     }; //  class Hankel
   
-} // namespace Linbox/*}}}*/
+} // namespace Linbox
 
 #include <linbox/blackbox/ntl-hankel.inl>     
 
 #endif //__LINBOX_ntl_hankel_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

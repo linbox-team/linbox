@@ -29,7 +29,7 @@
 #include <string>
 
 namespace LinBox 
-{/*{{{*/
+{
 
 	class UnSupportedMatrixType {};
 
@@ -77,7 +77,7 @@ namespace LinBox
 		Reader _R;
 	};
 
-}/*}}}*/
+}
 				
 
 #include "linbox/blackbox/dense.h"
@@ -101,7 +101,7 @@ namespace LinBox
 #include "field-reader-analyzer.h"
 
 namespace LinBox 
-{/*{{{*/
+{
 
 
 	template<class Vector>
@@ -360,10 +360,10 @@ namespace LinBox
 		return NULL; // or here
 	}
 
-}/*}}}*/
+}
 
 
 #endif //__LINBOX_reader_blackbox_factory_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

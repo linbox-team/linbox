@@ -19,8 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef _LIFTING_CONTAINER_H
-#define _LIFTING_CONTAINER_H
+#ifndef __LINBOX_lifting_container_H
+#define __LINBOX_lifting_container_H
 
 //#define DEBUG_LC
 //#define LC_CHECK_DIVISION
@@ -47,7 +47,8 @@
 //#include <linbox/algorithms/vector-hom.h>
 #undef _U
 
-namespace LinBox {
+namespace LinBox 
+{
 
 	/**
 	 * BoundBlackbox: Sets
@@ -1457,6 +1458,6 @@ namespace LinBox {
 
 
 } // end of namespace LinBox
-#endif
+#endif //__LINBOX_lifting_container_H
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

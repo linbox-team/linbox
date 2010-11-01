@@ -25,7 +25,7 @@
 #endif
 
 namespace LinBox 
-{ /*  {{{ */
+{ 
     template <class _Field>
     template <class Matrix, class Perm> inline unsigned long& 
     GaussDomain<_Field>::QLUPin (unsigned long &rank,
@@ -687,8 +687,8 @@ namespace LinBox
     }
 
 
-} /*  }}} */ // namespace LinBox
+} // namespace LinBox
 
 #endif // __LINBOX_gauss_INL
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

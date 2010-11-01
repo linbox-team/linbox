@@ -31,7 +31,7 @@
 //$define CRATIMING
 
 namespace LinBox 
-{/*{{{*/
+{
     
     template<class Function, class Element> struct CRATemporaryVectorTrait {
         typedef std::vector<Element> Type_t;
@@ -294,8 +294,8 @@ std::cerr << "Used: " << IterCounter << " primes." << std::endl;
 	};
 #endif
 
-}/*}}}*/
+}
 
 #endif //__LINBOX_sequential_cra_H
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

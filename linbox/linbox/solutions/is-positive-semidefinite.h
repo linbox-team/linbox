@@ -26,7 +26,7 @@
 #include "linbox/algorithms/signature.h"
 
 namespace LinBox
-{/*{{{*/
+{
 	// for specialization with respect to the DomainCategory
     template< class Blackbox, class isPositiveSemiDefiniteMethod, class DomainCategory>
     bool isPositiveSemiDefinite (
@@ -145,8 +145,8 @@ namespace LinBox
 		return Signature::isPosSemiDef(A, Signature::BLAS_LPM_Method() );
 	}
 	
-} // end of LinBox namespace/*}}}*/
+} // end of LinBox namespace
 #endif // __LINBOX_is_positive_semidefinite_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

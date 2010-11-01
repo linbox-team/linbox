@@ -1,4 +1,5 @@
 /* linbox/field/modular.h
+ * Copyright(C) LinBox
  * Written by 
  *    Pierrick Vignard 
  *    Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
@@ -537,14 +538,16 @@ namespace LinBox
 
 	}; // class PowerOfTwoModular
 	
+#if 0
 	/* Specialization of gcd_poweroftwo for Int64
- 	 */
-/* 	template<> */
-/* 	  PowerOfTwoModular<int64>::Element&  */
-/* 	  PowerOfTwoModular<int64>::gcd_poweroftwo (Element &x,const Element &y) const */
-/* 		{  */
-/* 		  return x=GCD2E64(y); */
-/* 		}  */
+	*/
+	template<> 
+	PowerOfTwoModular<int64>::Element&  
+	PowerOfTwoModular<int64>::gcd_poweroftwo (Element &x,const Element &y) const 
+	{  
+		return x=GCD2E64(y); 
+	}  
+#endif
 
 } // namespace LinBox
 
@@ -554,4 +557,4 @@ namespace LinBox
 #endif // __LINBOX_poweroftwomodular_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

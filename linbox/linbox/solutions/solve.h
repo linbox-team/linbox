@@ -1,4 +1,5 @@
 /* linbox/solutions/solve.h
+ * Copyright(C) LinBox
  *  Evolved from an earlier one by Bradford Hovinen <hovinen@cis.udel.edu>
  *
  * See COPYING for license information.
@@ -167,11 +168,13 @@ namespace LinBox
 			     typename FieldTraits<typename SparseMatrix<Field>::Field>::categoryTag(), 
 			     Method::BlasElimination(m)); 
 
-		// 		if ( ! consistent ) {  // we will return the zero vector
-		// 			typename Field::Element zero; A.field().init(zero, 0);
-		// 			for (typename Vector::iterator i = x.begin(); i != x.end(); ++i) *i = zero;
-		// 		}
-		// 		return x;
+#if 0
+		 		if ( ! consistent ) {  // we will return the zero vector
+		 			typename Field::Element zero; A.field().init(zero, 0);
+		 			for (typename Vector::iterator i = x.begin(); i != x.end(); ++i) *i = zero;
+		 		}
+		 		return x;
+#endif
 	}
 	// BlasElimination section ///////////////////
 
@@ -229,7 +232,7 @@ namespace LinBox
 		throw LinboxError("bad use of integer API solver\n");
 		
 	} 
-/*
+#if 0
 	template <class RatVector, class Vector, class BB, class MethodTraits> 
 	Vector& solve(RatVector& x, const BB& A, const Vector& b, 
 		      const RingCategories::RationalTag & tag, 
@@ -260,16 +263,17 @@ namespace LinBox
 		commentator.stop ("done", NULL, "Rsolve");
 		return x;
 	}
-*/	
+#endif
 	// error handler for non defined solver over rational domain
-/*	template <class Vector, class BB, class MethodTraits> 
+#if 0
+	template <class Vector, class BB, class MethodTraits> 
 	Vector& solve(Vector& x, const BB& A, const Vector& b, 
 		      const RingCategories::RationalTag & tag, 
 		      const MethodTraits& m)
 	{ 
 		throw LinboxError("LinBox ERROR: solver not yet defined over rational domain");
 	}
-*/	
+#endif
 	
 	/*
 	 * 1st integer solver API :
@@ -648,27 +652,29 @@ namespace LinBox
 			case SS_OK:
 				m.singular(Specifier::NONSINGULAR);				
 				break;					
-// 			case SS_SINGULAR:
-// 				switch (m.solution()){
-// 				case DixonTraits::DETERMINIST:
-// 					status= rsolve.monolithicSolve(x, d, A, b, false, false, m.maxTries(), 
-// 								       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
-// 					break;					
-// 				case DixonTraits::RANDOM:
-// 					status= rsolve.monolithicSolve(x, d, A, b, false, true, m.maxTries(), 
-// 								       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
-// 					break;					
-// 				case DixonTraits::DIOPHANTINE:
-// 					{ 
-// 						DiophantineSolver<RationalSolver<Ring,Field,RandomPrimeIterator, DixonTraits> > dsolve(rsolve);
-// 						status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
-// 										(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
-//                                         }
-//                                         break;					
-// 				default:
-// 					break;
-// 				}			
-// 				break;
+#if 0
+ 			case SS_SINGULAR:
+ 				switch (m.solution()){
+ 				case DixonTraits::DETERMINIST:
+ 					status= rsolve.monolithicSolve(x, d, A, b, false, false, m.maxTries(), 
+ 								       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
+ 					break;					
+ 				case DixonTraits::RANDOM:
+ 					status= rsolve.monolithicSolve(x, d, A, b, false, true, m.maxTries(), 
+ 								       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
+ 					break;					
+ 				case DixonTraits::DIOPHANTINE:
+ 					{ 
+ 						DiophantineSolver<RationalSolver<Ring,Field,RandomPrimeIterator, DixonTraits> > dsolve(rsolve);
+ 						status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
+ 										(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
+					 }
+					 break;					
+ 				default:
+ 					break;
+ 				}			
+ 				break;
+#endif
 			default:
                                 break;
 			}
@@ -679,30 +685,32 @@ namespace LinBox
 			break;
 			    
 		case Specifier::SINGULAR:
-// 			switch (m.solution()){
-// 			case DixonTraits::DETERMINIST:
-// 				status= rsolve.monolithicSolve(x, d, A, b, 
-// 							       false, false, m.maxTries(), 
-// 							       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
-// 				break;
+#if 0
+ 			switch (m.solution()){
+ 			case DixonTraits::DETERMINIST:
+ 				status= rsolve.monolithicSolve(x, d, A, b, 
+ 							       false, false, m.maxTries(), 
+ 							       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
+ 				break;
 				
-// 			case DixonTraits::RANDOM:
-// 				status= rsolve.monolithicSolve(x, d, A, b, 
-// 							       false, true, m.maxTries(), 
-// 							       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
-// 				break;
+ 			case DixonTraits::RANDOM:
+ 				status= rsolve.monolithicSolve(x, d, A, b, 
+ 							       false, true, m.maxTries(), 
+ 							       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
+ 				break;
 				
-// 			case DixonTraits::DIOPHANTINE:
-// 				{
-// 					DiophantineSolver<RationalSolver<Ring,Field,RandomPrimeIterator, DixonTraits> > dsolve(rsolve);
-// 					status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
-// 									(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
-//                                 }
-// 				break;
+ 			case DixonTraits::DIOPHANTINE:
+ 				{
+ 					DiophantineSolver<RationalSolver<Ring,Field,RandomPrimeIterator, DixonTraits> > dsolve(rsolve);
+ 					status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
+ 									(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
+				 }
+ 				break;
 				
-// 			//default:
-// 			//	break;
-// 			}		
+ 			//default:
+ 			//	break;
+ 			}		
+#endif
 		default:			    
 			break;
 		}
@@ -719,21 +727,21 @@ namespace LinBox
 
 
 
-	/*
+#if 0
 	  struct BlasEliminationCRASpecifier;
 	  // Extra case put in (1) for timing comparison or (2) for parallelism or 
 	  // (3) as an example of how we might leave an abandoned choice around in a 
 	  // callable state for future reference 
 	  template <class Vector, class Field> 
 	  Vector& solve(Vector& x, const DenseMatrix<Field>& A, const Vector& b, 
-	  const RingCategories::IntegerTag & tag, 
-	  const BlasEliminationCRASpecifier & m)
+			const RingCategories::IntegerTag & tag, 
+			const BlasEliminationCRASpecifier & m)
 	  { // (low priority) J-G puts in code using CRA object CRA and solve(x, A, b, ModularTag, Method::BlasElimination) 
-	  typename Field::Element zero; A.field().init(zero, 0);
-	  for (typename Vector::iterator i = x.begin(); i != x.end(); ++i) *i = zero;
-	  return x;
+		  typename Field::Element zero; A.field().init(zero, 0);
+		  for (typename Vector::iterator i = x.begin(); i != x.end(); ++i) *i = zero;
+		  return x;
 	  } 
-	*/
+#endif
 
 	// NonBlasElimination section ////////////////
 
@@ -758,33 +766,35 @@ namespace LinBox
 
 	// Lanczos ////////////////
 	// may throw SolverFailed or InconsistentSystem
+#if 0
 	
-	// 	template <class Vector, class BB> 
-	// 	Vector& solve(Vector& x, const BB& A, const Vector& b, 
-	// 		      const RingCategories::ModularTag & tag, 
-	// 		      const Method::Lanczos& m)
-	// 	{
-	// 		solve(A, x, b, A.field(), m);
-	// 		return x;
-	// 	}
+	template <class Vector, class BB> 
+	Vector& solve(Vector& x, const BB& A, const Vector& b, 
+		      const RingCategories::ModularTag & tag, 
+		      const Method::Lanczos& m)
+	{
+		solve(A, x, b, A.field(), m);
+		return x;
+	}
 
 
 
-	// 	template <class Vector, class BB> 
-	// 	Vector& solve(Vector& x, const BB& A, const Vector& b, 
-	// 		      const RingCategories::ModularTag & tag, 
-	// 		      const Method::BlockLanczos& m)
-	// 	{
-	//             try { 
-	//                 solve(A, x, b, A.field(), m); 
-	//             } catch (SolveFailed) {
-	//                 typename BB::Field::Element zero; A.field().init(zero, 0);
-	//                 for (typename Vector::iterator i = x.begin(); 
-	//                      i != x.end(); ++i) 
-	//                     *i = zero;
-	//             }
-	//             return x;
-	// 	}
+	template <class Vector, class BB> 
+	Vector& solve(Vector& x, const BB& A, const Vector& b, 
+		      const RingCategories::ModularTag & tag, 
+		      const Method::BlockLanczos& m)
+	{
+		try { 
+			solve(A, x, b, A.field(), m); 
+		} catch (SolveFailed) {
+			typename BB::Field::Element zero; A.field().init(zero, 0);
+			for (typename Vector::iterator i = x.begin(); 
+			     i != x.end(); ++i) 
+				*i = zero;
+		}
+		return x;
+	}
+#endif
 
 	// Wiedemann section ////////////////
 
@@ -819,7 +829,8 @@ namespace LinBox
 #include "linbox/algorithms/matrix-hom.h"
 #include "linbox/vector/vector-traits.h"
 
-namespace LinBox {
+namespace LinBox 
+{
    
 
 	template <class Blackbox, class Vector, class MyMethod>
@@ -969,5 +980,5 @@ namespace LinBox {
 #endif // __LINBOX_solve_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
 
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

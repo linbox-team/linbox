@@ -37,7 +37,8 @@
 #include <linbox/algorithms/blas-domain.h>
 #include <linbox/ffpack/ffpack.h>
 
-namespace LinBox{/*{{{*/
+namespace LinBox
+{
 
 /** @name Factorized Matrix
  * @brief Solving using blas and LU style factored matrix.
@@ -314,11 +315,11 @@ namespace LinBox{/*{{{*/
 	}; // end of class LQUPMatrix
 
 //@}
-} // end of namespace LinBox/*}}}*/
+} // end of namespace LinBox
 
 #include <linbox/matrix/factorized-matrix.inl>
 
 #endif //__LINBOX_factorized_matrix_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

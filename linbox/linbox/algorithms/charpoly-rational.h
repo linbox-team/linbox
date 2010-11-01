@@ -19,8 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __RAT_CHARPOLY_H
-#define __RAT_CHARPOLY_H
+#ifndef __LINBOX_charpoly_rational_H
+#define __LINBOX_charpoly_rational_H
 
 #include "linbox/util/commentator.h"
 #include "linbox/util/timer.h"
@@ -318,6 +318,6 @@ return p;
 
 }
 
-#endif
+#endif //__LINBOX_charpoly_rational_H
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

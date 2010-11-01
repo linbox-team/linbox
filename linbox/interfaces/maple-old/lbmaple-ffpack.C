@@ -42,7 +42,7 @@ extern "C"
 
   
 	ALGEB fgemm(MKernelVector kv, ALGEB* argv ) 
-	{/*{{{*/
+	{
 
 		/* expect arguments in following order:  
 		   1- p (int prime)
@@ -161,14 +161,14 @@ extern "C"
 
 		return Matrix;
 
-	}/*}}}*/
+	}
 }
 
 
 extern "C" {
 
 	ALGEB lsp(MKernelVector kv, ALGEB* argv ) 
-	{/*{{{*/
+	{
     
 		/* expect arguments in following order:  
 		   1- p (int prime)
@@ -249,14 +249,14 @@ extern "C" {
            
 
 		return OutMatrix;
-	}/*}}}*/
+	}
 
 }
 
 extern "C" {
 
 	ALGEB rank(MKernelVector kv, ALGEB* argv ) 
-	{/*{{{*/
+	{
 		/* expect arguments in following order:  
 		   1- p (int prime)
 		   2- m (int)
@@ -296,7 +296,7 @@ extern "C" {
 		int rank=FFPACK::Rank(F,m,n,A,n);
 
 		return ToMapleInteger(kv,rank);
-	}/*}}}*/
+	}
 }
 
 
@@ -304,7 +304,7 @@ extern "C" {
 extern "C" {
 
 	ALGEB determinant(MKernelVector kv, ALGEB* argv ) 
-	{/*{{{*/
+	{
 		/* expect arguments in following order:  
 		   1- p (int prime)
 		   2- m (int)
@@ -341,14 +341,14 @@ extern "C" {
 		Element d=FFPACK::Det(F,m,n,A,n);
 
 		return ToMapleInteger(kv,long(d));
-	}/*}}}*/
+	}
 }
 
 
 extern "C" {
 
 	ALGEB inverse(MKernelVector kv, ALGEB* argv ) 
-	{/*{{{*/
+	{
 		/* expect arguments in following order:  
 		   1- p (int prime)
 		   2- m (int)      
@@ -426,9 +426,9 @@ extern "C" {
 		}
 
 		return Matrix;
-	}/*}}}*/
+	}
 }
 
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

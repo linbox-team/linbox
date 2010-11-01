@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* ffpack/ffpack_krylovelim.inl
  * Copyright (C) 2007 Clement Pernet
  *
@@ -8,12 +6,17 @@
  * See COPYING for license information.
  */
 
+#ifndef __LINBOX_ffpack_krylovelim_INL
+#define __LINBOX_ffpack_krylovelim_INL
+
 #ifndef MIN
 #define MIN(a,b) (a<b)?a:b
 #endif
 #ifndef MAX
 #define MAX(a,b) (a<b)?b:a
 #endif
+
+//#define LB_DEBUG
 
 // A is m x n with m <= n
 // Ensures : rankprof is the row rankprofil of the matrix k x n matrix B formed as follows (k = sum d_i):
@@ -26,7 +29,8 @@ inline size_t
 FFPACK::KrylovElim( const Field& F, const size_t M, const size_t N,		
 		    typename Field::Element * A, const size_t lda, size_t*P, 
 		    size_t *Q, const size_t deg, size_t *iterates,  size_t * inviterates,size_t  maxit,
-		    size_t virt){
+		    size_t virt)
+{
 
 	if ( !(M && N) ) return 0;
 	typedef typename Field::Element elt;
@@ -136,7 +140,8 @@ template <class Field>
 size_t 
 FFPACK::SpecRankProfile (const Field& F, const size_t M, const size_t N,
 			 typename Field::Element * A, const size_t lda, const size_t deg,
-			 size_t *rankProfile){
+			 size_t *rankProfile)
+{
 
 	//size_t deg = (N-1)/M+1; // Number of trivial iterates per blocs
 	size_t * Q = new size_t[M];
@@ -165,7 +170,7 @@ FFPACK::SpecRankProfile (const Field& F, const size_t M, const size_t N,
 				if (iterates[it_idx++]){
 					rankProfile [rp_idx++] = curr_row;
 					if (dependent){
-#if DEBUG
+#ifdef LB_DEBUG
 						std::cerr<<"FAIL itere dependant intercale"<<std::endl;
 #endif
 						delete[] P;
@@ -174,13 +179,13 @@ FFPACK::SpecRankProfile (const Field& F, const size_t M, const size_t N,
 						delete[] inviterates;
 						throw CharpolyFailed();
 					}
-#if DEBUG
+#ifdef LB_DEBUG
 					std::cerr<<"X";
 #endif					
 				}
 				else{
 					dependent = true;
-#if DEBUG
+#ifdef LB_DEBUG
 					std::cerr<<"O";
 #endif
 				}
@@ -190,12 +195,12 @@ FFPACK::SpecRankProfile (const Field& F, const size_t M, const size_t N,
 		dependent = false;
 		if ((Q [bk_idx] == i)&&(i<R)){
 			rankProfile [rp_idx++] = curr_row;
-#if DEBUG
+#ifdef LB_DEBUG
  			std::cerr<<"V"<<std::endl;
 #endif
  			bk_idx++;
  		}
-#if DEBUG
+#ifdef LB_DEBUG
  		else
  			std::cerr<<"W"<<std::endl;
 #endif
@@ -208,3 +213,8 @@ FFPACK::SpecRankProfile (const Field& F, const size_t M, const size_t N,
 	
 	return rp_idx;
 }
+
+#endif //__LINBOX_ffpack_krylovelim_INL
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

@@ -1,7 +1,5 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
-
 /* linbox/solutions/rank.h
+ * Copyright(C) LinBox
  * ------------------------------------
  * See COPYING for license information.
  */
@@ -40,7 +38,8 @@
 #include "linbox/util/debug.h"
 
 // Namespace in which all LinBox library code resides
-namespace LinBox {
+namespace LinBox 
+{
 
 
 	/** 
@@ -620,7 +619,8 @@ namespace LinBox {
 #endif
 
 #include "linbox/field/givaro-extension.h"
-namespace LinBox {
+namespace LinBox 
+{
     template <class Blackbox>
     inline unsigned long &rank (unsigned long                   &r,
                          const Blackbox                  &A,
@@ -660,7 +660,8 @@ namespace LinBox {
     }
 }
 #else
-namespace LinBox {
+namespace LinBox 
+{
     template <class Blackbox>
     inline unsigned long &rank (unsigned long                   &r,
                          const Blackbox                  &A,
@@ -675,3 +676,6 @@ namespace LinBox {
 
 
 #endif // __LINBOX_rank_H
+
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

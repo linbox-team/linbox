@@ -1,4 +1,3 @@
-
 /* lb-domain.h
  * Copyright (C) 2005 Pascal Giorgi
  *
@@ -20,8 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LINBOX_LB_DOMAIN_H
-#define __LINBOX_LB_DOMAIN_H
+#ifndef __LINBOX_lb_domain_H
+#define __LINBOX_lb_domain_H
 
 #include <lb-domain-collection.h>
 #include <linbox/integer.h>
@@ -65,4 +64,4 @@ void writeDomainInfo(const DomainKey &k, std::ostream& os);
 
 #endif // end of file
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax
