@@ -29,12 +29,37 @@
 
 #include <<++>>
 
+#if 0 // better than commenting out code with big /*   */ 
+      // (it shows this code is not really mature yet...)
+
+#define LB_VAR  /* local var */
+#define LB_DEF  /* local define */
+
+#ifdef _LINBOX_DEF // linbox global define
+#endif
+
+#endif
+
+//#if LINBOX_VAR // linbox global variable
+
+/*! @file template.h
+ * @brief desc
+ * what is this (important) file about ?
+ */
+
 namespace LinBox 
 {
-	<++>
+	/**
+	 * this important code has comments so that other people 
+	 * will understand it 10 yrs afterwards !!!!!!
+	 */
+	template<++>
 }
+
+#undef LB_VAR // environmentalists love us
+#undef LB_DEF // really !
 
 #endif //__LINBOX_<+the_name+>_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax
