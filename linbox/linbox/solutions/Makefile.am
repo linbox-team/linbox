@@ -16,6 +16,8 @@ pkgincludesub_HEADERS=		\
 	charpoly.h		\
 	valence.h	\
 	nullspace.h	\
-	smith-form.h
+	smith-form.h 
+#\
+#	NullspaceZ.h
 
 EXTRA_DIST = solutions.doxy

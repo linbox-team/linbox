@@ -19,7 +19,8 @@
 #include <vector>
 
 #ifdef _LINBOX_LINBOX_CONFIG_H
-namespace LinBox{
+namespace LinBox
+{
 #endif
 
 // The use of the small size LQUP is currently disabled:
