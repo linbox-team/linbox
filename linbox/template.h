@@ -1,5 +1,5 @@
 /* Copyright (C) <+year+> LinBox
- * Written by <+someone+> <<+so.me@on.ne+>>
+ * Written by <+someone+> <<+her.mail@somewhere.net+>>
  *
  *
  *
@@ -19,28 +19,32 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LINBOX_<+the_name+>_H
-#define __LINBOX_<+the_name+>_H
+#ifndef __LINBOX_<+directory_file_name+>_H
+#define __LINBOX_<+directory_file_name+>_H
 
-/** @file <+the/file.h+>
+/** @file <+directory/file-name.h+>
   * @brief desc
   * long doxy desc
   */
 
-#include <<++>>
+#include "<++>"
 
 #if 0 // better than commenting out code with big /*   */ 
       // (it shows this code is not really mature yet...)
 
-#define LB_VAR  /* local var */
-#define LB_DEF  /* local define */
+#define LB_VAR  10  /* local var */
+#define LB_DEF      /* local define */
+#define LB_MACRO () /* local macro */
 
-#ifdef _LINBOX_DEF // linbox global define
+#ifdef _LINBOX_DEF   // linbox global define
+#ifdef _LINBOX_MACRO // linbox global macro
+#if _LINBOX_VAR // linbox global variable
+#endif
+#endif
 #endif
 
 #endif
 
-//#if LINBOX_VAR // linbox global variable
 
 /*! @file template.h
  * @brief desc
@@ -49,17 +53,20 @@
 
 namespace LinBox 
 {
-	/**
-	 * this important code has comments so that other people 
-	 * will understand it 10 yrs afterwards !!!!!!
+	/**  @brief this function is about...
+	 * this important function has comments  !!!
 	 */
 	template<++>
-}
+	void my_func(T & toto) ;
+} //LinBox
 
-#undef LB_VAR // environmentalists love us
-#undef LB_DEF // really !
+#include "<+file-name.inl+>" // implementation here
 
-#endif //__LINBOX_<+the_name+>_H
+#undef LB_VAR    // environmentalists love us
+#undef LB_DEF    // really !
+#undef LB_MACRO 
+
+#endif //__LINBOX_<+directory_file_name+>_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax
