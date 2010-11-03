@@ -65,7 +65,11 @@ namespace LinBox
 		    Father_t::initialize(D, e);
 		    _ZZ.reconstructRational(Numer0, Denom0, this->residue_, this->primeProd_);
 	    }
-	    
+
+	    Integer& result(Integer& Num, Integer& Den) {
+		    Den = Denom0;
+		    return Num=Numer0;
+	    }
     protected:
 	    
         Integer& fieldreconstruct(Integer& res, const Domain& D1, const DomainElement& u1, DomainElement& u0, DomainElement& m0, const Integer& r0, const Integer& P0) {
