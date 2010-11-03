@@ -10,8 +10,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __LINBOX_field_ntl_zz_p_H
-#define __LINBOX_field_ntl_zz_p_H
+#ifndef __LINBOX_field_ntl_UPPER_ZZ_p_H
+#define __LINBOX_field_ntl_UPPER_ZZ_p_H
 
 #include <sys/time.h>
 #include "linbox/linbox-config.h"
