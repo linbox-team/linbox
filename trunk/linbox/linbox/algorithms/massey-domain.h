@@ -43,7 +43,9 @@ namespace LinBox
 #endif
 
 #define DEFAULT_EARLY_TERM_THRESHOLD 20
+#ifndef DEFAULT_ADDITIONAL_ITERATION
 #define DEFAULT_ADDITIONAL_ITERATION 2
+#endif
 
 const long _DEGINFTY_ = -1;
 
@@ -105,8 +107,8 @@ class MasseyDomain {
 
         //-- Principal method
 	template<class Polynomial>
-	void operator () (Polynomial &C, bool full_poly = false) {
-		massey (C, full_poly);
+	long operator () (Polynomial &C, bool full_poly = false) {
+		return massey (C, full_poly);
 	}
 
         //-- Domains access
@@ -211,6 +213,7 @@ class MasseyDomain {
 
 
 		for (long N = 0; N < END && x < (long) EARLY_TERM_THRESHOLD; ++N, ++_iter) {
+
 			if (!(N % COMMOD)) 
 				commentator.progress (N);
 
