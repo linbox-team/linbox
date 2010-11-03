@@ -99,19 +99,7 @@ namespace LinBox
 		return charpoly(P, A, tag, Method::BlasElimination(M));
 	}
 
-		// The charpoly with Hybrid Method 
-	template<class Blackbox, class Polynomial>
-	Polynomial &charpoly (Polynomial            &P, 
-			      const Blackbox  &A,
-			      const RingCategories::IntegerTag  &tag,
-			      const Method::Hybrid  &M)
-	{
-		// not yet a hybrid
-		return charpoly(P, A, tag, Method::Blackbox(M));
-	}
-
-
-	// The charpoly with Hybrid Method 
+// The charpoly with Hybrid Method 
 	template<class Polynomial, class Domain>
 	Polynomial &charpoly (Polynomial            &P, 
 			      const SparseMatrix<Domain>  &A,
@@ -194,6 +182,20 @@ namespace LinBox
 		}            
 	};
 
+	template < class Blackbox,  class Polynomial >
+	Polynomial& charpoly (Polynomial                       & P, 
+			      const Blackbox                   & A,
+			      const RingCategories::IntegerTag & tag,
+			      const Method::Hybrid	       & M) 
+	{
+		commentator.start ("Integer Charpoly", "Icharpoly");
+                if ( (A.rowdim() < 1000) && (A.coldim() <1000) )
+                    charpoly(P, A, tag, Method::BlasElimination(M) );
+                else
+                    charpoly(P, A, tag, Method::Blackbox(M) );
+		commentator.stop ("done", NULL, "Icharpoly");
+		return P;
+	}
 
 //#if 0
 #if defined(__LINBOX_HAVE_NTL) && defined(__LINBOX_HAVE_GIVARO)
@@ -203,21 +205,40 @@ namespace LinBox
 namespace LinBox 
 {
 
-	template < class Polynomial, class Blackbox, class MyMethod >
+	// 	// The charpoly with Hybrid Method 
+	// template<class Blackbox, class Polynomial>
+	// Polynomial &charpoly (Polynomial            &P, 
+	// 		      const Blackbox  &A,
+	// 		      const RingCategories::IntegerTag  &tag,
+	// 		      const Method::Hybrid  &M)
+	// {
+	// 	// not yet a hybrid
+	// 	return charpoly(P, A, tag, Method::Blackbox(M));
+	// }
+
+	template < class IntRing, class Polynomial >
 	Polynomial& charpoly (Polynomial                       & P, 
-			      const Blackbox                   & A,
+			      const DenseMatrix<IntRing>         & A,
 			      const RingCategories::IntegerTag & tag,
-			      const MyMethod		       & M) 
+			      const Method::Hybrid             & M) 
 	{
-		commentator.start ("Dense Integer Charpoly", "Icharpoly");
-                if ( (A.rowdim() < 1000) && (A.coldim() <1000) )
-                    charpoly(P, A, tag, Method::BlasElimination() );
-                else
-                    charpoly(P, A, tag, Method::Blackbox() );
+		commentator.start ("DenseMatrix Integer Charpoly", "Icharpoly");
+		charpoly(P, A, tag, Method::BlasElimination(M) );
 		commentator.stop ("done", NULL, "Icharpoly");
 		return P;
 	}
 
+	template < class IntRing, class Polynomial >
+	Polynomial& charpoly (Polynomial                       & P, 
+			      const BlasMatrix<IntRing>         & A,
+			      const RingCategories::IntegerTag & tag,
+			      const Method::Hybrid             & M) 
+	{
+		commentator.start ("BlasMatrix Integer Charpoly", "Icharpoly");
+		charpoly(P, A, tag, Method::BlasElimination(M) );
+		commentator.stop ("done", NULL, "Icharpoly");
+		return P;
+	}
 
 	/** @brief Compute the characteristic polynomial over {\bf Z}
 	 *
