@@ -78,6 +78,7 @@ pkgincludesub_HEADERS = \
 	rational-reconstruction-base.h		\
 	classic-rational-reconstruction.h	\
 	rational-solver.h			\
+	rational-solver2.h \
 	rational-solver.inl			\
 	diophantine-solver.h			\
 	diophantine-solver.inl			\
@@ -99,7 +100,7 @@ pkgincludesub_HEADERS = \
 	sigma-basis.h		\
 	matpoly-mult.h		\
 	echelon-form.h		\
-	toeplitz-det.h
+	toeplitz-det.h 
 
 EXTRA_DIST = algorithms.doxy
 

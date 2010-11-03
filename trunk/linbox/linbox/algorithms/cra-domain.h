@@ -23,7 +23,8 @@
 #ifndef __LINBOX_cra_domain_H
 #define __LINBOX_cra_domain_H
 
-#if defined(OMP_H)
+//#if defined(OMP_H)
+#ifdef _OPENMP
 
 #include "linbox/algorithms/cra-domain-omp.h"
 namespace LinBox 
