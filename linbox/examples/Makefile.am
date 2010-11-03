@@ -16,8 +16,8 @@ INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/linbox
 #SAFER_FLAGS=--std=c++98 -g -Wall -Wextra -Wno-ignored-qualifiers -Wno-unused-parameter
 SAFER_FLAGS=-g -Wall
 
-AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly -DDEBUG -O0 
-# AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly -O2 
+# AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly -DDEBUG -O0 
+AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly -O2 
 AM_CPPFLAGS= $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
 #LDADD = $(NTL_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) $(GMP_LIBS)  "-Wl,-enable-auto-import"
 LDADD = $(NTL_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) $(GMP_LIBS) 

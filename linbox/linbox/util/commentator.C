@@ -110,7 +110,7 @@ namespace LinBox
 	}
 
 	Commentator::~Commentator() {
-		std::map <const char *, MessageClass * >::iterator i;
+		std::map <const char *, MessageClass *, C_str_Less >::iterator i;
 		for (i = _messageClasses.begin (); i != _messageClasses.end (); ++i) 
 			delete i->second;
 	}
@@ -280,7 +280,7 @@ namespace LinBox
 	void Commentator::setMaxDepth (long depth) 
 	{
 		MessageClass &briefReportClass = getMessageClass (BRIEF_REPORT);
-		std::map <const char *, MessageClass *>::iterator i;
+		std::map <const char *, MessageClass *, C_str_Less>::iterator i;
 
 		for (i = _messageClasses.begin (); i != _messageClasses.end (); ++i)
 			if (i->second != &briefReportClass)
@@ -290,7 +290,7 @@ namespace LinBox
 	void Commentator::setMaxDetailLevel (long level) 
 	{
 		MessageClass &briefReportClass = getMessageClass (BRIEF_REPORT);
-		std::map <const char *, MessageClass *>::iterator i;
+		std::map <const char *, MessageClass *, C_str_Less>::iterator i;
 
 		for (i = _messageClasses.begin (); i != _messageClasses.end (); ++i)
 			if (i->second != &briefReportClass)
@@ -334,7 +334,7 @@ namespace LinBox
 	void Commentator::setPrintParameters (unsigned long depth, unsigned long level, const char *fn) 
 	{
 		MessageClass &briefReportClass = getMessageClass (BRIEF_REPORT);
-		std::map <const char *, MessageClass *>::iterator i;
+		std::map <const char *, MessageClass *, C_str_Less>::iterator i;
 
 		for (i = _messageClasses.begin (); i != _messageClasses.end (); ++i)
 			if (i->second != &briefReportClass)
