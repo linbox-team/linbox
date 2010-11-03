@@ -113,13 +113,13 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, char * filename, Integer 
         int64 lp(p);
         Integer q = pow(p,e); int64 lq(q);
         if (q > Integer(lq)) {
-            std::cerr << "Sorry power rank mod large composite not yet implemented" << std::endl;
+		std::cerr << "Power rank might need extra large composite (" << p << '^' << e << ")." << std::endl << "Such a large composite is not yet implemented ..." << std::endl;
             q = p;
             do {
                 q *= p; lq = (int64)q;
             } while (q == Integer(lq));
             q/=p; lq = (int64)q;
-            std::cerr << "Trying: " << lq << std::endl;
+            std::cerr << "First trying: " << lq << " (without further warning this will be sufficient)." << std::endl;
         }
         Ring F(lq);
         std::ifstream input(filename);
@@ -134,8 +134,8 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, char * filename, Integer 
             std::cout << *rit << ' ';
         std::cout << std::endl;
     } else {
-        std::cerr << "Sorry power rank mod large composite not yet implemented" << std::endl;
-        std::cerr << "Assuming integer rank" << std::endl;
+        std::cerr << "*** WARNING *** Sorry power rank mod large composite not yet implemented" << std::endl;
+        std::cerr << "*** WARNING *** Assuming integer rank, extra factors in the Smith form could be missing" << std::endl;
         ranks.resize(0); ranks.push_back(intr);
     }               
     return ranks;
@@ -270,7 +270,7 @@ int main (int argc, char **argv)
                 for(size_t expo = (*eit)<<1; ranks.back() < coprimeR; expo<<=1) {
                     PRank(ranks, argv[1], sit->first, expo, coprimeR);
                     if (ranks.size() < expo) {
-                        std::cerr << "Larger prime power not yet implemented" << std::endl;
+                        std::cerr << "*** WARNING *** Larger prime power not yet implemented" << std::endl;
                         break;
                     }
                 }
