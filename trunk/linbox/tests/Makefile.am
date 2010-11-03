@@ -3,11 +3,12 @@
 # see COPYING for licence
 
 INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/linbox
-#AM_LDFLAGS = -llapack -lcblas -latlas 
-#AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -O2 
-AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -DDEBUG -O0
-#AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -D__LINBOX_HAVE_DGETRF -D__LINBOX_HAVE_DGETRI 
-#AM_CFLAGS = -g -Wall
+# AM_LDFLAGS = -llapack -lcblas -latlas 
+SAFER_FLAGS = -g -Wall
+AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly -O2 
+# AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -DDEBUG -O0
+# AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -D__LINBOX_HAVE_DGETRF -D__LINBOX_HAVE_DGETRI 
+# AM_CFLAGS = -g -Wall
 
 SUBDIRS = data
 
@@ -53,7 +54,7 @@ BASIC_TESTS =  \
         test-modular-double     \
         test-modular-int        \
         test-modular-short      \
-        test-block-ring                        \
+        test-block-ring         \
         test-moore-penrose      \
         test-randiter-nonzero   \
         test-rank               \
@@ -69,36 +70,36 @@ BASIC_TESTS =  \
         test-qlup               \
         test-zero-one           \
         test-solve              \
-        test-nullspace                \
-        test-smith-form-binary                \
-        test-rational-solver                \
-        test-rational-solver-adaptive        \
-        test-last-invariant-factor        \
+        test-nullspace                  \
+        test-smith-form-binary          \
+        test-rational-solver            \
+        test-rational-solver-adaptive   \
+        test-last-invariant-factor      \
         test-charpoly 
 
 # tests of components not adhering to LinBox requirements.
-NONCOMPLIANT_TESTS =        \
+NONCOMPLIANT_TESTS =                   \
         test-unparametric-field        \
-        test-ntl-RR                \
+        test-ntl-RR                    \
         test-param-fuzzy
 
 #These need clapack
 #test-rational-solver-adaptive
 
 
-DUBIOUS_TESTS = \
+DUBIOUS_TESTS =                 \
         test-quad-matrix        \
         test-zo
 
-NONCOMPILING_TESTS =          \
+NONCOMPILING_TESTS =           \
         test-dense-zero-one     
 
 FAILING_TESTS =                \
-        test-rat-charpoly        \
-        test-rat-solve                \
-        test-rat-minpoly        \
+        test-rat-charpoly      \
+        test-rat-solve         \
+        test-rat-minpoly       \
         test-smith-form-local        \
-        test-smith-form-adaptive \
+        test-smith-form-adaptive     \
         test-mg-block-lanczos        \
         test-la-block-lanczos
 
@@ -237,79 +238,79 @@ test_rational_matrix_factory_SOURCES =  \
 #        test-rational-reconstruction-base.C  \
 #        test-common.h
 
-test_rat_solve_SOURCES =                 \
+test_rat_solve_SOURCES =                \
         test-rat-solve.C                \
         test-common.h
 
-test_rat_charpoly_SOURCES =                \
-        test-rat-charpoly.C                \
+test_rat_charpoly_SOURCES =             \
+        test-rat-charpoly.C             \
         test-common.h
 
-test_rat_minpoly_SOURCES =                \
-        test-rat-minpoly.C                \
+test_rat_minpoly_SOURCES =              \
+        test-rat-minpoly.C              \
         test-common.h
 
-test_subiterator_SOURCES =                 \
-        test-subiterator.C                \
+test_subiterator_SOURCES =              \
+        test-subiterator.C              \
         test-common.h
 
-test_subvector_SOURCES =                 \
+test_subvector_SOURCES =                \
         test-subvector.C                \
         test-common.h
 
-test_vector_domain_SOURCES =                 \
-        test-vector-domain.C                \
+test_vector_domain_SOURCES =            \
+        test-vector-domain.C            \
         test-vector-domain.h                
 
-test_matrix_domain_SOURCES =                 \
-        test-matrix-domain.C                \
+test_matrix_domain_SOURCES =            \
+        test-matrix-domain.C            \
         test-common.h
 
-test_dense_SOURCES =                         \
-        test-dense.C                        \
+test_dense_SOURCES =                    \
+        test-dense.C                    \
         test-common.h
 
-test_sparse_SOURCES =                         \
-        test-sparse.C                        \
+test_sparse_SOURCES =                   \
+        test-sparse.C                   \
         test-common.h
 
-test_submatrix_SOURCES =                 \
+test_submatrix_SOURCES =                \
         test-submatrix.C                \
         test-common.h
 
-test_scalar_matrix_SOURCES =                 \
-        test-scalar-matrix.C                \
-        test-generic.h                        \
+test_scalar_matrix_SOURCES =            \
+        test-scalar-matrix.C            \
+        test-generic.h                  \
         test-common.h
 
-test_butterfly_SOURCES =                 \
-        test-vector-domain.h                \
-        test-blackbox.h                        \
+test_butterfly_SOURCES =                \
+        test-vector-domain.h            \
+        test-blackbox.h                 \
         test-butterfly.C                \
-        test-generic.h                        \
+        test-generic.h                  \
         test-common.h
 
 test_charpoly_SOURCES =                 \
-        test-charpoly.C                        \
+        test-charpoly.C                 \
         test-common.h
 
 test_diagonal_SOURCES =                 \
-        test-diagonal.C                        \
-        test-generic.h                        \
+        test-diagonal.C                 \
+        test-generic.h                  \
         test-common.h
 
-test_sum_SOURCES =                         \
-        test-sum.C                        \
-        test-generic.h                        \
+test_sum_SOURCES =                      \
+        test-sum.C                      \
+        test-generic.h                  \
         test-common.h
 
-test_dif_SOURCES =                         \
-        test-dif.C        test-generic.h        \
+test_dif_SOURCES =                          \
+        test-dif.C        test-generic.h    \
         test-common.h
 
 test_triplesbb_SOURCES =                \
         test-triplesbb.C                \
-        test-generic.h                        \
+        test-generic.h                  \
         test-common.h
 
 test_hilbert_SOURCES =                        \
@@ -333,18 +334,18 @@ test_toeplitz_det_SOURCES =                \
         test-toeplitz-det.C
 
 test_trace_SOURCES =                         \
-        test-trace.C                        \
+        test-trace.C                         \
         test-common.h
 
 test_getentry_SOURCES =                         \
-        test-getentry.C                        \
+        test-getentry.C                         \
         test-common.h
 
 test_minpoly_SOURCES =                         \
-        test-minpoly.C                        \
+        test-minpoly.C                         \
         test-common.h
 
-test_det_SOURCES =                         \
+test_det_SOURCES =                        \
         test-det.C                        \
         test-common.h
 
@@ -362,17 +363,17 @@ test_solve_SOURCES =                        \
 
 test_direct_sum_SOURCES =                \
         test-direct-sum.C                \
-        test-generic.h                        \
+        test-generic.h                   \
         test-common.h
 
 test_frobenius_SOURCES =                \
         test-frobenius.C                \
-        test-generic.h                        \
+        test-generic.h                  \
         test-common.h
 
 test_companion_SOURCES =                \
         test-companion.C                \
-        test-generic.h                        \
+        test-generic.h                  \
         test-common.h
 
 test_inverse_SOURCES =                        \
@@ -385,132 +386,132 @@ test_moore_penrose_SOURCES =                \
 
 test_ntl_RR_SOURCES =                        \
         test-ntl-RR.C                        \
-        test-generic.h                        \
+        test-generic.h                       \
         test-common.h
 
 test_ntl_ZZ_p_SOURCES =                        \
         test-ntl-ZZ_p.C                        \
-        test-generic.h                        \
+        test-generic.h                         \
         test-common.h
 
 test_ntl_lzz_p_SOURCES =                \
         test-ntl-lzz_p.C                \
-        test-generic.h                        \
+        test-generic.h                  \
         test-common.h
 
 test_givaro_zpz_SOURCES =                \
         test-givaro-zpz.C                \
-        test-generic.h                        \
+        test-generic.h                   \
         test-common.h
 
 test_givaro_zpzuns_SOURCES =                \
         test-givaro-zpzuns.C                \
-        test-generic.h                        \
+        test-generic.h                      \
         test-common.h
 
 test_lidia_gfq_SOURCES =                \
         test-lidia-gfq.C                \
-        test-generic.h                        \
+        test-generic.h                  \
         test-common.h
 
 test_param_fuzzy_SOURCES =                \
         test-param-fuzzy.C                \
-        test-generic.h                        \
+        test-generic.h                    \
         test-common.h
 
 test_quad_matrix_SOURCES =                \
         test-quad-matrix.C                \
-        test-generic-for-quad.h                \
-        test-generic.h                        \
+        test-generic-for-quad.h           \
+        test-generic.h                    \
         test-common.h
 
 test_zo_SOURCES =                        \
         test-zo.C                        \
-        test-generic.h                        \
+        test-generic.h                   \
         test-common.h
 
-test_zero_one_SOURCES =                        \
-        test-zero-one.C                        \
+test_zero_one_SOURCES =                       \
+        test-zero-one.C                       \
         test-generic.h                        \
         test-common.h
 
 test_modular_int_SOURCES =                \
-        test-modular-int.C                 \
+        test-modular-int.C                \
         test-common.h        
 
 test_modular_short_SOURCES =                \
         test-modular-short.C                \
-        test-generic.h                        \
+        test-generic.h                      \
         test-common.h
 
 test_modular_double_SOURCES =                \
         test-modular-double.C                \
-        test-generic.h                        \
+        test-generic.h                       \
         test-common.h
 
-test_modular_byte_SOURCES =                \
-        test-modular-byte.C                \
-        test-generic.h                        \
+test_modular_byte_SOURCES =          \
+        test-modular-byte.C          \
+        test-generic.h               \
         test-common.h
 
-test_modular_balanced_int_SOURCES =             \
-        test-modular-balanced-int.C             \
-        test-generic.h                  \
+test_modular_balanced_int_SOURCES =  \
+        test-modular-balanced-int.C  \
+        test-generic.h               \
         test-common.h
 
-test_smith_form_iliopoulos_SOURCES=    \
-        test-common.h        \
+test_smith_form_iliopoulos_SOURCES=  \
+        test-common.h                \
         test-smith-form-iliopoulos.C
 
-test_smith_form_binary_SOURCES=    \
-        test-common.h        \
+test_smith_form_binary_SOURCES=  \
+        test-common.h            \
         test-smith-form-binary.C
 
 # NTL test
-#        test-smith-form                        \
+#        test-smith-form     \
 test_smith_form_SOURCES=    \
-        test-common.h        \
+        test-common.h       \
         test-smith-form.C
 
 test_last_invariant_factor_SOURCES=    \
-        test-common.h        \
+        test-common.h                  \
         test-last-invariant-factor.C
 
 test_smith_form_local_SOURCES=    \
-        test-common.h        \
+        test-common.h             \
         test-smith-form-local.C
 
 test_optimization_SOURCES=    \
-        test-common.h   \
+        test-common.h         \
         test-optimization.C
 
 test_nullspace_SOURCES=    \
-        test-common.h   \
+        test-common.h      \
         test-nullspace.C
 
 test_bitonic_sort_SOURCES=    \
-        test-common.h   \
+        test-common.h         \
         test-bitonic-sort.C
 
-test_rational_solver_SOURCES =                \
-        test-common.h        \
+test_rational_solver_SOURCES =  \
+        test-common.h           \
         test-rational-solver.C
 
-test_blas_domain_SOURCES=                \
-        test-common.h   \
+test_blas_domain_SOURCES=  \
+        test-common.h      \
         test-blas-domain.C
 
-test_ffpack_SOURCES=                \
+test_ffpack_SOURCES=    \
         test-common.h   \
         test-ffpack.C
 
-test_matrix_stream_SOURCES =                \
+test_matrix_stream_SOURCES =         \
         test-matrix-stream.C
 
-test_la_block_lanczos_SOURCES =                \
+test_la_block_lanczos_SOURCES =      \
         test-la-block-lanczos.C
 
-test_mg_block_lanczos_SOURCES =                \
+test_mg_block_lanczos_SOURCES =      \
         test-mg-block-lanczos.C
 
 test_rational_solver_adaptive_SOURCES = \
@@ -520,26 +521,26 @@ test_rational_solver_adaptive_SOURCES = \
 # NTL test
 
 test_smith_form_adaptive_SOURCES=    \
-        test-common.h        \
+        test-common.h                \
         test-smith-form-adaptive.C
 
 benchmark_fields_SOURCES=    \
         test-common.h        \
         benchmark-fields.C
 
-benchmark_blas_domain_SOURCES=                \
-        test-common.h   \
+benchmark_blas_domain_SOURCES=  \
+        test-common.h           \
         benchmark-blas-domain.C
 
-test_isposdef_SOURCES=    \
+test_isposdef_SOURCES=       \
         test-common.h        \
         test-isposdef.C
 
 test_dense_zero_one_SOURCES=   \
-        test-blackbox.h \
+        test-blackbox.h        \
         test-dense-zero-one.C
 
-test_ispossemidef_SOURCES=\
+test_ispossemidef_SOURCES=   \
         test-common.h        \
         test-ispossemidef.C
 
