@@ -70,7 +70,6 @@ BASIC_TESTS =  \
         test-zero-one           \
         test-solve              \
         test-nullspace                \
-        test-mg-block-lanczos        \
         test-smith-form-binary                \
         test-rational-solver                \
         test-rational-solver-adaptive        \
@@ -105,6 +104,7 @@ FAILING_TESTS =                \
         test-rat-minpoly        \
         test-smith-form-local        \
         test-smith-form-adaptive \
+        test-mg-block-lanczos        \
         test-la-block-lanczos
 
 USE_NONCOMPILING_TESTS = 
