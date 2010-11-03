@@ -62,7 +62,6 @@ echelon_SOURCES=echelon.C
 smithvalence_SOURCES=smithvalence.C
 sparseelimdet_SOURCES=sparseelimdet.C
 sparseelimrank_SOURCES=sparseelimrank.C
-nulp_SOURCES=nulp.C
 LINBOX=@prefix@
 
 # no /bin if LinBox is uncompiled

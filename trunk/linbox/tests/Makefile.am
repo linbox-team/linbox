@@ -293,9 +293,6 @@ test_charpoly_SOURCES =                 \
         test-charpoly.C                        \
         test-common.h
 
-test_sigmabase_SOURCES = \
-        test-sigmabase.C
-
 test_diagonal_SOURCES =                 \
         test-diagonal.C                        \
         test-generic.h                        \
@@ -545,7 +542,4 @@ test_dense_zero_one_SOURCES=   \
 test_ispossemidef_SOURCES=\
         test-common.h        \
         test-ispossemidef.C
-
-test_fflas_SOURCES = \
-        test-fflas.C
 
