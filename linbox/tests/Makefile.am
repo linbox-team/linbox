@@ -75,11 +75,6 @@ BASIC_TESTS =  \
         test-rational-solver-adaptive        \
         test-last-invariant-factor        \
         test-charpoly 
-#\
-#         test-sigmabase          \
-#         test-fflas 
-#         test-yabla \
-#         test-nulp 
 
 # tests of components not adhering to LinBox requirements.
 NONCOMPLIANT_TESTS =        \

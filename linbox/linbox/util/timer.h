@@ -27,7 +27,8 @@ namespace LinBox
 \ingroup util
 */
 
-class BaseTimer { 
+class BaseTimer 
+{ 
     public:
 	enum { 
 		MSPSEC = 1000000  // microsecond per second
@@ -63,7 +64,8 @@ class BaseTimer {
 inline std::ostream &operator << (std::ostream &o, const BaseTimer &BT)
 	{ return BT.print(o); }
 
-class RealTimer : public BaseTimer {
+class RealTimer : public BaseTimer 
+{
     public:
 	inline RealTimer (const BaseTimer &BT) : BaseTimer (BT) {};
 	inline RealTimer () {};
@@ -72,7 +74,8 @@ class RealTimer : public BaseTimer {
 };
 
 
-class UserTimer : public BaseTimer {
+class UserTimer : public BaseTimer 
+{
     public:
 	inline UserTimer (const BaseTimer &BT) : BaseTimer (BT) {};
 	inline UserTimer () {};
@@ -81,7 +84,8 @@ class UserTimer : public BaseTimer {
 };
 
 
-class SysTimer : public BaseTimer {
+class SysTimer : public BaseTimer 
+{
     public:
 	inline SysTimer (const BaseTimer &BT): BaseTimer (BT) {};
 	inline SysTimer () {};
@@ -90,7 +94,8 @@ class SysTimer : public BaseTimer {
 };
 
 
-class Timer {
+class Timer 
+{
 public :
 	
 	Timer() { rt.clear(); ut.clear(); st.clear(); _count = 0; }
@@ -137,6 +142,28 @@ public :
 	SysTimer  st;
 };
 
+#ifdef _OPENMP
+#include <omp.h>
+struct OMPTimer
+{
+	double _c;
+	void start() { _c = omp_get_wtime(); }
+	void stop() { _c = omp_get_wtime() - _c; }
+	void clear() { _c = 0.0; }
+	double usertime() { return _c; }
+	friend std::ostream& operator<<(std::ostream& o, const OMPTimer& t) {
+		return o << t._c << 's';
+	}
+
+	OMPTimer& operator+=(const OMPTimer& t) {
+		_c += t._c;
+		return *this;
+	}
+
+};
+#endif
+
+
 // inline std::ostream &operator << (std::ostream &o, const Timer &T)
 // 	{ return T.print (o); }
 
@@ -146,7 +173,7 @@ inline std::ostream &operator << (std::ostream &o, const Timer &T)
 	if (ut < 0.0000000001) ut = 0;
 	return o << T.realtime() << "s (" << ut << " cpu) [" << T.count() << "]"; }
  
-}
+} // LinBox
 
 #ifdef LinBoxSrcOnly  // for all-source compilation
 #    include <linbox/util/timer.C>

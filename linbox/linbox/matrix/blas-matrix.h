@@ -38,21 +38,23 @@ namespace LinBox
 	class BlasMatrix;
 	
 	template <class Element>
-	class MatrixContainerTrait<BlasMatrix<Element> > {
+	class MatrixContainerTrait<BlasMatrix<Element> > 
+	{
 	public:
 		typedef MatrixContainerCategory::BlasContainer Type;
 	};
 	
 	template <class Element>
-	class MatrixContainerTrait<const BlasMatrix<Element> > {
+	class MatrixContainerTrait<const BlasMatrix<Element> > 
+	{
 	public:
 		typedef MatrixContainerCategory::BlasContainer Type;
 	};
 
-
 	// @brief Limited docs so far.
 	template <class _Element>
-	class BlasMatrix : public DenseSubmatrix<_Element> {
+	class BlasMatrix : public DenseSubmatrix<_Element> 
+	{
 		
 	public:
             typedef _Element Element;
@@ -75,6 +77,10 @@ namespace LinBox
 		BlasMatrix (int m, int n) 
 			: DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (m,n)),0,0,m,n), _stride(n), _alloc(true) { _ptr = this->_M->FullIterator();}
 
+		BlasMatrix (size_t m, size_t n) 
+			: DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (m,n)),0,0,m,n), _stride(n), _alloc(true) { _ptr = this->_M->FullIterator();}
+
+
 
 		/** Constructor from a matrix stream */
 		template< class Field >
@@ -94,11 +100,24 @@ namespace LinBox
 		// Generic copy constructor from either a blackbox or a matrix container (allow submatrix)
 		template <class Matrix>
 		BlasMatrix (const Matrix& A, const size_t i0,const size_t j0,const size_t m, const size_t n)
-			: DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (A.rowdim(),A.coldim())),0,0,A.rowdim(),A.coldim()), _stride(A.coldim()) , _alloc(true)
+			: DenseSubmatrix<Element>( *(new DenseMatrixBase<Element> (A.rowdim(),A.coldim())),0,0,A.rowdim(),A.coldim()), _stride(A.coldim()) , _alloc(true)
 		{
 			_ptr = this->_M->FullIterator();
 			createBlasMatrix(A, i0, j0, m, n, typename MatrixContainerTrait<Matrix>::Type());
 		}
+
+#if 0
+		template<class _Matrix, class _Field>
+		BlasMatrix (const _Matrix &A,  const _Field &F) 
+			: DenseSubmatrix<Element>( *(new DenseMatrixBase<Element> (A.rowdim(),A.coldim())),0,0,A.rowdim(),A.coldim() ), 
+			_stride(A.coldim()) , 
+			_alloc(true)
+		{
+			_ptr = this->_M->FullIterator() ;
+			rebind<_Field>()(*this,A,F);
+
+		}
+#endif
 
 		
 		// Copy data according to blas container structure
@@ -180,6 +199,7 @@ namespace LinBox
 					this->_M->setEntry(i-i0, j-j0, *iter_value);  
 			}
 		}
+
 		// Copy data according to Matrix container structure (allow submatrix)
 		template <class Matrix>
 		void createBlasMatrix (const Matrix& A, const size_t i0,const size_t j0,const size_t m, const size_t n, MatrixContainerCategory::BlasContainer)
@@ -202,7 +222,10 @@ namespace LinBox
 		template <class Matrix>
 		void createBlasMatrix (const Matrix& A, const size_t i0,const size_t j0,const size_t m, const size_t n, MatrixContainerCategory::Blackbox) 			
 		{
-			// need to be implemented by succesive apply
+			std::cerr << __func__ << ": not implemented yet" << std::flush << std::endl; 
+			exit(-1) ;
+			//! @todo need to be implemented by succesive apply
+			//! @todo lancer une exception générique "not implemented yet"
 		}
 
 
@@ -219,13 +242,10 @@ namespace LinBox
 #endif
 
 
-
 		// Copy Constructor of a matrix (copying data)
 		BlasMatrix (const BlasMatrix<Element>& A) 
 			: DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (*A._M)),0,0,A.rowdim(),A.coldim()), _stride(A._stride), _alloc(true) 
-		{
-			_ptr = this->_M->FullIterator();
-		}
+		{ _ptr = this->_M->FullIterator(); }
 		
 #if 0
  		// Copy Contructor of a matrix (no copy is done, just through pointer)
@@ -239,36 +259,38 @@ namespace LinBox
 #endif
 
 		
-		~BlasMatrix ()  {			
-			if (_alloc) {
+		~BlasMatrix ()  
+		{			
+			if (_alloc) 
 				delete this->_M;
-			}
 		}
 
                 // Rebind operator
-	template<typename _Tp1>
-        struct rebind
-        { 
-            typedef BlasMatrix<typename _Tp1::Element> other; 
+		template<typename _Tp1>
+		struct rebind
+		{ 
+			typedef BlasMatrix<typename _Tp1::Element> other; 
 
-            void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+			void operator() (other & Ap, const Self_t& A, const _Tp1& F) 
+			{
 
-                typedef typename DenseSubmatrix<_Element>::ConstRawIndexedIterator ConstRawIndexedIterator ;
-                typedef typename DenseSubmatrix<_Element>::ConstRawIterator ConstRawIterator ;
-                ConstRawIterator         iter_value = A.rawBegin();
-                ConstRawIndexedIterator  iter_index = A.rawIndexedBegin();
-                typename _Tp1::Element tmp;
-                for (;iter_value != A.rawEnd(); ++iter_value,++iter_index){
-                    F.init(  tmp, *iter_value ); 
-                    Ap.setEntry(iter_index.rowIndex(), iter_index.colIndex(),tmp);
-                }
-           }
-        };
+				typedef typename DenseSubmatrix<_Element>::ConstRawIndexedIterator ConstRawIndexedIterator ;
+				typedef typename DenseSubmatrix<_Element>::ConstRawIterator ConstRawIterator ;
+				ConstRawIterator         iter_value = A.rawBegin();
+				ConstRawIndexedIterator  iter_index = A.rawIndexedBegin();
+				typename _Tp1::Element tmp;
+				for (;iter_value != A.rawEnd(); ++iter_value,++iter_index){
+					F.init(  tmp, *iter_value ); 
+					Ap.setEntry(iter_index.rowIndex(), iter_index.colIndex(),tmp);
+				}
+			}
+		};
 
 
 		// operator = (copying data)
-		BlasMatrix<Element>& operator= (const BlasMatrix<Element>& A) {		       		
-				
+		BlasMatrix<Element>& operator= (const BlasMatrix<Element>& A) 
+		{	
+
 			DenseMatrixBase<Element> *tmp= this->_M;
 			this->_M       = new DenseMatrixBase<Element>(*A._M);
 			if (_alloc) {
@@ -281,10 +303,10 @@ namespace LinBox
 			_ptr     = this->_M->FullIterator();
 			_alloc   = true;
 			_stride  = A._stride;			
-			
+
 			return *this;
 		}
-		
+
 		pointer getPointer() const  {return _ptr;}
 		pointer& getWritePointer() {return _ptr;}
 
@@ -294,9 +316,9 @@ namespace LinBox
 	}; // end of class BlasMatrix
 
 
-
 	// TAG for triangular blas matrix
-	class BlasTag {
+	class BlasTag 
+	{
 	public:
 		typedef enum{low,up} uplo;
 		typedef enum{unit,nonunit} diag;
@@ -305,7 +327,8 @@ namespace LinBox
 
 	// class of triangular blas matrix
 	template <class Element>
-	class TriangularBlasMatrix: public BlasMatrix<Element> {
+	class TriangularBlasMatrix: public BlasMatrix<Element> 
+	{
 
 	protected:
 		
@@ -401,7 +424,8 @@ namespace LinBox
 	/** Class used for permuting indices. For example, create a vector (0 1 2 ...) over size_t,
 	 *  then apply a permutation to it using a BlasMatrixDomain to get the natural representation of the permutation.
 	 */
-	class indexDomain {
+	class indexDomain 
+	{
 	public:
 		typedef size_t Element;
 	public:
@@ -419,7 +443,8 @@ namespace LinBox
 
 // Dan Roche 7-8-04 Changed _P to _PP to avoid confict with a macro defined in
 // <iostream> somewhere.
-	class BlasPermutation {
+	class BlasPermutation 
+	{
 		
 		
 	public:
@@ -464,7 +489,8 @@ namespace LinBox
 	}; // end of class BlasPermutation
 
 	template< class Matrix >
-	class TransposedBlasMatrix {
+	class TransposedBlasMatrix 
+	{
 
 	public:
 		
@@ -480,7 +506,8 @@ namespace LinBox
 	template <>
 #endif
 	template< class Matrix >
-	class TransposedBlasMatrix< TransposedBlasMatrix< Matrix > > : public Matrix {
+	class TransposedBlasMatrix< TransposedBlasMatrix< Matrix > > : public Matrix 
+	{
 		
 	public:
 		TransposedBlasMatrix ( Matrix& M ) :  Matrix(M){}	

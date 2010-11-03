@@ -13,8 +13,11 @@ INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/linbox
 #LINBOX_LIBS= $(top_builddir)/linbox/liblinbox.la 
 #endif
 
-AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -DDEBUG -O0 
-# AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -O2 
+#SAFER_FLAGS=--std=c++98 -g -Wall -Wextra -Wno-ignored-qualifiers -Wno-unused-parameter
+SAFER_FLAGS=-g -Wall
+
+AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly -DDEBUG -O0 
+# AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly -O2 
 AM_CPPFLAGS= $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
 #LDADD = $(NTL_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) $(GMP_LIBS)  "-Wl,-enable-auto-import"
 LDADD = $(NTL_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) $(GMP_LIBS) 
@@ -66,9 +69,10 @@ LINBOX=@prefix@
 #LINBOX_BIN=$(LINBOX)/bin
 LINBOX_BIN=@bindir@
 
+
 # for compilation of new examples
 %:%.C 
-	$(CXX) $(CXXFLAGS) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $@ $(LDFLAGS) $(LDADD) $(LOADLIBES) $(top_srcdir)/linbox/.libs/liblinbox.a
+	$(CXX) $(SAFER_FLAGS) $(CXXFLAGS) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $@ $(LDFLAGS) $(LDADD) $(LOADLIBES) $(top_srcdir)/linbox/.libs/liblinbox.a
 
 %:%.cpp
-	$(CXX) $(CXXFLAGS) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.cpp -o $@ $(LDFLAGS) $(LDADD) $(LOADLIBES) $(top_srcdir)/linbox/.libs/liblinbox.a
+	$(CXX) $(SAFER_FLAGS) $(CXXFLAGS) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.cpp -o $@ $(LDFLAGS) $(LDADD) $(LOADLIBES) $(top_srcdir)/linbox/.libs/liblinbox.a
