@@ -227,6 +227,61 @@ namespace LinBox {
 	 * specialization for Operand1, Operand2 and Operand3  of type BlasMatrix<Element>
 	 */
 	
+	template<class Field>
+	class 	BlasMatrixDomainAdd<Field,BlasMatrix<typename Field::Element>,BlasMatrix<typename Field::Element>, BlasMatrix<typename Field::Element> > {
+	public:
+		BlasMatrix<typename Field::Element>& operator()(const Field& F,
+                                                                BlasMatrix<typename Field::Element>& C,
+                                                                const BlasMatrix<typename Field::Element>& A, 
+								const BlasMatrix<typename Field::Element>& B) const{
+			linbox_check( A.rowdim() == B.rowdim());
+			linbox_check( C.rowdim() == A.rowdim());
+			linbox_check( A.coldim() == B.coldim());
+			linbox_check( C.coldim() == A.coldim());
+			FFLAS::fadd (F, C.rowdim(), C.coldim(), 
+                                     A.getPointer(), A.getStride(),
+                                     B.getPointer(), B.getStride(),
+                                     C.getPointer(), C.getStride());
+			return C;
+		}
+        };
+
+	template<class Field>
+	class 	BlasMatrixDomainCopy<Field,BlasMatrix<typename Field::Element>, BlasMatrix<typename Field::Element> > {
+	public:
+		BlasMatrix<typename Field::Element>& operator()(const Field& F,
+                                                                BlasMatrix<typename Field::Element>& B,
+                                                                const BlasMatrix<typename Field::Element>& A) const{
+			linbox_check( A.rowdim() == B.rowdim());
+			linbox_check( A.coldim() == B.coldim());
+			for (size_t i=0; i<A.rowdim(); i++)
+                            FFLAS::fcopy (F, A.coldim(), 
+                                          B.getPointer() + i*B.getStride(), 1,
+                                          A.getPointer() + i*A.getStride(), 1);
+                        return B;
+		}
+        };
+
+	template<class Field>
+	class 	BlasMatrixDomainSub<Field,BlasMatrix<typename Field::Element>,BlasMatrix<typename Field::Element>, BlasMatrix<typename Field::Element> > {
+	public:
+		BlasMatrix<typename Field::Element>& operator()(const Field& F,
+                                                                BlasMatrix<typename Field::Element>& C,
+                                                                const BlasMatrix<typename Field::Element>& A, 
+								const BlasMatrix<typename Field::Element>& B) const{
+			linbox_check( A.rowdim() == B.rowdim());
+			linbox_check( C.rowdim() == A.rowdim());
+			linbox_check( A.coldim() == B.coldim());
+			linbox_check( C.coldim() == A.coldim());
+			FFLAS::fsub (F, C.rowdim(), C.coldim(), 
+                                     A.getPointer(), A.getStride(),
+                                     B.getPointer(), B.getStride(),
+                                     C.getPointer(), C.getStride());
+			return C;
+		}
+        };
+    
+            
 	//  general matrix-matrix multiplication and addition with scaling
 	// D= beta.C + alpha.A*B
 	template<class Field>

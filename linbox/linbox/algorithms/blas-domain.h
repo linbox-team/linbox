@@ -74,16 +74,33 @@ namespace LinBox {
 		
 	};
 	
-	/*  Class handling in-place multiplication of a Matrix by an Operand 
-	 *  Operand can be either a matrix a permutation or a vector 
-	 *  
-	 *  only  function:  operator () are defined :
-	 *       A = A*B
-	 *       B = A*B
-	 * Note that in-place multiplications are proposed for the specialization 
-	 * with a matrix and a permutation.
-	 * Using mulin with two matrices is still defined but is non-sense
-	 */
+	template< class Field, class Operand1, class Operand2, class Operand3>
+	class BlasMatrixDomainAdd {
+	public:
+		Operand1 &operator() (const Field &F, 
+				      Operand1 &C, const Operand2 &A, const Operand3 &B) const;
+            
+        };
+    
+
+	template< class Field, class Operand1, class Operand2, class Operand3>
+	class BlasMatrixDomainSub {
+	public:
+		Operand1 &operator() (const Field &F, 
+				      Operand1 &C, const Operand2 &A, const Operand3 &B) const;
+            
+        };
+
+	template< class Field, class Operand1, class Operand2>
+	class BlasMatrixDomainCopy {
+	public:
+		Operand1 &operator() (const Field &F, 
+				      Operand1 &B, const Operand2 &A) const;
+            
+        };
+    
+
+
 	template< class Field, class Operand1, class Operand2, class Operand3>
 	class BlasMatrixDomainMul {
 	public:
@@ -96,6 +113,17 @@ namespace LinBox {
 			return BlasMatrixDomainMulAdd<Field,Operand1,Operand2,Operand3>()( F, zero, C, one, A, B );
 		}
 	};
+
+	/*  Class handling in-place multiplication of a Matrix by an Operand 
+	 *  Operand can be either a matrix a permutation or a vector 
+	 *  
+	 *  only  function:  operator () are defined :
+	 *       A = A*B
+	 *       B = A*B
+	 * Note that in-place multiplications are proposed for the specialization 
+	 * with a matrix and a permutation.
+	 * Using mulin with two matrices is still defined but is non-sense
+	 */
 	// Operand 2 is always the type of the matrix which is not modified
 	// ( for example: BlasPermutation TriangularBlasMatrix )
 	template< class Field, class Operand1, class Operand2>
@@ -268,6 +296,26 @@ namespace LinBox {
 		template <class Operand1, class Operand2, class Operand3>
 		Operand1& mul(Operand1& C, const Operand2& A, const Operand3& B) const {
 			return BlasMatrixDomainMul<Field,Operand1,Operand2,Operand3>()(_F,C,A,B);
+		}
+
+		// addition
+		// C = A+B
+		template <class Operand1, class Operand2, class Operand3>
+		Operand1& add(Operand1& C, const Operand2& A, const Operand3& B) const {
+			return BlasMatrixDomainAdd<Field,Operand1,Operand2,Operand3>()(_F,C,A,B);
+		}
+
+		// copy
+		// B = A
+		template <class Operand1, class Operand2>
+		Operand1& copy(Operand1& B, const Operand2& A) const {
+			return BlasMatrixDomainCopy<Field,Operand1,Operand2>()(_F,B,A);
+		}
+		// multiplication
+		// C = A-B
+		template <class Operand1, class Operand2, class Operand3>
+		Operand1& sub(Operand1& C, const Operand2& A, const Operand3& B) const {
+			return BlasMatrixDomainSub<Field,Operand1,Operand2,Operand3>()(_F,C,A,B);
 		}
 
 		
