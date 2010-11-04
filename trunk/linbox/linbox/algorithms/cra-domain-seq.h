@@ -103,7 +103,7 @@ namespace LinBox
                 Builder_.progress( D, Iteration(r, D) );
             }
             commentator.stop ("done", NULL, "mmcrait");
-std::cerr << "Used: " << IterCounter << " primes." << std::endl;
+                //std::cerr << "Used: " << IterCounter << " primes." << std::endl;
             return Builder_.result(res);
         }
 
