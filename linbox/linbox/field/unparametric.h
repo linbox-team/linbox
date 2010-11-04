@@ -51,7 +51,14 @@ namespace LinBox
 
 	*/
 
-	template <class Ring>
+
+        template <typename Target, typename Source>
+        Target& Caster (Target& t, const Source& s)
+        {
+            return t = static_cast<Target>(s);
+        }
+        
+        template <class Ring>
 	struct ClassifyRing;
 
 	template <class K>
@@ -115,29 +122,20 @@ namespace LinBox
 	        //@{
 
 		/// x := y.  Caution: it is via cast to long.  Good candidate for specialization.
-		Element &init (Element &x, const integer &y=0) const 
-			{ return x = (const Element&) (static_cast<const Element&> (y)); }
-                template<typename T>
-		Element &init (Element &x, const T& y) const 
-			{ return x = (const Element&) (y); }
-   
-		/// x :=  y.  Caution: it is via cast to long.  Good candidate for specialization.
-		integer &convert (integer &x, const Element &y) const 
-		{ 
-			Element temp (y);
-			//Dan Roche changed this from long to integer.
-			return x = static_cast<integer> (temp); 
-		}
+                template <typename Src>
+                Element init (Element& x, const Src& s) const
+                {
+                    return Caster (x, s);
+                    
+                }
+            
     
 		/// x :=  y.  Caution: it is via cast to long.  Good candidate for specialization. --dpritcha
+
                 template <typename T>
-                T& convert (T &x, const Element &y) const 
-		{ 
-//			Element temp (y);
-			return x = static_cast<T> (y); 
-		}
- 
-		///
+                T& convert (T &x, const Element &y) const {return Caster (x,y);}
+
+                ///
 		Element &assign (Element &x, const Element &y) const { return x = y; }
     
 		/// c := cardinality of this field (-1 if infinite).
