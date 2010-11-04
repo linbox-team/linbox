@@ -1,3 +1,14 @@
+2010-11-03 cpernet
+	linbox-1.1.7 released:
+	* bug fixes and minor enhancements
+	* New interface to sage (supporting native floating point
+	representation)
+	* new rebind interface
+	* incorporate the code for computations over the rationals (by A
+	Ubranska), still waiting to be cleaned-up (it is not used yet by default)
+2008-09-22 cpernet
+	linbox-1.1.6 released:
+	* compilation pb, and bug fixes, for cygwin support and debianization
 2008-06-10 cpernet
 	* Upgrade fflas-ffpack to v1.3.3 (safer and tighter bounds, bug
 	fixes,...)
