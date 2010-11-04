@@ -71,15 +71,33 @@ namespace LinBox
 	 \ingroup field
 	 */
 	template <>
-	NTL::ZZ_p& UnparametricField<NTL::ZZ_p>::init(NTL::ZZ_p& x, const integer& y) const
+//	NTL::ZZ_p& UnparametricField<NTL::ZZ_p>::init(NTL::ZZ_p& x, const integer& y) const
+	NTL::ZZ_p& Caster(NTL::ZZ_p& x, const integer& y) 
 	{
 		return x = NTL::to_ZZ_p( NTL::to_ZZ( (static_cast<const std::string>(y)).c_str() ) );
 	}
 	template <>
-	NTL::ZZ_p& UnparametricField<NTL::ZZ_p>::init(NTL::ZZ_p& x, const double& y) const
+//	NTL::ZZ_p& UnparametricField<NTL::ZZ_p>::init(NTL::ZZ_p& x, const double& y) const
+	NTL::ZZ_p& Caster(NTL::ZZ_p& x, const double& y)
 	{
             return x = NTL::to_ZZ_p( NTL::to_ZZ((long)(y) ) );
 	}
+	template <>
+	NTL::ZZ_p& Caster(NTL::ZZ_p& x, const int& y)
+	{
+            return x = NTL::to_ZZ_p( NTL::to_ZZ((long)(y) ) );
+	}
+	template <>
+	NTL::ZZ_p& Caster(NTL::ZZ_p& x, const unsigned long& y)
+	{
+            return x = NTL::to_ZZ_p( NTL::to_ZZ((long)(y) ) );
+	}
+	template <>
+	NTL::ZZ_p& Caster(NTL::ZZ_p& x, const unsigned int& y)
+	{
+            return x = NTL::to_ZZ_p( NTL::to_ZZ((long)(y) ) );
+	}
+
 
 
   
@@ -97,7 +115,8 @@ namespace LinBox
 	 */
 
 	template <>
-	integer& UnparametricField<NTL::ZZ_p>::convert(integer& x, const NTL::ZZ_p& y) const
+//	integer& UnparametricField<NTL::ZZ_p>::convert(integer& x, const NTL::ZZ_p& y) const
+	integer& Caster(integer& x, const NTL::ZZ_p& y) 
  	{ 
 		NTL::ZZ iy = y._ZZ_p__rep; 
 		
@@ -118,7 +137,8 @@ namespace LinBox
 
 	//dpritcha
 	template<> 
-	double& UnparametricField<NTL::ZZ_p>::convert(double& x, const NTL::ZZ_p& y) const
+//	double& UnparametricField<NTL::ZZ_p>::convert(double& x, const NTL::ZZ_p& y) const
+	double& Caster(double& x, const NTL::ZZ_p& y)
 	{ 
 		x = NTL::to_double(NTL::rep(y));
 		return x;

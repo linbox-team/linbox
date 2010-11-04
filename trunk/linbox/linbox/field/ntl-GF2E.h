@@ -112,13 +112,15 @@ namespace LinBox
 	 * Specialization of UnparametricField<> for NTL::GF2E type
 	 */
 	template<>
-	NTL::GF2E& UnparametricField<NTL::GF2E>::init (NTL::GF2E &x, const integer &y) const
+//	NTL::GF2E& UnparametricField<NTL::GF2E>::init (NTL::GF2E &x, const integer &y) const
+	NTL::GF2E& Caster(NTL::GF2E &x, const integer &y) 
 	{
 		x=NTL::to_GF2E(static_cast<long>(y));
 		return x;
 	}
 	template<>
-	NTL::GF2E& UnparametricField<NTL::GF2E>::init (NTL::GF2E &x, const double &y) const
+//	NTL::GF2E& UnparametricField<NTL::GF2E>::init (NTL::GF2E &x, const double &y) const
+	NTL::GF2E& Caster(NTL::GF2E &x, const double &y)
 	{
 		x=NTL::to_GF2E(static_cast<long>(y));
 		return x;
@@ -126,7 +128,8 @@ namespace LinBox
 	
 
 	template<>
-	integer& UnparametricField<NTL::GF2E>::convert (integer& x, const NTL::GF2E &y) const	{
+//	integer& UnparametricField<NTL::GF2E>::convert (integer& x, const NTL::GF2E &y) const	{
+	integer& Caster(integer& x, const NTL::GF2E &y) {
 		NTL::GF2X poly = rep(y);
 		
 		long i;		

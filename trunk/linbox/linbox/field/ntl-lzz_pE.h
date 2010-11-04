@@ -115,20 +115,23 @@ namespace LinBox
 	 * Specialization of UnparametricField<> for NTL::zz_pE type
 	 */
 	template<>
-	NTL::zz_pE& UnparametricField<NTL::zz_pE>::init (NTL::zz_pE &x, const integer &y) const
+//	NTL::zz_pE& UnparametricField<NTL::zz_pE>::init (NTL::zz_pE &x, const integer &y) const
+	NTL::zz_pE& Caster(NTL::zz_pE &x, const integer &y)
 	{
 		x=NTL::to_zz_pE(static_cast<long>(y));
 		return x;
 	}
 	template<>
-	NTL::zz_pE& UnparametricField<NTL::zz_pE>::init (NTL::zz_pE &x, const double &y) const
+//	NTL::zz_pE& UnparametricField<NTL::zz_pE>::init (NTL::zz_pE &x, const double &y) const
+	NTL::zz_pE& Caster(NTL::zz_pE &x, const double &y) 
 	{
 		x=NTL::to_zz_pE(static_cast<long>(y));
 		return x;
 	}
 	
 	template<>
-	integer& UnparametricField<NTL::zz_pE>::convert (integer& x, const NTL::zz_pE &y) const	{
+//	integer& UnparametricField<NTL::zz_pE>::convert (integer& x, const NTL::zz_pE &y) const	{
+	integer& Caster (integer& x, const NTL::zz_pE &y) {
 		NTL::zz_pX poly = rep(y);
 		integer base = static_cast<integer>(NTL::zz_p::modulus());		
 		long i;		

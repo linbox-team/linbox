@@ -64,11 +64,19 @@ namespace LinBox
 	 * @param x field element to contain output (reference returned).
 	 * @param y integer.
 	 */
+	/* 
 	template <>
 		NTL::RR& UnparametricField<NTL::RR>::init(NTL::RR& x, const integer& y) const
 		{ return x = NTL::to_RR(static_cast<const long&>(y)); }
 	template <>
 		NTL::RR& UnparametricField<NTL::RR>::init(NTL::RR& x, const double& y) const
+		{ return x = NTL::to_RR((long)(y)); }
+	*/
+	template <>
+	NTL::RR& Caster(NTL::RR& x, const integer& y) 
+		{ return x = NTL::to_RR(static_cast<const long&>(y)); }
+	template <>
+	NTL::RR& Caster(NTL::RR& x, const double& y)
 		{ return x = NTL::to_RR((long)(y)); }
 
 	/** Conversion of field element to an integer.
@@ -83,9 +91,15 @@ namespace LinBox
 	 * @param x reference to integer to contain output (reference returned).
 	 * @param y constant reference to field element.
 	 */
+	/* 
 	template <>
 		integer& UnparametricField<NTL::RR>::convert(integer& x, const NTL::RR& y) const
 		{ return x = static_cast<integer>(to_long(y)); }
+	*/
+	template <>
+	integer& Caster(integer& x, const NTL::RR& y)
+		{ return x = static_cast<integer>(to_long(y)); }
+	
 
 	/** Multiplicative Inverse.
 	 * x = 1 / y

@@ -126,13 +126,15 @@ namespace LinBox
 
 
   template<>
-    NTL::ZZ_pE& UnparametricField<NTL::ZZ_pE>::init (NTL::ZZ_pE &x, const integer &y) const
+//    NTL::ZZ_pE& UnparametricField<NTL::ZZ_pE>::init (NTL::ZZ_pE &x, const integer &y) const
+    NTL::ZZ_pE& Caster(NTL::ZZ_pE &x, const integer &y)
     {
       x=NTL::to_ZZ_pE(static_cast<long>(y));
       return x;
     }
    template<>
-    NTL::ZZ_pE& UnparametricField<NTL::ZZ_pE>::init (NTL::ZZ_pE &x, const double &y) const
+//    NTL::ZZ_pE& UnparametricField<NTL::ZZ_pE>::init (NTL::ZZ_pE &x, const double &y) const
+    NTL::ZZ_pE& Caster(NTL::ZZ_pE &x, const double &y) 
     {
       x=NTL::to_ZZ_pE(static_cast<long>(y));
       return x;
@@ -156,10 +158,12 @@ namespace LinBox
   // a0 + a1*p + a2*p^2 + ...
   //
   template<>
-    integer& UnparametricField<NTL::ZZ_pE>::convert(integer& c, const NTL::ZZ_pE& e) const
+//    integer& UnparametricField<NTL::ZZ_pE>::convert(integer& c, const NTL::ZZ_pE& e) const
+    integer& Caster(integer& c, const NTL::ZZ_pE& e) 
     {
 	    NTL::ZZ_pX poly = rep(e);
-	    Integer base = _p;
+	    //Integer base = _p;
+	    Integer base = static_cast<integer>(to_long(NTL::ZZ_p::modulus()));
 	    long i;
 
 	    c = 0;

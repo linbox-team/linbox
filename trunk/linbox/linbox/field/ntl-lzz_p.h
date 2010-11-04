@@ -56,12 +56,20 @@ namespace LinBox
 	 * @param x field element to contain output (reference returned).
 	 * @param y integer.
 	 */
+	/*
         template <>
         NTL::zz_p& UnparametricField<NTL::zz_p>::init(NTL::zz_p& x, const integer& y) const
                 { return x = NTL::to_zz_p(y%NTL::zz_p::modulus()); }
         template <>
         NTL::zz_p& UnparametricField<NTL::zz_p>::init(NTL::zz_p& x, const double& y) const
         {   return x = NTL::to_zz_p((long)(y)%NTL::zz_p::modulus()); }
+	*/
+	template<>
+	NTL::zz_p& Caster(NTL::zz_p& x, const integer& y) 
+                { return x = NTL::to_zz_p(y%NTL::zz_p::modulus()); }
+        template <>
+        NTL::zz_p& Caster(NTL::zz_p& x, const double& y) 
+	        {   return x = NTL::to_zz_p((long)(y)%NTL::zz_p::modulus()); }
 
 	/** Conversion of field element to an integer.
 	 * This function assumes the output field element x has already been
@@ -75,8 +83,13 @@ namespace LinBox
 	 * @param x reference to integer to contain output (reference returned).
 	 * @param y constant reference to field element.
 	 */
+	/*
 	template <>
 		integer& UnparametricField<NTL::zz_p>::convert(integer& x, const NTL::zz_p& y) const
+		{ return x = static_cast<integer>(rep(y)); }
+	*/
+	template <>
+	integer& Caster(integer& x, const NTL::zz_p& y) 
 		{ return x = static_cast<integer>(rep(y)); }
 
 	/** Cardinality.
