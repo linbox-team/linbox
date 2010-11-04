@@ -142,7 +142,7 @@ public:
 	void operator()(DomainSource &res, DomainTarget *D) const {
 		Blackbox<DomainSource> *B_source= static_cast<Blackbox<DomainSource> * >  (ptr);				
 		Blackbox<DomainTarget> *B_target;
-		typename Blackbox<DomainSource>::template rebind<DomainTarget>()(B_target, *B_source, *D);					
+		typename Blackbox<DomainSource>::template rebind<DomainTarget>()(*B_target, *B_source, *D);					
 		delete B_source;
 		ptr = B_target;
 	}
