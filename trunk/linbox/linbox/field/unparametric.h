@@ -123,7 +123,7 @@ namespace LinBox
 
 		/// x := y.  Caution: it is via cast to long.  Good candidate for specialization.
                 template <typename Src>
-                Element init (Element& x, const Src& s) const
+                Element& init (Element& x, const Src& s) const
                 {
                     return Caster (x, s);
                     
