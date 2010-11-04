@@ -143,6 +143,34 @@ public:
 //---------------------------------------------------------------------
 // Level 2 routines
 //---------------------------------------------------------------------
+
+        template <class Field>
+        static void
+        fadd (const Field& F, const size_t M, const size_t N, 
+              const typename Field::Element* A, const size_t lda,
+              const typename Field::Element* B, const size_t ldb,
+              typename Field::Element* C, const size_t ldc)
+        {
+            const typename Field::Element *Ai = A, *Bi = B;
+            typename Field::Element *Ci = C;
+            for (; Ai < A+M*lda; Ai+=lda, Bi+=ldb, Ci+=ldc)
+                for (size_t i=0; i<N; i++)
+                    F.add (Ci[i], Ai[i], B[i]);
+        }
+        template <class Field>
+        static void
+        fsub (const Field& F, const size_t M, const size_t N, 
+              const typename Field::Element* A, const size_t lda,
+              const typename Field::Element* B, const size_t ldb,
+              typename Field::Element* C, const size_t ldc)
+        {
+            const typename Field::Element * Ai = A, *Bi = B;
+            typename Field::Element *Ci = C;
+            for (; Ai < A+M*lda; Ai+=lda, Bi+=ldb, Ci+=ldc)
+                for (size_t i=0; i<N; i++)
+                    F.sub (Ci[i], Ai[i], B[i]);
+        }
+    
 	/**
 	 *  @brief finite prime Field GEneral Matrix Vector multiplication
 	 *
