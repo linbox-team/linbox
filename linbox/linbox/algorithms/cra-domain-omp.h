@@ -46,7 +46,7 @@ namespace LinBox
         template<class Function, class PrimeIterator>
         Integer& operator() (Integer& res, Function& Iteration, PrimeIterator& primeiter) {
             size_t NN = omp_get_max_threads();
-            std::cerr << "Blocs: " << NN << " iterations." << std::endl;
+                //std::cerr << "Blocs: " << NN << " iterations." << std::endl;
 // commentator.start ("Parallel OMP Modular iteration", "mmcrait");
             if (NN == 1) return Father_t::operator()(res,Iteration,primeiter);
 
@@ -92,7 +92,7 @@ namespace LinBox
             }
 
             while( ! this->Builder_.terminated() ) {
-std::cerr << "Computed: " << this->IterCounter << " primes." << std::endl;
+                    //std::cerr << "Computed: " << this->IterCounter << " primes." << std::endl;
                 size_t NN = omp_get_max_threads();
                 std::set<Integer> coprimeset;
                 while(coprimeset.size() < NN) {
@@ -128,7 +128,7 @@ std::cerr << "Computed: " << this->IterCounter << " primes." << std::endl;
                 }
             }
 // commentator.stop ("done", NULL, "mmcrait");
-std::cerr << "Used: " << this->IterCounter << " primes." << std::endl;
+                //std::cerr << "Used: " << this->IterCounter << " primes." << std::endl;
             return this->Builder_.result(res);
         }
 
@@ -136,7 +136,7 @@ std::cerr << "Used: " << this->IterCounter << " primes." << std::endl;
         Container& operator() (Container& res, Function& Iteration, PrimeIterator& primeiter) {
             typedef typename CRATemporaryVectorTrait<Function, DomainElement>::Type_t ElementContainer;
             size_t NN = omp_get_max_threads();
-            std::cerr << "Blocs: " << NN << " iterations." << std::endl;
+                //std::cerr << "Blocs: " << NN << " iterations." << std::endl;
 // commentator.start ("Parallel OMP Modular iteration", "mmcrait");
             if (NN == 1) return Father_t::operator()(res,Iteration,primeiter);
 
@@ -184,7 +184,7 @@ std::cerr << "Used: " << this->IterCounter << " primes." << std::endl;
             }
 
             while( ! this->Builder_.terminated() ) {
-std::cerr << "Computed: " << this->IterCounter << " primes." << std::endl;
+                    //std::cerr << "Computed: " << this->IterCounter << " primes." << std::endl;
                 size_t NN = omp_get_max_threads();
                 std::set<Integer> coprimeset;
                 while(coprimeset.size() < NN) {
@@ -222,7 +222,7 @@ std::cerr << "Computed: " << this->IterCounter << " primes." << std::endl;
                 }
             }
 // commentator.stop ("done", NULL, "mmcrait");
-std::cerr << "Used: " << this->IterCounter << " primes." << std::endl;
+                //std::cerr << "Used: " << this->IterCounter << " primes." << std::endl;
             return this->Builder_.result(res);
         }
 
