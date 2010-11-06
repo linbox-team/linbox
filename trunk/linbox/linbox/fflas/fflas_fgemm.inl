@@ -1033,8 +1033,8 @@ inline void  FFLAS::WinoMain (const Field& F,
 			      const FFLAS_BASE base) {
 
 	typename Field::Element one,zero,mone;
-	F.init(one, 1.0);
-	F.init(zero, 0.0);
+	F.init(one, 1UL);
+	F.init(zero, 0UL);
 	F.neg(mone, one);
 	
 	if (w <= 0) // Winograd - >  Classic

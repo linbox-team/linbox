@@ -145,6 +145,10 @@ namespace LinBox {
 		inline integer &characteristic (integer &c) const {
 			return c = integer(modulus); 
 		}
+		inline size_t characteristic () const {
+			return modulus; 
+		}
+
 
 		inline integer &convert (integer &x, const Element &y) const { 
 			if ( y < 0. ) return x = integer (y + modulus) ;

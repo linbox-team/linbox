@@ -153,14 +153,21 @@ namespace LinBox
 			return c = integer(modulus); 
 		}
 
+		inline size_t characteristic () const {
+			return modulus; 
+		}
+
 		inline integer &convert (integer &x, const Element &y) const { 
 			if ( y < 0. ) return x = integer (y + modulus) ;
 			else return x = integer (y);
 		}
 
-		inline float &convert (float &x, const Element& y) const {
-			return x=y;
-		}
+		inline float &convert (float &x, const Element& y) const 
+		{ return x=y; }
+
+		inline double &convert (double &x, const Element& y) const 
+		{ return x=y; }
+
 		
 		std::ostream &write (std::ostream &os) const {
 			return os << "float mod " << int(modulus);

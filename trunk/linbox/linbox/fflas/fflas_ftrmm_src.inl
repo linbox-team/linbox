@@ -225,7 +225,7 @@ void operator()	(const Field& F, const size_t M, const size_t N,
 		 typename Field::Element * B, const size_t ldb) {
 	
 	static typename Field::Element one;
-	F.init(one, 1.0);
+	F.init(one, 1UL);
 	if (__FFLAS__Na == 1)
 #ifdef __FFLAS__NONUNIT
 		fscal(F, __FFLAS__Bdim, *A, B, __FFLAS__Bnorminc);
