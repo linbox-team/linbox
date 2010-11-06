@@ -21,7 +21,8 @@
 
 #ifndef __LINBOX_modular_balanced_int_H
 #define __LINBOX_modular_balanced_int_H
-// This file has been replaced by modular-balanced-int32.h
+#warning " This file has been replaced by modular-balanced-int32.h"
+//BB : la bonne blague...
 
 /* balanced representation for modular<int> field, [-p/2,p/2], p is odd. 
  */
@@ -49,9 +50,9 @@ namespace LinBox
 { 
 
 	template< class Element >
-		class ModularBalanced;
+	class ModularBalanced;
 	template< class Element >
-		class ModularBalancedRandIter;
+	class ModularBalancedRandIter;
 	
 	template <class Ring>
 	struct ClassifyRing;
@@ -169,6 +170,16 @@ namespace LinBox
 
 			return x;
 		}
+
+		inline Element& init(Element& x, size_t y =0) const {
+			x = y % modulus;
+
+			if ( x < nhalfmodulus ) x += modulus;
+			else if (x > halfmodulus ) x -= modulus;
+
+			return x;
+		}
+
 
 		inline Element& init(Element& x, long y) const {
 			x = y % modulus;

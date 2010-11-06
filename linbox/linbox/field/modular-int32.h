@@ -29,7 +29,7 @@
 #include "linbox/field/field-interface.h"
 #include "linbox/field/field-traits.h"
 #include "linbox/util/debug.h"
-#include <linbox/field/field-traits.h>
+#include "linbox/field/field-traits.h"
 
 #ifndef LINBOX_MAX_INT
 #define LINBOX_MAX_INT 2147483647

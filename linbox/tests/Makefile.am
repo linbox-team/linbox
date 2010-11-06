@@ -75,7 +75,8 @@ BASIC_TESTS =  \
         test-rational-solver            \
         test-rational-solver-adaptive   \
         test-last-invariant-factor      \
-        test-charpoly 
+        test-charpoly  \
+		test-ftrmm
 
 # tests of components not adhering to LinBox requirements.
 NONCOMPLIANT_TESTS =                   \
@@ -544,3 +545,5 @@ test_ispossemidef_SOURCES=   \
         test-common.h        \
         test-ispossemidef.C
 
+test_ftrmm_SOURCES = \
+					 test-ftrmm.C

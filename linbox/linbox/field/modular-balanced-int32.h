@@ -1,5 +1,6 @@
 /* Copyright (C) 2009 LinBox
- * Written by <brice.boyer@imag.fr>
+ * Written by C Pernet
+ * updated to compilable condition by <brice.boyer@imag.fr>
  *
  *
  *
@@ -21,8 +22,8 @@
 
 
 
-#ifndef __LINBOX_modular_balanced_int_H
-#define __LINBOX_modular_balanced_int_H
+#ifndef __LINBOX_modular_balanced_int32_H
+#define __LINBOX_modular_balanced_int32_H
 
 /*! @file field/modular-balanced-int32.h
  * @brief balanced representation for modular<int32> field, [-p/2,p/2], p is odd. 
@@ -35,7 +36,7 @@
 #include "linbox/field/field-traits.h"
 #include "linbox/util/field-axpy.h"
 #include "linbox/util/debug.h"
-#include <linbox/field/field-traits.h>
+#include "linbox/field/field-traits.h"
 
 #ifndef LINBOX_MAX_INT
 #define LINBOX_MAX_INT 2147483647
@@ -53,46 +54,46 @@ namespace LinBox
 { 
 
 	template< class Element >
-		class Modular;
+	class ModularBalanced;
 	template< class Element >
-		class ModularRandIter;
-	
+	class ModularBalancedRandIter;
+
 	template <class Ring>
 	struct ClassifyRing;
 
 	template<class Element>
-	struct ClassifyRing<Modular<Element> >;
+	struct ClassifyRing<ModularBalanced<Element> >;
 
-	template<class Element>
-	struct ClassifyRing<Modular<int32> > {
+	template<>
+	struct ClassifyRing<ModularBalanced<int32> > {
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
 	/// \ingroup field
 	template <>
-		class Modular<int32> : public FieldInterface {
-		protected:
+	class ModularBalanced<int32> : public FieldInterface {
+	protected:
 		int32 modulus;
 		int32 halfmodulus;
 		int32 nhalfmodulus;
 		double modulusinv;
 
-		public:	       
+	public:	       
 
-		friend class FieldAXPY<Modular<int32> >;
-                friend class DotProductDomain<Modular<int32> >;
-			       
+		friend class FieldAXPY<ModularBalanced<int32> >;
+		friend class DotProductDomain<ModularBalanced<int32> >;
+
 		typedef int32 Element;
-		typedef ModularRandIter<int32> RandIter;
+		typedef ModularBalancedRandIter<int32> RandIter;
 
 		//default modular field,taking 65521 as default modulus
-		Modular () :modulus(65521) {
+		ModularBalanced () :modulus(65521) {
 			modulusinv = 1/(double)65521;
 			halfmodulus = (65521 >> 1);
 			nhalfmodulus = -halfmodulus;
 		}
 
-		Modular (int32 value, int exp = 1)  : modulus(value) {
+		ModularBalanced (int32 value, int exp = 1)  : modulus(value) {
 			halfmodulus = (modulus >> 1);
 			nhalfmodulus = -halfmodulus;
 			modulusinv = 1 / ((double) value); 
@@ -104,9 +105,9 @@ namespace LinBox
 
 		}
 
-		Modular(const Modular<int32>& mf) : modulus(mf.modulus),halfmodulus(mf.halfmodulus),nhalfmodulus(mf.nhalfmodulus),modulusinv(mf.modulusinv) { }
+		ModularBalanced (const ModularBalanced<int32>& mf) : modulus(mf.modulus),halfmodulus(mf.halfmodulus),nhalfmodulus(mf.nhalfmodulus),modulusinv(mf.modulusinv) { }
 
-		const Modular &operator=(const Modular<int32> &F) {
+		const ModularBalanced &operator=(const ModularBalanced<int32> &F) {
 			modulus = F.modulus;
 			halfmodulus = F.halfmodulus;
 			nhalfmodulus = F.nhalfmodulus;
@@ -115,57 +116,89 @@ namespace LinBox
 			return *this;
 		}
 
-	
+
 		integer &cardinality (integer &c) const{ 
 			return c = modulus;
 		}
 
-		integer &characteristic (integer &c) const {
-			return c = modulus; 
-		}
+		integer &characteristic (integer &c) const 
+		{ return c = modulus; }
 
+		size_t characteristic () const 
+		{ return modulus; }
+
+		// this function converts an int to a natural number ?
 		integer &convert (integer &x, const Element &y) const { 
 			if(y >= 0)
 				return x = y;
 			else 
 				return x = y + modulus;
 		}
-		
+
+		double & convert(double &x, const Element &y) const { 
+			return x = (double) y;
+		}
+
+		float & convert(float &x, const Element &y) const { 
+			return x = (float) y;
+		}
+
+
+
 		std::ostream &write (std::ostream &os) const {
 			return os << "int32 mod " << modulus;
 		}
-		
+
 		std::istream &read (std::istream &is) {
 			is >> modulus; 
 			halfmodulus = modulus/2;
 			nhalfmodulus = -halfmodulus;
 			modulusinv = 1 /((double) modulus );
-                        if(modulus <= 1) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
+			if(modulus <= 1) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
 			integer max;
-                        if(modulus > FieldTraits<Modular<int32> >::maxModulus(max)) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
+			if(modulus > FieldTraits<Modular<int32> >::maxModulus(max)) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
 			if( ! (modulus % 2) ) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be oddd");	
 
 			return is;
 		}
-		
+
 		std::ostream &write (std::ostream &os, const Element &x) const {
 			return os << x;
 		}
 
-		std::istream &read (std::istream &is, Element &x) const {
+		std::istream &read (std::istream &is, Element &x) const 
+		{
 			integer tmp;
 			is >> tmp;
 			init(x,tmp); 
 			return is;
-                }
-		
+		}
 
-		Element &init (Element &x, const integer &y) const  {
+
+		Element &init (Element &x, const integer &y) const  
+		{
 			x = y % integer (modulus);
 			if (x < nhalfmodulus) x += modulus;
 			else if (x > halfmodulus) x -= modulus;
 			return x;
 		}
+
+	Element &init (Element &x, const double &y) const  
+		{
+			x = fmod(y,(double)modulus);
+			if (x < nhalfmodulus) x += modulus;
+			else if (x > halfmodulus) x -= modulus;
+			return x;
+		}
+
+
+		Element &init (Element &x, const size_t &y) const  {
+			x = y % (modulus);
+			if (x < nhalfmodulus) x += modulus;
+			else if (x > halfmodulus) x -= modulus;
+			return x;
+		}
+
 
 		inline Element& init(Element& x, int y =0) const {
 			x = y % modulus;
@@ -183,12 +216,12 @@ namespace LinBox
 
 			return x;
 		}
-		
+
 		inline Element& assign(Element& x, const Element& y) const {
 			return x = y;
 		}
-									
-		
+
+
 		inline bool areEqual (const Element &x, const Element &y) const {
 			return x == y;
 		}
@@ -196,7 +229,7 @@ namespace LinBox
 		inline  bool isZero (const Element &x) const {
 			return x == 0; 
 		}
-		
+
 		inline bool isOne (const Element &x) const {
 			return x == 1; 
 		}
@@ -208,20 +241,20 @@ namespace LinBox
 
 			return x;
 		}
- 
+
 		inline Element &sub (Element &x, const Element &y, const Element &z) const {
 			x = y - z;
 			if (x > halfmodulus) x -= modulus;
 			else if (x < nhalfmodulus) x += modulus;
 			return x;
 		}
-		
+
 		inline Element &mul (Element &x, const Element &y, const Element &z) const {
 			int32 q;
 
 			q  = (int32) ((((double) y) * ((double) z)) * modulusinv);  // q could be off by (+/-) 1
 			x = (int32) (y*z - q*modulus);
-			
+
 			if (x > halfmodulus)
 				x -= modulus;
 			else if (x < nhalfmodulus)
@@ -229,17 +262,17 @@ namespace LinBox
 
 			return x;
 		}
- 
+
 		inline Element &div (Element &x, const Element &y, const Element &z) const {
 			Element temp;
 			inv (temp, z);
 			return mul (x, y, temp);
 		}
- 
+
 		inline Element &neg (Element &x, const Element &y) const {
 			return x = -y;
 		}
- 
+
 		inline Element &inv (Element &x, const Element &y) const {
 			int32 d, t;			
 			XGCD(d, x, t, y, modulus);
@@ -251,7 +284,7 @@ namespace LinBox
 				x += modulus;
 
 			return x;		
-							      
+
 		}
 
 		inline Element &axpy (Element &r, 
@@ -259,11 +292,11 @@ namespace LinBox
 				      const Element &x, 
 				      const Element &y) const {
 			int32 q;
-			
+
 			q  = (int32) (((((double) a) * ((double) x)) + (double)y) * modulusinv);  // q could be off by (+/-) 1
 			r = (int32) (a * x + y - q*modulus);
-			
-			
+
+
 			if (r > halfmodulus)
 				r -= modulus;
 			else if (r < nhalfmodulus)
@@ -280,7 +313,7 @@ namespace LinBox
 
 			return x;
 		}
- 
+
 		inline Element &subin (Element &x, const Element &y) const {
 			x -= y;
 			if (x > halfmodulus) 
@@ -290,30 +323,30 @@ namespace LinBox
 
 			return x;
 		}
- 
+
 		inline Element &mulin (Element &x, const Element &y) const {
 			return mul(x,x,y);
 		}
- 
+
 		inline Element &divin (Element &x, const Element &y) const {
 			return div(x,x,y);
 		}
- 
+
 		inline Element &negin (Element &x) const {
 			return x = -x;
 		}
- 
+
 		inline Element &invin (Element &x) const {
 			return inv (x, x);
 		}
 
 		inline Element &axpyin (Element &r, const Element &a, const Element &x) const {
 			int32 q;
-			
+
 			q  = (int32) (((((double) a)*((double) x)) + (double)r) * modulusinv);  // q could be off by (+/-) 1
 			r = (int32) (a * x + r - q*modulus);
-			
-			
+
+
 			if (r > halfmodulus)
 				r -= modulus;
 			else if (r < nhalfmodulus)
@@ -322,29 +355,29 @@ namespace LinBox
 			return r;
 		}
 
-		private:
+	private:
 
-      		inline static void XGCD(int32& d, int32& s, int32& t, int32 a, int32 b) {
+		inline static void XGCD(int32& d, int32& s, int32& t, int32 a, int32 b) {
 			int32  u, v, u0, v0, u1, v1, u2, v2, q, r;
-			
+
 			int32 aneg = 0, bneg = 0;
-			
+
 			if (a < 0) {
 				if (a < -LINBOX_MAX_INT) throw PreconditionFailed(__FUNCTION__,__LINE__,"XGCD: integer overflow");
 				a = -a;
 				aneg = 1;
 			}
-			
+
 			if (b < 0) {
 				if (b < -LINBOX_MAX_INT) throw PreconditionFailed(__FUNCTION__,__LINE__,"XGCD: integer overflow");
 				b = -b;
 				bneg = 1;
 			}
-			
+
 			u1 = 1; v1 = 0;
 			u2 = 0; v2 = 1;
 			u = a; v = b;
-			
+
 			while (v != 0) {
 				q = u / v;
 				r = u % v;
@@ -357,42 +390,42 @@ namespace LinBox
 				u1 = u0;
 				v1 = v0;
 			}
-			
+
 			if (aneg)
 				u1 = -u1;
-			
+
 			if (bneg)
 				v1 = -v1;
-			
+
 			d = u;
 			s = u1;
 			t = v1;
 		}
-		
+
 	};
 
 	template <>
-		class FieldAXPY<Modular<int32> > {	  
-		public:
-	  
+	class FieldAXPY<ModularBalanced<int32> > {	  
+	public:
+
 		typedef int32 Element;
-		typedef Modular<int32> Field;
-	  
+		typedef ModularBalanced<int32> Field;
+
 		FieldAXPY (const Field &F) : _F (F),_y(0),_times(0) {
 		}
 
 
 		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0),_times(0){}
-	  
-		FieldAXPY<Modular<int32> > &operator = (const FieldAXPY &faxpy) {
+
+		FieldAXPY<ModularBalanced<int32> > &operator = (const FieldAXPY &faxpy) {
 			_F = faxpy._F; 
 			_y = faxpy._y; 
 			_times = faxpy._times;
 			return *this; 
 		}
-	  
+
 		inline int64& mulacc (const Element &a, const Element &x) {
-		        int64 t = (int64) a * (int64)   x;
+			int64 t = (int64) a * (int64)   x;
 			if (_times < blocksize) {
 				++_times;
 				return _y += t;
@@ -423,7 +456,7 @@ namespace LinBox
 			normalize();
 
 			y = _y;
-			
+
 			if (y > _F.halfmodulus)
 				y -= _F.modulus;
 			else if (y < _F.nhalfmodulus)
@@ -441,8 +474,8 @@ namespace LinBox
 			_y = 0;
 		}
 
-		private:
-	  
+	private:
+
 		Field _F;
 		int64 _y;
 		int32 _times;
@@ -451,29 +484,29 @@ namespace LinBox
 		inline void normalize() {
 			_y = (int32)_y -(int32)(int64)((double) _y * _F.modulusinv) * (int32)_F.modulus;
 		}
-			
+
 	};
 
 
 	template <>
-		class DotProductDomain<Modular<int32> > : private virtual VectorDomainBase<Modular<int32> > {
+	class DotProductDomain<ModularBalanced<int32> > : private virtual VectorDomainBase<ModularBalanced<int32> > {
 
-		private:
+	private:
 		const int32 blocksize;
-		
-		public:	  
+
+	public:	  
 		typedef int32 Element;	  
-		DotProductDomain (const Modular<int32> &F)
-			: VectorDomainBase<Modular<int32> > (F) ,blocksize(32){
+		DotProductDomain (const ModularBalanced<int32> &F)
+		: VectorDomainBase<ModularBalanced<int32> > (F) ,blocksize(32){
 		}
-				
-		protected:
+
+	protected:
 		template <class Vector1, class Vector2>
-			inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const {
-			
+		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const {
+
 			typename Vector1::const_iterator pv1,pv1e;
 			typename Vector2::const_iterator pv2;
-		  			
+
 			int64 y = 0;
 			int64 t;
 			int32 times = 0;
@@ -494,7 +527,7 @@ namespace LinBox
 				t = (((int64) *pv1 ) * ((int64) *pv2 ));
 				y += t;
 			}
-			
+
 			normalize(y);
 			res = y;
 
@@ -504,13 +537,13 @@ namespace LinBox
 			return res;
 
 		}
-	  
+
 		template <class Vector1, class Vector2>
-			inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const {		  
+		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const {		  
 
 			typename Vector1::first_type::const_iterator i_idx, i_idxe;
 			typename Vector1::second_type::const_iterator i_elt;
-		  
+
 			int64 y = 0;
 			int64 t;
 
@@ -544,12 +577,12 @@ namespace LinBox
 		inline void normalize(int64& _y) const {
 			_y = (int32)_y -(int32)(int64)((double) _y * _F.modulusinv) * (int32)_F.modulus;
 		}
-			
+
 	};
 }
 
 #include "linbox/randiter/modular.h"
-#endif //__LINBOX_modular_balanced_int_H
+#endif //__LINBOX_modular_balanced_int32_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax
