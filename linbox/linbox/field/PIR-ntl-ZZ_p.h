@@ -73,7 +73,7 @@ namespace LinBox
 		
 		PIR_ntl_ZZ_p (const integer& d, int exp = 1 ) {
 
-			if(exp != 1) throw PreconditionFailed(__FUNCTION__,__LINE__,"exponent must be 1");
+			if(exp != 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
 
 			NTL::ZZ_p::init (NTL::to_ZZ(((std::string)d). c_str()));
 
@@ -259,7 +259,7 @@ namespace LinBox
 			} 
 					
 			else
-				throw PreconditionFailed(__FUNCTION__,__LINE__,"Div: not dividable");
+				throw PreconditionFailed(__func__,__FILE__,__LINE__,"Div: not dividable");
 
 
 			return x;

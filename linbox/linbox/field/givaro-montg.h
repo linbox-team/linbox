@@ -80,7 +80,7 @@ namespace LinBox
 			Montgomery<Std32>(static_cast<uint32>(long(p))) { 
 			
 			if (k!=1)
-				throw PreconditionFailed(__FUNCTION__,__LINE__,"exponent must be 1");
+				throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
 		}
     
 		/** Characteristic.

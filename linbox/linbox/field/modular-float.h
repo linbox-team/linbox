@@ -77,37 +77,37 @@ namespace LinBox
 		Modular (int32 p, int exp = 1)  : modulus((float)p), lmodulus(p)//, inv_modulus(1./(float)p) 
 		{
 			if(modulus <= 1)
-				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
-			if( exp != 1 ) throw PreconditionFailed(__FUNCTION__,__LINE__,"exponent must be 1");
+				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
+			if( exp != 1 ) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
 			integer max;
 			if(modulus > (float) FieldTraits<Modular<float> >::maxModulus(max))
-				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
+				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 			
 		}
 
 		Modular (float p) : modulus(p), lmodulus((unsigned long)p) {
 			if( modulus <= 1 )
-				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
+				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			integer max;
 			if( modulus > (float) FieldTraits<Modular<float> >::maxModulus(max))
-				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
+				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 		}
 
 		Modular (long int p) :modulus((float)p), lmodulus(p) {
 			if( (float) modulus <= 1 )
-				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
+				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			integer max;
 			if( (float) modulus > (float) FieldTraits<Modular<float> >::maxModulus(max))
-				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
+				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 		}
 
 		Modular (const integer& p) : modulus((float) p), lmodulus(p) //, inv_modulus(1./(float)p)
 		{
 			if(modulus <= 1)
-				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
+				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			integer max;
 			if(modulus > (float) FieldTraits<Modular<float> >::maxModulus(max))
-				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
+				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 				
 		}
 
@@ -126,17 +126,21 @@ namespace LinBox
 			return c = integer(modulus);
 		}
 
-		integer &characteristic (integer &c) const {
-			return c = integer(modulus); 
-		}
+		integer &characteristic (integer &c) const 
+		{ return c = integer(modulus); }
 
-		integer &convert (integer &x, const Element &y) const { 
-			return x = integer(y);
-		}
+		size_t characteristic () const 
+		{ return modulus; }
 
-		float &convert (float &x, const Element& y) const {
-			return x=y;
-		}
+
+		integer &convert (integer &x, const Element &y) const 
+		{ return x = integer(y); }
+
+		double  &convert (double &x, const Element &y) const 
+		{ return x = y; }
+
+		float   &convert (float &x, const Element& y) const 
+		{ return x=y; }
 		
 		std::ostream &write (std::ostream &os) const {
 			return os << "float mod " << (int)modulus;
@@ -145,9 +149,9 @@ namespace LinBox
 		std::istream &read (std::istream &is) {
 			is >> modulus; 
 			if(modulus <= 1) 
-				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
+				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 		 	if(modulus > 94906265) 
-				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
+				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 
 			return is;
 		}

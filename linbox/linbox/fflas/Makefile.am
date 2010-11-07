@@ -14,6 +14,9 @@ pkgincludesub_HEADERS = \
 	fflas_ftrsm_src.inl		\
 	fflas_ftrmm.inl			\
 	fflas_ftrmm_src.inl		\
+	fflas_faddm.inl			\
+	fflas_faddm_src.inl		\
+	fflas_faddmin_src.inl	\
 	fflas_ftrsv.inl			\
 	fflas_fcopy.inl			\
 	fflas_bounds.inl

@@ -118,8 +118,8 @@ namespace LinBox
 
 		Modular (int value)  : modulus(value),zero(0),one(1),mone(value-1) {
 			modulusinv = 1 / ((double) value); 
-			if(value<=1) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
-			if(value>LINBOX_MAX_MODULUS) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
+			if(value<=1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
+			if(value>LINBOX_MAX_MODULUS) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 			_two64 = (int) ((uint64) (-1) % (uint64) value);
 			_two64 += 1;
 			if (_two64 >= value) _two64 -= value;
@@ -163,8 +163,8 @@ namespace LinBox
 		inline std::istream &read (std::istream &is) {
 			is >> modulus; 
 			modulusinv = 1 /((double) modulus );
-                        if(modulus <= 1) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
-                        if(modulus > LINBOX_MAX_MODULUS) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
+                        if(modulus <= 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
+                        if(modulus > LINBOX_MAX_MODULUS) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 			_two64 = (int) ((uint64) (-1) % (uint64) modulus);
 			_two64 += 1;
 			if (_two64 >= modulus) _two64 -= modulus;
@@ -279,7 +279,7 @@ namespace LinBox
 			int d, t;			
 			XGCD(d, x, t, y, modulus);
 			if (d != 1) {
-				throw PreconditionFailed(__FUNCTION__,__LINE__,"InvMod: Input is not invertible ");
+				throw PreconditionFailed(__func__,__FILE__,__LINE__,"InvMod: Input is not invertible ");
 			}
 			if (x < 0)
 				x += modulus;
@@ -358,13 +358,13 @@ namespace LinBox
 			int aneg = 0, bneg = 0;
 			
 			if (a < 0) {
-				if (a < -LINBOX_MAX_INT) throw PreconditionFailed(__FUNCTION__,__LINE__,"XGCD: integer overflow");
+				if (a < -LINBOX_MAX_INT) throw PreconditionFailed(__func__,__FILE__,__LINE__,"XGCD: integer overflow");
 				a = -a;
 				aneg = 1;
 			}
 			
 			if (b < 0) {
-				if (b < -LINBOX_MAX_INT) throw PreconditionFailed(__FUNCTION__,__LINE__,"XGCD: integer overflow");
+				if (b < -LINBOX_MAX_INT) throw PreconditionFailed(__func__,__FILE__,__LINE__,"XGCD: integer overflow");
 				b = -b;
 				bneg = 1;
 			}

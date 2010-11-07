@@ -114,7 +114,7 @@ namespace LinBox
 					       half_mod ((p-1)/2),
 					       lmodulus(p) {
 			if ((float) modulus <= 1)
-				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
+				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			integer max;
 			if ((float) modulus > (float) FieldTraits<ModularBalanced<float> >::maxModulus(max))
 				throw PreconditionFailed (__FUNCTION__,
@@ -126,9 +126,9 @@ namespace LinBox
 						     half_mod ((p-1)/2),
 						     lmodulus(p){
 			if(modulus <= 1)
-				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
+				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 	             	if(modulus > getMaxModulus())
-				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
+				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 				
 		}
 

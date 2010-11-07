@@ -51,7 +51,7 @@ namespace LinBox
 	public:
 	NTL_PID_zz_p(long pp, int exp = 1) 
     	: NTL_zz_p(pp), _modulus(pp) {
-		if( exp != 1 ) throw PreconditionFailed(__FUNCTION__,__LINE__,"exponent must be 1");
+		if( exp != 1 ) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
 	}
 
         Element& gcd(Element& g, const Element& a, const Element& b) const
