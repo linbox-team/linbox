@@ -105,8 +105,8 @@ namespace LinBox
 	int32 pl=p;
 	for(int32 i=1;i<k;++i) pl*=(int32)p;
 	if(!FieldTraits<GivaroGfq>::goodModulus(p)) 
-		throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus be between 2 and 2^15 and prime");
-	else if(pl>(1<<20)) throw PreconditionFailed(__FUNCTION__,__LINE__,"cardinality must be < 2^20");
+		throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus be between 2 and 2^15 and prime");
+	else if(pl>(1<<20)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"cardinality must be < 2^20");
 
 	}
 
@@ -120,12 +120,12 @@ namespace LinBox
         //enforce that the cardinality must be <2^16, for givaro-gfq
         int32 pl=p;
         for(int32 i=1;i<k;++i) pl*=(int32)p;
-        if(!FieldTraits<GivaroGfq>::goodModulus(p)) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus be between 2 and 2^15 and prime");
-        else if(pl>=(1<<16)) throw PreconditionFailed(__FUNCTION__,__LINE__,"cardinality must be < 2^16");
+        if(!FieldTraits<GivaroGfq>::goodModulus(p)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus be between 2 and 2^15 and prime");
+        else if(pl>=(1<<16)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"cardinality must be < 2^16");
 	
-	if( k < 2 ) throw PreconditionFailed(__FUNCTION__,__LINE__,"exponent must be >1 if polynomial is specified");
+	if( k < 2 ) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be >1 if polynomial is specified");
 
-	if(modPoly.size() != (size_t)(k+1)) throw PreconditionFailed(__FUNCTION__,__LINE__,"Polynomial must be of order k+1");
+	if(modPoly.size() != (size_t)(k+1)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"Polynomial must be of order k+1");
 
 	GFqDom<int32> Zp(p,1);
 	typedef Poly1FactorDom< GFqDom<int32>, Dense > PolDom;

@@ -336,6 +336,13 @@ namespace LinBox
 		  return x;
 		}
 
+		Element &init (Element &x, const size_t &y = 0) const
+		{ 
+		  x = (Element) y % ModularBase<Element>::_modulus;
+		  if (x < 0) x += ModularBase<Element>::_modulus;
+		  return x;
+		}
+
 		Element &init (Element &x, const int y ) const
 		{ 
 		  x = y % ModularBase<Element>::_modulus;

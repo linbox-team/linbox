@@ -111,10 +111,10 @@ namespace LinBox
 
 		Modular (int32 value, int32 exp = 1)  : modulus(value) {
 			modulusinv = 1 / ((double) value); 
-			if(exp != 1) throw PreconditionFailed(__FUNCTION__,__LINE__,"exponent must be 1");
-			if(value<=1) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
+			if(exp != 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
+			if(value<=1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			integer max;
-			if(value>FieldTraits< Modular<int32> >::maxModulus(max)) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
+			if(value>FieldTraits< Modular<int32> >::maxModulus(max)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 			_two64 = (int32) ((uint64) (-1) % (uint64) value);
 			_two64 += 1;
 			if (_two64 >= value) _two64 -= value;
@@ -134,9 +134,12 @@ namespace LinBox
 			return c = modulus;
 		}
 
-		inline integer &characteristic (integer &c) const {
-			return c = modulus; 
-		}
+		inline integer &characteristic (integer &c) const 
+		{ return c = modulus; }
+
+		inline size_t characteristic () const 
+		{ return modulus; }
+
 
 		inline integer &convert (integer &x, const Element &y) const { 
 			return x = y;
@@ -160,9 +163,9 @@ namespace LinBox
 		inline std::istream &read (std::istream &is) {
 			is >> modulus; 
 			modulusinv = 1 /((double) modulus );
-                        if(modulus <= 1) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
+                        if(modulus <= 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			integer max;
-                        if(modulus > FieldTraits< Modular<int32> >::maxModulus(max)) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
+                        if(modulus > FieldTraits< Modular<int32> >::maxModulus(max)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 			_two64 = (int32) ((uint64) (-1) % (uint64) modulus);
 			_two64 += 1;
 			if (_two64 >= modulus) _two64 -= modulus;
@@ -262,6 +265,7 @@ namespace LinBox
 		}
  
 		inline Element &div (Element &x, const Element &y, const Element &z) const {
+			linbox_check(!isZero(z));
 			Element temp;
 			inv (temp, z);
 			return mul (x, y, temp);
@@ -273,10 +277,11 @@ namespace LinBox
 		}
  
 		inline Element &inv (Element &x, const Element &y) const {
+			linbox_check(!isZero(y));
 			int32 d, t;			
 			XGCD(d, x, t, y, modulus);
 			if (d != 1) {
-				throw PreconditionFailed(__FUNCTION__,__LINE__,"InvMod: Input is not invertible ");
+				throw PreconditionFailed(__func__,__FILE__,__LINE__,"InvMod: Input is not invertible ");
 			}
 			if (x < 0)
 				x += modulus;
@@ -329,6 +334,7 @@ namespace LinBox
 		}
  
 		inline Element &invin (Element &x) const {
+			linbox_check(!isZero(x));
 			return inv (x, x);
 		}
 
@@ -358,13 +364,13 @@ namespace LinBox
 			int32 aneg = 0, bneg = 0;
 			
 			if (a < 0) {
-				if (a < -LINBOX_MAX_INT) throw PreconditionFailed(__FUNCTION__,__LINE__,"XGCD: integer overflow");
+				if (a < -LINBOX_MAX_INT) throw PreconditionFailed(__func__,__FILE__,__LINE__,"XGCD: integer overflow");
 				a = -a;
 				aneg = 1;
 			}
 			
 			if (b < 0) {
-				if (b < -LINBOX_MAX_INT) throw PreconditionFailed(__FUNCTION__,__LINE__,"XGCD: integer overflow");
+				if (b < -LINBOX_MAX_INT) throw PreconditionFailed(__func__,__FILE__,__LINE__,"XGCD: integer overflow");
 				b = -b;
 				bneg = 1;
 			}

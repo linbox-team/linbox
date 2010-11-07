@@ -361,6 +361,37 @@ public:
 					       typename Field::Element * B, const size_t ldb);
 #endif
 	
+	template<class Field>
+	inline void faddm(const Field & F,
+			  const FFLAS_TRANSPOSE transA,
+			  const size_t M, const size_t N,
+			  const typename Field::Element * A, const size_t lda,
+			  typename Field::Element * B, const size_t ldb);
+
+	template<class Field>
+	inline void faddm(const Field & F,
+			  const FFLAS_TRANSPOSE transA,
+			  const FFLAS_TRANSPOSE transB,
+			  const size_t M, const size_t N,
+			  const typename Field::Element * A, const size_t lda,
+			  const typename Field::Element * B, const size_t ldb,
+			  typename Field::Element * C, const size_t ldc );
+
+	template<class Field>
+	inline void fsubm(const Field & F,
+			  const FFLAS_TRANSPOSE transA,
+			  const size_t M, const size_t N,
+			  const typename Field::Element * A, const size_t lda,
+			  typename Field::Element * B, const size_t ldb) ;
+
+	template<class Field>
+	inline void fsubm(const Field & F,
+			  const FFLAS_TRANSPOSE transA,
+			  const FFLAS_TRANSPOSE transB,
+			  const size_t M, const size_t N,
+			  const typename Field::Element * A, const size_t lda,
+			  const typename Field::Element * B, const size_t ldb,
+			  typename Field::Element * C, const size_t ldc );
 
 	/**
 	 * MatCopy
@@ -801,8 +832,33 @@ protected:
 	class ftrtrRightLowerTransNonUnitUnit;
 	template <class Element>
 	class ftrtrRightLowerTransUnitUnit;
-
 #endif
+	template<class Element>
+	class faddmTrans;
+	template<class Element>
+	class faddmNoTrans;
+	template<class Element>
+	class fsubmTrans;
+	template<class Element>
+	class fsubmNoTrans;
+	template<class Element>
+	class faddmTransTrans;
+	template<class Element>
+	class faddmNoTransTrans;
+	template<class Element>
+	class faddmTransNoTrans;
+	template<class Element>
+	class faddmNoTransNoTrans;
+	template<class Element>
+	class fsubmTransTrans;
+	template<class Element>
+	class fsubmNoTransTrans;
+	template<class Element>
+	class fsubmTransNoTrans;
+	template<class Element>
+	class fsubmNoTransNoTrans;
+
+
 
 }; // class FFLAS
 
@@ -821,6 +877,8 @@ protected:
 #ifdef LB_TRTR
 #include "fflas_ftrtr.inl"
 #endif
+
+#include "fflas_faddm.inl"
 
 #ifdef _LINBOX_LINBOX_CONFIG_H
 }

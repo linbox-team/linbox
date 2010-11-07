@@ -108,7 +108,7 @@ namespace LinBox
 		GivaroZpz (const integer &p, const integer& k) : ZpzDom<TAG> (static_cast<typename ZpzDom<TAG>::Residu_t> (p))  {
 			
 			if (k!=1)
-				throw PreconditionFailed(__FUNCTION__,__LINE__,"exponent must be 1");
+				throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
 		}
 
 		/** Copy constructor

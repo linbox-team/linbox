@@ -268,7 +268,7 @@ class BlockRing : public FieldInterface
 		_D.inv(*(B.matrix), *(A.matrix), nullflag);
 
                 if (nullflag)
-                  throw PreconditionFailed(__FUNCTION__,__LINE__,"InvMatrix: inverse undefined");
+                  throw PreconditionFailed(__func__,__FILE__,__LINE__,"InvMatrix: inverse undefined");
 			
 		return B;
 	}
@@ -284,7 +284,7 @@ class BlockRing : public FieldInterface
                 _D.inv(*(B.matrix), *(A.matrix), nullflag);
                 
                 if (nullflag)
-                     throw PreconditionFailed(__FUNCTION__,__LINE__,"InvMatrix: inverse undefined");
+                     throw PreconditionFailed(__func__,__FILE__,__LINE__,"InvMatrix: inverse undefined");
                 
                 A=B;
 			
