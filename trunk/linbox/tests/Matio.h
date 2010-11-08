@@ -235,7 +235,7 @@ std::ostream& write_field(const Field& F,std::ostream& c,
 		if (!mapleFormat) c << std::endl;
 	}
 	if (mapleFormat) c << ']';
-	if (mapleFormat) c << ':';
+	if (mapleFormat) c << ')';
 	if (mapleHidden) c << ':' ; else c << ';' ;
 	return c << std::endl;
 }

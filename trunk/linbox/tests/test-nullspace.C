@@ -4,7 +4,7 @@
  * see COPYING for license details
  */
 
-/** \file tests/nullspace.C
+/** \file tests/test-nullspace.C
   \brief Tests the nullspace functions
   */
 
