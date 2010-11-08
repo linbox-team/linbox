@@ -10,12 +10,12 @@
 #define my_join(pre, nam) pre ## nam
 
 #ifdef  __FFLAS__NOTRANSPOSE 
-#define __FFLAS_B_inc   1
-#define __FFLAS_B_ld    ldb
+#define __FFLAS_A_inc   1
+#define __FFLAS_A_ld    lda
 #define __FFLAS_Trans   NoTrans
 #else
-#define __FFLAS_B_inc   ldb
-#define __FFLAS_B_ld    1
+#define __FFLAS_A_inc   M
+#define __FFLAS_A_ld    1
 #define __FFLAS_Trans   Trans
 #endif
 
@@ -38,26 +38,59 @@ public :
 	template<class Field>
 	void operator() (const Field & F,
 			 const size_t M, const size_t N,
-			 typename Field::Element * A, const size_t lda,
+			 const typename Field::Element * A, const size_t lda,
 			 typename Field::Element * B, const size_t ldb)
 	{
 		if (!M || !N ) return; // ne doit jamais arriver, déjà testé !
 
 		// adding (precomputing tB ?)
 		for (size_t i = 0 ; i < M ; ++i)
+#ifndef __LINBOX_HAVE_SSE2
 			for (size_t j = 0 ; j < N ; ++j)
-				*(A+i*lda+j) += *(B+i*__FFLAS_B_ld+j*__FFLAS_B_inc) ;
+				*(B+i*ldb+j) += *(A+i*__FFLAS_A_ld+j*__FFLAS_A_inc) ;
+#else
+#if defined(__FFLAS__TRANSPOSE)
+			for (size_t j = 0 ; j < N ; ++j)
+				*(B+i*ldb+j) += *(A+i*__FFLAS_A_ld+j*__FFLAS_A_inc) ;
+#else
+#ifdef __FFLAS__DOUBLE
+		{
+			size_t j = 0 ;
+			__m128d *av, *bv;
+			av = (__m128d*)A+i*lda; // assume 16-byte aligned
+			bv = (__m128d*)B+i*ldb; // assume 16-byte aligned
+			for (j = 0; j < N/2; ++j)
+				_mm_add_pd(bv[j], av[j]);
+			j *= 2 ;
+			for (; j<N ; ++j)
+				*(B+i*ldb+j) += *(A+i*lda+j) ;
+		}
+#else
+{
+			size_t j = 0 ;
+			__m128 *av, *bv;
+			av = (__m128*)A+i*lda; // assume 16-byte aligned
+			bv = (__m128*)B+i*ldb; // assume 16-byte aligned
+			for (j = 0; j < N/4; ++j)
+				_mm_add_ps(bv[j], av[j]);
+			j *= 4 ;
+			for (; j < N ; j++)
+				 *(B+i*ldb+j)  += *(A+i*lda+j) ;
+		}
+#endif
+#endif
+#endif
 
 		// reducing :
-		if (M == lda )
+		if (M == ldb )
 			for (size_t i = 0 ; i < M*N ; ++i)
-				F.init(*A+i,*A+i);
+				F.init(*(B+i),*(B+i));
 		else
 			for (size_t i = 0 ; i < M ; ++i)
 				for (size_t j = 0 ; j < N ; ++j)
-					F.init(*(A+i*lda+j), *(A+i*lda+j));
+					F.init(*(B+i*ldb+j), *(B+i*ldb+j));
 
-
+		return ;
 	}
 
 };
@@ -69,7 +102,7 @@ public :
 	template<class Field>
 	void operator() (const Field & F,
 			 const size_t M, const size_t N,
-			 typename Field::Element * A, const size_t lda,
+			 const typename Field::Element * A, const size_t lda,
 			 typename Field::Element * B, const size_t ldb)
 	{
 		if (!M || !N ) return; // ne doit jamais arriver, déjà testé !
@@ -77,18 +110,9 @@ public :
 		// adding (precomputing tB ?)
 		for (size_t i = 0 ; i < M ; ++i)
 			for (size_t j = 0 ; j < N ; ++j)
-				F.addin(*(A+i*lda+j), *(B+i*__FFLAS_B_ld+j*__FFLAS_B_inc)) ;
+				F.addin(*(B+i*ldb+j), *(A+i*__FFLAS_A_ld+j*__FFLAS_A_inc)) ;
 
-		// reducing :
-		if (M == lda )
-			for (size_t i = 0 ; i < M*N ; ++i)
-				F.init(*A+i,*A+i);
-		else
-			for (size_t i = 0 ; i < M ; ++i)
-				for (size_t j = 0 ; j < N ; ++j)
-					F.init(*(A+i*lda+j), *(A+i*lda+j));
-
-
+		return ;
 	}
 
 };
@@ -102,7 +126,7 @@ public :
 	template<class Field>
 	void operator() (const Field & F,
 			 const size_t M, const size_t N,
-			 typename Field::Element * A, const size_t lda,
+			 const typename Field::Element * A, const size_t lda,
 			 typename Field::Element * B, const size_t ldb)
 	{
 		if (!M || !N ) return; // ne doit jamais arriver, déjà testé !
@@ -110,18 +134,17 @@ public :
 		// adding (precomputing tB ?)
 		for (size_t i = 0 ; i < M ; ++i)
 			for (size_t j = 0 ; j < N ; ++j)
-				*(A+i*lda+j) -= *(B+i*__FFLAS_B_ld+j*__FFLAS_B_inc) ;
+				*(B+i*ldb+j) -= *(A+i*__FFLAS_A_ld+j*__FFLAS_A_inc) ;
 
 		// reducing :
-		if (M == lda )
+		if (M == ldb )
 			for (size_t i = 0 ; i < M*N ; ++i)
-				F.init(*A+i,*A+i);
+				F.init(*(B+i),*(B+i));
 		else
 			for (size_t i = 0 ; i < M ; ++i)
 				for (size_t j = 0 ; j < N ; ++j)
-					F.init(*(A+i*lda+j), *(A+i*lda+j));
-
-
+					F.init(*(B+i*ldb+j), *(B+i*ldb+j));
+		return ;
 	}
 
 };
@@ -133,7 +156,7 @@ public :
 	template<class Field>
 	void operator() (const Field & F,
 			 const size_t M, const size_t N,
-			 typename Field::Element * A, const size_t lda,
+			 const typename Field::Element * A, const size_t lda,
 			 typename Field::Element * B, const size_t ldb)
 	{
 		if (!M || !N ) return; // ne doit jamais arriver, déjà testé !
@@ -141,18 +164,9 @@ public :
 		// adding (precomputing tB ?)
 		for (size_t i = 0 ; i < M ; ++i)
 			for (size_t j = 0 ; j < N ; ++j)
-				F.subin(*(A+i*lda+j), *(B+i*__FFLAS_B_ld+j*__FFLAS_B_inc)) ;
+				F.subin(*(B+i*ldb+j), *(A+i*__FFLAS_A_ld+j*__FFLAS_A_inc)) ;
 
-		// reducing :
-		if (M == lda )
-			for (size_t i = 0 ; i < M*N ; ++i)
-				F.init(*A+i,*A+i);
-		else
-			for (size_t i = 0 ; i < M ; ++i)
-				for (size_t j = 0 ; j < N ; ++j)
-					F.init(*(A+i*lda+j), *(A+i*lda+j));
-
-
+		return ;
 	}
 
 };
@@ -169,8 +183,8 @@ public :
 #undef __FFLAS_Trans
 #undef __FFLAS_A_Trans
 #undef __FFLAS_B_Trans
-#undef __FFLAS_B_inc
-#undef __FFLAS_B_ld
+#undef __FFLAS_A_inc
+#undef __FFLAS_A_ld
 
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
