@@ -3,5 +3,5 @@
   @see Fields
   @see Field Wrappers
 
-  @memo Wrappers to make \Ref{LinBox} random field element generators.
+  @memo Wrappers to make \ref LinBox random field element generators.
 */

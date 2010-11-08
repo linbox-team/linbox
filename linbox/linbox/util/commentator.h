@@ -266,7 +266,7 @@ namespace LinBox
 		 *
 		 * Saves a copy of the activity state and returns it to the
 		 * caller. The caller need only pass this object back to
-		 * \ref{restoreActivityState} to return the commentator's
+		 * \ref restoreActivityState to return the commentator's
 		 * activity stack to the state it was when saveActivityState was
 		 * called.
 		 *

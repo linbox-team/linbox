@@ -14,13 +14,13 @@ namespace LinBox
 {
 // LinBox Blackbox Interface
 /*
- * The LinBox {@link BlackboxInterface} common object {@link Interfaces interface}.
+ * The LinBox @link BlackboxInterface@endlink common object @link Interfaces interface@endlink.
  * The blackbox interface includes the public members defined in the archetype.
 */
 /** 
  * \brief This blackbox base class exists solely to aid documentation organization.
 
- *  For the general blackbox member function documentation consult the {@link Blackbox Archetype}. For specific properties of individual representations consult the specific blackbox classes.
+ *  For the general blackbox member function documentation consult the @link Blackbox Archetype@endlink. For specific properties of individual representations consult the specific blackbox classes.
  */
 class BlackboxInterface 
 {

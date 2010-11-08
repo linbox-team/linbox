@@ -411,7 +411,7 @@ namespace LinBox
 		//@}
 
 		/** @name Implementation-Specific Methods.
-		 * These methods are not required of all \Ref{LinBox Fields}
+		 * These methods are not required of all \ref LinBox\ Fields 
 		 * and are included only for this implementation of the archetype.
 		 */
 		//@{

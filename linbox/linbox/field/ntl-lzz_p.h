@@ -206,8 +206,8 @@ namespace LinBox
 	 * moduli yield fields.  The primality of the modulus will not be checked, so
 	 * it is the programmer's responsibility to supply a prime modulus if a field is
 	 * wanted.
-	 * These specializations allow the \ref{UnparametricField} template class to be
-	 * used to wrap NTL's <tt>zz_p</tt> class as a LinBox field.
+	 * These specializations allow the \ref UnparametricField template class to be
+	 * used to wrap NTL's <code>zz_p</code> class as a LinBox field.
 	 * Uses nice trick for mod p via floating point.
 	\ingroup field
 	 */

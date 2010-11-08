@@ -72,7 +72,7 @@ class Eliminator
 
 	/** Constructor
 	 * @param F Field over which to operate
-	 * @param traits @ref{SolverTraits} structure describing user
+	 * @param traits @ref SolverTraits structure describing user
 	 *               options for the solver 
 	 */
 	Eliminator (const Field &F, unsigned int N);

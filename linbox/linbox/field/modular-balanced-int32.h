@@ -37,6 +37,7 @@
 #include "linbox/util/field-axpy.h"
 #include "linbox/util/debug.h"
 #include "linbox/field/field-traits.h"
+#include "linbox/field/modular-int32.h"
 
 #ifndef LINBOX_MAX_INT
 #define LINBOX_MAX_INT 2147483647
@@ -581,7 +582,7 @@ namespace LinBox
 	};
 }
 
-#include "linbox/randiter/modular.h"
+#include "linbox/randiter/modular-balanced.h"
 #endif //__LINBOX_modular_balanced_int32_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */

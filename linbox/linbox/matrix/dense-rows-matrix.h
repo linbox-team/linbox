@@ -24,10 +24,10 @@
 namespace LinBox
 {
 
-/** Dense row-wise matrix container
+/** @brief Dense row-wise matrix container
  *
  * This class implements a dense matrix, storing the data as a vector of vectors
- * of the given type, in the same manner as @ref{SparseMatrixBase}. It provides
+ * of the given type, in the same manner as @ref SparseMatrixBase. It provides
  * only row iterators.
  *
  * @param Vector Row vector type
@@ -110,7 +110,7 @@ class DenseRowsMatrix
 	 * Setting the entry to 0 will remove it from the matrix
 	 * @param i Row index of entry
 	 * @param j Column index of entry
-	 * @value Value of the new entry
+	 * @param value Value of the new entry
 	 */
 	void setEntry (size_t i, size_t j, const Element &value)
 		{ _A[i][j] = value; }

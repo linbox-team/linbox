@@ -26,7 +26,7 @@
 #include <vector>
 #include <queue>
 
-#include "linbox/field/modular-balanced-int.h"
+#include "linbox/field/modular-balanced-int32.h"
 
 #include "test-common.h"
 #include "test-generic.h"

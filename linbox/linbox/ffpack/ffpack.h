@@ -172,7 +172,7 @@ public:
  	 * @param Q column permutation of the LQUP decomposition of A
 	 * @param B Right/Left hand side matrix. Initially stores B, finally stores the solution X.
 	 * @param ldb leading dimension of B
-	 * @info Succes of the computation: 0 if successfull, >0 if system is inconsistent
+	 * @param info Success of the computation: 0 if successfull, >0 if system is inconsistent
 	 */
 	template <class Field>
 	static void
@@ -182,7 +182,8 @@ public:
 		typename Field::Element *A, const size_t lda,
 		const size_t *P, const size_t *Q,
 		typename Field::Element *B, const size_t ldb,
-		int * info){
+		int * info)
+	{
 
 		static typename Field::Element zero, one, mone;
 		F.init (zero, 0.0);
@@ -481,7 +482,7 @@ public:
  	 * @param Q column permutation of the LQUP decomposition of A
 	 * @param B Right/Left hand side matrix. Initially contains B, finally contains the solution X.
 	 * @param ldb leading dimension of B
-	 * @info Success of the computation: 0 if successfull, >0 if system is inconsistent
+	 * @param info Success of the computation: 0 if successfull, >0 if system is inconsistent
  	 * @return the rank of the system
  	 * 
 	 * Solve the system A X = B or X A = B.

@@ -73,7 +73,7 @@ namespace LinBox
 	    public:
 
 		/** @name Common Object Interface for a LinBox Field.
-		 * These methods are required of all \ref{LinBox} fields.
+		 * These methods are required of all \ref LinBox fields.
 		 */
 		//@{
     
@@ -590,23 +590,23 @@ namespace LinBox
 		//@} Common Object Interface
     
 		/** @name Implementation-Specific Methods.
-		 * These methods are not required of all \ref{LinBox Fields}
+		 * These methods are not required of all \ref LinBox\ Fields
 		 * and are included only for this implementation of the archetype.
 		 */
 		//@{
 
 		/** Constructor.
-		 * Constructs field from pointer to \ref{FieldAbstract} and its
+		 * Constructs field from pointer to \ref FieldAbstract and its
 		 * encapsulated element and random element generator.
 		 * Not part of the interface.
 		 * Creates new copies of field, element, and random iterator generator
 		 * objects in dynamic memory.
-		 * @param  field_ptr pointer to \ref{FieldAbstract}.
-		 * @param  elem_ptr  pointer to \ref{ElementAbstract}, which is the
-		 *                    encapsulated element of \ref{FieldAbstract}.
-		 * @param  randIter_ptr  pointer to \ref{RandIterAbstract}, which is the
+		 * @param  field_ptr pointer to \ref FieldAbstract.
+		 * @param  elem_ptr  pointer to \ref ElementAbstract, which is the
+		 *                    encapsulated element of \ref FieldAbstract.
+		 * @param  randIter_ptr  pointer to \ref RandIterAbstract, which is the
 		 *                        encapsulated random iterator generator
-		 *                        of \ref{FieldAbstract}.
+		 *                        of \ref FieldAbstract.
 		 */
 		FieldArchetype (FieldAbstract    *field_ptr,
 				 ElementAbstract  *elem_ptr,
@@ -620,7 +620,7 @@ namespace LinBox
     
 		/** Constructor.
 		 * Constructs field from ANYTHING matching the interface
-		 * using the enveloppe as a \ref{FieldAbstract} and its
+		 * using the enveloppe as a \ref FieldAbstract and its
 		 * encapsulated element and random element generator if needed.
 		 * @param  field_ptr pointer to field matching the interface
 		 * @param  elem_ptr  pointer to element matching the interface

@@ -61,21 +61,21 @@ namespace LinBox
 
 		VectorFraction<Ring>                  lastCertificate;
 
-		/* Constructor from a rationalSolver
-		 * @param rs  , a rationalSolver
+		/*! Constructor from a rationalSolver
+		 * @param rs  a rationalSolver
 		 */
 		DiophantineSolver (QSolver& rs) :
 			_rationalSolver(rs), _R(rs.getRing()), lastCertificate(_R, 0) {
 			_R.init(_rone, 1);
 		};
 
-		/** Solve a linear system Ax=b over quotient field of a ring
+		/** Solve a linear system \c Ax=b over quotient field of a ring
 		 * 
-		 * @param A        , Matrix of linear system
-		 * @param x        , Vector in which to store solution
-		 * @param b        , Right-hand side of system
-		 * @param maxPrimes, maximum number of moduli to try
-		 * @param level    , level of certification to be used
+		 * @param A        Matrix of linear system
+		 * @param x        Vector in which to store solution
+		 * @param b        Right-hand side of system
+		 * @param maxPrimes maximum number of moduli to try
+		 * @param level    level of certification to be used
 		 *
 		 * @return status of solution. if (return != SS_FAILED), and (level >= SL_LASVEGAS), solution is guaranteed correct.
 		 *   SS_FAILED - all primes used were bad
@@ -86,13 +86,13 @@ namespace LinBox
 		SolverReturnStatus solve(Vector1& x, Integer& den, const IMatrix& A, const Vector2& b, const int maxPrimes = DEFAULT_MAXPRIMES, 
 					 const SolverLevel level = SL_DEFAULT);
 
-		/** Find a random solution of the general linear system Ax=b over quotient field of a ring.
+		/** Find a random solution of the general linear system \c Ax=b over quotient field of a ring.
 		 * 
-		 * @param A        , Matrix of linear system
-		 * @param x        , Vector in which to store solution
-		 * @param b        , Right-hand side of system
-		 * @param maxPrimes, maximum number of moduli to try
-		 * @param level    , level of certification to be used
+		 * @param A        Matrix of linear system
+		 * @param x        Vector in which to store solution
+		 * @param b        Right-hand side of system
+		 * @param maxPrimes maximum number of moduli to try
+		 * @param level    level of certification to be used
 		 *
 		 * @return status of solution. if (return != SS_FAILED), and (level >= SL_LASVEGAS), solution is guaranteed correct.
 		 *   SS_FAILED - all primes used were bad
@@ -104,13 +104,13 @@ namespace LinBox
 					       const SolverLevel level = SL_DEFAULT);
  
 		/** 
-		 * Find a solution of the linear system Ax=b whose denominator (when written as an integer vector over a single denom) is minimal.
+		 * Find a solution of the linear system \c Ax=b whose denominator (when written as an integer vector over a single denom) is minimal.
 		 *
-		 * @param A        , Matrix of linear system
-		 * @param x        , Vector in which to store solution
-		 * @param b        , Right-hand side of system
-		 * @param maxPrimes, maximum number of moduli to try
-		 * @param level    , level of certification to be used
+		 * @param A        Matrix of linear system
+		 * @param x        Vector in which to store solution
+		 * @param b        Right-hand side of system
+		 * @param maxPrimes maximum number of moduli to try
+		 * @param level     level of certification to be used
 		 *
 		 * @return status of solution. if (return != SS_FAILED) and (level >= SL_LASVEGAS), solution is guaranteed correct
 		 *                             if (return == SS_OK) and (level >= SL_LASVEGAS), solution is guaranteed minimal.

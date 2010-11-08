@@ -29,8 +29,8 @@ namespace LinBox
 {
 	/** FieldAXPY object.
 	 *
-	 * This class is used to wrap the operation y = y + a * x. It acts as an
-	 * accumulator for y.
+	 * This class is used to wrap the operation <code>y = y + a * x</code>. It acts as an
+	 * accumulator for \c y.
 	 *
 	 * Through the use of template specialization, objects of this type can
 	 * be used to speed up vector dot product operations. In particular, for
@@ -38,12 +38,12 @@ namespace LinBox
 	 * expensive. In many cases, this can be postponed until the end of the
 	 * dot product operation, thus vastly improving performance.
 	 *
-	 * This object is constructed from the field object F and a field
+	 * This object is constructed from the field object \c F and a field
 	 * element a which it stores and thus can use several times.  The use of
 	 * an object instead of a static variable to store the element a makes
 	 * this method thread-safe.
 	 *
-	 * @param Field \Ref{LinBox} {@link Fields field}
+	 * @param Field \ref LinBox @link Fields field@endlink
 	 */
 	template <class Field>
 	class FieldAXPY 

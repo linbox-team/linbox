@@ -157,7 +157,7 @@ namespace LinBox
 	 
 		/** @name Implementation-Specific Methods.
 		 * These methods are not required of all 
-		 * \Ref{LinBox Random field element generators}
+		 * \ref LinBox\ Random\ field\ element\ generators
 		 * and are included only for this implementation of the archetype.
 		 */
 		//@{

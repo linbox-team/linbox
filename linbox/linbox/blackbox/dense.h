@@ -44,6 +44,9 @@
 #include <linbox/blackbox/blackbox_parallel.h>
 #endif
 
+/** @file blackbox/dense.h
+ */
+
 namespace LinBox
 {
 
@@ -100,7 +103,7 @@ class DenseMatrix : public BlackboxInterface, public DenseMatrixBase<typename _F
 	 * @param  F the field of entries; passed so that arithmetic may be done on elements. 
 	 * @param  m  row dimension
 	 * @param  n  column dimension
-	 * @para iter, random iterator
+	 * @param iter random iterator
 	 */
 	template<class RandIter>
 	DenseMatrix (const Field &F, size_t m, size_t n, const RandIter &iter)
@@ -142,13 +145,13 @@ class DenseMatrix : public BlackboxInterface, public DenseMatrixBase<typename _F
 
 	/** Constructor from a DenseMatrixBase. Copies all matrix data.
 	 * @param F Field over which this matrix' arithmetic will be.
-	 * @param M This will contain a complete copy of \ref{DenseMatrixBase} M.
+	 * @param M This will contain a complete copy of \ref DenseMatrixBase M.
 	 */
 	DenseMatrix (const Field &F, DenseMatrixBase<Element> &M)
 		: DenseMatrixBase<Element> (M), _F (F), _MD (F), _AT (*this)
 	{}
 
-	/// Copies {\it all} matrix data.
+	/// Copies <i>all</i> matrix data.
 	DenseMatrix (const DenseMatrix &M)
 		: DenseMatrixBase<Element> (M), _F (M._F), _MD (M._F), _AT (*this)
 	{}
@@ -338,8 +341,8 @@ struct MatrixTraits< const DenseMatrix<Field> >
 };
 
 /** Dense matrix factory
-  * This class ingerits \ref{BlackboxFactory} and provides a method for using a
-  * \ref{DenseMatrixBase} object with integer or rational data type as input to
+  * This class ingerits \ref BlackboxFactory and provides a method for using a
+  * \ref DenseMatrixBase object with integer or rational data type as input to
   * the high-level intger and rational solutions functions.
   */
 

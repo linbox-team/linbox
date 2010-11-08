@@ -25,10 +25,12 @@
 namespace LinBox 
 {
 
-//	/** @name Solvers
-//	 * @brief Solving linear system Ax = b over the field F.
-//	 */
-//	//@{
+#if 0
+	/** @name Solvers
+	 * @brief Solving linear system Ax = b over the field F.
+	 */
+	@{
+#endif
 
 	/*
 	// for specialization on method.
@@ -48,10 +50,10 @@ namespace LinBox
 	 * consistent and singular, it returns a random solution. Repeated
 	 * calls to this function can give a complete description of the
 	 * solution manifold. If the system is inconsistent and the
-	 * \Ref{SolverTraits} structure supplied requests certification of
+	 * \ref SolverTraits structure supplied requests certification of
 	 * inconsistency, it fills in the certificate of
 	 * inconsistency. Otherwise, it runs through the number of iterations
-	 * specified in @code{traits} and throws a \Ref{SolveFailed} exception
+	 * specified in \c traits and throws a \ref SolveFailed exception
 	 * if it cannot find a solution.
 	 *
 	 * This specialization uses Wiedemann's algorithm and is the default.
@@ -61,7 +63,7 @@ namespace LinBox
 	 * @param b Right-hand side
 	 * @param u Vector in which to store certificate of inconsistency, if required
 	 * @param F Field over which to perform computations
-	 * @param traits \Ref{SolverTraits} structure with user-specified parameters
+	 * @param traits \ref SolverTraits structure with user-specified parameters
 	 * @return Reference to solution vector
 	 */
 
@@ -123,9 +125,9 @@ namespace LinBox
 	 * it in the vector x. If the system is consistent and singular, it returns a
 	 * random solution. Repeated calls to this function can give a complete
 	 * description of the solution manifold. If the system is inconsistent and the
-	 * \Ref{SolverTraits} structure has result checking turned on, it runs through
-	 * the number of iterations specified in @code{traits} and throws a
-	 * \Ref{SolveFailed} exception if it cannot find a solution.
+	 * \ref SolverTraits  structure has result checking turned on, it runs through
+	 * the number of iterations specified in \c traits and throws a
+	 * \ref SolveFailed  exception if it cannot find a solution.
 	 *
 	 * This specialization uses the Lanczos algorithm.
 	 *
@@ -133,7 +135,7 @@ namespace LinBox
 	 * @param x Place to store solution vector
 	 * @param b Right-hand side
 	 * @param F Field over which to perform computations
-	 * @param traits \Ref{SolverTraits} structure with user-specified parameters
+	 * @param traits \ref SolverTraits  structure with user-specified parameters
 	 * @return Reference to solution vector
 	 */
 
@@ -155,9 +157,9 @@ namespace LinBox
 	 * it in the vector x. If the system is consistent and singular, it returns a
 	 * random solution. Repeated calls to this function can give a complete
 	 * description of the solution manifold. If the system is inconsistent and the
-	 * \Ref{SolverTraits} structure has result checking turned on, it runs through
-	 * the number of iterations specified in @code{traits} and throws a
-	 * \Ref{SolveFailed} exception if it cannot find a solution.
+	 * \ref SolverTraits structure has result checking turned on, it runs through
+	 * the number of iterations specified in \c traits and throws a
+	 * \ref SolveFailed exception if it cannot find a solution.
 	 *
 	 * This specialization uses the block Lanczos algorithm.
 	 *
@@ -165,7 +167,7 @@ namespace LinBox
 	 * @param x Place to store solution vector
 	 * @param b Right-hand side
 	 * @param F Field over which to perform computations
-	 * @param traits \Ref{SolverTraits} structure with user-specified parameters
+	 * @param traits \ref SolverTraits structure with user-specified parameters
 	 * @return Reference to solution vector
 	 */
 
@@ -188,17 +190,17 @@ namespace LinBox
 	 * it in the vector x. If the system is consistent and singular, it returns a
 	 * random solution. Repeated calls to this function can give a complete
 	 * description of the solution manifold. If the system is inconsistent and the
-	 * \Ref{SolverTraits} structure supplied requests certification of
-	 * inconsistency, it throws an \Ref{InconsistentSystem} exception, which
+	 * \ref SolverTraits  structure supplied requests certification of
+	 * inconsistency, it throws an \ref InconsistentSystem exception, which
 	 * includes a certificate of inconsistency. Otherwise, it runs through the
-	 * number of iterations specified in @code{traits} and throws a
-	 * \Ref{SolveFailed} exception if it cannot find a solution.
+	 * number of iterations specified in \p traits and throws a
+	 * \ref SolveFailed  exception if it cannot find a solution.
 	 *
 	 * @param A Black box matrix of the system
 	 * @param x Place to store solution vector
 	 * @param b Right-hand side
 	 * @param F Field over which to perform computations
-	 * @param traits \Ref{SolverTraits} structure with user-specified parameters
+	 * @param traits \ref SolverTraits  structure with user-specified parameters
 	 * @return Reference to solution vector
 	 */
 
@@ -216,13 +218,13 @@ namespace LinBox
 
 	/** Enumeration for results of next solver.
 	 *
-	 * SOLVE_SUCCESSFUL - System solution was succesful, @code{x} holds the solution
+	 * SOLVE_SUCCESSFUL - System solution was succesful, \c x holds the solution
 	 * vector 
-	 * SOLVE_INCONSISTENT - System was inconsistent, @code{u} holds the certificate
-	 * of inconsistency and @code{x} is untouched
+	 * SOLVE_INCONSISTENT - System was inconsistent, \c u holds the certificate
+	 * of inconsistency and \c x is untouched
 	 * SOLVE_FAILED - Neither a system solution nor a certificate of inconsistency
-	 * could be obtained before the maximum number of trials elapsed. Both @code{x}
-	 * and @code{u} are untouched.
+	 * could be obtained before the maximum number of trials elapsed. Both \c x
+	 * and \c u are untouched.
 	 */
 
 	enum SolveResult {
@@ -231,8 +233,8 @@ namespace LinBox
 
 	/** Solve Ax=b over field F, returning consistency indicator
 	 *
-	 * This is a variant of @code{solve} that does not throw any exceptions unless
-	 * the user makes an error. It returns a \Ref{SolveResult} enum indicating
+	 * This is a variant of \c solve that does not throw any exceptions unless
+	 * the user makes an error. It returns a \ref SolveResult  enum indicating
 	 * whether the solve operation was successful, the system was inconsistent, or
 	 * the solve operation failed. The certificate of inconsistency, if requested,
 	 * is stored in a reference parameter supplied to this variant.
@@ -242,8 +244,8 @@ namespace LinBox
 	 * @param b Right-hand side
 	 * @param u Place to store certificate of inconsistency
 	 * @param F Field over which to perform computations
-	 * @param traits \Ref{SolverTraits} structure with user-specified parameters
-	 * @return \Ref{SolveResult} indicating whether the solve operation was
+	 * @param traits \ref SolverTraits  structure with user-specified parameters
+	 * @return \ref SolveResult indicating whether the solve operation was
 	 * successful
 	 */
 

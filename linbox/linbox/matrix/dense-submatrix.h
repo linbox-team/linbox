@@ -43,9 +43,9 @@
 namespace LinBox
 {
 
-/** Submatrix of a dense matrix
+/** @brief Submatrix of a dense matrix
  *
- * This matrix type conforms to the same interface as @ref{DenseMatrixBase},
+ * This matrix type conforms to the same interface as @ref DenseMatrixBase,
  * except that you cannot resize it. It represents a submatrix of a dense
  * matrix. Upon construction, one can freely manipulate the entries in the
  * DenseSubmatrix, and the corresponding entries in the underlying
@@ -92,8 +92,8 @@ class DenseSubmatrix
 	 */
 	DenseSubmatrix () :_M(NULL) {}
 
-	/** Constructor from an existing @ref{DenseMatrixBase} and dimensions
-	 * \param M Pointer to @ref{DenseMatrixBase} of which to construct submatrix
+	/** Constructor from an existing @ref DenseMatrixBase  and dimensions
+	 * \param M Pointer to @ref DenseMatrixBase of which to construct submatrix
 	 * \param row Starting row
 	 * \param col Starting column
 	 * \param rowdim Row dimension
@@ -105,8 +105,8 @@ class DenseSubmatrix
 			size_t rowdim,
 			size_t coldim);
 
-	/** Constructor from an existing @ref{DenseMatrixBase} 
-	 * \param M Pointer to @ref{DenseMatrixBase} of which to construct submatrix
+	/** Constructor from an existing @ref DenseMatrixBase 
+	 * \param M Pointer to @ref DenseMatrixBase of which to construct submatrix
 	 */
 	DenseSubmatrix (DenseMatrixBase<Element> &M);
 

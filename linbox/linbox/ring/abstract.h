@@ -42,7 +42,7 @@ namespace LinBox
 	/** \brief Abstract ring base class.
 	\ingroup ring 
 
-	 * Found in the file \URL{linbox/ring/abstract.h}.
+	 * Found in the file \sa{linbox/ring/abstract.h}.
 	 * Abstract base class used to implement the ring archetype to minimize
 	 * code bloat.  All public member functions of this class are purely
 	 * virtual and must be implemented by all derived classes.
@@ -66,7 +66,7 @@ namespace LinBox
 		typedef FieldAbstract::RandIter RandIter;
 		/** @name Object Management
 		 * There are no public constructors for this class.
-		 * It should only be used in tandem with \Ref{FieldArchetype}.
+		 * It should only be used in tandem with \ref FieldArchetype.
 		 */
 		//@{
 

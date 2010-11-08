@@ -35,10 +35,10 @@ LinBox ring for use in integer matrix computation, see pid-integers.h or ntl-ZZ.
 	typedef signed __LINBOX_INT8 int8;
 	typedef signed __LINBOX_INT16 int16;
 
-	/** \memo This is a representation of 32 bit ints, usually equivalent to `int'.
+	/**  This is a representation of 32 bit ints, usually equivalent to \c int.
 	 *
-	 * The use of `int32' ensures you are working with 
-	 * 32 bit signed ints, [-2^31..2^31).  Similarly, int8, int16, and int64 are defined.
+	 * The use of \p int32 ensures you are working with 
+	 * 32 bit signed ints, \f$[-2^{31}\dots2^{31})\f$.  Similarly, \ref int8, \ref int16, and \ref int64 are defined.
 	 */
 	typedef signed __LINBOX_INT32 int32;
 

@@ -148,7 +148,7 @@ class MatrixArchetype
 	/* N.B. A matrix type may omit either one, but not both, of the
 	 * following two iterator types. If one type is omitted, then certain
 	 * restrictions on matrix-matrix arithmetic apply; see
-	 * @ref{MatrixDomain}
+	 * @ref MatrixDomain 
 	 */
 
 	/** @name Column of rows iterator

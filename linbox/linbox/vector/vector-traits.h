@@ -132,7 +132,7 @@ namespace LinBox
 	 * but it cannot usually do this.  For example, the vector_category
 	 * type is not defined in STL types, so this must be done through 
 	 * template specialization.
-	 * @param Vector \Ref{LinBox} dense or sparse vector.
+	 * @param Vector \ref LinBox  dense or sparse vector.
 	 */
 	template <class Vector> struct VectorTraits
 	{

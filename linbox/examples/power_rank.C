@@ -21,10 +21,10 @@
  *   <http://www.gnu.org/licenses/>.
  */
 
-/** \file examples/power-rank.C
-\brief Rank of sparse matrix over Z or Zp.
-\ingroup examples
-*/
+/** \file examples/power_rank.C
+  \brief Rank of sparse matrix over Z or Zp.
+  \ingroup examples
+  */
 #include "linbox/linbox-config.h"
 
 #include <iostream>

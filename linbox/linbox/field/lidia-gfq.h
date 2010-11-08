@@ -58,8 +58,8 @@ namespace LinBox
 
 	/** @brief defines the  Galois Field GF(p<sup>k</sup>).
 
-	* Inherits from galois\_field of LiDIA.
-	 *  p must be prime.
+	* Inherits from \c galois_field of \ref LiDIA.
+	 * @pre \p p must be prime.
 	\ingroup field
 	 */
 	class LidiaGfq  : public LiDIA::galois_field, public FieldInterface 

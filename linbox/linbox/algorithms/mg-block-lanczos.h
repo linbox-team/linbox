@@ -40,11 +40,11 @@ namespace LinBox
 
 /** \brief Block Lanczos iteration
  *
- * This is a blocked version of the iteration given in @ref{LanczosSolver}. The
+ * This is a blocked version of the iteration given in @ref LanczosSolver. The
  * essential difference is that, rather than applying the black box $A$ to a
- * single vector $v$ during each iteration, the block box $A$ is applied to an
- * $n\times N$ matrix $V$ or, equivalently, to $N$ vectors
- * $v_1, \ldots, v_N$ Scalars in the original iteration become $N\times N$
+ * single vector \f$v\f$ during each iteration, the block box \f$A\f$ is applied to an
+ * \f$n\times N\f$ matrix \f$V\f$ or, equivalently, to $N$ vectors
+ * \f$v_1, \ldots, v_N\f$ Scalars in the original iteration become \f$N\times N\f$
  * matrices in the blocked version. The resulting iteration is a natural
  * extension of the basic theory of the original Lanczos iteration,
  * c.f. (Montgomery 1995). This has the advantage of more flexible
@@ -63,7 +63,7 @@ class MGBlockLanczosSolver
 
 	/** Constructor
 	 * @param F Field over which to operate
-	 * @param traits @ref{SolverTraits} structure describing user
+	 * @param traits @ref SolverTraits  structure describing user
 	 *               options for the solver 
 	 */
 	MGBlockLanczosSolver (const Field &F, const BlockLanczosTraits &traits)
@@ -75,7 +75,7 @@ class MGBlockLanczosSolver
 
 	/** Constructor with a random iterator
 	 * @param F Field over which to operate
-	 * @param traits @ref{SolverTraits} structure describing user
+	 * @param traits @ref SolverTraits  structure describing user
 	 *               options for the solver 
 	 * @param r Random iterator to use for randomization
 	 */

@@ -84,14 +84,14 @@ template<class RatCRABase, class RatRecon = RReconstruction<PID_integer, Classic
             resulting from the Chinese remainder process on sufficiently many primes to meet the 
             termination condition.
 			
-            \parameter F - Function object of two arguments, F(r, p), given prime p it outputs residue(s) r.
-            This loop may be parallelized.  F must be reentrant, thread safe.
-            For example, F may be returning the coefficients of the minimal polynomial of a matrix mod p.
-            Warning - we won't detect bad primes.
+            \param F - Function object of two arguments, <code>F(r, p)</code>, given prime \p p it outputs residue(s) \p r.
+            This loop may be parallelized.  \p F must be reentrant, thread safe.
+            For example, \p F may be returning the coefficients of the minimal polynomial of a matrix mod p.
+            @warning - we won't detect bad primes.
 			
-            \parameter genprime - RandIter object for generating primes.
-            \result num - the rational numerator
-            \result den - the rational denominator
+            \param genprime - RandIter object for generating primes.
+            \param[out] num - the rational numerator
+            \param[out] den - the rational denominator
             */
         template<class Function, class RandPrimeIterator>
         Integer & operator() (Integer& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime) {

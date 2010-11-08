@@ -44,7 +44,7 @@ namespace LinBox
 	/** \brief field base class.
 	\ingroup field
 
-	 * Found in the file \URL{linbox/field/abstract.h}.
+	 * Found in the file \sa{linbox/field/abstract.h}.
 	 * Abstract base class used to implement the field archetype to minimize
 	 * code bloat.  All public member functions of this class are purely
 	 * virtual and must be implemented by all derived classes.
@@ -67,7 +67,7 @@ namespace LinBox
  
 		/** @name Object Management
 		 * There are no public constructors for this class.
-		 * It should only be used in tandem with \ref{FieldArchetype}.
+		 * It should only be used in tandem with \ref FieldArchetype.
 		 */
 		//@{
 

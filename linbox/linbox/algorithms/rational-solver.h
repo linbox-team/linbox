@@ -114,15 +114,15 @@ namespace LinBox {// LinBox
  	class RationalSolver {
 
 	public:
-		/** \brief Solve a linear system Ax=b over quotient field of a ring		 
+		/** \brief Solve a linear system \c Ax=b over quotient field of a ring		 
 		 *         giving a random solution if the system is singular and consistent.
 		 *         giving the unique solution if the system is non-singular.
 		 *
-		 * @param num  , Vector of numerators of the solution
-		 * @param den  , The common denominator. 1/den * num is the rational solution of Ax = b.
-		 * @param A    , Matrix of linear system
-		 * @param b    , Right-hand side of system
-		 * @param maxPrimes , maximum number of moduli to try
+		 * @param num  Vector of numerators of the solution
+		 * @param den  The common denominator. 1/den * num is the rational solution of \c Ax=b.
+		 * @param A    Matrix of linear system
+		 * @param b    Right-hand side of system
+		 * @param maxPrimes maximum number of moduli to try
 		 *
 		 * @return status of solution
 		 */
@@ -130,28 +130,28 @@ namespace LinBox {// LinBox
 		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,const bool, int maxPrimes = DEFAULT_MAXPRIMES) const;
     
 		
-		/** \brief  Solve a nonsingular linear system Ax=b over quotient field of a ring.
+		/** \brief  Solve a nonsingular linear system \c Ax=b over quotient field of a ring.
 		 *          giving the unique solution of the system.
 		 *
-		 * @param num  , Vector of numerators of the solution
-		 * @param den  , The common denominator. 1/den * num is the rational solution of Ax = b.
-		 * @param A   , Matrix of linear system
-		 * @param b   , Right-hand side of system
-		 * @param maxPrimes , maximum number of moduli to try
+		 * @param num  Vector of numerators of the solution
+		 * @param den  The common denominator. 1/den * num is the rational solution of \c Ax=b.
+		 * @param A   Matrix of linear system
+		 * @param b   Right-hand side of system
+		 * @param maxPrimes maximum number of moduli to try
 		 *
 		 * @return status of solution
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
 		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;         
 		
-		/** \brief Solve a singular linear system Ax=b over quotient field of a ring.
+		/** \brief Solve a singular linear system \c Ax=b over quotient field of a ring.
 		 *         giving a random solution if the system is singular and consistent.
 		 *
-		 * @param num  , Vector of numerators of the solution
-		 * @param den  , The common denominator. 1/den * num is the rational solution of Ax = b.
-		 * @param A   , Matrix of linear system
-		 * @param b   , Right-hand side of system
-		 * @param maxPrimes , maximum number of moduli to try
+		 * @param num  Vector of numerators of the solution
+		 * @param den  The common denominator. 1/den * num is the rational solution of \c Ax=b.
+		 * @param A   Matrix of linear system
+		 * @param b   Right-hand side of system
+		 * @param maxPrimes maximum number of moduli to try
 		 *
 		 * @return status of solution
 		 */	
@@ -229,8 +229,8 @@ namespace LinBox {// LinBox
 	public:
 
 		/** Constructor
-		 * @param r   , a Ring, set by default
-		 * @param rp  , a RandomPrime generator, set by default		 
+		 * @param r   a Ring, set by default
+		 * @param rp  a RandomPrime generator, set by default		 
 		 */
 		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE), const WiedemannTraits& traits=WiedemannTraits()) : 
 			_R(r), _genprime(rp), _traits(traits) {
@@ -242,9 +242,9 @@ namespace LinBox {// LinBox
 		}
     
 		/**  Constructor with a prime
-		 * @param p   , a Prime
-		 * @param r   , a Ring, set by default
-		 * @param rp  , a RandomPrime generator, set by default		 
+		 * @param p   a Prime
+		 * @param r   a Ring, set by default
+		 * @param rp  a RandomPrime generator, set by default		 
 		 */
 		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE), 
 				const WiedemannTraits& traits=WiedemannTraits()) : 
@@ -409,9 +409,9 @@ namespace LinBox {// LinBox
 #endif
 	public:
 
-		/* Constructor
-		 * @param r   , a Ring, set by default
-		 * @param rp  , a RandomPrime generator, set by default		 
+		/*! Constructor
+		 * @param r   a Ring, set by default
+		 * @param rp  a RandomPrime generator, set by default		 
 		 */
 		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE), const BlockWiedemannTraits& traits=BlockWiedemannTraits()) : 
 			_R(r), _genprime(rp), _traits(traits){
@@ -422,10 +422,10 @@ namespace LinBox {// LinBox
 #endif
 		}
     
-		/* Constructor with a prime
-		 * @param p   , a Prime
-		 * @param r   , a Ring, set by default
-		 * @param rp  , a RandomPrime generator, set by default		 
+		/*! Constructor with a prime
+		 * @param p   a Prime
+		 * @param r   a Ring, set by default
+		 * @param rp  a RandomPrime generator, set by default		 
 		 */
 		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE), 
 				const BlockWiedemannTraits& traits=BlockWiedemannTraits()) : 
@@ -588,8 +588,8 @@ namespace LinBox {// LinBox
 	public:
 		
 		/** Constructor
-		 * @param r   , a Ring, set by default
-		 * @param rp  , a RandomPrime generator, set by default		 
+		 * @param r   a Ring, set by default
+		 * @param rp  a RandomPrime generator, set by default		 
 		 */
 		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) : 
 			lastCertificate(r, 0), _genprime(rp), _R(r) 
@@ -602,9 +602,9 @@ namespace LinBox {// LinBox
     
 		
 		/** Constructor, trying the prime p first
-		 * @param p   , a Prime
-		 * @param r   , a Ring, set by default
-		 * @param rp  , a RandomPrime generator, set by default		 
+		 * @param p a Prime
+		 * @param r a Ring, set by default
+		 * @param rp a RandomPrime generator, set by default		 
 		 */
 		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) : 
 			lastCertificate(r, 0), _genprime(rp), _prime(p), _R(r) 
@@ -615,14 +615,14 @@ namespace LinBox {// LinBox
 		}
     
 		
-		/** Solve a linear system Ax=b over quotient field of a ring
+		/** Solve a linear system \c Ax=b over quotient field of a ring
 		 * 
-		 * @param num  , Vector of numerators of the solution
-		 * @param den  , The common denominator. 1/den * num is the rational solution of Ax = b.
-		 * @param A        , Matrix of linear system
-		 * @param b        , Right-hand side of system
+		 * @param num Vector of numerators of the solution
+		 * @param den  The common denominator. 1/den * num is the rational solution of \c Ax=b.
+		 * @param A        Matrix of linear system
+		 * @param b        Right-hand side of system
 		 * @param maxPrimes, maximum number of moduli to try
-		 * @param level    , level of certification to be used
+		 * @param level    level of certification to be used
 		 *
 		 * @return status of solution. if (return != SS_FAILED), and (level >= SL_LASVEGAS), solution is guaranteed correct.
 		 *   SS_FAILED - all primes used were bad
@@ -640,55 +640,55 @@ namespace LinBox {// LinBox
 			return solve (num, den, A, b, false, maxPrimes, level);
 		}
 
-		/** Solve a nonsingular, square linear system Ax=b over quotient field of a ring
+		/** Solve a nonsingular, square linear system \c Ax=b over quotient field of a ring
 		 * 
-		 * @param num  , Vector of numerators of the solution
-		 * @param den  , The common denominator. 1/den * num is the rational solution of Ax = b.
-		 * @param A        , Matrix of linear system (it must be square)
-		 * @param b        , Right-hand side of system
-		 * @param maxPrimes, maximum number of moduli to try
+		 * @param num   Vector of numerators of the solution
+		 * @param den   The common denominator. <code>1/den * num</code> is the rational solution of <code>Ax = b</code>.
+		 * @param A         Matrix of linear system (it must be square)
+		 * @param b         Right-hand side of system
+		 * @param maxPrimes maximum number of moduli to try
 		 *
 		 * @return status of solution. 
-		 *   SS_FAILED - all primes used were bad
-		 *   SS_OK - solution found, guaranteed correct. 
-		 *   SS_SINGULAR - system appreared singular mod all primes. 
+		 *   \c SS_FAILED - all primes used were bad
+		 *   \c SS_OK - solution found, guaranteed correct. 
+		 *   \c SS_SINGULAR - system appreared singular mod all primes. 
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
 		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, bool = false, 
 						    int maxPrimes = DEFAULT_MAXPRIMES) const;
 
-		/** Solve a general rectangular linear system Ax=b over quotient field of a ring. 
+		/** Solve a general rectangular linear system \c Ax=b over quotient field of a ring. 
 		 *  If A is known to be square and nonsingular, calling solveNonsingular is more efficient.
 		 * 
-		 * @param num  , Vector of numerators of the solution
-		 * @param den  , The common denominator. 1/den * num is the rational solution of Ax = b.
-		 * @param A        , Matrix of linear system
-		 * @param b        , Right-hand side of system
-		 * @param maxPrimes, maximum number of moduli to try
-		 * @param level    , level of certification to be used
+		 * @param num   Vector of numerators of the solution
+		 * @param den   The common denominator. <code>1/den * num</code> is the rational solution of <code>Ax = b</code>.
+		 * @param A         Matrix of linear system
+		 * @param b         Right-hand side of system
+		 * @param maxPrimes maximum number of moduli to try
+		 * @param level     level of certification to be used
 		 *
-		 * @return status of solution. if (return != SS_FAILED), and (level >= SL_LASVEGAS), solution is guaranteed correct.
-		 *   SS_FAILED - all primes used were bad
-		 *   SS_OK - solution found. 
-		 *   SS_INCONSISTENT - system appreared inconsistent. certificate is in lastCertificate if (level >= SL_CERTIFIED)
+		 * @return status of solution. if <code>(return != SS_FAILED)</code>, and <code>(level >= SL_LASVEGAS)</code>, solution is guaranteed correct.
+		 *   \c SS_FAILED - all primes used were bad
+		 *   \c SS_OK - solution found. 
+		 *   \c SS_INCONSISTENT - system appreared inconsistent. certificate is in \p lastCertificate if <code>(level >= SL_CERTIFIED)</code>
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
 		SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, 
 						 int maxPrimes = DEFAULT_MAXPRIMES, const SolverLevel level = SL_DEFAULT) const;
 
-		/** Find a random solution of the general linear system Ax=b over quotient field of a ring.
+		/** Find a random solution of the general linear system  \c Ax=b over quotient field of a ring.
 		 * 
-		 * @param num  , Vector of numerators of the solution
-		 * @param den  , The common denominator. 1/den * num is the rational solution of Ax = b.
-		 * @param A        , Matrix of linear system
-		 * @param b        , Right-hand side of system
-		 * @param maxPrimes, maximum number of moduli to try
-		 * @param level    , level of certification to be used
+		 * @param num   Vector of numerators of the solution
+		 * @param den   The common denominator. <code>1/den * num</code> is the rational solution of <code>Ax = b</code>.
+		 * @param A         Matrix of linear system
+		 * @param b         Right-hand side of system
+		 * @param maxPrimes maximum number of moduli to try
+		 * @param level     level of certification to be used
 		 *
-		 * @return status of solution. if (return != SS_FAILED), and (level >= SL_LASVEGAS), solution is guaranteed correct.
-		 *   SS_FAILED - all primes used were bad
-		 *   SS_OK - solution found. 
-		 *   SS_INCONSISTENT - system appreared inconsistent. certificate is in lastCertificate if (level >= SL_CERTIFIED)
+		 * @return status of solution. if <code>(return != SS_FAILED)</code>, and <code>(level >= SL_LASVEGAS)</code>, solution is guaranteed correct.
+		 *   \c SS_FAILED - all primes used were bad
+		 *   \c SS_OK - solution found. 
+		 *   \c SS_INCONSISTENT - system appreared inconsistent. certificate is in lastCertificate if <code>(level >= SL_CERTIFIED)</code>
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
 		SolverReturnStatus findRandomSolution(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, 
@@ -697,15 +697,15 @@ namespace LinBox {// LinBox
 		/** Big solving routine to perform random solving and certificate generation.
 		 * Same arguments and return as findRandomSolution, except
 		 *
-		 * @param num  , Vector of numerators of the solution
-		 * @param den  , The common denominator. 1/den * num is the rational solution of Ax = b.
-		 * @param randomSolution,  parameter to determine whether to randomize or not (since solveSingular calls this function as well)
-		 * @param makeMinDenomCert,  determines whether a partial certificate for the minimal denominator of a rational solution is made
+		 * @param num  Vector of numerators of the solution
+		 * @param den  The common denominator. <code>1/den * num</code> is the rational solution of <code>Ax = b</code>.
+		 * @param randomSolution  parameter to determine whether to randomize or not (since solveSingular calls this function as well)
+		 * @param makeMinDenomCert  determines whether a partial certificate for the minimal denominator of a rational solution is made
 		 *
-		 * When (randomSolution == true && makeMinDenomCert == true), 
-		 *   If (level == SL_MONTECARLO) this function has the same effect as calling findRandomSolution.
-		 *   If (level >= SL_LASVEGAS && return == SS_OK), lastCertifiedDenFactor contains a certified factor of the min-solution's denominator.
-		 *   If (level >= SL_CERTIFIED && return == SS_OK), lastZBNumer and lastCertificate are updated as well.
+		 * When <code>(randomSolution == true && makeMinDenomCert == true)</code>, 
+		 *   If <code>(level == SL_MONTECARLO)</code> this function has the same effect as calling findRandomSolution.
+		 *   If <code>(level >= SL_LASVEGAS && return == SS_OK)</code>, \c lastCertifiedDenFactor contains a certified factor of the min-solution's denominator.
+		 *   If <code>(level >= SL_CERTIFIED && return == SS_OK)</code>, \c lastZBNumer and \c lastCertificate are updated as well.
 		 *
 		 */
 		template <class IMatrix, class Vector1, class Vector2>	
@@ -947,8 +947,8 @@ namespace LinBox {// LinBox
 		
 
 		/** Constructor
-		 * @param r   , a Ring, set by default
-		 * @param rp  , a RandomPrime generator, set by default		 
+		 * @param r   a Ring, set by default
+		 * @param rp  a RandomPrime generator, set by default		 
 		 */
 		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) : 
 			 _genprime(rp), _R(r) 
@@ -958,9 +958,9 @@ namespace LinBox {// LinBox
     
 		
 		/** Constructor, trying the prime p first
-		 * @param p   , a Prime
-		 * @param r   , a Ring, set by default
-		 * @param rp  , a RandomPrime generator, set by default		 
+		 * @param p   a Prime
+		 * @param r   a Ring, set by default
+		 * @param rp  a RandomPrime generator, set by default		 
 		 */
 		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) : 
 			_genprime(rp), _prime(p), _R(r) {}
@@ -994,8 +994,8 @@ namespace LinBox {// LinBox
 		
 
 		/** Constructor
-		 * @param r   , a Ring, set by default
-		 * @param rp  , a RandomPrime generator, set by default		 
+		 * @param r   a Ring, set by default
+		 * @param rp  a RandomPrime generator, set by default		 
 		 */
 		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) : 
 			 _genprime(rp), _R(r) 
@@ -1005,9 +1005,9 @@ namespace LinBox {// LinBox
     
 		
 		/** Constructor, trying the prime p first
-		 * @param p   , a Prime
-		 * @param r   , a Ring, set by default
-		 * @param rp  , a RandomPrime generator, set by default		 
+		 * @param p   a Prime
+		 * @param r   a Ring, set by default
+		 * @param rp  a RandomPrime generator, set by default		 
 		 */
 		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) : 
 			_genprime(rp), _prime(p), _R(r) {}
