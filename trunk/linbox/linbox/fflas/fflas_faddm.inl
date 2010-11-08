@@ -1,4 +1,4 @@
-/* fflas/fflas_ftrmm.inl
+/* fflas/fflas_faddm.inl
  * Copyright (C) 2010 LinBox
  *
  * Written by Brice Boyer <Brice.Boyer@imag.fr>
@@ -6,6 +6,12 @@
  * See COPYING for license information.
  */
 
+#ifndef __LINBOX_fflas_faddm_H
+#define __LINBOX_fflas_faddm_H
+
+#ifdef __LINBOX_HAVE_SSE2
+#include <emmintrin.h>
+#endif
 
 /** faddm
  * A <- A+op(B)
@@ -256,7 +262,7 @@ inline void FFLAS::fsubm(const Field & F,
 #undef  __FFLAS__DOUBLE
 
 
-
+#endif // __LINBOX_fflas_faddm_H
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax
