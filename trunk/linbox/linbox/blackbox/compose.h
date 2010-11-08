@@ -52,9 +52,9 @@ namespace LinBox
 	 * This class, like the Black Box archetype from which it is derived, 
 	 * is templatized by the vector type to which the matrix is applied.  
 	 * Both constituent matrices must also use this same vector type.
-	 * For specification of the blackbox members see \ref{BlackboxArchetype}.
+	 * For specification of the blackbox members see \ref BlackboxArchetype.
 	 * 
-	 * {\bf Template parameter:} must meet the \ref{Vector} requirement.
+	 * <b> Template parameter:</b> must meet the \ref Vector requirement.
 \ingroup blackbox
 	 */
 	//@{
@@ -289,10 +289,10 @@ namespace LinBox
 			return y;
 		}
 
-		/*- Application of BlackBox matrix transpose.
-		 * y= transpose(A*B)*x.
-		 * Requires one vector conforming to the \ref{LinBox}
-		 * vector {@link Archetypes archetype}.
+		/*! Application of BlackBox matrix transpose.
+		 * <code>y= transpose(A*B)*x</code>.
+		 * Requires one vector conforming to the \ref LinBox
+		 * vector @link Archetypes archetype@endlink.
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
@@ -409,9 +409,9 @@ namespace LinBox
 	 * This class, like the Black Box archetype from which it is derived, 
 	 * is templatized by the vector type to which the matrix is applied.  
 	 * Both constituent matrices must also use this same vector type.
-	 * For specification of the blackbox members see \ref{BlackboxArchetype}.
+	 * For specification of the blackbox members see \ref BlackboxArchetype.
 	 * 
-	 * {\bf Template parameter:} must meet the \ref{Vector} requirement.
+	 * <b> Template parameter:</b> must meet the \ref Vector requirement.
 \ingroup blackbox
 	 */
 	//@{

@@ -23,12 +23,12 @@
 namespace LinBox
 {
 
-	/** \brief Blackbox of a difference: C := A - B, i.e. Cx = Ax - Bx.
+	/** \brief Blackbox of a difference: <code>C := A - B</code>, i.e. <code>Cx = Ax - Bx</code>.
 
-	 * {\bf Template parameters:} 
+	 * <b> Template parameters</b>:
 	 *     Field is the class of the entry domain, 
 	 *     Vector is a LinBox dense or sparse vector of field elements class.
-\ingroup blackbox
+	 \ingroup blackbox
 	 */
 	template <class _Blackbox1, class _Blackbox2>
 	class Dif : public BlackboxInterface 
@@ -58,7 +58,7 @@ namespace LinBox
 
 		/** Build this as A - B from blackbox pointers A_ptr, B_ptr.
 		 * The two matrices must have the same shape and be over the same field.
-		 * Their data {\it is} copied.  I don't know why.
+		 * Their data <i>is</i> copied.  I don't know why.
 		 */
 		Dif (const Blackbox1 *A_ptr, const Blackbox2 *B_ptr) : _A_ptr(A_ptr),_B_ptr(B_ptr)	       
 		{
@@ -91,9 +91,9 @@ namespace LinBox
 		}
 
 		/** Application of BlackBox matrix.
-		 * y= (A+B)*x.
-		 * Requires one vector conforming to the \ref{LinBox}
-		 * vector {@link Archetypes archetype}.
+		 * <code>y= (A+B)*x</code>.
+		 * Requires one vector conforming to the \ref LinBox
+		 * vector @link Archetypes archetype@endlink.
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
@@ -117,9 +117,9 @@ namespace LinBox
 		}
 
 		/** Application of BlackBox matrix transpose.
-		 * y= transpose(A+B)*x.
-		 * Requires one vector conforming to the \ref{LinBox}
-		 * vector {@link Archetypes archetype}.
+		 * <code>y= transpose(A+B)*x</code>.
+		 * Requires one vector conforming to the \ref LinBox
+		 * vector @link Archetypes archetype@endlink.
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input

@@ -40,7 +40,7 @@ namespace LinBox
 	 */
 	template <class Out, class Matrix, class In>
 	Out& BlackboxParallel(Out& out,const Matrix& m,
-			      const In& in, BBBase::BBType type): public BlackboxInterface;
+			      const In& in, BBBase::BBType type): public BlackboxInterface
 
 
 	template <class Out, class Matrix, class In>

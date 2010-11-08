@@ -31,9 +31,9 @@
 namespace LinBox
 {
 
-/** Matrix transpose
+/** @brief Matrix transpose
  * 
- * This class takes a matrix meeting the @ref{DenseMatrixBase} archetype and
+ * This class takes a matrix meeting the @ref DenseMatrixBase archetype and
  * switches the row and column iterators, giving the transpose of the original
  * matrix. It is generic with respect to the matrix given.
  * 
@@ -42,10 +42,10 @@ namespace LinBox
  * iterators, then the transpose object will have only column iterators, and
  * vice versa.
  * 
- * This class differs from @ref{Transpose} in that it constructs a full matrix
+ * This class differs from @ref Transpose in that it constructs a full matrix
  * representation, with row and/or column iterators. It does not include any
  * logic for matrix-vector products, and does not meet the
- * @ref{BlackboxArchetype} interface. Nor does it make such assumptions about
+ * @ref BlackboxArchetype interface. Nor does it make such assumptions about
  * the matrix given.
  *
  * This class gives a constant matrix as output. It provides no iterators for

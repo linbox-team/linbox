@@ -23,7 +23,7 @@ the directory and lists the classes declared in the directory's files.
 A class page discusses properties of the class beyond the 
 primary concept(s) that it implements and lists it's documented members.  
 
-Files containing a <tt>main()</tt>, such as in the examples directory,
+Files containing a <code>main()</code>, such as in the examples directory,
 have a file documentation and show up in the "File List" of the
 documentation giving easy access to the source code.
 
@@ -35,7 +35,7 @@ it's own page if it has one (directory, class, top-level function).
 The memo also reappears as the first line of the fuller documentation.
 
 Some attempt is made to indicate which parts are most relevant to the user.  
-{\small HOW?? }
+<small>HOW??</small>
 
 <h4> Developers: </h4>  
 Here are some rules of thumb about the documentation.
@@ -45,8 +45,8 @@ All other documentation is in the header files, a doc comment for each class and
 each documented member function.
 In tests/ and examples/ there is also some documentation in .C files.
 
-Each documentation comment begins with a <tt>\\brief</tt> memo.
-Keep in mind that the <tt>\\brief</tt> text appears with the name/signature line of the object
+Each documentation comment begins with a <code>\brief</code> memo.
+Keep in mind that the <code>\brief</code> text appears with the name/signature line of the object
 right above it.  Thus there is no need to restate information that is plain from the signature
 such as the C++ type of a parameter.  Try to make the brief memo succinctly state what the object
 is for.  The user, looking at the signature and brief memo, will be trying to decide whether,
@@ -55,29 +55,30 @@ documentation of it.  Try to help.
 
 The brief memo should not contain links to other pages.  
 Put desired links in the fuller 
-documentation, sometimes explicitly in "see also" section (using "\see"). 
+documentation, sometimes explicitly in "see also" section (using "\\see"). 
 Most particularly the brief memo should not
 contain links to the object of which this item is a member.  Such links
 become links to the current page and are a distraction and annoyance to the reader.
 
-Use documented parameter listings, with <tt>\\param arg - ...</tt>, when you have something significant to 
+Use documented parameter listings, with <code>\param arg - ...</code>, when you have something significant to 
 say about all or most of the parameters.  When you use \c \param for one parameter of a function,
-use it for all of them.  However, it is sometimes better to skip the <tt>\\param</tt> listing format 
+use it for all of them.  However, it is sometimes better to skip the <code>\param</code> listing format 
 and just discuss in sentences the parameters, their requirements on input, relation to each other, 
 and properties on output.  Use your judgement about this on a case by case basis.
 
 Members of archetypes should be thoroughly documented in the archetype and then 
 not documented at all in classes adhering to the archetype.  Just a reference to the 
-archetype documentation suffices.  See <tt>???</tt> for an example of this.
+archetype documentation suffices.  See <code>???</code> for an example of this.
 However, if the archetype function has a particular property concerning it's performance
 or use in this particular class, then document that special property.
 See Butterfly for an example of this.
 In many functions the return value is a reference to the first parameter, the primary output paramater.
 parameter and is rarely used in practice.  
-In this case, don't use both the <tt>\\param</tt> and the <tt>\\return</tt>.  Earlier I proposed not to use \c \return 
-at all in these situations.  Perhaps we should use <tt> \\return arg1 - ...</tt> in place of 
-<tt>\\param arg1 - ... </tt>.
-See <tt>???</tt> for an example of this.
+In this case, don't use both the <code>\param</code> and the <code>\return</code>.  Earlier I proposed not to use \c \return 
+at all in these situations.  Perhaps we should use <code> \return arg1 - ...</code> in place of 
+<code>\param arg1 - ... </code>.
+See <code>???</code> for an example of this.
 
 */
 
+// vim:syn=doxygen

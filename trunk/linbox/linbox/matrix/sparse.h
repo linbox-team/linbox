@@ -163,7 +163,7 @@ class SparseMatrixWriteHelper<_Element, Row, VectorCategories::SparseParallelVec
  * This class acts as a generic row-wise container for sparse
  * matrices. It is designed to provide various methods to access the
  * entries of the matrix. In particular, it does not meet the black box
- * archetype; see \ref{SparseMatrix} for an appropriate sparse matrix
+ * archetype; see \ref SparseMatrix for an appropriate sparse matrix
  * black box.
  *
  * @param Element Element type
@@ -261,7 +261,7 @@ class SparseMatrixBase
 	 * Setting the entry to 0 will remove it from the matrix
 	 * @param i Row index of entry
 	 * @param j Column index of entry
-	 * @value Value of the new entry
+	 * @param value Value of the new entry
 	 */
 	void setEntry (size_t i, size_t j, const Element &value);
 

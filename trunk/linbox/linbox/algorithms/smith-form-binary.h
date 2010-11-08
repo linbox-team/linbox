@@ -22,7 +22,7 @@
 #ifndef __LINBOX_smith_form_binary_H
 #define __LINBOX_smith_form_binary_H
 
-/*! @file smith.h
+/*! @file algorithms/smith-form-binary.h
  *  Implementation of EGV and EGV+ algorithm
  */
 

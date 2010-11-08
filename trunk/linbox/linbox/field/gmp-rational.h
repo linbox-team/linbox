@@ -62,7 +62,7 @@ class GMPRationalField : public FieldInterface
     public:
 
 	/** @name Common Object Interface for a LinBox Field.
-	 * These methods are required of all \ref{LinBox} fields.
+	 * These methods are required of all \ref LinBox fields.
 	 */
 	//@{
     

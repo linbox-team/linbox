@@ -36,18 +36,18 @@ namespace LinBox
 	 * \ingroup blackbox
 	 *
 	 * The matrix itself is not stored in memory.  Rather, its apply
-	 * methods use a vector of {@link Fields field} elements, which are 
+	 * methods use a vector of @link Fields field@endlink elements, which are 
 	 * used to "multiply" the matrix to a vector.
 	 * 
 	 * This class has three template parameters.  The first is the field in 
 	 * which the arithmetic is to be done.  The second is the type of 
-	 * \ref{LinBox} vector to which to apply the matrix.  The 
-	 * third is chosen be default to be the \ref{LinBox} vector trait
+	 * \ref LinBox vector to which to apply the matrix.  The 
+	 * third is chosen be default to be the \ref LinBox vector trait
 	 * of the vector.  This class is then specialized for dense and sparse 
 	 * vectors.
 	 *
-	 * @param Field \ref{LinBox} field
-	 * @param Vector \ref{LinBox} dense or sparse vector of field elements
+	 * @param Field \ref LinBox field
+	 * @param Vector \ref LinBox dense or sparse vector of field elements
 	 * @param Trait  Marker whether to use dense or sparse LinBox vector 
 	 *               implementation.  This is chosen by a default parameter 
 	 *               and partial template specialization.  */
@@ -87,8 +87,8 @@ namespace LinBox
 
 		/** Application of BlackBox matrix.
 		 * y= A*x.
-		 * Requires one vector conforming to the \ref{LinBox}
-		 * vector {@link Archetypes archetype}.
+		 * Requires one vector conforming to the \ref LinBox
+		 * vector @link Archetypes archetype@endlink.
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  y reference to vector into which to store the result
@@ -128,8 +128,8 @@ namespace LinBox
 
 		/** Application of BlackBox matrix transpose.
 		 * y= transpose(A)*x.
-		 * Requires one vector conforming to the \ref{LinBox}
-		 * vector {@link Archetypes archetype}.
+		 * Requires one vector conforming to the \ref LinBox
+		 * vector @link Archetypes archetype@endlink.
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input

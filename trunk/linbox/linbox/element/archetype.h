@@ -52,17 +52,17 @@ namespace LinBox
 	    public:
 
 		/** @name Common Object Interface for LinBox Field elements.
-		 * These methods are required of all \ref{LinBox} 
-		 * {@link Fields field} elements.
+		 * These methods are required of all \ref LinBox 
+		 * @link Fields field@endlink elements.
 		 */
 		//@{
 
 		/** Default constructor.
 		 * This constructor is required to allow 
-		 * {@link Fields field} elements to be primitive C++ types.
-		 * Because constructor does not know what {@link Fields field} 
+		 * @link Fields field@endlink elements to be primitive \c C++ types.
+		 * Because constructor does not know what @link Fields field@endlink 
 		 * the element belongs to, it cannot actually construct the element.
-		 * In this implementation, the constructor it sets {\tt \_elem\_ptr}
+		 * In this implementation, the constructor it sets \c _elem_ptr
 		 * to the null pointer.  Initialization of the element is done through
 		 * the field function init where the field is known.
 		 */
@@ -70,13 +70,13 @@ namespace LinBox
 
 		/** Copy constructor.
 		 * This constructor is required to allow 
-		 * {@link Fields field} elements to be primitive C++ types, 
+		 * @link Fields field@endlink elements to be primitive C++ types, 
 		 * and to allow field elements to be passed by value into 
 		 * functions.
-		 * Constructs {@link Fields field} element by copying the 
-		 * {@link Fields field} element.
+		 * Constructs @link Fields field@endlink element by copying the 
+		 * @link Fields field@endlink element.
 		 * In this implementation, this means copying the element to
-		 * which {\tt a.\_elem\_ptr} points.
+		 * which \c a._elem_ptr points.
 		 * @param  a field element.
 		 */
 		ElementArchetype (const ElementArchetype &a) 
@@ -89,14 +89,14 @@ namespace LinBox
 
 		/** Destructor.
 		 * In this implementation, this destroys element by deleting field 
-		 * element to which {\tt \_elem\_ptr} points.
+		 * element to which \c _elem_ptr points.
 		 */
 		~ElementArchetype () { if (_elem_ptr != 0) delete _elem_ptr; }
 
 		/** Assignment operator.
 		 * Assigns element a to element.  
 		 * In this implementation, this is done 
-		 * by copying field element to which {\tt \_elem\_ptr} points.
+		 * by copying field element to which \c _elem_ptr points.
 		 * @param  a field element.
 		 */
 		ElementArchetype &operator=(const ElementArchetype &a)
@@ -118,10 +118,10 @@ namespace LinBox
 		//@{
 
 		/** Constructor.
-		 * Constructs field element from pointer to \ref{ElementAbstract}
+		 * Constructs field element from pointer to \ref ElementAbstract
 		 * Not part of the interface.
 		 * Creates new copy of element object in dynamic memory.
-		 * @param  elem\_ptr  pointer to \ref{ElementAbstract}
+		 * @param  elem\_ptr  pointer to \ref ElementAbstract
 		 */
 		ElementArchetype (ElementAbstract *elem_ptr)
 			: _elem_ptr (elem_ptr->clone ()) {}
@@ -141,7 +141,7 @@ namespace LinBox
 		//@{
     
 		/** Pointer to parameterized field element.
-		 * Not part of the common object interface for \ref{LinBox} field elements.
+		 * Not part of the common object interface for \ref LinBox field elements.
 		 * Included to avoid code bloat.
 		 */
 		mutable ElementAbstract *_elem_ptr;

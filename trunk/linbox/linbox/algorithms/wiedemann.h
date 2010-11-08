@@ -209,7 +209,7 @@ class WiedemannSolver
 
 	/** Constructor
 	 * @param F Field over which to operate
-	 * @param traits @ref{SolverTraits} structure describing user
+	 * @param traits @ref SolverTraits  structure describing user
 	 *               options for the solver 
 	 */
 	WiedemannSolver (const Field &F, const WiedemannTraits &traits)
@@ -218,7 +218,7 @@ class WiedemannSolver
 
 	/** Constructor with a random iterator
 	 * @param F Field over which to operate
-	 * @param traits @ref{SolverTraits} structure describing user
+	 * @param traits @ref SolverTraits  structure describing user
 	 *               options for the solver 
 	 * @param r Random iterator to use for randomization
 	 */

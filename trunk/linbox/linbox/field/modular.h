@@ -279,7 +279,7 @@ namespace LinBox
             Element mone;
 
 		/*- @name Object Management
-		 * @brief see \ref{FieldArchetype} for member specs.
+		 * @brief see \ref FieldArchetype  for member specs.
 		 */
 		//@{
  
@@ -376,7 +376,7 @@ namespace LinBox
 
 		//@}  
 		/*- @name Arithmetic Operations
-		 * @brief see \ref{FieldArchetype} for member specs.
+		 * @brief see \ref FieldArchetype  for member specs.
 		 * x <- y op z; x <- op y
 		 * These operations require all elements, including x, to be initialized
 		 * before the operation is called.  Uninitialized field base elements will
@@ -511,7 +511,7 @@ namespace LinBox
 		//@} Arithmetic Operations
  
 		/*- @name Inplace Arithmetic Operations
-		 * @brief see \ref{FieldArchetype} for member specs.
+		 * @brief see \ref FieldArchetype  for member specs.
 		 * x <- x op y; x <- op x
 		 */
 		//@{

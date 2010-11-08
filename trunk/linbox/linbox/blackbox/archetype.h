@@ -40,14 +40,14 @@ namespace LinBox
 	 * Because of their use of virtual member funtions, these archetypes can be 
 	 * inefficient.
 	 *
-	 * @param Vector \ref{LinBox} dense or sparse vector of field elements
+	 * @param Vector \ref LinBox dense or sparse vector of field elements
 	 */
 
 	/*- 
 	@brief BlackBox base class and archetype 
 
 	This archetype is an abstract base class for blackbox matrix classes.
-	The key member functions are {\tt apply, applyTranspose, rowdim, coldim}.
+	The key member functions are \c apply, \c applyTranspose, \c rowdim, \c coldim}.
 	They are pure virtual, and hence are implemented in each child class.  
 	
 	Concrete classes inheriting from the archetype
@@ -62,13 +62,13 @@ namespace LinBox
 	may be compiled against any of these classes specifically or may be separately compiled
 	against the archetype.  Algorithms may also be written with a BlackboxArchetype parameter
 	and then called with an instance of a concrete blackbox class. 
-	In contrast with the situation for \ref{Field}s there is 
+	In contrast with the situation for \ref Field s there is 
 	negligible performance cost for separate compilation here.
 	
-	{\bf Template Parameter:} Vector - A type meeting the LinBox \ref{VectorArchetype} interface.
-	Vectors of this type are the normal arguments to {\tt apply} and {\tt applyTranspose}.
+	{\bf Template Parameter:} Vector - A type meeting the LinBox \ref VectorArchetype  interface.
+	Vectors of this type are the normal arguments to \c apply and \c applyTranspose.
 	
-	@see \ref{../archetypes} for general discussion of LinBox archetypes.
+	@see \ref ../archetypes  for general discussion of LinBox archetypes.
 	*/
 
 	/** \brief showing the member functions provided by all blackbox matrix classes.

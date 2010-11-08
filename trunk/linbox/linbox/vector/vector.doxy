@@ -2,19 +2,19 @@
 
   All LinBox dense vectors must implement the dense vector common 
   object interface as it is defined in the dense vector
-  {@link Archetypes archetype}.  It is basically the non-resizing subset 
-  of functionality of the STL vector<T> container.
+  @link Archetypes archetype@endlink.  It is basically the non-resizing subset 
+  of functionality of the STL <code>vector<T></code> container.
   For information on the STL vector, see SGI's 
-  \URL[Standard Template Library Programmer's Guide]{http://www.sgi.com/Technology/STL/}.
+  <a href=http://www.sgi.com/Technology/STL/>Standard Template Library Programmer's Guide]</a>.
 
 All LinBox sparse vectors must implement the sparse vector common
   object interface as it is defined in the sparse vector
-    {@link Archetypes archetype}.
+    @link Archetypes archetype@endlink.
 
 The LinBox sparse vector common object interface is the same as either
-  the STL sequence of pairs of {\tt size\_t} and a field element
-    or an STL unique and pair associative container.  (That is, an STL map
-	  without the operator[].)
+  the STL sequence of pairs of \c size_t and a field element
+    or an STL unique and pair associative container.  (That is, an STL \c map
+	  without the <code>operator[]</code>.)
 		    It is also always assumed that the entries in the sparse vector are in
 			  ascending order starting with the first index no less than zero.
 
@@ -25,4 +25,4 @@ The LinBox sparse vector common object interface is the same as either
   @see Archetypes
 
 */
-
+// vim:syn=doxygen

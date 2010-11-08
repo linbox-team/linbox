@@ -14,26 +14,26 @@ namespace LinBox
 {
 // LinBox Ring Interface
 /*
- * The LinBox {@link Rings ring} common object {@link Interfaces interface}.
+ * The LinBox @link Rings ring@endlink common object @link Interfaces interface@endlink.
  * The ring interface includes the following public members:
  *
- * Types: {\tt Element} and {\tt RandIter}.
+ * Types: \c Element and \c RandIter.
  *
  * Object management member functions:
  *   null constructor, copy constructor, destructor, assignment operator, 
- *   {\tt convert(), init(), assign(), characteristic(), cardinality()}.
+ *   \c convert(), \c init(), \c assign(), \c characteristic(),\c cardinality().
  *
  * Predicates on ring elements:
- *   {\tt areEqual(), isZero(), isOne()}.
+ *   \c areEqual(), \c isZero(), \c isOne().
  *
  * Basic arithmetic functions:
- *   {\tt axpy(), add(), neg(), sub(), mul(), inv(), div()}.
+ *   \c axpy(), \c add(), \c neg(), \c sub(), \c mul(), \c inv(), \c div().
  *
  * Inplace arithmetic functions:
- *   {\tt axpyin(), addin(), negin(), subin(), mulin(), invin(), divin()}.
+ *   \c axpyin(), \c addin(), \c negin(), \c subin(), \c mulin(), \c invin(), \c divin().
  *
  * I/O functions:
- *   {\tt read()} and {\tt write()} for I/O of the ring itself and for I/O of its elements.
+ *   \c read() and \c write() for I/O of the ring itself and for I/O of its elements.
  *
  * The ring archetype class is is the reference instantiation of this 
  * interface and contains the generic specifications of the member functions.
@@ -46,8 +46,9 @@ namespace LinBox
 /** 
  * @brief This ring base class exists solely to aid documentation organization.
 
- *  For the general ring member function documentation consult the {@link RingArchetype
- RingArchetype}. For specific properties of individual representations consult the specific ring classes.
+ *  For the general ring member function documentation consult the 
+ *  @link RingArchetype RingArchetype@endlink. For specific properties 
+ *  of individual representations consult the specific ring classes.
  */
   class RingInterface 
 {

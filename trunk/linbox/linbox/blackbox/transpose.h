@@ -47,7 +47,7 @@ namespace LinBox
 
 \ingroup blackbox
 
-	 * @param Vector \ref{LinBox} dense or sparse vector of field elements
+	 * @param Vector \ref LinBox dense or sparse vector of field elements
 	 */
 	template <class Blackbox>
 	class Transpose : public BlackboxInterface
@@ -96,9 +96,9 @@ namespace LinBox
                 };
             
 		/** Application of BlackBox matrix.
-		 * y= (A*B)*x.
-		 * Requires one vector conforming to the \ref{LinBox}
-		 * vector {@link Archetypes archetype}.
+		 * <code>y= (A*B)*x</code>.
+		 * Requires one vector conforming to the \ref LinBox
+		 * vector @link Archetypes archetype@endlink.
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
@@ -112,9 +112,9 @@ namespace LinBox
 
 
 		/** Application of BlackBox matrix transpose.
-		 * y= transpose(A*B)*x.
-		 * Requires one vector conforming to the \ref{LinBox}
-		 * vector {@link Archetypes archetype}.
+		 * <code>y= transpose(A*B)*x</code>.
+		 * Requires one vector conforming to the \ref LinBox
+		 * vector @link Archetypes archetype@endlink.
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
@@ -174,7 +174,7 @@ namespace LinBox
 
 \ingroup blackbox
 
-	 * @param Vector \ref{LinBox} dense or sparse vector of field elements
+	 * @param Vector \ref LinBox dense or sparse vector of field elements
 	 */
 	template <class Blackbox>
 	class TransposeOwner : public BlackboxInterface
@@ -234,9 +234,9 @@ namespace LinBox
 
  
 		/** Application of BlackBox matrix.
-		 * y= (A*B)*x.
-		 * Requires one vector conforming to the \ref{LinBox}
-		 * vector {@link Archetypes archetype}.
+		 * <code>y= (A*B)*x</code>.
+		 * Requires one vector conforming to the \ref LinBox
+		 * vector @link Archetypes archetype@endlink.
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
@@ -249,9 +249,9 @@ namespace LinBox
 
 
 		/** Application of BlackBox matrix transpose.
-		 * y= transpose(A*B)*x.
-		 * Requires one vector conforming to the \ref{LinBox}
-		 * vector {@link Archetypes archetype}.
+		 * <code>y= transpose(A*B)*x</code>.
+		 * Requires one vector conforming to the \ref LinBox
+		 * vector @link Archetypes archetype@endlink.
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input

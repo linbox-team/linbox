@@ -1,7 +1,6 @@
 /** @name tests	
 
-  @memo
-  These are correctness tests for LinBox components.
+  @memo These are correctness tests for LinBox components.
   @doc
   These are primarily to aid development but can also be used as 
   sanity checks and they contain some timing measurements.
@@ -14,3 +13,4 @@
   //@Include: *.C
   //@Include: *.cpp
 //@}
+// vim:syntax=doxygen

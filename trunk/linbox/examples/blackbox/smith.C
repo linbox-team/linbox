@@ -19,7 +19,7 @@
  */
 
 
-/** \file smith.C examples/blackbox/smith.C
+/** \file examples/blackbox/smith.C
   \brief mod m Smith form by elmination
 
   \author bds & zw

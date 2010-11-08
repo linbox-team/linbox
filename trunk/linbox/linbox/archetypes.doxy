@@ -55,7 +55,7 @@ In some cases,
 - Dense vector interface.  This is the interface for vectors to which blackboxes
     are applied (the vector of a matrix vector product). 
     This is simply the std::vector<Elt> interface, where Elt is the element type of the field involved.
-    But we do not use the functionality concerning resizing vectors, {\tt resize, push_back}, etc.
+    But we do not use the functionality concerning resizing vectors, \c resize, \c push_back, etc.
     An example of a class meeting this interface is LinBox::SubVector .
 
 - Sparse vector interfaces.  We are experimenting with two or three

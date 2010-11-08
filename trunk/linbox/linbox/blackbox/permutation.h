@@ -52,7 +52,7 @@ namespace LinBox
 	/** \brief size is n.
 
         \ingroup blackbox
-        * @param Storage \ref{LinBox} dense or sparse vector of field elements
+        * @param Storage \ref LinBox dense or sparse vector of field elements
         */
     template<class _Field, class _Storage = __LINBOX_PERMUTATION_STORAGE >
     class Permutation : public  BlackboxInterface 
@@ -114,15 +114,15 @@ namespace LinBox
             // Destructor
         ~Permutation (void) {}
 
-            /* Application of BlackBox permutation matrix.
-             * y= P*x.
-             * Requires one vector conforming to the \ref{LinBox}
-             * vector {@link Archetypes archetype}.
+            /** Application of BlackBox permutation matrix.
+             * <code>y= P*x</code>.
+             * Requires one vector conforming to the \ref LinBox
+             * vector @link Archetypes archetype@endlink.
              * Required by abstract base class.
              * @return reference to vector y containing output.
              * @param  x constant reference to vector to contain input
              */
-            /// #y \leftarrow Px#.
+            /// \f$y \leftarrow Px\f$.
         template<class OutVector, class InVector>
         inline OutVector &apply (OutVector &y, const InVector &x) const
             {
@@ -139,15 +139,15 @@ namespace LinBox
                 return y;
             }
 
-            /* Application of BlackBox permutation matrix transpose.
-             * y= transpose(P)*x, equivalently y= P^-1*x
-             * Requires one vector conforming to the \ref{LinBox}
-             * vector {@link Archetypes archetype}.
+            /** Application of BlackBox permutation matrix transpose.
+             * <code>y= transpose(P)*x</code>, equivalently <code>y= P^-1*x</code>
+             * Requires one vector conforming to the \ref LinBox
+             * vector @link Archetypes archetype@endlink.
              * Required by abstract base class.
              * @return reference to vector y containing output.
              * @param  x constant reference to vector to contain input
              */
-            /// #y^T \leftarrow x^T P#.
+            /// \f$y^T \leftarrow x^T P\f$.
         template<class OutVector, class InVector>
         inline OutVector &applyTranspose (OutVector &y, const InVector &x) const
             {

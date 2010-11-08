@@ -42,15 +42,15 @@ class GMPRationalElement
     public:
 
 	/** @name Common Object Interface for LinBox Field elements.
-	 * These methods are required of all \ref{LinBox} 
-	 * {@link Fields field} elements.
+	 * These methods are required of all \ref LinBox 
+	 * @link Fields field@endlink elements.
 	 */
 	//@{
 
 	/** Default constructor.
 	 * This constructor is required to allow 
-	 * {@link Fields field} elements to be primitive C++ types.
-	 * Because constructor does not know what {@link Fields field} 
+	 * @link Fields field@endlink elements to be primitive C++ types.
+	 * Because constructor does not know what @link Fields field@endlink 
 	 * the element belongs to, it cannot actually construct the element.
 	 * In this implementation, the constructor it sets _elem_ptr
 	 * to the null pointer.  Initialization of the element is done through
@@ -60,11 +60,11 @@ class GMPRationalElement
 
 	/** Copy constructor.
 	 * This constructor is required to allow 
-	 * {@link Fields field} elements to be primitive C++ types, 
+	 * @link Fields field@endlink elements to be primitive C++ types, 
 	 * and to allow field elements to be passed by value into 
 	 * functions.
-	 * Constructs {@link Fields field} element by copying the 
-	 * {@link Fields field} element.
+	 * Constructs @link Fields field@endlink element by copying the 
+	 * @link Fields field@endlink element.
 	 * In this implementation, this means copying the element to
 	 * which a._elem_ptr points.
 	 * @param  a field element.
@@ -104,7 +104,7 @@ class GMPRationalElement
 	 * Constructs field element from an mpq_t
 	 * Not part of the interface.
 	 * Creates new copy of element object in dynamic memory.
-	 * @param  elem_ptr  pointer to \ref{ElementAbstract}
+	 * @param  elem_ptr  pointer to \ref ElementAbstract
 	 */
 	GMPRationalElement (mpq_t _rep) {
 		mpq_init (rep);
@@ -153,7 +153,7 @@ class GMPRationalElement
 	//@{
     
 	/** Pointer to parameterized field element.
-	 * Not part of the common object interface for \ref{LinBox} field elements.
+	 * Not part of the common object interface for \ref LinBox field elements.
 	 * Included to avoid code bloat.
 	 */
 	mutable mpq_t rep;

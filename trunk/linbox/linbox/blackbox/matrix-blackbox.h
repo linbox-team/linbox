@@ -25,9 +25,9 @@ namespace LinBox
 /** \brief Matrix black box
  *
 \ingroup blackbox
- * This class wraps a matrix meeting the @ref{MatrixArchetype} interface into a
- * black box meeting the @ref{BlackboxArchetype} interface. It uses
- * @ref{MatrixDomain} to implement @code{apply} and @code{applyTranspose}.
+ * This class wraps a matrix meeting the @ref MatrixArchetype  interface into a
+ * black box meeting the @ref BlackboxArchetype interface. It uses
+ * @ref MatrixDomain to implement \c apply and \c applyTranspose.
  */
 
 template <class _Field, class _Matrix, class _Vector = typename LinBox::Vector<_Field>::Dense>
@@ -42,8 +42,8 @@ class MatrixBlackbox : public BlackboxArchetype
 
 	/** Constructor.
 	 *
-	 * Builds a black box for the matrix given by @code{rep} over the field
-	 * @code{F} 
+	 * Builds a black box for the matrix given by \p rep over the field
+	 * \p F 
 	 *
 	 * @param  F  Field over which entries exist
 	 * @param  rep  Matrix from which to construct the black box
@@ -64,7 +64,7 @@ class MatrixBlackbox : public BlackboxArchetype
 
 	/** Constructor
 	 *
-	 * Builds a black box, using the vector stream @code{stream} to fill in
+	 * Builds a black box, using the vector stream \p stream to fill in
 	 * its entries
 	 *
 	 * @param  F  Field over which entries exist

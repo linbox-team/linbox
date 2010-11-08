@@ -42,7 +42,7 @@ class CekstvSwitchFactory;
 /** Butterfly switch object from preconditioner paper.
  * This is a switch predicate object that is applied
  * to two references to elements to switch them as needed 
- * by the \Ref{Butterfly Switching Network BlackBox Matrix Object}
+ * by the \ref Butterfly\ Switching\ Network\ BlackBox\ Matrix\ Object
  * following the exchange matrix introduced in "Efficient Matrix
  * Preconditioners for Black Box Linear Algebra" by Chen, Eberly, 
  * Kaltofen, Saunders, Turner, and Villard.

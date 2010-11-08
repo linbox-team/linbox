@@ -61,10 +61,10 @@ namespace LinBox
 			SINGULARITY_UNKNOWN, SINGULAR, NONSINGULAR
 		};
 
-		/** Which preconditioner to use to ensure generic rank profile
+		/** @brief Which preconditioner to use to ensure generic rank profile
 		 *
 		 * NO_PRECONDITIONER - Do not use any preconditioner
-		 * BUTTERFLY - Use a butterfly network, see @ref{Butterfly}
+		 * BUTTERFLY - Use a butterfly network, see @ref Butterfly 
 		 * SPARSE - Use a sparse preconditioner, c.f. (Mulders 2000)
 		 * TOEPLITZ - Use a Toeplitz preconditioner, c.f. (Kaltofen and Saunders
 		 * 1991)
@@ -176,11 +176,11 @@ namespace LinBox
 #endif
 
 
-		/** Manipulators
+		/** @brief Manipulators
 		 *
 		 * These functions allow on-the-fly modification of a SolverTraits
 		 * structure. Note that it is guaranteed that your SolverTraits
-		 * structure will not be modified during @ref{solve}.
+		 * structure will not be modified during @ref solve.
 		 */
 
 		void preconditioner (Preconditioner p) { _preconditioner = p; }

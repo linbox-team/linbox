@@ -30,13 +30,13 @@ namespace LinBox
 
 #if 0
 	template<class T, template <class T> class Container>
-		std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
-			for(typename Container<T>::const_iterator refs =  C.begin();
-					refs != C.end() ;
-					++refs )
-				o << (*refs) << " " ;
-			return o << std::endl;
-		}
+	std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
+		for(typename Container<T>::const_iterator refs =  C.begin();
+		    refs != C.end() ;
+		    ++refs )
+			o << (*refs) << " " ;
+		return o << std::endl;
+	}
 #endif
 
 
@@ -63,17 +63,18 @@ namespace LinBox
             resulting from the Chinese remainder process on sufficiently many primes to meet the 
             termination condition.
 			
-            \parameter F - Function object of two arguments, F(r, p), given prime p it outputs residue(s) r.
+            \param F - Function object of two arguments, F(r, p), given prime p it outputs residue(s) r.
             This loop may be parallelized.  F must be reentrant, thread safe.
             For example, F may be returning the coefficients of the minimal polynomial of a matrix mod p.
             Warning - we won't detect bad primes.
 			
-            \parameter genprime - RandIter object for generating primes.
-            \result num - the rational numerator
-            \result den - the rational denominator
+            \param genprime - RandIter object for generating primes.
+            \param[out] num - the rational numerator
+            \param[out] den - the rational denominator
             */
         template<class Function, class RandPrimeIterator>
-        Integer & operator() (Integer& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime) {
+        Integer & operator() (Integer& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime) 
+	{
             ++genprime;
             Domain D(*genprime); 
             DomainElement r; D.init(r);

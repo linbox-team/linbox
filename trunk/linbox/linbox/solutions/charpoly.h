@@ -246,7 +246,7 @@ namespace LinBox
 	 * elimination methods
 
 	 * @param P Polynomial where to store the result
-	 * @param A \ref{Blacbox} representing the matrix
+	 * @param A \ref Black-Box representing the matrix
 	 */
 
 
@@ -268,7 +268,7 @@ namespace LinBox
 	 * a blackBox.
 	 * 
 	 * @param P Polynomial where to store the result
-	 * @param A \ref{Blacbox} representing the matrix
+	 * @param A \ref Black-Box representing the matrix
 	 */
 	template < class Polynomial, class Blackbox/*, class Categorytag*/ >
 	Polynomial& charpoly (Polynomial                       & P, 

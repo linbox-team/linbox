@@ -44,7 +44,7 @@ namespace LinBox
          * This field is provided as a convenience in a few places.  
          * Use with caution because expression swell.
          *
-	 * This specialization allows the \ref{UnparametricField} template class to be
+	 * This specialization allows the \ref UnparametricField template class to be
 	 * used to wrap NTL's RR class as a LinBox field.
 	\ingroup field
 	 */

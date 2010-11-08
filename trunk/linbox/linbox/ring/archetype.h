@@ -49,10 +49,10 @@ namespace LinBox
 	 * \brief specification and archetypic instance for the ring interface 
 	\ingroup ring
 	 *
-	 * The \Ref{RingArchetype} and its encapsulated
-	 * element class contain pointers to the \Ref{RingAbstract}
+	 * The \ref RingArchetype and its encapsulated
+	 * element class contain pointers to the \ref RingAbstract
 	 * and its encapsulated ring element, respectively.
-	 * \Ref{RingAbstract} then uses virtual member functions to
+	 * \ref RingAbstract then uses virtual member functions to
 	 * define operations on its encapsulated ring element.  This ring 
 	 * element has no knowledge of the ring properties being used on it 
 	 * which means the ring object must supply these operations.
@@ -67,7 +67,7 @@ namespace LinBox
 	    public:
 
 		/** @name Common Object Interface for a LinBox Ring.
-		 * These methods are required of all \Ref{LinBox} rings.
+		 * These methods are required of all \ref LinBox rings.
 		 */
 		//@{
     
@@ -87,12 +87,12 @@ namespace LinBox
 		 * be passed by value into functions.
 		 *
 		 * In this implementation, this means copying the
-		 * ring to which {\tt F.\_ring\_ptr} points, the
-		 * element to which {\tt F.\_elem\_ptr} points, and the
+		 * ring to which \c F._ring_ptr points, the
+		 * element to which \c F._elem_ptr points, and the
 		 * random element generator to which
-		 * {\tt F.\_randIter\_ptr} points.
+		 * \c F._randIter_ptr points.
 		 *
-		 * @param F {\tt RingArchetype} object.
+		 * @param F \ref RingArchetype object.
 		 */
 	  RingArchetype (const RingArchetype &F) : FieldArchetype ( F )	{ }
     
@@ -100,8 +100,8 @@ namespace LinBox
 		 * Test if ring element is invertible.
 		 * This function assumes the ring element has already been
 		 * constructed and initialized.
-		 * In this implementation, this means the {\tt
-		 * \_elem\_ptr} of x exists and does not point to
+		 * In this implementation, this means the \c
+		 * _elem_ptr of x exists and does not point to
 		 * null.
 		 *
 		 * @return boolean true if equals zero, false if not.
@@ -115,8 +115,8 @@ namespace LinBox
 		 * This function assumes the ring element has already been
 		 * constructed and initialized.
 		 *
-		 * In this implementation, this means the {\tt
-		 * \_elem\_ptr} of x exists and does not point to
+		 * In this implementation, this means the \c
+		 * _elem_ptr of x exists and does not point to
 		 * null.
 		 *
 		 * @return boolean true if divides zero, false if not.
@@ -127,17 +127,17 @@ namespace LinBox
     
 
 		/** Constructor.
-		 * Constructs ring from pointer to \Ref{RingAbstract} and its
+		 * Constructs ring from pointer to \ref RingAbstract and its
 		 * encapsulated element and random element generator.
 		 * Not part of the interface.
 		 * Creates new copies of ring, element, and random iterator generator
 		 * objects in dynamic memory.
-		 * @param  ring\_ptr pointer to \Ref{RingAbstract}.
-		 * @param  elem\_ptr  pointer to \Ref{ElementAbstract}, which is the
-		 *                    encapsulated element of \Ref{RingAbstract}.
-		 * @param  randIter\_ptr  pointer to \Ref{RandIterAbstract}, which is the
+		 * @param  ring\_ptr pointer to \ref RingAbstract.
+		 * @param  elem\_ptr  pointer to \ref ElementAbstract, which is the
+		 *                    encapsulated element of \ref RingAbstract.
+		 * @param  randIter\_ptr  pointer to \ref RandIterAbstract, which is the
 		 *                        encapsulated random iterator generator
-		 *                        of \Ref{RingAbstract}.
+		 *                        of \ref RingAbstract.
 		 */
 		RingArchetype (RingAbstract    *ring_ptr,
 				 ElementAbstract  *elem_ptr,
@@ -151,7 +151,7 @@ namespace LinBox
     
 		/** Constructor.
 		 * Constructs ring from ANYTHING matching the interface
-		 * using the enveloppe as a \Ref{RingAbstract} and its
+		 * using the enveloppe as a \ref RingAbstract and its
 		 * encapsulated element and random element generator if needed.
 		 * @param  ring\_ptr pointer to ring matching the interface
 		 * @param  elem\_ptr  pointer to element matching the interface

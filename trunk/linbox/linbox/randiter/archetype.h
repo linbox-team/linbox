@@ -51,7 +51,7 @@ namespace LinBox
 	    public:
     
 		/** @name Common Object Interface.
-		 * These methods are required of all \Ref{LinBox} field element generators.
+		 * These methods are required of all \ref LinBox field element generators.
 		 */
 		//@{
     
@@ -68,9 +68,9 @@ namespace LinBox
 		 * entire field.  A seed of zero means to use some
 		 * arbitrary seed for the generator.  In this
 		 * implementation, this means copying the field to
-		 * which {\tt F.\_field\_ptr} points, the element to
-		 * which {\tt F.\_elem\_ptr} points, and the random
-		 * element generator to which {\tt F.\_randIter\_ptr} points.
+		 * which <code>F._field_ptr</code> points, the element to
+		 * which <code>F._elem_ptr</code> points, and the random
+		 * element generator to which <code>F._randIter_ptr</code> points.
 		 *
 		 * @param F LinBox field archetype object in which to do arithmetic
 		 * @param size constant integer reference of sample size from which to 
@@ -89,7 +89,7 @@ namespace LinBox
 		 * This is required to allow generator objects to be passed by value
 		 * into functions.
 		 * In this implementation, this means copying the random field element
-		 * generator to which {\tt R.\_randIter\_ptr} points.
+		 * generator to which <code>R._randIter_ptr</code> points.
 		 * @param  R RandIterArchetype object.
 		 */
 		RandIterArchetype (const RandIterArchetype &R) 
@@ -98,11 +98,11 @@ namespace LinBox
 
 		/** Constructor.
 		 * Constructs RandIterArchetype  from ANYTHING matching the interface
-		 * using the enveloppe as a \Ref{FieldAbstract} and its
+		 * using the enveloppe as a \ref FieldAbstract and its
 		 * encapsulated element and random element generator if needed.
-		 * @param  field\_ptr pointer to field matching the interface
-		 * @param  elem\_ptr  pointer to element matching the interface
-		 * @param  randIter\_ptr  pointer to random matching the interface
+		 * @param  field_ptr pointer to field matching the interface
+		 * @param  elem_ptr  pointer to element matching the interface
+		 * @param  randIter_ptr  pointer to random matching the interface
 		 */
 		template<class Field_qcq>
 			RandIterArchetype (Field_qcq *f, 
@@ -117,7 +117,7 @@ namespace LinBox
 		 * This destructs the random field element generator
 		 * object.  In this implementation, this destroys the
 		 * generator by deleting the random generator object
-		 * to which {\tt \_randIter\_ptr} points.
+		 * to which \c _randIter_ptr points.
 		 */
 		~RandIterArchetype () 
 			{ delete _randIter_ptr; }
@@ -126,7 +126,7 @@ namespace LinBox
 		 *
 		 * Assigns RandIterArchetype object R to generator.
 		 * In this implementation, this means copying the
-		 * generator to which {\tt R.\_randIter\_ptr} points.
+		 * generator to which \c R._randIter_ptr points.
 		 *
 		 * @param  R RandIterArchetype object.
 		 */
@@ -154,16 +154,16 @@ namespace LinBox
     
 		/** @name Implementation-Specific Methods.
 		 * These methods are not required of all 
-		 * \Ref{LinBox Random field element generators}
+		 * \ref LinBox\ Random\ field\ element\ generators
 		 * and are included only for this implementation of the archetype.
 		 */
 		//@{
     
 		/** Constructor.
-		 * Constructs field from pointer to \Ref{RandIterAbstract}.
+		 * Constructs field from pointer to \ref RandIterAbstract.
 		 * Not part of the interface.
 		 * Creates new copies of random iterator generator object in dynamic memory.
-		 * @param  randIter_ptr  pointer to \Ref{RandIterAbstract}
+		 * @param  randIter_ptr  pointer to \ref RandIterAbstract 
 		 */
 		RandIterArchetype (RandIterAbstract* randIter_ptr)
 			: _randIter_ptr (randIter_ptr->clone ()) {}
@@ -202,7 +202,7 @@ namespace LinBox
 		 * classes derived from FieldAbstract and classes that aren't.
 		 * Should be called with the same argument to both parameters?
 		 * @param	trait	pointer to class not derived from FieldAbstract
-		 * @param	field\_ptr	pointer to class not derived from FieldAbstract
+		 * @param	field_ptr	pointer to class not derived from FieldAbstract
 		 */
 		template<class Field_qcq>
 		void constructor (void      *trait, 

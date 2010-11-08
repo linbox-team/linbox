@@ -84,7 +84,7 @@ namespace LinBox
 		//@{
  
 		/** Default constructor.
-		 * In this implementation, this means copying the field {\tt E.\_field}.
+		 * In this implementation, this means copying the field \c E._field.
 		 */
 		FieldEnvelope (void) {}
 
@@ -97,7 +97,7 @@ namespace LinBox
 		 * Constructs FieldEnvelope object by copying the field.
 		 * This is required to allow field objects to be passed by value
 		 * into functions.
-		 * In this implementation, this means copying the field {\tt E.\_field}.
+		 * In this implementation, this means copying the field \c E._field.
 		 * @param  E FieldEnvelope object.
 		 */
 		FieldEnvelope (const FieldEnvelope& E) : _field (E._field) {}

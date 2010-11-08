@@ -257,8 +257,8 @@ class SparseMatrix : public BlackboxInterface, public SparseMatrixBase<typename 
 };
 
 /** Sparse matrix factory
- * This class inherits \ref{BlackboxFactory} and provides a method for using a
- * \ref{SparseMatrixBase} object with integer or rational data type as input to
+ * This class inherits \ref BlackboxFactory and provides a method for using a
+ * \ref SparseMatrixBase object with integer or rational data type as input to
  * the high-level integer and rational solutions functions.
  */
 

@@ -53,7 +53,7 @@ namespace LinBox
                 -/ The "in" suffix indicates in place computation\\
                 -/ Without Ni, Nj, the SparseSeqMatrix parameter must be a vector of sparse 
                 row vectors, NOT storing any zero.\\
-                -/ Calls {@link rankinLinearPivoting rankinLinearPivoting} (by default) or {@link rankinNoReordering rankinNoReordering}
+                -/ Calls @link rankinLinearPivoting@endlink (by default) or @link rankinNoReordering@endlink
             */
             //@{
             ///     
@@ -88,7 +88,7 @@ namespace LinBox
                 -/ The "in" suffix indicates in place computation\\
                 -/ Without Ni, Nj, the SparseSeqMatrix parameter must be a vector of sparse 
                 row vectors, NOT storing any zero.\\
-                -/ Calls {@link LinearPivoting } (by default) or {@link NoReordering}
+                -/ Calls @link LinearPivoting@endlink (by default) or @link NoReordering@endlink
             */
             //@{
             ///     
@@ -128,8 +128,8 @@ namespace LinBox
                 [check details].
                 The computedet indicates whether the algorithm must compute the determionant as it goes
 
-                @ref [Jean-Guillaume Dumas and Gilles Villard, 
-                Computing the rank of sparse matrices over finite fields.
+                @see "[@ref Jean-Guillaume\ Dumas and @ref Gilles\ Villard, 
+                <i>Computing the rank of sparse matrices over finite fields.</i>
                 In Ganzha et~al. CASC'2002, pages 47--62.]
             */
 	template <class SparseSeqMatrix, class Perm>

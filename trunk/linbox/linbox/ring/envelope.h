@@ -53,7 +53,7 @@ namespace LinBox
 
 	This class implements all purely virtual member functions
 	 * of the abstract base class.  This class is used to wrap a
-	 * \Ref{LinBox}
+	 * \ref LinBox
 	 * ring so that it might be used with the Ring archetype.
 	 */
 	template <class Ring>
@@ -79,7 +79,7 @@ namespace LinBox
 		//@{
  
 		/** Default constructor.
-		 * In this implementation, this means copying the ring {\tt E.\_field}.
+		 * In this implementation, this means copying the ring \c E._field.
 		 */
 		RingEnvelope (void) {}
 
@@ -92,7 +92,7 @@ namespace LinBox
 		 * Constructs RingEnvelope object by copying the ring.
 		 * This is required to allow ring objects to be passed by value
 		 * into functions.
-		 * In this implementation, this means copying the ring {\tt E.\_field}.
+		 * In this implementation, this means copying the ring \c E._field.
 		 * @param  E RingEnvelope object.
 		 */
 		RingEnvelope (const RingEnvelope& E) : FieldEnvelope<Ring> (E._field) {}
