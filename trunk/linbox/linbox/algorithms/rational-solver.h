@@ -37,7 +37,8 @@
 //#define RSTIMING
 #define DEFAULT_PRIMESIZE 20 
 
-namespace LinBox {// LinBox
+namespace LinBox 
+{// LinBox
 
 	// bsd and mac problem
 #undef _R

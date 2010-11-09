@@ -33,7 +33,8 @@
 namespace LinBox 
 {
     
-    template<class Function, class Element> struct CRATemporaryVectorTrait {
+    template<class Function, class Element> struct CRATemporaryVectorTrait 
+    {
         typedef std::vector<Element> Type_t;
     };        
 
