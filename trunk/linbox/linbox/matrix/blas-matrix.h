@@ -106,7 +106,6 @@ namespace LinBox
 			createBlasMatrix(A, i0, j0, m, n, typename MatrixContainerTrait<Matrix>::Type());
 		}
 
-#if 0
 		template<class _Matrix, class _Field>
 		BlasMatrix (const _Matrix &A,  const _Field &F) 
 			: DenseSubmatrix<Element>( *(new DenseMatrixBase<Element> (A.rowdim(),A.coldim())),0,0,A.rowdim(),A.coldim() ), 
@@ -117,7 +116,6 @@ namespace LinBox
 			rebind<_Field>()(*this,A,F);
 
 		}
-#endif
 
 		
 		// Copy data according to blas container structure
