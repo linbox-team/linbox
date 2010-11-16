@@ -21,7 +21,7 @@
 #ifndef __LINBOX_matio_H
 #define __LINBOX_matio_H
 
-
+#include <cstring>
 #include <stdio.h>
 #include <stdlib.h>
 #include "linbox/fflas/fflas.h"
