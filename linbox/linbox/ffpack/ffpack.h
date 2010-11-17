@@ -1284,7 +1284,8 @@ public:
 	static size_t
 	ReducedRowEchelonForm (const Field& F, const size_t M, const size_t N,
 			       typename Field::Element * A, const size_t lda,
-			       size_t* P, size_t* Qt){
+			       size_t* P, size_t* Qt)
+	{
 		
 		typename Field::Element one, mone;
 		F.init (one, 1.0);
@@ -1332,24 +1333,29 @@ public:
 		const FFLAS_SIDE Side,
 		const FFLAS_TRANSPOSE Trans,
 		const size_t M, const int ibeg, const int iend,
-		typename Field::Element * A, const size_t lda, const size_t * P ){
+		typename Field::Element * A, const size_t lda, const size_t * P )
+	{
 		
 		if ( Side == FflasRight )
 			if ( Trans == FflasTrans ){
-				for ( size_t i=ibeg; i<(size_t) iend; ++i){
-					if ( P[i]> i )
-						fswap( F, M, 
-						       A + P[i]*1, lda, 
-						       A + i*1, lda );
-				}
+				for (size_t j = 0 ; j < M ; ++j)
+					for ( size_t i=ibeg; i<(size_t) iend; ++i){
+						if ( P[i]> i )
+							std::swap(A[P[i]+j*lda],A[i+j*lda]);
+//                                                        fswap( F, M, 
+//                                                               A + P[i]*1, lda, 
+//                                                               A + i*1, lda );
+					}
 			}
 			else{ // Trans == FflasNoTrans
-				for (int i=iend-1; i>=ibeg; --i){
-					if ( P[i]>(size_t)i ){
-						fswap( F, M, 
-						       A + P[i]*1, lda, 
-						       A + i*1, lda );
-					}
+				for (size_t j = 0 ; j < M ; ++j)
+					for (int i=iend-1; i>=ibeg; --i){
+						if ( P[i]>(size_t)i ){
+							std::swap(A[P[i]+j*lda],A[i+j*lda]);
+//                                                        fswap( F, M, 
+//                                                               A + P[i]*1, lda, 
+//                                                               A + i*1, lda );
+						}
 				}
 			}
 		else // Side == FflasLeft
