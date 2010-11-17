@@ -10,6 +10,7 @@
 
 #include "linbox/linbox-config.h"
 #include "linbox/fflas/fflas.h"
+#include "linbox/ffpack/ffpack.h"
 #include "linbox/integer.h" // for fflas on integers...
 
 //!@todo !
@@ -338,6 +339,89 @@ int test_ftrmm(const Field & F)
 	return err+eur ;
 }
 
+template<class Field>
+int test_applyP(const Field & F)
+{
+	srand(time(NULL));
+	size_t M    = random()%_LB_MAX_SZ ;
+	size_t N    = random()%_LB_MAX_SZ ; 
+	size_t lda  = random()%_LB_MAX_SZ+1 ; 
+	if (lda<N) std::swap(lda,N);
+
+#ifdef _LB_DEBUG
+	std::cout << "#M x N :"<< M << 'x' << N << std::endl; 
+	std::cout << "#lda x ldb :"<< lda << 'x' << ldb << std::endl; 
+#endif
+	typedef typename Field::Element Element;
+
+	Element * A = new Element[M*lda];
+	assert(A);
+	Element * B = new Element[M*lda];
+	assert(B);
+
+	typedef typename Field::RandIter RandIter;
+	RandIter G(F);
+	NonzeroRandIter<Field> Gn(F,G); 
+
+	/* init A,B,C and more...*/
+	for (size_t i = 0 ; i < M*lda ; ++i) G.random( *(A+i) ) ;
+	for (size_t i = 0 ; i < M*lda ; ++i)  *(B+i) = *(A+i) ;
+
+	size_t * P = new size_t[M] ;
+
+	size_t r = random()%M ;
+	for (size_t i = 0 ; i < r ; ++i){
+		P[i] = i + (size_t)(M-i)*( (std::max(0.,drand48()-1e-6)) ); // histoire de pas tomber sur 1...
+		//                if (P[i] == M) P[i]-- ;
+		assert(P[i] < M);
+	}
+
+	FFPACK::applyP(F,FFLAS::FflasLeft,FFLAS::FflasNoTrans,
+		       N, 0,r,
+		       A,lda,P);
+
+	FFPACK::applyP(F,FFLAS::FflasLeft,FFLAS::FflasTrans,
+		       N, 0,r,
+		       A,lda,P);
+	delete[] P ;
+	int err = 0 ;
+	for (size_t i = 0 ; i < M && !err ; ++i)
+		for (size_t j = 0 ; j < N && !err ; ++j)
+			if (!F.areEqual(*(A+i*lda+j),*(B+i*lda+j))) 
+				err = -1  ;
+	if (err)
+		std::cout << "row applyP failed" << std::endl;
+
+	size_t * Q = new size_t[N] ;
+
+	r = random()%N ;
+	for (size_t i = 0 ; i < r ; ++i){
+		Q[i] = i + (size_t)(N-i)*( std::max(0.,drand48()-1e-6)) ;
+		//                if (Q[i] == N) P[i]-- ;
+		assert(Q[i] < N);
+	}
+
+	FFPACK::applyP(F,FFLAS::FflasRight,FFLAS::FflasNoTrans,
+		       M, 0,r,
+		       A,lda,Q);
+
+	FFPACK::applyP(F,FFLAS::FflasRight,FFLAS::FflasTrans,
+		       M, 0,r,
+		       A,lda,Q);
+	delete[] Q ;
+
+	int eur = 0 ;
+	for (size_t i = 0 ; i < M && !eur ; ++i)
+		for (size_t j = 0 ; j < N && !eur ; ++j)
+			if (!F.areEqual(*(A+i*lda+j),*(B+i*lda+j))) 
+				err = -1  ;
+	if (eur)
+		std::cout << "col applyP failed" << std::endl;
+
+	return (err+eur);
+
+}
+
 int main() 
 {
 	//typedef ModularBalanced<float>  FieldF;
@@ -539,8 +623,31 @@ int main()
 #ifdef DEBUG
 	std::cout << "ftr(s/m)m  passed " << ret << "/" << tot << "tests" <<std::endl;
 #endif
+	(ret != tot)?(ret=-1):(ret=0) ;
+	int our = tot = 6*_LB_ITERS*2 ;
+#ifdef __LINBOX_HAVE_INT64
+	our = tot = tot+2*_LB_ITERS*2 ;
+#endif
 
-	return (ret!=tot) ;
+	for (size_t r = 0 ; r < _LB_ITERS ; ++r)
+	{
+		our+= test_applyP(FD);
+		our+= test_applyP(FD2);
+		our+= test_applyP(FI);
+		our+= test_applyP(FI2);
+		our+= test_applyP(FF);
+		our+= test_applyP(FF2);
+#ifdef __LINBOX_HAVE_INT64
+		our+= test_applyP(FU);
+		our+= test_applyP(FU2);
+#endif
+
+	}
+#ifdef DEBUG
+	std::cout << "applyP  passed " << our << "/" << tot << "tests" <<std::endl;
+#endif
+	(our != tot)?(our=-1):(our =0) ;
+	return (ret+our) ;
 
 }
 

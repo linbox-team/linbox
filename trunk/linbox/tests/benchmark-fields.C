@@ -18,7 +18,7 @@
 
 #include "linbox/field/modular.h"
 #include "linbox/field/modular-int32.h"
-#include "linbox/field/modular-int.h"
+//#include "linbox/field/modular-int.h"
 #include "linbox/field/modular-double.h"
 #include "linbox/field/field-traits.h"
 #include "linbox/vector/stream.h"
