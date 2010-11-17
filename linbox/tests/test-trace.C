@@ -16,7 +16,7 @@
 
 #include "test-common.h"
 
-#include "linbox/field/modular-int.h"
+#include "linbox/field/modular-int32.h"
 #include "linbox/solutions/trace.h"
 
 using namespace LinBox;
