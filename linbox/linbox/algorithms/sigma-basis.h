@@ -48,7 +48,8 @@ namespace LinBox {
 
 
 	template<class _Field>
-	class SigmaBasis {
+	class SigmaBasis 
+	{
 		
 	public:
 		typedef _Field                           Field;
@@ -553,7 +554,7 @@ namespace LinBox {
 #endif				
 				// Compute Discrepancy			
 				_BMD.mul(Discrepancy,SigmaBase[0],PowerSerie[k]);
-				for (size_t i=1;i<SigmaBase.size();i++){
+				for (size_t i=1;i<SigmaBase.size();++i){
 					_BMD.axpyin(Discrepancy,SigmaBase[i],PowerSerie[k-i]);
 				}
 #ifdef  _BM_TIMING

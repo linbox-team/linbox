@@ -158,7 +158,8 @@
 
 #ifndef __FFLAS__GENERIC
 template <>
-class FFLAS::Mjoin(ftrsm, Mjoin(__FFLAS__SIDE, Mjoin(__FFLAS__UPLO, Mjoin(__FFLAS__TRANS, __FFLAS__DIAG))))<__FFLAS__ELEMENT>{
+class FFLAS::Mjoin(ftrsm, Mjoin(__FFLAS__SIDE, Mjoin(__FFLAS__UPLO, Mjoin(__FFLAS__TRANS, __FFLAS__DIAG))))<__FFLAS__ELEMENT>
+{
 public:
 
 // TRSM with delayed updates: assumes input in Zp and ensures output in Zp.
@@ -167,7 +168,8 @@ template<class Field>
 void delayed (const Field& F, const size_t M, const size_t N,
 	      typename Field::Element * A, const size_t lda,
 	      typename Field::Element * B, const size_t ldb,
-	      const size_t nblas, size_t nbblocsblas) {
+	      const size_t nblas, size_t nbblocsblas) 
+{
 	
 	static typename Field::Element Mone;
 	static typename Field::Element one;
@@ -253,7 +255,8 @@ void delayed (const Field& F, const size_t M, const size_t N,
 template <class Field>
 void operator () (const Field& F, const size_t M, const size_t N,
 		  typename Field::Element * A, const size_t lda,
-		  typename Field::Element * B, const size_t ldb) {
+		  typename Field::Element * B, const size_t ldb) 
+{
 	
 	if (!M || !N ) return;
 		
@@ -263,13 +266,17 @@ void operator () (const Field& F, const size_t M, const size_t N,
 	
 	static __FFLAS__DOMAIN D;
 	size_t nblas = TRSMBound<Field> (F);
-
+#if 0
 	size_t ndel = DotProdBound (F, 0, one,
 #ifdef __FFLAS__DOUBLE
 				    FflasDouble);
 #else
 	                            FflasFloat);
 #endif
+#endif
+
+	size_t ndel = (size_t) F.AccBound(one);
+
         ndel = (ndel / nblas)*nblas;
 	size_t nsplit = ndel;
 	size_t nbblocsplit = (__FFLAS__Na-1) / nsplit;
@@ -300,13 +307,15 @@ void operator () (const Field& F, const size_t M, const size_t N,
 #else // __FFLAS__GENERIC
 
 template <class Element>
-class FFLAS::Mjoin(ftrsm, Mjoin(__FFLAS__SIDE, Mjoin(__FFLAS__UPLO, Mjoin(__FFLAS__TRANS, __FFLAS__DIAG)))) {
+class FFLAS::Mjoin(ftrsm, Mjoin(__FFLAS__SIDE, Mjoin(__FFLAS__UPLO, Mjoin(__FFLAS__TRANS, __FFLAS__DIAG)))) 
+{
 public:
 
 template<class Field>
 void operator()	(const Field& F, const size_t M, const size_t N,
 		 typename Field::Element * A, const size_t lda,
-		 typename Field::Element * B, const size_t ldb) {
+		 typename Field::Element * B, const size_t ldb) 
+{
 	
 	static typename Field::Element Mone;
 	static typename Field::Element one;

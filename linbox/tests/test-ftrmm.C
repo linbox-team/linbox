@@ -40,35 +40,36 @@ int test_ftrmm(const Field & F)
 {
 	srand(time(NULL));
 	size_t M    = random()%_LB_MAX_SZ ;
-	size_t N    = random()%_LB_MAX_SZ ; // B is MxN in a ldb*cols table
+	size_t N    = random()%_LB_MAX_SZ ; // B is MxN in a ldb*rows table
 	size_t ldb  = random()%_LB_MAX_SZ+1 ;
 	size_t lda  = random()%_LB_MAX_SZ+1 ; 
-	if (ldb<N) std::swap(ldb,N);
+	while (ldb<N || ldb<M) ldb = random()%_LB_MAX_SZ;
 
-	size_t Ldim = M; // A is MxM or NxN in a lda x cols table
-	if (Side == FFLAS::FflasRight) Ldim = N ;
+	size_t Ldim = M; // A is MxM or NxN in a lda x rows table
+	if (Side == FFLAS::FflasRight) Ldim = N ; // A = N x lda, else A is M x lda.
 	while (lda<Ldim)  lda  = random()%_LB_MAX_SZ ; 
 
-	size_t cols = std::max(Ldim,M)+3; 
+	size_t rows = std::max(N,M)+3; 
 
 #ifdef _LB_DEBUG
 	std::cout << "#M x N :"<< M << 'x' << N << std::endl; 
 	std::cout << "#lda x ldb :"<< lda << 'x' << ldb << std::endl; 
 #endif
 	assert(N    <= ldb);
+	assert(M    <= ldb);
 	assert(Ldim <= lda);
-	assert(cols >= Ldim);
-	assert(cols >= M);
+	assert(rows >= Ldim);
+	assert(rows >= M);
 
 	typedef typename Field::Element Element;
 
-	Element * A = new Element[cols*lda];
+	Element * A = new Element[rows*lda];
 	assert(A);
-	Element * B = new Element[cols*ldb];
+	Element * B = new Element[rows*ldb];
 	assert(B);
 	Element * C = new Element[M*N] ; // le résultat, le vrai, le bon.
 	assert(C);
-	Element * D = new Element[cols*ldb] ; // backup de B
+	Element * D = new Element[rows*ldb] ; // backup de B
 	assert(D);
 
 	typedef typename Field::RandIter RandIter;
@@ -76,12 +77,18 @@ int test_ftrmm(const Field & F)
 	NonzeroRandIter<Field> Gn(F,G); 
 
 	/* init A,B,C and more...*/
-	for (size_t i = 0 ; i < cols*lda ; ++i) G.random( *(A+i) ) ;
-	for (size_t i = 0 ; i < cols*ldb  ; ++i) G.random( *(B+i) ) ;
+	for (size_t i = 0 ; i < rows*lda ; ++i) G.random( *(A+i) ) ;
+#ifdef _LB_DEBUG
+	Element * E = new Element[rows*lda];
+	assert(E);
+	for (size_t i = 0 ; i < rows*lda ; ++i) *(E+i) = *(A+i);
+#endif
+
+	for (size_t i = 0 ; i < rows*ldb  ; ++i) G.random( *(B+i) ) ;
 
 	Element zero ; F.init(zero,0UL);
 	for (size_t i = 0 ; i < M*N ; ++i) *(C+i) = zero;
-	for (size_t i = 0 ; i < cols*ldb ; ++i) *(D+i) = *(B+i);
+	for (size_t i = 0 ; i < rows*ldb ; ++i) *(D+i) = *(B+i);
 	Element alpha ;
 	//! @todo F.isInvertible()
 	//! @toto InvertibleRandomIter
@@ -89,14 +96,6 @@ int test_ftrmm(const Field & F)
 	F.init(invalpha,0UL);
 	Gn.random(alpha);
 	F.inv(invalpha,alpha);
-#ifdef _LB_DEBUG
-	std::cout<<"#-------------T-------------" <<std::endl;
-	std::cout << "T :=" ;
-	write_field(F,std::cout,UpLo,Diag,A,Ldim,Ldim,lda,true,true);
-	std::cout<<"#-------------M-------------" <<std::endl;
-	std::cout << "M :=" ;
-	write_field(F,std::cout,B,M,N,ldb,true,true);
-#endif
 	/* *************** */
 	/*  testing ftrmm  */
 	/* *************** */
@@ -253,14 +252,20 @@ int test_ftrmm(const Field & F)
 			if (!F.areEqual(*(C+i*N+j),*(B+i*ldb+j))) 
 				err = -1  ;
 	// checking B has nothing written outside B...
-	for (size_t i = M ; i < ldb && !err ; ++i)
-		for (size_t j = N ; j < cols  && !err ; ++j)
+	for (size_t i = M ; i < rows && !err ; ++i)
+		for (size_t j = N ; j < ldb  && !err ; ++j)
 			if (!F.areEqual(*(D+i*ldb+j),*(B+i*ldb+j))) 
 				err = -1  ;
 #ifdef _LB_DEBUG
+	{
 	if (err)
 	{
-
+		std::cout<<"#-------------T-------------" <<std::endl;
+		std::cout << "T :=" ;
+		write_field(F,std::cout,UpLo,Diag,E,Ldim,Ldim,lda,true,true);
+		std::cout<<"#-------------M-------------" <<std::endl;
+		std::cout << "M :=" ;
+		write_field(F,std::cout,D,M,N,ldb,true,true);
 		std::cout<<"#------------a--------------" <<std::endl;
 		std::cout << "alpha := " << alpha << ':' << std::endl;
 		std::cout<<"#------------C--------------" <<std::endl;
@@ -286,12 +291,10 @@ int test_ftrmm(const Field & F)
 		std::cout << "linalg:-iszero(C - N  mod " << F.characteristic() << "),";
 		std::cout << "linalg:-iszero(B - N  mod " << F.characteristic() << ");"  <<  std::endl;
 
-
-
 	}
 
-	if (err) std::cout << "#ftrmm fail" ;
-	else std::cout << "#ftrmm success";
+	if (err) std::cout << "# \033[1;31m>\033[0m ftrmm fail" ;
+	else std::cout << "# \033[1;32m>\033[0m ftrmm success";
 
 	std::cout << " with " << ((Side == FFLAS::FflasLeft)?("left"):("right")) ;
 	std::cout << " with " ;
@@ -299,36 +302,44 @@ int test_ftrmm(const Field & F)
 	std::cout << ((Diag==FFLAS::FflasUnit)?(""):("non-")) ;
 	std::cout << "unit " ;
 	std::cout << ((Trans==FFLAS::FflasTrans)?(""):("non-")) ;
-	std::cout << "transposed triangular matrices."  ;
-	std::cout << "on " ;
+	std::cout << "transposed triangular matrices (on field \""  ;
 	F.write(std::cout) ;
-	std::cout << std::endl;
+	std::cout << "\")" << std::endl;
+	}
 #endif
 	/* *************** */
 	/*  testing ftrsm  */
 	/* *************** */
 	int eur = 0 ;
-	if (!err)
-	{
 
-		for (size_t i = 0 ; i < cols*ldb ; ++i) *(B+i) = *(D+i);
-		if (Diag == FFLAS::FflasNonUnit)
-			for (size_t i = 0 ; i < Ldim ; ++i) Gn.random(*(A+i*(lda+1))) ; // invertible diag !
-		FFLAS::ftrmm(F, Side, UpLo, Trans, Diag, M, N, alpha,    A, lda, B, ldb);
-		/* revert with ftrsm  */
-		FFLAS::ftrsm(F, Side, UpLo, Trans, Diag, M, N, invalpha, A, lda, B, ldb);
-		//! @todo check ftrsm fails nicely with non invertible A !
+	for (size_t i = 0 ; i < rows*ldb ; ++i) *(B+i) = *(D+i);
+	if (Diag == FFLAS::FflasNonUnit)
+		for (size_t i = 0 ; i < Ldim ; ++i) Gn.random(*(A+i*(lda+1))) ; // invertible diag !
+	FFLAS::ftrmm(F, Side, UpLo, Trans, Diag, M, N, alpha,    A, lda, B, ldb);
+	/* revert with ftrsm  */
+	FFLAS::ftrsm(F, Side, UpLo, Trans, Diag, M, N, invalpha, A, lda, B, ldb);
+	//! @todo check ftrsm fails nicely with non invertible A !
 
-		for (size_t i = 0 ; i < M && !eur ; ++i)
-			for (size_t j = 0 ; j < N && !eur ; ++j)
-				if (!F.areEqual(*(D+i*ldb+j),*(B+i*ldb+j))) 
-					eur = -1  ;
-	}
-	else eur = -1;
+	for (size_t i = 0 ; i < M && !eur ; ++i)
+		for (size_t j = 0 ; j < N && !eur ; ++j)
+			if (!F.areEqual(*(D+i*ldb+j),*(B+i*ldb+j))) 
+				eur = -1  ;
 
 #ifdef _LB_DEBUG
-	if (eur) std::cout << "#ftrsm fail" ;
-	else std::cout << "#ftrsm success";
+	{
+		if (eur) std::cout << "# \033[1;31m>\033[0m ftrsm fail" ;
+		else std::cout << "# \033[1;32m>\033[0m ftrsm success";
+		std::cout << " with " << ((Side == FFLAS::FflasLeft)?("left"):("right")) ;
+		std::cout << " with " ;
+		std::cout << ((UpLo==FFLAS::FflasUpper)?("upper "):("lower ")) ;
+		std::cout << ((Diag==FFLAS::FflasUnit)?(""):("non-")) ;
+		std::cout << "unit " ;
+		std::cout << ((Trans==FFLAS::FflasTrans)?(""):("non-")) ;
+		std::cout << "transposed triangular matrices (on field \""  ;
+		F.write(std::cout) ;
+		std::cout << "\")" << std::endl;
+		delete[] E ;
+	}
 #endif
 
 	delete[] A;
@@ -338,19 +349,19 @@ int test_ftrmm(const Field & F)
 
 	return err+eur ;
 }
-
+//!@todo  test \c NULL permutation
 template<class Field>
 int test_applyP(const Field & F)
 {
 	srand(time(NULL));
-	size_t M    = random()%_LB_MAX_SZ ;
-	size_t N    = random()%_LB_MAX_SZ ; 
+	size_t M    = random()%_LB_MAX_SZ+1 ;
+	size_t N    = random()%_LB_MAX_SZ+1 ; 
 	size_t lda  = random()%_LB_MAX_SZ+1 ; 
 	if (lda<N) std::swap(lda,N);
 
 #ifdef _LB_DEBUG
 	std::cout << "#M x N :"<< M << 'x' << N << std::endl; 
-	std::cout << "#lda x ldb :"<< lda << 'x' << ldb << std::endl; 
+	std::cout << "#lda :"<< lda << std::endl; 
 #endif
 	typedef typename Field::Element Element;
 
@@ -390,7 +401,7 @@ int test_applyP(const Field & F)
 			if (!F.areEqual(*(A+i*lda+j),*(B+i*lda+j))) 
 				err = -1  ;
 	if (err)
-		std::cout << "row applyP failed" << std::endl;
+		std::cout << "# \033[1;31m>\033[0m row applyP failed" << std::endl;
 
 	size_t * Q = new size_t[N] ;
 
@@ -416,24 +427,127 @@ int test_applyP(const Field & F)
 			if (!F.areEqual(*(A+i*lda+j),*(B+i*lda+j))) 
 				err = -1  ;
 	if (eur)
-		std::cout << "col applyP failed" << std::endl;
+		std::cout << "# \033[1;31m>\033[0mcol applyP failed" << std::endl;
 
+	delete[] A;
+	delete[] B ;
 	return (err+eur);
+
+}
+
+
+template<class Field, FFLAS::FFLAS_TRANSPOSE At, FFLAS::FFLAS_TRANSPOSE Bt>
+int test_fgemm(const Field & F)
+{
+	srand(time(NULL));
+	size_t M    = random()%_LB_MAX_SZ ;
+	size_t N    = random()%_LB_MAX_SZ ; 
+	size_t K    = random()%_LB_MAX_SZ ; 
+
+	size_t lda  = random()%_LB_MAX_SZ+1 ; 
+	size_t ldb  = random()%_LB_MAX_SZ+1 ; 
+	size_t ldc  = random()%_LB_MAX_SZ+1 ; 
+
+	// A is M x K
+	// B is K x N
+	// C is M x N
+	
+	size_t rowA = M;
+	size_t rowB = K;
+	size_t rowC = M;
+
+	typedef typename Field::RandIter RandIter;
+	RandIter G(F);
+	NonzeroRandIter<Field> Gn(F,G); 
+	typedef typename Field::Element Element;
+
+	Element alpha, beta ;
+	G.random(alpha);
+	G.random(beta);
+
+
+
+
+	Element * A = new Element[rowA*lda];
+	assert(A);
+	Element * B = new Element[rowB*ldb];
+	assert(B);
+	Element * C = new Element[rowC*ldc] ; // le résultat, le vrai, le bon.
+	assert(C);
+	Element * D = new Element[rowC*ldc] ; // backup de C
+	assert(D);
+
+
+
+	for (size_t i = 0 ; i < rowA*lda ; ++i) G.random( *(A+i) ) ;
+	for (size_t i = 0 ; i < rowB*lda ; ++i) G.random( *(B+i) ) ;
+	for (size_t i = 0 ; i < rowC*lda ; ++i) G.random( *(D+i) ) ;
+	for (size_t i = 0 ; i < rowC*lda ; ++i) *(C+i) = *(D+i)  ;
+
+
+	if (At == FFLAS::FflasNoTrans)
+		if (Bt == FFLAS::FflasNoTrans) // A.B + C
+			for (size_t i = 0 ; i < M ; ++i)
+				for (size_t j = 0 ; j < N ; ++j) {
+					Element temp;
+					F.init(temp,0UL);
+					for (size_t k = 0 ; k < K ; ++k)
+						F.axpyin(temp,A[i*lda+k],B[k*ldb+j]);
+					F.mulin(C[i*ldc+j],beta);
+					F.axpyin(C[i*ldc+j],alpha,temp);
+				}
+		else // A.tB + C
+			for (size_t i = 0 ; i < M ; ++i)
+				for (size_t j = 0 ; j < N ; ++j) {
+					Element temp;
+					F.init(temp,0UL);
+					for (size_t k = 0 ; k < K ; ++k)
+						F.axpyin(temp,A[i*lda+k],B[j*ldb+k]);
+					F.mulin(C[i*ldc+j],beta);
+					F.axpyin(C[i*ldc+j],alpha,temp);
+				}
+	else
+		if (Bt == FFLAS::FflasNoTrans) // tA.B + C
+			for (size_t i = 0 ; i < M ; ++i)
+				for (size_t j = 0 ; j < N ; ++j) {
+					Element temp;
+					F.init(temp,0UL);
+					for (size_t k = 0 ; k < K ; ++k)
+						F.axpyin(temp,A[k*lda+i],B[k*ldb+j]);
+					F.mulin(C[i*ldc+j],beta);
+					F.axpyin(C[i*ldc+j],alpha,temp);
+				}
+		else // tA.tB + C
+			for (size_t i = 0 ; i < M ; ++i)
+				for (size_t j = 0 ; j < N ; ++j) {
+					Element temp;
+					F.init(temp,0UL);
+					for (size_t k = 0 ; k < K ; ++k)
+						F.axpyin(temp,A[k*lda+i],B[j*ldb+k]);
+					F.mulin(C[i*ldc+j],beta);
+					F.axpyin(C[i*ldc+j],alpha,temp);
+				}
+
+	FFLAS::fgemm(F,At,Bt,M,N,K,alpha,A,lda,B,ldb,beta,C,ldc);
+
+	FFLAS::fgemm(F,At,Bt,M,N,K,alpha,A,lda,B,ldb,beta,C,ldc,1);
+return 0 ;
 
 }
 
 int main() 
 {
-	//typedef ModularBalanced<float>  FieldF;
+//        typedef ModularBalanced<float>  FieldF;
 	typedef Modular<float>          FieldF;
-	//typedef ModularBalanced<double> FieldD;
+//        typedef ModularBalanced<double> FieldD;
 	typedef Modular<double>         FieldD;
-	//typedef ModularBalanced<int32>  FieldI;
+//        typedef ModularBalanced<int32>  FieldI;
 	typedef Modular<int32>          FieldI;
 	//!@bug : this one completely fails :
 	//typedef Modular<Integer>          FieldI;
 
 	srand(time(NULL));
+	bool fail = false ;
 
 	// need to be prime for ftrsm
 	FieldD FD(13);
@@ -452,7 +566,9 @@ int main()
 #endif
 	tot *=2*16*_LB_ITERS ; // ftr(s/m)m 16 combinations, repeated _LB_ITERS times
 	int ret = tot;
-
+	//-----------//
+	/* FTR(S/M)M */
+	//-----------//
 	for (size_t r = 0 ; r < _LB_ITERS ; ++r)
 	{
 		ret+=test_ftrmm<FieldD,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasUnit>(FD);
@@ -621,13 +737,16 @@ int main()
 
 
 #ifdef DEBUG
-	std::cout << "ftr(s/m)m  passed " << ret << "/" << tot << "tests" <<std::endl;
+	std::cout << "# \033[1;33m>\033[0m ftr(s/m)m  passed " << ret << "/" << tot << "tests" <<std::endl;
 #endif
-	(ret != tot)?(ret=-1):(ret=0) ;
+	if (ret != tot) fail=true;
 	int our = tot = 6*_LB_ITERS*2 ;
 #ifdef __LINBOX_HAVE_INT64
 	our = tot = tot+2*_LB_ITERS*2 ;
 #endif
+	//-------//
+	/* APPLY */
+	//-------//
 
 	for (size_t r = 0 ; r < _LB_ITERS ; ++r)
 	{
@@ -644,10 +763,10 @@ int main()
 
 	}
 #ifdef DEBUG
-	std::cout << "applyP  passed " << our << "/" << tot << "tests" <<std::endl;
+	std::cout << "# \033[1;33m>\033[0m applyP  passed " << our << "/" << tot << "tests" <<std::endl;
 #endif
-	(our != tot)?(our=-1):(our =0) ;
-	return (ret+our) ;
+	if(our != tot) fail = true;
+	return (fail) ;
 
 }
 

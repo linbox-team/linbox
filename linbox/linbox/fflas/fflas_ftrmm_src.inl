@@ -147,13 +147,15 @@
 
 #ifndef __FFLAS__GENERIC
 template <>
-class FFLAS::Mjoin(ftrmm, Mjoin(__FFLAS__SIDE, Mjoin(__FFLAS__UPLO, Mjoin(__FFLAS__TRANS, __FFLAS__DIAG))))<__FFLAS__ELEMENT>{
+class FFLAS::Mjoin(ftrmm, Mjoin(__FFLAS__SIDE, Mjoin(__FFLAS__UPLO, Mjoin(__FFLAS__TRANS, __FFLAS__DIAG))))<__FFLAS__ELEMENT>
+{
 public:
 
 template <class Field>
 void delayed (const Field& F, const size_t M, const size_t N,
 	      typename Field::Element * A, const size_t lda,
-	      typename Field::Element * B, const size_t ldb) {
+	      typename Field::Element * B, const size_t ldb) 
+{
 	
 	Mjoin(cblas_,Mjoin(__FFLAS__BLAS_PREFIX,trmm))
 		(CblasRowMajor,
@@ -170,13 +172,15 @@ void delayed (const Field& F, const size_t M, const size_t N,
 template <class Field>
 void operator () (const Field& F, const size_t M, const size_t N,
 		  typename Field::Element * A, const size_t lda,
-		  typename Field::Element * B, const size_t ldb) {
+		  typename Field::Element * B, const size_t ldb) 
+{
 	
 	if (!M || !N ) return;
 	
 	static typename Field::Element one;
 	F.init(one, 1.0);
 	
+#if 0
 	size_t nsplit = DotProdBound (F, 0, one,
 #ifdef __FFLAS__DOUBLE
 				    FflasDouble
@@ -184,9 +188,12 @@ void operator () (const Field& F, const size_t M, const size_t N,
                                     FflasFloat
 #endif
 				    );
+#endif
+	size_t nsplit = (size_t) F.AccBound(one);
 
 	size_t nbblocsplit = (__FFLAS__Na-1) / nsplit;
 	size_t nrestsplit = ((__FFLAS__Na-1) % nsplit) +1;
+	linbox_check(__FFLAS__Na == nsplit*nbblocsplit+nrestsplit);
 	
 	if (nrestsplit)
 		this->delayed (F, __FFLAS__Mbrest, __FFLAS__Nbrest,
@@ -216,13 +223,15 @@ void operator () (const Field& F, const size_t M, const size_t N,
 #else // __FFLAS__GENERIC
 
 template <class Element>
-class FFLAS::Mjoin(ftrmm, Mjoin(__FFLAS__SIDE, Mjoin(__FFLAS__UPLO, Mjoin(__FFLAS__TRANS, __FFLAS__DIAG)))) {
+class FFLAS::Mjoin(ftrmm, Mjoin(__FFLAS__SIDE, Mjoin(__FFLAS__UPLO, Mjoin(__FFLAS__TRANS, __FFLAS__DIAG)))) 
+{
 public:
 
 template<class Field>
 void operator()	(const Field& F, const size_t M, const size_t N,
 		 typename Field::Element * A, const size_t lda,
-		 typename Field::Element * B, const size_t ldb) {
+		 typename Field::Element * B, const size_t ldb) 
+{
 	
 	static typename Field::Element one;
 	F.init(one, 1UL);

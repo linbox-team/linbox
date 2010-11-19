@@ -470,7 +470,8 @@ void FFPACK::DeCompressRows (Field& F, const size_t M, const size_t N,
 	
 	size_t w_idx = N - 2;
 	size_t r_idx = N - nb_blocs - 1;
-	for (int i = int(nb_blocs)-2; i>=0; --i){
+	int i = int(nb_blocs)-1 ;
+	for (; i--; ){
 		for (size_t j = 0; j<d[i+1]-1; ++j)
 			fcopy (F, M, A + (w_idx--)*lda, 1, A + (r_idx--)*lda, 1);
 		fcopy (F, M, A + (w_idx--)*lda, 1, tmp + i*ldtmp, 1);
@@ -493,7 +494,8 @@ void FFPACK::DeCompressRowsQK (Field& F, const size_t M, const size_t N,
 	size_t w_idx = N - 2;
 	size_t r_idx = N - zeroblockdim - 1;
 
-	for (int i = int(nb_blocs)-2; i>=0; --i){
+	int i = int(nb_blocs)-1 ;
+	for (; i--;){
 		for (size_t j = 0; j < d [i+1] - 1; ++j)
 			fcopy (F, M, A + (w_idx--)*lda, 1, A + (r_idx--)*lda, 1);
 		for (size_t j = 0; j < deg - d[i]; ++j)
@@ -530,7 +532,8 @@ void FFPACK::DeCompressRowsQA (Field& F, const size_t M, const size_t N,
 
 	size_t w_idx = N - 1;
 	size_t r_idx = N - nb_blocs - 1;
-	for (int i = int(nb_blocs)-1; i>=0; --i){
+	int i = int(nb_blocs) ;
+	for (; i--; ){
 		for (size_t j = 0; j<d[i]-1; ++j)
 			fcopy (F, M, A + (w_idx--)*lda, 1, A + (r_idx--)*lda, 1);
 		fcopy (F, M, A + (w_idx--)*lda, 1, tmp + i*ldtmp, 1);

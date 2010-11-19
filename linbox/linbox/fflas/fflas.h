@@ -268,7 +268,8 @@ public:
 	       const typename Field::Element* B, const size_t ldb, 
 	       const typename Field::Element beta,
 	       typename Field::Element* C, const size_t ldc,
-	       const size_t w){
+	       const size_t w)
+	{
 
 		if (!(m && n && k)) return C;
 
@@ -306,7 +307,8 @@ public:
 	       const typename Field::Element* A, const size_t lda,
 	       const typename Field::Element* B, const size_t ldb, 
 	       const typename Field::Element beta,
-	       typename Field::Element* C, const size_t ldc){
+	       typename Field::Element* C, const size_t ldc)
+	{
 
 		if (!(m && n && k)) return C;
 		if (F.isZero (alpha)){

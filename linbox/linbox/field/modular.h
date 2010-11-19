@@ -36,25 +36,26 @@
 
 
 // Namespace in which all LinBox code resides
-namespace LinBox 
-{ 
+namespace LinBox
+{
 	template <class Element>
 	class Modular;
 
 	template <class Ring>
-	struct ClassifyRing; 
+	struct ClassifyRing;
 
 	template <class Element>
-	struct ClassifyRing<Modular<Element> >{
+	struct ClassifyRing<Modular<Element> >
+	{
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
-	/** @name ModularBase 
-	 * \brief Base for prime fields where the elements are represented by various primitive types 
+	/** @name ModularBase
+	 * \brief Base for prime fields where the elements are represented by various primitive types
 	 * (and their operations).
 	 * Normally use it's children.  This class is of interest for the developer of a new field representation.
 	 *
-	 * 
+	 *
 	 * This parameterized field can be used to construct any prime
 	 * field. Typical use would be Modular<integer> for integers modulo a
 	 * large prime, Modular<long, long long> for integers modulo a wordsize
@@ -62,7 +63,7 @@ namespace LinBox
 	\ingroup field
 	 */
 	template <class _Element>
-	class ModularBase 
+	class ModularBase
 	{
 	    public:
 
@@ -79,20 +80,20 @@ namespace LinBox
 		/*- @name Object Management
 		 */
 		//@{
- 
+
 		/*- Default constructor.
 		 */
 		ModularBase (void) {}
 
 		/*- Constructor from an element type.
-		 * Sets the modulus of the field throug the static member of the 
+		 * Sets the modulus of the field throug the static member of the
 		 * element type.
 		 * @param modulus constant reference to integer prime modulus
 		 */
 		ModularBase (unsigned long modulus) : _modulus (modulus) {}
 
 		/*- Constructor from an integer.
-		 * Sets the modulus of the field throug the static member of the 
+		 * Sets the modulus of the field throug the static member of the
 		 * element type.
 		 * @param modulus constant reference to integer prime modulus
 		 */
@@ -105,7 +106,7 @@ namespace LinBox
 		 * @param  F Modular object.
 		 */
 		ModularBase (const ModularBase<Element> &F) : _modulus (F._modulus) {}
- 
+
 		/*- Conversion of field base element to a template class T.
 		 * This function assumes the output field base element x has already been
 		 * constructed, but that it is not already initialized.
@@ -118,10 +119,10 @@ namespace LinBox
 
 		double &convert (double& x, const Element &y) const
 		{return  x= (double) y;}
- 
+
 		float &convert (float& x, const Element &y) const
 		{return  x= (float) y;}
-	
+
 		/*- Assignment of one field base element to another.
 		 * This function assumes both field base elements have already been
 		 * constructed and initialized.
@@ -179,7 +180,7 @@ namespace LinBox
 		 */
 		bool isZero (const Element &x) const
 			{ return x == 0; }
- 
+
 		/*- One equality.
 		 * Test if field base element is equal to one.
 		 * This function assumes the field base element has already been
@@ -200,7 +201,7 @@ namespace LinBox
 		 * @return output stream to which field is written.
 		 * @param  os  output stream to which field is written.
 		 */
-		std::ostream &write (std::ostream &os) const 
+		std::ostream &write (std::ostream &os) const
 			{ return os << "Modular field, mod " << _modulus; }
 
 		/*- Read field.
@@ -219,7 +220,7 @@ namespace LinBox
 		 */
 		std::ostream &write (std::ostream &os, const Element &x) const
 			{ return os << (int) x; }
- 
+
 
 		/*- Read field base element.
 		 * This function assumes the field base element has already been
@@ -237,7 +238,7 @@ namespace LinBox
 			x = abs (tmp) % integer (_modulus);
 			if (tmp < 0) x = _modulus - x;
 
-			return is; 
+			return is;
 		}
 
 		//@}
@@ -262,7 +263,7 @@ namespace LinBox
 	 */
 
 	/** @brief Prime fields of positive characteristic implemented directly in LinBox.
-	 * 
+	 *
 	 * This parameterized field can be used to construct prime
 	 * fields. Typical use would be Modular<integer> for integers modulo a
 	 * large prime, Modular<uint32>, modular<int>, or modular<double>
@@ -282,21 +283,21 @@ namespace LinBox
 		 * @brief see \ref FieldArchetype  for member specs.
 		 */
 		//@{
- 
+
 		//private:
 		/*- Default constructor.
 		 */
 		Modular () : zero(0),one(1) {}
 
 		/*- Constructor from an element type
-		 * Sets the modulus of the field throug the static member of the 
+		 * Sets the modulus of the field throug the static member of the
 		 * element type.
 		 * @param modulus constant reference to integer prime modulus
 		 */
 		Modular (unsigned long modulus) : ModularBase<_Element> (modulus),zero(0),one(1) {}
 
 		/*- Constructor from an integer
-		 * Sets the modulus of the field throug the static member of the 
+		 * Sets the modulus of the field throug the static member of the
 		 * element type.
 		 * @param modulus constant reference to integer prime modulus
 		 */
@@ -308,7 +309,7 @@ namespace LinBox
 		 * @param F constant reference to Modular object
 		 * @return reference to Modular object for self
 		 */
-		const Modular &operator=(const Modular &F) 
+		const Modular &operator=(const Modular &F)
 		{
 			ModularBase<Element>::_modulus = F._modulus;
 			return *this;
@@ -316,7 +317,7 @@ namespace LinBox
 		public:
 
 		static inline Element getMaxModulus()
-                { return Element((1ULL<<(sizeof(Element)*8-1))-1); } 
+                { return Element((1ULL<<(sizeof(Element)*8-1))-1); }
 
 
 		/*- Initialization of field base element from an integer.
@@ -330,21 +331,21 @@ namespace LinBox
 		 * @param y integer.
 		 */
 		Element &init (Element &x, const integer &y = 0) const
-		{ 
+		{
 		  x = y % ModularBase<Element>::_modulus;
 		  if (x < 0) x += ModularBase<Element>::_modulus;
 		  return x;
 		}
 
 		Element &init (Element &x, const size_t &y = 0) const
-		{ 
+		{
 		  x = (Element) y % ModularBase<Element>::_modulus;
 		  if (x < 0) x += ModularBase<Element>::_modulus;
 		  return x;
 		}
 
 		Element &init (Element &x, const int y ) const
-		{ 
+		{
 		  x = y % ModularBase<Element>::_modulus;
 		  if (x < 0) x += ModularBase<Element>::_modulus;
 		  return x;
@@ -361,20 +362,20 @@ namespace LinBox
 		 * @param y integer.
 		 */
 		Element &init (Element &x, const double &y) const
-		{ 
+		{
 			double z = fmod(y, (double)ModularBase<Element>::_modulus);
 		  if (z < 0) z += (double) ModularBase<Element>::_modulus;
 		  return x = (Element) (z+.5);
 		}
 
 		Element &init (Element &x, const float &y) const
-		{ 
+		{
 			float z = fmod(y, (float)ModularBase<Element>::_modulus);
 		  if (z < 0) z += (float) ModularBase<Element>::_modulus;
 		  return x = (Element) (z+.5);
 		}
 
-		//@}  
+		//@}
 		/*- @name Arithmetic Operations
 		 * @brief see \ref FieldArchetype  for member specs.
 		 * x <- y op z; x <- op y
@@ -399,7 +400,7 @@ namespace LinBox
 			if (x >= ModularBase<Element>::_modulus) x -= ModularBase<Element>::_modulus;
 			return x;
 		}
- 
+
 		/* Subtraction.
 		 * x = y - z
 		 * This function assumes all the field base elements have already been
@@ -410,12 +411,12 @@ namespace LinBox
 		 * @param  z field base element.
 		 */
 		Element &sub (Element &x, const Element &y, const Element &z) const
-		{ 
+		{
 			x = y - z;
 			if (x < 0) x += ModularBase<Element>::_modulus;
 			return x;
 		}
- 
+
 		/* Multiplication.
 		 * x = y * z
 		 * This function assumes all the field base elements have already been
@@ -427,7 +428,7 @@ namespace LinBox
 		 */
 		Element &mul (Element &x, const Element &y, const Element &z) const
 			{ return x = (y * z) % ModularBase<Element>::_modulus; }
- 
+
 		/* Division.
 		 * x = y / z
 		 * This function assumes all the field base elements have already been
@@ -438,12 +439,12 @@ namespace LinBox
 		 * @param  z field base element.
 		 */
 		Element &div (Element &x, const Element &y, const Element &z) const
-		{ 
+		{
 			Element temp;
 			inv (temp, z);
 			return mul (x, y, temp);
 		}
- 
+
 		/* Additive Inverse (Negation).
 		 * x = - y
 		 * This function assumes both field base elements have already been
@@ -454,7 +455,7 @@ namespace LinBox
 		 */
 		Element &neg (Element &x, const Element &y) const
 			{ if (y == 0) return x = y; else return x = ModularBase<Element>::_modulus - y; }
- 
+
 		/* Multiplicative Inverse.
 		 * x = 1 / y
 		 * This function assumes both field base elements have already been
@@ -467,9 +468,9 @@ namespace LinBox
 		{
 			// The extended Euclidean algoritm
 			Element x_int, y_int, q, tx, ty, temp;
-			x_int = ModularBase<Element>::_modulus; 
+			x_int = ModularBase<Element>::_modulus;
 			y_int = y;
-			tx = 0; 
+			tx = 0;
 			ty = 1;
 
 			while (y_int != 0) {
@@ -490,7 +491,7 @@ namespace LinBox
 
 		/* Natural AXPY.
 		 * r  = a * x + y
-		 * This function assumes all field elements have already been 
+		 * This function assumes all field elements have already been
 		 * constructed and initialized.
 		 * @return reference to r.
 		 * @param  r field element (reference returned).
@@ -498,18 +499,18 @@ namespace LinBox
 		 * @param  x field element.
 		 * @param  y field element.
 		 */
-		Element &axpy (Element &r, 
-			      const Element &a, 
-			      const Element &x, 
+		Element &axpy (Element &r,
+			      const Element &a,
+			      const Element &x,
 			      const Element &y) const
-		{ 
+		{
 			r = (a * x + y) % ModularBase<Element>::_modulus;
 			if (r < 0) r += ModularBase<Element>::_modulus;
 			return r;
 		}
 
 		//@} Arithmetic Operations
- 
+
 		/*- @name Inplace Arithmetic Operations
 		 * @brief see \ref FieldArchetype  for member specs.
 		 * x <- x op y; x <- op x
@@ -525,12 +526,12 @@ namespace LinBox
 		 * @param  y field base element.
 		 */
 		Element &addin (Element &x, const Element &y) const
-		{ 
+		{
 			x += y;
 			if (x >= ModularBase<Element>::_modulus) x -= ModularBase<Element>::_modulus;
 			return x;
 		}
- 
+
 		/* Inplace Subtraction.
 		 * x -= y
 		 * This function assumes both field base elements have already been
@@ -545,7 +546,7 @@ namespace LinBox
 			if (x < 0) x += ModularBase<Element>::_modulus;
 			return x;
 		}
- 
+
 		/* Inplace Multiplication.
 		 * x *= y
 		 * This function assumes both field base elements have already been
@@ -560,7 +561,7 @@ namespace LinBox
 			x %= ModularBase<Element>::_modulus;
 			return x;
 		}
- 
+
 		/* Inplace Division.
 		 * x /= y
 		 * This function assumes both field base elements have already been
@@ -575,7 +576,7 @@ namespace LinBox
 			inv (temp, y);
 			return mulin (x, temp);
 		}
- 
+
 		/* Inplace Additive Inverse (Inplace Negation).
 		 * x = - x
 		 * This function assumes the field base element has already been
@@ -585,7 +586,7 @@ namespace LinBox
 		 */
 		Element &negin (Element &x) const
 			{ if (x == 0) return x; else return x = ModularBase<Element>::_modulus - x; }
- 
+
 		/* Inplace Multiplicative Inverse.
 		 * x = 1 / x
 		 * This function assumes the field base elementhas already been
@@ -598,7 +599,7 @@ namespace LinBox
 
 		/* Inplace AXPY.
 		 * r  += a * x
-		 * This function assumes all field elements have already been 
+		 * This function assumes all field elements have already been
 		 * constructed and initialized.
 		 * Purely virtual
 		 * @return reference to r.
@@ -607,7 +608,7 @@ namespace LinBox
 		 * @param  x field element.
 		 */
 		Element &axpyin (Element &r, const Element &a, const Element &x) const
-		{ 
+		{
 			r = (r + a * x) % ModularBase<Element>::_modulus;
 			if (r < 0) r += ModularBase<Element>::_modulus;
 			return r;
@@ -621,8 +622,8 @@ namespace LinBox
 
 	}; // class Modular
 
-	/** @brief Allows compact storage when the modulus is less than 2^8. 
-	
+	/** @brief Allows compact storage when the modulus is less than 2^8.
+
 	Requires 1 < the modulus < 2^8, normally prime.
 	See FieldArchetype for member specifications.
 	*/
@@ -647,7 +648,7 @@ namespace LinBox
                     _k (((uint64) -1LL) / (((uint8)modulus - 1) * ((uint8)modulus - 1))),
                     _pinv (1.0 / (double) ((uint8) modulus)) {}
 
-		const Modular &operator=(const Modular &F) 
+		const Modular &operator=(const Modular &F)
 		{
 			ModularBase<uint8>::_modulus = F._modulus;
 			_k = F._k;
@@ -664,7 +665,7 @@ namespace LinBox
 		}
 
 		Element &init (Element &x, const double &y) const
-		{ 
+		{
 			double z = fmod(y, (double)_modulus);
 			if (z < 0) z += (double) _modulus;
 			return x = (Element) (z);
@@ -676,34 +677,34 @@ namespace LinBox
 			if (t >= (uint32) ModularBase<Element>::_modulus) t -= ModularBase<Element>::_modulus;
 			return x = t;
 		}
- 
+
 		Element &sub (Element &x, const Element &y, const Element &z) const
-		{ 
+		{
 			int32 t = (int32) y - (int32) z;
 			if (t < 0) t += ModularBase<Element>::_modulus;
 			return x = t;
 		}
- 
+
 		Element &mul (Element &x, const Element &y, const Element &z) const
 			{ return x = ((uint32) y * (uint32) z) % (uint32) ModularBase<Element>::_modulus; }
- 
+
 		Element &div (Element &x, const Element &y, const Element &z) const
-		{ 
+		{
 			Element temp;
 			inv (temp, z);
 			return mul (x, y, temp);
 		}
- 
+
 		Element &neg (Element &x, const Element &y) const
 			{ if (y == 0) return x = y; else return x = ModularBase<Element>::_modulus - y; }
- 
+
 		Element &inv (Element &x, const Element &y) const
 		{
-			// The extended Euclidean algoritm 
+			// The extended Euclidean algoritm
 			int32 x_int, y_int, q, tx, ty, temp;
 			x_int = ModularBase<Element>::_modulus;
 			y_int = y;
-			tx = 0; 
+			tx = 0;
 			ty = 1;
 
 			while (y_int != 0) {
@@ -723,9 +724,9 @@ namespace LinBox
 			return x = tx;
 		}
 
-		Element &axpy (Element &r, 
-			       const Element &a, 
-			       const Element &x, 
+		Element &axpy (Element &r,
+			       const Element &a,
+			       const Element &x,
 			       const Element &y) const
 		{
 			r = ((uint32) a * (uint32) x + (uint32) y) % (uint32) ModularBase<Element>::_modulus;
@@ -733,40 +734,40 @@ namespace LinBox
 		}
 
 		Element &addin (Element &x, const Element &y) const
-		{ 
+		{
 			uint32 t = (long) x + (long) y;
 			if (t >= (uint32) ModularBase<Element>::_modulus) t -= ModularBase<Element>::_modulus;
 			return x = t;
 		}
- 
+
 		Element &subin (Element &x, const Element &y) const
 		{
 			long t = x - y;
 			if (t < 0) t += ModularBase<Element>::_modulus;
 			return x = t;
 		}
- 
+
 		Element &mulin (Element &x, const Element &y) const
 		{
 			x = ((uint32) x * (uint32) y) % (uint32) ModularBase<Element>::_modulus;
 			return x;
 		}
- 
+
 		Element &divin (Element &x, const Element &y) const
 		{
 			Element temp;
 			inv (temp, y);
 			return mulin (x, temp);
 		}
- 
+
 		Element &negin (Element &x) const
 			{ if (x == 0) return x; else return x = ModularBase<Element>::_modulus - x; }
- 
+
 		Element &invin (Element &x) const
 			{ return inv (x, x); }
 
 		Element &axpyin (Element &r, const Element &a, const Element &x) const
-		{ 
+		{
 			r = ((uint32) r + (uint32) a * (uint32) x) % (uint32) ModularBase<Element>::_modulus;
 			return r;
 		}
@@ -809,7 +810,7 @@ namespace LinBox
 			  _k (((uint64) -1LL) / ((ModularBase<Element>::_modulus - 1) * (ModularBase<Element>::_modulus - 1))),
 			  _pinv (1.0 / (double) ((uint16) ModularBase<Element>::_modulus)) {}
 
-		const Modular &operator=(const Modular &F) 
+		const Modular &operator=(const Modular &F)
 		{
 			ModularBase<Element>::_modulus = F._modulus;
 			_k = F._k;
@@ -825,7 +826,7 @@ namespace LinBox
 		}
 
 		Element &init (Element &x, const double &y) const
-		{ 
+		{
 			double z = fmod(y, (double)_modulus);
 			if (z < 0) z += (double) _modulus;
 			return x = (Element) (z);
@@ -837,34 +838,34 @@ namespace LinBox
 			if (t >= (uint32) ModularBase<Element>::_modulus) t -= ModularBase<Element>::_modulus;
 			return x = t;
 		}
- 
+
 		Element &sub (Element &x, const Element &y, const Element &z) const
-		{ 
+		{
 			int32 t = (int32) y - (int32) z;
 			if (t < 0) t += ModularBase<Element>::_modulus;
 			return x = t;
 		}
- 
+
 		Element &mul (Element &x, const Element &y, const Element &z) const
 			{ return x = ((uint32) y * (uint32) z) % (uint32) ModularBase<Element>::_modulus; }
- 
+
 		Element &div (Element &x, const Element &y, const Element &z) const
-		{ 
+		{
 			Element temp;
 			inv (temp, z);
 			return mul (x, y, temp);
 		}
- 
+
 		Element &neg (Element &x, const Element &y) const
 			{ if (y == 0) return x = y; else return x = ModularBase<Element>::_modulus - y; }
- 
+
 		Element &inv (Element &x, const Element &y) const
 		{
-			// The extended Euclidean algoritm 
+			// The extended Euclidean algoritm
 			int32 x_int, y_int, q, tx, ty, temp;
 			x_int = ModularBase<Element>::_modulus;
 			y_int = y;
-			tx = 0; 
+			tx = 0;
 			ty = 1;
 
 			while (y_int != 0) {
@@ -884,9 +885,9 @@ namespace LinBox
 			return x = tx;
 		}
 
-		Element &axpy (Element &r, 
-			       const Element &a, 
-			       const Element &x, 
+		Element &axpy (Element &r,
+			       const Element &a,
+			       const Element &x,
 			       const Element &y) const
 		{
 			r = ((uint32) a * (uint32) x + (uint32) y) % (uint32) ModularBase<Element>::_modulus;
@@ -894,40 +895,40 @@ namespace LinBox
 		}
 
 		Element &addin (Element &x, const Element &y) const
-		{ 
+		{
 			uint32 t = (long) x + (long) y;
 			if (t >= (uint32) ModularBase<Element>::_modulus) t -= ModularBase<Element>::_modulus;
 			return x = t;
 		}
- 
+
 		Element &subin (Element &x, const Element &y) const
 		{
 			long t = x - y;
 			if (t < 0) t += ModularBase<Element>::_modulus;
 			return x = t;
 		}
- 
+
 		Element &mulin (Element &x, const Element &y) const
 		{
 			x = ((uint32) x * (uint32) y) % (uint32) ModularBase<Element>::_modulus;
 			return x;
 		}
- 
+
 		Element &divin (Element &x, const Element &y) const
 		{
 			Element temp;
 			inv (temp, y);
 			return mulin (x, temp);
 		}
- 
+
 		Element &negin (Element &x) const
 			{ if (x == 0) return x; else return x = ModularBase<Element>::_modulus - x; }
- 
+
 		Element &invin (Element &x) const
 			{ return inv (x, x); }
 
 		Element &axpyin (Element &r, const Element &a, const Element &x) const
-		{ 
+		{
 			r = ((uint32) r + (uint32) a * (uint32) x) % (uint32) ModularBase<Element>::_modulus;
 			return r;
 		}
@@ -951,22 +952,22 @@ namespace LinBox
 	template <>
 	class Modular<uint32> : public FieldInterface, public ModularBase<uint32>
 	{
-	    public:
+	public:
 
 		typedef uint32 Element;
 
-            const Element zero,one;
-            Element mone;
+		const Element zero,one;
+		Element mone;
 
 		Modular () :  zero(0),one(1) {}
 		Modular (uint32 modulus)  : ModularBase<uint32> (modulus),zero(0),one(1),mone(modulus-1)  { init_two_64 (); }
 		Modular (const integer &modulus) : ModularBase<uint32> (modulus),zero(0),one(1),mone(modulus-1)  { init_two_64 (); }
 
-		const Modular &operator=(const Modular &F) 
+		const Modular &operator=(const Modular &F)
 		{
 			ModularBase<Element>::_modulus = F._modulus;
 			_two_64 = F._two_64;
-                        mone = F.mone;
+			mone = F.mone;
 			return *this;
 		}
 
@@ -978,7 +979,7 @@ namespace LinBox
 		}
 
 		Element &init (Element &x, const double &y) const
-		{ 
+		{
 			double z = fmod(y, (double)_modulus);
 			if (z < 0) z += (double) _modulus;
 			return x = (Element) (z);
@@ -990,34 +991,34 @@ namespace LinBox
 			if ((uint32) x >= (uint32) ModularBase<Element>::_modulus) x -= ModularBase<Element>::_modulus;
 			return x;
 		}
- 
+
 		Element &sub (Element &x, const Element &y, const Element &z) const
 		{
 			x = y - z;
 			if ((int32) x < 0) x += ModularBase<Element>::_modulus;
 			return x;
 		}
- 
+
 		Element &mul (Element &x, const Element &y, const Element &z) const
-			{ return x = ((uint64) y * (uint64) z) % (uint64) ModularBase<Element>::_modulus; }
- 
+		{ return x = ((uint64) y * (uint64) z) % (uint64) ModularBase<Element>::_modulus; }
+
 		Element &div (Element &x, const Element &y, const Element &z) const
-		{ 
+		{
 			Element temp;
 			inv (temp, z);
 			return mul (x, y, temp);
 		}
- 
+
 		Element &neg (Element &x, const Element &y) const
-			{ if (y == 0) return x = y; else return x = ModularBase<Element>::_modulus - y; }
- 
+		{ if (y == 0) return x = y; else return x = ModularBase<Element>::_modulus - y; }
+
 		Element &inv (Element &x, const Element &y) const
 		{
 			// The extended Euclidean algoritm
 			int64 x_int, y_int, q, tx, ty, temp;
 			x_int = ModularBase<Element>::_modulus;
 			y_int = y;
-			tx = 0; 
+			tx = 0;
 			ty = 1;
 
 			while (y_int != 0) {
@@ -1037,9 +1038,9 @@ namespace LinBox
 			return x = tx;
 		}
 
-		Element &axpy (Element &r, 
-			       const Element &a, 
-			       const Element &x, 
+		Element &axpy (Element &r,
+			       const Element &a,
+			       const Element &x,
 			       const Element &y) const
 		{
 			r = ((uint64) a * (uint64) x + (uint64) y) % (uint64) ModularBase<Element>::_modulus;
@@ -1048,48 +1049,48 @@ namespace LinBox
 		}
 
 		Element &addin (Element &x, const Element &y) const
-		{ 
+		{
 			x += y;
 			if ((uint32) x >= (uint32) ModularBase<Element>::_modulus) x -= ModularBase<Element>::_modulus;
 			return x;
 		}
- 
+
 		Element &subin (Element &x, const Element &y) const
 		{
 			x -= y;
 			if ((int32) x < 0) x += ModularBase<Element>::_modulus;
 			return x;
 		}
- 
+
 		Element &mulin (Element &x, const Element &y) const
 		{
 			x = ((uint64) x * (uint64) y) % (uint64) ModularBase<Element>::_modulus;
 			return x;
 		}
- 
+
 		Element &divin (Element &x, const Element &y) const
 		{
 			Element temp;
 			inv (temp, y);
 			return mulin (x, temp);
 		}
- 
+
 		Element &negin (Element &x) const
-			{ if (x == 0) return x; else return x = ModularBase<Element>::_modulus - x; }
- 
+		{ if (x == 0) return x; else return x = ModularBase<Element>::_modulus - x; }
+
 		Element &invin (Element &x) const
-			{ return inv (x, x); }
+		{ return inv (x, x); }
 
 		Element &axpyin (Element &r, const Element &a, const Element &x) const
-		{ 
+		{
 			r = ((uint64) r + (uint64) a * (uint64) x) % (uint64) ModularBase<Element>::_modulus;
 			if ((int32) r < 0) r += ModularBase<Element>::_modulus;
 			return r;
 		}
 
-	    private:
+	private:
 
-		void init_two_64 () 
+		void init_two_64 ()
 		{
 			uint64 two_64 = 2;
 
@@ -1120,7 +1121,7 @@ namespace LinBox
 		FieldAXPY (const Field &F) : _F (F) { _y = 0; }
 		FieldAXPY (const FieldAXPY<Modular<Element> > &faxpy) : _F (faxpy._F), _y (faxpy._y) {}
 
-		FieldAXPY<Modular <Element> > &operator = (const FieldAXPY &faxpy) 
+		FieldAXPY<Modular <Element> > &operator = (const FieldAXPY &faxpy)
 			{ _F = faxpy._F; _y = faxpy._y; return *this; }
 
 		inline Element& mulacc (const Element &a, const Element &x)
@@ -1157,7 +1158,7 @@ namespace LinBox
 		FieldAXPY (const Field &F) : _F (F), i (F._k) { _y = 0; }
 		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0), i (faxpy._F._k) {}
 
-		FieldAXPY<Modular<uint8> > &operator = (const FieldAXPY &faxpy) 
+		FieldAXPY<Modular<uint8> > &operator = (const FieldAXPY &faxpy)
 			{ _F = faxpy._F; _y = faxpy._y; return *this; }
 
 		inline uint64& mulacc (const Element &a, const Element &x)
@@ -1216,7 +1217,7 @@ namespace LinBox
 		FieldAXPY (const Field &F) : _F (F), i (F._k) { _y = 0; }
 		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0), i (faxpy._F._k) {}
 
-		FieldAXPY<Modular<uint16> > &operator = (const FieldAXPY &faxpy) 
+		FieldAXPY<Modular<uint16> > &operator = (const FieldAXPY &faxpy)
 			{ _F = faxpy._F; _y = faxpy._y; return *this; }
 
 		inline uint64& mulacc (const Element &a, const Element &x)
@@ -1274,7 +1275,7 @@ namespace LinBox
 		FieldAXPY (const Field &F) : _F (F) { _y = 0; }
 		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0) {}
 
-		FieldAXPY<Modular<uint32> > &operator = (const FieldAXPY &faxpy) 
+		FieldAXPY<Modular<uint32> > &operator = (const FieldAXPY &faxpy)
 			{ _F = faxpy._F; _y = faxpy._y; return *this; }
 
 		inline uint64& mulacc (const Element &a, const Element &x)
@@ -1501,11 +1502,11 @@ namespace LinBox
 	};
 
 	template <>
-	inline std::ostream& ModularBase<Integer>::write (std::ostream &os) const 
+	inline std::ostream& ModularBase<Integer>::write (std::ostream &os) const
 	  { return os << "GMP integers mod " << _modulus; }
 
 	template <>
-	inline integer& Modular<integer>::init (integer& x, const double& y) const 
+	inline integer& Modular<integer>::init (integer& x, const double& y) const
 	  {
 	    integer tmp = (integer)y % _modulus;
 	    if (tmp<0) tmp += _modulus;
@@ -1518,10 +1519,12 @@ namespace LinBox
 #include "linbox/field/modular.inl"
 #include "linbox/randiter/modular.h"
 #include "linbox/field/modular-int32.h"
+#include "linbox/field/modular-int64.h"
 #include "linbox/field/modular-short.h"
 #include "linbox/field/modular-byte.h"
 #include "linbox/field/modular-double.h"
 #include "linbox/field/modular-float.h"
+#include "linbox/field/modular-balanced-int32.h"
 
 #endif // __LINBOX_field_modular_H
 
