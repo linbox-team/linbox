@@ -173,7 +173,8 @@ FFPACK::KGFast_generalized (const Field& F, std::list<Polynomial>& charp,
 								
 				}
 				else {
-					for (int i=mu; i>=0; --i)
+					int i = mu+1 ;
+					for (; i--; )
 						T[i+lambda] = T[i]+lambda;
 					for (size_t i=0; i< lambda; ++i)
 						T[B[i]-mc-1] = i;
@@ -252,7 +253,8 @@ FFPACK::KGFast_generalized (const Field& F, std::list<Polynomial>& charp,
 			size_t * tempP = new size_t[lambda+me+mc];
 			for (size_t i=0; i< lambda+me+mc; ++i)
 				tempP[i] = i;
-			for (int i = r-1; i>=0; --i)
+			int i = r ;
+			for (; i--; )
 				if (Q[i] > (size_t) i){
 #ifdef LB_DEBUG
 					std::cerr<<"Permutation de tempP["<<i

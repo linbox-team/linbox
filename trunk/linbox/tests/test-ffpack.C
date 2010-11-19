@@ -28,18 +28,20 @@
 #include <iostream>
 #include <linbox/integer.h>
 #include <linbox/matrix/matrix-domain.h>
-//#include "linbox/field/givaro-zpz.h"
+#include "linbox/field/givaro-zpz.h"
 #include "linbox/field/modular.h"
 #include "linbox/ffpack/ffpack.h"
 #include <vector>
 #include "test-common.h"
+
+#define _LB_FULL_TEST
 
 using namespace LinBox;
 
 string blank;
 
 const int maxpretty = 35;
-const char* pretty(string a) 
+const char* pretty(string a)
 {
 
 	blank = "     " + a;
@@ -51,11 +53,11 @@ const char* pretty(string a)
 }
 
 /*
- *  Testing the rank of dense matrices 
+ *  Testing the rank of dense matrices
  *  construct a n*n matrices of rank r and compute the rank
  */
 template <class Field>
-static bool testRank (const Field& F,size_t n, int iterations) 
+static bool testRank (const Field& F,size_t n, int iterations)
 {
 
 	typedef typename Field::Element Element;
@@ -70,31 +72,31 @@ static bool testRank (const Field& F,size_t n, int iterations)
 	F.init( one, 1UL);
 	F.init( zero, 0UL);
 	RandIter G(F);
-	NonzeroRandIter<Field> Gn(F,G); 
+	NonzeroRandIter<Field> Gn(F,G);
 
 	unsigned int r;
 	bool ret = true;
-	
+
 	for (int k=0;k<iterations; ++k) {
-    
+
 		commentator.progress(k);
 		Element * A = new Element[n*n];
 		Element * S = new Element[n*n];
 		Element * L = new Element[n*n];
-     
+
 		r = rand() % n;
 		// create S as an upper triangular matrix with r nonzero rows
 		for (size_t i=0;i<r;++i){
 			for (size_t j=0;j<i;++j)
 				F.assign(*(S+j+i*n),zero);
 			Gn.random(*(S+i*n+i));
-			for (size_t j=i+1;j<n;++j)     
+			for (size_t j=i+1;j<n;++j)
 				G.random(*(S+i*n+j));
 		}
 		for (size_t i=r;i<n;++i){
 			for (size_t j=0;j<n;++j)
 				F.assign(*(S+j+i*n),zero);
-		}			
+		}
 		// create L as a lower triangular matrix with nonzero elements on the diagonal
 		for (size_t i=0;i<n;++i){
 			for (size_t j=0;j<i;++j)
@@ -104,7 +106,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
 				F.assign(*(L+j+i*n),zero);
 
 		}
-		
+
 		//  compute A=LS
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
 			      one, L, n, S, n, zero, A, n );
@@ -117,9 +119,9 @@ static bool testRank (const Field& F,size_t n, int iterations)
 		if (rank!=r)
 			ret=false;
 	}
-  	
+
 	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testRank");
-    
+
 	return ret;
 }
 
@@ -128,7 +130,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
  *  construct a n*n matrices of rank r and compute the rank
  */
 template <class Field>
-static bool testTURBO (const Field& F,size_t n, int iterations) 
+static bool testTURBO (const Field& F,size_t n, int iterations)
 {
 
 	typedef typename Field::Element Element;
@@ -143,25 +145,25 @@ static bool testTURBO (const Field& F,size_t n, int iterations)
 	F.init( one, 1UL);
 	F.init( zero, 0UL);
 	RandIter G(F);
-	NonzeroRandIter<Field> Gn(F,G); 
+	NonzeroRandIter<Field> Gn(F,G);
 
 	unsigned int r;
 	bool ret = true;
-		
+
 	for (int k=0;k<iterations; ++k) {
-    
+
 		commentator.progress(k);
 		Element * A = new Element[n*n];
 		Element * S = new Element[n*n];
 		Element * L = new Element[n*n];
-     
+
 		r = rand() % n;
 		// create S as an upper triangular matrix with r nonzero rows
 		for (size_t i=0;i<r;++i){
 			for (size_t j=0;j<i;++j)
 				F.assign(*(S+j+i*n),zero);
 			Gn.random(*(S+i*n+i));
-			for (size_t j=i+1;j<n;++j)     
+			for (size_t j=i+1;j<n;++j)
 				G.random(*(S+i*n+j));
 		}
 		for (size_t i=r; i<n; ++i)
@@ -175,20 +177,20 @@ static bool testTURBO (const Field& F,size_t n, int iterations)
 			for (size_t j=i+1;j<n;++j)
 				F.assign(*(L+j+i*n),zero);
 		}
-	
-		
+
+
 		//  compute A=LS
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
 			      one, L, n, S, n, zero, A, n );
-		
+
 		delete[] L;
 		delete[] S;
 		// compute the rank of A
 		size_t * P = new size_t[n];
 		size_t * Q = new size_t[n];
-		unsigned int rank= FFPACK::TURBO( F, n, n, 
+		unsigned int rank= FFPACK::TURBO( F, n, n,
 						  A,n, P, Q, 100);
-// 						  A, n, A+no2,n, 
+// 						  A, n, A+no2,n,
 // 						    A+no2*n, n, A+no2*(n+1), n );
 
 		delete[] P;
@@ -198,9 +200,9 @@ static bool testTURBO (const Field& F,size_t n, int iterations)
 		if (rank!=r)
 			ret=false;
 	}
-  	
+
 	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testTURBO");
-    
+
 	return ret;
 }
 
@@ -210,48 +212,48 @@ static bool testTURBO (const Field& F,size_t n, int iterations)
  *  construct a n*n matrices of determinant d and compute the determinant
  */
 template <class Field>
-static bool testDet (const Field& F,size_t n, int iterations) 
+static bool testDet (const Field& F,size_t n, int iterations)
 {
 
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
-  
+
 	//Commentator commentator;
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	commentator.start (pretty("Testing determinant"),"testDet",iterations);
 
 	RandIter G(F);
-	NonzeroRandIter<Field> Gn(F,G); 
+	NonzeroRandIter<Field> Gn(F,G);
 	Element one,zero,d;
 	F.init(one,1UL);
 	F.init(zero,0UL);
 
 	bool ret = true;
-	
+
 	for (int k=0;k<iterations;++k) {
-		
+
 		commentator.progress(k);
 
 		G.random(d);
-		
+
 		Element * A = new Element[n*n];
 		Element * S = new Element[n*n];
 		Element * L = new Element[n*n];
 
-		
 
-		// create S as an upper triangular matrix of full rank 
+
+		// create S as an upper triangular matrix of full rank
 		// with diagonal's element equal to 1 except the first entry wich equals to d
 		for (size_t i=0;i<n;++i){
 			for (size_t j=0;j<i;++j)
 				F.assign(*(S+j+i*n),zero);
 			F.assign(*(S+i*n+i), one);
-			for (size_t j=i+1;j<n;++j)      
+			for (size_t j=i+1;j<n;++j)
 				G.random(*(S+i*n+j));
 		}
 		F.assign(*S,d);
-		
+
 		// create L as a lower triangular matrix with only 1's on diagonal
 		for (size_t i=0;i<n;++i){
 			for (size_t j=0;j<i;++j)
@@ -261,7 +263,7 @@ static bool testDet (const Field& F,size_t n, int iterations)
 				F.assign(*(L+j+i*n),zero);
 		}
 
-    
+
 		//  compute A=LS
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
 			      one, L, n, S, n, zero, A, n );
@@ -277,9 +279,9 @@ static bool testDet (const Field& F,size_t n, int iterations)
 		if (!F.areEqual(det,d))
 			ret=false;
 	}
-  
+
 	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testDet");
-    
+
 	return ret;
 }
 
@@ -287,7 +289,7 @@ static bool testDet (const Field& F,size_t n, int iterations)
  * Test of the LQUP factorization routine
  */
 template <class Field>
-static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations) 
+static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 {
 
 	typedef typename Field::Element                  Element;
@@ -299,22 +301,22 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 	commentator.start (pretty("Testing LQUP factorization"),"testLQUP",iterations);
 
 	RandIter G(F);
-	NonzeroRandIter<Field> Gn(F,G); 
+	NonzeroRandIter<Field> Gn(F,G);
 	Element one,zero;
 	F.init(one,1UL);
 	F.init(zero,0UL);
-  
+
 	bool ret = true;
-	
+
 	for (int k=0;k<iterations;++k) {
-    
-		commentator.progress(k);    
-		
-		
+
+		commentator.progress(k);
+
+
 		Element * A = new Element[m*n];
 		Element * B = new Element[m*m];
 		Element * C = new Element[m*n];
-		
+
 
 		// Create B a random matrix of rank n/2
 		for (size_t j=0;j<m;++j)
@@ -336,7 +338,7 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 			} else
 				for (size_t j = 0; j < n; ++j)
 					F.assign (*(C+i*n+j),zero);
-		
+
 		// A = B*C
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m, n, m,
 			      one, B, m, C, n, zero, A, n );
@@ -349,7 +351,7 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 
 		size_t * P = new size_t[n];
 		size_t * Q = new size_t[m];
-		
+
 // 		write_field (F, cerr<<"A="<<endl, A, m, n, n);
 		size_t r = FFPACK::LUdivine( F, FFLAS::FflasNonUnit, FFLAS::FflasNoTrans,
 					     m, n, A, n, P, Q, FFPACK::FfpackLQUP);
@@ -357,18 +359,18 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 
 		Element * L = new Element[m*m];
 		Element * U = new Element[m*n];
-	
+
 		for (size_t i=0; i<m; ++i){
 			for (size_t j = 0; j < i; ++j)
 				if (j<n)
 					F.assign (*(L+i*m+j), *(A+i*n+j) );
 				else
 					F.assign (*(L+i*m+j), zero );
-					    
+
 			for (size_t j = i; j < m; ++j)
 				F.assign (*(L+i*m+j), zero );
 		}
-		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, m, 
+		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, m,
 				  0, r, L, m, Q);
 		for (size_t i=0; i<m; ++i)
 			F.assign( *(L+i*m+i), one);
@@ -382,11 +384,11 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 // 		write_field (F, cerr<<"L="<<endl, L, m, m, m);
 // 		write_field (F, cerr<<"U"<<endl, U, m, n, n);
 		// C = U*P
-		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, m, 
+		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, m,
 				  0, r, U, n, P);
 		//		write_field (F, cerr<<"UP"<<endl, U, m, n, n);
 		// C = Q*C
-		FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, n, 
+		FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, n,
 				  0, r, U, n, Q);
 		//		write_field (F, cerr<<"QUP"<<endl, U, m, n, n);
 
@@ -397,7 +399,7 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 			      one, L, m, U, n, zero, A, n );
 		delete[] L;
 		delete[] U;
-		
+
 		for (size_t i = 0; i < m;++i)
 			for (size_t j = 0; j < n; ++j)
 				if (!F.areEqual( *(A+i*n+j), *(Abis+i*n+j))){
@@ -416,12 +418,12 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 	}
 
 	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testLQUP");
-    
+
 	return ret;
 }
 
 template <class Field>
-static bool testMinPoly (const Field& F, size_t n, int iterations) 
+static bool testMinPoly (const Field& F, size_t n, int iterations)
 {
 	typedef typename Field::Element                  Element;
 	typedef typename Field::RandIter                RandIter;
@@ -432,21 +434,21 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 	commentator.start (pretty("Testing minpoly"),"testMinPoly",iterations);
 	Element tmp, one, zero,mone;
 	RandIter G(F);
-	NonzeroRandIter<Field> Gn(F,G); 
+	NonzeroRandIter<Field> Gn(F,G);
 	F.init(one, 1UL);
 	F.init(zero, 0UL);
 	F.neg(mone, one);
 	//F.neg( mone, one);
 	bool ret = true;
-			
+
 	for (int k=0;k<iterations;++k) {
-    
-		commentator.progress(k);    
-		
+
+		commentator.progress(k);
+
 		Element * A = new Element[n*n];
 		Element * X = new Element[n*(n+1)];
 		size_t * Perm = new size_t[n];
-			
+
 		Polynomial P;
 		// Test MinPoly(In) = X-1
 		for (size_t i=0;i<n;++i){
@@ -454,9 +456,9 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 				F.assign(*(A+j+i*n),zero);
 			F.assign(*(A+i*(n+1)),one);
 		}
-		
+
 		FFPACK::MinPoly( F, P, n, A, n, X, n, Perm );
-		
+
 		if ( P.size() !=2 )
 			ret = false;
 		if ( !F.areEqual(P[0], mone) )
@@ -466,20 +468,20 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 		if(!ret) cerr<<"MinP(In)!=X-1"<<endl;
 		// Test MinPoly(a*In) = X-a
 		G.random(tmp);
-		
+
 		for (size_t i=0;i<n;++i){
 			for (size_t j=0;j<n;++j)
 				F.assign(*(A+j+i*n),zero);
-			
+
 			F.assign(*(A+i*(n+1)),tmp);
 		}
-		
+
 		F.negin(tmp);
-		
-		for (size_t i=0; i<n ;++i) 
+
+		for (size_t i=0; i<n ;++i)
 			Perm[i]=0;
 		FFPACK::MinPoly( F, P, n, A, n, X, n, Perm );
-	
+
 		if ( P.size() !=2 )
 			ret = false;
 		if ( !F.areEqual(P[0], tmp) ){
@@ -492,7 +494,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 			ret = false;
 		}
 		if(!ret) cerr<<"MinP(aIn)!=X-a"<<endl;
-		
+
 // 		for (size_t i=0;i<n-1;++i){
 // 			for (size_t j=0; j<n; ++j)
 // 				F.assign(*(A+i*n+j),zero);
@@ -500,11 +502,11 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 // 		}
 // 		for (size_t j=0;j<n;++j)
 // 			F.assign(*(A+(n-1)*n+j),zero);
-		
-// 		for (size_t i=0; i<n ;++i) 
+
+// 		for (size_t i=0; i<n ;++i)
 // 			Perm[i]=0;
 // 		FFPACK::MinPoly( F, P, n, A, n, X, n, Perm );
-	
+
 // 		if ( P.size() !=n+1 )
 // 			ret = false;
 // 		for (size_t i=0; i<n;++i)
@@ -519,12 +521,12 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 	}
 
 	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testMinPoly");
-	
+
 	return ret;
 }
 
 template <class Field>
-static bool testCharPoly (const Field& F, size_t n, int iterations) 
+static bool testCharPoly (const Field& F, size_t n, int iterations)
 {
 	typedef typename Field::Element                  Element;
 	typedef typename Field::RandIter                RandIter;
@@ -535,18 +537,18 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 	commentator.start (pretty("Testing charpoly"),"testCharPoly",iterations);
 	Element tmp, one, zero,mone;
 	RandIter G(F);
-	NonzeroRandIter<Field> Gn(F,G); 
+	NonzeroRandIter<Field> Gn(F,G);
 	F.init(one, 1UL);
 	F.init(zero, 0UL);
 	F.neg(mone, one);
 	bool ret = true;
-	
+
 	for (int k=0;k<iterations;++k) {
-    
-		commentator.progress(k);    
+
+		commentator.progress(k);
 
 		Element * A = new Element[n*n];
-		
+
 		std::list<Polynomial> P;
 		// Test CharPoly(In) = (X-1)^n
 		for (size_t i=0;i<n;++i){
@@ -559,7 +561,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 		P.clear();
 
 		FFPACK::CharPoly (F, P, n, A, n);
-	
+
 
 		typename list<Polynomial>::const_iterator P_it = P.begin();
 		while (P_it != P.end()){
@@ -572,20 +574,20 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 			if ( !F.areEqual(P_it->operator[](1), one) ){
 				ret = false;
 			}
-			
+
 			P_it++;
 		}
-		
+
 		// Test CharPoly(a*In) = X-a
 		G.random(tmp);
-		
+
 		for (size_t i=0;i<n;++i)
 			F.assign(*(A+i*(n+1)),tmp);
 		F.negin(tmp);
 		P.clear();
 
 		FFPACK::CharPoly( F, P, n, A, n );
-	
+
 		P_it = P.begin();
 
 		while (P_it != P.end()){
@@ -601,30 +603,30 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 	}
 
 	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testCharPoly");
-	
+
 	return ret;
 }
 
 template <class Field>
-static bool testInv (const Field& F,size_t n, int iterations) 
+static bool testInv (const Field& F,size_t n, int iterations)
 {
 
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
-  
+
 	//Commentator commentator;
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	commentator.start (pretty("Testing inverse"),"testInv",iterations);
-	
+
 	RandIter G(F);
-	NonzeroRandIter<Field> Gn(F,G); 
+	NonzeroRandIter<Field> Gn(F,G);
 	Element zero,one;
 	F.init(one,1UL);
 	F.init(zero,0UL);
-	
+
 	bool ret = true;
-	
+
 	Element * Id = new Element[n*n];
 	for (size_t i=0;i<n;++i){
 		for (size_t j=0;j<n;++j)
@@ -632,28 +634,28 @@ static bool testInv (const Field& F,size_t n, int iterations)
 		F.assign( *(Id+i*(n+1)),one);
 	}
 	for (int k=0;k<iterations;++k) {
-    
+
 		commentator.progress(k);
-   
+
 
 		Element * A = new Element[n*n];
 		Element * L = new Element[n*n];
 		Element * S = new Element[n*n];
 
-		
 
-		// create S as an upper triangular matrix of full rank 
-		// with nonzero random diagonal's element 
+
+		// create S as an upper triangular matrix of full rank
+		// with nonzero random diagonal's element
 		for (size_t i=0;i<n;++i){
-			for (size_t j=0;j<i;++j)      
+			for (size_t j=0;j<i;++j)
 				F.assign(*(S+i*n+j),zero);
 			Gn.random(*(S+i*(n+1)));
-			for (size_t j=i+1;j<n;++j)      
+			for (size_t j=i+1;j<n;++j)
 				G.random(*(S+i*n+j));
 		}
-     
-		// create L as a lower triangular matrix 
-		// with only 1's on diagonal 
+
+		// create L as a lower triangular matrix
+		// with only 1's on diagonal
 		for (size_t i=0;i<n;++i){
 			for (size_t j=0;j<i;++j)
 				G.random(*(L+i*n+j));
@@ -662,7 +664,7 @@ static bool testInv (const Field& F,size_t n, int iterations)
 				F.assign(*(L+i*n+j),zero);
 
 		}
-        
+
 		//  compute A=LS
 
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
@@ -675,7 +677,7 @@ static bool testInv (const Field& F,size_t n, int iterations)
 		// compute the inverse of A
 		int nullity;
 		FFPACK::Invert2 ( F, n, A, n, invA, n, nullity);
-		
+
 		// compute Ainv*A and A*Ainv
 
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
@@ -683,9 +685,9 @@ static bool testInv (const Field& F,size_t n, int iterations)
 
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
 			      one, invA, n, Ab, n, zero, S, n );
-   
+
 		for (size_t i=0;i<n*n;++i)
-			if ( !F.areEqual(*(L+i),*(Id+i)) || !F.areEqual(*(S+i),*(Id+i)) ) 
+			if ( !F.areEqual(*(L+i),*(Id+i)) || !F.areEqual(*(S+i),*(Id+i)) )
 				ret =false;
 		if (!ret){
 			// write_field (F, cerr<<"ID1="<<endl, L, n,n,n);
@@ -699,141 +701,295 @@ static bool testInv (const Field& F,size_t n, int iterations)
 		delete[] invA;
 	}
 	delete[] Id;
-	
+
 	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testInv");
-    
+
 	return ret;
 }
 
 template <class Field>
-static bool testapplyP (const Field& F,size_t n, int iterations) 
+static bool testapplyP (const Field& F,size_t n, int iterations)
 {
 
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
-  
+
 	//Commentator commentator;
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	commentator.start (pretty("Testing applyP"),"testapplyP",iterations);
-	
+
 	RandIter G(F);
 	Element zero,one,tmp,tmp2;
 	F.init(one,1UL);
 	F.init(zero,0UL);
-	
+
 	bool ret = true;
 	Field Z2(2);
 	RandIter G2(Z2);
-	
+
 	for (int k=0;k<iterations;++k) {
-		
+
 		commentator.progress(k);
-		
+
 
 		Element * A = new Element[n*n];
 		Element * Ab = new Element[n*n];
 		size_t * P =new size_t[n];
-		
-		
+
+
 		for (size_t i=0; i<n; ++i){
 			G.random(tmp);
 			if ( Z2.isZero(G2.random(tmp2) ) )
-				P[i] = i + ( (size_t) tmp % (n-i) ); 
-			else				
+				P[i] = i + ( (size_t) tmp % (n-i) );
+			else
 				P[i] = i;
 		}
-		
-		// create S as an upper triangular matrix of full rank 
-		// with nonzero random diagonal's element 
+
+		// create S as an upper triangular matrix of full rank
+		// with nonzero random diagonal's element
 		for (size_t i=0;i<n;++i){
-			for (size_t j=0;j<n;++j)      
+			for (size_t j=0;j<n;++j)
 				G.random(*(A+i*n+j));
 		}
-		
+
 		for (size_t i = 0; i<n*n; ++i)
 			F.assign( *(Ab+i), *(A+i) );
-		
+
 		//  compute A=LS
 
 		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, n, 0, n, A, n, P );
 		FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans, n, 0, n, A, n, P );
 		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans, n, 0, n, A, n, P );
 		FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, n, 0, n, A, n, P );
-		
+
 		for (size_t i=0;i<n*n;++i)
-			if ( !F.areEqual(*(Ab+i),*(A+i)) ) 
+			if ( !F.areEqual(*(Ab+i),*(A+i)) )
 				ret =false;
 		delete[] A;
 		delete[] Ab;
 		delete[] P;
 	}
-	
+
 	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testApplyP");
-    
+
 	return ret;
 }
 
 int main(int argc, char** argv)
 {
-	//-----------------------------------------------------------------------
-	// Choice of the finite field representation
-	//typedef GivaroZpz<Std32> Field;
-	typedef Modular<double> Field;
-	//typedef Modular<float> Field;
-	//typedef Modular<LinBox::uint32> Field;
-	//------------------------------------------------------------------------
-
 	bool pass = true;
 
-	static size_t n = 130;
-	static size_t m = 130;
-	static integer q = 65521;
+	static size_t n = 130+(int)130*drand48();
+	static size_t m = 130+(int)130*drand48();
+	static integer q = 653;
 	static int iterations =1;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to MxN.",       TYPE_INT,     &n },
 		{ 'm', "-m M", "Set dimension of test matrices to MxN.",       TYPE_INT,     &m },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q }, 
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
 		{ 'i', "-i I", "Perform each test for I iterations.",           TYPE_INT,     &iterations },
 		{ '\0' }
 	};
 
 	parseArguments (argc, argv, args);
-    
-	Field F (q);
 
-	srand(time (NULL));
-	
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	commentator.start("ffpack test suite", "ffpack");
+	/* Modular Double */
+	{
+		typedef Modular<double> Field;
 
- 	if (!testLUdivine (F, m,n, iterations)) pass=false;
-  	if (!testRank (F, n, iterations))   pass = false;   
-  	if (!testDet (F, n, iterations))   pass = false;   
-   	if (!testTURBO (F, n, iterations))   pass = false;   
-   	if (!testapplyP  (F, n, iterations)) pass = false;
-   	if (!testInv  (F, n, iterations)) pass = false;
-   	if (!testMinPoly (F,n,iterations)) pass=false;
- 	if (!testCharPoly (F,n,iterations)) pass=false;
-	
+		Field F (q);
+
+		srand(time (NULL));
+
+		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+		commentator.start("ffpack test suite", "ffpack");
+
+		if (!testLUdivine (F, m,n, iterations)) pass = false;
+		if (!testRank (F, n, iterations))       pass = false;
+		if (!testDet (F, n, iterations))        pass = false;
+		if (!testTURBO (F, n, iterations))      pass = false;
+		if (!testapplyP  (F, n, iterations))    pass = false;
+		if (!testInv  (F, n, iterations))       pass = false;
+		if (!testMinPoly (F,n,iterations))      pass = false;
+		if (!testCharPoly (F,n,iterations))     pass = false;
+
+	}
+
+#ifdef _LB_FULL_TEST
+	/* Modular Float */
+	{
+		typedef Modular<float> Field;
+
+		Field F (q);
+
+		srand(time (NULL));
+
+		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+		commentator.start("ffpack test suite", "ffpack");
+
+		if (!testLUdivine (F, m,n, iterations)) pass = false;
+		if (!testRank (F, n, iterations))       pass = false;
+		if (!testDet (F, n, iterations))        pass = false;
+		if (!testTURBO (F, n, iterations))      pass = false;
+		if (!testapplyP  (F, n, iterations))    pass = false;
+		if (!testInv  (F, n, iterations))       pass = false;
+		if (!testMinPoly (F,n,iterations))      pass = false;
+		if (!testCharPoly (F,n,iterations))     pass = false;
+
+	}
+
+	/* Modular Balanced Double */
+	{
+		typedef ModularBalanced<double> Field;
+
+		Field F (q);
+
+		srand(time (NULL));
+
+		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+		commentator.start("ffpack test suite", "ffpack");
+
+		if (!testLUdivine (F, m,n, iterations)) pass = false;
+		if (!testRank (F, n, iterations))       pass = false;
+		if (!testDet (F, n, iterations))        pass = false;
+		if (!testTURBO (F, n, iterations))      pass = false;
+		if (!testapplyP  (F, n, iterations))    pass = false;
+		if (!testInv  (F, n, iterations))       pass = false;
+		if (!testMinPoly (F,n,iterations))      pass = false;
+		if (!testCharPoly (F,n,iterations))     pass = false;
+
+	}
+
+	/* Modular Balanced Float */
+	{
+		typedef ModularBalanced<float> Field;
+
+		Field F (q);
+
+		srand(time (NULL));
+
+		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+		commentator.start("ffpack test suite", "ffpack");
+
+		if (!testLUdivine (F, m,n, iterations)) pass = false;
+		if (!testRank (F, n, iterations))       pass = false;
+		if (!testDet (F, n, iterations))        pass = false;
+		if (!testTURBO (F, n, iterations))      pass = false;
+		if (!testapplyP  (F, n, iterations))    pass = false;
+		if (!testInv  (F, n, iterations))       pass = false;
+		if (!testMinPoly (F,n,iterations))      pass = false;
+		if (!testCharPoly (F,n,iterations))     pass = false;
+
+	}
+#warning "some tests don't compile or fail"
+	/* Modular int32 */
+	{
+		typedef Modular<LinBox::int32> Field;
+
+		Field F (q);
+
+		srand(time (NULL));
+
+		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+		commentator.start("ffpack test suite", "ffpack");
+
+		if (!testLUdivine (F, m,n, iterations)) pass = false;
+		if (!testRank (F, n, iterations))       pass = false;
+		if (!testDet (F, n, iterations))        pass = false;
+		if (!testTURBO (F, n, iterations))      pass = false;
+		if (!testapplyP  (F, n, iterations))    pass = false;
+		if (!testInv  (F, n, iterations))       pass = false;
+		if (!testMinPoly (F,n,iterations))      pass = false;
+		if (!testCharPoly (F,n,iterations))     pass = false;
+
+	}
+
+#if 0 // fails
+	/* Modular Balanced int32 */
+	{
+		typedef ModularBalanced<LinBox::int32 > Field ;
+
+		Field F (q);
+
+		srand(time (NULL));
+
+		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+		commentator.start("ffpack test suite", "ffpack");
+
+		if (!testLUdivine (F, m,n, iterations)) pass = false;
+		if (!testRank (F, n, iterations))       pass = false;
+		if (!testDet (F, n, iterations))        pass = false;
+		if (!testTURBO (F, n, iterations))      pass = false;
+		if (!testapplyP  (F, n, iterations))    pass = false;
+		if (!testInv  (F, n, iterations))       pass = false;
+		if (!testMinPoly (F,n,iterations))      pass = false;
+		if (!testCharPoly (F,n,iterations))     pass = false;
+	}
+#endif
+
+#if 0 // no NonZeroRandIter
+	/* Modular uint32 */
+	{
+		typedef Modular<LinBox::uint32> Field;
+
+		Field F (q);
+
+		srand(time (NULL));
+
+		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+		commentator.start("ffpack test suite", "ffpack");
+
+		if (!testLUdivine (F, m,n, iterations)) pass=false;
+		if (!testRank (F, n, iterations))   pass = false;
+		if (!testDet (F, n, iterations))   pass = false;
+		if (!testTURBO (F, n, iterations))   pass = false;
+		if (!testapplyP  (F, n, iterations)) pass = false;
+		if (!testInv  (F, n, iterations)) pass = false;
+		if (!testMinPoly (F,n,iterations)) pass=false;
+		if (!testCharPoly (F,n,iterations)) pass=false;
+	}
+#endif
+
+#if 0 // no NonZeroRandIter
+	/* GivaroZpz int32 */
+	{
+		typedef GivaroZpz<Std32> Field;
+
+		Field F (q);
+
+		srand(time (NULL));
+
+		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+		commentator.start("ffpack test suite", "ffpack");
+
+		if (!testLUdivine (F, m,n, iterations)) pass=false;
+		if (!testRank (F, n, iterations))   pass = false;
+		if (!testDet (F, n, iterations))   pass = false;
+		if (!testTURBO (F, n, iterations))   pass = false;
+		if (!testapplyP  (F, n, iterations)) pass = false;
+		if (!testInv  (F, n, iterations)) pass = false;
+		if (!testMinPoly (F,n,iterations)) pass=false;
+		if (!testCharPoly (F,n,iterations)) pass=false;
+	}
+#endif
+#endif
 	commentator.stop(MSG_STATUS(pass),"ffpack test suite");
-    
+
 	return pass ? 0 : -1;
 }
 
 
-
-
-
-
-
-
-
-
-
-
+#undef _LB_FULL_TEST
 
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */

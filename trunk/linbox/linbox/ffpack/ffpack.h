@@ -1335,50 +1335,41 @@ public:
 		const size_t M, const int ibeg, const int iend,
 		typename Field::Element * A, const size_t lda, const size_t * P )
 	{
-		
+
 		if ( Side == FflasRight )
-			if ( Trans == FflasTrans ){
-				for (size_t j = 0 ; j < M ; ++j)
-					for ( size_t i=ibeg; i<(size_t) iend; ++i){
+			if ( Trans == FflasTrans )
+				for (size_t j = 0 ; j < M ; ++j){
+					for ( size_t i=ibeg; i<(size_t) iend; ++i)
 						if ( P[i]> i )
-							std::swap(A[P[i]+j*lda],A[i+j*lda]);
-//                                                        fswap( F, M, 
-//                                                               A + P[i]*1, lda, 
-//                                                               A + i*1, lda );
-					}
-			}
-			else{ // Trans == FflasNoTrans
-				for (size_t j = 0 ; j < M ; ++j)
-					for (int i=iend-1; i>=ibeg; --i){
-						if ( P[i]>(size_t)i ){
-							std::swap(A[P[i]+j*lda],A[i+j*lda]);
-//                                                        fswap( F, M, 
-//                                                               A + P[i]*1, lda, 
-//                                                               A + i*1, lda );
-						}
+							std::swap(A[j*lda+P[i]],A[j*lda+i]);
+					//fswap( F, M, A + P[i]*1, lda, A + i*1, lda );
 				}
-			}
+			else // Trans == FflasNoTrans
+				for (size_t j = 0 ; j < M ; ++j){
+					for (int i=iend; i-->ibeg; )
+						if ( P[i]>(size_t)i )
+							std::swap(A[j*lda+P[i]],A[j*lda+i]);
+						//fswap( F, M, A + P[i]*1, lda, A + i*1, lda );
+					}
 		else // Side == FflasLeft
-			if ( Trans == FflasNoTrans ){
+			if ( Trans == FflasNoTrans )
 				for (size_t i=ibeg; i<(size_t)iend; ++i){
 					if ( P[i]> (size_t) i )
 						fswap( F, M, 
 						       A + P[i]*lda, 1, 
 						       A + i*lda, 1 );
 				}
-			}
-			else{ // Trans == FflasTrans
-				for (int i=iend-1; i>=ibeg; --i){
+			else // Trans == FflasTrans
+				for (int i=iend; i-->ibeg; ){
 					if ( P[i]> (size_t) i ){
 						fswap( F, M, 
 						       A + P[i]*lda, 1, 
 						       A + i*lda, 1 );
 					}
 				}
-			}
-			
+
 	}
-	
+
 	/**
 	 * Compute the characteristic polynomial of A using Krylov
 	 * Method, and LUP factorization of the Krylov matrix
@@ -1388,7 +1379,7 @@ public:
 	CharPoly( const Field& F, std::list<Polynomial>& charp, const size_t N,
 		  typename Field::Element * A, const size_t lda,
 		  const FFPACK_CHARPOLY_TAG CharpTag= FfpackArithProg);
-	
+
 	/**
 	 * Compute the minimal polynomial of (A,v) using an LUP 
 	 * factorization of the Krylov Base (v, Av, .., A^kv)
@@ -1420,7 +1411,8 @@ public:
 		F.init(one, 1.0);
 		F.init(zero, 0.0);
 		size_t LM = (Side == FflasRight)?N:M;
-		for (int i=R-1; i>=0; --i){
+		int i = R ;
+		for (; i--; ){ // much faster for
 			if (  Q[i] > (size_t) i){
 				//for (size_t j=0; j<=Q[i]; ++j)
 				//F.init( *(L+Q[i]+j*ldl), 0 );
