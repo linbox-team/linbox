@@ -1293,7 +1293,7 @@ testBlackbox(Field& F, BB &A)
 	
 	LinBox::commentator.setMaxDepth(-1);
 	bool ret = true;
-	UserTimer t;
+	LinBox::UserTimer t;
 
 #if 0
 	size_t iterations = 1; 

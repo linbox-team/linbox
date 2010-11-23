@@ -169,7 +169,7 @@ int main (int argc, char **argv)
         
         PID_integer::Element val_A;
 
-        Timer chrono; chrono.start();
+	LinBox::Timer chrono; chrono.start();
         if (argc >= 3) {
             Transpose<Blackbox> T(&A);
             if (strcmp(argv[2],"-ata") == 0) {
