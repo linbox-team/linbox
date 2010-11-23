@@ -220,8 +220,7 @@ std::ostream& write_field(const Field& F,std::ostream& c,
 {
 
 	double tmp;
-	if (mapleFormat) c << "Matrix(" << n <<',' << m << ',' ;
-	if (mapleFormat) c << '[';
+	if (mapleFormat) c << "Matrix(" << n <<',' << m << ", [" ;
 	for (int i = 0; i<n;++i){
 		if (mapleFormat) c << '[';
 		for (int j=0; j<m;++j){
@@ -234,9 +233,8 @@ std::ostream& write_field(const Field& F,std::ostream& c,
 		if (mapleFormat && i<n-1) c << ',';
 		if (!mapleFormat) c << std::endl;
 	}
-	if (mapleFormat) c << ']';
-	if (mapleFormat) c << ')';
-	return c << std::endl;
+	if (mapleFormat) c << "])";
+	return c ;
 }
 
 // Displays a triangular matrix
@@ -249,8 +247,7 @@ std::ostream& write_field(const Field& F,std::ostream& c,
 {
 
 	double tmp;
-	if (mapleFormat) c << "Matrix(" << n <<',' << m << ',' ;
-	if (mapleFormat) c << '[';
+	if (mapleFormat) c << "Matrix(" << n <<',' << m << ",[";
 	for (int i = 0; i<n;++i){
 		if (mapleFormat) c << '[';
 		// under diag
@@ -284,9 +281,8 @@ std::ostream& write_field(const Field& F,std::ostream& c,
 		if (mapleFormat && i<n-1) c << ',';
 		if (!mapleFormat) c << std::endl;
 	}
-	if (mapleFormat) c << ']';
-	if (mapleFormat) c << ')';
-	return c << std::endl;
+	if (mapleFormat) c << "])";
+	return c ;
 }
 
 #endif //__LINBOX_matio_H
