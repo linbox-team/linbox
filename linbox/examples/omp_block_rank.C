@@ -1,5 +1,4 @@
-
-/** 
+/* 
  * examples/omp_block_rank.C
  *
  * Copyright (C) 2010 J-G Dumas
@@ -36,7 +35,8 @@
 
 // **********************************************************
 // Variable globale pour fixer le générateurs des FFT primes
-struct FFTSeeder {
+struct FFTSeeder 
+{
     unsigned long seed;
     FFTSeeder(unsigned long s=0) : seed(s) {}
     void setseed(unsigned long s=0) { seed=s; }
@@ -115,12 +115,9 @@ void extractLeftSigma(const Field &F,
 
 }
 
-
-
-
-
 template<class Field>
-void write_sigma(const Field &_F, const char* name, const std::vector<LinBox::BlasMatrix<typename Field::Element> > & P) {
+void write_sigma(const Field &_F, const char* name, const std::vector<LinBox::BlasMatrix<typename Field::Element> > & P) 
+{
 	size_t m,n;
 	m = P[0].rowdim();
 	n = P[0].coldim();
@@ -154,24 +151,24 @@ void write_sigma(const Field &_F, const char* name, const std::vector<LinBox::Bl
 
 
 template<class Container, class Field>
-void scalarmulin(Container& C, const Field& F, const typename Field::Element& x) {
+void scalarmulin(Container& C, const Field& F, const typename Field::Element& x) 
+{
     for(typename Container::RawIterator it=C.rawBegin();it!=C.rawEnd();++it) 
         F.mulin(*it, x);
 }
+
 template<class Container1, class Field, class Container2>
-void contaddin(Container1& C, const Field& F, const Container2& V) {
+void contaddin(Container1& C, const Field& F, const Container2& V) 
+{
     typename Container1::RawIterator cit=C.rawBegin();
     typename Container2::ConstRawIterator vit=V.rawBegin();
     for( ; cit!=C.rawEnd(); ++cit, ++vit) 
         F.addin(*cit, *vit);
 }
 
-    
-
-
 template<class Field, class Array, class Matrix>
-void EvalPolyMat(Array& EvalDets, const Field& F, const LinBox::BlasMatrixDomain<Field>& D, const std::vector<Matrix>& matminpol, const Array& Points) {
-
+void EvalPolyMat(Array& EvalDets, const Field& F, const LinBox::BlasMatrixDomain<Field>& D, const std::vector<Matrix>& matminpol, const Array& Points) 
+{
     const long nump = Points.size();
     std::cerr << "num procs: " << omp_get_num_procs() << std::endl;
     std::cerr << "max threads: " << omp_get_max_threads() << std::endl;
@@ -193,56 +190,59 @@ void EvalPolyMat(Array& EvalDets, const Field& F, const LinBox::BlasMatrixDomain
 }
 
 #include "linbox/algorithms/whisart_trace.h"
-// now in LinBox
 
-// template<class Field, class BB>
-// void WhisartTrace(
-//     typename Field::Element& trace, 
-//     const Field& F, 
-//     const LinBox::Diagonal<Field>& ExtD, 
-//     const BB& A, 
-//     const LinBox::Diagonal<Field>& InD) {
-//         // Trace of ExtD B InD B^T ExtD
-//         // is sum ExtD_i^2 B_{i,j} InD_j
-//     F.init(trace, 0);
-//     for(typename BB::ConstRawIndexedIterator it = A.rawIndexedBegin();
-//         it != A.rawIndexedEnd(); ++it) {
-//         typename Field::Element tmp,e,i; F.init(tmp);F.init(e);F.init(i);
-//         F.mul(tmp,it.value(),it.value());
-//         ExtD.getEntry(e, it.rowIndex(),it.rowIndex());
-//         InD.getEntry(i, it.colIndex(),it.colIndex());
-//         F.mulin(tmp,e);
-//         F.mulin(tmp,e);
-//         F.mulin(tmp,i);
-//         F.addin(trace, tmp);
-//     }
-// }
 
-// template<class Field, class BB>
-// void WhisartTraceTranspose(
-//     typename Field::Element& trace, 
-//     const Field& F, 
-//     const LinBox::Diagonal<Field>& ExtD, 
-//     const BB& A, 
-//     const LinBox::Diagonal<Field>& InD) {
-//         // Trace of ExtD B^T  InD B ExtD
-//         // is sum ExtD_j^2 B_{i,j} InD_i
-//     F.init(trace, 0);
-//     for(typename BB::ConstRawIndexedIterator it = A.rawIndexedBegin();
-//         it != A.rawIndexedEnd(); ++it) {
-//         typename Field::Element tmp,e,i; F.init(tmp);F.init(e);F.init(i);
-//         F.mul(tmp,it.value(),it.value());
-//         ExtD.getEntry(e, it.colIndex(),it.colIndex());
-//         InD.getEntry(i, it.rowIndex(),it.rowIndex());
-//         F.mulin(tmp,e);
-//         F.mulin(tmp,e);
-//         F.mulin(tmp,i);
-//         F.addin(trace, tmp);
-//     }
-// }
+#if 0 // now in LinBox
+ template<class Field, class BB>
+ void WhisartTrace(
+     typename Field::Element& trace, 
+     const Field& F, 
+     const LinBox::Diagonal<Field>& ExtD, 
+     const BB& A, 
+     const LinBox::Diagonal<Field>& InD) {
+	 // Trace of ExtD B InD B^T ExtD
+	 // is sum ExtD_i^2 B_{i,j} InD_j
+     F.init(trace, 0);
+     for(typename BB::ConstRawIndexedIterator it = A.rawIndexedBegin();
+	 it != A.rawIndexedEnd(); ++it) {
+	 typename Field::Element tmp,e,i; F.init(tmp);F.init(e);F.init(i);
+	 F.mul(tmp,it.value(),it.value());
+	 ExtD.getEntry(e, it.rowIndex(),it.rowIndex());
+	 InD.getEntry(i, it.colIndex(),it.colIndex());
+	 F.mulin(tmp,e);
+	 F.mulin(tmp,e);
+	 F.mulin(tmp,i);
+	 F.addin(trace, tmp);
+     }
+ }
+
+ template<class Field, class BB>
+ void WhisartTraceTranspose(
+     typename Field::Element& trace, 
+     const Field& F, 
+     const LinBox::Diagonal<Field>& ExtD, 
+     const BB& A, 
+     const LinBox::Diagonal<Field>& InD) {
+	 // Trace of ExtD B^T  InD B ExtD
+	 // is sum ExtD_j^2 B_{i,j} InD_i
+     F.init(trace, 0);
+     for(typename BB::ConstRawIndexedIterator it = A.rawIndexedBegin();
+	 it != A.rawIndexedEnd(); ++it) {
+	 typename Field::Element tmp,e,i; F.init(tmp);F.init(e);F.init(i);
+	 F.mul(tmp,it.value(),it.value());
+	 ExtD.getEntry(e, it.colIndex(),it.colIndex());
+	 InD.getEntry(i, it.rowIndex(),it.rowIndex());
+	 F.mulin(tmp,e);
+	 F.mulin(tmp,e);
+	 F.mulin(tmp,i);
+	 F.addin(trace, tmp);
+     }
+ }
+#endif
 
 template<class T>
-std::ostream& operator<< (std::ostream& o, const std::vector<T>& C) {
+std::ostream& operator<< (std::ostream& o, const std::vector<T>& C) 
+{
     o << '[';
     if (C.size() == 0) return o << ']';
     if (C.size() == 1) return o << C.front() << ']';
@@ -252,7 +252,8 @@ std::ostream& operator<< (std::ostream& o, const std::vector<T>& C) {
     return o << C.back() << ']';
 }
 
-struct OMPTimer {
+struct OMPTimer 
+{
     double _c;
     void start() { _c = omp_get_wtime(); }
     void stop() { _c = omp_get_wtime() - _c; }
@@ -262,7 +263,6 @@ struct OMPTimer {
         return o << t._c << 's';
     }
 };
-
 
 template<class Field>
 int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
@@ -571,9 +571,6 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
               << std::endl;
     return 0;
 }
-
-
-
 
 int main (int argc, char **argv)
 {

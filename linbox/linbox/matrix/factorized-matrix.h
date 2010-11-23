@@ -208,14 +208,14 @@ namespace LinBox
 		// get the permutation P
 		const BlasPermutation& getP() const {return _PP;}
        
-		/** get the _transpose_ of the permutation Q
-		 * NOTE: this does not return Q itself! (because it is more difficult to compute)
-		 * If needed, Q can be obtained as a TransposedBlasMatrix from the return value
+		/** @brief get the <i>transpose</i> of the permutation \p Q
+		 * @warning this does not return \p Q itself! (because it is more difficult to compute)
+		 * If needed, \p Q can be obtained as a \p TransposedBlasMatrix from the return value
 		 *
 		 * One reason this confusion exists is that left-multiplying by a permuation matrix 
-		 * corresponds to a row permuation \pi \in S_n, while right-multiplying by the same matrix
-		 * corresponds to the inverse column permutation \pi^(-1)!
-		 * Usually this is handled intelligently (eg by applyP) but you must be careful with getQ().
+		 * corresponds to a row permuation \f$\pi \in S_n\f$, while right-multiplying by the same matrix
+		 * corresponds to the inverse column permutation \f$\pi^{-1}\f$!
+		 * Usually this is handled intelligently (eg by \c applyP) but you must be careful with \c getQ().
 		 */
 		const BlasPermutation& getQ() const  {return _QQ;}
 

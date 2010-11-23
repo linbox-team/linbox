@@ -1526,7 +1526,6 @@ namespace LinBox
 #include "linbox/field/modular-byte.h"
 #include "linbox/field/modular-double.h"
 #include "linbox/field/modular-float.h"
-#include "linbox/field/modular-balanced-int32.h"
 
 #endif // __LINBOX_field_modular_H
 

@@ -1,4 +1,4 @@
-/** 
+/* 
  * examples/rank.C
  *
  * Copyright (C) 2005, 2010 D. Saunders, J-G Dumas
@@ -24,7 +24,6 @@
 \brief Rank of sparse matrix over Z or Zp.
 \ingroup examples
 */
-
 
 #include <iostream>
 #include <sstream>

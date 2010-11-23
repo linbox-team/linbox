@@ -216,7 +216,7 @@ void read_field4(const Field& F,char * mat_file,int* tni,int* tnj,
 template<class Field>
 std::ostream& write_field(const Field& F,std::ostream& c, 
 			  const typename Field::Element* E,
-			  int n, int m, int id, bool mapleFormat = false,bool mapleHidden = false)
+			  int n, int m, int id, bool mapleFormat = false)
 {
 
 	double tmp;
@@ -236,7 +236,6 @@ std::ostream& write_field(const Field& F,std::ostream& c,
 	}
 	if (mapleFormat) c << ']';
 	if (mapleFormat) c << ')';
-	if (mapleHidden) c << ':' ; else c << ';' ;
 	return c << std::endl;
 }
 
@@ -246,7 +245,7 @@ template<class Field>
 std::ostream& write_field(const Field& F,std::ostream& c, 
 			  const LinBox::FFLAS::FFLAS_UPLO uplo, const LinBox::FFLAS::FFLAS_DIAG unit,
 			  const typename Field::Element* E,
-			  int n, int m, int id, bool mapleFormat = false, bool mapleHidden = false)
+			  int n, int m, int id, bool mapleFormat = false)
 {
 
 	double tmp;
@@ -287,7 +286,6 @@ std::ostream& write_field(const Field& F,std::ostream& c,
 	}
 	if (mapleFormat) c << ']';
 	if (mapleFormat) c << ')';
-	if (mapleHidden) c << ':' ; else c << ';' ;
 	return c << std::endl;
 }
 
