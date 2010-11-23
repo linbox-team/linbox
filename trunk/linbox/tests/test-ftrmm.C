@@ -8,6 +8,7 @@
 
 //#define DEBUG
 
+#include <cassert>
 #include "linbox/linbox-config.h"
 #include "linbox/fflas/fflas.h"
 #include "linbox/ffpack/ffpack.h"

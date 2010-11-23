@@ -455,7 +455,8 @@ namespace LinBox
 
 		BlasPermutation( const BlasPermutation& P): _PP( P._PP ), _order( P._order ) {};
 
-		BlasPermutation& operator=( const BlasPermutation& P ){
+		BlasPermutation& operator=( const BlasPermutation& P )
+		{
 			_PP = P._PP;
 			_order = P._order;
 			return *this;
@@ -469,7 +470,8 @@ namespace LinBox
 		//const size_t  getOrder()  const { return _order; } // BB: "warning: type qualifier on return type is meaningless"
 		size_t  getOrder()  const { return _order; }
 
-		BlasPermutation& extendTrivially(const size_t newSize) {
+		BlasPermutation& extendTrivially(const size_t newSize) 
+		{
 			if (newSize < _order) 
 				std::cerr << "WARNING: attempting to reduce size of permutation.";
 			_PP.resize(newSize);
