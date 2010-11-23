@@ -396,21 +396,21 @@ namespace LinBox
 
 		unsigned long AccBound(const Element&r) const
 {
-			Element one, zero ; init(one,1UL) ; init(zero,0UL);
-			double max_double = (double) (1ULL<<FLT_MANT_DIG) - modulus ;
-			double p = modulus-1 ;
-			if (areEqual(zero,r))
-				return (unsigned long) max_double/p ;
-			else if (areEqual(one,r))
-{
-				if (modulus>= getMaxModulus())
-					return 0 ;
-				else
-					return (unsigned long) max_double/(modulus*modulus) ;
-			} else
-				throw LinboxError("Bad input, expecting 0 or 1");
-			return 0;
-		}
+	Element one, zero ; init(one,1UL) ; init(zero,0UL);
+	double max_double = (double) (1ULL<<FLT_MANT_DIG) - modulus ;
+	double p = modulus-1 ;
+	if (areEqual(zero,r))
+		return (unsigned long) (double(max_double)/p) ;
+	else if (areEqual(one,r))
+	{
+		if (modulus>= getMaxModulus())
+			return 0 ;
+		else
+			return (unsigned long) (double(max_double)/(modulus*modulus)) ;
+	} else
+		throw LinboxError("Bad input, expecting 0 or 1");
+	return 0;
+}
 
 
 		static inline float getMaxModulus()

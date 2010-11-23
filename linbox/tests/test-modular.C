@@ -1,4 +1,3 @@
-
 /* tests/test-modular.C
  * Copyright (C) 2001, 2002 Bradford Hovinen,
  * Copyright (C) 2002 Dave Saunders

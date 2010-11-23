@@ -57,7 +57,7 @@ int main (int argc, char **argv)
 	}
  
 	integer det1, det2;
-	Timer tim; tim.clear();
+	LinBox::Timer tim; tim.clear();
 	tim.start();
 	bool proof=false;
 	if (argc > 2)
@@ -80,7 +80,7 @@ int main (int argc, char **argv)
 	det (db, B);
 	for (size_t j=0; j<n; ++j)
 		B.setEntry(n-1,j,A.getEntry(n,j));
-	Timer tim2;
+	LinBox::Timer tim2;
 	tim2.clear();
 	tim2.start();
 	det(dc, B);

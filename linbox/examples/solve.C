@@ -43,7 +43,7 @@ int main (int argc, char **argv)
         cerr << "Usage: solve <matrix-file-in-supported-format> [<dense-vector-file>] [<p>]" << endl;
         return 0;
     }
-    srand48( BaseTimer::seed() );
+    srand48( LinBox::BaseTimer::seed() );
 
     std::ifstream input (argv[1]);
     if (!input) { cerr << "Error opening matrix file " << argv[1] << endl; return -1; }
@@ -110,7 +110,7 @@ int main (int argc, char **argv)
             F.write(cout, *it) << " ";
         std::cout << "]" << std::endl;
                 
-        Timer chrono; 
+	LinBox::Timer chrono; 
 
             // Sparse Elimination 
         chrono.clear();
@@ -206,7 +206,7 @@ int main (int argc, char **argv)
         std::cout << "]" << std::endl;
                 
 	
-        Timer chrono; 
+	LinBox::Timer chrono; 
 		
 	// Wiedemann
         chrono.start();

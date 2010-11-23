@@ -389,13 +389,13 @@ namespace LinBox
 			double max_double = (double) (1ULL<<DBL_MANT_DIG) - modulus ; /* other wise 2^52+(2^52-1) */
 			double p = modulus-1 ;
 			if (areEqual(zero,r))
-				return (unsigned long) max_double/p ;
+				return (unsigned long) (double(max_double)/p) ;
 			else if (areEqual(one,r))
 			{
 				if (modulus>= getMaxModulus())
 					return 0 ;
 				else
-					return (unsigned long) max_double/(modulus*modulus) ;
+					return (unsigned long) (double(max_double)/(modulus*modulus)) ;
 			} else
 				throw LinboxError("Bad input, expecting 0 or 1");
 			return 0;

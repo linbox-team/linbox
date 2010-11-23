@@ -331,13 +331,13 @@ namespace LinBox
 			double p = half_mod ;
 			if (!(fmod(modulus,2.))) ++p; // if pair, -(p-1)/2 !
 			if (areEqual(zero,r))
-				return (unsigned long) max_double/p ;
+				return (unsigned long) (double(max_double)/p) ;
 			else if (areEqual(one,r))
 			{
 				if (modulus>= getMaxModulus())
 					return 0 ;
 				else
-					return (unsigned long) max_double/(modulus*modulus) ;
+					return (unsigned long) (double(max_double)/(modulus*modulus)) ;
 			} else
 				throw LinboxError("Bad input, expecting 0 or 1");
 			return 0;
