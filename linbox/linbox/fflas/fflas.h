@@ -233,11 +233,19 @@ public:
 	       typename Field::Element * A, const size_t lda,
 	       typename Field::Element * B, const size_t ldb);
 	
-	//---------------------------------------------------------------------
-	// ftrmm: TRiangular Matrix Multiply
-	// Computes  B <- alpha.op(A).B,  B <- alpha.B.op(A)
-	// B is m*n
-	//---------------------------------------------------------------------
+	/** @brief ftrmm: TRiangular Matrix Multiply
+	 * Computes  \f$ B \gets \alpha \mathrm{op}(A) B\f$ or  \f$B \gets \alpha B \mathrm{op}(A)\f$
+	 * B is M*N, A is M*M if 
+	 * \param M rows of \p B
+	 * \param N cols of \p B
+	 * \param A if \c Side==FflasLeft then \p A is \f$N\times N\f$, otherwise \p A is \f$M\times M\f$
+	 * \param F field
+	 * \param Side if \c Side==FflasLeft then  \f$ B \gets \alpha \mathrm{op}(A) B\f$ is computed.
+	 * \param Diag if \c Diag==FflasUnit then \p A is unit.
+	 * \param Uplo if \c Uplo==FflasUpper then \p A is upper triangular
+	 * \param TransA if \c TransA==FflasTrans then \f$\mathrm{op}(A)=A^t\f$. 
+	 * @warning unsafe with \c Trans==FflasTrans (debugging in progress)
+	*/
 	template<class Field>
 	static void
 	ftrmm (const Field& F, const FFLAS_SIDE Side,
@@ -251,9 +259,15 @@ public:
 	
 	/** @brief  Field GEneral Matrix Multiply 
 	 * 
-	 * Computes C = alpha.op(A)*op(B) + beta.C ,
-	 * op(A) = A, A<sup>T</sup>
-	 * wl recursive levels of Winograd's algorithm are used 
+	 * Computes \f$C = \alpha \mathrm{op}(A) \times \mathrm{op}(B) + \beta C\f$ 
+	 * \param ta if \c ta==FflasTrans then \f$\mathrm{op(A)=A^t\f$, else \f$\mathrm{op}(A)=A\f$, 
+	 * \param w recursive levels of Winograd's algorithm are used 
+	 * \param A \f$\mathrm{op(A)\f$ is \f$m \times k\f$
+	 * \param B \f$\mathrm{op(B)\f$ is \f$k \times n\f$
+	 * \param C \f$C\f$ is \f$m \times n\f$
+	 * \param lda leading dimension of \p A 
+	 * \param ldb leading dimension of \p B 
+	 * \param ldc leading dimension of \p C 
 	 */
 	template<class Field>
 	static typename Field::Element* 

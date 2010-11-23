@@ -57,11 +57,11 @@ MersenneTwister::MersenneTwister (uint32 seed)
 
 uint32 MersenneTwister::reload ()
 {
-	register std::vector<uint32>::iterator p0 = _state.begin ();
-	register std::vector<uint32>::iterator p2 = _state.begin () + 2;
-	register std::vector<uint32>::iterator pM = _state.begin () + M;
-	register uint32 s0, s1;
-	register int j;
+	std::vector<uint32>::iterator p0 = _state.begin ();
+	std::vector<uint32>::iterator p2 = _state.begin () + 2;
+	std::vector<uint32>::iterator pM = _state.begin () + M;
+	uint32 s0, s1;
+	int j;
 
 	if (_left < -1)
 		setSeed (4357U);
@@ -199,9 +199,9 @@ void MersenneTwister::setSeed (uint32 seed)
 	// so-- that's why the only change I made is to restrict to odd seeds.
 	//
 
-	register uint32 x = (seed | 1U) & 0xFFFFFFFFU;
-	register std::vector<uint32>::iterator s = _state.begin ();
-	register int j;
+	uint32 x = (seed | 1U) & 0xFFFFFFFFU;
+	std::vector<uint32>::iterator s = _state.begin ();
+	int j;
 
 	for (_left = 0, *s++ = x, j = N; --j; *s++ = (x *= 69069U) & 0xFFFFFFFFU) ;
 }
