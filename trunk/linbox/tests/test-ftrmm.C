@@ -39,7 +39,6 @@ using namespace LinBox ;
 template<class Field, FFLAS::FFLAS_SIDE Side,FFLAS::FFLAS_UPLO UpLo, FFLAS::FFLAS_TRANSPOSE Trans, FFLAS::FFLAS_DIAG Diag >
 int test_ftrmm(const Field & F) 
 {
-	srand(time(NULL));
 	size_t M    = random()%_LB_MAX_SZ ;
 	size_t N    = random()%_LB_MAX_SZ ; // B is MxN in a ldb*rows table
 	size_t ldb  = random()%_LB_MAX_SZ+1 ;
@@ -80,7 +79,7 @@ int test_ftrmm(const Field & F)
 	/* init A,B,C and more...*/
 	for (size_t i = 0 ; i < rows*lda ; ++i) G.random( *(A+i) ) ;
 #ifdef _LB_DEBUG
-	Element * E = new Element[rows*lda];
+	Element * E = new Element[rows*lda]; // copy of A
 	assert(E);
 	for (size_t i = 0 ; i < rows*lda ; ++i) *(E+i) = *(A+i);
 #endif
@@ -101,7 +100,7 @@ int test_ftrmm(const Field & F)
 	/*  testing ftrmm  */
 	/* *************** */
 
-	/*  compute C pedestrially */
+	/*  compute C pedestrially :) */
 	if (Side == FFLAS::FflasRight) // right
 	{
 		if (UpLo == FFLAS::FflasLower)
@@ -259,53 +258,60 @@ int test_ftrmm(const Field & F)
 				err = -1  ;
 #ifdef _LB_DEBUG
 	{
-	if (err)
-	{
-		std::cout<<"#-------------T-------------" <<std::endl;
-		std::cout << "T :=" ;
-		write_field(F,std::cout,UpLo,Diag,E,Ldim,Ldim,lda,true,true);
-		std::cout<<"#-------------M-------------" <<std::endl;
-		std::cout << "M :=" ;
-		write_field(F,std::cout,D,M,N,ldb,true,true);
-		std::cout<<"#------------a--------------" <<std::endl;
-		std::cout << "alpha := " << alpha << ':' << std::endl;
-		std::cout<<"#------------C--------------" <<std::endl;
-		std::cout << "C := " ; write_field(F,std::cout,C,M,N,N,true,true);
-		std::cout << "#------------B--------------"                     << std::endl;
-		std::cout << "B := " ; write_field(F,std::cout,B,M,N,ldb,true,true);
-		std::cout << "N := alpha * " ; 
-		if (Side == FFLAS::FflasRight)
-			std::cout << "M." ;
-		else
-			if (Trans == FFLAS::FflasNoTrans)
-				std::cout << "T." ;
+		if (err)
+		{
+			std::cout<<"#-------------T-------------" <<std::endl;
+			std::cout << "T :=" ;
+			write_field(F,std::cout,UpLo,Diag,E,Ldim,Ldim,lda,true);
+			std::cout << ':' << std::endl;
+			std::cout<<"#------------TT--------------" <<std::endl;
+			std::cout << "TT := " ; write_field(F,std::cout,E,Ldim,Ldim,lda,true);
+			std::cout << ':' << std::endl;
+
+			std::cout<<"#-------------M-------------" <<std::endl;
+			std::cout << "M :=" ;
+			write_field(F,std::cout,D,M,N,ldb,true);
+			std::cout << ':' << std::endl;
+			std::cout<<"#------------a--------------" <<std::endl;
+			std::cout << "alpha := " << alpha << ':' << std::endl;
+			std::cout<<"#------------C--------------" <<std::endl;
+			std::cout << "C := " ; write_field(F,std::cout,C,M,N,N,true);
+			std::cout << ':' << std::endl;
+			std::cout << "#------------B--------------" << std::endl;
+			std::cout << "B := " ; write_field(F,std::cout,B,M,N,ldb,true);
+			std::cout << ':' << std::endl;
+			std::cout << "N := alpha * " ; 
+			if (Side == FFLAS::FflasRight)
+				std::cout << "M." ;
 			else
-				std::cout << "LinearAlgebra:-Transpose(T)." ;
-		if (Side == FFLAS::FflasLeft)
-			std::cout << "M" ;
-		else
-			if (Trans == FFLAS::FflasNoTrans)
-				std::cout << "T" ;
+				if (Trans == FFLAS::FflasNoTrans)
+					std::cout << "T." ;
+				else
+					std::cout << "LinearAlgebra:-Transpose(T)." ;
+			if (Side == FFLAS::FflasLeft)
+				std::cout << "M" ;
 			else
-				std::cout << "LinearAlgebra:-Transpose(T)" ;
-		std:: cout << "  mod " << F.characteristic() << ':' << std::endl;
-		std::cout << "linalg:-iszero(C - N  mod " << F.characteristic() << "),";
-		std::cout << "linalg:-iszero(B - N  mod " << F.characteristic() << ");"  <<  std::endl;
+				if (Trans == FFLAS::FflasNoTrans)
+					std::cout << "T" ;
+				else
+					std::cout << "LinearAlgebra:-Transpose(T)" ;
+			std:: cout << "  mod " << F.characteristic() << ':' << std::endl;
+			std::cout << "linalg:-iszero(C - N  mod " << F.characteristic() << "),";
+			std::cout << "linalg:-iszero(B - N  mod " << F.characteristic() << ");"  <<  std::endl;
 
-	}
+		}
 
-	if (err) std::cout << "# \033[1;31m>\033[0m ftrmm fail" ;
-	else std::cout << "# \033[1;32m>\033[0m ftrmm success";
+		if (err) std::cout << "# \033[1;31m>\033[0m ftrmm fail" ;
+		else std::cout << "# \033[1;32m>\033[0m ftrmm success";
 
-	std::cout << " with " << ((Side == FFLAS::FflasLeft)?("left"):("right")) ;
-	std::cout << " with " ;
-	std::cout << ((UpLo==FFLAS::FflasUpper)?("upper "):("lower ")) ;
-	std::cout << ((Diag==FFLAS::FflasUnit)?(""):("non-")) ;
-	std::cout << "unit " ;
-	std::cout << ((Trans==FFLAS::FflasTrans)?(""):("non-")) ;
-	std::cout << "transposed triangular matrices (on field \""  ;
-	F.write(std::cout) ;
-	std::cout << "\")" << std::endl;
+		std::cout << " with " << ((Side == FFLAS::FflasLeft)?("left"):("right")) ;
+		std::cout << ((UpLo==FFLAS::FflasUpper)?(" upper "):(" lower ")) ;
+		std::cout << ((Diag==FFLAS::FflasUnit)?(""):("non-")) ;
+		std::cout << "unit " ;
+		std::cout << ((Trans==FFLAS::FflasTrans)?(""):("non-")) ;
+		std::cout << "transposed triangular matrices (on field \""  ;
+		F.write(std::cout) ;
+		std::cout << "\")" << std::endl;
 	}
 #endif
 	/* *************** */
@@ -331,8 +337,7 @@ int test_ftrmm(const Field & F)
 		if (eur) std::cout << "# \033[1;31m>\033[0m ftrsm fail" ;
 		else std::cout << "# \033[1;32m>\033[0m ftrsm success";
 		std::cout << " with " << ((Side == FFLAS::FflasLeft)?("left"):("right")) ;
-		std::cout << " with " ;
-		std::cout << ((UpLo==FFLAS::FflasUpper)?("upper "):("lower ")) ;
+		std::cout << ((UpLo==FFLAS::FflasUpper)?(" upper "):(" lower ")) ;
 		std::cout << ((Diag==FFLAS::FflasUnit)?(""):("non-")) ;
 		std::cout << "unit " ;
 		std::cout << ((Trans==FFLAS::FflasTrans)?(""):("non-")) ;
@@ -350,11 +355,11 @@ int test_ftrmm(const Field & F)
 
 	return err+eur ;
 }
+
 //!@todo  test \c NULL permutation
 template<class Field>
 int test_applyP(const Field & F)
 {
-	srand(time(NULL));
 	size_t M    = random()%_LB_MAX_SZ+1 ;
 	size_t N    = random()%_LB_MAX_SZ+1 ; 
 	size_t lda  = random()%_LB_MAX_SZ+1 ; 
@@ -436,27 +441,33 @@ int test_applyP(const Field & F)
 
 }
 
-
-template<class Field, FFLAS::FFLAS_TRANSPOSE At, FFLAS::FFLAS_TRANSPOSE Bt>
+template<class Field, FFLAS::FFLAS_TRANSPOSE ATRANS, FFLAS::FFLAS_TRANSPOSE BTRANS>
 int test_fgemm(const Field & F)
 {
-	srand(time(NULL));
-	size_t M    = random()%_LB_MAX_SZ ;
-	size_t N    = random()%_LB_MAX_SZ ; 
-	size_t K    = random()%_LB_MAX_SZ ; 
+	size_t M    = random()%_LB_MAX_SZ ; // rows of (t)A and C
+	size_t N    = random()%_LB_MAX_SZ ; // cols of (t)B and C
+	size_t K    = random()%_LB_MAX_SZ ; // cols of (t)A, rows of (t)B
 
-	size_t lda  = random()%_LB_MAX_SZ+1 ; 
-	size_t ldb  = random()%_LB_MAX_SZ+1 ; 
-	size_t ldc  = random()%_LB_MAX_SZ+1 ; 
+	size_t lda  = random()%(_LB_MAX_SZ/2) ; 
+	if (ATRANS == FFLAS::FflasTrans) lda += M ; else lda += K ;
+	size_t ldb  = random()%(_LB_MAX_SZ/2) ; 
+	if (BTRANS == FFLAS::FflasTrans) ldb += K ; else ldb += N ;
+	size_t ldc  = N+random()%(_LB_MAX_SZ/2) ; 
+
+	size_t rowA = 5;
+	if (ATRANS == FFLAS::FflasTrans) rowA += K ; else rowA += M ;
+	size_t rowB = 5;
+	if (BTRANS == FFLAS::FflasTrans) rowB += N ; else rowB += K ;
+	size_t rowC = M+5;
+
 
 	// A is M x K
-	// B is K x N
-	// C is M x N
+#ifdef _LB_DEBUG
+	std::cout <<"# A : " << M << 'x' << K << " ("<< rowA << 'x' << lda << ')' << std::endl;
+	std::cout <<"# B : " << K << 'x' << N << " ("<< rowB << 'x' << ldb << ')' << std::endl;
+	std::cout <<"# C : " << M << 'x' << N << " ("<< rowC << 'x' << ldc << ')' << std::endl;
+#endif
 	
-	size_t rowA = M;
-	size_t rowB = K;
-	size_t rowC = M;
-
 	typedef typename Field::RandIter RandIter;
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G); 
@@ -465,8 +476,6 @@ int test_fgemm(const Field & F)
 	Element alpha, beta ;
 	G.random(alpha);
 	G.random(beta);
-
-
 
 
 	Element * A = new Element[rowA*lda];
@@ -481,13 +490,12 @@ int test_fgemm(const Field & F)
 
 
 	for (size_t i = 0 ; i < rowA*lda ; ++i) G.random( *(A+i) ) ;
-	for (size_t i = 0 ; i < rowB*lda ; ++i) G.random( *(B+i) ) ;
-	for (size_t i = 0 ; i < rowC*lda ; ++i) G.random( *(D+i) ) ;
-	for (size_t i = 0 ; i < rowC*lda ; ++i) *(C+i) = *(D+i)  ;
+	for (size_t i = 0 ; i < rowB*ldb ; ++i) G.random( *(B+i) ) ;
+	for (size_t i = 0 ; i < rowC*ldc ; ++i) G.random( *(C+i) ) ;
+	for (size_t i = 0 ; i < rowC*ldc ; ++i) *(D+i) = *(C+i)  ;
 
-
-	if (At == FFLAS::FflasNoTrans)
-		if (Bt == FFLAS::FflasNoTrans) // A.B + C
+	if (ATRANS == FFLAS::FflasNoTrans)
+		if (BTRANS == FFLAS::FflasNoTrans) // A.B + C
 			for (size_t i = 0 ; i < M ; ++i)
 				for (size_t j = 0 ; j < N ; ++j) {
 					Element temp;
@@ -508,7 +516,7 @@ int test_fgemm(const Field & F)
 					F.axpyin(C[i*ldc+j],alpha,temp);
 				}
 	else
-		if (Bt == FFLAS::FflasNoTrans) // tA.B + C
+		if (BTRANS == FFLAS::FflasNoTrans) // tA.B + C
 			for (size_t i = 0 ; i < M ; ++i)
 				for (size_t j = 0 ; j < N ; ++j) {
 					Element temp;
@@ -529,20 +537,42 @@ int test_fgemm(const Field & F)
 					F.axpyin(C[i*ldc+j],alpha,temp);
 				}
 
-	FFLAS::fgemm(F,At,Bt,M,N,K,alpha,A,lda,B,ldb,beta,C,ldc);
+	FFLAS::fgemm(F,ATRANS,BTRANS,M,N,K,alpha,A,lda,B,ldb,beta,D,ldc);
 
-	FFLAS::fgemm(F,At,Bt,M,N,K,alpha,A,lda,B,ldb,beta,C,ldc,1);
-return 0 ;
+	int err = 0 ;
+	for (size_t i = 0 ; i < rowC && !err ; ++i)
+		for (size_t j = 0 ; j < ldc && !err ; ++j)
+			if (!F.areEqual(*(C+i*ldc+j),*(D+i*ldc+j))) {
+				err = -1  ;
+				std::cout << i << ',' << j << ':' << *(C+i*ldc+j) << "!=" << *(D+i*ldc+j) << std::endl;
+			}
 
+	delete[] A ;
+	delete[] B ;
+	delete[] C ;
+	delete[] D ;
+
+#ifdef _LB_DEBUG
+	if (err)
+	{
+		std::cout << "# \033[1;31m>\033[0mfgemm " << ((FFLAS::FflasNoTrans==ATRANS)?(""):("t")) << "A." <<  ((FFLAS::FflasNoTrans==BTRANS)?(""):("t")) << "B failed on " ;
+		F.write(std::cout) ; std::cout << std::endl;
+	} else{
+		std::cout << "# \033[1;32m>\033[0mfgemm " << ((FFLAS::FflasNoTrans==ATRANS)?(""):("t")) << "A." <<  ((FFLAS::FflasNoTrans==BTRANS)?(""):("t")) << "B success on " ;
+		F.write(std::cout) ; std::cout << std::endl;
+	}
+#endif
+
+	return err ;
 }
 
 int main() 
 {
-//        typedef ModularBalanced<float>  FieldF;
+	//typedef ModularBalanced<float>  FieldF;
 	typedef Modular<float>          FieldF;
-//        typedef ModularBalanced<double> FieldD;
+	//typedef ModularBalanced<double> FieldD;
 	typedef Modular<double>         FieldD;
-//        typedef ModularBalanced<int32>  FieldI;
+	//typedef ModularBalanced<int32>  FieldI;
 	typedef Modular<int32>          FieldI;
 	//!@bug : this one completely fails :
 	//typedef Modular<Integer>          FieldI;
@@ -572,166 +602,166 @@ int main()
 	//-----------//
 	for (size_t r = 0 ; r < _LB_ITERS ; ++r)
 	{
-		ret+=test_ftrmm<FieldD,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasUnit>(FD);
-		ret+=test_ftrmm<FieldD,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FD);
+		ret+=test_ftrmm<FieldD,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasUnit>(FD);
+		ret+=test_ftrmm<FieldD,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FD);
 		ret+=test_ftrmm<FieldD,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FD);
 		ret+=test_ftrmm<FieldD,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FD);
 
-		ret+=test_ftrmm<FieldD,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasUnit>(FD);
-		ret+=test_ftrmm<FieldD,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FD);
+		ret+=test_ftrmm<FieldD,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasUnit>(FD);
+		ret+=test_ftrmm<FieldD,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FD);
 		ret+=test_ftrmm<FieldD,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FD);
 		ret+=test_ftrmm<FieldD,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FD);
 
-		ret+=test_ftrmm<FieldD,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasUnit>(FD);
-		ret+=test_ftrmm<FieldD,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FD);
-		ret+=test_ftrmm<FieldD,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FD);
+		ret+=test_ftrmm<FieldD,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FD);
+		ret+=test_ftrmm<FieldD,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FD);
+		ret+=test_ftrmm<FieldD,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FD);
 		ret+=test_ftrmm<FieldD,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FD);
 
-		ret+=test_ftrmm<FieldD,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasUnit>(FD);
-		ret+=test_ftrmm<FieldD,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FD);
-		ret+=test_ftrmm<FieldD,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FD);
+		ret+=test_ftrmm<FieldD,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FD);
+		ret+=test_ftrmm<FieldD,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FD);
+		ret+=test_ftrmm<FieldD,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FD);
 		ret+=test_ftrmm<FieldD,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FD);
 
-		ret+=test_ftrmm<FieldD,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasUnit>(FD2);
-		ret+=test_ftrmm<FieldD,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FD2);
-		ret+=test_ftrmm<FieldD,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FD2);
+		ret+=test_ftrmm<FieldD,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FD2);
+		ret+=test_ftrmm<FieldD,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FD2);
+		ret+=test_ftrmm<FieldD,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FD2);
 		ret+=test_ftrmm<FieldD,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FD);
 
-		ret+=test_ftrmm<FieldD,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasUnit>(FD2);
-		ret+=test_ftrmm<FieldD,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FD2);
-		ret+=test_ftrmm<FieldD,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FD2);
+		ret+=test_ftrmm<FieldD,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FD2);
+		ret+=test_ftrmm<FieldD,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FD2);
+		ret+=test_ftrmm<FieldD,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FD2);
 		ret+=test_ftrmm<FieldD,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FD2);
 
-		ret+=test_ftrmm<FieldD,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasUnit>(FD2);
-		ret+=test_ftrmm<FieldD,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FD2);
-		ret+=test_ftrmm<FieldD,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FD2);
+		ret+=test_ftrmm<FieldD,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FD2);
+		ret+=test_ftrmm<FieldD,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FD2);
+		ret+=test_ftrmm<FieldD,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FD2);
 		ret+=test_ftrmm<FieldD,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FD2);
 
-		ret+=test_ftrmm<FieldD,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasUnit>(FD2);
-		ret+=test_ftrmm<FieldD,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FD2);
-		ret+=test_ftrmm<FieldD,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FD2);
+		ret+=test_ftrmm<FieldD,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FD2);
+		ret+=test_ftrmm<FieldD,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FD2);
+		ret+=test_ftrmm<FieldD,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FD2);
 		ret+=test_ftrmm<FieldD,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FD2);
 
-		ret+=test_ftrmm<FieldF,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasUnit>(FF);
-		ret+=test_ftrmm<FieldF,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FF);
-		ret+=test_ftrmm<FieldF,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FF);
+		ret+=test_ftrmm<FieldF,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FF);
+		ret+=test_ftrmm<FieldF,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FF);
+		ret+=test_ftrmm<FieldF,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FF);
 		ret+=test_ftrmm<FieldF,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FF);
 
-		ret+=test_ftrmm<FieldF,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasUnit>(FF);
-		ret+=test_ftrmm<FieldF,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FF);
-		ret+=test_ftrmm<FieldF,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FF);
+		ret+=test_ftrmm<FieldF,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FF);
+		ret+=test_ftrmm<FieldF,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FF);
+		ret+=test_ftrmm<FieldF,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FF);
 		ret+=test_ftrmm<FieldF,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FF);
 
-		ret+=test_ftrmm<FieldF,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasUnit>(FF);
-		ret+=test_ftrmm<FieldF,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FF);
-		ret+=test_ftrmm<FieldF,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FF);
+		ret+=test_ftrmm<FieldF,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FF);
+		ret+=test_ftrmm<FieldF,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FF);
+		ret+=test_ftrmm<FieldF,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FF);
 		ret+=test_ftrmm<FieldF,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FF);
 
-		ret+=test_ftrmm<FieldF,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasUnit>(FF);
-		ret+=test_ftrmm<FieldF,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FF);
-		ret+=test_ftrmm<FieldF,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FF);
+		ret+=test_ftrmm<FieldF,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FF);
+		ret+=test_ftrmm<FieldF,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FF);
+		ret+=test_ftrmm<FieldF,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FF);
 		ret+=test_ftrmm<FieldF,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FF);
 
-		ret+=test_ftrmm<FieldF,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasUnit>(FF2);
-		ret+=test_ftrmm<FieldF,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FF2);
-		ret+=test_ftrmm<FieldF,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FF2);
+		ret+=test_ftrmm<FieldF,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FF2);
+		ret+=test_ftrmm<FieldF,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FF2);
+		ret+=test_ftrmm<FieldF,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FF2);
 		ret+=test_ftrmm<FieldF,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FF2);
 
-		ret+=test_ftrmm<FieldF,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasUnit>(FF2);
-		ret+=test_ftrmm<FieldF,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FF2);
-		ret+=test_ftrmm<FieldF,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FF2);
+		ret+=test_ftrmm<FieldF,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FF2);
+		ret+=test_ftrmm<FieldF,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FF2);
+		ret+=test_ftrmm<FieldF,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FF2);
 		ret+=test_ftrmm<FieldF,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FF2);
 
-		ret+=test_ftrmm<FieldF,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasUnit>(FF2);
-		ret+=test_ftrmm<FieldF,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FF2);
-		ret+=test_ftrmm<FieldF,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FF2);
+		ret+=test_ftrmm<FieldF,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FF2);
+		ret+=test_ftrmm<FieldF,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FF2);
+		ret+=test_ftrmm<FieldF,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FF2);
 		ret+=test_ftrmm<FieldF,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FF2);
 
-		ret+=test_ftrmm<FieldF,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasUnit>(FF2);
-		ret+=test_ftrmm<FieldF,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FF2);
-		ret+=test_ftrmm<FieldF,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FF2);
+		ret+=test_ftrmm<FieldF,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FF2);
+		ret+=test_ftrmm<FieldF,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FF2);
+		ret+=test_ftrmm<FieldF,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FF2);
 		ret+=test_ftrmm<FieldF,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FF2);
 
 
-		ret+=test_ftrmm<FieldI,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasUnit>(FI);
-		ret+=test_ftrmm<FieldI,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FI);
-		ret+=test_ftrmm<FieldI,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FI);
+		ret+=test_ftrmm<FieldI,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FI);
+		ret+=test_ftrmm<FieldI,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FI);
+		ret+=test_ftrmm<FieldI,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FI);
 		ret+=test_ftrmm<FieldI,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FI);
 
-		ret+=test_ftrmm<FieldI,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasUnit>(FI);
-		ret+=test_ftrmm<FieldI,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FI);
-		ret+=test_ftrmm<FieldI,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FI);
+		ret+=test_ftrmm<FieldI,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FI);
+		ret+=test_ftrmm<FieldI,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FI);
+		ret+=test_ftrmm<FieldI,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FI);
 		ret+=test_ftrmm<FieldI,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FI);
 
-		ret+=test_ftrmm<FieldI,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasUnit>(FI);
-		ret+=test_ftrmm<FieldI,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FI);
-		ret+=test_ftrmm<FieldI,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FI);
+		ret+=test_ftrmm<FieldI,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FI);
+		ret+=test_ftrmm<FieldI,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FI);
+		ret+=test_ftrmm<FieldI,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FI);
 		ret+=test_ftrmm<FieldI,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FI);
 
-		ret+=test_ftrmm<FieldI,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasUnit>(FI);
-		ret+=test_ftrmm<FieldI,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FI);
-		ret+=test_ftrmm<FieldI,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FI);
+		ret+=test_ftrmm<FieldI,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FI);
+		ret+=test_ftrmm<FieldI,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FI);
+		ret+=test_ftrmm<FieldI,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FI);
 		ret+=test_ftrmm<FieldI,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FI);
 
-		ret+=test_ftrmm<FieldI,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasUnit>(FI2);
-		ret+=test_ftrmm<FieldI,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FI2);
-		ret+=test_ftrmm<FieldI,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FI2);
+		ret+=test_ftrmm<FieldI,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FI2);
+		ret+=test_ftrmm<FieldI,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FI2);
+		ret+=test_ftrmm<FieldI,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FI2);
 		ret+=test_ftrmm<FieldI,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FI2);
 
-		ret+=test_ftrmm<FieldI,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasUnit>(FI2);
-		ret+=test_ftrmm<FieldI,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FI2);
-		ret+=test_ftrmm<FieldI,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FI2);
+		ret+=test_ftrmm<FieldI,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FI2);
+		ret+=test_ftrmm<FieldI,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FI2);
+		ret+=test_ftrmm<FieldI,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FI2);
 		ret+=test_ftrmm<FieldI,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FI2);
 
-		ret+=test_ftrmm<FieldI,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasUnit>(FI2);
-		ret+=test_ftrmm<FieldI,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FI2);
-		ret+=test_ftrmm<FieldI,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FI2);
+		ret+=test_ftrmm<FieldI,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FI2);
+		ret+=test_ftrmm<FieldI,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FI2);
+		ret+=test_ftrmm<FieldI,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FI2);
 		ret+=test_ftrmm<FieldI,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FI2);
 
-		ret+=test_ftrmm<FieldI,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasUnit>(FI2);
-		ret+=test_ftrmm<FieldI,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FI2);
-		ret+=test_ftrmm<FieldI,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FI2);
+		ret+=test_ftrmm<FieldI,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FI2);
+		ret+=test_ftrmm<FieldI,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FI2);
+		ret+=test_ftrmm<FieldI,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FI2);
 		ret+=test_ftrmm<FieldI,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FI2);
 
 #ifdef __LINBOX_HAVE_INT64
-		ret+=test_ftrmm<FieldU,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasUnit>(FU);
-		ret+=test_ftrmm<FieldU,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FU);
-		ret+=test_ftrmm<FieldU,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FU);
+		ret+=test_ftrmm<FieldU,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FU);
+		ret+=test_ftrmm<FieldU,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FU);
+		ret+=test_ftrmm<FieldU,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FU);
 		ret+=test_ftrmm<FieldU,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FU);
 
-		ret+=test_ftrmm<FieldU,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasUnit>(FU);
-		ret+=test_ftrmm<FieldU,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FU);
-		ret+=test_ftrmm<FieldU,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FU);
+		ret+=test_ftrmm<FieldU,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FU);
+		ret+=test_ftrmm<FieldU,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FU);
+		ret+=test_ftrmm<FieldU,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FU);
 		ret+=test_ftrmm<FieldU,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FU);
 
-		ret+=test_ftrmm<FieldU,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasUnit>(FU);
-		ret+=test_ftrmm<FieldU,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FU);
-		ret+=test_ftrmm<FieldU,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FU);
+		ret+=test_ftrmm<FieldU,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FU);
+		ret+=test_ftrmm<FieldU,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FU);
+		ret+=test_ftrmm<FieldU,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FU);
 		ret+=test_ftrmm<FieldU,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FU);
 
-		ret+=test_ftrmm<FieldU,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasUnit>(FU);
-		ret+=test_ftrmm<FieldU,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FU);
-		ret+=test_ftrmm<FieldU,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FU);
+		ret+=test_ftrmm<FieldU,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FU);
+		ret+=test_ftrmm<FieldU,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FU);
+		ret+=test_ftrmm<FieldU,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FU);
 		ret+=test_ftrmm<FieldU,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FU);
 
-		ret+=test_ftrmm<FieldU,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasUnit>(FU2);
-		ret+=test_ftrmm<FieldU,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FU2);
-		ret+=test_ftrmm<FieldU,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FU2);
+		ret+=test_ftrmm<FieldU,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FU2);
+		ret+=test_ftrmm<FieldU,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FU2);
+		ret+=test_ftrmm<FieldU,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FU2);
 		ret+=test_ftrmm<FieldU,FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FU2);
 
-		ret+=test_ftrmm<FieldU,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasUnit>(FU2);
-		ret+=test_ftrmm<FieldU,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FU2);
-		ret+=test_ftrmm<FieldU,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FU2);
+		ret+=test_ftrmm<FieldU,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FU2);
+		ret+=test_ftrmm<FieldU,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FU2);
+		ret+=test_ftrmm<FieldU,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FU2);
 		ret+=test_ftrmm<FieldU,FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FU2);
 
-		ret+=test_ftrmm<FieldU,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasUnit>(FU2);
-		ret+=test_ftrmm<FieldU,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FU2);
-		ret+=test_ftrmm<FieldU,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FU2);
+		ret+=test_ftrmm<FieldU,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FU2);
+		ret+=test_ftrmm<FieldU,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FU2);
+		ret+=test_ftrmm<FieldU,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FU2);
 		ret+=test_ftrmm<FieldU,FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FU2);
 
-		ret+=test_ftrmm<FieldU,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasUnit>(FU2);
-		ret+=test_ftrmm<FieldU,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasNonUnit>(FU2);
-		ret+=test_ftrmm<FieldU,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>(FU2);
+		ret+=test_ftrmm<FieldU,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasUnit>   (FU2);
+		ret+=test_ftrmm<FieldU,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasTrans,  FFLAS::FflasNonUnit>(FU2);
+		ret+=test_ftrmm<FieldU,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit>   (FU2);
 		ret+=test_ftrmm<FieldU,FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit>(FU2);
 #endif
 	}
@@ -745,10 +775,10 @@ int main()
 #ifdef __LINBOX_HAVE_INT64
 	our = tot = tot+2*_LB_ITERS*2 ;
 #endif
+
 	//-------//
 	/* APPLY */
 	//-------//
-
 	for (size_t r = 0 ; r < _LB_ITERS ; ++r)
 	{
 		our+= test_applyP(FD);
@@ -767,6 +797,65 @@ int main()
 	std::cout << "# \033[1;33m>\033[0m applyP  passed " << our << "/" << tot << "tests" <<std::endl;
 #endif
 	if(our != tot) fail = true;
+
+	our = tot = 4*_LB_ITERS*6 ;
+#ifdef __LINBOX_HAVE_INT64
+	our = tot = tot+4*_LB_ITERS*2 ;
+#endif
+
+	//-------//
+	/* FGEMM */
+	//-------//
+	for (size_t r = 0 ; r < _LB_ITERS ; ++r)
+	{
+		our+= test_fgemm<FieldD,FFLAS::FflasNoTrans, FFLAS::FflasNoTrans>(FD);
+		our+= test_fgemm<FieldD,FFLAS::FflasNoTrans, FFLAS::FflasTrans>  (FD);
+		our+= test_fgemm<FieldD,FFLAS::FflasTrans,   FFLAS::FflasNoTrans>(FD);
+		our+= test_fgemm<FieldD,FFLAS::FflasTrans,   FFLAS::FflasTrans>  (FD);
+
+		our+= test_fgemm<FieldD,FFLAS::FflasNoTrans, FFLAS::FflasNoTrans>(FD2);
+		our+= test_fgemm<FieldD,FFLAS::FflasNoTrans, FFLAS::FflasTrans>  (FD2);
+		our+= test_fgemm<FieldD,FFLAS::FflasTrans,   FFLAS::FflasNoTrans>(FD2);
+		our+= test_fgemm<FieldD,FFLAS::FflasTrans,   FFLAS::FflasTrans>  (FD2);
+
+		our+= test_fgemm<FieldI,FFLAS::FflasNoTrans, FFLAS::FflasNoTrans>(FI);
+		our+= test_fgemm<FieldI,FFLAS::FflasNoTrans, FFLAS::FflasTrans>  (FI);
+		our+= test_fgemm<FieldI,FFLAS::FflasTrans,   FFLAS::FflasNoTrans>(FI);
+		our+= test_fgemm<FieldI,FFLAS::FflasTrans,   FFLAS::FflasTrans>  (FI);
+
+		our+= test_fgemm<FieldI,FFLAS::FflasNoTrans, FFLAS::FflasNoTrans>(FI2);
+		our+= test_fgemm<FieldI,FFLAS::FflasNoTrans, FFLAS::FflasTrans>  (FI2);
+		our+= test_fgemm<FieldI,FFLAS::FflasTrans,   FFLAS::FflasNoTrans>(FI2);
+		our+= test_fgemm<FieldI,FFLAS::FflasTrans,   FFLAS::FflasTrans>  (FI2);
+
+		our+= test_fgemm<FieldF,FFLAS::FflasNoTrans, FFLAS::FflasNoTrans>(FF);
+		our+= test_fgemm<FieldF,FFLAS::FflasNoTrans, FFLAS::FflasTrans>  (FF);
+		our+= test_fgemm<FieldF,FFLAS::FflasTrans,   FFLAS::FflasNoTrans>(FF);
+		our+= test_fgemm<FieldF,FFLAS::FflasTrans,   FFLAS::FflasTrans>  (FF);
+
+		our+= test_fgemm<FieldF,FFLAS::FflasNoTrans, FFLAS::FflasNoTrans>(FF2);
+		our+= test_fgemm<FieldF,FFLAS::FflasNoTrans, FFLAS::FflasTrans>  (FF2);
+		our+= test_fgemm<FieldF,FFLAS::FflasTrans,   FFLAS::FflasNoTrans>(FF2);
+		our+= test_fgemm<FieldF,FFLAS::FflasTrans,   FFLAS::FflasTrans>  (FF2);
+
+#ifdef __LINBOX_HAVE_INT64
+		our+= test_fgemm<FieldU,FFLAS::FflasNoTrans, FFLAS::FflasNoTrans>(FU);
+		our+= test_fgemm<FieldU,FFLAS::FflasNoTrans, FFLAS::FflasTrans>  (FU);
+		our+= test_fgemm<FieldU,FFLAS::FflasTrans,   FFLAS::FflasNoTrans>(FU);
+		our+= test_fgemm<FieldU,FFLAS::FflasTrans,   FFLAS::FflasTrans>  (FU);
+
+		our+= test_fgemm<FieldU,FFLAS::FflasNoTrans, FFLAS::FflasNoTrans>(FU2);
+		our+= test_fgemm<FieldU,FFLAS::FflasNoTrans, FFLAS::FflasTrans>  (FU2);
+		our+= test_fgemm<FieldU,FFLAS::FflasTrans,   FFLAS::FflasNoTrans>(FU2);
+		our+= test_fgemm<FieldU,FFLAS::FflasTrans,   FFLAS::FflasTrans>  (FU2);
+#endif
+
+	}
+#ifdef DEBUG
+	std::cout << "# \033[1;33m>\033[0m fgemm  passed " << our << "/" << tot << "tests" <<std::endl;
+#endif
+	if(our != tot) fail = true;
+
 	return (fail) ;
 
 }
