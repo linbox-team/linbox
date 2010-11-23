@@ -97,8 +97,9 @@ namespace LinBox
 			modulusinv = 1 / ((double) value); 
 			if(exp != 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
 			if(value <= 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
-			integer max;
-			if(value > FieldTraits<Modular<int64> >::maxModulus(max)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
+			int64 max;
+			FieldTraits<Modular<int64> >::maxModulus(max);
+			if(value > max ) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 			if( ! (value % 2) ) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be odd");
 
 		}
@@ -125,7 +126,7 @@ namespace LinBox
 		integer &characteristic (integer &c) const 
 		{ return c = modulus; }
 
-		size_t characteristic () const 
+		uint64 characteristic () const 
 		{ return modulus; }
 
 		// this function converts an int to a natural number ?

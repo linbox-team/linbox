@@ -54,6 +54,15 @@ struct FieldTraits
 	{
 		return i = static_cast<integer>(Field::getMaxModulus());
 	}
+	static uint64 & maxModulus( uint64& i ) 
+	{
+		return i = static_cast<uint64>(Field::getMaxModulus());
+	}
+	static uint32 & maxModulus( uint32& i ) 
+	{
+		return i = static_cast<uint32>(Field::getMaxModulus());
+	}
+
 	static bool goodModulus( const integer& i ) 
 	{
 		integer max;
