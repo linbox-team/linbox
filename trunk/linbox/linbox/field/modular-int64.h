@@ -33,7 +33,11 @@
 #include "linbox/field/field-traits.h"
 
 #ifndef _LB_MAX_INT
-#define _LB_MAX_INT 18446744073709551615
+#ifdef __x86_64__
+#define _LB_MAX_INT 18446744073709551615L
+#else
+#define _LB_MAX_INT 18446744073709551615LL
+#endif
 #endif
 
 // Namespace in which all LinBox code resides
@@ -112,7 +116,7 @@ namespace LinBox
 			if(exp != 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
 			if(value<=1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			integer max;
-			if(value>FieldTraits< Modular<int64> >::maxModulus(max)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
+			if( value > (FieldTraits<Modular<int64> >::maxModulus(max)) ) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 			_two64 = (int64) ((uint64) (-1) % (uint64) value);
 			_two64 += 1;
 			if (_two64 >= value) _two64 -= value;
@@ -128,14 +132,20 @@ namespace LinBox
 			return *this;
 		}
 
-
 		inline integer &cardinality (integer &c) const
 		{ 
 			return c = modulus;
 		}
 
 		inline integer &characteristic (integer &c) const
-		{ return c = modulus; }
+		{ 
+			return c = modulus; 
+		}
+
+		inline integer characteristic () const
+		{ 
+			return modulus; 
+		}
 
 		inline integer &convert (integer &x, const Element &y) const
 		{ 
@@ -143,7 +153,9 @@ namespace LinBox
 		}
 
 		inline int64 &convert (int64 &x, const Element &y) const 
-		{ return x = y; }
+		{
+		       	return x = y; 
+		}
 
 		inline double &convert (double &x, const Element &y) const
 		{ 
@@ -151,7 +163,9 @@ namespace LinBox
 		}
 
 		inline float &convert (float &x, const Element &y) const
-		{ return x = (float) y; }
+		{ 
+			return x = (float) y; 
+		}
 
 		inline std::ostream &write (std::ostream &os) const
 		{
@@ -173,7 +187,9 @@ namespace LinBox
 		}
 
 		inline std::ostream &write (std::ostream &os, const Element &x) const
-		{ return os << x; }
+		{
+		       	return os << x;
+	       	}
 
 		inline std::istream &read (std::istream &is, Element &x) const
 		{
@@ -192,7 +208,9 @@ namespace LinBox
 		}
 
 		inline Element &init (Element & x, const float &y) const
-		{ return init(x , (double) y); }
+		{
+		       	return init(x , (double) y); 
+		}
 
 		template<class Element1>
 		inline Element &init (Element & x, const Element1 &y) const
@@ -202,7 +220,8 @@ namespace LinBox
 			return x;
 		}
 
-		inline Element &init (Element &x, const integer &y) const  {
+		inline Element &init (Element &x, const integer &y) const  
+		{
 			x = y % modulus;
 			if (x < 0) x += modulus;
 			return x;
@@ -226,7 +245,6 @@ namespace LinBox
 		{
 			return x = y;
 		}
-
 
 		inline bool areEqual (const Element &x, const Element &y) const
 		{
@@ -372,7 +390,13 @@ namespace LinBox
 		}
 
 		static inline int64 getMaxModulus()
-		{ return 4611686018427387904; } // 2^62
+		{ 
+#ifdef __x86_64__
+			return 4611686018427387904L;  // 2^62 in long long
+#else
+			return 4611686018427387904LL;  // 2^62 in long
+#endif
+		}
 
 	private:
 
@@ -592,9 +616,12 @@ namespace LinBox
 	};
 
 	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Modular<int64> >::mulColDenseSpecialized
-	(const VectorDomain<Modular<int64> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
-	 VectorCategories::DenseVectorTag) const
+	Vector1 & MVProductDomain<Modular<int64> >
+	::mulColDenseSpecialized (const VectorDomain<Modular<int64> > &VD, 
+				  Vector1 &w, 
+				  const Matrix &A, 
+				  const Vector2 &v,
+				  VectorCategories::DenseVectorTag) const
 	{
 
 		linbox_check (A.coldim () == v.size ());
@@ -634,9 +661,12 @@ namespace LinBox
 	}
 
 	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Modular<int64> >::mulColDenseSpecialized
-	(const VectorDomain<Modular<int64> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
-	 VectorCategories::SparseSequenceVectorTag) const
+	Vector1 &MVProductDomain<Modular<int64> >
+	::mulColDenseSpecialized (const VectorDomain<Modular<int64> > &VD, 
+				  Vector1 &w, 
+				  const Matrix &A, 
+				  const Vector2 &v,
+				  VectorCategories::SparseSequenceVectorTag) const
 	{
 		linbox_check (A.coldim () == v.size ());
 		linbox_check (A.rowdim () == w.size ());
@@ -675,9 +705,12 @@ namespace LinBox
 	}
 
 	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Modular<int64> >::mulColDenseSpecialized
-	(const VectorDomain<Modular<int64> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
-	 VectorCategories::SparseAssociativeVectorTag) const
+	Vector1 &MVProductDomain<Modular<int64> >
+	::mulColDenseSpecialized(const VectorDomain<Modular<int64> > &VD, 
+				 Vector1 &w, 
+				 const Matrix &A, 
+				 const Vector2 &v,
+				 VectorCategories::SparseAssociativeVectorTag) const
 	{
 
 		linbox_check (A.coldim () == v.size ());
@@ -717,9 +750,12 @@ namespace LinBox
 	}
 
 	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Modular<int64> >::mulColDenseSpecialized
-	(const VectorDomain<Modular<int64> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
-	 VectorCategories::SparseParallelVectorTag) const
+	Vector1 &MVProductDomain<Modular<int64> >
+	::mulColDenseSpecialized (const VectorDomain<Modular<int64> > &VD, 
+				  Vector1 &w, 
+				  const Matrix &A, 
+				  const Vector2 &v,
+				  VectorCategories::SparseParallelVectorTag) const
 	{
 
 		linbox_check (A.coldim () == v.size ());

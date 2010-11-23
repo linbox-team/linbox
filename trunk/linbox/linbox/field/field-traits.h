@@ -24,7 +24,8 @@ namespace LinBox
  * maxExponent and goodExponent do the same for the prime power.
  */
 
-class RingCategories {
+class RingCategories 
+{
 
 public:
 
@@ -39,7 +40,8 @@ public:
 };
 
 template <class Field>
-struct ClassifyRing {
+struct ClassifyRing 
+{
 typedef	RingCategories::GenericTag categoryTag;
 };
 
@@ -48,10 +50,12 @@ struct FieldTraits
 {
 	typedef typename ClassifyRing<Field>::categoryTag categoryTag;
 	
-	static integer& maxModulus( integer& i ) {
+	static integer& maxModulus( integer& i ) 
+	{
 		return i = static_cast<integer>(Field::getMaxModulus());
 	}
-	static bool goodModulus( const integer& i ) {
+	static bool goodModulus( const integer& i ) 
+	{
 		integer max;
 		maxModulus( max );
 		if( max == -1 ) return ( i >= 2 );
@@ -59,8 +63,13 @@ struct FieldTraits
 		else return ( i >= 2 && i <= max );
 	}
 
-	static integer& maxExponent( integer& i ) { return i = 1; }
-	static bool goodExponent( const integer& i ) {
+	static integer& maxExponent( integer& i ) 
+	{ 
+		return i = 1; 
+	}
+
+	static bool goodExponent( const integer& i ) 
+	{
 		integer max;
                 maxExponent( max );
                 if( max == -1 ) return ( i >= 1 );
