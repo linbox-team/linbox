@@ -55,55 +55,72 @@ class FFLAS
 {
 
 public:	
-	enum FFLAS_TRANSPOSE { FflasNoTrans=111, FflasTrans=112};
-	enum FFLAS_UPLO      { FflasUpper=121, FflasLower=122 };
-	enum FFLAS_DIAG      { FflasNonUnit=131, FflasUnit=132 };
-	enum FFLAS_SIDE      { FflasLeft=141, FflasRight = 142 };
+	enum FFLAS_TRANSPOSE 
+	{ 
+		FflasNoTrans=111, /**< Matrix is not transposed */
+		FflasTrans  =112  /**< Matrix is transposed */
+	};
+	enum FFLAS_UPLO      
+	{ 
+		FflasUpper=121,  /**< Triangular matrix is Upper triangular (if \f$i>j\f$ then \f$T_{i,j} = 0\f$)*/
+		FflasLower=122   /**< Triangular matrix is Lower triangular (if \f$i<j\f$ then \f$T_{i,j} = 0\f$)*/ 
+	};
+	enum FFLAS_DIAG      
+	{ 
+		FflasNonUnit=131 ,  /**< Triangular matrix has an explicit general diagonal */
+	       	FflasUnit   =132    /**< Triangular matrix has an implicit unit diagonal (\f$T_{i,i} = 1\f$)*//**< */
+	};
+	enum FFLAS_SIDE      
+	{ 
+		FflasLeft  =141,  /**< Operator applied on the left */ 
+		FflasRight = 142  /**< Operator applied on the rigth*/
+	};
 
-	/* Determine the type of the element representation for Matrix Mult kernel
-	 * FflasDouble: to use the double precision BLAS
-	 * FflasFloat: to use the single precison BLAS
-	 * FflasGeneric: for any other domain, that can not be converted to floating point integers
-	 */
-	enum FFLAS_BASE      { FflasDouble = 151, FflasFloat = 152, FflasGeneric = 153};
+	/** \p FFLAS_BASE  determines the type of the element representation for Matrix Mult kernel.  */
+	enum FFLAS_BASE 
+	{ 
+		FflasDouble  = 151,  /**<  to use the double precision BLAS */
+		FflasFloat   = 152,  /**<  to use the single precison BLAS */
+		FflasGeneric = 153   /**< for any other domain, that can not be converted to floating point integers */
+	};
 
 	/* Representations of Z with floating point elements*/
 	typedef UnparametricField<float> FloatDomain;
 	typedef UnparametricField<double> DoubleDomain;
 
-
-	
 	
 //---------------------------------------------------------------------
 // Level 1 routines
 //---------------------------------------------------------------------
-	//---------------------------------------------------------------------
-	// fscal: X <- alpha.X
-	// X is a vector of size n
-	//---------------------------------------------------------------------
+	/** fscal. 
+	 * \f$x \gets a.x\f$
+	 * \p X, is a vector of size \p N and stride \p incX.
+	 */
 	template<class Field>
 	static void
 	fscal (const Field& F, const size_t n, const typename Field::Element alpha, 
-	       typename Field::Element * X, const size_t incX){
+	       typename Field::Element * X, const size_t incX)
+	{
 		
 		typename Field::Element * Xi = X;
 		for (; Xi < X+n*incX; Xi+=incX )
 			F.mulin( *Xi, alpha );
 	}
-	//---------------------------------------------------------------------
-	// fcopy: x <- y
-	// x,y are vectors of size N
-	//---------------------------------------------------------------------
+
+	/** fcopy. 
+	 * \f$x \gets y \f$
+	 * \p X, \p Y are vectors of size \p N and resp strides \p incX and \p incY
+	 */
 	template<class Field>
 	static void
 	fcopy (const Field& F, const size_t N, 
 	       typename Field::Element * X, const size_t incX,
 	       const typename Field::Element * Y, const size_t incY );
 
-	//---------------------------------------------------------------------
-	// faxpy: y <- a.x + y
-	// x,y are vectors of size N
-	//---------------------------------------------------------------------
+	/** faxpy. 
+	 * \f$y \gets a.x + y\f$
+	 * \p X, \p Y are vectors of size \p N and resp strides \p incX and \p incY
+	 */
 	template<class Field>
 	static void
 	faxpy (const Field& F, const size_t N, 
@@ -111,24 +128,24 @@ public:
 	       const typename Field::Element * X, const size_t incX,
 	       typename Field::Element * Y, const size_t incY );
 
-	//---------------------------------------------------------------------
-	// fdot: returns x^T . y
-	// x and y are vectors of size N
-	//---------------------------------------------------------------------
+	/** fdot: dot product.
+	 *  returns \f$x^T  y\f$
+	 * \p X, \p Y are vectors of size \p N and resp strides \p incX and \p incY
+	 */
 	template<class Field>
 	static typename Field::Element
 	fdot (const Field& F, const size_t N, 
 	      const typename Field::Element * X, const size_t incX,
 	      const typename Field::Element * Y, const size_t incY );
 
-	//---------------------------------------------------------------------
-	// fswap: X <-> Y
-	// X,Y are vectors of size N
-	//---------------------------------------------------------------------
+	/** fswap: \p X <-> \p Y.
+	* \p X, \p Y are vectors of size \p N and resp strides \p incX and \p incY
+	*/
 	template<class Field>
 	static void
 	fswap (const Field& F, const size_t N, typename Field::Element * X, const size_t incX,
-	       typename Field::Element * Y, const size_t incY ){
+	       typename Field::Element * Y, const size_t incY )
+	{
 		
 		typename Field::Element tmp;
 		typename Field::Element * Xi = X;
@@ -144,6 +161,9 @@ public:
 // Level 2 routines
 //---------------------------------------------------------------------
 
+	/** fsub : matrix addition.
+	 * Computes \p C = \p A + \p B.
+	 */
         template <class Field>
         static void
         fadd (const Field& F, const size_t M, const size_t N, 
@@ -157,6 +177,10 @@ public:
                 for (size_t i=0; i<N; i++)
                     F.add (Ci[i], Ai[i], B[i]);
         }
+
+	/** fsub : matrix subtraction.
+	 * Computes \p C = \p A - \p B.
+	 */
         template <class Field>
         static void
         fsub (const Field& F, const size_t M, const size_t N, 
@@ -171,11 +195,15 @@ public:
                     F.sub (Ci[i], Ai[i], B[i]);
         }
     
-	/**
-	 *  @brief finite prime Field GEneral Matrix Vector multiplication
+	/**  @brief finite prime Field GEneral Matrix Vector multiplication.
 	 *
-	 *  Computes  Y <- alpha op(A).X + beta.Y \\
-	 *  A is m*n
+	 *  Computes  \f$Y \gets \alpha \mathrm{op}(A) X + \beta Y \f$.
+	 * \param TransA if \c TransA==FflasTrans then \f$\mathrm{op}(A)=A^t\f$. 
+	 * \param A is \p M x \p N
+	 * \param X is a vector of size \p N or \p M according to \p TransA
+	 * \param Y is a vector of size \p M or \p N.
+	 * \param incx stride in \p X
+	 * \param incy stride in \p Y
 	 */
 	template<class Field>
 	static void
@@ -187,11 +215,11 @@ public:
 	       const  typename Field::Element beta,
 	       typename Field::Element * Y, const size_t incY);
 
-	/**
-	 *  @brief fger: GEneral ?
+	/**  @brief fger: GEneral ?
 	 *
-	 *  Computes  A <- alpha x . y^T + A \\
-	 *  A is m*n, x and y are vectors of size m and n
+	 *  Computes  \f$A \gets \alpha x . y^T + A\f$
+	 *  \p A is \p M x \p N
+	 *  \p x and \p y are vectors of size \p M and \p N
 	 */
 	template<class Field>
 	static void
@@ -201,11 +229,15 @@ public:
 	      const typename Field::Element * y, const size_t incy, 
 	      typename Field::Element * A, const size_t lda);
 
-	/**
-	   @brief ftrsv: TRiangular System solve with Vector
-	   Computes  X <- op(A^-1).X\\
-	   size of X is N
-	*/
+	/** @brief ftrsv: TRiangular System solve with Vector
+	 *  Computes  \f$ X \gets \mathrm{op}(A^{-1}) X\f$
+	 * @param X vector of size \p N on a field \p F
+	 * @param A a matrix of leading dimension \p lda
+	 * @param N number of rows or columns of \p A according to \p TransA
+	 * \param TransA if \c TransA==FflasTrans then \f$\mathrm{op}(A)=A^t\f$. 
+	 * \param Diag if \c Diag==FflasUnit then \p A is unit.
+	 * \param Uplo if \c Uplo==FflasUpper then \p A is upper triangular
+	 */
 	template<class Field>
 	static void
 	ftrsv (const Field& F, const FFLAS_UPLO Uplo, 
@@ -217,11 +249,17 @@ public:
 // Level 3 routines
 //---------------------------------------------------------------------
 
-	//---------------------------------------------------------------------
-	// ftrsm: TRiangular System solve with matrix
-	// Computes  B <- alpha.op(A^-1).B,  B <- alpha.B.op(A^-1)
-	// B is m*n
-	//---------------------------------------------------------------------
+	/** @brief ftrsm: TRiangular System solve with matrix.
+	 * Computes  \f$ B \gets \alpha \mathrm{op}(A^{-1}) B\f$ or  \f$B \gets \alpha B \mathrm{op}(A^{-1})\f$.
+	 * \param F field
+	 * \param M rows of \p B
+	 * \param N cols of \p B
+	 * \param Side if \c Side==FflasLeft then  \f$ B \gets \alpha \mathrm{op}(A^{-1}) B\f$ is computed.
+	 * \param Diag if \c Diag==FflasUnit then \p A is unit.
+	 * \param Uplo if \c Uplo==FflasUpper then \p A is upper triangular
+	 * \param TransA if \c TransA==FflasTrans then \f$\mathrm{op}(A)=A^t\f$. 
+	 * @warning unsafe with \c Trans==FflasTrans (debugging in progress)
+	 */
 	template<class Field>
 	static void
 	ftrsm (const Field& F, const FFLAS_SIDE Side,
@@ -232,8 +270,8 @@ public:
 	       const typename Field::Element alpha,
 	       typename Field::Element * A, const size_t lda,
 	       typename Field::Element * B, const size_t ldb);
-	
-	/** @brief ftrmm: TRiangular Matrix Multiply
+
+	/** @brief ftrmm: TRiangular Matrix Multiply.
 	 * Computes  \f$ B \gets \alpha \mathrm{op}(A) B\f$ or  \f$B \gets \alpha B \mathrm{op}(A)\f$
 	 * B is M*N, A is M*M if 
 	 * \param M rows of \p B
@@ -245,7 +283,7 @@ public:
 	 * \param Uplo if \c Uplo==FflasUpper then \p A is upper triangular
 	 * \param TransA if \c TransA==FflasTrans then \f$\mathrm{op}(A)=A^t\f$. 
 	 * @warning unsafe with \c Trans==FflasTrans (debugging in progress)
-	*/
+	 */
 	template<class Field>
 	static void
 	ftrmm (const Field& F, const FFLAS_SIDE Side,
@@ -256,8 +294,8 @@ public:
 	       const typename Field::Element alpha,
 	       typename Field::Element * A, const size_t lda,
 	       typename Field::Element * B, const size_t ldb);
-	
-	/** @brief  Field GEneral Matrix Multiply 
+
+	/** @brief  Field GEneral Matrix Multiply.
 	 * 
 	 * Computes \f$C = \alpha \mathrm{op}(A) \times \mathrm{op}(B) + \beta C\f$ 
 	 * \param ta if \c ta==FflasTrans then \f$\mathrm{op(A)=A^t\f$, else \f$\mathrm{op}(A)=A\f$, 
@@ -292,18 +330,18 @@ public:
 				fscal(F, n, beta, C + i*ldc, 1);
 			return C;
 		}
-		
+
 		size_t kmax = 0;
 		size_t winolevel = w;
 		FFLAS_BASE base;
 		MatMulParameters (F, MIN(MIN(m,n),k), beta, kmax, base,
 				  winolevel, true);
 		WinoMain (F, ta, tb, m, n, k, alpha, A, lda, B, ldb, beta,
-				 C, ldc, kmax, winolevel, base);
+			  C, ldc, kmax, winolevel, base);
 		return C;
-		}
+	}
 	
-	/** @brief  Field GEneral Matrix Multiply 
+	/** @brief  Field GEneral Matrix Multiply.
 	 * 
 	 * Computes C = alpha.op(A)*op(B) + beta.C ,
 	 * op(A) = A, A<sup>T</sup>
@@ -341,12 +379,11 @@ public:
 		return C;
 	}
 
-	//---------------------------------------------------------------------
-	// fsquare: 
-	// compute C = alpha. op(A)*op(A) + beta.C over a Field
-	// op(A) =A, A^T
-	// Avoid the conversion of B 
-	//---------------------------------------------------------------------
+	/** @brief fsquare: Squares a matrix.
+	 * compute \f$ C \gets \alpha \mathrm{op}(A) \mathrm{op}(A) + \beta C\f$ over a Field \p F
+	 * Avoid the conversion of B 
+	 * @param ta  if \c ta==FflasTrans, \f$\mathrm{op}(A)=A^T\f$.
+	 */
 	template<class Field>
 	static typename Field::Element* fsquare (const Field& F,
 						 const FFLAS_TRANSPOSE ta,
@@ -359,7 +396,8 @@ public:
 						 const size_t ldc);
 #ifdef LB_TRTR
 	// BB
-	/* B \gets alpha op(A)*B (for FFLAS_SIDE::FflasLeft)
+	/** @brief ftrtr: Triangular-Triangular matrix multiplication. 
+	 * B \gets alpha op(A)*B (for FFLAS_SIDE::FflasLeft)
 	* A and B are triangular, with B UpLo
 	* and op(A) = A, A^T according to TransA
 	* A and B can be (non)unit

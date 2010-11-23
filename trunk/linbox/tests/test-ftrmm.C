@@ -542,10 +542,8 @@ int test_fgemm(const Field & F)
 	int err = 0 ;
 	for (size_t i = 0 ; i < rowC && !err ; ++i)
 		for (size_t j = 0 ; j < ldc && !err ; ++j)
-			if (!F.areEqual(*(C+i*ldc+j),*(D+i*ldc+j))) {
+			if (!F.areEqual(*(C+i*ldc+j),*(D+i*ldc+j))) 
 				err = -1  ;
-				std::cout << i << ',' << j << ':' << *(C+i*ldc+j) << "!=" << *(D+i*ldc+j) << std::endl;
-			}
 
 	delete[] A ;
 	delete[] B ;
