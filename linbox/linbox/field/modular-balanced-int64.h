@@ -39,7 +39,11 @@
 #include "linbox/field/field-traits.h"
 
 #ifndef _LB_MAX_INT
-#define _LB_MAX_INT 18446744073709551615
+#ifdef __x86_64__
+#define _LB_MAX_INT 18446744073709551615L
+#else
+#define _LB_MAX_INT 18446744073709551615LL
+#endif
 #endif
 
 
@@ -98,7 +102,7 @@ namespace LinBox
 			if(exp != 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
 			if(value <= 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			int64 max;
-			FieldTraits<Modular<int64> >::maxModulus(max);
+			FieldTraits<Modular<int64> >::maxModulus((uint64&)max);
 			if(value > max ) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 			if( ! (value % 2) ) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be odd");
 
@@ -162,8 +166,9 @@ namespace LinBox
 			nhalfmodulus = -halfmodulus;
 			modulusinv = 1 /((double) modulus );
 			if(modulus <= 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
-			integer max;
-			if(modulus > FieldTraits<Modular<int64> >::maxModulus(max)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
+			int64 max;
+			FieldTraits<Modular<int64> >::maxModulus((uint64&)max) ;
+			if(modulus > max ) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 			if( ! (modulus % 2) ) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be oddd");	
 
 			return is;

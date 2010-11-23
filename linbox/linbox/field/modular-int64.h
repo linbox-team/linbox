@@ -115,8 +115,9 @@ namespace LinBox
 			modulusinv = 1 / ((double) value); 
 			if(exp != 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
 			if(value<=1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
-			integer max;
-			if( value > (FieldTraits<Modular<int64> >::maxModulus(max)) ) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
+			int64 max;
+			FieldTraits<Modular<int64 > >::maxModulus((uint64&)max) ;
+			if( value > max ) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 			_two64 = (int64) ((uint64) (-1) % (uint64) value);
 			_two64 += 1;
 			if (_two64 >= value) _two64 -= value;
@@ -177,8 +178,9 @@ namespace LinBox
 			is >> modulus; 
 			modulusinv = 1 /((double) modulus );
 			if(modulus <= 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
-			integer max;
-			if(modulus > FieldTraits< Modular<int64> >::maxModulus(max)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
+			int64 max;
+			FieldTraits< Modular<int64> >::maxModulus((uint64&)max) ;
+			if(modulus > max ) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 			_two64 = (int64) ((uint64) (-1) % (uint64) modulus);
 			_two64 += 1;
 			if (_two64 >= modulus) _two64 -= modulus;
