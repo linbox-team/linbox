@@ -22,10 +22,6 @@
 #ifndef __LINBOX_lifting_container_H
 #define __LINBOX_lifting_container_H
 
-//#define DEBUG_LC
-//#define LC_CHECK_DIVISION
-#undef _L
-
 #include <vector>
 
 #include <linbox/linbox-config.h>
@@ -45,7 +41,6 @@
 #include <linbox/matrix/transpose-matrix.h>
 #include <linbox/blackbox/transpose.h>
 //#include <linbox/algorithms/vector-hom.h>
-#undef _U
 
 namespace LinBox 
 {
@@ -893,7 +888,7 @@ namespace LinBox
 		size_t                              _col;
 		size_t                                _m;
 		size_t                                _n;
-		Block                                 _U;
+		Block                                 UU;
 		BlasMatrixDomain<Field>             _BMD;
 		Sequence                           *_Seq;
 		BlockMasseyDomain<Field,Sequence>  *_Dom;
@@ -922,7 +917,7 @@ namespace LinBox
 			  _col(Ap.coldim()), 
 			  _m(m), 
 			  _n(n), 
-			  _U(m-1,Ap.rowdim()), 
+			  UU(m-1,Ap.rowdim()), 
 			  _BMD(F) {
 			
 	
@@ -930,7 +925,7 @@ namespace LinBox
 		
 			for (size_t i=0;i<_m-1;++i)
 				for (size_t j=0;j< _row;++j)
-					_rand.random(_U.refEntry(i,j));
+					_rand.random(UU.refEntry(i,j));
 			
 			Coefficient V(_col,n);
 			for (size_t i=0;i< _col;++i)
@@ -939,17 +934,17 @@ namespace LinBox
 			
 		       
 			std::cout<<"U:\n";
-			_U.write(std::cout, _F);
+			UU.write(std::cout, _F);
 
 			std::cout<<"V:\n";
 			V.write(std::cout, _F);
 
 			Block UAp(_m, _row);
 
-			typename Block::ConstRowIterator    iter_U   = _U.rowBegin();
+			typename Block::ConstRowIterator    iter_U   = UU.rowBegin();
 			typename Block::RowIterator         iter_UAp = UAp.rowBegin();
 			++iter_UAp;
-			for (; iter_U != _U.rowEnd(); ++iter_UAp, ++iter_U) 
+			for (; iter_U != UU.rowEnd(); ++iter_UAp, ++iter_U) 
 				Ap.applyTranspose( *iter_UAp , *iter_U );
 				
 			for (size_t i=0;i<m;++i)
@@ -1057,7 +1052,7 @@ namespace LinBox
 					idx_poly.setEntry(i,j,minpoly[i].getEntry(idx,j+1));
 
 			BlasMatrix<Element> Combi(deg+1,_row);
-			_BMD.mul(Combi,idx_poly,_U);
+			_BMD.mul(Combi,idx_poly,UU);
 					
 
 			FVector lhs(_col),row(_row);	
@@ -1384,10 +1379,10 @@ namespace LinBox
 
 	protected:
 		
-		const FMatrix&                       _L;
-		const FMatrix&                       _U;
-		const Permutation<_Field>&           _Q;
-		const Permutation<_Field>&           _P;
+		const FMatrix&                       LL;
+		const FMatrix&                       UU;
+		const Permutation<_Field>&           QQ;
+		const Permutation<_Field>&           PP;
 		unsigned long                     _rank;
 		Field                                _F;
 		mutable FVector                  _res_p;
@@ -1409,7 +1404,7 @@ namespace LinBox
 					 unsigned long   rank,
 					 const VectorIn&    b, 
 					 const Prime_Type&  p)
-			: LiftingContainerBase<Ring,IMatrix> (R,A,b,p), _L(L),_Q(Q),_U(U), _P(P), _rank(rank),
+			: LiftingContainerBase<Ring,IMatrix> (R,A,b,p), LL(L),QQ(Q),UU(U), PP(P), _rank(rank),
 			  _F(F), _res_p(b.size()), _digit_p(A.coldim()), _GD(F)
 		{
 			for (size_t i=0; i< _res_p.size(); ++i)
@@ -1438,7 +1433,7 @@ namespace LinBox
 			}			
 		
 			// solve the system mod p using L.Q.U.P Factorization
-			_GD.solve(_digit_p, _rank, _Q,_L,_U,_P, _res_p);			
+			_GD.solve(_digit_p, _rank, QQ,LL,UU,PP, _res_p);			
 		
 			
 			// promote new solution mod p to integers
