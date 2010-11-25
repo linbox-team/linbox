@@ -2,7 +2,7 @@
  * Copyright(C) LinBox
  * Written by J-G Dumas <Jean-Guillaume.Dumas@imag.fr>,
  *            Clement Pernet <Clement.Pernet@imag.fr>
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -41,36 +41,35 @@
 #include "linbox/util/error.h"
 
 namespace LinBox
-{ 
+{
 	// Forward declarations
 	class RandIterArchetype;
 
-	/** 
-	 * \brief specification and archetypic instance for the ring interface 
+	/**
+	 * \brief specification and archetypic instance for the ring interface
 	\ingroup ring
 	 *
 	 * The \ref RingArchetype and its encapsulated
 	 * element class contain pointers to the \ref RingAbstract
 	 * and its encapsulated ring element, respectively.
 	 * \ref RingAbstract then uses virtual member functions to
-	 * define operations on its encapsulated ring element.  This ring 
-	 * element has no knowledge of the ring properties being used on it 
+	 * define operations on its encapsulated ring element.  This ring
+	 * element has no knowledge of the ring properties being used on it
 	 * which means the ring object must supply these operations.
 	 *
-	 * It does not contain elements zero and one because they can be created 
+	 * It does not contain elements zero and one because they can be created
 	 * whenever necessary, although it might be beneficial from an efficiency
 	 * stand point to include them.  However, because of archetype use three,
 	 * the elements themselves cannot be contained, but rather pointers to them.
 	 */
-	class RingArchetype : public virtual FieldArchetype
-	{
+	class RingArchetype : public virtual FieldArchetype {
 	    public:
 
 		/** @name Common Object Interface for a LinBox Ring.
 		 * These methods are required of all \ref LinBox rings.
 		 */
 		//@{
-    
+
 		/// element type.
 /* 		typedef ElementArchetype Element; */
 		typedef FieldArchetype::Element Element;
@@ -79,7 +78,7 @@ namespace LinBox
 		typedef FieldArchetype::RandIter RandIter;
 		/// @name Object Management
 		//@{
-    
+
 		/** Copy constructor.
 		 *
 		 * Constructs RingArchetype object by copying the
@@ -95,7 +94,7 @@ namespace LinBox
 		 * @param F \ref RingArchetype object.
 		 */
 	  RingArchetype (const RingArchetype &F) : FieldArchetype ( F )	{ }
-    
+
 	  /** \brief Invertibility test.
 		 * Test if ring element is invertible.
 		 * This function assumes the ring element has already been
@@ -107,9 +106,9 @@ namespace LinBox
 		 * @return boolean true if equals zero, false if not.
 		 * @param  x ring element.
 		 */
-	  bool isUnit (const Element &x) const 
+	  bool isUnit (const Element &x) const
 	    { return _ring_ptr->isUnit (*x._elem_ptr); }
-    
+
 		/** Divisibility of zero test.
 		 * Test if ring element is a zero divisor.
 		 * This function assumes the ring element has already been
@@ -122,9 +121,9 @@ namespace LinBox
 		 * @return boolean true if divides zero, false if not.
 		 * @param  x ring element.
 		 */
-		bool isZeroDivisor (const Element &x) const 
+		bool isZeroDivisor (const Element &x) const
 			{ return _ring_ptr->isZeroDivisor (*x._elem_ptr); }
-    
+
 
 		/** Constructor.
 		 * Constructs ring from pointer to \ref RingAbstract and its
@@ -148,7 +147,7 @@ namespace LinBox
 		{
 		}
 
-    
+
 		/** Constructor.
 		 * Constructs ring from ANYTHING matching the interface
 		 * using the enveloppe as a \ref RingAbstract and its
@@ -160,48 +159,48 @@ namespace LinBox
 		template<class Ring_qcq>
 		RingArchetype (Ring_qcq *f)
 		{ Ring_constructor (f, f); }
-	
+
 		//@} Implementation-Specific Methods
-    
+
 	    private:
-    
+
 		friend class ElementArchetype;
 		friend class RandIterArchetype;
-    
+
 		/** Pointer to RingAbstract object.
 		 * Not part of the interface.
 		 * Included to allow for archetype use three.
 		 */
 		mutable RingAbstract *_ring_ptr;
-    
 
-		/** Template method for constructing archetype from a derived class of 
+
+		/** Template method for constructing archetype from a derived class of
 		 * RingAbstract.
-		 * This class is needed to help the constructor differentiate between 
+		 * This class is needed to help the constructor differentiate between
 		 * classes derived from RingAbstract and classes that aren't.
 		 * Should be called with the same argument to both parameters?
 		 * @param	trait	pointer to RingAbstract or class derived from it
 		 * @param	ring\_ptr	pointer to class derived from RingAbstract
 		 */
 		template<class Ring_qcq>
-		void Ring_constructor (RingAbstract *trait, 
+		void Ring_constructor (RingAbstract *trait,
 				  Ring_qcq     *ring_ptr)
 		{
 			constructor( static_cast<FieldAbstract*>(trait), ring_ptr);
 			_ring_ptr    = dynamic_cast<RingAbstract*>(ring_ptr->clone ());
 
 		}
-	 
-		/** Template method for constructing archetype from a class not derived 
+
+		/** Template method for constructing archetype from a class not derived
 		 * from RingAbstract.
-		 * This class is needed to help the constructor differentiate between 
+		 * This class is needed to help the constructor differentiate between
 		 * classes derived from RingAbstract and classes that aren't.
 		 * Should be called with the same argument to both parameters?
 		 * @param	trait	pointer to class not derived from RingAbstract
 		 * @param	ring\_ptr	pointer to class not derived from RingAbstract
 		 */
 		template<class Ring_qcq>
-		void Ring_constructor (void      *trait, 
+		void Ring_constructor (void      *trait,
 				  Ring_qcq *ring_ptr)
 		{
 			RingEnvelope< Ring_qcq > EnvF (*ring_ptr);
@@ -209,7 +208,7 @@ namespace LinBox
 		}
 
 	}; // class RingArchetype
-  
+
 }  // namespace LinBox
 
 

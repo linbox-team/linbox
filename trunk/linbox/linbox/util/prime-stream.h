@@ -21,68 +21,67 @@
 namespace LinBox
 {
 
-/** Prime number stream
- *
- * Provides a source of prime numbers of given characteristics to use in parts
- * of the library that need to reduce modulo one or more primes.
- **/
-template <class Element>
-class PrimeStream
-{
-    public:
-
-	/** Constructor
+	/** Prime number stream
 	 *
-	 * Construct a PrimeStream object.
-	 * @param start Starting point; need not be prime itself
-	 * @param move_up true if we should move up from the starting point, false otherwise
-	 */
-	PrimeStream (Integer &start, bool move_up = true)
+	 * Provides a source of prime numbers of given characteristics to use in parts
+	 * of the library that need to reduce modulo one or more primes.
+	 **/
+	template <class Element>
+	class PrimeStream {
+	public:
+
+		/** Constructor
+		 *
+		 * Construct a PrimeStream object.
+		 * @param start Starting point; need not be prime itself
+		 * @param move_up true if we should move up from the starting point, false otherwise
+		 */
+		PrimeStream (Integer &start, bool move_up = true)
 		: _curr (start), _move_up (move_up) {}
 
-	~PrimeStream () 
-	{}
+		~PrimeStream ()
+		{}
 
-	/** Get the next prime element
-	 *
-	 * @param a Place to store the next prime element
-	 * @return Reference to next prime element
-	 */
-	Element &next (Element &a) 
-	{
+		/** Get the next prime element
+		 *
+		 * @param a Place to store the next prime element
+		 * @return Reference to next prime element
+		 */
+		Element &next (Element &a)
+		{
 
-		/** LinBox::Integer doesnot support prevprime */
-		/*
-		if (_move_up == true) {
+			/** LinBox::Integer doesnot support prevprime */
+			/*
+			   if (_move_up == true) {
+			   nextprime (_curr, _curr);
+			   a = _curr;
+			   _curr += 2L;
+			   } else {
+			   prevprime (_curr, _curr);
+			   a = _curr;
+			   _curr -= 2L;
+			   }
+			   */
+
 			nextprime (_curr, _curr);
 			a = _curr;
 			_curr += 2L;
-		} else {
-			prevprime (_curr, _curr);
-			a = _curr;
-			_curr -= 2L;
+
+			return a;
 		}
+
+		/** Operator form for getting the next prime element
 		*/
-
-		nextprime (_curr, _curr);
-		a = _curr;
-		_curr += 2L;
-
-		return a;
-	}
-
-	/** Operator form for getting the next prime element
-	 */
-	PrimeStream<Element> &operator >> (Element &a) 
+		PrimeStream<Element> &operator >> (Element &a)
 		{ next (a); return *this; }
 
-    private:
+	private:
 
-	Integer _curr;
-	bool    _move_up;
-     
-}; // class PrimeStream
- 
+		Integer _curr;
+		bool    _move_up;
+
+	}; // class PrimeStream
+
 } // namespace LinBox
 
 #endif // __LINBOX_prime_stream_H

@@ -36,24 +36,23 @@ namespace LinBox
 	 * \ingroup blackbox
 	 *
 	 * The matrix itself is not stored in memory.  Rather, its apply
-	 * methods use a vector of @link Fields field@endlink elements, which are 
+	 * methods use a vector of @link Fields field@endlink elements, which are
 	 * used to "multiply" the matrix to a vector.
-	 * 
-	 * This class has three template parameters.  The first is the field in 
-	 * which the arithmetic is to be done.  The second is the type of 
-	 * \ref LinBox vector to which to apply the matrix.  The 
+	 *
+	 * This class has three template parameters.  The first is the field in
+	 * which the arithmetic is to be done.  The second is the type of
+	 * \ref LinBox vector to which to apply the matrix.  The
 	 * third is chosen be default to be the \ref LinBox vector trait
-	 * of the vector.  This class is then specialized for dense and sparse 
+	 * of the vector.  This class is then specialized for dense and sparse
 	 * vectors.
 	 *
 	 * @param Field \ref LinBox field
 	 * @param Vector \ref LinBox dense or sparse vector of field elements
-	 * @param Trait  Marker whether to use dense or sparse LinBox vector 
-	 *               implementation.  This is chosen by a default parameter 
+	 * @param Trait  Marker whether to use dense or sparse LinBox vector
+	 *               implementation.  This is chosen by a default parameter
 	 *               and partial template specialization.  */
 	template <class Blackbox>
-	class Inverse : public BlackboxInterface
-	{
+	class Inverse : public BlackboxInterface {
 	    public:
 
 		typedef typename Blackbox::Field Field;
@@ -182,7 +181,7 @@ namespace LinBox
 		{
 			return _BB->rowdim ();
 		}
-    
+
 		/** Retreive column dimensions of BlackBox matrix.
 		 * Required by abstract base class.
 		 * @return integer number of columns of black box matrix.

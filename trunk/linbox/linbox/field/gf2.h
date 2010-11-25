@@ -23,12 +23,12 @@
 #include "linbox/field/field-traits.h"
 
 // Namespace in which all LinBox code resides
-namespace LinBox 
+namespace LinBox
 {
 
 class GF2RandIter;
 
-/** 
+/**
  * \brief Integers modulo 2
  *
  * This is a tuned implementation of the field of integers modulo
@@ -48,11 +48,10 @@ struct ClassifyRing<GF2> {
 	typedef RingCategories::ModularTag categoryTag;
 };
 
-class GF2 : public FieldInterface
-{
+class GF2 : public FieldInterface {
     public:
     const bool zero,one,mone;
-    
+
 
 	/** Element type
 	 */
@@ -67,7 +66,7 @@ class GF2 : public FieldInterface
 	/** @name Object Management
 	 */
 	//@{
- 
+
 	/** Default constructor.
 	 */
 	GF2 () : zero(false),one(true),mone(true) {}
@@ -90,7 +89,7 @@ class GF2 : public FieldInterface
 	 * @param F constant reference to Modular object
 	 * @return reference to Modular object for self
 	 */
-	const GF2 &operator = (const GF2 &) 
+	const GF2 &operator = (const GF2 &)
 		{ return *this; }
 
 	/** Initialization of field base element from an integer.
@@ -139,34 +138,34 @@ class GF2 : public FieldInterface
 	 */
 	integer &convert (integer &x, Element y) const
 		{ return x = y; }
- 
+
         std::_Bit_reference convert (std::_Bit_reference x, Element y) const {
             return x = y;
         }
 
-    	template<class XXX> 
+    	template<class XXX>
         XXX& convert (XXX& x, Element y) const {
             return x = static_cast<XXX>(y);
         }
-            
+
 // 	unsigned int &convert (unsigned int &x, Element y) const
 // 		{ return x = static_cast<unsigned int>(y); }
- 
+
 // 	int &convert (int &x, Element y) const
 // 		{ return x = static_cast<int>(y); }
- 
+
 // 	unsigned long &convert (unsigned long &x, Element y) const
 // 		{ return x = static_cast<unsigned long>(y); }
- 
+
 // 	long &convert (long &x, Element y) const
 // 		{ return x = static_cast<int>(y); }
- 
+
 // 	float &convert (float &x, Element y) const
 // 		{ return x = static_cast<float>(y); }
- 
+
 // 	double &convert (double &x, Element y) const
 // 		{ return x = static_cast<double>(y); }
- 
+
 	/** Assignment of one field base element to another.
 	 * This function assumes both field base elements have already been
 	 * constructed and initialized.
@@ -182,7 +181,7 @@ class GF2 : public FieldInterface
 
         std::_Bit_reference assign (std::_Bit_reference x, Element y) const
 		{ return x = y; }
-    
+
 	/** Cardinality.
 	 * Return integer representing cardinality of the domain.
 	 * Returns a non-negative integer for all domains with finite
@@ -231,7 +230,7 @@ class GF2 : public FieldInterface
 	 */
 	bool isZero (Element x) const
 		{ return !x; }
- 
+
 	/** One equality.
 	 * Test if field base element is equal to one.
 	 * This function assumes the field base element has already been
@@ -251,7 +250,7 @@ class GF2 : public FieldInterface
 	 * @return output stream to which field is written.
 	 * @param  os  output stream to which field is written.
 	 */
-	std::ostream &write (std::ostream &os) const 
+	std::ostream &write (std::ostream &os) const
 		{ return os << "integers mod 2"; }
 
 	/** Read field.
@@ -270,7 +269,7 @@ class GF2 : public FieldInterface
 	 */
 	std::ostream &write (std::ostream &os, Element x) const
 		{ return os << x; }
- 
+
 	/** Read field base element.
 	 * This function assumes the field base element has already been
 	 * constructed and initialized.
@@ -311,10 +310,10 @@ class GF2 : public FieldInterface
 
 	BitVector::reference add (BitVector::reference x, Element y, Element z) const
 		{ return x = y ^ z; }
- 
+
 	std::_Bit_reference add (std::_Bit_reference x, Element y, Element z) const
 		{ return x = y ^ z; }
- 
+
 	/** Subtraction.
 	 * x = y - z
 	 * This function assumes all the field base elements have already been
@@ -329,10 +328,10 @@ class GF2 : public FieldInterface
 
 	BitVector::reference sub (BitVector::reference x, Element y, Element z) const
 		{ return x = y ^ z; }
- 
+
 	std::_Bit_reference sub (std::_Bit_reference x, Element y, Element z) const
 		{ return x = y ^ z; }
- 
+
 	/** Multiplication.
 	 * x = y * z
 	 * This function assumes all the field base elements have already been
@@ -347,10 +346,10 @@ class GF2 : public FieldInterface
 
 	BitVector::reference mul (BitVector::reference x, Element y, Element z) const
 		{ return x = y & z; }
- 
+
 	std::_Bit_reference mul (std::_Bit_reference x, Element y, Element z) const
 		{ return x = y & z; }
- 
+
 	/** Division.
 	 * x = y / z
 	 * This function assumes all the field base elements have already been
@@ -365,10 +364,10 @@ class GF2 : public FieldInterface
 
 	BitVector::reference div (BitVector::reference x, Element y, Element ) const
 		{ return x = y; }
- 
+
 	std::_Bit_reference div (std::_Bit_reference x, Element y, Element ) const
 		{ return x = y; }
- 
+
 	/** Additive Inverse (Negation).
 	 * x = - y
 	 * This function assumes both field base elements have already been
@@ -382,10 +381,10 @@ class GF2 : public FieldInterface
 
 	BitVector::reference neg (BitVector::reference x, Element y) const
 		{ return x = y; }
- 
+
 	std::_Bit_reference neg (std::_Bit_reference x, Element y) const
 		{ return x = y; }
- 
+
 	/** Multiplicative Inverse.
 	 * x = 1 / y
 	 * This function assumes both field base elements have already been
@@ -405,7 +404,7 @@ class GF2 : public FieldInterface
 
 	/** Natural AXPY.
 	 * r  = a * x + y
-	 * This function assumes all field elements have already been 
+	 * This function assumes all field elements have already been
 	 * constructed and initialized.
 	 * @return reference to r.
 	 * @param  r field element (reference returned).
@@ -413,15 +412,15 @@ class GF2 : public FieldInterface
 	 * @param  x field element.
 	 * @param  y field element.
 	 */
-	BitVector::reference axpy (BitVector::reference r, 
-				   Element a, 
-				   Element x, 
+	BitVector::reference axpy (BitVector::reference r,
+				   Element a,
+				   Element x,
 				   Element y) const
 		{ return r = (a & x) ^ y; }
 
-	std::_Bit_reference axpy (std::_Bit_reference r, 
-				   Element a, 
-				   Element x, 
+	std::_Bit_reference axpy (std::_Bit_reference r,
+				   Element a,
+				   Element x,
 				   Element y) const
 		{ return r = (a & x) ^ y; }
 
@@ -429,7 +428,7 @@ class GF2 : public FieldInterface
 		{ return r = (a & x) ^ y; }
 
 	//@} Arithmetic Operations
- 
+
 	/** @name Inplace Arithmetic Operations
 	 * x <- x op y; x <- op x
 	 */
@@ -448,10 +447,10 @@ class GF2 : public FieldInterface
 
 	BitVector::reference addin (BitVector::reference x, Element y) const
 		{ return x ^= y; }
- 
+
 	std::_Bit_reference addin (std::_Bit_reference x, Element y) const
         	{ return x = x ^ y; }
- 
+
 	/** Inplace Subtraction.
 	 * x -= y
 	 * This function assumes both field base elements have already been
@@ -465,10 +464,10 @@ class GF2 : public FieldInterface
 
 	BitVector::reference subin (BitVector::reference x, Element y) const
 		{ return x ^= y; }
- 
+
 	std::_Bit_reference subin (std::_Bit_reference x, Element y) const
 		{ return x = x ^ y; }
- 
+
 	/** Inplace Multiplication.
 	 * x *= y
 	 * This function assumes both field base elements have already been
@@ -482,10 +481,10 @@ class GF2 : public FieldInterface
 
 	BitVector::reference mulin (BitVector::reference x, Element y) const
 		{ return x &= y; }
-    
+
 	Element& mulin (std::_Bit_reference& x, Element y) const
 		{ return mulin((bool&)x,y); }
- 
+
 	/** Inplace Division.
 	 * x /= y
 	 * This function assumes both field base elements have already been
@@ -499,10 +498,10 @@ class GF2 : public FieldInterface
 
 	BitVector::reference divin (BitVector::reference x, Element ) const
 		{ return x; }
- 
+
 	std::_Bit_reference divin (std::_Bit_reference x, Element ) const
 		{ return x; }
- 
+
 	/** Inplace Additive Inverse (Inplace Negation).
 	 * x = - x
 	 * This function assumes the field base element has already been
@@ -515,10 +514,10 @@ class GF2 : public FieldInterface
 
 	BitVector::reference negin (BitVector::reference x) const
 		{ return x; }
- 
+
 	std::_Bit_reference negin (std::_Bit_reference x) const
 		{ return x; }
- 
+
 	/** Inplace Multiplicative Inverse.
 	 * x = 1 / x
 	 * This function assumes the field base elementhas already been
@@ -537,7 +536,7 @@ class GF2 : public FieldInterface
 
 	/** Inplace AXPY.
 	 * r  += a * x
-	 * This function assumes all field elements have already been 
+	 * This function assumes all field elements have already been
 	 * constructed and initialized.
 	 * Purely virtual
 	 * @return reference to r.
@@ -583,16 +582,16 @@ class GF2 : public FieldInterface
 
 // Specialization of GivaroField for GF2
 #include "linbox/field/givaro-field.h"
-namespace LinBox 
+namespace LinBox
 {
 
-  /** 
+  /**
   \brief give LinBox fields an allure of Givaro Fields
   \ingroup field
 
-   *  This class adds the necessary requirements allowing 
+   *  This class adds the necessary requirements allowing
    *  the construction of an extension of a LinBox field.
-   */ 
+   */
     template<>
     struct GivaroField<LinBox::GF2> : public LinBox::GF2
     {
@@ -635,7 +634,7 @@ namespace LinBox
             Rep tmp; this->mul(tmp, a, x);
             return this->sub(r,y,tmp);
         }
-            // -- axmyin: r <- r - a * x 
+            // -- axmyin: r <- r - a * x
         Rep& axmyin (Rep& r, const Rep a, const Rep x) const {
             Rep tmp; this->mul(tmp, a, x);
             return this->subin(r,tmp);
@@ -652,7 +651,7 @@ namespace LinBox
 	    return axmyin(r,a,x);
         }
 
- 
+
 
         bool areNEqual ( const Rep a, const Rep b) const {
             return ! this->areEqual(a,b);
@@ -683,7 +682,7 @@ namespace LinBox
         template<class RandIter> std::_Bit_reference nonzerorandom(RandIter& g, std::_Bit_reference r, const std::_Bit_reference b) const { return r = g() ; }
 
     };
-    
+
 }
 
 
@@ -691,18 +690,18 @@ namespace LinBox
 // Specialization of homomorphism for basefield
 #include "linbox/field/hom.h"
 #include "linbox/field/givaro-extension.h"
-namespace LinBox 
+namespace LinBox
 {
 
     template <>
     class Hom<GF2,GF2> {
-        
+
     public:
         typedef GF2 Target;
         typedef GF2 Source;
         typedef Source::Element SrcElt;
         typedef Target::Element Elt;
-	
+
         Hom(const Source& S, const Target& ) : _source (S){}
         Elt& image(Elt& t, const SrcElt& s) {
             return _source.assign (t, s);
@@ -712,14 +711,14 @@ namespace LinBox
         }
         const Source& source() { return _source;}
         const Target& target() { return _source;}
-        
+
     protected:
         Source _source;
     };
 
-    template<class Target > 
-    class Hom<GF2, Target > 
-    {   public:
+    template<class Target >
+    class Hom<GF2, Target > {
+    public:
         typedef GF2 Source;
         typedef typename GF2::Element SrcElt;
         typedef typename Target::Element Elt;
@@ -742,13 +741,12 @@ namespace LinBox
     private:
         Source _source;
         Target _target;
-    }; // end Hom 
+    }; // end Hom
 
 
 
     template<>
-    class Hom < GF2, GivaroExtension<GF2> >
-    {
+    class Hom < GF2, GivaroExtension<GF2> > {
         typedef GF2 Source;
         typedef GivaroExtension<GF2> Target;
     public:
@@ -757,21 +755,21 @@ namespace LinBox
 
             //Hom(){}
             /**
-             * Construct a homomorphism from a specific source ring S and target 
-             * field T with Hom(S, T).  The default behaviour is error.  
+             * Construct a homomorphism from a specific source ring S and target
+             * field T with Hom(S, T).  The default behaviour is error.
              * Specializations define all actual homomorphisms.
              */
         Hom(const Source& S, const Target& T) : _source(S), _target(T){}
 
-            /** 
-             * image(t, s) implements the homomorphism, assigning the 
+            /**
+             * image(t, s) implements the homomorphism, assigning the
              * t the value of the image of s under the mapping.
              *
              * The default behaviour is a no-op.
              */
         Elt& image(Elt& t, const SrcElt& s) const {return _target.assign(t,s);}
-           
-            /** If possible, preimage(s,t) assigns a value to s such that 
+
+            /** If possible, preimage(s,t) assigns a value to s such that
              * the image of s is t.  Otherwise behaviour is unspecified.
              * An error may be thrown, a conventional value may be set, or
              * an arb value set.
@@ -792,11 +790,11 @@ namespace LinBox
     private:
         Source _source;
         Target _target;
-    }; // end Hom 
+    }; // end Hom
 }
 
 // #include <bits/stl_bvector.h>
-namespace std 
+namespace std
 {
 //! @todo JGD 05.11.2009 : it should be in bits/stl_bvector.h  ...
     inline void swap(_Bit_reference __x, _Bit_reference __y)

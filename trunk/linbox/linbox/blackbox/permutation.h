@@ -55,8 +55,7 @@ namespace LinBox
 	 * @param Storage \ref LinBox dense or sparse vector of field elements
 	 */
 	template<class _Field, class _Storage = __LINBOX_PERMUTATION_STORAGE >
-	class Permutation : public  BlackboxInterface 
-	{
+	class Permutation : public  BlackboxInterface {
 		const _Field& _F;
 	public:
 		typedef Permutation<_Field, _Storage>	Self_t;
@@ -81,7 +80,7 @@ namespace LinBox
 		}
 
 
-		void identity(int n) 
+		void identity(int n)
 		{
 			this->_indices.resize (n);
 			for (typename Storage::value_type i=0; i < n; ++i)
@@ -169,8 +168,8 @@ namespace LinBox
 
 		template<typename _Tp1>
 		struct rebind
-		{ 
-			typedef Permutation<_Tp1, Storage> other; 
+		{
+			typedef Permutation<_Tp1, Storage> other;
 			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
 				Ap->setStorage( A.getStorage() );
 			}
@@ -192,14 +191,14 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return integer number of columns of black box matrix.
 		 */
-		size_t coldim (void) const 
+		size_t coldim (void) const
 		{
 			return _indices.size ();
 		}
 
 		/** Add a transposition to the matrix
 		*/
-		void permute (size_t row1, size_t row2) 
+		void permute (size_t row1, size_t row2)
 		{
 			linbox_check (row1 >= 0 && row1 < _indices.size ());
 			linbox_check (row2 >= 0 && row2 < _indices.size ());
@@ -214,7 +213,7 @@ namespace LinBox
 		std::ostream &write(std::ostream &out) const
 		{
 			LinBox::Writer W;
-			if( toTag(W) ) 
+			if( toTag(W) )
 				W.write(out);
 
 			return out;
@@ -238,7 +237,7 @@ namespace LinBox
 #else
 		std::ostream &write(std::ostream &os, FileFormatTag format = FORMAT_MAPLE) const {
 			// 		for (typename Storage::const_iterator it=_indices.begin(); it!=_indices.end(); ++it)
-			//                     std::cerr << *it << ' ';                    
+			//                     std::cerr << *it << ' ';
 			typename Field::Element one, zero; _F.init(one,1UL);_F.init(zero,0UL);
 			os << "[";
 			bool firstrow=true;
@@ -247,7 +246,7 @@ namespace LinBox
 				if (firstrow) {
 					os << "[";
 					firstrow =false;
-				} else 
+				} else
 					os << ", [";
 
 				long i=0;

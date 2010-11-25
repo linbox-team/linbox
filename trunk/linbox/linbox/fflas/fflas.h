@@ -58,8 +58,7 @@ namespace LinBox
 //#define LB_TRTR
 
 /// @brief FFLAS: <b>F</b>inite <b>F</b>ield <b>L</b>inear <b>A</b>lgebra <b>S</b>ubroutines.
-class FFLAS
-{
+class FFLAS {
 
 public:
 	enum FFLAS_TRANSPOSE
@@ -494,15 +493,13 @@ protected:
 	// Prevents the instantiation of the class
 	FFLAS(){}
 	template <class X,class Y>
-	class AreEqual
-	{
+	class AreEqual {
 	public:
 		static const bool value = false;
 	};
 
 	template <class X>
-	class AreEqual<X,X>
-	{
+	class AreEqual<X,X> {
 	public:
 		static const bool value = true;
 	};

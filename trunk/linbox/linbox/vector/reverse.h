@@ -24,8 +24,7 @@ namespace LinBox
 	 \ingroup vector
 	 */
 	template <class Vector>
-	class ReverseVector
-	{
+	class ReverseVector {
 	    public:
 		typedef typename Vector::value_type             value_type;
 		typedef typename Vector::size_type              size_type;
@@ -40,9 +39,9 @@ namespace LinBox
 
 		ReverseVector (Vector& v)
 			: _v (v) {}
-		
+
 		// Copy constructor
-		ReverseVector (const ReverseVector<Vector> &v) 
+		ReverseVector (const ReverseVector<Vector> &v)
 			: _v (v._v) {}
 
 		~ReverseVector () {}
@@ -64,23 +63,23 @@ namespace LinBox
 		inline reference       operator[] (size_type n)       { return (begin ())[n]; }
 		inline const_reference operator[] (size_type n) const { return (begin ())[n]; }
 
-		// the method "at" does appear to be implemented 
+		// the method "at" does appear to be implemented
 		// in the gnu implementation of the STL
 		reference at (size_type n)  // validity is relative to valid _begin, _end
-		{   
+		{
 			iterator p = begin () + n;
-			if (begin () <= p && p < end ()) 
+			if (begin () <= p && p < end ())
 				return *p;
 			else
 				throw std::out_of_range("out of range"); //out of range error message.
 		}
 
-		const_reference at(size_type n) const 
+		const_reference at(size_type n) const
 		{
 			const_iterator p = begin () + n;
 			if (begin () <= p && p < end ())
 				return *p;
-			else 
+			else
 				throw std::out_of_range("out of range"); //out of range error message
 		}
 
@@ -106,14 +105,14 @@ namespace LinBox
 //		template <class In> void assign(In first, In last);
 //		void assign(size_type n, const T& val);
 
-		// Stack operations:  
+		// Stack operations:
 		// 	not implemented because they invalidate iterators
 
 		// List operations:
 		// 	not implemented because they invalidate iterators
 
 		// Capacity
-		// 	resize, reserve: not implemented because they 
+		// 	resize, reserve: not implemented because they
 		// 		invalidate iterators
 
 		inline size_type size      (void) const { return _v.size  (); }
@@ -127,10 +126,10 @@ namespace LinBox
 	}; // template <class Vector> class ReverseVector
 
 	// Vector traits for ReverseVector wrapper
-	template <class Vector> 
+	template <class Vector>
 	struct VectorTraits<ReverseVector<Vector> >
-	{ 
-		typedef typename VectorTraits<Vector>::VectorCategory VectorCategory; 
+	{
+		typedef typename VectorTraits<Vector>::VectorCategory VectorCategory;
 	};
 
 } // namespace LinBox

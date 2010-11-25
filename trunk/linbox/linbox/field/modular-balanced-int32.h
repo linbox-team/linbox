@@ -76,8 +76,7 @@ namespace LinBox
 
 	/// \ingroup field
 	template <>
-	class ModularBalanced<int32> : public FieldInterface
-	{
+	class ModularBalanced<int32> : public FieldInterface {
 	protected:
 		int32 modulus;
 		int32 halfmodulus;
@@ -413,8 +412,7 @@ namespace LinBox
 	};
 
 	template <>
-	class FieldAXPY<ModularBalanced<int32> >
-	{
+	class FieldAXPY<ModularBalanced<int32> > {
 	public:
 
 		typedef int32 Element;
@@ -498,8 +496,7 @@ namespace LinBox
 
 
 	template <>
-	class DotProductDomain<ModularBalanced<int32> > : private virtual VectorDomainBase<ModularBalanced<int32> >
-	{
+	class DotProductDomain<ModularBalanced<int32> > : private virtual VectorDomainBase<ModularBalanced<int32> > {
 
 	private:
 		const int32 blocksize;

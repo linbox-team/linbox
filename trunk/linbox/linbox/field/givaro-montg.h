@@ -33,8 +33,8 @@
 //------------------------------------
 
 // Namespace in which all LinBox code resides
-namespace LinBox 
-{ 
+namespace LinBox
+{
 
 
 	template <class Ring>
@@ -46,25 +46,24 @@ namespace LinBox
 	struct ClassifyRing<GivaroMontg> {
 		typedef RingCategories::ModularTag categoryTag;
 	};
-	/** 
+	/**
 	 \brief wrapper of Givaro's Montgomery<Std32>.
 	 \ingroup field
 
 	 *  This class is a modular representation with a Montgomery reduction
-	 */   
-	class GivaroMontg : public Montgomery<Std32>, public FieldInterface
-	{
- 
+	 */
+	class GivaroMontg : public Montgomery<Std32>, public FieldInterface {
+
 	public:
 
 		/** Element type.
 		 *  This type is inherited from the Givaro class Montgomery<Std32>
 		 */
 		typedef  Montgomery<Std32>::Rep Element;
-    
+
 		/** RandIter type
 		 *  This type is inherited from the Givaro class Montgomery<Std32>
-		 */	
+		 */
 		typedef GIV_randIter< Montgomery<Std32>, LinBox::integer >  RandIter;
 
 		/** Constructor from an integer
@@ -77,12 +76,12 @@ namespace LinBox
 		 *  this constructor use the ZpzDom<TAG> constructor
 		 */
 	  	GivaroMontg(const integer& p, const integer& k) :
-			Montgomery<Std32>(static_cast<uint32>(long(p))) { 
-			
+			Montgomery<Std32>(static_cast<uint32>(long(p))) {
+
 			if (k!=1)
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
 		}
-    
+
 		/** Characteristic.
 		 * Return integer representing characteristic of the domain.
 		 * Returns a positive integer to all domains with finite characteristic,
@@ -94,9 +93,9 @@ namespace LinBox
 
 		long characteristic() const
 		{return static_cast<long>(Montgomery<Std32>::characteristic());}
-    
-      
-		/** Cardinality. 
+
+
+		/** Cardinality.
 		 * Return integer representing cardinality of the domain.
 		 * Returns a non-negative integer for all domains with finite
 		 * cardinality, and returns -1 to signify a domain of infinite
@@ -105,7 +104,7 @@ namespace LinBox
 		 */
 		integer& cardinality(integer& c) const
 		{ return c=integer(static_cast<long>(Montgomery<Std32>::size()));}
- 
+
 
 		/** Initialization of field base Element from an integer.
 		 * Behaves like C++ allocator construct.
@@ -116,12 +115,12 @@ namespace LinBox
 		 * @return reference to field base Element.
 		 * @param x field base Element to contain output (reference returned).
 		 * @param y integer.
-		 */  
+		 */
 		Element& init(Element& x , const integer& y=0) const
-		{ 			
+		{
 			return Montgomery<Std32>::init( x,long(y % (integer)_p));
 		}
-      
+
 		Element& init(Element& x , const double y) const
 		{ return Montgomery<Std32>::init( x, y);}
 
@@ -134,7 +133,7 @@ namespace LinBox
 		 */
 		integer& convert(integer& x, const Element& y) const
 		{
-			long tmp;	
+			long tmp;
 			//	return x = *(new integer(Montgomery<Std32>::convert(tmp,y)));
 			return x = integer(Montgomery<Std32>::convert(tmp,y));
 		}
@@ -149,7 +148,7 @@ namespace LinBox
 		static inline int getMaxModulus() { return 40504; }
 
 	}; // class GivaroMontg
- 
+
 
 
 } // namespace LinBox

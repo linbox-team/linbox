@@ -53,8 +53,7 @@ namespace LinBox
 	 * level routines based on elimination.
 	 \ingroup ffpack
 	 */
-	class FFPACK : public FFLAS
-	{
+	class FFPACK : public FFLAS {
 
 
 	public:

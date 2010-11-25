@@ -38,8 +38,8 @@
 #include "linbox/randiter/mersenne-twister.h"
 #include "linbox/linbox-config.h"
 
-namespace LinBox 
-{ 
+namespace LinBox
+{
 
 	/** Random field base element generator.
 	  This is a generator of random field elements that can be used with
@@ -49,8 +49,7 @@ namespace LinBox
 	  distribution on an unspecified subset of the elements can be expected.
 	 */
 	template <class Field>
-	class GenericRandIter
-	{
+	class GenericRandIter {
 	    public:
 
 		typedef typename Field::Element Element;
@@ -62,13 +61,13 @@ namespace LinBox
 		 * A sampling size of zero means to sample from the entire prime subfield.
 		 * A seed of zero means to use some arbitrary seed for the generator.
 		 * @param F LinBox field in which to do arithmetic
-		 * @param size constant integer reference of sample size from which to 
+		 * @param size constant integer reference of sample size from which to
 		 *             sample (default = modulus of field)
 		 * @param seed constant integer reference from which to seed random number
 		 *             generator (default = 0)
 		 */
-		GenericRandIter (const Field &F, 
-				 const integer &size = 0, 
+		GenericRandIter (const Field &F,
+				 const integer &size = 0,
 				 const integer &seed = 0)
 			: _F (F), _size (size), _seed (seed)
 		{
@@ -82,18 +81,18 @@ namespace LinBox
 				_size = cardinality;
 
 			commentator.report (10, INTERNAL_DESCRIPTION)
-				<< "Created random generator with size " << _size 
+				<< "Created random generator with size " << _size
 				<< " and seed " << _seed << std::endl;
 
 			// Seed random number generator
 			srand (_seed);
 		}
 
-		GenericRandIter (const GenericRandIter<Field> &R) 
+		GenericRandIter (const GenericRandIter<Field> &R)
 			: _F (R._F), _size (R._size), _seed (R._seed) {}
 
 		~GenericRandIter () {}
-    
+
 		GenericRandIter<Field> &operator=(const GenericRandIter<Field> &R)
 		{
 			if (this != &R) { // guard against self-assignment
@@ -103,7 +102,7 @@ namespace LinBox
 
 			return *this;
 		}
- 
+
 		/** Random field element creator.
 		 * This returns a random field element from the information supplied
 		 * at the creation of the generator.
@@ -134,7 +133,7 @@ namespace LinBox
 
 		/// Sampling size
 		integer _size;
-    
+
 		/// Seed
 		long _seed;
 

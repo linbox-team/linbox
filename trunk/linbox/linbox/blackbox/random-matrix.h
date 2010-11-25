@@ -28,11 +28,10 @@
 #include <linbox/blackbox/dense.h>
 #include <linbox/blackbox/sparse.h>
 
-namespace LinBox 
+namespace LinBox
 {
 
-	class RandomMatrix : public  BlackboxInterface 
-	{
+	class RandomMatrix : public  BlackboxInterface {
 
 	public:
 
@@ -42,7 +41,7 @@ namespace LinBox
 		 General case.
 		 */
 		template <class Blackbox, class Field>
-		static Blackbox*& randomMatrix (Blackbox* &, const Field& f, 
+		static Blackbox*& randomMatrix (Blackbox* &, const Field& f,
 						int rowdim, int coldim);
 
 
@@ -60,7 +59,7 @@ namespace LinBox
 			for (Ap_p = Ap -> rawBegin(); Ap_p != Ap -> rawEnd(); ++ Ap_p)
 				f. assign (*Ap_p, zero);
 
-			if (rowdim < coldim) 
+			if (rowdim < coldim)
 				for (int i = 0; i < rowdim; ++ i) {
 					Ap -> setEntry (i, i, one);
 					for (int j = rowdim; j < coldim; ++ j){
@@ -68,7 +67,7 @@ namespace LinBox
 						Ap -> setEntry (i, j, elt);
 					}
 				}
-			else 
+			else
 				for (int i = 0; i < coldim; ++ i) {
 					Ap -> setEntry (i, i, one);
 					for (int j = coldim; j < rowdim; ++ j) {
@@ -84,8 +83,8 @@ namespace LinBox
 		// constructor a very special random sparse matrix
 		// [I, R] or [I, R}^t, where R is a sparse random matrix.
 		template<class Field>
-		static SparseMatrix<Field>*& randomMatrix( SparseMatrix<Field>*& Ap, 
-							   const Field& f, 
+		static SparseMatrix<Field>*& randomMatrix( SparseMatrix<Field>*& Ap,
+							   const Field& f,
 							   int rowdim, int coldim) {
 
 			Ap = new SparseMatrix<Field>(f, rowdim, coldim);
@@ -98,7 +97,7 @@ namespace LinBox
 
 			f. init (elt, 1);
 
-			for ( i = 0; i < m; ++ i) 
+			for ( i = 0; i < m; ++ i)
 
 				Ap -> setEntry (i, i, elt);
 
@@ -145,8 +144,8 @@ namespace LinBox
 
 		}
 
-		template<typename _Tp1> 
-		struct rebind 
+		template<typename _Tp1>
+		struct rebind
 		{ typedef RandomMatrix other; };
 
 	};

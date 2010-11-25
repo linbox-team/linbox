@@ -36,132 +36,130 @@
 namespace LinBox
 {
 
-class BooleanSwitchFactory;
+	class BooleanSwitchFactory;
 
-/** Boolean switch object.
- * This is a switch predicate object that is applied
- * to two references to elements to switch them as needed 
- * by the \ref Butterfly\ Switching\ Network\ BlackBox\ Matrix\ Object.
- */
-class BooleanSwitch
-{
-    public:
-
-	typedef BooleanSwitch Self_t;
-	typedef BooleanSwitchFactory Factory;
-
-	/** Constructor from an STL vector of booleans.
-	 * The switch is applied using the vector of booleans.
-	 * A true value means to swap the two elements, and a false
-	 * value means not to.
-	 * The apply function starts at the beginning of the vector moving 
-	 * forward through it, and applyTranspose function starts at the end
-	 * moving backwards.  Both repeat the vector after they pass through it.
-	 * @param switches vector of switches
+	/** Boolean switch object.
+	 * This is a switch predicate object that is applied
+	 * to two references to elements to switch them as needed
+	 * by the \ref Butterfly\ Switching\ Network\ BlackBox\ Matrix\ Object.
 	 */
-	BooleanSwitch (const bool s)
+	class BooleanSwitch {
+	public:
+
+		typedef BooleanSwitch Self_t;
+		typedef BooleanSwitchFactory Factory;
+
+		/** Constructor from an STL vector of booleans.
+		 * The switch is applied using the vector of booleans.
+		 * A true value means to swap the two elements, and a false
+		 * value means not to.
+		 * The apply function starts at the beginning of the vector moving
+		 * forward through it, and applyTranspose function starts at the end
+		 * moving backwards.  Both repeat the vector after they pass through it.
+		 * @param switches vector of switches
+		 */
+		BooleanSwitch (const bool s)
 		: _s (s)
-	{}
+		{}
 
-	/** Destructor.
-	 */
-	~BooleanSwitch () {}
+		/** Destructor.
+		*/
+		~BooleanSwitch () {}
 
-	/** Apply switch function.
-	 * Switches the elements in references according to current boolean
-	 * value.  Swaps the elements if boolean is true, otherwise does nothing.
-	 * It is templatized by the element type to be swapped.
-	 * @return bool true if swapped, false otherwise
-	 * @param x reference to first element to be switched
-	 * @param y reference to second element to be switched
-	 */
-	template <class Field>
-	bool apply (const Field             &F,
-		    typename Field::Element &x,
-		    typename Field::Element &y) const;
+		/** Apply switch function.
+		 * Switches the elements in references according to current boolean
+		 * value.  Swaps the elements if boolean is true, otherwise does nothing.
+		 * It is templatized by the element type to be swapped.
+		 * @return bool true if swapped, false otherwise
+		 * @param x reference to first element to be switched
+		 * @param y reference to second element to be switched
+		 */
+		template <class Field>
+		bool apply (const Field             &F,
+			    typename Field::Element &x,
+			    typename Field::Element &y) const;
 
-	/** Apply switch transpose function.
-	 * Switches the elements in references according to current boolean
-	 * value.  Swaps the elements if boolean is true, otherwise does nothing.
-	 * It is templatized by the element type to be swapped.
-	 * @return bool true if swapped, false otherwise
-	 * @param x reference to first element to be switched
-	 * @param y reference to second element to be switched
-	 */
-	template <class Field>
-	bool applyTranspose (const Field             &F,
-			     typename Field::Element &x,
-			     typename Field::Element &y) const;
+		/** Apply switch transpose function.
+		 * Switches the elements in references according to current boolean
+		 * value.  Swaps the elements if boolean is true, otherwise does nothing.
+		 * It is templatized by the element type to be swapped.
+		 * @return bool true if swapped, false otherwise
+		 * @param x reference to first element to be switched
+		 * @param y reference to second element to be switched
+		 */
+		template <class Field>
+		bool applyTranspose (const Field             &F,
+				     typename Field::Element &x,
+				     typename Field::Element &y) const;
 
-        template<typename _Tp1>
-        struct rebind
-        { 
-            typedef BooleanSwitch other;
+		template<typename _Tp1>
+		struct rebind
+		{
+			typedef BooleanSwitch other;
 
-        };
-    
-    protected:
+		};
 
-	bool _s;
+	protected:
 
-}; // class boolean_switch
+		bool _s;
 
-/** Boolean switch factory
- *
- * This class facilitates construction of boolean switch objects by the
- * butterfly matrix.
- */
+	}; // class boolean_switch
 
-class BooleanSwitchFactory 
-{
-    public:
-	/** Constructor from an STL vector of bools
-	 */
-	BooleanSwitchFactory (const std::vector<bool> &switches)
-		: _switches (switches), _iter (switches.begin ())
-	{}
-
-	/** Construct and return a boolean switch object
+	/** Boolean switch factory
 	 *
-	 * This function walks through the switches object given in the
-	 * constructor, advancing on each invocation. It wraps around to the
-	 * beginning of the vector when it reaches the end.
+	 * This class facilitates construction of boolean switch objects by the
+	 * butterfly matrix.
 	 */
-	BooleanSwitch makeSwitch ()
-	{
-		if (_iter == _switches.end ())
-			_iter = _switches.begin ();
 
-		return BooleanSwitch (*_iter++);
+	class BooleanSwitchFactory {
+	public:
+		/** Constructor from an STL vector of bools
+		*/
+		BooleanSwitchFactory (const std::vector<bool> &switches)
+		: _switches (switches), _iter (switches.begin ())
+		{}
+
+		/** Construct and return a boolean switch object
+		 *
+		 * This function walks through the switches object given in the
+		 * constructor, advancing on each invocation. It wraps around to the
+		 * beginning of the vector when it reaches the end.
+		 */
+		BooleanSwitch makeSwitch ()
+		{
+			if (_iter == _switches.end ())
+				_iter = _switches.begin ();
+
+			return BooleanSwitch (*_iter++);
+		}
+
+	private:
+
+		const std::vector<bool> &_switches;
+		std::vector<bool>::const_iterator _iter;
+	};
+
+	template <class Field>
+	inline bool BooleanSwitch::apply (const Field             &F,
+					  typename Field::Element &x,
+					  typename Field::Element &y) const
+	{
+		if (_s)
+			std::swap (x, y);
+
+		return _s;
 	}
 
-    private:
+	template <class Field>
+	inline bool BooleanSwitch::applyTranspose (const Field             &F,
+						   typename Field::Element &x,
+						   typename Field::Element &y) const
+	{
+		if (_s)
+			std::swap (x, y);
 
-	const std::vector<bool> &_switches;
-	std::vector<bool>::const_iterator _iter;
-};
-
-template <class Field> 
-inline bool BooleanSwitch::apply (const Field             &F,
-				  typename Field::Element &x,
-				  typename Field::Element &y) const
-{
-	if (_s)
-		std::swap (x, y);
-
-	return _s;
-}
-  
-template <class Field> 
-inline bool BooleanSwitch::applyTranspose (const Field             &F,
-					   typename Field::Element &x,
-					   typename Field::Element &y) const
-{
-	if (_s)
-		std::swap (x, y);
-
-	return _s;
-}
+		return _s;
+	}
 
 }
 

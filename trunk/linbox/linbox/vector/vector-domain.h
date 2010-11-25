@@ -11,13 +11,13 @@
  * contains all functions that require only one vector type (such as axpy, mul,
  * read, and write). VectorDomain inherits VectorDomainBase and implements
  * dotprod, which requires two vector types.
- * 
+ *
  * ------------------------------------
  * Modified by Dmitriy Morozov <linbox@foxcub.org>. May 27, 2002.
  *
  * Added the modifications for categories and vector traits that were designed
  * at the Rootbeer meeting. Added parametrization of VectorTags by VectorTraits.
- * 
+ *
  * ------------------------------------
  * 2002-06-04 Bradford Hovinen <hovinen@cis.udel.edu>
  *
@@ -55,8 +55,7 @@ namespace LinBox
 	 \ingroup vector
 	 */
 	template <class Field>
-	class VectorDomainBase 
-	{
+	class VectorDomainBase {
 	public:
 		VectorDomainBase (const Field &F)
 			: _F (F), accu(F)
@@ -85,8 +84,7 @@ namespace LinBox
 	 * class VectorDomain.
 	 */
 	template <class Field>
-	class DotProductDomain : public virtual VectorDomainBase<Field>
-	{
+	class DotProductDomain : public virtual VectorDomainBase<Field> {
 	public:
 
 		typedef typename Field::Element Element;
@@ -122,10 +120,9 @@ namespace LinBox
 // JGD 01.10.2003 : Why inherit twice from VectorDomainBase<Field> ???
 // bds 2004Apr25 : well, g++ 3.4.3 wants explicit base domains on everything - eases that.
 	template <class Field>
-	class VectorDomain : public virtual DotProductDomain<Field>, public virtual VectorDomainBase<Field>
-	{
+	class VectorDomain : public virtual DotProductDomain<Field>, public virtual VectorDomainBase<Field> {
       	public:
-    
+
 		typedef typename Field::Element         Element;
 
 		/** Copy constructor.
@@ -137,12 +134,12 @@ namespace LinBox
 		VectorDomain (const VectorDomain &VD)
 			: VectorDomainBase<Field> (VD._F), DotProductDomain<Field> (VD._F)
 		{}
-    
+
 		/** Assignment operator.
 		 * Assigns VectorDomain object MD to field.
 		 * @param  MD VectorDomain object.
 		 */
-		VectorDomain &operator = (const VectorDomain &VD) 
+		VectorDomain &operator = (const VectorDomain &VD)
 			{ VectorDomainBase<Field>::_F = VD._F; VectorDomainBase<Field>::accu = VD.accu; return *this; }
 
 		/** Retrieve the underlying field
@@ -153,7 +150,7 @@ namespace LinBox
 
 		const Field &field () const
 		{ return VectorDomainBase<Field>::_F; }
-    
+
 		/** Vector input/output operations
 		 * These routines are useful for reading and writing vectors to
 		 * and from file streams. They are analagous to field read and
@@ -163,7 +160,7 @@ namespace LinBox
 		//@{
 
 		/** Print vector of field elements.
-		 * This function assumes the field element has already been 
+		 * This function assumes the field element has already been
 		 * constructed and initialized.
 		 * @return output stream to which field element is written.
 		 * @param  os  output stream to which field element is written.
@@ -174,7 +171,7 @@ namespace LinBox
 		{ return writeSpecialized (os, x, typename VectorTraits<Vector>::VectorCategory ()); }
 
 		/** Read vector of field elements.
-		 * This function assumes the field element has already been 
+		 * This function assumes the field element has already been
 		 * constructed and initialized.
 		 * @return input stream from which field element is read.
 		 * @param  is  input stream from which field element is read.
@@ -411,7 +408,7 @@ namespace LinBox
 		//@}
 
 		/** @name Implementation-Specific Methods.
-		 * These methods are not required of all \ref LinBox\ Fields 
+		 * These methods are not required of all \ref LinBox\ Fields
 		 * and are included only for this implementation of the archetype.
 		 */
 		//@{
@@ -420,12 +417,12 @@ namespace LinBox
 		 * @param F Field from which to construct
 		 */
 		VectorDomain (const Field &F)
-			: 
+			:
                         VectorDomainBase<Field> (F),DotProductDomain<Field> (F)
 		{}
 
 		//@} Implementation-Specific Methods
-    
+
 		template <class Vector>
 		Vector& random(Vector& v)
 		{
@@ -1155,7 +1152,7 @@ namespace LinBox
 			typename LinBox::Vector<Field>::SparsePar t;
 			t = v1; v1 = v2; v2 = t;
 		}
-	
+
 		template <class Vector, class Iterator>
 		inline Vector &permuteSpecialized (Vector   &v,
 						   Iterator  P_start,

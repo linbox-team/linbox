@@ -49,7 +49,7 @@ public:
  * Macro for automatic code generation *
  ***************************************/
 #define LB_DOMAIN_VISIT(D)				\
-	void visit(const DomainEnvelope<D> &d){apply(d);}
+void visit(const DomainEnvelope<D> &d){apply(d);}
 
 
 /*******************************************************************************
@@ -60,19 +60,19 @@ template <class DList, class Functor, class Result> class LinBoxDomainVisitor;
 
 template <class Functor, class Result> class LinBoxDomainVisitor<LinBoxDumbType, Functor, Result>{};
 
-template <class T, class Functor, class Result> 
-class LinBoxDomainVisitor<LinBoxTypelist<T, LinBoxDumbType>, Functor, Result> 
-	: public LinBoxVisitor <DomainEnvelope<T> >, 
-	  public ApplyDomainFunctorBase<Functor, Result> {
+template <class T, class Functor, class Result>
+class LinBoxDomainVisitor<LinBoxTypelist<T, LinBoxDumbType>, Functor, Result>
+: public LinBoxVisitor <DomainEnvelope<T> >,
+public ApplyDomainFunctorBase<Functor, Result> {
 public:
 	LB_DOMAIN_VISIT(T);
 };
 
 template <class Head, class Tail, class Functor, class Result>
-class LinBoxDomainVisitor<LinBoxTypelist<Head, Tail>, Functor, Result > 
-	: public LinBoxVisitor <DomainEnvelope<Head> > ,
-	  public LinBoxDomainVisitor<Tail, Functor, Result> {
-	public:
+class LinBoxDomainVisitor<LinBoxTypelist<Head, Tail>, Functor, Result >
+: public LinBoxVisitor <DomainEnvelope<Head> > ,
+public LinBoxDomainVisitor<Tail, Functor, Result> {
+public:
 	LB_DOMAIN_VISIT(Head);
 };
 
@@ -85,9 +85,9 @@ template <class Functor, class Result>
 class ApplyDomainFunctor : public LinBoxDomainVisitor<DomainList, Functor, Result> {
 public:
 	ApplyDomainFunctor(Result &r, const Functor &f) {
-		this->res=&r; 
+		this->res=&r;
 		this->fct=&f;
-	}	
+	}
 };
 
 #endif

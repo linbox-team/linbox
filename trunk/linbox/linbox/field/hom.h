@@ -16,7 +16,7 @@
 #include <linbox/field/ntl-ZZ.h>
 #endif //__LINBOX_HAVE_NTL
 
-namespace LinBox 
+namespace LinBox
 {
 	/// Error object for attempt to establish a Hom that cannot exist.
 	class NoHomError {};
@@ -26,33 +26,33 @@ namespace LinBox
 
 	 * An instance of Hom is a homomorphism from a ring of type Source
 	 * to a ring (usually field) of type Target.  The intended use is that
-	 * it will be a natural mapping.  For instance: 
-	 * 
+	 * it will be a natural mapping.  For instance:
+	 *
 	 * Hom<Unparametric<Integers>, Modular<integer> >(Z, Zp) nat; // is the mod p mapping.
 	 *
-	 * Hom<<NTL_ZZp, Modular<integer> >(Zp, Mp) nat; 
+	 * Hom<<NTL_ZZp, Modular<integer> >(Zp, Mp) nat;
 	 *
 	 * // is an isomorphism, provided the Zp and Mp have same characteristic.
-	 * Hom<Unparametric<NTL_ZZp, Unparameteric<NTL_ZZpEx> >(Z3, Z27) nat; 
+	 * Hom<Unparametric<NTL_ZZp, Unparameteric<NTL_ZZpEx> >(Z3, Z27) nat;
 	 * // is the embedding of the prime field in the extension.
 	 */
 
-	template< class Source, class Target > 
-	class Hom 
-	{   public:
+	template< class Source, class Target >
+	class Hom {
+	public:
 		typedef typename Source::Element SrcElt;
 		typedef typename Target::Element Elt;
 
 		//Hom(){}
 		/**
-		 * Construct a homomorphism from a specific source ring S and target 
-		 * field T with Hom(S, T).  
+		 * Construct a homomorphism from a specific source ring S and target
+		 * field T with Hom(S, T).
 		 * Specializations define all actual homomorphisms.
 		 */
 		Hom(const Source& S, const Target& T) : _source(S), _target(T){ }
 
-		/** 
-		 * image(t, s) implements the homomorphism, assigning the 
+		/**
+		 * image(t, s) implements the homomorphism, assigning the
 		 * t the value of the image of s under the mapping.
 		 *
 		 * The default behaviour goes through integers.
@@ -61,7 +61,7 @@ namespace LinBox
                     return _target.init(t, _source.convert(tmp,s));
                 }
 
-		/** If possible, preimage(s,t) assigns a value to s such that 
+		/** If possible, preimage(s,t) assigns a value to s such that
 		 * the image of s is t.  Otherwise behaviour is unspecified.
 		 * An error may be thrown, a conventional value may be set, or
 		 * an arb value set.
@@ -78,7 +78,7 @@ namespace LinBox
             integer tmp;
 		Source _source;
 		Target _target;
-	}; // end Hom 
+	}; // end Hom
 
 
 
@@ -91,7 +91,7 @@ namespace LinBox
 		typedef Source Target;
 		typedef typename Source::Element SrcElt;
 		typedef typename Target::Element Elt;
-	
+
 		Hom(const Source& S, const Target& T) : _source (S){}
 		Elt& image(Elt& t, const SrcElt& s) {
 			_source. assign (t, s);
@@ -106,7 +106,7 @@ namespace LinBox
 
 	protected:
 		Source _source;
-	}; // end Hom 
+	}; // end Hom
 
 
 }
@@ -116,7 +116,7 @@ namespace LinBox
 //#include "linbox/field/modular.h"
 /// Specialization to Modular<uint16> --> Modular<uint_32>.
 // Just a trial.  delete this when better examples exist.
-namespace LinBox 
+namespace LinBox
 {
 	template<> inline Hom<Modular<uint16>, Modular<uint32> >::
 	Hom(const Modular<uint16>& S, const Modular<uint32>& T ): _source(S),_target(T)
@@ -147,7 +147,7 @@ namespace LinBox
 		typedef _Target Target;
 		typedef typename Source::Element SrcElt;
 		typedef typename Target::Element Elt;
-	
+
 		Hom(const Source& S, const Target& T) : _source (S), _target (T) {}
 		inline Elt& image(Elt& t, const SrcElt& s) {
 			_target. init (t, s);
@@ -163,7 +163,7 @@ namespace LinBox
 	protected:
 		Source _source;
 		Target _target;
-	}; // end Hom 
+	}; // end Hom
 
 	template<>
 	class Hom<UnparametricField<integer>, UnparametricField<integer> > {
@@ -173,7 +173,7 @@ namespace LinBox
 		typedef UnparametricField<integer> Target;
 		typedef Source::Element SrcElt;
 		typedef Target::Element Elt;
-	
+
 		Hom(const Source& S, const Target& T) : _source (S), _target (T) {}
 		inline Elt& image(Elt& t, const SrcElt& s) {
 			t = s;
@@ -189,7 +189,7 @@ namespace LinBox
 	protected:
 		Source _source;
 		Target _target;
-	}; // end Hom 
+	}; // end Hom
 
 	template<class _Target>
 	class Hom<PID_integer, _Target> {
@@ -199,7 +199,7 @@ namespace LinBox
 		typedef _Target Target;
 		typedef typename Source::Element SrcElt;
 		typedef typename Target::Element Elt;
-	
+
 		Hom(const Source& S, const Target& T) : _source (S), _target (T) {}
 		inline Elt& image(Elt& t, const SrcElt& s) {
 			_target. init (t, s);
@@ -215,7 +215,7 @@ namespace LinBox
 	protected:
 		Source _source;
 		Target _target;
-	}; // end Hom 
+	}; // end Hom
 
 
 	template<>
@@ -226,7 +226,7 @@ namespace LinBox
 		typedef Source Target;
 		typedef Source::Element SrcElt;
 		typedef Target::Element Elt;
-	
+
 		Hom(const Source& S, const Target& T) : _source (S), _target (T) {}
 		inline Elt& image(Elt& t, const SrcElt& s) {
 			_target. assign (t, s);
@@ -242,7 +242,7 @@ namespace LinBox
 	protected:
 		Source _source;
 		Target _target;
-	}; // end Hom 
+	}; // end Hom
 
 
 #if 0
@@ -284,10 +284,10 @@ namespace LinBox
 #endif //__LINBOX_field_unparametric_H
 
 #ifdef __LINBOX_HAVE_NTL
-namespace LinBox 
+namespace LinBox
 {
 
-	template<class _Target > 
+	template<class _Target >
 	class Hom <NTL_ZZ , _Target> {
 
 	public:
@@ -295,7 +295,7 @@ namespace LinBox
 		typedef _Target Target;
 		typedef typename Source::Element SrcElt;
 		typedef typename Target::Element Elt;
-	
+
 		Hom(const Source& S, const Target& T) : _source(S), _target(T){}
 		inline Elt& image(Elt& t, const SrcElt& s) {
 			return _target. init (t, _source. convert (tmp, s));
@@ -310,8 +310,8 @@ namespace LinBox
 		integer tmp;
 		Source _source;
 		Target _target;
-	}; // end Hom 
-	
+	}; // end Hom
+
 	template<>
 	class Hom <NTL_ZZ , NTL_ZZ> {
 	public:
@@ -319,7 +319,7 @@ namespace LinBox
 		typedef NTL_ZZ Target;
 		typedef Source::Element SrcElt;
 		typedef Target::Element Elt;
-	
+
 		Hom(const Source& S, const Target& T) : _source(S), _target(T){}
 		inline Elt& image(Elt& t, const SrcElt& s) {
 			return _target.assign(t, s);
@@ -333,13 +333,13 @@ namespace LinBox
 	protected:
 		Source _source;
 		Target _target;
-	}; // end Hom 
-	
+	}; // end Hom
+
 }
 #endif //__LINBOX_HAVE_NTL
 
 #ifdef __LINBOX_field_gmp_rational_H
-namespace LinBox 
+namespace LinBox
 {
 	template <class _Target>
 	class Hom<GMPRationalField, _Target> {
@@ -349,7 +349,7 @@ namespace LinBox
 		typedef _Target Target;
 		typedef typename Source::Element SrcElt;
 		typedef typename Target::Element Elt;
-	
+
             Hom(const Source& S, const Target& T) : _source (S), _target(T){ }
 		Elt& image(Elt& t, const SrcElt& s) {
 			_source. get_num (num, s);
@@ -380,7 +380,7 @@ namespace LinBox
 		Elt tmp;
 		Source _source;
 		Target _target;
-	}; // end Hom 
+	}; // end Hom
 
 	template <>
 	class Hom<GMPRationalField, GMPRationalField> {
@@ -390,7 +390,7 @@ namespace LinBox
 		typedef Source Target;
 		typedef Source::Element SrcElt;
 		typedef Target::Element Elt;
-	
+
 		Hom(const Source& S, const Target& T) : _source (S), _target(T){}
 		Elt& image(Elt& t, const SrcElt& s) {
 			_target.assign(t, s);
@@ -406,7 +406,7 @@ namespace LinBox
 	protected:
 		Source _source;
 		Target _target;
-	}; // end Hom 
+	}; // end Hom
 }
 #endif //__LINBOX_field_gmp_rational_H
 

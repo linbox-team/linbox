@@ -55,8 +55,7 @@ namespace LinBox
 
 	/// \ingroup field
 	template <>
-	class ModularBalanced<float> : public FieldInterface
-	{
+	class ModularBalanced<float> : public FieldInterface {
 
 	protected:
 

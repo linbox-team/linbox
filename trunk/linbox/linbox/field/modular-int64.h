@@ -41,8 +41,8 @@
 #endif
 
 // Namespace in which all LinBox code resides
-namespace LinBox 
-{ 
+namespace LinBox
+{
 
 	template< class Element >
 	class Modular;
@@ -56,7 +56,7 @@ namespace LinBox
 	class MVProductDomain;
 
 	template <class Ring>
-	struct ClassifyRing; 
+	struct ClassifyRing;
 
 	template <class Element>
 	struct ClassifyRing<Modular<Element> >;
@@ -68,7 +68,7 @@ namespace LinBox
 
 
 	/** \brief Specialization of Modular to int64 element type with efficient dot product.
-	 * 
+	 *
 	 * Efficient element operations for dot product, mul, axpy, by using floating point
 	 * inverse of modulus (borrowed from NTL) and some use of non-normalized intermediate values.
 	 *
@@ -80,8 +80,7 @@ namespace LinBox
 	 \ingroup field
 	 */
 	template <>
-	class Modular<int64> : public FieldInterface 
-	{
+	class Modular<int64> : public FieldInterface {
 
 	protected:
 
@@ -91,7 +90,7 @@ namespace LinBox
 
 		int64 _two64;
 
-	public:	       
+	public:
 
 		friend class FieldAXPY<Modular<int64> >;
 		friend class DotProductDomain<Modular<int64> >;
@@ -112,7 +111,7 @@ namespace LinBox
 
 		Modular (int64 value, int64 exp = 1)  : modulus(value)
 		{
-			modulusinv = 1 / ((double) value); 
+			modulusinv = 1 / ((double) value);
 			if(exp != 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
 			if(value<=1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			int64 max;
@@ -134,38 +133,38 @@ namespace LinBox
 		}
 
 		inline integer &cardinality (integer &c) const
-		{ 
+		{
 			return c = modulus;
 		}
 
 		inline integer &characteristic (integer &c) const
-		{ 
-			return c = modulus; 
+		{
+			return c = modulus;
 		}
 
 		inline integer characteristic () const
-		{ 
-			return modulus; 
+		{
+			return modulus;
 		}
 
 		inline integer &convert (integer &x, const Element &y) const
-		{ 
+		{
 			return x = y;
 		}
 
-		inline int64 &convert (int64 &x, const Element &y) const 
+		inline int64 &convert (int64 &x, const Element &y) const
 		{
-		       	return x = y; 
+		       	return x = y;
 		}
 
 		inline double &convert (double &x, const Element &y) const
-		{ 
+		{
 			return x = (double) y;
 		}
 
 		inline float &convert (float &x, const Element &y) const
-		{ 
-			return x = (float) y; 
+		{
+			return x = (float) y;
 		}
 
 		inline std::ostream &write (std::ostream &os) const
@@ -175,7 +174,7 @@ namespace LinBox
 
 		inline std::istream &read (std::istream &is)
 		{
-			is >> modulus; 
+			is >> modulus;
 			modulusinv = 1 /((double) modulus );
 			if(modulus <= 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			int64 max;
@@ -197,7 +196,7 @@ namespace LinBox
 		{
 			integer tmp;
 			is >> tmp;
-			init(x,tmp); 
+			init(x,tmp);
 			return is;
 		}
 
@@ -211,7 +210,7 @@ namespace LinBox
 
 		inline Element &init (Element & x, const float &y) const
 		{
-		       	return init(x , (double) y); 
+		       	return init(x , (double) y);
 		}
 
 		template<class Element1>
@@ -222,7 +221,7 @@ namespace LinBox
 			return x;
 		}
 
-		inline Element &init (Element &x, const integer &y) const  
+		inline Element &init (Element &x, const integer &y) const
 		{
 			x = y % modulus;
 			if (x < 0) x += modulus;
@@ -255,12 +254,12 @@ namespace LinBox
 
 		inline  bool isZero (const Element &x) const
 		{
-			return x == 0; 
+			return x == 0;
 		}
 
 		inline bool isOne (const Element &x) const
 		{
-			return x == 1; 
+			return x == 1;
 		}
 
 		inline Element &add (Element &x, const Element &y, const Element &z) const
@@ -308,7 +307,7 @@ namespace LinBox
 
 		inline Element &inv (Element &x, const Element &y) const
 		{
-			int64 d, t;			
+			int64 d, t;
 			XGCD(d, x, t, y, modulus);
 			if (d != 1)
 			{
@@ -316,13 +315,13 @@ namespace LinBox
 			}
 			if (x < 0)
 				x += modulus;
-			return x;		
+			return x;
 
 		}
 
-		inline Element &axpy (Element &r, 
-				      const Element &a, 
-				      const Element &x, 
+		inline Element &axpy (Element &r,
+				      const Element &a,
+				      const Element &x,
 				      const Element &y) const
 		{
 			int64 q;
@@ -366,8 +365,8 @@ namespace LinBox
 
 		inline Element &negin (Element &x) const
 		{
-			if (x == 0) return x; 
-			else return x = modulus - x; 
+			if (x == 0) return x;
+			else return x = modulus - x;
 		}
 
 		inline Element &invin (Element &x) const
@@ -392,7 +391,7 @@ namespace LinBox
 		}
 
 		static inline int64 getMaxModulus()
-		{ 
+		{
 #ifdef __x86_64__
 			return 4611686018427387904L;  // 2^62 in long long
 #else
@@ -454,8 +453,7 @@ namespace LinBox
 	};
 
 	template <>
-	class FieldAXPY<Modular<int64> > 
-	{	  
+	class FieldAXPY<Modular<int64> > {
 	public:
 
 		typedef int64 Element;
@@ -470,9 +468,9 @@ namespace LinBox
 
 		FieldAXPY<Modular<int64> > &operator = (const FieldAXPY &faxpy)
 		{
-			_F = faxpy._F; 
-			_y = faxpy._y; 		       
-			return *this; 
+			_F = faxpy._F;
+			_y = faxpy._y;
+			return *this;
 		}
 
 		inline uint64& mulacc (const Element &a, const Element &x)
@@ -502,7 +500,7 @@ namespace LinBox
 
 		inline FieldAXPY &assign (const Element y)
 		{
-			_y = y; 
+			_y = y;
 			return *this;
 		}
 
@@ -513,16 +511,15 @@ namespace LinBox
 
 	protected:
 		Field _F;
-		uint64 _y;		
+		uint64 _y;
 	};
 
 
 	template <>
-	class DotProductDomain<Modular<int64> > : private virtual VectorDomainBase<Modular<int64> >
-	{	       
+	class DotProductDomain<Modular<int64> > : private virtual VectorDomainBase<Modular<int64> > {
 
-	public:	  
-		typedef int64 Element;	  
+	public:
+		typedef int64 Element;
 		DotProductDomain (const Modular<int64> &F)
 		: VectorDomainBase<Modular<int64> > (F)
 		{}
@@ -548,14 +545,14 @@ namespace LinBox
 					y += _F._two64;
 			}
 
-			y %= (uint64) _F.modulus; 
+			y %= (uint64) _F.modulus;
 			return res = y;
 
 		}
 
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const
-		{		  
+		{
 			typename Vector1::first_type::const_iterator i_idx;
 			typename Vector1::second_type::const_iterator i_elt;
 
@@ -578,11 +575,10 @@ namespace LinBox
 		}
 	};
 
-	// Specialization of MVProductDomain for int64 modular field	
+	// Specialization of MVProductDomain for int64 modular field
 
 	template <>
-	class MVProductDomain<Modular<int64> >
-	{
+	class MVProductDomain<Modular<int64> > {
 	public:
 
 		typedef int64 Element;
@@ -619,9 +615,9 @@ namespace LinBox
 
 	template <class Vector1, class Matrix, class Vector2>
 	Vector1 & MVProductDomain<Modular<int64> >
-	::mulColDenseSpecialized (const VectorDomain<Modular<int64> > &VD, 
-				  Vector1 &w, 
-				  const Matrix &A, 
+	::mulColDenseSpecialized (const VectorDomain<Modular<int64> > &VD,
+				  Vector1 &w,
+				  const Matrix &A,
 				  const Vector2 &v,
 				  VectorCategories::DenseVectorTag) const
 	{
@@ -664,9 +660,9 @@ namespace LinBox
 
 	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &MVProductDomain<Modular<int64> >
-	::mulColDenseSpecialized (const VectorDomain<Modular<int64> > &VD, 
-				  Vector1 &w, 
-				  const Matrix &A, 
+	::mulColDenseSpecialized (const VectorDomain<Modular<int64> > &VD,
+				  Vector1 &w,
+				  const Matrix &A,
 				  const Vector2 &v,
 				  VectorCategories::SparseSequenceVectorTag) const
 	{
@@ -708,9 +704,9 @@ namespace LinBox
 
 	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &MVProductDomain<Modular<int64> >
-	::mulColDenseSpecialized(const VectorDomain<Modular<int64> > &VD, 
-				 Vector1 &w, 
-				 const Matrix &A, 
+	::mulColDenseSpecialized(const VectorDomain<Modular<int64> > &VD,
+				 Vector1 &w,
+				 const Matrix &A,
 				 const Vector2 &v,
 				 VectorCategories::SparseAssociativeVectorTag) const
 	{
@@ -753,9 +749,9 @@ namespace LinBox
 
 	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &MVProductDomain<Modular<int64> >
-	::mulColDenseSpecialized (const VectorDomain<Modular<int64> > &VD, 
-				  Vector1 &w, 
-				  const Matrix &A, 
+	::mulColDenseSpecialized (const VectorDomain<Modular<int64> > &VD,
+				  Vector1 &w,
+				  const Matrix &A,
 				  const Vector2 &v,
 				  VectorCategories::SparseParallelVectorTag) const
 	{
@@ -800,7 +796,7 @@ namespace LinBox
 	}
 
 
-} 
+}
 
 #undef _LB_MAX_INT
 

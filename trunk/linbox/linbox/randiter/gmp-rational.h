@@ -35,12 +35,11 @@
 namespace LinBox
 {
 
-class GMPRationalRandIter
-{
+class GMPRationalRandIter {
     public:
-    
+
 	typedef GMPRationalElement Element;
-    
+
 	GMPRationalRandIter (const GMPRationalField &F,
 			     const integer &size = 0,
 			     const integer &seed = 0)
@@ -71,9 +70,9 @@ class GMPRationalRandIter
 #endif
 
 
-	~GMPRationalRandIter() 
+	~GMPRationalRandIter()
 	{}
-    
+
 	GMPRationalRandIter& operator=(const GMPRationalRandIter& R)
 	{
 		if (this != &R) { // guard against self-assignment
@@ -83,7 +82,7 @@ class GMPRationalRandIter
 		}
 		return *this;
 	}
- 
+
 	Element &random (Element &a)  const
 	{
 		unsigned int s;
@@ -128,7 +127,7 @@ class GMPRationalRandIter
 
 		return a;
 	}
- 
+
 	/** Random field element creator.
 	 * This returns a random field element from the information supplied
 	 * at the creation of the generator.
@@ -149,9 +148,9 @@ class GMPRationalRandIter
 
 	integer _size;
 	integer _seed;
-     
+
 }; // class GMPRationalRandIter
- 
+
 } // namespace LinBox
 
 #endif // __LINBOX_randiter_gmp_random_H

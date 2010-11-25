@@ -30,7 +30,7 @@ namespace LinBox
 {
 	template <class Blackbox>
 	class Transpose;
-    
+
 
 	template <class Blackbox>
 	class TransposeOwner;
@@ -50,8 +50,7 @@ namespace LinBox
 	 * @param Vector \ref LinBox dense or sparse vector of field elements
 	 */
 	template <class Blackbox>
-	class Transpose : public BlackboxInterface
-	{
+	class Transpose : public BlackboxInterface {
 
 	    public:
 		typedef Blackbox Blackbox_t;
@@ -86,15 +85,15 @@ namespace LinBox
 		{
 		}
 
-            	template<typename _Tp1> 
-                struct rebind 
-                { 
-                    typedef TransposeOwner<typename Blackbox_t::template rebind<_Tp1>::other> other; 
+            	template<typename _Tp1>
+                struct rebind
+                {
+                    typedef TransposeOwner<typename Blackbox_t::template rebind<_Tp1>::other> other;
                     void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
                         typename Blackbox_t::template rebind<_Tp1> () ( Ap.getData(), *(A.getPtr()), F);
                     }
                 };
-            
+
 		/** Application of BlackBox matrix.
 		 * <code>y= (A*B)*x</code>.
 		 * Requires one vector conforming to the \ref LinBox
@@ -133,24 +132,24 @@ namespace LinBox
 		 */
 		size_t rowdim (void) const
 		{
-			if (_A_ptr != 0) 
+			if (_A_ptr != 0)
 				return _A_ptr->coldim ();
-			else 
+			else
 				return 0;
 		}
-    
+
 		/** Retreive column dimensions of BlackBox matrix.
 		 * Required by abstract base class.
 		 * @return integer number of columns of black box matrix.
 		 */
-		size_t coldim (void) const 
+		size_t coldim (void) const
 		{
-			if (_A_ptr != 0) 
+			if (_A_ptr != 0)
 				return _A_ptr->rowdim ();
-			else 
+			else
 				return 0;
 		}
-	       
+
 
 		const Field& field() const {return _A_ptr->field();}
 
@@ -160,7 +159,7 @@ namespace LinBox
 
 		// Pointers to the matrix
 		const Blackbox *_A_ptr;
-            
+
 
 	}; // template <Vector> class Transpose
 
@@ -177,8 +176,7 @@ namespace LinBox
 	 * @param Vector \ref LinBox dense or sparse vector of field elements
 	 */
 	template <class Blackbox>
-	class TransposeOwner : public BlackboxInterface
-	{
+	class TransposeOwner : public BlackboxInterface {
 
 	    public:
 		typedef Blackbox Blackbox_t;
@@ -212,27 +210,27 @@ namespace LinBox
 		{
 		}
 
-            	template<typename _Tp1> 
-                struct rebind 
-                { 
-                    typedef TransposeOwner<typename Blackbox::template rebind<_Tp1>::other> other; 
+            	template<typename _Tp1>
+                struct rebind
+                {
+                    typedef TransposeOwner<typename Blackbox::template rebind<_Tp1>::other> other;
                     void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
                         typename Blackbox_t::template rebind<_Tp1> () ( Ap.getData(), A.getData(), F);
                     }
                 };
 
             	template<typename _BB, class Field>
-            	TransposeOwner (const Transpose<_BB>& T, const Field& F) 
+            	TransposeOwner (const Transpose<_BB>& T, const Field& F)
                         : _A_data(*(T.getPtr()), F) {
                     typename Transpose<_BB>::template rebind<Field>()(*this,T, F);
                 }
             	template<typename _BB, class Field>
-            	TransposeOwner (const TransposeOwner<_BB>& T, const Field& F) 
+            	TransposeOwner (const TransposeOwner<_BB>& T, const Field& F)
                         : _A_data(T.getData(), F) {
                     typename TransposeOwner<_BB>::template rebind<Field>()(*this,T, F);
                 }
 
- 
+
 		/** Application of BlackBox matrix.
 		 * <code>y= (A*B)*x</code>.
 		 * Requires one vector conforming to the \ref LinBox
@@ -271,16 +269,16 @@ namespace LinBox
 		{
 			return _A_data.coldim ();
 		}
-    
+
 		/** Retreive column dimensions of BlackBox matrix.
 		 * Required by abstract base class.
 		 * @return integer number of columns of black box matrix.
 		 */
-		size_t coldim (void) const 
+		size_t coldim (void) const
 		{
 			return _A_data.rowdim ();
 		}
-	       
+
 
 		const Field& field() const {return _A_data.field();}
 
@@ -290,7 +288,7 @@ namespace LinBox
 	    private:
 		// Takes ownership of the data
 		Blackbox _A_data;
-            
+
 
 	};
 

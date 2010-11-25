@@ -63,8 +63,7 @@ namespace LinBox
 	\ingroup field
 	 */
 	template <class _Element>
-	class ModularBase
-	{
+	class ModularBase {
 	    public:
 
 		/*- Element type
@@ -271,8 +270,7 @@ namespace LinBox
 	 suitable to certain applications.
 	 */
 	template <class _Element>
-	class Modular : public ModularBase<_Element>
-	{
+	class Modular : public ModularBase<_Element> {
 	    public:
 		typedef _Element Element;
 		typedef typename ModularBase<_Element>::RandIter RandIter;
@@ -628,8 +626,7 @@ namespace LinBox
 	See FieldArchetype for member specifications.
 	*/
 	template <>
-	class Modular<uint8> : public FieldInterface, public ModularBase<uint8>
-	{
+	class Modular<uint8> : public FieldInterface, public ModularBase<uint8> {
 	    public:
 
 		typedef uint8 Element;
@@ -789,8 +786,7 @@ namespace LinBox
 
 	/** @brief Specialization of class Modular for uint16 element type */
 	template <>
-	class Modular<uint16> : public FieldInterface, public ModularBase<uint16>
-	{
+	class Modular<uint16> : public FieldInterface, public ModularBase<uint16> {
 	    public:
 
 		typedef uint16 Element;
@@ -950,8 +946,7 @@ namespace LinBox
 
 	/** @brief Specialization of class Modular for uint32 element type */
 	template <>
-	class Modular<uint32> : public FieldInterface, public ModularBase<uint32>
-	{
+	class Modular<uint32> : public FieldInterface, public ModularBase<uint32> {
 	public:
 
 		typedef uint32 Element;
@@ -1111,8 +1106,7 @@ namespace LinBox
 	/* Specialization of FieldAXPY for parameterized modular field */
 
 	template <class _Element>
-	class FieldAXPY<Modular<_Element> >
-	{
+	class FieldAXPY<Modular<_Element> > {
 	    public:
 
 		typedef _Element Element;
@@ -1148,8 +1142,7 @@ namespace LinBox
 	/* Specialization of FieldAXPY for uint8 modular field */
 
 	template <>
-	class FieldAXPY<Modular<uint8> >
-	{
+	class FieldAXPY<Modular<uint8> > {
 	    public:
 
 		typedef uint8 Element;
@@ -1207,8 +1200,7 @@ namespace LinBox
 	/* Specialization of FieldAXPY for uint16 modular field */
 
 	template <>
-	class FieldAXPY<Modular<uint16> >
-	{
+	class FieldAXPY<Modular<uint16> > {
 	    public:
 
 		typedef uint16 Element;
@@ -1265,8 +1257,7 @@ namespace LinBox
 	/* Specialization of FieldAXPY for unsigned short modular field */
 
 	template <>
-	class FieldAXPY<Modular<uint32> >
-	{
+	class FieldAXPY<Modular<uint32> > {
 	    public:
 
 		typedef uint32 Element;
@@ -1324,8 +1315,7 @@ namespace LinBox
 	// Specialization of DotProductDomain for unsigned short modular field
 
 	template <>
-	class DotProductDomain<Modular<uint8> > : private virtual VectorDomainBase<Modular<uint8> >
-	{
+	class DotProductDomain<Modular<uint8> > : private virtual VectorDomainBase<Modular<uint8> > {
 	    public:
 
 		typedef uint8 Element;
@@ -1345,8 +1335,7 @@ namespace LinBox
 	// Specialization of DotProductDomain for unsigned short modular field
 
 	template <>
-	class DotProductDomain<Modular<uint16> > : private virtual VectorDomainBase<Modular<uint16> >
-	{
+	class DotProductDomain<Modular<uint16> > : private virtual VectorDomainBase<Modular<uint16> > {
 	    public:
 
 		typedef uint16 Element;
@@ -1366,8 +1355,7 @@ namespace LinBox
 	// Specialization of DotProductDomain for uint32 modular field
 
 	template <>
-	class DotProductDomain<Modular<uint32> > : private virtual VectorDomainBase<Modular<uint32> >
-	{
+	class DotProductDomain<Modular<uint32> > : private virtual VectorDomainBase<Modular<uint32> > {
 	    public:
 
 		typedef uint32 Element;
@@ -1387,8 +1375,7 @@ namespace LinBox
 	// Specialization of MVProductDomain for uint8 modular field
 
 	template <>
-	class MVProductDomain<Modular<uint8> >
-	{
+	class MVProductDomain<Modular<uint8> > {
 	    public:
 
 		typedef uint8 Element;
@@ -1426,8 +1413,7 @@ namespace LinBox
 	// Specialization of MVProductDomain for uint16 modular field
 
 	template <>
-	class MVProductDomain<Modular<uint16> >
-	{
+	class MVProductDomain<Modular<uint16> > {
 	    public:
 
 		typedef uint16 Element;
@@ -1465,8 +1451,7 @@ namespace LinBox
 	// Specialization of MVProductDomain for uint32 modular field
 
 	template <>
-	class MVProductDomain<Modular<uint32> >
-	{
+	class MVProductDomain<Modular<uint32> > {
 	    public:
 
 		typedef uint32 Element;

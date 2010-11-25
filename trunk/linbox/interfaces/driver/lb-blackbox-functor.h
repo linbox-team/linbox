@@ -38,7 +38,7 @@ protected:
 
 public:
 	ApplyBlackboxFunctorBase(){}
-	
+
 	template<class Blackbox>
 	void apply(const Blackbox &b){
 		b.launch(*res, *fct);
@@ -50,7 +50,7 @@ public:
  * Macro for automatic code generation *
  ***************************************/
 #define LB_BLACKBOX_VISIT(B)				\
-	void visit(const B &d){apply(d);}
+void visit(const B &d){apply(d);}
 
 
 /**********************************************************************************
@@ -61,19 +61,19 @@ template <class BList, class Functor, class Result> class LinBoxBlackboxVisitor;
 
 template <class Functor, class Result> class LinBoxBlackboxVisitor<LinBoxDumbType, Functor, Result>{};
 
-template <class T, class Functor, class Result> 
-class LinBoxBlackboxVisitor<LinBoxTypelist<T, LinBoxDumbType>, Functor, Result> 
-	: public LinBoxVisitor <T>, 
-	  public ApplyBlackboxFunctorBase<Functor, Result> {
+template <class T, class Functor, class Result>
+class LinBoxBlackboxVisitor<LinBoxTypelist<T, LinBoxDumbType>, Functor, Result>
+: public LinBoxVisitor <T>,
+public ApplyBlackboxFunctorBase<Functor, Result> {
 public:
 	LB_BLACKBOX_VISIT(T);
 };
 
 template <class Head, class Tail, class Functor, class Result>
-class LinBoxBlackboxVisitor<LinBoxTypelist<Head, Tail>, Functor, Result > 
-	: public LinBoxVisitor <Head> ,
-	  public LinBoxBlackboxVisitor<Tail, Functor, Result> {
-	public:
+class LinBoxBlackboxVisitor<LinBoxTypelist<Head, Tail>, Functor, Result >
+: public LinBoxVisitor <Head> ,
+public LinBoxBlackboxVisitor<Tail, Functor, Result> {
+public:
 	LB_BLACKBOX_VISIT(Head);
 };
 
@@ -84,8 +84,7 @@ class LinBoxBlackboxVisitor<LinBoxTypelist<Head, Tail>, Functor, Result >
 
 template<class Functor, class Result>
 class ApplyBlackboxFunctor : public LinBoxBlackboxVisitor<BlackboxList, Functor, Result> {
-public:
-	ApplyBlackboxFunctor(Result &r, const Functor &f) { 
+public: ApplyBlackboxFunctor(Result &r, const Functor &f) {
 		this->res = &r;
 		this->fct = &f;
 	}

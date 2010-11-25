@@ -24,14 +24,13 @@
 
 
 namespace LinBox
-{ 
+{
 
 	template <class _MatrixDomain>
-	class DenseZeroOne : public  BlackboxInterface 
-	{
+	class DenseZeroOne : public  BlackboxInterface {
 
 	    public:
-		
+
 		// The following two typedefs are not useful in LinBox yet, as matrix domains aren't yet defined
 		typedef _MatrixDomain MatrixDomain;
 		typedef typename MatrixDomain::Scalar Scalar;
@@ -40,19 +39,19 @@ namespace LinBox
 
 		typedef LinBox::uint64 PackedUnit;
 		typedef DenseZeroOne<MatrixDomain> Self_t;
-	
+
 		/* Notes:
 		 * _rows gives the number of rows of PackedUnits
 		 * _cols gives the number of bits in each row */
 
-		DenseZeroOne(MatrixDomain MD, size_t m, size_t n) 
+		DenseZeroOne(MatrixDomain MD, size_t m, size_t n)
 		: _MD(MD), _rows(m), _cols(n)
 		{
 			_valPerWord = SIZE;
 			_mask = 1;
 			_rep.resize( _rows * ( ((_cols-1)/_valPerWord) + 1));
 		}
-	
+
 		DenseZeroOne(const Self_t & other)
 		: _MD(other._MD), _rows(other._rows), _cols(other._cols), _valPerWord(other._valPerWord), _rep(other._rep), _mask(other._mask)
 		{}
@@ -72,7 +71,7 @@ namespace LinBox
 			_rep.resize( _rows * ( ((_cols-1)/_valPerWord) + 1));
 		}
 
-	
+
 		Scalar & getEntry(Scalar & x, size_t i, size_t j) const
 		{
 			//Get all index values needed.
@@ -82,7 +81,7 @@ namespace LinBox
 			_MD.init(x, (_rep[unitNum] >> (_valPerWord - bitPlace) ) & _mask );
 			return x;
 		}
-	
+
 		void setEntry(size_t i, size_t j, const Scalar & x)
 		{
 			//Get all index values needed.
@@ -91,17 +90,17 @@ namespace LinBox
 
 			PackedUnit y = 0;
 			if (_MD.isOne(x))
-				y = 1; 
+				y = 1;
 
 			_rep[unitNum] &= ~(_mask << (_valPerWord - bitPlace));
-			_rep[unitNum] |= (y << (_valPerWord - bitPlace)); 
+			_rep[unitNum] |= (y << (_valPerWord - bitPlace));
 		}
 
 	//Apply Variants
-	
+
 		// matrix-vector product
 		template <class OutVector, class InVector>
-		OutVector & apply(OutVector & y, const InVector & x) const 
+		OutVector & apply(OutVector & y, const InVector & x) const
 		{
 		 	Scalar sum = 0;
 			std::vector<PackedUnit>::const_iterator p = _rep.begin();
@@ -127,7 +126,7 @@ namespace LinBox
 
 		//vector-matrix product
 		template <class OutVector, class InVector>
-		OutVector & applyTranspose(OutVector & y, const InVector & x) const 
+		OutVector & applyTranspose(OutVector & y, const InVector & x) const
 		{
 			Scalar sum = 0;
 			std::vector<PackedUnit>::const_iterator p = _rep.begin();
@@ -135,10 +134,10 @@ namespace LinBox
 			PackedUnit mask = _mask << (_valPerWord - 1);
 
 			for(size_t yi = 0; yi != _cols; ++yi){
-				for(; xp != x.end(); ++xp, p+=(_rep.size()/_rows)){ 
+				for(; xp != x.end(); ++xp, p+=(_rep.size()/_rows)){
 					if(mask & (*p))
 						_MD.addin(sum, (*xp));
-				} 
+				}
 				y[yi] = sum;
 				sum = 0;
 				xp = x.begin();
@@ -152,7 +151,7 @@ namespace LinBox
 		}
 
 
-		//Block apply	
+		//Block apply
 		Block & apply(Block & Y, Block & X) const
 		{
 			//Let i,j represent current spot in BB, used for Block constructions
@@ -160,10 +159,10 @@ namespace LinBox
 			size_t j = 0;
 			_MD.zero(Y);
 			Block x(1, X.coldim()), y(1, Y.coldim());
-			
+
 			for(size_t i = 0; i != _rows; ++i){
 				Y.subBlock(y,i,0,1,Y.coldim());
-				
+
 				for(; p != _rep.begin() + ((i+1) * (_rep.size()/_rows)); ++p){
 					for(PackedUnit mask = _mask << (_valPerWord - 1); (mask!=0) && (j != _cols); mask>>=1, ++j){
 						if(mask & (*p))
@@ -191,10 +190,10 @@ namespace LinBox
 
 			for(size_t j = 0; j != _cols; ++j){
 				Y.subBlock (y,0,j,Y.rowdim(),1);
-				for(size_t i = 0; i != _rows; ++i, p+=(_rep.size()/_rows)){ 
+				for(size_t i = 0; i != _rows; ++i, p+=(_rep.size()/_rows)){
 					if(mask & (*p))
 						_MD.addin(y, X.subBlock(x,0,i,X.rowdim(),1));
-				} 
+				}
 				p = _rep.begin() + ((j+1)/_valPerWord);
 				mask >>= 1;
 				if(mask == 0)
@@ -204,7 +203,7 @@ namespace LinBox
 			return Y;
 		}
 
-		
+
 		//Unpacking apply
 		Block & unpackingApply(Block & Out, Block & In, const size_t U = 1024)
 		{
@@ -222,7 +221,7 @@ namespace LinBox
 
 					Out.subBlock(C,i,j,iend,jend);
 					for(size_t k = 0; k < _cols; k += U){
-						if(k + U >= _cols) kend = _cols - k; 
+						if(k + U >= _cols) kend = _cols - k;
 						else kend = U;
 
 						expandBlock(A,i,k,iend,kend);
@@ -233,7 +232,7 @@ namespace LinBox
 			}
 
 			return Out;
-		} 
+		}
 
 
 		//Unpacking applyTranspose
@@ -253,7 +252,7 @@ namespace LinBox
 
 					Out.subBlock(C,i,j,iend,jend);
 					for(size_t k = 0; k < _rows; k += U){
-						if(k + U >= _rows) kend = _rows - k; 
+						if(k + U >= _rows) kend = _rows - k;
 						else kend = U;
 
 						expandBlock(A,k,j,kend,jend);
@@ -265,7 +264,7 @@ namespace LinBox
 
 			return Out;
 		}
-		
+
 
 		size_t rowdim() const {return _rows;}
 
@@ -291,7 +290,7 @@ namespace LinBox
 			std::vector<PackedUnit>::const_iterator p;
 			size_t outRow = 0;
 			size_t outCol = 0;
-			Scalar x, zero; 
+			Scalar x, zero;
 			_MD.init(zero,0);
 			size_t bp = bitPlace;
 
@@ -303,11 +302,11 @@ namespace LinBox
 				}
 
 				else{
-					for(; outCol != numCols; ++p){ 
+					for(; outCol != numCols; ++p){
 						for(; (bp != _valPerWord + 1) && (outCol != numCols); ++bp){
-							if (j + outCol >= _cols) x = zero; 
+							if (j + outCol >= _cols) x = zero;
 							else _MD.init(x, ((*p) >> (_valPerWord - bp)) & _mask);
-							Out.setEntry(outRow, outCol, x); 
+							Out.setEntry(outRow, outCol, x);
 							++outCol;
 						}
 						bp = 1;
@@ -320,7 +319,7 @@ namespace LinBox
 
 			return Out;
 		}
-		
+
 		std::ostream & write(std::ostream & os, Block & B)
 		{
 			Scalar x;
@@ -334,7 +333,7 @@ namespace LinBox
 		}
 
 		std::ostream & write(std::ostream & os)
-		{		
+		{
 			Scalar x;
 			for(size_t i = 0; i != _rows; ++i){
 				for(size_t j = 0; j!= _cols; ++j){
@@ -344,18 +343,18 @@ namespace LinBox
 			}
 			return os;
 		}
-	
-	
-	/* Functions that should be written: 
+
+
+	/* Functions that should be written:
 	 * read()
 	 * rebind()
-   	 */ 
+   	 */
 
 	    private:
-		
+
 		//Field which blackbox is over
 		MatrixDomain _MD;
-		
+
 		//Number of rows and columns of the matrix
 		size_t _rows, _cols;
 

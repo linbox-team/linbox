@@ -29,17 +29,17 @@
 #include <linbox/vector/vector-traits.h>
 #include <linbox/integer.h>
 
-namespace LinBox 
+namespace LinBox
 {
 
 
 /// \ingroup blackbox
 	template< class _Field,
-		  class _Row = typename LinBox::Vector<_Field>::SparseSeq > 
+		  class _Row = typename LinBox::Vector<_Field>::SparseSeq >
 	class LambdaSparseMatrix : public SparseMatrix<_Field,_Row> {
 
 	public:
-		
+
 		typedef _Row Row;
 		typedef _Field Field;
 
@@ -49,50 +49,50 @@ namespace LinBox
 
 		// Contructor of a lambda-sparse matrix as defined in Mulder 2003
 		// with non-zero elements choosen from entire Field
-		LambdaSparseMatrix(const Field& F,size_t m, size_t n, double LAMBDA = 3.) 
+		LambdaSparseMatrix(const Field& F,size_t m, size_t n, double LAMBDA = 3.)
 			:  SparseMatrix<Field,Row> (F,m,n) {
-			
+
 			integer card;
 			F.cardinality (card);
 			typename Field::RandIter _randiter(F);
 			double                   init_p = 1.0 - 1.0 / (double) card;
 			double                   log_m = LAMBDA * log ((double) m) / M_LN2;
-			double                   new_p;						
-			
+			double                   new_p;
+
 			RandomSparseStream<Field,typename LinBox::Vector<Field>::SparseSeq> stream (F, _randiter, init_p, n, m );
-			
+
 			for (unsigned int i = 0; i < m; ++i) {
 				new_p = log_m / double(m - i);
-				
+
 				if (init_p < new_p)
 					stream.setP (init_p);
 				else
 					stream.setP (new_p);
-				
+
 				stream >> this->getRow (i);
 			}
 		}
 
 		// Contructor of a lambda-sparse matrix as defined in Mulder 2003
 		// with non-zero elements choosen from a subset of the Field
-		LambdaSparseMatrix(const Field& F,size_t m, size_t n,const integer size, double LAMBDA = 3.) 
+		LambdaSparseMatrix(const Field& F,size_t m, size_t n,const integer size, double LAMBDA = 3.)
 			: SparseMatrix<Field,Row> (F,m,n)  {
 
 			typename Field::RandIter _randiter(F,size,0);
 			double init_p = 1.0 - 1.0 / (double) size;
 			double log_m = LAMBDA * log ((double) m) / M_LN2;
-			double new_p;						
-			
+			double new_p;
+
 			RandomSparseStream<Field,typename LinBox::Vector<Field>::SparseSeq> stream (F, _randiter, init_p, n, m );
-			
+
 			for (unsigned int i = 0; i < m; ++i) {
 				new_p = log_m / double(m - i);
-				
+
 				if (init_p < new_p)
 					stream.setP (init_p);
 				else
 					stream.setP (new_p);
-				
+
 				stream >> this->getRow (i);
 			}
 		}
@@ -109,11 +109,11 @@ namespace LinBox
 		LambdaSparseMatrix (const Field& F, const LambdaSparseMatrix<_Ring,_IRow>& L)
 			: SparseMatrix<Field,Row> (F,L.rowdim(),L.coldim())
 		{
-			
+
 			//typename LambdaSparseMatrix<_Ring,_IRow>::ConstRawIterator Liter = L.rawBegin();
 			typename LambdaSparseMatrix<_Ring,_IRow>::ConstRawIndexedIterator Literindex = L.rawIndexedBegin();
-			
-			integer tmp;			
+
+			integer tmp;
 			_Ring r= L.field();
 			for (;  Literindex!=L.rawIndexedEnd();  ++Literindex) {
 				r.convert(tmp,*Literindex);
@@ -131,14 +131,14 @@ namespace LinBox
 			max = *iter;
 			for (; iter != this->rawEnd(); ++iter)
 				if (*iter > max) max=*iter;
-			
+
 			this->_F.convert(norm,max);
 			return norm;
 		}
-		
-	
-    
-    
+
+
+
+
   }; //end of class LambdaSparseMatrix
 
 } //end of namespace LinBox

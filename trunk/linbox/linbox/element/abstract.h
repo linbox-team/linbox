@@ -24,22 +24,21 @@
 #ifndef __LINBOX_element_abstract_H
 #define __LINBOX_element_abstract_H
 
-namespace LinBox 
-{ 
+namespace LinBox
+{
 
 	/** \brief Abstract element base class, a technicality.
 
 	 * The element class of \ref FieldAbstract.
-	 * This element has no knowledge of the field to which it belongs. 
+	 * This element has no knowledge of the field to which it belongs.
 	 * All operations and functions requiring knolwedge of the field,
 	 * such as addition and other arithmetic operations, are supplied
 	 * by the field and not the element class.
 \ingroup element
 	 */
-	class ElementAbstract 
-	{
+	class ElementAbstract {
 	    public:
-    
+
 		/** Virtual copy constructor.
 		 * Required because constructors cannot be virtual.
 		 * Passes construction on to derived classes.

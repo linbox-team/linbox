@@ -33,18 +33,17 @@
 #include <linbox/field/field-traits.h>
 
 // Namespace in which all LinBox code resides
-namespace LinBox 
-{ 
+namespace LinBox
+{
 	// Forward declarations
 	class ParamFuzzyRandIter;
 
 	/** Abstract parameterized field of "fuzzy" doubles.
-	 * Field has (non-static, non-negative) member to contain "fuzz value" of 
+	 * Field has (non-static, non-negative) member to contain "fuzz value" of
 	 * field.  Doubles within this fuzz value are considered to be equal.
 	\ingroup field
 	 */
-	class ParamFuzzy : public FieldInterface
-	{
+	class ParamFuzzy : public FieldInterface {
 	    public:
 
 		/** element type.
@@ -62,13 +61,13 @@ namespace LinBox
 		/** @name Object Management
 		 */
 		//@{
- 
+
 		/** Default constructor.
 		 */
 		//ParamFuzzy (void) {}
 
 		/** Constructor from an integer.
-		 * Sets the fuzz value of the field throug the static member of the 
+		 * Sets the fuzz value of the field throug the static member of the
 		 * element type.
 		 * @param value constant reference to double fuzz value
 		 */
@@ -81,7 +80,7 @@ namespace LinBox
 		 * @param  F ParamFuzzy object.
 		 */
 		ParamFuzzy (const ParamFuzzy &F) : _fuzz (F._fuzz) {}
- 
+
 		/** Assignment operator.
 		 * @return reference to ParamFuzzy object for self
 		 * @param F constant reference to ParamFuzzy object
@@ -104,7 +103,7 @@ namespace LinBox
 			//{ return x = static_cast<double> (y); }
 		Element &init (Element &x, const double &y) const
 			{ return x = y; }
- 
+
 		/** Conversion of field base element to a template class T.
 		 * This function assumes the output field base element x has already been
 		 * constructed, but that it is not already initialized.
@@ -116,7 +115,7 @@ namespace LinBox
 			{ return x = y; }
 		double &convert (double &x, const Element &y) const
 			{ return x = y; }
- 
+
 		/** Assignment of one field base element to another.
 		 * This function assumes both field base elements have already been
 		 * constructed and initialized.
@@ -135,7 +134,7 @@ namespace LinBox
 		 * @return integer representing cardinality of the domain
 		 */
 		integer &cardinality (integer &c) const { return c = -1; }
- 
+
 		/** Characteristic.
 		 * Return integer representing characteristic of the domain.
 		 * Returns a positive integer to all domains with finite characteristic,
@@ -175,7 +174,7 @@ namespace LinBox
 		 */
 		Element &add (Element &x, const Element &y, const Element &z) const
 			{ return x = y + z; }
- 
+
 		/** Subtraction.
 		 * x = y - z
 		 * This function assumes all the field base elements have already been
@@ -187,7 +186,7 @@ namespace LinBox
 		 */
 		Element &sub (Element &x, const Element &y, const Element &z) const
 			{ return x = y - z; }
- 
+
 		/** Multiplication.
 		 * x = y * z
 		 * This function assumes all the field base elements have already been
@@ -199,7 +198,7 @@ namespace LinBox
 		 */
 		Element &mul (Element &x, const Element &y, const Element &z) const
 			{ return x = y * z; }
- 
+
 		/** Division.
 		 * x = y / z
 		 * This function assumes all the field base elements have already been
@@ -211,7 +210,7 @@ namespace LinBox
 		 */
 		Element &div (Element &x, const Element &y, const Element &z) const
 			{ return x = y / z; }
- 
+
 		/** Additive Inverse (Negation).
 		 * x = - y
 		 * This function assumes both field base elements have already been
@@ -222,7 +221,7 @@ namespace LinBox
 		 */
 		Element &neg (Element &x, const Element &y) const
 			{ return x = - y; }
- 
+
 		/** Multiplicative Inverse.
 		 * x = 1 / y
 		 * This function assumes both field base elements have already been
@@ -236,7 +235,7 @@ namespace LinBox
 
 		/** Natural AXPY.
 		 * r  = a * x + y
-		 * This function assumes all field elements have already been 
+		 * This function assumes all field elements have already been
 		 * constructed and initialized.
 		 * @return reference to r.
 		 * @param  r field element (reference returned).
@@ -244,9 +243,9 @@ namespace LinBox
 		 * @param  x field element.
 		 * @param  y field element.
 		 */
-		Element &axpy (Element &r, 
-			       const Element &a, 
-			       const Element &x, 
+		Element &axpy (Element &r,
+			       const Element &a,
+			       const Element &x,
 			       const Element &y) const
 			{ return r = a * x + y; }
 
@@ -285,7 +284,7 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		Element &addin (Element &x, const Element &y) const { return x += y; } 
+		Element &addin (Element &x, const Element &y) const { return x += y; }
 
 		/** Inplace Subtraction.
 		 * x -= y
@@ -296,7 +295,7 @@ namespace LinBox
 		 * @param  y field base element.
 		 */
 		Element &subin (Element &x, const Element &y) const { return x -= y; }
- 
+
 		/** Inplace Multiplication.
 		 * x *= y
 		 * This function assumes both field base elements have already been
@@ -306,7 +305,7 @@ namespace LinBox
 		 * @param  y field base element.
 		 */
 		Element &mulin (Element &x, const Element &y) const { return x *= y; }
- 
+
 		/** Inplace Division.
 		 * x /= y
 		 * This function assumes both field base elements have already been
@@ -325,7 +324,7 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 */
 		Element &negin (Element &x) const { return x = -x; }
- 
+
 		/** Inplace Multiplicative Inverse.
 		 * x = 1 / x
 		 * This function assumes the field base elementhas already been
@@ -338,7 +337,7 @@ namespace LinBox
 
 		/** Inplace AXPY.
 		 * r  += a * x
-		 * This function assumes all field elements have already been 
+		 * This function assumes all field elements have already been
 		 * constructed and initialized.
 		 * Purely virtual
 		 * @return reference to r.
@@ -348,9 +347,9 @@ namespace LinBox
 		 */
 		Element &axpyin (Element &r, const Element &a, const Element &x) const
 			{ return r += a * x; }
- 
+
 		//@} Inplace Arithmetic Operations
-		
+
 		/** @name Input/Output Operations */
 		//@{
 
@@ -358,9 +357,9 @@ namespace LinBox
 		 * @return output stream to which field is written.
 		 * @param  os  output stream to which field is written.
 		 */
-		std::ostream &write (std::ostream &os) const 
+		std::ostream &write (std::ostream &os) const
 			{ return os << " fuzz value " << _fuzz; }
- 
+
 		/** Read field.
 		 * @return input stream from which field is read.
 		 * @param  is  input stream from which field is read.
@@ -376,7 +375,7 @@ namespace LinBox
 		 */
 		std::ostream &write (std::ostream &os, const Element &x) const
 			{ return os << x; }
- 
+
 		/** Read field base element.
 		 * This function assumes the field base element has already been
 		 * constructed and initialized.
@@ -387,7 +386,7 @@ namespace LinBox
 		std::istream &read (std::istream &is, Element &x) const
 		{
 			is >> x;
-			return is; 
+			return is;
 		}
 
 		//@}

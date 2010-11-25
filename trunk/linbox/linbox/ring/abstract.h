@@ -36,11 +36,11 @@
 
 #endif
 
-namespace LinBox 
-{ 
+namespace LinBox
+{
 
 	/** \brief Abstract ring base class.
-	\ingroup ring 
+	\ingroup ring
 
 	 * Found in the file \sa{linbox/ring/abstract.h}.
 	 * Abstract base class used to implement the ring archetype to minimize
@@ -53,8 +53,7 @@ namespace LinBox
 	 * it.  This minimizes code bloat, but it also introduces indirection through
 	 * the use of pointers and virtual functions which is inefficient.
 	 */
-  class RingAbstract : public FieldAbstract
-	{
+  class RingAbstract : public FieldAbstract {
 	    public:
 
 /* 		/// element type. */
@@ -94,7 +93,7 @@ namespace LinBox
 		 * @param  x ring element.
 		 */
 		virtual bool isUnit (const Element &x) const = 0;
- 
+
 		/** Divisibility of zero test.
 		 * Test if ring element is a zero divisor.
 		 * This function assumes the ring element has already been
