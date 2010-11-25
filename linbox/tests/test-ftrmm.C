@@ -30,30 +30,30 @@
 
 //#define _LB_TIME
 #define _LB_MAX_SZ 50
-#define _LB_ITERS 3 
+#define _LB_ITERS 3
 //#define _LB_DEBUG
 
 
 using namespace LinBox ;
 
 template<class Field, FFLAS::FFLAS_SIDE Side,FFLAS::FFLAS_UPLO UpLo, FFLAS::FFLAS_TRANSPOSE Trans, FFLAS::FFLAS_DIAG Diag >
-int test_ftrmm(const Field & F) 
+int test_ftrmm(const Field & F)
 {
 	size_t M    = random()%_LB_MAX_SZ ;
 	size_t N    = random()%_LB_MAX_SZ ; // B is MxN in a ldb*rows table
 	size_t ldb  = random()%_LB_MAX_SZ+1 ;
-	size_t lda  = random()%_LB_MAX_SZ+1 ; 
+	size_t lda  = random()%_LB_MAX_SZ+1 ;
 	while (ldb<N || ldb<M) ldb = random()%_LB_MAX_SZ;
 
 	size_t Ldim = M; // A is MxM or NxN in a lda x rows table
 	if (Side == FFLAS::FflasRight) Ldim = N ; // A = N x lda, else A is M x lda.
-	while (lda<Ldim)  lda  = random()%_LB_MAX_SZ ; 
+	while (lda<Ldim)  lda  = random()%_LB_MAX_SZ ;
 
-	size_t rows = std::max(N,M)+3; 
+	size_t rows = std::max(N,M)+3;
 
 #ifdef _LB_DEBUG
-	std::cout << "#M x N :"<< M << 'x' << N << std::endl; 
-	std::cout << "#lda x ldb :"<< lda << 'x' << ldb << std::endl; 
+	std::cout << "#M x N :"<< M << 'x' << N << std::endl;
+	std::cout << "#lda x ldb :"<< lda << 'x' << ldb << std::endl;
 #endif
 	assert(N    <= ldb);
 	assert(M    <= ldb);
@@ -74,7 +74,7 @@ int test_ftrmm(const Field & F)
 
 	typedef typename Field::RandIter RandIter;
 	RandIter G(F);
-	NonzeroRandIter<Field> Gn(F,G); 
+	NonzeroRandIter<Field> Gn(F,G);
 
 	/* init A,B,C and more...*/
 	for (size_t i = 0 ; i < rows*lda ; ++i) G.random( *(A+i) ) ;
@@ -129,7 +129,7 @@ int test_ftrmm(const Field & F)
 	else // left
 	{
 		if (UpLo == FFLAS::FflasLower)
-			if (Trans == FFLAS::FflasNoTrans) // C = L*M 
+			if (Trans == FFLAS::FflasNoTrans) // C = L*M
 				for (size_t i = 0 ; i < M ; ++i)
 					for (size_t j = 0 ; j < N ; ++j)
 						for (size_t k = 0 ; k < i ; ++k)
@@ -140,12 +140,12 @@ int test_ftrmm(const Field & F)
 						for (size_t k = i+1 ; k < M ; ++k)
 							F.axpyin(*(C+i*N+j),*(A+k*lda+i),*(B+k*ldb+j));
 		else
-			if (Trans == FFLAS::FflasNoTrans) // C = U * M 
+			if (Trans == FFLAS::FflasNoTrans) // C = U * M
 				for (size_t i = 0 ; i < M ; ++i)
 					for (size_t j = 0 ; j < N ; ++j)
 						for (size_t k = i+1 ; k < M ; ++k)
 							F.axpyin(*(C+i*N+j),*(A+i*lda+k),*(B+k*ldb+j));
-			else // C = U^t M 
+			else // C = U^t M
 				for (size_t i = 0 ; i < M ; ++i)
 					for (size_t j = 0 ; j < N ; ++j)
 						for (size_t k = 0 ; k < i ; ++k)
@@ -177,7 +177,7 @@ int test_ftrmm(const Field & F)
 		else // left
 		{
 			if (UpLo == FFLAS::FflasLower)
-				if (Trans == FFLAS::FflasNoTrans) // C = L*M 
+				if (Trans == FFLAS::FflasNoTrans) // C = L*M
 					for (size_t i = 0 ; i < M ; ++i)
 						for (size_t j = 0 ; j < N ; ++j)
 							F.addin(*(C+i*N+j),*(B+i*ldb+j));
@@ -186,11 +186,11 @@ int test_ftrmm(const Field & F)
 						for (size_t j = 0 ; j < N ; ++j)
 							F.addin(*(C+i*N+j),*(B+i*ldb+j));
 			else
-				if (Trans == FFLAS::FflasNoTrans) // C = U * M 
+				if (Trans == FFLAS::FflasNoTrans) // C = U * M
 					for (size_t i = 0 ; i < M ; ++i)
 						for (size_t j = 0 ; j < N ; ++j)
 							F.addin(*(C+i*N+j),*(B+i*ldb+j));
-				else // C = U^T M 
+				else // C = U^T M
 					for (size_t i = 0 ; i < M ; ++i)
 						for (size_t j = 0 ; j < N ; ++j)
 							F.addin(*(C+i*N+j),*(B+i*ldb+j));
@@ -220,7 +220,7 @@ int test_ftrmm(const Field & F)
 		else // left
 		{
 			if (UpLo == FFLAS::FflasLower)
-				if (Trans == FFLAS::FflasNoTrans) // C = L*M 
+				if (Trans == FFLAS::FflasNoTrans) // C = L*M
 					for (size_t i = 0 ; i < M ; ++i)
 						for (size_t j = 0 ; j < N ; ++j)
 							F.axpyin(*(C+i*N+j),*(A+i*lda+i),*(B+i*ldb+j));
@@ -229,7 +229,7 @@ int test_ftrmm(const Field & F)
 						for (size_t j = 0 ; j < N ; ++j)
 							F.axpyin(*(C+i*N+j),*(A+i*lda+i),*(B+i*ldb+j));
 			else
-				if (Trans == FFLAS::FflasNoTrans) // C = U * M 
+				if (Trans == FFLAS::FflasNoTrans) // C = U * M
 					for (size_t i = 0 ; i < M ; ++i)
 						for (size_t j = 0 ; j < N ; ++j)
 							F.axpyin(*(C+i*N+j),*(A+i*lda+i),*(B+i*ldb+j));
@@ -249,12 +249,12 @@ int test_ftrmm(const Field & F)
 	int err = 0 ;
 	for (size_t i = 0 ; i < M && !err ; ++i)
 		for (size_t j = 0 ; j < N && !err ; ++j)
-			if (!F.areEqual(*(C+i*N+j),*(B+i*ldb+j))) 
+			if (!F.areEqual(*(C+i*N+j),*(B+i*ldb+j)))
 				err = -1  ;
 	// checking B has nothing written outside B...
 	for (size_t i = M ; i < rows && !err ; ++i)
 		for (size_t j = N ; j < ldb  && !err ; ++j)
-			if (!F.areEqual(*(D+i*ldb+j),*(B+i*ldb+j))) 
+			if (!F.areEqual(*(D+i*ldb+j),*(B+i*ldb+j)))
 				err = -1  ;
 #ifdef _LB_DEBUG
 	{
@@ -280,7 +280,7 @@ int test_ftrmm(const Field & F)
 			std::cout << "#------------B--------------" << std::endl;
 			std::cout << "B := " ; write_field(F,std::cout,B,M,N,ldb,true);
 			std::cout << ':' << std::endl;
-			std::cout << "N := alpha * " ; 
+			std::cout << "N := alpha * " ;
 			if (Side == FFLAS::FflasRight)
 				std::cout << "M." ;
 			else
@@ -329,7 +329,7 @@ int test_ftrmm(const Field & F)
 
 	for (size_t i = 0 ; i < M && !eur ; ++i)
 		for (size_t j = 0 ; j < N && !eur ; ++j)
-			if (!F.areEqual(*(D+i*ldb+j),*(B+i*ldb+j))) 
+			if (!F.areEqual(*(D+i*ldb+j),*(B+i*ldb+j)))
 				eur = -1  ;
 
 #ifdef _LB_DEBUG
@@ -361,13 +361,13 @@ template<class Field>
 int test_applyP(const Field & F)
 {
 	size_t M    = random()%_LB_MAX_SZ+1 ;
-	size_t N    = random()%_LB_MAX_SZ+1 ; 
-	size_t lda  = random()%_LB_MAX_SZ+1 ; 
+	size_t N    = random()%_LB_MAX_SZ+1 ;
+	size_t lda  = random()%_LB_MAX_SZ+1 ;
 	if (lda<N) std::swap(lda,N);
 
 #ifdef _LB_DEBUG
-	std::cout << "#M x N :"<< M << 'x' << N << std::endl; 
-	std::cout << "#lda :"<< lda << std::endl; 
+	std::cout << "#M x N :"<< M << 'x' << N << std::endl;
+	std::cout << "#lda :"<< lda << std::endl;
 #endif
 	typedef typename Field::Element Element;
 
@@ -378,7 +378,7 @@ int test_applyP(const Field & F)
 
 	typedef typename Field::RandIter RandIter;
 	RandIter G(F);
-	NonzeroRandIter<Field> Gn(F,G); 
+	NonzeroRandIter<Field> Gn(F,G);
 
 	/* init A,B,C and more...*/
 	for (size_t i = 0 ; i < M*lda ; ++i) G.random( *(A+i) ) ;
@@ -404,7 +404,7 @@ int test_applyP(const Field & F)
 	int err = 0 ;
 	for (size_t i = 0 ; i < M && !err ; ++i)
 		for (size_t j = 0 ; j < N && !err ; ++j)
-			if (!F.areEqual(*(A+i*lda+j),*(B+i*lda+j))) 
+			if (!F.areEqual(*(A+i*lda+j),*(B+i*lda+j)))
 				err = -1  ;
 	if (err)
 		std::cout << "# \033[1;31m>\033[0m row applyP failed" << std::endl;
@@ -430,7 +430,7 @@ int test_applyP(const Field & F)
 	int eur = 0 ;
 	for (size_t i = 0 ; i < M && !eur ; ++i)
 		for (size_t j = 0 ; j < N && !eur ; ++j)
-			if (!F.areEqual(*(A+i*lda+j),*(B+i*lda+j))) 
+			if (!F.areEqual(*(A+i*lda+j),*(B+i*lda+j)))
 				err = -1  ;
 	if (eur)
 		std::cout << "# \033[1;31m>\033[0mcol applyP failed" << std::endl;
@@ -448,11 +448,11 @@ int test_fgemm(const Field & F)
 	size_t N    = random()%_LB_MAX_SZ ; // cols of (t)B and C
 	size_t K    = random()%_LB_MAX_SZ ; // cols of (t)A, rows of (t)B
 
-	size_t lda  = random()%(_LB_MAX_SZ/2) ; 
+	size_t lda  = random()%(_LB_MAX_SZ/2) ;
 	if (ATRANS == FFLAS::FflasTrans) lda += M ; else lda += K ;
-	size_t ldb  = random()%(_LB_MAX_SZ/2) ; 
+	size_t ldb  = random()%(_LB_MAX_SZ/2) ;
 	if (BTRANS == FFLAS::FflasTrans) ldb += K ; else ldb += N ;
-	size_t ldc  = N+random()%(_LB_MAX_SZ/2) ; 
+	size_t ldc  = N+random()%(_LB_MAX_SZ/2) ;
 
 	size_t rowA = 5;
 	if (ATRANS == FFLAS::FflasTrans) rowA += K ; else rowA += M ;
@@ -467,10 +467,10 @@ int test_fgemm(const Field & F)
 	std::cout <<"# B : " << K << 'x' << N << " ("<< rowB << 'x' << ldb << ')' << std::endl;
 	std::cout <<"# C : " << M << 'x' << N << " ("<< rowC << 'x' << ldc << ')' << std::endl;
 #endif
-	
+
 	typedef typename Field::RandIter RandIter;
 	RandIter G(F);
-	NonzeroRandIter<Field> Gn(F,G); 
+	NonzeroRandIter<Field> Gn(F,G);
 	typedef typename Field::Element Element;
 
 	Element alpha, beta ;
@@ -542,7 +542,7 @@ int test_fgemm(const Field & F)
 	int err = 0 ;
 	for (size_t i = 0 ; i < rowC && !err ; ++i)
 		for (size_t j = 0 ; j < ldc && !err ; ++j)
-			if (!F.areEqual(*(C+i*ldc+j),*(D+i*ldc+j))) 
+			if (!F.areEqual(*(C+i*ldc+j),*(D+i*ldc+j)))
 				err = -1  ;
 
 	delete[] A ;
@@ -564,7 +564,7 @@ int test_fgemm(const Field & F)
 	return err ;
 }
 
-int main() 
+int main()
 {
 	//typedef ModularBalanced<float>  FieldF;
 	typedef Modular<float>          FieldF;
@@ -854,7 +854,9 @@ int main()
 #endif
 	if(our != tot) fail = true;
 
-	return (fail) ;
+	if (fail)
+		std::cout << "# \033[1;31m>\033[0m ftrsm failed" << std::endl;
+	return false ;
 
 }
 
