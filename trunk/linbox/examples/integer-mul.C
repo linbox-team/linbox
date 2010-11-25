@@ -1,8 +1,7 @@
-
-/** 
+/*
  * examples/integer-mul.C
  *
- * Copyright (C) 2002, 2005, 2010 G Villard, D. Saunders 
+ * Copyright (C) 2002, 2005, 2010 G Villard, D. Saunders
  *
  * This file is part of LinBox.
  *
@@ -17,35 +16,36 @@
  *   GNU Lesser General Public License for more details.
  *
  *   You should have received a copy of the GNU Lesser General Public
- *   License along with LinBox.  If not, see 
+ *   License along with LinBox.  If not, see
  *   <http://www.gnu.org/licenses/>.
  */
 
 /** \file examples/integer-mul.C
  * \author Gilles Villard
  * \brief The LinBox arbitrary precision integer type illustrated.
-\ingroup examples
+ * \ingroup examples
  *
- * class `integer' is a wrapper of GMP integers.
+ * \details The class `integer' is a wrapper of GMP integers.
  */
 
 // ---------------------------------------------
 #include <iostream>
-#include <fstream> 
+#include <fstream>
 // ---------------------------------------------
 
 #include "linbox/linbox-config.h"
 
-// Use of Gmp based LinBox integers 
+// Use of Gmp based LinBox integers
 #include "linbox/integer.h"
 
 using namespace LinBox;
 using namespace std;
- 
+
 // ---------------------------------------------
 
 /// no command line args.  Prompts for two integers.
-int main() {
+int main()
+{
 
   integer a,b;
 
