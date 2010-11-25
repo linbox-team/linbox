@@ -39,10 +39,9 @@ namespace LinBox
 	 * is entirely nonzero numbers.
 	 **/
 	template <class Field, class RandIter = typename Field::RandIter>
-	class NonzeroRandIter
-	{
+	class NonzeroRandIter {
 	    public:
-    
+
 		typedef typename Field::Element Element;
 
 		NonzeroRandIter (const Field &F, const RandIter &r)
@@ -51,7 +50,7 @@ namespace LinBox
 		NonzeroRandIter (const NonzeroRandIter& R)
 			: _F (R._F), _r (R._r) {}
 
-		~NonzeroRandIter() 
+		~NonzeroRandIter()
 			{}
 
 		NonzeroRandIter& operator=(const NonzeroRandIter& R)
@@ -89,9 +88,9 @@ namespace LinBox
 
 		Field    _F;
 		RandIter _r;
-     
+
 	}; // class NonzeroRandIter
- 
+
 } // namespace LinBox
 
 #endif // __LINBOX_randiter_nonzero_H

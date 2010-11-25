@@ -29,24 +29,23 @@
 #include "linbox/element/envelope.h"
 #include "linbox/randiter/abstract.h"
 
-namespace LinBox 
-{ 
+namespace LinBox
+{
 
 	/** Random field base element generator.
-	 * This encapsulated class is a generator of random field base elements for 
+	 * This encapsulated class is a generator of random field base elements for
 	 * the encapsulating field.
 	 * It is required to contain constructors from a field object and
-	 * two integers.  The first integer being a cardinality of a set to 
-	 * draw the random elements from, and the second being a seed for the 
+	 * two integers.  The first integer being a cardinality of a set to
+	 * draw the random elements from, and the second being a seed for the
 	 * random number generator.
 	 * It is also required to contain a copy constructor, a destructor, and
-	 * an operator() which acts on a reference to a field base element.  In this 
-	 * operator(), the random element is placed into the input field base element 
+	 * an operator() which acts on a reference to a field base element.  In this
+	 * operator(), the random element is placed into the input field base element
 	 * and also returned as a reference.
 	 */
 	template <class Field>
-	class RandIterEnvelope : public RandIterAbstract
-	{
+	class RandIterEnvelope : public RandIterAbstract {
 	    public:
 
 		/// element type
@@ -60,13 +59,13 @@ namespace LinBox
 		 * A sampling size of zero means to sample from the entire field.
 		 * A seed of zero means to use some arbitrary seed for the generator.
 		 * @param F LinBox field envelope object in which to do arithmetic
-		 * @param size constant integer reference of sample size from which to 
+		 * @param size constant integer reference of sample size from which to
 		 *             sample (default = 0)
 		 * @param seed constant integer reference from which to seed random number
 		 *             generator (default = 0)
 		 */
-		RandIterEnvelope (const FieldEnvelope<Field> &F, 
-				   const integer &size = 0, 
+		RandIterEnvelope (const FieldEnvelope<Field> &F,
+				   const integer &size = 0,
 				   const integer &seed = 0)
 			: _randIter (F._field, size, seed) {}
 
@@ -89,7 +88,7 @@ namespace LinBox
 		 * This destructs the random field element generator object.
 		 */
 		~RandIterEnvelope () {}
-    
+
 		/** Assignment operator.
 		 * Assigns RandIterEnvelope object R to generator.
 		 * Required by abstract base class.
@@ -102,7 +101,7 @@ namespace LinBox
 
 			return *this;
 		}
- 
+
 		/** Virtual constructor from field, sampling size, and seed.
 		 * Required because constructors cannot be virtual.
 		 * Passes construction on to derived classes.
@@ -113,15 +112,15 @@ namespace LinBox
 		 * A seed of zero means to use some arbitrary seed for the generator.
 		 * Required by abstract base class.
 		 * @param F LinBox field abstract object in which to do arithmetic
-		 * @param size constant integer reference of sample size from which to 
+		 * @param size constant integer reference of sample size from which to
 		 *             sample (default = 0)
 		 * @param seed constant integer reference from which to seed random number
 		 *             generator (default = 0)
 		 */
-		RandIterAbstract *construct (const FieldAbstract &F, 
-					      const integer &size = 0, 
+		RandIterAbstract *construct (const FieldAbstract &F,
+					      const integer &size = 0,
 					      const integer &seed = 0) const
-		{ 
+		{
 			return new RandIterEnvelope (static_cast<const FieldEnvelope<Field>&> (F)._field, size, seed);
 		}
 
@@ -146,7 +145,7 @@ namespace LinBox
 			// modify by P.G. 2004-07-16
                      {
 			     _randIter.random(static_cast<ElementEnvelope<Field>&> (a)._elem );
-			     return  a; 
+			     return  a;
 		     }
 
 

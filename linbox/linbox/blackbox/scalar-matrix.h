@@ -1,6 +1,6 @@
 /* linbox/blackbox/scalar.h
- * Copyright (C) 2002 by -bds  
- * evolved from diagonal.h written by William J Turner and Bradford Hovinen 
+ * Copyright (C) 2002 by -bds
+ * evolved from diagonal.h written by William J Turner and Bradford Hovinen
  *
  * -------------------------------
  * Modified by Dmitriy Morozov <linbox@foxcub.org>. May 28, 2002.
@@ -35,10 +35,9 @@ namespace LinBox
 	 * \ingroup blackbox
 	 */
 	template <class _Field>
-	class ScalarMatrix : public  BlackboxInterface 
-	{
+	class ScalarMatrix : public  BlackboxInterface {
 	    public:
-		
+
 		typedef _Field Field;
 		typedef typename Field::Element        Element;
 		typedef ScalarMatrix<_Field> Self_t;
@@ -82,7 +81,7 @@ namespace LinBox
 		 * Requires time linear in n, the size of the matrix.
 		 */
                 template<class OutVector, class InVector>
-		OutVector& apply(OutVector &y, InVector &x) const 
+		OutVector& apply(OutVector &y, InVector &x) const
 		{
 			//typename VectorTraits<InVector>::VectorCategory t;
 			//return _app (y, x, t);
@@ -98,12 +97,12 @@ namespace LinBox
 			{ return apply(y, x); }  // symmetric matrix.
 
 
-		template<typename _Tp1> 
-		struct rebind 
-		{ 
-                    typedef ScalarMatrix<_Tp1> other; 
-			
-                    void operator() (other & Ap, const Self_t& A, const _Tp1& F) 
+		template<typename _Tp1>
+		struct rebind
+		{
+                    typedef ScalarMatrix<_Tp1> other;
+
+                    void operator() (other & Ap, const Self_t& A, const _Tp1& F)
 			{
                             Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);
                             typename _Tp1::Element e; F.init(e);
@@ -112,32 +111,32 @@ namespace LinBox
 			}
 		};
 
-		template<typename _Tp1> 
+		template<typename _Tp1>
 		ScalarMatrix (const ScalarMatrix<_Tp1>& S, const Field &F) : _F(F), _n(S.rowdim()) {
                     typename ScalarMatrix<_Tp1>::template rebind<Field>() (*this, S, F);
                 }
 
 
 		size_t rowdim(void) const { return _n; }
-    
+
 		size_t coldim(void) const { return _n; }
 
 		const Field& field() const {return _F;}
 
 		// for a specialization in solutions
 		Element& trace(Element& t) const
-		{	Element n; _F.init(n, _n); 
-		return _F.mul(t, _v, n);  
+		{	Element n; _F.init(n, _n);
+		return _F.mul(t, _v, n);
 		}
 
 		Element& getEntry(Element& x, const size_t i, const size_t j) const
-		{	
-                    return (i==j?_F.assign(x,_v):_F.init(x,0));  
+		{
+                    return (i==j?_F.assign(x,_v):_F.init(x,0));
 		}
 
-		
+
             	Element& getScalar(Element& x) const { return this->_F.assign(x,this->_v); }
-            	Element& setScalar(const Element& x) { return this->_F.assign(this->_v,x); }            	
+            	Element& setScalar(const Element& x) { return this->_F.assign(this->_v,x); }
 
 	    protected:
 
@@ -154,7 +153,7 @@ namespace LinBox
 
 		// sparse sequence vector _app for apply
 
-		
+
 		template <class OutVector, class InVector>
 		OutVector& _app (OutVector &y, const InVector &x, VectorCategories::SparseSequenceVectorTag) const;
 
@@ -169,14 +168,14 @@ namespace LinBox
 	template <class OutVector, class InVector>
 	inline OutVector &ScalarMatrix<Field>
 		::_app(OutVector& y, const InVector& x, VectorCategories::DenseVectorTag t) const
-		{   
+		{
 		    linbox_check (x.size() >= _n);
 		    linbox_check (y.size() >= _n);
 		    typename OutVector::iterator y_iter = y.begin ();
 
 		    if (_F.isZero(_v)) // just write zeroes
 		        for ( ; y_iter != y.end ();  ++y_iter) *y_iter = _v;
-                    else if (_F.isOne(_v) ) // just copy 
+                    else if (_F.isOne(_v) ) // just copy
 			copy(x.begin(), x.end(), y.begin());
 		    else // use actual muls
 		    {   typename InVector::const_iterator x_iter = x.begin ();
@@ -187,7 +186,7 @@ namespace LinBox
 
 		} // dense vector _app
 
-		
+
 	// sparse sequence vector _app
 	template <class Field>
 	template <class OutVector, class InVector>
@@ -205,10 +204,10 @@ namespace LinBox
 
 		// For each element, multiply input element with corresponding element
 		// of stored scalar and insert non-zero elements into output vector
-		for ( typename InVector::const_iterator x_iter = x.begin (); x_iter != x.end (); ++x_iter) 
+		for ( typename InVector::const_iterator x_iter = x.begin (); x_iter != x.end (); ++x_iter)
 		{	_F.mul (entry, _v, x_iter->second);
 			if (!_F.isZero (entry)) y.push_back (make_pair (x_iter->first, entry));
-		} 
+		}
 
 		return y;
 	} // sparse sequence vector _app
@@ -226,7 +225,7 @@ namespace LinBox
 		_F.init (entry, 0);
 
 		// Iterator over indices of input vector.
-		// For each element, multiply input element with 
+		// For each element, multiply input element with
 		// stored scalar and insert non-zero elements into output vector
 		for ( typename InVector::const_iterator x_iter = x.begin (); x_iter != x.end (); ++x_iter)
 		{	_F.mul (entry, _v, x_iter->second);

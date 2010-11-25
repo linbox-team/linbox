@@ -1,5 +1,5 @@
 /* Copyright (C)  LinBox
- * Written by 
+ * Written by
  *            David Saunders
  *
  *
@@ -38,7 +38,7 @@ namespace LinBox
 
     template <class Blackbox1, class Blackbox2 = Blackbox1>
     class DirectSumOwner;
-    
+
 }
 
 
@@ -47,12 +47,11 @@ namespace LinBox
 
 	/** \brief If C = DirectSum(A, B) and y = xA and z = wB, then (y,z) = (x,w)C.
 
-        * And similarly for apply. 
+        * And similarly for apply.
 	\ingroup blackbox
         */
     template <class _Blackbox1, class _Blackbox2>
-    class DirectSum : public BlackboxInterface
-    {
+    class DirectSum : public BlackboxInterface {
         typedef DirectSum<_Blackbox1, _Blackbox2> Self_t;
     public:
         typedef _Blackbox1 Blackbox1;
@@ -63,7 +62,7 @@ namespace LinBox
 
             /** Constructor from two black box matrices.
              * This becomes direct sum of A and B.
-             * They may be rectangular.  
+             * They may be rectangular.
              * @param A, B:  black box matrices over a common field.
              */
         DirectSum(const	Blackbox1& A, const Blackbox2& B)
@@ -72,12 +71,12 @@ namespace LinBox
 
             /** Constructor from two black box matrix pointers.
              * This becomes direct sum of A and B.
-             * They may be rectangular.  They must be over the same field (or ring). 
+             * They may be rectangular.  They must be over the same field (or ring).
              * @param A_ptr pointer to black box matrix A.
              * @param B_ptr pointer to black box matrix B.
              */
             // 	DirectSum(): _Ap(& DirectSum<Blackbox1, Blackbox2>::_NullMatrix),
-// 			     _Bp(& DirectSum<Blackbox1, Blacbox2>::_NullMatrix) 
+// 			     _Bp(& DirectSum<Blackbox1, Blacbox2>::_NullMatrix)
 // 		{}
 
 
@@ -87,7 +86,7 @@ namespace LinBox
             {}
 
             /// Copy constructor.
-        DirectSum (const DirectSum<Blackbox1, Blackbox2>& M) 
+        DirectSum (const DirectSum<Blackbox1, Blackbox2>& M)
                 : _Ap (M._Ap), _Bp (M._Bp)
             {}
 
@@ -181,11 +180,11 @@ namespace LinBox
 
         template<typename _Tp1, typename _Tp2 = _Tp1>
         struct rebind
-        { 
+        {
             typedef DirectSumOwner<
                 typename Blackbox1::template rebind<_Tp1>::other,
                 typename Blackbox2::template rebind<_Tp2>::other
-            > other; 
+            > other;
 
             void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
                 typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), *(A.getLeftPtr()), F);
@@ -200,8 +199,8 @@ namespace LinBox
                 return _Ap->rowdim () + _Bp->rowdim ();
 
             }
-    
-        inline size_t coldim(void) const 
+
+        inline size_t coldim(void) const
             {
                 return _Ap->coldim () + _Bp->coldim ();
             }
@@ -216,16 +215,15 @@ namespace LinBox
     protected:
             // the direct summands
         const Blackbox1* _Ap;
-        const Blackbox2* _Bp; 
-		
+        const Blackbox2* _Bp;
+
 
     }; // template <Vector> class DirectSum
 
-	
+
 
     template <class Blackbox>
-    class DirectSum<Blackbox, Blackbox>
-    {
+    class DirectSum<Blackbox, Blackbox> {
     public:
         typedef DirectSum<Blackbox, Blackbox> Self_t;
         typedef Blackbox Blackbox_t;
@@ -257,7 +255,7 @@ namespace LinBox
                 n += (*bp)->coldim();
             }
         }
-		
+
             /// Copy constructor.
         DirectSum (const DirectSum<Blackbox, Blackbox>& M)
                 :_VB(M._VB),m(M.m),n(M.n)
@@ -270,18 +268,18 @@ namespace LinBox
 
         template<typename _Tp1>
         struct rebind
-        { 
+        {
             typedef DirectSumOwner<
-                typename Blackbox::template rebind<_Tp1>::other, 
+                typename Blackbox::template rebind<_Tp1>::other,
                 typename Blackbox::template rebind<_Tp1>::other
-            > other; 
+            > other;
 
 
             void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
                 typename other::ListBB_t::iterator itp = Ap.getDataSum().begin();
                 typename Self_t::ListBB_t::const_iterator it = A.getSum().begin();
-                  
-                for( ; it != A.getSum().end(); ++itp,++it) 
+
+                for( ; it != A.getSum().end(); ++itp,++it)
                     typename Blackbox::template rebind<_Tp1>()( *itp, *(*it), F);
             }
 
@@ -350,7 +348,7 @@ namespace LinBox
         std::vector<const Blackbox* > _VB;
         size_t m;
         size_t n;
-    }; 
+    };
 
 
 
@@ -365,7 +363,7 @@ namespace LinBox
         typedef DirectSum<BB1, BB2> MatrixType;
         typedef MatrixCategories::BlackboxTag MatrixCategory;
     };
-		                                                                                                
+
 #ifndef __INTEL_COMPILER
     template<>
 #endif
@@ -375,7 +373,7 @@ namespace LinBox
         typedef const DirectSum<BB1, BB2> MatrixType;
         typedef MatrixCategories::BlackboxTag MatrixCategory;
     };
-																												                                                                                                
+
 
 }; // namespace LinBox
 
@@ -384,8 +382,7 @@ namespace LinBox
 {
 
     template <class _Blackbox1, class _Blackbox2>
-    class DirectSumOwner : public BlackboxInterface
-    {
+    class DirectSumOwner : public BlackboxInterface {
         typedef DirectSumOwner<_Blackbox1, _Blackbox2> Self_t;
     public:
         typedef _Blackbox1 Blackbox1;
@@ -396,7 +393,7 @@ namespace LinBox
 
             /** Constructor from two black box matrices.
              * This becomes direct sum of A and B.
-             * They may be rectangular.  
+             * They may be rectangular.
              * @param A, B:  black box matrices over a common field.
              */
         DirectSumOwner(const	Blackbox1& A, const Blackbox2& B)
@@ -405,12 +402,12 @@ namespace LinBox
 
             /** Constructor from two black box matrix pointers.
              * This becomes direct sum of A and B.
-             * They may be rectangular.  They must be over the same field (or ring). 
+             * They may be rectangular.  They must be over the same field (or ring).
              * @param A_ptr pointer to black box matrix A.
              * @param B_ptr pointer to black box matrix B.
              */
             // 	DirectSumOwner(): _Ap(& DirectSumOwner<Blackbox1, Blackbox2>::_NullMatrix),
-// 			     _Bp(& DirectSumOwner<Blackbox1, Blacbox2>::_NullMatrix) 
+// 			     _Bp(& DirectSumOwner<Blackbox1, Blacbox2>::_NullMatrix)
 // 		{}
 
 
@@ -420,7 +417,7 @@ namespace LinBox
             {}
 
             /// Copy constructor.
-        DirectSumOwner (const DirectSumOwner<Blackbox1, Blackbox2>& M) 
+        DirectSumOwner (const DirectSumOwner<Blackbox1, Blackbox2>& M)
                 : _A_data (M._A_data), _B_data (M._B_data)
             {}
 
@@ -464,11 +461,11 @@ namespace LinBox
 
         template<typename _Tp1, typename _Tp2 = _Tp1>
         struct rebind
-        { 
+        {
             typedef DirectSumOwner<
                 typename Blackbox1::template rebind<_Tp1>::other,
                 typename Blackbox2::template rebind<_Tp2>::other
-            > other; 
+            > other;
 
             void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
                 typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), A.getLeftData(), F);
@@ -481,7 +478,7 @@ namespace LinBox
         template<typename _BBt1, typename _BBt2, typename Field>
         DirectSumOwner (const DirectSum<_BBt1, _BBt2> &M, const Field& F)
                 : _A_data(*(M.getLeftPtr()), F),
-                  _B_data(*(M.getRightPtr()), F) 
+                  _B_data(*(M.getRightPtr()), F)
             {
                 typename DirectSum<_BBt1, _BBt2>::template rebind<Field,Field>()(*this, M, F);
             }
@@ -489,7 +486,7 @@ namespace LinBox
         template<typename _BBt1, typename _BBt2, typename Field>
         DirectSumOwner (const DirectSumOwner<_BBt1, _BBt2> &M, const Field& F)
                 : _A_data(M.getLeftData(), F),
-                  _B_data(M.getRightData(), F) 
+                  _B_data(M.getRightData(), F)
             {
                 typename DirectSumOwner<_BBt1, _BBt2>::template rebind<Field,Field>()(*this, M, F);
             }
@@ -502,8 +499,8 @@ namespace LinBox
                 return _A_data.rowdim () + _B_data.rowdim ();
 
             }
-    
-        inline size_t coldim(void) const 
+
+        inline size_t coldim(void) const
             {
                 return _A_data.coldim () + _B_data.coldim ();
             }
@@ -513,27 +510,26 @@ namespace LinBox
 
             // accessors to the blackboxes without ownership
         const Blackbox1& getLeftData() const {return  _A_data;}
-		
+
         const Blackbox2& getRightData() const {return  _B_data;}
 
     protected:
 
             // the direct summands
         Blackbox1 _A_data;
-        Blackbox2 _B_data;		
+        Blackbox2 _B_data;
 
     }; // template <Vector> class DirectSumOwner
 
 
 
     template <class Blackbox>
-    class DirectSumOwner<Blackbox, Blackbox>
-    {
+    class DirectSumOwner<Blackbox, Blackbox> {
     public:
         typedef DirectSumOwner<Blackbox, Blackbox> Self_t;
         typedef Blackbox Blackbox_t;
         typedef LightContainer<Blackbox> ListBB_t;
-        
+
         typedef typename Blackbox::Field Field;
         typedef typename Blackbox::Element Element;
 
@@ -560,7 +556,7 @@ namespace LinBox
                 n += bp->coldim();
             }
         }
-		
+
             /// Copy constructor.
         DirectSumOwner (const DirectSumOwner<Blackbox, Blackbox>& M)
                 :_VB_data(M._VB_data),m(M.m),n(M.n)
@@ -573,18 +569,18 @@ namespace LinBox
 
         template<typename _Tp1>
         struct rebind
-        { 
+        {
             typedef DirectSumOwner<
-                typename Blackbox::template rebind<_Tp1>::other, 
+                typename Blackbox::template rebind<_Tp1>::other,
                 typename Blackbox::template rebind<_Tp1>::other
-            > other; 
+            > other;
 
 
             void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
                 typename other::ListBB_t::iterator itp = Ap.getDataSum().begin();
                 typename Self_t::ListBB_t::const_iterator it = A.getDataSum().begin();
 
-                  
+
                 for( ; it != A.getDataSum().end(); ++itp,++it)
                     typename Blackbox::template rebind<_Tp1>()( *(itp->get()), *(*it), F);
             }
@@ -663,17 +659,17 @@ namespace LinBox
         size_t size() const {
             return this->_VB_data.size();
         }
-            
-                    
+
+
 
     protected:
         ListBB_t _VB_data;
         size_t m;
         size_t n;
-    }; 
+    };
 
 
-	
+
 }; // namespace LinBox
 
 

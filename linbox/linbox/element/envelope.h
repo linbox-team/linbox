@@ -28,8 +28,8 @@
 
 #include "linbox/element/abstract.h"
 
-namespace LinBox 
-{ 
+namespace LinBox
+{
 	// Forward declarations
 	template <class Field> class RingEnvelope;
 	template <class Field> class FieldEnvelope;
@@ -41,14 +41,13 @@ namespace LinBox
 	 * to be a child class of ElementAbstract.
 	 * A concrete instance of ElementArchetype representing
 	 * the adapted class can then be constructed.
-	 * 
+	 *
 	 * All this is in support of the FieldArchetype system.
 \ingroup element
 
 	 */
 	template <class Field>
-	class ElementEnvelope : public ElementAbstract
-	{
+	class ElementEnvelope : public ElementAbstract {
 	    public:
 
 		/** Default Constructor.
@@ -70,7 +69,7 @@ namespace LinBox
 		 */
 		ElementEnvelope (const ElementAbstract &E)
 			: _elem (static_cast<const ElementEnvelope&>(E)._elem) {}
-  
+
 		/** Virtual copy constructor.
 		 * Required because constructors cannot be virtual.
 		 * Passes construction on to derived classes.

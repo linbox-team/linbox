@@ -20,7 +20,7 @@
 #endif
 #ifdef __FFLAS__ATRANSPOSE
 #define __FFLAS_incA    lda
-#define __FFLAS_ldA     1   
+#define __FFLAS_ldA     1
 #define __FFLAS_A_Trans Trans
 #define __FFLAS_incB    1
 #define __FFLAS_ldB     ldb
@@ -37,7 +37,7 @@
 #endif
 #ifdef __FFLAS__ATRANSPOSE
 #define __FFLAS_incA    lda
-#define __FFLAS_ldA     1   
+#define __FFLAS_ldA     1
 #define __FFLAS_A_Trans Trans
 #define __FFLAS_incB    ldb
 #define __FFLAS_ldB     1
@@ -58,8 +58,7 @@
 
 #ifndef __FFLAS__GENERIC
 template<>
-class FFLAS::Mjoin(faddm, Mjoin(__FFLAS_A_Trans, __FFLAS_B_Trans))<__FFLAS_Element> 
-{
+class FFLAS::Mjoin(faddm, Mjoin(__FFLAS_A_Trans, __FFLAS_B_Trans))<__FFLAS_Element> {
 public :
 	template<class Field>
 	void operator() (const Field & F,
@@ -82,8 +81,7 @@ public :
 };
 #else
 template<class Element>
-class FFLAS::Mjoin(faddm, Mjoin(__FFLAS_A_Trans, __FFLAS_B_Trans))
-{
+class FFLAS::Mjoin(faddm, Mjoin(__FFLAS_A_Trans, __FFLAS_B_Trans)) {
 public :
 	template<class Field>
 	void operator() (const Field & F,
@@ -101,8 +99,8 @@ public :
 				*(C+i*ldc+j) = *(A+i*__FFLAS_ldA+j*__FFLAS_incA) + *(B+i*__FFLAS_ldB+j*__FFLAS_incB) ;
 #else
 #if defined(__FFLAS__ATRANSPOSE) || defined(__FFLAS__BTRANSPOSE)
-			for (size_t j = 0 ; j < N ; ++j)
-				*(C+i*ldc+j) = *(A+i*__FFLAS_ldA+j*__FFLAS_incA) + *(B+i*__FFLAS_ldB+j*__FFLAS_incB) ;
+		for (size_t j = 0 ; j < N ; ++j)
+			*(C+i*ldc+j) = *(A+i*__FFLAS_ldA+j*__FFLAS_incA) + *(B+i*__FFLAS_ldB+j*__FFLAS_incB) ;
 #else
 #ifdef __FFLAS__DOUBLE
 		{
@@ -151,8 +149,7 @@ public :
 
 #ifndef __FFLAS__GENERIC
 template<>
-class FFLAS::Mjoin(fsubm, Mjoin(__FFLAS_A_Trans, __FFLAS_B_Trans))<__FFLAS_Element > 
-{
+class FFLAS::Mjoin(fsubm, Mjoin(__FFLAS_A_Trans, __FFLAS_B_Trans))<__FFLAS_Element > {
 public :
 	template<class Field>
 	void operator() (const Field & F,
@@ -184,8 +181,7 @@ public :
 };
 #else
 template<class Element>
-class FFLAS::Mjoin(fsubm,Mjoin(__FFLAS_A_Trans,__FFLAS_B_Trans))
-{
+class FFLAS::Mjoin(fsubm,Mjoin(__FFLAS_A_Trans,__FFLAS_B_Trans)) {
 public :
 	template<class Field>
 	void operator() (const Field & F,

@@ -62,20 +62,19 @@ namespace LinBox
 	 * @pre \p p must be prime.
 	\ingroup field
 	 */
-	class LidiaGfq  : public LiDIA::galois_field, public FieldInterface 
-	{
+	class LidiaGfq  : public LiDIA::galois_field, public FieldInterface {
 	public:
 
 		/** Element type.
 		 *  This type is inherited from the LiDIA class LiDIA::gf_element
 		 */
 		typedef LiDIA::gf_element  Element;
-    
-    
+
+
 		/** Random element generator which is define in the wrapper LIDIA_randiter
 		 */
 		typedef LidiaGfqRandIter<LidiaGfq>  RandIter;
-    
+
 
 
 		/** Default constructor of the field
@@ -85,16 +84,16 @@ namespace LinBox
 
 		/** @brief Constructor of GF(p^k).
 
-		 *  A GF(p^k) field is constructed through 
+		 *  A GF(p^k) field is constructed through
 		 *  the constructor of LiDIA LiDIA::galois_field
 		 *  We need a double cast to pass integer arguments to the LiDIA constructor
 		 */
 		LidiaGfq(const integer& p , const integer& k=1) :
-			LiDIA::galois_field(static_cast<LiDIA::bigint>(double(p)), 
+			LiDIA::galois_field(static_cast<LiDIA::bigint>(double(p)),
 				     static_cast<LiDIA::lidia_size_t>(int(k))) {}
-     
 
-		/** Copy constructor 
+
+		/** Copy constructor
 		 */
 		LidiaGfq(const LidiaGfq& F) : LiDIA::galois_field(F) {}
 
@@ -137,7 +136,7 @@ namespace LinBox
 		}
 #endif
 
-    
+
 		/** Destructor
 		 */
 		~LidiaGfq() {}
@@ -162,7 +161,7 @@ namespace LinBox
 
 		/** Initialization of field Element from an integer.
 		 * Behaves like C++ allocator construct.
-		 * This function assumes the output field Element x has already been 
+		 * This function assumes the output field Element x has already been
 		 * constructed, but that it is not already initialized.
 		 * We also need to define the Element over the field.
 		 * So what we always initialize the Element with the zero field value.
@@ -180,26 +179,26 @@ namespace LinBox
 			else
 				{
 					if (y!=0)
-						if (this->degree() > 1)						
+						if (this->degree() > 1)
 							{
 								LiDIA::Fp_polynomial Pol;
 								LiDIA::bigint p=static_cast<const LiDIA::galois_field&>(*this).characteristic();
 								Pol.set_modulus(p);
 								//Pol.set_max_degree((x.get_field()).degree());
-								
+
 								//integer rem, quo,tmp=y;
 								LiDIA::bigint rem, quo ,tmp;
 								LiDIA::string_to_bigint(std::string(y).data(),tmp);
 								LiDIA::lidia_size_t deg = this->degree();
 								for(LiDIA::lidia_size_t i=0;i<deg;i++)
-								 	{		
+								 	{
 										quo=tmp/p;
 										rem=tmp%p;
 										tmp=quo;
 										if (rem != LiDIA::bigint(0))
 											Pol.set_coefficient(rem,i);
 									}
-								//Element e(x.get_field());	   
+								//Element e(x.get_field());
 								x.set_polynomial_rep(Pol);
 								//x.assign(e);
 							}
@@ -209,15 +208,15 @@ namespace LinBox
 							x.assign(tmp);
 						}
 				}
-			return x;				
+			return x;
 		}
-    
-    
+
+
 
 		/** Conversion of field base Element to an integer.
 		 * This function assumes the output field base Element x has already been
 		 * constructed, but that it is not already initialized.
-		 * As Elements are represented by polynom the convert function return 
+		 * As Elements are represented by polynom the convert function return
 		 * the valuation of polynom in characteristic by the Horner Method.
 		 * That keeps unicity of each Element.
 		 * @return reference to an integer.
@@ -228,8 +227,8 @@ namespace LinBox
 		{
 			LiDIA::bigint fx(0) , X((y.get_field()).characteristic());
 			LiDIA::bigint tmp;
-	
-	 
+
+
 			for(int i=(int)(y.get_field()).degree();i>0;i--)
 				{
 					(y.polynomial_rep()).get_coefficient(tmp,i);
@@ -253,7 +252,7 @@ namespace LinBox
 
 
 		/** Assignment of one field Element to another.
-		 * This function assumes both field Elements have already been 
+		 * This function assumes both field Elements have already been
 		 * constructed and initialized.
 		 * @return reference to x
 		 * @param  x field Element (reference returned).
@@ -271,10 +270,10 @@ namespace LinBox
 		/** Cardinality.
 		 * Return integer representing cardinality of the field.
 		 * Returns  p^k.
-		 * @return constant reference to integer representing cardinality 
+		 * @return constant reference to integer representing cardinality
 		 *	       of the field.
 		 */
-		integer& cardinality(integer& c) const 
+		integer& cardinality(integer& c) const
 		{
 			LiDIA::bigint tmp=number_of_elements();
 			unsigned int size= tmp.bit_length();
@@ -282,7 +281,7 @@ namespace LinBox
 			LiDIA::bigint_to_string(tmp,s);
 
 			return c=integer(s);
- 
+
 		}
 
 
@@ -290,12 +289,12 @@ namespace LinBox
 		/** Characteristic.
 		 * Return integer representing characteristic of the field.
 		 * Returns p.
-		 * @return constant reference to integer representing characteristic 
+		 * @return constant reference to integer representing characteristic
 		 * 	       of the field.
 		 */
 		integer& characteristic(integer& c) const
 		{
-			
+
 			LiDIA::bigint tmp = static_cast<const LiDIA::galois_field&>(*this).characteristic();
 			unsigned int size= tmp.bit_length();
 			char s[(size>>2)+4];
@@ -306,17 +305,17 @@ namespace LinBox
 
 
 		//@} Object Management
-    
-		/** @name Arithmetic Operations 
+
+		/** @name Arithmetic Operations
 		 * x <- y op z; x <- op y
 		 * These operations require all Elements, including x, to be initialized
 		 * before the operation is called.  Uninitialized field Elements will
 		 * give undefined results.
 		 */
 		//@{
-     
+
 		/** Equality of two Elements.
-		 * This function assumes both field Elements have already been 
+		 * This function assumes both field Elements have already been
 		 * constructed and initialized.
 		 * @return boolean true if equal, false if not.
 		 * @param  x field Element
@@ -330,7 +329,7 @@ namespace LinBox
 
 		/** Addition.
 		 * x = y + z
-		 * This function assumes all the field Elements have already been 
+		 * This function assumes all the field Elements have already been
 		 * constructed and initialized.
 		 * @return reference to x.
 		 * @param  x field Element (reference returned).
@@ -338,14 +337,14 @@ namespace LinBox
 		 * @param  z field Element.
 		 */
 		Element& add(Element& x, const Element& y, const Element& z) const
-		{ 
+		{
 			LiDIA::add(x,y,z);
 			return x;
 		}
-    
+
 		/** Subtraction.
 		 * x = y - z
-		 * This function assumes all the field Elements have already been 
+		 * This function assumes all the field Elements have already been
 		 * constructed and initialized.
 		 * @return reference to x.
 		 * @param  x field Element (reference returned).
@@ -357,10 +356,10 @@ namespace LinBox
 			LiDIA::subtract(x,y,z);
 			return x;
 		}
-     
+
 		/** Multiplication.
 		 * x = y * z
-		 * This function assumes all the field Elements have already been 
+		 * This function assumes all the field Elements have already been
 		 * constructed and initialized.
 		 * @return reference to x.
 		 * @param  x field Element (reference returned).
@@ -370,12 +369,12 @@ namespace LinBox
 		Element& mul(Element& x, const Element& y, const Element& z) const
 		{
 			LiDIA::multiply(x,y,z);
-			return x; 
+			return x;
 		}
-     
+
 		/** Division.
 		 * x = y / z
-		 * This function assumes all the field Elements have already been 
+		 * This function assumes all the field Elements have already been
 		 * constructed and initialized.
 		 * @return reference to x.
 		 * @param  x field Element (reference returned).
@@ -387,11 +386,11 @@ namespace LinBox
 			LiDIA::divide(x,y,z);
 			return x;
 		}
-     
-     
+
+
 		/** Additive Inverse (Negation).
 		 * x = - y
-		 * This function assumes both field Elements have already been 
+		 * This function assumes both field Elements have already been
 		 * constructed and initialized.
 		 * @return reference to x.
 		 * @param  x field Element (reference returned).
@@ -407,7 +406,7 @@ namespace LinBox
 
 		/** Multiplicative Inverse.
 		 * x = 1 / y
-		 * This function assumes both field Elements have already been 
+		 * This function assumes both field Elements have already been
 		 * constructed and initialized.
 		 * @return reference to x.
 		 * @param  x field Element (reference returned).
@@ -418,12 +417,12 @@ namespace LinBox
 			LiDIA::invert(x,y);
 			return x;
 		}
-     
-     
+
+
 
 		/** Natural AXPY.
 		 * r  = a * x + y
-		 * This function assumes all field Elements have already been 
+		 * This function assumes all field Elements have already been
 		 * constructed and initialized.
 		 * @return reference to r.
 		 * @param  r field Element (reference returned).
@@ -431,24 +430,24 @@ namespace LinBox
 		 * @param  x field Element.
 		 * @param  y field Element.
 		 */
-		Element& axpy(Element& r, 
+		Element& axpy(Element& r,
 			      const Element& a,
-			      const Element& x, 
+			      const Element& x,
 			      const Element& y) const
 		{
 			return r=a*x+y;
 		}
 
-      
+
 
 		/** Zero equality.
 		 * Test if field Element is equal to zero of field.
-		 * This function assumes the field Element has already been 
+		 * This function assumes the field Element has already been
 		 * constructed and initialized.
 		 * @return boolean true if equals zero of field, false if not.
 		 * @param  x field Element.
 		 */
-		bool isZero(const Element& x) const 
+		bool isZero(const Element& x) const
 		{
 			return x.is_zero();
 		}
@@ -457,70 +456,70 @@ namespace LinBox
 
 		/** One equality.
 		 * Test if field Element is equal to one of field.
-		 * This function assumes the field Element has already been 
+		 * This function assumes the field Element has already been
 		 * constructed and initialized.
 		 * @return boolean true if equals one of field, false if not.
 		 * @param  x field Element.
 		 */
-		bool isOne(const Element& x) const 
+		bool isOne(const Element& x) const
 		{
 			return x.is_one();
 		}
 
 
-     
+
 		/** Inplace Addition.
 		 * x += y
-		 * This function assumes both field Elements have already been 
+		 * This function assumes both field Elements have already been
 		 * constructed and initialized.
 		 * @return reference to x.
 		 * @param  x field Element (reference returned).
 		 * @param  y field Element.
 		 */
 		Element& addin(Element& x, const Element& y) const {
-			return x+=y; 
+			return x+=y;
 		}
-     
+
 		/** Inplace Subtraction.
 		 * x -= y
-		 * This function assumes both field Elements have already been 
+		 * This function assumes both field Elements have already been
 		 * constructed and initialized.
 		 * @return reference to x.
 		 * @param  x field Element (reference returned).
 		 * @param  y field Element.
 		 */
 		Element& subin(Element& x, const Element& y) const {
-			return x-=y; 
+			return x-=y;
 		}
-     
+
 		/** Inplace Multiplication.
 		 * x *= y
-		 * This function assumes both field Elements have already been 
+		 * This function assumes both field Elements have already been
 		 * constructed and initialized.
 		 * @return reference to x.
 		 * @param  x field Element (reference returned).
 		 * @param  y field Element.
 		 */
 		Element& mulin(Element& x, const Element& y) const {
-			return x*=y; 
+			return x*=y;
 		}
-    
+
 		/** Inplace Division.
 		 * x /= y
-		 * This function assumes both field Elements have already been 
+		 * This function assumes both field Elements have already been
 		 * constructed and initialized.
 		 * @return reference to x.
 		 * @param  x field Element (reference returned).
 		 * @param  y field Element.
 		 */
-		Element& divin(Element& x, const Element& y) const { 
+		Element& divin(Element& x, const Element& y) const {
 			return x/=y;
 		}
-     
-     
+
+
 		/** Inplace Additive Inverse (Inplace Negation).
 		 * x = - x
-		 * This function assumes the field Element has already been 
+		 * This function assumes the field Element has already been
 		 * constructed and initialized.
 		 * @return reference to x.
 		 * @param  x field Element (reference returned).
@@ -530,12 +529,12 @@ namespace LinBox
 			x.negate();
 			return x;
 		}
-     
-     
+
+
 
 		/** Inplace Multiplicative Inverse.
 		 * x = 1 / x
-		 * This function assumes the field Elementhas already been 
+		 * This function assumes the field Elementhas already been
 		 * constructed and initialized.
 		 * @return reference to x.
 		 * @param  x field Element (reference returned).
@@ -550,7 +549,7 @@ namespace LinBox
 
 		/** Inplace AXPY.
 		 * r  += a * x
-		 * This function assumes all field Elements have already been 
+		 * This function assumes all field Elements have already been
 		 * constructed and initialized.
 		 * @return reference to r.
 		 * @param  r field Element (reference returned).
@@ -558,7 +557,7 @@ namespace LinBox
 		 * @param  x field Element.
 		 */
 		Element& axpyin(Element& r, const Element& a, const Element& x) const
-		{			 
+		{
 			return  r+=a*x;
 		}
 
@@ -567,7 +566,7 @@ namespace LinBox
 #ifndef __LINBOX_XMLENABLED
 		/** @name Input/Output Operations */
 		//@{
-    
+
 		/** Print field.
 		 * @return output stream to which field is written.
 		 * @param  os  output stream to which field is written.
@@ -578,8 +577,8 @@ namespace LinBox
 			return os<<"corps de Galois GF("<<
 				characteristic(c)<<"^"<<degree()<<")";
 		}
-     
-     
+
+
 		/** Read field.
 		 * @return input stream from which field is read.
 		 * @param  is  input stream from which field is read.
@@ -588,7 +587,7 @@ namespace LinBox
 		{
 			return is ;
 		}
-     
+
 
 		/** Print field Element like a polynom.
 		 * @return output stream to which field Element is written.
@@ -597,39 +596,39 @@ namespace LinBox
 		 */
 		std::ostream& write(std::ostream& os,const Element& e) const
 		{
-			/*integer tmp; 
+			/*integer tmp;
 			  (*this).convert(tmp,e);
 			  return os<<tmp;
 			*/
 			return os<<e;
 		}
-     
-     
-     
+
+
+
 		/** Read field Element.
 		 * @return input stream from which field Element is read.
 		 * @param  is  input stream from which field Element is read.
 		 * @param  x   field Element.
 		 */
 		std::istream& read(std::istream& is, Element& e) const
-		{ 
+		{
 			// return is>>e;
 			integer tmp;
 			is>> tmp;
 			(*this).init(e,tmp);
 			return is;
-	 
+
 		}
 
 		//@}
-      
+
 #else
 		std::ostream &write(std::ostream &os) const
 		{
 			LinBox::Writer W;
-			if( toTag(W)) 
+			if( toTag(W))
 				W.write(os);
-			
+
 			return os;
 		}
 
@@ -664,7 +663,7 @@ namespace LinBox
 			return true;
 		}
 
-		std::ostream &write(std::ostream &os, const Element &e) const 
+		std::ostream &write(std::ostream &os, const Element &e) const
 		{
 			LinBox::Writer W;
 			if (toTag(W, e))
@@ -725,9 +724,9 @@ namespace LinBox
 
 			return true;
 		}
-#endif			
-			
-			
+#endif
+
+
 		static inline integer getMaxModulus()
 		{ return integer( "9007199254740881" ); } // prevprime(2^53)
 

@@ -22,7 +22,7 @@
  *
  * ------------------------------------
  * 2002-05-14 William J. Turner <wjturner@acm.org>
- * 
+ *
  * changed randIter to RandIter.
  * ------------------------------------
  */
@@ -48,8 +48,8 @@
 #endif //__LINBOX_XMLENABLED
 
 // Namespace in which all LinBox code resides
-namespace LinBox 
-{ 
+namespace LinBox
+{
 	// Forward declarations
 	template <class Field> class RandIterEnvelope;
 
@@ -63,8 +63,7 @@ namespace LinBox
 	 * field so that it might be used with the Field archetype.
 	 */
 	template <class Field>
-	class FieldEnvelope : public FieldAbstract
-	{
+	class FieldEnvelope : public FieldAbstract {
 	    public:
 
 		/** element type.
@@ -82,7 +81,7 @@ namespace LinBox
 		/** @name Object Management
 		 */
 		//@{
- 
+
 		/** Default constructor.
 		 * In this implementation, this means copying the field \c E._field.
 		 */
@@ -92,7 +91,7 @@ namespace LinBox
 		 * @param F Field object to be wrapped.
 		 */
 		FieldEnvelope (const Field& F) : _field (F) {}
- 
+
 		/** Copy constructor.
 		 * Constructs FieldEnvelope object by copying the field.
 		 * This is required to allow field objects to be passed by value
@@ -106,7 +105,7 @@ namespace LinBox
 		FieldEnvelope(Reader &R) : _field(R) {}
 #endif
 
- 
+
 		/** Virtual copy constructor.
 		 * Required because constructors cannot be virtual.
 		 * Passes construction on to derived classes.
@@ -144,7 +143,7 @@ namespace LinBox
 			_field.init (static_cast<ElementEnvelope<Field>&> (x)._elem, y);
 			return x;
 		}
- 
+
 		/** Conversion of field base element to a template class T.
 		 * This function assumes the output field base element x has already been
 		 * constructed, but that it is not already initialized.
@@ -157,7 +156,7 @@ namespace LinBox
 			_field.convert (x, static_cast<const ElementEnvelope<Field>&> (y)._elem);
 			return x;
 		}
- 
+
 		/** Assignment of one field base element to another.
 		 * This function assumes both field base elements have already been
 		 * constructed and initialized.
@@ -181,7 +180,7 @@ namespace LinBox
 		 */
 		integer& cardinality (integer& c) const
 			{ return _field.cardinality (c); }
- 
+
 		/** Characteristic.
 		 * Return integer representing characteristic of the domain.
 		 * Returns a positive integer to all domains with finite characteristic,
@@ -232,7 +231,7 @@ namespace LinBox
 				    static_cast<const ElementEnvelope<Field>&> (z)._elem);
 			return x;
 		}
- 
+
 		/** Subtraction.
 		 * x = y - z
 		 * This function assumes all the field base elements have already been
@@ -251,7 +250,7 @@ namespace LinBox
 				    static_cast<const ElementEnvelope<Field>&> (z)._elem);
 			return x;
 		}
- 
+
 		/** Multiplication.
 		 * x = y * z
 		 * This function assumes all the field base elements have already been
@@ -270,7 +269,7 @@ namespace LinBox
 				    static_cast<const ElementEnvelope<Field>&> (z)._elem);
 			return x;
 		}
- 
+
 		/** Division.
 		 * x = y / z
 		 * This function assumes all the field base elements have already been
@@ -289,7 +288,7 @@ namespace LinBox
 				    static_cast<const ElementEnvelope<Field>&> (z)._elem);
 			return x;
 		}
- 
+
 		/** Additive Inverse (Negation).
 		 * x = - y
 		 * This function assumes both field base elements have already been
@@ -304,7 +303,7 @@ namespace LinBox
 				    static_cast<const ElementEnvelope<Field>&> (y)._elem);
 			return x;
 		}
- 
+
 		/** Multiplicative Inverse.
 		 * x = 1 / y
 		 * This function assumes both field base elements have already been
@@ -322,7 +321,7 @@ namespace LinBox
 
 		/** Natural AXPY.
 		 * r  = a * x + y
-		 * This function assumes all field elements have already been 
+		 * This function assumes all field elements have already been
 		 * constructed and initialized.
 		 * @return reference to r.
 		 * @param  r field element (reference returned).
@@ -330,9 +329,9 @@ namespace LinBox
 		 * @param  x field element.
 		 * @param  y field element.
 		 */
-		ElementAbstract& axpy (ElementAbstract& r, 
-					const ElementAbstract& a, 
-					const ElementAbstract& x, 
+		ElementAbstract& axpy (ElementAbstract& r,
+					const ElementAbstract& a,
+					const ElementAbstract& x,
 					const ElementAbstract& y) const
 		{
 			_field.axpy (static_cast<ElementEnvelope<Field>&> (r)._elem,
@@ -341,9 +340,9 @@ namespace LinBox
 				     static_cast<const ElementEnvelope<Field>&> (y)._elem);
 			return r;
 		}
- 
+
 		//@} Arithmetic Operations
- 
+
 		/** @name Inplace Arithmetic Operations
 		 * x <- x op y; x <- op x
 		 */
@@ -358,7 +357,7 @@ namespace LinBox
 		 */
 		bool isZero (const ElementAbstract& x) const
 			{ return _field.isZero (static_cast<const ElementEnvelope<Field>&> (x)._elem); }
- 
+
 		/** One equality.
 		 * Test if field base element is equal to one.
 		 * This function assumes the field base element has already been
@@ -383,7 +382,7 @@ namespace LinBox
 				      static_cast<const ElementEnvelope<Field>&> (y)._elem);
 			return x;
 		}
- 
+
 		/** Inplace Subtraction.
 		 * x -= y
 		 * This function assumes both field base elements have already been
@@ -398,7 +397,7 @@ namespace LinBox
 				      static_cast<const ElementEnvelope<Field>&> (y)._elem);
 			return x;
 		}
- 
+
 		/** Inplace Multiplication.
 		 * x *= y
 		 * This function assumes both field base elements have already been
@@ -422,14 +421,14 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		ElementAbstract& divin (ElementAbstract& x, 
+		ElementAbstract& divin (ElementAbstract& x,
 					 const ElementAbstract& y) const
 		{
 			_field.divin (static_cast<ElementEnvelope<Field>&> (x)._elem,
 				      static_cast<const ElementEnvelope<Field>&> (y)._elem);
 			return x;
 		}
- 
+
 		/** Inplace Additive Inverse (Inplace Negation).
 		 * x = - x
 		 * This function assumes the field base element has already been
@@ -442,7 +441,7 @@ namespace LinBox
 			_field.negin (static_cast<ElementEnvelope<Field>&> (x)._elem);
 			return x;
 		}
- 
+
 		/** Inplace Multiplicative Inverse.
 		 * x = 1 / x
 		 * This function assumes the field base elementhas already been
@@ -458,15 +457,15 @@ namespace LinBox
 
 		/** Inplace AXPY.
 		 * r  += a * x
-		 * This function assumes all field elements have already been 
+		 * This function assumes all field elements have already been
 		 * constructed and initialized.
 		 * @return reference to r.
 		 * @param  r field element (reference returned).
 		 * @param  a field element.
 		 * @param  x field element.
 		 */
-		ElementAbstract& axpyin (ElementAbstract& r, 
-					  const ElementAbstract& a, 
+		ElementAbstract& axpyin (ElementAbstract& r,
+					  const ElementAbstract& a,
 					  const ElementAbstract& x) const
 		{
 			_field.axpyin (static_cast<ElementEnvelope<Field>&> (r)._elem,
@@ -474,7 +473,7 @@ namespace LinBox
 				       static_cast<const ElementEnvelope<Field>&> (x)._elem);
 			return r;
 		}
- 
+
 		//@} Inplace Arithmetic Operations
 
 #ifndef __LINBOX_XMLENABLED
@@ -486,7 +485,7 @@ namespace LinBox
 		 * @param  os  output stream to which field is written.
 		 */
 		std::ostream& write (std::ostream& os) const { return _field.write (os); }
- 
+
 		/** Read field.
 		 * @return input stream from which field is read.
 		 * @param  is  input stream from which field is read.
@@ -502,7 +501,7 @@ namespace LinBox
 		 */
 		std::ostream& write (std::ostream& os, const ElementAbstract& x) const
 			{ return _field.write (os, static_cast<const ElementEnvelope<Field>&> (x)._elem); }
- 
+
 		/** Read field base element.
 		 * This function assumes the field base element has already been
 		 * constructed and initialized.
@@ -543,7 +542,7 @@ namespace LinBox
 			return _field.fromTag(R, static_cast<ElementEnvelope<Field>&>(x)._elem);
 		}
 #endif
-			
+
 
 
 

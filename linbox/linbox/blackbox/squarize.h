@@ -39,8 +39,7 @@ namespace LinBox
 	 * @param Vector \ref LinBox dense or sparse vector of field elements
 	 */
 	template <class Blackbox>
-	class Squarize : public BlackboxInterface
-	{
+	class Squarize : public BlackboxInterface {
 
 	    public:
 		typedef Blackbox Blackbox_t;
@@ -83,10 +82,10 @@ namespace LinBox
 		{
 		}
 
-		template<typename _Tp1> 
-		struct rebind 
-		{ 
-                        typedef Squarize<typename Blackbox::template rebind<_Tp1>::other> other; 
+		template<typename _Tp1>
+		struct rebind
+		{
+                        typedef Squarize<typename Blackbox::template rebind<_Tp1>::other> other;
                         void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
                                 typename Blackbox_t::template rebind<_Tp1> () ( *(Ap._A_ptr), *(A._A_ptr), F);
                         }
@@ -134,11 +133,11 @@ namespace LinBox
 
 	protected:
 		size_t maxsize() const {
-			if (_A_ptr != 0) 
+			if (_A_ptr != 0)
 				return GIVMAX( _A_ptr->rowdim (), _A_ptr->coldim () );
-			else 
+			else
 				return 0;
-		}		
+		}
 	public:
 		/** Retreive row dimensions of BlackBox matrix.
 		 * This may be needed for applying preconditioners.
@@ -149,16 +148,16 @@ namespace LinBox
 		{
 			return maxsize();
 		}
-    
+
 		/** Retreive column dimensions of BlackBox matrix.
 		 * Required by abstract base class.
 		 * @return integer number of columns of black box matrix.
 		 */
-		size_t coldim (void) const 
+		size_t coldim (void) const
 		{
 			return maxsize();
 		}
-	       
+
 
 
 		const Field& field() const {return _A_ptr->field();}

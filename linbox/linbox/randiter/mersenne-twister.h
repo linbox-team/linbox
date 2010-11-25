@@ -32,37 +32,36 @@
 namespace LinBox
 {
 
-class MersenneTwister 
-{
-    public:
-	MersenneTwister (uint32 seed = 0);
+	class MersenneTwister {
+	public:
+		MersenneTwister (uint32 seed = 0);
 
-	uint32 reload ();
-	uint32 randomInt ();
-	uint32 randomInt () const
-	{ return const_cast<MersenneTwister&>(*this).randomInt();}
+		uint32 reload ();
+		uint32 randomInt ();
+		uint32 randomInt () const
+		{ return const_cast<MersenneTwister&>(*this).randomInt();}
 
-	uint32 randomIntRange (uint32 start, uint32 end);
-	uint32 randomIntRange (uint32 start, uint32 end) const
-	{ return const_cast<MersenneTwister&>(*this).randomIntRange(start,end); }
+		uint32 randomIntRange (uint32 start, uint32 end);
+		uint32 randomIntRange (uint32 start, uint32 end) const
+		{ return const_cast<MersenneTwister&>(*this).randomIntRange(start,end); }
 
-	double randomDouble ();
-	double randomDouble ()  const
-	{ return const_cast<MersenneTwister&>(*this).randomDouble(); }
+		double randomDouble ();
+		double randomDouble ()  const
+		{ return const_cast<MersenneTwister&>(*this).randomDouble(); }
 
-	double randomDoubleRange (double start, double end)
+		double randomDoubleRange (double start, double end)
 		{ return randomDouble () * (end - start) + start; }
-	double randomDoubleRange (double start, double end) const
-	{ return const_cast<MersenneTwister&>(*this).randomDoubleRange(start,end); }
+		double randomDoubleRange (double start, double end) const
+		{ return const_cast<MersenneTwister&>(*this).randomDoubleRange(start,end); }
 
-	void setSeed (uint32 seed);
+		void setSeed (uint32 seed);
 
-    private:
-	std::vector<uint32>           _state;
-	std::vector<uint32>::iterator _next;
-	int                           _left;
-};
- 
+	private:
+		std::vector<uint32>           _state;
+		std::vector<uint32>::iterator _next;
+		int                           _left;
+	};
+
 }
 
 #ifdef LinBoxSrcOnly

@@ -1,6 +1,6 @@
 /* linbox/blackbox/quad-matrix.h
  * Copyright (C) 2006 LinBox
- * Written by -bds, hui wang  
+ * Written by -bds, hui wang
  * see COPYING for license information
  */
 
@@ -20,7 +20,7 @@
 //#include <linbox/blackbox/side-by-side.h>
 //#include <linbox/blackbox/over-under.h>
 
-namespace LinBox 
+namespace LinBox
 {
 
 	template <typename Field>
@@ -40,20 +40,19 @@ namespace LinBox
  Right now we implement only side-by-side blocks, which is done to improve cache performance.  This class works especially well on quite sparse matrices whose entries are rather randomly positioned.  The idea is that the vector to be multiplied by each block fits in cache.  It is being more or less randomly accessed, so cache misses are avoided for these random accesses.
 
  The possibility exists to set the stripe(block) width by a configure-time parameter.  Also this approach should be used on sparse matrices which are not zero-one.
- 
+
  This ZOQuad class is like a tagged union of several BB types.
- Then SideBySide does not have it's two part types as template parameters.  
+ Then SideBySide does not have it's two part types as template parameters.
  Instead the parts are always ZOQuads.
 
  \ingroup blackbox
 
 */
 	template <typename _Field>
-	class ZOQuad
-	{
+	class ZOQuad {
 		//friend class ZeroOne<_Field>;
 		enum BBtype {zo, sbs, ou};
-		const void* _BBp;	
+		const void* _BBp;
 		BBtype _tag;
 		size_t _r, _c;
 		static const unsigned int smallThreshold = 60000;
@@ -62,16 +61,16 @@ namespace LinBox
 		_Field _F;
     public:
 		typedef _Field Field;
-		
+
 		typedef size_t Index;
 		typedef std::vector<Index> IndexVector;
 		typedef std::vector<IndexVector::iterator> PointerVector;
-		
+
 		// constructors
 		ZOQuad() : _BBp(0), _r(0), _c(0) {}
-		//ZOQuad(const ScalarMatrix<Field>&  A) : _BBp(&A), _tag(sm), _r(A.rowdim()), _c(A.coldim()) {} 
-		ZOQuad(const SideBySide<Field>& A) : _BBp(&A), _tag(sbs), _r(A.rowdim()), _c(A.coldim()) {} 
-		ZOQuad(const OverUnder<Field>& A) : _BBp(&A), _tag(ou), _r(A.rowdim()), _c(A.coldim()) {} 
+		//ZOQuad(const ScalarMatrix<Field>&  A) : _BBp(&A), _tag(sm), _r(A.rowdim()), _c(A.coldim()) {}
+		ZOQuad(const SideBySide<Field>& A) : _BBp(&A), _tag(sbs), _r(A.rowdim()), _c(A.coldim()) {}
+		ZOQuad(const OverUnder<Field>& A) : _BBp(&A), _tag(ou), _r(A.rowdim()), _c(A.coldim()) {}
 		ZOQuad(const ZeroOne<Field>& A) //: _BBp(&A), _tag(zo), _r(A.rowdim()), _c(A.coldim())
 		{
 			init(A);
@@ -110,7 +109,7 @@ namespace LinBox
 					copy( A._indexP.begin(), A._indexP.begin() + A._indexP.size()/2 + 1, firstP);
 					ZeroOne<Field> U(F, firstHalf, firstHalfP, firstHalfP.size()-1, A._coldim, A.sorted);
 					ZOQuad<Field> *UU = new ZOQuad<Field>(U);
-					
+
 					IndexVector secondHalf;
 					PointerVector secondHalfP;
 					std::back_insert_iterator< IndexVector > second(secondHalf);
@@ -119,14 +118,14 @@ namespace LinBox
 					copy( A._indexP.begin() + A._indexP.size()/2, A._indexP.end(), secondP);
 					ZeroOne<Field> D(F, secondHalf, secondHalfP, secondHalfP.size()-1, A._coldim, A.sorted);
 					ZOQuad<Field> *DD = new ZOQuad<Field>(D);
-					
+
 					//Hui works this out!
-					
+
 					_BBp = new OverUnder<Field>(UU, DD);
 
 					_tag = ou;
 					_r = A.rowdim(); _c = A.coldim();
- 					
+
 					return 1;
 				}
 			*/
@@ -144,7 +143,7 @@ namespace LinBox
 					copy( A._indexP.begin(), A._indexP.begin() + A._indexP.size()/2 + 1, firstP);
 					ZeroOne<Field> L(F, firstHalf, firstHalfP, A._rowdim, firstHalfP.size()-1, A.sorted);
 					ZOQuad<Field> *LL = new ZOQuad<Field>(L);
-					
+
 					IndexVector secondHalf;
 					PointerVector secondHalfP;
 					std::back_insert_iterator< IndexVector > second(secondHalf);
@@ -153,29 +152,29 @@ namespace LinBox
 					copy( A._indexP.begin() + A._indexP.size()/2, A._indexP.end(), secondP);
 					ZeroOne<Field> R(F, secondHalf, secondHalfP, A._rowdim, secondHalfP.size()-1, A.sorted);
 					ZOQuad<Field> *RR = new ZOQuad<Field>(R);
-					
+
 					//Hui works this out!
-					
+
 					_BBp = new SideBySide<Field>(LL, RR);
 
 					_tag = sbs;
 					_r = A.rowdim(); _c = A.coldim();
- 					
+
 					return 2;
 				  }
 			//*/
-		} 
+		}
 		std::ostream & write(std::ostream & out) const
 		{
 			switch (_tag)
 				{
-				case zo: 
+				case zo:
 					{
 						const ZeroOne<Field> *A(static_cast< const ZeroOne<Field>* >(_BBp));
 						out << "zo(" << A->rowdim() << ", " << A->coldim() << ", " << A->nnz() << ") ";
 						break;
 					}
-					//case sm: 
+					//case sm:
 					//{
 					//const ScalarMatrix<Field> *A(static_cast< const ScalarMatrix<Field>* >(_BBp));
 					//delete A ; break;
@@ -200,16 +199,16 @@ namespace LinBox
 			return out;
 		}
 
-		~ZOQuad() 
+		~ZOQuad()
 		{/*	switch (_tag)
 			{
-			case zo: 
+			case zo:
 				{
 					const ZeroOne<Field> *A(static_cast< const ZeroOne<Field>* >(_BBp));
-					delete A ; 
+					delete A ;
 					break;
 				}
-				//case sm: 
+				//case sm:
 				//{
 					//const ScalarMatrix<Field> *A(static_cast< const ScalarMatrix<Field>* >(_BBp));
 					//delete A ; break;
@@ -226,23 +225,23 @@ namespace LinBox
 				}
 			}*/
 		}
-		
+
 		template <typename InVector, typename OutVector>
-		OutVector& apply(OutVector& y, const InVector& x) const  
+		OutVector& apply(OutVector& y, const InVector& x) const
 			//OutVector& apply(OutVector& y, const InVector& x)
 		{
 			//std::cout << " zo-quad apply size of x: " << x.size() << " " << " size of y: " << y.size() << endl;
 			switch (_tag)
 				{
-				case zo: 
+				case zo:
 					{
 						const ZeroOne<Field> *A(static_cast< const ZeroOne<Field>* >(_BBp));
 						//ZeroOne<Field> *A(static_cast< ZeroOne<Field>* >(_BBp));
 						//std::cout << "\n apply zo quad -- zo " << "( quad: " << this << ", zo: " << _BBp << "), (" << _r << ", " << _c << "), (" << A->rowdim() << ", " << A->coldim() << ")" << endl;
-						A->apply(y, x); 
+						A->apply(y, x);
 						break;
 					}
-					//case sm: 
+					//case sm:
 					//{
 					//const ScalarMatrix<Field> *A(static_cast< const ScalarMatrix<Field>* >(_BBp));
 						//ScalarMatrix<Field> *A(static_cast< ScalarMatrix<Field>* >(_BBp));
@@ -258,7 +257,7 @@ namespace LinBox
 						break;
 					}
 				case ou:
-					{ 
+					{
 						const OverUnder<Field> *A(static_cast< const OverUnder<Field>* >(_BBp));
 						//OverUnder<Field> *A(static_cast< OverUnder<Field>* >(_BBp));
 						//std::cout << "\n apply zo quad -- ou " << _r << " " << _c << endl;
@@ -268,7 +267,7 @@ namespace LinBox
 				}
 			return y;
 		}
-		
+
 		// similar applyTranspose
 		template <typename InVector, typename OutVector>
 		OutVector& applyTranspose(OutVector& y, const InVector& x) const
@@ -276,14 +275,14 @@ namespace LinBox
 		{
 			switch (_tag)
 				{
-				case zo: 
+				case zo:
 					{
 						//const ZeroOne<Field> *A(static_cast< const ZeroOne<Field>* >(_BBp));
 						const ZeroOne<Field> *A(static_cast< const ZeroOne<Field>* >(_BBp));
-						A->applyTranspose(y, x); 
+						A->applyTranspose(y, x);
 						break;
 					}
-					//case sm: 
+					//case sm:
 					//{
 					//const ScalarMatrix<Field> *A(static_cast< const ScalarMatrix<Field>* >(_BBp));
 						//ScalarMatrix<Field> *A(static_cast< ScalarMatrix<Field>* >(_BBp));
@@ -307,22 +306,22 @@ namespace LinBox
 				}
 			return y;
 		}
-		
+
 		size_t rowdim() const
 		{
 			switch (_tag)
 				{
-				case zo: 
+				case zo:
 					{
 						const ZeroOne<Field> *A(static_cast< const ZeroOne<Field>* >(_BBp));
 						return A->rowdim();
 					}
-				case sbs: 
+				case sbs:
 					{
 						const SideBySide<Field> *A(static_cast< const SideBySide<Field>* >(_BBp));
 						return A->rowdim();
 					}
-				case ou: 
+				case ou:
 					{
 						const OverUnder<Field> *A(static_cast< const OverUnder<Field>* >(_BBp));
 						return A->rowdim();
@@ -334,17 +333,17 @@ namespace LinBox
 		{
 			switch (_tag)
 				{
-				case zo: 
+				case zo:
 					{
 						const ZeroOne<Field> *A(static_cast< const ZeroOne<Field>* >(_BBp));
 						return A->coldim();
 					}
-				case sbs: 
+				case sbs:
 					{
 						const SideBySide<Field> *A(static_cast< const SideBySide<Field>* >(_BBp));
 						return A->coldim();
 					}
-				case ou: 
+				case ou:
 					{
 						const OverUnder<Field> *A(static_cast< const OverUnder<Field>* >(_BBp));
 						return A->coldim();
@@ -356,22 +355,22 @@ namespace LinBox
 		{
 			switch (_tag)
 				{
-				case zo: 
+				case zo:
 					{
 						const ZeroOne<Field> *A(static_cast< const ZeroOne<Field>* >(_BBp));
 						return A->field();
 					}
-					//case sm: 
+					//case sm:
 					//{
 					//const ScalarMatrix<Field> *A(static_cast< const ScalarMatrix<Field>* >(_BBp));
 					//return A->field();
 					//}
-				case sbs: 
+				case sbs:
 					{
 						const SideBySide<Field> *A(static_cast< const SideBySide<Field>* >(_BBp));
 						return A->field();
 					}
-				case ou: 
+				case ou:
 					{
 						const OverUnder<Field> *A(static_cast< const OverUnder<Field>* >(_BBp));
 						return A->field();
@@ -382,17 +381,16 @@ namespace LinBox
 			return A->field();
 		}
 	}; //ZOQuad
-	
+
 	template <typename Field>
-	class SideBySide
-	{
+	class SideBySide {
 		typedef ZOQuad<Field> Quad;
 	public://temp
 		const Quad *_L, *_R;
     public:
 		SideBySide(const Quad* A, const Quad* B) : _L(A), _R(B) {}
 		//~SideBySide() {delete _L; delete _R;}
-		
+
 		template <typename InVector, typename OutVector>
 		OutVector& apply(OutVector& y, const InVector& x) const
 			//OutVector& apply(OutVector& y, const InVector& x)
@@ -408,10 +406,10 @@ namespace LinBox
 			_L->apply (y, x_1);
 			_R->apply (z, x_2);
 			VD.addin(y, z);
-			
+
 			return y;
 		}
-		
+
 		template <typename InVector, typename OutVector>
 		OutVector& applyTranspose(OutVector& y, const InVector& x) const
 			//OutVector& applyTranspose(OutVector& y, const InVector& x)
@@ -426,15 +424,14 @@ namespace LinBox
 			copy(y_2.begin(), y_2.end(), y.begin() + y_1.size());
 			return y;
 		}
-		
+
 		size_t rowdim()const{return _L->rowdim();}
 		size_t coldim()const{return _L->coldim() + _R->coldim();}
-		const Field& field()const {return _L->field();}	
+		const Field& field()const {return _L->field();}
 	};
-	
+
 	template <typename Field>
-	class OverUnder
-	{
+	class OverUnder {
 		typedef ZOQuad<Field> Quad;
 	public://temp
 		const Quad *_U, *_D;
@@ -457,10 +454,10 @@ namespace LinBox
 			_D->apply (y_2, x);
 			//copy(y_1.begin(), y_1.end(), y.begin());
 			//copy(y_2.begin(), y_2.end(), y.begin() + y_1.size());
-			
+
 			return y;
 		}
-		
+
 		template <typename InVector, typename OutVector>
 		OutVector& applyTranspose(OutVector& y, const InVector& x) const
 			//OutVector& applyTranspose(OutVector& y, const InVector& x)
@@ -476,15 +473,15 @@ namespace LinBox
 			VD.addin(y, z);
 			return y;
 		}
-		
+
 		size_t coldim() const{return _U->coldim();}
 		size_t rowdim() const{return _U->rowdim() + _D->rowdim();}
-		const Field& field() const {return _U->field();}	
+		const Field& field() const {return _U->field();}
 	};
-	
+
 	// similar class OverUnder<Field>
-	
-}; //namespace LinBox 
+
+}; //namespace LinBox
 
 #endif // __LINBOX_quad_matrix_H
 

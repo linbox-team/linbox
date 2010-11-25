@@ -37,22 +37,21 @@ namespace LinBox
 
 	/** \brief Generalized inverse of a blackbox.  Efficiency concerns when many applications are used.
 	 *
-\ingroup blackbox
+	 \ingroup blackbox
 	 * Given an arbitrary matrix in black box representation, this black box
 	 * represents the Moore-Penrose inverse of the matrix.
 	 *
 	 * This implementation assumes that A already has a nonsingular
 	 * principal r x r minor. It is the caller's responsibility to ensure
 	 * that that condition holds.
-	 * 
-	 * Given MoorePenrose M(A, r), and vector b, we have that M.apply(u, b) provides 
+	 *
+	 * Given MoorePenrose M(A, r), and vector b, we have that M.apply(u, b) provides
 	 * the least norm, least squares solution x = u to Ax = b.
 	 *
 	 * TODO: remove the requirement that lpm is nonsingular.  Specialize for dense matrices.
 	 */
 	template <class Blackbox>
-	class MoorePenrose : public BlackboxInterface
-	{
+	class MoorePenrose : public BlackboxInterface {
 	    public:
 
 		typedef typename Blackbox::Field Field;
@@ -114,7 +113,7 @@ namespace LinBox
 			delete _B1;
 		}
 
-	
+
 
 		/** Application of BlackBox matrix.
 		 * <code>y= A*x</code>.
@@ -169,7 +168,7 @@ namespace LinBox
 		 */
 		size_t rowdim (void) const
 			{ return _A->coldim (); }
-    
+
 		/** Retreive _column dimensions of BlackBox matrix.
 		 * Required by abstract base class.
 		 * @return integer number of _columns of black box matrix.
@@ -193,7 +192,7 @@ namespace LinBox
 		Inverse<Compose<Submatrix<Blackbox>, Transpose<Submatrix<Blackbox> >  > >  *_GGTinv;
 
 		size_t     _rank;
-	}; 
+	};
 
 } // namespace LinBox
 

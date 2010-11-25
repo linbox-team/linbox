@@ -3,7 +3,7 @@
  * Copyright (C) 2001,2010 LinBox
  * Copyright (C) 2001 Bradford Hovinen
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
- * 
+ *
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -45,8 +45,7 @@
 
 namespace LinBox
 {
-	class PreconditionFailed //: public LinboxError BB: otherwise,  error.h:39 segfaults
-	{
+	class PreconditionFailed {//: public LinboxError BB: otherwise,  error.h:39 segfaults
 		static std::ostream *_errorStream;
 
 	    public:
@@ -71,9 +70,9 @@ namespace LinBox
 		static void setErrorStream (std::ostream &stream);
 
 		// -- overload the virtual print of LinboxError
-		std::ostream &print (std::ostream &o) const { 
+		std::ostream &print (std::ostream &o) const {
 			if (std::ostringstream * str = dynamic_cast<std::ostringstream*>(_errorStream))
-				return o << str->str() ; 
+				return o << str->str() ;
 			else
 				throw LinboxError("LinBox ERROR: PreconditionFailed exception is not initialized correctly");
 		}

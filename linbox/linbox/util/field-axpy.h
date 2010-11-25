@@ -46,8 +46,7 @@ namespace LinBox
 	 * @param Field \ref LinBox @link Fields field@endlink
 	 */
 	template <class Field>
-	class FieldAXPY 
-	{
+	class FieldAXPY {
 	    public:
 
 		/// Definition of element type
@@ -68,7 +67,7 @@ namespace LinBox
 		/** Assignment operator
 		 * @param faxpy
 		 */
-		FieldAXPY<Field> &operator = (const FieldAXPY &faxpy) 
+		FieldAXPY<Field> &operator = (const FieldAXPY &faxpy)
 			{ _y = faxpy._y; return *this; }
 
 		/** Add a*x to y
@@ -78,10 +77,10 @@ namespace LinBox
 		 */
             inline Element& mulacc (const Element &a, const Element &x)
                 { return _F.axpyin (_y, a, x); }
-            
+
             inline Element& accumulate (const Element &t)
                 { return _F.addin (_y, t); }
-            
+
 		/** Retrieve y
 		 *
 		 * Performs the delayed modding out if necessary
@@ -98,7 +97,7 @@ namespace LinBox
 			_y = y;
 			return *this;
 		}
-		
+
 		inline void reset() {
 			_F.init(_y,0);
 		}

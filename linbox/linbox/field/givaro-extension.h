@@ -42,8 +42,8 @@
 
 //---------------------------------------------
 // Namespace in which all LinBox code resides
-namespace LinBox 
-{ 
+namespace LinBox
+{
 
 	template <class Ring>
 	struct ClassifyRing;
@@ -66,13 +66,13 @@ namespace LinBox
     struct FieldTraits< GivaroExtension<BaseField> >
     {
 	typedef RingCategories::ModularTag categoryTag;
-	
-	static integer& maxModulus( integer& i )
-            { return  FieldTraits<BaseField>::maxModulus(i); } 
 
-	static bool goodModulus( const integer& i ) 
-            { return  FieldTraits<BaseField>::goodModulus(i); } 
-        
+	static integer& maxModulus( integer& i )
+            { return  FieldTraits<BaseField>::maxModulus(i); }
+
+	static bool goodModulus( const integer& i )
+            { return  FieldTraits<BaseField>::goodModulus(i); }
+
 	// After that degree might not be correct ...
 	static integer& maxExponent( integer& i ) { return i = 2147483648UL; }
 	static bool goodExponent( const integer& i ) {
@@ -87,11 +87,10 @@ namespace LinBox
    *  Most of all methods are inherited from Extension  class
    *  of Givaro.
    *  these class allow to construct only extension field with a prime characteristic.
-   */   
+   */
     template< class BaseField = GivaroGfq>
-    class GivaroExtension : public Extension<GivaroField<BaseField> >, public FieldInterface
-    {
- 
+    class GivaroExtension : public Extension<GivaroField<BaseField> >, public FieldInterface {
+
         typedef GivaroExtension<GivaroField<BaseField> > Self_t;
   public:
 
@@ -99,15 +98,15 @@ namespace LinBox
      *  This type is inherited from the Givaro class Extension
      */
     typedef typename Extension<GivaroField<BaseField> >::Element Element;
-    
+
     /** RandIter type
      *  This type is inherited from the Givaro class GFqDom<TAG>
-     */	
+     */
     typedef GIV_ExtensionrandIter< Extension<GivaroField<BaseField> >, LinBox::integer >  RandIter;
 
 
     GivaroExtension() {}
-        
+
 
     /** Constructor from an integer
      */
@@ -115,21 +114,21 @@ namespace LinBox
       Extension<GivaroField<BaseField> >(static_cast<typename Extension<GivaroField<BaseField> >::Residu_t>(int32(p)), static_cast<typename Extension<GivaroField<BaseField> >::Residu_t>(int32(k))) {
     }
 
-    /** Constructor extension of a base field 
+    /** Constructor extension of a base field
      */
     GivaroExtension(const BaseField& bF, const integer& ext=1) :
       Extension<GivaroField<BaseField> >( GivaroField<BaseField>(bF), static_cast<typename Extension<GivaroField<BaseField> >::Residu_t>(int32(ext))) {
     }
 
 
-    /** Copy Constructor 
+    /** Copy Constructor
      */
     GivaroExtension(const Self_t& F) :
       Extension<GivaroField<BaseField> >(F) {
     }
 
   }; // class GivaroExtension
- 
+
 
 
   /** This template class is define just to be in phase with the LinBox
@@ -137,13 +136,12 @@ namespace LinBox
    *  Most of all methods are inherited from Extension  class
    *  of Givaro.
    *  these class allow to construct only extension field with a prime characteristic.
-   */   
+   */
 #ifndef __INTEL_COMPILER
     template<>
 #endif
-    class GivaroExtension<GivaroGfq> : public Extension<GFqDom<int32> >, public FieldInterface
-    {
- 
+    class GivaroExtension<GivaroGfq> : public Extension<GFqDom<int32> >, public FieldInterface {
+
         typedef GivaroExtension<GivaroGfq> Self_t;
   public:
 
@@ -151,10 +149,10 @@ namespace LinBox
      *  This type is inherited from the Givaro class Extension
      */
     typedef Extension<GFqDom<int32> >::Element Element;
-    
+
     /** RandIter type
      *  This type is inherited from the Givaro class GFqDom<TAG>
-     */	
+     */
     typedef GIV_ExtensionrandIter< Extension< GFqDom<int32> >, LinBox::integer >  RandIter;
 
     /** Constructor from an integer
@@ -163,21 +161,21 @@ namespace LinBox
       Extension<GFqDom<int32> >(static_cast< Extension<GFqDom<int32> >::Residu_t>(int32(p)), static_cast< Extension<GFqDom<int32> >::Residu_t>(int32(k))) {
     }
 
-    /** Constructor extension of a base field 
+    /** Constructor extension of a base field
      */
     GivaroExtension(const GivaroGfq& bF, const integer& ext=1) :
       Extension<GFqDom<int32> >( static_cast< const Extension<GFqDom<int32> >::BaseField_t &>(bF), static_cast< Extension<GFqDom<int32> >::Residu_t>(int32(ext))) {
     }
 
 
-    /** Copy Constructor 
+    /** Copy Constructor
      */
     GivaroExtension(const Self_t& F) :
       Extension<GFqDom<int32> >(F) {
     }
 
   }; // class GivaroExtension
- 
+
 
 
 } // namespace LinBox
@@ -186,11 +184,10 @@ namespace LinBox
 
 // Specialization of homomorphism for basefield
 #include "linbox/field/hom.h"
-namespace LinBox 
+namespace LinBox
 {
     template< class BaseField>
-    class Hom < BaseField, GivaroExtension<BaseField> >
-	{
+    class Hom < BaseField, GivaroExtension<BaseField> > {
             typedef BaseField Source;
             typedef GivaroExtension<BaseField> Target;
         public:
@@ -199,21 +196,21 @@ namespace LinBox
 
 		//Hom(){}
 		/**
-		 * Construct a homomorphism from a specific source ring S and target 
-		 * field T with Hom(S, T).  The default behaviour is error.  
+		 * Construct a homomorphism from a specific source ring S and target
+		 * field T with Hom(S, T).  The default behaviour is error.
 		 * Specializations define all actual homomorphisms.
 		 */
 		Hom(const Source& S, const Target& T) : _source(S), _target(T){}
 
-		/** 
-		 * image(t, s) implements the homomorphism, assigning the 
+		/**
+		 * image(t, s) implements the homomorphism, assigning the
 		 * t the value of the image of s under the mapping.
 		 *
 		 * The default behaviour is a no-op.
 		 */
 		Elt& image(Elt& t, const SrcElt& s) const {return _target.assign(t, s);}
 
-		/** If possible, preimage(s,t) assigns a value to s such that 
+		/** If possible, preimage(s,t) assigns a value to s such that
 		 * the image of s is t.  Otherwise behaviour is unspecified.
 		 * An error may be thrown, a conventional value may be set, or
 		 * an arb value set.
@@ -231,7 +228,7 @@ namespace LinBox
 	private:
 		Source _source;
 		Target _target;
-    }; // end Hom 
+    }; // end Hom
 }
 #endif // __LINBOX_field_givaro_extension_H
 

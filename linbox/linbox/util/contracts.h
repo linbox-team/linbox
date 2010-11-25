@@ -22,20 +22,19 @@
 #define __LINBOX_util_contracts_H
 
 // Object class is the base class for all
-// objects in the system. All classes inheriting from this class need 
+// objects in the system. All classes inheriting from this class need
 // to define a method IsValid. This method should perform a
-// consistency check on the state of the object. Note that 
+// consistency check on the state of the object. Note that
 // this method needs to be defined only when a debug build is made
 #include <cassert>
 #include <cstddef>
 #if 0
-class Object
-{
+class Object {
 public:
 #ifdef _DEBUG
-    virtual bool IsValid() const = 0;
+	virtual bool IsValid() const = 0;
 #endif
-    
+
 };
 #endif
 #if _DEBUG == 2
@@ -64,7 +63,7 @@ public:
 // in the final release from these checks.
 
 #define ASSERT(ignore) ((void) 0)
-#define IS_VALID(ignore) ((void) 0) 
+#define IS_VALID(ignore) ((void) 0)
 #define REQUIRE(ignore) ((void) 0)
 #define ENSURE(ignore) ((void) 0)
 #define STATE(ignore) ((void) 0)

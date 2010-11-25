@@ -4,8 +4,8 @@
  * Modified by JG Dumas
  *
  * It will be desirable to keep sum.h and dif.h in sync.
- * 
- * Time-stamp: <18 Jun 10 15:28:48 Jean-Guillaume.Dumas@imag.fr> 
+ *
+ * Time-stamp: <18 Jun 10 15:28:48 Jean-Guillaume.Dumas@imag.fr>
  *
  * ------------------------------------
  *
@@ -26,18 +26,17 @@ namespace LinBox
 	/** \brief Blackbox of a difference: <code>C := A - B</code>, i.e. <code>Cx = Ax - Bx</code>.
 
 	 * <b> Template parameters</b>:
-	 *     Field is the class of the entry domain, 
+	 *     Field is the class of the entry domain,
 	 *     Vector is a LinBox dense or sparse vector of field elements class.
 	 \ingroup blackbox
 	 */
 	template <class _Blackbox1, class _Blackbox2>
-	class Dif : public BlackboxInterface 
-	{
+	class Dif : public BlackboxInterface {
                 typedef Dif<_Blackbox1, _Blackbox2> Self_t;
 	    public:
 		typedef _Blackbox1 Blackbox1;
 		typedef _Blackbox2 Blackbox2;
-	       
+
 		typedef typename Blackbox1::Field Field;
 		typedef typename Blackbox1::Element Element;
 
@@ -46,7 +45,7 @@ namespace LinBox
 		 * Their data is not copied.  A subsequent change to one of them also changes
 		 * this difference.
 		 */
-		Dif (const Blackbox1 &A, const Blackbox2 &B) : _A_ptr(&A), _B_ptr(&B)		     
+		Dif (const Blackbox1 &A, const Blackbox2 &B) : _A_ptr(&A), _B_ptr(&B)
 		{
 			// create new copies of matrices in dynamic memory
 			linbox_check (A.coldim () == B.coldim ());
@@ -60,7 +59,7 @@ namespace LinBox
 		 * The two matrices must have the same shape and be over the same field.
 		 * Their data <i>is</i> copied.  I don't know why.
 		 */
-		Dif (const Blackbox1 *A_ptr, const Blackbox2 *B_ptr) : _A_ptr(A_ptr),_B_ptr(B_ptr)	       
+		Dif (const Blackbox1 *A_ptr, const Blackbox2 *B_ptr) : _A_ptr(A_ptr),_B_ptr(B_ptr)
 		{
 			// create new copies of matrices in dynamic memory
 			linbox_check (A_ptr != 0);
@@ -139,12 +138,12 @@ namespace LinBox
 
             template<typename _Tp1, typename _Tp2 = _Tp1>
             struct rebind
-            { 
+            {
                 typedef Dif<
                     typename Blackbox1::template rebind<_Tp1>::other,
                     typename Blackbox2::template rebind<_Tp2>::other
                 > other;
-                
+
     		void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
                     typename Blackbox1::template rebind<_Tp1> () ( *(Ap._A_ptr), *(A._A_ptr), F);
                     typename Blackbox2::template rebind<_Tp2> () ( *(Ap._B_ptr), *(A._B_ptr), F);
@@ -161,12 +160,12 @@ namespace LinBox
 		 */
 		size_t rowdim (void) const
 			{ return _A_ptr->rowdim (); }
-    
+
 		/** Retreive column dimensions of BlackBox matrix.
 		 * Required by abstract base class.
 		 * @return integer number of columns of black box matrix.
 		 */
-		size_t coldim (void) const 
+		size_t coldim (void) const
 			{ return _A_ptr->coldim (); }
 
 		const Field& field() const {return _A_ptr->field();}
@@ -179,7 +178,7 @@ namespace LinBox
 		mutable std::vector<Element>  _z1;
 		mutable std::vector<Element>  _z2;
 
-	}; 
+	};
 
 } // namespace LinBox
 

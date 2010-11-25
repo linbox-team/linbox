@@ -9,7 +9,7 @@
 #define Mjoin(pre, nam) my_join(pre, nam)
 #define my_join(pre, nam) pre ## nam
 
-#ifdef  __FFLAS__NOTRANSPOSE 
+#ifdef  __FFLAS__NOTRANSPOSE
 #define __FFLAS_A_inc   1
 #define __FFLAS_A_ld    lda
 #define __FFLAS_Trans   NoTrans
@@ -32,8 +32,7 @@
 
 #ifndef __FFLAS__GENERIC
 template<>
-class FFLAS::Mjoin(faddm, __FFLAS_Trans)<__FFLAS_Element> 
-{
+class FFLAS::Mjoin(faddm, __FFLAS_Trans)<__FFLAS_Element> {
 public :
 	template<class Field>
 	void operator() (const Field & F,
@@ -50,8 +49,8 @@ public :
 				*(B+i*ldb+j) += *(A+i*__FFLAS_A_ld+j*__FFLAS_A_inc) ;
 #else
 #if defined(__FFLAS__TRANSPOSE)
-			for (size_t j = 0 ; j < N ; ++j)
-				*(B+i*ldb+j) += *(A+i*__FFLAS_A_ld+j*__FFLAS_A_inc) ;
+		for (size_t j = 0 ; j < N ; ++j)
+			*(B+i*ldb+j) += *(A+i*__FFLAS_A_ld+j*__FFLAS_A_inc) ;
 #else
 #ifdef __FFLAS__DOUBLE
 		{
@@ -66,7 +65,7 @@ public :
 				*(B+i*ldb+j) += *(A+i*lda+j) ;
 		}
 #else
-{
+		{
 			size_t j = 0 ;
 			__m128 *av, *bv;
 			av = (__m128*)A+i*lda; // assume 16-byte aligned
@@ -75,7 +74,7 @@ public :
 				_mm_add_ps(bv[j], av[j]);
 			j *= 4 ;
 			for (; j < N ; j++)
-				 *(B+i*ldb+j)  += *(A+i*lda+j) ;
+				*(B+i*ldb+j)  += *(A+i*lda+j) ;
 		}
 #endif
 #endif
@@ -96,8 +95,7 @@ public :
 };
 #else
 template<class Element>
-class FFLAS::Mjoin(faddm, __FFLAS_Trans) 
-{
+class FFLAS::Mjoin(faddm, __FFLAS_Trans) {
 public :
 	template<class Field>
 	void operator() (const Field & F,
@@ -120,8 +118,7 @@ public :
 
 #ifndef __FFLAS__GENERIC
 template<>
-class FFLAS::Mjoin(fsubm, __FFLAS_Trans)<__FFLAS_Element > 
-{
+class FFLAS::Mjoin(fsubm, __FFLAS_Trans)<__FFLAS_Element > {
 public :
 	template<class Field>
 	void operator() (const Field & F,
@@ -150,8 +147,7 @@ public :
 };
 #else
 template<class Element>
-class FFLAS::Mjoin(fsubm,__FFLAS_Trans)
-{
+class FFLAS::Mjoin(fsubm,__FFLAS_Trans) {
 public :
 	template<class Field>
 	void operator() (const Field & F,

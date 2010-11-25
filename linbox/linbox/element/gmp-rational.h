@@ -29,137 +29,136 @@
 namespace LinBox
 {
 
-// Forward declarations
-class GMPRationalField;
-class GMPRationalRandIter;
+	// Forward declarations
+	class GMPRationalField;
+	class GMPRationalRandIter;
 
 
-/** \brief elements of GMP_Rationals.
-\ingroup element
- */
-class GMPRationalElement
-{
-    public:
+	/** \brief elements of GMP_Rationals.
+	  \ingroup element
+	  */
+	class GMPRationalElement {
+	public:
 
-	/** @name Common Object Interface for LinBox Field elements.
-	 * These methods are required of all \ref LinBox 
-	 * @link Fields field@endlink elements.
-	 */
-	//@{
+		/** @name Common Object Interface for LinBox Field elements.
+		 * These methods are required of all \ref LinBox
+		 * @link Fields field@endlink elements.
+		 */
+		//@{
 
-	/** Default constructor.
-	 * This constructor is required to allow 
-	 * @link Fields field@endlink elements to be primitive C++ types.
-	 * Because constructor does not know what @link Fields field@endlink 
-	 * the element belongs to, it cannot actually construct the element.
-	 * In this implementation, the constructor it sets _elem_ptr
-	 * to the null pointer.  Initialization of the element is done through
-	 * the field function init where the field is known.
-	 */
-	GMPRationalElement(void) { mpq_init (rep); }
+		/** Default constructor.
+		 * This constructor is required to allow
+		 * @link Fields field@endlink elements to be primitive C++ types.
+		 * Because constructor does not know what @link Fields field@endlink
+		 * the element belongs to, it cannot actually construct the element.
+		 * In this implementation, the constructor it sets _elem_ptr
+		 * to the null pointer.  Initialization of the element is done through
+		 * the field function init where the field is known.
+		 */
+		GMPRationalElement(void) { mpq_init (rep); }
 
-	/** Copy constructor.
-	 * This constructor is required to allow 
-	 * @link Fields field@endlink elements to be primitive C++ types, 
-	 * and to allow field elements to be passed by value into 
-	 * functions.
-	 * Constructs @link Fields field@endlink element by copying the 
-	 * @link Fields field@endlink element.
-	 * In this implementation, this means copying the element to
-	 * which a._elem_ptr points.
-	 * @param  a field element.
-	 */
-	GMPRationalElement(const GMPRationalElement& a) 
-	{ mpq_init (rep); mpq_set (rep, a.rep); }
+		/** Copy constructor.
+		 * This constructor is required to allow
+		 * @link Fields field@endlink elements to be primitive C++ types,
+		 * and to allow field elements to be passed by value into
+		 * functions.
+		 * Constructs @link Fields field@endlink element by copying the
+		 * @link Fields field@endlink element.
+		 * In this implementation, this means copying the element to
+		 * which a._elem_ptr points.
+		 * @param  a field element.
+		 */
+		GMPRationalElement(const GMPRationalElement& a)
+		{ mpq_init (rep); mpq_set (rep, a.rep); }
 
-	/** Destructor.
-	 * In this implementation, this destroys element by deleting field 
-	 * element to which _elem_ptr points.
-	 */
-	~GMPRationalElement() { mpq_clear (rep); }
+		/** Destructor.
+		 * In this implementation, this destroys element by deleting field
+		 * element to which _elem_ptr points.
+		 */
+		~GMPRationalElement() { mpq_clear (rep); }
 
-	/** Assignment operator.
-	 * Assigns element a to element.  
-	 * In this implementation, this is done 
-	 * by copying field element to which _elem_ptr points.
-	 * @param  a field element.
-	 */
-	GMPRationalElement& operator=(const GMPRationalElement& a)
-	{
-		if (this != &a) { // guard against self-assignment
-			mpq_set (rep, a.rep);
+		/** Assignment operator.
+		 * Assigns element a to element.
+		 * In this implementation, this is done
+		 * by copying field element to which _elem_ptr points.
+		 * @param  a field element.
+		 */
+		GMPRationalElement& operator=(const GMPRationalElement& a)
+		{
+			if (this != &a) { // guard against self-assignment
+				mpq_set (rep, a.rep);
+			}
+			return *this;
 		}
-		return *this;
-	}
 
-	//@} Common Object Interface
+		//@} Common Object Interface
 
-	/** @name Implementation-Specific Methods.
-	 * These methods are not required of all LinBox field elements
-	 * and are included only for this implementation of the archetype.
-	 */
-	//@{
+		/** @name Implementation-Specific Methods.
+		 * These methods are not required of all LinBox field elements
+		 * and are included only for this implementation of the archetype.
+		 */
+		//@{
 
-	/** Constructor.
-	 * Constructs field element from an mpq_t
-	 * Not part of the interface.
-	 * Creates new copy of element object in dynamic memory.
-	 * @param  elem_ptr  pointer to \ref ElementAbstract
-	 */
-	GMPRationalElement (mpq_t _rep) {
-		mpq_init (rep);
-		mpq_set (rep, _rep);
-	}
+		/** Constructor.
+		 * Constructs field element from an mpq_t
+		 * Not part of the interface.
+		 * Creates new copy of element object in dynamic memory.
+		 * @param  elem_ptr  pointer to \ref ElementAbstract
+		 */
+		GMPRationalElement (mpq_t _rep) {
+			mpq_init (rep);
+			mpq_set (rep, _rep);
+		}
 
-	/** Constructor
-	 * Initialize from numerator and denominator
-	 */
-	GMPRationalElement (const integer &num, const integer &den) 
-	{
-		mpq_init (rep);
-		mpz_set (mpq_numref (rep), SpyInteger::get_rep(num));
-		mpz_set (mpq_denref (rep), SpyInteger::get_rep(den));
-	}
-	
-	// Added by Rich Seagraves to take care of some headaches
-	/** Constructor
-	 *  Initalizes from a single integer, (which is assumed to be the
-	 *  numerator, with the denominator being 1)
-	 */
-	GMPRationalElement(const integer &num)
-	{
-		mpq_init (rep);
-		/*
-		//potential error, error occurs when |num| is bigger than largest int
-		mpz_set_si (mpq_numref(rep), num);
-		mpz_set_si (mpq_denref(rep), integer(1));
-		*/
-		mpq_set_z(rep, SpyInteger::get_rep(num));
-	}
+		/** Constructor
+		 * Initialize from numerator and denominator
+		 */
+		GMPRationalElement (const integer &num, const integer &den)
+		{
+			mpq_init (rep);
+			mpz_set (mpq_numref (rep), SpyInteger::get_rep(num));
+			mpz_set (mpq_denref (rep), SpyInteger::get_rep(den));
+		}
 
-	mpq_ptr get_rep() {return rep;}
+		// Added by Rich Seagraves to take care of some headaches
+		/** Constructor
+		 *  Initalizes from a single integer, (which is assumed to be the
+		 *  numerator, with the denominator being 1)
+		 */
+		GMPRationalElement(const integer &num)
+		{
+			mpq_init (rep);
+			/*
+			//potential error, error occurs when |num| is bigger than largest int
+			mpz_set_si (mpq_numref(rep), num);
+			mpz_set_si (mpq_denref(rep), integer(1));
+			*/
+			mpq_set_z(rep, SpyInteger::get_rep(num));
+		}
 
-	//@}p
-    
-    private:
+		mpq_ptr get_rep() {return rep;}
 
-	friend class GMPRationalField;
-	friend class GMPRationalRandIter;
+		//@}p
 
-	/** @name Implementation-Specific Data.
-	 * This data is not required of all LinBox field elements
-	 * and is included only for this implementation of the archetype.
-	 */
-	//@{
-    
-	/** Pointer to parameterized field element.
-	 * Not part of the common object interface for \ref LinBox field elements.
-	 * Included to avoid code bloat.
-	 */
-	mutable mpq_t rep;
-    
-	//@} Non-Interface
-};
+	private:
+
+		friend class GMPRationalField;
+		friend class GMPRationalRandIter;
+
+		/** @name Implementation-Specific Data.
+		 * This data is not required of all LinBox field elements
+		 * and is included only for this implementation of the archetype.
+		 */
+		//@{
+
+		/** Pointer to parameterized field element.
+		 * Not part of the common object interface for \ref LinBox field elements.
+		 * Included to avoid code bloat.
+		 */
+		mutable mpq_t rep;
+
+		//@} Non-Interface
+	};
 
 } // namespace LinBox
 

@@ -15,9 +15,9 @@
 #include <linbox/vector/vector-domain.h>
 #include <linbox/blackbox/blackbox-interface.h>
 
-namespace LinBox 
+namespace LinBox
 {
-	/** 
+	/**
 	 * \brief submatrix consisting contiguous rows of a row based matrix.
 
 \ingroup blackbox
@@ -33,23 +33,22 @@ namespace LinBox
 	  * Support Row, apply, applyTranspose
 	  */
 	template <class Matrix>
-	class SubRowMatrix<Matrix, MatrixCategories::RowMatrixTag> 
-	: public BlackboxInterface {
+	class SubRowMatrix<Matrix, MatrixCategories::RowMatrixTag> : public BlackboxInterface {
 
 	public:
 		typedef typename Matrix::Field Field;
-		  
+
 	protected:
 
-		/* try to use const Matrix* 
+		/* try to use const Matrix*
 		  * but getting too much compiling error messages.
 		  * Maybe do it in future.
 		  * Z. Wan
 		  */
 		Matrix* _BB;
-		
+
 		size_t _row;
-		
+
 		size_t _rowdim;
 
 		MatrixDomain<Field> _MD;
@@ -72,7 +71,7 @@ namespace LinBox
 
 		SubRowMatrix (const Matrix* BB,
 			   size_t row,
-			   size_t rowdim) 
+			   size_t rowdim)
 			: _row(row), _rowdim(rowdim), _MD(BB->field()) {
 
 			_BB = const_cast<Matrix*&>(BB);
@@ -96,15 +95,15 @@ namespace LinBox
 
 			return _BB -> field ();
 		}
-		
+
 		template <class OutVector, class InVector>
 		OutVector &apply (OutVector &y, const InVector &x) const {
-			
-			
-			return _MD.vectorMul (y, *this, x); 
+
+
+			return _MD.vectorMul (y, *this, x);
 		}
-		
-		
+
+
 		template <class OutVector, class InVector>
 		OutVector &applyTranspose (OutVector& y, const InVector &x) const {
 
@@ -113,8 +112,8 @@ namespace LinBox
 
 
 
-            template<typename _Tp1> 
-            struct rebind                           
+            template<typename _Tp1>
+            struct rebind
             { typedef SubRowMatrix<Matrix::rebind<_Tp1>::other, MatrixCategory> other; };
 
 
@@ -124,20 +123,20 @@ namespace LinBox
 			return _BB -> rowBegin() + _row;
 
 		}
-		
+
 		RowIterator rowEnd () {
 
 			return _BB -> rowBegin() + (_row + rowdim);
 		}
 
-		
+
 		ConstRowIterator rowBegin () const {
-			
+
 			return _BB -> rowBegin() + _row;
 		}
-			
+
 		ConstRowIterator rowEnd () const {
-			
+
 			return _BB -> rowBegin() + (_row + _rowdim);
 		}
 
@@ -157,7 +156,7 @@ namespace LinBox
 			for (row_p = rowBegin(); row_p != rowEnd(); ++ row_p) {
 
 				vd. write (out, *row_p);
-			
+
 				std::cout << '\n';
 
 			}
@@ -166,7 +165,7 @@ namespace LinBox
 
 		}
 
-		/* I do not need them currently now, 
+		/* I do not need them currently now,
 		  * I maybe implement in future
 		  */
 		//RawIterator rawBegin ();

@@ -54,8 +54,7 @@ namespace LinBox
 
 	/// \ingroup field
 	template <>
-	class Modular<double> : public FieldInterface
-	{
+	class Modular<double> : public FieldInterface {
 
 	protected:
 
@@ -407,8 +406,7 @@ namespace LinBox
 	};
 
 	template <>
-	class FieldAXPY<Modular<double> >
-	{
+	class FieldAXPY<Modular<double> > {
 	public:
 
 		typedef double Element;
@@ -489,8 +487,7 @@ namespace LinBox
 	};
 
 	template <>
-	class DotProductDomain<Modular<double> > : private virtual VectorDomainBase<Modular<double> >
-	{
+	class DotProductDomain<Modular<double> > : private virtual VectorDomainBase<Modular<double> > {
 	private:
 		double _bound;
 		size_t _nmax;

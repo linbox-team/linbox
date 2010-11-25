@@ -38,15 +38,14 @@ namespace LinBox
 {
 
 	/** \brief represent the matrix P(A) where A is a blackbox and P a polynomial
-	    
+
 	\ingroup blackbox
-	
+
 	*/
 	template <class Blackbox, class Poly>
-	class PolynomialBB : public BlackboxInterface
-	{
+	class PolynomialBB : public BlackboxInterface {
 	public:
-		
+
 		typedef typename Blackbox::Field Field;
 		typedef typename Blackbox::Element Element;
 		typedef Poly Polynomial;
@@ -55,11 +54,11 @@ namespace LinBox
 		/** Constructor from a black box and a polynomial.
 		 */
 		PolynomialBB (const Blackbox& A, const Polynomial& P) : _A_ptr(&A), _P_ptr(&P), _VD(A.field()) {}
-		
+
 		PolynomialBB (const Blackbox *A_ptr, const Polynomial * P_ptr): _A_ptr(A_ptr), _P_ptr(P_ptr), _VD(A_ptr->field())
 		{
 		}
-		
+
 		/** Copy constructor.
 		 * Creates new black box objects in dynamic memory.
 		 * @param M constant reference to compose black box matrix
@@ -119,10 +118,10 @@ namespace LinBox
 			return y;
 		}
 
-		
-		template<typename _Tp1, class Poly1 = typename Polynomial::template rebind<_Tp1>::other> 
-		struct rebind 
-		{ 
+
+		template<typename _Tp1, class Poly1 = typename Polynomial::template rebind<_Tp1>::other>
+		struct rebind
+		{
                     typedef PolynomialBBOwner<typename Blackbox::template rebind<_Tp1>::other, Poly1> other;
 
                     void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
@@ -141,24 +140,24 @@ namespace LinBox
 		 */
 		size_t rowdim (void) const
 		{
-			if (_A_ptr != 0) 
+			if (_A_ptr != 0)
 				return _A_ptr->rowdim ();
-			else 
+			else
 				return 0;
 		}
-    
+
 		/** Retreive column dimensions of BlackBox matrix.
 		 * Required by abstract base class.
 		 * @return integer number of columns of black box matrix.
 		 */
-		size_t coldim (void) const 
+		size_t coldim (void) const
 		{
-			if (_A_ptr != 0) 
+			if (_A_ptr != 0)
 				return _A_ptr->coldim ();
-			else 
+			else
 				return 0;
 		}
-	       
+
 
 		const Polynomial* getPolynomial () const  { return _P_ptr; }
 		const Blackbox* getBlackbox () const { return _A_ptr; }
@@ -179,15 +178,14 @@ namespace LinBox
 {
 
 	/** \brief represent the matrix P(A) where A is a blackbox and P a polynomial
-	    
+
 	\ingroup blackbox
-	
+
 	*/
 	template <class Blackbox, class Poly>
-	class PolynomialBBOwner : public BlackboxInterface
-	{
+	class PolynomialBBOwner : public BlackboxInterface {
 	public:
-		
+
 		typedef typename Blackbox::Field Field;
 		typedef typename Blackbox::Element Element;
 		typedef Poly Polynomial;
@@ -196,11 +194,11 @@ namespace LinBox
 		/** Constructor from a black box and a polynomial.
 		 */
 		PolynomialBBOwner (const Blackbox& A, const Polynomial& P) : _A_data(A), _P_data(P), _VD(A.field()) {}
-		
+
 		PolynomialBBOwner (const Blackbox *A_data, const Polynomial * P_data): _A_data(*A_data), _P_data(*P_data), _VD(A_data.field())
 		{
 		}
-		
+
 		/** Copy constructor.
 		 * Creates new black box objects in dynamic memory.
 		 * @param M constant reference to compose black box matrix
@@ -260,10 +258,10 @@ namespace LinBox
 			return y;
 		}
 
-		
-		template<typename _Tp1, class Poly1 = typename Polynomial::template rebind<_Tp1>::other> 
-		struct rebind 
-		{ 
+
+		template<typename _Tp1, class Poly1 = typename Polynomial::template rebind<_Tp1>::other>
+		struct rebind
+		{
                     typedef PolynomialBBOwner<typename Blackbox::template rebind<_Tp1>::other, Poly1> other;
 
                     void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
@@ -277,7 +275,7 @@ namespace LinBox
             PolynomialBBOwner (const PolynomialBB<_BBt, _Polt> &M, const Field& F)
                     : _VD(F),
                       _A_data(*(M.getBlackbox()), F),
-                      _P_data(*(M.getPolynomial()), F) 
+                      _P_data(*(M.getPolynomial()), F)
                 {
                     typename _BBt::template rebind<Field>()(_A_data, *(M.getBlackbox()), F);
                     typename _Polt::template rebind<Field>()(_P_data, *(M.getPolynomial()), F);
@@ -286,7 +284,7 @@ namespace LinBox
             template<typename _BBt, typename _Polt, typename Field>
             PolynomialBBOwner (const PolynomialBBOwner<_BBt, _Polt> &M, const Field& F)
                     : _A_data(M.getDataBlackbox(), F),
-                      _P_data(M.getDataPolynomial(), F) 
+                      _P_data(M.getDataPolynomial(), F)
                 {
                     typename _BBt::template rebind<Field>()(_A_data, M.getDataBlackbox(), F);
                     typename _Polt::template rebind<Field>()(_P_data, M.getDataPolynomial(), F);
@@ -303,16 +301,16 @@ namespace LinBox
 		{
 			return _A_data.rowdim ();
 		}
-    
+
 		/** Retreive column dimensions of BlackBox matrix.
 		 * Required by abstract base class.
 		 * @return integer number of columns of black box matrix.
 		 */
-		size_t coldim (void) const 
+		size_t coldim (void) const
 		{
                     return _A_data.coldim ();
 		}
-	       
+
 
 		const Polynomial& getDataPolynomial () const  { return _P_data; }
 		const Blackbox& getDataBlackbox () const { return _A_data; }

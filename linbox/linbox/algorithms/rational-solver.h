@@ -1,7 +1,7 @@
 /* linbox/algorithms/lifting-container.h
  * Copyright (C) 2004 Zhendong Wan, Pascal Giorgi
  *
- * Written by Zhendong Wan  <wan@mail.eecis.udel.edu> 
+ * Written by Zhendong Wan  <wan@mail.eecis.udel.edu>
  *         and Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
  * Modified by David Pritchard  <daveagp@mit.edu>
  *
@@ -35,28 +35,28 @@
 #include <linbox/util/timer.h>
 
 //#define RSTIMING
-#define DEFAULT_PRIMESIZE 20 
+#define DEFAULT_PRIMESIZE 20
 
-namespace LinBox 
+namespace LinBox
 {// LinBox
 
 	// bsd and mac problem
 #undef _R
-	
+
 #define SINGULARITY_THRESHOLD 5
 #define BAD_PRECONTITIONER_THRESHOLD 5
 #define DEFAULT_MAXPRIMES 5
 #define SL_DEFAULT SL_LASVEGAS
 
-	 
-	
+
+
 	/** @defgroup padic p-adic lifting for linear system solutions.
 	 *  @brief interface for solving linear system by p-adic lifting technique over the quotient field of a ring.
 	 *  i.e. solution over the rational for an integer linear system.
 	 *
 	 * \par Headers
 	 *  #include<linbox/algorithms/rational-solver.h>
-	 * 
+	 *
 	 * \par References
 	 *
 	 *  See the following reference for details on this algorithm:
@@ -66,26 +66,26 @@ namespace LinBox
 	 *  Berlin-Heidelberger-New York, 1979. Springer-Verlag.
 	 *  .
 	 *
-	 *  - John D. Dixon: Exact Solution of linear equations using p-adic expansions. Numerische Mathematik, 
+	 *  - John D. Dixon: Exact Solution of linear equations using p-adic expansions. Numerische Mathematik,
 	 *  volume 40, pages 137-141, 1982.
 	 *  .
 	 * \ingroup algorithms
-	 * 
+	 *
 	 */
 
 
-	/** \brief define the different return status of the p-adic based solver's computation. 
-	 * 
+	/** \brief define the different return status of the p-adic based solver's computation.
+	 *
 	 * \ingroup padic
 	 */
 	enum SolverReturnStatus {
 		SS_OK, SS_FAILED, SS_SINGULAR, SS_INCONSISTENT, SS_BAD_PRECONDITIONER
 	};
-    
+
 	/** \brief  define the different strategy which can be used in the p-adic based solver.
 	 *
 	 * used to determine what level of solving should be done:
-	 * - Monte Carlo: Try to solve if possible, but result is not guaranteed. 
+	 * - Monte Carlo: Try to solve if possible, but result is not guaranteed.
 	 *   In any case a 0 denominator should not be returned.
 	 * - Las Vegas  : Result should be guaranteed correct.
 	 * - Certified  : Additionally, provide certificates that the result returned is correct.
@@ -109,13 +109,13 @@ namespace LinBox
 	 * -  RandomPrime: generator of random primes
 	 * -  MethodTraits: type of subalgorithm to use in p-adic lifting (default is DixonTraits)
 	 *
-	 * \ingroup padic	 
-	 */	
- 	template<class Ring, class Field,class RandomPrime, class MethodTraits = DixonTraits>		
+	 * \ingroup padic
+	 */
+ 	template<class Ring, class Field,class RandomPrime, class MethodTraits = DixonTraits>
  	class RationalSolver {
 
 	public:
-		/** \brief Solve a linear system \c Ax=b over quotient field of a ring		 
+		/** \brief Solve a linear system \c Ax=b over quotient field of a ring
 		 *         giving a random solution if the system is singular and consistent.
 		 *         giving the unique solution if the system is non-singular.
 		 *
@@ -129,8 +129,8 @@ namespace LinBox
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
 		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,const bool, int maxPrimes = DEFAULT_MAXPRIMES) const;
-    
-		
+
+
 		/** \brief  Solve a nonsingular linear system \c Ax=b over quotient field of a ring.
 		 *          giving the unique solution of the system.
 		 *
@@ -143,8 +143,8 @@ namespace LinBox
 		 * @return status of solution
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;         
-		
+		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
+
 		/** \brief Solve a singular linear system \c Ax=b over quotient field of a ring.
 		 *         giving a random solution if the system is singular and consistent.
 		 *
@@ -155,20 +155,20 @@ namespace LinBox
 		 * @param maxPrimes maximum number of moduli to try
 		 *
 		 * @return status of solution
-		 */	
+		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;	
+		SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
 
-		
+
 	};
-	
-	
-	
+
+
+
 
 
 #ifdef RSTIMING
 	class WiedemannTimer {
-	public: 
+	public:
 		mutable Timer ttSetup, ttRecon, ttGetDigit, ttGetDigitConvert, ttRingApply, ttRingOther;
 		void clear() const {
 			ttSetup.clear();
@@ -195,11 +195,11 @@ namespace LinBox
 	/** \brief partial specialization of p-adic based solver with Wiedemann algorithm
 	 *
 	 *   See the following reference for details on this algorithm:
-	 *   - Douglas H. Wiedemann: Solving sparse linear equations over finite fields. 
+	 *   - Douglas H. Wiedemann: Solving sparse linear equations over finite fields.
 	 *   IEEE Transaction on Information Theory, 32(1), pages 54-62, 1986.
 	 *
 	 *   - Erich Kaltofen and B. David Saunders: On Wiedemann's method of solving sparse linear systems.
-	 *   In Applied Algebra, Algebraic Algorithms and Error Correcting Codes - AAECC'91, volume 539 of Lecture Notes 
+	 *   In Applied Algebra, Algebraic Algorithms and Error Correcting Codes - AAECC'91, volume 539 of Lecture Notes
 	 *   in Computer Sciences, pages 29-38, 1991.
 	 *
 	 */
@@ -207,7 +207,7 @@ namespace LinBox
 	template<class Ring, class Field,class RandomPrime>
 	class RationalSolver<Ring, Field, RandomPrime, WiedemannTraits> {
 
-	public: 
+	public:
 		typedef Ring                                 RingType;
 		typedef typename Ring::Element                Integer;
 		typedef typename Field::Element               Element;
@@ -219,60 +219,60 @@ namespace LinBox
 		mutable RandomPrime _genprime;
 		mutable Prime          _prime;
 		WiedemannTraits       _traits;
-	 
+
 #ifdef RSTIMING
 		mutable Timer  tNonsingularSetup,   ttNonsingularSetup,
 			tNonsingularMinPoly, ttNonsingularMinPoly,
 			totalTimer;
-		
+
 		mutable WiedemannTimer   ttNonsingularSolve;
 #endif
 	public:
 
 		/** Constructor
 		 * @param r   a Ring, set by default
-		 * @param rp  a RandomPrime generator, set by default		 
+		 * @param rp  a RandomPrime generator, set by default
 		 */
-		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE), const WiedemannTraits& traits=WiedemannTraits()) : 
+		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE), const WiedemannTraits& traits=WiedemannTraits()) :
 			_R(r), _genprime(rp), _traits(traits) {
-			
+
 			++_genprime; _prime=*_genprime;
 #ifdef RSTIMING
 			clearTimers();
 #endif
 		}
-    
+
 		/**  Constructor with a prime
 		 * @param p   a Prime
 		 * @param r   a Ring, set by default
-		 * @param rp  a RandomPrime generator, set by default		 
+		 * @param rp  a RandomPrime generator, set by default
 		 */
-		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE), 
-				const WiedemannTraits& traits=WiedemannTraits()) : 
+		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE),
+				const WiedemannTraits& traits=WiedemannTraits()) :
 			_R(r), _genprime(rp), _prime(p), _traits(traits){
-			
+
 #ifdef RSTIMING
 			clearTimers();
 #endif
 		}
-    
+
 
 		template<class IMatrix, class Vector1, class Vector2>
 		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,const bool s=false, int maxPrimes = DEFAULT_MAXPRIMES) const;
-		
-		
-		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;         
 
-		
+
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;	
+		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
+
+
+		template<class IMatrix, class Vector1, class Vector2>
+		SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
 
 
 		template <class IMatrix, class FMatrix, class IVector>
 		void sparseprecondition (const Field&, const IMatrix* , Compose< LambdaSparseMatrix<Ring>,Compose<IMatrix, LambdaSparseMatrix<Ring> > > *&, const FMatrix*, Compose<LambdaSparseMatrix<Field>,Compose<FMatrix,LambdaSparseMatrix<Field> > > *&, const IVector&, IVector&, LambdaSparseMatrix<Ring> *&, LambdaSparseMatrix<Ring> *&, LambdaSparseMatrix<Field> *&, LambdaSparseMatrix<Field> *&) const;
 
- 
+
 		/*
 		  template <class IMatrix, class FMatrix, class IVector, class FVector>
 		  void precondition (const Field&,
@@ -280,18 +280,18 @@ namespace LinBox
 		  BlackboxArchetype<IVector>*&,
 		  const FMatrix*,
 		  BlackboxArchetype<FVector>*&,
-		  const IVector&,				   
+		  const IVector&,
 		  IVector&,
 		  BlackboxArchetype<IVector>*&,
-		  BlackboxArchetype<IVector>*&) const; 
+		  BlackboxArchetype<IVector>*&) const;
 		*/
-			
-#ifdef RSTIMING	
+
+#ifdef RSTIMING
 		void clearTimers() const
 		{
 			ttNonsingularSetup.clear();
 			ttNonsingularMinPoly.clear();
-   		      
+
 			ttNonsingularSolve.clear();
 		}
 
@@ -302,7 +302,7 @@ namespace LinBox
 				totalTimer += timer;
 			if (timer.count() > 0) {
 				os << pref << title;
-				for (int i=strlen(title)+strlen(pref); i<28; i++) 
+				for (int i=strlen(title)+strlen(pref); i<28; i++)
 					os << ' ';
 				return os << timer << std::endl;
 			}
@@ -341,7 +341,7 @@ namespace LinBox
 
 #ifdef RSTIMING
 	class BlockWiedemannTimer {
-	public: 
+	public:
 		mutable Timer ttSetup, ttRecon, ttGetDigit, ttGetDigitConvert, ttRingApply, ttRingOther, ttMinPoly;
 		void clear() const {
 			ttSetup.clear();
@@ -370,23 +370,23 @@ namespace LinBox
 	/** \brief partial specialization of p-adic based solver with block Wiedemann algorithm
 	 *
 	 *   See the following reference for details on this algorithm:
-	 *   - Douglas H. Wiedemann: Solving sparse linear equations over finite fields. 
+	 *   - Douglas H. Wiedemann: Solving sparse linear equations over finite fields.
 	 *   IEEE Transaction on Information Theory, 32(1), pages 54-62, 1986.
 	 *
 	 *   - Don Coppersmith: Solving homogeneous linear equations over GF(2) via block Wiedemann algorithm.
-	 *   Mathematic of computation, 62(205), pages 335-350, 1994. 
+	 *   Mathematic of computation, 62(205), pages 335-350, 1994.
 	 *
 	 *   - Erich Kaltofen and B. David Saunders: On Wiedemann's method of solving sparse linear systems.
-	 *   In Applied Algebra, Algebraic Algorithms and Error Correcting Codes - AAECC'91, volume 539 of Lecture Notes 
+	 *   In Applied Algebra, Algebraic Algorithms and Error Correcting Codes - AAECC'91, volume 539 of Lecture Notes
 	 *   in Computer Sciences, pages 29-38, 1991.
 	 *
 	 *
 	 */
 
-	template<class Ring, class Field,class RandomPrime>		
+	template<class Ring, class Field,class RandomPrime>
 	class RationalSolver<Ring, Field, RandomPrime, BlockWiedemannTraits> {
 
-	public: 
+	public:
 		typedef Ring                                 RingType;
 		typedef typename Ring::Element                Integer;
 		typedef typename Field::Element               Element;
@@ -400,61 +400,61 @@ namespace LinBox
 		RandomPrime           _genprime;
 		mutable Prime            _prime;
 		BlockWiedemannTraits    _traits;
-	 
+
 #ifdef RSTIMING
 		mutable Timer  tNonsingularSetup,   ttNonsingularSetup,
 			tNonsingularBlockMinPoly, ttNonsingularBlockMinPoly,
 			totalTimer;
-		
+
 		mutable BlockWiedemannTimer   ttNonsingularSolve;
 #endif
 	public:
 
 		/*! Constructor
 		 * @param r   a Ring, set by default
-		 * @param rp  a RandomPrime generator, set by default		 
+		 * @param rp  a RandomPrime generator, set by default
 		 */
-		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE), const BlockWiedemannTraits& traits=BlockWiedemannTraits()) : 
+		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE), const BlockWiedemannTraits& traits=BlockWiedemannTraits()) :
 			_R(r), _genprime(rp), _traits(traits){
-			
+
 			++_genprime; _prime=*_genprime;
 #ifdef RSTIMING
 			clearTimers();
 #endif
 		}
-    
+
 		/*! Constructor with a prime
 		 * @param p   a Prime
 		 * @param r   a Ring, set by default
-		 * @param rp  a RandomPrime generator, set by default		 
+		 * @param rp  a RandomPrime generator, set by default
 		 */
-		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE), 
-				const BlockWiedemannTraits& traits=BlockWiedemannTraits()) : 
+		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE),
+				const BlockWiedemannTraits& traits=BlockWiedemannTraits()) :
 			_R(r), _genprime(rp), _prime(p), _traits(traits){
-			
+
 #ifdef RSTIMING
 			clearTimers();
 #endif
 		}
-    
+
 		template<class IMatrix, class Vector1, class Vector2>
 		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,const bool s=false, int maxPrimes = DEFAULT_MAXPRIMES) const;
-    
-		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;         
-
 
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;	
+		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
 
 
-			
-#ifdef RSTIMING	
+		template<class IMatrix, class Vector1, class Vector2>
+		SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
+
+
+
+#ifdef RSTIMING
 		void clearTimers() const
 		{
 			ttNonsingularSetup.clear();
 			ttNonsingularBlockMinPoly.clear();
-   		      
+
 			ttNonsingularSolve.clear();
 		}
 
@@ -465,7 +465,7 @@ namespace LinBox
 				totalTimer += timer;
 			if (timer.count() > 0) {
 				os << pref << title;
-				for (int i=strlen(title)+strlen(pref); i<28; i++) 
+				for (int i=strlen(title)+strlen(pref); i<28; i++)
 					os << ' ';
 				return os << timer << std::endl;
 			}
@@ -504,7 +504,7 @@ namespace LinBox
 
 #ifdef RSTIMING
 	class DixonTimer {
-	public: 
+	public:
 		mutable Timer ttSetup, ttRecon, ttGetDigit, ttGetDigitConvert, ttRingApply, ttRingOther;
 		mutable int rec_elt;
 		void clear() const {
@@ -534,17 +534,17 @@ namespace LinBox
 	/** \brief partial specialization of p-adic based solver with Dixon algorithm
 	 *
 	 *   See the following reference for details on this algorithm:
-	 * 
-	 *  - John D. Dixon: Exact Solution of linear equations using p-adic expansions. Numerische Mathematik, 
+	 *
+	 *  - John D. Dixon: Exact Solution of linear equations using p-adic expansions. Numerische Mathematik,
 	 *  volume 40, pages 137-141, 1982.
 	 *
 	 */
 
-	template<class Ring, class Field,class RandomPrime>		
+	template<class Ring, class Field,class RandomPrime>
 	class RationalSolver<Ring, Field, RandomPrime, DixonTraits> {
-	
-	public:          
-		
+
+	public:
+
 		typedef Ring                                 RingType;
 		typedef typename Ring::Element               Integer;
 		typedef typename Field::Element              Element;
@@ -553,20 +553,20 @@ namespace LinBox
 		// polymorphic 'certificate' generated when level >= SL_CERTIFIED
 		// certificate of inconsistency when any solving routine returns SS_INCONSISTENT
 		// certificate of minimal denominator when findRandomSolutionAndCertificate is called & return is SS_OK
-		mutable VectorFraction<Ring>                 lastCertificate;     
+		mutable VectorFraction<Ring>                 lastCertificate;
 
 		//next 2 fields generated only by findRandomSolutionAndCertificate, when return is SS_OK
 		mutable Integer                              lastZBNumer;               //filled in if level >= SL_CERTIFIED
 		mutable Integer                              lastCertifiedDenFactor;    //filled in if level >= SL_LASVEGAS
 		//note: lastCertificate * b = lastZBNumer / lastCertifiedDenFactor, in lowest form
-		
+
 	protected:
-		
+
 		mutable RandomPrime                     _genprime;
 		mutable Prime                   _prime;
-		Ring                            _R; 
+		Ring                            _R;
 #ifdef RSTIMING
-		mutable Timer       
+		mutable Timer
 		tSetup,           ttSetup,
 			tLQUP,            ttLQUP,
 			tFastInvert,      ttFastInvert,        //only done in deterministic or inconsistent
@@ -581,43 +581,43 @@ namespace LinBox
 			tNonsingularInv,  ttNonsingularInv,
 
 			totalTimer;
-		
+
 		mutable DixonTimer
 		ttConsistencySolve, ttSystemSolve, ttCertSolve, ttNonsingularSolve;
 #endif
-		
+
 	public:
-		
+
 		/** Constructor
 		 * @param r   a Ring, set by default
-		 * @param rp  a RandomPrime generator, set by default		 
+		 * @param rp  a RandomPrime generator, set by default
 		 */
-		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) : 
-			lastCertificate(r, 0), _genprime(rp), _R(r) 
+		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
+			lastCertificate(r, 0), _genprime(rp), _R(r)
 		{
-			++_genprime; _prime=*_genprime; 
+			++_genprime; _prime=*_genprime;
 #ifdef RSTIMING
 			clearTimers();
 #endif
 		}
-    
-		
+
+
 		/** Constructor, trying the prime p first
 		 * @param p a Prime
 		 * @param r a Ring, set by default
-		 * @param rp a RandomPrime generator, set by default		 
+		 * @param rp a RandomPrime generator, set by default
 		 */
-		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) : 
-			lastCertificate(r, 0), _genprime(rp), _prime(p), _R(r) 
+		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
+			lastCertificate(r, 0), _genprime(rp), _prime(p), _R(r)
 		{
 #ifdef RSTIMING
 			clearTimers();
 #endif
 		}
-    
-		
+
+
 		/** Solve a linear system \c Ax=b over quotient field of a ring
-		 * 
+		 *
 		 * @param num Vector of numerators of the solution
 		 * @param den  The common denominator. 1/den * num is the rational solution of \c Ax=b.
 		 * @param A        Matrix of linear system
@@ -627,40 +627,40 @@ namespace LinBox
 		 *
 		 * @return status of solution. if (return != SS_FAILED), and (level >= SL_LASVEGAS), solution is guaranteed correct.
 		 *   SS_FAILED - all primes used were bad
-		 *   SS_OK - solution found. 
+		 *   SS_OK - solution found.
 		 *   SS_INCONSISTENT - system appreared inconsistent. certificate is in lastCertificate if (level >= SL_CERTIFIED)
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, const bool s = false, 
+		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, const bool s = false,
 					 const int maxPrimes = DEFAULT_MAXPRIMES, const SolverLevel level = SL_DEFAULT) const;
-		
+
 		/** overload so that the bool 'oldMatrix' argument is not accidentally set to true */
-		template <class IMatrix, class Vector1, class Vector2>	
-		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, const int maxPrimes, 
+		template <class IMatrix, class Vector1, class Vector2>
+		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, const int maxPrimes,
 					 const SolverLevel level = SL_DEFAULT) const {
 			return solve (num, den, A, b, false, maxPrimes, level);
 		}
 
 		/** Solve a nonsingular, square linear system \c Ax=b over quotient field of a ring
-		 * 
+		 *
 		 * @param num   Vector of numerators of the solution
 		 * @param den   The common denominator. <code>1/den * num</code> is the rational solution of <code>Ax = b</code>.
 		 * @param A         Matrix of linear system (it must be square)
 		 * @param b         Right-hand side of system
 		 * @param maxPrimes maximum number of moduli to try
 		 *
-		 * @return status of solution. 
+		 * @return status of solution.
 		 *   \c SS_FAILED - all primes used were bad
-		 *   \c SS_OK - solution found, guaranteed correct. 
-		 *   \c SS_SINGULAR - system appreared singular mod all primes. 
+		 *   \c SS_OK - solution found, guaranteed correct.
+		 *   \c SS_SINGULAR - system appreared singular mod all primes.
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, bool = false, 
+		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, bool = false,
 						    int maxPrimes = DEFAULT_MAXPRIMES) const;
 
-		/** Solve a general rectangular linear system \c Ax=b over quotient field of a ring. 
+		/** Solve a general rectangular linear system \c Ax=b over quotient field of a ring.
 		 *  If A is known to be square and nonsingular, calling solveNonsingular is more efficient.
-		 * 
+		 *
 		 * @param num   Vector of numerators of the solution
 		 * @param den   The common denominator. <code>1/den * num</code> is the rational solution of <code>Ax = b</code>.
 		 * @param A         Matrix of linear system
@@ -670,15 +670,15 @@ namespace LinBox
 		 *
 		 * @return status of solution. if <code>(return != SS_FAILED)</code>, and <code>(level >= SL_LASVEGAS)</code>, solution is guaranteed correct.
 		 *   \c SS_FAILED - all primes used were bad
-		 *   \c SS_OK - solution found. 
+		 *   \c SS_OK - solution found.
 		 *   \c SS_INCONSISTENT - system appreared inconsistent. certificate is in \p lastCertificate if <code>(level >= SL_CERTIFIED)</code>
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, 
+		SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,
 						 int maxPrimes = DEFAULT_MAXPRIMES, const SolverLevel level = SL_DEFAULT) const;
 
 		/** Find a random solution of the general linear system  \c Ax=b over quotient field of a ring.
-		 * 
+		 *
 		 * @param num   Vector of numerators of the solution
 		 * @param den   The common denominator. <code>1/den * num</code> is the rational solution of <code>Ax = b</code>.
 		 * @param A         Matrix of linear system
@@ -688,13 +688,13 @@ namespace LinBox
 		 *
 		 * @return status of solution. if <code>(return != SS_FAILED)</code>, and <code>(level >= SL_LASVEGAS)</code>, solution is guaranteed correct.
 		 *   \c SS_FAILED - all primes used were bad
-		 *   \c SS_OK - solution found. 
+		 *   \c SS_OK - solution found.
 		 *   \c SS_INCONSISTENT - system appreared inconsistent. certificate is in lastCertificate if <code>(level >= SL_CERTIFIED)</code>
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus findRandomSolution(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, 
+		SolverReturnStatus findRandomSolution(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,
 						      int maxPrimes = DEFAULT_MAXPRIMES, const SolverLevel level = SL_DEFAULT) const;
-		
+
 		/** Big solving routine to perform random solving and certificate generation.
 		 * Same arguments and return as findRandomSolution, except
 		 *
@@ -703,14 +703,14 @@ namespace LinBox
 		 * @param randomSolution  parameter to determine whether to randomize or not (since solveSingular calls this function as well)
 		 * @param makeMinDenomCert  determines whether a partial certificate for the minimal denominator of a rational solution is made
 		 *
-		 * When <code>(randomSolution == true && makeMinDenomCert == true)</code>, 
+		 * When <code>(randomSolution == true && makeMinDenomCert == true)</code>,
 		 *   If <code>(level == SL_MONTECARLO)</code> this function has the same effect as calling findRandomSolution.
 		 *   If <code>(level >= SL_LASVEGAS && return == SS_OK)</code>, \c lastCertifiedDenFactor contains a certified factor of the min-solution's denominator.
 		 *   If <code>(level >= SL_CERTIFIED && return == SS_OK)</code>, \c lastZBNumer and \c lastCertificate are updated as well.
 		 *
 		 */
-		template <class IMatrix, class Vector1, class Vector2>	
-		SolverReturnStatus monolithicSolve (Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, 
+		template <class IMatrix, class Vector1, class Vector2>
+		SolverReturnStatus monolithicSolve (Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,
 						    bool makeMinDenomCert, bool randomSolution,
 						    int maxPrimes = DEFAULT_MAXPRIMES, const SolverLevel level = SL_DEFAULT) const;
 
@@ -746,7 +746,7 @@ namespace LinBox
 				totalTimer += timer;
 			if (timer.count() > 0) {
 				os << pref << title;
-				for (int i=strlen(title)+strlen(pref); i<28; i++) 
+				for (int i=strlen(title)+strlen(pref); i<28; i++)
 					os << ' ';
 				return os << timer << std::endl;
 			}
@@ -788,7 +788,7 @@ namespace LinBox
 			return os;
 		}
 #endif
-		
+
 	}; // end of specialization for the class RationalSover with Dixon traits
 
 
@@ -801,7 +801,7 @@ namespace LinBox
 	 *   Submitted to Journal of Symbolic Computation, 2004.
 	 *
 	 */
-	
+
 	//template argument Field and RandomPrime are not used.
 	//Keep it just for interface consistency.
 	template <class Ring, class Field, class RandomPrime>
@@ -820,13 +820,13 @@ namespace LinBox
 		template <class IMatrix, class OutVector, class InVector>
 		SolverReturnStatus solve(OutVector& num, Integer& den, const IMatrix& M, const InVector& b) const {
 
-			if(M. rowdim() != M. coldim()) 
+			if(M. rowdim() != M. coldim())
 				return SS_FAILED;
-	
+
 			linbox_check((b.size() == M.rowdim()) && (num. size() == M.coldim()));
 			int n = M. rowdim();
 			integer mentry, bnorm; mentry = 1; bnorm = 1;
-			typename InVector::const_iterator b_p; 
+			typename InVector::const_iterator b_p;
 			Integer tmp_I; integer tmp;
 			typename IMatrix::ConstRawIterator raw_p;
 			for (raw_p = M. rawBegin(); raw_p != M. rawEnd(); ++ raw_p) {
@@ -841,7 +841,7 @@ namespace LinBox
 				tmp = abs (tmp);
 				if (tmp > bnorm) bnorm = tmp;
 			}
-				
+
 			integer threshold; threshold = 1; threshold <<= 50;
 
 			if ((mentry > threshold) || (bnorm > threshold)) return SS_FAILED;
@@ -866,7 +866,7 @@ namespace LinBox
 				integer denx;
 				int ret;
 				ret = cblas_rsol (n, DM, numx, denx, Db);
-				delete[] DM; delete[] Db; 
+				delete[] DM; delete[] Db;
 
 				if (ret == 0){
 					r. init (den, denx);
@@ -894,7 +894,7 @@ namespace LinBox
 		//print out a vector
 		template <class Elt>
 		inline static int printvec (const Elt* v, int n);
-		/** Compute the OO-norm of a mtrix */ 
+		/** Compute the OO-norm of a mtrix */
 		inline static double cblas_dOOnorm(const double* M, int m, int n);
 		/** compute the maximam of absolute value of an array*/
 		inline static double cblas_dmax (const int N, const double* a, const int inc);
@@ -913,7 +913,7 @@ namespace LinBox
 #if __LINBOX_HAVE_DGETRF && __LINBOX_HAVE_DGETRI
 		// compute the inverse of a general matrix
 		inline static int cblas_dgeinv(double* M, int n);
-		/* solve Ax = b 
+		/* solve Ax = b
 		 * A, the integer matrix
 		 * b, integer rhs
 		 * Return value
@@ -930,93 +930,91 @@ namespace LinBox
 	 * BLOCK HANKEL
 	 *****************/
 
-	template<class Ring, class Field,class RandomPrime>		
- 	class RationalSolver<Ring, Field, RandomPrime, BlockHankelTraits> 
-	{
+	template<class Ring, class Field,class RandomPrime>
+ 	class RationalSolver<Ring, Field, RandomPrime, BlockHankelTraits> {
 	public:
 		typedef Ring                                 RingType;
 		typedef typename Ring::Element               Integer;
 		typedef typename Field::Element              Element;
 		typedef typename RandomPrime::Prime_Type     Prime;
-	
+
 	protected:
 		RandomPrime                     _genprime;
 		mutable Prime                   _prime;
-		Ring                            _R; 
+		Ring                            _R;
 
 	public:
-		
+
 
 		/** Constructor
 		 * @param r   a Ring, set by default
-		 * @param rp  a RandomPrime generator, set by default		 
+		 * @param rp  a RandomPrime generator, set by default
 		 */
-		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) : 
-			 _genprime(rp), _R(r) 
+		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
+			 _genprime(rp), _R(r)
 		{
-			_prime=_genprime.randomPrime(); 
+			_prime=_genprime.randomPrime();
 		}
-    
-		
+
+
 		/** Constructor, trying the prime p first
 		 * @param p   a Prime
 		 * @param r   a Ring, set by default
-		 * @param rp  a RandomPrime generator, set by default		 
+		 * @param rp  a RandomPrime generator, set by default
 		 */
-		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) : 
+		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
 			_genprime(rp), _prime(p), _R(r) {}
 
 
 		// solve non singular system
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, size_t blocksize, int maxPrimes = DEFAULT_MAXPRIMES) const;         				
+		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, size_t blocksize, int maxPrimes = DEFAULT_MAXPRIMES) const;
 	};
-	
 
-	
+
+
 	/*****************
 	 * SPARSE LU
 	 *****************/
-	template<class Ring, class Field,class RandomPrime>		
- 	class RationalSolver<Ring, Field, RandomPrime, SparseEliminationTraits> 
-	{
+	template<class Ring, class Field,class RandomPrime>
+ 	class RationalSolver<Ring, Field, RandomPrime, SparseEliminationTraits> {
 	public:
 		typedef Ring                                 RingType;
 		typedef typename Ring::Element               Integer;
 		typedef typename Field::Element              Element;
 		typedef typename RandomPrime::Prime_Type     Prime;
-	
+
 	protected:
 		RandomPrime                     _genprime;
 		mutable Prime                   _prime;
-		Ring                            _R; 
+		Ring                            _R;
 
 	public:
-		
+
 
 		/** Constructor
 		 * @param r   a Ring, set by default
-		 * @param rp  a RandomPrime generator, set by default		 
+		 * @param rp  a RandomPrime generator, set by default
 		 */
-		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) : 
-			 _genprime(rp), _R(r) 
+		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
+			 _genprime(rp), _R(r)
 		{
-			_prime=_genprime.randomPrime(); 
+			_prime=_genprime.randomPrime();
 		}
-    
-		
+
+
 		/** Constructor, trying the prime p first
 		 * @param p   a Prime
 		 * @param r   a Ring, set by default
-		 * @param rp  a RandomPrime generator, set by default		 
+		 * @param rp  a RandomPrime generator, set by default
 		 */
-		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) : 
+		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
 			_genprime(rp), _prime(p), _R(r) {}
 
 
 		// solve non singular system
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;         				
+		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
 	};
 
 }

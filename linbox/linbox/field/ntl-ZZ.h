@@ -50,8 +50,7 @@ namespace LinBox
 	class FieldAXPY;
 
 	/// \brief the integer ring. \ingroup ring
-	class NTL_ZZ
-	{
+	class NTL_ZZ {
 
 	public:
 		typedef NTL_ZZRandIter RandIter;
@@ -595,8 +594,7 @@ namespace LinBox
 
 
 	template<>
-	class FieldAXPY<NTL_ZZ>
-	{
+	class FieldAXPY<NTL_ZZ> {
 	public:
 		typedef NTL_ZZ Field;
 		typedef Field::Element Element;

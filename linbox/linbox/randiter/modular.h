@@ -42,24 +42,23 @@
 #include "linbox/randiter/mersenne-twister.h"
 #include "linbox/linbox-config.h"
 
-namespace LinBox 
-{ 
+namespace LinBox
+{
 
 	/** Random field base element generator.
-	 * This encapsulated class is a generator of random field base elements for 
+	 * This encapsulated class is a generator of random field base elements for
 	 * the encapsulating field.
 	 * It is required to contain constructors from a field object and
-	 * two integers.  The first integer being a cardinality of a set to 
-	 * draw the random elements from, and the second being a seed for the 
+	 * two integers.  The first integer being a cardinality of a set to
+	 * draw the random elements from, and the second being a seed for the
 	 * random number generator.
 	 * It is also required to contain a copy constructor, a destructor, and
-	 * an operator () which acts on a reference to a field base element.  In this 
-	 * operator (), the random element is placed into the input field base element 
+	 * an operator () which acts on a reference to a field base element.  In this
+	 * operator (), the random element is placed into the input field base element
 	 * and also returned as a reference.
 	 */
 	template <class Element>
-	class ModularRandIter
-	{
+	class ModularRandIter {
 	    public:
 
 		/** Constructor from field, sampling size, and seed.
@@ -70,13 +69,13 @@ namespace LinBox
 		 * A seed of zero means to use some arbitrary seed for the generator.
 		 * Purely virtual.
 		 * @param F LinBox field archetype object in which to do arithmetic
-		 * @param size constant integer reference of sample size from which to 
+		 * @param size constant integer reference of sample size from which to
 		 *             sample (default = modulus of field)
 		 * @param seed constant integer reference from which to seed random number
 		 *             generator (default = 0)
 		 */
-		ModularRandIter (const Modular<Element> &F, 
-				 const integer &size = 0, 
+		ModularRandIter (const Modular<Element> &F,
+				 const integer &size = 0,
 				 const integer &seed = 0)
 			: _F (F), _size (size), _seed (seed)
 		{
@@ -90,7 +89,7 @@ namespace LinBox
 				_size = cardinality;
 
 			commentator.report (10, INTERNAL_DESCRIPTION)
-				<< "Created random generator with size " << _size 
+				<< "Created random generator with size " << _size
 				<< " and seed " << _seed << std::endl;
 
 			// Seed random number generator
@@ -104,14 +103,14 @@ namespace LinBox
 		 * into functions.
 		 * @param  R ModularRandIter object.
 		 */
-		ModularRandIter (const ModularRandIter<Element> &R) 
+		ModularRandIter (const ModularRandIter<Element> &R)
 			: _F (R._F), _size (R._size), _seed (R._seed) {}
 
 		/** Destructor.
 		 * This destructs the random field element generator object.
 		 */
 		~ModularRandIter () {}
-    
+
 		/** Assignment operator.
 		 * Assigns ModularRandIter object R to generator.
 		 * @param  R ModularRandIter object.
@@ -125,7 +124,7 @@ namespace LinBox
 
 			return *this;
 		}
- 
+
 		/** Random field element creator.
 		 * This returns a random field element from the information supplied
 		 * at the creation of the generator.
@@ -171,7 +170,7 @@ namespace LinBox
 
 		/// Sampling size
 		integer _size;
-    
+
 		/// Seed
 		long _seed;
 
@@ -280,7 +279,7 @@ namespace LinBox
 				  (_r.randomIntRange (0, _size)); }
 
 	};
-}// namespace LinBox 
+}// namespace LinBox
 
 #endif // __LINBOX_large_modular_randiter_H
 

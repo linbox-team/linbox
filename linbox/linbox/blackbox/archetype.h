@@ -15,7 +15,7 @@
 namespace LinBox
 {
 
-	/*-  Note the original archetype concept has been given 
+	/*-  Note the original archetype concept has been given
          * up in favor of supporting template members.
 
 
@@ -23,9 +23,9 @@ namespace LinBox
 	 * Base class from which derived concrete blackbox classes.
 	 * Unlike the LinBox field common object interface,
 	 * the common object interface for LinBox BlackBoxes does not require
-	 * the copy constructor.  All object management routines are given 
+	 * the copy constructor.  All object management routines are given
 	 * through virtual clone and killclone methods.  This allows the base
-	 * object to be the archetype, which is not possible for LinBox fields. 
+	 * object to be the archetype, which is not possible for LinBox fields.
 	 *
 	 * In general, there are three uses of archetypes:
 	 * \begin{enumerate}
@@ -37,43 +37,43 @@ namespace LinBox
 	 *       library components.
 	 * \item To control code bloat.
 	 * \end{enumerate}
-	 * Because of their use of virtual member funtions, these archetypes can be 
+	 * Because of their use of virtual member funtions, these archetypes can be
 	 * inefficient.
 	 *
 	 * @param Vector \ref LinBox dense or sparse vector of field elements
 	 */
 
-	/*- 
-	@brief BlackBox base class and archetype 
+	/*-
+	@brief BlackBox base class and archetype
 
 	This archetype is an abstract base class for blackbox matrix classes.
 	The key member functions are \c apply, \c applyTranspose, \c rowdim, \c coldim}.
-	They are pure virtual, and hence are implemented in each child class.  
-	
+	They are pure virtual, and hence are implemented in each child class.
+
 	Concrete classes inheriting from the archetype
-	use a variety of representation schemes for matrices internally. 
-	All provide the blackbox interface described here and can be used 
+	use a variety of representation schemes for matrices internally.
+	All provide the blackbox interface described here and can be used
 	interchangably in blackbox algorithms.
 	Some also implement a dense matrix or sparse matrix interface to support elimination
 	techniques.  Each has unique constructor(s) reflecting it's specific scheme for representing
 	a linear operator.
 
-	Algorithms written with a Blackbox template parameter 
+	Algorithms written with a Blackbox template parameter
 	may be compiled against any of these classes specifically or may be separately compiled
 	against the archetype.  Algorithms may also be written with a BlackboxArchetype parameter
-	and then called with an instance of a concrete blackbox class. 
-	In contrast with the situation for \ref Field s there is 
+	and then called with an instance of a concrete blackbox class.
+	In contrast with the situation for \ref Field s there is
 	negligible performance cost for separate compilation here.
-	
+
 	{\bf Template Parameter:} Vector - A type meeting the LinBox \ref VectorArchetype  interface.
 	Vectors of this type are the normal arguments to \c apply and \c applyTranspose.
-	
+
 	@see \ref ../archetypes  for general discussion of LinBox archetypes.
 	*/
 
 	/** \brief showing the member functions provided by all blackbox matrix classes.
 
-	This simple interface is all that is needed for the 
+	This simple interface is all that is needed for the
 blackbox algorithms.  Alternatively, the matrix archetype provides individual
 matrix entry access, as needed by some algorithms, such as elimination
 methods.
@@ -81,8 +81,7 @@ methods.
 \ingroup blackbox
 	*/
 //	template <class Field>
-	class BlackboxArchetype //: public BlackboxInterface 
-	{
+	class BlackboxArchetype { //: public BlackboxInterface
 	public:
 
 		/*- Serves in place of copy constructor.
@@ -97,14 +96,14 @@ methods.
 
 	// apply variants //
 
-		/** \brief y := Ax, matrix-vector product. 
+		/** \brief y := Ax, matrix-vector product.
 
 		The vector x must be of size A.coldim(), where A is this blackbox.
 		On entry to apply, the vector y must be of size A.rowdim().
 		Neither vector has it's size or capacity modified by apply.  Apply is not
 		responsible for the validity of the sizes, which may or may not be checked.
 		The two vectors may not overlap in memory.
-		@param y it's entries are overwritten and a reference to it is also returned to allow for 
+		@param y it's entries are overwritten and a reference to it is also returned to allow for
 		use in nested expressions.
 		@param x it's entries are the input data.
 		*/
@@ -117,7 +116,7 @@ methods.
 		could allow the blackbox to operate more as a pure container, with the field
 		(or other functionality such as dot product) provided through the handle.
 
-		However, there are no known current uses (2003 june).  
+		However, there are no known current uses (2003 june).
 		*/
 	        template <class InVector, class OutVector>
 		OutVector &apply (OutVector &y, const InVector &x, void *handle) const;
@@ -134,10 +133,10 @@ matrix transpose times vector product. )
 		Neither vector has it's size or capacity modified by applyTranspose.  ApplyTranspose is not
 		responsible for the validity of the sizes, which may or may not be checked.
 		The two vectors may not overlap in memory.
-		@param y it's entries are overwritten and a reference to it is also returned to allow for 
+		@param y it's entries are overwritten and a reference to it is also returned to allow for
 		use in nested expressions.
 		@param x it's entries are the input data.
-		*/  
+		*/
 	        template <class InVector, class OutVector>
 		OutVector &applyTranspose (OutVector &y, const InVector &x) const;
 
@@ -147,7 +146,7 @@ matrix transpose times vector product. )
 		could allow the blackbox to operate more as a pure container, with the field
 		(or other functionality such as dot product) provided through the handle.
 
-		However, there are no known current uses (2003 june).  
+		However, there are no known current uses (2003 june).
 		*/
 	        template <class InVector, class OutVector>
 		OutVector &applyTranspose (OutVector &y, const InVector &x, void *handle) const;
@@ -166,7 +165,7 @@ matrix transpose times vector product. )
 
 #if 0
 		/** \brief default constructor.
-		 * Note: Most blacbbox classes will have a constructor that takes 
+		 * Note: Most blacbbox classes will have a constructor that takes
                  * the field and size as parameters.
 
 		 * Developer: It is expected that each blackbox class will
@@ -179,7 +178,7 @@ matrix transpose times vector product. )
 
 		Subsequent modification of either source or copy does not affect the other.
 		*/
-		BlackboxArchetype (const BlackboxArchetype& B); 
+		BlackboxArchetype (const BlackboxArchetype& B);
 
 		///\brief assignment
                 BlackboxArchetype& operator=(const BlackboxArchetype& B);

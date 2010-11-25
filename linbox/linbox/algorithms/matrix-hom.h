@@ -302,8 +302,7 @@ namespace LinBox
 	{
 
 		template<class Field, class IMatrix>
-		class BlasBlackboxMAP<Field, IMatrix, MatrixContainerCategory::Blackbox>
-		{
+		class BlasBlackboxMAP<Field, IMatrix, MatrixContainerCategory::Blackbox> {
 		public:
 			void operator() (BlasBlackbox<Field> &Ap, const IMatrix &A,  const Field &F, MatrixContainerCategory::Blackbox type)
 			{
@@ -343,8 +342,7 @@ namespace LinBox
 
 
 		template<class Field, class IMatrix>
-		class BlasBlackboxMAP<Field, IMatrix, MatrixContainerCategory::Container>
-		{
+		class BlasBlackboxMAP<Field, IMatrix, MatrixContainerCategory::Container> {
 		public:
 			void operator() (BlasBlackbox<Field> &Ap, const IMatrix &A, const Field &F, MatrixContainerCategory::Container type)
 			{
@@ -371,8 +369,7 @@ namespace LinBox
 
 
 		template<class Field, class IMatrix>
-		class BlasBlackboxMAP<Field, IMatrix, MatrixContainerCategory::BlasContainer>
-		{
+		class BlasBlackboxMAP<Field, IMatrix, MatrixContainerCategory::BlasContainer> {
 		public:
 			void operator() (BlasBlackbox<Field> &Ap, const IMatrix &A, const Field &F, MatrixContainerCategory::BlasContainer type)
 			{
@@ -390,8 +387,7 @@ namespace LinBox
 
 
 		template< class IMatrix>
-		class BlasBlackboxMAP<MultiModDouble, IMatrix, MatrixContainerCategory::BlasContainer >
-		{
+		class BlasBlackboxMAP<MultiModDouble, IMatrix, MatrixContainerCategory::BlasContainer > {
 		public:
 			void operator() (BlasBlackbox<MultiModDouble> &Ap, const IMatrix &A, const MultiModDouble &F,  MatrixContainerCategory::BlasContainer type)
 			{
@@ -402,8 +398,7 @@ namespace LinBox
 		};
 
 		template< class IMatrix>
-		class BlasBlackboxMAP<MultiModDouble, IMatrix, MatrixContainerCategory::Container >
-		{
+		class BlasBlackboxMAP<MultiModDouble, IMatrix, MatrixContainerCategory::Container > {
 		public:
 			void operator() (BlasBlackbox<MultiModDouble> &Ap, const IMatrix &A, const MultiModDouble &F,  MatrixContainerCategory::Container type)
 			{
@@ -414,8 +409,7 @@ namespace LinBox
 		};
 
 		template< class IMatrix>
-		class BlasBlackboxMAP<MultiModDouble, IMatrix, MatrixContainerCategory::Blackbox >
-		{
+		class BlasBlackboxMAP<MultiModDouble, IMatrix, MatrixContainerCategory::Blackbox > {
 		public:
 			void operator() (BlasBlackbox<MultiModDouble> &Ap, const IMatrix &A, const MultiModDouble &F,  MatrixContainerCategory::Blackbox type)
 			{

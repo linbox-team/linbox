@@ -54,22 +54,22 @@
   #define __FFLAS__A1 A + (nsplit) * (lda + 1)
   #define __FFLAS__A2 A + (nsplit) * __FFLAS__Arowinc
   #define __FFLAS__A3 A
-  #define __FFLAS__B1 B + (nsplit) * ldb 
-  #define __FFLAS__B2 B 
+  #define __FFLAS__B1 B + (nsplit) * ldb
+  #define __FFLAS__B2 B
 #else
   #define __FFLAS__Atriang A + (nrestsplit + i * nsplit) * (lda + 1)
   #define __FFLAS__Aupdate A + (nrestsplit + i * nsplit) * __FFLAS__Acolinc
-  #define __FFLAS__Arest A 
+  #define __FFLAS__Arest A
   #define __FFLAS__Brec B + (nrestsplit + i * nsplit) * ldb
   #define __FFLAS__Bupdate B
   #define __FFLAS__Brest B
-  #define __FFLAS__A1 A 
+  #define __FFLAS__A1 A
   #define __FFLAS__A2 A + (M-nsplit) * __FFLAS__Acolinc
   #define __FFLAS__A3 A + (M-nsplit) * (lda + 1)
-  #define __FFLAS__B1 B 
+  #define __FFLAS__B1 B
   #define __FFLAS__B2 B + (M-nsplit) * ldb
  #endif
-#else	
+#else
  #define __FFLAS__SIDE Right
  #define __FFLAS__Na N
  #define __FFLAS__Nb nsplit
@@ -83,29 +83,29 @@
  #define __FFLAS__Bdim M
  #define __FFLAS__Bnorminc ldb
  #ifdef __FFLAS__UP
-  #define __FFLAS__Atriang A + (nbblocsplit - (i + 1)) * nsplit * (lda + 1) 
+  #define __FFLAS__Atriang A + (nbblocsplit - (i + 1)) * nsplit * (lda + 1)
   #define __FFLAS__Aupdate __FFLAS__Atriang + nsplit * __FFLAS__Acolinc
   #define __FFLAS__Arest A + nbblocsplit * nsplit * (lda+1)
-  #define __FFLAS__Brec B + (nbblocsplit - (i+1)) * nsplit 
-  #define __FFLAS__Bupdate B + (nbblocsplit - i) * nsplit 
+  #define __FFLAS__Brec B + (nbblocsplit - (i+1)) * nsplit
+  #define __FFLAS__Bupdate B + (nbblocsplit - i) * nsplit
   #define __FFLAS__Brest B + nbblocsplit * nsplit
   #define __FFLAS__A1 A + (nsplit) * (lda + 1)
   #define __FFLAS__A2 A + (nsplit) * __FFLAS__Acolinc
   #define __FFLAS__A3 A
   #define __FFLAS__B1 B + nsplit
-  #define __FFLAS__B2 B 
+  #define __FFLAS__B2 B
 #else
-  #define __FFLAS__Atriang A + (nrestsplit + i * nsplit) * (lda + 1) 
-  #define __FFLAS__Aupdate A + (nrestsplit + i * nsplit) * __FFLAS__Arowinc 
+  #define __FFLAS__Atriang A + (nrestsplit + i * nsplit) * (lda + 1)
+  #define __FFLAS__Aupdate A + (nrestsplit + i * nsplit) * __FFLAS__Arowinc
   #define __FFLAS__Arest A
-  #define __FFLAS__Brec B + (nrestsplit + i * nsplit) 
-  #define __FFLAS__Bupdate B 
+  #define __FFLAS__Brec B + (nrestsplit + i * nsplit)
+  #define __FFLAS__Bupdate B
   #define __FFLAS__Brest B
   #define __FFLAS__A1 A
   #define __FFLAS__A2 A + (N-nsplit) * __FFLAS__Arowinc
   #define __FFLAS__A3 A + (N-nsplit) * (lda + 1)
-  #define __FFLAS__B1 B 
-  #define __FFLAS__B2 B + N-nsplit 
+  #define __FFLAS__B1 B
+  #define __FFLAS__B2 B + N-nsplit
  #endif
 #endif
 
@@ -147,16 +147,15 @@
 
 #ifndef __FFLAS__GENERIC
 template <>
-class FFLAS::Mjoin(ftrmm, Mjoin(__FFLAS__SIDE, Mjoin(__FFLAS__UPLO, Mjoin(__FFLAS__TRANS, __FFLAS__DIAG))))<__FFLAS__ELEMENT>
-{
+class FFLAS::Mjoin(ftrmm, Mjoin(__FFLAS__SIDE, Mjoin(__FFLAS__UPLO, Mjoin(__FFLAS__TRANS, __FFLAS__DIAG))))<__FFLAS__ELEMENT> {
 public:
 
 template <class Field>
 void delayed (const Field& F, const size_t M, const size_t N,
 	      typename Field::Element * A, const size_t lda,
-	      typename Field::Element * B, const size_t ldb) 
+	      typename Field::Element * B, const size_t ldb)
 {
-	
+
 	Mjoin(cblas_,Mjoin(__FFLAS__BLAS_PREFIX,trmm))
 		(CblasRowMajor,
 		 Mjoin (Cblas, __FFLAS__SIDE),
@@ -168,18 +167,18 @@ void delayed (const Field& F, const size_t M, const size_t N,
 		for (size_t j = 0; j < N; ++j)
 			F.init (*(B + i*ldb + j), *(B + i*ldb + j));
 }
- 
+
 template <class Field>
 void operator () (const Field& F, const size_t M, const size_t N,
 		  typename Field::Element * A, const size_t lda,
-		  typename Field::Element * B, const size_t ldb) 
+		  typename Field::Element * B, const size_t ldb)
 {
-	
+
 	if (!M || !N ) return;
-	
+
 	static typename Field::Element one;
 	F.init(one, 1.0);
-	
+
 #if 0
 	size_t nsplit = DotProdBound (F, 0, one,
 #ifdef __FFLAS__DOUBLE
@@ -194,13 +193,13 @@ void operator () (const Field& F, const size_t M, const size_t N,
 	size_t nbblocsplit = (__FFLAS__Na-1) / nsplit;
 	size_t nrestsplit = ((__FFLAS__Na-1) % nsplit) +1;
 	linbox_check(__FFLAS__Na == nsplit*nbblocsplit+nrestsplit);
-	
+
 	if (nrestsplit)
 		this->delayed (F, __FFLAS__Mbrest, __FFLAS__Nbrest,
 			       __FFLAS__Arest, lda, __FFLAS__Brest, ldb);
-	
+
 	for ( size_t  i = 0; i < nbblocsplit; ++i) {
-		
+
 #ifdef __FFLAS__RIGHT
 		fgemm (F, FflasNoTrans, Mjoin (Fflas, __FFLAS__TRANS),
 		       __FFLAS__Mupdate, __FFLAS__Nupdate, nsplit, one,
@@ -213,7 +212,7 @@ void operator () (const Field& F, const size_t M, const size_t N,
 
 		this->delayed (F, __FFLAS__Mb, __FFLAS__Nb,
 			       __FFLAS__Atriang, lda, __FFLAS__Brec, ldb);
-					 
+
 
 	}
 }
@@ -223,16 +222,15 @@ void operator () (const Field& F, const size_t M, const size_t N,
 #else // __FFLAS__GENERIC
 
 template <class Element>
-class FFLAS::Mjoin(ftrmm, Mjoin(__FFLAS__SIDE, Mjoin(__FFLAS__UPLO, Mjoin(__FFLAS__TRANS, __FFLAS__DIAG)))) 
-{
+class FFLAS::Mjoin(ftrmm, Mjoin(__FFLAS__SIDE, Mjoin(__FFLAS__UPLO, Mjoin(__FFLAS__TRANS, __FFLAS__DIAG)))) {
 public:
 
 template<class Field>
 void operator()	(const Field& F, const size_t M, const size_t N,
 		 typename Field::Element * A, const size_t lda,
-		 typename Field::Element * B, const size_t ldb) 
+		 typename Field::Element * B, const size_t ldb)
 {
-	
+
 	static typename Field::Element one;
 	F.init(one, 1UL);
 	if (__FFLAS__Na == 1)
@@ -241,11 +239,11 @@ void operator()	(const Field& F, const size_t M, const size_t N,
 #else
        ;
 #endif
-	
+
 	 else { // __FFLAS__Na > 1
 		size_t nsplit = __FFLAS__Na >> 1;
 		this->operator() (F, __FFLAS__Mb2, __FFLAS__Nb2, __FFLAS__A1, lda, __FFLAS__B1, ldb);
-		
+
 #ifdef __FFLAS__RIGHT
 		fgemm (F, FflasNoTrans , Mjoin (Fflas, __FFLAS__TRANS),
 		       __FFLAS__Mb2, __FFLAS__Nb2, nsplit, one,
@@ -271,14 +269,14 @@ void operator()	(const Field& F, const size_t M, const size_t N,
 #undef __FFLAS__Mb
 #undef __FFLAS__Nb
 #undef __FFLAS__Mbrest
-#undef __FFLAS__Nbrest 
-#undef __FFLAS__Mupdate 
+#undef __FFLAS__Nbrest
+#undef __FFLAS__Mupdate
 #undef __FFLAS__Nupdate
-#undef __FFLAS__Atriang 
+#undef __FFLAS__Atriang
 #undef __FFLAS__Aupdate
-#undef __FFLAS__Arest 
-#undef __FFLAS__Bupdate 
-#undef __FFLAS__Brec 
+#undef __FFLAS__Arest
+#undef __FFLAS__Bupdate
+#undef __FFLAS__Brec
 #undef __FFLAS__Brest
 #undef __FFLAS__ELEMENT
 #undef __FFLAS__BLAS_PREFIX

@@ -1,7 +1,7 @@
 /* tests/test-local-smith.C
  * Copyright (C) LinBox
  *
- * Written by David Saunders 
+ * Written by David Saunders
  *
  * --------------------------------------------------------
  * See COPYING for license information
@@ -40,14 +40,13 @@ using namespace LinBox;
  */
 
 template <class LocalPIR>
-class foobar 
-{
-	public:
+class foobar {
+public:
 	typedef typename LocalPIR::Element first_argument_type;
 	typedef LocalPIR second_argument_type;
 	typedef void result_type;
 	void operator()(typename LocalPIR::Element& d, const LocalPIR& R) const
-	{ 
+	{
 		typename LocalPIR::Element x = d;
 		if (R.isUnit(d)) R.divin(d, d);
 		else R.gcd(d, x, x);
@@ -55,11 +54,10 @@ class foobar
 };
 
 template<>
-class foobar<LinBox::Local2_32> 
-{
+class foobar<LinBox::Local2_32> {
 public:
 	typedef LinBox::Local2_32 LocalPIR;
-	
+
 	typedef LocalPIR::Element first_argument_type;
 	typedef LocalPIR second_argument_type;
 	typedef void result_type;
@@ -78,47 +76,45 @@ public:
 
 			d = r;
 		}
-		
-	 
+
+
 	}
 };
-				
+
 template <class LocalPIR>
-class pplt
-{   
+class pplt {
 public:
 	pplt(LocalPIR R) : _R_(R){}
 	bool operator() (typename LocalPIR::Element a, typename LocalPIR::Element b)
-	{  
-	       if ( b == 0 ) return true;
-       	       else if ( a == 0 ) return false;
-	       else return a <= b;
- 	}		
-    //protected:
-        LocalPIR _R_;
+	{
+		if ( b == 0 ) return true;
+		else if ( a == 0 ) return false;
+		else return a <= b;
+	}
+	//protected:
+	LocalPIR _R_;
 };
 
 #if 0
 template<>
-class pplt<LinBox::NTL_PID_zz_p> 
-{
+class pplt<LinBox::NTL_PID_zz_p> {
 public:
 	typedef LinBox::NTL_PID_zz_p LocalPIR;
-	
+
 	pplt(LocalPIR R) : _R_(R){}
 	bool operator() (LocalPIR::Element a, LocalPIR::Element b)
-	{  
-	       if ( b == 0 ) return true;
-       	       else if ( a == 0 ) return false;
-	       else return NTL::rep(a) <= NTL::rep(b);
- 	}		
-    //protected:
-        LocalPIR _R_;
+	{
+		if ( b == 0 ) return true;
+		else if ( a == 0 ) return false;
+		else return NTL::rep(a) <= NTL::rep(b);
+	}
+	//protected:
+	LocalPIR _R_;
 };
 #endif
 
 template <class LocalPIR>
-static bool testLocalSmith (const LocalPIR &R, VectorStream<vector<typename LocalPIR::Element> > &stream, string s) 
+static bool testLocalSmith (const LocalPIR &R, VectorStream<vector<typename LocalPIR::Element> > &stream, string s)
 {
 	typedef vector <typename LocalPIR::Element> Vector;
 	typedef typename LocalPIR::Element Elt;
@@ -143,38 +139,38 @@ static bool testLocalSmith (const LocalPIR &R, VectorStream<vector<typename Loca
 
 		stream.next (d);
 
- 		report << "Input vector:  ";
- 		VD.write (report, d);
- 		report << endl;
+		report << "Input vector:  ";
+		VD.write (report, d);
+		report << endl;
 
 		Blackbox Lm (R, n, n), D (R, n, n), U (R, n, n), A (R, n, n);
 		for( i = 0; i < n; ++i ) {D[i][i] = d[i];Lm[i][i]=U[i][i]=1;}
-		
+
 		size_t j;
-		
-		for (i = 0; i < n; ++ i) 
-		       for ( j = 0; j < i; ++ j) {
-			       
-			       D[i][j] = D[j][i] = 0;
-			       
-			       Lm[i][j] = rand() % 10;
-			       Lm[j][i] = 0;
-			       
-			       U[j][i] = rand() % 10;
-			       U[i][j] = 0;
-		       }
+
+		for (i = 0; i < n; ++ i)
+			for ( j = 0; j < i; ++ j) {
+
+				D[i][j] = D[j][i] = 0;
+
+				Lm[i][j] = rand() % 10;
+				Lm[j][i] = 0;
+
+				U[j][i] = rand() % 10;
+				U[i][j] = 0;
+			}
 
 		MatrixDomain<LocalPIR> MR(R);
-		
+
 		Timer timer;
-		
+
 		timer.start();
 		MR.mul(A,Lm,D);
 
 		MR.mulin(A,U);
 		timer.stop();
 		report << "Two matrix multiplication: " << timer << "\n";
-		
+
 		//for( i = 0; i < n; ++i ) D[i][i] = rand() % 10 + 1;
 
 		list< typename LocalPIR::Element > L;
@@ -183,14 +179,14 @@ static bool testLocalSmith (const LocalPIR &R, VectorStream<vector<typename Loca
 		SmithForm( L, A, R );
 		timer.stop();
 		report << "Time " << timer <<"\n";
-			
+
 		report.flush();
 		report << "Computed invariants: ";
-		
+
 		report << "[";
 		typedef typename list<Elt>::iterator listptr;
 		for (listptr p = L.begin(); p != L.end(); ++p)
-		    report << *p << ", ";
+			report << *p << ", ";
 		report << "\b\b]" << endl;
 
 		pplt<LocalPIR> lt(R);
@@ -214,15 +210,15 @@ static bool testLocalSmith (const LocalPIR &R, VectorStream<vector<typename Loca
 		if ( L.size() != D.rowdim() ) {ret = false; break;}
 		typedef typename Vector::iterator vectptr;
 		listptr p; vectptr q;
-		for (p = L.begin(), q = d.begin(); 
-		     q != d.end(); 
+		for (p = L.begin(), q = d.begin();
+		     q != d.end();
 		     ++p, ++q)
-		    if ( !R.areEqual (*p, *q ) )
-		    {
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			if ( !R.areEqual (*p, *q ) )
+			{
+				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Computed invariants incorrect" << endl;
-			 ret = false;
-		    }
+				ret = false;
+			}
 		commentator.stop("done");
 		commentator.progress();
 	}
@@ -254,7 +250,7 @@ int main (int argc, char **argv)
 	typedef vector<Ring::Element> Vector;
 
 	Ring R (32768);
-// 	Ring R (536870912);
+	// 	Ring R (536870912);
 
 	commentator.start("Local Smith Form test suite", "LocalSmith");
 
@@ -266,8 +262,8 @@ int main (int argc, char **argv)
 
 	// power of 2 test
 	Local2_32 R2;
-	RandomDenseStream<Local2_32, vector<Local2_32::Element> > 
-		stream2 (R2, n, iterations);
+	RandomDenseStream<Local2_32, vector<Local2_32::Element> >
+	stream2 (R2, n, iterations);
 	if (!testLocalSmith<Local2_32> (R2, stream2, "Local2_32")) pass = false;
 
 	commentator.stop("Local Smith Form test suite");

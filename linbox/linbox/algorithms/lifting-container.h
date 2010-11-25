@@ -267,9 +267,7 @@ namespace LinBox
 	}
 
 	template< class _Ring>
-	class LiftingContainer
-	{
-
+	class LiftingContainer {
 	public:
 		typedef _Ring Ring;
 		typedef typename Ring::Element Integer;
@@ -291,8 +289,7 @@ namespace LinBox
 	};
 
 	template< class _Ring, class _IMatrix>
-	class LiftingContainerBase : public LiftingContainer< _Ring>
-	{
+	class LiftingContainerBase : public LiftingContainer< _Ring> {
 
 	public:
 		typedef _IMatrix                  IMatrix;
@@ -408,8 +405,7 @@ namespace LinBox
 
 		virtual IVector& nextdigit (IVector& , const IVector&) const = 0;
 
-		class const_iterator
-		{
+		class const_iterator {
 		private:
 			std::vector<Integer>          _res;
 			const LiftingContainerBase    &_lc;
@@ -589,8 +585,7 @@ namespace LinBox
 
 	/// Dixon Lifting Container
 	template <class _Ring, class _Field, class _IMatrix, class _FMatrix>
-	class DixonLiftingContainer : public LiftingContainerBase< _Ring, _IMatrix>
-	{
+	class DixonLiftingContainer : public LiftingContainerBase< _Ring, _IMatrix> {
 
 	public:
 		typedef _Field                               Field;
@@ -714,8 +709,7 @@ namespace LinBox
 
 	/// Wiedemann LiftingContianer.
 	template <class _Ring, class _Field, class _IMatrix, class _FMatrix, class _FPolynomial>
-	class WiedemannLiftingContainer : public LiftingContainerBase<_Ring, _IMatrix>
-	{
+	class WiedemannLiftingContainer : public LiftingContainerBase<_Ring, _IMatrix> {
 
 	public:
 		typedef _Field                                     Field;
@@ -901,8 +895,7 @@ namespace LinBox
 
 	/// Block Wiedemann LiftingContianer.
 	template <class _Ring, class _Field, class _IMatrix, class _FMatrix>
-	class BlockWiedemannLiftingContainer : public LiftingContainerBase<_Ring, _IMatrix>
-	{
+	class BlockWiedemannLiftingContainer : public LiftingContainerBase<_Ring, _IMatrix> {
 
 	public:
 		typedef _Field                                	            Field;
@@ -1166,8 +1159,7 @@ namespace LinBox
 
 	/// Block Hankel LiftingContianer.
 	template <class _Ring, class _Field, class _IMatrix, class _FMatrix, class _Block>
-	class BlockHankelLiftingContainer : public LiftingContainerBase< _Ring, _IMatrix>
-	{
+	class BlockHankelLiftingContainer : public LiftingContainerBase< _Ring, _IMatrix> {
 
 	public:
 		typedef _Field                               Field;
@@ -1414,8 +1406,7 @@ namespace LinBox
 
 	///  SparseLULiftingContainer.
 	template <class _Ring, class _Field, class _IMatrix, class _FMatrix>
-	class SparseLULiftingContainer : public LiftingContainerBase< _Ring, _IMatrix>
-	{
+	class SparseLULiftingContainer : public LiftingContainerBase< _Ring, _IMatrix> {
 
 	public:
 		typedef _Field                               Field;
