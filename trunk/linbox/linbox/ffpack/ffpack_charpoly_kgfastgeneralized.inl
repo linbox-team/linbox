@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/ffpack/ffpack_charpoly_kgfast.inl
  * Copyright (C) 2004 Clement Pernet
  *
@@ -607,5 +609,3 @@ FFPACK::KGFast_generalized (const Field& F, std::list<Polynomial>& charp,
 
 #endif // __LINBOX_ffpack_charpoly_kgfastgeneralized_INL
 
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

@@ -1,7 +1,9 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/algorithms/cra-domain.h
  * Copyright (C) 1999-2010 The LinBox group
  *
- * Time-stamp: <19 Apr 10 18:35:14 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <19 Apr 10 18:35:14 Jean-Guillaume.Dumas@imag.fr>
  * Computes the trace of D1 B D2 B^T D1 or D1 B^T D2 B D1
  *
  * This library is free software; you can redistribute it and/or
@@ -30,63 +32,65 @@
 // #include "linbox/blackbox/subrowmatrix.h"
 #include "linbox/solutions/trace.h"
 
-namespace LinBox 
+namespace LinBox
 {
 
 // Trait to show whether or not the BB class has a RawIndexed iterator
 template<class BB> struct RawIndexedCategory;
 
-namespace RawIndexedTags { 
-    struct HasRawIndexed{}; struct NoRawIndexed{}; 
+/// limited doc so far
+namespace RawIndexedTags
+{
+    struct HasRawIndexed{}; struct NoRawIndexed{};
 };
 
-template<class BB> struct RawIndexedCategory { 
+template<class BB> struct RawIndexedCategory {
     typedef RawIndexedTags::NoRawIndexed Tag; };
 
 template<class Field>
-struct RawIndexedCategory< DenseMatrix<Field> > 	{ 
+struct RawIndexedCategory< DenseMatrix<Field> > 	{
     typedef RawIndexedTags::HasRawIndexed Tag; };
 
 template<class Field, class Row>
-struct RawIndexedCategory< LambdaSparseMatrix<Field,Row> > 	{ 
+struct RawIndexedCategory< LambdaSparseMatrix<Field,Row> > 	{
     typedef RawIndexedTags::HasRawIndexed Tag; };
 
 template<class Field, class Row>
-struct RawIndexedCategory< SparseMatrix<Field,Row> > 	{ 
+struct RawIndexedCategory< SparseMatrix<Field,Row> > 	{
     typedef RawIndexedTags::HasRawIndexed Tag; };
 
 // template<class Matrix, class MatrixCategory>
-// struct RawIndexedCategory< SubRowMatrix<Matrix,MatrixCategory> > 	{ 
+// struct RawIndexedCategory< SubRowMatrix<Matrix,MatrixCategory> > 	{
 //     typedef RawIndexedTags::HasRawIndexed Tag; };
 
 
 
 template<class Field, class BB>
 typename Field::Element& WhisartTrace(
-    typename Field::Element& trace, 
-    const Field& F, 
-    const LinBox::Diagonal<Field>& ExtD, 
-    const BB& A, 
+    typename Field::Element& trace,
+    const Field& F,
+    const LinBox::Diagonal<Field>& ExtD,
+    const BB& A,
     const LinBox::Diagonal<Field>& InD) {
     return WhisartTrace(trace, F, ExtD, A, InD, typename RawIndexedCategory<BB>::Tag() );
 }
 
 template<class Field, class BB>
 typename Field::Element& WhisartTraceTranspose(
-    typename Field::Element& trace, 
-    const Field& F, 
-    const LinBox::Diagonal<Field>& ExtD, 
-    const BB& A, 
+    typename Field::Element& trace,
+    const Field& F,
+    const LinBox::Diagonal<Field>& ExtD,
+    const BB& A,
     const LinBox::Diagonal<Field>& InD) {
     return WhisartTraceTranspose(trace, F, ExtD, A, InD, typename RawIndexedCategory<BB>::Tag() );
 }
 
 template<class Field, class BB>
 typename Field::Element& WhisartTrace(
-    typename Field::Element& tr, 
-    const Field& F, 
-    const LinBox::Diagonal<Field>& ExtD, 
-    const BB& A, 
+    typename Field::Element& tr,
+    const Field& F,
+    const LinBox::Diagonal<Field>& ExtD,
+    const BB& A,
     const LinBox::Diagonal<Field>& InD, RawIndexedTags::NoRawIndexed t) {
         // Trace of ExtD B InD B^T ExtD
     typedef Compose<Diagonal<Field>, BB > C_DB;
@@ -103,15 +107,15 @@ typename Field::Element& WhisartTrace(
 
 template<class Field, class BB>
 typename Field::Element& WhisartTraceTranspose(
-    typename Field::Element& tr, 
-    const Field& F, 
-    const LinBox::Diagonal<Field>& ExtD, 
-    const BB& A, 
+    typename Field::Element& tr,
+    const Field& F,
+    const LinBox::Diagonal<Field>& ExtD,
+    const BB& A,
     const LinBox::Diagonal<Field>& InD, RawIndexedTags::NoRawIndexed t) {
         // Trace of ExtD A^T  InD A ExtD
     Transpose<BB> AT (&A);
     typedef Compose<Diagonal<Field>,Transpose<BB> > C_DBt;
-    C_DBt	B1 (&ExtD, 	&AT); 	// D1 A^T 
+    C_DBt	B1 (&ExtD, 	&AT); 	// D1 A^T
     typedef Compose<C_DBt, Diagonal<Field> > C_DBtD;
     C_DBtD 	B2 (&B1,   	&InD);	// D1 A^T D2
     typedef Compose<C_DBtD, BB> C_DBtDB;
@@ -125,10 +129,10 @@ typename Field::Element& WhisartTraceTranspose(
 
 template<class Field, class BB>
 typename Field::Element& WhisartTrace(
-    typename Field::Element& tr, 
-    const Field& F, 
-    const LinBox::Diagonal<Field>& ExtD, 
-    const BB& A, 
+    typename Field::Element& tr,
+    const Field& F,
+    const LinBox::Diagonal<Field>& ExtD,
+    const BB& A,
     const LinBox::Diagonal<Field>& InD, RawIndexedTags::HasRawIndexed ) {
         // Trace of ExtD B InD B^T ExtD
         // is sum ExtD_i^2 B_{i,j} InD_j
@@ -149,10 +153,10 @@ typename Field::Element& WhisartTrace(
 
 template<class Field, class BB>
 typename Field::Element& WhisartTraceTranspose(
-    typename Field::Element& tr, 
-    const Field& F, 
-    const LinBox::Diagonal<Field>& ExtD, 
-    const BB& A, 
+    typename Field::Element& tr,
+    const Field& F,
+    const LinBox::Diagonal<Field>& ExtD,
+    const BB& A,
     const LinBox::Diagonal<Field>& InD, RawIndexedTags::HasRawIndexed ) {
         // Trace of ExtD B^T  InD B ExtD
         // is sum ExtD_j^2 B_{i,j} InD_i
@@ -175,9 +179,7 @@ typename Field::Element& WhisartTraceTranspose(
 }
 
 
- 
+
 }
 #endif //__LINBOX_whisart_trace_H
 
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

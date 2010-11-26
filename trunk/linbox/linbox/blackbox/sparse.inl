@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/blackbox/sparse.inl
  * Copyright (C) 1999-2001 William J Turner,
  *               2001-2002 Bradford Hovinen
@@ -48,5 +50,3 @@ SparseMatrix<Field,_Row> *SparseMatrixFactory<Field, BElement, _Row, BRow>::make
 
 #endif // __LINBOX_blackbox_sparse_INL
 
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

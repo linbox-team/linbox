@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/tests/test-vector-domain.h
  * Copyright (C) 2001, 2002 Bradford Hovinen
  * See COPYING for license information.
@@ -467,5 +469,3 @@ static bool testCopyEqual (Field &F, const char *text, LinBox::VectorStream<Vect
 }
 
 #endif // __LINBOX_test_vector_domain_H
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/algorithms/sigma-basis.h
  * Copyright (C) 2005 Pascal Giorgi
  *
@@ -668,10 +670,12 @@ namespace LinBox {
 
 			//  ** try to not use a Copy **
 			// Work on a copy of the Sigma Base
-			//std::vector<Coefficient> Sigma(SigmaBase.size());
-			//for (size_t i=0;i<SigmaBase.size();++i){
-			//	Sigma[i] = SigmaBase[i];
-			//}
+#if 0
+			std::vector<Coefficient> Sigma(SigmaBase.size());
+			for (size_t i=0;i<SigmaBase.size();++i){
+				Sigma[i] = SigmaBase[i];
+			}
+#endif
 
 
 			PM_domain.midproduct(NewSerie, SigmaBase, Serie);
@@ -1235,23 +1239,25 @@ namespace LinBox {
 			double updis=0.;
 #endif
 
-			//bool UseTrivial=true;
+#if 0
+			bool UseTrivial=true;
 
-			//std::cout<<"defect: ";
-			//for (size_t i=0;i<m;++i)
-			//	std::cout<<defect[i]<<", ";
-			//std::cout<<"\n";
+			std::cout<<"defect: ";
+			for (size_t i=0;i<m;++i)
+				std::cout<<defect[i]<<", ";
+			std::cout<<"\n";
+#endif
 
 			// Compute the minimal Sigma Base of the PowerSerie up to length
 			for (size_t k=0; k< length; ++k) {
 
-				/*
+#if 0
 				std::cout<<"row degree: ";
 				for (size_t i=0;i<m;++i)
 					std::cout<<degree[i]<<", ";
 				std::cout<<"\n";
 				write_maple("Sigma",SigmaBase);
-				*/
+#endif
 
 #ifdef _BM_TIMING
 				chrono.start();
@@ -1503,12 +1509,12 @@ namespace LinBox {
 						std::swap(PermTrivial[i], PermTrivial[*(Qt.getPointer()+i)]);
 				}
 
-				/*
+#if 0
 				std::cout<<"PermTrivial: ";
 				for (size_t i=0;i<m;++i)
 					std::cout<<PermTrivial[i]<<", ";
 				std::cout<<"\n";
-				*/
+#endif
 
 				BlasPermutation PTr (PermTrivial);
 				TransposedBlasMatrix<BlasPermutation> PTrT(PTr);
@@ -1517,8 +1523,9 @@ namespace LinBox {
 				BlasPermutation PPiv (PermPivots);
 				TransposedBlasMatrix<BlasPermutation> PPivT(PPiv);
 
+#if 0
 
-				/*
+
 				std::cout<<"MAXS: "<<maxs<<"\n\n ******************\n";
 
 				std::cout<<"Perm1: ";
@@ -1547,7 +1554,7 @@ namespace LinBox {
 				_BMD.mulin_left(SigmaBase[0],PPivT);
 				TransposedBlasMatrix<BlasPermutation> BPerm1T(BPerm1);
 				_BMD.mulin_right(BPerm1T, SigmaBase[0]);
-				*/
+#endif
 
 				// Update SigmaBase
 				for (size_t i=0;i<maxs+1;++i) {
@@ -1566,21 +1573,26 @@ namespace LinBox {
 
 
 					// apply transformation to SigmaBase
-				 	//BlasMatrix<Element>    S_top(SigmaBase[i], 0,0,rank,m);
-				 	//BlasMatrix<Element> S_bottom(SigmaBase[i], rank,0,m-rank,m);
-					//_BMD.axmyin(S_bottom, G, S_top);
+#if 0
+					BlasMatrix<Element>    S_top(SigmaBase[i], 0,0,rank,m);
+					BlasMatrix<Element> S_bottom(SigmaBase[i], rank,0,m-rank,m);
+					_BMD.axmyin(S_bottom, G, S_top);
+#endif
 
 					BlasMatrix<Element> S_top_left    (SigmaBase[i], 0,0,rank,lsize);
 					BlasMatrix<Element> S_bottom_left (SigmaBase[i], rank,0,m-rank,lsize);
-					//if (i==0){
-					//	S_bottom_left.write(std::cout,_F);
-					//}
+#if 0
+					if (i==0){
+						S_bottom_left.write(std::cout,_F);
+					}
+#endif
 					// deal with the left part of S_bottom
 					_BMD.axmyin(S_bottom_left, G, S_top_left);
-					//if (i==0){
-					//	S_bottom_left.write(std::cout,_F);
-					//}
-
+#if 0
+					if (i==0){
+						S_bottom_left.write(std::cout,_F);
+					}
+#endif
 
 					// deal with the right part of S_bottom
 					if (rsize > 0){
@@ -1596,9 +1608,11 @@ namespace LinBox {
 
 					if (!QisTrivial)
 					 _BMD.mulin_right(Q, SigmaBase[i]);
-					//if (i==0){
-					//	S_bottom_left.write(std::cout,_F);
-					//}
+#if 0
+					if (i==0){
+						S_bottom_left.write(std::cout,_F);
+					}
+#endif
 				}
 
 				for (size_t i=maxs+1;i<SigmaBase.size();++i) {
@@ -2050,5 +2064,3 @@ namespace LinBox {
 
 #endif //__LINBOX_sigma_basis_H
 
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

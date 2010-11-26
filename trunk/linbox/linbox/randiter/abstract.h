@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/randiter/abstract.h
  * Copyright (C) 1999-2001 William J Turner,
  *               2002 Bradford Hovinen
@@ -46,7 +48,7 @@ namespace LinBox
 	 * and also returned as a reference.
 	 */
 	class RandIterAbstract {
-	    public:
+	public:
 
 		typedef ElementAbstract Element;
 
@@ -66,8 +68,8 @@ namespace LinBox
 		 *             generator (default = 0)
 		 */
 		virtual RandIterAbstract *construct (const FieldAbstract &F,
-						      const integer &size = 0,
-						      const integer &seed = 0) const = 0;
+						     const integer &size = 0,
+						     const integer &seed = 0) const = 0;
 
 		/** Virtual copy constructor.
 		 * Required because constructors cannot be virtual.
@@ -85,7 +87,7 @@ namespace LinBox
 		virtual RandIterAbstract &operator= (const RandIterAbstract &x) = 0;
 
 		/** Destructor.
-		 */
+		*/
 		virtual ~RandIterAbstract (void) {}
 
 		/** Random field element creator.
@@ -94,7 +96,7 @@ namespace LinBox
 		 */
 		virtual Element &random (Element &a) const = 0;
 
-	    protected:
+	protected:
 
 		/** Default constructor
 		 * Required by derived classes, but protected because this class should
@@ -108,5 +110,3 @@ namespace LinBox
 
 #endif // __LINBOX_randiter_abstract_H
 
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

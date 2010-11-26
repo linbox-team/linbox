@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/ffpack/ffpack_minpoly_construct.inl
  * Copyright (C) 2003 Clement Pernet
  *
@@ -85,5 +87,3 @@ LinBox::FFPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
 #undef LB_DEBUG
 
 #endif //__LINBOX_ffpack_minpoly_construct_INL
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax
