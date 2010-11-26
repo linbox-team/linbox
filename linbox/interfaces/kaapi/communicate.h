@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) LinBox
  *
  *
@@ -39,12 +41,12 @@ a1::OStream& operator<<( a1::OStream& out, const Integer& x ) {
 }
 
 a1::IStream& operator>>( a1::IStream& in, Integer& x ) {
-    std::string is;
-    in >> is;
+	std::string is;
+	in >> is;
 
 	std::istringstream iss(is);
 	iss >> x;
-    return in;
+	return in;
 }
 
 /*
@@ -52,36 +54,36 @@ a1::IStream& operator>>( a1::IStream& in, Integer& x ) {
  * we first inherit from them to access protected memebers
  */
 
-namespace kaapi {
-
-template <class T> struct Modular;
-
-/*
- * double specialization
- */
-template <>
-struct Modular<double> : LinBox::Modular<double>
+/// limited doc so far.
+namespace kaapi
 {
-    const double& get_modulus() const { return this->modulus; }
-    const unsigned long& get_lmodulus() const { return this->lmodulus; }
-    double& get_modulus() { return this->modulus; }
-    unsigned long& get_lmodulus() { return this->lmodulus; }
-};
+
+	template <class T> struct Modular;
+
+	/*
+	 * double specialization
+	 */
+	template <>
+	struct Modular<double> : LinBox::Modular<double>
+	{
+		const double& get_modulus() const { return this->modulus; }
+		const unsigned long& get_lmodulus() const { return this->lmodulus; }
+		double& get_modulus() { return this->modulus; }
+		unsigned long& get_lmodulus() { return this->lmodulus; }
+	};
 
 } //namespace
 
 a1::OStream& operator<<( a1::OStream& out, const LinBox::Modular<double>& m)
 {
-    const kaapi::Modular<double>* m_tmp = static_cast<const kaapi::Modular<double>*>(&m);
-    return out << m_tmp->get_modulus() << m_tmp->get_lmodulus() ;
+	const kaapi::Modular<double>* m_tmp = static_cast<const kaapi::Modular<double>*>(&m);
+	return out << m_tmp->get_modulus() << m_tmp->get_lmodulus() ;
 }
 
 a1::IStream& operator>>( a1::IStream& in, LinBox::Modular<double>& m)
 {
-    kaapi::Modular<double>* m_tmp = static_cast<kaapi::Modular<double>*>(&m);
-    return in >> m_tmp->get_modulus() >> m_tmp->get_lmodulus() ;
+	kaapi::Modular<double>* m_tmp = static_cast<kaapi::Modular<double>*>(&m);
+	return in >> m_tmp->get_modulus() >> m_tmp->get_lmodulus() ;
 }
 
 #endif //__LINBOX_kaapi_communicate_H
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

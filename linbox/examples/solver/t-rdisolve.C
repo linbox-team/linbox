@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /** 
  * examples/solver/t-rdisolve.C
  *
@@ -515,5 +517,3 @@ int main (int argc, char **argv)
 // TODO: come up with better test data, so can have a big singular matrix of all 0..9
 // TODO: change "probability of dependence" to "set X dependent rows"
 // FIX: seems to not work for n >= 10000
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

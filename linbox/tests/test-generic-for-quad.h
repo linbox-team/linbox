@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/tests/test-generic-for-quad.h
  * Copyright (C) LinBox
  *
@@ -2036,5 +2038,3 @@ static bool testCopyEqual (Field &F, const char *text, LinBox::VectorStream<Vect
 //@}
 
 #endif // __LINBOX_test_generic_quad_H
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* eliminator.inl
  * Copyright (C) 2002, 2003 LinBox, Bradford Hovinen
  *
@@ -718,5 +720,3 @@ Eliminator<Field, Matrix>::buildMinimalPermutationFromProfile (Permutation &P, u
 
 #endif // __LINBOX_eliminator_INL
 
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

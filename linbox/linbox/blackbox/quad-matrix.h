@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/blackbox/quad-matrix.h
  * Copyright (C) 2006 LinBox
  * Written by -bds, hui wang
@@ -174,11 +176,14 @@ namespace LinBox
 						out << "zo(" << A->rowdim() << ", " << A->coldim() << ", " << A->nnz() << ") ";
 						break;
 					}
-					//case sm:
-					//{
-					//const ScalarMatrix<Field> *A(static_cast< const ScalarMatrix<Field>* >(_BBp));
-					//delete A ; break;
-					//}
+
+#if 0
+				case sm:
+					{
+						const ScalarMatrix<Field> *A(static_cast< const ScalarMatrix<Field>* >(_BBp));
+						delete A ; break;
+					}
+#endif
 				case sbs:
 					{
 						out << "sidebyside(";
@@ -200,7 +205,9 @@ namespace LinBox
 		}
 
 		~ZOQuad()
-		{/*	switch (_tag)
+		{
+#if 0
+			switch (_tag)
 			{
 			case zo:
 				{
@@ -208,22 +215,25 @@ namespace LinBox
 					delete A ;
 					break;
 				}
-				//case sm:
-				//{
-					//const ScalarMatrix<Field> *A(static_cast< const ScalarMatrix<Field>* >(_BBp));
-					//delete A ; break;
-				//}
-		    case sbs:
+#if 0
+				case sm:
+				{
+				const ScalarMatrix<Field> *A(static_cast< const ScalarMatrix<Field>* >(_BBp));
+				delete A ; break;
+				}
+#endif
+			case sbs:
 				{
 					const SideBySide<Field> *A(static_cast< const SideBySide<Field>* >(_BBp));
 					delete A ; break;
 				}
-		 	case ou:
+			case ou:
 				{
 					const OverUnder<Field> *A(static_cast< const OverUnder<Field>* >(_BBp));
 					delete A ; break;
 				}
-			}*/
+			}
+#endif
 		}
 
 		template <typename InVector, typename OutVector>
@@ -241,13 +251,17 @@ namespace LinBox
 						A->apply(y, x);
 						break;
 					}
-					//case sm:
-					//{
-					//const ScalarMatrix<Field> *A(static_cast< const ScalarMatrix<Field>* >(_BBp));
-						//ScalarMatrix<Field> *A(static_cast< ScalarMatrix<Field>* >(_BBp));
-						//A->apply(y, x);
-						//break;
-					//}
+
+#if 0
+				case sm:
+					{
+
+						const ScalarMatrix<Field> *A(static_cast< const ScalarMatrix<Field>* >(_BBp));
+						ScalarMatrix<Field> *A(static_cast< ScalarMatrix<Field>* >(_BBp));
+						A->apply(y, x);
+						break;
+					}
+#endif
 				case sbs:
 					{
 						const SideBySide<Field> *A(static_cast< const SideBySide<Field>* >(_BBp));
@@ -282,13 +296,15 @@ namespace LinBox
 						A->applyTranspose(y, x);
 						break;
 					}
-					//case sm:
-					//{
-					//const ScalarMatrix<Field> *A(static_cast< const ScalarMatrix<Field>* >(_BBp));
-						//ScalarMatrix<Field> *A(static_cast< ScalarMatrix<Field>* >(_BBp));
-						//A->applyTranspose(y, x);
-						//break;
-					//}
+#if 0
+				case sm:
+					{
+						const ScalarMatrix<Field> *A(static_cast< const ScalarMatrix<Field>* >(_BBp));
+						ScalarMatrix<Field> *A(static_cast< ScalarMatrix<Field>* >(_BBp));
+						A->applyTranspose(y, x);
+						break;
+					}
+#endif
 				case sbs:
 					{
 						const SideBySide<Field> *A(static_cast< const SideBySide<Field>* >(_BBp));
@@ -360,11 +376,13 @@ namespace LinBox
 						const ZeroOne<Field> *A(static_cast< const ZeroOne<Field>* >(_BBp));
 						return A->field();
 					}
-					//case sm:
-					//{
-					//const ScalarMatrix<Field> *A(static_cast< const ScalarMatrix<Field>* >(_BBp));
-					//return A->field();
-					//}
+#if 0
+				case sm:
+					{
+						const ScalarMatrix<Field> *A(static_cast< const ScalarMatrix<Field>* >(_BBp));
+						return A->field();
+					}
+#endif
 				case sbs:
 					{
 						const SideBySide<Field> *A(static_cast< const SideBySide<Field>* >(_BBp));
@@ -485,5 +503,3 @@ namespace LinBox
 
 #endif // __LINBOX_quad_matrix_H
 
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax

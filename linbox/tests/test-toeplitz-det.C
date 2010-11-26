@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) LinBox
  *
  *
@@ -39,7 +41,7 @@
 using namespace std;
 using namespace LinBox;
 
-int main(int argc, char* argv[]) 
+int main(int argc, char* argv[])
 {
 	static size_t N_BOUND = 100;
 	static Argument args[] = {
@@ -61,39 +63,39 @@ int main(int argc, char* argv[])
 	NTL_zz_p::RandIter randit;
 	report << "\tUsing random primes and square matrices of size 2 to " << N_BOUND << endl;
 	//for( int i = 0; pass && i < 2; ++i ) {
-		size_t n;
-		do { n = rand() % N_BOUND; } while( n < 2 );
+	size_t n;
+	do { n = rand() % N_BOUND; } while( n < 2 );
 
-		NTL_zz_p CF( *rp );
-		NTL_zz_pX PF(CF);
-		
-		DenseMatrix<NTL_zz_p> A(CF,n,n);
-		
-		NTL_zz_p::Element temp;
-		NTL_zz_pX::Element poly;
-		PF.init(poly,0);
-		size_t r,c;
+	NTL_zz_p CF( *rp );
+	NTL_zz_pX PF(CF);
 
-		for( int diff = 1 - ((int)n); diff <= ((int)n) - 1; ++diff ) {
-			randit.random(temp);
-			PF.setCoeff(poly,(size_t)(diff + n - 1), temp );
-			r = c = 0;
-			if( diff < 0 ) c = (size_t)(diff*-1);
-			else r = (size_t)diff;
-			for( ; r < n && c < n; ++r, ++c )
-				A.setEntry(r,c,temp);
-		}
+	DenseMatrix<NTL_zz_p> A(CF,n,n);
 
-		Toeplitz<NTL_zz_p,NTL_zz_pX> T( PF, poly, n );
+	NTL_zz_p::Element temp;
+	NTL_zz_pX::Element poly;
+	PF.init(poly,0);
+	size_t r,c;
 
-		NTL_zz_p::Element res1, res2;
-		//det(res1,A);
-		det(res1,T);
-		det(res2,T);
-		
-		if( res1 != res2 ) pass = false;
+	for( int diff = 1 - ((int)n); diff <= ((int)n) - 1; ++diff ) {
+		randit.random(temp);
+		PF.setCoeff(poly,(size_t)(diff + n - 1), temp );
+		r = c = 0;
+		if( diff < 0 ) c = (size_t)(diff*-1);
+		else r = (size_t)diff;
+		for( ; r < n && c < n; ++r, ++c )
+			A.setEntry(r,c,temp);
+	}
+
+	Toeplitz<NTL_zz_p,NTL_zz_pX> T( PF, poly, n );
+
+	NTL_zz_p::Element res1, res2;
+	//det(res1,A);
+	det(res1,T);
+	det(res2,T);
+
+	if( res1 != res2 ) pass = false;
 	//}
-#else 
+#else
 	report << "No test, because no NTL." << endl;
 #endif
 	report << endl;
@@ -135,5 +137,3 @@ int main(int argc, char* argv[])
 	commentator.stop("toeplitz determinant test suite");
 #endif
 }
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s:syntax=cpp.doxygen:foldmethod=syntax
