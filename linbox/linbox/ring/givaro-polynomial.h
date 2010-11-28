@@ -2,7 +2,7 @@
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/ring/givaro-polynomial.h
  * Copyright(C) LinBox
- * Written by 
+ * Written by
  * Clement Pernet
  *
  * See COPYING for license information.
@@ -21,10 +21,10 @@
 
 
 // Namespace in which all LinBox code resides
-namespace LinBox 
-{ 
-	
-	/** \brief polynomials 
+namespace LinBox
+{
+
+	/** \brief polynomials
 	\ingroup ring
 	 *
 	 * @param Polynomial type, e.g. std::vector<Field::Element>
@@ -48,25 +48,25 @@ public:
 		: Poly1Dom<GivaroField<Domain>,StorageTag>(D, I){}
 
 	template<class PolyCont>
-	PolyCont& factor (PolyCont& factors, 
+	PolyCont& factor (PolyCont& factors,
 			  std::vector<unsigned long>& exp,
 			  const Polynomial& P);
-	
+
 };
 
-	
+
 #ifdef __LINBOX_HAVE_NTL
 }
 #include "linbox/field/ntl-ZZ.h"
 #include "NTL/ZZXFactoring.h"
-namespace LinBox 
+namespace LinBox
 {
     typedef GivPolynomialRing<UnparametricField<integer>,Dense> GivPolIntDense;
 
     template <>
     template <>
-    std::vector<GivPolIntDense::Element* >& 
-    GivPolIntDense::factor (std::vector<GivPolIntDense::Element* >& factors, 
+    std::vector<GivPolIntDense::Element* >&
+    GivPolIntDense::factor (std::vector<GivPolIntDense::Element* >& factors,
                             std::vector<unsigned long>& exp,
                             const GivPolIntDense::Element &P) {
         NTL::ZZXFac_InitNumPrimes = 1;
@@ -77,8 +77,8 @@ namespace LinBox
         NTL::vec_pair_ZZX_long ntlfactors;
         NTL::ZZ c;
         NTL::factor (c, ntlfactors, f);
-    
-        NTL::ZZ t; 
+
+        NTL::ZZ t;
         NTL_ZZ NTLIntDom;
         factors.resize(ntlfactors.length());
         exp.resize(ntlfactors.length());
@@ -95,14 +95,14 @@ namespace LinBox
 }
 
 #include <linbox/field/PID-integer.h>
-namespace LinBox 
+namespace LinBox
 {
     typedef GivPolynomialRing<PID_integer,Dense> GivPolPIDIntDense;
     template <>
     template <>
-    std::vector<GivPolPIDIntDense::Element* >& 
-    GivPolPIDIntDense::factor<std::vector<GivPolPIDIntDense::Element* > > 
-    (std::vector<GivPolPIDIntDense::Element* >& factors, 
+    std::vector<GivPolPIDIntDense::Element* >&
+    GivPolPIDIntDense::factor<std::vector<GivPolPIDIntDense::Element* > >
+    (std::vector<GivPolPIDIntDense::Element* >& factors,
      std::vector<unsigned long>& exp,
      const GivPolPIDIntDense::Element &P)
     {
@@ -114,8 +114,8 @@ namespace LinBox
         NTL::vec_pair_ZZX_long ntlfactors;
         NTL::ZZ c;
         NTL::factor (c, ntlfactors, f);
-			
-        NTL::ZZ t; 
+
+        NTL::ZZ t;
         NTL_ZZ NTLIntDom;
         factors.resize(ntlfactors.length());
         exp.resize(ntlfactors.length());
@@ -133,9 +133,9 @@ namespace LinBox
     typedef GivPolynomialRing< NTL_ZZ , Dense> GivPolZZDense;
     template <>
     template <>
-    std::vector<GivPolZZDense::Element* >& 
-    GivPolZZDense::factor<std::vector<GivPolZZDense::Element* > > 
-    (std::vector<GivPolZZDense::Element* >& factors, 
+    std::vector<GivPolZZDense::Element* >&
+    GivPolZZDense::factor<std::vector<GivPolZZDense::Element* > >
+    (std::vector<GivPolZZDense::Element* >& factors,
      std::vector<unsigned long>& exp,
      const GivPolZZDense::Element &P)
     {
@@ -147,8 +147,8 @@ namespace LinBox
         NTL::vec_pair_ZZX_long ntlfactors;
         NTL::ZZ c;
         NTL::factor (c, ntlfactors, f);
-			
-        NTL::ZZ t; 
+
+        NTL::ZZ t;
         factors.resize(ntlfactors.length());
         exp.resize(ntlfactors.length());
         for (int i= 0; i<ntlfactors.length(); ++i) {
@@ -159,15 +159,15 @@ namespace LinBox
             exp[i] = ntlfactors[i].b;
         }
         return factors;
-    } 
+    }
 
 #endif
 
     typedef GivPolynomialRing<Modular<double>,Dense> GivPolMdDense;
     template <>
     template <>
-    std::vector<GivPolMdDense::Element *>& 
-    GivPolMdDense::factor (std::vector<GivPolMdDense::Element* > & factors, 
+    std::vector<GivPolMdDense::Element *>&
+    GivPolMdDense::factor (std::vector<GivPolMdDense::Element* > & factors,
                            std::vector<unsigned long>& exp,
                            const GivPolMdDense::Element& P)
     {
@@ -176,7 +176,7 @@ namespace LinBox
 	double p = charac;
         typedef GivaroField<Modular<double> > GivModDouble;
         typedef Poly1FactorDom< GivModDouble,Dense, GivModDouble::RandIter> PolysDouble;
-        
+
 
 	PolysDouble PFD(*this, GivModDouble::RandIter(_domain));
 	std::vector<PolysDouble::Element> factors2;
@@ -194,7 +194,7 @@ namespace LinBox
             _domain.assign((*itf)->operator[]((*itf)->size()-1),1.0);
 	}
 	return factors;
-    }	
+    }
 
 } // namespace LinBox
 

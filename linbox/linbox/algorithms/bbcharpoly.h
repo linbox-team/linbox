@@ -2,7 +2,7 @@
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/algorithms/bbchapoly.h
  * Copyright(C) LinBox
- * Written 
+ * Written
  *  by Clement Pernet <clement.pernet@imag.fr>
  *
  * See COPYING for license information.
@@ -11,7 +11,7 @@
 #ifndef __LINBOX_bbcharpoly_H
 #define __LINBOX_bbcharpoly_H
 
-#define __MAXITER 5
+#define _LB_MAXITER 5
 #include <vector>
 #include <map>
 
@@ -27,24 +27,24 @@
 #include "linbox/algorithms/matrix-hom.h"
 #include "linbox/blackbox/polynomial.h"
 
-namespace LinBox 
-{	
+namespace LinBox
+{
 	template<class FieldPoly, class IntPoly=FieldPoly>
 	class FactorMult ;
 
 	template < class Blackbox, class Polynomial, class Categorytag >
 	Polynomial&
-	blackboxcharpoly (Polynomial & P, 
+	blackboxcharpoly (Polynomial & P,
 			  const Blackbox                   & A,
 			  const Categorytag                & tag,
 			  const Method::Blackbox           & M);
-	
-	/* Algorithm computing the integer characteristic polynomial
+
+	/** Algorithm computing the integer characteristic polynomial
 	 * of a blackbox.
 	 */
 	template < class Blackbox >
 	typename GivPolynomialRing<typename Blackbox::Field>::Element&
-	blackboxcharpoly (typename GivPolynomialRing<typename Blackbox::Field>::Element & P, 
+	blackboxcharpoly (typename GivPolynomialRing<typename Blackbox::Field>::Element & P,
 			  const Blackbox                   & A,
 			  const RingCategories::IntegerTag & tag,
 			  const Method::Blackbox           & M)
@@ -62,12 +62,12 @@ namespace LinBox
  		typedef multimap<unsigned long,FM*> FactPoly;
 		typedef typename FactPoly::iterator FactPolyIterator;
 		multimap<FM*,bool> leadingBlocks;
-		//typename multimap<FM*,bool>::iterator lead_it; 
+		//typename multimap<FM*,bool>::iterator lead_it;
  		FactPoly factCharPoly;
  		size_t n = A.coldim();
 
  		IntPolyDom IPD(intRing);
-		
+
  		/* Computation of the integer minimal polynomial */
  		IntPoly intMinPoly;
 		minpoly (intMinPoly, A, M);
@@ -76,7 +76,7 @@ namespace LinBox
  			return P = intMinPoly;
 		}
  		/* Factorization over the integers */
- 		vector<IntPoly*> intFactors;    
+ 		vector<IntPoly*> intFactors;
  		vector<unsigned long> exp;
  		IPD.factor (intFactors, exp, intMinPoly);
 		size_t factnum = intFactors.size();
@@ -102,14 +102,14 @@ namespace LinBox
 
 					FFM = new FM (tmp2p, tmp2, 0, depend);
 					factCharPoly.insert (pair<size_t, FM*> (deg, FFM));
-					factnum++;
+					++factnum;
 					depend = FFM;
 					deg += intFactors[i]->size()-1;
 					if (j < exp[i])
 						IPD.mul (*tmp, *tmp2, *intFactors[i]);
 				}
 				delete tmp;
-				factnum--;
+				--factnum;
 				FFM->multiplicity = 1; // The last factor is present in minpoly
 				goal -= deg-intFactors[i]->size()+1;
 				leadingBlocks.insert (pair<FM*,bool>(FFM,false));
@@ -122,16 +122,16 @@ namespace LinBox
 				goal -= deg;
 			}
 		}
-		 
+
  		FieldBlackbox Ap(A, F);
-		
+
 		findMultiplicities (Ap, factCharPoly, leadingBlocks, goal, M);
 
  		// Building the integer charpoly
 		IntPoly intCharPoly (n+1);
 		IntPoly tmpP;
 		intRing.init (intCharPoly[0], 1);
-		for (FactPolyIterator it_f = factCharPoly.begin(); it_f != factCharPoly.end(); it_f++){
+		for (FactPolyIterator it_f = factCharPoly.begin(); it_f != factCharPoly.end(); ++it_f){
 			IPD.pow (tmpP, *it_f->second->intP, it_f->second->multiplicity);
 			IPD.mulin (intCharPoly, tmpP);
 			delete it_f->second->intP;
@@ -142,15 +142,16 @@ namespace LinBox
 
 		return P = intCharPoly;
 	}
-	/* Algorithm computing the  characteristic polynomial
+
+	/** Algorithm computing the  characteristic polynomial
 	 * of a blackbox over a prime field.
 	 */
 	template < class Blackbox >
-	typename GivPolynomialRing<typename Blackbox::Field>::Element& 
-	blackboxcharpoly (typename GivPolynomialRing<typename Blackbox::Field>::Element & P, 
-			  const Blackbox                                   & A,
-			  const RingCategories::ModularTag                 & tag,
-			  const Method::Blackbox           & M)
+	typename GivPolynomialRing<typename Blackbox::Field>::Element&
+	blackboxcharpoly (typename GivPolynomialRing<typename Blackbox::Field>::Element & P,
+			  const Blackbox                                                & A,
+			  const RingCategories::ModularTag                              & tag,
+			  const Method::Blackbox                                        & M)
 	{
 		commentator.start ("Modular Blackbox Charpoly ", "MbbCharpoly");
 		typedef typename Blackbox::Field Field;
@@ -160,12 +161,12 @@ namespace LinBox
 		typedef std::multimap<unsigned long,FactorMult<Polynomial>* > FactPoly;
 		typedef typename FactPoly::iterator FactPolyIterator;
 		multimap<FactorMult<Polynomial>*,bool> leadingBlocks;
-		//typename multimap<FactorMult<Polynomial>*,bool>::iterator lead_it; 
+		//typename multimap<FactorMult<Polynomial>*,bool>::iterator lead_it;
 
 		Field F = A.field();
 		PolyDom PD (F);
 		FactPoly factCharPoly;
-		size_t n = A.coldim();
+		const size_t n = A.coldim();
 
 		/* Computation of the minimal polynomial */
 		Polynomial minPoly;
@@ -175,80 +176,83 @@ namespace LinBox
 			commentator.stop ("done", NULL, "MbbCharpoly");
 			return P = minPoly;
 		}
-		 
-		/* Factorization over the field */
-		std::vector<Polynomial*> factors;    
-		std::vector<unsigned long> exp;
-		PD.factor (factors, exp, minPoly);
-		size_t factnum = factors.size();
 
-		/* Building the structure of factors */
-		int goal = n;
 
-		for (size_t i = 0; i < factors.size(); ++i) {
-			unsigned long deg =  (factors[i]->size()-1);
-			FactorMult<Polynomial>* FFM=NULL;
-			if (exp[i] > 1) {
-				Polynomial* tmp = new Polynomial(*factors[i]);
-				FactorMult<Polynomial>* depend = NULL;
-				for (size_t j = 1; j <= exp[i]; ++j){
-					Polynomial * tmp2 = new Polynomial(*tmp);
-					FFM = new FactorMult<Polynomial> (tmp2, tmp2, 0, depend);
-					//	std::cerr<<"Inserting new factor (exp>1) : "<<(*tmp2)<<std::endl;
+		Polynomial charPoly (n+1);
 
-					factCharPoly.insert (pair<size_t, FactorMult<Polynomial>*> (deg, FFM));
-					factnum++;
-					depend = FFM;
-					deg += factors[i]->size()-1;
-					if (j < exp[i])
-						PD.mul (*tmp, *tmp2, *factors[i]);
+		{	/* Factorization over the field */
+			std::vector<Polynomial*> factors;
+			std::vector<unsigned long> exp;
+
+			PD.factor (factors, exp, minPoly);
+			size_t factnum = factors.size();
+
+			/* Building the structure of factors */
+			int goal = n;
+
+			for (size_t i = 0; i < factors.size(); ++i) {
+				unsigned long deg =  (factors[i]->size()-1);
+				FactorMult<Polynomial>* FFM=NULL;
+				if (exp[i] > 1) {
+					Polynomial* tmp = new Polynomial(*factors[i]);
+					FactorMult<Polynomial>* depend = NULL;
+					for (size_t j = 1; j <= exp[i]; ++j){
+						Polynomial * tmp2 = new Polynomial(*tmp);
+						FFM = new FactorMult<Polynomial> (tmp2, tmp2, 0, depend);
+						//	std::cerr<<"Inserting new factor (exp>1) : "<<(*tmp2)<<std::endl;
+
+						factCharPoly.insert (pair<size_t, FactorMult<Polynomial>*> (deg, FFM));
+						++factnum;
+						depend = FFM;
+						deg += factors[i]->size()-1;
+						if (j < exp[i])
+							PD.mul (*tmp, *tmp2, *factors[i]);
+					}
+					delete tmp;
+					--factnum;
+					FFM->multiplicity = 1; // The last factor is present in minpoly
+					goal -= deg-factors[i]->size()+1;
+					leadingBlocks.insert (pair<FactorMult<Polynomial>*,bool>(FFM,false));
+					delete factors[i] ;
+				} else {
+					FFM = new FactorMult<Polynomial> (factors[i],factors[i],1,NULL);
+					//std::cerr<<"Inserting new factor : "<<*factors[i]<<std::endl;
+					factCharPoly.insert (pair<size_t, FactorMult<Polynomial>* > (factors[i]->size()-1, FFM));
+					leadingBlocks.insert (pair<FactorMult<Polynomial>*,bool>(FFM,false));
+					goal -= deg;
 				}
-				delete tmp;
-				factnum--;
-				FFM->multiplicity = 1; // The last factor is present in minpoly
-				goal -= deg-factors[i]->size()+1;
-				leadingBlocks.insert (pair<FactorMult<Polynomial>*,bool>(FFM,false));
-			} else {
-				FFM = new FactorMult<Polynomial> (factors[i],factors[i],1,NULL);
-				//std::cerr<<"Inserting new factor : "<<*factors[i]<<std::endl;
-				factCharPoly.insert (pair<size_t, FactorMult<Polynomial>* > (factors[i]->size()-1, FFM));
-				leadingBlocks.insert (pair<FactorMult<Polynomial>*,bool>(FFM,false));
-				goal -= deg;
+			}
+			findMultiplicities ( A, factCharPoly, leadingBlocks, goal, M);
+
+			// Building the product
+			Polynomial tmpP;
+			F.init (charPoly[0], 1);
+			for (FactPolyIterator it_f = factCharPoly.begin(); it_f != factCharPoly.end(); ++it_f){
+				PD.pow (tmpP, *it_f->second->fieldP, it_f->second->multiplicity);
+				PD.mulin (charPoly, tmpP);
+				delete it_f->second->fieldP;
+				delete it_f->second;
+
 			}
 		}
-		 
-		findMultiplicities ( A, factCharPoly, leadingBlocks, goal, M);
-		 
-		// Building the product 
-		Polynomial charPoly (n+1);
-		Polynomial tmpP;
-		F.init (charPoly[0], 1);
-		for (FactPolyIterator it_f = factCharPoly.begin(); it_f != factCharPoly.end(); it_f++){
-			PD.pow (tmpP, *it_f->second->fieldP, it_f->second->multiplicity);
-			PD.mulin (charPoly, tmpP);
-			delete it_f->second->fieldP;
-			delete it_f->second;
-
-		}
-
 
 		commentator.stop ("done", NULL, "MbbCharpoly");
 
 		return P = charPoly;
 	}
-	
+
 	template<class FieldPoly, class IntPoly>
 	class FactorMult {
 	public:
 		FactorMult():multiplicity(0),dep(NULL){}
 		FactorMult( FieldPoly* FP, IntPoly* IP, unsigned long m, FactorMult<FieldPoly,IntPoly>*d)
 			: fieldP(FP), intP(IP), multiplicity(m), dep(d) {}
-		FactorMult (const FactorMult<FieldPoly>& FM) 
+		FactorMult (const FactorMult<FieldPoly>& FM)
 			: fieldP(FM.fieldP), intP(FM.intP), multiplicity(FM.multiplicity), dep(FM.dep) {}
-	
+
 		int update (const size_t n, int * goal)
 		{
-			if (dep->dep != NULL){ 
+			if (dep->dep != NULL){
 				FactorMult<FieldPoly,IntPoly>*curr = dep;
 				int k = dep->update (n,goal)+1;
 				int d = (dep->fieldP->size()-1)/k;
@@ -257,7 +261,7 @@ namespace LinBox
 				while (curr->dep!=NULL){
 					curr = curr->dep;
 					tmp-=i*curr->multiplicity;
-					i--;
+					--i;
 				}
 				tmp = tmp/k + (multiplicity - dep->multiplicity) / d;
 				dep->multiplicity = tmp ;
@@ -286,7 +290,7 @@ namespace LinBox
 				 <<"  IntPoly --> "<<intP
 				 <<"  multiplicity --> "<<multiplicity<<std::endl
 				 <<"  dep --> "<<dep<<std::endl;
-		
+
 		}
 	};
 
@@ -304,9 +308,9 @@ namespace LinBox
 				ufv[i].multiplicity--;
 			}
 		}
-	}	
+	}
 	template <class Blackbox, class FieldPoly, class IntPoly>
-	void findMultiplicities( const Blackbox& A, 
+	void findMultiplicities( const Blackbox& A,
 				 std::multimap<unsigned long, FactorMult<FieldPoly,IntPoly>* >& factCharPoly,
 				 std::multimap<FactorMult<FieldPoly,IntPoly>*,bool>& leadingBlocks,
 				 int goal,
@@ -316,20 +320,20 @@ namespace LinBox
 		typedef typename Blackbox::Field Field;
 		typedef GivPolynomialRing<Field, Dense> PolyDom;
 		typename FactPoly::iterator itf = factCharPoly.begin();
-		typename multimap<FactorMult<FieldPoly,IntPoly>*,bool>::iterator lead_it; 
+		typename multimap<FactorMult<FieldPoly,IntPoly>*,bool>::iterator lead_it;
 		Field F = A.field();
 		PolyDom PD(F);
 		size_t factnum = factCharPoly.size();
 		size_t n = A.coldim();
-		
+
 		/* Rank for the linear factors */
 		while ( ( factnum > 1 ) && ( itf->first == 1) ){
-			
+
 			lead_it = leadingBlocks.find(itf->second);
 			if ( lead_it != leadingBlocks.end())
 				lead_it->second = true;
 			long unsigned int r;
-			
+
 			/* The matrix Pi (A) */
 			if (F.isZero (itf->second->fieldP->operator[](0))){
 				rank (r, A, M) ;
@@ -340,36 +344,36 @@ namespace LinBox
 			itf->second->multiplicity = r;
 
 			//std::cerr<<"Rank 1 : "<<*itf->second->fieldP<<" --> "<<r<<std::endl;
-			factnum--;
-			itf++;
+			--factnum;
+			++itf;
 		}
-		
-		size_t maxIter = __MAXITER;//MAX( __MAXITER, sqrt(IspBB.mnz() ) );
+
+		size_t maxIter = _LB_MAXITER;//MAX( _LB_MAXITER, sqrt(IspBB.mnz() ) );
 		// Rank for the other factorspair
 		while ( factnum > maxIter ){
 			lead_it = leadingBlocks.find (itf->second);
 			if ( lead_it != leadingBlocks.end())
 				lead_it->second = true;
-			
+
 			PolynomialBB<Blackbox, FieldPoly > PA (A, *itf->second->fieldP);
 			long unsigned int r;
 			rank (r, PA,  M);
-						
+
 			itf->second->multiplicity =r;
 			//std::cerr<<"Rank > 1 : "<<*itf->second->intP<<" --> "<<r<<std::endl;
 
-			factnum--;
-			itf++;
+			--factnum;
+			++itf;
 		}
-		
+
 		// update the multiplicities
-		for (lead_it = leadingBlocks.begin(); lead_it != leadingBlocks.end(); lead_it++){
-			
+		for (lead_it = leadingBlocks.begin(); lead_it != leadingBlocks.end(); ++lead_it){
+
 			FactorMult<FieldPoly,IntPoly>* currFFM = lead_it->first;
 			//std::cerr<<"Updating multiplicities of "<<*lead_it->first->fieldP<<std::endl;
-						
+
 			if (!lead_it->second){ // the leading block has not been computed
-				
+
 				// go to the last computed multiplicity of the sequence
 				while (currFFM->dep!=NULL){
 					if (currFFM->dep->multiplicity != 0)
@@ -377,7 +381,7 @@ namespace LinBox
 					currFFM = currFFM->dep;
 				}
 				if (currFFM->dep != NULL){
-					
+
 					// Need one more computation:
 					PolynomialBB<Blackbox, FieldPoly > PA (A, *currFFM->fieldP);
 					long unsigned int r;
@@ -392,31 +396,31 @@ namespace LinBox
 			} else {
 				int lbm;
 				if (currFFM->dep != NULL){
-					
+
 					int k = currFFM->update (n,&goal)+1;
 					int d = (lead_it->first->fieldP->size()-1) / k;
-					
+
 					lbm = (n-lead_it->first->multiplicity) / d;
 					currFFM = currFFM->dep;
 					do{
-						lbm -= currFFM->multiplicity * (currFFM->fieldP->size()-1); 
+						lbm -= currFFM->multiplicity * (currFFM->fieldP->size()-1);
 						currFFM = currFFM->dep;
 					} while (currFFM!=NULL);
 					lbm /= k;
 					goal -= (lbm-1)*(lead_it->first->fieldP->size()-1);
 				}else {
 					lbm = (n-lead_it->first->multiplicity) / (lead_it->first->fieldP->size()-1);
-					goal -=  (lbm-1)*(lead_it->first->fieldP->size()-1); 
+					goal -=  (lbm-1)*(lead_it->first->fieldP->size()-1);
 				}
 				lead_it->first->multiplicity = lbm;
 			}
 		}
-		
-		// Recursive search 
+
+		// Recursive search
 		typename FactPoly::iterator firstUnknowFactor = itf;
-		if ( factnum <= __MAXITER ){
+		if ( factnum <= _LB_MAXITER ){
 			std::vector<FactorMult<FieldPoly,IntPoly> > unknownFact (factnum);
-			for (size_t  i = 0; i < factnum; ++i, itf++){
+			for (size_t  i = 0; i < factnum; ++i, ++itf){
 				unknownFact[i] = *itf->second;
 			}
 			std::list<vector<FactorMult<FieldPoly,IntPoly> > > sols;
@@ -430,24 +434,24 @@ namespace LinBox
 				do
 					g.random(gamma);
 				while (F.isZero(gamma));
-				
+
 
 				//Building the matrix A + gamma.Id mod p
 				F.neg( mgamma, gamma );
-				ScalarMatrix<Field> gammaId( F, n, gamma ); 
+				ScalarMatrix<Field> gammaId( F, n, gamma );
 				Sum<Blackbox,ScalarMatrix<Field> > Agamma(A, gammaId);
 
 				// Compute det (A+gamma.Id)
 				det (d, Agamma, M);
 				if (A.rowdim()%2)
 					F.negin(d);
-				
+
 				// Compute Prod(Pi(-gamma)^mi)
 				typename Field::Element tmp, e;
 				F.init (d2,1);
 				typename FactPoly::iterator it_f=factCharPoly.begin();
 				PolyDom PD (F);
-				for (size_t i = 0; i < factCharPoly.size()-factnum; ++i, it_f++){
+				for (size_t i = 0; i < factCharPoly.size()-factnum; ++i, ++it_f){
 					PD.eval (tmp, *it_f->second->fieldP, mgamma);
 					for (size_t j=0; j < it_f->second->multiplicity; ++j)
 						F.mulin (d2, tmp);
@@ -462,7 +466,7 @@ namespace LinBox
 					F.mulin( e, d2);
 					if (F.areEqual(e,d))
 						break;
-					uf_it++;
+					++uf_it;
 				}
 				if (uf_it == sols.end())
 					std::cerr<<"FAIL:: No solutions found in recursive seach"<<endl;
@@ -470,13 +474,13 @@ namespace LinBox
 			// update with the good multiplicities
 			typename FactPoly::iterator it_f = firstUnknowFactor;
 			typename std::vector<FactorMult<FieldPoly,IntPoly> >::iterator it_fm = (*uf_it).begin();
-			for (; it_f != factCharPoly.end(); it_f++, it_fm++)
+			for (; it_f != factCharPoly.end(); ++it_f, ++it_fm)
 				it_f->second->multiplicity = it_fm->multiplicity;
 		}
 	}
 
 }
 
-#undef __MAXITER
+#undef _LB_MAXITER
 #endif // __BBCHARPOLY_H
 
