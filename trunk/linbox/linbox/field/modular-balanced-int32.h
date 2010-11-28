@@ -155,7 +155,7 @@ namespace LinBox
 
 
 		std::ostream &write (std::ostream &os) const {
-			return os << "int32 mod " << modulus;
+			return os << "balanced int32 mod " << modulus;
 		}
 
 		std::istream &read (std::istream &is) {

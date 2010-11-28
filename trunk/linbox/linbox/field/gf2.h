@@ -150,23 +150,25 @@ class GF2 : public FieldInterface {
             return x = static_cast<XXX>(y);
         }
 
-// 	unsigned int &convert (unsigned int &x, Element y) const
-// 		{ return x = static_cast<unsigned int>(y); }
+#if 0
+ 	unsigned int &convert (unsigned int &x, Element y) const
+ 		{ return x = static_cast<unsigned int>(y); }
 
-// 	int &convert (int &x, Element y) const
-// 		{ return x = static_cast<int>(y); }
+ 	int &convert (int &x, Element y) const
+ 		{ return x = static_cast<int>(y); }
 
-// 	unsigned long &convert (unsigned long &x, Element y) const
-// 		{ return x = static_cast<unsigned long>(y); }
+ 	unsigned long &convert (unsigned long &x, Element y) const
+ 		{ return x = static_cast<unsigned long>(y); }
 
-// 	long &convert (long &x, Element y) const
-// 		{ return x = static_cast<int>(y); }
+ 	long &convert (long &x, Element y) const
+ 		{ return x = static_cast<int>(y); }
 
-// 	float &convert (float &x, Element y) const
-// 		{ return x = static_cast<float>(y); }
+ 	float &convert (float &x, Element y) const
+ 		{ return x = static_cast<float>(y); }
 
-// 	double &convert (double &x, Element y) const
-// 		{ return x = static_cast<double>(y); }
+ 	double &convert (double &x, Element y) const
+ 		{ return x = static_cast<double>(y); }
+#endif
 
 	/** Assignment of one field base element to another.
 	 * This function assumes both field base elements have already been

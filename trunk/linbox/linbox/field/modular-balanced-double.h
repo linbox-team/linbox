@@ -338,7 +338,7 @@ namespace LinBox
 				if (modulus>= getMaxModulus())
 					return 0 ;
 				else
-					return (unsigned long) (double(max_double)/(modulus*modulus)) ;
+					return (unsigned long) (double(max_double)/(p*p)) ;
 			} else
 				throw LinboxError("Bad input, expecting 0 or 1");
 			return 0;
