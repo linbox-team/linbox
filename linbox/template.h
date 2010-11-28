@@ -1,5 +1,5 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=g0,t0,\:0
 /* Copyright (C) <+year+> LinBox
  * Written by <+someone+> <<+her.mail@somewhere.net+>>
  *
@@ -25,14 +25,14 @@
 #define __LINBOX_<+directory_file_name+>_H
 
 /** @file <+directory/file-name.h+>
-  * @brief desc
-  * long doxy desc
-  */
+ * @brief desc
+ * long doxy desc
+ */
 
 #include "<++>"
 
-#if 0 // better than commenting out code with big /*   */ 
-      // (it shows this code is not really mature yet...)
+#if 0 // better than commenting out code with big /*   */
+// (it shows this code is not really mature yet...)
 
 #define LB_VAR  10  /* local var */
 #define LB_DEF      /* local define */
@@ -53,20 +53,67 @@
  * what is this (important) file about ?
  */
 
-namespace LinBox 
+namespace LinBox
 {
 	/**  @brief this function is about...
 	 * this important function has comments  !!!
 	 */
 	template<++>
-	void my_func(T & toto) ;
+	void my_func(T & toto)
+	{
+		toto() ;
+		if (a) {
+			b();
+		} else {
+			c() ;
+		}
+	}
+
+
+	switch(a) {
+	case toto:
+		a() ;
+		break;
+	case titi: {
+			   b() ;
+			   break;
+		   }
+	default :
+		   {
+			   b() ;
+		   }
+	}
+
+	class A {
+	private :
+		int _p ;
+		int _q ;
+	public :
+		A() : _p(0), _q(0) {} ;
+		A(int q) :
+			_p(1), _q(q)
+		{} ;
+		A(int p, int q)
+			: _p(p), _q(q)
+		{} ;
+
+
+		~A() {} ;
+	}
+#if 0
+	int old_code()  // but maybe usefull later
+	{
+		prinf("comment out code !");
+	}
+#endif
+
 } //LinBox
 
 #include "<+file-name.inl+>" // implementation here
 
 #undef LB_VAR    // environmentalists love us
 #undef LB_DEF    // really !
-#undef LB_MACRO 
+#undef LB_MACRO
 
 #endif //__LINBOX_<+directory_file_name+>_H
 
