@@ -15,7 +15,8 @@
 #include <vector>
 #include <cstdio>
 template<class T, template <class T> class Container>
-std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
+std::ostream& operator<< (std::ostream& o, const Container<T>& C)
+{
 	for(typename Container<T>::const_iterator refs =  C.begin();
 	    refs != C.end() ;
 	    ++refs )
@@ -44,22 +45,22 @@ using namespace LinBox;
  *
  * Return true on success and false on failure
  */
-
 template <class Dom, class Polynomial>
 typename Dom::Element eval (const Dom& D,
 			    typename Dom::Element& value,
 			    const Polynomial& P,
-			    const typename Dom::Element x){
+			    const typename Dom::Element x)
+{
 	typename Dom::Element tmp = P[P.size()-1];
 	for (int i = P.size()-2; i >= 0; --i){
 		D.mulin (tmp, x);
 		D.addin (tmp, P[i]);
 	}
-	return value = tmp; 
+	return value = tmp;
 }
 
 template <class Dom>
-static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false) 
+static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 {
 	typedef typename Dom::Element Element;
 	typedef vector<Element> Vector;
@@ -120,7 +121,6 @@ static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
  *
  * Return true on success and false on failure
  */
-
 template <class Field>
 static bool testNilpotentCharpoly (Field &F, size_t n)
 {
@@ -266,8 +266,8 @@ int main (int argc, char **argv)
 	std::cout<<setprecision(8);
 	std::cerr<<setprecision(8);
 	static size_t n = 50;
-	static integer q = 33554467U; 
-	//static integer q = 1000003U; // 33554467U; 
+	static integer q = 33554467U;
+	//static integer q = 1000003U; // 33554467U;
 	static int iterations = 1;
 	static int numVectors = 100;
 	static int k = 3;
