@@ -27,7 +27,7 @@
 /* matrix-stream.h
  * Take a file or stream of a matrix, return (row, column, value) triples from
  * that matrix.  Automatically determine matrix format.
- * 
+ *
  * NOTE to developers:  To add a new format, write a subclass of
  *                      MatrixStreamReader and put it in the formats
  *                      subdirectory.  Then you must add this new format to
@@ -42,8 +42,8 @@
 #include <queue>
 #include <vector>
 
-namespace LinBox 
-{ 
+namespace LinBox
+{
 // namespace in which all LinBox code resides
 //  Error codes enumeration
 enum MatrixStreamError {
@@ -91,14 +91,14 @@ class MatrixStreamReader {
       * get an instance of the field via ms->getField().
       */
 	MatrixStream<Field>* ms;
-	
+
     /** The number of rows in the matrix.  This will be set by default to 0.
       */
 	size_t _m;
 
     /** Indicates whether the row dimension is accurate */
     	bool knowM;
-	
+
     /** Number of columns in the matrix.  Similar requirements as _m above. */
 	size_t _n;
 
@@ -113,14 +113,14 @@ class MatrixStreamReader {
 
     /** Save the triple (m,n,v) onto the savedTriples std::queue. */
 	void saveTriple(size_t m, size_t n, const Element& v);
-	
+
     /** Read the next triple of row index, column index, value and store it in
      * the given references.
      * @return A MatrixStreamError indicating the success or failure of the
      *         operation
      */
 	virtual MatrixStreamError nextTripleImpl(size_t&,size_t&,Element&) = 0;
-	
+
     /** Read the first line of the matrix from the stream and attempt to
      * determine if it is of this reader's type.
      * @return A MatrixStreamError indicating the success or failure of the
@@ -130,12 +130,13 @@ class MatrixStreamReader {
 
     /** A protected constructor that is called automatically when subclasses
      * are instantiated. */
-	MatrixStreamReader() {
-		sin = NULL;
-		ms = NULL;
-		_m = _n = 0;
-		knowM = knowN = false;
-		atEnd = false;
+	MatrixStreamReader()
+	{
+		sin       = NULL;
+		ms        = NULL;
+		_m        = _n = 0;
+		knowM     = knowN = false;
+		atEnd     = false;
 		lastError = GOOD;
 	}
 
@@ -174,7 +175,7 @@ class MatrixStreamReader {
      * it to the savedTriples std::queue rather than returning it.  The error
      * returned is that given from the subclass method. */
 	MatrixStreamError saveNext();
-	
+
     /** Get the number of rows in this matrix, store it in the given int. */
 	MatrixStreamError getRows(size_t&);
 
@@ -203,13 +204,13 @@ class MatrixStream {
      * the init functions).
      */
 	static const int FIRST_LINE_LIMIT = 160;
-	
+
     /** The underlying input stream from which data is being read. */
     	std::istream& in;
 
     /** The lineNumber is recorded in case the user wants to know at which line
       * an error occurs.  This will be updated automatically by any of the read
-      * methods below if they encounter breaks; it is up to the subclasses to 
+      * methods below if they encounter breaks; it is up to the subclasses to
       * increment lineNumber if they read any newline characters independently.
       */
 	int lineNumber;
@@ -244,15 +245,15 @@ class MatrixStream {
      *         first line (i.e. on initialization).
      */
     	MatrixStream( const Field& fld, std::istream& i );
-	
+
     /** Destructor */
 	~MatrixStream() { delete reader; }
-	
+
     /** Re initiliaze after one matrix has been read. */
 	void newmatrix();
 
     /** Read some white space (if there is any). Using this method is preferable
-     * to letting the input stream handle whitespace skipping because this 
+     * to letting the input stream handle whitespace skipping because this
      * method will update the line number when breaks are encountered.
      * @return true iff there is more data after the whitespace.
      */
@@ -278,7 +279,7 @@ class MatrixStream {
      * @return true iff the operation succeeded.
      */
 	bool getColumns(size_t&);
-	
+
     /** Get the number of rows and columns in the matrix and store them in the
      * given ints.
      * @return true iff the operation succeeded.
