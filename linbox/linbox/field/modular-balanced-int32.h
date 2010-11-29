@@ -102,7 +102,7 @@ namespace LinBox
 		}
 
 		ModularBalanced (int32 value, int exp = 1)  : modulus(value) {
-			std::cout << value << std::endl;
+			//std::cout << value << std::endl;
 			halfmodulus = (modulus >> 1);
 			nhalfmodulus = -halfmodulus;
 			modulusinv = 1 / ((double) value);

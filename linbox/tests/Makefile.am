@@ -5,7 +5,9 @@
 INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/linbox
 # AM_LDFLAGS = -llapack -lcblas -latlas 
 SAFER_FLAGS = -g -Wall
-AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly -O2 
+# bds: no need to optimize for unit/regression tests, and opt adds a lot to compilation time
+AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly  
+#AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly -O2 
 # AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -DDEBUG -O0
 # AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -D__LINBOX_HAVE_DGETRF -D__LINBOX_HAVE_DGETRI 
 # AM_CFLAGS = -g -Wall
