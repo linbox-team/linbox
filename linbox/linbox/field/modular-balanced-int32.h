@@ -349,7 +349,8 @@ namespace LinBox
 			return inv (x, x);
 		}
 
-		inline Element &axpyin (Element &r, const Element &a, const Element &x) const {
+		inline Element &axpyin (Element &r, const Element &a, const Element &x) const
+		{
 			int32 q;
 
 			q  = (int32) (((((double) a)*((double) x)) + (double)r) * modulusinv);  // q could be off by (+/-) 1
@@ -363,6 +364,9 @@ namespace LinBox
 
 			return r;
 		}
+
+		static inline int32 getMaxModulus()
+		{ return 1073741824; } // 2^30
 
 	private:
 
@@ -511,19 +515,20 @@ namespace LinBox
 
 	protected:
 		template <class Vector1, class Vector2>
-		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const {
+		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const
+		{
 
 			typename Vector1::const_iterator pv1,pv1e;
 			typename Vector2::const_iterator pv2;
 
 			int64 y = 0;
 			int64 t;
-			int32 times = 0;
+			// int32 times = 0;
 
 			pv1 = pv1e = v1.begin();
 			pv2 = v2.begin();
 
-			for(int i = 0; i < v1.size() / blocksize ;++i) {
+			for(size_t i = 0; i < v1.size() / blocksize ;++i) {
 				pv1e = pv1e + blocksize;
 				for(;pv1 != pv1e;++pv1,++pv2) {
 					t = (((int64) *pv1 ) * ((int64) *pv2 ));
@@ -559,7 +564,7 @@ namespace LinBox
 			i_idx = i_idxe = v1.first.begin();
 			i_elt = v1.second.begin();
 
-			for(int i = 0; i < v1.first.size() / blocksize ; ++i) {
+			for(size_t i = 0; i < v1.first.size() / blocksize ; ++i) {
 				i_idxe = i_idxe + blocksize;
 				for(;i_idx!= i_idxe;++i_idx, ++i_elt) {
 					t = ( (int64) *i_elt ) * ( (int64) v2[*i_idx] );

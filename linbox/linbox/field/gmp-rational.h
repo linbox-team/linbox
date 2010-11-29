@@ -160,17 +160,22 @@ namespace LinBox
 
 			mpz_divexact (x.get_mpz(), n, d);
 
+			mpz_clear (n);
+			mpz_clear (d);
+
 			/* Shouldn't there be something like this? We'll assume integer is gmp integers.
 			   x.set_mpz(n);
 			   */
-			// 		x = integer::zero;
+#if 0
+			x = integer::zero;
 
-			// 		// Really bad, but I know of no other general way to do this
-			// 		while (mpz_sgn (n) != 0) {
-			// 			// We need to be ready for multiple word sizes and so on here...
-			// 			x = (x << (sizeof (unsigned long) << 3)) + mpz_get_ui (n);
-			// 			mpz_tdiv_q_2exp (n, n, sizeof (unsigned long) << 3);
-			// 		}
+			// Really bad, but I know of no other general way to do this
+			while (mpz_sgn (n) != 0) {
+				// We need to be ready for multiple word sizes and so on here...
+				x = (x << (sizeof (unsigned long) << 3)) + mpz_get_ui (n);
+				mpz_tdiv_q_2exp (n, n, sizeof (unsigned long) << 3);
+			}
+#endif
 
 			return x;
 		}

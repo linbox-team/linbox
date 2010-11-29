@@ -35,10 +35,12 @@
 
 using namespace LinBox;
 
+#warning "this test leaks memory at matrix-stream.h:134"
+
 /** @file tests/test-matrix-stream.C
-@todo I would like to see a matrix writer that 
-writes sms format and generic dense format.  
-Then we could have a self contained test that 
+@todo I would like to see a matrix writer that
+writes sms format and generic dense format.
+Then we could have a self contained test that
 checks the write/read cycle without depending on preexisting data files.
 
 ...but data files illustrating formats that we intend to read but not write would continue to be used.
@@ -65,7 +67,7 @@ TestField f;
 
 template <class BB>
 bool testMatrix( std::ostream& out, const char* filename, const char* BBName ) ;
-bool testMatrixStream(const string& matfile) 
+bool testMatrixStream(const string& matfile)
 {
 
 	bool pass = true;
@@ -173,7 +175,7 @@ bool testMatrixStream(const string& matfile)
 					  << matfile
 					  << ", format " << ms2.getFormat()
 					  << std::endl
-					  << "Got " << array[i*colDim+j] 
+					  << "Got " << array[i*colDim+j]
 					  << " at index (" << i
 					  << "," << j << "), should be "
 					  << matrix[i][j] << std::endl;
@@ -200,9 +202,9 @@ bool testMatrixStream(const string& matfile)
 	if( !testMatrix< BlasBlackbox<TestField> >
 			( out, matfile[0], "BLAS BlackBox Matrix" )
 	  ) pass = false;
-	
+
 */
-	if( !pass )	out << "FAIL: matrix-stream" << std::endl; 
+	if( !pass )	out << "FAIL: matrix-stream" << std::endl;
 	else 		out << "matrix-stream Passed" << std::endl;
 	commentator.stop(ms.getFormat());
 	//commentator.stop(MSG_STATUS(pass));
@@ -210,7 +212,7 @@ bool testMatrixStream(const string& matfile)
 }
 
 template <class BB>
-bool testMatrix( std::ostream& out, const char* filename, const char* BBName ) 
+bool testMatrix( std::ostream& out, const char* filename, const char* BBName )
 {
 	out << "\tTesting " << BBName << std::endl;
 	std::ifstream fin( filename );

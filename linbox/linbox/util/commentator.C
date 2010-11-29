@@ -25,7 +25,7 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * This file implements the C++ interface to commentators (for 
+ * This file implements the C++ interface to commentators (for
  * providing runtime commentary to the user)
  */
 
@@ -41,7 +41,7 @@
 #include "linbox/util/debug.h"
 #include "linbox/util/timer.h"
 
-namespace LinBox 
+namespace LinBox
 {
 	// -----------------------------------------------------
 	// Mathematical routines
@@ -51,7 +51,7 @@ namespace LinBox
 		long rm = r - 1 ;
 		double c1 = double (rm) / double (r), c2 = a / double (r);
 		double g = 1, pgr = 1, err = a - 1;
-    
+
 		while (err > precision) {
 			g = g * c1 + c2 / pgr;
 			pgr = pow (g, (double) rm);
@@ -80,7 +80,7 @@ namespace LinBox
 		return 0;
 	}
 
-	Commentator::Commentator () 
+	Commentator::Commentator ()
 		//: cnull (new nullstreambuf), _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
 		: cnull ("/dev/null"), _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
 		  _show_timing (true), _show_progress (true), _show_est_time (true)
@@ -95,7 +95,7 @@ namespace LinBox
 		registerMessageClass (INTERNAL_ERROR,       _report, 10, LEVEL_NORMAL);
 		registerMessageClass (INTERNAL_DESCRIPTION, _report);
 	}
-	Commentator::Commentator (std::ostream& out) 
+	Commentator::Commentator (std::ostream& out)
 		//: cnull (new nullstreambuf), _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
 		: cnull ("/dev/null"), _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
 		  _show_timing (true), _show_progress (true), _show_est_time (true)
@@ -111,19 +111,24 @@ namespace LinBox
 		registerMessageClass (INTERNAL_DESCRIPTION, _report);
 	}
 
-	Commentator::~Commentator() {
+	Commentator::~Commentator()
+	{
 		std::map <const char *, MessageClass *, C_str_Less >::iterator i;
-		for (i = _messageClasses.begin (); i != _messageClasses.end (); ++i) 
+		for (i = _messageClasses.begin (); i != _messageClasses.end (); ++i)
 			delete i->second;
+		while (!_activities.empty()){
+			delete _activities.top();
+			_activities.pop();
+		}
 	}
 
-	void Commentator::start (const char *description, const char *fn, unsigned long len) 
+	void Commentator::start (const char *description, const char *fn, unsigned long len)
 	{
 		if (fn == (const char *) 0 && _activities.size () > 0)
 			fn = _activities.top ()->_fn;
 
 		if (isPrinted (_activities.size () + 1, LEVEL_IMPORTANT, INTERNAL_DESCRIPTION, fn))
-			report (LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) //<< "Starting activity: " 
+			report (LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) //<< "Starting activity: "
 			<< description << std::endl;
 
 		Activity *new_act = new Activity (description, fn, len);
@@ -136,7 +141,7 @@ namespace LinBox
 		new_act->_timer.start ();
 	}
 
-	void Commentator::startIteration (unsigned int iter, unsigned long len) 
+	void Commentator::startIteration (unsigned int iter, unsigned long len)
 	{
 		std::ostringstream str;
 
@@ -146,7 +151,7 @@ namespace LinBox
 		start (_iteration_str.c_str (), (const char *) 0, len);
 	}
 
-	void Commentator::stop (const char *msg, const char *long_msg, const char *fn) 
+	void Commentator::stop (const char *msg, const char *long_msg, const char *fn)
 	{
 		float realtime, usertime, systime;
 		Activity *top_act;
@@ -209,14 +214,14 @@ namespace LinBox
 		delete top_act;
 	}
 
-	void Commentator::progress (long k, long len) 
+	void Commentator::progress (long k, long len)
 	{
 		linbox_check (_activities.top () != (Activity *) 0);
 
 		Activity *act = _activities.top ();
                 Timer tmp = act->_timer;
 		act->_timer.stop ();
-                
+
 		if (k == -1)
 			act->_progress++;
 		else
@@ -239,7 +244,7 @@ namespace LinBox
                 act->_timer = tmp;
 	}
 
-	std::ostream &Commentator::report (long level, const char *msg_class) 
+	std::ostream &Commentator::report (long level, const char *msg_class)
 	{
 		linbox_check (msg_class != (const char *) 0);
 
@@ -279,7 +284,7 @@ namespace LinBox
 		}
 	}
 
-	void Commentator::setMaxDepth (long depth) 
+	void Commentator::setMaxDepth (long depth)
 	{
 		MessageClass &briefReportClass = getMessageClass (BRIEF_REPORT);
 		std::map <const char *, MessageClass *, C_str_Less>::iterator i;
@@ -289,7 +294,7 @@ namespace LinBox
 				i->second->setMaxDepth (depth);
 	}
 
-	void Commentator::setMaxDetailLevel (long level) 
+	void Commentator::setMaxDetailLevel (long level)
 	{
 		MessageClass &briefReportClass = getMessageClass (BRIEF_REPORT);
 		std::map <const char *, MessageClass *, C_str_Less>::iterator i;
@@ -299,7 +304,7 @@ namespace LinBox
 				i->second->setMaxDetailLevel (level);
 	}
 
-	MessageClass &Commentator::registerMessageClass (const char *msg_class, std::ostream &stream, unsigned long max_depth, unsigned long max_level) 
+	MessageClass &Commentator::registerMessageClass (const char *msg_class, std::ostream &stream, unsigned long max_depth, unsigned long max_level)
 	{
 		linbox_check (msg_class != (const char *) 0);
 
@@ -308,7 +313,7 @@ namespace LinBox
 		return *new_obj;
 	}
 
-	MessageClass &Commentator::cloneMessageClass (const char *new_msg_class, const char *msg_class) 
+	MessageClass &Commentator::cloneMessageClass (const char *new_msg_class, const char *msg_class)
 	{
 		linbox_check (new_msg_class != (const char *) 0);
 		linbox_check (msg_class != (const char *) 0);
@@ -319,7 +324,7 @@ namespace LinBox
 		return *new_obj;
 	}
 
-	MessageClass &Commentator::cloneMessageClass (const char *new_msg_class, const char *msg_class, std::ostream &stream) 
+	MessageClass &Commentator::cloneMessageClass (const char *new_msg_class, const char *msg_class, std::ostream &stream)
 	{
 		linbox_check (new_msg_class != (const char *) 0);
 		linbox_check (msg_class != (const char *) 0);
@@ -333,7 +338,7 @@ namespace LinBox
 	MessageClass &Commentator::getMessageClass (const char *msg_class)
 		{ return *_messageClasses[msg_class]; }
 
-	void Commentator::setPrintParameters (unsigned long depth, unsigned long level, const char *fn) 
+	void Commentator::setPrintParameters (unsigned long depth, unsigned long level, const char *fn)
 	{
 		MessageClass &briefReportClass = getMessageClass (BRIEF_REPORT);
 		std::map <const char *, MessageClass *, C_str_Less>::iterator i;
@@ -343,7 +348,7 @@ namespace LinBox
 				i->second->setPrintParameters (depth, level, fn);
 	}
 
-	void Commentator::setBriefReportParameters (OutputFormat format, bool show_timing, bool show_progress, bool show_est_time) 
+	void Commentator::setBriefReportParameters (OutputFormat format, bool show_timing, bool show_progress, bool show_est_time)
 	{
 		_format        = format;
 		_show_timing   = show_timing;
@@ -361,10 +366,10 @@ namespace LinBox
 		return messageClass.isPrinted (depth, level, fn);
 	}
 
-	void Commentator::setBriefReportStream (std::ostream &stream) 
+	void Commentator::setBriefReportStream (std::ostream &stream)
 		{ setMessageClassStream (BRIEF_REPORT, stream); }
 
-	void Commentator::setReportStream (std::ostream &stream) 
+	void Commentator::setReportStream (std::ostream &stream)
 	{
 		setMessageClassStream (BRIEF_REPORT,      stream);
 		setMessageClassStream (PROGRESS_REPORT,      stream);
@@ -379,7 +384,7 @@ namespace LinBox
 			getMessageClass (BRIEF_REPORT).setMaxDepth (0);
 	}
 
-	void Commentator::setMessageClassStream (const char *msg_class, std::ostream &stream) 
+	void Commentator::setMessageClassStream (const char *msg_class, std::ostream &stream)
 	{
                 //temporarily fixed the bug in test-commentator, left memory leaking.
                 MessageClass *old_msg_class = _messageClasses[msg_class];
@@ -388,12 +393,12 @@ namespace LinBox
 
 	}
 
-	void Commentator::setDefaultReportFile (const char *filename) 
+	void Commentator::setDefaultReportFile (const char *filename)
 	{
 		_report.open (filename);
 	}
 
-	void Commentator::printActivityReport (Activity &activity) 
+	void Commentator::printActivityReport (Activity &activity)
 	{
 		MessageClass &messageClass = getMessageClass (BRIEF_REPORT);
 
@@ -422,7 +427,7 @@ namespace LinBox
 		}
 	}
 
-	void Commentator::updateActivityReport (Activity &activity) 
+	void Commentator::updateActivityReport (Activity &activity)
 	{
 		MessageClass &messageClass = getMessageClass (BRIEF_REPORT);
 		unsigned int i, old_len;
@@ -471,7 +476,7 @@ namespace LinBox
 		}
 	}
 
-	void Commentator::finishActivityReport (Activity &activity, const char *msg) 
+	void Commentator::finishActivityReport (Activity &activity, const char *msg)
 	{
 		MessageClass &messageClass = getMessageClass (BRIEF_REPORT);
 		unsigned int i;
@@ -520,7 +525,7 @@ namespace LinBox
 				    const char *msg_class,
 				    std::ostream &stream,
 				    unsigned long max_depth,
-				    unsigned long max_level) 
+				    unsigned long max_level)
 		: _msg_class (msg_class),
 		  _smart_streambuf (comm, stream),
 		  _stream (&_smart_streambuf),
@@ -530,7 +535,7 @@ namespace LinBox
 		fixDefaultConfig ();
 	}
 
-	void MessageClass::setMaxDepth (long depth) 
+	void MessageClass::setMaxDepth (long depth)
 	{
 		_max_depth = (unsigned long) depth;
 		fixDefaultConfig ();
@@ -542,7 +547,7 @@ namespace LinBox
 		fixDefaultConfig ();
 	}
 
-	void MessageClass::setPrintParameters (unsigned long depth, unsigned long level, const char *fn) 
+	void MessageClass::setPrintParameters (unsigned long depth, unsigned long level, const char *fn)
 	{
 		if (fn == (const char *) 0)
 			fn = "";
@@ -584,11 +589,11 @@ namespace LinBox
 
 	bool MessageClass::isPrinted (unsigned long depth, unsigned long level, const char *fn)
 	{
-		return 
-			checkConfig (_configuration[""], depth, level) 
+		return
+			checkConfig (_configuration[""], depth, level)
 			||
-			(	fn != (const char *) 0 
-				&& 
+			(	fn != (const char *) 0
+				&&
 		   		checkConfig (_configuration[fn], depth, level)
 		   	);
 		/*
@@ -597,7 +602,7 @@ namespace LinBox
 		else if (fn != (const char *) 0)
 			//return checkConfig (_configuration[fn], depth, level);
 			{ bool ans = checkConfig (_configuration[fn], depth, level);
-			  if (ans) 
+			  if (ans)
 		 		{	//std::cerr << " fn=" << fn << ", d " << depth << ", l " << level << " true" << std::endl;
 			 		return true;
 		 		}
@@ -617,14 +622,14 @@ namespace LinBox
 	MessageClass::MessageClass (const Commentator &comm,
 				    const char *msg_class,
 				    std::ostream &stream,
-				    Configuration configuration) 
+				    Configuration configuration)
 		: _msg_class (msg_class),
 		  _smart_streambuf (comm, stream),
 		  _stream (&_smart_streambuf),
 		  _configuration (configuration)
 	{}
 
-	void MessageClass::fixDefaultConfig () 
+	void MessageClass::fixDefaultConfig ()
 	{
 		std::list <std::pair <unsigned long, unsigned long> > &config = _configuration[""];
 
@@ -633,9 +638,9 @@ namespace LinBox
 		config.push_back (std::pair <unsigned long, unsigned long> ((unsigned long) -1, Commentator::LEVEL_ALWAYS));
 	}
 
-	bool MessageClass::checkConfig (std::list <std::pair <unsigned long, unsigned long> > &config, 
-			unsigned long depth, 
-			unsigned long ) //lvl 
+	bool MessageClass::checkConfig (std::list <std::pair <unsigned long, unsigned long> > &config,
+			unsigned long depth,
+			unsigned long ) //lvl
 	{
 		std::list <std::pair <unsigned long, unsigned long> >::iterator i;
 
@@ -668,13 +673,13 @@ namespace LinBox
 		}
 	}
 
-	int MessageClass::smartStreambuf::sync () 
+	int MessageClass::smartStreambuf::sync ()
 	{
 		std::streamsize n = pptr () - pbase ();
 		return (n && writeData (pbase (), n) != n) ? EOF : 0;
 	}
 
-	int MessageClass::smartStreambuf::overflow (int ch) 
+	int MessageClass::smartStreambuf::overflow (int ch)
 	{
 		std::streamsize n = pptr () - pbase ();
 

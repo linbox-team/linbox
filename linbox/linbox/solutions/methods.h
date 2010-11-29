@@ -55,8 +55,6 @@ namespace LinBox
         };
 };
 
-
-
 	struct Specifier {
 		/** Whether the system is known to be singular or nonsingular */
 		enum SingularState {
@@ -121,21 +119,22 @@ namespace LinBox
 			PIVOT_LINEAR, PIVOT_NONE
 		};
 
-		Specifier ( )
-			: _preconditioner(NO_PRECONDITIONER),
-			  _rank(RANK_UNKNOWN),
-			  _singular(SINGULARITY_UNKNOWN),
-			  _symmetric(NON_SYMMETRIC),
-			  _certificate(CERTIFY),
-			  _maxTries(1),
-			  _ett(DEFAULT_EARLY_TERM_THRESHOLD),
-			  _blockingFactor(16),
-			  _strategy(PIVOT_LINEAR),
-                          _shape(SPARSE),
-			  _provensuccessprobability( 0.0 )
+		Specifier ( ) :
+			_preconditioner(NO_PRECONDITIONER),
+			_rank(RANK_UNKNOWN),
+			_singular(SINGULARITY_UNKNOWN),
+			_symmetric(NON_SYMMETRIC),
+			_certificate(CERTIFY),
+			_maxTries(1),
+			_ett(DEFAULT_EARLY_TERM_THRESHOLD),
+			_blockingFactor(16),
+			_strategy(PIVOT_LINEAR),
+			_shape(SPARSE),
+			_provensuccessprobability( 0.0 )
 #ifdef __LINBOX_HAVE_MPI
-			  , _communicatorp( 0 )
+			, _communicatorp( 0 )
 #endif
+			, _checkResult( true )
 		{}
 
 		Specifier (const Specifier& s):
@@ -153,6 +152,7 @@ namespace LinBox
 #ifdef __LINBOX_HAVE_MPI
 			, _communicatorp(s._communicatorp)
 #endif
+			, _checkResult( s._checkResult )
 		{}
 
 		/** Accessors
@@ -228,10 +228,12 @@ namespace LinBox
 		{ _communicatorp = &C; };
 #endif
 	};
+
 	struct BlackboxSpecifier :public Specifier {
 		BlackboxSpecifier(){};
 		BlackboxSpecifier (const Specifier& m): Specifier(m){};
 	};
+
 	struct EliminationSpecifier :public Specifier {
 		EliminationSpecifier(){};
 		EliminationSpecifier (const Specifier& m): Specifier(m){};
@@ -293,9 +295,6 @@ namespace LinBox
 		WiedemannExtensionTraits( const Specifier& S) :  WiedemannTraits(S) {}
 	};
 
-
-
-
 	struct LanczosTraits : public Specifier {
 		/** Constructor
 		 *
@@ -341,7 +340,6 @@ namespace LinBox
 		SparseEliminationTraits( const EliminationSpecifier& S) :  Specifier(S) {}
 	};
 
-
     	struct DixonTraits : public Specifier {
 
 		enum SolutionType {
@@ -375,7 +373,6 @@ namespace LinBox
 		SolutionType _solution;
 	};
 
-
 	struct BlockWiedemannTraits : public Specifier {
 		BlockWiedemannTraits ( Preconditioner preconditioner = NO_PRECONDITIONER,
 				       size_t          rank            = RANK_UNKNOWN)
@@ -408,7 +405,6 @@ namespace LinBox
 		BlockHankelTraits( const Specifier& S) :  Specifier(S) {}
 	};
 
-
 	struct BlasEliminationTraits : public Specifier {
 		BlasEliminationTraits() {}
 		BlasEliminationTraits( const Specifier& S) :  Specifier(S) {}
@@ -424,7 +420,6 @@ namespace LinBox
                 {}
             	BlasExtensionTraits( const Specifier& S) :  BlasEliminationTraits(S) {}
 	};
-
 
 	struct NonBlasEliminationTraits : public Specifier {
 		NonBlasEliminationTraits() {}
@@ -463,8 +458,7 @@ namespace LinBox
 	 *
          * User-specified parameters for solving a linear system.
          */
-	struct SolverTraits : public Specifier
-	{
+	struct SolverTraits : public Specifier {
 		/** Constructor
 		 *
 		 * @param checkResult True if and only if the solution should be checked
