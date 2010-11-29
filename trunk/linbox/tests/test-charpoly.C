@@ -183,7 +183,6 @@ static bool testNilpotentCharpoly (Field &F, size_t n)
 
 template <class Field, class Row, class Vector>
 bool testRandomCharpoly (Field                 &F,
-			int                    iterations,
 			VectorStream<Row>    &A_stream,
 			VectorStream<Vector> &v_stream)
 {
@@ -192,69 +191,50 @@ bool testRandomCharpoly (Field                 &F,
 	typedef std::vector<typename Field::Element> Polynomial;
 	typedef SparseMatrix <Field> Blackbox;
 
-	commentator.start ("Testing sparse random charpoly", "testRandomCharpoly", iterations);
+	commentator.start ("Testing sparse random charpoly", "testRandomCharpoly", 1);
 
 	bool ret = true;
-	bool iter_passed;
 
 	VectorDomain<Field> VD (F);
-
-	Vector v, w;
-
+	Vector w, v;
 	VectorWrapper::ensureDim (v, v_stream.n ());
 	VectorWrapper::ensureDim (w, v_stream.n ());
 
-	for (int i = 0; i < iterations; i++) {
-		commentator.startIteration (i);
+	A_stream.reset ();
+	Blackbox A (F, A_stream);
 
-		iter_passed = true;
+	ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+	report << "Matrix:" << endl;
+	A.write (report, FORMAT_PRETTY);
 
-		A_stream.reset ();
-		Blackbox A (F, A_stream);
+	Polynomial phi;
 
-		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
-		report << "Matrix:" << endl;
-		A.write (report, FORMAT_PRETTY);
+	charpoly (phi, A);
 
-		Polynomial phi;
+	report << "characteristic polynomial is: ";
+	printPolynomial (F, report, phi);
 
-		charpoly (phi, A);
+	commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+		<< "deg charpoly (A) = " << phi.size () - 1 << endl;
 
-		report << "characteristic polynomial is: ";
-		printPolynomial (F, report, phi);
+	v_stream.reset ();
 
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
-			<< "deg charpoly (A) = " << phi.size () - 1 << endl;
+	while (v_stream) {
+		v_stream.next (v);
+		VD.write (report << "Input vector  " << v_stream.j () << ": ", v) << endl;
 
-		v_stream.reset ();
+		applyPoly (F, w, A, phi, v);
+		VD.write (report << "Output vector " << v_stream.j () << ": ", w) << endl;
 
-		while (v_stream) {
-			v_stream.next (v);
-
-			report << "Input vector  " << v_stream.j () << ": ";
-			VD.write (report, v);
-			report << endl;
-
-			applyPoly (F, w, A, phi, v);
-
-			report << "Output vector " << v_stream.j () << ": ";
-			VD.write (report, w);
-			report << endl;
-
-			if (!VD.isZero (w))
-				ret = iter_passed = false;
-		}
-
-		if (!iter_passed)
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Output vector was incorrect" << endl;
-
-		commentator.stop ("done");
-		commentator.progress ();
+		//bds: VD.isZero fails to work right when -O2 using gcc 4.2
+		if (!VD.isZero (w)) { ret = false; break; }
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomCharpoly");
+	if (!ret)
+		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			<< "ERROR: Output vector was incorrect" << endl;
 
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomCharpoly");
 	return ret;
 }
 #endif
@@ -267,15 +247,13 @@ int main (int argc, char **argv)
 	std::cerr<<setprecision(8);
 	static size_t n = 50;
 	static integer q = 33554467U;
-	//static integer q = 1000003U; // 33554467U;
-	static int iterations = 1;
-	static int numVectors = 100;
+	//static integer q = 103U; // 33554467U;
+	static int numVectors = 10;
 	static int k = 3;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN.",                 TYPE_INT,     &n },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].",          TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations.",                    TYPE_INT,     &iterations },
 		{ 'v', "-v V", "Use V test vectors for the random charpoly tests.",      TYPE_INT,     &numVectors },
 		{ 'k', "-k K", "K nonzero Elements per row in sparse random apply test.", TYPE_INT,     &k },
 		{ '\0' }
@@ -305,7 +283,7 @@ int main (int argc, char **argv)
 		A_stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), (double) k / (double) n, n, n);
 
 	if (!testNilpotentCharpoly (F, n)) pass = false;
-	if (!testRandomCharpoly    (F, iterations, A_stream, v_stream)) pass = false;
+	if (!testRandomCharpoly    (F, A_stream, v_stream)) pass = false;
 
 	// symmetrizing
 	if (!testIdentityCharpoly  (F, n, true)) pass = false;
@@ -333,7 +311,7 @@ int main (int argc, char **argv)
 	if (!testNilpotentCharpoly (Z, n)) pass = false;
 
 	//Comment by Z. Wan. Stream doesn't work here
-	//if (!testRandomCharpoly    (Z, iterations, zA_stream, zv_stream)) pass = false;
+	//if (!testRandomCharpoly    (Z, zA_stream, zv_stream)) pass = false;
 
 	// symmetrizing
 	if (!testIdentityCharpoly  (Z, n, true)) pass = false;
