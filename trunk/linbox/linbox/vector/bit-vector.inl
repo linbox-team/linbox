@@ -47,8 +47,9 @@ namespace LinBox
 	class BitVector::reference {
 	public:
 
-		reference (std::vector<unsigned long>::iterator word, uint8 position)
-		: _word (word), _pos (position) {}
+		reference (std::vector<unsigned long>::iterator word, uint8 position) :
+			_word (word), _pos (position)
+		{}
 
 		~reference () {}
 
@@ -103,14 +104,17 @@ namespace LinBox
 	class BitVector::const_reference {
 	public:
 
-		const_reference (BitVector::reference r)
-		: _word (r._word), _pos (r._pos) {}
+		const_reference (BitVector::reference r) :
+			_word (r._word), _pos (r._pos)
+		{}
 
-		const_reference (std::vector<unsigned long>::iterator word, uint8 position)
-		: _word (word), _pos (position) {}
+		const_reference (std::vector<unsigned long>::iterator word, uint8 position) :
+			_word (word), _pos (position)
+		{}
 
-		const_reference (std::vector<unsigned long>::const_iterator word, uint8 position)
-		: _word (word), _pos (position) {}
+		const_reference (std::vector<unsigned long>::const_iterator word, uint8 position) :
+			_word (word), _pos (position)
+		{}
 
 		~const_reference () {}
 
@@ -137,11 +141,18 @@ namespace LinBox
 		typedef std::iterator_traits<iterator>::value_type value_type;
 		typedef std::iterator_traits<iterator>::difference_type difference_type;
 
-		iterator () : _ref (std::vector<unsigned long>::iterator (), 0UL) {}
-		iterator (std::vector<unsigned long>::iterator word, uint8 position) : _ref (word, position) {}
-		iterator (const iterator &i) : std::_Bit_iterator(),_ref (i._ref._word, i._ref._pos) {}
+		iterator () :
+			_ref (std::vector<unsigned long>::iterator (), 0UL)
+		{}
+		iterator (std::vector<unsigned long>::iterator word, uint8 position) :
+			_ref (word, position)
+		{}
+		iterator (const iterator &i) :
+			std::_Bit_iterator(),_ref (i._ref._word, i._ref._pos)
+		{}
 
-		iterator &operator = (const iterator &i) {
+		iterator &operator = (const iterator &i)
+		{
 			_ref._word = i._ref._word;
 			_ref._pos = i._ref._pos;
 			return *this;
@@ -246,17 +257,25 @@ namespace LinBox
 		typedef std::iterator_traits<const_iterator>::difference_type difference_type;
 		typedef BitVector::iterator iterator;
 
-		const_iterator () : _ref (std::vector<unsigned long>::const_iterator (), 0UL) {}
-		const_iterator (std::vector<unsigned long>::const_iterator word, uint8 position) : _ref (word, position) {}
-		const_iterator (const const_iterator &i) : _ref (i._ref._word, i._ref._pos) {}
+		const_iterator () :
+			_ref (std::vector<unsigned long>::const_iterator (), 0UL)
+		{}
+		const_iterator (std::vector<unsigned long>::const_iterator word, uint8 position) :
+			_ref (word, position)
+		{}
+		const_iterator (const const_iterator &i) :
+			_ref (i._ref._word, i._ref._pos)
+		{}
 
-		const_iterator &operator = (const const_iterator &i) {
+		const_iterator &operator = (const const_iterator &i)
+		{
 			this->_ref._word = i._ref._word;
 			this->_ref._pos = i._ref._pos;
 			return *this;
 		}
 
-		const_iterator &operator = (const iterator &i) {
+		const_iterator &operator = (const iterator &i)
+		{
 			this->_ref._word = i._ref._word;
 			this->_ref._pos = i._ref._pos;
 			return *this;
@@ -482,19 +501,19 @@ namespace LinBox
 
 	/*
 	   namespace VectorWrapper
-	   {
-	   template <class Field, class Vector, class Trait>
-	   inline BitVector::reference refSpecialized
-	   (Vector &v, size_t i, VectorCategories::DenseZeroOneVectorTag<Trait>)
-	   { return v[i]; }
+{
+template <class Field, class Vector, class Trait>
+inline BitVector::reference refSpecialized
+(Vector &v, size_t i, VectorCategories::DenseZeroOneVectorTag<Trait>)
+{ return v[i]; }
 
-	   template <class Field, class Vector, class Trait>
-	   inline BitVector::const_reference constRefSpecialized
-	   (const Vector &v, size_t i, VectorCategories::DenseZeroOneVectorTag<Trait>)
-	   { return v[i]; }
+template <class Field, class Vector, class Trait>
+inline BitVector::const_reference constRefSpecialized
+(const Vector &v, size_t i, VectorCategories::DenseZeroOneVectorTag<Trait>)
+{ return v[i]; }
 
-	   }
-	   */
+}
+*/
 
 } // namespace LinBox
 

@@ -40,20 +40,26 @@
 
 namespace LinBox
 {
-// JGD 22.01.2007 : adapted from Lidzhade Fhulu's
-    template <typename EnumT, typename BaseEnumT>
-    struct InheritEnum {
-        InheritEnum() {}
-        InheritEnum(EnumT e) : enum_(e) {}
-        InheritEnum(BaseEnumT e) : baseEnum_(e) {}
-        explicit InheritEnum( int val ) : enum_(static_cast<EnumT>(val)) {}
-        operator EnumT() const { return enum_; }
-    private:
-        union {
-            EnumT enum_;
-            BaseEnumT baseEnum_;
-        };
-};
+	// JGD 22.01.2007 : adapted from Lidzhade Fhulu's
+	template <typename EnumT, typename BaseEnumT>
+	struct InheritEnum {
+		InheritEnum() {}
+		InheritEnum(EnumT e) :
+			enum_(e)
+		{}
+		InheritEnum(BaseEnumT e) :
+		       	baseEnum_(e)
+	       	{}
+		explicit InheritEnum( int val ) :
+		       	enum_(static_cast<EnumT>(val))
+	       	{}
+		operator EnumT() const { return enum_; }
+	private:
+		union {
+			EnumT enum_;
+			BaseEnumT baseEnum_;
+		};
+	};
 
 	struct Specifier {
 		/** Whether the system is known to be singular or nonsingular */
@@ -82,22 +88,22 @@ namespace LinBox
 			NO_PRECONDITIONER, BUTTERFLY, SPARSE, TOEPLITZ, SYMMETRIZE, PARTIAL_DIAGONAL, PARTIAL_DIAGONAL_SYMMETRIZE, FULL_DIAGONAL, DENSE
 		};
 
-                /** Other shapes :
-                 *  UNIMOD_UT -- unimodular upper triang. Toeplitz
-                 *  UNIMOD_LT -- unimodular lower triang. Toeplitz
-                 *  UNIMOD_UH -- unimodular upper triang. Hankel
-                 *  UNIMOD_LH -- unimodular lower triang. Hankel
-                 **/
-            	enum BlackboxShape {
-                    DIAGONAL = 15, HANKEL, UNIMOD_UT, UNIMOD_LT,  UNIMOD_UH,  UNIMOD_LH,  BLKVECTOR, TRI_SUP, TRI_INF
-            	};
+		/** Other shapes :
+		 *  UNIMOD_UT -- unimodular upper triang. Toeplitz
+		 *  UNIMOD_LT -- unimodular lower triang. Toeplitz
+		 *  UNIMOD_UH -- unimodular upper triang. Hankel
+		 *  UNIMOD_LH -- unimodular lower triang. Hankel
+		 **/
+		enum BlackboxShape {
+			DIAGONAL = 15, HANKEL, UNIMOD_UT, UNIMOD_LT,  UNIMOD_UH,  UNIMOD_LH,  BLKVECTOR, TRI_SUP, TRI_INF
+		};
 
-            	/** Shape of a Blackbox
-                 *  Precontioner shapes and
-                 *  other blackbox shape are
-                 *  combined
-                 **/
-            	typedef InheritEnum<BlackboxShape, Preconditioner> Shape;
+		/** Shape of a Blackbox
+		 *  Precontioner shapes and
+		 *  other blackbox shape are
+		 *  combined
+		 **/
+		typedef InheritEnum<BlackboxShape, Preconditioner> Shape;
 
 		/** Whether the rank of the system is known (otherwise its value) */
 		enum {
@@ -115,7 +121,7 @@ namespace LinBox
 		};
 
 		/** Linear-time pivoting or not for eliminations */
-                enum PivotStrategy {
+		enum PivotStrategy {
 			PIVOT_LINEAR, PIVOT_NONE
 		};
 
@@ -135,7 +141,7 @@ namespace LinBox
 			, _communicatorp( 0 )
 #endif
 			, _checkResult( true )
-		{}
+			{}
 
 		Specifier (const Specifier& s):
 			_preconditioner( s._preconditioner),
@@ -147,13 +153,13 @@ namespace LinBox
 			_ett( s._ett),
 			_blockingFactor( s._blockingFactor),
 			_strategy( s._strategy),
-                        _shape( s._shape),
+			_shape( s._shape),
 			_provensuccessprobability( s._provensuccessprobability)
 #ifdef __LINBOX_HAVE_MPI
 			, _communicatorp(s._communicatorp)
 #endif
 			, _checkResult( s._checkResult )
-		{}
+			{}
 
 		/** Accessors
 		 *
@@ -170,7 +176,7 @@ namespace LinBox
 		unsigned long	earlyTermThreshold ()	const { return _ett; }
 		unsigned long	blockingFactor ()	const { return _blockingFactor; }
 		PivotStrategy	strategy ()		const { return _strategy; }
-            	Shape		shape ()		const { return _shape; }
+		Shape		shape ()		const { return _shape; }
 		double		trustability ()		const { return _provensuccessprobability; }
 		bool		checkResult ()		const { return _checkResult; }
 #ifdef __LINBOX_HAVE_MPI
@@ -212,7 +218,7 @@ namespace LinBox
 		unsigned long  _ett;
 		unsigned long  _blockingFactor;
 		PivotStrategy  _strategy;
-            	Shape          _shape;
+		Shape          _shape;
 		double         _provensuccessprobability;
 		bool           _checkResult;
 #ifdef __LINBOX_HAVE_MPI
@@ -222,21 +228,28 @@ namespace LinBox
 
 	struct HybridSpecifier :public Specifier {
 		HybridSpecifier(){};
-		HybridSpecifier (const Specifier& m): Specifier(m){};
+		HybridSpecifier (const Specifier& m) :
+		       	Specifier(m)
+		{};
 #ifdef __LINBOX_HAVE_MPI
-		HybridSpecifier (Communicator& C): Specifier()
+		HybridSpecifier (Communicator& C) :
+		       	Specifier()
 		{ _communicatorp = &C; };
 #endif
 	};
 
 	struct BlackboxSpecifier :public Specifier {
 		BlackboxSpecifier(){};
-		BlackboxSpecifier (const Specifier& m): Specifier(m){};
+		BlackboxSpecifier (const Specifier& m) :
+		       	Specifier(m)
+		{};
 	};
 
 	struct EliminationSpecifier :public Specifier {
 		EliminationSpecifier(){};
-		EliminationSpecifier (const Specifier& m): Specifier(m){};
+		EliminationSpecifier (const Specifier& m) :
+		       	Specifier(m)
+		{};
 	};
 
 	struct WiedemannTraits : public Specifier {
@@ -264,7 +277,7 @@ namespace LinBox
 				 bool           certificate    = CERTIFY,
 				 unsigned long  maxTries       = 100,
 				 bool           checkResult    = true
-				 )
+				)
 
 		{ Specifier::_preconditioner = preconditioner;
 			Specifier::_rank =(rank);
@@ -276,23 +289,27 @@ namespace LinBox
 			Specifier::_checkResult = (checkResult);
 		}
 
-		WiedemannTraits( const Specifier& S) :  Specifier(S) {}
+		WiedemannTraits( const Specifier& S) :
+		      	Specifier(S)
+	       	{}
 	};
 
 	struct WiedemannExtensionTraits : public WiedemannTraits {
 		WiedemannExtensionTraits (
-				 bool           symmetric      = NON_SYMMETRIC,
-				 unsigned long  thres          = DEFAULT_EARLY_TERM_THRESHOLD,
-				 size_t         rank           = RANK_UNKNOWN,
-				 Preconditioner preconditioner = SPARSE,
-				 SingularState  singular       = SINGULARITY_UNKNOWN,
-				 bool           certificate    = CERTIFY,
-				 unsigned long  maxTries       = 100,
-				 bool           checkResult    = true
-				 )
-                        : WiedemannTraits(symmetric,thres,rank,preconditioner,singular,certificate,maxTries,checkResult)
-                {}
-		WiedemannExtensionTraits( const Specifier& S) :  WiedemannTraits(S) {}
+					  bool           symmetric      = NON_SYMMETRIC,
+					  unsigned long  thres          = DEFAULT_EARLY_TERM_THRESHOLD,
+					  size_t         rank           = RANK_UNKNOWN,
+					  Preconditioner preconditioner = SPARSE,
+					  SingularState  singular       = SINGULARITY_UNKNOWN,
+					  bool           certificate    = CERTIFY,
+					  unsigned long  maxTries       = 100,
+					  bool           checkResult    = true
+					 ) :
+			WiedemannTraits(symmetric,thres,rank,preconditioner,singular,certificate,maxTries,checkResult)
+		{}
+		WiedemannExtensionTraits( const Specifier& S) :
+			WiedemannTraits(S)
+		{}
 	};
 
 	struct LanczosTraits : public Specifier {
@@ -307,7 +324,9 @@ namespace LinBox
 		{ Specifier::_preconditioner =(preconditioner);
 			Specifier::_maxTries =(maxTries);
 		}
-		LanczosTraits( const Specifier& S) :  Specifier(S) {}
+		LanczosTraits( const Specifier& S) :
+		      	Specifier(S)
+	       	{}
 	};
 
 	struct BlockLanczosTraits : public Specifier {
@@ -328,7 +347,9 @@ namespace LinBox
 			Specifier::_blockingFactor = (blockingFactor);
 		}
 
-		BlockLanczosTraits( const Specifier& S) :  Specifier(S) {}
+		BlockLanczosTraits( const Specifier& S) :
+		      	Specifier(S)
+	       	{}
 	};
 
 	struct SparseEliminationTraits  : public Specifier {
@@ -337,10 +358,12 @@ namespace LinBox
 		 * @param strategy Pivoting strategy to use
 		 */
 		SparseEliminationTraits (PivotStrategy strategy = PIVOT_LINEAR) { Specifier::_strategy = (strategy) ;}
-		SparseEliminationTraits( const EliminationSpecifier& S) :  Specifier(S) {}
+		SparseEliminationTraits( const EliminationSpecifier& S) :
+		      	Specifier(S)
+	       	{}
 	};
 
-    	struct DixonTraits : public Specifier {
+	struct DixonTraits : public Specifier {
 
 		enum SolutionType {
 			DETERMINIST, RANDOM, DIOPHANTINE
@@ -361,11 +384,13 @@ namespace LinBox
 			Specifier::_rank=(rank);
 		}
 
-		DixonTraits( const Specifier& S) :  Specifier(S) {
+		DixonTraits( const Specifier& S) :
+		       	Specifier(S)
+		{
 			_solution= RANDOM;
 		}
 
-          	SolutionType solution () const { return _solution;}
+		SolutionType solution () const { return _solution;}
 
 		void solution (SolutionType s) { _solution= (s);}
 
@@ -380,7 +405,9 @@ namespace LinBox
 			Specifier::_preconditioner = preconditioner;
 			Specifier::_rank=rank;
 		}
-		BlockWiedemannTraits( const Specifier& S) :  Specifier(S) {}
+		BlockWiedemannTraits( const Specifier& S) :
+		       	Specifier(S)
+		{}
 	};
 
 	//Using numerical methods to symbolically solve linear systems.
@@ -392,7 +419,9 @@ namespace LinBox
 
 			Specifier::_rank=(rank) ;
 		}
-		NumericalTraits( const Specifier& S) :  Specifier(S) {}
+		NumericalTraits( const Specifier& S) :
+		       	Specifier(S)
+	       	{}
 	};
 
 	struct BlockHankelTraits : public Specifier {
@@ -402,28 +431,36 @@ namespace LinBox
 			Specifier::_preconditioner = preconditioner;
 			Specifier::_rank=rank;
 		}
-		BlockHankelTraits( const Specifier& S) :  Specifier(S) {}
+		BlockHankelTraits( const Specifier& S) :
+		       	Specifier(S)
+	       	{}
 	};
 
 	struct BlasEliminationTraits : public Specifier {
 		BlasEliminationTraits() {}
-		BlasEliminationTraits( const Specifier& S) :  Specifier(S) {}
+		BlasEliminationTraits( const Specifier& S) :
+		       	Specifier(S)
+	       	{}
 
 	};
 
 	struct BlasExtensionTraits : public BlasEliminationTraits {
-            	BlasExtensionTraits (bool           //certificate    = CERTIFY
-									 , unsigned long  //maxTries       = 100
-									 , bool         //checkResult    = true
-                                     )
-                        : BlasEliminationTraits()
-                {}
-            	BlasExtensionTraits( const Specifier& S) :  BlasEliminationTraits(S) {}
+		BlasExtensionTraits (bool           //certificate    = CERTIFY
+				     , unsigned long  //maxTries       = 100
+				     , bool         //checkResult    = true
+				    ) :
+			BlasEliminationTraits()
+		{}
+		BlasExtensionTraits( const Specifier& S) :
+		       	BlasEliminationTraits(S)
+	       	{}
 	};
 
 	struct NonBlasEliminationTraits : public Specifier {
 		NonBlasEliminationTraits() {}
-		NonBlasEliminationTraits( const Specifier& S) :  Specifier(S) {}
+		NonBlasEliminationTraits( const Specifier& S) :
+		       	Specifier(S)
+	       	{}
 
 	};
 
@@ -438,7 +475,7 @@ namespace LinBox
 		typedef BlockLanczosTraits	BlockLanczos;
 		typedef SparseEliminationTraits	SparseElimination;
 		typedef NumericalTraits		Numerical;
-            	typedef BlasEliminationTraits 	BlasElimination;
+		typedef BlasEliminationTraits 	BlasElimination;
 		typedef BlasExtensionTraits ExtensionBlasElimination;
 		typedef NonBlasEliminationTraits NonBlasElimination;
 		typedef DixonTraits             Dixon;
@@ -456,8 +493,8 @@ namespace LinBox
 
 	/** Solver traits
 	 *
-         * User-specified parameters for solving a linear system.
-         */
+	 * User-specified parameters for solving a linear system.
+	 */
 	struct SolverTraits : public Specifier {
 		/** Constructor
 		 *
@@ -473,7 +510,9 @@ namespace LinBox
 		 *
 		 * @param traits MethodTraits structure from which to get defaults
 		 */
-		SolverTraits( const Specifier& S) :  Specifier(S) {}
+		SolverTraits( const Specifier& S) :
+		       	Specifier(S)
+	       	{}
 	};
 
 	/** Exception thrown when the computed solution vector is not a true
@@ -487,8 +526,8 @@ namespace LinBox
 	template <class Vector>
 	class InconsistentSystem {
 	public:
-		InconsistentSystem (Vector &u)
-			: _u (u)
+		InconsistentSystem (Vector &u) :
+		       	_u (u)
 		{}
 
 		const Vector &certificate () const { return _u; }

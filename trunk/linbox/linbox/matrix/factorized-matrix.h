@@ -50,78 +50,78 @@ namespace LinBox
 	template <class Field>
 	class LQUPMatrix;
 
-	/// 
-	template <class Field, class Operand> 
+	///
+	template <class Field, class Operand>
 	class FactorizedMatrixLeftSolve {
 	public:
-		Operand& operator() ( const Field& F, 
-				      const LQUPMatrix<Field>& A, 
+		Operand& operator() ( const Field& F,
+				      const LQUPMatrix<Field>& A,
 				      Operand& X, const Operand& B ) const;
 		Operand& operator() ( const Field& F,
-				      const LQUPMatrix<Field>& A, 
+				      const LQUPMatrix<Field>& A,
 				      Operand& B ) const;
 	}; // end of class FactorizedMatrixLeftSolve
 
-	/// 
-	template <class Field, class Operand> 
+	///
+	template <class Field, class Operand>
 	class FactorizedMatrixRightSolve {
 	public:
-		Operand& operator() ( const Field& F, 
-				      const LQUPMatrix<Field>& A, 
+		Operand& operator() ( const Field& F,
+				      const LQUPMatrix<Field>& A,
 				      Operand& X, const Operand& B ) const;
-		Operand& operator() ( const Field& F, 
-				      const LQUPMatrix<Field>& A, 
+		Operand& operator() ( const Field& F,
+				      const LQUPMatrix<Field>& A,
 				      Operand& B ) const;
 	}; // end of class FactorizedMatrixRightSolve
 
 	///
-	template <class Field, class Operand> 
+	template <class Field, class Operand>
 	class FactorizedMatrixLeftLSolve {
 	public:
-		Operand& operator() ( const Field& F, 
+		Operand& operator() ( const Field& F,
 				      const LQUPMatrix<Field>& A,
 				      Operand& X, const Operand& B ) const;
-		Operand& operator() ( const Field& F, 
+		Operand& operator() ( const Field& F,
 				      const LQUPMatrix<Field>& A,
 				      Operand& B ) const;
 	}; // end of class FactorizedMatrixLeftLSolve
 
 	///
-	template <class Field, class Operand> 
+	template <class Field, class Operand>
 	class FactorizedMatrixRightLSolve {
 	public:
-		Operand& operator() ( const Field& F, 
+		Operand& operator() ( const Field& F,
 				      const LQUPMatrix<Field>& A,
 				      Operand& X, const Operand& B ) const;
-		Operand& operator() ( const Field& F, 
+		Operand& operator() ( const Field& F,
 				      const LQUPMatrix<Field>& A,
 				      Operand& B ) const;
 	}; // end of class FactorizedMatrixRightLsolve
 
 	///
-	template <class Field, class Operand> 
+	template <class Field, class Operand>
 	class FactorizedMatrixLeftUSolve {
 	public:
-		Operand& operator() ( const Field& F, 
+		Operand& operator() ( const Field& F,
 				      const LQUPMatrix<Field>& A,
 				      Operand& X, const Operand& B ) const;
-		Operand& operator() ( const Field& F, 
+		Operand& operator() ( const Field& F,
 				      const LQUPMatrix<Field>& A,
 				      Operand& B ) const;
 	}; // end of class FactorizedMatrixLeftUSolve
 
 	///
-	template <class Field, class Operand> 
+	template <class Field, class Operand>
 	class FactorizedMatrixRightUSolve {
 	public:
-		Operand& operator() ( const Field& F, 
+		Operand& operator() ( const Field& F,
 				      const LQUPMatrix<Field>& A,
 				      Operand& X, const Operand& B ) const;
-		Operand& operator() ( const Field& F, 
+		Operand& operator() ( const Field& F,
 				      const LQUPMatrix<Field>& A,
 				      Operand& B ) const;
 	}; // end of class FactorizedMatrixRightUSolve
-	
+
 	///
 	template <class Field>
 	class LQUPMatrix {
@@ -135,60 +135,64 @@ namespace LinBox
 		Field                   _F;
 		BlasMatrix<Element>    &_LU;
 		BlasPermutation         _PP;
-		BlasPermutation         _QQ;  //note: this is actually Qt! 
+		BlasPermutation         _QQ;  //note: this is actually Qt!
 		size_t                  _m;
 		size_t                  _n;
 		size_t               _rank;
 		bool                 _alloc;
-    
+
 	public:
 
 
 		// Contruction of LQUP factorization of A (making a copy of A)
-		LQUPMatrix (const Field& F, const BlasMatrix<Element>& A)
-			: _F(F), _LU(*(new BlasMatrix<Element> (A))) ,
+		LQUPMatrix (const Field& F, const BlasMatrix<Element>& A) :
+		       	_F(F), _LU(*(new BlasMatrix<Element> (A))) ,
 			  _PP(A.coldim()), _QQ(A.rowdim()), _m(A.rowdim()),
-			  _n(A.coldim()), _alloc(true)  {
+			  _n(A.coldim()), _alloc(true)
+		{
 			//std::cerr<<"Je passe par le constructeur const"<<std::endl;
 
-			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans, _m, _n, 
-						 _LU.getPointer(),_LU.getStride(), 
+			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans, _m, _n,
+						 _LU.getPointer(),_LU.getStride(),
 						 _PP.getWritePointer(), _QQ.getWritePointer(), FFPACK::FfpackLQUP );
-			
+
 		}
 
 		// Contruction of LQUP factorization of A (in-place in A)
-		LQUPMatrix (const Field& F, BlasMatrix<Element>& A)
-			: _F(F), _LU(A) , _PP(A.coldim()), _QQ(A.rowdim()), 
-			  _m(A.rowdim()), _n(A.coldim()), _alloc(false) {
+		LQUPMatrix (const Field& F, BlasMatrix<Element>& A) :
+		       	_F(F), _LU(A) , _PP(A.coldim()), _QQ(A.rowdim()),
+			  _m(A.rowdim()), _n(A.coldim()), _alloc(false)
+		{
 			//std::cerr<<"Je passe par le constructeur non const"<<std::endl;
-			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, _m, _n, 
-						 _LU.getPointer(),_LU.getStride(), 
+			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, _m, _n,
+						 _LU.getPointer(),_LU.getStride(),
 						 _PP.getWritePointer(), _QQ.getWritePointer(), FFPACK::FfpackLQUP );
-			
+
 		}
 
 		// Contruction of LQUP factorization of A (making a copy of A)
-		LQUPMatrix (const BlasBlackbox<Field>& A)
-			: _F(A.field()), _LU(*(new BlasMatrix<Element> (A))) ,
+		LQUPMatrix (const BlasBlackbox<Field>& A) :
+		       	_F(A.field()), _LU(*(new BlasMatrix<Element> (A))) ,
 			  _PP(A.coldim()), _QQ(A.rowdim()), _m(A.rowdim()),
-			  _n(A.coldim()), _alloc(true)  {
-			
-			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans,  _m, _n, 
-						 _LU.getPointer(),_LU.getStride(), 
+			  _n(A.coldim()), _alloc(true)
+		{
+
+			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans,  _m, _n,
+						 _LU.getPointer(),_LU.getStride(),
 						 _PP.getWritePointer(), _QQ.getWritePointer(), FFPACK::FfpackLQUP );
 		}
 
 		// Contruction of LQUP factorization of A (in-place in A)
-		LQUPMatrix (BlasBlackbox<Field>& A)
-			: _F(A.field()), _LU(static_cast<BlasMatrix<Element>&> (A)) , _PP(A.coldim()), _QQ(A.rowdim()), 
-			  _m(A.rowdim()), _n(A.coldim()), _alloc(false) {
-			
-			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans, _m, _n, 
-						 _LU.getPointer(),_LU.getStride(), 
+		LQUPMatrix (BlasBlackbox<Field>& A) :
+		       	_F(A.field()), _LU(static_cast<BlasMatrix<Element>&> (A)) , _PP(A.coldim()), _QQ(A.rowdim()),
+			  _m(A.rowdim()), _n(A.coldim()), _alloc(false)
+		{
+
+			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans, _m, _n,
+						 _LU.getPointer(),_LU.getStride(),
 						 _PP.getWritePointer(), _QQ.getWritePointer(), FFPACK::FfpackLQUP );
 		}
-		
+
 
 		~LQUPMatrix () {
 			if (_alloc)
@@ -203,18 +207,18 @@ namespace LinBox
 
 		// get column dimension
 		size_t coldim() const {return _n;}
-    
+
 		// get the rank of matrix
 		size_t getrank() const {return _rank;}
-    
+
 		// get the permutation P
 		const BlasPermutation& getP() const {return _PP;}
-       
+
 		/** @brief get the <i>transpose</i> of the permutation \p Q
 		 * @warning this does not return \p Q itself! (because it is more difficult to compute)
 		 * If needed, \p Q can be obtained as a \p TransposedBlasMatrix from the return value
 		 *
-		 * One reason this confusion exists is that left-multiplying by a permuation matrix 
+		 * One reason this confusion exists is that left-multiplying by a permuation matrix
 		 * corresponds to a row permuation \f$\pi \in S_n\f$, while right-multiplying by the same matrix
 		 * corresponds to the inverse column permutation \f$\pi^{-1}\f$!
 		 * Usually this is handled intelligently (eg by \c applyP) but you must be careful with \c getQ().
@@ -258,19 +262,19 @@ namespace LinBox
 		Operand& right_solve(Operand& X, const Operand& B) const {
 			return FactorizedMatrixRightSolve<Field,Operand>()( _F, *this, X, B );
 		}
-		
+
 		// solve XA=B (X is stored in B)
 		template <class Operand>
 		Operand& right_solve(Operand& B) const{
 			return FactorizedMatrixRightSolve<Field,Operand>()( _F, *this, B );
 		}
-		
+
 		// solve LX=B (L from LQUP)
 		template <class Operand>
 		Operand& left_Lsolve(Operand& X, const Operand& B) const{
 			return FactorizedMatrixLeftLSolve<Field,Operand>()( _F, *this, X, B );
 		}
-		
+
 		// solve LX=B (L from LQUP) (X is stored in B)
 		template <class Operand>
 		Operand& left_Lsolve(Operand& B) const{
@@ -282,19 +286,19 @@ namespace LinBox
 		Operand& right_Lsolve(Operand& X, const Operand& B) const{
 			return FactorizedMatrixRightLSolve<Field,Operand>()( _F, *this, X, B );
 		}
-		
+
 		// solve XL=B (L from LQUP) (X is stored in B)
 		template <class Operand>
 		Operand& right_Lsolve(Operand& B) const{
 			return FactorizedMatrixRightLSolve<Field,Operand>()( _F, *this, B );
 		}
-		
+
 		// solve UX=B (U from LQUP is r by r)
 		template <class Operand>
 		Operand& left_Usolve(Operand& X, const Operand& B) const{
 			return FactorizedMatrixLeftUSolve<Field,Operand>()( _F, *this, X, B );
 		}
-		
+
 		// solve UX=B (U from LQUP) (X is stored in B)
 		template <class Operand>
 		Operand& rleft_Usolve(Operand& B) const{
@@ -306,7 +310,7 @@ namespace LinBox
 		Operand& right_Usolve(Operand& X, const Operand& B) const{
 			return FactorizedMatrixRightUSolve<Field,Operand>()( _F, *this, X, B );
 		}
-		
+
 		// solve XU=B (U from LQUP) (X is stored in B)
 		template <class Operand>
 		Operand& right_Usolve(Operand& B) const{

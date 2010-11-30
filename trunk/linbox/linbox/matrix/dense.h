@@ -80,16 +80,16 @@ namespace LinBox
 		};
 
 		///
-		DenseMatrixBase ()
-		: _rows (0), _cols (0)
+		DenseMatrixBase () :
+			_rows (0), _cols (0)
 		{}
 
 		/** Constructor.
 		 * @param  m  row dimension
 		 * @param  n  column dimension
 		 */
-		DenseMatrixBase (size_t m, size_t n)
-		: _rep (m * n), _rows (m), _cols (n), _ptr(&_rep[0])
+		DenseMatrixBase (size_t m, size_t n) :
+			_rep (m * n), _rows (m), _cols (n), _ptr(&_rep[0])
 		{}
 
 		/** Constructor from a matrix stream */
@@ -97,8 +97,8 @@ namespace LinBox
 		DenseMatrixBase( MatrixStream<Field>& ms );
 
 		///
-		DenseMatrixBase (const DenseMatrixBase &M)
-		: _rep (M._rep),_rows (M._rows), _cols (M._cols), _ptr(&_rep[0])
+		DenseMatrixBase (const DenseMatrixBase &M) :
+			_rep (M._rep),_rows (M._rows), _cols (M._cols), _ptr(&_rep[0])
 		{}
 
 		~DenseMatrixBase(){}

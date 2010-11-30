@@ -75,9 +75,10 @@ namespace LinBox
 
 		ModularBalanced () {}
 
-		ModularBalanced (int32 p, int exp = 1)  : modulus((double)p),
-							  half_mod( (p-1.)/2),
-							  lmodulus (p)
+		ModularBalanced (int32 p, int exp = 1) :
+			modulus((double)p),
+			half_mod( (p-1.)/2),
+			lmodulus (p)
 		{
 			if(modulus <= 1)
 				throw PreconditionFailed(__FUNCTION__,
@@ -93,9 +94,11 @@ namespace LinBox
 							  "modulus is too big");
 		}
 
-		ModularBalanced (double p) : modulus (p),
-					     half_mod ((p-1)/2),
-					     lmodulus ((unsigned long)p) {
+		ModularBalanced (double p) :
+			modulus (p),
+			half_mod ((p-1)/2),
+			lmodulus ((unsigned long)p)
+		{
 			if (modulus <= 1)
 				throw PreconditionFailed(__FUNCTION__,
 							 __LINE__,
@@ -107,9 +110,11 @@ namespace LinBox
 							  "modulus is too big");
 		}
 
-		ModularBalanced (long int p) : modulus((double)p),
-					       half_mod ((p-1)/2),
-					       lmodulus(p) {
+		ModularBalanced (long int p) :
+			modulus((double)p),
+			half_mod ((p-1)/2),
+			lmodulus(p)
+		{
 			if ((double) modulus <= 1)
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			integer max;
@@ -119,12 +124,14 @@ namespace LinBox
 							  "modulus is too big");
 		}
 
-		ModularBalanced (const integer& p) : modulus((double) p),
-						     half_mod ((p-1)/2),
-						     lmodulus(p){
+		ModularBalanced (const integer& p) :
+			modulus((double) p),
+			half_mod ((p-1)/2),
+			lmodulus(p)
+		{
 			if(modulus <= 1)
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
-	             	if(modulus > getMaxModulus())
+			if(modulus > getMaxModulus())
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 
 		}
@@ -146,24 +153,29 @@ namespace LinBox
 			return c = integer(modulus);
 		}
 
-		inline integer &characteristic (integer &c) const {
+		inline integer &characteristic (integer &c) const
+		{
 			return c = integer(modulus);
 		}
-		inline size_t characteristic () const {
+		inline size_t characteristic () const
+		{
 			return modulus;
 		}
 
 
-		inline integer &convert (integer &x, const Element &y) const {
+		inline integer &convert (integer &x, const Element &y) const
+		{
 			if ( y < 0. ) return x = integer (y + modulus) ;
 			else return x = integer (y);
 		}
 
-		inline double &convert (double &x, const Element& y) const {
+		inline double &convert (double &x, const Element& y) const
+		{
 			return x=y;
 		}
 
-		std::ostream &write (std::ostream &os) const {
+		std::ostream &write (std::ostream &os) const
+		{
 			return os << "balanced double mod " << int(modulus);
 		}
 
@@ -171,22 +183,24 @@ namespace LinBox
 			is >> modulus;
 			if(modulus <= 1)
 				throw PreconditionFailed (__FUNCTION__,
-							 __LINE__,
+							  __LINE__,
 							  "modulus must be > 1");
-		 	if(modulus > getMaxModulus())
+			if(modulus > getMaxModulus())
 				throw PreconditionFailed (__FUNCTION__,
-							 __LINE__,
-							 "modulus is too big");
+							  __LINE__,
+							  "modulus is too big");
 			return is;
 		}
 
-		std::ostream &write (std::ostream &os, const Element &x) const {
+		std::ostream &write (std::ostream &os, const Element &x) const
+		{
 			return os << int(x);
 		}
 
-		std::istream &read (std::istream &is, Element &x) const {
+		std::istream &read (std::istream &is, Element &x) const
+		{
 			integer tmp;
-                            // JGD : should'nt it be double tmp ???
+			// JGD : should'nt it be double tmp ???
 			is >> tmp;
 			init(x,tmp);
 			return is;
@@ -194,11 +208,12 @@ namespace LinBox
 
 
 		inline Element &init (Element &x, const integer &y) const  {
-// 			return x = (Element)mpz_fdiv_ui(y.get_mpz(),lmodulus );
+			// 			return x = (Element)mpz_fdiv_ui(y.get_mpz(),lmodulus );
 			return x = (Element)(y%lmodulus);
 		}
 
-		inline Element& init(Element& x, const double y =0) const {
+		inline Element& init(Element& x, const double y =0) const
+		{
 
 			x = fmod (y, modulus);
 			if (x > half_mod) return   x -= modulus;
@@ -206,29 +221,35 @@ namespace LinBox
 			else return x;
 		}
 
-		inline Element& assign(Element& x, const Element& y) const {
+		inline Element& assign(Element& x, const Element& y) const
+		{
 			return x = y;
 		}
 
-		inline bool areEqual (const Element &x, const Element &y) const {
+		inline bool areEqual (const Element &x, const Element &y) const
+		{
 			return x == y;
 		}
 
-		inline  bool isZero (const Element &x) const {
+		inline  bool isZero (const Element &x) const
+		{
 			return x == 0.;
 		}
 
-		inline bool isOne (const Element &x) const {
+		inline bool isOne (const Element &x) const
+		{
 			return x == 1.;
 		}
 
-		inline bool isMinusOne (const Element &x) const {
+		inline bool isMinusOne (const Element &x) const
+		{
 			return (x == -1.);
 		}
 
 		inline Element &add (Element &x,
 				     const Element &y,
-				     const Element &z) const {
+				     const Element &z) const
+		{
 			x = y + z;
 			if ( x > half_mod ) return x -= modulus;
 			if ( x < -half_mod ) return x += modulus;
@@ -237,29 +258,34 @@ namespace LinBox
 
 		inline Element &sub (Element &x,
 				     const Element &y,
-				     const Element &z) const {
+				     const Element &z) const
+		{
 			x = y - z;
 			if (x > half_mod) return x -= modulus;
 			if (x < -half_mod) return x += modulus;
 			return x;
 		}
 
-		inline Element &mul (Element &x, const Element &y, const Element &z) const {
+		inline Element &mul (Element &x, const Element &y, const Element &z) const
+		{
 			x = y * z;
 			return init (x,x);
 		}
 
-		inline Element &div (Element &x, const Element &y, const Element &z) const {
+		inline Element &div (Element &x, const Element &y, const Element &z) const
+		{
 			Element temp;
 			inv (temp, z);
 			return mul (x, y, temp);
 		}
 
-		inline Element &neg (Element &x, const Element &y) const {
+		inline Element &neg (Element &x, const Element &y) const
+		{
 			return x = -y;
 		}
 
-		inline Element &inv (Element &x, const Element &y) const {
+		inline Element &inv (Element &x, const Element &y) const
+		{
 			// The extended Euclidean algoritm
 			int x_int, y_int, q, tx, ty, temp;
 			x_int = int (modulus);
@@ -285,42 +311,50 @@ namespace LinBox
 		inline Element &axpy (Element &r,
 				      const Element &a,
 				      const Element &x,
-				      const Element &y) const {
+				      const Element &y) const
+		{
 			r = a * x + y;
 			return init (r, r);
 		}
 
-		inline Element &addin (Element &x, const Element &y) const {
+		inline Element &addin (Element &x, const Element &y) const
+		{
 			x += y;
 			if ( x > half_mod ) return x -= modulus;
 			if ( x < -half_mod ) return x += modulus;
 			return x;
 		}
 
-		inline Element &subin (Element &x, const Element &y) const {
+		inline Element &subin (Element &x, const Element &y) const
+		{
 			x -= y;
 			if ( x > half_mod ) return x -= modulus;
 			if ( x < -half_mod ) return x += modulus;
 			return x;
 		}
 
-		inline Element &mulin (Element &x, const Element &y) const {
+		inline Element &mulin (Element &x, const Element &y) const
+		{
 			return mul(x,x,y);
 		}
 
-		inline Element &divin (Element &x, const Element &y) const {
+		inline Element &divin (Element &x, const Element &y) const
+		{
 			return div(x,x,y);
 		}
 
-		inline Element &negin (Element &x) const {
+		inline Element &negin (Element &x) const
+		{
 			return x = -x;
 		}
 
-		inline Element &invin (Element &x) const {
+		inline Element &invin (Element &x) const
+		{
 			return inv (x, x);
 		}
 
-		inline Element &axpyin (Element &r, const Element &a, const Element &x) const {
+		inline Element &axpyin (Element &r, const Element &a, const Element &x) const
+		{
 			r += a * x;
 			return init (r, r);
 		}
@@ -346,7 +380,7 @@ namespace LinBox
 
 
 		static inline double getMaxModulus()
-			{ return 67108864.0; } // 2^26
+		{ return 67108864.0; } // 2^26
 
 	};
 
@@ -357,39 +391,47 @@ namespace LinBox
 		typedef double Element;
 		typedef ModularBalanced<double> Field;
 
-		FieldAXPY (const Field &F) : _F (F),
-					     _y(0.) , _bound( (double) ((1ULL << 53) - (int) (_F.modulus*_F.modulus))) {}
+		FieldAXPY (const Field &F) :
+			_F (F),
+			_y(0.) , _bound( (double) ((1ULL << 53) - (int) (_F.modulus*_F.modulus)))
+		{}
 
-		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F),
-		_y(faxpy._y), _bound(faxpy._bound) {}
+		FieldAXPY (const FieldAXPY &faxpy) :
+			_F (faxpy._F),
+			_y(faxpy._y), _bound(faxpy._bound)
+		{}
 
-		FieldAXPY<ModularBalanced<double> > &operator = (const FieldAXPY &faxpy) {
+		FieldAXPY<ModularBalanced<double> > &operator = (const FieldAXPY &faxpy)
+		{
 			_F = faxpy._F;
 			_y= faxpy._y;
 			_bound= faxpy._bound;
 			return *this;
 		}
 
-            inline Element& mulacc (const Element &a, const Element &x) {
-//                 Element tmp= a*x;
-//                 return accumulate(tmp);
-                return accumulate(a*x);
-            }
+		inline Element& mulacc (const Element &a, const Element &x)
+		{
+			//                 Element tmp= a*x;
+			//                 return accumulate(tmp);
+			return accumulate(a*x);
+		}
 
-            inline Element& accumulate (const Element &tmp) {
-                _y += tmp;
-                if (_y > _bound)
-                    return _y = fmod (_y, _F.modulus);
-                else
-                    return _y;
-            }
-            inline Element& subumulate (const Element &tmp) {
-                _y -= tmp;
-                if (_y < 0)
-                    return _y += _F.modulus;
-                else
-                    return _y;
-            }
+		inline Element& accumulate (const Element &tmp)
+		{
+			_y += tmp;
+			if (_y > _bound)
+				return _y = fmod (_y, _F.modulus);
+			else
+				return _y;
+		}
+		inline Element& subumulate (const Element &tmp)
+		{
+			_y -= tmp;
+			if (_y < 0)
+				return _y += _F.modulus;
+			else
+				return _y;
+		}
 
 		inline Element& get (Element &y) {
 			_y = fmod (_y, _F.modulus);
@@ -405,13 +447,13 @@ namespace LinBox
 			_y = 0.;
 		}
 
-            inline Element& set (const Element &tmp) {
-                _y = tmp;
-                if (_y > _bound)
-                    return _y = fmod (_y, _F.modulus);
-                else
-                    return _y;
-            }
+		inline Element& set (const Element &tmp) {
+			_y = tmp;
+			if (_y > _bound)
+				return _y = fmod (_y, _F.modulus);
+			else
+				return _y;
+		}
 
 	private:
 
@@ -429,15 +471,16 @@ namespace LinBox
 
 	public:
 		typedef double Element;
-		DotProductDomain (const ModularBalanced<double> &F)
-			: VectorDomainBase<ModularBalanced<double> > (F), _bound( (double) ( (1ULL<<53) - (int) (_F.modulus*_F.modulus)))
-			{
-				_nmax= (size_t)floor((double(1<<26)* double(1<<26)*2.)/ (_F.modulus * _F.modulus));
-			}
+		DotProductDomain (const ModularBalanced<double> &F) :
+			VectorDomainBase<ModularBalanced<double> > (F), _bound( (double) ( (1ULL<<53) - (int) (_F.modulus*_F.modulus)))
+		{
+			_nmax= (size_t)floor((double(1<<26)* double(1<<26)*2.)/ (_F.modulus * _F.modulus));
+		}
 
 	protected:
 		template <class Vector1, class Vector2>
-		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const {
+		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const
+		{
 
 			double y = 0.;
 			double t = 0.;
@@ -463,7 +506,8 @@ namespace LinBox
 		}
 
 		template <class Vector1, class Vector2>
-		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const {
+		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const
+		{
 
 			double y = 0.;
 			double t =0.;

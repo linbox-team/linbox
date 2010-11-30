@@ -47,22 +47,23 @@ namespace LinBox
 
 	template <class _Field, class JIT_EntryGenerator>
 	class JIT_Matrix {
-	  public:
+	public:
 
 		typedef _Field Field;
 		typedef typename Field::Element Element;
 		typedef MatrixCategories::BlackboxTag MatrixCategory;
 
-/**
- * m by n matrix is constructed.
- * JIT(Field::Element& e, size_t i, size_t j) is a function object which
- * assigns the i,j entry to e (and returns a reference to e)
- * and must be valid for 0 <= i < m, 0 <= j < n.
- **/
+		/**
+		 * m by n matrix is constructed.
+		 * JIT(Field::Element& e, size_t i, size_t j) is a function object which
+		 * assigns the i,j entry to e (and returns a reference to e)
+		 * and must be valid for 0 <= i < m, 0 <= j < n.
+		 **/
 
 		JIT_Matrix (_Field& F, const size_t m, const size_t n,
-                            const JIT_EntryGenerator& JIT)
-		: _F(F), _m(m), _n(n), _gen(JIT){};
+			    const JIT_EntryGenerator& JIT) :
+			_F(F), _m(m), _n(n), _gen(JIT)
+		{};
 
 		template<class OutVector, class InVector>
 		OutVector& apply (OutVector& y, const InVector& x) ;
@@ -76,7 +77,7 @@ namespace LinBox
 		size_t coldim (void) const { return _n; }
 		const Field& field() const { return _F; }
 
-      protected:
+	protected:
 
 		// Field for arithmetic
 		Field _F;
@@ -95,16 +96,15 @@ namespace LinBox
 
 	template <class Field, class JIT_EntryGenerator>
 	template <class OutVector, class InVector>
-	inline OutVector& JIT_Matrix<Field, JIT_EntryGenerator>
-		::apply (OutVector& y, const InVector& x)
+	inline OutVector& JIT_Matrix<Field, JIT_EntryGenerator>::apply (OutVector& y, const InVector& x)
 	{	Element entry;  _F.init(entry);
 		for (size_t i = 0; i < _m; ++i)
 		{   _F.init(y[i], 0);
-		    for (size_t j = 0; j < _n; ++j)
+			for (size_t j = 0; j < _n; ++j)
 			{
-			    _gen(entry, i, j);
+				_gen(entry, i, j);
 
-			    _F.axpyin (y[i], entry, x[j]);
+				_F.axpyin (y[i], entry, x[j]);
 			}
 		}
 		return y;
@@ -113,12 +113,11 @@ namespace LinBox
 
 	template <class Field, class JIT_EntryGenerator>
 	template <class OutVector, class InVector>
-	inline OutVector& JIT_Matrix<Field, JIT_EntryGenerator>
-		::applyTranspose (OutVector& y, const InVector& x)
+	inline OutVector& JIT_Matrix<Field, JIT_EntryGenerator>::applyTranspose (OutVector& y, const InVector& x)
 	{	Element entry;  _F.init(entry);
 		for (size_t i = 0; i < _m; ++i)
 		{   _F.init(y[i], 0);
-		    for (size_t j = 0; j < _n; ++j)
+			for (size_t j = 0; j < _n; ++j)
 			{ _F.axpyin ( y[i], x[j], _gen(entry, j, i) ); }
 		}
 		return y;
@@ -126,19 +125,21 @@ namespace LinBox
 
 
 
-// Example: Generator to create psuedo-random entries
-// !WARNING! repeated calls will give different values for the same entry
+	// Example: Generator to create psuedo-random entries
+	// !WARNING! repeated calls will give different values for the same entry
 
 	template < class Field >
 	class JIT_RandomEntryGenerator {
 		typename Field::RandIter _r;
-                size_t _b;
+		size_t _b;
 
-          public:
-		JIT_RandomEntryGenerator(Field& F, size_t b):_r(F), _b(b) {}
+	public:
+		JIT_RandomEntryGenerator(Field& F, size_t b) :
+			_r(F), _b(b)
+		{}
 
 		typename Field::Element& operator()(typename Field::Element& e,
-                   size_t k,  size_t l)
+						    size_t k,  size_t l)
 		{
 			return _r.random(e);
 		}

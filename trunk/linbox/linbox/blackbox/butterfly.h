@@ -69,7 +69,9 @@ namespace LinBox
 
 		/** No-Op Constructor
 		*/
-		Butterfly (const Field &F, size_t n) : _F (F), _VD (F), _n (n) {}
+		Butterfly (const Field &F, size_t n) :
+			_F (F), _VD (F), _n (n)
+		{}
 
 
 
@@ -145,7 +147,9 @@ namespace LinBox
 		};
 
 		template<typename _Tp1, typename _Sw1>
-		Butterfly (const Butterfly<_Tp1,_Sw1>& B, const Field &F) : _F (F), _VD (F), _n (B.rowdim()) {
+		Butterfly (const Butterfly<_Tp1,_Sw1>& B, const Field &F) :
+			_F (F), _VD (F), _n (B.rowdim())
+		{
 			typename Butterfly<_Tp1,_Sw1>::template rebind<Field>() (*this, B, F);
 		}
 
@@ -166,19 +170,25 @@ namespace LinBox
 		size_t coldim () const
 		{ return _n; }
 
-		const Field& field() const {return _F;}
+		const Field& field() const
+		{return _F;}
 
 
 		// Required for rebind
 		// Don't know how to tell that rebind should be friend ...
-		std::vector<size_t> n_vec() const { return this->_n_vec; }
-		std::vector<size_t> l_vec() const { return this->_l_vec; }
-		std::vector< std::pair< size_t, size_t > > indices() const { return this->_indices; }
+		std::vector<size_t> n_vec() const
+		{ return this->_n_vec; }
+		std::vector<size_t> l_vec() const
+		{ return this->_l_vec; }
+		std::vector< std::pair< size_t, size_t > > indices() const
+		{ return this->_indices; }
 		std::vector<size_t>& n_vec() { return this->_n_vec; }
 		std::vector<size_t>& l_vec() { return this->_l_vec; }
 		std::vector< std::pair< size_t, size_t > >& indices() { return this->_indices; }
-		typename std::vector<Switch>::const_iterator switchesBegin() const { return this->_switches.begin();}
-		typename std::vector<Switch>::const_iterator switchesEnd() const { return this->_switches.end(); }
+		typename std::vector<Switch>::const_iterator switchesBegin() const
+		{ return this->_switches.begin();}
+		typename std::vector<Switch>::const_iterator switchesEnd() const
+		{ return this->_switches.end(); }
 		std::vector<Switch>& switches() { return _switches; }
 
 
@@ -212,8 +222,8 @@ namespace LinBox
 	// Implementation of methods
 
 	template <class Field, class Switch>
-	inline Butterfly<Field, Switch>::Butterfly (const Field &F, size_t n, typename Switch::Factory &factory)
-	: _F (F), _VD (F), _n (n)
+	inline Butterfly<Field, Switch>::Butterfly (const Field &F, size_t n, typename Switch::Factory &factory) :
+		_F (F), _VD (F), _n (n)
 	{
 		buildIndices ();
 

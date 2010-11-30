@@ -213,8 +213,8 @@ namespace LinBox
 		 * @param traits @ref SolverTraits  structure describing user
 		 *               options for the solver
 		 */
-		WiedemannSolver (const Field &F, const WiedemannTraits &traits)
-		: _traits (traits), _F (F), _randiter (F), _VD (F)
+		WiedemannSolver (const Field &F, const WiedemannTraits &traits) :
+			_traits (traits), _F (F), _randiter (F), _VD (F)
 		{}
 
 		/** Constructor with a random iterator
@@ -225,8 +225,8 @@ namespace LinBox
 		 */
 		WiedemannSolver (const Field &F,
 				 const WiedemannTraits &traits,
-				 typename Field::RandIter r)
-		: _traits (traits), _F (F), _randiter (r), _VD (F)
+				 typename Field::RandIter r) :
+			_traits (traits), _F (F), _randiter (r), _VD (F)
 		{}
 
 		// @name Solvers

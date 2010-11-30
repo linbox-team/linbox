@@ -44,7 +44,7 @@ namespace LinBox
 	 */
 	template <class Element>
 	class ModularCrookedRandIter {
-	    public:
+	public:
 
 		/** Constructor from field, sampling size, and seed.
 		 * The random field element iterator works in the field F, is seeded
@@ -60,9 +60,9 @@ namespace LinBox
 		 *             generator (default = 0)
 		 */
 		ModularCrookedRandIter (const ModularCrooked<Element> &F,
-				 const integer &size = 0,
-				 const integer &seed = 0)
-			: _F (F), _size (size), _seed (seed)
+					const integer &size = 0,
+					const integer &seed = 0) :
+			_F (F), _size (size), _seed (seed)
 		{
 			if (_seed == 0) _seed = time (NULL);
 
@@ -74,8 +74,8 @@ namespace LinBox
 				_size = cardinality;
 
 			commentator.report (10, INTERNAL_DESCRIPTION)
-				<< "Created random generator with size " << _size
-				<< " and seed " << _seed << std::endl;
+			<< "Created random generator with size " << _size
+			<< " and seed " << _seed << std::endl;
 
 			// Seed random number generator
 			srand (_seed);
@@ -88,8 +88,9 @@ namespace LinBox
 		 * into functions.
 		 * @param  R ModularCrookedRandIter object.
 		 */
-		ModularCrookedRandIter (const ModularCrookedRandIter<Element> &R)
-			: _F (R._F), _size (R._size), _seed (R._seed) {}
+		ModularCrookedRandIter (const ModularCrookedRandIter<Element> &R) :
+			_F (R._F), _size (R._size), _seed (R._seed)
+		{}
 
 		/** Destructor.
 		 * This destructs the random field element generator object.
@@ -133,7 +134,7 @@ namespace LinBox
 			return (a = ElementEnvelope <ModularCrooked<Element> > (tmp));
 		}
 
-	    private:
+	private:
 		/// Field in which arithmetic is done
 		ModularCrooked<Element> _F;
 

@@ -58,11 +58,11 @@ namespace LinBox
 	 *               and partial template specialization.
 	 */
 	template <class Field,
-		 class Trait = typename VectorTraits<typename LinBox::Vector<Field>::Dense>::VectorCategory>
-		 class Diagonal {
-		 private:
-			 Diagonal () {}
-		 };
+	class Trait = typename VectorTraits<typename LinBox::Vector<Field>::Dense>::VectorCategory>
+	class Diagonal {
+	private:
+		Diagonal () {}
+	};
 
 
 	/** diagonal.h linbox/blackbox/diagonal.h
@@ -114,8 +114,8 @@ namespace LinBox
 
 
 		template<typename _Tp1>
-		struct rebind
-		{ typedef Diagonal<_Tp1, VectorCategories::DenseVectorTag> other;
+		struct rebind {
+			typedef Diagonal<_Tp1, VectorCategories::DenseVectorTag> other;
 
 			void operator() (other & Ap, const Self_t& A, const _Tp1& F)
 			{
@@ -131,8 +131,9 @@ namespace LinBox
 		};
 
 		template<typename _Tp1, typename _Vc1>
-		Diagonal(const Diagonal<_Tp1,_Vc1>& D, const Field& F)
-		: _F(F), _n(D.rowdim()), _v(D.rowdim()) {
+		Diagonal(const Diagonal<_Tp1,_Vc1>& D, const Field& F) :
+			_F(F), _n(D.rowdim()), _v(D.rowdim())
+		{
 			typename Diagonal<_Tp1,_Vc1>::template rebind<Field>() (*this, D, F);
 		}
 
@@ -195,15 +196,16 @@ namespace LinBox
 		 * @param j Column index
 		 * @return Reference to x
 		 */
-		Element &getEntry (Element &x, size_t i, size_t j) const {
+		Element &getEntry (Element &x, size_t i, size_t j) const
+		{
 			return (i==j?_F.assign(x,_v[i]):_F.init(x));
 		}
 
 
 
 		template<typename _Tp1>
-		struct rebind
-		{ typedef Diagonal<_Tp1, VectorCategories::SparseSequenceVectorTag> other;
+		struct rebind {
+			typedef Diagonal<_Tp1, VectorCategories::SparseSequenceVectorTag> other;
 			void operator() (other & Ap, const Self_t& A, const _Tp1& F)
 			{
 
@@ -218,8 +220,9 @@ namespace LinBox
 		};
 
 		template<typename _Tp1, typename _Vc1>
-		Diagonal(const Diagonal<_Tp1,_Vc1>& D, const Field& F)
-		: _F(F), _n(D.rowdim()), _v(D.rowdim()) {
+		Diagonal(const Diagonal<_Tp1,_Vc1>& D, const Field& F) :
+			_F(F), _n(D.rowdim()), _v(D.rowdim())
+		{
 			typename Diagonal<_Tp1,_Vc1>::template rebind<Field>() (*this, D, F);
 		}
 
@@ -277,15 +280,16 @@ namespace LinBox
 		 * @param j Column index
 		 * @return Reference to x
 		 */
-		Element &getEntry (Element &x, size_t i, size_t j) const {
+		Element &getEntry (Element &x, size_t i, size_t j) const
+		{
 			return (i==j?_F.assign(x,_v[i]):_F.init(x));
 		}
 
 
 
 		template<typename _Tp1>
-		struct rebind
-		{ typedef Diagonal<_Tp1, VectorCategories::SparseAssociativeVectorTag> other;
+		struct rebind {
+		       	typedef Diagonal<_Tp1, VectorCategories::SparseAssociativeVectorTag> other;
 			void operator() (other & Ap, const Self_t& A, const _Tp1& F)
 			{
 				Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);
@@ -299,8 +303,9 @@ namespace LinBox
 		};
 
 		template<typename _Tp1, typename _Vc1>
-		Diagonal(const Diagonal<_Tp1,_Vc1>& D, const Field& F)
-		: _F(F), _n(D.rowdim()), _v(D.rowdim()) {
+		Diagonal(const Diagonal<_Tp1,_Vc1>& D, const Field& F) :
+			_F(F), _n(D.rowdim()), _v(D.rowdim())
+		{
 			typename Diagonal<_Tp1,_Vc1>::template rebind<Field>() (*this, D, F);
 		}
 
@@ -326,17 +331,18 @@ namespace LinBox
 	// Method implementations for dense vectors
 
 	template <class Field>
-	inline Diagonal<Field, VectorCategories::DenseVectorTag >
-	::Diagonal(const Field F, const std::vector<typename Field::Element>& v)
-	: _F(F), _n(v.size()), _v(v)
+	inline Diagonal<Field, VectorCategories::DenseVectorTag >::Diagonal(const Field F,
+									    const std::vector<typename Field::Element>& v) :
+		_F(F), _n(v.size()), _v(v)
 	{}
 
 
 	template <class _Field>
-	inline Diagonal<_Field, VectorCategories::DenseVectorTag>
-	::Diagonal(const Field F, const size_t n, bool nonsing)
-	: _F(F), _n(n), _v(n)
-	{   typename Field::RandIter r(F);
+	inline Diagonal<_Field, VectorCategories::DenseVectorTag>::Diagonal(const Field F,
+									    const size_t n, bool nonsing) :
+		_F(F), _n(n), _v(n)
+	{
+		typename Field::RandIter r(F);
 		typedef typename std::vector<typename Field::Element>::iterator iter;
 		if (nonsing)
 			randomNonsingular();
@@ -350,28 +356,32 @@ namespace LinBox
 
 
 	template <class Field>
-	inline Diagonal<Field, VectorCategories::DenseVectorTag >
-	::Diagonal(const Field F, const size_t n, typename Field::RandIter& iter)
-	: _F(F), _n(n), _v(n)
-	{	//for (typename std::vector<typename Field::Element>::iterator
-		//		i = _v.begin(); i != _v.end(); ++i)
-		//	iter.random(*i);
+	inline Diagonal<Field, VectorCategories::DenseVectorTag >::Diagonal(const Field F,
+									    const size_t n,
+									    typename Field::RandIter& iter) :
+		_F(F), _n(n), _v(n)
+	{
+#if 0
+		for (typename std::vector<typename Field::Element>::iterator
+		     i = _v.begin(); i != _v.end(); ++i)
+			iter.random(*i);
+#endif
 		random();
 	}
 
 	template <class _Field>
-	inline void Diagonal<_Field, VectorCategories::DenseVectorTag>
-	::random()
-	{   typename Field::RandIter r(_F);
+	inline void Diagonal<_Field, VectorCategories::DenseVectorTag>::random()
+	{
+		typename Field::RandIter r(_F);
 		typedef typename std::vector<typename Field::Element>::iterator iter;
 		for (iter i = _v.begin(); i < _v.end(); ++i)
 			r.random(*i);
 	}
 
 	template <class _Field>
-	inline void Diagonal<_Field, VectorCategories::DenseVectorTag>
-	::randomNonsingular()
-	{   typename Field::RandIter r(_F);
+	inline void Diagonal<_Field, VectorCategories::DenseVectorTag>::randomNonsingular()
+	{
+		typename Field::RandIter r(_F);
 		typedef typename std::vector<typename Field::Element>::iterator iter;
 		for (iter i = _v.begin(); i < _v.end(); ++i)
 			while (_F.isZero(r.random(*i))) ;
@@ -379,8 +389,8 @@ namespace LinBox
 
 	template <class Field>
 	template <class OutVector, class InVector>
-	inline OutVector &Diagonal<Field, VectorCategories::DenseVectorTag >
-	::apply (OutVector &y, const InVector &x) const
+	inline OutVector &Diagonal<Field, VectorCategories::DenseVectorTag >::apply (OutVector &y,
+										     const InVector &x) const
 	{
 		linbox_check (_n == x.size ());
 
@@ -406,15 +416,14 @@ namespace LinBox
 	// Method implementations for sparse sequence vectors
 
 	template <class Field>
-	inline Diagonal<Field, VectorCategories::SparseSequenceVectorTag >
-	::Diagonal(const Field F, const std::vector<typename Field::Element>& v)
-	: _F(F), _n(v.size()), _v(v)
+	inline Diagonal<Field, VectorCategories::SparseSequenceVectorTag >::Diagonal(const Field F,
+										     const std::vector<typename Field::Element>& v) :
+		_F(F), _n(v.size()), _v(v)
 	{}
 
 	template <class Field>
 	template<class OutVector, class InVector>
-	inline OutVector &Diagonal<Field, VectorCategories::SparseSequenceVectorTag >
-	::apply(OutVector& y, const InVector& x) const
+	inline OutVector &Diagonal<Field, VectorCategories::SparseSequenceVectorTag >::apply(OutVector& y, const InVector& x) const
 	{
 		linbox_check ((!x.empty ()) && (_n >= x.back ().first));
 
@@ -448,15 +457,13 @@ namespace LinBox
 	// Method implementations for sparse associative vectors
 
 	template <class Field>
-	inline Diagonal<Field, VectorCategories::SparseAssociativeVectorTag >
-	::Diagonal(const Field F, const std::vector<typename Field::Element>& v)
-	: _F(F), _n(v.size()), _v(v)
+	inline Diagonal<Field, VectorCategories::SparseAssociativeVectorTag >::Diagonal(const Field F, const std::vector<typename Field::Element>& v) :
+		_F(F), _n(v.size()), _v(v)
 	{}
 
 	template <class Field>
 	template<class OutVector, class InVector>
-	inline OutVector& Diagonal<Field, VectorCategories::SparseAssociativeVectorTag >
-	::apply(OutVector& y, const InVector& x) const
+	inline OutVector& Diagonal<Field, VectorCategories::SparseAssociativeVectorTag >::apply(OutVector& y, const InVector& x) const
 	{
 		linbox_check ((!x.empty ()) && (_n >= x.rbegin ()->first));
 

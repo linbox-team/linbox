@@ -21,9 +21,9 @@
  * Boston, MA 02111-1307, USA.
  */
 
-// ======================================================================= 
+// =======================================================================
 // Sparse Vector      : vector< Pair<T> > and an additional actual size
-// ======================================================================= 
+// =======================================================================
 #ifndef __LINBOX_sparse_vector_H
 #define __LINBOX_sparse_vector_H
 #include <iostream>
@@ -50,45 +50,53 @@
 
 namespace LinBox
 {
-// ---------------------------------------------------
-//
-/** \brief vector< Pair<T,I> > and actualsize
-\ingroup vector
-*/
-template<class T, class I = unsigned int>
-class Sparse_Vector : public _IBB_VECTOR_< _IBB_PAIR_<I, T> > {
-public:
-    typedef _IBB_PAIR_<I, T>       Element;
-    typedef T                      Type_t;
-    typedef Sparse_Vector<T, I>    Self_t;
+	// ---------------------------------------------------
+	//
+	/** \brief vector< Pair<T,I> > and actualsize
+	  \ingroup vector
+	  */
+	template<class T, class I = unsigned int>
+	class Sparse_Vector : public _IBB_VECTOR_< _IBB_PAIR_<I, T> > {
+	public:
+		typedef _IBB_PAIR_<I, T>       Element;
+		typedef T                      Type_t;
+		typedef Sparse_Vector<T, I>    Self_t;
 
-    // Dan Roche 6-30-04
-    typedef VectorCategories::SparseSequenceVectorTag VectorCategory;
-
-
-    Sparse_Vector() {};
-    Sparse_Vector(size_t n) : _IBB_VECTOR_< _IBB_PAIR_<I, T> >(n), _rsize(0) {};
-    Sparse_Vector(size_t n, size_t rn) : _IBB_VECTOR_< _IBB_PAIR_<I, T> >(n), _rsize(rn) {};
-    ~Sparse_Vector() {};
-    
-            
-
-        /// Actual dimension of the vector, 0 for infinite or unknown
-    inline size_t actualsize() const { return _rsize; };            
-    inline size_t reactualsize( const size_t s ) { return _rsize = s; };
-    template<class XX> inline size_t reactualsize( const XX s ) { return _rsize = (size_t)s; };
-
-    friend inline std::ostream& operator<< (std::ostream& o, const Sparse_Vector<T, I> v) {
-        if (v.size())
-            for(long i=0;i<v.size();i++)
-                o << v[i] << std::endl;
-        return o;
-    }
+		// Dan Roche 6-30-04
+		typedef VectorCategories::SparseSequenceVectorTag VectorCategory;
 
 
-private:
-    size_t _rsize;
-};    
+		Sparse_Vector() {};
+		Sparse_Vector(size_t n) :
+			_IBB_VECTOR_< _IBB_PAIR_<I, T> >(n), _rsize(0)
+		{};
+		Sparse_Vector(size_t n, size_t rn) :
+			_IBB_VECTOR_< _IBB_PAIR_<I, T> >(n), _rsize(rn)
+		{};
+		~Sparse_Vector() {};
+
+
+
+		/// Actual dimension of the vector, 0 for infinite or unknown
+		inline size_t actualsize() const { return _rsize; };
+		inline size_t reactualsize( const size_t s ) { return _rsize = s; };
+		template<class XX> inline size_t reactualsize( const XX s )
+		{
+			return _rsize = (size_t)s;
+		}
+
+		friend inline std::ostream& operator<< (std::ostream& o, const Sparse_Vector<T, I> v)
+		{
+			if (v.size())
+				for(long i=0;i<v.size();i++)
+					o << v[i] << std::endl;
+			return o;
+		}
+
+
+	private:
+		size_t _rsize;
+	};
 
 } //end of namespace LinBox
 

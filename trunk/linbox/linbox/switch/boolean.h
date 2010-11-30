@@ -60,8 +60,8 @@ namespace LinBox
 		 * moving backwards.  Both repeat the vector after they pass through it.
 		 * @param switches vector of switches
 		 */
-		BooleanSwitch (const bool s)
-		: _s (s)
+		BooleanSwitch (const bool s) :
+		       	_s (s)
 		{}
 
 		/** Destructor.
@@ -117,8 +117,8 @@ namespace LinBox
 	public:
 		/** Constructor from an STL vector of bools
 		*/
-		BooleanSwitchFactory (const std::vector<bool> &switches)
-		: _switches (switches), _iter (switches.begin ())
+		BooleanSwitchFactory (const std::vector<bool> &switches) :
+		       	_switches (switches), _iter (switches.begin ())
 		{}
 
 		/** Construct and return a boolean switch object

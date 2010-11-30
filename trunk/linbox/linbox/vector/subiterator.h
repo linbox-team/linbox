@@ -54,12 +54,12 @@ namespace LinBox
 		 *  underlying container.  It is up to the user to dereference the
 		 *  iterator only when it has a valid reference.
 		 */
-		Subiterator (const Iterator &iter, const difference_type& stride = 1)
-		: _iter (iter), _stride (stride) {}
+		Subiterator (const Iterator &iter, const difference_type& stride = 1) :
+		       	_iter (iter), _stride (stride) {}
 
 		template<class Iterator2>
-		Subiterator (const Subiterator<Iterator2>& iter)
-		: _iter (iter._iter), _stride (iter._stride) {}
+		Subiterator (const Subiterator<Iterator2>& iter) :
+		       	_iter (iter._iter), _stride (iter._stride) {}
 
 
 		template<class Iterator2>

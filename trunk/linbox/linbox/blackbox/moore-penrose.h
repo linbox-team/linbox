@@ -54,13 +54,14 @@ namespace LinBox
 	 */
 	template <class Blackbox>
 	class MoorePenrose : public BlackboxInterface {
-	    public:
+	public:
 
 		typedef typename Blackbox::Field Field;
 		typedef typename Blackbox::Element Element;
-            template<typename _Tp1>
-            struct rebind
-            { typedef MoorePenrose<typename Blackbox::template rebind<_Tp1>::other> other; };
+		template<typename _Tp1>
+		struct rebind {
+		       	typedef MoorePenrose<typename Blackbox::template rebind<_Tp1>::other> other;
+		};
 
 
 		/** Constructor from field and dense vector of field elements.
@@ -70,8 +71,8 @@ namespace LinBox
 		 * @param rowdim Row dimension
 		 * @param coldim Column dimension
 		 */
-		MoorePenrose (const Blackbox *A, size_t rank)
-			: _A (A), _rank (rank)
+		MoorePenrose (const Blackbox *A, size_t rank) :
+			_A (A), _rank (rank)
 		{
 			_B1 = new Submatrix<Blackbox> (_A, 0, 0, rank, rank);
 			_F = new Submatrix<Blackbox> (_A, 0, 0, _A->rowdim (), rank);
@@ -85,9 +86,9 @@ namespace LinBox
 		}
 
 		/** Copy constructor
-		 */
-		MoorePenrose (const MoorePenrose &A)
-			: _A (A._A),
+		*/
+		MoorePenrose (const MoorePenrose &A) :
+			_A (A._A),
 			_B1 (A._B1),
 			_F (A._F),
 			_GG (A._GG),
@@ -98,10 +99,10 @@ namespace LinBox
 			_FTFinv (A._FTFinv),
 			_GGTinv (A._GGTinv),
 			_rank (A._rank)
-			{}
+		{}
 
 		/** Destructor
-		 */
+		*/
 		~MoorePenrose ()
 		{
 			delete _GGTinv;
@@ -126,7 +127,7 @@ namespace LinBox
 		 * @param  x constant reference to vector to contain input
 		 */
 		template <class OutVector, class InVector>
-	        OutVector& apply (OutVector &y, const InVector& x) const
+		OutVector& apply (OutVector &y, const InVector& x) const
 		{
 			InVector _z1 (_rank);
 			InVector _z2 (_rank);
@@ -169,18 +170,18 @@ namespace LinBox
 		 * @return integer number of _rows of black box matrix.
 		 */
 		size_t rowdim (void) const
-			{ return _A->coldim (); }
+		{ return _A->coldim (); }
 
 		/** Retreive _column dimensions of BlackBox matrix.
 		 * Required by abstract base class.
 		 * @return integer number of _columns of black box matrix.
 		 */
 		size_t coldim (void) const
-			{ return _A->rowdim (); }
+		{ return _A->rowdim (); }
 
 		const Field& field() { return _A -> field(); }
 
-	    private:
+	private:
 
 		const Blackbox  *_A;
 		Submatrix<Blackbox>  *_B1;

@@ -88,9 +88,9 @@ namespace LinBox
 		 * construct multiple field objects
 		 */
 
-		GMPRationalField (const GMPRationalField &)
-		: _cardinality (0), _characteristic (0), _zero (0), _one (1), _neg_one (-1),
-		zero (_zero, _one), one (_one, _one), neg_one (_neg_one, _one)
+		GMPRationalField (const GMPRationalField &) :
+			_cardinality (0), _characteristic (0), _zero (0), _one (1), _neg_one (-1),
+			zero (_zero, _one), one (_one, _one), neg_one (_neg_one, _one)
 		{}
 
 		/** Destructor.
@@ -663,9 +663,9 @@ namespace LinBox
 
 		//@} Common Object Interface
 
-		GMPRationalField (int p = 0, int exp = 1)
-		: _cardinality (0), _characteristic (0), _zero (0), _one (1), _neg_one (-1),
-		zero (_zero, _one), one (_one, _one), neg_one (_neg_one, _one)
+		GMPRationalField (int p = 0, int exp = 1) :
+			_cardinality (0), _characteristic (0), _zero (0), _one (1), _neg_one (-1),
+			zero (_zero, _one), one (_one, _one), neg_one (_neg_one, _one)
 		{
 			if(p != 0) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be 0 (no modulus)");
 			if(exp != 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
@@ -681,17 +681,20 @@ namespace LinBox
 		}
 
 		// x = denominator of y
-		integer& get_den (integer& x, const Element& y) const {
+		integer& get_den (integer& x, const Element& y) const
+		{
 			mpq_get_den (SpyInteger::get_mpz(x), y. rep);
 			return x;
 		}
 
-		int sign (const Element& x) const {
+		int sign (const Element& x) const
+		{
 			return mpq_sgn (x. rep);
 		}
 
 		//bitsize as sum of bitsizes of numerator and denominator
-		integer& bitsize(integer& bs, const Element q) const {
+		integer& bitsize(integer& bs, const Element q) const
+		{
 			integer y; get_den(y,q);
 			integer x; get_num(x,q);
 			bs = x.bitsize() + y.bitsize();
@@ -701,23 +704,26 @@ namespace LinBox
 
 	}; // class GMPRationalField
 
-	/*  use GMPRationalField::read() and GMPRationalField::write(), not these operators.
-	    std::ostream &operator << (std::ostream &os, GMPRationalElement &elt)
-	    {
-	    GMPRationalField field;
 
-	    field.write (os, elt);
-	    return os;
-	    }
+#if 0
+	// use GMPRationalField::read() and GMPRationalField::write(), not these operators.
+	std::ostream &operator << (std::ostream &os, GMPRationalElement &elt)
+	{
+		GMPRationalField field;
 
-	    std::istream &operator >> (std::istream &is, GMPRationalElement &elt)
-	    {
-	    GMPRationalField field;
+		field.write (os, elt);
+		return os;
+	}
 
-	    field.read (is, elt);
-	    return is;
-	    }
-	    */
+	std::istream &operator >> (std::istream &is, GMPRationalElement &elt)
+	{
+		GMPRationalField field;
+
+		field.read (is, elt);
+		return is;
+	}
+
+#endif
 
 } // namespace LinBox
 

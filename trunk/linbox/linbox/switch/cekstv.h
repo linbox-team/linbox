@@ -66,8 +66,8 @@ namespace LinBox
 		 * @param F field in which arithmetic is done
 		 * @param switches vector of switches
 		 */
-		CekstvSwitch (const typename Field::Element &a)
-		: _a (a)
+		CekstvSwitch (const typename Field::Element &a) :
+		       	_a (a)
 		{}
 
 		/** Destructor.
@@ -132,8 +132,8 @@ namespace LinBox
 	public:
 		/** Constructor from an STL vector of bools
 		*/
-		CekstvSwitchFactory (typename Field::RandIter r)
-		: _r (r)
+		CekstvSwitchFactory (typename Field::RandIter r) :
+		       	_r (r)
 		{}
 
 		/** Construct and return a boolean switch object

@@ -66,7 +66,9 @@ namespace LinBox
 	public:
 		typedef typename Ring::Element Element;
 
-		RReconstruction(const Ring& Z=Ring(), const RReconstructionSchedule M = GEOMETRIC, size_t T=DEF_RR_THRESH, size_t b= 0):_Z(Z), _RR(Z), _M(M), THRESHOLD_(T), rbound_(b) {
+		RReconstruction(const Ring& Z=Ring(), const RReconstructionSchedule M = GEOMETRIC, size_t T=DEF_RR_THRESH, size_t b= 0) :
+			_Z(Z), _RR(Z), _M(M), THRESHOLD_(T), rbound_(b)
+		{
 			RecCounter =0;
 			if (_M == QUADRATIC) {
 				RecCounter = (int)sqrt((double)rbound_);//RecCounter^2 < rbound_ <=(RecCounter+1)^2
@@ -76,7 +78,9 @@ namespace LinBox
 			}
 		}
 
-		RReconstruction(const RRBase& RR, const RReconstructionSchedule M = GEOMETRIC, size_t T=DEF_RR_THRESH, size_t b = 0): _Z(RR._Z), _RR(RR),_M(M), THRESHOLD_(T), rbound_(b) {
+		RReconstruction(const RRBase& RR, const RReconstructionSchedule M = GEOMETRIC, size_t T=DEF_RR_THRESH, size_t b = 0) :
+			_Z(RR._Z), _RR(RR),_M(M), THRESHOLD_(T), rbound_(b)
+		{
 			RecCounter =0;
 			if (_M == QUADRATIC) {
 				RecCounter = (int)sqrt(rbound_);//RecCounter^2 < rbound_ <=(RecCounter+1)^2
@@ -89,7 +93,8 @@ namespace LinBox
 
 		int getCounter() { return RecCounter;}
 
-		bool scheduled(const size_t i) const {
+		bool scheduled(const size_t i) const
+		{
 			//if (RecCounter ==0)  return true;
 			if (i < rbound_) return false; //skip first rbound iterations
 			if (_M == INCREMENTAL) {
@@ -112,7 +117,8 @@ namespace LinBox
 		}
 
 		template <class Vect>
-		const bool reconstructRational(Vect& a, Element& b, const Vect& x, const Element m, const int inc = 1) const {
+		const bool reconstructRational(Vect& a, Element& b, const Vect& x, const Element m, const int inc = 1) const
+		{
 			++RecCounter;
 			b = 1;
 			if (a.size() != x.size()) return false;
@@ -189,7 +195,8 @@ namespace LinBox
 
 			}
 
-			const bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m) const {
+			const bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m) const
+			{
 				++RecCounter;
 				Element x_in(x);
 				if (x<0) {
@@ -209,7 +216,8 @@ namespace LinBox
 				return res;
 			}
 
-			const bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound) const{
+			const bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound) const
+			{
 				++RecCounter;
 				Element x_in(x);
 				if (x<0) {
@@ -228,7 +236,8 @@ namespace LinBox
 				return res;
 			}
 
-			const bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound, const Element& b_bound) const{
+			const bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound, const Element& b_bound) const
+			{
 				++RecCounter;
 				Element x_in(x);
 				if (x<0) {
@@ -278,8 +287,12 @@ namespace LinBox
 			mutable OpCounter C;
 			typedef typename Ring::Element Element;
 
-			RReconstructionBase(const Ring& Z): _Z(Z) {}
-			RReconstructionBase(const RReconstructionBase<Ring>& RR): _Z(RR._Z) {}
+			RReconstructionBase(const Ring& Z) :
+				_Z(Z)
+			{}
+			RReconstructionBase(const RReconstructionBase<Ring>& RR) :
+				_Z(RR._Z)
+			{}
 
 			virtual bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m) const =0;
 
@@ -287,7 +300,8 @@ namespace LinBox
 
 			virtual ~RReconstructionBase() {}
 
-			void write(ostream& is) const {
+			void write(ostream& is) const
+			{
 				C.write(is);
 			}
 		};
@@ -304,8 +318,12 @@ namespace LinBox
 			mutable OpCounter C;
 			typedef Ring::Element Element;
 
-			RReconstructionBase(const Ring& Z): _Z(Z) {}
-			RReconstructionBase(const RReconstructionBase<Ring>& RR): _Z(RR._Z) {}
+			RReconstructionBase(const Ring& Z) :
+				_Z(Z)
+			{}
+			RReconstructionBase(const RReconstructionBase<Ring>& RR) :
+				_Z(RR._Z)
+			{}
 
 			bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m)
 			{

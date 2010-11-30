@@ -26,61 +26,62 @@
 #include <linbox/integer.h>
 #include <linbox/util/timer.h>
 
-namespace LinBox {
-	
-    class RandomPrimeIterator {		
-    public:
-        
-        int 	_bits;
-        integer _shift;
-        integer _prime;
+namespace LinBox
+{
 
-        RandomPrimeIterator(int bits = 30, unsigned long seed = 0) 
-                : _bits(bits)
-            {
-                _shift = integer(1)<<_bits;
-                if (! seed) 
-                    RandomPrimeIterator::setSeed( BaseTimer::seed() );
-                else
-                    RandomPrimeIterator::setSeed( seed );
+	class RandomPrimeIterator {
+	public:
 
-                integer::random(_prime,_bits-1);
-                _prime = _shift - _prime;
-                nextprime( _prime, _prime);
-            }
-	  
-            // define the prime type
-        typedef integer Prime_Type;
-	  
-            /** @brief operator++()
-             *  creates a new random prime
-             */
-	inline RandomPrimeIterator &operator ++ () { 
-            integer::random(_prime,_bits-1);
-            _prime = _shift - _prime;
-            nextprime( _prime, _prime);
-            return *this;
-        }
+		int 	_bits;
+		integer _shift;
+		integer _prime;
 
-            /** @brief operator*()
-             *  returns the actual prime
-             */
-        Prime_Type &operator *  () { 
-            return _prime;
-        }
-        Prime_Type & randomPrime() { 
-            return _prime;
-        }
-       
-            /** @brief setSeed (unsigned long ul)
-             *  Set the random seed to be ul.
-             */
-        void static setSeed(unsigned long ul) { 
-	    integer::seeding(ul);
-        }
-        
-        
-    };
+		RandomPrimeIterator(int bits = 30, unsigned long seed = 0) :
+			_bits(bits)
+		{
+			_shift = integer(1)<<_bits;
+			if (! seed)
+				RandomPrimeIterator::setSeed( BaseTimer::seed() );
+			else
+				RandomPrimeIterator::setSeed( seed );
+
+			integer::random(_prime,_bits-1);
+			_prime = _shift - _prime;
+			nextprime( _prime, _prime);
+		}
+
+		// define the prime type
+		typedef integer Prime_Type;
+
+		/** @brief operator++()
+		 *  creates a new random prime
+		 */
+		inline RandomPrimeIterator &operator ++ () {
+			integer::random(_prime,_bits-1);
+			_prime = _shift - _prime;
+			nextprime( _prime, _prime);
+			return *this;
+		}
+
+		/** @brief operator*()
+		 *  returns the actual prime
+		 */
+		Prime_Type &operator *  () {
+			return _prime;
+		}
+		Prime_Type & randomPrime() {
+			return _prime;
+		}
+
+		/** @brief setSeed (unsigned long ul)
+		 *  Set the random seed to be ul.
+		 */
+		void static setSeed(unsigned long ul) {
+			integer::seeding(ul);
+		}
+
+
+	};
 }
 
 #endif //__LINBOX_random_prime_iterator_H

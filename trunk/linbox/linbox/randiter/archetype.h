@@ -49,7 +49,7 @@ namespace LinBox
 	 * and also returned as a reference.
 	 */
 	class RandIterArchetype {
-	    public:
+	public:
 
 		/** @name Common Object Interface.
 		 * These methods are required of all \ref LinBox field element generators.
@@ -80,9 +80,9 @@ namespace LinBox
 		 *             generator (default = 0)
 		 */
 		RandIterArchetype (const FieldArchetype &F,
-				    const integer &size = 0,
-				    const integer &seed = 0)
-			{ _randIter_ptr = F._randIter_ptr->construct (*F._field_ptr, size, seed); }
+				   const integer &size = 0,
+				   const integer &seed = 0)
+		{ _randIter_ptr = F._randIter_ptr->construct (*F._field_ptr, size, seed); }
 
 		/** Copy constructor.
 		 * Constructs RandIterArchetype object by copying the random field
@@ -94,7 +94,7 @@ namespace LinBox
 		 * @param  R RandIterArchetype object.
 		 */
 		RandIterArchetype (const RandIterArchetype &R)
-			{ _randIter_ptr = R._randIter_ptr->clone (); }
+		{ _randIter_ptr = R._randIter_ptr->clone (); }
 
 
 		/** Constructor.
@@ -106,9 +106,9 @@ namespace LinBox
 		 * @param  randIter_ptr  pointer to random matching the interface
 		 */
 		template<class Field_qcq>
-			RandIterArchetype (Field_qcq *f,
-				    const integer &size = 0,
-				    const integer &seed = 0)
+		RandIterArchetype (Field_qcq *f,
+				   const integer &size = 0,
+				   const integer &seed = 0)
 		{ constructor (f, f, size, seed); }
 
 
@@ -121,7 +121,7 @@ namespace LinBox
 		 * to which \c _randIter_ptr points.
 		 */
 		~RandIterArchetype ()
-			{ delete _randIter_ptr; }
+		{ delete _randIter_ptr; }
 
 		/** Assignment operator.
 		 *
@@ -166,12 +166,13 @@ namespace LinBox
 		 * Creates new copies of random iterator generator object in dynamic memory.
 		 * @param  randIter_ptr  pointer to \ref RandIterAbstract
 		 */
-		RandIterArchetype (RandIterAbstract* randIter_ptr)
-			: _randIter_ptr (randIter_ptr->clone ()) {}
+		RandIterArchetype (RandIterAbstract* randIter_ptr) :
+			_randIter_ptr (randIter_ptr->clone ())
+		{}
 
 		//@} Implementation-Specific Methods
 
-	    private:
+	private:
 
 		/** Pointer to RandIterAbstract object.
 		 * Not part of the interface.

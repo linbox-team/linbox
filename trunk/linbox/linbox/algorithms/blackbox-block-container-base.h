@@ -38,7 +38,7 @@
 #undef _V
 #undef _F
 
-namespace LinBox 
+namespace LinBox
 {
 
 #ifndef MIN
@@ -48,9 +48,9 @@ namespace LinBox
 	/** \brief A base class for BlackboxBlockContainer.
 	 * The primary member function is begin().
 
-	 * It returns an iterator which after i increments (++) dereferences to 
+	 * It returns an iterator which after i increments (++) dereferences to
 	 * $U A^i V$, for $U$ and $V$ determined by the init function.
-	 * It is designed to be used with implementations of Block Berlekamp-Massey 
+	 * It is designed to be used with implementations of Block Berlekamp-Massey
 	 * such as BlockMasseyDomain.
 	 *
 	 * Subclasses complete the implementation by defining _launch() and _wait().
@@ -66,65 +66,68 @@ namespace LinBox
 		typedef BlasMatrix<Element>            Value;
 
 		// Default constructors
-		BlackboxBlockContainerBase () {} 
+		BlackboxBlockContainerBase () {}
 
 		// Sequence constructor from a blackbox and a field
 		// cs set the size of the sequence
-		BlackboxBlockContainerBase (const Blackbox *BD, const Field &F, size_t m, size_t n, size_t seed=time(NULL))
-			: _F(F)  , _BB(BD), _size(BD->rowdim()/m + BD->coldim()/n +2) , _row(BD->rowdim()),  _col(BD->coldim()), _m(m), _n(n),  _value(m,n), _seed(seed) {}
-  
-	
+		BlackboxBlockContainerBase (const Blackbox *BD, const Field &F, size_t m, size_t n, size_t seed=time(NULL)) :
+			_F(F)  , _BB(BD), _size(BD->rowdim()/m + BD->coldim()/n +2) , _row(BD->rowdim()),  _col(BD->coldim()), _m(m), _n(n),  _value(m,n), _seed(seed)
+		{}
+
+
 		virtual ~BlackboxBlockContainerBase(){}
 
 		// iterator of the sequence
 		class const_iterator {
-			
+
 		protected:
 			BlackboxBlockContainerBase<Field, Blackbox> &_c;
 
 		public:
 			const_iterator () {}
-			
-			const_iterator (BlackboxBlockContainerBase<Field, Blackbox> &C) : _c (C) {}
-			
+
+			const_iterator (BlackboxBlockContainerBase<Field, Blackbox> &C) :
+				_c (C)
+			{}
+
 			const_iterator &operator ++ () { _c._launch (); return *this; }
-			
-			const Value    &operator * ()  { _c._wait (); return _c.getvalue();}			
+
+			const Value    &operator * ()  { _c._wait (); return _c.getvalue();}
 		};
-		
+
 		// begin of the sequence iterator
 		const_iterator begin ()        { return const_iterator (*this); }
-		
+
 		// end of the sequence iterator
 		const_iterator end ()          { return const_iterator (); }
 
 		// size of the sequence
-		size_t size() const            { return _size; }		
+		size_t size() const            { return _size; }
 
 		// field of the sequence
 		const Field &getField () const { return _F; }
 
 		// blackbox of the sequence
-		const Blackbox *getBB () const { return _BB; }		
+		const Blackbox *getBB () const { return _BB; }
 
 		// row dimension of the sequence element
 		size_t rowdim() const          { return _m; }
-		
+
 		// column dimension of the sequence element
 		size_t coldim() const          { return _n; }
 
-		// row dimension of the matrix 
+		// row dimension of the matrix
 		size_t getrow() const { return _BB->rowdim();}
 
-		// col dimension of the matrix 
+		// col dimension of the matrix
 		size_t getcol() const { return _BB->rowcol();}
 
 
 	protected:
 
 		friend class const_iterator;
-    
-		/** Launches a process to do the computation of the next sequence 
+
+		/** Launches a process to do the computation of the next sequence
 		 *  value: $U A^{i+1} V$.  ...or just does it.
 		 */
 		virtual void _launch() = 0;
@@ -134,10 +137,10 @@ namespace LinBox
 		 */
 		virtual void _wait() = 0;
 
-		//-------------- 
+		//--------------
 		/// Members
-		//--------------  
- 
+		//--------------
+
 		Field                        _F;
 		const Blackbox             *_BB;
 		size_t                    _size;
@@ -145,8 +148,8 @@ namespace LinBox
 		size_t                     _col;
 		size_t                       _m;
 		size_t                       _n;
-		
-                // BDS 22.03.03
+
+		// BDS 22.03.03
 		long                 casenumber;
 		Block                        _U;
 		Block                        _V;
@@ -156,52 +159,55 @@ namespace LinBox
 
 		const Value &getvalue() {return _value;}
 
-		//-------------- 
+		//--------------
 		/// Initializers
-		//--------------  
+		//--------------
 
-		// Blackbox multiplication using apply function 
-		void Mul(Block &M1, const Blackbox &M2 , const Block& M3) {
+		// Blackbox multiplication using apply function
+		void Mul(Block &M1, const Blackbox &M2 , const Block& M3)
+		{
 			linbox_check( M1.rowdim() == M2.rowdim());
 			linbox_check( M2.coldim() == M3.rowdim());
 			linbox_check( M1.coldim() == M3.coldim());
-			
+
 			typename Block::ColIterator        p1 = M1.colBegin();
 			typename Block::ConstColIterator   p3 = M3.colBegin();
-			
+
 			for (; p3 != M3.colEnd(); ++p1,++p3) {
 				M2.apply(*p1,*p3);
 			}
 		}
-	    
-	
+
+
 		/// User Left and Right blocks
-		void init (const Block& U, const Block& V) {
-			
+		void init (const Block& U, const Block& V)
+		{
+
 			linbox_check ( U.coldim() == _row);
 			linbox_check ( V.rowdim() == _col);
 			casenumber = 1;
-			_U = U;  
-			_V = V;  
+			_U = U;
+			_V = V;
 			_value = Value(_m,_n);
 			BlasMatrixDomain<Field> BMD(_F);
 			BMD.mul(_value, _U, _V);
 		}
 
-		// Random Left Matrix and Right Matrix       
-		void init (size_t m, size_t n) {
+		// Random Left Matrix and Right Matrix
+		void init (size_t m, size_t n)
+		{
 			casenumber = 1;
-								
+
 			typename Field::RandIter G(_F,0,_seed);
 			Block U (m, _BB->rowdim());
-			_U =U;			
+			_U =U;
 			Block V(_BB->coldim(), n);
 			_V =V;
-			
+
 			typename Block::RawIterator iter_U = _U.rawBegin();
 			for (; iter_U != _U.rawEnd();++iter_U)
 				G.random(*iter_U);
-			
+
 			typename Block::RawIterator iter_V = _V.rawBegin();
 			for (; iter_V != _V.rawEnd();++iter_V)
 				G.random(*iter_V);
@@ -211,7 +217,7 @@ namespace LinBox
 			BMD.mul(_value, _U, _V);
 		}
 	};
- 
+
 }
 
 #endif // __LINBOX_blackbox_block_container_base_H

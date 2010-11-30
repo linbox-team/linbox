@@ -27,7 +27,7 @@
 
 #include "linbox/field/PID-integer.h"
 
-namespace LinBox 
+namespace LinBox
 {
 
 #if 0
@@ -48,63 +48,66 @@ namespace LinBox
 	 * Either by Early Termination see [Dumas, Saunder, Villard, JSC 32 (1/2), pp 71-99, 2001],
 	 * Or via a bound on the size of the integers.
 	 */
-    template<class RatCRABase>
-    struct RationalRemainder {
-        typedef typename RatCRABase::Domain		Domain;
-        typedef typename RatCRABase::DomainElement	DomainElement;
-    protected:
-        RatCRABase Builder_;
-        
-    public:
-        template<class Param>
-        RationalRemainder(const Param& b) : Builder_(b) { }
+	template<class RatCRABase>
+	struct RationalRemainder {
+		typedef typename RatCRABase::Domain		Domain;
+		typedef typename RatCRABase::DomainElement	DomainElement;
+	protected:
+		RatCRABase Builder_;
 
-           /** \brief The Rational CRA loop
-				
-            Given a function to generate residues mod a single prime, this loop produces the residues 
-            resulting from the Chinese remainder process on sufficiently many primes to meet the 
-            termination condition.
-			
-            \param F - Function object of two arguments, F(r, p), given prime p it outputs residue(s) r.
-            This loop may be parallelized.  F must be reentrant, thread safe.
-            For example, F may be returning the coefficients of the minimal polynomial of a matrix mod p.
-            Warning - we won't detect bad primes.
-			
-            \param genprime - RandIter object for generating primes.
-            \param[out] num - the rational numerator
-            \param[out] den - the rational denominator
-            */
-        template<class Function, class RandPrimeIterator>
-        Integer & operator() (Integer& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime) 
-	{
-            ++genprime;
-            Domain D(*genprime); 
-            DomainElement r; D.init(r);
-            Builder_.initialize( D, Iteration(r, D) );				
-            while( ! Builder_.terminated() ) {
-                ++genprime; while(Builder_.noncoprime(*genprime) ) ++genprime;
-                Domain D(*genprime); 
-                DomainElement r; D.init(r);
-                Builder_.progress( D, Iteration(r, D) );
-            }
-            return Builder_.result(num, den);
-        }
+	public:
+		template<class Param>
+		RationalRemainder(const Param& b) :
+			Builder_(b)
+		{ }
 
-	    template<template <class, class> class Vect, template <class> class Alloc,  class Function, class RandPrimeIterator>
-	    Vect<Integer, Alloc<Integer> > & operator() (Vect<Integer, Alloc<Integer> >& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime) {
-            ++genprime;
-            Domain D(*genprime); 
-            Vect<DomainElement, Alloc<DomainElement> > r; 
-            Builder_.initialize( D, Iteration(r, D) );				
-            while( ! Builder_.terminated() ) {
-                ++genprime; while(Builder_.noncoprime(*genprime) ) ++genprime;
-                Domain D(*genprime); 
-                Vect<DomainElement, Alloc<DomainElement> > r; 
-                Builder_.progress( D, Iteration(r, D) );
-            }
-            return Builder_.result(num, den);
-        }
-    };
+		/** \brief The Rational CRA loop
+
+		  Given a function to generate residues mod a single prime, this loop produces the residues
+		  resulting from the Chinese remainder process on sufficiently many primes to meet the
+		  termination condition.
+
+		  \param F - Function object of two arguments, F(r, p), given prime p it outputs residue(s) r.
+		  This loop may be parallelized.  F must be reentrant, thread safe.
+		  For example, F may be returning the coefficients of the minimal polynomial of a matrix mod p.
+		  Warning - we won't detect bad primes.
+
+		  \param genprime - RandIter object for generating primes.
+		  \param[out] num - the rational numerator
+		  \param[out] den - the rational denominator
+		  */
+		template<class Function, class RandPrimeIterator>
+		Integer & operator() (Integer& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
+		{
+			++genprime;
+			Domain D(*genprime);
+			DomainElement r; D.init(r);
+			Builder_.initialize( D, Iteration(r, D) );
+			while( ! Builder_.terminated() ) {
+				++genprime; while(Builder_.noncoprime(*genprime) ) ++genprime;
+				Domain D(*genprime);
+				DomainElement r; D.init(r);
+				Builder_.progress( D, Iteration(r, D) );
+			}
+			return Builder_.result(num, den);
+		}
+
+		template<template <class, class> class Vect, template <class> class Alloc,  class Function, class RandPrimeIterator>
+		Vect<Integer, Alloc<Integer> > & operator() (Vect<Integer, Alloc<Integer> >& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
+		{
+			++genprime;
+			Domain D(*genprime);
+			Vect<DomainElement, Alloc<DomainElement> > r;
+			Builder_.initialize( D, Iteration(r, D) );
+			while( ! Builder_.terminated() ) {
+				++genprime; while(Builder_.noncoprime(*genprime) ) ++genprime;
+				Domain D(*genprime);
+				Vect<DomainElement, Alloc<DomainElement> > r;
+				Builder_.progress( D, Iteration(r, D) );
+			}
+			return Builder_.result(num, den);
+		}
+	};
 }
 
 #endif //__LINBOX_rational_cra_H

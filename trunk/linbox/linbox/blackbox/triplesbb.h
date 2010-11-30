@@ -20,38 +20,38 @@ using std::max;
 
 #include <vector>
 
-namespace LinBox 
+namespace LinBox
 {
 
 	/** \brief wrapper for NAG Sparse Matrix format.
 	 *
-\ingroup blackbox
+	 \ingroup blackbox
 	 * This class acts as a wrapper for a pre-existing NAGSparse Matrix.
 	 * To be used for interface between LinBox and computer algebra systems such
 	 * as Maple that can encode sparse matrices in the NAGSparse format
-	 */ 
+	 */
 
 	template<class _Field>
-		class TriplesBB : public BlackboxInterface{	 
-	 
-		public:
+	class TriplesBB : public BlackboxInterface{
+
+	public:
 		typedef _Field Field;
 		typedef typename Field::Element Element;
-	    typedef TriplesBB<Field> Self_t;
+		typedef TriplesBB<Field> Self_t;
 
 
 		// Default constructor.
 		TriplesBB() {}
 
 		// Takes 3 vectors and copies(bad) them.
-		TriplesBB(	Field F, 
-					std::vector<Element> values, 
-					std::vector<size_t> rowP, 
-					std::vector<size_t> colP, 
-					size_t rows, 
-					size_t cols, 
-					bool RowSortFlag = false, 
-					bool ColSortFlag = false);
+		TriplesBB(	Field F,
+				std::vector<Element> values,
+				std::vector<size_t> rowP,
+				std::vector<size_t> colP,
+				size_t rows,
+				size_t cols,
+				bool RowSortFlag = false,
+				bool ColSortFlag = false);
 
 		// Alternate constructor.  Allows for use of addEntry operation.
 		TriplesBB(Field F, size_t rows, size_t cols, size_t reserve = 0);
@@ -73,30 +73,30 @@ namespace LinBox
 
 		size_t coldim() const { return _cols; }
 
-        template<typename _Tp1> 
-        struct rebind { 
-            typedef TriplesBB<_Tp1> other; 
-            void operator() (other & Ap, const Self_t& A, const _Tp1& F)
-                {
-                    Hom <typename Self_t::Field, _Tp1> hom( A.field(), F);
-                    
-                    typedef typename _Tp1::Element otherElt;
-                    typedef typename std::vector<otherElt> othervec;
-                    typedef typename std::vector<Element> selfvec;
-                    typedef typename othervec::iterator otheriter;
-                    typedef typename selfvec::const_iterator selfiter;
-                    otheriter vp_p; selfiter v_p;
+		template<typename _Tp1>
+		struct rebind {
+			typedef TriplesBB<_Tp1> other;
+			void operator() (other & Ap, const Self_t& A, const _Tp1& F)
+			{
+				Hom <typename Self_t::Field, _Tp1> hom( A.field(), F);
 
-                    Ap._values.resize(A._values.size());
-                    for (v_p = A._values.begin(), vp_p = Ap._values.begin();
-                         v_p != A._values.end(); ++ v_p, ++ vp_p)
-                        hom.image (*vp_p, *v_p);
-                }
-        };
+				typedef typename _Tp1::Element otherElt;
+				typedef typename std::vector<otherElt> othervec;
+				typedef typename std::vector<Element> selfvec;
+				typedef typename othervec::iterator otheriter;
+				typedef typename selfvec::const_iterator selfiter;
+				otheriter vp_p; selfiter v_p;
 
-        template<typename _Tp1> 
-        TriplesBB(const TriplesBB<_Tp1>& T, const Field& F) 
-                : _F(F), _values(T.size()), _RowV(T.getRows()), _ColV(T.getCols()), _rows(T.rowdim()), _cols(T.coldim()), _faxpy(max(T.getRows(),T.getCols()), FieldAXPY<Field>(F)), _RowSortFlag(T.isRowSorted()), _ColSortFlag(T.isColSorted())
+				Ap._values.resize(A._values.size());
+				for (v_p = A._values.begin(), vp_p = Ap._values.begin();
+				     v_p != A._values.end(); ++ v_p, ++ vp_p)
+					hom.image (*vp_p, *v_p);
+			}
+		};
+
+		template<typename _Tp1>
+		TriplesBB(const TriplesBB<_Tp1>& T, const Field& F) :
+			_F(F), _values(T.size()), _RowV(T.getRows()), _ColV(T.getCols()), _rows(T.rowdim()), _cols(T.coldim()), _faxpy(max(T.getRows(),T.getCols()), FieldAXPY<Field>(F)), _RowSortFlag(T.isRowSorted()), _ColSortFlag(T.isColSorted())
 		{}
 
 
@@ -110,24 +110,24 @@ namespace LinBox
 		const Field & field() const { return _F; }
 
 		/* Data accessors.  Used to access the 3 vectors containing Matrix data
-		 */
+		*/
 		const std::vector<Element> & getData() const { return _values; }
 		const std::vector<size_t> & getRows() const { return _RowV; }
 		const std::vector<size_t> & getCols() const { return _ColV; }
-                    bool isRowSorted() { return _RowSortFlag; }
-                    bool isColSorted() { return _ColSortFlag; }
-                    
+		bool isRowSorted() { return _RowSortFlag; }
+		bool isColSorted() { return _ColSortFlag; }
 
-		protected:
+
+	protected:
 		Field _F; // The field used by this class
 
 		/// _values contains the nonzero elements of the BlackBox
 		std::vector<Element> _values;
 
-		/// _RowV & _ColV are vectors containing the row & column indices 
+		/// _RowV & _ColV are vectors containing the row & column indices
 		std::vector<size_t> _RowV, _ColV;
 
-		/// The number of rows, columns 
+		/// The number of rows, columns
 		size_t _rows, _cols;
 
 		/* _apply is the generic apply utility funtion called by apply() and
@@ -162,16 +162,16 @@ namespace LinBox
 	 * defaults to 0 (no ordering implied).
 	 */
 	template<class Field>
-		TriplesBB<Field>::TriplesBB(Field F, 
-								    std::vector<Element> values, 
-								    std::vector<size_t> RowV, 
-									std::vector<size_t> ColV, 
-									size_t rows, 
-									size_t cols, 
-									bool RowSortFlag, 
-									bool ColSortFlag) :
+	TriplesBB<Field>::TriplesBB(Field F,
+				    std::vector<Element> values,
+				    std::vector<size_t> RowV,
+				    std::vector<size_t> ColV,
+				    size_t rows,
+				    size_t cols,
+				    bool RowSortFlag,
+				    bool ColSortFlag) :
 		_F(F), _values(values), _RowV(RowV), _ColV(ColV), _rows(rows), _cols(cols), _faxpy(max(rows,cols), FieldAXPY<Field>(F)), _RowSortFlag(RowSortFlag), _ColSortFlag(ColSortFlag)
-		{}
+	{}
 
 	/* Better constructor that only takes the field, m, n and recommended
 	 * reserve (optional arguement) for use with STL vector reserve option
@@ -179,57 +179,57 @@ namespace LinBox
 	 * conjuction with the addEntry() method
 	 */
 	template<class Field>
-		TriplesBB<Field>::TriplesBB( Field F, size_t rows, size_t cols, size_t res):
+	TriplesBB<Field>::TriplesBB( Field F, size_t rows, size_t cols, size_t res):
 		_F(F), _rows(rows), _cols(cols), _faxpy( max(rows, cols), FieldAXPY<Field>(F)), _RowSortFlag(false), _ColSortFlag(false)
-		{
-			if(res != 0) {
-				_values.reserve(res);
-				_RowV.reserve(res);
-				_ColV.reserve(res);
-			}
+	{
+		if(res != 0) {
+			_values.reserve(res);
+			_RowV.reserve(res);
+			_ColV.reserve(res);
 		}
+	}
 
 
 
 	template<class Field>
-		TriplesBB<Field>::TriplesBB(const TriplesBB<Field> &In) :
+	TriplesBB<Field>::TriplesBB(const TriplesBB<Field> &In) :
 		_faxpy( max(In._rows, In._cols), FieldAXPY<Field>(In._F)),
-			_F ( In._F ),
-			_values ( In._values ),
-			_RowV ( In._RowV ),
-			_ColV ( In._ColV ),
-			_rows ( In._rows ), 
-			_cols ( In._cols ),
-			_RowSortFlag ( In._RowSortFlag ),
-			_ColSortFlag ( In._ColSortFlag )
-		{ }
+		_F ( In._F ),
+		_values ( In._values ),
+		_RowV ( In._RowV ),
+		_ColV ( In._ColV ),
+		_rows ( In._rows ),
+		_cols ( In._cols ),
+		_RowSortFlag ( In._RowSortFlag ),
+		_ColSortFlag ( In._ColSortFlag )
+	{ }
 
 
 	template<class Field>
-		const TriplesBB<Field> & TriplesBB<Field>::operator=(const TriplesBB<Field> & rhs)
-		{
-			_F = rhs._F;
-			_values = rhs._values;
-			_RowV = rhs._RowV;
-			_ColV = rhs._ColV;
-			_rows = rhs._rows; _cols = rhs._cols;
-			_RowSortFlag = rhs._RowSortFlag;
-			_ColSortFlag  = rhs._ColSortFlag;
+	const TriplesBB<Field> & TriplesBB<Field>::operator=(const TriplesBB<Field> & rhs)
+	{
+		_F = rhs._F;
+		_values = rhs._values;
+		_RowV = rhs._RowV;
+		_ColV = rhs._ColV;
+		_rows = rhs._rows; _cols = rhs._cols;
+		_RowSortFlag = rhs._RowSortFlag;
+		_ColSortFlag  = rhs._ColSortFlag;
 
-			_faxpy.resize(rhs._faxpy.size(), FieldAXPY<Field>(_F));
+		_faxpy.resize(rhs._faxpy.size(), FieldAXPY<Field>(_F));
 
-			return *this;
-		}
+		return *this;
+	}
 
 
 	template<class Field>
-		template<class OutVector, class InVector>
-		OutVector & TriplesBB<Field>::apply(OutVector & y, const InVector & x) const
-		{
+	template<class OutVector, class InVector>
+	OutVector & TriplesBB<Field>::apply(OutVector & y, const InVector & x) const
+	{
 
-			_apply( y, x, _RowV.begin(), _ColV.begin() );
-			return y;
-		}
+		_apply( y, x, _RowV.begin(), _ColV.begin() );
+		return y;
+	}
 
 	/* BlackBoxArchetype applyTranspose function.  Performs the y = ATx, where
 	 * y and x are vectors passed in applyTranspose(y,x), and A is the present
@@ -238,82 +238,81 @@ namespace LinBox
 	 * by the rows.  Thus, as in apply above, takes advantage of this fact by
 	 * switching on the ordering.
 	 */
+	template<class Field>
+	template<class OutVector, class InVector>
+	OutVector & TriplesBB<Field>::applyTranspose(OutVector & y, const InVector & x) const
+	{
+		_apply( y, x, _ColV.begin(), _RowV.begin() );
+		return y;
+	}
+
 
 	template<class Field>
-		template<class OutVector, class InVector>
-		OutVector & TriplesBB<Field>::applyTranspose(OutVector & y, const InVector & x) const
-		{
-			_apply( y, x, _ColV.begin(), _RowV.begin() );
-			return y;
-		}
+	template<class OutVector, class InVector>
+	void TriplesBB<Field>::_apply(OutVector & y, const InVector & x, std::vector<size_t>::const_iterator i, std::vector<size_t>::const_iterator j) const
+	{
+		typename OutVector::iterator yp;
+		typename InVector::const_iterator xp;
+		typename Field::Element zero;
+		typename std::vector<Element>::const_iterator v;
+		typename std::vector<FieldAXPY<Field> >::iterator fa_i;
 
+		_F.init(zero,0);
 
-	template<class Field>
-		template<class OutVector, class InVector>
-		void TriplesBB<Field>::_apply(OutVector & y, const InVector & x, std::vector<size_t>::const_iterator i, std::vector<size_t>::const_iterator j) const
-		{
-			typename OutVector::iterator yp;
-			typename InVector::const_iterator xp;
-			typename Field::Element zero;
-			typename std::vector<Element>::const_iterator v;
-			typename std::vector<FieldAXPY<Field> >::iterator fa_i;
+		for(fa_i = _faxpy.begin(); fa_i != _faxpy.end(); ++fa_i)
+			fa_i->assign(zero);
 
-			_F.init(zero,0);
-
-			for(fa_i = _faxpy.begin(); fa_i != _faxpy.end(); ++fa_i) 
-				fa_i->assign(zero);
-
-			for( v = _values.begin(), fa_i = _faxpy.begin() - 1, xp = x.begin() - 1; v != _values.end(); ++i, ++j, ++v) 
-				(fa_i + *i)->mulacc(*v,  *(xp + *j));
+		for( v = _values.begin(), fa_i = _faxpy.begin() - 1, xp = x.begin() - 1; v != _values.end(); ++i, ++j, ++v)
+			(fa_i + *i)->mulacc(*v,  *(xp + *j));
 
 
 
-			for(fa_i = _faxpy.begin(), yp = y.begin(); yp != y.end(); ++yp, ++fa_i) 
-				fa_i->get(*yp);
+		for(fa_i = _faxpy.begin(), yp = y.begin(); yp != y.end(); ++yp, ++fa_i)
+			fa_i->get(*yp);
 
-  
 
-		}
+
+	}
 
 
 	/* addEntry method.  Allows user to add entries on the fly.  Meant to be used
 	 * with the "copyless" constructor above.  Note, will automatically set the
 	 * _sortFlag to false, as you can't be sure the entries are still sorted afterwards
 	 */
-
 	template<class Field>
-		void TriplesBB<Field>::addEntry(const Element &Elem, const size_t i, const size_t j) {
+	void TriplesBB<Field>::addEntry(const Element &Elem, const size_t i, const size_t j)
+	{
 		_RowSortFlag = _ColSortFlag = false;
 		_values.push_back(Elem);
 		_RowV.push_back(i);
 		_ColV.push_back(j);
 	}
 
-	/*
-	  template<class Field, class Vector>
-	  void TriplesBB<Field, Vector>::SortByRow()
-	  {
-	  RowWiseLessThan<Field,Vector> rwlt;
-	  if(_RowSortFlag) return; // If already sorted, bail
+#if 0
+	template<class Field, class Vector>
+	void TriplesBB<Field, Vector>::SortByRow()
+	{
+		RowWiseLessThan<Field,Vector> rwlt;
+		if(_RowSortFlag) return; // If already sorted, bail
 
-	  std::sort( rawIndexedBegin(), rawIndexedEnd(), rwlt  );
-	  _RowSortFlag = true;     // Sets the row sort flag
-	  _ColSortFlag = false;    // Unset the col sort flag
+		std::sort( rawIndexedBegin(), rawIndexedEnd(), rwlt  );
+		_RowSortFlag = true;     // Sets the row sort flag
+		_ColSortFlag = false;    // Unset the col sort flag
 
-	  }
+	}
 
-	  template<class Field, class Vector>
-	  void TriplesBB<Field, Vector>::SortByCol()
-	  {
+	template<class Field, class Vector>
+	void TriplesBB<Field, Vector>::SortByCol()
+	{
 
-	  ColWiseLessThan<Field,Vector> cwlt;
-	  if(_ColSortFlag) return;  // If already sorted, bail
+		ColWiseLessThan<Field,Vector> cwlt;
+		if(_ColSortFlag) return;  // If already sorted, bail
 
-	  std::sort( rawIndexedBegin(), rawIndexedEnd(), cwlt );
-	  _ColSortFlag = true;     // Sets the Col sort flag
-	  _RowSortFlag = false;    // Unset the Row sort flag
-	  }
-	*/
+		std::sort( rawIndexedBegin(), rawIndexedEnd(), cwlt );
+		_ColSortFlag = true;     // Sets the Col sort flag
+		_RowSortFlag = false;    // Unset the Row sort flag
+	}
+#endif
 
 } // namespace LinBox
 

@@ -42,6 +42,10 @@
 
 #include "linbox/util/error.h"
 
+/** @file ring/archetype.h
+ * @brief Specification and archetypic instance for the ring interface.
+ */
+
 namespace LinBox
 {
 	// Forward declarations
@@ -49,7 +53,7 @@ namespace LinBox
 
 	/**
 	 * \brief specification and archetypic instance for the ring interface
-	\ingroup ring
+	 \ingroup ring
 	 *
 	 * The \ref RingArchetype and its encapsulated
 	 * element class contain pointers to the \ref RingAbstract
@@ -65,7 +69,7 @@ namespace LinBox
 	 * the elements themselves cannot be contained, but rather pointers to them.
 	 */
 	class RingArchetype : public virtual FieldArchetype {
-	    public:
+	public:
 
 		/** @name Common Object Interface for a LinBox Ring.
 		 * These methods are required of all \ref LinBox rings.
@@ -73,10 +77,10 @@ namespace LinBox
 		//@{
 
 		/// element type.
-/* 		typedef ElementArchetype Element; */
+		/* 		typedef ElementArchetype Element; */
 		typedef FieldArchetype::Element Element;
 		/// Random iterator generator type.
-/* 		typedef RandIterArchetype RandIter; */
+		/* 		typedef RandIterArchetype RandIter; */
 		typedef FieldArchetype::RandIter RandIter;
 		/// @name Object Management
 		//@{
@@ -95,9 +99,11 @@ namespace LinBox
 		 *
 		 * @param F \ref RingArchetype object.
 		 */
-	  RingArchetype (const RingArchetype &F) : FieldArchetype ( F )	{ }
+		RingArchetype (const RingArchetype &F) :
+		       	FieldArchetype ( F )
+		{ }
 
-	  /** \brief Invertibility test.
+		/** \brief Invertibility test.
 		 * Test if ring element is invertible.
 		 * This function assumes the ring element has already been
 		 * constructed and initialized.
@@ -108,8 +114,8 @@ namespace LinBox
 		 * @return boolean true if equals zero, false if not.
 		 * @param  x ring element.
 		 */
-	  bool isUnit (const Element &x) const
-	    { return _ring_ptr->isUnit (*x._elem_ptr); }
+		bool isUnit (const Element &x) const
+		{ return _ring_ptr->isUnit (*x._elem_ptr); }
 
 		/** Divisibility of zero test.
 		 * Test if ring element is a zero divisor.
@@ -124,7 +130,7 @@ namespace LinBox
 		 * @param  x ring element.
 		 */
 		bool isZeroDivisor (const Element &x) const
-			{ return _ring_ptr->isZeroDivisor (*x._elem_ptr); }
+		{ return _ring_ptr->isZeroDivisor (*x._elem_ptr); }
 
 
 		/** Constructor.
@@ -133,30 +139,29 @@ namespace LinBox
 		 * Not part of the interface.
 		 * Creates new copies of ring, element, and random iterator generator
 		 * objects in dynamic memory.
-		 * @param  ring\_ptr pointer to \ref RingAbstract.
-		 * @param  elem\_ptr  pointer to \ref ElementAbstract, which is the
+		 * @param  ring_ptr pointer to \ref RingAbstract.
+		 * @param  elem_ptr  pointer to \ref ElementAbstract, which is the
 		 *                    encapsulated element of \ref RingAbstract.
-		 * @param  randIter\_ptr  pointer to \ref RandIterAbstract, which is the
+		 * @param  randIter_ptr  pointer to \ref RandIterAbstract, which is the
 		 *                        encapsulated random iterator generator
 		 *                        of \ref RingAbstract.
 		 */
 		RingArchetype (RingAbstract    *ring_ptr,
-				 ElementAbstract  *elem_ptr,
-				 RandIterAbstract *randIter_ptr = 0)
-		  : FieldArchetype( static_cast<FieldAbstract*>(ring_ptr->clone()),
-				    elem_ptr, randIter_ptr ),
-		  _ring_ptr (dynamic_cast<RingAbstract*>(ring_ptr->clone ()))
-		{
-		}
+			       ElementAbstract  *elem_ptr,
+			       RandIterAbstract *randIter_ptr = 0) :
+			FieldArchetype( static_cast<FieldAbstract*>(ring_ptr->clone()),
+					elem_ptr, randIter_ptr ),
+			_ring_ptr (dynamic_cast<RingAbstract*>(ring_ptr->clone ()))
+		{ }
 
 
 		/** Constructor.
 		 * Constructs ring from ANYTHING matching the interface
 		 * using the enveloppe as a \ref RingAbstract and its
 		 * encapsulated element and random element generator if needed.
-		 * @param  ring\_ptr pointer to ring matching the interface
-		 * @param  elem\_ptr  pointer to element matching the interface
-		 * @param  randIter\_ptr  pointer to random matching the interface
+		 * @param  ring_ptr pointer to ring matching the interface
+		 * @param  elem_ptr  pointer to element matching the interface
+		 * @param  randIter_ptr  pointer to random matching the interface
 		 */
 		template<class Ring_qcq>
 		RingArchetype (Ring_qcq *f)
@@ -164,7 +169,7 @@ namespace LinBox
 
 		//@} Implementation-Specific Methods
 
-	    private:
+	private:
 
 		friend class ElementArchetype;
 		friend class RandIterArchetype;
@@ -182,11 +187,11 @@ namespace LinBox
 		 * classes derived from RingAbstract and classes that aren't.
 		 * Should be called with the same argument to both parameters?
 		 * @param	trait	pointer to RingAbstract or class derived from it
-		 * @param	ring\_ptr	pointer to class derived from RingAbstract
+		 * @param	ring_ptr	pointer to class derived from RingAbstract
 		 */
 		template<class Ring_qcq>
 		void Ring_constructor (RingAbstract *trait,
-				  Ring_qcq     *ring_ptr)
+				       Ring_qcq     *ring_ptr)
 		{
 			constructor( static_cast<FieldAbstract*>(trait), ring_ptr);
 			_ring_ptr    = dynamic_cast<RingAbstract*>(ring_ptr->clone ());
@@ -199,11 +204,11 @@ namespace LinBox
 		 * classes derived from RingAbstract and classes that aren't.
 		 * Should be called with the same argument to both parameters?
 		 * @param	trait	pointer to class not derived from RingAbstract
-		 * @param	ring\_ptr	pointer to class not derived from RingAbstract
+		 * @param	ring_ptr	pointer to class not derived from RingAbstract
 		 */
 		template<class Ring_qcq>
 		void Ring_constructor (void      *trait,
-				  Ring_qcq *ring_ptr)
+				       Ring_qcq *ring_ptr)
 		{
 			RingEnvelope< Ring_qcq > EnvF (*ring_ptr);
 			Ring_constructor (static_cast<RingAbstract*> (&EnvF), &EnvF) ;
@@ -211,7 +216,7 @@ namespace LinBox
 
 	}; // class RingArchetype
 
-}  // namespace LinBox
+	}  // namespace LinBox
 
 
 #endif // __LINBOX_ring_archetype_H

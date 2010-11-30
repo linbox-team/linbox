@@ -91,7 +91,9 @@ namespace LinBox
 
 		/** \brief
 		*/
-		DenseSubmatrix () :_M(NULL) {}
+		DenseSubmatrix () :
+			_M(NULL)
+	       	{}
 
 		/** Constructor from an existing @ref DenseMatrixBase  and dimensions
 		 * \param M Pointer to @ref DenseMatrixBase of which to construct submatrix

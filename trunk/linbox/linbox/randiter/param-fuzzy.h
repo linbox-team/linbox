@@ -47,8 +47,8 @@ namespace LinBox
 
 		ParamFuzzyRandIter (/*const ParamFuzzy &F, */
 				   const integer &size = 0,
-				   const integer &seed = 0)
-			: /*_F (F),*/ _size (size), _seed (seed)
+				   const integer &seed = 0) :
+		       	/*_F (F),*/ _size (size), _seed (seed)
 		{
 			/*if (_size == 0) F.cardinality (_size);*/
 			if (_seed == 0) _seed = std::time (NULL);
@@ -56,15 +56,16 @@ namespace LinBox
 
 		ParamFuzzyRandIter (const ParamFuzzy &F,
 				    const integer &size = 0,
-				    const integer &seed = 0)
-			: _F (F), _size (size), _seed (seed)
+				    const integer &seed = 0) :
+		       	_F (F), _size (size), _seed (seed)
 		{
 			if (_size == 0) F.cardinality (_size);
 			if (_seed == 0) _seed = std::time (NULL);
 		}
 
-		ParamFuzzyRandIter (const ParamFuzzyRandIter &R)
-			: /*_F (R._F),*/ _size (R._size), _seed (R._seed) {}
+		ParamFuzzyRandIter (const ParamFuzzyRandIter &R) :
+		       	/*_F (R._F),*/ _size (R._size), _seed (R._seed)
+		{}
 
 		~ParamFuzzyRandIter () {}
 

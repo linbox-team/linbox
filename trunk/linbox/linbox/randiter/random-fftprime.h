@@ -28,53 +28,56 @@
 #include <linbox/integer.h>
 #include <linbox/util/timer.h>
 
-namespace LinBox {
-	
-	class RandomFFTPrime {		
+namespace LinBox
+{
+
+	class RandomFFTPrime {
 	public:
 
 		int         _bits;
 
-		RandomFFTPrime(int bits = 20, unsigned long seed = 0) 
-			: _bits(bits)
-                {
-			if (! seed) 
+		RandomFFTPrime(int bits = 20, unsigned long seed = 0) :
+			_bits(bits)
+		{
+			if (! seed)
 				RandomFFTPrime::setSeed( BaseTimer::seed() );
 			else
 				RandomFFTPrime::setSeed( seed );
-                }
-	  
+		}
+
 		// define the prime type
 		typedef integer Prime_Type;
-	  
+
 		/** @brief randomPrime()
 		 *  return a random prime
 		 */
-		inline Prime_Type randomPrime() const {
+		inline Prime_Type randomPrime() const
+		{
 			integer tmp;
 			size_t cbits=5;
 			size_t tresh;
-			do {				
+			do {
 				tresh = 1<<(cbits);
 				size_t p = 1<<(_bits-cbits);
 				do {
 					integer::random(tmp,cbits);
 					tmp = tmp*p+1;
-					tresh--;						
+					tresh--;
 				} while ((::probab_prime(tmp)<2) && (tresh));
 				cbits++;
 			}
 			while(tresh==0);
 			return tmp;
 		}
-	  
+
 		/** @brief randomPrime(Prime_Type& p)
 		 *  return a random prime
 		 */
-		inline Prime_Type randomPrime (Prime_Type& t) const {
+		inline Prime_Type randomPrime (Prime_Type& t) const
+		{
 			size_t cbits=5;
 			size_t tresh;
-			do {				
+			do {
 				tresh = 1<<(cbits);
 				size_t p = 1<<(_bits-cbits);
 				do {
@@ -88,15 +91,16 @@ namespace LinBox {
 
 			return t;
 		}
-	  
+
 		/** @brief setSeed (unsigned long ul)
 		 *  Set the random seed to be ul.
 		 */
-		void static setSeed(unsigned long ul) { 
+		void static setSeed(unsigned long ul)
+		{
 			integer::seeding(ul);
 		}
 
-	  	  
+
 	};
 }
 

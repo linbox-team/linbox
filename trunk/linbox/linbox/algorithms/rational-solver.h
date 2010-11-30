@@ -113,8 +113,8 @@ namespace LinBox
 	 *
 	 * \ingroup padic
 	 */
- 	template<class Ring, class Field,class RandomPrime, class MethodTraits = DixonTraits>
- 	class RationalSolver {
+	template<class Ring, class Field,class RandomPrime, class MethodTraits = DixonTraits>
+	class RationalSolver {
 
 	public:
 		/** \brief Solve a linear system \c Ax=b over quotient field of a ring
@@ -238,11 +238,11 @@ namespace LinBox
 		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE), const WiedemannTraits& traits=WiedemannTraits()) :
 			_R(r), _genprime(rp), _traits(traits) {
 
-			++_genprime; _prime=*_genprime;
+				++_genprime; _prime=*_genprime;
 #ifdef RSTIMING
-			clearTimers();
+				clearTimers();
 #endif
-		}
+			}
 
 		/**  Constructor with a prime
 		 * @param p   a Prime
@@ -254,9 +254,9 @@ namespace LinBox
 			_R(r), _genprime(rp), _prime(p), _traits(traits){
 
 #ifdef RSTIMING
-			clearTimers();
+				clearTimers();
 #endif
-		}
+			}
 
 
 		template<class IMatrix, class Vector1, class Vector2>
@@ -276,17 +276,17 @@ namespace LinBox
 
 
 		/*
-		  template <class IMatrix, class FMatrix, class IVector, class FVector>
-		  void precondition (const Field&,
-		  const IMatrix&,
-		  BlackboxArchetype<IVector>*&,
-		  const FMatrix*,
-		  BlackboxArchetype<FVector>*&,
-		  const IVector&,
-		  IVector&,
-		  BlackboxArchetype<IVector>*&,
-		  BlackboxArchetype<IVector>*&) const;
-		*/
+		   template <class IMatrix, class FMatrix, class IVector, class FVector>
+		   void precondition (const Field&,
+		   const IMatrix&,
+		   BlackboxArchetype<IVector>*&,
+		   const FMatrix*,
+		   BlackboxArchetype<FVector>*&,
+		   const IVector&,
+		   IVector&,
+		   BlackboxArchetype<IVector>*&,
+		   BlackboxArchetype<IVector>*&) const;
+		   */
 
 #ifdef RSTIMING
 		void clearTimers() const
@@ -419,11 +419,11 @@ namespace LinBox
 		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE), const BlockWiedemannTraits& traits=BlockWiedemannTraits()) :
 			_R(r), _genprime(rp), _traits(traits){
 
-			++_genprime; _prime=*_genprime;
+				++_genprime; _prime=*_genprime;
 #ifdef RSTIMING
-			clearTimers();
+				clearTimers();
 #endif
-		}
+			}
 
 		/*! Constructor with a prime
 		 * @param p   a Prime
@@ -435,9 +435,9 @@ namespace LinBox
 			_R(r), _genprime(rp), _prime(p), _traits(traits){
 
 #ifdef RSTIMING
-			clearTimers();
+				clearTimers();
 #endif
-		}
+			}
 
 		template<class IMatrix, class Vector1, class Vector2>
 		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,const bool s=false, int maxPrimes = DEFAULT_MAXPRIMES) const;
@@ -570,19 +570,19 @@ namespace LinBox
 #ifdef RSTIMING
 		mutable Timer
 		tSetup,           ttSetup,
-			tLQUP,            ttLQUP,
-			tFastInvert,      ttFastInvert,        //only done in deterministic or inconsistent
-			tCheckConsistency,ttCheckConsistency,        //includes lifting the certificate
-			tMakeConditioner, ttMakeConditioner,
-			tInvertBP,        ttInvertBP,              //only done in random
-			tCheckAnswer,     ttCheckAnswer,
-			tCertSetup,       ttCertSetup,        //remaining 3 only done when makeMinDenomCert = true
-			tCertMaking,      ttCertMaking,
+		tLQUP,            ttLQUP,
+		tFastInvert,      ttFastInvert,        //only done in deterministic or inconsistent
+		tCheckConsistency,ttCheckConsistency,        //includes lifting the certificate
+		tMakeConditioner, ttMakeConditioner,
+		tInvertBP,        ttInvertBP,              //only done in random
+		tCheckAnswer,     ttCheckAnswer,
+		tCertSetup,       ttCertSetup,        //remaining 3 only done when makeMinDenomCert = true
+		tCertMaking,      ttCertMaking,
 
-			tNonsingularSetup,ttNonsingularSetup,
-			tNonsingularInv,  ttNonsingularInv,
+		tNonsingularSetup,ttNonsingularSetup,
+		tNonsingularInv,  ttNonsingularInv,
 
-			totalTimer;
+		totalTimer;
 
 		mutable DixonTimer
 		ttConsistencySolve, ttSystemSolve, ttCertSolve, ttNonsingularSolve;
@@ -735,7 +735,7 @@ namespace LinBox
 			ttNonsingularSetup.clear();
 			ttNonsingularInv.clear();
 
-   		        ttConsistencySolve.clear();
+			ttConsistencySolve.clear();
 			ttSystemSolve.clear();
 			ttCertSolve.clear();
 			ttNonsingularSolve.clear();
@@ -815,7 +815,9 @@ namespace LinBox
 	public:
 		typedef typename Ring::Element Integer;
 
-		RationalSolver(const Ring& _r = Ring()) : r(_r) {}
+		RationalSolver(const Ring& _r = Ring()) :
+			r(_r)
+		{}
 
 
 #if  __LINBOX_HAVE_DGETRF && __LINBOX_HAVE_DGETRI
@@ -887,9 +889,9 @@ namespace LinBox
 #else
 		template <class IMatrix, class OutVector, class InVector>
 		SolverReturnStatus solve(OutVector& num, Integer& den, const IMatrix& M, const InVector& b) const {
-//                     std::cerr<< "dgetrf or dgetri missing" << std::endl;
-                    return SS_FAILED;
-                }
+			//                     std::cerr<< "dgetrf or dgetri missing" << std::endl;
+			return SS_FAILED;
+		}
 #endif
 
 	public:
@@ -933,7 +935,7 @@ namespace LinBox
 	 *****************/
 
 	template<class Ring, class Field,class RandomPrime>
- 	class RationalSolver<Ring, Field, RandomPrime, BlockHankelTraits> {
+	class RationalSolver<Ring, Field, RandomPrime, BlockHankelTraits> {
 	public:
 		typedef Ring                                 RingType;
 		typedef typename Ring::Element               Integer;
@@ -953,7 +955,7 @@ namespace LinBox
 		 * @param rp  a RandomPrime generator, set by default
 		 */
 		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
-			 _genprime(rp), _R(r)
+			_genprime(rp), _R(r)
 		{
 			_prime=_genprime.randomPrime();
 		}
@@ -979,7 +981,7 @@ namespace LinBox
 	 * SPARSE LU
 	 *****************/
 	template<class Ring, class Field,class RandomPrime>
- 	class RationalSolver<Ring, Field, RandomPrime, SparseEliminationTraits> {
+	class RationalSolver<Ring, Field, RandomPrime, SparseEliminationTraits> {
 	public:
 		typedef Ring                                 RingType;
 		typedef typename Ring::Element               Integer;
@@ -999,7 +1001,7 @@ namespace LinBox
 		 * @param rp  a RandomPrime generator, set by default
 		 */
 		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
-			 _genprime(rp), _R(r)
+			_genprime(rp), _R(r)
 		{
 			_prime=_genprime.randomPrime();
 		}

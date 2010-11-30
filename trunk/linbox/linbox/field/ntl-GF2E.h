@@ -38,15 +38,15 @@
 #include "linbox/linbox-config.h"
 #include <linbox/field/field-traits.h>
 
-namespace LinBox 
+namespace LinBox
 {
 
 	template <class Ring>
-	struct ClassifyRing; 
+	struct ClassifyRing;
 
 	template <class Element>
 	struct ClassifyRing<UnparametricRandIter<Element> >;
-	
+
 	template <>
 	struct ClassifyRing<UnparametricRandIter<NTL::GF2E> > {
 		typedef RingCategories::ModularTag categoryTag;
@@ -59,11 +59,11 @@ namespace LinBox
 	{
 	public:
 		typedef NTL::GF2E Element;
-		UnparametricRandIter<NTL::GF2E>(const UnparametricField<NTL::GF2E>& F =UnparametricField<NTL::GF2E>(), 
-						 const size_t& size = 0,
-						 const size_t& seed = 0
-						 )
-			: _size(size), _seed(seed)
+		UnparametricRandIter<NTL::GF2E>(const UnparametricField<NTL::GF2E>& F =UnparametricField<NTL::GF2E>(),
+						const size_t& size = 0,
+						const size_t& seed = 0
+					       ) :
+			_size(size), _seed(seed)
 		{
 			if(_seed == 0)
 				NTL::SetSeed(NTL::to_ZZ(time(0)));
@@ -71,16 +71,16 @@ namespace LinBox
 				NTL::SetSeed(NTL::to_ZZ(_seed));
 		}
 
-		UnparametricRandIter<NTL::GF2E>(const UnparametricRandIter<NTL::GF2E>& R)
-			: _size(R._size), _seed(R._seed) 
-	
+		UnparametricRandIter<NTL::GF2E>(const UnparametricRandIter<NTL::GF2E>& R) :
+			_size(R._size), _seed(R._seed)
+
 		{
 			if(_seed == 0)
 				NTL::SetSeed(NTL::to_ZZ(time(0)));
 			else
 				NTL::SetSeed(NTL::to_ZZ(_seed));
 		}
-      
+
 		Element& random (Element& x) const
 		{
 			NTL::random(x);
@@ -97,52 +97,54 @@ namespace LinBox
 	/*
 	 * Define a parameterized class to easily handle UnparametricField<NTL::GF2E> field
 	 */
-	
- 	class NTL_GF2E : public UnparametricField<NTL::GF2E>
+
+	class NTL_GF2E : public UnparametricField<NTL::GF2E>
 	{
 	public:
-		NTL_GF2E (const integer &p, const integer &k) {	
-		  if(p != 2) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be 2");
-		  NTL::GF2X irredPoly = NTL::BuildSparseIrred_GF2X((long) k);
-		  NTL::GF2E::init(irredPoly);
+		NTL_GF2E (const integer &p, const integer &k)
+		{
+			if(p != 2) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be 2");
+			NTL::GF2X irredPoly = NTL::BuildSparseIrred_GF2X((long) k);
+			NTL::GF2E::init(irredPoly);
 		}
-		
+
 	}; // end o class NTL_GF2E
-	
+
 
 	/*
 	 * Specialization of UnparametricField<> for NTL::GF2E type
 	 */
 	template<>
-//	NTL::GF2E& UnparametricField<NTL::GF2E>::init (NTL::GF2E &x, const integer &y) const
-	NTL::GF2E& Caster(NTL::GF2E &x, const integer &y) 
+	//	NTL::GF2E& UnparametricField<NTL::GF2E>::init (NTL::GF2E &x, const integer &y) const
+	NTL::GF2E& Caster(NTL::GF2E &x, const integer &y)
 	{
 		x=NTL::to_GF2E(static_cast<long>(y));
 		return x;
 	}
 	template<>
-//	NTL::GF2E& UnparametricField<NTL::GF2E>::init (NTL::GF2E &x, const double &y) const
+	//	NTL::GF2E& UnparametricField<NTL::GF2E>::init (NTL::GF2E &x, const double &y) const
 	NTL::GF2E& Caster(NTL::GF2E &x, const double &y)
 	{
 		x=NTL::to_GF2E(static_cast<long>(y));
 		return x;
 	}
-	
+
 
 	template<>
-//	integer& UnparametricField<NTL::GF2E>::convert (integer& x, const NTL::GF2E &y) const	{
-	integer& Caster(integer& x, const NTL::GF2E &y) {
+	//	integer& UnparametricField<NTL::GF2E>::convert (integer& x, const NTL::GF2E &y) const	{
+	integer& Caster(integer& x, const NTL::GF2E &y)
+	{
 		NTL::GF2X poly = rep(y);
-		
-		long i;		
+
+		long i;
 		x = 0;
 		for(i = deg(poly); i >= 0; --i) {
-		  x <<= 1;
-		  x += rep(coeff(poly, i));
+			x <<= 1;
+			x += rep(coeff(poly, i));
 		}
 		return x;
 	}
-	
+
 
 
 	template<>
@@ -150,27 +152,27 @@ namespace LinBox
 	{
 		return NTL::IsZero(a);
 	}
-  
+
 	template<>
 	bool UnparametricField<NTL::GF2E>::isOne (const NTL::GF2E& a) const
 	{
 		return NTL::IsOne(a);
 	}
-  
-  
+
+
 	template<>
 	integer& UnparametricField<NTL::GF2E>::characteristic (integer &c) const
 	{
-		return c = 2; 
+		return c = 2;
 	}
-  
+
 	template<>
 	integer& UnparametricField<NTL::GF2E>::cardinality(integer& c) const
-	  {
-	    c=1;
-	    c<<= NTL::GF2E::degree();
-	    return c;
-	  }
+	{
+		c=1;
+		c<<= NTL::GF2E::degree();
+		return c;
+	}
 
 
 	template<>
@@ -195,7 +197,7 @@ namespace LinBox
 		x=NTL::to_GF2E(tmp);
 		return is;
 	}
-  
+
 
 }
 

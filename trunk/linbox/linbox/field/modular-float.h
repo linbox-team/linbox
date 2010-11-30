@@ -44,8 +44,7 @@ namespace LinBox
 	template <class Element>
 	struct ClassifyRing<Modular<Element> >;
 	template <>
-	struct ClassifyRing<Modular<float> >
-{
+	struct ClassifyRing<Modular<float> > {
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
@@ -71,14 +70,18 @@ namespace LinBox
 		typedef ModularRandIter<float> RandIter;
 		typedef NonzeroRandIter<Modular<float>, ModularRandIter<float> > NonZeroRandIter;
 
-		static ClassifyRing<Modular<float> >::categoryTag getCategory() {return ClassifyRing<Modular<float> >::categoryTag();}
+		static ClassifyRing<Modular<float> >::categoryTag getCategory()
+		{
+			return ClassifyRing<Modular<float> >::categoryTag();
+		}
 
 
 
 		Modular () {}
 
-		Modular (int32 p, int exp = 1)  : modulus((float)p), lmodulus(p)//, inv_modulus(1./(float)p)
-{
+		Modular (int32 p, int exp = 1)  :
+			modulus((float)p), lmodulus(p)//, inv_modulus(1./(float)p)
+		{
 			if(modulus <= 1)
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			if( exp != 1 ) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
@@ -88,8 +91,9 @@ namespace LinBox
 
 		}
 
-		Modular (float p) : modulus(p), lmodulus((unsigned long)p)
-{
+		Modular (float p) :
+			modulus(p), lmodulus((unsigned long)p)
+		{
 			if( modulus <= 1 )
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			integer max;
@@ -97,8 +101,9 @@ namespace LinBox
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 		}
 
-		Modular (long int p) :modulus((float)p), lmodulus(p)
-{
+		Modular (long int p) :
+			modulus((float)p), lmodulus(p)
+		{
 			if( (float) modulus <= 1 )
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			integer max;
@@ -106,8 +111,9 @@ namespace LinBox
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 		}
 
-		Modular (const integer& p) : modulus((float) p), lmodulus(p) //, inv_modulus(1./(float)p)
-{
+		Modular (const integer& p) :
+			modulus((float) p), lmodulus(p) //, inv_modulus(1./(float)p)
+		{
 			if(modulus <= 1)
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			integer max;
@@ -116,11 +122,12 @@ namespace LinBox
 
 		}
 
-		Modular(const Modular<float>& mf) : modulus(mf.modulus), lmodulus(mf.lmodulus)//,inv_modulus(mf.inv_modulus)
+		Modular(const Modular<float>& mf) :
+			modulus(mf.modulus), lmodulus(mf.lmodulus)//,inv_modulus(mf.inv_modulus)
 		{}
 
 		const Modular &operator=(const Modular<float> &F)
-{
+		{
 			modulus = F.modulus;
 			lmodulus= F.lmodulus;
 			//inv_modulus = F.inv_modulus;
@@ -129,7 +136,7 @@ namespace LinBox
 
 
 		integer &cardinality (integer &c) const
-{
+		{
 			return c = integer(modulus);
 		}
 
@@ -150,30 +157,30 @@ namespace LinBox
 		{ return x=y; }
 
 		std::ostream &write (std::ostream &os) const
-{
+		{
 			return os << "float mod " << (int)modulus;
 		}
 
 		std::istream &read (std::istream &is)
-{
+		{
 			is >> modulus;
 			if(modulus <= 1)
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
-		 	if(modulus > 94906265)
+			if(modulus > 94906265)
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 
 			return is;
 		}
 
 		std::ostream &write (std::ostream &os, const Element &x) const
-{
+		{
 			return os << x;
 		}
 
 		std::istream &read (std::istream &is, Element &x) const
-{
+		{
 			integer tmp;
-                            // JGD : should'nt it be float tmp ???
+			// JGD : should'nt it be float tmp ???
 			is >> tmp;
 			init(x,tmp);
 			return is;
@@ -181,24 +188,24 @@ namespace LinBox
 
 
 		Element &init (Element &x, const integer &y) const
-{
-// 			return x = (Element)mpz_fdiv_ui(y.get_mpz(),lmodulus );
+		{
+			// 			return x = (Element)mpz_fdiv_ui(y.get_mpz(),lmodulus );
 			return x = (Element)(y%lmodulus);
 		}
 
 		inline Element& init(Element& x, float y =0.0) const
-{
+		{
 
 			//float tmp = y;
 
 			/*
-			int sign=0;
-			if (tmp < 0.0)
-{
-				tmp=-tmp;
-				sign=1;
-			}
-			*/
+			   int sign=0;
+			   if (tmp < 0.0)
+			   {
+			   tmp=-tmp;
+			   sign=1;
+			   }
+			   */
 
 			//			tmp = floor (y + 0.5);
 
@@ -208,27 +215,27 @@ namespace LinBox
 			x = fmod (y, modulus);
 
 			/*
-			if (tmp > modulus)
-				tmp -= (modulus * floor( tmp*inv_modulus));
+			   if (tmp > modulus)
+			   tmp -= (modulus * floor( tmp*inv_modulus));
 
-			if ( (!tmp) || (tmp == modulus) )
-{
-				return x = 0.0;
+			   if ( (!tmp) || (tmp == modulus) )
+			   {
+			   return x = 0.0;
 
-			}
-			else
-				if (sign)
-					return x = modulus-tmp;
-				else
-					return x = tmp;
-			*/
+			   }
+			   else
+			   if (sign)
+			   return x = modulus-tmp;
+			   else
+			   return x = tmp;
+			   */
 
 			if (x < 0) x += modulus;
 			return x;
 		}
 
 		inline Element& init(Element& x, double y) const
-{
+		{
 
 			x = fmod (y, double(modulus));
 
@@ -237,7 +244,7 @@ namespace LinBox
 		}
 
 		inline Element& init(Element& x, unsigned long y) const
-{
+		{
 
 			x = fmod (float(y), modulus);
 
@@ -245,7 +252,7 @@ namespace LinBox
 			return x;
 		}
 		inline Element& init(Element& x, int y) const
-{
+		{
 
 			x = fmod (float(y), modulus);
 
@@ -256,42 +263,42 @@ namespace LinBox
 
 
 		inline Element& assign(Element& x, const Element& y) const
-{
+		{
 			return x = y;
 		}
 
 
 		inline bool areEqual (const Element &x, const Element &y) const
-{
+		{
 			return x == y;
 		}
 
 		inline  bool isZero (const Element &x) const
-{
+		{
 			return x == 0.;
 		}
 
 		inline bool isOne (const Element &x) const
-{
+		{
 			return x == 1.;
 		}
 
 		inline Element &add (Element &x, const Element &y, const Element &z) const
-{
+		{
 			x = y + z;
 			if ( x >= modulus ) x -= modulus;
 			return x;
 		}
 
 		inline Element &sub (Element &x, const Element &y, const Element &z) const
-{
+		{
 			x = y - z;
 			if (x < 0) x += modulus;
 			return x;
 		}
 
 		inline Element &mul (Element &x, const Element &y, const Element &z) const
-{
+		{
 			float tmp= y*z;
 			x= fmod(tmp, modulus);
 			//x= tmp - floor(tmp*inv_modulus)*modulus;
@@ -300,20 +307,20 @@ namespace LinBox
 		}
 
 		inline Element &div (Element &x, const Element &y, const Element &z) const
-{
+		{
 			Element temp;
 			inv (temp, z);
 			return mul (x, y, temp);
 		}
 
 		inline Element &neg (Element &x, const Element &y) const
-{
+		{
 			if(y == 0) return x = 0;
 			else return x = modulus - y;
 		}
 
 		inline Element &inv (Element &x, const Element &y) const
-{
+		{
 			// The extended Euclidean algoritm
 			int x_int, y_int, q, tx, ty, temp;
 			x_int = int (modulus);
@@ -322,7 +329,7 @@ namespace LinBox
 			ty = 1;
 
 			while (y_int != 0)
-{
+			{
 				// always: gcd (modulus,residue) = gcd (x_int,y_int)
 				//         sx*modulus + tx*residue = x_int
 				//         sy*modulus + ty*residue = y_int
@@ -345,7 +352,7 @@ namespace LinBox
 				      const Element &a,
 				      const Element &x,
 				      const Element &y) const
-{
+		{
 			float tmp = a * x + y;
 			return r= fmod(tmp, modulus);
 			//return r= tmp- floor(tmp*inv_modulus)*modulus;
@@ -353,42 +360,42 @@ namespace LinBox
 		}
 
 		inline Element &addin (Element &x, const Element &y) const
-{
+		{
 			x += y;
 			if (  x >= modulus ) x -= modulus;
 			return x;
 		}
 
 		inline Element &subin (Element &x, const Element &y) const
-{
+		{
 			x -= y;
 			if (x < 0.) x += modulus;
 			return x;
 		}
 
 		inline Element &mulin (Element &x, const Element &y) const
-{
+		{
 			return mul(x,x,y);
 		}
 
 		inline Element &divin (Element &x, const Element &y) const
-{
+		{
 			return div(x,x,y);
 		}
 
 		inline Element &negin (Element &x) const
-{
+		{
 			if (x == 0.) return x;
 			else return x = modulus - x;
 		}
 
 		inline Element &invin (Element &x) const
-{
+		{
 			return inv (x, x);
 		}
 
 		inline Element &axpyin (Element &r, const Element &a, const Element &x) const
-{
+		{
 			float tmp = r + a * x;
 			return r = fmod(tmp, modulus);
 
@@ -396,26 +403,26 @@ namespace LinBox
 		}
 
 		unsigned long AccBound(const Element&r) const
-{
-	Element one, zero ; init(one,1UL) ; init(zero,0UL);
-	double max_double = (double) (1ULL<<FLT_MANT_DIG) - modulus ;
-	double p = modulus-1 ;
-	if (areEqual(zero,r))
-		return (unsigned long) (double(max_double)/p) ;
-	else if (areEqual(one,r))
-	{
-		if (modulus>= getMaxModulus())
-			return 0 ;
-		else
-			return (unsigned long) (double(max_double)/(modulus*modulus)) ;
-	} else
-		throw LinboxError("Bad input, expecting 0 or 1");
-	return 0;
-}
+		{
+			Element one, zero ; init(one,1UL) ; init(zero,0UL);
+			double max_double = (double) (1ULL<<FLT_MANT_DIG) - modulus ;
+			double p = modulus-1 ;
+			if (areEqual(zero,r))
+				return (unsigned long) (double(max_double)/p) ;
+			else if (areEqual(one,r))
+			{
+				if (modulus>= getMaxModulus())
+					return 0 ;
+				else
+					return (unsigned long) (double(max_double)/(modulus*modulus)) ;
+			} else
+				throw LinboxError("Bad input, expecting 0 or 1");
+			return 0;
+		}
 
 
 		static inline float getMaxModulus()
-			{ return 4096.0; } // floor( 2^12 )
+		{ return 4096.0; } // floor( 2^12 )
 
 	};
 
@@ -426,14 +433,18 @@ namespace LinBox
 		typedef float Element;
 		typedef Modular<float> Field;
 
-		FieldAXPY (const Field &F) : _F (F) , //_invmod(1./_F.modulus),
-					     _y(0.) , _bound( (float) ( (1UL << 23) - (int) (_F.modulus*_F.modulus))) {}
+		FieldAXPY (const Field &F) :
+			_F (F) , //_invmod(1./_F.modulus),
+			_y(0.) , _bound( (float) ( (1UL << 23) - (int) (_F.modulus*_F.modulus)))
+		{}
 
-		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F),// _invmod(faxpy._invmod) ,
-		_y(faxpy._y), _bound(faxpy._bound) {}
+		FieldAXPY (const FieldAXPY &faxpy) :
+			_F (faxpy._F),// _invmod(faxpy._invmod) ,
+			_y(faxpy._y), _bound(faxpy._bound)
+		{}
 
 		FieldAXPY<Modular<float> > &operator = (const FieldAXPY &faxpy)
-{
+		{
 			_F = faxpy._F;
 			//_invmod= faxpy._invmod;
 			_y= faxpy._y;
@@ -441,35 +452,35 @@ namespace LinBox
 			return *this;
 		}
 
-            inline Element& mulacc (const Element &a, const Element &x)
-{
-                Element tmp= a*x;
-                return accumulate(tmp);
-            }
+		inline Element& mulacc (const Element &a, const Element &x)
+		{
+			Element tmp= a*x;
+			return accumulate(tmp);
+		}
 
-            inline Element& accumulate (const Element &tmp)
-{
-                _y += tmp;
-                if (_y > _bound)
-                    return _y = fmod (_y, _F.modulus);
-                else
-                    return _y;
-            }
+		inline Element& accumulate (const Element &tmp)
+		{
+			_y += tmp;
+			if (_y > _bound)
+				return _y = fmod (_y, _F.modulus);
+			else
+				return _y;
+		}
 
 		inline Element& get (Element &y)
-{
+		{
 			_y = fmod (_y, _F.modulus);
 			return y=_y ;
 		}
 
 		inline FieldAXPY &assign (const Element y)
-{
+		{
 			_y = y;
 			return *this;
 		}
 
 		inline void reset()
-{
+		{
 			_y = 0.;
 		}
 
@@ -491,30 +502,32 @@ namespace LinBox
 
 	public:
 		typedef float Element;
-		DotProductDomain (const Modular<float> &F)
-			: VectorDomainBase<Modular<float> > (F), _bound( (float) ( (1<<23) - (int) (_F.modulus*_F.modulus)))//, _invmod(1./_F.modulus)
-{
-				_nmax= (size_t)floor((float(1<<11)* float(1<<12))/ (_F.modulus * _F.modulus));
-			}
+		DotProductDomain (const Modular<float> &F) :
+			VectorDomainBase<Modular<float> > (F)
+			, _bound( (float) ( (1<<23) - (int) (_F.modulus*_F.modulus)))
+			//, _invmod(1./_F.modulus)
+		{
+			_nmax= (size_t)floor((float(1<<11)* float(1<<12))/ (_F.modulus * _F.modulus));
+		}
 
 	protected:
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const
-{
+		{
 
 			float y = 0.;
 			float t = 0.;
 			if (v1.size() < _nmax)
-{
+			{
 				for (size_t i = 0; i< v1.size();++i)
 					y += v1[i] * v2[i] ;
 				y = fmod(y, _F.modulus);
 			}
 			else
-{
+			{
 				size_t i=0;
 				for (;i< v1.size()- _nmax ;i=i+_nmax)
-{
+				{
 					for (size_t j=i;j<i+_nmax;++j)
 						y += v1[j] * v2[j];
 					t+=fmod(y, _F.modulus);
@@ -530,23 +543,23 @@ namespace LinBox
 
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const
-{
+		{
 
 			float y = 0.;
 			float t =0.;
 
 
 			if (v1.first.size() < _nmax)
-{
+			{
 				for (size_t i=0;i<v1.first.size();++i)
 					y+= v1.second[i] * v2[v1.first[i]];
 				y = fmod(y, _F.modulus);
 			}
 			else
-{
+			{
 				size_t i=0;
 				for (;i< v1.first.size()- _nmax ;i=i+_nmax)
-{
+				{
 					for (size_t j=i;j<i+_nmax;++j)
 						y += v1.second[j] * v2[v1.first[j]];
 					t+=fmod(y, _F.modulus);

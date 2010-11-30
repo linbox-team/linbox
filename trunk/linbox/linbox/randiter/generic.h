@@ -49,10 +49,10 @@ namespace LinBox
 	  For prime fields with p < 2^32, a near-uniform distrubution can
 	  be expected.  For larger fields or non-prime fields, a near-uniform
 	  distribution on an unspecified subset of the elements can be expected.
-	 */
+	  */
 	template <class Field>
 	class GenericRandIter {
-	    public:
+	public:
 
 		typedef typename Field::Element Element;
 
@@ -70,8 +70,8 @@ namespace LinBox
 		 */
 		GenericRandIter (const Field &F,
 				 const integer &size = 0,
-				 const integer &seed = 0)
-			: _F (F), _size (size), _seed (seed)
+				 const integer &seed = 0) :
+			_F (F), _size (size), _seed (seed)
 		{
 			if (_seed == 0) _seed = time (NULL);
 
@@ -83,15 +83,16 @@ namespace LinBox
 				_size = cardinality;
 
 			commentator.report (10, INTERNAL_DESCRIPTION)
-				<< "Created random generator with size " << _size
-				<< " and seed " << _seed << std::endl;
+			<< "Created random generator with size " << _size
+			<< " and seed " << _seed << std::endl;
 
 			// Seed random number generator
 			srand (_seed);
 		}
 
-		GenericRandIter (const GenericRandIter<Field> &R)
-			: _F (R._F), _size (R._size), _seed (R._seed) {}
+		GenericRandIter (const GenericRandIter<Field> &R) :
+			_F (R._F), _size (R._size), _seed (R._seed)
+		{}
 
 		~GenericRandIter () {}
 
@@ -128,7 +129,7 @@ namespace LinBox
 			return (a = ElementEnvelope <Field> (tmp));
 		}
 
-	    private:
+	private:
 
 		/// Field in which arithmetic is done
 		Field _F;

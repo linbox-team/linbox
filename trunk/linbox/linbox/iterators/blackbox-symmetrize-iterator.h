@@ -28,44 +28,44 @@
 // Symmetrizing iterator (for rank computations)
 // Same left and right vector
 // A is supposed to have tranpose-vector product
-// the sequence is u^t u, (A u)^t (A u) = u^t (A^t A) u, 
+// the sequence is u^t u, (A u)^t (A u) = u^t (A^t A) u,
 // (A^t (A u))^t (A^t (A u)) = u^t (A^t A)^2 u , etc.
 // ================================================================
 
 
 #include <linbox/algorithms/blackbox-container-base.h>
 
-namespace LinBox 
+namespace LinBox
 {
 
-template<class Field, class Vector>
-class BlackboxSymmetrizeIterator : public BlackboxContainerBase< Field, Vector > {
-public:
-    BlackboxSymmetrizeIterator() {} 
+	template<class Field, class Vector>
+	class BlackboxSymmetrizeIterator : public BlackboxContainerBase< Field, Vector > {
+	public:
+		BlackboxSymmetrizeIterator() {}
 
-    BlackboxSymmetrizeIterator(Blackbox * D, const Field& F, const Vector& u0) 
-            : BlackboxContainerBase< Field, Vector >(D, F) { init(u0); }
-    
-    BlackboxSymmetrizeIterator(Blackbox * D, const Field& F) 
-            : BlackboxContainerBase< Field, Vector >(D, F) { init( Field::RandIter(_field) ); }
-    
-private:
-    void _launch () {
-        if (casenumber) {
-            casenumber = 0;
-            _BB_domain->Apply(v, u);
-            DOTPROD(_value,v,v); 
-        } else {
-            casenumber = 1;
-            _BB_domain->ApplyTrans( u, v); 
-            DOTPROD(_value,u,u);
-        }  
-    }
-    
-    void _wait () {}
+		BlackboxSymmetrizeIterator(Blackbox * D, const Field& F, const Vector& u0) :
+			BlackboxContainerBase< Field, Vector >(D, F) { init(u0); }
 
-};
- 
+		BlackboxSymmetrizeIterator(Blackbox * D, const Field& F) :
+			BlackboxContainerBase< Field, Vector >(D, F) { init( Field::RandIter(_field) ); }
+
+	private:
+		void _launch () {
+			if (casenumber) {
+				casenumber = 0;
+				_BB_domain->Apply(v, u);
+				DOTPROD(_value,v,v);
+			} else {
+				casenumber = 1;
+				_BB_domain->ApplyTrans( u, v);
+				DOTPROD(_value,u,u);
+			}
+		}
+
+		void _wait () {}
+
+	};
+
 };
 
 

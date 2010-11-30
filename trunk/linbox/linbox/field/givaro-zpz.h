@@ -52,13 +52,13 @@ namespace LinBox
 	 *  "Std32"  for 32 bits integer
 	 *  "Log16"  for Zech log representation in 16 bits
 	 */
-        template<class Field>
-                class DotProductDomain;
-        template<class Field>
-                class FieldAXPY;
+	template<class Field>
+	class DotProductDomain;
+	template<class Field>
+	class FieldAXPY;
 
 	template <class Ring>
-    struct ClassifyRing;
+	struct ClassifyRing;
 
 	template <class TAG>
 	class GivaroZpz;
@@ -69,7 +69,7 @@ namespace LinBox
 	};
 
 	/** \brief wrapper of Givaro's ZpzDom.
-\ingroup field
+	  \ingroup field
 
 	 *  Most methods are inherited from ZpzDom<Std16>, ZpzDom<Std32>
 	 *  and ZpzDom<log16> classes of Givaro.
@@ -101,22 +101,28 @@ namespace LinBox
 		/** Constructor from an integer
 		 *  this constructor use the ZpzDom<TAG> constructor
 		 */
-		GivaroZpz (const integer &p) : ZpzDom<TAG> (static_cast<typename ZpzDom<TAG>::Residu_t> (p))  {}
+		GivaroZpz (const integer &p) :
+			ZpzDom<TAG> (static_cast<typename ZpzDom<TAG>::Residu_t> (p))
+		{}
 
 
 		/** Constructor from an integer (takes degree of extension as 2nd parameter, must be 1)
 		 *  this constructor use the ZpzDom<TAG> constructor
 		 */
-		GivaroZpz (const integer &p, const integer& k) : ZpzDom<TAG> (static_cast<typename ZpzDom<TAG>::Residu_t> (p))  {
+		GivaroZpz (const integer &p, const integer& k) :
+			ZpzDom<TAG> (static_cast<typename ZpzDom<TAG>::Residu_t> (p))
+		{
 
 			if (k!=1)
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
 		}
 
-		/** Copy constructor
+		/** Copy constructor.
 		 * This copy constructor use the ZpzDom<TAG> copy constructor
 		 */
-		GivaroZpz (const GivaroZpz<TAG>& F) : ZpzDom<TAG> (F) {}
+		GivaroZpz (const GivaroZpz<TAG>& F) :
+			ZpzDom<TAG> (F)
+		{}
 
 
 		// Rich Seagraves 7-16-2003
@@ -127,28 +133,28 @@ namespace LinBox
 		// the "Right Thing" for this operator
 		//
 		/** Operator =
-		 */
-		/*
-		       	GivaroZpz<TAG>& operator= (const GivaroZpz<TAG>& F) {
-				return (*this)=F;
-			}
 		*/
+		/*
+		   GivaroZpz<TAG>& operator= (const GivaroZpz<TAG>& F) {
+		   return (*this)=F;
+		   }
+		   */
 
 		/** Characteristic.
 		 * Return integer representing characteristic of the domain.
 		 * @return integer representing characteristic of the domain.
 		 */
 		integer &characteristic (integer &c) const
-			{ return c = integer (ZpzDom<TAG>::size ()); }
+		{ return c = integer (ZpzDom<TAG>::size ()); }
 		long characteristic() const
-			{return static_cast<int>(ZpzDom<TAG>::size());}
+		{return static_cast<int>(ZpzDom<TAG>::size());}
 
 		/** Cardinality.
 		 * Return integer representing cardinality of the domain.
 		 * @return integer representing cardinality of the domain
 		 */
 		integer &cardinality (integer &c) const
-			{ return c = integer (ZpzDom<TAG>::size ()); }
+		{ return c = integer (ZpzDom<TAG>::size ()); }
 
 		/** Conversion of field base element to an integer.
 		 * This function assumes the output field base element x has already been
@@ -158,7 +164,7 @@ namespace LinBox
 		 * @param y constant field base element.
 		 */
 		integer &convert (integer &x, const Element &y) const
-		         { return x = integer (y); }
+		{ return x = integer (y); }
 
 		double &convert (double& x, const Element& y) const
 		{ return x = static_cast<double>(y); }
@@ -190,7 +196,7 @@ namespace LinBox
 		Element &init (Element &x , const double &y ) const
 		{
 			double z = fmod(y, (double) this->_p);
-		        if (z < 0) z += (double) this->_p;
+			if (z < 0) z += (double) this->_p;
 			z += 0.5;
 			return x = static_cast<long>(z); //rounds towards 0
 		}
@@ -248,34 +254,38 @@ namespace LinBox
 
 	template <>
 	class FieldAXPY<GivaroZpz<Std32> > {
-	    public:
+	public:
 
 		typedef GivaroZpz<Std32>::Element Element;
 		typedef GivaroZpz<Std32> Field;
 
-		FieldAXPY (const Field &F) : _F (F) , Corr(uint64(-1) % (uint64)F.characteristic() +1){ _y = 0; }
-		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0) , Corr(faxpy.Corr) {}
+		FieldAXPY (const Field &F) :
+			_F (F) , Corr(uint64(-1) % (uint64)F.characteristic() +1)
+		{ _y = 0; }
+		FieldAXPY (const FieldAXPY &faxpy) :
+			_F (faxpy._F), _y (0) , Corr(faxpy.Corr)
+		{}
 
 		FieldAXPY<GivaroZpz<Std32> > &operator = (const FieldAXPY &faxpy)
-			{ _F = faxpy._F; _y = faxpy._y; Corr = faxpy.Corr; return *this; }
+		{ _F = faxpy._F; _y = faxpy._y; Corr = faxpy.Corr; return *this; }
 
 		inline uint64& mulacc (const Element &a, const Element &x)
 		{
 			uint64 t = (uint64) a * (uint64) x;
 			_y += t;
 			if (_y < t)
-                            return _y += Corr;
-                        else
-                            return _y;
-                }
+				return _y += Corr;
+			else
+				return _y;
+		}
 
 		inline uint64& accumulate (const Element &t)
 		{
 			_y += t;
 			if (_y < (uint64)t)
-                            return _y += Corr;
-                        else
-                            return _y;
+				return _y += Corr;
+			else
+				return _y;
 		}
 
 		inline Element &get (Element &y) {
@@ -286,13 +296,13 @@ namespace LinBox
 		}
 
 		inline FieldAXPY &assign (const Element y)
-			{ _y = y; return *this; }
+		{ _y = y; return *this; }
 
 		inline void reset() {
 			_y = 0;
 		}
 
-	    private:
+	private:
 
 		Field _F;
 		uint64 _y;
@@ -306,36 +316,40 @@ namespace LinBox
 
 	template <>
 	class FieldAXPY<GivaroZpz<Std16> > {
-	    public:
+	public:
 
 		typedef GivaroZpz<Std16>::Element Element;
 		typedef GivaroZpz<Std16> Field;
 
-		FieldAXPY (const Field &F) : _F (F) , Corr(uint32(-1) % (uint32)F.characteristic() +1){ _y = 0; }
-		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0) , Corr(faxpy.Corr) {}
+		FieldAXPY (const Field &F) :
+			_F (F) , Corr(uint32(-1) % (uint32)F.characteristic() +1)
+		{ _y = 0; }
+		FieldAXPY (const FieldAXPY &faxpy) :
+			_F (faxpy._F), _y (0) , Corr(faxpy.Corr)
+		{}
 
 		FieldAXPY<GivaroZpz<Std16> > &operator = (const FieldAXPY &faxpy)
-			{ _F = faxpy._F; _y = faxpy._y; Corr = faxpy.Corr; return *this; }
+		{ _F = faxpy._F; _y = faxpy._y; Corr = faxpy.Corr; return *this; }
 
 		inline uint32& mulacc (const Element &a, const Element &x)
 		{
-                    uint32 t = (uint32) a * (uint32) x;
+			uint32 t = (uint32) a * (uint32) x;
 			_y += t;
 
 			if (_y < t)
-                            return _y += Corr;
-                        else
-                            return _y;
+				return _y += Corr;
+			else
+				return _y;
 		}
 
 		inline uint32& accumulate (const Element &t)
 		{
-                    _y += t;
+			_y += t;
 
 			if (_y < (uint32)t)
-                            return _y += Corr;
-                        else
-                            return _y;
+				return _y += Corr;
+			else
+				return _y;
 		}
 
 		inline Element &get (Element &y) {
@@ -346,13 +360,13 @@ namespace LinBox
 		}
 
 		inline FieldAXPY &assign (const Element y)
-			{ _y = y; return *this; }
+		{ _y = y; return *this; }
 
 		inline void reset() {
 			_y = 0;
 		}
 
-	    private:
+	private:
 
 		Field _F;
 		uint32 _y;
@@ -370,10 +384,10 @@ namespace LinBox
 
 		typedef GivaroZpz<Std32>::Element Element;
 
-		DotProductDomain (const GivaroZpz<Std32> &F)
-			: VectorDomainBase<GivaroZpz<Std32> > (F) ,
-			  Corr(uint64(-1) % (uint64)F.characteristic() +1),
-			  Max(uint64(-1))
+		DotProductDomain (const GivaroZpz<Std32> &F) :
+			VectorDomainBase<GivaroZpz<Std32> > (F) ,
+			Corr(uint64(-1) % (uint64)F.characteristic() +1),
+			Max(uint64(-1))
 		{}
 
 	protected:
@@ -397,10 +411,10 @@ namespace LinBox
 
 		typedef GivaroZpz<Std16>::Element Element;
 
-		DotProductDomain (const GivaroZpz<Std16> &F)
-			:  VectorDomainBase<GivaroZpz<Std16> > (F) ,
-			   Corr(uint32(-1) % (uint32)F.characteristic() +1),
-			   Max(uint32(-1))
+		DotProductDomain (const GivaroZpz<Std16> &F) :
+			VectorDomainBase<GivaroZpz<Std16> > (F) ,
+			Corr(uint32(-1) % (uint32)F.characteristic() +1),
+			Max(uint32(-1))
 		{}
 
 	protected:
@@ -413,7 +427,7 @@ namespace LinBox
 	private:
 		uint32 Corr;
 		uint32 Max;
-};
+	};
 
 } // namespace LinBox
 

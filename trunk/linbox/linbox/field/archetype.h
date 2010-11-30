@@ -55,7 +55,7 @@ namespace LinBox
 	// Forward declarations
 	class RandIterArchetype;
 	/** \brief field specification and archetypical instance.
-	\ingroup field
+	  \ingroup field
 	 *
 	 * The %FieldArchetype and its encapsulated
 	 * element class contain pointers to the \ref FieldAbstract
@@ -71,7 +71,7 @@ namespace LinBox
 	 * the elements themselves cannot be contained, but rather pointers to them.
 	 */
 	class FieldArchetype : public FieldInterface {
-	    public:
+	public:
 
 		/** @name Common Object Interface for a LinBox Field.
 		 * These methods are required of all \ref LinBox fields.
@@ -172,9 +172,9 @@ namespace LinBox
 
 		/** \brief Conversion of field element to an integer.
 		 *
-		The meaning of conversion is specific to each field class.
-		However, if x is in the prime subfield, the integer n returned is such
-		that an init from n will reproduce x.  Most often, 0 &leq; n &lt; characteristic.
+		 The meaning of conversion is specific to each field class.
+		 However, if x is in the prime subfield, the integer n returned is such
+		 that an init from n will reproduce x.  Most often, 0 &leq; n &lt; characteristic.
 
 		 *
 		 * @return reference to n.
@@ -216,7 +216,7 @@ namespace LinBox
 		 * cardinality, and -1 to signify a field of infinite cardinality.
 		 */
 		integer &cardinality (integer &c) const
-			{ return _field_ptr->cardinality (c); }
+		{ return _field_ptr->cardinality (c); }
 
 		/** \brief Characteristic.
 		 *
@@ -226,7 +226,7 @@ namespace LinBox
 		 * and 0 to signify a field of infinite characteristic.
 		 */
 		integer &characteristic (integer &c) const
-			{ return _field_ptr->characteristic (c); }
+		{ return _field_ptr->characteristic (c); }
 
 		//@} Object Management
 
@@ -252,7 +252,7 @@ namespace LinBox
 		 * @param  y field element
 		 */
 		bool areEqual (const Element &x, const Element &y) const
-			{ return _field_ptr->areEqual (*x._elem_ptr, *y._elem_ptr); }
+		{ return _field_ptr->areEqual (*x._elem_ptr, *y._elem_ptr); }
 
 		/** \brief Addition, x <-- y + z.
 		 *
@@ -389,7 +389,7 @@ namespace LinBox
 		 * @param  x field element.
 		 */
 		bool isZero (const Element &x) const
-			{ return _field_ptr->isZero (*x._elem_ptr); }
+		{ return _field_ptr->isZero (*x._elem_ptr); }
 
 		/** One equality.
 		 * Test if field element is equal to one.
@@ -403,7 +403,7 @@ namespace LinBox
 		 * @param  x field element.
 		 */
 		bool isOne (const Element &x) const
-			{ return _field_ptr->isOne (*x._elem_ptr); }
+		{ return _field_ptr->isOne (*x._elem_ptr); }
 		//@}
 
 		/** @name Inplace Arithmetic Operations
@@ -570,7 +570,7 @@ namespace LinBox
 		 * @param  x   field element.
 		 */
 		std::ostream &write (std::ostream &os, const Element &x) const
-			{ return _field_ptr->write (os, *x._elem_ptr); }
+		{ return _field_ptr->write (os, *x._elem_ptr); }
 
 		/** Read field element.
 		 * This function assumes the field element has already been
@@ -585,7 +585,7 @@ namespace LinBox
 		 * @param  x   field element.
 		 */
 		std::istream &read (std::istream &is, Element &x) const
-			{ return _field_ptr->read (is, *x._elem_ptr); }
+		{ return _field_ptr->read (is, *x._elem_ptr); }
 
 		//@} Input/Output Operations
 		//@} Common Object Interface
@@ -610,10 +610,10 @@ namespace LinBox
 		 *                        of \ref FieldAbstract.
 		 */
 		FieldArchetype (FieldAbstract    *field_ptr,
-				 ElementAbstract  *elem_ptr,
-				 RandIterAbstract *randIter_ptr = 0)
-			: _field_ptr (field_ptr->clone ()),
-			  _elem_ptr (elem_ptr->clone ())
+				ElementAbstract  *elem_ptr,
+				RandIterAbstract *randIter_ptr = 0) :
+			_field_ptr (field_ptr->clone ()),
+			_elem_ptr (elem_ptr->clone ())
 		{
 			if (randIter_ptr != 0) _randIter_ptr = randIter_ptr->clone ();
 		}
@@ -628,11 +628,11 @@ namespace LinBox
 		 * @param  randIter_ptr  pointer to random matching the interface
 		 */
 		template<class Field_qcq>
-			FieldArchetype (Field_qcq *f) { constructor (f, f); }
+		FieldArchetype (Field_qcq *f) { constructor (f, f); }
 
 		//@} Implementation-Specific Methods
 
-	    protected:
+	protected:
 
 		friend class ElementArchetype;
 		friend class RandIterArchetype;

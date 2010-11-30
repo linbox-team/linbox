@@ -34,8 +34,8 @@ namespace LinBox
 	 */
 	template <class _Blackbox1, class _Blackbox2>
 	class Dif : public BlackboxInterface {
-                typedef Dif<_Blackbox1, _Blackbox2> Self_t;
-	    public:
+		typedef Dif<_Blackbox1, _Blackbox2> Self_t;
+	public:
 		typedef _Blackbox1 Blackbox1;
 		typedef _Blackbox2 Blackbox2;
 
@@ -47,7 +47,8 @@ namespace LinBox
 		 * Their data is not copied.  A subsequent change to one of them also changes
 		 * this difference.
 		 */
-		Dif (const Blackbox1 &A, const Blackbox2 &B) : _A_ptr(&A), _B_ptr(&B)
+		Dif (const Blackbox1 &A, const Blackbox2 &B) :
+		       	_A_ptr(&A), _B_ptr(&B)
 		{
 			// create new copies of matrices in dynamic memory
 			linbox_check (A.coldim () == B.coldim ());
@@ -61,7 +62,8 @@ namespace LinBox
 		 * The two matrices must have the same shape and be over the same field.
 		 * Their data <i>is</i> copied.  I don't know why.
 		 */
-		Dif (const Blackbox1 *A_ptr, const Blackbox2 *B_ptr) : _A_ptr(A_ptr),_B_ptr(B_ptr)
+		Dif (const Blackbox1 *A_ptr, const Blackbox2 *B_ptr) :
+		       	_A_ptr(A_ptr),_B_ptr(B_ptr)
 		{
 			// create new copies of matrices in dynamic memory
 			linbox_check (A_ptr != 0);
@@ -69,8 +71,8 @@ namespace LinBox
 			linbox_check (A_ptr->coldim () == B_ptr->coldim ());
 			linbox_check (A_ptr->rowdim () == B_ptr->rowdim ());
 
-// 			_A_ptr = A_ptr->clone ();
-// 			_B_ptr = B_ptr->clone ();
+			// 			_A_ptr = A_ptr->clone ();
+			// 			_B_ptr = B_ptr->clone ();
 			VectorWrapper::ensureDim (_z1, A_ptr->rowdim ());
 			VectorWrapper::ensureDim (_z2, A_ptr->coldim ());
 		}
@@ -79,8 +81,8 @@ namespace LinBox
 		 * Creates new black box objects in dynamic memory.
 		 * @param M constant reference to compose black box matrix
 		 */
-		Dif (const Dif<Blackbox1, Blackbox2> &M)
-			: _A_ptr (M._A_ptr), _B_ptr (M._B_ptr)
+		Dif (const Dif<Blackbox1, Blackbox2> &M) :
+			_A_ptr (M._A_ptr), _B_ptr (M._B_ptr)
 		{
 			VectorWrapper::ensureDim (_z1, _A_ptr->rowdim ());
 			VectorWrapper::ensureDim (_z2, _A_ptr->coldim ());
@@ -138,20 +140,19 @@ namespace LinBox
 			return y;
 		}
 
-            template<typename _Tp1, typename _Tp2 = _Tp1>
-            struct rebind
-            {
-                typedef Dif<
-                    typename Blackbox1::template rebind<_Tp1>::other,
-                    typename Blackbox2::template rebind<_Tp2>::other
-                > other;
+		template<typename _Tp1, typename _Tp2 = _Tp1>
+		struct rebind {
+			typedef Dif<
+			typename Blackbox1::template rebind<_Tp1>::other,
+				 typename Blackbox2::template rebind<_Tp2>::other
+				 > other;
 
-    		void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
-                    typename Blackbox1::template rebind<_Tp1> () ( *(Ap._A_ptr), *(A._A_ptr), F);
-                    typename Blackbox2::template rebind<_Tp2> () ( *(Ap._B_ptr), *(A._B_ptr), F);
-                }
+			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+				typename Blackbox1::template rebind<_Tp1> () ( *(Ap._A_ptr), *(A._A_ptr), F);
+				typename Blackbox2::template rebind<_Tp2> () ( *(Ap._B_ptr), *(A._B_ptr), F);
+			}
 
-            };
+		};
 
 
 
@@ -161,18 +162,18 @@ namespace LinBox
 		 * @return integer number of rows of black box matrix.
 		 */
 		size_t rowdim (void) const
-			{ return _A_ptr->rowdim (); }
+		{ return _A_ptr->rowdim (); }
 
 		/** Retreive column dimensions of BlackBox matrix.
 		 * Required by abstract base class.
 		 * @return integer number of columns of black box matrix.
 		 */
 		size_t coldim (void) const
-			{ return _A_ptr->coldim (); }
+		{ return _A_ptr->coldim (); }
 
 		const Field& field() const {return _A_ptr->field();}
 
-	    private:
+	private:
 
 		const Blackbox1       *_A_ptr;
 		const Blackbox2       *_B_ptr;

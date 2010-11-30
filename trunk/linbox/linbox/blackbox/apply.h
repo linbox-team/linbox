@@ -25,7 +25,7 @@
 
 
 /* Reserve for possible optimal.
- */
+*/
 
 #ifndef __LINBOX_apply_H
 #define __LINBOX_apply_H
@@ -62,14 +62,16 @@ namespace LinBox
 
 	// general case, y = A x
 	template<class OutV, class Matrix, class InV>
-	inline OutV& apply (OutV& y, const Matrix& A, const InV& x) {
+	inline OutV& apply (OutV& y, const Matrix& A, const InV& x)
+	{
 
 		return A. apply (y, x);
 
 	}
 
 	template<class OutV, class Matrix, class InV>
-	inline OutV& applyTranspose (OutV& y, const Matrix& A, const InV& x) {
+	inline OutV& applyTranspose (OutV& y, const Matrix& A, const InV& x)
+	{
 
 		return A. applyTranspose (y, x);
 
@@ -83,7 +85,9 @@ namespace LinBox
 		typedef typename Domain::Element    Element;
 		typedef std::vector<Element>         Vector;
 
-		BlasApply(const Domain& D) : _D(D), _MD(D) {
+		BlasApply(const Domain& D) :
+			_D(D), _MD(D)
+		{
 			_D.characteristic(_prime);
 			_D.init(_one,1UL);
 			_D.init(_zero,0UL);
@@ -93,7 +97,8 @@ namespace LinBox
 		//#ifdef __LINBOX_BLAS_AVAILABLE
 		inline Vector& applyV(Vector                        &y,
 				      const BlasMatrix<Element>     &A,
-				      const Vector                  &x) const {
+				      const Vector                  &x) const
+		{
 
 			if (( _prime > 0) && ( _prime <  67108863)) {
 
@@ -113,7 +118,8 @@ namespace LinBox
 
 		inline Vector& applyVTrans(Vector                        &y,
 					   BlasMatrix<Element>           &A,
-					   const Vector                  &x) const {
+					   const Vector                  &x) const
+		{
 
 			if (( _prime > 0) && ( _prime <  67108863)) {
 
@@ -134,7 +140,8 @@ namespace LinBox
 
 		inline Vector& applyVspecial (Vector                        &y,
 					      BlasMatrix<Element>           &A,
-					      const Vector                  &x) const {//toto
+					      const Vector                  &x) const
+		{//toto
 
 			size_t m,n;
 			m = A.rowdim();
@@ -266,21 +273,22 @@ namespace LinBox
 		typedef typename Domain::Element    Element;
 		typedef std::vector<Element>         Vector;
 
-		MatrixApplyDomain(const Domain& D, const IMatrix &M) : _D(D), _M(M) {}
+		MatrixApplyDomain(const Domain& D, const IMatrix &M) :
+			_D(D), _M(M)
+		{}
 
 		void setup(LinBox::integer prime){}
 
-		Vector& applyV(Vector& y, Vector& x, Vector& z) const { return _M.apply(y,x);}
+		Vector& applyV(Vector& y, Vector& x, Vector& z) const
+		{ return _M.apply(y,x);}
 
-		Vector& applyVTrans(Vector& y, Vector& x, Vector&z) const {return _M.applyTranspose(y,x);}
+		Vector& applyVTrans(Vector& y, Vector& x, Vector&z) const
+		{return _M.applyTranspose(y,x);}
 
 	private:
 		Domain          _D;
 		const IMatrix  &_M;
 	};
-
-
-
 
 
 	// special function to split an integer matrix in q-adic representation in an array of double
@@ -304,7 +312,6 @@ namespace LinBox
 
 
 	// \brief optimizations for applying an integer matrix to a bounded integer vector
-
 	template <class Domain, class IMatrix>
 	class BlasMatrixApplyDomain {
 
@@ -316,10 +323,13 @@ namespace LinBox
 		typedef IMatrix                       Matrix;
 
 
-	       	BlasMatrixApplyDomain(const Domain& D, const IMatrix &M) : _D(D), _M(M), _MD(D), _m(M.rowdim()), _n(M.coldim()){ _switcher= Classic;_rns=NULL;}
+		BlasMatrixApplyDomain(const Domain& D, const IMatrix &M) :
+			_D(D), _M(M), _MD(D), _m(M.rowdim()), _n(M.coldim())
+		{ _switcher= Classic;_rns=NULL;}
 
 
-		~BlasMatrixApplyDomain () {
+		~BlasMatrixApplyDomain ()
+		{
 			if (_switcher==MatrixQadic) delete[] chunks;
 			if (_switcher==VectorQadic) {delete[] chunks;delete[] vchunks;}
 			if (_switcher== CRT) delete _rns;
@@ -328,7 +338,8 @@ namespace LinBox
 			//std::cout<<"time convert result = "<<_convert_result<<std::endl;
 		}
 
-		ApplyChoice  setup(LinBox::integer prime){//setup
+		ApplyChoice  setup(LinBox::integer prime)
+		{ //setup
 
 			_D.init(_prime,prime);
 			_apply.clear();
@@ -360,9 +371,9 @@ namespace LinBox
 
 			// Check Qadic matrix reprentation possibility
 			LinBox::integer maxChunkVal = 1;
- 			maxChunkVal <<= 53;
- 			maxChunkVal /= (prime-1) * _n;
- 			chunk_size = maxChunkVal.bitsize();
+			maxChunkVal <<= 53;
+			maxChunkVal /= (prime-1) * _n;
+			chunk_size = maxChunkVal.bitsize();
 			use_chunks = (chunk_size >= 16);
 			//std::cout<<"max bit= "<<maxBitSize<<" "<<maxValue.size_in_base(4)*2<<"\n";std::cout<<"max value= "<<maxValue<<"\n";
 			if (use_chunks){//std::cout<<"Matrix Qadic\n";
@@ -511,8 +522,9 @@ namespace LinBox
 		}
 
 
-//#define DEBUG_CHUNK_APPLY
-		Vector& applyV(Vector& y, Vector& x, Vector &b) const {//applyV
+		//#define DEBUG_CHUNK_APPLY
+		Vector& applyV(Vector& y, Vector& x, Vector &b) const
+		{ //applyV
 
 #ifdef DEBUG_CHUNK_APPLY
 			std::cout << "x: ";
@@ -531,10 +543,11 @@ namespace LinBox
 
 			case MatrixQadic:
 				{// mqadic
-//temp fix
-//                                _MD.vectorMul (y, _M, x);
-//                                break;
-
+#if 0
+					temp fix
+					_MD.vectorMul (y, _M, x);
+					break;
+#endif
 					double* dx = new double[_n];
 					for (size_t i=0; i<_n; i++) {
 						_D.convert(dx[i], x[i]);
@@ -548,22 +561,21 @@ namespace LinBox
 							_D.init(y[i],ctd[i]);
 						delete[] ctd;
 						delete[] dx;
-					}
-					else {
-
-						//rc: number of vectors to recombine
-						//(the idea is that to compute a polynomial in the base 2^chunksize
-						// with <= 53 bits in each coefficient, we can instead OR nonoverlapping blocks
-						// of bits and then add them at the end, like this:
-						//      AAAACCCCEEEEGGGG   instead  AAAA << 12 + BBBB << 10 + CCCC << 8 + ...
-						//    +   BBBBDDDDFFFF00      of
-						// also note that we need separate blocks for positive and negative entries)
-
-						int rc = (52 / chunk_size) + 1; //constant at 4 for now
-
-						//rclen: number of bytes in each of these OR-ed vectors
-						// needs room to hold (max long long) << (num_chunks * chunksize)
-
+					} else {
+						/*
+						 * rc: number of vectors to recombine
+						 * (the idea is that to compute a polynomial in the base 2^chunksize
+						 * with <= 53 bits in each coefficient, we can instead OR nonoverlapping blocks
+						 * of bits and then add them at the end, like this:
+						 *      AAAACCCCEEEEGGGG   instead  AAAA << 12 + BBBB << 10 + CCCC << 8 + ...
+						 *    +   BBBBDDDDFFFF00      of
+						 * also note that we need separate blocks for positive and negative entries)
+						 */
+						 int rc = (52 / chunk_size) + 1; //constant at 4 for now
+						 /*
+						 * rclen: number of bytes in each of these OR-ed vectors
+						 * needs room to hold (max long long) << (num_chunks * chunksize)
+						 */
 						int rclen = num_chunks*2 + 5;
 
 						unsigned char* combined = new unsigned char[rc*_n*rclen];
@@ -610,12 +622,12 @@ namespace LinBox
 						for (size_t i=0; i<_n; i++) {
 							LinBox::integer result, tmp;
 							/*
-							  if (use_neg) {
-							  result = -ctd[i];
-							  result <<= (num_chunks-1)*16;
-							  }
-							  else
-							*/
+							   if (use_neg) {
+							   result = -ctd[i];
+							   result <<= (num_chunks-1)*16;
+							   }
+							   else
+							   */
 							result = 0;
 
 							for (int j=0; j<rc; j++) {
@@ -823,18 +835,18 @@ namespace LinBox
 					}
 					delete[] ctd;
 
-					/*
-					  std::cout << "y mod q: ";
-					  for (size_t i=0; i<y.size(); i++)
-					  std::cout << y[i] << ' ';
-					  std::cout << std::endl;
-					  std::cout << "b: ";
-					  for (size_t i=0; i<b.size(); i++)
-					  std::cout << b[i] << ' ';
-					  std::cout << std::endl;
+#if 0
+					std::cout << "y mod q: ";
+					for (size_t i=0; i<y.size(); i++)
+						std::cout << y[i] << ' ';
+					std::cout << std::endl;
+					std::cout << "b: ";
+					for (size_t i=0; i<b.size(); i++)
+						std::cout << b[i] << ' ';
+					std::cout << std::endl;
 
-					  std::cout<<"p: "<<_prime<<" q: "<<_q<<std::endl;
-					*/
+					std::cout<<"p: "<<_prime<<" q: "<<_q<<std::endl;
+#endif
 					Element y_cur, b_cur;
 					// finish crt according to b
 					for (size_t i=0;i<_m;++i){
@@ -846,11 +858,11 @@ namespace LinBox
 						if ( y[i] > _h_pq) y[i]-=_pq;
 					}
 					/*
-					  std::cout << "y: ";
-					  for (size_t i=0; i<y.size(); i++)
-					  std::cout << y[i] << ' ';
-					  std::cout << std::endl;
-					*/
+					   std::cout << "y: ";
+					   for (size_t i=0; i<y.size(); i++)
+					   std::cout << y[i] << ' ';
+					   std::cout << std::endl;
+					   */
 
 #ifdef TIMING_APPLY
 					chrono.stop();
@@ -872,13 +884,15 @@ namespace LinBox
 		}
 
 
-		Vector& applyVTrans(Vector& y, Vector& x) const {
+		Vector& applyVTrans(Vector& y, Vector& x) const
+		{
 			TransposeMatrix<IMatrix> B(_M);
 			return _MD.vectorMul (y, B, x);
 		}
 
 
-		IMatrix& applyM (IMatrix &Y, const IMatrix &X) const {
+		IMatrix& applyM (IMatrix &Y, const IMatrix &X) const
+		{
 
 			linbox_check( _n == X.rowdim());
 			linbox_check( _m == Y.rowdim());
@@ -914,13 +928,15 @@ namespace LinBox
 					delete[] dX;
 				}
 				else {
-					//rc: number of vectors to recombine
-					//(the idea is that to compute a polynomial in the base 2^chunksize
-					// with <= 53 bits in each coefficient, we can instead OR nonoverlapping blocks
-					// of bits and then add them at the end, like this:
-					//      AAAACCCCEEEEGGGG   instead  AAAA << 12 + BBBB << 10 + CCCC << 8 + ...
-					//    +   BBBBDDDDFFFF00      of
-					// also note that we need separate blocks for positive and negative entries)
+					/*
+					 * rc: number of vectors to recombine
+					 *(the idea is that to compute a polynomial in the base 2^chunksize
+					 * with <= 53 bits in each coefficient, we can instead OR nonoverlapping blocks
+					 * of bits and then add them at the end, like this:
+					 *     AAAACCCCEEEEGGGG   instead  AAAA << 12 + BBBB << 10 + CCCC << 8 + ...
+					 *   +   BBBBDDDDFFFF00      of
+					 * also note that we need separate blocks for positive and negative entries)
+					 */
 
 					int rc = (52 / chunk_size) + 1; //constant at 4 for now
 
@@ -929,7 +945,7 @@ namespace LinBox
 
 					int rclen = num_chunks*2 + 5;
 
-					// 					cout << "rc= " << rc << ", rclen = " << rclen << endl;
+					// cout << "rc= " << rc << ", rclen = " << rclen << endl;
 
 					unsigned char* combined = new unsigned char[rc*_m*_k*rclen];
 					memset(combined, 0, rc*_m*_k*rclen);
@@ -1019,38 +1035,41 @@ namespace LinBox
 
 #ifndef __INTEL_COMPILER
 	template<>
-#endif
+	#endif
 	template <class Domain>
 	class MatrixApplyDomain<Domain, BlasMatrix<typename Domain::Element> > : public BlasMatrixApplyDomain<Domain, BlasMatrix<typename Domain::Element> > {
 
 	public:
-		MatrixApplyDomain (const Domain &D, const  BlasMatrix<typename Domain::Element> &M)
-			: BlasMatrixApplyDomain<Domain, BlasMatrix<typename Domain::Element> > (D,M) {}
+		MatrixApplyDomain (const Domain &D, const  BlasMatrix<typename Domain::Element> &M) :
+			BlasMatrixApplyDomain<Domain, BlasMatrix<typename Domain::Element> > (D,M)
+		{}
 
 	};
 
 #ifndef __INTEL_COMPILER
 	template<>
-#endif
+	#endif
 	template <class Domain>
 	class MatrixApplyDomain<Domain, DenseMatrix<Domain> > : public BlasMatrixApplyDomain<Domain, DenseMatrix<Domain> > {
 
 	public:
-		MatrixApplyDomain (const Domain &D, const DenseMatrix<Domain> &M)
-			: BlasMatrixApplyDomain<Domain, DenseMatrix<Domain> > (D,M) {}
+		MatrixApplyDomain (const Domain &D, const DenseMatrix<Domain> &M) :
+			BlasMatrixApplyDomain<Domain, DenseMatrix<Domain> > (D,M)
+		{}
 	};
 
 
 #ifndef __INTEL_COMPILER
 	template<>
-#endif
+	#endif
 	template <class Domain>
 	class MatrixApplyDomain<Domain, BlasBlackbox<Domain> > :
-		public BlasMatrixApplyDomain<Domain, BlasBlackbox<Domain> > {
+	public BlasMatrixApplyDomain<Domain, BlasBlackbox<Domain> > {
 
 	public:
-		MatrixApplyDomain (const Domain &D, const  BlasBlackbox<Domain> &M)
-			: BlasMatrixApplyDomain<Domain, BlasBlackbox<Domain> > (D,M) {}
+		MatrixApplyDomain (const Domain &D, const  BlasBlackbox<Domain> &M) :
+			BlasMatrixApplyDomain<Domain, BlasBlackbox<Domain> > (D,M)
+		{}
 
 	};
 
@@ -1064,7 +1083,8 @@ namespace LinBox
 				 const IMatrix          &M,
 				 double            *chunks,
 				 size_t         num_chunks,
-				 const integer    &shift=0) {
+				 const integer    &shift=0)
+	{
 
 		typename IMatrix::ConstRawIterator it= M.rawBegin();
 
@@ -1093,7 +1113,7 @@ namespace LinBox
 				} else
 					if (tmp > 0) {
 
-//if (sizeof(long)==8 ) {
+						//if (sizeof(long)==8 ) {
 #if __LINBOX_SIZEOF_LONG  == 8
 
 						// specialization for 64bits integer limbs
@@ -1118,7 +1138,7 @@ namespace LinBox
 						}
 						if ((tmpbitsize - j*64) > 48 )
 							*pdbl = (tmp[tmpsize-1] >> 48)& 0xFFFF;
-//} else {
+						//} else {
 #else
 						// specialization for 32bits integer limbs
 						for (j=0; j<tmpsize-1; j++) {
@@ -1133,7 +1153,7 @@ namespace LinBox
 						else {
 							*pdbl      = tmp[tmpsize-1] & 0xFFFF;
 						}
-//}
+						//}
 #endif
 					}
 					else {
@@ -1207,7 +1227,8 @@ namespace LinBox
 	void create_VectorQadic (const Domain            &D,
 				 const Vector            &V,
 				 double             *chunks,
-				 size_t          num_chunks) {
+				 size_t          num_chunks)
+	{
 
 
 		typename Vector::const_iterator it= V.begin();
@@ -1345,7 +1366,8 @@ namespace LinBox
 	void create_VectorQadic_32 (const Domain            &D,
 				    const Vector            &V,
 				    double             *chunks,
-				    size_t          num_chunks) {
+				    size_t          num_chunks)
+	{
 
 
 		typename Vector::const_iterator it= V.begin();
@@ -1440,7 +1462,8 @@ namespace LinBox
 	void create_MatrixRNS (const MultiModDouble    &F,
 			       const Domain            &D,
 			       const IMatrix           &M,
-			       double             *chunks) {
+			       double             *chunks)
+	{
 
 
 		size_t rns_size= F.size();
@@ -1460,7 +1483,8 @@ namespace LinBox
 	void create_VectorRNS (const MultiModDouble    &F,
 			       const Domain            &D,
 			       const IVector           &V,
-			       double             *chunks) {
+			       double             *chunks)
+	{
 
 		size_t rns_size= F.size();
 		typename IVector::const_iterator it= V.begin();

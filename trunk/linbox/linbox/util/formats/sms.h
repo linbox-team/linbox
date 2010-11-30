@@ -23,7 +23,7 @@
 
 /*! @file util/formats/sms.h
  * @brief MatrixStreamReader for sms matrix format
- * 
+ *
  * 1st line: "50 60 X" // #rows #cols a letter (e.g M, I, R, P ...)
  * Subsequent lines: i j v // row index, col index, value
  * last line: 0 0 0
@@ -35,101 +35,102 @@
 #include <cstdlib>
 
 /*
-namespace LinBox__SMS_H
-	{ static const char* name = "SMS Sparse Integer Matrix Format";
-	  static const char* shortname = "sms"; }
-	  */
+   namespace LinBox__SMS_H
+{ static const char* name = "SMS Sparse Integer Matrix Format";
+static const char* shortname = "sms"; }
+*/
 
-namespace LinBox {
+namespace LinBox
+{
 
-template<class Field>
-class SMSReader :public MatrixStreamReader<Field> {
-    public:
-    	typedef typename MatrixStreamReader<Field>::Element Element;
-    private:
-    	int _base;
+	template<class Field>
+	class SMSReader :public MatrixStreamReader<Field> {
+	public:
+		typedef typename MatrixStreamReader<Field>::Element Element;
+	private:
+		int _base;
 
-    protected:
+	protected:
 
-	MatrixStreamError initImpl(const char* firstLine) {
-		char* restLine;
-		int i = 0;
+		MatrixStreamError initImpl(const char* firstLine) {
+			char* restLine;
+			int i = 0;
 
-		// Read m
-		this->_m = strtoul(firstLine,&restLine,0);
-		if( this->_m == 0 && restLine == firstLine )
-			return NO_FORMAT;
-		i = restLine - firstLine;
+			// Read m
+			this->_m = strtoul(firstLine,&restLine,0);
+			if( this->_m == 0 && restLine == firstLine )
+				return NO_FORMAT;
+			i = restLine - firstLine;
 
-		// Read n
-		this->_n = strtoul(firstLine+i,&restLine,0);
-		if( this->_n == 0 && restLine == firstLine+i )
-			return NO_FORMAT;
-		i = restLine - firstLine;
+			// Read n
+			this->_n = strtoul(firstLine+i,&restLine,0);
+			if( this->_n == 0 && restLine == firstLine+i )
+				return NO_FORMAT;
+			i = restLine - firstLine;
 
-		// Read "M" or "R" or "P" or "I"
-		while( firstLine[i] && isspace(firstLine[i]) )
+			// Read "M" or "R" or "P" or "I"
+			while( firstLine[i] && isspace(firstLine[i]) )
+				++i;
+			if( !firstLine[i] || (firstLine[i] != 'M' &&
+					      firstLine[i] != 'm' &&
+					      firstLine[i] != 'I' &&
+					      firstLine[i] != 'i' &&
+					      firstLine[i] != 'R' &&
+					      firstLine[i] != 'r' &&
+					      firstLine[i] != 'P' &&
+					      firstLine[i] != 'p'   ) )
+				return NO_FORMAT;
+
+			// Check whitespace for rest of line
 			++i;
-		if( !firstLine[i] || (firstLine[i] != 'M' &&
-		                      firstLine[i] != 'm' &&
-		                      firstLine[i] != 'I' &&
-		                      firstLine[i] != 'i' &&
-		                      firstLine[i] != 'R' &&
-		                      firstLine[i] != 'r' &&
-		                      firstLine[i] != 'P' &&
-		                      firstLine[i] != 'p'   ) )
-			return NO_FORMAT;
+			while( firstLine[i] && isspace(firstLine[i]) )
+				++i;
+			if( firstLine[i] ) return BAD_FORMAT;
 
-		// Check whitespace for rest of line
-		++i;
-		while( firstLine[i] && isspace(firstLine[i]) )
-			++i;
-		if( firstLine[i] ) return BAD_FORMAT;
+			this->knowM = this->knowN = true;
 
-		this->knowM = this->knowN = true;
+			return GOOD;
+		}
 
-		return GOOD;
-	}
+		MatrixStreamError nextTripleImpl( size_t& m, size_t& n, Element& v ) {
+			this->ms->readWhiteSpace();
+			*(this->sin) >> m;
+			if( this->sin->eof() ) return END_OF_FILE;
+			if( !this->sin->good() ) return BAD_FORMAT;
 
-	MatrixStreamError nextTripleImpl( size_t& m, size_t& n, Element& v ) {
-		this->ms->readWhiteSpace();
-	        *(this->sin) >> m;
-	        if( this->sin->eof() ) return END_OF_FILE;
-	        if( !this->sin->good() ) return BAD_FORMAT;
-       
-		this->ms->readWhiteSpace();
-	        *(this->sin) >> n;
-	        if( this->sin->eof() ) return END_OF_FILE;
-	        if( !this->sin->good() ) return BAD_FORMAT;
-       
-		this->ms->readWhiteSpace();
-		if( this->sin->eof() ) return END_OF_FILE;
-	        this->ms->getField().read(*(this->sin),v);
-	        if( this->sin->eof() ) this->atEnd = true;
-	        else if( !this->sin->good() ) return BAD_FORMAT;
+			this->ms->readWhiteSpace();
+			*(this->sin) >> n;
+			if( this->sin->eof() ) return END_OF_FILE;
+			if( !this->sin->good() ) return BAD_FORMAT;
 
-		if( m == 0 && n == 0 ) return END_OF_MATRIX;
+			this->ms->readWhiteSpace();
+			if( this->sin->eof() ) return END_OF_FILE;
+			this->ms->getField().read(*(this->sin),v);
+			if( this->sin->eof() ) this->atEnd = true;
+			else if( !this->sin->good() ) return BAD_FORMAT;
 
-		m -= _base;
-		n -= _base;
+			if( m == 0 && n == 0 ) return END_OF_MATRIX;
 
-		if( m >= this->_m ||
-		    n >= this->_n ) return BAD_FORMAT;
+			m -= _base;
+			n -= _base;
 
-		return GOOD;
-	}
+			if( m >= this->_m ||
+			    n >= this->_n ) return BAD_FORMAT;
 
-    public:
-    	SMSReader( int base = 1 ) {
-		_base = base;
-	}
+			return GOOD;
+		}
 
-	const char* getName() const {return "SMS Sparse Integer Matrix Format"; }//LinBox__SMS_H::name;}
-	const char* shortName() const
-	{ return "sms"; }//LinBox__SMS_H::shortname; }
+	public:
+		SMSReader( int base = 1 ) {
+			_base = base;
+		}
 
-	bool isSparse() const { return true; }
-};
+		const char* getName() const {return "SMS Sparse Integer Matrix Format"; }//LinBox__SMS_H::name;}
+		const char* shortName() const
+		{ return "sms"; }//LinBox__SMS_H::shortname; }
+
+		bool isSparse() const { return true; }
+		};
 
 }
 

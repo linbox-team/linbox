@@ -69,12 +69,14 @@ namespace LinBox
 		ZeroOne(){};
 
 		// basic constructor, can be used with subsequent read.
-		ZeroOne(const Field& F): _F(F), sorted(true){}
+		ZeroOne(const Field& F) :
+		       	_F(F), sorted(true)
+		{}
 
 		// constructor for use by ZOQuad.  Needs work.
 		ZeroOne
-		(const Field& F, IndexVector& index, PointerVector& indexP, Index rowdim, Index coldim, bool sortedBy)
-		: _F(F), _index(index), _indexP(indexP), _rowdim(rowdim), _coldim(coldim), sorted(sortedBy)
+		(const Field& F, IndexVector& index, PointerVector& indexP, Index rowdim, Index coldim, bool sortedBy) :
+			_F(F), _index(index), _indexP(indexP), _rowdim(rowdim), _coldim(coldim), sorted(sortedBy)
 		{
 			ptrdiff_t diff = _index.begin() - index.begin();
 			for (size_t i = 0; i < _indexP.size(); ++i)
@@ -96,20 +98,22 @@ namespace LinBox
 		  assuming entries are sorted in lexicographic order by (row,col) pair.
 		  */
 		ZeroOne
-		(Field& F, Index* rowP, Index* colP, Index rows, Index cols, Index NNz)
-		: _F(F), _rowdim(rows), _coldim(cols), sorted(true)
+		(Field& F, Index* rowP, Index* colP, Index rows, Index cols, Index NNz) :
+			_F(F), _rowdim(rows), _coldim(cols), sorted(true)
 		{
 			std::vector<std::pair<Index, Index> > indexPairs;
 			for (Index i = 0; i < NNz; ++i, ++rowP, ++colP)
 				indexPairs.push_back(std::pair<Index,Index>(static_cast<Index>(*rowP), static_cast<Index>(*colP)));
 			init(indexPairs);
 		}
-		ZeroOne(const ZeroOne<Field>& A) // better keep the commented out statements below for later debugging
-		: _F(A._F), _index(A._index), _rowdim(A._rowdim), _coldim(A._coldim), sorted(A.sorted)
+		ZeroOne(const ZeroOne<Field>& A) :
+			// better keep the commented out statements below for later debugging  _F(A._F), _index(A._index), _rowdim(A._rowdim), _coldim(A._coldim), sorted(A.sorted)
 		{
-			//std::cout << " copy constructor of zero-one matrix: A.rowdim = "  << A._rowdim << " A.coldim = " << A._coldim << std::endl;
-			//ZeroOne(A._F, A._index, A._indexP, A._rowdim, A._coldim, A.sorted);
-			//std::cout << " copy constructor of zero-one matrix: rowdim = " << _rowdim << " coldim = " << _coldim << std::endl;
+#if 0
+			std::cout << " copy constructor of zero-one matrix: A.rowdim = "  << A._rowdim << " A.coldim = " << A._coldim << std::endl;
+			ZeroOne(A._F, A._index, A._indexP, A._rowdim, A._coldim, A.sorted);
+			std::cout << " copy constructor of zero-one matrix: rowdim = " << _rowdim << " coldim = " << _coldim << std::endl;
+#endif
 			_indexP.push_back( _index.begin() );
 			IndexVector::iterator i = _index.begin();
 			PointerVector::iterator j = A._indexP.begin();
@@ -117,15 +121,21 @@ namespace LinBox
 			{
 				//std::cout << *j - *(j-1) << std::endl;
 				_indexP.push_back( i + ( *j - *(j-1) ) );
-				//std::cout << " stupid test here " << (*_indexP.begin()) - _index.begin() << std::endl;
-				//std::cout << " the size of _indexP now is " << _indexP.size() << std::endl;
+#if 0
+				std::cout << " stupid test here " << (*_indexP.begin()) - _index.begin() << std::endl;
+				std::cout << " the size of _indexP now is " << _indexP.size() << std::endl;
+#endif
 				i = _indexP.back();
-				//std::cout << " the last element points to the position " << _indexP.back() - *_indexP.begin() << std::endl;
+#if 0
+				std::cout << " the last element points to the position " << _indexP.back() - *_indexP.begin() << std::endl;
+#endif
 			}
-			//_indexP.push_back(_index.end());
-			//std::cout << &_index << " ";
-			//std::cout << &(*_index.begin()) << std::endl;
-			//std::cout << std::endl;
+#if 0
+			_indexP.push_back(_index.end());
+			std::cout << &_index << " ";
+			std::cout << &(*_index.begin()) << std::endl;
+			std::cout << std::endl;
+#endif
 		}
 
 		//switching the way in which the matrix is sorted
@@ -247,9 +257,11 @@ namespace LinBox
 		OutVector& applyTranspose(OutVector& y, const InVector& x) const; // y = ATx
 		//OutVector& applyTranspose(OutVector& y, const InVector& x); // y = ATx
 
-		size_t rowdim() const { return _rowdim; }
+		size_t rowdim() const
+		{ return _rowdim; }
 
-		size_t coldim() const { return _coldim; }
+		size_t coldim() const
+		{ return _coldim; }
 
 
 		template<typename _Tp1>
@@ -309,11 +321,13 @@ namespace LinBox
 			return out;
 		}
 
-		const Field& field() const { return _F; }
+		const Field& field() const
+		{ return _F; }
 
 		/* Non blackbox function.  Tells the number of nonzero entries
 		*/
-		size_t nnz() const { return _index.size(); };
+		size_t nnz() const
+		{ return _index.size(); };
 
 
 		typedef MatrixCategories::BlackboxTag MatrixCategory;

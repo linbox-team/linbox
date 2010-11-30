@@ -42,18 +42,20 @@ namespace LinBox
 	 **/
 	template <class Field, class RandIter = typename Field::RandIter>
 	class NonzeroRandIter {
-	    public:
+	public:
 
 		typedef typename Field::Element Element;
 
-		NonzeroRandIter (const Field &F, const RandIter &r)
-			: _F (F), _r (r) {}
+		NonzeroRandIter (const Field &F, const RandIter &r) :
+			_F (F), _r (r)
+		{}
 
-		NonzeroRandIter (const NonzeroRandIter& R)
-			: _F (R._F), _r (R._r) {}
+		NonzeroRandIter (const NonzeroRandIter& R) :
+			_F (R._F), _r (R._r)
+		{}
 
 		~NonzeroRandIter()
-			{}
+		{}
 
 		NonzeroRandIter& operator=(const NonzeroRandIter& R)
 		{
@@ -65,7 +67,7 @@ namespace LinBox
 			return *this;
 		}
 
-                template<class Elt>
+		template<class Elt>
 		Elt &random (Elt &a)  const
 		{
 			do _r.random (a); while (_F.isZero (a));
@@ -86,7 +88,7 @@ namespace LinBox
 			return (a = ElementEnvelope <Field> (tmp));
 		}
 
-	    private:
+	private:
 
 		Field    _F;
 		RandIter _r;

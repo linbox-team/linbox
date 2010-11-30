@@ -35,18 +35,19 @@
 
 #include <typeinfo>
 
-namespace LinBox 
+namespace LinBox
 {
 
 	/** \brief This is a matrix representation supporting a parallel matrix vector product
 	 */
 	template <class Out, class Matrix, class In>
 	Out& BlackboxParallel(Out& out,const Matrix& m,
-			      const In& in, BBBase::BBType type): public BlackboxInterface
+			      const In& in, BBBase::BBType type) : public BlackboxInterface
 
 
 	template <class Out, class Matrix, class In>
-	Out& BlackboxParallel(Out& out, const Matrix& cm, const In& in, BBBase::BBType type): public BlackboxInterface {
+	Out& BlackboxParallel(Out& out, const Matrix& cm, const In& in, BBBase::BBType type) : public BlackboxInterface
+	{
 
 		typedef SubRowMatrix<Matrix> SubMatrix;
 
@@ -66,10 +67,10 @@ namespace LinBox
 
 			Matrix& m = const_cast<Matrix&>(cm);
 
-			m. sub_list. insert (std::pair<const std::type_info*, 
+			m. sub_list. insert (std::pair<const std::type_info*,
 						    BB_list>
 						(key, BB_list()));
-	
+
 			typename BB_list_list::iterator p;
 
 			p = m. sub_list. find (key);
@@ -93,7 +94,7 @@ namespace LinBox
 			aver_load = (int)ceil((double)nnz / (double)LINBOX_NTHR);
 
 			cur_load = 0;
-		
+
 			int len = 0;
 
 			int pos = 0;
@@ -105,7 +106,7 @@ namespace LinBox
 			BBBase* t;
 
 			for (row_p = m. rowBegin(); row_p != m. rowEnd(); ++ row_p) {
-			
+
 				cur_load += density(*row_p);
 
 				++ len;
@@ -119,10 +120,10 @@ namespace LinBox
 					t = createBBThread(subp, outaddr, inaddr);
 
 					p -> second. push_back (t);
-				
+
 					pos += len;
 
-					len = 0; 
+					len = 0;
 				}
 
 			}
@@ -170,18 +171,18 @@ namespace LinBox
 
 			OutIterator out_p;
 
-			for (out_p = out. begin() + pos; out_p != out. end(); ++ out_p) 
+			for (out_p = out. begin() + pos; out_p != out. end(); ++ out_p)
 
 				cm. field(). init (*out_p, 0);
-	
+
 			for (ti_p = cp ->second. begin(); ti_p != cp -> second. end(); ++ ti_p)
-		
-			Thread::wait_thread (*ti_p);	
-			
+
+			Thread::wait_thread (*ti_p);
+
 			for (outv_p = outv. begin(); outv_p != outv. end(); ++ outv_p)
 
 			delete (*outv_p);
-			
+
 			break; }
 
 		case BBBase::ApplyTranspose : {
@@ -189,8 +190,8 @@ namespace LinBox
 			int nthr = cp -> second. size ();
 
 			OutIterator out_p;
-			
-			 for (out_p = out. begin(); out_p != out. end(); ++ out_p) 
+
+			 for (out_p = out. begin(); out_p != out. end(); ++ out_p)
 
                                 cm. field(). init (*out_p, 0);
 
@@ -219,9 +220,9 @@ namespace LinBox
 				len = ((const SubMatrix*)bp -> bb_addr) -> rowdim();
 
 				*in_v_p = new Subvector<InIterator>(in. begin() + pos, in. begin() + (pos + len));
-				
+
 				out_v_p -> resize (cm. coldim());
-				
+
 				bp -> bb_outaddr = &(*out_v_p);
 
 				bp -> bb_inaddr = *in_v_p;
@@ -235,7 +236,7 @@ namespace LinBox
 
 			for (ti_p = cp ->second. begin(); ti_p != cp -> second. end(); ++ ti_p)
 
-                       		Thread::wait_thread (*ti_p);    
+                       		Thread::wait_thread (*ti_p);
 
 			VectorDomain<typename Matrix::Field> vd(cm. field());
 
@@ -252,8 +253,8 @@ namespace LinBox
 
 		default :
 			break;
-		}		
-	
+		}
+
 		return out;
 	}
 

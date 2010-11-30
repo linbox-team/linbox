@@ -37,7 +37,7 @@
 #include <linbox/field/field-traits.h>
 
 
-namespace LinBox 
+namespace LinBox
 {
 
 
@@ -54,11 +54,11 @@ namespace LinBox
 	{
 	public:
 		typedef NTL::zz_pE Element;
-		UnparametricRandIter<NTL::zz_pE>(const UnparametricField<NTL::zz_pE>& F =UnparametricField<NTL::zz_pE>(), 
+		UnparametricRandIter<NTL::zz_pE>(const UnparametricField<NTL::zz_pE>& F =UnparametricField<NTL::zz_pE>(),
 						 const size_t& size = 0,
 						 const size_t& seed = 0
-						 )
-			: _size(size), _seed(seed)
+						) :
+			_size(size), _seed(seed)
 		{
 			if(_seed == 0)
 				NTL::SetSeed(NTL::to_ZZ(time(0)));
@@ -66,16 +66,16 @@ namespace LinBox
 				NTL::SetSeed(NTL::to_ZZ(_seed));
 		}
 
-		UnparametricRandIter<NTL::zz_pE>(const UnparametricRandIter<NTL::zz_pE>& R)
-			: _size(R._size), _seed(R._seed) 
-	
+		UnparametricRandIter<NTL::zz_pE>(const UnparametricRandIter<NTL::zz_pE>& R) :
+			_size(R._size), _seed(R._seed)
+
 		{
 			if(_seed == 0)
 				NTL::SetSeed(NTL::to_ZZ(time(0)));
 			else
 				NTL::SetSeed(NTL::to_ZZ(_seed));
 		}
-      
+
 		Element& random (Element& x) const
 		{
 			NTL::random(x);
@@ -92,13 +92,14 @@ namespace LinBox
 	/*
 	 * Define a parameterized class to easily handle UnparametricField<NTL::zz_pE> field
 	 */
-	
+
 	/// \brief for large cardinality, small prime.  \ingroup field
- 	class NTL_zz_pE : public UnparametricField<NTL::zz_pE>
+	class NTL_zz_pE : public UnparametricField<NTL::zz_pE>
 	{
 	public:
-		NTL_zz_pE (const integer &p, const integer &k) {
-			
+		NTL_zz_pE (const integer &p, const integer &k)
+		{
+
 			NTL::zz_p::init( (long) p);
 			NTL::zz_pX irredPoly = NTL::BuildIrred_zz_pX ((long) k);
 			NTL::zz_pE::init(irredPoly);
@@ -109,42 +110,42 @@ namespace LinBox
 			NTL::random(x);
 			return x;
 		}
-		
+
 	}; // end o class NTL_zz_pE
-	
+
 
 	/*
 	 * Specialization of UnparametricField<> for NTL::zz_pE type
 	 */
 	template<>
-//	NTL::zz_pE& UnparametricField<NTL::zz_pE>::init (NTL::zz_pE &x, const integer &y) const
+	//	NTL::zz_pE& UnparametricField<NTL::zz_pE>::init (NTL::zz_pE &x, const integer &y) const
 	NTL::zz_pE& Caster(NTL::zz_pE &x, const integer &y)
 	{
 		x=NTL::to_zz_pE(static_cast<long>(y));
 		return x;
 	}
 	template<>
-//	NTL::zz_pE& UnparametricField<NTL::zz_pE>::init (NTL::zz_pE &x, const double &y) const
-	NTL::zz_pE& Caster(NTL::zz_pE &x, const double &y) 
+	//	NTL::zz_pE& UnparametricField<NTL::zz_pE>::init (NTL::zz_pE &x, const double &y) const
+	NTL::zz_pE& Caster(NTL::zz_pE &x, const double &y)
 	{
 		x=NTL::to_zz_pE(static_cast<long>(y));
 		return x;
 	}
-	
+
 	template<>
-//	integer& UnparametricField<NTL::zz_pE>::convert (integer& x, const NTL::zz_pE &y) const	{
+	//	integer& UnparametricField<NTL::zz_pE>::convert (integer& x, const NTL::zz_pE &y) const	{
 	integer& Caster (integer& x, const NTL::zz_pE &y) {
 		NTL::zz_pX poly = rep(y);
-		integer base = static_cast<integer>(NTL::zz_p::modulus());		
-		long i;		
+		integer base = static_cast<integer>(NTL::zz_p::modulus());
+		long i = deg(poly)+1;
 		x = 0;
-		for(i = deg(poly); i >= 0; --i) {
+		for( ; i-- ; ) {
 			x *= base;
 			x +=  NTL::to_long(rep(coeff(poly, i)));
 		}
 		return x;
 	}
-	
+
 
 
 	template<>
@@ -152,20 +153,20 @@ namespace LinBox
 	{
 		return NTL::IsZero(a);
 	}
-  
+
 	template<>
 	bool UnparametricField<NTL::zz_pE>::isOne (const NTL::zz_pE& a) const
 	{
 		return NTL::IsOne(a);
 	}
-  
-  
+
+
 	template<>
 	integer& UnparametricField<NTL::zz_pE>::characteristic (integer &c) const
 	{
-		return c = static_cast<integer>(NTL::zz_p::modulus()); 
+		return c = static_cast<integer>(NTL::zz_p::modulus());
 	}
-  
+
 	template<>
 	integer& UnparametricField<NTL::zz_pE>::cardinality(integer& c) const
 	{
@@ -174,15 +175,15 @@ namespace LinBox
 		unsigned char* byteArray;
 		byteArray = new unsigned char[(size_t)b ];
 		BytesFromZZ(byteArray, card, b);
-      
+
 		integer base(256);
 		c= integer(0);
-      
+
 		for(long i = b - 1; i >= 0; --i) {
 			c *= base;
 			c += integer(byteArray[i]);
 		}
-		delete [] byteArray;		
+		delete [] byteArray;
 
 		return c;
 	}
@@ -210,7 +211,7 @@ namespace LinBox
 		x=NTL::to_zz_pE(tmp);
 		return is;
 	}
-  
+
 
 }
 

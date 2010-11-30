@@ -36,7 +36,7 @@ namespace LinBox
 	class RandIterArchetype;
 
 	/** @brief Field and Ring element interface specification and archetypical instance class.
-\ingroup element
+	  \ingroup element
 
 	 * Element classes must contain public default constructor, copy constructor,
 	 * assignment operator, and destructor.  Note that primitive types
@@ -48,9 +48,9 @@ namespace LinBox
 	 * Note that the documentation below of the specific methods, describes
 	 * them as implemented in the archetypic element class.
 
-	 */
+*/
 	class ElementArchetype {
-	    public:
+	public:
 
 		/** @name Common Object Interface for LinBox Field elements.
 		 * These methods are required of all \ref LinBox
@@ -124,12 +124,13 @@ namespace LinBox
 		 * Creates new copy of element object in dynamic memory.
 		 * @param  elem\_ptr  pointer to \ref ElementAbstract
 		 */
-		ElementArchetype (ElementAbstract *elem_ptr)
-			: _elem_ptr (elem_ptr->clone ()) {}
+		ElementArchetype (ElementAbstract *elem_ptr) :
+			_elem_ptr (elem_ptr->clone ())
+		{}
 
 		//@}
 
-	    private:
+	private:
 
 		friend class RingArchetype;
 		friend class FieldArchetype;

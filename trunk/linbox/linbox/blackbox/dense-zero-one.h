@@ -31,7 +31,7 @@ namespace LinBox
 	template <class _MatrixDomain>
 	class DenseZeroOne : public  BlackboxInterface {
 
-	    public:
+	public:
 
 		// The following two typedefs are not useful in LinBox yet, as matrix domains aren't yet defined
 		typedef _MatrixDomain MatrixDomain;
@@ -46,16 +46,16 @@ namespace LinBox
 		 * _rows gives the number of rows of PackedUnits
 		 * _cols gives the number of bits in each row */
 
-		DenseZeroOne(MatrixDomain MD, size_t m, size_t n)
-		: _MD(MD), _rows(m), _cols(n)
+		DenseZeroOne(MatrixDomain MD, size_t m, size_t n) :
+			_MD(MD), _rows(m), _cols(n)
 		{
 			_valPerWord = SIZE;
 			_mask = 1;
 			_rep.resize( _rows * ( ((_cols-1)/_valPerWord) + 1));
 		}
 
-		DenseZeroOne(const Self_t & other)
-		: _MD(other._MD), _rows(other._rows), _cols(other._cols), _valPerWord(other._valPerWord), _rep(other._rep), _mask(other._mask)
+		DenseZeroOne(const Self_t & other) :
+			_MD(other._MD), _rows(other._rows), _cols(other._cols), _valPerWord(other._valPerWord), _rep(other._rep), _mask(other._mask)
 		{}
 
 		/* Constructor for making the blackbox out of a vector of PackedUnits.
@@ -64,8 +64,8 @@ namespace LinBox
 		 * If the vector given is too large, the blackbox truncates this vector
 		 * to the appropriate number of PackedUnits.  */
 		template <class Vector>
-		DenseZeroOne(MatrixDomain MD, size_t m, size_t n, Vector & v)
-		: _MD(MD), _rows(m), _cols(n)
+		DenseZeroOne(MatrixDomain MD, size_t m, size_t n, Vector & v) :
+			_MD(MD), _rows(m), _cols(n)
 		{
 			_valPerWord = SIZE;
 			_mask = 1;
@@ -98,18 +98,18 @@ namespace LinBox
 			_rep[unitNum] |= (y << (_valPerWord - bitPlace));
 		}
 
-	//Apply Variants
+		//Apply Variants
 
 		// matrix-vector product
 		template <class OutVector, class InVector>
 		OutVector & apply(OutVector & y, const InVector & x) const
 		{
-		 	Scalar sum = 0;
+			Scalar sum = 0;
 			std::vector<PackedUnit>::const_iterator p = _rep.begin();
 			typename InVector::const_iterator xp = x.begin();
 
 			for(size_t yi = 0; yi != _rows; ++yi){
-			//	for(; xp != x.end(); ++p){
+				//	for(; xp != x.end(); ++p)
 				for(; p != _rep.begin() + ((yi+1) * (_rep.size()/_rows)); ++p){
 					for(PackedUnit mask = _mask << (_valPerWord -1); (mask!=0) && (xp!=x.end()); mask>>=1){
 						if(mask & (*p))
@@ -347,12 +347,12 @@ namespace LinBox
 		}
 
 
-	/* Functions that should be written:
-	 * read()
-	 * rebind()
-   	 */
+		/** @todo Functions that should be written:
+		 * read()
+		 * rebind()
+		 */
 
-	    private:
+	private:
 
 		//Field which blackbox is over
 		MatrixDomain _MD;

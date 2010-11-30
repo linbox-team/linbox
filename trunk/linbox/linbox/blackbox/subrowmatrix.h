@@ -22,18 +22,18 @@ namespace LinBox
 	/**
 	 * \brief submatrix consisting contiguous rows of a row based matrix.
 
-\ingroup blackbox
+	 \ingroup blackbox
 	 * submatrix consisting of rows [i1, ..., i2] of a row based matrix.
 	 */
 	//@{
 	template<class Matrix,
-	   	 class MatrixCategory = typename MatrixTraits<Matrix>::MatrixCategory>
+	class MatrixCategory = typename MatrixTraits<Matrix>::MatrixCategory>
 
 	class SubRowMatrix: public BlackboxInterface ;
 
 	/** matrix with RowMatrixTag
-	  * Support Row, apply, applyTranspose
-	  */
+	 * Support Row, apply, applyTranspose
+	 */
 	template <class Matrix>
 	class SubRowMatrix<Matrix, MatrixCategories::RowMatrixTag> : public BlackboxInterface {
 
@@ -43,10 +43,10 @@ namespace LinBox
 	protected:
 
 		/* try to use const Matrix*
-		  * but getting too much compiling error messages.
-		  * Maybe do it in future.
-		  * Z. Wan
-		  */
+		 * but getting too much compiling error messages.
+		 * Maybe do it in future.
+		 * Z. Wan
+		 */
 		Matrix* _BB;
 
 		size_t _row;
@@ -57,7 +57,7 @@ namespace LinBox
 
 	public:
 
-	 	typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
+		typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
 
 		typedef typename Field::Element Element;
 
@@ -72,34 +72,39 @@ namespace LinBox
 		typedef typename Matrix::ConstRawIndexedIterator ConstRawIndexedIterator;
 
 		SubRowMatrix (const Matrix* BB,
-			   size_t row,
-			   size_t rowdim)
-			: _row(row), _rowdim(rowdim), _MD(BB->field()) {
+			      size_t row,
+			      size_t rowdim) :
+			_row(row), _rowdim(rowdim), _MD(BB->field())
+		{
 
 			_BB = const_cast<Matrix*&>(BB);
 
-			}
+		}
 
 
 		virtual ~SubRowMatrix ( ) {}
 
-		size_t rowdim ( ) const {
+		size_t rowdim ( ) const
+		{
 
 			return _rowdim;
 		}
 
-		size_t coldim ( ) const {
+		size_t coldim ( ) const
+		{
 
 			return _BB -> coldim();
 		}
 
-		const Field& field( ) const {
+		const Field& field( ) const
+		{
 
 			return _BB -> field ();
 		}
 
 		template <class OutVector, class InVector>
-		OutVector &apply (OutVector &y, const InVector &x) const {
+		OutVector &apply (OutVector &y, const InVector &x) const
+		{
 
 
 			return _MD.vectorMul (y, *this, x);
@@ -107,16 +112,17 @@ namespace LinBox
 
 
 		template <class OutVector, class InVector>
-		OutVector &applyTranspose (OutVector& y, const InVector &x) const {
+		OutVector &applyTranspose (OutVector& y, const InVector &x) const
+		{
 
 			return _MD.vectorMul (y, TransposeMatrix<SubRowMatrix> (*this), x);
 		}
 
 
 
-            template<typename _Tp1>
-            struct rebind
-            { typedef SubRowMatrix<Matrix::rebind<_Tp1>::other, MatrixCategory> other; };
+		template<typename _Tp1>
+		struct rebind
+		{ typedef SubRowMatrix<Matrix::rebind<_Tp1>::other, MatrixCategory> other; };
 
 
 
@@ -132,18 +138,21 @@ namespace LinBox
 		}
 
 
-		ConstRowIterator rowBegin () const {
+		ConstRowIterator rowBegin () const
+		{
 
 			return _BB -> rowBegin() + _row;
 		}
 
-		ConstRowIterator rowEnd () const {
+		ConstRowIterator rowEnd () const
+		{
 
 			return _BB -> rowBegin() + (_row + _rowdim);
 		}
 
 
-		std::ostream& write (std::ostream& out) const {
+		std::ostream& write (std::ostream& out) const
+		{
 
 #ifdef DEBUG
 
@@ -168,12 +177,14 @@ namespace LinBox
 		}
 
 		/* I do not need them currently now,
-		  * I maybe implement in future
-		  */
-		//RawIterator rawBegin ();
-		//RawIterator rawEnd ();
-		//ConstRawIterator rawBegin () const;
-		//ConstRawIterator rawEnd () const;
+		 * I maybe implement in future
+		 */
+#if 0
+		RawIterator rawBegin ();
+		RawIterator rawEnd ();
+		ConstRawIterator rawBegin () const;
+		ConstRawIterator rawEnd () const;
+#endif
 	};
 	//@}
 }

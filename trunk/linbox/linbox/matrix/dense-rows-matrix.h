@@ -52,8 +52,8 @@ namespace LinBox
 
 		/** Copy constructor.
 		*/
-		DenseRowsMatrix (const DenseRowsMatrix &A)
-		: _A (A._A), _m (A._m), _n (A._n)
+		DenseRowsMatrix (const DenseRowsMatrix &A) :
+		       	_A (A._A), _m (A._m), _n (A._n)
 		{}
 
 		/** Destructor. */

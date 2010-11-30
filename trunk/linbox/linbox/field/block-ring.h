@@ -50,14 +50,18 @@ namespace LinBox
 			typedef _Field Field;
 			typedef Scalar Entry;
 
-			Element() : matrix(0) {}
+			Element() :
+				matrix(0)
+			{}
 
 			~Element() {
 				release();
 			}
 
 			// copy constructor
-			Element(const Element& e) : matrix(0){
+			Element(const Element& e) :
+				matrix(0)
+			{
 				if (e.matrix != 0) {
 					matrix = new Matrix(*(e.matrix));
 					// memory leak of previous value?
@@ -134,7 +138,8 @@ namespace LinBox
 				 const integer seed=0) :
 				r(BR._F, size, seed), dim(BR._b) {}
 
-			Element& random(Element& e) const {
+			Element& random(Element& e) const
+			{
 				// e must be init'd
 				for(size_t i=0; i < e. matrix -> rowdim(); i++)
 					for(size_t j=0; j < e. matrix -> coldim(); j++)
@@ -145,10 +150,12 @@ namespace LinBox
 		}; //class RandIter
 
 
-		BlockRing(const _Field& F, size_t d=1)
-		: _F(F), _D(F), _b(d) {}
+		BlockRing(const _Field& F, size_t d=1) :
+			_F(F), _D(F), _b(d)
+		{}
 
-		Element& init(Element& B) const {
+		Element& init(Element& B) const
+		{
 			// B is garbage from memory
 			B.set(new Matrix(_b,_b));
 			return B;
@@ -216,7 +223,8 @@ namespace LinBox
 			return _F.characteristic(c);
 		}
 
-		size_t dim() const { return _b; }
+		size_t dim() const
+		{ return _b; }
 
 
 		//Operations
@@ -260,7 +268,8 @@ namespace LinBox
 		// and no checks are provided!
 
 		// B = A^{-1}
-		Element& inv(Element& B, const Element& A) const {
+		Element& inv(Element& B, const Element& A) const
+		{
 
 			int nullflag = 0;
 
@@ -273,7 +282,8 @@ namespace LinBox
 		}
 
 		// A=A^{-1} not really inplace!
-		Element& invin(Element& A) const {
+		Element& invin(Element& A) const
+		{
 
 			int nullflag = 0;
 
@@ -292,7 +302,8 @@ namespace LinBox
 
 
 		// C = A*B^{-1}
-		Element& div(Element& C, const Element& A, const Element& B) const {
+		Element& div(Element& C, const Element& A, const Element& B) const
+		{
 
 			_D.right_solve(*(C.matrix),*(B.matrix),*(A.matrix));
 			return C;
@@ -300,7 +311,8 @@ namespace LinBox
 
 
 		//A = A*B^{-1};
-		Element& divin( Element& A, const Element& B) const {
+		Element& divin( Element& A, const Element& B) const
+		{
 			_D.right_solve(*(B.matrix),*(A.matrix));
 			return A;
 		}

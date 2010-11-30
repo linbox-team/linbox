@@ -38,8 +38,9 @@ namespace LinBox
 		 * @param start Starting point; need not be prime itself
 		 * @param move_up true if we should move up from the starting point, false otherwise
 		 */
-		PrimeStream (Integer &start, bool move_up = true)
-		: _curr (start), _move_up (move_up) {}
+		PrimeStream (Integer &start, bool move_up = true) :
+			_curr (start), _move_up (move_up)
+		{}
 
 		~PrimeStream ()
 		{}

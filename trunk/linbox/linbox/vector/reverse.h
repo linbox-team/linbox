@@ -39,12 +39,14 @@ namespace LinBox
 		typedef typename Vector::iterator               reverse_iterator;
 		typedef typename Vector::const_iterator         const_reverse_iterator;
 
-		ReverseVector (Vector& v)
-			: _v (v) {}
+		ReverseVector (Vector& v) :
+		       	_v (v)
+		{}
 
 		// Copy constructor
-		ReverseVector (const ReverseVector<Vector> &v)
-			: _v (v._v) {}
+		ReverseVector (const ReverseVector<Vector> &v) :
+		       	_v (v._v)
+		{}
 
 		~ReverseVector () {}
 

@@ -88,7 +88,9 @@ namespace LinBox
 		typedef typename DenseMatrixBase<typename _Field::Element>::RawIndexedIterator RawIndexedIterator;
 		typedef typename DenseMatrixBase<typename _Field::Element>::ConstRawIndexedIterator ConstRawIndexedIterator;
 
-		DenseMatrix (const Field& F) :  _F(F) , _MD(F), _AT (*this) {}
+		DenseMatrix (const Field& F) :
+			_F(F) , _MD(F), _AT (*this)
+		{}
 
 		/** Constructor of a m by n matrix with initial entries which are the
 		 * default constructor value of the field's element type.
@@ -96,8 +98,8 @@ namespace LinBox
 		 * @param  m  row dimension
 		 * @param  n  column dimension
 		 */
-		DenseMatrix (const Field &F, size_t m, size_t n)
-		: DenseMatrixBase<Element> (m, n), _F (F), _MD (F), _AT (*this)
+		DenseMatrix (const Field &F, size_t m, size_t n) :
+			DenseMatrixBase<Element> (m, n), _F (F), _MD (F), _AT (*this)
 		{}
 
 		/** Constructor of a m by n matrix with entries created by a random iterator.
@@ -107,8 +109,8 @@ namespace LinBox
 		 * @param iter random iterator
 		 */
 		template<class RandIter>
-		DenseMatrix (const Field &F, size_t m, size_t n, const RandIter &iter)
-		: DenseMatrixBase<Element> (m, n), _F (F), _MD (F), _AT (*this)
+		DenseMatrix (const Field &F, size_t m, size_t n, const RandIter &iter) :
+			DenseMatrixBase<Element> (m, n), _F (F), _MD (F), _AT (*this)
 		{
 			for (typename std::vector<typename Field::Element>::iterator p = DenseMatrixBase<Element>::_rep.begin (); p != DenseMatrixBase<Element>::_rep.end (); ++p)
 				iter.random (*p);
@@ -121,8 +123,8 @@ namespace LinBox
 		 *                matrix
 		 */
 		template <class StreamVector>
-		DenseMatrix (const Field &F, VectorStream<StreamVector> &stream)
-		: DenseMatrixBase<Element> (stream.size (), stream.dim ()), _F (F), _MD (F), _AT (*this)
+		DenseMatrix (const Field &F, VectorStream<StreamVector> &stream) :
+			DenseMatrixBase<Element> (stream.size (), stream.dim ()), _F (F), _MD (F), _AT (*this)
 		{
 			StreamVector tmp;
 			typename DenseMatrixBase<Element>::RowIterator p;
@@ -140,27 +142,28 @@ namespace LinBox
 		/** Constructor from a MatrixStream
 		 * @param ms A matrix stream properly initialized
 		 */
-		DenseMatrix( MatrixStream<Field>& ms )
-		:DenseMatrixBase<Element>(ms), _F( ms.getField() ), _MD( ms.getField() ), _AT(*this)
+		DenseMatrix( MatrixStream<Field>& ms ) :
+			DenseMatrixBase<Element>(ms), _F( ms.getField() ), _MD( ms.getField() ), _AT(*this)
 		{ }
 
 		/** Constructor from a DenseMatrixBase. Copies all matrix data.
 		 * @param F Field over which this matrix' arithmetic will be.
 		 * @param M This will contain a complete copy of \ref DenseMatrixBase M.
 		 */
-		DenseMatrix (const Field &F, DenseMatrixBase<Element> &M)
-		: DenseMatrixBase<Element> (M), _F (F), _MD (F), _AT (*this)
+		DenseMatrix (const Field &F, DenseMatrixBase<Element> &M) :
+			DenseMatrixBase<Element> (M), _F (F), _MD (F), _AT (*this)
 		{}
 
 		/// Copies <i>all</i> matrix data.
-		DenseMatrix (const DenseMatrix &M)
-		: DenseMatrixBase<Element> (M), _F (M._F), _MD (M._F), _AT (*this)
+		DenseMatrix (const DenseMatrix &M) :
+			DenseMatrixBase<Element> (M), _F (M._F), _MD (M._F), _AT (*this)
 		{}
 
 
 		/** Assignment operator makes a complete copy.
 		*/
-		DenseMatrix<Field>& operator= (const DenseMatrix<Field>& M) {
+		DenseMatrix<Field>& operator= (const DenseMatrix<Field>& M)
+		{
 			(*this)._rep  = M._rep;
 			(*this)._rows = M._rows;
 			(*this)._cols = M._cols;
@@ -187,8 +190,9 @@ namespace LinBox
 		};
 
 		template<typename _Tp1>
-		DenseMatrix (const DenseMatrix<_Tp1> &M, const Field& F)
-		: DenseMatrixBase<Element> (M.rowdim(),M.coldim()), _F (F), _MD (F), _AT (*this) {
+		DenseMatrix (const DenseMatrix<_Tp1> &M, const Field& F) :
+			DenseMatrixBase<Element> (M.rowdim(),M.coldim()), _F (F), _MD (F), _AT (*this)
+		{
 			typename DenseMatrix<_Tp1>::template rebind<Field>()(*this, M, F);
 		}
 
@@ -353,7 +357,9 @@ namespace LinBox
 		const DenseMatrixBase<BElement>& _A;
 
 	public:
-		DenseMatrixFactory( const DenseMatrixBase<BElement> &A ) :_A(A) {}
+		DenseMatrixFactory( const DenseMatrixBase<BElement> &A ) :
+			_A(A)
+		{}
 
 		DenseMatrix<Field>* makeBlackbox( const Field& F );
 

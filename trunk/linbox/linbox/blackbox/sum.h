@@ -19,11 +19,11 @@
 
 namespace LinBox
 {
-    template <class _Blackbox1, class _Blackbox2 = _Blackbox1>
-    class Sum;
+	template <class _Blackbox1, class _Blackbox2 = _Blackbox1>
+	class Sum;
 
-    template <class _Blackbox1, class _Blackbox2 = _Blackbox1>
-    class SumOwner;
+	template <class _Blackbox1, class _Blackbox2 = _Blackbox1>
+	class SumOwner;
 }
 
 
@@ -33,16 +33,16 @@ namespace LinBox
 
 	/** \brief blackbox of a matrix sum without copying.
 
-\ingroup blackbox
-         * Adds only at apply time.
+	  \ingroup blackbox
+	 * Adds only at apply time.
 	 * Given two black boxes A and B of the same dimensions, form a black
 	 * box representing A+B, i.e., Sum(A,B)x=(A+B)x=Ax+Bx
 	 * @param Vector \ref LinBox dense or sparse vector of field elements
 	 */
 	template <class _Blackbox1, class _Blackbox2>
 	class Sum : public BlackboxInterface {
-                typedef Sum<_Blackbox1, _Blackbox2> Self_t;
-	    public:
+		typedef Sum<_Blackbox1, _Blackbox2> Self_t;
+	public:
 		typedef _Blackbox1 Blackbox1;
 		typedef _Blackbox2 Blackbox2;
 
@@ -55,8 +55,8 @@ namespace LinBox
 		 * A + B, of black box matrices.
 		 * @param A, B:  black box matrices.
 		 */
-		Sum (const Blackbox1 &A, const Blackbox2 &B)
-			: _A_ptr(&A), _B_ptr(&B), VD( field() )
+		Sum (const Blackbox1 &A, const Blackbox2 &B) :
+			_A_ptr(&A), _B_ptr(&B), VD( field() )
 		{
 			linbox_check (A.coldim () == B.coldim ());
 			linbox_check (A.rowdim () == B.rowdim ());
@@ -70,8 +70,8 @@ namespace LinBox
 		 * A + B, of black box matrices.
 		 * @param A_ptr, B_ptr:  pointers to black box matrices.
 		 */
-		Sum (const Blackbox1 *A_ptr, const Blackbox2 *B_ptr)
-			: _A_ptr(A_ptr), _B_ptr(B_ptr), VD( field() )
+		Sum (const Blackbox1 *A_ptr, const Blackbox2 *B_ptr) :
+			_A_ptr(A_ptr), _B_ptr(B_ptr), VD( field() )
 		{
 			// create new copies of matrices in dynamic memory
 			linbox_check (A_ptr != 0);
@@ -87,8 +87,8 @@ namespace LinBox
 		 * Creates new black box objects in dynamic memory.
 		 * @param M constant reference to compose black box matrix
 		 */
-		Sum (const Sum<Blackbox1, Blackbox2> &M)
-			: _A_ptr (M._A_ptr), _B_ptr (M._B_ptr), VD(M.VD)
+		Sum (const Sum<Blackbox1, Blackbox2> &M) :
+			_A_ptr (M._A_ptr), _B_ptr (M._B_ptr), VD(M.VD)
 		{
 			VectorWrapper::ensureDim (_z1, _A_ptr->rowdim ());
 			VectorWrapper::ensureDim (_z2, _A_ptr->coldim ());
@@ -110,11 +110,11 @@ namespace LinBox
 		template<class OutVector, class InVector>
 		inline OutVector &apply (OutVector &y, const InVector &x) const
 		{
-                    _A_ptr->apply (y, x);
-                    _B_ptr->apply (_z1, x);
-                    VD.addin (y, _z1);
+			_A_ptr->apply (y, x);
+			_B_ptr->apply (_z1, x);
+			VD.addin (y, _z1);
 
-                    return y;
+			return y;
 		}
 
 		/** Application of BlackBox matrix transpose.
@@ -128,50 +128,50 @@ namespace LinBox
 		template<class OutVector, class InVector>
 		inline OutVector &applyTranspose (OutVector &y, const InVector &x) const
 		{
-                    _A_ptr->applyTranspose (y, x);
-                    _B_ptr->applyTranspose (_z2, x);
-                    VD.addin (y, _z2);
+			_A_ptr->applyTranspose (y, x);
+			_B_ptr->applyTranspose (_z2, x);
+			VD.addin (y, _z2);
 
 			return y;
 		}
 
-            template<typename _Tp1, typename _Tp2 = _Tp1>
-            struct rebind
-            { typedef SumOwner<
-                  typename Blackbox1::template rebind<_Tp1>::other,
-                  typename Blackbox2::template rebind<_Tp2>::other
-              > other;
+		template<typename _Tp1, typename _Tp2 = _Tp1>
+		struct rebind
+		{ typedef SumOwner<
+			typename Blackbox1::template rebind<_Tp1>::other,
+				 typename Blackbox2::template rebind<_Tp2>::other
+				 > other;
 
-    		void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
-                    typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), *(A.getLeftPtr()), F);
-                    typename Blackbox2::template rebind<_Tp2> () ( Ap.getRightData(), *(A.getRightPtr()), F);
-                }
+			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+				typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), *(A.getLeftPtr()), F);
+				typename Blackbox2::template rebind<_Tp2> () ( Ap.getRightData(), *(A.getRightPtr()), F);
+			}
 
 
-            };
-                /** Retreive row dimensions of BlackBox matrix.
+		};
+		/** Retreive row dimensions of BlackBox matrix.
 		 * This may be needed for applying preconditioners.
 		 * Required by abstract base class.
 		 * @return integer number of rows of black box matrix.
 		 */
 		size_t rowdim (void) const
-			{ return _A_ptr->rowdim (); }
+		{ return _A_ptr->rowdim (); }
 
 		/** Retreive column dimensions of BlackBox matrix.
 		 * Required by abstract base class.
 		 * @return integer number of columns of black box matrix.
 		 */
 		size_t coldim (void) const
-			{ return _A_ptr->coldim (); }
+		{ return _A_ptr->coldim (); }
 
 
 		const Field& field() const { return _A_ptr -> field(); }
 
 		const Blackbox1* getLeftPtr() const {return  _A_ptr;}
 
-	        const Blackbox2* getRightPtr() const {return  _B_ptr;}
+		const Blackbox2* getRightPtr() const {return  _B_ptr;}
 
-	    protected:
+	protected:
 
 		// use a copy of the input field for faster performance (no pointer dereference).
 
@@ -181,7 +181,7 @@ namespace LinBox
 		mutable std::vector<Element>  _z1;
 		mutable std::vector<Element>  _z2;
 
-    		VectorDomain<Field> VD;
+		VectorDomain<Field> VD;
 	}; // template <Field, Vector> class Sum
 
 } // namespace LinBox
@@ -192,16 +192,16 @@ namespace LinBox
 
 	/** \brief blackbox of a matrix sum without copying.
 
-\ingroup blackbox
-         * Adds only at apply time.
+	  \ingroup blackbox
+	 * Adds only at apply time.
 	 * Given two black boxes A and B of the same dimensions, form a black
 	 * box representing A+B, i.e., SumOwner(A,B)x=(A+B)x=Ax+Bx
 	 * @param Vector \ref LinBox dense or sparse vector of field elements
 	 */
 	template <class _Blackbox1, class _Blackbox2>
 	class SumOwner : public BlackboxInterface {
-                typedef SumOwner<_Blackbox1, _Blackbox2> Self_t;
-	    public:
+		typedef SumOwner<_Blackbox1, _Blackbox2> Self_t;
+	public:
 		typedef _Blackbox1 Blackbox1;
 		typedef _Blackbox2 Blackbox2;
 
@@ -214,8 +214,8 @@ namespace LinBox
 		 * A + B, of black box matrices.
 		 * @param A, B:  black box matrices.
 		 */
-		SumOwner (const Blackbox1 &A, const Blackbox2 &B)
-			: _A_data(&A), _B_data(&B), VD( field() )
+		SumOwner (const Blackbox1 &A, const Blackbox2 &B) :
+			_A_data(&A), _B_data(&B), VD( field() )
 		{
 			linbox_check (A.coldim () == B.coldim ());
 			linbox_check (A.rowdim () == B.rowdim ());
@@ -229,8 +229,8 @@ namespace LinBox
 		 * A + B, of black box matrices.
 		 * @param A_data, B_data:  pointers to black box matrices.
 		 */
-		SumOwner (const Blackbox1 *A_data, const Blackbox2 *B_data)
-			: _A_data(A_data), _B_data(B_data), VD( field() )
+		SumOwner (const Blackbox1 *A_data, const Blackbox2 *B_data) :
+			_A_data(A_data), _B_data(B_data), VD( field() )
 		{
 			// create new copies of matrices in dynamic memory
 			linbox_check (A_data != 0);
@@ -246,8 +246,8 @@ namespace LinBox
 		 * Creates new black box objects in dynamic memory.
 		 * @param M constant reference to compose black box matrix
 		 */
-		SumOwner (const SumOwner<Blackbox1, Blackbox2> &M)
-			: _A_data (M._A_data), _B_data (M._B_data), VD(M.VD)
+		SumOwner (const SumOwner<Blackbox1, Blackbox2> &M) :
+			_A_data (M._A_data), _B_data (M._B_data), VD(M.VD)
 		{
 			VectorWrapper::ensureDim (_z1, _A_data.rowdim ());
 			VectorWrapper::ensureDim (_z2, _A_data.coldim ());
@@ -269,10 +269,10 @@ namespace LinBox
 		template<class OutVector, class InVector>
 		inline OutVector &apply (OutVector &y, const InVector &x) const
 		{
-                    _A_data.apply (y, x);
-                    _B_data.apply (_z1, x);
-                    VD.addin (y, _z1);
-                    return y;
+			_A_data.apply (y, x);
+			_B_data.apply (_z1, x);
+			VD.addin (y, _z1);
+			return y;
 		}
 
 		/** Application of BlackBox matrix transpose.
@@ -286,45 +286,45 @@ namespace LinBox
 		template<class OutVector, class InVector>
 		inline OutVector &applyTranspose (OutVector &y, const InVector &x) const
 		{
-                    _A_data.applyTranspose (y, x);
-                    _B_data.applyTranspose (_z2, x);
-                    VD.addin (y, _z2);
+			_A_data.applyTranspose (y, x);
+			_B_data.applyTranspose (_z2, x);
+			VD.addin (y, _z2);
 
 			return y;
 		}
 
-            template<typename _Tp1, typename _Tp2 = _Tp1>
-            struct rebind
-            { typedef SumOwner<typename Blackbox1::template rebind<_Tp1>::other, typename Blackbox2::template rebind<_Tp2>::other> other;
+		template<typename _Tp1, typename _Tp2 = _Tp1>
+		struct rebind
+		{ typedef SumOwner<typename Blackbox1::template rebind<_Tp1>::other, typename Blackbox2::template rebind<_Tp2>::other> other;
 
-    		void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
-                    typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), A.getLeftData(), F);
-                    typename Blackbox2::template rebind<_Tp1> () ( Ap.getRightData(), A.getRightData(), F);
-                 }
+			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+				typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), A.getLeftData(), F);
+				typename Blackbox2::template rebind<_Tp1> () ( Ap.getRightData(), A.getRightData(), F);
+			}
 
 
-            };
-            template<typename _BBt1, typename _BBt2, typename Field>
-            SumOwner (const Sum<_BBt1, _BBt2> &M, const Field& F)
-                    : _A_data(*(M.getLeftPtr()), F),
-                      _B_data(*(M.getRightPtr()), F),
-                      _z1(_A_data.rowdim()),
-                      _z2(_A_data.coldim()),
-                      VD(F)
-                {
-                    typename Sum<_BBt1, _BBt2>::template rebind<Field>()(*this,M,F);
-                }
+		};
+		template<typename _BBt1, typename _BBt2, typename Field>
+		SumOwner (const Sum<_BBt1, _BBt2> &M, const Field& F) :
+			_A_data(*(M.getLeftPtr()), F),
+			_B_data(*(M.getRightPtr()), F),
+			_z1(_A_data.rowdim()),
+			_z2(_A_data.coldim()),
+			VD(F)
+		{
+			typename Sum<_BBt1, _BBt2>::template rebind<Field>()(*this,M,F);
+		}
 
-            template<typename _BBt1, typename _BBt2, typename Field>
-            SumOwner (const SumOwner<_BBt1, _BBt2> &M, const Field& F)
-                    : _A_data(M.getLeftData(), F),
-                      _B_data(M.getRightData(), F) ,
-                      _z1(_A_data.rowdim()),
-                      _z2(_A_data.coldim()) ,
-                      VD(F)
-            	{
-                    typename SumOwner<_BBt1, _BBt2>::template rebind<Field>()(*this,M,F);
-                }
+		template<typename _BBt1, typename _BBt2, typename Field>
+		SumOwner (const SumOwner<_BBt1, _BBt2> &M, const Field& F) :
+			_A_data(M.getLeftData(), F),
+			_B_data(M.getRightData(), F) ,
+			_z1(_A_data.rowdim()),
+			_z2(_A_data.coldim()) ,
+			VD(F)
+		{
+			typename SumOwner<_BBt1, _BBt2>::template rebind<Field>()(*this,M,F);
+		}
 
 
 
@@ -335,14 +335,14 @@ namespace LinBox
 		 * @return integer number of rows of black box matrix.
 		 */
 		size_t rowdim (void) const
-			{ return _A_data.rowdim (); }
+		{ return _A_data.rowdim (); }
 
 		/** Retreive column dimensions of BlackBox matrix.
 		 * Required by abstract base class.
 		 * @return integer number of columns of black box matrix.
 		 */
 		size_t coldim (void) const
-			{ return _A_data.coldim (); }
+		{ return _A_data.coldim (); }
 
 
 		const Field& field() const { return _A_data . field(); }
@@ -351,10 +351,10 @@ namespace LinBox
 		const Blackbox1& getLeftData() const {return  _A_data;}
 		Blackbox1& getLeftData() {return  _A_data;}
 
-	        const Blackbox2& getRightData() const {return  _B_data;}
-	        Blackbox2& getRightData() {return  _B_data;}
+		const Blackbox2& getRightData() const {return  _B_data;}
+		Blackbox2& getRightData() {return  _B_data;}
 
-	    protected:
+	protected:
 
 		// use a copy of the input field for faster performance (no pointer dereference).
 
@@ -364,7 +364,7 @@ namespace LinBox
 		mutable std::vector<Element>  _z1;
 		mutable std::vector<Element>  _z2;
 
-    		VectorDomain<Field> VD;
+		VectorDomain<Field> VD;
 	}; // template <Field, Vector> class SumOwner
 
 } // namespace LinBox

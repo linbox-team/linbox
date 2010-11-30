@@ -46,7 +46,8 @@
 //#define OPTMIZED_SIGMA_UPDATE
 
 
-namespace LinBox {
+namespace LinBox
+{
 
 
 	template<class _Field>
@@ -107,23 +108,24 @@ namespace LinBox {
 
 		void clearTimer()
 		{
-			 ttMBasis.clear();
-			 ttUpdateSerie.clear();
-			 ttBasisMultiplication.clear();
-			 ttPermutation.clear();
-			 ttTransformation.clear();
-			 ttSigmaUp.clear();
-			 ttResidueUp.clear();
-			 ttSigmaSh.clear();
-			 ttResidueSh.clear();
-			 Total.clear();
+			ttMBasis.clear();
+			ttUpdateSerie.clear();
+			ttBasisMultiplication.clear();
+			ttPermutation.clear();
+			ttTransformation.clear();
+			ttSigmaUp.clear();
+			ttResidueUp.clear();
+			ttSigmaSh.clear();
+			ttResidueSh.clear();
+			Total.clear();
 		}
 #endif
 
 
 	public:
 
-		SigmaBasis(const Field &F, std::vector<Coefficient> &PowerSerie) : _F(F), _BMD(F), _MD(F), _Serie(PowerSerie), PM_domain(F)
+		SigmaBasis(const Field &F, std::vector<Coefficient> &PowerSerie) :
+			_F(F), _BMD(F), _MD(F), _Serie(PowerSerie), PM_domain(F)
 		{
 #ifdef  _BM_TIMING
 			clearTimer();
@@ -131,8 +133,8 @@ namespace LinBox {
 		}
 
 		void right_basis(std::vector<Coefficient>     &SigmaBase,
-				size_t                           degree,
-				std::vector<size_t>             &defect)
+				 size_t                           degree,
+				 std::vector<size_t>             &defect)
 		{
 
 
@@ -160,8 +162,8 @@ namespace LinBox {
 		}
 
 		void left_basis(std::vector<Coefficient>      &SigmaBase,
-				 size_t                           degree,
-				 std::vector<size_t>             &defect)
+				size_t                           degree,
+				std::vector<size_t>             &defect)
 		{
 
 			const size_t m = _Serie[0].rowdim();
@@ -454,7 +456,7 @@ namespace LinBox {
 #ifdef _BM_TIMING
 					tBasisMultiplication.stop();ttBasisMultiplication += tBasisMultiplication;
 #endif
- 				}
+				}
 			}
 		}
 
@@ -509,7 +511,7 @@ namespace LinBox {
 			Coefficient Discrepancy(m,n);
 			Timer chrono;
 #ifdef  _BM_TIMING
-                        int cptr=0;
+			int cptr=0;
 #endif
 
 			// Compute the minimal Sigma Base of the PowerSerie up to length
@@ -619,17 +621,17 @@ namespace LinBox {
 
 				size_t size=SigmaBase.size();
 				if (SigmaBase.size()<= max_degree)
-					{
-						SigmaBase.resize(size+1,Zero);
-						size++;
-					}
+				{
+					SigmaBase.resize(size+1,Zero);
+					size++;
+				}
 				// Mulitply by x the rows of Sigma involved as pivot in LQUP
 				for (size_t i=0;i<n;++i){
 					for (int j= (int) size-2;j>=0; --j){
 						for (size_t l=0;l<m;++l)
-//BB: #warning Q[i] pour i>r ne veut rien dire...
+							//BB: #warning Q[i] pour i>r ne veut rien dire...
 							_F.assign(SigmaBase[j+1].refEntry(*(Qt.getPointer()+i),l),
-								 SigmaBase[j].getEntry(*(Qt.getPointer()+i),l));
+								  SigmaBase[j].getEntry(*(Qt.getPointer()+i),l));
 					}
 					for (size_t l=0;l<m;++l)
 						_F.assign(SigmaBase[0].refEntry(*(Qt.getPointer()+i),l),zero);
@@ -874,10 +876,10 @@ namespace LinBox {
 				}
 				size_t size=SigmaBase.size();
 				if (SigmaBase.size()<= (size_t)max_degree)
-					{
-						SigmaBase.resize(size+1,Zero);
-						size++;
-					}
+				{
+					SigmaBase.resize(size+1,Zero);
+					size++;
+				}
 				for (int i= (int)size-2;i>=0;i--)
 					for (size_t j=0;j<n;j++)
 						for (size_t k=0;k<n;++k)
@@ -1094,10 +1096,10 @@ namespace LinBox {
 				}
 				size_t size=SigmaBase.size();
 				if (SigmaBase.size()<= (size_t)max_degree)
-					{
-						SigmaBase.resize(size+1,Zero);
-						size++;
-					}
+				{
+					SigmaBase.resize(size+1,Zero);
+					size++;
+				}
 				for (int i= (int)size-2;i>=0;i--)
 					for (size_t j=0;j<n;j++)
 						for (size_t k=0;k<n;++k)
@@ -1607,7 +1609,7 @@ namespace LinBox {
 					}
 
 					if (!QisTrivial)
-					 _BMD.mulin_right(Q, SigmaBase[i]);
+						_BMD.mulin_right(Q, SigmaBase[i]);
 #if 0
 					if (i==0){
 						S_bottom_left.write(std::cout,_F);
@@ -1623,11 +1625,11 @@ namespace LinBox {
 
 					// apply transformation to SigmaBase
 					BlasMatrix<Element> S_bottom(SigmaBase[i], rank,0,m-rank,m);
-				 	_MD.negin(S_bottom);
+					_MD.negin(S_bottom);
 
 					// undo the permutation on sigmaBase
 					if (!QisTrivial)
-					 _BMD.mulin_right(Q, SigmaBase[i]);
+						_BMD.mulin_right(Q, SigmaBase[i]);
 				}
 
 #else
@@ -1688,16 +1690,16 @@ namespace LinBox {
 					maxk=std::min(maxk,SigmaBase.size()-1);
 					for (size_t i=0;i<maxs+1;++i){
 						BlasMatrix<Element> S_top_left (SigmaBase[i], 0,0,rank,lsize);
-					 	BlasMatrix<Element> S_bottom   (SigmaBase[i], rank,0,m-rank,m);
+						BlasMatrix<Element> S_bottom   (SigmaBase[i], rank,0,m-rank,m);
 
 						// deal with the left part of kth slice of S_bottom
-					 	BlasMatrix<Element> Sb_last_left (S_bottom,q*rank,0,q_last, lsize);
-					 	_BMD.axmyin(Sb_last_left, G_last, S_top_left);
+						BlasMatrix<Element> Sb_last_left (S_bottom,q*rank,0,q_last, lsize);
+						_BMD.axmyin(Sb_last_left, G_last, S_top_left);
 
 						// deal with the right part of kth slice of S_bottom
-					 	if (rsize > 0){
+						if (rsize > 0){
 							BlasMatrix<Element> Sb_last_right(S_bottom,q*rank,lsize,q_last, rsize);
-						 	_MD.negin(Sb_last_right);
+							_MD.negin(Sb_last_right);
 						}
 
 					}
@@ -1728,16 +1730,16 @@ namespace LinBox {
 				/*
 				// Update  Residual (only monomials greater than k-1)
 				for (size_t i=k;i<length;++i){
-					_BMD.mulin_right(BPerm1,Residual[i]);
-					//_BMD.mulin_right(invL,Residual[i]);
+				_BMD.mulin_right(BPerm1,Residual[i]);
+				//_BMD.mulin_right(invL,Residual[i]);
 
-					// try optimization
-					_BMD.mulin_right(Qt, Residual[i]);
-					 BlasMatrix<Element>    R_top(Residual[i], 0,0,rank,n);
-					 BlasMatrix<Element> R_bottom(Residual[i], rank,0,m-rank,n);
-					 _BMD.axmyin(R_bottom, G, R_top);
+				// try optimization
+				_BMD.mulin_right(Qt, Residual[i]);
+				BlasMatrix<Element>    R_top(Residual[i], 0,0,rank,n);
+				BlasMatrix<Element> R_bottom(Residual[i], rank,0,m-rank,n);
+				_BMD.axmyin(R_bottom, G, R_top);
 
-					 _BMD.mulin_right(Q, Residual[i]);
+				_BMD.mulin_right(Q, Residual[i]);
 				}
 				*/
 #ifdef _BM_TIMING
@@ -1756,10 +1758,10 @@ namespace LinBox {
 				// Resize SigmaBase if necessary
 				size_t size=SigmaBase.size();
 				if (SigmaBase.size()<= max_degree+1)
-					{
-						SigmaBase.resize(size+1,Zeromm);
-						size++;cptr++;
-					}
+				{
+					SigmaBase.resize(size+1,Zeromm);
+					size++;cptr++;
+				}
 
 				// Mulitply by x the rows of SigmaBase involved as pivot
 				for (size_t i=0;i<rank;++i){
@@ -1779,10 +1781,10 @@ namespace LinBox {
 				/*
 				// Mulitply by x the rows of Residual involved as pivot
 				for (size_t i=0;i<rank;++i){
-					for (int j= (int) length-2;j>= (int) k; j--){
-						for (size_t l=0;l<n;++l)
-							_F.assign(Residual[j+1].refEntry(*(Qt.getPointer()+i),l), Residual[j].getEntry(*(Qt.getPointer()+i),l));
-					}
+				for (int j= (int) length-2;j>= (int) k; j--){
+				for (size_t l=0;l<n;++l)
+				_F.assign(Residual[j+1].refEntry(*(Qt.getPointer()+i),l), Residual[j].getEntry(*(Qt.getPointer()+i),l));
+				}
 				}
 				*/
 #ifdef _BM_TIMING
@@ -1884,7 +1886,7 @@ namespace LinBox {
 					// Work on a copy of the old  Serie (increase size by one for computation of middle product)
 					std::vector<Coefficient> Serie(2*degree1+1,ZeroSerie);
 					for (size_t i=0;i< PowerSerie.size();++i)
-						Serie[i] = PowerSerie[i];
+					Serie[i] = PowerSerie[i];
 
 					PM_domain.midproduct(Serie2, Sigma1, Serie);
 					//ClassicMulDomain<Field, std::vector<Coefficient> > CM_domain(_F);
@@ -1919,11 +1921,11 @@ namespace LinBox {
 #endif
 					// Remove leading Zero coefficient of Sigma1 and Sigma2
 					/*
-					size_t idx1,idx2;
-					idx1=Sigma1.size();
-					idx2=Sigma2.size();
-					while( _MD.isZero(Sigma1[idx1-1]) && idx1 >0) {idx1--;}
-					while( _MD.isZero(Sigma2[idx2-1]) && idx2 >0) {idx2--;}
+					   size_t idx1,idx2;
+					   idx1=Sigma1.size();
+					   idx2=Sigma2.size();
+					   while( _MD.isZero(Sigma1[idx1-1]) && idx1 >0) {idx1--;}
+					   while( _MD.isZero(Sigma2[idx2-1]) && idx2 >0) {idx2--;}
 
 					//std::cout<<"zero removed: "<<Sigma1.size()-idx1+Sigma2.size()-idx2<<"\n";
 					// resize Sigma1 ad Sigma2

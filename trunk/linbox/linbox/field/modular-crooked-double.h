@@ -200,11 +200,13 @@ namespace LinBox
 			return is;
 		}
 
-		std::ostream &write (std::ostream &os, const Element &x) const {
+		std::ostream &write (std::ostream &os, const Element &x) const
+		{
 			return os << int(x);
 		}
 
-		std::istream &read (std::istream &is, Element &x) const {
+		std::istream &read (std::istream &is, Element &x) const
+		{
 			integer tmp;
 			// JGD : should'nt it be double tmp ???
 			is >> tmp;
@@ -227,23 +229,28 @@ namespace LinBox
 			return x;
 		}
 
-		inline Element& assign(Element& x, const Element& y) const {
+		inline Element& assign(Element& x, const Element& y) const
+		{
 			return x = y;
 		}
 
-		inline bool areEqual (const Element &x, const Element &y) const {
+		inline bool areEqual (const Element &x, const Element &y) const
+		{
 			return x == y;
 		}
 
-		inline  bool isZero (const Element &x) const {
+		inline  bool isZero (const Element &x) const
+		{
 			return x == 0.;
 		}
 
-		inline bool isOne (const Element &x) const {
+		inline bool isOne (const Element &x) const
+		{
 			return x == 1.;
 		}
 
-		inline bool isMinusOne (const Element &x) const {
+		inline bool isMinusOne (const Element &x) const
+		{
 			return (x == -1.);
 		}
 
@@ -267,18 +274,21 @@ namespace LinBox
 			return x;
 		}
 
-		inline Element &mul (Element &x, const Element &y, const Element &z) const {
+		inline Element &mul (Element &x, const Element &y, const Element &z) const
+		{
 			x = y * z;
 			return init (x,x);
 		}
 
-		inline Element &div (Element &x, const Element &y, const Element &z) const {
+		inline Element &div (Element &x, const Element &y, const Element &z) const
+		{
 			Element temp;
 			inv (temp, z);
 			return mul (x, y, temp);
 		}
 
-		inline Element &neg (Element &x, const Element &y) const {
+		inline Element &neg (Element &x, const Element &y) const
+		{
 			return x = -y;
 		}
 
@@ -331,23 +341,28 @@ namespace LinBox
 			return x;
 		}
 
-		inline Element &mulin (Element &x, const Element &y) const {
+		inline Element &mulin (Element &x, const Element &y) const
+		{
 			return mul(x,x,y);
 		}
 
-		inline Element &divin (Element &x, const Element &y) const {
+		inline Element &divin (Element &x, const Element &y) const
+		{
 			return div(x,x,y);
 		}
 
-		inline Element &negin (Element &x) const {
+		inline Element &negin (Element &x) const
+		{
 			return x = -x;
 		}
 
-		inline Element &invin (Element &x) const {
+		inline Element &invin (Element &x) const
+		{
 			return inv (x, x);
 		}
 
-		inline Element &axpyin (Element &r, const Element &a, const Element &x) const {
+		inline Element &axpyin (Element &r, const Element &a, const Element &x) const
+		{
 			r += a * x;
 			return init (r, r);
 		}
@@ -376,6 +391,9 @@ namespace LinBox
 
 	};
 
+#define SQR(A) \
+	((A)*(A))
+
 	template <>
 	class FieldAXPY<ModularCrooked<double> > {
 	public:
@@ -383,13 +401,17 @@ namespace LinBox
 		typedef double Element;
 		typedef ModularCrooked<double> Field;
 
-		FieldAXPY (const Field &F)
-		: _F (F), _y(0.) , _bound( (double) ((1ULL << 53) - (int) (_F.modulus*_F.modulus))) {}
+		FieldAXPY (const Field &F) :
+			_F (F), _y(0.) , _bound( (double) ((1ULL << 53) - (int) (SQR(std::max(_F.up_mod,-_F.lo_mod)))))
+		{}
 
-		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F),
-		_y(faxpy._y), _bound(faxpy._bound) {}
+		FieldAXPY (const FieldAXPY &faxpy) :
+			_F (faxpy._F),
+			_y(faxpy._y), _bound(faxpy._bound)
+		{}
 
-		FieldAXPY<ModularCrooked<double> > &operator = (const FieldAXPY &faxpy) {
+		FieldAXPY<ModularCrooked<double> > &operator = (const FieldAXPY &faxpy)
+		{
 			_F = faxpy._F;
 			_y= faxpy._y;
 			_bound= faxpy._bound;
@@ -454,15 +476,16 @@ namespace LinBox
 
 	public:
 		typedef double Element;
-		DotProductDomain (const ModularCrooked<double> &F)
-		: VectorDomainBase<ModularCrooked<double> > (F), _bound( (double) ( (1ULL<<53) - (int) (_F.modulus*_F.modulus)))
+		DotProductDomain (const ModularCrooked<double> &F) :
+			VectorDomainBase<ModularCrooked<double> > (F), _bound( (double) ( (1ULL<<53) - (int) (SQR(std::max(_F.up_mod,-_F.lo_mod)))))
 		{
-			_nmax= (size_t)floor((double(1<<26)* double(1<<26)*2.)/ (_F.modulus * _F.modulus));
+			_nmax= (size_t)floor((double(1<<26)* double(1<<26)*2.)/ (SQR(std::max(_F.up_mod,-_F.lo_mod))));
 		}
 
 	protected:
 		template <class Vector1, class Vector2>
-		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const {
+		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const
+		{
 
 			double y = 0.;
 			double t = 0.;
@@ -488,7 +511,8 @@ namespace LinBox
 		}
 
 		template <class Vector1, class Vector2>
-		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const {
+		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const
+		{
 
 			double y = 0.;
 			double t =0.;
@@ -517,11 +541,11 @@ namespace LinBox
 	};
 
 #include <iostream>
-template<class T>
-std::ostream& operator<< (std::ostream & o, const ModularCrooked<T> & F)
-{
-	return F.write(o);
-}
+	template<class T>
+	std::ostream& operator<< (std::ostream & o, const ModularCrooked<T> & F)
+	{
+		return F.write(o);
+	}
 
 }
 #endif //__LINBOX_modular_crooked_double_H

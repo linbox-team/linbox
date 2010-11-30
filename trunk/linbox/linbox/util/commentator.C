@@ -80,10 +80,10 @@ namespace LinBox
 		return 0;
 	}
 
-	Commentator::Commentator ()
-		//: cnull (new nullstreambuf), _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
-		: cnull ("/dev/null"), _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
-		  _show_timing (true), _show_progress (true), _show_est_time (true)
+	Commentator::Commentator () :
+		// cnull (new nullstreambuf), _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
+		cnull ("/dev/null"), _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
+		_show_timing (true), _show_progress (true), _show_est_time (true)
 	{
 		//registerMessageClass (BRIEF_REPORT,         std::clog, 1, LEVEL_IMPORTANT);
 		registerMessageClass (BRIEF_REPORT,         _report, 1, LEVEL_IMPORTANT);
@@ -95,10 +95,10 @@ namespace LinBox
 		registerMessageClass (INTERNAL_ERROR,       _report, 10, LEVEL_NORMAL);
 		registerMessageClass (INTERNAL_DESCRIPTION, _report);
 	}
-	Commentator::Commentator (std::ostream& out)
-		//: cnull (new nullstreambuf), _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
-		: cnull ("/dev/null"), _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
-		  _show_timing (true), _show_progress (true), _show_est_time (true)
+	Commentator::Commentator (std::ostream& out) :
+		// cnull (new nullstreambuf), _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
+		cnull ("/dev/null"), _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
+		_show_timing (true), _show_progress (true), _show_est_time (true)
 	{
 		//registerMessageClass (BRIEF_REPORT,         out, 1, LEVEL_IMPORTANT);
 		registerMessageClass (BRIEF_REPORT,         out, 1, LEVEL_IMPORTANT);
@@ -180,7 +180,7 @@ namespace LinBox
 		    strcmp (fn, top_act->_fn) != 0)
 		{
 			report (LEVEL_IMPORTANT, INTERNAL_WARNING)
-				<< "Activity report mismatch. Check that start () and stop () calls are paired correctly." << std::endl;
+			<< "Activity report mismatch. Check that start () and stop () calls are paired correctly." << std::endl;
 		}
 
 		fn = top_act->_fn;
@@ -219,7 +219,7 @@ namespace LinBox
 		linbox_check (_activities.top () != (Activity *) 0);
 
 		Activity *act = _activities.top ();
-                Timer tmp = act->_timer;
+		Timer tmp = act->_timer;
 		act->_timer.stop ();
 
 		if (k == -1)
@@ -237,11 +237,11 @@ namespace LinBox
 		rep.precision (3);
 		rep.setf (std::ios::fixed);
 		rep << "Progress: " << act->_progress << " out of " << act->_len
-		    << " (" << act->_timer.realtime () << "s elapsed)" << std::endl;
+		<< " (" << act->_timer.realtime () << "s elapsed)" << std::endl;
 
 		if (_show_progress && isPrinted (_activities.size () - 1, LEVEL_IMPORTANT, BRIEF_REPORT, act->_fn))
 			updateActivityReport (*act);
-                act->_timer = tmp;
+		act->_timer = tmp;
 	}
 
 	std::ostream &Commentator::report (long level, const char *msg_class)
@@ -336,7 +336,7 @@ namespace LinBox
 	}
 
 	MessageClass &Commentator::getMessageClass (const char *msg_class)
-		{ return *_messageClasses[msg_class]; }
+	{ return *_messageClasses[msg_class]; }
 
 	void Commentator::setPrintParameters (unsigned long depth, unsigned long level, const char *fn)
 	{
@@ -367,7 +367,7 @@ namespace LinBox
 	}
 
 	void Commentator::setBriefReportStream (std::ostream &stream)
-		{ setMessageClassStream (BRIEF_REPORT, stream); }
+	{ setMessageClassStream (BRIEF_REPORT, stream); }
 
 	void Commentator::setReportStream (std::ostream &stream)
 	{
@@ -386,10 +386,10 @@ namespace LinBox
 
 	void Commentator::setMessageClassStream (const char *msg_class, std::ostream &stream)
 	{
-                //temporarily fixed the bug in test-commentator, left memory leaking.
-                MessageClass *old_msg_class = _messageClasses[msg_class];
-                cloneMessageClass (msg_class, msg_class, stream);
-                delete old_msg_class;
+		//temporarily fixed the bug in test-commentator, left memory leaking.
+		MessageClass *old_msg_class = _messageClasses[msg_class];
+		cloneMessageClass (msg_class, msg_class, stream);
+		delete old_msg_class;
 
 	}
 
@@ -452,7 +452,7 @@ namespace LinBox
 #if 0
 				if (_show_est_time)
 					messageClass._stream << activity._estimate.front ()._time
-							     << " remaining" << std::endl;
+					<< " remaining" << std::endl;
 #endif
 			}
 
@@ -464,14 +464,14 @@ namespace LinBox
 #if 0
 				if (_show_est_time)
 					messageClass._stream << " (" << activity._estimate.front ()._time
-							     << " remaining)";
+					<< " remaining)";
 #endif
 				messageClass._stream << std::endl;
 			}
 #if 0
 			else if (_show_est_time)
 				messageClass._stream << activity._estimate.front ()._time
-						     << " remaining" << std::endl;
+				<< " remaining" << std::endl;
 #endif
 		}
 	}
@@ -525,12 +525,12 @@ namespace LinBox
 				    const char *msg_class,
 				    std::ostream &stream,
 				    unsigned long max_depth,
-				    unsigned long max_level)
-		: _msg_class (msg_class),
-		  _smart_streambuf (comm, stream),
-		  _stream (&_smart_streambuf),
-		  _max_level (max_level),
-		  _max_depth (max_depth)
+				    unsigned long max_level) :
+		_msg_class (msg_class),
+		_smart_streambuf (comm, stream),
+		_stream (&_smart_streambuf),
+		_max_level (max_level),
+		_max_depth (max_depth)
 	{
 		fixDefaultConfig ();
 	}
@@ -590,43 +590,45 @@ namespace LinBox
 	bool MessageClass::isPrinted (unsigned long depth, unsigned long level, const char *fn)
 	{
 		return
-			checkConfig (_configuration[""], depth, level)
-			||
-			(	fn != (const char *) 0
-				&&
-		   		checkConfig (_configuration[fn], depth, level)
-		   	);
-		/*
- 		if (checkConfig (_configuration[""], depth, level))
- 			return true;
+		checkConfig (_configuration[""], depth, level)
+		||
+		(	fn != (const char *) 0
+			&&
+			checkConfig (_configuration[fn], depth, level)
+		);
+#if 0
+
+		if (checkConfig (_configuration[""], depth, level))
+			return true;
 		else if (fn != (const char *) 0)
 			//return checkConfig (_configuration[fn], depth, level);
-			{ bool ans = checkConfig (_configuration[fn], depth, level);
-			  if (ans)
-		 		{	//std::cerr << " fn=" << fn << ", d " << depth << ", l " << level << " true" << std::endl;
-			 		return true;
-		 		}
-			  else
-		 		{	//std::cerr << " fn=" << fn << ", d " << depth << ", l " << level << " false" << std::endl;
-			 		return false;
-		 		}
-		 	}
+		{ bool ans = checkConfig (_configuration[fn], depth, level);
+			if (ans)
+			{	//std::cerr << " fn=" << fn << ", d " << depth << ", l " << level << " true" << std::endl;
+				return true;
+			}
+			else
+			{	//std::cerr << " fn=" << fn << ", d " << depth << ", l " << level << " false" << std::endl;
+				return false;
+			}
+		}
 
 		else
 		{	//std::cerr << " fn=0, d " << depth << ", l " << level << " false" << std::endl;
 			return false;
 		}
-		*/
+
+#endif
 	}
 
 	MessageClass::MessageClass (const Commentator &comm,
 				    const char *msg_class,
 				    std::ostream &stream,
-				    Configuration configuration)
-		: _msg_class (msg_class),
-		  _smart_streambuf (comm, stream),
-		  _stream (&_smart_streambuf),
-		  _configuration (configuration)
+				    Configuration configuration) :
+		_msg_class (msg_class),
+		_smart_streambuf (comm, stream),
+		_stream (&_smart_streambuf),
+		_configuration (configuration)
 	{}
 
 	void MessageClass::fixDefaultConfig ()
@@ -639,18 +641,20 @@ namespace LinBox
 	}
 
 	bool MessageClass::checkConfig (std::list <std::pair <unsigned long, unsigned long> > &config,
-			unsigned long depth,
-			unsigned long ) //lvl
+					unsigned long depth,
+					unsigned long ) //lvl
 	{
 		std::list <std::pair <unsigned long, unsigned long> >::iterator i;
 
 		for ( i = config.begin (); i != config.end (); ++i) {
 			if (depth < i->first) {
-				//// uninitialized value error goes away if we ignore level.
-				//if (level <= i->second)
-				//	return true;
-				//else
-				//	return false;
+#if 0
+				// uninitialized value error goes away if we ignore level.
+				if (level <= i->second)
+					return true;
+				else
+					return false;
+#endif
 				return true;
 			}
 		}

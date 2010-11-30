@@ -45,23 +45,25 @@ int int_comb;
 
 struct StopReduce{};
 
-namespace LinBox {
+namespace LinBox
+{
 
-	int large_double_division(integer &x, const integer &y, const integer &z){
+	int large_double_division(integer &x, const integer &y, const integer &z)
+	{
 		double x_m, y_m, z_m;
 		long   x_e, y_e, z_e;
 		Timer t;
-	
-		y_m = mpz_get_d_2exp(&y_e, y.get_mpz()); 
-		z_m = mpz_get_d_2exp(&z_e, z.get_mpz());		
+
+		y_m = mpz_get_d_2exp(&y_e, y.get_mpz());
+		z_m = mpz_get_d_2exp(&z_e, z.get_mpz());
 		x_e = y_e - z_e;
-	
+
 
 		if (x_e <53) {
 			x_m = y_m / z_m;
 
 			if (x_m == 0.){
-				x=0;	
+				x=0;
 				return 0;
 			}
 			else {
@@ -86,7 +88,7 @@ namespace LinBox {
 
 
 	protected:
-	
+
 		integer b1[3], b2[3], b3[3];
 		integer lb1, lb2, lb3;
 		integer b1b2, b1b3, b2b3 ;
@@ -100,20 +102,22 @@ namespace LinBox {
 		inline void innerProduct(integer &z, const integer x[3] , const integer  y[3]){
 			integer::mul(z,x[0],y[0]);
 			integer::axpyin(z,x[1],y[1]);
-			integer::axpyin(z,x[2],y[2]);			
+			integer::axpyin(z,x[2],y[2]);
 		}
-	
+
 		inline void SquareEuclideanLength(integer& l, const integer y[3]){
 			innerProduct(l, y, y);
 		}
 
 
-		inline void EuclideanLength(integer& l, const integer y[3] ){
+		inline void EuclideanLength(integer& l, const integer y[3] )
+		{
 			innerProduct(l, y, y);
 			::sqrt(l,l);
 		}
 
-		inline void swap(integer x[3], integer y[3] ){
+		inline void swap(integer x[3], integer y[3] )
+		{
 			integer tmp;
 			tmp=x[0];
 			x[0]=y[0];
@@ -123,15 +127,16 @@ namespace LinBox {
 			y[1]=tmp;
 			tmp=x[2];
 			x[2]=y[2];
-			y[2]=tmp;		
+			y[2]=tmp;
 		}
-	
-		inline void axmyin(integer r[3], const integer &a, const integer y[3]){
+
+		inline void axmyin(integer r[3], const integer &a, const integer y[3])
+		{
 			if ((a.bitsize()<32) && (a >= 0)){
 				unsigned long aa= a;
-				mpz_submul_ui(r[0].get_mpz(), y[0].get_mpz(), aa); 
-				mpz_submul_ui(r[1].get_mpz(), y[1].get_mpz(), aa); 
-				mpz_submul_ui(r[2].get_mpz(), y[2].get_mpz(), aa); 
+				mpz_submul_ui(r[0].get_mpz(), y[0].get_mpz(), aa);
+				mpz_submul_ui(r[1].get_mpz(), y[1].get_mpz(), aa);
+				mpz_submul_ui(r[2].get_mpz(), y[2].get_mpz(), aa);
 			}
 			else {
 				integer::axmyin(r[0],a,y[0]);
@@ -139,22 +144,24 @@ namespace LinBox {
 				integer::axmyin(r[2],a,y[2]);
 			}
 		}
-	
-		inline void axpyin(integer r[3], const integer &a, const integer y[3]){
+
+		inline void axpyin(integer r[3], const integer &a, const integer y[3])
+		{
 			if ((a.bitsize()<32) && (a >= 0)){
 				unsigned long aa= a;
-				mpz_addmul_ui(r[0].get_mpz(), y[0].get_mpz(), aa); 
-				mpz_addmul_ui(r[1].get_mpz(), y[1].get_mpz(), aa); 
-				mpz_addmul_ui(r[2].get_mpz(), y[2].get_mpz(), aa); 
+				mpz_addmul_ui(r[0].get_mpz(), y[0].get_mpz(), aa);
+				mpz_addmul_ui(r[1].get_mpz(), y[1].get_mpz(), aa);
+				mpz_addmul_ui(r[2].get_mpz(), y[2].get_mpz(), aa);
 			}
 			else {
 				integer::axpyin(r[0],a,y[0]);
 				integer::axpyin(r[1],a,y[1]);
-				integer::axpyin(r[2],a,y[2]);	
+				integer::axpyin(r[2],a,y[2]);
 			}
 		}
 
-		inline void sort(){
+		inline void sort()
+		{
 			if (lb1 > lb2){
 				swap(b1,b2);
 				std::swap(lb1,lb2);
@@ -172,7 +179,9 @@ namespace LinBox {
 			}
 		}
 
-		inline void binaryGaussReduce(){int_gauss++;
+		inline void binaryGaussReduce()
+		{
+			int_gauss++;
 			integer  r;
 			r=b1b2/lb1;
 			integer a[3], la;
@@ -197,18 +206,20 @@ namespace LinBox {
 				}
 			}
 		}
-       
-		inline void assign(integer x[3], const integer y[3]){
+
+		inline void assign(integer x[3], const integer y[3])
+		{
 			x[0]=y[0];
 			x[1]=y[1];
 			x[2]=y[2];
 		}
 
-	
-		inline integer SEL(integer &l, const integer &x1, const integer &y1, const integer &y2, const integer &y3){
+
+		inline integer SEL(integer &l, const integer &x1, const integer &y1, const integer &y2, const integer &y3)
+		{
 			Timer t;
 			t.start();
-			integer tmp, tmp_min, y_min;			
+			integer tmp, tmp_min, y_min;
 			integer b2b3_2   = b2b3<<1;
 			integer rr = b2b3_2;
 			integer::axpyin(rr,x1<<1,b1b2);
@@ -230,7 +241,7 @@ namespace LinBox {
 				tmp_min=tmp;
 				y_min=y2;
 			}
-			
+
 			tmp = rr;
 			integer::axpyin(tmp, y3, lb2);
 			tmp*=y3;
@@ -238,7 +249,7 @@ namespace LinBox {
 				tmp_min=tmp;
 				y_min=y3;
 			}
-			
+
 
 			l+=tmp_min;
 			t.stop();
@@ -249,7 +260,8 @@ namespace LinBox {
 
 	public:
 
-		TernaryLattice(const std::vector<integer> &L) {
+		TernaryLattice(const std::vector<integer> &L)
+		{
 			linbox_check(L.size()==9);
 			b1[0]=L[0];
 			b1[1]=L[1];
@@ -269,15 +281,17 @@ namespace LinBox {
 			innerProduct(b1b3, b1, b3);
 			innerProduct(b2b3, b2, b3);
 		}
-		
-		
+
+
 		template<class Blackbox>
-		TernaryLattice(const Blackbox &L) {int_div=0;int_gauss=0;int_comb=0;
+		TernaryLattice(const Blackbox &L)
+		{
+			int_div=0;int_gauss=0;int_comb=0;
 
 			Tgauss.clear();
 			Tcoeff.clear();
 			Tgetcoeff.clear();
-			Tcombine.clear();		
+			Tcombine.clear();
 			L.field().convert(b1[0], L.getEntry(0,0));
 			L.field().convert(b1[1], L.getEntry(0,1));
 			L.field().convert(b1[2], L.getEntry(0,2));
@@ -296,79 +310,78 @@ namespace LinBox {
 			innerProduct(b2b3, b2, b3);
 		}
 
-		
-	
 
-		void reduce() {
-			
-			integer lmin_a, x1, x2;		
+		void reduce()
+		{
+
+			integer lmin_a, x1, x2;
 			{
 				Timer t;
-				
+
 				/*
-				  std::cout<<"Calling reduce (";
-				  std::cout<<lb1.bitsize()<<",";
-				  std::cout<<lb2.bitsize()<<",";
-				  std::cout<<lb3.bitsize()<<")";;
-				*/
+				   std::cout<<"Calling reduce (";
+				   std::cout<<lb1.bitsize()<<",";
+				   std::cout<<lb2.bitsize()<<",";
+				   std::cout<<lb3.bitsize()<<")";;
+				   */
 				//std::cout<<lb1<<",";
 				//std::cout<<lb2<<",";
 				//std::cout<<lb3;
 				//std::cout<<")\n";
 				//print();
-			
+
 				t.start();
 				binaryGaussReduce();//std::cout<<"Gauss reduce done\n";
 				t.stop();
 				Tgauss+=t;
 				t.clear();
 				t.start();
-				
-			
+
+
 				integer::div(B1B2LB1, b1b2, lb1);
 				integer::div(B1B2LB2, b1b2, lb2);
 				integer::div(B2B3LB2, b2b3, lb2);
 				integer::div(B1B3LB1, b1b3, lb1);
-				
+
 				TMP= integer(integer(1));
 				integer::axmyin(TMP, B1B2LB1, B1B2LB2);
-			
-				
+
+
 				y2= B2B3LB2;
-				integer::axmyin(y2, B1B2LB2, B1B3LB1);							
-				integer::divin(y2,TMP); 				
+				integer::axmyin(y2, B1B2LB2, B1B3LB1);
+				integer::divin(y2,TMP);
 				integer::negin(y2);
 
 				y1= B1B3LB1;
 				integer::axmyin(y1, B1B2LB1, B2B3LB2);
-				integer::divin(y1,TMP); 				
+				integer::divin(y1,TMP);
 				integer::negin(y1);
-				
+
 				x10= y1;
 				x11= 1+y1;
 				x12= -1+y1;
-				x20= y2; 
+				x20= y2;
 				x21= 1+y2;
 				x22= -1+y2;
-				
+
 				t.stop();
 				Tcoeff+=t;
-				
-				integer la, x_tmp;						       
 
-			
+				integer la, x_tmp;
+
+
 				x2   = SEL(la, x10, x20, x21, x22); lmin_a=la;x1=x10;
 				x_tmp = SEL(la, x11, x20, x21, x22); if (la < lmin_a) {lmin_a=la;x1=x11;x2=x_tmp;}
 				x_tmp = SEL(la, x12, x20, x21, x22); if (la < lmin_a) {lmin_a=la;x1=x12;x2=x_tmp;}
 
 
-				//if (::abs(x1)-::abs(y1)  != 1) std::cout<<"|x1|-|y1|: "<<::abs(x1)-::abs(y1)<<"\n";				
+				//if (::abs(x1)-::abs(y1)  != 1) std::cout<<"|x1|-|y1|: "<<::abs(x1)-::abs(y1)<<"\n";
 				//if (::abs(x2)-::abs(y2)  != 1) std::cout<<"|x2|-|y2|: "<<::abs(x2)-::abs(y2)<<"\n";
 
 			}
-		
-		
-			if (lmin_a < lb3){ 
+
+
+			if (lmin_a < lb3){
 				int_comb++;
 				Timer tt;
 				tt.clear();
@@ -380,36 +393,39 @@ namespace LinBox {
 				integer::axpyin(b1b3,x2,b1b2);
 				integer::axpyin(b2b3,x1,b1b2);
 				integer::axpyin(b2b3,x2,lb2);
-											
+
 				if (lb3 < lb1){
-					swap(b1, b3);std::swap(lb1,lb3);std::swap(b1b2, b2b3);						
+					swap(b1, b3);std::swap(lb1,lb3);std::swap(b1b2, b2b3);
 				}
 				if (lb3 < lb2){
-					swap(b2, b3);std::swap(lb2,lb3);std::swap(b1b3, b1b2);	
+					swap(b2, b3);std::swap(lb2,lb3);std::swap(b1b3, b1b2);
 				}
-				
+
 				//sort();
 				tt.stop();
 				Tcombine+=tt;
-				reduce();			
+				reduce();
 			}
 		}
 
-		integer* operator[](size_t i){
+		integer* operator[](size_t i)
+		{
 			if (i==0) return b1;
 			if (i==1) return b2;
 			if (i==2) return b3;
 		}
 
 
-		void timing(){ 
+		void timing()
+		{
 			std::cout<<"Gauss reduce     : "<<Tgauss<<" with "<<int_gauss<<" calls \n";
 			std::cout<<"Coeff computation: "<<Tcoeff<<" with "<<int_div<<" exact division \n";
-			std::cout<<"       get coeff : "<<Tgetcoeff<<"\n"; 
-			std::cout<<"Combine row      : "<<Tcombine<<" with "<<int_comb<<" combinaison \n";		
+			std::cout<<"       get coeff : "<<Tgetcoeff<<"\n";
+			std::cout<<"Combine row      : "<<Tcombine<<" with "<<int_comb<<" combinaison \n";
 		}
 
-		void print(){		
+		void print()
+		{
 			PID_integer Z;
 			BlasBlackbox<PID_integer> M(Z,3,3);
 			M.setEntry(0,0,b1[0]);
@@ -425,7 +441,8 @@ namespace LinBox {
 		}
 
 		template<class Blackbox>
-		void getLattice(Blackbox &M){
+		void getLattice(Blackbox &M)
+		{
 			M.setEntry(0,0,b1[0]);
 			M.setEntry(0,1,b1[1]);
 			M.setEntry(0,2,b1[2]);
@@ -434,7 +451,7 @@ namespace LinBox {
 			M.setEntry(1,2,b2[2]);
 			M.setEntry(2,0,b3[0]);
 			M.setEntry(2,1,b3[1]);
-			M.setEntry(2,2,b3[2]);			
+			M.setEntry(2,2,b3[2]);
 		}
 
 	};
@@ -444,24 +461,29 @@ namespace LinBox {
 		double _m;
 		long   _e;
 	public:
-		LargeDouble(const integer &x){
+		LargeDouble(const integer &x)
+		{
 			_m=mpz_get_d_2exp(&_e, x.get_mpz());
 		}
-		
+
 		LargeDouble() {}
 
-		LargeDouble(const LargeDouble &x) : _m(x._m), _e(x._e) {}
-		
-		LargeDouble& operator= (const LargeDouble &x){
+		LargeDouble(const LargeDouble &x) :
+			_m(x._m), _e(x._e)
+		{}
+
+		LargeDouble& operator= (const LargeDouble &x)
+		{
 			_m = x._m;
 			_e = x._e;
 			return *this;
 		}
 
-		integer& convert(integer &x){
+		integer& convert(integer &x)
+		{
 			if (_e < 53 ){
 				if (_m == 0.)
-					return x=integer(0);	
+					return x=integer(0);
 				else
 					return x=integer(round(ldexp(_m,_e)));
 			}
@@ -469,10 +491,11 @@ namespace LinBox {
 				x = (_m* 0x1P53);//9007199254740992;
 				x = x<<(_e-53);
 				return x;
-			}			      
+			}
 		}
 
-		static LargeDouble& div(LargeDouble &x, const LargeDouble &y, const LargeDouble &z){
+		static LargeDouble& div(LargeDouble &x, const LargeDouble &y, const LargeDouble &z)
+		{
 			x._e = y._e - z._e;
 			x._m = y._m / y._m;
 			int e;
@@ -482,7 +505,8 @@ namespace LinBox {
 			return x;
 		}
 
-		static LargeDouble& divin(LargeDouble &x, const LargeDouble &y){
+		static LargeDouble& divin(LargeDouble &x, const LargeDouble &y)
+		{
 			x._e = x._e - y._e;
 			x._m = x._m / y._m;
 			int e;
@@ -491,8 +515,9 @@ namespace LinBox {
 			//if (x._e >= 53) throw StopReduce();
 			return x;
 		}
-		
-		static LargeDouble& axpyin(LargeDouble &x, const LargeDouble &a, const LargeDouble &y){
+
+		static LargeDouble& axpyin(LargeDouble &x, const LargeDouble &a, const LargeDouble &y)
+		{
 			long e = a._e + y._e;
 			if (x._e > e + 53)
 				return x;
@@ -519,8 +544,9 @@ namespace LinBox {
 				}
 			}
 		}
-		
-		static LargeDouble& axmyin(LargeDouble &x, const LargeDouble &a, const LargeDouble &y){
+
+		static LargeDouble& axmyin(LargeDouble &x, const LargeDouble &a, const LargeDouble &y)
+		{
 
 			long e = a._e + y._e;
 			if (x._e > e + 53)
@@ -546,9 +572,11 @@ namespace LinBox {
 					x._e+=t;
 					return x;
 				}
-			}}
+			}
+		}
 
-		static LargeDouble& mul(LargeDouble &x, const LargeDouble &y, const LargeDouble &z){
+		static LargeDouble& mul(LargeDouble &x, const LargeDouble &y, const LargeDouble &z)
+		{
 			x._e = y._e + z._e;
 			x._m = y._m + z._m;
 			int t;
@@ -557,23 +585,23 @@ namespace LinBox {
 			return x;
 		}
 
-		static LargeDouble& negin(LargeDouble &x){
+		static LargeDouble& negin(LargeDouble &x)
+		{
 			x._m = -x._m;
 			return x;
-		}	
+		}
 	};
 
-	
-	std::ostream& operator<< (std::ostream& os, LargeDouble& x) {
-			integer tmp;
-			x.convert(tmp);
-			return os<<tmp;
+
+	std::ostream& operator<< (std::ostream& os, LargeDouble& x)
+	{
+		integer tmp;
+		x.convert(tmp);
+		return os<<tmp;
 	}
-
-	
-
 
 
 }// end of namespace LinBox
+
 #endif //__LINBOX_ternary_lattice_H
 

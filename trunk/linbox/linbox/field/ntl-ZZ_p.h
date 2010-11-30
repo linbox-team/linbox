@@ -27,13 +27,13 @@
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
-{ 
+{
 
 	template <class Ring>
 	struct ClassifyRing;
 
 
- 	template <>
+	template <>
 	struct ClassifyRing<UnparametricField<NTL::ZZ_p> > {
 		typedef RingCategories::ModularTag categoryTag;
 	};
@@ -53,11 +53,11 @@ namespace LinBox
 
 	template<>
 	UnparametricField<NTL::ZZ_p>::UnparametricField(integer q, size_t e)
-	{    
+	{
 		// no default - allow initialization of ZZ_p directly by user.
 		//if(q==0) q=65521;   //set default value to 65521
 		if ( q > 0 )
-		NTL::ZZ_p::init(NTL::to_ZZ((std::string(q)).data())); // it's an error if q not prime, e not 1
+			NTL::ZZ_p::init(NTL::to_ZZ((std::string(q)).data())); // it's an error if q not prime, e not 1
 		//
 	}
 
@@ -73,36 +73,36 @@ namespace LinBox
 	 \ingroup field
 	 */
 	template <>
-//	NTL::ZZ_p& UnparametricField<NTL::ZZ_p>::init(NTL::ZZ_p& x, const integer& y) const
-	NTL::ZZ_p& Caster(NTL::ZZ_p& x, const integer& y) 
+	//	NTL::ZZ_p& UnparametricField<NTL::ZZ_p>::init(NTL::ZZ_p& x, const integer& y) const
+	NTL::ZZ_p& Caster(NTL::ZZ_p& x, const integer& y)
 	{
 		return x = NTL::to_ZZ_p( NTL::to_ZZ( (static_cast<const std::string>(y)).c_str() ) );
 	}
 	template <>
-//	NTL::ZZ_p& UnparametricField<NTL::ZZ_p>::init(NTL::ZZ_p& x, const double& y) const
+	//	NTL::ZZ_p& UnparametricField<NTL::ZZ_p>::init(NTL::ZZ_p& x, const double& y) const
 	NTL::ZZ_p& Caster(NTL::ZZ_p& x, const double& y)
 	{
-            return x = NTL::to_ZZ_p( NTL::to_ZZ((long)(y) ) );
+		return x = NTL::to_ZZ_p( NTL::to_ZZ((long)(y) ) );
 	}
 	template <>
 	NTL::ZZ_p& Caster(NTL::ZZ_p& x, const int& y)
 	{
-            return x = NTL::to_ZZ_p( NTL::to_ZZ((long)(y) ) );
+		return x = NTL::to_ZZ_p( NTL::to_ZZ((long)(y) ) );
 	}
 	template <>
 	NTL::ZZ_p& Caster(NTL::ZZ_p& x, const unsigned long& y)
 	{
-            return x = NTL::to_ZZ_p( NTL::to_ZZ((long)(y) ) );
+		return x = NTL::to_ZZ_p( NTL::to_ZZ((long)(y) ) );
 	}
 	template <>
 	NTL::ZZ_p& Caster(NTL::ZZ_p& x, const unsigned int& y)
 	{
-            return x = NTL::to_ZZ_p( NTL::to_ZZ((long)(y) ) );
+		return x = NTL::to_ZZ_p( NTL::to_ZZ((long)(y) ) );
 	}
 
 
 
-  
+
 	//@} doc of NTL_ZZ_p
 
 	//@{
@@ -117,18 +117,18 @@ namespace LinBox
 	 */
 
 	template <>
-//	integer& UnparametricField<NTL::ZZ_p>::convert(integer& x, const NTL::ZZ_p& y) const
-	integer& Caster(integer& x, const NTL::ZZ_p& y) 
- 	{ 
-		NTL::ZZ iy = y._ZZ_p__rep; 
-		
+	//	integer& UnparametricField<NTL::ZZ_p>::convert(integer& x, const NTL::ZZ_p& y) const
+	integer& Caster(integer& x, const NTL::ZZ_p& y)
+	{
+		NTL::ZZ iy = y._ZZ_p__rep;
+
 		long nb = NTL::NumBytes(iy);
 		unsigned char *txt;
 		typedef unsigned char u_char;
 		txt = new u_char[nb + 68];
 		// 			   if (!txt) Error("out of memory");
 		BytesFromZZ(txt, iy, nb);
-		
+
 		x = 0;
 		for (long i = 0; i < nb; i++) {
 			x += LinBox::integer( (unsigned long)txt[i] )<<(8*i) ;
@@ -138,10 +138,10 @@ namespace LinBox
 	}
 
 	//dpritcha
-	template<> 
-//	double& UnparametricField<NTL::ZZ_p>::convert(double& x, const NTL::ZZ_p& y) const
+	template<>
+	//	double& UnparametricField<NTL::ZZ_p>::convert(double& x, const NTL::ZZ_p& y) const
 	double& Caster(double& x, const NTL::ZZ_p& y)
-	{ 
+	{
 		x = NTL::to_double(NTL::rep(y));
 		return x;
 	}
@@ -151,7 +151,7 @@ namespace LinBox
 	 * Returns the modulus of the field, which should be prime.
 	 * @return integer representing cardinality of the field
 	 */
-	template <> 
+	template <>
 	integer& UnparametricField<NTL::ZZ_p>::cardinality(integer& c) const
 	{ return c = static_cast<integer>(to_long(NTL::ZZ_p::modulus())); }
 
@@ -160,10 +160,10 @@ namespace LinBox
 	 * Returns the modulus of the field, which should be prime.
 	 * @return integer representing characteristic of the field.
 	 */
-	template <> 
+	template <>
 	integer& UnparametricField<NTL::ZZ_p>::characteristic(integer& c) const
-		//FIXME we shouldn't go thru long here as p may be larger than that.
-		// check if NTL has cast ZZp to gmp integers.
+	//FIXME we shouldn't go thru long here as p may be larger than that.
+	// check if NTL has cast ZZp to gmp integers.
 	{ return c = static_cast<integer>(to_long(NTL::ZZ_p::modulus())); }
 
 	/** Multiplicative Inverse.
@@ -174,10 +174,10 @@ namespace LinBox
 	 * @param  x field element (reference returned).
 	 * @param  y field element.
 	 */
-	template <> NTL::ZZ_p& 
+	template <> NTL::ZZ_p&
 	UnparametricField<NTL::ZZ_p>::inv(NTL::ZZ_p& x, const NTL::ZZ_p& y) const
 	{ return x = NTL::inv(y); }
- 
+
 	/** Zero equality.
 	 * Test if field element is equal to zero.
 	 * This function assumes the field element has already been
@@ -215,31 +215,31 @@ namespace LinBox
 	 * @return output stream to which field is written.
 	 * @param  os  output stream to which field is written.
 	 */
-	template <> std::ostream& UnparametricField<NTL::ZZ_p>::write(std::ostream& os) const 
-	{ 
-		return os << "unparameterized field NTL::ZZ_p with p = " 
-			  << NTL::ZZ_p::modulus(); 
+	template <> std::ostream& UnparametricField<NTL::ZZ_p>::write(std::ostream& os) const
+	{
+		return os << "unparameterized field NTL::ZZ_p with p = "
+		<< NTL::ZZ_p::modulus();
 	}
 
 	/// Constructor for random field element generator
-	template <> 
-	UnparametricRandIter<NTL::ZZ_p>::UnparametricRandIter (const UnparametricField<NTL::ZZ_p>& F, 
-							       const integer& size, 
-							       const integer& seed)
-		: _size(size), _seed(seed)
+	template <>
+	UnparametricRandIter<NTL::ZZ_p>::UnparametricRandIter (const UnparametricField<NTL::ZZ_p>& F,
+							       const integer& size,
+							       const integer& seed) :
+		_size(size), _seed(seed)
 	{
 		if (_seed == integer(0)) _seed = integer(time(NULL));
-		
-		integer cardinality; 
+
+		integer cardinality;
 		F.cardinality(cardinality);
 		if (_size > cardinality)
 			_size = 0;
 
 #ifdef TRACE
-		std::cout << "created random generator with size " << _size 
-		     << " and seed " << _seed << std::endl;
+		std::cout << "created random generator with size " << _size
+		<< " and seed " << _seed << std::endl;
 #endif // TRACE
-		
+
 		// Seed random number generator
 		NTL::SetSeed(NTL::to_ZZ(static_cast<long>(_seed)));
 	}
@@ -247,10 +247,10 @@ namespace LinBox
 
 	/// Random field element creator.
 	template <> NTL::ZZ_p& UnparametricRandIter<NTL::ZZ_p>::random(NTL::ZZ_p& x) const
-		//		{ return x = static_cast<long>((double(rand())/RAND_MAX)*double(_size)); }
+	//		{ return x = static_cast<long>((double(rand())/RAND_MAX)*double(_size)); }
 	{
 		if (_size == 0) {
-			return x = NTL::random_ZZ_p(); 
+			return x = NTL::random_ZZ_p();
 		}
 		else {
 			return x = NTL::to_ZZ_p(NTL::RandomBnd(static_cast<long>(_size)));
@@ -258,19 +258,19 @@ namespace LinBox
 	}
 
 
- 	/***************************************************************
-         *								
-         * @brief Wrapper of zz_p from NTL.	  			
-         * Uses nice mod p via floating pt trick.			
-         *								
-         */		
-        struct NTL_ZZ_p: public UnparametricField<NTL::ZZ_p>{
-		NTL_ZZ_p(integer p, size_t e = 1) 
-			: UnparametricField<NTL::ZZ_p>(p, e)
-                {}
-            
+	/***************************************************************
+	 *
+	 * @brief Wrapper of zz_p from NTL.
+	 * Uses nice mod p via floating pt trick.
+	 *
+	 */
+	struct NTL_ZZ_p: public UnparametricField<NTL::ZZ_p>{
+		NTL_ZZ_p(integer p, size_t e = 1) :
+			UnparametricField<NTL::ZZ_p>(p, e)
+		{}
+
 		NTL::ZZ_p& init(NTL::ZZ_p& x, const integer& y) const
-		{ 
+		{
 			return UnparametricField<NTL::ZZ_p>::init(x,y);
 		}
 
@@ -281,28 +281,28 @@ namespace LinBox
 			else z -= 0.5;
 			return x = NTL::to_ZZ_p(static_cast<long>(z)); //rounds towards 0
 		}
-		
-                /** Specialization for NTL::ZZ
-                 *
-                 * @return reference to field element.
-                 * @param x field element to contain output (reference returned)
-                 * @param y NTL::ZZ.
-                 */
+
+		/** Specialization for NTL::ZZ
+		 *
+		 * @return reference to field element.
+		 * @param x field element to contain output (reference returned)
+		 * @param y NTL::ZZ.
+		 */
 		NTL::ZZ_p& init(NTL::ZZ_p& x, const NTL::ZZ& y) const
-		{ 
+		{
 			return x = NTL::to_ZZ_p( y );
 		}
-            
-                /** Specialization for NTL::ZZ
-                 *
-                 * @return reference to  NTL::ZZ
-                 * @param x  NTL::ZZ to contain output (reference returned).
-                 * @param y constant reference to field element.
-                 */
+
+		/** Specialization for NTL::ZZ
+		 *
+		 * @return reference to  NTL::ZZ
+		 * @param x  NTL::ZZ to contain output (reference returned).
+		 * @param y constant reference to field element.
+		 */
 		NTL::ZZ& convert(NTL::ZZ& x, const NTL::ZZ_p& y) const
-		{ 
+		{
 			return x = y._ZZ_p__rep;
-                }
+		}
 
 		/** Conversion of field element to an integer.
 		 * This function assumes the output field element x has already been
@@ -313,16 +313,16 @@ namespace LinBox
 		 * @param y constant reference to field element.
 		 */
 		integer& convert(integer& x, const NTL::ZZ_p& y) const
-		{ 
-			NTL::ZZ iy = y._ZZ_p__rep; 
-			
+		{
+			NTL::ZZ iy = y._ZZ_p__rep;
+
 			long nb = NTL::NumBytes(iy);
 			unsigned char *txt;
 			typedef unsigned char u_char;
 			txt = new u_char[nb + 68];
 			// 			   if (!txt) Error("out of memory");
 			BytesFromZZ(txt, iy, nb);
-			
+
 			x = 0;
 			for (long i = 0; i < nb; i++) {
 				x += LinBox::integer( (unsigned long)txt[i] )<<(8*i) ;
@@ -330,9 +330,9 @@ namespace LinBox
 			delete [] txt;
 			return x;
 		};
-		
+
 		double& convert(double& x, const NTL::ZZ_p& y) const
-		{ 
+		{
 			x = NTL::to_double(NTL::rep(y));
 			return x;
 		}
@@ -348,16 +348,18 @@ namespace LinBox
 		static inline integer getMaxModulus()
 		{ return integer( -1 ); }
 
-		NTL::ZZ_p& pow( NTL::ZZ_p& res, const NTL::ZZ_p& x, long exp ) const {
+		NTL::ZZ_p& pow( NTL::ZZ_p& res, const NTL::ZZ_p& x, long exp ) const
+		{
 			NTL::power( res, x, exp );
 			return res;
 		}
 
-		NTL::ZZ_p& powin( NTL::ZZ_p& x, long exp ) const {
+		NTL::ZZ_p& powin( NTL::ZZ_p& x, long exp ) const
+		{
 			return x = NTL::power(x,exp);
 		}
-            
-        };
+
+	};
 
 	template <>
 	struct ClassifyRing<NTL_ZZ_p>  {

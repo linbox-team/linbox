@@ -39,13 +39,15 @@ namespace LinBox
 	template <class Element>
 	class DenseMatrixBase<Element>::ConstRowIterator {
 	public:
-		ConstRowIterator (const typename Rep::const_iterator& p, size_t len, size_t d)
-		: _row (p, p + len), _dis (d) {}
+		ConstRowIterator (const typename Rep::const_iterator& p, size_t len, size_t d) :
+			_row (p, p + len), _dis (d)
+		{}
 
 		ConstRowIterator () {}
 
-		ConstRowIterator (const ConstRowIterator& colp)
-		: _row (colp._row), _dis (colp._dis) {}
+		ConstRowIterator (const ConstRowIterator& colp) :
+			_row (colp._row), _dis (colp._dis)
+		{}
 
 		ConstRowIterator& operator = (const ConstRowIterator& colp)
 		{
@@ -110,13 +112,15 @@ namespace LinBox
 	template <class Element>
 	class DenseMatrixBase<Element>::RowIterator {
 	public:
-		RowIterator (const typename Rep::iterator& p, size_t len, size_t d)
-		: _row (p, p + len), _dis (d){}
+		RowIterator (const typename Rep::iterator& p, size_t len, size_t d) :
+			_row (p, p + len), _dis (d)
+		{}
 
 		RowIterator () {}
 
-		RowIterator (const RowIterator& colp)
-		: _row (colp._row), _dis (colp._dis) {}
+		RowIterator (const RowIterator& colp) :
+			_row (colp._row), _dis (colp._dis)
+		{}
 
 		RowIterator& operator = (const RowIterator& colp)
 		{
@@ -184,18 +188,20 @@ namespace LinBox
 	template <class Element>
 	class DenseMatrixBase<Element>::ConstColIterator {
 	public:
-		ConstColIterator (typename Rep::const_iterator p, size_t stride, size_t len)
-		: _col (Subiterator<typename Rep::const_iterator> (p, stride),
-			Subiterator<typename Rep::const_iterator> (p + len * stride, stride)), _stride (stride)
+		ConstColIterator (typename Rep::const_iterator p, size_t stride, size_t len) :
+			_col (Subiterator<typename Rep::const_iterator> (p, stride),
+			      Subiterator<typename Rep::const_iterator> (p + len * stride, stride)), _stride (stride)
 		{}
 
-		ConstColIterator (const ConstCol& col, size_t stride)
-		:_col (col), _stride (stride){}
+		ConstColIterator (const ConstCol& col, size_t stride) :
+			_col (col), _stride (stride)
+		{}
 
 		ConstColIterator () {}
 
-		ConstColIterator (const ConstColIterator& rowp)
-		:_col (rowp._col){}
+		ConstColIterator (const ConstColIterator& rowp) :
+			_col (rowp._col)
+		{}
 
 		ConstColIterator& operator= (const ConstColIterator& rowp)
 		{
@@ -249,15 +255,16 @@ namespace LinBox
 	template <class Element>
 	class DenseMatrixBase<Element>::ColIterator {
 	public:
-		ColIterator (typename Rep::iterator p, size_t stride, size_t len)
-		: _col (Subiterator<typename Rep::iterator> (p, stride),
-			Subiterator<typename Rep::iterator> (p + len * stride, stride)), _stride (stride)
+		ColIterator (typename Rep::iterator p, size_t stride, size_t len) :
+			_col (Subiterator<typename Rep::iterator> (p, stride),
+			      Subiterator<typename Rep::iterator> (p + len * stride, stride)), _stride (stride)
 		{}
 
 		ColIterator () {}
 
-		ColIterator (const ColIterator& rowp)
-		:_col (rowp._col){}
+		ColIterator (const ColIterator& rowp) :
+			_col (rowp._col)
+		{}
 
 		ColIterator& operator= (const ColIterator& rowp)
 		{
@@ -322,8 +329,8 @@ namespace LinBox
 
 	template <class _Element>
 	template <class Field>
-	DenseMatrixBase<_Element>::DenseMatrixBase( MatrixStream<Field>& ms )
-	:_rep(0), _rows(0), _cols(0), _ptr(NULL)
+	DenseMatrixBase<_Element>::DenseMatrixBase( MatrixStream<Field>& ms ) :
+		_rep(0), _rows(0), _cols(0), _ptr(NULL)
 	{
 		if( !ms.getArray(_rep) || !ms.getRows(_rows) || !ms.getColumns(_cols) )
 			throw ms.reportError(__FUNCTION__,__LINE__);
@@ -491,14 +498,16 @@ namespace LinBox
 		RawIndexedIterator (const size_t  &dim,
 				    const size_t  &r_index,
 				    const size_t  &c_index,
-				    const typename Rep::iterator &begin)
-		: _r_index (r_index), _c_index (c_index), _dim (dim), _begin (begin)
+				    const typename Rep::iterator &begin) :
+			_r_index (r_index), _c_index (c_index), _dim (dim), _begin (begin)
 		{}
 
-		RawIndexedIterator ():_r_index (0), _c_index (0), _dim (1), _begin (0){}
+		RawIndexedIterator () :
+			_r_index (0), _c_index (0), _dim (1), _begin (0)
+		{}
 
-		RawIndexedIterator (const RawIndexedIterator& r)
-		: _r_index (r._r_index), _c_index (r._c_index), _dim (r._dim), _begin (r._begin)
+		RawIndexedIterator (const RawIndexedIterator& r) :
+			_r_index (r._r_index), _c_index (r._c_index), _dim (r._dim), _begin (r._begin)
 		{}
 
 		RawIndexedIterator& operator = (const RawIndexedIterator &iter)
@@ -608,14 +617,16 @@ namespace LinBox
 		ConstRawIndexedIterator (const size_t  &dim,
 					 const size_t  &r_index,
 					 const size_t  &c_index,
-					 const typename Rep::const_iterator &begin)
-		: _r_index (r_index), _c_index (c_index), _dim (dim), _begin (begin)
+					 const typename Rep::const_iterator &begin) :
+			_r_index (r_index), _c_index (c_index), _dim (dim), _begin (begin)
 		{}
 
-		ConstRawIndexedIterator ():_r_index (0), _c_index (0), _dim (1), _begin (0){}
+		ConstRawIndexedIterator () :
+			_r_index (0), _c_index (0), _dim (1), _begin (0)
+		{}
 
-		ConstRawIndexedIterator (const ConstRawIndexedIterator& r)
-		: _r_index (r._r_index), _c_index (r._c_index), _dim (r._dim), _begin (r._begin)
+		ConstRawIndexedIterator (const ConstRawIndexedIterator& r) :
+			_r_index (r._r_index), _c_index (r._c_index), _dim (r._dim), _begin (r._begin)
 		{}
 
 		ConstRawIndexedIterator& operator = (const ConstRawIndexedIterator &iter)

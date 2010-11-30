@@ -45,21 +45,23 @@ namespace LinBox
 	 * the adapted class can then be constructed.
 	 *
 	 * All this is in support of the FieldArchetype system.
-\ingroup element
+	 \ingroup element
 
-	 */
+*/
 	template <class Field>
 	class ElementEnvelope : public ElementAbstract {
-	    public:
+	public:
 
 		/** Default Constructor.
-		 */
+		*/
 		ElementEnvelope () {}
 
 		/** Constructor from the Field element to be wrapped.
 		 * @param elem Field element object to be wrapped.
 		 */
-		ElementEnvelope (const typename Field::Element &elem) : _elem (elem) {}
+		ElementEnvelope (const typename Field::Element &elem) :
+			_elem (elem)
+		{}
 
 		/** Copy constructor.
 		 * Constructs ElementEnvelope object by copying the element
@@ -69,8 +71,9 @@ namespace LinBox
 		 * In this implementation, this means copying the element \c E._elem.
 		 * @param  E FieldEnvelope object.
 		 */
-		ElementEnvelope (const ElementAbstract &E)
-			: _elem (static_cast<const ElementEnvelope&>(E)._elem) {}
+		ElementEnvelope (const ElementAbstract &E) :
+			_elem (static_cast<const ElementEnvelope&>(E)._elem)
+		{}
 
 		/** Virtual copy constructor.
 		 * Required because constructors cannot be virtual.
@@ -91,10 +94,10 @@ namespace LinBox
 		}
 
 		/** Destructor.
-		 */
+		*/
 		~ElementEnvelope () {}
 
-	    private:
+	private:
 
 		// Friend declarations
 		friend class RingEnvelope<Field>;
