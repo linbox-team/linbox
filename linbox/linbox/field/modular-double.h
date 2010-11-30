@@ -81,10 +81,13 @@ namespace LinBox
 
 
 
-		Modular () : zero(0.0),one(0.0),mone(0.0){}
+		Modular () :
+			zero(0.0),one(0.0),mone(0.0)
+		{}
 
-		Modular (int32 p, int exp = 1)  : modulus((double)p), lmodulus(p)//, inv_modulus(1./(double)p)
-						  , zero(0.0), one(1.0), mone(modulus-1.0)
+		Modular (int32 p, int exp = 1) :
+			modulus((double)p), lmodulus(p)//, inv_modulus(1./(double)p)
+			, zero(0.0), one(1.0), mone(modulus-1.0)
 		{
 			if(modulus <= 1)
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
@@ -95,8 +98,9 @@ namespace LinBox
 
 		}
 
-		Modular (double p) : modulus(p), lmodulus((unsigned long)p)
-				     , zero(0.0), one(1.0), mone(modulus-1.0)
+		Modular (double p) :
+			modulus(p), lmodulus((unsigned long)p)
+			, zero(0.0), one(1.0), mone(modulus-1.0)
 		{
 			if( modulus <= 1 )
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
@@ -105,8 +109,9 @@ namespace LinBox
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 		}
 
-		Modular (long int p) :modulus((double)p), lmodulus(p)
-				      , zero(0.0), one(1.0), mone(modulus-1.0)
+		Modular (long int p) :
+			modulus((double)p), lmodulus(p)
+			, zero(0.0), one(1.0), mone(modulus-1.0)
 		{
 			if( (double) modulus <= 1 )
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
@@ -115,8 +120,9 @@ namespace LinBox
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 		}
 
-		Modular (const integer& p) : modulus((double) p), lmodulus(p) //, inv_modulus(1./(double)p)
-					     , zero(0.0), one(1.0), mone(modulus-1.0)
+		Modular (const integer& p) :
+			modulus((double) p), lmodulus(p) //, inv_modulus(1./(double)p)
+			, zero(0.0), one(1.0), mone(modulus-1.0)
 		{
 			if(modulus <= 1)
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
@@ -125,8 +131,9 @@ namespace LinBox
 
 		}
 
-		Modular(const Modular<double>& mf) : modulus(mf.modulus), lmodulus(mf.lmodulus)//,inv_modulus(mf.inv_modulus)
-						     , zero(mf.zero), one(mf.one), mone(mf.mone)
+		Modular(const Modular<double>& mf) :
+			modulus(mf.modulus), lmodulus(mf.lmodulus)//,inv_modulus(mf.inv_modulus)
+			, zero(mf.zero), one(mf.one), mone(mf.mone)
 		{}
 
 		const Modular &operator=(const Modular<double> &F)
@@ -414,11 +421,15 @@ namespace LinBox
 		typedef double Element;
 		typedef Modular<double> Field;
 
-		FieldAXPY (const Field &F) : _F (F) , //_invmod(1./_F.modulus),
-		_y(0.) , _bound( (double) ((1ULL << 53) - (int) (_F.modulus*_F.modulus))) {}
+		FieldAXPY (const Field &F) :
+			_F (F) , //_invmod(1./_F.modulus),
+			_y(0.) , _bound( (double) ((1ULL << 53) - (int) (_F.modulus*_F.modulus)))
+		{}
 
-		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F),// _invmod(faxpy._invmod) ,
-		_y(faxpy._y), _bound(faxpy._bound) {}
+		FieldAXPY (const FieldAXPY &faxpy) :
+			_F (faxpy._F),// _invmod(faxpy._invmod) ,
+			_y(faxpy._y), _bound(faxpy._bound)
+		{}
 
 		FieldAXPY<Modular<double> > &operator = (const FieldAXPY &faxpy)
 		{
@@ -497,8 +508,8 @@ namespace LinBox
 
 	public:
 		typedef double Element;
-		DotProductDomain (const Modular<double> &F)
-		: VectorDomainBase<Modular<double> > (F), _bound( (double) ( (1ULL<<53) - (int) (F.modulus*F.modulus)))//, _invmod(1./_F.modulus)
+		DotProductDomain (const Modular<double> &F) :
+			VectorDomainBase<Modular<double> > (F), _bound( (double) ( (1ULL<<53) - (int) (F.modulus*F.modulus)))//, _invmod(1./_F.modulus)
 		{
 			_nmax= (size_t)floor((double(1<<26)* double(1<<26)*2.)/ (F.modulus * F.modulus));
 			_nmax = (_nmax>0?_nmax:1);

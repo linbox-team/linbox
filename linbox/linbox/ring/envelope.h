@@ -44,13 +44,13 @@
 #endif
 
 // Namespace in which all LinBox code resides
-namespace LinBox 
-{ 
+namespace LinBox
+{
 	// Forward declarations
 	template <class Ring> class RandIterEnvelope;
 
-	/** 
-	 * \brief implement the ring archetype to minimize code bloat.  
+	/**
+	 * \brief implement the ring archetype to minimize code bloat.
 	\ingroup ring
 
 	This class implements all purely virtual member functions
@@ -79,7 +79,7 @@ namespace LinBox
 		/** @name Object Management
 		 */
 		//@{
- 
+
 		/** Default constructor.
 		 * In this implementation, this means copying the ring \c E._field.
 		 */
@@ -88,8 +88,10 @@ namespace LinBox
 		/** Constructor from ring to be wrapped.
 		 * @param F Ring object to be wrapped.
 		 */
-		RingEnvelope (const Ring& F) : FieldEnvelope<Ring> (F) {}
- 
+		RingEnvelope (const Ring& F) :
+		       	FieldEnvelope<Ring> (F)
+		{}
+
 		/** Copy constructor.
 		 * Constructs RingEnvelope object by copying the ring.
 		 * This is required to allow ring objects to be passed by value
@@ -97,21 +99,27 @@ namespace LinBox
 		 * In this implementation, this means copying the ring \c E._field.
 		 * @param  E RingEnvelope object.
 		 */
-		RingEnvelope (const RingEnvelope& E) : FieldEnvelope<Ring> (E._field) {}
+		RingEnvelope (const RingEnvelope& E) :
+		       	FieldEnvelope<Ring> (E._field)
+		{}
 
 #ifdef __LINBOX_XMLENABLED
-		RingEnvelope(Reader &R) : FieldEnvelope<Ring>(R) {}
+		RingEnvelope(Reader &R) :
+		       	FieldEnvelope<Ring>(R)
+	       	{}
 #endif
 
- 
+
 		/** Virtual copy constructor.
 		 * Required because constructors cannot be virtual.
 		 * Passes construction on to derived classes.
 		 * This function is not part of the common object interface.
 		 * @return pointer to new object in dynamic memory.
 		 */
-// 		RingAbstract* clone () const
-// 			{ return new RingEnvelope (*this); }
+#if 0
+		RingAbstract* clone () const
+		{ return new RingEnvelope (*this); }
+#endif
 
 		FieldAbstract* clone () const
 			{ return static_cast<RingAbstract*>( new RingEnvelope (*this)); }
@@ -168,14 +176,14 @@ namespace LinBox
 		}
 		integer& cardinality (integer& c) const{
 			return FieldEnvelope<Ring>::cardinality(c);
-			
+
 		}
 		integer& characteristic (integer& c) const{
 			return FieldEnvelope<Ring>::characteristic(c);
-			
+
 		}
 		bool areEqual (const ElementAbstract& x, const ElementAbstract& y) const{
-			
+
 			return FieldEnvelope<Ring>::areEqual(x,y);
 		}
 
@@ -200,10 +208,10 @@ namespace LinBox
 				      const ElementAbstract& z) const{
 			return FieldEnvelope<Ring>::div(x,y,z);
 		}
-		
-		ElementAbstract& axpy (ElementAbstract& r, 
-					const ElementAbstract& a, 
-					const ElementAbstract& x, 
+
+		ElementAbstract& axpy (ElementAbstract& r,
+					const ElementAbstract& a,
+					const ElementAbstract& x,
 					const ElementAbstract& y) const
 		{
 			return FieldEnvelope<Ring>::axpy(r,a,x,y);
@@ -225,9 +233,9 @@ namespace LinBox
 					const ElementAbstract& z) const{
 			return FieldEnvelope<Ring>::divin(x,z);
 		}
-		
-		ElementAbstract& axpyin(ElementAbstract& r, 
-					const ElementAbstract& x, 
+
+		ElementAbstract& axpyin(ElementAbstract& r,
+					const ElementAbstract& x,
 					const ElementAbstract& y) const
 		{
 			return FieldEnvelope<Ring>::axpyin(r,x,y);
@@ -236,7 +244,7 @@ namespace LinBox
 			return FieldEnvelope<Ring>::isZero(x);
 		}
 
-		
+
 		bool isOne (const ElementAbstract& x) const{
 			return FieldEnvelope<Ring>::isOne(x);
 		}
@@ -252,7 +260,7 @@ namespace LinBox
 
 		bool isUnit (const ElementAbstract& x) const
 			{ return _field.isUnit (static_cast<const ElementEnvelope<Ring>&> (x)._elem); }
- 
+
 		/** Divisibility of zero test.
 		 * Test if ring element is a zero divisor.
 		 * This function assumes the ring element has already been
@@ -265,14 +273,14 @@ namespace LinBox
 			{ return _field.isZeroDivisor (static_cast<const ElementEnvelope<Ring>&> (x)._elem); }
 
 
-		std::ostream& write (std::ostream& os) const 
+		std::ostream& write (std::ostream& os) const
 		{ return  FieldEnvelope<Ring>::write (os); }
-		
+
 		std::istream& read (std::istream& is) { return FieldEnvelope<Ring>::read (is); }
 
 		std::ostream& write (std::ostream& os, const ElementAbstract& x) const
 			{ return FieldEnvelope<Ring>::write (os, x); }
- 
+
 		std::istream& read (std::istream& is, ElementAbstract& x) const
 			{ return FieldEnvelope<Ring>::read (is, x); }
 	    private:

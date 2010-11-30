@@ -20,56 +20,59 @@
 
 #include <linbox/algorithms/blackbox-container-base.h>
 
-namespace LinBox 
+namespace LinBox
 {
 
-/** \brief Symmetrizing iterator (for rank computations).
+	/** \brief Symmetrizing iterator (for rank computations).
 
- #
-//================================================================
-// LinBox Project 1999
-// Symmetrizing iterator (for rank computations)
-// Same left and right vector
-// A is supposed to have tranpose-vector product
-// the sequence is this->u^t this->u, (A this->u)^t (A this->u) = this->u^t (A^t A) this->u, 
-// (A^t (A this->u))^t (A^t (A this->u)) = this->u^t (A^t A)^2 this->u , etc.
-// Time-stamp: <13 Jun 02 18:16:43 Jean-Guillaume.Dumas@imag.fr> 
-// ================================================================
- #
- */
+#
+	//================================================================
+	// LinBox Project 1999
+	// Symmetrizing iterator (for rank computations)
+	// Same left and right vector
+	// A is supposed to have tranpose-vector product
+	// the sequence is this->u^t this->u, (A this->u)^t (A this->u) = this->u^t (A^t A) this->u,
+	// (A^t (A this->u))^t (A^t (A this->u)) = this->u^t (A^t A)^2 this->u , etc.
+	// Time-stamp: <13 Jun 02 18:16:43 Jean-Guillaume.Dumas@imag.fr>
+	// ================================================================
+#
+*/
 
 	template<class Field, class _Blackbox, class RandIter = typename Field::RandIter>
 	class BlackboxContainerSymmetrize : public BlackboxContainerBase<Field, _Blackbox> {
-	    public:
+	public:
 
-                typedef _Blackbox Blackbox;
+		typedef _Blackbox Blackbox;
 
-		BlackboxContainerSymmetrize () {} 
+		BlackboxContainerSymmetrize () {}
 
 		template<class Vector>
-		BlackboxContainerSymmetrize (const Blackbox *D, const Field &F, const Vector &u0) 
-			: BlackboxContainerBase<Field, Blackbox> (D, F) { init (u0); }
-    
-		//BlackboxContainerSymmetrize (const Blackbox *D, const Field &F, RandIter &g = typename Field::RandIter(_F) ) 
-		BlackboxContainerSymmetrize (const Blackbox *D, const Field &F, RandIter &g = typename Field::RandIter() ) 
-			: BlackboxContainerBase<Field, Blackbox> (D, F) { init (g); }
+		BlackboxContainerSymmetrize (const Blackbox *D, const Field &F, const Vector &u0) :
+			BlackboxContainerBase<Field, Blackbox> (D, F)
+		{ init (u0); }
 
-	    private:
-		void _launch () {
+		//BlackboxContainerSymmetrize (const Blackbox *D, const Field &F, RandIter &g = typename Field::RandIter(_F) )
+		BlackboxContainerSymmetrize (const Blackbox *D, const Field &F, RandIter &g = typename Field::RandIter() ) :
+			BlackboxContainerBase<Field, Blackbox> (D, F)
+		{ init (g); }
+
+	private:
+		void _launch ()
+		{
 			if (this->casenumber) {
 				this->casenumber = 0;
 				this->_BB->apply (this->v, this->u);
-				this->_VD.dot (this->_value, this->v, this->v); 
+				this->_VD.dot (this->_value, this->v, this->v);
 			} else {
 				this->casenumber = 1;
-				this->_BB->applyTranspose (this->u, this->v); 
+				this->_BB->applyTranspose (this->u, this->v);
 				this->_VD.dot (this->_value, this->u, this->u);
 			}
 		}
 
 		void _wait () {}
 	};
- 
+
 }
 
 #endif // __LINBOX_blackbox_container_symmetrize_H

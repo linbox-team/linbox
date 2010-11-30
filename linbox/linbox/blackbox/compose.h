@@ -33,11 +33,11 @@
 
 namespace LinBox
 {
-    template <class _Blackbox1, class _Blackbox2 = _Blackbox1>
-    class Compose;
+	template <class _Blackbox1, class _Blackbox2 = _Blackbox1>
+	class Compose;
 
-    template <class _Blackbox1, class _Blackbox2 = _Blackbox1>
-    class ComposeOwner;
+	template <class _Blackbox1, class _Blackbox2 = _Blackbox1>
+	class ComposeOwner;
 }
 
 
@@ -57,14 +57,14 @@ namespace LinBox
 	 * For specification of the blackbox members see \ref BlackboxArchetype.
 	 *
 	 * <b> Template parameter:</b> must meet the \ref Vector requirement.
-\ingroup blackbox
+	 \ingroup blackbox
 	 */
 	//@{
 	/// General case
 	template <class _Blackbox1, class _Blackbox2>
 	class Compose : public BlackboxInterface {
-                typedef Compose<_Blackbox1, _Blackbox2> Self_t;
-	    public:
+		typedef Compose<_Blackbox1, _Blackbox2> Self_t;
+	public:
 
 		typedef _Blackbox1 Blackbox1;
 		typedef _Blackbox2 Blackbox2;
@@ -76,8 +76,8 @@ namespace LinBox
 		 * Build the product A*B of any two black box matrices of compatible dimensions.
 		 * Requires A.coldim() equals B.rowdim().
 		 */
-		Compose (const Blackbox1 &A, const Blackbox2 &B)
-			: _A_ptr(&A), _B_ptr(&B)
+		Compose (const Blackbox1 &A, const Blackbox2 &B) :
+			_A_ptr(&A), _B_ptr(&B)
 		{
 			// Rich Seagraves - "It seems VectorWrapper somehow
 			// became depricated.  Makes the assumption that
@@ -90,8 +90,8 @@ namespace LinBox
 		 * This constructor creates a matrix that is a product of two black box
 		 * matrices: A*B from pointers to them.
 		 */
-		Compose (const Blackbox1 *A_ptr, const Blackbox2 *B_ptr)
-			: _A_ptr(A_ptr), _B_ptr(B_ptr)
+		Compose (const Blackbox1 *A_ptr, const Blackbox2 *B_ptr) :
+			_A_ptr(A_ptr), _B_ptr(B_ptr)
 		{
 			linbox_check (A_ptr != (Blackbox1 *) 0);
 			linbox_check (B_ptr != (Blackbox2 *) 0);
@@ -105,10 +105,10 @@ namespace LinBox
 		 * Copies the composed matrix (a small handle).  The underlying two matrices
 		 * are not copied.
 		 */
-		Compose (const Compose<Blackbox1, Blackbox2>& M)
-			:_A_ptr ( M._A_ptr), _B_ptr ( M._B_ptr)
+		Compose (const Compose<Blackbox1, Blackbox2>& M) :
+			_A_ptr ( M._A_ptr), _B_ptr ( M._B_ptr)
 			//{ VectorWrapper::ensureDim (_z, _A_ptr->coldim ()); }
-			{ _z.resize(_A_ptr->coldim());}
+		{ _z.resize(_A_ptr->coldim());}
 
 		/// Destructor
 		~Compose () {}
@@ -118,9 +118,11 @@ namespace LinBox
 		 * Make a copy of the BlackboxArchetype object.
 		 * Required by abstract base class.
 		 * @return pointer to new blackbox object
-// 		 */
-// 		BlackboxArchetype<_Vector> *clone () const
-// 			{ return new Compose (*this); }
+		*/
+#if 0
+		 		BlackboxArchetype<_Vector> *clone () const
+		 			{ return new Compose (*this); }
+#endif
 
 		/** Matrix * column vector product.
 		 * y= (A*B)*x.
@@ -157,20 +159,20 @@ namespace LinBox
 			return y;
 		}
 
-            template<typename _Tp1, typename _Tp2 = _Tp1>
-            struct rebind
-            {
-                typedef ComposeOwner<
-                    typename Blackbox1::template rebind<_Tp1>::other,
-                    typename Blackbox2::template rebind<_Tp2>::other
-                > other;
+		template<typename _Tp1, typename _Tp2 = _Tp1>
+		struct rebind
+		{
+			typedef ComposeOwner<
+			typename Blackbox1::template rebind<_Tp1>::other,
+				 typename Blackbox2::template rebind<_Tp2>::other
+				 > other;
 
-    		void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
-                    typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), *(A.getLeftPtr()), F);
-                    typename Blackbox2::template rebind<_Tp2> () ( Ap.getRightData(), *(A.getRightPtr()), F);
-                }
+			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+				typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), *(A.getLeftPtr()), F);
+				typename Blackbox2::template rebind<_Tp2> () ( Ap.getRightData(), *(A.getRightPtr()), F);
+			}
 
-            };
+		};
 
 
 
@@ -200,16 +202,19 @@ namespace LinBox
 			else
 				return 0;
 		}
-	        /// The field.
-		const Field& field() const {return _B_ptr->field();}
+		/// The field.
+		const Field& field() const
+		{return _B_ptr->field();}
 
 		// accessors to the blackboxes
 
-		const Blackbox1* getLeftPtr() const {return  _A_ptr;}
+		const Blackbox1* getLeftPtr() const
+		{return  _A_ptr;}
 
-	        const Blackbox2* getRightPtr() const {return  _B_ptr;}
+		const Blackbox2* getRightPtr() const
+		{return  _B_ptr;}
 
-	    protected:
+	protected:
 
 		// Pointers to A and B matrices
 		const Blackbox1 *_A_ptr;
@@ -222,7 +227,7 @@ namespace LinBox
 	/// specialization for _Blackbox1 = _Blackbox2
 	template <class _Blackbox>
 	class Compose <_Blackbox, _Blackbox> : public BlackboxInterface {
-                typedef Compose<_Blackbox, _Blackbox> Self_t;
+		typedef Compose<_Blackbox, _Blackbox> Self_t;
 	public:
 		typedef _Blackbox Blackbox;
 
@@ -253,8 +258,8 @@ namespace LinBox
 		 * Requires A.coldim() equals B.rowdim().
 		 */
 		template<class BPVector>
-		Compose (const BPVector& v)
-			:  _BlackboxL(v.begin(), v.end())
+		Compose (const BPVector& v) :
+			_BlackboxL(v.begin(), v.end())
 		{
 
 			linbox_check(v.size() > 0);
@@ -279,7 +284,7 @@ namespace LinBox
 			pz_p = z_p = _zl.rbegin();
 
 			(*b_p) -> apply(*pz_p, x);
-		        ++ b_p;  ++ z_p;
+			++ b_p;  ++ z_p;
 
 			for (; z_p != _zl.rend(); ++ b_p, ++ z_p, ++ pz_p)
 				(*b_p) -> apply (*z_p,*pz_p);
@@ -318,22 +323,22 @@ namespace LinBox
 			return y;
 		}
 
-            template<typename _Tp1>
-            struct rebind
-            {
-                typedef Compose<typename Blackbox::template rebind<_Tp1>::other, typename Blackbox::template rebind<_Tp1>::other> other;
+		template<typename _Tp1>
+		struct rebind
+		{
+			typedef Compose<typename Blackbox::template rebind<_Tp1>::other, typename Blackbox::template rebind<_Tp1>::other> other;
 
-                void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
-                    std::vector<typename other::Blackbox *> newPtrV;
-                    typename std::vector<typename other::Blackbox *>::iterator np;
-                    typename std::vector<const Blackbox* >::const_iterator bp;
-                    for( bp = A._BlackboxL.begin(), np = newPtrV.begin();
-                         bp != A._BlackboxL.end(); ++bp, ++np) {
-                        typename Blackbox::template rebind<_Tp1> () (*np, *(*bp), F);
-                    }
-                    Ap = new other(newPtrV);
-                }
-            };
+			void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
+				std::vector<typename other::Blackbox *> newPtrV;
+				typename std::vector<typename other::Blackbox *>::iterator np;
+				typename std::vector<const Blackbox* >::const_iterator bp;
+				for( bp = A._BlackboxL.begin(), np = newPtrV.begin();
+				     bp != A._BlackboxL.end(); ++bp, ++np) {
+					typename Blackbox::template rebind<_Tp1> () (*np, *(*bp), F);
+				}
+				Ap = new other(newPtrV);
+			}
+		};
 
 		/*- Retreive row dimensions of BlackBox matrix.
 		 * This may be needed for applying preconditioners.
@@ -354,16 +359,19 @@ namespace LinBox
 			return _BlackboxL[_BlackboxL.size() - 1] -> coldim();
 		}
 
-		const Field& field() const {return _BlackboxL.front() -> field();}
+		const Field& field() const
+		{return _BlackboxL.front() -> field();}
 
 		// accessors to the blackboxes
 
-		const Blackbox* getLeftPtr() const {return  _BlackboxL.front();}
+		const Blackbox* getLeftPtr() const
+		{return  _BlackboxL.front();}
 
-	        const Blackbox* getRightPtr() const {return  _BlackboxL.back();}
+		const Blackbox* getRightPtr() const
+		{return  _BlackboxL.back();}
 
 
-	    protected:
+	protected:
 
 		// Pointers to A and B matrices
 		std::vector<const Blackbox*> _BlackboxL;
@@ -372,7 +380,7 @@ namespace LinBox
 		mutable std::vector<std::vector<Element> > _zl;
 	};
 
-//@}
+	//@}
 
 } // namespace LinBox
 
@@ -381,20 +389,20 @@ namespace LinBox
 namespace LinBox
 {
 
-        /// used in ..., for example
-        template<class IMatrix>
-        class ComposeTraits {
+	/// used in ..., for example
+	template<class IMatrix>
+	class ComposeTraits {
 	public:
-                typedef Compose<IMatrix, IMatrix> value_type;
-        };
+		typedef Compose<IMatrix, IMatrix> value_type;
+	};
 
-        /// used in smith-binary, for example
-        template<class Field>
-        class ComposeTraits<DenseMatrix<Field> > {
+	/// used in smith-binary, for example
+	template<class Field>
+	class ComposeTraits<DenseMatrix<Field> > {
 	public:
 
-                // define the return value type
-                typedef DenseMatrix<Field> value_type;         };
+		// define the return value type
+		typedef DenseMatrix<Field> value_type;         };
 }
 
 
@@ -414,14 +422,14 @@ namespace LinBox
 	 * For specification of the blackbox members see \ref BlackboxArchetype.
 	 *
 	 * <b> Template parameter:</b> must meet the \ref Vector requirement.
-\ingroup blackbox
+	 \ingroup blackbox
 	 */
 	//@{
 	/// General case
 	template <class _Blackbox1, class _Blackbox2>
 	class ComposeOwner : public BlackboxInterface {
-                typedef ComposeOwner<_Blackbox1, _Blackbox2> Self_t;
-	    public:
+		typedef ComposeOwner<_Blackbox1, _Blackbox2> Self_t;
+	public:
 
 		typedef _Blackbox1 Blackbox1;
 		typedef _Blackbox2 Blackbox2;
@@ -433,8 +441,8 @@ namespace LinBox
 		 * Build the product A*B of any two black box matrices of compatible dimensions.
 		 * Requires A.coldim() equals B.rowdim().
 		 */
-		ComposeOwner (const Blackbox1 &A, const Blackbox2 &B)
-			: _A_data(A), _B_data(B)
+		ComposeOwner (const Blackbox1 &A, const Blackbox2 &B) :
+			_A_data(A), _B_data(B)
 		{
 			// Rich Seagraves - "It seems VectorWrapper somehow
 			// became depricated.  Makes the assumption that
@@ -447,8 +455,8 @@ namespace LinBox
 		 * This constructor creates a matrix that is a product of two black box
 		 * matrices: A*B from pointers to them.
 		 */
-		ComposeOwner (const Blackbox1 *A_data, const Blackbox2 *B_data)
-			: _A_data(*A_data), _B_data(*B_data)
+		ComposeOwner (const Blackbox1 *A_data, const Blackbox2 *B_data) :
+			_A_data(*A_data), _B_data(*B_data)
 		{
 			linbox_check (A_data != (Blackbox1 *) 0);
 			linbox_check (B_data != (Blackbox2 *) 0);
@@ -462,9 +470,9 @@ namespace LinBox
 		 * Copies the composed matrix (a small handle).  The underlying two matrices
 		 * are not copied.
 		 */
-		ComposeOwner (const ComposeOwner<Blackbox1, Blackbox2>& M)
-			:_A_data ( M.getLeftData()), _B_data ( M.getRightData())
-			{ _z.resize(_A_data.coldim());}
+		ComposeOwner (const ComposeOwner<Blackbox1, Blackbox2>& M) :
+			_A_data ( M.getLeftData()), _B_data ( M.getRightData())
+		{ _z.resize(_A_data.coldim());}
 
 
 		/// Destructor
@@ -475,9 +483,11 @@ namespace LinBox
 		 * Make a copy of the BlackboxArchetype object.
 		 * Required by abstract base class.
 		 * @return pointer to new blackbox object
-// 		 */
-// 		BlackboxArchetype<_Vector> *clone () const
-// 			{ return new ComposeOwner (*this); }
+		*/
+#if 0
+		 		BlackboxArchetype<_Vector> *clone () const
+		 			{ return new ComposeOwner (*this); }
+#endif
 
 		/** Matrix * column vector product.
 		 * y= (A*B)*x.
@@ -504,39 +514,38 @@ namespace LinBox
 			return _B_data.applyTranspose (y, _A_data.applyTranspose (_z, x));
 		}
 
-            template<typename _Tp1, typename _Tp2 = _Tp1>
-            struct rebind
-            {
-                typedef ComposeOwner<
-                    typename Blackbox1::template rebind<_Tp1>::other,
-                    typename Blackbox2::template rebind<_Tp2>::other
-                > other;
+		template<typename _Tp1, typename _Tp2 = _Tp1>
+		struct rebind {
+			typedef ComposeOwner<
+			typename Blackbox1::template rebind<_Tp1>::other,
+				 typename Blackbox2::template rebind<_Tp2>::other
+				 > other;
 
-    		void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
-                    typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), A.getLeftData(), F);
-                    typename Blackbox2::template rebind<_Tp2> () ( Ap.getRightData(), A.getRightData(), F);
-                }
+			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+				typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), A.getLeftData(), F);
+				typename Blackbox2::template rebind<_Tp2> () ( Ap.getRightData(), A.getRightData(), F);
+			}
 
-            };
+		};
 
 
-            template<typename _BBt1, typename _BBt2, typename Field>
-            ComposeOwner (const Compose<_BBt1, _BBt2> &M, const Field& F)
-                    : _A_data(*(M.getLeftPtr()), F),
-                      _B_data(*(M.getRightPtr()), F),
-                      _z(_A_data.coldim())
-                {
-                    typename Compose<_BBt1, _BBt2>::template rebind<Field>()(*this,M,F);
-                }
+		template<typename _BBt1, typename _BBt2, typename Field>
+		ComposeOwner (const Compose<_BBt1, _BBt2> &M, const Field& F) :
+			_A_data(*(M.getLeftPtr()), F),
+			_B_data(*(M.getRightPtr()), F),
+			_z(_A_data.coldim())
+		{
+			typename Compose<_BBt1, _BBt2>::template rebind<Field>()(*this,M,F);
+		}
 
-            template<typename _BBt1, typename _BBt2, typename Field>
-            ComposeOwner (const ComposeOwner<_BBt1, _BBt2> &M, const Field& F)
-                    : _A_data(M.getLeftData(), F),
-                      _B_data(M.getRightData(), F) ,
-                      _z(_A_data.coldim())
-                {
-                    typename ComposeOwner<_BBt1, _BBt2>::template rebind<Field>()(*this,M,F);
-                }
+		template<typename _BBt1, typename _BBt2, typename Field>
+		ComposeOwner (const ComposeOwner<_BBt1, _BBt2> &M, const Field& F) :
+			_A_data(M.getLeftData(), F),
+			_B_data(M.getRightData(), F) ,
+			_z(_A_data.coldim())
+		{
+			typename ComposeOwner<_BBt1, _BBt2>::template rebind<Field>()(*this,M,F);
+		}
 
 
 		/*- Retreive row dimensions of BlackBox matrix.
@@ -559,18 +568,21 @@ namespace LinBox
 		{
 			return _B_data.coldim ();
 		}
-	        /// The field.
-		const Field& field() const {return _B_data.field();}
+		/// The field.
+		const Field& field() const
+		{return _B_data.field();}
 
 
 		// accessors to the blackboxes without ownership
-		const Blackbox1& getLeftData() const {return  _A_data;}
+		const Blackbox1& getLeftData() const
+		{return  _A_data;}
 		Blackbox1& getLeftData() {return  _A_data;}
 
-	        const Blackbox2& getRightData() const {return  _B_data;}
-	        Blackbox2& getRightData() {return  _B_data;}
+		const Blackbox2& getRightData() const
+		{return  _B_data;}
+		Blackbox2& getRightData() {return  _B_data;}
 
-	    protected:
+	protected:
 
 		// A and B matrices
 		Blackbox1 _A_data;

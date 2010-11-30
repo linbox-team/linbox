@@ -69,14 +69,16 @@ namespace LinBox
 		 * This constructor creates a permutation matrix based on a vector of indices
 		 * @param indices Vector of indices representing the permutation
 		 */
-		Permutation (Storage & indices, const Field& F = Field()) : _F(F), _indices (indices)
+		Permutation (Storage & indices, const Field& F = Field()) :
+			_F(F), _indices (indices)
 		{}
 
 		/** Constructor from a dimension
 		 * This constructor creates an n x n permutation matrix, initialized to be the identity
 		 * @param n The dimension of hte matrix to create
 		 */
-		Permutation (int n, const Field& F = Field()) : _F(F)
+		Permutation (int n, const Field& F = Field()) :
+			_F(F)
 		{
 			identity(n);
 		}
@@ -94,8 +96,8 @@ namespace LinBox
 		 * Creates new black box objects in dynamic memory.
 		 * @param M constant reference to compose black box matrix
 		 */
-		Permutation (const Permutation &M)
-		: _F(M._F),_indices (M._indices)
+		Permutation (const Permutation &M) :
+			_F(M._F),_indices (M._indices)
 		{}
 
 #ifdef __LINBOX_XMLENABLED
@@ -237,7 +239,8 @@ namespace LinBox
 			return true;
 		}
 #else
-		std::ostream &write(std::ostream &os, FileFormatTag format = FORMAT_MAPLE) const {
+		std::ostream &write(std::ostream &os, FileFormatTag format = FORMAT_MAPLE) const
+		{
 			// 		for (typename Storage::const_iterator it=_indices.begin(); it!=_indices.end(); ++it)
 			//                     std::cerr << *it << ' ';
 			typename Field::Element one, zero; _F.init(one,1UL);_F.init(zero,0UL);

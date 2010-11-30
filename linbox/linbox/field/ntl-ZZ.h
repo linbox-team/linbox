@@ -22,7 +22,7 @@
  */
 
 /** @file field/ntl-ZZ.h
- */
+*/
 
 #ifndef __LINBOX_ntl_zz_H
 #define __LINBOX_ntl_zz_H
@@ -93,8 +93,8 @@ namespace LinBox
 
 		/** @brief
 		 *   Init from a NTL::ZZ
-                 */
-                inline Element& init (Element& x, const Element& y) const {
+		 */
+		inline Element& init (Element& x, const Element& y) const {
 
 			x = y;
 
@@ -133,7 +133,7 @@ namespace LinBox
 		/** @brief
 		 *  I don't  know how to init from integer efficiently.
 		 */
-		 // c_str is safer than data, Z. W and BDS
+		// c_str is safer than data, Z. W and BDS
 		inline Element& init (Element& x, const integer& y) const {
 
 			return x=NTL::to_ZZ((std::string(y)).c_str());
@@ -380,7 +380,7 @@ namespace LinBox
 
 
 		/** some PIR function
-		 */
+		*/
 
 		/** @brief
 		 *  Test if x is a unit.
@@ -499,7 +499,7 @@ namespace LinBox
 		 */
 
 		inline long reconstructRational (Element& a, Element& b, const Element& x, const Element& m,
-							const Element& a_bound, const Element& b_bound) const {
+						 const Element& a_bound, const Element& b_bound) const {
 
 			return NTL::ReconstructRational(a,b,x,m,a_bound,b_bound);
 		}
@@ -570,18 +570,18 @@ namespace LinBox
 		}
 
 		/** compare two elements, a and b
-		  * return 1, if a > b
-		  * return 0, if a = b;
-		  * return -1. if a < b
-		  */
+		 * return 1, if a > b
+		 * return 0, if a = b;
+		 * return -1. if a < b
+		 */
 		inline long compare (const Element& a, const Element& b) const {
 
 			return NTL::compare (a, b);
 		}
 
 		/** return the absolute value
-		  * x = abs (a);
-		  */
+		 * x = abs (a);
+		 */
 		inline Element& abs (Element& x, const Element& a) const {
 
 			NTL::abs (x, a);
@@ -602,51 +602,55 @@ namespace LinBox
 		typedef Field::Element Element;
 
 		/** Constructor.
-                 * A faxpy object if constructed from a Field and a field element.
-                 * Copies of this objects are stored in the faxpy object.
-                 * @param F field F in which arithmetic is done
-                 */
-                FieldAXPY (const Field &F) : _F (F) { _y = 0; }
+		 * A faxpy object if constructed from a Field and a field element.
+		 * Copies of this objects are stored in the faxpy object.
+		 * @param F field F in which arithmetic is done
+		 */
+		FieldAXPY (const Field &F) :
+			_F (F)
+		{ _y = 0; }
 
-                /** Copy constructor.
-                 * @param faxpy
-                 */
-                FieldAXPY (const FieldAXPY<Field> &faxpy) : _F (faxpy._F), _y (faxpy._y) {}
+		/** Copy constructor.
+		 * @param faxpy
+		 */
+		FieldAXPY (const FieldAXPY<Field> &faxpy) :
+			_F (faxpy._F), _y (faxpy._y)
+		{}
 
-                /** Assignment operator
-                 * @param faxpy
-                 */
-                FieldAXPY<Field> &operator = (const FieldAXPY &faxpy)
+		/** Assignment operator
+		 * @param faxpy
+		 */
+		FieldAXPY<Field> &operator = (const FieldAXPY &faxpy)
 		{ _y = faxpy._y; return *this; }
 
-                /** Add a*x to y
-                 * y += a*x.
-                 * @param a constant reference to element a
-                 * @param x constant reference to element x
+		/** Add a*x to y
+		 * y += a*x.
+		 * @param a constant reference to element a
+		 * @param x constant reference to element x
 		 * allow optimal multiplication, such as integer * int
-                 */
+		 */
 		template<class Element1>
-                inline Element& mulacc  (const Element &a, const Element1 &x)
+		inline Element& mulacc  (const Element &a, const Element1 &x)
 		{
 			return _y += a * x;
 		}
 
-                inline Element& accumulate (const Element &t)
+		inline Element& accumulate (const Element &t)
 		{
 			return _y += t;
 		}
 
 		/** Add a*x to y
-                 * y += a*x.
-                 * @param a constant reference to element a
-                 * @param x constant reference to element x
-                 * allow optimal multiplication, such as integer * int
-                 */
-                template<class Element1>
-                inline Element& mulacc (const Element1 &a, const Element &x)
-                {
-                        return _y += a * x;
-                }
+		 * y += a*x.
+		 * @param a constant reference to element a
+		 * @param x constant reference to element x
+		 * allow optimal multiplication, such as integer * int
+		 */
+		template<class Element1>
+		inline Element& mulacc (const Element1 &a, const Element &x)
+		{
+			return _y += a * x;
+		}
 
 		inline Element& mulacc (const Element& a, const Element& b) {
 
@@ -654,22 +658,22 @@ namespace LinBox
 		}
 
 
-                /** Retrieve y
-                 *
-                 * Performs the delayed modding out if necessary
-                 */
-                inline Element &get (Element &y) { y = _y; return y; }
+		/** Retrieve y
+		 *
+		 * Performs the delayed modding out if necessary
+		 */
+		inline Element &get (Element &y) { y = _y; return y; }
 
-                /** Assign method.
-                 * Stores new field element for arithmetic.
-                 * @return reference to self
-                 * @param y_init constant reference to element a
-                 */
-                inline FieldAXPY &assign (const Element& y)
-                {
-                        _y = y;
-                        return *this;
-                }
+		/** Assign method.
+		 * Stores new field element for arithmetic.
+		 * @return reference to self
+		 * @param y_init constant reference to element a
+		 */
+		inline FieldAXPY &assign (const Element& y)
+		{
+			_y = y;
+			return *this;
+		}
 
 		inline void reset() {
 			_y = 0;
@@ -677,12 +681,12 @@ namespace LinBox
 
 	private:
 
-                /// Field in which arithmetic is done
-                /// Not sure why it must be mutable, but the compiler complains otherwise
-                Field _F;
+		/// Field in which arithmetic is done
+		/// Not sure why it must be mutable, but the compiler complains otherwise
+		Field _F;
 
-                /// Field element for arithmetic
-                Element _y;
+		/// Field element for arithmetic
+		Element _y;
 
 	};
 }

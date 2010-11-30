@@ -31,22 +31,22 @@
 #include <linbox/util/debug.h>
 #include <linbox/blackbox/block-hankel.h>
 
-namespace LinBox 
+namespace LinBox
 {
-	
+
 	template<class _Field>
 	class BlockToeplitz : public BlockHankel<_Field> {
 	public:
 		typedef _Field Field;
 		typedef typename Field::Element Element;
-		
+
 		BlockToeplitz(){}
 
-		BlockToeplitz (const Field &F, const std::vector<BlasMatrix<Element> > &P, BlockHankelTag::shape s=BloackHankelTag::plain) 
-			: BlockHankel(F, P, s) {}
+		BlockToeplitz (const Field &F, const std::vector<BlasMatrix<Element> > &P, BlockHankelTag::shape s=BloackHankelTag::plain) :
+			BlockHankel(F, P, s) {}
 
 
-		
+
 	};
 
 } // end of namespace LinBox

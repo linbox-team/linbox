@@ -72,11 +72,15 @@ namespace LinBox
 		int IterCounter;
 
 		template<class Param>
-		RationalRemainder2(const Param& b, const RatRecon& RR = RatRecon()) : Builder_(b), RR_(RR) {
+		RationalRemainder2(const Param& b, const RatRecon& RR = RatRecon()) :
+			Builder_(b), RR_(RR)
+		{
 			IterCounter = 0;
 		}
 
-		RationalRemainder2(RatCRABase b, const RatRecon& RR = RatRecon()) : Builder_(b), RR_() {
+		RationalRemainder2(RatCRABase b, const RatRecon& RR = RatRecon()) :
+			Builder_(b), RR_()
+		{
 			IterCounter = 0;
 		}
 
@@ -96,7 +100,8 @@ namespace LinBox
 		  \param[out] den - the rational denominator
 		  */
 		template<class Function, class RandPrimeIterator>
-		Integer & operator() (Integer& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime) {
+		Integer & operator() (Integer& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
+		{
 
 			++genprime;
 			Domain D(*genprime);
@@ -152,7 +157,8 @@ namespace LinBox
 		 */
 
 		template<class Function, class RandPrimeIterator>
-		bool operator() (const int k, Integer& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime) {
+		bool operator() (const int k, Integer& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
+		{
 
 			if ((IterCounter==0) && (k != 0)) {
 				++IterCounter;
@@ -219,7 +225,8 @@ namespace LinBox
 		}
 
 		template<template <class, class> class Vect, template<class> class Alloc,  class Function, class RandPrimeIterator>
-		Vect<Integer, Alloc<Integer> > & operator() (Vect<Integer, Alloc<Integer> >& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime) {
+		Vect<Integer, Alloc<Integer> > & operator() (Vect<Integer, Alloc<Integer> >& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
+		{
 			++IterCounter;
 			++genprime;
 			Domain D(*genprime);
@@ -306,7 +313,8 @@ namespace LinBox
 		 * run until terminated if k <0
 		 */
 		template<template <class, class> class Vect, template<class> class Alloc, class Function, class RandPrimeIterator>
-		bool operator() (const int k, Vect<Integer, Alloc<Integer>  >& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime) {
+		bool operator() (const int k, Vect<Integer, Alloc<Integer>  >& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
+		{
 			if ((IterCounter==0) && (k != 0)) {
 				++IterCounter;
 				++genprime;
@@ -385,7 +393,8 @@ namespace LinBox
 		}
 
 #ifdef CRATIMING
-		std::ostream& reportTimes(std::ostream& os) {
+		std::ostream& reportTimes(std::ostream& os)
+		{
 			//Builder_.reportTimes(os);
 			return os <<  "Iterations:" << IterCounter << "\n" ;
 		}
@@ -397,7 +406,8 @@ namespace LinBox
 		class RCRATimer {
 		public:
 			mutable Timer ttInit, tt RRecon, ttIRecon, ttImaging, ttIteration, ttOther;
-			void clear() const {
+			void clear() const
+			{
 				ttInit.clear();
 				ttRRecon.clear();
 				ttIRecon.clear();
@@ -407,7 +417,8 @@ namespace LinBox
 			}
 #if 0
 			template<class RR, class LC>
-			void update(RR& rr, LC& lc) const {
+			void update(RR& rr, LC& lc) const
+			{
 				ttSetup += lc.ttSetup;
 				ttRecon += rr.ttRecon;
 				ttGetDigit += lc.ttGetDigit;

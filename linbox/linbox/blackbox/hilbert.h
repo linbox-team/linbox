@@ -11,7 +11,7 @@
  * was written by Will Turner.
  *
  * See COPYING for license information.
-*/
+ */
 
 
 #ifndef __LINBOX_hilbert_H
@@ -21,68 +21,68 @@
 #include<linbox/blackbox/jit-matrix.h>
 
 
-namespace LinBox 
+namespace LinBox
 {
 
-/// The object needed to build a Hilbert matrix as a JIT matrix 
-template<typename _Field>
-class Hilbert_JIT_Entry {
+	/// The object needed to build a Hilbert matrix as a JIT matrix
+	template<typename _Field>
+	class Hilbert_JIT_Entry {
 
-  public:
-    typedef _Field Field;
-    typedef typename _Field::Element Element;
+	public:
+		typedef _Field Field;
+		typedef typename _Field::Element Element;
 
-/// set up vector of 1/(i+1) 
-    Hilbert_JIT_Entry(Field& F, size_t m, size_t n);
-  
-/// return 1/(i+j+2), zero based indexing.
-    Element& operator()(Element &entry, size_t i, size_t j) const 
-    {	return entry = _H[i+j+1]; }
+		/// set up vector of 1/(i+1)
+		Hilbert_JIT_Entry(Field& F, size_t m, size_t n);
 
-  private:
-    std::vector<Element> _H;
-  
-}; // Hilbert_JIT_Entry
-  
-template<typename _Field>
-Hilbert_JIT_Entry<_Field>::Hilbert_JIT_Entry(_Field& F, size_t m, size_t n) {
+		/// return 1/(i+j+2), zero based indexing.
+		Element& operator()(Element &entry, size_t i, size_t j) const
+		{	return entry = _H[i+j+1]; }
 
-  Element temp, one;
-  F.init(one, 1);
-  F.init(temp, 0);
-  
-  _H = std::vector<Element>(m+n, temp);
+	private:
+		std::vector<Element> _H;
 
-  typename std::vector<Element>::iterator iter;
+	}; // Hilbert_JIT_Entry
 
-  // the ith entry of _H = 1/(i+1)
-  for (iter=_H.begin(); iter != _H.end(); iter++) {
-    F.addin(temp, one);
-    F.inv(*iter, temp);
-  }
-  
-}//constructor
+	template<typename _Field>
+	Hilbert_JIT_Entry<_Field>::Hilbert_JIT_Entry(_Field& F, size_t m, size_t n) {
+
+		Element temp, one;
+		F.init(one, 1);
+		F.init(temp, 0);
+
+		_H = std::vector<Element>(m+n, temp);
+
+		typename std::vector<Element>::iterator iter;
+
+		// the ith entry of _H = 1/(i+1)
+		for (iter=_H.begin(); iter != _H.end(); iter++) {
+			F.addin(temp, one);
+			F.inv(*iter, temp);
+		}
+
+	}//constructor
 
 
-/** \brief Example of a blackbox that is space efficient, though not time efficient.
+	/** \brief Example of a blackbox that is space efficient, though not time efficient.
 
-\ingroup blackbox
+	  \ingroup blackbox
 
-Blackbox for the matrix whose i,j entry is 1/(i+j), i in 1..n, j in 1..n.
+	  Blackbox for the matrix whose i,j entry is 1/(i+j), i in 1..n, j in 1..n.
 
 */
-template<typename _Field>
-class Hilbert : public JIT_Matrix<_Field, Hilbert_JIT_Entry<_Field> > {
+	template<typename _Field>
+	class Hilbert : public JIT_Matrix<_Field, Hilbert_JIT_Entry<_Field> > {
 
-  public:
-  /** Constructor from field and size.
-	* @param n size_t integer number of rows and columns of matrix.
-	*/
-    Hilbert(_Field& F, size_t n) : 
-      JIT_Matrix<_Field, Hilbert_JIT_Entry<_Field> >(F, n, n, Hilbert_JIT_Entry<_Field>(F, n, n)) 
-	{};
-  
-};
+	public:
+		/** Constructor from field and size.
+		 * @param n size_t integer number of rows and columns of matrix.
+		 */
+		Hilbert(_Field& F, size_t n) :
+			JIT_Matrix<_Field, Hilbert_JIT_Entry<_Field> >(F, n, n, Hilbert_JIT_Entry<_Field>(F, n, n))
+		{};
+
+	};
 
 
 

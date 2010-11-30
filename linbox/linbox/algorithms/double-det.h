@@ -2,7 +2,7 @@
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/algorithms/doubledet.h
  * Copyright (C) LinBox
- * 
+ *
  *  Written by Clement Pernet <clement.pernet@gmail.com>
  *
  * See COPYING for license information.
@@ -12,23 +12,23 @@
 #define __LINBOX_doubledet_H
 
 #include "linbox/ffpack/ffpack.h"
-#include "linbox/algorithms/matrix-hom.h"	
+#include "linbox/algorithms/matrix-hom.h"
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/algorithms/cra-full-multip.h"
 #include "linbox/algorithms/cra-early-multip.h"
-#include "linbox/randiter/random-prime.h"	
+#include "linbox/randiter/random-prime.h"
 #include "linbox/solutions/solve.h"
 #include "linbox/solutions/methods.h"
 #include <vector>
-namespace LinBox 
+namespace LinBox
 {
-	
+
 	/* Given a (n-1) x n full rank matrix A and 2 vectors b,c mod p,
 	 * compute
 	 * d1 = det( [ A ] ) mod p and d2 = det ( [ A ]) mod p
 	 *           [ b ]                        [ c ]
 	 *
-	 * 
+	 *
 	 * A, b, c will be overwritten.
 	 */
 	template <class Field>
@@ -41,7 +41,7 @@ namespace LinBox
 
 		size_t* P = new size_t[N];
 		size_t* Qt = new size_t[N-1];
-		
+
 		FFPACK::LUdivine (F, FFLAS::FflasUnit, FFLAS::FflasNoTrans, N-1, N,
 				  A, lda, P, Qt);
 		typename Field::Element d;
@@ -70,7 +70,7 @@ namespace LinBox
 
 		F.mul (d1, d, *(b + (N-1) * incb));
 		F.mul (d2, d, *(c + (N-1) * incc));
-		
+
 		delete[] P;
 		delete[] Qt;
 	}
@@ -84,13 +84,15 @@ namespace LinBox
 		const typename BlackBox::Field::Element _s2;
 		IntegerDoubleDetIteration(const BlackBox& A,
 					  const typename BlackBox::Field::Element& s1,
-					  const typename BlackBox::Field::Element& s2)
-			: _A(A), _s1(s1), _s2(s2) {}
+					  const typename BlackBox::Field::Element& s2) :
+			_A(A), _s1(s1), _s2(s2)
+		{}
 
 		template<class Field>
 		std::vector<typename Field::Element>&
 		operator () (std::vector<typename Field::Element>& dd,
-			     const Field& F) const {
+			     const Field& F) const
+		{
 
 			typedef typename BlackBox::template rebind<Field>::other FBlackbox;
 			typename Field::Element s1p, s2p;
@@ -115,24 +117,25 @@ namespace LinBox
 		}
 	};
 
-	/* Computes the actual Hadamard bound of the matrix A by taking the minimum 
+	/* Computes the actual Hadamard bound of the matrix A by taking the minimum
 	 * of the column-wise and the row-wise euclidean norm.
-	 * 
+	 *
 	 * A is supposed to be over integers.
 	 *
 	 */
 	// should use multiprec floating pt arith, wait, maybe not!
 	template<class BlackBox>
-	integer& HadamardBound (integer& hadamarBound, const BlackBox& A){
-		
-		
+	integer& HadamardBound (integer& hadamarBound, const BlackBox& A)
+	{
+
+
 		integer res1 = 1;
 		integer res2 = 1;
 		integer temp;
-		
+
 		typename BlackBox::ConstRowIterator rowIt;
 		typename BlackBox::ConstRow::const_iterator col;
-		
+
 		for( rowIt = A.rowBegin(); rowIt != A.rowEnd(); ++rowIt ) {
 			temp = 0;
 			for( col = rowIt->begin(); col != rowIt->end(); ++col )
@@ -143,7 +146,7 @@ namespace LinBox
 
 		typename BlackBox::ConstColIterator colIt;
 		typename BlackBox::ConstCol::const_iterator row;
-		
+
 		for( colIt = A.colBegin(); colIt != A.colEnd(); ++colIt ) {
 			temp = 0;
 			for( row = colIt->begin(); row != colIt->end(); ++row )
@@ -151,41 +154,45 @@ namespace LinBox
 			res2 *= temp;
 		}
 		res2 = sqrt(res2);
-		
+
 		return hadamarBound = MIN(res1, res2);
 	}
-// 	template<class BlackBox>
-// 	double& HadamardBound (double& hadamarBound, const BlackBox& A){
-		
-		
-// 		double res1 = 0;
-// 		double res2 = 0;
-// 		integer temp;
-		
-// 		typename BlackBox::ConstRowIterator rowIt;
-// 		typename BlackBox::ConstRow::const_iterator col;
-		
-// 		for( rowIt = A.rowBegin(); rowIt != A.rowEnd(); ++rowIt ) {
-// 			temp = 0;
-// 			for( col = rowIt->begin(); col != rowIt->end(); ++col )
-// 				temp += static_cast<integer>((*col)) * (*col);
-// 			res1 += log ((double)temp);
-// 		}
-// 		res1 = res1/2;
 
-// 		typename BlackBox::ConstColIterator colIt;
-// 		typename BlackBox::ConstCol::const_iterator row;
-		
-// 		for( colIt = A.colBegin(); colIt != A.colEnd(); ++colIt ) {
-// 			temp = 0;
-// 			for( row = colIt->begin(); row != colIt->end(); ++row )
-// 				temp += static_cast<integer>((*row)) * (*row);
-// 			res2 += log((double)temp);
-// 		}
-// 		res2 = res2/2;
-		
-// 		return hadamarBound = MIN(res1, res2);
-// 	}
+#if 0
+	template<class BlackBox>
+	double& HadamardBound (double& hadamarBound, const BlackBox& A)
+	{
+
+
+		double res1 = 0;
+		double res2 = 0;
+		integer temp;
+
+		typename BlackBox::ConstRowIterator rowIt;
+		typename BlackBox::ConstRow::const_iterator col;
+
+		for( rowIt = A.rowBegin(); rowIt != A.rowEnd(); ++rowIt ) {
+			temp = 0;
+			for( col = rowIt->begin(); col != rowIt->end(); ++col )
+				temp += static_cast<integer>((*col)) * (*col);
+			res1 += log ((double)temp);
+		}
+		res1 = res1/2;
+
+		typename BlackBox::ConstColIterator colIt;
+		typename BlackBox::ConstCol::const_iterator row;
+
+		for( colIt = A.colBegin(); colIt != A.colEnd(); ++colIt ) {
+			temp = 0;
+			for( row = colIt->begin(); row != colIt->end(); ++row )
+				temp += static_cast<integer>((*row)) * (*row);
+			res2 += log((double)temp);
+		}
+		res2 = res2/2;
+
+		return hadamarBound = MIN(res1, res2);
+	}
+#endif
 
 	/* Given a (N+1) x N full rank matrix
 	 * [ A ]
@@ -208,13 +215,14 @@ namespace LinBox
 				     typename BlackBox::Field::Element& d2,
 				     const typename BlackBox::Field::Element& s1,
 				     const typename BlackBox::Field::Element& s2,
-				     const bool proof){
+				     const bool proof)
+	{
 
 		typename BlackBox::Field F = A.field();
 		IntegerDoubleDetIteration<BlackBox> iteration(A, s1, s2);
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
-		RandomPrimeIterator genprime( 25-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
-		
+		RandomPrimeIterator genprime( 25-(int)ceil(log((double)A.rowdim())*0.7213475205));
+
 		std::vector<typename BlackBox::Field::Element> dd;
 		if (proof) {
 			integer bound;
@@ -251,17 +259,18 @@ namespace LinBox
 	 * d1 = det( [ A ] ) and d2 = det ( [ A ])
 	 *           [ b ]                  [ c ]
 	 */
-	
+
 	template <class BlackBox>
 	void doubleDet (typename BlackBox::Field::Element& d1,
 			typename BlackBox::Field::Element& d2,
 			const BlackBox& A,
 			//const vector<typename BlackBox::Field::Element>& b,
 			//const vector<typename BlackBox::Field::Element>& c,
-			bool proof){
+			bool proof)
+	{
 
 		linbox_check (A.coldim() == A.rowdim()+1);
-		
+
 		const size_t N = A.coldim();
 		//		BlasBlackbox<typename BlackBox::Field> B (A,0,0,N,N);
 		BlasBlackbox<typename BlackBox::Field> B (A.field(),N,N);
@@ -284,10 +293,10 @@ namespace LinBox
 		solve (x1, den1, B, c);
 		//tim.stop();
 		//std::cerr<<"Solve took "<<tim.usertime()<<std::endl;
-		
+
 		den1 = den1;
 		// Should work:
-		// den (y[n]) = den (-den1/x[n]) = x[n] 
+		// den (y[n]) = den (-den1/x[n]) = x[n]
 		den2 = -x1[N-1];
 		//tim.clear();
 		//tim.start();

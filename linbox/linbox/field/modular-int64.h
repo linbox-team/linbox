@@ -102,7 +102,8 @@ namespace LinBox
 		typedef ModularRandIter<int64> RandIter;
 
 		//default modular field,taking 65521 as default modulus
-		Modular () :modulus(65521)
+		Modular () :
+			modulus(65521)
 		{
 			modulusinv=1/(double)65521;
 
@@ -111,7 +112,8 @@ namespace LinBox
 			if (_two64 >= 65521) _two64 -= 65521;
 		}
 
-		Modular (int64 value, int64 exp = 1)  : modulus(value)
+		Modular (int64 value, int64 exp = 1) :
+			modulus(value)
 		{
 			modulusinv = 1 / ((double) value);
 			if(exp != 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
@@ -124,7 +126,8 @@ namespace LinBox
 			if (_two64 >= value) _two64 -= value;
 		}
 
-		Modular(const Modular<int64>& mf) : modulus(mf.modulus),modulusinv(mf.modulusinv),_two64(mf._two64){}
+		Modular(const Modular<int64>& mf) :
+			modulus(mf.modulus),modulusinv(mf.modulusinv),_two64(mf._two64){}
 
 		const Modular &operator=(const Modular<int64> &F)
 		{
@@ -156,7 +159,7 @@ namespace LinBox
 
 		inline int64 &convert (int64 &x, const Element &y) const
 		{
-		       	return x = y;
+			return x = y;
 		}
 
 		inline double &convert (double &x, const Element &y) const
@@ -191,8 +194,8 @@ namespace LinBox
 
 		inline std::ostream &write (std::ostream &os, const Element &x) const
 		{
-		       	return os << x;
-	       	}
+			return os << x;
+		}
 
 		inline std::istream &read (std::istream &is, Element &x) const
 		{
@@ -212,7 +215,7 @@ namespace LinBox
 
 		inline Element &init (Element & x, const float &y) const
 		{
-		       	return init(x , (double) y);
+			return init(x , (double) y);
 		}
 
 		template<class Element1>
@@ -461,11 +464,13 @@ namespace LinBox
 		typedef int64 Element;
 		typedef Modular<int64> Field;
 
-		FieldAXPY (const Field &F) : _F (F),_y(0)
+		FieldAXPY (const Field &F) :
+			_F (F),_y(0)
 		{}
 
 
-		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0)
+		FieldAXPY (const FieldAXPY &faxpy) :
+			_F (faxpy._F), _y (0)
 		{}
 
 		FieldAXPY<Modular<int64> > &operator = (const FieldAXPY &faxpy)
@@ -522,8 +527,8 @@ namespace LinBox
 
 	public:
 		typedef int64 Element;
-		DotProductDomain (const Modular<int64> &F)
-		: VectorDomainBase<Modular<int64> > (F)
+		DotProductDomain (const Modular<int64> &F) :
+			VectorDomainBase<Modular<int64> > (F)
 		{}
 
 
@@ -616,12 +621,12 @@ namespace LinBox
 	};
 
 	template <class Vector1, class Matrix, class Vector2>
-	Vector1 & MVProductDomain<Modular<int64> >
-	::mulColDenseSpecialized (const VectorDomain<Modular<int64> > &VD,
-				  Vector1 &w,
-				  const Matrix &A,
-				  const Vector2 &v,
-				  VectorCategories::DenseVectorTag) const
+	Vector1 & MVProductDomain<Modular<int64> >::
+	mulColDenseSpecialized (const VectorDomain<Modular<int64> > &VD,
+				Vector1 &w,
+				const Matrix &A,
+				const Vector2 &v,
+				VectorCategories::DenseVectorTag) const
 	{
 
 		linbox_check (A.coldim () == v.size ());
@@ -661,12 +666,12 @@ namespace LinBox
 	}
 
 	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Modular<int64> >
-	::mulColDenseSpecialized (const VectorDomain<Modular<int64> > &VD,
-				  Vector1 &w,
-				  const Matrix &A,
-				  const Vector2 &v,
-				  VectorCategories::SparseSequenceVectorTag) const
+	Vector1 &MVProductDomain<Modular<int64> >::
+	mulColDenseSpecialized (const VectorDomain<Modular<int64> > &VD,
+				Vector1 &w,
+				const Matrix &A,
+				const Vector2 &v,
+				VectorCategories::SparseSequenceVectorTag) const
 	{
 		linbox_check (A.coldim () == v.size ());
 		linbox_check (A.rowdim () == w.size ());
@@ -705,12 +710,12 @@ namespace LinBox
 	}
 
 	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Modular<int64> >
-	::mulColDenseSpecialized(const VectorDomain<Modular<int64> > &VD,
-				 Vector1 &w,
-				 const Matrix &A,
-				 const Vector2 &v,
-				 VectorCategories::SparseAssociativeVectorTag) const
+	Vector1 &MVProductDomain<Modular<int64> > ::
+	mulColDenseSpecialized(const VectorDomain<Modular<int64> > &VD,
+			       Vector1 &w,
+			       const Matrix &A,
+			       const Vector2 &v,
+			       VectorCategories::SparseAssociativeVectorTag) const
 	{
 
 		linbox_check (A.coldim () == v.size ());
@@ -750,12 +755,12 @@ namespace LinBox
 	}
 
 	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Modular<int64> >
-	::mulColDenseSpecialized (const VectorDomain<Modular<int64> > &VD,
-				  Vector1 &w,
-				  const Matrix &A,
-				  const Vector2 &v,
-				  VectorCategories::SparseParallelVectorTag) const
+	Vector1 &MVProductDomain<Modular<int64> > ::
+	mulColDenseSpecialized (const VectorDomain<Modular<int64> > &VD,
+				Vector1 &w,
+				const Matrix &A,
+				const Vector2 &v,
+				VectorCategories::SparseParallelVectorTag) const
 	{
 
 		linbox_check (A.coldim () == v.size ());

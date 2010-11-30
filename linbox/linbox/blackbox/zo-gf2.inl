@@ -32,9 +32,12 @@ namespace LinBox
 	struct dotp {
 		const typename Blackbox::Field& _F;
 		const InVector& _x;
-		dotp(const typename Blackbox::Field& F, const InVector& x) : _F(F), _x(x) {}
+		dotp(const typename Blackbox::Field& F, const InVector& x) :
+			_F(F), _x(x)
+		{}
 
-		bool operator()(const typename Blackbox::Row_t& row) const {
+		bool operator()(const typename Blackbox::Row_t& row) const
+		{
 			bool tmp(false);
 			for(typename Blackbox::Row_t::const_iterator loc = row.begin(); loc != row.end(); ++loc) {
 				_F.addin(tmp,_x[*loc]);
@@ -45,29 +48,32 @@ namespace LinBox
 
 #include <algorithm>
 	template<class OutVector, class InVector>
-	inline OutVector & ZeroOne<GF2>::apply(OutVector & y, const InVector & x) const {
+	inline OutVector & ZeroOne<GF2>::apply(OutVector & y, const InVector & x) const
+	{
 		dotp<Self_t,InVector> mydp(this->_F, x);
 		std::transform(this->begin(), this->end(), y.begin(), mydp );
 		return y;
 	}
 
-	/*
-	   template<class OutVector, class InVector>
-	   inline OutVector & ZeroOne<GF2>::apply(OutVector & y, const InVector & x) const {
-	   typename OutVector::iterator yit = y.begin();
-	   Self_t::const_iterator row = this->begin();
-	   for( ; row != this->end(); ++yit, ++row) {
-	   bool tmp(false);
-	   for(Row_t::const_iterator loc = row->begin();loc != row->end(); ++loc)
-	   _F.addin(tmp,x[*loc]);
-	 *yit = tmp;
-	 }
-	 return y;
-	 }
-	 */
+#if 0
+	template<class OutVector, class InVector>
+	inline OutVector & ZeroOne<GF2>::apply(OutVector & y, const InVector & x) const
+	{
+		typename OutVector::iterator yit = y.begin();
+		Self_t::const_iterator row = this->begin();
+		for( ; row != this->end(); ++yit, ++row) {
+			bool tmp(false);
+			for(Row_t::const_iterator loc = row->begin();loc != row->end(); ++loc)
+				_F.addin(tmp,x[*loc]);
+			*yit = tmp;
+		}
+		return y;
+	}
+#endif
 
 	template<class OutVector, class InVector>
-	inline OutVector & ZeroOne<GF2>::applyTranspose(OutVector & y, const InVector & x) const {
+	inline OutVector & ZeroOne<GF2>::applyTranspose(OutVector & y, const InVector & x) const
+	{
 		std::fill(y.begin(),y.end(),false);
 		typename InVector::const_iterator xit = x.begin();
 		Self_t::const_iterator row = this->begin();
@@ -96,7 +102,8 @@ namespace LinBox
 		}
 	}
 
-	inline ZeroOne<GF2>::Element& ZeroOne<GF2>::getEntry(Element& r, size_t i, size_t j) const {
+	inline ZeroOne<GF2>::Element& ZeroOne<GF2>::getEntry(Element& r, size_t i, size_t j) const
+	{
 		const Row_t& rowi = this->operator[](i);
 		Row_t::const_iterator there = std::lower_bound(rowi.begin(), rowi.end(), j);
 		if (there != rowi.end() )
@@ -105,7 +112,8 @@ namespace LinBox
 			return r=_F.zero;
 	}
 
-	inline const ZeroOne<GF2>::Element& ZeroOne<GF2>::getEntry(size_t i, size_t j) const {
+	inline const ZeroOne<GF2>::Element& ZeroOne<GF2>::getEntry(size_t i, size_t j) const
+	{
 		const Row_t& rowi = this->operator[](i);
 		Row_t::const_iterator there = std::lower_bound(rowi.begin(), rowi.end(), j);
 		if (there != rowi.end() )
@@ -134,7 +142,8 @@ namespace LinBox
 		return is;
 	}
 
-	inline std::ostream& ZeroOne<GF2>::write (std::ostream& out, FileFormatTag format) const {
+	inline std::ostream& ZeroOne<GF2>::write (std::ostream& out, FileFormatTag format) const
+	{
 		if (format == FORMAT_GUILLAUME) {
 			out << _rowdim << ' ' << _coldim << " M\n";
 			for(size_t i=0; i<_rowdim; ++i) {
@@ -177,10 +186,12 @@ namespace LinBox
 		typedef Element value_type;
 
 		RawIterator(size_t pos, Element elem) :
-			_elem(elem),_pos(pos)  {}
+			_elem(elem),_pos(pos)
+		{}
 
 		RawIterator(const RawIterator &In) :
-			_elem(In._elem),_pos(In._pos) {}
+			_elem(In._elem),_pos(In._pos)
+		{}
 
 		const RawIterator& operator=(const RawIterator& rhs)
 		{
@@ -215,7 +226,8 @@ namespace LinBox
 
 		value_type operator*() { return _elem; }
 
-		const value_type operator*() const { return _elem; }
+		const value_type operator*() const
+		{ return _elem; }
 
 	private:
 		value_type _elem;
@@ -251,12 +263,13 @@ namespace LinBox
 				 LightContainer<LightContainer<size_t> >::const_iterator rowbeg,
 				 LightContainer<LightContainer<size_t> >::const_iterator rowend,
 				 size_t colidx,
-				 LightContainer<size_t>::const_iterator colbeg)
-		: _rowbeg( LightContainer<LightContainer<size_t> >::iterator(rowbeg) ),
-		_rowend( LightContainer<LightContainer<size_t> >::iterator(rowend) ),
-		_colbeg( LightContainer<size_t>::iterator(colbeg) ),
-		_row(rowidx),
-		_col(colidx) {
+				 LightContainer<size_t>::const_iterator colbeg) :
+			_rowbeg( LightContainer<LightContainer<size_t> >::iterator(rowbeg) ),
+			_rowend( LightContainer<LightContainer<size_t> >::iterator(rowend) ),
+			_colbeg( LightContainer<size_t>::iterator(colbeg) ),
+			_row(rowidx),
+			_col(colidx)
+		{
 
 			if( _rowbeg == _rowend ) return;
 
@@ -270,8 +283,9 @@ namespace LinBox
 
 		}
 
-		RawIndexIterator(const RawIndexIterator &In):
-			_rowbeg(In._rowbeg), _rowend(In._rowend), _colbeg(In._colbeg), _row(In._row), _col(In._col) {}
+		RawIndexIterator(const RawIndexIterator &In) :
+			_rowbeg(In._rowbeg), _rowend(In._rowend), _colbeg(In._colbeg), _row(In._row), _col(In._col)
+		{}
 
 		const RawIndexIterator &operator=(const RawIndexIterator &rhs)
 		{
@@ -363,6 +377,6 @@ namespace LinBox
 namespace LinBox
 {
 	template<> struct GetEntryCategory<ZeroOne<GF2> > { typedef GetEntryTags::Local Tag; };
-} // end of namespace LinBox
+	} // end of namespace LinBox
 
 #endif //__LINBOX_zo_gf2_INL

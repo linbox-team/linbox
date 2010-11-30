@@ -24,7 +24,7 @@ namespace LinBox
 	class NoHomError {};
 
 	/**  \brief map element of source ring(field) to target ring
-	\ingroup field
+	  \ingroup field
 
 	 * An instance of Hom is a homomorphism from a ring of type Source
 	 * to a ring (usually field) of type Target.  The intended use is that
@@ -51,7 +51,9 @@ namespace LinBox
 		 * field T with Hom(S, T).
 		 * Specializations define all actual homomorphisms.
 		 */
-		Hom(const Source& S, const Target& T) : _source(S), _target(T){ }
+		Hom(const Source& S, const Target& T) :
+			_source(S), _target(T)
+		{ }
 
 		/**
 		 * image(t, s) implements the homomorphism, assigning the
@@ -60,8 +62,8 @@ namespace LinBox
 		 * The default behaviour goes through integers.
 		 */
 		Elt& image(Elt& t, const SrcElt& s) {
-                    return _target.init(t, _source.convert(tmp,s));
-                }
+			return _target.init(t, _source.convert(tmp,s));
+		}
 
 		/** If possible, preimage(s,t) assigns a value to s such that
 		 * the image of s is t.  Otherwise behaviour is unspecified.
@@ -71,13 +73,13 @@ namespace LinBox
 		 * The default behaviour goes through integers.
 		 */
 		SrcElt& preimage(SrcElt& s, const Elt& t) {
-                    return _source.init(s, _target.convert(tmp,t));
-                }
+			return _source.init(s, _target.convert(tmp,t));
+		}
 		const Source& source() { return _source;}
 		const Target& target() { return _target;}
 
 	private:
-            integer tmp;
+		integer tmp;
 		Source _source;
 		Target _target;
 	}; // end Hom
@@ -94,12 +96,16 @@ namespace LinBox
 		typedef typename Source::Element SrcElt;
 		typedef typename Target::Element Elt;
 
-		Hom(const Source& S, const Target& T) : _source (S){}
-		Elt& image(Elt& t, const SrcElt& s) {
+		Hom(const Source& S, const Target& T) :
+			_source (S)
+		{}
+		Elt& image(Elt& t, const SrcElt& s)
+		{
 			_source. assign (t, s);
 			return t;
 		}
-		SrcElt& preimage(SrcElt& s, const Elt& t) {
+		SrcElt& preimage(SrcElt& s, const Elt& t)
+		{
 			_source. assign (s, t);
 			return s;
 		}
@@ -121,7 +127,8 @@ namespace LinBox
 namespace LinBox
 {
 	template<> inline Hom<Modular<uint16>, Modular<uint32> >::
-	Hom(const Modular<uint16>& S, const Modular<uint32>& T ): _source(S),_target(T)
+	Hom(const Modular<uint16>& S, const Modular<uint32>& T ) :
+		_source(S),_target(T)
 	{
 		integer ps, pt;
 		if (S.characteristic(ps) != T.characteristic(pt)) throw NoHomError();
@@ -150,12 +157,16 @@ namespace LinBox
 		typedef typename Source::Element SrcElt;
 		typedef typename Target::Element Elt;
 
-		Hom(const Source& S, const Target& T) : _source (S), _target (T) {}
-		inline Elt& image(Elt& t, const SrcElt& s) {
+		Hom(const Source& S, const Target& T) :
+			_source (S), _target (T)
+		{}
+		inline Elt& image(Elt& t, const SrcElt& s)
+		{
 			_target. init (t, s);
 			return t;
 		}
-		inline SrcElt& preimage(SrcElt& s, const Elt& t) {
+		inline SrcElt& preimage(SrcElt& s, const Elt& t)
+		{
 			_target. convert (s, t);
 			return s;
 		}
@@ -176,12 +187,16 @@ namespace LinBox
 		typedef Source::Element SrcElt;
 		typedef Target::Element Elt;
 
-		Hom(const Source& S, const Target& T) : _source (S), _target (T) {}
-		inline Elt& image(Elt& t, const SrcElt& s) {
+		Hom(const Source& S, const Target& T) :
+			_source (S), _target (T)
+		{}
+		inline Elt& image(Elt& t, const SrcElt& s)
+		{
 			t = s;
 			return t;
 		}
-		inline SrcElt& preimage(SrcElt& s, const Elt& t) {
+		inline SrcElt& preimage(SrcElt& s, const Elt& t)
+		{
 			s = t;
 			return s;
 		}
@@ -202,7 +217,9 @@ namespace LinBox
 		typedef typename Source::Element SrcElt;
 		typedef typename Target::Element Elt;
 
-		Hom(const Source& S, const Target& T) : _source (S), _target (T) {}
+		Hom(const Source& S, const Target& T) :
+			_source (S), _target (T)
+		{}
 		inline Elt& image(Elt& t, const SrcElt& s) {
 			_target. init (t, s);
 			return t;
@@ -229,8 +246,11 @@ namespace LinBox
 		typedef Source::Element SrcElt;
 		typedef Target::Element Elt;
 
-		Hom(const Source& S, const Target& T) : _source (S), _target (T) {}
-		inline Elt& image(Elt& t, const SrcElt& s) {
+		Hom(const Source& S, const Target& T) :
+			_source (S), _target (T)
+		{}
+		inline Elt& image(Elt& t, const SrcElt& s)
+		{
 			_target. assign (t, s);
 			return t;
 		}
@@ -248,38 +268,40 @@ namespace LinBox
 
 
 #if 0
-	  #ifdef __FIELD_MODULAR_H
-	  // Dan Roche mapping from UnparametricField to Modular - for integer
-	  // computations that use mod one or more primes and possibly chinese
-	  // remaindering.
-	  template<class _INT1, class _INT2>
-	  class Hom<UnparametricField<_INT1 >,Modular<_INT2 > > {
+#ifdef __FIELD_MODULAR_H
+	// Dan Roche mapping from UnparametricField to Modular - for integer
+	// computations that use mod one or more primes and possibly chinese
+	// remaindering.
+	template<class _INT1, class _INT2>
+	class Hom<UnparametricField<_INT1 >,Modular<_INT2 > > {
 
-	  public:
-	  typedef UnparametricField<_INT1 > Source;
-	  typedef Modular<_INT2 > Target;
-	  typedef _INT1 SrcElt;
-	  typedef _INT2 Elt;
+	public:
+		typedef UnparametricField<_INT1 > Source;
+		typedef Modular<_INT2 > Target;
+		typedef _INT1 SrcElt;
+		typedef _INT2 Elt;
 
-	  Hom(const Source& S, const Target& T) :_source(S), _target(T) {}
+		Hom(const Source& S, const Target& T) :
+			_source(S), _target(T)
+		{}
 
-	  inline Elt& image(Elt& t, const SrcElt& s) {
-	  integer temp;
-	  return _target.init(t,_source.convert(temp,s));
-	  }
-	  inline SrcElt& preimage(SrcElt& s, const Elt& t) {
-	  integer temp;
-	  return _source.init(s,_source.convert(temp,t));
-	  }
-	  const Source& source() { return _source; }
-	  const Target& target() { return _target; }
+		inline Elt& image(Elt& t, const SrcElt& s) {
+			integer temp;
+			return _target.init(t,_source.convert(temp,s));
+		}
+		inline SrcElt& preimage(SrcElt& s, const Elt& t) {
+			integer temp;
+			return _source.init(s,_source.convert(temp,t));
+		}
+		const Source& source() { return _source; }
+		const Target& target() { return _target; }
 
-	  protected:
-	  Source _source;
-	  Target _target;
-	  }; // end Hom
+	protected:
+		Source _source;
+		Target _target;
+	}; // end Hom
 
-	  #endif // __FIELD_MODULAR_H
+#endif // __FIELD_MODULAR_H
 #endif
 
 } // namespace LinBox
@@ -298,7 +320,9 @@ namespace LinBox
 		typedef typename Source::Element SrcElt;
 		typedef typename Target::Element Elt;
 
-		Hom(const Source& S, const Target& T) : _source(S), _target(T){}
+		Hom(const Source& S, const Target& T) :
+			_source(S), _target(T)
+		{}
 		inline Elt& image(Elt& t, const SrcElt& s) {
 			return _target. init (t, _source. convert (tmp, s));
 		}
@@ -322,7 +346,9 @@ namespace LinBox
 		typedef Source::Element SrcElt;
 		typedef Target::Element Elt;
 
-		Hom(const Source& S, const Target& T) : _source(S), _target(T){}
+		Hom(const Source& S, const Target& T) :
+			_source(S), _target(T)
+		{}
 		inline Elt& image(Elt& t, const SrcElt& s) {
 			return _target.assign(t, s);
 		}
@@ -352,22 +378,24 @@ namespace LinBox
 		typedef typename Source::Element SrcElt;
 		typedef typename Target::Element Elt;
 
-            Hom(const Source& S, const Target& T) : _source (S), _target(T){ }
+		Hom(const Source& S, const Target& T) :
+			_source (S), _target(T)
+		{ }
 		Elt& image(Elt& t, const SrcElt& s) {
 			_source. get_num (num, s);
 			_source. get_den (den, s);
-                        if (den == 1) {
-                            return _target.init(t,num);
-                        } else if (num == 1) {
-                            _target.init(t,den);
-                            return _target.invin(t);
-                        } else {
-                            _target. init (tmp, den);
-                            _target. init (t, num);
-                            return _target. divin (t, tmp);
-                        }
-// 			_target. init (t, den);
-// 			return _target. invin (t);
+			if (den == 1) {
+				return _target.init(t,num);
+			} else if (num == 1) {
+				_target.init(t,den);
+				return _target.invin(t);
+			} else {
+				_target. init (tmp, den);
+				_target. init (t, num);
+				return _target. divin (t, tmp);
+			}
+			// 			_target. init (t, den);
+			// 			return _target. invin (t);
 		}
 		SrcElt& preimage(SrcElt& s, const Elt& t) {
 			_target. convert (num, t);
@@ -393,7 +421,9 @@ namespace LinBox
 		typedef Source::Element SrcElt;
 		typedef Target::Element Elt;
 
-		Hom(const Source& S, const Target& T) : _source (S), _target(T){}
+		Hom(const Source& S, const Target& T) :
+			_source (S), _target(T)
+		{}
 		Elt& image(Elt& t, const SrcElt& s) {
 			_target.assign(t, s);
 			return t;

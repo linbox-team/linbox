@@ -99,10 +99,13 @@ namespace LinBox
 	public:
 
 		///
-		MatrixDomain (const Field &F) : _F (F), _VD (F) {}
+		MatrixDomain (const Field &F) :
+			_F (F), _VD (F)
+		{}
 
 		MatrixDomain& operator= (const MatrixDomain& MD)
-		{ _F = MD._F;
+		{
+			_F = MD._F;
 			_VD = MD._VD;
 			return *this;
 		}

@@ -34,11 +34,11 @@
 #include <algorithm>
 #include <linbox/randiter/random-prime.h>
 
-namespace LinBox 
-{    
+namespace LinBox
+{
 
 	/** Compute the rank of an integer matrix in place over a finite field by Gaussian elimination.
-	 */
+	*/
 	template<class _Ring, class _Field, class _RandomPrime = RandomPrimeIterator>
 	class MatrixRank {
 
@@ -51,13 +51,16 @@ namespace LinBox
 
 		mutable _RandomPrime rp;
 
-		MatrixRank(const Ring& _r = Ring(), const _RandomPrime& _rp = _RandomPrime() ) : r(_r), rp (_rp) {}
+		MatrixRank(const Ring& _r = Ring(), const _RandomPrime& _rp = _RandomPrime() ) :
+			r(_r), rp (_rp)
+		{}
 
 		~MatrixRank() {}
 
 		//compute the integer matrix A by modulo a random prime, Monto-Carlo
 		template<class IMatrix>
-		long rank(const IMatrix& A) const {
+		long rank(const IMatrix& A) const
+		{
 
 			Field F (*rp);
 
@@ -73,7 +76,8 @@ namespace LinBox
 		}
 
 		template <class Row>
-		long rank(const SparseMatrix<Ring, Row>& A) const {
+		long rank(const SparseMatrix<Ring, Row>& A) const
+		{
 
 			Field F (*rp);
 			typename SparseMatrix<Ring, Row>::template rebind<Field>::other Ap(A, F);
@@ -84,7 +88,8 @@ namespace LinBox
 
 
 		template<class Field, class Row>
-		long rankIn(SparseMatrix<Field, Row>& A) const {
+		long rankIn(SparseMatrix<Field, Row>& A) const
+		{
 
 			unsigned long result;
 
@@ -94,7 +99,8 @@ namespace LinBox
 		}
 
 		// compute rank by Gauss Elimination
-		long rankIn(DenseMatrix<Field>& Ap) const {
+		long rankIn(DenseMatrix<Field>& Ap) const
+		{
 
 			typedef typename Field::Element Element;
 
@@ -135,7 +141,7 @@ namespace LinBox
 				}
 
 				//if swicth two row if nessary. Each row in dense matrix is stored in contiguous space
-				if (tmp_r != cur_r) { 
+				if (tmp_r != cur_r) {
 
 					std::copy (tmp_r -> begin(), tmp_r -> end(), tmp_v.begin());
 
@@ -144,17 +150,17 @@ namespace LinBox
 					std::copy (tmp_v.begin(), tmp_v.end(), cur_r -> begin());
 				}
 
-				// continue gauss elimination	 
-				for(tmp_r = cur_r + 1; tmp_r != Ap.rowEnd(); ++ tmp_r) {	   
+				// continue gauss elimination
+				for(tmp_r = cur_r + 1; tmp_r != Ap.rowEnd(); ++ tmp_r) {
 
 					//see if need to update the row
 					if (!F.isZero(*(tmp_r -> begin() + offset_r ))) {
 
 						F.div (tmp_e, *(tmp_r -> begin() + offset_r), *(cur_r -> begin() + offset_r));
 
-						F.negin(tmp_e);		    
+						F.negin(tmp_e);
 
-						for ( cur_rp = cur_r ->begin() + offset_r,tmp_rp =  tmp_r -> begin() + offset_r; 
+						for ( cur_rp = cur_r ->begin() + offset_r,tmp_rp =  tmp_r -> begin() + offset_r;
 						      tmp_rp != tmp_r -> end(); ++ tmp_rp, ++ cur_rp )
 
 							F.axpyin ( *tmp_rp, *cur_rp, tmp_e);

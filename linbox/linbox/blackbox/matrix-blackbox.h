@@ -49,8 +49,9 @@ namespace LinBox
 		 * @param  F  Field over which entries exist
 		 * @param  rep  Matrix from which to construct the black box
 		 */
-		MatrixBlackbox (const Field &F, Matrix &rep)
-		: _F (F), _MD (F), _A (rep) {}
+		MatrixBlackbox (const Field &F, Matrix &rep) :
+			_F (F), _MD (F), _A (rep)
+		{}
 
 		/** Constructor with size
 		 *
@@ -60,8 +61,9 @@ namespace LinBox
 		 * @param  m  Row dimension
 		 * @param  n  Column dimension
 		 */
-		MatrixBlackbox (const Field &F, size_t m, size_t n)
-		: _F (F), _MD (F), _A (m, n) {}
+		MatrixBlackbox (const Field &F, size_t m, size_t n) :
+			_F (F), _MD (F), _A (m, n)
+		{}
 
 		/** Constructor
 		 *
@@ -72,13 +74,15 @@ namespace LinBox
 		 * @param  stream  Stream with which to generate row vectors
 		 */
 		template <class Row>
-		MatrixBlackbox (const Field &F, VectorStream<Row> &stream)
-		: _F (F), _MD (F), _A (stream) {}
+		MatrixBlackbox (const Field &F, VectorStream<Row> &stream) :
+			_F (F), _MD (F), _A (stream)
+		{}
 
 		/** Copy constructor
 		*/
-		MatrixBlackbox (const MatrixBlackbox &B)
-		: _F (B._F), _MD (B._F), _A (B._A) {}
+		MatrixBlackbox (const MatrixBlackbox &B) :
+			_F (B._F), _MD (B._F), _A (B._A)
+		{}
 
 		/** Destructor. */
 		~MatrixBlackbox () {}
@@ -87,8 +91,9 @@ namespace LinBox
 		template<typename _Tp1,
 		typename _Mat1 = typename Matrix::template rebind<_Tp1>::other,
 		typename _Vect1 = typename Rebind<Vector, _Tp1>::other >
-		struct rebind
-		{ typedef MatrixBlackbox<_Tp1, _Mat1, _Vect1> other; };
+		struct rebind {
+			typedef MatrixBlackbox<_Tp1, _Mat1, _Vect1> other;
+		};
 
 
 

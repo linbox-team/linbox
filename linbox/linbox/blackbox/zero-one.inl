@@ -99,7 +99,8 @@ namespace LinBox
 			_row(row), _col(col) {}
 
 		RawIndexIterator(const RawIndexIterator &In):
-			_row(In._row), _col(In._col) {}
+			_row(In._row), _col(In._col)
+		{}
 
 		const RawIndexIterator &operator=(const RawIndexIterator &rhs)
 		{
@@ -169,12 +170,15 @@ namespace LinBox
 	}
 
 	template<class Field>
-	ZeroOne<Field>::ZeroOne(const Field& F) : _F(F) { srand( time(NULL) ); dynamic = false;}
+	ZeroOne<Field>::ZeroOne(const Field& F) :
+	       	_F(F)
+       	{ srand( time(NULL) ); dynamic = false;}
 
 
 	template<class Field>
 	ZeroOne<Field>::ZeroOne(Field F, Index* rowP, Index* colP, Index rows, Index cols, Index NNz, bool rowSort, bool colSort):
-		_F(F), _rows(rows), _cols(cols), _nnz(NNz), _rowP(rowP), _colP(colP), _rowSort(rowSort), _colSort(colSort) , dynamic(false) { srand(time(NULL)); }
+		_F(F), _rows(rows), _cols(cols), _nnz(NNz), _rowP(rowP), _colP(colP), _rowSort(rowSort), _colSort(colSort) , dynamic(false)
+	{ srand(time(NULL)); }
 
 	template<class Field>
 	ZeroOne<Field>::~ZeroOne()

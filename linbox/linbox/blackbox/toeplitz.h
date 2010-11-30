@@ -26,19 +26,19 @@
 
 //#define DBGMSGS 1
 
-/*-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *   Partial Specialization of Toeplitz for Dense vectors from
- *   an FFT based on Shoup's NTL library.
- *   this file is included at the end of the template specification
+/*! @file blackbox/toeplitz.h
+ *   @brief Partial Specialization of Toeplitz for Dense vectors from  an FFT based on Shoup's NTL library.
+ *
+ *   This file is included at the end of the template specification
  *   for Toeplitz.h
- *-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+*/
+ */
 
 namespace LinBox
 {
 	template <class _Field, class _PField>
 	class ToeplitzBase : public  BlackboxInterface {
 	protected: // Constructors etc. are protected because instances of this
-	           // class should not be instantiated; use Toeplitz instead.
+		// class should not be instantiated; use Toeplitz instead.
 		typedef _PField PField;
 		typedef typename _PField::Element Poly;
 
@@ -56,22 +56,22 @@ namespace LinBox
 		// field representing the matrix, and the matrix dimensions
 		// If no n is given, it will default to the same as m.
 		ToeplitzBase( const PField& PF, const Poly& p,
-		              size_t m, size_t n=0 );
+			      size_t m, size_t n=0 );
 
 
 	public:
 		//------- READ-ONLY ACCESSOR, and OBSERVER METHODS
 
-            template<typename _Tp1, typename _Tp2>
-            struct rebind
-            { typedef ToeplitzBase<_Tp1,_Tp2> other; };
+		template<typename _Tp1, typename _Tp2>
+		struct rebind
+		{ typedef ToeplitzBase<_Tp1,_Tp2> other; };
 
 
 
 		inline size_t rowdim() const { return rowDim; }// Number of Rows
 		inline size_t coldim() const { return colDim; }// Number of Cols
 		inline size_t sysdim() const { return sysDim; }
-			// Max of rows & columns;
+		// Max of rows & columns;
 		const Field& field() const {return K;}
 		//------- MUTATOR METHODS
 
@@ -81,7 +81,7 @@ namespace LinBox
 		//------ SERVICE METHODS
 
 		//      void convert(NTL::ZZ_pX &pout, const std::vector<Element> &vin);
-    protected:
+	protected:
 		PField P; 	  // Polynomial field
 		Field K;           // Field parameter (coefficient field)
 
@@ -100,7 +100,7 @@ namespace LinBox
 		/* These were only used by the XML stuff and are more or less
 		 * obsolete with the presence of polynomial fields.
 
-		void convert(Poly &pout, const std::vector<Element> &vin);
+		 void convert(Poly &pout, const std::vector<Element> &vin);
 		// CONVERTS the input vector of field Elements to a ZZ_pX
 
 		void convert( std::vector<Element> &vout, const Poly &pin);
@@ -112,7 +112,7 @@ namespace LinBox
 
 	/** \brief This is the blackbox representation of a Toeplitz matrix.
 
-\ingroup blackbox
+	  \ingroup blackbox
 	 * It stores the 2n-1 values of the first row and column.
 	 * The apply is a call to polynomial multiplication and for large n
 	 * will be FFT based, running in O(lg(n)) time.
@@ -121,9 +121,9 @@ namespace LinBox
 	 */
 #ifdef __LINBOX_HAVE_NTL
 	template< class _CField, class _PField = NTL_ZZ_pX >
-#else
+	#else
 	template< class _CField, class _PField >
-#endif
+	#endif
 	class Toeplitz :public ToeplitzBase<_CField,_PField> {
 	protected:
 		typedef ToeplitzBase<_CField,_PField> TBase;
@@ -135,21 +135,27 @@ namespace LinBox
 
 		typedef typename TBase::Element Element;
 
-		Toeplitz() :TBase() {}
-		Toeplitz(const Field& F) :TBase(F) {}
-		Toeplitz( const PField& PF ) :TBase(PF) {}
+		Toeplitz() :
+			TBase()
+		{}
+		Toeplitz(const Field& F) :
+			TBase(F)
+		{}
+		Toeplitz( const PField& PF ) :
+			TBase(PF)
+		{}
 		Toeplitz( const PField& PF, const Poly& p,
-		              size_t m, size_t n=0 )
-			:TBase(PF,p,m,n) {}
+			  size_t m, size_t n=0 ) :
+			TBase(PF,p,m,n)
+		{}
 
 	}; // end of class Toeplitz
 
 	/** Specialization for when the field of matrix elements is the same
-	  * as the coefficient field of the polynomial field.
-	  */
+	 * as the coefficient field of the polynomial field.
+	 */
 	template< class _PField >
-	class Toeplitz< typename _PField::CoeffField, _PField >
-		: public ToeplitzBase< typename _PField::CoeffField, _PField > {
+	class Toeplitz< typename _PField::CoeffField, _PField > : public ToeplitzBase< typename _PField::CoeffField, _PField > {
 	protected:
 		typedef ToeplitzBase< typename _PField::CoeffField, _PField > TBase;
 		using TBase::P;
@@ -171,15 +177,23 @@ namespace LinBox
 		typedef typename TBase::Element Element;
 
 		//------- CONSTRUCTORS AND DESTRUCTORS
-		Toeplitz() :TBase() {}
-		Toeplitz(const Field& F) :TBase(F) {}
-		Toeplitz( const PField& PF ) :TBase(PF) {}
+		Toeplitz() :
+			TBase()
+		{}
+		Toeplitz(const Field& F) :
+			TBase(F)
+		{}
+		Toeplitz( const PField& PF ) :
+			TBase(PF)
+		{}
 		Toeplitz( const PField& PF, const Poly& p,
-		              size_t m, size_t n=0 )
-			:TBase(PF,p,m,n) {}
+			  size_t m, size_t n=0 ) :
+			TBase(PF,p,m,n)
+		{}
 
 		Toeplitz( const Field& F,    // Cnstr. with Field and STL vec. of elems
-				  const std::vector<Element>& v) :TBase(F)
+			  const std::vector<Element>& v) :
+			TBase(F)
 		{ init_vector(v); }
 
 
@@ -197,9 +211,9 @@ namespace LinBox
 		// Get the determinant of the matrix
 		Element& det( Element& res ) const;
 	protected:
-                // initialization via a vector. Usually called by a constructor
-                // Moved in a separate protected function to enable easier
-                // inherited constructor calls. JGD 30.09.2003
+		// initialization via a vector. Usually called by a constructor
+		// Moved in a separate protected function to enable easier
+		// inherited constructor calls. JGD 30.09.2003
 		void init_vector( const std::vector<Element>& v );
 	}; //  Toeplitz specialization
 

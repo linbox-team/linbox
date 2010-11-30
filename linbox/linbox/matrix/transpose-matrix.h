@@ -82,14 +82,14 @@ namespace LinBox
 		/** Constructor.
 		 * @param  A  Underlying matrix of which to construct the transpose
 		 */
-		TransposeMatrix (Matrix &A)
-		: _A (A)
+		TransposeMatrix (Matrix &A) :
+			_A (A)
 		{}
 
 		/** Copy constructor
 		*/
-		TransposeMatrix (const TransposeMatrix &M)
-		: _A (M._A)
+		TransposeMatrix (const TransposeMatrix &M) :
+			_A (M._A)
 		{}
 
 		/** Get the number of rows in the matrix
@@ -235,8 +235,13 @@ namespace LinBox
 		typedef typename Matrix::Row Col;
 		typedef typename Matrix::Col Row;
 
-		TransposeMatrix (Matrix &A) : _A (A) {}
-		TransposeMatrix (const TransposeMatrix &M) : _A (M._A) {}
+		TransposeMatrix (Matrix &A) :
+			_A (A)
+		{}
+
+		TransposeMatrix (const TransposeMatrix &M) :
+			_A (M._A)
+		{}
 
 		inline size_t rowdim () const { return _A.coldim (); }
 		inline size_t coldim () const { return _A.rowdim (); }
@@ -294,8 +299,12 @@ namespace LinBox
 		typedef typename Matrix::Row Col;
 
 		//TransposeMatrix () {}
-		TransposeMatrix (Matrix &A) : _A (A) {}
-		TransposeMatrix (const TransposeMatrix &M) : _A (M._A) {}
+		TransposeMatrix (Matrix &A) :
+			_A (A)
+		{}
+		TransposeMatrix (const TransposeMatrix &M) :
+			_A (M._A)
+		{}
 
 		inline size_t rowdim () const { return _A.coldim (); }
 		inline size_t coldim () const { return _A.rowdim (); }
@@ -346,8 +355,12 @@ namespace LinBox
 
 		typedef typename Matrix::Col Row;
 
-		TransposeMatrix (Matrix &A) : _A (A) {}
-		TransposeMatrix (const TransposeMatrix &M) : _A (M._A) {}
+		TransposeMatrix (Matrix &A) :
+			_A (A)
+		{}
+		TransposeMatrix (const TransposeMatrix &M) :
+			_A (M._A)
+		{}
 
 		inline size_t rowdim () const { return _A.coldim (); }
 		inline size_t coldim () const { return _A.rowdim (); }

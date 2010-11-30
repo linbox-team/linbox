@@ -35,9 +35,9 @@ namespace LinBox
 {
 
 
-/// \ingroup blackbox
+	/// \ingroup blackbox
 	template< class _Field,
-		  class _Row = typename LinBox::Vector<_Field>::SparseSeq >
+	class _Row = typename LinBox::Vector<_Field>::SparseSeq >
 	class LambdaSparseMatrix : public SparseMatrix<_Field,_Row> {
 
 	public:
@@ -45,14 +45,15 @@ namespace LinBox
 		typedef _Row Row;
 		typedef _Field Field;
 
-            template<typename _Tp1, typename _Rw1 = _Row>
-            struct rebind
-            { typedef LambdaSparseMatrix<_Tp1, _Rw1> other; };
+		template<typename _Tp1, typename _Rw1 = _Row>
+		struct rebind
+		{ typedef LambdaSparseMatrix<_Tp1, _Rw1> other; };
 
 		// Contructor of a lambda-sparse matrix as defined in Mulder 2003
 		// with non-zero elements choosen from entire Field
-		LambdaSparseMatrix(const Field& F,size_t m, size_t n, double LAMBDA = 3.)
-			:  SparseMatrix<Field,Row> (F,m,n) {
+		LambdaSparseMatrix(const Field& F,size_t m, size_t n, double LAMBDA = 3.) :
+			SparseMatrix<Field,Row> (F,m,n)
+		{
 
 			integer card;
 			F.cardinality (card);
@@ -77,8 +78,9 @@ namespace LinBox
 
 		// Contructor of a lambda-sparse matrix as defined in Mulder 2003
 		// with non-zero elements choosen from a subset of the Field
-		LambdaSparseMatrix(const Field& F,size_t m, size_t n,const integer size, double LAMBDA = 3.)
-			: SparseMatrix<Field,Row> (F,m,n)  {
+		LambdaSparseMatrix(const Field& F,size_t m, size_t n,const integer size, double LAMBDA = 3.) :
+			SparseMatrix<Field,Row> (F,m,n)
+		{
 
 			typename Field::RandIter _randiter(F,size,0);
 			double init_p = 1.0 - 1.0 / (double) size;
@@ -101,15 +103,16 @@ namespace LinBox
 
 
 		// Copy constructor
-		LambdaSparseMatrix (const LambdaSparseMatrix<Field,Row>& L)
-			: SparseMatrix<Field,Row>(L) {}
+		LambdaSparseMatrix (const LambdaSparseMatrix<Field,Row>& L) :
+			SparseMatrix<Field,Row>(L)
+		{}
 
 
 		// Copy constructor from a LambdaSparseMatrix over a Ring
 		// allow the mod p reduction for all entries.
 		template<class _Ring, class _IRow>
-		LambdaSparseMatrix (const Field& F, const LambdaSparseMatrix<_Ring,_IRow>& L)
-			: SparseMatrix<Field,Row> (F,L.rowdim(),L.coldim())
+		LambdaSparseMatrix (const Field& F, const LambdaSparseMatrix<_Ring,_IRow>& L) :
+			SparseMatrix<Field,Row> (F,L.rowdim(),L.coldim())
 		{
 
 			//typename LambdaSparseMatrix<_Ring,_IRow>::ConstRawIterator Liter = L.rawBegin();
@@ -126,9 +129,10 @@ namespace LinBox
 		}
 
 		// return the norm of the matrix (= the maximum value)
-		integer& Norm(integer& norm) {
+		integer& Norm(integer& norm)
+		{
 			typename Field::Element max;
-	// Dan Roche 7-20-04 added typename here to stop compiler warning
+			// Dan Roche 7-20-04 added typename here to stop compiler warning
 			typename LambdaSparseMatrix<_Field,_Row>::ConstRawIterator iter= this->rawBegin();
 			max = *iter;
 			for (; iter != this->rawEnd(); ++iter)
@@ -141,7 +145,7 @@ namespace LinBox
 
 
 
-  }; //end of class LambdaSparseMatrix
+	}; //end of class LambdaSparseMatrix
 
 } //end of namespace LinBox
 

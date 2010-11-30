@@ -71,8 +71,7 @@ namespace LinBox
 	struct ClassifyRing<ModularBalanced<Element> >;
 
 	template<>
-	struct ClassifyRing<ModularBalanced<int32> >
-	{
+	struct ClassifyRing<ModularBalanced<int32> > {
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
@@ -95,13 +94,17 @@ namespace LinBox
 		typedef NonzeroRandIter<ModularBalanced<int32>,RandIter> NonZeroRandIter;
 
 		//default modular field,taking 65521 as default modulus
-		ModularBalanced () :modulus(65521) {
+		ModularBalanced () :
+			modulus(65521)
+		{
 			modulusinv = 1/(double)65521;
 			halfmodulus = (65521 >> 1);
 			nhalfmodulus = -halfmodulus;
 		}
 
-		ModularBalanced (int32 value, int exp = 1)  : modulus(value) {
+		ModularBalanced (int32 value, int exp = 1)  :
+			modulus(value)
+		{
 			//std::cout << value << std::endl;
 			halfmodulus = (modulus >> 1);
 			nhalfmodulus = -halfmodulus;
@@ -114,7 +117,9 @@ namespace LinBox
 
 		}
 
-		ModularBalanced (const ModularBalanced<int32>& mf) : modulus(mf.modulus),halfmodulus(mf.halfmodulus),nhalfmodulus(mf.nhalfmodulus),modulusinv(mf.modulusinv) { }
+		ModularBalanced (const ModularBalanced<int32>& mf) :
+			modulus(mf.modulus),halfmodulus(mf.halfmodulus),nhalfmodulus(mf.nhalfmodulus),modulusinv(mf.modulusinv)
+		{ }
 
 		const ModularBalanced &operator=(const ModularBalanced<int32> &F) {
 			modulus = F.modulus;
@@ -192,7 +197,7 @@ namespace LinBox
 			return x;
 		}
 
-	Element &init (Element &x, const double &y) const
+		Element &init (Element &x, const double &y) const
 		{
 			x = fmod(y,(double)modulus);
 			if (x < nhalfmodulus) x += modulus;
@@ -424,11 +429,14 @@ namespace LinBox
 		typedef int32 Element;
 		typedef ModularBalanced<int32> Field;
 
-		FieldAXPY (const Field &F) : _F (F),_y(0),_times(0) {
-		}
+		FieldAXPY (const Field &F) :
+			_F (F),_y(0),_times(0)
+		{ }
 
 
-		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0),_times(0){}
+		FieldAXPY (const FieldAXPY &faxpy) :
+			_F (faxpy._F), _y (0),_times(0)
+		{}
 
 		FieldAXPY<ModularBalanced<int32> > &operator = (const FieldAXPY &faxpy) {
 			_F = faxpy._F;
@@ -509,9 +517,9 @@ namespace LinBox
 
 	public:
 		typedef int32 Element;
-		DotProductDomain (const ModularBalanced<int32> &F)
-		: VectorDomainBase<ModularBalanced<int32> > (F) ,blocksize(32){
-		}
+		DotProductDomain (const ModularBalanced<int32> &F) :
+			VectorDomainBase<ModularBalanced<int32> > (F) ,blocksize(32)
+		{ }
 
 	protected:
 		template <class Vector1, class Vector2>
@@ -553,7 +561,8 @@ namespace LinBox
 		}
 
 		template <class Vector1, class Vector2>
-		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const {
+		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const
+		{
 
 			typename Vector1::first_type::const_iterator i_idx, i_idxe;
 			typename Vector1::second_type::const_iterator i_elt;
@@ -588,7 +597,8 @@ namespace LinBox
 			return res;
 		}
 
-		inline void normalize(int64& _y) const {
+		inline void normalize(int64& _y) const
+		{
 			_y = (int32)_y -(int32)(int64)((double) _y * _F.modulusinv) * (int32)_F.modulus;
 		}
 

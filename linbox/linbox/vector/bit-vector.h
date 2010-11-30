@@ -78,14 +78,14 @@ namespace LinBox
 		BitVector () {}
 		BitVector (std::vector<bool> &v)
 		{ *this = v; }
-		BitVector (std::vector<unsigned long> &v)
-		: _v (v), _size (_v.size () * __LINBOX_BITSOF_LONG) {}
+		BitVector (std::vector<unsigned long> &v) :
+		       	_v (v), _size (_v.size () * __LINBOX_BITSOF_LONG) {}
 		BitVector (size_t n, bool val = false)
 		{ resize (n, val); }
 
 		// Copy constructor
-		BitVector (const BitVector &v)
-		: _v (v._v), _size (v._size) {}
+		BitVector (const BitVector &v) :
+		       	_v (v._v), _size (v._size) {}
 
 		~BitVector () {}
 

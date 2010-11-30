@@ -60,9 +60,9 @@ namespace LinBox
 		 *               options for the solver
 		 */
 		LABlockLanczosSolver (const Field &F,
-				      const BlockLanczosTraits &traits)
-		: _traits (traits), _F (F), _VD (F), _MD (F), _randiter (F),
-		_uAv (this), _eliminator (F, _traits.blockingFactor ())
+				      const BlockLanczosTraits &traits) :
+			_traits (traits), _F (F), _VD (F), _MD (F), _randiter (F),
+			_uAv (this), _eliminator (F, _traits.blockingFactor ())
 		{ init_temps (); }
 
 		/** Constructor with a random iterator
@@ -73,9 +73,9 @@ namespace LinBox
 		 */
 		LABlockLanczosSolver (const Field &F,
 				      const BlockLanczosTraits &traits,
-				      typename Field::RandIter r)
-		: _traits (traits), _F (F), _VD (F), _MD (F), _randiter (r),
-		_uAv (this), _eliminator (F, _traits.blockingFactor ())
+				      typename Field::RandIter r) :
+			_traits (traits), _F (F), _VD (F), _MD (F), _randiter (r),
+			_uAv (this), _eliminator (F, _traits.blockingFactor ())
 		{ init_temps (); }
 
 		/** Destructor
@@ -148,8 +148,9 @@ namespace LinBox
 			void reportComplete (std::ostream &out);
 			void report (std::ostream &out);
 
-			BasisTransformation (LABlockLanczosSolver<Field, Matrix> &solver, unsigned int N)
-			: _solver (solver), _N (N) { reset (); }
+			BasisTransformation (LABlockLanczosSolver<Field, Matrix> &solver, unsigned int N) :
+				_solver (solver), _N (N)
+			{ reset (); }
 
 			~BasisTransformation ();
 		};
@@ -201,11 +202,11 @@ namespace LinBox
 			unsigned int _rho_u, _rho_v;
 			bool _done;
 
-			Iterate (LABlockLanczosSolver &solver, size_t n, size_t N, unsigned int iter)
-			: _udotAvbarinv (N, N), _ubarAvdotinv (N, N),
-			_u (n, N), _v (n, N), _udot (n, N), _vdot (n, N),
-			_sigma_u (solver, N), _sigma_v (solver, N),
-			_udotAv (N, N), _uAvdot (N, N)
+			Iterate (LABlockLanczosSolver &solver, size_t n, size_t N, unsigned int iter) :
+				_udotAvbarinv (N, N), _ubarAvdotinv (N, N),
+				_u (n, N), _v (n, N), _udot (n, N), _vdot (n, N),
+				_sigma_u (solver, N), _sigma_v (solver, N),
+				_udotAv (N, N), _uAvdot (N, N)
 			{ init (iter); }
 
 			void init (unsigned int iter)
@@ -227,7 +228,9 @@ namespace LinBox
 			unsigned int _base;
 
 		public:
-			InnerProductArray (LABlockLanczosSolver *solver) : _solver (solver), _base (0) {}
+			InnerProductArray (LABlockLanczosSolver *solver) :
+				_solver (solver), _base (0)
+			{}
 
 			void extend ();
 			void contract ();

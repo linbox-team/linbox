@@ -62,7 +62,8 @@ namespace LinBox
 	{ return i = integer( 32749 ); } // prevprime( 2^15 )
 
 	template<>
-	inline bool FieldTraits<GivaroGfq>::goodModulus( const integer& i ) {
+	inline bool FieldTraits<GivaroGfq>::goodModulus( const integer& i )
+	{
 		integer max;
 		if( i < 2 || i > FieldTraits<GivaroGfq>::maxModulus(max) )
 			return false;
@@ -95,28 +96,32 @@ namespace LinBox
 
 		/** Empty Constructor
 		*/
-		GivaroGfq() : GFqDom<int32>() { }
+		GivaroGfq() :
+			GFqDom<int32>()
+		{ }
 
 		/** Constructor from an integer
 		 *  this constructor use the ZpzDom<TAG> constructor
 		 */
 		GivaroGfq(const integer& p, const integer& k=1) :
-			GFqDom<int32>(static_cast<UTT>(int32(p)), static_cast<UTT>(int32(k))) {
-				//enforce that the cardinality must be <2^16, for givaro-gfq
-				int32 pl=p;
-				for(int32 i=1;i<k;++i) pl*=(int32)p;
-				if(!FieldTraits<GivaroGfq>::goodModulus(p))
-					throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus be between 2 and 2^15 and prime");
-				else if(pl>(1<<20)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"cardinality must be < 2^20");
+			GFqDom<int32>(static_cast<UTT>(int32(p)), static_cast<UTT>(int32(k)))
+		{
+			//enforce that the cardinality must be <2^16, for givaro-gfq
+			int32 pl=p;
+			for(int32 i=1;i<k;++i) pl*=(int32)p;
+			if(!FieldTraits<GivaroGfq>::goodModulus(p))
+				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus be between 2 and 2^15 and prime");
+			else if(pl>(1<<20)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"cardinality must be < 2^20");
 
-			}
+		}
 
 		// Dan Roche 6-15-04
 		// This constructor takes a vector of ints that represent the polynomial
 		// to use (for modular arithmetic on the extension field).
 		// Mostly copied from givaro/givgfq.inl
-		GivaroGfq(const integer& p, const integer& k, const std::vector<integer>& modPoly)
-		: GFqDom<int32>(static_cast<UTT>(int32(p)), static_cast<UTT>(int32(k))) {
+		GivaroGfq(const integer& p, const integer& k, const std::vector<integer>& modPoly) :
+			GFqDom<int32>(static_cast<UTT>(int32(p)), static_cast<UTT>(int32(k)))
+		{
 
 			//enforce that the cardinality must be <2^16, for givaro-gfq
 			int32 pl=p;
@@ -250,9 +255,6 @@ namespace LinBox
 	}; // class GivaroGfq
 
 
-
-
-
 	template<>
 	class Hom <GivaroGfq,GivaroGfq> {
 	public:
@@ -268,7 +270,9 @@ namespace LinBox
 		 * field T with Hom(S, T).
 		 * Specializations define all actual homomorphisms.
 		 */
-		Hom(const Source& S, const Target& T) : _source(S), _target(T){ }
+		Hom(const Source& S, const Target& T) :
+			_source(S), _target(T)
+		{ }
 
 		/**
 		 * image(t, s) implements the homomorphism, assigning the
@@ -276,7 +280,8 @@ namespace LinBox
 		 *
 		 * The default behaviour goes through integers.
 		 */
-		Elt& image(Elt& t, const SrcElt& s) {
+		Elt& image(Elt& t, const SrcElt& s)
+		{
 			return _target.init(t, _source.convert(tmp,s));
 		}
 
@@ -287,7 +292,8 @@ namespace LinBox
 		 *
 		 * The default behaviour goes through integers.
 		 */
-		SrcElt& preimage(SrcElt& s, const Elt& t) {
+		SrcElt& preimage(SrcElt& s, const Elt& t)
+		{
 			return _source.init(s, _target.convert(tmp,t));
 		}
 		const Source& source() { return _source;}

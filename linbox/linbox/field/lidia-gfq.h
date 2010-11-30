@@ -97,11 +97,14 @@ namespace LinBox
 
 		/** Copy constructor
 		 */
-		LidiaGfq(const LidiaGfq& F) : LiDIA::galois_field(F) {}
+		LidiaGfq(const LidiaGfq& F) :
+		       	LiDIA::galois_field(F)
+		{}
 
 #ifdef __LINBOX_XMLENABLED
 		// XML LinBox::Reader constructor
-		LidiaGfq(LinBox::Reader &R) : LiDIA::galois_field()
+		LidiaGfq(LinBox::Reader &R) :
+		       	LiDIA::galois_field()
 		{
 			integer p, k;
 			if(!R.expectTagName("field") || !R.expectChildTag()) return;

@@ -48,10 +48,10 @@ namespace LinBox
 	 */
 	template <class Field>
 	class RandIterEnvelope : public RandIterAbstract {
-	    public:
+	public:
 
 		/// element type
-                //typedef ElementAbstract element;
+		//typedef ElementAbstract element;
 		typedef ElementEnvelope<Field> Element;
 
 		/** Constructor from field, sampling size, and seed.
@@ -67,14 +67,17 @@ namespace LinBox
 		 *             generator (default = 0)
 		 */
 		RandIterEnvelope (const FieldEnvelope<Field> &F,
-				   const integer &size = 0,
-				   const integer &seed = 0)
-			: _randIter (F._field, size, seed) {}
+				  const integer &size = 0,
+				  const integer &seed = 0) :
+			_randIter (F._field, size, seed)
+		{}
 
 		/** Constructor from random field element generator to be wrapped
 		 * @param R random field element generator object to be wrapped
 		 */
-		RandIterEnvelope (const typename Field::RandIter &R) : _randIter (R) {}
+		RandIterEnvelope (const typename Field::RandIter &R) :
+			_randIter (R)
+		{}
 
 		/** Copy constructor.
 		 * Constructs RandIterEnvelope object by copying the random field
@@ -83,7 +86,9 @@ namespace LinBox
 		 * into functions.
 		 * @param  R RandIterEnvelope object.
 		 */
-		RandIterEnvelope (const RandIterEnvelope &R) : _randIter (R._randIter) {}
+		RandIterEnvelope (const RandIterEnvelope &R) :
+			_randIter (R._randIter)
+		{}
 
 		/** Destructor.
 		 * Required by abstract base class.
@@ -120,8 +125,8 @@ namespace LinBox
 		 *             generator (default = 0)
 		 */
 		RandIterAbstract *construct (const FieldAbstract &F,
-					      const integer &size = 0,
-					      const integer &seed = 0) const
+					     const integer &size = 0,
+					     const integer &seed = 0) const
 		{
 			return new RandIterEnvelope (static_cast<const FieldEnvelope<Field>&> (F)._field, size, seed);
 		}
@@ -133,7 +138,7 @@ namespace LinBox
 		 * @return pointer to new RandIterAbstract object in dynamic memory.
 		 */
 		RandIterAbstract* clone (void) const
-			{ return new RandIterEnvelope (*this); }
+		{ return new RandIterEnvelope (*this); }
 
 		/** Random field element creator.
 		 * This returns a random field element from the information supplied
@@ -142,17 +147,17 @@ namespace LinBox
 		 * @return reference to random field element
 		 */
 		ElementAbstract &random (ElementAbstract &a) const
-			//{ return  _randIter.random (a); }
-			// GV Thu Apr 18 14:46:46 MEST 2002
-			// modify by P.G. 2004-07-16
-                     {
-			     _randIter.random(static_cast<ElementEnvelope<Field>&> (a)._elem );
-			     return  a;
-		     }
+		//{ return  _randIter.random (a); }
+		// GV Thu Apr 18 14:46:46 MEST 2002
+		// modify by P.G. 2004-07-16
+		{
+			_randIter.random(static_cast<ElementEnvelope<Field>&> (a)._elem );
+			return  a;
+		}
 
 
 
-	    private:
+	private:
 
 		typename Field::RandIter _randIter;
 

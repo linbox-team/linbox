@@ -59,12 +59,16 @@ namespace LinBox
 		 * Copies of this objects are stored in the faxpy object.
 		 * @param F field F in which arithmetic is done
 		 */
-		FieldAXPY (const Field &F) : _F (F) { _F.init (_y, 0); }
+		FieldAXPY (const Field &F) :
+		       	_F (F)
+		{ _F.init (_y, 0); }
 
 		/** Copy constructor.
 		 * @param faxpy
 		 */
-		FieldAXPY (const FieldAXPY<Field> &faxpy) : _F (faxpy._F), _y (faxpy._y) {}
+		FieldAXPY (const FieldAXPY<Field> &faxpy) :
+		       	_F (faxpy._F), _y (faxpy._y)
+	       	{}
 
 		/** Assignment operator
 		 * @param faxpy

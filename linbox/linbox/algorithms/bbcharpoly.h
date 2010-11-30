@@ -51,40 +51,40 @@ namespace LinBox
 	{
 		commentator.start ("Integer Blackbox Charpoly ", "IbbCharpoly");
 
- 		typename Blackbox::Field intRing = A.field();
- 		typedef Modular<uint32> Field;
- 		typedef typename Blackbox::template rebind<Field>::other FieldBlackbox;
- 		typedef GivPolynomialRing<typename Blackbox::Field, Dense> IntPolyDom;
- 		typedef typename IntPolyDom::Element IntPoly;
- 		typedef GivPolynomialRing<Field>::Element FieldPoly;
- 		// Set of factors-multiplicities sorted by degree
- 		typedef FactorMult<FieldPoly,IntPoly> FM;
- 		typedef multimap<unsigned long,FM*> FactPoly;
+		typename Blackbox::Field intRing = A.field();
+		typedef Modular<uint32> Field;
+		typedef typename Blackbox::template rebind<Field>::other FieldBlackbox;
+		typedef GivPolynomialRing<typename Blackbox::Field, Dense> IntPolyDom;
+		typedef typename IntPolyDom::Element IntPoly;
+		typedef GivPolynomialRing<Field>::Element FieldPoly;
+		// Set of factors-multiplicities sorted by degree
+		typedef FactorMult<FieldPoly,IntPoly> FM;
+		typedef multimap<unsigned long,FM*> FactPoly;
 		typedef typename FactPoly::iterator FactPolyIterator;
 		multimap<FM*,bool> leadingBlocks;
 		//typename multimap<FM*,bool>::iterator lead_it;
- 		FactPoly factCharPoly;
- 		size_t n = A.coldim();
+		FactPoly factCharPoly;
+		size_t n = A.coldim();
 
- 		IntPolyDom IPD(intRing);
+		IntPolyDom IPD(intRing);
 
- 		/* Computation of the integer minimal polynomial */
- 		IntPoly intMinPoly;
+		/* Computation of the integer minimal polynomial */
+		IntPoly intMinPoly;
 		minpoly (intMinPoly, A, M);
 		if (intMinPoly.size() == n+1){
 			commentator.stop ("done", NULL, "IbbCharpoly");
- 			return P = intMinPoly;
+			return P = intMinPoly;
 		}
- 		/* Factorization over the integers */
- 		vector<IntPoly*> intFactors;
- 		vector<unsigned long> exp;
- 		IPD.factor (intFactors, exp, intMinPoly);
+		/* Factorization over the integers */
+		vector<IntPoly*> intFactors;
+		vector<unsigned long> exp;
+		IPD.factor (intFactors, exp, intMinPoly);
 		size_t factnum = intFactors.size();
 
- 		/* Choose a modular prime field */
- 		RandomPrimeIterator primeg (28);
+		/* Choose a modular prime field */
+		RandomPrimeIterator primeg (28);
 		++primeg;
- 		Field F(*primeg);
+		Field F(*primeg);
 
 		/* Building the structure of factors */
 		int goal = n;
@@ -123,11 +123,11 @@ namespace LinBox
 			}
 		}
 
- 		FieldBlackbox Ap(A, F);
+		FieldBlackbox Ap(A, F);
 
 		findMultiplicities (Ap, factCharPoly, leadingBlocks, goal, M);
 
- 		// Building the integer charpoly
+		// Building the integer charpoly
 		IntPoly intCharPoly (n+1);
 		IntPoly tmpP;
 		intRing.init (intCharPoly[0], 1);
@@ -199,7 +199,7 @@ namespace LinBox
 					for (size_t j = 1; j <= exp[i]; ++j){
 						Polynomial * tmp2 = new Polynomial(*tmp);
 						FFM = new FactorMult<Polynomial> (tmp2, tmp2, 0, depend);
-						//	std::cerr<<"Inserting new factor (exp>1) : "<<(*tmp2)<<std::endl;
+						//	std::cerr<<"Inserting new factor (exp>1): "<<(*tmp2)<<std::endl;
 
 						factCharPoly.insert (pair<size_t, FactorMult<Polynomial>*> (deg, FFM));
 						++factnum;
@@ -244,11 +244,16 @@ namespace LinBox
 	template<class FieldPoly, class IntPoly>
 	class FactorMult {
 	public:
-		FactorMult():multiplicity(0),dep(NULL){}
-		FactorMult( FieldPoly* FP, IntPoly* IP, unsigned long m, FactorMult<FieldPoly,IntPoly>*d)
-			: fieldP(FP), intP(IP), multiplicity(m), dep(d) {}
-		FactorMult (const FactorMult<FieldPoly>& FM)
-			: fieldP(FM.fieldP), intP(FM.intP), multiplicity(FM.multiplicity), dep(FM.dep) {}
+		FactorMult() :
+			multiplicity(0),dep(NULL)
+		{}
+		FactorMult( FieldPoly* FP, IntPoly* IP, unsigned long m, FactorMult<FieldPoly,IntPoly>*d) :
+			fieldP(FP), intP(IP), multiplicity(m), dep(d)
+		{}
+
+		FactorMult (const FactorMult<FieldPoly>& FM) :
+			fieldP(FM.fieldP), intP(FM.intP), multiplicity(FM.multiplicity), dep(FM.dep)
+		{}
 
 		int update (const size_t n, int * goal)
 		{
@@ -285,11 +290,12 @@ namespace LinBox
 		unsigned long                   multiplicity;
 		FactorMult<FieldPoly, IntPoly>  *dep;
 
-		std::ostream& write(std::ostream& os){
+		std::ostream& write(std::ostream& os)
+		{
 			return os<<"  FieldPoly --> "<<fieldP
-				 <<"  IntPoly --> "<<intP
-				 <<"  multiplicity --> "<<multiplicity<<std::endl
-				 <<"  dep --> "<<dep<<std::endl;
+			<<"  IntPoly --> "<<intP
+			<<"  multiplicity --> "<<multiplicity<<std::endl
+			<<"  dep --> "<<dep<<std::endl;
 
 		}
 	};

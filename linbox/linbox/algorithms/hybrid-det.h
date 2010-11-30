@@ -84,22 +84,27 @@ namespace LinBox
 
 		typename Vector<PID_integer>::Dense primes;
 
-		size_t iterations() {
+		size_t iterations()
+		{
 			return iter_count;
 		}
-		size_t iterations2() {
+
+		size_t iterations2()
+		{
 			return iter_count2;
 		}
 
 
+#if 0
+		int iter_count;
+		int iter_count2;
+		Vector <PID_integer>:: Dense moduli;
+		Vector <PID_integer>:: Dense primes;
+#endif
 
-		//          int iter_count;
-		//          int iter_count2;
-		//          Vector <PID_integer>:: Dense moduli;
-		//          Vector <PID_integer>:: Dense primes;
-
-		IntegerModularDetReduced(const Blackbox& b, const MyMethod& n, const integer& divisor, const size_t& f)
-		: A(b), M(n), beta(divisor), factor(f) {
+		IntegerModularDetReduced(const Blackbox& b, const MyMethod& n, const integer& divisor, const size_t& f) :
+			A(b), M(n), beta(divisor), factor(f)
+		{
 			moduli.resize(factor);
 			primes.resize(factor);
 			iter_count = 0;
@@ -108,7 +113,8 @@ namespace LinBox
 		}
 
 		template<typename Field>
-		typename Field::Element& operator()(typename Field::Element& d, const Field& F) {
+		typename Field::Element& operator()(typename Field::Element& d, const Field& F)
+		{
 
 			if (beta > 1) {
 				if (iter_count2 < factor) {
@@ -420,10 +426,11 @@ namespace LinBox
 		return d ;
 
 	}
+
 #if 0
 	template <class Integers, class MyMethod>
-	typename Integers::Element & lif_cra_det (typename Integers::Element         &d,
-						  const SparseMatrix<Integers >                            &A,
+	typename Integers::Element & lif_cra_det (typename Integers::Element                &d,
+						  const SparseMatrix<Integers>              &A,
 						  const RingCategories::IntegerTag          &tag,
 						  const MyMethod                            &M)
 	{

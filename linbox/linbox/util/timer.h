@@ -67,7 +67,9 @@ namespace LinBox
 
 	class RealTimer : public BaseTimer {
 	public:
-		inline RealTimer (const BaseTimer &BT) : BaseTimer (BT) {};
+		inline RealTimer (const BaseTimer &BT) :
+		       	BaseTimer (BT)
+		{};
 		inline RealTimer () {};
 		void start ();
 		void stop ();
@@ -76,7 +78,9 @@ namespace LinBox
 
 	class UserTimer : public BaseTimer {
 	public:
-		inline UserTimer (const BaseTimer &BT) : BaseTimer (BT) {};
+		inline UserTimer (const BaseTimer &BT) :
+		       	BaseTimer (BT)
+	       	{};
 		inline UserTimer () {};
 		void start ();
 		void stop ();
@@ -85,7 +89,9 @@ namespace LinBox
 
 	class SysTimer : public BaseTimer {
 	public:
-		inline SysTimer (const BaseTimer &BT): BaseTimer (BT) {};
+		inline SysTimer (const BaseTimer &BT) :
+		       	BaseTimer (BT)
+	       	{};
 		inline SysTimer () {};
 		void start ();
 		void stop ();

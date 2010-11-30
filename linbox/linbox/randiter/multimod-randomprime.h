@@ -18,10 +18,10 @@
 #include <linbox/util/timer.h>
 #include <vector>
 
-namespace LinBox 
+namespace LinBox
 {
-	
-	class MultiModRandomPrime {		
+
+	class MultiModRandomPrime {
 	protected:
 
 		size_t   _bits;
@@ -29,75 +29,80 @@ namespace LinBox
 		integer _shift;
 
 	public:
-		
 
-		MultiModRandomPrime(size_t n=1, size_t bits = 30, unsigned long seed = 0) 
-			: _bits(bits), _size(n)
+
+		MultiModRandomPrime(size_t n=1, size_t bits = 30, unsigned long seed = 0) :
+			_bits(bits), _size(n)
 		{
 			_shift = integer(1)<<_bits;
 
-			if (! seed) 
+			if (! seed)
 				MultiModRandomPrime::setSeed( BaseTimer::seed() );
 			else
 				MultiModRandomPrime::setSeed( seed );
 		}
-	  
+
 		// define the prime type
 		typedef std::vector<integer> Prime_Type;
-	  
+
 		/** @memo randomPrime()
 		 *  return a vector of random prime
 		 */
-		inline Prime_Type randomPrime() const {std::cout<<"ist used\n";
+		inline Prime_Type randomPrime() const
+		{
+			std::cout<<"ist used\n";
 			std::vector<integer> tmp(_size);
 			for (size_t i=0;i<_size; ++i){
 				do {
 					integer::random(tmp[i],_bits-1);
 					tmp[i]= _shift-tmp[i];
-					nextprime(tmp[i],tmp[i]);					
-				} while (std::find(tmp.begin(), tmp.begin()+i, tmp[i]) != (tmp.begin()+i ));				
-			}				
+					nextprime(tmp[i],tmp[i]);
+				} while (std::find(tmp.begin(), tmp.begin()+i, tmp[i]) != (tmp.begin()+i ));
+			}
 			return tmp;
 		}
-	  
+
 		/** @memo randomPrime(Prime_Type& p)
 		 *  return a random prime
 		 */
-		inline Prime_Type randomPrime (Prime_Type& p) const {
+		inline Prime_Type randomPrime (Prime_Type& p) const
+		{
 			for (size_t i=0;i<p.size(); ++i){
 				do {
 					integer::random(p[i],_bits-1);
 					p[i]= _shift-p[i];
 					nextprime(p[i],p[i]);
-				} while (std::find(p.begin(), p.begin()+i-1, p[i]) != (p.begin()+i-1 ));		
+				} while (std::find(p.begin(), p.begin()+i-1, p[i]) != (p.begin()+i-1 ));
 			}
 			return p;
 		}
-	  
+
 
 		/** @memo setSeed (unsigned long ul)
 		 *  Set the random seed to be ul.
 		 */
-		void static setSeed(unsigned long ul) { 
+		void static setSeed(unsigned long ul)
+		{
 			integer::seeding(ul);
 		}
 
 
-		inline Prime_Type createPrimes (const integer& maxPrime, const integer& productBound) const {
+		inline Prime_Type createPrimes (const integer& maxPrime, const integer& productBound) const
+		{
 			Prime_Type tmp;
-			integer acc=1, cur=maxPrime; 
-			
+			integer acc=1, cur=maxPrime;
+
 			do {
 				prevprime(cur, cur);
 				tmp.push_back(cur);
-				acc*=cur;				
+				acc*=cur;
 			} while (acc < productBound);
 
 			return tmp;
 		}
-		
-	  
-	  
+
+
+
 	};
 }
 

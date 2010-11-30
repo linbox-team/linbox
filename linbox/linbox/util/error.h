@@ -30,57 +30,65 @@
 namespace LinBox
 {
 
-// ------------------------------- LinboxError
-/** base class for execption handling in Givaro
-\ingroup util
-*/
-class LinboxError {
-	static const size_t max_error_string = 256;
-public:
-	LinboxError (const char* msg = '\0') {
-		std::strncpy(strg, msg, max_error_string);
-		strg[max_error_string-1] = 0;
-	};
+	// ------------------------------- LinboxError
+	/** base class for execption handling in Givaro
+	  \ingroup util
+	  */
+	class LinboxError {
+		static const size_t max_error_string = 256;
+	public:
+		LinboxError (const char* msg = '\0') {
+			std::strncpy(strg, msg, max_error_string);
+			strg[max_error_string-1] = 0;
+		};
 
 
-	// -- virtual print of the error message
-	virtual std::ostream &print (std::ostream &o) const
-	{ return o << strg<<std::endl ; }
-  
-	// -- non virtual output operator
-	friend std::ostream &operator << (std::ostream &o, const LinboxError &E);
+		// -- virtual print of the error message
+		virtual std::ostream &print (std::ostream &o) const
+		{ return o << strg<<std::endl ; }
 
-	// - useful to setup a break point on it
-	static void throw_error (const LinboxError &err)
+		// -- non virtual output operator
+		friend std::ostream &operator << (std::ostream &o, const LinboxError &E);
+
+		// - useful to setup a break point on it
+		static void throw_error (const LinboxError &err)
 		{ throw err; }
 
-    	virtual ~LinboxError() {}        
+		virtual ~LinboxError() {}
 
-    protected:
-	char strg[max_error_string]; 
-};
+	protected:
+		char strg[max_error_string];
+	};
 
-class LinboxMathError : public LinboxError {
- public:
-	LinboxMathError (const char* msg) : LinboxError (msg) {};
-};
+	class LinboxMathError : public LinboxError {
+	public:
+		LinboxMathError (const char* msg) :
+			LinboxError (msg)
+		{};
+	};
 
-class LinboxMathDivZero : public LinboxMathError {
- public:
-	LinboxMathDivZero (const char* msg) : LinboxMathError (msg) {};
-};
+	class LinboxMathDivZero : public LinboxMathError {
+	public:
+		LinboxMathDivZero (const char* msg) :
+			LinboxMathError (msg)
+		{};
+	};
 
-class LinboxMathInconsistentSystem : public LinboxMathError {
- public:
-	LinboxMathInconsistentSystem (const char* msg) : LinboxMathError (msg) {};
-};
+	class LinboxMathInconsistentSystem : public LinboxMathError {
+	public:
+		LinboxMathInconsistentSystem (const char* msg) :
+			LinboxMathError (msg)
+		{};
+	};
 
-// -- Exception thrown in input of data structure 
-class LinboxBadFormat : public LinboxError {
- public:
-	LinboxBadFormat (const char* msg) : LinboxError (msg) {};
-};
- 
+	// -- Exception thrown in input of data structure
+	class LinboxBadFormat : public LinboxError {
+	public:
+		LinboxBadFormat (const char* msg) :
+			LinboxError (msg)
+		{};
+	};
+
 }
 
 #ifdef LinBoxSrcOnly       // for all-source compilation

@@ -36,14 +36,14 @@ namespace LinBox
 
 	/** \brief transpose matrix without copying.
 
-\ingroup blackbox
+	  \ingroup blackbox
 
 	 * @param Vector \ref LinBox dense or sparse vector of field elements
 	 */
 	template <class Blackbox>
 	class Squarize : public BlackboxInterface {
 
-	    public:
+	public:
 		typedef Blackbox Blackbox_t;
 		typedef Squarize<Blackbox> Self_t;
 
@@ -55,11 +55,14 @@ namespace LinBox
 		 * matrix A
 		 * @param A_ptr pointer to black box matrix.
 		 */
-		Squarize (const Blackbox& A) : _A_ptr(&A){
+		Squarize (const Blackbox& A) :
+			_A_ptr(&A)
+		{
 			_A_ptr->field().init(_Zero,0UL);
 		}
 
-		Squarize (const Blackbox *A_ptr): _A_ptr(A_ptr)
+		Squarize (const Blackbox *A_ptr) :
+			_A_ptr(A_ptr)
 		{
 			_A_ptr->field().init(_Zero,0UL);
 			// create new copies of matrices in dynamic memory
@@ -71,7 +74,8 @@ namespace LinBox
 		 * Creates new black box objects in dynamic memory.
 		 * @param M constant reference to compose black box matrix
 		 */
-		Squarize (const Squarize<Blackbox> &M) : _A_ptr(M._A_ptr)
+		Squarize (const Squarize<Blackbox> &M) :
+			_A_ptr(M._A_ptr)
 		{
 			_A_ptr->field().init(_Zero,0UL);
 			// create new copies of matrices in dynamic memory
@@ -87,10 +91,10 @@ namespace LinBox
 		template<typename _Tp1>
 		struct rebind
 		{
-                        typedef Squarize<typename Blackbox::template rebind<_Tp1>::other> other;
-                        void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
-                                typename Blackbox_t::template rebind<_Tp1> () ( *(Ap._A_ptr), *(A._A_ptr), F);
-                        }
+			typedef Squarize<typename Blackbox::template rebind<_Tp1>::other> other;
+			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+				typename Blackbox_t::template rebind<_Tp1> () ( *(Ap._A_ptr), *(A._A_ptr), F);
+			}
 		};
 
 		/** Application of BlackBox matrix.
@@ -130,7 +134,7 @@ namespace LinBox
 				for(typename Vector1::iterator yit=y.begin()+_A_ptr->rcoldim ();
 				    yit != y.end(); ++yit)
 					*yit = _Zero;
-}			return y;
+			}			return y;
 		}
 
 	protected:
@@ -163,7 +167,7 @@ namespace LinBox
 
 
 		const Field& field() const {return _A_ptr->field();}
-	    protected:
+	protected:
 		// Pointer to A matrix
 		const Blackbox *_A_ptr;
 		typename Field::Element _Zero;

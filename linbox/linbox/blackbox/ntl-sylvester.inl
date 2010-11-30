@@ -23,28 +23,28 @@ namespace LinBox
      *    Destructor
      *---------------------------------------------------------------------*/
     template <class Field>
-    inline Sylvester<Field>::~Sylvester() 
+    inline Sylvester<Field>::~Sylvester()
     {
-	  
+
 #ifdef DBGMSGS
-	  std::cout << "Sylvester::~Sylvester():\tDestroyed a " 
+	  std::cout << "Sylvester::~Sylvester():\tDestroyed a "
 			<< rowDim << "x"<< colDim << " Sylvester matrix "<< std::endl;
 #endif
-	  
+
     }// End, ~Sylvester()
-    
-    
-    
+
+
+
     /*----------------------------------------------------------------------
      *    Default constructor.
      *---------------------------------------------------------------------*/
     template <class Field>
-    Sylvester<Field>::Sylvester()  
+    Sylvester<Field>::Sylvester()
     {
 	  sysDim =               // Default dimension is 0
 	  rowDim =               // Default row dim is 0
 	  colDim = 0;            // Default col dim is 0
-	  
+
 #ifdef DBGMSGS
 	  std::cout << "Sylvester::Sylvester():\tCreated a " << rowDim << "x"<< colDim<<
 		" Sylvester matrix "<< std::endl;
@@ -55,39 +55,40 @@ namespace LinBox
 
 
     /*----------------------------------------------------------------------
-     *    Constructor. Builds two rectangular Toeplitz blocks, the top from 
+     *    Constructor. Builds two rectangular Toeplitz blocks, the top from
      *                 px with deg(qx) rows, and the bottom out qx, with deg(px)
      *                 rows.
      *---------------------------------------------------------------------*/
     template <class Field>
-    Sylvester<Field>::Sylvester( 
+    Sylvester<Field>::Sylvester(
 		    const Field F,
 		    const std::vector<typename Field::Element> &vp,
-		    const std::vector<typename Field::Element> &vq 
-		    ) :	  pdata(vp), qdata(vq)
+		    const std::vector<typename Field::Element> &vq
+		    ) :
+	    pdata(vp), qdata(vq)
     {
-	  
+
 	  // Set the row, col, and system dimensions
-	  rowDim = 
+	  rowDim =
 	  colDim =
-	  sysDim = vp.size() + vq.size()-2;  // square system with dimension deg(px)+deg(qx) 
-	  
+	  sysDim = vp.size() + vq.size()-2;  // square system with dimension deg(px)+deg(qx)
+
 	  // Copy the vector to a polynomial representation, for px
 	  pxdata.SetMaxLength( vp.size() );
 	  for (size_t ip=0; ip< vp.size(); ip++ )
 	  SetCoeff( pxdata, ip, vp[ip]);
-	  
+
 	  // Copy the vector to a polynomial representation, for qx
 	  qxdata.SetMaxLength( vq.size() );
-	  for ( size_t iq=0; iq< vq.size(); iq++ ) 
+	  for ( size_t iq=0; iq< vq.size(); iq++ )
 	  SetCoeff( qxdata, iq, vq[iq] );
-	  
-	  
+
+
 #ifdef DBGMSGS
-	  std::cout << "Sylvester::Sylvester(F,v,w):\tCreated a " << rowDim << 
+	  std::cout << "Sylvester::Sylvester(F,v,w):\tCreated a " << rowDim <<
 		"x"<< colDim<< " Sylvester matrix "<< std::endl;
 #endif
-	  
+
 	  /* Inserted for a timing calculation with the gcd
 	   *  double start_time = GetTime();
 	   *	  ZZ_pX gx;
@@ -106,44 +107,44 @@ namespace LinBox
      *    debugging
      *---------------------------------------------------------------------*/
     template <class Field>
-    void Sylvester<Field>::print(std::ostream& os) const 
+    void Sylvester<Field>::print(std::ostream& os) const
     {
-	  if ( sysDim < 20 ) 
+	  if ( sysDim < 20 )
 		{
 		    os << rowDim << " " << colDim << std::endl;
-		    for (size_t irow=0; irow < qxdeg(); irow++ ) 
+		    for (size_t irow=0; irow < qxdeg(); irow++ )
 			  {
-				os << "[  ";	
-				for (size_t icoeff=0; icoeff < irow; icoeff++ ) 
-				    os << "0  ";
-				
-				for (size_t icoeff = pxdeg(); icoeff > 0; icoeff-- ) 
-				    os << pdata[ icoeff ] << " ";
-				
-				os << pdata[ 0 ] << " ";
-				
-				for (size_t icoeff = sysDim-1-pxdeg()-irow; icoeff > 0; icoeff-- ) 
-				    os << "0  ";
-				os << " ]\n";
-			  }
-		    for (size_t irow=0; irow < pxdeg(); irow++ ) 
-			  {
-				os << "[ "; 
-				
+				os << "[  ";
 				for (size_t icoeff=0; icoeff < irow; icoeff++ )
-				    os << "0  "; 		
-				
-				for (size_t icoeff = qxdeg(); icoeff > 0; icoeff-- )
-				    os << qdata[ icoeff ] << " "; 
-				os << qdata[ 0 ] << " ";
-				
-				for (size_t icoeff = sysDim-1-qxdeg()-irow; icoeff > 0; icoeff-- ) 
 				    os << "0  ";
-				
+
+				for (size_t icoeff = pxdeg(); icoeff > 0; icoeff-- )
+				    os << pdata[ icoeff ] << " ";
+
+				os << pdata[ 0 ] << " ";
+
+				for (size_t icoeff = sysDim-1-pxdeg()-irow; icoeff > 0; icoeff-- )
+				    os << "0  ";
 				os << " ]\n";
 			  }
-		} 
-	  else 
+		    for (size_t irow=0; irow < pxdeg(); irow++ )
+			  {
+				os << "[ ";
+
+				for (size_t icoeff=0; icoeff < irow; icoeff++ )
+				    os << "0  ";
+
+				for (size_t icoeff = qxdeg(); icoeff > 0; icoeff-- )
+				    os << qdata[ icoeff ] << " ";
+				os << qdata[ 0 ] << " ";
+
+				for (size_t icoeff = sysDim-1-qxdeg()-irow; icoeff > 0; icoeff-- )
+				    os << "0  ";
+
+				os << " ]\n";
+			  }
+		}
+	  else
 		{
 		    os << rowDim << " " << colDim << std::endl;
 		    os << pxdata;
@@ -151,9 +152,9 @@ namespace LinBox
 		    os << qxdata;
 		    os << "\n";
 		}
-	  
+
     }// Print()
-    
+
 
 
 
@@ -162,7 +163,7 @@ namespace LinBox
      *---------------------------------------------------------------------*/
 
     template <class Field>
-    void Sylvester<Field>::print(char *outFileName) const 
+    void Sylvester<Field>::print(char *outFileName) const
     {
 	  if ( outFileName == NULL )
 		print();
@@ -194,7 +195,7 @@ namespace LinBox
      *--------------------------------------------------------------------- */
 
     template <class Field>
-    void Sylvester<Field>::printcp(char *outFileName) const 
+    void Sylvester<Field>::printcp(char *outFileName) const
     {
 	  if ( outFileName == NULL )
 		print();
@@ -203,26 +204,26 @@ namespace LinBox
 		os << rowDim << " " << colDim << " M" << std::endl;
 		size_t irow;
 		size_t icoeff;
-		for (irow=0; irow < qxdeg(); irow++ ) 
+		for (irow=0; irow < qxdeg(); irow++ )
 		    {
-			  
-			  for (icoeff = pxdeg(); icoeff > 0; icoeff-- ) 
-				os << (irow+1) << " " << (irow + pxdeg()- icoeff +1) << " " << 
+
+			  for (icoeff = pxdeg(); icoeff > 0; icoeff-- )
+				os << (irow+1) << " " << (irow + pxdeg()- icoeff +1) << " " <<
 				    pdata[ icoeff ] << "\n";
 
-			  os << (irow+1) << " " << (irow + pxdeg()+1) << " " << 
+			  os << (irow+1) << " " << (irow + pxdeg()+1) << " " <<
 				    pdata[ icoeff ] << "\n";
 
 		    }
-		
-		for (irow=0; irow < pxdeg(); irow++ ) 
+
+		for (irow=0; irow < pxdeg(); irow++ )
 		    {
 
 			  for (icoeff = qxdeg(); icoeff > 0; icoeff-- )
-				os << (irow+qxdeg()+1) << " " << (irow + pxdeg()- icoeff +1) << " " << 
+				os << (irow+qxdeg()+1) << " " << (irow + pxdeg()- icoeff +1) << " " <<
 				    qdata[ icoeff ] << "\n";
-			  
-			  os << (irow+qxdeg()+1) << " " << (irow + pxdeg()+1) << " " << 
+
+			  os << (irow+qxdeg()+1) << " " << (irow + pxdeg()+1) << " " <<
 				qdata[ icoeff ] << "\n";
 		    }
 
@@ -244,25 +245,25 @@ namespace LinBox
 
     template <class Field>
     template <class OutVector, class InVector>
-    OutVector& Sylvester<Field>::apply( OutVector &v_out, 
+    OutVector& Sylvester<Field>::apply( OutVector &v_out,
 							   const InVector& v_in) const
-    {  
+    {
 	  /* uncomment the following lines here and in apply() and swap method names
 	   * to swap the apply() for the faster applyTranspose()
 	   *
 	   *	  static int flipper = 1;
-	   *	  if (flipper == 1) 
-	   *		{ cout << "\t sylvester applyTranspose is flipped apply\n"; 
+	   *	  if (flipper == 1)
+	   *		{ cout << "\t sylvester applyTranspose is flipped apply\n";
 	   *		  flipper++;
 	   *		}
 	   */
-	  
+
 	  /*--------------- Check the size of the output vector ----------*/
 	  if ( v_out.size() != sysdim() )
 		std::cout << "\tSylvester::apply()\t output vector not correct size, at "
 			    << v_out.size() << ". System rowdim is" <<  sysdim() << std::endl;
 	  NTL::ZZ_pX txOut, txIn;
-	  
+
 	  /*--------------- Convert input vector to a polynomial ---------*/
 	  txIn.SetMaxLength( v_in.size() -1 );
 	  for ( size_t i=0; i < v_in.size(); i++ )
@@ -273,7 +274,7 @@ namespace LinBox
 	  int Nq = qxdeg();
 	  int m  = pxdeg();
 	  /*--------------  vout[0..deg(q)-1] <--- txout[deg(qx)...2deg(qx)-1] --- */
-	  for ( int i=0; i < Nq; ++i ) 
+	  for ( int i=0; i < Nq; ++i )
 		GetCoeff(v_out[i], txOut, m+i);
 
 	  /*--------------  Poly multiply the lower Sylvester poly by input -----*/
@@ -282,9 +283,9 @@ namespace LinBox
 	  int Np = pxdeg();
 	  int n  = qxdeg();
 
-	  /*--------------  vout[deg(qx)..deg(qx)+deg(px)-1] <--- 
+	  /*--------------  vout[deg(qx)..deg(qx)+deg(px)-1] <---
 	   *                              txout[deg(qx)...deg(qx)+deg(px)-1] --- */
-	  for ( int i=0; i < Np; ++i ) 
+	  for ( int i=0; i < Np; ++i )
 		GetCoeff(v_out[Nq+i], txOut, n+i );
 
 
@@ -293,7 +294,7 @@ namespace LinBox
 
 
     /*----------------------------------------------------------------------
-     *    Apply Transpose: Does 2 polymults of degree deg(qx), and deg(px) 
+     *    Apply Transpose: Does 2 polymults of degree deg(qx), and deg(px)
      *                     respectively. It takes approx 55% of the time of
      *                     apply, in apparent violation of Tellegen's theorem
      *                     Actually, both apply and applyT can be done with
@@ -302,22 +303,22 @@ namespace LinBox
      *---------------------------------------------------------------------*/
     template <class Field>
     template <class OutVector, class InVector>
-    OutVector& Sylvester<Field>::applyTranspose( OutVector &v_out, 
+    OutVector& Sylvester<Field>::applyTranspose( OutVector &v_out,
 									const InVector& v_in) const
-    {  
+    {
 	  /* uncomment the following lines here and in apply() and swap method names
 	   * to swap the apply() for the faster applyTranspose()
 	   *
 	   *	  static int flipper=1;
-	   *	  if (flipper == 1) 
+	   *	  if (flipper == 1)
 	   *		{ cout << "\tSylvester apply is flipped applyTranspose\n"; flipper++;}
-	   */	  
+	   */
 
 	  /*--------- Check for size-compatibility of output vectors ------------*/
 	  if ( v_out.size() != sysdim() )
 		std::cout << "\tSylvester::apply()\t output vector not correct size, at "
 			    << v_out.size() << ". System rowdim is" <<  sysdim() << std::endl;
-	  
+
 	  NTL::ZZ_pX txOut, txIn;
 	  NTL::ZZ_p tval;
 
@@ -326,12 +327,12 @@ namespace LinBox
 	  txIn.SetMaxLength( qxdeg()-1 );
 	  for ( size_t i=0; i < qxdeg(); i++ )
 		SetCoeff( txIn, qxdeg()-1-i, v_in[i] );
-	  
+
 	  mul( txOut, txIn, pxdata);     // Do the poly multiply
-	  
+
 	  /*--------- We need to reverse the output vector           -----------*/
 	  /*-------  v_out[0..N-1] <--- txOut[N-1...0]                  --------*/
-	  for (size_t i=0; i < v_out.size(); i++) 
+	  for (size_t i=0; i < v_out.size(); i++)
 		GetCoeff(v_out[i], txOut, sysdim()-1-i); // Extract the coeffs
 
 	  /*--------- We need to reverse the input vector           -----------*/

@@ -38,7 +38,7 @@
 #include <linbox/util/error.h>
 #include <linbox/util/debug.h>
 
-namespace LinBox 
+namespace LinBox
 {
 
 	template <class _Field>
@@ -58,15 +58,20 @@ namespace LinBox
 		RandIter                   _rand;
 
 	public:
-		BlockWiedemannSolver (const Field &F) : _F(F), _BMD(F), _VDF(F), _rand(F) {}
+		BlockWiedemannSolver (const Field &F) :
+			_F(F), _BMD(F), _VDF(F), _rand(F)
+		{}
 
-		BlockWiedemannSolver (const Field &F, const RandIter &rand) : _F(F), _BMD(F), _VDF(F), _rand(rand) {}
+		BlockWiedemannSolver (const Field &F, const RandIter &rand) :
+			_F(F), _BMD(F), _VDF(F), _rand(rand)
+		{}
 
 
 		template <class Blackbox>
-		Vector &solveNonSingular (Vector &x, const Blackbox &B, const Vector &y) const {
+		Vector &solveNonSingular (Vector &x, const Blackbox &B, const Vector &y) const
+		{
 
-			
+
 			Transpose<Blackbox> A(B);
 
 			size_t m,n;
@@ -86,31 +91,31 @@ namespace LinBox
 
 
 			Block U(p,m), UA(p-1,m), V(n,q);
-			
+
 			for (size_t i=0;i<n;++i)
 				for (size_t j=0;j<q;++j)
 					_rand.random(V.refEntry(i,j));
-			
+
 			for (size_t i=0;i<p-1;++i)
 				for (size_t j=0;j<m;++j)
 					_rand.random(UA.refEntry(i,j));
-			
+
 			Block::RowIterator        iter_U  = U.rowBegin();
 			Block::ConstRowIterator   iter_UA = UA.rowBegin();
 			++iter_U;
-			for (; iter_UA != UA.rowEnd(); ++iter_UA, ++iter_U) 
+			for (; iter_UA != UA.rowEnd(); ++iter_UA, ++iter_U)
 				A.applyTranspose( *iter_U , *iter_UA );
-				
+
 			for (size_t i=0;i<m;++i)
 				U.setEntry(0,i,y[i]);
 
-			BlackboxBlockContainer<Field,Transpose<Blackbox> > Sequence (&A,_F,U,V);			
+			BlackboxBlockContainer<Field,Transpose<Blackbox> > Sequence (&A,_F,U,V);
 			BlockMasseyDomain <Field,BlackboxBlockContainer<Field,Transpose<Blackbox> > > MBD(&Sequence);
-			
+
 			std::vector<Block> minpoly;
 			std::vector<size_t> degree;
 			MBD.left_minpoly(minpoly,degree);
-			
+
 
 			size_t idx=0;
 			if ( _F.isZero(minpoly[0].getEntry(0,0))) {
@@ -120,10 +125,10 @@ namespace LinBox
 					++i;
 				if (i == m)
 					throw LinboxError(" block minpoly: matrix seems to be singular - abort");
-				else 
-					idx=i	;			
+				else
+					idx=i	;
 			}
-			
+
 
 			bool classic = false;
 			if ( classic) {
@@ -133,44 +138,44 @@ namespace LinBox
 				 * the first element in this row is non zero.
 				 * we use y and UA as projection (UA= U.A)
 				 */
-				size_t deg = degree[idx];		
+				size_t deg = degree[idx];
 				std::vector<Vector> combi(p,Vector(deg+1));
-				for (size_t i=0;i<p;++i) 
+				for (size_t i=0;i<p;++i)
 					for (size_t k=0;k<deg+1;++k)
 						combi[i][k]=minpoly[k].getEntry(idx,i);
-					
-				Vector lhs(n);			
+
+				Vector lhs(n);
 				A.applyTranspose(lhs,y);
 				_VDF.mulin(lhs,combi[0][deg]);
 				Vector lhsbis(lhs);
 				for (int i = deg-1 ; i > 0;--i) {
 					_VDF.axpy (lhs, combi[0][i], y, lhsbis);
-					A.applyTranspose (lhsbis, lhs);			
-				}   
-		
+					A.applyTranspose (lhsbis, lhs);
+				}
+
 				Vector accu (lhs);
-				for (size_t k=1;k<p;++k){			
+				for (size_t k=1;k<p;++k){
 					Vector row(m);
 					for (size_t j=0;j<m;++j)
-						row[j]=UA.getEntry(k-1,j);				
-					A.applyTranspose(lhs,row);			
+						row[j]=UA.getEntry(k-1,j);
+					A.applyTranspose(lhs,row);
 					_VDF.mulin(lhs,combi[k][deg]);
 					Vector lhsbis(lhs);
-					for (int i = deg-1 ; i >= 0;--i) {												
+					for (int i = deg-1 ; i >= 0;--i) {
 						_VDF.axpy (lhs, combi[k][i], row, lhsbis);
 						A.applyTranspose (lhsbis, lhs);
-					}   
-				
-				
+					}
+
+
 					_VDF.addin(accu,lhs);
 				}
-			
+
 				Element scaling;
 				_F.init(scaling);
 				_F.neg(scaling,combi[0][0]);
 				_F.invin(scaling);
 				_VDF.mul(x,accu,scaling);
-				
+
 			}
 			else {
 				/*
@@ -178,40 +183,40 @@ namespace LinBox
 				 * given by the product of the idx-th row of MinPoly and UA.
 				 * this should decrease the number of sparse apply but increase memory requirement.
 				 */
-				size_t deg = degree[idx];		
+				size_t deg = degree[idx];
 				BlasMatrix<Element> idx_poly(deg+1,p-1);
-				for (size_t i=0;i<deg+1;++i) 
+				for (size_t i=0;i<deg+1;++i)
 					for (size_t j=0;j<p-1;++j)
 						idx_poly.setEntry(i,j,minpoly[i].getEntry(idx,j+1));
 
 				BlasMatrix<Element> Combi(deg+1,m);
 				_BMD.mul(Combi,idx_poly,UA);
-					
 
-				Vector lhs(n),row(m);	
+
+				Vector lhs(n),row(m);
 				for (size_t i=0;i<m;++i)
 					row[i]= Combi.getEntry(deg,i);
-					
-				A.applyTranspose(lhs,row);					
+
+				A.applyTranspose(lhs,row);
 				Vector lhsbis(lhs);
 				for (int i = deg-1 ; i >= 0;--i) {
 					for (size_t j=0;j<m;++j)
 						row[j]= Combi.getEntry(i,j);
 					_VDF.add (lhs,row,lhsbis);
-					A.applyTranspose (lhsbis, lhs);			
-				}   
-					
+					A.applyTranspose (lhsbis, lhs);
+				}
+
 				Vector accu (lhs);
-					
-					
+
+
 				A.applyTranspose(lhs,y);
 				_VDF.mulin(lhs,minpoly[deg].getEntry(idx,0));
 				lhsbis=lhs;
 				for (size_t i = deg-1 ; i > 0;--i) {
 					_VDF.axpy (lhs,minpoly[i].getEntry(idx,0) , y, lhsbis);
-					A.applyTranspose (lhsbis, lhs);			
-				}  
-					
+					A.applyTranspose (lhsbis, lhs);
+				}
+
 				_VDF.addin(accu,lhs);
 				Element scaling;
 				_F.init(scaling);
@@ -219,16 +224,16 @@ namespace LinBox
 				_F.invin(scaling);
 				_VDF.mul(x,accu,scaling);
 			}
-	
-			return x;	
+
+			return x;
 		}
 
 
 
 	}; // end of class BlockWiedemannSolver
-    
 
-    
+
+
 }// end of namespace LinBox
 
 #endif //__LINBOX_block_wiedemann_H

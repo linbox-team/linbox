@@ -65,8 +65,7 @@ namespace LinBox
 	struct ClassifyRing<ModularBalanced<Element> >;
 
 	template<>
-	struct ClassifyRing<ModularBalanced<int64> >
-	{
+	struct ClassifyRing<ModularBalanced<int64> > {
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
@@ -88,14 +87,16 @@ namespace LinBox
 		typedef ModularBalancedRandIter<int64> RandIter;
 
 		//default modular field,taking 65521 as default modulus
-		ModularBalanced () :modulus(65521)
+		ModularBalanced () :
+			modulus(65521)
 		{
 			modulusinv = 1/(double)65521;
 			halfmodulus = (65521 >> 1);
 			nhalfmodulus = -halfmodulus;
 		}
 
-		ModularBalanced (int64 value, int exp = 1)  : modulus(value)
+		ModularBalanced (int64 value, int exp = 1)  :
+			modulus(value)
 		{
 			halfmodulus = (modulus >> 1);
 			nhalfmodulus = -halfmodulus;
@@ -109,7 +110,8 @@ namespace LinBox
 
 		}
 
-		ModularBalanced (const ModularBalanced<int64>& mf) : modulus(mf.modulus),halfmodulus(mf.halfmodulus),nhalfmodulus(mf.nhalfmodulus),modulusinv(mf.modulusinv)
+		ModularBalanced (const ModularBalanced<int64>& mf) :
+			modulus(mf.modulus),halfmodulus(mf.halfmodulus),nhalfmodulus(mf.nhalfmodulus),modulusinv(mf.modulusinv)
 		{ }
 
 		const ModularBalanced &operator=(const ModularBalanced<int64> &F)
@@ -449,12 +451,15 @@ namespace LinBox
 		typedef int64 Element;
 		typedef ModularBalanced<int64> Field;
 
-		FieldAXPY (const Field &F) : _F (F),_y(0),_times(0)
+		FieldAXPY (const Field &F) :
+			_F (F),_y(0),_times(0)
 		{
 		}
 
 
-		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0),_times(0){}
+		FieldAXPY (const FieldAXPY &faxpy) :
+			_F (faxpy._F), _y (0),_times(0)
+		{}
 
 		FieldAXPY<ModularBalanced<int64> > &operator = (const FieldAXPY &faxpy)
 		{
@@ -545,9 +550,9 @@ namespace LinBox
 
 	public:
 		typedef int64 Element;
-		DotProductDomain (const ModularBalanced<int64> &F)
-		: VectorDomainBase<ModularBalanced<int64> > (F) ,blocksize(32){
-		}
+		DotProductDomain (const ModularBalanced<int64> &F) :
+			VectorDomainBase<ModularBalanced<int64> > (F) ,blocksize(32)
+		{ }
 
 	protected:
 		template <class Vector1, class Vector2>

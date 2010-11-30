@@ -46,18 +46,21 @@ namespace LinBox
 		const Ring _Z;
 		typedef typename Ring::Element Element;
 
-		ClassicRationalReconstruction(const Ring& Z, const bool reduce = true, const bool recursive = false): RReconstructionBase<Ring>(Z),
+		ClassicRationalReconstruction(const Ring& Z, const bool reduce = true, const bool recursive = false) :
+			RReconstructionBase<Ring>(Z),
 			_reduce(reduce), _recursive (recursive), _Z(Z)
 		{}
 
-		ClassicRationalReconstruction<Ring> (const ClassicRationalReconstruction<Ring>& RR): RReconstructionBase<Ring>(RR._Z),
+		ClassicRationalReconstruction<Ring> (const ClassicRationalReconstruction<Ring>& RR):
+			RReconstructionBase<Ring>(RR._Z),
 			_reduce(RR._reduce), _recursive(RR._recursive), _Z(RR._Z)
 		{}
 
 		~ClassicRationalReconstruction() {}
 
 		//Wang method
-		bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m) const {
+		bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m) const
+		{
 			Element a_bound; _Z.sqrt(a_bound, m/2);
 			bool res = reconstructRational(a,b,x,m,a_bound);
 			res = res && (b <= a_bound);
@@ -90,7 +93,8 @@ namespace LinBox
 
 	protected:
 
-		bool ratrecon(Element& a,Element& b,const Element& x,const Element& m,const Element& a_bound) const {
+		bool ratrecon(Element& a,Element& b,const Element& x,const Element& m,const Element& a_bound) const
+		{
 
 			Element  r0, t0, q, u;
 			r0=m;
@@ -99,7 +103,7 @@ namespace LinBox
 			b=1;
 			//Element s0,s1; s0=1,s1=0;//test time gcdex;
 			while(a>=a_bound)
-			//while (t0 <= b_bound)
+				//while (t0 <= b_bound)
 			{
 
 				q = r0;
@@ -165,145 +169,150 @@ namespace LinBox
 					if (abs((double)b) > (double)m/(double)a_bound) {
 						if (!_recursive) {
 							std::cerr
-								<< "*** Error *** No rational reconstruction of "
-								<< x
-								<< " modulo "
-								<< m
-								<< " with denominator <= "
-								<< (m/a_bound)
-								<< std::endl;
+							<< "*** Error *** No rational reconstruction of "
+							<< x
+							<< " modulo "
+							<< m
+							<< " with denominator <= "
+							<< (m/a_bound)
+							<< std::endl;
 						}
 						return false;
 					}
 					if (_Z.gcd(gg,a,b) != 1) {
 						if (!_recursive)
 							std::cerr
-								<< "*** Error *** There exists no rational reconstruction of "
-								<< x
-								<< " modulo "
-								<< m
-								<< " with |numerator| < "
-								<< a_bound
-								<< std::endl
-								<< "*** Error *** But "
-								<< a
-								<< " = "
-								<< b
-								<< " * "
-								<< x
-								<< " modulo "
-								<< m
-								<< std::endl;
+							<< "*** Error *** There exists no rational reconstruction of "
+							<< x
+							<< " modulo "
+							<< m
+							<< " with |numerator| < "
+							<< a_bound
+							<< std::endl
+							<< "*** Error *** But "
+							<< a
+							<< " = "
+							<< b
+							<< " * "
+							<< x
+							<< " modulo "
+							<< m
+							<< std::endl;
 						return false;
 					}
 				}
-			}
-			// (i)
-			if (b < 0) {
-				_Z.negin(a);
-				_Z.negin(b);
-			}
-
-			// std::cerr << "RatRecon End " << num << "/" << den << std::endl;
-			return true;
-		}
-	};
-
-	/*
-	 * implements classic rational reconstruction by extended euclidean algorithm,
-	 * reconstructed pair corresponds to the maximal (or large enough) quotient, see MQRR Alg. of Monagan [Monagan2004] is used
-	 */
-
-	template <class Ring>
-	class ClassicMaxQRationalReconstruction:public ClassicRationalReconstruction<Ring> {
-	public:
-		const Ring _Z;
-		typedef typename Ring::Element Element;
-
-		ClassicMaxQRationalReconstruction(const Ring& Z, const bool reduce = true, const bool recursive = false):ClassicRationalReconstruction<Ring>(Z,reduce,recursive), _Z(Z)  {}
-
-		ClassicMaxQRationalReconstruction(const ClassicMaxQRationalReconstruction<Ring>& RR): ClassicRationalReconstruction<Ring>(RR), _Z(RR._Z) {}
-
-		~ClassicMaxQRationalReconstruction() {}
-
-		bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m) const {
-			bool res = maxEEA(a,b,x,m);
-			return res;
-		}
-
-		bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound) const{
-			bool res= false;
-			return res = ClassicRationalReconstruction<Ring>::reconstructRational(a,b,x,m,a_bound);
-		}
-
-	protected:
-		bool maxEEA(Element& a, Element& b, const Element& x, const Element& m) const{
-
-			Element qmax = 0, amax=x, bmax =1;
-
-			Element  r0, t0, q, u;
-			r0=m;
-			t0=0;
-			a=x;
-			b=1;
-			//Element s0,s; s0=1,s=0;//test time gcdex;
-
-			Element T = m.bitsize();
-                        int c = 5;	//should be changed here to enhance probability of correctness
-
-			while((a>0) && (r0.bitsize() > T.bitsize() + c))
-			{
-				q = r0;
-				_Z.divin(q,a);        // r0/num
-				//++this->C.div_counter;
-				if (q > qmax) {
-					amax = a;
-					bmax = b;
-					qmax = q;
-					if (qmax.bitsize() > T.bitsize() + c) break;
+				}
+				// (i)
+				if (b < 0) {
+					_Z.negin(a);
+					_Z.negin(b);
 				}
 
-				u = a;
-				a = r0;
-				r0 = u;	// r0 <-- num
-
-				_Z.axmyin(a,u,q); // num <-- r0-q*num
-				//++this->C.mul_counter;
-				//if (a == 0) return false;
-
-				u = b;
-				b = t0;
-				t0 = u;	// t0 <-- den
-
-				_Z.axmyin(b,u,q); // den <-- t0-q*den
-				//++this->C.mul_counter;
-			}
-
-			a = amax;
-			b = bmax;
-
-			if (b < 0) {
-				_Z.negin(a);
-				_Z.negin(b);
-			}
-
-			Element gg;
-			_Z.gcd(gg,a,b);
-			//++this->C.gcd_counter;
-
-			//if (q > T)
-			//Element T = m.bitsize();
-			//int c = 20;
-			//T=0;c=0;
-			if (qmax.bitsize() > T.bitsize() + c) {
+				// std::cerr << "RatRecon End " << num << "/" << den << std::endl;
 				return true;
 			}
-			else return false;
+		};
 
-			//if (gg > 1) return false;
-			//else return true;
-		}
-	};
+		/*
+		 * implements classic rational reconstruction by extended euclidean algorithm,
+		 * reconstructed pair corresponds to the maximal (or large enough) quotient, see MQRR Alg. of Monagan [Monagan2004] is used
+		 */
 
-}
+		template <class Ring>
+		class ClassicMaxQRationalReconstruction:public ClassicRationalReconstruction<Ring> {
+		public:
+			const Ring _Z;
+			typedef typename Ring::Element Element;
+
+			ClassicMaxQRationalReconstruction(const Ring& Z, const bool reduce = true, const bool recursive = false) :
+				ClassicRationalReconstruction<Ring>(Z,reduce,recursive), _Z(Z)
+		       	{}
+
+			ClassicMaxQRationalReconstruction(const ClassicMaxQRationalReconstruction<Ring>& RR) :
+				ClassicRationalReconstruction<Ring>(RR), _Z(RR._Z)
+			{}
+
+			~ClassicMaxQRationalReconstruction() {}
+
+			bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m) const
+			{
+				bool res = maxEEA(a,b,x,m);
+				return res;
+			}
+
+			bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound) const{
+				bool res= false;
+				return res = ClassicRationalReconstruction<Ring>::reconstructRational(a,b,x,m,a_bound);
+			}
+
+		protected:
+			bool maxEEA(Element& a, Element& b, const Element& x, const Element& m) const{
+
+				Element qmax = 0, amax=x, bmax =1;
+
+				Element  r0, t0, q, u;
+				r0=m;
+				t0=0;
+				a=x;
+				b=1;
+				//Element s0,s; s0=1,s=0;//test time gcdex;
+
+				Element T = m.bitsize();
+				int c = 5;	//should be changed here to enhance probability of correctness
+
+				while((a>0) && (r0.bitsize() > T.bitsize() + c))
+				{
+					q = r0;
+					_Z.divin(q,a);        // r0/num
+					//++this->C.div_counter;
+					if (q > qmax) {
+						amax = a;
+						bmax = b;
+						qmax = q;
+						if (qmax.bitsize() > T.bitsize() + c) break;
+					}
+
+					u = a;
+					a = r0;
+					r0 = u;	// r0 <-- num
+
+					_Z.axmyin(a,u,q); // num <-- r0-q*num
+					//++this->C.mul_counter;
+					//if (a == 0) return false;
+
+					u = b;
+					b = t0;
+					t0 = u;	// t0 <-- den
+
+					_Z.axmyin(b,u,q); // den <-- t0-q*den
+					//++this->C.mul_counter;
+				}
+
+				a = amax;
+				b = bmax;
+
+				if (b < 0) {
+					_Z.negin(a);
+					_Z.negin(b);
+				}
+
+				Element gg;
+				_Z.gcd(gg,a,b);
+				//++this->C.gcd_counter;
+
+				//if (q > T)
+				//Element T = m.bitsize();
+				//int c = 20;
+				//T=0;c=0;
+				if (qmax.bitsize() > T.bitsize() + c) {
+					return true;
+				}
+				else return false;
+
+				//if (gg > 1) return false;
+				//else return true;
+			}
+		};
+
+	}
 #endif //__LINBOX_classic_reconstruction_H

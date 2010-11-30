@@ -51,7 +51,8 @@ using namespace LinBox;
  */
 
 template< class Field >
-void fieldTest( const Field& f, double* array, long iter = 1000000, bool fulltest = false ) {
+void fieldTest( const Field& f, double* array, long iter = 1000000, bool fulltest = false )
+{
 
 	long vectorSize = 10000;
 	float sparsity = .01;
@@ -74,14 +75,14 @@ void fieldTest( const Field& f, double* array, long iter = 1000000, bool fulltes
 	RandomSparseStream<Field> sparse( f, sparsity, vectorSize );
 	typename RandomSparseStream<Field>::Vector sv; sparse.get( sv );
 
-/*
+#if 0
 	// initialize and fill array of random elements.
 	typename Field::RandIter r(f);
 	typename Field::Element *elements;
 	elements = new typename Field::Element[ iter * 3 ];
 	for( int i = 0; i < iter*3; i++ ) {
 		do { r.random( elements[i] ); }
-			while( f.isZero( elements[i] ) );
+		while( f.isZero( elements[i] ) );
 	}
 
 	// initialize random vector streams
@@ -99,7 +100,8 @@ void fieldTest( const Field& f, double* array, long iter = 1000000, bool fulltes
 	typename RandomDenseStream<Field>::Vector dv1;
 	typename RandomDenseStream<Field>::Vector dv2;
 	typename RandomSparseStream<Field>::Vector sv;
-*/
+#endif
+
 	VectorWrapper::ensureDim (dv1,vectorSize);
 	VectorWrapper::ensureDim (dv2,vectorSize);
 	VectorWrapper::ensureDim (sv,vectorSize);
@@ -122,27 +124,27 @@ void fieldTest( const Field& f, double* array, long iter = 1000000, bool fulltes
 		f.addin(s, returnValue);
 	}
 	timer.stop(); array[0] = timer.time() - overHeadTime;
-//std::cout << iter << " add done " << array[0] << std::endl;
+	//std::cout << iter << " add done " << array[0] << std::endl;
 
-if (fulltest) {
-    // sub
-    timer.clear(); timer.start();
-    for( i = 0; i < iter; i++ ) {
-		f.init(a, i);
-		f.sub( returnValue, a, b);
-		f.addin(s, returnValue);
-    }
-    timer.stop(); array[1] = timer.time() - overHeadTime;
+	if (fulltest) {
+		// sub
+		timer.clear(); timer.start();
+		for( i = 0; i < iter; i++ ) {
+			f.init(a, i);
+			f.sub( returnValue, a, b);
+			f.addin(s, returnValue);
+		}
+		timer.stop(); array[1] = timer.time() - overHeadTime;
 
-	// neg
-	timer.clear(); timer.start();
-	for( i = 0; i < iter; i++ ) {
-		f.init(a, i);
-		f.neg( returnValue, a);
-		f.addin(s, returnValue);
-	}
-	timer.stop(); array[2] = timer.time() - overHeadTime;
-} // end if (fulltest)
+		// neg
+		timer.clear(); timer.start();
+		for( i = 0; i < iter; i++ ) {
+			f.init(a, i);
+			f.neg( returnValue, a);
+			f.addin(s, returnValue);
+		}
+		timer.stop(); array[2] = timer.time() - overHeadTime;
+	} // end if (fulltest)
 
 	// mul
 	timer.clear(); timer.start();
@@ -152,27 +154,27 @@ if (fulltest) {
 		f.addin(s, returnValue);
 	}
 	timer.stop(); array[3] = timer.time() - overHeadTime;
-//std::cout << iter << " mul done " << array[3] << std::endl;
+	//std::cout << iter << " mul done " << array[3] << std::endl;
 
-if (fulltest) {
-	// inv
-	timer.clear(); timer.start();
-	for( i = 0; i < iter; i++ ) {
-		f.init(a, i);  if (f.isZero(a)) f.init(a, 1);
-		f.inv( returnValue, a);
-		f.addin(s, returnValue);
-	}
-	timer.stop(); array[4] = timer.time() - overHeadTime;
+	if (fulltest) {
+		// inv
+		timer.clear(); timer.start();
+		for( i = 0; i < iter; i++ ) {
+			f.init(a, i);  if (f.isZero(a)) f.init(a, 1);
+			f.inv( returnValue, a);
+			f.addin(s, returnValue);
+		}
+		timer.stop(); array[4] = timer.time() - overHeadTime;
 
-	// div
-	timer.clear(); timer.start();
-	for( i = 0; i < iter; i++ ) {
-		f.init(a, i);
-		f.div( returnValue, a, b);
-		f.addin(s, returnValue);
-	}
-	timer.stop(); array[5] = timer.time() - overHeadTime;
-} // end if (fulltest)
+		// div
+		timer.clear(); timer.start();
+		for( i = 0; i < iter; i++ ) {
+			f.init(a, i);
+			f.div( returnValue, a, b);
+			f.addin(s, returnValue);
+		}
+		timer.stop(); array[5] = timer.time() - overHeadTime;
+	} // end if (fulltest)
 
 	// axpy
 	timer.clear(); timer.start();
@@ -192,22 +194,22 @@ if (fulltest) {
 		f.addin(s, returnValue);
 	}
 	timer.stop(); array[7] = timer.time();
-//	std::cout << (iter/vectorSize) << " dd " << timer.time() << std::endl;;
+	//	std::cout << (iter/vectorSize) << " dd " << timer.time() << std::endl;;
 
-if (fulltest) {
-	// DotProduct2 ( dense * sparse )
-	timer.clear(); timer.start();
-	for( i = 0; i < iter/vectorSize; i++ ) {
-		f.init(dv1.back(), i);
-    	for ( int j = 0; j < sparsity_inv; ++ j ) {
-			f.init(dv1.front(), j);
-			VD.dot( returnValue, dv1, sv );
-			f.addin(s, returnValue);
+	if (fulltest) {
+		// DotProduct2 ( dense * sparse )
+		timer.clear(); timer.start();
+		for( i = 0; i < iter/vectorSize; i++ ) {
+			f.init(dv1.back(), i);
+			for ( int j = 0; j < sparsity_inv; ++ j ) {
+				f.init(dv1.front(), j);
+				VD.dot( returnValue, dv1, sv );
+				f.addin(s, returnValue);
+			}
 		}
-	}
-	timer.stop(); array[8] = timer.time();
-	//std::cout << "ds " << timer.time() << std::endl;;
-} // end if (fulltest)
+		timer.stop(); array[8] = timer.time();
+		//std::cout << "ds " << timer.time() << std::endl;;
+	} // end if (fulltest)
 
 	// Convert timings to mops (million operations per second)
 	for( i = 0; i < 9; i++ ) {
@@ -224,7 +226,8 @@ if (fulltest) {
  * (one floating-point and one int operation) can be executed on the current
  * machine.
  */
-int64 getOps(int unit) {
+int64 getOps(int unit)
+{
 	int64 ops = 1;
 	int64 i = 0;
 	int a = 13;
@@ -252,25 +255,27 @@ int64 getOps(int unit) {
 	return ops;
 }
 
-void printTimings( double* timings, bool fulltest = false ) {
+void printTimings( double* timings, bool fulltest = false )
+{
 	if (fulltest){ std::cout
-	     << std::setw(11) << timings[0] << ' '
-	     << std::setw(11) << timings[1] << ' '
-	     << std::setw(11) << timings[2] << ' '
-	     << std::setw(11) << timings[3] << ' '
-	     << std::setw(11) << timings[4] << ' '
-	     << std::setw(11) << timings[5] << ' '
-	;} std::cout
-	     << std::setw(11) << timings[6] << ' '
-	     << std::setw(11) << timings[7] << ' '
-	; if (fulltest){ std::cout
-	     << std::setw(11) << timings[8] << ' '
-	;} std::cout
-	     << std::setw(11) << timings[6]/(1/(1/timings[0] + 1/timings[3])); // axpy/(mul+add) ratio
+		<< std::setw(11) << timings[0] << ' '
+		<< std::setw(11) << timings[1] << ' '
+		<< std::setw(11) << timings[2] << ' '
+		<< std::setw(11) << timings[3] << ' '
+		<< std::setw(11) << timings[4] << ' '
+		<< std::setw(11) << timings[5] << ' '
+		;} std::cout
+		<< std::setw(11) << timings[6] << ' '
+		<< std::setw(11) << timings[7] << ' '
+		; if (fulltest){ std::cout
+			<< std::setw(11) << timings[8] << ' '
+			;} std::cout
+			<< std::setw(11) << timings[6]/(1/(1/timings[0] + 1/timings[3])); // axpy/(mul+add) ratio
 }
 
 template <class Field>
-void doTest(const char* name, integer& p, integer& exp, int64& iter, bool fulltest = false) {
+void doTest(const char* name, integer& p, integer& exp, int64& iter, bool fulltest = false)
+{
 	static double mops[11];
 	if( FieldTraits<Field>::goodModulus( p ) &&
 	    FieldTraits<Field>::goodExponent( exp ) ) {
@@ -302,52 +307,59 @@ int main(int argc, char** argv)
 	if( argc > 4 ) exit(1);
 
 	std::cout << std::setw(20) << "Field Name";
-	if (fulltest) { std::cout
-	     << std::setw(12) << "add "
-	     << std::setw(12) << "sub "
-	     << std::setw(12) << "neg "
-	     << std::setw(12) << "mul "
-	     << std::setw(12) << "inv "
-	     << std::setw(12) << "div "
-	;} std::cout
-	     << std::setw(12) << "axpy"
-	     << std::setw(12) << "dot d*d "
-	; if (fulltest) { std::cout
-	     << std::setw(12) << "dot d*s "
-	;} std::cout
-	     << std::setw(12) << "axpy/(mul+add)"
-		 << std::endl;
+	if (fulltest) {
+		std::cout
+		<< std::setw(12) << "add "
+		<< std::setw(12) << "sub "
+		<< std::setw(12) << "neg "
+		<< std::setw(12) << "mul "
+		<< std::setw(12) << "inv "
+		<< std::setw(12) << "div "
+		;
+	}
+	std::cout
+	<< std::setw(12) << "axpy"
+	<< std::setw(12) << "dot d*d "
+	;
+	if (fulltest) {
+		std::cout
+		<< std::setw(12) << "dot d*s "
+		;
+	}
+	std::cout
+	<< std::setw(12) << "axpy/(mul+add)"
+	<< std::endl;
 
-    doTest< Modular<int8> >( "Modular<int8>", prime, exp, iterations, fulltest );
-    doTest< Modular<int16> >( "Modular<int16>", prime, exp, iterations, fulltest );
-    doTest< Modular<int32> >( "Modular<int32>", prime, exp, iterations, fulltest );
-    //doTest< Modular<int> >( "Modular<int>", prime, exp, iterations, fulltest );
-    doTest< Modular<double> >( "Modular<double>", prime, exp, iterations, fulltest );
-    doTest< Modular<float> >( "Modular<float>", prime, exp, iterations, fulltest );
+	doTest< Modular<int8> >( "Modular<int8>", prime, exp, iterations, fulltest );
+	doTest< Modular<int16> >( "Modular<int16>", prime, exp, iterations, fulltest );
+	doTest< Modular<int32> >( "Modular<int32>", prime, exp, iterations, fulltest );
+	//doTest< Modular<int> >( "Modular<int>", prime, exp, iterations, fulltest );
+	doTest< Modular<double> >( "Modular<double>", prime, exp, iterations, fulltest );
+	doTest< Modular<float> >( "Modular<float>", prime, exp, iterations, fulltest );
 
-    //doTest< ModularBalanced<int8> >( "ModularBalanced<int8>", prime, exp, iterations, fulltest );
-    //doTest< ModularBalanced<int16> >( "ModularBalanced<int16>", prime, exp, iterations, fulltest );
-    doTest< ModularBalanced<int32> >( "ModularBalanced<int32>", prime, exp, iterations, fulltest );
-    doTest< ModularBalanced<double> >( "ModularBalanced<double>", prime, exp, iterations, fulltest );
-    doTest< ModularBalanced<float> >( "ModularBalanced<float>", prime, exp, iterations, fulltest );
+	//doTest< ModularBalanced<int8> >( "ModularBalanced<int8>", prime, exp, iterations, fulltest );
+	//doTest< ModularBalanced<int16> >( "ModularBalanced<int16>", prime, exp, iterations, fulltest );
+	doTest< ModularBalanced<int32> >( "ModularBalanced<int32>", prime, exp, iterations, fulltest );
+	doTest< ModularBalanced<double> >( "ModularBalanced<double>", prime, exp, iterations, fulltest );
+	doTest< ModularBalanced<float> >( "ModularBalanced<float>", prime, exp, iterations, fulltest );
 
-    doTest< ModularCrooked<double> >( "ModularCrooked<double>", prime, exp, iterations, fulltest );
+	doTest< ModularCrooked<double> >( "ModularCrooked<double>", prime, exp, iterations, fulltest );
 
 #ifdef __LINBOX_HAVE_NTL
-    doTest< NTL_zz_p >( "NTL_zz_p", prime, exp, iterations, fulltest );
-    doTest< NTL_PID_zz_p >( "NTL_PID_zz_p", prime, exp, iterations, fulltest );
-    doTest< NTL_ZZ_p >( "NTL_ZZ_p", prime, exp, iterations, fulltest );
-    doTest< PIR_ntl_ZZ_p >( "PIR_ntl_ZZ_p", prime, exp, iterations, fulltest );
-    doTest< NTL_ZZ >( "NTL_ZZ", prime, exp, iterations, fulltest );
+	doTest< NTL_zz_p >( "NTL_zz_p", prime, exp, iterations, fulltest );
+	doTest< NTL_PID_zz_p >( "NTL_PID_zz_p", prime, exp, iterations, fulltest );
+	doTest< NTL_ZZ_p >( "NTL_ZZ_p", prime, exp, iterations, fulltest );
+	doTest< PIR_ntl_ZZ_p >( "PIR_ntl_ZZ_p", prime, exp, iterations, fulltest );
+	doTest< NTL_ZZ >( "NTL_ZZ", prime, exp, iterations, fulltest );
 #endif
 #ifdef __LINBOX_HAVE_LIDIA
-    doTest< LidiaGfq >( "LidiaGfq", prime, exp, iterations, fulltest );
+	doTest< LidiaGfq >( "LidiaGfq", prime, exp, iterations, fulltest );
 #endif
-//	doTest< GF2 >( "GF2", prime, exp, iterations, fulltest );
-    doTest< GMPRationalField >( "GMPRationalField", prime, exp, iterations, fulltest );
+	//	doTest< GF2 >( "GF2", prime, exp, iterations, fulltest );
+	doTest< GMPRationalField >( "GMPRationalField", prime, exp, iterations, fulltest );
 	//if (prime == 2)
-    	doTest< PIRModular<int32> >( "PIRModular<int32>", prime, exp, iterations, fulltest );
-    doTest< Local2_32 >( "Local2_32", prime, exp, iterations, fulltest );
+	doTest< PIRModular<int32> >( "PIRModular<int32>", prime, exp, iterations, fulltest );
+	doTest< Local2_32 >( "Local2_32", prime, exp, iterations, fulltest );
 
 	return 0;
 }

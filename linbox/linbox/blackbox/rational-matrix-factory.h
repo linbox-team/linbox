@@ -2,14 +2,14 @@
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/blackbox/rational-matrix-factory.h
  * Copyright (C) 2009 Anna Marszalek
- * 
- * Written by Anna Marszalek <aniau@astronet.pl> 
- * 
+ *
+ * Written by Anna Marszalek <aniau@astronet.pl>
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -32,17 +32,17 @@
 
 #include <vector>
 
-namespace LinBox 
+namespace LinBox
 {
 
 /*
  * aniau@astronet.pl 06/2009
  * Given rational matrix _A, computes parameters needed to found best (usually integer) representation:
  * See: denominator, rationalNorm, normAtilde, normAprim, getOmega
- * See others: maxNorm, hadamard 
+ * See others: maxNorm, hadamard
  * Computes the representation
  * See: makeAtilde, makeAprim
- * Works with dense matrices, needs sparse spcialization (due to use of row::iterator)  
+ * Works with dense matrices, needs sparse spcialization (due to use of row::iterator)
  */
 
 
@@ -66,7 +66,9 @@ typedef typename Rationals::Element Quotient;
 
     public:
 
-    	RationalMatrixFactory(const QMatrix* A):  Q(), denAi(A->rowdim(),1) {rat_omega = 0; omega = 0; denA = 1; _A = A;}
+    	RationalMatrixFactory(const QMatrix* A) :
+	      	Q(), denAi(A->rowdim(),1)
+	{rat_omega = 0; omega = 0; denA = 1; _A = A;}
 
 	size_t rowdim() { return _A->rowdim(); }
         size_t coldim() { return _A->coldim(); }
@@ -120,7 +122,7 @@ typedef typename Rationals::Element Quotient;
 	 	        Integer d; Q.get_den(d,*i);
 		        lcm(denA,denA,d);
 	        }
-	    }	
+	    }
 	    return da=denA;;
 	}
 
@@ -128,7 +130,7 @@ typedef typename Rationals::Element Quotient;
 	 * returns common denominator denAi[i] of i-th row
 	 */
 	Integer& denominator(Integer& di, const int i) const {
-	  if (denAi[i]==1) {   
+	  if (denAi[i]==1) {
 		typedef typename QMatrix::ConstRow::const_iterator EltIterator;
 		for (size_t j=0; j < _A->coldim(); ++j) {
 			Integer d; Q.get_den(d,_A->getEntry(i,j));
@@ -138,7 +140,7 @@ typedef typename Rationals::Element Quotient;
 	  return di=denAi[i];
 	}
 
-//returns max of abs(numerators) and denominators of _A 
+//returns max of abs(numerators) and denominators of _A
 	Integer& rationalNorm(Integer& res) const {
 	        ConstRawIterator i;
 	        res = 0L;
@@ -155,10 +157,10 @@ typedef typename Rationals::Element Quotient;
 
 //returns norm of A'= denA * _A
 	Integer& normAprim(Integer& res) const {
-	
+
                 Integer DA;
                 denominator(DA);
-		
+
 		double norm; maxNorm(norm);
 		res = (Integer) ( (double) DA * norm ) ;
 
@@ -185,7 +187,7 @@ typedef typename Rationals::Element Quotient;
                 	}
         	}
 		res = (Integer)dres;
-	
+
 		return res;
 	}
 
@@ -199,12 +201,12 @@ typedef typename Rationals::Element Quotient;
 		std::vector<integer> di(_A->rowdim(),1L);
 
 		for (size_t i=0; i < _A->rowdim(); ++i)  {
-		   if (denAi[i]==1) { 	
+		   if (denAi[i]==1) {
 			for (size_t j=0; j < _A->coldim(); ++j ) {
 		        	Integer d ; Q.get_den(d,_A->getEntry(i,j));
 				lcm(denAi[i],denAi[i],d);
 			}
-		   } 
+		   }
 		   di[i] = denAi[i];
 		   lcm(denA,denA,di[i]);
 		}
@@ -214,7 +216,7 @@ typedef typename Rationals::Element Quotient;
 			for (size_t j=0; j < _A->coldim(); ++j ) {
 				Integer n ; Q.get_num(n,_A->getEntry(i,j));
 				Integer d ; Q.get_den(d,_A->getEntry(i,j));
-				
+
 				Integer tmp = abs(n);
 				if (tmp > ratnorm) ratnorm = tmp;
 				if (d > ratnorm) ratnorm = d;
@@ -226,8 +228,8 @@ typedef typename Rationals::Element Quotient;
 				tmp2 = da/d;
 				tmp2 *= tmp;
 				if (tmp2 > normaprim) normaprim = tmp2;
-				
-			}	
+
+			}
 		}
 		integer minnorm = (ratnorm > normatilde) ? normatilde : ratnorm;
 		return minnorm;
@@ -236,7 +238,7 @@ typedef typename Rationals::Element Quotient;
 	DenseMatrix< Rationals >& makeA(DenseMatrix<Rationals >& A) {
 	        //DenseMatrix<Rationals > local(Q,_A);
 		//return A = local;
-		
+
 		for( int i=0; i < _A->rowdim(); ++i) {
 	                for (int j=0; j < _A->coldim(); ++j) {
 	                        A.setEntry(i,j, _A->getEntry(i,j));
@@ -276,7 +278,7 @@ typedef typename Rationals::Element Quotient;
 		Atilde.resize(_A->rowdim(),_A->coldim());
 	        std::vector<integer> di(_A->rowdim());
 	        for (size_t i=0; i < _A->rowdim(); ++i) denominator(di[i],i);
-		           
+
 		for( size_t i=0; i < _A->rowdim(); ++i) {
                         for (size_t j=0; j < _A->coldim(); ++j) {
                         	Quotient  q = _A->getEntry(i,j);
@@ -287,7 +289,7 @@ typedef typename Rationals::Element Quotient;
 				typename Matrix::Field F=Atilde.field();
 				typename Matrix::Field::Element ftmp; F.init(ftmp,tmp);
 				Atilde.setEntry(i,j, ftmp);
-			}	
+			}
                 }
 		return Atilde;
   	}

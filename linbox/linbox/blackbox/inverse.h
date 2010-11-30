@@ -55,7 +55,7 @@ namespace LinBox
 	 *               and partial template specialization.  */
 	template <class Blackbox>
 	class Inverse : public BlackboxInterface {
-	    public:
+	public:
 
 		typedef typename Blackbox::Field Field;
 		typedef typename Field::Element   Element;
@@ -64,8 +64,8 @@ namespace LinBox
 		/** Constructor from field and dense vector of field elements.
 		 * @param __BB   Black box of which to get the inverse
 		 */
-		Inverse (const Blackbox *BB)
-		    :  _VD (BB->field()), _BB (BB)
+		Inverse (const Blackbox *BB) :
+			_VD (BB->field()), _BB (BB)
 		{
 			linbox_check ((BB->rowdim ()) == (BB->coldim ()));
 
@@ -79,8 +79,8 @@ namespace LinBox
 		 * minimal polynomial every time this black box is used inside
 		 * another black box
 		 */
-		Inverse (const Inverse &BB)
-		    : _VD (BB->field()), _BB (BB._BB), _minpoly (BB._minpoly)
+		Inverse (const Inverse &BB) :
+			_VD (BB->field()), _BB (BB._BB), _minpoly (BB._minpoly)
 		{
 			_z.resize (_BB->coldim ());
 		}
@@ -96,8 +96,8 @@ namespace LinBox
 		 * @param  x constant reference to vector to contain input
 		 */
 		template<class OutVector, class InVector>
-	        OutVector& apply (OutVector &y, const InVector& x) const
-	        {
+		OutVector& apply (OutVector &y, const InVector& x) const
+		{
 			int i;
 
 			if (_minpoly.empty ()) {
@@ -125,7 +125,7 @@ namespace LinBox
 			}
 
 			return y;
-	        }
+		}
 
 		/** Application of BlackBox matrix transpose.
 		 * y= transpose(A)*x.
@@ -169,9 +169,9 @@ namespace LinBox
 			return y;
 		}
 
-            template<typename _Tp1>
-            struct rebind
-            { typedef Inverse<typename Blackbox::template rebind<_Tp1>::other> other; };
+		template<typename _Tp1>
+		struct rebind
+		{ typedef Inverse<typename Blackbox::template rebind<_Tp1>::other> other; };
 
 
 		/** Retreive row dimensions of BlackBox matrix.
@@ -193,8 +193,9 @@ namespace LinBox
 			return _BB->coldim ();
 		}
 
-		const Field& field() const { return _BB->field();}
-	    private:
+		const Field& field() const
+		{ return _BB->field();}
+	private:
 
 		const VectorDomain<Field>  _VD;
 		const Blackbox             *_BB;

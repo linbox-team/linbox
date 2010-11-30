@@ -5,7 +5,7 @@
  *
  * Selector for ChineseRemainder
  * Parallel versions are transparent to the user
- * Time-stamp: <30 Mar 10 15:11:42 Jean-Guillaume.Dumas@imag.fr> 
+ * Time-stamp: <30 Mar 10 15:11:42 Jean-Guillaume.Dumas@imag.fr>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,33 +29,41 @@
 #ifdef _OPENMP
 
 #include "linbox/algorithms/cra-domain-omp.h"
-namespace LinBox 
+namespace LinBox
 {
-    template<class CRABase>
-    struct ChineseRemainder : public ChineseRemainderOMP<CRABase> {
-        typedef typename CRABase::Domain	Domain;
-        typedef typename CRABase::DomainElement	DomainElement;
-        template<class Param>
-        ChineseRemainder(const Param& b) : ChineseRemainderOMP<CRABase>(b) {}
-        
-	ChineseRemainder(const CRABase& b) : ChineseRemainderOMP<CRABase>(b) {}
-    };
+	template<class CRABase>
+	struct ChineseRemainder : public ChineseRemainderOMP<CRABase> {
+		typedef typename CRABase::Domain	Domain;
+		typedef typename CRABase::DomainElement	DomainElement;
+		template<class Param>
+		ChineseRemainder(const Param& b) :
+			ChineseRemainderOMP<CRABase>(b)
+		{}
+
+		ChineseRemainder(const CRABase& b) :
+			ChineseRemainderOMP<CRABase>(b)
+		{}
+	};
 }
 
 #else
 
 #include "linbox/algorithms/cra-domain-seq.h"
-namespace LinBox 
+namespace LinBox
 {
-    template<class CRABase>
-    struct ChineseRemainder : public ChineseRemainderSeq<CRABase> {
-        typedef typename CRABase::Domain	Domain;
-        typedef typename CRABase::DomainElement	DomainElement;
-        template<class Param>
-        ChineseRemainder(const Param& b) : ChineseRemainderSeq<CRABase>(b) {}
-        
-	ChineseRemainder(const CRABase& b) : ChineseRemainderSeq<CRABase>(b) {}
-    };
+	template<class CRABase>
+	struct ChineseRemainder : public ChineseRemainderSeq<CRABase> {
+		typedef typename CRABase::Domain	Domain;
+		typedef typename CRABase::DomainElement	DomainElement;
+		template<class Param>
+		ChineseRemainder(const Param& b) :
+			ChineseRemainderSeq<CRABase>(b)
+		{}
+
+		ChineseRemainder(const CRABase& b) :
+			ChineseRemainderSeq<CRABase>(b)
+		{}
+	};
 }
 
 #endif

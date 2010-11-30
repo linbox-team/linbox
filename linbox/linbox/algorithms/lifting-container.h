@@ -100,20 +100,23 @@ namespace LinBox
 	// in solveNonsingular, we may work with something that inherits from DenseMatrixBase
 	template <class Ring>
 	void BoundBlackbox(const Ring& R, typename Ring::Element& H_col_sqr,
-			   typename Ring::Element& short_col_sqr, const DenseMatrixBase<typename Ring::Element>& A) {
+			   typename Ring::Element& short_col_sqr, const DenseMatrixBase<typename Ring::Element>& A)
+	{
 		SpecialBound(R, H_col_sqr, short_col_sqr, A);
 	}
-	template <class Ring>
 
+	template <class Ring>
 	void BoundBlackbox(const Ring& R, typename Ring::Element& H_col_sqr,
-			   typename Ring::Element& short_col_sqr, const BlasBlackbox<Ring>& A) {
+			   typename Ring::Element& short_col_sqr, const BlasBlackbox<Ring>& A)
+	{
 		SpecialBound(R, H_col_sqr, short_col_sqr, A);
 	}
 
 	// in other solvers we generally use BlasBlackbox which inherits from DenseSubmatrix
 	template <class Ring>
 	void BoundBlackbox(const Ring& R, typename Ring::Element& H_col_sqr,
-			   typename Ring::Element& short_col_sqr, const DenseSubmatrix<typename Ring::Element>& A) {
+			   typename Ring::Element& short_col_sqr, const DenseSubmatrix<typename Ring::Element>& A)
+	{
 		SpecialBound(R, H_col_sqr, short_col_sqr, A);
 	}
 
@@ -413,8 +416,9 @@ namespace LinBox
 			const LiftingContainerBase    &_lc;
 			size_t                   _position;
 		public:
-			const_iterator(const LiftingContainerBase& lc,size_t end=0)
-			: _res(lc._b), _lc(lc), _position(end) {}
+			const_iterator(const LiftingContainerBase& lc,size_t end=0) :
+				_res(lc._b), _lc(lc), _position(end)
+			{}
 
 			/**
 			 * @returns False if the next digit cannot be computed
@@ -500,31 +504,33 @@ namespace LinBox
 
 		};
 
-		/** @brief Bit manipulation function for possible use in optimization.
-		// efficiently pulls out continuous blocks of bits, from lsb to msb inclusive
-		// least significant bits start at index 0, so msb >= lsb
-		// if any bits with index >= 8*numBytes are asked for they will be zeroes
+		/*- @brief Bit manipulation function for possible use in optimization.
+		 * efficiently pulls out continuous blocks of bits, from lsb to msb inclusive
+		 * least significant bits start at index 0, so msb >= lsb
+		 * if any bits with index >= 8*numBytes are asked for they will be zeroes
+		 */
+#if 0
 		static long long bytesToBits(unsigned char * byteArray, size_t numBytes, size_t lsb, size_t msb) {
-		linbox_check(msb >= lsb);
-		size_t lsbi = lsb >> 3;
-		size_t msbi = msb >> 3;
-		if (msbi == lsbi)
-		if (msbi >= numBytes)
-		return 0;
-		else
-		return (byteArray[lsbi] >> (lsb & 7)) & ((1 << (msb - lsb + 1)) - 1);
+			linbox_check(msb >= lsb);
+			size_t lsbi = lsb >> 3;
+			size_t msbi = msb >> 3;
+			if (msbi == lsbi)
+				if (msbi >= numBytes)
+					return 0;
+				else
+					return (byteArray[lsbi] >> (lsb & 7)) & ((1 << (msb - lsb + 1)) - 1);
 
-		long long result = (msbi < numBytes) ? (byteArray[msbi] & ((1 << ((msb & 7)+1)) - 1)) : 0;
-		for (size_t i=msbi-1; i>lsbi; i--) {
-		result <<= 8;
-		result |= (i < numBytes) ? byteArray[i] : 0;
-		}
-		result <<= 8 - (lsb & 7);
-		result |= (lsbi < numBytes) ? (byteArray[lsbi] >> (lsb & 7)) : 0;
+			long long result = (msbi < numBytes) ? (byteArray[msbi] & ((1 << ((msb & 7)+1)) - 1)) : 0;
+			for (size_t i=msbi-1; i>lsbi; i--) {
+				result <<= 8;
+				result |= (i < numBytes) ? byteArray[i] : 0;
+			}
+			result <<= 8 - (lsb & 7);
+			result |= (lsbi < numBytes) ? (byteArray[lsbi] >> (lsb & 7)) : 0;
 
-		return result;
+			return result;
 		}
-		*/
+#endif
 
 		const_iterator begin() const
 		{
@@ -619,9 +625,9 @@ namespace LinBox
 				       const IMatrix&    A,
 				       const FMatrix&   Ap,
 				       const VectorIn&   b,
-				       const Prime_Type& p)
-		: LiftingContainerBase<Ring,IMatrix> (R,A,b,p), _Ap(Ap), _F(F), _VDF(F),
-		_res_p(b.size()), _digit_p(A.coldim()), _BA(F)
+				       const Prime_Type& p) :
+			LiftingContainerBase<Ring,IMatrix> (R,A,b,p), _Ap(Ap), _F(F), _VDF(F),
+			_res_p(b.size()), _digit_p(A.coldim()), _BA(F)
 		{
 
 			for (size_t i=0; i< _res_p.size(); ++i)
@@ -747,8 +753,8 @@ namespace LinBox
 					   const FMatrix& Ap,
 					   const FPolynomial& MinPoly,
 					   const VectorIn& b,
-					   const Prime_Type& p)
-		: LiftingContainerBase<Ring,IMatrix> (R,A,b,p), _Ap(Ap), _MinPoly(MinPoly), _F(F), _VDF(F), _res_p(b.size()), _digit_p(A.coldim()), _rand(F)
+					   const Prime_Type& p) :
+			LiftingContainerBase<Ring,IMatrix> (R,A,b,p), _Ap(Ap), _MinPoly(MinPoly), _F(F), _VDF(F), _res_p(b.size()), _digit_p(A.coldim()), _rand(F)
 		{
 
 			// Normalize the minimal polynomial as f(x)=1- a1/a0 x - a2/a0 x^2 - ...
@@ -944,19 +950,19 @@ namespace LinBox
 						const VectorIn                     &b,
 						const Prime_Type                   &p,
 						const size_t                        m,
-						const size_t                        n)
-		: LiftingContainerBase<Ring,IMatrix> (R,A,b,p), _Ap(Ap),
-		_F(F),
-		_VDF(F),
-		_res_p(b.size()),
-		_digit_p(A.coldim()),
-		_rand(F),
-		_row(Ap.rowdim()),
-		_col(Ap.coldim()),
-		_m(m),
-		_n(n),
-		UU(m-1,Ap.rowdim()),
-		_BMD(F)
+						const size_t                        n) :
+			LiftingContainerBase<Ring,IMatrix> (R,A,b,p), _Ap(Ap),
+			_F(F),
+			_VDF(F),
+			_res_p(b.size()),
+			_digit_p(A.coldim()),
+			_rand(F),
+			_row(Ap.rowdim()),
+			_col(Ap.coldim()),
+			_m(m),
+			_n(n),
+			UU(m-1,Ap.rowdim()),
+			_BMD(F)
 		{
 
 
@@ -1207,9 +1213,9 @@ namespace LinBox
 					     const Block&      U,
 					     const Block&      V,
 					     const VectorIn&   b,
-					     const Prime_Type& p)
-		: LiftingContainerBase<Ring,IMatrix> (R,A,b,p), _Ap(Ap), _Hinv(Hinv), _F(F),
-		_res_p(b.size()), _digit_p(A.coldim()),  _block(U.rowdim()), _numblock(A.coldim()/_block) , _VD(F), _BMD(F), _D(D)
+					     const Prime_Type& p) :
+			LiftingContainerBase<Ring,IMatrix> (R,A,b,p), _Ap(Ap), _Hinv(Hinv), _F(F),
+			_res_p(b.size()), _digit_p(A.coldim()),  _block(U.rowdim()), _numblock(A.coldim()/_block) , _VD(F), _BMD(F), _D(D)
 		{
 			tApplyU.clear();
 			tApplyH.clear();
@@ -1446,9 +1452,9 @@ namespace LinBox
 					  const Permutation<_Field>& P,
 					  unsigned long   rank,
 					  const VectorIn&    b,
-					  const Prime_Type&  p)
-		: LiftingContainerBase<Ring,IMatrix> (R,A,b,p), LL(L),QQ(Q),UU(U), PP(P), _rank(rank),
-		_F(F), _res_p(b.size()), _digit_p(A.coldim()), _GD(F)
+					  const Prime_Type&  p) :
+			LiftingContainerBase<Ring,IMatrix> (R,A,b,p), LL(L),QQ(Q),UU(U), PP(P), _rank(rank),
+			_F(F), _res_p(b.size()), _digit_p(A.coldim()), _GD(F)
 		{
 			for (size_t i=0; i< _res_p.size(); ++i)
 				_F.init(_res_p[i]);

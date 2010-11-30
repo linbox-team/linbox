@@ -61,7 +61,7 @@ namespace LinBox
 	 */
 	template <class Element>
 	class ModularRandIter {
-	    public:
+	public:
 
 		/** Constructor from field, sampling size, and seed.
 		 * The random field element iterator works in the field F, is seeded
@@ -78,8 +78,8 @@ namespace LinBox
 		 */
 		ModularRandIter (const Modular<Element> &F,
 				 const integer &size = 0,
-				 const integer &seed = 0)
-			: _F (F), _size (size), _seed (seed)
+				 const integer &seed = 0) :
+			_F (F), _size (size), _seed (seed)
 		{
 			if (_seed == 0) _seed = time (NULL);
 
@@ -91,8 +91,8 @@ namespace LinBox
 				_size = cardinality;
 
 			commentator.report (10, INTERNAL_DESCRIPTION)
-				<< "Created random generator with size " << _size
-				<< " and seed " << _seed << std::endl;
+			<< "Created random generator with size " << _size
+			<< " and seed " << _seed << std::endl;
 
 			// Seed random number generator
 			srand (_seed);
@@ -105,8 +105,9 @@ namespace LinBox
 		 * into functions.
 		 * @param  R ModularRandIter object.
 		 */
-		ModularRandIter (const ModularRandIter<Element> &R)
-			: _F (R._F), _size (R._size), _seed (R._seed) {}
+		ModularRandIter (const ModularRandIter<Element> &R) :
+			_F (R._F), _size (R._size), _seed (R._seed)
+		{}
 
 		/** Destructor.
 		 * This destructs the random field element generator object.
@@ -144,7 +145,7 @@ namespace LinBox
 		 */
 		Element &nonzerorandom (Element &a) const
 		{
-			//return a = rand() % (_F.modulus -1) + 1; }
+			//return a = rand() % (_F.modulus -1) + 1;
 
 			// CPernet: stupidly slow, but now way to get _F.modulus without changing the interface
 			while (_F.isZero (random(a))) ;
@@ -165,7 +166,7 @@ namespace LinBox
 			return (a = ElementEnvelope <Modular<Element> > (tmp));
 		}
 
-	    private:
+	private:
 
 		/// Field in which arithmetic is done
 		Modular<Element> _F;
@@ -182,19 +183,21 @@ namespace LinBox
 	class ModularBase<Element>::RandIter {
 		ModularRandIter<Element> _r;
 
-	    public:
-		RandIter (const Modular<Element> &F, const integer &size = 0, const integer &seed = 0)
-			: _r (F, size, seed) {}
-		RandIter (const ModularBase<Element>::RandIter &r)
-			: _r (r._r) {}
+	public:
+		RandIter (const Modular<Element> &F, const integer &size = 0, const integer &seed = 0) :
+			_r (F, size, seed)
+		{}
+		RandIter (const ModularBase<Element>::RandIter &r) :
+			_r (r._r)
+		{}
 
 		~RandIter () {}
 		RandIter &operator= (const RandIter &r)
-			{ _r = r._r; return *this; }
+		{ _r = r._r; return *this; }
 		Element &random (Element &a) const
-			{ return _r.random (a); }
+		{ return _r.random (a); }
 		ElementAbstract &random (ElementAbstract &a) const
-			{ return _r.random (a); }
+		{ return _r.random (a); }
 
 	};
 
@@ -204,7 +207,7 @@ namespace LinBox
 		uint16 _size;
 		uint16 _seed;
 
-	    public:
+	public:
 		typedef uint16 Element;
 
 		RandIter (const Modular<Element> &F, const integer &size = 0, const integer &seed = 0)
@@ -226,17 +229,18 @@ namespace LinBox
 			_r.setSeed (_seed);
 		}
 
-		RandIter (const ModularBase<Element>::RandIter &r)
-			: _r (r._r), _size (r._size), _seed (r._seed) {}
+		RandIter (const ModularBase<Element>::RandIter &r) :
+			_r (r._r), _size (r._size), _seed (r._seed)
+		{}
 
 		~RandIter () {}
 		RandIter &operator= (const RandIter &r)
-			{ _r = r._r; return *this; }
+		{ _r = r._r; return *this; }
 		Element &random (Element &a) const
-			{ return a = _r.randomIntRange (0, _size); }
+		{ return a = _r.randomIntRange (0, _size); }
 		ElementAbstract &random (ElementAbstract &a)  const
-			{ return a = ElementEnvelope <Modular<Element> >
-				  (_r.randomIntRange (0, _size)); }
+		{ return a = ElementEnvelope <Modular<Element> >
+			(_r.randomIntRange (0, _size)); }
 
 	};
 
@@ -246,7 +250,7 @@ namespace LinBox
 		uint32 _size;
 		uint32 _seed;
 
-	    public:
+	public:
 		typedef uint32 Element;
 
 		RandIter (const Modular<Element> &F, const integer &size = 0, const integer &seed = 0)
@@ -268,17 +272,18 @@ namespace LinBox
 			_r.setSeed (_seed);
 		}
 
-		RandIter (const ModularBase<Element>::RandIter &r)
-			: _r (r._r), _size (r._size), _seed (r._seed) {}
+		RandIter (const ModularBase<Element>::RandIter &r) :
+			_r (r._r), _size (r._size), _seed (r._seed)
+		{}
 
 		~RandIter () {}
 		RandIter &operator= (const RandIter &r)
-			{ _r = r._r; return *this; }
+		{ _r = r._r; return *this; }
 		Element &random (Element &a) const
-			{ return a = _r.randomIntRange (0, _size); }
+		{ return a = _r.randomIntRange (0, _size); }
 		ElementAbstract &random (ElementAbstract &a) const
-			{ return a = ElementEnvelope <Modular<Element> >
-				  (_r.randomIntRange (0, _size)); }
+		{ return a = ElementEnvelope <Modular<Element> >
+			(_r.randomIntRange (0, _size)); }
 
 	};
 }// namespace LinBox

@@ -59,8 +59,8 @@ namespace LinBox
 	template <class Field>
 	class VectorDomainBase {
 	public:
-		VectorDomainBase (const Field &F)
-			: _F (F), accu(F)
+		VectorDomainBase (const Field &F) :
+		       	_F (F), accu(F)
 		{}
 
 		VectorDomainBase& operator= (const VectorDomainBase& VD)
@@ -91,8 +91,8 @@ namespace LinBox
 
 		typedef typename Field::Element Element;
 
-		DotProductDomain (const Field &F)
-			: VectorDomainBase<Field> (F)
+		DotProductDomain (const Field &F) :
+		       	VectorDomainBase<Field> (F)
 		{}
 
 	protected:
@@ -133,8 +133,8 @@ namespace LinBox
 		 * by value into functions.
 		 * @param  VD VectorDomain object.
 		 */
-		VectorDomain (const VectorDomain &VD)
-			: VectorDomainBase<Field> (VD._F), DotProductDomain<Field> (VD._F)
+		VectorDomain (const VectorDomain &VD) :
+		       	VectorDomainBase<Field> (VD._F), DotProductDomain<Field> (VD._F)
 		{}
 
 		/** Assignment operator.
@@ -418,8 +418,7 @@ namespace LinBox
 		/** Construct from a field
 		 * @param F Field from which to construct
 		 */
-		VectorDomain (const Field &F)
-			:
+		VectorDomain (const Field &F) :
                         VectorDomainBase<Field> (F),DotProductDomain<Field> (F)
 		{}
 

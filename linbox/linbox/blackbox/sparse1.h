@@ -60,12 +60,20 @@ protected:
 
 public:
 	//--- Default cstors:
-	SparseBlackBoxDom() : _domain(),_nz_elem(0) {};
-	SparseBlackBoxDom(const Domain& D) : _domain(D),_nz_elem(0) { }
-	SparseBlackBoxDom(const Domain& D, char * mat_file) : _domain(D),_nz_elem(0) { read(mat_file) ; }
+	SparseBlackBoxDom() :
+		_domain(),_nz_elem(0)
+	{};
+	SparseBlackBoxDom(const Domain& D) :
+		_domain(D),_nz_elem(0)
+	{ }
+	SparseBlackBoxDom(const Domain& D, char * mat_file) :
+		_domain(D),_nz_elem(0)
+	{ read(mat_file) ; }
 
 	//--- Cstor of recopy: compiler's generated
-	SparseBlackBoxDom(const Self_t& M) : _domain(M._domain),_row_dim(M.n_row()),_col_dim(M.n_col()),_nz_elem(0),_container(M._container) {}
+	SparseBlackBoxDom(const Self_t& M) :
+		_domain(M._domain),_row_dim(M.n_row()),_col_dim(M.n_col()),_nz_elem(0),_container(M._container)
+	{}
 
 	//--- Usefull to use the same domain to perform other operations
 	const Domain_t& getdomain() const { return _domain; }
@@ -74,7 +82,8 @@ public:
 	//--- BlackBox size
 	size_t n_row(const Rep& a) const { return a.size(); }
 	size_t n_col(const Rep& a) const { if (a.size() ) return a[0].actualsize(); else return 0; }
-	size_t n_elem(const Rep& a) const {
+	size_t n_elem(const Rep& a) const
+	{
 		long tot=0;
 		for(long s=a.size();s--;)
 			tot+=a[s].size();

@@ -37,8 +37,8 @@ namespace LinBox
 						  size_t row,
 						  size_t col,
 						  size_t rowdim,
-						  size_t coldim)
-	: _M (&M), _beg_row (row), _end_row (row + rowdim), _beg_col (col), _end_col (col + coldim)
+						  size_t coldim) :
+		_M (&M), _beg_row (row), _end_row (row + rowdim), _beg_col (col), _end_col (col + coldim)
 	{
 		linbox_check (_beg_row <= _end_row);
 		linbox_check (_beg_col <= _end_col);
@@ -48,8 +48,9 @@ namespace LinBox
 
 
 	template <class _Element>
-	DenseSubmatrix<_Element>::DenseSubmatrix (DenseMatrixBase<_Element> &M)
-	: _M(&M), _beg_row(0), _end_row(M.rowdim()), _beg_col(0), _end_col(M.coldim()) {}
+	DenseSubmatrix<_Element>::DenseSubmatrix (DenseMatrixBase<_Element> &M) :
+		_M(&M), _beg_row(0), _end_row(M.rowdim()), _beg_col(0), _end_col(M.coldim())
+	{}
 
 
 
@@ -58,12 +59,12 @@ namespace LinBox
 						  size_t row,
 						  size_t col,
 						  size_t rowdim,
-						  size_t coldim)
-	: _M (SM._M),
-	_beg_row (SM._beg_row + row),
-	_end_row (SM._beg_row + row + rowdim),
-	_beg_col (SM._beg_col + col),
-	_end_col (SM._beg_col + col + coldim)
+						  size_t coldim) :
+		_M (SM._M),
+		_beg_row (SM._beg_row + row),
+		_end_row (SM._beg_row + row + rowdim),
+		_beg_col (SM._beg_col + col),
+		_end_col (SM._beg_col + col + coldim)
 	{
 		linbox_check (_beg_row <= _end_row);
 		linbox_check (_beg_col <= _end_col);
@@ -72,8 +73,8 @@ namespace LinBox
 	}
 
 	template <class _Element>
-	DenseSubmatrix<_Element>::DenseSubmatrix (const DenseSubmatrix<_Element> &SM)
-	: _M (SM._M), _beg_row (SM._beg_row), _end_row (SM._end_row), _beg_col (SM._beg_col), _end_col (SM._end_col)
+	DenseSubmatrix<_Element>::DenseSubmatrix (const DenseSubmatrix<_Element> &SM) :
+		_M (SM._M), _beg_row (SM._beg_row), _end_row (SM._end_row), _beg_col (SM._beg_col), _end_col (SM._end_col)
 	{
 	}
 
@@ -97,8 +98,8 @@ namespace LinBox
 		RawIterator (const typename DenseMatrixBase<_Element>::RawIterator& cur,
 			     const size_t c_dim,
 			     const size_t stride,
-			     const size_t c_idx)
-		: _cur (cur), _c_dim (c_dim), _stride(stride), _c_idx (c_idx)
+			     const size_t c_idx) :
+			_cur (cur), _c_dim (c_dim), _stride(stride), _c_idx (c_idx)
 		{}
 
 		RawIterator& operator = (const RawIterator& r)
@@ -153,8 +154,8 @@ namespace LinBox
 		ConstRawIterator (const typename DenseMatrixBase<_Element>::ConstRawIterator& cur,
 				  const size_t c_dim,
 				  const size_t stride,
-				  const size_t c_idx)
-		: _cur (cur), _c_dim (c_dim), _stride(stride), _c_idx (c_idx)
+				  const size_t c_idx) :
+			_cur (cur), _c_dim (c_dim), _stride(stride), _c_idx (c_idx)
 		{}
 
 		ConstRawIterator& operator = (const ConstRawIterator& r)
@@ -206,8 +207,8 @@ namespace LinBox
 
 		ConstRawIterator ( const typename DenseMatrixBase<Element>::ConstRawIterator& cur,
 				   size_t cont_len,
-				   size_t gap_len)
-		:   _beg (beg), _cur (cur), _cont_len (cont_len), _gap_len (gap_len)
+				   size_t gap_len) :
+			_beg (beg), _cur (cur), _cont_len (cont_len), _gap_len (gap_len)
 		{}
 
 		ConstRawIterator& operator = (const RawIterator& r)
@@ -323,8 +324,8 @@ namespace LinBox
 				    size_t c_dim,
 				    size_t stride,
 				    size_t r_idx,
-				    size_t c_idx)
-		:   _cur (cur), _c_dim (c_dim), _stride (stride), _r_idx(r_idx), _c_idx (c_idx)
+				    size_t c_idx) :
+			_cur (cur), _c_dim (c_dim), _stride (stride), _r_idx(r_idx), _c_idx (c_idx)
 		{}
 
 		RawIndexedIterator& operator = (const RawIndexedIterator& r)
@@ -427,8 +428,8 @@ namespace LinBox
 					 size_t c_dim,
 					 size_t stride,
 					 size_t r_idx,
-					 size_t c_idx)
-		:   _cur (cur), _stride (stride), _c_dim (c_dim), _r_idx(r_idx), _c_idx (c_idx)
+					 size_t c_idx) :
+			_cur (cur), _stride (stride), _c_dim (c_dim), _r_idx(r_idx), _c_idx (c_idx)
 		{}
 
 		ConstRawIndexedIterator& operator = (const RawIndexedIterator& r)

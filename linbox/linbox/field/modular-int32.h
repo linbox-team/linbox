@@ -67,8 +67,7 @@ namespace LinBox
 	struct ClassifyRing<Modular<Element> >;
 
 	template <>
-	struct ClassifyRing<Modular<int32> >
-	{
+	struct ClassifyRing<Modular<int32> > {
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
@@ -108,7 +107,8 @@ namespace LinBox
 		typedef NonzeroRandIter<Modular<int32>, ModularRandIter<int32> > NonZeroRandIter;
 
 		//default modular field,taking 65521 as default modulus
-		Modular () :modulus(65521)
+		Modular () :
+			modulus(65521)
 		{
 			modulusinv=1/(double)65521;
 
@@ -117,7 +117,8 @@ namespace LinBox
 			if (_two64 >= 65521) _two64 -= 65521;
 		}
 
-		Modular (int32 value, int32 exp = 1)  : modulus(value)
+		Modular (int32 value, int32 exp = 1) :
+			modulus(value)
 		{
 			modulusinv = 1 / ((double) value);
 			if(exp != 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
@@ -129,7 +130,9 @@ namespace LinBox
 			if (_two64 >= value) _two64 -= value;
 		}
 
-		Modular(const Modular<int32>& mf) : modulus(mf.modulus),modulusinv(mf.modulusinv),_two64(mf._two64){}
+		Modular(const Modular<int32>& mf) :
+			modulus(mf.modulus),modulusinv(mf.modulusinv),_two64(mf._two64)
+		{}
 
 		const Modular &operator=(const Modular<int32> &F)
 		{
@@ -479,10 +482,14 @@ namespace LinBox
 		typedef int32 Element;
 		typedef Modular<int32> Field;
 
-		FieldAXPY (const Field &F) : _F (F),_y(0) {}
+		FieldAXPY (const Field &F) :
+			_F (F),_y(0)
+		{}
 
 
-		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0) {}
+		FieldAXPY (const FieldAXPY &faxpy) :
+			_F (faxpy._F), _y (0)
+		{}
 
 		FieldAXPY<Modular<int32> > &operator = (const FieldAXPY &faxpy)
 		{
@@ -538,8 +545,9 @@ namespace LinBox
 
 	public:
 		typedef int32 Element;
-		DotProductDomain (const Modular<int32> &F)
-		: VectorDomainBase<Modular<int32> > (F) {}
+		DotProductDomain (const Modular<int32> &F) :
+			VectorDomainBase<Modular<int32> > (F)
+		{}
 
 
 	protected:
