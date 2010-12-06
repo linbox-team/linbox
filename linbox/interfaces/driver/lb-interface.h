@@ -34,7 +34,7 @@
 #include <lb-det.h>
 #include <lb-rank.h> //problem with givaro-extension (UTT type is not always consistent) disabled in the code
 #include <lb-minpoly.h>
-#include <lb-charpoly.h> 
+#include <lb-charpoly.h>
 #include <lb-solve.h>
 
 // overload PreconditionFailed to be a real exception

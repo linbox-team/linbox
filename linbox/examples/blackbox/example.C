@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
-/** 
+/**
  * examples/blackbox/example.C
  *
  * Copyright (C) 2001, 2002, 2010 Bradford Hovinen <hovinen@cis.udel.edu>
@@ -19,17 +19,17 @@
  *   GNU Lesser General Public License for more details.
  *
  *   You should have received a copy of the GNU Lesser General Public
- *   License along with LinBox.  If not, see 
+ *   License along with LinBox.  If not, see
  *   <http://www.gnu.org/licenses/>.
  */
 
 /** @name examples/blackbox/example.C
  *
  * @author Bradford Hovinen <hovinen@cis.udel.edu>
- * @memo 
+ * @memo
  * Simple example on Linbox use. Demonstrates loading and application of
  * blackbox matrix to a vector and computation of the minimal polynomial.
- * @doc 
+ * @doc
  * FIXME what is shown different that in other minpoly example?
  *
  */
@@ -69,7 +69,7 @@ typedef LinBox::SparseMatrix <Field, Row> Blackbox;
 const int n = 10;
 const int q = 101;
 
-void printVector (const Field &F, const Vector &v) 
+void printVector (const Field &F, const Vector &v)
 {
 	int i;
 
@@ -82,7 +82,7 @@ void printVector (const Field &F, const Vector &v)
 	cout << ')' << endl;
 }
 
-void printPolynomial (const Field &F, const Polynomial &v) 
+void printPolynomial (const Field &F, const Polynomial &v)
 {
 	int i;
 
@@ -96,7 +96,7 @@ void printPolynomial (const Field &F, const Polynomial &v)
 	cout << endl;
 }
 
-void makeTestVector (const Field &F, const Blackbox &A, Vector &v) 
+void makeTestVector (const Field &F, const Blackbox &A, Vector &v)
 {
 	int i;
 
@@ -120,7 +120,7 @@ void testApply (const Field &F, const Blackbox &A, const Vector &v)
 	cout << endl;
 }
 
-void testMinpoly (const Field &F, const Blackbox &A) 
+void testMinpoly (const Field &F, const Blackbox &A)
 {
 	Polynomial m_A;
 

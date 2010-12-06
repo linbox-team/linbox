@@ -37,24 +37,24 @@ extern "C"{
 
 
 extern "C" {
- 
+
 	/***********************************
 	 * Initializer of LinBox interface *
 	 ***********************************/
-	
-	ALGEB lbStart (MKernelVector kv, ALGEB *argv){		
-		//MaplePrintf(kv, "LinBox driver initialization...\n");	
-		try {LinBoxInit();} 
-		catch(lb_runtime_error &t){lbRaiseError(kv, t);}	
+
+	ALGEB lbStart (MKernelVector kv, ALGEB *argv){
+		//MaplePrintf(kv, "LinBox driver initialization...\n");
+		try {LinBoxInit();}
+		catch(lb_runtime_error &t){lbRaiseError(kv, t);}
 		lb_kv = kv;
 		return ToMapleNULL(kv);
 	}
-	
+
 	ALGEB lbStop (MKernelVector kv, ALGEB *argv){
-		//MaplePrintf(kv, "LinBox driver termination...");	
+		//MaplePrintf(kv, "LinBox driver termination...");
 		std::cout<<"terminating LinBox...";
 		//try{LinBoxEnd();}
-		//catch(lb_runtime_error &t){lbRaiseError(kv, t);}	
+		//catch(lb_runtime_error &t){lbRaiseError(kv, t);}
 		std::cout<<"done\n";
 		return ToMapleNULL(kv);
 	}
@@ -68,11 +68,11 @@ extern "C" {
 		LinBoxDataInfo(out);
 		size_t l=out.str().length();
 		char* msg = new char[l];
-		strncpy(msg, out.str().c_str(), l); 
+		strncpy(msg, out.str().c_str(), l);
 		MaplePrintf(kv, msg);
 		delete  msg;
 		return ToMapleNULL(kv);
-	}	
+	}
 
 
 	/******************************************
@@ -80,7 +80,7 @@ extern "C" {
 	 *** Function to create LinBox's object ***
 	 ******************************************
 	 ******************************************/
-	
+
 	/**********************************
 	 * Interface to create an element *
 	 **********************************/
@@ -89,29 +89,29 @@ extern "C" {
 		if (argc != 1){
 			MapleRaiseError(kv, "wrong number of arguments");
 			return ToMapleNULL(kv);
-		}		
-		const DomainKey *key = &MapleToDomainKey(kv, argv[1]);	       
-		try { 
-			LB_GMP_SET();	
+		}
+		const DomainKey *key = &MapleToDomainKey(kv, argv[1]);
+		try {
+			LB_GMP_SET();
 			const EltKey *k = &createElement(*key);
-			LB_GMP_RESTORE();	
-			return ElementKeyToMaple(kv, *k); 
-		} 
-		catch ( lb_runtime_error &t ) 
-			{ lbRaiseError(kv, t); return ToMapleNULL(kv); }				
+			LB_GMP_RESTORE();
+			return ElementKeyToMaple(kv, *k);
+		}
+		catch ( lb_runtime_error &t )
+			{ lbRaiseError(kv, t); return ToMapleNULL(kv); }
 	}
 
 	/********************************
 	 * Interface to create a domain *
 	 ********************************/
 	ALGEB lbCreateDomain (MKernelVector kv, ALGEB *argv){
-		M_INT argc = MapleNumArgs(kv, (ALGEB) argv);		
+		M_INT argc = MapleNumArgs(kv, (ALGEB) argv);
 		const DomainKey *key;
 		try {
 			if (argc < 1){
-				LB_GMP_SET();	
+				LB_GMP_SET();
 				key = &createDomain(0);
-				LB_GMP_RESTORE();	
+				LB_GMP_RESTORE();
 				return DomainKeyToMaple(kv, *key);
 			}
 			//LinBox::integer *p = GMPMapleToLinBox(kv, argv[1]);
@@ -119,24 +119,24 @@ extern "C" {
 			GMPMapleToLinBox(p, kv, argv[1]);
 
 			if (argc == 1){
-				LB_GMP_SET();	
+				LB_GMP_SET();
 				key = &createDomain(p);
-				LB_GMP_RESTORE();	
+				LB_GMP_RESTORE();
 				return DomainKeyToMaple(kv, *key);
-			}			
+			}
 			if (argc == 2){
-				LB_GMP_SET();	
+				LB_GMP_SET();
 				key = &createDomain(p, MapleToString(kv, argv[2]));
-				LB_GMP_RESTORE();	
-				return DomainKeyToMaple(kv, *key); 
+				LB_GMP_RESTORE();
+				return DomainKeyToMaple(kv, *key);
 			}
 			if (argc > 2){
 				MapleRaiseError(kv, "wrong number of argument");
 				return ToMapleNULL(kv);
 			}
 		}
-		catch ( lb_runtime_error &t ) 
-			{ lbRaiseError(kv, t); return ToMapleNULL(kv);}	
+		catch ( lb_runtime_error &t )
+			{ lbRaiseError(kv, t); return ToMapleNULL(kv);}
 		return ToMapleNULL(kv);
 	}
 
@@ -144,16 +144,16 @@ extern "C" {
 	 * Interface to create a blackbox *
 	 **********************************/
 	ALGEB lbCreateBlackboxFromMatrix(MKernelVector kv, ALGEB A, const LinBox::integer &p){
-		
-	
-		
+
+
+
 		RTableSettings setting;
 		RTableGetSettings(kv,&setting,A);
 		size_t m,n;
-		m = RTableUpperBound(kv, A, 1);	
+		m = RTableUpperBound(kv, A, 1);
 		n = RTableUpperBound(kv, A, 2);
 
-	
+
 		std::stringstream *buffer= new std::stringstream();//std::string(buffer_data, m*n));
 
 		//LinBox::Timer chrono;
@@ -162,7 +162,7 @@ extern "C" {
 			DenseMatrixToBuffer(kv, A, *buffer, m, n, setting);
 		else
 			if (setting.storage == RTABLE_SPARSE)
-				SparseMatrixToBuffer(kv, A, *buffer, m, n, setting);	
+				SparseMatrixToBuffer(kv, A, *buffer, m, n, setting);
 			else
 				MapleRaiseError(kv, "Matrix storage must be either dense or sparse");
 		//chrono.stop();
@@ -174,19 +174,19 @@ extern "C" {
 		//std::cout<<"buffering in <- : "<<chrono;
 		//chrono.clear();
 		//chrono.start();
-		LB_GMP_SET();	
+		LB_GMP_SET();
 		const DomainKey   *Dkey = &createDomain(p);
-		const BlackboxKey *Bkey = &createBlackbox(*Dkey, *buffer); 
+		const BlackboxKey *Bkey = &createBlackbox(*Dkey, *buffer);
 		deleteDomain (*Dkey);
 		LB_GMP_RESTORE();
 		//chrono.stop();
 		//std::cout<<"buffering out -> : "<<chrono;
 		delete buffer;
-		
-	
+
+
 		return BlackboxKeyToMaple(kv, *Bkey);
 	}
-	
+
 
 
 	ALGEB lbCreateBlackbox (MKernelVector kv, ALGEB *argv){
@@ -196,23 +196,23 @@ extern "C" {
 			MapleRaiseError(kv, "wrong number of arguments");
 			return ToMapleNULL(kv);
 		}
-		try {		
+		try {
 			if (argc == 1){
 				if (IsMapleRTable(kv, argv[1]))
 					return lbCreateBlackboxFromMatrix(kv, argv[1], LinBox::integer(0));
-				
-			}			
+
+			}
 			if (argc == 2){
 				if (IsMapleInteger(kv, argv[1]) && IsMapleRTable(kv, argv[2])){
 					//LinBox::integer *p = GMPMapleToLinBox(kv, argv[1]);
 					LinBox::integer p;
 					GMPMapleToLinBox(p, kv, argv[1]);
 					LB_GMP_SET();
-					ALGEB ret = lbCreateBlackboxFromMatrix(kv, argv[2], p); 
+					ALGEB ret = lbCreateBlackboxFromMatrix(kv, argv[2], p);
 					LB_GMP_RESTORE();
-					return ret; 
+					return ret;
 				}
-				    
+
 				if (IsMapleDomainKey(kv, argv[1]) && IsMapleString(kv, argv[2])) {
 					const DomainKey *k = &MapleToDomainKey(kv, argv[1]);
 					std::ifstream in(MapleToString(kv, argv[2]));
@@ -220,15 +220,15 @@ extern "C" {
 					key = &createBlackbox(*k, in);
 					LB_GMP_RESTORE();
 					return BlackboxKeyToMaple(kv, *key);
-			
-				}				
-			}						
+
+				}
+			}
 			if (argc == 3){
 				if (IsMapleDomainKey(kv, argv[1])){
 					const DomainKey *k = &MapleToDomainKey(kv, argv[1]);
 					if (IsMapleInteger(kv, argv[2])){
 						LB_GMP_SET();
-						key = &createBlackbox(*k, MapleToInteger32(kv, argv[2]), MapleToInteger32(kv, argv[3]));	
+						key = &createBlackbox(*k, MapleToInteger32(kv, argv[2]), MapleToInteger32(kv, argv[3]));
 						LB_GMP_RESTORE();
 					}
 					else {
@@ -239,7 +239,7 @@ extern "C" {
 					}
 					return BlackboxKeyToMaple(kv, *key);
 				}
-			}			
+			}
 			if (argc == 4){
 				if (IsMapleDomainKey(kv, argv[1])) {
 					const DomainKey *k = &MapleToDomainKey(kv, argv[1]);
@@ -251,33 +251,33 @@ extern "C" {
 			}
 			MapleRaiseError(kv, "wrong types of arguments");
 		}
-		catch ( lb_runtime_error &t ) 
+		catch ( lb_runtime_error &t )
 			{ lbRaiseError(kv, t); }
 		return ToMapleNULL(kv);
 	}
-	
+
 	/********************************
 	 * Interface to create a vector *
 	 ********************************/
 
 	ALGEB lbCreateVectorFromVector(MKernelVector kv, ALGEB V, const LinBox::integer &p){
-		
+
 		LB_GMP_SET();
 		const DomainKey *Dkey = &createDomain(p);
 		LB_GMP_RESTORE();
 		std::stringstream buffer;
-		RTableSettings setting; 
-		RTableData tmp;	
+		RTableSettings setting;
+		RTableData tmp;
 		RTableGetSettings(kv,&setting,V);
 		size_t n;
-		n = RTableUpperBound(kv, V, 1);		
+		n = RTableUpperBound(kv, V, 1);
 		buffer<<n<<"\n";
 		M_INT index[1];
 		if (setting.data_type == RTABLE_INTEGER8)
 			for (size_t i=1;i<n+1; ++i){index[0]=(M_INT)i;
 				tmp=RTableSelect(kv, V, index);
 				buffer<<tmp.int8<<"\n";
-			}		
+			}
 		if (setting.data_type == RTABLE_INTEGER16)
 			for (size_t i=1;i<n+1; ++i){index[0]=(M_INT)i;
 				tmp=RTableSelect(kv, V, index);
@@ -315,25 +315,25 @@ extern "C" {
 			MapleRaiseError(kv, "data type format in the matrix is not yet recognized by LinBox ");
 
 		LB_GMP_SET();
-		const VectorKey *Vkey = &createVector(*Dkey, buffer);	
-		deleteDomain (*Dkey);	
+		const VectorKey *Vkey = &createVector(*Dkey, buffer);
+		deleteDomain (*Dkey);
 		LB_GMP_RESTORE();
-		
-		return VectorKeyToMaple(kv, *Vkey);		       
+
+		return VectorKeyToMaple(kv, *Vkey);
 	}
-	
+
 	ALGEB lbCreateVector (MKernelVector kv, ALGEB *argv){
 		M_INT argc = MapleNumArgs(kv, (ALGEB) argv);
 		const VectorKey *key;
 		if ((argc < 1) || (argc > 4)){
 			MapleRaiseError(kv, "wrong number of arguments");
 			return ToMapleNULL(kv);
-		} 
-		try {  
+		}
+		try {
 			if (argc == 1){
 				if (IsMapleRTable(kv, argv[1]))
 					return lbCreateVectorFromVector(kv, argv[1], LinBox::integer(0));
-			}					
+			}
 			if (argc == 2){
 				if (IsMapleInteger(kv, argv[1]) && IsMapleRTable(kv, argv[2])){
 					//LinBox::integer *p = GMPMapleToLinBox(kv, argv[1]);
@@ -344,27 +344,27 @@ extern "C" {
 					LB_GMP_RESTORE();
 					return ret;
 				}
-				
+
 				if ( IsMapleDomainKey(kv, argv[1]) && IsMapleInteger(kv, argv[2])) {
 					const DomainKey *k = &MapleToDomainKey(kv, argv[1]);
 					LB_GMP_SET();
-					key = &createVector(*k, MapleToInteger32(kv, argv[2]));	
+					key = &createVector(*k, MapleToInteger32(kv, argv[2]));
 					LB_GMP_RESTORE();
 					return VectorKeyToMaple(kv, *key);
 				}
-			}						
+			}
 			if (argc == 3){
 				if ( IsMapleDomainKey(kv, argv[1]) && IsMapleInteger(kv, argv[2]) && IsMapleString(kv, argv[3])){
 					const DomainKey *k = &MapleToDomainKey(kv, argv[1]);
 					LB_GMP_SET();
-					key = &createVector(*k, MapleToInteger32(kv, argv[2]), MapleToString(kv, argv[3]));	
+					key = &createVector(*k, MapleToInteger32(kv, argv[2]), MapleToString(kv, argv[3]));
 					LB_GMP_RESTORE();
 					return VectorKeyToMaple(kv, *key);
 				}
 			}
 			MapleRaiseError(kv, "wrong types of arguments");
 		}
-		catch ( lb_runtime_error &t ) 
+		catch ( lb_runtime_error &t )
 			{ lbRaiseError(kv, t); }
 		return ToMapleNULL(kv);
 	}
@@ -375,7 +375,7 @@ extern "C" {
 	 ***************************
 	 *** Domain's Functions ****
 	 ***************************
-	 ***************************/	
+	 ***************************/
 
 	/******************************
 	 * Interface to copy a Domain *
@@ -389,7 +389,7 @@ extern "C" {
 			{ lbRaiseError(kv, t);}
 		return ToMapleNULL(kv);
 	}
-	
+
 	/*****************************************************
 	 * Interface to change globally the prime field type *
 	 *****************************************************/
@@ -404,9 +404,9 @@ extern "C" {
 			return ToMapleNULL(kv);
 		}
 		setPrimeField(MapleToString(kv, argv[1]));
-		return ToMapleNULL(kv);		    
+		return ToMapleNULL(kv);
 	}
-	
+
 	/********************************************************
 	 * Interface to change globally the rational field type *
 	 ********************************************************/
@@ -421,7 +421,7 @@ extern "C" {
 			return ToMapleNULL(kv);
 		}
 		setRationalField(MapleToString(kv, argv[1]));
-		return ToMapleNULL(kv);		    
+		return ToMapleNULL(kv);
 	}
 
 	/******************************************************
@@ -438,17 +438,17 @@ extern "C" {
 			return ToMapleNULL(kv);
 		}
 		setIntegerRing(MapleToString(kv, argv[1]));
-		return ToMapleNULL(kv);		    
+		return ToMapleNULL(kv);
 	}
-	
 
-	
+
+
 	/*****************************
 	 *****************************
 	 *** Blackbox's Functions ****
 	 *****************************
-	 *****************************/	
-		
+	 *****************************/
+
 	/********************************
 	 * Interface to copy a blackbox *
 	 ********************************/
@@ -458,7 +458,7 @@ extern "C" {
 			return BlackboxKeyToMaple(kv, copyBlackbox(*key));
 		}
 		catch (lb_runtime_error &t)
-			{ lbRaiseError(kv, t);}	
+			{ lbRaiseError(kv, t);}
 		return ToMapleNULL(kv);
 	}
 
@@ -474,14 +474,14 @@ extern "C" {
 	 * Interface to write a blackbox in a file *
 	 *******************************************/
 	ALGEB lbWriteBlackbox (MKernelVector kv, ALGEB *argv){
-		try {		
+		try {
 			std::ofstream os(MapleToString(kv, argv[2]));
 			const BlackboxKey *key = &MapleToBlackboxKey(kv, argv[1]);
 			writeBlackbox(*key, os);
-			return ToMapleNULL(kv);			
+			return ToMapleNULL(kv);
 		}
 		catch (lb_runtime_error &t)
-			{ lbRaiseError(kv, t);}	
+			{ lbRaiseError(kv, t);}
 		return ToMapleNULL(kv);
 	}
 
@@ -490,29 +490,29 @@ extern "C" {
 	 * Interface to fill a blackbox with random value *
 	 **************************************************/
 	ALGEB lbSetBlackboxAtRandom (MKernelVector kv, ALGEB *argv){
-		try {			
+		try {
 			const BlackboxKey *key = &MapleToBlackboxKey(kv, argv[1]);
 			setBlackboxAtRandom(*key);
 			return argv[1];
-		}	
+		}
 		catch (lb_runtime_error &t)
-			{ lbRaiseError(kv, t);}	
+			{ lbRaiseError(kv, t);}
 		return ToMapleNULL(kv);
 	}
-	
+
 
 	/******************************************************
 	 * Interface to rebind a blackbox over another domain *
 	 ******************************************************/
-	ALGEB lbRebindBlackbox (MKernelVector kv, ALGEB *argv){		
-		try {		
+	ALGEB lbRebindBlackbox (MKernelVector kv, ALGEB *argv){
+		try {
 			const DomainKey   *Dkey = &MapleToDomainKey(kv, argv[1]);;
-			const BlackboxKey *Bkey = &MapleToBlackboxKey(kv, argv[2]);			
+			const BlackboxKey *Bkey = &MapleToBlackboxKey(kv, argv[2]);
 			rebindBlackbox(*Bkey, *Dkey);
 			return ToMapleNULL(kv);
 		}
 		catch (lb_runtime_error &t)
-			{ lbRaiseError(kv, t);}	
+			{ lbRaiseError(kv, t);}
 		return ToMapleNULL(kv);
 	}
 
@@ -531,7 +531,7 @@ extern "C" {
 			return ToMapleNULL(kv);
 		}
 		setBlackbox(MapleToString(kv, argv[1]));
-		return ToMapleNULL(kv);		    
+		return ToMapleNULL(kv);
 	}
 
 
@@ -541,7 +541,7 @@ extern "C" {
 	 *** Vector's Functions ****
 	 ***************************
 	 ***************************/
-	
+
 	/******************************
 	 * Interface to copy a vector *
 	 ******************************/
@@ -551,7 +551,7 @@ extern "C" {
 			return VectorKeyToMaple(kv, copyVector(*key));
 		}
 		catch (lb_runtime_error &t)
-			{ lbRaiseError(kv, t);}	
+			{ lbRaiseError(kv, t);}
 		return ToMapleNULL(kv);
 	}
 
@@ -573,14 +573,14 @@ extern "C" {
 	 * Interface to write a vector in a file *
 	 *****************************************/
 	ALGEB lbWriteVector (MKernelVector kv, ALGEB *argv){
-		try {		
+		try {
 			std::ofstream os(MapleToString(kv, argv[2]));
 			const VectorKey *key = &MapleToVectorKey(kv, argv[1]);
 			writeVector(*key, os);
 			return ToMapleNULL(kv);
 		}
 		catch (lb_runtime_error &t)
-			{ lbRaiseError(kv, t);}	
+			{ lbRaiseError(kv, t);}
 		return ToMapleNULL(kv);
 	}
 
@@ -588,28 +588,28 @@ extern "C" {
 	 * Interface to fill a vector with random value *
 	 ************************************************/
 	ALGEB lbSetVectorAtRandom (MKernelVector kv, ALGEB *argv){
-		try {			
+		try {
 			const VectorKey *key = &MapleToVectorKey(kv, argv[1]);
 			setVectorAtRandom(*key);
 			return argv[1];
-		}	
+		}
 		catch (lb_runtime_error &t)
-			{ lbRaiseError(kv, t);}	
-		return ToMapleNULL(kv);	
+			{ lbRaiseError(kv, t);}
+		return ToMapleNULL(kv);
 	}
 
 	/******************************************************
 	 * Interface to rebind a vector over another domain *
 	 ******************************************************/
 	ALGEB lbRebindVector (MKernelVector kv, ALGEB *argv){
-		try {		
+		try {
 			const DomainKey   *Dkey = &MapleToDomainKey(kv, argv[1]);;
-			const VectorKey *Bkey = &MapleToVectorKey(kv, argv[2]);			
+			const VectorKey *Bkey = &MapleToVectorKey(kv, argv[2]);
 			rebindVector(*Bkey, *Dkey);
 			return argv[2];
 		}
 		catch (lb_runtime_error &t)
-			{ lbRaiseError(kv, t);}	
+			{ lbRaiseError(kv, t);}
 		return ToMapleNULL(kv);
 	}
 
@@ -627,7 +627,7 @@ extern "C" {
 			return ToMapleNULL(kv);
 		}
 		setVector(MapleToString(kv, argv[1]));
-		return ToMapleNULL(kv);		    
+		return ToMapleNULL(kv);
 	}
 
 
@@ -642,14 +642,14 @@ extern "C" {
 	 * Interface to write a polynomial *
 	 ***********************************/
 	ALGEB lbWritePolynomial (MKernelVector kv, ALGEB *argv){
-		try {	
+		try {
 			std::ofstream os(MapleToString(kv, argv[2]));
 			const VectorKey *key = &MapleToVectorKey(kv, argv[1]);
 			writePolynomial(*key, os);
 			return ToMapleNULL(kv);
 		}
        		catch (lb_runtime_error &t)
-			{ lbRaiseError(kv, t);}	
+			{ lbRaiseError(kv, t);}
 		return ToMapleNULL(kv);
 	}
 
@@ -665,7 +665,7 @@ extern "C" {
 	 ******************************************************/
 	ALGEB lbDeterminant (MKernelVector kv, ALGEB *argv){
 		M_INT argc = MapleNumArgs(kv, (ALGEB) argv);
-		try{				
+		try{
 			if (argc == 1){
 				LB_GMP_SET();
 				const BlackboxKey *key = &MapleToBlackboxKey(kv, argv[1]);
@@ -673,7 +673,7 @@ extern "C" {
 				LB_GMP_RESTORE();
 				return ElementKeyToMaple(kv, *k);
 			}
-			if (argc == 2){	
+			if (argc == 2){
 				LB_GMP_SET();
 				const EltKey      *k   = &MapleToElementKey(kv, argv[1]);
 				const BlackboxKey *key = &MapleToBlackboxKey(kv, argv[2]);
@@ -683,7 +683,7 @@ extern "C" {
 			}
 		}
 		catch (lb_runtime_error &t)
-			{ lbRaiseError(kv, t);}	
+			{ lbRaiseError(kv, t);}
 		return ToMapleNULL(kv);
 	}
 
@@ -692,7 +692,7 @@ extern "C" {
 	 ***********************************************/
 	ALGEB lbRank (MKernelVector kv, ALGEB *argv){
 		M_INT argc = MapleNumArgs(kv, (ALGEB) argv);
-		try{			
+		try{
 			if (argc == 1){
 				LB_GMP_SET();
 				const BlackboxKey *key = &MapleToBlackboxKey(kv, argv[1]);
@@ -700,7 +700,7 @@ extern "C" {
 				LB_GMP_RESTORE();
 				return ToMapleInteger(kv, r);
 			}
-			if (argc == 2){	
+			if (argc == 2){
 				LB_GMP_SET();
 				size_t *r = (size_t*) MapleToPointer(kv, argv[1]);
 				const BlackboxKey *key = &MapleToBlackboxKey(kv, argv[2]);
@@ -710,7 +710,7 @@ extern "C" {
 			}
 		}
 		catch (lb_runtime_error &t)
-			{ lbRaiseError(kv, t);}	
+			{ lbRaiseError(kv, t);}
 		return ToMapleNULL(kv);
 	}
 
@@ -721,7 +721,7 @@ extern "C" {
 	 *************************************************************/
 	ALGEB lbMinpoly (MKernelVector kv, ALGEB *argv){
 		M_INT argc = MapleNumArgs(kv, (ALGEB) argv);
-		try{		
+		try{
 			if (argc == 1){
 				LB_GMP_SET();
 				const BlackboxKey    *key = &MapleToBlackboxKey(kv, argv[1]);
@@ -729,8 +729,8 @@ extern "C" {
 				LB_GMP_RESTORE();
 				return PolynomialKeyToMaple(kv, *k);
 			}
-			if (argc == 2){	
-				LB_GMP_SET();	
+			if (argc == 2){
+				LB_GMP_SET();
 				const PolynomialKey  *k   = &MapleToPolynomialKey(kv, argv[1]);
 				const BlackboxKey    *key = &MapleToBlackboxKey(kv, argv[2]);
 				lb_minpoly(*k, *key);
@@ -739,7 +739,7 @@ extern "C" {
 			}
 		}
 		catch (lb_runtime_error &t)
-			{ lbRaiseError(kv, t);}	
+			{ lbRaiseError(kv, t);}
 		return ToMapleNULL(kv);
 	}
 
@@ -749,7 +749,7 @@ extern "C" {
 	 ********************************************************************/
 	ALGEB lbCharpoly (MKernelVector kv, ALGEB *argv){
 		M_INT argc = MapleNumArgs(kv, (ALGEB) argv);
-		try{		
+		try{
 			if (argc == 1){
 				LB_GMP_SET();
 				const BlackboxKey    *key = &MapleToBlackboxKey(kv, argv[1]);
@@ -757,17 +757,17 @@ extern "C" {
 				LB_GMP_RESTORE();
 				return PolynomialKeyToMaple(kv, *k);
 			}
-			if (argc == 2){	
-				LB_GMP_SET();			
+			if (argc == 2){
+				LB_GMP_SET();
 				const PolynomialKey  *k   = &MapleToPolynomialKey(kv, argv[1]);
 				const BlackboxKey    *key = &MapleToBlackboxKey(kv, argv[2]);
-				lb_charpoly(*k, *key);	
+				lb_charpoly(*k, *key);
 				LB_GMP_RESTORE();
 				return ToMapleNULL(kv);
 			}
 		}
 		catch (lb_runtime_error &t)
-			{ lbRaiseError(kv, t);}	
+			{ lbRaiseError(kv, t);}
 		return ToMapleNULL(kv);
 	}
 
@@ -777,8 +777,8 @@ extern "C" {
 	 **************************************/
 	ALGEB lbSolve (MKernelVector kv, ALGEB *argv){
 		M_INT argc = MapleNumArgs(kv, (ALGEB) argv);
-		try{		
-			if (argc == 2){	
+		try{
+			if (argc == 2){
 				LB_GMP_SET();
 				const BlackboxKey *Bkey = &MapleToBlackboxKey(kv, argv[1]);
 				const VectorKey   *Vkey = &MapleToVectorKey(kv, argv[2]);
@@ -786,22 +786,22 @@ extern "C" {
 				LB_GMP_RESTORE();
 				return VectorKeyToMaple(kv, *Rkey);
 			}
-			if (argc == 3){	
+			if (argc == 3){
 				LB_GMP_SET();
 				const VectorKey   *Rkey = &MapleToVectorKey(kv, argv[1]);
 				const BlackboxKey *Bkey = &MapleToBlackboxKey(kv, argv[2]);
-				const VectorKey   *Vkey = &MapleToVectorKey(kv, argv[3]);				
-				lb_solve(*Rkey, *Bkey, *Vkey);	
+				const VectorKey   *Vkey = &MapleToVectorKey(kv, argv[3]);
+				lb_solve(*Rkey, *Bkey, *Vkey);
 				LB_GMP_RESTORE();
 				return ToMapleNULL(kv);
 			}
 		}
 		catch (lb_runtime_error &t)
-			{ lbRaiseError(kv, t);}	
+			{ lbRaiseError(kv, t);}
 		return ToMapleNULL(kv);
 	}
 
-	
+
 
 	/*******************************************
 	 *******************************************
@@ -820,7 +820,7 @@ extern "C" {
 
 			if (strcmp(s.type, "integer")==0)
 				return LinBoxToGMPMaple(kv, s.list.front());
-			else 
+			else
 				if (strcmp(s.type,"rational")==0){
 					ALGEB n,d,f;
 					n = LinBoxToGMPMaple(kv, s.list.front());
@@ -852,7 +852,7 @@ extern "C" {
 			const VectorKey *k = &MapleToVectorKey(kv, argv[1]);
 			SerialVector s;
 			SerializeVector(s, *k);
-						
+
 			if (strcmp(s.type, "integer")==0){
 				size_t n = s.list.size();
 				RTableSettings setting;
@@ -861,7 +861,7 @@ extern "C" {
 				setting.num_dimensions=1;
 				setting.subtype=RTABLE_COLUMN;
 				setting.data_type=RTABLE_DAG;
-				
+
 				ALGEB vector = RTableCreate(kv, &setting, NULL, bounds);
 				M_INT index[1];
 				RTableData tmp;
@@ -882,20 +882,20 @@ extern "C" {
 				setting.num_dimensions=1;
 				setting.subtype=RTABLE_COLUMN;
 				setting.data_type=RTABLE_DAG;
-			
+
 				ALGEB vector = RTableCreate(kv, &setting, NULL, bounds);
-				ALGEB f = EvalMapleStatement(kv,"Fraction:");				
+				ALGEB f = EvalMapleStatement(kv,"Fraction:");
 				M_INT index[1];
 				RTableData tmp;
 				for (size_t i=1; i<n+1; ++i){
 					index[0]=i;
 					tmp.dag =  EvalMapleProc(kv, f, 2, LinBoxToGMPMaple(kv, s.list[(i<<1)-2]) , LinBoxToGMPMaple(kv, s.list[(i<<1)-1]));
-					RTableAssign(kv, vector, index, tmp);						    
+					RTableAssign(kv, vector, index, tmp);
 				}
 				return vector;
 			}
-			
-			else 			
+
+			else
 				MapleRaiseError(kv, "LinBox internal error (serializing vector problem)");
 		}
 		catch (lb_runtime_error &t)
@@ -911,7 +911,7 @@ extern "C" {
 			const PolynomialKey *k = &MapleToPolynomialKey(kv, argv[1]);
 			SerialPolynomial s;
 			SerializePolynomial(s, *k);
-						
+
 			if (strcmp(s.type, "integer")==0){
 				size_t n = s.list.size();
 				ALGEB f, listcoeff;
@@ -922,7 +922,7 @@ extern "C" {
 				f = EvalMapleStatement(kv,"proc(l, name) local i, p; p:=0; for  i from 1 to nops(l) do  p:=p+ l[i]*name^(i-1); end do; return p; end proc;");
 				return EvalMapleProc(kv, f, 2, listcoeff, argv[2]);
 			}
-			else 			
+			else
 				MapleRaiseError(kv, "LinBox internal error (serializing polynomial problem)");
 		}
 		catch (lb_runtime_error &t)
@@ -931,7 +931,7 @@ extern "C" {
 	}
 
 
-	
+
 	/*******************************************
 	 *******************************************
 	 **** Higher level API on LinBox object ****
@@ -947,12 +947,12 @@ extern "C" {
 			MapleRaiseError(kv, "wrong number of arguments");
 		}
 		if (IsMapleDomainKey(kv, argv[1]))
-			return lbCopyDomain(kv, argv);		
+			return lbCopyDomain(kv, argv);
 		if (IsMapleBlackboxKey(kv, argv[1]))
 			return lbCopyBlackbox(kv, argv);
 		if (IsMapleVectorKey(kv, argv[1]))
 			return lbCopyVector(kv, argv);
-	
+
 		MapleRaiseError(kv, "LinBox object (lbDomain, lbBlackbox, lbVector) expected for 1st argument");
 		return ToMapleNULL(kv);
 	}
@@ -967,7 +967,7 @@ extern "C" {
 		}
 		if (!IsMapleString(kv, argv[2]))
 			MapleRaiseError(kv, "Filename expected for 2nd argument");
-		
+
 		if (IsMapleBlackboxKey(kv, argv[1]))
 			return lbWriteBlackbox(kv, argv);
 		if (IsMapleVectorKey(kv, argv[1]))
@@ -991,7 +991,7 @@ extern "C" {
 			return lbGetBlackboxDimension(kv, argv);
 		if (IsMapleVectorKey(kv, argv[1]))
 			return lbGetVectorDimension(kv, argv);
-		
+
 		MapleRaiseError(kv, "LinBox object (lbBlackbox, lbVector) expected for 1st argument");
 		return ToMapleNULL(kv);
 	}
@@ -1006,7 +1006,7 @@ extern "C" {
 		}
 		if (!IsMapleDomainKey(kv, argv[1]))
 			MapleRaiseError(kv, "LinBox object (lbDomain) expected for 1st argument");
-		
+
 		if (IsMapleBlackboxKey(kv, argv[2]))
 			return lbRebindBlackbox(kv, argv);
 		if (IsMapleVectorKey(kv, argv[2]))

@@ -65,7 +65,7 @@ int main (int argc, char **argv)
 	//cout << endl << "GivaroZpz<Unsigned32> field test suite" << endl;
 	//cout.flush ();
 	bool pass = true;
-	
+
 	GivaroZpz<Unsigned32> F1 (2);
 	GivaroZpz<Unsigned32> F2 (q);
 	GivaroZpz<Unsigned32> F3 (3);

@@ -55,12 +55,12 @@ public:
 	bool add(const char *name, createDomainCallBack createD){
 		return _callback.insert(CallBackMap::value_type(name, createD)).second;
 	}
-	
+
 	bool remove(const char *name){
 		return _callback.erase(name) == 1;
 	}
-	
-	DomainAbstract* create(const char *name, const LinBox::integer &p){		
+
+	DomainAbstract* create(const char *name, const LinBox::integer &p){
 		CallBackMap::iterator it = _callback.find(name);
 		if (it != _callback.end()){
 			return it->second(p);
@@ -126,13 +126,13 @@ class DomainEnvelope :  public DomainAbstract {
 public:
 	typedef Domain Self_t;
 	typedef typename LinBox::FieldTraits<Domain>::categoryTag categoryTag;
-	
+
 	DomainEnvelope() {}
 
 	DomainEnvelope(const LinBox::integer &p) {
 		ptr = constructDomainFunctor<Domain, categoryTag> ()(p, categoryTag());
 	}
-	
+
 	~DomainEnvelope() {delete ptr;}
 
 	DomainAbstract* clone() const {
@@ -141,7 +141,7 @@ public:
 
 	LINBOX_VISITABLE();
 
-	Domain *getDomain() const  {return ptr;}			
+	Domain *getDomain() const  {return ptr;}
 };
 
 

@@ -18,16 +18,16 @@
 template<class Field>
 inline void
 FFLAS::ftrmm (const Field& F, const FFLAS_SIDE Side,
-	      const FFLAS_UPLO Uplo, 
+	      const FFLAS_UPLO Uplo,
 	      const FFLAS_TRANSPOSE TransA,
-	      const FFLAS_DIAG Diag, 
+	      const FFLAS_DIAG Diag,
 	      const size_t M, const size_t N,
 	      const typename Field::Element alpha,
 	      typename Field::Element * A, const size_t lda,
-	      typename Field::Element * B, const size_t ldb) 
+	      typename Field::Element * B, const size_t ldb)
 {
-	if (!M || !N ) return; 
-		
+	if (!M || !N ) return;
+
 	if ( Side==FflasLeft )
 	{
 		if ( Uplo==FflasUpper){
@@ -86,7 +86,7 @@ FFLAS::ftrmm (const Field& F, const FFLAS_SIDE Side,
 		for (size_t i=0; i< M; ++i)
 			for (size_t j=0; j<N; ++j)
 				F.mulin(*(B+i*ldb+j),alpha);
-	
+
 }
 
 #define __FFLAS__GENERIC

@@ -29,7 +29,7 @@
 using namespace LinBox;
 bool test() ;
 int main(int argc, char** argv)
-{	
+{
    static Argument args[] = {
    };
    parseArguments (argc, argv, args);
@@ -44,9 +44,9 @@ bool test()
 {
 	const char* title = "Subiterator test";
 	commentator.start(title, title, 1);
-	ostream &report = commentator.report 
+	ostream &report = commentator.report
 		(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-	std::vector<int> v; 
+	std::vector<int> v;
 	for (int i = 1; i <= 10; ++i) v.push_back(i);
 
 	Subiterator<std::vector<int>::iterator> s(v.begin()+2, 2);
@@ -62,7 +62,7 @@ bool test()
 	if (*(s+1) != 5) {report << 8 << endl; res=false;}
 	if (*(s-1) != 1) {report << 9 << endl; res=false;}
 	if ((t-s) != 5) {report << 10 << endl; res=false;}
-	//	report << "10 " << t-s << endl; 
+	//	report << "10 " << t-s << endl;
 	if ((s[1]) != 5) {report << 11 << endl; res=false;}
 
 	if (s == t) {report << 12 << endl; res=false;}

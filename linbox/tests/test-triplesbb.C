@@ -74,13 +74,13 @@ int main (int argc, char **argv)
 	typedef TriplesBB<Field> Blackbox;
 
 	Field F (q);
-	Element d; 
+	Element d;
 	F.init (d, -1);
 
 	// set up the matrix
-	std::vector<Element> values; 
-	std::vector<size_t> rowP; 
-	std::vector<size_t> colP; 
+	std::vector<Element> values;
+	std::vector<size_t> rowP;
+	std::vector<size_t> colP;
 	for(int i = 1; i < 12; ++i)
 	{
 		values.push_back(i);

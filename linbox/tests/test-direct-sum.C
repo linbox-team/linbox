@@ -54,7 +54,7 @@ int main (int argc, char **argv)
 	ScalarMatrix<Field> B(F, 10, k);
 	F.init(k, 2);
 	ScalarMatrix<Field> C(F, 5, k);
-	
+
 	DirectSum<ScalarMatrix<Field>, ScalarMatrix<Field> > A(&B, &C);
 	pass = pass && testBlackbox(A);
 	DirectSum<ScalarMatrix<Field>, ScalarMatrix<Field> > D(B, C);

@@ -40,27 +40,27 @@ namespace LinBox
 		struct Container{};
 		struct Blackbox{};
 	};
-  
+
 	template <class Matrix>
 	class MatrixContainerTrait {
 	public:
 		typedef MatrixContainerCategory::Blackbox Type;
 	};
-	
+
 
 	template <class Element>
 	class MatrixContainerTrait<DenseMatrixBase<Element> > {
 	public:
 		typedef MatrixContainerCategory::Container Type;
 	};
-	
+
 	template <class Element>
 	class MatrixContainerTrait<SparseMatrixBase<Element> > {
 	public:
 		typedef MatrixContainerCategory::Container Type;
 	};
 
-	
+
 	template <class Field>
 	class MatrixContainerTrait<DenseMatrix<Field> > {
 	public:

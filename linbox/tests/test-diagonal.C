@@ -46,7 +46,7 @@ using namespace LinBox;
  */
 
 template <class Field, class Vector>
-static bool testIdentityApply (Field &F, VectorStream<Vector> &stream) 
+static bool testIdentityApply (Field &F, VectorStream<Vector> &stream)
 {
         typedef LinBox::Diagonal<Field> Blackbox;
 
@@ -122,7 +122,7 @@ static bool testIdentityApply (Field &F, VectorStream<Vector> &stream)
  */
 
 template <class Field, class Vector>
-static bool testRandomMinpoly (Field &F, VectorStream<Vector> &stream) 
+static bool testRandomMinpoly (Field &F, VectorStream<Vector> &stream)
 {
 	typedef vector <typename Field::Element> Polynomial;
 	typedef LinBox::Diagonal <Field> Blackbox;
@@ -208,7 +208,7 @@ template <class Field, class Vector>
 static bool testRandomLinearity (Field &F,
 				 VectorStream<std::vector<typename Field::Element> > &d_stream,
 				 VectorStream<Vector> &stream1,
-				 VectorStream<Vector> &stream2) 
+				 VectorStream<Vector> &stream2)
 {
 	typedef LinBox::Diagonal <Field> Blackbox;
 
@@ -250,7 +250,7 @@ template <class Field, class Vector>
 static bool testRandomTranspose (Field &F,
 				 VectorStream<std::vector<typename Field::Element> > &d_stream,
 				 VectorStream<Vector> &stream1,
-				 VectorStream<Vector> &stream2) 
+				 VectorStream<Vector> &stream2)
 {
 	typedef LinBox::Diagonal <Field> Blackbox;
 

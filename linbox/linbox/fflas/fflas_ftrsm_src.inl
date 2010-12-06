@@ -48,7 +48,7 @@
  #define __FFLAS__Bnormnext ldb
  #define __FFLAS__Bdim N
  #ifdef __FFLAS__LOW
-  #define __FFLAS__Atriang A + i * nsplit * (lda + 1)			
+  #define __FFLAS__Atriang A + i * nsplit * (lda + 1)
   #define __FFLAS__Aupdate A + i * nsplit * (lda + 1) + nsplit*__FFLAS__Arowinc
   #define __FFLAS__Arest A + (__FFLAS__Na - nrestsplit) * (lda + 1)
   #define __FFLAS__Anormnext __FFLAS__Arowinc
@@ -64,19 +64,19 @@
 #else
   #define __FFLAS__Atriang A + (__FFLAS__Na - (i + 1) * nsplit) * (lda + 1)
   #define __FFLAS__Aupdate A + (__FFLAS__Na  - (i + 1) * nsplit) * __FFLAS__Acolinc
-  #define __FFLAS__Arest A 
+  #define __FFLAS__Arest A
   #define __FFLAS__Anormnext lda + 1
   #define __FFLAS__Bupdate B
   #define __FFLAS__Brec B + (M - (i + 1) * nsplit) * ldb
   #define __FFLAS__Brest B
   #define __FFLAS__A1 A + (__FFLAS__Na - nsplit) * (lda + 1)
   #define __FFLAS__A2 A + (__FFLAS__Na - nsplit) * __FFLAS__Acolinc
-  #define __FFLAS__A3 A 
+  #define __FFLAS__A3 A
   #define __FFLAS__B1 B + (M - nsplit)*ldb
   #define __FFLAS__B2 B
   #define __FFLAS__Normdim __FFLAS__Na-i-1
  #endif
-#else	
+#else
  #define __FFLAS__SIDE Right
  #define __FFLAS__Na N
  #define __FFLAS__Nb nsplit
@@ -115,7 +115,7 @@
   #define __FFLAS__Brest B
   #define __FFLAS__A1 A + (__FFLAS__Na - nsplit) * (lda + 1)
   #define __FFLAS__A2 A + (__FFLAS__Na - nsplit) * __FFLAS__Arowinc
-  #define __FFLAS__A3 A 
+  #define __FFLAS__A3 A
   #define __FFLAS__B1 B + N - nsplit
   #define __FFLAS__B2 B
   #define __FFLAS__Normdim __FFLAS__Na - i -1
@@ -170,9 +170,9 @@ template<class Field>
 void delayed (const Field& F, const size_t M, const size_t N,
 	      typename Field::Element * A, const size_t lda,
 	      typename Field::Element * B, const size_t ldb,
-	      const size_t nblas, size_t nbblocsblas) 
+	      const size_t nblas, size_t nbblocsblas)
 {
-	
+
 	static typename Field::Element Mone;
 	static typename Field::Element one;
 
@@ -195,7 +195,7 @@ void delayed (const Field& F, const size_t M, const size_t N,
 #endif
 #ifdef __FFLAS__RIGHT
 #ifdef __FFLAS__LOW
-		Ai += __FFLAS__Arowinc; 
+		Ai += __FFLAS__Arowinc;
 #endif
 #endif
 		for (size_t i = 0; i < __FFLAS__Na; ++i){
@@ -217,7 +217,7 @@ void delayed (const Field& F, const size_t M, const size_t N,
 		for (size_t i = 0; i < M; ++i)
 			for (size_t j = 0; j < N; ++j)
 				F.init (*(B + i*ldb + j), *(B + i*ldb + j));
-				
+
 #ifndef __FFLAS__UNIT
 		Ai = A;
 #ifdef __FFLAS__LEFT
@@ -227,7 +227,7 @@ void delayed (const Field& F, const size_t M, const size_t N,
 #endif
 #ifdef __FFLAS__RIGHT
 #ifdef __FFLAS__LOW
-		Ai += __FFLAS__Arowinc; 
+		Ai += __FFLAS__Arowinc;
 #endif
 #endif
 		for (size_t i = 0; i < __FFLAS__Na; ++i){
@@ -257,15 +257,15 @@ void delayed (const Field& F, const size_t M, const size_t N,
 template <class Field>
 void operator () (const Field& F, const size_t M, const size_t N,
 		  typename Field::Element * A, const size_t lda,
-		  typename Field::Element * B, const size_t ldb) 
+		  typename Field::Element * B, const size_t ldb)
 {
-	
+
 	if (!M || !N ) return;
-		
+
 	static typename Field::Element one, Mone;
 	F.init(one, 1.0);
 	F.neg(Mone, one);
-	
+
 	static __FFLAS__DOMAIN D;
 	size_t nblas = TRSMBound<Field> (F);
 #if 0
@@ -283,11 +283,11 @@ void operator () (const Field& F, const size_t M, const size_t N,
 	size_t nsplit = ndel;
 	size_t nbblocsplit = (__FFLAS__Na-1) / nsplit;
 	size_t nrestsplit = ((__FFLAS__Na-1) % nsplit) +1;
-	
+
 	for ( size_t  i = 0; i < nbblocsplit; ++i) {
 		this->delayed (F, __FFLAS__Mb, __FFLAS__Nb,
 			       __FFLAS__Atriang, lda, __FFLAS__Brec, ldb, nblas, nsplit / nblas);
-					 
+
 #ifdef __FFLAS__RIGHT
 		fgemm (F, FflasNoTrans, Mjoin (Fflas, __FFLAS__TRANS),
 		       __FFLAS__Mupdate, __FFLAS__Nupdate, nsplit, Mone,
@@ -309,23 +309,23 @@ void operator () (const Field& F, const size_t M, const size_t N,
 #else // __FFLAS__GENERIC
 
 template <class Element>
-class FFLAS::Mjoin(ftrsm, Mjoin(__FFLAS__SIDE, Mjoin(__FFLAS__UPLO, Mjoin(__FFLAS__TRANS, __FFLAS__DIAG)))) 
+class FFLAS::Mjoin(ftrsm, Mjoin(__FFLAS__SIDE, Mjoin(__FFLAS__UPLO, Mjoin(__FFLAS__TRANS, __FFLAS__DIAG))))
 {
 public:
 
 template<class Field>
 void operator()	(const Field& F, const size_t M, const size_t N,
 		 typename Field::Element * A, const size_t lda,
-		 typename Field::Element * B, const size_t ldb) 
+		 typename Field::Element * B, const size_t ldb)
 {
-	
+
 	static typename Field::Element Mone;
 	static typename Field::Element one;
 	F.init(one, 1.0);
 	F.neg(Mone,one);
 	if (__FFLAS__Na == 1){
-		
-#ifndef __FFLAS__UNIT					
+
+#ifndef __FFLAS__UNIT
 		typename Field::Element inv;
 		if ( F.isZero(*A) ) throw PreconditionFailed(__func__,__FILE__,__LINE__,"Triangular matrix not invertible");
 		F.inv(inv, *A);
@@ -360,14 +360,14 @@ void operator()	(const Field& F, const size_t M, const size_t N,
 #undef __FFLAS__Mb
 #undef __FFLAS__Nb
 #undef __FFLAS__Mbrest
-#undef __FFLAS__Nbrest 
-#undef __FFLAS__Mupdate 
+#undef __FFLAS__Nbrest
+#undef __FFLAS__Mupdate
 #undef __FFLAS__Nupdate
-#undef __FFLAS__Atriang 
+#undef __FFLAS__Atriang
 #undef __FFLAS__Aupdate
-#undef __FFLAS__Arest 
-#undef __FFLAS__Bupdate 
-#undef __FFLAS__Brec 
+#undef __FFLAS__Arest
+#undef __FFLAS__Bupdate
+#undef __FFLAS__Brec
 #undef __FFLAS__Brest
 #undef __FFLAS__Bnorminc
 #undef __FFLAS__Bnormnext

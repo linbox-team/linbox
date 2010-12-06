@@ -41,13 +41,13 @@ class RankFunctor{
 private:
 	Method meth;
 public:
-	
+
 	RankFunctor(Method m = Method()) : meth(m) {}
 
 	template<class Blackbox>
 	void operator() (unsigned long &res, Blackbox *B) const {
-		LinBox::rank(res, *B, meth);		
-	}	
+		LinBox::rank(res, *B, meth);
+	}
 };
 
 /**********************************************************
@@ -63,7 +63,7 @@ void lb_rank(unsigned long &res, const BlackboxKey& key){
  * API for rank computation                          *
  * rank is returned through an unsigned long integer *
  *****************************************************/
-unsigned long lb_rank(const BlackboxKey& key){	
+unsigned long lb_rank(const BlackboxKey& key){
 	unsigned long r;
 	lb_rank(r, key);
 	return r;

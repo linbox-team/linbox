@@ -32,7 +32,7 @@
  * Collection of Blackbox *
  **************************/
 
-// definition of a key 
+// definition of a key
 typedef size_t  BlackboxKey;
 
 // comparison functor on key
@@ -44,6 +44,6 @@ typedef std::map<BlackboxKey, BlackboxAbstract*, BlackboxKeyLessThan>   Blackbox
 
 
 
- 
+
 
 #endif

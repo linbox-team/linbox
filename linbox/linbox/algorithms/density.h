@@ -25,13 +25,14 @@
 #define __LINBOX_density_H
 #include <linbox/vector/vector-traits.h>
 
-namespace LinBox 
+namespace LinBox
 {
 
 	/** \brief Estimate nonzero entries in a vector, used in parallel elimination */
 	template<class Vector>
-	inline long density(const Vector& v) {
-		
+	inline long density(const Vector& v)
+	{
+
 		return density(v, VectorTraits<Vector>::VectorCategory());
 	}
 
@@ -39,28 +40,32 @@ namespace LinBox
 	inline long density(const Vector&, VectorCategory);
 
 	template<class Vector>
-	inline long density(const Vector& v, VectorCategories::DenseVectorTag) {
+	inline long density(const Vector& v, VectorCategories::DenseVectorTag)
+	{
 
 		return v.size();
 	}
 
 
 	template<class Vector>
-	inline long density(const Vector& v, VectorCategories::SparseSequenceVectorTag) {
+	inline long density(const Vector& v, VectorCategories::SparseSequenceVectorTag)
+	{
 
 		return v.size();
 	}
 
 
 	template<class Vector>
-	inline long density(const Vector& v, VectorCategories::SparseAssociativeVectorTag) {
+	inline long density(const Vector& v, VectorCategories::SparseAssociativeVectorTag)
+	{
 
 		return v.size();
 	}
 
 
 	template<class Vector>
-        inline long density(const Vector& v, VectorCategories::SparseParallelVectorTag) { 
+	inline long density(const Vector& v, VectorCategories::SparseParallelVectorTag) {
+
 
 		return v.first.size();
 	}

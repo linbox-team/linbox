@@ -59,8 +59,8 @@ int main (int argc, char **argv)
 	if (! F.areEqual(t1, t) ) pass = false;
 
 /*
-	Vector v(2*n-1, s); 
-	for (int i = 0; i < 2*n-1; ++i) if (i != n-1) F.init(v[i], i); 
+	Vector v(2*n-1, s);
+	for (int i = 0; i < 2*n-1; ++i) if (i != n-1) F.init(v[i], i);
 	Toeplitz<Field> B(F, n, v);
 	trace(t1, B);
 	if (! F.areEqual(t1, t) pass = false;

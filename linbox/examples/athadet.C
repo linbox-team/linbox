@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-/** 
+/*
  * examples/athadet.C
  *
  * Copyright (C) 2007, 2010 S. Guelton
@@ -18,15 +18,15 @@
  *   GNU Lesser General Public License for more details.
  *
  *   You should have received a copy of the GNU Lesser General Public
- *   License along with LinBox.  If not, see 
+ *   License along with LinBox.  If not, see
  *   <http://www.gnu.org/licenses/>.
  */
 
 /**\file examples/athadet.C
-\brief Determinant of sparse matrix over Z or Zp.
-\ingroup examples
- @author serge.guelton@imag.fr
-*/
+  \brief Determinant of sparse matrix over Z or Zp.
+  \ingroup examples
+  @author serge.guelton@imag.fr
+  */
 
 
 /*
@@ -58,8 +58,8 @@ struct  cra_det_task {
 	void operator()(int argc, char **argv) {
 		ifstream input (argv[1]);
 		if (!input) {
-			cerr << "Error opening matrix file '" << argv[1] << "'" << endl; 
-			return ; 
+			cerr << "Error opening matrix file '" << argv[1] << "'" << endl;
+			return ;
 		}
 
 
@@ -70,7 +70,7 @@ struct  cra_det_task {
 		Util::logfile() << "matrix created" << std::endl;
 		PID_integer::Element det_A;
 		try {
-		cra_det(det_A, sparseMatrix, RingCategories::IntegerTag(), Method::Hybrid() );
+			cra_det(det_A, sparseMatrix, RingCategories::IntegerTag(), Method::Hybrid() );
 		}
 		catch ( LinBox::LinboxError err ) {
 			std::cerr << err << std::endl;

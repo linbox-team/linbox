@@ -43,7 +43,7 @@ using namespace LinBox;
 
 /* Display a help message on command usage */
 
-void printHelpMessage (const char *program, Argument *args, bool printDefaults = false) 
+void printHelpMessage (const char *program, Argument *args, bool printDefaults = false)
 {
 	int i, l;
 
@@ -63,9 +63,9 @@ void printHelpMessage (const char *program, Argument *args, bool printDefaults =
 		}
 		else if (args[i].type == TYPE_NONE)
 			std::cout << "  -" << args[i].c << " {YN+-} ";
-		else 
+		else
 			std::cout << "  -" << args[i].c << ' ' << args[i].c << "      ";
-			
+
 		std::cout << args[i].helpString;
 		if (printDefaults) {
 			l = 54 - strlen (args[i].helpString);
@@ -85,7 +85,7 @@ void printHelpMessage (const char *program, Argument *args, bool printDefaults =
 				cout << *(double *) args[i].data;
 				break;
 			}
-			std::cout << ")";		
+			std::cout << ")";
 		}
 		std::cout << std::endl;
 	}
@@ -93,7 +93,7 @@ void printHelpMessage (const char *program, Argument *args, bool printDefaults =
 	std::cout << "  -h or -?  Display this message" << std::endl;
 	std::cout << "For boolean switches, the argument may be omitted, meaning the switch should be ON" << std::endl;
 	std::cout << std::endl;
-	std::cout << "If <report file> is '-' the report is written to std output.  If <report file> is" << std::endl; 
+	std::cout << "If <report file> is '-' the report is written to std output.  If <report file> is" << std::endl;
 	std::cout << "not given, then no detailed reporting is done. This is suitable if you wish only" << std::endl;
 	std::cout << "to determine whether the tests succeeded." << std::endl;
 	std::cout << std::endl;
@@ -104,7 +104,7 @@ void printHelpMessage (const char *program, Argument *args, bool printDefaults =
 
 /* Find an argument in the argument list for a character */
 
-Argument *findArgument (Argument *args, char c) 
+Argument *findArgument (Argument *args, char c)
 {
 	int i;
 
@@ -143,11 +143,11 @@ void parseArguments (int argc, char **argv, Argument *args, bool printDefaults)
 						*(bool *) current->data = true;
 						break;
 					}
-					*(bool *) current->data = 
-						(argv[i+1][0] == '+' 
-						 || argv[i+1][0] == 'Y' 
-						 || argv[i+1][0] == 'y' 
-						 || argv[i+1][0] == 'T' 
+					*(bool *) current->data =
+						(argv[i+1][0] == '+'
+						 || argv[i+1][0] == 'Y'
+						 || argv[i+1][0] == 'y'
+						 || argv[i+1][0] == 'T'
 						 || argv[i+1][0] == 't') ;
 					i++;
 					break;
@@ -157,7 +157,7 @@ void parseArguments (int argc, char **argv, Argument *args, bool printDefaults)
 					i++;
 					break;
 
-				case TYPE_INTEGER: 
+				case TYPE_INTEGER:
 					{
 						integer tmp(argv[i+1]);
 						*(integer *) current->data = tmp;
@@ -210,7 +210,7 @@ bool isPower (integer n, integer m)
 	return (n == 1) || (((n % m) == 0) && isPower (n/m, m));
 }
 
-inline double incompleteGamma (double a, double x, double tol) 
+inline double incompleteGamma (double a, double x, double tol)
 {
 	double xa_ex = pow (x, a) * exp (-x);
 	double pi = 1.0;

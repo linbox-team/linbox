@@ -48,13 +48,13 @@ const char* current_blackbox  = default_blackbox;
 
 
 /*******************************************************
- * API to contruct a m x n zero blackbox over a domain * 
+ * API to contruct a m x n zero blackbox over a domain *
  *******************************************************/
 const BlackboxKey& createBlackbox(const DomainKey &k, size_t m, size_t n, const char* name){
 	const char* type = name;
 	if (type == NULL)
 		type = current_blackbox;
-	       
+
 	BlackboxAbstract* bb = linbox_blackbox.create(type, k, m , n);
 	return addBlackbox(bb);
 }
@@ -75,13 +75,13 @@ const BlackboxKey& createBlackbox(const DomainKey &k, std::istream &in, const ch
  * API to copy an existing blackbox *
  ************************************/
 const BlackboxKey& copyBlackbox(const BlackboxKey &k){
-	
+
 	BlackboxTable::iterator it = blackbox_hashtable.find(k);
 	if (it == blackbox_hashtable.end())
 		throw lb_runtime_error("LinBox ERROR: blackbox does not exist (copying impossible)\n");
-	
+
 	BlackboxAbstract *v = it->second->clone();
-	return addBlackbox(v);       
+	return addBlackbox(v);
 }
 
 /********************************************
@@ -131,7 +131,7 @@ public:
 	template<class Blackbox, class Domain>
 	void operator()(Blackbox *B, Domain *D) {
 		typename Domain::RandIter G(*D);
-		for (size_t i=0; i< B->coldim();++i) 
+		for (size_t i=0; i< B->coldim();++i)
 			for (size_t j=0;j< B->coldim();++j)
 				G.random(B->refEntry(i,j));
 	}
@@ -143,8 +143,8 @@ protected:
 	Blackbox *vect;
 public:
 	BlackboxAtRandomFunctorSpec(Blackbox *V) : vect(V) {}
-	
-	template<class Domain> 
+
+	template<class Domain>
 	void operator()(void *, Domain *D) const {
 		RandomBlackbox<typename Blackbox::Field::Element, typename Domain::Element, typename LinBox::MatrixContainerTrait<Blackbox>::Type>()(vect, D);
 	}
@@ -155,13 +155,13 @@ protected:
 	const BlackboxKey key;
 public:
 	BlackboxAtRandomFunctor(const BlackboxKey &k) : key(k) {}
-	
+
 	template<class Blackbox>
 	void operator()(void*, Blackbox *V) const {
 		BlackboxTable::iterator it = blackbox_hashtable.find(key);
 		if ( it == blackbox_hashtable.end())
 			throw lb_runtime_error("LinBox ERROR: invalid blackbox (set random value impossible)");
-		
+
 		BlackboxAtRandomFunctorSpec<Blackbox> Fct(V);
 		DomainFunction::call(it->second->getDomainKey(), Fct);
 	}
@@ -190,18 +190,18 @@ void rebindBlackbox(const BlackboxKey &Vkey, const DomainKey &Dkey){
  *************************************************/
 class WriteBlackboxFunctor{
 	std::ostream &os;
-public:	
+public:
 	WriteBlackboxFunctor(std::ostream &o) : os(o) {}
-	
+
 	template<class Blackbox>
 	void operator() (void*, Blackbox *B) const {
-		B->write(os);	
+		B->write(os);
 	}
 };
 
 void writeBlackbox (const BlackboxKey &key,  std::ostream &os){
 	WriteBlackboxFunctor Fct(os);
-	BlackboxFunction::call(key, Fct);	
+	BlackboxFunction::call(key, Fct);
 }
 
 

@@ -31,12 +31,12 @@
 #include <linbox/blackbox/lambda-sparse.h>
 #include <linbox/blackbox/compose.h>
 
-namespace LinBox 
+namespace LinBox
 {
-	
+
 	extern const char* solverReturnString[6] ;
 
-	/** 
+	/**
 	 * \brief DiophantineSolver<QSolver> creates a diophantine solver using a QSolver to generate rational solutions
 
 	 * Methods solve, randomSolve just expose functions from underlying rational solver.
@@ -46,7 +46,7 @@ namespace LinBox
 	 */
 	template<class QSolver>
 	class DiophantineSolver {
-		
+
 	protected:
 
 		typedef typename QSolver::RingType    Ring;
@@ -68,11 +68,11 @@ namespace LinBox
 		 */
 		DiophantineSolver (QSolver& rs) :
 			_rationalSolver(rs), _R(rs.getRing()), lastCertificate(_R, 0) {
-			_R.init(_rone, 1);
-		};
+				_R.init(_rone, 1);
+			};
 
 		/** Solve a linear system \c Ax=b over quotient field of a ring
-		 * 
+		 *
 		 * @param A        Matrix of linear system
 		 * @param x        Vector in which to store solution
 		 * @param b        Right-hand side of system
@@ -81,15 +81,15 @@ namespace LinBox
 		 *
 		 * @return status of solution. if (return != SS_FAILED), and (level >= SL_LASVEGAS), solution is guaranteed correct.
 		 *   SS_FAILED - all primes used were bad
-		 *   SS_OK - solution found. 
+		 *   SS_OK - solution found.
 		 *   SS_INCONSISTENT - system appreared inconsistent. certificate is in lastCertificate if (level >= SL_CERTIFIED)
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solve(Vector1& x, Integer& den, const IMatrix& A, const Vector2& b, const int maxPrimes = DEFAULT_MAXPRIMES, 
+		SolverReturnStatus solve(Vector1& x, Integer& den, const IMatrix& A, const Vector2& b, const int maxPrimes = DEFAULT_MAXPRIMES,
 					 const SolverLevel level = SL_DEFAULT);
 
 		/** Find a random solution of the general linear system \c Ax=b over quotient field of a ring.
-		 * 
+		 *
 		 * @param A        Matrix of linear system
 		 * @param x        Vector in which to store solution
 		 * @param b        Right-hand side of system
@@ -98,14 +98,14 @@ namespace LinBox
 		 *
 		 * @return status of solution. if (return != SS_FAILED), and (level >= SL_LASVEGAS), solution is guaranteed correct.
 		 *   SS_FAILED - all primes used were bad
-		 *   SS_OK - solution found. 
+		 *   SS_OK - solution found.
 		 *   SS_INCONSISTENT - system appreared inconsistent. certificate is in lastCertificate if (level >= SL_CERTIFIED)
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus randomSolve(Vector1& x, Integer& den, const IMatrix& A, const Vector2& b, const int maxPrimes = DEFAULT_MAXPRIMES, 
+		SolverReturnStatus randomSolve(Vector1& x, Integer& den, const IMatrix& A, const Vector2& b, const int maxPrimes = DEFAULT_MAXPRIMES,
 					       const SolverLevel level = SL_DEFAULT);
- 
-		/** 
+
+		/**
 		 * Find a solution of the linear system \c Ax=b whose denominator (when written as an integer vector over a single denom) is minimal.
 		 *
 		 * @param A        Matrix of linear system
@@ -121,9 +121,9 @@ namespace LinBox
 		 *   SS_INCONSISTENT - system appreared inconsistent. certificate of inconsistency is in lastCertificate if (level >= SL_CERTIFIED)
 		 *
 		 * @return status of solution - OK, FAILED, SINGULAR, INCONSISTENT, BAD_PRECONDITIONER
-		 */	
+		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus diophantineSolve(Vector1& x, Integer& den, const IMatrix& A, const Vector2& b, const int maxPrimes = DEFAULT_MAXPRIMES, 
+		SolverReturnStatus diophantineSolve(Vector1& x, Integer& den, const IMatrix& A, const Vector2& b, const int maxPrimes = DEFAULT_MAXPRIMES,
 						    const SolverLevel level = SL_DEFAULT);
 	};
 

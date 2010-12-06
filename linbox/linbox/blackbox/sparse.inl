@@ -20,7 +20,7 @@
  *     RawIndexIterator
  *   - Eliminated operator []; added getEntry; changed put_value to setEntry
  * ------------------------------------
- * 
+ *
  * See COPYING for license information.
  */
 
@@ -29,22 +29,22 @@
 
 #include "linbox/blackbox/sparse.h"
 
-namespace LinBox 
+namespace LinBox
 {
 
-template <class Field, class BElement,  class _Row, class BRow>
-SparseMatrix<Field,_Row> *SparseMatrixFactory<Field, BElement, _Row, BRow>::makeBlackbox (const Field &F)
-{
-	SparseMatrix<Field, _Row> *A = new SparseMatrix<Field, _Row> (F, rowdim (), coldim ());
+	template <class Field, class BElement,  class _Row, class BRow>
+	SparseMatrix<Field,_Row> *SparseMatrixFactory<Field, BElement, _Row, BRow>::makeBlackbox (const Field &F)
+	{
+		SparseMatrix<Field, _Row> *A = new SparseMatrix<Field, _Row> (F, rowdim (), coldim ());
 
-	typename SparseMatrixBase<BElement, BRow>::ConstRawIterator i;
-	typename SparseMatrixBase<BElement, BRow>::ConstRawIndexedIterator j;
+		typename SparseMatrixBase<BElement, BRow>::ConstRawIterator i;
+		typename SparseMatrixBase<BElement, BRow>::ConstRawIndexedIterator j;
 
-	for (i = _A.rawBegin (), j = _A.rawIndexedBegin (); i != _A.rawEnd (); ++i, ++j)
-		F.init (A->refEntry (j.rowIndex (), j.colIndex ()), *i);
+		for (i = _A.rawBegin (), j = _A.rawIndexedBegin (); i != _A.rawEnd (); ++i, ++j)
+			F.init (A->refEntry (j.rowIndex (), j.colIndex ()), *i);
 
-	return A;
-}
+		return A;
+	}
 
 }
 

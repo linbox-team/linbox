@@ -45,7 +45,7 @@ using namespace LinBox;
  */
 
 template <class Field>
-static bool testDiagonalDet1 (Field &F, size_t n, int iterations) 
+static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <typename Field::Element> Polynomial;
@@ -96,7 +96,7 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 		report << endl;
 
 		Blackbox D (F, d);
-                
+
                 Method::Wiedemann WiedemannChoice;
 		det (phi_wiedemann, D,  WiedemannChoice);
 		F.write (report << "Computed determinant (Wiedemann) : ", phi_wiedemann) << endl;
@@ -139,7 +139,7 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
  */
 
 template <class Field>
-static bool testDiagonalDet2 (Field &F, size_t n, int iterations) 
+static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <typename Field::Element> Polynomial;
@@ -231,7 +231,7 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
  */
 
 template <class Field>
-static bool testSingularDiagonalDet (Field &F, size_t n, int iterations) 
+static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <typename Field::Element> Polynomial;
@@ -312,7 +312,7 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
  * Returns true on success and false on failure
  */
 
-bool testIntegerDet (size_t n, int iterations) 
+bool testIntegerDet (size_t n, int iterations)
 {
  	commentator.start ("Testing integer determinant", "testIntegerDet", iterations);
 
@@ -336,30 +336,30 @@ bool testIntegerDet (size_t n, int iterations)
 	 		integer::negin(A.refEntry(1,1));
 	 		integer::negin(pi);
 	 	}
-                              
+
 		// 	if (i == iterations - 1) {
-		// 			A.setEntry(1, 2, A.getEntry(1,1)); 
-		// 			A.setEntry(2, 1, A.getEntry(2,2)); 
+		// 			A.setEntry(1, 2, A.getEntry(1,1));
+		// 			A.setEntry(2, 1, A.getEntry(2,2));
 		// 			pi = 0;
 		// 		}
 
 		//GMP_Integers R;
 		//A.write(cout,R);
 	 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
- 		
-	 	report << "True determinant: "; 
+
+	 	report << "True determinant: ";
 		report << pi;
 		report << endl;
- 		
+
                 Method::Wiedemann WiedemannChoice;
                 det (det_A_wiedemann, A, WiedemannChoice);
  	 	report << "Computed integer determinant (Wiedemann): " << det_A_wiedemann << endl;
-		                
+
 
                 WiedemannChoice.symmetric(Specifier::SYMMETRIC);
                 det (det_A_symm_wied, A, WiedemannChoice);
 	 	report << "Computed integer determinant (Symmetric Wiedemann): " << det_A_symm_wied << endl;
- 		
+
                 det (det_A_blas_elimination, A, Method::BlasElimination());
 	 	report << "Computed integer determinant (BlasElimination): " << det_A_blas_elimination << endl;
 
@@ -390,7 +390,7 @@ bool testIntegerDet (size_t n, int iterations)
  * Returns true on success and false on failure
  */
 
-bool testIntegerDetGen (size_t n, int iterations) 
+bool testIntegerDetGen (size_t n, int iterations)
 {
  	commentator.start ("Testing integer determinant, generic methods", "testIntegerDeterminantGeneric", iterations);
 
@@ -414,11 +414,11 @@ bool testIntegerDetGen (size_t n, int iterations)
 	 		integer::negin(A.refEntry(1,1));
 	 		integer::negin(pi);
 	 	}
-                              
+
 	 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
- 		
+
 	 	report << "True determinant: " << pi << endl;
- 		
+
                 det (det_A, A);
  	 	report << "Computed integer determinant (Default): " << det_A << endl;
 		if (det_A != pi){
@@ -434,7 +434,7 @@ bool testIntegerDetGen (size_t n, int iterations)
 	 			<< "ERROR: Hybrid Computed determinant is incorrect" << endl;
 	 		ret = false;
 	 	}
- 		
+
                 det (det_A_B, A, Method::Blackbox());
 	 	report << "Computed integer determinant (Blackbox): " << det_A_B << endl;
 		if (det_A_B != pi){
@@ -442,7 +442,7 @@ bool testIntegerDetGen (size_t n, int iterations)
 	 			<< "ERROR: Blackbox Computed determinant is incorrect" << endl;
 	 		ret = false;
 	 	}
- 		
+
                 det (det_A_E, A, Method::Elimination());
 	 	report << "Computed integer determinant (Elimination): " << det_A_E << endl;
 		if (det_A_E != pi){
@@ -473,7 +473,7 @@ bool testIntegerDetGen (size_t n, int iterations)
  * Returns true on success and false on failure
  */
 
-bool testRationalDetGen (size_t n, int iterations) 
+bool testRationalDetGen (size_t n, int iterations)
 {
  	commentator.start ("Testing rational determinant, generic methods", "testRationalDeterminantGeneric", iterations);
 
@@ -505,11 +505,11 @@ bool testRationalDetGen (size_t n, int iterations)
 			Q.negin(BB.refEntry(1,1));
 	 		Q.negin(pi);
 	 	}
-                              
+
 	 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
- 		
+
 	 	report << "True determinant: ";  Q.write(report,pi); report << endl;
- 		
+
                 det (det_A, A);
  	 	report << "Computed rational determinant (Default): "; Q.write(report, det_A); report << endl;
 		if (!Q.areEqual(det_A ,pi)){
@@ -525,7 +525,7 @@ bool testRationalDetGen (size_t n, int iterations)
 	 			<< "ERROR: Hybrid Computed determinant is incorrect" << endl;
 	 		ret = false;
 	 	}
- 		
+
                 det (det_A_B, A, Method::Blackbox());
 	 	report << "Computed rational determinant (Blackbox): "; Q.write(report, det_A_B); report<< endl;
 		if (!Q.areEqual(det_A_B , pi)){
@@ -533,7 +533,7 @@ bool testRationalDetGen (size_t n, int iterations)
 	 			<< "ERROR: Blackbox Computed determinant is incorrect" << endl;
 	 		ret = false;
 	 	}
- 		
+
                 det (det_A_E, A, Method::Elimination());
 	 	report << "Computed rational determinant (Elimination): "; Q.write(report, det_A_E); report << endl;
 		if (!Q.areEqual(det_A_E ,pi)){
@@ -541,7 +541,7 @@ bool testRationalDetGen (size_t n, int iterations)
 	 			<< "ERROR: Elimination Computed determinant is incorrect" << endl;
 	 		ret = false;
 	 	}
-		
+
 		det (det_B, BB);
  	 	report << "Computed rational determinant (Default): "; Q.write(report, det_A); report << endl;
 		if (!Q.areEqual(det_B ,pi)){
@@ -564,7 +564,7 @@ bool testRationalDetGen (size_t n, int iterations)
 	 			<< "ERROR: (Dense) Blackbox Computed determinant is incorrect" << endl;
 	 		ret = false;
 	 	}
-		
+
 		det (det_B_E, BB, Method::Elimination());
 	 	report << "Computed rational determinant (BlasElimination): "; Q.write(report, det_A_E); report << endl;
 		if (!Q.areEqual(det_B_E ,pi)){
@@ -603,7 +603,7 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Modular<int> F (q);
 
-	commentator.start("Determinant test suite", "det"); 
+	commentator.start("Determinant test suite", "det");
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);

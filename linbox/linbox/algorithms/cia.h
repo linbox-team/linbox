@@ -2,7 +2,7 @@
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/algorithms/cia.h
  * Copyright(C) LinBox
- * 
+ *
  *  Written by Clement Pernet <clement.pernet@imag.fr>
  *
  * See COPYING for license information.
@@ -18,9 +18,9 @@
 #include "linbox/algorithms/blas-domain.h"
 #include "linbox/solutions/minpoly.h"
 
-namespace LinBox 
+namespace LinBox
 {
-	
+
 	/* Algorithm computing the integer characteristic polynomial
 	 * of a dense matrix.
 	 * See [Dumas-Pernet-Wan ISSAC05]
@@ -29,7 +29,7 @@ namespace LinBox
 	 */
 	template < class Polynomial, class Blackbox >
 	Polynomial& cia (Polynomial & P, const Blackbox & A,
-			 const Method::BlasElimination  & M) 
+			 const Method::BlasElimination  & M)
 
 	{
 		commentator.start ("Integer Dense Charpoly ", "CIA");
@@ -43,14 +43,14 @@ namespace LinBox
 		typedef typename FieldPolyDom::Element FieldPoly;
 
 		IntPolyDom IPD(intRing);
-		
+
 		FieldPoly fieldCharPoly(A.coldim());
 		/* Computation of the integer minimal polynomial */
 		IntPoly intMinPoly;
 		minpoly (intMinPoly, A, RingCategories::IntegerTag(), M);
-		
+
 		/* Factorization over the integers */
-		vector<IntPoly*> intFactors;    
+		vector<IntPoly*> intFactors;
 		vector<unsigned long> mult;
 		IPD.factor (intFactors, mult, intMinPoly);
 		size_t nf = intFactors.size();
@@ -73,7 +73,7 @@ namespace LinBox
 				//F.init ((fieldFactors[i])[j], (*intFactors[i])[j]);
 				F.init ((fieldFactors[i])[j], intRing.convert(tmp_convert,(*intFactors[i])[j]));// PG 2005-08-04
 		}
-		
+
 		FieldPoly currPol = fieldCharPoly;
 		FieldPoly r,tmp,q;
 		std::vector<long> multip (nf);
@@ -89,7 +89,7 @@ namespace LinBox
 			} while (FPD.isZero (r));
 			multip[i] = m-1;
 		}
-		
+
 		IntPoly intCharPoly (A.coldim());
 		intRing.init (intCharPoly[0], 1);
 		for (size_t i = 0; i < nf; ++i){

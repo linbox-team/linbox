@@ -33,14 +33,14 @@
 
 #ifdef __cplusplus
 #define EXTERN extern "C"
-#else 
+#else
 #define EXTERN
 #endif
 
 /*****************************************************************
 
   Dense over Z/nZ.
- 
+
 *****************************************************************/
 
 // Element could be either double or float
@@ -99,9 +99,9 @@ EXTERN unsigned long linbox_modn_dense_col_rankprofile_submatrix_indices_float (
 /*****************************************************************
 
   Dense over ZZ
- 
+
 *****************************************************************/
- 
+
 /* linbox_minpoly allocates space for minpoly, so you have to call linbox_delete_array
    to free it up afterwards. */
 
@@ -125,18 +125,18 @@ void linbox_integer_dense_double_det (mpz_t ans1, mpz_t ans2, mpz_t **a, mpz_t *
 /*****************************************************************
 
   Sparse over Z/nZ
- 
+
 *****************************************************************/
 
 
-unsigned long linbox_modn_sparse_matrix_rank(unsigned int modulus, 
-					     size_t numrows, 
-					     size_t numcols, 
+unsigned long linbox_modn_sparse_matrix_rank(unsigned int modulus,
+					     size_t numrows,
+					     size_t numcols,
 					     void *rows,
 					     int reorder);
 
-std::vector<unsigned int> linbox_modn_sparse_matrix_solve (unsigned int modulus, size_t numrows, 
-						     size_t numcols, void *a, void *b, 
+std::vector<unsigned int> linbox_modn_sparse_matrix_solve (unsigned int modulus, size_t numrows,
+						     size_t numcols, void *a, void *b,
 						     int method);
 
 #endif // __LINBOX_SAGE_H

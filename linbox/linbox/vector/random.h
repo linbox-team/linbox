@@ -10,7 +10,7 @@
  *
  * Added parametrization of VectorCategory tags by VectorTraits. See
  * vector-traits.h for more details.
- *  
+ *
  * ------------------------------------
  *
  * See COPYING for lincense information.
@@ -45,18 +45,18 @@ namespace LinBox
 	 \ingroup vector
 	 */
 	template <class Field, class Vector>
-		inline
-		Vector
-		randomVector(Field& F, size_t n, typename Field::RandIter& r)
-		{ 
-			return 
-				randomVector<Field, Vector>(
-						F, 
-						n, 
-						r, 
-						VectorTraits<Vector>::VectorCategory()
-						); 
-		}
+	inline
+	Vector
+	randomVector(Field& F, size_t n, typename Field::RandIter& r)
+	{
+		return
+		randomVector<Field, Vector>(
+					    F,
+					    n,
+					    r,
+					    VectorTraits<Vector>::VectorCategory()
+					   );
+	}
 
 	/* Random dense vector generator
 	 * This templated function takes a field and a random field element
@@ -71,28 +71,28 @@ namespace LinBox
 	 * @param tag	category of vector obtained from vector trait
 	 */
 	template <class Field, class Vector, class VectorTrait>
-		inline
-		Vector
-		randomVector(
-				Field& F, 
-				size_t n,
-				typename Field::RandIter& r,
-				VectorCategories::DenseVectorTag<VectorTrait> tag
-				)
-		{
+	inline
+	Vector
+	randomVector(
+		     Field& F,
+		     size_t n,
+		     typename Field::RandIter& r,
+		     VectorCategories::DenseVectorTag<VectorTrait> tag
+		    )
+	{
 #ifdef TRACE
-			cout << "Called dense random vector" << endl;
+		cout << "Called dense random vector" << endl;
 #endif // TRACE
 
-			Vector v(n);
-			typename Vector::iterator iter;
+		Vector v(n);
+		typename Vector::iterator iter;
 
-			for (iter = v.begin(); iter != v.end(); iter++)
-				r.random(*iter);
+		for (iter = v.begin(); iter != v.end(); iter++)
+			r.random(*iter);
 
-			return v;
-  
-		} // randomVector(F, r, VectorCategories::DenseVectorTag& tag)
+		return v;
+
+	} // randomVector(F, r, VectorCategories::DenseVectorTag& tag)
 
 	/* Random sparse sequence vector generator
 	 * This templated function takes a field and a random field element
@@ -107,37 +107,37 @@ namespace LinBox
 	 * @param tag	category of vector obtained from vector trait
 	 */
 	template <class Field, class Vector, class VectorTrait>
-		inline
-		Vector
-		randomVector(
-				Field& F, 
-				size_t n,
-				typename Field::RandIter& r,
-				VectorCategories::SparseSequenceVectorTag<VectorTrait> tag
-				)
+	inline
+	Vector
+	randomVector(
+		     Field& F,
+		     size_t n,
+		     typename Field::RandIter& r,
+		     VectorCategories::SparseSequenceVectorTag<VectorTrait> tag
+		    )
+	{
+#ifdef TRACE
+		cout << "Called sparse sequence random vector" << endl
+		<< "   return vector v = " << endl;
+#endif // TRACE
+
+		Vector v(n);
+		typename Vector::iterator iter;
+		size_t i = 0;
+		for (iter = v.begin(); iter != v.end(); iter++, i++)
 		{
+			iter->first = i;
+			r.random(iter->second);
 #ifdef TRACE
-			cout << "Called sparse sequence random vector" << endl
-				<< "   return vector v = " << endl;
+			cout << "      v[" << iter->first << "] = ";
+			F.write(cout, iter->second);
+			cout << endl;
 #endif // TRACE
+		}
 
-			Vector v(n);
-			typename Vector::iterator iter;
-			size_t i = 0;
-			for (iter = v.begin(); iter != v.end(); iter++, i++)
-			{
-				iter->first = i;
-				r.random(iter->second);
-#ifdef TRACE
-				cout << "      v[" << iter->first << "] = ";
-				F.write(cout, iter->second);
-				cout << endl;
-#endif // TRACE
-			}
+		return v;
 
-			return v;
-  
-		} // randomVector(F, r, VectorCategories::SparseSequenceVectorTag& tag)
+	} // randomVector(F, r, VectorCategories::SparseSequenceVectorTag& tag)
 
 	/* Random sparse associative vector generator
 	 * This templated function takes a field and a random field element
@@ -152,37 +152,37 @@ namespace LinBox
 	 * @param tag	category of vector obtained from vector trait
 	 */
 	template <class Field, class Vector, class VectorTrait>
-		inline
-		Vector
-		randomVector(
-				Field& F, 
-				size_t n,
-				typename Field::RandIter& r,
-				VectorCategories::SparseAssociativeVectorTag<VectorTrait> tag
-				)
+	inline
+	Vector
+	randomVector(
+		     Field& F,
+		     size_t n,
+		     typename Field::RandIter& r,
+		     VectorCategories::SparseAssociativeVectorTag<VectorTrait> tag
+		    )
+	{
+#ifdef TRACE
+		cout << "Called sparse associative random vector" << endl
+		<< "   return vector v = " << endl;
+#endif // TRACE
+
+		Vector v;
+		typename Field::Element temp;
+
+		for (size_t i = 0; i < size_t(n); i++)
 		{
+			r.random(temp);
+			v.insert(make_pair(i, temp));
 #ifdef TRACE
-			cout << "Called sparse associative random vector" << endl
-				<< "   return vector v = " << endl;
+			cout << "      v[" << i << "] = ";
+			F.write(cout, v[i]);
+			cout << endl;
 #endif // TRACE
+		}
 
-			Vector v;
-			typename Field::Element temp;
-			
-			for (size_t i = 0; i < size_t(n); i++)
-			{
-				r.random(temp);
-				v.insert(make_pair(i, temp));
-#ifdef TRACE
-				cout << "      v[" << i << "] = ";
-				F.write(cout, v[i]);
-				cout << endl;
-#endif // TRACE
-			}
+		return v;
 
-			return v;
-  
-		} // randomVector(F, r, VectorCategories::SparseAssociativeVectorTag& tag)
+	} // randomVector(F, r, VectorCategories::SparseAssociativeVectorTag& tag)
 
 }
 

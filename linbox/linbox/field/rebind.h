@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) 2005 LinBox
- * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr> 
+ * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
  *
  *
  *
@@ -27,15 +27,15 @@
 namespace LinBox
 {
 
-/** \brief used in support of Hom, MatrixHom 
+	/** \brief used in support of Hom, MatrixHom
 
-Helps define rebind for vector types.  See blackbox/sparse.h for example of use.
-*/
-template<class XXX, class U>
-struct Rebind 
-{
-    typedef typename XXX::template rebind<U>::other other;
-};
+	  Helps define rebind for vector types.  See blackbox/sparse.h for example of use.
+	  */
+	template<class XXX, class U>
+	struct Rebind
+	{
+		typedef typename XXX::template rebind<U>::other other;
+	};
 
 }
 #endif //__LINBOX_rebind_H

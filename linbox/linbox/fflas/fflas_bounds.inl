@@ -19,7 +19,7 @@
  * \brief Computes the threshold parameters for the cascade
  *        Matmul algorithm
  *
- * 
+ *
  * \param F Finite Field/Ring of the computation.
  * \param k Common dimension of A and B, in the product A x B
  * \param bet Computing AB + beta C
@@ -67,18 +67,18 @@ inline void FFLAS::MatMulParameters (const Field& F,
  * \brief  computes the maximal size for delaying the modular reduction in a dotproduct
  *
  * This is the default version assuming a conversion to a positive modular representation
- * 
+ *
  * \param F Finite Field/Ring of the computation
  * \param w Number of recusrive Strassen-Winograd levels (if any, \p 0 otherwise)
  * \param beta Computing <code>AB + beta C</code>
  * \param base Type of floating point representation for delayed modular computations
- * 
+ *
  */
 template <class Field>
 inline size_t FFLAS::DotProdBound (const Field& F,
-				   const size_t w, 
+				   const size_t w,
 				   const typename Field::Element& beta,
-				   const FFLAS_BASE base) 
+				   const FFLAS_BASE base)
 {
 
 	FFLAS_INT_TYPE p;
@@ -140,9 +140,9 @@ inline double FFLAS::computeFactor (const Field& F, const size_t w)
  * \brief Computes the number of recursive levels to perform
  *
  * \param m the common dimension in the product AxB
- * 
+ *
  */
-inline size_t FFLAS::WinoSteps (const size_t m) 
+inline size_t FFLAS::WinoSteps (const size_t m)
 {
 	size_t w = 0;
 	size_t mt = m;
@@ -153,12 +153,12 @@ inline size_t FFLAS::WinoSteps (const size_t m)
 /** \brief BaseCompute determines the type of floating point representation to convert to, for BLAS computations
  * \param F Finite Field/Ring of the computation
  * \param w Number of recursive levels in Winograd's algorithm
- * 
+ *
  */
 template <class Field>
 inline FFLAS::FFLAS_BASE FFLAS::BaseCompute (const Field& F, const size_t w)
 {
-	
+
 	FFLAS_INT_TYPE pi;
 	F.characteristic(pi);
 	FFLAS_BASE base;
@@ -186,7 +186,7 @@ inline double computeFactor (const ModularBalanced<Element>& F, const size_t w){
 	F.characteristic(p);
 	size_t ex=1;
 	for (size_t i=0; i < w; ++i) 	ex *= 3;
-	return  (p - 1) * ex / 2; 
+	return  (p - 1) * ex / 2;
 }
 
 template <>
@@ -221,13 +221,13 @@ inline FFLAS::FFLAS_BASE FFLAS::BaseCompute (const ModularBalanced<float>& ,
  *
  * This is the default version over an arbitrary field.
  * It is currently never used (the recursive algorithm is run until n=1 in this case)
- * 
+ *
  * \param F Finite Field/Ring of the computation
- * 
+ *
  */
 template <class Field>
 inline size_t FFLAS::TRSMBound (const Field& F) {
-	return 1;	
+	return 1;
 }
 
 /**

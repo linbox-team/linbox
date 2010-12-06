@@ -29,14 +29,14 @@ using namespace LinBox;
 
 /* Test 1: Charpoly of a diagonal matrix
  *
- * Constructs a random diagonal rational matrix D 
+ * Constructs a random diagonal rational matrix D
  * Computes its characteristic polynomial
- * Checks if c[0] (determinant) and c[n-1] (trace) agree 
- * 
+ * Checks if c[0] (determinant) and c[n-1] (trace) agree
+ *
  * Return true on success and false on failure
  */
 
-static bool testDiagRatCharpoly (size_t n, int iterations) 
+static bool testDiagRatCharpoly (size_t n, int iterations)
 {
 	commentator.start ("Testing rational charpoly of diagonal matrix ", "testNonsingularRatIntSolve", iterations);
 
@@ -54,7 +54,7 @@ static bool testDiagRatCharpoly (size_t n, int iterations)
 	        Q.init(c0,1,1);
 	        Q.init(cn,0,1);
 
-		
+
 		commentator.startIteration (i);
 
 		for (j=0; j < n; ++j) {
@@ -63,18 +63,18 @@ static bool testDiagRatCharpoly (size_t n, int iterations)
 			tmp_n = (integer) rand() % (5*(i +1)) + 1;
 			tmp_d = (integer) rand() % (5*(i +1)) + 1;
 			if ( ( i%2) && (j % 2)) integer::negin(tmp_n);
-			
+
 			Q.init(tmp, tmp_n,tmp_d);
-			
+
 			A.setEntry(j,j,tmp);
 			B.setEntry(j,j,tmp);
-			
+
 
 			Q.mulin(c0, tmp);
 			Q.addin(cn, tmp);
-		}	
+		}
 		if (n%2==0) Q.negin(cn);
-			
+
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		charpoly (c, A);
 		if ((!Q.areEqual(c[0] , c0)) || (!Q.areEqual(c[n-1] , cn) ) ) {
@@ -90,7 +90,7 @@ static bool testDiagRatCharpoly (size_t n, int iterations)
                                 << "ERROR: Dense charpoly failed" << endl;
                         ret = false;
                 }
-		
+
 		commentator.stop ("done");
 		commentator.progress ();
 	}
@@ -113,7 +113,7 @@ int main (int argc, char **argv)
 		{ '\0' }
 	};
 	parseArguments (argc, argv, args);
-	
+
 	commentator.start("Rational solve test suite", "solve");
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);

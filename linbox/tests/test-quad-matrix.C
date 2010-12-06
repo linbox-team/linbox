@@ -64,7 +64,7 @@ int main (int argc, char **argv)
 	typedef ZOQuad <Field> BlackBox;
 
 	Field F (q);
-	Field::Element d; 
+	Field::Element d;
 	F.init (d, 1);
 
        	//ScalarMatrix<Field> A (F, n, d); // a small identity.
@@ -84,7 +84,7 @@ int main (int argc, char **argv)
 	*/
 
 	// random 3 per row matrix
-	for(i = 0; i < n; i++) 
+	for(i = 0; i < n; i++)
 		{
 			set<size_t> a;
 			while( a.size() < npr )

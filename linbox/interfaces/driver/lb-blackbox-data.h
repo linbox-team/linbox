@@ -51,7 +51,7 @@ class BlackboxSpecFunctor{
 	void *ptr;
 public:
 	BlackboxSpecFunctor(const Functor &f, void *p) : fct(f), ptr(p) {}
-	
+
 	template<class Domain, class Result>
 	void  operator()(Result &res, Domain *d) const{
 		Blackbox<Domain> * b= static_cast<Blackbox<Domain>*> (ptr);
@@ -69,13 +69,13 @@ public:
 	typedef BlackboxAbstract* (*createBlackbox_1_CallBack)(const DomainKey &, size_t, size_t, const char*);
 	typedef BlackboxAbstract* (*createBlackbox_2_CallBack)(const DomainKey &, std::istream&, const char*);
 	typedef std::map<const char*, std::pair<createBlackbox_1_CallBack, createBlackbox_2_CallBack > , ltstr> CallBackMap;
-	
+
 	bool add(const char *name, std::pair<createBlackbox_1_CallBack, createBlackbox_2_CallBack> createD){
 		return _callback.insert(CallBackMap::value_type(name, createD)).second;
 	}
-	
+
 	bool remove(const char *name){return _callback.erase(name) == 1;}
-			
+
 	BlackboxAbstract* create(const char *name, const DomainKey &k, size_t m, size_t n){
 		CallBackMap::iterator it = _callback.find(name);
 		if (it != _callback.end()){
@@ -97,13 +97,13 @@ public:
 			mes+= std::string(name);
 			mes+= std::string(" >>\n");
 			throw lb_runtime_error(mes.c_str());// throw an exception
-		}		
-		
+		}
+
 	}
 
 	size_t size() { return _callback.size(); }
 
-private:	
+private:
 	CallBackMap _callback;
 };
 
@@ -134,17 +134,17 @@ public:
 	RebindBlackboxFunctor(void *&p) : ptr(p) {}
 
 	template<class Domain>
-	void operator()(const DomainKey &key, Domain *D) const {		
+	void operator()(const DomainKey &key, Domain *D) const {
 		RebindBlackboxFunctor fct(ptr);
 		DomainFunction::call(*D, key, fct);
 	}
 
-	
+
 	template<class DomainSource, class DomainTarget>
 	void operator()(DomainSource &res, DomainTarget *D) const {
-		Blackbox<DomainSource> *B_source= static_cast<Blackbox<DomainSource> * >  (ptr);				
+		Blackbox<DomainSource> *B_source= static_cast<Blackbox<DomainSource> * >  (ptr);
 		Blackbox<DomainTarget> *B_target;
-		typename Blackbox<DomainSource>::template rebind<DomainTarget>()(*B_target, *B_source, *D);					
+		typename Blackbox<DomainSource>::template rebind<DomainTarget>()(*B_target, *B_source, *D);
 		delete B_source;
 		ptr = B_target;
 	}
@@ -174,11 +174,11 @@ public:
 	}
 
 	void * getPtr() const { return ptr;}
-	
+
 	virtual const DomainKey& getDomainKey() const {return key;}
 
 	LINBOX_VISITABLE();
-	
+
 	template<class Functor, class Result>
 	void  launch (Result &res, const Functor &fct) const {
 		BlackboxSpecFunctor<Blackbox, Functor> bbs(fct, ptr);
@@ -197,11 +197,11 @@ public:
 	}
 
 	void rebind(const DomainKey &k) {
-		RebindBlackboxFunctor<Blackbox> Fct(ptr);		
-		DomainFunction::call(k, key, Fct);	
+		RebindBlackboxFunctor<Blackbox> Fct(ptr);
+		DomainFunction::call(k, key, Fct);
 		key = k;
 		key.set_autogc();
-	}	
+	}
 
 };
 
@@ -220,12 +220,12 @@ public:
 
 	template<class Domain>
 	void operator()(void *&res, Domain *D) const {
-		res = new Blackbox<Domain>(*D, _row, _col);	
+		res = new Blackbox<Domain>(*D, _row, _col);
 	}
 };
 
 template<template<class T> class Blackbox>
-class CreateBlackboxFromStreamFunctor{	
+class CreateBlackboxFromStreamFunctor{
 	std::istream &in;
 public:
 	CreateBlackboxFromStreamFunctor(std::istream &i) : in(i) {}
@@ -266,7 +266,7 @@ BlackboxAbstract* constructBlackbox_from_stream (const DomainKey &k, std::istrea
  * Function to add an abstract blackbox in linbox hashtable *
  ************************************************************/
 const BlackboxKey& addBlackbox(BlackboxAbstract * v){
-	
+
 	std::pair<BlackboxTable::const_iterator, bool> status;
 	status = blackbox_hashtable.insert(std::pair<BlackboxKey, BlackboxAbstract*> (BlackboxKey(v), v));
 	if (status.second)

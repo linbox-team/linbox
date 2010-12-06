@@ -39,7 +39,7 @@
 class DeleteElementFunctor{
 protected:
 	EltAbstract  *elt;
-public:	
+public:
 	DeleteElementFunctor(EltAbstract *e) : elt(e) {}
 
 	template<class Domain>
@@ -63,7 +63,7 @@ void deleteElement(const EltKey &key){
 #ifdef __LINBOX_NO_GC_EXCEPTION
 		try {
 #endif
-		DomainFunction::call(it->second->getDomainKey(), Fct);	
+		DomainFunction::call(it->second->getDomainKey(), Fct);
 #ifdef __LINBOX_NO_GC_EXCEPTION
 		} catch(lb_runtime_error &t){std::cout<<"LinBox exception catched\n"; exit(0);}
 #endif
@@ -92,7 +92,7 @@ void deleteDomain(const DomainKey &key) {
 	if (key.free()){
 		DomainTable::iterator it= domain_hashtable.find(key);
 		delete it->second;
-		domain_hashtable.erase(it);	
+		domain_hashtable.erase(it);
 	}
 	else{
 		key.dispose();
@@ -115,16 +115,16 @@ void collectDomain(){
  * API to delete a blackbox from its key *
  *****************************************/
 class DeleteBlackboxFunctor{
-public:	
+public:
 	template<class Blackbox>
 	void operator() (void *, Blackbox *B) const {
-		delete B;		
+		delete B;
 	}
 };
 
 void deleteBlackbox (const BlackboxKey &key){
 	BlackboxTable::iterator it = blackbox_hashtable.find(key);
-	
+
 	if ( it == blackbox_hashtable.end()){
 #ifndef __LINBOX_NO_GC_EXCEPTION
 		throw lb_runtime_error("LinBox ERROR: invalid blackbox (freeing impossible)\n");
@@ -138,11 +138,11 @@ void deleteBlackbox (const BlackboxKey &key){
 		try {
 #endif
 			BlackboxFunction::call(key, Fct);
-#ifdef __LINBOX_NO_GC_EXCEPTION	
+#ifdef __LINBOX_NO_GC_EXCEPTION
 		} catch (lb_runtime_error &t) {std::cout<<"LinBox exception catched: "<<t<<"\n"; exit(0);}
 #endif
-		delete it->second;	
-		blackbox_hashtable.erase(it);		
+		delete it->second;
+		blackbox_hashtable.erase(it);
 	}
 }
 
@@ -172,10 +172,10 @@ void collectBlackbox(){
  ***************************************/
 
 class DeleteVectorFunctor{
-public:	
+public:
 	template<class Vector>
 	void operator() (void*, Vector *V) const {
-		delete V;		
+		delete V;
 	}
 };
 
@@ -192,12 +192,12 @@ void deleteVector (const VectorKey &key){
 #ifdef __LINBOX_NO_GC_EXCEPTION
 		try{
 #endif
-			VectorFunction::call(key, Fct);	
+			VectorFunction::call(key, Fct);
 #ifdef __LINBOX_NO_GC_EXCEPTION
 		} catch(lb_runtime_error &t) {exit(0);}
 #endif
 		delete it->second;
-		vector_hashtable.erase(it);	
+		vector_hashtable.erase(it);
 	}
 }
 
@@ -212,7 +212,7 @@ void collectVector(){
 #ifdef __LINBOX_NO_GC_EXCEPTION
 		try{
 #endif
-			VectorFunction::call(*it, Fct);		
+			VectorFunction::call(*it, Fct);
 #ifdef __LINBOX_NO_GC_EXCEPTION
 		} catch (lb_runtime_error &t) {std::cout<<"LinBox exception catched\n"; exit(0);}
 #endif
@@ -226,11 +226,11 @@ void collectVector(){
  * API to collect all data allocated by LinBox *
  **********************************************/
 void LinBoxCollect(){
-	collectVector();   
-	collectBlackbox();  
-	collectElement();   
-	collectDomain();    
-} 
+	collectVector();
+	collectBlackbox();
+	collectElement();
+	collectDomain();
+}
 
 
 #endif

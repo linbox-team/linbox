@@ -4,8 +4,8 @@
  * Copyright (C) LinBox
  *
  * Evolved from test-generic.h by Hui Wang, spring/summer 2006
- * The test-blackbox is substantially different.  
- * It is setup to compare blackbox/zo.h with blackbox/quad-matrix.h, 
+ * The test-blackbox is substantially different.
+ * It is setup to compare blackbox/zo.h with blackbox/quad-matrix.h,
  * two representations of zero-one matrices. (quad wins)
  *
  * See COPYING for license information.
@@ -28,13 +28,13 @@
 #include "linbox/blackbox/dense.h"
 #include "linbox/integer.h"
 
-#include "test-common.h" 
+#include "test-common.h"
 
 /* Modular exponentiation */
 using namespace std;
 
 template <class Field>
-typename Field::Element expt (const Field &F, typename Field::Element &res, const typename Field::Element &a, LinBox::integer &n) 
+typename Field::Element expt (const Field &F, typename Field::Element &res, const typename Field::Element &a, LinBox::integer &n)
 {
 	if (n == 0) {
 		F.init (res, 1);
@@ -68,7 +68,7 @@ typename Field::Element expt (const Field &F, typename Field::Element &res, cons
  */
 
 template<class Field>
-bool testField (Field &F, const char *title) 
+bool testField (Field &F, const char *title)
 {
 	typename Field::Element zero, one, two, three;
 	typename Field::Element a, b, c, d, e, f;
@@ -86,20 +86,20 @@ bool testField (Field &F, const char *title)
 	commentator.start ("\t--Testing characteristic/cardinality match");
 	part_pass = true;
 
-	F.characteristic (n); 
+	F.characteristic (n);
 	F.cardinality (m);
 
 	if (n > 0 && !isPower (m, n)) {
-		pass = part_pass = false; 
+		pass = part_pass = false;
 		commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Characteristic, cardinality mismatch" << endl;
+		<< "ERROR: Characteristic, cardinality mismatch" << endl;
 	}
 
 	commentator.stop (MSG_STATUS (part_pass));
 	commentator.progress ();
 
 	/* tests for presence of members with minimal check of semantics */
-	// these checks need improvement 
+	// these checks need improvement
 
 	commentator.start ("\t--Testing correctness of 0 and 1");
 	part_pass = true;
@@ -110,25 +110,25 @@ bool testField (Field &F, const char *title)
 	if (!F.isZero (zero)) {
 		pass = part_pass = false;
 		commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: isZero (0) is false" << endl;
+		<< "ERROR: isZero (0) is false" << endl;
 	}
 
 	if (F.isZero (one)) {
 		pass = part_pass = false;
 		commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: isZero (1) is true" << endl;
+		<< "ERROR: isZero (1) is true" << endl;
 	}
 
 	if (F.isOne (zero)) {
 		pass = part_pass = false;
 		commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: isOne (0) is true" << endl;
+		<< "ERROR: isOne (0) is true" << endl;
 	}
 
 	if (!F.isOne (one)) {
 		pass = part_pass = false;
 		commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: isOne (1) is false" << endl;
+		<< "ERROR: isOne (1) is false" << endl;
 	}
 
 	commentator.stop (MSG_STATUS (part_pass));
@@ -142,8 +142,8 @@ bool testField (Field &F, const char *title)
 	else
 		n -= 1;
 
-	F.init (a, n);  
-	
+	F.init (a, n);
+
 	{
 		ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Initial value: " << n << endl;
@@ -152,12 +152,12 @@ bool testField (Field &F, const char *title)
 		report << endl;
 	}
 
-	F.convert (m, a); 
+	F.convert (m, a);
 
 	if (m != n) {
 		pass = part_pass = false;
 		commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: F.convert (m, F.init (a, n)) != n" << endl;
+		<< "ERROR: F.convert (m, F.init (a, n)) != n" << endl;
 	}
 
 	commentator.stop (MSG_STATUS (part_pass));
@@ -173,7 +173,7 @@ bool testField (Field &F, const char *title)
 	F.init (d, n-2);
 	F.init (e, 3);
 
-	F.add (a, three, two); 
+	F.add (a, three, two);
 	F.assign (d, three);
 	F.addin (d, two);
 
@@ -191,10 +191,10 @@ bool testField (Field &F, const char *title)
 	if (!F.areEqual (a, F.init (f, 5)) || !F.areEqual (d, a)) {
 		pass = part_pass = false;
 		commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Results of add are incorrect" << endl;
+		<< "ERROR: Results of add are incorrect" << endl;
 	}
 
-	F.neg (a, two); 
+	F.neg (a, two);
 	F.assign (d, two);
 	F.negin (d);
 
@@ -224,7 +224,7 @@ bool testField (Field &F, const char *title)
 	if (!F.areEqual (a, one) || !F.areEqual (d, a)) {
 		pass = part_pass = false;
 		commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Results of sub are incorrect" << endl;
+		<< "ERROR: Results of sub are incorrect" << endl;
 	}
 
 	F.mul (a, two, three);
@@ -235,7 +235,7 @@ bool testField (Field &F, const char *title)
 	if (!F.areEqual (a, f) || !F.areEqual (d, a)) {
 		pass = part_pass = false;
 		commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Results of mul are incorrect" << endl;
+		<< "ERROR: Results of mul are incorrect" << endl;
 	}
 
 	F.inv (a, one);
@@ -244,29 +244,29 @@ bool testField (Field &F, const char *title)
 
 	if (!F.areEqual (a, one) || !F.areEqual (d, a)) {
 		pass = part_pass = false;
-		F.write( F.write( F.write( 
-                    commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-                         << "ERROR: Results of inv are incorrect : 1/", one)
-                         << " != ", a) 
-                         << " or != ", d) << endl;
+		F.write( F.write( F.write(
+					  commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+					  << "ERROR: Results of inv are incorrect : 1/", one)
+				  << " != ", a)
+			 << " or != ", d) << endl;
 	}
 
-        F.write( commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR) << " two : ", two) << ", is zero ? : " << F.isZero(two) << std::endl;
-        
+	F.write( commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR) << " two : ", two) << ", is zero ? : " << F.isZero(two) << std::endl;
+
 	if ( ! F.isZero(two) )
 	{
-	        F.div (a, two, two);
+		F.div (a, two, two);
 		ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Result of 2/2: ";
 		F.write (report, a);
 		report << endl;
-	        if (!F.areEqual (a, one) ) {
-		    pass = part_pass = false;
-		    report << "ERROR: Result of div is incorrect" << endl;
-	        }
+		if (!F.areEqual (a, one) ) {
+			pass = part_pass = false;
+			report << "ERROR: Result of div is incorrect" << endl;
+		}
 	}
 
-        F.write( commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR) << " three : ", three) << ", is zero ? : " << F.isZero(three) << std::endl;
+	F.write( commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR) << " three : ", three) << ", is zero ? : " << F.isZero(three) << std::endl;
 	if ( ! F.isZero(three) ) {
 		F.assign (d, three);
 		F.divin (d, three);
@@ -275,19 +275,19 @@ bool testField (Field &F, const char *title)
 		F.write (report, d);
 		report << endl;
 		if (!F.areEqual (d, one)) {
-		    pass = part_pass = false;
-		    report << "ERROR: Result of divin is incorrect" << endl;
+			pass = part_pass = false;
+			report << "ERROR: Result of divin is incorrect" << endl;
 		}
 	}
 
-	F.axpy (a, two, three, two); 
+	F.axpy (a, two, three, two);
 	F.assign (d, two);
 	F.axpyin (d, two, three);
 
 	if ( !F.areEqual (a, F.init (f, 8)) || !F.areEqual (d, a) ) {
 		pass = part_pass = false;
 		commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Resutls of axpy are incorrect" << endl;
+		<< "ERROR: Resutls of axpy are incorrect" << endl;
 	}
 
 	commentator.stop (MSG_STATUS (part_pass));
@@ -301,7 +301,7 @@ bool testField (Field &F, const char *title)
 	F.init (a, 1);
 	F.init (b, 2);
 	F.init (c, 0);
-	
+
 	for (int i = 1; i <= 101; ++i) {
 		F.addin (c, a);
 		F.mulin (a, b);
@@ -312,7 +312,7 @@ bool testField (Field &F, const char *title)
 	if (!F.areEqual (a, c)) {
 		pass = part_pass = false;
 		commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Results are incorrect using mul/add" << endl;
+		<< "ERROR: Results are incorrect using mul/add" << endl;
 	}
 
 	F.assign (d, one);
@@ -322,22 +322,22 @@ bool testField (Field &F, const char *title)
 	if (!F.areEqual (a, d)) {
 		pass = part_pass = false;
 		commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Results are incorrect using axpy" << endl;
+		<< "ERROR: Results are incorrect using axpy" << endl;
 	}
 
 	commentator.stop (MSG_STATUS (part_pass));
 	commentator.progress ();
 
 	/* untested so far
-	   ostream &write (ostream &os) const 
+	   ostream &write (ostream &os) const
 	   istream &read (istream &is)
-	   ostream &write (ostream &os, const Element &x) const 
+	   ostream &write (ostream &os, const Element &x) const
 	   istream &read (istream &is, Element &x) const
 	   FieldArchetype (FieldAbstract*, ElementAbstract*, RandIterAbstract* = 0)
-	*/
+	   */
 
 	commentator.stop (MSG_STATUS (pass), (const char *) 0, "testField");
-	
+
 	return pass;
 }
 
@@ -349,7 +349,7 @@ bool testField (Field &F, const char *title)
  */
 
 template <class Field>
-bool testFieldNegation (const Field &F, const char *name, unsigned int iterations) 
+bool testFieldNegation (const Field &F, const char *name, unsigned int iterations)
 {
 	std::ostringstream str;
 	str << "\t--Testing " << name << " negation" << ends;
@@ -364,7 +364,7 @@ bool testFieldNegation (const Field &F, const char *name, unsigned int iteration
 
 	for (unsigned int i = 0; i < iterations; i++) {
 		commentator.startIteration (i);
-		
+
 		r.random (a);
 
 		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
@@ -383,7 +383,7 @@ bool testFieldNegation (const Field &F, const char *name, unsigned int iteration
 
 		if (!F.areEqual (neg_a_a, zero)) {
 			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: a + -a != 0" << endl;
+			<< "ERROR: a + -a != 0" << endl;
 			ret = false;
 		}
 
@@ -402,7 +402,7 @@ bool testFieldNegation (const Field &F, const char *name, unsigned int iteration
  */
 
 template <class Field>
-bool testFieldInversion (const Field &F, const char *name, unsigned int iterations) 
+bool testFieldInversion (const Field &F, const char *name, unsigned int iterations)
 {
 	std::ostringstream str;
 	str << "\t--Testing " << name << " inversion" << ends;
@@ -434,7 +434,7 @@ bool testFieldInversion (const Field &F, const char *name, unsigned int iteratio
 
 		if (!F.areEqual (aainv, one)) {
 			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: a a^-1 != 1" << endl;
+			<< "ERROR: a a^-1 != 1" << endl;
 			ret = false;
 		}
 
@@ -454,7 +454,7 @@ bool testFieldInversion (const Field &F, const char *name, unsigned int iteratio
  */
 
 template <class Field>
-bool testFieldAxioms (const Field &F, const char *name, unsigned int iterations) 
+bool testFieldAxioms (const Field &F, const char *name, unsigned int iterations)
 {
 	std::ostringstream str;
 	str << "\t--Testing " << name << " commutativity, distributivity" << ends;
@@ -499,7 +499,7 @@ bool testFieldAxioms (const Field &F, const char *name, unsigned int iterations)
 		F.write (report, bc_ac) << endl;
 		if (!F.areEqual (a_bc, ac_bc) || !F.areEqual (a_bc, ca_b) || !F.areEqual (a_bc, bc_ac)) {
 			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Results are not equal" << endl;
+			<< "ERROR: Results are not equal" << endl;
 			ret = false;
 		}
 
@@ -519,7 +519,7 @@ bool testFieldAxioms (const Field &F, const char *name, unsigned int iterations)
  */
 
 template <class Field>
-bool testFieldAssociativity (const Field &F, const char *name, unsigned int iterations) 
+bool testFieldAssociativity (const Field &F, const char *name, unsigned int iterations)
 {
 	std::ostringstream str;
 	str << "\t--Testing " << name << " associativity" << ends;
@@ -556,7 +556,7 @@ bool testFieldAssociativity (const Field &F, const char *name, unsigned int iter
 
 		if (!F.areEqual (ab_c, a_bc)) {
 			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Results are not equal" << endl;
+			<< "ERROR: Results are not equal" << endl;
 			ret = false;
 		}
 
@@ -573,7 +573,7 @@ bool testFieldAssociativity (const Field &F, const char *name, unsigned int iter
 
 		if (!F.areEqual (ab_c, a_bc)) {
 			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Results are not equal" << endl;
+			<< "ERROR: Results are not equal" << endl;
 			ret = false;
 		}
 
@@ -594,7 +594,7 @@ bool testFieldAssociativity (const Field &F, const char *name, unsigned int iter
  */
 
 template <class Field>
-bool testGeometricSummation (const Field &F, const char *name, unsigned int iterations, unsigned int n) 
+bool testGeometricSummation (const Field &F, const char *name, unsigned int iterations, unsigned int n)
 {
 	std::ostringstream str;
 	str << "\t--Testing " << name << " geometric summation" << ends;
@@ -648,7 +648,7 @@ bool testGeometricSummation (const Field &F, const char *name, unsigned int iter
 
 		if (!F.areEqual (k, a_n)) {
 			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Field elements are not equal" << endl;
+			<< "ERROR: Field elements are not equal" << endl;
 			ret = false;
 		}
 
@@ -670,7 +670,7 @@ bool testGeometricSummation (const Field &F, const char *name, unsigned int iter
  */
 
 template <class Field>
-bool testFieldCharacteristic (const Field &F, const char *name, unsigned int iterations) 
+bool testFieldCharacteristic (const Field &F, const char *name, unsigned int iterations)
 {
 	std::ostringstream str;
 	str << "\t--Testing " << name << " characteristic" << ends;
@@ -707,7 +707,7 @@ bool testFieldCharacteristic (const Field &F, const char *name, unsigned int ite
 
 		if (!F.isZero (sigma)) {
 			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: p a != 0" << endl;
+			<< "ERROR: p a != 0" << endl;
 			ret = false;
 		}
 
@@ -728,7 +728,7 @@ bool testFieldCharacteristic (const Field &F, const char *name, unsigned int ite
  */
 
 template <class Field>
-bool testFreshmansDream (const Field &F, const char *name, unsigned int iterations) 
+bool testFreshmansDream (const Field &F, const char *name, unsigned int iterations)
 {
 	std::ostringstream str;
 	str << "\t--Testing " << name << " Freshman's Dream" << ends;
@@ -786,7 +786,7 @@ bool testFreshmansDream (const Field &F, const char *name, unsigned int iteratio
 
 		if (!F.areEqual (a_b_p, a_p_b_p)) {
 			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: (a + b)^p != a^p + b^p" << endl;
+			<< "ERROR: (a + b)^p != a^p + b^p" << endl;
 			ret = false;
 		}
 
@@ -800,7 +800,7 @@ bool testFreshmansDream (const Field &F, const char *name, unsigned int iteratio
 }
 
 
-/* Tests of field features */ 
+/* Tests of field features */
 
 /** Generic test 7: Consistency of in-place and out-of-place arithmetic
  *
@@ -845,7 +845,7 @@ bool testArithmeticConsistency (const Field &F, const char *name, unsigned int i
 
 		if (!F.areEqual (c1, c2)) {
 			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Consistency failure for addition" << endl;
+			<< "ERROR: Consistency failure for addition" << endl;
 			ret = false;
 		}
 
@@ -859,7 +859,7 @@ bool testArithmeticConsistency (const Field &F, const char *name, unsigned int i
 
 		if (!F.areEqual (c1, c2)) {
 			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Consistency failure for subtraction" << endl;
+			<< "ERROR: Consistency failure for subtraction" << endl;
 			ret = false;
 		}
 
@@ -873,7 +873,7 @@ bool testArithmeticConsistency (const Field &F, const char *name, unsigned int i
 
 		if (!F.areEqual (c1, c2)) {
 			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Consistency failure for negation" << endl;
+			<< "ERROR: Consistency failure for negation" << endl;
 			ret = false;
 		}
 
@@ -887,7 +887,7 @@ bool testArithmeticConsistency (const Field &F, const char *name, unsigned int i
 
 		if (!F.areEqual (c1, c2)) {
 			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Consistency failure for multiplication" << endl;
+			<< "ERROR: Consistency failure for multiplication" << endl;
 			ret = false;
 		}
 
@@ -902,7 +902,7 @@ bool testArithmeticConsistency (const Field &F, const char *name, unsigned int i
 
 			if (!F.areEqual (c1, c2)) {
 				commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-					<< "ERROR: Consistency failure for division" << endl;
+				<< "ERROR: Consistency failure for division" << endl;
 				ret = false;
 			}
 
@@ -916,7 +916,7 @@ bool testArithmeticConsistency (const Field &F, const char *name, unsigned int i
 
 			if (!F.areEqual (c1, c2)) {
 				commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-					<< "ERROR: Consistency failure for inversion" << endl;
+				<< "ERROR: Consistency failure for inversion" << endl;
 				ret = false;
 			}
 		}
@@ -974,7 +974,7 @@ bool testAxpyConsistency (const Field &F, const char *name, unsigned int iterati
 
 		if (!F.areEqual (c1, c2) || !F.areEqual (c1, c3)) {
 			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Consistency failure for axpy" << endl;
+			<< "ERROR: Consistency failure for axpy" << endl;
 			ret = false;
 		}
 
@@ -1018,7 +1018,7 @@ bool testRanditerBasic(const Field &F, const char *name, unsigned int iterations
 /* Convenience function to run all of the field tests on a given field */
 
 template <class Field>
-bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, size_t n, bool runCharacteristicTest) 
+bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, size_t n, bool runCharacteristicTest)
 {
 	bool pass = true;
 	ostringstream str1, str2;
@@ -1027,7 +1027,7 @@ bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, s
 	str2 << "\t--Testing " << desc << " FieldAXPY" << ends;
 
 	commentator.start (str1.str ().c_str (), "runFieldTests", runCharacteristicTest ? 11 : 10);
-	
+
 	if (!testField                 (F, str1.str ().c_str ()))                pass = false; commentator.progress ();
 	if (!testFieldNegation         (F, desc, iterations))                    pass = false; commentator.progress ();
 	if (!testFieldInversion        (F, desc, iterations))                    pass = false; commentator.progress ();
@@ -1054,7 +1054,7 @@ bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, s
 //@}
 
 
-///@name Generic tests for black boxes 
+///@name Generic tests for black boxes
 //@{
 /** Generic Blackbox test 1: (u^T A) v = u^T (A v).
  *
@@ -1074,9 +1074,9 @@ bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, s
 template <class Field, class Blackbox, class Vector>
 static bool
 testTranspose (Field                             &F,
-			   Blackbox							 &A,
-			   LinBox::VectorStream<Vector>      &stream1,
-			   LinBox::VectorStream<Vector>      &stream2) 
+	       Blackbox							 &A,
+	       LinBox::VectorStream<Vector>      &stream1,
+	       LinBox::VectorStream<Vector>      &stream2)
 {
 	bool ret = true;
 
@@ -1121,7 +1121,7 @@ testTranspose (Field                             &F,
 		if (!F.areEqual (r1, r2)) {
 			ret = false;
 			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Values are not equal" << endl;
+			<< "ERROR: Values are not equal" << endl;
 		}
 
 		LinBox::commentator.stop ("done");
@@ -1148,7 +1148,7 @@ static bool
 testLinearity (Field                             &F,
 	       BB 				 &A,
 	       LinBox::VectorStream<Vector>      &stream1,
-	       LinBox::VectorStream<Vector>      &stream2) 
+	       LinBox::VectorStream<Vector>      &stream2)
 {
 	bool ret = true, iter_passed;
 
@@ -1196,7 +1196,7 @@ testLinearity (Field                             &F,
 		VD.axpy ( AxpaAy, alpha, Ay, Ax);
 
 		VD.write( report << "   x+alpha y = ", xpay) << endl;
- 
+
 		VD.write( report << "A(x+alpha y) = ", Axpay) << endl;
 
 		VD.write( report << "          Ax = ", Ax) << endl;
@@ -1210,7 +1210,7 @@ testLinearity (Field                             &F,
 
 		if (!iter_passed)
 			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Vectors are not equal" << endl;
+			<< "ERROR: Vectors are not equal" << endl;
 
 		LinBox::commentator.stop ("done");
 		LinBox::commentator.progress ();
@@ -1227,15 +1227,15 @@ testLinearity (Field                             &F,
  * F - Field over which to perform computations
  * A - Black box of which to compute the dense representation
  */
-template <class Field, class Blackbox> 
-static bool 
+template <class Field, class Blackbox>
+static bool
 testSmallBlackbox(Field& F, Blackbox& A)
 {
 	size_t m = A.rowdim(), n = A.coldim();
 	typedef std::vector<typename Field::Element> Vector;
 
 	// e for cols of identity
-	typename Field::Element zero, one; 
+	typename Field::Element zero, one;
 	F.init(zero, 0); F.init(one, 1);
 	Vector e(n, zero);
 	Vector v(m);
@@ -1249,7 +1249,7 @@ testSmallBlackbox(Field& F, Blackbox& A)
 		for (size_t i = 0; i < m; ++i) B.setEntry(i, j, v[i]);
 	}
 
-// really, you have to look at B to see if it is what is intended, else this is just another linearity test.
+	// really, you have to look at B to see if it is what is intended, else this is just another linearity test.
 
 	// display B in report
 	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -1263,7 +1263,7 @@ testSmallBlackbox(Field& F, Blackbox& A)
 	A.apply(y, x); B.apply(z, x);
 
 	// display x, y, z in report
-	LinBox::VectorDomain<Field> VD(F); 
+	LinBox::VectorDomain<Field> VD(F);
 	VD.write(report, x); report << " is x" << endl;
 	VD.write(report, y); report << " is y" << endl;
 	VD.write(report, z); report << " is z" << endl;
@@ -1272,145 +1272,145 @@ testSmallBlackbox(Field& F, Blackbox& A)
 }
 
 /** Generic blackbox test 4: combination of tests
- * 
+ *
  * Call testTranspose and testLinearity.
  * If large, time apply and applyTranspose.
  * if small, call testSmallBlackbox.
  */
-template <class Field, class BB> 
-//template <class Field, class AA, class BB> 
-static bool 
+template <class Field, class BB>
+//template <class Field, class AA, class BB>
+static bool
 testBlackbox(Field& F, BB &A)
-//testBlackbox(Field& F, AA &A, BB &B)
+	//testBlackbox(Field& F, AA &A, BB &B)
 {
 	size_t smallThresh = 20; // Below it do dense matrix comparison.
 	size_t largeThresh = 2000; // Above it do timing of apply and applyTr.
 	typedef std::vector<typename Field::Element> DenseVector;
 	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "testBlackbox on " << A.rowdim() << " by " << A.coldim() << " matrix." << endl;
-	if (largeThresh < smallThresh) 
+	if (largeThresh < smallThresh)
 		std::cout << "telling compiler not to issue warning";
 
 	//LinBox::VectorDomain<Field> VD (F);
-	
+
 	LinBox::commentator.setMaxDepth(-1);
 	bool ret = true;
 	LinBox::UserTimer t;
 
 #if 0
-	size_t iterations = 1; 
-	LinBox::commentator.start ("\t--Testing A(ax+y) = a(Ax) + (Ay)", 
-							   "testLinearity", 1);
+	size_t iterations = 1;
+	LinBox::commentator.start ("\t--Testing A(ax+y) = a(Ax) + (Ay)",
+				   "testLinearity", 1);
 	typename Field::RandIter r(F);
-	LinBox::RandomDenseStream<Field, DenseVector> stream1 (F, r, A.rowdim(), iterations); 
-	typename Field::Element x; 
+	LinBox::RandomDenseStream<Field, DenseVector> stream1 (F, r, A.rowdim(), iterations);
+	typename Field::Element x;
 	r.random(x);
-	LinBox::RandomDenseStream<Field, DenseVector> stream2 (F, r, A.coldim(), iterations); 
+	LinBox::RandomDenseStream<Field, DenseVector> stream2 (F, r, A.coldim(), iterations);
 
 	ret = ret && testLinearity (F, A, stream1, stream2);
-	
-	LinBox::commentator.stop (MSG_STATUS (ret), 
-							  (const char *) 0, "testLinearity");
-	
-	/*
-	LinBox::commentator.start ("\t--Testing u^T(Av) = (u^T A)v", 
-							   "testTranspose", 1);
-	
-	r.random(x);
-	r.random(x);
-	LinBox::RandomDenseStream<Field, DenseVector> stream3 (F, r, A.rowdim(), iterations); 
-	r.random(x);
-	r.random(x);
-	r.random(x);
-	r.random(x);
-	LinBox::RandomDenseStream<Field, DenseVector> stream4 (F, r, A.coldim(), iterations); 
 
-	ret = ret && testTranspose (F, A, stream3, stream4); 
-	LinBox::commentator.stop (MSG_STATUS (ret), 
-							  (const char *) 0, "testTranspose");
-	*/
-	
+	LinBox::commentator.stop (MSG_STATUS (ret),
+				  (const char *) 0, "testLinearity");
+
+	/*
+	   LinBox::commentator.start ("\t--Testing u^T(Av) = (u^T A)v",
+	   "testTranspose", 1);
+
+	   r.random(x);
+	   r.random(x);
+	   LinBox::RandomDenseStream<Field, DenseVector> stream3 (F, r, A.rowdim(), iterations);
+	   r.random(x);
+	   r.random(x);
+	   r.random(x);
+	   r.random(x);
+	   LinBox::RandomDenseStream<Field, DenseVector> stream4 (F, r, A.coldim(), iterations);
+
+	   ret = ret && testTranspose (F, A, stream3, stream4);
+	   LinBox::commentator.stop (MSG_STATUS (ret),
+	   (const char *) 0, "testTranspose");
+	   */
+
 #endif
 #if 1
 	/* timing tests */   // I changed the order of all tests. Timing now is the first set of tests and then linearity and transpose
 	{
 		//{
-			DenseVector x(A.coldim()), ya(A.rowdim());
-			//DenseVector yb(B.rowdim());
-			for(size_t i = 0; i < A.coldim(); ++i) F.init(x[i], i);
-			for(size_t i = 0; i < A.rowdim(); ++i) F.init(ya[i], i);
-			//for(size_t i = 0; i < A.rowdim(); ++i) F.init(yb[i], i);
-			//std::cout << " -- testblackbox: correctness test --> ";
-			A.apply(ya, x);
-			//B.apply(yb, x);
-	    //}
-			//if (!VD.areEqual(ya, yb)) {std::cout << " wrong computation -- " << endl;  return ret = false;}
-			//else std::cout << " correct computation -- " << endl;
+		DenseVector x(A.coldim()), ya(A.rowdim());
+		//DenseVector yb(B.rowdim());
+		for(size_t i = 0; i < A.coldim(); ++i) F.init(x[i], i);
+		for(size_t i = 0; i < A.rowdim(); ++i) F.init(ya[i], i);
+		//for(size_t i = 0; i < A.rowdim(); ++i) F.init(yb[i], i);
+		//std::cout << " -- testblackbox: correctness test --> ";
+		A.apply(ya, x);
+		//B.apply(yb, x);
+		//}
+		//if (!VD.areEqual(ya, yb)) {std::cout << " wrong computation -- " << endl;  return ret = false;}
+		//else std::cout << " correct computation -- " << endl;
 
 		//if (A.coldim() >= largeThresh)
+		{
+			//LinBox::commentator.start ("\t--Timing Test (Av)","testApply", 1);
+			t.clear();
+			t.start();
+			//std::cout << " -- before call to apply -- " << std::endl;
+			for(size_t i = 0; i < 10; ++i )
 			{
-				//LinBox::commentator.start ("\t--Timing Test (Av)","testApply", 1);
-				t.clear();
-				t.start();
-				//std::cout << " -- before call to apply -- " << std::endl;
-				for(size_t i = 0; i < 10; ++i )
-					{
-				        //DenseVector x(A.coldim()), y(A.rowdim());
-						//for(size_t i = 0; i < A.coldim(); ++i) F.init(x[i], i);
-						//for(size_t i = 0; i < A.rowdim(); ++i) F.init(y[i], i);
-						A.apply(ya, x);
-						//for(int j = 0; j < A.rowdim(); ++j)
-						//	report << ya[j] << " ";
-						//report << std::endl;
-					}
-				//LinBox::commentator.stop (MSG_STATUS (true), (const char *) 0, "testApply");
-				t.stop();
-				std::cout << t.time() << ", ";
-				//std::cout << " -- testblackbox: time of quad -- " << t.time() << std::endl;
-				//t.clear();
-				//t.start();
-				//for(size_t i = 0; i < 3; ++i )
-				//B.apply(yb, x);
-				//t.stop();
-				//std::cout << t.time() << ")" << endl;
-				//std::cout << " -- testblackbox: time of zo  -- " << t.time() << std::endl;
+				//DenseVector x(A.coldim()), y(A.rowdim());
+				//for(size_t i = 0; i < A.coldim(); ++i) F.init(x[i], i);
+				//for(size_t i = 0; i < A.rowdim(); ++i) F.init(y[i], i);
+				A.apply(ya, x);
+				//for(int j = 0; j < A.rowdim(); ++j)
+				//	report << ya[j] << " ";
+				//report << std::endl;
 			}
+			//LinBox::commentator.stop (MSG_STATUS (true), (const char *) 0, "testApply");
+			t.stop();
+			std::cout << t.time() << ", ";
+			//std::cout << " -- testblackbox: time of quad -- " << t.time() << std::endl;
+			//t.clear();
+			//t.start();
+			//for(size_t i = 0; i < 3; ++i )
+			//B.apply(yb, x);
+			//t.stop();
+			//std::cout << t.time() << ")" << endl;
+			//std::cout << " -- testblackbox: time of zo  -- " << t.time() << std::endl;
+		}
 
 		//if (A.rowdim() >= largeThresh)
-			{
-				//LinBox::commentator.start ("\t--Timing Test(v^T A)", "testApplyTranspose", 1);
-				//A.applyTranspose(x, y);
-	  			//LinBox::commentator.stop (MSG_STATUS (true), (const char *) 0, "testApplyTranspose");
-	   		}
-	   	
+		{
+			//LinBox::commentator.start ("\t--Timing Test(v^T A)", "testApplyTranspose", 1);
+			//A.applyTranspose(x, y);
+			//LinBox::commentator.stop (MSG_STATUS (true), (const char *) 0, "testApplyTranspose");
+		}
+
 	} // timing test block
 #endif
-#if 0	
-	/*  Testing against constructed dense matrix doesn't really add much.  
+#if 0
+	/*  Testing against constructed dense matrix doesn't really add much.
 	    May be useful to see the matrix in the report.
-	*/
+	    */
 	if (A.rowdim() <= smallThresh && A.coldim() <= smallThresh)
-		{
-			LinBox::commentator.start ("\t--Testing A behaves like Dense A", 
-									   "testSmallBlackbox", 1);
-			ret = ret && testSmallBlackbox(F, A);
-			LinBox::commentator.stop (MSG_STATUS (ret), 
-									  (const char *) 0, "testSmallBlackbox");
-		}
+	{
+		LinBox::commentator.start ("\t--Testing A behaves like Dense A",
+					   "testSmallBlackbox", 1);
+		ret = ret && testSmallBlackbox(F, A);
+		LinBox::commentator.stop (MSG_STATUS (ret),
+					  (const char *) 0, "testSmallBlackbox");
+	}
 #endif
 	return ret;
 }
- 
+
 /** Generic blackbox test 5: test several sizes
- * 
+ *
  * Call testTranspose and testLinearity.
  * If large, time apply and applyTranspose.
  * if small, call test
-SmallBlackbox.
+ SmallBlackbox.
  */
-template <class Field, class Blackbox> 
-static bool 
-testBB(Field& F) 
+template <class Field, class Blackbox>
+static bool
+testBB(Field& F)
 {
 	bool pass = true;
 
@@ -1431,14 +1431,14 @@ testBB(Field& F)
  *
  * Test that the random iterator over the given field works.
  *
- * Test up to five times, accepting any one, to increase probability of 
+ * Test up to five times, accepting any one, to increase probability of
  * passing statistical tests.
  */
 template <class Field>
 bool testRandomIterator (const Field &F, const char *text,
 			 unsigned int num_trials,
 			 unsigned int num_categories,
-			 unsigned int hist_len) 
+			 unsigned int hist_len)
 {
 	std::ostringstream str;
 
@@ -1449,12 +1449,12 @@ bool testRandomIterator (const Field &F, const char *text,
 	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
 
 	/* This test either passes or runs forever */
-	for (int i = 1; 
+	for (int i = 1;
 	     !  testRandomIteratorStep (F, text, num_trials, num_categories, hist_len) ;
 	     ++i ){
-		if (0 == i % 10)  
+		if (0 == i % 10)
 			report << "Warning! Probable failure of uniformity" << std::endl;
-		};
+	};
 
 	LinBox::commentator.stop (MSG_STATUS (true), (const char *) 0, "testRandomIterator");
 	return true;
@@ -1468,10 +1468,10 @@ bool testRandomIterator (const Field &F, const char *text,
 
 template <class Field>
 bool testRandomIteratorStep (const Field &F,
-			 const char *, // text
-			 unsigned int num_trials,
-			 unsigned int num_categories,
-			 unsigned int hist_len) 
+			     const char *, // text
+			     unsigned int num_trials,
+			     unsigned int num_categories,
+			     unsigned int hist_len)
 {
 	//std::ostringstream str;
 
@@ -1534,13 +1534,13 @@ bool testRandomIteratorStep (const Field &F,
 	p = chiSquaredCDF (chi_squared * num_categories / num_trials, num_categories - 1);
 
 	report << "Test of distribution uniformity (low-order): chi^2 = "
-	       << chi_squared * num_categories / num_trials << std::endl;
+								<< chi_squared * num_categories / num_trials << std::endl;
 	report << "Test of distribution uniformity (low-order):     p = " << p << std::endl;
 
 	if (p < 0.05 || p > 0.95) {
 		LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Random iterator's values do not appear to be uniformly distributed"
-			<< std::endl;
+		<< "ERROR: Random iterator's values do not appear to be uniformly distributed"
+		<< std::endl;
 		ret = false;
 	}
 
@@ -1553,13 +1553,13 @@ bool testRandomIteratorStep (const Field &F,
 	p = chiSquaredCDF (chi_squared * num_categories / num_trials, num_categories - 1);
 
 	report << "Test of distribution uniformity (high-order): chi^2 = "
-	       << chi_squared * num_categories / num_trials << std::endl;
+								 << chi_squared * num_categories / num_trials << std::endl;
 	report << "Test of distribution uniformity (high-order):     p = " << p << std::endl;
 
 	if (p < 0.05 || p > 0.95) {
 		LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Random iterator's values do not appear to be uniformly distributed"
-			<< std::endl;
+		<< "ERROR: Random iterator's values do not appear to be uniformly distributed"
+		<< std::endl;
 		ret = false;
 	}
 
@@ -1577,13 +1577,13 @@ bool testRandomIteratorStep (const Field &F,
 		p = chiSquaredCDF (chi_squared * num_categories / num_trials, num_categories - 1);
 
 		report << "Test of " << idx + 1 << " spacing: chi^2 = "
-		       << chi_squared * num_categories / num_trials << std::endl;
+		<< chi_squared * num_categories / num_trials << std::endl;
 		report << "Test of " << idx + 1 << " spacing:     p = " << p << std::endl;
 
 		if (p < 0.05 || p > 0.95) {
 			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Difference values do not appear to be uniformly distributed"
-				<< std::endl;
+			<< "ERROR: Difference values do not appear to be uniformly distributed"
+			<< std::endl;
 			ret = false;
 		}
 	}
@@ -1608,7 +1608,7 @@ bool testRandomIteratorStep (const Field &F,
  */
 
 template <class Field, class Vector1, class Vector2>
-static bool testDotProduct (Field &F, const char *text, LinBox::VectorStream<Vector1> &stream1, LinBox::VectorStream<Vector2> &stream2) 
+static bool testDotProduct (Field &F, const char *text, LinBox::VectorStream<Vector1> &stream1, LinBox::VectorStream<Vector2> &stream2)
 {
 	std::ostringstream str;
 
@@ -1665,7 +1665,7 @@ static bool testDotProduct (Field &F, const char *text, LinBox::VectorStream<Vec
 		if (!F.areEqual (sigma, rho)) {
 			ret = false;
 			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Dot products are not equal" << std::endl;
+			<< "ERROR: Dot products are not equal" << std::endl;
 		}
 
 		LinBox::commentator.stop ("done");
@@ -1673,7 +1673,7 @@ static bool testDotProduct (Field &F, const char *text, LinBox::VectorStream<Vec
 	}
 
 	LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
-		<< "Average time for dot product: " << totaltime / stream1.m () << std::endl;
+	<< "Average time for dot product: " << totaltime / stream1.m () << std::endl;
 
 	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDotProduct");
 
@@ -1697,7 +1697,7 @@ static bool testDotProduct (Field &F, const char *text, LinBox::VectorStream<Vec
  */
 
 template <class Field, class Vector>
-static bool testAddMul (Field &F, const char *text, LinBox::VectorStream<Vector> &stream1, LinBox::VectorStream<Vector> &stream2) 
+static bool testAddMul (Field &F, const char *text, LinBox::VectorStream<Vector> &stream1, LinBox::VectorStream<Vector> &stream2)
 {
 	std::ostringstream str;
 
@@ -1772,7 +1772,7 @@ static bool testAddMul (Field &F, const char *text, LinBox::VectorStream<Vector>
 
 		if (!iter_passed)
 			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: (x + a*y) != a*(y + a^-1*x)" << std::endl;
+			<< "ERROR: (x + a*y) != a*(y + a^-1*x)" << std::endl;
 
 		LinBox::commentator.stop ("done");
 		LinBox::commentator.progress ();
@@ -1800,7 +1800,7 @@ static bool testAddMul (Field &F, const char *text, LinBox::VectorStream<Vector>
  */
 
 template <class Field, class Vector>
-static bool testSubMul (Field &F, const char *text, LinBox::VectorStream<Vector> &stream1, LinBox::VectorStream<Vector> &stream2) 
+static bool testSubMul (Field &F, const char *text, LinBox::VectorStream<Vector> &stream1, LinBox::VectorStream<Vector> &stream2)
 {
 	std::ostringstream str;
 
@@ -1875,7 +1875,7 @@ static bool testSubMul (Field &F, const char *text, LinBox::VectorStream<Vector>
 
 		if (!iter_passed)
 			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: (x - a*y) != a*(a^-1*x - y)" << std::endl;
+			<< "ERROR: (x - a*y) != a*(a^-1*x - y)" << std::endl;
 
 		LinBox::commentator.stop ("done");
 		LinBox::commentator.progress ();
@@ -1902,7 +1902,7 @@ static bool testSubMul (Field &F, const char *text, LinBox::VectorStream<Vector>
  */
 
 template <class Field, class Vector>
-static bool testAXPY (Field &F, const char *text, LinBox::VectorStream<Vector> &stream1, LinBox::VectorStream<Vector> &stream2) 
+static bool testAXPY (Field &F, const char *text, LinBox::VectorStream<Vector> &stream1, LinBox::VectorStream<Vector> &stream2)
 {
 	std::ostringstream str;
 	str << "\t--Testing " << text << " vector axpy" << std::ends;
@@ -1958,7 +1958,7 @@ static bool testAXPY (Field &F, const char *text, LinBox::VectorStream<Vector> &
 
 		if (!iter_passed)
 			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: (x + a*y) - a*(y + a^-1*x) != 0" << std::endl;
+			<< "ERROR: (x + a*y) - a*(y + a^-1*x) != 0" << std::endl;
 
 		LinBox::commentator.stop ("done");
 		LinBox::commentator.progress ();
@@ -1984,7 +1984,7 @@ static bool testAXPY (Field &F, const char *text, LinBox::VectorStream<Vector> &
  * Return true on success and false on failure
  */
 template <class Field, class Vector1, class Vector2>
-static bool testCopyEqual (Field &F, const char *text, LinBox::VectorStream<Vector1> &stream, LinBox::VectorStream<Vector2> &stream2) 
+static bool testCopyEqual (Field &F, const char *text, LinBox::VectorStream<Vector1> &stream, LinBox::VectorStream<Vector2> &stream2)
 {
 	std::ostringstream str;
 
@@ -2022,7 +2022,7 @@ static bool testCopyEqual (Field &F, const char *text, LinBox::VectorStream<Vect
 
 		if (!iter_passed)
 			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Vectors are not equal" << std::endl;
+			<< "ERROR: Vectors are not equal" << std::endl;
 
 		LinBox::commentator.stop ("done");
 		LinBox::commentator.progress ();

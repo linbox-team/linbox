@@ -21,13 +21,13 @@
 //#include "linbox/vector/stream.h"
 #include "linbox/integer.h"
 
-#include "test-common.h" 
+#include "test-common.h"
 
 /* Modular exponentiation */
 using namespace std;
 
 template <class Field>
-typename Field::Element& expt (const Field &F, typename Field::Element &res, const typename Field::Element &a, LinBox::integer &n) 
+typename Field::Element& expt (const Field &F, typename Field::Element &res, const typename Field::Element &a, LinBox::integer &n)
 {
 	if (n == 0) {
 		F.init (res, 1);
@@ -42,8 +42,8 @@ typename Field::Element& expt (const Field &F, typename Field::Element &res, con
 	} else {
 		n /= 2;
 		expt (F, res, a, n);
-                typename Field::Element tmp;
-                F.init(tmp,0);
+		typename Field::Element tmp;
+		F.init(tmp,0);
 		res = F.mul (tmp, res, res);
 	}
 
@@ -69,7 +69,7 @@ bool reportError(string rep, bool& flag)
  */
 
 template<class Field>
-bool testField (Field &F, const char *title, bool fieldp = true) 
+bool testField (Field &F, const char *title, bool fieldp = true)
 {
 	commentator.start (title, "testField", 5);
 	ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
@@ -89,7 +89,7 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 
 	commentator.start ("\t--Testing characteristic/cardinality match");
 
-	F.characteristic (n); 
+	F.characteristic (n);
 	F.cardinality (m);
 
 	if (n > 0 && !isPower (m, n)) part_pass = reportError("Characteristic, cardinality mismatch", pass);
@@ -98,7 +98,7 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	commentator.progress ();
 
 	/* tests for presence of members with minimal check of semantics */
-	// these checks need improvement 
+	// these checks need improvement
 
 	commentator.start ("\t--Testing correctness of 0 and 1");
 	part_pass = true;
@@ -124,7 +124,7 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	else
 		n -= 1;
 
-	
+
 	report << "Initial integer: " << n << endl;
 	F.init (a, n);  F.write ( report << "Result of init: ", a) << endl;
 
@@ -147,7 +147,7 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	F.assign (d, three);
 	F.addin (d, two); F.write (report << "Result of 2 + 3 (inplace): ", d) << endl;
 
-	if (!F.areEqual (a, F.init (f, 5)) || !F.areEqual (d, a)) 
+	if (!F.areEqual (a, F.init (f, 5)) || !F.areEqual (d, a))
 		part_pass = reportError( "Results of add are incorrect", pass);
 
 	F.neg (a, two); F.write (report << "Result of -2: ", a) << endl;
@@ -155,14 +155,14 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	F.negin (d); F.write (report << "Result of -2 (inplace): ", d) << endl;
 	F.init (f, -2); F.write( report << "-2 via init: ", f) << endl;
 
-	if (!F.areEqual (a, f) || !F.areEqual (d, a)) 
+	if (!F.areEqual (a, f) || !F.areEqual (d, a))
 		part_pass = reportError( "Results of neg are incorrect", pass);
 
 	F.sub (a, three, two); F.write (report << "Result of 3 - 2: ", a) << endl;
 	F.init (d, 3);
 	F.subin (d, two); F.write (report << "Result of 3 - 2 (inplace): ", d) << endl;
 
-	if (!F.areEqual (a, one) || !F.areEqual (d, a)) 
+	if (!F.areEqual (a, one) || !F.areEqual (d, a))
 		part_pass = reportError( "Results of neg sub incorrect", pass);
 
 	F.mul (a, two, three); F.write (report << "Result of 2 * 3: ", a) << endl;
@@ -170,14 +170,14 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	F.mulin (d, three); F.write (report << "Result of 2 * 3 (inplace): ", d) << endl;
 	F.init (f, 6);
 
-	if (!F.areEqual (a, f) || !F.areEqual (d, a)) 
+	if (!F.areEqual (a, f) || !F.areEqual (d, a))
 		part_pass = reportError( "Results of mul incorrect", pass);
 
 	F.inv (a, one); F.write (report << "Result of inverting 1: ", a) << endl;
 	F.assign (d, one);
 	F.invin (d); F.write (report << "Result of inverting 1 (inplace): ", d) << endl;
 
-	if (!F.areEqual (a, one) || !F.areEqual (d, a)) 
+	if (!F.areEqual (a, one) || !F.areEqual (d, a))
 		part_pass = reportError( "Results of inv incorrect", pass);
 
 	if ( F.isZero(two) ) F.assign(f, three); else F.assign(f, two);
@@ -185,7 +185,7 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	F.assign(d, f);
 	F.divin (d, f); F.write ( report << "Result of f/f (inplace): ", d) << endl;
 
-	if (!F.areEqual (a, one) || !F.areEqual (d, a)) 
+	if (!F.areEqual (a, one) || !F.areEqual (d, a))
 		part_pass = reportError( "Results of div incorrect", pass);
 
 	F.axpy (a, two, three, two); F.write ( report << "Result of axpy 2*3 + 2: ", a) << endl;
@@ -193,7 +193,7 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	F.axpyin (d, two, three); F.write ( report << "Result of axpy 2*3 + 2 (inplace): ", d) << endl;
 	F.init (f, 8);
 
-	if ( !F.areEqual (a, f) || !F.areEqual (d, a) ) 
+	if ( !F.areEqual (a, f) || !F.areEqual (d, a) )
 		part_pass = reportError( "Results of axpy incorrect", pass);
 
 	commentator.stop (MSG_STATUS (part_pass));
@@ -207,7 +207,7 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	F.init (a, 1);
 	F.init (b, 1);
 	F.init (c, 0);
-	
+
 	n = 101;
 	expt(F, a, two, n);
 	F.subin (a, one); F.write( report << "using expt, 2^101 - 1: ", a) << endl;
@@ -217,35 +217,35 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 		F.mulin (b, two);
 	}
 
-	if (!F.areEqual (a, c)) 
+	if (!F.areEqual (a, c))
 		part_pass = reportError( "2^101 - 1 != 1 + 2 + .. + 2^100", pass);
 
 	// 1 + 2*(1 + 2*( ... (1) ... )), 100 times.
 	F.assign (d, one);
 	for (int i = 1; i < 101; ++i)
 	{	F.axpy (b, two, d, one); F.assign(d, b); }
-    F.write( report << "using axpy, 1 + 2(1 + ... + 2(1)...), with 100 '+'s: ", d) << endl;
+	F.write( report << "using axpy, 1 + 2(1 + ... + 2(1)...), with 100 '+'s: ", d) << endl;
 
-	if (!F.areEqual (a, d)) 
-	part_pass = reportError( "2^101 - 1 != 1 + 2(1 + ... + 2(1)...), with 100 '+'s: ", pass);
+	if (!F.areEqual (a, d))
+		part_pass = reportError( "2^101 - 1 != 1 + 2(1 + ... + 2(1)...), with 100 '+'s: ", pass);
 
 	commentator.stop (MSG_STATUS (part_pass));
 	commentator.progress ();
 
 	/* untested so far
-	   ostream &write (ostream &os) const 
+	   ostream &write (ostream &os) const
 	   istream &read (istream &is)
-	   ostream &write (ostream &os, const Element &x) const 
+	   ostream &write (ostream &os, const Element &x) const
 	   istream &read (istream &is, Element &x) const
 	   FieldArchetype (FieldAbstract*, ElementAbstract*, RandIterAbstract* = 0)
-	*/
+	   */
 
 	commentator.stop (MSG_STATUS (pass), (const char *) 0, "testField");
-	
+
 	return pass;
 }
 
-
+
 /** Tests of algebraic properties of fields */
 
 /* Generic test 6: Negation of elements
@@ -254,7 +254,7 @@ bool testField (Field &F, const char *title, bool fieldp = true)
  */
 
 template <class Field>
-bool testFieldNegation (const Field &F, const char *name, unsigned int iterations) 
+bool testFieldNegation (const Field &F, const char *name, unsigned int iterations)
 {
 	std::ostringstream str;
 	str << "\t--Testing " << name << " negation" << ends;
@@ -270,7 +270,7 @@ bool testFieldNegation (const Field &F, const char *name, unsigned int iteration
 
 	for (unsigned int i = 0; i < iterations; i++) {
 		commentator.startIteration (i);
-		
+
 		r.random (a);
 
 		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
@@ -304,7 +304,7 @@ bool testFieldNegation (const Field &F, const char *name, unsigned int iteration
  */
 
 template <class Field>
-bool testFieldInversion (const Field &F, const char *name, unsigned int iterations) 
+bool testFieldInversion (const Field &F, const char *name, unsigned int iterations)
 {
 	std::ostringstream str;
 	str << "\t--Testing " << name << " inversion" << ends;
@@ -313,7 +313,7 @@ bool testFieldInversion (const Field &F, const char *name, unsigned int iteratio
 	commentator.start (st, "testFieldInversion", iterations);
 
 	typename Field::Element a, ainv, aainv, one;
-        F.init (a,0); F.init (ainv,0); F.init (aainv,0);
+	F.init (a,0); F.init (ainv,0); F.init (aainv,0);
 	F.init (one, 1);
 	typename Field::RandIter r (F);
 
@@ -356,7 +356,7 @@ bool testFieldInversion (const Field &F, const char *name, unsigned int iteratio
 
 
 template <class Field>
-bool testFieldDistributivity(const Field &F, const char *name, unsigned int iterations) 
+bool testFieldDistributivity(const Field &F, const char *name, unsigned int iterations)
 {
 	std::ostringstream str;
 	str << "\t--Testing " << name << " distributivity" << ends;
@@ -365,11 +365,11 @@ bool testFieldDistributivity(const Field &F, const char *name, unsigned int iter
 	commentator.start (st, "testFieldDistributivity", iterations);
 
 	typename Field::Element a, b, c, a_b, a_bc, ac, bc, ac_bc, ca_b, ca, cb, ca_cb;
-        F.init (a,0); F.init (b,0); F.init (c,0); 
-        F.init (a_b,0); F.init (a_bc,0); F.init (ac,0); F.init (bc,0);
-        F.init (ac_bc,0); 
-		F.init (ca_b,0); F.init (ca,0); F.init (cb,0); F.init (ca_cb,0); 
-        
+	F.init (a,0); F.init (b,0); F.init (c,0);
+	F.init (a_b,0); F.init (a_bc,0); F.init (ac,0); F.init (bc,0);
+	F.init (ac_bc,0);
+	F.init (ca_b,0); F.init (ca,0); F.init (cb,0); F.init (ca_cb,0);
+
 	typename Field::RandIter r (F);
 
 	bool ret = true;
@@ -408,7 +408,7 @@ bool testFieldDistributivity(const Field &F, const char *name, unsigned int iter
 
 		report << "c * a + c * b = ";
 		F.write (report, ca_cb) << endl;
-		if (!F.areEqual (a_bc, ac_bc) || !F.areEqual (ca_b, ca_cb)) 
+		if (!F.areEqual (a_bc, ac_bc) || !F.areEqual (ca_b, ca_cb))
 			reportError("Operations were not distributative", ret);
 
 		commentator.stop ("done");
@@ -430,7 +430,7 @@ bool testFieldDistributivity(const Field &F, const char *name, unsigned int iter
 
 
 template <class Field>
-bool testFieldCommutativity (const Field &F, const char *name, unsigned int iterations) 
+bool testFieldCommutativity (const Field &F, const char *name, unsigned int iterations)
 {
 	std::ostringstream str;
 	str << "\t--Testing " << name << " commutativity," << ends;
@@ -439,11 +439,11 @@ bool testFieldCommutativity (const Field &F, const char *name, unsigned int iter
 	commentator.start (st, "testFieldCommutativity", iterations);
 
 	typename Field::Element a, b, ab, ba, a_b, b_a;
-        F.init (a,0); F.init (b,0);
-        F.init (ab,0); F.init (ba,0);
-        F.init (a_b,0); F.init (b_a,0);
+	F.init (a,0); F.init (b,0);
+	F.init (ab,0); F.init (ba,0);
+	F.init (a_b,0); F.init (b_a,0);
 
-        
+
 	typename Field::RandIter r (F);
 
 	bool ret = true;
@@ -468,7 +468,7 @@ bool testFieldCommutativity (const Field &F, const char *name, unsigned int iter
 		report << "b*a = ";
 		F.write (report, ba) << endl;
 
-		if (!F.areEqual (ab, ba)) 
+		if (!F.areEqual (ab, ba))
 			reportError("Multiplication was not commutative", ret);
 
 
@@ -481,7 +481,7 @@ bool testFieldCommutativity (const Field &F, const char *name, unsigned int iter
 		report << "b+a = ";
 		F.write (report, b_a) << endl;
 
-		if (!F.areEqual (a_b, b_a)) 
+		if (!F.areEqual (a_b, b_a))
 			reportError("Addition was not commutative", ret);
 
 
@@ -503,7 +503,7 @@ bool testFieldCommutativity (const Field &F, const char *name, unsigned int iter
  */
 
 template <class Field>
-bool testFieldAssociativity (const Field &F, const char *name, unsigned int iterations) 
+bool testFieldAssociativity (const Field &F, const char *name, unsigned int iterations)
 {
 	std::ostringstream str;
 	str << "\t--Testing " << name << " associativity" << ends;
@@ -512,8 +512,8 @@ bool testFieldAssociativity (const Field &F, const char *name, unsigned int iter
 	commentator.start (st, "testFieldAssociativity", iterations);
 
 	typename Field::Element a, b, c, a_b, b_c, a_bc, ab_c;
-        F.init (a,0); F.init (b,0); F.init (c,0);
-        F.init (a_b,0); F.init (b_c,0); F.init (a_bc,0); F.init (ab_c,0);
+	F.init (a,0); F.init (b,0); F.init (c,0);
+	F.init (a_b,0); F.init (b_c,0); F.init (a_bc,0); F.init (ab_c,0);
 	typename Field::RandIter r (F);
 
 	bool ret = true;
@@ -574,7 +574,7 @@ bool testFieldAssociativity (const Field &F, const char *name, unsigned int iter
  */
 
 template <class Field>
-bool testGeometricSummation (const Field &F, const char *name, unsigned int iterations, unsigned int n) 
+bool testGeometricSummation (const Field &F, const char *name, unsigned int iterations, unsigned int n)
 {
 	std::ostringstream str;
 	str << "\t--Testing " << name << " geometric summation" << ends;
@@ -587,7 +587,7 @@ bool testGeometricSummation (const Field &F, const char *name, unsigned int iter
 
 	F.init (zero, 0);
 	F.init (one, 1);
-        F.init (a,0); F.init (a_n,0); F.init (k,0);
+	F.init (a,0); F.init (a_n,0); F.init (k,0);
 
 	bool ret = true;
 
@@ -649,7 +649,7 @@ bool testGeometricSummation (const Field &F, const char *name, unsigned int iter
  */
 
 template <class Field>
-bool testFieldCharacteristic (const Field &F, const char *name, unsigned int iterations) 
+bool testFieldCharacteristic (const Field &F, const char *name, unsigned int iterations)
 {
 	std::ostringstream str;
 	str << "\t--Testing " << name << " characteristic" << ends;
@@ -663,8 +663,8 @@ bool testFieldCharacteristic (const Field &F, const char *name, unsigned int ite
 
 	F.characteristic (p);
 	F.init (zero, 0);
-        F.init (a,0); F.init (sigma,0);
-        
+	F.init (a,0); F.init (sigma,0);
+
 	bool ret = true;
 
 	ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
@@ -681,7 +681,7 @@ bool testFieldCharacteristic (const Field &F, const char *name, unsigned int ite
 
 		F.assign (sigma, zero);
 
-// suggestion: make this run in time O(lg(p)), then take the conditional out of the run...Tests
+		// suggestion: make this run in time O(lg(p)), then take the conditional out of the run...Tests
 		for (j = 0; j < p; j += 1)
 			F.addin (sigma, a);
 
@@ -707,7 +707,7 @@ bool testFieldCharacteristic (const Field &F, const char *name, unsigned int ite
  */
 
 template <class Field>
-bool testFreshmansDream (const Field &F, const char *name, unsigned int iterations) 
+bool testFreshmansDream (const Field &F, const char *name, unsigned int iterations)
 {
 	std::ostringstream str;
 	str << "\t--Testing " << name << " Freshman's Dream" << ends;
@@ -730,8 +730,8 @@ bool testFreshmansDream (const Field &F, const char *name, unsigned int iteratio
 	typename Field::RandIter r (F);
 	typename Field::Element a, b, a_b, a_b_p, a_p, b_p, a_p_b_p;
 
-        F.init (a,0); F.init (b,0); F.init (a_b,0);
-        F.init (a_b_p,0); F.init (a_p,0); F.init (b_p,0); F.init (a_p_b_p,0);
+	F.init (a,0); F.init (b,0); F.init (a_b,0);
+	F.init (a_b_p,0); F.init (a_p,0); F.init (b_p,0); F.init (a_p_b_p,0);
 
 	for (unsigned int i = 0; i < iterations; i++) {
 		commentator.startIteration (i);
@@ -780,7 +780,7 @@ bool testFreshmansDream (const Field &F, const char *name, unsigned int iteratio
 }
 
 
-/* Tests of field features */ 
+/* Tests of field features */
 
 /** Generic test 7: Consistency of in-place and out-of-place arithmetic
  *
@@ -792,8 +792,8 @@ bool testFreshmansDream (const Field &F, const char *name, unsigned int iteratio
 
 template <class Field>
 bool testArithmeticConsistency (const Field &F, const char *name, unsigned int iterations)
-{  return testRingArithmeticConsistency(F, name, iterations) 
-	   && testInvDivConsistency(F, name, iterations); 
+{  return testRingArithmeticConsistency(F, name, iterations)
+	&& testInvDivConsistency(F, name, iterations);
 }
 template <class Field>
 bool testRingArithmeticConsistency (const Field &F, const char *name, unsigned int iterations)
@@ -808,7 +808,7 @@ bool testRingArithmeticConsistency (const Field &F, const char *name, unsigned i
 
 	typename Field::RandIter r (F);
 	typename Field::Element a, b, c1, c2;
-        F.init (a,0); F.init (b,0); F.init (c1,0); F.init (c2,0);
+	F.init (a,0); F.init (b,0); F.init (c1,0); F.init (c2,0);
 
 	for (unsigned int i = 0; i < iterations; i++) {
 		commentator.startIteration (i);
@@ -877,26 +877,26 @@ bool testRingArithmeticConsistency (const Field &F, const char *name, unsigned i
 template <class Field>
 bool testInvDivConsistency (const Field &F, const char *name, unsigned int iterations)
 {
-    std::ostringstream str;
-    str << "\t--Testing " << name << " in-place/out-of-place inv and div consistency" << ends;
+	std::ostringstream str;
+	str << "\t--Testing " << name << " in-place/out-of-place inv and div consistency" << ends;
 	char * st = new char[str.str().size()];
 	strcpy (st, str.str().c_str());
 	commentator.start (st, "testInvDivConsistency", iterations);
 
-    bool ret = true;
+	bool ret = true;
 
-    typename Field::RandIter r (F);
-    typename Field::Element a, b, c1, c2;
-    F.init (a,0); F.init (b,0); F.init (c1,0); F.init (c2,0);
+	typename Field::RandIter r (F);
+	typename Field::Element a, b, c1, c2;
+	F.init (a,0); F.init (b,0); F.init (c1,0); F.init (c2,0);
 
-    for (unsigned int i = 0; i < iterations; i++) {
-        commentator.startIteration (i);
+	for (unsigned int i = 0; i < iterations; i++) {
+		commentator.startIteration (i);
 
-        r.random (a); r.random (b);
+		r.random (a); r.random (b);
 
 		// This should be immaterial, since we have already "proven" commutativity
 		if (F.isZero (a) && !F.isZero (b))
-		std::swap (a, b);
+			std::swap (a, b);
 
 		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Random elements a = ";
@@ -913,7 +913,7 @@ bool testInvDivConsistency (const Field &F, const char *name, unsigned int itera
 			F.write (report, c1) << ", (in-place) ";
 			F.write (report, c2) << endl;
 
-		if (!F.areEqual (c1, c2)) reportError("Consistency failure for division", ret);
+			if (!F.areEqual (c1, c2)) reportError("Consistency failure for division", ret);
 
 			F.inv (c1, a);
 			F.assign (c2, a);
@@ -923,7 +923,7 @@ bool testInvDivConsistency (const Field &F, const char *name, unsigned int itera
 			F.write (report, c1) << ", (in-place) ";
 			F.write (report, c2) << endl;
 
-		if (!F.areEqual (c1, c2)) reportError("Consistency failure for inversion", ret);
+			if (!F.areEqual (c1, c2)) reportError("Consistency failure for inversion", ret);
 		}
 
 		commentator.stop ("done");
@@ -954,8 +954,8 @@ bool testAxpyConsistency (const Field &F, const char *name, unsigned int iterati
 
 	typename Field::RandIter r (F);
 	typename Field::Element a, x, y, c1, c2, c3;
-        F.init (a,0); F.init (x,0); F.init (y,0); 
-        F.init (c1,0); F.init (c2,0); F.init (c3,0);
+	F.init (a,0); F.init (x,0); F.init (y,0);
+	F.init (c1,0); F.init (c2,0); F.init (c3,0);
 
 	for (unsigned int i = 0; i < iterations; i++) {
 		commentator.startIteration (i);
@@ -1007,47 +1007,47 @@ bool testRanditerBasic(const Field &F, const char *name, unsigned int iterations
 	strcpy (st, str.str().c_str());
 	commentator.start (st, "testRanditerBasic", iterations);
 
-	 typename Field::RandIter r (F);
-	 typename Field::Element a;
-		 F.init (a,0);
+	typename Field::RandIter r (F);
+	typename Field::Element a;
+	F.init (a,0);
 
-	 if (iterations < 20) iterations = 20;
-	 for (unsigned int i = 0; i < iterations; i++) {
-		 r.random (a);
-		 if ( ! F.isZero(a) ) {ret = true; break;}
+	if (iterations < 20) iterations = 20;
+	for (unsigned int i = 0; i < iterations; i++) {
+		r.random (a);
+		if ( ! F.isZero(a) ) {ret = true; break;}
 
-	 }
+	}
 
-	 commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRanditerBasic");
-	 delete[] st;
-	 return ret;
- }
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRanditerBasic");
+	delete[] st;
+	return ret;
+}
 
- 
- /* Convenience function to run all of the field tests on a given field */
 
- template <class Field>
- bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, size_t n, bool runCharacteristicTest = true) 
- // n is not used.
- {	ostringstream str;
+/* Convenience function to run all of the field tests on a given field */
 
-	 str << "\t--Testing " << desc << " field" << ends;
-	 char * st = new char[str.str().size()];
-	 strcpy (st, str.str().c_str());
-	 commentator.start (st, "runFieldTests");
-	 bool ret =  runBasicRingTests(F, desc, iterations, runCharacteristicTest)
-		 && testInvDivConsistency(F, desc, iterations) 
-		 && testFieldInversion (F, desc, iterations)
-		 && testFieldCommutativity (F, desc, iterations)
-		 && testFreshmansDream(F, desc, iterations);
+template <class Field>
+bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, size_t n, bool runCharacteristicTest = true)
+	// n is not used.
+{	ostringstream str;
 
-	 commentator.stop (MSG_STATUS (ret));
-	 delete[] st;
-	 return ret;
+	str << "\t--Testing " << desc << " field" << ends;
+	char * st = new char[str.str().size()];
+	strcpy (st, str.str().c_str());
+	commentator.start (st, "runFieldTests");
+	bool ret =  runBasicRingTests(F, desc, iterations, runCharacteristicTest)
+	&& testInvDivConsistency(F, desc, iterations)
+	&& testFieldInversion (F, desc, iterations)
+	&& testFieldCommutativity (F, desc, iterations)
+	&& testFreshmansDream(F, desc, iterations);
+
+	commentator.stop (MSG_STATUS (ret));
+	delete[] st;
+	return ret;
 }
 
 template <class Field>
-bool runBasicRingTests (const Field &F, const char *desc, unsigned int iterations, bool runCharacteristicTest = true) 
+bool runBasicRingTests (const Field &F, const char *desc, unsigned int iterations, bool runCharacteristicTest = true)
 {
 	bool pass = true;
 	ostringstream str;
@@ -1057,7 +1057,7 @@ bool runBasicRingTests (const Field &F, const char *desc, unsigned int iteration
 	strcpy (st, str.str().c_str());
 
 	commentator.start (st, "runBasicRingTests", runCharacteristicTest ? 11 : 10);
-	
+
 	if (!testField                 (F, string(str.str()).c_str()))                pass = false; commentator.progress ();
 	if (!testFieldNegation         (F, desc, iterations))                    pass = false; commentator.progress ();
 	if (!testFieldDistributivity           (F, desc, iterations))                    pass = false; commentator.progress ();
@@ -1086,14 +1086,14 @@ bool runBasicRingTests (const Field &F, const char *desc, unsigned int iteration
  *
  * Test that the random iterator over the given field works.
  *
- * Test up to five times, accepting any one, to increase probability of 
+ * Test up to five times, accepting any one, to increase probability of
  * passing statistical tests.
  */
 template <class Field>
 bool testRandomIterator (const Field &F, const char *text,
 			 unsigned int num_trials,
 			 unsigned int num_categories,
-			 unsigned int hist_len) 
+			 unsigned int hist_len)
 {
 	std::ostringstream str;
 
@@ -1106,12 +1106,12 @@ bool testRandomIterator (const Field &F, const char *text,
 	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
 
 	/* This test either passes or runs a lot of times */
-	for (int i = 1; 
+	for (int i = 1;
 	     (!  testRandomIteratorStep (F, text, num_trials, num_categories, hist_len)) && (i < 20) ;
 	     ++i ){
-		if (0 == i % 10)  
+		if (0 == i % 10)
 			report << "Warning! Probable failure of uniformity" << std::endl;
-		};
+	};
 
 	LinBox::commentator.stop (MSG_STATUS (true), (const char *) 0, "testRandomIterator");
 
@@ -1127,10 +1127,10 @@ bool testRandomIterator (const Field &F, const char *text,
 
 template <class Field>
 bool testRandomIteratorStep (const Field &F,
-			 const char *text,
-			 unsigned int num_trials,
-			 unsigned int num_categories,
-			 unsigned int hist_len) 
+			     const char *text,
+			     unsigned int num_trials,
+			     unsigned int num_categories,
+			     unsigned int hist_len)
 {
 	//std::ostringstream str;
 
@@ -1165,7 +1165,7 @@ bool testRandomIteratorStep (const Field &F,
 		integer ix, id;
 		F.convert(ix, iter.random (x));
 
-   
+
 		categories1[ix % num_categories]++;
 		categories2[(unsigned int) (double (ix) / double (card) * num_categories)]++;
 
@@ -1192,10 +1192,10 @@ bool testRandomIteratorStep (const Field &F,
 	p = chiSquaredCDF (chi_squared * (double)num_categories / (double)num_trials, (double)num_categories - 1.0);
 
 	report << "Test of distribution uniformity (low-order): chi^2 = "
-	       << chi_squared * num_categories / num_trials << std::endl;
+								<< chi_squared * num_categories / num_trials << std::endl;
 	report << "Test of distribution uniformity (low-order):     p = " << p << std::endl;
 
-	if (p < 0.05 || p > 0.95) 
+	if (p < 0.05 || p > 0.95)
 		reportError("Random iterator's values do not appear to be uniformly distributed", ret);
 
 	chi_squared = 0.0;
@@ -1207,10 +1207,10 @@ bool testRandomIteratorStep (const Field &F,
 	p = chiSquaredCDF (chi_squared * num_categories / num_trials, num_categories - 1);
 
 	report << "Test of distribution uniformity (high-order): chi^2 = "
-	       << chi_squared * num_categories / num_trials << std::endl;
+								 << chi_squared * num_categories / num_trials << std::endl;
 	report << "Test of distribution uniformity (high-order):     p = " << p << std::endl;
 
-	if (p < 0.05 || p > 0.95) 
+	if (p < 0.05 || p > 0.95)
 		reportError("Consistency failure for addition", ret);
 
 	diff_cat_iter = diff_categories.begin ();
@@ -1227,10 +1227,10 @@ bool testRandomIteratorStep (const Field &F,
 		p = chiSquaredCDF (chi_squared * num_categories / num_trials, num_categories - 1);
 
 		report << "Test of " << idx + 1 << " spacing: chi^2 = "
-		       << chi_squared * num_categories / num_trials << std::endl;
+		<< chi_squared * num_categories / num_trials << std::endl;
 		report << "Test of " << idx + 1 << " spacing:     p = " << p << std::endl;
 
-		if (p < 0.05 || p > 0.95) 
+		if (p < 0.05 || p > 0.95)
 			reportError("Difference values do not appear to be uniformly distributed", ret);
 	}
 

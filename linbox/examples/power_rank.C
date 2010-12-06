@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
-/** 
+/*
  * examples/power_rank.C
  *
  * Copyright (C) 2005, 2010 J-G Dumas
@@ -19,7 +19,7 @@
  *   GNU Lesser General Public License for more details.
  *
  *   You should have received a copy of the GNU Lesser General Public
- *   License along with LinBox.  If not, see 
+ *   License along with LinBox.  If not, see
  *   <http://www.gnu.org/licenses/>.
  */
 
@@ -42,11 +42,11 @@ using namespace std;
 
 int main (int argc, char **argv)
 {
-    commentator.setMaxDetailLevel (-1);
-    commentator.setMaxDepth (-1);
-    commentator.setReportStream (std::cerr);
+	commentator.setMaxDetailLevel (-1);
+	commentator.setMaxDepth (-1);
+	commentator.setReportStream (std::cerr);
 
-	if (argc < 4 || argc > 4) 
+	if (argc < 4 || argc > 4)
 	{	cerr << "Usage: rank <matrix-file-in-supported-format> <prime> <prime-power>]" << endl; return -1; }
 
 	ifstream input (argv[1]);
@@ -54,34 +54,34 @@ int main (int argc, char **argv)
 
 	long unsigned int r;
 
-	if (argc == 4) { 
-            LinBox::int64 p = atoi(argv[2]);
-            LinBox::int64 q = atoi(argv[3]);
-                typedef GivaroZpz<Std64> Field;
-                Field F(q);
-                MatrixStream<Field> ms( F, input );
-                SparseMatrix<Field, Vector<Field>::SparseSeq > B (ms);
-                cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
-                if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
+	if (argc == 4) {
+		LinBox::int64 p = atoi(argv[2]);
+		LinBox::int64 q = atoi(argv[3]);
+		typedef GivaroZpz<Std64> Field;
+		Field F(q);
+		MatrixStream<Field> ms( F, input );
+		SparseMatrix<Field, Vector<Field>::SparseSeq > B (ms);
+		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
+		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
 
-                    // using Sparse Elimination
-                PowerGaussDomain< Field > PGD( F );
-                std::vector<std::pair<size_t,size_t> > local;
+		// using Sparse Elimination
+		PowerGaussDomain< Field > PGD( F );
+		std::vector<std::pair<size_t,size_t> > local;
 
 		Timer tq; tq.clear(); tq.start();
-                PGD(local, B, q, p);    
+		PGD(local, B, q, p);
 		tq.stop();
 
-                
-                std::cout << "Local Smith Form : ("; 
-                for (std::vector<std::pair<size_t,size_t> >::const_iterator  p = local.begin(); 
-                     p != local.end(); ++p) 
-                    std::cout << p->first << " " << p->second << ", "; 
-                cout << ")" << endl; 
+
+		std::cout << "Local Smith Form : (";
+		for (std::vector<std::pair<size_t,size_t> >::const_iterator  p = local.begin();
+		     p != local.end(); ++p)
+			std::cout << p->first << " " << p->second << ", ";
+		cout << ")" << endl;
 
 
 		std::cerr << tq << std::endl;
- 	}
+	}
 
 	return 0;
 }

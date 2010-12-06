@@ -106,22 +106,22 @@ namespace LinBoxTL{
 
 	template <class List1, class List2>
 	struct Append;
-	
+
 	template <>
 	struct Append <LinBoxDumbType, LinBoxDumbType>{
-		typedef LinBoxDumbType Result; 
+		typedef LinBoxDumbType Result;
 	};
-	
-	template <class T> 
+
+	template <class T>
 	struct Append <LinBoxDumbType, T> {
 		typedef LinBoxTypelist<T, LinBoxDumbType> Result;
 	};
-	
+
 	template <class T, class U>
 	struct Append <LinBoxDumbType, LinBoxTypelist<T, U> > {
 		typedef LinBoxTypelist<T,U> Result;
 	};
-	
+
 	template <class Head, class Tail, class T>
 	struct Append <LinBoxTypelist<Head, Tail>, T > {
 		typedef LinBoxTypelist<Head, typename Append<Tail, T>::Result> Result;

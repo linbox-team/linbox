@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
-/** 
+/*
  * examples/doubledet.C
  *
  * Copyright (C) 2008, 2010 C. Pernet
@@ -19,7 +19,7 @@
  *   GNU Lesser General Public License for more details.
  *
  *   You should have received a copy of the GNU Lesser General Public
- *   License along with LinBox.  If not, see 
+ *   License along with LinBox.  If not, see
  *   <http://www.gnu.org/licenses/>.
  */
 
@@ -43,12 +43,12 @@ int main (int argc, char **argv)
 	//     commentator.setReportStream (std::cerr);
 
 	PID_integer ZZ;
-    
+
 	ifstream input (argv[1]);
-	if (!input) 
-		{ cerr << "Error opening matrix file " << argv[1] << endl; 
-			return -1; 
-		}
+	if (!input)
+	{ cerr << "Error opening matrix file " << argv[1] << endl;
+		return -1;
+	}
 	MatrixStream <PID_integer> ms (ZZ, input);
 	BlasBlackbox <PID_integer> A (ms);
 	cout << "Matrix is " << A.rowdim() << " by " << A.coldim() << endl;
@@ -57,7 +57,7 @@ int main (int argc, char **argv)
 		cerr<<"Wrong dimensions: A must be (n+1) x n"<<endl;
 		exit (-1);
 	}
- 
+
 	integer det1, det2;
 	LinBox::Timer tim; tim.clear();
 	tim.start();
@@ -68,7 +68,7 @@ int main (int argc, char **argv)
 	//doubleDet (det1, det2, A, true);
 	doubleDet (det1, det2, A, proof);
 	tim.stop();
-     
+
 	// Check solution
 	size_t n = A.coldim();
 	BlasBlackbox<PID_integer> B (ZZ, n, n);
@@ -93,7 +93,7 @@ int main (int argc, char **argv)
 
 	cout<< "Det 1 = " << det1 << endl;
 	cout<< "Det 2 = "<<det2 << endl;
-	
+
 	cerr << "Double Det: "<<tim.usertime() << "s" << endl;
 	cerr << "Each single Det: "<<tim2.usertime() << "s" << endl;
 }

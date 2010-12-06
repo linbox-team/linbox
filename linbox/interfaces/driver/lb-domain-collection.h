@@ -44,42 +44,42 @@ private:
 
 
 public:
-	DomainKey(const LinBox::integer &p, const char* name) 
-		: pfirst(new LinBox::integer(p)), psecond(new const char*(name)), counter(new size_t(0)), autogc(false) 
+	DomainKey(const LinBox::integer &p, const char* name)
+		: pfirst(new LinBox::integer(p)), psecond(new const char*(name)), counter(new size_t(0)), autogc(false)
 	{}
 
-	DomainKey(const DomainKey &k, bool gc = false) 
+	DomainKey(const DomainKey &k, bool gc = false)
 		: pfirst(k.pfirst), psecond(k.psecond), counter(k.counter), autogc(gc) {(*counter)++;}
 
 	~DomainKey() {
 		if (autogc){
 			extern void deleteDomain(const DomainKey &key);
-			if ((*counter) == 0) 
+			if ((*counter) == 0)
 				deleteDomain(*this);
-			else 
-				(*counter)--;	
-			
+			else
+				(*counter)--;
+
 		}
-		else{ 		
+		else{
 			if ((*counter) == 0) { delete counter; delete pfirst; delete psecond;}
-			else (*counter)--;	
+			else (*counter)--;
 		}
-	}	
-	
+	}
+
 	const DomainKey& operator= (const DomainKey &k) {
 		if (autogc){
 			extern void deleteDomain(const DomainKey &key);
-			if ((*counter) == 0) 
+			if ((*counter) == 0)
 				deleteDomain(*this);
-			else 
-				(*counter)--;	
-			
+			else
+				(*counter)--;
+
 		}
-		else{ 		
+		else{
 			if ((*counter) == 0) {  delete counter; delete pfirst; delete psecond;}
-			else (*counter)--;	
+			else (*counter)--;
 		}
-		 
+
 		pfirst  = k.pfirst;
 		psecond = k.psecond;
 		counter = k.counter;
@@ -89,7 +89,7 @@ public:
 	}
 
 	bool free() const {return ((*counter) == 0);}
-	
+
 	void dispose() const { (*counter)--; }
 
 	void copy() const { (*counter)++; }
@@ -108,10 +108,10 @@ public:
 };
 
 
- 
+
 // comparison functor on key
 struct DomainKeyLessThan{
-	bool operator()(const DomainKey& k1, const DomainKey &k2) 
+	bool operator()(const DomainKey& k1, const DomainKey &k2)
 	{ return k1.lessThan(k2);}
 };
 

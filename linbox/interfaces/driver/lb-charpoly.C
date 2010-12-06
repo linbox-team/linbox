@@ -58,7 +58,7 @@ public:
 		// use givpolynomial du to non genericity of charpoly over integer
 		typename LinBox::GivPolynomialRing<Field, Dense>::Element pol;
 		LinBox::charpoly(pol, *B, meth);
-		
+
 		// convert back the result to std::vector
 		std::vector<Element> *phi = static_cast<std::vector<Element>*> (res);
 		phi->resize(pol.size());
@@ -67,7 +67,7 @@ public:
 #else
 		throw lb_runtime_error("LinBox ERROR: charpoly computation requires Givaro library, computation impossible)\n");
 #endif
-		
+
 	}
 };
 
@@ -96,7 +96,7 @@ const VectorKey& lb_charpoly(const BlackboxKey& key) {
 	BlackboxTable::iterator it = blackbox_hashtable.find(key);
 	if ( it == blackbox_hashtable.end())
 		throw lb_runtime_error("LinBox ERROR: blackbox is not defined (charpoly computation impossible)");
-		
+
 	const VectorKey *res = & createVector(it->second->getDomainKey(), 0, "linbox_dense");
 	lb_charpoly(*res, key);
 	return *res;

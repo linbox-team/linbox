@@ -41,7 +41,7 @@ protected:
 
 public:
 	ApplyVectorFunctorBase(){}
-	
+
 	template<class Vector>
 	void apply(const Vector &b){
 		b.launch(*res, *fct);
@@ -64,16 +64,16 @@ template <class BList, class Functor, class Result> class LinBoxVectorVisitor;
 
 template <class Functor, class Result> class LinBoxVectorVisitor<LinBoxDumbType, Functor, Result>{};
 
-template <class T, class Functor, class Result> 
-class LinBoxVectorVisitor<LinBoxTypelist<T, LinBoxDumbType>, Functor, Result> 
-	: public LinBoxVisitor <T>, 
+template <class T, class Functor, class Result>
+class LinBoxVectorVisitor<LinBoxTypelist<T, LinBoxDumbType>, Functor, Result>
+	: public LinBoxVisitor <T>,
 	  public ApplyVectorFunctorBase<Functor, Result> {
 public:
 	LB_VECTOR_VISIT(T);
 };
 
 template <class Head, class Tail, class Functor, class Result>
-class LinBoxVectorVisitor<LinBoxTypelist<Head, Tail>, Functor, Result > 
+class LinBoxVectorVisitor<LinBoxTypelist<Head, Tail>, Functor, Result >
 	: public LinBoxVisitor <Head> ,
 	  public LinBoxVectorVisitor<Tail, Functor, Result> {
 	public:
@@ -88,7 +88,7 @@ class LinBoxVectorVisitor<LinBoxTypelist<Head, Tail>, Functor, Result >
 template<class Functor, class Result>
 class ApplyVectorFunctor : public LinBoxVectorVisitor<VectorList, Functor, Result> {
 public:
-	ApplyVectorFunctor(Result &r, const Functor &f) { 
+	ApplyVectorFunctor(Result &r, const Functor &f) {
 		this->res = &r;
 		this->fct = &f;
 	}

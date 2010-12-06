@@ -26,7 +26,7 @@
 
 
 #include <lb-domain-abstract.h>
-#include <lb-domain-functor.h> 
+#include <lb-domain-functor.h>
 
 
 /*********************************************************
@@ -43,28 +43,28 @@ public:
 		ApplyDomainFunctor<Functor, Result> Ap(res, functor);
 		(domain.second)->Accept(Ap);
 	}
-	
-	// call a functor over a domain from the hashtable, no result 
+
+	// call a functor over a domain from the hashtable, no result
 	template <class Functor>
 	static void call (const std::pair<const DomainKey, DomainAbstract*>& k, const Functor& f){
-		void *dumbresult; 
+		void *dumbresult;
 		call(dumbresult, k, f);
 	}
 
 	// call a functor over a domain from its key, result is given through 1st parameter
 	template <class Functor, class Result>
 	static void call (Result &res, const DomainKey &key, const Functor &functor){
-		DomainTable::iterator it = domain_hashtable.find(key);  
+		DomainTable::iterator it = domain_hashtable.find(key);
 		if (it != domain_hashtable.end())
-			DomainFunction::call(res, *it, functor);  
+			DomainFunction::call(res, *it, functor);
 		else
 			throw lb_runtime_error("LinBox ERROR: use of a non allocated domain\n");// throw an exception
 	}
-	
-	// call a functor over a domain from its key, no result 
+
+	// call a functor over a domain from its key, no result
 	template <class Functor>
 	static void call (const DomainKey &k, const Functor &f){
-		void *dumbresult; 
+		void *dumbresult;
 		call(dumbresult, k, f);
 	}
 

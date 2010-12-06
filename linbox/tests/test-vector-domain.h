@@ -24,7 +24,7 @@
 #include "linbox/blackbox/dense.h"
 #include "linbox/integer.h"
 
-#include "test-common.h" 
+#include "test-common.h"
 
 
 /** Test 1: Dot product of vectors
@@ -40,7 +40,7 @@
  */
 
 template <class Field, class Vector1, class Vector2>
-static bool testDotProduct (Field &F, const char *text, LinBox::VectorStream<Vector1> &stream1, LinBox::VectorStream<Vector2> &stream2) 
+static bool testDotProduct (Field &F, const char *text, LinBox::VectorStream<Vector1> &stream1, LinBox::VectorStream<Vector2> &stream2)
 {
 	std::ostringstream str;
 
@@ -97,7 +97,7 @@ static bool testDotProduct (Field &F, const char *text, LinBox::VectorStream<Vec
 		if (!F.areEqual (sigma, rho)) {
 			ret = false;
 			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Dot products are not equal" << std::endl;
+			<< "ERROR: Dot products are not equal" << std::endl;
 		}
 
 		LinBox::commentator.stop ("done");
@@ -105,7 +105,7 @@ static bool testDotProduct (Field &F, const char *text, LinBox::VectorStream<Vec
 	}
 
 	LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
-		<< "Average time for dot product: " << totaltime / stream1.m () << std::endl;
+	<< "Average time for dot product: " << totaltime / stream1.m () << std::endl;
 
 	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDotProduct");
 
@@ -129,7 +129,7 @@ static bool testDotProduct (Field &F, const char *text, LinBox::VectorStream<Vec
  */
 
 template <class Field, class Vector>
-static bool testAddMul (Field &F, const char *text, LinBox::VectorStream<Vector> &stream1, LinBox::VectorStream<Vector> &stream2) 
+static bool testAddMul (Field &F, const char *text, LinBox::VectorStream<Vector> &stream1, LinBox::VectorStream<Vector> &stream2)
 {
 	std::ostringstream str;
 
@@ -204,7 +204,7 @@ static bool testAddMul (Field &F, const char *text, LinBox::VectorStream<Vector>
 
 		if (!iter_passed)
 			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: (x + a*y) != a*(y + a^-1*x)" << std::endl;
+			<< "ERROR: (x + a*y) != a*(y + a^-1*x)" << std::endl;
 
 		LinBox::commentator.stop ("done");
 		LinBox::commentator.progress ();
@@ -232,7 +232,7 @@ static bool testAddMul (Field &F, const char *text, LinBox::VectorStream<Vector>
  */
 
 template <class Field, class Vector>
-static bool testSubMul (Field &F, const char *text, LinBox::VectorStream<Vector> &stream1, LinBox::VectorStream<Vector> &stream2) 
+static bool testSubMul (Field &F, const char *text, LinBox::VectorStream<Vector> &stream1, LinBox::VectorStream<Vector> &stream2)
 {
 	std::ostringstream str;
 
@@ -307,7 +307,7 @@ static bool testSubMul (Field &F, const char *text, LinBox::VectorStream<Vector>
 
 		if (!iter_passed)
 			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: (x - a*y) != a*(a^-1*x - y)" << std::endl;
+			<< "ERROR: (x - a*y) != a*(a^-1*x - y)" << std::endl;
 
 		LinBox::commentator.stop ("done");
 		LinBox::commentator.progress ();
@@ -334,7 +334,7 @@ static bool testSubMul (Field &F, const char *text, LinBox::VectorStream<Vector>
  */
 
 template <class Field, class Vector>
-static bool testAXPY (Field &F, const char *text, LinBox::VectorStream<Vector> &stream1, LinBox::VectorStream<Vector> &stream2) 
+static bool testAXPY (Field &F, const char *text, LinBox::VectorStream<Vector> &stream1, LinBox::VectorStream<Vector> &stream2)
 {
 	std::ostringstream str;
 	str << "\t--Testing " << text << " vector axpy" << std::ends;
@@ -390,7 +390,7 @@ static bool testAXPY (Field &F, const char *text, LinBox::VectorStream<Vector> &
 
 		if (!iter_passed)
 			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: (x + a*y) - a*(y + a^-1*x) != 0" << std::endl;
+			<< "ERROR: (x + a*y) - a*(y + a^-1*x) != 0" << std::endl;
 
 		LinBox::commentator.stop ("done");
 		LinBox::commentator.progress ();
@@ -416,7 +416,7 @@ static bool testAXPY (Field &F, const char *text, LinBox::VectorStream<Vector> &
  * Return true on success and false on failure
  */
 template <class Field, class Vector1, class Vector2>
-static bool testCopyEqual (Field &F, const char *text, LinBox::VectorStream<Vector1> &stream, LinBox::VectorStream<Vector2> &stream2) 
+static bool testCopyEqual (Field &F, const char *text, LinBox::VectorStream<Vector1> &stream, LinBox::VectorStream<Vector2> &stream2)
 {
 	std::ostringstream str;
 
@@ -454,7 +454,7 @@ static bool testCopyEqual (Field &F, const char *text, LinBox::VectorStream<Vect
 
 		if (!iter_passed)
 			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Vectors are not equal" << std::endl;
+			<< "ERROR: Vectors are not equal" << std::endl;
 
 		LinBox::commentator.stop ("done");
 		LinBox::commentator.progress ();

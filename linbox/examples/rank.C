@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-/* 
+/*
  * examples/rank.C
  *
  * Copyright (C) 2005, 2010 D. Saunders, J-G Dumas
@@ -18,14 +18,14 @@
  *   GNU Lesser General Public License for more details.
  *
  *   You should have received a copy of the GNU Lesser General Public
- *   License along with LinBox.  If not, see 
+ *   License along with LinBox.  If not, see
  *   <http://www.gnu.org/licenses/>.
  */
 
-/**\file examples/rank.C 
-\brief Rank of sparse matrix over Z or Zp.
-\ingroup examples
-*/
+/**\file examples/rank.C
+  \brief Rank of sparse matrix over Z or Zp.
+  \ingroup examples
+  */
 
 #include <iostream>
 #include <sstream>
@@ -45,11 +45,11 @@ using namespace std;
 /// rank or rank mod p
 int main (int argc, char **argv)
 {
-    commentator.setMaxDetailLevel (-1);
-    commentator.setMaxDepth (-1);
-    commentator.setReportStream (std::cerr);
+	commentator.setMaxDetailLevel (-1);
+	commentator.setMaxDepth (-1);
+	commentator.setReportStream (std::cerr);
 
-	if (argc < 2 || argc > 3) 
+	if (argc < 2 || argc > 3)
 	{	cerr << "Usage: rank <matrix-file-in-supported-format> [<p>]" << endl; return -1; }
 
 	ifstream input (argv[1]);
@@ -59,27 +59,27 @@ int main (int argc, char **argv)
 
 	if (argc == 2) { // rank over the rational numbers.
 
-	   /* We could pick a random prime and work mod that prime, But the point here 
-	   is that the rank function in solutions/ handles that issue.  Our matrix here 
-	   is an integer or rational matrix and our concept is that we are getting the rank of that 
-	   matrix by some blackbox magic inside linbox.
-	   */
-            LinBox::GivaroRational ZZ;
-            MatrixStream<GivaroRational> ms( ZZ, input );
-            SparseMatrix<GivaroRational> A ( ms );
+		/* We could pick a random prime and work mod that prime, But the point here
+		   is that the rank function in solutions/ handles that issue.  Our matrix here
+		   is an integer or rational matrix and our concept is that we are getting the rank of that
+		   matrix by some blackbox magic inside linbox.
+		   */
+		LinBox::GivaroRational ZZ;
+		MatrixStream<GivaroRational> ms( ZZ, input );
+		SparseMatrix<GivaroRational> A ( ms );
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
 		rank (r, A);
 	}
-	if (argc == 3) { // rank mod a prime 
-		/* 
+	if (argc == 3) { // rank mod a prime
+		/*
 		//for prime greater than wordsize:
-	    stringstream qstr(argv[2]);
+		stringstream qstr(argv[2]);
 		integer q;
 		qstr >> q;
 		typedef Modular<integer> Field;
 		*/
-		/* 
+		/*
 		//to use doubles, prime < 2^{23}
 		double q = atof(argv[2]);
 		typedef Modular<double> Field;
@@ -96,22 +96,22 @@ int main (int argc, char **argv)
 
 		// Using the adaptive LinBox Solution
 		rank(r,B);
-                    
+
 		// using BlackBoxes
 		/*
-		Method::Blackbox MBB;
-		MBB.certificate(true);
-		rank(r, B, MBB);
-		*/
+		   Method::Blackbox MBB;
+		   MBB.certificate(true);
+		   rank(r, B, MBB);
+		   */
 
 		// using in place Sparse Elimination with linear pivoting
-		
+
 		/*
-		Method::SparseElimination SE;
-		SE.strategy(Specifier::PIVOT_LINEAR);
-		rankin (r, B, SE);                    
-		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
-		*/
+		   Method::SparseElimination SE;
+		   SE.strategy(Specifier::PIVOT_LINEAR);
+		   rankin (r, B, SE);
+		   if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
+		   */
 
 
 	}

@@ -27,9 +27,9 @@
 // iterates must be initialized by [1, 2, ...]
 // inviterates is the inverse finction of iterates
 template <class Field>
-inline size_t 
-FFPACK::KrylovElim( const Field& F, const size_t M, const size_t N,		
-		    typename Field::Element * A, const size_t lda, size_t*P, 
+inline size_t
+FFPACK::KrylovElim( const Field& F, const size_t M, const size_t N,
+		    typename Field::Element * A, const size_t lda, size_t*P,
 		    size_t *Q, const size_t deg, size_t *iterates,  size_t * inviterates,size_t  maxit,
 		    size_t virt)
 {
@@ -63,22 +63,22 @@ FFPACK::KrylovElim( const Field& F, const size_t M, const size_t N,
 			return 0;
 		}
 		*P = ip;
-			// 	cerr<<"iterates = ";
-// 		cerr<<"iterates avant"<<endl;
-// 		for (size_t i=0; i<N; ++i)
-//  			cerr<<iterates[i]<<" ";
-//  		cerr<<endl;
-//  		cerr<<"inviterates["<<N<<"-"<<ip<<"] ="<<inviterates[N-ip]<<endl;
-//  		cerr<<"iterates[inviterates[N-ip]] ="<<iterates[inviterates[N-ip]]<<endl;
+		// 	cerr<<"iterates = ";
+		// 		cerr<<"iterates avant"<<endl;
+		// 		for (size_t i=0; i<N; ++i)
+		//  			cerr<<iterates[i]<<" ";
+		//  		cerr<<endl;
+		//  		cerr<<"inviterates["<<N<<"-"<<ip<<"] ="<<inviterates[N-ip]<<endl;
+		//  		cerr<<"iterates[inviterates[N-ip]] ="<<iterates[inviterates[N-ip]]<<endl;
 		iterates [inviterates[N-ip] -1 ] = 0;
 		if (ip >0){
 			iterates [inviterates[N] -1 ] = N-ip;
 			inviterates[N-ip] = inviterates[N];
 		}
-// 		cerr<<"iterates apres"<<endl;
-// 		for (size_t i=0; i<N; ++i)
-//  			cerr<<iterates[i]<<" ";
-//  		cerr<<endl;
+		// 		cerr<<"iterates apres"<<endl;
+		// 		for (size_t i=0; i<N; ++i)
+		//  			cerr<<iterates[i]<<" ";
+		//  		cerr<<endl;
 		//cout<<"iterates ["<<N<<"-1-"<<ip<<"] = 0"<<endl;
 
 		if (ip!=0){
@@ -94,17 +94,17 @@ FFPACK::KrylovElim( const Field& F, const size_t M, const size_t N,
 
 		// Recursive call on NW
 		size_t R = KrylovElim (F,  Nup, N, A, lda, P, Q, deg, iterates, inviterates, maxit, virt);
-		
+
 		typename Field::Element *Ar = A + Nup*lda; // SW
 		typename Field::Element *Ac = A + R;     // NE
 		typename Field::Element *An = Ar + R;    // SE
 
 		if (R){
 			// Ar <- Ar.P
-			applyP (F, FflasRight, FflasTrans, Ndown, 0, R, Ar, lda, P); 
+			applyP (F, FflasRight, FflasTrans, Ndown, 0, R, Ar, lda, P);
 			// Ar <- Ar.U1^-1
-			ftrsm( F, FflasRight, FflasUpper, 
-			       FflasNoTrans, FFLAS::FflasNonUnit, Ndown, R, 
+			ftrsm( F, FflasRight, FflasUpper,
+			       FflasNoTrans, FFLAS::FflasNonUnit, Ndown, R,
 			       one, A, lda, Ar, lda);
 			// An <- An - Ar*Ac
 			fgemm( F, FflasNoTrans, FflasNoTrans, Ndown, N-R, R,
@@ -117,8 +117,8 @@ FFPACK::KrylovElim( const Field& F, const size_t M, const size_t N,
 			P[i] += R;
 		if (R2)
 			// An <- An.P2
-			applyP (F, FflasRight, FflasTrans, Nup, R, R+R2, A, lda, P); 
-		
+			applyP (F, FflasRight, FflasTrans, Nup, R, R+R2, A, lda, P);
+
 		// Non zero row permutations
 		for (size_t i = Nup; i < M; i++)
 			Q[i] += Nup;
@@ -139,7 +139,7 @@ FFPACK::KrylovElim( const Field& F, const size_t M, const size_t N,
 }
 
 template <class Field>
-size_t 
+size_t
 FFPACK::SpecRankProfile (const Field& F, const size_t M, const size_t N,
 			 typename Field::Element * A, const size_t lda, const size_t deg,
 			 size_t *rankProfile)
@@ -156,9 +156,9 @@ FFPACK::SpecRankProfile (const Field& F, const size_t M, const size_t N,
 	size_t R = KrylovElim (F, M, N, A, lda, P, Q, deg, iterates, inviterates, N,0);
 	//cerr<<"Apres tout iterates = "<<endl;
 
-// 	for (size_t i=0; i<N; ++i)
-// 		cerr<<iterates[i]<<" ";
-// 	cerr<<endl;
+	// 	for (size_t i=0; i<N; ++i)
+	// 		cerr<<iterates[i]<<" ";
+	// 	cerr<<endl;
 
 	size_t curr_row = 0;
 	size_t it_idx = 0;
@@ -183,7 +183,7 @@ FFPACK::SpecRankProfile (const Field& F, const size_t M, const size_t N,
 					}
 #ifdef LB_DEBUG
 					std::cerr<<"X";
-#endif					
+#endif
 				}
 				else{
 					dependent = true;
@@ -198,13 +198,13 @@ FFPACK::SpecRankProfile (const Field& F, const size_t M, const size_t N,
 		if ((Q [bk_idx] == i)&&(i<R)){
 			rankProfile [rp_idx++] = curr_row;
 #ifdef LB_DEBUG
- 			std::cerr<<"V"<<std::endl;
+			std::cerr<<"V"<<std::endl;
 #endif
- 			bk_idx++;
- 		}
+			bk_idx++;
+		}
 #ifdef LB_DEBUG
- 		else
- 			std::cerr<<"W"<<std::endl;
+		else
+			std::cerr<<"W"<<std::endl;
 #endif
 		curr_row++;
 	}
@@ -212,7 +212,7 @@ FFPACK::SpecRankProfile (const Field& F, const size_t M, const size_t N,
 	delete[] Q;
 	delete[] inviterates;
 	delete[] iterates;
-	
+
 	return rp_idx;
 }
 

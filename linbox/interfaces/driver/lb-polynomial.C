@@ -60,8 +60,8 @@ public:
 		D->write(os,(*poly)[deg])<<".x^"<<deg;
 		for (int i= (int)deg-1; i > 1 ; --i) {
 			if (!D->isZero((*poly)[i])){os<<" + ";D->write(os, (*poly)[i])<<".x^"<<i;}
-		} 
-		if (deg > 1) 
+		}
+		if (deg > 1)
 			if (!D->isZero((*poly)[1])){os<<" + ";D->write(os,(*poly)[1])<<".x";}
 		if (deg > 0)
 			if (!D->isZero((*poly)[0])){os<<" + ";D->write(os,(*poly)[0]);}
@@ -88,12 +88,12 @@ class WritePolynomialFunctor{
 protected:
 	std::ostream     &os;
 	const PolynomialKey &key;
-public:	
+public:
 	WritePolynomialFunctor(std::ostream &o, const PolynomialKey &k) : os(o), key(k) {}
 
 	template<class Polynomial>
 	void operator() (void*, Polynomial *P) const {
-	
+
 		VectorTable::iterator it = vector_hashtable.find(key);
 		if ( it == vector_hashtable.end())
 			throw lb_runtime_error("LinBox ERROR: invalid polynomial (writing impossible)");
@@ -106,7 +106,7 @@ public:
 
 void writePolynomial (const PolynomialKey &key, std::ostream &os){
 	WritePolynomialFunctor Fct(os, key);
-	VectorFunction::call(key, Fct);	
+	VectorFunction::call(key, Fct);
 }
 
 
@@ -154,12 +154,12 @@ public:
 class SerializePolynomialFunctor{
 protected:
 	const PolynomialKey &key;
-public:	
+public:
 	SerializePolynomialFunctor(const PolynomialKey &k) :  key(k) {}
 
 	template<class Polynomial>
 	void operator() (SerialPolynomial& s, Polynomial *P) const {
-	
+
 		VectorTable::iterator it = vector_hashtable.find(key);
 		if ( it == vector_hashtable.end())
 			throw lb_runtime_error("LinBox ERROR: invalid polynomial (serializing impossible)");
@@ -170,9 +170,9 @@ public:
 };
 
 
-void  SerializePolynomial (SerialPolynomial &s, const PolynomialKey &key) {       
+void  SerializePolynomial (SerialPolynomial &s, const PolynomialKey &key) {
 	SerializePolynomialFunctor Fct(key);
-	VectorFunction::call(s, key, Fct);	
+	VectorFunction::call(s, key, Fct);
 }
 
 

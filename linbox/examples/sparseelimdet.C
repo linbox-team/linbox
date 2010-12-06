@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-/** 
+/*
  * examples/sparseelimdet.C
  *
  * Copyright (C) 2006, 2010  J-G Dumas
@@ -18,15 +18,15 @@
  *   GNU Lesser General Public License for more details.
  *
  *   You should have received a copy of the GNU Lesser General Public
- *   License along with LinBox.  If not, see 
+ *   License along with LinBox.  If not, see
  *   <http://www.gnu.org/licenses/>.
  */
 
 /** \file examples/sparseelimdet.C
  * Time-stamp: <26 Mar 07 11:46:03 Jean-Guillaume.Dumas@imag.fr>
-\brief Gaussian elimination determinant of sparse matrix over Z or Zp.
-\ingroup examples
-*/
+ \brief Gaussian elimination determinant of sparse matrix over Z or Zp.
+ \ingroup examples
+ */
 //#include "linbox-config.h"
 
 #include <iostream>
@@ -35,11 +35,11 @@
 
 template<class T>
 std::ostream& operator<< (std::ostream& o, const std::vector<std::pair<size_t, T> >& C) {
-          for(typename std::vector<std::pair<size_t, T> >::const_iterator refs =  C.begin();
-                                refs != C.end() ;
-                                      ++refs )
-		  o << '(' << refs->first << ';' << refs->second << ')';
-            return o << std::endl;
+	for(typename std::vector<std::pair<size_t, T> >::const_iterator refs =  C.begin();
+	    refs != C.end() ;
+	    ++refs )
+		o << '(' << refs->first << ';' << refs->second << ')';
+	return o << std::endl;
 }
 
 
@@ -56,16 +56,16 @@ using namespace std;
 
 int main (int argc, char **argv)
 {
-    commentator.setMaxDetailLevel (-1);
-    commentator.setMaxDepth (-1);
-    commentator.setReportStream (std::cerr);
+	commentator.setMaxDetailLevel (-1);
+	commentator.setMaxDepth (-1);
+	commentator.setReportStream (std::cerr);
 
-	if (argc < 2 || argc > 3) 
+	if (argc < 2 || argc > 3)
 	{	cerr << "Usage: sparseelimdet <matrix-file-in-supported-format> [<p>]" << endl; return -1; }
 
 	ifstream input (argv[1]);
 	if (!input) { cerr << "Error opening matrix file: " << argv[1] << endl; return -1; }
-	
+
 	Method::SparseElimination SE;
 
 	if (argc == 2) { // determinant over the integers.
@@ -81,28 +81,28 @@ int main (int argc, char **argv)
 
 		ZZ.write(cout << "Determinant is ", d) << endl;
 	}
-	if (argc == 3) { 
+	if (argc == 3) {
 		double q = atof(argv[2]);
-                    typedef Modular<double> Field;
-		    Field::Element d;
-                    Field F(q);
-		    MatrixStream<Field> ms( F, input );
-                    SparseMatrix<Field, Vector<Field>::SparseSeq > B (ms);
-                    cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
-                    if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
+		typedef Modular<double> Field;
+		Field::Element d;
+		Field F(q);
+		MatrixStream<Field> ms( F, input );
+		SparseMatrix<Field, Vector<Field>::SparseSeq > B (ms);
+		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
+		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
 
 
-		    SE.strategy(Specifier::PIVOT_NONE);
-			// using Sparse Elimination
-                    det (d, B, SE);                    
-                    if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
-                    F.write(cout << "Determinant is ", d) << endl;
+		SE.strategy(Specifier::PIVOT_NONE);
+		// using Sparse Elimination
+		det (d, B, SE);
+		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
+		F.write(cout << "Determinant is ", d) << endl;
 
-		    SE.strategy(Specifier::PIVOT_LINEAR);
-			// using Sparse Elimination with reordering
-                    detin (d, B, SE);                    
-                    if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
-                    F.write(cout << "Determinant is ", d) << endl;
+		SE.strategy(Specifier::PIVOT_LINEAR);
+		// using Sparse Elimination with reordering
+		detin (d, B, SE);
+		if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
+		F.write(cout << "Determinant is ", d) << endl;
 
 
 	}

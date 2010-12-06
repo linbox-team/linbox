@@ -32,7 +32,7 @@
  * Collection of Vectors *
  *************************/
 
-// definition of a key 
+// definition of a key
 typedef size_t VectorKey;
 
 // comparison functor on key

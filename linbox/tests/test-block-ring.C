@@ -53,26 +53,26 @@ int main (int argc, char **argv)
 
 	commentator.start("block-ring test suite", "block-ring");
 	bool pass = true;
-	
-	typedef Modular<int> Field1;  
-	typedef Modular<double> Field2;  
-        
+
+	typedef Modular<int> Field1;
+	typedef Modular<double> Field2;
+
         Field1 F1(q, 1);
 	BlockRing<Field1> R1(F1, n);
 
         Field2 F2(q, 1);
         BlockRing<Field2> R2(F2, n);
-                        	
+
 	// Make sure some more detailed messages get printed
 	//commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
         commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
         commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
-                
+
 
 	if (!runBasicRingTests(R1, "BlockRing of Modular<int>", iterations)) pass = false;
 	if (!runBasicRingTests(R2, "BlockRing of Modular<double>", iterations)) pass = false;
 
 	commentator.stop("block-ring test suite");
 	return pass ? 0 : -1;
-        
+
 }

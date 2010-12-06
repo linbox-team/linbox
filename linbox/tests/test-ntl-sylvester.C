@@ -28,29 +28,29 @@ int main(int argc, char* argv[])
 {
   LinBox::commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
   ostream &report = LinBox::commentator.report(
-					       LinBox::Commentator::LEVEL_IMPORTANT, 
+					       LinBox::Commentator::LEVEL_IMPORTANT,
 					       INTERNAL_DESCRIPTION );
     bool pass = true;
-  
+
   static size_t n = 1000;
   static long q = 134217689;
   //   q = 101;
   static int iterations = 1;
-  
+
   static Argument args[] = {
     { 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT, &n },
-    { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", 
+    { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].",
                     TYPE_INT, &q },
-    { 'i', "-i I", "Perform each test for I iterations.", 
+    { 'i', "-i I", "Perform each test for I iterations.",
                     TYPE_INT, &iterations },
 	{ '\0' }
   };
-  
+
   parseArguments (argc, argv, args);
-  
 
 
-  
+
+
   //------ Read q and construct F(q)
   NTL::ZZ modulus; 	// prime modulus
   modulus = q;
@@ -60,25 +60,25 @@ int main(int argc, char* argv[])
   report <<  "The modulus is " << modulus << std::endl;
   report <<  "Dimension (m+n) is " << m+n << std::endl;
   NTL::ZZ_p::init(modulus); // NOTE: This is essential for using NTL
-  
+
 	commentator.start("Sylvester black box test suite", "Sylvester");
   report <<"Dimension(m+n)= " << m+n << "\t modulus= " << q << endl;
 
   typedef LinBox::UnparametricField<NTL::ZZ_p> Field;
   typedef Field::Element element;
-  typedef std::vector<element> Vector;  
-  
+  typedef std::vector<element> Vector;
+
   // Now we are using the NTL wrapper as the field, call the instance F
   Field F;
   element zero;
   F.init(zero, 0);
-  
+
   // Use the default constructor to create a matrix
   LinBox::Sylvester<Field> T;
-  
+
   // Use a special constructor to construct a matrix of dim TSIZE
 
-  Vector pdata(n), qdata(m); 
+  Vector pdata(n), qdata(m);
 
   report << "\n\tpx:=";
 
@@ -120,11 +120,11 @@ int main(int argc, char* argv[])
     if (i!= idata.size()-1)     report << idata[i] << ",";
   }
   report << "]\n";
-  
+
   TT.apply(odata, idata);
   report << "\n\nTesting  apply :--------------------- \nResult is[";
 
-  for (unsigned int i = 0; i < odata.size(); i++) 
+  for (unsigned int i = 0; i < odata.size(); i++)
     report << odata[i] << " ";
 
   report << "]\n";
@@ -136,7 +136,7 @@ int main(int argc, char* argv[])
 
   TT.applyTranspose(odata, idata);
 
-  for (unsigned int i = 0; i < odata.size(); i++) 
+  for (unsigned int i = 0; i < odata.size(); i++)
     report << odata[i] << " ";
 
   pass = testBlackbox(TT);

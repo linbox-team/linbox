@@ -47,7 +47,7 @@ using namespace LinBox;
  */
 
 template <class Field, class Vector>
-static bool testIdentityInverse (const Field &F, VectorStream<Vector> &stream) 
+static bool testIdentityInverse (const Field &F, VectorStream<Vector> &stream)
 {
 	typedef Diagonal<Field> Blackbox;
 
@@ -123,7 +123,7 @@ static bool testIdentityInverse (const Field &F, VectorStream<Vector> &stream)
  */
 
 template <class Field, class Vector>
-static bool testHilbertInverse (const Field &F, VectorStream<Vector> &stream) 
+static bool testHilbertInverse (const Field &F, VectorStream<Vector> &stream)
 {
 	typedef Hilbert <Field> Blackbox;
 
@@ -188,7 +188,7 @@ static bool testHilbertInverse (const Field &F, VectorStream<Vector> &stream)
  * vector. We then evaluate the polynomial in Horner fashion at each of the
  * evaluation points generated above to check whether the result is the original
  * input vector.
- * 
+ *
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
  * iterations - Number of random diagonal matrices to construct
@@ -200,7 +200,7 @@ static bool testHilbertInverse (const Field &F, VectorStream<Vector> &stream)
 template <class Field, class Vector>
 static bool testVandermondeInverse (const Field           &F,
 				    VectorStream<Vector> &x_stream,
-				    VectorStream<Vector> &v_stream) 
+				    VectorStream<Vector> &v_stream)
 {
 	typedef DenseMatrix <Field> Blackbox;
 
@@ -296,7 +296,7 @@ static bool testVandermondeInverse (const Field           &F,
  * Constructs a random nonsingular diagonal matrix and its inverse, and extracts
  * the values along the diagonal of the inverse. Checks that those values are in
  * fact the inverses of the diagonal elements in the original.
- * 
+ *
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
  * iterations - Number of random diagonal matrices to construct
@@ -305,7 +305,7 @@ static bool testVandermondeInverse (const Field           &F,
  */
 
 template <class Field, class Vector>
-static bool testDiagonalInverse (const Field &F, VectorStream<Vector> &stream) 
+static bool testDiagonalInverse (const Field &F, VectorStream<Vector> &stream)
 {
 	typedef Diagonal <Field> Blackbox;
 
@@ -392,7 +392,7 @@ static bool testDiagonalInverse (const Field &F, VectorStream<Vector> &stream)
 template <class Field, class Vector>
 static bool testRandomTranspose (Field &F,
 				 VectorStream<Vector> &stream1,
-				 VectorStream<Vector> &stream2) 
+				 VectorStream<Vector> &stream2)
 {
 	typedef DenseMatrix <Field> Blackbox;
 

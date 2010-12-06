@@ -28,7 +28,7 @@
 #ifndef __LINBOX_rational_solver2__H
 #define __LINBOX_rational_solver2__H
 
-/* 
+/*
  * Implementation the algorithm in manuscript, available at http://www.cis.udel.edu/~wan/jsc_wan.ps
  */
 
@@ -40,7 +40,7 @@
 #include <linbox/integer.h>
 #include <linbox/algorithms/rational-reconstruction2.h>
 
-namespace LinBox 
+namespace LinBox
 {
 
 #if __LINBOX_HAVE_DGETRF && __LINBOX_HAVE_DGETRI
@@ -51,21 +51,22 @@ namespace LinBox
 		int P[n];
 		int ierr = clapack_dgetrf (order, n, n, M, lda, P);
 		if (ierr != 0) {
-                    std::cerr << "In RationalSolver::cblas_dgeinv Matrix is not full rank" << std::endl;
-                    return -1;
+			std::cerr << "In RationalSolver::cblas_dgeinv Matrix is not full rank" << std::endl;
+			return -1;
 		}
 		clapack_dgetri (order, n, M, lda, P);
 		return 0;
 	}
 
 	template <class Ring, class Field, class RandomPrime>
-	inline int RationalSolver<Ring, Field, RandomPrime, NumericalTraits>::cblas_rsol (int n, const double* M, integer* numx, integer& denx, double* b) {
+	inline int RationalSolver<Ring, Field, RandomPrime, NumericalTraits>::cblas_rsol (int n, const double* M, integer* numx, integer& denx, double* b)
+	{
 		if (n < 1) return 0;
 		double* IM = new double[n * n];
 		memcpy ((void*)IM, (const void*)M, sizeof(double)*n*n);
 		int ret;
 		//compute the inverse by flops
-		ret = cblas_dgeinv (IM, n); 
+		ret = cblas_dgeinv (IM, n);
 		if (ret != 0) {delete[] IM; return 1;}
 
 		double mnorm = cblas_dOOnorm(M, n, n);
@@ -81,19 +82,19 @@ namespace LinBox
 		const double* p2;
 		double* pd;
 		const double T = 1 << 30;
-	
+
 		integer* num = new integer [n];
 		integer* p_mpz;
 		integer tmp_mpz, den, denB, B;
 
 		den = 1;
 		// compute the hadamard bound
-		cblas_hbound (denB, n, n, M);      
+		cblas_hbound (denB, n, n, M);
 		B = denB * denB;
 		// shouble be a check for tmp_mpz
 		tmp_mpz = 2 * mnorm + cblas_dmax (n, b, 1);
 		B <<= 1; B *= tmp_mpz; //B *= tmp_mpz;
-	
+
 		//double log2 = log (2.0);
 		double log2 = M_LN2;
 		// r = b
@@ -112,7 +113,7 @@ namespace LinBox
 			normr3 = cblas_dmax(n, x, 1);
 			//try to find a good scalar
 			int shift = 30;
-			if (normr2 <.0000000001) 
+			if (normr2 <.0000000001)
 				shift = 30;
 			else {
 				shift1 = floor(log (normr1 / normr2) / log2) - 2;
@@ -130,22 +131,22 @@ namespace LinBox
 				printf ("%d, shift = ", shift);
 				printf ("OO-norm of matrix: %f\n", cblas_dOOnorm(M, n, n));
 				printf ("OO-norm of inverse: %f\n", cblas_dOOnorm(IM, n, n));
-				printf ("Error, abort\n"); 
+				printf ("Error, abort\n");
 #endif
-				delete[] IM; delete[] r; delete[] x; delete[] ax; delete[] d; delete[] num; 
+				delete[] IM; delete[] r; delete[] x; delete[] ax; delete[] d; delete[] num;
 				return 2;
 			}
 
 			int scalar = ((long long int)1 << shift);
-			for (pd = d, p2 = x; pd != d + n; ++ pd, ++ p2) 
+			for (pd = d, p2 = x; pd != d + n; ++ pd, ++ p2)
 				//better use round, but sun sparc machine doesnot supprot it
 				*pd = floor (*p2 * scalar);
 
 			// update den
-			den <<= shift; 
+			den <<= shift;
 			//update num
 			update_num (num, n, d, shift);
-		
+
 #ifdef DEBUGRC
 			printf ("in iteration\n");
 			printf ("residual=\n");
@@ -169,7 +170,7 @@ namespace LinBox
 			else update_r_ll (r, n, M, d, shift);
 			//update_r_ll (r, n, M, d, shift);
 		} while (den < B);
-	
+
 		integer q, rem, den_lcm, tmp_den;
 		integer* p_x, * p_x1;
 		p_mpz = num;
@@ -185,11 +186,11 @@ namespace LinBox
 			tmp_mpz = denx * (*p_mpz);
 			tmp_mpz = abs (tmp_mpz);
 			integer::divmod (q, rem, tmp_mpz, den);
-		
+
 			if ( rem < denx)  {
 				if (sgn >= 0)
 					*p_x = q;
-				else 
+				else
 					*p_x = -q;
 			}
 			else {
@@ -211,7 +212,7 @@ namespace LinBox
 					for (p_x1 = numx; p_x1 != p_x; ++ p_x1)
 						integer::mul (*p_x1, *p_x1, tmp_mpz);
 				}
-			}	
+			}
 		}
 #ifdef DEBUGRC
 		std::cout << "rational answer\nCommon den = ";
@@ -219,9 +220,9 @@ namespace LinBox
 		std::cout << "\nNumerator= \n";
 		printvec (numx, n);
 #endif
-	
+
 		//normalize the answer
-		if (denx != 0) {	
+		if (denx != 0) {
 			integer g; g = denx;
 			for (p_x = numx; p_x != numx + n; ++ p_x)
 				g = gcd (g, *p_x);
@@ -229,7 +230,7 @@ namespace LinBox
 				integer::divexact (*p_x, *p_x, g);
 			integer::divexact (denx, denx, g);
 		}
-	
+
 		//check if the answer is correct, not necessary
 		cblas_mpzapply (n, n, M, (const integer*)numx, num);
 		integer* sb = new integer [n];
@@ -239,14 +240,14 @@ namespace LinBox
 			integer::mulin(*p_mpz, denx);
 		}
 		ret = 0;
-		for (p_mpz = sb, p_x = num; p_mpz != sb + n; ++ p_mpz, ++ p_x) 
+		for (p_mpz = sb, p_x = num; p_mpz != sb + n; ++ p_mpz, ++ p_x)
 			if (*p_mpz != *p_x) {
 				ret = 3;
 				break;
 			}
 #ifdef DEBUGRC
 		if (ret == 3) {
-	
+
 			std::cout << "Input matrix:\n";
 			for (int i = 0; i < n; ++ i) {
 				const double* p = M + (i * n);
@@ -275,13 +276,15 @@ namespace LinBox
 
 	template <class Ring, class Field, class RandomPrime>
 	/* apply  y <- Ax */
-	inline int RationalSolver<Ring, Field, RandomPrime, NumericalTraits>::cblas_dapply (int m, int n, const double* A, const double* x, double* y) {
+	inline int RationalSolver<Ring, Field, RandomPrime, NumericalTraits>::cblas_dapply (int m, int n, const double* A, const double* x, double* y)
+	{
 		cblas_dgemv (CblasRowMajor, CblasNoTrans, m, n, 1, A, n, x, 1, 0, y, 1);
 		return 0;
 	}
 
 	template <class Ring, class Field, class RandomPrime>
-	inline int RationalSolver<Ring, Field, RandomPrime, NumericalTraits>::cblas_mpzapply (int m, int n, const double* A, const integer* x, integer* y) {
+	inline int RationalSolver<Ring, Field, RandomPrime, NumericalTraits>::cblas_mpzapply (int m, int n, const double* A, const integer* x, integer* y)
+	{
 		const double* p_A;
 		const integer* p_x;
 		integer* p_y;
@@ -300,7 +303,8 @@ namespace LinBox
 
 	template <class Ring, class Field, class RandomPrime>
 	template <class Elt>
-	inline int RationalSolver<Ring, Field, RandomPrime, NumericalTraits>::printvec (const Elt* v, int n) {
+	inline int RationalSolver<Ring, Field, RandomPrime, NumericalTraits>::printvec (const Elt* v, int n)
+	{
 		const Elt* p;
 		std::cout << "\[";
 		for (p = v; p != v + n; ++ p)
@@ -311,7 +315,8 @@ namespace LinBox
 
 	template <class Ring, class Field, class RandomPrime>
 	//update num, *num <- *num * 2^shift + d
-	inline int RationalSolver<Ring, Field, RandomPrime, NumericalTraits>::update_num (integer* num, int n, const double* d, int shift) {
+	inline int RationalSolver<Ring, Field, RandomPrime, NumericalTraits>::update_num (integer* num, int n, const double* d, int shift)
+	{
 		integer* p_mpz;
 		integer tmp_mpz;
 		const double* pd;
@@ -319,13 +324,14 @@ namespace LinBox
 			(*p_mpz) = (*p_mpz) << shift;
 			tmp_mpz = *pd;
 			integer::add (*p_mpz, *p_mpz, tmp_mpz);
-		} 
+		}
 		return 0;
 	}
 
 	template <class Ring, class Field, class RandomPrime>
 	//update r = r * shift - M d
-	inline int RationalSolver<Ring, Field, RandomPrime, NumericalTraits>::update_r_int (double* r, int n, const double* M, const double* d, int shift) {
+	inline int RationalSolver<Ring, Field, RandomPrime, NumericalTraits>::update_r_int (double* r, int n, const double* M, const double* d, int shift)
+	{
 		int tmp;
 		double* p1;
 		const double* p2;
@@ -343,7 +349,8 @@ namespace LinBox
 
 	template <class Ring, class Field, class RandomPrime>
 	//update r = r * shift - M d
-	inline int RationalSolver<Ring, Field, RandomPrime, NumericalTraits>::update_r_ll (double* r, int n, const double* M, const double* d, int shift) {
+	inline int RationalSolver<Ring, Field, RandomPrime, NumericalTraits>::update_r_ll (double* r, int n, const double* M, const double* d, int shift)
+	{
 		long long int tmp;
 		double* p1;
 		const double* p2;
@@ -360,7 +367,8 @@ namespace LinBox
 	}
 
 	template <class Ring, class Field, class RandomPrime>
-	inline double RationalSolver<Ring, Field, RandomPrime, NumericalTraits>::cblas_dOOnorm(const double* M, int m, int n) {
+	inline double RationalSolver<Ring, Field, RandomPrime, NumericalTraits>::cblas_dOOnorm(const double* M, int m, int n)
+	{
 		double norm = 0;
 		double old = 0;
 		const double* p;
@@ -369,17 +377,19 @@ namespace LinBox
 			norm = cblas_dasum (n, p ,1);
 			if (norm < old) norm = old;
 			p += n;
-		}	
+		}
 		return norm;
 	}
 
 	template <class Ring, class Field, class RandomPrime>
-	inline double RationalSolver<Ring, Field, RandomPrime, NumericalTraits>::cblas_dmax (const int N, const double* a, const int inc) {
+	inline double RationalSolver<Ring, Field, RandomPrime, NumericalTraits>::cblas_dmax (const int N, const double* a, const int inc)
+	{
 		return fabs(a[cblas_idamax (N, a, inc)]);
 	}
 
 	template <class Ring, class Field, class RandomPrime>
-	inline int RationalSolver<Ring, Field, RandomPrime, NumericalTraits>::cblas_hbound (integer& b, int m, int n, const double* M){
+	inline int RationalSolver<Ring, Field, RandomPrime, NumericalTraits>::cblas_hbound (integer& b, int m, int n, const double* M)
+	{
 		double norm = 0;
 		const  double* p;
 		integer tmp;

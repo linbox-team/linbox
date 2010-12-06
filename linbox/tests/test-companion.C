@@ -63,9 +63,9 @@ int main (int argc, char **argv)
 	typedef Companion<Field> Blackbox;
 
 	Field F (q);
-	Field::Element d; 
+	Field::Element d;
 	F.init (d, -1);
-	Polynomial p(n+1, d);  
+	Polynomial p(n+1, d);
 	F.init (d, 1); F.assign(p[n], d);
 
 	Blackbox A (F, p);

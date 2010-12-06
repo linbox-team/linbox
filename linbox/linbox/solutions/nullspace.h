@@ -47,9 +47,9 @@
 namespace LinBox
 {
 
-	/** 
-	 * @brief 
-	 * 
+	/**
+	 * @brief
+	 *
 	 * @param F
 	 * @param Z
 	 * @param ldZ
@@ -59,9 +59,9 @@ namespace LinBox
 	 * @param col2
 	 */
 	template <class Field >
-	void Zero(const Field & F, 
-		  typename Field::Element * Z, const size_t ldZ, 
-		  const size_t lig1, const size_t col1, 
+	void Zero(const Field & F,
+		  typename Field::Element * Z, const size_t ldZ,
+		  const size_t lig1, const size_t col1,
 		  const size_t lig2, const size_t col2)
 	{
 		assert(lig1<lig2);
@@ -71,10 +71,10 @@ namespace LinBox
 		F.init(zero,0UL);
 
 		for (size_t i = lig1 ; i < lig2 ; ++i)
-			for (size_t j = col1; j < col2 ; ++j) // F.assign(*(Id+i*ldI+j),zero) 
+			for (size_t j = col1; j < col2 ; ++j) // F.assign(*(Id+i*ldI+j),zero)
 				*(Z+i*ldZ+j) = zero ;
 		return;
-	} 
+	}
 
 
 	/*! Creates identity matrix in \p F of size \p dim1 \p x \p dim2.
@@ -82,9 +82,9 @@ namespace LinBox
 	 * @bug     long et size_t ne cohabitent pas bien.
 	 */
 	template <class Field >
-	void Identity(const Field & F, 
-		      typename Field::Element * Id, const size_t ldI, 
-		      const size_t lig1, const size_t col1, 
+	void Identity(const Field & F,
+		      typename Field::Element * Id, const size_t ldI,
+		      const size_t lig1, const size_t col1,
 		      const size_t lig2, const size_t col2)
 	{
 		assert(lig1<lig2);
@@ -94,12 +94,12 @@ namespace LinBox
 		F.init(one,1UL);
 		F.init(zero,0UL);
 		for (size_t i = lig1 ; i < lig2 ; ++i)
-			for (size_t j = col1; j < col2 ; ++j) // F.assign(*(Id+i*ldI+j),zero) 
+			for (size_t j = col1; j < col2 ; ++j) // F.assign(*(Id+i*ldI+j),zero)
 				*(Id+i*ldI+j) = zero ;
 		//        Zero(F,Id,ldI,lig1,col1,lig2,col2);
 		size_t nb_un = std::min(col2-col1,lig2-lig1)-1;
 
-		typename Field::Element * Un_ici = Id+lig1*ldI+col1 ; 
+		typename Field::Element * Un_ici = Id+lig1*ldI+col1 ;
 		for (size_t i = 0 ; i < nb_un ; ++i){
 			*(Un_ici) = one ;
 			Un_ici += ldI ;
@@ -107,7 +107,7 @@ namespace LinBox
 		}
 		*(Un_ici) = one ;
 		return;
-	} 
+	}
 
 
 	/*!
@@ -131,7 +131,7 @@ namespace LinBox
 			       const size_t & lda, // leading dimension
 			       //typename  Field::Element &* V ,
 			       size_t & ker_dim )
-	{ 
+	{
 		size_t *P = new size_t[N];
 		size_t *Qt = new size_t[M];
 		size_t R = FFPACK::LUdivine (F, FFLAS::FflasNonUnit, FFLAS::FflasNoTrans,
@@ -151,7 +151,7 @@ namespace LinBox
 			return V ;
 		}
 
-		for (size_t i = 0 ; i < R ; ++i)					// V <- U2 
+		for (size_t i = 0 ; i < R ; ++i)					// V <- U2
 			FFLAS::fcopy (F, ker_dim, V + i * ldV, 1, A + R + i*lda, 1);
 		typename Field::Element one ;
 		F.init(one,1UL);
@@ -192,7 +192,7 @@ namespace LinBox
 				 const size_t & lda, // leading dimension
 				 //typename  Field::Element &* V ,
 				 size_t & ker_dim )
-	{ 
+	{
 		size_t *P = new size_t[M];
 		size_t *Qt = new size_t[N];
 		size_t R = FFPACK::LUdivine (F, FFLAS::FflasNonUnit, FFLAS::FflasTrans,
@@ -254,7 +254,7 @@ namespace LinBox
 			//write_field (F, std::cout<<"A avant trsm   ="<<std::endl, A, M, N, N,true);
 			FFLAS::ftrsm(F, FFLAS::FflasLeft, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasUnit,
 				     N, ker_dim, one,  A, lda , V, ldV) ;						// V = inv(Lower) V ;
-                         //write_field (F, std::cout<<"V if after trsm  ="<<std::endl, V, N,ker_dim, ker_dim,true);
+			//write_field (F, std::cout<<"V if after trsm  ="<<std::endl, V, N,ker_dim, ker_dim,true);
 		} else { // N > M we can't ftrsm because we can't add 0's to the lower part...
 			typename Field::Element * L = new typename Field::Element[N*N];					// L_inf
 			// début de L
@@ -287,7 +287,7 @@ namespace LinBox
 
 			delete[] L;
 		}
-                    //write_field (F, std::cout<<"V final   ="<<std::endl, V, ker_dim, M, M,true);
+		//write_field (F, std::cout<<"V final   ="<<std::endl, V, ker_dim, M, M,true);
 		delete[] Qt ;
 		return V;
 
@@ -302,7 +302,7 @@ namespace LinBox
 				const size_t & lda, // leading dimension
 				//typename  Field::Element &* V ,
 				size_t & coker_dim )
-	{ 
+	{
 		size_t *P = new size_t[M];
 		size_t *Qt = new size_t[N];
 		size_t R = FFPACK::LUdivine (F, FFLAS::FflasNonUnit, FFLAS::FflasTrans,
@@ -363,7 +363,7 @@ namespace LinBox
 			      const size_t & N, // colm
 			      const size_t & lda, // leading dimension
 			      size_t & coker_dim)
-	{ 
+	{
 
 		size_t *P = new size_t[N];
 		size_t *Q = new size_t[M];
@@ -443,15 +443,15 @@ namespace LinBox
 		//write_field (F, std::cout<<"V final   ="<<std::endl, V, coker_dim, M, M,true);
 		delete[] Q ;
 		return V;
-	} 
+	}
 
-	/** 
+	/**
 	 * @brief Computes the kernel of a Dense matrix using \c LQUP.
 	 *
 	 * acccording to the dimensions of the input matrix, we chose different methods.
 	 * @warning timings may vary (or may not) and these choices were made on an experimental basis.
-	 * 
-	 * @param F 
+	 *
+	 * @param F
 	 * @param Side  left or right from \p FFLAS::FFLAS_SIDE
 	 * @param m rows
 	 * @param n cols
@@ -460,10 +460,10 @@ namespace LinBox
 	 * @param Ker Kernel. \c NULL if \c kerdim==0
 	 * @param ldk leading dimension of the kernel.
 	 * @param kerdim dimension of the kernel.
-	 * @return dimension of the kernel. 
+	 * @return dimension of the kernel.
 	 */
 	template<class Field>
-	size_t 
+	size_t
 	NullSpaceBasis (const Field& F, const FFLAS::FFLAS_SIDE Side,
 			const size_t & m, const size_t & n,
 			typename Field::Element * A, const size_t & lda,
@@ -471,16 +471,16 @@ namespace LinBox
 			size_t & kerdim)
 	{
 		if (Side == FFLAS::FflasRight){
-			if (m < n) 
+			if (m < n)
 				Ker = RightNullspaceDirect(F,A,m,n,lda,kerdim) ;
-			 else
+			else
 				Ker = RightNullspaceIndirect(F,A,m,n,lda,kerdim) ;
 			ldk = kerdim;
 
 		} else {
-			if (m < n) 
+			if (m < n)
 				Ker = LeftNullspaceDirect(F,A,m,n,lda,kerdim) ;
-			 else 
+			else
 				Ker = LeftNullspaceIndirect(F,A,m,n,lda,kerdim) ;
 			ldk = m;
 		}
@@ -488,23 +488,23 @@ namespace LinBox
 	}
 
 	template<class Field>
-	size_t& 
+	size_t&
 	NullSpaceBasis (const Field& F, const FFLAS::FFLAS_SIDE Side,
 			const BlasMatrix<typename Field::Element> & A,
-			BlasMatrix<typename Field::Element> & Ker, 
-                        size_t & kerdim) {
+			BlasMatrix<typename Field::Element> & Ker,
+			size_t & kerdim) {
 
-            typename Field::Element * Kert;
-            size_t ldk;
-            NullSpaceBasis(F,Side,A.rowdim(),A.coldim(), A.getPointer(),A.getStride(), Kert,ldk,kerdim);
-            if (Side == FFLAS::FflasRight){
-                Ker = BlasMatrix<typename Field::Element>(A.rowdim(),kerdim);
-            } else {
-                Ker = BlasMatrix<typename Field::Element>(kerdim,A.coldim());
-            }
-            for(typename BlasMatrix<typename Field::Element>::RawIterator it=Ker.rawBegin(); it!= Ker.rawEnd(); ++it,++Kert)
-                *it=*Kert;
-           return kerdim;
+		typename Field::Element * Kert;
+		size_t ldk;
+		NullSpaceBasis(F,Side,A.rowdim(),A.coldim(), A.getPointer(),A.getStride(), Kert,ldk,kerdim);
+		if (Side == FFLAS::FflasRight){
+			Ker = BlasMatrix<typename Field::Element>(A.rowdim(),kerdim);
+		} else {
+			Ker = BlasMatrix<typename Field::Element>(kerdim,A.coldim());
+		}
+		for(typename BlasMatrix<typename Field::Element>::RawIterator it=Ker.rawBegin(); it!= Ker.rawEnd(); ++it,++Kert)
+			*it=*Kert;
+		return kerdim;
 	}
 } // LinBox
 

@@ -30,11 +30,11 @@ using namespace LinBox;
  *
  * Constructs a random nonsingular diagonal rational matrix D and a random right-hand
  * side integer b, and computes the solution to the Dx=b, checking the result
- * 
+ *
  * Return true on success and false on failure
  */
 
-static bool testNonsingularRatIntSolve (size_t n, int iterations) 
+static bool testNonsingularRatIntSolve (size_t n, int iterations)
 {
 	commentator.start ("Testing nonsingular solve with integer vector", "testNonsingularRatIntSolve", iterations);
 
@@ -44,7 +44,7 @@ static bool testNonsingularRatIntSolve (size_t n, int iterations)
 
 	GMPRationalField Q;
 	SparseMatrix<GMPRationalField > A(Q,n,n);
-	
+
 	PID_integer Z;
 	std::vector<PID_integer::Element> b(n);
 	std::vector<GMPRationalField::Element> true_x(n),x(n);
@@ -74,7 +74,7 @@ static bool testNonsingularRatIntSolve (size_t n, int iterations)
 				ret = false;
 			}
 		}
-		
+
 		commentator.stop ("done");
 		commentator.progress ();
 	}
@@ -88,11 +88,11 @@ static bool testNonsingularRatIntSolve (size_t n, int iterations)
  *
  * Constructs a random nonsingular diagonal rational matrix D and a random right-hand
  * side rational b, and computes the solution to the Dx=b, checking the result
- * 
+ *
  * Return true on success and false on failure
  */
 
-static bool testNonsingularRatRatSolve (size_t n, int iterations) 
+static bool testNonsingularRatRatSolve (size_t n, int iterations)
 {
 	commentator.start ("Testing nonsingular solve with rational vector", "testNonsingularRatRatSolve", iterations);
 
@@ -102,7 +102,7 @@ static bool testNonsingularRatRatSolve (size_t n, int iterations)
 
 	GMPRationalField Q;
 	SparseMatrix<GMPRationalField > A(Q,n,n);
-	
+
 	PID_integer Z;
 	std::vector<GMPRationalField::Element> b(n);
 	std::vector<GMPRationalField::Element> true_x(n),x(n);
@@ -126,13 +126,13 @@ static bool testNonsingularRatRatSolve (size_t n, int iterations)
 			A.setEntry(j,j,tmp);
 			Q.init(tmpb,tmp_bn,tmp_bd);
 			b[j]= tmpb;
-			
+
 			Q.init(true_x[j] , tmp_bn * tmp_d, tmp_bd * tmp_n);
 		}
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		solve (x, A, b);
-		
+
 		for (j=0; j < n; ++j) {
 			if (!Q.areEqual(x[j] ,true_x[j])) {
 				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
@@ -140,7 +140,7 @@ static bool testNonsingularRatRatSolve (size_t n, int iterations)
 				ret = false;
 			}
 		}
-		
+
 		commentator.stop ("done");
 		commentator.progress ();
 	}
@@ -164,7 +164,7 @@ int main (int argc, char **argv)
 		{ '\0' }
 	};
 	parseArguments (argc, argv, args);
-	
+
 	commentator.start("Rational solve test suite", "solve");
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
@@ -175,7 +175,7 @@ int main (int argc, char **argv)
 	//commentator.getMessageClass (BRIEF_REPORT).setMaxDepth (4);
 
     if ( ! testNonsingularRatIntSolve(n,iterations) ) pass = false;
-    if ( ! testNonsingularRatRatSolve(n,iterations) ) pass = false;    
+    if ( ! testNonsingularRatRatSolve(n,iterations) ) pass = false;
 
 	commentator.stop("solve test suite");
     //std::cout << (pass ? "passed" : "FAILED" ) << std::endl;

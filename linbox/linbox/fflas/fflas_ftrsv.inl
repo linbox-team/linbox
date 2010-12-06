@@ -16,11 +16,11 @@
 //---------------------------------------------------------------------
 template<class Field>
 inline void
-FFLAS::ftrsv (const Field& F, const FFLAS_UPLO Uplo, 
+FFLAS::ftrsv (const Field& F, const FFLAS_UPLO Uplo,
 	      const FFLAS_TRANSPOSE TransA, const FFLAS_DIAG Diag,
 	      const size_t N,const typename Field::Element * A, size_t lda,
 	      typename Field::Element * X, int incX){
-	
+
 	typename Field::Element * Xi,* Xj, * Ximax;
 	const typename Field::Element * Ai, * Aj;
 	if ( Uplo == FflasLower ){
@@ -29,10 +29,10 @@ FFLAS::ftrsv (const Field& F, const FFLAS_UPLO Uplo,
 			Ximax = Xi = X+(N-1)*incX;
 			for( ; Xi>=X; Ai-=lda+1,Xi-=incX ){
 				F.negin( *Xi );
-				for ( Xj = Xi+incX, Aj=Ai+lda; Xj<=Ximax; 
+				for ( Xj = Xi+incX, Aj=Ai+lda; Xj<=Ximax;
 				      Xj+=incX, Aj+=lda){
 					F.axpyin( *Xi, *Xj, *Aj );
-				}				
+				}
 				if ( Diag==FflasNonUnit ){
 					F.divin(*Xi,*Ai);
 				}
@@ -44,7 +44,7 @@ FFLAS::ftrsv (const Field& F, const FFLAS_UPLO Uplo,
 		        Xi = X;
 			for( ; Xi<X+incX*N; Ai+=lda+1,Xi+=incX ){
 				F.negin( *Xi );
-				for ( Xj = Xi-incX, Aj=Ai-1; Xj>=X; 
+				for ( Xj = Xi-incX, Aj=Ai-1; Xj>=X;
 				      Xj-=incX, Aj--){
 					F.axpyin( *Xi, *Xj, *Aj );
 				}
@@ -56,7 +56,7 @@ FFLAS::ftrsv (const Field& F, const FFLAS_UPLO Uplo,
 	} // FflasLower
 	else{
 		if ( TransA == FflasTrans){
-			Ai = A; 
+			Ai = A;
 			Xi = X;
 			for( ; Xi<X+N*incX; Ai+=lda+1,Xi+=incX ){
 				F.negin( *Xi );
@@ -64,7 +64,7 @@ FFLAS::ftrsv (const Field& F, const FFLAS_UPLO Uplo,
 				      Xj-=incX, Aj-=lda){
 					F.axpyin( *Xi, *Xj, *Aj );
 				}
-				
+
 				if ( Diag==FflasNonUnit )
 					F.divin(*Xi,*Ai);
 				F.negin( *Xi );
@@ -72,7 +72,7 @@ FFLAS::ftrsv (const Field& F, const FFLAS_UPLO Uplo,
 
 		} // FflasTrans
 		else{
-			Ai = A+(lda+1)*(N-1); 
+			Ai = A+(lda+1)*(N-1);
 			Ximax = Xi = X+incX*(N-1);
 			for( ; Xi>=X; Ai-=lda+1,Xi-=incX ){
 				F.negin( *Xi );

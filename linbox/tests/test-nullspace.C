@@ -127,24 +127,24 @@ void RandomMatrixWithRank(const Field & F,
 }
 
 
-/** 
+/**
  * @brief Checks we got the right rank.
- * 
- * @param F 
- * @param A 
- * @param m 
- * @param n 
- * @param lda 
- * @param alledged_rank 
- * 
- * @return 
+ *
+ * @param F
+ * @param A
+ * @param m
+ * @param n
+ * @param lda
+ * @param alledged_rank
+ *
+ * @return
  */
 template <class Field>
-bool CheckRank( const Field & F, 
-		const typename Field::Element * A, 
-		const size_t & m, 
-		const size_t & n, 
-		const size_t & lda, 
+bool CheckRank( const Field & F,
+		const typename Field::Element * A,
+		const size_t & m,
+		const size_t & n,
+		const size_t & lda,
 		const size_t & alledged_rank)
 {
 	//                std::cout << " is rank truely " << alledged_rank << " ?" << std::endl;
@@ -167,7 +167,7 @@ bool CheckRank( const Field & F,
  * @return \p true hopefully if test's passed!
  */
 template <class Field >
-static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank, int iterations, bool a_droite) 
+static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank, int iterations, bool a_droite)
 {
 	typedef typename Field::Element			Element;
 
@@ -200,7 +200,7 @@ static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank,
 		size_t ker_dim = 0 ; // or coker_dim
 		Element * Kern  = NULL;
 		size_t ld_k = 0 ;
-		if (a_droite) { 
+		if (a_droite) {
 			NullSpaceBasis (F, FFLAS::FflasRight,m,n,A,ld_a,Kern,ld_k,ker_dim);
 			if (ker_dim != (ld_a - rank)) {
 				ret = false;
@@ -255,7 +255,7 @@ static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank,
 		}
 		if (ret) delete[] NullMat ;
 		else break;
-		
+
 		//delete[] Kern ;
 	}
 
@@ -303,7 +303,7 @@ int main(int argc, char** argv)
 	commentator.start("NullSpace test suite", "nullspace");
 
 	std::ostream& report = commentator.report();
-    
+
 	report << "\t \033[1;35m>>>\033[0;m \t testing left kernel" << endl ;
 	if (!testNullSpaceBasis (F, m,n,r, iterations, false))
 		pass=false;

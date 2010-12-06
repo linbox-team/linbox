@@ -67,7 +67,7 @@ int main (int argc, char **argv)
 	//cout << endl << "GivaroZpz<Std16> field test suite" << endl;
 	//cout.flush ();
 	bool pass = true;
-	
+
 	GivaroZpz<Std16> F1 (q);
 	GivaroZpz<Std32> F2 (q);
 //	GivaroZpz<Log16> F3 (q);

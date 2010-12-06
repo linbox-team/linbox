@@ -26,12 +26,12 @@
 #include <utility>
 
 #include "linbox/blackbox/zero-one.h"
-#include "linbox/field/modular.h" 
+#include "linbox/field/modular.h"
 
 #include "test-common.h"
 #include "test-generic.h"
 
-int main(int argc, char **argv) 
+int main(int argc, char **argv)
 {
   bool pass = true;
   uint32 prime = 31337;
@@ -75,7 +75,7 @@ int main(int argc, char **argv)
 	commentator.start("ZeroOne matrix blackbox test suite", "ZeroOne");
 
   pass = pass && testBlackbox(testMatrix);
-  
+
   delete [] rows;
   delete [] cols;
 

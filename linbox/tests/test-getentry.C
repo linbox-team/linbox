@@ -44,7 +44,7 @@ bool testGenericBBgetEntry (const Field &F, size_t n)
 	F.init(z, 0);
 	ScalarMatrix<Field> B(F, n, s);
 	typename GetEntryTags::GenericBB t;
-	//getEntry(x, B, 0, n-1, t); 
+	//getEntry(x, B, 0, n-1, t);
 	if (n > 1 && !F.isZero(x)) ret = false;
 	getEntry(x, B, 0, 0, t);
 	if ( !F.areEqual(s, x)) ret = false;
@@ -59,7 +59,7 @@ bool testScalarMatrixgetEntry (const Field &F, size_t n)
 	commentator.start ("Testing scalar matrix getEntry", "", 1);
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "scalarmatrix getEntry test (using specialization)" << endl;
-    typename Field::Element s, t, r, th; 
+    typename Field::Element s, t, r, th;
 	F.init(r, 0);
 	F.init(s, 2);
 	F.init(th, 2);
@@ -74,8 +74,8 @@ bool testScalarMatrixgetEntry (const Field &F, size_t n)
 		report << "n-1 x n-1" << t << endl;
 	if (!F.areEqual(t, th)) {
 		report << "bad scalar matrix getEntry " << t << ", should be " << th << endl;
-		ret= false; 
-	} 
+		ret= false;
+	}
 	else ret= true;
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testScalarMatrixgetEntry");
 	return ret;
@@ -88,13 +88,13 @@ bool testSparseMatrixgetEntry (const Field &F, size_t n)
 	commentator.start ("Building sparse matrix", "", 1);
 	bool ret = true;
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-    	typename Field::Element s, t, th; 
+    	typename Field::Element s, t, th;
 	F.init(s, 2);
 	size_t m = (n > 10 ? 10 : n);
 	F.init(th, 2*m);
 	SparseMatrix<Field> B(F, n, n);
 	for (size_t i = 0; i <  m; ++i)
-		for (size_t j = 0; j < m; ++j) 
+		for (size_t j = 0; j < m; ++j)
 			B.setEntry(i,j,s);
 	commentator.stop ("", "done");
 	commentator.start ("Testing sparse matrix getEntry", "", 1);
@@ -104,26 +104,26 @@ bool testSparseMatrixgetEntry (const Field &F, size_t n)
 	if (!F.areEqual(t, s)) {
 	report << "bad sparse matrix getEntry 1,1 " << t << ", should be " << s << endl;
 
-		ret = false; 
-	} 
+		ret = false;
+	}
 	getEntry(t, B, 0, n-1);
 	if (!F.areEqual(t, s)) {
 	report << "bad sparse matrix getEntry 1,n" << t << ", should be " << s << endl;
 
-		ret = false; 
-	} 
+		ret = false;
+	}
 	getEntry(t, B, n-1, 0);
 	if (!F.areEqual(t, s)) {
 	report << "bad sparse matrix getEntry n,1" << t << ", should be " << s << endl;
 
-		ret = false; 
-	} 
+		ret = false;
+	}
 	getEntry(t, B, n-1, n-1);
 	if (!F.areEqual(t, s)) {
 	report << "bad sparse matrix getEntry n,n" << t << ", should be " << s << endl;
 
-		ret = false; 
-	} 
+		ret = false;
+	}
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testSparseMatrixgetEntry");
 	return ret;
 }
@@ -133,13 +133,13 @@ template <class Field>
 static bool testDenseMatrixgetEntry (const Field &F, size_t n)
 {
 	bool ret = true;
-    	typename Field::Element s, t, th; 
+    	typename Field::Element s, t, th;
 	F.init(s, 2);
 	size_t m = (n > 10 ? 10 : n);
 	F.init(th, 2*m);
 	DenseMatrix<Field> B(F, n, n);
 	for (size_t i = 0; i <  m; ++i)
-		for (size_t j = 0; j < n; ++j) 
+		for (size_t j = 0; j < n; ++j)
 			B.setEntry(i, j, s);
 	commentator.start ("Testing dense matrix getEntry", "", 1);
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -149,33 +149,33 @@ static bool testDenseMatrixgetEntry (const Field &F, size_t n)
 	if (!F.areEqual(t, s)) {
 		report << "bad dense matrix getEntry 1,1 " << t << ", should be " << s << endl;
 
-		ret = false; 
-	} 
+		ret = false;
+	}
         getEntry(t, B, 0, n-1);
 	if (!F.areEqual(t, s)) {
 		report << "bad dense matrix getEntry 1,n " << t << ", should be " << s << endl;
 
-		ret = false; 
-	} 
+		ret = false;
+	}
         getEntry(t, B, n-1, 0);
 	if (!F.areEqual(t, s)) {
 		report << "bad dense matrix getEntry n,1 " << t << ", should be " << s << endl;
 
-		ret = false; 
-	} 
+		ret = false;
+	}
         getEntry(t, B, n-1, n-1);
 	if (!F.areEqual(t, s)) {
 		report << "bad dense matrix getEntry n,n " << t << ", should be " << s << endl;
 
-		ret = false; 
-	} 
+		ret = false;
+	}
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDenseMatrixgetEntry");
 	return ret;
 }
 
 /* getEntry of diagonal matrix */
 template <class Field>
-static bool testDiagonalgetEntry (const Field &F, VectorStream<vector<typename Field::Element> > &stream) 
+static bool testDiagonalgetEntry (const Field &F, VectorStream<vector<typename Field::Element> > &stream)
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef Diagonal <Field> Blackbox;
@@ -218,7 +218,7 @@ static bool testDiagonalgetEntry (const Field &F, VectorStream<vector<typename F
 			F.addin (res, getEntry (ge, D, i, i));
                 F.addin(res, getEntry (ge, D, 0,stream.n ()-1));
                 F.addin(res, getEntry (ge, D, stream.n ()-1, 0));
-               
+
 
 		report << "Computed getEntry: ";
 		F.write (report, res);

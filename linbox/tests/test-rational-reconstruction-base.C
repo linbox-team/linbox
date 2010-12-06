@@ -35,11 +35,11 @@
 using namespace LinBox;
 
 /* Test: Rational reconstruction of random fraction using rational-cra2.h
- * 
- * Constructs a random pair of numerator/denominator 
+ *
+ * Constructs a random pair of numerator/denominator
  * Reconstructs it based on rational reconstruction
  *
- * n - size of numerator 
+ * n - size of numerator
  * d - size of denominator
  * iterations - Number of iterations to run
  *
@@ -57,7 +57,7 @@ struct ModularFraction {
 	}
 };
 
-static bool testRandomFraction (size_t n, size_t d, int iterations) 
+static bool testRandomFraction (size_t n, size_t d, int iterations)
 {
 	commentator.start ("Testing rational reconstruction on random fractions", "testRandFrac", iterations);
 
@@ -75,9 +75,9 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		integer g; gcd(g,num, den);
 		num /= g; den /= g;
 		if (i %2 ) integer::negin(num);
-		
+
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-		report << "True fraction: " << num << " / " << den; 
+		report << "True fraction: " << num << " / " << den;
 		report << endl;
 
 		ModularFraction iteration(num,den);
@@ -94,7 +94,7 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		integer a1_4, b1_4, a2_4, b2_4, a3_4, b3_4, a4_4, b4_4;
 
 		RReconstruction<PID_integer, FastRationalReconstruction<PID_integer> > RR1_1(Z,INCREMENTAL,5);
-		RationalRemainder2< VarPrecEarlySingleCRA< Modular<double> >, 
+		RationalRemainder2< VarPrecEarlySingleCRA< Modular<double> >,
 			RReconstruction<PID_integer, FastRationalReconstruction<PID_integer> > > cra1_1(4UL, RR1_1);
 		cra1_1(a1_1,b1_1,iteration,genprime);
 		if ((a1_1 != num)  || (b1_1 != den) ) {
@@ -181,7 +181,7 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		if ((a1_3 != num)  || (b1_3 != den) ) {
 			ret = false;
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: rational reconstruction (Wang, geometric, fast) failed" << endl;	
+				<< "ERROR: rational reconstruction (Wang, geometric, fast) failed" << endl;
 		}
 
 		RReconstruction<PID_integer, FastMaxQRationalReconstruction<PID_integer> > RR2_3(Z,GEOMETRIC,0,5);
@@ -216,7 +216,7 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 
 		size_t H = (n > d) ? n : d;
 		H /= bits;
-		++H; 
+		++H;
 		H *=2;
 		++H;
 		RReconstruction<PID_integer, FastRationalReconstruction<PID_integer> > RR1_4(Z,CERTIFIED,0,H);
@@ -270,7 +270,7 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	//Modular<int> F (q);
 
-	commentator.start("Rational reconstruction test suite", "rr"); 
+	commentator.start("Rational reconstruction test suite", "rr");
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);

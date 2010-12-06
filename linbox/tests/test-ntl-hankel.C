@@ -42,26 +42,26 @@ int main(int argc, char* argv[])
 {
   LinBox::commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
   ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-  
+
   bool pass = true;
-  
+
   static size_t n = 1000;
   static long q = 2147483647;
 
 
   static int iterations = 1;
-  
+
   static Argument args[] = {
     { 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
     { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INT, &q },
     { 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
 	{ '\0' }
   };
-  
-  parseArguments (argc, argv, args);
-  
 
-  
+  parseArguments (argc, argv, args);
+
+
+
   //------ Read q and construct F(q)
   NTL::ZZ modulus; 	// prime modulus
   modulus = q;
@@ -69,37 +69,37 @@ int main(int argc, char* argv[])
   //std::cin >> modulus;
   report <<  "The modulus is " << modulus << std::endl;
   NTL::ZZ_p::init(modulus); // NOTE: This is essential for using NTL
-  
+
 
 	commentator.start("Hankel black box test test suite", "Hankel");
   report << "\tn= " <<  n << " \tq= " << q <<   endl ;
 
   typedef LinBox::UnparametricField<NTL::ZZ_p> Field;
   typedef Field::Element element;
-  typedef std::vector<element> Vector;  
-  
+  typedef std::vector<element> Vector;
+
   // Now we are using the NTL wrapper as the field, call the instance F
   Field F;
   element zero;
   F.init(zero, 0);
-  
+
   // Use the default constructor to create a matrix
   LinBox::Hankel<Field> T;
-  
+
   // Use a special constructor to construct a matrix of dim TSIZE
   int TSIZE = 2*n-1;
-  Vector tdata(TSIZE); 
+  Vector tdata(TSIZE);
   report << "The random vector is:" << std::endl;
   for (unsigned int i=0; i < tdata.size(); i++) {
     tdata[i] = NTL::random_ZZ_p() ;
     report << tdata[i] << " ";
   }
   report << std::endl;
-  
+
   LinBox::Hankel<Field> TT(F,tdata);
   report << "The matrix is: " << std::endl;
   TT.print(report);
-  
+
   // Create an interesting input vector called idata
   Vector idata((TSIZE+2)/2), odata((TSIZE+2)/2);
   report << "A random col vector:\t" << std::endl;
@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
     report << idata[i] << " ";
   }
   report << std::endl;
-  
+
   // Apply the matrix to the vector just created
   // Testing the apply function when both input and output are over ZZ_p
   TT.applyTranspose(odata, idata);
@@ -116,26 +116,26 @@ int main(int argc, char* argv[])
   for (unsigned int i = 0; i < odata.size(); i++)
     report << odata[i] << " ";
   report << "]\n";
-  
-  
-  
+
+
+
   TT.apply(odata, idata);
   report << "\n\nTesting  apply :--------------------- \nResult is[";
   for (unsigned int i = 0; i < odata.size(); i++)
     report << odata[i] << " ";
   report << "]\n";
-  
+
    report << "Setting the matrix to UniModular Lower Triangular";
    TT.setToUniModLT();
    TT.print(report);
    report << "\nSetting the matrix to UniModular Upper Triangular";
       TT.setToUniModUT();
       TT.print(report);
-  
+
   pass = testBlackbox(TT);
 
 	commentator.stop("Hankel black box test test suite");
   return pass ? 0 : -1;
-  
+
 }
 

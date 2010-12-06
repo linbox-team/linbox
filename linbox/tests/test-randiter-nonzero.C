@@ -39,7 +39,7 @@ using namespace LinBox;
  */
 
 template <class Field>
-static bool testNonzeroRandom (Field &F, int iterations) 
+static bool testNonzeroRandom (Field &F, int iterations)
 {
 	int i;
 
