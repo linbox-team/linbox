@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
-/** 
+/*
  * examples/graph-charpoly.C
  *
  * Copyright (C) 2005, 2007, 2010 C. Pernet
@@ -19,14 +19,14 @@
  *   GNU Lesser General Public License for more details.
  *
  *   You should have received a copy of the GNU Lesser General Public
- *   License along with LinBox.  If not, see 
+ *   License along with LinBox.  If not, see
  *   <http://www.gnu.org/licenses/>.
  */
-/** 
-    Example for Pr G. Royle :
-    Compute the integer characteristic polynomial of symetric matrices with 
-    0,1 coefficients
-*/
+/**
+  Example for Pr G. Royle :
+  Compute the integer characteristic polynomial of symetric matrices with
+  0,1 coefficients
+  */
 
 
 #include <iostream>
@@ -71,7 +71,7 @@ int main (int argc, char **argv)
 {
 	commentator.getMessageClass (BRIEF_REPORT).setMaxDepth (2);
 	commentator.getMessageClass (BRIEF_REPORT).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
-	
+
 
 	if (argc != 2) {
 		cerr << "Usage: graph-charpoly <matrix-file-in-SMS-format>" <<endl;
@@ -79,23 +79,23 @@ int main (int argc, char **argv)
 	}
 
 	ifstream input (argv[1]);
-	if (!input) { 
-	  cerr << "Error opening matrix file " << argv[1] << endl; 
-	  return -1; 
+	if (!input) {
+		cerr << "Error opening matrix file " << argv[1] << endl;
+		return -1;
 	}
-	
+
 	//UnparametricField<integer> ZZ;
 	PID_integer ZZ;
 	Matrix A(ZZ);
 	A.read (input);
 	commentator.report(1, BRIEF_REPORT)<< "A is " << A.rowdim() << " by " << A.coldim() << endl;
-	
+
 	IntPolRing::Element c_A;
 
 	charpoly (c_A, A, Method::Blackbox(Method::Wiedemann( Specifier::SYMMETRIC)));
-	
+
 	cout<< "Characteristic Polynomial is ";
 	printPolynomial (ZZ, c_A);
-	
+
 	return 0;
 }

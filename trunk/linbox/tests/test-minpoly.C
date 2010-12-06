@@ -37,7 +37,7 @@ using namespace LinBox;
 /* Test 0: Minimal polynomial of the zero matrix
 */
 template <class Field, class Meth>
-static bool testZeroMinpoly (Field &F, size_t n, bool symmetrizing, const Meth& M) 
+static bool testZeroMinpoly (Field &F, size_t n, bool symmetrizing, const Meth& M)
 {
 	commentator.start ("Testing zero minpoly", "testZeroMinpoly");
 	typedef vector <typename Field::Element> Polynomial;
@@ -52,9 +52,9 @@ static bool testZeroMinpoly (Field &F, size_t n, bool symmetrizing, const Meth& 
 	printPolynomial<Field, Polynomial> (F, report, phi);
 
 	bool ret;
-	if (phi.size () == 2 && F.isZero (phi[0]) && F.isOne(phi[1]) ) 
+	if (phi.size () == 2 && F.isZero (phi[0]) && F.isOne(phi[1]) )
 		ret = true;
-	else 
+	else
 	{
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: A = 0, should get x, got ";
@@ -66,7 +66,7 @@ static bool testZeroMinpoly (Field &F, size_t n, bool symmetrizing, const Meth& 
 	return ret;
 }
 template <class Field>
-static bool testZeroMinpoly (Field &F, size_t n) 
+static bool testZeroMinpoly (Field &F, size_t n)
 {
 	return testZeroMinpoly(F, n, false, Method::Blackbox());
 }
@@ -83,7 +83,7 @@ static bool testZeroMinpoly (Field &F, size_t n)
  */
 
 template <class Field, class Meth>
-static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing, const Meth& M) 
+static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing, const Meth& M)
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <typename Field::Element> Polynomial;
@@ -112,7 +112,7 @@ static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing, const Me
 	F.init (c0, -1);
 	F.init (c1, 1);
 
-	if (phi.size () == 2 && F.areEqual (phi[0], c0) && F.areEqual (phi[1], c1)) 
+	if (phi.size () == 2 && F.areEqual (phi[0], c0) && F.areEqual (phi[1], c1))
 		ret = true;
 	else {
 		ret = false;
@@ -127,7 +127,7 @@ static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing, const Me
 }
 
 template <class Field>
-static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing=false) 
+static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing=false)
 {
     return testIdentityMinpoly(F, n, symmetrizing, Method::Blackbox());
 }
@@ -238,7 +238,7 @@ bool testRandomMinpoly (Field                 &F,
 		iter_passed = true;
 
 		A_stream.reset ();
-		Blackbox A (F, A_stream);                
+		Blackbox A (F, A_stream);
 
 		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Matrix:" << endl;
@@ -298,13 +298,13 @@ bool testRandomMinpoly (Field                 &F,
 
 	 Gram matrix is 1's offdiagonal and 0's on diagonal.  Self orthogonality when characteristic | n-1.
 
-	 Arg m is ignored. 
+	 Arg m is ignored.
 	 if p := characteristic is small then size is p+1 and minpoly is x^2 + x
 	 (because A^2 = (p-1)A).
 	 if p is large, size is 2 and minpoly is x^2 -1.
 */
 template <class Field, class Meth>
-static bool testGramMinpoly (Field &F, size_t m, bool symmetrizing, const Meth& M) 
+static bool testGramMinpoly (Field &F, size_t m, bool symmetrizing, const Meth& M)
 {
 	commentator.start ("Testing gram minpoly", "testGramMinpoly");
 	typedef vector <typename Field::Element> Polynomial;
@@ -334,7 +334,7 @@ static bool testGramMinpoly (Field &F, size_t m, bool symmetrizing, const Meth& 
 			printPolynomial<Field, Polynomial> (F, report, phi);
 			ret = false;
 		}
-	else 
+	else
 		if (phi.size() == 3 && F.isZero(phi[0]) && F.isOne(phi[1]) && F.isOne(phi[2]))
 			ret = true;
 		else
@@ -349,7 +349,7 @@ static bool testGramMinpoly (Field &F, size_t m, bool symmetrizing, const Meth& 
 }
 
 template <class Field>
-static bool testGramMinpoly (Field &F, size_t n) 
+static bool testGramMinpoly (Field &F, size_t n)
 {
 	return testGramMinpoly(F, n, false, Method::Blackbox());
 }
@@ -413,7 +413,7 @@ int main (int argc, char **argv)
 	commentator.stop("Blackbox prime field minpoly test suite");
 	}else{
 
-	int p;  
+	int p;
 	if (q % 2 == 0) p = 2;
 	if (q % 3 == 0) p = 3;
 	if (q % 5 == 0) p = 5;

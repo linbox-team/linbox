@@ -26,7 +26,7 @@
 #include <linbox/blackbox/dense.h>
 #include <linbox/blackbox/submatrix.h>
 
-namespace LinBox 
+namespace LinBox
 {
 
 	template<class Matrix>
@@ -34,7 +34,7 @@ namespace LinBox
 
 	template<class Field>
 	class SubMatrixTraits<DenseMatrix<Field> > {
-	
+
 	public:
 
 		typedef  Submatrix<DenseMatrix<Field> > value_type;
@@ -43,9 +43,9 @@ namespace LinBox
 
 	template<class Field>
 	class SubMatrixTraits<Submatrix<DenseMatrix<Field> > > {
-	
+
 	public:
-	
+
 		typedef Submatrix<DenseMatrix<Field> > value_type;
 	};
 

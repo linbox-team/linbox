@@ -2,9 +2,9 @@
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
 /* tests/test-modular-double.C
- * Brazenly stolen by bds from 
+ * Brazenly stolen by bds from
  * tests/test-modular-short.C
- * Brazenly stolen by Zhendong Wan (Copyright (C) 2003) from 
+ * Brazenly stolen by Zhendong Wan (Copyright (C) 2003) from
  * tests/test-modular.C
  * Copyright (C) 2001, 2002 Bradford Hovinen,
  * Copyright (C) 2002 Dave Saunders
@@ -53,14 +53,14 @@ int main (int argc, char **argv)
 	commentator.start("Modular<double> field test suite", "Modular<double>");
 	bool pass = true;
 
-	//Modular<double> F2 (2); 
-	Modular<double> F3 (3); 
-	Modular<double> F5 (5); 
-	Modular<double> F7 (7); 
-	Modular<double> F11 (11); 
-	Modular<double> F (32749); 
-	Modular<double> G (65521); 
-	//Modular<double> H (1099511627689); 
+	//Modular<double> F2 (2);
+	Modular<double> F3 (3);
+	Modular<double> F5 (5);
+	Modular<double> F7 (7);
+	Modular<double> F11 (11);
+	Modular<double> F (32749);
+	Modular<double> G (65521);
+	//Modular<double> H (1099511627689);
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);

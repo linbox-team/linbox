@@ -31,7 +31,7 @@
 
 // (NEED TO USE ENVELOPE TO DEFINE A CONCRETE TYPE)
 typedef LinBoxTypelist < BlackboxEnvelope< LinBox::BlasBlackbox > , LinBoxDumbType> BL1;
-//typedef LinBoxTypelist < BlackboxEnvelope< LinBox::SparseMatrix > , BL1> BL2; 
+//typedef LinBoxTypelist < BlackboxEnvelope< LinBox::SparseMatrix > , BL1> BL2;
 
 // define the blackbox typelist
 typedef BL1 BlackboxList;
@@ -45,11 +45,11 @@ extern Blackbox_Factory linbox_blackbox;
 
 void UpdateBlackbox() {
 	// linbox_blackbox.add("linbox_sparse",
-	// Blackbox_Factory::CallBackMap::value_type::second_type( 
+	// Blackbox_Factory::CallBackMap::value_type::second_type(
 	// constructBlackbox_from_size<LinBox::SparseMatrix>, constructBlackbox_from_stream<LinBox::SparseMatrix> ));
 	linbox_blackbox.add("linbox_dense",
-			    Blackbox_Factory::CallBackMap::value_type::second_type( constructBlackbox_from_size<LinBox::BlasBlackbox>, 
-										    constructBlackbox_from_stream<LinBox::BlasBlackbox> ));			    
+			    Blackbox_Factory::CallBackMap::value_type::second_type( constructBlackbox_from_size<LinBox::BlasBlackbox>,
+										    constructBlackbox_from_stream<LinBox::BlasBlackbox> ));
 }
 
 

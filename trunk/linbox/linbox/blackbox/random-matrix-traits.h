@@ -23,12 +23,12 @@
 #ifndef __LINBOX_random_matrix_traits_H
 #define __LINBOX_random_matrix_traits_H
 
-namespace LinBox 
+namespace LinBox
 {
 
 	template<class Matrix>
 	class RandomMatrixTraits{
-		public:
+	public:
 		typedef Matrix value_type;
 	};
 }

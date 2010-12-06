@@ -12,13 +12,14 @@
 template <class Field, class Polynomial>
 Polynomial&
 FFPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
-			 const typename Field::Element *A, const size_t lda,
-			 typename Field::Element* X, const size_t ldx,
-			 size_t* P, 
-			 const FFPACK_MINPOLY_TAG MinTag = FfpackDense,
-			 const size_t kg_mc =0, 
-			 const size_t kg_mb=0, 
-			 const size_t kg_j=0 ){
+		 const typename Field::Element *A, const size_t lda,
+		 typename Field::Element* X, const size_t ldx,
+		 size_t* P,
+		 const FFPACK_MINPOLY_TAG MinTag = FfpackDense,
+		 const size_t kg_mc =0,
+		 const size_t kg_mb=0,
+		 const size_t kg_j=0 )
+{
 
 	typedef typename Field::Element elt;
 	static elt one,zero;
@@ -36,7 +37,7 @@ FFPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
 	do{
 		for (Ui=U, Xi = X; Ui<U+N; ++Ui, ++Xi){
 			g.random (*Ui);
-		 	*Xi = *Ui;
+			*Xi = *Ui;
 			if (!F.isZero(*Ui))
 				KeepOn = false;
 		}

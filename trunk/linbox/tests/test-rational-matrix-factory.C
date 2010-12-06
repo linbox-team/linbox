@@ -38,11 +38,11 @@ using namespace LinBox;
  * -> Aprim[j,j] = denA / j
  *
  * n - Dimension to which to make matrix
- * 
+ *
  * Return true on success and false on failure
  */
 
-static bool testDiagonalMatrix (size_t n) 
+static bool testDiagonalMatrix (size_t n)
 {
 	commentator.start ("Testing rational matrix factory for dense matrix", "testRationalMatrixFactory");
 
@@ -109,7 +109,7 @@ static bool testDiagonalMatrix (size_t n)
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: Common denominator is incorrect" << endl;
 	}
-	
+
 	for (j=0; j < n; ++j) {
 		FA.denominator(d,j);
 		report << "True common denominator for " << j+1 <<  "th row: " << j+1 << endl;
@@ -120,14 +120,14 @@ static bool testDiagonalMatrix (size_t n)
 				<< "ERROR: Common denominator for " << j+1 <<  "th row is incorrect" << endl;
 		}
 	}
-	
+
 	PID_integer Z;
 	DenseMatrix<PID_integer> Aprim(Z,n,n);
 	DenseMatrix<PID_integer> Atilde(Z,n,n);
 
 	FA.makeAprim(Aprim);
 	FA.makeAtilde(Atilde);
-	
+
 	Aprim.write(report);
 	Atilde.write(report);
 
@@ -166,7 +166,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator.start("Rational Matrix Factory test suite", "rmf"); 
+	commentator.start("Rational Matrix Factory test suite", "rmf");
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);

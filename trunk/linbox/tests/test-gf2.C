@@ -37,7 +37,7 @@ using LinBox::uint32;
 
 static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 			       VectorStream<Vector<GF2>::Dense> &stream1,
-			       VectorStream<Vector<GF2>::Dense> &stream2) 
+			       VectorStream<Vector<GF2>::Dense> &stream2)
 {
 	LinBox::commentator.start ("Testing GF2 dot product (dense/dense)", "testDotProduct", stream1.size ());
 
@@ -130,7 +130,7 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 
 static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 			       VectorStream<Vector<GF2>::Dense> &stream1,
-			       VectorStream<Vector<GF2>::Sparse> &stream2) 
+			       VectorStream<Vector<GF2>::Sparse> &stream2)
 {
 	LinBox::commentator.start ("Testing GF2 dot product (dense/sparse)", "testDotProduct", stream1.size ());
 
@@ -256,7 +256,7 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	commentator.start ("Testing GF2", "main", 10);
-	
+
 	if (!testFieldNegation         (F, "GF2", iterations))      pass = false; commentator.progress ();
 	if (!testFieldInversion        (F, "GF2", iterations))      pass = false; commentator.progress ();
 	if (!testFieldAxioms           (F, "GF2", iterations))      pass = false; commentator.progress ();

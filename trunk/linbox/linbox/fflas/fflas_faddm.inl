@@ -75,7 +75,7 @@ inline void FFLAS::fsubm(const Field & F,
 		  const size_t M, const size_t N,
 		  const typename Field::Element * A, const size_t lda,
 		        typename Field::Element * B, const size_t ldb)
-		  
+
 {
 	if (!M || !N) return ;
 	if (transA ==  FflasNoTrans)

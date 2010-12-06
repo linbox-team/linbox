@@ -36,7 +36,7 @@
  * Allocate global variable *
  ****************************/
 
-// global hash table for allocated vector 
+// global hash table for allocated vector
 VectorTable vector_hashtable;
 
 // global variable for the factory
@@ -51,7 +51,7 @@ const char* current_vector  = default_vector;
  * function to add an abstract vector in linbox hashtable *
  **********************************************************/
 const VectorKey& addVector(VectorAbstract * v){
-	
+
 	std::pair<VectorTable::const_iterator, bool> status;
 	status = vector_hashtable.insert(std::pair<VectorKey, VectorAbstract*> (VectorKey(v), v));
 	if (status.second)
@@ -69,7 +69,7 @@ const VectorKey& createVector(const DomainKey &k, size_t n, const char *name){
 	if (type == NULL)
 		type= current_vector;
 
-	VectorAbstract *v = linbox_vector.create(type, k, n); 
+	VectorAbstract *v = linbox_vector.create(type, k, n);
 	return addVector(v);
 }
 
@@ -82,8 +82,8 @@ const VectorKey& createVector(const DomainKey &k, std::istream &in, const char *
 	const char *type=name;
 	if (type == NULL)
 		type= current_vector;
-	
-	VectorAbstract *v = linbox_vector.create(type, k, in); 
+
+	VectorAbstract *v = linbox_vector.create(type, k, in);
 	return addVector(v);
 }
 
@@ -92,13 +92,13 @@ const VectorKey& createVector(const DomainKey &k, std::istream &in, const char *
  * API to copy an existing vector *
  **********************************/
 const VectorKey& copyVector(const VectorKey &k){
-	
+
 	VectorTable::iterator it = vector_hashtable.find(k);
 	if (it == vector_hashtable.end())
 		throw lb_runtime_error("LinBox ERROR: vector does not exist (copying impossible)\n");
-	
+
 	VectorAbstract *v = it->second->clone();
-	return addVector(v);       
+	return addVector(v);
 }
 
 
@@ -139,7 +139,7 @@ public:
 	template<class Vector, class Domain>
 	void operator()(Vector *V, Domain *D) {
 		typename Domain::RandIter G(*D);
-		for (size_t i=0; i< V->size();++i) 
+		for (size_t i=0; i< V->size();++i)
 			G.random((*V)[i]);
 	}
 };
@@ -150,8 +150,8 @@ protected:
 	Vector *vect;
 public:
 	VectorAtRandomFunctorSpec(Vector *V) : vect(V) {}
-	
-	template<class Domain> 
+
+	template<class Domain>
 	void operator()(void *, Domain *D) const {
 		RandomVector<typename Vector::value_type, typename Domain::Element>()(vect, D);
 	}
@@ -162,13 +162,13 @@ protected:
 	const VectorKey key;
 public:
 	VectorAtRandomFunctor(const VectorKey &k) : key(k) {}
-	
+
 	template<class Vector>
 	void operator()(void*, Vector *V) const {
 		VectorTable::iterator it = vector_hashtable.find(key);
 		if ( it == vector_hashtable.end())
 			throw lb_runtime_error("LinBox ERROR: invalid vector (set random value impossible)");
-		
+
 		VectorAtRandomFunctorSpec<Vector> Fct(V);
 		DomainFunction::call(it->second->getDomainKey(), Fct);
 	}
@@ -210,7 +210,7 @@ class PrintVector<Element, Element> {
 public:
 	template< class Domain, class Vector, class Out>
 	void operator()(Domain *D, Vector *vect, Out &os){
-		os<<" [ "; 
+		os<<" [ ";
 		for (size_t i=0; i<vect->size()-1; ++i){
 			D->write(os, (*vect)[i])<<" , ";
 		}
@@ -237,12 +237,12 @@ class WriteVectorFunctor{
 protected:
 	std::ostream     &os;
 	const VectorKey &key;
-public:	
+public:
 	WriteVectorFunctor(std::ostream &o, const VectorKey &k) : os(o), key(k) {}
 
 	template<class Vector>
 	void operator() (void*, Vector *V) const {
-	
+
 		VectorTable::iterator it = vector_hashtable.find(key);
 		if ( it == vector_hashtable.end())
 			throw lb_runtime_error("LinBox ERROR: invalid vector (writing impossible)");
@@ -255,7 +255,7 @@ public:
 
 void writeVector (const VectorKey &key, std::ostream &os){
 	WriteVectorFunctor Fct(os, key);
-	VectorFunction::call(key, Fct);	
+	VectorFunction::call(key, Fct);
 }
 
 
@@ -315,7 +315,7 @@ public:
 	inline void operator()(SerialVector &s, Domain *D, Vector *poly){
 		s.type = "rational";
 		s.list.resize(2*poly->size());
-	
+
 		typename Vector::const_iterator    it_P= poly->begin();
 		std::vector<LinBox::integer>::iterator it_s= s.list.begin();
 		for (; it_P != poly->end(); ++it_P, ++it_s){
@@ -344,12 +344,12 @@ public:
 class SerializeVectorFunctor{
 protected:
 	const VectorKey &key;
-public:	
+public:
 	SerializeVectorFunctor(const VectorKey &k) :  key(k) {}
 
 	template<class Vector>
 	void operator() (SerialVector& s, Vector *P) const {
-	
+
 		VectorTable::iterator it = vector_hashtable.find(key);
 		if ( it == vector_hashtable.end())
 			throw lb_runtime_error("LinBox ERROR: invalid vector (serializing impossible)");
@@ -360,9 +360,9 @@ public:
 };
 
 
-void  SerializeVector (SerialVector &s, const VectorKey &key) {       
+void  SerializeVector (SerialVector &s, const VectorKey &key) {
 	SerializeVectorFunctor Fct(key);
-	VectorFunction::call(s, key, Fct);	
+	VectorFunction::call(s, key, Fct);
 }
 
 

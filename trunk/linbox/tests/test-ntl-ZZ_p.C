@@ -86,7 +86,7 @@ int main (int argc, char **argv)
 	}
         commentator.stop(MSG_STATUS (part_pass));
         pass &= part_pass;
-        
+
 	commentator.stop("UnparametricField<NTL::ZZ_p> field test suite");
 	return pass ? 0 : -1;
 }

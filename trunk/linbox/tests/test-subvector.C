@@ -32,34 +32,34 @@
 using namespace LinBox;
 
 template <class Field>
-static bool testSubvector(Field &F, size_t n); 
+static bool testSubvector(Field &F, size_t n);
 
 int main(int argc, char** argv)
-{	
+{
     // set up command line options
     static size_t n = 8;
-    static Argument args[] = 
+    static Argument args[] =
     {
  		{ 'n', "-n N", "Set size of vector to N.", TYPE_INT, &n},
 		{ '\0' }
     };
     parseArguments (argc, argv, args);
- 
+
     // start testing
 	commentator.start("Subvector test suite", "Subvector");
     bool pass = true;
- 
+
     // call tests
     typedef LinBox::UnparametricField<int> Field;
     Field F;
     pass = testSubvector<Field> (F, n);
- 
+
     // finish
 	commentator.stop("Subvector test suite");
     return pass? 0 : -1;
 }
 
-/* Test Subvector class 
+/* Test Subvector class
  * Subvector has the vector interface less those that
  * can invalidate iterators.
  */
@@ -67,12 +67,12 @@ int main(int argc, char** argv)
 using namespace LinBox;
 
 template <class Field>
-static bool testSubvector(Field &F, size_t n) 
+static bool testSubvector(Field &F, size_t n)
 {
 	// commentator setup
 	const char *  title = "Subvector test";
 	commentator.start(title, title, 1);
-	ostream &report = commentator.report 
+	ostream &report = commentator.report
 		(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	report << "This test currently neglects several members including constructors." << endl;
@@ -105,20 +105,20 @@ static bool testSubvector(Field &F, size_t n)
 	Subvect w(sb, se);
 
 	// implicit (not stored) stride of 1
-	Subvector<typename Vector::iterator> 
-		z(v.begin(), v.end()); 
+	Subvector<typename Vector::iterator>
+		z(v.begin(), v.end());
 	// fixme: at least constructor compiles.
 
 	// explicit (stored) stride of 1
-	Subvect zz(v.begin(), v.end()); 
+	Subvect zz(v.begin(), v.end());
 	// fixme: at least constructor compiles.
-	
+
 	//report << "start = " << w._start << endl;
 	//report << "stride = " << w._stride << endl;
 	//report << "length = " << w._length << endl;
 
 	report << endl << "*** Testing forward iterator" << endl << endl;
-	
+
 	Subiter j = w.begin();
 
 //	report << "stride = " << j._stride << endl;
@@ -170,7 +170,7 @@ static bool testSubvector(Field &F, size_t n)
 	}
 	report << ')' << endl;
 
-	j = w.begin();	
+	j = w.begin();
 	report << "Random access through vector: (";
 	for (unsigned long i = 0; i < w.size(); i++)
 	{
@@ -181,7 +181,7 @@ static bool testSubvector(Field &F, size_t n)
 
 #if 1
 	report << endl << "*** Testing reverse iterator" << endl << endl;
-	
+
 	ReverseSubiterator jr(w.rbegin());
 
 	report << "*jr = 5 = " << *jr << endl;
@@ -215,7 +215,7 @@ static bool testSubvector(Field &F, size_t n)
 	report << "*jr = 5 = " << *jr << endl;
 	ret = ret && 5 == *jr;
 
-	if (jr != w.rbegin()) 
+	if (jr != w.rbegin())
 		report << "not at beginning" << endl;
 	ret = ret && 5 == *jr;
 
@@ -228,7 +228,7 @@ static bool testSubvector(Field &F, size_t n)
 	report << ')' << endl;
 	ret = ret && jr == w.rend();
 
-	jr = w.rbegin();	
+	jr = w.rbegin();
 	report << "Random access through vector: (";
 	for (unsigned long i = 0; i < w.size(); i++)
 	{
@@ -242,7 +242,7 @@ static bool testSubvector(Field &F, size_t n)
 	report << endl << "*** Testing vector" << endl << endl;
 
 	// Need to check on const_iterator variants of functions.
-	
+
 	report << "w.size() = 3 = " << w.size() << endl;
 	ret = ret && w.size() == 3;
 	report << "w.max_size() = 3 = " << w.max_size() << endl;

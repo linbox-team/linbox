@@ -39,7 +39,7 @@ using namespace std;
 using namespace LinBox;
 
 template <class Field>
-bool testVectorDomain (const Field &F, const char *text, size_t n, unsigned int iterations) 
+bool testVectorDomain (const Field &F, const char *text, size_t n, unsigned int iterations)
 {
 	typedef std::vector<typename Field::Element> DenseVector;
 	typedef std::vector<typename Field::Element> SparseSeqVector;

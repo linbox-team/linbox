@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
-/** 
+/*
  * examples/mpidet.C
  *
  * Copyright (C) 2006, 2010 B Youse, D Saunders
@@ -19,14 +19,14 @@
  *   GNU Lesser General Public License for more details.
  *
  *   You should have received a copy of the GNU Lesser General Public
- *   License along with LinBox.  If not, see 
+ *   License along with LinBox.  If not, see
  *   <http://www.gnu.org/licenses/>.
  */
 
 /**\file examples/det.C examples/det.C
-\brief Determinant of sparse matrix over Z or Zp.
-\ingroup examples
-*/
+  \brief Determinant of sparse matrix over Z or Zp.
+  \ingroup examples
+  */
 
 #include <iostream>
 #include <string>
@@ -51,24 +51,24 @@ int main (int argc, char **argv)
 		// For a small integer matrix test, do "make mpidet2 -f makefile.mpi"
 
 		//  set up parallel code object
-	   Communicator *Cptr = NULL;
+		Communicator *Cptr = NULL;
 		Cptr = new Communicator(&argc, &argv);
 
 		typedef PID_integer Integers;
 		Integers ZZ;
 
 		ifstream input (argv[1]);
-		if (!input) 
-		{ cerr << "Error opening matrix file " << argv[1] << endl; 
-			return -1; 
+		if (!input)
+		{ cerr << "Error opening matrix file " << argv[1] << endl;
+			return -1;
 		}
 
 		SparseMatrix<Integers>A(ZZ);
 		A.read(input);
 		if(!Cptr->rank()){
-		   cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
+			cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 			cout << "Beginning parallel computation with " << Cptr->size()
-				  << " processes." << endl;
+			<< " processes." << endl;
 		}
 
 		Integers::Element det_A;
@@ -77,7 +77,7 @@ int main (int argc, char **argv)
 		cra_det(det_A, A, RingCategories::IntegerTag(), Method::Hybrid(*Cptr), Cptr);
 
 		//  if parent process, report the determinant
-		if(!Cptr->rank()){ 
+		if(!Cptr->rank()){
 			cout << "Determinant is ";
 			ZZ.write(cout, det_A) << endl;
 		}
@@ -87,5 +87,6 @@ int main (int argc, char **argv)
 	return 0;
 #else
 	cerr << "Compile with -D__LINBOX_HAVE_MPI" << endl;
+	return -1 ;
 #endif
 }

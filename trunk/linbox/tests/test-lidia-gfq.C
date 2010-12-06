@@ -54,9 +54,9 @@ int main (int argc, char **argv)
 	cout << endl << "LiDIAGfq field test suite" << endl;
 	cout.flush ();
 	bool pass = true;
-	
+
 	LidiaGfq F (q, 1);
-	
+
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 

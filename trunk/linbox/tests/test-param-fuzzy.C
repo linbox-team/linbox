@@ -46,7 +46,7 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	/* I am distressed that this field passes the testField()
-	   We need a test that distinguishes exact fields from 
+	   We need a test that distinguishes exact fields from
 	   approximate ones.  -bds */
 
 	if (!runFieldTests (F, "ParamFuzzy", iterations, n, false)) pass = false;

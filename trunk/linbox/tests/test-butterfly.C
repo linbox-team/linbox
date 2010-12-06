@@ -43,7 +43,7 @@ using namespace std;
  */
 
 template <class Field, class Vector>
-static bool testSetButterfly (const Field &F, VectorStream<Vector> &stream, size_t k) 
+static bool testSetButterfly (const Field &F, VectorStream<Vector> &stream, size_t k)
 {
 	commentator.start ("Testing setButterfly", "testSetButterfly", stream.size ());
 
@@ -131,7 +131,7 @@ static bool testSetButterfly (const Field &F, VectorStream<Vector> &stream, size
  */
 
 template <class Field>
-static bool testCekstvSwitch (const Field &F, unsigned int iterations, size_t n, size_t r) 
+static bool testCekstvSwitch (const Field &F, unsigned int iterations, size_t n, size_t r)
 {
 	commentator.start ("Testing cekstv switch", "testCekstvSwitch", iterations);
 
@@ -230,7 +230,7 @@ static bool testCekstvSwitch (const Field &F, unsigned int iterations, size_t n,
 template <class Field>
 static bool testRandomLinearity (const Field                                 &F,
 				 VectorStream<typename Vector<Field>::Dense> &v1_stream,
-				 VectorStream<typename Vector<Field>::Dense> &v2_stream) 
+				 VectorStream<typename Vector<Field>::Dense> &v2_stream)
 {
 	commentator.start ("Testing random linearity", "testRandomLinearity", v1_stream.size ());
 
@@ -264,7 +264,7 @@ static bool testRandomLinearity (const Field                                 &F,
 template <class Field>
 static bool testRandomTranspose (const Field                                 &F,
 				 VectorStream<typename Vector<Field>::Dense> &v1_stream,
-				 VectorStream<typename Vector<Field>::Dense> &v2_stream) 
+				 VectorStream<typename Vector<Field>::Dense> &v2_stream)
 {
 	commentator.start ("Testing random transpose", "testRandomTranspose", v1_stream.size ());
 

@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* -*- mode: C++; style: linux -*- */
-/** 
+/*
  * examples/dot-product.C
  *
  * Copyright (C) 2002, 2010 Bradford Hovinen <hovinen@cis.udel.edu>
@@ -19,13 +19,13 @@
  *   GNU Lesser General Public License for more details.
  *
  *   You should have received a copy of the GNU Lesser General Public
- *   License along with LinBox.  If not, see 
+ *   License along with LinBox.  If not, see
  *   <http://www.gnu.org/licenses/>.
  */
 
 /** \file examples/dot-product.C
-\brief Timings on dot products of random vectors.
-\ingroup examples
+  \brief Timings on dot products of random vectors.
+  \ingroup examples
  *
  * \author Bradford Hovinen <hovinen@cis.udel.edu>
  *

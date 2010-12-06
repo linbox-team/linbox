@@ -31,13 +31,13 @@
 
 
 /*******************************************
- * API to contruct a element over a domain * 
+ * API to contruct a element over a domain *
  *******************************************/
 const EltKey& createElement(const DomainKey &key);
 
 
 /*********************************************
- * API to write an a element over its domain * 
+ * API to write an a element over its domain *
  *********************************************/
 void writeElement (const EltKey &key, std::ostream &os);
 

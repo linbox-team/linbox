@@ -25,7 +25,7 @@
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
-  
+
 	template <class Ring>
 	struct ClassifyRing;
 
@@ -41,14 +41,14 @@ namespace LinBox
 	//typedef UnparametricField<NTL::RR> NTL_RR;
 
 	/** @name class RR.
-	 \brief
-	 * Rational number field.  
-         * This field is provided as a convenience in a few places.  
-         * Use with caution because expression swell.
-         *
+	  \brief
+	 * Rational number field.
+	 * This field is provided as a convenience in a few places.
+	 * Use with caution because expression swell.
+	 *
 	 * This specialization allows the \ref UnparametricField template class to be
 	 * used to wrap NTL's RR class as a LinBox field.
-	\ingroup field
+	 \ingroup field
 	 */
 	//@{
 
@@ -66,20 +66,20 @@ namespace LinBox
 	 * @param x field element to contain output (reference returned).
 	 * @param y integer.
 	 */
-	/* 
+	/*
+	   template <>
+	   NTL::RR& UnparametricField<NTL::RR>::init(NTL::RR& x, const integer& y) const
+	   { return x = NTL::to_RR(static_cast<const long&>(y)); }
+	   template <>
+	   NTL::RR& UnparametricField<NTL::RR>::init(NTL::RR& x, const double& y) const
+	   { return x = NTL::to_RR((long)(y)); }
+	   */
 	template <>
-		NTL::RR& UnparametricField<NTL::RR>::init(NTL::RR& x, const integer& y) const
-		{ return x = NTL::to_RR(static_cast<const long&>(y)); }
-	template <>
-		NTL::RR& UnparametricField<NTL::RR>::init(NTL::RR& x, const double& y) const
-		{ return x = NTL::to_RR((long)(y)); }
-	*/
-	template <>
-	NTL::RR& Caster(NTL::RR& x, const integer& y) 
-		{ return x = NTL::to_RR(static_cast<const long&>(y)); }
+	NTL::RR& Caster(NTL::RR& x, const integer& y)
+	{ return x = NTL::to_RR(static_cast<const long&>(y)); }
 	template <>
 	NTL::RR& Caster(NTL::RR& x, const double& y)
-		{ return x = NTL::to_RR((long)(y)); }
+	{ return x = NTL::to_RR((long)(y)); }
 
 	/** Conversion of field element to an integer.
 	 * This function assumes the output field element x has already been
@@ -93,15 +93,15 @@ namespace LinBox
 	 * @param x reference to integer to contain output (reference returned).
 	 * @param y constant reference to field element.
 	 */
-	/* 
-	template <>
-		integer& UnparametricField<NTL::RR>::convert(integer& x, const NTL::RR& y) const
-		{ return x = static_cast<integer>(to_long(y)); }
-	*/
+	/*
+	   template <>
+	   integer& UnparametricField<NTL::RR>::convert(integer& x, const NTL::RR& y) const
+	   { return x = static_cast<integer>(to_long(y)); }
+	   */
 	template <>
 	integer& Caster(integer& x, const NTL::RR& y)
-		{ return x = static_cast<integer>(to_long(y)); }
-	
+	{ return x = static_cast<integer>(to_long(y)); }
+
 
 	/** Multiplicative Inverse.
 	 * x = 1 / y
@@ -111,10 +111,10 @@ namespace LinBox
 	 * @param  x field element (reference returned).
 	 * @param  y field element.
 	 */
-	template <> 
-		NTL::RR& UnparametricField<NTL::RR>::inv(NTL::RR& x, const NTL::RR& y) const
-		{ return x = NTL::inv(y); }
- 
+	template <>
+	NTL::RR& UnparametricField<NTL::RR>::inv(NTL::RR& x, const NTL::RR& y) const
+	{ return x = NTL::inv(y); }
+
 	/** Zero equality.
 	 * Test if field element is equal to zero.
 	 * This function assumes the field element has already been
@@ -124,7 +124,7 @@ namespace LinBox
 	 * @param  x field element.
 	 */
 	template <> bool UnparametricField<NTL::RR>::isZero(const NTL::RR& x) const
-		{ return static_cast<bool>(IsZero(x)); }
+	{ return static_cast<bool>(IsZero(x)); }
 
 	/** One equality.
 	 * Test if field element is equal to one.
@@ -135,7 +135,7 @@ namespace LinBox
 	 * @param  x field element.
 	 */
 	template <> bool UnparametricField<NTL::RR>::isOne(const NTL::RR& x) const
-		{ return static_cast<bool>(IsOne(x)); }
+	{ return static_cast<bool>(IsOne(x)); }
 
 	/** Inplace Multiplicative Inverse.
 	 * x = 1 / x
@@ -145,14 +145,14 @@ namespace LinBox
 	 * @param  x field element (reference returned).
 	 */
 	template <> NTL::RR& UnparametricField<NTL::RR>::invin(NTL::RR& x) const
-		{ return x = NTL::inv(x); }
+	{ return x = NTL::inv(x); }
 
 	/** Print field.
 	 * @return output stream to which field is written.
 	 * @param  os  output stream to which field is written.
 	 */
-	template <> std::ostream& UnparametricField<NTL::RR>::write(std::ostream& os) const 
-		{ return os << "unparameterized field NTL::RR"; }
+	template <> std::ostream& UnparametricField<NTL::RR>::write(std::ostream& os) const
+	{ return os << "unparameterized field NTL::RR"; }
 
 
 	/** Random field element creator.
@@ -160,32 +160,32 @@ namespace LinBox
 	 * at the creation of the generator.
 	 * This generator uses the built-in C++ random number generator instead of
 	 * NTL's random function because the NTL function does not allow as much
-	 * control over the sampling size as the generic LinBox template.  This 
-	 * specialization is included only to allow conversion to an NTL 
+	 * control over the sampling size as the generic LinBox template.  This
+	 * specialization is included only to allow conversion to an NTL
 	 * object.
 	 * @return random field element
 	 */
 	template <> NTL::RR& UnparametricRandIter<NTL::RR>::random(NTL::RR &elt) const
-		{
-			// Create new random elements
-			if (_size == 0)
-				elt = rand();
-			else
-				elt = static_cast<long>((double(rand())/RAND_MAX)*double(_size));
+	{
+		// Create new random elements
+		if (_size == 0)
+			elt = rand();
+		else
+			elt = static_cast<long>((double(rand())/RAND_MAX)*double(_size));
 
 #ifdef TRACE
-			double temp = elt;
-			cout << "random double = " << temp 
-			     << "    random NTL::RR = " << elt << endl;
+		double temp = elt;
+		cout << "random double = " << temp
+		<< "    random NTL::RR = " << elt << endl;
 #endif // TRACE
 
-			return elt;
-    
-		} // element& operator() (void)
+		return elt;
+
+	} // element& operator() (void)
 
 
 
-	//@} 
+	//@}
 } // namespace LinBox
 
 #endif // __LINBOX_field_ntl_rr_H

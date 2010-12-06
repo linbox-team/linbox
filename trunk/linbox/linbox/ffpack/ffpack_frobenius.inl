@@ -14,15 +14,16 @@
 #endif
 
 //---------------------------------------------------------------------
-// CharpolyArithProg: Las Vegas algorithm to compute the Charpoly 
+// CharpolyArithProg: Las Vegas algorithm to compute the Charpoly
 // over a large field (Z/pZ, s.t.  p > 2n^2)
 //---------------------------------------------------------------------
 template <class Field, class Polynomial>
 std::list<Polynomial>&
-FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm, 
+FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 			   const size_t N, typename Field::Element * A, const size_t lda,
-			   const size_t c){
-	
+			   const size_t c)
+{
+
 	static typename Field::Element one, zero, mone;
 	F.init(one, 1UL);
 	F.neg(mone, one);
@@ -31,7 +32,7 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 	size_t * rp = new size_t[2*N];
 	size_t noc = static_cast<size_t>(ceil(double(N)/double(c)));
 
-	// Building the workplace matrix 
+	// Building the workplace matrix
 	typename Field::Element *K = new typename Field::Element[N*(noc*c)];
 	typename Field::Element *K2 = new typename Field::Element[N*(noc*c)];
 	size_t ldk = N;
@@ -71,9 +72,9 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 		Qk[i] = 0;
 	for (size_t i=0; i<N; ++i)
 		Pk[i] = 0;
-	
+
 	size_t R = LUdivine(F, FflasNonUnit, FflasNoTrans, N, N, K, ldk, Pk, Qk, FfpackLQUP);
-			
+
 	size_t row_idx = 0;
 	size_t i=0;
 	size_t dold = c;
@@ -110,7 +111,7 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 	}
 	delete[] K2;
 
-	// K <- K A^T 
+	// K <- K A^T
 	fgemm( F, FflasNoTrans, FflasTrans, Mk, N, N, one,  K3, ldk, A, lda, zero, K4, ldk);
 
 	// K <- K P^T
@@ -133,7 +134,7 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 	size_t Ncurr = R;
 	size_t offset = Ncurr-1;
 	for (size_t i=Mk-1; i>=nb_full_blocks+1;  --i){
-		if (dK[i] >= 1){ 
+		if (dK[i] >= 1){
 			for (size_t j = offset+1; j<R; ++j)
 				if (!F.isZero(*(K4 + i*ldk + j))){
 					//std::cerr<<"FAIL C != 0 in preconditionning"<<std::endl;
@@ -164,7 +165,7 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 					throw CharpolyFailed();
 				}
 			}
-		
+
 		//std::cerr<<"Preconditionning failed; missing rank = "<<N-R
 		//	 <<" completing the Krylov matrix"
 		//	 <<std::endl;
@@ -185,17 +186,17 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 		// A = A . P : Undo the permutation on A
 		applyP( F, FflasRight, FflasNoTrans, N, 0, R, A, lda, Pk);
 
-		// K2_ = K2_ . P^t (=  ( P A^t P^t )2_ ) 
+		// K2_ = K2_ . P^t (=  ( P A^t P^t )2_ )
 		applyP( F, FflasRight, FflasTrans, Nrest, 0, R, K21, ldk, Pk);
 
 		// K21 = K21 . S1^-1
 		ftrsm (F, FflasRight, FflasUpper, FflasNoTrans, FflasNonUnit, Nrest, R,
-		       one, K, ldk, K21, ldk);  
+		       one, K, ldk, K21, ldk);
 
 		typename Field::Element * Arec = new typename Field::Element[Nrest*Nrest];
 		size_t ldarec = Nrest;
-		
-		// Creation of the matrix A2 for recursive call 
+
+		// Creation of the matrix A2 for recursive call
 		for (Ki = K22,  Ai = Arec;
 		     Ki != K22 + Nrest*ldk;
 		     Ki += (ldk-Nrest) )
@@ -219,12 +220,12 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 	for (size_t i=0; i<Mk; ++i)
  		dA[i] = dK[i];
 	bk_idx = 0;
-	
+
 	typename Field::Element *Arp = new typename Field::Element[Ncurr*Ma];
 	typename Field::Element *Ac = new typename Field::Element[Ncurr*Ma];
 	size_t ldac = Ma;
 	size_t ldarp = Ncurr;
-	
+
 	for (size_t i=0; i < Ncurr; ++i)
  		for (size_t j=0; j<Ma; ++j)
 			*(K+i*ldk+j) = *(Ac + i*Ma +j) = *(K4 + i + (j)*ldk);
@@ -239,7 +240,7 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 		K = new typename Field::Element[Ncurr*Ma];
 		K3 = new typename Field::Element[Ncurr*Ma];
 		ldk = Ma;
- 
+
 		// Computation of the rank profile
 		for (size_t i=0; i < Ncurr; ++i)
 			for (size_t j=0; j < Ma; ++j)
@@ -287,12 +288,12 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 		}
 
 		Mk = block_idx;
-				
-		// Selection of dense colums of K 
+
+		// Selection of dense colums of K
 		for (size_t i=0; i < nb_full_blocks; ++i){
 			fcopy (F, Ncurr, K+i, ldk, Ac+i, ldac);
 		}
-		
+
 		// K <- QK K
 		size_t pos = nb_full_blocks*(deg-1);
 		for (size_t i = nb_full_blocks; i < Mk; ++i){
@@ -310,10 +311,10 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 
 		// K <- PA K
 		CompressRows (F, nb_full_blocks, K, ldk, Arp, ldarp, dA, Ma);
-		
+
 		// A <- newQA^T K (compress)
 		CompressRowsQA (F, Ma, Ac, ldac, Arp, ldarp, dA, Ma);
-		
+
 		// K <- A K
 		fgemm (F, FflasNoTrans, FflasNoTrans, Ncurr-Ma, nb_full_blocks, Ma, one,
 		       Ac, ldac, K+(Ncurr-Ma)*ldk, ldk, one, K, ldk);
@@ -321,7 +322,7 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 		       Ac+(Ncurr-Ma)*ldac, ldac, K+(Ncurr-Ma)*ldk, ldk, zero, Arp, ldarp);
 		for (size_t i=0; i< Ma; ++i)
 			fcopy(F, nb_full_blocks, K+(Ncurr-Ma+i)*ldk, 1, Arp+i*ldarp, 1);
-		
+
 		// Copying the last rows of A times K
 		offset = (deg-2)*nb_full_blocks;
 		for (size_t i = nb_full_blocks; i < Mk; ++i) {
@@ -334,14 +335,14 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 			}
 			offset += dA[i]-1;
 		}
-				
+
 		// K <- QA K
 		DeCompressRowsQA (F, Mk, Ncurr, K, ldk, Arp, ldarp, dA, Ma);
 
 		// K <- QK^T K
 		CompressRowsQK (F, Mk, K + nb_full_blocks*(deg-1)*ldk, ldk, Arp, ldarp,
 				dK+nb_full_blocks, deg, Mk-nb_full_blocks);
-		
+
 		// K <- K^-1 K
 		size_t *P=new size_t[Mk];
 		size_t *Q=new size_t[Mk];
@@ -359,16 +360,16 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 		       K3, ldk, K+(Ncurr-Mk)*ldk,ldk, one, K, ldk);
 		delete[] P;
 		delete[] Q;
-		
+
 		// K <- PK^T K
 		DeCompressRows (F, Mk, Ncurr, K, ldk, Arp, ldarp, dK, Mk);
-		
+
 		// K <- K PK (dA <- dK)
 		if (nb_full_blocks*deg < Ncurr)
 			Ma = nb_full_blocks+1;
 		else
 			Ma = nb_full_blocks;
-		
+
 		for (size_t i=0; i< Ma; ++i)
 			dA[i] = dK[i];
 
@@ -376,7 +377,7 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 		offset = Ncurr-1;
 		size_t oldNcurr = Ncurr;
 		for (size_t i=Mk-1; i>=nb_full_blocks+1;  --i)
-			if (dK[i] >= 1){ 
+			if (dK[i] >= 1){
 				Polynomial  P (dK [i]+1);
 				F.assign(P[dK[i]], one);
 				for (size_t j=0; j < dK[i]; ++j)
@@ -395,7 +396,7 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 					throw CharpolyFailed();
 				}
 			}
-		
+
 		// A <- K
 		delete[] Ac; delete[] Arp;
 		Ac = new typename Field::Element[Ncurr*Mk];
@@ -406,7 +407,7 @@ FFPACK::CharpolyArithProg (const Field& F, std::list<Polynomial>& frobeniusForm,
 			fcopy (F, Mk, Ac + i*ldac, 1, K + i*ldk, 1);
 
 		deg++;
-			
+
 	}
 
 	// Recovery of the first invariant factor
@@ -424,7 +425,8 @@ template <class Field>
 void FFPACK::CompressRowsQK (Field& F, const size_t M,
 			   typename Field::Element * A, const size_t lda,
 			   typename Field::Element * tmp, const size_t ldtmp,
-			   const size_t * d, const size_t deg,const size_t nb_blocs){
+			   const size_t * d, const size_t deg,const size_t nb_blocs)
+{
 
 	int currtmp = 0;
 	size_t currw = d[0]-1;
@@ -445,7 +447,8 @@ template <class Field>
 void FFPACK::CompressRows (Field& F, const size_t M,
 			     typename Field::Element * A, const size_t lda,
 			     typename Field::Element * tmp, const size_t ldtmp,
-			     const size_t * d, const size_t nb_blocs){
+			     const size_t * d, const size_t nb_blocs)
+{
 
 	size_t currd = d[0]-1;
 	size_t curri = d[0]-1;
@@ -465,11 +468,12 @@ template <class Field>
 void FFPACK::DeCompressRows (Field& F, const size_t M, const size_t N,
 			     typename Field::Element * A, const size_t lda,
 			     typename Field::Element * tmp, const size_t ldtmp,
-			     const size_t * d, const size_t nb_blocs){
-	
+			     const size_t * d, const size_t nb_blocs)
+{
+
 	for (int i=0; i<int(nb_blocs)-1; ++i)
 		fcopy(F, M, tmp + i*ldtmp, 1, A + (N-nb_blocs+i)*lda, 1);
-	
+
 	size_t w_idx = N - 2;
 	size_t r_idx = N - nb_blocs - 1;
 	int i = int(nb_blocs)-1 ;
@@ -484,8 +488,9 @@ template <class Field>
 void FFPACK::DeCompressRowsQK (Field& F, const size_t M, const size_t N,
 			       typename Field::Element * A, const size_t lda,
 			       typename Field::Element * tmp, const size_t ldtmp,
-			       const size_t * d, const size_t deg,const size_t nb_blocs){
-	
+			       const size_t * d, const size_t deg,const size_t nb_blocs)
+{
+
 	size_t zeroblockdim = 1; // the last block contributes with 1
 	size_t currtmp = 0;
 	for (int i=0; i<int(nb_blocs)-1; ++i)
@@ -509,7 +514,8 @@ template <class Field>
 void FFPACK::CompressRowsQA (Field& F, const size_t M,
 			     typename Field::Element * A, const size_t lda,
 			     typename Field::Element * tmp, const size_t ldtmp,
-			     const size_t * d, const size_t nb_blocs){
+			     const size_t * d, const size_t nb_blocs)
+{
 
 	size_t currd = 0;
 	size_t curri = 0;
@@ -527,8 +533,9 @@ template <class Field>
 void FFPACK::DeCompressRowsQA (Field& F, const size_t M, const size_t N,
 			       typename Field::Element * A, const size_t lda,
 			       typename Field::Element * tmp, const size_t ldtmp,
-			       const size_t * d, const size_t nb_blocs){
-	
+			       const size_t * d, const size_t nb_blocs)
+{
+
 	for (size_t i=0; i<nb_blocs; ++i)
 		fcopy(F, M, tmp + i*ldtmp, 1, A + (N-nb_blocs+i)*lda, 1);
 

@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
-/** 
+/*
  * examples/rr.C
  *
  * Copyright (C) 2008, 2010 A. Urbanska
@@ -19,7 +19,7 @@
  *   GNU Lesser General Public License for more details.
  *
  *   You should have received a copy of the GNU Lesser General Public
- *   License along with LinBox.  If not, see 
+ *   License along with LinBox.  If not, see
  *   <http://www.gnu.org/licenses/>.
  */
 
@@ -48,8 +48,8 @@ int main (int argc, char **argv)
 
 	x = x*rand()*rand()*rand()*rand()*rand()*rand();
 	m = m*rand()*rand()*rand()*rand()*rand()*rand()*rand()*rand();
-	
-	if (x > m) {integer t=x; x=m; m=t;} 
+
+	if (x > m) {integer t=x; x=m; m=t;}
 
 	cout << "Searching a,b: a =" << x << "b mod " << m << endl << flush;
 	cout << "size of m" << m.bitsize() << endl << flush;
@@ -57,28 +57,29 @@ int main (int argc, char **argv)
 	Ints Z;
 	WangClassicRationalReconstruction<Ints> RRB(Z,true,false);
 	//RationalReconstruction<Ints, WangClassicRationalReconstruction<Ints> > RR(RRB);
-	//RationalReconstruction<Ints, MaxQClassicRationalReconstruction<Ints> > RR(Z); 
+	//RationalReconstruction<Ints, MaxQClassicRationalReconstruction<Ints> > RR(Z);
 	//RationalReconstruction<Ints, WangFastRationalReconstruction<Ints> > RR(Z);
 	RationalReconstruction<Ints, MaxQFastRationalReconstruction<Ints> > RR(Z);
 
 	UserTimer t;
 	t.clear();
-	t.start();       
- 
-	for (int i=0; i < 1 ; ++i) {
-	if (RR.reconstructRational(a,b,x,m,5)) {
-		cout << "Found a,b: "<< a <<"=" << x << "x" << b << " mod " << m << endl << flush;
-		cout << "Does agree with bounds\n";
-	}
-	else {
-      		cout << "Found a,b: "<< a <<"=" << x << "x" << b << " mod " << m << endl << flush;
- 		cout << "Does not agree with bounds\n";
-	}
-	}  
-	t.stop();
-	cout << "Time:";  
-        t.print(cout);
-	cout << endl;
-		
+	t.start();
 
-} 
+	for (int i=0; i < 1 ; ++i) {
+		if (RR.reconstructRational(a,b,x,m,5)) {
+			cout << "Found a,b: "<< a <<"=" << x << "x" << b << " mod " << m << endl << flush;
+			cout << "Does agree with bounds\n";
+		}
+		else {
+			cout << "Found a,b: "<< a <<"=" << x << "x" << b << " mod " << m << endl << flush;
+			cout << "Does not agree with bounds\n";
+		}
+	}
+	t.stop();
+	cout << "Time:";
+	t.print(cout);
+	cout << endl;
+
+	return 0 ;
+
+}

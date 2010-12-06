@@ -108,7 +108,7 @@ template <class Field, class Vector1>
 static bool testSampleNullspace (const Field           &F,
 				 VectorStream<Vector1> &A_stream,
 				 size_t                 N,
-				 unsigned int           num_iter) 
+				 unsigned int           num_iter)
 {
 	typedef DenseMatrixBase<typename Field::Element> Matrix;
 	typedef MGBlockLanczosSolver<Field, Matrix> MGBLSolver;
@@ -163,7 +163,7 @@ static bool testSampleNullspace (const Field           &F,
 
 int main (int argc, char **argv)
 {
-	static int i = 5; 
+	static int i = 5;
 	static int n = 100;
 	static int k = 5;
 	static int q = 2;
@@ -198,7 +198,7 @@ int main (int argc, char **argv)
 	RandomDenseStream<Field> y_stream (F, n, i);
 
 	if (!testRandomSolve (F, A_stream, y_stream, N)) pass=false;;
-	commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) 
+	commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 		<< "	Skipping Sample Nullspace test (which has mem problems)" << std::endl;
 	//if (!testSampleNullspace (F, A_stream, N, i)) pass=false;;
 

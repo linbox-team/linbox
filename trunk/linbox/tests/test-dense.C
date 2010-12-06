@@ -45,7 +45,7 @@ using namespace LinBox;
  */
 
 template <class Field>
-static bool testIdentity (Field &F, long n, int iterations) 
+static bool testIdentity (Field &F, long n, int iterations)
 {
 	typedef typename Vector<Field>::Dense Vector;
 	typedef DenseMatrixBase <typename Field::Element> Base;
@@ -123,7 +123,7 @@ static bool testIdentity (Field &F, long n, int iterations)
  * function interpolates (using Lagrange interpolants) the evaluation points to
  * get the original polynomials and checks whether the coefficients match the
  * original vectors.
- * 
+ *
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
  * iterations - Number of random diagonal matrices to construct
@@ -133,7 +133,7 @@ static bool testIdentity (Field &F, long n, int iterations)
  */
 
 template <class Field>
-static bool testVandermonde (Field &F, long n, int iterations, int N) 
+static bool testVandermonde (Field &F, long n, int iterations, int N)
 {
 	typedef typename Vector<Field>::Dense Vector;
 	typedef vector <typename Field::Element> Polynomial;
@@ -242,7 +242,7 @@ template <class Field>
 static bool testRandomLinearity (const Field                                 &F,
 				 VectorStream<typename Vector<Field>::Dense> &A_stream,
 				 VectorStream<typename Vector<Field>::Dense> &v1_stream,
-				 VectorStream<typename Vector<Field>::Dense> &v2_stream) 
+				 VectorStream<typename Vector<Field>::Dense> &v2_stream)
 {
 	commentator.start ("Testing random linearity", "testRandomLinearity", v1_stream.size ());
 
@@ -276,7 +276,7 @@ template <class Field>
 static bool testRandomTranspose (const Field                                 &F,
 				 VectorStream<typename Vector<Field>::Dense> &A_stream,
 				 VectorStream<typename Vector<Field>::Dense> &v1_stream,
-				 VectorStream<typename Vector<Field>::Dense> &v2_stream) 
+				 VectorStream<typename Vector<Field>::Dense> &v2_stream)
 {
 	commentator.start ("Testing random transpose", "testRandomTranspose", v1_stream.size ());
 

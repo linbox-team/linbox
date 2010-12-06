@@ -34,60 +34,60 @@
 
 #if 0
 // Reading a matrice from a (eventually zipped) file
-double * read_dbl(char * mat_file,int* tni,int* tnj) 
-{ 
-	char *UT, *File_Name; 
-	int is_gzipped = 0; 
-	size_t s = strlen(mat_file); 
-	double* X; 
-	if ((mat_file[--s] == 'z') &&  
-	    (mat_file[--s] == 'g') &&  
-	    (mat_file[--s] == '.')) { 
-		is_gzipped = 1; 
-		File_Name = "/tmp/bbXXXXXX_"; 
-		mkstemp(File_Name); 
-		UT = new char[s+34+strlen(File_Name)]; 
-		sprintf(UT,"gunzip -c %s > %s", mat_file, File_Name); 
-		system(UT); 
-		sprintf(UT,"\\rm %s", File_Name); 
-	} else 
-		File_Name = mat_file; 
+double * read_dbl(char * mat_file,int* tni,int* tnj)
+{
+	char *UT, *File_Name;
+	int is_gzipped = 0;
+	size_t s = strlen(mat_file);
+	double* X;
+	if ((mat_file[--s] == 'z') &&
+	    (mat_file[--s] == 'g') &&
+	    (mat_file[--s] == '.')) {
+		is_gzipped = 1;
+		File_Name = "/tmp/bbXXXXXX_";
+		mkstemp(File_Name);
+		UT = new char[s+34+strlen(File_Name)];
+		sprintf(UT,"gunzip -c %s > %s", mat_file, File_Name);
+		system(UT);
+		sprintf(UT,"\\rm %s", File_Name);
+	} else
+		File_Name = mat_file;
 
-	FILE* FileDes = fopen(File_Name, "r"); 
-	if (FileDes != NULL) { 
-		char * tmp = new char[200];// usigned long tni, tnj; 
-		fscanf(FileDes,"%d %d %s\n",tni, tnj, &tmp) ; 
-		int n=*tni; 
-		int p=*tnj; 
-		X = new double[n*p]; 
-		for (int i=0;i<n*p;++i) 
-			X[i] = (double) 0; 
-		long i,j; long val; 
-		fscanf(FileDes,"%ld %ld %ld\n",&i, &j, &val) ; 
-		while(i && j) { 
-			X[p*(i-1)+j-1] = (double) val; 
-			fscanf(FileDes,"%ld %ld %ld\n",&i, &j, &val) ; 
-		} 
-	} 
+	FILE* FileDes = fopen(File_Name, "r");
+	if (FileDes != NULL) {
+		char * tmp = new char[200];// usigned long tni, tnj;
+		fscanf(FileDes,"%d %d %s\n",tni, tnj, &tmp) ;
+		int n=*tni;
+		int p=*tnj;
+		X = new double[n*p];
+		for (int i=0;i<n*p;++i)
+			X[i] = (double) 0;
+		long i,j; long val;
+		fscanf(FileDes,"%ld %ld %ld\n",&i, &j, &val) ;
+		while(i && j) {
+			X[p*(i-1)+j-1] = (double) val;
+			fscanf(FileDes,"%ld %ld %ld\n",&i, &j, &val) ;
+		}
+	}
 
-	fclose(FileDes); 
-	if (is_gzipped) system(UT);         
-	return X; 
-} 
+	fclose(FileDes);
+	if (is_gzipped) system(UT);
+	return X;
+}
 
-// Displays a matrix  
-std::ostream& write_dbl(std::ostream& c,  
-			double* E, 
+// Displays a matrix
+std::ostream& write_dbl(std::ostream& c,
+			double* E,
 			int n, int m, int id)
-{ 
+{
 
-	for (int i = 0; i<n;++i){ 
-		for (int j=0; j<m;++j) 
-			c << *(E+j+id*i) << " "; 
-		c << std::endl; 
-	} 
-	return c << std::endl; 
-} 
+	for (int i = 0; i<n;++i){
+		for (int j=0; j<m;++j)
+			c << *(E+j+id*i) << " ";
+		c << std::endl;
+	}
+	return c << std::endl;
+}
 #endif
 // Reading and writing matrices over field
 
@@ -101,8 +101,8 @@ typename Field::Element * read_field(const Field& F,char * mat_file,int* tni,int
 	typename Field::Element zero;
 	F.init(zero,0);
 	typename Field::Element * X;
-	if ((mat_file[--s] == 'z') && 
-	    (mat_file[--s] == 'g') && 
+	if ((mat_file[--s] == 'z') &&
+	    (mat_file[--s] == 'g') &&
 	    (mat_file[--s] == '.')) {
 		is_gzipped = 1;
 		File_Name = "/tmp/bbXXXXXX_";
@@ -131,13 +131,13 @@ typename Field::Element * read_field(const Field& F,char * mat_file,int* tni,int
 	}
 
 	fclose(FileDes);
-	if (is_gzipped) system(UT);        
+	if (is_gzipped) system(UT);
 	return X;
 }
 
 template<class Field>
 void read_field4(const Field& F,char * mat_file,int* tni,int* tnj,
-		 typename Field::Element *& NW,typename Field::Element *& NE, 
+		 typename Field::Element *& NW,typename Field::Element *& NE,
 		 typename Field::Element *& SW,typename Field::Element *& SE)
 {
 	char *UT, *File_Name;
@@ -146,8 +146,8 @@ void read_field4(const Field& F,char * mat_file,int* tni,int* tnj,
 	typename Field::Element zero;
 	F.init(zero,0);
 	typename Field::Element * X;
-	if ((mat_file[--s] == 'z') && 
-	    (mat_file[--s] == 'g') && 
+	if ((mat_file[--s] == 'z') &&
+	    (mat_file[--s] == 'g') &&
 	    (mat_file[--s] == '.')) {
 		is_gzipped = 1;
 		File_Name = "/tmp/bbXXXXXX_";
@@ -211,12 +211,12 @@ void read_field4(const Field& F,char * mat_file,int* tni,int* tnj,
 	}
 
 	fclose(FileDes);
-	if (is_gzipped) system(UT);        
+	if (is_gzipped) system(UT);
 }
 
 // Displays a matrix
 template<class Field>
-std::ostream& write_field(const Field& F,std::ostream& c, 
+std::ostream& write_field(const Field& F,std::ostream& c,
 			  const typename Field::Element* E,
 			  int n, int m, int id, bool mapleFormat = false)
 {
@@ -242,7 +242,7 @@ std::ostream& write_field(const Field& F,std::ostream& c,
 // Displays a triangular matrix
 //! @todo let the user choose to convert to a non destructive format (not double but long or Integer...)
 template<class Field>
-std::ostream& write_field(const Field& F,std::ostream& c, 
+std::ostream& write_field(const Field& F,std::ostream& c,
 			  const LinBox::FFLAS::FFLAS_UPLO uplo, const LinBox::FFLAS::FFLAS_DIAG unit,
 			  const typename Field::Element* E,
 			  int n, int m, int id, bool mapleFormat = false)
@@ -254,7 +254,7 @@ std::ostream& write_field(const Field& F,std::ostream& c,
 		if (mapleFormat) c << '[';
 		// under diag
 		for (int j=0; j<i ;++j){
-			if (uplo == LinBox::FFLAS::FflasLower) 
+			if (uplo == LinBox::FFLAS::FflasLower)
 				F.convert(tmp,*(E+j+id*i));
 			else tmp = 0 ;
 			c << tmp;
@@ -264,7 +264,7 @@ std::ostream& write_field(const Field& F,std::ostream& c,
 		// on diag
 		if (unit == LinBox::FFLAS::FflasNonUnit)
 			F.convert(tmp,*(E+i+id*i));
-		else 
+		else
 			tmp = 1.;
 		c << tmp;
 		if (mapleFormat && i<m-1) c << ',';
@@ -273,7 +273,7 @@ std::ostream& write_field(const Field& F,std::ostream& c,
 		for (int j=i+1; j<m;++j){
 			if (uplo == LinBox::FFLAS::FflasUpper)
 				F.convert(tmp,*(E+j+id*i));
-			else 
+			else
 				tmp = 0 ;
 			c << tmp;
 			if (mapleFormat && j<m-1) c << ',';

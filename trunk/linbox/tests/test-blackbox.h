@@ -29,11 +29,11 @@
 #include "linbox/vector/vector-domain.h"
 #include "linbox/blackbox/dense.h"
 
-#include "test-common.h" 
+#include "test-common.h"
 
 using namespace std;
 
-// Generic tests for black boxes 
+// Generic tests for black boxes
 /// testBlackbox combines testTranspose and testLinearity
 
 /** Random check that (u^T A) v = u^T (A v).
@@ -54,9 +54,9 @@ using namespace std;
 template <class Field, class Blackbox, class Vector>
 static bool
 testTranspose (Field                             &F,
-			   Blackbox							 &A,
-			   LinBox::VectorStream<Vector>      &stream1,
-			   LinBox::VectorStream<Vector>      &stream2) 
+	       Blackbox							 &A,
+	       LinBox::VectorStream<Vector>      &stream1,
+	       LinBox::VectorStream<Vector>      &stream2)
 {
 	bool ret = true;
 
@@ -102,7 +102,7 @@ testTranspose (Field                             &F,
 		if (!F.areEqual (r1, r2)) {
 			ret = false;
 			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Values are not equal" << endl;
+			<< "ERROR: Values are not equal" << endl;
 		}
 
 		LinBox::commentator.stop ("done");
@@ -129,7 +129,7 @@ static bool
 testLinearity (Field                             &F,
 	       BB 				 &A,
 	       LinBox::VectorStream<Vector>      &stream1,
-	       LinBox::VectorStream<Vector>      &stream2) 
+	       LinBox::VectorStream<Vector>      &stream2)
 {
 	bool ret = true, iter_passed;
 
@@ -177,7 +177,7 @@ testLinearity (Field                             &F,
 		VD.axpy ( AxpaAy, alpha, Ay, Ax);
 
 		VD.write( report << "   x+alpha y = ", xpay) << endl;
- 
+
 		VD.write( report << "A(x+alpha y) = ", Axpay) << endl;
 
 		VD.write( report << "          Ax = ", Ax) << endl;
@@ -191,7 +191,7 @@ testLinearity (Field                             &F,
 
 		if (!iter_passed)
 			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Vectors are not equal" << endl;
+			<< "ERROR: Vectors are not equal" << endl;
 
 		LinBox::commentator.stop ("done");
 		LinBox::commentator.progress ();
@@ -201,13 +201,13 @@ testLinearity (Field                             &F,
 }
 
 /** Generic blackbox test 4: combination of tests
- * 
+ *
  * Call testTranspose and testLinearity.
  * If large, time apply and applyTranspose.
  * if small, call testSmallBlackbox.
  */
-template <class BB> 
-static bool 
+template <class BB>
+static bool
 testBlackbox(BB &A)
 {
 	size_t largeThresh = 2000; // Above it do timing of apply and applyTr.
@@ -215,7 +215,7 @@ testBlackbox(BB &A)
 	typedef std::vector<typename Field::Element> DenseVector;
 	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "testBlackbox on " << A.rowdim() << " by " << A.coldim() << " matrix." << endl;
-	
+
 	LinBox::commentator.setMaxDepth(-1);
 	bool ret = true;
 	typename BB::Field F = A.field();
@@ -226,63 +226,63 @@ testBlackbox(BB &A)
 		for(size_t i = 0; i < A.coldim(); ++i) F.init(x[i], i);
 		for(size_t i = 0; i < A.rowdim(); ++i) F.init(y[i], i);
 		//A.apply(y, x);
-		
+
 		if (A.coldim() >= largeThresh)
-			{
-				LinBox::commentator.start ("\t--Timing Test (Av)","testApply", 1);
-				A.apply(y, x);
-				LinBox::commentator.stop (MSG_STATUS (true), (const char *) 0, "testApply");
-			}
-		
+		{
+			LinBox::commentator.start ("\t--Timing Test (Av)","testApply", 1);
+			A.apply(y, x);
+			LinBox::commentator.stop (MSG_STATUS (true), (const char *) 0, "testApply");
+		}
+
 		if (A.rowdim() >= largeThresh)
-			{
-				LinBox::commentator.start ("\t--Timing Test(v^T A)", 
-										   "testApplyTranspose", 1);
-				A.applyTranspose(x, y);
-				LinBox::commentator.stop (MSG_STATUS (true), (const char *) 0, "testApplyTranspose");
-			}
-		
+		{
+			LinBox::commentator.start ("\t--Timing Test(v^T A)",
+						   "testApplyTranspose", 1);
+			A.applyTranspose(x, y);
+			LinBox::commentator.stop (MSG_STATUS (true), (const char *) 0, "testApplyTranspose");
+		}
+
 	} // timing test block
-	
-#if 1 
-	size_t iterations = 1; 
+
+#if 1
+	size_t iterations = 1;
 	typename Field::RandIter r(F);
-	LinBox::RandomDenseStream<Field, DenseVector> stream1 (F, r, A.rowdim(), iterations); 
-	typename Field::Element x; 
+	LinBox::RandomDenseStream<Field, DenseVector> stream1 (F, r, A.rowdim(), iterations);
+	typename Field::Element x;
 	r.random(x);
-	LinBox::RandomDenseStream<Field, DenseVector> stream2 (F, r, A.coldim(), iterations); 
+	LinBox::RandomDenseStream<Field, DenseVector> stream2 (F, r, A.coldim(), iterations);
 
 	LinBox::commentator.start ("\t--Testing A(ax+y) = a(Ax) + (Ay)", "testLinearity", 1);
 	ret = ret && testLinearity (F, A, stream1, stream2);
-	
-	LinBox::commentator.stop (MSG_STATUS (ret), 
-							  (const char *) 0, "testLinearity");
-	
-	LinBox::commentator.start ("\t--Testing u^T(Av) = (u^T A)v", 
-							   "testTranspose", 1);
-	
-	LinBox::RandomDenseStream<Field, DenseVector> stream3 (F, r, A.rowdim(), iterations); 
-	LinBox::RandomDenseStream<Field, DenseVector> stream4 (F, r, A.coldim(), iterations); 
 
-	ret = ret && testTranspose (F, A, stream3, stream4); 
-	LinBox::commentator.stop (MSG_STATUS (ret), 
-							  (const char *) 0, "testTranspose");
-	
+	LinBox::commentator.stop (MSG_STATUS (ret),
+				  (const char *) 0, "testLinearity");
+
+	LinBox::commentator.start ("\t--Testing u^T(Av) = (u^T A)v",
+				   "testTranspose", 1);
+
+	LinBox::RandomDenseStream<Field, DenseVector> stream3 (F, r, A.rowdim(), iterations);
+	LinBox::RandomDenseStream<Field, DenseVector> stream4 (F, r, A.coldim(), iterations);
+
+	ret = ret && testTranspose (F, A, stream3, stream4);
+	LinBox::commentator.stop (MSG_STATUS (ret),
+				  (const char *) 0, "testTranspose");
+
 #endif
-	
+
 	return ret;
 }
- 
+
 /** Generic blackbox test 5: test several sizes
- * 
+ *
  * Call testTranspose and testLinearity.
  * If large, time apply and applyTranspose.
  * if small, call test
-SmallBlackbox.
+ SmallBlackbox.
  */
-template <class Field, class Blackbox> 
-static bool 
-testBB(Field& F) 
+template <class Field, class Blackbox>
+static bool
+testBB(Field& F)
 {
 	bool pass = true;
 

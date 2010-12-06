@@ -2,7 +2,7 @@
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
 
-/** 
+/*
  * examples/blackbox/load-det.C
  *
  * Copyright (C) 2001, 2002, 2010 Bradford Hovinen <hovinen@cis.udel.edu>
@@ -20,7 +20,7 @@
  *   GNU Lesser General Public License for more details.
  *
  *   You should have received a copy of the GNU Lesser General Public
- *   License along with LinBox.  If not, see 
+ *   License along with LinBox.  If not, see
  *   <http://www.gnu.org/licenses/>.
  */
 
@@ -28,7 +28,7 @@
  *
  * @author Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * @memo 
+ * @memo
  * Small program that loads and computes the determinant of a matrix whose
  * filename is given on the command line.
  */
@@ -58,7 +58,7 @@ typedef DenseMatrix<Field> Blackbox;
 int main (int argc, char **argv)
 {
 	Field::Element det_A;
-    int q = 65521U;
+	int q = 65521U;
 
 	if (argc < 2 || argc > 3) {
 		cerr << "Usage: load-det <matrix> [<p>]" << endl;

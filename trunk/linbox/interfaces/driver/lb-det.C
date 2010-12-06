@@ -50,16 +50,16 @@ class DeterminantFunctor{
 private:
 	Method meth;
 public:
-	
+
 	DeterminantFunctor(Method m = Method()) : meth(m) {}
 
 	template<class Blackbox>
 	void operator() (EltAbstract *&res, Blackbox *B) const {
-		typedef typename Blackbox::Field::Element Element;		
-		if (Element *d = (dynamic_cast<EltEnvelope<Element>*>(res))->getElement()) 
-			LinBox::det(*d, *B, meth);		
+		typedef typename Blackbox::Field::Element Element;
+		if (Element *d = (dynamic_cast<EltEnvelope<Element>*>(res))->getElement())
+			LinBox::det(*d, *B, meth);
 		else
-			throw lb_runtime_error("LinBox ERROR: incompatible blackbox and element type (determinant computation impossible)");			       
+			throw lb_runtime_error("LinBox ERROR: incompatible blackbox and element type (determinant computation impossible)");
 	}
 };
 
@@ -72,7 +72,7 @@ void lb_determinant(const EltKey& Ekey, const BlackboxKey& Bkey, const char* met
 	EltTable::iterator it = element_hashtable.find(Ekey);
 	if ( it == element_hashtable.end())
 		throw lb_runtime_error("LinBox ERROR: invalid element (determinant computation impossible)");
-	
+
 	DeterminantFunctor<> fct;
 	BlackboxFunction::call(it->second, Bkey, fct);
 }
@@ -87,7 +87,7 @@ const EltKey& lb_determinant(const BlackboxKey& key, const char *method) {
 	BlackboxTable::iterator it = blackbox_hashtable.find(key);
 	if (it == blackbox_hashtable.end())
 		throw lb_runtime_error("LinBox ERROR: blackbox does not exist (determinant computation impossible)\n");
-	
+
 	const DomainKey *d = &(it->second->getDomainKey());
 	const EltKey *e = &createElement(*d);
 	lb_determinant(*e, key, method);

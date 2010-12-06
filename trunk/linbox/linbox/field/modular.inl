@@ -172,7 +172,7 @@ inline uint32 &DotProductDomain<Modular<uint32> >::dotSpecializedDD
 {
 	typename Vector1::const_iterator i;
 	typename Vector2::const_iterator j;
-  
+
 	uint64 y = 0;
 	uint64 t;
 
@@ -183,7 +183,7 @@ inline uint32 &DotProductDomain<Modular<uint32> >::dotSpecializedDD
 		if (y < t)
 			y += _F._two_64;
 	}
-  
+
 	y %= (uint64) _F._modulus;
 
 	return res = y;
@@ -195,7 +195,7 @@ inline uint32 &DotProductDomain<Modular<uint32> >::dotSpecializedDSP
 {
 	typename Vector1::first_type::const_iterator i_idx;
 	typename Vector1::second_type::const_iterator i_elt;
-  
+
 	uint64 y = 0;
 	uint64 t;
 
@@ -206,7 +206,7 @@ inline uint32 &DotProductDomain<Modular<uint32> >::dotSpecializedDSP
 		if (y < t)
 			y += _F._two_64;
 	}
-  
+
 	y %= (uint64) _F._modulus;
 
 	return res = y;

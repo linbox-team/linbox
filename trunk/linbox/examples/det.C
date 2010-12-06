@@ -1,9 +1,9 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-/* 
+/*
  * examples/det.C
  *
- * Copyright (C) 2005, 2010 D. Saunders,  J-G. Dumas 
+ * Copyright (C) 2005, 2010 D. Saunders,  J-G. Dumas
  *
  * This file is part of LinBox.
  *
@@ -18,14 +18,14 @@
  *   GNU Lesser General Public License for more details.
  *
  *   You should have received a copy of the GNU Lesser General Public
- *   License along with LinBox.  If not, see 
+ *   License along with LinBox.  If not, see
  *   <http://www.gnu.org/licenses/>.
  */
 
 /**\file examples/det.C examples/det.C
-\brief Determinant of sparse matrix over Z or Zp.
-\ingroup examples
-*/
+  \brief Determinant of sparse matrix over Z or Zp.
+  \ingroup examples
+  */
 
 //#include "linbox-config.h"
 #include <iostream>
@@ -41,9 +41,9 @@ using namespace std;
 
 int main (int argc, char **argv)
 {
-    commentator.setMaxDetailLevel (-1);
-    commentator.setMaxDepth (-1);
-    commentator.setReportStream (std::cerr);
+	commentator.setMaxDetailLevel (-1);
+	commentator.setMaxDepth (-1);
+	commentator.setReportStream (std::cerr);
 
 	if (argc <= 1 || argc > 3) {
 		cerr << "Usage: det <matrix-file-in-supported-format> [<p>]" << endl;
@@ -51,17 +51,17 @@ int main (int argc, char **argv)
 	}
 
 	if (argc == 2 ) {
-	
-		// For a small integer matrix test, do "det data/mat2S". 
+
+		// For a small integer matrix test, do "det data/mat2S".
 		// It is a 2 by 2 matrix with determinant = -2.
 
-		typedef PID_integer Integers;		
+		typedef PID_integer Integers;
 		Integers ZZ;
 
 		ifstream input (argv[1]);
-		if (!input) 
-		{ cerr << "Error opening matrix file " << argv[1] << endl; 
-			return -1; 
+		if (!input)
+		{ cerr << "Error opening matrix file " << argv[1] << endl;
+			return -1;
 		}
 		MatrixStream< Integers> ms ( ZZ, input );
 		BlasBlackbox<Integers> A(ms);
@@ -73,16 +73,16 @@ int main (int argc, char **argv)
 		cout << "Determinant is ";
 		ZZ.write(cout, det_A) << endl;
 	}
-	if (argc == 3) { 
+	if (argc == 3) {
 
 		typedef Modular<double> Field;
 		double q = atof(argv[2]);
 		Field F(q);
 
 		ifstream input (argv[1]);
-		if (!input) 
-		{ cerr << "Error opening matrix file " << argv[1] << endl; 
-		  return -1; 
+		if (!input)
+		{ cerr << "Error opening matrix file " << argv[1] << endl;
+			return -1;
 		}
 		MatrixStream< Field > ms ( F, input );
 		SparseMatrix<Field> B (ms);
@@ -96,4 +96,4 @@ int main (int argc, char **argv)
 	}
 
 	return 0;
-} 
+}

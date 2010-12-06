@@ -43,7 +43,7 @@ typedef VL1 VectorList;
 extern Vector_Factory linbox_vector;
 
 void UpdateVector() {
-	linbox_vector.add("linbox_dense", Vector_Factory::CallBackMap::value_type::second_type( constructVector_from_size<std::vector>, 
+	linbox_vector.add("linbox_dense", Vector_Factory::CallBackMap::value_type::second_type( constructVector_from_size<std::vector>,
 												constructVector_from_stream<std::vector> ));
 }
 

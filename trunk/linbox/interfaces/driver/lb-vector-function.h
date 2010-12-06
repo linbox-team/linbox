@@ -26,7 +26,7 @@
 
 
 #include <lb-vector-abstract.h>
-#include <lb-vector-functor.h> 
+#include <lb-vector-functor.h>
 
 
 /*********************************************************
@@ -39,32 +39,32 @@ public:
 	template<class Functor, class Result>
 	static void call(Result &res, const std::pair<const VectorKey, VectorAbstract*> &vector, const Functor &functor){
 		ApplyVectorFunctor<Functor, Result> Ap(res, functor);
-		(vector.second)->Accept(Ap);	
+		(vector.second)->Accept(Ap);
 	}
 
 	// call a functor over a vector from the hashtable, no result
 	template<class Functor>
 	static void call(const std::pair<const VectorKey, VectorAbstract*> &v, const Functor &f){
-		void *dumbresult; 
+		void *dumbresult;
 		call(dumbresult,v,f);
 	}
-	
+
 	// call a functor over a vector from its key, result is given through 1st parameter
 	template<class Functor, class Result>
 	static void call(Result &res, const VectorKey &key, const Functor &functor){
-		VectorTable::const_iterator it = vector_hashtable.find(key);  
+		VectorTable::const_iterator it = vector_hashtable.find(key);
 		if (it != vector_hashtable.end())
 			VectorFunction::call(res, *it, functor);
 		else
 			throw lb_runtime_error("LinBox ERROR: use of a non allocated vector\n");// throw an exception
 	}
-	
+
 	// call a functor over a vector from its key, no result
 	template<class Functor>
-	static void call(const VectorKey &k, const Functor &f) { 
-		void *dumbresult; 
+	static void call(const VectorKey &k, const Functor &f) {
+		void *dumbresult;
 		call(dumbresult,k,f);
 	}
 };
-	
+
 #endif

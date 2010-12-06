@@ -11,9 +11,9 @@
  * Added parametrization to the VectorCategory tags to make them fit the
  * Rootbeer meeting design of VectorCategories being parametrized by
  * VectorTraits.
- * 
+ *
  * ------------------------------------
- * 
+ *
  * See COPYING for license information.
  */
 
@@ -35,7 +35,7 @@ enum ArgumentType {
 };
 #define TYPE_BOOL TYPE_NONE
 
-struct Argument 
+struct Argument
 {
 	char             c;
 	const char            *example;
@@ -47,16 +47,16 @@ struct Argument
 // eg "-b {YN+-}" for bools, "-v v" for all else
 
 template <class Field, class Vector>
-void printVector (Field &F, ostream &output, const Vector &v) 
+void printVector (Field &F, ostream &output, const Vector &v)
 { printVectorSpecialized(F, output, v, typename LinBox::VectorTraits<Vector>::VectorCategory()); }
 
 template <class Field, class Vector>
 void printVectorSpecialized(
-		Field &F, 
-		ostream &output, 
-		const Vector &v, 
-		LinBox::VectorCategories::DenseVectorTag tag
-		)
+			    Field &F,
+			    ostream &output,
+			    const Vector &v,
+			    LinBox::VectorCategories::DenseVectorTag tag
+			   )
 {
 	unsigned int i;
 
@@ -71,11 +71,11 @@ void printVectorSpecialized(
 
 template <class Field, class Vector>
 void printVectorSpecialized(
-		Field &F, 
-		ostream &output, 
-		const Vector &v, 
-		LinBox::VectorCategories::SparseSequenceVectorTag tag
-		)
+			    Field &F,
+			    ostream &output,
+			    const Vector &v,
+			    LinBox::VectorCategories::SparseSequenceVectorTag tag
+			   )
 {
 	typename Vector::const_iterator i;
 	unsigned int j;
@@ -97,11 +97,11 @@ void printVectorSpecialized(
 
 template <class Field, class Vector>
 void printVectorSpecialized(
-		Field &F, 
-		ostream &output, 
-		const Vector &v, 
-		LinBox::VectorCategories::SparseAssociativeVectorTag tag
-		)
+			    Field &F,
+			    ostream &output,
+			    const Vector &v,
+			    LinBox::VectorCategories::SparseAssociativeVectorTag tag
+			   )
 {
 	typename Vector::const_iterator i;
 	unsigned int j;
@@ -122,78 +122,78 @@ void printVectorSpecialized(
 }
 
 template <class Field, class Vector>
-bool areVectorsEqual (Field &F, const Vector &v, const Vector &w) 
+bool areVectorsEqual (Field &F, const Vector &v, const Vector &w)
 { return areVectorsEqualSpecialized(F, v, w, LinBox::VectorTraits<Vector>::VectorCategory()); }
 
 template <class Field, class Vector>
 bool areVectorsEqualSpecialized(
-		Field &F, 
-		const Vector &v, 
-		const Vector &w, 
-		LinBox::VectorCategories::DenseVectorTag tag
-		)
+				Field &F,
+				const Vector &v,
+				const Vector &w,
+				LinBox::VectorCategories::DenseVectorTag tag
+			       )
 {
 	if (v.size() != w.size()) return false;
 
 	for (size_t i = 0; i < v.size(); i++)
 		if (!F.areEqual (w[i], v[i]))
 			return false;
-	
+
 	return true;
 }
 
 template <class Field, class Vector>
 bool areVectorsEqualSpecialized(
-		Field &F, 
-		const Vector &v, 
-		const Vector &w, 
-		LinBox::VectorCategories::SparseSequenceVectorTag tag
-		)
+				Field &F,
+				const Vector &v,
+				const Vector &w,
+				LinBox::VectorCategories::SparseSequenceVectorTag tag
+			       )
 {
 	if (v.size() != w.size()) return false;
 
 	typename Vector::const_iterator v_iter, w_iter;
 	w_iter = w.begin();
-	
+
 	for ( v_iter = v.begin(); v_iter != v.end(); v_iter++, w_iter++)
-		if ( (w_iter->first != v_iter->first) 
-				|| (!F.areEqual (w_iter->second, v_iter->second)) )
+		if ( (w_iter->first != v_iter->first)
+		     || (!F.areEqual (w_iter->second, v_iter->second)) )
 			return false;
-	
+
 	return true;
 }
 
 template <class Field, class Vector>
 bool areVectorsEqualSpecialized(
-		Field &F, 
-		const Vector &v, 
-		const Vector &w, 
-		LinBox::VectorCategories::SparseAssociativeVectorTag tag
-		)
+				Field &F,
+				const Vector &v,
+				const Vector &w,
+				LinBox::VectorCategories::SparseAssociativeVectorTag tag
+			       )
 {
 	if (v.size() != w.size()) return false;
 
 	typename Vector::const_iterator v_iter, w_iter;
 	w_iter = w.begin();
-	
+
 	for ( v_iter = v.begin(); v_iter != v.end(); v_iter++, w_iter++)
-		if ( (w_iter->first != v_iter->first) 
-				|| (!F.areEqual (w_iter->second, v_iter->second)) )
+		if ( (w_iter->first != v_iter->first)
+		     || (!F.areEqual (w_iter->second, v_iter->second)) )
 			return false;
-	
+
 	return true;
 }
 
 template <class Field, class Vector>
-bool allZero (Field &F, const Vector &v) 
+bool allZero (Field &F, const Vector &v)
 { return allZeroSpecialized(F, v, LinBox::VectorTraits<Vector>::VectorCategory()); }
 
 template <class Field, class Vector>
 bool allZeroSpecialized(
-		Field &F, 
-		const Vector &v, 
-		LinBox::VectorCategories::DenseVectorTag tag
-		)
+			Field &F,
+			const Vector &v,
+			LinBox::VectorCategories::DenseVectorTag tag
+		       )
 {
 	for (size_t i = 0; i < v.size(); i++)
 		if (!F.isZero (v[i]))
@@ -201,22 +201,22 @@ bool allZeroSpecialized(
 
 	return true;
 }
-	
+
 template <class Field, class Vector>
 bool allZeroSpecialized(
-		Field &F, 
-		const Vector &v, 
-		LinBox::VectorCategories::SparseSequenceVectorTag tag
-		)
+			Field &F,
+			const Vector &v,
+			LinBox::VectorCategories::SparseSequenceVectorTag tag
+		       )
 {
-	if (0 != v.size()) 
+	if (0 != v.size())
 		return false;
 	else
 		return true;
 }
 
 template <class Field, class Polynomial>
-void printPolynomial (Field &F, ostream &output, const Polynomial &v) 
+void printPolynomial (Field &F, ostream &output, const Polynomial &v)
 {
 	int i;
 	size_t val;
@@ -249,7 +249,7 @@ applyPoly (const Field                             &F,
 	   Vector                                  &w,
 	   const Blackbox			   &A,
 	   const Polynomial                        &phi,
-	   const Vector                            &v) 
+	   const Vector                            &v)
 {
 	LinBox::VectorDomain <Field> VD (F);
 	Vector z;
@@ -274,7 +274,7 @@ vector <typename Field::Element> &
 multiEvalPoly (const Field                            &F,
 	       vector <typename Field::Element>       &w,
 	       const Polynomial                       &phi,
-	       const vector <typename Field::Element> &v) 
+	       const vector <typename Field::Element> &v)
 {
 	typedef vector <typename Field::Element> Vector;
 
@@ -305,7 +305,7 @@ Polynomial &
 interpolatePoly (const Field                            &F,
 		 Polynomial                             &f,
 		 const vector <typename Field::Element> &x,
-		 const vector <typename Field::Element> &y) 
+		 const vector <typename Field::Element> &y)
 {
 	typedef vector <typename Field::Element> Vector;
 
@@ -313,7 +313,7 @@ interpolatePoly (const Field                            &F,
 
 	// NB I leave one element in g always initialized to 0 as the ficticious
 	// negative-first coefficient. This streamlines some of the code.
-	static const int g_FUDGE = 1; 
+	static const int g_FUDGE = 1;
 	Vector g(n + g_FUDGE);
 	F.init (g[0], 0);
 

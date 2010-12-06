@@ -49,7 +49,7 @@ public:
 	void operator() (Result &res, Blackbox *B) const {
 		typedef typename Blackbox::Field::Element Element;
 		std::vector<Element> * phi = static_cast<std::vector<Element>*>(res);
-		LinBox::minpoly(*phi, *B, meth);	
+		LinBox::minpoly(*phi, *B, meth);
 		res = phi;
 	}
 };
@@ -79,7 +79,7 @@ const VectorKey& lb_minpoly(const BlackboxKey& key) {
 	BlackboxTable::iterator it = blackbox_hashtable.find(key);
 	if ( it == blackbox_hashtable.end())
 		throw lb_runtime_error("LinBox ERROR: blackbox is not defined (minpoly computation impossible)");
-		
+
 	const VectorKey *res = & createVector(it->second->getDomainKey(), 0, "linbox_dense");
 	lb_minpoly(*res, key);
 	return *res;

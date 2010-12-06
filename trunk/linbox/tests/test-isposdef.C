@@ -32,7 +32,7 @@ using namespace LinBox;
  */
 
 template <class Ring>
-bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, double sparsity = 0.05) 
+bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, double sparsity = 0.05)
 {
 	typedef SparseMatrix<Ring> Blackbox;
 
@@ -51,13 +51,13 @@ bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, double spars
 		for (size_t j = 0; j < n; ++j)
 			A.setEntry(j, j, e);
 
-		std::ostream & report = 
+		std::ostream & report =
 		commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
 
-		Z.write( report ) << endl; 
-		A.write( report ) << endl; 
+		Z.write( report ) << endl;
+		A.write( report ) << endl;
 		bool p;
-		p = isPositiveDefinite(A); 
+		p = isPositiveDefinite(A);
 		report << "Positivedefiniteness on I computed by default (Hybrid) method: " << p << endl;
 		if (!p) {report << "ERROR: should be pos def" << endl; ret = false;}
 
@@ -65,9 +65,9 @@ bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, double spars
 		Z. assign(A. refEntry(n/2, n/2), e);
 		A.setEntry(1, 2, e);
 		A.setEntry(2, 1, e);
-		p = isPositiveDefinite(A); 
+		p = isPositiveDefinite(A);
 		report << "Matrix:\n";
-		A.write( report ) << endl; 
+		A.write( report ) << endl;
 		report << "Positivedefiniteness on indefinite example computed by default (Hybrid) method: " << p << endl;
 		if (p) {report << "ERROR: should not be pos def" << endl; ret = false;}
 
@@ -87,7 +87,7 @@ int main (int argc, char **argv)
 
 //     commentator.setMaxDetailLevel( 100000 );
 //     commentator.setMaxDepth( 100000 );
-   
+
 	bool pass = true;
 
 	static size_t n = 80;
@@ -114,7 +114,7 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 
     PID_integer R;
-        
+
 	if (!testIsPosDef(R, n, iterations, sparsity)) pass = false;
 
 	commentator.stop("IsPositiveDefinite solution test suite");

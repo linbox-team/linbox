@@ -30,22 +30,22 @@
 
 #include "linbox/blackbox/zo.h"
 #include "linbox/blackbox/transpose.h"
-#include "linbox/field/modular.h" 
+#include "linbox/field/modular.h"
 #include "linbox/util/commentator.h"
 
 
 #include "test-common.h"
 #include "test-blackbox.h"
 
-int main(int argc, char **argv) 
+int main(int argc, char **argv)
 {
   bool pass = true;
   uint32 prime = 31337;
   static size_t n = 100000;
 
-  static Argument args[] = 
-    {{ 'n', "-n N", "Set dimension of test matrix to NxN.", TYPE_INT, &n }, 
-     { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INT, &prime }, 
+  static Argument args[] =
+    {{ 'n', "-n N", "Set dimension of test matrix to NxN.", TYPE_INT, &n },
+     { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INT, &prime },
 	 { '\0'}
 	};
 
@@ -57,14 +57,14 @@ int main(int argc, char **argv)
 
   Field afield(prime);
 
-  /* 
+  /*
   // "arrow" matrix
   size_t *rows, *cols, i;
   rows = new size_t[3 * n + 1 - 2];
   cols = new size_t[3 * n + 1 - 2];
 
   for(i = 0; i < n; i++) { rows[i] = 0; cols[i] = i; } // first row
-  for(i = 0; i < n - 1; i++) 
+  for(i = 0; i < n - 1; i++)
     { rows[n+2*i] = i + 1; cols[n+2*i] = 0; rows[n+2*i+1] = i + 1; cols[n+2*i+1] = i + 1; } // first col and the diag
   Matrix testMatrix(afield, rows, cols, n, n, 3 * n - 2);
   */
@@ -109,7 +109,7 @@ int main(int argc, char **argv)
 
   pass = pass && testBlackbox(testMatrix);
   //bool pass2 = testBlackbox(testMat);
-  
+
   //delete [] rows;
   //delete [] cols;
 

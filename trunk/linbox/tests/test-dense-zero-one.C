@@ -37,7 +37,7 @@
 namespace LinBox
 {
 template <class _Field>
-struct BlackboxDomain : public _Field 
+struct BlackboxDomain : public _Field
 {
 	// types Scalar, Block, Blackbox
 	typedef _Field Field; // transitional
@@ -64,42 +64,42 @@ struct BlackboxDomain : public _Field
 	// A <-- A + B.  A and B must have same shape.
 	Block & addin( Block & A, const Block & B ) const { return MatrixDomain<Field>(*this).addin(A,B); }
 	// for the Scalar addin.
-	using Field::addin; 
+	using Field::addin;
 
 	// A <-- B * C.  A, B, C must have compatible shapes.
-	Block & mul( Block & C, const Block & A, const Block & B ) const { 
-		return BlasMatrixDomain<Field>(*this).mul(C,A,B); 
+	Block & mul( Block & C, const Block & A, const Block & B ) const {
+		return BlasMatrixDomain<Field>(*this).mul(C,A,B);
 	}
 
 	// for the Scalar mul.
-	using Field::mul; 
+	using Field::mul;
 
 	// C <-- B * C.  A, B, C must have compatible shapes.
-	Block & axpyin( Block & C, const Block & A, const Block & B ) const { 
-		return BlasMatrixDomain<Field>(*this).axpyin(C,A,B); 
+	Block & axpyin( Block & C, const Block & A, const Block & B ) const {
+		return BlasMatrixDomain<Field>(*this).axpyin(C,A,B);
 	}
 
 	// for the Scalar axpyin
 	using Field::axpyin;
 
 	// A <-- B * C.  A, B, C must have compatible shapes.
-	bool areEqual( const Block & A, const Block & B ) const { 
-		return MatrixDomain<Field>(*this).areEqual(A,B); 
+	bool areEqual( const Block & A, const Block & B ) const {
+		return MatrixDomain<Field>(*this).areEqual(A,B);
 	}
 	// for the Scalar areEqual.
-	using Field::areEqual; 
+	using Field::areEqual;
 
 	// Set the entries in a block to zero.
 	void zero( Block& B ) const {
-		for ( typename Block::RawIterator raw = B.rawBegin(); raw != B.rawEnd(); ++raw ) 
+		for ( typename Block::RawIterator raw = B.rawBegin(); raw != B.rawEnd(); ++raw )
 			init(*raw, 0);
 	}
 
 	// Set the entries in a block to random field elements.
-	void random( Block& B) { 
+	void random( Block& B) {
 		RandIter r(*this);
-		for ( typename Block::RowIterator row = B.rowBegin(); row != B.rowEnd(); ++row ) 
-			for ( typename Block::Row::iterator place = row->begin(); place != row->end(); ++place ) 
+		for ( typename Block::RowIterator row = B.rowBegin(); row != B.rowEnd(); ++row )
+			for ( typename Block::Row::iterator place = row->begin(); place != row->end(); ++place )
 				r.random(*place);
 	}
 
@@ -111,7 +111,7 @@ using namespace LinBox;
 using namespace std;
 
 template <class Blackbox>
-bool testAssociativity(Blackbox& A) 
+bool testAssociativity(Blackbox& A)
 {
 	typedef typename Blackbox::MatrixDomain Dom;
 	Dom MD = A.domain();
@@ -155,7 +155,7 @@ void testTiming(Blackbox & A)
 	for(size_t i = 0; i != n; ++i){
 		r.random(x);
 		v1.push_back(x);
-	} 
+	}
 
 
 	//Tests:
@@ -228,13 +228,13 @@ void stressTest (Blackbox & A)
 	//Note that the rowdim/coldim of A must be 30000
 	typedef typename Blackbox::MatrixDomain Dom;
 	typedef typename Dom::Block Block;
-	
+
 	Dom MD = A.domain();
 	size_t m = 30000;
 	size_t n = 2000;
 
 	UserTimer timer;
-	
+
 	Block B(m,n), C(m,n);
 	MD.random(B);
 
@@ -261,13 +261,13 @@ void largeTest (Blackbox & A)
 	//Use for large blackboxes
 	typedef typename Blackbox::MatrixDomain Dom;
 	typedef typename Dom::Block Block;
-	
+
 	Dom MD = A.domain();
 	size_t m = A.coldim();
 	size_t n = 2000;
 
 	UserTimer timer;
-	
+
 	Block B(m,n), C(m,n);
 	MD.random(B);
 
@@ -280,7 +280,7 @@ void largeTest (Blackbox & A)
 }  //end largeTest
 
 
-int main (int argc, char* argv[]) 
+int main (int argc, char* argv[])
 {
 
 	static size_t n = 100;
@@ -315,60 +315,60 @@ int main (int argc, char* argv[])
 	F.init(oneF, 1); F.init(zeroF, 0);
 	D.init(oneD, 1); D.init(zeroD, 0);
 
-	for (size_t i = 0; i < n; ++i) 
+	for (size_t i = 0; i < n; ++i)
 		for (size_t j = 0; j < n; ++j) {
 			if (rand()%2){
 				A.setEntry(i, j, oneF);
 				B.setEntry(i, j, oneD);
 			}
-	
+
 			else {
 				A.setEntry(i, j, zeroF);
 				B.setEntry(i, j, zeroD);
 			}
 		}
-	
+
 	//A.write(cout) << endl << endl;
 	//B.write(cout) << endl << endl;
 
 	/* basic everyday test
 	cout << endl;
-	cout << "Domain: Modular<float>, GF(" << f << ")" << endl; 
+	cout << "Domain: Modular<float>, GF(" << f << ")" << endl;
 	testTiming(A);
 
 	cout << "Domain: Modular<double>, GF(" << d << ")" << endl;
 	testTiming(B);
-	*/	
+	*/
 
 	/* block size tests
 	cout << endl;
 	cout << "Domain: Modular<double>, GF(" << d << ")" << endl << endl;
 	cout << "block Size     n     unpackingApply   unpackingApplyTranspose    Domain mul" << endl << endl;
-	for (size_t sizeU = 256; sizeU != 4096; sizeU *= 2)	
-		for (int count = 500; count != 4500; count += 500){ 
+	for (size_t sizeU = 256; sizeU != 4096; sizeU *= 2)
+		for (int count = 500; count != 4500; count += 500){
 			DenseZeroOne<BlackboxDomain<FieldD> > C(D, count, count);
-			
-			for (size_t i = 0; i < count; ++i) 
+
+			for (size_t i = 0; i < count; ++i)
 				for (size_t j = 0; j < count; ++j) {
 					if (rand()%2)
 						C.setEntry(i, j, oneD);
-					else 
+					else
 						C.setEntry(i, j, zeroD);
 				}
-			
+
 				blockSizeTimingTest(C, sizeU);
 		}
 	*/
 
-	
+
 	/* stress test
 	cout << "Domain: Modular<double>, GF(" << d << ")" << endl;
 	DenseZeroOne<BlackboxDomain<FieldD> > C(D, 30000, 30000);
-	for (size_t i = 0; i != 30000; ++i) 
+	for (size_t i = 0; i != 30000; ++i)
 		for (size_t j = 0; j != 30000; ++j) {
 			if (rand()%2)
 				C.setEntry(i, j, oneD);
-			else 
+			else
 				C.setEntry(i, j, zeroD);
 		}
 	stressTest(C);
@@ -378,11 +378,11 @@ int main (int argc, char* argv[])
 	cout << "Domain: Modular<double>, GF(" << d << ")" << endl;
 	for (size_t dim = 120000; dim < 150000; dim *= 2){
 		DenseZeroOne<BlackboxDomain<FieldD> > C(D, dim, dim);
-		for (size_t i = 0; i != dim; ++i) 
+		for (size_t i = 0; i != dim; ++i)
 			for (size_t j = 0; j != dim; ++j) {
 				if (rand()%2)
 					C.setEntry(i, j, oneD);
-				else 
+				else
 					C.setEntry(i, j, zeroD);
 			}
 		cout << "blackbox created\n";

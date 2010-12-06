@@ -61,7 +61,7 @@ int main (int argc, char **argv)
 	typedef Modular<uint32> Field;
 
 	Field F (q);
-	Field::Element d; 
+	Field::Element d;
 	F.init (d, -1);
 
 	typedef ScalarMatrix <Field> Blackbox;

@@ -52,7 +52,7 @@ template <class Field, class Vector, class MethodTraits>
 static bool testIdentitySolve (const Field          &F,
 			       VectorStream<Vector> &stream,
 			       const char           *text,
-			       MethodTraits          method) 
+			       MethodTraits          method)
 {
 	typedef ScalarMatrix <Field> Blackbox;
 
@@ -131,7 +131,7 @@ static bool testIdentitySolve (const Field          &F,
  *
  * Constructs a random nonsingular diagonal matrix D and a random right-hand
  * side b, and computes the solution to the Dx=b, checking the result
- * 
+ *
  * F - Field over which to perform computations
  * stream1 - Vector stream for diagonal entries
  * stream2 - Vector stream for right-hand sides
@@ -143,10 +143,10 @@ static bool testIdentitySolve (const Field          &F,
 
 template <class Field, class Vector, class MethodTraits>
 static bool testNonsingularSolve (const Field          &F,
-				  VectorStream<Vector> &stream1, 
+				  VectorStream<Vector> &stream1,
 				  VectorStream<Vector> &stream2,
 				  const char           *text,
-				  MethodTraits          method) 
+				  MethodTraits          method)
 {
 	typedef Diagonal <Field, Vector> Blackbox;
 
@@ -242,7 +242,7 @@ static bool testNonsingularSolve (const Field          &F,
  *
  * Constructs a random diagonal matrix D of rank r and a random right-hand
  * side b, and computes the solution to the Dx=b, checking the result
- * 
+ *
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
  * stream1 - Vector stream for diagonal entries
@@ -259,7 +259,7 @@ static bool testSingularConsistentSolve (const Field          &F,
 					 VectorStream<Vector> &stream1,
 					 VectorStream<Vector> &stream2,
 					 const char           *text,
-					 MethodTraits          method) 
+					 MethodTraits          method)
 {
 	typedef Diagonal <Field, Vector> Blackbox;
 
@@ -365,7 +365,7 @@ static bool testSingularConsistentSolve (const Field          &F,
  *
  * Constructs a random diagonal matrix D of rank r and a random right-hand
  * side b, and computes the solution to the Dx=b, checking the result
- * 
+ *
  * F - Field over which to perform computations
  * stream1 - Vector stream for diagonal entries
  * stream2 - Vector stream for right-hand sides
@@ -380,7 +380,7 @@ static bool testSingularInconsistentSolve (const Field          &F,
 					   VectorStream<Vector> &stream1,
 					   VectorStream<Vector> &stream2,
 					   const char           *text,
-					   MethodTraits          method) 
+					   MethodTraits          method)
 {
 	typedef Diagonal <Field, Vector> Blackbox;
 
@@ -483,7 +483,7 @@ static bool testSingularInconsistentSolve (const Field          &F,
  *
  * Constructs a random diagonal matrix D of rank r and a random right-hand
  * side b, and computes the solution to the Dx=b, checking the result
- * 
+ *
  * F - Field over which to perform computations
  * stream1 - Vector stream for diagonal entries
  * stream2 - Vector stream for right-hand sides
@@ -498,7 +498,7 @@ static bool testSingularPreconditionedSolve (const Field                  &F,
 					     VectorStream<SparseVector>   &stream1,
 					     VectorStream<Vector>         &stream2,
 					     const char                   *text,
-					     Method::Wiedemann::Preconditioner preconditioner) 
+					     Method::Wiedemann::Preconditioner preconditioner)
 {
 	typedef SparseMatrix <Field> Blackbox;
 
@@ -789,7 +789,7 @@ int main (int argc, char **argv)
 					      "Wiedemann", Method::Wiedemann ()))
 		pass = false;
 	if (!testSingularPreconditionedSolve (F, stream6, stream2,
-					      "Sparse preconditioner", Method::Wiedemann::SPARSE)) 
+					      "Sparse preconditioner", Method::Wiedemann::SPARSE))
 		pass = false;
 	if (!testIdentitySolve               (F, stream1,
 					      "Lanczos", Method::Lanczos ()))
@@ -815,7 +815,7 @@ int main (int argc, char **argv)
 	if (!testRandomSolve (F, A_stream, stream1, "Block Lanczos", traits2))
 		pass = false;
 #endif
-    if ( ! testBasicMethodsSolve (F, n) ) 
+    if ( ! testBasicMethodsSolve (F, n) )
 		pass = false;
 
 	commentator.stop("solve test suite");

@@ -37,7 +37,7 @@ EltTable element_hashtable;
 
 
 /*******************************************
- * API to contruct a element over a domain * 
+ * API to contruct a element over a domain *
  *******************************************/
 const EltKey& createElement(const DomainKey &key) {
 	EltAbstract *e = constructElt(key);
@@ -51,17 +51,17 @@ const EltKey& createElement(const DomainKey &key) {
 
 
 /*********************************************
- * API to write an a element over its domain * 
+ * API to write an a element over its domain *
  *********************************************/
 class WriteElementFunctor{
 protected:
 	std::ostream     &os;
 	EltAbstract  *elt;
-public:	
+public:
 	WriteElementFunctor(std::ostream &o, EltAbstract* e) : os(o), elt(e) {}
 
 	template<class Domain>
-	void operator() (void*, Domain *D) const {	
+	void operator() (void*, Domain *D) const {
 		if (EltEnvelope<typename Domain::Element> *ptr = dynamic_cast<EltEnvelope<typename Domain::Element>*>(elt))
 			D->write(os, *(ptr->getElement()))<<"\n";
 		else
@@ -76,7 +76,7 @@ void writeElement (const EltKey &key, std::ostream &os){
 		throw lb_runtime_error("LinBox ERROR: invalid element (writing impossible)");
 
 	WriteElementFunctor Fct(os, it->second);
-	DomainFunction::call(it->second->getDomainKey(), Fct);	
+	DomainFunction::call(it->second->getDomainKey(), Fct);
 }
 
 
@@ -117,13 +117,13 @@ public:
 	}
 };
 
-void  SerializeElement (SerialElement &s, const EltKey &key) {       
+void  SerializeElement (SerialElement &s, const EltKey &key) {
 	EltTable::iterator it = element_hashtable.find(key);
 	if ( it == element_hashtable.end())
 		throw lb_runtime_error("LinBox ERROR: invalid element (serializing impossible)");
 
 	SerializeElementFunctor Fct(it->second);
-	DomainFunction::call(s, it->second->getDomainKey(), Fct);	
+	DomainFunction::call(s, it->second->getDomainKey(), Fct);
 }
 
 #endif

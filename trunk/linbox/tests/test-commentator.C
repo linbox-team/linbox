@@ -33,7 +33,7 @@ using namespace std;
 
 // Output various report strings
 
-void outputReportStrings () 
+void outputReportStrings ()
 {
 	static const char *classes[] =
 		{ INTERNAL_DESCRIPTION, INTERNAL_WARNING, INTERNAL_ERROR };
@@ -48,7 +48,7 @@ void outputReportStrings ()
 
 // Simple test activity to exercise commentator features
 
-void runTestActivity (bool reportStrings) 
+void runTestActivity (bool reportStrings)
 {
 	commentator.start ("Test activity", "test", 2);
 
@@ -82,7 +82,7 @@ void runTestActivity (bool reportStrings)
  * Return true on success and false on failure
  */
 
-static bool testPrimaryOutput () 
+static bool testPrimaryOutput ()
 {
 	//cout << "Testing primary output...";
 
@@ -123,7 +123,7 @@ static bool testPrimaryOutput ()
  * Return true on success and false on failure
  */
 
-static bool testBriefReport () 
+static bool testBriefReport ()
 {
 	//cout << "Testing brief report...";
 

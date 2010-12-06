@@ -44,7 +44,7 @@ using namespace LinBox;
  */
 
 template <class Row, class Field, class Vector>
-static bool testIdentityApply (Field &F, const char *text, VectorStream<Vector> &stream) 
+static bool testIdentityApply (Field &F, const char *text, VectorStream<Vector> &stream)
 {
 	typedef SparseMatrix <Field, Row> Blackbox;
 
@@ -118,7 +118,7 @@ static bool testIdentityApply (Field &F, const char *text, VectorStream<Vector> 
  */
 
 template <class Row, class Field, class Vector>
-static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector> &stream) 
+static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector> &stream)
 {
 	typedef SparseMatrix <Field, Row> Blackbox;
 
@@ -224,7 +224,7 @@ static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector>
  */
 
 template <class Vector, class Row, class Field>
-bool testRandomApply1 (Field &F, const char *text, unsigned int iterations, VectorStream<Row> &A_stream) 
+bool testRandomApply1 (Field &F, const char *text, unsigned int iterations, VectorStream<Row> &A_stream)
 {
 	typedef SparseMatrix <Field, Row> Blackbox;
 
@@ -299,7 +299,7 @@ bool testRandomApply1 (Field &F, const char *text, unsigned int iterations, Vect
  */
 
 template <class Vector, class Row, class Field>
-bool testRandomApply2 (Field &F, const char *text, unsigned int iterations, VectorStream<Row> &A_stream) 
+bool testRandomApply2 (Field &F, const char *text, unsigned int iterations, VectorStream<Row> &A_stream)
 {
 	typedef SparseMatrix <Field, Row> Blackbox;
 
@@ -387,7 +387,7 @@ static bool testRandomTranspose (Field                &F,
 				 const char           *text,
 				 VectorStream<Row>    &A_stream,
 				 VectorStream<Vector> &stream1,
-				 VectorStream<Vector> &stream2) 
+				 VectorStream<Vector> &stream2)
 {
 	typedef SparseMatrix <Field, Row> Blackbox;
 
@@ -428,7 +428,7 @@ static bool testRandomLinearity (Field                 &F,
 				 const char            *text,
 				 VectorStream<Row>    &A_stream,
 				 VectorStream<Vector> &stream1,
-				 VectorStream<Vector> &stream2) 
+				 VectorStream<Vector> &stream2)
 {
 	typedef SparseMatrix <Field, Row> Blackbox;
 
@@ -459,7 +459,7 @@ bool runSparseMatrixTestsByVector (const Field           &F,
 				   unsigned int           iterations,
 				   VectorStream<Vector> &v_stream1,
 				   VectorStream<Vector> &v_stream2,
-				   VectorStream<Row>    &A_stream) 
+				   VectorStream<Row>    &A_stream)
 {
 	bool pass = true;
 
@@ -484,7 +484,7 @@ template <class Field, class Row>
 bool runSparseMatrixTests (const Field       &F,
 			   const char        *desc,
 			   int                iterations,
-			   VectorStream<Row> &A_stream) 
+			   VectorStream<Row> &A_stream)
 {
 	typedef std::vector <typename Field::Element> DenseVector;
 	typedef std::vector <pair <size_t, typename Field::Element> > SparseSeqVector;

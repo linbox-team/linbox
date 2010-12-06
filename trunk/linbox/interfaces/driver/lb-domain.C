@@ -27,7 +27,7 @@
 #include <lb-domain.h>
 #include <lb-domain-function.h>
 
-	
+
 /****************************
  * Allocate global variable *
  ****************************/
@@ -37,7 +37,7 @@ DomainTable domain_hashtable;
 
 // global variable for the factory
 Domain_Factory linbox_domain;
-	
+
 // global variable for current prime field type
 const char* current_prime_field  = default_prime_field;
 
@@ -48,9 +48,9 @@ const char* current_rational_field  = default_rational_field;
 const char* current_integer_ring = default_integer_ring;
 
 
-				  
+
 /****************************
- * API to contruct domains  * 
+ * API to contruct domains  *
  ****************************/
 
 const DomainKey& createDomain( const LinBox::integer characteristic, const char *name){
@@ -63,7 +63,7 @@ const DomainKey& createDomain( const LinBox::integer characteristic, const char 
 	}
 
 	DomainKey key(characteristic, type);
-	
+
 	// check if the domain is already constructed in domain hashtable
 	// if so return the pointer to the domain
 	DomainTable::const_iterator it= domain_hashtable.find(key) ;
@@ -71,10 +71,10 @@ const DomainKey& createDomain( const LinBox::integer characteristic, const char 
 		it->first.copy();
 		return it->first;
 	}
-	
+
 	// need to create a new field
 	DomainAbstract *domain = linbox_domain.create(type, characteristic);
-	
+
 
 	std::pair<DomainTable::const_iterator, bool> status= domain_hashtable.insert(std::pair<DomainKey, DomainAbstract*> (key, domain));
 
@@ -86,7 +86,7 @@ const DomainKey& createDomain( const LinBox::integer characteristic, const char 
 
 
 /************************
- * API to copy domains  * 
+ * API to copy domains  *
  ************************/
 const DomainKey copyDomain( const DomainKey &k){
 	return k;

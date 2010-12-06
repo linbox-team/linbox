@@ -65,7 +65,7 @@ extern "C" {
  ************************/
 	ALGEB lbCopyBlackbox          (MKernelVector kv, ALGEB *argv);
 	ALGEB lbGetBlackboxDimension  (MKernelVector kv, ALGEB *argv);
-	ALGEB lbSetBlackboxAtRandom   (MKernelVector kv, ALGEB *argv);	
+	ALGEB lbSetBlackboxAtRandom   (MKernelVector kv, ALGEB *argv);
 	ALGEB lbRebindBlackbox        (MKernelVector kv, ALGEB *argv);
 	ALGEB lbWriteBlackbox         (MKernelVector kv, ALGEB *argv);
 	ALGEB lbSetBlackbox           (MKernelVector kv, ALGEB *argv);

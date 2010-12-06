@@ -34,7 +34,7 @@ void UpdateBlackbox();
 
 
 /*******************************************************
- * API to contruct a m x n zero blackbox over a domain * 
+ * API to contruct a m x n zero blackbox over a domain *
  *******************************************************/
 const BlackboxKey& createBlackbox(const DomainKey &k, size_t m, size_t n, const char* name=NULL);
 
@@ -49,7 +49,7 @@ const BlackboxKey& createBlackbox(const DomainKey &k, std::istream &is, const ch
  * API to copy an existing blackbox *
  ************************************/
 const BlackboxKey& copyBlackbox(const BlackboxKey &k);
-	
+
 
 /********************************************
  * API to get the dimensions of  a blackbox *

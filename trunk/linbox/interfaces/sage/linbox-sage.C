@@ -47,7 +47,7 @@
 #include "linbox/algorithms/gauss.h"
 #include "linbox/algorithms/smith-form-adaptive.h"
 #include "linbox/ffpack/ffpack.h"
-#include <linbox/solutions/rank.h>          
+#include <linbox/solutions/rank.h>
 #include <linbox/solutions/det.h>
 #include <linbox/solutions/solve.h>
 #include "linbox/solutions/methods.h"
@@ -110,7 +110,7 @@ unsigned long int linbox_modn_dense_rank (Element modulus,  Element* matrix, siz
 	for (size_t i=0; i< nrows; ++i)
 		for (size_t j = 0; j < ncols; ++j)
 			*(Ad + i * ncols + j) = *(matrix + i*ncols + j);
-	
+
 	size_t r = FFPACK::Rank (F, nrows, ncols, Ad, ncols);
 	delete[] Ad;
 	return r;
@@ -123,7 +123,7 @@ EXTERN unsigned long int linbox_modn_dense_rank_float (float modulus, float* mat
 
 template<class Element>
 Element linbox_modn_dense_det(Element modulus,Element*matrix,size_t nrows,size_t ncols){
-	
+
 	Modular<Element> F (modulus);
 	Element * Ad = new Element [nrows*ncols];
 	for (size_t i=0; i< nrows; ++i)
@@ -140,7 +140,7 @@ EXTERN float linbox_modn_dense_det_float (float modulus, float* matrix, size_t n
 {return linbox_modn_dense_det<float>(modulus,matrix,nrows,ncols);}
 
 template<class Element>
-Element* linbox_modn_dense_minpoly (Element modulus, Element ** mp, size_t* degree, 
+Element* linbox_modn_dense_minpoly (Element modulus, Element ** mp, size_t* degree,
 				    size_t n, Element *matrix) {
 
 	Modular<Element> F(modulus);
@@ -152,7 +152,7 @@ Element* linbox_modn_dense_minpoly (Element modulus, Element ** mp, size_t* degr
 	// FIXME: check the memory management: better to allocate mp in sage
 	FFPACK::MinPoly (F, *minP, n, matrix, n, X, n, P);
 	*degree=minP->size()-1;
-	
+
 	*mp = &(*minP)[0];
 	delete[] P;
 	delete[] X;
@@ -176,18 +176,18 @@ Polynomial & mulpoly(const Field& F, Polynomial &res, const Polynomial & P1, con
 				for ( j=0;j<P2.size();j++)
 					F.axpyin(res[i+j],P1[i],P2[j]);
 			return res;
-			
+
 		}
 
 template<class Element>
 Element* linbox_modn_dense_charpoly (Element modulus, Element *& cp, size_t n, Element *matrix) {
 
 	Modular<Element> F(modulus);
-	
+
 	// FIXME: check the memory management: better to allocate mp in sage
 	std::list<std::vector<Element> > P_list;
 
-	
+
 	FFPACK::CharPoly (F, P_list, n, matrix, n);
 
 	std::vector<Element>* tmp = new std::vector<Element> (n+1);
@@ -204,7 +204,7 @@ Element* linbox_modn_dense_charpoly (Element modulus, Element *& cp, size_t n, E
 		++it;
 	}
 	return cp = &(*tmp)[0];
-	
+
 }
 
 EXTERN double* linbox_modn_dense_charpoly_double (double modulus, double ** cp, size_t n, double * matrix)
@@ -225,7 +225,7 @@ unsigned long linbox_modn_dense_col_rankprofile_submatrix_indices (Element modul
 	for (size_t i=0; i< nrows; ++i)
 		for (size_t j = 0; j < ncols; ++j)
 			*(Ad + i * ncols + j) = *(matrix +i*ncols + j);
-  
+
 	size_t R;
 	Element * X;
 	FFPACK::ColRankProfileSubmatrixIndices (F, nrows, ncols, Ad, ncols,
@@ -250,7 +250,7 @@ unsigned long linbox_modn_dense_col_rankprofile_submatrix (Element modulus,
 	for (size_t i=0; i< nrows; ++i)
 		for (size_t j = 0; j < ncols; ++j)
 			*(Ad + i * ncols + j) = *(matrix + i*ncols + j);
-  
+
 	size_t R = FFPACK::ColRankProfileSubmatrix (F, nrows, ncols, ans, ncols, ans, rank);
 	delete[] Ad;
 	return R;
@@ -261,13 +261,13 @@ EXTERN unsigned long linbox_modn_dense_col_rankprofile_submatrix_float (float mo
 {return linbox_modn_dense_col_rankprofile_submatrix<float>(modulus,matrix,out,*rank,nrows,ncols);}
 
 template<class Element>
-Element* linbox_modn_dense_matrix_matrix_multiply (Element modulus, Element *ans, 
+Element* linbox_modn_dense_matrix_matrix_multiply (Element modulus, Element *ans,
 					       Element *A, Element *B,
 					       size_t m, size_t n, size_t k) {
 
 	Modular<Element> F(modulus);
 
-	FFLAS::fgemm (F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m,n,k, 1.0, 
+	FFLAS::fgemm (F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m,n,k, 1.0,
 		      A, k, B, n, 0.0, ans, n);
 }
 
@@ -283,10 +283,10 @@ Element *  linbox_modn_dense_matrix_matrix_general_multiply(Element modulus,
 						      Element *A, Element *B,
 						      size_t m, size_t n, size_t k) {
 	Modular<Element> F(modulus);
-	FFLAS::fgemm (F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m,n,k, alpha, 
+	FFLAS::fgemm (F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m,n,k, alpha,
 		      A, k, B, n, beta,ans, n);
 	return ans;
-	
+
 }
 EXTERN double* linbox_modn_dense_matrix_matrix_general_multiply_double (double modulus, double * ans, double alpha, double beta, double *A, double *B, size_t m, size_t n, size_t k)
 {return linbox_modn_dense_matrix_matrix_general_multiply<double>(modulus,ans,alpha,beta,A,B,m,n,k);}
@@ -300,7 +300,7 @@ EXTERN float* linbox_modn_dense_matrix_matrix_general_multiply_float (float modu
 typedef PID_integer Integers;
 
 template <class Field, class Polynomial>
-void printPolynomial (const Field &F, const Polynomial &v) 
+void printPolynomial (const Field &F, const Polynomial &v)
 {
         for (int i = v.size () - 1; i >= 0; i--) {
                 F.write (std::cout, v[i]);
@@ -378,13 +378,13 @@ void linbox_integer_dense_minpoly_hacked(mpz_t* *mp, size_t* degree, size_t n, m
  //    vector<Integers::Element> m_A;
      IntPolRing::Element m_A;
 
-     if (do_minpoly) 
+     if (do_minpoly)
 	 minpoly(m_A, A);
      else
 	 charpoly(m_A, A);
 
      if (n%4 == 0 || !do_minpoly) {
-	 /* Program around the bug. 
+	 /* Program around the bug.
 	    It is OK that this code is crappy and redundant, since it will get replaced
 	    when linbox gets fixed. */
 	 int divide_by_x;
@@ -402,7 +402,7 @@ void linbox_integer_dense_minpoly_hacked(mpz_t* *mp, size_t* degree, size_t n, m
 	     *degree = m_A.size() - 2;
 	     for (size_t i=0; i <= *degree; i++) {
 		 mpz_init((*mp)[i]);
-		 mpz_set((*mp)[i], spy.get_mpz(m_A[i+1])); 
+		 mpz_set((*mp)[i], spy.get_mpz(m_A[i+1]));
 	     }
 	     return;
 	 }
@@ -412,7 +412,7 @@ void linbox_integer_dense_minpoly_hacked(mpz_t* *mp, size_t* degree, size_t n, m
      *degree = m_A.size() - 1;
      for (size_t i=0; i <= *degree; i++) {
 	 mpz_init((*mp)[i]);
-	 mpz_set((*mp)[i], spy.get_mpz(m_A[i])); 
+	 mpz_set((*mp)[i], spy.get_mpz(m_A[i]));
      }
 
 }
@@ -429,7 +429,7 @@ void linbox_integer_dense_minpoly_hacked(mpz_t* *mp, size_t* degree, size_t n, m
      *degree = m_A.size() - 1;
      for (size_t i=0; i <= *degree; i++) {
 	 mpz_init((*mp)[i]);
-	 mpz_set((*mp)[i], spy.get_mpz(m_A[i])); 
+	 mpz_set((*mp)[i], spy.get_mpz(m_A[i]));
      }
 
  }
@@ -446,7 +446,7 @@ void linbox_integer_dense_minpoly_hacked(mpz_t* *mp, size_t* degree, size_t n, m
      *degree = m_A.size() - 1;
      for (size_t i=0; i <= *degree; i++) {
 	 mpz_init((*mp)[i]);
-	 mpz_set((*mp)[i], spy.get_mpz(m_A[i])); 
+	 mpz_set((*mp)[i], spy.get_mpz(m_A[i]));
      }
 
  }
@@ -456,7 +456,7 @@ void linbox_integer_dense_delete_array(mpz_t* f) {
  }
 
  int linbox_integer_dense_matrix_matrix_multiply(mpz_t** ans, mpz_t **A, mpz_t **B,
-				   size_t A_nr, size_t A_nc, size_t B_nr, size_t B_nc) 
+				   size_t A_nr, size_t A_nc, size_t B_nr, size_t B_nc)
  {
    typedef PID_integer Integers;
    Integers ZZ;
@@ -541,7 +541,7 @@ void linbox_integer_dense_double_det (mpz_t  ans1, mpz_t ans2, mpz_t **a, mpz_t 
 /*
 This won't build on OS X PPC.
 
-void linbox_integer_dense_smithform(mpz_t **v, 
+void linbox_integer_dense_smithform(mpz_t **v,
                                     mpz_t **matrix, size_t nrows, size_t ncols) {
   typedef NTL_ZZ Ints;
   Ints Z;
@@ -578,13 +578,13 @@ typedef SparseMatrix<GFp, SparseSeqVectorGFp> SparseMatrixGFp;
 static SparseMatrixGFp linbox_new_modn_sparse_matrix(mod_int modulus, size_t numrows, size_t numcols, void *rows) {
   GFp F(modulus);
   SparseMatrixGFp M(F, numrows, numcols);
-  
+
   struct c_vector_modint_linbox *A = static_cast<struct c_vector_modint_linbox *>(rows);
-  
+
   for(int i = 0; i < numrows; i++) {
     for(int j = 0; j < A[i].num_nonzero; j++) {
       M.setEntry(i, A[i].positions[j], A[i].entries[j]);
-    } 
+    }
   }
   return M;
 }
@@ -593,7 +593,7 @@ static vector<Element> linbox_new_modn_sparse_vector(mod_int modulus, size_t len
   GFp F(modulus);
 
   vector<GFp::Element> A(len);
-  
+
   if (_vec==NULL) {
     return A;
   }
@@ -605,7 +605,7 @@ static vector<Element> linbox_new_modn_sparse_vector(mod_int modulus, size_t len
   return A;
 }
 
-unsigned long linbox_modn_sparse_matrix_rank(mod_int modulus, 
+unsigned long linbox_modn_sparse_matrix_rank(mod_int modulus,
 					     size_t numrows, size_t numcols,
 					     void *rows, int gauss) {
   GFp F(modulus);

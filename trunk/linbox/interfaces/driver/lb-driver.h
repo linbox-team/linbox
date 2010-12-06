@@ -36,7 +36,7 @@
 #include <lb-det.h>
 #include <lb-rank.h> //problem with givaro-extension (UTT type is not always consistent) disabled in the code
 #include <lb-minpoly.h>
-#include <lb-charpoly.h> 
+#include <lb-charpoly.h>
 #include <lb-solve.h>
 
 // overload PreconditionFailed to be a real exception
@@ -76,13 +76,13 @@ void LinBoxDataInfo(std::ostringstream &out){
 	extern VectorTable        vector_hashtable;
 	extern EltTable          element_hashtable;
 
-	
+
 	out<<"LinBox Driver active Data:\n"
 	   <<"   - Domain    : "<<domain_hashtable.size()<<"\n"
 	   <<"   - Element   : "<<element_hashtable.size()<<"\n"
 	   <<"   - Blackbox  : "<<blackbox_hashtable.size()<<"\n"
 	   <<"   - Vector    : "<<vector_hashtable.size()<<"\n"
-	   <<"\n";	
+	   <<"\n";
 }
 
 

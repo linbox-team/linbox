@@ -43,7 +43,7 @@ using namespace LinBox;
  */
 
 template <class Field, class Vector>
-static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream<Vector> &stream2) 
+static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream<Vector> &stream2)
 {
 	typedef Diagonal <Field> Blackbox;
 
@@ -128,7 +128,7 @@ static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream
  */
 
 template <class Field>
-static bool testRandomTranspose (Field &F, size_t n, int iterations) 
+static bool testRandomTranspose (Field &F, size_t n, int iterations)
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef Diagonal <Field> Blackbox;

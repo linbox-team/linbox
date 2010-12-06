@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
-/** 
+/*
  * examples/samplebb.C
  *
  * Copyright (C) 2005, 2010 D Saunders
@@ -19,29 +19,29 @@
  *   GNU Lesser General Public License for more details.
  *
  *   You should have received a copy of the GNU Lesser General Public
- *   License along with LinBox.  If not, see 
+ *   License along with LinBox.  If not, see
  *   <http://www.gnu.org/licenses/>.
  */
 
 /** \file samplebb.C \ingroup examples
-\brief generate an example matrix with specified frobenius form.
+  \brief generate an example matrix with specified frobenius form.
 
-samplebb takes options and any number of argument triples denoting companion matrix blocks.
-For example, the call "samplebb -r 7 2 3 a3 1 1" generates a sparsely randomized matrix (because of the '-r' option)
-matrix which is similar (because of the two triples '7 2 3' and 'a2 1 1') to a direct sum of 3 companion matrices for 
-(x-7)^2 plus one companion matrix for x^3 + x + 2, the polynomial denoted by 'a3'.
+  samplebb takes options and any number of argument triples denoting companion matrix blocks.
+  For example, the call "samplebb -r 7 2 3 a3 1 1" generates a sparsely randomized matrix (because of the '-r' option)
+  matrix which is similar (because of the two triples '7 2 3' and 'a2 1 1') to a direct sum of 3 companion matrices for
+  (x-7)^2 plus one companion matrix for x^3 + x + 2, the polynomial denoted by 'a3'.
 
-In general, in the first position of each triple 'aK' denotes the polynomial x^k + x + K-1 and a number n
-denotes the polynomial x-n.  The second number in the triple specifies a power of the polynomial and the
-third specifies how many companion matrix blocks for that power of that polynomial.
+  In general, in the first position of each triple 'aK' denotes the polynomial x^k + x + K-1 and a number n
+  denotes the polynomial x-n.  The second number in the triple specifies a power of the polynomial and the
+  third specifies how many companion matrix blocks for that power of that polynomial.
 
-Possible options are 
- -r lightly randomized similarity transform, matrix remains sparse.
- -R fully randomized similarity transform, matrix becomes dense.
-    
-The matrix is written to standard out in SMS format (triples).
+  Possible options are
+  -r lightly randomized similarity transform, matrix remains sparse.
+  -R fully randomized similarity transform, matrix becomes dense.
 
-For some other examples:
+  The matrix is written to standard out in SMS format (triples).
+
+  For some other examples:
   "samplebb  1 1 2  2 1 2  4 1 2  12 1 1  0 1 1" is a 8 by 8 diagonal matrix in smith form,
   diag(1,1,2,2,4,4,12,0)
 
@@ -75,8 +75,8 @@ void stripOptions(int& acp, char* avp[], string& opts, const int ac, char** av)
 	{
 		//std::cout << av[i] << " ";
 		if (av[i][0] == '-') {
-			for (const char* j = av[i]+1; *j != 0; ++j) 
-				opts.push_back(*j); 
+			for (const char* j = av[i]+1; *j != 0; ++j)
+				opts.push_back(*j);
 		}
 
 		else {
@@ -96,17 +96,17 @@ void augmentBB(List& L, char* code, int e, int k, const Ring& R)
 	ZZX p;
 
 	// build poly p
-	   
+
 	if ( *code != 'a')  // build linear poly
-	{	
-		R.init(a, -atoi(code)); 
+	{
+		R.init(a, -atoi(code));
 		p += ZZX(0, a);
-		p += ZZX(1, one); 
+		p += ZZX(1, one);
 	}
 	else // build long poly
-	{	
-		int n = atoi(code+1); 
-		R.init(a, n-1); 
+	{
+		int n = atoi(code+1);
+		R.init(a, n-1);
 		p += ZZX(n, one);
 		p += ZZX(1, one);
 		p += ZZX(0, a);
@@ -123,71 +123,72 @@ void augmentBB(List& L, char* code, int e, int k, const Ring& R)
 	for (int i = 0; i < v.size(); ++i) v[i] = coeff(q, i);
 
 	// companion matrix of q
-	Companion<Ring>* C = new Companion<Ring>(R, v);		
+	Companion<Ring>* C = new Companion<Ring>(R, v);
 	for(int i = 0; i < k; ++i) L.push_back(C);
-	 
+
 }
 
 template < class Ring >
 void scramble(DenseMatrix<Ring>& M)
 {
-	
-	    Ring R = M.field();
 
-		int N,n = M.rowdim(); // number of random basic row and col ops.
-		N = 2*n;
-	
-		for (int k = 0; k < N; ++k) {
+	Ring R = M.field();
 
-	    	int i = rand()%M.rowdim(); 
-			
-	    	int j = rand()%M.coldim(); 
-			
-	    	if (i == j) continue;
+	int N,n = M.rowdim(); // number of random basic row and col ops.
+	N = 2*n;
 
-		    // M*i += alpha M*j and Mj* -= alpha Mi*
+	for (int k = 0; k < N; ++k) {
 
-			typename Ring::Element alpha, beta, x;
-			R.init(alpha, rand()%5 - 2);
-			R.neg(beta, alpha);
-			
-	   	 	for (size_t l = 0; l < M.rowdim(); ++l) if (!R.isZero(alpha)) {
-					R.mul(x, alpha, M[l][j]);
-					R.addin(M[l][i], x);
-   	    	}
+		int i = rand()%M.rowdim();
 
+		int j = rand()%M.coldim();
 
-	   	 	for (size_t l = 0; l < M.rowdim(); ++l) if (!R.isZero(alpha)) {
-					R.mul(x, beta, M[i][l]);
-					R.addin(M[j][l], x);
-   	    	}
+		if (i == j) continue;
+
+		// M*i += alpha M*j and Mj* -= alpha Mi*
+
+		typename Ring::Element alpha, beta, x;
+		R.init(alpha, rand()%5 - 2);
+		R.neg(beta, alpha);
+
+		for (size_t l = 0; l < M.rowdim(); ++l) if (!R.isZero(alpha)) {
+			R.mul(x, alpha, M[l][j]);
+			R.addin(M[l][i], x);
 		}
 
-/*
-		std::ofstream out("matrix", std::ios::out);
 
-		//M. write(std::cout);
-
-		out << n << " " << n << "\n";
-
-		for (int i = 0; i < n; ++ i) {
-
-			for ( int j = 0; j < n; ++ j) {
-
-				R. write(out, M[i][j]);
-
-				out << " ";
-			}
-
-			out << "\n";
-
+		for (size_t l = 0; l < M.rowdim(); ++l) if (!R.isZero(alpha)) {
+			R.mul(x, beta, M[i][l]);
+			R.addin(M[j][l], x);
 		}
-*/
+	}
+
+	/*
+	   std::ofstream out("matrix", std::ios::out);
+
+	//M. write(std::cout);
+
+	out << n << " " << n << "\n";
+
+	for (int i = 0; i < n; ++ i) {
+
+	for ( int j = 0; j < n; ++ j) {
+
+	R. write(out, M[i][j]);
+
+	out << " ";
+	}
+
+	out << "\n";
+
+	}
+	*/
 
 }
 
 template <class Matrix>
-void printMatrix (const Matrix& A) {
+void printMatrix (const Matrix& A)
+{
 	int m = A. rowdim();
 	int n = A. coldim();
 	typedef typename Matrix::Field Ring;
@@ -214,12 +215,12 @@ void printMatrix (const Matrix& A) {
 
 int main(int ac, char* av[])
 {
-	if (ac < 2) 
+	if (ac < 2)
 	{	std::cout << "usage: " << av[0] <<
 		" options block-groups." << std::endl;
 		std::cout << av[0] << " -r 1 2 3 a4 1 1" << std::endl;
-		std::cout << 
-		"for lightly randomized matrix similar to direct sum of 3 copies of companion " << std::endl 
+		std::cout <<
+		"for lightly randomized matrix similar to direct sum of 3 copies of companion " << std::endl
 		<< "matrix of (x-1)^2 and one copy of companion matrix of (x^4 + x + 3)^1." << std::endl;
 	}
 
@@ -232,11 +233,11 @@ int main(int ac, char* av[])
 	//std::cout << "number of triples: " << acp << std::endl;
 	//for (int i = 0; i < acp; ++ i)
 	//	std::cout << avp[i];
-	//std::cout << std::endl;	
+	//std::cout << std::endl;
 	//std::cout << "Begin to ....\n";
 	list<BB*> L;
 
-	for (int i = 0; i < acp; i += 3) 
+	for (int i = 0; i < acp; i += 3)
 		augmentBB(L, avp[i], atoi(avp[i+1]), atoi(avp[i+2]), Z);
 
 	DirectSum<BB> A(L);
@@ -256,12 +257,13 @@ int main(int ac, char* av[])
 		}
 
 		if (opts[0] == 'R') ;
-			// into dense matrix, then many row ops
-			//...
+		// into dense matrix, then many row ops
+		//...
 
 	}
 	else {
 		printMatrix (A);
 	}
 
+	return 0 ;
 }

@@ -32,7 +32,7 @@ using namespace LinBox;
  */
 
 template <class Ring>
-bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, double sparsity = 0.05) 
+bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, double sparsity = 0.05)
 {
 	typedef SparseMatrix<Ring> Blackbox;
 
@@ -53,13 +53,13 @@ bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, double spars
 
 		A.setEntry(1, 2, e);
 		A.setEntry(2, 1, e);
-		std::ostream & report = 
+		std::ostream & report =
 		commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
 
-		Z.write( report ) << endl; 
-		A.write( report ) << endl; 
+		Z.write( report ) << endl;
+		A.write( report ) << endl;
 		bool p;
-		p = isPositiveSemiDefinite(A); 
+		p = isPositiveSemiDefinite(A);
 		report << "PositiveSemidefiniteness on I computed by default (Hybrid) method: " << p << endl;
 		if (!p) {report << "ERROR: should be pos semidef" << endl; ret = false;}
 
@@ -67,9 +67,9 @@ bool testIsPosDef(const Ring &Z, size_t n, unsigned int iterations, double spars
 		Z. assign(A. refEntry(n/2, n/2), e);
 		//A.setEntry(1, 2, e);
 		//A.setEntry(2, 1, e);
-		p = isPositiveSemiDefinite(A); 
+		p = isPositiveSemiDefinite(A);
 		report << "Matrix:\n";
-		A.write( report ) << endl; 
+		A.write( report ) << endl;
 		report << "PositiveSemidefiniteness on indefinite example computed by default (Hybrid) method: " << p << endl;
 		if (p) {report << "ERROR: should not be pos semidef" << endl; ret = false;}
 
@@ -89,7 +89,7 @@ int main (int argc, char **argv)
 
 //     commentator.setMaxDetailLevel( 100000 );
 //     commentator.setMaxDepth( 100000 );
-   
+
 	bool pass = true;
 
 	static size_t n = 80;
@@ -117,7 +117,7 @@ int main (int argc, char **argv)
 //	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 
     PID_integer R;
-        
+
 	if (!testIsPosDef(R, n, iterations, sparsity)) pass = false;
 
 	commentator.stop("isPositiveSemiDefinite solution test suite");

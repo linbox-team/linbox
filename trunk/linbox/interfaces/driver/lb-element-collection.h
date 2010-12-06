@@ -32,12 +32,12 @@
  * Collection of Elements *
  **************************/
 
-// definition of a unique key 
+// definition of a unique key
 typedef size_t EltKey;
 
 // comparison functor on key
 struct EltKeyLessThan{
-	bool operator()(const EltKey& k1, const EltKey &k2) 
+	bool operator()(const EltKey& k1, const EltKey &k2)
 	{ return (k1 < k2);}
 };
 

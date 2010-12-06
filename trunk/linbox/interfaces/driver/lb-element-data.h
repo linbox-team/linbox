@@ -41,15 +41,15 @@ class EltEnvelope :  public EltAbstract {
 	DomainKey key;
 	Element  *ptr;
 public:
-	
+
 	EltEnvelope(const DomainKey &k, Element* e) : key(k, true), ptr(e) {}
-	
+
 	~EltEnvelope() {delete ptr;}
 
-	Element *getElement() const  {return ptr;}			
-	
+	Element *getElement() const  {return ptr;}
+
 	const DomainKey& getDomainKey() const {	return key;}
-	
+
 	EltAbstract* clone() const { return new EltEnvelope<Element>(key, new Element(*ptr));}
 };
 

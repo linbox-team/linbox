@@ -36,20 +36,20 @@ template <class Ring, class Field, class Vector>
 bool testRandomSolve (const Ring& R,
 		      const Field& f,
 		      LinBox::VectorStream<Vector>& stream1,
-		      LinBox::VectorStream<Vector>& stream2) 
+		      LinBox::VectorStream<Vector>& stream2)
 {
 
-	
+
 	std::ostringstream str;
-	
-	
+
+
 
 	commentator.start ("Testing Nonsingular Random Diagonal solve ", "testNonsingularRandomDiagonalSolve");
 
 	bool ret = true;
 
         bool iter_passed = true;
-	
+
 	VectorDomain<Ring> VD (R);
 
 	Vector d, b, x, y;
@@ -62,13 +62,13 @@ bool testRandomSolve (const Ring& R,
 	int n = d. size();
 
 	while (stream1 && stream2) {
-        
+
 		commentator.startIteration (stream1.j ());
-                                                                                                        
+
                 //ActivityState state = commentator.saveActivityState ();
-                                                                                                        
+
                 iter_passed = true;
-                
+
 		bool zeroEntry;
 		do {
 		  stream1.next (d);
@@ -76,40 +76,40 @@ bool testRandomSolve (const Ring& R,
 		  for (size_t i=0; i<stream1.n(); i++)
 		    zeroEntry |= R.isZero(d[i]);
 		} while (zeroEntry);
-		
+
                 stream2.next (b);
-                                                                                                        
+
                 std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
                 report << "Diagonal entries: ";
                 VD.write (report, d);
                 report << endl;
-                                                                                                        
+
                 report << "Right-hand side:  ";
                 VD.write (report, b);
                 report << endl;
 
-                //Diagonal<Ring> D(R, d);                                                                               
-		
+                //Diagonal<Ring> D(R, d);
+
 		DenseMatrix<Ring> D(R, n, n);
-	 
+
 		for(int i = 0; i < n; ++i) R.init (D[i][i],  d[i]);
-						
+
 		typedef RationalSolverAdaptive RSolver;
 		RSolver rsolver;
- 
+
 		//std::vector<std::pair<typename Ring::Element, typename Ring::Element> > answer(n);
 		std::vector<typename Ring::Element> num(n);
 		typename Ring::Element den;
- 
+
 		SolverReturnStatus solveResult = rsolver.solveNonsingular(num, den, D, b); //often 5 primes are not enough
-		
+
 		/*
 		typename Ring::Element lden;
 
 		R. init (lden, 1);
 
 		typename std::vector<std::pair<typename Ring::Element, typename Ring::Element> >::iterator p;
-		
+
 		for (p = answer.begin(); p != answer.end(); ++ p)
 			R. lcm (lden, lden, p->second);
 		typename Vector::iterator p_x;
@@ -118,22 +118,22 @@ bool testRandomSolve (const Ring& R,
 
 		if (solveResult == SS_OK) {
 		/*
-		  for (p = answer.begin(), p_x = x. begin(); 
+		  for (p = answer.begin(), p_x = x. begin();
 		       p != answer.end();
 		       ++ p, ++ p_x) {
-		    
+
 		    R. mul (*p_x, p->first, lden);
-		    
+
 		    R. divin (*p_x, p->second);
-		    
+
 		  }
-		  
+
 		  D. apply (y, x);
 		  */
 		  D. apply (y, num);
-		  
+
 		  VD. mulin(b, den);
-		  
+
 		  if (!VD.areEqual (y, b)) {
 		    ret = iter_passed = false;
 		    commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
@@ -143,32 +143,32 @@ bool testRandomSolve (const Ring& R,
 		else {
 		    ret = iter_passed = false;
 		    commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-		      << "ERROR: Did not return OK solving status" << endl;		  
+		      << "ERROR: Did not return OK solving status" << endl;
 		}
-		
+
 		commentator.stop ("done");
                 commentator.progress ();
-		
+
 	}
 
-	
+
 	stream1.reset ();
         stream2.reset ();
-	
+
         commentator.stop (MSG_STATUS (ret), (const char *) 0, "testNonsingularRandomDiagonalSolve");
 
 	return ret;
-}	
+}
 
-int main(int argc, char** argv) 
+int main(int argc, char** argv)
 {
 
 	bool pass = true;
- 
+
         static size_t n = 10;
-                
+
 	static int iterations = 1;
- 
+
         static Argument args[] = {
                 { 'n', "-n N", "Set order of test matrices to N.", TYPE_INT, &n },
 		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT, &iterations },
@@ -177,22 +177,22 @@ int main(int argc, char** argv)
 
 
 	parseArguments (argc, argv, args);
-	
+
 	typedef Modular<LinBox::int32> Field;
-	
+
 	typedef PID_integer     Ring;
 
 	Ring R;
 
 	Field F(101);
-	
+
 	RandomDenseStream<Ring> s1 (R, n, iterations), s2 (R, n, iterations);
 
 
 
 	if (!testRandomSolve(R, F, s1, s2)) pass = false;
-	
+
 	return pass ? 0 : -1;
-	
+
 }
 

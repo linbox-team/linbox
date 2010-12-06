@@ -53,7 +53,7 @@ TransposeMatrix<Matrix> transpose (Matrix &M)
 
 template <class Field, class Matrix1, class Matrix2>
 void eliminate (MatrixDomain<Field> &MD, Matrix1 &M, Matrix2 &pivotRow,
-		size_t row, size_t col, size_t rowdim, size_t coldim) 
+		size_t row, size_t col, size_t rowdim, size_t coldim)
 {
 	DenseMatrixBase<typename Matrix1::Element> pivotCol (rowdim, 1);
 	DenseSubmatrix<typename Matrix1::Element> realPivotCol (M, row, col, rowdim, 1);
@@ -70,7 +70,7 @@ void eliminate (MatrixDomain<Field> &MD, Matrix1 &M, Matrix2 &pivotRow,
  */
 
 template <class Field, class Matrix1, class Matrix2>
-Matrix1 &inv (MatrixDomain<Field> &MD, Matrix1 &res, const Matrix2 &A) 
+Matrix1 &inv (MatrixDomain<Field> &MD, Matrix1 &res, const Matrix2 &A)
 {
 	linbox_check (res.coldim () == A.coldim ());
 	linbox_check (res.rowdim () == A.rowdim ());
@@ -135,7 +135,7 @@ Matrix1 &inv (MatrixDomain<Field> &MD, Matrix1 &res, const Matrix2 &A)
  */
 
 template <class Field, class Matrix>
-static bool testCopyEqual (Field &F, const char *text, const Matrix &M) 
+static bool testCopyEqual (Field &F, const char *text, const Matrix &M)
 {
 	ostringstream str;
 
@@ -174,7 +174,7 @@ static bool testCopyEqual (Field &F, const char *text, const Matrix &M)
  */
 
 template <class Field, class Matrix>
-static bool testSubinIsZero (Field &F, const char *text, const Matrix &M) 
+static bool testSubinIsZero (Field &F, const char *text, const Matrix &M)
 {
 	ostringstream str;
 
@@ -214,7 +214,7 @@ static bool testSubinIsZero (Field &F, const char *text, const Matrix &M)
  */
 
 template <class Field, class Matrix>
-static bool testAddNegSub (Field &F, const char *text, const Matrix &M1, const Matrix &M2) 
+static bool testAddNegSub (Field &F, const char *text, const Matrix &M1, const Matrix &M2)
 {
 	ostringstream str;
 
@@ -266,7 +266,7 @@ static bool testAddNegSub (Field &F, const char *text, const Matrix &M1, const M
  */
 
 template <class Field, class Matrix>
-static bool testAddinNeginSub (Field &F, const char *text, const Matrix &M1, const Matrix &M2) 
+static bool testAddinNeginSub (Field &F, const char *text, const Matrix &M1, const Matrix &M2)
 {
 	ostringstream str;
 
@@ -322,7 +322,7 @@ static bool testAddinNeginSub (Field &F, const char *text, const Matrix &M1, con
 // Version for square matrices
 
 template <class Field, class Matrix>
-static bool testInvMulSquare (Field &F, const char *text, const Matrix &M) 
+static bool testInvMulSquare (Field &F, const char *text, const Matrix &M)
 {
 	linbox_check (M.rowdim () == M.coldim ());
 
@@ -393,7 +393,7 @@ static bool testInvMulSquare (Field &F, const char *text, const Matrix &M)
 // Version for over-determined matrices
 
 template <class Field, class Matrix>
-static bool testInvMulOver (Field &F, const char *text, Matrix &M) 
+static bool testInvMulOver (Field &F, const char *text, Matrix &M)
 {
 	linbox_check (M.coldim () <= M.rowdim ());
 
@@ -474,7 +474,7 @@ static bool testInvMulOver (Field &F, const char *text, Matrix &M)
 // Version for under-determined matrices
 
 template <class Field, class Matrix>
-static bool testInvMulUnder (Field &F, const char *text, Matrix &M) 
+static bool testInvMulUnder (Field &F, const char *text, Matrix &M)
 {
 	linbox_check (M.rowdim () <= M.coldim ());
 
@@ -559,7 +559,7 @@ static bool testInvMulUnder (Field &F, const char *text, Matrix &M)
 // Version for square matrices
 
 template <class Field, class Matrix>
-static bool testInvLeftMulinSquare (Field &F, const char *text, const Matrix &M) 
+static bool testInvLeftMulinSquare (Field &F, const char *text, const Matrix &M)
 {
 	linbox_check (M.rowdim () == M.coldim ());
 
@@ -618,7 +618,7 @@ static bool testInvLeftMulinSquare (Field &F, const char *text, const Matrix &M)
 // Version for over-determined matrices
 
 template <class Field, class Matrix>
-static bool testInvLeftMulinOver (Field &F, const char *text, Matrix &M) 
+static bool testInvLeftMulinOver (Field &F, const char *text, Matrix &M)
 {
 	linbox_check (M.coldim () <= M.rowdim ());
 
@@ -680,7 +680,7 @@ static bool testInvLeftMulinOver (Field &F, const char *text, Matrix &M)
 // Version for under-determined matrices
 
 template <class Field, class Matrix>
-static bool testInvLeftMulinUnder (Field &F, const char *text, Matrix &M) 
+static bool testInvLeftMulinUnder (Field &F, const char *text, Matrix &M)
 {
 	linbox_check (M.rowdim () <= M.coldim ());
 
@@ -747,7 +747,7 @@ static bool testInvLeftMulinUnder (Field &F, const char *text, Matrix &M)
 // Version for square matrices
 
 template <class Field, class Matrix>
-static bool testInvRightMulinSquare (Field &F, const char *text, const Matrix &M) 
+static bool testInvRightMulinSquare (Field &F, const char *text, const Matrix &M)
 {
 	linbox_check (M.rowdim () == M.coldim ());
 
@@ -806,7 +806,7 @@ static bool testInvRightMulinSquare (Field &F, const char *text, const Matrix &M
 // Version for over-determined matrices
 
 template <class Field, class Matrix>
-static bool testInvRightMulinOver (Field &F, const char *text, Matrix &M) 
+static bool testInvRightMulinOver (Field &F, const char *text, Matrix &M)
 {
 	linbox_check (M.coldim () <= M.rowdim ());
 
@@ -868,7 +868,7 @@ static bool testInvRightMulinOver (Field &F, const char *text, Matrix &M)
 // Version for under-determined matrices
 
 template <class Field, class Matrix>
-static bool testInvRightMulinUnder (Field &F, const char *text, Matrix &M) 
+static bool testInvRightMulinUnder (Field &F, const char *text, Matrix &M)
 {
 	linbox_check (M.rowdim () <= M.coldim ());
 
@@ -933,7 +933,7 @@ static bool testInvRightMulinUnder (Field &F, const char *text, Matrix &M)
  */
 
 template <class Field, class Matrix>
-static bool testAddMulAxpyin (Field &F, const char *text, Matrix &M1, Matrix &M2, Matrix &M3) 
+static bool testAddMulAxpyin (Field &F, const char *text, Matrix &M1, Matrix &M2, Matrix &M3)
 {
 	ostringstream str;
 
@@ -987,7 +987,7 @@ static bool testAddMulAxpyin (Field &F, const char *text, Matrix &M1, Matrix &M2
  */
 
 template <class Field, class Matrix>
-static bool testMVMulSub (Field &F, const char *text, const Matrix &M) 
+static bool testMVMulSub (Field &F, const char *text, const Matrix &M)
 {
 	ostringstream str;
 
@@ -1035,7 +1035,7 @@ static bool testMVMulSub (Field &F, const char *text, const Matrix &M)
  */
 
 template <class Field, class Matrix>
-static bool testMVAxpy (Field &F, const char *text, const Matrix &M) 
+static bool testMVAxpy (Field &F, const char *text, const Matrix &M)
 {
 	ostringstream str;
 
@@ -1094,7 +1094,7 @@ static bool testMVAxpy (Field &F, const char *text, const Matrix &M)
 
 template <class Field, class Vector, class Blackbox>
 static bool testLeftBlackboxMul (Field &F, const char *text, const Blackbox &A,
-				 VectorStream<Vector> &stream) 
+				 VectorStream<Vector> &stream)
 {
 	ostringstream str;
 
@@ -1148,7 +1148,7 @@ static bool testLeftBlackboxMul (Field &F, const char *text, const Blackbox &A,
 
 template <class Field, class Vector, class Blackbox>
 static bool testRightBlackboxMul (Field &F, const char *text, const Blackbox &A,
-				  VectorStream<Vector> &stream) 
+				  VectorStream<Vector> &stream)
 {
 	ostringstream str;
 
@@ -1197,7 +1197,7 @@ static bool testRightBlackboxMul (Field &F, const char *text, const Blackbox &A,
 
 std::ostream &reportPermutation
 	(std::ostream &out,
-	 const std::vector<std::pair<unsigned int, unsigned int> > &P) 
+	 const std::vector<std::pair<unsigned int, unsigned int> > &P)
 {
 	std::vector<std::pair<unsigned int, unsigned int> >::const_iterator i;
 
@@ -1208,7 +1208,7 @@ std::ostream &reportPermutation
 }
 
 template <class Field, class Matrix>
-bool testPermutation (const Field &F, const char *text, const Matrix &M) 
+bool testPermutation (const Field &F, const char *text, const Matrix &M)
 {
 	ostringstream str;
 
@@ -1320,7 +1320,7 @@ bool testMatrixDomain (const Field &F, const char *text,
 	bool pass = true;
 
 	RandomDenseStream<Field, typename LinBox::Vector<Field>::Dense> stream (F, A.coldim (), iterations);
-	
+
 	if (!testCopyEqual (F, text, M1)) pass = false;
 	if (!testSubinIsZero (F, text, M1)) pass = false;
 	if (!testAddNegSub (F, text, M1, M2)) pass = false;
@@ -1359,7 +1359,7 @@ bool testMatrixDomain (const Field &F, const char *text,
 		       Matrix &M1, Matrix &M2, Matrix &M3,
 		       const Blackbox &A,
 		       unsigned int iterations,
-		       MatrixCategories::RowMatrixTag) 
+		       MatrixCategories::RowMatrixTag)
 {
 	ostringstream str;
 	str << "Testing MatrixDomain with " << text << " matrices" << ends;
@@ -1399,7 +1399,7 @@ bool testMatrixDomain (const Field &F, const char *text,
 		       Matrix &M1, Matrix &M2, Matrix &M3,
 		       const Blackbox &A,
 		       unsigned int iterations,
-		       MatrixCategories::ColMatrixTag) 
+		       MatrixCategories::ColMatrixTag)
 {
 	ostringstream str;
 	str << "Testing MatrixDomain with " << text << " matrices" << ends;

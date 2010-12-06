@@ -14,15 +14,16 @@
 #endif
 
 //---------------------------------------------------------------------
-// CharPoly: Compute the characteristic polynomial of A using 
+// CharPoly: Compute the characteristic polynomial of A using
 // Danilevski's algorithm.
 //---------------------------------------------------------------------
 
 template <class Field, class Polynomial>
 std::list<Polynomial>&
-FFPACK::Danilevski (const Field& F, std::list<Polynomial>& charp, 
-			    const size_t N, typename Field::Element * A, 
-			    const size_t lda){	
+FFPACK::Danilevski (const Field& F, std::list<Polynomial>& charp,
+		    const size_t N, typename Field::Element * A,
+		    const size_t lda)
+{
 	static typename Field::Element one, mone;
 	F.init(one, 1.0);
 	F.neg(mone, one);
@@ -30,7 +31,7 @@ FFPACK::Danilevski (const Field& F, std::list<Polynomial>& charp,
 	size_t dtot=0;
 	typename Field::Element *pivot,*e,*u1,invp;
 	for (size_t k=0; k<N; ++k){
-		size_t i = k+1; 
+		size_t i = k+1;
 		size_t d;
 		e = pivot = A + (k+1) * lda + k; // coef
 		while ((i<N) && F.isZero(*e)) { e += lda; i++; }
@@ -43,17 +44,17 @@ FFPACK::Danilevski (const Field& F, std::list<Polynomial>& charp,
 			fscal (F, N-k-1, invp, pivot+1, 1);
 			fscal (F, N-dtot, *pivot, A+dtot*lda+k+1, lda);
 			// X <- X - uw
-			fger (F, k + 1-dtot, N - k -1, mone, 
-			      A + dtot*lda + k, lda, pivot+1, 1, 
+			fger (F, k + 1-dtot, N - k -1, mone,
+			      A + dtot*lda + k, lda, pivot+1, 1,
 			      A+k+1+dtot*lda, lda);
 			if (k<N-2){
-				
+
 				// Y <- Y - vw
-				fger (F, N-k-2, N-k-1, mone, pivot+lda, lda, pivot+1, 1, 
+				fger (F, N-k-2, N-k-1, mone, pivot+lda, lda, pivot+1, 1,
 				      pivot+lda+1,lda);
 				//6
-				fgemv (F, FflasNoTrans, N-dtot, N-k-2, 
-				       one, A+dtot*lda+k+2, lda, pivot+lda, lda, one, 
+				fgemv (F, FflasNoTrans, N-dtot, N-k-2,
+				       one, A+dtot*lda+k+2, lda, pivot+lda, lda, one,
 				       A+dtot*lda+k+1,lda);
 			}
 			//5
@@ -73,7 +74,7 @@ FFPACK::Danilevski (const Field& F, std::list<Polynomial>& charp,
 			F.assign( (*P)[d], one);
 			charp.push_front(*P);
 			dtot+=d;
-		} 
+		}
 	}
 	return charp;
 }

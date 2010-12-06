@@ -25,12 +25,12 @@ using namespace LinBox;
 int main (int argc, char **argv)
 {
   bool pass = true;
-  
+
   static size_t n = 10;
   static integer q = 101;
   static int iterations1 = 100;
   static int iterations2 = 1;
-  
+
   static Argument args[] = {
     { 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
     { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
@@ -38,18 +38,18 @@ int main (int argc, char **argv)
     { 'j', "-j J", "Apply test matrix to J vectors.",         TYPE_INT,     &iterations2 },
 	{ '\0' }
   };
-  
+
   typedef Modular<uint32> Field;
   typedef vector<Field::Element> Vector;
   typedef Vector Polynomial;
   typedef vector<Polynomial> Plist;
-  
+
   parseArguments (argc, argv, args);
   Field F (q);
   Plist plist(3);
-  
+
   Field::RandIter r(F);
-  
+
   size_t  pdeg = 10;
   plist[0].resize(pdeg+1);
   for ( size_t ideg=0; ideg < pdeg; ++ideg) r.random(plist[0][ideg]);
@@ -69,7 +69,7 @@ int main (int argc, char **argv)
   Frobenius<Field>  A(F, plist.begin(), plist.end());
 
   pass = pass && testBlackbox(A);
-  
+
 	commentator.stop("Frobenius form black box test suite");
   return pass ? 0 : -1;
 }

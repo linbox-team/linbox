@@ -36,10 +36,10 @@ using namespace LinBox;
 
 
 template <class Field2, class Blackbox>
-static bool testBBrebind (const Field2 &F2, const Blackbox& B) 
+static bool testBBrebind (const Field2 &F2, const Blackbox& B)
 {
     typedef typename Blackbox::template rebind<Field2>::other FBlackbox;
-    
+
     FBlackbox A(B, F2);
 
     return testBlackbox(A);
@@ -59,7 +59,7 @@ static bool testBBrebind (const Field2 &F2, const Blackbox& B)
  * Return true on success and false on failure
  */
 template <class Field1, class Field2, class Vector>
-static bool testZeroApply (Field1 &F1, Field2 &F2, VectorStream<Vector> &stream1, VectorStream<Vector> &stream2) 
+static bool testZeroApply (Field1 &F1, Field2 &F2, VectorStream<Vector> &stream1, VectorStream<Vector> &stream2)
 {
 	commentator.start ("Testing zero apply", "testZeroApply", stream1.m ());
 
@@ -126,7 +126,7 @@ static bool testZeroApply (Field1 &F1, Field2 &F2, VectorStream<Vector> &stream1
 		commentator.progress ();
 
                 ret = ret && testBBrebind(F2, A);
-                
+
 	}
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testZeroApply");
@@ -149,7 +149,7 @@ static bool testZeroApply (Field1 &F1, Field2 &F2, VectorStream<Vector> &stream1
  */
 
 template <class Field>
-static bool testRandomTranspose (Field &F, size_t n, int iterations) 
+static bool testRandomTranspose (Field &F, size_t n, int iterations)
 {
 	typedef vector <typename Field::Element> Vector;
 
@@ -198,11 +198,11 @@ int main (int argc, char **argv)
 
 //        typedef UnparametricField<NTL::zz_p> Field;
         typedef NTL_zz_p Field;
-// 	NTL::zz_p::init(q1); // Done in the constructor  
+// 	NTL::zz_p::init(q1); // Done in the constructor
 	Field F1(q1);
 
         GivaroZpz<Std32> F2(q2);
-        
+
 	typedef vector<Field::Element> Vector;
 
 	parseArguments (argc, argv, args);
@@ -226,12 +226,12 @@ int main (int argc, char **argv)
 //	Diagonal <Field, Vector> D1 (F, d1), D2 (F, d2);
 
 	Field::Element d; F1.init(d, 5);
-	ScalarMatrix<Field> D1(F1, 10, d), D2(F1, 10, d); 
+	ScalarMatrix<Field> D1(F1, 10, d), D2(F1, 10, d);
 	typedef ScalarMatrix<Field> Blackbox;
 
 	Sum <Blackbox, Blackbox> A (D1, D2);
 	pass = pass && testBlackbox(A) && testBBrebind(F2, A);
-        
+
 
         Sum <Blackbox, Blackbox> Aref (&D1, &D2);
 	pass = pass && testBlackbox(Aref) && testBBrebind(F2, A);

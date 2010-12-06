@@ -49,7 +49,7 @@
 typedef LinBoxTypelist < LinBox::Modular<double>          , LinBoxDumbType> DL1;
 typedef LinBoxTypelist < LinBox::PID_integer              , DL1> DL2;
 typedef LinBoxTypelist < LinBox::GMPRationalField         , DL2> DL3;
-typedef LinBoxTypelist < LinBox::Modular<LinBox::int32>   , DL3> DL4; 
+typedef LinBoxTypelist < LinBox::Modular<LinBox::int32>   , DL3> DL4;
 typedef LinBoxTypelist < LinBox::Modular<LinBox::int64>   , DL4> DL5;
 typedef LinBoxTypelist < LinBox::Modular<LinBox::integer> , DL5> DL6;
 
@@ -83,13 +83,13 @@ typedef DG2 givaro_domain_list;
 #endif
 #else
 typedef LinBoxDumbType givaro_domain_list;
-#endif		
+#endif
 
 // define DomainList to be the list of all domains
 #ifdef __LINBOX_DOMAIN_ONLY
 typedef linbox_domain_list DomainList;
 #else
-typedef LinBoxTL::Append< linbox_domain_list, LinBoxTL::Append< ntl_domain_list, givaro_domain_list>::Result>::Result DomainList; 
+typedef LinBoxTL::Append< linbox_domain_list, LinBoxTL::Append< ntl_domain_list, givaro_domain_list>::Result>::Result DomainList;
 #endif
 
 
@@ -105,14 +105,14 @@ void UpdateDomain(){
 	linbox_domain.add("linbox_field_dbl"      , constructDomain<LinBox::Modular<double> >);
 	linbox_domain.add("linbox_field_rational" , constructDomain<LinBox::GMPRationalField>);
 	linbox_domain.add("linbox_ring_integer"   , constructDomain<LinBox::PID_integer>);
-#ifndef __LINBOX_MINIMIZE_DOMAIN	
+#ifndef __LINBOX_MINIMIZE_DOMAIN
 	linbox_domain.add("linbox_field_32"       , constructDomain<LinBox::Modular<LinBox::int32> >);
 	linbox_domain.add("linbox_field_64"       , constructDomain<LinBox::Modular<LinBox::int64> >);
 	linbox_domain.add("linbox_field_mp"       , constructDomain<LinBox::Modular<LinBox::integer> >);
 #endif
 #ifdef __LINBOX_HAVE_NTL
 	linbox_domain.add("ntl_field_ZZ_p"      , constructDomain<LinBox::NTL_ZZ_p>);
-#ifndef __LINBOX_MINIMIZE_DOMAIN	
+#ifndef __LINBOX_MINIMIZE_DOMAIN
 	linbox_domain.add("ntl_field_zz_p"      , constructDomain<LinBox::NTL_zz_p >);
 	linbox_domain.add("ntl_ring_integer"    , constructDomain<LinBox::NTL_ZZ>);
 #endif
@@ -137,7 +137,7 @@ void UpdateDomain(){
 #define default_rational_field "linbox_field_rational"
 
 // definition of the default type for integer ring
-#define default_integer_ring "linbox_ring_integer"  
+#define default_integer_ring "linbox_ring_integer"
 
 
 

@@ -31,14 +31,14 @@
  * Initializer of Domain *
  *************************/
 void UpdateDomain();
-				  
+
 /****************************
- * API to contruct domains  * 
+ * API to contruct domains  *
  ****************************/
 const DomainKey& createDomain( const LinBox::integer characteristic, const char *name=NULL);
 
-/************************ 
- * API to copy domains  * 
+/************************
+ * API to copy domains  *
  ************************/
 const DomainKey copyDomain( const DomainKey &k);
 

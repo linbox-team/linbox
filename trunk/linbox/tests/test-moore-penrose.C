@@ -53,7 +53,7 @@ static SparseMatrix<Field,  Row>
 			  double                           K,
 			  vector<typename Field::Element> &dinv,
 			  VectorStream<Row>               &top_right_stream,
-			  VectorStream<Row>               &bottom_left_stream) 
+			  VectorStream<Row>               &bottom_left_stream)
 {
 	typedef SparseMatrix<Field, Row> Blackbox;
 
@@ -123,7 +123,7 @@ static bool testIdentityApply (Field                                           &
 			       size_t                                           n,
 			       size_t                                           m,
 			       size_t                                           r,
-			       VectorStream<vector<typename Field::Element> > &stream) 
+			       VectorStream<vector<typename Field::Element> > &stream)
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <pair <size_t, typename Field::Element> > Row;
@@ -216,7 +216,7 @@ static bool testRandomApply1 (Field                 &F,
 			      double                 K,
 			      VectorStream<Row>    &M_stream1,
 			      VectorStream<Row>    &M_stream2,
-			      VectorStream<Vector> &stream) 
+			      VectorStream<Vector> &stream)
 {
 	typedef SparseMatrix <Field, Row> Blackbox;
 
@@ -252,7 +252,7 @@ static bool testRandomApply1 (Field                 &F,
 		commentator.start ("Constructing Moore-Penrose inverse");
 		MoorePenrose<Blackbox> Adagger (A, r);
 		commentator.stop ("done");
-		
+
 		{
 			ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 			report << "Input matrix" << endl;

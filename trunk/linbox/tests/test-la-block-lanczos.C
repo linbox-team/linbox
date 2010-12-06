@@ -35,7 +35,7 @@ template <class Field, class Vector1, class Vector2>
 static bool testRandomSolve (const Field           &F,
 			     VectorStream<Vector1> &A_stream,
 			     VectorStream<Vector2> &y_stream,
-			     size_t                 N) 
+			     size_t                 N)
 {
 	typedef LABlockLanczosSolver<Field, DenseMatrixBase<typename Field::Element> > LABLSolver;
 
@@ -108,7 +108,7 @@ template <class Field, class Vector1>
 static bool testSampleNullspace (const Field           &F,
 				 VectorStream<Vector1> &A_stream,
 				 size_t                 N,
-				 unsigned int           num_iter) 
+				 unsigned int           num_iter)
 {
 	typedef DenseMatrixBase<typename Field::Element> Matrix;
 	typedef LABlockLanczosSolver<Field, Matrix> LABLSolver;
@@ -168,7 +168,7 @@ template <class Field, class Vector1>
 static bool testRank (const Field           &F,
 		      VectorStream<Vector1> &A_stream,
 		      size_t                 N,
-		      unsigned int           num_iter) 
+		      unsigned int           num_iter)
 {
 	typedef DenseMatrixBase<typename Field::Element> Matrix;
 	typedef LABlockLanczosSolver<Field, Matrix> LABLSolver;
@@ -221,7 +221,7 @@ static bool testRank (const Field           &F,
 
 int main (int argc, char **argv)
 {
-	static int i = 5; 
+	static int i = 5;
 	static int n = 10; // because it shows the problem
 	static int k = 5;
 	static int q = 2;

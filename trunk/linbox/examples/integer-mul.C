@@ -49,14 +49,14 @@ using namespace std;
 int main()
 {
 
-  integer a,b;
+	integer a,b;
 
-  cout << "1st integer > ";
-  cin >> a;
-  cout << "2nd integer > ";
-  cin >> b;
+	cout << "1st integer > ";
+	cin >> a;
+	cout << "2nd integer > ";
+	cin >> b;
 
-  cout << "The product " << a*b << "\n";
+	cout << "The product " << a*b << "\n";
 
-  return 0;
+	return 0;
 };

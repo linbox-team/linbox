@@ -1,8 +1,8 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) 2010 LinBox
- * Written by 
- * zhendong wan 
+ * Written by
+ * zhendong wan
  *
  *
  *
@@ -28,25 +28,25 @@
 
 #include <linbox/util/debug.h>
 #include <linbox/blackbox/blackbox-interface.h>
- 
+
 namespace LinBox
 {
-  
-  // couldn't a null instance of one of the other classes serve as well?
 
-  /** \brief  This is a representation of the 0 by 0 empty matrix which does not occupy memory.  
-   * It has it's uses!
-   * \ingroup blackbox
-   */
-  
+	// couldn't a null instance of one of the other classes serve as well?
+
+	/** \brief  This is a representation of the 0 by 0 empty matrix which does not occupy memory.
+	 * It has it's uses!
+	 * \ingroup blackbox
+	 */
+
 	class NullMatrix : public  BlackboxInterface{
 	public:
 		NullMatrix() {}//cout << "NullMatrix default cstor" << endl;}
 		NullMatrix(const NullMatrix& n) {}
-	        virtual ~NullMatrix() {}
-		
-	public:
-		
+		virtual ~NullMatrix() {}
+
+public:
+
 		template<class OutVector, class InVector>
 		inline OutVector& apply(OutVector& y, const InVector& x) const {
 			linbox_check(y.size()==0);
@@ -59,8 +59,8 @@ namespace LinBox
 		   linbox_check(x.size()==0);
 		   return x;
 		   }
-    */
-		
+		   */
+
 
 		template<class OutVector, class InVector>
 		inline OutVector& applyTranspose(OutVector& y, const InVector& x) const {
@@ -74,20 +74,20 @@ namespace LinBox
 		   linbox_check(x.size()==0);
 		   return x;
 		   }
-		*/
-		
+		   */
+
 		virtual inline size_t rowdim() const {return 0;}
-		
+
 		virtual inline size_t coldim() const {return 0;}
-	
+
 		template<typename _Tp1>
 		struct rebind
 		{ typedef NullMatrix other; };
 
 
-	};
-	
-} 
+};
+
+}
 
 #endif //__LINBOX_bb_nullmatrix_H
 

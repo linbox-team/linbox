@@ -60,7 +60,7 @@ class LaunchSolveFunctor<Element, Element, Element, DomainCategory>{
 public:
 	template<class Result, class Blackbox, class Vector, class Method>
 	inline void  operator()(Result &s, Blackbox *B, Vector *v, const Method &m) const {
-		LinBox::solve(s, *B, *v, m);		
+		LinBox::solve(s, *B, *v, m);
 	}
 };
 
@@ -71,7 +71,7 @@ class LaunchSolveFunctor<Element, Element, Element, LinBox::RingCategories::Inte
 public:
 	template<class Result, class Blackbox, class Vector, class Method>
 	inline void  operator()(Result &s, Blackbox *B, Vector *v, const Method &m) const {
-		//LinBox::solve(s, *B, *v, m);		
+		//LinBox::solve(s, *B, *v, m);
 		//not yet handled
 		throw lb_runtime_error("LinBox ERROR: integer system solving with same vector type is not yet handled");
 	}
@@ -83,8 +83,8 @@ template<class Element>
 class LaunchSolveFunctor<LinBox::GMPRationalElement, Element, Element, LinBox::RingCategories::IntegerTag >{
 public:
 	template<class Result, class Blackbox, class Vector, class Method>
-	inline void  operator()(Result &s, Blackbox *B, Vector *v, const Method &m) const {	
-		LinBox::solve(s, *B, *v, m);		
+	inline void  operator()(Result &s, Blackbox *B, Vector *v, const Method &m) const {
+		LinBox::solve(s, *B, *v, m);
 	}
 };
 
@@ -99,17 +99,17 @@ protected:
 	Blackbox         *_BB;
 	const Method   &meth;
 public:
-	
+
 	SolvePartialFunctor (Blackbox *B, const Method &m) : _BB(B), meth(m) {}
-	
+
 	template<class Vector>
 	void operator()(const VectorKey& Vkey, Vector *res) const {
 		VectorTable::iterator it = vector_hashtable.find(Vkey);
 		if (it == vector_hashtable.end())
 			throw lb_runtime_error("LinBox ERROR: right hand side vector does not exist (solving impossible)\n");
-		
+
 		SolvePartialFunctor<Blackbox, Method> fct(_BB, meth);
-		VectorFunction::call(*res, Vkey, fct);		
+		VectorFunction::call(*res, Vkey, fct);
 	}
 
       	template<class Vector, class Result>
@@ -141,7 +141,7 @@ public:
 		const DomainKey *k= &createDomain(0, current_rational_field);
 		v->rebind(*k);
 		deleteDomain(*k);
-	}	
+	}
 };
 
 
@@ -158,7 +158,7 @@ void modifyResultVector(const VectorKey &key){
 	VectorTable::iterator it = vector_hashtable.find(key);
 	if (it == vector_hashtable.end())
 			throw lb_runtime_error("LinBox ERROR: result vector does not exist (solving impossible)\n");
-	
+
 	const DomainKey *Dkey = &(it->second->getDomainKey());
 	MutateVectorFunctor Fct;
 	DomainFunction::call(it->second, *Dkey, Fct);
@@ -190,7 +190,7 @@ public:
  * vector solution  is returned through a given vector key *
  ***********************************************************/
 
-void lb_solve(const VectorKey &res, const BlackboxKey &Bkey, const VectorKey &Vkey) {		
+void lb_solve(const VectorKey &res, const BlackboxKey &Bkey, const VectorKey &Vkey) {
 	SolveFunctor<> fct(res);
 	modifyResultVector(res);
 	BlackboxFunction::call(Vkey, Bkey, fct);
@@ -201,11 +201,11 @@ void lb_solve(const VectorKey &res, const BlackboxKey &Bkey, const VectorKey &Vk
  * vector solution  is returned through a vector key *
  *****************************************************/
 
-const VectorKey&  lb_solve(const BlackboxKey &Bkey, const VectorKey &Vkey) {	
+const VectorKey&  lb_solve(const BlackboxKey &Bkey, const VectorKey &Vkey) {
 
 	BlackboxTable::iterator it = blackbox_hashtable.find(Bkey);
 	if (it == blackbox_hashtable.end())
-		throw lb_runtime_error("LinBox ERROR: blackbox does not exist (solving impossible)\n");	
+		throw lb_runtime_error("LinBox ERROR: blackbox does not exist (solving impossible)\n");
 	const DomainKey *Dkey = &it->second->getDomainKey();
 
 	std::pair<size_t,size_t> dim;

@@ -31,12 +31,12 @@ using namespace LinBox;
  *
  * Constructs a random diagonal rational matrix D such that d[2i,2i]=d[2i+1,2i+1]
  * Computes its characteristic polynomial
- * Checks if c[0] (determinant) and c[n-1] (trace) agree 
- * 
+ * Checks if c[0] (determinant) and c[n-1] (trace) agree
+ *
  * Return true on success and false on failure
  */
 
-static bool testDiagRatCharpoly (size_t n, int iterations) 
+static bool testDiagRatCharpoly (size_t n, int iterations)
 {
 	commentator.start ("Testing rational charpoly of diagonal matrix ", "testNonsingularRatIntSolve", iterations);
 
@@ -53,9 +53,9 @@ static bool testDiagRatCharpoly (size_t n, int iterations)
         	GMPRationalField::Element c0,cn;
 	        Q.init(c0,1,1);
 	        Q.init(cn,0,1);
-		
+
 		commentator.startIteration (i);
-	
+
 		int k = ceil(n/2);
 		for (j=0; j < k; ++j) {
 			integer tmp_n, tmp_d;
@@ -63,12 +63,12 @@ static bool testDiagRatCharpoly (size_t n, int iterations)
 			tmp_n = (integer) rand() % (5*(i +1)) + 1;
 			tmp_d = (integer) rand() % (5*(i +1)) + 1;
 			if ( ( i%2) && (j % 2)) integer::negin(tmp_n);
-			
+
 			Q.init(tmp, tmp_n,tmp_d);
-			
+
 			A.setEntry(2*j,2*j,tmp);
 			B.setEntry(2*j,2*j,tmp);
-			
+
 			if (2*j +1 < n) {
 				A.setEntry(2*j+1,2*j+1,tmp);
 				B.setEntry(2*j+1,2*j+1,tmp);
@@ -76,13 +76,13 @@ static bool testDiagRatCharpoly (size_t n, int iterations)
 
 			Q.mulin(c0, tmp);
 			Q.addin(cn, tmp);
-		}	
+		}
 		if (k%2==0) Q.negin(cn);
-		
+
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		charpoly (c, A);
-	
+
 		if ( (c.size() == k+1) && ((!Q.areEqual(c[0] , c0)) || (!Q.areEqual(c[k-1] , cn) ) ) ) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Sparse charpoly failed" << endl;
@@ -96,7 +96,7 @@ static bool testDiagRatCharpoly (size_t n, int iterations)
                                 << "ERROR: Dense charpoly failed" << endl;
                         ret = false;
                 }
-		
+
 		commentator.stop ("done");
 		commentator.progress ();
 	}
@@ -119,7 +119,7 @@ int main (int argc, char **argv)
 		{ '\0' }
 	};
 	parseArguments (argc, argv, args);
-	
+
 	commentator.start("Rational solve test suite", "solve");
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
