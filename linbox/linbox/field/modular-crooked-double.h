@@ -183,7 +183,11 @@ namespace LinBox
 		std::ostream &write (std::ostream &os) const
 		{
 			// os << modulus << '(' << lo_mod << ',' << up_mod << ')' << std::endl;
-			return os << "crooked double mod " << int(modulus) << " @ " << (double)up_mod/modulus;
+			os << "crooked double mod " << int(modulus) << " @ " ;
+			os.precision(2) ;
+			os << (double)up_mod/(modulus-1);
+			os.precision();
+			return os ;
 		}
 
 		std::istream &read (std::istream &is)
@@ -223,7 +227,7 @@ namespace LinBox
 		inline Element& init(Element& x, const double y =0) const
 		{
 
-			x = fmod (y, modulus);
+			x = drem (y, modulus);
 			if (x < lo_mod) return x += modulus;
 			if (x > up_mod) x -= modulus;
 			return x;
@@ -427,7 +431,7 @@ namespace LinBox
 		inline Element& accumulate (const Element &tmp) {
 			_y += tmp;
 			if (_y > _bound)
-				return _y = fmod (_y, _F.modulus);
+				return _y = drem (_y, _F.modulus);
 			else
 				return _y;
 		}
@@ -440,7 +444,7 @@ namespace LinBox
 		}
 
 		inline Element& get (Element &y) {
-			_y = fmod (_y, _F.modulus);
+			_y = drem (_y, _F.modulus);
 			return y=_y ;
 		}
 
@@ -456,7 +460,7 @@ namespace LinBox
 		inline Element& set (const Element &tmp) {
 			_y = tmp;
 			if (_y > _bound)
-				return _y = fmod (_y, _F.modulus);
+				return _y = drem (_y, _F.modulus);
 			else
 				return _y;
 		}
@@ -492,20 +496,20 @@ namespace LinBox
 			if (v1.size() < _nmax) {
 				for (size_t i = 0; i< v1.size();++i)
 					y += v1[i] * v2[i] ;
-				y = fmod(y, _F.modulus);
+				y = drem(y, _F.modulus);
 			}
 			else{
 				size_t i=0;
 				for (;i< v1.size()- _nmax ;i=i+_nmax){
 					for (size_t j=i;j<i+_nmax;++j)
 						y += v1[j] * v2[j];
-					t+=fmod(y, _F.modulus);
+					t+=drem(y, _F.modulus);
 					y=0.;
 				}
 				for (;i < v1.size();++i)
 					y += v1[i] * v2[i];
-				t+=fmod(y, _F.modulus);
-				y = fmod(t, _F.modulus);
+				t+=drem(y, _F.modulus);
+				y = drem(t, _F.modulus);
 			}
 			return res = y;
 		}
@@ -521,20 +525,20 @@ namespace LinBox
 			if (v1.first.size() < _nmax) {
 				for (size_t i=0;i<v1.first.size();++i)
 					y+= v1.second[i] * v2[v1.first[i]];
-				y = fmod(y, _F.modulus);
+				y = drem(y, _F.modulus);
 			}
 			else {
 				size_t i=0;
 				for (;i< v1.first.size()- _nmax ;i=i+_nmax){
 					for (size_t j=i;j<i+_nmax;++j)
 						y += v1.second[j] * v2[v1.first[j]];
-					t+=fmod(y, _F.modulus);
+					t+=drem(y, _F.modulus);
 					y=0.;
 				}
 				for (;i < v1.first.size();++i)
 					y += v1.second[i] * v2[v1.first[i]];
-				t+= fmod(y, _F.modulus);
-				y = fmod(t, _F.modulus);
+				t+= drem(y, _F.modulus);
+				y = drem(t, _F.modulus);
 			}
 			return res = y;
 		}

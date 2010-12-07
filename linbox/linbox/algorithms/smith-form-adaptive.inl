@@ -59,7 +59,8 @@ namespace LinBox
 	/* Compute the local smith form at prime p, when modular (p^e) fits in long
 	*/
 	template <class Matrix>
-	void SmithFormAdaptive::compute_local_long (std::vector <integer>& s, const Matrix& A, long p, long e) {
+	void SmithFormAdaptive::compute_local_long (std::vector <integer>& s, const Matrix& A, long p, long e)
+	{
 		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 
 		int order = A. rowdim() < A. coldim() ? A. rowdim() : A. coldim();
@@ -67,20 +68,19 @@ namespace LinBox
 		if (e == 0) return;
 
 		if (p == 2) {
-			 report << "      Compute local smith at 2^32 using special Local2_32\n";
-			 Local2_32 R;
-			 std::list <Local2_32::Element> l;
-			 SmithFormLocal<Local2_32> SF;
-			 DenseMatrix <Local2_32> A_local(R, A.rowdim(),A.coldim());
-			 MatrixHom::map (A_local, A, R);
-			 SF (l, A_local, R);
-			 std::list <Local2_32::Element>::iterator l_p;
-			 std::vector <integer>::iterator s_p;
-			 for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() + order; ++ s_p, ++ l_p)
-			 	*s_p = *l_p;
+			report << "      Compute local smith at 2^32 using special Local2_32\n";
+			Local2_32 R;
+			std::list <Local2_32::Element> l;
+			SmithFormLocal<Local2_32> SF;
+			DenseMatrix <Local2_32> A_local(R, A.rowdim(),A.coldim());
+			MatrixHom::map (A_local, A, R);
+			SF (l, A_local, R);
+			std::list <Local2_32::Element>::iterator l_p;
+			std::vector <integer>::iterator s_p;
+			for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() + order; ++ s_p, ++ l_p)
+				*s_p = *l_p;
 			report << "     Done\n";
-		}
-		else if (e == 1) {
+		} else if (e == 1) {
 			report << "      Compute local smith at prime " << p << ", by rank.\n";
 #if 0 /*Meet trouble to call ffpack routine*/
 			Modular<double> F (p); Modular<double>::Element elt;
@@ -120,8 +120,7 @@ namespace LinBox
 			for (; s_p != s. begin() + order; ++ s_p)
 				*s_p = 0;
 			report << "      Done\n";
-		}
-		else {
+		} else {
 			report << "      Compute local smith at " << p <<'^' << e << " using PIRModular<int32>\n";
 			long m = 1; int i = 0; for (i = 0; i < e; ++ i) m *= p;
 			typedef PIRModular<int32> PIR;
@@ -144,14 +143,15 @@ namespace LinBox
 	/* Compute the local smith form at prime p, when modular (p^e) doesnot fit in long
 	*/
 	template <class Matrix>
-	void SmithFormAdaptive::compute_local_big (std::vector<integer>& s, const Matrix& A, long p, long e) {
+	void SmithFormAdaptive::compute_local_big (std::vector<integer>& s, const Matrix& A, long p, long e)
+	{
 
 		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		int order = A. rowdim() < A. coldim() ? A. rowdim() : A. coldim();
 		linbox_check ((s. size() >= (unsigned long) order) && (p > 0) && ( e >= 0));
 		integer T; T = order; T <<= 20; T = pow (T, (int) sqrt((double)order));
 		NTL::ZZ m;  NTL::conv(m, 1); int i = 0; for (i = 0; i < e; ++ i) m *= p;
-		//if (m < T) {
+		//if (m < T)
 		if (1) {
 			report << "      Compute local Smith at " << p << '^' << e << " over PIR-ntl-ZZ_p\n";
 			PIR_ntl_ZZ_p R(m);
@@ -165,8 +165,7 @@ namespace LinBox
 			for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() + order; ++ s_p, ++ l_p)
 				R. convert(*s_p, *l_p);
 			report << "      Done \n";
-		}
-		else {
+		} else {
 			std::cout << "Compute local smith at " << p << '^' << e << std::endl;
 			std::cerr << "Not implemented yet.\n";
 		}
@@ -177,7 +176,8 @@ namespace LinBox
 	/* Compute the local smith form at prime p
 	*/
 	template <class Matrix>
-	void SmithFormAdaptive::compute_local (std::vector<integer>& s, const Matrix& A, long p, long e) {
+	void SmithFormAdaptive::compute_local (std::vector<integer>& s, const Matrix& A, long p, long e)
+	{
 
 		linbox_check ((p > 0) && ( e >= 0));
 		integer m = 1; int i = 0; for ( i = 0; i < e; ++ i) m *= p;
@@ -197,7 +197,8 @@ namespace LinBox
 	 * r >= 2;
 	 */
 	template <class Matrix>
-	void SmithFormAdaptive::smithFormSmooth (std::vector<integer>& s, const Matrix& A, long r, const std::vector<long>& sev) {
+	void SmithFormAdaptive::smithFormSmooth (std::vector<integer>& s, const Matrix& A, long r, const std::vector<long>& sev)
+	{
 		//....
 		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation the k-smooth part of the invariant factors starts(via local and rank):" << std::endl;
@@ -238,9 +239,10 @@ namespace LinBox
 #ifdef __LINBOX_HAVE_NTL
 	/* Compute the k-rough part of the invariant factor, where k = 100.
 	 * By EGV+ algorithm or Iliopoulos' algorithm for Smith form.
-	*/
+	 */
 	template <class Matrix>
-	void SmithFormAdaptive::smithFormRough  (std::vector<integer>& s, const Matrix& A, integer m) {
+	void SmithFormAdaptive::smithFormRough  (std::vector<integer>& s, const Matrix& A, integer m)
+	{
 
 		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Compuation of the k-rough part f the invariant factors starts(via EGV+ or Iliopolous):\n";
@@ -266,7 +268,7 @@ namespace LinBox
 			typedef Modular<int> Field;
 			typedef typename Matrix::Field Ring;
 			typedef RationalSolverAdaptive Solver;
-		   	typedef LastInvariantFactor<Ring, Solver> LIF;
+			typedef LastInvariantFactor<Ring, Solver> LIF;
 			typedef OneInvariantFactor<Ring, LIF, SCompose, RandomMatrix>  OIF;
 			SmithFormBinary<Ring, OIF, MatrixRank<Ring, Field > > sf;;
 			sf. setOIFThreshold (2);
@@ -288,7 +290,7 @@ namespace LinBox
 			SmithFormIliopoulos::smithFormIn (A_ilio);
 			int i; std::vector<integer>::iterator s_p;
 			for (i = 0, s_p = s. begin(); s_p != s. begin() + order; ++ i, ++ s_p)
-                            R. convert(*s_p, A_ilio[i][i]);
+				R. convert(*s_p, A_ilio[i][i]);
 			report << "    Elimination ends.\n";
 		}
 		report << "Compuation of the k-rough part of the invariant factors finishes.\n";
@@ -300,7 +302,8 @@ namespace LinBox
 	 * r >= 2;
 	 */
 	template <class Matrix>
-	void SmithFormAdaptive::smithFormVal (std::vector<integer>&s, const Matrix& A, long r, const std::vector<long>& sev){
+	void SmithFormAdaptive::smithFormVal (std::vector<integer>&s, const Matrix& A, long r, const std::vector<long>& sev)
+	{
 		//....
 		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation the local smith form at each possible prime:\n";
@@ -341,6 +344,7 @@ namespace LinBox
 		report << "Computation of the smith form done.\n";
 
 	}
+
 	/* Compute the Smith form of a dense matrix
 	 * By adaptive algorithm.
 	 * Compute the valence possible, or valence is rough,
@@ -348,8 +352,9 @@ namespace LinBox
 	 * then based on that, compute the rough and smooth part, seperately.
 	 */
 	template <class Matrix>
-	void SmithFormAdaptive::smithForm (std::vector<integer>& s, const Matrix& A) {
-	 	//commentator.start ("Smith Form starts", "Smihtform");
+	void SmithFormAdaptive::smithForm (std::vector<integer>& s, const Matrix& A)
+	{
+		//commentator.start ("Smith Form starts", "Smihtform");
 
 		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation of the invariant factors starts (via an adaptive alg):" << std::endl;
@@ -401,14 +406,14 @@ namespace LinBox
 
 		report << "Computation of the largest invariant factor with bonus starts:\n";
 		typedef RationalSolverAdaptive Solver;
-	    typedef LastInvariantFactor<Ring, Solver> LIF;
+		typedef LastInvariantFactor<Ring, Solver> LIF;
 		typedef OneInvariantFactor<Ring, LIF, SCompose, RandomMatrix>  OIF;
 		OIF oif; oif. setThreshold  (4); oif.getLastInvariantFactor().setThreshold (6);
 		typename Ring::Element _lif, _bonus; integer lif, bonus;
 		//Chnage A to DenseMatrix
 		Ring R(A. field());
 		DenseMatrix<Ring> DA(R,A.rowdim(),A.coldim());
-                MatrixHom::map (DA, A, R);
+		MatrixHom::map (DA, A, R);
 		do {
 			oif. oneInvariantFactor_Bonus (_lif, _bonus, DA, (int)r);
 
@@ -438,15 +443,15 @@ namespace LinBox
 		std::vector<integer>::iterator s_p, rough_p, smooth_p;
 
 		/*
-		report << "Smooth part\n";
-		for (smooth_p = smooth. begin(); smooth_p != smooth. end(); ++ smooth_p)
-			report<< *smooth_p << ' ';
-		report<< '\n';
-		report<<"Rough part\n";
-		for (rough_p = rough. begin(); rough_p != rough. begin() + r; ++ rough_p)
-			report<< *rough_p << ' ';
-		report<< '\n';
-		*/
+		   report << "Smooth part\n";
+		   for (smooth_p = smooth. begin(); smooth_p != smooth. end(); ++ smooth_p)
+		   report<< *smooth_p << ' ';
+		   report<< '\n';
+		   report<<"Rough part\n";
+		   for (rough_p = rough. begin(); rough_p != rough. begin() + r; ++ rough_p)
+		   report<< *rough_p << ' ';
+		   report<< '\n';
+		   */
 
 		for (rough_p = rough. begin(); rough_p != rough. begin() + r; ++ rough_p)
 			if (* rough_p == 0) *rough_p = bonus;
@@ -457,6 +462,7 @@ namespace LinBox
 		report << "Computation of the invariant factors ends." << std::endl;
 		//commentator. stop ("done", NULL, "Smithform");
 	}
+
 	/* Compute the Smith form of a dense matrix
 	 * By adaptive algorithm.
 	 * Compute the valence possible, or valence is rough,
@@ -464,8 +470,9 @@ namespace LinBox
 	 * then based on that, compute the rough and smooth part, seperately.
 	 */
 	template <class IRing>
-	void SmithFormAdaptive::smithForm (std::vector<integer>& s, const DenseMatrix<IRing>& A) {
-	 	//commentator.start ("Smith Form starts", "Smithform");
+	void SmithFormAdaptive::smithForm (std::vector<integer>& s, const DenseMatrix<IRing>& A)
+	{
+		//commentator.start ("Smith Form starts", "Smithform");
 
 		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation of the invariant factors starts (via an adaptive alg):" << std::endl;
@@ -488,7 +495,7 @@ namespace LinBox
 		RandomPrimeIterator rg ((int)(log( (double)(Field::getMaxModulus()) ) / M_LN2 - 2));
 		Field F (*rg);
 		typename MatrixHomTrait<DenseMatrix<IRing>, Field>::value_type Ap(F,A.rowdim(),A.coldim());
-                MatrixHom::map (Ap, A, F);
+		MatrixHom::map (Ap, A, F);
 		Valence::one_valence (v, degree, Ap);
 		report <<"   Degree of minial polynomial of AA^T = " << degree << '\n';
 		// if degree is small
@@ -517,7 +524,7 @@ namespace LinBox
 
 		report << "Computation of the largest invariant factor with bonus starts:\n";
 		typedef RationalSolverAdaptive Solver;
-	    typedef LastInvariantFactor<Ring, Solver> LIF;
+		typedef LastInvariantFactor<Ring, Solver> LIF;
 		typedef OneInvariantFactor<Ring, LIF, SCompose, RandomMatrix>  OIF;
 		OIF oif; oif. setThreshold  (10); oif.getLastInvariantFactor().setThreshold (6);
 		typename Ring::Element _lif, _bonus; integer lif, bonus;
@@ -544,21 +551,21 @@ namespace LinBox
 		std::vector<integer> smooth (order), rough (order);
 		smithFormSmooth (smooth, A, r, e);
 		smithFormRough (rough, A, bonus);
-		//fixed the rough largest invariant factor
+		// fixed the rough largest invariant factor
 		if (r > 0) rough[r-1] = r_mod;
 
 		std::vector<integer>::iterator s_p, rough_p, smooth_p;
 
 		/*
-		report << "Smooth part\n";
-		for (smooth_p = smooth. begin(); smooth_p != smooth. end(); ++ smooth_p)
-			report<< *smooth_p << ' ';
-		report<< '\n';
-		report<<"Rough part\n";
-		for (rough_p = rough. begin(); rough_p != rough. begin() + r; ++ rough_p)
-			report<< *rough_p << ' ';
-		report<< '\n';
-		*/
+		   report << "Smooth part\n";
+		   for (smooth_p = smooth. begin(); smooth_p != smooth. end(); ++ smooth_p)
+		   report<< *smooth_p << ' ';
+		   report<< '\n';
+		   report<<"Rough part\n";
+		   for (rough_p = rough. begin(); rough_p != rough. begin() + r; ++ rough_p)
+		   report<< *rough_p << ' ';
+		   report<< '\n';
+		   */
 
 		for (rough_p = rough. begin(); rough_p != rough. begin() + r; ++ rough_p)
 			if (* rough_p == 0) *rough_p = bonus;

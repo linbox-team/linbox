@@ -16,7 +16,7 @@
 #ifndef __LINBOX_fflas_H
 #define __LINBOX_fflas_H
 
-#include <math.h>
+#include <cmath>
 
 #ifndef MAX
 #define MAX(a,b) ((a < b)?b:a)

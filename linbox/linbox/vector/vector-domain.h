@@ -60,7 +60,7 @@ namespace LinBox
 	class VectorDomainBase {
 	public:
 		VectorDomainBase (const Field &F) :
-		       	_F (F), accu(F)
+			_F (F), accu(F)
 		{}
 
 		VectorDomainBase& operator= (const VectorDomainBase& VD)
@@ -92,7 +92,7 @@ namespace LinBox
 		typedef typename Field::Element Element;
 
 		DotProductDomain (const Field &F) :
-		       	VectorDomainBase<Field> (F)
+			VectorDomainBase<Field> (F)
 		{}
 
 	protected:
@@ -119,11 +119,11 @@ namespace LinBox
 	 * as a template parameter and it will work as intended, though its
 	 * operation may not be fully optimized.
 	 */
-// JGD 01.10.2003 : Why inherit twice from VectorDomainBase<Field> ???
-// bds 2004Apr25 : well, g++ 3.4.3 wants explicit base domains on everything - eases that.
+	// JGD 01.10.2003 : Why inherit twice from VectorDomainBase<Field> ???
+	// bds 2004Apr25 : well, g++ 3.4.3 wants explicit base domains on everything - eases that.
 	template <class Field>
 	class VectorDomain : public virtual DotProductDomain<Field>, public virtual VectorDomainBase<Field> {
-      	public:
+	public:
 
 		typedef typename Field::Element         Element;
 
@@ -134,7 +134,7 @@ namespace LinBox
 		 * @param  VD VectorDomain object.
 		 */
 		VectorDomain (const VectorDomain &VD) :
-		       	VectorDomainBase<Field> (VD._F), DotProductDomain<Field> (VD._F)
+			VectorDomainBase<Field> (VD._F), DotProductDomain<Field> (VD._F)
 		{}
 
 		/** Assignment operator.
@@ -142,7 +142,11 @@ namespace LinBox
 		 * @param  MD VectorDomain object.
 		 */
 		VectorDomain &operator = (const VectorDomain &VD)
-			{ VectorDomainBase<Field>::_F = VD._F; VectorDomainBase<Field>::accu = VD.accu; return *this; }
+		{
+			VectorDomainBase<Field>::_F = VD._F;
+			VectorDomainBase<Field>::accu = VD.accu;
+			return *this;
+		}
 
 		/** Retrieve the underlying field
 		 * Return a reference to the field that this vector domain
@@ -151,7 +155,9 @@ namespace LinBox
 		 */
 
 		const Field &field () const
-		{ return VectorDomainBase<Field>::_F; }
+		{
+			return VectorDomainBase<Field>::_F;
+		}
 
 		/** Vector input/output operations
 		 * These routines are useful for reading and writing vectors to
@@ -170,7 +176,9 @@ namespace LinBox
 		 */
 		template <class Vector>
 		inline std::ostream &write (std::ostream &os, const Vector &x) const
-		{ return writeSpecialized (os, x, typename VectorTraits<Vector>::VectorCategory ()); }
+		{
+			return writeSpecialized (os, x, typename VectorTraits<Vector>::VectorCategory ());
+		}
 
 		/** Read vector of field elements.
 		 * This function assumes the field element has already been
@@ -181,7 +189,9 @@ namespace LinBox
 		 */
 		template <class Vector>
 		inline std::istream &read (std::istream &is, Vector &x) const
-		{ return readSpecialized (is, x, typename VectorTraits<Vector>::VectorCategory ()); }
+		{
+			return readSpecialized (is, x, typename VectorTraits<Vector>::VectorCategory ());
+		}
 
 		//@} Input/Output Operations
 
@@ -202,9 +212,11 @@ namespace LinBox
 		 */
 		template <class Vector1, class Vector2>
 		inline Vector1 &copy (Vector1 &res, const Vector2 &v) const
-		{ return copySpecialized (res, v,
-					  typename VectorTraits<Vector1>::VectorCategory (),
-					  typename VectorTraits<Vector2>::VectorCategory ()); }
+		{
+			return copySpecialized (res, v,
+						typename VectorTraits<Vector1>::VectorCategory (),
+						typename VectorTraits<Vector2>::VectorCategory ());
+		}
 
 		/** Vector copy
 		 * Copy a vector to a portion of another vector, possibly
@@ -218,8 +230,10 @@ namespace LinBox
 		 */
 		template <class Vector1, class Vector2>
 		inline Vector1 &copy (Vector1 &res, const Vector2 &v, size_t i, size_t len = 0) const
-		{ return copySpecialized (res, v, i, len,
-					  typename VectorTraits<Vector1>::VectorCategory ()); }
+		{
+			return copySpecialized (res, v, i, len,
+						typename VectorTraits<Vector1>::VectorCategory ());
+		}
 
 		/** Vector equality
 		 * @param v1 Input vector
@@ -228,9 +242,11 @@ namespace LinBox
 		 */
 		template <class Vector1, class Vector2>
 		inline bool areEqual (const Vector1 &v1, const Vector2 &v2) const
-		{ return areEqualSpecialized (v1, v2,
-					      typename VectorTraits<Vector1>::VectorCategory (),
-					      typename VectorTraits<Vector2>::VectorCategory ()); }
+		{
+			return areEqualSpecialized (v1, v2,
+						    typename VectorTraits<Vector1>::VectorCategory (),
+						    typename VectorTraits<Vector2>::VectorCategory ());
+		}
 
 		/** Vector equality with zero
 		 * @param v Input vector
@@ -238,7 +254,9 @@ namespace LinBox
 		 */
 		template <class Vector>
 		inline bool isZero (const Vector &v) const
-		{ return isZeroSpecialized (v, typename VectorTraits<Vector>::VectorCategory ()); }
+		{
+			return isZeroSpecialized (v, typename VectorTraits<Vector>::VectorCategory ());
+		}
 
 		/** Vector-vector dot product
 		 * @param res element into which to store result
@@ -247,14 +265,18 @@ namespace LinBox
 		 */
 		template <class Vector1, class Vector2>
 		inline Element &dot (Element &res, const Vector1 &v1, const Vector2 &v2) const
-		{ return dotSpecialized (res, v1, v2,
-					 typename VectorTraits<Vector1>::VectorCategory (),
-					 typename VectorTraits<Vector2>::VectorCategory ()); }
+		{
+			return dotSpecialized (res, v1, v2,
+					       typename VectorTraits<Vector1>::VectorCategory (),
+					       typename VectorTraits<Vector2>::VectorCategory ());
+		}
 
 		/* Alias for the above, to avoid source incompatibility */
 		template <class Vector1, class Vector2>
 		inline Element &dotprod (Element &res, const Vector1 &v1, const Vector2 &v2) const
-		{ return dot (res, v1, v2); }
+		{
+			return dot (res, v1, v2);
+		}
 
 		/** Vector add
 		 * res <- y + x
@@ -264,10 +286,12 @@ namespace LinBox
 		 */
 		template <class Vector1, class Vector2, class Vector3>
 		inline Vector1 &add (Vector1 &res, const Vector2 &y, const Vector3 &x) const
-		{ return addSpecialized (res, y, x,
-					 typename VectorTraits<Vector1>::VectorCategory (),
-					 typename VectorTraits<Vector2>::VectorCategory (),
-					 typename VectorTraits<Vector3>::VectorCategory ()); }
+		{
+			return addSpecialized (res, y, x,
+					       typename VectorTraits<Vector1>::VectorCategory (),
+					       typename VectorTraits<Vector2>::VectorCategory (),
+					       typename VectorTraits<Vector3>::VectorCategory ());
+		}
 
 		/** Vector in-place add
 		 * y <- y + x
@@ -276,9 +300,11 @@ namespace LinBox
 		 */
 		template <class Vector1, class Vector2>
 		inline Vector1 &addin (Vector1 &y, const Vector2 &x) const
-		{ return addinSpecialized (y, x,
-					   typename VectorTraits<Vector1>::VectorCategory (),
-					   typename VectorTraits<Vector2>::VectorCategory ()); }
+		{
+			return addinSpecialized (y, x,
+						 typename VectorTraits<Vector1>::VectorCategory (),
+						 typename VectorTraits<Vector2>::VectorCategory ());
+		}
 
 		/** Vector subtract
 		 * res <- y - x
@@ -288,10 +314,12 @@ namespace LinBox
 		 */
 		template <class Vector1, class Vector2, class Vector3>
 		inline Vector1 &sub (Vector1 &res, const Vector2 &y, const Vector3 &x) const
-		{ return subSpecialized (res, y, x,
-					 typename VectorTraits<Vector1>::VectorCategory (),
-					 typename VectorTraits<Vector2>::VectorCategory (),
-					 typename VectorTraits<Vector3>::VectorCategory ()); }
+		{
+			return subSpecialized (res, y, x,
+					       typename VectorTraits<Vector1>::VectorCategory (),
+					       typename VectorTraits<Vector2>::VectorCategory (),
+					       typename VectorTraits<Vector3>::VectorCategory ());
+		}
 
 		/** Vector in-place subtract
 		 * y <- y - x
@@ -300,9 +328,11 @@ namespace LinBox
 		 */
 		template <class Vector1, class Vector2>
 		inline Vector1 &subin (Vector1 &y, const Vector2 &x) const
-		{ return subinSpecialized (y, x,
-					   typename VectorTraits<Vector1>::VectorCategory (),
-					   typename VectorTraits<Vector2>::VectorCategory ()); }
+		{
+			return subinSpecialized (y, x,
+						 typename VectorTraits<Vector1>::VectorCategory (),
+						 typename VectorTraits<Vector2>::VectorCategory ());
+		}
 
 		/** Vector negate
 		 * res <- -x
@@ -311,9 +341,11 @@ namespace LinBox
 		 */
 		template <class Vector1, class Vector2>
 		inline Vector1 &neg (Vector1 &res, const Vector2 &x) const
-		{ return negSpecialized (res, x,
-					 typename VectorTraits<Vector1>::VectorCategory (),
-					 typename VectorTraits<Vector2>::VectorCategory ()); }
+		{
+			return negSpecialized (res, x,
+					       typename VectorTraits<Vector1>::VectorCategory (),
+					       typename VectorTraits<Vector2>::VectorCategory ());
+		}
 
 		/** Vector in-place negate
 		 * y <- -y
@@ -321,7 +353,9 @@ namespace LinBox
 		 */
 		template <class Vector>
 		inline Vector &negin (Vector &y) const
-		{ return neginSpecialized (y, typename VectorTraits<Vector>::VectorCategory ()); }
+		{
+			return neginSpecialized (y, typename VectorTraits<Vector>::VectorCategory ());
+		}
 
 		/** Scalar-vector multiplication
 		 * res <- a * x
@@ -331,7 +365,9 @@ namespace LinBox
 		 */
 		template <class Vector1, class Vector2>
 		inline Vector1 &mul (Vector1 &res, const Vector2 &x, const Element &a) const
-		{ return mulSpecialized (res, x, a, typename VectorTraits<Vector1>::VectorCategory ()); }
+		{
+			return mulSpecialized (res, x, a, typename VectorTraits<Vector1>::VectorCategory ());
+		}
 
 		/** In-place scalar-vector multiplication
 		 * x <- a * x
@@ -341,7 +377,9 @@ namespace LinBox
 		 */
 		template <class Vector>
 		inline Vector &mulin (Vector &x, const Element &a) const
-		{ return mulinSpecialized (x, a, typename VectorTraits<Vector>::VectorCategory ()); }
+		{
+			return mulinSpecialized (x, a, typename VectorTraits<Vector>::VectorCategory ());
+		}
 
 		/** Vector axpy
 		 * res <- y + a*x
@@ -352,7 +390,9 @@ namespace LinBox
 		 */
 		template <class Vector1, class Vector2, class Vector3>
 		inline Vector1 &axpy (Vector1 &res, const Element &a, const Vector2 &x, const Vector3 &y) const
-		{ return axpySpecialized (res, y, a, x, typename VectorTraits<Vector1>::VectorCategory ()); }
+		{
+			return axpySpecialized (res, y, a, x, typename VectorTraits<Vector1>::VectorCategory ());
+		}
 
 		/** Vector in-place axpy
 		 * y <- y + a*x
@@ -362,9 +402,11 @@ namespace LinBox
 		 */
 		template <class Vector1, class Vector2>
 		inline Vector1 &axpyin (Vector1 &y, const Element &a, const Vector2 &x) const
-		{ return axpyinSpecialized (y, a, x,
-					    typename VectorTraits<Vector1>::VectorCategory (),
-					    typename VectorTraits<Vector2>::VectorCategory ()); }
+		{
+			return axpyinSpecialized (y, a, x,
+						  typename VectorTraits<Vector1>::VectorCategory (),
+						  typename VectorTraits<Vector2>::VectorCategory ());
+		}
 
 		//@} Vector arithmetic operations
 
@@ -390,7 +432,9 @@ namespace LinBox
 		 */
 		template <class Vector>
 		inline void swap (Vector &v1, Vector &v2) const
-			{ swapSpecialized (v1, v2, typename VectorTraits<Vector>::VectorCategory ()); }
+		{
+			swapSpecialized (v1, v2, typename VectorTraits<Vector>::VectorCategory ());
+		}
 
 		/** Permute the entries of a given vector using the given
 		 * permutation
@@ -404,8 +448,10 @@ namespace LinBox
 		inline Vector &permute (Vector   &v,
 					Iterator  P_start,
 					Iterator  P_end) const
-			{ return permuteSpecialized (v, P_start, P_end,
-						     typename VectorTraits<Vector>::VectorCategory ()); }
+		{
+			return permuteSpecialized (v, P_start, P_end,
+						   typename VectorTraits<Vector>::VectorCategory ());
+		}
 
 		//@}
 
@@ -419,7 +465,7 @@ namespace LinBox
 		 * @param F Field from which to construct
 		 */
 		VectorDomain (const Field &F) :
-                        VectorDomainBase<Field> (F),DotProductDomain<Field> (F)
+			VectorDomainBase<Field> (F),DotProductDomain<Field> (F)
 		{}
 
 		//@} Implementation-Specific Methods
@@ -484,7 +530,9 @@ namespace LinBox
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
 					  VectorCategories::DenseVectorTag,
 					  VectorCategories::SparseSequenceVectorTag) const
-		{ return areEqual (v2, v1); }
+		{
+			return areEqual (v2, v1);
+		}
 		template <class Vector1, class Vector2>
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
 					  VectorCategories::SparseSequenceVectorTag,
@@ -502,12 +550,16 @@ namespace LinBox
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
 					  VectorCategories::DenseVectorTag,
 					  VectorCategories::SparseAssociativeVectorTag) const
-		{ return areEqual (v2, v1); }
+		{
+			return areEqual (v2, v1);
+		}
 		template <class Vector1, class Vector2>
 		inline bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
 						 VectorCategories::SparseSequenceVectorTag,
 						 VectorCategories::SparseAssociativeVectorTag) const
-		{ return areEqual (v2, v1); }
+		{
+			return areEqual (v2, v1);
+		}
 		template <class Vector1, class Vector2>
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
 					  VectorCategories::SparseAssociativeVectorTag,
@@ -521,17 +573,23 @@ namespace LinBox
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
 					  VectorCategories::DenseVectorTag,
 					  VectorCategories::SparseParallelVectorTag) const
-		{ return areEqual (v2, v1); }
+		{
+			return areEqual (v2, v1);
+		}
 		template <class Vector1, class Vector2>
 		inline bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
 						 VectorCategories::SparseSequenceVectorTag,
 						 VectorCategories::SparseParallelVectorTag) const
-		{ return areEqual (v2, v1); }
+		{
+			return areEqual (v2, v1);
+		}
 		template <class Vector1, class Vector2>
 		inline bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
 						 VectorCategories::SparseAssociativeVectorTag,
 						 VectorCategories::SparseParallelVectorTag) const
-		{ return areEqual (v2, v1); }
+		{
+			return areEqual (v2, v1);
+		}
 		template <class Vector1, class Vector2>
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
 					  VectorCategories::SparseParallelVectorTag,
@@ -550,7 +608,8 @@ namespace LinBox
 		inline Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
 						 VectorCategories::DenseVectorTag,
 						 VectorCategories::DenseVectorTag) const
-		{ std::copy (v.begin (), v.end (), res.begin ()); return res; }
+		{ std::copy (v.begin (), v.end (), res.begin ()); return res;
+		}
 		template <class Vector1, class Vector2>
 		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
 					  VectorCategories::SparseSequenceVectorTag,
@@ -572,7 +631,9 @@ namespace LinBox
 		inline Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
 						 VectorCategories::SparseSequenceVectorTag,
 						 VectorCategories::SparseSequenceVectorTag) const
-		{ res.resize (v.size ()); std::copy (v.begin (), v.end (), res.begin ()); return res; }
+		{
+			res.resize (v.size ()); std::copy (v.begin (), v.end (), res.begin ()); return res;
+		}
 		template <class Vector1, class Vector2>
 		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
 					  VectorCategories::SparseAssociativeVectorTag,
@@ -649,7 +710,9 @@ namespace LinBox
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::DenseVectorTag,
 						VectorCategories::DenseVectorTag) const
-		{ return DotProductDomain<Field>::dotSpecializedDD (res, v1, v2); }
+		{
+			return DotProductDomain<Field>::dotSpecializedDD (res, v1, v2);
+		}
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::SparseSequenceVectorTag,
@@ -662,13 +725,17 @@ namespace LinBox
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::SparseParallelVectorTag,
 						VectorCategories::DenseVectorTag) const
-		{ return DotProductDomain<Field>::dotSpecializedDSP (res, v1, v2); }
+		{
+			return DotProductDomain<Field>::dotSpecializedDSP (res, v1, v2);
+		}
 
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::DenseVectorTag,
 						VectorCategories::SparseSequenceVectorTag) const
-		{ return dot (res, v2, v1); }
+		{
+			return dot (res, v2, v1);
+		}
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::SparseSequenceVectorTag,
@@ -686,12 +753,16 @@ namespace LinBox
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::DenseVectorTag,
 						VectorCategories::SparseAssociativeVectorTag) const
-		{ return dot (res, v2, v1); }
+		{
+			return dot (res, v2, v1);
+		}
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::SparseSequenceVectorTag,
 						VectorCategories::SparseAssociativeVectorTag) const
-		{ return dot (res, v2, v1); }
+		{
+			return dot (res, v2, v1);
+		}
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::SparseAssociativeVectorTag,
@@ -705,17 +776,23 @@ namespace LinBox
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::DenseVectorTag,
 						VectorCategories::SparseParallelVectorTag) const
-		{ return dot (res, v2, v1); }
+		{
+			return dot (res, v2, v1);
+		}
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::SparseSequenceVectorTag,
 						VectorCategories::SparseParallelVectorTag) const
-		{ return dot (res, v2, v1); }
+		{
+			return dot (res, v2, v1);
+		}
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::SparseAssociativeVectorTag,
 						VectorCategories::SparseParallelVectorTag) const
-		{ return dot (res, v2, v1); }
+		{
+			return dot (res, v2, v1);
+		}
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::SparseParallelVectorTag,

@@ -38,16 +38,15 @@ namespace LinBox
 	 * column vectors is used instead.
 	 */
 
-	struct MatrixCategories
-	{
+	struct MatrixCategories {
 		struct BlackboxTag { };
 		struct RowMatrixTag : public virtual BlackboxTag { };
 		struct ColMatrixTag : public virtual BlackboxTag { };
 		struct RowColMatrixTag : public RowMatrixTag, public ColMatrixTag { };
 	};
 
-	template <class Matrix> struct MatrixTraits
-	{
+	template <class Matrix>
+	struct MatrixTraits {
 		typedef Matrix MatrixType;
 		typedef typename Matrix::MatrixCategory MatrixCategory;
 	};
