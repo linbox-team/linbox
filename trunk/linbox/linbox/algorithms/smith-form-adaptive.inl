@@ -82,7 +82,7 @@ namespace LinBox
 		}
 		else if (e == 1) {
 			report << "      Compute local smith at prime " << p << ", by rank.\n";
-#if 0  Meet trouble to call ffpack routine
+#if 0 /*Meet trouble to call ffpack routine*/
 			Modular<double> F (p); Modular<double>::Element elt;
 			int n = A. rowdim(); int m = A. coldim();
 			Modular<double>::Element* A_local = new Modular<double>::Element [n * m];
