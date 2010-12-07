@@ -85,7 +85,6 @@ namespace LinBox
 
 	};
 
-
 	template< class Field, class Operand1, class Operand2, class Operand3>
 	class BlasMatrixDomainSub {
 	public:
@@ -101,8 +100,6 @@ namespace LinBox
 				      Operand1 &B, const Operand2 &A) const;
 
 	};
-
-
 
 	template< class Field, class Operand1, class Operand2, class Operand3>
 	class BlasMatrixDomainMul {
@@ -179,8 +176,6 @@ namespace LinBox
 		int &operator() (const Field &F, Matrix &Ainv, Matrix &A) const;
 	};
 
-
-
 	/*  Class handling rank computation of a Matrix
 	 *
 	 *  only  function:  operator () are defined :
@@ -211,7 +206,6 @@ namespace LinBox
 		typename Field::Element operator() (const Field &F, Matrix& A) const;
 	};
 
-
 	/*  Class handling resolution of linear system of a Matrix
 	 *  with Operand as right or left and side
 	 *
@@ -240,7 +234,6 @@ namespace LinBox
 		Operand &operator() (const Field &F, const Matrix &A, Operand &B) const;
 	};
 
-
 	template< class Field, class Polynomial, class Matrix>
 	class BlasMatrixDomainMinpoly {
 	public:
@@ -255,14 +248,11 @@ namespace LinBox
 		ContPol&  operator() (const Field &F, ContPol& P, const Matrix& A) const;
 	};
 
-
-	/*
+	/**
 	 *  Interface for all functionnalities provided
 	 *  for BlasMatrix through specialization of all
 	 *  classes defined above.
 	 */
-
-
 	template <class Field>
 	class BlasMatrixDomain {
 
@@ -295,7 +285,10 @@ namespace LinBox
 
 
 		// Field accessor
-		const Field& field() const {return _F;}
+		const Field& field() const
+		{
+			return _F;
+		}
 
 
 		/*
@@ -305,27 +298,31 @@ namespace LinBox
 		// multiplication
 		// C = A*B
 		template <class Operand1, class Operand2, class Operand3>
-		Operand1& mul(Operand1& C, const Operand2& A, const Operand3& B) const {
+		Operand1& mul(Operand1& C, const Operand2& A, const Operand3& B) const
+		{
 			return BlasMatrixDomainMul<Field,Operand1,Operand2,Operand3>()(_F,C,A,B);
 		}
 
 		// addition
 		// C = A+B
 		template <class Operand1, class Operand2, class Operand3>
-		Operand1& add(Operand1& C, const Operand2& A, const Operand3& B) const {
+		Operand1& add(Operand1& C, const Operand2& A, const Operand3& B) const
+		{
 			return BlasMatrixDomainAdd<Field,Operand1,Operand2,Operand3>()(_F,C,A,B);
 		}
 
 		// copy
 		// B = A
 		template <class Operand1, class Operand2>
-		Operand1& copy(Operand1& B, const Operand2& A) const {
+		Operand1& copy(Operand1& B, const Operand2& A) const
+		{
 			return BlasMatrixDomainCopy<Field,Operand1,Operand2>()(_F,B,A);
 		}
 		// multiplication
 		// C = A-B
 		template <class Operand1, class Operand2, class Operand3>
-		Operand1& sub(Operand1& C, const Operand2& A, const Operand3& B) const {
+		Operand1& sub(Operand1& C, const Operand2& A, const Operand3& B) const
+		{
 			return BlasMatrixDomainSub<Field,Operand1,Operand2,Operand3>()(_F,C,A,B);
 		}
 
@@ -334,7 +331,8 @@ namespace LinBox
 		// multiplication with scaling
 		// C = alpha.A*B
 		template <class Operand1, class Operand2, class Operand3>
-		Operand1& mul(Operand1& C, const Element& alpha, const Operand2& A, const Operand3& B) const {
+		Operand1& mul(Operand1& C, const Element& alpha, const Operand2& A, const Operand3& B) const
+		{
 			return muladdin(_Zero,C,alpha,A,B);
 		}
 
@@ -342,42 +340,48 @@ namespace LinBox
 		// In place multiplication
 		// A = A*B
 		template <class Operand1, class Operand2>
-		Operand1& mulin_left(Operand1& A, const Operand2& B ) const {
+		Operand1& mulin_left(Operand1& A, const Operand2& B ) const
+		{
 			return BlasMatrixDomainMulin<Field,Operand1,Operand2>()(_F,A,B);
 		}
 
 		// In place multiplication
 		// B = A*B
 		template <class Operand1, class Operand2>
-		Operand2& mulin_right(const Operand1& A, Operand2& B ) const {
+		Operand2& mulin_right(const Operand1& A, Operand2& B ) const
+		{
 			return BlasMatrixDomainMulin<Field,Operand2,Operand1>()(_F,A,B);
 		}
 
 		// axpy
 		// D = A*B + C
 		template <class Operand1, class Operand2, class Operand3>
-		Operand1& axpy(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C) const {
+		Operand1& axpy(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C) const
+		{
 			return muladd(D,_One,C,_One,A,B);
 		}
 
 		// axpyin
 		// C += A*B
 		template <class Operand1, class Operand2, class Operand3>
-		Operand1& axpyin(Operand1& C, const Operand2& A, const Operand3& B) const {
+		Operand1& axpyin(Operand1& C, const Operand2& A, const Operand3& B) const
+		{
 			return muladdin(_One,C,_One,A,B);
 		}
 
 		// axmy
 		// D= A*B - C
 		template <class Operand1, class Operand2, class Operand3>
-		Operand1& axmy(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C) const {
+		Operand1& axmy(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C) const
+		{
 			return muladd(D,_MOne,C,_One,A,B);
 		}
 
 		// axmyin
 		// C = A*B - C
 		template <class Operand1, class Operand2, class Operand3>
-		Operand1& axmyin(Operand1& C, const Operand2& A, const Operand3& B) const {
+		Operand1& axmyin(Operand1& C, const Operand2& A, const Operand3& B) const
+		{
 			return muladdin(_MOne,C,_One,A,B);
 		}
 
@@ -385,14 +389,16 @@ namespace LinBox
 		// D= beta.C + alpha.A*B
 		template <class Operand1, class Operand2, class Operand3>
 		Operand1& muladd(Operand1& D, const Element& beta, const Operand1& C,
-				 const Element& alpha, const Operand2& A, const Operand3& B) const {
+				 const Element& alpha, const Operand2& A, const Operand3& B) const
+		{
 			return BlasMatrixDomainMulAdd<Field,Operand1,Operand2,Operand3>()(_F,D,beta,C,alpha,A,B);
 		}
 
 		// C= beta.C + alpha.A*B
 		template <class Operand1, class Operand2, class Operand3>
 		Operand1& muladdin(const Element& beta, Operand1& C,
-				   const Element& alpha, const Operand2& A, const Operand3& B) const {
+				   const Element& alpha, const Operand2& A, const Operand3& B) const
+		{
 			return BlasMatrixDomainMulAdd<Field,Operand1,Operand2,Operand3>()(_F,beta,C,alpha,A,B);
 		}
 
@@ -403,21 +409,24 @@ namespace LinBox
 
 		// Inversion
 		template <class Matrix>
-		Matrix& inv( Matrix &Ainv, const Matrix &A) const {
+		Matrix& inv( Matrix &Ainv, const Matrix &A) const
+		{
 			BlasMatrixDomainInv<Field,Matrix>()(_F,Ainv,A);
 			return Ainv;
 		}
 
 		// Inversion
 		template <class Matrix>
-		Matrix& invin( Matrix &Ainv, Matrix &A) const {
+		Matrix& invin( Matrix &Ainv, Matrix &A) const
+		{
 			BlasMatrixDomainInv<Field,Matrix>()(_F,Ainv,A);
 			return Ainv;
 		}
 
 		// Inversion (the matrix A is modified)
 		template <class Matrix>
-		Matrix& invin(Matrix &A) const {
+		Matrix& invin(Matrix &A) const
+		{
 			Matrix tmp(A.rowdim(), A.coldim());
 			tmp = A;
 			BlasMatrixDomainInv<Field,Matrix>()(_F,A,tmp);
@@ -427,46 +436,53 @@ namespace LinBox
 
 		// C = A B^{-1}  ==>  C . B = A
 		template <class Matrix>
-		Matrix& div( Matrix &C, const Matrix &A, const Matrix &B) const {
+		Matrix& div( Matrix &C, const Matrix &A, const Matrix &B) const
+		{
 			return this->right_solve(C,B,A);
 		}
 
 
 		// Inversion w singular check
 		template <class Matrix>
-		Matrix& inv( Matrix &Ainv, const Matrix &A, int& nullity) const {
+		Matrix& inv( Matrix &Ainv, const Matrix &A, int& nullity) const
+		{
 			nullity = BlasMatrixDomainInv<Field,Matrix>()(_F,Ainv,A);
 			return Ainv;
 		}
 
 		// Inversion (the matrix A is modified) w singular check
 		template <class Matrix>
-		Matrix& invin( Matrix &Ainv, Matrix &A, int& nullity) const {
+		Matrix& invin( Matrix &Ainv, Matrix &A, int& nullity) const
+		{
 			nullity = BlasMatrixDomainInv<Field,Matrix>()(_F,Ainv,A);
 			return Ainv;
 		}
 
 		// Rank
 		template <class Matrix>
-		unsigned int rank(const Matrix &A) const {
+		unsigned int rank(const Matrix &A) const
+		{
 			return BlasMatrixDomainRank<Field,Matrix>()(_F,A);
 		}
 
 		// in-place Rank (the matrix is modified)
 		template <class Matrix>
-		unsigned int rankin(Matrix &A) const {
+		unsigned int rankin(Matrix &A) const
+		{
 			return BlasMatrixDomainRank<Field, Matrix>()(_F,A);
 		}
 
 		// determinant
 		template <class Matrix>
-		Element det(const Matrix &A) const {
+		Element det(const Matrix &A) const
+		{
 			return BlasMatrixDomainDet<Field, Matrix>()(_F,A);
 		}
 
 		//in-place Determinant (the matrix is modified)
 		template <class Matrix>
-		Element detin(Matrix &A) const {
+		Element detin(Matrix &A) const
+		{
 			return BlasMatrixDomainDet<Field, Matrix>()(_F,A);
 		}
 
@@ -478,7 +494,8 @@ namespace LinBox
 		// inear solve with matrix right hand side
 		// AX=B
 		template <class Operand, class Matrix>
-		Operand& left_solve (Operand& X, const Matrix& A, const Operand& B) const {
+		Operand& left_solve (Operand& X, const Matrix& A, const Operand& B) const
+		{
 			return BlasMatrixDomainLeftSolve<Field,Operand,Matrix>()(_F,X,A,B);
 		}
 
@@ -486,14 +503,16 @@ namespace LinBox
 		// A must be square
 		// AX=B , (B<-X)
 		template <class Operand,class Matrix>
-		Operand& left_solve (const Matrix& A, Operand& B) const {
+		Operand& left_solve (const Matrix& A, Operand& B) const
+		{
 			return BlasMatrixDomainLeftSolve<Field,Operand,Matrix>()(_F,A,B);
 		}
 
 		// linear solve with matrix right hand side
 		// XA=B
 		template <class Operand, class Matrix>
-		Operand& right_solve (Operand& X, const Matrix& A, const Operand& B) const {
+		Operand& right_solve (Operand& X, const Matrix& A, const Operand& B) const
+		{
 			return BlasMatrixDomainRightSolve<Field,Operand,Matrix>()(_F,X,A,B);
 		}
 
@@ -501,18 +520,21 @@ namespace LinBox
 		// A must be square
 		// XA=B , (B<-X)
 		template <class Operand, class Matrix>
-		Operand& right_solve (const Matrix& A, Operand& B) const {
+		Operand& right_solve (const Matrix& A, Operand& B) const
+		{
 			return BlasMatrixDomainRightSolve<Field,Operand,Matrix>()(_F,A,B);
 		}
 
 		// minimal polynomial computation
 		template <class Polynomial, class Matrix>
-		Polynomial& minpoly( Polynomial& P, const Matrix& A ) const{
+		Polynomial& minpoly( Polynomial& P, const Matrix& A ) const
+		{
 			return BlasMatrixDomainMinpoly<Field, Polynomial, Matrix>()(_F,P,A);
 		}
 
 		template <class Polynomial,  class Matrix >
-		Polynomial& charpoly( Polynomial& P, const Matrix& A ) const{
+		Polynomial& charpoly( Polynomial& P, const Matrix& A ) const
+		{
 
 			commentator.start ("Modular Dense Charpoly ", "MDCharpoly");
 			std::list<Polynomial> P_list;
@@ -536,7 +558,8 @@ namespace LinBox
 		}
 
 		template <class Polynomial, class Matrix >
-		std::list<Polynomial>& charpoly( std::list<Polynomial>& P, const Matrix& A ) const{
+		std::list<Polynomial>& charpoly( std::list<Polynomial>& P, const Matrix& A ) const
+		{
 			return BlasMatrixDomainCharpoly<Field, std::list<Polynomial>, Matrix >()(_F,P,A);
 		}
 
@@ -545,7 +568,8 @@ namespace LinBox
 		// Temporary: waiting for an implementation of a domain of polynomial
 		template<class Polynomial>
 		Polynomial &
-		mulpoly(Polynomial &res, const Polynomial & P1, const Polynomial & P2)const{
+		mulpoly(Polynomial &res, const Polynomial & P1, const Polynomial & P2)const
+		{
 			size_t i,j;
 			res.resize(P1.size()+P2.size()-1);
 			for (i=0;i<res.size();i++)
@@ -567,11 +591,15 @@ namespace LinBox
 		 */
 		template <class Matrix>
 		inline std::ostream &write (std::ostream &os, const Matrix &A) const
-		{ return A.write (os, _F); }
+		{
+			return A.write (os, _F);
+		}
 
 		template <class Matrix>
 		inline std::ostream &write (std::ostream &os, const Matrix &A, bool maple_format) const
-		{ return A.write (os, _F, maple_format); }
+		{
+			return A.write (os, _F, maple_format);
+		}
 
 		/** Read matrix
 		 * @param  is  Input stream from which matrix is read.
@@ -580,7 +608,9 @@ namespace LinBox
 		 */
 		template <class Matrix>
 		inline std::istream &read (std::istream &is, Matrix &A) const
-		{ return A.read (is, _F); }
+		{
+			return A.read (is, _F);
+		}
 
 
 
