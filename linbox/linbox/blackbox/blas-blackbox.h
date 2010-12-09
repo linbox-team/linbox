@@ -69,16 +69,19 @@ namespace LinBox
 		typedef typename Field::Element Element;
 		typedef BlasBlackbox<_Field> Self_t;
 
-		//BlasBlackbox () {} // BB: ??
-
 		BlasBlackbox (const Field& F) :
 		      	_F(F), _MD(F), _VD(F)
-		{ _F.init(_One,1UL), _F.init(_Zero,0UL);_use_fflas=false;}
+		{
+		       	_F.init(_One,1UL) ;
+			_F.init(_Zero,0UL);
+			_use_fflas=false;
+		}
 
 		BlasBlackbox (const Field& F, const size_t m, const size_t n) :
 			BlasMatrix<Element> (m,n),  _F(F), _MD(F), _VD(F), _row(m) , _col(n)
 		{
-			_F.init(_One,1UL), _F.init(_Zero,0UL);
+			_F.init(_One,1UL);
+		       	_F.init(_Zero,0UL);
 			typename BlasMatrix<Element>::RawIterator it = this->rawBegin();
 			for (; it != this->rawEnd(); ++it)
 				_F.init(*it, 0);
@@ -93,31 +96,43 @@ namespace LinBox
 			_use_fflas= checkBlasApply(_F, _col);
 		}
 
-
-
 		BlasBlackbox (const Field& F, BlasMatrix<Element>& M) :
 			BlasMatrix<Element> (M),  _F(F), _MD(F) , _VD(F),  _row(M.rowdim()), _col(M.coldim())
-		{ _F.init(_One,1UL), _F.init(_Zero,0UL); _use_fflas= checkBlasApply(_F, _col); }
-
+		{
+			_F.init(_One,1UL),
+			_F.init(_Zero,0UL);
+			_use_fflas= checkBlasApply(_F, _col);
+	       	}
 
 		template< class Blackbox >
 		BlasBlackbox (const Blackbox& M) :
 			BlasMatrix<Element> (M), _F(M.field()), _MD(M.field()), _VD(M.field()), _row(M.rowdim()), _col(M.coldim())
-		{_F.init( _One, 1UL ); _F.init( _Zero, 0UL ); _use_fflas= checkBlasApply(_F, _col);}
-
+		{
+			_F.init( _One, 1UL );
+		       	_F.init( _Zero, 0UL );
+		       	_use_fflas= checkBlasApply(_F, _col);
+		}
 
 		BlasBlackbox (const BlasBlackbox<Field>& M) :
 			BlasMatrix< Element> (M), _F(M._F), _MD(M._F), _VD(M._F),
-			_row(M._row), _col(M._col), _One(M._One), _Zero(M._Zero) {_use_fflas= checkBlasApply(_F, _col);}
+			_row(M._row), _col(M._col), _One(M._One), _Zero(M._Zero)
+		{
+			_use_fflas= checkBlasApply(_F, _col);
+		}
 
 		BlasBlackbox (const BlasBlackbox<Field>& M, const size_t i0, const size_t j0, const size_t m, const size_t n) :
 			BlasMatrix< Element> (M,i0,j0,m,n), _F(M._F), _MD(M._F), _VD(M._F),
-			_row(m), _col(n), _One(M._One), _Zero(M._Zero) {_use_fflas= checkBlasApply(_F, _col);}
-
+			_row(m), _col(n), _One(M._One), _Zero(M._Zero)
+		{
+			_use_fflas= checkBlasApply(_F, _col);
+		}
 
 		BlasBlackbox (const Field &F, const BlasBlackbox<Field>& M) :
 			BlasMatrix< Element> (M), _F(M._F), _MD(M._F), _VD(F),
-			_row(M._row), _col(M._col), _One(M._One), _Zero(M._Zero) {_use_fflas= checkBlasApply(_F, _col);}
+			_row(M._row), _col(M._col), _One(M._One), _Zero(M._Zero)
+		{
+			_use_fflas= checkBlasApply(_F, _col);
+		}
 
 		template <class Vector1, class Vector2>
 		Vector1&  apply (Vector1& y, const Vector2& x) const
@@ -132,15 +147,15 @@ namespace LinBox
 					      &x[0],1,
 					      this->_Zero,
 					      &y[0],1);
-			}
-			else {
+			} else {
 				_MD. vectorMul (y, *this, x);
+#if 0
+				typename BlasMatrix<Element>::ConstRowIterator i = this->rowBegin ();
+				typename Vector1::iterator j = y.begin ();
 
-				//typename BlasMatrix<Element>::ConstRowIterator i = this->rowBegin ();
-				//typename Vector1::iterator j = y.begin ();
-
-				//for (; j != y.end (); ++j, ++i)
-				//	_VD.dot (*j, *i, x);
+				for (; j != y.end (); ++j, ++i)
+					_VD.dot (*j, *i, x);
+#endif
 			}
 			return y;
 		}
@@ -169,13 +184,12 @@ namespace LinBox
 			return y;
 		}
 
-
 		template<typename _Tp1>
-		struct rebind
-		{
+		struct rebind {
 			typedef BlasBlackbox<_Tp1> other;
 
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+			void operator() (other & Ap, const Self_t& A, const _Tp1& F)
+			{
 				typedef typename BlasMatrix<Element>::ConstRawIterator ConstRawIterator ;
 				ConstRawIterator A_p;
 				typename other::RawIterator Ap_p;
@@ -186,33 +200,29 @@ namespace LinBox
 			}
 		};
 
-
 		template<typename _Tp1>
 		BlasBlackbox(const BlasBlackbox<_Tp1>& M, const Field& F) :
 			BlasMatrix<Element>(M.rowdim(),M.coldim()),
 			_F(F),_MD(F),_VD(F),
 			_row(M.rowdim()), _col(M.coldim()),
-			_One(F.one), _Zero(F.zero) {
-				_use_fflas = checkBlasApply(F, M.coldim());
-				typename BlasBlackbox<_Tp1>::template rebind<Field>() (*this, M, F);
-			}
-
-
+			_One(F.one), _Zero(F.zero)
+		{
+			_use_fflas = checkBlasApply(F, M.coldim());
+			typename BlasBlackbox<_Tp1>::template rebind<Field>() (*this, M, F);
+		}
 
 		size_t rowdim() const {return _row;}
 
 		size_t coldim() const {return _col;}
 
-
 		const Field &field() const  {return _F;}
 		Field &field() {return const_cast<Field&>(_F);}
-
-
 
 		/** Read the blackbox from an input stream
 		 * @param file Input stream from which to read
 		 */
-		std::istream &read (std::istream &file){
+		std::istream &read (std::istream &file)
+		{
 			return BlasMatrix<Element>::read(file, _F);
 
 		}
@@ -220,34 +230,32 @@ namespace LinBox
 		/** Write the blackbox to an output stream
 		 * @param os Output stream to which to write
 		 */
-		std::ostream &write (std::ostream &os) const {
+		std::ostream &write (std::ostream &os) const
+		{
 			return DenseSubmatrix<Element>::write(os, _F);
 		}
-
 
 
 	protected:
 
 		const Field                 & _F;
-		MatrixDomain<Field>    _MD;
-		VectorDomain<Field>    _VD;
-		size_t                _row,_col;
-		Element              _One,_Zero;
+		MatrixDomain<Field>          _MD;
+		VectorDomain<Field>          _VD;
+		size_t                 _row,_col;
+		Element               _One,_Zero;
 		bool                  _use_fflas;
 
 
 	}; // end of class BlasBlackbox
 
 	template <class Field>
-	struct MatrixTraits< BlasBlackbox<Field> >
-	{
+	struct MatrixTraits< BlasBlackbox<Field> > {
 		typedef BlasBlackbox<Field> MatrixType;
 		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
 	};
 
 	template <class Field>
-	struct MatrixTraits< const BlasBlackbox<Field> >
-	{
+	struct MatrixTraits< const BlasBlackbox<Field> > {
 		typedef const BlasBlackbox<Field> MatrixType;
 		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
 	};
@@ -263,10 +271,6 @@ namespace LinBox
 	public:
 		typedef MatrixContainerCategory::BlasContainer Type;
 	};
-
-
-
-
 
 	template<>
 	class BlasBlackbox<MultiModDouble> {
@@ -408,10 +412,6 @@ namespace LinBox
 		std::vector<BlasBlackbox<Modular<double> >* > _rep;
 		std::vector<double>       _entry;
 	};
-
-
-
-
 
 	template <>
 	class MatrixContainerTrait<BlasBlackbox<MultiModDouble> > {

@@ -36,6 +36,11 @@
 #include "linbox/matrix/archetype.h"
 #include "linbox/solutions/methods.h"
 
+/** @file algorithms/gauss.h
+ * @brief  Gauss elimination and applications for sparse matrices.
+ * Rank, nullspace, solve...
+ */
+
 namespace LinBox
 {
 
@@ -135,23 +140,21 @@ namespace LinBox
 
 
 		/** \brief Sparse in place Gaussian elimination with reordering to reduce fill-in.
-		  pivots are chosen in sparsest column of sparsest row.
-		  This runs in linear overhead.
-		  It is similar in spirit but different from Markovitz' approach.
-
-		  <pre>
-Using : SparseFindPivot(..., density) for sparsest column, and
-eliminate (..., density)
-</pre>
-
-The Matrix parameter must meet the LinBox sparse matrix interface.
-[check details].
-The computedet indicates whether the algorithm must compute the determionant as it goes
-
-@see "[@ref Jean-Guillaume\ Dumas and @ref Gilles\ Villard,
-<i>Computing the rank of sparse matrices over finite fields</i>.
-In Ganzha et~al. CASC'2002, pages 47--62.]"
-*/
+		 * Pivots are chosen in sparsest column of sparsest row.
+		 * This runs in linear overhead.
+		 * It is similar in spirit but different from Markovitz' approach.
+		 *
+		 * \pre Using : SparseFindPivot(..., density) for sparsest column, and
+		 * eliminate (..., density)
+		 *
+		 * The Matrix parameter must meet the LinBox sparse matrix interface.
+		 * [check details].
+		 * The computedet indicates whether the algorithm must compute the determionant as it goes
+		 *
+		 * @bib [Jean-Guillaume Dumas and  Gilles Villard,
+		 * <i>Computing the rank of sparse matrices over finite fields</i>.
+		 * In Ganzha et~al. CASC'2002, pages 47--62.]
+		 */
 		template <class Matrix, class Perm>
 		unsigned long& QLUPin(unsigned long &rank,
 				      Element& determinant,

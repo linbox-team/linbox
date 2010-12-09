@@ -23,6 +23,12 @@
 #include "linbox/algorithms/gauss.h"
 #include "linbox/blackbox/zo-gf2.h"
 
+/** @file algorithms/gauss-gf2.h
+ * @brief  Gauss elimination and applications for sparse matrices on \f$F_2\f$.
+ * Rank, nullspace, solve...
+ */
+
+
 namespace LinBox
 {
 
@@ -37,8 +43,7 @@ namespace LinBox
 
 	public:
 
-		/** \brief The field parameter is the domain
-		 * over which to perform computations
+		/** \brief The field parameter is the domain  over which to perform computations.
 		 */
 		GaussDomain (const Field &) {}
 
@@ -46,16 +51,16 @@ namespace LinBox
 		///
 		GaussDomain (const GaussDomain &)  {}
 
-		/** accessor for the field of computation
+		/** accessor for the field of computation.
 		*/
 		const Field &field () const { return *(new GF2()); }
 
 		/** @name rank
-		  Callers of the different rank routines\\
-		  -/ The "in" suffix indicates in place computation\\
-		  -/ Without Ni, Nj, the SparseSeqMatrix parameter must be a vector of sparse
-		  row vectors, NOT storing any zero.\\
-		  -/ Calls @link rankinLinearPivoting@endlink (by default) or @link rankinNoReordering@endlink
+		  Callers of the different rank routines
+		  @li  The "in" suffix indicates in place computation
+		  @li  Without Ni, Nj, the SparseSeqMatrix parameter must be a vector of sparse
+		  row vectors, NOT storing any zero.
+		  @li  Calls @link rankinLinearPivoting@endlink (by default) or @link rankinNoReordering@endlink
 		  */
 		//@{
 		///
@@ -117,23 +122,21 @@ namespace LinBox
 
 
 		/** \brief Sparse in place Gaussian elimination with reordering to reduce fill-in.
-		  pivots are chosen in sparsest column of sparsest row.
-		  This runs in linear overhead.
-		  It is similar in spirit but different from Markovitz' approach.
-
-		  <pre>
-Using : SparseFindPivot(..., density) for sparsest column, and
-eliminate (..., density)
-</pre>
-
-The SparseSeqMatrix parameter must meet the LinBox sparse matrix interface.
-[check details].
-The computedet indicates whether the algorithm must compute the determionant as it goes
-
-@see "[@ref Jean-Guillaume\ Dumas and @ref Gilles\ Villard,
-<i>Computing the rank of sparse matrices over finite fields.</i>
-In Ganzha et~al. CASC'2002, pages 47--62.]
-*/
+		 * pivots are chosen in sparsest column of sparsest row.
+		 * This runs in linear overhead.
+		 * It is similar in spirit but different from Markovitz' approach.
+		 *
+		 * \pre Using : SparseFindPivot(..., density) for sparsest column, and
+		 * eliminate (..., density)
+		 *
+		 * The SparseSeqMatrix parameter must meet the LinBox sparse matrix interface.
+		 * [check details].
+		 * The computedet indicates whether the algorithm must compute the determionant as it goes
+		 *
+		 * @bib [Jean-Guillaume Dumas and Gilles Villard,
+		 * <i>Computing the rank of sparse matrices over finite fields.</i>
+		 * In Ganzha et~al. CASC'2002, pages 47--62.]
+		 */
 		template <class SparseSeqMatrix, class Perm>
 		unsigned long& QLUPin(unsigned long &rank,
 				      Element& determinant,
