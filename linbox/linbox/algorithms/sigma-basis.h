@@ -45,11 +45,20 @@
 
 //#define OPTMIZED_SIGMA_UPDATE
 
+/*! @file algorithms/sigma-basis.h
+ * @brief \f$\sigma\f$-basis (minimal basis).
+ */
 
 namespace LinBox
 {
 
 
+	/*!
+	 * @brief implementation of \f$\sigma\f$-basis (minimal basis).
+	 * @bib
+	 * - P. Giorgi, C.P. Jeannerod and G. Villard. <i>On the complexity of polynomial matrix computations.</i>   ISSAC'03 <a href=http://dx.doi.org/10.1145/860854.860889>doi</a>.
+	 *
+	 */
 	template<class _Field>
 	class SigmaBasis {
 
