@@ -1,10 +1,13 @@
-/** \defgroup ring linbox/ring
+/** \ingroup linbox
+  \defgroup ring ring
 
-LinBox rings, ring wrappers, ring construction tools.
+  \brief LinBox rings, ring wrappers, ring construction tools.
 
-LinBox rings implement the ring concept,
-inheriting from the field concept,
-as it is defined in the ring archetype. 
+  LinBox rings implement the ring concept,
+  inheriting from the field concept,
+  as it is defined in the ring archetype.
 
-*/
+ */
+
+// vim:syn=doxygen
 

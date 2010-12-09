@@ -1,6 +1,9 @@
-/** \defgroup util linbox/util
+/** \ingroup linbox
+  \defgroup util util
 
-Miscellaneous utilities.
+  @brief Miscellaneous utilities.
 
-Basic GMP integer wrapper, timers, commentator, matrix-stream-reader, error, debug. 
-*/
+  Basic GMP integer wrapper, timers, commentator, matrix-stream-reader, error, debug.
+ */
+
+// vim:syn=doxygen

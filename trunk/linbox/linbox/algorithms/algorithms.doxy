@@ -1,18 +1,19 @@
-/** \defgroup algorithms linbox/algorithms
+/** \ingroup linbox
+    \defgroup algorithms algorithms
 
-The core linear algebra algorithms of LinBox
+\brief The core linear algebra algorithms of LinBox.
 
 The codes here implement algorithms for linear algebra problems.  The names often
-reflect the authorship of the central algorithm (Lanczos, Wiedemann, ...).  
-In contrast, the "drivers" in the 
-\ref solutions directory are named for the problem solved (rank, det, ...).  
+reflect the authorship of the central algorithm (Lanczos, Wiedemann, ...).
+In contrast, the "drivers" in the
+\ref solutions directory are named for the problem solved (rank, det, ...).
 Those are generally wrappers of
-algorithms from this directory.  Their purpose is to give a simple and direct user interface 
+algorithms from this directory.  Their purpose is to give a simple and direct user interface
 and sometimes to provide a solution strategy which is a hybrid of algorithms from this directory.
 
-%Algorithm classes and functions generally have the field class as a template parameter. 
-Blackbox algorithms may have a BlackboxMatrix parameter or allow a Blackbox class as 
-template parameter.  
+%Algorithm classes and functions generally have the field class as a template parameter.
+Blackbox algorithms may have a BlackboxMatrix parameter or allow a Blackbox class as
+template parameter.
 Elimination codes work over DenseMatrix or SparseMatrix types with varying degrees of
 substitution among the types possible.
 
@@ -79,3 +80,4 @@ substitution among the types possible.
 //@}
 
 
+// vim:syn=doxygen

@@ -1,4 +1,5 @@
-/** \defgroup tests tests
+/** \ingroup linbox
+  \defgroup tests tests
 
   \brief Correctness tests for LinBox components.
 

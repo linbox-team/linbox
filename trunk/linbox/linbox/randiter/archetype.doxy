@@ -1,11 +1,11 @@
-/* \page Random Iterator Generator Archetype
+/*! \page Random Iterator Generator Archetype
 
   The \ref LinBox random iterator generator archetype defines the random
   iterator generator common object interface.
 
   @see Archetypes
 
-  @\brief @link Archetypes Archetype@endlink for implementing the \ref LinBox
+  \brief @link Archetypes Archetype@endlink for implementing the \ref LinBox
         \ref Random\ Iterator\ Generators} common object interface.
 */
 //@{
@@ -14,3 +14,4 @@
   //@Include: envelope.h
 //@}
 
+// vim:syn=doxygen
