@@ -22,6 +22,12 @@
  * See COPYING for license information.
  */
 
+/*! @file  tests/test-modular-double.C
+ * @ingroup tests
+ * @brief tests only runFieldTests for modular-double.
+ */
+
+
 #include "linbox/linbox-config.h"
 
 #include <iostream>

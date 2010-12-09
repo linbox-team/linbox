@@ -13,6 +13,14 @@
  * Public License. See COPYING for more information.
  */
 
+
+/*! @file  tests/test-rank.C
+ * @ingroup tests
+ * @brief  no doc
+ */
+
+
+
 #include "linbox/linbox-config.h"
 
 #include <iostream>

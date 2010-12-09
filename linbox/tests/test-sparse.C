@@ -11,6 +11,13 @@
  * See COPYING for license information
  */
 
+/*! @file  tests/test-sparse.C
+ * @ingroup tests
+ *
+ * @brief no doc
+ *
+ */
+
 #include "linbox/linbox-config.h"
 
 #include <iostream>

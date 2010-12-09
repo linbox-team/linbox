@@ -12,6 +12,14 @@
  * See COPYING for license information
  */
 
+
+/*! @file  tests/test-dense.C
+ * @ingroup tests
+ * @brief  no doc
+ */
+
+
+
 // something currently commented out
 #include "linbox/linbox-config.h"
 

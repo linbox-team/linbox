@@ -21,6 +21,11 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/*! @file  tests/test-quad-matrix.C
+ * @ingroup tests
+ * @brief no doc.
+ */
+
 
 
 

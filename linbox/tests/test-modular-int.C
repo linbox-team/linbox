@@ -18,6 +18,12 @@
  * See COPYING for license information.
  */
 
+/*! @file   tests/test-modular-int.C
+ * @ingroup tests
+ * @brief run runFieldTests testRandomIterator tests on modular-int32
+ */
+
+
 #include "linbox/linbox-config.h"
 
 #include <iostream>

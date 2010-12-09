@@ -22,12 +22,12 @@
  *   License along with LinBox.  If not, see
  *   <http://www.gnu.org/licenses/>.
  */
-/**
-  Example for Pr G. Royle :
-  Compute the integer characteristic polynomial of symetric matrices with
-  0,1 coefficients
-  */
 
+/*! @file examples/graph-charpoly.C
+ * @ingroup examples
+ * @brief Compute the integer characteristic polynomial of symetric matrices with (0,1) coefficients.
+ * Example for Pr G. Royle.
+ */
 
 #include <iostream>
 
@@ -41,7 +41,8 @@ using namespace std;
 using namespace LinBox;
 
 template <class Field, class Polynomial>
-void printPolynomial(const Field& F, const Polynomial& P){
+void printPolynomial(const Field& F, const Polynomial& P)
+{
 	int n= P.size()-1;
 	for (int i=0;i<n;++i)
 		cout<<P[i]<<" ";

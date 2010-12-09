@@ -23,29 +23,34 @@
  *   <http://www.gnu.org/licenses/>.
  */
 
-/** \file samplebb.C \ingroup examples
-  \brief generate an example matrix with specified frobenius form.
-
-  samplebb takes options and any number of argument triples denoting companion matrix blocks.
-  For example, the call "samplebb -r 7 2 3 a3 1 1" generates a sparsely randomized matrix (because of the '-r' option)
-  matrix which is similar (because of the two triples '7 2 3' and 'a2 1 1') to a direct sum of 3 companion matrices for
-  (x-7)^2 plus one companion matrix for x^3 + x + 2, the polynomial denoted by 'a3'.
-
-  In general, in the first position of each triple 'aK' denotes the polynomial x^k + x + K-1 and a number n
-  denotes the polynomial x-n.  The second number in the triple specifies a power of the polynomial and the
-  third specifies how many companion matrix blocks for that power of that polynomial.
-
-  Possible options are
-  -r lightly randomized similarity transform, matrix remains sparse.
-  -R fully randomized similarity transform, matrix becomes dense.
-
-  The matrix is written to standard out in SMS format (triples).
-
-  For some other examples:
-  "samplebb  1 1 2  2 1 2  4 1 2  12 1 1  0 1 1" is a 8 by 8 diagonal matrix in smith form,
-  diag(1,1,2,2,4,4,12,0)
-
-*/
+/** \file samplebb.C
+ * \ingroup examples
+ * \brief generate an example matrix with specified frobenius form.
+ *
+ * samplebb takes options and any number of argument triples denoting companion
+ * matrix blocks.
+ * For example, the call "samplebb -r 7 2 3 a3 1 1" generates a sparsely
+ * randomized matrix (because of the '-r' option) matrix which is similar
+ * (because of the two triples '7 2 3' and 'a2 1 1') to a direct sum of 3
+ * companion matrices for (x-7)^2 plus one companion matrix for x^3 + x + 2, the
+ * polynomial denoted by 'a3'.
+ *
+ *  In general, in the first position of each triple 'aK' denotes the polynomial
+ *  x^k + x + K-1 and a number n denotes the polynomial x-n.  The second number
+ *  in the triple specifies a power of the polynomial and the third specifies how
+ *  many companion matrix blocks for that power of that polynomial.
+ *
+ *  Possible options are
+ *  -r lightly randomized similarity transform, matrix remains sparse.
+ *  -R fully randomized similarity transform, matrix becomes dense.
+ *
+ *  The matrix is written to standard out in SMS format (triples).
+ *
+ *  For some other examples:
+ *  "samplebb  1 1 2  2 1 2  4 1 2  12 1 1  0 1 1" is a 8 by 8 diagonal matrix in smith form,
+ *  diag(1,1,2,2,4,4,12,0)
+ *
+ */
 
 #include <iostream>
 #include <string>

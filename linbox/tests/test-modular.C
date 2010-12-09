@@ -17,6 +17,15 @@
  * See COPYING for license information.
  */
 
+
+/*! @file  tests/test-modular.C
+ * @ingroup tests
+ *
+ * @brief  runFieldTests on various <code>Modular<XXX></code> fields.
+ */
+
+
+
 #include "linbox/linbox-config.h"
 
 #include <iostream>
@@ -79,7 +88,7 @@ int main (int argc, char **argv)
 	if (!runFieldTests (F_uint8,  "Modular<uint8>",  iterations, n, false)) pass = false;
 	if (!runFieldTests (F_float,  "Modular<float>",  iterations, n, false)) pass = false;
 
-	//if (!testRandomIterator (F_integer, "Modular<integer>", trials, categories, hist_level)) pass = false;
+	if (!testRandomIterator (F_integer, "Modular<integer>", trials, categories, hist_level)) pass = false;
 	if (!testRandomIterator (F_uint32,  "Modular<uint32>", trials, categories, hist_level)) pass = false;
 	if (!testRandomIterator (F_uint16,  "Modular<uint16>", trials, categories, hist_level)) pass = false;
 	if (!testRandomIterator (F_uint8,  "Modular<uint8>", trials, categories, hist_level)) pass = false;

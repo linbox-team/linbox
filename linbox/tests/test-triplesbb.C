@@ -20,6 +20,13 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/*! @file  tests/test-tripplebb.C
+ * @ingroup tests
+ *
+ * @brief no doc
+ *
+ */
+
 
 #include "linbox/linbox-config.h"
 

@@ -27,6 +27,7 @@
   \brief Valence of sparse matrix over Z or Zp.
   \ingroup examples
   */
+
 //#include "linbox-config.h"
 #include <iostream>
 #include <omp.h>
@@ -143,9 +144,6 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, char * filename, Integer 
 	return ranks;
 }
 
-
-
-
 using namespace LinBox;
 
 int main (int argc, char **argv)
@@ -173,7 +171,7 @@ int main (int argc, char **argv)
 
 	PID_integer::Element val_A;
 
-	Timer chrono; chrono.start();
+	LinBox::Timer chrono; chrono.start();
 	if (argc >= 3) {
 		Transpose<Blackbox> T(&A);
 		if (strcmp(argv[2],"-ata") == 0) {

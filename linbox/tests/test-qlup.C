@@ -10,6 +10,14 @@
  * Public License. See COPYING for more information.
  */
 
+
+/*! @file  tests/test-qlup.C
+ * @ingroup tests
+ * @brief  tests LQUP decomposition, solve, and nullspace of a random sparse matrice.
+ */
+
+
+
 #include "linbox/linbox-config.h"
 
 #include <iostream>
@@ -219,8 +227,6 @@ bool testQLUPsolve(const Field &F, size_t n, unsigned int iterations, int rseed,
 	return res;
 }
 
-
-
 /* Test 2: LQUP nullspacebasis of a random sparse matrix
  *
  * Constructs a random sparse matrix and computes its QLUP decomposition
@@ -301,8 +307,6 @@ bool testQLUPnullspace(const Field &F, size_t n, unsigned int iterations, int rs
 
 	return res;
 }
-
-
 
 int main (int argc, char **argv)
 {

@@ -8,6 +8,7 @@
 
 /** \file tests/test-nullspace.C
   \brief Tests the nullspace functions
+ @ingroup tests
   */
 
 #include "../linbox/linbox-config.h"

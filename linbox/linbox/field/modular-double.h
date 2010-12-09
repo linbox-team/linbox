@@ -199,13 +199,13 @@ namespace LinBox
 
 		Element &init (Element &x, const integer &y) const
 		{
-			// 			return x = (Element)mpz_fdiv_ui(y.get_mpz(),lmodulus );
+			// return x = (Element)mpz_fdiv_ui(y.get_mpz(),lmodulus );
 			return x = (Element)(y%lmodulus);
 		}
 
 		inline Element& init(Element& x, double y =0) const
 		{
-
+#if 0
 			//double tmp = y;
 
 			/*
@@ -220,9 +220,10 @@ namespace LinBox
 
 			//Some odds donot support it. It is in C99.
 			//tmp = round (y);
+#endif
 
 			x = fmod (y, modulus);
-
+#if 0
 			/*
 			   if (tmp > modulus)
 			   tmp -= (modulus * floor( tmp*inv_modulus));
@@ -237,7 +238,7 @@ namespace LinBox
 			   else
 			   return x = tmp;
 			   */
-
+#endif
 			if (x < 0) x += modulus;
 			return x;
 		}

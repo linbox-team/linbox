@@ -12,6 +12,13 @@
  *
  *
  */
+
+/*! @file  tests/benchmark-blas-domain.C
+ * @ingroup tests
+ * @brief no doc.
+ */
+
+
  // where is this used?
 #define __MINP_CONSTRUCT
 #include "linbox/linbox-config.h"

@@ -21,6 +21,12 @@
  */
 
 
+/*! @file tests/test-optimization.C
+ * @ingroup tests
+ * @brief no doc.
+ */
+
+
 
 #include <iostream>
 #include <fstream>

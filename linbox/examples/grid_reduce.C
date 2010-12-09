@@ -23,6 +23,11 @@
  *   <http://www.gnu.org/licenses/>.
  */
 
+/*! @file examples/grid_reduce.C
+ * @ingroup examples
+ * @brief undocumented
+ */
+
 #include <iostream>
 #include <sstream>
 #include<fstream>
@@ -89,7 +94,7 @@ int main(int argc, char* argv[])
 
 	std::vector<int> mC;
 	std::vector<int> mR;
-	/*
+#if 0
 	   ifstream mRow ("mR2", ios::in);
 	   char c='['; mRow >> c; cout << c;
 	   while (c!='[') {
@@ -111,7 +116,7 @@ int main(int argc, char* argv[])
 	   mRow >> mark;
 	   if(mark==1) mC[i] = mark;
 	   }
-	   */
+#endif
 	cout << src << "\n"<< flush ;
 	TT.clear();
 	TT.start();

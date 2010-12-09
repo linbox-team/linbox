@@ -22,6 +22,14 @@
  */
 
 
+
+/*! @file  tests/test-rational-solver-adaptive.C
+ * @ingroup tests
+ * @brief  no doc
+ */
+
+
+
 #include <linbox/field/PID-integer.h>
 #include <linbox/blackbox/dense.h>
 #include <linbox/blackbox/diagonal.h>

@@ -21,6 +21,15 @@
  */
 
 
+
+/*! @file  tests/test-matrix-stream.C
+ * @ingroup tests
+ * @brief  no doc
+ * @bug this tests reveals memory leaks
+ */
+
+
+
 #include <iostream>
 #include <fstream>
 #include <string>

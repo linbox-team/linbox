@@ -21,7 +21,10 @@
  * Boston, MA 02111-1307, USA.
  */
 
-
+/*! @file tests/test-smith-form.C
+ * @ingroup tests
+ * @brief no doc.
+ */
 
 
 #include <time.h>

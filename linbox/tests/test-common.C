@@ -20,6 +20,15 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+
+
+/*! @file  tests/test-common.C
+ * @ingroup tests
+ * @brief  no doc
+ */
+
+
+
 #ifndef __LINBOX_test_common_C
 #define __LINBOX_test_common_C
 

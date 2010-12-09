@@ -22,6 +22,14 @@
 
 
 
+/*! @file  tests/test-dense-zero-one.C
+ * @ingroup tests
+ * @brief  no doc
+ */
+
+
+
+
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/algorithms/blas-domain.h"
 #include "linbox/matrix/matrix-domain.h"

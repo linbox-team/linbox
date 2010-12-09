@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
-/* tests/test-modular.C
+/* tests/test-modular-short.C
  * Copyright (C) 2001, 2002 Bradford Hovinen,
  * Copyright (C) 2002 Dave Saunders
  *
@@ -17,6 +17,12 @@
  *
  * See COPYING for license information.
  */
+
+/*! @file  tests/test-modular-short.C
+ * @ingroup tests
+ * @brief run runFieldTests testRandomIterator tests on modular-short
+ */
+
 
 #include "linbox/linbox-config.h"
 

@@ -38,21 +38,6 @@
 
 namespace LinBox
 {
-	/** \brief Unparameterized field adapter.
-	  \ingroup field
-
-	  A field having an interface similar to that of floats is adapted to LinBox.
-
-	  Used to generate efficient field classes for unparameterized fields (or hidden parameter fields).
-
-	  Some fields are implemented by definition of the C++ arithmetic operators, such as z = x*y,
-	  for z, y, z instances of a type K.   The LinBox field
-	  Unparametric<K> is the adaptation to LinBox.
-
-	  For a typical unparametric field, some of the methods must be defined in a specialization.
-
-*/
-
 
 	template <typename Target, typename Source>
 	Target& Caster (Target& t, const Source& s)
@@ -67,11 +52,25 @@ namespace LinBox
 	class UnparametricField;
 
 	template <class K>
-	struct ClassifyRing<UnparametricField<K> >
-	{
+	struct ClassifyRing<UnparametricField<K> > {
 		typedef RingCategories::GenericTag categoryTag;
 	};
 
+
+	/** \brief Unparameterized field adapter.
+	 * \ingroup field
+	 * \defgroup UnparametericField
+	 *
+	 * A field having an interface similar to that of floats is adapted to LinBox.
+	 *
+	 *  Used to generate efficient field classes for unparameterized fields (or hidden parameter fields).
+	 *
+	 *  Some fields are implemented by definition of the C++ arithmetic operators, such as z = x*y,
+	 *  for z, y, z instances of a type K.   The LinBox field
+	 *  Unparametric<K> is the adaptation to LinBox.
+	 *
+	 *  For a typical unparametric field, some of the methods must be defined in a specialization.
+	 */
 	template <class K>
 	class UnparametricField : public FieldInterface {
 	protected:

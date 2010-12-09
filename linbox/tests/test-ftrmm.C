@@ -8,6 +8,16 @@
  * See COPYING for license information.
  */
 
+
+/*! @file  tests/test-ftrmm.C
+ * @ingroup tests
+ * @brief  tests all variants of applyP, ftrmm, ftrsm and fgemm for varions m,k,n and leading dimensions combinations.
+ * @bug ftrmm fails on non-double transposed versions.
+ * @bug is fgemm correct on null A and B ?
+ */
+
+
+
 //#define DEBUG
 
 #include <cassert>
@@ -93,7 +103,7 @@ int test_ftrmm(const Field & F)
 	for (size_t i = 0 ; i < rows*ldb ; ++i) *(D+i) = *(B+i);
 	Element alpha ;
 	//! @todo F.isInvertible()
-	//! @toto InvertibleRandomIter
+	//! @todo InvertibleRandomIter
 	Element invalpha ;
 	F.init(invalpha,0UL);
 	Gn.random(alpha);

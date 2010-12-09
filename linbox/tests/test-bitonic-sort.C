@@ -22,6 +22,12 @@
  */
 
 
+/*! @file  tests/test-bitonic-sort.C
+ * @ingroup tests
+ * @brief no doc.
+ */
+
+
 
 #include <algorithm>
 #include <linbox/algorithms/bitonic-sort.h>

@@ -8,6 +8,14 @@
  * See COPYING for license information.
  */
 
+
+/*! @file  tests/test-hom.C
+ * @ingroup tests
+ * @brief  no doc
+ */
+
+
+
 #include "linbox/linbox-config.h"
 
 #include <iostream>
