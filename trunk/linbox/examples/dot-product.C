@@ -24,8 +24,8 @@
  */
 
 /** \file examples/dot-product.C
-  \brief Timings on dot products of random vectors.
-  \ingroup examples
+ * \brief Timings on dot products of random vectors.
+ * \ingroup examples
  *
  * \author Bradford Hovinen <hovinen@cis.udel.edu>
  *

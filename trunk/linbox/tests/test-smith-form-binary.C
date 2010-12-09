@@ -22,6 +22,12 @@
  */
 
 
+/*! @file  tests/test-smith-form-binary.C
+ * @ingroup tests
+ * @brief no doc.
+ */
+
+
 
 
 #include <linbox/field/PID-integer.h>

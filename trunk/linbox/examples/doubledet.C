@@ -23,6 +23,11 @@
  *   <http://www.gnu.org/licenses/>.
  */
 
+/*! @file examples/doubledet.C
+ * @ingroup examples
+ * @brief computes doubleDet.
+ */
+
 #include <iostream>
 
 #include "linbox/linbox-config.h"
@@ -92,8 +97,10 @@ int main (int argc, char **argv)
 		std::cerr<<"Check FAIL"<<endl;
 
 	cout<< "Det 1 = " << det1 << endl;
-	cout<< "Det 2 = "<<det2 << endl;
+	cout<< "Det 2 = " << det2 << endl;
 
-	cerr << "Double Det: "<<tim.usertime() << "s" << endl;
+	cerr << "Double Det: "     << tim.usertime() << "s" << endl;
 	cerr << "Each single Det: "<<tim2.usertime() << "s" << endl;
+
+	return 0 ;
 }

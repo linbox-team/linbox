@@ -22,6 +22,14 @@
  */
 
 
+/*! @file  tests/test-smith-form-adaptive.C
+ * @ingroup tests
+ * @brief  no doc
+ */
+
+
+
+
 //#include <linbox/field/ntl-ZZ.h>
 #include <linbox/field/PID-integer.h>
 #include <time.h>

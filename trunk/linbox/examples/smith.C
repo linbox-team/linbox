@@ -112,7 +112,7 @@ int main(int argc, char* argv[])
 
 	string format = (argc >= 6 ? argv[5] : "");
 
-	UserTimer T;
+	LinBox::UserTimer T;
 
 	if (algo == "adaptive")
 	{
@@ -648,6 +648,7 @@ void distinct (I1 a, I1 b, Lp& c)
 	c.push_back(typename Lp::value_type(e, count));
 	return;
 }
+
 template <class I>
 void display(I b, I e)
 { cout << "(";

@@ -21,6 +21,14 @@
  */
 
 
+
+/*! @file  tests/test-hilbert.C
+ * @ingroup tests
+ * @brief  no doc
+ */
+
+
+
 #include "linbox/linbox-config.h"
 
 #include <iostream>

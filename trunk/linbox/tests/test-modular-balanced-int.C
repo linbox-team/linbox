@@ -20,6 +20,14 @@
  * Boston, MA 02111-1307, USA.
  */
 
+
+/*! @file  tests/test-modular-balanced-int.C
+ * @ingroup tests
+ * @brief  tests only runFieldTests on modular-balanced-int32
+ */
+
+
+
 #include "linbox/linbox-config.h"
 
 #include <iostream>
@@ -62,18 +70,18 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator.start("ModularBalanced<int> field test suite", "ModularBalanced<int>");
+	commentator.start("ModularBalanced<int32> field test suite", "ModularBalanced<int32>");
 	bool pass = true;
 
-	ModularBalanced<int> F_int (1073741789);//(2147483629);//(2147483647);
+	ModularBalanced<int32> F_int (1073741789);//(2147483629);//(2147483647);
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	if (!runFieldTests (F_int,  "ModularBalanced<int>",  iterations, n, false)) pass = false;
-	//if (!testRandomIterator (F_int,  "ModularBalanced<int>", trials, categories, hist_level)) pass = false;
+	if (!runFieldTests (F_int,  "ModularBalanced<int32>",  iterations, n, false)) pass = false;
+	if (!testRandomIterator (F_int,  "ModularBalanced<int32>", trials, categories, hist_level)) pass = false;
 
-	commentator.stop("ModularBalanced<int> field test suite");
+	commentator.stop("ModularBalanced<int32> field test suite");
 	return pass ? 0 : -1;
 }

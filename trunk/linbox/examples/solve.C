@@ -22,6 +22,11 @@
  *   <http://www.gnu.org/licenses/>.
  */
 
+/** @file examples/solve.C
+ * @ingroup examples
+ * @brief Blackbox solvers.
+ * @warning some are commented out...
+ */
 #include <iostream>
 
 #include "linbox/field/modular-double.h"

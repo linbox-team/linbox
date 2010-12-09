@@ -22,10 +22,9 @@
  *   <http://www.gnu.org/licenses/>.
  */
 
-/* omp_block_rank.C
- * Block Wiedemann Rank with OpenMP
- * Time-stamp: <19 Apr 10 18:38:33 Jean-Guillaume.Dumas@imag.fr>
- * See COPYING for license information.
+/*! @file examples/omp_block_rank.C
+ * @ingroup examples
+ * @brief Block Wiedemann Rank with OpenMP
  */
 
 #include <iostream>

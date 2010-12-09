@@ -52,9 +52,13 @@ namespace LinBox
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
-	/** @name ModularBase
-	 * \brief Base for prime fields where the elements are represented by various primitive types
-	 * (and their operations).
+	/**
+	 * <!-- /name ModularBase-->
+	 * \brief Base for prime fields where the elements are represented by various primitive types (and their operations).
+	 * \ingroup field
+	 * \defgroup Fields Fields
+	 *
+	 *
 	 * Normally use it's children.  This class is of interest for the developer of a new field representation.
 	 *
 	 *
@@ -62,7 +66,6 @@ namespace LinBox
 	 * field. Typical use would be Modular<integer> for integers modulo a
 	 * large prime, Modular<long, long long> for integers modulo a wordsize
 	 * prime, etc. for integers modulo a half-wordsize prime.
-	 \ingroup field
 	 */
 	template <class _Element>
 	class ModularBase {

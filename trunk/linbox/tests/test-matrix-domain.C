@@ -14,12 +14,20 @@
  * SparseMatrixBase, and TransposeMatrix
  */
 
-/* ERRORS:
+
+
+/*! @file  tests/test-matrix-domain.C
+ * @ingroup tests
+ * @brief  no real doc.
+ *
+ * \par ERRORS:
  *
  * X- Ambiguous specializations with RolColMatrixTag
  *  - Can't use leftMulin or rightMulin on some tests
  *  - VectorDomain needs subin, addin, etc. with multiple vector representations
  */
+
+
 
 #include "linbox/linbox-config.h"
 

@@ -22,6 +22,12 @@
  */
 
 
+/*! @file  tests/test-rational-solver.C
+ * @ingroup tests
+ * @brief no doc.
+ */
+
+
 
 #include <linbox/field/PID-integer.h>
 #include <linbox/field/modular-int32.h>

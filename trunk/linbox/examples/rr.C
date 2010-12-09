@@ -23,6 +23,11 @@
  *   <http://www.gnu.org/licenses/>.
  */
 
+/*! @file rr.C
+ * @ingroup examples
+ * @brief Rational Reconstruction.
+ */
+
 #include <iostream>
 
 #include "linbox/integer.h"
@@ -61,7 +66,7 @@ int main (int argc, char **argv)
 	//RationalReconstruction<Ints, WangFastRationalReconstruction<Ints> > RR(Z);
 	RationalReconstruction<Ints, MaxQFastRationalReconstruction<Ints> > RR(Z);
 
-	UserTimer t;
+	LinBox::UserTimer t;
 	t.clear();
 	t.start();
 

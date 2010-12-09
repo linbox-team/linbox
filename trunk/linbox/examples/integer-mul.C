@@ -27,7 +27,7 @@
  * \brief The LinBox arbitrary precision integer type illustrated.
  * \ingroup examples
  *
- * \details The class `integer' is a wrapper of <a href=http://gmplib.org>GMP</a> integers.
+ * The class `integer' is a wrapper of <a href=http://gmplib.org>GMP</a> integers.
  */
 
 // ---------------------------------------------

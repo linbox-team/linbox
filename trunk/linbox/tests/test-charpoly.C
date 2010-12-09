@@ -7,6 +7,15 @@
  * See COPYING for license information.
  */
 
+/*! @file  tests/test-charpoly.C
+ * @ingroup tests
+ * @brief tests the characteristic polynomial of sparse and special matrices
+ * @warning gcc-4.2 produces bad optimized code there
+ * @bug occasionnnaly there is a "SIGFPE, Arithmetic exception." in CRA
+ * @bug testRandomCharpoly is not always tested !!
+ */
+
+
 #include "linbox/linbox-config.h"
 
 #include <iostream>

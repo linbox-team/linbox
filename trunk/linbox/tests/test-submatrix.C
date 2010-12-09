@@ -22,6 +22,12 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/*! @file  tests/test-submatrix.C
+ * @ingroup tests
+ * @brief no doc.
+ */
+
+
 #include "linbox/linbox-config.h"
 
 #include <iostream>

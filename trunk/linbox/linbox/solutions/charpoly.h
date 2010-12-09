@@ -208,17 +208,19 @@ namespace LinBox
 #include "linbox/algorithms/cia.h"
 namespace LinBox
 {
+#if 0
 
-	// 	// The charpoly with Hybrid Method
-	// template<class Blackbox, class Polynomial>
-	// Polynomial &charpoly (Polynomial            &P,
-	// 		      const Blackbox  &A,
-	// 		      const RingCategories::IntegerTag  &tag,
-	// 		      const Method::Hybrid  &M)
-	// {
-	// 	// not yet a hybrid
-	// 	return charpoly(P, A, tag, Method::Blackbox(M));
-	// }
+	// The charpoly with Hybrid Method
+	template<class Blackbox, class Polynomial>
+	Polynomial &charpoly (Polynomial                        &P,
+			      const Blackbox                    &A,
+			      const RingCategories::IntegerTag  &tag,
+			      const Method::Hybrid              &M)
+	{
+		// not yet a hybrid
+		return charpoly(P, A, tag, Method::Blackbox(M));
+	}
+#endif
 
 	template < class IntRing, class Polynomial >
 	Polynomial& charpoly (Polynomial                       & P,
@@ -287,7 +289,7 @@ namespace LinBox
 	}
 
 
-#else
+#else //  no NTL or no Givaro (??)
 }
 
 #include "linbox/field/modular.h"

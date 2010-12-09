@@ -52,7 +52,7 @@
 namespace LinBox
 {
 
-	/** Blackbox dense matrix template.
+	/** @brief Blackbox dense matrix template.
 	 * This is a class of dense matrices
 	 * templatized by the entry type, the Element type of some @link Fields field@endlink.
 	 * The matrix is stored as a one dimensional STL vector of the elements, by rows.

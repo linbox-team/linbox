@@ -6,6 +6,11 @@
  * Copyright (C) June 2004 Dan Roche, part of LinBox, GNU LGPL. See COPYING for license.
  */
 
+/*! @file  tests/benchmark-fields.C
+ * @ingroup tests
+ * @brief  no doc
+ */
+
 #include "linbox/linbox-config.h"
 #include "linbox/util/timer.h"
 // #include "linbox/field/givaro-gfq.h"

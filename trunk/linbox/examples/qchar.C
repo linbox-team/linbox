@@ -23,6 +23,11 @@
  *   <http://www.gnu.org/licenses/>.
  */
 
+/*! @file examples/qchar.C
+ * @ingroup examples
+ * @brief  Undocumented.
+ */
+
 #include <linbox/field/PID-integer.h>
 #include <linbox/field/modular-double.h>
 #include <linbox/field/gmp-rational.h>

@@ -22,8 +22,13 @@
  */
 
 
-/** \file test-last-invariant-factor.C
+
+/*! @file  tests/test-last-invariant-factor.C
+ * @ingroup tests
+ * @brief  no doc
  */
+
+
 
 #include <linbox/field/PID-integer.h>
 #include <linbox/randiter/random-prime.h>
