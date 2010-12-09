@@ -57,18 +57,14 @@ namespace LinBox
 	 *  i.e. solution over the rational for an integer linear system.
 	 *
 	 * \par Headers
-	 *  #include<linbox/algorithms/rational-solver.h>
-	 *
-	 * \par References
+	 *  <code>\#include <linbox/algorithms/rational-solver.h></code>
 	 *
 	 *  See the following reference for details on this algorithm:
-	 *
-	 *  - Robert T. Moenck and John H. Carter: Approximate algorithms to derive exact solutions to system
-	 *  of linear equations. In Proc. EUROSAM'79, volume 72 of Lectures Note in Computer Science, pages 65-72,
+	 * \bib
+	 *  - Robert T. Moenck and John H. Carter <i>Approximate algorithms to derive exact solutions to system
+	 *  of linear equations.</i> In Proc. EUROSAM'79, volume 72 of Lectures Note in Computer Science, pages 65-72,
 	 *  Berlin-Heidelberger-New York, 1979. Springer-Verlag.
-	 *  .
-	 *
-	 *  - John D. Dixon: Exact Solution of linear equations using p-adic expansions. Numerische Mathematik,
+	 *  - John D. Dixon <i>Exact Solution of linear equations using p-adic expansions.</i> Numerische Mathematik,
 	 *  volume 40, pages 137-141, 1982.
 	 *  .
 	 * \ingroup algorithms
@@ -81,25 +77,31 @@ namespace LinBox
 	 * \ingroup padic
 	 */
 	enum SolverReturnStatus {
-		SS_OK, SS_FAILED, SS_SINGULAR, SS_INCONSISTENT, SS_BAD_PRECONDITIONER
+		SS_OK,
+		SS_FAILED,
+		SS_SINGULAR,
+		SS_INCONSISTENT,
+		SS_BAD_PRECONDITIONER
 	};
 
-	/** \brief  define the different strategy which can be used in the p-adic based solver.
+	/** \brief  Define the different strategy which can be used in the p-adic based solver.
 	 *
-	 * used to determine what level of solving should be done:
+	 * Used to determine what level of solving should be done:
 	 * - Monte Carlo: Try to solve if possible, but result is not guaranteed.
 	 *   In any case a 0 denominator should not be returned.
 	 * - Las Vegas  : Result should be guaranteed correct.
 	 * - Certified  : Additionally, provide certificates that the result returned is correct.
-	 *              - if the return value is SS_INCONSISTENT, this means
-	 *                   lastCertificate satisfies lC.A = 0, lC.b != 0
-	 *              - if diophantine solving was called and the return value is SS_OK, this means
-	 *                   lastCertificate satisfies den(lC.A) = 1, den(lC.b) = den(answer)
+	 *              - if the return value is \p SS_INCONSISTENT, this means
+	 *                   \p lastCertificate satisfies \f$lC \cdot A = 0\f$ and \f$lC \cdot b \neq 0 \f$
+	 *              - if diophantine solving was called and the return value is \p SS_OK, this means
+	 *                   \p lastCertificate satisfies \f$ \mathrm{den}(lC \cdot A) = 1, \mathrm{den}(lC \cdot b) = \mathrm{den}(answer) \f$
 	 * .
 	 * \ingroup padic
 	 */
 	enum SolverLevel {
-		SL_MONTECARLO, SL_LASVEGAS, SL_CERTIFIED
+		SL_MONTECARLO,
+		SL_LASVEGAS,
+		SL_CERTIFIED
 	};    // note: code may assume that each level is 'stronger' than the previous one
 
 

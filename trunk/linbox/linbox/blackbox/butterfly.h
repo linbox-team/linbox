@@ -33,6 +33,8 @@
 #include <vector>
 #include <linbox/blackbox/blackbox-interface.h>
 
+/*! @file blackbox/butterfly.h
+*/
 
 // Namespace in which all LinBox library code resides
 namespace LinBox

@@ -133,9 +133,10 @@ namespace LinBox
 		 * [check details].
 		 * The computedet indicates whether the algorithm must compute the determionant as it goes
 		 *
-		 * @bib [Jean-Guillaume Dumas and Gilles Villard,
+		 * @bib
+		 * - Jean-Guillaume Dumas and Gilles Villard,
 		 * <i>Computing the rank of sparse matrices over finite fields.</i>
-		 * In Ganzha et~al. CASC'2002, pages 47--62.]
+		 * In Ganzha et~al. CASC'2002, pages 47--62.
 		 */
 		template <class SparseSeqMatrix, class Perm>
 		unsigned long& QLUPin(unsigned long &rank,
