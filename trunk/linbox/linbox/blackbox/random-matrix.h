@@ -23,8 +23,8 @@
 
 
 
-#ifndef __LINBOX_random_matrix_H
-#define __LINBOX_random_matrix_H
+#ifndef __LINBOX_blackbox_random_matrix_H
+#define __LINBOX_blackbox_random_matrix_H
 
 #include <linbox/blackbox/blackbox-interface.h>
 #include <linbox/blackbox/dense.h>
@@ -154,5 +154,5 @@ namespace LinBox
 }
 
 
-#endif //__LINBOX_random_matrix_H
+#endif //__LINBOX_blabbox_random_matrix_H
 

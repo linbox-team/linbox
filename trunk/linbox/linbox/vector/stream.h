@@ -55,10 +55,18 @@
 #include "linbox/randiter/nonzero.h"
 #include "linbox/randiter/mersenne-twister.h"
 
+/**
+ * @file vector/stream.h
+ *
+ * @brief Generation of sequences of random vectors.
+ *
+ * Random, sparse, basis vectors,...
+ */
+
 namespace LinBox
 {
 
-	/** \brief Vector factory
+	/** \brief Vector factory.
 
 	 * This is an abstract base class that generates a sequence of vectors
 	 * in a generic way. Typical uses would be in tests, where the same test
@@ -124,7 +132,7 @@ namespace LinBox
 		//@}
 	};
 
-	/** Constant vector factory
+	/** @brief Constant vector factory.
 	 * Returns the same vector repeatedly
 	 */
 	template <class _Vector>
@@ -133,7 +141,7 @@ namespace LinBox
 		typedef _Vector Vector;
 		typedef ConstantVectorStream<Vector> Self_t;
 
-		/** Constructor
+		/** Constructor.
 		 * Construct a new factory with the given field and vector size.
 		 * @param v Vector to return on next
 		 * @param m Number of vectors to return (0 for unlimited)
@@ -178,7 +186,7 @@ namespace LinBox
 		size_t  _j;
 	};
 
-	/** Random dense vector stream
+	/** @brief Random dense vector stream.
 	 * Generates a sequence of random dense vectors over a given field
 	 */
 	template <class Field, class _Vector = typename LinBox::Vector<Field>::Dense, class RandIter = typename Field::RandIter, class Trait = typename VectorTraits<_Vector>::VectorCategory>
@@ -234,8 +242,7 @@ namespace LinBox
 		void reset ();
 	};
 
-	// Specialization of random dense stream for dense vectors
-
+	//! Specialization of random dense stream for dense vectors
 	template <class Field, class _Vector, class RandIter>
 	class RandomDenseStream<Field, _Vector, RandIter, VectorCategories::DenseVectorTag > : public VectorStream<_Vector> {
 	public:
@@ -281,7 +288,7 @@ namespace LinBox
 		size_t       _j;
 	};
 
-	/** Random sparse vector stream
+	/** @brief Random sparse vector stream.
 	 * Generates a sequence of random sparse vectors over a given field
 	 */
 	template <class Field, class _Vector = typename LinBox::Vector<Field>::Sparse, class RandIter = typename Field::RandIter, class Trait = typename VectorTraits<_Vector>::VectorCategory>
@@ -343,8 +350,7 @@ namespace LinBox
 		void setP (double p);
 	};
 
-	// Specialization of RandomSparseStream for dense vectors
-
+	//! Specialization of RandomSparseStream for dense vectors
 	template <class Field, class _Vector, class RandIter>
 	class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::DenseVectorTag > : public VectorStream<_Vector> {
 	public:
@@ -404,8 +410,7 @@ namespace LinBox
 		MersenneTwister                   MT;
 	};
 
-	// Specialization of RandomSparseStream for sparse sequence vectors
-
+	//! Specialization of RandomSparseStream for sparse sequence vectors
 	template <class Field, class _Vector, class RandIter>
 	class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseSequenceVectorTag > : public VectorStream<_Vector> {
 	public:
@@ -481,8 +486,7 @@ namespace LinBox
 		MersenneTwister                   MT;
 	};
 
-	// Specialization of RandomSparseStream for sparse associative vectors
-
+	//! Specialization of RandomSparseStream for sparse associative vectors
 	template <class Field, class _Vector, class RandIter>
 	class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseAssociativeVectorTag > : public VectorStream<_Vector> {
 	public:
@@ -541,8 +545,7 @@ namespace LinBox
 		MersenneTwister                   MT;
 	};
 
-	// Specialization of RandomSparseStream for sparse parallel vectors
-
+	//! Specialization of RandomSparseStream for sparse parallel vectors
 	template <class Field, class _Vector, class RandIter>
 	class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseParallelVectorTag > : public VectorStream<_Vector> {
 	public:
@@ -621,20 +624,19 @@ namespace LinBox
 		MersenneTwister                   MT;
 	};
 
-	/** Stream for e_1,...,e_n
-	 * Generates the sequence e_1,...,e_n over a given field
+	/** @brief Stream for \f$e_1,\cdots,e_n\f$.
+	 * Generates the sequence (e_1,...,e_n) over a given field
 	 *
 	 * This class is generic with respect to the underlying vector
 	 * representation.
 	 */
-
 	template <class Field, class _Vector, class Trait = typename VectorTraits<_Vector>::VectorCategory>
 	class StandardBasisStream : public VectorStream<_Vector> {
 	public:
 		typedef _Vector Vector;
 		typedef StandardBasisStream<Field, Vector, Trait > Self_t;
 
-		/** Constructor
+		/** Constructor.
 		 * Construct a new stream with the given field and vector size.
 		 * @param F Field over which to create vectors
 		 * @param n Size of vectors
@@ -677,8 +679,7 @@ namespace LinBox
 		size_t                    _j;
 	};
 
-	// Specialization of standard basis stream for dense vectors
-
+	//! Specialization of standard basis stream for dense vectors
 	template <class Field, class _Vector>
 	class StandardBasisStream<Field, _Vector, VectorCategories::DenseVectorTag > : public VectorStream<_Vector> {
 	public:
@@ -723,8 +724,7 @@ namespace LinBox
 		size_t                    _j;
 	};
 
-	// Specialization of standard basis stream for sparse sequence vectors
-
+	//! Specialization of standard basis stream for sparse sequence vectors
 	template <class Field, class _Vector>
 	class StandardBasisStream<Field, _Vector, VectorCategories::SparseSequenceVectorTag > : public VectorStream<_Vector> {
 	public:
@@ -762,8 +762,7 @@ namespace LinBox
 		typename Field::Element   _one;
 	};
 
-	// Specialization of standard basis stream for sparse associative vectors
-
+	//! Specialization of standard basis stream for sparse associative vectors
 	template <class Field, class _Vector>
 	class StandardBasisStream<Field, _Vector, VectorCategories::SparseAssociativeVectorTag > : public VectorStream<_Vector> {
 	public:
@@ -801,8 +800,7 @@ namespace LinBox
 		typename Field::Element   _one;
 	};
 
-	// Specialization of standard basis stream for sparse parallel vectors
-
+	//! Specialization of standard basis stream for sparse parallel vectors
 	template <class Field, class _Vector>
 	class StandardBasisStream<Field, _Vector, VectorCategories::SparseParallelVectorTag > : public VectorStream<_Vector> {
 	public:

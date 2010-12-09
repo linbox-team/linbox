@@ -24,6 +24,8 @@
 /*! @file tests/test-ffpack.C
  * @brief Tests for the ffpack set of routines
  * usage: test-ffpack p A n, for n lsp factorization  of A over Z/pZ
+ *
+ * \ingroup tests
  */
 
 #include "linbox/linbox-config.h"

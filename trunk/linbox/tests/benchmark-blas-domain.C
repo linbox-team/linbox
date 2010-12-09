@@ -37,7 +37,8 @@ const int maxpretty = 35;
 
 string blank;
 
-const char* pretty(string a) {
+const char* pretty(string a)
+{
 
 	blank = "     " + a;
 	int msgsize= maxpretty - blank.size();
@@ -50,7 +51,8 @@ const char* pretty(string a) {
 #define mycommentator commentator
 
 template <class Field>
-static bool testMulAdd (const Field& F, size_t n, int iterations) {
+static bool testMulAdd (const Field& F, size_t n, int iterations)
+{
 
 	typedef typename Field::Element     Element;
 	typedef typename Field::RandIter   RandIter;
@@ -127,14 +129,13 @@ static bool testMulAdd (const Field& F, size_t n, int iterations) {
 	return ret;
 }
 
-
-
 /*
  *  Testing the rank of dense matrices using BlasDomain
  *  construct a n*n matrices of rank r and compute the rank
  */
 template <class Field>
-static bool testRank (const Field& F,size_t n, int iterations) {
+static bool testRank (const Field& F,size_t n, int iterations)
+{
 
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
@@ -185,13 +186,13 @@ static bool testRank (const Field& F,size_t n, int iterations) {
 	return ret;
 }
 
-
 /*
  *  Testing the determinant of dense matrices using BlasDomain
  *  construct a n*n matrices of determinant d and compute the determinant
  */
 template <class Field>
-static bool testDet (const Field& F,size_t n, int iterations) {
+static bool testDet (const Field& F,size_t n, int iterations)
+{
 
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
@@ -254,7 +255,8 @@ static bool testDet (const Field& F,size_t n, int iterations) {
  *  construct a non-singular n*n matrices
  */
 template <class Field>
-static bool testInv (const Field& F,size_t n, int iterations) {
+static bool testInv (const Field& F,size_t n, int iterations)
+{
 
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
@@ -320,12 +322,12 @@ static bool testInv (const Field& F,size_t n, int iterations) {
 	return ret;
 }
 
-
 /*
  * Test resolution of linear system with a triangular matrix
  */
 template <class Field>
-static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterations) {
+static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterations)
+{
 
 	typedef typename Field::Element                  Element;
 	typedef BlasMatrix<Element>                       Matrix;
@@ -438,7 +440,8 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
  * Test resolution of linear system with a matrix
  */
 template <class Field>
-static bool testSolve (const Field& F, size_t m, size_t n, int iterations) {
+static bool testSolve (const Field& F, size_t m, size_t n, int iterations)
+{
 
 	typedef typename Field::Element                  Element;
 	typedef BlasMatrix<Element>                       Matrix;
@@ -553,9 +556,9 @@ static bool testSolve (const Field& F, size_t m, size_t n, int iterations) {
 /*
  * Test of the BlasPermutations
  */
-
 template <class Field>
-static bool testPermutation (const Field& F, size_t m, int iterations) {
+static bool testPermutation (const Field& F, size_t m, int iterations)
+{
 
 	typedef typename Field::Element                  Element;
 	typedef BlasMatrix<Element>                       Matrix;
@@ -860,7 +863,8 @@ static bool testPermutation (const Field& F, size_t m, int iterations) {
  * Test of the LQUPMatrix class
  */
 template <class Field>
-static bool testLQUP (const Field& F, size_t m, size_t n, int iterations) {
+static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
+{
 
 	typedef typename Field::Element                  Element;
 	typedef BlasMatrix<Element>                       Matrix;
@@ -964,7 +968,8 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations) {
 }
 
 template <class Field>
-static bool testMinPoly (const Field& F, size_t n, int iterations) {
+static bool testMinPoly (const Field& F, size_t n, int iterations)
+{
 	typedef typename Field::Element                  Element;
 	typedef BlasMatrix<Element>                       Matrix;
 	typedef typename Field::RandIter                RandIter;
@@ -1045,7 +1050,8 @@ static bool testMinPoly (const Field& F, size_t n, int iterations) {
 }
 
 template <class Field>
-static bool testCharPoly (const Field& F, size_t n, int iterations) {
+static bool testCharPoly (const Field& F, size_t n, int iterations)
+{
 	typedef typename Field::Element                  Element;
 	typedef BlasMatrix<Element>                       Matrix;
 	typedef typename Field::RandIter                RandIter;
@@ -1119,7 +1125,8 @@ static bool testCharPoly (const Field& F, size_t n, int iterations) {
 }
 
 template<class T, template <class T> class Container>
-std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
+std::ostream& operator<< (std::ostream& o, const Container<T>& C)
+{
 	for(typename Container<T>::const_iterator refs =  C.begin();
 	    refs != C.end() ;
 	    ++refs )
@@ -1127,7 +1134,8 @@ std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
 	return o << std::endl;
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
 	commentator.setBriefReportStream (cout);
 	commentator.getMessageClass (BRIEF_REPORT).setMaxDepth (2);
 	commentator.getMessageClass (BRIEF_REPORT).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
