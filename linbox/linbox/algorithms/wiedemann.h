@@ -231,7 +231,8 @@ namespace LinBox
 
 		// @name Solvers
 		// try to make the idea work doxy
-		/// \defgroup Solvers
+		/// \ingroup algorithms
+		/// \defgroup Solvers Solvers
 
 		//@{
 

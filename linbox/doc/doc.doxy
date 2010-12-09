@@ -1,7 +1,8 @@
 // Copyright (C) 2005 David Saunders, part of LinBox, GNU LGPL, see COPYING
-/** \brief This is a discussion of the form and organization of %LinBox documentation.
+/** \ingroup linbox
 \defgroup doc doc
 
+\brief This is a discussion of the form and organization of %LinBox documentation.
 
 The doc directory contains
 - in subdirectory linbox-html/ the html documentation, it has been built using <a href=http://www.stack.nl/~dimitri/doxygen/>Doxygen</a>.  Start at

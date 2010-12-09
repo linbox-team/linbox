@@ -1,15 +1,18 @@
-/** \defgroup element linbox/element
+/** \ingroup linbox
+  \defgroup element element
 
-The interface for field and ring element types.
+  \brief The interface for field and ring element types.
 
-The interface requirements are minimal and are specified
-in LinBox::ElementArchetype.
+  The interface requirements are minimal and are specified
+  in LinBox::ElementArchetype.
 
-Developers:
-Your element type may be almost any primitive type or defined class.
-To support the field archetype there is also a LinBox::ElementAbstract
-and LinBox::ElementEnvelope.
+  \note Developers:
+  Your element type may be almost any primitive type or defined class.
+  To support the field archetype there is also a LinBox::ElementAbstract
+  and LinBox::ElementEnvelope.
 
-@see \ref Archetypes
+  @see \ref Archetypes
 
-*/
+ */
+
+// vim:syn=doxygen

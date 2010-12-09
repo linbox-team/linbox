@@ -39,9 +39,10 @@ namespace LinBox
 	template<class BB> struct RawIndexedCategory;
 
 	/// limited doc so far
-	namespace RawIndexedTags {
-struct HasRawIndexed{};
-struct NoRawIndexed{};
+	namespace RawIndexedTags
+	{
+		struct HasRawIndexed{};
+		struct NoRawIndexed{};
 	};
 
 	template<class BB> struct RawIndexedCategory {

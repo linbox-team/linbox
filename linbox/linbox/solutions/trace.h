@@ -24,9 +24,10 @@ namespace LinBox
 	template<class BB> struct TraceCategory;
 
 	/// undocumented
-	namespace TraceTags {
-struct Generic{};
-struct Local{};
+	namespace TraceTags
+	{
+		struct Generic{};
+		struct Local{};
 	};
 
 	template<class BB> struct TraceCategory		{ typedef TraceTags::Generic Tag; };

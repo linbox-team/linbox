@@ -1,4 +1,7 @@
-/** \defgroup vector linbox/vector
+/** \ingroup linbox
+  \defgroup vector vector
+
+  \brief LinBox vectors.
 
   All LinBox dense vectors must implement the dense vector common
   object interface as it is defined in the dense vector
