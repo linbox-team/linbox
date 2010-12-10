@@ -65,7 +65,8 @@ namespace LinBox
 		/** Constructor from two black box matrices.
 		 * This becomes direct sum of A and B.
 		 * They may be rectangular.
-		 * @param A, B:  black box matrices over a common field.
+		 * @param A  black box matrices over a common field.
+		 * @param B  black box matrices over a common field.
 		 */
 		DirectSum(const	Blackbox1& A, const Blackbox2& B) :
 			_Ap(&A), _Bp(&B)
@@ -74,8 +75,8 @@ namespace LinBox
 		/** Constructor from two black box matrix pointers.
 		 * This becomes direct sum of A and B.
 		 * They may be rectangular.  They must be over the same field (or ring).
-		 * @param A_ptr pointer to black box matrix A.
-		 * @param B_ptr pointer to black box matrix B.
+		 * @param Ap pointer to black box matrix A.
+		 * @param Bp pointer to black box matrix B.
 		 */
 #if 0
 		DirectSum() :
@@ -181,14 +182,14 @@ namespace LinBox
 		}
 
 		template<typename _Tp1, typename _Tp2 = _Tp1>
-		struct rebind
-		{
+		struct rebind {
 			typedef DirectSumOwner<
 			typename Blackbox1::template rebind<_Tp1>::other,
 				 typename Blackbox2::template rebind<_Tp2>::other
 				 > other;
 
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+			void operator() (other & Ap, const Self_t& A, const _Tp1& F)
+			{
 				typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), *(A.getLeftPtr()), F);
 				typename Blackbox2::template rebind<_Tp2> () ( Ap.getRightData(), *(A.getRightPtr()), F);
 			}
@@ -398,25 +399,26 @@ namespace LinBox
 		/** Constructor from two black box matrices.
 		 * This becomes direct sum of A and B.
 		 * They may be rectangular.
-		 * @param A, B:  black box matrices over a common field.
+		 * @param A  black box matrices over a common field.
+		 * @param B  black box matrices over a common field.
 		 */
 		DirectSumOwner(const	Blackbox1& A, const Blackbox2& B) :
 			_A_data(A), _B_data(B)
 		{}
 
-		/** Constructor from two black box matrix pointers.
-		 * This becomes direct sum of A and B.
-		 * They may be rectangular.  They must be over the same field (or ring).
-		 * @param A_ptr pointer to black box matrix A.
-		 * @param B_ptr pointer to black box matrix B.
-		 */
-#if 0
+	#if 0
 		DirectSumOwner() :
 			_Ap(& DirectSumOwner<Blackbox1, Blackbox2>::_NullMatrix),
 			_Bp(& DirectSumOwner<Blackbox1, Blacbox2>::_NullMatrix)
 		{}
 #endif
 
+		/** Constructor from two black box matrix pointers.
+		 * This becomes direct sum of A and B.
+		 * They may be rectangular.  They must be over the same field (or ring).
+		 * @param Ap pointer to black box matrix A.
+		 * @param Bp pointer to black box matrix B.
+		 */
 
 		DirectSumOwner(const	Blackbox1* Ap, const Blackbox2* Bp) :
 			_A_data(*Ap), _B_data(*Bp)

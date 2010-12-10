@@ -62,7 +62,7 @@ namespace LinBox
 		typedef std::vector<Element>      Polynomial;
 
 		/** Constructor from field and dense vector of field elements.
-		 * @param __BB   Black box of which to get the inverse
+		 * @param BB   Black box of which to get the inverse
 		 */
 		Inverse (const Blackbox *BB) :
 			_VD (BB->field()), _BB (BB)

@@ -14,7 +14,8 @@
 
 /*! @file  tests/test-rational-reconstruction-base.C
  * @ingroup tests
- * @brief  no doc
+ * @ingroup CRA
+ * @brief  tests rational reconstruction using rational-cra2.h .
  */
 
 
@@ -56,9 +57,12 @@ using namespace LinBox;
 
 struct ModularFraction {
 	integer a_,b_;
-	ModularFraction(const integer& a, const integer& b): a_(a), b_(b) {}
+	ModularFraction(const integer& a, const integer& b) :
+		a_(a), b_(b)
+	{}
 	template<typename Field>
-	typename Field::Element& operator()(typename Field::Element& d, const Field& F) const {
+	typename Field::Element& operator()(typename Field::Element& d, const Field& F) const
+	{
 		F.init(d,a_);
 		F.divin(d,b_);
 		return d;
@@ -103,123 +107,123 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 
 		RReconstruction<PID_integer, FastRationalReconstruction<PID_integer> > RR1_1(Z,INCREMENTAL,5);
 		RationalRemainder2< VarPrecEarlySingleCRA< Modular<double> >,
-			RReconstruction<PID_integer, FastRationalReconstruction<PID_integer> > > cra1_1(4UL, RR1_1);
+		RReconstruction<PID_integer, FastRationalReconstruction<PID_integer> > > cra1_1(4UL, RR1_1);
 		cra1_1(a1_1,b1_1,iteration,genprime);
 		if ((a1_1 != num)  || (b1_1 != den) ) {
 			ret = false;
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: rational reconstruction (Wang, incremental, fast) failed" << endl;
+			<< "ERROR: rational reconstruction (Wang, incremental, fast) failed" << endl;
 		}
 
 		RReconstruction<PID_integer, FastMaxQRationalReconstruction<PID_integer> > RR2_1(Z,INCREMENTAL,5);
 		RationalRemainder2< VarPrecEarlySingleCRA< Modular<double> >,
-			RReconstruction<PID_integer, FastMaxQRationalReconstruction<PID_integer> > > cra2_1(4UL, RR2_1);
+		RReconstruction<PID_integer, FastMaxQRationalReconstruction<PID_integer> > > cra2_1(4UL, RR2_1);
 		cra2_1(a2_1,b2_1,iteration,genprime);
 		if ((a2_1 != num)  || (b2_1 != den) ) {
 			ret = false;
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: rational reconstruction (MaxQ, incremental, fast) failed" << endl;
+			<< "ERROR: rational reconstruction (MaxQ, incremental, fast) failed" << endl;
 		}
 
 		RReconstruction<PID_integer, ClassicRationalReconstruction<PID_integer> > RR3_1(RRB1,INCREMENTAL,5);
 		RationalRemainder2< VarPrecEarlySingleCRA< Modular<double> >,
-			RReconstruction<PID_integer, ClassicRationalReconstruction<PID_integer> > > cra3_1(4UL, RR3_1);
+		RReconstruction<PID_integer, ClassicRationalReconstruction<PID_integer> > > cra3_1(4UL, RR3_1);
 		cra3_1(a3_1,b3_1,iteration,genprime);
 		if ((a3_1 != num)  || (b3_1 != den) ) {
 			ret = false;
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: rational reconstruction (Wang, incremental, classic) failed" << endl;
+			<< "ERROR: rational reconstruction (Wang, incremental, classic) failed" << endl;
 		}
 
 		RReconstruction<PID_integer, ClassicMaxQRationalReconstruction<PID_integer> > RR4_1(RRB2,INCREMENTAL,5);
 		RationalRemainder2< VarPrecEarlySingleCRA< Modular<double> >,
-			RReconstruction<PID_integer, ClassicMaxQRationalReconstruction<PID_integer> > > cra4_1(4UL, RR4_1);
+		RReconstruction<PID_integer, ClassicMaxQRationalReconstruction<PID_integer> > > cra4_1(4UL, RR4_1);
 		cra4_1(a4_1,b4_1,iteration,genprime);
 		if ((a4_1 != num)  || (b4_1 != den) ) {
 			ret = false;
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: rational reconstruction (MaxQ, incremental, classic) failed" << endl;
+			<< "ERROR: rational reconstruction (MaxQ, incremental, classic) failed" << endl;
 		}
 
 		RReconstruction<PID_integer, FastRationalReconstruction<PID_integer> > RR1_2(Z,QUADRATIC,0,10);
 		RationalRemainder2< VarPrecEarlySingleCRA< Modular<double> >,
-			RReconstruction<PID_integer, FastRationalReconstruction<PID_integer> > > cra1_2(4UL, RR1_2);
+		RReconstruction<PID_integer, FastRationalReconstruction<PID_integer> > > cra1_2(4UL, RR1_2);
 		cra1_2(a1_2,b1_2,iteration,genprime);
 		if ((a1_2 != num)  || (b1_2 != den) ) {
 			ret = false;
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: rational reconstruction (Wang, quadratic, fast) failed" << endl;
+			<< "ERROR: rational reconstruction (Wang, quadratic, fast) failed" << endl;
 		}
 
 		RReconstruction<PID_integer, FastMaxQRationalReconstruction<PID_integer> > RR2_2(Z,QUADRATIC,0,10);
 		RationalRemainder2< VarPrecEarlySingleCRA< Modular<double> >,
-			RReconstruction<PID_integer, FastMaxQRationalReconstruction<PID_integer> > > cra2_2(4UL, RR2_2);
+		RReconstruction<PID_integer, FastMaxQRationalReconstruction<PID_integer> > > cra2_2(4UL, RR2_2);
 		cra2_2(a2_2,b2_2,iteration,genprime);
 		if ((a2_2 != num)  || (b2_2 != den) ) {
 			ret = false;
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: rational reconstruction (MaxQ, quadratic, fast) failed" << endl;
+			<< "ERROR: rational reconstruction (MaxQ, quadratic, fast) failed" << endl;
 		}
 
 		RReconstruction<PID_integer, ClassicRationalReconstruction<PID_integer> > RR3_2(RRB1,QUADRATIC,0,10);
 		RationalRemainder2< VarPrecEarlySingleCRA< Modular<double> >,
-			RReconstruction<PID_integer, ClassicRationalReconstruction<PID_integer> > > cra3_2(4UL, RR3_2);
+		RReconstruction<PID_integer, ClassicRationalReconstruction<PID_integer> > > cra3_2(4UL, RR3_2);
 		cra3_2(a3_2,b3_2,iteration,genprime);
 		if ((a3_2 != num)  || (b3_2 != den) ) {
 			ret = false;
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: rational reconstruction (Wang, quadratic, classic) failed" << endl;
+			<< "ERROR: rational reconstruction (Wang, quadratic, classic) failed" << endl;
 		}
 
 		RReconstruction<PID_integer, ClassicMaxQRationalReconstruction<PID_integer> > RR4_2(RRB2,QUADRATIC,0,10);
 		RationalRemainder2< VarPrecEarlySingleCRA< Modular<double> >,
-			RReconstruction<PID_integer, ClassicMaxQRationalReconstruction<PID_integer> > > cra4_2(4UL, RR4_2);
+		RReconstruction<PID_integer, ClassicMaxQRationalReconstruction<PID_integer> > > cra4_2(4UL, RR4_2);
 		cra4_2(a4_2,b4_2,iteration,genprime);
 		if ((a4_2 != num)  || (b4_2 != den) ) {
 			ret = false;
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: rational reconstruction (MaxQ, quadratic, classic) failed" << endl;
+			<< "ERROR: rational reconstruction (MaxQ, quadratic, classic) failed" << endl;
 		}
 
 
 		RReconstruction<PID_integer, FastRationalReconstruction<PID_integer> > RR1_3(Z,GEOMETRIC,0,5);
 		RationalRemainder2< VarPrecEarlySingleCRA< Modular<double> >,
-			RReconstruction<PID_integer, FastRationalReconstruction<PID_integer> > > cra1_3(4UL, RR1_3);
+		RReconstruction<PID_integer, FastRationalReconstruction<PID_integer> > > cra1_3(4UL, RR1_3);
 		cra1_3(a1_3,b1_3,iteration,genprime);
 		if ((a1_3 != num)  || (b1_3 != den) ) {
 			ret = false;
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: rational reconstruction (Wang, geometric, fast) failed" << endl;
+			<< "ERROR: rational reconstruction (Wang, geometric, fast) failed" << endl;
 		}
 
 		RReconstruction<PID_integer, FastMaxQRationalReconstruction<PID_integer> > RR2_3(Z,GEOMETRIC,0,5);
 		RationalRemainder2< VarPrecEarlySingleCRA< Modular<double> >,
-			RReconstruction<PID_integer, FastMaxQRationalReconstruction<PID_integer> > > cra2_3(4UL, RR2_3);
+		RReconstruction<PID_integer, FastMaxQRationalReconstruction<PID_integer> > > cra2_3(4UL, RR2_3);
 		cra2_3(a2_3,b2_3,iteration,genprime);
 		if ((a2_3 != num)  || (b2_3 != den) ) {
 			ret = false;
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: rational reconstruction (MaxQ, geometric, fast) failed" << endl;
+			<< "ERROR: rational reconstruction (MaxQ, geometric, fast) failed" << endl;
 		}
 
 		RReconstruction<PID_integer, ClassicRationalReconstruction<PID_integer> > RR3_3(RRB1,GEOMETRIC,0,5);
 		RationalRemainder2< VarPrecEarlySingleCRA< Modular<double> >,
-			RReconstruction<PID_integer, ClassicRationalReconstruction<PID_integer> > > cra3_3(4UL, RR3_3);
+		RReconstruction<PID_integer, ClassicRationalReconstruction<PID_integer> > > cra3_3(4UL, RR3_3);
 		cra3_3(a3_3,b3_3,iteration,genprime);
 		if ((a3_3 != num)  || (b3_3 != den) ) {
 			ret = false;
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: rational reconstruction (Wang, geometric, classic) failed" << endl;
+			<< "ERROR: rational reconstruction (Wang, geometric, classic) failed" << endl;
 		}
 
 		RReconstruction<PID_integer, ClassicMaxQRationalReconstruction<PID_integer> > RR4_3(RRB2,GEOMETRIC,0,5);
 		RationalRemainder2< VarPrecEarlySingleCRA< Modular<double> >,
-			RReconstruction<PID_integer, ClassicMaxQRationalReconstruction<PID_integer> > > cra4_3(4UL, RR4_3);
+		RReconstruction<PID_integer, ClassicMaxQRationalReconstruction<PID_integer> > > cra4_3(4UL, RR4_3);
 		cra4_3(a4_3,b4_3,iteration,genprime);
 		if ((a4_3 != num)  || (b4_3 != den) ) {
 			ret = false;
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: rational reconstruction (MaxQ, geometric, classic) failed" << endl;
+			<< "ERROR: rational reconstruction (MaxQ, geometric, classic) failed" << endl;
 		}
 
 		size_t H = (n > d) ? n : d;
@@ -229,31 +233,31 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 		++H;
 		RReconstruction<PID_integer, FastRationalReconstruction<PID_integer> > RR1_4(Z,CERTIFIED,0,H);
 		RationalRemainder2< VarPrecEarlySingleCRA< Modular<double> >,
-			RReconstruction<PID_integer, FastRationalReconstruction<PID_integer> > > cra1_4(4UL, RR1_4);
+		RReconstruction<PID_integer, FastRationalReconstruction<PID_integer> > > cra1_4(4UL, RR1_4);
 		cra1_4(a1_4,b1_4,iteration,genprime);
 		if ((a1_4 != num)  || (b1_4 != den) ) {
 			ret = false;
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: rational reconstruction (Wang, certified, fast) failed" << endl;
+			<< "ERROR: rational reconstruction (Wang, certified, fast) failed" << endl;
 		}
 
-//RReconstruction<PID_integer, FastMaxQRationalReconstruction<PID_integer> > RR2_4(Z,CERTIFIED);
+		//RReconstruction<PID_integer, FastMaxQRationalReconstruction<PID_integer> > RR2_4(Z,CERTIFIED);
 		RReconstruction<PID_integer, ClassicRationalReconstruction<PID_integer> > RR3_4(RRB1,CERTIFIED,0,H);
 		RationalRemainder2< VarPrecEarlySingleCRA< Modular<double> >,
-			RReconstruction<PID_integer, ClassicRationalReconstruction<PID_integer> > > cra3_4(4UL, RR3_4);
+		RReconstruction<PID_integer, ClassicRationalReconstruction<PID_integer> > > cra3_4(4UL, RR3_4);
 		cra3_4(a3_4,b3_4,iteration,genprime);
 		if ((a3_4 != num)  || (b3_4 != den) ) {
 			ret = false;
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: rational reconstruction (Wang, certified, classic) failed" << endl;
-}
+			<< "ERROR: rational reconstruction (Wang, certified, classic) failed" << endl;
+		}
 
-//RReconstruction<PID_integer, ClassicMaxQRationalReconstruction<PID_integer> > RR4_4(RRB2,CERTIFIED);
+		//RReconstruction<PID_integer, ClassicMaxQRationalReconstruction<PID_integer> > RR4_4(RRB2,CERTIFIED);
 
 		commentator.stop ("done");
-	 	commentator.progress ();
-	 	//commentator.progress (i, iterations);
- 	}
+		commentator.progress ();
+		//commentator.progress (i, iterations);
+	}
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRationalDeterminantGeneric");
 

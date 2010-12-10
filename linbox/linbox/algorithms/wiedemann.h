@@ -43,6 +43,11 @@
 #ifndef __LINBOX_wiedemann_H
 #define __LINBOX_wiedemann_H
 
+/*! @file algorithms/wiedemann.h
+ * @ingroup algorithms
+ * @brief minpoly computation and Wiedeman solvers.
+ */
+
 #include <vector>
 #include <algorithm>
 
@@ -198,7 +203,6 @@ namespace LinBox
 	 * random nullspace element of Kaltofen and Saunders (1991), as well as the
 	 * certificate of inconsistency of Giesbrecht, Lobo, and Saunders (1998).
 	 */
-
 	template <class Field>
 	class WiedemannSolver {
 	public:
@@ -208,7 +212,8 @@ namespace LinBox
 			OK, FAILED, SINGULAR, INCONSISTENT, BAD_PRECONDITIONER
 		};
 
-		/** Constructor
+		/*! Constructor.
+		 *
 		 * @param F Field over which to operate
 		 * @param traits @ref SolverTraits  structure describing user
 		 *               options for the solver
@@ -217,7 +222,8 @@ namespace LinBox
 			_traits (traits), _F (F), _randiter (F), _VD (F)
 		{}
 
-		/** Constructor with a random iterator
+		/*! Constructor with a random iterator.
+		 *
 		 * @param F Field over which to operate
 		 * @param traits @ref SolverTraits  structure describing user
 		 *               options for the solver
@@ -229,14 +235,12 @@ namespace LinBox
 			_traits (traits), _F (F), _randiter (r), _VD (F)
 		{}
 
-		// @name Solvers
-		// try to make the idea work doxy
 		/// \ingroup algorithms
 		/// \defgroup Solvers Solvers
 
 		//@{
 
-		/** Solve a system Ax=b, giving a random solution if the system is
+		/*! Solve a system Ax=b, giving a random solution if the system is
 		 * singular and consistent, and a certificate of inconsistency (if
 		 * specified in traits parameter at construction time) otherwise.
 		 *
@@ -249,7 +253,7 @@ namespace LinBox
 		template<class Blackbox, class Vector>
 		ReturnStatus solve (const Blackbox&A, Vector &x, const Vector &b, Vector &u);
 
-		/** Solve a nonsingular system Ax=b.
+		/*! Solve a nonsingular system Ax=b.
 		 *
 		 * This is a "Las Vegas" method, which makes use of randomization. It
 		 * attempts to certify that the system solution is correct. It will only
@@ -269,7 +273,7 @@ namespace LinBox
 					       const Vector &b,
 					       bool useRandIter = false);
 
-		/** Solve a general singular linear system.
+		/*! Solve a general singular linear system.
 		 *
 		 * @param A Black box of linear system
 		 * @param x Vector in which to store solution
@@ -285,7 +289,7 @@ namespace LinBox
 					    Vector &u,
 					    unsigned long r);
 
-		/** Get a random solution to a singular system Ax=b of rank r with
+		/*! Get a random solution to a singular system Ax=b of rank r with
 		 * generic rank profile.
 		 *
 		 * @param A Black box of linear system
@@ -304,7 +308,7 @@ namespace LinBox
 						 const Prec1             *P,
 						 const Prec2             *Q);
 
-		/** Get a random element of the right nullspace of A.
+		/*! Get a random element of the right nullspace of A.
 		 *
 		 * @param x Vector in which to store nullspace element
 		 * @param A Black box of which to find nullspace element
@@ -313,7 +317,7 @@ namespace LinBox
 		ReturnStatus findNullspaceElement (Vector                &x,
 						   const Blackbox        &A);
 
-		/** Get a certificate u that the given system Ax=b is
+		/*! @brief Get a certificate u that the given system Ax=b is
 		 * inconsistent, if one can be found.
 		 *
 		 * @param u Vector in which to store certificate

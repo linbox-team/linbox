@@ -25,16 +25,43 @@
 #ifndef __LINBOX_cra_domain_H
 #define __LINBOX_cra_domain_H
 
-//#if defined(OMP_H)
+/*! @ingroup algorithms
+ * @defgroup CRA Chinese Remaindering Algorithm.
+ * @{
+ * @brief Chinese Remaindering Algorithm
+ *
+ * no real doc so far.
+ * @}
+ */
+
+/*! @file algorithms/cra-domain.h
+ * @brief Wrapper around OMP/SEQ version of ChineseRemainder.
+ * @ingroup algorithms
+ * @ingroup CRA
+ *
+ * If _OPENMP is defined, the we use ChineseRemainderOMP, else
+ * we fall back to ChineseRemainderSeq
+ */
+
 #ifdef _OPENMP
 
 #include "linbox/algorithms/cra-domain-omp.h"
 namespace LinBox
 {
+	/*! @brief Wrapper around OMP/SEQ version of ChineseRemainderXXX<CRABase>.
+	 * \ingroup CRA
+	 *
+	 * If _OPENMP is defined, the we use ChineseRemainderOMP, else
+	 * we fall back to ChineseRemainderSeq
+	 *
+	 * This is the OMP version
+	 */
+
 	template<class CRABase>
 	struct ChineseRemainder : public ChineseRemainderOMP<CRABase> {
 		typedef typename CRABase::Domain	Domain;
 		typedef typename CRABase::DomainElement	DomainElement;
+
 		template<class Param>
 		ChineseRemainder(const Param& b) :
 			ChineseRemainderOMP<CRABase>(b)
@@ -51,10 +78,20 @@ namespace LinBox
 #include "linbox/algorithms/cra-domain-seq.h"
 namespace LinBox
 {
+	/*! @brief Wrapper around OMP/SEQ version of ChineseRemainderXXX<CRABase>.
+	 * \ingroup CRA
+	 *
+	 * If _OPENMP is defined, the we use ChineseRemainderOMP, else
+	 * we fall back to ChineseRemainderSeq
+	 *
+	 * This is the SEQ version
+	 */
+
 	template<class CRABase>
 	struct ChineseRemainder : public ChineseRemainderSeq<CRABase> {
 		typedef typename CRABase::Domain	Domain;
 		typedef typename CRABase::DomainElement	DomainElement;
+
 		template<class Param>
 		ChineseRemainder(const Param& b) :
 			ChineseRemainderSeq<CRABase>(b)

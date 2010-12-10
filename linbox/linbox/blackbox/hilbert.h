@@ -76,7 +76,8 @@ namespace LinBox
 
 	public:
 		/** Constructor from field and size.
-		 * @param n size_t integer number of rows and columns of matrix.
+		 * @param F the field.
+		 * @param n the size : size_t integer number of rows and columns of matrix.
 		 */
 		Hilbert(_Field& F, size_t n) :
 			JIT_Matrix<_Field, Hilbert_JIT_Entry<_Field> >(F, n, n, Hilbert_JIT_Entry<_Field>(F, n, n))

@@ -20,7 +20,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/*! @file  tests/test-tripplebb.C
+/*! @file  tests/test-tripplesbb.C
  * @ingroup tests
  *
  * @brief no doc

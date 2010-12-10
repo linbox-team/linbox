@@ -203,14 +203,13 @@ namespace LinBox
 		ConstRawIterator rawBegin () const;
 		ConstRawIterator rawEnd () const;
 
-		/** @name Raw Indexed iterator
-		 * Like the raw iterator, the indexed iterator is a method for
+		/** Like the raw iterator, the indexed iterator is a method for
 		 * accessing all entries in the matrix in some unspecified order.
+		 *
 		 * At each position of the the indexed iterator, it also provides
 		 * the row and column indices of the currently referenced entry.
 		 * This is provided through it's rowIndex() and colIndex() functions.
 		 */
-
 		class RawIndexedIterator;
 		typedef const RawIndexedIterator ConstRawIndexedIterator;
 
@@ -228,6 +227,7 @@ namespace LinBox
 		 * @param i Row index
 		 */
 		Row operator[] (size_t i);
+		/// const version
 		ConstRow operator[] (size_t i) const;
 
 		//@}
