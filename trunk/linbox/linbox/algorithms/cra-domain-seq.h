@@ -21,6 +21,11 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/*! @file algorithms/cra-domain-seq.h
+ * @brief Sequencial version of \ref CRA
+ * @ingroup CRA
+ */
+
 #ifndef __LINBOX_sequential_cra_H
 #define __LINBOX_sequential_cra_H
 #include "linbox/util/timer.h"
@@ -40,6 +45,7 @@ namespace LinBox
 	};
 
 
+	/// No doc.
 	template<class CRABase>
 	struct ChineseRemainderSeq {
 		typedef typename CRABase::Domain	Domain;
@@ -58,24 +64,25 @@ namespace LinBox
 			Builder_(b)
 		{IterCounter=0;}
 
-		/** \brief The CRA loop
+		/** \brief The \ref CRA loop
+		 * \ingroup CRA
 		 *
 		 * Given a function to generate residues mod a single prime,
 		 * this loop produces the residues resulting from the Chinese
 		 * remainder process on sufficiently many primes to meet the
 		 * termination condition.
 		 *
-		 * \param Iteration - Function object of two arguments, F(r, p),
-		 * given prime p it outputs residue(s) r. This loop may be
-		 * parallelized.  F must be reentrant, thread safe. For example,
-		 * F may be returning the coefficients of the minimal polynomial
-		 * of a matrix mod p.
+		 * \param Iteration  Function object of two arguments, \c Iteration(r, p),
+		 * given prime \p p it outputs residue(s) \p r. This loop may be
+		 * parallelized.  \p Iteration  must be reentrant, thread safe. For example,
+		 * \p Iteration may be returning the coefficients of the minimal polynomial
+		 * of a matrix \c mod \p p.
 		 *
-		 * Warning - we won't detect bad primes.
+		 * @warning  We won't detect bad primes.
 		 *
-		 * \param PrimeIterator - iterator for generating primes.
+		 * \param primeiter  iterator for generating primes.
 		 *
-		 * \result res - an integer
+		 * \param[out] res  an integer
 		 */
 		template<class Function, class PrimeIterator>
 		Integer& operator() (Integer& res, Function& Iteration, PrimeIterator& primeiter)

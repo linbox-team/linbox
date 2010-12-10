@@ -1,8 +1,9 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-/* Copyright (C) 2010 LinBox
+/* Copyright (C) 2005 LinBox
  *
  *
+ * Written by Daniel Roche, August 2005
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,10 +25,6 @@
 
 #ifndef __LINBOX_field_ntl_lzz_px_H
 #define __LINBOX_field_ntl_lzz_px_H
-
-/** linbox/field/ntl-lzz_pX.h
- * Daniel Roche, August 2005
- */
 
 #include <linbox/field/unparametric.h>
 #include <linbox/field/ntl-lzz_p.h>

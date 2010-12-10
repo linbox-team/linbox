@@ -22,6 +22,11 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/*! @file algorithms/cra-kaapi.h
+ * @ingroup algorithms
+ * @ingroup CRA
+ * @brief NO DOC
+ */
 
 #ifndef __LINBOX_cra_kaapi_H
 #define __LINBOX_cra_kaapi_H
@@ -39,14 +44,6 @@
 namespace LinBox
 {
 
-	/************************************************************************************************
-	 * CRA loop subroutine
-	 * given a function and a prime, this returns the residue by applying given function
-	 * this must be thread safe and communicable
-	 * \param p Prime Integer
-	 * \param f function used to compute residue
-	 * \return the residue
-	 */
 	template<class Function, class Domain >
 	struct Residue {
 
@@ -69,6 +66,9 @@ namespace LinBox
 		}
 	};
 
+	/*! No doc.
+	 * @ingroup CRA
+	 */
 	template<class CRABase>
 	struct ChineseRemainder {
 
@@ -83,7 +83,16 @@ namespace LinBox
 			Builder_(b)
 		{}
 
-
+		/**
+		 * CRA loop subroutine.
+		 * @ingroup CRA
+		 * given a function and a prime, this returns the residue by applying given function
+		 * this must be thread safe and communicable
+		 * \param primeiter Prime Integer
+		 * \param Iteration function used to compute residue
+		 * \param[out] res the residue
+		 * \return the residue
+		 */
 		template<class Int, class Function, class PrimeIterator>
 		Int& operator() (Int& res, Function& Iteration, PrimeIterator& primeiter)
 		{

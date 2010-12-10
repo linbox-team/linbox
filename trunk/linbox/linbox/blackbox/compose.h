@@ -74,7 +74,9 @@ namespace LinBox
 
 		/** Constructor of C := A*B from blackbox matrices A and B.
 		 * Build the product A*B of any two black box matrices of compatible dimensions.
-		 * Requires A.coldim() equals B.rowdim().
+		 * @pre <code>A.coldim() == B.rowdim()</code>.
+		 * @param A blackbox
+		 * @param B blackbox
 		 */
 		Compose (const Blackbox1 &A, const Blackbox2 &B) :
 			_A_ptr(&A), _B_ptr(&B)
@@ -89,6 +91,8 @@ namespace LinBox
 		/** Constructor of C := (*A_ptr)*(*B_ptr).
 		 * This constructor creates a matrix that is a product of two black box
 		 * matrices: A*B from pointers to them.
+		 * @param A_ptr blackbox
+		 * @param B_ptr blackbox
 		 */
 		Compose (const Blackbox1 *A_ptr, const Blackbox2 *B_ptr) :
 			_A_ptr(A_ptr), _B_ptr(B_ptr)
@@ -104,6 +108,7 @@ namespace LinBox
 		/** Copy constructor.
 		 * Copies the composed matrix (a small handle).  The underlying two matrices
 		 * are not copied.
+		 * @param[in] M blackbox to copy.
 		 */
 		Compose (const Compose<Blackbox1, Blackbox2>& M) :
 			_A_ptr ( M._A_ptr), _B_ptr ( M._B_ptr)
@@ -125,12 +130,12 @@ namespace LinBox
 #endif
 
 		/** Matrix * column vector product.
-		 * y= (A*B)*x.
+		 * \f$ y \gets (A\cdot B)\cdot x\f$
 		 * Applies B, then A.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
+		 * @param[out] y the result.
 		 */
-
 		template <class OutVector, class InVector>
 		inline OutVector& apply (OutVector& y, const InVector& x) const
 		{
@@ -142,11 +147,12 @@ namespace LinBox
 			return y;
 		}
 
-		/** row vector * matrix produc
-		 * y= transpose(A*B)*x.
+		/** row vector * matrix product.
+		 * \f$ y \gets (A\cdot B)^t  \cdot x\f$.
 		 * Applies A^t then B^t.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
+		 * @param[out] y the result.
 		 */
 		template <class OutVector, class InVector>
 		inline OutVector& applyTranspose (OutVector& y, const InVector& x) const
@@ -160,14 +166,14 @@ namespace LinBox
 		}
 
 		template<typename _Tp1, typename _Tp2 = _Tp1>
-		struct rebind
-		{
+		struct rebind {
 			typedef ComposeOwner<
 			typename Blackbox1::template rebind<_Tp1>::other,
 				 typename Blackbox2::template rebind<_Tp2>::other
 				 > other;
 
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+			void operator() (other & Ap, const Self_t& A, const _Tp1& F)
+			{
 				typename Blackbox1::template rebind<_Tp1> () ( Ap.getLeftData(), *(A.getLeftPtr()), F);
 				typename Blackbox2::template rebind<_Tp2> () ( Ap.getRightData(), *(A.getRightPtr()), F);
 			}
@@ -206,11 +212,11 @@ namespace LinBox
 		const Field& field() const
 		{return _B_ptr->field();}
 
-		// accessors to the blackboxes
-
+		/// accessor to the blackboxes
 		const Blackbox1* getLeftPtr() const
 		{return  _A_ptr;}
 
+		/// accessor to the blackboxes
 		const Blackbox2* getRightPtr() const
 		{return  _B_ptr;}
 
@@ -301,6 +307,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
+		 * \param y result
 		 */
 		template <class OutVector, class InVector>
 		inline OutVector& applyTranspose (OutVector& y, const InVector& x) const
@@ -462,13 +469,14 @@ namespace LinBox
 			linbox_check (B_data != (Blackbox2 *) 0);
 			linbox_check (A_data.coldim () == B_data.rowdim ());
 
-			//			VectorWrapper::ensureDim (_z, _A_data.coldim ());
+			// VectorWrapper::ensureDim (_z, _A_data.coldim ());
 			_z.resize(_A_data.coldim());
 		}
 
 		/** Copy constructor.
 		 * Copies the composed matrix (a small handle).  The underlying two matrices
 		 * are not copied.
+		 * \param M matrix to be copied.
 		 */
 		ComposeOwner (const ComposeOwner<Blackbox1, Blackbox2>& M) :
 			_A_data ( M.getLeftData()), _B_data ( M.getRightData())
@@ -478,24 +486,26 @@ namespace LinBox
 		/// Destructor
 		~ComposeOwner () {}
 
+#if 0
 		/*- Virtual constructor.
 		 * Required because constructors cannot be virtual.
 		 * Make a copy of the BlackboxArchetype object.
 		 * Required by abstract base class.
 		 * @return pointer to new blackbox object
 		*/
-#if 0
-		 		BlackboxArchetype<_Vector> *clone () const
-		 			{ return new ComposeOwner (*this); }
+		BlackboxArchetype<_Vector> *clone () const
+		{
+			return new ComposeOwner (*this);
+		}
 #endif
 
 		/** Matrix * column vector product.
-		 * y= (A*B)*x.
+		 * \f$ y= (A\cdot B) \cdot x.\f$
 		 * Applies B, then A.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
+		 * \param y result
 		 */
-
 		template <class OutVector, class InVector>
 		inline OutVector& apply (OutVector& y, const InVector& x) const
 		{

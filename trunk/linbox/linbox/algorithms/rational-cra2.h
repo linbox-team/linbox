@@ -86,18 +86,22 @@ namespace LinBox
 
 		/** \brief The Rational CRA loop
 
-		  Given a function to generate residues mod a single prime, this loop produces the residues
-		  resulting from the Chinese remainder process on sufficiently many primes to meet the
+		  Given a function to generate residues mod a single prime,
+		  this loop produces the residues resulting from the Chinese
+		  remainder process on sufficiently many primes to meet the
 		  termination condition.
 
-		  \param F - Function object of two arguments, <code>F(r, p)</code>, given prime \p p it outputs residue(s) \p r.
-		  This loop may be parallelized.  \p F must be reentrant, thread safe.
-		  For example, \p F may be returning the coefficients of the minimal polynomial of a matrix mod p.
-		  @warning - we won't detect bad primes.
+		  \param Iteration  Function object of two arguments, <code>Iteration(r,
+		  p)</code>, given prime \p p it outputs residue(s) \p r.  This
+		  loop may be parallelized.  \p Iteration must be reentrant, thread
+		  safe.  For example, \p Iteration may be returning the coefficients of
+		  the minimal polynomial of a matrix \c mod \p p.
 
-		  \param genprime - RandIter object for generating primes.
-		  \param[out] num - the rational numerator
-		  \param[out] den - the rational denominator
+		  @warning We won't detect bad primes.
+
+		  \param genprime  RandIter object for generating primes.
+		  \param[out] num  the rational numerator
+		  \param[out] den  the rational denominator
 		  */
 		template<class Function, class RandPrimeIterator>
 		Integer & operator() (Integer& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)

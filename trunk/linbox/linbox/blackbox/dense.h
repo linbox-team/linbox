@@ -244,19 +244,19 @@ namespace LinBox
 
 		//@{
 
-		/** Generic matrix-vector apply
-		 * y = A * x.
+		/** Generic matrix-vector apply.
+		 * \f$y = A \cdot  x\f$
 		 * This version of apply allows use of arbitrary input and output vector
 		 * types.
-		 * @param y Output vector
-		 * @param x Input vector
+		 * @param[out] y Output vector
+		 * @param[in] x Input vector
 		 * @return Reference to output vector
 		 */
 		template<class Vect1, class Vect2>
 		Vect1 &apply (Vect1 &y, const Vect2 &x) const;
 
-		/** Generic in-place apply
-		 * y = A * y.
+		/** Generic in-place apply.
+		 * \f$y = A \cdot y\f$.
 		 * This version of in-place apply allows use of an arbitrary vector
 		 * type. Because it performs allocation and copying, it is not
 		 * recommended for general use.
@@ -271,8 +271,8 @@ namespace LinBox
 			return y;
 		}
 
-		/** Generic matrix-vector transpose apply
-		 * y = A^T * x
+		/** Generic matrix-vector transpose apply.
+		 * \f$y = A^T \cdot  x\f$.
 		 * This version of applyTranspose allows use of arbitrary input and
 		 * output vector types
 		 * @param y Output vector
@@ -282,8 +282,8 @@ namespace LinBox
 		template<class Vect1, class Vect2>
 		Vect1 &applyTranspose (Vect1 &y, const Vect2 &x) const;
 
-		/** Generic in-place transpose apply
-		 * y = A^T * y
+		/** Generic in-place transpose apply.
+		 * \f$y = A^T \cdot  y\f$.
 		 * This version of in-place transpose apply allows use of an arbitrary
 		 * vector type. Because it performs allocation and copying, it is not
 		 * recommended for general use.
@@ -299,7 +299,7 @@ namespace LinBox
 		}
 
 
-		// destructor
+		/// destructor
 		~DenseMatrix ( ) {
 
 #ifdef __LINBOX_PARALLEL

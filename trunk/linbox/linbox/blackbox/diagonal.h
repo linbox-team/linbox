@@ -38,7 +38,7 @@ namespace LinBox
 	 * which the elements reside.  The class conforms to the
 	 * BlackboxArchetype.
 	 *
-	 * The matrix itself is not stored in memory.  Rather, its <tt>apply</tt>
+	 * The matrix itself is not stored in memory.  Rather, its \c apply
 	 * methods use a vector of field elements, which are
 	 * used to "multiply" the matrix to a vector.
 	 *
@@ -57,10 +57,12 @@ namespace LinBox
 	 *               implementation.  This is chosen by a default parameter
 	 *               and partial template specialization.
 	 */
-	template <class Field,
-	class Trait = typename VectorTraits<typename LinBox::Vector<Field>::Dense>::VectorCategory>
+	template<class Field,
+		 class Trait = typename VectorTraits<typename LinBox::Vector<Field>::Dense>::VectorCategory
+		 >
 	class Diagonal {
 	private:
+		/// empty constructor
 		Diagonal () {}
 	};
 
@@ -330,6 +332,7 @@ namespace LinBox
 
 	// Method implementations for dense vectors
 
+	/// constructor from vector
 	template <class Field>
 	inline Diagonal<Field, VectorCategories::DenseVectorTag >::Diagonal(const Field F,
 									    const std::vector<typename Field::Element>& v) :
@@ -337,24 +340,28 @@ namespace LinBox
 	{}
 
 
+	/*!
+	 * random Diagonal matrix
+	 * @param F the field
+	 * @param n size
+	 * @param nonsing non-singular matrix ? (no zero on diagonal ?)
+	 */
 	template <class _Field>
 	inline Diagonal<_Field, VectorCategories::DenseVectorTag>::Diagonal(const Field F,
-									    const size_t n, bool nonsing) :
+									    const size_t n,
+									    bool nonsing) :
 		_F(F), _n(n), _v(n)
 	{
 		typename Field::RandIter r(F);
 		typedef typename std::vector<typename Field::Element>::iterator iter;
 		if (nonsing)
 			randomNonsingular();
-		//for (iter i = _v.begin(); i < _v.end(); ++i)
-		//	while (_F.isZero(r.random(*i))) ;
 		else
 			random();
-		//for (iter i = _v.begin(); i < _v.end(); ++i)
-		//	r.random(*i);
 	}
 
 
+	//! random diagonal matrix of size n
 	template <class Field>
 	inline Diagonal<Field, VectorCategories::DenseVectorTag >::Diagonal(const Field F,
 									    const size_t n,
@@ -369,6 +376,7 @@ namespace LinBox
 		random();
 	}
 
+	/// creates a random Diagonal matrix
 	template <class _Field>
 	inline void Diagonal<_Field, VectorCategories::DenseVectorTag>::random()
 	{
@@ -378,6 +386,7 @@ namespace LinBox
 			r.random(*i);
 	}
 
+	/// creates a random non singular Diagonal matrix
 	template <class _Field>
 	inline void Diagonal<_Field, VectorCategories::DenseVectorTag>::randomNonsingular()
 	{
@@ -387,6 +396,10 @@ namespace LinBox
 			while (_F.isZero(r.random(*i))) ;
 	}
 
+	/*! generic apply.
+	 * @param y output
+	 * @param x input vector
+	 */
 	template <class Field>
 	template <class OutVector, class InVector>
 	inline OutVector &Diagonal<Field, VectorCategories::DenseVectorTag >::apply (OutVector &y,
@@ -414,13 +427,21 @@ namespace LinBox
 	} // Vector& Diagonal<DenseVectorTag>::apply(Vector& y, const Vector&) const
 
 	// Method implementations for sparse sequence vectors
-
+	/*! Constructor for sparse sequence vectors.
+	 * This is the same constructor as the dense one.
+	 * @param F  field
+	 * @param v  vector
+	 */
 	template <class Field>
 	inline Diagonal<Field, VectorCategories::SparseSequenceVectorTag >::Diagonal(const Field F,
 										     const std::vector<typename Field::Element>& v) :
 		_F(F), _n(v.size()), _v(v)
 	{}
 
+	/** apply for sparse sequence vectors.
+	 * @param x sparse vector
+	 * @param[out] y sparse vector.
+	 */
 	template <class Field>
 	template<class OutVector, class InVector>
 	inline OutVector &Diagonal<Field, VectorCategories::SparseSequenceVectorTag >::apply(OutVector& y, const InVector& x) const
@@ -449,18 +470,29 @@ namespace LinBox
 			i = (*x_iter).first;
 			_F.mul (entry, *(v_iter + i), (*x_iter).second);
 			if (!_F.isZero (entry)) y.push_back ( std::pair<size_t, Element>(i, entry));
-		} // for (x_iter = x.begin (); x_iter != x.end (); x_iter++)
+		}
 
 		return y;
 	} // Vector& Diagonal<SparseSequenceVectorTag>::apply(Vector& y, const Vector&) const
 
 	// Method implementations for sparse associative vectors
 
+	/*! Constructor for sparse associative vectors.
+	 * This is the same constructor as the dense one.
+	 * @param F  field
+	 * @param v  vector
+	 */
 	template <class Field>
 	inline Diagonal<Field, VectorCategories::SparseAssociativeVectorTag >::Diagonal(const Field F, const std::vector<typename Field::Element>& v) :
 		_F(F), _n(v.size()), _v(v)
 	{}
 
+
+
+	/** apply for sparse associative vectors.
+	 * @param x sparse vector
+	 * @param[out] y sparse vector.
+	 */
 	template <class Field>
 	template<class OutVector, class InVector>
 	inline OutVector& Diagonal<Field, VectorCategories::SparseAssociativeVectorTag >::apply(OutVector& y, const InVector& x) const
@@ -495,7 +527,6 @@ namespace LinBox
 		return y;
 	} // Vector& Diagonal<SparseAssociativeVectorTag>::apply(...) const
 
-	//@}
 
 
 

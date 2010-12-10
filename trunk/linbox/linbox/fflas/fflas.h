@@ -63,21 +63,27 @@ namespace LinBox
 class FFLAS {
 
 public:
+	/// Is matrix transposed ?
 	enum FFLAS_TRANSPOSE
 	{
 		FflasNoTrans=111, /**< Matrix is not transposed */
 		FflasTrans  =112  /**< Matrix is transposed */
 	};
+	/// Is triangular matrix's shape upper ?
 	enum FFLAS_UPLO
 	{
 		FflasUpper=121,  /**< Triangular matrix is Upper triangular (if \f$i>j\f$ then \f$T_{i,j} = 0\f$)*/
 		FflasLower=122   /**< Triangular matrix is Lower triangular (if \f$i<j\f$ then \f$T_{i,j} = 0\f$)*/
 	};
+
+	/// Is Matrix diagonal implicit ?
 	enum FFLAS_DIAG
 	{
 		FflasNonUnit=131 ,  /**< Triangular matrix has an explicit general diagonal */
 	       	FflasUnit   =132    /**< Triangular matrix has an implicit unit diagonal (\f$T_{i,i} = 1\f$)*//**< */
 	};
+
+	/// On what side ?
 	enum FFLAS_SIDE
 	{
 		FflasLeft  =141,  /**< Operator applied on the left */
@@ -101,23 +107,50 @@ public:
 // Level 1 routines
 //---------------------------------------------------------------------
 	/** fscal.
-	 * \f$x \gets a.x\f$
-	 * \p X, is a vector of size \p N and stride \p incX.
+	 * \f$x \gets a \cdot x\f$
+	 * @param F field
+	 * @param n size of the vectors
+	 * @param alpha homotÃ©ti scalar
+	 * \param X vector in \p F
+	 * \param incX stride of \p X
 	 */
 	template<class Field>
 	static void
 	fscal (const Field& F, const size_t n, const typename Field::Element alpha,
 	       typename Field::Element * X, const size_t incX)
 	{
+		typedef typename Field::Element Element ;
+		Element one, mone, zero;
+		F.init(one,1UL);
+		F.init(mone,-1.0) ;
+		F.init(zero,0UL);
 
-		typename Field::Element * Xi = X;
+		if (F.areEqual(alpha,one))
+		    return ;
+
+		Element * Xi = X;
+		if (F.areEqual(alpha,mone)){
+			for (; Xi < X+n*incX; Xi+=incX )
+				F.negin( *Xi );
+			return;
+		}
+		if (F.areEqual(alpha,zero)){
+			for (; Xi < X+n*incX; Xi+=incX )
+				F.assign( *Xi,zero );
+			return;
+		}
+
 		for (; Xi < X+n*incX; Xi+=incX )
 			F.mulin( *Xi, alpha );
 	}
 
 	/** \brief fcopy : \f$x \gets y \f$.
-	 * \param X vector of size \p N and stride \p incX.
-	 * \param Y vector of size \p N and stride \p incY.
+	 * @param F field
+	 * @param N size of the vectors
+	 * \param X vector in \p F
+	 * \param incX stride of \p X
+	 * \param Y vector in \p F
+	 * \param incY stride of \p Y
 	 */
 	template<class Field>
 	static void
@@ -125,20 +158,29 @@ public:
 	       typename Field::Element * X, const size_t incX,
 	       const typename Field::Element * Y, const size_t incY );
 
-	/** \brief faxpy : \f$y \gets a.x + y\f$.
-	 * \param X vector of size \p N and stride \p incX.
-	 * \param Y vector of size \p N and stride \p incY.
+	/** \brief faxpy : \f$y \gets \alpha \cdot x + y\f$.
+	 * @param F field
+	 * @param N size of the vectors
+	 * @param alpha scalar
+	 * \param X vector in \p F
+	 * \param incX stride of \p X
+	 * \param Y vector in \p F
+	 * \param incY stride of \p Y
 	 */
 	template<class Field>
 	static void
 	faxpy (const Field& F, const size_t N,
-	       const typename Field::Element a,
+	       const typename Field::Element alpha,
 	       const typename Field::Element * X, const size_t incX,
 	       typename Field::Element * Y, const size_t incY );
 
 	/** \brief fdot: dot product \f$x^T  y\f$.
-	 * \param X vector of size \p N and stride \p incX.
-	 * \param Y vector of size \p N and stride \p incY.
+	 * @param F field
+	 * @param N size of the vectors
+	 * \param X vector in \p F
+	 * \param incX stride of \p X
+	 * \param Y vector in \p F
+	 * \param incY stride of \p Y
 	 */
 	template<class Field>
 	static typename Field::Element
@@ -147,8 +189,12 @@ public:
 	      const typename Field::Element * Y, const size_t incY );
 
 	/** \brief fswap: \f$ X \leftrightarrow Y\f$.
-	 * \param X vector of size \p N and stride \p incX.
-	 * \param Y vector of size \p N and stride \p incY.
+	 * @param F field
+	 * @param N size of the vectors
+	 * \param X vector in \p F
+	 * \param incX stride of \p X
+	 * \param Y vector in \p F
+	 * \param incY stride of \p Y
 	 */
 	template<class Field>
 	static void
@@ -172,6 +218,15 @@ public:
 
 	/** fsub : matrix addition.
 	 * Computes \p C = \p A + \p B.
+	 * @param F field
+	 * @param M rows
+	 * @param N cols
+	 * @param A dense matrix of size \c MxN
+	 * @param lda leading dimension of \p A
+	 * @param B dense matrix of size \c MxN
+	 * @param ldb leading dimension of \p B
+	 * @param C dense matrix of size \c MxN
+	 * @param ldc leading dimension of \p C
 	 */
         template <class Field>
         static void
@@ -189,6 +244,15 @@ public:
 
 	/** fsub : matrix subtraction.
 	 * Computes \p C = \p A - \p B.
+	 * @param F field
+	 * @param M rows
+	 * @param N cols
+	 * @param A dense matrix of size \c MxN
+	 * @param lda leading dimension of \p A
+	 * @param B dense matrix of size \c MxN
+	 * @param ldb leading dimension of \p B
+	 * @param C dense matrix of size \c MxN
+	 * @param ldc leading dimension of \p C
 	 */
         template <class Field>
         static void
@@ -207,12 +271,18 @@ public:
 	/**  @brief finite prime Field GEneral Matrix Vector multiplication.
 	 *
 	 *  Computes  \f$Y \gets \alpha \mathrm{op}(A) X + \beta Y \f$.
+	 * @param F field
 	 * \param TransA if \c TransA==FflasTrans then \f$\mathrm{op}(A)=A^t\f$.
-	 * \param A is \p M x \p N
-	 * \param X is a vector of size \p N or \p M according to \p TransA
-	 * \param Y is a vector of size \p M or \p N.
-	 * \param incx stride in \p X
-	 * \param incy stride in \p Y
+	 * @param M rows
+	 * @param N cols
+	 * @param alpha scalar
+	 * @param A dense matrix of size \c MxN
+	 * @param lda leading dimension of \p A
+	 * @param X dense vector of size \c N
+	 * @param incX stride of \p X
+	 * @param beta scalar
+	 * @param[out] Y dense vector of size \c M
+	 * @param incY stride of \p Y
 	 */
 	template<class Field>
 	static void
@@ -227,8 +297,16 @@ public:
 	/**  @brief fger: GEneral ?
 	 *
 	 *  Computes  \f$A \gets \alpha x . y^T + A\f$
-	 *  \p A is \p M x \p N
-	 *  \p x and \p y are vectors of size \p M and \p N
+	 * @param F field
+	 * @param M rows
+	 * @param N cols
+	 * @param alpha scalar
+	 * @param[in,out] A dense matrix of size \c MxN and leading dimension \p lda
+	 * @param lda leading dimension of \p A
+	 * @param x dense vector of size \c M
+	 * @param incx stride of \p X
+	 * @param y dense vector of size \c N
+	 * @param incy stride of \p Y
 	 */
 	template<class Field>
 	static void
@@ -240,8 +318,11 @@ public:
 
 	/** @brief ftrsv: TRiangular System solve with Vector
 	 *  Computes  \f$ X \gets \mathrm{op}(A^{-1}) X\f$
+	 *  @param F field
 	 * @param X vector of size \p N on a field \p F
-	 * @param A a matrix of leading dimension \p lda
+	 * @param incX stride of \p  X
+	 * @param A a matrix of leading dimension \p lda and size \p N
+	 * @param lda leading dimension of \p A
 	 * @param N number of rows or columns of \p A according to \p TransA
 	 * \param TransA if \c TransA==FflasTrans then \f$\mathrm{op}(A)=A^t\f$.
 	 * \param Diag if \c Diag==FflasUnit then \p A is unit.
@@ -281,8 +362,8 @@ public:
 	       typename Field::Element * B, const size_t ldb);
 
 	/** @brief ftrmm: TRiangular Matrix Multiply.
-	 * Computes  \f$ B \gets \alpha \mathrm{op}(A) B\f$ or  \f$B \gets \alpha B \mathrm{op}(A)\f$
-	 * B is M*N, A is M*M if
+	 * Computes  \f$ B \gets \alpha \mathrm{op}(A) B\f$ or  \f$B \gets \alpha B \mathrm{op}(A)\f$.
+	 * @param F field
 	 * \param M rows of \p B
 	 * \param N cols of \p B
 	 * \param A if \c Side==FflasLeft then \p A is \f$N\times N\f$, otherwise \p A is \f$M\times M\f$
@@ -400,6 +481,15 @@ public:
 	 * compute \f$ C \gets \alpha \mathrm{op}(A) \mathrm{op}(A) + \beta C\f$ over a Field \p F
 	 * Avoid the conversion of B
 	 * @param ta  if \c ta==FflasTrans, \f$\mathrm{op}(A)=A^T\f$.
+	 * @param F field
+	 * @param n size of \p A
+	 * @param alpha scalar
+	 * @param beta scalar
+	 * @param A dense matrix of size \c nxn
+	 * @param lda leading dimension of \p A
+	 * @param C dense matrix of size \c nxn
+	 * @param ldc leading dimension of \p C
+
 	 */
 	template<class Field>
 	static typename Field::Element* fsquare (const Field& F,

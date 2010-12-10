@@ -52,10 +52,8 @@ namespace LinBox
 	 * THRESHOLD_ - treshold for INCREMENTAL schedule
 	 * rbound_ - min number of iterations for all schedule
 	 */
-
 	template <class Ring=PID_integer, class RRBase=RReconstructionBase<PID_integer> >
-	struct RReconstruction
-	{
+	struct RReconstruction {
 	protected:
 		Ring _Z;
 		RRBase _RR;
@@ -157,7 +155,7 @@ namespace LinBox
 
 				}
 			}
-			else {//if (inc == -1) {
+			else {//if (inc == -1)
 				int i = x.size()-1;
 				for (; i >=0; --i ) {
 					Element x_in(x[i]);
@@ -193,159 +191,158 @@ namespace LinBox
 #endif
 			return res;
 
+		}
+
+		const bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m) const
+		{
+			++RecCounter;
+			Element x_in(x);
+			if (x<0) {
+				if ((-x)>m)
+					x_in %= m;
+				if (x<0)
+					x_in += m;
+			} else {
+				if (x>m)
+					x_in %= m;
 			}
 
-			const bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m) const
-			{
-				++RecCounter;
-				Element x_in(x);
-				if (x<0) {
-					if ((-x)>m)
-						x_in %= m;
-					if (x<0)
-						x_in += m;
-				} else {
-					if (x>m)
-						x_in %= m;
-				}
+			bool res;
+			if (x_in >0) res = _RR.reconstructRational(a,b,x_in,m);
+			else { a = 0; b =1; res = true;}
+			//_RR.write(std::cout);
+			return res;
+		}
 
-				bool res;
-				if (x_in >0) res = _RR.reconstructRational(a,b,x_in,m);
-				else { a = 0; b =1; res = true;}
-				//_RR.write(std::cout);
-				return res;
+		const bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound) const
+		{
+			++RecCounter;
+			Element x_in(x);
+			if (x<0) {
+				if ((-x)>m)
+					x_in %= m;
+				if (x<0)
+					x_in += m;
+			} else {
+				if (x>m)
+					x_in %= m;
 			}
+			bool res;
+			if (x_in >0) res = _RR.reconstructRational(a,b,x_in,m,a_bound);
+			else { a = 0; b =1; res = true;}
+			//_RR.write(std::cout);
+			return res;
+		}
 
-			const bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound) const
-			{
-				++RecCounter;
-				Element x_in(x);
-				if (x<0) {
-					if ((-x)>m)
-						x_in %= m;
-					if (x<0)
-						x_in += m;
-				} else {
-					if (x>m)
-						x_in %= m;
-				}
-				bool res;
-				if (x_in >0) res = _RR.reconstructRational(a,b,x_in,m,a_bound);
-				else { a = 0; b =1; res = true;}
-				//_RR.write(std::cout);
-				return res;
+		const bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound, const Element& b_bound) const
+		{
+			++RecCounter;
+			Element x_in(x);
+			if (x<0) {
+				if ((-x)>m)
+					x_in %= m;
+				if (x<0)
+					x_in += m;
+			} else {
+				if (x>m)
+					x_in %= m;
 			}
+			Element bound = x_in/b_bound;
+			if (x_in > 0) _RR.reconstructRational(a,b,x_in,m,(bound>a_bound?bound:a_bound));
+			else  { a = 0; b =1; }
+			bool res=  (b > b_bound)? false: true;
+			//_RR.write(std::cout);
+			return res;
+		}
 
-			const bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound, const Element& b_bound) const
-			{
-				++RecCounter;
-				Element x_in(x);
-				if (x<0) {
-					if ((-x)>m)
-						x_in %= m;
-					if (x<0)
-						x_in += m;
-				} else {
-					if (x>m)
-						x_in %= m;
-				}
-				Element bound = x_in/b_bound;
-				if (x_in > 0) _RR.reconstructRational(a,b,x_in,m,(bound>a_bound?bound:a_bound));
-				else  { a = 0; b =1; }
-				bool res=  (b > b_bound)? false: true;
-				//_RR.write(std::cout);
-				return res;
-			}
+		//fastReconstruction();
 
-			//fastReconstruction();
+		//classicReconstruction();
 
-			//classicReconstruction();
+	};
 
-		};
+	class OpCounter {
+	public:
+		size_t div_counter;
+		size_t mul_counter;
+		size_t gcd_counter;
 
-		class OpCounter {
-		public:
-			size_t div_counter;
-			size_t mul_counter;
-			size_t gcd_counter;
+		OpCounter() {
+			div_counter=0; mul_counter=0; gcd_counter=0;
+		}
 
-			OpCounter() {
-				div_counter=0; mul_counter=0; gcd_counter=0;
-			}
+		void write(ostream& is) {
+			is << div_counter << " divisions\n";
+			is << mul_counter << " multiplications\n";
+			is << gcd_counter << " gcds\n";
+		}
+	};
 
-			void write(ostream& is) {
-				is << div_counter << " divisions\n";
-				is << mul_counter << " multiplications\n";
-				is << gcd_counter << " gcds\n";
-			}
-		};
+	template <class Ring>
+	class RReconstructionBase {
+	public:
+		Ring _Z;
+		mutable OpCounter C;
+		typedef typename Ring::Element Element;
 
-		template <class Ring>
-		class RReconstructionBase {
-		public:
-			Ring _Z;
-			mutable OpCounter C;
-			typedef typename Ring::Element Element;
+		RReconstructionBase(const Ring& Z) :
+			_Z(Z)
+		{}
+		RReconstructionBase(const RReconstructionBase<Ring>& RR) :
+			_Z(RR._Z)
+		{}
 
-			RReconstructionBase(const Ring& Z) :
-				_Z(Z)
-			{}
-			RReconstructionBase(const RReconstructionBase<Ring>& RR) :
-				_Z(RR._Z)
-			{}
+		virtual bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m) const =0;
 
-			virtual bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m) const =0;
+		virtual bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound) const =0;
 
-			virtual bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound) const =0;
+		virtual ~RReconstructionBase() {}
 
-			virtual ~RReconstructionBase() {}
+		void write(ostream& is) const
+		{
+			C.write(is);
+		}
+	};
 
-			void write(ostream& is) const
-			{
-				C.write(is);
-			}
-		};
-		/*
-		 * This is the default RReconstruction, using PID_Integer and ClassicRationalReconstruction of Wang
-		 */
+	/*
+	 * This is the default RReconstruction, using PID_Integer and ClassicRationalReconstruction of Wang
+	 */
+	template <>
+	class RReconstructionBase<PID_integer> {
+	public:
+		typedef PID_integer Ring;
+		Ring _Z;
+		mutable OpCounter C;
+		typedef Ring::Element Element;
 
+		RReconstructionBase(const Ring& Z) :
+			_Z(Z)
+		{}
+		RReconstructionBase(const RReconstructionBase<Ring>& RR) :
+			_Z(RR._Z)
+		{}
 
-		template <>
-		class RReconstructionBase<PID_integer> {
-		public:
-			typedef PID_integer Ring;
-			Ring _Z;
-			mutable OpCounter C;
-			typedef Ring::Element Element;
+		bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m)
+		{
+			Element a_bound; _Z.sqrt(a_bound,m/2);
+			return _Z.reconstructRational(a,b,x,m,a_bound,a_bound);
+		}
 
-			RReconstructionBase(const Ring& Z) :
-				_Z(Z)
-			{}
-			RReconstructionBase(const RReconstructionBase<Ring>& RR) :
-				_Z(RR._Z)
-			{}
+		bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound)
+		{
+			_Z.reconstructRational(a,b,x,m,a_bound);
+			return true;
+		}
 
-			bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m)
-			{
-				Element a_bound; _Z.sqrt(a_bound,m/2);
-				return _Z.reconstructRational(a,b,x,m,a_bound,a_bound);
-			}
-
-			bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound)
-			{
-				_Z.reconstructRational(a,b,x,m,a_bound);
-				return true;
-			}
-
-			~RReconstructionBase() {}
+		~RReconstructionBase() {}
 #if 0
-			const void write(ostream& is) {
-				C.write(is);
-			}
+		const void write(ostream& is) {
+			C.write(is);
+		}
 #endif
-		};
+	};
 
-	} //namespace LinBox
+} //namespace LinBox
 
 #undef DEF_RR_THRESH
 #endif

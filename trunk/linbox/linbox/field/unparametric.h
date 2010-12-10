@@ -59,7 +59,7 @@ namespace LinBox
 
 	/** \brief Unparameterized field adapter.
 	 * \ingroup field
-	 * \defgroup UnparametericField
+	 * \defgroup UnparametricField UnparametricField
 	 *
 	 * A field having an interface similar to that of floats is adapted to LinBox.
 	 *
