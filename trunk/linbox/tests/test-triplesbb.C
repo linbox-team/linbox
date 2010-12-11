@@ -54,7 +54,7 @@ bool eqVec(const Vec& a, const Vec& b)
 {
 	bool good = true;
 	if (a.size() != b.size())
-		return !good
+		return !good;
 	for (typename Vec::size_type i = 0; i < a.size(); ++i) good = good && (a[i] == b[i]);
 	return good;
 }

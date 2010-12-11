@@ -146,7 +146,7 @@ namespace LinBox
 	inline unsigned long &rank (unsigned long                       &r,
 				    const Blackbox                      &A,
 				    const   RingCategories::ModularTag  &tag,
-				    const Method::NonBlasEliminationi   & m)
+				    const Method::NonBlasElimination    & m)
 	{
 		return rank(r, A, tag, Method::SparseElimination(m));
 	}
