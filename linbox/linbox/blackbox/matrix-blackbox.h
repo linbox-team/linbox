@@ -103,35 +103,39 @@ namespace LinBox
 		{ return new MatrixBlackbox (*this); }
 
 		/** Generic matrix-vector product
-		 * y = A x.
+		 * \f$ y = A x\f$.
 		 * @return reference to output vector y
 		 * @param  x input vector
+		 * @param y
 		 */
 		template <class Vector1, class Vector2>
 		inline Vector1 &apply (Vector1 &y, const Vector2 &x) const
 		{ return _MD.vectorMul (y, _A, x); }
 
 		/** Matrix-vector product
-		 * y = A x.
+		 * \f$y = A x\f$.
 		 * @return reference to output vector y
 		 * @param  x input vector
+		 * @param y
 		 */
 		inline Vector &apply (Vector &y, const Vector &x) const
 		{ return apply<Vector, Vector> (y, x); }
 
 		/** Generic transpose matrix-vector product
-		 * y = A^T x.
+		 * \f$y = A^T x\f$.
 		 * @return reference to output vector y
 		 * @param  x input vector
+		 * @param y
 		 */
 		template <class Vector1, class Vector2>
 		inline Vector1 &applyTranspose (Vector1 &y, const Vector2 &x) const
 		{ return _MD.vectorMul (y, TransposeMatrix<const Matrix> (_A), x); }
 
 		/** Transpose matrix-vector product
-		 * y = A^T x.
+		 * \f$y = A^T x\f$.
 		 * @return reference to output vector y
 		 * @param  x input vector
+		 * @param y
 		 */
 		inline Vector &applyTranspose (Vector &y, const Vector &x) const
 		{ return applyTranspose<Vector, Vector> (y, x); }

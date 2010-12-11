@@ -63,11 +63,11 @@ namespace LinBox
 		/** @name Object Management
 		*/
 		//@{
-
+#if 0
 		/** Default constructor.
 		*/
-		//ParamFuzzy (void) {}
-
+		ParamFuzzy (void) {}
+#endif
 		/** Constructor from an integer.
 		 * Sets the fuzz value of the field throug the static member of the
 		 * element type.
@@ -106,7 +106,10 @@ namespace LinBox
 		 */
 		Element &init (Element &x, const integer &y = 0) const
 		{ return x = y; }
-		//{ return x = static_cast<double> (y); }
+
+		/*! init (from double)
+		 * @param x,y
+		 */
 		Element &init (Element &x, const double &y) const
 		{ return x = y; }
 
@@ -119,6 +122,9 @@ namespace LinBox
 		 */
 		integer &convert (integer &x, const Element &y) const
 		{ return x = y; }
+		/*! convert (double)
+		 * @param x,y
+		 */
 		double &convert (double &x, const Element &y) const
 		{ return x = y; }
 

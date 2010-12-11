@@ -45,18 +45,18 @@ namespace LinBox
 
 
 	/**
-	  Compute the rank of a linear transform A over a field by selected method.
-	  For very large and/or very sparse matrices the Wiedemann method will be faster
-	  (and is memory efficient).
-	  For some sparse matrices SparseElimination may outperform Wiedemann.
-	  For small or dense matrices BlasElimination will be faster.
-	  \param r - output rank of A.
-	  \param - input A linear transform, member of any blackbox class.
-	  \param - input M may be a Method::Wiedemann (the default), a Method::BlasElimination, or a Method::SparseElimination..
-	  \returns  reference to r.
-	  \ingroup solutions
-	  */
-
+	 * Compute the rank of a linear transform A over a field by selected method.
+	 * \ingroup solutions
+	 * For very large and/or very sparse matrices the Wiedemann method will be faster
+	 * (and it is memory efficient).
+	 * For some sparse matrices SparseElimination may outperform Wiedemann.
+	 * For small or dense matrices BlasElimination will be faster.
+	 * \param[out] r  output rank of A.
+	 * \param[in]  A linear transform, member of any blackbox class.
+	 * \param[in]  M may be a \p Method::Wiedemann (the default), a \p Method::BlasElimination, or a \p Method::SparseElimination..
+	 * \param      tag UNDOC
+	 * \return a reference to r.
+	 */
 	template <class Blackbox, class Method, class DomainCategory>
 	inline unsigned long &rank (unsigned long                   &r,
 				    const Blackbox                  &A,
@@ -78,43 +78,48 @@ namespace LinBox
 
 
 	/**
-	  Compute the rank of a linear transform A over a field.
-
-	  The default method is Wiedemann(), using diagonal preconditioning and
-	  the minpoly.  For small or dense matrices BlasElimination will be faster.
-	  \returns <em>r</em> rank of A.
-	  \param A linear transform, member of any blackbox class.
-	  \ingroup solutions
+	 * Compute the rank of a linear transform A over a field.
+	 * \ingroup solutions
+	 * The default method is Wiedemann(), using diagonal preconditioning and
+	 * the minpoly.  For small or dense matrices BlasElimination will be faster.
+	 * \param      A linear transform, member of any blackbox class.
+	 * \param[out] r rank of \p A
+	 * \return     \p r rank of \p A.
 	  */
 	template <class Blackbox>
 	inline unsigned long &rank (unsigned long                   &r,
 				    const Blackbox                  &A)
-	{  return rank(r, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), Method::Hybrid());
+	{
+		return rank(r, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), Method::Hybrid());
 	}
 
-	/** A may be modified
+	/** Rank of \p A.
+	 * \p A may be modified
+	 * @param A matrix
+	 * @param r rank
 	*/
 	template <class Matrix>
 	inline unsigned long &rankin (unsigned long                   &r,
-				      Matrix                  &A)
-	{  return rankin(r, A, typename FieldTraits<typename Matrix::Field>::categoryTag(), Method::Elimination());
+				      Matrix                          &A)
+	{
+		return rankin(r, A, typename FieldTraits<typename Matrix::Field>::categoryTag(), Method::Elimination());
 	}
 
 	template <class Blackbox>
-	inline unsigned long &rank (unsigned long                   &r,
-				    const Blackbox                  &A,
-				    const RingCategories::ModularTag     &tag,
-				    const Method::Hybrid         &m)
+	inline unsigned long &rank (unsigned long                    &r,
+				    const Blackbox                   &A,
+				    const RingCategories::ModularTag &tag,
+				    const Method::Hybrid             &m)
 	{ // this should become a BB/Blas hybrid in the style of Duran/Saunders/Wan.
 		if (useBB(A)) return rank(r, A, tag, Method::Blackbox(m ));
 		else return rank(r, A, tag, Method::Elimination( m ));
 	}
 
 	template <class Blackbox>
-	inline unsigned long &rank (unsigned long                   &r,
-				    const Blackbox                  &A,
-				    const RingCategories::ModularTag                  &tag,
-				    const Method::Elimination    &m)
+	inline unsigned long &rank (unsigned long                     &r,
+				    const Blackbox                    &A,
+				    const RingCategories::ModularTag  &tag,
+				    const Method::Elimination         &m)
 	{
 		typedef typename Blackbox::Field Field;
 		const Field& F = A.field();
@@ -127,10 +132,10 @@ namespace LinBox
 
 
 	template <class Field, class Vector>
-	inline unsigned long &rank (unsigned long                   &r,
-				    const SparseMatrix<Field, Vector>         &A,
-				    const RingCategories::ModularTag                  &tag,
-				    const Method::Elimination    &m)
+	inline unsigned long &rank (unsigned long                      &r,
+				    const SparseMatrix<Field, Vector>  &A,
+				    const RingCategories::ModularTag   &tag,
+				    const Method::Elimination          &m)
 	{
 		return rank(r, A, tag, Method::SparseElimination(m));
 	}
@@ -138,31 +143,33 @@ namespace LinBox
 
 	// specialization of NonBlas for SparseMatrix
 	template <class Blackbox>
-	inline unsigned long &rank (unsigned long                   &r,
-				    const Blackbox                  &A,
-				    const   RingCategories::ModularTag           &tag,
-				    const Method::NonBlasElimination& m)
+	inline unsigned long &rank (unsigned long                       &r,
+				    const Blackbox                      &A,
+				    const   RingCategories::ModularTag  &tag,
+				    const Method::NonBlasEliminationi   & m)
 	{
 		return rank(r, A, tag, Method::SparseElimination(m));
 	}
 
 
 	template <class Blackbox>
-	inline unsigned long &rank (unsigned long                   &r,
-				    const Blackbox                  &A,
-				    const  RingCategories::ModularTag                   &tag,
-				    const Method::Blackbox& m);
+	inline unsigned long &rank (unsigned long                     &r,
+				    const Blackbox                    &A,
+				    const  RingCategories::ModularTag &tag,
+				    const Method::Blackbox            &m);
 
 
 	/**
-	  Compute the rank of a linear transform A over a field.
-
-	  The default method is Wiedemann(), using diagonal preconditioning and
-	  the minpoly.  For small or dense matrices BlasElimination will be faster.
-	  \returns <em>r</em> rank of A.
-	  \param A linear transform, member of any blackbox class.
-	  \ingroup solutions
-	  */
+	 * Compute the rank of a linear transform A over a field.
+	 * \ingroup solutions
+	 *
+	 * The default method is \p Wiedemann(), using diagonal preconditioning and
+	 * the minpoly.  For small or dense matrices \p BlasElimination will be faster.
+	 * \return \p r rank of \p A.
+	 * \param A linear transform, member of any blackbox class.
+	 * @param[out] r rank of \p A
+	 * @param M method (see ???)
+	 */
 	template <class Blackbox, class Method>
 	inline unsigned long &rank (unsigned long                   &r,
 				    const Blackbox                  &A,
@@ -172,10 +179,10 @@ namespace LinBox
 
 	/// M may be <code>Method::Wiedemann()</code>.
 	template <class Blackbox>
-	inline unsigned long &rank (unsigned long                   &res,
-				    const Blackbox                  &A,
-				    const RingCategories::ModularTag          &tag,
-				    const Method::Wiedemann    &M)
+	inline unsigned long &rank (unsigned long                     &res,
+				    const Blackbox                    &A,
+				    const RingCategories::ModularTag  &tag,
+				    const Method::Wiedemann           &M)
 	// This is too much for solutions.  It belongs in algorithms
 	{
 
@@ -467,14 +474,15 @@ namespace LinBox
 	template <class Field, class Method>
 	inline unsigned long &rankin (unsigned long                   &r,
 				      SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq>  &A,
-				      const Method    &M)
-	{  return rankin(r, A, typename FieldTraits<Field>::categoryTag(), M);
+				      const Method                    &M)
+	{
+		return rankin(r, A, typename FieldTraits<Field>::categoryTag(), M);
 	}
 
 
 	template <class Blackbox, class Ring>
-	inline unsigned long &rankin (unsigned long                     &r,
-				      Blackbox &A,
+	inline unsigned long &rankin (unsigned long                       &r,
+				      Blackbox                            &A,
 				      const RingCategories::IntegerTag    &tag,
 				      const Method::SparseElimination     &M)
 	{
@@ -506,8 +514,9 @@ namespace LinBox
 		return r;
 	}
 
+	/// specialization to \f$ \mathbf{F}_2 \f$
 	inline unsigned long &rankin (unsigned long                       &r,
-				      GaussDomain<GF2>::Matrix    &A,
+				      GaussDomain<GF2>::Matrix            &A,
 				      const Method::SparseElimination     &)//M
 	{
 		commentator.start ("Sparse Elimination Rank over GF2", "serankmod2");
@@ -517,17 +526,19 @@ namespace LinBox
 		return r;
 	}
 
+	/// specialization to \f$ \mathbf{F}_2 \f$
 	inline unsigned long &rankin (unsigned long                       &r,
-				      GaussDomain<GF2>::Matrix    &A,
+				      GaussDomain<GF2>::Matrix            &A,
 				      const RingCategories::ModularTag    &,//tag
-				      const Method::SparseElimination     &M) {
+				      const Method::SparseElimination     &M)
+	{
 		return rankin(r, A, M);
 	}
 
 	// Change of representation to be able to call the sparse elimination
 	template <class Blackbox>
 	inline unsigned long &rank (unsigned long                       &r,
-				    const Blackbox  &A,
+				    const Blackbox                      &A,
 				    const RingCategories::ModularTag    &tag,
 				    const Method::SparseElimination     &M)
 	{
@@ -540,10 +551,10 @@ namespace LinBox
 
 	// M may be <code>Method::BlasElimination()</code>.
 	template <class Blackbox>
-	inline unsigned long &rank (unsigned long                     &r,
-				    const Blackbox                      &A,
-				    const RingCategories::ModularTag          &tag,
-				    const Method::BlasElimination  &M)
+	inline unsigned long &rank (unsigned long                      &r,
+				    const Blackbox                     &A,
+				    const RingCategories::ModularTag   &tag,
+				    const Method::BlasElimination      &M)
 	{
 
 		commentator.start ("Blas Rank", "blasrank");
@@ -564,9 +575,9 @@ namespace LinBox
 	// A is modified.
 	template <class Matrix>
 	inline unsigned long &rankin (unsigned long                      &r,
-				      Matrix                               &A,
-				      const RingCategories::ModularTag          &tag,
-				      const Method::SparseElimination &M)
+				      Matrix                             &A,
+				      const RingCategories::ModularTag   &tag,
+				      const Method::SparseElimination    &M)
 	{
 		typedef typename Matrix::Field Field;
 		const Field F = A.field();
@@ -578,9 +589,9 @@ namespace LinBox
 	/// A is modified.
 	template <class Field>
 	inline unsigned long &rankin (unsigned long                     &r,
-				      BlasBlackbox<Field>                 &A,
-				      const RingCategories::ModularTag          &tag,
-				      const Method::BlasElimination  &M)
+				      BlasBlackbox<Field>               &A,
+				      const RingCategories::ModularTag  &tag,
+				      const Method::BlasElimination     &M)
 	{
 
 		commentator.start ("BlasBB Rank", "blasbbrank");
@@ -593,9 +604,9 @@ namespace LinBox
 
 	template <class Blackbox, class MyMethod>
 	inline unsigned long &rank (unsigned long                     &r,
-				    const Blackbox                      &A,
-				    const RingCategories::IntegerTag          &tag,
-				    const MyMethod                           &M)
+				    const Blackbox                    &A,
+				    const RingCategories::IntegerTag  &tag,
+				    const MyMethod                    &M)
 	{
 		commentator.start ("Integer Rank", "iirank");
 		typedef Modular<double> Field;
@@ -624,10 +635,10 @@ namespace LinBox
 namespace LinBox
 {
 	template <class Blackbox>
-	inline unsigned long &rank (unsigned long                   &r,
-				    const Blackbox                  &A,
-				    const RingCategories::ModularTag                   &tag,
-				    const Method::Blackbox& m)
+	inline unsigned long &rank (unsigned long                     &r,
+				    const Blackbox                    &A,
+				    const RingCategories::ModularTag  &tag,
+				    const Method::Blackbox            & m)
 	{
 		commentator.start ("BB Rank", "extend");
 		if (m.certificate()) {
@@ -665,10 +676,10 @@ namespace LinBox
 namespace LinBox
 {
 	template <class Blackbox>
-	inline unsigned long &rank (unsigned long                   &r,
-				    const Blackbox                  &A,
-				    const  RingCategories::ModularTag                   &tag,
-				    const Method::Blackbox& m)
+	inline unsigned long &rank (unsigned long                      &r,
+				    const Blackbox                     &A,
+				    const  RingCategories::ModularTag  &tag,
+				    const Method::Blackbox             & m)
 	{
 		return rank(r, A, tag, Method::Wiedemann(m));
 	}

@@ -22,7 +22,7 @@ namespace LinBox
 	/**
 	 * \brief This blackbox base class exists solely to aid documentation organization.
 
-	 *  For the general blackbox member function documentation consult the @link Blackbox Archetype@endlink. For specific properties of individual representations consult the specific blackbox classes.
+	 *  For the general blackbox member function documentation consult the @link blackbox Archetype@endlink. For specific properties of individual representations consult the specific blackbox classes.
 	 */
 	class BlackboxInterface {
 		/*

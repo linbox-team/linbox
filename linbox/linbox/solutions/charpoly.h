@@ -133,13 +133,15 @@ namespace LinBox
 	}
 
 
-	/** @brief Compute the characteristic polynomial over <bold>Z</bold><sub>p</sub>
+	/** @brief Compute the characteristic polynomial over \f$\mathbf{Z}_p\f$.
 	 *
 	 * Compute the characteristic polynomial of a matrix using dense
 	 * elimination methods
 
 	 * @param P Polynomial where to store the result
 	 * @param A Blackbox representing the matrix
+	 * @param tag
+	 * @param M
 	 */
 	template < class Polynomial, class Blackbox >
 	Polynomial& charpoly (Polynomial                       & P,
@@ -416,13 +418,15 @@ namespace LinBox
 
 #endif
 
-	/** Compute the characteristic polynomial over <bold>Z</bold><sub>p</sub>.
+	/** Compute the characteristic polynomial over \f$\mathbf{Z}_p\f$.
 	 *
 	 * Compute the characteristic polynomial of a matrix, represented via
 	 * a blackBox.
 	 *
 	 * @param P Polynomial where to store the result
 	 * @param A Blackbox representing the matrix
+	 * @param tag
+	 * @param M
 	 */
 	template < class Polynomial, class Blackbox/*, class Categorytag*/ >
 	Polynomial& charpoly (Polynomial                       & P,

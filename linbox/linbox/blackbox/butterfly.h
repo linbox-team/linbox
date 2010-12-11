@@ -89,7 +89,8 @@ namespace LinBox
 		 * of values.
 		 * This is not required by the abstract base class.
 		 * @param n integer size of vectors to be applied to
-		 * @param S switch predicate object object
+		 * @param F
+		 * @param factory switch predicate object object
 		 */
 		Butterfly (const Field &F, size_t n, typename Switch::Factory &factory);
 
@@ -107,6 +108,7 @@ namespace LinBox
 		 * @return reference to vector y containing output (after switching).
 		 * @param  x constant reference to vector to contain input
 		 * 			(before switching)
+		 * @param y
 		 */
 
 		template<class OutVector, class InVector>
@@ -122,6 +124,7 @@ namespace LinBox
 		 * @return reference to vector y containing output (after switching).
 		 * @param  x constant reference to vector to contain input
 		 * 			(before switching)
+		 * @param y
 		 */
 		template<class OutVector, class InVector>
 		OutVector& applyTranspose (OutVector& y, const InVector& x) const;
@@ -364,7 +367,6 @@ namespace LinBox
 	 * @param x vector of booleans marking elements to switch into
 	 *	      contiguous block
 	 * @param j offset of contiguous block
-	 * @param log reference to ostream for logging
 	 */
 	inline std::vector<bool> setButterfly (const std::vector<bool>& x,
 					       size_t j = 0)

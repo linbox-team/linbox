@@ -100,12 +100,13 @@ namespace LinBox
 		}
 
 		/** Application of BlackBox matrix.
-		 * y= (A+B)*x.
+		 * \f$y= (A+B)\cdot x\f$.
 		 * Requires one vector conforming to the \ref LinBox
 		 * vector @link Archetypes archetype@endlink.
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
+		 * @param y
 		 */
 		template<class OutVector, class InVector>
 		inline OutVector &apply (OutVector &y, const InVector &x) const
@@ -118,12 +119,13 @@ namespace LinBox
 		}
 
 		/** Application of BlackBox matrix transpose.
-		 * y= transpose(A+B)*x.
+		 * \f$ y= (A+B)^T\cdot x\f$.
 		 * Requires one vector conforming to the \ref LinBox
 		 * vector @link Archetypes archetype@endlink.
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
+		 * @param y
 		 */
 		template<class OutVector, class InVector>
 		inline OutVector &applyTranspose (OutVector &y, const InVector &x) const
@@ -259,12 +261,13 @@ namespace LinBox
 		}
 
 		/** Application of BlackBox matrix.
-		 * y= (A+B)*x.
+		 * \f$ y= (A+B) \cdot x\f$.
 		 * Requires one vector conforming to the \ref LinBox
 		 * vector @link Archetypes archetype@endlink.
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
+		 * @param y
 		 */
 		template<class OutVector, class InVector>
 		inline OutVector &apply (OutVector &y, const InVector &x) const
@@ -276,12 +279,13 @@ namespace LinBox
 		}
 
 		/** Application of BlackBox matrix transpose.
-		 * y= transpose(A+B)*x.
+		 * \f$ y= (A+B)^T \cdot x\f$.
 		 * Requires one vector conforming to the \ref LinBox
 		 * vector @link Archetypes archetype@endlink.
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
+		 * @param y
 		 */
 		template<class OutVector, class InVector>
 		inline OutVector &applyTranspose (OutVector &y, const InVector &x) const

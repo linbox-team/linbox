@@ -317,16 +317,14 @@ namespace LinBox
 		ReturnStatus findNullspaceElement (Vector                &x,
 						   const Blackbox        &A);
 
-		/*! @brief Get a certificate u that the given system Ax=b is
+		/*! Get a certificate \p u that the given system \f$Ax=b\f$ is
 		 * inconsistent, if one can be found.
 		 *
 		 * @param u Vector in which to store certificate
-		 * @param A Black box for the linear system
+		 * @param A Blackbox for the linear system
 		 * @param b Right-hand side for the linear system
-		 * @param r Rank of A
-		 * @param P Left preconditioner, if applicable
-		 * @return true if a certificate can be found in one iteration; u
-		 *         is filled in with that certificate; and false otherwise
+		 * @return \p true if a certificate can be found in one iteration; \p u
+		 *         is filled in with that certificate; and \p false otherwise
 		 */
 		template<class Blackbox, class Vector>
 		bool certifyInconsistency (Vector                          &u,

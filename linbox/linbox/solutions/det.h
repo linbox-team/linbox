@@ -462,15 +462,16 @@ namespace LinBox
 
 
 	// This should work for a DenseMatrix too ?
-	/** \brief A will be modified.
-
-	  \returns d determinant of A.
-	  \param A this BlasBlackbox matrix will be modified in place in the process.
-	  \ingroup solutions
+	/** Rank of Blackbox \p A.
+	  * \ingroup solutions
+	  * A will be modified.
+	  * \param[out]  d determinant of \p A.
+	  * \param       A this BlasBlackbox matrix will be modified in place in the process.
+	  * \return \p d
 	  */
 	template <class Field>
 	typename Field::Element &detin (typename Field::Element             &d,
-					BlasBlackbox<Field>                   &A)
+					BlasBlackbox<Field>                  &A)
 	{
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for determinant computation\n");

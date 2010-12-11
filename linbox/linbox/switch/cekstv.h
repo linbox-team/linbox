@@ -63,8 +63,7 @@ namespace LinBox
 		CekstvSwitch () {}
 
 		/** Constructor from a field and a field element.
-		 * @param F field in which arithmetic is done
-		 * @param switches vector of switches
+		 * @param a vector of switches
 		 */
 		CekstvSwitch (const typename Field::Element &a) :
 		       	_a (a)
@@ -81,6 +80,7 @@ namespace LinBox
 		 * Kaltofen, Saunders, Turner, and Villard and the current field element
 		 * specified in the switch object.
 		 * @return bool true if swapped, false otherwise
+		 * @param F
 		 * @param x reference to first element to be switched
 		 * @param y reference to second element to be switched
 		 */
@@ -93,6 +93,7 @@ namespace LinBox
 		 * Kaltofen, Saunders, Turner, and Villard and the current field element
 		 * specified in the switch object.
 		 * @return bool true if swapped, false otherwise
+		 * @param F
 		 * @param x reference to first element to be switched
 		 * @param y reference to second element to be switched
 		 */

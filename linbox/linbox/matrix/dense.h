@@ -129,11 +129,12 @@ namespace LinBox
 		size_t coldim () const
 		{ return _cols; }
 
-		/** Resize the matrix to the given dimensions
+		/** Resize the matrix to the given dimensions.
 		 * The state of the matrix's entries after a call to this method is
 		 * undefined
 		 * @param m Number of rows
 		 * @param n Number of columns
+		 * @param val
 		 */
 		void resize (size_t m, size_t n, const Element& val = Element())
 		{

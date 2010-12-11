@@ -43,6 +43,13 @@
 
 //------------------------------------
 
+/*! @brief LiDIA
+* \ingroup field
+* \defgroup LiDIA
+* @{
+* Limited doc so far.
+* @}
+*/
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
@@ -597,7 +604,7 @@ namespace LinBox
 		/** Print field Element like a polynom.
 		 * @return output stream to which field Element is written.
 		 * @param  os  output stream to which field Element is written.
-		 * @param  x   field Element.
+		 * @param  e   field Element.
 		 */
 		std::ostream& write(std::ostream& os,const Element& e) const
 		{
@@ -613,7 +620,7 @@ namespace LinBox
 		/** Read field Element.
 		 * @return input stream from which field Element is read.
 		 * @param  is  input stream from which field Element is read.
-		 * @param  x   field Element.
+		 * @param  e   field Element.
 		 */
 		std::istream& read(std::istream& is, Element& e) const
 		{

@@ -122,7 +122,7 @@ namespace LinBox
 		 * Constructs field element from pointer to \ref ElementAbstract
 		 * Not part of the interface.
 		 * Creates new copy of element object in dynamic memory.
-		 * @param  elem\_ptr  pointer to \ref ElementAbstract
+		 * @param  elem_ptr  pointer to \ref ElementAbstract
 		 */
 		ElementArchetype (ElementAbstract *elem_ptr) :
 			_elem_ptr (elem_ptr->clone ())

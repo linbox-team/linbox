@@ -203,9 +203,10 @@ namespace LinBox
 		 */
 		RandomDenseStream (const Field &F, size_t n, size_t m = 0);
 
-		/** Constructor
+		/** Constructor.
 		 * Construct a new stream with the given field and vector size.
 		 * @param F Field over which to create random vectors
+		 * @param r
 		 * @param n Size of vectors
 		 * @param m Number of vectors to return (0 for unlimited)
 		 */
@@ -306,12 +307,14 @@ namespace LinBox
 		 */
 		RandomSparseStream (const Field &F, double p, size_t n, size_t m = 0);
 
-		/** Constructor
+		/** Constructor.
 		 * Construct a new stream with the given field and vector size.
 		 * @param F Field over which to create random vectors
+		 * @param r
 		 * @param n Size of vectors
 		 * @param p Proportion of nonzero entries
 		 * @param m Number of vectors to return (0 for unlimited)
+		 * @param seed
 		 */
 		RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0, int seed=time (NULL));
 

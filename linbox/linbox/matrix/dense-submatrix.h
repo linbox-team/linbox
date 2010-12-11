@@ -128,14 +128,14 @@ namespace LinBox
 				size_t rowdim,
 				size_t coldim);
 
-		/** Copy constructor
-		 * @param _M Submatrix to copy
+		/** Copy constructor.
+		 * @param SM Submatrix to copy
 		 */
 		DenseSubmatrix (const DenseSubmatrix<Element> &SM);
 
-		/** Assignment operator
+		/** Assignment operator.
 		 * Assign the given submatrix to this one
-		 * @param _M Submatrix to assign
+		 * @param SM Submatrix to assign
 		 * @return Reference to this submatrix
 		 */
 		DenseSubmatrix &operator = (const DenseSubmatrix<Element> &SM);
@@ -177,6 +177,7 @@ namespace LinBox
 		/** Write the matrix to an output stream
 		 * @param os Output stream to which to write
 		 * @param field
+		 * @param mapleFormat write in Maple(r) format ?
 		 */
 		template<class Field>
 		std::ostream& write (std::ostream &os, const Field& field, bool mapleFormat = false) const;

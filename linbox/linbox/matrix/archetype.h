@@ -76,7 +76,7 @@ namespace LinBox
 		 */
 		size_t coldim () const;
 
-		/** \brief Resize the matrix to the given dimensions
+		/** \brief Resize the matrix to the given dimensions.
 		 *
 		 * The state of the matrix's entries after a call to this method is
 		 * undefined.
@@ -94,14 +94,14 @@ namespace LinBox
 
 		//@{
 
-		/** Read the matrix from an input stream
+		/** Read the matrix from an input stream.
 		 * @param file Input stream from which to read
 		 * @param F Field over which to read
 		 */
 		template <class Field>
 		std::istream &read (std::istream &file, const Field &F);
 
-		/** Write the matrix to an output stream
+		/** Write the matrix to an output stream.
 		 * @param os Output stream to which to write
 		 * @param F Field over which to write
 		 */
@@ -110,7 +110,8 @@ namespace LinBox
 
 		//@}
 
-		/** @name Access to matrix elements
+		/**
+		 * @name Access to matrix elements
 		*/
 
 		//@{
@@ -152,28 +153,34 @@ namespace LinBox
 		 * @ref MatrixDomain
 		 */
 
-		/** @name Column of rows iterator
+		/** Column of rows iterator.
 		 * The column of rows iterator traverses the rows of the
 		 * matrix in ascending order. Dereferencing the iterator yields
 		 * a row vector in dense format
 		 */
 
+		//@{
 		class Row;
 		class ConstRow;
 		class RowIterator;
 		class ConstRowIterator;
 
+		/// rowBegin
 		RowIterator rowBegin ();
+		/// rowEnd
 		RowIterator rowEnd ();
+		/// const rowBegin
 		ConstRowIterator rowBegin () const;
+		/// const rowEnd
 		ConstRowIterator rowEnd () const;
+		//@}
 
-		/** @name Row of columns iterator
+		/** Row of columns iterator.
 		 * The row of columns iterator traverses the columns of the
 		 * matrix in ascending order. Dereferencing the iterator yields
 		 * a column vector in dense format
 		 */
-
+		//@{
 		class Col;
 		class ConstCol;
 		class ColIterator;
@@ -181,20 +188,23 @@ namespace LinBox
 
 		typedef Col Column;
 		typedef ConstCol ConstColumn;
-
+/// colBegin
 		ColIterator colBegin ();
+		/// colEnd
 		ColIterator colEnd ();
+		/// const colBegin
 		ConstColIterator colBegin () const;
+		/// const colEnd
 		ConstColIterator colEnd () const;
+		//@}
 
-		/** @name Raw iterator
-		 *
+		/**  RawIterator.
 		 * The raw iterator is a method for accessing all entries in the matrix
 		 * in some unspecified order. This can be used, e.g. to reduce all
 		 * matrix entries modulo a prime before passing the matrix into an
 		 * algorithm.
 		 */
-
+		//@{
 		class RawIterator;
 		class ConstRawIterator;
 
@@ -202,14 +212,16 @@ namespace LinBox
 		RawIterator rawEnd ();
 		ConstRawIterator rawBegin () const;
 		ConstRawIterator rawEnd () const;
+		//@}
 
 		/** Like the raw iterator, the indexed iterator is a method for
 		 * accessing all entries in the matrix in some unspecified order.
 		 *
 		 * At each position of the the indexed iterator, it also provides
 		 * the row and column indices of the currently referenced entry.
-		 * This is provided through it's rowIndex() and colIndex() functions.
+		 * This is provided through it's \c rowIndex() and \c colIndex() functions.
 		 */
+		//@{
 		class RawIndexedIterator;
 		typedef const RawIndexedIterator ConstRawIndexedIterator;
 
@@ -217,6 +229,7 @@ namespace LinBox
 		RawIndexedIterator rawIndexedEnd();
 		ConstRawIndexedIterator rawIndexedBegin() const;
 		ConstRawIndexedIterator rawIndexedEnd() const;
+		//@}
 
 		/** Retrieve a reference to a row.
 		 * Since rows may also be indexed, this allows A[i][j] notation

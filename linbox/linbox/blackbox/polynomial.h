@@ -86,6 +86,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
+		 * @param y
 		 */
 		template <class Vector1, class Vector2>
 		inline Vector1 &apply (Vector1 &y, const Vector2 &x) const
@@ -109,6 +110,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
+		 * @param y
 		 */
 		template <class Vector1, class Vector2>
 		inline Vector1 &applyTranspose (Vector1 &y, const Vector2 &x) const
@@ -126,8 +128,7 @@ namespace LinBox
 
 
 		template<typename _Tp1, class Poly1 = typename Polynomial::template rebind<_Tp1>::other>
-		struct rebind
-		{
+		struct rebind {
 			typedef PolynomialBBOwner<typename Blackbox::template rebind<_Tp1>::other, Poly1> other;
 
 			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
@@ -230,6 +231,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
+		 * @param y
 		 */
 		template <class Vector1, class Vector2>
 		inline Vector1 &apply (Vector1 &y, const Vector2 &x) const
@@ -253,6 +255,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
+		 * @param y
 		 */
 		template <class Vector1, class Vector2>
 		inline Vector1 &applyTranspose (Vector1 &y, const Vector2 &x) const
@@ -270,8 +273,7 @@ namespace LinBox
 
 
 		template<typename _Tp1, class Poly1 = typename Polynomial::template rebind<_Tp1>::other>
-		struct rebind
-		{
+		struct rebind {
 			typedef PolynomialBBOwner<typename Blackbox::template rebind<_Tp1>::other, Poly1> other;
 
 			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {

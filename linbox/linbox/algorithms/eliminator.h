@@ -49,12 +49,12 @@ namespace LinBox
 
 		typedef typename Field::Element Element;
 
-		/** Permutation
+		/** Permutation.
 		 *
 		 * A permutation is represented as a vector of pairs, each
 		 * pair representing a transposition. Thus a permutation
-		 * requires O(n log n) storage and O(n log n) application
-		 * time, as opposed to the lower bound of O(n) for
+		 * requires \p O(n log n) storage and \p O(n log n) application
+		 * time, as opposed to the lower bound of \p O(n) for
 		 * both. However, this allows us to decompose a permutation
 		 * easily into its factors, thus eliminating the need for
 		 * additional auxillary storage in each level of the
@@ -73,8 +73,7 @@ namespace LinBox
 
 		/** Constructor
 		 * @param F Field over which to operate
-		 * @param traits @ref SolverTraits structure describing user
-		 *               options for the solver
+		 * @param N
 		 */
 		Eliminator (const Field &F, unsigned int N);
 
@@ -101,7 +100,7 @@ namespace LinBox
 					  const Matrix4 &A,
 					  unsigned int  &rank);
 
-		/** Permute the input and invert it
+		/** Permute the input and invert it.
 		 *
 		 * Compute the pseudoinverse of the input matrix A and return
 		 * it. First apply the permutation given by the lists leftPriorityIdx
@@ -115,8 +114,9 @@ namespace LinBox
 		 * @param W Output inverse
 		 * @param S Output vector S
 		 * @param T Output vector T
-		 * @param leftPriorityIdx Priority indices on the left
-		 * @param Rightpriorityidx Priority indices on the right
+		 * @param rightPriorityIdx Priority indices on the right
+		 * @param Qp
+		 * @param rank
 		 * @param A Input matrix A
 		 * @return Reference to inverse matrix
 		 */
@@ -128,7 +128,7 @@ namespace LinBox
 					  unsigned int            &rank,
 					  const Matrix            &A);
 
-		/** Perform a Gauss-Jordan transform using a recursive algorithm
+		/** Perform a Gauss-Jordan transform using a recursive algorithm.
 		 *
 		 * Upon completion, we have UPA = R, where R is of reduced row
 		 * echelon form
@@ -136,6 +136,12 @@ namespace LinBox
 		 * @param U Output matrix U
 		 * @param P Output permutation P
 		 * @param A Input matrix A
+		 * @param profile
+		 * @param Tu
+		 * @param Q
+		 * @param Tv
+		 * @param rank
+		 * @param det
 		 * @return Reference to U
 		 */
 		template <class Matrix1, class Matrix2, class Matrix3, class Matrix4>
@@ -149,19 +155,23 @@ namespace LinBox
 				      typename Field::Element   &det,
 				      const Matrix4             &A);
 
-		/** Retrieve the total user time spent permuting and inverting
-		*/
+		/**
+		 * Retrieve the total user time spent permuting and inverting.
+		 */
 		double getTotalTime () const { return _total_time; }
 
-		/** Retrieve the total user time spent inverting only
+		/**
+		 * Retrieve the total user time spent inverting only.
 		*/
 		double getInvertTime () const { return _invert_time; }
 
-		/** Write the filter vector to the given output stream
+		/**
+		 * Write the filter vector to the given output stream
 		*/
 		std::ostream &writeFilter (std::ostream &out, const std::vector<bool> &v) const;
 
-		/** Write the given permutation to the output stream
+		/**
+		 * Write the given permutation to the output stream
 		*/
 		std::ostream &writePermutation (std::ostream &out, const Permutation &P) const;
 

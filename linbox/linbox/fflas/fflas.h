@@ -342,12 +342,17 @@ public:
 	/** @brief ftrsm: TRiangular System solve with matrix.
 	 * Computes  \f$ B \gets \alpha \mathrm{op}(A^{-1}) B\f$ or  \f$B \gets \alpha B \mathrm{op}(A^{-1})\f$.
 	 * \param F field
-	 * \param M rows of \p B
-	 * \param N cols of \p B
 	 * \param Side if \c Side==FflasLeft then  \f$ B \gets \alpha \mathrm{op}(A^{-1}) B\f$ is computed.
-	 * \param Diag if \c Diag==FflasUnit then \p A is unit.
 	 * \param Uplo if \c Uplo==FflasUpper then \p A is upper triangular
 	 * \param TransA if \c TransA==FflasTrans then \f$\mathrm{op}(A)=A^t\f$.
+	 * \param Diag if \c Diag==FflasUnit then \p A is unit.
+	 * \param M rows of \p B
+	 * \param N cols of \p B
+	 * @param alpha scalar
+	 * \param A triangular invertible matrix. If \c Side==FflasLeft then \p A is \f$N\times N\f$, otherwise \p A is \f$M\times M\f$
+	 * @param lda leading dim of \p A
+	 * @param B matrix of size \p MxN
+	 * @param ldb leading dim of \p B
 	 * @warning unsafe with \c Trans==FflasTrans (debugging in progress)
 	 */
 	template<class Field>
@@ -364,14 +369,17 @@ public:
 	/** @brief ftrmm: TRiangular Matrix Multiply.
 	 * Computes  \f$ B \gets \alpha \mathrm{op}(A) B\f$ or  \f$B \gets \alpha B \mathrm{op}(A)\f$.
 	 * @param F field
-	 * \param M rows of \p B
-	 * \param N cols of \p B
-	 * \param A if \c Side==FflasLeft then \p A is \f$N\times N\f$, otherwise \p A is \f$M\times M\f$
-	 * \param F field
 	 * \param Side if \c Side==FflasLeft then  \f$ B \gets \alpha \mathrm{op}(A) B\f$ is computed.
-	 * \param Diag if \c Diag==FflasUnit then \p A is unit.
 	 * \param Uplo if \c Uplo==FflasUpper then \p A is upper triangular
 	 * \param TransA if \c TransA==FflasTrans then \f$\mathrm{op}(A)=A^t\f$.
+	 * \param Diag if \c Diag==FflasUnit then \p A is unit.
+	 * \param M rows of \p B
+	 * \param N cols of \p B
+	 * @param alpha scalar
+	 * \param A triangular matrix. If \c Side==FflasLeft then \p A is \f$N\times N\f$, otherwise \p A is \f$M\times M\f$
+	 * @param lda leading dim of \p A
+	 * @param B matrix of size \p MxN
+	 * @param ldb leading dim of \p B
 	 * @warning unsafe with \c Trans==FflasTrans (debugging in progress)
 	 */
 	template<class Field>
@@ -388,7 +396,14 @@ public:
 	/** @brief  Field GEneral Matrix Multiply.
 	 *
 	 * Computes \f$C = \alpha \mathrm{op}(A) \times \mathrm{op}(B) + \beta C\f$
+	 * \param F field.
 	 * \param ta if \c ta==FflasTrans then \f$\mathrm{op}(A)=A^t\f$, else \f$\mathrm{op}(A)=A\f$,
+	 * \param tb same for \p B
+	 * \param m see \p A
+	 * \param k see \p A
+	 * \param n see \p B
+	 * \param alpha scalar
+	 * \param beta scalar
 	 * \param w recursive levels of Winograd's algorithm are used
 	 * \param A \f$\mathrm{op}(A)\f$ is \f$m \times k\f$
 	 * \param B \f$\mathrm{op}(B)\f$ is \f$k \times n\f$
@@ -396,6 +411,7 @@ public:
 	 * \param lda leading dimension of \p A
 	 * \param ldb leading dimension of \p B
 	 * \param ldc leading dimension of \p C
+	 * \param w recursive levels of Winograd's algorithm are used
 	 */
 	template<class Field>
 	static typename Field::Element*
@@ -435,15 +451,20 @@ public:
 	 *
 	 * Computes \f$C = \alpha \mathrm{op}(A) \mathrm{op}(B) + \beta C\f$.
 	 * Automatically set Winograd recursion level
+	 * \param F field.
 	 * \param ta if \c ta==FflasTrans then \f$\mathrm{op}(A)=A^t\f$, else \f$\mathrm{op}(A)=A\f$,
-	 * \param w recursive levels of Winograd's algorithm are used
+	 * \param tb same for matrix \p B
+	 * \param m see \p A
+	 * \param k see \p A
+	 * \param n see \p B
+	 * \param alpha scalar
+	 * \param beta scalar
 	 * \param A \f$\mathrm{op}(A)\f$ is \f$m \times k\f$
 	 * \param B \f$\mathrm{op}(B)\f$ is \f$k \times n\f$
 	 * \param C \f$C\f$ is \f$m \times n\f$
 	 * \param lda leading dimension of \p A
 	 * \param ldb leading dimension of \p B
 	 * \param ldc leading dimension of \p C
-
 	 */
 	template<class Field>
 	static typename Field::Element*
@@ -489,7 +510,6 @@ public:
 	 * @param lda leading dimension of \p A
 	 * @param C dense matrix of size \c nxn
 	 * @param ldc leading dimension of \p C
-
 	 */
 	template<class Field>
 	static typename Field::Element* fsquare (const Field& F,
@@ -504,12 +524,12 @@ public:
 #ifdef LB_TRTR
 	// BB
 	/** @brief ftrtr: Triangular-Triangular matrix multiplication.
-	 * B \gets alpha op(A)*B (for FFLAS_SIDE::FflasLeft)
-	* A and B are triangular, with B UpLo
-	* and op(A) = A, A^T according to TransA
-	* A and B can be (non)unit
-	*
-	*/
+	 * \f$B \gets \alpha \mathrm{op}(A) \times B\f$ (for FFLAS_SIDE::FflasLeft)
+	 * A and B are triangular, with B UpLo
+	 * and op(A) = A, A^T according to TransA
+	 * A and B can be (non)unit
+	 *
+	 */
 	template<class Field>
 	static typename Field::Element* ftrtr (const Field& F, const FFLAS_SIDE Side,
 					       const FFLAS_UPLO Uplo,
@@ -555,14 +575,21 @@ public:
 			  typename Field::Element * C, const size_t ldc );
 
 	/**
-	 * MatCopy
 	 * Makes a copy of the matrix M into a new allocated space.
+	 * @param F field
+	 * @param M rows of \p A
+	 * @param N cols of \p A
+	 * @param A matrix to be copied
+	 * @param lda leading dimension of \p A
+	 * @return a copy \p C of \p A with stride \p N
+	 * @warning \p A and \p C belong to the same field.
 	 */
 	template<class Field>
 	static typename Field::Element* MatCopy (const Field& F,
 						 const size_t M, const size_t N,
 						 const typename Field::Element * A,
-						 const size_t lda){
+						 const size_t lda)
+	{
 
 		typename Field::Element * C = new typename Field::Element[M*N];
 		for (size_t i = 0; i < N; ++i)
@@ -680,7 +707,8 @@ protected:
 	static void MatD2MatF (const Field& F,
 			       typename Field::Element* S, const size_t lds,
 			       const typename DoubleDomain::Element* E, const size_t lde,
-			       const size_t m, const size_t n){
+			       const size_t m, const size_t n)
+	{
 
 		typename Field::Element* Si = S;
 		const DoubleDomain::Element* Ei =E;
@@ -710,15 +738,13 @@ protected:
 	}
 
 	/**
-	 * MatMulParameters
-	 *
-	 * \brief Computes the threshold parameters for the cascade
-	 *        Matmul algorithm
+	 * Computes the threshold parameters for the cascade
+	 *        Matmul algorithm.
 	 *
 	 *
 	 * \param F Finite Field/Ring of the computation.
 	 * \param k Common dimension of A and B, in the product A x B
-	 * \param bet Computing AB + beta C
+	 * \param beta Computing \f$AB + \beta C\f$
 	 * \param delayedDim Returns the size of blocks that can be multiplied
 	 *                   over Z with no overflow
 	 * \param base Returns the type of BLAS representation to use
@@ -727,8 +753,8 @@ protected:
 	 * \param winoLevelProvided tells whether the user forced the number of
 	 *                          recursive level of Winograd's algorithm
 	 *
-	 * See [Dumas, Giorgi, Pernet, arXiv cs/0601133]
-	 * http://arxiv.org/abs/cs.SC/0601133
+	 * @bib [Dumas, Giorgi, Pernet, arXiv cs/0601133]
+	 * <a href=http://arxiv.org/abs/cs.SC/0601133>here</a>
 	 */
 	template <class Field>
 	static void MatMulParameters (const Field& F,
@@ -741,10 +767,8 @@ protected:
 
 
 	/**
-	 * DotprodBound
-	 *
-	 * \brief  computes the maximal size for delaying the modular reduction
-	 *         in a dotproduct
+	 * Computes the maximal size for delaying the modular reduction
+	 *         in a dotproduct.
 	 *
 	 * This is the default version assuming a conversion to a positive modular representation
 	 *
@@ -756,13 +780,13 @@ protected:
 	 */
 	template <class Field>
 	static size_t DotProdBound (const Field& F,
-			     const size_t w,
+			     const size_t winoRecLevel,
 			     const typename Field::Element& beta,
 			     const FFLAS_BASE base);
 
 
 	/**
-	 * Internal function for the bound computation
+	 * Internal function for the bound computation.
 	 * Generic implementation for positive representations
 	 */
 	template <class Field>
@@ -770,10 +794,8 @@ protected:
 
 
 	/**
-	 * BaseCompute
-	 *
-	 * \brief Determines the type of floating point representation to convert to,
-	 *        for BLAS computations
+	 * Determines the type of floating point representation to convert to,
+	 *        for BLAS computations.
 	 * \param F Finite Field/Ring of the computation
 	 * \param w Number of recursive levels in Winograd's algorithm
 	 */
@@ -781,15 +803,14 @@ protected:
 	static FFLAS_BASE BaseCompute (const Field& F, const size_t w);
 
 	/**
-	 * TRSMBound
-	 *
-	 * \brief  computes the maximal size for delaying the modular reduction
-	 *         in a triangular system resolution
+	 * Computes the maximal size for delaying the modular reduction
+	 *         in a triangular system resolution.
 	 *
 	 *  Compute the maximal dimension k, such that a unit diagonal triangular
 	 *  system of dimension k can be solved over Z without overflow of the
 	 *  underlying floating point representation.
-  	 *  See [Dumas, Giorgi, Pernet 06, arXiv:cs/0601133 ]
+	 *
+  	 *  @bib [Dumas, Giorgi, Pernet 06, arXiv:cs/0601133 ]
 	 *
 	 * \param F Finite Field/Ring of the computation
 	 *

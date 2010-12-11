@@ -101,9 +101,9 @@ namespace LinBox
 		 * Constructs RandIterArchetype  from ANYTHING matching the interface
 		 * using the enveloppe as a \ref FieldAbstract and its
 		 * encapsulated element and random element generator if needed.
-		 * @param  field_ptr pointer to field matching the interface
-		 * @param  elem_ptr  pointer to element matching the interface
-		 * @param  randIter_ptr  pointer to random matching the interface
+		 * @param f
+		 * @param size
+		 * @param seed
 		 */
 		template<class Field_qcq>
 		RandIterArchetype (Field_qcq *f,

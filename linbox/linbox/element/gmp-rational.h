@@ -105,15 +105,16 @@ namespace LinBox
 		 * Constructs field element from an mpq_t
 		 * Not part of the interface.
 		 * Creates new copy of element object in dynamic memory.
-		 * @param  elem_ptr  pointer to \ref ElementAbstract
+		 * @param  _rep  pointer to \ref ElementAbstract
 		 */
 		GMPRationalElement (mpq_t _rep) {
 			mpq_init (rep);
 			mpq_set (rep, _rep);
 		}
 
-		/** Constructor
+		/** Constructor.
 		 * Initialize from numerator and denominator
+		 * @param num,den
 		 */
 		GMPRationalElement (const integer &num, const integer &den)
 		{
@@ -123,9 +124,10 @@ namespace LinBox
 		}
 
 		// Added by Rich Seagraves to take care of some headaches
-		/** Constructor
+		/** Constructor.
 		 *  Initalizes from a single integer, (which is assumed to be the
 		 *  numerator, with the denominator being 1)
+		 *  @param num
 		 */
 		GMPRationalElement(const integer &num)
 		{
@@ -138,6 +140,7 @@ namespace LinBox
 			mpq_set_z(rep, SpyInteger::get_rep(num));
 		}
 
+		/// access representation
 		mpq_ptr get_rep() {return rep;}
 
 		//@}p
