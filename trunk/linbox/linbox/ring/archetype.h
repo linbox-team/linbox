@@ -159,9 +159,7 @@ namespace LinBox
 		 * Constructs ring from ANYTHING matching the interface
 		 * using the enveloppe as a \ref RingAbstract and its
 		 * encapsulated element and random element generator if needed.
-		 * @param  ring_ptr pointer to ring matching the interface
-		 * @param  elem_ptr  pointer to element matching the interface
-		 * @param  randIter_ptr  pointer to random matching the interface
+		 * @param f
 		 */
 		template<class Ring_qcq>
 		RingArchetype (Ring_qcq *f)

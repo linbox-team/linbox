@@ -20,7 +20,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/*! @file  tests/test-tripplesbb.C
+/*! @file  tests/test-triplesbb.C
  * @ingroup tests
  *
  * @brief no doc
@@ -42,10 +42,19 @@
 #include "test-generic.h"
 
 
+/*! Check vector equality.
+ *
+ * @param a a vector
+ * @param b another one
+ * @todo factorize somewhere!
+ *
+ */
 template<class Vec>
 bool eqVec(const Vec& a, const Vec& b)
 {
 	bool good = true;
+	if (a.size() != b.size())
+		return !good
 	for (typename Vec::size_type i = 0; i < a.size(); ++i) good = good && (a[i] == b[i]);
 	return good;
 }

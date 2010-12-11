@@ -111,6 +111,7 @@ namespace LinBox
 
 		/** Write a matrix to an output stream
 		 * @param stream Stream to which to write the matrix
+		 * @param F
 		 * @return Reference to stream
 		 */
 		template <class Field>

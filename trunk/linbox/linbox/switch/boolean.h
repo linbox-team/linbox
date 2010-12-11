@@ -58,7 +58,7 @@ namespace LinBox
 		 * The apply function starts at the beginning of the vector moving
 		 * forward through it, and applyTranspose function starts at the end
 		 * moving backwards.  Both repeat the vector after they pass through it.
-		 * @param switches vector of switches
+		 * @param s vector of switches
 		 */
 		BooleanSwitch (const bool s) :
 		       	_s (s)
@@ -72,7 +72,8 @@ namespace LinBox
 		 * Switches the elements in references according to current boolean
 		 * value.  Swaps the elements if boolean is true, otherwise does nothing.
 		 * It is templatized by the element type to be swapped.
-		 * @return bool true if swapped, false otherwise
+		 * @return bool \c true if swapped, \c false otherwise
+		 * @param F
 		 * @param x reference to first element to be switched
 		 * @param y reference to second element to be switched
 		 */
@@ -85,7 +86,8 @@ namespace LinBox
 		 * Switches the elements in references according to current boolean
 		 * value.  Swaps the elements if boolean is true, otherwise does nothing.
 		 * It is templatized by the element type to be swapped.
-		 * @return bool true if swapped, false otherwise
+		 * @return bool \c true if swapped, \c false otherwise
+		 * @param F
 		 * @param x reference to first element to be switched
 		 * @param y reference to second element to be switched
 		 */
@@ -95,8 +97,7 @@ namespace LinBox
 				     typename Field::Element &y) const;
 
 		template<typename _Tp1>
-		struct rebind
-		{
+		struct rebind {
 			typedef BooleanSwitch other;
 
 		};

@@ -25,7 +25,7 @@ namespace LinBox
 {
 
 	/** \brief polynomials
-	  \ingroup ring
+	 * \ingroup ring
 	 *
 	 * @param Polynomial type, e.g. std::vector<Field::Element>
 	 */

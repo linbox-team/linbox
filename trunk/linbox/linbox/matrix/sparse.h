@@ -315,9 +315,13 @@ namespace LinBox
 		class RawIterator;
 		class ConstRawIterator;
 
+		/// rawBegin.
 		RawIterator rawBegin ();
+		/// rawEnd.
 		RawIterator rawEnd ();
+		/// const rawBegin.
 		ConstRawIterator rawBegin () const;
+		/// const rawEnd
 		ConstRawIterator rawEnd () const;
 
 		/** @name Index iterator
@@ -330,9 +334,13 @@ namespace LinBox
 		class RawIndexedIterator;
 		class ConstRawIndexedIterator;
 
+		/// rawIndexedBegin
 		RawIndexedIterator rawIndexedBegin ();
+		/// rawIndexedEnd
 		RawIndexedIterator rawIndexedEnd ();
+		/// const rawIndexedBegin
 		ConstRawIndexedIterator rawIndexedBegin () const;
+		/// const rawIndexedEnd
 		ConstRawIndexedIterator rawIndexedEnd () const;
 
 		/** Retrieve a row as a writeable reference
@@ -340,24 +348,25 @@ namespace LinBox
 		 */
 		Row &getRow (size_t i);
 
-		/** Retrieve a row as a writeable reference
+		/** Retrieve a row as a writeable reference.
 		 * @param i Row index
 		 */
 		Row &operator [] (size_t i);
 
-		/** Retrieve a row as a read-only reference
+		/** Retrieve a row as a read-only reference.
 		 * @param i Row index
 		 */
 		ConstRow &operator [] (size_t i) const;
 
-		/** Compute the column density, i.e. the number of entries per column
+		/** Compute the column density, i.e the number of entries per column.
 		 * @param v Vector in which to store column density
 		 */
 		template <class Vector>
 		Vector &columnDensity (Vector &v) const;
 
 		/** Construct the transpose of this matrix and place it in the
-		 * matrix given
+		 * matrix given.
+		 * @param AT
 		 */
 		SparseMatrixBase &transpose (SparseMatrixBase &AT) const;
 

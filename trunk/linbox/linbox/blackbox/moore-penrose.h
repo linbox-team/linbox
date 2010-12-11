@@ -65,11 +65,13 @@ namespace LinBox
 
 
 		/** Constructor from field and dense vector of field elements.
-		 * @param BB   Black box from which to extract the submatrix
-		 * @param row  First row of the submatrix to extract (1.._BB->rowdim ())
-		 * @param col  First column of the submatrix to extract (1.._BB->coldim ())
-		 * @param rowdim Row dimension
-		 * @param coldim Column dimension
+		 * -param BB   Black box from which to extract the submatrix
+		 * -param row  First row of the submatrix to extract (1.._BB->rowdim ())
+		 * -param col  First column of the submatrix to extract (1.._BB->coldim ())
+		 * -param rowdim Row dimension
+		 * -param coldim Column dimension
+		 *  @param A
+		 *  @param rank
 		 */
 		MoorePenrose (const Blackbox *A, size_t rank) :
 			_A (A), _rank (rank)
@@ -125,6 +127,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
+		 * @param y
 		 */
 		template <class OutVector, class InVector>
 		OutVector& apply (OutVector &y, const InVector& x) const
@@ -148,6 +151,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
+		 * @param y
 		 */
 		template <class OutVector, class InVector>
 		OutVector& applyTranspose (OutVector &y, const InVector& x) const

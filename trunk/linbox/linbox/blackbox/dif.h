@@ -25,8 +25,8 @@
 namespace LinBox
 {
 
-	/** \brief Blackbox of a difference: <code>C := A - B</code>, i.e. <code>Cx = Ax - Bx</code>.
-
+	/** Blackbox of a difference: <code>C := A - B</code>, i.e <code>Cx = Ax - Bx</code>.
+	 *
 	 * <b> Template parameters</b>:
 	 *     Field is the class of the entry domain,
 	 *     Vector is a LinBox dense or sparse vector of field elements class.
@@ -100,6 +100,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
+		 * @param y
 		 */
 		template<class OutVector, class InVector>
 		inline OutVector &apply (OutVector &y, const InVector &x) const
@@ -126,6 +127,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
+		 * @param y
 		 */
 		template<class OutVector, class InVector>
 		inline OutVector &applyTranspose (OutVector &y, const InVector &x) const

@@ -17,8 +17,8 @@
 #ifndef __LINBOX_hilbert_H
 #define __LINBOX_hilbert_H
 
-#include<vector>
-#include<linbox/blackbox/jit-matrix.h>
+#include <vector>
+#include <linbox/blackbox/jit-matrix.h>
 
 
 namespace LinBox
@@ -44,6 +44,7 @@ namespace LinBox
 
 	}; // Hilbert_JIT_Entry
 
+	/// constructor
 	template<typename _Field>
 	Hilbert_JIT_Entry<_Field>::Hilbert_JIT_Entry(_Field& F, size_t m, size_t n) {
 
@@ -65,12 +66,12 @@ namespace LinBox
 
 
 	/** \brief Example of a blackbox that is space efficient, though not time efficient.
-
-	  \ingroup blackbox
-
-	  Blackbox for the matrix whose i,j entry is 1/(i+j), i in 1..n, j in 1..n.
-
-*/
+	 *
+	 *  \ingroup blackbox
+	 *
+	 *  Blackbox for the matrix whose i,j entry is 1/(i+j), i in 1..n, j in 1..n.
+	 *
+	 */
 	template<typename _Field>
 	class Hilbert : public JIT_Matrix<_Field, Hilbert_JIT_Entry<_Field> > {
 

@@ -63,7 +63,7 @@ namespace LinBox
 		/** Constructor from a black box.
 		 * This constructor creates a matrix that is the transpose of a black box
 		 * matrix A
-		 * @param A_ptr pointer to black box matrix.
+		 * @param A pointer to black box matrix.
 		 */
 		Transpose (const Blackbox& A) :
 			_A_ptr(&A)
@@ -106,6 +106,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
+		 * @param y
 		 */
 		template <class Vector1, class Vector2>
 		inline Vector1 &apply (Vector1 &y, const Vector2 &x) const
@@ -122,6 +123,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
+		 * @param y
 		 */
 		template <class Vector1, class Vector2>
 		inline Vector1 &applyTranspose (Vector1 &y, const Vector2 &x) const
@@ -250,6 +252,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
+		 * @param y
 		 */
 		template <class Vector1, class Vector2>
 		inline Vector1 &apply (Vector1 &y, const Vector2 &x) const
@@ -265,6 +268,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
+		 * @param y
 		 */
 		template <class Vector1, class Vector2>
 		inline Vector1 &applyTranspose (Vector1 &y, const Vector2 &x) const

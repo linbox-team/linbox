@@ -119,6 +119,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
+		 * @param y
 		 */
 		template<class OutVector, class InVector>
 		OutVector& apply (OutVector &y, const InVector& x) const
@@ -139,6 +140,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
+		 * @param y
 		 */
 		template<class OutVector, class InVector>
 		OutVector& applyTranspose (OutVector &y, const InVector& x) const
@@ -446,6 +448,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
+		 * @param y
 		 */
 		template<class OutVector, class InVector>
 		OutVector& apply (OutVector &y, const InVector& x) const
@@ -466,6 +469,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
+		 * @param y
 		 */
 		template<class OutVector, class InVector>
 		OutVector& applyTranspose (OutVector &y, const InVector& x) const

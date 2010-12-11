@@ -508,7 +508,7 @@ namespace LinBox
 
 		/** Constructor from a MethodTraits structure
 		 *
-		 * @param traits MethodTraits structure from which to get defaults
+		 * @param S MethodTraits structure from which to get defaults
 		 */
 		SolverTraits( const Specifier& S) :
 		       	Specifier(S)

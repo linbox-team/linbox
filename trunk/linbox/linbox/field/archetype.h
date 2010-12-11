@@ -172,14 +172,14 @@ namespace LinBox
 
 		/** \brief Conversion of field element to an integer.
 		 *
-		 The meaning of conversion is specific to each field class.
-		 However, if x is in the prime subfield, the integer n returned is such
-		 that an init from n will reproduce x.  Most often, 0 &leq; n &lt; characteristic.
-
+		 * The meaning of conversion is specific to each field class.
+		 * However, if x is in the prime subfield, the integer n returned is such
+		 * that an init from n will reproduce x.  Most often, \f$0 \leq n < \mathrm{characteristic}\f$.
+		 *
 		 *
 		 * @return reference to n.
 		 * @param n output integer.
-		 * @param x input field element.
+		 * @param y input field element.
 		 */
 		integer &convert (integer &n, const Element &y = 0) const
 		{
@@ -623,9 +623,7 @@ namespace LinBox
 		 * Constructs field from ANYTHING matching the interface
 		 * using the enveloppe as a \ref FieldAbstract and its
 		 * encapsulated element and random element generator if needed.
-		 * @param  field_ptr pointer to field matching the interface
-		 * @param  elem_ptr  pointer to element matching the interface
-		 * @param  randIter_ptr  pointer to random matching the interface
+		 * @param  f
 		 */
 		template<class Field_qcq>
 		FieldArchetype (Field_qcq *f) { constructor (f, f); }

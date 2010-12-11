@@ -84,7 +84,7 @@ namespace LinBox
 
 		/** Assignment operator.
 		 * @return reference to self
-		 * @param  x parameterized field base element
+		 * @param  E parameterized field base element
 		 */
 		ElementAbstract &operator= (const ElementAbstract &E)
 		{

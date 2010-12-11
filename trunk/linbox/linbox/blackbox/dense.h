@@ -224,8 +224,8 @@ namespace LinBox
 
 		//@{
 
-		/** Read the matrix from an input stream
-		 * @param file Input stream from which to read
+		/** Read the matrix from an input stream.
+		 * @param is Input stream from which to read
 		 */
 		std::istream& read (std::istream &is)
 		{ return DenseMatrixBase<Element>::read (is, _F); }

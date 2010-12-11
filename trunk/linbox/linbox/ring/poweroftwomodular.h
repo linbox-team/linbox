@@ -180,16 +180,23 @@ namespace LinBox
 		bool isOne (const Element &x) const
 		{ return x == 1; }
 
-
+		/*! isUnit.
+		 * @param x
+		 */
 		bool isUnit (const Element &x) const
 		{ return x&1UL; }
 
+		/*! isZeroDivisor.
+		 * @param x
+		 */
 		bool isZeroDivisor ( const Element &x ) const
 		{ return !(x&1UL); }
 
-		/** Gcd with 2^_poweroftwo *
-		 * Valid for Ints up to 32 bits *
+		/** Gcd with 2^_poweroftwo .
+		 * Valid for Ints up to 32 bits
 		 * Specialization is required for bigger Ints
+		 * @param x
+		 * @param y
 		 */
 		Element &gcd_poweroftwo (Element &x,const Element &y) const
 		{
@@ -224,6 +231,11 @@ namespace LinBox
 
 		}
 
+		/*! bezout.
+		 * @param x,y
+		 * @param gcd
+		 * @param u,v
+		 */
 		Element &bezout(const Element &x, const Element &y, Element &gcd, Element &u, Element &v) const
 		{
 			Element v1,v2,v3,t1,t2,t3,q;

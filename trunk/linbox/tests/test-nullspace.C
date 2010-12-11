@@ -7,9 +7,9 @@
  */
 
 /** \file tests/test-nullspace.C
-  \brief Tests the nullspace functions
- @ingroup tests
-  */
+ * \brief Tests the dense nullspace functions for Zp
+ * @ingroup tests
+ */
 
 #include "../linbox/linbox-config.h"
 #include <iostream>
@@ -29,7 +29,7 @@ using namespace LinBox;
 /** @brief gives a random number such that \f$0 \leq RIII < s\f$.
  * @details basic..
  * @param [in]  s sup
-//         * /param [in]  seed is a seed. If \p 0 (default) we create a new one.
+ * \param [in]  seed seed. If \p 0 (default) we create a new one.
  * @param [out] RIII random integer in the interval  \f$[[0, s-1]]\f$.
  * @return a reference to \p RIII
  */
@@ -47,8 +47,9 @@ size_t & RandIntInInt ( const size_t & s, size_t & RIII, const int & seed = 0 )
 	return RIII ;
 }
 
-/*! Creates a random Lapack style Permutation \p P of size \p len.
-*/
+/*!
+ * Creates a random Lapack style Permutation \p P of size \p len.
+ */
 void RandomPermutation ( size_t * P, const size_t & len)
 {
 	size_t alea = 0 ;
@@ -60,8 +61,9 @@ void RandomPermutation ( size_t * P, const size_t & len)
 }
 
 
-/*! Builds a \p m x \p n random matrix of rank \p rank over field \p F.
-*/
+/*!
+ * Builds a \p m x \p n random matrix of rank \p rank over field \p F.
+ */
 template <class Field >
 void RandomMatrixWithRank(const Field & F,
 			  typename Field::Element * A,
@@ -131,14 +133,14 @@ void RandomMatrixWithRank(const Field & F,
 /**
  * @brief Checks we got the right rank.
  *
- * @param F
- * @param A
- * @param m
- * @param n
- * @param lda
- * @param alledged_rank
+ * @param F field
+ * @param A matrix
+ * @param m rows
+ * @param n cols
+ * @param lda leadin dimmension
+ * @param alledged_rank supposedly correct rank.
  *
- * @return
+ * @return \c alledged_rank==rank(A)
  */
 template <class Field>
 bool CheckRank( const Field & F,
@@ -157,8 +159,8 @@ bool CheckRank( const Field & F,
 	return (alledged_rank == true_rank);
 }
 
-/**
- * @brief Tests the NullSpace routines
+/*!
+ * @brief Tests the NullSpace routines.
  * @param F field
  * @param m row
  * @param n col

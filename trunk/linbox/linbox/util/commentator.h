@@ -104,7 +104,7 @@ namespace LinBox
 		void *_act;
 	};
 
-	/** * \brief give information to user during runtime
+	/** Give information to user during runtime.
 	  \ingroup util
 
 	 * This object is used for reporting information about a computation to
@@ -115,13 +115,14 @@ namespace LinBox
 	 *
 	 * Typical usage follows the following pattern:
 	 \code
-	 void myFunction () {
-	 commentator.start ("Doing important work", "myFunction", 100);
-	 for (int i = 0; i < 100; i++) {
-	 ...
-	 commentator.progress ();
-	 }
-	 commentator.stop (MSG_DONE, "Task completed successfully");
+	 void myFunction ()
+	 {
+	     commentator.start ("Doing important work", "myFunction", 100);
+	     for (int i = 0; i < 100; i++) {
+	         ...
+	         commentator.progress ();
+	     }
+	     commentator.stop (MSG_DONE, "Task completed successfully");
 	 }
 	 \endcode
 	 *
@@ -431,7 +432,7 @@ namespace LinBox
 		{ return isPrinted (_activities.size (), level, msg_class, fn); }
 
 		/** Determine whether the stream given is the null stream
-		 * @param stream Stream to check
+		 * @param str Stream to check
 		 * @return true if stream is the null stream; false otherwise
 		 */
 		bool isNullStream (const std::ostream &str)
@@ -455,7 +456,7 @@ namespace LinBox
 		void setMessageClassStream (const char *msg_class, std::ostream &stream);
 
 		/** Set default report file
-		 * @param name of file
+		 * @param filename of file
 		 */
 		void setDefaultReportFile (const char *filename);
 
@@ -482,7 +483,8 @@ namespace LinBox
 
 		/** Stop an activity
 		 * @param msg Message to print
-		 * @param msglevel Level of message
+		 */
+		 /* @param msglevel Level of message
 		 * @param msgclass Class of message
 		 * @param time_type Type of timing to use
 		 */

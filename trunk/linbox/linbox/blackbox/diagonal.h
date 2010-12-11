@@ -32,40 +32,35 @@ namespace LinBox
 
 	/**
 	 * \brief Random diagonal matrices are used heavily as preconditioners.
-
-	 * This is a class of n by n diagonal matrices templatized by the
-	 * field in
-	 * which the elements reside.  The class conforms to the
-	 * BlackboxArchetype.
+	 * \ingroup blackbox
+	 * This is a class of \f$n \times n\f$ diagonal matrices templatized by
+	 * the field in which the elements reside.  The class conforms to the
+	 * \ref BlackboxArchetype.
 	 *
 	 * The matrix itself is not stored in memory.  Rather, its \c apply
-	 * methods use a vector of field elements, which are
-	 * used to "multiply" the matrix to a vector.
+	 * methods use a vector of field elements, which are used to "multiply"
+	 * the matrix to a vector.
 	 *
 	 * This class has two template parameters.  The first is the field in
-	 * which the arithmetic is to be done.
-	 * The second is the vector trait indicating dense or
-	 * sparse vector interface (dense by default).
+	 * which the arithmetic is to be done.  The second is the vector trait
+	 * indicating dense or sparse vector interface (dense by default).
 	 * This class is then specialized for dense and sparse vectors.
 	 *
 	 * The default class is not implemented.  It's functions should never
 	 * be called because partial template specialization should always be
 	 * done on the vector traits.
-	 * \ingroup blackbox
-	 * @param Field \ref LinBox field
-	 * @param Trait  Marker whether to use dense or sparse LinBox vector
-	 *               implementation.  This is chosen by a default parameter
-	 *               and partial template specialization.
+	 *
+	 *
+	 * @param Field  \ref LinBox field.
+	 * @param Trait  Marker whether to use dense or sparse  LinBox vector
+	 * implementation. This is chosen by a default parameter
+	 * and partial template specialization.
 	 */
-	template<class Field,
-		 class Trait = typename VectorTraits<typename LinBox::Vector<Field>::Dense>::VectorCategory
-		 >
-	class Diagonal {
+	template<class Field, class Trait = typename VectorTraits<typename
+	LinBox::Vector<Field>::Dense>::VectorCategory > class Diagonal {
 	private:
 		/// empty constructor
-		Diagonal () {}
-	};
-
+		Diagonal () {} };
 
 	/** diagonal.h linbox/blackbox/diagonal.h
 	  \brief Specialization of Diagonal for application to dense vectors
@@ -329,9 +324,7 @@ namespace LinBox
 
 	}; // template <Field, Vector> class Diagonal<SparseAssociativeVectorTag>
 
-
 	// Method implementations for dense vectors
-
 	/// constructor from vector
 	template <class Field>
 	inline Diagonal<Field, VectorCategories::DenseVectorTag >::Diagonal(const Field F,
@@ -341,7 +334,7 @@ namespace LinBox
 
 
 	/*!
-	 * random Diagonal matrix
+	 * random Diagonal matrix.
 	 * @param F the field
 	 * @param n size
 	 * @param nonsing non-singular matrix ? (no zero on diagonal ?)
@@ -359,7 +352,6 @@ namespace LinBox
 		else
 			random();
 	}
-
 
 	//! random diagonal matrix of size n
 	template <class Field>
@@ -476,7 +468,6 @@ namespace LinBox
 	} // Vector& Diagonal<SparseSequenceVectorTag>::apply(Vector& y, const Vector&) const
 
 	// Method implementations for sparse associative vectors
-
 	/*! Constructor for sparse associative vectors.
 	 * This is the same constructor as the dense one.
 	 * @param F  field
@@ -486,8 +477,6 @@ namespace LinBox
 	inline Diagonal<Field, VectorCategories::SparseAssociativeVectorTag >::Diagonal(const Field F, const std::vector<typename Field::Element>& v) :
 		_F(F), _n(v.size()), _v(v)
 	{}
-
-
 
 	/** apply for sparse associative vectors.
 	 * @param x sparse vector
@@ -526,9 +515,6 @@ namespace LinBox
 
 		return y;
 	} // Vector& Diagonal<SparseAssociativeVectorTag>::apply(...) const
-
-
-
 
 } // namespace LinBox
 

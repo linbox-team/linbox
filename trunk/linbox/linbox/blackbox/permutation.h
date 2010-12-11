@@ -65,17 +65,19 @@ namespace LinBox
 		typedef _Field				Field;
 		typedef typename Field::Element 	Element;
 
-		/** Constructor from a vector of indices
+		/** Constructor from a vector of indices.
 		 * This constructor creates a permutation matrix based on a vector of indices
+		 * @param F
 		 * @param indices Vector of indices representing the permutation
 		 */
 		Permutation (Storage & indices, const Field& F = Field()) :
 			_F(F), _indices (indices)
 		{}
 
-		/** Constructor from a dimension
+		/** Constructor from a dimension.
 		 * This constructor creates an n x n permutation matrix, initialized to be the identity
 		 * @param n The dimension of hte matrix to create
+		 * @param F
 		 */
 		Permutation (int n, const Field& F = Field()) :
 			_F(F)
@@ -119,14 +121,14 @@ namespace LinBox
 		~Permutation (void) {}
 
 		/** Application of BlackBox permutation matrix.
-		 * <code>y= P*x</code>.
+		  \f$y \leftarrow Px\f$.
 		 * Requires one vector conforming to the \ref LinBox
 		 * vector @link Archetypes archetype@endlink.
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
+		 * @param y
 		 */
-		/// \f$y \leftarrow Px\f$.
 		template<class OutVector, class InVector>
 		inline OutVector &apply (OutVector &y, const InVector &x) const
 		{
@@ -150,6 +152,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
+		 * @param y
 		 */
 		/// \f$y^T \leftarrow x^T P\f$.
 		template<class OutVector, class InVector>
@@ -171,8 +174,7 @@ namespace LinBox
 
 
 		template<typename _Tp1>
-		struct rebind
-		{
+		struct rebind {
 			typedef Permutation<_Tp1, Storage> other;
 			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
 				Ap->setStorage( A.getStorage() );
@@ -186,6 +188,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return integer number of rows of black box matrix.
 		 */
+		/// rowdim
 		size_t rowdim (void) const
 		{
 			return _indices.size ();
@@ -195,12 +198,14 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return integer number of columns of black box matrix.
 		 */
+		/// coldim
 		size_t coldim (void) const
 		{
 			return _indices.size ();
 		}
 
-		/** Add a transposition to the matrix
+		/**
+		 * Add a transposition to the matrix
 		*/
 		void permute (size_t row1, size_t row2)
 		{

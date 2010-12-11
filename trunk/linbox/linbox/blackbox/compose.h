@@ -45,7 +45,7 @@ namespace LinBox
 {
 
 	/**
-	 * \brief Blackbox of a product: C := AB, i.e. Cx := A(Bx).
+	 * Blackbox of a product: \f$C = AB\f$, i.e \f$Cx \gets A(Bx)\f$.
 
 	 * This is a class that multiplies two matrices by implementing an
 	 * apply method that calls the apply methods of both of the consituent
@@ -417,7 +417,7 @@ namespace LinBox
 {
 
 	/**
-	 * \brief Blackbox of a product: C := AB, i.e. Cx := A(Bx).
+	 * Blackbox of a product: \f$C = AB\f$, i.e \f$Cx \gets A(Bx)\f$.
 
 	 * This is a class that multiplies two matrices by implementing an
 	 * apply method that calls the apply methods of both of the consituent
@@ -512,11 +512,11 @@ namespace LinBox
 			return _A_data.apply (y, _B_data.apply (_z, x));
 		}
 
-		/** row vector * matrix produc
-		 * y= transpose(A*B)*x.
+		/** row vector * matrix product \f$y= (A \times B)^T \cdot x\f$.
 		 * Applies A^t then B^t.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
+		 * @param y
 		 */
 		template <class OutVector, class InVector>
 		inline OutVector& applyTranspose (OutVector& y, const InVector& x) const

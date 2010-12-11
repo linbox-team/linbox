@@ -27,6 +27,7 @@
 #include "linbox/field/field-traits.h"
 #include "linbox/randiter/modular-crooked.h"
 #include "linbox/randiter/nonzero.h"
+#include <iostream>
 
 
 // Namespace in which all LinBox code resides
@@ -544,7 +545,6 @@ namespace LinBox
 		}
 	};
 
-#include <iostream>
 	template<class T>
 	std::ostream& operator<< (std::ostream & o, const ModularCrooked<T> & F)
 	{

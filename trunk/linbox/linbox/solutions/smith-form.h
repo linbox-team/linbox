@@ -54,18 +54,19 @@ namespace LinBox
 	}
 
 
-	/** Compute the Smith form of A
+	/** Compute the Smith form of A.
+	 * \ingroup solutions
 	 *
 	 * The Smith form of a linear operator A, represented as a
-	 * black box, is computed over a representation of Z or Z_m.
+	 * black box, is computed over a representation of \f$Z\f$ or \f$Z_m\f$.
 	 *
-	 * @param Output S, a list of invariant/repcount pairs.
+	 * @param[out] S a list of invariant/repcount pairs.
 	 * @param A Matrix of which to compute the Smith form
-	 * @param M may be a Method::Hybrid (default), which uses the
+	 * @param M may be a \p Method::Hybrid (default), which uses the
 	 algorithms/smith-form-adaptive.
-	 Other methods will be provided later.  For now see the examples/smith.C
+	 @todo Other methods will be provided later.
+	 For now see the examples/smith.C
 	 for ways to call other smith form algorithms.
-	 \ingroup solutions
 	 */
 	template <class Output, class Blackbox, class MyMethod>
 	Output &smithForm(Output & S,
@@ -89,7 +90,8 @@ namespace LinBox
 	// The smithForm with default Method
 	template<class Output, class Blackbox>
 	Output &smithForm(Output& S,
-			  const Blackbox& A) {
+			  const Blackbox& A)
+	{
 
 		smithForm(S, A, Method::Hybrid());
 		return S;

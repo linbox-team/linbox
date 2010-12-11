@@ -119,8 +119,8 @@ namespace LinBox
 	class RationalSolver {
 
 	public:
-		/** \brief Solve a linear system \c Ax=b over quotient field of a ring
-		 *         giving a random solution if the system is singular and consistent.
+		/** Solve a linear system \c Ax=b over quotient field of a ring
+		 *         giving a random solution if the system is singular and consistent,
 		 *         giving the unique solution if the system is non-singular.
 		 *
 		 * @param num  Vector of numerators of the solution
@@ -128,14 +128,17 @@ namespace LinBox
 		 * @param A    Matrix of linear system
 		 * @param b    Right-hand side of system
 		 * @param maxPrimes maximum number of moduli to try
+		 * @param toto
 		 *
 		 * @return status of solution
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,const bool, int maxPrimes = DEFAULT_MAXPRIMES) const;
+		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A,
+					 const Vector2& b,const bool toto,
+					 int maxPrimes = DEFAULT_MAXPRIMES) const;
 
 
-		/** \brief  Solve a nonsingular linear system \c Ax=b over quotient field of a ring.
+		/** Solve a nonsingular linear system \c Ax=b over quotient field of a ring,
 		 *          giving the unique solution of the system.
 		 *
 		 * @param num  Vector of numerators of the solution
@@ -147,9 +150,10 @@ namespace LinBox
 		 * @return status of solution
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
+		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A,
+						    const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
 
-		/** \brief Solve a singular linear system \c Ax=b over quotient field of a ring.
+		/** brief Solve a singular linear system \c Ax=b over quotient field of a ring,
 		 *         giving a random solution if the system is singular and consistent.
 		 *
 		 * @param num  Vector of numerators of the solution
@@ -161,7 +165,8 @@ namespace LinBox
 		 * @return status of solution
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
+		SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A,
+						 const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
 
 
 	};
@@ -236,37 +241,44 @@ namespace LinBox
 		/** Constructor
 		 * @param r   a Ring, set by default
 		 * @param rp  a RandomPrime generator, set by default
+		 * @param traits
 		 */
 		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE), const WiedemannTraits& traits=WiedemannTraits()) :
-			_R(r), _genprime(rp), _traits(traits) {
+			_R(r), _genprime(rp), _traits(traits)
+		{
 
-				++_genprime; _prime=*_genprime;
+			++_genprime; _prime=*_genprime;
 #ifdef RSTIMING
-				clearTimers();
+			clearTimers();
 #endif
-			}
+		}
 
-		/**  Constructor with a prime
+		/**  Constructor with a prime.
 		 * @param p   a Prime
 		 * @param r   a Ring, set by default
 		 * @param rp  a RandomPrime generator, set by default
+		 * @param traits
 		 */
-		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE),
+		RationalSolver (const Prime& p, const Ring& r = Ring(),
+				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE),
 				const WiedemannTraits& traits=WiedemannTraits()) :
-			_R(r), _genprime(rp), _prime(p), _traits(traits){
+			_R(r), _genprime(rp), _prime(p), _traits(traits)
+		{
 
 #ifdef RSTIMING
-				clearTimers();
+			clearTimers();
 #endif
-			}
+		}
 
 
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,const bool s=false, int maxPrimes = DEFAULT_MAXPRIMES) const;
+		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,
+					 const bool s=false, int maxPrimes = DEFAULT_MAXPRIMES) const;
 
 
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
+		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A,
+						    const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
 
 
 		template<class IMatrix, class Vector1, class Vector2>
@@ -301,7 +313,8 @@ namespace LinBox
 
 	public:
 
-		inline std::ostream& printTime(const Timer& timer, const char* title, std::ostream& os, const char* pref = "") const {
+		inline std::ostream& printTime(const Timer& timer, const char* title, std::ostream& os, const char* pref = "") const
+		{
 			if (&timer != &totalTimer)
 				totalTimer += timer;
 			if (timer.count() > 0) {
@@ -314,7 +327,8 @@ namespace LinBox
 				return os;
 		}
 
-		inline std::ostream& printWiedemannTime(const WiedemannTimer& timer, const char* title, std::ostream& os) const{
+		inline std::ostream& printWiedemannTime(const WiedemannTimer& timer, const char* title, std::ostream& os) const
+		{
 			if (timer.ttSetup.count() > 0) {
 				printTime(timer.ttSetup, "Setup", os, title);
 				printTime(timer.ttGetDigit, "Field Apply", os, title);
@@ -326,7 +340,8 @@ namespace LinBox
 			return os;
 		}
 
-		std::ostream& reportTimes(std::ostream& os) const {
+		std::ostream& reportTimes(std::ostream& os) const
+		{
 			totalTimer.clear();
 			printTime(ttNonsingularSetup, "NonsingularSetup", os);
 			printTime(ttNonsingularMinPoly, "NonsingularMinPoly", os);
@@ -417,29 +432,34 @@ namespace LinBox
 		/*! Constructor
 		 * @param r   a Ring, set by default
 		 * @param rp  a RandomPrime generator, set by default
+		 * @param traits
 		 */
 		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE), const BlockWiedemannTraits& traits=BlockWiedemannTraits()) :
-			_R(r), _genprime(rp), _traits(traits){
+			_R(r), _genprime(rp), _traits(traits)
+		{
 
-				++_genprime; _prime=*_genprime;
+			++_genprime; _prime=*_genprime;
 #ifdef RSTIMING
-				clearTimers();
+			clearTimers();
 #endif
-			}
+		}
 
 		/*! Constructor with a prime
 		 * @param p   a Prime
 		 * @param r   a Ring, set by default
 		 * @param rp  a RandomPrime generator, set by default
+		 * @param traits
 		 */
-		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE),
+		RationalSolver (const Prime& p, const Ring& r = Ring(),
+				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE),
 				const BlockWiedemannTraits& traits=BlockWiedemannTraits()) :
-			_R(r), _genprime(rp), _prime(p), _traits(traits){
+			_R(r), _genprime(rp), _prime(p), _traits(traits)
+		{
 
 #ifdef RSTIMING
-				clearTimers();
+			clearTimers();
 #endif
-			}
+		}
 
 		template<class IMatrix, class Vector1, class Vector2>
 		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,const bool s=false, int maxPrimes = DEFAULT_MAXPRIMES) const;
@@ -464,7 +484,8 @@ namespace LinBox
 
 	public:
 
-		inline std::ostream& printTime(const Timer& timer, const char* title, std::ostream& os, const char* pref = "") const {
+		inline std::ostream& printTime(const Timer& timer, const char* title, std::ostream& os, const char* pref = "") const
+		{
 			if (&timer != &totalTimer)
 				totalTimer += timer;
 			if (timer.count() > 0) {
@@ -477,7 +498,8 @@ namespace LinBox
 				return os;
 		}
 
-		inline std::ostream& printBlockWiedemannTime(const BlockWiedemannTimer& timer, const char* title, std::ostream& os) const{
+		inline std::ostream& printBlockWiedemannTime(const BlockWiedemannTimer& timer, const char* title, std::ostream& os) const
+		{
 			if (timer.ttSetup.count() > 0) {
 				printTime(timer.ttSetup, "Setup", os, title);
 				printTime(timer.ttGetDigit, "Field Apply", os, title);
@@ -489,7 +511,8 @@ namespace LinBox
 			return os;
 		}
 
-		std::ostream& reportTimes(std::ostream& os) const {
+		std::ostream& reportTimes(std::ostream& os) const
+		{
 			totalTimer.clear();
 			printTime(ttNonsingularSetup, "NonsingularSetup", os);
 			printTime(ttNonsingularBlockMinPoly, "NonsingularMinPoly", os);
@@ -511,7 +534,8 @@ namespace LinBox
 	public:
 		mutable Timer ttSetup, ttRecon, ttGetDigit, ttGetDigitConvert, ttRingApply, ttRingOther;
 		mutable int rec_elt;
-		void clear() const {
+		void clear() const
+		{
 			ttSetup.clear();
 			ttRecon.clear();
 			ttGetDigit.clear();
@@ -522,7 +546,8 @@ namespace LinBox
 		}
 
 		template<class RR, class LC>
-		void update(RR& rr, LC& lc) const {
+		void update(RR& rr, LC& lc) const
+		{
 			ttSetup += lc.ttSetup;
 			ttRecon += rr.ttRecon;
 			rec_elt += rr._num_rec;
@@ -611,7 +636,8 @@ namespace LinBox
 		 * @param r a Ring, set by default
 		 * @param rp a RandomPrime generator, set by default
 		 */
-		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
+		RationalSolver (const Prime& p, const Ring& r = Ring(),
+				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
 			lastCertificate(r, 0), _genprime(rp), _prime(p), _R(r)
 		{
 #ifdef RSTIMING
@@ -620,28 +646,33 @@ namespace LinBox
 		}
 
 
-		/** Solve a linear system \c Ax=b over quotient field of a ring
+		/** Solve a linear system \c Ax=b over quotient field of a ring.
 		 *
 		 * @param num Vector of numerators of the solution
 		 * @param den  The common denominator. 1/den * num is the rational solution of \c Ax=b.
 		 * @param A        Matrix of linear system
 		 * @param b        Right-hand side of system
-		 * @param maxPrimes, maximum number of moduli to try
+		 * @param s
+		 * @param maxPrimes maximum number of moduli to try
 		 * @param level    level of certification to be used
 		 *
-		 * @return status of solution. if (return != SS_FAILED), and (level >= SL_LASVEGAS), solution is guaranteed correct.
-		 *   SS_FAILED - all primes used were bad
-		 *   SS_OK - solution found.
-		 *   SS_INCONSISTENT - system appreared inconsistent. certificate is in lastCertificate if (level >= SL_CERTIFIED)
+		 * @return status of solution. if \c (return != SS_FAILED), and \c (level >= SL_LASVEGAS), solution is guaranteed correct.
+		 *  \c  SS_FAILED - all primes used were bad
+		 *  \c SS_OK - solution found.
+		 *  \c  SS_INCONSISTENT - system appreared inconsistent. certificate is in \p  lastCertificate if \c (level >= SL_CERTIFIED)
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, const bool s = false,
-					 const int maxPrimes = DEFAULT_MAXPRIMES, const SolverLevel level = SL_DEFAULT) const;
+		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A,
+					 const Vector2& b, const bool s = false,
+					 const int maxPrimes = DEFAULT_MAXPRIMES,
+					 const SolverLevel level = SL_DEFAULT) const;
 
 		/** overload so that the bool 'oldMatrix' argument is not accidentally set to true */
 		template <class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, const int maxPrimes,
-					 const SolverLevel level = SL_DEFAULT) const {
+		SolverReturnStatus solve(Vector1& num, Integer& den,
+					 const IMatrix& A, const Vector2& b, const int maxPrimes,
+					 const SolverLevel level = SL_DEFAULT) const
+		{
 			return solve (num, den, A, b, false, maxPrimes, level);
 		}
 
@@ -659,7 +690,8 @@ namespace LinBox
 		 *   \c SS_SINGULAR - system appreared singular mod all primes.
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, bool = false,
+		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A,
+						    const Vector2& b, bool = false,
 						    int maxPrimes = DEFAULT_MAXPRIMES) const;
 
 		/** Solve a general rectangular linear system \c Ax=b over quotient field of a ring.
@@ -678,7 +710,8 @@ namespace LinBox
 		 *   \c SS_INCONSISTENT - system appreared inconsistent. certificate is in \p lastCertificate if <code>(level >= SL_CERTIFIED)</code>
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,
+		SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A,
+						 const Vector2& b,
 						 int maxPrimes = DEFAULT_MAXPRIMES, const SolverLevel level = SL_DEFAULT) const;
 
 		/** Find a random solution of the general linear system  \c Ax=b over quotient field of a ring.
@@ -696,16 +729,22 @@ namespace LinBox
 		 *   \c SS_INCONSISTENT - system appreared inconsistent. certificate is in lastCertificate if <code>(level >= SL_CERTIFIED)</code>
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus findRandomSolution(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,
-						      int maxPrimes = DEFAULT_MAXPRIMES, const SolverLevel level = SL_DEFAULT) const;
+		SolverReturnStatus findRandomSolution(Vector1& num, Integer& den, const IMatrix& A,
+						      const Vector2& b,
+						      int maxPrimes = DEFAULT_MAXPRIMES,
+						      const SolverLevel level = SL_DEFAULT) const;
 
 		/** Big solving routine to perform random solving and certificate generation.
 		 * Same arguments and return as findRandomSolution, except
 		 *
 		 * @param num  Vector of numerators of the solution
 		 * @param den  The common denominator. <code>1/den * num</code> is the rational solution of <code>Ax = b</code>.
+		 * @param A
+		 * @param b
 		 * @param randomSolution  parameter to determine whether to randomize or not (since solveSingular calls this function as well)
 		 * @param makeMinDenomCert  determines whether a partial certificate for the minimal denominator of a rational solution is made
+		 * @param maxPrimes
+		 * @param level
 		 *
 		 * When <code>(randomSolution == true && makeMinDenomCert == true)</code>,
 		 *   If <code>(level == SL_MONTECARLO)</code> this function has the same effect as calling findRandomSolution.
@@ -714,9 +753,11 @@ namespace LinBox
 		 *
 		 */
 		template <class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus monolithicSolve (Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,
+		SolverReturnStatus monolithicSolve (Vector1& num, Integer& den, const IMatrix& A,
+						    const Vector2& b,
 						    bool makeMinDenomCert, bool randomSolution,
-						    int maxPrimes = DEFAULT_MAXPRIMES, const SolverLevel level = SL_DEFAULT) const;
+						    int maxPrimes = DEFAULT_MAXPRIMES,
+						    const SolverLevel level = SL_DEFAULT) const;
 
 		Ring getRing() const {return _R;}
 
@@ -745,7 +786,8 @@ namespace LinBox
 
 	public:
 
-		inline std::ostream& printTime(const Timer& timer, const char* title, std::ostream& os, const char* pref = "") const {
+		inline std::ostream& printTime(const Timer& timer, const char* title, std::ostream& os, const char* pref = "") const
+		{
 			if (&timer != &totalTimer)
 				totalTimer += timer;
 			if (timer.count() > 0) {
@@ -758,7 +800,8 @@ namespace LinBox
 				return os;
 		}
 
-		inline std::ostream& printDixonTime(const DixonTimer& timer, const char* title, std::ostream& os) const{
+		inline std::ostream& printDixonTime(const DixonTimer& timer, const char* title, std::ostream& os) const
+		{
 			if (timer.ttSetup.count() > 0) {
 				printTime(timer.ttSetup, "Setup", os, title);
 				printTime(timer.ttGetDigit, "Field Apply", os, title);
@@ -771,7 +814,8 @@ namespace LinBox
 			return os;
 		}
 
-		std::ostream& reportTimes(std::ostream& os) const {
+		std::ostream& reportTimes(std::ostream& os) const
+		{
 			totalTimer.clear();
 			printTime(ttNonsingularSetup, "NonsingularSetup", os);
 			printTime(ttNonsingularInv, "NonsingularInv", os);
@@ -824,7 +868,8 @@ namespace LinBox
 
 #if  __LINBOX_HAVE_DGETRF && __LINBOX_HAVE_DGETRI
 		template <class IMatrix, class OutVector, class InVector>
-		SolverReturnStatus solve(OutVector& num, Integer& den, const IMatrix& M, const InVector& b) const {
+		SolverReturnStatus solve(OutVector& num, Integer& den, const IMatrix& M, const InVector& b) const
+		{
 
 			if(M. rowdim() != M. coldim())
 				return SS_FAILED;
@@ -890,7 +935,8 @@ namespace LinBox
 		}
 #else
 		template <class IMatrix, class OutVector, class InVector>
-		SolverReturnStatus solve(OutVector& num, Integer& den, const IMatrix& M, const InVector& b) const {
+		SolverReturnStatus solve(OutVector& num, Integer& den, const IMatrix& M, const InVector& b) const
+		{
 			//                     std::cerr<< "dgetrf or dgetri missing" << std::endl;
 			return SS_FAILED;
 		}
@@ -969,7 +1015,8 @@ namespace LinBox
 		 * @param rp  a RandomPrime generator, set by default
 		 */
 		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
-			_genprime(rp), _prime(p), _R(r) {}
+			_genprime(rp), _prime(p), _R(r)
+		{}
 
 
 		// solve non singular system
@@ -1015,7 +1062,8 @@ namespace LinBox
 		 * @param rp  a RandomPrime generator, set by default
 		 */
 		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
-			_genprime(rp), _prime(p), _R(r) {}
+			_genprime(rp), _prime(p), _R(r)
+		{}
 
 
 		// solve non singular system

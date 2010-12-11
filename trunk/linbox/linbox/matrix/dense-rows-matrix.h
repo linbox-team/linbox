@@ -76,28 +76,24 @@ namespace LinBox
 		/** Read a matrix from the given input stream using field read/write
 		 * @param is Input stream from which to read the matrix
 		 * @param F Field with which to read
-		 * @param format Format of input matrix
 		 */
 		template <class Field>
 		std::istream &read (std::istream &is, const Field &F);
 
 		/** Read a matrix from the given input stream using standard operators
 		 * @param is Input stream from which to read the matrix
-		 * @param format Format of input matrix
 		 */
 		std::istream &read (std::istream &is);
 
 		/** Write a matrix to the given output stream using field read/write
 		 * @param os Output stream to which to write the matrix
 		 * @param F Field with which to write
-		 * @param format Format with which to write
 		 */
 		template <class Field>
 		std::ostream &write (std::ostream &os, const Field &F) const;
 
 		/** Write a matrix to the given output stream using standard operators
 		 * @param os Output stream to which to write the matrix
-		 * @param format Format with which to write
 		 */
 		std::ostream &write (std::ostream &os) const;
 
@@ -155,9 +151,13 @@ namespace LinBox
 		typedef typename Rep::iterator RowIterator;
 		typedef typename Rep::const_iterator ConstRowIterator;
 
+		///
 		RowIterator rowBegin () { return _A.begin (); }
+		///
 		RowIterator rowEnd () { return _A.end (); }
+		///
 		ConstRowIterator rowBegin () const { return _A.begin (); }
+		///
 		ConstRowIterator rowEnd () const { return _A.end (); }
 
 		/** @name Raw iterator
@@ -167,12 +167,18 @@ namespace LinBox
 		 * passing the matrix into an algorithm.
 		 */
 
+		///
 		class RawIterator;
+		///
 		class ConstRawIterator;
 
+		/// rawBegin
 		RawIterator rawBegin ();
+		/// rawEnd
 		RawIterator rawEnd ();
+		/// const rawBegin
 		ConstRawIterator rawBegin () const;
+		/// const rawEnd
 		ConstRawIterator rawEnd () const;
 
 		/** @name Index iterator
@@ -182,12 +188,18 @@ namespace LinBox
 		 * first and second positions, respectively.
 		 */
 
+		/// RawIndexedIterator
 		class RawIndexedIterator;
+		/// ConstRawIndexedIterator
 		class ConstRawIndexedIterator;
 
+		/// rawIndexedBegin
 		RawIndexedIterator rawIndexedBegin ();
+		/// rawIndexedEnd
 		RawIndexedIterator rawIndexedEnd ();
+		/// const rawIndexedBegin
 		ConstRawIndexedIterator rawIndexedBegin () const;
+		/// const rawIndexedEnd
 		ConstRawIndexedIterator rawIndexedEnd () const;
 
 		/** Retrieve a row as a writeable reference
@@ -197,7 +209,8 @@ namespace LinBox
 		{ return _A[i]; }
 
 		/** Construct the transpose of this matrix and place it in the
-		 * DenseRowsMatrix given
+		 * DenseRowsMatrix given.
+		 * @param AT
 		 */
 		DenseRowsMatrix &transpose (DenseRowsMatrix &AT) const;
 

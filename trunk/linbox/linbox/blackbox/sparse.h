@@ -160,9 +160,10 @@ namespace LinBox
 		}
 
 		/** Matrix-vector product
-		 * y = A x.
+		 * \f$y = A x\f$.
 		 * @return reference to output vector y
 		 * @param  x input vector
+		 * @param y
 		 */
 		template <class OutVector, class InVector>
 		OutVector &apply (OutVector &y, const InVector &x) const
@@ -175,9 +176,10 @@ namespace LinBox
 		}
 
 		/** Transpose matrix-vector product
-		 * y = A^T x.
+		 * \f$ y = A^T x\f$.
 		 * @return reference to output vector y
 		 * @param  x input vector
+		 * @param y
 		 */
 		template <class OutVector, class InVector>
 		OutVector &applyTranspose (OutVector& y, const InVector &x) const

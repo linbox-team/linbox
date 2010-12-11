@@ -128,12 +128,13 @@ namespace LinBox
 		}
 
 		/** Application of BlackBox matrix transpose.
-		 * y= transpose(A)*x.
+		 * \f$ y= A^t \cdot  x.\f$
 		 * Requires one vector conforming to the \ref LinBox
 		 * vector @link Archetypes archetype@endlink.
 		 * Required by abstract base class.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
+		 * @param y
 		 */
 		template<class OutVector, class InVector>
 		OutVector& applyTranspose (OutVector &y, const InVector& x) const
