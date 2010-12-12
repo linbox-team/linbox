@@ -20,6 +20,12 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+
+/*! @file solutions/det.h
+ * @ingroup solutions
+ * @brief NO DOC
+ */
+
 #ifndef __LINBOX_det_H
 #define __LINBOX_det_H
 

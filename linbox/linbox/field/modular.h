@@ -20,6 +20,13 @@
  * See COPYING for license information.
  */
 
+/*! @file field/modular.h
+ * @ingroup field
+ * @ingroup modular
+ * @brief NO DOC
+ *
+ */
+
 #ifndef __LINBOX_field_modular_H
 #define __LINBOX_field_modular_H
 

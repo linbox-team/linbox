@@ -13,9 +13,11 @@
  * See COPYING for license information.
  */
 
-/* WARNING this wrapper works only with an improved version of Givaro.
- * This version of givaro won't be available for public yet.
- * But it is available on my web page.
+/*! @file field/givaro-gfq.h
+ *
+ * @warning This wrapper works only with an improved version of Givaro ;
+ * This version of givaro won't be available for public yet ;
+ * But it is available on my web page ;
  * You can send me a mail to get it or for others details.
  */
 
@@ -75,7 +77,7 @@ namespace LinBox
 	{ return i = 20; } // Cardinality must be <= 2^20
 
 
-	/** wrapper of Givaro's GFqDom<int32>  class
+	/** Wrapper of Givaro's GFqDom<int32>  class.
 	  \ingroup field
 
 	 *  This class allows to construct only extension fields with a prime characteristic.

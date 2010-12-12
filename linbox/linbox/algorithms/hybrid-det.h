@@ -63,6 +63,8 @@
 
 #include "linbox/solutions/det.h"
 
+// #define _LB_H_DET_TIMING
+
 namespace LinBox
 {
 
@@ -204,29 +206,34 @@ namespace LinBox
 			commentator.stop ( "first step", NULL, "det");
 			commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 			<< "Iterations done " << iteration.iterations() << "\n";
-		} else
+		} else {}
 #endif
-			Integer res;
+		Integer res;
 
+#ifdef _LB_H_DET_TIMING
 		Timer BT;
 		double time1, time2;
 		BT.start();
+#endif
 
 		while ( early_counter < myfactor && !cra.terminated() ) {
 			++genprime;
 			while (cra.noncoprime(*genprime)) ++genprime;
 			myModular D(*genprime);
 			iteration.primes[early_counter] = *genprime;
-			//		prime(p, early_counter);
+			// prime(p, early_counter);
 			myModular::Element r;
 			D.init(r,0);
+			//!@bug \c cra.initialize(D, iter_0) never called !
 			cra.progress( D, iteration(r, D));
 			++early_counter;
 		}
 
+#ifdef _LB_H_DET_TIMING
 		BT.stop();
 		time1 = BT.usertime()/myfactor;
 		if (time1 < 0) time1 = 0;
+#endif
 		cra.result(res);
 
 		if (early_counter < myfactor) {
@@ -266,17 +273,20 @@ namespace LinBox
 		typename Vector<Integers>:: Dense r_num1 (A. coldim());
 
 		LastInvariantFactor < Integers ,RationalSolver < Integers, myModular, RandomPrimeIterator, DixonTraits > >  LIF(RSolver);
-
+#ifdef _LB_H_DET_TIMING
 		BT.start();
+#endif
 		if (LIF.lastInvariantFactor1(lif, r_num1, A)==0) {
 			//if (lif==0)
 			d = 0;
 			commentator.stop ("is 0", NULL, "det");
 			return d;
 		}
+#ifdef _LB_H_DET_TIMING
 		BT.stop();
 		time2 = BT.usertime();
 		if (time2 < 0) time2 =0;
+#endif
 
 		//commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 		//            << "5 LU time: " << time1 << " LIF time: " << time2 << ")\n";
@@ -416,8 +426,10 @@ namespace LinBox
 
 		Integer tmp;
 
+#ifdef _LB_H_DET_TIMING
 		commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 		<< "1 LU time: " << time1 << " LIF time: " << time2 << ")\n";
+#endif
 		commentator.report(Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 		<< "det/lif " << k<< "\n";
 		//commentator.report(Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
@@ -686,6 +698,9 @@ namespace LinBox
 #endif
 
 } // end of LinBox namespace
+
+#undef _LB_H_DET_TIMING
+
 #endif // __LINBOX_hybrid_det_H
 
 

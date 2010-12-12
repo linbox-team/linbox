@@ -25,15 +25,6 @@
 #ifndef __LINBOX_cra_domain_H
 #define __LINBOX_cra_domain_H
 
-/*! @ingroup algorithms
- * @defgroup CRA Chinese Remaindering Algorithm.
- * @{
- * @brief Chinese Remaindering Algorithm
- *
- * no real doc so far.
- * @}
- */
-
 /*! @file algorithms/cra-domain.h
  * @brief Wrapper around OMP/SEQ version of ChineseRemainder.
  * @ingroup algorithms

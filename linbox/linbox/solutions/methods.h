@@ -25,6 +25,11 @@
  * See COPYING for license information.
  */
 
+/*! @file solutions/methods.h
+ * @ingroup solutions
+ * @brief NO DOC
+ */
+
 #ifndef __LINBOX_method_H
 #define __LINBOX_method_H
 
