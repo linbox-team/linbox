@@ -56,7 +56,8 @@ namespace LinBox
 		/** @brief operator++()
 		 *  creates a new random prime
 		 */
-		inline RandomPrimeIterator &operator ++ () {
+		inline RandomPrimeIterator &operator ++ ()
+		{
 			integer::random(_prime,_bits-1);
 			_prime = _shift - _prime;
 			nextprime( _prime, _prime);
@@ -66,17 +67,20 @@ namespace LinBox
 		/** @brief operator*()
 		 *  returns the actual prime
 		 */
-		Prime_Type &operator *  () {
+		Prime_Type &operator *  ()
+		{
 			return _prime;
 		}
-		Prime_Type & randomPrime() {
+		Prime_Type & randomPrime()
+		{
 			return _prime;
 		}
 
 		/** @brief setSeed (unsigned long ul)
 		 *  Set the random seed to be ul.
 		 */
-		void static setSeed(unsigned long ul) {
+		void static setSeed(unsigned long ul)
+		{
 			integer::seeding(ul);
 		}
 

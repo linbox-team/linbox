@@ -7,6 +7,11 @@
  * with mods by bds
  */
 
+/** @file blackbox/tripplesbb.h
+ * @ingroup blackbox
+ * @brief NO DOC
+ */
+
 #ifndef __LINBOX_triplesbb_H
 #define __LINBOX_triplesbb_H
 
@@ -30,7 +35,6 @@ namespace LinBox
 	 * To be used for interface between LinBox and computer algebra systems such
 	 * as Maple that can encode sparse matrices in the NAGSparse format
 	 */
-
 	template<class _Field>
 	class TriplesBB : public BlackboxInterface{
 

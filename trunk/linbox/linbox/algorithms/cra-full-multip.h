@@ -32,6 +32,12 @@
 
 #include "linbox/algorithms/lazy-product.h"
 
+/*! @file algorithms/cra-full-multip.h
+ * @ingroup algorithms
+ * @ingroup CRA
+ * @brief NO DOC
+ */
+
 namespace LinBox
 {
 

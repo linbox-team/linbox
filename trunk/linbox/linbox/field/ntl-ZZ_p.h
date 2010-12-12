@@ -12,6 +12,12 @@
  * See COPYING for license information.
  */
 
+/*! @file field/ntl-ZZ_p.h
+ * @ingroup field
+ * @ingroup NTL
+ * @brief NO DOC
+ */
+
 #ifndef __LINBOX_field_ntl_UPPER_ZZ_p_H
 #define __LINBOX_field_ntl_UPPER_ZZ_p_H
 
@@ -258,13 +264,14 @@ namespace LinBox
 	}
 
 
-	/***************************************************************
+	/**
 	 *
 	 * @brief Wrapper of zz_p from NTL.
 	 * Uses nice mod p via floating pt trick.
 	 *
 	 */
-	struct NTL_ZZ_p: public UnparametricField<NTL::ZZ_p>{
+	struct NTL_ZZ_p: public UnparametricField<NTL::ZZ_p> {
+
 		NTL_ZZ_p(integer p, size_t e = 1) :
 			UnparametricField<NTL::ZZ_p>(p, e)
 		{}

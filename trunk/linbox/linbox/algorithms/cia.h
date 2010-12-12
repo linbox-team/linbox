@@ -21,16 +21,17 @@
 namespace LinBox
 {
 
-	/* Algorithm computing the integer characteristic polynomial
+	/*! @ingroup algorithms
+	 * Algorithm computing the integer characteristic polynomial
 	 * of a dense matrix.
-	 * See [Dumas-Pernet-Wan ISSAC05]
+	 *
+	 * @bib [Dumas-Pernet-Wan ISSAC05]
 	 *
 	 *
 	 */
 	template < class Polynomial, class Blackbox >
 	Polynomial& cia (Polynomial & P, const Blackbox & A,
 			 const Method::BlasElimination  & M)
-
 	{
 		commentator.start ("Integer Dense Charpoly ", "CIA");
 

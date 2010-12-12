@@ -10,7 +10,7 @@
   This interface consists of the methods required of all \ref LinBox
   random iterator generators.
 
-  @see Archetypes
+  @see \ref Archetypes
 
  */
 //@{

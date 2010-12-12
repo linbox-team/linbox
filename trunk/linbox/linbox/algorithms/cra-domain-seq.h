@@ -35,7 +35,7 @@
 #include <vector>
 #include <utility>
 
-//$define CRATIMING
+//$define _LB_CRATIMING
 
 namespace LinBox
 {
@@ -46,6 +46,7 @@ namespace LinBox
 
 
 	/// No doc.
+	/// @ingroup CRA
 	template<class CRABase>
 	struct ChineseRemainderSeq {
 		typedef typename CRABase::Domain	Domain;
@@ -59,15 +60,18 @@ namespace LinBox
 		template<class Param>
 		ChineseRemainderSeq(const Param& b) :
 			Builder_(b)
-		{IterCounter=0;}
+		{
+			IterCounter=0;
+		}
 		ChineseRemainderSeq(const CRABase& b) :
 			Builder_(b)
-		{IterCounter=0;}
+		{
+			IterCounter=0;
+		}
 
 		/** \brief The \ref CRA loop
-		 * \ingroup CRA
 		 *
-		 * Given a function to generate residues mod a single prime,
+		 * Given a function to generate residues \c mod a single prime,
 		 * this loop produces the residues resulting from the Chinese
 		 * remainder process on sufficiently many primes to meet the
 		 * termination condition.
@@ -294,7 +298,7 @@ namespace LinBox
 			return m;
 		}
 
-#ifdef CRATIMING
+#ifdef _LB_CRATIMING
 		inline std::ostream& reportTimes(std::ostream& os)
 		{
 			os <<  "Iterations:" << IterCounter << "\n";
@@ -305,7 +309,7 @@ namespace LinBox
 
 	};
 
-#ifdef CRATIMING
+#ifdef _LB_CRATIMING
 	class CRATimer {
 	public:
 		mutable Timer ttInit, ttIRecon, /* ttImaging, ttIteration,*/ ttOther;
@@ -321,5 +325,7 @@ namespace LinBox
 #endif
 
 }
+
+#undef _LB_CRATIMING
 
 #endif //__LINBOX_sequential_cra_H
