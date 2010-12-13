@@ -246,7 +246,7 @@ class MatrixStream {
      * @throws MatrixStreamError if an error occurs in reading the
      *         first line (i.e. on initialization).
      */
-    	MatrixStream( const Field& fld, std::istream& i );
+    	MatrixStream( const Field& fld, std::istream& in );
 
     /** Destructor */
 	~MatrixStream() { delete reader; }

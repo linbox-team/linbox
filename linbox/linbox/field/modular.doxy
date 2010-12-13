@@ -3,7 +3,7 @@
 /*! @ingroup field
   @defgroup modular Modular
 
-  @brief Modular Field is a representation of \f$\mathb{Z}/p\mathbf{Z}\$.
+  @brief Modular Field is a representation of \f$\mathbf{Z}/p\mathbf{Z}\f$.
 
   - Modular
   - Modular Balanced

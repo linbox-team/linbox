@@ -43,12 +43,9 @@
 
 //------------------------------------
 
-/*! @brief LiDIA
+/*! @file field/lidia-gfq.h
+ * @brief LiDIA : NO DOC
 * \ingroup field
-* \defgroup LiDIA
-* @{
-* Limited doc so far.
-* @}
 */
 
 // Namespace in which all LinBox library code resides
