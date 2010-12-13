@@ -11,6 +11,7 @@ all all-local: $(USE_TARGETS)
 install install-data-local: $(INSTALL_TARGETS)
 
 docs :
+	sed -i 's/^\\version.*/\\version\ $(VERSION)/' mainpage.doxy
 	doxygen
 	cp tutorial.html linbox-html
 	cp install-dist.html linbox-html

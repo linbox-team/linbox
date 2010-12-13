@@ -21,6 +21,12 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/*! @file algorithms/cra-early-single.h
+ * @ingroup algorithms
+ * @brief NO DOC
+ */
+
+
 #ifndef __LINBOX_cra_early_single_H
 #define __LINBOX_cra_early_single_H
 
@@ -35,6 +41,10 @@
 namespace LinBox
 {
 
+	/*!  @brief NO DOC
+	 * @ingroup CRA
+	 *
+	 */
 	template<class Domain_Type>
 	struct EarlySingleCRA {
 		typedef Domain_Type			Domain;

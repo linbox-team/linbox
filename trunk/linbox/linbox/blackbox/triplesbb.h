@@ -7,7 +7,7 @@
  * with mods by bds
  */
 
-/** @file blackbox/tripplesbb.h
+/** @file blackbox/triplesbb.h
  * @ingroup blackbox
  * @brief NO DOC
  */

@@ -20,6 +20,10 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/*! @file algorithms/cra-early-multip.h
+ * @ingroup algorithms
+ * @brief NO DOC
+ */
 
 #ifndef __LINBOX_cra_early_multip_H
 #define __LINBOX_cra_early_multip_H
@@ -37,6 +41,11 @@
 
 namespace LinBox
 {
+
+	/*!  @brief NO DOC
+	 * @ingroup CRA
+	 *
+	 */
 
 	template<class Domain_Type>
 	struct EarlyMultipCRA : public EarlySingleCRA<Domain_Type>, public FullMultipCRA<Domain_Type> {

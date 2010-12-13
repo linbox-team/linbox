@@ -62,7 +62,7 @@ field and ring interfaces and the many specific representations can be used for
 purposes other than linear algebra computation or with algorithms not provided
 by %LinBox.
 
-\section using Using Linbox
+\section using Using LinBox
 
 - \subpage copy
 
@@ -76,7 +76,7 @@ by %LinBox.
 have been first William J Turner, then Bradford Hovinen, and recently
 David Saunders.
 
-\version 1.7
+\version 1.1.7
 
 \par Support.
 The project is supported by
@@ -87,7 +87,7 @@ and by CNRS in France.
 
 /*! \page copy Copyright and Licencing
   The copyright and licensing (GNU LGPL) info of %LinBox is in \c COPYING
-  \verbinclude "COPYING.
+  \verbinclude "COPYING".
 */
 
 /*!  \page inst Installing

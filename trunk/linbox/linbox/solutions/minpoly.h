@@ -225,8 +225,10 @@ namespace LinBox
 			     const RingCategories::IntegerTag   &tag,
 			     const MyMethod                     &M)
 	{
-		//             if (A.coldim() != A.rowdim())
-		//                     throw LinboxError("LinBox ERROR: matrix must be square for minimal polynomial computation\n");
+#if 0
+		if (A.coldim() != A.rowdim())
+			throw LinboxError("LinBox ERROR: matrix must be square for minimal polynomial computation\n");
+#endif
 
 #ifdef __LINBOX_HAVE_MPI
 		Communicator *c = M.communicatorp();
@@ -243,7 +245,7 @@ namespace LinBox
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
 		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
 		IntegerModularMinpoly<Blackbox,MyMethod> iteration(A, M);
-		std::vector<integer> PP; // use of integer du to non genericity of cra. PG 2005-08-04
+		std::vector<integer> PP; // use of integer due to non genericity of cra. PG 2005-08-04
 #ifdef __LINBOX_HAVE_MPI
 		MPIChineseRemainder< EarlyMultipCRA<Modular<double> > > cra(3UL, c);
 		cra(PP, iteration, genprime);
