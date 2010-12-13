@@ -37,10 +37,10 @@ namespace LinBox
 
 	public:
 
-		/** generates random matrices used in EGV and EGV+ algorithm
+		/** Generates random matrices used in EGV and EGV+ algorithm.
 
 		 * [I, R] or [I, R]^t, where R is a random matrix.
-		 General case.
+		 * General case.
 		 */
 		template <class Blackbox, class Field>
 		static Blackbox*& randomMatrix (Blackbox* &, const Field& f,
@@ -51,7 +51,8 @@ namespace LinBox
 		template<class Field>
 		static DenseMatrix<Field>*& randomMatrix( DenseMatrix<Field>*& Ap,
 							  const Field& f,
-							  int rowdim, int coldim ) {
+							  int rowdim, int coldim )
+		{
 
 			Ap = new DenseMatrix<Field>(f, rowdim, coldim);
 			typename DenseMatrix<Field>::RawIterator Ap_p;
@@ -83,11 +84,12 @@ namespace LinBox
 		}
 
 		// constructor a very special random sparse matrix
-		// [I, R] or [I, R}^t, where R is a sparse random matrix.
+		// [I, R] or [I, R]^t, where R is a sparse random matrix.
 		template<class Field>
 		static SparseMatrix<Field>*& randomMatrix( SparseMatrix<Field>*& Ap,
 							   const Field& f,
-							   int rowdim, int coldim) {
+							   int rowdim, int coldim)
+		{
 
 			Ap = new SparseMatrix<Field>(f, rowdim, coldim);
 
@@ -147,8 +149,9 @@ namespace LinBox
 		}
 
 		template<typename _Tp1>
-		struct rebind
-		{ typedef RandomMatrix other; };
+		struct rebind {
+			typedef RandomMatrix other;
+		};
 
 	};
 }

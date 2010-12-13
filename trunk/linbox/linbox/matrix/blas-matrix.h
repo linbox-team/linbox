@@ -33,6 +33,7 @@
 #include <linbox/util/debug.h>
 #include <linbox/matrix/matrix-category.h>
 
+#include "linbox/algorithms/cra-full-multip.h"
 namespace LinBox
 {
 
@@ -167,9 +168,9 @@ namespace LinBox
 			typename std::vector<typename Field::Element>::iterator e_p, tmp_p;
 
 
-			//for (col_p = colBegin(), e_p = e.begin();
 			for (col_p = DenseSubmatrix<_Element>:: colBegin(), e_p = e.begin();
-			     e_p != e.end(); ++ col_p, ++ e_p) {
+			     e_p != e.end(); ++ col_p, ++ e_p)
+			{
 
 				F.assign(*e_p, one);
 
@@ -230,7 +231,7 @@ namespace LinBox
 		}
 
 
-#if 0
+#if 1
 		// Constructor from matrix (no copy)
 		BlasMatrix ( DenseMatrixBase<Element>& A ) :
 			DenseSubmatrix<Element>(A,0,0,A.rowdim(),A.coldim()), _stride(A.coldim()) , _alloc(false)
@@ -246,7 +247,9 @@ namespace LinBox
 		// Copy Constructor of a matrix (copying data)
 		BlasMatrix (const BlasMatrix<Element>& A) :
 			DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (*A._M)),0,0,A.rowdim(),A.coldim()), _stride(A._stride), _alloc(true)
-		{ _ptr = this->_M->FullIterator(); }
+		{
+			_ptr = this->_M->FullIterator();
+		}
 
 #if 0
 		// Copy Contructor of a matrix (no copy is done, just through pointer)
@@ -268,8 +271,7 @@ namespace LinBox
 
 		// Rebind operator
 		template<typename _Tp1>
-		struct rebind
-		{
+		struct rebind {
 			typedef BlasMatrix<typename _Tp1::Element> other;
 
 			void operator() (other & Ap, const Self_t& A, const _Tp1& F)
@@ -411,15 +413,13 @@ namespace LinBox
 	}; // end of class TriangularBlasMatrix
 
 	template <class Element>
-	struct MatrixTraits< BlasMatrix<Element> >
-	{
+	struct MatrixTraits< BlasMatrix<Element> > {
 		typedef BlasMatrix<Element> MatrixType;
 		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
 	};
 
 	template <class Element>
-	struct MatrixTraits< const BlasMatrix<Element> >
-	{
+	struct MatrixTraits< const BlasMatrix<Element> > {
 		typedef const BlasMatrix<Element> MatrixType;
 		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
 	};

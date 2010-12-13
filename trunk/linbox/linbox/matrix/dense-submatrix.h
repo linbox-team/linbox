@@ -270,8 +270,7 @@ namespace LinBox
 	};
 
 	template <class Element>
-	struct MatrixTraits< DenseSubmatrix<Element> >
-	{
+	struct MatrixTraits< DenseSubmatrix<Element> > {
 		typedef DenseSubmatrix<Element> MatrixType;
 		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
 	};

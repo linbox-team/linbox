@@ -1,11 +1,11 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/algorithms/blas-domain.inl
- * Copyright (C) 2004 Pascal Giorgi, Clément Pernet
+ * Copyright (C) 2004 Pascal Giorgi, ClÃ©ment Pernet
  *
  * Written by :
  *               Pascal Giorgi  pascal.giorgi@ens-lyon.fr
- *               Clément Pernet clement.pernet@imag.fr
+ *               ClÃ©ment Pernet clement.pernet@imag.fr
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -647,7 +647,8 @@ namespace LinBox
 	};
 
 	/*
-	 * specialization for Operand1 of type BlasMatrix<Element> and Operand2 of type TriangularBlasMatrix<Element>
+	 * specialization for Operand1 of type BlasMatrix<Element> and Operand2
+	 * of type TriangularBlasMatrix<Element>
 	 */
 
 	// Matrix permutation product C = A*B

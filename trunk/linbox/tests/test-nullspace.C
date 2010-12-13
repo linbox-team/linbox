@@ -92,7 +92,7 @@ void RandomMatrixWithRank(const Field & F,
 			Gn.random (*(B+i*m+j)); // random mais pas nul.. euh... et sur Z/2 ?? :/
 	}
 	// Create C a random matrix of rank \p ( m x n format)
-	//                for (size_t i = 0; i < std::min(rank,m); ++i){
+	// for (size_t i = 0; i < std::min(rank,m); ++i)
 	for (size_t i = 0; i < rank; ++i){
 		size_t j = 0;
 		for ( ; j < std::min(i,n) ; ++j)
