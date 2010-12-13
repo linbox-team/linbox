@@ -3,13 +3,13 @@
 # see COPYING for licence
 
 INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/linbox
-# AM_LDFLAGS = -llapack -lcblas -latlas 
+# AM_LDFLAGS = -llapack -lcblas -latlas
 SAFER_FLAGS = -g -Wall
 # bds: no need to optimize for unit/regression tests, and opt adds a lot to compilation time
-AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly  
-#AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly -O2 
+AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly
+#AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly -O2
 # AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -DDEBUG -O0
-# AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -D__LINBOX_HAVE_DGETRF -D__LINBOX_HAVE_DGETRI 
+# AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -D__LINBOX_HAVE_DGETRF -D__LINBOX_HAVE_DGETRI
 # AM_CFLAGS = -g -Wall
 
 SUBDIRS = data
@@ -20,7 +20,7 @@ LDADD = $(BLAS_LIBS) $(NTL_LIBS) $(GIVARO_LIBS) $(GMP_LIBS)  $(LIDIA_LIBS)
 EXTRA_DIST=\
 test-common.C
 
-# Put an entry for your test-mycomponent.C here (or in one of the other test groups).  
+# Put an entry for your test-mycomponent.C here (or in one of the other test groups).
 # Don't forget to add a test_mycomponent_SOURCES entry below.
 #
 # Once present, tests should remain present, being moved from one group to another.
@@ -78,7 +78,8 @@ BASIC_TESTS =  \
         test-rational-solver-adaptive   \
         test-last-invariant-factor      \
         test-charpoly  \
-		test-ftrmm
+		test-ftrmm \
+		test-cra
 
 # tests of components not adhering to LinBox requirements.
 NONCOMPLIANT_TESTS =                   \
@@ -95,7 +96,7 @@ DUBIOUS_TESTS =                 \
         test-zo
 
 NONCOMPILING_TESTS =           \
-        test-dense-zero-one     
+        test-dense-zero-one
 
 FAILING_TESTS =                \
         test-rat-charpoly      \
@@ -106,8 +107,8 @@ FAILING_TESTS =                \
         test-mg-block-lanczos        \
         test-la-block-lanczos
 
-USE_NONCOMPILING_TESTS = 
-USE_FAILING_TESTS = 
+USE_NONCOMPILING_TESTS =
+USE_FAILING_TESTS =
 # comment out these two lines to avoid facing reality
 #USE_NONCOMPILING_TESTS += $(NONCOMPILING_TESTS)
 #USE_FAILING_TESTS += $(FAILING_TESTS)
@@ -122,7 +123,7 @@ BENCHMARKS =                    \
 #       test-lsp         lsp.h superceded by factorized-matrix.h
 # removed test
 #        test-nag-sparse
-#        test-image-field       replaced by hom 
+#        test-image-field       replaced by hom
 #       test-lsp
 # I put test-gssv_rank in hmrg:~saunders/gen_superlu.  It is not linbox until and unless it is made to work
 # test-gssv is an ntl test
@@ -148,7 +149,7 @@ NTL_TESTS =                           \
 
 LIDIA_TESTS =                         \
         test-lidia-gfq
- 
+
 ATLAS_TESTS =                         \
         test-optimization
 
@@ -263,7 +264,7 @@ test_subvector_SOURCES =                \
 
 test_vector_domain_SOURCES =            \
         test-vector-domain.C            \
-        test-vector-domain.h                
+        test-vector-domain.h
 
 test_matrix_domain_SOURCES =            \
         test-matrix-domain.C            \
@@ -440,7 +441,7 @@ test_zero_one_SOURCES =                       \
 
 test_modular_int_SOURCES =                \
         test-modular-int.C                \
-        test-common.h        
+        test-common.h
 
 test_modular_short_SOURCES =                \
         test-modular-short.C                \
@@ -492,59 +493,64 @@ test_nullspace_SOURCES=    \
         test-common.h      \
         test-nullspace.C
 
-test_bitonic_sort_SOURCES=    \
-        test-common.h         \
+test_bitonic_sort_SOURCES=              \
+        test-common.h                   \
         test-bitonic-sort.C
 
-test_rational_solver_SOURCES =  \
-        test-common.h           \
+test_rational_solver_SOURCES =          \
+        test-common.h                   \
         test-rational-solver.C
 
-test_blas_domain_SOURCES=  \
-        test-common.h      \
+test_blas_domain_SOURCES=               \
+        test-common.h                   \
         test-blas-domain.C
 
-test_ffpack_SOURCES=    \
-        test-common.h   \
+test_ffpack_SOURCES=                    \
+        test-common.h                   \
         test-ffpack.C
 
-test_matrix_stream_SOURCES =         \
+test_matrix_stream_SOURCES =            \
         test-matrix-stream.C
 
-test_la_block_lanczos_SOURCES =      \
+test_la_block_lanczos_SOURCES =         \
         test-la-block-lanczos.C
 
-test_mg_block_lanczos_SOURCES =      \
+test_mg_block_lanczos_SOURCES =         \
         test-mg-block-lanczos.C
 
 test_rational_solver_adaptive_SOURCES = \
         test-rational-solver-adaptive.C \
         test-common.h
 
+test_cra_SOURCES =                      \
+        test-cra.C                      \
+        test-common.h
+
+
 # NTL test
 
-test_smith_form_adaptive_SOURCES=    \
-        test-common.h                \
+test_smith_form_adaptive_SOURCES=      \
+        test-common.h                  \
         test-smith-form-adaptive.C
 
-benchmark_fields_SOURCES=    \
-        test-common.h        \
+benchmark_fields_SOURCES=              \
+        test-common.h                  \
         benchmark-fields.C
 
-benchmark_blas_domain_SOURCES=  \
-        test-common.h           \
+benchmark_blas_domain_SOURCES=         \
+        test-common.h                  \
         benchmark-blas-domain.C
 
-test_isposdef_SOURCES=       \
-        test-common.h        \
+test_isposdef_SOURCES=                 \
+        test-common.h                  \
         test-isposdef.C
 
-test_dense_zero_one_SOURCES=   \
-        test-blackbox.h        \
+test_dense_zero_one_SOURCES=           \
+        test-blackbox.h                \
         test-dense-zero-one.C
 
-test_ispossemidef_SOURCES=   \
-        test-common.h        \
+test_ispossemidef_SOURCES=            \
+        test-common.h                 \
         test-ispossemidef.C
 
 test_ftrmm_SOURCES = \

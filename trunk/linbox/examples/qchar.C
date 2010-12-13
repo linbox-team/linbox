@@ -51,7 +51,7 @@ typedef Rationals::Element Quotient;
 typedef DenseMatrix<Integers > Blackbox;
 typedef SparseMatrix<Rationals > RBlackbox;
 
-//#define CONT_FR
+//#define _LB_CONT_FR
 
 typedef UserTimer myTimer;
 
@@ -75,11 +75,13 @@ struct PrecRationalModularCharpoly {
 	const MyMethod &M;
 	const Integer &prec;
 
-	PrecRationalModularCharpoly(const Integer& detPrec, const Blackbox& b, const MyMethod& n)
-	: prec(detPrec), A(b), M(n) {}
+	PrecRationalModularCharpoly(const Integer& detPrec, const Blackbox& b, const MyMethod& n) :
+		prec(detPrec), A(b), M(n)
+	{}
 
 	template<typename Polynomial, typename Field>
-	Polynomial& operator()(Polynomial& P, const Field& F) const {
+	Polynomial& operator()(Polynomial& P, const Field& F) const
+	{
 
 		typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 		FBlackbox * Ap;
@@ -116,11 +118,13 @@ struct PrecRationalModularMinpoly {
 	const DVector &prec;
 
 
-	PrecRationalModularMinpoly(const DVector& detPrec, const Blackbox& b, const MyMethod& n)
-	: prec(detPrec), A(b), M(n) {}
+	PrecRationalModularMinpoly(const DVector& detPrec, const Blackbox& b, const MyMethod& n) :
+		prec(detPrec), A(b), M(n)
+	{}
 
 	template<typename Polynomial, typename Field>
-	Polynomial& operator()(Polynomial& P, const Field& F) const {
+	Polynomial& operator()(Polynomial& P, const Field& F) const
+	{
 
 		typedef typename Blackbox::template rebind<Field>::other FBlackbox;
 		FBlackbox * Ap;
@@ -360,30 +364,36 @@ void generate_precRatMat(string& filename, RMatrix& M, DVector& den, Integer& de
 	cout << "Reading matrix\n";
 
 	den.resize(m,1);
-	while (1) {//temp fix
-		//while (is >> m) {//temp fix
-		//if (m==0) break;//temp fix
+	while (1) {//! @todo temp fix
+#if 0
+		while (is >> m) //temp fix
+			if (m==0) break;//temp fix
+#endif
 		is >> m;//temp fix
 		is >> n;
-		//cout << m << n << "\n";
-		//    long double x;
-		//    is >> x;
+#if 0
+		cout << m << n << "\n";
+		long double x;
+		is >> x;
+#endif
 		char xstr[500];
 		char numstr[500];
-		//    cout << x << " ";
-		//    sprintf(xstr, "%100f", x);
-		//    cout << xstr << " " ;
-		//    is >> c; int i=0;
-		//while (c!= '\n') {
-		//  xstr[i]=c;
-		//  ++i;
-		//  is >> c;
-		//  if (i>=199) {
-		//	xstr[i]=0;
-		//	break;
-		//      }
-		//    }
-		//is >> c;
+#if 0
+		cout << x << " ";
+		sprintf(xstr, "%100f", x);
+		cout << xstr << " " ;
+		is >> c; int i=0;
+		while (c!= '\n') {
+			xstr[i]=c;
+			++i;
+			is >> c;
+			if (i>=199) {
+				xstr[i]=0;
+				break;
+			}
+		}
+		is >> c;
+#endif
 		is.getline(xstr,500);
 
 		Integer ten=1;
@@ -494,7 +504,7 @@ void generate_precRatMat(string& filename, RMatrix& M, DVector& den, Integer& de
 		Integer num (numstr);
 		Integer g;
 
-#ifdef CONT_FR
+#ifdef _LB_CONT_FR
 		double epsi = 1/(double)ten*10;
 		size_t s=10;
 		continuedFractionIn(num, ten, epsi, s, ten);
@@ -519,5 +529,6 @@ void generate_precRatMat(string& filename, RMatrix& M, DVector& den, Integer& de
 		den[i]=d*den[i+1];
 		cout << den[i] << "\n";
 	}
-	}
+}
 
+#undef _LB_CONT_FR
