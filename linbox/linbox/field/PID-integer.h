@@ -401,7 +401,7 @@ namespace LinBox
 						den = t0;
 					}
 
-					//                                if (t0 > m/k) {
+					// if (t0 > m/k)
 					if (den > m/k) {
 						if (!recursive)
 							std::cerr
@@ -435,66 +435,66 @@ namespace LinBox
 						return false;
 					}
 				}
-				}
-				// (i)
-				if (den < 0) {
-					Integer::negin(num);
-					Integer::negin(den);
-				}
-
-				// std::cerr << "RatRecon End " << num << "/" << den << std::endl;
-				return true;
+			}
+			// (i)
+			if (den < 0) {
+				Integer::negin(num);
+				Integer::negin(den);
 			}
 
-		}; //end of class PID_integer
+			// std::cerr << "RatRecon End " << num << "/" << den << std::endl;
+			return true;
+		}
 
-		template<>
-		struct ClassifyRing<PID_integer>
-		{
-			typedef RingCategories::IntegerTag categoryTag;
-		};
+	}; //end of class PID_integer
+
+	template<>
+	struct ClassifyRing<PID_integer>
+	{
+		typedef RingCategories::IntegerTag categoryTag;
+	};
 
 
 #if 0 // Specialization for Homomorphism
-		template <class _Target>
-		class Hom<PID_integer, _Target>
-		{
-		public:
-			typedef PID_integer Source;
-			typedef _Target Target;
-			typedef typename Source::Element SrcElt;
-			typedef typename Target::Element Elt;
+	template <class _Target>
+	class Hom<PID_integer, _Target>
+	{
+	public:
+		typedef PID_integer Source;
+		typedef _Target Target;
+		typedef typename Source::Element SrcElt;
+		typedef typename Target::Element Elt;
 
-			Hom(const Source& S, const Target& T) :
-			       	_source (S), _target(T)
-			{}
+		Hom(const Source& S, const Target& T) :
+			_source (S), _target(T)
+		{}
 
-			Elt& image(Elt& t, const SrcElt& s) {
-				if  (s.bitsize() > 52 )
-					_target.init(t,s);
-				else
-					_target.init(t, (double)s);
-				return t;
-			}
+		Elt& image(Elt& t, const SrcElt& s) {
+			if  (s.bitsize() > 52 )
+				_target.init(t,s);
+			else
+				_target.init(t, (double)s);
+			return t;
+		}
 
-			SrcElt& preimage(SrcElt& s, const Elt& t) {
-				_source.convert(s,t);
-				return s;
-			}
+		SrcElt& preimage(SrcElt& s, const Elt& t) {
+			_source.convert(s,t);
+			return s;
+		}
 
-			const Source& source() { return _source;}
+		const Source& source() { return _source;}
 
-			const Target& target() { return _target;}
+		const Target& target() { return _target;}
 
-		protected:
-			double tmp;
-			Source _source;
-			Target _target;
+	protected:
+		double tmp;
+		Source _source;
+		Target _target;
 
-		};
+	};
 
 #endif
-	} //end of namespace LinBox
+} //end of namespace LinBox
 
 #endif //__LINBOX_pid_integer_H
 

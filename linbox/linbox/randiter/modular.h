@@ -286,6 +286,50 @@ namespace LinBox
 			(_r.randomIntRange (0, _size)); }
 
 	};
+
+	template <>
+	class ModularBase<uint64>::RandIter {
+		MersenneTwister _r;
+		uint64 _size;
+		uint64 _seed;
+
+	public:
+		typedef uint64 Element;
+
+		RandIter (const Modular<Element> &F, const integer &size = 0, const integer &seed = 0)
+		{
+			_seed = seed;
+			_size = size;
+
+			if (_seed == 0) _seed = time (NULL);
+
+			integer c;
+
+			F.cardinality (c);
+
+			linbox_check (c != -1);
+
+			if ((_size == 0) || (_size > double (c)))
+				_size = c;
+
+			_r.setSeed (_seed);
+		}
+
+		RandIter (const ModularBase<Element>::RandIter &r) :
+			_r (r._r), _size (r._size), _seed (r._seed)
+		{}
+
+		~RandIter () {}
+		RandIter &operator= (const RandIter &r)
+		{ _r = r._r; return *this; }
+		Element &random (Element &a) const
+		{ return a = _r.randomIntRange (0, _size); }
+		ElementAbstract &random (ElementAbstract &a) const
+		{ return a = ElementEnvelope <Modular<Element> >
+			(_r.randomIntRange (0, _size)); }
+
+	};
+
 }// namespace LinBox
 
 #endif // __LINBOX_large_modular_randiter_H
