@@ -32,19 +32,19 @@
       run the script
       <b>configure,</b> optionally you may specify the LinBox
       installation directory or an optional package directory using prefixes:
-      <blockquote><tt>> cd linbox</tt>
-	<br><tt>> ./configure [--prefix=&lt;inst. dir.> --with-package=&lt;location> --enable-feature]</tt></blockquote>
+      <blockquote><tt>&gt; cd linbox</tt>
+	<br><tt>&gt; ./configure [--prefix=&lt;inst. dir.&gt; --with-package=&lt;location&gt; --enable-feature]</tt></blockquote>
       <a href="http://swox.com/gmp">Gmp</a> is required (preferably compiled with the "--enable-cxx" option) and its location
-      must be specified &lt;gmp location> if not at a standard location such as
+      must be specified &lt;gmp location&gt; if not at a standard location such as
       <tt>/usr</tt> or <tt>/usr/local</tt>:
-      <blockquote><tt>>&nbsp;./configure --with-gmp= &lt;gmp location>
+      <blockquote><tt>&gt;&nbsp;./configure --with-gmp= &lt;gmp location&gt;
 	  [...]</tt></blockquote>
       A source of BLAS (e.g. Fortran <a href="http://www.tacc.utexas.edu/resources/software">Goto</a> or C <a href="http://math-atlas.sourceforge.net/">Atlas</a>) 
 is also required and its location
       must be specified if not standard.
-      <blockquote><tt>>&nbsp;./configure --with-blas=-L&lt;gotoblas location> -lgoto -lpthread
+      <blockquote><tt>&gt;&nbsp;./configure --with-blas=-L&lt;gotoblas location&gt; -lgoto -lpthread
 	  [...]</tt></blockquote>
-      <blockquote><tt>>&nbsp;./configure --with-blas= &lt;atlas location>
+      <blockquote><tt>&gt;&nbsp;./configure --with-blas= &lt;atlas location&gt;
 	  [...]</tt></blockquote>
       This sets up the library and runs&nbsp; .<tt>/configure</tt>
       
@@ -59,10 +59,10 @@ is also required and its location
 	<p><b> 3.2.</b> The use of an optional package is switched on by specifying the directory
 	  where it can be found:
 	<blockquote>
-	  --with-package=&lt;package_directory> 
+	  --with-package=&lt;package_directory&gt;
 	  <br>
 	  <br>
-	  &lt;package_directory> can be left blank if the package is installed in a standard directory (<tt>/usr</tt> or <tt>/usr/local</tt>)
+	  &lt;package_directory&gt; can be left blank if the package is installed in a standard directory (<tt>/usr</tt> or <tt>/usr/local</tt>)
 	  <br>
 	  Ex: <tt> ./configure --with-givaro</tt> will enable the use of Givaro library and assume it is installed in a standard directory
 	  <br>
@@ -73,32 +73,32 @@ is also required and its location
 	  <table  border="3" style="text-align: left; margin-left: 30pt;" cellpadding="5" cellspacing="5">
 	    <tr>
 	      <td> <a href="http://ljk.imag.fr/CASYS/LOGICIELS/givaro/givaro-3.2.tar.gz"> Givaro (v3.2.6)</a> </td>
-	      <td> <tt> --with-givaro= &lt;givaro_directory></tt> </td>
+	      <td> <tt> --with-givaro= &lt;givaro_directory&gt;</tt> </td>
 	      <td> used for finite field arithmetic.</td>
 	    </tr>
 	    <tr>
 	      <td> <a href="http://shoup.net/ntl/">NTL</a></td>
-	      <td> <tt> --with-ntl= &lt;ntl_directory></tt></td>
+	      <td> <tt> --with-ntl= &lt;ntl_directory&gt;</tt></td>
 	      <td> used for finite field, polynomial arithmetic.</td>
 	    </tr>
 	    <tr>
 	      <td> <a href="http://www.informatik.tu-darmstadt.de/TI/LiDIA/"> Lidia </a></td>
-	      <td> <tt> --with-lidia= &lt;lidia_directory></tt> </td>
+	      <td> <tt> --with-lidia= &lt;lidia_directory&gt;</tt> </td>
 	      <td> used for finite field arithmetic.</td>
 	    </tr>
 	    <tr>
 	      <td> <a href="ftp://ftp.risc.uni-linz.ac.at/pub/saclib/"> Saclib </a></td>
-	      <td> <tt> --with-saclib= &lt;saclib_directory></td>
+	      <td> <tt> --with-saclib= &lt;saclib_directory&gt;</td>
 	      <td> not yet used </td>
 	    </tr>
 	    <tr>
 	      <td> <a href="http://www.maplesoft.com/"> Maple (> v9) </a></td>
-	      <td> <tt> --enable-shared --with-maple= &lt;maple-directory>&nbsp; </tt></td>
+	      <td> <tt> --enable-shared --with-maple= &lt;maple-directory&gt;&nbsp; </tt></td>
 	      <td> used to create an interface with Maple.</td>
 	    </tr>
 	    <tr>
 	      <td> <a href="http://www.doxygen.org/"> Doxygen </a></td>
-	      <td> <tt> --with-doxygen= &lt;doxygen-path>&nbsp; </tt></td>
+	      <td> <tt> --with-doxygen= &lt;doxygen-path&gt;&nbsp; </tt></td>
 	      <td>used to create the html reference manual.</td>
 	    </tr>
 	  </table>
@@ -106,7 +106,7 @@ is also required and its location
 	  <br>
 	  Note: 
 	  <blockquote>
-	    <p> the use of <tt> --with-default= &lt;default_directory></tt> can add a special directory to the default location of library
+	    <p> the use of <tt> --with-default= &lt;default_directory&gt;</tt> can add a special directory to the default location of library
 	    <p> the use of <tt> --with-all</tt> specifies that all packages will be used
 	  </blockquote>
 	</blockquote>
@@ -140,7 +140,7 @@ is also required and its location
     
 
       <b>4.&nbsp; </b>Install the library:
-      <blockquote><tt>>&nbsp; make install</tt></blockquote>
+      <blockquote><tt>&gt;&nbsp; make install</tt></blockquote>
     <hr WIDTH="100%">
     <div align=right><font size=-1>Copyright 1999-2007 The Linbox Group.</font></div>
     

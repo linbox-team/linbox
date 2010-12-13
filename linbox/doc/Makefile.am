@@ -4,14 +4,14 @@ INSTALL_TARGETS = install-doc
 endif
 docdir=$(LINBOX_DOC_PATH)
 
-man1_MANS = linbox-config.1 
+man1_MANS = linbox-config.1
 
 all all-local: $(USE_TARGETS)
 
 install install-data-local: $(INSTALL_TARGETS)
 
-docs: 
-	doxygen 
+docs :
+	doxygen
 	cp tutorial.html linbox-html
 	cp install-dist.html linbox-html
 	cp install-dev.html linbox-html
@@ -24,18 +24,19 @@ install-doc :
 	cp -r linbox-html $(docdir)/linbox-html
 	cp linbox.html $(docdir)/linbox.html
 
-EXTRA_DIST=\
-	linbox.html		\
-	tutorial.html		\
-	install-dev.html	\
-	install-dist.html	\
-	Doxyfile		\
-	doc.doxy		\
-	mainpage.doxy		\
-	linbox-config.1 
+EXTRA_DIST=             \
+    linbox.html         \
+    tutorial.html       \
+    install-dev.html    \
+    install-dist.html   \
+    Doxyfile            \
+    doc.doxy            \
+    mainpage.doxy       \
+    tutorial.doxy       \
+    linbox-config.1
 
 
-clean-local:
+clean-local :
 	rm -rf linbox-html
 
 
