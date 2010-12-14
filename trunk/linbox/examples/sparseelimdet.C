@@ -23,6 +23,7 @@
  */
 
 /** \file examples/sparseelimdet.C
+ * @example  examples/sparseelimdet.C
  \brief Gaussian elimination determinant of sparse matrix over Z or Zp.
  \ingroup examples
  */

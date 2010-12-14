@@ -23,6 +23,7 @@
  */
 
 /*! @file examples/omp_block_rank.C
+ * @example  examples/omp_block_rank.C
  * @ingroup examples
  * @brief Block Wiedemann Rank with OpenMP
  */

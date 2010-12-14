@@ -22,6 +22,13 @@
  *
  */
 
+/*!@file ring/archetype.h
+ * @ingroup ring
+ * @brief Specification and archetypic instance for the ring interface.
+ * @see \ref Archetypes
+ */
+
+
 
 #ifndef __LINBOX_ring_archetype_H
 #define __LINBOX_ring_archetype_H
@@ -41,10 +48,6 @@
 #include "linbox/linbox-config.h"
 
 #include "linbox/util/error.h"
-
-/** @file ring/archetype.h
- * @brief Specification and archetypic instance for the ring interface.
- */
 
 namespace LinBox
 {

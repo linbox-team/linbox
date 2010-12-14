@@ -45,6 +45,7 @@
 
 namespace LinBox
 {
+	///
 	// JGD 22.01.2007 : adapted from Lidzhade Fhulu's
 	template <typename EnumT, typename BaseEnumT>
 	struct InheritEnum {
@@ -66,6 +67,7 @@ namespace LinBox
 		};
 	};
 
+	///
 	struct Specifier {
 		/** Whether the system is known to be singular or nonsingular */
 		enum SingularState {
@@ -231,7 +233,8 @@ namespace LinBox
 #endif
 	};
 
-	struct HybridSpecifier :public Specifier {
+	/// HybridSpecifier
+	struct HybridSpecifier : public Specifier {
 		HybridSpecifier(){};
 		HybridSpecifier (const Specifier& m) :
 		       	Specifier(m)
@@ -243,20 +246,23 @@ namespace LinBox
 #endif
 	};
 
-	struct BlackboxSpecifier :public Specifier {
+	/// BlackboxSpecifier
+	struct BlackboxSpecifier : public Specifier {
 		BlackboxSpecifier(){};
 		BlackboxSpecifier (const Specifier& m) :
 		       	Specifier(m)
 		{};
 	};
 
-	struct EliminationSpecifier :public Specifier {
+	/// EliminationSpecifier
+	struct EliminationSpecifier : public Specifier {
 		EliminationSpecifier(){};
 		EliminationSpecifier (const Specifier& m) :
 		       	Specifier(m)
 		{};
 	};
 
+	///
 	struct WiedemannTraits : public Specifier {
 		/** Constructor
 		 *
@@ -299,6 +305,7 @@ namespace LinBox
 	       	{}
 	};
 
+	///
 	struct WiedemannExtensionTraits : public WiedemannTraits {
 		WiedemannExtensionTraits (
 					  bool           symmetric      = NON_SYMMETRIC,
@@ -317,6 +324,7 @@ namespace LinBox
 		{}
 	};
 
+	///
 	struct LanczosTraits : public Specifier {
 		/** Constructor
 		 *
@@ -334,6 +342,7 @@ namespace LinBox
 	       	{}
 	};
 
+	///
 	struct BlockLanczosTraits : public Specifier {
 		/** Constructor
 		 *
@@ -357,6 +366,7 @@ namespace LinBox
 	       	{}
 	};
 
+	///
 	struct SparseEliminationTraits  : public Specifier {
 		/** Constructor
 		 *
@@ -368,6 +378,7 @@ namespace LinBox
 	       	{}
 	};
 
+	///
 	struct DixonTraits : public Specifier {
 
 		enum SolutionType {
@@ -403,6 +414,7 @@ namespace LinBox
 		SolutionType _solution;
 	};
 
+	///
 	struct BlockWiedemannTraits : public Specifier {
 		BlockWiedemannTraits ( Preconditioner preconditioner = NO_PRECONDITIONER,
 				       size_t          rank            = RANK_UNKNOWN)
@@ -429,6 +441,7 @@ namespace LinBox
 	       	{}
 	};
 
+	///
 	struct BlockHankelTraits : public Specifier {
 		BlockHankelTraits ( Preconditioner preconditioner = NO_PRECONDITIONER,
 				    size_t          rank            = RANK_UNKNOWN)
@@ -441,6 +454,7 @@ namespace LinBox
 	       	{}
 	};
 
+	///
 	struct BlasEliminationTraits : public Specifier {
 		BlasEliminationTraits() {}
 		BlasEliminationTraits( const Specifier& S) :
@@ -449,6 +463,7 @@ namespace LinBox
 
 	};
 
+	///
 	struct BlasExtensionTraits : public BlasEliminationTraits {
 		BlasExtensionTraits (bool           //certificate    = CERTIFY
 				     , unsigned long  //maxTries       = 100
@@ -461,6 +476,7 @@ namespace LinBox
 	       	{}
 	};
 
+	///
 	struct NonBlasEliminationTraits : public Specifier {
 		NonBlasEliminationTraits() {}
 		NonBlasEliminationTraits( const Specifier& S) :
@@ -471,20 +487,20 @@ namespace LinBox
 
 	/// Method specifiers for controlling algorithm choice
 	struct Method {
-		typedef HybridSpecifier		Hybrid;
-		typedef BlackboxSpecifier	Blackbox;
-		typedef EliminationSpecifier	Elimination;
-		typedef WiedemannTraits		Wiedemann;
-		typedef WiedemannExtensionTraits ExtensionWiedemann;
-		typedef LanczosTraits		Lanczos;
-		typedef BlockLanczosTraits	BlockLanczos;
-		typedef SparseEliminationTraits	SparseElimination;
-		typedef NumericalTraits		Numerical;
-		typedef BlasEliminationTraits 	BlasElimination;
-		typedef BlasExtensionTraits ExtensionBlasElimination;
-		typedef NonBlasEliminationTraits NonBlasElimination;
-		typedef DixonTraits             Dixon;
-		typedef BlockHankelTraits       BlockHankel;
+		typedef HybridSpecifier		Hybrid;              //!< Method::Hybrid : no doc
+		typedef BlackboxSpecifier	Blackbox;            //!< Method::Blackbox : no doc
+		typedef EliminationSpecifier	Elimination;         //!< Method::Elimination : no doc
+		typedef WiedemannTraits		Wiedemann;           //!< Method::Wiedemann : no doc
+		typedef WiedemannExtensionTraits ExtensionWiedemann; //!< Method::ExtensionWiedemann :  no doc
+		typedef LanczosTraits		Lanczos;             //!< Method::Lanczos : no doc.
+		typedef BlockLanczosTraits	BlockLanczos;        //!< Method::BlockLanczos : no doc.
+		typedef SparseEliminationTraits	SparseElimination;   //!< Method::SparseElimination : no doc
+		typedef NumericalTraits		Numerical;           //!< Method::Numerical : no doc.
+		typedef BlasEliminationTraits 	BlasElimination;     //!< Method::BlasElimination : no doc
+		typedef BlasExtensionTraits ExtensionBlasElimination;//!< Method::ExtensionBlasElimination : no doc
+		typedef NonBlasEliminationTraits NonBlasElimination; //!< Method::NonBlasElimination : no doc.
+		typedef DixonTraits             Dixon;               //!< Method::Dixon : no doc
+		typedef BlockHankelTraits       BlockHankel;         //!< Method::BlockHankel : no doc
 		Method(){}
 	};
 

@@ -11,6 +11,12 @@
  * See COPYING for license information.
  */
 
+/*!@file blackbox/archetype.h
+ * @ingroup blackbox
+ * @brief NO DOC
+ * @see \ref Archetypes
+ */
+
 #ifndef __LINBOX_blackbox_archetype_H
 #define __LINBOX_blackbox_archetype_H
 
@@ -75,12 +81,12 @@ namespace LinBox
 
 	/** \brief showing the member functions provided by all blackbox matrix classes.
 
-	This simple interface is all that is needed for the
-blackbox algorithms.  Alternatively, the matrix archetype provides individual
-matrix entry access, as needed by some algorithms, such as elimination
-methods.
+	This simple interface is all that is needed for the blackbox
+	algorithms.  Alternatively, the matrix archetype provides individual
+	matrix entry access, as needed by some algorithms, such as elimination
+	methods.
 
-\ingroup blackbox
+	\ingroup blackbox
 	*/
 //	template <class Field>
 	class BlackboxArchetype { //: public BlackboxInterface

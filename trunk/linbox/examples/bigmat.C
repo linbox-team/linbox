@@ -24,6 +24,7 @@
 
 
 /*! @file examples/bigmat.C
+ * @example  examples/bigmat.C
  * \ingroup examples
  * @brief Outputs a big and very sparse matrix.
  *

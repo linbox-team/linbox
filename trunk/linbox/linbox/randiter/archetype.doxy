@@ -1,12 +1,12 @@
-/*! \page Random Iterator Generator Archetype
+/*! \page randomIGA Random Iterator Generator Archetype
 
   The \ref LinBox random iterator generator archetype defines the random
   iterator generator common object interface.
 
-  @see Archetypes
+  @see \ref Archetypes
 
-  \brief @link Archetypes Archetype@endlink for implementing the \ref LinBox
-        \ref Random\ Iterator\ Generators} common object interface.
+  \brief @link Archetypes Archetype@endlink for implementing the %LinBox
+        \ref randomIGA common object interface.
 */
 //@{
   //@Include: archetype.h

@@ -24,6 +24,7 @@
  */
 
 /** \file examples/dot-product.C
+ * @example  examples/dot-product.C
  * \brief Timings on dot products of random vectors.
  * \ingroup examples
  *

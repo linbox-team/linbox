@@ -1,6 +1,6 @@
-/** \page Random field element generator wrappers
+/** \page randomFEGW Random field element generator wrappers
 
-  @see Fields
+  @see \ref Fields
   @see Field Wrappers
 
   @brief Wrappers to make \ref LinBox random field element generators.

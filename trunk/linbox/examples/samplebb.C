@@ -23,7 +23,8 @@
  *   <http://www.gnu.org/licenses/>.
  */
 
-/** \file samplebb.C
+/** \file examples/samplebb.C
+ * @example  examples/samplebb.C
  * \ingroup examples
  * \brief generate an example matrix with specified frobenius form.
  *

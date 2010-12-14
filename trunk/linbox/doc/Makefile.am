@@ -12,13 +12,13 @@ install install-data-local: $(INSTALL_TARGETS)
 
 docs :
 	sed -i 's/^\\version.*/\\version\ $(VERSION)/' mainpage.doxy
-	doxygen
 	cp tutorial.html linbox-html
 	cp install-dist.html linbox-html
 	cp install-dev.html linbox-html
 	cp ../INSTALL linbox-html
 	cp ../COPYING linbox-html
 	cp ../AUTHORS linbox-html
+	doxygen Doxyfile
 
 install-doc :
 	mkdir $(docdir)

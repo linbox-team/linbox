@@ -23,7 +23,8 @@
  *   <http://www.gnu.org/licenses/>.
  */
 
-/**\file examples/valence.C
+/**\file examples/omp_smithvalence.C
+ * @example  examples/omp_smithvalence.C
   \brief Valence of sparse matrix over Z or Zp.
   \ingroup examples
   */

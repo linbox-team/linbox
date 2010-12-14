@@ -24,6 +24,7 @@
  */
 
 /** \file examples/echelon.C
+ * @example examples/echelon.C
   \brief Echelon form of matrix over  Zp.
   \ingroup examples
   */

@@ -21,6 +21,12 @@
  * See COPYING for license information
  */
 
+/*!@file matrix/archetype.h
+ * @ingroup matrix
+ * @brief NO DOC
+ * @see \ref Archetypes
+ */
+
 #ifndef __LINBOX_matrix_archetype_H
 #define __LINBOX_matrix_archetype_H
 

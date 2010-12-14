@@ -23,7 +23,8 @@
  *   <http://www.gnu.org/licenses/>.
  */
 
-/** \file examples/minpoly.C examples/minpoly.C
+/** \file examples/minpoly.C
+ * @example  examples/minpoly.C
   \brief Minimal polynomial of a sparse matrix.
   \ingroup examples
   */

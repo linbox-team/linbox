@@ -23,9 +23,10 @@
  */
 
 /**\file examples/valence.C
-  \brief Valence of sparse matrix over Z or Zp.
-  \ingroup examples
-  */
+ * \brief Valence of sparse matrix over Z or Zp.
+ * \ingroup examples
+ * @example  examples/valence.C
+ */
 //#include "linbox-config.h"
 #include <iostream>
 

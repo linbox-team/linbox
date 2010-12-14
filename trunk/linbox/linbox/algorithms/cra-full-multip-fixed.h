@@ -21,6 +21,11 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/*! @file algorithms/cra-full-multip-fixed.h
+ * @ingroup algorithms
+ * @brief NO DOC AGAIN
+ */
+
 #ifndef __LINBOX_cra_full_multip_fixed_H
 #define __LINBOX_cra_full_multip_fixed_H
 
@@ -40,6 +45,9 @@ namespace LinBox
 
 
 
+	/*! @ingroup CRA
+	 * @brief ???
+	 */
 	template<class Domain_Type>
 	struct FullMultipFixedCRA : FullMultipCRA<Domain_Type> {
 		typedef Domain_Type			Domain;
@@ -53,7 +61,9 @@ namespace LinBox
 	public:
 		FullMultipFixedCRA(const std::pair<size_t,double>& p ) :
 		       	FullMultipCRA<Domain>(p.second), size(p.first)
-	       	{ this->initialize(); }
+	       	{
+		       	this->initialize();
+		}
 
 		void initialize ()
 		{
@@ -154,8 +164,6 @@ namespace LinBox
 			this->RadixPrimeProd_.push_back( mi );
 			this->RadixOccupancy_.push_back ( true );
 		}
-
-
 
 		template<class Iterator>
 		Iterator& result (Iterator &d)

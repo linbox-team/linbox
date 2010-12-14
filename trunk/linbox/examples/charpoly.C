@@ -23,6 +23,7 @@
  */
 
 /** \file examples/charpoly.C
+ * @example  examples/charpoly.C
   \brief Characteristic polynomial of matrix over Z or Zp.
   \ingroup examples
   */

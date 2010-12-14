@@ -1,11 +1,11 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/matrix/blas-matrix.h
- * Copyright (C) 2004 Pascal Giorgi, Clément Pernet
+ * Copyright (C) 2004 Pascal Giorgi, ClÃ©ment Pernet
  *
  * Written by :
  *               Pascal Giorgi  pascal.giorgi@ens-lyon.fr
- *               Clément Pernet clement.pernet@imag.fr
+ *               ClÃ©ment Pernet clement.pernet@imag.fr
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,12 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/*! @file matrix/blas-matrix.h
+ * @ingroup matrix
+ * @brief NO DOC
+ *
+ */
+
 #ifndef __LINBOX_blas_matrix_H
 #define __LINBOX_blas_matrix_H
 
@@ -37,6 +43,7 @@
 namespace LinBox
 {
 
+	// forward declaration
 	template<class Element>
 	class BlasMatrix;
 
@@ -52,7 +59,8 @@ namespace LinBox
 		typedef MatrixContainerCategory::BlasContainer Type;
 	};
 
-	// @brief Limited docs so far.
+	//! @brief BlasMatrix.
+	//! Limited docs so far.
 	template <class _Element>
 	class BlasMatrix : public DenseSubmatrix<_Element> {
 
@@ -227,7 +235,7 @@ namespace LinBox
 			std::cerr << __func__ << ": not implemented yet" << std::flush << std::endl;
 			exit(-1) ;
 			//! @todo need to be implemented by succesive apply
-			//! @todo lancer une exception générique "not implemented yet"
+			//! @todo lancer une exception gÃ©nÃ©rique "not implemented yet"
 		}
 
 
@@ -319,7 +327,7 @@ namespace LinBox
 	}; // end of class BlasMatrix
 
 
-	// TAG for triangular blas matrix
+	//! TAG for triangular blas matrix
 	class BlasTag {
 	public:
 		typedef enum{low,up} uplo;
@@ -327,7 +335,7 @@ namespace LinBox
 	};
 
 
-	// class of triangular blas matrix
+	//! class of triangular blas matrix
 	template <class Element>
 	class TriangularBlasMatrix: public BlasMatrix<Element> {
 
@@ -425,8 +433,10 @@ namespace LinBox
 	};
 
 
-	/** Class used for permuting indices. For example, create a vector (0 1 2 ...) over size_t,
-	 *  then apply a permutation to it using a BlasMatrixDomain to get the natural representation of the permutation.
+	/** Class used for permuting indices.
+	 * For example, create a vector (0 1 2 ...) over size_t, then apply a
+	 * permutation to it using a BlasMatrixDomain to get the natural
+	 * representation of the permutation.
 	 */
 	class indexDomain {
 	public:
@@ -446,6 +456,9 @@ namespace LinBox
 
 	// Dan Roche 7-8-04 Changed _P to _PP to avoid confict with a macro defined in
 	// <iostream> somewhere.
+	/*! BlasPermutation.
+	 * Lapack ipiv style compressed permutation.
+	 */
 	class BlasPermutation {
 
 
@@ -496,6 +509,7 @@ namespace LinBox
 
 	}; // end of class BlasPermutation
 
+	//! TransposedBlasMatrix
 	template< class Matrix >
 	class TransposedBlasMatrix {
 
@@ -513,7 +527,7 @@ namespace LinBox
 
 #if !defined(__INTEL_COMPILER) && !defined(__CUDACC__)
 	template <>
-	#endif
+#endif
 	template< class Matrix >
 	class TransposedBlasMatrix< TransposedBlasMatrix< Matrix > > : public Matrix {
 

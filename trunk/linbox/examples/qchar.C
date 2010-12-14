@@ -24,6 +24,7 @@
  */
 
 /*! @file examples/qchar.C
+ * @example  examples/qchar.C
  * @ingroup examples
  * @brief  Undocumented.
  */

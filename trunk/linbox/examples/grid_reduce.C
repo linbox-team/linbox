@@ -24,6 +24,7 @@
  */
 
 /*! @file examples/grid_reduce.C
+ * @example examples/grid_reduce.C
  * @ingroup examples
  * @brief undocumented
  */

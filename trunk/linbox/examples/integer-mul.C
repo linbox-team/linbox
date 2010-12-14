@@ -23,6 +23,7 @@
  */
 
 /** \file examples/integer-mul.C
+ * @example examples/integer-mul.C
  * \author Gilles Villard
  * \brief The LinBox arbitrary precision integer type illustrated.
  * \ingroup examples

@@ -24,6 +24,7 @@
  */
 
 /*! @file examples/graph-charpoly.C
+  * @example examples/graph-charpoly.C
  * @ingroup examples
  * @brief Compute the integer characteristic polynomial of symetric matrices with (0,1) coefficients.
  * Example for Pr G. Royle.
