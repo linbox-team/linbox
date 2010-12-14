@@ -1,6 +1,6 @@
 // Copyright (C) 2005 David Saunders, 2010 LinBox.
 // This file is part of LinBox, see COPYING for licence information.
-/*!  \page tuto Turorial
+/*!  \page tuto Tutorial
 
 The person requiring some exact linear algebra computation may exploit LinBox
 at any of four general levels.  In order from least involved with the details

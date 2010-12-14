@@ -29,6 +29,11 @@
  * providing runtime commentary to the user)
  */
 
+/*! @internal
+ * @file util/commentator.C
+ * @brief implementation of LinBox::Commentator.
+ */
+
 #include "linbox/linbox-config.h"
 
 #include <string>

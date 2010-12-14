@@ -47,12 +47,13 @@ namespace LinBox
 	 * \f$v_1, \ldots, v_N\f$ Scalars in the original iteration become \f$N\times N\f$
 	 * matrices in the blocked version. The resulting iteration is a natural
 	 * extension of the basic theory of the original Lanczos iteration,
-	 * c.f. (\ref Montgomery\ 1995 ). This has the advantage of more flexible
+	 * c.f. (see Montgomery 1995 ). This has the advantage of more flexible
 	 * parallelization, and does not break down as often when used over small
 	 * fields.
 	 *
 	 * Currently, only dense vectors are supported for this iteration, and it is
 	 * unlikely any other vector archetypes will be supported in the future.
+	 * @bib [Montgomery '95]
 	 */
 	template <class Field, class Matrix = DenseMatrixBase<typename Field::Element> >
 	class BlockLanczosSolver {
@@ -60,7 +61,7 @@ namespace LinBox
 
 		typedef typename Field::Element Element;
 
-		/** @brief Constructor
+		/** @brief Constructor.
 		 * @param F Field over which to operate
 		 * @param traits @ref SolverTraits  structure describing user
 		 *               options for the solver
@@ -72,7 +73,7 @@ namespace LinBox
 			_F.init (_one, 1);
 		}
 
-		/** Constructor with a random iterator
+		/** Constructor with a random iterator.
 		 * @param F Field over which to operate
 		 * @param traits @ref SolverTraits structure describing user
 		 *               options for the solver

@@ -55,19 +55,21 @@ namespace LinBox
 			Builder_(b), _commPtr(c), _numprocs(c->size())
 		{}
 
-		/** \brief The CRA loop
-
-		  termination condition.
-
-		  \param F - Function object of two arguments, F(r, p), given prime p it outputs residue(s) r.
-		  This loop may be parallelized.  F must be reentrant, thread safe.
-		  For example, F may be returning the coefficients of the minimal polynomial of a matrix mod p.
-		  Warning - we won't detect bad primes.
-
-		  \param genprime - RandIter object for generating primes.
-		  \param Comm - Pointer to Communicator object to delegate parallelism using MPI
-		  \result res - an integer
-		  */
+		/** \brief The CRA loop.
+		 *
+		 * termination condition.
+		 *
+		 * \param Iteration  Function object of two arguments, \c
+		 * Iteration(r, p), given prime \c p it outputs residue(s) \c
+		 * r.  This loop may be parallelized.  \p Iteration must be
+		 * reentrant, thread safe.  For example, \p Iteration may be
+		 * returning the coefficients of the minimal polynomial of a
+		 * matrix \c mod \p p.
+		 @warning  we won't detect bad primes.
+		 *
+		 * \param primeg  RandIter object for generating primes.
+		 * \param[out] res an integer
+		 */
 		template<class Function, class PrimeIterator>
 		Integer & operator() (Integer& res, Function& Iteration, PrimeIterator& primeg)
 		{

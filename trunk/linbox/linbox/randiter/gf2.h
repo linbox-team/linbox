@@ -50,14 +50,14 @@ namespace LinBox
 		 * A sampling size of zero means to sample from the entire field.
 		 * A seed of zero means to use some arbitrary seed for the generator.
 		 * Purely virtual.
-		 * @param F LinBox field archetype object in which to do arithmetic
+		 * @param F    LinBox field archetype object in which to do arithmetic
 		 * @param size constant integer reference of sample size from which to
 		 *             sample (default = modulus of field)
 		 * @param seed constant integer reference from which to seed random number
 		 *             generator (default = 0)
 		 */
-		GF2RandIter (const GF2 &,
-			     const integer &  = 0 ,
+		GF2RandIter (const GF2 & F,
+			     const integer &size  = 0 ,
 			     const integer &seed = 0)
 		{
 			long _seed = seed;
@@ -66,6 +66,7 @@ namespace LinBox
 			MT.setSeed (_seed);
 		}
 
+		/// constructor
 		GF2RandIter (const GF2RandIter &) {}
 
 		/** Destructor.
@@ -77,7 +78,7 @@ namespace LinBox
 		 * Assigns ModularRandIter object R to generator.
 		 * @param  R ModularRandIter object.
 		 */
-		GF2RandIter &operator = (const GF2RandIter &)
+		GF2RandIter &operator = (const GF2RandIter & R)
 		{ return *this; }
 
 		/** Random field element creator.

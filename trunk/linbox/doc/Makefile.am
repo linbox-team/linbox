@@ -14,7 +14,7 @@ docs :
 	sed -i 's/^\\version.*/\\version\ $(VERSION)/' mainpage.doxy
 	cp tutorial.html linbox-html
 	cp install-dist.html linbox-html
-	cp install-dev.html linbox-html
+	cp install-dev.html linbox-html #dev
 	cp ../INSTALL linbox-html
 	cp ../COPYING linbox-html
 	cp ../AUTHORS linbox-html
@@ -31,6 +31,7 @@ EXTRA_DIST=             \
     install-dev.html    \
     install-dist.html   \
     Doxyfile            \
+    DoxyfileDev         \
     doc.doxy            \
     mainpage.doxy       \
     tutorial.doxy       \
@@ -39,5 +40,6 @@ EXTRA_DIST=             \
 
 clean-local :
 	rm -rf linbox-html
+	rm -rf linbox-dev-html
 
 

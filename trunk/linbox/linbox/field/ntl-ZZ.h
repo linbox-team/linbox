@@ -667,7 +667,7 @@ namespace LinBox
 		/** Assign method.
 		 * Stores new field element for arithmetic.
 		 * @return reference to self
-		 * @param y_init constant reference to element a
+		 * @param y constant reference to element a
 		 */
 		inline FieldAXPY &assign (const Element& y)
 		{
