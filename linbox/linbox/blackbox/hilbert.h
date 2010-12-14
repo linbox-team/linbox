@@ -13,6 +13,10 @@
  * See COPYING for license information.
  */
 
+/*! @file blackbox/hilbert.h
+ * @ingroup blackbox
+ * @brief NO DESC
+ */
 
 #ifndef __LINBOX_hilbert_H
 #define __LINBOX_hilbert_H
@@ -37,7 +41,9 @@ namespace LinBox
 
 		/// return 1/(i+j+2), zero based indexing.
 		Element& operator()(Element &entry, size_t i, size_t j) const
-		{	return entry = _H[i+j+1]; }
+		{
+			return entry = _H[i+j+1];
+		}
 
 	private:
 		std::vector<Element> _H;

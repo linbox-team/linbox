@@ -90,14 +90,13 @@ and by CNRS in France.
   \verbinclude "COPYING".
 */
 
-/*!  \page inst Installing
+/*!  \page inst Installing LinBox
   To install from a distribution, the usual <em> configure, make</em> sequence
   applies.  See \subpage dist "configuring and installing" for
   more details.  To install a development version from the SVN repository see
   the \subpage dev "developer info".  The generic Free Software
   Foundation \subpage INSTALL "INSTALL" may also be of use.
  */
-
 
 /*!  \page arch Architecture of the library.
 
@@ -121,22 +120,22 @@ and by CNRS in France.
   - <a href="group__tests.html">tests</a>, primarily correctness tests to aid development.
  */
 
-/*!  \page AUTHORS Authors
+/*!  \page AUTHORS LinBox Authors
  \verbinclude "AUTHORS"
  */
 
-/*!  \page INSTALL INSTALL
+/*!  \page INSTALL The INSTALL in LinBox
  \verbinclude "INSTALL"
  */
 
-/*!  \page dist Configuring and Installing
+/*!  \page dist Configuring and Installing LinBox
  \htmlinclude "doc/install-dist.html"
  */
 
-/*!  \page dev Developer info
+/*!  \page dev Developer info for LinBox
  \htmlinclude "doc/install-dev.html"
 
-\par HACKING.
+\par HACKING LinBox.
  \verbinclude "HACKING"
  */
 

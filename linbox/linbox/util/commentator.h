@@ -28,6 +28,11 @@
  * providing runtime commentary to the user)
  */
 
+/*! @file util/commentator.h
+ * @ingroup util
+ * @brief Reports information to the user.
+ */
+
 #ifndef __LINBOX_commentator_H
 #define __LINBOX_commentator_H
 
@@ -84,7 +89,7 @@ namespace LinBox
 	class Commentator;
 
 	// \class ActivityState commentator.h linbox/util/commentator.h
-	/**
+	/** @internal
 	 * \brief used by commentator
 
 	 * This stores a snapshot of the state of the commentator's activity
@@ -104,9 +109,10 @@ namespace LinBox
 		void *_act;
 	};
 
-	/** Give information to user during runtime.
-	  \ingroup util
-
+	/**
+	 * Give information to user during runtime.
+	 * \ingroup util
+	 *
 	 * This object is used for reporting information about a computation to
 	 * the user. Such information includes errors and warnings, descriptions
 	 * of internal progress, performance measurements, and timing
@@ -155,23 +161,27 @@ namespace LinBox
 
 	class Commentator {
 	public:
-		/** Default constructor
+		/** @internal
+		 * Default constructor.
 		 * Constructs a commentator with default settings
 		 */
 		Commentator ();
 		Commentator (std::ostream&);
 
 
-		/** Default destructor
+		/** @internal
+		 * Default destructor.
 		*/
 		virtual ~Commentator ();
 
-		/** @name Reporting facilities
+		/**@internal
+		 * @name Reporting facilities.
+		 * @{
 		*/
 
-		//@{
 
-		/** Start an activity
+		/** <!--@internal-->
+		 * Start an activity.
 		 * Inform the commentator that some new activity has begun. This
 		 * is typically called at the beginning of a library function.
 		 * @param description A human-readable text description of the
@@ -188,7 +198,8 @@ namespace LinBox
 			    const char *fn = (const char *) 0,
 			    unsigned long len = 0);
 
-		/** Start a new iteration
+		/** @internal
+		 * Start a new iteration.
 		 * This is a convenience function to indicate that an iteration
 		 * has started
 		 * @param iter Number of the iteration
@@ -199,7 +210,8 @@ namespace LinBox
 		 */
 		void startIteration (unsigned int iter, unsigned long len = 0);
 
-		/** Stop an activity
+		/** <!--@internal-->
+		 * Stop an activity.
 		 * Inform the commentator that the current activity has
 		 * finished.
 		 * @param msg A short (one word) message describing the
@@ -217,7 +229,8 @@ namespace LinBox
 			   const char *long_msg = (const char *) 0,
 			   const char *fn = (const char *) 0);
 
-		/** Report progress in the current activity
+		/** <!--@internal-->
+		 * Report progress in the current activity.
 		 * Inform the commentator that k steps of the current activity
 		 * have been completed.
 		 * @param k Number of steps completed; use -1 to increment the
@@ -228,7 +241,8 @@ namespace LinBox
 		 */
 		void progress (long k = -1, long len = -1);
 
-		/** Message level
+		/** @internal
+		 * Message level.
 		 * Some default settings to use for the message level
 		 */
 		enum MessageLevel {
@@ -238,7 +252,8 @@ namespace LinBox
 			LEVEL_UNIMPORTANT  =  3
 		};
 
-		/** Basic reporting
+		/** <!--@internal-->
+		 * Basic reporting.
 		 * Send some report string to the commentator
 		 * @param level Level of detail of the message
 		 * @param msg_class Type of message
@@ -246,13 +261,16 @@ namespace LinBox
 		 */
 		std::ostream &report (long level = LEVEL_IMPORTANT, const char *msg_class = INTERNAL_DESCRIPTION);
 
-		/** Indent to the correct column on the given string
+		/** @internal
+		 * Indent to the correct column on the given string.
 		*/
 		void indent (std::ostream &stream) const;
 
 		//@} Reporting facilities
 
-		/** @name Activity stack restoration
+
+		/** @internal
+		 * @name Activity stack restoration.
 		 *
 		 * The methods below facilitate restoring the activity stack
 		 * after an exception has been thrown. If user code wishes to
@@ -265,7 +283,8 @@ namespace LinBox
 
 		//@{
 
-		/** Save activity state
+		/** @internal
+		 * Save activity state.
 		 *
 		 * Saves a copy of the activity state and returns it to the
 		 * caller. The caller need only pass this object back to
@@ -279,7 +298,8 @@ namespace LinBox
 		ActivityState saveActivityState () const
 		{ return ActivityState (_activities.top ()); }
 
-		/** Restore activity state
+		/** @internal
+		 * Restore activity state.
 		 *
 		 * Restores the activity state to the point it was when the
 		 * given ActivityState object was passed. Note that this
@@ -290,12 +310,14 @@ namespace LinBox
 
 		void restoreActivityState (ActivityState state);
 
-		/** @name Configuration
+		/** @internal
+		 * @name Configuration
 		*/
 
 		//@{
 
-		/** Output format
+		/** @internal
+		 * Output format.
 		 * OUTPUT_CONSOLE - output human-readable and tailor-made for the console
 		 * OUTPUT_PIPE - output made for piping into other processes
 		 *
@@ -315,9 +337,10 @@ namespace LinBox
 			LONG_TIMING
 		};
 
-		/** Set maximum message depth
+		/** @internal
+		 * Set maximum message depth.
 		 * Sets the maximum activity depth, as defined by
-		 * Commentator::start and Commentator::stop, at which messages
+		 * \c Commentator::start and \c Commentator::stop, at which messages
 		 * of all classes will be printed.
 		 * @param depth Maximum depth at which to print messages; set to
 		 *              -1 to print messages at any depth and 0 to
@@ -325,7 +348,8 @@ namespace LinBox
 		 */
 		void setMaxDepth (long depth);
 
-		/** Set maximum detail level
+		/** @internal
+		 * Set maximum detail level.
 		 * Sets the maximum detail level at which to print messages
 		 * @param level Maximum detail level at which to print messages;
 		 *              set to -1 to print messages at all levels and 0
@@ -333,7 +357,8 @@ namespace LinBox
 		 */
 		void setMaxDetailLevel (long level);
 
-		/** Register a new message class
+		/** @internal
+		 * Register a new message class.
 		 * Register some new message class with the commentator.
 		 * @param msg_class Name of message class
 		 * @param stream Stream to which to send data of this type
@@ -349,7 +374,8 @@ namespace LinBox
 						    unsigned long max_depth = 1,
 						    unsigned long max_level = 2);
 
-		/** Clone an existing message class
+		/** @internal
+		 * Clone an existing message class.
 		 * Clone the message class to construct a new message class with
 		 * the same parameters.
 		 * @param new_msg_class Name of the new class
@@ -358,7 +384,8 @@ namespace LinBox
 		 */
 		MessageClass &cloneMessageClass (const char *new_msg_class, const char *msg_class);
 
-		/** Clone an existing message class, specifying a new output stream
+		/** @internal
+		 * Clone an existing message class, specifying a new output stream.
 		 * Clone the message class to construct a new message class with
 		 * the same parameters.
 		 * @param new_msg_class Name of the new class
@@ -370,13 +397,15 @@ namespace LinBox
 						 const char *msg_class,
 						 std::ostream &stream);
 
-		/** Retrieve a message class by name
+		/** @internal
+		 * Retrieve a message class by name.
 		 * @param msg_class Name of message class
 		 * @return Reference to message class object
 		 */
 		MessageClass &getMessageClass (const char *msg_class);
 
-		/** Precise control over printing
+		/** @internal
+		 * Precise control over printing.
 		 * Specifies that all messages up to the given depth and the
 		 * given detail level should be printed
 		 *
@@ -392,7 +421,8 @@ namespace LinBox
 					 unsigned long level,
 					 const char *fn = (const char *) 0);
 
-		/** Set parameters for the brief report
+		/** @internal
+		 * Set parameters for the brief report.
 		 * @param format Output format
 		 * @param show_timing Show the CPU time for each toplevel activity
 		 * @param show_progress Show a counter of the progress as each
@@ -404,7 +434,8 @@ namespace LinBox
 					       bool show_progress,
 					       bool show_est_time);
 
-		/** Determine whether a message will be printed
+		/** @internal
+		 * Determine whether a message will be printed.
 		 * @param depth Activity depth
 		 * @param level Message level
 		 * @param msg_class Type of message
@@ -417,7 +448,8 @@ namespace LinBox
 				const char *msg_class,
 				const char *fn = (const char *) 0);
 
-		/** Determine whether a message will be printed
+		/** @internal
+		 * Determine whether a message will be printed.
 		 * This variant uses the current activity depth rather than
 		 * specifying it explicitly.
 		 * @param level Message level
@@ -431,45 +463,53 @@ namespace LinBox
 				const char *fn = (const char *) 0)
 		{ return isPrinted (_activities.size (), level, msg_class, fn); }
 
-		/** Determine whether the stream given is the null stream
+		/** @internal
+		 * Determine whether the stream given is the null stream.
 		 * @param str Stream to check
 		 * @return true if stream is the null stream; false otherwise
 		 */
 		bool isNullStream (const std::ostream &str)
 		{ return &str == &cnull; }
 
-		/** Set output stream for brief report
+		/** @internal
+		 * Set output stream for brief report.
 		 * @param stream Output stream
 		 */
 		void setBriefReportStream (std::ostream &stream);
 
-		/** Set output stream for all reports other than the brief
+		/** @internal
+		 * Set output stream for all reports other than the brief.
 		 * report
 		 * @param stream Output stream
 		 */
 		void setReportStream (std::ostream &stream);
 
-		/** Set the output stream for a given message class
+		/** @internal
+		 * Set the output stream for a given message class.
 		 * @param msg_class Message class
 		 * @param stream Output stream
 		 */
 		void setMessageClassStream (const char *msg_class, std::ostream &stream);
 
-		/** Set default report file
+		/** @internal
+		 * Set default report file.
 		 * @param filename of file
 		 */
 		void setDefaultReportFile (const char *filename);
 
 		//@} Configuration
 
-		/** @name Legacy commentator interface
+		/** @internal
+		 * @name Legacy commentator interface
 		 * These routines provide compatibility with the old commentator
 		 * interface. They are deprecated.
+		 * @deprecated
 		 */
 
 		//@{
 
-		/** Start an activity
+		/** @internal
+		 * Start an activity.
 		 * @param id String identifier of activity
 		 * @param msg Message to print
 		 * @param msglevel Level of message
@@ -481,7 +521,8 @@ namespace LinBox
 			report ((MessageLevel) msglevel, msgclass) << msg << std::endl;
 		}
 
-		/** Stop an activity
+		/** @internal
+		 * Stop an activity.
 		 * @param msg Message to print
 		 */
 		 /* @param msglevel Level of message
@@ -495,7 +536,8 @@ namespace LinBox
 			  )
 		{ stop (msg); }
 
-		/** Report progress
+		/** @internal
+		 * Report progress.
 		 * @param msg Message to print
 		 * @param msglevel Level of message
 		 * @param k Number of steps completed
@@ -507,7 +549,8 @@ namespace LinBox
 			report ((MessageLevel) msglevel, INTERNAL_DESCRIPTION) << msg << std::endl;
 		}
 
-		/** General reporting
+		/** @internal
+		 * General reporting.
 		 * @param msg Message to print
 		 * @param msglevel Level of message
 		 * @param msgclass Class of message
@@ -515,7 +558,8 @@ namespace LinBox
 		void report (const char *msg, long msglevel, const char *msgclass)
 		{ report ((MessageLevel) msglevel, msgclass) << msg << std::endl; }
 
-		/** Test whether message is printed
+		/** @internal
+		 * Test whether message is printed.
 		 * @param msglevel Level of message
 		 * @param msgclass Class of message
 		 */
@@ -524,7 +568,8 @@ namespace LinBox
 
 		//@} Legacy commentator interface
 
-		/** Use this stream to disable a message class entirely
+		/** @internal
+		 * Use this stream to disable a message class entirely.
 		*/
 		std::ofstream cnull;
 
@@ -597,14 +642,17 @@ namespace LinBox
 		virtual void finishActivityReport (Activity &activity, const char *msg);
 	};
 
-	/** Message class object
+	/** @internal
+	 * Message class object.
 	 * This object encapsulates the configuration of a given message class
 	 */
 	class MessageClass {
 	public:
 		friend class Commentator;
 
-		/** Constructor
+		/**  @internal
+		 * Constructor.
+		 *
 		 * Constructs a new MessageClass object with the given type,
 		 * outputing to the given stream. All other parameters are set
 		 * to factory defaults.
@@ -623,7 +671,8 @@ namespace LinBox
 			      unsigned long max_depth = 1,
 			      unsigned long max_level = 2);
 
-		/** Copy constructor
+		/** @internal
+		 * Copy constructor.
 		*/
 		MessageClass (const MessageClass &message_class) :
 			_msg_class (message_class._msg_class),
@@ -635,7 +684,8 @@ namespace LinBox
 			_max_depth (message_class._max_depth)
 		{}
 
-		/** Set maximum message depth
+		/** @internal
+		 * Set maximum message depth.
 		 * Sets the maximum activity depth, as defined by
 		 * Commentator::start and Commentator::stop, at which messages
 		 * of this class will be printed.
@@ -645,7 +695,8 @@ namespace LinBox
 		 */
 		void setMaxDepth (long depth);
 
-		/** Set maximum detail level
+		/** @internal
+		 * Set maximum detail level.
 		 * Sets the maximum detail level at which to print messages
 		 * @param level Maximum detail level at which to print messages;
 		 *              set to -1 to print messages at all levels and 0
@@ -653,7 +704,8 @@ namespace LinBox
 		 */
 		void setMaxDetailLevel (long level);
 
-		/** Precise control over printing
+		/** @internal
+		 * Precise control over printing.
 		 * Specifies that all messages up to the given depth and the
 		 * given activity level should be printed
 		 * @param depth Maximum depth at which to print
@@ -664,8 +716,9 @@ namespace LinBox
 		 */
 		void setPrintParameters (unsigned long depth, unsigned long level, const char *fn);
 
-		/** Determine whether a given message will be printed when of
-		 * this message class
+		/** @internal
+		 * Determine whether a given message will be printed when of
+		 * this message class.
 		 * @param depth Activity depty of the message
 		 * @param level Detail level of the message
 		 * @param fn Fully qualified function name (0 if not applicable;
@@ -821,18 +874,18 @@ namespace LinBox
 		std::ofstream cnull;
 
 	private:
-		/*
+#if 0
 		// Null std::ostream prints nothing
 		struct nullstreambuf : public std::streambuf {
-		nullstreambuf () {};
-		~nullstreambuf () {};
-		inline std::streampos seekoff (std::streambuf::off_type, std::ios::seekdir, std::ios::openmode) { return 0; }
-		inline std::streampos seekpos (std::streambuf::pos_type, std::ios::openmode) { return 0; }
-		inline std::streampos sys_seek (std::streambuf::off_type, std::ios::seekdir) { return 0; }
-		inline std::streamsize showmanyc () { return 0; }
-		inline void imbue (const std::locale &loc) {}
+			nullstreambuf () {};
+			~nullstreambuf () {};
+			inline std::streampos seekoff (std::streambuf::off_type, std::ios::seekdir, std::ios::openmode) { return 0; }
+			inline std::streampos seekpos (std::streambuf::pos_type, std::ios::openmode) { return 0; }
+			inline std::streampos sys_seek (std::streambuf::off_type, std::ios::seekdir) { return 0; }
+			inline std::streamsize showmanyc () { return 0; }
+			inline void imbue (const std::locale &loc) {}
 		};
-		*/
+#endif
 
 		MessageClass _msgcls;
 	};

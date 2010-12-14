@@ -45,7 +45,7 @@ namespace LinBox
 		// define the prime type
 		typedef std::vector<integer> Prime_Type;
 
-		/** @memo randomPrime()
+		/** \c randomPrime().
 		 *  return a vector of random prime
 		 */
 		inline Prime_Type randomPrime() const
@@ -62,7 +62,7 @@ namespace LinBox
 			return tmp;
 		}
 
-		/** @memo randomPrime(Prime_Type& p)
+		/** @c randomPrime(Prime_Type& p).
 		 *  return a random prime
 		 */
 		inline Prime_Type randomPrime (Prime_Type& p) const
@@ -78,7 +78,7 @@ namespace LinBox
 		}
 
 
-		/** @memo setSeed (unsigned long ul)
+		/** @c setSeed(unsigned long ul).
 		 *  Set the random seed to be ul.
 		 */
 		void static setSeed(unsigned long ul)

@@ -6,6 +6,12 @@
  *            B.D. Saunders <saunders@cis.udel.edu>
  * See COPYING for licence information
  */
+
+/*! @file blackbox/frobenius.h
+ * @ingroup blackbox
+ * @brief NO DESC
+ */
+
 #ifndef __LINBOX_frobenius_H
 #define __LINBOX_frobenius_H
 
@@ -22,19 +28,21 @@ namespace LinBox
 	public:
 		Frobenius() { }   // default constructor
 
-		/**
+		/** Constructor.
 		 *    Build a matrix in Frobenius form whose block sizes are
 		 *    specified by vlist, generated from random polynomials
+		 *    @param F
 		 *    @param vlist diagonal-block sizes, positive ints in non-increasing order
 		 */
 		template <class VDegList>
 		Frobenius( const _Field &F, const VDegList &vlist)
 		{ }
 
-		/**
+		/** Constructor.
 		 *    Build a square, block-diagonal matrix as a direct sum of the companion
 		 *    matrices of the polynomials. The dimension is the sum of the degrees.
 		 *    @param pbegin iterator pointing to the start of a list of polynomials
+		 *    @param F
 		 *    @param pend   iterator pointing after end   of a list of polynomials
 		 */
 		template <class PolyIterator>
@@ -53,6 +61,7 @@ namespace LinBox
 		}
 
 
+		/// destructor
 		~Frobenius()
 		{
 			typename std::vector< const Companion<_Field>* >::iterator vp;

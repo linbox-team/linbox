@@ -87,16 +87,16 @@ namespace LinBox
 		 * into functions.
 		 * @param  F Modular object.
 		 */
-		GF2 (const GF2 &) :
+		GF2 (const GF2 & F ) :
 			zero(false),one(true),mone(true) {}
 
-		/** Assignment operator
+		/** Assignment operator.
 		 * Required by the archetype
 		 *
 		 * @param F constant reference to Modular object
 		 * @return reference to Modular object for self
 		 */
-		const GF2 &operator = (const GF2 &)
+		const GF2 &operator = (const GF2 &F)
 		{ return *this; }
 
 		/** Initialization of field base element from an integer.
@@ -282,7 +282,7 @@ namespace LinBox
 		{ return os << x; }
 
 		/** Read field base element.
-		 * This function assumes the field base element has already been
+		 * @pre This function assumes the field base element has already been
 		 * constructed and initialized.
 		 * @return input stream from which field base element is read.
 		 * @param  is  input stream from which field base element is read.
@@ -291,9 +291,19 @@ namespace LinBox
 		std::istream &read (std::istream &is, Element &x) const
 		{ is >> x; return is; }
 
+		/** Read field base element.
+		 * @param is input stream
+		 * @param x
+		 * @return  \c is
+		 */
 		std::istream &read (std::istream &is, BitVector::reference x) const
 		{ is >> x; return is; }
 
+		/** Read field base element.
+		 * @param is input stream
+		 * @param x
+		 * @return  \c is
+		 */
 		std::istream &read (std::istream &is, std::_Bit_reference x) const
 		{ bool a; is >> a; x=a; return is; }
 
@@ -319,9 +329,19 @@ namespace LinBox
 		Element &add (Element &x, Element y, Element z) const
 		{ return x = y ^ z; }
 
+		/** Addition.
+		 * @param x
+		 * @param y
+		 * @param z
+		 */
 		BitVector::reference add (BitVector::reference x, Element y, Element z) const
 		{ return x = y ^ z; }
 
+		/** Addition.
+		 * @param x
+		 * @param y
+		 * @param z
+		 */
 		std::_Bit_reference add (std::_Bit_reference x, Element y, Element z) const
 		{ return x = y ^ z; }
 
@@ -337,9 +357,19 @@ namespace LinBox
 		Element &sub (Element &x, Element y, Element z) const
 		{ return x = y ^ z; }
 
+		/** Subtraction.
+		 * @param x
+		 * @param y
+		 * @param z
+		 */
 		BitVector::reference sub (BitVector::reference x, Element y, Element z) const
 		{ return x = y ^ z; }
 
+		/** Subtraction.
+		 * @param x
+		 * @param y
+		 * @param z
+		 */
 		std::_Bit_reference sub (std::_Bit_reference x, Element y, Element z) const
 		{ return x = y ^ z; }
 
@@ -355,9 +385,19 @@ namespace LinBox
 		Element &mul (Element &x, Element y, Element z) const
 		{ return x = y & z; }
 
+		/** Multiplication.
+		 * @param x
+		 * @param y
+		 * @param z
+		 */
 		BitVector::reference mul (BitVector::reference x, Element y, Element z) const
 		{ return x = y & z; }
 
+		/** Multiplication.
+		 * @param x
+		 * @param y
+		 * @param z
+		 */
 		std::_Bit_reference mul (std::_Bit_reference x, Element y, Element z) const
 		{ return x = y & z; }
 
@@ -369,14 +409,25 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 * @param  z field base element.
+		 * @bug z is unused
 		 */
-		Element &div (Element &x, Element y, Element ) const // z is unused!
+		Element &div (Element &x, Element y, Element z ) const
 		{ return x = y; }
 
-		BitVector::reference div (BitVector::reference x, Element y, Element ) const
+		/** Division.
+		 * @param x
+		 * @param y
+		 * @param z
+		 */
+		BitVector::reference div (BitVector::reference x, Element y, Element z ) const
 		{ return x = y; }
 
-		std::_Bit_reference div (std::_Bit_reference x, Element y, Element ) const
+		/** Division.
+		 * @param x
+		 * @param y
+		 * @param z
+		 */
+		std::_Bit_reference div (std::_Bit_reference x, Element y, Element z ) const
 		{ return x = y; }
 
 		/** Additive Inverse (Negation).
@@ -390,9 +441,19 @@ namespace LinBox
 		Element &neg (Element &x, Element y) const
 		{ return x = y; }
 
+		/** Additive Inverse (Negation).
+		 * @return reference to x.
+		 * @param  x
+		 * @param  y
+		 */
 		BitVector::reference neg (BitVector::reference x, Element y) const
 		{ return x = y; }
 
+		/** Additive Inverse (Negation).
+		 * @return reference to x.
+		 * @param  x
+		 * @param  y
+		 */
 		std::_Bit_reference neg (std::_Bit_reference x, Element y) const
 		{ return x = y; }
 
@@ -407,9 +468,19 @@ namespace LinBox
 		Element &inv (Element &x, Element y) const
 		{ return x = y; }
 
+		/** Multiplicative Inverse.
+		 * @return reference to x.
+		 * @param  x
+		 * @param  y
+		 */
 		BitVector::reference inv (BitVector::reference x, Element y) const
 		{ return x = y; }
 
+		/** Multiplicative Inverse.
+		 * @return reference to x.
+		 * @param  x
+		 * @param  y
+		 */
 		std::_Bit_reference inv (std::_Bit_reference x, Element y) const
 		{ return x = y; }
 
@@ -429,12 +500,26 @@ namespace LinBox
 					   Element y) const
 		{ return r = (a & x) ^ y; }
 
+		/** Natural AXPY.
+		 * @return reference to r.
+		 * @param  r
+		 * @param  a
+		 * @param  x
+		 * @param  y
+		 */
 		std::_Bit_reference axpy (std::_Bit_reference r,
 					  Element a,
 					  Element x,
 					  Element y) const
 		{ return r = (a & x) ^ y; }
 
+		/** Natural AXPY.
+		 * @return reference to r.
+		 * @param  r
+		 * @param  a
+		 * @param  x
+		 * @param  y
+		 */
 		Element &axpy (Element &r, Element a, Element x, Element y) const
 		{ return r = (a & x) ^ y; }
 
@@ -456,9 +541,19 @@ namespace LinBox
 		Element &addin (Element &x, Element y) const
 		{ return x ^= y; }
 
+		/** Inplace Addition.
+		 * @return reference to x.
+		 * @param  x
+		 * @param  y
+		 */
 		BitVector::reference addin (BitVector::reference x, Element y) const
 		{ return x ^= y; }
 
+		/** Inplace Addition.
+		 * @return reference to x.
+		 * @param  x
+		 * @param  y
+		 */
 		std::_Bit_reference addin (std::_Bit_reference x, Element y) const
 		{ return x = x ^ y; }
 
@@ -473,9 +568,19 @@ namespace LinBox
 		Element &subin (Element &x, Element y) const
 		{ return x ^= y; }
 
+		/** Inplace Subtraction.
+		 * @return reference to x.
+		 * @param  x
+		 * @param  y
+		 */
 		BitVector::reference subin (BitVector::reference x, Element y) const
 		{ return x ^= y; }
 
+		/** Inplace Subtraction.
+		 * @return reference to x.
+		 * @param  x
+		 * @param  y
+		 */
 		std::_Bit_reference subin (std::_Bit_reference x, Element y) const
 		{ return x = x ^ y; }
 
@@ -490,9 +595,19 @@ namespace LinBox
 		Element &mulin (Element &x, Element y) const
 		{ return x &= y; }
 
+		/** Inplace Multiplication.
+		 * @return reference to x.
+		 * @param  x
+		 * @param  y
+		 */
 		BitVector::reference mulin (BitVector::reference x, Element y) const
 		{ return x &= y; }
 
+		/** Inplace Multiplication.
+		 * @return reference to x.
+		 * @param  x
+		 * @param  y
+		 */
 		Element& mulin (std::_Bit_reference& x, Element y) const
 		{ return mulin((bool&)x,y); }
 
@@ -503,14 +618,27 @@ namespace LinBox
 		 * @return reference to x.
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
+		 * @bug y is unused
 		 */
-		Element &divin (Element &x, Element ) const //y is unsued !
+		Element &divin (Element &x, Element y ) const
 		{ return x; }
 
-		BitVector::reference divin (BitVector::reference x, Element ) const
+		/** Inplace Division.
+		 * @return reference to x.
+		 * @param  x
+		 * @param  y
+		 * @bug y is unused
+		 */
+		BitVector::reference divin (BitVector::reference x, Element y ) const
 		{ return x; }
 
-		std::_Bit_reference divin (std::_Bit_reference x, Element ) const
+		/** Inplace Division.
+		 * @return reference to x.
+		 * @param  x
+		 * @param  y
+		 * @bug y is unused
+		 */
+		std::_Bit_reference divin (std::_Bit_reference x, Element y ) const
 		{ return x; }
 
 		/** Inplace Additive Inverse (Inplace Negation).
@@ -523,9 +651,19 @@ namespace LinBox
 		Element &negin (Element &x) const
 		{ return x; }
 
+		/** Inplace Additive Inplace (Inplace Negation).
+		 * @return reference to x.
+		 * @param  x
+		 * @bug y is unused
+		 */
 		BitVector::reference negin (BitVector::reference x) const
 		{ return x; }
 
+		/** Inplace Additive Inplace (Inplace Negation).
+		 * @return reference to x.
+		 * @param  x
+		 * @bug y is unused
+		 */
 		std::_Bit_reference negin (std::_Bit_reference x) const
 		{ return x; }
 
@@ -539,9 +677,17 @@ namespace LinBox
 		Element &invin (Element &x) const
 		{ return x; }
 
+		/** Inplace Multiplicative Inverse.
+		 * @return reference to x.
+		 * @param  x
+		 */
 		BitVector::reference invin (BitVector::reference x) const
 		{ return x; }
 
+		/** Inplace Multiplicative Inverse.
+		 * @return reference to x.
+		 * @param  x
+		 */
 		std::_Bit_reference invin (std::_Bit_reference x) const
 		{ return x; }
 
@@ -558,27 +704,75 @@ namespace LinBox
 		Element &axpyin (Element &r, Element a, Element x) const
 		{ return r ^= a & x; }
 
+		/** Inplace AXPY.
+		 * @return reference to r.
+		 * @param  r
+		 * @param  a
+		 * @param  x
+		 */
 		BitVector::reference axpyin (BitVector::reference r, Element a, Element x) const
 		{ return r ^= a & x; }
 
+		/** Inplace AXPY.
+		 * @return reference to r.
+		 * @param  r
+		 * @param  a
+		 * @param  x
+		 */
 		std::_Bit_reference axpyin (std::_Bit_reference r, Element a, Element x) const
 		{ return r = r ^ (a & x); }
 
+		/** Inplace AXPY.
+		 * @return reference to r.
+		 * @param  r
+		 * @param  a
+		 * @param  x
+		 */
 		Element &axpyin (Element &r, const std::_Bit_reference a, Element x) const
 		{ return r ^= a & x; }
 
+		/** Inplace AXPY.
+		 * @return reference to r.
+		 * @param  r
+		 * @param  a
+		 * @param  x
+		 */
 		std::_Bit_reference axpyin (std::_Bit_reference r, const std::_Bit_reference a, Element x) const
 		{ return r = r ^ (a & x); }
 
+		/** Inplace AXPY.
+		 * @return reference to r.
+		 * @param  r
+		 * @param  a
+		 * @param  x
+		 */
 		Element &axpyin (Element &r, Element a, const std::_Bit_reference x) const
 		{ return r ^= a & static_cast<bool>(x); }
 
+		/** Inplace AXPY.
+		 * @return reference to r.
+		 * @param  r
+		 * @param  a
+		 * @param  x
+		 */
 		std::_Bit_reference axpyin (std::_Bit_reference r, Element a, const std::_Bit_reference x) const
 		{ return r = r ^ (a & static_cast<bool>(x)); }
 
+		/** Inplace AXPY.
+		 * @return reference to r.
+		 * @param  r
+		 * @param  a
+		 * @param  x
+		 */
 		Element &axpyin (Element &r, const std::_Bit_reference a, const std::_Bit_reference x) const
 		{ return r ^= a & static_cast<bool>(x); }
 
+		/** Inplace AXPY.
+		 * @return reference to r.
+		 * @param  r
+		 * @param  a
+		 * @param  x
+		 */
 		std::_Bit_reference axpyin (std::_Bit_reference r, const std::_Bit_reference a, const std::_Bit_reference x) const
 		{ return r = r ^ (a & static_cast<bool>(x)); }
 

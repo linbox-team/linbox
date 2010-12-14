@@ -409,6 +409,13 @@ namespace LinBox
 			return x;
 		}
 
+		/*! axpy.
+		 * r = a*x + y
+		 * @param r
+		 * @param a
+		 * @param x
+		 * @param y
+		 */
 		Element &axpy (Element &r, const Element &a, const Element &x, const Element &y) const
 		{
 			mpq_mul (r.rep, a.rep, x.rep);
@@ -416,6 +423,12 @@ namespace LinBox
 			return r;
 		}
 
+		/*! axpyin.
+		 * r += a*x
+		 * @param r
+		 * @param a
+		 * @param x
+		 */
 		Element &axpyin (Element &r, const Element &a, const Element &x) const
 		{
 			Element tmp;
@@ -671,28 +684,44 @@ namespace LinBox
 			if(exp != 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
 		}
 
+		/// max modulus.
 		static inline int getMaxModulus() { return 0; } // no modulus
 
-		// x = numerator of y
+		/*! get numerator.
+		 * @param x  numerator of y
+		 * @param y
+		 */
 		integer& get_num (integer& x, const Element& y)  const{
 			mpq_get_num (SpyInteger::get_mpz(x), y. rep);
 			return x;
 
 		}
 
-		// x = denominator of y
+		/*! get denominator.
+		 * @param x  denominator of y
+		 * @param y
+		 */
 		integer& get_den (integer& x, const Element& y) const
 		{
 			mpq_get_den (SpyInteger::get_mpz(x), y. rep);
 			return x;
 		}
 
+		/*! sign.
+		 * @param x
+		 * @return sign of \c x
+		 */
 		int sign (const Element& x) const
 		{
 			return mpq_sgn (x. rep);
 		}
 
-		//bitsize as sum of bitsizes of numerator and denominator
+		/*!
+		 * Bitsize as sum of bitsizes of numerator and denominator.
+		 * @param bs
+		 * @param q
+		 * @return \c bs
+		 */
 		integer& bitsize(integer& bs, const Element q) const
 		{
 			integer y; get_den(y,q);

@@ -330,7 +330,7 @@ namespace LinBox
 	//! TAG for triangular blas matrix
 	class BlasTag {
 	public:
-		typedef enum{low,up} uplo;
+		typedef enum{low,up}       uplo;
 		typedef enum{unit,nonunit} diag;
 	};
 

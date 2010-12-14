@@ -139,7 +139,7 @@ namespace LinBox
 
 		/** Assignment operator.
 		 * Assigns VectorDomain object MD to field.
-		 * @param  MD VectorDomain object.
+		 * @param  VD VectorDomain object.
 		 */
 		VectorDomain &operator = (const VectorDomain &VD)
 		{
@@ -203,7 +203,7 @@ namespace LinBox
 
 		//@{
 
-		/** Vector copy
+		/** Vector copy.
 		 * Copy a vector to another vector, possibly converting to a
 		 * different representation
 		 * @param res Output vector
@@ -218,7 +218,7 @@ namespace LinBox
 						typename VectorTraits<Vector2>::VectorCategory ());
 		}
 
-		/** Vector copy
+		/** Vector copy.
 		 * Copy a vector to a portion of another vector, possibly
 		 * converting to a different representation
 		 * @param res Output vector
@@ -235,7 +235,7 @@ namespace LinBox
 						typename VectorTraits<Vector1>::VectorCategory ());
 		}
 
-		/** Vector equality
+		/** Vector equality.
 		 * @param v1 Input vector
 		 * @param v2 Input vector
 		 * @returns true if and only if the vectors v1 and v2 are equal
@@ -248,7 +248,7 @@ namespace LinBox
 						    typename VectorTraits<Vector2>::VectorCategory ());
 		}
 
-		/** Vector equality with zero
+		/** Vector equality with zero.
 		 * @param v Input vector
 		 * @returns true if and only if the vector v is zero
 		 */
@@ -258,7 +258,7 @@ namespace LinBox
 			return isZeroSpecialized (v, typename VectorTraits<Vector>::VectorCategory ());
 		}
 
-		/** Vector-vector dot product
+		/** Vector-vector dot product.
 		 * @param res element into which to store result
 		 * @param v1 Input vector
 		 * @param v2 Input vector
@@ -271,14 +271,19 @@ namespace LinBox
 					       typename VectorTraits<Vector2>::VectorCategory ());
 		}
 
-		/* Alias for the above, to avoid source incompatibility */
+		/** Vector-vector dot product.
+		 * Alias for the above, to avoid source incompatibility.
+		 * @param res element into which to store result
+		 * @param v1 Input vector
+		 * @param v2 Input vector
+		 */
 		template <class Vector1, class Vector2>
 		inline Element &dotprod (Element &res, const Vector1 &v1, const Vector2 &v2) const
 		{
 			return dot (res, v1, v2);
 		}
 
-		/** Vector add
+		/** Vector add.
 		 * res <- y + x
 		 * @param res Vector into which to store result
 		 * @param y Input vector y
@@ -293,7 +298,7 @@ namespace LinBox
 					       typename VectorTraits<Vector3>::VectorCategory ());
 		}
 
-		/** Vector in-place add
+		/** Vector in-place add.
 		 * y <- y + x
 		 * @param y Input vector y; result is stored here
 		 * @param x Input vector x
@@ -306,7 +311,7 @@ namespace LinBox
 						 typename VectorTraits<Vector2>::VectorCategory ());
 		}
 
-		/** Vector subtract
+		/** Vector subtract.
 		 * res <- y - x
 		 * @param res Vector into which to store result
 		 * @param y Input vector y
@@ -321,7 +326,7 @@ namespace LinBox
 					       typename VectorTraits<Vector3>::VectorCategory ());
 		}
 
-		/** Vector in-place subtract
+		/** Vector in-place subtract.
 		 * y <- y - x
 		 * @param y Input vector y; result is stored here
 		 * @param x Input vector x
@@ -334,7 +339,7 @@ namespace LinBox
 						 typename VectorTraits<Vector2>::VectorCategory ());
 		}
 
-		/** Vector negate
+		/** Vector negate.
 		 * res <- -x
 		 * @param res Vector into which to store result
 		 * @param x Input vector x
@@ -347,7 +352,7 @@ namespace LinBox
 					       typename VectorTraits<Vector2>::VectorCategory ());
 		}
 
-		/** Vector in-place negate
+		/** Vector in-place negate.
 		 * y <- -y
 		 * @param y Input vector y; result is stored here
 		 */
@@ -357,7 +362,7 @@ namespace LinBox
 			return neginSpecialized (y, typename VectorTraits<Vector>::VectorCategory ());
 		}
 
-		/** Scalar-vector multiplication
+		/** Scalar-vector multiplication.
 		 * res <- a * x
 		 * @param res Vector into which to store result
 		 * @param x Input vector x
@@ -369,9 +374,8 @@ namespace LinBox
 			return mulSpecialized (res, x, a, typename VectorTraits<Vector1>::VectorCategory ());
 		}
 
-		/** In-place scalar-vector multiplication
+		/** In-place scalar-vector multiplication.
 		 * x <- a * x
-		 * @param res Vector into which to store result
 		 * @param x Input vector x
 		 * @param a Input element a
 		 */
@@ -381,7 +385,7 @@ namespace LinBox
 			return mulinSpecialized (x, a, typename VectorTraits<Vector>::VectorCategory ());
 		}
 
-		/** Vector axpy
+		/** Vector axpy.
 		 * res <- y + a*x
 		 * @param res Vector into which to store result
 		 * @param a Scalar element a
@@ -394,7 +398,7 @@ namespace LinBox
 			return axpySpecialized (res, y, a, x, typename VectorTraits<Vector1>::VectorCategory ());
 		}
 
-		/** Vector in-place axpy
+		/** Vector in-place axpy.
 		 * y <- y + a*x
 		 * @param y Input vector y; result is stored here
 		 * @param a Scalar element a
@@ -417,7 +421,7 @@ namespace LinBox
 
 		//@{
 
-		/** Permutation
+		/** Permutation.
 		 *
 		 * A permutation is represented as a vector of pairs, each
 		 * pair representing a transposition.
@@ -437,7 +441,7 @@ namespace LinBox
 		}
 
 		/** Permute the entries of a given vector using the given
-		 * permutation
+		 * permutation.
 		 *
 		 * @param v Vector to permute
 		 * @param P_start Iterator of the start of the permutation to apply
@@ -461,7 +465,7 @@ namespace LinBox
 		 */
 		//@{
 
-		/** Construct from a field
+		/** Construct from a field.
 		 * @param F Field from which to construct
 		 */
 		VectorDomain (const Field &F) :
@@ -470,6 +474,9 @@ namespace LinBox
 
 		//@} Implementation-Specific Methods
 
+		/*! Random vector.
+		 * @param v vector to be randomized.
+		 */
 		template <class Vector>
 		Vector& random(Vector& v)
 		{

@@ -264,20 +264,29 @@ namespace LinBox
 
 	///
 	struct WiedemannTraits : public Specifier {
-		/** Constructor
+		/** Constructora.
 		 *
-		 * @param precond Preconditioner to use, default is sparse
-		 * @param rank Rank, if known; otherwise use RANK_UNKNOWN
-		 * @param singular Whether the system is known to be singular or
-		 * nonsingular; default is UNKNOWN
-		 * @param symmetric True only if the system is symmetric. This improves
+		 *  @param symmetric True only if the system is symmetric. This improves
 		 * performance somewhat, but will yield incorrect results if the system
 		 * is not actually symmetric. Default is false.
+		 *
+		 * @param thres
+		 *
+		 * @param rank Rank, if known; otherwise use RANK_UNKNOWN
+		 *
+		 * @param preconditioner Preconditioner to use, default is sparse
+		 *
+		 * @param singular Whether the system is known to be singular or
+		 * nonsingular; default is UNKNOWN
+		 *
 		 * @param certificate True if the solver should attempt to find a
 		 * certificate of inconsistency if it suspects the system to be
 		 * inconsistent; default is true
+		 *
 		 * @param maxTries Maximum number of trials before giving up and
 		 * returning a failure; default is 100
+		 *
+		 * @param checkResult
 		 */
 		WiedemannTraits (
 				 bool           symmetric      = NON_SYMMETRIC,
@@ -326,15 +335,16 @@ namespace LinBox
 
 	///
 	struct LanczosTraits : public Specifier {
-		/** Constructor
+		/** Constructor.
 		 *
-		 * @param precond Preconditioner to use, default is sparse
+		 * @param preconditioner Preconditioner to use, default is sparse
 		 * @param maxTries Maximum number of trials before giving up and
 		 * returning a failure; default is 100
 		 */
 		LanczosTraits (Preconditioner preconditioner = FULL_DIAGONAL,
 			       unsigned long maxTries       = 100)
-		{ Specifier::_preconditioner =(preconditioner);
+		{
+			Specifier::_preconditioner =(preconditioner);
 			Specifier::_maxTries =(maxTries);
 		}
 		LanczosTraits( const Specifier& S) :
@@ -344,9 +354,9 @@ namespace LinBox
 
 	///
 	struct BlockLanczosTraits : public Specifier {
-		/** Constructor
+		/** Constructor.
 		 *
-		 * @param precond Preconditioner to use, default is sparse
+		 * @param preconditioner Preconditioner to use, default is sparse
 		 * @param maxTries Maximum number of trials before giving up and
 		 * returning a failure; default is 100
 		 * @param blockingFactor Blocking factor to use
@@ -354,7 +364,8 @@ namespace LinBox
 		BlockLanczosTraits (Preconditioner preconditioner = FULL_DIAGONAL,
 				    unsigned long  maxTries       = 100,
 				    int            blockingFactor = 16)
-		{ Specifier::_preconditioner =(preconditioner);
+		{
+			Specifier::_preconditioner =(preconditioner);
 
 			Specifier::_maxTries = (maxTries);
 
@@ -368,11 +379,14 @@ namespace LinBox
 
 	///
 	struct SparseEliminationTraits  : public Specifier {
-		/** Constructor
+		/** Constructor.
 		 *
 		 * @param strategy Pivoting strategy to use
 		 */
-		SparseEliminationTraits (PivotStrategy strategy = PIVOT_LINEAR) { Specifier::_strategy = (strategy) ;}
+		SparseEliminationTraits (PivotStrategy strategy = PIVOT_LINEAR)
+		{
+			Specifier::_strategy = (strategy) ;
+		}
 		SparseEliminationTraits( const EliminationSpecifier& S) :
 		      	Specifier(S)
 	       	{}
@@ -429,10 +443,12 @@ namespace LinBox
 
 	//Using numerical methods to symbolically solve linear systems.
 	//based on a preprinted article, submitted to JSC 2004
-	struct NumericalTraits : public Specifier{
+	struct NumericalTraits : public Specifier
+	{
 		NumericalTraits ( Preconditioner preconditioner = NO_PRECONDITIONER,
 				  size_t          rank          = RANK_UNKNOWN)
-		{ Specifier::_preconditioner=(preconditioner);
+		{
+			Specifier::_preconditioner=(preconditioner);
 
 			Specifier::_rank=(rank) ;
 		}
