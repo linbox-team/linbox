@@ -23,6 +23,13 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/*!@file randiter/archetype.h
+ * @ingroup randiter
+ * @brief NO DOC
+ * @see \ref Archetypes
+ */
+
+
 #ifndef __LINBOX_randiter_archetype_H
 #define __LINBOX_randiter_archetype_H
 

@@ -24,6 +24,7 @@
  */
 
 /** \file examples/power_rank.C
+ * @example  examples/power_rank.C
   \brief Rank of sparse matrix over Z or Zp.
   \ingroup examples
   */

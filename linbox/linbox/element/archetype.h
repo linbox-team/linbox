@@ -23,6 +23,11 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/*!@file element/archetype.h
+ * @ingroup element
+ * @brief NO DOC
+ * @see \ref Archetypes
+ */
 #ifndef __LINBOX_element_archetype_H
 #define __LINBOX_element_archetype_H
 

@@ -23,7 +23,8 @@
  *   <http://www.gnu.org/licenses/>.
  */
 
-/*! @file rr.C
+/*! @file examples/rr.C
+ * @example  examples/rr.C
  * @ingroup examples
  * @brief Rational Reconstruction.
  */

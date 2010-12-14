@@ -23,7 +23,8 @@
  *   <http://www.gnu.org/licenses/>.
  */
 
-/**\file examples/det.C examples/det.C
+/**\file examples/mpidet.C
+ * @example examples/mpidet.C
   \brief Determinant of sparse matrix over Z or Zp.
   \ingroup examples
   */

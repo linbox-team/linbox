@@ -21,7 +21,8 @@
  *   License along with LinBox.  If not, see
  *   <http://www.gnu.org/licenses/>.
  */
-/**\file examples/solve.C
+/**\file examples/checksolve.C
+ * @example  examples/checksolve.C
   \brief Solving of sparse matrix over Z or Zp.
   \ingroup examples
   */

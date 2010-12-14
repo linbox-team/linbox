@@ -23,6 +23,7 @@
  */
 
 /** \file examples/sparseelimrank.C
+ * @example  examples/sparseelimrank.C
  \brief Gaussian elimination Rank of sparse matrix over Z or Zp.
  \ingroup examples
  */

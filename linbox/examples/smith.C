@@ -23,6 +23,7 @@
  */
 
 /** \file examples/smith.C
+ * @example  examples/smith.C
   \brief mod m Smith form by elmination
   \ingroup examples
 

@@ -1,7 +1,6 @@
-// Copyright (C) 2005 David Saunders, 2010 LinBox. 
+// Copyright (C) 2005 David Saunders, 2010 LinBox.
 // This file is part of LinBox, see COPYING for licence information.
-/*!
-\page tuto Turorial 
+/*!  \page tuto Turorial
 
 The person requiring some exact linear algebra computation may exploit LinBox
 at any of four general levels.  In order from least involved with the details
@@ -9,7 +8,7 @@ to most involved, they are:
 
 <ol>
 <li>
-Access using a LinBox web server. 
+Access using a LinBox web server.
 </li>
 
 The user at this level must attend to preparation of a matrix in a suitable
@@ -20,7 +19,7 @@ href="http://www.linalg.org" target="_blank">linalg.org</a>.
 <li>
 Access using compiled codes.  Full programs exist in the examples directory and
 can be used through an interface to LinBox in a general purposes system such as
-Maple or <a href="http://www.sagemath.org"  target="_blank">SAGE</a>.  
+Maple or <a href="http://www.sagemath.org"  target="_blank">SAGE</a>.
 </li>
 
 The user at this level must see to installation, and then attend to preparation
@@ -28,12 +27,12 @@ of her matrix in a suitable file format and to the form of the program or
 procedure invocation.  A number of programs are available in the examples
 directory distributed with LinBox providing for rank, determinant, linear
 system solution, etc.  The documentation of the examples module should serve
-for this level of access.  
+for this level of access.
 
 <!-- what about interfaces maple and gap - can they be documented now? -->
 
 <li>
-Use of LinBox as a programmers library for exact linear algebra functions.  
+Use of LinBox as a programmers library for exact linear algebra functions.
 </li>
 
 At this level a user must do at least the following:
@@ -43,7 +42,7 @@ Choose a field or ring representation and construct a specific field or ring
 object \c R.
 </li>
 <li>
-Choose a blackbox or matrix representation suitable to your data and construct 
+Choose a blackbox or matrix representation suitable to your data and construct
 specific matrix \c A over \c R.
 </li>
 <li>
@@ -51,7 +50,7 @@ Call needed algorithm.  The solutions directory is designed to support this by
 providing functions with simple problem oriented interfaces (\c rank(), \c
 det(), \c solve()), yet allowing some user control of algorithm details.  The
 programmer may be providing some of the parts such as an application specific
-blackbox matrix class.  
+blackbox matrix class.
 </li>
 </ol>
 
@@ -81,13 +80,13 @@ separating wheat from chaff in that case.
 In this tutorial we will discuss a simple application at level 3,  the design
 of a program to compute the determinant of a sparse matrix over
 \f$\mathbf{GF}(101)\f$.  The programmer has 3 major issues: field, matrix,
-algorithm.  
+algorithm.
 
-The basic algorithm choice is between blackbox and elimination algorithms.  
+The basic algorithm choice is between blackbox and elimination algorithms.
 If our matrix is \c A, then the algorithm call may look like
 \code
 determinant(det, A, Method::Blackbox());
-//or 
+//or
 determinant(det, A, Method::Elimination());
 \endcode
 To have access to this determinant function just <code>\#include <linbox/solutions/det.h></code>.
@@ -100,7 +99,7 @@ case there is a default, so this argument is optional.  Also, some method
 objects may be constructed so as to convey more detail about the algorithm to
 use.  For example it may help to promise that the matrix is nonsingular or
 symmetric or to request a particular algorithm variant.  The blackbox algorithm
-based fundamentally on Wiedemann's approach is specified by 
+based fundamentally on Wiedemann's approach is specified by
 \c Method::Wiedemann, see \c solutions/methods.h for more details.  Specification of
 a blocked blackbox algorithm may be advantageous (in the future).   Elimination
 is likely fastest if the matrix is not extremely sparse or not large or not
@@ -132,7 +131,7 @@ provide some timing data on the basic functions of each representation.  In
 distinct types.  The field object owns the arithmetic operations, whereas the
 entry objects may be of a primitive type such as \c short, \c int, \c double.
 Each field class \p Fld has the embedded class \c Fld::Element for it's
-elements. 
+elements.
 
 \code
 Field::Element a, b, c;
@@ -163,7 +162,7 @@ Then there is the question of initializing matrix
 entries.  Two basic approaches are illustrated here.
 
 \code
-TriplesBB A; 
+TriplesBB A;
 A.read("triples-file"); // initialize A from data in file (including shape).
 \endcode
 
@@ -175,7 +174,7 @@ SparseMatrix B(100, 200); // 100 by 200 zero matrix (so far).
 for ( ... )
 {
    Field::Element v;
-   F.init(v, ...); 
+   F.init(v, ...);
    B.setEntry(i, j, v);  // put nonzero v in i,j position.
 }
 \endcode
@@ -200,7 +199,7 @@ main()
 }
 \endcode
 
-This tutorial should continue with a discussion of compilation issues, but it 
+This tutorial should continue with a discussion of compilation issues, but it
 doesn't.  Something useful may be learned from examining the Makefile.am in the examples directory.
 */
 

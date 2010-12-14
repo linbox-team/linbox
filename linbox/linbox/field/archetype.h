@@ -33,6 +33,11 @@
  * ------------------------------------
  */
 
+/*!@file field/archetype.h
+ * @ingroup field
+ * @brief NO DOC
+ * @see \ref Archetypes
+ */
 
 #ifndef __LINBOX_field_archetype_H
 #define __LINBOX_field_archetype_H

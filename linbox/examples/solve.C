@@ -26,7 +26,9 @@
  * @ingroup examples
  * @brief Blackbox solvers.
  * @warning some are commented out...
+ * @example  examples/solve.C
  */
+
 #include <iostream>
 
 #include "linbox/field/modular-double.h"

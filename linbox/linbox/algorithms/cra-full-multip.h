@@ -37,12 +37,6 @@
 
 #include "linbox/algorithms/lazy-product.h"
 
-/*! @file algorithms/cra-full-multip.h
- * @ingroup algorithms
- * @ingroup CRA
- * @brief NO DOC
- */
-
 namespace LinBox
 {
 
@@ -422,7 +416,6 @@ namespace LinBox
 	 * @ingroup CRA
 	 * Version of LinBox::FullMultipCRA for matrices.
 	 */
-
 	template<class Domain_Type>
 	struct FullMultipBlasMatCRA : FullMultipCRA<Domain_Type>
 	{
@@ -434,7 +427,9 @@ namespace LinBox
 		const size_t				size;
 
 	public:
-		FullMultipBlasMatCRA(const std::pair<size_t,double>& p ) : FullMultipCRA<Domain>(p.second), size(p.first) { }
+		FullMultipBlasMatCRA(const std::pair<size_t,double>& p ) :
+		       	FullMultipCRA<Domain>(p.second), size(p.first)
+		{ }
 
 		template<class Matrix>
 		void initialize (const Domain& D, Matrix& e)

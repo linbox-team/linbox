@@ -23,6 +23,7 @@
  */
 
 /**\file examples/rank.C
+ * @example  examples/rank.C
   \brief Rank of sparse matrix over Z or Zp.
   \ingroup examples
   */

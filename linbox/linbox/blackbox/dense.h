@@ -24,6 +24,10 @@
  * See COPYING for license information
  */
 
+/** @file blackbox/dense.h
+ * @ingroup blackbox
+ * @brief NO DOC
+*/
 #ifndef __LINBOX_blackbox_dense_H
 #define __LINBOX_blackbox_dense_H
 
@@ -46,8 +50,6 @@
 #include <linbox/blackbox/blackbox_parallel.h>
 #endif
 
-/** @file blackbox/dense.h
-*/
 
 namespace LinBox
 {

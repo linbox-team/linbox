@@ -6,7 +6,7 @@
   All \ref LinBox random iterator generators must implement the
   random iterator generator common object interface
   as it is defined in the random iterator generator
-  @link RandIterArchetype archetype@endlink.
+  @ref RandIterArchetype.
   This interface consists of the methods required of all \ref LinBox
   random iterator generators.
 

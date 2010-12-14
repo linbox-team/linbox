@@ -24,6 +24,7 @@
  */
 
 /*! @file examples/doubledet.C
+ * @example  examples/doubledet.C
  * @ingroup examples
  * @brief computes doubleDet.
  */

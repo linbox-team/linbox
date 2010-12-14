@@ -46,6 +46,7 @@ namespace LinBox
 	 * random() which acts on a reference to a field element.
 	 * The random value is written to the argument
 	 * and also returned as a reference.
+	 * @see \subpage randomFEGW Randiter Field Element Generator wrapper
 	 */
 	class RandIterAbstract {
 	public:

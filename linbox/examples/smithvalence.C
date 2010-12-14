@@ -23,6 +23,7 @@
  */
 
 /**\file examples/smithvalence.C
+ * @example  examples/smithvalence.C
   \brief Valence of sparse matrix over Z or Zp.
   \ingroup examples
   */

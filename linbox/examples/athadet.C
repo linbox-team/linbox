@@ -23,6 +23,7 @@
  */
 
 /**\file examples/athadet.C
+ * @example  examples/athadet.C
   \brief Determinant of sparse matrix over Z or Zp.
   \ingroup examples
   @author serge.guelton@imag.fr
