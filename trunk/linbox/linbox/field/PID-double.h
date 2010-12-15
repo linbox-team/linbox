@@ -24,7 +24,10 @@
  */
 
 
-
+/*!  @file field/PID-double.h
+ * @ingroup field
+ * @brief NO DOC
+ */
 
 #ifndef __LINBOX_pid_double_H
 #define __LINBOX_pid_double_H
@@ -36,42 +39,52 @@ namespace LinBox
 {
 
 
-	/// \ingroup ring
+	/*! \ingroup integers
+	 * @brief NO DOC
+	 */
 	class PID_double : public UnparametricField<double> {
 
 	public:
 
 		typedef double Element;
 
-		inline static bool isUnit (const Element& x) {
+		/// test if unit (1 or -1)
+		inline static bool isUnit (const Element& x)
+		{
 
 			return (x == double(1))  || (x== double(-1));
 		}
 
-		inline static Element& abs (Element& x, const Element& a) {
+		/// return absolute value
+		inline static Element& abs (Element& x, const Element& a)
+		{
 			x= (a>0)? a: -a;
 			return x;
 		}
 
-		inline static Element abs (const Element& a){
+		/// return absolute value
+		inline static Element abs (const Element& a)
+		{
 			return (a>0)? a: -a;
 		}
 
-		/** compare two elements, a and b
+		/** compare two elements, a and b.
 		 * return 1, if a > b
 		 * return 0, if a = b;
 		 * return -1. if a < b
 		 */
-		inline long compare (const Element& a, const Element& b) const {
+		inline long compare (const Element& a, const Element& b) const
+		{
 
 			return (a>b)? 1: ((a<b)? -1 : 0);
 		}
 
 
-		/** @brief gcd (g, a, b)
+		/** @brief gcd (g, a, b).
 		 *  return g = gcd (a, b)
 		 */
-		inline static Element& gcd (Element& g, const Element& a, const Element& b) {
+		inline static Element& gcd (Element& g, const Element& a, const Element& b)
+		{
 
 			double  u, v, q, r;
 			u = a; v = b;
@@ -96,10 +109,11 @@ namespace LinBox
 			return g;
 		}
 
-		/** @brief gcding (g, b)
+		/** @brief gcding (g, b).
 		 *  return g = gcd (g, b)
 		 */
-		inline static Element& gcdin (Element& g, const Element& b) {
+		inline static Element& gcdin (Element& g, const Element& b)
+		{
 
 			gcd(g, g, b);
 
@@ -112,7 +126,8 @@ namespace LinBox
 		 *  Euclidean algorithm applied to |a| and |b|, with the signs then
 		 *  adjusted according to the signs of a and b.
 		 */
-		inline static Element& xgcd (Element& g, Element& s, Element& t, const Element& a, const Element& b){
+		inline static Element& xgcd (Element& g, Element& s, Element& t, const Element& a, const Element& b)
+		{
 			double  u, v, u0, v0, u1, v1, u2, v2, q, r;
 
 			int aneg = 0, bneg = 0;
@@ -160,7 +175,8 @@ namespace LinBox
 		/** @brief lcm (c, a, b)
 		 *  c = lcm (a, b)
 		 */
-		inline static Element& lcm (Element& c, const Element& a, const Element& b) {
+		inline static Element& lcm (Element& c, const Element& a, const Element& b)
+		{
 
 			if ((a==0.) || (b==0.)) return c = 0.;
 
@@ -182,7 +198,8 @@ namespace LinBox
 		/** @brief lcmin (l, b)
 		 *  l = lcm (l, b)
 		 */
-		inline static Element& lcmin (Element& l, const Element& b) {
+		inline static Element& lcmin (Element& l, const Element& b)
+		{
 
 			if ((l==0.) || (b==0.)) return l = 0.;
 
@@ -203,7 +220,8 @@ namespace LinBox
 
 
 		inline static long reconstructRational (Element& a, Element& b, const Element& x, const Element& m,
-							const Element& a_bound, const Element& b_bound) {
+							const Element& a_bound, const Element& b_bound)
+		{
 
 			double  u, v, u0, u1, u2, q, r;
 
@@ -233,14 +251,16 @@ namespace LinBox
 		/** @brief quo (q, x, y)
 		 *  q = floor (x/y);
 		 */
-		inline static Element& quo (Element& q, const Element& a, const Element& b) {
+		inline static Element& quo (Element& q, const Element& a, const Element& b)
+		{
 			return  q = floor (a/b);
 		}
 
 		/** @brief rem (r, a, b)
 		 *  r = remindar of  a / b
 		 */
-		inline static Element& rem (Element& r, const Element& a, const Element& b)  {
+		inline static Element& rem (Element& r, const Element& a, const Element& b)
+		{
 			Element q;
 			return r= a - quo(q,a,b)*b  ;
 		}
@@ -248,14 +268,16 @@ namespace LinBox
 		/** @brief quoin (a, b)
 		 *  a = quotient (a, b)
 		 */
-		inline static Element& quoin (Element& a, const Element& b)  {
+		inline static Element& quoin (Element& a, const Element& b)
+		{
 			return quo(a,a,b);
 		}
 
 		/** @brief quoin (a, b)
 		 *  a = quotient (a, b)
 		 */
-		inline static Element& remin (Element& a, const Element& b)  {
+		inline static Element& remin (Element& a, const Element& b)
+		{
 			return rem(a,a,b);
 		}
 
@@ -264,7 +286,8 @@ namespace LinBox
 		 * q = [a/b], r = a - b*q
 		 * |r| < |b|, and if r != 0, sign(r) = sign(b)
 		 */
-		inline static void quoRem (Element& q, Element& r, const Element& a, const Element& b) {
+		inline static void quoRem (Element& q, Element& r, const Element& a, const Element& b)
+		{
 			quo(q,a,b);
 			r = a - q*b;
 		}
@@ -272,30 +295,41 @@ namespace LinBox
 		/** @brief isDivisor (a, b)
 		 *  Test if a | b.
 		 */
-		inline static bool isDivisor (const Element& a, const Element& b) {
+		inline static bool isDivisor (const Element& a, const Element& b)
+		{
 			double r;
 			return rem(r,a,b)==0.;
 		}
 
 		// some specializations and conversions
 		double& convert(double& x, const Element& y) const
-		{ return x=y;}
+		{
+			return x=y;
+		}
 
 		Element& init(Element& x, const double& y) const
-		{ return x=y;}
+		{
+			return x=y;
+		}
 
 		integer& convert(integer& x, const Element& y) const
-		{ return x=(integer)y;}
+		{
+			return x=(integer)y;
+		}
 
 		Element& init(Element& x, const integer& y) const
-		{ return x=(double)y;}
+		{
+			return x=(double)y;
+		}
 
 
 	}; //end of class PID_double
 
 	template<>
 	std::ostream &UnparametricField<double>::write (std::ostream &os) const
-	{ return os << "unparam<double>"; }
+	{
+		return os << "unparam<double>";
+	}
 
 } //end of namespace LinBox
 #endif //__LINBOX_pid_double_H

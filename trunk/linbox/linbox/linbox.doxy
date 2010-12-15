@@ -1,3 +1,5 @@
+// Copyright (C) 2010 LinBox, GNU LGPL, see COPYING for licence information
+
 /** \defgroup linbox LinBox
 
   \brief This is the LinBox library proper.
