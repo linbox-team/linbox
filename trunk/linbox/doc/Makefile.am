@@ -45,6 +45,7 @@ EXTRA_DIST=             \
     linbox.html         \
     tutorial.html       \
     install-dev.html    \
+    index-dev.html      \
     install-dist.html   \
     Doxyfile            \
     DoxyfileDev         \

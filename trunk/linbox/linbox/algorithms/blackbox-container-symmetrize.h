@@ -15,6 +15,12 @@
  * See COPYING for license information.
  */
 
+/*! @internal
+ * @file algorithms/blackbox-containter-symetrize.h
+ * @ingroup algorithms
+ * @brief Symmetrizing iterator for rank computations
+ */
+
 #ifndef __LINBOX_blackbox_container_symmetrize_H
 #define __LINBOX_blackbox_container_symmetrize_H
 
@@ -24,19 +30,20 @@ namespace LinBox
 {
 
 	/** \brief Symmetrizing iterator (for rank computations).
-
-#
-	//================================================================
-	// LinBox Project 1999
-	// Symmetrizing iterator (for rank computations)
-	// Same left and right vector
-	// A is supposed to have tranpose-vector product
-	// the sequence is this->u^t this->u, (A this->u)^t (A this->u) = this->u^t (A^t A) this->u,
-	// (A^t (A this->u))^t (A^t (A this->u)) = this->u^t (A^t A)^2 this->u , etc.
-	// Time-stamp: <13 Jun 02 18:16:43 Jean-Guillaume.Dumas@imag.fr>
-	// ================================================================
-#
-*/
+	 * @ingroup algorithms
+	 *
+	 * Symmetrizing iterator (for rank computations)
+	 * Same left and right vector
+	 * A is supposed to have tranpose-vector product
+	 * the sequence is
+	 *
+	 \code
+	 this->u^t this->u
+	 (A this->u)^t (A this->u) = this->u^t (A^t A) this->u
+	 (A^t (A this->u))^t (A^t (A this->u)) = this->u^t (A^t A)^2 this->u
+	 etc.
+	 \endcode
+	 */
 
 	template<class Field, class _Blackbox, class RandIter = typename Field::RandIter>
 	class BlackboxContainerSymmetrize : public BlackboxContainerBase<Field, _Blackbox> {
@@ -49,12 +56,16 @@ namespace LinBox
 		template<class Vector>
 		BlackboxContainerSymmetrize (const Blackbox *D, const Field &F, const Vector &u0) :
 			BlackboxContainerBase<Field, Blackbox> (D, F)
-		{ init (u0); }
+		{
+		       	init (u0);
+	       	}
 
 		//BlackboxContainerSymmetrize (const Blackbox *D, const Field &F, RandIter &g = typename Field::RandIter(_F) )
 		BlackboxContainerSymmetrize (const Blackbox *D, const Field &F, RandIter &g = typename Field::RandIter() ) :
 			BlackboxContainerBase<Field, Blackbox> (D, F)
-		{ init (g); }
+		{
+		       	init (g);
+	       	}
 
 	private:
 		void _launch ()
