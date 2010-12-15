@@ -21,8 +21,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-
-
 #ifndef __LINBOX_smith_form_adaptive_H
 #define __LINBOX_smith_form_adaptive_H
 

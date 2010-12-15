@@ -354,7 +354,7 @@ namespace LinBox
 	template <class Matrix>
 	void SmithFormAdaptive::smithForm (std::vector<integer>& s, const Matrix& A)
 	{
-		//commentator.start ("Smith Form starts", "Smihtform");
+		//commentator.start ("Smith Form starts", "Smithform");
 
 		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation of the invariant factors starts (via an adaptive alg):" << std::endl;
