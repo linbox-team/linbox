@@ -24,6 +24,8 @@
  */
 
 /** @file field/PID-integer.h
+ * @ingroup field
+ * @brief NO DOC
 */
 
 #ifndef __LINBOX_pid_integer_H
@@ -43,7 +45,9 @@ namespace LinBox
 	template <class Ring>
 	class ClassifyRing;
 
-	/// \ingroup ring
+	/*! \ingroup integers
+	 * @brief Domain for integer operations.
+	 */
 	class PID_integer : public UnparametricField<integer>
 	{
 
@@ -54,39 +58,45 @@ namespace LinBox
 
 		typedef integer Element;
 
+		/// axpyin
 		inline Element& axpyin (integer &r, const integer& a, const integer& x) const
 		{
 			return Integer::axpyin(r,a,x);
 		}
 
+		/// axmyin
 		inline Element& axmyin (integer &r, const integer& a, const integer& x) const
 		{
 			return Integer::axmyin(r,a,x);
 		}
 
+		/// axpy
 		inline Element& axpy (integer &r, const integer& a, const integer& x, const integer& y) const
 		{
 			return Integer::axpy(r,a,x,y);//r = ax+y
 		}
 
+		/// isUnit
 		inline  bool isUnit (const Element& x) const
 		{
 
 			return (x == Element(1))  || (x== Element(-1));
 		}
 
+		/// abs
 		inline  Element& abs(Element& x, const Element& a) const
 		{
 			x= (a>0)? a: -a;
 			return x;
 		}
 
+		/// abs
 		inline  Element abs(const Element& a) const
 		{
 			return (a>0)? a: -a;
 		}
 
-		/** compare two elements, a and b
+		/** compare two elements, a and b.
 		 * return 1, if a > b
 		 * return 0, if a = b;
 		 * return -1. if a < b
@@ -317,10 +327,13 @@ namespace LinBox
 		{ return os << I; }
 
 	protected:
-		// Rational number reconstruction:
-		// num/den \equiv f modulo m, with |num|<k and 0 < |den| \leq f/k
-		// See [von zur Gathen & Gerhard, Modern Computer Algebra,
-		//      5.10, Cambridge Univ. Press 1999]
+		/*! Rational number reconstruction.
+		* \f$\frac{n}{d} \equiv f \mod m\f$, with \f$\vert n
+		 \vert <k\f$ and \f$0 < \vert d \vert \leq \frac{f}{k}\f$.
+		* @bib
+		* - von zur Gathen & Gerhard, <i>Modern Computer Algebra</i>,
+		*      5.10, Cambridge Univ. Press 1999
+		*/
 		inline void RationalReconstruction( Element& a, Element& b,
 						    const Element& f, const Element& m,
 						    const Element& k,
@@ -449,8 +462,7 @@ namespace LinBox
 	}; //end of class PID_integer
 
 	template<>
-	struct ClassifyRing<PID_integer>
-	{
+	struct ClassifyRing<PID_integer> {
 		typedef RingCategories::IntegerTag categoryTag;
 	};
 

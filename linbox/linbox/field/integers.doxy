@@ -1,0 +1,29 @@
+// Copyright (C) 2010 LinBox, GNU LGPL, see COPYING for licence information
+
+/*! @ingroup ring
+ * @defgroup integers Integers
+ * LinBox integer representation and operations.
+ *
+ * LinBox integers come from Givaro which uses GMP. This ensures fastest
+ * operations.
+ *
+ * LinBox provides :
+ * - LinBox::Integer is the Givaro representation of an integer (Givaro::Integer).
+ * - LinBox::integer is a synonym
+ * - LinBox::PID_integer is a domain (ref ???) to perform integers operation on.
+ * - Others ?
+ *
+ *
+ * other use of integers ?
+ *
+ * @warning due to the construction of Givaro, you should always prefer to
+ * group operations as in the example :
+ \code
+ Integer a=1,b=1,c=1;
+ // c += a * b ; /* slow */
+ axpyin(c,a,b) ; /* faster */
+ \endcode
+ * @see <a href="http://ljk.imag.fr/CASYS/LOGICIELS/givaro/">Givaro</a> for documentation.
+ */
+
+// vim:syn=doxygen

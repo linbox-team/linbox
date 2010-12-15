@@ -290,7 +290,7 @@ namespace LinBox
 		 */
 		//@{
 
-		/// Default constructor
+		//- Default constructor
 		//UnparametricField (void) {}
 
 		/** Constructor from field object.
@@ -316,6 +316,9 @@ namespace LinBox
 	template<class Field>
 	class FieldAXPY;
 
+	/*! @ingroup integers
+	 * @brief NO DOc
+	 */
 	template<>
 	class FieldAXPY<UnparametricField<integer> >  {
 	public:

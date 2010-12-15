@@ -93,5 +93,6 @@ EXTRA_DIST =            \
     $(LIDIA_HDRS)       \
     field.doxy          \
     modular.doxy        \
+    integers.doxy       \
     lidia.doxy          \
     ntl.doxy
