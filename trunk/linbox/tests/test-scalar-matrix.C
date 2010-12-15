@@ -45,8 +45,6 @@ using namespace LinBox;
 
 int main (int argc, char **argv)
 {
-	ofstream report;
-
 	bool pass = true;
 
 	static size_t n = 20;

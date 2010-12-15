@@ -50,6 +50,8 @@ namespace LinBox
 		    Vector& applyTranspose(Vector& y, Vector& x) const;
 		    size_t rowdim(void) const;
 		    size_t coldim(void) const;
+		    Field& field() const;
+		    ...rebind...
 		    */
 
 		/// Constructs an initially 0 by 0 matrix.
