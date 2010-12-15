@@ -12,6 +12,12 @@ docs:doc/linbox-html/index.html
 doc/linbox-html/index.html:
 	(cd doc; make docs)
 
+docs_dev:doc/linbox-dev-html/index.html
+
+doc/linbox-dev-html/index.html:
+	(cd doc; make docs_dev)
+
+
 examples:
 	(cd examples; make examples)
 

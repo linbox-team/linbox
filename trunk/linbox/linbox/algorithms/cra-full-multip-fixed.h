@@ -54,6 +54,14 @@ namespace LinBox
 		typedef typename Domain::Element 	DomainElement;
 		typedef FullMultipFixedCRA<Domain> 	Self_t;
 
+		typedef std::vector<double>::iterator        DoubleVect_Iterator ;
+		typedef std::vector< bool >::iterator          BoolVect_Iterator ;
+		typedef std::vector< LazyProduct >::iterator   LazyVect_Iterator ;
+		typedef std::vector< Integer >                           IntVect ;
+		typedef IntVect::iterator                       IntVect_Iterator ;
+		typedef std::vector< IntVect >::iterator    IntVectVect_Iterator ;
+		typedef IntVect::const_iterator            IntVect_ConstIterator ;
+
 	protected:
 		const size_t				size;
 
@@ -70,7 +78,8 @@ namespace LinBox
 			this->RadixSizes_.resize(1);
 			this->RadixPrimeProd_.resize(1);
 			this->RadixResidues_.resize(1);
-			this->RadixOccupancy_.resize(1); this->RadixOccupancy_.front() = false;
+			this->RadixOccupancy_.resize(1);
+			this->RadixOccupancy_.front() = false;
 		}
 
 		template<class Iterator>
@@ -84,21 +93,30 @@ namespace LinBox
 		void progress (const Domain& D, Iterator& e)
 		{
 			// Radix shelves
-			std::vector< double >::iterator  _dsz_it = this->RadixSizes_.begin();
-			std::vector< LazyProduct >::iterator _mod_it = this->RadixPrimeProd_.begin();
-			std::vector< std::vector<Integer> >::iterator _tab_it = this->RadixResidues_.begin();
-			std::vector< bool >::iterator    _occ_it = this->RadixOccupancy_.begin();
-			std::vector<Integer> ri(this->size); LazyProduct mi; double di;
+			DoubleVect_Iterator  _dsz_it = this->RadixSizes_.begin();
+			LazyVect_Iterator    _mod_it = this->RadixPrimeProd_.begin();
+			IntVectVect_Iterator _tab_it = this->RadixResidues_.begin();
+			BoolVect_Iterator    _occ_it = this->RadixOccupancy_.begin();
+
+			IntVect ri(this->size);
+			LazyProduct mi;
+			double di;
 			if (*_occ_it) {
 				// If lower shelf is occupied
 				// Combine it with the new residue
-				// The for loop will transmit the resulting combination to the upper shelf
+				// The for loop will transmit the resulting
+				// combination to the upper shelf
 				Iterator e_it = e;
-				std::vector<Integer>::iterator       ri_it = ri.begin();
-				std::vector<Integer>::const_iterator t0_it = _tab_it->begin();
-				DomainElement invP0; this->precomputeInvP0(invP0, D, _mod_it->operator()() );
+				IntVect_Iterator       ri_it = ri.begin();
+				IntVect_ConstIterator  t0_it = _tab_it->begin();
+
+				DomainElement invP0;
+				this->precomputeInvP0(invP0, D, _mod_it->operator()() );
+
 				for( ; ri_it != ri.end(); ++e_it, ++ri_it, ++ t0_it)
-					this->fieldreconstruct(*ri_it, D, *e_it, *t0_it, invP0, (*_mod_it).operator()() );
+					this->fieldreconstruct(*ri_it, D, *e_it, *t0_it, invP0,
+							       (*_mod_it).operator()() );
+
 				Integer tmp; D.characteristic(tmp);
 				double ltp = log(double(tmp));
 				di = *_dsz_it + ltp;
@@ -116,7 +134,7 @@ namespace LinBox
 				this->totalsize += ltp;
 				Iterator e_it = e;
 				_tab_it->resize(this->size);
-				std::vector<Integer>::iterator t0_it= _tab_it->begin();
+				IntVect_Iterator t0_it= _tab_it->begin();
 				for( ; t0_it != _tab_it->end(); ++e_it, ++ t0_it)
 					D.convert(*t0_it, *e_it);
 				*_occ_it = true;
@@ -124,15 +142,19 @@ namespace LinBox
 			}
 
 			// We have a combination to put in the upper shelf
-			for(++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it ; _occ_it != this->RadixOccupancy_.end() ; ++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it) {
+			for(++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it ;
+			    _occ_it != this->RadixOccupancy_.end() ;
+			    ++_dsz_it, ++_mod_it, ++_tab_it, ++_occ_it) {
 				if (*_occ_it) {
 					// This shelf is occupied
 					// Combine it with the new combination
 					// The loop will try to put it on the upper shelf
-					std::vector<Integer>::iterator      ri_it = ri.begin();
-					std::vector<Integer>::const_iterator t_it= _tab_it->begin();
+					IntVect_Iterator      ri_it = ri.begin();
+					IntVect_ConstIterator t_it  = _tab_it->begin();
 
-					Integer invprod; this->precomputeInvProd(invprod, mi(), _mod_it->operator()());
+					Integer invprod;
+					this->precomputeInvProd(invprod, mi(), _mod_it->operator()());
+
 					for( ; ri_it != ri.end(); ++ri_it, ++ t_it)
 						this->smallbigreconstruct(*ri_it, *t_it, invprod);
 
@@ -168,9 +190,9 @@ namespace LinBox
 		template<class Iterator>
 		Iterator& result (Iterator &d)
 		{
-			std::vector< LazyProduct >::iterator          _mod_it = this->RadixPrimeProd_.begin();
-			std::vector< std::vector< Integer > >::iterator _tab_it = this->RadixResidues_.begin();
-			std::vector< bool >::iterator                _occ_it = this->RadixOccupancy_.begin();
+			LazyVect_Iterator     _mod_it = this->RadixPrimeProd_.begin();
+			IntVectVect_Iterator  _tab_it = this->RadixResidues_.begin();
+			BoolVect_Iterator     _occ_it = this->RadixOccupancy_.begin();
 			LazyProduct Product;
 			// We have to find to lowest occupied shelf
 			for( ; _occ_it != this->RadixOccupancy_.end() ; ++_mod_it, ++_tab_it, ++_occ_it) {
@@ -178,12 +200,13 @@ namespace LinBox
 					// Found the lowest occupied shelf
 					Product = *_mod_it;
 					Iterator t0_it = d;
-					std::vector<Integer>::iterator t_it = _tab_it->begin();
+					IntVect_Iterator t_it = _tab_it->begin();
 					if (++_occ_it == this->RadixOccupancy_.end()) {
 						// It is the only shelf of the radix
 						// We normalize the result and output it
 						for( ; t_it != _tab_it->end(); ++t0_it, ++t_it)
-							normalize(*t0_it = *t_it, *t_it, _mod_it->operator()());
+							normalize(*t0_it = *t_it, *t_it,
+								  _mod_it->operator()());
 						this->RadixPrimeProd_.resize(1);
 						return d;
 					} else {
@@ -202,8 +225,10 @@ namespace LinBox
 					// This shelf is occupied
 					// We need to combine it with the actual value of the result
 					Iterator t0_it = d;
-					std::vector<Integer>::const_iterator t_it = _tab_it->begin();
-					Integer invprod; this->precomputeInvProd(invprod, Product(), _mod_it->operator()() );
+					IntVect_ConstIterator t_it = _tab_it->begin();
+
+					Integer invprod;
+					this->precomputeInvProd(invprod, Product(), _mod_it->operator()() );
 
 					for( ; t_it != _tab_it->end(); ++t0_it, ++t_it)
 						this->smallbigreconstruct(*t0_it, *t_it, invprod);

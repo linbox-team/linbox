@@ -43,7 +43,7 @@ namespace LinBox
 	/*! NO DOC.
 	 * @ingroup CRA
 	 * @bib
-	 * Jean-Guillaume Dumas, Thierry Gautier et Jean-Louis Roch.  <i>Generic design
+	 * - Jean-Guillaume Dumas, Thierry Gautier et Jean-Louis Roch.  <i>Generic design
 	 * of Chinese remaindering schemes</i>  PASCO 2010, pp 26-34, 21-23 juillet,
 	 * Grenoble, France.
 	 */
@@ -260,8 +260,6 @@ namespace LinBox
 			RadixPrimeProd_.push_back( mi );
 			RadixOccupancy_.push_back ( true );
 		}
-
-
 
 		template<template<class, class> class Vect, template <class> class Alloc>
 		Vect<Integer, Alloc<Integer> >& result (Vect<Integer, Alloc<Integer> > &d)
