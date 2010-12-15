@@ -28,6 +28,7 @@
  * @ingroup blackbox
  * @brief NO DOC
 */
+
 #ifndef __LINBOX_blackbox_dense_H
 #define __LINBOX_blackbox_dense_H
 
@@ -73,7 +74,6 @@ namespace LinBox
 	 * @param _Field a LinBox field class
 	 \ingroup blackbox
 	 */
-
 	template <class _Field>
 	class DenseMatrix : public BlackboxInterface, public DenseMatrixBase<typename _Field::Element> {
 	public:
@@ -176,11 +176,11 @@ namespace LinBox
 
 
 		template<typename _Tp1>
-		struct rebind
-		{
+		struct rebind {
 			typedef DenseMatrix<_Tp1> other;
 
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+			void operator() (other & Ap, const Self_t& A, const _Tp1& F)
+			{
 				// 			Ap = new other(F, A.rowdim(), A.coldim());
 				typename Self_t::ConstRawIterator A_p;
 				typename other::RawIterator Ap_p;
@@ -341,8 +341,7 @@ namespace LinBox
 	};
 
 	template <class Field>
-	struct MatrixTraits< const DenseMatrix<Field> >
-	{
+	struct MatrixTraits< const DenseMatrix<Field> > {
 		typedef const DenseMatrix<Field> MatrixType;
 		typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
 	};

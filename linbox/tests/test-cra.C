@@ -25,7 +25,7 @@
  * @ingroup tests
  * @ingroup CRA
  * @brief We test the various CRA algorithms here.
- * @bug this test fails sometimes
+ * @bug this test fails  for LinBox::FullMultipFixedCRA and LinBox::FullMultipBlasMatCRA
  */
 
 #include "linbox/integer.h"
@@ -36,6 +36,7 @@
 
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/algorithms/cra-full-multip.h"
+#include "linbox/algorithms/cra-full-multip-fixed.h"
 
 #define _LB_ITERS 5
 
@@ -60,6 +61,7 @@ std::ostream & operator<<(std::ostream & o, const std::vector<T> & v)
 	return o;
 }
 
+// testing EarlySingleCRA
 template< class T >
 int test_early_single(size_t PrimeSize, size_t Size)
 {
@@ -143,6 +145,7 @@ int test_early_single(size_t PrimeSize, size_t Size)
 	return EXIT_SUCCESS ;
 }
 
+// testing EarlyMultipCRA
 template< class T >
 int test_early_multip(size_t PrimeSize, size_t Taille, size_t Size)
 {
@@ -237,6 +240,7 @@ int test_early_multip(size_t PrimeSize, size_t Taille, size_t Size)
 	return EXIT_SUCCESS ;
 }
 
+// testing FullMultipBlasMatCRA
 #if 0
 template< class T>
 int test_full_multip_matrix(size_t PrimeSize, size_t Size, std::pair<size_t, size_t> dims)
@@ -347,6 +351,7 @@ int test_full_multip_matrix(size_t PrimeSize, size_t Size, std::pair<size_t, siz
 }
 #endif
 
+// testing FullMultipCRA
 template< class T>
 int test_full_multip(size_t PrimeSize, size_t Size, size_t Taille)
 {
@@ -354,7 +359,7 @@ int test_full_multip(size_t PrimeSize, size_t Size, size_t Taille)
 
 	typedef typename std::vector<T>                    Vect ;
 	typedef typename std::vector<Vect>             VectVect ;
-	typedef typename std::vector<Integer>           IntVect ;
+	typedef std::vector<Integer>                    IntVect ;
 	typedef typename Vect::iterator                 Iterator;
 	typedef typename VectVect::iterator         VectIterator;
 
@@ -447,6 +452,116 @@ int test_full_multip(size_t PrimeSize, size_t Size, size_t Taille)
 }
 
 
+// testing FullMultipFixedCRA
+#if 0
+template< class T>
+int test_full_multip_fixed(size_t PrimeSize, size_t Size, size_t Taille)
+{
+	// std::cout << ">" ;
+
+	typedef typename std::vector<T>                    Vect ;
+	typedef typename std::vector<Vect>             VectVect ;
+	typedef std::vector<Integer>                    IntVect ;
+	typedef IntVect::iterator                IntVectIterator;
+	typedef typename Vect::iterator                 Iterator;
+	typedef typename VectVect::iterator         VectIterator;
+
+	typedef LinBox::Modular<double >           ModularField ;
+	typedef ModularField::Element                    Element;
+	typedef typename std::vector<Element>             pVect ;
+	typedef typename pVect::iterator          pVectIterator ;
+
+	Vect primes(Size) ;
+	/*  probably not all coprime... */
+	RandomPrimeIterator RP(PrimeSize);
+	for (size_t i = 0 ; i < Size ; ++i) {
+		primes[i] = RP.randomPrime() ;
+		++RP ;
+	}
+
+	/*  residues */
+	VectVect residues(Size) ;
+	for (size_t k = 0 ; k < Size ; ++k) {
+		residues[k].resize(Taille) ;
+		for (size_t i = 0 ; i < Taille ; ++i)
+			residues[k][i] = Integer::random(PrimeSize-1) ;
+	}
+
+#if 0
+	std::cout << "primes : " << std::endl ;
+	std::cout << primes << std::endl;
+	std::cout << "residues : " << std::endl ;
+	std::cout << residues << std::endl;
+#endif
+
+	Iterator   genprime =   primes.begin()  ; // prime iterator
+	VectIterator residu = residues.begin()  ; // residu iterator
+
+	double IntSize = std::log(PrimeSize*Size) ;
+	std::pair<size_t,double> my_pair(Size,IntSize)  ;
+
+	FullMultipFixedCRA<ModularField> cra( my_pair ) ;
+	IntVect result(Taille) ; // the result
+	pVect  residue(Taille) ; // temporary
+	pVectIterator residue_it = residue.begin();
+	{ /* init */
+		ModularField F(*genprime);
+		for (size_t i = 0 ; i < Taille; ++i)
+			F.init(residue[i],(*residu)[i]);
+		cra.initialize(F,residue_it);
+		++genprime;
+		++residu;
+	}
+	while (genprime < primes.end() /* && !cra.terminated()*/ )
+	{ /* progress */
+		if (cra.noncoprime((integer)*genprime))
+		{
+#if 0
+			std::cout << "bad luck, you picked twice the same prime..." <<std::endl;
+			std::cout << *genprime << std::endl;
+			for (size_t i = 0 ; i < Size ; ++i) {
+				if (*genprime == primes[i])
+					std::cout << "was n°" << i << std::endl;
+			}
+#endif
+			return EXIT_SUCCESS ; // pas la faute à cra...
+		}
+		ModularField F(*genprime);
+		pVectIterator residue_it = residue.begin();
+		for (size_t i = 0 ; i < Taille; ++i)
+			F.init(residue[i],(*residu)[i]);
+		cra.progress(F,residue_it);
+		++genprime;
+		++residu ;
+	}
+
+	IntVectIterator result_it = result.begin();
+
+	cra.result(result_it);
+
+	for (size_t i = 0 ; i < Size ; ++i){
+		ModularField F(primes[i]);
+		for (size_t j = 0 ; j < Taille ; ++j) {
+			Element tmp1,tmp2 ;
+			F.init(tmp1,result[j]);
+			F.init(tmp2,residues[i][j]);
+			if(!F.areEqual(tmp1,tmp2)){
+#if 1
+				std::cout << "at " << i << ',' << j << ':' << std::endl;
+				std::cout << "computed res : "   << result[j]  << " ( " << tmp1 << ')' << std::endl;
+				std::cout << "but " << tmp1 << " not equal to " << residues[i][j] << " ( " << tmp2 << ')'  << " mod "    << primes[i] << std::endl;
+#endif
+				return EXIT_FAILURE ;
+			}
+		}
+	}
+
+	std::cout << "full_multip passed" << std::endl;
+	return EXIT_SUCCESS ;
+}
+#endif
+
+// launching tests
 int main(int ac, char ** av)
 {
 
@@ -475,6 +590,15 @@ int main(int ac, char ** av)
 
 	_LB_REPEAT( if (test_full_multip<double>(22,Size,Taille/4))           return EXIT_FAILURE ;  ) ;
 	_LB_REPEAT( if (test_full_multip<integer>(PrimeSize,Size,Taille/4))   return EXIT_FAILURE ;  ) ;
+
+#if 0
+	/* FULL MULTIPLE FIXED */
+	_LB_REPEAT( if (test_full_multip_fixed<double>(22,Size,Taille))           return EXIT_FAILURE ;  ) ;
+	_LB_REPEAT( if (test_full_multip_fixed<integer>(PrimeSize,Size,Taille))   return EXIT_FAILURE ;  ) ;
+
+	_LB_REPEAT( if (test_full_multip_fixed<double>(22,Size,Taille/4))         return EXIT_FAILURE ;  ) ;
+	_LB_REPEAT( if (test_full_multip_fixed<integer>(PrimeSize,Size,Taille/4)) return EXIT_FAILURE ;  ) ;
+#endif
 
 
 #if 0

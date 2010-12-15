@@ -243,12 +243,16 @@ namespace LinBox
 		// Constructor from matrix (no copy)
 		BlasMatrix ( DenseMatrixBase<Element>& A ) :
 			DenseSubmatrix<Element>(A,0,0,A.rowdim(),A.coldim()), _stride(A.coldim()) , _alloc(false)
-		{ _ptr = this->_M->FullIterator();}
+		{
+			_ptr = this->_M->FullIterator();
+		}
 
 		// Constructor from matrix (no copy )
 		BlasMatrix ( DenseMatrixBase<Element>& A, const size_t i0,const size_t j0,const size_t m, const size_t n) :
 			DenseSubmatrix<Element>(A,i0,j0,m,n), _stride(A.coldim()) , _alloc(false)
-		{_ptr = this->_M->FullIterator();}
+		{
+			_ptr = this->_M->FullIterator();
+		}
 #endif
 
 
@@ -318,10 +322,26 @@ namespace LinBox
 			return *this;
 		}
 
+		/*! @internal
+		 * get read-only pointer to the matrix data.
+		 */
 		pointer getPointer() const  {return _ptr;}
+
+		/*! @internal
+		 * get write pointer to the matrix data.
+		 * Data may be changed this way.
+		 */
 		pointer& getWritePointer() {return _ptr;}
 
+		/*! @internal
+		 * get the stride of the matrix
+		 */
 		size_t getStride() const {return _stride;}
+
+		/*! @internal
+		 * get a reference to the stride of the matrix.
+		 * Modify stride this way.
+		 */
 		size_t& getWriteStride() {return _stride;}
 
 	}; // end of class BlasMatrix

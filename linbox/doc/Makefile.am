@@ -12,13 +12,27 @@ install install-data-local: $(INSTALL_TARGETS)
 
 docs :
 	sed -i 's/^\\version.*/\\version\ $(VERSION)/' mainpage.doxy
-	cp tutorial.html linbox-html
-	cp install-dist.html linbox-html
-	cp install-dev.html linbox-html #dev
-	cp ../INSTALL linbox-html
-	cp ../COPYING linbox-html
-	cp ../AUTHORS linbox-html
+	if test -d linbox-html ; then echo exists; else mkdir linbox-html ; fi
+	cp tutorial.html linbox-html/
+	cp install-dist.html linbox-html/
+	cp install-dev.html linbox-html/
+	cp ../INSTALL linbox-html/
+	cp ../COPYING linbox-html/
+	cp ../AUTHORS linbox-html/
 	doxygen Doxyfile
+
+docs_dev :
+	sed -i 's/^\\version.*/\\version\ $(VERSION)/' mainpage.doxy
+	if test -d linbox-dev-html ; then echo exists; else mkdir linbox-dev-html ; fi
+	cp tutorial.html linbox-dev-html/
+	cp install-dist.html linbox-dev-html/
+	cp install-dev.html linbox-dev-html/
+	cp ../INSTALL linbox-dev-html/
+	cp ../COPYING linbox-dev-html/
+	cp ../AUTHORS linbox-dev-html/
+	doxygen DoxyfileDev
+
+
 
 install-doc :
 	mkdir $(docdir)
