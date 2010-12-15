@@ -231,7 +231,6 @@ namespace LinBox
 			// prime(p, early_counter);
 			myModular::Element r;
 			D.init(r,0);
-			//!@bug \c cra.initialize(D, iter_0) never called !
 			cra.progress( D, iteration(r, D));
 			++early_counter;
 		}
