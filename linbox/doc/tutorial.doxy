@@ -1,6 +1,6 @@
 // Copyright (C) 2005 David Saunders, 2010 LinBox.
 // This file is part of LinBox, see COPYING for licence information.
-/*!  \page tuto Tutorial
+/*!  \page tuto LinBox tutorial
 
 The person requiring some exact linear algebra computation may exploit LinBox
 at any of four general levels.  In order from least involved with the details
@@ -85,9 +85,9 @@ algorithm.
 The basic algorithm choice is between blackbox and elimination algorithms.
 If our matrix is \c A, then the algorithm call may look like
 \code
-determinant(det, A, Method::Blackbox());
+det(d, A, Method::Blackbox());
 //or
-determinant(det, A, Method::Elimination());
+det(d, A, Method::Elimination());
 \endcode
 To have access to this determinant function just <code>\#include <linbox/solutions/det.h></code>.
 
@@ -193,9 +193,9 @@ main()
     typedef DenseMatrix<Field> Matrix;
     Field F(65521);
     Matrix A; A.read("datafile");
-    Field::Element det;
-    determinant(det, A, blasElimination);
-    F.write(cout << "the determinant is ", det) << endl;
+    Field::Element d;
+    det(d, A, blasElimination);
+    F.write(cout << "the determinant is ", d) << endl;
 }
 \endcode
 
