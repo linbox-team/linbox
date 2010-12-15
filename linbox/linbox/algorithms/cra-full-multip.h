@@ -3,7 +3,7 @@
 /* linbox/algorithms/cra-full-multip.h
  * Copyright (C) 1999-2010 The LinBox group
  *
- * Time-stamp: <30 Mar 10 14:56:21 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <15 Dec 10 15:54:00 Jean-Guillaume.Dumas@imag.fr>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -89,21 +89,21 @@ namespace LinBox
 			RadixPrimeProd_.resize(1);
 			RadixResidues_.resize(1);
 			RadixOccupancy_.resize(1); RadixOccupancy_.front() = false;
+                        progress( D, e);
+// 			std::vector< double >::iterator  _dsz_it = RadixSizes_.begin();
+// 			std::vector< LazyProduct >::iterator _mod_it = RadixPrimeProd_.begin();
+// 			std::vector< std::vector<Integer> >::iterator _tab_it = RadixResidues_.begin();
+// 			std::vector< bool >::iterator    _occ_it = RadixOccupancy_.begin();
+// 			_mod_it->initialize(D);
+// 			*_dsz_it = naturallog(D);
 
-			std::vector< double >::iterator  _dsz_it = RadixSizes_.begin();
-			std::vector< LazyProduct >::iterator _mod_it = RadixPrimeProd_.begin();
-			std::vector< std::vector<Integer> >::iterator _tab_it = RadixResidues_.begin();
-			std::vector< bool >::iterator    _occ_it = RadixOccupancy_.begin();
-			_mod_it->initialize(D);
-			*_dsz_it = log(double(D));
-
-			typename Vect::const_iterator e_it = e.begin();
-			_tab_it->resize(e.size());
-			std::vector<Integer>::iterator t0_it= _tab_it->begin();
-			for( ; e_it != e.end(); ++e_it, ++ t0_it)
-				*t0_it = *e_it;
-			*_occ_it = true;
-			return;
+// 			typename Vect::const_iterator e_it = e.begin();
+// 			_tab_it->resize(e.size());
+// 			std::vector<Integer>::iterator t0_it= _tab_it->begin();
+// 			for( ; e_it != e.end(); ++e_it, ++ t0_it)
+// 				*t0_it = *e_it;
+// 			*_occ_it = true;
+// 			return;
 		}
 
 		template< template<class, class> class Vect, template <class> class Alloc>
@@ -135,14 +135,14 @@ namespace LinBox
 					smallbigreconstruct(*ri_it,  *t0_it, invprod );
 				}
 				Integer tmp = D;
-				di = *_dsz_it + log(double(tmp));
+				di = *_dsz_it + naturallog(tmp);
 				mi.mulin(tmp);
 				mi.mulin(*_mod_it);
 				*_occ_it = false;
 			} else {
 				Integer tmp = D;
 				_mod_it->initialize(tmp);
-				*_dsz_it = log(double(tmp));
+				*_dsz_it = naturallog(tmp);
 				typename Vect<Integer>::const_iterator e_it = e.begin();
 				_tab_it->resize(e.size());
 				std::vector<Integer>::iterator t0_it= _tab_it->begin();
@@ -196,7 +196,7 @@ namespace LinBox
 				for( ; ri_it != ri.end(); ++e_it, ++ri_it, ++ t0_it)
 					fieldreconstruct(*ri_it, D, *e_it, *t0_it, invP0, (*_mod_it).operator()() );
 				Integer tmp; D.characteristic(tmp);
-				double ltp = log(double(tmp));
+				double ltp = naturallog(tmp);
 				di = *_dsz_it + ltp;
 				totalsize += ltp;
 				mi.mulin(tmp);
@@ -206,7 +206,7 @@ namespace LinBox
 				// Lower shelf is free
 				// Put the new residue here and exit
 				Integer tmp; D.characteristic(tmp);
-				double ltp = log(double(tmp));
+				double ltp = naturallog(tmp);
 				_mod_it->initialize(tmp);
 				*_dsz_it = ltp;
 				totalsize += ltp;
@@ -327,7 +327,7 @@ namespace LinBox
 			RadixPrimeProd_.resize(1);
 			RadixPrimeProd_.front() = Product;
 			RadixSizes_.resize(1);
-			RadixSizes_.front() = log((double)Product());
+			RadixSizes_.front() = naturallog(Product());
 			RadixResidues_.resize(1);
 			RadixResidues_.front() = d;
 			RadixOccupancy_.resize(1);
@@ -386,6 +386,7 @@ namespace LinBox
 
 		Integer& fieldreconstruct(Integer& res, const Domain& D1, const DomainElement& u1, const Integer& r0, const DomainElement& invP0, const Integer& P0)
 		{
+                    	// u0 = r0 mod m1
 			DomainElement u0; D1.init(u0, r0);
 			if (D1.areEqual(u1, u0))
 				return res=r0;
@@ -464,7 +465,7 @@ namespace LinBox
 					this->fieldreconstruct(*ri_it, D, *e_it, *t0_it, invP0, (*_mod_it).operator()() );
 				}
 				Integer tmp; D.characteristic(tmp);
-				double ltp = log(double(tmp));
+				double ltp = naturallog(tmp);
 				di = *_dsz_it + ltp;
 				this->totalsize += ltp;
 				mi.mulin(tmp);
@@ -474,7 +475,7 @@ namespace LinBox
 				// Lower shelf is free
 				// Put the new residue here and exit
 				Integer tmp; D.characteristic(tmp);
-				double ltp = log(double(tmp));
+				double ltp = naturallog(tmp);
 				_mod_it->initialize(tmp);
 				*_dsz_it = ltp;
 				this->totalsize += ltp;
