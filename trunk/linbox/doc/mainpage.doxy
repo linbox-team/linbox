@@ -23,7 +23,7 @@ software for symbolic linear algebra, particularly using \ref blackbox matrix
 methods, i.e. iterative methods requiring only the linear transform property of
 the matrix (that, given A and x,  one can compute \f$y \gets Ax\f$).  Such
 methods are especially effective with sparse or structured matrices for which
-the matrix-vector product can be computed cheaply.  Increasingly, linbox also
+the matrix-vector product can be computed cheaply.  Increasingly, %LinBox also
 provides elimination based methods for dense matrices exploiting the numeric
 BLAS routines.
 
@@ -34,20 +34,23 @@ except over very small fields (less than 1000 elements, say).
 \section desig Design
 
 %LinBox depends on other packages for some of its functionality.  It is a design goal
-of %LinBox to be a kind of \e middleware, providing a common interface for use in projects needing
-linear algebra and providing access to other systems and programs thru wrappers whenever their
-capabilities may contribute to the linear algebra.  Thus, to gain full advangage of %LinBox it
-will be desirable to have certain other packages installed.  In particular GMP and a BLAS implementation are required.  GMP provides the basic large integer system used throughout.  We have been
-using ATLAS for the the BLAS implementation.  The remaining dependencies are optional, but two
-packages stand out as contributing substantially to %LinBox.  They are %NTL and Givaro.
-%NTL is used for some finite field and ring representations, particularly in the case of GF(q),
-where q is a prime power or a prime greater than word size.  %NTL is also used by algorithms
-that need polynomial operations such as factorization.
-Givaro is another source of field representations and polynomial operations.  Importantly,
-Givaro provides our best representation of small non-prime fields,
-say q = p<sup>e</sup> < 10<sup>6</sup>.
-Functionality from some other systems has been wrapped also but is currently less
-widely used in %LinBox.
+of %LinBox to be a kind of \e middleware, providing a common interface for use
+in projects needing linear algebra and providing access to other systems and
+programs through wrappers whenever their capabilities may contribute to the
+linear algebra.  Thus, to gain full advangage of %LinBox it will be desirable
+to have certain other packages installed.  In particular GMP and a BLAS
+implementation are required.  GMP provides the basic large integer system used
+throughout.  We have been using ATLAS for the BLAS implementation.  The
+remaining dependencies are optional, but two packages stand out as contributing
+substantially to %LinBox.  They are %NTL and Givaro.
+%NTL is used for some finite field and ring representations, particularly in
+the case of \c GF(q), where \c q is a prime power or a prime greater than word
+size.  %NTL is also used by algorithms that need polynomial operations such as
+factorization.  Givaro is another source of field representations and
+polynomial operations.  Importantly, Givaro provides our best representation of
+small non-prime fields, say <code>q = p<sup>e</sup> < 10<sup>6</sup></code>.
+Functionality from some other systems has been wrapped also but is currently
+less widely used in %LinBox.
 
 \e Genericity and \e high \e performance are the twin goals of %LinBox.  The genericity
 is achieved by use of a small set of interfaces.  Algorithms are implemented
@@ -55,7 +58,7 @@ with C++ template parameters which may be instantiated with any class adhering
 to the specified interface.  High performance is achieved by judicious
 specializations of the generic algorithms.  It is entirely within the spirit of
 the project to introduce new implementations.  Thus a user of the library may
-invoke a linbox algorithm, say for determinant or rank of a matrix, but
+invoke a %LinBox algorithm, say for determinant or rank of a matrix, but
 providing a blackbox class of her own design and perhaps even providing the
 underlying field (or commutative ring) representation.  Conversely, the %LinBox
 field and ring interfaces and the many specific representations can be used for
@@ -64,17 +67,26 @@ by %LinBox.
 
 \section using Using LinBox
 
-- \subpage copy
+- \subpage copy.
+- \subpage tuto. This is a brief introduction to %LinBox capabilities.
+- \subpage inst. Explains how to install from sources or from the latest svn version.
+- \subpage arch. Describes how %LinBox is organized
+- <a href="../linbox-html/index.html"     style="color: blue  ; font-weight: bold">Documentation for Users</a>. If everything around is blue, then you are reading the lighter, user-oriented, documentation.
+- <a href="../linbox-dev-html/index.html" style="color: green ; font-weight: bold">Documentation for Developers</a>. If everything around is green, then you can get to everything (not necessarily yet) documented.
+.
 
-- \subpage tuto
+\section contrib Contributing to LinBox, getting assistance.
+We warmly welcome contributors ! Contributing can rhyme with providing documentation,
+pointing out bugs, requesting more features, giving test-cases, making comments about the
+code,...\n
+You can contact the LinBox team at < \c linbox<sub> \c dash </sub>\c
+use<sub> \c at </sub> \c googlegroups <sub> \c dot </sub> \c com > (user
+oriented discussions) or < \c linbox <sub> \c dash </sub> \c devel <sub> \c
+at </sub> \c googlegroups <sub> \c dot </sub> \c com > (development oriented
+discussions).
 
-- \subpage inst
-
-- \subpage arch
-
-\authors Members of the %LinBox group.  The most prolific documenters
-have been first William J Turner, then Bradford Hovinen, and recently
-David Saunders.
+\authors Members of the \link AUTHORS %LinBox group\endlink.  The most prolific documenters
+have been first William J Turner, then Bradford Hovinen, and David Saunders.
 
 \version 1.1.7
 
@@ -82,7 +94,6 @@ David Saunders.
 The project is supported by
 the National Science Foundation (http://www.nsf.gov/) in the USA
 and by CNRS in France.
-
 */
 
 /*! \page copy Copyright and Licencing
@@ -98,7 +109,7 @@ and by CNRS in France.
   Foundation \subpage INSTALL "INSTALL" may also be of use.
  */
 
-/*!  \page arch Architecture of the library.
+/*!  \page arch Architecture of the library
 
   The distribution contains subdirectories (documented as `modules' <a href=modules.html>here</a>)
 
@@ -121,22 +132,31 @@ and by CNRS in France.
  */
 
 /*!  \page AUTHORS LinBox Authors
- \verbinclude "AUTHORS"
+  \verbinclude "AUTHORS"
  */
 
 /*!  \page INSTALL The INSTALL in LinBox
- \verbinclude "INSTALL"
+  \verbinclude "INSTALL"
  */
 
 /*!  \page dist Configuring and Installing LinBox
- \htmlinclude "doc/install-dist.html"
+  \htmlinclude "doc/install-dist.html"
  */
 
-/*!  \page dev Developer info for LinBox
- \htmlinclude "doc/install-dev.html"
+/*!  \page devs  DevVersion
+  \htmlinclude "doc/linbox-dev-html/index.html"
+ */
 
-\par HACKING LinBox.
- \verbinclude "HACKING"
+/*!  \page users  UserVersion
+  \htmlinclude "doc/linbox-html/index.html"
+ */
+
+
+/*!  \page dev Developer info for LinBox
+  \htmlinclude "doc/install-dev.html"
+
+  \par HACKING LinBox.
+  \verbinclude "HACKING"
  */
 
 // vim:syn=doxygen
