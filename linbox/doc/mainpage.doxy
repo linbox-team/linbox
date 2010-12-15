@@ -143,15 +143,6 @@ and by CNRS in France.
   \htmlinclude "doc/install-dist.html"
  */
 
-/*!  \page devs  DevVersion
-  \htmlinclude "doc/linbox-dev-html/index.html"
- */
-
-/*!  \page users  UserVersion
-  \htmlinclude "doc/linbox-html/index.html"
- */
-
-
 /*!  \page dev Developer info for LinBox
   \htmlinclude "doc/install-dev.html"
 
