@@ -117,8 +117,8 @@ namespace LinBox
 					this->fieldreconstruct(*ri_it, D, *e_it, *t0_it, invP0,
 							       (*_mod_it).operator()() );
 
-				Integer tmp; D.characteristic(tmp);
-				double ltp = log(double(tmp));
+				Integer tmp; 
+				double ltp = naturallog(D.characteristic(tmp));
 				di = *_dsz_it + ltp;
 				this->totalsize += ltp;
 				mi.mulin(tmp);
@@ -128,7 +128,7 @@ namespace LinBox
 				// Lower shelf is free
 				// Put the new residue here and exit
 				Integer tmp; D.characteristic(tmp);
-				double ltp = log(double(tmp));
+				double ltp = naturallog(D.characteristic(tmp));
 				_mod_it->initialize(tmp);
 				*_dsz_it = ltp;
 				this->totalsize += ltp;
