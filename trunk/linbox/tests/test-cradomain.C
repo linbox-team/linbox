@@ -3,7 +3,7 @@
 
 /* Copyright (C) 2010 LinBox
  *
- * Time-stamp: <16 Dec 10 18:46:32 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <16 Dec 10 19:20:04 Jean-Guillaume.Dumas@imag.fr>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -128,7 +128,7 @@ struct InteratorBlas : public Interator {
     typedef typename Matrix::pointer Pointer;
     mutable Matrix _C;
 
-    InteratorBlas(const std::vector<Integer>& v) : Interator(v), _C(v.size(),1) {}
+    InteratorBlas(const std::vector<Integer>& v) : Interator(v), _C((int)v.size(), (int)1) {}
     InteratorBlas(int n, int s) : Interator(n,s), _C(n,1) {}
 
     Pointer& operator()(Pointer& res, const Field& F) const {
@@ -142,6 +142,72 @@ struct InteratorBlas : public Interator {
 
 };
 
+#include <typeinfo>
+
+template<typename Builder, typename Iter, typename RandGen, typename BoundType>
+bool TestOneCRA(std::ostream& report, Iter& iteration, RandGen& genprime, size_t N, const BoundType& bound) {
+	report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
+        LinBox::ChineseRemainder< Builder > cra( bound );
+        std::vector<Integer> Res(N);
+        cra( Res, iteration, genprime);
+        bool locpass = std::equal( Res.begin(), Res.end(), iteration.getVector().begin() );
+        if (locpass) report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
+        else {
+		report << "***ERROR***: ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;
+		std::vector<Integer>::const_iterator Rit=Res.begin();
+		std::vector<Integer>::const_iterator Oit=iteration.getVector().begin();
+		for( ; Rit!=Res.end(); ++Rit, ++Oit) 
+			if (*Rit != *Oit)
+				report << *Rit <<  " != " << * Oit << std::endl;
+		
+	}
+        return locpass;
+}
+
+std::ostream& operator<<(std::ostream& out, 
+			 const std::pair<size_t,double>& B) {
+	return out << B.first << ',' << B.second;
+}
+
+template<typename Builder, typename Iter, typename RandGen, typename BoundType>
+bool TestOneCRAbegin(std::ostream& report, Iter& iteration, RandGen& genprime, size_t N, const BoundType& bound) {
+	report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
+        LinBox::ChineseRemainder< Builder > cra( bound );
+        std::vector<Integer> Res(N);
+        std::vector<Integer>::iterator ResIT= Res.begin();
+        cra( ResIT, iteration, genprime);
+        bool locpass = std::equal( Res.begin(), Res.end(), iteration.getVector().begin() );
+        if (locpass) report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
+        else {
+		report << "***ERROR***: ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;
+		std::vector<Integer>::const_iterator Rit=Res.begin();
+		std::vector<Integer>::const_iterator Oit=iteration.getVector().begin();
+		for( ; Rit!=Res.end(); ++Rit, ++Oit) 
+			if (*Rit != *Oit)
+				report << *Rit <<  " != " << * Oit << std::endl;
+		
+	}
+        return locpass;
+}
+
+template<typename Builder, typename Iter, typename RandGen, typename BoundType>
+bool TestOneCRAWritePointer(std::ostream& report, Iter& iteration, RandGen& genprime, size_t N, const BoundType& bound) {
+	report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
+        LinBox::ChineseRemainder< Builder > cra( bound );
+        LinBox::BlasMatrix<Integer> Res( (int)N, (int)1);
+        cra( Res.getWritePointer(), iteration, genprime);
+        bool locpass = std::equal( iteration.getVector().begin(), iteration.getVector().end(), Res.getWritePointer() );
+
+        if (locpass) report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
+        else {
+		report << "***ERROR***: ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;		
+	}
+        return locpass;
+}
+
+
+
+
 bool TestCra(int N, int S, size_t seed)
 {
 
@@ -154,67 +220,54 @@ bool TestCra(int N, int S, size_t seed)
 
     Interator iteration(N, S);
     InteratorIt iterationIt(iteration.getVector());
+    InteratorBlas<LinBox::Modular<double> > iterationBlas(iteration.getVector());
     LinBox::RandomPrimeIterator genprime( 24, new_seed );
 
     bool pass = true;
 
-    report << "ChineseRemainder<EarlyMultipCRA>(4)" << std::endl;
-    {
-        LinBox::ChineseRemainder< LinBox::EarlyMultipCRA< LinBox::Modular<double> > > craEM(4UL);
-        std::vector<Integer> ResEM(N);
-        craEM( ResEM, iteration, genprime);
-        bool locpass = std::equal( ResEM.begin(), ResEM.end(), iteration.getVector().begin() );
-        if (locpass) report << "ChineseRemainder<EarlyMultipCRA>(4)" << ", passed."  << std::endl;
-        else report << "***ERROR***: ChineseRemainder<EarlyMultipCRA>(4)" << "***ERROR***"  << std::endl;
-        pass &= locpass;
-    }
+    pass &= TestOneCRA< LinBox::EarlyMultipCRA< LinBox::Modular<double> >, 
+	    Interator, LinBox::RandomPrimeIterator>(
+		    report, iteration, genprime, N, 5);
+
+    pass &= TestOneCRA< LinBox::EarlyMultipCRA< LinBox::Modular<double> >, 
+	    Interator, LinBox::RandomPrimeIterator>(
+		    report, iteration, genprime, N, 15);
+
+    pass &= TestOneCRA< LinBox::FullMultipCRA< LinBox::Modular<double> >,
+	    Interator, LinBox::RandomPrimeIterator>(
+		    report, iteration, genprime, N, iteration.getLogSize()+1);
+
+    pass &= TestOneCRA< LinBox::FullMultipCRA< LinBox::Modular<double> >,
+	    Interator, LinBox::RandomPrimeIterator>(
+		    report, iteration, genprime, N, 3*iteration.getLogSize()+15);
+
+    pass &= TestOneCRAbegin<LinBox::FullMultipFixedCRA< LinBox::Modular<double> >,
+	    InteratorIt, LinBox::RandomPrimeIterator>(
+		    report, iterationIt, genprime, N, std::pair<size_t,double>(N,iteration.getLogSize()+1));
+
+    pass &= TestOneCRAbegin<LinBox::FullMultipFixedCRA< LinBox::Modular<double> >,
+	    InteratorIt, LinBox::RandomPrimeIterator>(
+		    report, iterationIt, genprime, N, std::pair<size_t,double>(N,3*iteration.getLogSize()+15));
 
 
-    report << "ChineseRemainder<FullMultipCRA>(" << iteration.getLogSize() << ')' << std::endl;
-    {
-        LinBox::ChineseRemainder< LinBox::FullMultipCRA< LinBox::Modular<double> > > craFM( iteration.getLogSize()+1 );
-        std::vector<Integer> ResFM(N);
-        craFM( ResFM, iteration, genprime);
-        bool locpass = std::equal( ResFM.begin(), ResFM.end(), iteration.getVector().begin() );
-        if (locpass) report << "ChineseRemainder<FullMultipCRA>(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
-        else {
-		report << "***ERROR***: ChineseRemainder<FullMultipCRA>(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;
-		std::vector<Integer>::const_iterator Rit=ResFM.begin();
-		std::vector<Integer>::const_iterator Oit=iteration.getVector().begin();
-		for( ; Rit!=ResFM.end(); ++Rit, ++Oit) 
-			if (*Rit != *Oit)
-				report << *Rit <<  " != " << * Oit << std::endl;
-		
-	}
-        pass &= locpass;
-    }
-
-    report << "ChineseRemainder<FullMultipFixedCRA,vector>(" << N << ',' << iterationIt.getLogSize() << ')' << std::endl;
-    {
-        LinBox::ChineseRemainder< LinBox::FullMultipFixedCRA< LinBox::Modular<double> > > craFMF( std::pair<size_t,double>(N,iterationIt.getLogSize()+1) );
-        std::vector<Integer> ResFMF(N);
-        std::vector<Integer>::iterator ResIT= ResFMF.begin();
-        craFMF( ResIT, iterationIt, genprime);
-        bool locpass = std::equal( iterationIt.getVector().begin(), iterationIt.getVector().end(), ResFMF.begin() );
-        if (locpass) report << "ChineseRemainder<FullMultipFixedCRA,vector>(" << N << ',' << iterationIt.getLogSize() << ')' << ", passed."  << std::endl;
-        else report << "***ERROR***: ChineseRemainder<FullMultipFixedCRA,vector>(" << N << ',' << iterationIt.getLogSize() << ')' << "***ERROR***"  << std::endl;
-        pass &= locpass;
-    }
-
-    report << "ChineseRemainder<FullMultipFixedCRA,BlasMatrix>(" << N << ',' << iterationIt.getLogSize() << ')' << std::endl;
-    {
-        LinBox::ChineseRemainder< LinBox::FullMultipFixedCRA< LinBox::Modular<double> > > craFMFBM( std::pair<size_t,double>(N,iterationIt.getLogSize()+1) );
-        LinBox::BlasMatrix<Integer> ResFMFBM(N,1);
-        craFMFBM( ResFMFBM.getWritePointer(), iterationIt, genprime);
-
-        bool locpass = std::equal( iterationIt.getVector().begin(), iterationIt.getVector().end(), ResFMFBM.getWritePointer() );
-
-        if (locpass) report << "ChineseRemainder<FullMultipFixedCRA,BlasMatrix>(" << N << ',' << iterationIt.getLogSize() << ')' << ", passed."  << std::endl;
-        else
-            report << "***ERROR***: ChineseRemainder<FullMultipFixedCRA,BlasMatrix>(" << N << ',' << iterationIt.getLogSize() << ')' << " ***ERROR***"  << std::endl;
-
-        pass &= locpass;
-    }
+    pass &= TestOneCRAWritePointer<LinBox::FullMultipFixedCRA< LinBox::Modular<double> >,
+	    InteratorIt, LinBox::RandomPrimeIterator>(
+		    report, iterationIt, genprime, N, std::pair<size_t,double>(N,iterationIt.getLogSize()+1) );
+    
+    pass &= TestOneCRAWritePointer<LinBox::FullMultipFixedCRA< LinBox::Modular<double> >,
+	    InteratorIt, LinBox::RandomPrimeIterator>(
+		    report, iterationIt, genprime, N, std::pair<size_t,double>(N,3*iterationIt.getLogSize()+15) );
+    
+    pass &= TestOneCRAWritePointer<LinBox::FullMultipFixedCRA< LinBox::Modular<double> >,
+	    InteratorBlas< LinBox::Modular<double> >, 
+	    LinBox::RandomPrimeIterator>(
+		    report, iterationBlas, genprime, N, std::pair<size_t,double>(N,iterationIt.getLogSize()+1) );
+    
+    pass &= TestOneCRAWritePointer<LinBox::FullMultipFixedCRA< LinBox::Modular<double> >,
+	    InteratorBlas< LinBox::Modular<double> >, 
+	    LinBox::RandomPrimeIterator>(
+		    report, iterationBlas, genprime, N, std::pair<size_t,double>(N,3*iterationIt.getLogSize()+15) );
+    
 
     if (pass) report << "TestCra(" << N << ',' << S << ')' << ", passed." << std::endl;
     else
@@ -230,7 +283,7 @@ bool TestCra(int N, int S, size_t seed)
 
 int main (int argc, char **argv)
 {
-	static size_t n = 1000;
+	static size_t n = 10;
 	static size_t s = 30;
         static size_t seed = 0;
 	static int iterations = 20;
