@@ -144,12 +144,13 @@ bool TestCra(int N, int S, size_t seed)
     std::ostream &report = LinBox::commentator.report
                 (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-    report << "TestCra(" << N << ',' << S << ',' << seed << ')' << std::endl;
-    Integer::seeding(seed);
+    size_t new_seed = (seed?(seed):(LinBox::BaseTimer::seed())) ;
+    report << "TestCra(" << N << ',' << S << ',' << new_seed << ')' << std::endl;
+    Integer::seeding(new_seed);
 
     Interator iteration(N, S);
     InteratorIt iterationIt(iteration.getVector());
-    LinBox::RandomPrimeIterator genprime( 24, seed );
+    LinBox::RandomPrimeIterator genprime( 24, new_seed );
 
     bool pass = true;
 
@@ -219,7 +220,7 @@ int main (int argc, char **argv)
 {
 	static size_t n = 1000;
 	static size_t s = 30;
-        static size_t seed = LinBox::BaseTimer::seed();
+        static size_t seed = 0;
 	static int iterations = 20;
 
         static Argument args[] = {
