@@ -79,7 +79,8 @@ BASIC_TESTS =  \
         test-last-invariant-factor      \
         test-charpoly  \
 		test-ftrmm \
-		test-cra
+		test-cra   \
+		test-cradomain
 
 # tests of components not adhering to LinBox requirements.
 NONCOMPLIANT_TESTS =                   \
@@ -524,6 +525,10 @@ test_rational_solver_adaptive_SOURCES = \
 
 test_cra_SOURCES =                      \
         test-cra.C                      \
+        test-common.h
+
+test_cradomain_SOURCES =                      \
+        test-cradomain.C                      \
         test-common.h
 
 
