@@ -26,6 +26,7 @@
 /*! @file  tests/test-lidia-gfq.C
  * @ingroup tests
  * @brief  no doc
+ * @test NO DOC
  */
 
 

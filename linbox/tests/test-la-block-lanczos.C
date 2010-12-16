@@ -14,6 +14,7 @@
 
 /*! @file  tests/test-la-block-lanczos.C
  * @ingroup tests
+ * @test NO DOC
  * @brief  no doc
  */
 

@@ -16,6 +16,7 @@
  * @ingroup tests
  * @ingroup CRA
  * @brief  tests rational reconstruction using rational-cra2.h .
+ * @test no doc.
  */
 
 

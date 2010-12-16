@@ -25,6 +25,7 @@
 /*! @file  tests/test-submatrix.C
  * @ingroup tests
  * @brief no doc.
+ * @test no doc.
  */
 
 

@@ -15,6 +15,7 @@
 /*! @file  tests/test-randiter-nonzero.C
  * @ingroup tests
  * @brief  no doc
+ * @test no doc.
  */
 
 

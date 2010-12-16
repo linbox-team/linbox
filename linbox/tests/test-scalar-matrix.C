@@ -25,6 +25,7 @@
 /*! @file  tests/test-scalar-matrix.C
  * @ingroup tests
  * @brief  no doc
+ * @test no doc.
  */
 
 

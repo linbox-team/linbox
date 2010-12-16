@@ -26,6 +26,7 @@
  * @ingroup CRA
  * @brief We test the various CRA algorithms here.
  * @bug this test fails  for LinBox::FullMultipFixedCRA and LinBox::FullMultipBlasMatCRA
+ * @test cra algorithms
  */
 
 #include "linbox/integer.h"

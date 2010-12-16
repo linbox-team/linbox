@@ -25,6 +25,7 @@
 /*! @file   tests/test-smith-form-iliopoulos.C
  * @ingroup tests
  * @brief no doc.
+ * @test no doc.
  */
 
 

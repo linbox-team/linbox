@@ -15,6 +15,7 @@
 /*! @file  tests/test-rat-minpoly.C
  * @ingroup tests
  * @brief  no doc
+ * @test no doc.
  */
 
 

@@ -15,6 +15,7 @@
 /*! @file  tests/test-rat-solve.C
  * @ingroup tests
  * @brief  no doc
+ * @test no doc.
  */
 
 

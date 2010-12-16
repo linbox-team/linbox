@@ -24,6 +24,7 @@
 /*! @file  tests/test-quad-matrix.C
  * @ingroup tests
  * @brief no doc.
+ * @test no doc.
  */
 
 

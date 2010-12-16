@@ -27,6 +27,7 @@
  *
  * \ingroup tests
  * @bug this file does not compile or the test fails for some fields.
+ * @test NO DOC
  */
 
 #include "linbox/linbox-config.h"

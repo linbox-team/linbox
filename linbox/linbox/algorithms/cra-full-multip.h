@@ -81,7 +81,6 @@ namespace LinBox
 			return r;
 		}
 
-		//template<template<class> class Vect>
 		template<class Vect>
 		void initialize (const Integer& D, const Vect& e)
 		{
@@ -89,21 +88,23 @@ namespace LinBox
 			RadixPrimeProd_.resize(1);
 			RadixResidues_.resize(1);
 			RadixOccupancy_.resize(1); RadixOccupancy_.front() = false;
-                        progress( D, e);
-// 			std::vector< double >::iterator  _dsz_it = RadixSizes_.begin();
-// 			std::vector< LazyProduct >::iterator _mod_it = RadixPrimeProd_.begin();
-// 			std::vector< std::vector<Integer> >::iterator _tab_it = RadixResidues_.begin();
-// 			std::vector< bool >::iterator    _occ_it = RadixOccupancy_.begin();
-// 			_mod_it->initialize(D);
-// 			*_dsz_it = naturallog(D);
+			progress( D, e);
+#if 0
+			std::vector< double >::iterator  _dsz_it = RadixSizes_.begin();
+			std::vector< LazyProduct >::iterator _mod_it = RadixPrimeProd_.begin();
+			std::vector< std::vector<Integer> >::iterator _tab_it = RadixResidues_.begin();
+			std::vector< bool >::iterator    _occ_it = RadixOccupancy_.begin();
+			_mod_it->initialize(D);
+			*_dsz_it = naturallog(D);
 
-// 			typename Vect::const_iterator e_it = e.begin();
-// 			_tab_it->resize(e.size());
-// 			std::vector<Integer>::iterator t0_it= _tab_it->begin();
-// 			for( ; e_it != e.end(); ++e_it, ++ t0_it)
-// 				*t0_it = *e_it;
-// 			*_occ_it = true;
-// 			return;
+			typename Vect::const_iterator e_it = e.begin();
+			_tab_it->resize(e.size());
+			std::vector<Integer>::iterator t0_it= _tab_it->begin();
+			for( ; e_it != e.end(); ++e_it, ++ t0_it)
+				*t0_it = *e_it;
+			*_occ_it = true;
+#endif
+			return;
 		}
 
 		template< template<class, class> class Vect, template <class> class Alloc>
@@ -117,8 +118,9 @@ namespace LinBox
 		}
 
 		/* Used in the case where D is a big Integer and Domain cannot be constructed */
-		template<template<class T> class Vect>
-		void progress (const Integer& D, const Vect<Integer>& e)
+		// template<template<class T> class Vect>
+		template< template<class, class> class Vect, template <class> class Alloc>
+		void progress (const Integer& D, const Vect<Integer, Alloc<Integer> >& e)
 		{
 			std::vector< double >::iterator  _dsz_it = RadixSizes_.begin();
 			std::vector< LazyProduct >::iterator _mod_it = RadixPrimeProd_.begin();
@@ -126,7 +128,7 @@ namespace LinBox
 			std::vector< bool >::iterator    _occ_it = RadixOccupancy_.begin();
 			std::vector<Integer> ri(e.size()); LazyProduct mi; double di;
 			if (*_occ_it) {
-				typename Vect<Integer>::const_iterator  e_it = e.begin();
+				typename Vect<Integer,Alloc<Integer> >::const_iterator  e_it = e.begin();
 				std::vector<Integer>::iterator       ri_it = ri.begin();
 				std::vector<Integer>::const_iterator t0_it = _tab_it->begin();
 				Integer invprod; precomputeInvProd(invprod, D, _mod_it->operator()());
@@ -143,7 +145,7 @@ namespace LinBox
 				Integer tmp = D;
 				_mod_it->initialize(tmp);
 				*_dsz_it = naturallog(tmp);
-				typename Vect<Integer>::const_iterator e_it = e.begin();
+				typename Vect<Integer, Alloc<Integer> >::const_iterator e_it = e.begin();
 				_tab_it->resize(e.size());
 				std::vector<Integer>::iterator t0_it= _tab_it->begin();
 				for( ; e_it != e.end(); ++e_it, ++ t0_it)

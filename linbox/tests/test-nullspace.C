@@ -9,6 +9,7 @@
 /** \file tests/test-nullspace.C
  * \brief Tests the dense nullspace functions for Zp
  * @ingroup tests
+ * @test dense nullspace
  */
 
 #include "../linbox/linbox-config.h"

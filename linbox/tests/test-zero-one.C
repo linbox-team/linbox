@@ -23,6 +23,7 @@
 /*! @file   tests/test-zero-one.C
  * @ingroup tests
  * @brief no doc.
+ * @test no doc.
  */
 
 

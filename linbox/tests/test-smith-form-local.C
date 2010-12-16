@@ -13,6 +13,7 @@
 /*! @file  tests/test-smith-form-local.C
  * @ingroup tests
  * @brief  no doc
+ * @test no doc.
  */
 
 

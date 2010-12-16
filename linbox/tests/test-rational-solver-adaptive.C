@@ -26,6 +26,7 @@
 /*! @file  tests/test-rational-solver-adaptive.C
  * @ingroup tests
  * @brief  no doc
+ * @test no doc.
  */
 
 

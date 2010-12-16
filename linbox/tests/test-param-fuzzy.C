@@ -12,6 +12,7 @@
 /*! @file  tests/test-param-fuzzy.C
  * @ingroup tests
  * @brief  no doc
+ * @test no doc
  */
 
 

@@ -27,6 +27,7 @@
 /*! @file  tests/test-ntl-ZZ_p.C
  * @ingroup tests
  * @brief  no doc
+ * @test no doc
  */
 
 

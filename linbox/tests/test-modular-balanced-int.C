@@ -24,6 +24,7 @@
 /*! @file  tests/test-modular-balanced-int.C
  * @ingroup tests
  * @brief  tests only runFieldTests on modular-balanced-int32
+ * @test   tests only runFieldTests on modular-balanced-int32
  */
 
 

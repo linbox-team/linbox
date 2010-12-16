@@ -17,6 +17,7 @@
 /*! @file  tests/test-gmp-rational.C
  * @ingroup tests
  * @brief  no doc
+ * @test NO DOC
  */
 
 
