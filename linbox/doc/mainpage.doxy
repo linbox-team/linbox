@@ -1,6 +1,9 @@
-// Copyright (C) 2005 David Saunders, part of LinBox, GNU LGPL, see COPYING
+// Copyright (C) 2005 David Saunders, 2010 LinBox. This file is part of LinBox,
+// GNU LGPL, see COPYING for lincene information.
 /** \mainpage LinBox Symbolic Linear Algebra Software Library.
+
 \section intro Introduction
+
 %LinBox is a C++ template library of routines
 for solution of linear algebra
 problems including linear system solution, rank, determinant, minimal polynomial,
@@ -71,18 +74,25 @@ by %LinBox.
 - \subpage tuto. This is a brief introduction to %LinBox capabilities.
 - \subpage inst. Explains how to install from sources or from the latest svn version.
 - \subpage arch. Describes how %LinBox is organized
-- <a href="../linbox-html/index.html"     style="color: blue  ; font-weight: bold">Documentation for Users</a>. If everything around is blue, then you are reading the lighter, user-oriented, documentation.
-- <a href="../linbox-dev-html/index.html" style="color: green ; font-weight: bold">Documentation for Developers</a>. If everything around is green, then you can get to everything (not necessarily yet) documented.
+- <a href="../linbox-html/index.html"     style="color: blue  ; font-weight: bold">
+Documentation for Users</a>. If everything around is blue, then you are reading
+the lighter, user-oriented, documentation.
+- <a href="../linbox-dev-html/index.html" style="color: green ; font-weight: bold">
+Documentation for Developers</a>. If everything around is green, then you can
+get to everything (not necessarily yet) documented.
 .
 
 \section contrib Contributing to LinBox, getting assistance.
 We warmly welcome contributors ! Contributing can rhyme with providing documentation,
 pointing out bugs, requesting more features, giving test-cases, making comments about the
 code,...\n
-You can contact the LinBox team at < \c linbox<sub> \c dash </sub>\c
-use<sub> \c at </sub> \c googlegroups <sub> \c dot </sub> \c com > (user
-oriented discussions) or < \c linbox <sub> \c dash </sub> \c devel <sub> \c
-at </sub> \c googlegroups <sub> \c dot </sub> \c com > (development oriented
+You can contact the LinBox team at <!-- \c linbox<sub> \c dash </sub>\c
+use<sub> \c at </sub> \c googlegroups <sub> \c dot </sub> \c com -->
+\f$\mathtt{linbox}\!-\!\mathtt{use} \mathtt{@}
+\mathtt{googlegroups}\!\cdot\!\mathtt{com}\f$ (user oriented discussions) or
+<!-- \c linbox <sub> \c dash </sub> \c devel <sub> \c at </sub> \c googlegroups
+<sub> \c dot </sub> \c com --> \f$\mathtt{linbox}\!-\!\mathtt{use} \mathtt{@}
+\mathtt{googlegroups}\!\cdot\!\mathtt{com}\f$ (development oriented
 discussions).
 
 \authors Members of the \link AUTHORS %LinBox group\endlink.  The most prolific documenters
