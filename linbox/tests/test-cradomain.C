@@ -1,6 +1,6 @@
 /* Copyright (C) 2010 LinBox
  *
- * Time-stamp: <16 Dec 10 16:26:18 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <16 Dec 10 17:48:13 Jean-Guillaume.Dumas@imag.fr>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -89,20 +89,52 @@ struct InteratorIt : public Interator {
 
 
 
+template<typename Field> struct InteratorBlas; 
+namespace LinBox
+{
+    template<class Element,class Field> struct CRATemporaryVectorTrait<InteratorBlas<Field> , Element> {
+        typedef typename LinBox::BlasMatrix<Element>::pointer Type_t;
+    };
+}
+
+template<typename Field>
+struct InteratorBlas : public Interator {
+    typedef typename Field::Element Element;
+    typedef LinBox::BlasMatrix<Element> Matrix;
+    typedef typename Matrix::pointer Pointer;
+    mutable Matrix _C;
+
+    InteratorBlas(const std::vector<Integer>& v) : Interator(v), _C(v.size(),1) {}
+    InteratorBlas(int n, int s) : Interator(n,s), _C(n,1) {}
+    
+    Pointer& operator()(Pointer& res, const Field& F) const {
+        std::vector<Integer>::const_iterator vit=this->_v.begin();
+        res = _C.getWritePointer();
+        for( ; vit != _v.end(); ++vit, ++res)
+            F.init(*res, *vit);
+
+        return res=_C.getWritePointer();
+    }
+    
+};
 
 
 
 
-bool TestCra(int N, int S) {
+
+
+
+bool TestCra(int N, int S, size_t seed) {
     
     std::ostream &report = LinBox::commentator.report
                 (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-    report << "TestCra(" << N << ',' << S << ')' << std::endl;
+    report << "TestCra(" << N << ',' << S << ',' << seed << ')' << std::endl;
+    Integer::seeding(seed);
 
     Interator iteration(N, S);
     InteratorIt iterationIt(iteration.getVector());
-    LinBox::RandomPrimeIterator genprime( 24 );
+    LinBox::RandomPrimeIterator genprime( 24, seed );
     
     bool pass = true;
 
@@ -111,8 +143,10 @@ bool TestCra(int N, int S) {
         LinBox::ChineseRemainder< LinBox::EarlyMultipCRA< LinBox::Modular<double> > > craEM(4UL);
         std::vector<Integer> ResEM(N);
         craEM( ResEM, iteration, genprime);
-    
-        pass = pass && std::equal( ResEM.begin(), ResEM.end(), iteration.getVector().begin() );
+        bool locpass = std::equal( ResEM.begin(), ResEM.end(), iteration.getVector().begin() );
+        if (locpass) report << "ChineseRemainder<EarlyMultipCRA>(4)" << ", passed."  << std::endl;
+        else report << "***ERROR***: ChineseRemainder<EarlyMultipCRA>(4)" << "***ERROR***"  << std::endl;
+        pass = pass && locpass;
     }
 
     report << "ChineseRemainder<FullMultipCRA>(" << iteration.getLogSize() << ')' << std::endl;
@@ -120,31 +154,56 @@ bool TestCra(int N, int S) {
         LinBox::ChineseRemainder< LinBox::FullMultipCRA< LinBox::Modular<double> > > craFM( iteration.getLogSize() );
         std::vector<Integer> ResFM(N);
         craFM( ResFM, iteration, genprime);
-    
-        pass = pass && std::equal( ResFM.begin(), ResFM.end(), iteration.getVector().begin() );
+        bool locpass = std::equal( ResFM.begin(), ResFM.end(), iteration.getVector().begin() );
+        if (locpass) report << "ChineseRemainder<FullMultipCRA>(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
+        else report << "***ERROR***: ChineseRemainder<FullMultipCRA>(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;
+        pass = pass && locpass;
     }
     
-    report << "ChineseRemainder<FullMultipFixedCRA>(" << N << ',' << iterationIt.getLogSize() << ')' << std::endl;
+    report << "ChineseRemainder<FullMultipFixedCRA,vector>(" << N << ',' << iterationIt.getLogSize() << ')' << std::endl;
     {
         LinBox::ChineseRemainder< LinBox::FullMultipFixedCRA< LinBox::Modular<double> > > craFMF( std::pair<size_t,double>(N,iterationIt.getLogSize()) );
         std::vector<Integer> ResFMF(N);
         std::vector<Integer>::iterator ResIT= ResFMF.begin();
         craFMF( ResIT, iterationIt, genprime);
-    
-        pass = pass && std::equal( iterationIt.getVector().begin(), iterationIt.getVector().end(), ResFMF.begin() );
+        bool locpass = std::equal( iterationIt.getVector().begin(), iterationIt.getVector().end(), ResFMF.begin() );
+        if (locpass) report << "ChineseRemainder<FullMultipFixedCRA,vector>(" << N << ',' << iterationIt.getLogSize() << ')' << ", passed."  << std::endl;
+        else report << "***ERROR***: ChineseRemainder<FullMultipFixedCRA,vector>(" << N << ',' << iterationIt.getLogSize() << ')' << "***ERROR***"  << std::endl;
+        pass = pass && locpass;
     }
     
+    report << "ChineseRemainder<FullMultipFixedCRA,BlasMatrix>(" << N << ',' << iterationIt.getLogSize() << ')' << std::endl;
+    {
+        LinBox::ChineseRemainder< LinBox::FullMultipFixedCRA< LinBox::Modular<double> > > craFMFBM( std::pair<size_t,double>(N,iterationIt.getLogSize()) );
+        LinBox::BlasMatrix<Integer> ResFMFBM(N,1);
+        craFMFBM( ResFMFBM.getWritePointer(), iterationIt, genprime);
+    
+        bool locpass = std::equal( iterationIt.getVector().begin(), iterationIt.getVector().end(), ResFMFBM.getWritePointer() );
+        
+        if (locpass) report << "ChineseRemainder<FullMultipFixedCRA,BlasMatrix>(" << N << ',' << iterationIt.getLogSize() << ')' << ", passed."  << std::endl;
+        else 
+            report << "***ERROR***: ChineseRemainder<FullMultipFixedCRA,BlasMatrix>(" << N << ',' << iterationIt.getLogSize() << ')' << " ***ERROR***"  << std::endl;
+
+        pass = pass && locpass;
+    }
+
+    if (pass) report << "TestCra(" << N << ',' << S << ')' << ", passed." << std::endl;
+    else 
+        report << "***ERROR***: TestCra(" << N << ',' << S << ')' << " ***ERROR***" << std::endl;
+
     return pass;
 }
 
 
 
 #include "test-common.h"
+#include "linbox/util/timer.h"
 
 int main (int argc, char **argv)
 {
         static size_t n = 1000;
         static size_t s = 30;
+        static size_t seed = LinBox::BaseTimer::seed();
         static int iterations = 1;
 
         static Argument args[] = {
@@ -152,6 +211,8 @@ int main (int argc, char **argv)
 , &n },
                 { 's', "-s S", "Set size of test integers.", TYPE_INT
 , &s },
+                { 'z', "-z Z", "Set seed.", TYPE_INT
+, &seed },
                 { 'i', "-i I", "Perform each test for I iterations.",     TYPE_INT, &iterations },
                 { '\0' }
         };
@@ -162,7 +223,7 @@ int main (int argc, char **argv)
         bool pass = true;
 
         for(int i=0; i<iterations; ++i)
-            pass = TestCra(n,s);
+            pass = TestCra(n,s,seed);
         
 
         commentator.stop("CRA-Domain test suite");
