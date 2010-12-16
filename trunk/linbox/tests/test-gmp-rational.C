@@ -20,8 +20,6 @@
  * @test NO DOC
  */
 
-
-
 #include "linbox/linbox-config.h"
 
 #include <iostream>

@@ -59,7 +59,7 @@ namespace LinBox
 	public:
 
 		/** @name Common Object Interface.
-		 * These methods are required of all \ref LinBox field element generators.
+		 * These methods are required of all LinBox field element generators.
 		 */
 		//@{
 
@@ -162,7 +162,7 @@ namespace LinBox
 
 		/** @name Implementation-Specific Methods.
 		 * These methods are not required of all
-		 * \ref LinBox\ Random\ field\ element\ generators
+		 * LinBox random field element generators
 		 * and are included only for this implementation of the archetype.
 		 */
 		//@{
@@ -181,13 +181,13 @@ namespace LinBox
 
 	private:
 
-		/** Pointer to RandIterAbstract object.
+		/** @internal Pointer to RandIterAbstract object.
 		 * Not part of the interface.
 		 * Included to allow for archetype use three.
 		 */
 		mutable RandIterAbstract *_randIter_ptr;
 
-		/** Template method for constructing archetype from a derived class of
+		/** @internal Template method for constructing archetype from a derived class of
 		 * FieldAbstract.
 		 * This class is needed to help the constructor differentiate between
 		 * classes derived from FieldAbstract and classes that aren't.
@@ -205,7 +205,7 @@ namespace LinBox
 			_randIter_ptr = FRI->construct (*field_ptr, size, seed);
 		}
 
-		/** Template method for constructing archetype from a class not derived
+		/** @internal Template method for constructing archetype from a class not derived
 		 * from FieldAbstract.
 		 * This class is needed to help the constructor differentiate between
 		 * classes derived from FieldAbstract and classes that aren't.

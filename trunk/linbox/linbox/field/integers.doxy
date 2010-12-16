@@ -20,10 +20,15 @@
  * group operations as in the example :
  \code
  Integer a=1,b=1,c=1;
- // c += a * b ; /* slow */
- axpyin(c,a,b) ; /* faster */
+ c += a * b ;    // slow
+ axpyin(c,a,b) ; // faster
  \endcode
  * @see <a href="http://ljk.imag.fr/CASYS/LOGICIELS/givaro/">Givaro</a> for documentation.
  */
+
+ /** @ingroup integers
+  * @defgroup primes Primes
+  * @brief NO DOC
+  */
 
 // vim:syn=doxygen

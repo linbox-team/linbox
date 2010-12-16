@@ -1,8 +1,0 @@
-/** @name Random field element generator wrappers
-
-  @see Fields
-  @see Field Wrappers
-
-  @memo Wrappers to make \ref LinBox random field element generators.
-*/
-// vim:syntax=doxygen

@@ -19,6 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#error "deprecated and not tested"
+
 #ifndef __LINBOX_gmp_random_prime_H
 #define __LINBOX_gmp_random_prime_H
 
@@ -31,6 +33,7 @@ namespace LinBox
 	 * Similar to random-prime.h, but return type is integer, not long, allowing
 	 * for larger primes.
 	 * @author Dan Roche
+	 * @deprecated This is not true.
 	 */
 
 	class GmpRandomPrime {
@@ -54,7 +57,6 @@ namespace LinBox
 		}
 
 		// I believe reference returned is appropriate. -bds
-		//inline integer randomPrime( integer& p )
 		inline integer& randomPrime( integer& p )
 		{
 			do integer::nonzerorandom( p, max );

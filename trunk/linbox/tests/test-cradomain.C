@@ -1,3 +1,6 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+
 /* Copyright (C) 2010 LinBox
  *
  * Time-stamp: <16 Dec 10 17:48:13 Jean-Guillaume.Dumas@imag.fr>
@@ -18,6 +21,12 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/*! @file tests-test-cradomain.C
+ * @ingroup tests
+ * @brief tests LinBox::ChineseRemainer
+ * @test tests LinBox::ChineseRemainer (see \ref CRA)
+ */
+
 #include <linbox/algorithms/cra-domain.h>
 #include <linbox/field/modular-double.h>
 #include "linbox/algorithms/blas-domain.h"
@@ -27,69 +36,80 @@
 #include "linbox/randiter/random-prime.h"
 
 struct Interator {
-    std::vector<Integer> _v;
-    double maxsize;
-    
-    Interator(const std::vector<Integer>& v) : _v(v), maxsize(0.0) {
-        for(std::vector<Integer>::const_iterator it=_v.begin();
-            it != _v.end(); ++it) {
-            double ds = naturallog(*it);
-            maxsize = (maxsize<ds?ds:maxsize);
-        }
-    }
+	std::vector<Integer> _v;
+	double maxsize;
 
-    Interator(int n, int s) : _v(n), maxsize(0.0) {
-        for(std::vector<Integer>::iterator it=_v.begin();
-            it != _v.end(); ++it) {
-            Integer::random(*it, s);
-            double ds = naturallog(*it);
-            maxsize = (maxsize<ds?ds:maxsize);
-        }
-    }
-        
-    const std::vector<Integer>& getVector() { return _v; }
-    const double getLogSize() { return maxsize; }
-    
-    template<typename Field>
-    std::vector<typename Field::Element>& operator()(std::vector<typename Field::Element>& v, const Field& F) const {
-        v.resize(_v.size());
-        std::vector<Integer>::const_iterator vit=_v.begin();
-        typename std::vector<typename Field::Element>::iterator eit=v.begin();
-        for( ; vit != _v.end(); ++vit, ++eit)
-            F.init(*eit, *vit);
-        return v;
-    }
+	Interator(const std::vector<Integer>& v) :
+		_v(v), maxsize(0.0)
+	{
+		for(std::vector<Integer>::const_iterator it=_v.begin();
+		    it != _v.end(); ++it) {
+			double ds = naturallog(*it);
+			maxsize = (maxsize<ds?ds:maxsize);
+		}
+	}
+
+	Interator(int n, int s) :
+		_v(n), maxsize(0.0)
+	{
+		for(std::vector<Integer>::iterator it=_v.begin();
+		    it != _v.end(); ++it) {
+			Integer::random(*it, s);
+			double ds = naturallog(*it);
+			maxsize = (maxsize<ds?ds:maxsize);
+		}
+	}
+
+	const std::vector<Integer>& getVector() { return _v; }
+	const double getLogSize() { return maxsize; }
+
+	template<typename Field>
+	std::vector<typename Field::Element>& operator()(std::vector<typename Field::Element>& v,
+							 const Field& F) const
+	{
+		v.resize(_v.size());
+		std::vector<Integer>::const_iterator vit=_v.begin();
+		typename std::vector<typename Field::Element>::iterator eit=v.begin();
+		for( ; vit != _v.end(); ++vit, ++eit)
+			F.init(*eit, *vit);
+		return v;
+	}
 };
 
 struct InteratorIt;
 namespace LinBox
 {
-    template<class Element> struct CRATemporaryVectorTrait<InteratorIt , Element> {
-        typedef typename std::vector<double>::iterator Type_t;
-    };
+	template<class Element> struct CRATemporaryVectorTrait<InteratorIt , Element> {
+		typedef typename std::vector<double>::iterator Type_t;
+	};
 }
 
 struct InteratorIt : public Interator {
-   
-    mutable std::vector<double> _C;
 
-    InteratorIt(const std::vector<Integer>& v) : Interator(v), _C(v.size()) {}
-    InteratorIt(int n, int s) : Interator(n,s), _C(n) {}
-    
-    template<typename Iterator, typename Field>
-    Iterator& operator()(Iterator& res, const Field& F) const {
-        std::vector<Integer>::const_iterator vit=this->_v.begin();
-        std::vector<double>::iterator eit=_C.begin();
-        for( ; vit != _v.end(); ++vit, ++eit)
-            F.init(*eit, *vit);
-        return res=_C.begin();
-    }
-    
+	mutable std::vector<double> _C;
+
+	InteratorIt(const std::vector<Integer>& v) :
+		Interator(v), _C(v.size())
+	{}
+	InteratorIt(int n, int s) :
+		Interator(n,s), _C(n)
+	{}
+
+	template<typename Iterator, typename Field>
+	Iterator& operator()(Iterator& res, const Field& F) const
+	{
+		std::vector<Integer>::const_iterator vit=this->_v.begin();
+		std::vector<double>::iterator eit=_C.begin();
+		for( ; vit != _v.end(); ++vit, ++eit)
+			F.init(*eit, *vit);
+		return res=_C.begin();
+	}
+
 };
 
 
 
-template<typename Field> struct InteratorBlas; 
+template<typename Field> struct InteratorBlas;
 namespace LinBox
 {
     template<class Element,class Field> struct CRATemporaryVectorTrait<InteratorBlas<Field> , Element> {
@@ -106,7 +126,7 @@ struct InteratorBlas : public Interator {
 
     InteratorBlas(const std::vector<Integer>& v) : Interator(v), _C(v.size(),1) {}
     InteratorBlas(int n, int s) : Interator(n,s), _C(n,1) {}
-    
+
     Pointer& operator()(Pointer& res, const Field& F) const {
         std::vector<Integer>::const_iterator vit=this->_v.begin();
         res = _C.getWritePointer();
@@ -115,17 +135,12 @@ struct InteratorBlas : public Interator {
 
         return res=_C.getWritePointer();
     }
-    
+
 };
 
+bool TestCra(int N, int S, size_t seed)
+{
 
-
-
-
-
-
-bool TestCra(int N, int S, size_t seed) {
-    
     std::ostream &report = LinBox::commentator.report
                 (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
@@ -135,7 +150,7 @@ bool TestCra(int N, int S, size_t seed) {
     Interator iteration(N, S);
     InteratorIt iterationIt(iteration.getVector());
     LinBox::RandomPrimeIterator genprime( 24, seed );
-    
+
     bool pass = true;
 
     report << "ChineseRemainder<EarlyMultipCRA>(4)" << std::endl;
@@ -149,6 +164,7 @@ bool TestCra(int N, int S, size_t seed) {
         pass = pass && locpass;
     }
 
+
     report << "ChineseRemainder<FullMultipCRA>(" << iteration.getLogSize() << ')' << std::endl;
     {
         LinBox::ChineseRemainder< LinBox::FullMultipCRA< LinBox::Modular<double> > > craFM( iteration.getLogSize() );
@@ -159,7 +175,7 @@ bool TestCra(int N, int S, size_t seed) {
         else report << "***ERROR***: ChineseRemainder<FullMultipCRA>(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;
         pass = pass && locpass;
     }
-    
+
     report << "ChineseRemainder<FullMultipFixedCRA,vector>(" << N << ',' << iterationIt.getLogSize() << ')' << std::endl;
     {
         LinBox::ChineseRemainder< LinBox::FullMultipFixedCRA< LinBox::Modular<double> > > craFMF( std::pair<size_t,double>(N,iterationIt.getLogSize()) );
@@ -171,24 +187,24 @@ bool TestCra(int N, int S, size_t seed) {
         else report << "***ERROR***: ChineseRemainder<FullMultipFixedCRA,vector>(" << N << ',' << iterationIt.getLogSize() << ')' << "***ERROR***"  << std::endl;
         pass = pass && locpass;
     }
-    
+
     report << "ChineseRemainder<FullMultipFixedCRA,BlasMatrix>(" << N << ',' << iterationIt.getLogSize() << ')' << std::endl;
     {
         LinBox::ChineseRemainder< LinBox::FullMultipFixedCRA< LinBox::Modular<double> > > craFMFBM( std::pair<size_t,double>(N,iterationIt.getLogSize()) );
         LinBox::BlasMatrix<Integer> ResFMFBM(N,1);
         craFMFBM( ResFMFBM.getWritePointer(), iterationIt, genprime);
-    
+
         bool locpass = std::equal( iterationIt.getVector().begin(), iterationIt.getVector().end(), ResFMFBM.getWritePointer() );
-        
+
         if (locpass) report << "ChineseRemainder<FullMultipFixedCRA,BlasMatrix>(" << N << ',' << iterationIt.getLogSize() << ')' << ", passed."  << std::endl;
-        else 
+        else
             report << "***ERROR***: ChineseRemainder<FullMultipFixedCRA,BlasMatrix>(" << N << ',' << iterationIt.getLogSize() << ')' << " ***ERROR***"  << std::endl;
 
         pass = pass && locpass;
     }
 
     if (pass) report << "TestCra(" << N << ',' << S << ')' << ", passed." << std::endl;
-    else 
+    else
         report << "***ERROR***: TestCra(" << N << ',' << S << ')' << " ***ERROR***" << std::endl;
 
     return pass;
@@ -201,10 +217,10 @@ bool TestCra(int N, int S, size_t seed) {
 
 int main (int argc, char **argv)
 {
-        static size_t n = 1000;
-        static size_t s = 30;
+	static size_t n = 1000;
+	static size_t s = 30;
         static size_t seed = LinBox::BaseTimer::seed();
-        static int iterations = 1;
+	static int iterations = 20;
 
         static Argument args[] = {
                 { 'n', "-n N", "Set dimension of test vectors to NxN.", TYPE_INT
@@ -217,15 +233,15 @@ int main (int argc, char **argv)
                 { '\0' }
         };
 
-        parseArguments (argc, argv, args);
+	parseArguments (argc, argv, args);
 
-        commentator.start("CRA-Domain test suite", "CRADom");
-        bool pass = true;
+	commentator.start("CRA-Domain test suite", "CRADom");
+	bool pass = true;
 
-        for(int i=0; i<iterations; ++i)
-            pass = TestCra(n,s,seed);
-        
+	for(int i=0; pass && i<iterations; ++i)
+		pass &= TestCra(n,s,seed);
 
-        commentator.stop("CRA-Domain test suite");
-        return pass ? 0 : -1;
+
+	commentator.stop(MSG_STATUS (pass), (const char *) 0,"CRA-Domain test suite");
+	return pass ? 0 : -1;
 }
