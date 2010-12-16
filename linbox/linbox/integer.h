@@ -35,7 +35,10 @@
 
 namespace LinBox
 {
-	/// Integers in LinBox, from <a href=http://ljk.imag.fr/CASYS/LOGICIELS/givaro/>Givaro</a>.
+	/*! Integers in LinBox.
+	 * Integer representation from <a href=http://ljk.imag.fr/CASYS/LOGICIELS/givaro/>Givaro</a>.
+	 * @ingroup integers
+	 */
 	typedef Integer integer;
 
 	/// int8.
@@ -45,7 +48,7 @@ namespace LinBox
 
 	/** @brief This is a representation of 32 bit ints, usually equivalent to \c int.
 	 *
-	 * The use of \p int32 ensures you are working with
+	 * The use of \c int32 ensures you are working with
 	 * 32 bit signed ints, \f$[-2^{31}\dots2^{31})\f$.  Similarly, \ref int8, \ref int16, and \ref int64 are defined.
 	 */
 	typedef signed __LINBOX_INT32 int32;
@@ -58,7 +61,8 @@ namespace LinBox
 	/// unsigned int16.
 	typedef unsigned __LINBOX_INT16 uint16;
 
-	/** @brief This is a representation of 32 bit unsigned ints, usually equivalent to `<code>unsigned int</code>'.
+	/** This is a representation of 32 bit unsigned ints, usually
+	 * equivalent to `<code>unsigned int</code>'.
 	 *
 	 * The use of `uint32' ensures you are working with
 	 * 32 bit unsigned ints, \f$[0\cdots 2^32[\f$.  Similarly, uint8, uint16, and uint64 are defined.
@@ -74,7 +78,9 @@ namespace LinBox
 
 
 
-        //! SPy to have access to protected members of integer Integer
+        /*! @internal
+	 * Spy structure to have access to protected members of Givaro::Integer.
+	 */
 	struct SpyInteger
 	{
 

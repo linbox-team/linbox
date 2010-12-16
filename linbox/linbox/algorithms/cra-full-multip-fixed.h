@@ -23,7 +23,9 @@
 
 /*! @file algorithms/cra-full-multip-fixed.h
  * @ingroup algorithms
- * @brief NO DOC AGAIN
+ * @brief CRA for multi-residues.
+ *
+ * An upper bound is given on the size of the data to reconstruct.
  */
 
 #ifndef __LINBOX_cra_full_multip_fixed_H
@@ -46,7 +48,8 @@ namespace LinBox
 
 
 	/*! @ingroup CRA
-	 * @brief ???
+	 * @brief Chinese Remaindering Algorithm for multiple residues.
+	 * An upper bound is given on the size of the data to reconstruct.
 	 */
 	template<class Domain_Type>
 	struct FullMultipFixedCRA : FullMultipCRA<Domain_Type> {
@@ -65,15 +68,11 @@ namespace LinBox
 	protected:
 		const size_t				size;
 
-
-	public:
-		FullMultipFixedCRA(const std::pair<size_t,double>& p ) :
-		       	FullMultipCRA<Domain>(p.second), size(p.first)
-	       	{
-		       	this->initialize();
-		}
-
-		void initialize ()
+	private :
+		/*! \internal
+		 *  Intialize the Radix ladder.
+		 */
+		void _initialize ()
 		{
 			this->RadixSizes_.resize(1);
 			this->RadixPrimeProd_.resize(1);
@@ -82,13 +81,34 @@ namespace LinBox
 			this->RadixOccupancy_.front() = false;
 		}
 
+	public:
+		/*! Constructor.
+		 * @param p is a pair such that
+		 * - \c p.first is the size of the residues, it would be 1 for \"FullSingle\"
+		 * - \c p.second is the theoretical upperbound on the size of the data to reconstruct.
+		 */
+		FullMultipFixedCRA(const std::pair<size_t,double>& p ) :
+		       	FullMultipCRA<Domain>(p.second), size(p.first)
+	       	{
+		       	this->_initialize();
+		}
+
+		/*! Intialize to the first residue/prime.
+		 * @param D domain
+		 * @param e iterator on the first residue
+		 * @pre any CRA should first call \c initialize before \c progress
+		 */
 		template<class Iterator>
 		void initialize (const Domain& D, Iterator& e)
 		{
-			this->initialize();
+			this->_initialize();
 			this->progress(D, e);
 		}
 
+		/*! Add a new residue (ie take into account a new prime).
+		 * @param D domain
+		 * @param e iterator for the new residue, for instance, a std::vector<T>::iterator.
+		 */
 		template<class Iterator>
 		void progress (const Domain& D, Iterator& e)
 		{
@@ -187,6 +207,10 @@ namespace LinBox
 			this->RadixOccupancy_.push_back ( true );
 		}
 
+		/*! Compute the result.
+		 * moves low occupied shelves up.
+		 * @param[out] d an iterator for the result.
+		 */
 		template<class Iterator>
 		Iterator& result (Iterator &d)
 		{

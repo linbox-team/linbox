@@ -26,6 +26,11 @@
  * See COPYING for license information.
  */
 
+/*! @file randiter/generic.h
+ * @ingroup randiter
+ * @brief Genric random iterator.
+ */
+
 #ifndef __LINBOX_generic_randiter_H
 #define __LINBOX_generic_randiter_H
 
@@ -44,12 +49,12 @@ namespace LinBox
 {
 
 	/** Random field base element generator.
-	  This is a generator of random field elements that can be used with
-	  any field.  It initializes elements using rand().
-	  For prime fields with p < 2^32, a near-uniform distrubution can
-	  be expected.  For larger fields or non-prime fields, a near-uniform
-	  distribution on an unspecified subset of the elements can be expected.
-	  */
+	 * This is a generator of random field elements that can be used with
+	 * any field.  It initializes elements using rand().  For prime fields
+	 * with p < 2^32, a near-uniform distrubution can be expected.  For
+	 * larger fields or non-prime fields, a near-uniform distribution on an
+	 * unspecified subset of the elements can be expected.
+	 */
 	template <class Field>
 	class GenericRandIter {
 	public:
@@ -59,7 +64,7 @@ namespace LinBox
 		/** Constructor from field, sampling size, and seed.
 		 * The random field element iterator works in the field F, is seeded
 		 * by seed, and it returns any one element with probability no more
-		 * than 1/min (size, F.characteristic(c)).
+		 * than <code>1/min (size, F.characteristic(c))</code>.
 		 * A sampling size of zero means to sample from the entire prime subfield.
 		 * A seed of zero means to use some arbitrary seed for the generator.
 		 * @param F LinBox field in which to do arithmetic
@@ -81,6 +86,8 @@ namespace LinBox
 
 			if ((_size == 0) || (_size > cardinality))
 				_size = cardinality;
+
+			linbox_check(cardinality>0); // could be -1
 
 			commentator.report (10, INTERNAL_DESCRIPTION)
 			<< "Created random generator with size " << _size

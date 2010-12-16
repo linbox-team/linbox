@@ -34,14 +34,21 @@
 namespace LinBox
 {
 
-	/*! @ingroup primes
-	 * @brief Random Prime Generator.
+	/*!  @brief Random Prime Generator.
+	 * @ingroup primes
+	 * @ingroup randiter
+	 *
 	 * Generates prime of specified length.
+	 * @internal
+	 * It is given by <code>nextprime(2^_bits-p)</code> where <code>size(p) < _bits</code>.
+	 * @todo
+	 * One could use Integer::random_exact.
 	 */
+	//template<class Prime_Type = integer>
 	class RandomPrimeIterator {
 
 		int 	_bits;  //!< common lenght of all primes
-		integer _shift; //!< @internal used to
+		integer _shift; //!< @internal used to set proper bit size
 		integer _prime; //!< the generated prime.
 
 	public:
@@ -51,9 +58,8 @@ namespace LinBox
 		 * provided seed will be use.
 		 */
 		RandomPrimeIterator(int bits = 30, unsigned long seed = 0) :
-			_bits(bits)
+			_bits(bits), _shift(integer(1)<<_bits)
 		{
-			_shift = integer(1)<<_bits;
 			if (! seed)
 				RandomPrimeIterator::setSeed( BaseTimer::seed() );
 			else
@@ -64,8 +70,7 @@ namespace LinBox
 			nextprime( _prime, _prime);
 		}
 
-		// define the prime type
-		typedef integer Prime_Type;
+		typedef integer Prime_Type ;
 
 		/** @brief operator++()
 		 *  creates a new random prime.
@@ -85,6 +90,11 @@ namespace LinBox
 		{
 			return _prime;
 		}
+
+		/** @brief get the random prime.
+		 *  returns the actual prime.
+		 *  @warning a new prime is not generated.
+		 */
 		Prime_Type & randomPrime()
 		{
 			return _prime;
@@ -101,6 +111,75 @@ namespace LinBox
 
 
 	};
+
+	/*! @brief Random Prime Iterator.
+	 * @ingroup primes
+	 * @ingroup randiter
+	 *
+	 * Generates prime of size smaller than a prescribed one.
+	 * This class is closer to the LinBox::RandIterArchetype.
+	 * @todo
+	 * one could create the same one on a LinBox::PID_double ?
+	 */
+	class RandomPrimeIter {
+
+		int 	_bits;  //!< max length for all primes
+		integer _seed; //!< the generated prime.
+
+	public:
+		/*! Constructor.
+		 * @param bits max size of primes (in bits)
+		 * @param seed if \c 0 a seed will be generated, otherwise, the
+		 * provided seed will be use.
+		 */
+		RandomPrimeIter(int bits = 30, unsigned long seed = 0) :
+			_bits(bits)
+		{
+			if (! seed)
+				_seed = BaseTimer::seed() ;
+			else
+				_seed = seed ;
+
+			integer::seeding(_seed);
+		}
+
+		/// destructor.
+		~RandomPrimeIter() {}
+
+		/// copy constructor.
+		/// @param R random iterator to be copied.
+		RandomPrimeIter (const RandomPrimeIter &R) :
+			_bits(R._bits), _seed(R._seed)
+		{}
+
+		typedef integer Element ;
+
+		/// copy.
+		/// @param R random iterator to be copied.
+		RandomPrimeIter &operator=(const RandomPrimeIter &R)
+		{
+			if (this != &R) {
+				_bits = R._bits;
+				_seed = R._seed;
+			}
+			return *this;
+		}
+
+		/** @brief get the random prime.
+		 * @param[out] a the new prime number
+		 */
+		integer & random (integer & a)
+		{
+			integer::random(a,_bits);
+			nextprime( a, a);
+			while ((int)a.bitsize()>_bits)
+				prevprime(a,a);
+
+			return a;
+		}
+
+	};
+
 }
 
 #endif //__LINBOX_random_prime_iterator_H

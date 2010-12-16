@@ -287,9 +287,9 @@ int test_full_multip_matrix(size_t PrimeSize, size_t Size, std::pair<size_t, siz
 	Iterator  genprime =   primes.begin()  ; // prime iterator
 	MatIterator residu = residues.begin()  ; // residu iterator
 
-	double IntSize = std::log(PrimeSize*Size) ;
+	double LogIntSize = std::log(PrimeSize)*std::log(2)+std::log(Size) ;
 
-	std::pair<size_t,double> my_pair(Size,IntSize)  ;
+	std::pair<size_t,double> my_pair(Size,LogIntSize)  ;
 
 	FullMultipBlasMatCRA<ModularField> cra( my_pair ) ;
 	IntMatrix result(dims.first,dims.second); // the result
@@ -394,9 +394,9 @@ int test_full_multip(size_t PrimeSize, size_t Size, size_t Taille)
 	Iterator   genprime =   primes.begin()  ; // prime iterator
 	VectIterator residu = residues.begin()  ; // residu iterator
 
-	double IntSize = std::log(PrimeSize*Size) ;
+	double LogIntSize = std::log(PrimeSize)*std::log(2)+std::log(Size) ;
 
-	FullMultipCRA<ModularField> cra( IntSize ) ;
+	FullMultipCRA<ModularField> cra( LogIntSize ) ;
 	IntVect result(Taille) ; // the result
 	pVect  residue(Taille) ; // temporary
 	{ /* init */
@@ -498,8 +498,8 @@ int test_full_multip_fixed(size_t PrimeSize, size_t Size, size_t Taille)
 	Iterator   genprime =   primes.begin()  ; // prime iterator
 	VectIterator residu = residues.begin()  ; // residu iterator
 
-	double IntSize = std::log(PrimeSize*Size) ;
-	std::pair<size_t,double> my_pair(Size,IntSize)  ;
+	double LogIntSize = std::log(PrimeSize)*std::log(2)+std::log(Size) ;
+	std::pair<size_t,double> my_pair(Size,LogIntSize)  ;
 
 	FullMultipFixedCRA<ModularField> cra( my_pair ) ;
 	IntVect result(Taille) ; // the result
@@ -592,8 +592,7 @@ int main(int ac, char ** av)
 	_LB_REPEAT( if (test_full_multip<double>(22,Size,Taille/4))           return EXIT_FAILURE ;  ) ;
 	_LB_REPEAT( if (test_full_multip<integer>(PrimeSize,Size,Taille/4))   return EXIT_FAILURE ;  ) ;
 
-#if 0
-	/* FULL MULTIPLE FIXED */
+#if 0 /* FULL MULTIPLE FIXED */
 	_LB_REPEAT( if (test_full_multip_fixed<double>(22,Size,Taille))           return EXIT_FAILURE ;  ) ;
 	_LB_REPEAT( if (test_full_multip_fixed<integer>(PrimeSize,Size,Taille))   return EXIT_FAILURE ;  ) ;
 

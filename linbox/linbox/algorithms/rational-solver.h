@@ -621,7 +621,8 @@ namespace LinBox
 		 * @param r   a Ring, set by default
 		 * @param rp  a RandomPrime generator, set by default
 		 */
-		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
+		RationalSolver (const Ring& r = Ring(),
+				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
 			lastCertificate(r, 0), _genprime(rp), _R(r)
 		{
 			++_genprime; _prime=*_genprime;
@@ -759,9 +760,16 @@ namespace LinBox
 						    int maxPrimes = DEFAULT_MAXPRIMES,
 						    const SolverLevel level = SL_DEFAULT) const;
 
-		Ring getRing() const {return _R;}
+		Ring getRing() const
+		{
+			return _R;
+		}
 
-		void chooseNewPrime() const { ++_genprime; _prime = *_genprime; }
+		void chooseNewPrime() const
+		{
+			++_genprime;
+			_prime = *_genprime;
+		}
 
 #ifdef RSTIMING
 		void clearTimers() const
@@ -786,7 +794,8 @@ namespace LinBox
 
 	public:
 
-		inline std::ostream& printTime(const Timer& timer, const char* title, std::ostream& os, const char* pref = "") const
+		inline std::ostream& printTime(const Timer& timer, const char* title,
+					       std::ostream& os, const char* pref = "") const
 		{
 			if (&timer != &totalTimer)
 				totalTimer += timer;
@@ -800,7 +809,8 @@ namespace LinBox
 				return os;
 		}
 
-		inline std::ostream& printDixonTime(const DixonTimer& timer, const char* title, std::ostream& os) const
+		inline std::ostream& printDixonTime(const DixonTimer& timer, const char* title,
+						    std::ostream& os) const
 		{
 			if (timer.ttSetup.count() > 0) {
 				printTime(timer.ttSetup, "Setup", os, title);

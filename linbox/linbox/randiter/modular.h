@@ -66,7 +66,7 @@ namespace LinBox
 		/** Constructor from field, sampling size, and seed.
 		 * The random field element iterator works in the field F, is seeded
 		 * by seed, and it returns any one element with probability no more
-		 * than 1/min (size, F.cardinality (c)).
+		 * than <code>1/min (size, F.cardinality (c))</code>.
 		 * A sampling size of zero means to sample from the entire field.
 		 * A seed of zero means to use some arbitrary seed for the generator.
 		 * Purely virtual.
@@ -74,7 +74,7 @@ namespace LinBox
 		 * @param size constant integer reference of sample size from which to
 		 *             sample (default = modulus of field)
 		 * @param seed constant integer reference from which to seed random number
-		 *             generator (default = 0)
+		 *             generator (default is 0 and new seed is generated)
 		 */
 		ModularRandIter (const Modular<Element> &F,
 				 const integer &size = 0,

@@ -22,6 +22,11 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/*! @file randiter/gmp-rational.h
+ * @ingroup randiter
+ * @brief Generate a random rational with prescribed size.
+ */
+
 #ifndef __LINBOX_randiter_gmp_rational_H
 #define __LINBOX_randiter_gmp_rational_H
 
@@ -40,8 +45,18 @@ namespace LinBox
 	class GMPRationalRandIter {
 	public:
 
+		/// Element type.
 		typedef GMPRationalElement Element;
 
+		/*! Rational number random iterator.
+		 * @ingroup rationals
+		 * @ingroup randiter
+		 *
+		 * @param F rational field
+		 * @param size ??.
+		 * @param seed seed for random generator. By default it is 0
+		 * and a new one is created.
+		 */
 		GMPRationalRandIter (const GMPRationalField &F,
 				     const integer &size = 0,
 				     const integer &seed = 0) :
@@ -53,6 +68,8 @@ namespace LinBox
 
 
 
+		/// Copy constructor
+		/// @param R Random iterator to copy.
 		GMPRationalRandIter (const GMPRationalRandIter& R) :
 			_F (R._F), _size (R._size), _seed (R._seed)
 		{}
@@ -74,9 +91,14 @@ namespace LinBox
 #endif
 
 
+		/// Destructor.
 		~GMPRationalRandIter()
 		{}
 
+		/*! Copy.
+		* @param R Random iterator to copy.
+		* @return a reference to this copy.
+		*/
 		GMPRationalRandIter& operator=(const GMPRationalRandIter& R)
 		{
 			if (this != &R) { // guard against self-assignment
@@ -87,6 +109,9 @@ namespace LinBox
 			return *this;
 		}
 
+		/*! get a random number.
+		 * @param[out] a a random rational.
+		 */
 		Element &random (Element &a)  const
 		{
 			unsigned int s;
@@ -105,8 +130,7 @@ namespace LinBox
 
 				const_cast<integer&>(_seed) = s;
 				mpz_set_si (mpq_denref (a.rep), value);
-			}
-			else {
+			} else {
 				unsigned int s;
 				int num, den;
 
@@ -136,7 +160,8 @@ namespace LinBox
 		 * This returns a random field element from the information supplied
 		 * at the creation of the generator.
 		 * Required by abstract base class.
-		 * @return reference to random field element
+		 * @param[out] a random field element.
+		 * @return reference to random field element \p a.
 		 */
 		ElementAbstract &random (ElementAbstract &a)  const
 		{
@@ -148,10 +173,9 @@ namespace LinBox
 
 	private:
 
-		GMPRationalField _F;
-
-		integer _size;
-		integer _seed;
+		GMPRationalField _F; //!< @internal rational field
+		integer _size;       //!< @internal ??
+		integer _seed;       //!< @internal seed
 
 	}; // class GMPRationalRandIter
 
