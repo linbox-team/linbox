@@ -21,6 +21,7 @@
 /*! @file  tests/test-modular-short.C
  * @ingroup tests
  * @brief run runFieldTests testRandomIterator tests on modular-short
+ * @test run runFieldTests testRandomIterator tests on modular-short
  */
 
 

@@ -19,6 +19,7 @@
 /*! @file  tests/test-unparametric-field.C
  * @ingroup tests
  * @brief no doc.
+ * @test no doc.
  */
 
 

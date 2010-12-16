@@ -16,6 +16,7 @@
  *
  * @brief no doc
  *
+ * @test no doc.
  */
 
 #include "linbox/linbox-config.h"

@@ -10,6 +10,7 @@
 /*! @file  tests/test-direct-sum.C
  * @ingroup tests
  * @brief no doc.
+ * @test NO DOC
  */
 
 

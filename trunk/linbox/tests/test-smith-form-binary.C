@@ -25,6 +25,7 @@
 /*! @file  tests/test-smith-form-binary.C
  * @ingroup tests
  * @brief no doc.
+ * @test no doc.
  */
 
 

@@ -12,6 +12,7 @@
 /*! @file  tests/test-fields.C
  * @ingroup tests
  * @brief  no doc
+ * @deprecated this is replaced by benchmark-fields.C
  */
 
 

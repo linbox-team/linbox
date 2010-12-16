@@ -22,6 +22,7 @@
 /*! @file  tests/test-modular-byte.C
  * @ingroup tests
  * @brief  run runFieldTests and testRandomIterator on modular-byte
+ * @test   run runFieldTests and testRandomIterator on modular-byte
  */
 
 

@@ -20,6 +20,7 @@
 /*! @file  tests/test-gf2.C
  * @ingroup tests
  * @brief  no doc
+ * @test NO DOC
  */
 
 

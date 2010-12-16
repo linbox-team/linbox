@@ -26,6 +26,7 @@
 /*! @file  tests/test-last-invariant-factor.C
  * @ingroup tests
  * @brief  no doc
+ * @test NO DOC
  */
 
 

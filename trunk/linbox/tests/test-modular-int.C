@@ -21,6 +21,7 @@
 /*! @file   tests/test-modular-int.C
  * @ingroup tests
  * @brief run runFieldTests testRandomIterator tests on modular-int32
+ * @test run runFieldTests testRandomIterator tests on modular-int32
  */
 
 

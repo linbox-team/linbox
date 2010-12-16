@@ -12,6 +12,7 @@
 /*! @file  tests/test-image-field.C
  * @ingroup tests
  * @brief  no doc
+ * @test NO DOC
  */
 
 

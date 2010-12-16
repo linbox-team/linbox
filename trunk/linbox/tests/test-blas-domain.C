@@ -17,6 +17,7 @@
 /*! @file  tests/test-blas-domain.C
  * @ingroup tests
  * @brief  no doc
+ * @test NO DOC
  */
 
 

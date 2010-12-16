@@ -14,6 +14,7 @@
 /*! @file  tests/test-qlup.C
  * @ingroup tests
  * @brief  tests LQUP decomposition, solve, and nullspace of a random sparse matrice.
+ * @test tests LQUP decomposition, solve, and nullspace of a random sparse matrice.
  */
 
 

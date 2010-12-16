@@ -14,6 +14,7 @@
  * @brief  tests all variants of applyP, ftrmm, ftrsm and fgemm for varions m,k,n and leading dimensions combinations.
  * @bug ftrmm fails on non-double transposed versions.
  * @bug is fgemm correct on null A and B ?
+ * @test FFLAS::ftrmm, FFPACK::applyP, FFLAS::ftrsm, FFLAS::fgemm
  */
 
 

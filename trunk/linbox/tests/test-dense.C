@@ -16,6 +16,7 @@
 /*! @file  tests/test-dense.C
  * @ingroup tests
  * @brief  no doc
+ * @test NO DOC
  */
 
 

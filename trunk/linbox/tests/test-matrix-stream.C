@@ -26,6 +26,7 @@
  * @ingroup tests
  * @brief  no doc
  * @bug this tests reveals memory leaks
+ * @test NO DOC
  */
 
 

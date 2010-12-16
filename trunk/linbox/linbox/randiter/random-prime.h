@@ -21,6 +21,11 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/*! @file randiter/random-prime.h
+ * @ingroup randiter
+ * @brief Generates random positive prime \ref integers.
+ */
+
 #ifndef __LINBOX_random_prime_iterator_H
 #define __LINBOX_random_prime_iterator_H
 #include <linbox/integer.h>
@@ -29,13 +34,22 @@
 namespace LinBox
 {
 
+	/*! @ingroup primes
+	 * @brief Random Prime Generator.
+	 * Generates prime of specified length.
+	 */
 	class RandomPrimeIterator {
+
+		int 	_bits;  //!< common lenght of all primes
+		integer _shift; //!< @internal used to
+		integer _prime; //!< the generated prime.
+
 	public:
-
-		int 	_bits;
-		integer _shift;
-		integer _prime;
-
+		/*! Constructor.
+		 * @param bits size of primes (in bits)
+		 * @param seed if \c 0 a seed will be generated, otherwise, the
+		 * provided seed will be use.
+		 */
 		RandomPrimeIterator(int bits = 30, unsigned long seed = 0) :
 			_bits(bits)
 		{
@@ -54,7 +68,7 @@ namespace LinBox
 		typedef integer Prime_Type;
 
 		/** @brief operator++()
-		 *  creates a new random prime
+		 *  creates a new random prime.
 		 */
 		inline RandomPrimeIterator &operator ++ ()
 		{
@@ -64,8 +78,8 @@ namespace LinBox
 			return *this;
 		}
 
-		/** @brief operator*()
-		 *  returns the actual prime
+		/** @brief get the random prime.
+		 *  returns the actual prime.
 		 */
 		Prime_Type &operator *  ()
 		{
@@ -76,8 +90,9 @@ namespace LinBox
 			return _prime;
 		}
 
-		/** @brief setSeed (unsigned long ul)
-		 *  Set the random seed to be ul.
+		/** @brief Sets the seed.
+		 *  Set the random seed to be \p ul.
+		 *  @param ul the new seed.
 		 */
 		void static setSeed(unsigned long ul)
 		{

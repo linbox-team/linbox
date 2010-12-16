@@ -21,6 +21,7 @@
 /*! @file  tests/test-commentator.C
  * @ingroup tests
  * @brief no doc.
+ * @test tests LinBox::Commentator
  */
 
 #include "linbox/linbox-config.h"

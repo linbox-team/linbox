@@ -22,6 +22,7 @@
  * @ingroup tests
  *
  * @brief  runFieldTests on various <code>Modular<XXX></code> fields.
+ * @test   runFieldTests on various <code>Modular<XXX></code> fields.
  */
 
 

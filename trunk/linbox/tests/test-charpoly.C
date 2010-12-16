@@ -13,6 +13,7 @@
  * @warning gcc-4.2 produces bad optimized code there
  * @bug occasionnnaly there is a "SIGFPE, Arithmetic exception." in CRA
  * @bug testRandomCharpoly is not always tested !!
+ * @test characteristic polynomial of some matrices (sparse, special)
  */
 
 

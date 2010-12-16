@@ -16,6 +16,7 @@
 /*! @file  tests/test-diagonal.C
  * @ingroup tests
  * @brief  no doc
+ * @test NO DOC
  */
 
 

@@ -25,6 +25,7 @@
 /*! @file  tests/test-modular-double.C
  * @ingroup tests
  * @brief tests only runFieldTests for modular-double.
+ * @test  tests only runFieldTests for modular-double.
  */
 
 

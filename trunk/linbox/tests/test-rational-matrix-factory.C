@@ -14,6 +14,7 @@
 /*! @file  tests/test-rational-matrix-factory.C
  * @ingroup tests
  * @brief no doc.
+ * @test no doc.
  */
 
 

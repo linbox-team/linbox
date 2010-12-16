@@ -14,6 +14,7 @@
 /*! @file  tests/test-ntl-RR.C
  * @ingroup tests
  * @brief  no doc
+ * @test no doc
  */
 
 
