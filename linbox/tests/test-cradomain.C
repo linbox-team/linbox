@@ -3,7 +3,7 @@
 
 /* Copyright (C) 2010 LinBox
  *
- * Time-stamp: <16 Dec 10 17:48:13 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <16 Dec 10 18:13:45 Jean-Guillaume.Dumas@imag.fr>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -161,7 +161,7 @@ bool TestCra(int N, int S, size_t seed)
         bool locpass = std::equal( ResEM.begin(), ResEM.end(), iteration.getVector().begin() );
         if (locpass) report << "ChineseRemainder<EarlyMultipCRA>(4)" << ", passed."  << std::endl;
         else report << "***ERROR***: ChineseRemainder<EarlyMultipCRA>(4)" << "***ERROR***"  << std::endl;
-        pass = pass && locpass;
+        pass &= locpass;
     }
 
 
@@ -173,7 +173,7 @@ bool TestCra(int N, int S, size_t seed)
         bool locpass = std::equal( ResFM.begin(), ResFM.end(), iteration.getVector().begin() );
         if (locpass) report << "ChineseRemainder<FullMultipCRA>(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
         else report << "***ERROR***: ChineseRemainder<FullMultipCRA>(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;
-        pass = pass && locpass;
+        pass &= locpass;
     }
 
     report << "ChineseRemainder<FullMultipFixedCRA,vector>(" << N << ',' << iterationIt.getLogSize() << ')' << std::endl;
@@ -185,7 +185,7 @@ bool TestCra(int N, int S, size_t seed)
         bool locpass = std::equal( iterationIt.getVector().begin(), iterationIt.getVector().end(), ResFMF.begin() );
         if (locpass) report << "ChineseRemainder<FullMultipFixedCRA,vector>(" << N << ',' << iterationIt.getLogSize() << ')' << ", passed."  << std::endl;
         else report << "***ERROR***: ChineseRemainder<FullMultipFixedCRA,vector>(" << N << ',' << iterationIt.getLogSize() << ')' << "***ERROR***"  << std::endl;
-        pass = pass && locpass;
+        pass &= locpass;
     }
 
     report << "ChineseRemainder<FullMultipFixedCRA,BlasMatrix>(" << N << ',' << iterationIt.getLogSize() << ')' << std::endl;
@@ -200,7 +200,7 @@ bool TestCra(int N, int S, size_t seed)
         else
             report << "***ERROR***: ChineseRemainder<FullMultipFixedCRA,BlasMatrix>(" << N << ',' << iterationIt.getLogSize() << ')' << " ***ERROR***"  << std::endl;
 
-        pass = pass && locpass;
+        pass &= locpass;
     }
 
     if (pass) report << "TestCra(" << N << ',' << S << ')' << ", passed." << std::endl;
@@ -240,7 +240,6 @@ int main (int argc, char **argv)
 
 	for(int i=0; pass && i<iterations; ++i)
 		pass &= TestCra(n,s,seed);
-
 
 	commentator.stop(MSG_STATUS (pass), (const char *) 0,"CRA-Domain test suite");
 	return pass ? 0 : -1;
