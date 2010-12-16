@@ -9,22 +9,22 @@ libalgorithms_la_SOURCES= diophantine-solver.C
 
 AM_CPPFLAGS= $(CBLAS_FLAG) $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
 
-pkgincludesub_HEADERS =                 \
-    blackbox-container.h                \
-    blackbox-container-symmetric.h      \
-    blackbox-container-symmetrize.h     \
-    blackbox-container-base.h           \
-    bbsolve.h                           \
-    double-det.h                        \
-    det-rational.h                      \
-    massey-domain.h                     \
-    wiedemann.h wiedemann.inl           \
-    lanczos.h   lanczos.inl             \
-    block-lanczos.h block-lanczos.inl   \
+pkgincludesub_HEADERS =         \
+    blackbox-container.h        \
+    blackbox-container-symmetric.h          \
+    blackbox-container-symmetrize.h         \
+    blackbox-container-base.h   \
+    bbsolve.h                   \
+    double-det.h                \
+    det-rational.h              \
+    massey-domain.h             \
+    wiedemann.h wiedemann.inl   \
+    lanczos.h   lanczos.inl     \
+    block-lanczos.h block-lanczos.inl       \
     mg-block-lanczos.h mg-block-lanczos.inl \
     la-block-lanczos.h la-block-lanczos.inl \
-    eliminator.h    eliminator.inl      \
-    gauss.h                             \
+    eliminator.h    eliminator.inl          \
+    gauss.h                                 \
     gauss.inl                   \
     gauss-det.inl               \
     gauss-rank.inl              \
@@ -52,15 +52,15 @@ pkgincludesub_HEADERS =                 \
     lazy-product.h              \
     rational-cra.h              \
     rational-cra2.h             \
-    rational-cra-early-multip.h     \
-    rational-cra-early-single.h     \
-    rational-cra-full-multip.h      \
-    blas-domain.h                   \
-    blas-domain.inl                 \
-    bitonic-sort.h                  \
-    blackbox-block-container-base.h \
-    blackbox-block-container.h      \
-    block-massey-domain.h           \
+    rational-cra-early-multip.h \
+    rational-cra-early-single.h \
+    rational-cra-full-multip.h  \
+    blas-domain.h               \
+    blas-domain.inl             \
+    bitonic-sort.h              \
+    blackbox-block-container-base.h         \
+    blackbox-block-container.h  \
+    block-massey-domain.h       \
     block-wiedemann.h           \
     default.h                   \
     signature.h                 \
@@ -74,9 +74,9 @@ pkgincludesub_HEADERS =                 \
     matrix-inverse.h            \
     matrix-hom.h                \
     matrix-rank.h               \
-    rational-reconstruction.h           \
-    rational-reconstruction-base.h      \
-    classic-rational-reconstruction.h   \
+    rational-reconstruction.h   \
+    rational-reconstruction-base.h          \
+    classic-rational-reconstruction.h       \
     rational-solver.h           \
     rational-solver2.h          \
     rational-solver.inl         \
@@ -85,23 +85,30 @@ pkgincludesub_HEADERS =                 \
     smith-form-binary.h         \
     smith-form-adaptive.h       \
     smith-form-adaptive.inl     \
-    smith-form-sparseelim-local.h   \
-    rational-reconstruction2.h      \
-    rational-solver-adaptive.h      \
-    varprec-cra-early-single.h      \
-    varprec-cra-early-multip.h      \
-    vector-fraction.h   \
-    whisart_trace.h     \
-    cia.h               \
-    bbcharpoly.h        \
-    charpoly-rational.h \
-    minpoly-integer.h   \
-    minpoly-rational.h  \
-    sigma-basis.h       \
-    matpoly-mult.h      \
-    echelon-form.h      \
-    toeplitz-det.h 
+    smith-form-sparseelim-local.h           \
+    rational-reconstruction2.h  \
+    rational-solver-adaptive.h  \
+    varprec-cra-early-single.h  \
+    varprec-cra-early-multip.h  \
+    vector-fraction.h           \
+    whisart_trace.h             \
+    cia.h                       \
+    bbcharpoly.h                \
+    charpoly-rational.h         \
+    minpoly-integer.h           \
+    minpoly-rational.h          \
+    sigma-basis.h               \
+    matpoly-mult.h              \
+    echelon-form.h              \
+    toeplitz-det.h
 
-EXTRA_DIST = algorithms.doxy \
-             cra.doxy
+EXTRA_DIST =                    \
+             algorithms.doxy    \
+             cra.doxy           \
+             wiedemann.doxy     \
+             lanczos.doxy       \
+             sigmabasis.doxy    \
+             elimination.doxy   \
+             diophantine.doxy
+
 
