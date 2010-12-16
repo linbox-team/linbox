@@ -435,9 +435,6 @@ namespace LinBox
 		template<class Matrix>
 		void initialize (const Domain& D, Matrix& e)
 		{
-//                        for (typename Matrix::RawIterator e_it = e.rawBegin() ; e_it != e.rawEnd() ; ++e_it)
-//                                std:: cout << *e_it << " " ;
-			std:: cout << std::endl;
 			this->RadixSizes_.resize(1);
 			this->RadixPrimeProd_.resize(1);
 			this->RadixResidues_.resize(1);
