@@ -3,7 +3,7 @@
 
 /* Copyright (C) 2010 LinBox
  *
- * Time-stamp: <16 Dec 10 18:13:45 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <16 Dec 10 18:46:32 Jean-Guillaume.Dumas@imag.fr>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -70,8 +70,10 @@ struct Interator {
 		v.resize(_v.size());
 		std::vector<Integer>::const_iterator vit=_v.begin();
 		typename std::vector<typename Field::Element>::iterator eit=v.begin();
-		for( ; vit != _v.end(); ++vit, ++eit)
+		for( ; vit != _v.end(); ++vit, ++eit){
 			F.init(*eit, *vit);
+		}
+		
 		return v;
 	}
 };
@@ -100,8 +102,10 @@ struct InteratorIt : public Interator {
 	{
 		std::vector<Integer>::const_iterator vit=this->_v.begin();
 		std::vector<double>::iterator eit=_C.begin();
-		for( ; vit != _v.end(); ++vit, ++eit)
+		for( ; vit != _v.end(); ++vit, ++eit) {
 			F.init(*eit, *vit);
+		}	
+
 		return res=_C.begin();
 	}
 
@@ -168,18 +172,26 @@ bool TestCra(int N, int S, size_t seed)
 
     report << "ChineseRemainder<FullMultipCRA>(" << iteration.getLogSize() << ')' << std::endl;
     {
-        LinBox::ChineseRemainder< LinBox::FullMultipCRA< LinBox::Modular<double> > > craFM( iteration.getLogSize() );
+        LinBox::ChineseRemainder< LinBox::FullMultipCRA< LinBox::Modular<double> > > craFM( iteration.getLogSize()+1 );
         std::vector<Integer> ResFM(N);
         craFM( ResFM, iteration, genprime);
         bool locpass = std::equal( ResFM.begin(), ResFM.end(), iteration.getVector().begin() );
         if (locpass) report << "ChineseRemainder<FullMultipCRA>(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
-        else report << "***ERROR***: ChineseRemainder<FullMultipCRA>(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;
+        else {
+		report << "***ERROR***: ChineseRemainder<FullMultipCRA>(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;
+		std::vector<Integer>::const_iterator Rit=ResFM.begin();
+		std::vector<Integer>::const_iterator Oit=iteration.getVector().begin();
+		for( ; Rit!=ResFM.end(); ++Rit, ++Oit) 
+			if (*Rit != *Oit)
+				report << *Rit <<  " != " << * Oit << std::endl;
+		
+	}
         pass &= locpass;
     }
 
     report << "ChineseRemainder<FullMultipFixedCRA,vector>(" << N << ',' << iterationIt.getLogSize() << ')' << std::endl;
     {
-        LinBox::ChineseRemainder< LinBox::FullMultipFixedCRA< LinBox::Modular<double> > > craFMF( std::pair<size_t,double>(N,iterationIt.getLogSize()) );
+        LinBox::ChineseRemainder< LinBox::FullMultipFixedCRA< LinBox::Modular<double> > > craFMF( std::pair<size_t,double>(N,iterationIt.getLogSize()+1) );
         std::vector<Integer> ResFMF(N);
         std::vector<Integer>::iterator ResIT= ResFMF.begin();
         craFMF( ResIT, iterationIt, genprime);
@@ -191,7 +203,7 @@ bool TestCra(int N, int S, size_t seed)
 
     report << "ChineseRemainder<FullMultipFixedCRA,BlasMatrix>(" << N << ',' << iterationIt.getLogSize() << ')' << std::endl;
     {
-        LinBox::ChineseRemainder< LinBox::FullMultipFixedCRA< LinBox::Modular<double> > > craFMFBM( std::pair<size_t,double>(N,iterationIt.getLogSize()) );
+        LinBox::ChineseRemainder< LinBox::FullMultipFixedCRA< LinBox::Modular<double> > > craFMFBM( std::pair<size_t,double>(N,iterationIt.getLogSize()+1) );
         LinBox::BlasMatrix<Integer> ResFMFBM(N,1);
         craFMFBM( ResFMFBM.getWritePointer(), iterationIt, genprime);
 
