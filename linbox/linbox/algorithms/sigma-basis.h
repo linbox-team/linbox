@@ -768,7 +768,7 @@ namespace LinBox
 			// since the other colums have always lower degree.
 			if (_BMD.rank(*_iter)< min_mn) {
 				std::cout<<"LinBox ERROR: constant term in the Power Serie is singular\n";
-				throw PreconditionFailed (__FUNCTION__, __LINE__, "Bad random Blocks, abort\n");
+				throw PreconditionFailed (__func__, __LINE__, "Bad random Blocks, abort\n");
 			}
 
 			unsigned long early_stop=0;
@@ -988,7 +988,7 @@ namespace LinBox
 			// since the other colums have always lower degree.
 			if (_BMD.rank(*_iter)< min_mn) {
 				std::cout<<"LinBox ERROR: constant term in the Power Serie is singular\n";
-				throw PreconditionFailed (__FUNCTION__, __LINE__, "Bad random Blocks, abort\n");
+				throw PreconditionFailed (__func__, __LINE__, "Bad random Blocks, abort\n");
 			}
 
 			unsigned long early_stop=0;

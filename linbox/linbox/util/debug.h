@@ -4,7 +4,9 @@
  *
  * Copyright (C) 2001,2010 LinBox
  * Copyright (C) 2001 Bradford Hovinen
+ * Copyright (C) 2010 LinBox
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
+ * Modified by BB.
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -47,11 +49,27 @@
 
 namespace LinBox
 {
+	/*!  A precondtion failed.
+	 * @ingroup util
+	 * The \c throw mechanism is usually used here as in
+	 \code
+	 if (!check)
+	 throw(PreconditionFailed(__func__,__LINE__,"this check just failed");
+	 \endcode
+	 * The parameters of the constructor help debugging.
+	 */
 	class PreconditionFailed {//: public LinboxError BB: otherwise,  error.h:39 segfaults
 		static std::ostream *_errorStream;
 
-	    public:
-		PreconditionFailed (const char *function, int line, const char *check) { //BB : not so useful, is it ?
+	public:
+		/*! @internal
+		 * A precondtion failed.
+		 * @param function usually \c __func__, the function that threw the error
+		 * @param line     usually \c __LINE__, the line where it happened
+		 * @param check    a string telling what failed.
+		 */
+		PreconditionFailed (const char *function, int line, const char *check)
+		{
 			if (_errorStream == (std::ostream *) 0)
 				_errorStream = &std::cerr;
 
@@ -60,7 +78,17 @@ namespace LinBox
 			(*_errorStream) << "Precondition not met:" << check << std::endl;
 		}
 
-		PreconditionFailed (const char* function, const char *file, int line, const char *check) {
+		/*! @internal
+		 * A precondtion failed.
+		 * The parameter help debugging. This is not much different from the previous
+		 * except we can digg faster in the file where the exception was triggered.
+		 * @param function usually \c __func__, the function that threw the error
+		 * @param file     usually \c __FILE__, the file where this function is
+		 * @param line     usually \c __LINE__, the line where it happened
+		 * @param check    a string telling what failed.
+		 */
+		PreconditionFailed (const char* function, const char *file, int line, const char *check)
+		{
 			if (_errorStream == (std::ostream *) 0)
 				_errorStream = &std::cerr;
 
@@ -71,12 +99,50 @@ namespace LinBox
 
 		static void setErrorStream (std::ostream &stream);
 
-		// -- overload the virtual print of LinboxError
-		std::ostream &print (std::ostream &o) const {
+		/*! @internal overload the virtual print of LinboxError.
+		 * @param o output stream
+		 */
+		std::ostream &print (std::ostream &o) const
+		{
 			if (std::ostringstream * str = dynamic_cast<std::ostringstream*>(_errorStream))
 				return o << str->str() ;
 			else
 				throw LinboxError("LinBox ERROR: PreconditionFailed exception is not initialized correctly");
+		}
+	};
+
+	/*! @internal A function is "not implemented yet(tm)".
+	 * where, why ?
+	 */
+	class NotImplementedYet {
+		static std::ostream *_errorStream;
+
+	public:
+		/*! @internal
+		 * A precondtion failed.
+		 * The parameter help debugging. This is not much different from the previous
+		 * except we can digg faster in the file where the exception was triggered.
+		 * @param function usually \c __func__, the function that threw the error
+		 * @param file     usually \c __FILE__, the file where this function is
+		 * @param line     usually \c __LINE__, the line where it happened
+		 * @param why      by default, lazy people don't provide an explanation.
+		 */
+		NotImplementedYet(const char * function,
+				  const char* file,
+				  int line,
+				  const char * why='\0')
+		{
+			if (_errorStream == (std::ostream *) 0)
+				_errorStream = &std::cerr;
+
+			(*_errorStream) << std::endl << std::endl;
+			(*_errorStream) << "ERROR (at " << function << " in " << file << ':' <<  line << "): " << std::endl;
+			(*_errorStream) << " This function is not implemented yet" ;
+			if (why)
+				(*_errorStream)	<< " (" << why << ")" <<std::endl;
+			else
+				(*_errorStream)	<<  "." ;
+
 		}
 	};
 }

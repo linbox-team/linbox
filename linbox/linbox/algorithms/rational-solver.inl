@@ -452,10 +452,10 @@ namespace LinBox
 			<< "ERROR: Toeplitz preconditioner not implemented yet. Sorry." << std::endl;
 
 		case WiedemannTraits::NONE:
-			throw PreconditionFailed (__FUNCTION__, __LINE__, "preconditioner is BUTTERFLY, SPARSE, or TOEPLITZ");
+			throw PreconditionFailed (__func__, __LINE__, "preconditioner is BUTTERFLY, SPARSE, or TOEPLITZ");
 
 		default:
-			throw PreconditionFailed (__FUNCTION__, __LINE__, "preconditioner is BUTTERFLY, SPARSE, or TOEPLITZ");
+			throw PreconditionFailed (__func__, __LINE__, "preconditioner is BUTTERFLY, SPARSE, or TOEPLITZ");
 		}
 
 

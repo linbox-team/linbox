@@ -81,15 +81,15 @@ namespace LinBox
 			lmodulus (p)
 		{
 			if(modulus <= 1)
-				throw PreconditionFailed(__FUNCTION__,
+				throw PreconditionFailed(__func__,
 							 __LINE__,
 							 "modulus must be > 1");
-			if( exp != 1 ) throw PreconditionFailed(__FUNCTION__,
+			if( exp != 1 ) throw PreconditionFailed(__func__,
 								__LINE__,
 								"exponent must be 1");
 			integer max;
 			if (modulus > (double) FieldTraits<ModularBalanced<double> >::maxModulus(max))
-				throw PreconditionFailed (__FUNCTION__,
+				throw PreconditionFailed (__func__,
 							  __LINE__,
 							  "modulus is too big");
 		}
@@ -100,12 +100,12 @@ namespace LinBox
 			lmodulus ((unsigned long)p)
 		{
 			if (modulus <= 1)
-				throw PreconditionFailed(__FUNCTION__,
+				throw PreconditionFailed(__func__,
 							 __LINE__,
 							 "modulus must be > 1");
 			integer max;
 			if (modulus > (double) FieldTraits<ModularBalanced<double> >::maxModulus(max))
-				throw PreconditionFailed (__FUNCTION__,
+				throw PreconditionFailed (__func__,
 							  __LINE__,
 							  "modulus is too big");
 		}
@@ -119,7 +119,7 @@ namespace LinBox
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			integer max;
 			if ((double) modulus > (double) FieldTraits<ModularBalanced<double> >::maxModulus(max))
-				throw PreconditionFailed (__FUNCTION__,
+				throw PreconditionFailed (__func__,
 							  __LINE__,
 							  "modulus is too big");
 		}
@@ -182,11 +182,11 @@ namespace LinBox
 		std::istream &read (std::istream &is) {
 			is >> modulus;
 			if(modulus <= 1)
-				throw PreconditionFailed (__FUNCTION__,
+				throw PreconditionFailed (__func__,
 							  __LINE__,
 							  "modulus must be > 1");
 			if(modulus > getMaxModulus())
-				throw PreconditionFailed (__FUNCTION__,
+				throw PreconditionFailed (__func__,
 							  __LINE__,
 							  "modulus is too big");
 			return is;

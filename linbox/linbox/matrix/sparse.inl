@@ -284,7 +284,7 @@ namespace LinBox
 
 		switch (format) {
 		case FORMAT_DETECT:
-			throw PreconditionFailed (__FUNCTION__, __LINE__, "format != FORMAT_DETECT");
+			throw PreconditionFailed (__func__, __LINE__, "format != FORMAT_DETECT");
 			//break;//BB: unreachable
 
 		case FORMAT_TURNER:
@@ -444,7 +444,7 @@ namespace LinBox
 
 		switch (format) {
 		case FORMAT_DETECT:
-			throw PreconditionFailed (__FUNCTION__, __LINE__, "format != FORMAT_DETECT");
+			throw PreconditionFailed (__func__, __LINE__, "format != FORMAT_DETECT");
 			//break//BB: unreachable;
 
 		case FORMAT_TURNER:
@@ -610,9 +610,9 @@ namespace LinBox
 			setEntry(i,j,val);
 		}
 		if( ms.getError() > END_OF_MATRIX )
-			throw ms.reportError(__FUNCTION__,__LINE__);
+			throw ms.reportError(__func__,__LINE__);
 		if( !ms.getDimensions( i, _n ) )
-			throw ms.reportError(__FUNCTION__,__LINE__);
+			throw ms.reportError(__func__,__LINE__);
 		if( i > _m ) {
 			_m = i;
 			_A.resize(_m);
@@ -635,9 +635,9 @@ namespace LinBox
 			setEntry(i,j,val);
 		}
 		if( ms.getError() > END_OF_MATRIX )
-			throw ms.reportError(__FUNCTION__,__LINE__);
+			throw ms.reportError(__func__,__LINE__);
 		if( !ms.getDimensions( i, _n ) )
-			throw ms.reportError(__FUNCTION__,__LINE__);
+			throw ms.reportError(__func__,__LINE__);
 		if( i > _m ) {
 			_m = i;
 			_A.resize(_m);
@@ -660,9 +660,9 @@ namespace LinBox
 			setEntry(i,j,val);
 		}
 		if( ms.getError() > END_OF_MATRIX )
-			throw ms.reportError(__FUNCTION__,__LINE__);
+			throw ms.reportError(__func__,__LINE__);
 		if( !ms.getDimensions( i, _n ) )
-			throw ms.reportError(__FUNCTION__,__LINE__);
+			throw ms.reportError(__func__,__LINE__);
 		if( i > _m ) {
 			_m = i;
 			_A.resize(_m);
@@ -685,9 +685,9 @@ namespace LinBox
 			setEntry(i,j,val);
 		}
 		if( ms.getError() > END_OF_MATRIX )
-			throw ms.reportError(__FUNCTION__,__LINE__);
+			throw ms.reportError(__func__,__LINE__);
 		if( !ms.getDimensions( i, _n ) )
-			throw ms.reportError(__FUNCTION__,__LINE__);
+			throw ms.reportError(__func__,__LINE__);
 		if( i > _m ) {
 			_m = i;
 			_A.resize(_m);
