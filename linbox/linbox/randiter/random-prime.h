@@ -47,7 +47,7 @@ namespace LinBox
 	//template<class Prime_Type = integer>
 	class RandomPrimeIterator {
 
-		int 	_bits;  //!< common lenght of all primes
+		unsigned int 	_bits;  //!< common lenght of all primes
 		integer _shift; //!< @internal used to set proper bit size
 		integer _prime; //!< the generated prime.
 
@@ -57,9 +57,10 @@ namespace LinBox
 		 * @param seed if \c 0 a seed will be generated, otherwise, the
 		 * provided seed will be use.
 		 */
-		RandomPrimeIterator(int bits = 30, unsigned long seed = 0) :
+		RandomPrimeIterator(unsigned int bits = 30, unsigned long seed = 0) :
 			_bits(bits), _shift(integer(1)<<_bits)
 		{
+			linbox_check(bits >1);
 			if (! seed)
 				RandomPrimeIterator::setSeed( BaseTimer::seed() );
 			else
@@ -86,7 +87,7 @@ namespace LinBox
 		/** @brief get the random prime.
 		 *  returns the actual prime.
 		 */
-		Prime_Type &operator *  ()
+		Prime_Type &operator *  () const
 		{
 			return _prime;
 		}
@@ -95,7 +96,7 @@ namespace LinBox
 		 *  returns the actual prime.
 		 *  @warning a new prime is not generated.
 		 */
-		Prime_Type & randomPrime()
+		Prime_Type & randomPrime() const
 		{
 			return _prime;
 		}
@@ -123,7 +124,7 @@ namespace LinBox
 	 */
 	class RandomPrimeIter {
 
-		int 	_bits;  //!< max length for all primes
+		unsigned int 	_bits;  //!< max length for all primes
 		integer _seed; //!< the generated prime.
 
 	public:
@@ -132,9 +133,10 @@ namespace LinBox
 		 * @param seed if \c 0 a seed will be generated, otherwise, the
 		 * provided seed will be use.
 		 */
-		RandomPrimeIter(int bits = 30, unsigned long seed = 0) :
+		RandomPrimeIter(unsigned int bits = 30, unsigned long seed = 0) :
 			_bits(bits)
 		{
+			linbox_check(bits >1);
 			if (! seed)
 				_seed = BaseTimer::seed() ;
 			else
@@ -168,14 +170,19 @@ namespace LinBox
 		/** @brief get the random prime.
 		 * @param[out] a the new prime number
 		 */
-		integer & random (integer & a)
+		integer & random (integer & a) const
 		{
-			integer::random(a,_bits);
+			integer::random_exact(a,_bits);
 			nextprime( a, a);
-			while ((int)a.bitsize()>_bits)
+			while (a.bitsize()>_bits)
 				prevprime(a,a);
 
 			return a;
+		}
+
+		void setBits (unsigned int  bits)
+		{
+			_bits = bits;
 		}
 
 	};

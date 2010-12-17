@@ -25,7 +25,6 @@
  * @ingroup tests
  * @ingroup CRA
  * @brief We test the various CRA algorithms here.
- * @bug this test fails  for LinBox::FullMultipFixedCRA and LinBox::FullMultipBlasMatCRA
  * @test cra algorithms
  */
 
@@ -39,10 +38,8 @@
 #include "linbox/algorithms/cra-full-multip.h"
 #include "linbox/algorithms/cra-full-multip-fixed.h"
 
-#define _LB_ITERS 5
-
 #define _LB_REPEAT(command) \
-do { for (size_t i = 0 ; i < _LB_ITERS ; ++i) {  command } } while(0)
+do { for (size_t i = 0 ; pass && i < iters ; ++i) {  command } } while(0)
 
 using namespace LinBox ;
 
@@ -64,7 +61,7 @@ std::ostream & operator<<(std::ostream & o, const std::vector<T> & v)
 
 // testing EarlySingleCRA
 template< class T >
-int test_early_single(size_t PrimeSize, size_t Size)
+int test_early_single(std::ostream & report, size_t PrimeSize, size_t Size)
 {
 
 	typedef typename std::vector<T> Vect ;
@@ -87,6 +84,7 @@ int test_early_single(size_t PrimeSize, size_t Size)
 	Iterator genprime = primes.begin()  ; // prime iterator
 	Iterator residu = residues.begin()  ; // residu iterator
 
+	report << "EarlySingleCRA (" <<  4UL << ')' << std::endl;
 	EarlySingleCRA<ModularField> cra( 4UL ) ;
 	Integer res = 0; // the result
 	typedef ModularField::Element Element;
@@ -101,6 +99,8 @@ int test_early_single(size_t PrimeSize, size_t Size)
 	while (genprime < primes.end() && !cra.terminated() )
 	{ /* progress */
 		if (cra.noncoprime((integer)*genprime)) {
+			report << "bad luck, you picked twice the same prime..." <<std::endl;
+			report << "EarlySingleCRA exiting successfully." << std::endl;
 			return EXIT_SUCCESS ; // pas la faute à cra...
 		}
 		ModularField F(*genprime);
@@ -118,22 +118,19 @@ int test_early_single(size_t PrimeSize, size_t Size)
 		F.init(tmp1,res);
 		F.init(tmp2,residues[i]);
 		if(!F.areEqual(tmp1,tmp2)){
-#if 0
-			std::cout << "computed res : "   << res         << std::endl;
-#endif
+			report << " *** FullMultipFixedCRA failed. ***" << std::endl;
 			return EXIT_FAILURE ;
 		}
 	}
 
-#ifdef DEBUG
-	 std::cout << "early_cra_single passed" << std::endl;
-#endif
+	report << "EarlySingleCRA exiting successfully." << std::endl;
+
 	return EXIT_SUCCESS ;
 }
 
 // testing EarlyMultipCRA
 template< class T >
-int test_early_multip(size_t PrimeSize, size_t Taille, size_t Size)
+int test_early_multip(std::ostream & report, size_t PrimeSize, size_t Taille, size_t Size)
 {
 
 	typedef typename std::vector<T>                     Vect ;
@@ -164,6 +161,7 @@ int test_early_multip(size_t PrimeSize, size_t Taille, size_t Size)
 	Iterator   genprime = primes.begin()    ; // prime iterator
 	VectIterator residu = residues.begin()  ; // residu iterator
 
+	report << "EarlyMultpCRA (" <<  4UL << ')' << std::endl;
 	EarlyMultipCRA<ModularField> cra( 4UL ) ;
 	IntVect result (Taille); // the result
 	pVect residue(Taille) ; // temporary
@@ -178,9 +176,8 @@ int test_early_multip(size_t PrimeSize, size_t Taille, size_t Size)
 	while (genprime < primes.end() && !cra.terminated() )
 	{ /* progress */
 		if (cra.noncoprime((integer)*genprime)) {
-#if 0
-			std::cout << "bad luck, you picked twice the same prime..." <<std::endl;
-#endif
+			report << "bad luck, you picked twice the same prime..." <<std::endl;
+			report << "EarlyMultipCRA exiting successfully." << std::endl;
 			return EXIT_SUCCESS ; // pas la faute à cra...
 		}
 		ModularField F(*genprime);
@@ -200,21 +197,21 @@ int test_early_multip(size_t PrimeSize, size_t Taille, size_t Size)
 			F.init(tmp1,result[j]);
 			F.init(tmp2,residues[i][j]);
 			if(!F.areEqual(tmp1,tmp2)){
+				report << " *** EarlyMultipCRA failed. ***" << std::endl;
 				return EXIT_FAILURE ;
 			}
 		}
 	}
 
-#ifdef DEBUG
-	 std::cout << "early_cra_multip passed" << std::endl;
-#endif
+	report << "EarlyMultipCRA exiting successfully." << std::endl;
+
 	return EXIT_SUCCESS ;
 }
 
 
 #if 1 /* testing FullMultipBlasMatCRA */
 template< class T>
-int test_full_multip_matrix(size_t PrimeSize, size_t Size, std::pair<size_t, size_t> dims)
+int test_full_multip_matrix(std::ostream & report, size_t PrimeSize, size_t Size, std::pair<size_t, size_t> dims)
 {
 
 	typedef typename std::vector<T>                    Vect ;
@@ -249,10 +246,11 @@ int test_full_multip_matrix(size_t PrimeSize, size_t Size, std::pair<size_t, siz
 	Iterator  genprime =   primes.begin()  ; // prime iterator
 	MatIterator residu = residues.begin()  ; // residu iterator
 
-	double LogIntSize = PrimeSize*std::log(2)+std::log(Size) ;
+	double LogIntSize = (PrimeSize+1)*std::log(2)+std::log(Size)+1 ;
 
 	std::pair<size_t,double> my_pair(dims.first*dims.second,LogIntSize)  ;
 
+	report << "FullMultipBlasMatCRA (" <<  my_pair.first << ", " << my_pair.second << ')' << std::endl;
 	FullMultipBlasMatCRA<ModularField> cra( my_pair ) ;
 	IntMatrix result(dims.first,dims.second); // the result
 	pMatrix residue(dims.first,dims.second) ; // temporary
@@ -269,9 +267,8 @@ int test_full_multip_matrix(size_t PrimeSize, size_t Size, std::pair<size_t, siz
 	{ /* progress */
 		if (cra.noncoprime((integer)*genprime))
 		{
-#if 0
-			std::cout << "bad luck, you picked twice the same prime..." <<std::endl;
-#endif
+			report << "bad luck, you picked twice the same prime..." <<std::endl;
+			report << "FullMultipBlasMatCRA exiting successfully." << std::endl;
 			return EXIT_SUCCESS ; // pas la faute à cra...
 		}
 		ModularField F(*genprime);
@@ -294,22 +291,23 @@ int test_full_multip_matrix(size_t PrimeSize, size_t Size, std::pair<size_t, siz
 				F.init(tmp1,result.getEntry(l,m));
 				F.init(tmp2,residues[i].getEntry(l,m));
 				if(!F.areEqual(tmp1,tmp2)){
-					std::cout << "fail" << std::endl;
+					report << result.getEntry(l,m) << ';' << residues[i].getEntry(l,m) << '@' << primes[i] << std::endl;
+					report << i << ':' << l << ',' << m << "> " << tmp1 << "!=" << tmp2 << std::endl;
+					report << " *** FullMultipBlasMatCRA failed. ***" << std::endl;
 					return EXIT_FAILURE ;
 				}
 			}
 	}
 
-#ifdef DEBUG
-	std::cout << "full_multip_matrix passed" << std::endl;
-#endif
+	report << "FullMultipBlasMatCRA exiting successfully." << std::endl;
+
 	return EXIT_SUCCESS ;
 }
 #endif
 
 // testing FullMultipCRA
 template< class T>
-int test_full_multip(size_t PrimeSize, size_t Size, size_t Taille)
+int test_full_multip(std::ostream & report, size_t PrimeSize, size_t Size, size_t Taille)
 {
 
 	typedef typename std::vector<T>                    Vect ;
@@ -344,6 +342,7 @@ int test_full_multip(size_t PrimeSize, size_t Size, size_t Taille)
 
 	double LogIntSize = PrimeSize*std::log(2)+std::log(Size)+1 ;
 
+	report << "FullMultipCRA (" <<  LogIntSize << ')' << std::endl;
 	FullMultipCRA<ModularField> cra( LogIntSize ) ;
 	IntVect result(Taille) ; // the result
 	pVect  residue(Taille) ; // temporary
@@ -359,9 +358,8 @@ int test_full_multip(size_t PrimeSize, size_t Size, size_t Taille)
 	{ /* progress */
 		if (cra.noncoprime((integer)*genprime))
 		{
-#if 0
-			std::cout << "bad luck, you picked twice the same prime..." <<std::endl;
-#endif
+			report << "bad luck, you picked twice the same prime..." <<std::endl;
+			report << "FullMultipCRA exiting successfully." << std::endl;
 			return EXIT_SUCCESS ; // pas la faute à cra...
 		}
 		ModularField F(*genprime);
@@ -381,14 +379,14 @@ int test_full_multip(size_t PrimeSize, size_t Size, size_t Taille)
 			F.init(tmp1,result[j]);
 			F.init(tmp2,residues[i][j]);
 			if(!F.areEqual(tmp1,tmp2)){
+				report << " *** FullMultipCRA failed. ***" << std::endl;
 				return EXIT_FAILURE ;
 			}
 		}
 	}
 
-#ifdef DEBUG
-	 std::cout << "full_multip passed" << std::endl;
-#endif
+	report << "FullMultipCRA exiting successfully." << std::endl;
+
 	return EXIT_SUCCESS ;
 }
 
@@ -396,8 +394,9 @@ int test_full_multip(size_t PrimeSize, size_t Size, size_t Taille)
 
 #if 1 /* testing FullMultipFixedCRA */
 template< class T>
-int test_full_multip_fixed(size_t PrimeSize, size_t Size, size_t Taille)
+int test_full_multip_fixed(std::ostream & report, size_t PrimeSize, size_t Size, size_t Taille)
 {
+
 
 	typedef typename std::vector<T>                    Vect ;
 	typedef typename std::vector<Vect>             VectVect ;
@@ -434,6 +433,8 @@ int test_full_multip_fixed(size_t PrimeSize, size_t Size, size_t Taille)
 
 	std::pair<size_t,double> my_pair(Taille,LogIntSize)  ;
 
+	report << "FullMultipFixedCRA (" <<  my_pair.first << ", " << my_pair.second << ')' << std::endl;
+
 	FullMultipFixedCRA<ModularField> cra( my_pair ) ;
 	IntVect result(Taille) ; // the result
 	pVect  residue(Taille) ; // temporary
@@ -450,9 +451,8 @@ int test_full_multip_fixed(size_t PrimeSize, size_t Size, size_t Taille)
 	{ /* progress */
 		if (cra.noncoprime((integer)*genprime))
 		{
-#if 0
-			std::cout << "bad luck, you picked twice the same prime..." <<std::endl;
-#endif
+			report << "bad luck, you picked twice the same prime..." <<std::endl;
+			report << "FullMultipFixedCRA exiting successfully." << std::endl;
 			return EXIT_SUCCESS ; // pas la faute à cra...
 		}
 		ModularField F(*genprime);
@@ -475,65 +475,95 @@ int test_full_multip_fixed(size_t PrimeSize, size_t Size, size_t Taille)
 			F.init(tmp1,result[j]);
 			F.init(tmp2,residues[i][j]);
 			if(!F.areEqual(tmp1,tmp2)){
+				report << " *** FullMultipFixedCRA failed. ***" << std::endl;
 				return EXIT_FAILURE ;
 			}
 		}
 	}
 
-#ifdef DEBUG
-	std::cout << "full_multip passed" << std::endl;
-#endif
+	report << "FullMultipFixedCRA exiting successfully." << std::endl;
+
 	return EXIT_SUCCESS ;
 }
 #endif
+
+
+#include "test-common.h"
+#include "linbox/util/timer.h"
 
 // launching tests
 int main(int ac, char ** av)
 {
 
+	/*  Argument parsing/setting */
+
+	static size_t       n = 50;    /*  Taille */
+	static size_t       p = 22;    /*  PrimeSize */
+	// static size_t    seed =  0;    /*  ! unused */
+	static size_t   iters = 20;    /* _LB_REPEAT */
+
+        static Argument as[] = {
+                { 'n', "-n N", "Set number of primes.", TYPE_INT , &n },
+                { 'p', "-p P", "Set size of test primes.", TYPE_INT , &p },
+                { 'i', "-i I", "Perform each test for I iterations.",     TYPE_INT, &iters },
+                { '\0' }
+        };
+
+	parseArguments (ac, av, as);
+
+	bool pass = true ;
+
+	commentator.start("CRA-Algos test suite", "CRA-Algos");
+
+	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT,
+							   INTERNAL_DESCRIPTION);
+
+
+
 	typedef std::pair<size_t,size_t> Pair ;
 	srand(time(NULL)); // seeding
-	size_t PrimeSize = 22; // size of the residues/primes
-	size_t Size      = 50 ; // nb of residues/primes
+	size_t PrimeSize = p; // size of the residues/primes
+	size_t Size      = n ; // nb of residues/primes
 	size_t Taille    = 2*Size ; // nb of vectors of residues
-	if (ac > 1) Size = atoi(av[1]);
+
 	/* EARLY SINGLE */
-	_LB_REPEAT( if (test_early_single<double>(22,Size))                   return EXIT_FAILURE ;  ) ;
-	_LB_REPEAT( if (test_early_single<integer>(PrimeSize,Size))           return EXIT_FAILURE ;  ) ;
+	_LB_REPEAT( if (test_early_single<double>(report,22,Size))                       pass = false ;  ) ;
+	_LB_REPEAT( if (test_early_single<integer>(report,PrimeSize,Size))               pass = false ;  ) ;
 
 	/* EARLY MULTIPLE */
-	_LB_REPEAT( if (test_early_multip<double>(22,Taille*2,Size))          return EXIT_FAILURE ;  ) ;
-	_LB_REPEAT( if (test_early_multip<integer>(PrimeSize,Taille*2,Size))  return EXIT_FAILURE ;  ) ;
+	_LB_REPEAT( if (test_early_multip<double>(report,22,Taille*2,Size))              pass = false ;  ) ;
+	_LB_REPEAT( if (test_early_multip<integer>(report,PrimeSize,Taille*2,Size))      pass = false ;  ) ;
 
-	_LB_REPEAT( if (test_early_multip<double>(22,Taille/4,Size))          return EXIT_FAILURE ;  ) ;
-	_LB_REPEAT( if (test_early_multip<integer>(PrimeSize,Taille/4,Size))  return EXIT_FAILURE ;  ) ;
+	_LB_REPEAT( if (test_early_multip<double>(report,22,Taille/4,Size))              pass = false ;  ) ;
+	_LB_REPEAT( if (test_early_multip<integer>(report,PrimeSize,Taille/4,Size))      pass = false ;  ) ;
 
 	/* FULL MULTIPLE */
-	_LB_REPEAT( if (test_full_multip<double>(22,Size,Taille))             return EXIT_FAILURE ;  ) ;
-	_LB_REPEAT( if (test_full_multip<integer>(PrimeSize,Size,Taille))     return EXIT_FAILURE ;  ) ;
+	_LB_REPEAT( if (test_full_multip<double>(report,22,Size,Taille))                 pass = false ;  ) ;
+	_LB_REPEAT( if (test_full_multip<integer>(report,PrimeSize,Size,Taille))         pass = false ;  ) ;
 
-	_LB_REPEAT( if (test_full_multip<double>(22,Size,Taille/4))           return EXIT_FAILURE ;  ) ;
-	_LB_REPEAT( if (test_full_multip<integer>(PrimeSize,Size,Taille/4))   return EXIT_FAILURE ;  ) ;
+	_LB_REPEAT( if (test_full_multip<double>(report,22,Size,Taille/4))               pass = false ;  ) ;
+	_LB_REPEAT( if (test_full_multip<integer>(report,PrimeSize,Size,Taille/4))       pass = false ;  ) ;
 
 #if 1 /* FULL MULTIPLE FIXED */
-	_LB_REPEAT( if (test_full_multip_fixed<double>(22,Size,Taille))           return EXIT_FAILURE ;  ) ;
-	_LB_REPEAT( if (test_full_multip_fixed<integer>(PrimeSize,Size,Taille))   return EXIT_FAILURE ;  ) ;
+	_LB_REPEAT( if (test_full_multip_fixed<double>(report,22,Size,Taille))           pass = false ;  ) ;
+	_LB_REPEAT( if (test_full_multip_fixed<integer>(report,PrimeSize,Size,Taille))   pass = false ;  ) ;
 
-	_LB_REPEAT( if (test_full_multip_fixed<double>(22,Size,Taille/4))         return EXIT_FAILURE ;  ) ;
-	_LB_REPEAT( if (test_full_multip_fixed<integer>(PrimeSize,Size,Taille/4)) return EXIT_FAILURE ;  ) ;
+	_LB_REPEAT( if (test_full_multip_fixed<double>(report,22,Size,Taille/4))         pass = false ;  ) ;
+	_LB_REPEAT( if (test_full_multip_fixed<integer>(report,PrimeSize,Size,Taille/4)) pass = false ;  ) ;
 #endif
 
 
 #if 1 /* FULL MULTIPLE MATRIX */
 	Taille = 15 ;
-	Pair p(Taille,2*Taille);
-	_LB_REPEAT( if (test_full_multip_matrix<double>(22,Size,p))           return EXIT_FAILURE ;  ) ;
-	_LB_REPEAT( if (test_full_multip_matrix<integer>(PrimeSize,Size,p))   return EXIT_FAILURE ;  ) ;
+	Pair q(Taille,2*Taille);
+	_LB_REPEAT( if (test_full_multip_matrix<double>(report,22,Size,q))               pass = false ;  ) ;
+	_LB_REPEAT( if (test_full_multip_matrix<integer>(report,PrimeSize,Size,q))       pass = false ;  ) ;
 
-	Pair q(Taille*2,Taille);
-	_LB_REPEAT( if (test_full_multip_matrix<double>(22,Size,q))           return EXIT_FAILURE ;  ) ;
-	_LB_REPEAT( if (test_full_multip_matrix<integer>(PrimeSize,Size,q))   return EXIT_FAILURE ;  ) ;
+	Pair s(Taille*2,Taille);
+	_LB_REPEAT( if (test_full_multip_matrix<double>(report,22,Size,s))               pass = false ;  ) ;
+	_LB_REPEAT( if (test_full_multip_matrix<integer>(report,PrimeSize,Size,s))       pass = false ;  ) ;
 
 #endif
-	return EXIT_SUCCESS ;
+	commentator.stop(MSG_STATUS (pass), (const char *) 0,"CRA-Algos test suite");
+	return !pass ;
 }
