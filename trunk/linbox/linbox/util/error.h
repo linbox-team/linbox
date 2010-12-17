@@ -31,7 +31,7 @@ namespace LinBox
 {
 
 	// ------------------------------- LinboxError
-	/** base class for execption handling in Givaro
+	/** base class for execption handling in Givaro.
 	  \ingroup util
 	  */
 	class LinboxError {

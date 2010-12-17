@@ -328,7 +328,7 @@ namespace LinBox
 				break;
 			}
 		default:
-			throw PreconditionFailed (__FUNCTION__, __LINE__, "preconditioner is BUTTERFLY, SPARSE, or TOEPLITZ");
+			throw PreconditionFailed (__func__, __LINE__, "preconditioner is BUTTERFLY, SPARSE, or TOEPLITZ");
 		}
 
 

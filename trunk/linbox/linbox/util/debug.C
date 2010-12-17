@@ -36,4 +36,6 @@ namespace LinBox
 	}
 
 	std::ostream *PreconditionFailed::_errorStream;
+
+	std::ostream *NotImplementedYet::_errorStream ;
 }

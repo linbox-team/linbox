@@ -30,6 +30,7 @@
 #define __LINBOX_random_prime_iterator_H
 #include <linbox/integer.h>
 #include <linbox/util/timer.h>
+#include "linbox/util/debug.h"
 
 namespace LinBox
 {
@@ -48,8 +49,8 @@ namespace LinBox
 	class RandomPrimeIterator {
 
 		unsigned int 	_bits;  //!< common lenght of all primes
-		integer _shift; //!< @internal used to set proper bit size
-		integer _prime; //!< the generated prime.
+		integer        _shift;  //!< @internal used to set proper bit size
+		integer        _prime;  //!< the generated prime.
 
 	public:
 		/*! Constructor.
@@ -87,7 +88,7 @@ namespace LinBox
 		/** @brief get the random prime.
 		 *  returns the actual prime.
 		 */
-		Prime_Type &operator *  () const
+		const Prime_Type &operator *  () const
 		{
 			return _prime;
 		}
@@ -96,7 +97,7 @@ namespace LinBox
 		 *  returns the actual prime.
 		 *  @warning a new prime is not generated.
 		 */
-		Prime_Type & randomPrime() const
+		const Prime_Type & randomPrime() const
 		{
 			return _prime;
 		}
@@ -125,7 +126,7 @@ namespace LinBox
 	class RandomPrimeIter {
 
 		unsigned int 	_bits;  //!< max length for all primes
-		integer _seed; //!< the generated prime.
+		integer         _seed;  //!< the generated prime.
 
 	public:
 		/*! Constructor.

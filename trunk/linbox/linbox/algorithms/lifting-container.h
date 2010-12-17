@@ -873,7 +873,7 @@ namespace LinBox
 					if (nst < nosolution_threshold) nst++;
 					else{
 						nosolution=true;
-						throw PreconditionFailed (__FUNCTION__, __LINE__, "system is inconsistent or the choosen prime leads to inconsistent resolution");
+						throw PreconditionFailed (__func__, __LINE__, "system is inconsistent or the choosen prime leads to inconsistent resolution");
 					}
 				}
 			}

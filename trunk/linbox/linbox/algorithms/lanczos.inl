@@ -185,7 +185,7 @@ namespace LinBox
 				}
 
 			default:
-				throw PreconditionFailed (__FUNCTION__, __LINE__,
+				throw PreconditionFailed (__func__, __LINE__,
 							  "preconditioner is NO_PRECONDITIONER, SYMMETRIZE, PARTIAL_DIAGONAL_SYMMETRIZE, "
 							  "PARTIAL_DIAGONAL, or FULL_DIAGONAL");
 			}

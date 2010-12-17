@@ -305,7 +305,7 @@ namespace LinBox
 			// only the first column of the approximation of [ S(x) Id]^T
 			// since the other colums have always lower degree.
 			if (_BMD.rank(*_iter)< min_mn)
-				throw PreconditionFailed (__FUNCTION__, __LINE__, "Bad random Blocks, abort\n");
+				throw PreconditionFailed (__func__, __LINE__, "Bad random Blocks, abort\n");
 #if 0
 			cerr<<"\n**************************************************\n";
 			cerr<<"*** THE FIRST ELEMENT OF SEQUENCE IS SINGULAR  ***\n";
