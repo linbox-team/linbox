@@ -199,7 +199,7 @@ namespace LinBox
 
 		Element &init (Element &x, const integer &y) const
 		{
-			// return x = (Element)mpz_fdiv_ui(y.get_mpz(),lmodulus );
+			linbox_check(y%lmodulus < lmodulus);
 			return x = (Element)(y%lmodulus);
 		}
 
