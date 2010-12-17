@@ -16,13 +16,13 @@ AC_DEFUN([LB_CHECK_GIVARO],
 [
 
 AC_ARG_WITH(givaro,
-[  --with-givaro=<path>|yes Use Givaro library. This library is mandatory for 
-                           LinBox compilation. If argument is yes or <empty> 
+[  --with-givaro=<path>|yes Use Givaro library. This library is mandatory for
+                           LinBox compilation. If argument is yes or <empty>
 			   that means the library is reachable with the standard
-			   search path (/usr or /usr/local). Otherwise you give 
-			   the <path> to the directory which contain the 
+			   search path (/usr or /usr/local). Otherwise you give
+			   the <path> to the directory which contains the
 			   library.
-],		  
+],
 	     [if test "$withval" = yes ; then
 			GIVARO_HOME_PATH="${DEFAULT_CHECKING_PATH}"
 	      elif test "$withval" != no ; then
@@ -40,8 +40,8 @@ BACKUP_LIBS=${LIBS}
 
 AC_MSG_CHECKING(for GIVARO >= $min_givaro_version)
 
-for GIVARO_HOME in ${GIVARO_HOME_PATH} 
- do	
+for GIVARO_HOME in ${GIVARO_HOME_PATH}
+ do
 if test -r "$GIVARO_HOME/include/givaro/givconfig.h"; then
 
 	if test "x$GIVARO_HOME" != "x/usr" -a "x$GIVARO_HOME" != "x/usr/local"; then
@@ -49,9 +49,9 @@ if test -r "$GIVARO_HOME/include/givaro/givconfig.h"; then
 		GIVARO_LIBS="-L${GIVARO_HOME}/lib -lgivaro"
 	else
 		GIVARO_CFLAGS=
-		GIVARO_LIBS="-lgivaro"		
-	fi	
-	CXXFLAGS="${BACKUP_CXXFLAGS} ${GIVARO_CFLAGS} ${GMP_CFLAGS}" 
+		GIVARO_LIBS="-lgivaro"
+	fi
+	CXXFLAGS="${BACKUP_CXXFLAGS} ${GIVARO_CFLAGS} ${GMP_CFLAGS}"
 	LIBS="${BACKUP_LIBS} ${GIVARO_LIBS} ${GMP_LIBS}"
 
 	AC_TRY_LINK(
@@ -59,35 +59,35 @@ if test -r "$GIVARO_HOME/include/givaro/givconfig.h"; then
 	[Integer a;],
 	[
 	AC_TRY_RUN(
-	[#include <givaro/givconfig.h>	 
-	 int main () { if (GIVARO_VERSION < 030304) return -1; else return 0; }
+	[#include <givaro/givconfig.h>
+	 int main () { if (GIVARO_VERSION < 30304 || GIVARO_VERSION>0x030000) return -1; else return 0; /* old version of Givaro are defined as hexa 0x03yyzz*/ }
 	],[
-	givaro_found="yes"	
+	givaro_found="yes"
 	break
-	],[	
-	givaro_problem="$problem $GIVARO_HOME"	
+	],[
+	givaro_problem="$problem $GIVARO_HOME"
 	unset GIVARO_CFLAGS
 	unset GIVARO_LIBS
 	],[
 	givaro_found="yes"
 	givaro_cross="yes"
-	
+
 	break
-	])	
+	])
 	],
 	[
 	givaro_found="no"
 	givaro_checked="$checked $GIVARO_HOME"
 	unset GIVARO_CFLAGS
 	unset GIVARO_LIBS
-	
+
 	])
 else
 	givaro_found="no"
-fi	
+fi
 done
 
-if test "x$givaro_found" = "xyes" ; then		
+if test "x$givaro_found" = "xyes" ; then
 	AC_SUBST(GIVARO_CFLAGS)
 	AC_SUBST(GIVARO_LIBS)
 	AC_DEFINE(HAVE_GIVARO,1,[Define if GIVARO is installed])
@@ -107,7 +107,7 @@ elif test -n "$givaro_problem"; then
 elif test "x$givaro_found" = "xno" ; then
 	AC_MSG_RESULT(not found)
 	ifelse([$3], , :, [$3])
-fi	
+fi
 
 AM_CONDITIONAL(LINBOX_HAVE_GIVARO, test "x$HAVE_GIVARO" = "xyes")
 
