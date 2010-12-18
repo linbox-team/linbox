@@ -21,7 +21,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/*! @file tests-test-cradomain.C
+/*! @file tests/test-cradomain.C
  * @ingroup tests
  * @brief tests LinBox::ChineseRemainer
  * @test tests LinBox::ChineseRemainer (see \ref CRA)

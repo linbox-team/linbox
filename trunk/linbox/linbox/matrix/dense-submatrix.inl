@@ -22,6 +22,10 @@
  * See COPYING for license information
  */
 
+/*! @file matrix/dense-submatrix.inl
+ * @brief Implementation of dense-submatrix.h
+ */
+
 #ifndef __LINBOX_dense_submatrix_INL
 #define __LINBOX_dense_submatrix_INL
 
@@ -134,10 +138,14 @@ namespace LinBox
 		}
 
 		_Element& operator * ()
-		{ return *_cur; }
+		{
+			return *_cur;
+		}
 
 		const _Element& operator * () const
-		{ return *_cur; }
+		{
+			return *_cur;
+		}
 
 	protected:
 		typename DenseMatrixBase<_Element>::RawIterator _cur;
@@ -283,6 +291,7 @@ namespace LinBox
 		return RawIterator (_M->rawBegin () + _end_row * _M->coldim () + _beg_col,
 				    coldim (), _M->coldim (), 0);
 	}
+
 	template <class _Element>
 	typename DenseSubmatrix<_Element>::ConstRawIterator DenseSubmatrix<_Element>::rawBegin () const
 	{
