@@ -33,6 +33,11 @@
  * See COPYING for license information
  */
 
+/*! @file matrix/dense.h
+ * @ingroup matrix
+ * @brief Blackbox dense matrix.
+ */
+
 #ifndef __LINBOX_matrix_dense_H
 #define __LINBOX_matrix_dense_H
 
@@ -58,28 +63,26 @@ namespace LinBox
 	 * The matrix is stored as a one dimensional STL vector of the elements, by rows.
 	 * The interface provides for iteration over rows and over columns.
 	 *
-	 * The class LinBox::Dense builds on this base.
+	 * The class \p LinBox::Dense builds on this base.
 	 *
 	 * Currently, only dense vectors are supported when doing matrix-vector applies.
 	 *
 	 \ingroup matrix
 	 */
-
 	template <class _Element>
 	class DenseMatrixBase {
 	public:
 
-		typedef _Element Element;
-		typedef typename RawVector<Element>::Dense Rep;
-		typedef DenseMatrixBase<_Element> Self_t;
+		typedef _Element                            Element;
+		typedef typename RawVector<Element>::Dense      Rep;
+		typedef DenseMatrixBase<_Element>            Self_t;
 
 		template<typename _Tp1>
-		struct rebind
-		{
+		struct rebind {
 			typedef DenseMatrixBase<typename _Tp1::Element> other;
 		};
 
-		///
+		/// NULL constructor.
 		DenseMatrixBase () :
 			_rows (0), _cols (0)
 		{}
@@ -92,18 +95,27 @@ namespace LinBox
 			_rep (m * n), _rows (m), _cols (n), _ptr(&_rep[0])
 		{}
 
-		/** Constructor from a matrix stream */
+		/** Constructor from a matrix stream.
+		 * @param ms matrix stream
+		 */
 		template< class Field >
 		DenseMatrixBase( MatrixStream<Field>& ms );
 
-		///
+		/*! copy constructor.
+		 * @param M Dense matrix to be copied.
+		 */
 		DenseMatrixBase (const DenseMatrixBase &M) :
 			_rep (M._rep),_rows (M._rows), _cols (M._cols), _ptr(&_rep[0])
 		{}
 
+		//! destructor.
 		~DenseMatrixBase(){}
-		///
-		DenseMatrixBase& operator= (const DenseMatrixBase& M) {
+
+		/*! copy operator.
+		 * @param M matrix to be copied.
+		 */
+		DenseMatrixBase& operator= (const DenseMatrixBase& M)
+		{
 			(*this)._rep  = M._rep;
 			(*this)._rows = M._rows;
 			(*this)._cols = M._cols;
@@ -111,23 +123,30 @@ namespace LinBox
 			return (*this);
 		}
 
-		/** Get a pointer on the storage of the elements
+		/** Get a pointer on the storage of the elements.
 		 * @returns a pointer on Elements
 		 /todo What is this?
 		 */
-		Element* FullIterator() const {return const_cast<Element*>(&_rep[0]);}
+		Element* FullIterator() const
+		{
+			return const_cast<Element*>(&_rep[0]);
+		}
 
 		/** Get the number of rows in the matrix
 		 * @returns Number of rows in matrix
 		 */
 		size_t rowdim () const
-		{ return _rows; }
+		{
+			return _rows;
+		}
 
-		/** Get the number of columns in the matrix
+		/** Get the number of columns in the matrix.
 		 * @returns Number of columns in matrix
 		 */
 		size_t coldim () const
-		{ return _cols; }
+		{
+			return _cols;
+		}
 
 		/** Resize the matrix to the given dimensions.
 		 * The state of the matrix's entries after a call to this method is
@@ -143,14 +162,14 @@ namespace LinBox
 			_rep.resize (m * n, val);
 		}
 
-		/** Read the matrix from an input stream
+		/** Read the matrix from an input stream.
 		 * @param file Input stream from which to read
 		 * @param F Field over which to read
 		 */
 		template <class Field>
 		std::istream &read (std::istream &file, const Field &F);
 
-		/** Write the matrix to an output stream
+		/** Write the matrix to an output stream.
 		 * @param os Output stream to which to write
 		 * @param F Field over which to write
 		 */
@@ -163,7 +182,9 @@ namespace LinBox
 		 * @param a_ij Element to set
 		 */
 		void setEntry (size_t i, size_t j, const Element &a_ij)
-		{ _rep[i * _cols + j] = a_ij; }
+		{
+			_rep[i * _cols + j] = a_ij;
+		}
 
 		/** Get a writeable reference to the entry in the (i, j) position.
 		 * @param i Row index of entry
@@ -171,7 +192,9 @@ namespace LinBox
 		 * @returns Reference to matrix entry
 		 */
 		Element &refEntry (size_t i, size_t j)
-		{ return _rep[i * _cols + j]; }
+		{
+			return _rep[i * _cols + j];
+		}
 
 		/** Get a read-only reference to the entry in the (i, j) position.
 		 * @param i Row index
@@ -179,7 +202,9 @@ namespace LinBox
 		 * @returns Const reference to matrix entry
 		 */
 		const Element &getEntry (size_t i, size_t j) const
-		{ return _rep[i * _cols + j]; }
+		{
+			return _rep[i * _cols + j];
+		}
 
 		/** Copy the (i, j) entry into x, and return a reference to x.
 		 * This form is more in the Linbox style and is provided for interface
@@ -190,12 +215,15 @@ namespace LinBox
 		 * @returns Reference to x
 		 */
 		Element &getEntry (Element &x, size_t i, size_t j) const
-		{ x = _rep[i * _cols + j]; return x; }
+		{
+			x = _rep[i * _cols + j]; return x;
+		}
 
 		/** @name Column of rows iterator
 		 * The column of rows iterator traverses the rows of the
 		 * matrix in ascending order. Dereferencing the iterator yields
 		 * a row vector in dense format
+		 * @{
 		 */
 
 		typedef Subvector<typename Rep::iterator, typename Rep::const_iterator> Row;
@@ -208,11 +236,13 @@ namespace LinBox
 		RowIterator rowEnd ();
 		ConstRowIterator rowBegin () const;
 		ConstRowIterator rowEnd () const;
+		//@}
 
 		/** @name Row of columns iterator
 		 * The row of columns iterator traverses the columns of the
 		 * matrix in ascending order. Dereferencing the iterator yields
 		 * a column vector in dense format
+		 * @{
 		 */
 
 		typedef Subvector<Subiterator<typename Rep::iterator> > Col;
@@ -227,13 +257,16 @@ namespace LinBox
 		ColIterator colEnd ();
 		ConstColIterator colBegin () const;
 		ConstColIterator colEnd () const;
+		//@}
 
-		/** \brief
+		/** @name Raw iterator
+		 * \brief
 		 *
 		 * The raw iterator is a method for accessing all entries in the matrix
 		 * in some unspecified order. This can be used, e.g. to reduce all
 		 * matrix entries modulo a prime before passing the matrix into an
 		 * algorithm.
+		 * @{
 		 */
 
 		typedef typename Rep::iterator RawIterator;
@@ -243,14 +276,17 @@ namespace LinBox
 		RawIterator rawEnd ();
 		ConstRawIterator rawBegin () const;
 		ConstRawIterator rawEnd () const;
+		//@}
 
-		/** \brief
+		/** @name Raw Indexed iterator
+		 * \brief
 		 *
 		 * Like the raw iterator, the indexed iterator is a method for
 		 * accessing all entries in the matrix in some unspecified order.
 		 * At each position of the the indexed iterator, it also provides
 		 * the row and column indices of the currently referenced entry.
 		 * This is provided through it's rowIndex() and colIndex() functions.
+		 * @{
 		 */
 
 		class RawIndexedIterator;
@@ -260,6 +296,7 @@ namespace LinBox
 		RawIndexedIterator rawIndexedEnd();
 		ConstRawIndexedIterator rawIndexedBegin() const;
 		ConstRawIndexedIterator rawIndexedEnd() const;
+		//@}
 
 		/** Retrieve a reference to a row.
 		 * Since rows may also be indexed, this allows A[i][j] notation
@@ -267,17 +304,24 @@ namespace LinBox
 		 * @param i Row index
 		 */
 		Row operator[] (size_t i)
-		{ return Row (_rep.begin () + i * _cols, _rep.begin () + i * _cols + _cols); }
+		{
+			return Row (_rep.begin () + i * _cols, _rep.begin () + i * _cols + _cols);
+		}
 
 		ConstRow operator[] (size_t i) const
-		{ return Row (_rep.begin () + i * _cols, _rep.begin () + i * _cols + _cols); }
+		{
+			return Row (_rep.begin () + i * _cols, _rep.begin () + i * _cols + _cols);
+		}
 
-		/** Compute column density
+		/** Compute column density.
+		 * @param v
 		*/
-
 		template <class Vector>
 		Vector &columnDensity (Vector &v) const
-		{ std::fill (v.begin (), v.end (), _rows); return v; }
+		{
+			std::fill (v.begin (), v.end (), _rows);
+			return v;
+		}
 
 	protected:
 
