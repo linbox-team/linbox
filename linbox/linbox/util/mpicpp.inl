@@ -177,13 +177,13 @@ namespace LinBox
 	{  return MPI_Buffer_detach( &b,
 				     size);
 	}
+
 	// collective communication
 	template < class Ptr, class Function_object >
 	void Communicator::reduce( Ptr bloc, Ptr eloc, Ptr bres, Function_object binop, int root)
 	{}
 
-	/// member access
-
+	// member access
 	MPI_Status Communicator::get_stat()
 	{
 		return stat;

@@ -57,25 +57,25 @@
 namespace LinBox
 {
 
-	/** @brief Blackbox dense matrix template.
+	/** @brief LinBox dense matrix template.
 	 * This is a class of dense matrices
-	 * templatized by the entry type, the Element type of some @link Fields field@endlink.
-	 * The matrix is stored as a one dimensional STL vector of the elements, by rows.
+	 * templatized by the entry type, the \c Element type of some @link Fields field@endlink.
+	 * The matrix is stored as a one dimensional STL \c std::vector of the elements, by rows.
 	 * The interface provides for iteration over rows and over columns.
 	 *
-	 * The class \p LinBox::Dense builds on this base.
+	 * The class \c LinBox::DenseMatrix builds on this base.
 	 *
 	 * Currently, only dense vectors are supported when doing matrix-vector applies.
 	 *
-	 \ingroup matrix
+	 * \ingroup matrix
 	 */
 	template <class _Element>
 	class DenseMatrixBase {
 	public:
 
-		typedef _Element                            Element;
-		typedef typename RawVector<Element>::Dense      Rep;
-		typedef DenseMatrixBase<_Element>            Self_t;
+		typedef _Element                            Element; //!< Element type
+		typedef typename RawVector<Element>::Dense      Rep; //!< No doc
+		typedef DenseMatrixBase<_Element>            Self_t; //!< Self type
 
 		template<typename _Tp1>
 		struct rebind {
@@ -176,6 +176,14 @@ namespace LinBox
 		template <class Field>
 		std::ostream &write (std::ostream &os, const Field &F) const;
 
+		/** Write the matrix to an output stream.
+		 * This a raw version of \c write(os,F) (no field is given).
+		 * @param os Output stream to which to write
+		 */
+		std::ostream &write (std::ostream &os) const;
+
+
+
 		/** Set the entry at the (i, j) position to a_ij.
 		 * @param i Row number, 0...rowdim () - 1
 		 * @param j Column number 0...coldim () - 1
@@ -220,14 +228,14 @@ namespace LinBox
 		}
 
 		/** @name Column of rows iterator
+		 * \brief
 		 * The column of rows iterator traverses the rows of the
 		 * matrix in ascending order. Dereferencing the iterator yields
 		 * a row vector in dense format
-		 * @{
 		 */
-
+		//@{
 		typedef Subvector<typename Rep::iterator, typename Rep::const_iterator> Row;
-		typedef Subvector<typename Rep::const_iterator> ConstRow;
+		typedef Subvector<typename Rep::const_iterator>                    ConstRow;
 
 		class RowIterator;
 		class ConstRowIterator;
@@ -235,19 +243,19 @@ namespace LinBox
 		RowIterator rowBegin ();
 		RowIterator rowEnd ();
 		ConstRowIterator rowBegin () const;
-		ConstRowIterator rowEnd () const;
+		ConstRowIterator rowEnd   () const;
 		//@}
 
 		/** @name Row of columns iterator
+		 * \brief
 		 * The row of columns iterator traverses the columns of the
 		 * matrix in ascending order. Dereferencing the iterator yields
 		 * a column vector in dense format
-		 * @{
 		 */
-
-		typedef Subvector<Subiterator<typename Rep::iterator> > Col;
+		//@{
+		typedef Subvector<Subiterator<typename Rep::iterator> >            Col;
 		typedef Subvector<Subiterator<typename Rep::const_iterator> > ConstCol;
-		typedef Col Column;
+		typedef Col           Column;
 		typedef ConstCol ConstColumn;
 
 		class ColIterator;
@@ -266,16 +274,15 @@ namespace LinBox
 		 * in some unspecified order. This can be used, e.g. to reduce all
 		 * matrix entries modulo a prime before passing the matrix into an
 		 * algorithm.
-		 * @{
 		 */
-
+		//@{
 		typedef typename Rep::iterator RawIterator;
 		typedef typename Rep::const_iterator ConstRawIterator;
 
 		RawIterator rawBegin ();
-		RawIterator rawEnd ();
+		RawIterator rawEnd   ();
 		ConstRawIterator rawBegin () const;
-		ConstRawIterator rawEnd () const;
+		ConstRawIterator rawEnd   () const;
 		//@}
 
 		/** @name Raw Indexed iterator
@@ -285,17 +292,16 @@ namespace LinBox
 		 * accessing all entries in the matrix in some unspecified order.
 		 * At each position of the the indexed iterator, it also provides
 		 * the row and column indices of the currently referenced entry.
-		 * This is provided through it's rowIndex() and colIndex() functions.
-		 * @{
+		 * This is provided through it's \c rowIndex() and \c colIndex() functions.
 		 */
-
+		//@{
 		class RawIndexedIterator;
 		class ConstRawIndexedIterator;
 
-		RawIndexedIterator rawIndexedBegin();
-		RawIndexedIterator rawIndexedEnd();
-		ConstRawIndexedIterator rawIndexedBegin() const;
-		ConstRawIndexedIterator rawIndexedEnd() const;
+		RawIndexedIterator rawIndexedBegin ();
+		RawIndexedIterator rawIndexedEnd   ();
+		ConstRawIndexedIterator rawIndexedBegin () const;
+		ConstRawIndexedIterator rawIndexedEnd   () const;
 		//@}
 
 		/** Retrieve a reference to a row.
@@ -303,6 +309,7 @@ namespace LinBox
 		 * to be used.
 		 * @param i Row index
 		 */
+		//@{
 		Row operator[] (size_t i)
 		{
 			return Row (_rep.begin () + i * _cols, _rep.begin () + i * _cols + _cols);
@@ -312,6 +319,7 @@ namespace LinBox
 		{
 			return Row (_rep.begin () + i * _cols, _rep.begin () + i * _cols + _cols);
 		}
+		//@}
 
 		/** Compute column density.
 		 * @param v

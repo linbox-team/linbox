@@ -68,41 +68,24 @@ namespace LinBox
 
 		/*  Iterators */
 
-		/*! -name Raw Iterators.
-		 * \brief Raw Iterators.
-		 * The raw iterator is a method for accessing all entries in the matrix
-		 * in some unspecified order. This can be used, e.g. to reduce all
-		 * matrix entries modulo a prime before passing the matrix into an
-		 * algorithm.
-		 * @{
-		 */
-		/// RawIterator.
-		class RawIterator ;
-		/// Const RawIterator.
-		class ConstRawIterator;
-		 //@} Raw Iterators.
+		//! @name Forward declaration of Raw Iterators.
+		//@{
+		// RawIterator.
+		class RawIterator  ;
+		// Const RawIterator.
+		class ConstRawIterator ;
 
-		/** @name Raw Indexed Iterators
-		 * \brief
-		 *
-		 * Like the raw iterator, the indexed iterator is a method for
-		 * accessing all entries in the matrix in some unspecified order.
-		 * At each position of the the indexed iterator, it also provides
-		 * the row and column indices of the currently referenced entry.
-		 * This is provided through it's \c rowIndex() and \c colIndex() functions.
-		 * @{
-		 */
-		/// RawIndexed
-		class RawIndexedIterator;
-		/// Const RawIndexed
-		class ConstRawIndexedIterator;
-		//@} Raw Indexed
+		 // RawIndexed
+		class RawIndexedIterator ;
+		// Const RawIndexed
+		class ConstRawIndexedIterator ;
+		//@}
 
 		typedef _Element                  Element;       //!< Element type
 		typedef DenseSubmatrix<_Element>   Self_t;       //!< Self type
 
 
-		/** @name Row Iterators.
+		/** @name typedef'd Row Iterators.
 		 *\brief
 		 * The row iterator gives the rows of the
 		 * matrix in ascending order. Dereferencing the iterator yields
@@ -115,7 +98,7 @@ namespace LinBox
 		typedef typename DenseMatrixBase<Element>::ConstRow               ConstRow;
 		 //@} Row Iterators
 
-		/** @name Column Iterators.
+		/** @name typedef'd Column Iterators.
 		 *\brief
 		 * The columns iterator gives the columns of the
 		 * matrix in ascending order. Dereferencing the iterator yields
@@ -221,6 +204,15 @@ namespace LinBox
 		template<class Field>
 		std::ostream& write (std::ostream &os, const Field& field,
 				     bool mapleFormat = false) const;
+
+		/** Write the matrix to an output stream.
+		 * This a raw version of \c write(os,F) (no field is given).
+		 * @param os Output stream to which to write
+		 * @param mapleFormat write in Maple(r) format ?
+		 */
+		std::ostream& write (std::ostream &os,
+				     bool mapleFormat = false) const;
+
 
 		/** Set the entry at (i, j).
 		 * @param i Row number, 0...rowdim () - 1

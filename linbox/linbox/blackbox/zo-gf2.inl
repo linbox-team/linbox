@@ -20,6 +20,11 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/*! @file blackbox/zo-gf2.inl
+ * @ingroup blackbox
+ * @brief NO DOC
+ */
+
 #ifndef __LINBOX_zo_gf2_INL
 #define __LINBOX_zo_gf2_INL
 
@@ -181,6 +186,9 @@ namespace LinBox
 			return out << "ZeroOne over GF(2), format other than SMS or Maple not implemented" << std::endl;
 	}
 
+	/*! Raw iterator.
+	 * @ingroup iterators
+	 */
 	class ZeroOne<GF2>::RawIterator {
 	public:
 		typedef Element value_type;
@@ -239,18 +247,28 @@ namespace LinBox
 	 * can be used in algorithms like a normal STL iterator.
 	 */
 	inline ZeroOne<GF2>::RawIterator ZeroOne<GF2>::rawBegin()
-	{ return RawIterator( 0, _F.one ); }
+	{
+		return RawIterator( 0, _F.one );
+	}
 
 	inline ZeroOne<GF2>::RawIterator ZeroOne<GF2>::rawEnd()
-	{ return RawIterator( _nnz, _F.one ); }
+	{
+		return RawIterator( _nnz, _F.one );
+	}
 
 	inline const ZeroOne<GF2>::RawIterator ZeroOne<GF2>::rawBegin() const
-	{ return RawIterator(0, _F.one ); }
+	{
+		return RawIterator(0, _F.one );
+	}
 
 	inline const ZeroOne<GF2>::RawIterator ZeroOne<GF2>::rawEnd() const
-	{ return RawIterator(_nnz, _F.one ); }
+	{
+		return RawIterator(_nnz, _F.one );
+	}
 
-	/* RawIndexIterator - Iterates through the i and j of the current element
+	/*! RawIndexIterator.
+	 * @ingroup iterators
+	 * Iterates through the i and j of the current element
 	 * and when accessed returns an STL pair containing the coordinates
 	 */
 	class ZeroOne<GF2>::RawIndexIterator {

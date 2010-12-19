@@ -25,12 +25,12 @@
 
 /*! @file matrix/blas-matrix.h
  * @ingroup matrix
- * A <code>BlasMatrix<_element></code> represents a matrix as an array of
+ * A \c BlasMatrix<\c _element > represents a matrix as an array of
  * <code>_element</code>s.
  *
- * @todo explain the differences with <code>DenseMatrixBase<_element></code>
- * and <code> DenseSubmatrix<_element></code> or
- * <code>DenseMatrix<_field></code>...
+ * @todo explain the differences with \c DenseMatrixBase<\c _element >
+ * and \c DenseSubmatrix<\c _element > or
+ * \c DenseMatrix<\c _field >...
  */
 
 #ifndef __LINBOX_blas_matrix_H
@@ -72,6 +72,7 @@ namespace LinBox
 
 	public:
 		typedef _Element                                     Element;
+		// typedef _Element* pointer ?
 		typedef typename DenseSubmatrix<_Element>::Element * pointer;
 		typedef BlasMatrix<Element>                           Self_t;
 
@@ -228,7 +229,8 @@ namespace LinBox
 		/*! Allocates a new \f$ 0 \times 0\f$ matrix.
 		 */
 		BlasMatrix () :
-			DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (0,0)),0,0,0,0), _stride(0),  _alloc(true)
+			DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (0,0)),0,0,0,0),
+			_stride(0),  _alloc(true)
 		{
 			_ptr = this->_M->FullIterator();
 		}
@@ -238,7 +240,8 @@ namespace LinBox
 		 * @param n cols
 		 */
 		BlasMatrix (int m, int n) :
-			DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (m,n)),0,0,m,n), _stride(n), _alloc(true)
+			DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (m,n)),0,0,m,n),
+			_stride(n), _alloc(true)
 		{
 			_ptr = this->_M->FullIterator();
 		}
@@ -248,7 +251,8 @@ namespace LinBox
 		 * @param n cols
 		 */
 		BlasMatrix (size_t m, size_t n) :
-			DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (m,n)),0,0,m,n), _stride(n), _alloc(true)
+			DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (m,n)),0,0,m,n),
+			_stride(n), _alloc(true)
 		{
 			_ptr = this->_M->FullIterator();
 		}
@@ -269,7 +273,8 @@ namespace LinBox
 		 */
 		template <class Matrix>
 		BlasMatrix (const Matrix &A) :
-			DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (A.rowdim(),A.coldim())),0,0,A.rowdim(),A.coldim()), _stride(A.coldim()) , _alloc(true)
+			DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (A.rowdim(),A.coldim())),0,0,A.rowdim(),A.coldim()),
+			_stride(A.coldim()) , _alloc(true)
 		{
 			_ptr = this->_M->FullIterator();
 			createBlasMatrix(A, typename MatrixContainerTrait<Matrix>::Type());
@@ -286,7 +291,8 @@ namespace LinBox
 		BlasMatrix (const Matrix& A,
 			    const size_t i0, const size_t j0,
 			    const size_t m, const size_t n) :
-			DenseSubmatrix<Element>( *(new DenseMatrixBase<Element> (A.rowdim(),A.coldim())),0,0,A.rowdim(),A.coldim()), _stride(A.coldim()) , _alloc(true)
+			DenseSubmatrix<Element>( *(new DenseMatrixBase<Element> (A.rowdim(),A.coldim())),0,0,A.rowdim(),A.coldim()),
+			_stride(A.coldim()) , _alloc(true)
 		{
 			_ptr = this->_M->FullIterator();
 			createBlasMatrix(A, i0, j0, m, n, typename MatrixContainerTrait<Matrix>::Type());
@@ -312,7 +318,8 @@ namespace LinBox
 		 * @param A DenseMatrixBase
 		 */
 		BlasMatrix ( DenseMatrixBase<Element>& A ) :
-			DenseSubmatrix<Element>(A,0,0,A.rowdim(),A.coldim()), _stride(A.coldim()) , _alloc(false)
+			DenseSubmatrix<Element>(A,0,0,A.rowdim(),A.coldim()),
+			_stride(A.coldim()) , _alloc(false)
 		{
 			_ptr = this->_M->FullIterator();
 		}
@@ -327,7 +334,8 @@ namespace LinBox
 		BlasMatrix ( DenseMatrixBase<Element>& A,
 			     const size_t i0, const size_t j0,
 			     const size_t m, const size_t n) :
-			DenseSubmatrix<Element>(A,i0,j0,m,n), _stride(A.coldim()) , _alloc(false)
+			DenseSubmatrix<Element>(A,i0,j0,m,n),
+			_stride(A.coldim()) , _alloc(false)
 		{
 			_ptr = this->_M->FullIterator();
 		}
@@ -338,21 +346,34 @@ namespace LinBox
 		 * @param A matrix to be copied.
 		 */
 		BlasMatrix (const BlasMatrix<Element>& A) :
-			DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (*A._M)),0,0,A.rowdim(),A.coldim()), _stride(A._stride), _alloc(true)
+			DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (*A._M)),0,0,A.rowdim(),A.coldim()),
+			_stride(A._stride), _alloc(true)
 		{
 			_ptr = this->_M->FullIterator();
 		}
 
 
-#if 0
+#if 1
 		/// Copy Contructor of a matrix (no copy is done, just through pointer)
+		/*! @param A BlasMatrix to be copied */
 		BlasMatrix(BlasMatrix<Element>& A) :
-			DenseSubmatrix<Element>(A), _stride(A._stride), _alloc(false), _ptr(A._ptr) {}
+			DenseSubmatrix<Element>(A),
+			_stride(A._stride), _alloc(false), _ptr(A._ptr)
+		{}
 
 
 		/// Copy Contructor of a submatrix (no copy is done, just through pointer)
+		/*! @param A BlasMatrix to be copied
+		 * @param i0
+		 * @param j0
+		 * @param m rows
+		 * @param n columns
+		 */
 		BlasMatrix(BlasMatrix<Element>& A, const size_t i, const size_t j, const size_t m, const size_t n) :
-			DenseSubmatrix<Element>(A,i,j,m,n), _stride(A._stride), _alloc(false), _ptr(A._ptr+ i*A._stride+j) {}
+			DenseSubmatrix<Element>(A,i,j,m,n),
+			_stride(A._stride), _alloc(false),
+			_ptr(A._ptr+ i*A._stride+j)
+		{}
 #endif
 
 		/// Destructor.
@@ -406,13 +427,19 @@ namespace LinBox
 		/*! @internal
 		 * Get read-only pointer to the matrix data.
 		 */
-		pointer getPointer() const  {return _ptr;}
+		pointer getPointer() const
+		{
+			return _ptr;
+		}
 
 		/*! @internal
 		 * Get write pointer to the matrix data.
 		 * Data may be changed this way.
 		 */
-		pointer& getWritePointer() {return _ptr;}
+		pointer& getWritePointer()
+		{
+			return _ptr;
+		}
 
 		/*! @internal
 		 * Get the stride of the matrix
@@ -429,6 +456,13 @@ namespace LinBox
 		size_t& getWriteStride()
 		{
 			return _stride;
+		}
+
+		/*! @internal Is the matrix allocated ?
+		 */
+		bool isAllocated()
+		{
+			return _alloc ;
 		}
 
 	}; // end of class BlasMatrix

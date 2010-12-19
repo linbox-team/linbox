@@ -35,4 +35,10 @@
   @todo talk about Linux::BlasPermutation
  */
 
+ /*! @ingroup matrix
+ * @defgroup iterators Iterators
+ * @brief NO DOC YET
+ */
+
+
 // vim:syn=doxygen

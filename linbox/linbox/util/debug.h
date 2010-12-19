@@ -26,6 +26,11 @@
  *
  */
 
+/*! @file util/debug.h
+ * @ingroup util
+ * Various utilities for debugging.
+ */
+
 #ifndef __LINBOX_util_debug_H
 #define __LINBOX_util_debug_H
 
@@ -33,6 +38,11 @@
 #include <sstream>
 #include "linbox/util/error.h"
 
+/*! Check an assertion (à la \c std::assert).
+ * If in DEBUG mode, throws a \ref PreconditionFailed exception.
+ * In REALEASE mode, nothing is checked.
+ * @param check assertion to be checked.
+ */
 #ifndef DEBUG
 #  define linbox_check(check)
 #else
