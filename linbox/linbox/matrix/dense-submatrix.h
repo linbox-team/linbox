@@ -298,6 +298,18 @@ namespace LinBox
 		size_t _end_col;
 	};
 
+	/*! Write a matrix to a stream.
+	 * The C++ way using <code>operator<<</code>
+	 * @param o output stream
+	 * @param M matrix to write.
+	 */
+	template<class T>
+	std::ostream& operator<< (std::ostream & o, const DenseSubmatrix<T> & M)
+	{
+		return M.write(o);
+	}
+
+
 	template <class Element>
 	struct MatrixTraits< DenseSubmatrix<Element> > {
 		typedef DenseSubmatrix<Element> MatrixType;

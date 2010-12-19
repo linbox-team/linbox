@@ -522,18 +522,19 @@ namespace LinBox
 
 	template<class BB>
 	bool useBB(const BB& A)
-	{  return (A.coldim() > 1000) && (A.rowdim() > 1000);
+	{
+		return (A.coldim() > 1000) && (A.rowdim() > 1000);
 	}
 
 	template<class Field>
 	bool useBB(const DenseMatrix<Field>& A) { return false; }
 
-	/** Solver traits
+	/** Solver traits.
 	 *
 	 * User-specified parameters for solving a linear system.
 	 */
 	struct SolverTraits : public Specifier {
-		/** Constructor
+		/** Constructor.
 		 *
 		 * @param checkResult True if and only if the solution should be checked
 		 * for correctness after it is computed (very much recommended for the
