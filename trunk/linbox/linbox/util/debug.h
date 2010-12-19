@@ -151,7 +151,7 @@ namespace LinBox
 			if (why)
 				(*_errorStream)	<< " (" << why << ")" <<std::endl;
 			else
-				(*_errorStream)	<<  "." ;
+				(*_errorStream)	<<  "." << std::endl;
 
 		}
 	};

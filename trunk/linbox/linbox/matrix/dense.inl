@@ -809,82 +809,131 @@ namespace LinBox
 
 	template <class Element>
 	template <class Field>
-	std::ostream& DenseMatrixBase<Element>::write (std::ostream &os, const Field &F) const
+	std::ostream& DenseMatrixBase<Element>::write (std::ostream &os, const Field &F,
+						       bool mapleFormat) const
 	{
-
-		integer c;
-		int wid;
 
 		ConstRowIterator p;
 
+		if (!mapleFormat) {
+			integer c;
+			int wid;
 
 
-		F.cardinality (c);
 
-		if (c >0)
-			wid = (int) ceil (log ((double) c) / M_LN10);
-		else {
-			integer tmp;
-			size_t max=0;
-			ConstRawIterator it = rawBegin();
-			for (; it != rawEnd(); ++it){
-				F.convert(tmp,*it);
-				if (tmp.bitsize() > max)
-					max= tmp.bitsize();
-			}
-			wid= (int) ceil ((double)max / M_LN10)+1;
-		}
 
-		for (p = rowBegin (); p != rowEnd (); ++p) {
-			typename ConstRow::const_iterator pe;
+			F.cardinality (c);
 
-			os << "  [ ";
-
-			for (pe = p->begin (); pe != p->end (); ++pe) {
-				os.width (wid);
-				F.write (os, *pe);
-				os << " ";
+			if (c >0)
+				wid = (int) ceil (log ((double) c) / M_LN10);
+			else {
+				integer tmp;
+				size_t max=0;
+				ConstRawIterator it = rawBegin();
+				for (; it != rawEnd(); ++it){
+					F.convert(tmp,*it);
+					if (tmp.bitsize() > max)
+						max= tmp.bitsize();
+				}
+				wid= (int) ceil ((double)max / M_LN10)+1;
 			}
 
-			os << "]" << std::endl;
-		}
+			for (p = rowBegin (); p != rowEnd ();++p) {
+				typename ConstRow::const_iterator pe;
 
+				os << "  [ ";
+
+				for (pe = p->begin (); pe != p->end (); ++pe) {
+					os.width (wid);
+					F.write (os, *pe);
+					os << " ";
+				}
+
+				os << "]" << std::endl;
+			}
+		} else {
+
+			os << "Matrix( " << rowdim() << ',' << coldim() << ",[" ;
+			for (p = rowBegin (); p != rowEnd (); ) {
+				typename ConstRow::const_iterator pe;
+
+				os << " [ ";
+
+				for (pe = p->begin (); pe != p->end (); ) {
+					F.write (os, *pe);
+					++pe ;
+					if (pe != p->end())
+						os << ", ";
+				}
+
+				os << "]" ;
+				++p ;
+			if (p != rowEnd() )
+				os << ',' << std::endl;;
+
+			}
+			os << "])" ;
+		}
 		return os;
 	}
 
 	template <class Element>
-	std::ostream& DenseMatrixBase<Element>::write (std::ostream &os) const
+	std::ostream& DenseMatrixBase<Element>::write (std::ostream &os,
+						       bool mapleFormat) const
 	{
 
-		integer c;
-		int wid;
-
 		ConstRowIterator p;
+		if (!mapleFormat) {
+			integer c;
+			int wid;
 
 
 
-		integer tmp;
-		size_t max=0;
-		ConstRawIterator it = rawBegin();
-		for (; it != rawEnd(); ++it){
-			tmp = (integer) *it;
-			if (tmp.bitsize() > max)
-				max= tmp.bitsize();
-		}
-		wid= (int) ceil ((double)max / M_LN10)+1;
 
-		for (p = rowBegin (); p != rowEnd (); ++p) {
-			typename ConstRow::const_iterator pe;
-
-			os << "  [ ";
-
-			for (pe = p->begin (); pe != p->end (); ++pe) {
-				os.width (wid);
-				os << *pe;
-				os << " ";
+			integer tmp;
+			size_t max=0;
+			ConstRawIterator it = rawBegin();
+			for (; it != rawEnd(); ++it){
+				tmp = (integer) *it;
+				if (tmp.bitsize() > max)
+					max= tmp.bitsize();
 			}
+			wid= (int) ceil ((double)max / M_LN10)+1;
 
-			os << "]" << std::endl;
+			for (p = rowBegin (); p != rowEnd (); ++p) {
+				typename ConstRow::const_iterator pe;
+
+				os << "  [ ";
+
+				for (pe = p->begin (); pe != p->end (); ++pe) {
+					os.width (wid);
+					os << *pe;
+					os << " ";
+				}
+
+				os << "]" << std::endl;
+			}
+		} else {
+
+			os << "Matrix( " << rowdim() << ',' << coldim() << ",[" ;
+			for (p = rowBegin (); p != rowEnd (); ) {
+				typename ConstRow::const_iterator pe;
+
+				os << " [ ";
+
+				for (pe = p->begin (); pe != p->end (); ) {
+					os << *pe;
+					++pe ;
+					if (pe != p->end())
+						os << ", ";
+				}
+
+				os << "]" ;
+				++p ;
+				if (p != rowEnd() )
+					os << ',' << std::endl;
+			}
+			os << "])" ;
 		}
 
 		return os;

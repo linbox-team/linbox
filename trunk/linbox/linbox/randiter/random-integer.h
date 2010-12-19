@@ -181,6 +181,11 @@ namespace LinBox
 			_bits = bits;
 		}
 
+		unsigned int getBits () const
+		{
+			return _bits ;
+		}
+
 	};
 
 }

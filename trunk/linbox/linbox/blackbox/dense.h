@@ -236,7 +236,9 @@ namespace LinBox
 		 * @param os Output stream to which to write
 		 */
 		std::ostream &write (std::ostream &os = std::cout) const
-		{ return DenseMatrixBase<Element>::write (os, _F); }
+		{
+			return DenseMatrixBase<Element>::write (os, _F);
+		}
 
 		//@}
 
@@ -346,7 +348,7 @@ namespace LinBox
 		typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
 	};
 
-	/** Dense matrix factory
+	/** Dense matrix factory.
 	 * This class ingerits \ref BlackboxFactory and provides a method for using a
 	 * \ref DenseMatrixBase object with integer or rational data type as input to
 	 * the high-level intger and rational solutions functions.

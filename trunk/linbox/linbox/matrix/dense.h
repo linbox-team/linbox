@@ -172,15 +172,19 @@ namespace LinBox
 		/** Write the matrix to an output stream.
 		 * @param os Output stream to which to write
 		 * @param F Field over which to write
+		 * @param mapleFormat write in Maple format ?
 		 */
 		template <class Field>
-		std::ostream &write (std::ostream &os, const Field &F) const;
+		std::ostream &write (std::ostream &os, const Field &F,
+				     bool mapleFormat=true) const;
 
 		/** Write the matrix to an output stream.
 		 * This a raw version of \c write(os,F) (no field is given).
 		 * @param os Output stream to which to write
+		 * @param mapleFormat write in maple format ?
 		 */
-		std::ostream &write (std::ostream &os) const;
+		std::ostream &write (std::ostream &os,
+				     bool mapleFormat=true) const;
 
 
 
@@ -337,6 +341,17 @@ namespace LinBox
 		size_t                _rows, _cols;
 		Element *             _ptr;
 	};
+
+	/*! Write a matrix to a stream.
+	 * The C++ way using <code>operator<<</code>
+	 * @param o output stream
+	 * @param M matrix to write.
+	 */
+	template<class T>
+	std::ostream& operator<< (std::ostream & o, const DenseMatrixBase<T> & M)
+	{
+		return M.write(o);
+	}
 
 	template <class Element>
 	struct MatrixTraits< DenseMatrixBase<Element> > {
