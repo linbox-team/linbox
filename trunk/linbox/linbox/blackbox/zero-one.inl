@@ -12,8 +12,16 @@
  * See COPYING for license information.
  */
 
+/*! @file blackbox/zero-one.inl
+ * @ingroup blackbox
+ * @brief NO DOC
+ */
+
 namespace LinBox
 {
+	/*! Raw iterator.
+	 * @ingroup iterators
+	 */
 	template<class Field>
 	class ZeroOne<Field>::RawIterator {
 	public:
@@ -85,7 +93,9 @@ namespace LinBox
 	const typename ZeroOne<Field>::RawIterator ZeroOne<Field>::rawEnd() const
 	{ return RawIterator(_nnz, _F.init(_tmp, 1) ); }
 
-	/* RawIndexIterator - Iterates through the i and j of the current element
+	/*! RawIndexIterator.
+	 * @ingroup iterators
+	 * Iterates through the i and j of the current element
 	 * and when accessed returns an STL pair containing the coordinates
 	 */
 	template<class Field>
@@ -172,7 +182,10 @@ namespace LinBox
 	template<class Field>
 	ZeroOne<Field>::ZeroOne(const Field& F) :
 	       	_F(F)
-       	{ srand( time(NULL) ); dynamic = false;}
+       	{
+		srand( time(NULL) );
+		dynamic = false;
+	}
 
 
 	template<class Field>

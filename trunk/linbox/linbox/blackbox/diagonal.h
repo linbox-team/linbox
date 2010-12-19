@@ -17,6 +17,13 @@
  *
  * See COPYING for license information.
  */
+
+/*! @file blackbox/diagonal.h
+ * @ingroup blackbox
+ * @brief Random diagonal matrices and diagonal matrices
+ * Class especially meant for diagonal precondtionners
+ */
+
 #ifndef __LINBOX_diagonal_H
 #define __LINBOX_diagonal_H
 
@@ -51,7 +58,7 @@ namespace LinBox
 	 * done on the vector traits.
 	 *
 	 *
-	 * @param Field  \ref LinBox field.
+	 * @param Field  \c LinBox field.
 	 * @param Trait  Marker whether to use dense or sparse  LinBox vector
 	 * implementation. This is chosen by a default parameter
 	 * and partial template specialization.
@@ -62,7 +69,7 @@ namespace LinBox
 		/// empty constructor
 		Diagonal () {} };
 
-	/** diagonal.h linbox/blackbox/diagonal.h
+	/**
 	  \brief Specialization of Diagonal for application to dense vectors
 	  */
 	template <class _Field>
@@ -73,7 +80,7 @@ namespace LinBox
 		typedef _Field Field;
 		typedef typename Field::Element    Element;
 
-		/// \brief cstor from vector of elements
+		/// \brief cstor from vector of elements.
 		Diagonal(const Field F, const std::vector<typename Field::Element>& v);
 
 		// construct random nonsingular n by n diagonal matrix.
@@ -97,8 +104,8 @@ namespace LinBox
 		/// \brief the field of the entries
 		const Field& field() const{ return _F; }
 
-		/** Get an entry and store it in the given value
-		 * This form is more in the Linbox style and is provided for interface
+		/** Get an entry and store it in the given value.
+		 * This form is more in the LinBox style and is provided for interface
 		 * compatibility with other parts of the library
 		 * @param x Element in which to store result
 		 * @param i Row index
@@ -185,8 +192,8 @@ namespace LinBox
 		size_t rowdim(void) const { return _n; }
 		size_t coldim(void) const { return _n; }
 		const Field& field() const {return _F;}
-		/** Get an entry and store it in the given value
-		 * This form is more in the Linbox style and is provided for interface
+		/** Get an entry and store it in the given value.
+		 * This form is more in the LinBox style and is provided for interface
 		 * compatibility with other parts of the library
 		 * @param x Element in which to store result
 		 * @param i Row index
@@ -244,7 +251,7 @@ namespace LinBox
 
 	// Specialization of diagonal for LinBox sparse associative vectors
 	/**
-	  \brief Specialization of Diagonal for application to sparse associative vectors
+	  \brief Specialization of Diagonal for application to sparse associative vectors.
 	  */
 	template <class _Field>
 	class Diagonal<_Field, VectorCategories::SparseAssociativeVectorTag > {
@@ -269,8 +276,9 @@ namespace LinBox
 		size_t rowdim(void) const { return _n; }
 		size_t coldim(void) const { return _n; }
 		const Field field() const { return _F; }
-		/** Get an entry and store it in the given value
-		 * This form is more in the Linbox style and is provided for interface
+
+		/** Get an entry and store it in the given value.
+		 * This form is more in the LinBox style and is provided for interface
 		 * compatibility with other parts of the library
 		 * @param x Element in which to store result
 		 * @param i Row index

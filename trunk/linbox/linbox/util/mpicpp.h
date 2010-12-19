@@ -121,6 +121,7 @@ namespace LinBox
 }// namespace LinBox
 
 #include "mpicpp.inl"
+
 #endif // __LINBOX_HAVE_MPI
 #endif // __LINBOX_mpicpp_H
 

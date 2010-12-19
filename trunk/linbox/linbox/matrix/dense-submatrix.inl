@@ -79,8 +79,7 @@ namespace LinBox
 	template <class _Element>
 	DenseSubmatrix<_Element>::DenseSubmatrix (const DenseSubmatrix<_Element> &SM) :
 		_M (SM._M), _beg_row (SM._beg_row), _end_row (SM._end_row), _beg_col (SM._beg_col), _end_col (SM._end_col)
-	{
-	}
+	{ }
 
 	template <class _Element>
 	DenseSubmatrix<_Element>& DenseSubmatrix<_Element>::operator=(const DenseSubmatrix<_Element> &SM)
@@ -94,11 +93,23 @@ namespace LinBox
 		return *this;
 	}
 
+
+	/*! Raw Iterators.
+	 * @ingroup iterators
+	 *
+	 * The raw iterator is a method for accessing all entries in the matrix
+	 * in some unspecified order. This can be used, e.g. to reduce all
+	 * matrix entries modulo a prime before passing the matrix into an
+	 * algorithm.
+	 */
 	template <class _Element>
 	class DenseSubmatrix<_Element>::RawIterator {
 	public:
 		RawIterator (){}
 
+		/*! @internal
+		 * @brief NO DOC
+		 */
 		RawIterator (const typename DenseMatrixBase<_Element>::RawIterator& cur,
 			     const size_t c_dim,
 			     const size_t stride,
@@ -106,15 +117,23 @@ namespace LinBox
 			_cur (cur), _c_dim (c_dim), _stride(stride), _c_idx (c_idx)
 		{}
 
+		/*! @internal
+		 * @brief copy operator.
+		 * @param r RawIterator to copy.
+		 */
 		RawIterator& operator = (const RawIterator& r)
 		{
-			_cur = r._cur;
-			_c_dim = r._c_dim;
+			_cur    = r._cur;
+			_c_dim  = r._c_dim;
 			_stride = r._stride;
-			_c_idx = r._c_idx;
+			_c_idx  = r._c_idx;
 			return *this;
 		}
 
+		/*! @internal
+		 * increment.
+		 * ??
+		 */
 		RawIterator& operator ++()
 		{
 			if (_c_idx < _c_dim - 1){
@@ -127,21 +146,32 @@ namespace LinBox
 			return *this;
 		}
 
+		/*! @internal
+		 * increment.
+		 * ??
+		 */
 		RawIterator& operator++ (int)
 		{
 			return this->operator++ ();
 		}
 
+
+		/*! @internal
+		 * @brief  operator !=.
+		 * @param r RawIterator to test inequaltity from.
+		 */
 		bool operator != (const RawIterator& r) const
 		{
 			return (_cur != r._cur || _c_dim != r._c_dim) || (_stride != r._stride) || (_c_idx != r._c_idx);
 		}
 
+		//! @internal operator *.
 		_Element& operator * ()
 		{
 			return *_cur;
 		}
 
+		//! @internal operator *.
 		const _Element& operator * () const
 		{
 			return *_cur;
@@ -154,11 +184,23 @@ namespace LinBox
 		size_t _c_idx;
 	};
 
+	/*! Raw Iterators (const version).
+	 * @ingroup iterators
+	 * The raw iterator is a method for accessing all entries in the matrix
+	 * in some unspecified order. This can be used, e.g. to reduce all
+	 * matrix entries modulo a prime before passing the matrix into an
+	 * algorithm.
+	 */
 	template <class _Element>
 	class DenseSubmatrix<_Element>::ConstRawIterator {
 	public:
+		//! @internal Null constructor
 		ConstRawIterator (){}
 
+
+		/*! @internal
+		 * @brief NO DOC
+		 */
 		ConstRawIterator (const typename DenseMatrixBase<_Element>::ConstRawIterator& cur,
 				  const size_t c_dim,
 				  const size_t stride,
@@ -166,6 +208,10 @@ namespace LinBox
 			_cur (cur), _c_dim (c_dim), _stride(stride), _c_idx (c_idx)
 		{}
 
+		/*! @internal
+		 * @brief copy operator.
+		 * @param r RawIterator to copy.
+		 */
 		ConstRawIterator& operator = (const ConstRawIterator& r)
 		{
 			_cur = r._cur;
@@ -175,6 +221,10 @@ namespace LinBox
 			return *this;
 		}
 
+		/*! @internal
+		 * increment.
+		 * ??
+		 */
 		ConstRawIterator& operator ++()
 		{
 			if (_c_idx < _c_dim - 1){
@@ -187,18 +237,29 @@ namespace LinBox
 			return *this;
 		}
 
+		/*! @internal
+		 * increment.
+		 * ??
+		 */
 		ConstRawIterator& operator++ (int)
 		{
 			return this->operator++ ();
 		}
 
+		/*! @internal
+		 * @brief  operator !=.
+		 * @param r RawIterator to test inequaltity from.
+		 */
 		bool operator != (const ConstRawIterator& r) const
 		{
 			return (_cur != r._cur) || (_c_dim != r._c_dim) || (_stride != r._stride) || (_c_idx != r._c_idx);
 		}
 
+		//! @internal operator *.
 		const _Element& operator * () const
-		{ return *_cur; }
+		{
+			return *_cur;
+		}
 
 	protected:
 		typename DenseMatrixBase<_Element>::ConstRawIterator _cur;
@@ -323,7 +384,16 @@ namespace LinBox
 					 coldim (), _M->coldim () - coldim ());
 	}
 #endif
-	//////
+
+	/*! Raw Indexed Iterator.
+	 * @ingroup iterators
+	 *
+	 * Like the raw iterator, the indexed iterator is a method for
+	 * accessing all entries in the matrix in some unspecified order.
+	 * At each position of the the indexed iterator, it also provides
+	 * the row and column indices of the currently referenced entry.
+	 * This is provided through it's \c rowIndex() and \c colIndex() functions.
+	 */
 	template <class _Element>
 	class DenseSubmatrix<_Element>::RawIndexedIterator {
 	public:
@@ -428,6 +498,15 @@ namespace LinBox
 					   coldim(), _M->coldim (), rowdim()-1, coldim()-1);
 	}
 
+	/*! Raw Indexed Iterator (const version).
+	 * @ingroup iterators
+	 *
+	 * Like the raw iterator, the indexed iterator is a method for
+	 * accessing all entries in the matrix in some unspecified order.
+	 * At each position of the the indexed iterator, it also provides
+	 * the row and column indices of the currently referenced entry.
+	 * This is provided through it's \c rowIndex() and \c colIndex() functions.
+	 */
 	template <class _Element>
 	class DenseSubmatrix<_Element>::ConstRawIndexedIterator {
 	public:
@@ -620,14 +699,15 @@ namespace LinBox
 
 	template <class _Element>
 	template <class Field>
-	std::ostream &DenseSubmatrix<_Element>::write (std::ostream &os, const Field& field, bool mapleFormat) const
+	std::ostream &DenseSubmatrix<_Element>::write (std::ostream &os, const Field& field,
+						       bool mapleFormat) const
 	{
 		ConstRowIterator p;
 
-		integer c;
+		// integer c;
 		//int wid;
 
-		field.cardinality (c);
+		// field.cardinality (c);
 		//wid = (int) ceil (log ((double) c) / M_LN10); //BB : not used !
 
 		typename ConstRow::const_iterator pe;
@@ -658,6 +738,39 @@ namespace LinBox
 		if (mapleFormat) os << ']';
 		return os;
 	}
+
+	template <class _Element>
+	std::ostream &DenseSubmatrix<_Element>::write (std::ostream &os, bool mapleFormat) const
+	{
+		ConstRowIterator p;
+
+
+
+		typename ConstRow::const_iterator pe;
+
+		if (mapleFormat) os << "[";
+
+		for (p = rowBegin (); p != rowEnd (); ++p) {
+			if (mapleFormat && (p != rowBegin()))
+				os << ',';
+			if (mapleFormat) os << "[";
+
+			for (pe = p->begin (); pe != p->end (); ++pe) {
+				if (mapleFormat && (pe != p->begin())) os << ',';
+
+				os << *pe;
+				os << " ";
+			}
+
+			if (!mapleFormat)
+				os << std::endl;
+			else os << ']';
+		}
+
+		if (mapleFormat) os << ']';
+		return os;
+	}
+
 
 } // namespace LinBox
 

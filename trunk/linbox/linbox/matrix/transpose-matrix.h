@@ -96,13 +96,17 @@ namespace LinBox
 		 * @return Number of rows in matrix
 		 */
 		inline size_t rowdim () const
-		{ return _A.coldim (); }
+		{
+			return _A.coldim ();
+		}
 
 		/** Get the number of columns in the matrix
 		 * @return Number of columns in matrix
 		 */
 		inline size_t coldim () const
-		{ return _A.rowdim (); }
+		{
+			return _A.rowdim ();
+		}
 
 		/** @name Matrix I/O
 		*/
@@ -116,7 +120,9 @@ namespace LinBox
 		 */
 		template <class Field>
 		inline std::ostream &write (std::ostream &stream, const Field &F) const
-		{ return _A.write (stream, F); }
+		{
+			return _A.write (stream, F);
+		}
 
 		//@} Matrix I/O
 
@@ -131,7 +137,9 @@ namespace LinBox
 		 * @param a_ij Element to set
 		 */
 		void setEntry (size_t i, size_t j, const Element &a_ij)
-		{ _A.setEntry (j, i, a_ij); }
+		{
+			_A.setEntry (j, i, a_ij);
+		}
 
 		/** Get a writeable reference to the entry in the (i, j) position.
 		 * @param i Row index of entry
@@ -139,7 +147,9 @@ namespace LinBox
 		 * @return Reference to matrix entry
 		 */
 		Element &refEntry (size_t i, size_t j)
-		{ return _A.refEntry (j, i); }
+		{
+			return _A.refEntry (j, i);
+		}
 
 		/** Get a read-only reference to the entry in the (i, j) position.
 		 * @param i Row index
@@ -147,7 +157,9 @@ namespace LinBox
 		 * @return Const reference to matrix entry
 		 */
 		inline const Element &getEntry (size_t i, size_t j) const
-		{ return _A.getEntry (j, i); }
+		{
+			return _A.getEntry (j, i);
+		}
 
 		/** Copy the (i, j) entry into x, and return a reference to x.
 		 * This form is more in the Linbox style and is provided for interface
@@ -158,7 +170,9 @@ namespace LinBox
 		 * @return Reference to x
 		 */
 		inline Element &getEntry (Element &x, size_t i, size_t j) const
-		{ return _A.getEntry (x, j, i); }
+		{
+			return _A.getEntry (x, j, i);
+		}
 
 		/** @name Column of rows iterator
 		 * The column of rows iterator traverses the rows of the
@@ -166,10 +180,22 @@ namespace LinBox
 		 * a row vector in dense format
 		 */
 
-		inline RowIterator rowBegin () { return _A.colBegin (); }
-		inline RowIterator rowEnd () { return _A.colEnd (); }
-		inline ConstRowIterator rowBegin () const { return _A.colBegin (); }
-		inline ConstRowIterator rowEnd () const { return _A.colEnd (); }
+		inline RowIterator rowBegin ()
+		{
+			return _A.colBegin ();
+		}
+		inline RowIterator rowEnd ()
+		{
+			return _A.colEnd ();
+		}
+		inline ConstRowIterator rowBegin () const
+		{
+			return _A.colBegin ();
+		}
+		inline ConstRowIterator rowEnd () const
+		{
+			return _A.colEnd ();
+		}
 
 		/** @name Row of columns iterator
 		 * The row of columns iterator traverses the columns of the
@@ -177,10 +203,22 @@ namespace LinBox
 		 * a column vector in dense format
 		 */
 
-		inline ColIterator colBegin () { return _A.rowBegin (); }
-		inline ColIterator colEnd () { return _A.rowEnd (); }
-		inline ConstColIterator colBegin () const { return _A.rowBegin (); }
-		inline ConstColIterator colEnd () const { return _A.rowEnd (); }
+		inline ColIterator colBegin ()
+		{
+			return _A.rowBegin ();
+		}
+		inline ColIterator colEnd ()
+		{
+			return _A.rowEnd ();
+		}
+		inline ConstColIterator colBegin () const
+		{
+			return _A.rowBegin ();
+		}
+		inline ConstColIterator colEnd () const
+		{
+			return _A.rowEnd ();
+		}
 
 		/** @name Raw iterator
 		 *
@@ -190,12 +228,25 @@ namespace LinBox
 		 * algorithm.
 		 */
 
-		inline RawIterator rawBegin () { return _A.rawBegin (); }
-		inline RawIterator rawEnd () { return _A.rawEnd (); }
-		inline ConstRawIterator rawBegin () const { return _A.rawBegin (); }
-		inline ConstRawIterator rawEnd () const { return _A.rawEnd (); }
+		inline RawIterator rawBegin ()
+		{
+			return _A.rawBegin ();
+		}
+		inline RawIterator rawEnd ()
+		{
+			return _A.rawEnd ();
+		}
+		inline ConstRawIterator rawBegin () const
+		{
+			return _A.rawBegin ();
+		}
+		inline ConstRawIterator rawEnd () const
+		{
+			return _A.rawEnd ();
+		}
 
-		/** @name Raw Indexed iterator
+		/** @name Raw Indexed iterator.
+		 * @brief
 		 * Like the raw iterator, the indexed iterator is a method for
 		 * accessing all entries in the matrix in some unspecified order.
 		 * At each position of the the indexed iterator, it also provides
@@ -203,10 +254,22 @@ namespace LinBox
 		 * This is provided through it's rowIndex() and colIndex() functions.
 		 */
 
-		inline RawIndexedIterator rawIndexedBegin() { return _A.rawIndexedBegin (); }
-		inline RawIndexedIterator rawIndexedEnd() { return _A.rawIndexedEnd (); }
-		inline ConstRawIndexedIterator rawIndexedBegin() const { return _A.rawIndexedBegin (); }
-		inline ConstRawIndexedIterator rawIndexedEnd() const { return _A.rawIndexedEnd (); }
+		inline RawIndexedIterator rawIndexedBegin()
+		{
+			return _A.rawIndexedBegin ();
+		}
+		inline RawIndexedIterator rawIndexedEnd()
+		{
+			return _A.rawIndexedEnd ();
+		}
+		inline ConstRawIndexedIterator rawIndexedBegin() const
+		{
+			return _A.rawIndexedBegin ();
+		}
+		inline ConstRawIndexedIterator rawIndexedEnd() const
+		{
+			return _A.rawIndexedEnd ();
+		}
 
 		//@}
 
@@ -244,37 +307,105 @@ namespace LinBox
 			_A (M._A)
 		{}
 
-		inline size_t rowdim () const { return _A.coldim (); }
-		inline size_t coldim () const { return _A.rowdim (); }
+		inline size_t rowdim () const
+		{
+			return _A.coldim ();
+		}
+		inline size_t coldim () const
+		{
+			return _A.rowdim ();
+		}
 
 		template <class Field>
 		inline std::ostream &write (std::ostream &stream, const Field &F) const
-		{ return _A.write (stream, F); }
+		{
+			return _A.write (stream, F);
+		}
 
-		inline void setEntry (size_t i, size_t j, const Element &a_ij) { _A.setEntry (j, i, a_ij); }
-		inline Element &refEntry (size_t i, size_t j) { return _A.refEntry (j, i); }
-		inline const Element &getEntry (size_t i, size_t j) const { return _A.getEntry (j, i); }
-		inline Element &getEntry (Element &x, size_t i, size_t j) const { return _A.getEntry (x, j, i); }
+		inline void setEntry (size_t i, size_t j, const Element &a_ij)
+		{
+			_A.setEntry (j, i, a_ij);
+		}
+		inline Element &refEntry (size_t i, size_t j)
+		{
+			return _A.refEntry (j, i);
+		}
+		inline const Element &getEntry (size_t i, size_t j) const
+		{
+			return _A.getEntry (j, i);
+		}
+		inline Element &getEntry (Element &x, size_t i, size_t j) const
+		{
+			return _A.getEntry (x, j, i);
+		}
 
-		inline RowIterator rowBegin () { return _A.colBegin (); }
-		inline RowIterator rowEnd () { return _A.colEnd (); }
-		inline ConstRowIterator rowBegin () const { return _A.colBegin (); }
-		inline ConstRowIterator rowEnd () const { return _A.colEnd (); }
+		inline RowIterator rowBegin ()
+		{
+			return _A.colBegin ();
+		}
+		inline RowIterator rowEnd ()
+		{
+			return _A.colEnd ();
+		}
+		inline ConstRowIterator rowBegin () const
+		{
+			return _A.colBegin ();
+		}
+		inline ConstRowIterator rowEnd () const
+		{
+			return _A.colEnd ();
+		}
 
-		inline ColIterator colBegin () { return _A.rowBegin (); }
-		inline ColIterator colEnd () { return _A.rowEnd (); }
-		inline ConstColIterator colBegin () const { return _A.rowBegin (); }
-		inline ConstColIterator colEnd () const { return _A.rowEnd (); }
+		inline ColIterator colBegin ()
+		{
+			return _A.rowBegin ();
+		}
+		inline ColIterator colEnd ()
+		{
+			return _A.rowEnd ();
+		}
+		inline ConstColIterator colBegin () const
+		{
+			return _A.rowBegin ();
+		}
+		inline ConstColIterator colEnd () const
+		{
+			return _A.rowEnd ();
+		}
 
-		inline RawIterator rawBegin () { return _A.rawBegin (); }
-		inline RawIterator rawEnd () { return _A.rawEnd (); }
-		inline ConstRawIterator rawBegin () const { return _A.rawBegin (); }
-		inline ConstRawIterator rawEnd () const { return _A.rawEnd (); }
+		inline RawIterator rawBegin ()
+		{
+			return _A.rawBegin ();
+		}
+		inline RawIterator rawEnd ()
+		{
+			return _A.rawEnd ();
+		}
+		inline ConstRawIterator rawBegin () const
+		{
+			return _A.rawBegin ();
+		}
+		inline ConstRawIterator rawEnd () const
+		{
+			return _A.rawEnd ();
+		}
 
-		inline RawIndexedIterator rawIndexedBegin() { return _A.rawIndexedBegin (); }
-		inline RawIndexedIterator rawIndexedEnd() { return _A.rawIndexedEnd (); }
-		inline ConstRawIndexedIterator rawIndexedBegin() const { return _A.rawIndexedBegin (); }
-		inline ConstRawIndexedIterator rawIndexedEnd() const { return _A.rawIndexedEnd (); }
+		inline RawIndexedIterator rawIndexedBegin()
+		{
+			return _A.rawIndexedBegin ();
+		}
+		inline RawIndexedIterator rawIndexedEnd()
+		{
+			return _A.rawIndexedEnd ();
+		}
+		inline ConstRawIndexedIterator rawIndexedBegin() const
+		{
+			return _A.rawIndexedBegin ();
+		}
+		inline ConstRawIndexedIterator rawIndexedEnd() const
+		{
+			return _A.rawIndexedEnd ();
+		}
 
 	protected:
 
@@ -299,7 +430,8 @@ namespace LinBox
 		typedef typename Matrix::Row Column;
 		typedef typename Matrix::Row Col;
 
-		//TransposeMatrix () {}
+		// TransposeMatrix () {}
+
 		TransposeMatrix (Matrix &A) :
 			_A (A)
 		{}
@@ -307,32 +439,88 @@ namespace LinBox
 			_A (M._A)
 		{}
 
-		inline size_t rowdim () const { return _A.coldim (); }
-		inline size_t coldim () const { return _A.rowdim (); }
+		inline size_t rowdim () const
+		{
+			return _A.coldim ();
+		}
+		inline size_t coldim () const
+		{
+			return _A.rowdim ();
+		}
 
 		template <class Field>
 		inline std::ostream &write (std::ostream &stream, const Field &F) const
-		{ return _A.write (stream, F); }
+		{
+			return _A.write (stream, F);
+		}
 
-		inline void setEntry (size_t i, size_t j, const Element &a_ij) { _A.setEntry (j, i, a_ij); }
-		inline Element &refEntry (size_t i, size_t j) { return _A.refEntry (j, i); }
-		inline const Element &getEntry (size_t i, size_t j) const { return _A.getEntry (j, i); }
-		inline Element &getEntry (Element &x, size_t i, size_t j) const { return _A.getEntry (x, j, i); }
+		inline void setEntry (size_t i, size_t j, const Element &a_ij)
+		{
+			_A.setEntry (j, i, a_ij);
+		}
+		inline Element &refEntry (size_t i, size_t j)
+		{
+			return _A.refEntry (j, i);
+		}
+		inline const Element &getEntry (size_t i, size_t j) const
+		{
+			return _A.getEntry (j, i);
+		}
+		inline Element &getEntry (Element &x, size_t i, size_t j) const
+		{
+			return _A.getEntry (x, j, i);
+		}
 
-		inline ColIterator colBegin () { return _A.rowBegin (); }
-		inline ColIterator colEnd () { return _A.rowEnd (); }
-		inline ConstColIterator colBegin () const { return _A.rowBegin (); }
-		inline ConstColIterator colEnd () const { return _A.rowEnd (); }
+		inline ColIterator colBegin ()
+		{
+			return _A.rowBegin ();
+		}
+		inline ColIterator colEnd ()
+		{
+			return _A.rowEnd ();
+		}
+		inline ConstColIterator colBegin () const
+		{
+			return _A.rowBegin ();
+		}
+		inline ConstColIterator colEnd () const
+		{
+			return _A.rowEnd ();
+		}
 
-		inline RawIterator rawBegin () { return _A.rawBegin (); }
-		inline RawIterator rawEnd () { return _A.rawEnd (); }
-		inline ConstRawIterator rawBegin () const { return _A.rawBegin (); }
-		inline ConstRawIterator rawEnd () const { return _A.rawEnd (); }
+		inline RawIterator rawBegin ()
+		{
+			return _A.rawBegin ();
+		}
+		inline RawIterator rawEnd ()
+		{
+			return _A.rawEnd ();
+		}
+		inline ConstRawIterator rawBegin () const
+		{
+			return _A.rawBegin ();
+		}
+		inline ConstRawIterator rawEnd () const
+		{
+			return _A.rawEnd ();
+		}
 
-		inline RawIndexedIterator rawIndexedBegin() { return _A.rawIndexedBegin (); }
-		inline RawIndexedIterator rawIndexedEnd() { return _A.rawIndexedEnd (); }
-		inline ConstRawIndexedIterator rawIndexedBegin() const { return _A.rawIndexedBegin (); }
-		inline ConstRawIndexedIterator rawIndexedEnd() const { return _A.rawIndexedEnd (); }
+		inline RawIndexedIterator rawIndexedBegin()
+		{
+			return _A.rawIndexedBegin ();
+		}
+		inline RawIndexedIterator rawIndexedEnd()
+		{
+			return _A.rawIndexedEnd ();
+		}
+		inline ConstRawIndexedIterator rawIndexedBegin() const
+		{
+			return _A.rawIndexedBegin ();
+		}
+		inline ConstRawIndexedIterator rawIndexedEnd() const
+		{
+			return _A.rawIndexedEnd ();
+		}
 
 	protected:
 
@@ -363,32 +551,88 @@ namespace LinBox
 			_A (M._A)
 		{}
 
-		inline size_t rowdim () const { return _A.coldim (); }
-		inline size_t coldim () const { return _A.rowdim (); }
+		inline size_t rowdim () const
+		{
+			return _A.coldim ();
+		}
+		inline size_t coldim () const
+		{
+			return _A.rowdim ();
+		}
 
 		template <class Field>
 		inline std::ostream &write (std::ostream &stream, const Field &F) const
-		{ return _A.write (stream, F); }
+		{
+			return _A.write (stream, F);
+		}
 
-		inline void setEntry (size_t i, size_t j, const Element &a_ij) { _A.setEntry (j, i, a_ij); }
-		inline Element &refEntry (size_t i, size_t j) { return _A.refEntry (j, i); }
-		inline const Element &getEntry (size_t i, size_t j) const { return _A.getEntry (j, i); }
-		inline Element &getEntry (Element &x, size_t i, size_t j) const { return _A.getEntry (x, j, i); }
+		inline void setEntry (size_t i, size_t j, const Element &a_ij)
+		{
+			_A.setEntry (j, i, a_ij);
+		}
+		inline Element &refEntry (size_t i, size_t j)
+		{
+			return _A.refEntry (j, i);
+		}
+		inline const Element &getEntry (size_t i, size_t j) const
+		{
+			return _A.getEntry (j, i);
+		}
+		inline Element &getEntry (Element &x, size_t i, size_t j) const
+		{
+			return _A.getEntry (x, j, i);
+		}
 
-		inline RowIterator rowBegin () { return _A.colBegin (); }
-		inline RowIterator rowEnd () { return _A.colEnd (); }
-		inline ConstRowIterator rowBegin () const { return _A.colBegin (); }
-		inline ConstRowIterator rowEnd () const { return _A.colEnd (); }
+		inline RowIterator rowBegin ()
+		{
+			return _A.colBegin ();
+		}
+		inline RowIterator rowEnd ()
+		{
+			return _A.colEnd ();
+		}
+		inline ConstRowIterator rowBegin () const
+		{
+			return _A.colBegin ();
+		}
+		inline ConstRowIterator rowEnd () const
+		{
+			return _A.colEnd ();
+		}
 
-		inline RawIterator rawBegin () { return _A.rawBegin (); }
-		inline RawIterator rawEnd () { return _A.rawEnd (); }
-		inline ConstRawIterator rawBegin () const { return _A.rawBegin (); }
-		inline ConstRawIterator rawEnd () const { return _A.rawEnd (); }
+		inline RawIterator rawBegin ()
+		{
+			return _A.rawBegin ();
+		}
+		inline RawIterator rawEnd ()
+		{
+			return _A.rawEnd ();
+		}
+		inline ConstRawIterator rawBegin () const
+		{
+			return _A.rawBegin ();
+		}
+		inline ConstRawIterator rawEnd () const
+		{
+			return _A.rawEnd ();
+		}
 
-		inline RawIndexedIterator rawIndexedBegin() { return _A.rawIndexedBegin (); }
-		inline RawIndexedIterator rawIndexedEnd() { return _A.rawIndexedEnd (); }
-		inline ConstRawIndexedIterator rawIndexedBegin() const { return _A.rawIndexedBegin (); }
-		inline ConstRawIndexedIterator rawIndexedEnd() const { return _A.rawIndexedEnd (); }
+		inline RawIndexedIterator rawIndexedBegin()
+		{
+			return _A.rawIndexedBegin ();
+		}
+		inline RawIndexedIterator rawIndexedEnd()
+		{
+			return _A.rawIndexedEnd ();
+		}
+		inline ConstRawIndexedIterator rawIndexedBegin() const
+		{
+			return _A.rawIndexedBegin ();
+		}
+		inline ConstRawIndexedIterator rawIndexedEnd() const
+		{
+			return _A.rawIndexedEnd ();
+		}
 
 	protected:
 
@@ -396,43 +640,37 @@ namespace LinBox
 	};
 
 	template <class Matrix>
-	struct MatrixTraits< TransposeMatrix<Matrix, MatrixCategories::RowColMatrixTag> >
-	{
+	struct MatrixTraits< TransposeMatrix<Matrix, MatrixCategories::RowColMatrixTag> > {
 		typedef TransposeMatrix<Matrix, MatrixCategories::RowColMatrixTag> MatrixType;
 		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
 	};
 
 	template <class Matrix>
-	struct MatrixTraits< TransposeMatrix<Matrix, MatrixCategories::RowMatrixTag > >
-	{
+	struct MatrixTraits< TransposeMatrix<Matrix, MatrixCategories::RowMatrixTag > > {
 		typedef TransposeMatrix<Matrix, MatrixCategories::RowMatrixTag> MatrixType;
 		typedef typename MatrixCategories::ColMatrixTag MatrixCategory;
 	};
 
 	template <class Matrix>
-	struct MatrixTraits< TransposeMatrix<Matrix, MatrixCategories::ColMatrixTag > >
-	{
+	struct MatrixTraits< TransposeMatrix<Matrix, MatrixCategories::ColMatrixTag > > {
 		typedef TransposeMatrix<Matrix, MatrixCategories::ColMatrixTag> MatrixType;
 		typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
 	};
 
 	template <class Matrix>
-	struct MatrixTraits<const TransposeMatrix<Matrix, MatrixCategories::RowColMatrixTag> >
-	{
+	struct MatrixTraits<const TransposeMatrix<Matrix, MatrixCategories::RowColMatrixTag> > {
 		typedef const TransposeMatrix<Matrix, MatrixCategories::RowColMatrixTag> MatrixType;
 		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
 	};
 
 	template <class Matrix>
-	struct MatrixTraits<const TransposeMatrix<Matrix, MatrixCategories::RowMatrixTag> >
-	{
+	struct MatrixTraits<const TransposeMatrix<Matrix, MatrixCategories::RowMatrixTag> > {
 		typedef const TransposeMatrix<Matrix, MatrixCategories::RowMatrixTag> MatrixType;
 		typedef typename MatrixCategories::ColMatrixTag MatrixCategory;
 	};
 
 	template <class Matrix>
-	struct MatrixTraits<const TransposeMatrix<Matrix, MatrixCategories::ColMatrixTag> >
-	{
+	struct MatrixTraits<const TransposeMatrix<Matrix, MatrixCategories::ColMatrixTag> > {
 		typedef const TransposeMatrix<Matrix, MatrixCategories::ColMatrixTag> MatrixType;
 		typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
 	};

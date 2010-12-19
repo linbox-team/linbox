@@ -680,19 +680,21 @@ namespace LinBox
 		/** Solve a nonsingular, square linear system \c Ax=b over quotient field of a ring
 		 *
 		 * @param num   Vector of numerators of the solution
-		 * @param den   The common denominator. <code>1/den * num</code> is the rational solution of <code>Ax = b</code>.
+		 * @param den   The common denominator. <code>1/den * num</code> is the rational solution of <code>Ax = b</code>
 		 * @param A         Matrix of linear system (it must be square)
 		 * @param b         Right-hand side of system
+		 * @param s         unused
 		 * @param maxPrimes maximum number of moduli to try
 		 *
-		 * @return status of solution.
-		 *   \c SS_FAILED - all primes used were bad
-		 *   \c SS_OK - solution found, guaranteed correct.
-		 *   \c SS_SINGULAR - system appreared singular mod all primes.
+		 * @return status of solution :
+		 *   - \c SS_FAILED   all primes used were bad;
+		 *   - \c SS_OK       solution found, guaranteed correct;
+		 *   - \c SS_SINGULAR system appreared singular mod all primes.
+		 *   .
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
 		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A,
-						    const Vector2& b, bool = false,
+						    const Vector2& b, bool s = false,
 						    int maxPrimes = DEFAULT_MAXPRIMES) const;
 
 		/** Solve a general rectangular linear system \c Ax=b over quotient field of a ring.
