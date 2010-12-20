@@ -52,6 +52,7 @@
 	    <li><a href="#source">Subversion</a></li>
 	    <li><a href="#standards">Coding standards</a></li>
 	    <li><a href="#checklist">Checklist for adding files</a></li>
+	    <li><a href="#website">Checklist for website maintenance</a></li>
 	  </ol>
 
 	  <a name="compilation"></a>
@@ -644,6 +645,26 @@ test_sparse_matrix_SOURCES = 		\
 	      from the linbox directory. Again, include a meaningful log entry.
 	    </li>
 	  </ol>
+	</td>
+	<td>
+	  <a name="website"></a>
+	      To modify the website,
+	      <p><tt>svn co svn://linalg.org/linalg/trunk/www/</tt></p>
+
+		  Then make your changes and check them in.  They automatically propagate to the public website.  
+
+When updating the website, please also make an up-to-date version of the html
+documentation:  in a linbox installation, 
+make the html docs and copy the html directory to here.
+
+1. cd <path>/linbox/doc
+
+2. make doc
+
+3. cd ~linbox
+
+4  cp -r <path>/linbox/doc/html html
+
 	</td>
       </tr>
 
