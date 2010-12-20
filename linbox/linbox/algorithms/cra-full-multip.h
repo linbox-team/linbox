@@ -460,7 +460,7 @@ namespace LinBox
 				std::vector<Integer>::const_iterator t0_it = _tab_it->begin();
 				DomainElement invP0; this->precomputeInvP0(invP0, D, _mod_it->operator()() );
 				for( ; ri_it != ri.end(); ++e_it, ++ri_it, ++ t0_it){
-					assert (!std::isnan(*e_it));
+//					assert (!std::isnan(*e_it));
 					this->fieldreconstruct(*ri_it, D, *e_it, *t0_it, invP0, (*_mod_it).operator()() );
 				}
 				Integer tmp; D.characteristic(tmp);
@@ -482,7 +482,7 @@ namespace LinBox
 				_tab_it->resize(this->size);
 				std::vector<Integer>::iterator t0_it= _tab_it->begin();
 				for( ; t0_it != _tab_it->end(); ++e_it, ++ t0_it){
-					assert (!std::isnan(*e_it));
+//					assert (!std::isnan(*e_it));
 					D.convert(*t0_it, *e_it);
 				}
 				*_occ_it = true;
