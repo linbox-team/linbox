@@ -46,7 +46,7 @@ int main (int argc, char **argv)
 		{ '\0' }
 	};
 
-	typedef Modular<uint32> Field;
+	typedef Modular<LinBox::uint32> Field;
 	typedef vector<Field::Element> Vector;
 
 	parseArguments (argc, argv, args);

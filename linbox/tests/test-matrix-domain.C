@@ -1463,7 +1463,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	typedef Modular<uint32> Field;
+	typedef Modular<LinBox::uint32> Field;
 	typedef Field::Element Element;
 
 	Field F (q);

@@ -113,7 +113,7 @@ namespace LinBox
 // log(2) being close to 0.69314718055994531
 double naturallog(const Integer& a) {
   signed long int exp;
-  double d = mpz_get_d_2exp( &exp, (mpz_ptr)&(a.gmp_rep) );
+  double d = mpz_get_d_2exp( &exp, (mpz_ptr)&(LinBox::SpyInteger::get_rep(a) ) );
   return (double)exp*0.69314718055994531+log(d);
 }
 #endif

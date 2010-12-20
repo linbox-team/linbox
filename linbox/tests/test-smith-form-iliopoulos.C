@@ -48,7 +48,6 @@
 #include "test-common.h"
 #include <linbox/algorithms/matrix-hom.h>
 
-#define int32 LinBox::int32
 
 using namespace LinBox;
 
@@ -180,11 +179,11 @@ bool testRandom(const Ring& R,
 
 		else {
 
-			report << "Using PIRModular<int32>\n";
+			report << "Using PIRModular<LinBox::int32>\n";
 
-			PIRModular<int32> PIR(s % LINBOX_MAX_MODULUS);
+			PIRModular<LinBox::int32> PIR(s % LINBOX_MAX_MODULUS);
 
-			DenseMatrix<PIRModular<int32> > Ap(PIR, A.rowdim(), A.coldim());
+			DenseMatrix<PIRModular<LinBox::int32> > Ap(PIR, A.rowdim(), A.coldim());
 
 			MatrixHom::map (Ap, A, PIR);
 
@@ -312,4 +311,3 @@ int main(int argc, char** argv)
 
 }
 
-#undef int32

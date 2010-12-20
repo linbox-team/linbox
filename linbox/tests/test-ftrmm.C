@@ -584,8 +584,8 @@ int main()
 	typedef Modular<float>          FieldF;
 	//typedef ModularBalanced<double> FieldD;
 	typedef Modular<double>         FieldD;
-	//typedef ModularBalanced<int32>  FieldI;
-	typedef Modular<int32>          FieldI;
+	//typedef ModularBalanced<LinBox::int32>  FieldI;
+	typedef Modular<LinBox::int32>          FieldI;
 	//!@bug : this one completely fails :
 	//typedef Modular<Integer>          FieldI;
 
