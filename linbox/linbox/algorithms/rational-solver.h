@@ -116,60 +116,60 @@ namespace LinBox
 	 * \ingroup padic
 	 */
 	template<class Ring, class Field,class RandomPrime, class MethodTraits = DixonTraits>
-	class RationalSolver {
+	      class RationalSolver {
 
-	public:
-		/** Solve a linear system \c Ax=b over quotient field of a ring
-		 *         giving a random solution if the system is singular and consistent,
-		 *         giving the unique solution if the system is non-singular.
-		 *
-		 * @param num  Vector of numerators of the solution
-		 * @param den  The common denominator. 1/den * num is the rational solution of \c Ax=b.
-		 * @param A    Matrix of linear system
-		 * @param b    Right-hand side of system
-		 * @param maxPrimes maximum number of moduli to try
-		 * @param toto
-		 *
-		 * @return status of solution
-		 */
-		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A,
-					 const Vector2& b,const bool toto,
-					 int maxPrimes = DEFAULT_MAXPRIMES) const;
-
-
-		/** Solve a nonsingular linear system \c Ax=b over quotient field of a ring,
-		 *          giving the unique solution of the system.
-		 *
-		 * @param num  Vector of numerators of the solution
-		 * @param den  The common denominator. 1/den * num is the rational solution of \c Ax=b.
-		 * @param A   Matrix of linear system
-		 * @param b   Right-hand side of system
-		 * @param maxPrimes maximum number of moduli to try
-		 *
-		 * @return status of solution
-		 */
-		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A,
-						    const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
-
-		/** brief Solve a singular linear system \c Ax=b over quotient field of a ring,
-		 *         giving a random solution if the system is singular and consistent.
-		 *
-		 * @param num  Vector of numerators of the solution
-		 * @param den  The common denominator. 1/den * num is the rational solution of \c Ax=b.
-		 * @param A   Matrix of linear system
-		 * @param b   Right-hand side of system
-		 * @param maxPrimes maximum number of moduli to try
-		 *
-		 * @return status of solution
-		 */
-		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A,
-						 const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
+	      public:
+		      /** Solve a linear system \c Ax=b over quotient field of a ring
+		       *         giving a random solution if the system is singular and consistent,
+		       *         giving the unique solution if the system is non-singular.
+		       *
+		       * @param num  Vector of numerators of the solution
+		       * @param den  The common denominator. 1/den * num is the rational solution of \c Ax=b.
+		       * @param A    Matrix of linear system
+		       * @param b    Right-hand side of system
+		       * @param maxPrimes maximum number of moduli to try
+		       * @param toto
+		       *
+		       * @return status of solution
+		       */
+		      template<class IMatrix, class Vector1, class Vector2>
+		      SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A,
+					       const Vector2& b,const bool toto,
+					       int maxPrimes = DEFAULT_MAXPRIMES) const;
 
 
-	};
+		      /** Solve a nonsingular linear system \c Ax=b over quotient field of a ring,
+		       *          giving the unique solution of the system.
+		       *
+		       * @param num  Vector of numerators of the solution
+		       * @param den  The common denominator. 1/den * num is the rational solution of \c Ax=b.
+		       * @param A   Matrix of linear system
+		       * @param b   Right-hand side of system
+		       * @param maxPrimes maximum number of moduli to try
+		       *
+		       * @return status of solution
+		       */
+		      template<class IMatrix, class Vector1, class Vector2>
+		      SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A,
+							  const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
+
+		      /** brief Solve a singular linear system \c Ax=b over quotient field of a ring,
+		       *         giving a random solution if the system is singular and consistent.
+		       *
+		       * @param num  Vector of numerators of the solution
+		       * @param den  The common denominator. 1/den * num is the rational solution of \c Ax=b.
+		       * @param A   Matrix of linear system
+		       * @param b   Right-hand side of system
+		       * @param maxPrimes maximum number of moduli to try
+		       *
+		       * @return status of solution
+		       */
+		      template<class IMatrix, class Vector1, class Vector2>
+		      SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A,
+						       const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
+
+
+	      };
 
 
 
@@ -677,10 +677,10 @@ namespace LinBox
 			return solve (num, den, A, b, false, maxPrimes, level);
 		}
 
-		/** Solve a nonsingular, square linear system \c Ax=b over quotient field of a ring
+		/** Solve a nonsingular, square linear system \c Ax=b over quotient field of a ring.
 		 *
-		 * @param num   Vector of numerators of the solution
-		 * @param den   The common denominator. <code>1/den * num</code> is the rational solution of <code>Ax = b</code>
+		 * @param num       Vector of numerators of the solution
+		 * @param den       The common denominator. <code>1/den * num</code> is the rational solution of <code>Ax = b</code>
 		 * @param A         Matrix of linear system (it must be square)
 		 * @param b         Right-hand side of system
 		 * @param s         unused
@@ -700,17 +700,17 @@ namespace LinBox
 		/** Solve a general rectangular linear system \c Ax=b over quotient field of a ring.
 		 *  If A is known to be square and nonsingular, calling solveNonsingular is more efficient.
 		 *
-		 * @param num   Vector of numerators of the solution
-		 * @param den   The common denominator. <code>1/den * num</code> is the rational solution of <code>Ax = b</code>.
+		 * @param num       Vector of numerators of the solution
+		 * @param den       The common denominator. <code>1/den * num</code> is the rational solution of <code>Ax = b</code>
 		 * @param A         Matrix of linear system
 		 * @param b         Right-hand side of system
 		 * @param maxPrimes maximum number of moduli to try
 		 * @param level     level of certification to be used
 		 *
 		 * @return status of solution. if <code>(return != SS_FAILED)</code>, and <code>(level >= SL_LASVEGAS)</code>, solution is guaranteed correct.
-		 *   \c SS_FAILED - all primes used were bad
-		 *   \c SS_OK - solution found.
-		 *   \c SS_INCONSISTENT - system appreared inconsistent. certificate is in \p lastCertificate if <code>(level >= SL_CERTIFIED)</code>
+		 *   - \c SS_FAILED        all primes used were bad
+		 *   - \c SS_OK            solution found.
+		 *   - \c SS_INCONSISTENT  system appreared inconsistent. certificate is in \p lastCertificate if <code>(level >= SL_CERTIFIED)</code>
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
 		SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A,
@@ -727,9 +727,9 @@ namespace LinBox
 		 * @param level     level of certification to be used
 		 *
 		 * @return status of solution. if <code>(return != SS_FAILED)</code>, and <code>(level >= SL_LASVEGAS)</code>, solution is guaranteed correct.
-		 *   \c SS_FAILED - all primes used were bad
-		 *   \c SS_OK - solution found.
-		 *   \c SS_INCONSISTENT - system appreared inconsistent. certificate is in lastCertificate if <code>(level >= SL_CERTIFIED)</code>
+		 *  - \c SS_FAILED  all primes used were bad
+		 *  - \c SS_OK  solution found.
+		 *  - \c SS_INCONSISTENT  system appreared inconsistent. certificate is in lastCertificate if <code>(level >= SL_CERTIFIED)</code>
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
 		SolverReturnStatus findRandomSolution(Vector1& num, Integer& den, const IMatrix& A,
@@ -741,7 +741,7 @@ namespace LinBox
 		 * Same arguments and return as findRandomSolution, except
 		 *
 		 * @param num  Vector of numerators of the solution
-		 * @param den  The common denominator. <code>1/den * num</code> is the rational solution of <code>Ax = b</code>.
+		 * @param den  The common denominator. <code>1/den * num</code> is the rational solution of <code>Ax = b</code>
 		 * @param A
 		 * @param b
 		 * @param randomSolution  parameter to determine whether to randomize or not (since solveSingular calls this function as well)
@@ -750,9 +750,9 @@ namespace LinBox
 		 * @param level
 		 *
 		 * When <code>(randomSolution == true && makeMinDenomCert == true)</code>,
-		 *   If <code>(level == SL_MONTECARLO)</code> this function has the same effect as calling findRandomSolution.
-		 *   If <code>(level >= SL_LASVEGAS && return == SS_OK)</code>, \c lastCertifiedDenFactor contains a certified factor of the min-solution's denominator.
-		 *   If <code>(level >= SL_CERTIFIED && return == SS_OK)</code>, \c lastZBNumer and \c lastCertificate are updated as well.
+		 *  - If <code>(level == SL_MONTECARLO)</code> this function has the same effect as calling findRandomSolution.
+		 *  - If <code>(level >= SL_LASVEGAS && return == SS_OK)</code>, \c lastCertifiedDenFactor contains a certified factor of the min-solution's denominator.
+		 *  - If <code>(level >= SL_CERTIFIED && return == SS_OK)</code>, \c lastZBNumer and \c lastCertificate are updated as well.
 		 *
 		 */
 		template <class IMatrix, class Vector1, class Vector2>
@@ -854,14 +854,14 @@ namespace LinBox
 
 
 
-	/** \brief partial specialization of p-adic based solver with a hybrid Numeric/Symbolic computation
+	/** \brief partial specialization of p-adic based solver with a hybrid Numeric/Symbolic computation.
 	 *
 	 *   See the following reference for details on this implementation:
-	 *   - Zhendong Wan: Exactly solve integer linear systems using numerical methods.
+	 *   @bib
+	 *   - Zhendong Wan <i>Exactly solve integer linear systems using numerical methods.</i>
 	 *   Submitted to Journal of Symbolic Computation, 2004.
 	 *
 	 */
-
 	//template argument Field and RandomPrime are not used.
 	//Keep it just for interface consistency.
 	template <class Ring, class Field, class RandomPrime>
@@ -990,9 +990,9 @@ namespace LinBox
 #endif
 	};
 
-	/*****************
-	 * BLOCK HANKEL
-	 *****************/
+	/*------------*/
+	//! BLOCK HANKEL
+	/*------------*/
 
 	template<class Ring, class Field,class RandomPrime>
 	class RationalSolver<Ring, Field, RandomPrime, BlockHankelTraits> {
@@ -1010,7 +1010,7 @@ namespace LinBox
 	public:
 
 
-		/** Constructor
+		/** Constructor.
 		 * @param r   a Ring, set by default
 		 * @param rp  a RandomPrime generator, set by default
 		 */
@@ -1021,7 +1021,7 @@ namespace LinBox
 		}
 
 
-		/** Constructor, trying the prime p first
+		/** Constructor, trying the prime p first.
 		 * @param p   a Prime
 		 * @param r   a Ring, set by default
 		 * @param rp  a RandomPrime generator, set by default
@@ -1038,9 +1038,9 @@ namespace LinBox
 
 
 
-	/*****************
-	 * SPARSE LU
-	 *****************/
+	/*------------*/
+	//! SPARSE LU
+	/*------------*/
 	template<class Ring, class Field,class RandomPrime>
 	class RationalSolver<Ring, Field, RandomPrime, SparseEliminationTraits> {
 	public:
