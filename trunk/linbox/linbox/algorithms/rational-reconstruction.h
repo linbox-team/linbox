@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-/* linbox/algorithms/lifting-container-base.h
+/*
  * Copyright (C) 2004 Zhendong Wan, Pascal Giorgi
  *
  * Written by Zhendong Wan <wan@mail.eecis.udel.edu>
@@ -20,6 +20,11 @@
  * License along with this library; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
+ */
+
+/*! @file algorithms/rational-reconstruction.h
+ * @ingroup algorithms
+ * @brief NO DOC
  */
 
 #ifndef __LINBOX_reconstruction_H
@@ -87,7 +92,10 @@ namespace LinBox
 		RatRecon RR;
 
 		/** \brief Constructor
-		 *  maybe use different ring than the ring in lcontainer
+		 * @todo maybe use different ring than the ring in lcontainer
+		 *  @param lcontainer NO DOC
+		 *  @param r          NO DOC
+		 *  @param THRESHOLD  NO DOC
 		 */
 		RationalReconstruction (const LiftingContainer& lcontainer, const Ring& r = Ring(), int THRESHOLD =DEF_THRESH) :
 			_lcontainer(lcontainer), _r(r), _threshold(THRESHOLD), RR(_r)
@@ -102,7 +110,6 @@ namespace LinBox
 		{
 			return _lcontainer;
 		}
-
 
 		/** \brief  Handler to switch between different rational reconstruction strategy.
 		 *  Allow  early termination and direct fast method
@@ -142,6 +149,7 @@ namespace LinBox
 			return 1;
 		}
 
+		/*! @todo WHY a dot product here ?  */
 		template <class InVect1, class InVect2>
 		Integer& dot (Integer& d, const InVect1& v1, const InVect2& v2) const
 		{
@@ -153,13 +161,6 @@ namespace LinBox
 
 			return d;
 		}
-		/** \brief Reconstruct a vector of rational numbers
-		 *  from p-adic digit vector sequence.
-		 *  An early termination technique is used.
-		 *  Answer is a pair (numerator, common denominator)
-		 *  The trick to reconstruct the raitonal solution (V. Pan) is implemented.
-		 *  Implement the certificate idea, preprint submitted to ISSAC'05
-		 */
 
 #if 0
 		template <class Vector>
@@ -173,6 +174,13 @@ namespace LinBox
 		}
 #endif
 
+		/** Reconstruct a vector of rational numbers
+		 *  from p-adic digit vector sequence.
+		 *  An early termination technique is used.
+		 *  Answer is a pair (numerator, common denominator)
+		 *  The trick to reconstruct the raitonal solution (V. Pan) is implemented.
+		 *  Implement the certificate idea, preprint submitted to ISSAC'05
+		 */
 		template<class Vector>
 		bool getRational1(Vector& num, Integer& den) const
 		{
@@ -657,8 +665,7 @@ namespace LinBox
 			return true; //lifted ok, assuming norm was correct
 		}
 
-
-
+		/** NO DOC. */
 		template <class ConstIterator>
 		void PolEval(Vector& y, ConstIterator& Pol, size_t deg, Integer &x) const
 		{
@@ -694,7 +701,7 @@ namespace LinBox
 		} // end of getRational2
 
 
-		/** \brief Reconstruct a vector of rational numbers
+		/** Reconstruct a vector of rational numbers
 		 *  from p-adic digit vector sequence.
 		 *  compute all digits and reconstruct rationals only once
 		 *  Result is a vector of numerators and one common denominator
@@ -986,12 +993,12 @@ namespace LinBox
 
 		} // end of getRational3
 
-		/*
-		 * early terminated analog of getRational3
+		/*!
+		 * early terminated analog of getRational3.
 		 */
-
 		template<class Vector1>
-		bool getRationalET(Vector1& num, Integer& den, const Integer& den_app =1) const {
+		bool getRationalET(Vector1& num, Integer& den, const Integer& den_app =1) const
+		{
 			//cout << "ET p ading lifting using ClassicMaxQRationalReconstruction by default or given RReconstruction\n";
 #ifdef RSTIMING
 			ttRecon.clear();
@@ -1176,7 +1183,7 @@ namespace LinBox
 
 
 #ifdef __LINBOX_HAVE_NTL
-		/*
+		/*!
 		 * Rational reconstruction using Lattice base reduction
 		 */
 		template<class Vector1>
@@ -1505,7 +1512,7 @@ namespace LinBox
 
 #ifdef __LINBOX_HAVE_FPLLL
 
-		/*
+		/*!
 		 * Rational reconstruction using Lattice base reduction
 		 */
 		template<class Vector1>
@@ -1829,7 +1836,7 @@ namespace LinBox
 		} // end of getRational5
 
 
-		/*
+		/*!
 		 * Rational reconstruction using Lattice base reduction
 		 */
 		template<class Vector1>

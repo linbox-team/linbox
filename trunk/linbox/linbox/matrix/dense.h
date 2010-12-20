@@ -178,14 +178,13 @@ namespace LinBox
 		std::ostream &write (std::ostream &os, const Field &F,
 				     bool mapleFormat=true) const;
 
-		/** Write the matrix to an output stream.
+		/** Write brutally the matrix to an output stream.
 		 * This a raw version of \c write(os,F) (no field is given).
 		 * @param os Output stream to which to write
 		 * @param mapleFormat write in maple format ?
 		 */
 		std::ostream &write (std::ostream &os,
 				     bool mapleFormat=true) const;
-
 
 
 		/** Set the entry at the (i, j) position to a_ij.
