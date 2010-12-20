@@ -48,7 +48,7 @@
 
 using namespace LinBox;
 
-typedef Modular<uint32> Field;
+typedef Modular<LinBox::uint32> Field;
 
 // Constants: we are working with an n x n matrix over GF(q)
 const int n = 10000000;
