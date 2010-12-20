@@ -256,7 +256,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	typedef PIRModular<int32> Ring;
+	typedef PIRModular<LinBox::int32> Ring;
 	//typedef PIRModular<dense> Ring;
 	typedef vector<Ring::Element> Vector;
 
@@ -269,7 +269,7 @@ int main (int argc, char **argv)
 
 	RandomDenseStream<Ring, Vector> stream (R, n, iterations);
 
-	if (!testLocalSmith<Ring> (R, stream, "PIRModular<int32>")) pass = false;
+	if (!testLocalSmith<Ring> (R, stream, "PIRModular<LinBox::int32>")) pass = false;
 
 	// power of 2 test
 	Local2_32 R2;

@@ -55,19 +55,19 @@ int main (int argc, char **argv)
 	commentator.start("Hom test suite", "Hom");
 	bool pass = true;
 
-	Modular<uint32> F_uint32 ((uint32) q);
-	Modular<uint16> F_uint16 ((uint16) q);
-	Hom<Modular<uint16>, Modular<uint32> > iso(F_uint16, F_uint32);
+	Modular<LinBox::uint32> F_uint32 ((LinBox::uint32) q);
+	Modular<LinBox::uint16> F_uint16 ((LinBox::uint16) q);
+	Hom<Modular<LinBox::uint16>, Modular<LinBox::uint32> > iso(F_uint16, F_uint32);
 
-	uint16 x=2, y;
-	uint32 z=2, w;
+	LinBox::uint16 x=2, y;
+	LinBox::uint32 z=2, w;
 	iso.image(w, x);
 	pass = pass && F_uint32.areEqual(z, w);
 	iso.preimage(y, z);
 	pass = pass && F_uint16.areEqual(x, y);
 
 	/* for image field!
-	uint32 x, y, z, w;
+	LinBox::uint32 x, y, z, w;
 	iso.smul(x, 2, 3);
 	iso.mul(y, 2, 3);
 	pass = pass && iso.areEqual(x, y);

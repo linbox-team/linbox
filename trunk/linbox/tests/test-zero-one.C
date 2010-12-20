@@ -41,7 +41,7 @@
 int main(int argc, char **argv)
 {
   bool pass = true;
-  uint32 prime = 31337;
+  LinBox::uint32 prime = 31337;
   size_t *rows, *cols, i;
   static size_t n = 1000, iter = 1;
 

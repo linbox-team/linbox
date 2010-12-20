@@ -74,7 +74,7 @@ int main (int argc, char **argv)
 	commentator.start("ModularBalanced<int32> field test suite", "ModularBalanced<int32>");
 	bool pass = true;
 
-	ModularBalanced<int32> F_int (1073741789);//(2147483629);//(2147483647);
+	ModularBalanced<LinBox::int32> F_int (1073741789);//(2147483629);//(2147483647);
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
