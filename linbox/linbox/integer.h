@@ -104,5 +104,18 @@ namespace LinBox
 
 }
 
+// Temporary dependency to GIVARO >= 3.3.4
+#include <givaro/givconfig.h>
+#if GIVARO_VERSION < 30304
+#include <gmp++/gmp++.h>
+#include <math.h>
+// Natural logarithm of a
+// log(2) being close to 0.69314718055994531
+double naturallog(const Integer& a) {
+  signed long int exp;
+  double d = mpz_get_d_2exp( &exp, (mpz_ptr)&(a.gmp_rep) );
+  return (double)exp*0.69314718055994531+log(d);
+}
+#endif
 #endif // __LINBOX_integer_H
 

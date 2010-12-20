@@ -30,7 +30,7 @@ AC_ARG_WITH(givaro,
 	     fi],
 	     [GIVARO_HOME_PATH="${DEFAULT_CHECKING_PATH}"])
 
-min_givaro_version=ifelse([$1], ,3.3.4,$1)
+min_givaro_version=ifelse([$1], ,3.3.0,$1)
 
 
 dnl Check for existence
@@ -60,7 +60,7 @@ if test -r "$GIVARO_HOME/include/givaro/givconfig.h"; then
 	[
 	AC_TRY_RUN(
 	[#include <givaro/givconfig.h>
-	 int main () { if (GIVARO_VERSION < 30304 || GIVARO_VERSION>0x030000) return -1; else return 0; /* old version of Givaro are defined as hexa 0x03yyzz*/ }
+	 int main () { if (GIVARO_VERSION < 30300 || GIVARO_VERSION>0x030000) return -1; else return 0; /* old version of Givaro are defined as hexa 0x03yyzz*/ }
 	],[
 	givaro_found="yes"
 	break
