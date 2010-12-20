@@ -111,7 +111,7 @@ namespace LinBox
 #include <math.h>
 // Natural logarithm of a
 // log(2) being close to 0.69314718055994531
-double naturallog(const Integer& a) {
+inline double naturallog(const Integer& a) {
   signed long int exp;
   double d = mpz_get_d_2exp( &exp, (mpz_ptr)(LinBox::SpyInteger::get_rep(a) ) );
   return (double)exp*0.69314718055994531+log(d);
