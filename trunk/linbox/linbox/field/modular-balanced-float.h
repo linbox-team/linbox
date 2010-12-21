@@ -11,6 +11,11 @@
  * See COPYING for license information.
  */
 
+/*! @file field/modular-balanced-float.h
+ * @ingroup field
+ * @brief Balanced  representation of <code>Z/mZ</code> over \c float .
+ */
+
 #ifndef __LINBOX_modular_balanced_float_H
 #define __LINBOX_modular_balanced_float_H
 
@@ -63,6 +68,7 @@ namespace LinBox
 
 		float  modulus;
 		float half_mod;
+		float mhalf_mod;
 		unsigned long   lmodulus;
 
 	public:
@@ -85,6 +91,7 @@ namespace LinBox
 		ModularBalanced (int32 p, int exp = 1) :
 			modulus((float)p),
 			half_mod( (p-1.)/2),
+			mhalf_mod( half_mod-p+1),
 			lmodulus (p)
 		{
 			if(modulus <= 1)
@@ -104,6 +111,7 @@ namespace LinBox
 		ModularBalanced (float p) :
 			modulus (p),
 			half_mod ((p-1)/2),
+			mhalf_mod( half_mod-p+1),
 			lmodulus ((unsigned long)p)
 		{
 			if (modulus <= 1)
@@ -120,6 +128,7 @@ namespace LinBox
 		ModularBalanced (long int p) :
 			modulus((float)p),
 			half_mod ((p-1)/2),
+			mhalf_mod( half_mod-p+1),
 			lmodulus(p)
 		{
 			if ((float) modulus <= 1)
@@ -134,6 +143,7 @@ namespace LinBox
 		ModularBalanced (const integer& p) :
 			modulus((float) p),
 			half_mod ((p-1)/2),
+			mhalf_mod( half_mod-(float)p+1),
 			lmodulus(p)
 		{
 			if(modulus <= 1)
@@ -146,11 +156,13 @@ namespace LinBox
 		ModularBalanced (const ModularBalanced<float>& mf) :
 			modulus (mf.modulus),
 			half_mod (mf.half_mod),
+			mhalf_mod( mf.mhalf_mod),
 			lmodulus (mf.lmodulus) {}
 
 		const ModularBalanced &operator= (const ModularBalanced<float> &F) {
 			modulus = F.modulus;
 			half_mod = F.half_mod;
+			mhalf_mod = F.mhalf_mod;
 			lmodulus= F.lmodulus;
 			return *this;
 		}
@@ -216,9 +228,13 @@ namespace LinBox
 		}
 
 
-		inline Element &init (Element &x, const integer &y) const  {
-			// 			return x = (Element)mpz_fdiv_ui(y.get_mpz(),lmodulus );
-			return x = (Element)(y%lmodulus);
+		inline Element &init (Element &x, const integer &y) const
+		{
+			x = (Element)(y%lmodulus);
+			if (x > half_mod) return   x -= modulus;
+			else if (x < mhalf_mod) return x += modulus;
+
+			return x;
 		}
 
 		inline Element& init(Element& x, const float y =0) const
@@ -226,7 +242,7 @@ namespace LinBox
 
 			x = fmod (y, modulus);
 			if (x > half_mod) return   x -= modulus;
-			else if (x < - half_mod) return x += modulus;
+			else if (x < mhalf_mod) return x += modulus;
 			else return x;
 		}
 
@@ -261,7 +277,7 @@ namespace LinBox
 		{
 			x = y + z;
 			if ( x > half_mod ) return x -= modulus;
-			if ( x < -half_mod ) return x += modulus;
+			if ( x < mhalf_mod ) return x += modulus;
 			return x;
 		}
 
@@ -271,7 +287,7 @@ namespace LinBox
 		{
 			x = y - z;
 			if (x > half_mod) return x -= modulus;
-			if (x < -half_mod) return x += modulus;
+			if (x < mhalf_mod) return x += modulus;
 			return x;
 		}
 
@@ -313,7 +329,7 @@ namespace LinBox
 				tx = temp;
 			}
 			if (tx > half_mod ) return x = tx - modulus;
-			if ( tx < -half_mod ) return x = tx + modulus;
+			if ( tx < mhalf_mod ) return x = tx + modulus;
 			return x = (float) tx;
 		}
 
@@ -330,7 +346,7 @@ namespace LinBox
 		{
 			x += y;
 			if ( x > half_mod ) return x -= modulus;
-			if ( x < -half_mod ) return x += modulus;
+			if ( x < mhalf_mod ) return x += modulus;
 			return x;
 		}
 
@@ -338,7 +354,7 @@ namespace LinBox
 		{
 			x -= y;
 			if ( x > half_mod ) return x -= modulus;
-			if ( x < -half_mod ) return x += modulus;
+			if ( x < mhalf_mod ) return x += modulus;
 			return x;
 		}
 
@@ -372,8 +388,7 @@ namespace LinBox
 		{
 			Element one, zero ; init(one,1UL) ; init(zero,0UL);
 			double max_double = (double) (1ULL<<FLT_MANT_DIG) - modulus ;
-			double p = half_mod ;
-			if (!(fmod((double)modulus,(double)2.))) ++p; // if pair, -(p-1)/2 !
+			double p = std::max(half_mod,-mhalf_mod) ;
 			if (areEqual(zero,r))
 				return (unsigned long) (double(max_double)/p) ;
 			else if (areEqual(one,r))

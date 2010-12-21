@@ -21,6 +21,10 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/*! @file field/modular-int64.h
+ * @ingroup field
+ * @brief  representation of <code>Z/mZ</code> over \c int64 .
+ */
 #ifndef __LINBOX_modular_int64_H
 #define __LINBOX_modular_int64_H
 
@@ -228,7 +232,7 @@ namespace LinBox
 
 		inline Element &init (Element &x, const integer &y) const
 		{
-			x = y % modulus;
+			x = Element (y % modulus);
 			if (x < 0) x += modulus;
 			return x;
 		}

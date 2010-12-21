@@ -21,6 +21,10 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/*! @file field/modular-short.h
+ * @ingroup field
+ * @brief  representation of <code>Z/mZ</code> over \c short .
+ */
 #ifndef __LINBOX_modular__int16_H
 #define __LINBOX_modular__int16_H
 
@@ -171,7 +175,7 @@ namespace LinBox
 		}
 
 		inline Element &init (Element &x, const integer &y) const  {
-			x = y % integer (modulus);
+			x = Element(y % (long)modulus);
 			if (x < 0) x += modulus;
 			return x;
 		}

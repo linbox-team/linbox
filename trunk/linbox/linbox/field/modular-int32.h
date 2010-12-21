@@ -20,6 +20,10 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/*! @file field/modular-int32.h
+ * @ingroup field
+ * @brief  representation of <code>Z/mZ</code> over \c int32 .
+ */
 #ifndef __LINBOX_modular_int32_H
 #define __LINBOX_modular_int32_H
 
@@ -229,7 +233,7 @@ namespace LinBox
 
 		inline Element &init (Element &x, const integer &y) const
 		{
-			x = y % modulus;
+			x = Element (y % modulus);
 			if (x < 0) x += modulus;
 			return x;
 		}

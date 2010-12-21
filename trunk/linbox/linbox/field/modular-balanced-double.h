@@ -11,6 +11,11 @@
  * See COPYING for license information.
  */
 
+/*! @file field/modular-balanced-double.h
+ * @ingroup field
+ * @brief Balanced representation of <code>Z/mZ</code> over \c double .
+ */
+
 #ifndef __LINBOX_modular_balanced_double_H
 #define __LINBOX_modular_balanced_double_H
 
@@ -42,21 +47,28 @@ namespace LinBox
 	struct ClassifyRing<ModularBalanced<Element> >;
 
 	template <>
-	struct ClassifyRing<ModularBalanced<double> >
-	{
+	struct ClassifyRing<ModularBalanced<double> > {
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
 	class MultiModDouble;
 
-	/// \ingroup field
-	template <>
+	/*! \ingroup modular
+	 * Centered representation of \f$\mathbf{Z}/m\mathbf{Z}\f$.
+	 * If \c m is the modulus, then elements are represented in \f[ \left
+	 * \llbracket \left \lceil -\frac{m-1}{2} \right \rceil, \left \lceil
+	 * \frac{m-1}{2} \right \rceil \right \rrbracket.\f] This
+	 * representation allows more accumulations before a reduction is
+	 * necessary, at the cost of a more expensive reduction.
+	 */
+	template<>
 	class ModularBalanced<double> : public FieldInterface {
 
 	protected:
 
 		double  modulus;
 		double half_mod;
+		double mhalf_mod;
 		unsigned long   lmodulus;
 
 	public:
@@ -68,8 +80,8 @@ namespace LinBox
 		typedef ModularBalancedRandIter<double> RandIter;
 		typedef NonzeroRandIter<ModularBalanced<double>,RandIter> NonZeroRandIter;
 
-		static ClassifyRing <ModularBalanced<double> >::categoryTag
-		getCategory() {
+		static ClassifyRing <ModularBalanced<double> >::categoryTag getCategory()
+		{
 			return ClassifyRing<ModularBalanced<double> >::categoryTag();
 		}
 
@@ -78,6 +90,7 @@ namespace LinBox
 		ModularBalanced (int32 p, int exp = 1) :
 			modulus((double)p),
 			half_mod( (p-1.)/2),
+			mhalf_mod(half_mod-modulus+1),
 			lmodulus (p)
 		{
 			if(modulus <= 1)
@@ -97,6 +110,7 @@ namespace LinBox
 		ModularBalanced (double p) :
 			modulus (p),
 			half_mod ((p-1)/2),
+			mhalf_mod(half_mod-modulus+1),
 			lmodulus ((unsigned long)p)
 		{
 			if (modulus <= 1)
@@ -113,6 +127,7 @@ namespace LinBox
 		ModularBalanced (long int p) :
 			modulus((double)p),
 			half_mod ((p-1)/2),
+			mhalf_mod(half_mod-modulus+1),
 			lmodulus(p)
 		{
 			if ((double) modulus <= 1)
@@ -127,6 +142,7 @@ namespace LinBox
 		ModularBalanced (const integer& p) :
 			modulus((double) p),
 			half_mod ((p-1)/2),
+			mhalf_mod(half_mod-modulus+1),
 			lmodulus(p)
 		{
 			if(modulus <= 1)
@@ -139,11 +155,13 @@ namespace LinBox
 		ModularBalanced (const ModularBalanced<double>& mf) :
 			modulus (mf.modulus),
 			half_mod (mf.half_mod),
+			mhalf_mod(half_mod-modulus+1),
 			lmodulus (mf.lmodulus) {}
 
 		const ModularBalanced &operator= (const ModularBalanced<double> &F) {
 			modulus = F.modulus;
 			half_mod = F.half_mod;
+			mhalf_mod = F.mhalf_mod;
 			lmodulus= F.lmodulus;
 			return *this;
 		}
@@ -179,7 +197,8 @@ namespace LinBox
 			return os << "balanced double mod " << int(modulus);
 		}
 
-		std::istream &read (std::istream &is) {
+		std::istream &read (std::istream &is)
+		{
 			is >> modulus;
 			if(modulus <= 1)
 				throw PreconditionFailed (__func__,
@@ -208,8 +227,10 @@ namespace LinBox
 
 
 		inline Element &init (Element &x, const integer &y) const  {
-			// 			return x = (Element)mpz_fdiv_ui(y.get_mpz(),lmodulus );
-			return x = (Element)(y%lmodulus);
+			x = (Element)(y%lmodulus);
+			if (x<mhalf_mod) return x += modulus ;
+			else if (x>half_mod) return x += modulus ;
+			return  x ;
 		}
 
 		inline Element& init(Element& x, const double y =0) const
@@ -217,7 +238,7 @@ namespace LinBox
 
 			x = fmod (y, modulus);
 			if (x > half_mod) return   x -= modulus;
-			else if (x < - half_mod) return x += modulus;
+			else if (x < mhalf_mod) return x += modulus;
 			else return x;
 		}
 
@@ -226,6 +247,11 @@ namespace LinBox
 			return x = y;
 		}
 
+		/*! Tests equality.
+		 * @param x element
+		 * @param y element
+		 * @warning \c x and \c y are supposed to be reduced.
+		 */
 		inline bool areEqual (const Element &x, const Element &y) const
 		{
 			return x == y;
@@ -252,7 +278,7 @@ namespace LinBox
 		{
 			x = y + z;
 			if ( x > half_mod ) return x -= modulus;
-			if ( x < -half_mod ) return x += modulus;
+			if ( x < mhalf_mod ) return x += modulus;
 			return x;
 		}
 
@@ -262,7 +288,7 @@ namespace LinBox
 		{
 			x = y - z;
 			if (x > half_mod) return x -= modulus;
-			if (x < -half_mod) return x += modulus;
+			if (x < mhalf_mod) return x += modulus;
 			return x;
 		}
 
@@ -304,7 +330,7 @@ namespace LinBox
 				tx = temp;
 			}
 			if (tx > half_mod ) return x = tx - modulus;
-			if ( tx < -half_mod ) return x = tx + modulus;
+			if ( tx < mhalf_mod ) return x = tx + modulus;
 			return x = (double) tx;
 		}
 
@@ -321,7 +347,7 @@ namespace LinBox
 		{
 			x += y;
 			if ( x > half_mod ) return x -= modulus;
-			if ( x < -half_mod ) return x += modulus;
+			if ( x < mhalf_mod ) return x += modulus;
 			return x;
 		}
 
@@ -329,7 +355,7 @@ namespace LinBox
 		{
 			x -= y;
 			if ( x > half_mod ) return x -= modulus;
-			if ( x < -half_mod ) return x += modulus;
+			if ( x < mhalf_mod ) return x += modulus;
 			return x;
 		}
 
@@ -363,8 +389,7 @@ namespace LinBox
 		{
 			Element one, zero ; init(one,1UL) ; init(zero,0UL);
 			double max_double = (double) (1ULL<<DBL_MANT_DIG) - modulus ;
-			double p = half_mod ;
-			if (!(fmod(modulus,2.))) ++p; // if pair, -(p-1)/2 !
+			double p = std::max(half_mod,-mhalf_mod) ;
 			if (areEqual(zero,r))
 				return (unsigned long) (double(max_double)/p) ;
 			else if (areEqual(one,r))
@@ -380,10 +405,13 @@ namespace LinBox
 
 
 		static inline double getMaxModulus()
-		{ return 67108864.0; } // 2^26
+		{
+			return 67108864.0;  // 2^26
+		}
 
 	};
 
+	//! Specialization  of FieldAXPY.
 	template <>
 	class FieldAXPY<ModularBalanced<double> > {
 	public:
@@ -463,6 +491,7 @@ namespace LinBox
 	};
 
 
+	//! Specialization  of DotProductDomain.
 	template <>
 	class DotProductDomain<ModularBalanced<double> > : private virtual VectorDomainBase<ModularBalanced<double> > {
 	private:

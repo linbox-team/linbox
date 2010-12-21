@@ -20,6 +20,11 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/*! @file field/modular-int.h
+ * @ingroup field
+ * @brief  representation of <code>Z/mZ</code> over \c int .
+ * @deprecated This file is deprecated by modular-int32.h. Do not use it.
+ */
 
 #warning "use of modular-int.h is now deprecated.  Use modular-int32.h."
 #include <linbox/field/modular-int32.h>

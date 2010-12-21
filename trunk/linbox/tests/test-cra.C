@@ -43,14 +43,6 @@ do { for (size_t i = 0 ; pass && i < iters ; ++i) {  command } } while(0)
 
 using namespace LinBox ;
 
-struct DummyIteration {
-	double x_ ;
-	DummyIteration(double x) :
-		x_(x)
-	{}
-	~DummyIteration() {}
-} ;
-
 template< class T >
 std::ostream & operator<<(std::ostream & o, const std::vector<T> & v)
 {
@@ -118,7 +110,8 @@ int test_early_single(std::ostream & report, size_t PrimeSize, size_t Size)
 		F.init(tmp1,res);
 		F.init(tmp2,residues[i]);
 		if(!F.areEqual(tmp1,tmp2)){
-			report << " *** FullMultipFixedCRA failed. ***" << std::endl;
+			report << tmp1 << "!=" << tmp2 << std::endl;
+			report << " *** EarlySingleCRA failed. ***" << std::endl;
 			return EXIT_FAILURE ;
 		}
 	}
@@ -487,44 +480,15 @@ int test_full_multip_fixed(std::ostream & report, size_t PrimeSize, size_t Size,
 }
 #endif
 
-
-#include "test-common.h"
-#include "linbox/util/timer.h"
-
-// launching tests
-int main(int ac, char ** av)
+bool test_CRA_algos(size_t PrimeSize, size_t Size, size_t Taille, size_t iters)
 {
-
-	/*  Argument parsing/setting */
-
-	static size_t       n = 50;    /*  Taille */
-	static size_t       p = 22;    /*  PrimeSize */
-	// static size_t    seed =  0;    /*  ! unused */
-	static size_t   iters = 20;    /* _LB_REPEAT */
-
-        static Argument as[] = {
-                { 'n', "-n N", "Set number of primes.", TYPE_INT , &n },
-                { 'p', "-p P", "Set size of test primes.", TYPE_INT , &p },
-                { 'i', "-i I", "Perform each test for I iterations.",     TYPE_INT, &iters },
-                { '\0' }
-        };
-
-	parseArguments (ac, av, as);
-
 	bool pass = true ;
-
-	commentator.start("CRA-Algos test suite", "CRA-Algos");
-
 	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT,
 							   INTERNAL_DESCRIPTION);
 
 
 
 	typedef std::pair<size_t,size_t> Pair ;
-	srand(time(NULL)); // seeding
-	size_t PrimeSize = p; // size of the residues/primes
-	size_t Size      = n ; // nb of residues/primes
-	size_t Taille    = 2*Size ; // nb of vectors of residues
 
 	/* EARLY SINGLE */
 	_LB_REPEAT( if (test_early_single<double>(report,22,Size))                       pass = false ;  ) ;
@@ -564,6 +528,46 @@ int main(int ac, char ** av)
 	_LB_REPEAT( if (test_full_multip_matrix<integer>(report,PrimeSize,Size,s))       pass = false ;  ) ;
 
 #endif
+
+	return pass ;
+
+}
+
+#include "test-common.h"
+#include "linbox/util/timer.h"
+
+// launching tests
+int main(int ac, char ** av)
+{
+
+	/*  Argument parsing/setting */
+
+	static size_t       n = 50;    /*  Taille */
+	static size_t       p = 22;    /*  PrimeSize */
+	// static size_t    seed =  0;    /*  ! unused */
+	static size_t   iters = 20;    /* _LB_REPEAT */
+
+        static Argument as[] = {
+                { 'n', "-n N", "Set number of primes.", TYPE_INT , &n },
+                { 'p', "-p P", "Set size of test primes.", TYPE_INT , &p },
+                { 'i', "-i I", "Perform each test for I iterations.",     TYPE_INT, &iters },
+                { '\0' }
+        };
+
+	parseArguments (ac, av, as);
+
+	bool pass = true ;
+
+	srand(time(NULL));             // seeding
+	size_t PrimeSize   =  p;       // size of the residues/primes
+	size_t Size        =  n ;      // nb of residues/primes
+	size_t Taille      =  2*Size ; // nb of vectors of residues
+
+
+	commentator.start("CRA-Algos test suite", "CRA-Algos");
+
+	pass = test_CRA_algos(PrimeSize,Size,Taille,iters) ;
+
 	commentator.stop(MSG_STATUS (pass), (const char *) 0,"CRA-Algos test suite");
 	return !pass ;
 }

@@ -20,14 +20,16 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/*! @file field/modular-balanced-int.h
+ * @ingroup field
+ * @brief Balanced representation of <code>Z/mZ</code> over \c int .
+ * @deprecated This file is deprecated by modular-balanced-int32.h. Do not use it.
+ */
 
 #ifndef __LINBOX_modular_balanced_int_H
 #define __LINBOX_modular_balanced_int_H
 #warning " This file has been replaced by modular-balanced-int32.h"
-//BB : la bonne blague...
 
-/* balanced representation for modular<int> field, [-p/2,p/2], p is odd.
-*/
 
 #include "linbox/linbox-config.h"
 #include "linbox/integer.h"
@@ -91,14 +93,14 @@ namespace LinBox
 		{
 			modulusinv = 1/(double)65521;
 			halfmodulus = (65521 >> 1);
-			nhalfmodulus = -halfmodulus;
+			nhalfmodulus = halfmodulus-65520;
 		}
 
 		ModularBalanced (int value) :
 		       	modulus(value)
 		{
 			halfmodulus = (modulus >> 1);
-			nhalfmodulus = -halfmodulus;
+			nhalfmodulus = halfmodulus-modulus+1;
 			modulusinv = 1 / ((double) value);
 			if(value <= 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			if(value > LINBOX_MAX_MODULUS) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
@@ -145,7 +147,7 @@ namespace LinBox
 		std::istream &read (std::istream &is) {
 			is >> modulus;
 			halfmodulus = modulus/2;
-			nhalfmodulus = -halfmodulus;
+			nhalfmodulus = halfmodulus-modulus+1;
 			modulusinv = 1 /((double) modulus );
 			if(modulus <= 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			if(modulus > LINBOX_MAX_MODULUS) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
@@ -169,7 +171,7 @@ namespace LinBox
 
 
 		Element &init (Element &x, const integer &y) const  {
-			x = y % integer (modulus);
+			x = y % (long) (modulus);
 			if (x < nhalfmodulus) x += modulus;
 			else if (x > halfmodulus) x -= modulus;
 			return x;
@@ -309,7 +311,7 @@ namespace LinBox
 		{
 			x += y;
 			if ( x > halfmodulus ) x -= modulus;
-			else if (x < -halfmodulus) x += modulus;
+			else if (x < nhalfmodulus) x += modulus;
 
 			return x;
 		}
