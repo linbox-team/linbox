@@ -22,8 +22,12 @@
 
 /*! @file field/modular.h
  * @ingroup field
- * @ingroup modular
- * @brief NO DOC
+ * @brief A Modular field is a representations of <code>Z/mZ</code>.
+ * This file groups many implementations/specialisations of modular fields.
+ *   - Modular arithmetic is provided in the <code>ModularXXX<T></code> classes.
+ *   - Specialisations for \ref FieldAXPY, \ref MVProductDomain, \ref DotProductDomain.
+ *   - Random Iterators
+ *   .
  *
  */
 
@@ -59,19 +63,19 @@ namespace LinBox
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
-	/**
-	 * <!-- /name ModularBase-->
+	/** * <!-- @name ModularBase-->
 	 * \brief Base for prime fields where the elements are represented by various primitive types (and their operations).
 	 * \ingroup field
-	 * \defgroup Fields Fields
+	 * \defgroup Fields Fields <!--for old \ref Fields...-->
 	 *
 	 *
-	 * Normally use it's children.  This class is of interest for the developer of a new field representation.
+	 * Normally use it's children.  This class is of interest for the
+	 * developer of a new field representation.
 	 *
 	 *
-	 * This parameterized field can be used to construct any prime
-	 * field. Typical use would be Modular<integer> for integers modulo a
-	 * large prime, Modular<long, long long> for integers modulo a wordsize
+	 * This parameterized field can be used to construct any prime field.
+	 * Typical use would be Modular<integer> for integers modulo a large
+	 * prime, Modular<long> Modular<long long> for integers modulo a wordsize
 	 * prime, etc. for integers modulo a half-wordsize prime.
 	 */
 	template <class _Element>
@@ -282,11 +286,11 @@ namespace LinBox
 
 	/** @brief Prime fields of positive characteristic implemented directly in LinBox.
 	 *
-	 * This parameterized field can be used to construct prime
-	 * fields. Typical use would be Modular<integer> for integers modulo a
-	 * large prime, Modular<uint32>, modular<int>, or modular<double>
-	 for integers modulo a wordsize * prime.  Each of those has specialized performance features
-	 suitable to certain applications.
+	 * This parameterized field can be used to construct prime fields.
+	 * Typical use would be Modular<integer> for integers modulo a large
+	 * prime, Modular<uint32>, Modular<int32>, or Modular<double> for
+	 * integers modulo a wordsize prime.  Each of those has specialized
+	 * performance features suitable to certain applications.
 	 */
 	template <class _Element>
 	class Modular : public ModularBase<_Element> {
@@ -646,10 +650,10 @@ namespace LinBox
 	}; // class Modular
 
 	/** @brief Allows compact storage when the modulus is less than 2^8.
-
-	  Requires 1 < the modulus < 2^8, normally prime.
-	  See FieldArchetype for member specifications.
-	  */
+	 *
+	 *  Requires <code>1 < modulus < 2^8</code>, normally prime.  See \ref
+	 *  FieldArchetype for member specifications.
+	 */
 	template <>
 	class Modular<uint8> : public FieldInterface, public ModularBase<uint8> {
 	public:
@@ -1140,7 +1144,7 @@ namespace LinBox
 
 	}; // class Modular<uint32>
 
-	/* Specialization of FieldAXPY for parameterized modular field */
+	/*! Specialization of FieldAXPY for parameterized modular field */
 
 	template <class _Element>
 	class FieldAXPY<Modular<_Element> > {
@@ -1180,7 +1184,7 @@ namespace LinBox
 		Element _y;
 	};
 
-	/* Specialization of FieldAXPY for uint8 modular field */
+	/*! Specialization of FieldAXPY for uint8 modular field */
 
 	template <>
 	class FieldAXPY<Modular<uint8> > {
@@ -1242,8 +1246,7 @@ namespace LinBox
 		int i;
 	};
 
-	/* Specialization of FieldAXPY for uint16 modular field */
-
+	/*! Specialization of FieldAXPY for uint16 modular field */
 	template <>
 	class FieldAXPY<Modular<uint16> > {
 	public:
@@ -1303,7 +1306,7 @@ namespace LinBox
 		int i;
 	};
 
-	/* Specialization of FieldAXPY for unsigned short modular field */
+	/*! Specialization of FieldAXPY for unsigned short modular field */
 
 	template <>
 	class FieldAXPY<Modular<uint32> > {
@@ -1365,7 +1368,7 @@ namespace LinBox
 		uint64 _y;
 	};
 
-	// Specialization of DotProductDomain for unsigned short modular field
+	//! Specialization of DotProductDomain for unsigned short modular field
 
 	template <>
 	class DotProductDomain<Modular<uint8> > : private virtual VectorDomainBase<Modular<uint8> > {
@@ -1385,7 +1388,7 @@ namespace LinBox
 		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const;
 	};
 
-	// Specialization of DotProductDomain for unsigned short modular field
+	//! Specialization of DotProductDomain for unsigned short modular field
 
 	template <>
 	class DotProductDomain<Modular<uint16> > : private virtual VectorDomainBase<Modular<uint16> > {
@@ -1405,7 +1408,7 @@ namespace LinBox
 		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const;
 	};
 
-	// Specialization of DotProductDomain for uint32 modular field
+	//! Specialization of DotProductDomain for uint32 modular field
 
 	template <>
 	class DotProductDomain<Modular<uint32> > : private virtual VectorDomainBase<Modular<uint32> > {
@@ -1425,7 +1428,7 @@ namespace LinBox
 		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const;
 	};
 
-	// Specialization of MVProductDomain for uint8 modular field
+	//! Specialization of MVProductDomain for uint8 modular field
 
 	template <>
 	class MVProductDomain<Modular<uint8> > {
@@ -1463,7 +1466,7 @@ namespace LinBox
 		mutable std::vector<uint32> _tmp;
 	};
 
-	// Specialization of MVProductDomain for uint16 modular field
+	//! Specialization of MVProductDomain for uint16 modular field
 
 	template <>
 	class MVProductDomain<Modular<uint16> > {
@@ -1501,7 +1504,7 @@ namespace LinBox
 		mutable std::vector<uint64> _tmp;
 	};
 
-	// Specialization of MVProductDomain for uint32 modular field
+	//! Specialization of MVProductDomain for uint32 modular field
 
 	template <>
 	class MVProductDomain<Modular<uint32> > {
@@ -1541,7 +1544,9 @@ namespace LinBox
 
 	template <>
 	inline std::ostream& ModularBase<Integer>::write (std::ostream &os) const
-	{ return os << "GMP integers mod " << _modulus; }
+	{
+		return os << "GMP integers mod " << _modulus;
+	}
 
 	template <>
 	inline integer& Modular<integer>::init (integer& x, const double& y) const

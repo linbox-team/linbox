@@ -12,6 +12,12 @@
  * See COPYING for license information.
  */
 
+/*! @file field/modular-crooked-double.h
+ * @ingroup field
+ * @brief Crooked  representation of <code>Z/mZ</code> over \c double .
+ * This is a balanced representation with more positive (or negative) representants.
+ * Being tested.
+ */
 #ifndef __LINBOX_modular_crooked_double_H
 #define __LINBOX_modular_crooked_double_H
 
@@ -221,8 +227,11 @@ namespace LinBox
 
 
 		inline Element &init (Element &x, const integer &y) const  {
-			// 			return x = (Element)mpz_fdiv_ui(y.get_mpz(),lmodulus );
-			return x = (Element)(y%lmodulus);
+			x = (Element)(y%lmodulus);
+			if (x < lo_mod) return x += modulus;
+			if (x > up_mod) x -= modulus;
+
+			return x;
 		}
 
 		inline Element& init(Element& x, const double y =0) const

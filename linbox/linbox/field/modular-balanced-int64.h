@@ -23,13 +23,13 @@
  */
 
 
+/*! @file field/modular-balanced-int64.h
+ * @ingroup field
+ * @brief Balanced representation of <code>Z/mZ</code> over \c int64 .
+ */
 
 #ifndef __LINBOX_modular_balanced_int64_H
 #define __LINBOX_modular_balanced_int64_H
-
-/*! @file field/modular-balanced-int64.h
- * @brief balanced representation for modular<int64> field, [-p/2,p/2], p is odd.
- */
 
 #include "linbox/linbox-config.h"
 #include "linbox/integer.h"
@@ -92,14 +92,14 @@ namespace LinBox
 		{
 			modulusinv = 1/(double)65521;
 			halfmodulus = (65521 >> 1);
-			nhalfmodulus = -halfmodulus;
+			nhalfmodulus = halfmodulus-65520;
 		}
 
 		ModularBalanced (int64 value, int exp = 1)  :
 			modulus(value)
 		{
 			halfmodulus = (modulus >> 1);
-			nhalfmodulus = -halfmodulus;
+			nhalfmodulus = halfmodulus-modulus+1;
 			modulusinv = 1 / ((double) value);
 			if(exp != 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
 			if(value <= 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
@@ -166,7 +166,7 @@ namespace LinBox
 		{
 			is >> modulus;
 			halfmodulus = modulus/2;
-			nhalfmodulus = -halfmodulus;
+			nhalfmodulus = halfmodulus-modulus+1;
 			modulusinv = 1 /((double) modulus );
 			if(modulus <= 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			int64 max;
@@ -193,7 +193,7 @@ namespace LinBox
 
 		Element &init (Element &x, const integer &y) const
 		{
-			x = y % integer (modulus);
+			x = y % (long) (modulus);
 			if (x < nhalfmodulus) x += modulus;
 			else if (x > halfmodulus) x -= modulus;
 			return x;
@@ -339,7 +339,7 @@ namespace LinBox
 		{
 			x += y;
 			if ( x > halfmodulus ) x -= modulus;
-			else if (x < -halfmodulus) x += modulus;
+			else if (x < nhalfmodulus) x += modulus;
 
 			return x;
 		}

@@ -10,6 +10,11 @@
  * See COPYING for license information.
  */
 
+/*! @file field/modular-double.h
+ * @ingroup field
+ * @brief Standard representation of <code>Z/mZ</code> over \c double .
+ */
+
 #ifndef __LINBOX_modular_double_H
 #define __LINBOX_modular_double_H
 
@@ -47,14 +52,17 @@ namespace LinBox
 	template <class Element>
 	struct ClassifyRing<Modular<Element> >;
 	template <>
-	struct ClassifyRing<Modular<double> >
-	{
+	struct ClassifyRing<Modular<double> > {
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
 	class MultiModDouble;
 
-	/// \ingroup field
+	/*! \ingroup modular
+	 * Standard representation of \f$\mathbf{Z}/m\mathbf{Z}\f$.
+	 * If \c m is the modulus, then elements are represented in \f[ \left
+	 * \llbracket 0, m-1  \right \rrbracket.\f]
+	 */
 	template <>
 	class Modular<double> : public FieldInterface {
 
@@ -199,8 +207,11 @@ namespace LinBox
 
 		Element &init (Element &x, const integer &y) const
 		{
-			linbox_check(y%lmodulus < lmodulus);
-			return x = (Element)(y%lmodulus);
+			x = (Element)(y%lmodulus);
+			if (x<0) x+= lmodulus ;
+			linbox_check(x < lmodulus);
+			linbox_check(!(x < 0));
+			return x  ;
 		}
 
 		inline Element& init(Element& x, double y =0) const

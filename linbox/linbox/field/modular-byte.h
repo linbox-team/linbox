@@ -20,6 +20,10 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/*! @file field/modular-byte.h
+ * @ingroup field
+ * @brief  representation of <code>Z/mZ</code> over \c byte .
+ */
 #ifndef __LINBOX_modular__int8_H
 #define __LINBOX_modular__int8_H
 
@@ -165,7 +169,7 @@ namespace LinBox
 
 
 		inline Element &init (Element &x, const integer &y) const  {
-			x =(int8)((int16) (y % integer (modulus)));
+			x =(int8)((int16) (y % (long) (modulus)));
 			if (x < 0) x += modulus;
 			return x;
 		}

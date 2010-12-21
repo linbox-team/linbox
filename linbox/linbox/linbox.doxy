@@ -1,28 +1,30 @@
 // Copyright (C) 2010 LinBox, GNU LGPL, see COPYING for licence information
 
 /** \defgroup linbox LinBox
-
-  \brief This is the LinBox library proper.
-
-  The subdirectories contain the template source code for all the linbox
-  fuctionality.  See the <a href=modules.html>Modules</a> list of this
-  documentation for the discussion of these main parts of linbox.  Also a few
-  headers are directly in this directory.  They are for including features of
-  wrapped packages such as Givaro and NTL.
-
-
-(bb :)
- I see the module page like this :
- - LinBox
-   - Solutions
-     - Solvers
-     - Rank
-     - Determinant
-   - Algorithms
-     - CRA
-     - p-adic lifing
-   - etc...
-
+ *
+ * \brief This is the LinBox library proper.
+ *
+ * The subdirectories contain the template source code for all the linbox
+ * fuctionality.  See the <a href=modules.html>Modules</a> list of this
+ * documentation for the discussion of these main parts of linbox.  Also a few
+ * headers are directly in this directory.  They are for including features of
+ * wrapped packages such as Givaro and NTL.
+ *
+ *
+ * (bb :)
+ * I see the module page like this :
+ * - LinBox
+ *   - Solutions
+ *     - Solvers
+ *     - Rank
+ *     - Determinant
+ *     .
+ *   - Algorithms
+ *     - CRA
+ *     - p-adic lifing
+ *     .
+ *   - etc...
+ *   .
  */
 
 // vim:syn=doxygen

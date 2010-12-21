@@ -175,7 +175,7 @@ namespace LinBox
 		integer & random (integer & a) const
 		{
 			// integer::random_exact(a,_bits);
-			integer::random(a,_bits-1);
+			integer::random(a,_bits-1); //!@todo uses random_exact when givaro is released.
 			a = (integer(1)<<_bits) - a;
 
 			nextprime( a, a);

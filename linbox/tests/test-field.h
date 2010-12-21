@@ -7,6 +7,12 @@
  * Extracted by bds from test-generic.h, written by Bradford Hovinen <hovinen@cis.udel.edu>
  */
 
+/*! @file tests/test-field.h
+ * @ingroup tests
+ * @brief tests field operations
+ * @test  tests field operations
+ */
+
 #ifndef __LINBOX_test_field_H
 #define __LINBOX_test_field_H
 
@@ -232,13 +238,14 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	commentator.stop (MSG_STATUS (part_pass));
 	commentator.progress ();
 
-	/* untested so far
-	   ostream &write (ostream &os) const
-	   istream &read (istream &is)
-	   ostream &write (ostream &os, const Element &x) const
-	   istream &read (istream &is, Element &x) const
-	   FieldArchetype (FieldAbstract*, ElementAbstract*, RandIterAbstract* = 0)
-	   */
+	/*! @todo untested so far :
+	 * - ostream &write (ostream &os) const
+	 * - istream &read (istream &is)
+	 * - ostream &write (ostream &os, const Element &x) const
+	 * - istream &read (istream &is, Element &x) const
+	 * - FieldArchetype (FieldAbstract*, ElementAbstract*, RandIterAbstract* = 0)
+	 * .
+	 */
 
 	commentator.stop (MSG_STATUS (pass), (const char *) 0, "testField");
 

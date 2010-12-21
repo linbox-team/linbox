@@ -10,6 +10,10 @@
  * See COPYING for license information.
  */
 
+/*! @file field/modular-float.h
+ * @ingroup field
+ * @brief  representation of <code>Z/mZ</code> over \c float .
+ */
 
 #ifndef __LINBOX_modular_float_H
 #define __LINBOX_modular_float_H
@@ -189,8 +193,9 @@ namespace LinBox
 
 		Element &init (Element &x, const integer &y) const
 		{
-			// 			return x = (Element)mpz_fdiv_ui(y.get_mpz(),lmodulus );
-			return x = (Element)(y%lmodulus);
+			x = (Element)(y%lmodulus);
+			if (x<0) return x+=modulus ;
+			return x;
 		}
 
 		inline Element& init(Element& x, float y =0.0) const

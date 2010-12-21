@@ -83,16 +83,16 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	if (!runFieldTests (F_integer, "Modular<integer>", iterations, n, false)) pass = false;
-	if (!runFieldTests (F_uint32,  "Modular<uint32>",  iterations, n, false)) pass = false;
-	if (!runFieldTests (F_uint16,  "Modular<uint16>",  iterations, n, false)) pass = false;
-	if (!runFieldTests (F_uint8,  "Modular<uint8>",  iterations, n, false)) pass = false;
-	if (!runFieldTests (F_float,  "Modular<float>",  iterations, n, false)) pass = false;
+	if (!runFieldTests (F_integer,"Modular<integer>", iterations, n, false)) pass = false;
+	if (!runFieldTests (F_uint32, "Modular<uint32>",  iterations, n, false)) pass = false;
+	if (!runFieldTests (F_uint16, "Modular<uint16>",  iterations, n, false)) pass = false;
+	if (!runFieldTests (F_uint8,  "Modular<uint8>",   iterations, n, false)) pass = false;
+	if (!runFieldTests (F_float,  "Modular<float>",   iterations, n, false)) pass = false;
 
 	if (!testRandomIterator (F_integer, "Modular<integer>", trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F_uint32,  "Modular<uint32>", trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F_uint16,  "Modular<uint16>", trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F_uint8,  "Modular<uint8>", trials, categories, hist_level)) pass = false;
+	if (!testRandomIterator (F_uint32,  "Modular<uint32>",  trials, categories, hist_level)) pass = false;
+	if (!testRandomIterator (F_uint16,  "Modular<uint16>",  trials, categories, hist_level)) pass = false;
+	if (!testRandomIterator (F_uint8,    "Modular<uint8>",  trials, categories, hist_level)) pass = false;
 
 	commentator.stop("Modular test suite");
 	return pass ? 0 : -1;

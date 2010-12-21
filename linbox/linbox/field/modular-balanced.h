@@ -8,7 +8,10 @@
  */
 
 /** @file field/modular-balanced.h
+ * @ingroup field
  * @brief Common header for any modular-balanced field.
+ * Use <code>\#include<modular-balanced></code> to get access to any modular
+ * balanced representation.
  */
 
 #ifndef __LINBOX_modular_balanced_H
