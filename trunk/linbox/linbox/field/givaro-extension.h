@@ -55,7 +55,7 @@ namespace LinBox
 
 #if !defined(__INTEL_COMPILER) && !defined(__CUDACC__)
 	template<>
-	#endif
+#endif
 	template< class BaseField>
 	struct ClassifyRing<GivaroExtension<BaseField> > {
 		typedef RingCategories::ModularTag categoryTag;
@@ -63,7 +63,7 @@ namespace LinBox
 
 #if !defined(__INTEL_COMPILER) && !defined(__CUDACC__)
 	template<>
-	#endif
+#endif
 	template< class BaseField>
 	struct FieldTraits< GivaroExtension<BaseField> >
 	{
@@ -94,7 +94,10 @@ namespace LinBox
 	class GivaroExtension : public Extension<GivaroField<BaseField> >, public FieldInterface {
 
 		typedef GivaroExtension<GivaroField<BaseField> > Self_t;
+		typedef Extension<GivaroField<BaseField> >       Extension_t;
 	public:
+		using Extension_t::zero;
+		using Extension_t::one;
 
 		/** Element type.
 		 *  This type is inherited from the Givaro class Extension
