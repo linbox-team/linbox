@@ -174,7 +174,10 @@ namespace LinBox
 		 */
 		integer & random (integer & a) const
 		{
-			integer::random_exact(a,_bits);
+			// integer::random_exact(a,_bits);
+			integer::random(_prime,_bits-1);
+			_prime = (integer(1)<<_bits) - _prime;
+
 			nextprime( a, a);
 			while (a.bitsize()>_bits)
 				prevprime(a,a);
