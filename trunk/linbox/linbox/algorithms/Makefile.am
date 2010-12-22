@@ -100,7 +100,9 @@ pkgincludesub_HEADERS =         \
     sigma-basis.h               \
     matpoly-mult.h              \
     echelon-form.h              \
-    toeplitz-det.h
+    toeplitz-det.h              \
+    dense-nullspace.h dense-nullspace.inl   \
+	linbox-tags
 
 EXTRA_DIST =                    \
              algorithms.doxy    \
