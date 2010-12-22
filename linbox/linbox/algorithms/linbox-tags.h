@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-/* Copyright (C) 2009 LinBox
+/* Copyright (C) 2010 LinBox
  * Written by <brice.boyer@imag.fr>
  *
  *
@@ -21,21 +21,31 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LINBOX_nullspace_H
-#define __LINBOX_nullspace_H
-
-/** \file linbox/solutions/nullspace.h
- * @brief Nullspace solutions.
- * This file will eventually comprehend :
- * - Dense matrix nullspace on Integers or <code>Z/pZ</code>
- * - Sparse matrix nullspace
- * - Random element in the nullspace
- */
+#ifndef __LINBOX_linbox_tags_H
+#define __LINBOX_linbox_tags_H
 
 namespace LinBox
 {
-#error "you don't want to include this file for now."
+
+	/*! Structure for tags.
+	 * Tags are simple enums that set a choice in a routine.
+	 * For instance, if the user wants a <i>right</i> nullspace,
+	 * she will use a \c LinBoxTag::Right parameter.
+	 * @note Tags are not Methods.
+	 */
+	struct LinBoxTag {
+		//! Left/Right Tag
+		enum Side {
+			Left  = 1000, //!< Left
+			Right = 1001  //!< Right
+		};
+
+		enum Transpose {
+			Trans   = 1010,
+			NoTrans = 1011
+		};
+	} ;
+
 }
 
-#endif // __LINBOX_modulardense_nullspace_H
-
+#endif // __LINBOX_linbox_tags_H

@@ -355,7 +355,8 @@ namespace LinBox
 
 #if 1
 		/// Copy Contructor of a matrix (no copy is done, just through pointer)
-		/*! @param A BlasMatrix to be copied */
+		/*! @param A BlasMatrix to be copied
+		 */
 		BlasMatrix(BlasMatrix<Element>& A) :
 			DenseSubmatrix<Element>(A),
 			_stride(A._stride), _alloc(false), _ptr(A._ptr)
@@ -375,6 +376,19 @@ namespace LinBox
 			_ptr(A._ptr+ i*A._stride+j)
 		{}
 #endif
+
+
+
+#if 0 /*  Create a blas matrix from a pointer of elements
+       *  (without allocating a vector in DenseMatrixBase...)
+       *  is it possible ? */
+		BlasMatrix(size_t m, size_t n, size_t stride,
+			   Element * A, size_t lda)
+		{
+
+		}
+#endif
+
 
 		/// Destructor.
 		~BlasMatrix ()

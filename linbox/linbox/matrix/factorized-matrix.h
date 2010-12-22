@@ -1,11 +1,11 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/matrix/factorized-matrix.h
- * Copyright (C) 2004 Pascal Giorgi, Clément Pernet
+ * Copyright (C) 2004 Pascal Giorgi, ClÃ©ment Pernet
  *
  * Written by :
  *               Pascal Giorgi  pascal.giorgi@ens-lyon.fr
- *               Clément Pernet clement.pernet@imag.fr
+ *               ClÃ©ment Pernet clement.pernet@imag.fr
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -47,10 +47,11 @@ namespace LinBox
  */
 //@{
 
+	// forward definition
 	template <class Field>
 	class LQUPMatrix;
 
-	///
+	/// @internal
 	template <class Field, class Operand>
 	class FactorizedMatrixLeftSolve {
 	public:
@@ -62,7 +63,7 @@ namespace LinBox
 				      Operand& B ) const;
 	}; // end of class FactorizedMatrixLeftSolve
 
-	///
+	/// @internal
 	template <class Field, class Operand>
 	class FactorizedMatrixRightSolve {
 	public:
@@ -74,7 +75,7 @@ namespace LinBox
 				      Operand& B ) const;
 	}; // end of class FactorizedMatrixRightSolve
 
-	///
+	/// @internal
 	template <class Field, class Operand>
 	class FactorizedMatrixLeftLSolve {
 	public:
@@ -86,7 +87,7 @@ namespace LinBox
 				      Operand& B ) const;
 	}; // end of class FactorizedMatrixLeftLSolve
 
-	///
+	/// @internal
 	template <class Field, class Operand>
 	class FactorizedMatrixRightLSolve {
 	public:
@@ -98,7 +99,7 @@ namespace LinBox
 				      Operand& B ) const;
 	}; // end of class FactorizedMatrixRightLsolve
 
-	///
+	/// @internal
 	template <class Field, class Operand>
 	class FactorizedMatrixLeftUSolve {
 	public:
@@ -110,7 +111,7 @@ namespace LinBox
 				      Operand& B ) const;
 	}; // end of class FactorizedMatrixLeftUSolve
 
-	///
+	/// @internal
 	template <class Field, class Operand>
 	class FactorizedMatrixRightUSolve {
 	public:

@@ -19,10 +19,11 @@
 //#include "linbox/field/givaro-zpz.h"
 #include "../linbox/field/modular.h"
 //#include "linbox/ffpack/ffpack.h"
-#include "../linbox/solutions/nullspace.h"
+#include "../linbox/algorithms/dense-nullspace.h"
 #include <vector>
 #include "./test-common.h"
 //#include "Matio.h" // write_field ;
+#include "linbox/algorithms/linbox-tags.h"
 
 using namespace LinBox;
 
@@ -205,7 +206,7 @@ static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank,
 		Element * Kern  = NULL;
 		size_t ld_k = 0 ;
 		if (a_droite) {
-			NullSpaceBasis (F, FFLAS::FflasRight,m,n,A,ld_a,Kern,ld_k,ker_dim);
+			NullSpaceBasis (F, LinBoxTag::Right,m,n,A,ld_a,Kern,ld_k,ker_dim);
 			if (ker_dim != (ld_a - rank)) {
 				ret = false;
 				cout << "faux : (1) mauvaises dim : " << ker_dim << " != " << (ld_a - rank) << endl;
@@ -215,7 +216,7 @@ static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank,
 				break ;
 			}
 		} else {
-			NullSpaceBasis (F, FFLAS::FflasLeft,m,n,A,ld_a,Kern,ld_k,ker_dim);
+			NullSpaceBasis (F, LinBoxTag::Left,m,n,A,ld_a,Kern,ld_k,ker_dim);
 			if (ker_dim != (wd_a - rank) ) {
 				ret = false;
 				cout << "faux : (1) mauvaises dim " << ker_dim << " != " << (wd_a - rank)  << endl;
