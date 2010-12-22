@@ -150,6 +150,8 @@ namespace LinBox
 		/// destructor.
 		~RandomPrimeIter() {}
 
+		/// prime type
+		typedef integer Prime_Type ;
 		/// copy constructor.
 		/// @param R random iterator to be copied.
 		RandomPrimeIter (const RandomPrimeIter &R) :

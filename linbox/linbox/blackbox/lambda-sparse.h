@@ -37,7 +37,7 @@ namespace LinBox
 
 	/// \ingroup blackbox
 	template< class _Field,
-	class _Row = typename LinBox::Vector<_Field>::SparseSeq >
+	class _Row = typename Vector<_Field>::SparseSeq >
 	class LambdaSparseMatrix : public SparseMatrix<_Field,_Row> {
 
 	public:
@@ -62,7 +62,7 @@ namespace LinBox
 			double                   log_m = LAMBDA * log ((double) m) / M_LN2;
 			double                   new_p;
 
-			RandomSparseStream<Field,typename LinBox::Vector<Field>::SparseSeq> stream (F, _randiter, init_p, n, m );
+			RandomSparseStream<Field,typename Vector<Field>::SparseSeq> stream (F, _randiter, init_p, n, m );
 
 			for (unsigned int i = 0; i < m; ++i) {
 				new_p = log_m / double(m - i);
@@ -87,7 +87,7 @@ namespace LinBox
 			double log_m = LAMBDA * log ((double) m) / M_LN2;
 			double new_p;
 
-			RandomSparseStream<Field,typename LinBox::Vector<Field>::SparseSeq> stream (F, _randiter, init_p, n, m );
+			RandomSparseStream<Field,typename Vector<Field>::SparseSeq> stream (F, _randiter, init_p, n, m );
 
 			for (unsigned int i = 0; i < m; ++i) {
 				new_p = log_m / double(m - i);

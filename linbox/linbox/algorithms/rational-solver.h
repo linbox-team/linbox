@@ -107,69 +107,71 @@ namespace LinBox
 
 	/** \brief interface for the different specialization of p-adic lifting based solvers.
 	 *
-	 * The following type are abstract in the implementation and can be change during the instanciation of the class:
+	 * The following type are abstract in the implementation and can be
+	 * change during the instanciation of the class:
 	 * -  Ring: ring over which entries are defined
 	 * -  Field: finite field for p-adic lifting
 	 * -  RandomPrime: generator of random primes
 	 * -  MethodTraits: type of subalgorithm to use in p-adic lifting (default is DixonTraits)
+	 * .
 	 *
 	 * \ingroup padic
 	 */
-	template<class Ring, class Field,class RandomPrime, class MethodTraits = DixonTraits>
-	      class RationalSolver {
+	template<class Ring, class Field, class RandomPrime, class MethodTraits = DixonTraits>
+	class RationalSolver {
 
-	      public:
-		      /** Solve a linear system \c Ax=b over quotient field of a ring
-		       *         giving a random solution if the system is singular and consistent,
-		       *         giving the unique solution if the system is non-singular.
-		       *
-		       * @param num  Vector of numerators of the solution
-		       * @param den  The common denominator. 1/den * num is the rational solution of \c Ax=b.
-		       * @param A    Matrix of linear system
-		       * @param b    Right-hand side of system
-		       * @param maxPrimes maximum number of moduli to try
-		       * @param toto
-		       *
-		       * @return status of solution
-		       */
-		      template<class IMatrix, class Vector1, class Vector2>
-		      SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A,
-					       const Vector2& b,const bool toto,
-					       int maxPrimes = DEFAULT_MAXPRIMES) const;
-
-
-		      /** Solve a nonsingular linear system \c Ax=b over quotient field of a ring,
-		       *          giving the unique solution of the system.
-		       *
-		       * @param num  Vector of numerators of the solution
-		       * @param den  The common denominator. 1/den * num is the rational solution of \c Ax=b.
-		       * @param A   Matrix of linear system
-		       * @param b   Right-hand side of system
-		       * @param maxPrimes maximum number of moduli to try
-		       *
-		       * @return status of solution
-		       */
-		      template<class IMatrix, class Vector1, class Vector2>
-		      SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A,
-							  const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
-
-		      /** brief Solve a singular linear system \c Ax=b over quotient field of a ring,
-		       *         giving a random solution if the system is singular and consistent.
-		       *
-		       * @param num  Vector of numerators of the solution
-		       * @param den  The common denominator. 1/den * num is the rational solution of \c Ax=b.
-		       * @param A   Matrix of linear system
-		       * @param b   Right-hand side of system
-		       * @param maxPrimes maximum number of moduli to try
-		       *
-		       * @return status of solution
-		       */
-		      template<class IMatrix, class Vector1, class Vector2>
-		      SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A,
-						       const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
+	public:
+		/** Solve a linear system \c Ax=b over quotient field of a ring
+		 *         giving a random solution if the system is singular and consistent,
+		 *         giving the unique solution if the system is non-singular.
+		 *
+		 * @param num  Vector of numerators of the solution
+		 * @param den  The common denominator. 1/den * num is the rational solution of \c Ax=b.
+		 * @param A    Matrix of linear system
+		 * @param b    Right-hand side of system
+		 * @param maxPrimes maximum number of moduli to try
+		 * @param toto
+		 *
+		 * @return status of solution
+		 */
+		template<class IMatrix, class Vector1, class Vector2>
+		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A,
+					 const Vector2& b,const bool toto,
+					 int maxPrimes = DEFAULT_MAXPRIMES) const;
 
 
-	      };
+		/** Solve a nonsingular linear system \c Ax=b over quotient field of a ring,
+		 *          giving the unique solution of the system.
+		 *
+		 * @param num  Vector of numerators of the solution
+		 * @param den  The common denominator. 1/den * num is the rational solution of \c Ax=b.
+		 * @param A   Matrix of linear system
+		 * @param b   Right-hand side of system
+		 * @param maxPrimes maximum number of moduli to try
+		 *
+		 * @return status of solution
+		 */
+		template<class IMatrix, class Vector1, class Vector2>
+		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A,
+						    const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
+
+		/** brief Solve a singular linear system \c Ax=b over quotient field of a ring,
+		 *         giving a random solution if the system is singular and consistent.
+		 *
+		 * @param num  Vector of numerators of the solution
+		 * @param den  The common denominator. 1/den * num is the rational solution of \c Ax=b.
+		 * @param A   Matrix of linear system
+		 * @param b   Right-hand side of system
+		 * @param maxPrimes maximum number of moduli to try
+		 *
+		 * @return status of solution
+		 */
+		template<class IMatrix, class Vector1, class Vector2>
+		SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A,
+						 const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
+
+
+	};
 
 
 
@@ -560,12 +562,13 @@ namespace LinBox
 #endif
 
 
-	/** \brief partial specialization of p-adic based solver with Dixon algorithm
+	/** \brief partial specialization of p-adic based solver with Dixon algorithm.
 	 *
 	 *   See the following reference for details on this algorithm:
-	 *
-	 *  - John D. Dixon: Exact Solution of linear equations using p-adic expansions. Numerische Mathematik,
-	 *  volume 40, pages 137-141, 1982.
+	 *   @bib
+	 *  - John D. Dixon <i>Exact Solution of linear equations using p-adic
+	 *  expansions</i>. Numerische Mathematik, volume 40, pages 137-141,
+	 *  1982.
 	 *
 	 */
 
@@ -591,7 +594,7 @@ namespace LinBox
 
 	protected:
 
-		mutable RandomPrime                     _genprime;
+		mutable RandomPrime             _genprime;
 		mutable Prime                   _prime;
 		Ring                            _R;
 #ifdef RSTIMING

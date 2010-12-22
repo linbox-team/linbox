@@ -34,7 +34,8 @@ namespace LinBox
 
 	/** utility function to reduce a rational pair to lowest form */
 	template<class Domain>
-	void reduceIn(Domain& D, std::pair<typename Domain::Element, typename Domain::Element> &frac){
+	void reduceIn(Domain& D, std::pair<typename Domain::Element, typename Domain::Element> &frac)
+	{
 		linbox_check(!D.isZero(frac.second));
 
 		if (D.isZero(frac.first)){
