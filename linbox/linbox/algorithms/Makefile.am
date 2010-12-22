@@ -102,7 +102,7 @@ pkgincludesub_HEADERS =         \
     echelon-form.h              \
     toeplitz-det.h              \
     dense-nullspace.h dense-nullspace.inl   \
-	linbox-tags
+	linbox-tags.h
 
 EXTRA_DIST =                    \
              algorithms.doxy    \
