@@ -301,16 +301,24 @@ namespace LinBox
 
 		// some specializations and conversions
 		inline double& convert(double& x, const Element& y) const
-		{ return x= (double)y;}
+		{
+			return x= (double)y;
+		}
 
 		inline Element& init(Element& x, const double& y) const
-		{ return x=Element(y);}
+		{
+			return x=Element(y);
+		}
 
 		inline integer& convert(integer& x, const Element& y) const
-		{ return x=y;}
+		{
+			return x=y;
+		}
 
 		inline Element& init(Element& x, const integer& y = 0) const
-		{ return x=y;}
+		{
+			return x=y;
+		}
 		/*
 		 * aniau@astronet.pl 06/2009 initialization form GMPRationalElement
 		 */
@@ -321,10 +329,14 @@ namespace LinBox
 		}
 
 		inline std::ostream &write (std::ostream &os) const
-		{ return os << "PID_integer extends unparam<integer>"; }
+		{
+			return os << "PID_integer extends unparam<integer>";
+		}
 
 		inline std::ostream &write (std::ostream &os, const Integer& I) const
-		{ return os << I; }
+		{
+			return os << I;
+		}
 
 	protected:
 		/*! Rational number reconstruction.

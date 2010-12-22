@@ -39,6 +39,8 @@
 #include <linbox/algorithms/blas-domain.h>
 #include <linbox/ffpack/ffpack.h>
 
+#include "linbox/matrix/matrix-permutation.h"
+
 namespace LinBox
 {
 
@@ -215,16 +217,30 @@ namespace LinBox
 		// get the permutation P
 		const BlasPermutation& getP() const {return _PP;}
 
+		template<class T>
+		PackedPermutation<T> & getP( PackedPermutation<T> & P ) const
+		{
+			return P = PackedPermutation<T>(_PP.getPointer(),_n,_rank);
+		}
+
 		/** @brief get the <i>transpose</i> of the permutation \p Q
 		 * @warning this does not return \p Q itself! (because it is more difficult to compute)
 		 * If needed, \p Q can be obtained as a \p TransposedBlasMatrix from the return value
 		 *
-		 * One reason this confusion exists is that left-multiplying by a permuation matrix
-		 * corresponds to a row permuation \f$\pi \in S_n\f$, while right-multiplying by the same matrix
-		 * corresponds to the inverse column permutation \f$\pi^{-1}\f$!
-		 * Usually this is handled intelligently (eg by \c applyP) but you must be careful with \c getQ().
+		 * One reason this confusion exists is that left-multiplying by
+		 * a permuation matrix corresponds to a row permuation \f$\pi
+		 \in S_n\f$, while right-multiplying by the same matrix
+		 * corresponds to the inverse column permutation
+		 * \f$\pi^{-1}\f$!  Usually this is handled intelligently (eg
+		 * by \c applyP) but you must be careful with \c getQ().
 		 */
 		const BlasPermutation& getQ() const  {return _QQ;}
+
+		template<class T>
+		PackedPermutation<T> & getQ( PackedPermutation<T> & Qt ) const
+		{
+			return Qt = PackedPermutation<T>(_QQ.getPointer(),_n,_rank);
+		}
 
 		// get the Matrix L
 		TriangularBlasMatrix<Element>& getL(TriangularBlasMatrix<Element>& L) const;
