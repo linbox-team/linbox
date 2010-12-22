@@ -107,7 +107,6 @@ namespace LinBox
 // Temporary dependency to GIVARO >= 3.3.4
 #include <givaro/givconfig.h>
 #if GIVARO_VERSION < 30304
-#include <gmp++/gmp++.h>
 #include <math.h>
 // Natural logarithm of a
 // log(2) being close to 0.69314718055994531
