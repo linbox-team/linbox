@@ -28,7 +28,8 @@
 #ifndef __LINBOX_rational_solver2__H
 #define __LINBOX_rational_solver2__H
 
-/*
+/*! @brief NO DOC
+ * @bib
  * Implementation the algorithm in manuscript, available at http://www.cis.udel.edu/~wan/jsc_wan.ps
  */
 
@@ -45,7 +46,8 @@ namespace LinBox
 
 #if __LINBOX_HAVE_DGETRF && __LINBOX_HAVE_DGETRI
 	template <class Ring, class Field, class RandomPrime>
-	inline int RationalSolver<Ring, Field, RandomPrime, NumericalTraits>::cblas_dgeinv(double* M, int n) {
+	inline int RationalSolver<Ring, Field, RandomPrime, NumericalTraits>::cblas_dgeinv(double* M, int n)
+	{
 		enum CBLAS_ORDER order = CblasRowMajor;
 		int lda = n;
 		int P[n];

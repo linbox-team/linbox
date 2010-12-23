@@ -67,7 +67,9 @@ namespace LinBox
 	// the solve with default method
 	template< class Vector, class Blackbox>
 	Vector& solve(Vector& x, const Blackbox& A, const Vector& b)
-	{ return solve(x, A, b, Method::Hybrid()); }
+	{
+		return solve(x, A, b, Method::Hybrid());
+	}
 
 	// in methods.h FoobarMethod and Method::Foobar are the same class.
 	// in methods.h template<BB> bool useBB(const BB& A) is defined.
@@ -91,7 +93,7 @@ namespace LinBox
 		return solve(x, A, b, Method::Wiedemann(m));
 	}
 
-	// temporary - fix this
+	//! @todo temporary - fix this
 #define inBlasRange(p) true
 
 	template <class Vector, class BB>
@@ -234,6 +236,7 @@ namespace LinBox
 		throw LinboxError("bad use of integer API solver\n");
 
 	}
+
 #if 0
 	template <class RatVector, class Vector, class BB, class MethodTraits>
 	Vector& solve(RatVector& x, const BB& A, const Vector& b,
@@ -285,13 +288,15 @@ namespace LinBox
 
 	// default API (method is BlasElimination)
 	template<class RatVector, class Vector, class BB>
-	RatVector& solve(RatVector& x, const BB &A, const Vector &b){
+	RatVector& solve(RatVector& x, const BB &A, const Vector &b)
+	{
 		return solve(x, A, b, Method::BlasElimination());
 	}
 
 	// API with Hybrid method
 	template<class RatVector, class Vector, class BB>
-	RatVector& solve(RatVector& x, const BB &A, const Vector &b, const Method::Hybrid &m){
+	RatVector& solve(RatVector& x, const BB &A, const Vector &b, const Method::Hybrid &m)
+	{
 		if (useBB(A))
 			return solve(x, A, b, Method::Blackbox(m));
 		else
@@ -300,20 +305,23 @@ namespace LinBox
 
 	// API with Blackbox method
 	template<class RatVector, class Vector, class BB>
-	RatVector& solve(RatVector& x, const BB &A, const Vector &b, const Method::Blackbox &m){
+	RatVector& solve(RatVector& x, const BB &A, const Vector &b, const Method::Blackbox &m)
+	{
 		return solve(x, A, b, Method::Wiedemann(m));
 	}
 
 	// API with Elimination method
 	template<class RatVector, class Vector, class BB>
-	RatVector& solve(RatVector& x, const BB &A, const Vector &b, const Method::Elimination &m){
+	RatVector& solve(RatVector& x, const BB &A, const Vector &b, const Method::Elimination &m)
+	{
 		return solve(x, A, b,  Method::BlasElimination(m));
 	}
 
 
 	// launcher of specialized solver depending on the MethodTrait
 	template<class RatVector, class Vector, class BB, class MethodTraits>
-	RatVector& solve(RatVector& x, const BB &A, const Vector &b, const MethodTraits &m){
+	RatVector& solve(RatVector& x, const BB &A, const Vector &b, const MethodTraits &m)
+	{
 		return solve(x, A, b, typename FieldTraits<typename BB::Field>::categoryTag(),  m);
 	}
 
@@ -386,13 +394,15 @@ namespace LinBox
 
 	// default API (method is BlasElimination)
 	template< class Vector, class BB>
-	Vector& solve(Vector &x, typename BB::Field::Element &d, const BB &A, const Vector &b){
+	Vector& solve(Vector &x, typename BB::Field::Element &d, const BB &A, const Vector &b)
+	{
 		return solve(x, d, A, b, typename FieldTraits<typename BB::Field>::categoryTag(),  Method::BlasElimination());
 	}
 
 	// launcher of specialized solver depending on the MethodTraits
 	template< class Vector, class BB, class MethodTraits>
-	Vector& solve(Vector &x, typename BB::Field::Element &d, const BB &A, const Vector &b, const MethodTraits &m){
+	Vector& solve(Vector &x, typename BB::Field::Element &d, const BB &A, const Vector &b, const MethodTraits &m)
+	{
 		return solve(x, d, A, b, typename FieldTraits<typename BB::Field>::categoryTag(), m);
 	}
 

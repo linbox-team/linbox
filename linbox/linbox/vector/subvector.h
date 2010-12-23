@@ -149,8 +149,9 @@ namespace LinBox
 			return *this;
 		}
 
-		//		template <class In> void assign(In first, In last);
-		//		void assign(size_type n, const T& val);
+#if 0
+		template <class In> void assign(In first, In last);
+		void assign(size_type n, const T& val);
 
 		// Stack operations:
 		// 	not implemented because they invalidate iterators
@@ -161,6 +162,7 @@ namespace LinBox
 		// Capacity
 		// 	resize, reserve: not implemented because they
 		// 		invalidate iterators
+#endif
 
 		//copy assignment
 		Subvector& operator=(const Subvector& sub)
@@ -172,7 +174,6 @@ namespace LinBox
 		//size_type capacity(void) const { return _end - _begin; }
 
 		// Swap
-
 		void swap (Subvector& x)
 		{ std::swap (_begin,x._begin); std::swap(_end, x._end); }
 
@@ -186,27 +187,30 @@ namespace LinBox
 
 	// Vector traits for Subvector wrapper
 	template <typename Iterator, typename ConstIterator>
-	struct VectorTraits<Subvector<Iterator, ConstIterator> >
-	{
+	struct VectorTraits<Subvector<Iterator, ConstIterator> > {
 		typedef VectorCategories::DenseVectorTag VectorCategory;
 	};
 
-	/*     Equality and unequality operators may be desirable, both for raw vectors of elements
-	       and for vectors over a field with non-unique element representations.   In the latter
-	       case a vector domain can provide it thru it's areEqual predicate.  The following
-	       thought makes the valid point that raw vector equality could easily be misused.
-	       I remain agnostic on the subject.   -bds
+	/* Equality and unequality operators may be desirable, both for raw
+	 * vectors of elements and for vectors over a field with non-unique
+	 * element representations.   In the latter case a vector domain can
+	 * provide it thru it's areEqual predicate.  The following thought
+	 * makes the valid point that raw vector equality could easily be
+	 * misused.  I remain agnostic on the subject.   -bds
+	 *
+	 * These and also < type operator comparisons are inappropriate for use
+	 * by linbox programmers, since we are interested in comparing vectors
+	 * of field elements not vectors of underlying representation type.
+	 * Not wishing to use these functions, we don't bother to implement
+	 * them.
+	 */
+#if 0
+	template<class Iterator>
+	bool operator==(const Subvector<Iterator>& sub1, const Subvector<Iterator>& sub2) const;
 
-	       These and also < type operator comparisons are inappropriate for use
-	       by linbox programmers, since we are interested in comparing vectors
-	       of field elements not vectors of underlying representation type.
-	       Not wishing to use these functions, we don't bother to implement them.
-	       template<class Iterator>
-	       bool operator==(const Subvector<Iterator>& sub1, const Subvector<Iterator>& sub2) const;
-
-	       template<class Iterator>
-	       bool operator!=(const Subvector<Iterator>& sub1, const Subvector<Iterator>& sub2) const;
-	       */
+	template<class Iterator>
+	bool operator!=(const Subvector<Iterator>& sub1, const Subvector<Iterator>& sub2) const;
+#endif
 
 } // namespace LinBox
 

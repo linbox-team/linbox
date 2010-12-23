@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-/* linbox/algorithms/lifting-container-base.h
+/* linbox/algorithms/lifting-container.h
  * Copyright (C) 2004 Pascal Giorgi
  *
  * Written by Pascal Giorgi pascal.giorgi@ens-lyon.fr
@@ -19,6 +19,12 @@
  * License along with this library; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
+ */
+
+/*! @file algorithms/lifting-container.h
+ * @ingroup algorithms
+ * @brief Lifting from <code>mod p^n</code> to rationals
+ * NO DOC
  */
 
 #ifndef __LINBOX_lifting_container_H
@@ -53,11 +59,12 @@ namespace LinBox
 	 * where H_col(A) is prod_j sqrt(sum_i a_ij^2)     ('Hadamard column bound')
 	 *   short_col(A) is min_j  sqrt(sum_i a_ij^2)     ('shortest column')
 	 *
-	 * note: H_col is not actually a norm! but it is what we need for lifting bound computation
+	 * @note H_col is not actually a norm! but it is what we need for lifting bound computation
 	 */
 	template <class Ring, class ItMatrix>
 	void SpecialBound(const Ring& R, typename Ring::Element& H_col_sqr,
-			  typename Ring::Element& short_col_sqr, const ItMatrix& A) {
+			  typename Ring::Element& short_col_sqr, const ItMatrix& A)
+	{
 
 		typedef typename Ring::Element Integer;
 		//Integer sqsum;
@@ -122,7 +129,8 @@ namespace LinBox
 
 
 	template < class Ring, class Blackbox>
-	void BoundBlackbox (const Ring& R, typename Ring::Element& H_col_sqr, typename Ring::Element& short_col_sqr, const Blackbox& A)
+	void BoundBlackbox (const Ring& R, typename Ring::Element& H_col_sqr,
+			    typename Ring::Element& short_col_sqr, const Blackbox& A)
 	{
 
 		typedef typename Ring::Element Integer;
@@ -151,7 +159,8 @@ namespace LinBox
 	}
 
 	template < class Ring, class Matrix1, class Matrix2>
-	void BoundBlackbox (const Ring& R, typename Ring::Element& H_col_sqr, typename Ring::Element& short_col_sqr, const Compose<Matrix1,Matrix2> & A)
+	void BoundBlackbox (const Ring& R, typename Ring::Element& H_col_sqr,
+			    typename Ring::Element& short_col_sqr, const Compose<Matrix1,Matrix2> & A)
 	{
 		typedef typename Ring::Element Integer;
 		Integer one,zero,sqsum;
@@ -177,7 +186,8 @@ namespace LinBox
 	}
 
 	template < class Ring, class Matrix>
-	void BoundBlackbox (const Ring& R, typename Ring::Element& H_col_sqr, typename Ring::Element& short_col_sqr, const Transpose<Matrix> & A)
+	void BoundBlackbox (const Ring& R, typename Ring::Element& H_col_sqr,
+			    typename Ring::Element& short_col_sqr, const Transpose<Matrix> & A)
 	{
 		typedef typename Ring::Element Integer;
 		Integer one,zero,sqsum;
@@ -204,37 +214,39 @@ namespace LinBox
 
 
 	/*
-	   This should work with blackboxes. However it is much slower if column iterators are available.
-	   Furthermore the compiler always binds to this instead of the above faster version; so some
-	   trickier kind of specialization may have to be done when BoundBlackBox is to be used with true blackboxes.
-	   (Or is the plural Blackboxen?)
-
+	 *  This should work with blackboxes. However it is much slower if
+	 *  column iterators are available.  Furthermore the compiler always
+	 *  binds to this instead of the above faster version; so some trickier
+	 *  kind of specialization may have to be done when BoundBlackBox is to
+	 *  be used with true blackboxes.  (Or is the plural Blackboxen?)
+	 */
+#if 0
 	   template < class Ring, class IMatrix>
-	   void BoundBlackbox
-	   (const Ring& R, typename Ring::Element& H_col_sqr, typename Ring::Element& short_col_sqr, const IMatrix& A) {
-	   typedef typename Ring::Element Integer;
-	   Integer one,zero,sqsum;
-	   size_t m,n;
-	   n=A.coldim();
-	   m=A.rowdim();
-	   R.init(one,1);
-	   R.init(zero,0);
-	   R.init(H_col_sqr, 1);
-	   typename std::vector<Integer>::const_iterator iter;
-	   std::vector<Integer> e(n,zero),tmp(m);
-	   for (size_t i=0;i<n;i++){
-	   e[i]=one;
-	   A.apply(tmp,e);
-	   sqsum=zero;
-	   for (iter=tmp.begin();iter!=tmp.end();++iter)
-	   sqsum += (*iter)*(*iter);
-	   R.mulin(H_col_sqr, sqsum);
-	   if (i==0 || sqsum < short_col_sqr)
-	   short_col_sqr = sqsum;
-	   e[i]=zero;
+	   void BoundBlackbox (const Ring& R, typename Ring::Element& H_col_sqr,
+			       typename Ring::Element& short_col_sqr, const IMatrix& A) {
+		   typedef typename Ring::Element Integer;
+		   Integer one,zero,sqsum;
+		   size_t m,n;
+		   n=A.coldim();
+		   m=A.rowdim();
+		   R.init(one,1);
+		   R.init(zero,0);
+		   R.init(H_col_sqr, 1);
+		   typename std::vector<Integer>::const_iterator iter;
+		   std::vector<Integer> e(n,zero),tmp(m);
+		   for (size_t i=0;i<n;i++){
+			   e[i]=one;
+			   A.apply(tmp,e);
+			   sqsum=zero;
+			   for (iter=tmp.begin();iter!=tmp.end();++iter)
+				   sqsum += (*iter)*(*iter);
+			   R.mulin(H_col_sqr, sqsum);
+			   if (i==0 || sqsum < short_col_sqr)
+				   short_col_sqr = sqsum;
+			   e[i]=zero;
+		   }
 	   }
-	   }
-	   */
+#endif
 
 	/** @brief ApplyBound.
 	 * ApplyBound computes
@@ -803,7 +815,7 @@ namespace LinBox
 			FVector z(_Ap.rowdim ());
 
 
-			for (size_t i = _MinPoly.size () - 1; --i > 0;) {
+			for (size_t i = _MinPoly.size () - 1; --i ;) {
 				_Ap.apply (z, _digit_p);
 				_VDF.axpy (_digit_p, _MinPoly[i], _res_p, z);
 			}
@@ -1290,20 +1302,22 @@ namespace LinBox
 			tGetDigit.start();
 #endif
 
-			// compute the solution of _Ap^(-1).residu mod p = [V^T AV^T ... A^k]^T . Hinv . [U^T U^TA ... U^TA^k]^T residue mod p
-			// with k= numblock -1
+			/* compute the solution of :
+			 * _Ap^(-1).residu mod p = [V^T AV^T ... A^k]^T . Hinv
+			 * . [U^T U^TA ... U^TA^k]^T residue mod p
+			 * with k= numblock -1
+			 */
 #ifdef RSTIMING
 			tAcc.clear();
 			tAcc.start();
 #endif
-			/*
-			   std::cout<<"b:=<";
-			   for (size_t i=0;i<_res_p.size()-1;++i)
-			   _F.write(std::cout,_res_p[i])<<",";
-			   _F.write(std::cout,_res_p[_res_p.size()-1])<<">;\n";
-			   */
 
-
+#if 0
+			std::cout<<"b:=<";
+			for (size_t i=0;i<_res_p.size()-1;++i)
+				_F.write(std::cout,_res_p[i])<<",";
+			_F.write(std::cout,_res_p[_res_p.size()-1])<<">;\n";
+#endif
 
 			size_t n = _Ap.coldim();
 			// compute z0 = [U^T U^T Ap^T ... U^T Ap^k]^T . residue mod p
@@ -1353,13 +1367,15 @@ namespace LinBox
 			tAcc.clear();
 			tAcc.start();
 #endif
-			/*
+
+#if 0
 			   std::cout<<" Hinv U b mod p done\n";
 			   std::cout<<"\n y:=<";
 			   for (size_t i=0;i<_digit_p.size()-1;++i)
 			   _F.write(std::cout,z1[i])<<",";
 			   _F.write(std::cout,z1[_digit_p.size()-1])<<">;\n";
-			   */
+#endif
+
 			// compute digit_p  = [V^T AV^T ... A^k]^T.z1
 			FVector b_bar(n), b_hat(_numblock);
 			for (size_t i=0;i<n;++i)
@@ -1379,13 +1395,14 @@ namespace LinBox
 			tAcc.stop();
 			tApplyV+=tAcc;
 #endif
-			/*
+
+#if 0
 			   std::cout<<" V Hinv U b mod p done\n";
 			   std::cout<<"\n x:=<";
 			   for (size_t i=0;i<_digit_p.size()-1;++i)
 			   _F.write(std::cout,_digit_p[i])<<",";
 			   _F.write(std::cout,_digit_p[_digit_p.size()-1])<<">;\n";
-			   */
+#endif
 
 #ifdef RSTIMING
 			tGetDigit.stop();

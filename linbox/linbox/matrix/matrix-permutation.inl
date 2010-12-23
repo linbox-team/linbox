@@ -148,7 +148,7 @@ namespace LinBox
 
 	template<class _Uint>
 	_Uint
-	PackedPermutation<_Uint>::getSize()
+	PackedPermutation<_Uint>::getSize() const
 	{
 		if ( r_ == 0) return (n_ = 0) ;
 		if ( n_ == (_Uint) -1 ) //! @warning potentially catastrophic
@@ -197,7 +197,7 @@ namespace LinBox
 	}
 
 	template<class _Uint>
-	void PackedPermutation<_Uint>::InitQ_()
+	void PackedPermutation<_Uint>::InitQ_() const
 	{
 		getSize();
 		Q_.resize(n_);
@@ -434,7 +434,7 @@ namespace LinBox
 
 	template<class _Uint>
 	_Uint
-	MatrixPermutation<_Uint>::getSize()
+	MatrixPermutation<_Uint>::getSize() const
 	{ return n_ ; }
 
 	template<class _Uint>
