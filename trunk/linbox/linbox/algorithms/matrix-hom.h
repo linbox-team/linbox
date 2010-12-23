@@ -376,7 +376,7 @@ namespace LinBox
 		public:
 			void operator() (BlasBlackbox<Field> &Ap, const IMatrix &A, const Field &F, MatrixContainerCategory::BlasContainer type)
 			{
-				// 				Ap = new BlasBlackbox<Field>(F, A.rowdim(), A.coldim());
+				//Ap = new BlasBlackbox<Field>(F, A.rowdim(), A.coldim());
 				Hom<typename IMatrix::Field , Field> hom(A.field(), F);
 
 				typename IMatrix::ConstRawIterator        iterA  = A.rawBegin();
@@ -387,6 +387,22 @@ namespace LinBox
 			}
 		};
 
+		template<class Field>
+		class BlasBlackboxMAP<Field, BlasMatrix<integer>, MatrixContainerCategory::BlasContainer> {
+		public:
+			void operator() (BlasBlackbox<Field> &Ap, const BlasMatrix<integer> &A, const Field &F, MatrixContainerCategory::BlasContainer type)
+			{
+				//Ap = new BlasBlackbox<Field>(F, A.rowdim(), A.coldim());
+				PID_integer ZZ ;
+				Hom<PID_integer , Field> hom(ZZ, F);
+
+				typename BlasMatrix<integer>::ConstRawIterator        iterA  = A.rawBegin();
+				typename BlasBlackbox<Field>::RawIterator iterAp = Ap.rawBegin();
+
+				for(; iterA != A.rawEnd(); iterA++, iterAp++)
+					hom. image (*iterAp, *iterA);
+			}
+		};
 
 
 		template< class IMatrix>
@@ -394,7 +410,7 @@ namespace LinBox
 		public:
 			void operator() (BlasBlackbox<MultiModDouble> &Ap, const IMatrix &A, const MultiModDouble &F,  MatrixContainerCategory::BlasContainer type)
 			{
-				// 				Ap = new BlasBlackbox<MultiModDouble>(F, A.rowdim(), A.coldim());
+				//Ap = new BlasBlackbox<MultiModDouble>(F, A.rowdim(), A.coldim());
 				for (size_t i=0; i<F.size();++i)
 					MatrixHom::map(Ap.getMatrix(i), A, F.getBase(i));
 			}

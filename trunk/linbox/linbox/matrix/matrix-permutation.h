@@ -43,11 +43,13 @@
 namespace LinBox
 {
 
+#if 0
 	template<class _Uint>
 	class PermutationInterface {
 	public :
 		virtual _Uint getSize() = 0;
 	};
+#endif
 
 	// forward declaration
 	template<class _Uint>
@@ -66,7 +68,7 @@ namespace LinBox
 	 * @pre if Q_ is built, then P_=Q_
 	*/
 	template<class _UnsignedInt> // unsigned * ou Integer
-	class PackedPermutation : PermutationInterface<_UnsignedInt> {
+	class PackedPermutation /*  : PermutationInterface<_UnsignedInt> */ {
 		typedef PackedPermutation<_UnsignedInt> BlasPerm ;
 	public :
 		PackedPermutation() ;
@@ -115,7 +117,7 @@ namespace LinBox
 		}
 
 		/*  size */
-		_UnsignedInt getSize() ;
+		_UnsignedInt getSize() const ;
 		_UnsignedInt getOrder() ;
 
 		_UnsignedInt getCompression() ;
@@ -176,7 +178,7 @@ namespace LinBox
 
 	protected :
 		_UnsignedInt			r_ ;	// size of compressed permutation
-		_UnsignedInt			n_ ;	// dim of permutation
+		mutable _UnsignedInt			n_ ;	// dim of permutation
 		std::vector<_UnsignedInt>	P_ ;	// blas permutation
 		mutable std::vector<_UnsignedInt>       Q_ ;    // corresponding matrix permutation
 		mutable bool                            cleaned_ ;
@@ -191,7 +193,7 @@ namespace LinBox
 		std::vector<_UnsignedInt> &InvertQ_(std::vector<_UnsignedInt> & Qinv);
 		void BuildP_(std::vector<_UnsignedInt>&Q, std::vector<_UnsignedInt>&Qinv);
 		bool CheckP_();
-		void InitQ_() ;
+		void InitQ_() const ;
 
 
 	};
@@ -205,7 +207,7 @@ namespace LinBox
 	 * @ingroup permutation
 	 */
 	template<class _UnsignedInt>
-	class MatrixPermutation  : PermutationInterface<_UnsignedInt> {
+	class MatrixPermutation /*  : PermutationInterface<_UnsignedInt> */ {
 		typedef MatrixPermutation<_UnsignedInt> MatPerm ;
 	private :
 		_UnsignedInt			n_ ; // order of permutation
@@ -219,7 +221,7 @@ namespace LinBox
 
 		_UnsignedInt & operator[] (const _UnsignedInt i) const ;
 		_UnsignedInt getSize() const ;
-		_UnsignedInt getSize() ;
+		// _UnsignedInt getSize() ;
 
 		void resize( _UnsignedInt n ) ;
 

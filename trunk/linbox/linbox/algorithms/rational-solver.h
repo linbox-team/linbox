@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-/* linbox/algorithms/lifting-container.h
+/* linbox/algorithms/rational-solver.h
  * Copyright (C) 2004 Zhendong Wan, Pascal Giorgi
  *
  * Written by Zhendong Wan  <wan@mail.eecis.udel.edu>
@@ -23,6 +23,11 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/*! @file algorithms/rational-solver.h
+ * @ingroup algorithms
+ * @brief Rational solving (Dixon, Wiedemann,...)
+ */
+
 #ifndef __LINBOX_rational_solver_H
 #define __LINBOX_rational_solver_H
 
@@ -42,7 +47,7 @@
 namespace LinBox
 {// LinBox
 
-	// bsd and mac problem
+// bsd and mac problem
 #undef _R
 
 #define SINGULARITY_THRESHOLD 5
@@ -61,11 +66,13 @@ namespace LinBox
 	 *
 	 *  See the following reference for details on this algorithm:
 	 * \bib
-	 *  - Robert T. Moenck and John H. Carter <i>Approximate algorithms to derive exact solutions to system
-	 *  of linear equations.</i> In Proc. EUROSAM'79, volume 72 of Lectures Note in Computer Science, pages 65-72,
-	 *  Berlin-Heidelberger-New York, 1979. Springer-Verlag.
-	 *  - John D. Dixon <i>Exact Solution of linear equations using p-adic expansions.</i> Numerische Mathematik,
-	 *  volume 40, pages 137-141, 1982.
+	 *    - Robert T. Moenck and John H. Carter <i>Approximate algorithms to
+	 *  derive exact solutions to system of linear equations.</i> In Proc.
+	 *  EUROSAM'79, volume 72 of Lectures Note in Computer Science, pages
+	 *  65-72, Berlin-Heidelberger-New York, 1979. Springer-Verlag.
+	 *    - John D. Dixon <i>Exact Solution of linear equations using p-adic
+	 *  expansions.</i> Numerische Mathematik, volume 40, pages 137-141,
+	 *  1982.
 	 *  .
 	 * \ingroup algorithms
 	 *
@@ -84,7 +91,7 @@ namespace LinBox
 		SS_BAD_PRECONDITIONER
 	};
 
-	/** \brief  Define the different strategy which can be used in the p-adic based solver.
+	/** Define the different strategy which can be used in the p-adic based solver.
 	 *
 	 * Used to determine what level of solving should be done:
 	 * - Monte Carlo: Try to solve if possible, but result is not guaranteed.
@@ -95,6 +102,7 @@ namespace LinBox
 	 *                   \p lastCertificate satisfies \f$lC \cdot A = 0\f$ and \f$lC \cdot b \neq 0 \f$
 	 *              - if diophantine solving was called and the return value is \p SS_OK, this means
 	 *                   \p lastCertificate satisfies \f$ \mathrm{den}(lC \cdot A) = 1, \mathrm{den}(lC \cdot b) = \mathrm{den}(answer) \f$
+	 *              .
 	 * .
 	 * \ingroup padic
 	 */
@@ -104,8 +112,11 @@ namespace LinBox
 		SL_CERTIFIED
 	};    // note: code may assume that each level is 'stronger' than the previous one
 
+	/*****************/
+	/*** Interface ***/
+	/*****************/
 
-	/** \brief interface for the different specialization of p-adic lifting based solvers.
+	/** \brief Interface for the different specialization of p-adic lifting based solvers.
 	 *
 	 * The following type are abstract in the implementation and can be
 	 * change during the instanciation of the class:
@@ -135,9 +146,9 @@ namespace LinBox
 		 * @return status of solution
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A,
-					 const Vector2& b,const bool toto,
-					 int maxPrimes = DEFAULT_MAXPRIMES) const;
+		SolverReturnStatus solve(Vector1& num, Integer& den,
+					 const IMatrix& A, const Vector2& b,
+					 const bool toto, int maxPrimes = DEFAULT_MAXPRIMES) const;
 
 
 		/** Solve a nonsingular linear system \c Ax=b over quotient field of a ring,
@@ -152,8 +163,9 @@ namespace LinBox
 		 * @return status of solution
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A,
-						    const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
+		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den,
+						    const IMatrix& A, const Vector2& b,
+						    int maxPrimes = DEFAULT_MAXPRIMES) const;
 
 		/** brief Solve a singular linear system \c Ax=b over quotient field of a ring,
 		 *         giving a random solution if the system is singular and consistent.
@@ -167,15 +179,20 @@ namespace LinBox
 		 * @return status of solution
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A,
-						 const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
+		SolverReturnStatus solveSingular(Vector1& num, Integer& den,
+						 const IMatrix& A, const Vector2& b,
+						 int maxPrimes = DEFAULT_MAXPRIMES) const;
 
 
 	};
 
+	/***********************/
+	/*** Specialisations ***/
+	/***********************/
 
-
-
+	/*-----------*/
+	/* WIEDEMANN */
+	/*-----------*/
 
 #ifdef RSTIMING
 	class WiedemannTimer {
@@ -202,19 +219,19 @@ namespace LinBox
 	};
 #endif
 
-
-	/** \brief partial specialization of p-adic based solver with Wiedemann algorithm
+	/** Partial specialization of p-adic based solver with Wiedemann algorithm.
 	 *
 	 *   See the following reference for details on this algorithm:
-	 *   - Douglas H. Wiedemann: Solving sparse linear equations over finite fields.
-	 *   IEEE Transaction on Information Theory, 32(1), pages 54-62, 1986.
-	 *
-	 *   - Erich Kaltofen and B. David Saunders: On Wiedemann's method of solving sparse linear systems.
-	 *   In Applied Algebra, Algebraic Algorithms and Error Correcting Codes - AAECC'91, volume 539 of Lecture Notes
-	 *   in Computer Sciences, pages 29-38, 1991.
+	 * @bib
+	 *   - Douglas H. Wiedemann <i>Solving sparse linear equations over
+	 *   finite fields</i>.  IEEE Transaction on Information Theory, 32(1),
+	 *   pages 54-62, 1986.
+	 *   - Erich Kaltofen and B. David Saunders <i>On Wiedemann's method of
+	 *   solving sparse linear systems</i>.  In Applied Algebra, Algebraic
+	 *   Algorithms and Error Correcting Codes - AAECC'91, volume 539 of
+	 *   Lecture Notes in Computer Sciences, pages 29-38, 1991.
 	 *
 	 */
-
 	template<class Ring, class Field,class RandomPrime>
 	class RationalSolver<Ring, Field, RandomPrime, WiedemannTraits> {
 
@@ -245,7 +262,9 @@ namespace LinBox
 		 * @param rp  a RandomPrime generator, set by default
 		 * @param traits
 		 */
-		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE), const WiedemannTraits& traits=WiedemannTraits()) :
+		RationalSolver (const Ring& r = Ring(),
+				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE),
+				const WiedemannTraits& traits=WiedemannTraits()) :
 			_R(r), _genprime(rp), _traits(traits)
 		{
 
@@ -274,35 +293,45 @@ namespace LinBox
 
 
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,
+		SolverReturnStatus solve(Vector1& num, Integer& den,
+					 const IMatrix& A, const Vector2& b,
 					 const bool s=false, int maxPrimes = DEFAULT_MAXPRIMES) const;
 
 
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A,
-						    const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
+		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den,
+						    const IMatrix& A, const Vector2& b,
+						    int maxPrimes = DEFAULT_MAXPRIMES) const;
 
 
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
+		SolverReturnStatus solveSingular(Vector1& num, Integer& den,
+						 const IMatrix& A, const Vector2& b,
+						 int maxPrimes = DEFAULT_MAXPRIMES) const;
 
 
 		template <class IMatrix, class FMatrix, class IVector>
-		void sparseprecondition (const Field&, const IMatrix* , Compose< LambdaSparseMatrix<Ring>,Compose<IMatrix, LambdaSparseMatrix<Ring> > > *&, const FMatrix*, Compose<LambdaSparseMatrix<Field>,Compose<FMatrix,LambdaSparseMatrix<Field> > > *&, const IVector&, IVector&, LambdaSparseMatrix<Ring> *&, LambdaSparseMatrix<Ring> *&, LambdaSparseMatrix<Field> *&, LambdaSparseMatrix<Field> *&) const;
+		void sparseprecondition (const Field&, const IMatrix* ,
+					 Compose< LambdaSparseMatrix<Ring>,Compose<IMatrix, LambdaSparseMatrix<Ring> > > *&,
+					 const FMatrix*,
+					 Compose<LambdaSparseMatrix<Field>,Compose<FMatrix,LambdaSparseMatrix<Field> > > *&,
+					 const IVector&, IVector&, LambdaSparseMatrix<Ring> *&,
+					 LambdaSparseMatrix<Ring> *&,
+					 LambdaSparseMatrix<Field> *&,
+					 LambdaSparseMatrix<Field> *&) const;
 
-
-		/*
+#if 0
 		   template <class IMatrix, class FMatrix, class IVector, class FVector>
 		   void precondition (const Field&,
-		   const IMatrix&,
-		   BlackboxArchetype<IVector>*&,
-		   const FMatrix*,
-		   BlackboxArchetype<FVector>*&,
-		   const IVector&,
-		   IVector&,
-		   BlackboxArchetype<IVector>*&,
-		   BlackboxArchetype<IVector>*&) const;
-		   */
+				      const IMatrix&,
+				      BlackboxArchetype<IVector>*&,
+				      const FMatrix*,
+				      BlackboxArchetype<FVector>*&,
+				      const IVector&,
+				      IVector&,
+				      BlackboxArchetype<IVector>*&,
+				      BlackboxArchetype<IVector>*&) const;
+#endif
 
 #ifdef RSTIMING
 		void clearTimers() const
@@ -357,8 +386,9 @@ namespace LinBox
 
 	}; // end of specialization for the class RationalSover with Wiedemann traits
 
-
-
+	/*-----------------*/
+	/* BLOCK WIEDEMANN */
+	/*-----------------*/
 
 #ifdef RSTIMING
 	class BlockWiedemannTimer {
@@ -387,23 +417,23 @@ namespace LinBox
 	};
 #endif
 
-
-	/** \brief partial specialization of p-adic based solver with block Wiedemann algorithm
+	/** \brief partial specialization of p-adic based solver with block Wiedemann algorithm.
 	 *
 	 *   See the following reference for details on this algorithm:
-	 *   - Douglas H. Wiedemann: Solving sparse linear equations over finite fields.
-	 *   IEEE Transaction on Information Theory, 32(1), pages 54-62, 1986.
+	 *   @bib
+	 *   - Douglas H. Wiedemann <i>Solving sparse linear equations over
+	 *   finite fields</i>.  IEEE Transaction on Information Theory, 32(1),
+	 *   pages 54-62, 1986.
+	 *   - Don Coppersmith  <i>Solving homogeneous linear equations over
+	 *   GF(2) via block Wiedemann algorithm.</i> Mathematic of
+	 *   computation, 62(205), pages 335-350, 1994.
 	 *
-	 *   - Don Coppersmith: Solving homogeneous linear equations over GF(2) via block Wiedemann algorithm.
-	 *   Mathematic of computation, 62(205), pages 335-350, 1994.
-	 *
-	 *   - Erich Kaltofen and B. David Saunders: On Wiedemann's method of solving sparse linear systems.
-	 *   In Applied Algebra, Algebraic Algorithms and Error Correcting Codes - AAECC'91, volume 539 of Lecture Notes
-	 *   in Computer Sciences, pages 29-38, 1991.
-	 *
+	 *   - Erich Kaltofen and B. David Saunders <i>On Wiedemann's method of
+	 *   solving sparse linear systems</i>.  In Applied Algebra, Algebraic
+	 *   Algorithms and Error Correcting Codes, AAECC'91, volume 539 of
+	 *   Lecture Notes in Computer Sciences, pages 29-38, 1991.
 	 *
 	 */
-
 	template<class Ring, class Field,class RandomPrime>
 	class RationalSolver<Ring, Field, RandomPrime, BlockWiedemannTraits> {
 
@@ -431,12 +461,14 @@ namespace LinBox
 #endif
 	public:
 
-		/*! Constructor
+		/*! Constructor.
 		 * @param r   a Ring, set by default
 		 * @param rp  a RandomPrime generator, set by default
 		 * @param traits
 		 */
-		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE), const BlockWiedemannTraits& traits=BlockWiedemannTraits()) :
+		RationalSolver (const Ring& r = Ring(),
+				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE),
+				const BlockWiedemannTraits& traits=BlockWiedemannTraits()) :
 			_R(r), _genprime(rp), _traits(traits)
 		{
 
@@ -446,7 +478,7 @@ namespace LinBox
 #endif
 		}
 
-		/*! Constructor with a prime
+		/*! Constructor with a prime.
 		 * @param p   a Prime
 		 * @param r   a Ring, set by default
 		 * @param rp  a RandomPrime generator, set by default
@@ -464,14 +496,20 @@ namespace LinBox
 		}
 
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,const bool s=false, int maxPrimes = DEFAULT_MAXPRIMES) const;
+		SolverReturnStatus solve(Vector1& num, Integer& den,
+					 const IMatrix& A, const Vector2& b,
+					 const bool s=false, int maxPrimes = DEFAULT_MAXPRIMES) const;
 
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
+		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den,
+						    const IMatrix& A, const Vector2& b,
+						    int maxPrimes = DEFAULT_MAXPRIMES) const;
 
 
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
+		SolverReturnStatus solveSingular(Vector1& num, Integer& den,
+						 const IMatrix& A, const Vector2& b,
+						 int maxPrimes = DEFAULT_MAXPRIMES) const;
 
 
 
@@ -526,10 +564,9 @@ namespace LinBox
 #endif
 	}; // end of specialization for the class RationalSover with BlockWiedemann traits
 
-
-
-
-
+	/*-------*/
+	/* DIXON */
+	/*-------*/
 
 #ifdef RSTIMING
 	class DixonTimer {
@@ -560,7 +597,6 @@ namespace LinBox
 		}
 	};
 #endif
-
 
 	/** \brief partial specialization of p-adic based solver with Dixon algorithm.
 	 *
@@ -855,7 +891,9 @@ namespace LinBox
 	}; // end of specialization for the class RationalSover with Dixon traits
 
 
-
+	/*----------------*/
+	/* HYBRID Num/Sym */
+	/*----------------*/
 
 	/** \brief partial specialization of p-adic based solver with a hybrid Numeric/Symbolic computation.
 	 *
@@ -883,7 +921,8 @@ namespace LinBox
 
 #if  __LINBOX_HAVE_DGETRF && __LINBOX_HAVE_DGETRI
 		template <class IMatrix, class OutVector, class InVector>
-		SolverReturnStatus solve(OutVector& num, Integer& den, const IMatrix& M, const InVector& b) const
+		SolverReturnStatus solve(OutVector& num, Integer& den,
+					 const IMatrix& M, const InVector& b) const
 		{
 
 			if(M. rowdim() != M. coldim())
@@ -950,7 +989,8 @@ namespace LinBox
 		}
 #else
 		template <class IMatrix, class OutVector, class InVector>
-		SolverReturnStatus solve(OutVector& num, Integer& den, const IMatrix& M, const InVector& b) const
+		SolverReturnStatus solve(OutVector& num, Integer& den,
+					 const IMatrix& M, const InVector& b) const
 		{
 			//                     std::cerr<< "dgetrf or dgetri missing" << std::endl;
 			return SS_FAILED;
@@ -993,10 +1033,13 @@ namespace LinBox
 #endif
 	};
 
-	/*------------*/
-	//! BLOCK HANKEL
-	/*------------*/
+	/*--------------*/
+	/* BLOCK HANKEL */
+	/*--------------*/
 
+	/*! Block Hankel.
+	 * NO DOC
+	 */
 	template<class Ring, class Field,class RandomPrime>
 	class RationalSolver<Ring, Field, RandomPrime, BlockHankelTraits> {
 	public:
@@ -1017,7 +1060,8 @@ namespace LinBox
 		 * @param r   a Ring, set by default
 		 * @param rp  a RandomPrime generator, set by default
 		 */
-		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
+		RationalSolver (const Ring& r = Ring(),
+				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
 			_genprime(rp), _R(r)
 		{
 			_prime=_genprime.randomPrime();
@@ -1029,21 +1073,28 @@ namespace LinBox
 		 * @param r   a Ring, set by default
 		 * @param rp  a RandomPrime generator, set by default
 		 */
-		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
+		RationalSolver (const Prime& p, const Ring& r = Ring(),
+				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
 			_genprime(rp), _prime(p), _R(r)
 		{}
 
 
 		// solve non singular system
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, size_t blocksize, int maxPrimes = DEFAULT_MAXPRIMES) const;
+		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den,
+						    const IMatrix& A, const Vector2& b,
+						    size_t blocksize, int maxPrimes = DEFAULT_MAXPRIMES) const;
 	};
 
 
 
-	/*------------*/
-	//! SPARSE LU
-	/*------------*/
+	/*-----------*/
+	/* SPARSE LU */
+	/*-----------*/
+
+	/*! Sparse LU.
+	 * NO DOC
+	 */
 	template<class Ring, class Field,class RandomPrime>
 	class RationalSolver<Ring, Field, RandomPrime, SparseEliminationTraits> {
 	public:
@@ -1060,30 +1111,34 @@ namespace LinBox
 	public:
 
 
-		/** Constructor
+		/** Constructor.
 		 * @param r   a Ring, set by default
 		 * @param rp  a RandomPrime generator, set by default
 		 */
-		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
+		RationalSolver (const Ring& r = Ring(),
+				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
 			_genprime(rp), _R(r)
 		{
 			_prime=_genprime.randomPrime();
 		}
 
 
-		/** Constructor, trying the prime p first
+		/** Constructor, trying the prime p first.
 		 * @param p   a Prime
 		 * @param r   a Ring, set by default
 		 * @param rp  a RandomPrime generator, set by default
 		 */
-		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
+		RationalSolver (const Prime& p, const Ring& r = Ring(),
+				const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) :
 			_genprime(rp), _prime(p), _R(r)
 		{}
 
 
 		// solve non singular system
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
+		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den,
+						    const IMatrix& A, const Vector2& b,
+						    int maxPrimes = DEFAULT_MAXPRIMES) const;
 	};
 
 }
