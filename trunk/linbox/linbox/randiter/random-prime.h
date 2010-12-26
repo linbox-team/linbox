@@ -171,10 +171,27 @@ namespace LinBox
 			return *this;
 		}
 
-		/** @brief get the random prime.
-		 * @param[out] a the new prime number
+		/** @brief get a random prime of maximum size \c _bits .
+		 * @param[out] a a prime number
 		 */
 		integer & random (integer & a) const
+		{
+			integer::random(a,_bits);
+
+			nextprime( a, a);
+			while (a.bitsize()>_bits)
+				prevprime(a,a);
+
+			return a;
+		}
+
+		integer  random () const
+		{
+			integer a ;
+			return random(a);
+		}
+
+		integer & random_exact (integer & a) const
 		{
 			// integer::random_exact(a,_bits);
 			integer::random(a,_bits-1); //!@todo uses random_exact when givaro is released.
@@ -185,6 +202,40 @@ namespace LinBox
 				prevprime(a,a);
 
 			return a;
+		}
+
+		integer random_exact () const
+		{
+			integer a ;
+			return random_exact(a);
+		}
+
+		integer & random_between (integer & a, unsigned long _low_bits) const
+		{
+			linbox_check(_low_bits < _bits);
+			// integer::random_exact(a,_bits);
+			unsigned long ze_bits = _low_bits+(_bits - _low_bits)*drand48() ;
+			std::cout << ze_bits << std::endl;
+			linbox_check (!(ze_bits<_low_bits) && !(ze_bits>_bits));
+			integer::random(a,ze_bits-1); //!@todo uses random_between when givaro is released.
+			a = (integer(1)<<ze_bits) - a;
+
+			nextprime( a, a);
+			while (a.bitsize()>_bits)
+				prevprime(a,a);
+
+			linbox_check(a.bitsize() >= _low_bits && a.bitsize() <= _bits) ;
+
+			return a;
+		}
+
+		integer random_between ( unsigned long _low_bits) const
+		{
+			// std::cout << "random between " << _low_bits << " and " << _bits << std::endl;
+			integer a ;
+			random_between(a,_low_bits);
+			// std::cout << a << std::endl;
+			return a ;
 		}
 
 		void setBits (unsigned int  bits)
