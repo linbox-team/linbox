@@ -68,7 +68,7 @@ namespace LinBox
 		inline Vector1 &mulColDense (const VectorDomain<Field> &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const;
 	};
 
-	/** \brief Class of matrix arithmetic functions
+	/** Class of matrix arithmetic functions.
 	 *
 	 * This class encapuslated matrix-matrix and matrix-vector operations, roughly
 	 * equivalent to BLAS levels 2 and 3. The arithmetic methods are parameterized
@@ -136,7 +136,7 @@ namespace LinBox
 			return A.write (os, _F);
 		}
 
-		/** Read matrix
+		/** Read matrix.
 		 * @param  is  Input stream from which matrix is read.
 		 * @param  A   Matrix.
 		 * @returns reference to is.
@@ -148,7 +148,7 @@ namespace LinBox
 		}
 
 		/** Matrix copy
-		 * B <- A
+		 * B <- A.
 		 * Copy the contents of the matrix B to the matrix A
 		 *
 		 * Both matrices must support the same iterators, row or column.
@@ -165,7 +165,7 @@ namespace LinBox
 						typename MatrixTraits<Matrix2>::MatrixCategory ());
 		}
 
-		/** Matrix equality
+		/** Matrix equality.
 		 * Test whether the matrices A and B are equal
 		 * @param A Input vector
 		 * @param B Input vector
@@ -179,7 +179,7 @@ namespace LinBox
 						    typename MatrixTraits<Matrix2>::MatrixCategory ());
 		}
 
-		/** Matrix equality with zero
+		/** Matrix equality with zero.
 		 * @param A Input matrix
 		 * @returns true if and only if the matrix A is zero
 		 */
@@ -190,7 +190,7 @@ namespace LinBox
 		}
 
 		/** Matrix-matrix addition
-		 * C <- A + B
+		 * C <- A + B.
 		 *
 		 * Each of A, B, and C must support the same iterator, either row or
 		 * column
@@ -210,7 +210,7 @@ namespace LinBox
 		}
 
 		/** Matrix-matrix in-place addition
-		 * A <- A + B
+		 * A <- A + B.
 		 *
 		 * Each of A and B must support the same iterator, either row or column
 		 *
@@ -227,7 +227,7 @@ namespace LinBox
 		}
 
 		/** Matrix-matrix subtraction
-		 * C <- A - B
+		 * C <- A - B.
 		 *
 		 * Each of A, B, and C must support the same iterator, either row or
 		 * column
@@ -247,7 +247,7 @@ namespace LinBox
 		}
 
 		/** Matrix-matrix in-place subtraction
-		 * A <- A - B
+		 * A <- A - B.
 		 *
 		 * Each of A and B must support the same iterator, either row or column
 		 *
@@ -264,7 +264,7 @@ namespace LinBox
 		}
 
 		/** Matrix negate
-		 * B <- -A
+		 * B <- -A.
 		 *
 		 * Each of A and B must support the same iterator, either row or column
 		 *
@@ -281,7 +281,7 @@ namespace LinBox
 		}
 
 		/** Matrix in-place negate
-		 * A <- -A
+		 * A <- -A.
 		 * @param A Input matrix A; result is stored here
 		 */
 		template <class Matrix>
@@ -291,7 +291,7 @@ namespace LinBox
 		}
 
 		/** Matrix-matrix multiply
-		 * C <- A * B
+		 * C <- A * B.
 		 *
 		 * C must support both row and column iterators, and the vector
 		 * representations must be dense. Examples of supported matrices are
@@ -317,7 +317,7 @@ namespace LinBox
 		}
 
 		/** Matrix-matrix in-place multiply on the left
-		 * B <- A * B
+		 * B <- A * B.
 		 *
 		 * B should support both row and column iterators, and must be dense. A
 		 * must support row iterators.
@@ -330,7 +330,7 @@ namespace LinBox
 		inline Matrix2 &leftMulin (const Matrix1 &A, Matrix2 &B) const;
 
 		/** Matrix-matrix in-place multiply on the right
-		 * A <- A * B
+		 * A <- A * B.
 		 *
 		 * A should support both row and column iterators, and must be dense. B
 		 * must support column iterators.
@@ -343,7 +343,7 @@ namespace LinBox
 		inline Matrix1 &rightMulin (Matrix1 &A, const Matrix2 &B) const;
 
 		/** Matrix-matrix in-place multiply
-		 * A <- A * B
+		 * A <- A * B.
 		 *
 		 * This is an alias for \ref rightMulin
 		 *
@@ -358,7 +358,7 @@ namespace LinBox
 		}
 
 		/** Matrix-scalar multiply
-		 * C <- B * a
+		 * C <- B * a.
 		 *
 		 * Multiply B by the scalar element a and store the result in C. B and C
 		 * must support the same iterators.
@@ -377,7 +377,7 @@ namespace LinBox
 		}
 
 		/** Matrix-scalar in-place multiply
-		 * B <- B * a
+		 * B <- B * a.
 		 *
 		 * Multiply B by the scalar element a in-place.
 		 *
@@ -392,7 +392,7 @@ namespace LinBox
 		}
 
 		/** Matrix-matrix in-place axpy
-		 * Y <- Y + A*X
+		 * Y <- Y + A*X.
 		 *
 		 * This function combines \ref mul and \ref add, eliminating the need
 		 * for an additional temporary in expressions of the form $Y = Y +
@@ -433,8 +433,8 @@ namespace LinBox
 		 * product and matrix-vector AXPY
 		 */
 		//@{
-		/** Matrix-vector multiply.
-		 * w <- A * v
+		/** Matrix-vector multiply
+		 * w <- A * v.
 		 *
 		 * The vectors v and w must be of the same representation (dense, sparse
 		 * sequence, sparse associative, or sparse parallel), but they may be of
@@ -451,8 +451,8 @@ namespace LinBox
 			return mulSpecialized (w, A, v, typename MatrixTraits<Matrix>::MatrixCategory ());
 		}
 
-		/** Matrix-vector in-place axpy.
-		 * y <- y + A*x
+		/** Matrix-vector in-place axpy
+		 * y <- y + A*x.
 		 *
 		 * This function eliminates the requirement for temporary storage when
 		 * one is computing an expression of the form given above.
@@ -481,8 +481,8 @@ namespace LinBox
 		 * but one of the parameters is a \ref BlackboxArchetype.
 		 */
 		//@{
-		/** Matrix-black box left-multiply.
-		 * C <- A * B
+		/** Matrix-black box left-multiply
+		 * C <- A * B.
 		 *
 		 * Both C and B must support column iterators
 		 *
@@ -493,8 +493,8 @@ namespace LinBox
 		template <class Matrix1, class Blackbox, class Matrix2>
 		inline Matrix1 &blackboxMulLeft (Matrix1 &C, const Blackbox &A, const Matrix2 &B) const;
 
-		/** Matrix-black box right-multiply.
-		 * C <- A * B
+		/** Matrix-black box right-multiply
+		 * C <- A * B.
 		 *
 		 * Both C and A must support row iterators
 		 *
@@ -507,6 +507,7 @@ namespace LinBox
 		//@}
 
 		/*! @name Matrix permutations
+		 * @brief
 		 * These operations permute the rows or columns of a matrix based on
 		 * the given permutation. They are intended for use with Gauss-Jordan
 		 * elimination

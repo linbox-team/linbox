@@ -111,6 +111,7 @@ namespace LinBox
 			n_       = P.n_;
 			P_       = P.P_;
 			Q_       = P.Q_;
+			Id_      = P.Id_ ;
 			cleaned_ = P.cleaned_;
 
 			return (*this) ;
@@ -132,8 +133,10 @@ namespace LinBox
 
 
 		/*  convert */
-		/** converts a \c PackedPermutation to a \c MatrixPermutation */
-		MatrixPermutation<_UnsignedInt> & Convert(const MatrixPermutation<_UnsignedInt> &P);
+		/*! Converts a \c PackedPermutation to a \c MatrixPermutation.
+		 * @param[out] P MatrixPermutation to be created. Need not be initialized.
+		 */
+		MatrixPermutation<_UnsignedInt> & Convert(MatrixPermutation<_UnsignedInt> &P);
 
 		/*  apply */
 		/*! \f$ M \gets P M\f$   */
@@ -151,7 +154,7 @@ namespace LinBox
 		Matrix & applyTransposeCols(Matrix &M);
 
 		//_UnsignedInt & operator[] (const _UnsignedInt &i) ;
-		_UnsignedInt & operator[] (const _UnsignedInt i) const ;
+		_UnsignedInt  operator[] (const _UnsignedInt i) const ;
 
 		/*! col \p i and col \p j are swapped
 		 */
@@ -169,7 +172,7 @@ namespace LinBox
 
 		/*  print */
 		/*! writes on output stream \p o */
-		std::ostream & write(std::ostream & o, bool Lapack=true) ;
+		std::ostream & write(std::ostream & o, bool Lapack=true) const ;
 
 		/*! writes \p P on output stream \p o */
 		template<class _Uint>
@@ -177,10 +180,11 @@ namespace LinBox
 
 
 	protected :
-		_UnsignedInt			r_ ;	// size of compressed permutation
+		_UnsignedInt			        r_ ;	// size of compressed permutation
 		mutable _UnsignedInt			n_ ;	// dim of permutation
-		std::vector<_UnsignedInt>	P_ ;	// blas permutation
+		std::vector<_UnsignedInt>	        P_ ;	// blas permutation
 		mutable std::vector<_UnsignedInt>       Q_ ;    // corresponding matrix permutation
+		bool                                    Id_; // identity permutation ?
 		mutable bool                            cleaned_ ;
 
 		// hmmmm...
@@ -212,6 +216,7 @@ namespace LinBox
 	private :
 		_UnsignedInt			n_ ; // order of permutation
 		std::vector<_UnsignedInt>	P_ ; // _M_[i] = j ssi P(i) = j
+		bool                            Id_; // identity permutation ?
 
 	public :
 		MatrixPermutation();
@@ -219,7 +224,7 @@ namespace LinBox
 		MatrixPermutation(const _UnsignedInt * V, const _UnsignedInt & n) ;
 		MatrixPermutation(const std::vector<_UnsignedInt> & V) ;
 
-		_UnsignedInt & operator[] (const _UnsignedInt i) const ;
+		_UnsignedInt  operator[] (const _UnsignedInt i) const ;
 		_UnsignedInt getSize() const ;
 		// _UnsignedInt getSize() ;
 
@@ -234,7 +239,7 @@ namespace LinBox
 
 		/*  print */
 		/*! writes on output stream \p o */
-		std::ostream & write(std::ostream & o) ;
+		std::ostream & write(std::ostream & o) const ;
 
 		/*! writes \p P on output stream \p o */
 		template<class _Uint>

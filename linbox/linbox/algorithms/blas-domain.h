@@ -23,6 +23,14 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/*! @file algorithms/blas-domain.h
+ * @ingroup algorithms
+ * @brief NO DOC
+ * @warning A <code>BlasMatrixDomain<Field></code> should be templated by a
+ * \link LinBox::Modular Modular\endlink field. In particular, this domain
+ * is not suitable for integers.
+ */
+
 #ifndef __LINBOX_blas_matrix_domain_H
 #define __LINBOX_blas_matrix_domain_H
 
@@ -45,8 +53,8 @@ namespace LinBox
 	 *  Operand can be either a matrix or a vector.
 	 *
 	 *  The only function:  operator () is defined :
-	 *       D = beta.C + alpha. A*B
-	 *       C = beta.C + alpha. A*B
+	 *     -  D = beta.C + alpha. A*B
+	 *     -  C = beta.C + alpha. A*B
 	 */
 	template< class Field, class Operand1, class Operand2, class Operand3>
 	class BlasMatrixDomainMulAdd {
@@ -129,11 +137,13 @@ namespace LinBox
 	 *  Operand can be either a matrix a permutation or a vector
 	 *
 	 *  only  function:  operator () are defined :
-	 *       A = A*B
-	 *       B = A*B
-	 * Note that in-place multiplications are proposed for the specialization
+	 *     -  A = A*B
+	 *     -  B = A*B
+	 *     .
+	 * @note In-place multiplications are proposed for the specialization
 	 * with a matrix and a permutation.
-	 * Using mulin with two matrices is still defined but is non-sense
+	 * @warning Using mulin with two matrices is still defined but is
+	 * non-sense
 	 */
 	// Operand 2 is always the type of the matrix which is not modified
 	// ( for example: BlasPermutation TriangularBlasMatrix )
@@ -174,12 +184,13 @@ namespace LinBox
 	 * Class handling inversion of a Matrix.
 	 *
 	 *  only  function:  operator () are defined :
-	 *       Ainv = A^(-1)
-	 *
-	 *  Beware, if A is not const this allows an inplace computation
-	 *  and so A will be modified
+	 *    -   Ainv = A^(-1)
 	 *
 	 *  Returns nullity of matrix (0 iff inversion was ok)
+	 *
+	 * @warning Beware, if A is not const this allows an inplace computation
+	 *  and so A will be modified
+	 *
 	 */
 	template< class Field, class Matrix>
 	class BlasMatrixDomainInv {
@@ -192,9 +203,9 @@ namespace LinBox
 	 * Class handling rank computation of a Matrix.
 	 *
 	 *  only  function:  operator () are defined :
-	 *       return the rank of A
+	 *    -  return the rank of A
 	 *
-	 *  Beware, if A is not const this allows an inplace computation
+	 *  @warning Beware, if A is not const this allows an inplace computation
 	 *  and so A will be modified
 	 */
 	template< class Field, class Matrix>
@@ -208,9 +219,9 @@ namespace LinBox
 	 * Class handling determinant computation of a Matrix.
 	 *
 	 *  only  function:  operator () are defined :
-	 *       return the determinant of A
+	 *     -  return the determinant of A
 	 *
-	 *  Beware, if A is not const this allows an inplace computation
+	 * @warning Beware, if A is not const this allows an inplace computation
 	 *  and so A will be modified
 	 */
 	template< class Field, class Matrix>
@@ -225,8 +236,8 @@ namespace LinBox
 	 *  with Operand as right or left and side
 	 *
 	 *  only  function:  operator () are defined :
-	 *      X = A^(-1).B
-	 *      B = A^(-1).B
+	 *    -  X = A^(-1).B
+	 *    -  B = A^(-1).B
 	 */
 	template< class Field, class Operand, class Matrix>
 	class BlasMatrixDomainLeftSolve {
@@ -240,8 +251,8 @@ namespace LinBox
 	 *  with Operand as right or left and side
 	 *
 	 *  only  function:  operator () are defined :
-	 *      X = B.A^(-1)
-	 *      B = B.A^(-1)
+	 *   -   X = B.A^(-1)
+	 *   -   B = B.A^(-1)
 	 */
 	template< class Field, class Operand, class Matrix>
 	class BlasMatrixDomainRightSolve {
