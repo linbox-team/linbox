@@ -209,8 +209,8 @@ namespace LinBox
 		*/
 		void permute (size_t row1, size_t row2)
 		{
-			linbox_check (row1 >= 0 && row1 < _indices.size ());
-			linbox_check (row2 >= 0 && row2 < _indices.size ());
+			linbox_check (/*  row1 >= 0 &&*/ row1 < _indices.size ());
+			linbox_check (/*  row2 >= 0 &&*/ row2 < _indices.size ());
 			std::swap (_indices[row1], _indices[row2]);
 
 		}

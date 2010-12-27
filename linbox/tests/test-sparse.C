@@ -564,7 +564,7 @@ int main (int argc, char **argv)
 		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
 		{ 'k', "-k K", "K nonzero Elements per row in sparse random apply test.", TYPE_INT,     &k },
 		{ 'N', "-N N", "N nonzero Elements in sparse random apply test.", TYPE_INT,     &N },
-		{ '\0' }
+		END_OF_ARGUMENTS
 	};
 	parseArguments (argc, argv, args);
 

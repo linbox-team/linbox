@@ -333,7 +333,7 @@ int main (int argc, char **argv)
 		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
                 { 's', "-s S", "Sparse matrices with density S.", TYPE_DOUBLE,     &sparsity },
                 { 'r', "-r R", "Random generator seed.", TYPE_INT,     &rseed },
-				{ '\0' }
+		END_OF_ARGUMENTS
 	};
 
 	parseArguments (argc, argv, args);

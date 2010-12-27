@@ -32,6 +32,7 @@
 #include <linbox/integer.h>
 #include <linbox/util/timer.h>
 #include "linbox/util/debug.h"
+#include <cstdlib> // drand48, temporary
 
 namespace LinBox
 {

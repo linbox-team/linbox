@@ -50,7 +50,7 @@ int main(int argc, char** argv)
     static Argument args[] =
     {
  		{ 'n', "-n N", "Set size of vector to N.", TYPE_INT, &n},
-		{ '\0' }
+		END_OF_ARGUMENTS
     };
     parseArguments (argc, argv, args);
 

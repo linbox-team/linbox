@@ -53,12 +53,12 @@ bool testRandom(const Ring& R,
 
 	str << "Testing the adaptive algorithm for Smith form computation:\n";
 
-        commentator.start (str.str ().c_str (), "testRandom");//, stream1.m ());
+	commentator.start (str.str ().c_str (), "testRandom");//, stream1.m ());
 
-        bool ret = true;
-        bool iter_passed = true;
+	bool ret = true;
+	bool iter_passed = true;
 
-        VectorDomain<Ring> VD (R);
+	VectorDomain<Ring> VD (R);
 
 	Vector d, x;
 
@@ -69,19 +69,19 @@ bool testRandom(const Ring& R,
 
 	int n = d. size();
 
-	 while (stream1) {
+	while (stream1) {
 
-                commentator.startIteration (stream1.j ());
+		commentator.startIteration (stream1.j ());
 
 		std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-                iter_passed = true;
+		iter_passed = true;
 
-                stream1.next (d);
+		stream1.next (d);
 
 		report << "Input vector:  ";
 		VD.write (report, d);
-                report << endl;
+		report << endl;
 
 		DenseMatrix<Ring> D(R, n, n), L(R, n, n), U(R, n, n), A(R,n,n);
 
@@ -92,105 +92,105 @@ bool testRandom(const Ring& R,
 			R. init (L[i][i], 1);
 			R. init (U[i][i], 1);}
 
-		for (i = 0; i < n; ++ i)
+			for (i = 0; i < n; ++ i)
 
-			for (j = 0; j < i; ++ j) {
+				for (j = 0; j < i; ++ j) {
 
-				R.init(L[i][j], rand() % 10);
+					R.init(L[i][j], rand() % 10);
 
-				R.init(U[j][i], rand() % 10);
+					R.init(U[j][i], rand() % 10);
+				}
+
+
+			std::vector<typename Ring::Element> tmp1(n), tmp2(n), e(n);
+
+			typename DenseMatrix<Ring>::ColIterator col_p;
+
+			i = 0;
+			for (col_p = A.colBegin();
+			     col_p != A.colEnd(); ++ col_p, ++ i) {
+
+				R.init(e[i],1);
+				U.apply(tmp1, e);
+				D.apply(tmp2, tmp1);
+				L.apply(*col_p, tmp2);
+				R.init(e[i],0);
 			}
 
 
-		std::vector<typename Ring::Element> tmp1(n), tmp2(n), e(n);
 
-		typename DenseMatrix<Ring>::ColIterator col_p;
+			std::vector<integer> xi(A. rowdim());
 
-		i = 0;
-		for (col_p = A.colBegin();
-		     col_p != A.colEnd(); ++ col_p, ++ i) {
-
-			R.init(e[i],1);
-			U.apply(tmp1, e);
-			D.apply(tmp2, tmp1);
-			L.apply(*col_p, tmp2);
-			R.init(e[i],0);
-		}
+			SF.smithForm (xi, A);
+			typename Vector::iterator x_p; std::vector<integer>::iterator xi_p;
+			for (x_p = x. begin(), xi_p = xi. begin(); x_p != x. end(); ++ x_p, ++ xi_p)
+				A. field (). init (*x_p, *xi_p);
 
 
+			report << "Computed Smith form: \n";
 
-		std::vector<integer> xi(A. rowdim());
+			VD. write (report, x);
 
-		SF.smithForm (xi, A);
-		typename Vector::iterator x_p; std::vector<integer>::iterator xi_p;
-		for (x_p = x. begin(), xi_p = xi. begin(); x_p != x. end(); ++ x_p, ++ xi_p)
-			A. field (). init (*x_p, *xi_p);
+			report << '\n';
 
 
-		report << "Computed Smith form: \n";
-
-		VD. write (report, x);
-
-		report << '\n';
+			typename std::vector<typename Ring::Element>::iterator p1, p2;
+			typename Ring::Element g;
 
 
-		typename std::vector<typename Ring::Element>::iterator p1, p2;
-		typename Ring::Element g;
+			for (p1 = d.begin(); p1 != d.end(); ++ p1) {
 
+				for ( p2 = p1 + 1; p2 != d.end(); ++ p2) {
 
-		for (p1 = d.begin(); p1 != d.end(); ++ p1) {
+					if (R. isUnit(*p1))  break;
 
-			for ( p2 = p1 + 1; p2 != d.end(); ++ p2) {
+					else if (R. isZero (*p2)) continue;
 
-				if (R. isUnit(*p1))  break;
+					else if (R. isZero (*p1)) {
+						std::swap (*p1, *p2);
+					}
 
-				else if (R. isZero (*p2)) continue;
+					else {
+						R. gcd (g, *p1, *p2);
 
-				else if (R. isZero (*p1)) {
-                                                std::swap (*p1, *p2);
-				}
+						R. divin (*p2, g);
 
-				else {
-					R. gcd (g, *p1, *p2);
+						R. mulin (*p2, *p1);
 
-					R. divin (*p2, g);
-
-					R. mulin (*p2, *p1);
-
-					R. assign (*p1, g);
+						R. assign (*p1, g);
+					}
 				}
 			}
-		}
 
 
-		report << "Expected smith form:\n";
+			report << "Expected smith form:\n";
 
-		VD.write (report, d);
+			VD.write (report, d);
 
-		report << '\n';
+			report << '\n';
 
-		if (!VD.areEqual (d, x))
+			if (!VD.areEqual (d, x))
 
-			ret = iter_passed = false;
+				ret = iter_passed = false;
 
-                if (!iter_passed)
+			if (!iter_passed)
 
-                        commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Computed Smith form is incorrect" << endl;
 
 
 
-                commentator.stop ("done");
+			commentator.stop ("done");
 
-                commentator.progress ();
+			commentator.progress ();
 
-	 }
+	}
 
-	 //stream1.reset ();
+	//stream1.reset ();
 
-	  commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandom");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandom");
 
-	  return ret;
+	return ret;
 
 }
 
@@ -203,8 +203,8 @@ int main(int argc, char** argv)
 	static Argument args[] = {
 		{ 'n', "-n N", "Set order of test matrices to N.", TYPE_INT,  &n },
 		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT, &iterations },
-		{ '\0' }
-		};
+		END_OF_ARGUMENTS
+	};
 
 	parseArguments (argc, argv, args);
 	SmithFormAdaptive sf;

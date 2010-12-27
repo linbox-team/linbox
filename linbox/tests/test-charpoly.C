@@ -266,7 +266,7 @@ int main (int argc, char **argv)
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].",          TYPE_INTEGER, &q },
 		{ 'v', "-v V", "Use V test vectors for the random charpoly tests.",      TYPE_INT,     &numVectors },
 		{ 'k', "-k K", "K nonzero Elements per row in sparse random apply test.", TYPE_INT,     &k },
-		{ '\0' }
+		END_OF_ARGUMENTS
 	};
 
 

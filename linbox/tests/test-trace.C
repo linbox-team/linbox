@@ -42,7 +42,7 @@ int main (int argc, char **argv)
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
-		{ '\0' }
+		END_OF_ARGUMENTS
 	};
 
 	parseArguments (argc, argv, args);

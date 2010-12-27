@@ -290,10 +290,10 @@ namespace LinBox
 		typedef typename Ring::Element Integer;
 
 		// return the length of container
-		virtual const size_t length() const =0;
+		virtual size_t length() const =0;
 
 		// return the size of the solution
-		virtual const size_t size() const = 0;
+		virtual size_t size() const = 0;
 
 		// return the ring
 		virtual const Ring& ring() const = 0;
@@ -502,15 +502,17 @@ namespace LinBox
 
 			bool operator != (const const_iterator& iterator) const
 			{
-				if ( &_lc != &iterator._lc)
+				if ( &_lc != &iterator._lc) {
 					;//assert("try to compare differents LiftingContainer::const_iterator , abort\n");
+				}
 				return _position != iterator._position;
 			}
 
 			bool operator == (const const_iterator& iterator) const
 			{
-				if ( &_lc != &iterator._lc)
+				if ( &_lc != &iterator._lc) {
 					;//assert("try to compare differents LiftingContainer::const_iterator , abort\n");
+				}
 				return _position == iterator._position;
 			}
 
@@ -554,13 +556,13 @@ namespace LinBox
 			return const_iterator (*this,_length);
 		}
 
-		virtual const size_t length() const
+		virtual size_t length() const
 		{
 			return _length;
 		}
 
 		// return the size of the solution
-		virtual const size_t size() const
+		virtual size_t size() const
 		{
 			return _A.coldim();
 		}

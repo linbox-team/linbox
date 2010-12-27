@@ -1458,7 +1458,7 @@ int main (int argc, char **argv)
 		{ 'k', "-k K", "K nonzero elements per row/column in sparse matrices.", TYPE_INT,     &k },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] for uint32 modulus.", TYPE_INTEGER, &q },
 		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
-		{ '\0' }
+		END_OF_ARGUMENTS
 	};
 
 	parseArguments (argc, argv, args);

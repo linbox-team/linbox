@@ -302,7 +302,7 @@ int main (int argc, char* argv[])
                 { 'f', "-f Q", "Operate over the \"field\" GF(Q).", TYPE_INTEGER, &f },
                 { 'd', "-d Q", "Operate over the \"field\" GF(Q).", TYPE_INTEGER, &d },
                 { 't', "-t T", "If T is flagged, only run timing tests.", TYPE_BOOL, &t },
-                { '\0' }
+		END_OF_ARGUMENTS
         };
 
         parseArguments (argc, argv, args);

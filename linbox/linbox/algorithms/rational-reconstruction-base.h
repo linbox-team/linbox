@@ -115,7 +115,7 @@ namespace LinBox
 		}
 
 		template <class Vect>
-		const bool reconstructRational(Vect& a, Element& b, const Vect& x, const Element m, const int inc = 1) const
+		bool reconstructRational(Vect& a, Element& b, const Vect& x, const Element m, const int inc = 1) const
 		{
 			++RecCounter;
 			b = 1;
@@ -193,7 +193,7 @@ namespace LinBox
 
 		}
 
-		const bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m) const
+		bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m) const
 		{
 			++RecCounter;
 			Element x_in(x);
@@ -214,7 +214,7 @@ namespace LinBox
 			return res;
 		}
 
-		const bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound) const
+		bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound) const
 		{
 			++RecCounter;
 			Element x_in(x);
@@ -234,7 +234,7 @@ namespace LinBox
 			return res;
 		}
 
-		const bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound, const Element& b_bound) const
+		bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m, const Element& a_bound, const Element& b_bound) const
 		{
 			++RecCounter;
 			Element x_in(x);

@@ -53,8 +53,8 @@ int main(int argc, char* argv[])
 {
 	static size_t N_BOUND = 100;
 	static Argument args[] = {
-    	{ 'n', "-n N", "Set dimension limit of test matrices to NxN.", TYPE_INT,     &N_BOUND },
-		{ '\0' }
+		{ 'n', "-n N", "Set dimension limit of test matrices to NxN.", TYPE_INT,     &N_BOUND },
+		END_OF_ARGUMENTS
 	};
 
 	parseArguments (argc, argv, args);

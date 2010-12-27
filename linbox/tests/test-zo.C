@@ -52,10 +52,11 @@ int main(int argc, char **argv)
   static size_t n = 100000;
 
   static Argument args[] =
-    {{ 'n', "-n N", "Set dimension of test matrix to NxN.", TYPE_INT, &n },
-     { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INT, &prime },
-	 { '\0'}
-	};
+  {
+	  { 'n', "-n N", "Set dimension of test matrix to NxN.", TYPE_INT, &n },
+	  { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INT, &prime },
+	  END_OF_ARGUMENTS
+  };
 
   parseArguments(argc, argv, args);
 

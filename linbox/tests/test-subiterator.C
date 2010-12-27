@@ -39,6 +39,7 @@ bool test() ;
 int main(int argc, char** argv)
 {
    static Argument args[] = {
+	   END_OF_ARGUMENTS
    };
    parseArguments (argc, argv, args);
 	commentator.start("Subiterator test suite", "Subiterator");

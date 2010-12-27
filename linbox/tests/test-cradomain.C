@@ -291,7 +291,7 @@ int main (int argc, char **argv)
 		{ 's', "-s S", "Set size of test integers.", TYPE_INT , &s },
 		{ 'z', "-z Z", "Set seed.", TYPE_INT , &seed },
 		{ 'i', "-i I", "Perform each test for I iterations.",     TYPE_INT, &iterations },
-		{ '\0' }
+		END_OF_ARGUMENTS
 	};
 
 	parseArguments (argc, argv, args);

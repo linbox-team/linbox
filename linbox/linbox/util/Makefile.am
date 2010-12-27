@@ -3,7 +3,7 @@
 # see COPYING for licence
 INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/linbox
 
-AM_CFLAGS=-Wall -O2
+AM_CFLAGS=-g -Wall  -Wextra -Wno-unused-parameter -O2
 
 SUBDIRS=formats
 

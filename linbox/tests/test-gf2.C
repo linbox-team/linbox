@@ -243,7 +243,7 @@ int main (int argc, char **argv)
 		{ 't', "-t T", "Number of trials for the random iterator test.", TYPE_INT, &trials },
 		{ 'c', "-c C", "Number of categories for the random iterator test.", TYPE_INT, &categories },
 		{ 'H', "-H H", "History level for random iterator test.", TYPE_INT, &hist_level },
-		{ '\0' }
+		END_OF_ARGUMENTS
 	};
 
 	parseArguments (argc, argv, args);

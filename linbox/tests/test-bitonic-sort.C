@@ -156,7 +156,7 @@ int main(int argc, char** argv)
 		{ 'n', "-n N", "Set size of sequence to N.  N must be a power of 2)",  TYPE_INT,     &n },
 		{ 'i', "-i I", "Perform each test for I iterations"
 			,           TYPE_INT,     &iterations },
-		{ '\0' }
+		END_OF_ARGUMENTS
 	};
 
 
