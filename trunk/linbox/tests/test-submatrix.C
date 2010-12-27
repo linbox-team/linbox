@@ -230,7 +230,7 @@ int main (int argc, char **argv)
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
 		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
 		{ 'N', "-N N", "Perform each test on N vectors.", TYPE_INT,     &N },
-		{ '\0' }
+		END_OF_ARGUMENTS
 	};
 
 	typedef Modular<LinBox::uint32> Field;

@@ -186,8 +186,7 @@ int main (int argc, char **argv)
 		{ 'k', "-k K", "K nonzero entries per row in test matrix.", TYPE_INT, &k },
 		{ 'N', "-N N", "Blocking factor.", TYPE_INT, &N },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INT, &q },
-		{ '\0', NULL, NULL, TYPE_NONE, NULL },
-		{ '\0' }
+		END_OF_ARGUMENTS
 	};
 
 	typedef Modular<uint8> Field;

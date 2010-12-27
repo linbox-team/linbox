@@ -759,7 +759,7 @@ int main (int argc, char **argv)
 		{ 'N', "-N N", "Set blocking factor to N.", TYPE_INT,     &N },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
 		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
-		{ '\0' }
+		END_OF_ARGUMENTS
 	};
 
 	typedef Modular<LinBox::uint32> Field;

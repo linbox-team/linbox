@@ -59,7 +59,7 @@ int main (int argc, char **argv)
 		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
 		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
-		{ '\0' }
+		END_OF_ARGUMENTS
 	};
 
 	parseArguments (argc, argv, args);

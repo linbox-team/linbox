@@ -551,7 +551,7 @@ int main(int ac, char ** av)
                 { 'n', "-n N", "Set number of primes.", TYPE_INT , &n },
                 { 'p', "-p P", "Set size of test primes.", TYPE_INT , &p },
                 { 'i', "-i I", "Perform each test for I iterations.",     TYPE_INT, &iters },
-                { '\0' }
+		END_OF_ARGUMENTS
         };
 
 	parseArguments (ac, av, as);

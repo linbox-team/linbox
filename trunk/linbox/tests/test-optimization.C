@@ -42,46 +42,46 @@
 using namespace LinBox;
 int main (int argc, char ** argv)
 {
-    size_t n=300, nmax=1000, prec=256;
+	size_t n=300, nmax=1000, prec=256;
 
-    static Argument args[] = {
-        { 'n', "-n n", "Operate over the \"field\" GF(Q) [1] for integer modulus.", TYPE_INT, &n },
-        { 'm', "-m m", "Operate over the \"field\" GF(Q) [1] for uint32 modulus.", TYPE_INT, &nmax },
-        { 'p', "-p p", "Operate over the \"field\" GF(Q) [1] for uint16 modulus.", TYPE_INT, &prec },
-        { '\0' }
-    };
+	static Argument args[] = {
+		{ 'n', "-n n", "Operate over the \"field\" GF(Q) [1] for integer modulus.", TYPE_INT, &n },
+		{ 'm', "-m m", "Operate over the \"field\" GF(Q) [1] for uint32 modulus.", TYPE_INT, &nmax },
+		{ 'p', "-p p", "Operate over the \"field\" GF(Q) [1] for uint16 modulus.", TYPE_INT, &prec },
+		END_OF_ARGUMENTS
+	};
 
-    parseArguments (argc, argv, args);
+	parseArguments (argc, argv, args);
 
-    commentator.start("Optimization suite", "Optim");
-    std::ostream& report = commentator.report();
+	commentator.start("Optimization suite", "Optim");
+	std::ostream& report = commentator.report();
 
-    Modular<double> F(17);
-    LinBox::Timer chrono;
+	Modular<double> F(17);
+	LinBox::Timer chrono;
 
-    double *A, *C;
-    A = new double[nmax*nmax];
-    C = new double[nmax*nmax];
-    for (size_t i=0; i<nmax*nmax;++i){
-        A[i]=rand() % 17;
-    }
+	double *A, *C;
+	A = new double[nmax*nmax];
+	C = new double[nmax*nmax];
+	for (size_t i=0; i<nmax*nmax;++i){
+		A[i]=rand() % 17;
+	}
 
-    do {
-        chrono.start();
-        FFLAS::fgemm(F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
-                     n, n, n, 1., A, n, A, n, 0., C, n);
-        chrono.stop();
-        report << std::endl
-                  << "fgemm " << FFLAS::WinoSteps(n) << "Wino: " << n << "x" << n << ": "
-                  << chrono.usertime() << " s, "
-                  << (2.0/chrono.usertime()*n/100.0*n/100.0*n/100.0) << " Mffops"
-                  << std::endl;
+	do {
+		chrono.start();
+		FFLAS::fgemm(F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
+			     n, n, n, 1., A, n, A, n, 0., C, n);
+		chrono.stop();
+		report << std::endl
+		<< "fgemm " << FFLAS::WinoSteps(n) << "Wino: " << n << "x" << n << ": "
+		<< chrono.usertime() << " s, "
+		<< (2.0/chrono.usertime()*n/100.0*n/100.0*n/100.0) << " Mffops"
+		<< std::endl;
 
-            n+=prec;
-    } while ((n < nmax));
+		n+=prec;
+	} while ((n < nmax));
 
-    delete[] A;
-    delete[] C;
+	delete[] A;
+	delete[] C;
 
-    return 0;
+	return 0;
 }

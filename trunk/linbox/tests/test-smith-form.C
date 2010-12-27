@@ -180,8 +180,8 @@ int main(int argc, char** argv)
 	static Argument args[] = {
 		{ 'n', "-n N", "Set order of test matrices to N.", TYPE_INT,  &n },
 		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT, &iterations },
-		{ '\0' }
-		};
+		END_OF_ARGUMENTS
+	};
 
 	parseArguments (argc, argv, args);
 #ifdef __LINBOX_HAVE_NTL

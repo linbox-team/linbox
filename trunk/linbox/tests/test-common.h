@@ -35,13 +35,16 @@ enum ArgumentType {
 };
 #define TYPE_BOOL TYPE_NONE
 
+#define END_OF_ARGUMENTS \
+     { '\0', "\0", "\0", TYPE_NONE, NULL }
+
 struct Argument
 {
 	char             c;
-	const char            *example;
-	const char            *helpString;
-	ArgumentType     type;
-	void            *data;
+	const char      *example    ;
+	const char      *helpString ;
+	ArgumentType     type       ;
+	void            *data       ;
 };
 // example may be passed as null and will be generated intelligently
 // eg "-b {YN+-}" for bools, "-v v" for all else
@@ -123,7 +126,9 @@ void printVectorSpecialized(
 
 template <class Field, class Vector>
 bool areVectorsEqual (Field &F, const Vector &v, const Vector &w)
-{ return areVectorsEqualSpecialized(F, v, w, LinBox::VectorTraits<Vector>::VectorCategory()); }
+{
+	return areVectorsEqualSpecialized(F, v, w, LinBox::VectorTraits<Vector>::VectorCategory());
+}
 
 template <class Field, class Vector>
 bool areVectorsEqualSpecialized(
@@ -186,7 +191,9 @@ bool areVectorsEqualSpecialized(
 
 template <class Field, class Vector>
 bool allZero (Field &F, const Vector &v)
-{ return allZeroSpecialized(F, v, LinBox::VectorTraits<Vector>::VectorCategory()); }
+{
+       	return allZeroSpecialized(F, v, LinBox::VectorTraits<Vector>::VectorCategory());
+}
 
 template <class Field, class Vector>
 bool allZeroSpecialized(

@@ -173,7 +173,7 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static Argument args[] = {
-		{ '\0' }
+		END_OF_ARGUMENTS
 	};
 
 	parseArguments (argc, argv, args);

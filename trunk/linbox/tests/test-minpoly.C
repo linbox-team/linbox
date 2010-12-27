@@ -384,7 +384,7 @@ int main (int argc, char **argv)
 		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
 		{ 'v', "-v V", "Use V test vectors for the random minpoly tests.", TYPE_INT,     &numVectors },
 		{ 'k', "-k K", "K nonzero Elements per row in sparse random apply test.", TYPE_INT,     &k },
-		{ '\0' }
+		END_OF_ARGUMENTS
 	};
 
 

@@ -234,8 +234,10 @@ namespace LinBox
 
 		value_type operator*() { return _elem; }
 
-		const value_type operator*() const
-		{ return _elem; }
+		value_type operator*() const
+		{
+		       	return _elem;
+		}
 
 	private:
 		value_type _elem;
