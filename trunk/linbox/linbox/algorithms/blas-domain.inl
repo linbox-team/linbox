@@ -466,62 +466,65 @@ namespace LinBox
 
 
 	/*
-	 * specialization for Operand1, Operand2  of type BlasMatrix<Element> and Operand3 of type BlasPermutation
+	 * Specialization for Operand1, Operand2  of type BlasMatrix<Element>
+	 * and Operand3 of type BlasPermutation
 	 */
 
 	// Matrix permutation product C = A*B
 	template<class Field>
-	class BlasMatrixDomainMul<Field,BlasMatrix<typename Field::Element>,BlasMatrix<typename Field::Element>, BlasPermutation > {
+	class BlasMatrixDomainMul<Field,BlasMatrix<typename Field::Element>,BlasMatrix<typename Field::Element>, BlasPermutation<size_t> > {
 	public:
 		BlasMatrix<typename Field::Element>& operator()(const Field& F,
 								BlasMatrix<typename Field::Element>& C,
 								const BlasMatrix<typename Field::Element>& A,
-								const BlasPermutation& B) const
+								const BlasPermutation<size_t>& B) const
 		{
 			C = A;
-			return BlasMatrixDomainMulin<Field,BlasMatrix<typename Field::Element>,BlasPermutation>()( F, C, B);
+			return BlasMatrixDomainMulin<Field,BlasMatrix<typename Field::Element>,BlasPermutation<size_t> >()( F, C, B);
 		}
 	};
+
 	template<class Field>
-	class BlasMatrixDomainMul<Field,BlasMatrix<typename Field::Element>, BlasPermutation,BlasMatrix<typename Field::Element> > {
+	class BlasMatrixDomainMul<Field,BlasMatrix<typename Field::Element>, BlasPermutation<size_t>,BlasMatrix<typename Field::Element> > {
 	public:
 		BlasMatrix<typename Field::Element>& operator()(const Field& F,
 								BlasMatrix<typename Field::Element>& C,
-								const BlasPermutation& B,
+								const BlasPermutation<size_t>& B,
 								const BlasMatrix<typename Field::Element>& A) const
 		{
 			C = A;
-			return BlasMatrixDomainMulin<Field,BlasMatrix<typename Field::Element>,BlasPermutation >()( F, B, C);
+			return BlasMatrixDomainMulin<Field,BlasMatrix<typename Field::Element>,BlasPermutation<size_t> >()( F, B, C);
 		}
 	};
 
 	/*
-	 * specialization for Operand1, Operand2  of type BlasMatrix<Element> and Operand3 of type TransposedBlasMatrix<BlasPermutation>
+	 * specialization for Operand1, Operand2  of type BlasMatrix<Element> and Operand3 of type TransposedBlasMatrix<BlasPermutation<size_t> >
 	 */
 
 	// Matrix permutation product C = A*B
 	template<class Field>
-	class BlasMatrixDomainMul<Field,BlasMatrix<typename Field::Element>,BlasMatrix<typename Field::Element>, TransposedBlasMatrix<BlasPermutation> > {
+	class BlasMatrixDomainMul<Field,BlasMatrix<typename Field::Element>,BlasMatrix<typename Field::Element>, TransposedBlasMatrix<BlasPermutation<size_t> > > {
 	public:
 		BlasMatrix<typename Field::Element>& operator()(const Field& F,
 								BlasMatrix<typename Field::Element>& C,
 								const BlasMatrix<typename Field::Element>& A,
-								const TransposedBlasMatrix<BlasPermutation>& B) const
+								const TransposedBlasMatrix<BlasPermutation<size_t> >& B) const
 		{
 			C = A;
-			return BlasMatrixDomainMulin<Field,BlasMatrix<typename Field::Element>,TransposedBlasMatrix<BlasPermutation> >()( F, C, B);
+			return BlasMatrixDomainMulin<Field,BlasMatrix<typename Field::Element>,TransposedBlasMatrix<BlasPermutation<size_t> > >()( F, C, B);
 		}
 	};
+
 	template<class Field>
-	class BlasMatrixDomainMul<Field,BlasMatrix<typename Field::Element>, TransposedBlasMatrix<BlasPermutation>,BlasMatrix<typename Field::Element> > {
+	class BlasMatrixDomainMul<Field,BlasMatrix<typename Field::Element>, TransposedBlasMatrix<BlasPermutation<size_t> >,BlasMatrix<typename Field::Element> > {
 	public:
 		BlasMatrix<typename Field::Element>& operator()(const Field& F,
 								BlasMatrix<typename Field::Element>& C,
-								const TransposedBlasMatrix<BlasPermutation>& B,
+								const TransposedBlasMatrix<BlasPermutation<size_t> >& B,
 								const BlasMatrix<typename Field::Element>& A) const
 		{
 			C = A;
-			return BlasMatrixDomainMulin<Field,BlasMatrix<typename Field::Element>,TransposedBlasMatrix<BlasPermutation> >()( F, B, C);
+			return BlasMatrixDomainMulin<Field,BlasMatrix<typename Field::Element>,TransposedBlasMatrix<BlasPermutation<size_t> > >()( F, B, C);
 		}
 	};
 
@@ -531,22 +534,24 @@ namespace LinBox
 
 	// In-place matrix permutation product
 	template<class Field>
-	class BlasMatrixDomainMulin<Field,BlasMatrix<typename Field::Element>, BlasPermutation > {
+	class BlasMatrixDomainMulin<Field,BlasMatrix<typename Field::Element>, BlasPermutation<size_t> > {
 	public:
 		BlasMatrix<typename Field::Element>& operator()( const Field& F,
 								 BlasMatrix<typename Field::Element>& A,
-								 const BlasPermutation& B) const
+								 const BlasPermutation<size_t>& B) const
 		{
-			linbox_check( A.coldim() == B.getOrder() );
+			if (B.isIdentity()) return A ;
+			linbox_check( A.coldim() >= B.getSize() );
 			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, A.rowdim(), 0, A.coldim(), A.getPointer(), A.getStride(), B.getPointer() );
 			return A;
 		}
 
 		BlasMatrix<typename Field::Element>& operator()( const Field& F,
-								 const BlasPermutation& B,
+								 const BlasPermutation<size_t>& B,
 								 BlasMatrix<typename Field::Element>& A) const
 		{
-			linbox_check( A.rowdim() == B.getOrder() );
+			if (B.isIdentity()) return A ;
+			linbox_check( A.rowdim() >= B.getSize() );
 			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans, A.coldim(), 0, A.rowdim(), A.getPointer(), A.getStride(), B.getPointer() );
 			return A;
 		}
@@ -554,21 +559,23 @@ namespace LinBox
 	};
 
 	template<class Field>
-	class BlasMatrixDomainMulin<Field,BlasMatrix<typename Field::Element>, TransposedBlasMatrix<BlasPermutation> > {
+	class BlasMatrixDomainMulin<Field,BlasMatrix<typename Field::Element>, TransposedBlasMatrix<BlasPermutation<size_t> > > {
 	public:
 		BlasMatrix<typename Field::Element>& operator()( const Field& F,
 								 BlasMatrix<typename Field::Element>& A,
-								 const TransposedBlasMatrix<BlasPermutation>& B) const
+								 const TransposedBlasMatrix<BlasPermutation<size_t> >& B) const
 		{
-			linbox_check( A.coldim() == B.getMatrix().getOrder() );
+			if (B.getMatrix().isIdentity()) return A ;
+			linbox_check( A.coldim() >= B.getMatrix().getSize() );
 			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans, A.rowdim(), 0, A.coldim(), A.getPointer(), A.getStride(), B.getMatrix().getPointer() );
 			return A;
 		}
 		BlasMatrix<typename Field::Element>& operator()(  const Field& F,
-								  const TransposedBlasMatrix<BlasPermutation>& B,
+								  const TransposedBlasMatrix<BlasPermutation<size_t> >& B,
 								  BlasMatrix<typename Field::Element>& A) const
 		{
-			linbox_check( A.rowdim() == B.getMatrix().getOrder() );
+			if (B.getMatrix().isIdentity()) return A ;
+			linbox_check( A.rowdim() >= B.getMatrix().getSize() );
 			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, A.coldim(), 0, A.rowdim(), A.getPointer(), A.getStride(), B.getMatrix().getPointer() );
 			return A;
 		}
@@ -582,57 +589,59 @@ namespace LinBox
 
 	// Matrix permutation product C = A*B
 	template<class Field>
-	class BlasMatrixDomainMul<Field,std::vector< typename Field::Element>,std::vector< typename Field::Element>, BlasPermutation > {
+	class BlasMatrixDomainMul<Field,std::vector< typename Field::Element>,std::vector< typename Field::Element>, BlasPermutation<size_t> > {
 	public:
 		std::vector< typename Field::Element>& operator()(const Field& F,
 								  std::vector< typename Field::Element>& C,
 								  const std::vector< typename Field::Element>& A,
-								  const BlasPermutation& B) const
+								  const BlasPermutation<size_t>& B) const
 		{
 			C = A;
-			return BlasMatrixDomainMulin<Field,std::vector< typename Field::Element>,BlasPermutation>()( F, C, B);
+			return BlasMatrixDomainMulin<Field,std::vector< typename Field::Element>,BlasPermutation<size_t> >()( F, C, B);
 		}
 	};
+
 	template<class Field>
-	class BlasMatrixDomainMul<Field,std::vector< typename Field::Element>, BlasPermutation,std::vector< typename Field::Element> > {
+	class BlasMatrixDomainMul<Field,std::vector< typename Field::Element>, BlasPermutation<size_t>,std::vector< typename Field::Element> > {
 	public:
 		std::vector< typename Field::Element>& operator()(const Field& F,
 								  std::vector< typename Field::Element>& C,
-								  const BlasPermutation& B,
+								  const BlasPermutation<size_t>& B,
 								  const std::vector< typename Field::Element>& A) const
 		{
 			C = A;
-			return BlasMatrixDomainMulin<Field,std::vector< typename Field::Element>,BlasPermutation >()( F, B, C);
+			return BlasMatrixDomainMulin<Field,std::vector< typename Field::Element>,BlasPermutation<size_t> >()( F, B, C);
 		}
 	};
 
 	/*
-	 * specialization for Operand1, Operand2  of type std::vector<Element> and Operand3 of type TransposedBlasMatrix<BlasPermutation>
+	 * specialization for Operand1, Operand2  of type std::vector<Element> and Operand3 of type TransposedBlasMatrix<BlasPermutation<size_t> >
 	 */
 
 	// Matrix permutation product C = A*B
 	template<class Field>
-	class BlasMatrixDomainMul<Field,std::vector< typename Field::Element>,std::vector< typename Field::Element>, TransposedBlasMatrix<BlasPermutation> > {
+	class BlasMatrixDomainMul<Field,std::vector< typename Field::Element>,std::vector< typename Field::Element>, TransposedBlasMatrix<BlasPermutation<size_t> > > {
 	public:
 		std::vector< typename Field::Element>& operator()(const Field& F,
 								  std::vector< typename Field::Element>& C,
 								  const std::vector< typename Field::Element>& A,
-								  const TransposedBlasMatrix<BlasPermutation>& B) const
+								  const TransposedBlasMatrix<BlasPermutation<size_t> >& B) const
 		{
 			C = A;
-			return BlasMatrixDomainMulin<Field,std::vector< typename Field::Element>,TransposedBlasMatrix<BlasPermutation> >()( F, C, B);
+			return BlasMatrixDomainMulin<Field,std::vector< typename Field::Element>,TransposedBlasMatrix<BlasPermutation<size_t> > >()( F, C, B);
 		}
 	};
+
 	template<class Field>
-	class BlasMatrixDomainMul<Field,std::vector< typename Field::Element>, TransposedBlasMatrix<BlasPermutation>,std::vector< typename Field::Element> > {
+	class BlasMatrixDomainMul<Field,std::vector< typename Field::Element>, TransposedBlasMatrix<BlasPermutation<size_t> >,std::vector< typename Field::Element> > {
 	public:
 		std::vector< typename Field::Element>& operator()(const Field& F,
 								  std::vector< typename Field::Element>& C,
-								  const TransposedBlasMatrix<BlasPermutation>& B,
+								  const TransposedBlasMatrix<BlasPermutation<size_t> >& B,
 								  const std::vector< typename Field::Element>& A) const
 		{
 			C = A;
-			return BlasMatrixDomainMulin<Field,std::vector< typename Field::Element>,TransposedBlasMatrix<BlasPermutation> >()( F, B, C);
+			return BlasMatrixDomainMulin<Field,std::vector< typename Field::Element>,TransposedBlasMatrix<BlasPermutation<size_t> > >()( F, B, C);
 		}
 	};
 
@@ -642,22 +651,24 @@ namespace LinBox
 
 	// In-place matrix permutation product
 	template<class Field>
-	class BlasMatrixDomainMulin<Field,std::vector< typename Field::Element>, BlasPermutation > {
+	class BlasMatrixDomainMulin<Field,std::vector< typename Field::Element>, BlasPermutation<size_t> > {
 	public:
 		std::vector< typename Field::Element>& operator()( const Field& F,
 								   std::vector< typename Field::Element>& A,
-								   const BlasPermutation& B) const
+								   const BlasPermutation<size_t>& B) const
 		{
-			linbox_check( A.size() == B.getOrder() );
+			if (B.isIdentity()) return A ;
+			linbox_check( A.size() == B.getSize() );
 			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, 1, 0, A.size(), &A[0], 1, B.getPointer() );
 			return A;
 		}
 
 		std::vector< typename Field::Element>& operator()( const Field& F,
-								   const BlasPermutation& B,
+								   const BlasPermutation<size_t>& B,
 								   std::vector< typename Field::Element>& A) const
 		{
-			linbox_check( A.size() == B.getOrder() );
+			if (B.isIdentity()) return A ;
+			linbox_check( A.size() >= B.getSize() );
 			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans, 1, 0, A.size(), &A[0], 1, B.getPointer() );
 			return A;
 		}
@@ -665,21 +676,23 @@ namespace LinBox
 	};
 
 	template<class Field>
-	class BlasMatrixDomainMulin<Field,std::vector< typename Field::Element>, TransposedBlasMatrix<BlasPermutation> > {
+	class BlasMatrixDomainMulin<Field,std::vector< typename Field::Element>, TransposedBlasMatrix<BlasPermutation<size_t> > > {
 	public:
 		std::vector< typename Field::Element>& operator()( const Field& F,
 								   std::vector< typename Field::Element>& A,
-								   const TransposedBlasMatrix<BlasPermutation>& B) const
+								   const TransposedBlasMatrix<BlasPermutation<size_t> >& B) const
 		{
-			linbox_check( A.size() == B.getMatrix().getOrder() );
+			if (B.getMatrix().isIdentity()) return A ;
+			linbox_check( A.size() >= B.getMatrix().getSize() );
 			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans, 1, 0, A.size(), &A[0], 1, B.getMatrix().getPointer() );
 			return A;
 		}
 		std::vector< typename Field::Element>& operator()(  const Field& F,
-								    const TransposedBlasMatrix<BlasPermutation>& B,
+								    const TransposedBlasMatrix<BlasPermutation<size_t> >& B,
 								    std::vector< typename Field::Element>& A) const
 		{
-			linbox_check( A.size() == B.getMatrix().getOrder() );
+			if (B.getMatrix().isIdentity()) return A ;
+			linbox_check( A.size() >= B.getMatrix().getSize() );
 			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, 1, 0, A.size(), &A[0], 1, B.getMatrix().getPointer() );
 			return A;
 		}
@@ -703,6 +716,7 @@ namespace LinBox
 			return BlasMatrixDomainMulin<Field,BlasMatrix<typename Field::Element>,TriangularBlasMatrix<typename Field::Element> >()( F, C, B);
 		}
 	};
+
 	template<class Field>
 	class BlasMatrixDomainMul<Field,BlasMatrix<typename Field::Element>, TriangularBlasMatrix<typename Field::Element>,BlasMatrix<typename Field::Element> > {
 	public:
@@ -751,35 +765,38 @@ namespace LinBox
 			return A;
 		}
 	};
+
 	/*
 	 * specialization for Operand1 of type TriangularBlasMatrix<Element> and Operand2 of type BlasPermutation
 	 */
 
 	// Matrix permutation product C = A*B
 	template<class Field>
-	class BlasMatrixDomainMul<Field,BlasMatrix<typename Field::Element>,TriangularBlasMatrix<typename Field::Element>, BlasPermutation > {
+	class BlasMatrixDomainMul<Field,BlasMatrix<typename Field::Element>,TriangularBlasMatrix<typename Field::Element>, BlasPermutation<size_t> > {
 	public:
 		BlasMatrix<typename Field::Element>& operator()(const Field& F,
 								BlasMatrix<typename Field::Element>& C,
 								const TriangularBlasMatrix<typename Field::Element>& A,
-								const BlasPermutation& B) const
+								const BlasPermutation<size_t>& B) const
 		{
 			C = A;
-			return BlasMatrixDomainMulin<Field,BlasMatrix<typename Field::Element>,BlasPermutation >()( F, C, B);
+			return BlasMatrixDomainMulin<Field,BlasMatrix<typename Field::Element>,BlasPermutation<size_t> >()( F, C, B);
 		}
 	};
+
 	template<class Field>
-	class BlasMatrixDomainMul<Field,BlasMatrix<typename Field::Element>, BlasPermutation,TriangularBlasMatrix<typename Field::Element> > {
+	class BlasMatrixDomainMul<Field,BlasMatrix<typename Field::Element>, BlasPermutation<size_t>,TriangularBlasMatrix<typename Field::Element> > {
 	public:
 		BlasMatrix<typename Field::Element>& operator()(const Field& F,
 								BlasMatrix<typename Field::Element>& C,
-								const BlasPermutation& B,
+								const BlasPermutation<size_t>& B,
 								const TriangularBlasMatrix<typename Field::Element>& A) const
 		{
 			C = A;
-			return BlasMatrixDomainMulin<Field,BlasMatrix<typename Field::Element>,BlasPermutation >()( F, B, C);
+			return BlasMatrixDomainMulin<Field,BlasMatrix<typename Field::Element>,BlasPermutation<size_t> >()( F, B, C);
 		}
 	};
+
 	/*
 	 * Specialization for Operand of type BlasMatrix<Element>
 	 */
@@ -979,8 +996,6 @@ namespace LinBox
 		}
 	};
 
-
-
 	template <class Field>
 	class BlasMatrixDomainRightSolve<Field,BlasMatrix<typename Field::Element>, TriangularBlasMatrix<typename Field::Element> > {
 	public:
@@ -1052,8 +1067,6 @@ namespace LinBox
 			return B;
 		}
 	};
-
-
 
 	/*
 	 * specialization for Operand of type std::vector<Element>

@@ -156,14 +156,16 @@ namespace LinBox
 			_F.init(zero,0);
 			_F.init(one,1);
 
+			BlasPermutation<size_t> P(E.coldim());
+			BlasPermutation<size_t> Qt(E.rowdim());
 			// compute the LQUP of E
-			LQUPMatrix<Field> LQUP(_F, E);
+			LQUPMatrix<Field> LQUP(_F, E,P,Qt);
 
 			// get the rank
 			rank = LQUP.getrank();
 
 			// get permutation Qt
-			BlasPermutation Qt = LQUP.getQ();
+			// BlasPermutation<size_t> Qt = LQUP.getQ();
 
 			// Zero out upper triangular part of E
 			for (size_t i=0;i<m;++i)
@@ -191,13 +193,16 @@ namespace LinBox
 			_F.init(one,1);
 
 			// compute the LQUP of E
-			LQUPMatrix<Field> LQUP(_F, E);
+			BlasPermutation<size_t> P(E.coldim());
+			BlasPermutation<size_t> Qt(E.rowdim());
+
+			LQUPMatrix<Field> LQUP(_F, E, P, Qt);
 
 			// get the rank
 			rank = LQUP.getrank();
 
-			BlasPermutation Qt = LQUP.getQ();
-			TransposedBlasMatrix<BlasPermutation> Q(Qt);
+			// BlasPermutation<size_t> Qt = LQUP.getQ();
+			TransposedBlasMatrix<BlasPermutation<size_t> > Q(Qt);
 
 			// Zero out upper triangular part of E
 			for (size_t i=0;i<m;++i)

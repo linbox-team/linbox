@@ -84,8 +84,9 @@ namespace LinBox
 	public:
 		/*! Constructor.
 		 * @param p is a pair such that
-		 * - \c p.first is the size of the residues, it would be 1 for \"FullSingle\"
-		 * - \c p.second is the theoretical upperbound on the size of the data to reconstruct.
+		 * - \c p.first is the size of a residue, it would be 1 for \"FullSingle\"
+		 * - \c p.second is the theoretical upperbound (natural logarithm) on the size of the integers to reconstruct.
+		 * .
 		 */
 		FullMultipFixedCRA(const std::pair<size_t,double>& p ) :
 		       	FullMultipCRA<Domain>(p.second), size(p.first)
@@ -137,7 +138,7 @@ namespace LinBox
 					this->fieldreconstruct(*ri_it, D, *e_it, *t0_it, invP0,
 							       (*_mod_it).operator()() );
 
-				Integer tmp; 
+				Integer tmp;
 				double ltp = naturallog(D.characteristic(tmp));
 				di = *_dsz_it + ltp;
 				this->totalsize += ltp;

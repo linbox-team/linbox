@@ -638,7 +638,7 @@ namespace LinBox
 		}
 	};
 
-
+#if 0 /*  original BlasPermutation */
 	// Dan Roche 7-8-04 Changed _P to _PP to avoid confict with a macro defined in
 	// <iostream> somewhere.
 	/*! BlasPermutation.
@@ -654,29 +654,55 @@ namespace LinBox
 		BlasPermutation() {};
 
 		BlasPermutation( const size_t n ) :
-			_PP(n), _order( n )
+			_PP(n), _order( n ), _size( -1 )
 		{};
 
 		BlasPermutation( const std::vector<size_t> P ) :
-			_PP( P ), _order( P.size() )
+			_PP( P ), _order( P.size() ) , _size( -1 )
+		{};
+
+		BlasPermutation( const std::vector<size_t> P, size_t order ) :
+			_PP( P ), _order( order ) , _size( -1 )
+		{};
+
+		BlasPermutation( const std::vector<size_t> P,
+				 size_t order, size_t size ) :
+			_PP( P ), _order( order ) , _size( size )
 		{};
 
 		BlasPermutation( const BlasPermutation& P) :
-			_PP( P._PP ), _order( P._order ) {};
+			_PP( P._PP ), _order( P._order ) , _size( size )
+		{};
 
 		BlasPermutation& operator=( const BlasPermutation& P )
 		{
-			_PP = P._PP;
+			_PP    = P._PP;
 			_order = P._order;
+			_size  = P._size ;
 			return *this;
 		}
 
+		const size_t* getPointer() const
+		{
+			return &_PP[0];
+		}
 
-		const size_t* getPointer() const  { return &_PP[0]; }
+		size_t* getWritePointer()
+		{
+			return &_PP[0];
+		}
 
-		size_t* getWritePointer()  { return &_PP[0]; }
+		size_t  getOrder()  const
+		{
+			return _order;
+		}
 
-		size_t  getOrder()  const { return _order; }
+		size_t  getSize()  const
+		{
+			if (_size == -1)
+				_size = (*(std::max_element(_PP.begin(),_PP.end())))+1 ;
+			return _size;
+		}
 
 		BlasPermutation& extendTrivially(const size_t newSize)
 		{
@@ -691,10 +717,44 @@ namespace LinBox
 
 	protected:
 
-		std::vector<size_t>  _PP;
-		size_t               _order;
+		std::vector<size_t>  _PP ;    //!< Lapack representation of the permutation
+		size_t               _order;  //!< size of the representation (number of permutations)
+		mutable size_t       _size ;  //!< size of the permutation (computed if necessary)
+
+	private :
+
+		/// compresses PackedPermutation to a smaller \c r_.
+		void Compress_()
+		{
+			if (_order==0) {
+				_PP.resize(0) ;
+				// Id_ = true ;
+				return ;
+			}
+			linbox_check(_order);
+			size_t rr = _order-1 ;
+			while ( rr && (_PP[rr] == 0  )) --rr ;    // removing trailing zeros
+			while ( rr && (_PP[rr] == rr )) --rr ;    // useless information
+			if ((rr == 0) && (_PP[0] == 0)) {
+				_order = 0 ;
+				_size = 0  ;
+				Id_ = true ;
+				_PP.resize(0) ;
+				return ;
+			}
+			_order = rr+1 ;
+			_PP.resize(_order,0);   // done cleaning.
+			// recomputing n_ if lost.
+			if (_size !=  -1) {
+				_size = getSize();
+			}
+			cleaned_ = true ;
+			return ;
+		}
+
 
 	}; // end of class BlasPermutation
+#endif
 
 	/*! TransposedBlasMatrix.
 	 * NO DOC

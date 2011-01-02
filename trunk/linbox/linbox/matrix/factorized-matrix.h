@@ -135,92 +135,217 @@ namespace LinBox
 
 	protected:
 
-		Field                   _F;
-		BlasMatrix<Element>    &_LU;
-		BlasPermutation         _PP;
-		BlasPermutation         _QQ;  //note: this is actually Qt!
-		size_t                  _m;
-		size_t                  _n;
-		size_t               _rank;
-		bool                 _alloc;
+		Field                     _F;
+		BlasMatrix<Element>     &_LU;
+		BlasPermutation<size_t> &_PP;
+		BlasPermutation<size_t> &_QQ;  //note: this is actually Qt!
+		size_t                    _m;
+		size_t                    _n;
+		size_t                 _rank;
+		bool                  _alloc;
+		bool                  _plloc;
 
 	public:
 
-
+#if 1
 		// Contruction of LQUP factorization of A (making a copy of A)
 		LQUPMatrix (const Field& F, const BlasMatrix<Element>& A) :
-		       	_F(F), _LU(*(new BlasMatrix<Element> (A))) ,
-			  _PP(A.coldim()), _QQ(A.rowdim()), _m(A.rowdim()),
-			  _n(A.coldim()), _alloc(true)
+			_F(F), _LU(*(new BlasMatrix<Element> (A))) ,
+			_PP(*(new BlasPermutation<size_t>(A.coldim()))),
+			_QQ(*(new BlasPermutation<size_t>(A.rowdim()))),
+			_m(A.rowdim()), _n(A.coldim()),
+			_alloc(true),_plloc(true)
 		{
 			//std::cerr<<"Je passe par le constructeur const"<<std::endl;
 
 			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans, _m, _n,
 						 _LU.getPointer(),_LU.getStride(),
 						 _PP.getWritePointer(), _QQ.getWritePointer(), FFPACK::FfpackLQUP );
+			_PP.setOrder(_rank);
+			_QQ.setOrder(_rank);
 
 		}
 
 		// Contruction of LQUP factorization of A (in-place in A)
 		LQUPMatrix (const Field& F, BlasMatrix<Element>& A) :
-		       	_F(F), _LU(A) , _PP(A.coldim()), _QQ(A.rowdim()),
-			  _m(A.rowdim()), _n(A.coldim()), _alloc(false)
+			_F(F), _LU(A) ,
+			_PP(*(new BlasPermutation<size_t>(A.coldim()))),
+			_QQ(*(new BlasPermutation<size_t>(A.rowdim()))),
+			_m(A.rowdim()), _n(A.coldim()),
+			_alloc(false),_plloc(true)
 		{
 			//std::cerr<<"Je passe par le constructeur non const"<<std::endl;
 			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, _m, _n,
 						 _LU.getPointer(),_LU.getStride(),
 						 _PP.getWritePointer(), _QQ.getWritePointer(), FFPACK::FfpackLQUP );
+			_PP.setOrder(_rank);
+			_QQ.setOrder(_rank);
 
 		}
 
 		// Contruction of LQUP factorization of A (making a copy of A)
 		LQUPMatrix (const BlasBlackbox<Field>& A) :
-		       	_F(A.field()), _LU(*(new BlasMatrix<Element> (A))) ,
-			  _PP(A.coldim()), _QQ(A.rowdim()), _m(A.rowdim()),
-			  _n(A.coldim()), _alloc(true)
+			_F(A.field()), _LU(*(new BlasMatrix<Element> (A))) ,
+			_PP(*(new BlasPermutation<size_t>(A.coldim()))),
+			_QQ(*(new BlasPermutation<size_t>(A.rowdim()))),
+			_m(A.rowdim()), _n(A.coldim()),
+			_alloc(true),_plloc(true)
 		{
 
 			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans,  _m, _n,
 						 _LU.getPointer(),_LU.getStride(),
 						 _PP.getWritePointer(), _QQ.getWritePointer(), FFPACK::FfpackLQUP );
+			_PP.setOrder(_rank);
+			_QQ.setOrder(_rank);
+
 		}
 
 		// Contruction of LQUP factorization of A (in-place in A)
 		LQUPMatrix (BlasBlackbox<Field>& A) :
-		       	_F(A.field()), _LU(static_cast<BlasMatrix<Element>&> (A)) , _PP(A.coldim()), _QQ(A.rowdim()),
-			  _m(A.rowdim()), _n(A.coldim()), _alloc(false)
+		       	_F(A.field()), _LU(static_cast<BlasMatrix<Element>&> (A)) ,
+			_PP(*(new BlasPermutation<size_t>(A.coldim()))),
+			_QQ(*(new BlasPermutation<size_t>(A.rowdim()))),
+			_PP(A.coldim()), _QQ(A.rowdim()),
+			_m(A.rowdim()), _n(A.coldim()),
+			_alloc(false),_plloc(true)
 		{
 
 			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans, _m, _n,
 						 _LU.getPointer(),_LU.getStride(),
 						 _PP.getWritePointer(), _QQ.getWritePointer(), FFPACK::FfpackLQUP );
+			_PP.setOrder(_rank);
+			_QQ.setOrder(_rank);
+
 		}
+#endif
+
+		// Contruction of LQUP factorization of A (making a copy of A)
+		LQUPMatrix (const Field& F, const BlasMatrix<Element>& A,
+			    BlasPermutation<size_t> & P, BlasPermutation<size_t> & Q) :
+			_F(F), _LU(*(new BlasMatrix<Element> (A))) ,
+			_PP(P), _QQ(Q),
+			_m(A.rowdim()), _n(A.coldim()),
+			_alloc(true),_plloc(false)
+		{
+			//std::cerr<<"Je passe par le constructeur const"<<std::endl;
+
+			linbox_check(_QQ.getSize()<=A.rowdim());
+			linbox_check(_PP.getSize()<=A.coldim());
+			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans, _m, _n,
+						 _LU.getPointer(),_LU.getStride(),
+						 _PP.getWritePointer(), _QQ.getWritePointer(), FFPACK::FfpackLQUP );
+			_PP.setOrder(_rank);
+			_QQ.setOrder(_rank);
+
+
+		}
+
+		// Contruction of LQUP factorization of A (in-place in A)
+		LQUPMatrix (const Field& F, BlasMatrix<Element>& A,
+			    BlasPermutation<size_t> & P, BlasPermutation<size_t> & Q) :
+			_F(F), _LU(A) , _PP(P), _QQ(Q),
+			_m(A.rowdim()), _n(A.coldim()),
+			_alloc(false),_plloc(false)
+		{
+			//std::cerr<<"Je passe par le constructeur non const"<<std::endl;
+			linbox_check(_QQ.getSize()<=A.rowdim());
+			linbox_check(_PP.getSize()<=A.coldim());
+
+			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, _m, _n,
+						 _LU.getPointer(),_LU.getStride(),
+						 _PP.getWritePointer(), _QQ.getWritePointer(), FFPACK::FfpackLQUP );
+			_PP.setOrder(_rank);
+			_QQ.setOrder(_rank);
+
+		}
+
+		// Contruction of LQUP factorization of A (making a copy of A)
+		LQUPMatrix (const BlasBlackbox<Field>& A,
+			    BlasPermutation<size_t> & P, BlasPermutation<size_t> & Q) :
+			_F(A.field()), _LU(*(new BlasMatrix<Element> (A))) ,
+			_PP(P), _QQ(Q),
+			_m(A.rowdim()), _n(A.coldim()),
+			_alloc(true),_plloc(false)
+		{
+
+			linbox_check(_QQ.getSize()<=A.rowdim());
+			linbox_check(_PP.getSize()<=A.coldim());
+
+
+			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans,  _m, _n,
+						 _LU.getPointer(),_LU.getStride(),
+						 _PP.getWritePointer(), _QQ.getWritePointer(), FFPACK::FfpackLQUP );
+
+			_PP.setOrder(_rank);
+			_QQ.setOrder(_rank);
+
+		}
+
+		// Contruction of LQUP factorization of A (in-place in A)
+		LQUPMatrix (BlasBlackbox<Field>& A,
+			    BlasPermutation<size_t> & P, BlasPermutation<size_t> & Q) :
+		       	_F(A.field()), _LU(static_cast<BlasMatrix<Element>&> (A)) ,
+			_PP(P), _QQ(Q),
+			_m(A.rowdim()), _n(A.coldim()),
+			_alloc(false),_plloc(false)
+		{
+
+			linbox_check(_QQ.getSize()<=A.rowdim());
+			linbox_check(_PP.getSize()<=A.coldim());
+
+
+			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans, _m, _n,
+						 _LU.getPointer(),_LU.getStride(),
+						 _PP.getWritePointer(), _QQ.getWritePointer(), FFPACK::FfpackLQUP );
+			_PP.setOrder(_rank);
+			_QQ.setOrder(_rank);
+
+		}
+
 
 
 		~LQUPMatrix () {
 			if (_alloc)
 				delete &_LU;
+			if (_plloc) {
+				delete &_PP;
+				delete &_QQ;
+			}
 		}
 
 		// get the field on which the factorization is done
-		Field& field() {return _F;}
+		Field& field()
+		{
+			return _F;
+		}
 
 		// get row dimension
-		size_t rowdim() const {return _m;}
+		size_t rowdim() const
+		{
+			return _m;
+		}
 
 		// get column dimension
-		size_t coldim() const {return _n;}
+		size_t coldim() const
+		{
+			return _n;
+		}
 
 		// get the rank of matrix
-		size_t getrank() const {return _rank;}
+		size_t getrank() const
+		{
+			return _rank;
+		}
 
 		// get the permutation P
-		const BlasPermutation& getP() const {return _PP;}
-
-		template<class T>
-		PackedPermutation<T> & getP( PackedPermutation<T> & P ) const
+		const BlasPermutation<size_t>& getP() const
 		{
-			P = PackedPermutation<T>(_PP.getPointer(),_rank);
+			return _PP;
+		}
+
+		BlasPermutation<size_t> & getP( BlasPermutation<size_t> & P ) const
+		{
+			P = BlasPermutation<size_t>(_PP.getPointer(),_rank);
 			return P;
 		}
 
@@ -235,12 +360,14 @@ namespace LinBox
 		 * is handled intelligently (eg by \c applyP) but you must be
 		 * careful with \c getQ().
 		 */
-		const BlasPermutation& getQ() const  {return _QQ;}
-
-		template<class T>
-		PackedPermutation<T> & getQ( PackedPermutation<T> & Qt ) const
+		const BlasPermutation<size_t>& getQ() const
 		{
-			Qt = PackedPermutation<T>(_QQ.getPointer(),_rank);
+			return _QQ;
+		}
+
+		BlasPermutation<size_t> & getQ( BlasPermutation<size_t> & Qt ) const
+		{
+			Qt = BlasPermutation<size_t>(_QQ.getPointer(),_rank);
 			return Qt ;
 		}
 
@@ -254,11 +381,16 @@ namespace LinBox
 		BlasMatrix<Element>& getS( BlasMatrix<Element>& S) const;
 
 		// get a pointer to the begin of storage
-		Element* getPointer() const { return _LU.getPointer(); }
+		Element* getPointer() const
+		{
+			return _LU.getPointer();
+		}
 
 		// get a pointer to the begin of storage
-		//const size_t getStride() const { return _LU.getStride(); }
-		size_t getStride() const { return _LU.getStride(); } //BB: pas besoin
+		size_t getStride() const
+		{
+			return _LU.getStride();
+		}
 
 		/*
 		 * Solvers with matrices or vectors

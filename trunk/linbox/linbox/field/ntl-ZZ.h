@@ -22,7 +22,9 @@
  */
 
 /** @file field/ntl-ZZ.h
-*/
+ * @ingroup field
+ * @brief NO DOC
+ */
 
 #ifndef __LINBOX_ntl_zz_H
 #define __LINBOX_ntl_zz_H

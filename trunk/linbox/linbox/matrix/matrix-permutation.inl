@@ -34,76 +34,46 @@
 #include <algorithm>
 #include "linbox/util/debug.h"
 
-// PackedPermutation
+// BlasPermutation
 namespace LinBox
 {
 	template<class _Uint>
-	PackedPermutation<_Uint>::PackedPermutation() :
-	       	r_(0),n_(-1),P_(0),Q_(0),Id_(true),cleaned_(true)
+	BlasPermutation<_Uint>::BlasPermutation() :
+	       	r_(0),n_(-1),P_(0),Q_(0),inv_(false)
 	{
 		std::cout << "NULL permutation created. Beware !" << std::endl;
 	};
 
 	template<class _Uint>
-	PackedPermutation<_Uint>::~PackedPermutation() {}
+	BlasPermutation<_Uint>::BlasPermutation(size_t n) :
+	       	r_(n),n_(-1),P_(n),Q_(0),inv_(false)
+	{ };
+
+
+	template<class _Uint>
+	BlasPermutation<_Uint>::~BlasPermutation() {}
 
 	// n_ is not computed here.
 	template<class _Uint>
-	PackedPermutation<_Uint>::PackedPermutation(const _Uint *P, const _Uint & r, bool clean) :
-	       	r_(r), n_(-1),P_(0),Q_(0),cleaned_(clean)
+	BlasPermutation<_Uint>::BlasPermutation(const _Uint *P, const _Uint & r ) :
+	       	r_(r), n_(-1),P_(0),Q_(0),inv_(false)
 	{
-		std::cout << "CTOR 2" << std::endl;
-		std::cout << "got : perm  (" << clean<< ") of " << r << std::endl;
-		for (size_t i = 0 ; i< r ; ++i) std::cout << P[i] << ' ' ;
-		std::cout<<std::endl;
+		// std::cout << "CTOR 2" << std::endl;
+		// std::cout << "got : perm of " << r << std::endl;
+		// for (size_t i = 0 ; i< r ; ++i) std::cout << P[i] << ' ' ;
+		// std::cout<<std::endl;
 		if (!r) {
 			// n_ = 0 ;
-			Id_ = true ;
 			return ;
 		}
-		if (clean) {
-			std::cout << "cleaning ! " << std::endl;
-			linbox_check(r_);
-			_Uint rr = r_-1 ;
-			while ( rr && (P[rr] == 0  )) --rr ;         // removing trailing zeros
-			while ( rr && (P[rr] == rr )) --rr ;         // useless information
-			if ((rr == 0) && (P[0] == 0)) {
-				r_ = 0 ;
-				Id_ = true  ;
-				return ;
-			}
-			r_ = rr+1 ;
-			P_.resize(r_,0);   // done cleaning.
-			Id_=false ;
-#if 0 /*  computes n_ */
-			_Uint n = P_[0] = P[0] ; // max element
-			_Uint tmp = 0 ;
-			for (_Uint  i = 1 ; i < r_ ; ++i)
-				P_[i] = tmp = P[i] ;
-			if (tmp > n)  n = tmp ;
-			n_ = n ;
-#endif
-		}
-		else {
-			P_.resize(r_);
-			Id_ = false;
-#if 0 /*  computes n_ */
-			_Uint n = P_[0] = P[0] ; // max element
-			_Uint tmp = 0 ;
-			for (_Uint  i = 1 ; i < r ; ++i){
-				P_[i] = tmp = P[i] ;
-				if (tmp > n)  n = tmp ;
-			}
-			n_ = n ;
-#endif
-		}
+		P_.resize(r_);
 		for (_Uint  i = 0 ; i < r_ ; ++i) {
 			P_[i] = P[i] ;
 		}
 
-		std::cout << "return : perm  (" << cleaned_ <<',' << Id_ << ") of " << r_ << std::endl;
-		for (size_t i = 0 ; i< r_ ; ++i) std::cout << P_[i] << ' ' ;
-		std::cout<<std::endl;
+		// std::cout << "return : perm  (" << cleaned_ << ") of " << r_ << std::endl;
+		// for (size_t i = 0 ; i< r_ ; ++i) std::cout << P_[i] << ' ' ;
+		// std::cout<<std::endl;
 
 		return ;
 
@@ -111,108 +81,68 @@ namespace LinBox
 
 	// n_ is not computed here.
 	template<class _Uint>
-	PackedPermutation<_Uint>::PackedPermutation(const std::vector<_Uint> & P, bool clean) :
-	       	r_(P.size()), n_(-1),P_(0),Q_(0),cleaned_(clean)
+	BlasPermutation<_Uint>::BlasPermutation(const std::vector<_Uint> & P) :
+	       	r_(P.size()), n_(-1),P_(0),Q_(0),inv_(false)
 	{
-		if (r_==0)  {
+		if ( !r_ )  {
 			// n_ = 0 ;
-			Id_ = true ;
 			return ;
 		}
-		if (clean) {
-			linbox_check(r_);
-			_Uint rr = r_-1 ;
-			while ( rr && (P[rr] == 0  )) --rr ;      // removing trailing zeros
-			while ( rr && (P[rr] == rr )) --rr ;      // useless information
-			if ((rr == 0) && (P[0] == 0)) {
-				r_ = 0 ;
-				Id_  = true ;
-				return ;
-			}
-			r_ = rr+1 ;
-			Id_ = false;
-#if 0
-			_Uint n = P_[0] = P[0] ; // max element
-			_Uint tmp = 0 ;
-			for (_Uint  i = 1 ; i < r_ ; ++i)
-				P_[i] = tmp = P[i] ;
-			if (tmp > n)  n = tmp ;
-			n_ = n ;
-#endif
-			if (r_ < (_Uint) P.size()) {
-				P_.resize(r_,0);   // done cleaning.
-				for (_Uint  i = 0 ; i < r_ ; ++i) P_[i] = P[i] ;
-			}
-			else {
-				P_ = P;
-			}
-		}
-		else {
-			P_ = P;
-			Id_ = false;
-#if 0
-			{
-				P_.resize(r_);
-				_Uint tmp = 0 ;
-				_Uint n = P_[0] = P[0] ; // max element
-				for (_Uint  i = 1 ; i < r_ ; ++i){
-					P_[i] = tmp = P[i] ;
-					if (tmp > n)  n = tmp ;  // probably faster than ::max_element from <algorithm> and P_(P) constructor
-				}
-				n_ = n ;
-			}
-#endif
-		}
+		P_ = P;
 		return ;
 
 	}
 
 	// n_ is not computed here.
 	template<class _Uint>
-	PackedPermutation<_Uint>::PackedPermutation(const MatrixPermutation<_Uint> & P, bool clean) :
-	       	r_(P.getSize()), n_(/*P.getSize()*/-1),P_(P.getSize()),Q_(P),cleaned_(clean)
+	BlasPermutation<_Uint>::BlasPermutation(const MatrixPermutation<_Uint> & P) :
+	       	r_(P.getSize()), n_(/*P.getSize()*/-1),P_(P.getSize()),Q_(P),inv_(false)
 	{
-		if (r_ == 0) {
-			Id_ = true ;
+		if ( !r_ ) {
 			return ;
 		}
 		std::vector<_Uint> Qinv(n_);
 		InvertQ_(Qinv);
 		BuildP_(Qinv,Q_);
-		if (clean) Compress_();
-		( r_ == 0)?(Id_=true):(Id_=false);
 	}
 
 	// n_ is computed here
 	template<class _Uint>
 	_Uint
-	PackedPermutation<_Uint>::getSize() const
+	BlasPermutation<_Uint>::getSize() const
 	{
+		// std::cout << "getting size (" << r_ << ") :";
+		// this->write(std::cout) << std::endl ;
 
-		if (!r_) {
-			linbox_check(Id_);
-			return (n_ = 0) ;
-		}
-		linbox_check(!Id_);
+		// std::cout << " was " << n_ << std::endl;
 		if ( n_ == (_Uint) -1 ) { //! @warning potentially catastrophic
-			return n_ = (*(std::max_element(P_.begin(),P_.end())))+1 ;
+			if (!r_)
+				n_ = 0 ;
+			else
+				n_ = (*(std::max_element(P_.begin(),P_.end())))+1 ;
 		}
-		else {
-			return n_ ;
-		}
-
+		// std::cout << " is " << n_ << std::endl;
+		return n_ ;
 	}
 
 	template<class _Uint>
 	_Uint
-	PackedPermutation<_Uint>::getCompression()
+	BlasPermutation<_Uint>::getOrder() const
 	{
 		return r_ ;
 	}
 
 	template<class _Uint>
+	void BlasPermutation<_Uint>::setOrder( size_t r)
+	{
+		r_ = r  ;
+		n_ = -1 ;
+	}
+
+
+	template<class _Uint>
 	MatrixPermutation<_Uint> &
-	PackedPermutation<_Uint>::Convert (MatrixPermutation<_Uint> & P)
+	BlasPermutation<_Uint>::Convert (MatrixPermutation<_Uint> & P)
 	{
 		getSize() ;   // si c'était pas déjà fait...
 		P.resize(n_); // sets P to identity
@@ -221,38 +151,36 @@ namespace LinBox
 		return P ;
 	}
 
-	/// compresses PackedPermutation to a smaller \c r_.
+	/// compresses BlasPermutation to a smaller \c r_.
 	template<class _Uint>
-	void PackedPermutation<_Uint>::Compress_()
+	void BlasPermutation<_Uint>::Compress()
 	{
-		if (r_==0) {
+		if (!r_) {
+			linbox_check(!n_);
 			P_.resize(0) ;
-			Id_ = true ;
 			return ;
 		}
-		linbox_check(r_);
 		_Uint rr = r_-1 ;
 		while ( rr && (P_[rr] == 0  )) --rr ;    // removing trailing zeros
 		while ( rr && (P_[rr] == rr )) --rr ;    // useless information
 		if ((rr == 0) && (P_[0] == 0)) {
 			r_ = 0 ;
 			n_ = 0  ;
-			Id_ = true ;
 			P_.resize(0) ;
 			return ;
 		}
 		r_ = rr+1 ;
 		P_.resize(r_,0);   // done cleaning.
+		n_ = -1 ;
 		// recomputing n_ if lost.
-		if (n_ != (_Uint) -1) {
-			n_ = getSize();
-		}
-		cleaned_ = true ;
+		// if (n_ != (_Uint) -1) {
+			// n_ = getSize();
+		// }
 		return ;
 	}
 
 	template<class _Uint>
-	void PackedPermutation<_Uint>::InitQ_() const
+	void BlasPermutation<_Uint>::InitQ_() const
 	{
 		getSize();
 		Q_.resize(n_);
@@ -260,19 +188,22 @@ namespace LinBox
 	}
 
 	template<class _Uint>
-	void PackedPermutation<_Uint>::Invert()
+	void BlasPermutation<_Uint>::Transpose()
 	{
-		Transpose();
+		Invert();
 	}
 
 	template<class _Uint>
-	void PackedPermutation<_Uint>::Transpose()
+	void BlasPermutation<_Uint>::Invert()
 	{
-		if (Id_) {
-			linbox_check(!r_);
+		if (!r_) {
 			return ;
 		}
-		linbox_check(r_);
+		if (inv_) {
+			inv_ = false ;
+			return ;
+		}
+		inv_ = false ;
 		getSize();
 		// if not already computed :
 		BuildQ_();
@@ -283,15 +214,14 @@ namespace LinBox
 		return ;
 	}
 
-
 	// P = convert(Q), using Qinv
 	template<class _Uint>
-	void PackedPermutation<_Uint>::BuildP_( std::vector<_Uint> &Q, std::vector<_Uint> &Qinv)
+	void BlasPermutation<_Uint>::BuildP_( std::vector<_Uint> &Q, std::vector<_Uint> &Qinv)
 	{
-		linbox_check( !r_ || !Id_);
+		linbox_check( r_ );
 		P_.resize(getSize());
 		/*  building */
-		std::cout << "Buiding P (" << n_ << ")" << std::endl;
+		// std::cout << "Buiding P (" << n_ << ")" << std::endl;
 		_Uint pi,qi,qpi ;
 		for (_Uint i = 0 ;i < n_ ; ++i) {
 			pi  = P_[i]  = Qinv[i];
@@ -309,41 +239,30 @@ namespace LinBox
 		//std::cout << "new :" << r << std::endl;
 		r_ = r ;
 		P_.resize(r_) ;
-		if (!r_) Id_=true ;
-		cleaned_ = true ;
 		/* rebuild Q */
 		//for (_Uint i = 0 ; i < r_ ; ++i) std::swap(Q[i],Q[P_[i]]);
 	}
 
 	template<class _Uint>
-	void PackedPermutation<_Uint>::BuildQ_() const
+	void BlasPermutation<_Uint>::BuildQ_() const
 	{
-		linbox_check( !r_ || !Id_);
 		if ((_Uint)Q_.size() == n_) return ; // si Q_ est déjà initialisée, alors P_ == Q_
 		// set Q_ to identity
 		InitQ_();
 		// then permute it
-		if (cleaned_) {
-			for (_Uint i = 0 ; i < r_ ; ++i){
+		for (_Uint i = 0 ; i < r_ ; ++i) {
+			if (P_[i]>i) {
 				std::swap(Q_[i],Q_[P_[i]]);
 			}
-		}
-		else {
-			for (_Uint i = 0 ; i < r_ ; ++i) {
-				if (P_[i]) {
-					std::swap(Q_[i],Q_[P_[i]]);
-				}
-				else {
-					return ;
-				}
+			else {
+				return ;
 			}
 		}
-
 		return ;
 	}
 
 	template<class _Uint>
-	bool PackedPermutation<_Uint>::CheckP_()
+	bool BlasPermutation<_Uint>::CheckP_()
 	{
 		for (_Uint i = 0 ; i < r_ ; ++i)
 			if (P_[i] && P_[i] < i)
@@ -352,10 +271,9 @@ namespace LinBox
 	}
 
 	template<class _Uint>
-	std::vector<_Uint> & PackedPermutation<_Uint>::InvertQ_(std::vector<_Uint> & Qinv)
+	std::vector<_Uint> & BlasPermutation<_Uint>::InvertQ_(std::vector<_Uint> & Qinv)
 	{
 		linbox_check(n_ != (_Uint) -1);
-		linbox_check( !r_ || !Id_);
 		for (_Uint i = 0 ; i < n_ ; ++i)
 			Qinv[Q_[i]] = i ;
 		return Qinv ;
@@ -363,7 +281,7 @@ namespace LinBox
 
 #if 0 /*  non-sense */
 	template<class _Uint>
-	void PackedPermutation<_Uint>::InvertQ_()
+	void BlasPermutation<_Uint>::InvertQ_()
 	{
 		linbox_check(n_ != (_Uint) -1);
 		for (_Uint i = 0 ; i < n_ ; ++i)
@@ -374,7 +292,7 @@ namespace LinBox
 #if 0
 	template<class _Uint>
 	inline _Uint
-	PackedPermutation<_Uint>::operator[](const _Uint & i)
+	BlasPermutation<_Uint>::operator[](const _Uint & i)
 	{
 		BuildQ_() ;
 		linbox_check( i<Q_.size() ) ;
@@ -384,10 +302,9 @@ namespace LinBox
 
 	template<class _Uint>
 	inline  _Uint
-	PackedPermutation<_Uint>::operator[](const _Uint  i) const
+	BlasPermutation<_Uint>::operator[](const _Uint  i) const
 	{
-		linbox_check( !r_ || !Id_);
-		if (Id_) return i ;
+		if (!r_) return i ;
 		getSize() ;
 		BuildQ_() ;
 		linbox_check(n_ == Q_.size() );
@@ -401,14 +318,15 @@ namespace LinBox
 	/* output */
 	/* ****** */
 	template<class _Uint>
-	std::ostream & PackedPermutation<_Uint>::write (std::ostream & o, bool Lapack) const
+	std::ostream & BlasPermutation<_Uint>::write (std::ostream & o, bool Lapack) const
 	{
-		linbox_check(!r_ || !Id_);
 		if (Lapack) {
 			o << '['  ;
 			for (_Uint i = 0 ; i < r_ ; ++i)
 			{ o << P_[i]  ; if (i< r_-1) o << ','; }
-			o << ']' << '(' << (long int) n_ << ')' ;
+			o << "]" ;
+			if (inv_) o << "^{-1}" ;
+			o << '(' << (long int) (n_+1)-(long int)1 << ')' ;
 		}
 		else {
 			BuildQ_() ;
@@ -421,11 +339,12 @@ namespace LinBox
 	}
 
 	template<class _Uint>
-	std::ostream & operator<<(std::ostream &o, PackedPermutation<_Uint> & P)
+	std::ostream & operator<<(std::ostream &o, BlasPermutation<_Uint> & P)
 	{
 		return P.write(o) ;
 	}
 
+#if 0
 
 	/* ******* */
 	/*  Apply  */
@@ -433,7 +352,7 @@ namespace LinBox
 
 	template<class _Uint>
 	template<class OutVector, class InVector>
-	OutVector &PackedPermutation<_Uint>::apply (OutVector &y, const InVector &x)
+	OutVector &BlasPermutation<_Uint>::apply (OutVector &y, const InVector &x)
 	{
 		linbox_check((_Uint)x.size() == getSize());
 		linbox_check((_Uint)y.size() == getSize());
@@ -446,7 +365,7 @@ namespace LinBox
 
 	template<class _Uint>
 	template<class OutVector, class InVector>
-	OutVector &PackedPermutation<_Uint>::applyTranspose (OutVector &y, const InVector &x)
+	OutVector &BlasPermutation<_Uint>::applyTranspose (OutVector &y, const InVector &x)
 	{
 		linbox_check((_Uint)x.size() == getSize());
 		linbox_check((_Uint)y.size() == getSize());
@@ -458,13 +377,15 @@ namespace LinBox
 		return y ;
 	}
 
+#endif
 
+#if 0
 	/* *************** */
 	/*  Transposition  */
 	/* *************** */
 
 	template<class _Uint>
-	void PackedPermutation<_Uint>::TransposeRows(_Uint i, _Uint j)
+	void BlasPermutation<_Uint>::TransposeRows(_Uint i, _Uint j)
 	{
 		if (i == j) return ;
 		linbox_check(i<getSize());
@@ -480,7 +401,7 @@ namespace LinBox
 	}
 
 	template<class _Uint>
-	void PackedPermutation<_Uint>::TransposeCols(_Uint i, _Uint j)
+	void BlasPermutation<_Uint>::TransposeCols(_Uint i, _Uint j)
 	{
 		if (i == j) return ;
 		linbox_check(i<getSize());
@@ -493,6 +414,7 @@ namespace LinBox
 		Q_.resize(0);
 
 	}
+#endif
 
 }
 

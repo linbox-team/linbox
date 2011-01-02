@@ -832,12 +832,15 @@ namespace LinBox
 			ttSetup += tSetup;
 			tLQUP.start();
 #endif
-			LQUPMatrix<Field>* TAS_LQUP = new LQUPMatrix<Field>(F, *TAS_factors);
+			BlasPermutation<size_t>  TAS_P(TAS_factors->coldim()) ;
+			BlasPermutation<size_t>  TAS_Qt(TAS_factors->rowdim()) ;
+
+			LQUPMatrix<Field>* TAS_LQUP = new LQUPMatrix<Field>(F, *TAS_factors,TAS_P,TAS_Qt);
 			size_t TAS_rank = TAS_LQUP->getrank();
 
 			// check consistency. note, getQ returns Qt.
-			BlasPermutation TAS_P = TAS_LQUP->getP();
-			BlasPermutation TAS_Qt = TAS_LQUP->getQ();
+			// BlasPermutation<size_t>  TAS_P = TAS_LQUP->getP();
+			// BlasPermutation<size_t>  TAS_Qt = TAS_LQUP->getQ();
 			std::vector<size_t> srcRow(A.rowdim()), srcCol(A.coldim()+1);
 			std::vector<size_t>::iterator sri = srcRow.begin(), sci = srcCol.begin();
 			for (size_t i=0; i<A.rowdim(); i++, sri++) *sri = i;

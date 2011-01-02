@@ -541,7 +541,7 @@ namespace LinBox
 					std::swap(defect[i], defect[idx_min]);
 					Perm1[i]=idx_min;
 				}
-				BlasPermutation BPerm1(Perm1);
+				BlasPermutation<size_t> BPerm1(Perm1);
 
 				// permute row degree
 				for (size_t i=0;i<m;++i)
@@ -582,14 +582,16 @@ namespace LinBox
 
 
 				// Compute LQUP of Discrepancy
-				LQUPMatrix<Field> LQUP(_F,Discrepancy);
+				BlasPermutation<size_t> Qt(Discrepancy.rowdim());
+				BlasPermutation<size_t> P(Discrepancy.coldim());
+				LQUPMatrix<Field> LQUP(_F,Discrepancy,P,Qt);
 
 				// Get L from LQUP
 				TriangularBlasMatrix<Element> L(m, m, BlasTag::low, BlasTag::unit);
 				LQUP.getL(L);
 
 				// get the transposed permutation of Q from LQUP
-				BlasPermutation Qt =LQUP.getQ();
+				// BlasPermutation<size_t> Qt =LQUP.getQ();
 
 
 				// Compute the inverse of L
@@ -822,7 +824,7 @@ namespace LinBox
 						Perm1[i]=idx_min;
 					}
 				}
-				BlasPermutation BPerm1(Perm1);
+				BlasPermutation<size_t> BPerm1(Perm1);
 
 
 				// Discrepancy= BPerm1.Discrepancy
@@ -832,14 +834,17 @@ namespace LinBox
 				// Computation of the LQUP decomposition of the discrepancy
 				Coefficient CopyDiscr;
 				CopyDiscr=Discrepancy;
-				LQUPMatrix<Field> LQUP(_F, CopyDiscr);
+				BlasPermutation<size_t> Qt(Discrepancy.rowdim());
+				BlasPermutation<size_t> P(Discrepancy.coldim());
+
+				LQUPMatrix<Field> LQUP(_F, CopyDiscr,P,Qt);
 
 				// Get the matrix L of LQUP decomposition
 				TriangularBlasMatrix<Element> L(m+n,m+n, BlasTag::low, BlasTag::unit );
 				LQUP.getL(L);
 
 				// Get the tranposed  permutation of Q from LQUP
-				BlasPermutation Qt=LQUP.getQ();
+				// BlasPermutation<size_t> Qt=LQUP.getQ();
 
 				// Computation of permutations BPerm2 such that the last n rows of BPerm2.Qt.Discrepancy are non zero.
 				std::vector<size_t> Perm2(m+n);
@@ -847,7 +852,7 @@ namespace LinBox
 					Perm2[i]=m+i;
 				for (size_t i=n;i<m+n;++i)
 					Perm2[i]=i;
-				BlasPermutation BPerm2(Perm2);
+				BlasPermutation<size_t> BPerm2(Perm2);
 
 				// compute the inverse of L
 				TriangularBlasMatrix<Element> invL (m+n,m+n, BlasTag::low,BlasTag::unit);
@@ -904,7 +909,7 @@ namespace LinBox
 				TriangularBlasMatrix<Element> trU(U,BlasTag::up,BlasTag::nonunit);
 				LQUP.getU(trU);
 				Discrepancy=U;
-				BlasPermutation P= LQUP.getP();
+				// BlasPermutation<size_t> P= LQUP.getP();
 				_BMD.mulin_left(Discrepancy,P);
 				_BMD.mulin_right(BPerm2,Discrepancy);
 
@@ -1042,7 +1047,7 @@ namespace LinBox
 						Perm1[i]=idx_min;
 					}
 				}
-				BlasPermutation BPerm1(Perm1);
+				BlasPermutation<size_t> BPerm1(Perm1);
 
 
 				// Discrepancy= BPerm1.Discrepancy
@@ -1052,14 +1057,17 @@ namespace LinBox
 				// Computation of the LQUP decomposition of the discrepancy
 				Coefficient CopyDiscr;
 				CopyDiscr=Discrepancy;
-				LQUPMatrix<Field> LQUP(_F, CopyDiscr);
+				BlasPermutation<size_t> Qt(Discrepancy.rowdim());
+				BlasPermutation<size_t> P(Discrepancy.coldim());
+
+				LQUPMatrix<Field> LQUP(_F, CopyDiscr,P,Qt);
 
 				// Get the matrix L of LQUP decomposition
 				TriangularBlasMatrix<Element> L(m+n,m+n, BlasTag::low, BlasTag::unit );
 				LQUP.getL(L);
 
 				// Get the tranposed  permutation of Q from LQUP
-				BlasPermutation Qt=LQUP.getQ();
+				// BlasPermutation<size_t> Qt=LQUP.getQ();
 
 				// Computation of permutations BPerm2 such that the last n rows of BPerm2.Qt.Discrepancy are non zero.
 				std::vector<size_t> Perm2(m+n);
@@ -1067,7 +1075,7 @@ namespace LinBox
 					Perm2[i]=m+i;
 				for (size_t i=n;i<m+n;++i)
 					Perm2[i]=i;
-				BlasPermutation BPerm2(Perm2);
+				BlasPermutation<size_t> BPerm2(Perm2);
 
 				// compute the inverse of L
 				TriangularBlasMatrix<Element> invL (m+n,m+n, BlasTag::low,BlasTag::unit);
@@ -1124,7 +1132,7 @@ namespace LinBox
 				TriangularBlasMatrix<Element> trU(U,BlasTag::up,BlasTag::nonunit);
 				LQUP.getU(trU);
 				Discrepancy=U;
-				BlasPermutation P= LQUP.getP();
+				// BlasPermutation<size_t> P= LQUP.getP();
 				_BMD.mulin_left(Discrepancy,P);
 				_BMD.mulin_right(BPerm2,Discrepancy);
 
@@ -1300,8 +1308,8 @@ namespace LinBox
 					}
 				}
 
-				BlasPermutation PPP (PermTrivial);
-				TransposedBlasMatrix<BlasPermutation> PPPT(PPP);
+				BlasPermutation<size_t> PPP (PermTrivial);
+				TransposedBlasMatrix<BlasPermutation<size_t> > PPPT(PPP);
 
 				// set Discrepancy to Residual[k]
 				// -> can be optimized by directly using Residual[k]
@@ -1315,8 +1323,8 @@ namespace LinBox
 						_MD.copy(Discrepancy, PowerSerie[0]);
 					}
 					else {
-						BlasPermutation PPiv (PermPivots);
-						TransposedBlasMatrix<BlasPermutation> PPivT(PPiv);
+						BlasPermutation<size_t> PPiv (PermPivots);
+						TransposedBlasMatrix<BlasPermutation<size_t> > PPivT(PPiv);
 
 						if (!PTrivial){
 							_BMD.mulin_left(SigmaBase[0], PPP);
@@ -1412,7 +1420,7 @@ namespace LinBox
 					for (size_t i=0;i<m;++i)
 						PermPivots[i]=Perm1[i];
 
-				BlasPermutation BPerm1(Perm1);
+				BlasPermutation<size_t> BPerm1(Perm1);
 
 				// Apply Bperm1 to the Discrepancy
 				_BMD.mulin_right(BPerm1, Discrepancy);
@@ -1440,8 +1448,8 @@ namespace LinBox
 					idx++;
 				}
 
-				BlasPermutation Qt(perm);
-				TransposedBlasMatrix<BlasPermutation> Q(Qt);
+				BlasPermutation<size_t> Qt(perm);
+				TransposedBlasMatrix<BlasPermutation<size_t> > Q(Qt);
 
 				// detect trivial permutation (Q=Qt=Identity)
 				bool QisTrivial=true;
@@ -1527,12 +1535,12 @@ namespace LinBox
 				std::cout<<"\n";
 #endif
 
-				BlasPermutation PTr (PermTrivial);
-				TransposedBlasMatrix<BlasPermutation> PTrT(PTr);
-				//BlasPermutation PPP (PermTrivial);
-				//TransposedBlasMatrix<BlasPermutation> PPPT(PPP);
-				BlasPermutation PPiv (PermPivots);
-				TransposedBlasMatrix<BlasPermutation> PPivT(PPiv);
+				BlasPermutation<size_t> PTr (PermTrivial);
+				TransposedBlasMatrix<BlasPermutation<size_t> > PTrT(PTr);
+				//BlasPermutation<size_t>  PPP (PermTrivial);
+				//TransposedBlasMatrix<BlasPermutation<size_t> > PPPT(PPP);
+				BlasPermutation<size_t>  PPiv (PermPivots);
+				TransposedBlasMatrix<BlasPermutation<size_t> > PPivT(PPiv);
 
 #if 0
 
@@ -1563,7 +1571,7 @@ namespace LinBox
 				SigmaBase[0].write(std::cout,_F);
 				_BMD.mulin_left(SigmaBase[0], PTrT);
 				_BMD.mulin_left(SigmaBase[0],PPivT);
-				TransposedBlasMatrix<BlasPermutation> BPerm1T(BPerm1);
+				TransposedBlasMatrix<BlasPermutation<size_t> > BPerm1T(BPerm1);
 				_BMD.mulin_right(BPerm1T, SigmaBase[0]);
 #endif
 

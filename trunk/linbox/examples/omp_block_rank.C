@@ -83,7 +83,7 @@ void extractLeftSigma(const Field &F,
 		std::swap(defect[i],defect[idx_min]);
 		Perm[i]=idx_min;
 	}
-	LinBox::BlasPermutation BPerm(Perm);
+	LinBox::BlasPermutation<size_t>  BPerm(Perm);
 
 	// Apply BPerm to the Sigma Base
 	for (size_t i=0;i<SigmaBase.size();++i)

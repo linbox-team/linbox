@@ -59,12 +59,12 @@ namespace LinBox
 #define DEFAULT_EARLY_TERM_THRESHOLD 20
 
 
-	/**
-	  \brief Compute the linear generator of a sequence of matrices
-
-	 * Giorgi, Jeannerod Villard algorithm from ISSAC'03
+	/** Compute the linear generator of a sequence of matrices.
+	 *
 	 * This class encapsulates the functionality required for computing
 	 * the block minimal polynomial of a matrix.
+	 * @bib
+	 * Giorgi, Jeannerod Villard algorithm from ISSAC'03
 	 */
 	template<class _Field, class _Sequence>
 	class BlockMasseyDomain {
@@ -87,25 +87,26 @@ namespace LinBox
 	public:
 
 #ifdef _BM_TIMING
-		mutable Timer   ttGetMinPoly;			mutable Timer     tGetMinPoly;
+		mutable Timer   ttGetMinPoly;			mutable Timer tGetMinPoly;
 		mutable Timer	ttNewDiscrepancy;		mutable Timer tNewDiscrepancy;
 		mutable Timer	ttShiftSigma;			mutable Timer tShiftSigma;
-		mutable Timer   ttApplyPerm;			mutable Timer   tApplyPerm;
+		mutable Timer   ttApplyPerm;			mutable Timer tApplyPerm;
 		mutable Timer   ttUpdateSigma;			mutable Timer tUpdateSigma;
-		mutable Timer   ttInverseL;				mutable Timer tInverseL;
+		mutable Timer   ttInverseL;			mutable Timer tInverseL;
 		mutable Timer   ttGetPermutation;		mutable Timer tGetPermutation;
-		mutable Timer   ttLQUP;					mutable Timer          tLQUP;
+		mutable Timer   ttLQUP;				mutable Timer tLQUP;
 		mutable Timer   ttDiscrepancy;			mutable Timer tDiscrepancy;
-		mutable Timer   ttGetCoeff;				mutable Timer tGetCoeff;
+		mutable Timer   ttGetCoeff;			mutable Timer tGetCoeff;
 		mutable Timer   ttCheckSequence;		mutable Timer tCheckSequence;
-		mutable Timer   ttSetup;				mutable Timer tSetup;
-		mutable Timer   ttMBasis;				mutable Timer tMBasis;
+		mutable Timer   ttSetup;			mutable Timer tSetup;
+		mutable Timer   ttMBasis;			mutable Timer tMBasis;
 		mutable Timer   ttUpdateSerie;			mutable Timer tUpdateSerie;
-		mutable Timer   ttBasisMultiplication;	mutable Timer tBasisMultiplication;
+		mutable Timer   ttBasisMultiplication;	        mutable Timer tBasisMultiplication;
 		mutable Timer   ttCopyingData;			mutable Timer tCopyingData;
 		mutable Timer   Total;
 
-		void clearTimer() {
+		void clearTimer()
+		{
 			ttGetMinPoly.clear();
 			ttNewDiscrepancy.clear();
 			ttShiftSigma.clear();
@@ -125,7 +126,8 @@ namespace LinBox
 			Total.clear();
 		}
 
-		void print(Timer& T, const  char* timer, const char* title) {
+		void print(Timer& T, const  char* timer, const char* title)
+		{
 			if (&T != &Total)
 				Total+=T;
 			if (T.count() > 0) {
@@ -136,7 +138,8 @@ namespace LinBox
 			}
 		}
 
-		void printTimer() {
+		void printTimer()
+		{
 			print(ttSetup, "Setup", "direct");
 			print(ttCheckSequence, "Rank of Seq[0]", "direct");
 			print(ttGetCoeff, "Compute sequence", "direct");
@@ -378,6 +381,7 @@ namespace LinBox
 #endif
 				// Computation of the permutation BPerm1 such that BPerm1.order is in increasing order.
 				// order=Perm.order
+				//! @todo factorize this in \c BlasPermutation.
 				std::vector<size_t> Perm1(m+n);
 				for (size_t i=0;i<m+n;++i)
 					Perm1[i]=i;
@@ -391,7 +395,7 @@ namespace LinBox
 						Perm1[i]=idx_min;
 					}
 				}
-				BlasPermutation BPerm1(Perm1);
+				BlasPermutation<size_t> BPerm1(Perm1);
 
 #ifdef _BM_TIMING
 				tGetPermutation.stop();
@@ -420,7 +424,9 @@ namespace LinBox
 				// Computation of the LQUP decomposition of the discrepancy
 				Coefficient CopyDiscr;
 				CopyDiscr=Discrepancy;
-				LQUPMatrix<Field> LQUP(_F, CopyDiscr);
+				BlasPermutation<size_t> P (CopyDiscr.coldim());
+				BlasPermutation<size_t> Qt (CopyDiscr.rowdim());
+				LQUPMatrix<Field> LQUP(_F, CopyDiscr,P,Qt);
 
 #ifdef _BM_TIMING
 				tLQUP.stop();
@@ -432,7 +438,7 @@ namespace LinBox
 				LQUP.getL(L);
 
 				// Get the tranposed  permutation of Q from LQUP
-				BlasPermutation Qt=LQUP.getQ();
+				// BlasPermutation<size_t> Qt=LQUP.getQ();
 
 
 #ifdef _BM_TIMING
@@ -445,7 +451,7 @@ namespace LinBox
 					Perm2[i]=m+i;
 				for (size_t i=n;i<m+n;++i)
 					Perm2[i]=i;
-				BlasPermutation BPerm2(Perm2);
+				BlasPermutation<size_t> BPerm2(Perm2);
 
 #ifdef _BM_TIMING
 				tGetPermutation.stop();
@@ -593,7 +599,7 @@ namespace LinBox
 				TriangularBlasMatrix<Element> trU(U,BlasTag::up,BlasTag::nonunit);
 				LQUP.getU(trU);
 				Discrepancy=U;
-				BlasPermutation P= LQUP.getP();
+				// BlasPermutation<size_t> P= LQUP.getP();
 				_BMD.mulin_left(Discrepancy,P);
 				_BMD.mulin_right(BPerm2,Discrepancy);
 
@@ -748,7 +754,7 @@ namespace LinBox
 				std::swap(defect[i],defect[idx_min]);
 				Perm[i]=idx_min;
 			}
-			BlasPermutation BPerm(Perm);
+			BlasPermutation<size_t> BPerm(Perm);
 
 			// Apply BPerm to the Sigma Base
 			for (size_t i=0;i<SigmaBase.size();++i)
@@ -823,7 +829,8 @@ namespace LinBox
 		void PM_Basis(std::vector<Coefficient>     &SigmaBase,
 			      std::vector<Coefficient>    &PowerSerie,
 			      size_t                           degree,
-			      std::vector<size_t>             &defect) {
+			      std::vector<size_t>             &defect)
+		{
 
 			size_t m,n;
 			m = PowerSerie[0].rowdim();
@@ -899,7 +906,8 @@ namespace LinBox
 		void M_Basis(std::vector<Coefficient>     &SigmaBase,
 			     std::vector<Coefficient>    &PowerSerie,
 			     size_t                           length,
-			     std::vector<size_t>             &defect) {
+			     std::vector<size_t>             &defect)
+		{
 
 			// Get the dimension of matrices inside
 			// the Matrix Power Serie
@@ -942,7 +950,7 @@ namespace LinBox
 					std::swap(defect[i], defect[idx_min]);
 					Perm1[i]=idx_min;
 				}
-				BlasPermutation BPerm1(Perm1);
+				BlasPermutation<size_t> BPerm1(Perm1);
 
 				// Apply Bperm1 to the current SigmaBase
 				for (size_t i=0;i<SigmaBase.size();++i)
@@ -956,14 +964,17 @@ namespace LinBox
 				}
 
 				// Compute LQUP of Discrepancy
-				LQUPMatrix<Field> LQUP(_F,Discrepancy);
+				BlasPermutation<size_t> P (Discrepancy.coldim());
+				BlasPermutation<size_t> Qt (Discrepancy.rowdim());
+
+				LQUPMatrix<Field> LQUP(_F,Discrepancy,P,Qt);
 
 				// Get L from LQUP
 				TriangularBlasMatrix<Element> L(m, m, BlasTag::low, BlasTag::unit);
 				LQUP.getL(L);
 
 				// get the transposed permutation of Q from LQUP
-				BlasPermutation Qt =LQUP.getQ();
+				// BlasPermutation<size_t> Qt =LQUP.getQ();
 
 				// Compute the inverse of L
 				TriangularBlasMatrix<Element> invL(m, m, BlasTag::low, BlasTag::unit);
@@ -1026,7 +1037,8 @@ namespace LinBox
 		// using Karatsuba multiplication
 		// algorithm is that of Hanrot, Quercia and Zimmermann 2002
 
-		void MP_Karatsuba(std::vector<Coefficient> &C, const std::vector<Coefficient> &A, const std::vector<Coefficient> &B){
+		void MP_Karatsuba(std::vector<Coefficient> &C, const std::vector<Coefficient> &A, const std::vector<Coefficient> &B)
+		{
 
 			if (A.size() == 1)
 				_BMD.mul(C[0],A[0],B[0]);
@@ -1088,7 +1100,8 @@ namespace LinBox
 				     const std::vector<Coefficient>   &SigmaBase,
 				     const std::vector<Coefficient>    &OldSerie,
 				     size_t                              degree1,
-				     size_t                              degree2){
+				     size_t                              degree2)
+		{
 
 
 			// degree1 >= degree2
@@ -1123,7 +1136,8 @@ namespace LinBox
 		// using Karatsuba's algorithm
 		void MulPolyMatrix(std::vector<Coefficient> &C, size_t shiftC,
 				   std::vector<Coefficient> &A, size_t shiftA, size_t degA,
-				   std::vector<Coefficient> &B, size_t shiftB, size_t degB){
+				   std::vector<Coefficient> &B, size_t shiftB, size_t degB)
+		{
 
 			const Coefficient ZeroC(C[0].rowdim(), C[0].coldim());
 			const Coefficient ZeroA(A[0].rowdim(), A[0].coldim());
@@ -1204,7 +1218,8 @@ namespace LinBox
 		// since only result will be used
 		void MulSigmaBasis(std::vector<Coefficient> &C,
 				   std::vector<Coefficient> &A,
-				   std::vector<Coefficient> &B){
+				   std::vector<Coefficient> &B)
+		{
 			//std::cout<<"C=A*B: "<<C.size()<<" "<<A.size()<<" "<<B.size()<<std::endl;
 			MulPolyMatrix(C, 0, A, 0, A.size(), B, 0, B.size());
 #if 0

@@ -612,7 +612,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations) {
 		//std::cerr<<P<<std::endl;
 		Matrix A(m,m), Abis(m,m), B(m,m), C(m,m), D(m,m);
 		std::vector<Element> a(m),abis(m),b(m),c(m), d(m);
-		BlasPermutation Perm(P);
+		BlasPermutation<size_t>  Perm(P);
 
 		// Create A a random matrix
 		for (size_t i=0;i<m;++i)
@@ -629,7 +629,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations) {
 		// B = A.P
 		BMD.mul( B, A, Perm);
 		// C = B.P^t
-		BMD.mul( C, B, TransposedBlasMatrix<BlasPermutation>(Perm) );
+		BMD.mul( C, B, TransposedBlasMatrix<BlasPermutation<size_t> >(Perm) );
 		// Test C==A
 		if (!MD.areEqual(A,C))
 			ret=false;
@@ -638,7 +638,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations) {
 		 */
 
 		// B = A.P^t
-		BMD.mul( B, A, TransposedBlasMatrix<BlasPermutation>(Perm));
+		BMD.mul( B, A, TransposedBlasMatrix<BlasPermutation<size_t> >(Perm));
 		// C = B.P
 		BMD.mul( C, B, Perm );
 		// Test C==A
@@ -651,7 +651,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations) {
 		// B = P.A
 		BMD.mul( B, Perm, A);
 		// C = P^t.B
-		BMD.mul( C, TransposedBlasMatrix<BlasPermutation>(Perm) , B);
+		BMD.mul( C, TransposedBlasMatrix<BlasPermutation<size_t> >(Perm) , B);
 		// Test C==A
 		if (!MD.areEqual(A,C))
 			ret=false;
@@ -660,7 +660,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations) {
 		 */
 
 		// B = P^t.A
-		BMD.mul( B, TransposedBlasMatrix<BlasPermutation>(Perm), A);
+		BMD.mul( B, TransposedBlasMatrix<BlasPermutation<size_t> >(Perm), A);
 		// C = P.B
 		BMD.mul( C, Perm, B);
 		// Test C==A
@@ -674,7 +674,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations) {
 		// b = a.P
 		BMD.mul( b, a, Perm);
 		// c = b.P^t
-		BMD.mul( c, b, TransposedBlasMatrix<BlasPermutation>(Perm) );
+		BMD.mul( c, b, TransposedBlasMatrix<BlasPermutation<size_t> >(Perm) );
 		// Test c==a
 		if (!VD.areEqual(a,c))
 			ret=false;
@@ -684,7 +684,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations) {
 		 */
 
 		// b = a.P^t
-		BMD.mul( b, a, TransposedBlasMatrix<BlasPermutation>(Perm));
+		BMD.mul( b, a, TransposedBlasMatrix<BlasPermutation<size_t> >(Perm));
 		// c = B.P
 		BMD.mul( c, b, Perm );
 		// Test c==a
@@ -697,7 +697,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations) {
 		// b = P.a
 		BMD.mul( b, Perm, a);
 		// c = P^t.b
-		BMD.mul( c, TransposedBlasMatrix<BlasPermutation>(Perm) , b);
+		BMD.mul( c, TransposedBlasMatrix<BlasPermutation<size_t> >(Perm) , b);
 		// Test c==a
 		if (!VD.areEqual(a,c))
 			ret=false;
@@ -707,7 +707,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations) {
 		 */
 
 		// b = P^t.a
-		BMD.mul( b, TransposedBlasMatrix<BlasPermutation>(Perm), a);
+		BMD.mul( b, TransposedBlasMatrix<BlasPermutation<size_t> >(Perm), a);
 		// c = P.b
 		BMD.mul( c, Perm, b);
 		// Test c==a
@@ -799,13 +799,13 @@ static bool testPermutation (const Field& F, size_t m, int iterations) {
 				B.setEntry(i,j,G.random(tmp));
 
 		// Abis = P^t.A
-		BMD.mul( Abis, TransposedBlasMatrix<BlasPermutation>(Perm), A);
+		BMD.mul( Abis, TransposedBlasMatrix<BlasPermutation<size_t> >(Perm), A);
 		// C = (P^t.A)^-1.B
 		BMD.left_solve( C, Abis, B);
 		// D = A.C (= P.B)
 		BMD.mul(D, A, C);
 		// D = P^t.D
-		BMD.mulin_right( TransposedBlasMatrix<BlasPermutation>(Perm),D);
+		BMD.mulin_right( TransposedBlasMatrix<BlasPermutation<size_t> >(Perm),D);
 		if (!MD.areEqual(D,B))
 			ret=false;
 		/*
@@ -817,11 +817,11 @@ static bool testPermutation (const Field& F, size_t m, int iterations) {
 				B.setEntry(i,j,G.random(tmp));
 
 		// Abis = A.P^t
-		BMD.mul( Abis, A, TransposedBlasMatrix<BlasPermutation>(Perm));
+		BMD.mul( Abis, A, TransposedBlasMatrix<BlasPermutation<size_t> >(Perm));
 		// C = (A.P^t)^-1.B
 		BMD.left_solve( C, Abis, B);
 		// C = P^t.C
-		BMD.mulin_right( TransposedBlasMatrix<BlasPermutation>(Perm),C);
+		BMD.mulin_right( TransposedBlasMatrix<BlasPermutation<size_t> >(Perm),C);
 		// D = A.C (= P.B)
 		BMD.mul(D, A, C);
 
@@ -836,11 +836,11 @@ static bool testPermutation (const Field& F, size_t m, int iterations) {
 				B.setEntry(i,j,G.random(tmp));
 
 		// Abis = P^t.A
-		BMD.mul( Abis, TransposedBlasMatrix<BlasPermutation>(Perm), A);
+		BMD.mul( Abis, TransposedBlasMatrix<BlasPermutation<size_t> >(Perm), A);
 		// C = B.(P^t.A)^-1
 		BMD.right_solve( C, Abis, B);
 		// C = C.P^t
-		BMD.mulin_left( C,TransposedBlasMatrix<BlasPermutation>(Perm));
+		BMD.mulin_left( C,TransposedBlasMatrix<BlasPermutation<size_t> >(Perm));
 		// D = C.A (=B)
 		BMD.mul(D, C, A);
 		if (!MD.areEqual(D,B))
@@ -855,13 +855,13 @@ static bool testPermutation (const Field& F, size_t m, int iterations) {
 				B.setEntry(i,j,G.random(tmp));
 
 		// Abis = A.P^t
-		BMD.mul( Abis, A, TransposedBlasMatrix<BlasPermutation>(Perm));
+		BMD.mul( Abis, A, TransposedBlasMatrix<BlasPermutation<size_t> >(Perm));
 		// C = B.(A.P^t)^-1
 		BMD.right_solve( C, Abis, B);
 		// D = C.A (= B.P)
 		BMD.mul(D, C, A);
 		// C = C.P^t
-		BMD.mulin_left( D, TransposedBlasMatrix<BlasPermutation>(Perm));
+		BMD.mulin_left( D, TransposedBlasMatrix<BlasPermutation<size_t> >(Perm));
 
 		if (!MD.areEqual(D,B))
 			ret=false;
@@ -925,13 +925,13 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations) {
 
 		Abis = A;
 
-		LQUPMatrix<Field> X(F,A);
+		BlasPermutation<size_t>  P(A.coldim()),Q(A.rowdim());
+		LQUPMatrix<Field> X(F,A,P,Q);
 
 		TriangularBlasMatrix<Element> L(m,m,BlasTag::low,BlasTag::unit);
 		TriangularBlasMatrix<Element> U(m,n,BlasTag::up,BlasTag::nonunit);
 		X.getL(L);
 		X.getU(U);
-		BlasPermutation P,Q;
 		P=X.getP();
 
 		Q=X.getQ();
@@ -952,7 +952,7 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations) {
 
 		Abis = A;
 
-		LQUPMatrix<Field> Y(F,A);
+		LQUPMatrix<Field> Y(F,A,P,Q);
 
 		TriangularBlasMatrix<Element> L2(m,m,BlasTag::low,BlasTag::unit);
 		TriangularBlasMatrix<Element> U2(m,n,BlasTag::up,BlasTag::nonunit);

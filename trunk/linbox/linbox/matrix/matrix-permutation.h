@@ -27,7 +27,7 @@
  * A permutation class for operations on permutations, their representations
  * and matrix row/column permuting.
  *
- * We provide a \ref LinBox::PackedPermutation class that stores the
+ * We provide a \ref LinBox::BlasPermutation class that stores the
  * permutation packed in a Lapack style and a \ref LinBox::MatrixPermutation
  * class that represents a permutation naturally.  Converstions are provided.
  */
@@ -39,7 +39,7 @@
 #include <ostream>
 
 
-// PackedPermutation
+// BlasPermutation
 namespace LinBox
 {
 
@@ -56,30 +56,35 @@ namespace LinBox
 	class MatrixPermutation ;
 
 	template<class _Uint>
-	class PackedPermutation ;
+	class BlasPermutation ;
 
 	/** Lapack-style permutation.
 	 * @ingroup permutation
 	 *
-	 * The permutation \f$P=[a,b,c]\f$ tells that \f$1\f$ and \f$a\f$ are transposed, then
-	 * \f$2\f$ and \f$b\f$, and finally \f$3\f$ and \f$c\f$.
-	 * It is always true that \f$P[i] \geq i\f$.
+	 * A Lapack permutation is represented with a vector \f$[p_1,p_2,\cdots, p_r]\f$
+	 * such that \f$p_i > i\f$. Converting it to a classic representation
+	 * of a permutation corresponds to taking an identity permutation and
+	 * then successively permuting \f$(i,p_i)\f$.
 	 * Example : if <code>P=[1,4,4]</code> and <code>V=[1,2,3,4,5]</code>, then <code>P.V=[1,4,2,3,5]</code>.
-	 * @pre if Q_ is built, then P_=Q_
+	 * @internal
+	 * @pre if \c Q_ is built, then \c P_=Q_
 	*/
 	template<class _UnsignedInt> // unsigned * ou Integer
-	class PackedPermutation /*  : PermutationInterface<_UnsignedInt> */ {
-		typedef PackedPermutation<_UnsignedInt> BlasPerm ;
+	class BlasPermutation /*  : PermutationInterface<_UnsignedInt> */ {
+		typedef BlasPermutation<_UnsignedInt> BlasPerm ;
 	public :
-		PackedPermutation() ;
-		~PackedPermutation() ;
+		BlasPermutation() ;
+		~BlasPermutation() ;
 
-		PackedPermutation(const _UnsignedInt * V, const _UnsignedInt & n, bool clean = false) ;
-		PackedPermutation(const std::vector<_UnsignedInt> & V, bool clean = false);
-		PackedPermutation(const MatrixPermutation<_UnsignedInt> &M, bool clean = false);
+		BlasPermutation(size_t n) ;
+
+		BlasPermutation(const _UnsignedInt * V, const _UnsignedInt & n) ;
+		BlasPermutation(const std::vector<_UnsignedInt> & V);
+		BlasPermutation(const MatrixPermutation<_UnsignedInt> &M);
+
 #if 0
-		PackedPermutation(MatrixPermutation & P);
-		PackedPermutation(TranspositionPermutation & P);
+		BlasPermutation(MatrixPermutation & P);
+		BlasPermutation(TranspositionPermutation & P);
 
 		//        void Invert() ;
 		//        BlasPerm & getInverse(BlasPerm & P) ;
@@ -105,70 +110,90 @@ namespace LinBox
 #endif
 
 		// operator =
-		PackedPermutation<_UnsignedInt>& operator= (const PackedPermutation<_UnsignedInt> & P)
+		BlasPermutation<_UnsignedInt>& operator= (const BlasPermutation<_UnsignedInt> & P)
 		{
 			r_       = P.r_;
 			n_       = P.n_;
 			P_       = P.P_;
 			Q_       = P.Q_;
-			Id_      = P.Id_ ;
-			cleaned_ = P.cleaned_;
+			inv_     = P.inv_ ;
 
 			return (*this) ;
 		}
 
 		/*  size */
 		_UnsignedInt getSize() const ;
-		_UnsignedInt getOrder() ;
+		// _UnsignedInt getOrder() ;
 
-		_UnsignedInt getCompression() ;
+		_UnsignedInt getOrder() const ;
+		void setOrder( size_t r)  ;
+
 		std::vector<_UnsignedInt> & getStorage() ;
 		void resize(_UnsignedInt & s, bool with_zeros=true) ;
 
-		template<class OutVector, class InVector>
-		OutVector &apply (OutVector &y, const InVector &x)  ;
-		template<class OutVector, class InVector>
-		OutVector &applyTranspose (OutVector &y, const InVector &x) ;
+		// template<class OutVector, class InVector>
+		// OutVector &apply (OutVector &y, const InVector &x)  ;
+		// template<class OutVector, class InVector>
+		// OutVector &applyTranspose (OutVector &y, const InVector &x) ;
 
-
+		/*  properties */
+		bool isIdentity() const
+		{
+			return (!r_);
+		}
 
 		/*  convert */
-		/*! Converts a \c PackedPermutation to a \c MatrixPermutation.
+		/*! Converts a \c BlasPermutation to a \c MatrixPermutation.
 		 * @param[out] P MatrixPermutation to be created. Need not be initialized.
 		 */
 		MatrixPermutation<_UnsignedInt> & Convert(MatrixPermutation<_UnsignedInt> &P);
 
 		/*  apply */
-		/*! \f$ M \gets P M\f$   */
-		template<class Matrix>
-		Matrix & applyRows(Matrix &M);
-		/*! \f$ M \gets M P\f$   */
-		template<class Matrix>
-		Matrix & applyCols(Matrix &M);
+		// /*! \f$ M \gets P M\f$   */
+		// template<class Matrix>
+		// Matrix & applyRows(Matrix &M);
+		// /*! \f$ M \gets M P\f$   */
+		// template<class Matrix>
+		// Matrix & applyCols(Matrix &M);
 
-		/*! \f$ M \gets M P^t\f$   */
-		template<class Matrix>
-		Matrix & applyTransposeRows(Matrix &M);
-		/*! \f$ M \gets P^t M\f$   */
-		template<class Matrix>
-		Matrix & applyTransposeCols(Matrix &M);
+		// /*! \f$ M \gets M P^t\f$   */
+		// template<class Matrix>
+		// Matrix & applyTransposeRows(Matrix &M);
+		// /*! \f$ M \gets P^t M\f$   */
+		// template<class Matrix>
+		// Matrix & applyTransposeCols(Matrix &M);
 
 		//_UnsignedInt & operator[] (const _UnsignedInt &i) ;
 		_UnsignedInt  operator[] (const _UnsignedInt i) const ;
 
-		/*! col \p i and col \p j are swapped
-		 */
-		void TransposeCols(_UnsignedInt i, _UnsignedInt j);
+		// /*! col \p i and col \p j are swapped
+		 // */
+		// void TransposeCols(_UnsignedInt i, _UnsignedInt j);
 
-		/*! row \p i and row \p j are swapped
-		 */
-		void TransposeRows(_UnsignedInt i, _UnsignedInt j);
+		// /*! row \p i and row \p j are swapped
+		 // */
+		// void TransposeRows(_UnsignedInt i, _UnsignedInt j);
+
+		const _UnsignedInt* getPointer() const
+		{
+			linbox_check(r_);
+			return &P_[0];
+		}
+
+		_UnsignedInt* getWritePointer()
+		{
+			linbox_check(r_);
+			return &P_[0];
+		}
 
 		/*  invert */
 		void Transpose();
 		void Invert();
 		BlasPerm & Transpose(BlasPerm &Mt);
 		BlasPerm & Invert(BlasPerm &Mt);
+
+		/* clean */
+		void Compress() ;
 
 		/*  print */
 		/*! writes on output stream \p o */
@@ -184,14 +209,12 @@ namespace LinBox
 		mutable _UnsignedInt			n_ ;	// dim of permutation
 		std::vector<_UnsignedInt>	        P_ ;	// blas permutation
 		mutable std::vector<_UnsignedInt>       Q_ ;    // corresponding matrix permutation
-		bool                                    Id_; // identity permutation ?
-		mutable bool                            cleaned_ ;
+		bool                                    inv_ ;  // matrix is inverted ?
 
 		// hmmmm...
 		// using stl vectors instead of pointers for the sake of simplicity...
 		// this allows permutation up to MAX_INT size. Not so restricting for now...
 
-		void Compress_() ;
 		void BuildQ_() const ;
 		void InvertQ_();
 		std::vector<_UnsignedInt> &InvertQ_(std::vector<_UnsignedInt> & Qinv);
@@ -216,7 +239,6 @@ namespace LinBox
 	private :
 		_UnsignedInt			n_ ; // order of permutation
 		std::vector<_UnsignedInt>	P_ ; // _M_[i] = j ssi P(i) = j
-		bool                            Id_; // identity permutation ?
 
 	public :
 		MatrixPermutation();
