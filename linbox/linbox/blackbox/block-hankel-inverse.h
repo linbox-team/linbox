@@ -329,7 +329,7 @@ namespace LinBox
 				std::swap(defect[i],defect[idx_min]);
 				Perm[i]=idx_min;
 			}
-			BlasPermutation BPerm(Perm);
+			BlasPermutation<size_t>  BPerm(Perm);
 
 			// Apply BPerm to the Sigma Base
 			for (size_t i=0;i<SigmaBase.size();++i)
@@ -396,7 +396,7 @@ namespace LinBox
 				std::swap(defect[i],defect[idx_min]);
 				Perm[i]=idx_min;
 			}
-			BlasPermutation BPerm(Perm);
+			BlasPermutation<size_t>  BPerm(Perm);
 
 			// Apply BPerm to the Sigma Base
 			for (size_t i=0;i<SigmaBase.size();++i)

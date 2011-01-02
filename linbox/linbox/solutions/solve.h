@@ -200,17 +200,21 @@ namespace LinBox
 			throw LinboxError("LinBox ERROR: dimension of data are not compatible in system solving (solving impossible)");
 
 		commentator.start ("Solving linear system (FFLAS LQUP)", "LQUP::left_solve");
-		//		bool consistent = false;
+		//bool consistent = false;
 		LQUPMatrix<Field> LQUP(A);
 		//FactorizedMatrix<Field> LQUP(A);
 
 		LQUP.left_solve(x, b);
 
+#if 0
 		// this should be implemented directly in left_solve
-		//if ( ! consistent ) {  // we will return the zero vector
-		//	typename Field::Element zero; A.field().init(zero, 0);
-		//	for (typename Vector::iterator i = x.begin(); i != x.end(); ++i) *i = zero;
-		//}
+		if ( ! consistent ) {  // we will return the zero vector
+			typename Field::Element zero;
+			A.field().init(zero, 0);
+			for (typename Vector::iterator i = x.begin(); i != x.end(); ++i)
+				*i = zero;
+		}
+#endif
 		commentator.stop ("done", NULL, "LQUP::left_solve");
 		return x;
 	}

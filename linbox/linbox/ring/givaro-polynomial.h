@@ -8,6 +8,11 @@
  * See COPYING for license information.
  */
 
+/*! @file ring/givaro-polynomial.h
+ * @ingroup ring
+ * @brief NO DOC
+ */
+
 #ifndef __LINBOX_givaropolynomial_H
 #define __LINBOX_givaropolynomial_H
 
@@ -24,10 +29,12 @@
 namespace LinBox
 {
 
-	/** \brief polynomials
+	/** Polynomials.
 	 * \ingroup ring
 	 *
-	 * @param Polynomial type, e.g. std::vector<Field::Element>
+	 * -param Polynomial type, e.g. std::vector<Field::Element>
+	 *  @tparam Domain
+	 *  @tparam StorageTag
 	 */
 	template <class Domain, class StorageTag=Dense>
 	class GivPolynomialRing : public Poly1Dom<GivaroField<Domain>,StorageTag> {
@@ -103,10 +110,9 @@ namespace LinBox
 	template <>
 	template <>
 	std::vector<GivPolPIDIntDense::Element* >&
-	GivPolPIDIntDense::factor<std::vector<GivPolPIDIntDense::Element* > >
-	(std::vector<GivPolPIDIntDense::Element* >& factors,
-	 std::vector<unsigned long>& exp,
-	 const GivPolPIDIntDense::Element &P)
+	GivPolPIDIntDense::factor<std::vector<GivPolPIDIntDense::Element* > > (std::vector<GivPolPIDIntDense::Element* >& factors,
+									       std::vector<unsigned long>& exp,
+									       const GivPolPIDIntDense::Element &P)
 	{
 		NTL::ZZXFac_InitNumPrimes = 1;
 		NTL::ZZX f;
