@@ -108,7 +108,8 @@ namespace LinBox
 
 		/*! Add a new residue (ie take into account a new prime).
 		 * @param D domain
-		 * @param e iterator for the new residue, for instance, a std::vector<T>::iterator.
+		 * @param e iterator for the new residue, for instance, a
+		 * <code>std::vector<T>::iterator</code>.
 		 */
 		template<class Iterator>
 		void progress (const Domain& D, Iterator& e)

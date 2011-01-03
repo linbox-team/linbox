@@ -204,6 +204,7 @@ namespace LinBox
 		/*! @internal
 		 * Copy data according to blackbox structure (allow submatrix).
 		 * Specialisation for Blackbox matrices
+		 * @todo need to be implemented by succesive apply
 		 */
 		template <class Matrix>
 		void createBlasMatrix (const Matrix& A,
@@ -211,10 +212,8 @@ namespace LinBox
 				       const size_t m, const size_t n,
 				       MatrixContainerCategory::Blackbox)
 		{
-			std::cerr << __func__ << ": not implemented yet" << std::flush << std::endl;
-			exit(-1) ;
-			//! @todo need to be implemented by succesive apply
-			//! @todo lancer une exception générique "not implemented yet"
+			throw(NotImplementedYet(__func__,__FILE__,__LINE__,
+						"need to be implemented by succesive apply"));
 		}
 
 		/*! @internal
