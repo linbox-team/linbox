@@ -105,6 +105,15 @@ namespace LinBox
 				      Operand1 &C, const Operand2 &A, const Operand3 &B) const;
 
 	};
+	// C -= A
+	template< class Field, class Operand1, class Operand2>
+	class BlasMatrixDomainSubin {
+	public:
+		Operand1 &operator() (const Field &F,
+				      Operand1 &C, const Operand2 &A) const;
+
+	};
+
 
 	/*!@internal
 	 * Copying a matrix
@@ -355,7 +364,7 @@ namespace LinBox
 			return BlasMatrixDomainCopy<Field,Operand1,Operand2>()(_F,B,A);
 		}
 
-		//! multiplication.
+		//! substraction
 		//! C = A-B
 		template <class Operand1, class Operand2, class Operand3>
 		Operand1& sub(Operand1& C, const Operand2& A, const Operand3& B) const
@@ -363,6 +372,13 @@ namespace LinBox
 			return BlasMatrixDomainSub<Field,Operand1,Operand2,Operand3>()(_F,C,A,B);
 		}
 
+		//! substraction
+		//! C -= B
+		template <class Operand1, class Operand3>
+		Operand1& subin(Operand1& C, const Operand3& B) const
+		{
+			return BlasMatrixDomainSubin<Field,Operand1,Operand3>()(_F,C,B);
+		}
 
 
 		//! multiplication with scaling.
@@ -473,8 +489,9 @@ namespace LinBox
 		}
 
 
-		//! Division.
-		//! C = A B^{-1}  ==>  C . B = A
+		/*! Division.
+		 * C = A B^{-1}  ==>  C . B = A
+		 */
 		template <class Matrix>
 		Matrix& div( Matrix &C, const Matrix &A, const Matrix &B) const
 		{

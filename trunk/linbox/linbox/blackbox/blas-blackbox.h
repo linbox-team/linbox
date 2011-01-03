@@ -54,7 +54,8 @@ namespace LinBox
 	}
 
 
-	/** \brief dense matrix representation for BLAS based elimination. \ingroup blackbox
+	/** Dense matrix representation for BLAS based elimination.
+	 * \ingroup blackbox
 	 *
 	 *  A BlasBlackbox can be constructed from any blackbox matrix. This costs n blackbox
 	 * matrix vector products in general, but is efficiently done from a DenseMatrix
@@ -96,6 +97,7 @@ namespace LinBox
 			_use_fflas= checkBlasApply(_F, _col);
 		}
 
+		// copy
 		BlasBlackbox (const Field& F, BlasMatrix<Element>& M) :
 			BlasMatrix<Element> (M),  _F(F), _MD(F) , _VD(F),  _row(M.rowdim()), _col(M.coldim())
 		{

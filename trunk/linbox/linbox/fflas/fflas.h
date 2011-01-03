@@ -216,7 +216,7 @@ public:
 // Level 2 routines
 //---------------------------------------------------------------------
 
-	/** fsub : matrix addition.
+	/** fadd : matrix addition.
 	 * Computes \p C = \p A + \p B.
 	 * @param F field
 	 * @param M rows
@@ -239,7 +239,7 @@ public:
             typename Field::Element *Ci = C;
             for (; Ai < A+M*lda; Ai+=lda, Bi+=ldb, Ci+=ldc)
                 for (size_t i=0; i<N; i++)
-                    F.add (Ci[i], Ai[i], B[i]);
+                    F.add (Ci[i], Ai[i], Bi[i]);
         }
 
 	/** fsub : matrix subtraction.
@@ -265,8 +265,23 @@ public:
             typename Field::Element *Ci = C;
             for (; Ai < A+M*lda; Ai+=lda, Bi+=ldb, Ci+=ldc)
                 for (size_t i=0; i<N; i++)
-                    F.sub (Ci[i], Ai[i], B[i]);
+                    F.sub (Ci[i], Ai[i], Bi[i]);
         }
+
+	template <class Field>
+        static void
+        fsubin (const Field& F, const size_t M, const size_t N,
+              const typename Field::Element* B, const size_t ldb,
+              typename Field::Element* C, const size_t ldc)
+        {
+            const typename Field::Element * Bi = B;
+            typename Field::Element *Ci = C;
+            for (; Ci < C+M*ldc; Bi+=ldb, Ci+=ldc)
+                for (size_t i=0; i<N; i++)
+                    F.subin (Ci[i], Bi[i]);
+        }
+
+
 
 	/**  @brief finite prime Field GEneral Matrix Vector multiplication.
 	 *

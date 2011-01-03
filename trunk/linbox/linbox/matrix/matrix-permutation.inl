@@ -37,6 +37,20 @@
 // BlasPermutation
 namespace LinBox
 {
+	template<class T>
+	std::ostream & operator<<(std::ostream & o, const std::vector<T> & V)
+	{
+		o << '{' ;
+		if (!V.size())
+			return o << '}' ;
+		size_t i = 0 ;
+		if (V.size() >1 ) {
+			for ( ; i < V.size()-1 ; ++i)
+				o << V[i] << ' ';
+		}
+		o << V[i] << '}' ;
+		return o ;
+	}
 	template<class _Uint>
 	BlasPermutation<_Uint>::BlasPermutation() :
 	       	r_(0),n_(-1),P_(0),Q_(0),inv_(false)
@@ -250,12 +264,10 @@ namespace LinBox
 		// set Q_ to identity
 		InitQ_();
 		// then permute it
+		// faster if P_ is ::Compress()ed
 		for (_Uint i = 0 ; i < r_ ; ++i) {
 			if (P_[i]>i) {
 				std::swap(Q_[i],Q_[P_[i]]);
-			}
-			else {
-				return ;
 			}
 		}
 		return ;
@@ -322,18 +334,38 @@ namespace LinBox
 	{
 		if (Lapack) {
 			o << '['  ;
-			for (_Uint i = 0 ; i < r_ ; ++i)
-			{ o << P_[i]  ; if (i< r_-1) o << ','; }
-			o << "]" ;
+			_Uint i = 0 ;
+			if (r_) {
+				if (r_ > 1) {
+					for ( ; i < r_-1 ; ++i)
+						o << P_[i] << ',';
+				}
+				o << P_[i] ;
+			}
+			o  << ']' ;
 			if (inv_) o << "^{-1}" ;
 			o << '(' << (long int) (n_+1)-(long int)1 << ')' ;
 		}
 		else {
+			// std::cout << "order : " << r_ << std::endl;
+			// std::cout << "P_ := " << (std::vector<_Uint>)P_ << std::endl;
+			// std::cout << "Q_ := " << (std::vector<_Uint>)Q_ << std::endl;
+			// std::cout << Q_.size() << std::endl;
 			BuildQ_() ;
+			// std::cout << "Q_ := " << (std::vector<_Uint>)Q_ << std::endl;
+			// std::cout << Q_.size() << std::endl;
 			o << '['  ;
-			for (_Uint i = 0 ; i < n_ ; ++i)
-			{ o << Q_[i]  ; if (i< n_-1) o << ','; }
-			o << ']' ;
+			_Uint i = 0 ;
+			if (r_) {
+				if (r_ > 1) {
+					for ( ; i < r_-1 ; ++i)
+						o << Q_[i] << ',';
+				}
+				o << Q_[i] ;
+			}
+			o  << ']' ;
+			if (inv_) o << "^{-1}" ;
+			o << '(' << (long int) (n_+1)-(long int)1 << ')' ;
 		}
 		return o;
 	}
