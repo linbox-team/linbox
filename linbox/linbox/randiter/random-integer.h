@@ -172,7 +172,7 @@ namespace LinBox
 		 */
 		const integer & random (integer & a) const
 		{
-			integer::random_exact<_Unsigned>(a,_bits);
+			integer::random_lessthan<_Unsigned>(a,_bits);
 
 			return a;
 		}

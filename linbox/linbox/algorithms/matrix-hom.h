@@ -21,6 +21,15 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/*! @file algorithms/matrix-hom.h
+ * @ingroup algorithms
+ * @brief Matrix Homomorphism
+ * A map function  converts a matrix on a field/ring
+ * to its natural image in another field/ring.
+ * @sa
+ * \c rebind operator.
+ */
+
 #ifndef __LINBOX_matrix_hom_H
 #define __LINBOX_matrix_hom_H
 
@@ -370,7 +379,6 @@ namespace LinBox
 			}
 		};
 
-
 		template<class Field, class IMatrix>
 		class BlasBlackboxMAP<Field, IMatrix, MatrixContainerCategory::BlasContainer> {
 		public:
@@ -403,7 +411,6 @@ namespace LinBox
 					hom. image (*iterAp, *iterA);
 			}
 		};
-
 
 		template< class IMatrix>
 		class BlasBlackboxMAP<MultiModDouble, IMatrix, MatrixContainerCategory::BlasContainer > {
