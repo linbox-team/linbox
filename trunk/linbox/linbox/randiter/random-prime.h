@@ -216,7 +216,6 @@ namespace LinBox
 			linbox_check(_low_bits < _bits);
 			// integer::random_exact(a,_bits);
 			unsigned long ze_bits = _low_bits+(_bits - _low_bits)*drand48() ;
-			std::cout << ze_bits << std::endl;
 			linbox_check (!(ze_bits<_low_bits) && !(ze_bits>_bits));
 			integer::random(a,ze_bits-1); //!@todo uses random_between when givaro is released.
 			a = (integer(1)<<ze_bits) - a;

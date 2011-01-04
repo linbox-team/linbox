@@ -52,7 +52,7 @@ namespace LinBox
 				L.setEntry( i, j, zero );
 		}
 
-		FFPACK::applyP( _F, FFLAS::FflasRight, FFLAS::FflasNoTrans, _m,0,_m, L.getWritePointer(), _m, _QQ.getPointer() );
+		FFPACK::applyP( _F, FFLAS::FflasRight, FFLAS::FflasNoTrans, _m,0,_QQ.getOrder(), L.getWritePointer(), _m, _QQ.getPointer() );
 		for ( size_t i=0; i<_m; ++i )
 			L.setEntry( i, i, one );
 
@@ -91,7 +91,7 @@ namespace LinBox
 				S.setEntry( i, j, _LU.getEntry(i,j) );
 		}
 
-		FFPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FflasTrans, _n, 0, _m, S.getWritePointer(), _n, _QQ.getPointer() );
+		FFPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FflasTrans, _n, 0, _QQ.getOrder(), S.getWritePointer(), _n, _QQ.getPointer() );
 		return S;
 	}
 

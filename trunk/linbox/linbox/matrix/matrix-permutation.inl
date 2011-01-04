@@ -169,6 +169,7 @@ namespace LinBox
 	template<class _Uint>
 	void BlasPermutation<_Uint>::Compress()
 	{
+		std::cout << r_ << std::endl;
 		if (!r_) {
 			linbox_check(!n_);
 			P_.resize(0) ;
@@ -247,12 +248,13 @@ namespace LinBox
 		}
 		/*  cleaning */
 		linbox_check(n_ && (n_ != (_Uint)-1) );
-		_Uint r = n_-1 ;
-		while (r && P_[r] == r) --r ;
-		if (P_[0] != 0) ++r ;
+		r_ = n_-1 ;
+		Compress();
+		// while (r && P_[r] == r) --r ;
+		// if (P_[0] != 0) ++r ;
 		//std::cout << "new :" << r << std::endl;
-		r_ = r ;
-		P_.resize(r_) ;
+		// r_ = r ;
+		// P_.resize(r_) ;
 		/* rebuild Q */
 		//for (_Uint i = 0 ; i < r_ ; ++i) std::swap(Q[i],Q[P_[i]]);
 	}
@@ -356,9 +358,9 @@ namespace LinBox
 			// std::cout << Q_.size() << std::endl;
 			o << '['  ;
 			_Uint i = 0 ;
-			if (r_) {
-				if (r_ > 1) {
-					for ( ; i < r_-1 ; ++i)
+			if (n_) {
+				if (n_ > 1) {
+					for ( ; i < n_-1 ; ++i)
 						o << Q_[i] << ',';
 				}
 				o << Q_[i] ;

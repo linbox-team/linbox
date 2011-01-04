@@ -572,7 +572,7 @@ namespace LinBox
 		{
 			if (B.isIdentity()) return A ;
 			linbox_check( A.coldim() >= B.getSize() );
-			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, A.rowdim(), 0, A.coldim(), A.getPointer(), A.getStride(), B.getPointer() );
+			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, A.rowdim(), 0, B.getOrder(), A.getPointer(), A.getStride(), B.getPointer() );
 			return A;
 		}
 
@@ -582,7 +582,7 @@ namespace LinBox
 		{
 			if (B.isIdentity()) return A ;
 			linbox_check( A.rowdim() >= B.getSize() );
-			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans, A.coldim(), 0, A.rowdim(), A.getPointer(), A.getStride(), B.getPointer() );
+			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans, A.coldim(), 0, B.getOrder(), A.getPointer(), A.getStride(), B.getPointer() );
 			return A;
 		}
 
@@ -597,7 +597,7 @@ namespace LinBox
 		{
 			if (B.getMatrix().isIdentity()) return A ;
 			linbox_check( A.coldim() >= B.getMatrix().getSize() );
-			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans, A.rowdim(), 0, A.coldim(), A.getPointer(), A.getStride(), B.getMatrix().getPointer() );
+			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans, A.rowdim(), 0, B.getMatrix().getOrder(), A.getPointer(), A.getStride(), B.getMatrix().getPointer() );
 			return A;
 		}
 		BlasMatrix<typename Field::Element>& operator()(  const Field& F,
@@ -606,7 +606,7 @@ namespace LinBox
 		{
 			if (B.getMatrix().isIdentity()) return A ;
 			linbox_check( A.rowdim() >= B.getMatrix().getSize() );
-			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, A.coldim(), 0, A.rowdim(), A.getPointer(), A.getStride(), B.getMatrix().getPointer() );
+			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, A.coldim(), 0, B.getMatrix().getPointer(), A.getPointer(), A.getStride(), B.getMatrix().getPointer() );
 			return A;
 		}
 	};
@@ -689,7 +689,7 @@ namespace LinBox
 		{
 			if (B.isIdentity()) return A ;
 			linbox_check( A.size() == B.getSize() );
-			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, 1, 0, A.size(), &A[0], 1, B.getPointer() );
+			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, 1, 0, B.getOrder(), &A[0], 1, B.getPointer() );
 			return A;
 		}
 
@@ -699,7 +699,7 @@ namespace LinBox
 		{
 			if (B.isIdentity()) return A ;
 			linbox_check( A.size() >= B.getSize() );
-			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans, 1, 0, A.size(), &A[0], 1, B.getPointer() );
+			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans, 1, 0, B.getOrder(), &A[0], 1, B.getPointer() );
 			return A;
 		}
 
@@ -714,7 +714,7 @@ namespace LinBox
 		{
 			if (B.getMatrix().isIdentity()) return A ;
 			linbox_check( A.size() >= B.getMatrix().getSize() );
-			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans, 1, 0, A.size(), &A[0], 1, B.getMatrix().getPointer() );
+			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans, 1, 0, B.getMatrix().getOrder(), &A[0], 1, B.getMatrix().getPointer() );
 			return A;
 		}
 		std::vector< typename Field::Element>& operator()(  const Field& F,
@@ -723,7 +723,7 @@ namespace LinBox
 		{
 			if (B.getMatrix().isIdentity()) return A ;
 			linbox_check( A.size() >= B.getMatrix().getSize() );
-			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, 1, 0, A.size(), &A[0], 1, B.getMatrix().getPointer() );
+			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, 1, 0, B.getMatrix().getOrder(), &A[0], 1, B.getMatrix().getPointer() );
 			return A;
 		}
 	};
