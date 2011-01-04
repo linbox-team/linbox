@@ -290,7 +290,7 @@ namespace LinBox
 		BlasMatrix (const Matrix& A,
 			    const size_t i0, const size_t j0,
 			    const size_t m, const size_t n) :
-			DenseSubmatrix<Element>( *(new DenseMatrixBase<Element> (A.rowdim(),A.coldim())),0,0,A.rowdim(),A.coldim()),
+			DenseSubmatrix<Element>( *(new DenseMatrixBase<Element> (m,n)),0,0,m,n),
 			_stride(A.coldim()) , _alloc(true)
 		{
 			_ptr = this->_M->FullIterator();

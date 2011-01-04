@@ -317,7 +317,21 @@ namespace LinBox
 		}
 	};
 
-
+	template<class Field>
+	class 	BlasMatrixDomainAddin<Field,BlasMatrix<typename Field::Element>,BlasMatrix<typename Field::Element> > {
+	public:
+		BlasMatrix<typename Field::Element>& operator()(const Field& F,
+								BlasMatrix<typename Field::Element>& C,
+								const BlasMatrix<typename Field::Element>& B) const
+		{
+			linbox_check( C.rowdim() == B.rowdim());
+			linbox_check( C.coldim() == B.coldim());
+			FFLAS::faddin (F, C.rowdim(), C.coldim(),
+				     B.getPointer(), B.getStride(),
+				     C.getPointer(), C.getStride());
+			return C;
+		}
+	};
 	//  general matrix-matrix multiplication and addition with scaling
 	// D= beta.C + alpha.A*B
 	template<class Field>
