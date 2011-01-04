@@ -606,7 +606,7 @@ namespace LinBox
 		{
 			if (B.getMatrix().isIdentity()) return A ;
 			linbox_check( A.rowdim() >= B.getMatrix().getSize() );
-			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, A.coldim(), 0, B.getMatrix().getPointer(), A.getPointer(), A.getStride(), B.getMatrix().getPointer() );
+			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, A.coldim(), 0, B.getMatrix().getOrder(), A.getPointer(), A.getStride(), B.getMatrix().getPointer() );
 			return A;
 		}
 	};
