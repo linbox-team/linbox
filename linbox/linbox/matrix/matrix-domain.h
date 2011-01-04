@@ -452,7 +452,7 @@ namespace LinBox
 		}
 
 		/** Matrix-vector in-place axpy
-		 * y <- y + A*x.
+		 * \f$y \gets y + A x\f$.
 		 *
 		 * This function eliminates the requirement for temporary storage when
 		 * one is computing an expression of the form given above.

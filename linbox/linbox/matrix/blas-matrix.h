@@ -308,7 +308,7 @@ namespace LinBox
 			_alloc(true)
 		{
 			_ptr = this->_M->FullIterator() ;
-			rebind<_Field>()(*this,A,F);
+			typename _Matrix::template rebind<_Field>()(*this,A,F);
 
 		}
 
@@ -403,7 +403,6 @@ namespace LinBox
 
 			void operator() (other & Ap, const Self_t& A, const _Tp1& F)
 			{
-
 				typedef typename DenseSubmatrix<_Element>::ConstRawIndexedIterator ConstRawIndexedIterator ;
 				typedef typename DenseSubmatrix<_Element>::ConstRawIterator ConstRawIterator ;
 				ConstRawIterator         iter_value = A.rawBegin();
@@ -413,6 +412,15 @@ namespace LinBox
 					F.init(  tmp, *iter_value );
 					Ap.setEntry(iter_index.rowIndex(), iter_index.colIndex(),tmp);
 				}
+#if 0
+				linbox_check( Ap.rowdim() == A.rowdim() );
+				linbox_check( Ap.coldim() == A.coldim() ) ;
+				for (size_t i = 0 ; i < A.rowdim() ; ++i)
+					for (size_t j = 0 ; j < A.coldim() ; ++j) {
+						F.init(Ap.refEntry(i,j),(Element)A.getEntry(i,j));
+					}
+#endif
+				return ;
 			}
 		};
 
