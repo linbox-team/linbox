@@ -1468,7 +1468,7 @@ namespace LinBox
 
 		/** Apply a permutation submatrix of P (between ibeg and iend) to a matrix
 		 * to (iend-ibeg) vectors of size M stored in A (as column for NoTrans
-		 * and rows for Trans)
+		 * and rows for Trans).
 		 * Side==FflasLeft for row permutation Side==FflasRight for a column
 		 * permutation
 		 * Trans==FflasTrans for the inverse permutation of P
