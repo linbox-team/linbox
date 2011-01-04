@@ -545,7 +545,9 @@ namespace LinBox
 
 	template<class _Uint>
 	void MatrixPermutation<_Uint>::Invert()
-	{ Transpose() ;}
+	{
+		Transpose() ;
+	}
 
 	template<class _Uint>
 	MatrixPermutation<_Uint> & MatrixPermutation<_Uint>::Transpose(MatrixPermutation<_Uint> &Mt)

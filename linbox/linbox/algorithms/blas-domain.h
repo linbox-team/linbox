@@ -105,9 +105,17 @@ namespace LinBox
 				      Operand1 &C, const Operand2 &A, const Operand3 &B) const;
 
 	};
-	// C -= A
+	//! C -= A
 	template< class Field, class Operand1, class Operand2>
 	class BlasMatrixDomainSubin {
+	public:
+		Operand1 &operator() (const Field &F,
+				      Operand1 &C, const Operand2 &A) const;
+
+	};
+	//! C += A
+	template< class Field, class Operand1, class Operand2>
+	class BlasMatrixDomainAddin {
 	public:
 		Operand1 &operator() (const Field &F,
 				      Operand1 &C, const Operand2 &A) const;
@@ -372,12 +380,20 @@ namespace LinBox
 			return BlasMatrixDomainSub<Field,Operand1,Operand2,Operand3>()(_F,C,A,B);
 		}
 
-		//! substraction
+		//! substraction (in place)
 		//! C -= B
 		template <class Operand1, class Operand3>
 		Operand1& subin(Operand1& C, const Operand3& B) const
 		{
 			return BlasMatrixDomainSubin<Field,Operand1,Operand3>()(_F,C,B);
+		}
+
+		//! addition (in place)
+		//! C += B
+		template <class Operand1, class Operand3>
+		Operand1& addin(Operand1& C, const Operand3& B) const
+		{
+			return BlasMatrixDomainAddin<Field,Operand1,Operand3>()(_F,C,B);
 		}
 
 

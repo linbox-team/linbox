@@ -281,6 +281,18 @@ public:
                     F.subin (Ci[i], Bi[i]);
         }
 
+	template <class Field>
+        static void
+        faddin (const Field& F, const size_t M, const size_t N,
+              const typename Field::Element* B, const size_t ldb,
+              typename Field::Element* C, const size_t ldc)
+        {
+            const typename Field::Element * Bi = B;
+            typename Field::Element *Ci = C;
+            for (; Ci < C+M*ldc; Bi+=ldb, Ci+=ldc)
+                for (size_t i=0; i<N; i++)
+                    F.addin (Ci[i], Bi[i]);
+        }
 
 
 	/**  @brief finite prime Field GEneral Matrix Vector multiplication.
