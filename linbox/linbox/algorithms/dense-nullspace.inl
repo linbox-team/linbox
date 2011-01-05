@@ -85,7 +85,7 @@ namespace LinBox
 		for (size_t i = lig1 ; i < lig2 ; ++i)
 			for (size_t j = col1; j < col2 ; ++j) // F.assign(*(Id+i*ldI+j),zero)
 				*(Id+i*ldI+j) = zero ;
-		//        Zero(F,Id,ldI,lig1,col1,lig2,col2);
+		// Zero(F,Id,ldI,lig1,col1,lig2,col2);
 		size_t nb_un = std::min(col2-col1,lig2-lig1)-1;
 
 		typename Field::Element * Un_ici = Id+lig1*ldI+col1 ;
@@ -144,7 +144,8 @@ namespace LinBox
 			FFLAS::fcopy (F, ker_dim, V + i * ldV, 1, A + R + i*lda, 1);
 		typename Field::Element one ;
 		F.init(one,1UL);
-		FFLAS::ftrsm(F, FFLAS::FflasLeft, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit,
+		FFLAS::ftrsm(F, FFLAS::FflasLeft, FFLAS::FflasUpper,
+			     FFLAS::FflasNoTrans, FFLAS::FflasNonUnit,
 			     R, ker_dim, one,  A, lda , V, ldV) ;			// (V = U2, A = U1) : U2 <- inv(U1)*U2 ;
 
 		typename Field::Element minus_one, zero;
@@ -188,10 +189,10 @@ namespace LinBox
 					     M, N, A, lda, P, Qt, FFPACK::FfpackLQUP);
 
 
-		//                write_field (F, std::cout<<"ALU :="<<std::endl, A, M, N, N, true);
-		//                PrintLQUP (F,FFLAS::FflasNonUnit,FFLAS::FflasTrans,M,N,A,R,std::cout<<"L.Q.U.P"<<std::endl,Qt,P,true);
+		// write_field (F, std::cout<<"ALU :="<<std::endl, A, M, N, N, true);
+		// PrintLQUP (F,FFLAS::FflasNonUnit,FFLAS::FflasTrans,M,N,A,R,std::cout<<"L.Q.U.P"<<std::endl,Qt,P,true);
 
-		//                std::cout << "ker_dim = " << ker_dim << std::endl;
+		// std::cout << "ker_dim = " << ker_dim << std::endl;
 
 		delete[] P;
 
@@ -212,11 +213,11 @@ namespace LinBox
 
 		Zero    (F,V,ldV,0,0,R,ker_dim);
 		Identity(F,V,ldV,R,0,N,ker_dim);
-		//                                write_field (F, std::cout<<"V init   ="<<std::endl, V, N, ker_dim, ker_dim,true);
+		// write_field (F, std::cout<<"V init   ="<<std::endl, V, N, ker_dim, ker_dim,true);
 		FFPACK::applyP(F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
 			       ker_dim, 0, R, V, ldV, Qt);			//  V = Q V
 
-		//                write_field (F, std::cout<<"V reordered   ="<<std::endl, V, N,ker_dim, ker_dim,true);
+		// write_field (F, std::cout<<"V reordered   ="<<std::endl, V, N,ker_dim, ker_dim,true);
 
 		// actually we just select a line in the inverse of L.
 		//size_t wda = M ;
@@ -224,7 +225,7 @@ namespace LinBox
 		typename Field::Element one, zero;
 		F.init(zero,0UL);
 		F.init(one,1UL);
-		//                F.neg(minus_one, one);
+		// F.neg(minus_one, one);
 
 		if (N <= M) { // on a de la place...
 			for ( size_t i=0; i< M; ++i ) {
@@ -241,10 +242,12 @@ namespace LinBox
 				*(A+N*i+i) = one ;
 
 			//write_field (F, std::cout<<"A avant trsm   ="<<std::endl, A, M, N, N,true);
-			FFLAS::ftrsm(F, FFLAS::FflasLeft, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasUnit,
-				     N, ker_dim, one,  A, lda , V, ldV) ;						// V = inv(Lower) V ;
+			FFLAS::ftrsm(F, FFLAS::FflasLeft, FFLAS::FflasUpper,
+				     FFLAS::FflasNoTrans, FFLAS::FflasUnit,
+				     N, ker_dim, one,  A, lda , V, ldV) ; // V = inv(Lower) V ;
 			//write_field (F, std::cout<<"V if after trsm  ="<<std::endl, V, N,ker_dim, ker_dim,true);
-		} else { // N > M we can't ftrsm because we can't add 0's to the lower part...
+		}
+		else { // N > M we can't ftrsm because we can't add 0's to the lower part...
 			typename Field::Element * L = new typename Field::Element[N*N];					// L_inf
 			// début de L
 			size_t i = 0 ;
@@ -269,10 +272,11 @@ namespace LinBox
 				*(L+N*i+i) = one ;
 			// fin de L.
 			//write_field (F, std::cout<<"U_1="<<std::endl, L, M, M, M,true);
-			FFLAS::ftrsm(F, FFLAS::FflasLeft, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasUnit,
-				     N, ker_dim, one,  L, N , V, ldV) ;						// V = inv(Lower) V ;
+			FFLAS::ftrsm(F, FFLAS::FflasLeft, FFLAS::FflasUpper,
+				     FFLAS::FflasNoTrans, FFLAS::FflasUnit,
+				     N, ker_dim, one,  L, N , V, ldV); 	// V = inv(Lower) V ;
 
-			//                        write_field (F, std::cout<<"V else after trsm   ="<<std::endl, V, N,ker_dim, ker_dim,true);
+			// write_field (F, std::cout<<"V else after trsm   ="<<std::endl, V, N,ker_dim, ker_dim,true);
 
 			delete[] L;
 		}
@@ -298,10 +302,10 @@ namespace LinBox
 					     M, N, A, lda, P, Qt, FFPACK::FfpackLQUP);
 		delete[] Qt;
 
-		coker_dim = M-R ;								// dimension of kernel
+		coker_dim = M-R ;			// dimension of kernel
 		if (coker_dim == 0) {
 			delete[] P ;
-			return NULL ;							// only 0 in kernel
+			return NULL ;			// only 0 in kernel
 		}
 		size_t ldV = M ;
 		typename Field::Element * V = new typename Field::Element[coker_dim*M];	// Result here.
@@ -311,33 +315,36 @@ namespace LinBox
 			return V ;
 		}
 
-		for (size_t i = 0 ; i < coker_dim ; ++i)					// copy U2 to result V before updating with U1
+		for (size_t i = 0 ; i < coker_dim ; ++i)	// copy U2 to result V before updating with U1
 			FFPACK::fcopy (F, R, V + i * ldV, 1, A + (R + i)*lda, 1);
 		typename Field::Element one, minus_one ;
 		F.init(one,1UL);
 		F.neg(minus_one, one);
-		FFLAS::ftrsm(F, FFLAS::FflasRight, FFLAS::FflasLower, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit,
-			     coker_dim, R, minus_one,  A, lda , V, ldV) ;			// V = U2  ; A = U1 ; U2 <- inv(U1)*U2 ;
+		FFLAS::ftrsm(F, FFLAS::FflasRight, FFLAS::FflasLower,
+			     FFLAS::FflasNoTrans, FFLAS::FflasNonUnit,
+			     coker_dim, R, minus_one,  A, lda , V, ldV) ;	// V = U2  ; A = U1 ; U2 <- inv(U1)*U2 ;
 
 		typename Field::Element zero;
 		F.init(zero,0UL);
 		Identity(F,V,ldV,0,R,coker_dim,M);
-		//                for ( size_t i = 0 ; i < coker_dim ; ++i){					// filling the rest of V with minus identity
-		//                        for (size_t j = R ; j < M ; ++j)
-		//                                *(V+i*M+j) = zero ;
-		//                        *(V+i*M+i+R) = one ;
-		/* // FIXME : faster ?
-		   for (size_t j = R ; j < M ; ++j) {
-		   if (j == i+R)
-		 *(V+M*i+j) = one ;
-		 else
-		 *(V+M*i+j) = zero ;
-		 }
-		 */
+#if 0
+		for ( size_t i = 0 ; i < coker_dim ; ++i){	/* filling the rest of V with minus identity */
+			for (size_t j = R ; j < M ; ++j)
+				*(V+i*M+j) = zero ;
+			*(V+i*M+i+R) = one ;
+#if 0 /* FIXME : faster ? */
+			for (size_t j = R ; j < M ; ++j) {
+				if (j == i+R)
+					*(V+M*i+j) = one ;
+				else
+					*(V+M*i+j) = zero ;
+			}
+#endif
+		}
+#endif
 
-		//                }
 		FFPACK::applyP(F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
-			       coker_dim, 0, R, V, ldV , P);				//  X = P^{-1}V
+			       coker_dim, 0, R, V, ldV , P);		// X = P^{-1}V
 		delete[] P;
 		return V;
 
@@ -368,15 +375,15 @@ namespace LinBox
 		//PrintLapackPermutation(Q,M,std::cout<<"Permutation Q := ");
 		//PrintPermutation(F , FFLAS::FflasTrans, Q, M, 0, M, std::cout, true);
 		//PrintLQUP (F,FFLAS::FflasUnit,FFLAS::FflasNoTrans,M,N,A,R,std::cout<<"L.Q.U.P"<<std::endl,Q,P,true);
-		coker_dim = M - R ;											// dimension of co-kernel.
+		coker_dim = M -R ; // dimension of co-kernel.
 		//std::cout << "coker_dim = " << coker_dim << std::endl;
-		delete[] P;												// on s'en fout de P !
+		delete[] P; // on s'en fout de P !
 		if (coker_dim == 0){
 			delete[] Q ;
-			return NULL;											// CoKernel is \f$\{\mathbf{0}_n\}\f$
+			return NULL;	// CoKernel is \f$\{\mathbf{0}_n\}\f$
 		}
 
-		typename Field::Element one, zero ;									// 1,0 dans le corps
+		typename Field::Element one, zero ; // 1,0 dans le corps
 		F.init(one,1UL);
 		F.init(zero,0UL);
 
@@ -389,9 +396,9 @@ namespace LinBox
 		}
 		Zero    (F,V,ldV,0,0,coker_dim,R);
 		Identity(F,V,ldV,0,R,coker_dim,M);
-		//                write_field (F, std::cout<<"V init   ="<<std::endl, V, coker_dim, M, M,true);
+		// write_field (F, std::cout<<"V init   ="<<std::endl, V, coker_dim, M, M,true);
 		FFPACK::applyP(F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
-			       coker_dim, 0, R, V, ldV, Q);							//  V = V  tQ FIXME BUG XXX WARNING TODO pourquoi 0..R ??
+			       coker_dim, 0, R, V, ldV, Q); // V = V  tQ
 
 		//write_field (F, std::cout<<"V reordered   ="<<std::endl, V, coker_dim, M, M,true);
 
@@ -407,10 +414,12 @@ namespace LinBox
 				*(A+N*i+i) = one ;
 
 			//write_field (F, std::cout<<"A avant trsm   ="<<std::endl, A, M, N, N,true);
-			FFLAS::ftrsm(F, FFLAS::FflasRight, FFLAS::FflasLower, FFLAS::FflasNoTrans, FFLAS::FflasUnit,
-				     coker_dim , M , one,  A, lda , V, ldV) ;						// V = V inv(Lower) ;
-		} else { // M > N we can't ftrsm because we can't add 0's to the lower part...
-			typename Field::Element * L = new typename Field::Element[M*M];					// L_inf
+			FFLAS::ftrsm(F, FFLAS::FflasRight, FFLAS::FflasLower,
+				     FFLAS::FflasNoTrans, FFLAS::FflasUnit,
+				     coker_dim , M , one,  A, lda , V, ldV) ; // V = V inv(Lower) ;
+		}
+		else { // M > N we can't ftrsm because we can't add 0's to the lower part...
+			typename Field::Element * L = new typename Field::Element[M*M]; // L_inf
 
 			for ( size_t i=0; i< M; ++i ){ // copying A_inf to L
 				size_t j=0;
@@ -424,8 +433,9 @@ namespace LinBox
 				*(L+M*i+i) = one ;
 
 			//write_field (F, std::cout<<"U_1="<<std::endl, L, M, M, M,true);
-			FFLAS::ftrsm(F, FFLAS::FflasRight, FFLAS::FflasLower, FFLAS::FflasNoTrans, FFLAS::FflasUnit,
-				     coker_dim , M , one,  L, M , V, ldV) ;						// V = V inv(Lower) ;
+			FFLAS::ftrsm(F, FFLAS::FflasRight, FFLAS::FflasLower,
+				     FFLAS::FflasNoTrans, FFLAS::FflasUnit,
+				     coker_dim , M , one,  L, M , V, ldV) ; // V = V inv(Lower) ;
 
 			delete[] L;
 		}
@@ -449,7 +459,8 @@ namespace LinBox
 				Ker = RightNullspaceIndirect(F,A,m,n,lda,kerdim) ;
 			ldk = kerdim;
 
-		} else {
+		}
+		else {
 			if (m < n)
 				Ker = LeftNullspaceDirect(F,A,m,n,lda,kerdim) ;
 			else
@@ -472,7 +483,8 @@ namespace LinBox
 		NullSpaceBasis(F,Side,A.rowdim(),A.coldim(), A.getWritePointer(),A.getStride(), Ker_ptr,ldk,kerdim);
 		if (Side == LinBoxTag::Right){
 			Ker = BlasMatrix<typename Field::Element>(A.rowdim(),kerdim);
-		} else {
+		}
+		else {
 			Ker = BlasMatrix<typename Field::Element>(kerdim,A.coldim());
 		}
 		//! @todo this is slow : use a constructor from Ker ?

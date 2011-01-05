@@ -32,7 +32,8 @@ namespace LinBox
 
 	// get the Matrix L
 	template <class Field>
-	inline TriangularBlasMatrix<typename Field::Element>& LQUPMatrix<Field>::getL(TriangularBlasMatrix<Element>& L) const
+	inline TriangularBlasMatrix<typename Field::Element>& LQUPMatrix<Field>::getL( TriangularBlasMatrix<Element >& L,
+										    bool _QLUP ) const
 	{
 
 		linbox_check( L.coldim() == _m);
@@ -43,7 +44,37 @@ namespace LinBox
 		typename Field::Element zero,one;
 		_F.init( zero, 0UL );
 		_F.init( one, 1UL );
+#if 0
+		if (_m > _n) {
+			size_t i = 0 ;
+			for ( ; i<_n; ++i ){
+				size_t j=0;
+				for (; j<i ; ++j )
+					L.setEntry( i, j, _LU.getEntry(i,j) );
+				for (; j<_m; ++j )
+					L.setEntry( i, j, zero );
+			}
+			for ( ; i<_m; ++i ){
+				size_t j=0;
+				for (; j<_n ; ++j )
+					L.setEntry( i, j, _LU.getEntry(i,j) );
+				for (; j<_m; ++j )
+					L.setEntry( i, j, zero );
+			}
 
+
+		}
+		else {
+			for ( size_t i=0; i<_m; ++i ){
+				size_t j=0;
+				for (; j<i ; ++j )
+					L.setEntry( i, j, _LU.getEntry(i,j) );
+				for (; j<_m; ++j )
+					L.setEntry( i, j, zero );
+			}
+		}
+#endif
+#if 1 /*  slower */
 		for ( size_t i=0; i<_m; ++i ){
 			size_t j=0;
 			for (; j< ((i<_n)?i:_n) ; ++j )
@@ -51,10 +82,25 @@ namespace LinBox
 			for (; j<_m; ++j )
 				L.setEntry( i, j, zero );
 		}
+#endif
 
-		FFPACK::applyP( _F, FFLAS::FflasRight, FFLAS::FflasNoTrans, _m,0,_QQ.getOrder(), L.getWritePointer(), _m, _QQ.getPointer() );
+		if (!_QQ.isIdentity())
+			FFPACK::applyP( _F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
+					_m,0,_QQ.getOrder(),
+					L.getWritePointer(), _m, _QQ.getPointer() );
 		for ( size_t i=0; i<_m; ++i )
 			L.setEntry( i, i, one );
+		if (_QLUP) {
+			if (!_QQ.isIdentity()) {
+				FFPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
+						_m,0,_QQ.getOrder(),
+						L.getWritePointer(), _m, _QQ.getPointer() );
+				FFPACK::applyP( _F, FFLAS::FflasRight, FFLAS::FflasTrans,
+						_m,0,_QQ.getOrder(),
+						L.getWritePointer(), _m, _QQ.getPointer() );
+
+			}
+		}
 
 		return L;
 
@@ -62,7 +108,7 @@ namespace LinBox
 
 	// get the matrix U
 	template <class Field>
-	inline TriangularBlasMatrix<typename Field::Element>& LQUPMatrix<Field>::getU(TriangularBlasMatrix<typename Field::Element>& U) const
+	inline TriangularBlasMatrix<typename Field::Element>& LQUPMatrix<Field>::getU( TriangularBlasMatrix<typename Field::Element >& U ) const
 	{
 
 		linbox_check( U.rowdim() == _m);
@@ -77,7 +123,7 @@ namespace LinBox
 
 	// get the Matrix S (from the LSP factorization of A deduced from LQUP)
 	template <class Field>
-	inline BlasMatrix<typename Field::Element>& LQUPMatrix<Field>::getS(BlasMatrix<typename Field::Element>& S) const
+	inline BlasMatrix<typename Field::Element>& LQUPMatrix<Field>::getS( BlasMatrix<typename Field::Element >& S) const
 	{
 
 		linbox_check( S.rowdim() == _m);
@@ -91,7 +137,10 @@ namespace LinBox
 				S.setEntry( i, j, _LU.getEntry(i,j) );
 		}
 
-		FFPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FflasTrans, _n, 0, _QQ.getOrder(), S.getWritePointer(), _n, _QQ.getPointer() );
+		if (!_QQ.isIdentity())
+			FFPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FflasTrans,
+					_n, 0, _QQ.getOrder(),
+					S.getWritePointer(), _n, _QQ.getPointer() );
 		return S;
 	}
 
