@@ -169,7 +169,7 @@ namespace LinBox
 	template<class _Uint>
 	void BlasPermutation<_Uint>::Compress()
 	{
-		std::cout << r_ << std::endl;
+		// std::cout << r_ << std::endl;
 		if (!r_) {
 			linbox_check(!n_);
 			P_.resize(0) ;
