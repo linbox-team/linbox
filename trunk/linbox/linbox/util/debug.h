@@ -125,6 +125,7 @@ namespace LinBox
 	 * where, why ?
 	 */
 	class NotImplementedYet {
+	protected:
 		static std::ostream *_errorStream;
 
 	public:
@@ -137,6 +138,8 @@ namespace LinBox
 		 * @param line     usually \c __LINE__, the line where it happened
 		 * @param why      by default, lazy people don't provide an explanation.
 		 */
+		NotImplementedYet() {}
+
 		NotImplementedYet(const char * function,
 				  const char* file,
 				  int line,
@@ -155,6 +158,38 @@ namespace LinBox
 
 		}
 	};
+	/*! @internal A function is "not implemented yet(tm)".
+	 * where, why ?
+	 */
+	class LinBoxFailure : public NotImplementedYet {
+	public:
+		/*! @internal
+		 * LinBox failed.
+		 * The parameter help debugging/explaining.
+		 * @param function usually \c __func__, the function that threw the error
+		 * @param file     usually \c __FILE__, the file where this function is
+		 * @param line     usually \c __LINE__, the line where it happened
+		 * @param what     what happened ? should not be NULL...
+		 */
+		LinBoxFailure(const char * function,
+			      const char* file,
+			      int line,
+			      const char * what='\0')
+		{
+			if (_errorStream == (std::ostream *) 0)
+				_errorStream = &std::cerr;
+
+			(*_errorStream) << std::endl << std::endl;
+			(*_errorStream) << "ERROR (at " << function << " in " << file << ':' <<  line << "): " << std::endl;
+			(*_errorStream) << " failure : " ;
+			if (what)
+				(*_errorStream)	<< what << "." <<std::endl;
+			else
+				(*_errorStream)	<<  "no explanation." << std::endl;
+
+		}
+	};
+
 }
 
 #ifdef LinBoxSrcOnly
