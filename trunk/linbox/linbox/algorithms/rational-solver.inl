@@ -92,12 +92,13 @@ namespace LinBox
 
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
-	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::
-	solve (Vector1& num, Integer& den,
-	       const IMatrix& A,
-	       const Vector2& b,
-	       const bool old,
-	       int maxPrimes) const
+	SolverReturnStatus
+	RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::solve (Vector1& num,
+								       Integer& den,
+								       const IMatrix& A,
+								       const Vector2& b,
+								       const bool old,
+								       int maxPrimes) const
 	{
 		SolverReturnStatus status=SS_FAILED;
 
@@ -125,9 +126,12 @@ namespace LinBox
 
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
-	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::
-	solveNonsingular (Vector1& num, Integer& den,
-			  const IMatrix& A, const Vector2& b, int maxPrimes) const
+	SolverReturnStatus
+	RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::solveNonsingular( Vector1& num,
+										  Integer& den,
+										  const IMatrix& A,
+										  const Vector2& b,
+										  int maxPrimes) const
 	{
 		// checking if matrix is square
 		linbox_check(A.rowdim() == A.coldim());
@@ -210,11 +214,12 @@ namespace LinBox
 
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
-	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::
-	solveSingular (Vector1& num, Integer& den,
-		       const IMatrix& A,
-		       const Vector2& b,
-		       int maxPrimes) const
+	SolverReturnStatus
+	RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>:: solveSingular (Vector1& num,
+										Integer& den,
+										const IMatrix& A,
+										const Vector2& b,
+										int maxPrimes) const
 	{
 		std::cerr<<"in singular solver\n";
 
@@ -345,18 +350,18 @@ namespace LinBox
 
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class FMatrix, class IVector>
-	void RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::
-	sparseprecondition (const Field& F,
-			    const IMatrix *A,
-			    Compose<LambdaSparseMatrix<Ring>,Compose<IMatrix,LambdaSparseMatrix<Ring> > > *&PAQ,
-			    const FMatrix *Ap,
-			    Compose<LambdaSparseMatrix<Field>,Compose<FMatrix,LambdaSparseMatrix<Field> > > *&PApQ,
-			    const IVector& b,
-			    IVector& Pb,
-			    LambdaSparseMatrix<Ring> *&P,
-			    LambdaSparseMatrix<Ring> *&Q,
-			    LambdaSparseMatrix<Field> *&Pmodp,
-			    LambdaSparseMatrix<Field> *&Qmodp) const
+	void
+	RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::sparseprecondition (const Field& F,
+										    const IMatrix *A,
+										    Compose<LambdaSparseMatrix<Ring>, Compose<IMatrix, LambdaSparseMatrix<Ring> > > *&PAQ,
+										    const FMatrix *Ap,
+										    Compose<LambdaSparseMatrix<Field>, Compose<FMatrix, LambdaSparseMatrix<Field> > > *&PApQ,
+										    const IVector& b,
+										    IVector& Pb,
+										    LambdaSparseMatrix<Ring> *&P,
+										    LambdaSparseMatrix<Ring> *&Q,
+										    LambdaSparseMatrix<Field> *&Pmodp,
+										    LambdaSparseMatrix<Field> *&Qmodp) const
 	{
 #if 0
 		std::cerr<<"A:\n";
@@ -471,12 +476,12 @@ namespace LinBox
 
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
-	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,BlockWiedemannTraits>::
-	solve (Vector1& num, Integer& den,
-	       const IMatrix& A,
-	       const Vector2& b,
-	       const bool old,
-	       int maxPrimes) const
+	SolverReturnStatus
+	RationalSolver<Ring,Field,RandomPrime,BlockWiedemannTraits>::solve (Vector1& num, Integer& den,
+									    const IMatrix& A,
+									    const Vector2& b,
+									    const bool old,
+									    int maxPrimes) const
 	{
 		SolverReturnStatus status=SS_FAILED;
 
@@ -504,11 +509,12 @@ namespace LinBox
 
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
-	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,BlockWiedemannTraits>::
-	solveNonsingular (Vector1& num, Integer& den,
-			  const IMatrix& A,
-			  const Vector2& b,
-			  int maxPrimes) const
+	SolverReturnStatus
+	RationalSolver<Ring,Field,RandomPrime,BlockWiedemannTraits>::solveNonsingular (Vector1& num,
+										       Integer& den,
+										       const IMatrix& A,
+										       const Vector2& b,
+										       int maxPrimes) const
 	{
 		// checking if matrix is square
 		linbox_check(A.rowdim() == A.coldim());
@@ -558,8 +564,14 @@ namespace LinBox
 
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
-	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::
-	solve (Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, const bool old, int maxP, const SolverLevel level ) const
+	SolverReturnStatus
+	RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solve (Vector1& num,
+								   Integer& den,
+								   const IMatrix& A,
+								   const Vector2& b,
+								   const bool old,
+								   int maxP,
+								   const SolverLevel level ) const
 	{
 
 		SolverReturnStatus status;
@@ -606,8 +618,14 @@ namespace LinBox
 
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
-	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solveNonsingular
-	(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, bool oldMatrix, int maxPrimes) const {
+	SolverReturnStatus
+	RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solveNonsingular(Vector1& num,
+									     Integer& den,
+									     const IMatrix& A,
+									     const Vector2& b,
+									     bool oldMatrix,
+									     int maxPrimes) const
+	{
 
 		// std::cout<<"DIXON\n\n\n\n";
 #ifdef DEBUG_DIXON
@@ -738,15 +756,27 @@ namespace LinBox
 
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
-	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solveSingular
-	(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes, const SolverLevel level) const {
+	SolverReturnStatus
+	RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solveSingular (Vector1& num,
+									   Integer& den,
+									   const IMatrix& A,
+									   const Vector2& b,
+									   int maxPrimes,
+									   const SolverLevel level) const
+	{
 		return monolithicSolve (num, den, A, b, false, false, maxPrimes, level);
 	}
 
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
-	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::findRandomSolution
-	(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes, const SolverLevel level ) const {
+	SolverReturnStatus
+	RationalSolver<Ring,Field,RandomPrime,DixonTraits>::findRandomSolution (Vector1& num,
+										Integer& den,
+										const IMatrix& A,
+										const Vector2& b,
+										int maxPrimes,
+										const SolverLevel level ) const
+	{
 
 		return monolithicSolve (num, den, A, b, false, true, maxPrimes, level);
 	}
@@ -758,9 +788,15 @@ namespace LinBox
 
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
-	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::monolithicSolve
-	(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, bool makeMinDenomCert, bool randomSolution,
-	 int maxPrimes, const SolverLevel level) const
+	SolverReturnStatus
+	RationalSolver<Ring,Field,RandomPrime,DixonTraits>::monolithicSolve (Vector1& num,
+									     Integer& den,
+									     const IMatrix& A,
+									     const Vector2& b,
+									     bool makeMinDenomCert,
+									     bool randomSolution,
+									     int maxPrimes,
+									     const SolverLevel level) const
 	{
 
 		if (level == SL_MONTECARLO && maxPrimes > 1)
@@ -1340,8 +1376,13 @@ namespace LinBox
 	// solve non singular system using block Hankel
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
-	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,BlockHankelTraits>::solveNonsingular
-	(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, size_t blocksize, int maxPrimes) const
+	SolverReturnStatus
+	RationalSolver<Ring,Field,RandomPrime,BlockHankelTraits>::solveNonsingular(Vector1& num,
+										   Integer& den,
+										   const IMatrix& A,
+										   const Vector2& b,
+										   size_t blocksize,
+										   int maxPrimes) const
 	{
 
 		linbox_check(A.rowdim() == A.coldim());
@@ -1435,9 +1476,12 @@ namespace LinBox
 	// max prime is not use. only check with one prime
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>
-	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,SparseEliminationTraits>::
-	solveNonsingular
-	(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes) const
+	SolverReturnStatus
+	RationalSolver<Ring,Field,RandomPrime,SparseEliminationTraits>::solveNonsingular(Vector1& num,
+											 Integer& den,
+											 const IMatrix& A,
+											 const Vector2& b,
+											 int maxPrimes) const
 	{
 
 		linbox_check(A.rowdim() == A.coldim());
