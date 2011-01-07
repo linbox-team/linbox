@@ -141,14 +141,14 @@ namespace LinBox
 		 * @param A    Matrix of linear system
 		 * @param b    Right-hand side of system
 		 * @param maxPrimes maximum number of moduli to try
-		 * @param toto
+		 * @param side
 		 *
 		 * @return status of solution
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
 		SolverReturnStatus solve(Vector1& num, Integer& den,
 					 const IMatrix& A, const Vector2& b,
-					 const bool toto, int maxPrimes = DEFAULT_MAXPRIMES) const;
+					 const bool side, int maxPrimes = DEFAULT_MAXPRIMES) const;
 
 
 		/** Solve a nonsingular linear system \c Ax=b over quotient field of a ring,
@@ -165,6 +165,7 @@ namespace LinBox
 		template<class IMatrix, class Vector1, class Vector2>
 		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den,
 						    const IMatrix& A, const Vector2& b,
+						    // bool toto,
 						    int maxPrimes = DEFAULT_MAXPRIMES) const;
 
 		/** brief Solve a singular linear system \c Ax=b over quotient field of a ring,
@@ -888,7 +889,7 @@ namespace LinBox
 		}
 #endif
 
-	}; // end of specialization for the class RationalSover with Dixon traits
+	}; // end of specialization for the class RationalSolver with Dixon traits
 
 
 	/*----------------*/
@@ -901,6 +902,7 @@ namespace LinBox
 	 *   @bib
 	 *   - Zhendong Wan <i>Exactly solve integer linear systems using numerical methods.</i>
 	 *   Submitted to Journal of Symbolic Computation, 2004.
+	 *   @warning entries in Matrix must be smaller than \f$2^50\f$.
 	 *
 	 */
 	//template argument Field and RandomPrime are not used.
@@ -915,7 +917,7 @@ namespace LinBox
 		typedef typename Ring::Element Integer;
 
 		RationalSolver(const Ring& _r = Ring()) :
-			r(_r)
+			r(_r),IPromiseMyCoefficientsAreSmallAndIWontCry(false)
 		{}
 
 
@@ -925,66 +927,73 @@ namespace LinBox
 					 const IMatrix& M, const InVector& b) const
 		{
 
-			if(M. rowdim() != M. coldim())
+			if(M. rowdim() != M. coldim()) {
+				std::cerr << __func__ << " (" << __FILE__ << ';' << __LINE__ << ") Matrix is not square... Failed" << std::endl;
 				return SS_FAILED;
+			}
 
 			linbox_check((b.size() == M.rowdim()) && (num. size() == M.coldim()));
 			int n = M. rowdim();
-			integer mentry, bnorm; mentry = 1; bnorm = 1;
-			typename InVector::const_iterator b_p;
 			Integer tmp_I; integer tmp;
-			typename IMatrix::ConstRawIterator raw_p;
-			for (raw_p = M. rawBegin(); raw_p != M. rawEnd(); ++ raw_p) {
-				r. convert (tmp, *raw_p);
-				tmp = abs (tmp);
-				if (tmp > mentry) mentry = tmp;
-			}
-
-			for (b_p = b. begin(); b_p != b.  end(); ++ b_p) {
-				r. init (tmp_I, *b_p);
-				r. convert (tmp, tmp_I);
-				tmp = abs (tmp);
-				if (tmp > bnorm) bnorm = tmp;
-			}
-
-			integer threshold; threshold = 1; threshold <<= 50;
-
-			if ((mentry > threshold) || (bnorm > threshold)) return SS_FAILED;
-			else {
-
-				double* DM = new double [n * n];
-				double* Db = new double [n];
-				double* DM_p, *Db_p;
+			typename InVector::const_iterator b_p;
+			if (!IPromiseMyCoefficientsAreSmallAndIWontCry) {
+				integer mentry, bnorm; mentry = 1; bnorm = 1;
 				typename IMatrix::ConstRawIterator raw_p;
-				for (raw_p = M. rawBegin(), DM_p = DM; raw_p != M. rawEnd(); ++ raw_p, ++ DM_p) {
+				for (raw_p = M. rawBegin(); raw_p != M. rawEnd(); ++ raw_p) {
 					r. convert (tmp, *raw_p);
-					*DM_p = (double) tmp;
+					tmp = abs (tmp);
+					if (tmp > mentry) mentry = tmp;
 				}
 
-				for (b_p = b. begin(), Db_p = Db; b_p != b. begin() + n; ++ b_p, ++ Db_p) {
+				for (b_p = b. begin(); b_p != b.  end(); ++ b_p) {
 					r. init (tmp_I, *b_p);
 					r. convert (tmp, tmp_I);
-					*Db_p = (double) tmp;
+					tmp = abs (tmp);
+					if (tmp > bnorm) bnorm = tmp;
 				}
 
-				integer* numx = new integer[n];
-				integer denx;
-				int ret;
-				ret = cblas_rsol (n, DM, numx, denx, Db);
-				delete[] DM; delete[] Db;
+				integer threshold; threshold = 1; threshold <<= 50;
 
-				if (ret == 0){
-					r. init (den, denx);
-					typename OutVector::iterator num_p;
-					integer* numx_p = numx;
-					for (num_p = num. begin(); num_p != num. end(); ++ num_p, ++ numx_p)
-						r. init (*num_p, *numx_p);
+				if ((mentry > threshold) || (bnorm > threshold))  {
+					std::cerr << __func__ << " (" << __FILE__ << ';' << __LINE__ << ") Entries in matrix are too big for NumericalTraits... Failed" << std::endl;
+					return SS_FAILED;
 				}
-				delete[] numx;
-
-				if (ret == 0) return SS_OK;
-				else return SS_FAILED;
 			}
+			// else {
+
+			double* DM = new double [n * n];
+			double* Db = new double [n];
+			double* DM_p, *Db_p;
+			typename IMatrix::ConstRawIterator raw_p;
+			for (raw_p = M. rawBegin(), DM_p = DM; raw_p != M. rawEnd(); ++ raw_p, ++ DM_p) {
+				r. convert (tmp, *raw_p);
+				*DM_p = (double) tmp;
+			}
+
+			for (b_p = b. begin(), Db_p = Db; b_p != b. begin() + n; ++ b_p, ++ Db_p) {
+				r. init (tmp_I, *b_p);
+				r. convert (tmp, tmp_I);
+				*Db_p = (double) tmp;
+			}
+
+			integer* numx = new integer[n];
+			integer denx;
+			int ret;
+			ret = cblas_rsol (n, DM, numx, denx, Db);
+			delete[] DM; delete[] Db;
+
+			if (ret == 0){
+				r. init (den, denx);
+				typename OutVector::iterator num_p;
+				integer* numx_p = numx;
+				for (num_p = num. begin(); num_p != num. end(); ++ num_p, ++ numx_p)
+					r. init (*num_p, *numx_p);
+			}
+			delete[] numx;
+
+			if (ret == 0) return SS_OK;
+			else return SS_FAILED;
+			// }
 
 		}
 #else
@@ -992,7 +1001,7 @@ namespace LinBox
 		SolverReturnStatus solve(OutVector& num, Integer& den,
 					 const IMatrix& M, const InVector& b) const
 		{
-			//                     std::cerr<< "dgetrf or dgetri missing" << std::endl;
+			throw(LinBoxFailure(__func__,__FILE__,__LINE__,"LinBox does not have \"dgetrf\" and \"dgetri\" mandatory for \'RationalSolver<...,NumericalTraits>\'"));
 			return SS_FAILED;
 		}
 #endif
@@ -1030,6 +1039,11 @@ namespace LinBox
 		 * 3, incorrect answer, possible ill-conditioned.
 		 */
 		inline static int cblas_rsol (int n, const double* M, integer* numx, integer& denx, double* b);
+		void hasSmallCoeffs() {
+			IPromiseMyCoefficientsAreSmallAndIWontCry = true  ;
+		}
+	private:
+		bool IPromiseMyCoefficientsAreSmallAndIWontCry ;
 #endif
 	};
 
