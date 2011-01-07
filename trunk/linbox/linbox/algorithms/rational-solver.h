@@ -1039,12 +1039,13 @@ namespace LinBox
 		 * 3, incorrect answer, possible ill-conditioned.
 		 */
 		inline static int cblas_rsol (int n, const double* M, integer* numx, integer& denx, double* b);
+#endif
 		void hasSmallCoeffs() {
 			IPromiseMyCoefficientsAreSmallAndIWontCry = true  ;
 		}
 	private:
 		bool IPromiseMyCoefficientsAreSmallAndIWontCry ;
-#endif
+
 	};
 
 	/*--------------*/
