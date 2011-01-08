@@ -1,5 +1,6 @@
 # Check for BLAS
 # Copyright Pascal Giorgi 2005
+# This file is part of LinBox. See COPYING for licence information.
 
 
 dnl LB_CHECK_BLAS ([MINIMUM-VERSION [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
@@ -11,9 +12,9 @@ AC_DEFUN([LB_CHECK_BLAS],
 
 AC_ARG_WITH(blas,
 [  --with-blas=<lib>|yes Use BLAS library. This library is mandatory for LinBox
-   			compilation. If argument is yes or <empty> that means 
-			the library is reachable with the standard search path 
-			(/usr or /usr/local). Otherwise you give the <path> to 
+   			compilation. If argument is yes or <empty> that means
+			the library is reachable with the standard search path
+			(/usr or /usr/local). Otherwise you give the <path> to
 			the directory which contain the library.
 	     ],
 	     [if test "$withval" = yes ; then
@@ -36,7 +37,7 @@ if test -n "$BLAS_HOME_PATH" ; then
 AC_MSG_CHECKING(for C interface to BLAS)
 fi
 
-   
+
 ###
 ### Check first for C interface to BLAS
 ###
@@ -45,27 +46,27 @@ fi
 if test -n "$BLAS_VAL"; then
 
 	## check with user supplied value
-	CBLAS="yes"	 	
+	CBLAS="yes"
 	CBLAS_FLAG="-D__LINBOX_HAVE_CBLAS"
 
 	if   test -d "$BLAS_VAL"; then
-		if test -r "$BLAS_VAL/lib/libcblas.a" ; then 
+		if test -r "$BLAS_VAL/lib/libcblas.a" ; then
 			ATLAS_NEEDED=`nm -u $BLAS_VAL/lib/libcblas.a | grep ATL`
 			if test -n "$ATLAS_NEEDED"; then
-				ATLAS_LIBS="-llapack -lcblas -latlas"	
+				ATLAS_LIBS="-llapack -lcblas -latlas"
 			else
 				ATLAS_LIBS="-lcblas -llapack"
-			fi		
-			BLAS_LIBS="-L${BLAS_VAL}/lib $ATLAS_LIBS" 
+			fi
+			BLAS_LIBS="-L${BLAS_VAL}/lib $ATLAS_LIBS"
 
-		elif test -r "$BLAS_VAL/libcblas.a" ; then 
+		elif test -r "$BLAS_VAL/libcblas.a" ; then
 			ATLAS_NEEDED=`nm -u $BLAS_VAL/libcblas.a | grep ATL`
 			if test -n "$ATLAS_NEEDED"; then
-				ATLAS_LIBS="-llapack -lcblas -latlas"	
+				ATLAS_LIBS="-llapack -lcblas -latlas"
 			else
 				ATLAS_LIBS="-lcblas -llapack"
-			fi		
-			BLAS_LIBS="-L${BLAS_VAL} $ATLAS_LIBS" 
+			fi
+			BLAS_LIBS="-L${BLAS_VAL} $ATLAS_LIBS"
                 elif test -r "$BLAS_VAL/include/mkl_cblas.h"; then
 			case `./config.guess` in
 				i686-*linux-gnu)
@@ -77,14 +78,14 @@ if test -n "$BLAS_VAL"; then
 				*)
 					echo "Sorry unsupported arch, please complain in linbox-use discussion group";
 					;;
-			esac	
+			esac
                         BLAS_LIBS="-L${BLAS_VAL}/lib/${MKL_ARCH}/ -lmkl_lapack64 -lmkl -lvml -lguide"
 		fi
 	else
 		BLAS_LIBS="$BLAS_VAL"
-	fi		
-	CXXFLAGS="${BACKUP_CXXFLAGS} ${CBLAS_FLAG}" 
-	LIBS="${BACKUP_LIBS} ${BLAS_LIBS}" 
+	fi
+	CXXFLAGS="${BACKUP_CXXFLAGS} ${CBLAS_FLAG}"
+	LIBS="${BACKUP_LIBS} ${BLAS_LIBS}"
 
 	AC_TRY_LINK(
 	[#define __LINBOX_CONFIGURATION
@@ -94,24 +95,24 @@ if test -n "$BLAS_VAL"; then
 	AC_TRY_RUN(
 	[#define __LINBOX_CONFIGURATION
        	 #include "linbox/config-blas.h"
-	 int main () {  double a[4] = {1.,2.,3.,4.}; double b[4]= {4.,3.,2.,1.}; double c[4]; 
+	 int main () {  double a[4] = {1.,2.,3.,4.}; double b[4]= {4.,3.,2.,1.}; double c[4];
 			cblas_dgemm(CblasRowMajor, CblasNoTrans,CblasNoTrans,2,2,2,1., a,2,b,2,0.,c,2);
 			if ( (c[0]!=8.) && (c[1]!=5.) && (c[2]!=20.) && (c[3]!=13))
 				return -1;
 			else
 				return 0;
 		      }
-	],[	
-	blas_found="yes"	
+	],[
+	blas_found="yes"
 	break
-	],[	
-	blas_problem="$problem $BLAS_VAL"	
-	unset BLAS_LIBS	
+	],[
+	blas_problem="$problem $BLAS_VAL"
+	unset BLAS_LIBS
 	],[
 	blas_found="yes"
 	blas_cross="yes"
 	break
-	])	
+	])
 	],
 	[
 	blas_found="no"
@@ -121,21 +122,21 @@ if test -n "$BLAS_VAL"; then
 else
 
 	## check in default path
-	for BLAS_HOME in ${DEFAULT_CHECKING_PATH} 
-	do		
+	for BLAS_HOME in ${DEFAULT_CHECKING_PATH}
+	do
 		CBLAS="yes"
 		CBLAS_FLAG="-D__LINBOX_HAVE_CBLAS"
-	
+
 		if test -r "/System/Library/Frameworks/Accelerate.framework"; then
 			BLAS_LIBS="-Wl,-framework -Wl,Accelerate"
 		elif test -r "$BLAS_HOME/lib/libcblas.a"; then
 
 			ATLAS_NEEDED=`nm -u $BLAS_HOME/lib/libcblas.a | grep ATL`
 			if test -n "$ATLAS_NEEDED"; then
-				ATLAS_LIBS="-llapack -lcblas -latlas"	
+				ATLAS_LIBS="-llapack -lcblas -latlas"
 			else
 				ATLAS_LIBS="-lcblas -llapack"
-			fi		
+			fi
 			if test "x$BLAS_HOME" = "x/usr" -o "x$BLAS_HOME" = "x/usr/local" ; then
  				BLAS_LIBS=" ${ATLAS_LIBS}"
 			else
@@ -147,13 +148,13 @@ else
 			if test -n "$ATLAS_NEEDED"; then
 				ATLAS_LIBS="-llapack -lcblas -latlas"
 			else
-				ATLAS_LIBS="-lcblas -llapack"	
-			fi		
+				ATLAS_LIBS="-lcblas -llapack"
+			fi
 			BLAS_LIBS="-L${BLAS_HOME} ${ATLAS_LIBS}"
-		fi 
-	
-		CXXFLAGS="${BACKUP_CXXFLAGS} ${CBLAS_FLAG}" 
-		LIBS="${BACKUP_LIBS} ${BLAS_LIBS}" 
+		fi
+
+		CXXFLAGS="${BACKUP_CXXFLAGS} ${CBLAS_FLAG}"
+		LIBS="${BACKUP_LIBS} ${BLAS_LIBS}"
 
 		AC_TRY_LINK(
 		[#define __LINBOX_CONFIGURATION
@@ -163,24 +164,24 @@ else
 		AC_TRY_RUN(
 		[#define __LINBOX_CONFIGURATION
      	         #include "linbox/config-blas.h"
-		 int main () {  double a[4] = {1.,2.,3.,4.}; double b[4]= {4.,3.,2.,1.}; double c[4]; 
+		 int main () {  double a[4] = {1.,2.,3.,4.}; double b[4]= {4.,3.,2.,1.}; double c[4];
 				cblas_dgemm(CblasRowMajor, CblasNoTrans,CblasNoTrans,2,2,2,1., a,2,b,2,0.,c,2);
 				if ( (c[0]!=8.) && (c[1]!=5.) && (c[2]!=20.) && (c[3]!=13))
 					return -1;
 				else
 					return 0;
 			      }
-		],[	
-		blas_found="yes"	
+		],[
+		blas_found="yes"
 		break
-		],[	
-		blas_problem="$problem $BLAS_HOME"	
-		unset BLAS_LIBS	
+		],[
+		blas_problem="$problem $BLAS_HOME"
+		unset BLAS_LIBS
 		],[
 		blas_found="yes"
 		blas_cross="yes"
 		break
-		])	
+		])
 		],
 		[
  		blas_found="no"
@@ -190,12 +191,17 @@ else
 	done
 fi
 
+
+
 if test "x$blas_found" = "xyes"; then
 	AC_SUBST(BLAS_LIBS)
 	AC_SUBST(CBLAS_FLAG)
 	AC_DEFINE(HAVE_BLAS,1,[Define if BLAS is installed])
 	AC_DEFINE(HAVE_CBLAS,1,[Define if C interface to BLAS is available])
 	AC_DEFINE(BLAS_AVAILABLE,,[Define if BLAS routines are available])
+	#whenever there is -lclbas, there is -llapack so we enable  dgetrf/dgetri without checking.
+	AC_DEFINE(HAVE_DGETRF,1,[Define if dgetrf is available])
+	AC_DEFINE(HAVE_DGETRI,1,[Define if dgetrf is available])
 	HAVE_BLAS=yes
 	if test "x$blas_cross" != "xyes"; then
 		AC_MSG_RESULT(found)
@@ -209,9 +215,9 @@ if test "x$blas_found" = "xyes"; then
 elif test -n "$blas_problem"; then
 	AC_MSG_RESULT(not working)
 	#echo "Sorry, your BLAS are not working. Disabling."
-elif test "x$blas_found" = "xno" ; then	
+elif test "x$blas_found" = "xno" ; then
 	AC_MSG_RESULT(not found)
-fi	
+fi
 
 
 ###
@@ -219,21 +225,21 @@ fi
 ###
 if test "x$blas_found" != "xyes" ; then
 	AC_MSG_CHECKING(for others BLAS)
-	CBLAS="no"	 	
+	CBLAS="no"
 	CBLAS_FLAG=""
 	if test -n "$BLAS_VAL"; then
 		if   test -d "$BLAS_VAL"; then
 			if test -r "${BLAS_VAL}/lib/libblas.a" ; then
-				BLAS_LIBS="-L${BLAS_VAL}/lib  -lblas" 
+				BLAS_LIBS="-L${BLAS_VAL}/lib  -lblas"
 			fi
 			if test -r "${BLAS_VAL}/libblas.a" ; then
-				BLAS_LIBS="-L${BLAS_VAL}  -lblas" 
+				BLAS_LIBS="-L${BLAS_VAL}  -lblas"
 			fi
 		else
 			BLAS_LIBS=$BLAS_VAL
-		fi		
-		CXXFLAGS="${BACKUP_CXXFLAGS} ${CBLAS_FLAG}" 
-		LIBS="${BACKUP_LIBS} ${BLAS_LIBS}" 
+		fi
+		CXXFLAGS="${BACKUP_CXXFLAGS} ${CBLAS_FLAG}"
+		LIBS="${BACKUP_LIBS} ${BLAS_LIBS}"
 
 		AC_TRY_LINK(
 		[#define __LINBOX_CONFIGURATION
@@ -243,24 +249,24 @@ if test "x$blas_found" != "xyes" ; then
 		AC_TRY_RUN(
 		[#define __LINBOX_CONFIGURATION
        		 #include "linbox/config-blas.h"
-		 int main () {  double a[4] = {1.,2.,3.,4.}; double b[4]= {4.,3.,2.,1.}; double c[4]; 
+		 int main () {  double a[4] = {1.,2.,3.,4.}; double b[4]= {4.,3.,2.,1.}; double c[4];
 				cblas_dgemm(CblasRowMajor, CblasNoTrans,CblasNoTrans,2,2,2,1., a,2,b,2,0.,c,2);
 				if ( (c[0]!=8.) && (c[1]!=5.) && (c[2]!=20.) && (c[3]!=13))
 					return -1;
 				else
 					return 0;
 			      }
-		],[	
-		blas_found="yes"	
+		],[
+		blas_found="yes"
 		break
-		],[	
-		blas_problem="$problem $BLAS_"	
-		unset BLAS_LIBS	
+		],[
+		blas_problem="$problem $BLAS_"
+		unset BLAS_LIBS
 		],[
 		blas_found="yes"
 		blas_cross="yes"
 		break
-		])	
+		])
 		],
 		[
 		blas_found="no"
@@ -270,7 +276,7 @@ if test "x$blas_found" != "xyes" ; then
 	else
 
 		## check in default path
-		for BLAS_HOME in ${DEFAULT_CHECKING_PATH} 
+		for BLAS_HOME in ${DEFAULT_CHECKING_PATH}
 		do
 			CBLAS="no"
 			CBLAS_FLAG=""
@@ -293,37 +299,37 @@ if test "x$blas_found" != "xyes" ; then
 				fi
 			elif test -r "$BLAS_HOME/libblas.a"; then
 				BLAS_LIBS="-L${BLAS_HOME} -lblas"
-			fi 
-	
-			CXXFLAGS="${BACKUP_CXXFLAGS} ${CBLAS_FLAG}" 
-			LIBS="${BACKUP_LIBS} ${BLAS_LIBS}" 
+			fi
 
-			AC_TRY_LINK(	
+			CXXFLAGS="${BACKUP_CXXFLAGS} ${CBLAS_FLAG}"
+			LIBS="${BACKUP_LIBS} ${BLAS_LIBS}"
+
+			AC_TRY_LINK(
 			[#define __LINBOX_CONFIGURATION
-       		         #include "linbox/config-blas.h"],	
+       		         #include "linbox/config-blas.h"],
 			[double a;],
 			[
 			AC_TRY_RUN(
 			[#define __LINBOX_CONFIGURATION
      		         #include "linbox/config-blas.h"
-			 int main () {  double a[4] = {1.,2.,3.,4.}; double b[4]= {4.,3.,2.,1.}; double c[4]; 
+			 int main () {  double a[4] = {1.,2.,3.,4.}; double b[4]= {4.,3.,2.,1.}; double c[4];
 					cblas_dgemm(CblasRowMajor, CblasNoTrans,CblasNoTrans,2,2,2,1., a,2,b,2,0.,c,2);
 					if ( (c[0]!=8.) && (c[1]!=5.) && (c[2]!=20.) && (c[3]!=13))
 						return -1;
 					else
 						return 0;
 				      }
-			],[	
-			blas_found="yes"	
+			],[
+			blas_found="yes"
 			break
-			],[	
-			blas_problem="$problem $BLAS_HOME"	
-			unset BLAS_LIBS	
+			],[
+			blas_problem="$problem $BLAS_HOME"
+			unset BLAS_LIBS
 			],[
 			blas_found="yes"
 			blas_cross="yes"
 			break
-			])	
+			])
 			],
 			[
  			blas_found="no"
@@ -336,8 +342,8 @@ if test "x$blas_found" != "xyes" ; then
 
 	if test "x$blas_found" = "xyes"; then
 		AC_SUBST(BLAS_LIBS)
-		AC_SUBST(CBLAS_FLAG)	
-		AC_DEFINE(HAVE_BLAS,1,[Define if BLAS is installed])	
+		AC_SUBST(CBLAS_FLAG)
+		AC_DEFINE(HAVE_BLAS,1,[Define if BLAS is installed])
 		AC_DEFINE(BLAS_AVAILABLE,,[Define if BLAS routines are available])
 		HAVE_BLAS=yes
 		if test "x$blas_cross" != "xyes"; then
@@ -352,7 +358,7 @@ if test "x$blas_found" != "xyes" ; then
 		AC_MSG_RESULT(problem)
 		echo "Sorry, your BLAS are not working. Disabling."
 		ifelse([$3], , :, [$3])
-	elif test "x$blas_found" = "xno" ; then	
+	elif test "x$blas_found" = "xno" ; then
 		AC_MSG_RESULT(not found)
 		ifelse([$3], , :, [$3])
 	fi
@@ -374,23 +380,23 @@ if test "x$blas_found" != "xyes" ; then
 			else
 				return 0;
 		      }
-	],[	
-	dgetrf_found="yes"	
+	],[
+	dgetrf_found="yes"
 	break
-	],[	
-	dgetrf_problem="$problem"	
+	],[
+	dgetrf_problem="$problem"
 	],[
 	break
-	])	
+	])
 
 	if test "x$dgetrf_found" = "xyes"; then
 		AC_MSG_RESULT(found)
 		AC_DEFINE(HAVE_DGETRF,1,[Define if dgetrf is available])
 	else
 		AC_MSG_RESULT(disabling)
-		#AC_DEFINE(HAVE_DGETRF,0,[Define if dgetrf is available])	
+		#AC_DEFINE(HAVE_DGETRF,0,[Define if dgetrf is available])
 	fi
-	
+
 ## Check for dtrtri (mainly for Goto less than 1.7)
 	AC_MSG_CHECKING(for dtrtri)
 	AC_TRY_RUN(
@@ -405,14 +411,14 @@ if test "x$blas_found" != "xyes" ; then
 			else
 				return 0;
 		      }
-	],[	
-	dtrtri_found="yes"	
+	],[
+	dtrtri_found="yes"
 	break
-	],[	
-	dtrtri_problem="$problem"	
+	],[
+	dtrtri_problem="$problem"
 	],[
 	break
-	])	
+	])
 
 	if test "x$dtrtri_found" = "xyes"; then
 		AC_MSG_RESULT(found)
@@ -437,11 +443,11 @@ if test "x$blas_found" != "xyes" ; then
 			else
 				return 0;
 		      }
-	],[	
-	dgetri_found="yes"	
+	],[
+	dgetri_found="yes"
 	break
-	],[	
-	dgetri_problem="autoimplement"	
+	],[
+	dgetri_problem="autoimplement"
 	],[
 	break
 	])
@@ -453,22 +459,22 @@ if test "x$blas_found" != "xyes" ; then
 			AC_TRY_RUN(
 			[#define __LINBOX_CONFIGURATION
 		 	 #define __LINBOX_AUTOIMPLEMENT_DGETRI
-		 	 #define __LINBOX_HAVE_DGETRI 
+		 	 #define __LINBOX_HAVE_DGETRI
 		 	 #define __LINBOX_HAVE_DTRTRI
 	 	 	 #include "linbox/config-blas.h"
 		 	 int main () {  double a[4] = {2.,0.5,4.,1.};
-					int ipiv[2] = {2,2};				
+					int ipiv[2] = {2,2};
 					clapack_dgetri(CblasRowMajor, 2, a, 2, ipiv);
 					if ( (a[0]!=-2.) && (a[1]!=1.) && (a[2]!=1.5) && (a[3]!=-0.5))
 						return -1;
 					else
 						return 0;
 				      }
-			],[	
-			dgetri_found="yes"	
+			],[
+			dgetri_found="yes"
 			break
-			],[	
-			dgetri_problem="$problem"	
+			],[
+			dgetri_problem="$problem"
 			],[
 			break
 			])
@@ -479,15 +485,15 @@ if test "x$blas_found" != "xyes" ; then
 			else
 				AC_MSG_RESULT(disabling)
 				AC_DEFINE(HAVE_DGETRI,0,[Define if dgetri is available])
-			fi				
-		else	
+			fi
+		else
 			AC_MSG_RESULT(disabling)
 			#AC_DEFINE(HAVE_DGETRI,0,[Define if dgetri is available])
 		fi
 	else
 		AC_MSG_RESULT(working)
 		AC_DEFINE(HAVE_DGETRI,1,[Define if dgetri is available])
-	fi	
+	fi
 fi
 
 
