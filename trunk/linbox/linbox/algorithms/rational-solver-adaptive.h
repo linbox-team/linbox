@@ -50,8 +50,9 @@ namespace LinBox
 				typename IRing::Element tmp;
 				for(typename InVector::const_iterator biter = b.begin();
 				    biter != b.end();
-				    ++biter)
+				    ++biter) {
 					Ib.push_back( M.field().init(tmp, *biter) );
+				}
 				ret = solver. solve(num, den, M, Ib);
 			}
 

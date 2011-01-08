@@ -928,7 +928,7 @@ namespace LinBox
 		{
 
 			if(M. rowdim() != M. coldim()) {
-				std::cerr << __func__ << " (" << __FILE__ << ';' << __LINE__ << ") Matrix is not square... Failed" << std::endl;
+				throw(PreconditionFailed(__func__,__FILE__,__LINE__," Matrix is not square...")) ;
 				return SS_FAILED;
 			}
 
@@ -955,7 +955,9 @@ namespace LinBox
 				integer threshold; threshold = 1; threshold <<= 50;
 
 				if ((mentry > threshold) || (bnorm > threshold))  {
+#ifdef DEBUG
 					std::cerr << __func__ << " (" << __FILE__ << ';' << __LINE__ << ") Entries in matrix are too big for NumericalTraits... Failed" << std::endl;
+#endif
 					return SS_FAILED;
 				}
 			}
@@ -1001,7 +1003,9 @@ namespace LinBox
 		SolverReturnStatus solve(OutVector& num, Integer& den,
 					 const IMatrix& M, const InVector& b) const
 		{
-			throw(LinBoxFailure(__func__,__FILE__,__LINE__,"LinBox does not have \"dgetrf\" and \"dgetri\" mandatory for \'RationalSolver<...,NumericalTraits>\'"));
+#ifdef DEBUG
+			std::cerr << __func__ << " (" << __FILE__ << ';' << __LINE__ <<"LinBox does not have \"dgetrf\" and \"dgetri\" mandatory for \'RationalSolver<...,NumericalTraits>\'" << std::endl;
+#endif
 			return SS_FAILED;
 		}
 #endif
