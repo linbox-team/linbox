@@ -58,7 +58,7 @@ namespace LinBox
 		Ring _Z;
 		RRBase _RR;
 		mutable size_t RecCounter;
-		const RReconstructionSchedule& _M;
+		const RReconstructionSchedule  _M;
 		const size_t THRESHOLD_;
 		const size_t rbound_;
 	public:
@@ -89,7 +89,10 @@ namespace LinBox
 
 		}
 
-		int getCounter() { return RecCounter;}
+		int getCounter()
+		{
+		       	return RecCounter;
+		}
 
 		bool scheduled(const size_t i) const
 		{
@@ -271,7 +274,7 @@ namespace LinBox
 			div_counter=0; mul_counter=0; gcd_counter=0;
 		}
 
-		void write(ostream& is) {
+		void write(std::ostream& is) {
 			is << div_counter << " divisions\n";
 			is << mul_counter << " multiplications\n";
 			is << gcd_counter << " gcds\n";
@@ -298,7 +301,7 @@ namespace LinBox
 
 		virtual ~RReconstructionBase() {}
 
-		void write(ostream& is) const
+		void write(std::ostream& is) const
 		{
 			C.write(is);
 		}
@@ -336,7 +339,7 @@ namespace LinBox
 
 		~RReconstructionBase() {}
 #if 0
-		const void write(ostream& is) {
+		const void write(std::ostream& is) {
 			C.write(is);
 		}
 #endif

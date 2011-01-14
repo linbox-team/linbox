@@ -77,10 +77,11 @@ BASIC_TESTS =  \
         test-rational-solver            \
         test-rational-solver-adaptive   \
         test-last-invariant-factor      \
-        test-charpoly  \
-		test-ftrmm \
-		test-cra   \
-		test-cradomain
+        test-charpoly                   \
+		test-ftrmm                      \
+		test-cra                        \
+		test-cradomain                  \
+		test-rational-reconstruction-base
 
 # tests of components not adhering to LinBox requirements.
 NONCOMPLIANT_TESTS =                   \
@@ -238,10 +239,9 @@ test_rational_matrix_factory_SOURCES =  \
         test-rational-matrix-factory.C  \
         test-common.h
 
-#        test-rational-reconstruction-base \
-#test_rational_reconstruction_base_SOURCES =  \
-#        test-rational-reconstruction-base.C  \
-#        test-common.h
+test_rational_reconstruction_base_SOURCES =  \
+	  test-rational-reconstruction-base.C  \
+	  test-common.h
 
 test_rat_solve_SOURCES =                \
         test-rat-solve.C                \

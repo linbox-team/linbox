@@ -60,8 +60,14 @@ struct Interator {
 		}
 	}
 
-	const std::vector<Integer>& getVector() { return _v; }
-	const double getLogSize() { return maxsize; }
+	const std::vector<Integer>& getVector()
+	{
+	       	return _v;
+       	}
+	double getLogSize() const
+	{
+	       	return maxsize;
+	}
 
 	template<typename Field>
 	std::vector<typename Field::Element>& operator()(std::vector<typename Field::Element>& v,

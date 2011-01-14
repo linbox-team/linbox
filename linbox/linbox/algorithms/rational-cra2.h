@@ -126,7 +126,7 @@ namespace LinBox
 					++genprime;
 					++coprime;
 					if (coprime > maxnoncoprime) {
-						cout << "you are running out of primes. " << maxnoncoprime << " coprime primes found";
+						std::cout << "you are running out of primes. " << maxnoncoprime << " coprime primes found";
 						Integer res; return Builder_.result(res);
 					}
 				}
@@ -186,7 +186,7 @@ namespace LinBox
 					++genprime;
 					++coprime;
 					if (coprime > maxnoncoprime) {
-						cout << "you are running out of primes. " << maxnoncoprime << " coprime primes found";
+						std::cout << "you are running out of primes. " << maxnoncoprime << " coprime primes found";
 						//Integer res; return Builder_.result(res);
 						return false;
 					}
@@ -243,7 +243,7 @@ namespace LinBox
 			Vect<Integer, Alloc<Integer> > f_in,m_in;
 			Builder_.getPreconditioner(f_in,m_in);
 
-			//while( ! Builder_.terminated() ) {
+			//while( ! Builder_.terminated() )
 			while (1) { // in case of terminated() - checks for RR of the whole vector
 				//++IterCounter;
 				++genprime;
@@ -251,7 +251,7 @@ namespace LinBox
 					++genprime;
 					++coprime;
 					if (coprime > maxnoncoprime) {
-						cout << "you are running out of primes. " << maxnoncoprime << " coprime primes found";
+						std::cout << "you are running out of primes. " << maxnoncoprime << " coprime primes found";
 						return num;
 					}
 				}
@@ -338,7 +338,7 @@ namespace LinBox
 					++genprime;
 					++coprime;
 					if (coprime > maxnoncoprime) {
-						cout << "you are running out of primes. " << maxnoncoprime << " coprime primes found";
+						std::cout << "you are running out of primes. " << maxnoncoprime << " coprime primes found";
 						return false;
 						//return Builder_.result(res);
 					}
@@ -347,30 +347,30 @@ namespace LinBox
 				Domain D(*genprime);
 				Vect<DomainElement, Alloc<DomainElement>  > r;
 				Builder_.progress( D, Iteration(r, D) );
-				//if (RR_.scheduled(IterCounter-1)) {
+				//if (RR_.scheduled(IterCounter-1))
 				++IterCounter;
-				/*
-				   Integer M ; Builder_.getModulus(M);
-				   if ( Builder_.terminated() ) {
-				   Vect<Integer> r ; Builder_.getResidue(r);
-				   if (RR_.reconstructRational(num,den,r,M) ) {
-				   Vect<Integer> vnum(num),vden(m_in.size(),den);
-				   Builder_.productin(vnum, f_in); Builder_.productin(vden,m_in);
-				   if (Builder_.changePreconditioner(vnum,vden)) break;
-				   else Builder_.changePreconditioner(f_in,m_in);//not optimal, may restore results
-				   }
-				   } else {
-				   Integer r ; Builder_.getResidue(r);
-				   Integer n,d;
-				   if (RR_.reconstructRational(n,d,r,M)) {
-				   Vect<Integer > vden(m_in.size(),d);
-				   Builder_.productin(vden,m_in);
-				   if (Builder_.changePreconditioner(f_in,vden)) break;
-				   else Builder_.changePreconditioner(f_in,m_in);//not optimal, may restore results
-				   }
-				   }
-				   }
-				   */
+
+#if 0
+				Integer M ; Builder_.getModulus(M);
+				if ( Builder_.terminated() ) {
+					Vect<Integer> r ; Builder_.getResidue(r);
+					if (RR_.reconstructRational(num,den,r,M) ) {
+						Vect<Integer> vnum(num),vden(m_in.size(),den);
+						Builder_.productin(vnum, f_in); Builder_.productin(vden,m_in);
+						if (Builder_.changePreconditioner(vnum,vden)) break;
+						else Builder_.changePreconditioner(f_in,m_in);//not optimal, may restore results
+					}
+				} else {
+					Integer r ; Builder_.getResidue(r);
+					Integer n,d;
+					if (RR_.reconstructRational(n,d,r,M)) {
+						Vect<Integer > vden(m_in.size(),d);
+						Builder_.productin(vden,m_in);
+						if (Builder_.changePreconditioner(f_in,vden)) break;
+						else Builder_.changePreconditioner(f_in,m_in);//not optimal, may restore results
+					}
+				}
+#endif
 			}
 			if (Builder_.terminated()) {
 				//Vect<Integer> p_mul, p_div,res, g;
@@ -393,7 +393,8 @@ namespace LinBox
 #endif
 
 				return true;
-			} else return false;
+			}
+			else return false;
 		}
 
 #ifdef CRATIMING
@@ -403,38 +404,38 @@ namespace LinBox
 			return os <<  "Iterations:" << IterCounter << "\n" ;
 		}
 #endif
-		};
+	};
 
 #ifdef RCRATIMING
 
-		class RCRATimer {
-		public:
-			mutable Timer ttInit, tt RRecon, ttIRecon, ttImaging, ttIteration, ttOther;
-			void clear() const
-			{
-				ttInit.clear();
-				ttRRecon.clear();
-				ttIRecon.clear();
-				ttImaging.clear();
-				ttIteration.clear();
-				ttother.clear();
-			}
+	class RCRATimer {
+	public:
+		mutable Timer ttInit, tt RRecon, ttIRecon, ttImaging, ttIteration, ttOther;
+		void clear() const
+		{
+			ttInit.clear();
+			ttRRecon.clear();
+			ttIRecon.clear();
+			ttImaging.clear();
+			ttIteration.clear();
+			ttother.clear();
+		}
 #if 0
-			template<class RR, class LC>
-			void update(RR& rr, LC& lc) const
-			{
-				ttSetup += lc.ttSetup;
-				ttRecon += rr.ttRecon;
-				ttGetDigit += lc.ttGetDigit;
-				ttGetDigitConvert += lc.ttGetDigitConvert;
-				ttRingOther += lc.ttRingOther;
-				ttRingApply += lc.ttRingApply;
-			}
+		template<class RR, class LC>
+		void update(RR& rr, LC& lc) const
+		{
+			ttSetup += lc.ttSetup;
+			ttRecon += rr.ttRecon;
+			ttGetDigit += lc.ttGetDigit;
+			ttGetDigitConvert += lc.ttGetDigitConvert;
+			ttRingOther += lc.ttRingOther;
+			ttRingApply += lc.ttRingApply;
+		}
 #endif
-		};
+	};
 #endif
 
-	}
+}
 
 #undef RCRATIMING
 #undef CRATIMING
