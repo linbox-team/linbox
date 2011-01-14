@@ -266,9 +266,9 @@ namespace LinBox
 			//Computation of residue_
 
 			//std::vector< double >::iterator  _dsz_it = RadixSizes_.begin();//nie wiem
-			std::vector< LazyProduct >::iterator _mod_it = FullMultipCRA<Domain>::RadixPrimeProd_.end();// list of prime products
-			std::vector< std::vector<Integer> >::iterator _tab_it = FullMultipCRA<Domain>::RadixResidues_.end();// list of residues as vectors of size 1
-			std::vector< bool >::iterator    _occ_it = FullMultipCRA<Domain>::RadixOccupancy_.end();//flags of occupied fields
+			std::vector< LazyProduct >::iterator          _mod_it = FullMultipCRA<Domain>::RadixPrimeProd_.end(); // list of prime products
+			std::vector< std::vector<Integer> >::iterator _tab_it = FullMultipCRA<Domain>::RadixResidues_.end();  // list of residues as vectors of size 1
+			std::vector< bool >::iterator                 _occ_it = FullMultipCRA<Domain>::RadixOccupancy_.end(); //flags of occupied fields
 			int n= FullMultipCRA<Domain>::RadixOccupancy_.size();
 			//std::vector<Integer> ri(1); LazyProduct mi; double di;//nie wiem
 			// could be much faster if max occupandy is stored

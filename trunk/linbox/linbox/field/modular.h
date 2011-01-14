@@ -171,7 +171,14 @@ namespace LinBox
 		 * @return integer representing characteristic of the domain.
 		 */
 		integer &characteristic (integer &c) const
-		{ return c = _modulus; }
+		{
+		       	return c = _modulus;
+		}
+
+		integer characteristic () const
+		{
+			return  _modulus;
+		}
 
 		//@} Object Management
 

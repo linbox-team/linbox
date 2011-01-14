@@ -47,11 +47,11 @@
 
 
 //#define __LINBOX_HAVE_FPLLL
-//!@bug BB: demander FPLLL comme dépendance optionnelle...
+//!@bug demander FPLLL comme dépendance optionnelle...
 #ifdef __LINBOX_HAVE_FPLLL
 extern "C" {
-#include </home/pgiorgi/Library/fplll-1.1/myheuristic.h>
-#include </home/pgiorgi/Library/fplll-1.1/myproved.h>
+#include <libfplll/myheuristic.h>
+#include <libfplll/myproved.h>
 }
 #include <linbox/algorithms/short-vector.h>
 #endif
@@ -178,7 +178,7 @@ namespace LinBox
 		 *  from p-adic digit vector sequence.
 		 *  An early termination technique is used.
 		 *  Answer is a pair (numerator, common denominator)
-		 *  The trick to reconstruct the raitonal solution (V. Pan) is implemented.
+		 *  The trick to reconstruct the rational solution (V. Pan) is implemented.
 		 *  Implement the certificate idea, preprint submitted to ISSAC'05
 		 */
 		template<class Vector>
@@ -370,7 +370,7 @@ namespace LinBox
 			return true; //lifted ok
 		} // end of getRational1
 
-		/** \brief Reconstruct a vector of rational numbers
+		/** Reconstruct a vector of rational numbers
 		 *  from p-adic digit vector sequence.
 		 *  An early termination technique is used.
 		 *  Answer is a vector of pair (num, den)

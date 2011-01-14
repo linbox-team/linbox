@@ -403,7 +403,7 @@ namespace LinBox
 		 * @return \p 0 if the field is too big, a positive number otherwise, \p -1 if infinity
 		 * on general fields, it is \p 1.
 		 */
-		unsigned long AccBound(const Element&r) const
+		unsigned long AccBound(const Element r) const
 		{
 			Element one, zero ; init(one,1UL) ; init(zero,0UL);
 			double max_double = (double) (1ULL<<DBL_MANT_DIG) - modulus ; /* other wise 2^52+(2^52-1) */

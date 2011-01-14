@@ -151,7 +151,7 @@ namespace LinBox
 		virtual void progress (const Integer& D, const Integer& e)
 		{
 			// Precondition : initialize has been called once before
-			linbox_check(occurency_ > 0);
+			// linbox_check(occurency_ > 0);
 #ifdef CRATIMING
 			tIRecon.clear();
 			tIRecon.start();
@@ -187,7 +187,7 @@ namespace LinBox
 		virtual void progress (const Domain& D, const DomainElement& e)
 		{
 			// Precondition : initialize has been called once before
-			linbox_check(occurency_ > 0);
+			// linbox_check(occurency_ > 0);
 #ifdef CRATIMING
 			tIRecon.clear();
 			tIRecon.start();
