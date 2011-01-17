@@ -1,10 +1,10 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-/* linbox/field/modular-double.h
+/* linbox/field/modular-balanced-double.h
  * Copyright (C) 2003 Pascal Giorgi
  *               2008 Clement Pernet
- * Written by Clement Pernet <clement.pernet@gmail.com>
- *            Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
+ * Written by Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
+ * and Clement Pernet <Clement.Pernet@imag.fr>
  *
  * ------------------------------------
  *
@@ -78,12 +78,14 @@ namespace LinBox
 
 		typedef double Element;
 		typedef ModularBalancedRandIter<double> RandIter;
-		typedef NonzeroRandIter<ModularBalanced<double>,RandIter> NonZeroRandIter;
+		typedef NonzeroRandIter<ModularBalanced<double>, RandIter > NonZeroRandIter;
 
 		static ClassifyRing <ModularBalanced<double> >::categoryTag getCategory()
 		{
 			return ClassifyRing<ModularBalanced<double> >::categoryTag();
 		}
+
+		// const bool balanced ;
 
 		ModularBalanced () {}
 

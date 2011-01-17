@@ -63,24 +63,27 @@ FFPACK::KrylovElim( const Field& F, const size_t M, const size_t N,
 			return 0;
 		}
 		*P = ip;
-		// 	cerr<<"iterates = ";
-		// 		cerr<<"iterates avant"<<endl;
-		// 		for (size_t i=0; i<N; ++i)
-		//  			cerr<<iterates[i]<<" ";
-		//  		cerr<<endl;
-		//  		cerr<<"inviterates["<<N<<"-"<<ip<<"] ="<<inviterates[N-ip]<<endl;
-		//  		cerr<<"iterates[inviterates[N-ip]] ="<<iterates[inviterates[N-ip]]<<endl;
+#if 0
+		cerr<<"iterates = ";
+		cerr<<"iterates avant"<<endl;
+		for (size_t i=0; i<N; ++i)
+			cerr<<iterates[i]<<" ";
+		cerr<<endl;
+		cerr<<"inviterates["<<N<<"-"<<ip<<"] ="<<inviterates[N-ip]<<endl;
+		cerr<<"iterates[inviterates[N-ip]] ="<<iterates[inviterates[N-ip]]<<endl;
+#endif
 		iterates [inviterates[N-ip] -1 ] = 0;
 		if (ip >0){
 			iterates [inviterates[N] -1 ] = N-ip;
 			inviterates[N-ip] = inviterates[N];
 		}
-		// 		cerr<<"iterates apres"<<endl;
-		// 		for (size_t i=0; i<N; ++i)
-		//  			cerr<<iterates[i]<<" ";
-		//  		cerr<<endl;
-		//cout<<"iterates ["<<N<<"-1-"<<ip<<"] = 0"<<endl;
-
+#if 0
+		cerr<<"iterates apres"<<endl;
+		for (size_t i=0; i<N; ++i)
+			cerr<<iterates[i]<<" ";
+		cerr<<endl;
+		cout<<"iterates ["<<N<<"-1-"<<ip<<"] = 0"<<endl;
+#endif
 		if (ip!=0){
 			// swap the pivot
 			typename Field::Element tmp=*A;
@@ -154,12 +157,13 @@ FFPACK::SpecRankProfile (const Field& F, const size_t M, const size_t N,
 		inviterates[i+1] = iterates[i] = i+1;
 
 	size_t R = KrylovElim (F, M, N, A, lda, P, Q, deg, iterates, inviterates, N,0);
-	//cerr<<"Apres tout iterates = "<<endl;
+#if 0
+	cerr<<"Apres tout iterates = "<<endl;
 
-	// 	for (size_t i=0; i<N; ++i)
-	// 		cerr<<iterates[i]<<" ";
-	// 	cerr<<endl;
-
+	for (size_t i=0; i<N; ++i)
+		cerr<<iterates[i]<<" ";
+	cerr<<endl;
+#endif
 	size_t curr_row = 0;
 	size_t it_idx = 0;
 	size_t bk_idx = 0;

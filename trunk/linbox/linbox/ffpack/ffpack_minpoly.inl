@@ -43,7 +43,7 @@ FFPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
 		}
 	}while(KeepOn);
 
-	//nRow = 1;
+	// nRow = 1;
 	// LUP factorization of the Krylov Base Matrix
 	k = LUdivine_construct (F, FflasUnit, N+1, N, A, lda, X, ldx, U, P, true,
 				MinTag, kg_mc, kg_mb, kg_j);

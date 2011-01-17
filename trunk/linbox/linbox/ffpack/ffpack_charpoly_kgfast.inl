@@ -38,15 +38,19 @@ FFPACK::KGFast ( const Field& F, std::list<Polynomial>& charp,
 
 
 	while ( mc > 0 ) {
-		// 		std::cerr<<"Boucle1: mc,mb,N="<<mc<<" "<<mb<<" "<<N<<std::endl;
-		// 		write_field( F, std::cerr, A, N, N, lda );
+#if 0
+		std::cerr<<"Boucle1: mc,mb,N="<<mc<<" "<<mb<<" "<<N<<std::endl;
+		write_field( F, std::cerr, A, N, N, lda );
+#endif
 		size_t j=0;
 		C = A + (N-mc);
 		//std::cerr<<std::endl<<"mc="<<mc<<":";
 		while ( (j+1)*mc < N ) {
 			mb = MIN ( mb, N-(j+1)*mc );
-			// 			std::cerr<<"Boucle2: j,mb="<<j<<" "<<mb<<std::endl;
-			// 			write_field( F, std::cerr, A, N, N, lda );
+#if 0
+			std::cerr<<"Boucle2: j,mb="<<j<<" "<<mb<<std::endl;
+			write_field( F, std::cerr, A, N, N, lda );
+#endif
 			B = A + (N-mc-mb);
 
 			// B1 <- C1^-1.B1
@@ -67,8 +71,10 @@ FFPACK::KGFast ( const Field& F, std::list<Polynomial>& charp,
 				return -1;
 
 			}
-			// 			std::cerr<<"LUP="<<std::endl;
-			// 			write_field( F, std::cerr, LUP, mc, mc, mc );
+#if 0
+			std::cerr<<"LUP="<<std::endl;
+			write_field( F, std::cerr, LUP, mc, mc, mc );
+#endif
 			//std::cerr<<" "<<r;
 			ftrsm(F, FflasLeft, FflasLower, FflasNoTrans, FflasUnit,
 			      mc, mb, one, LUP, mc , B, lda);
@@ -79,16 +85,20 @@ FFPACK::KGFast ( const Field& F, std::list<Polynomial>& charp,
 
 			delete[] P;
 			delete[] Q;
-			// 			std::cerr<<"Apres B1<-C1^-1"<<std::endl;
-			// 			write_field( F, std::cerr, A, N, N, lda );
+#if 0
+			std::cerr<<"Apres B1<-C1^-1"<<std::endl;
+			write_field( F, std::cerr, A, N, N, lda );
+#endif
 
 			// B2 <- B2 - C2.B1
 			fgemm(F, FflasNoTrans, FflasNoTrans, N-mc, mb, mc,
 			      mone, C+mc*lda, lda, B, lda,
 			      one, B+mc*lda, lda);
 
-			// 			std::cerr<<"Apres B2<-B2-C2.B1"<<std::endl;
-			//                         write_field( F, std::cerr, A, N, N, lda );
+#if 0
+			std::cerr<<"Apres B2<-B2-C2.B1"<<std::endl;
+						write_field( F, std::cerr, A, N, N, lda );
+#endif
 
 			// Shifting B: B1;B2 -> B2;B1
 			typename Field::Element * tmp = new typename Field::Element[mc*mb];
@@ -99,25 +109,31 @@ FFPACK::KGFast ( const Field& F, std::list<Polynomial>& charp,
 			for (size_t i=0; i<mc; ++i)
 				fcopy( F, mb, B+(i+N-mc)*lda, 1, tmp+i*mb, 1);
 			delete[] tmp;
-			// 			std::cerr<<"Apres shift de B"<<std::endl;
-			//                         write_field( F, std::cerr, A, N, N, lda );
+#if 0
+			std::cerr<<"Apres shift de B"<<std::endl;
+						write_field( F, std::cerr, A, N, N, lda );
+#endif
 
 
 			// C3 <- B3.C1 + C3
 			fgemm(F, FflasNoTrans, FflasNoTrans, (j+1)*mc, mc, mb,
 			      one, B+(N-(j+1)*mc)*lda, lda, C+(N-(j+1)*mc-mb)*lda, lda,
 			      one, C+(N-(j+1)*mc)*lda, lda);
+#if 0
 			// std::cerr<<"C3 <- B3.C1 + C3: B3="<<std::endl;
-			//                         write_field( F, std::cerr, B+(N-(j+1)*mc)*lda, (j+1)*mc, mb, lda );
-			// 			std::cerr<<"C3 <- B3.C1 + C3: C1"<<std::endl;
-			//                         write_field( F, std::cerr,  C+(N-(j+1)*mc-mb)*lda, mb, mc, lda );
-			// 			std::cerr<<"C3 <- B3.C1 + C3: C3="<<std::endl;
-			//                         write_field( F, std::cerr, C+(N-(j+1)*mc)*lda, (j+1)*mc, mc, lda );
+						write_field( F, std::cerr, B+(N-(j+1)*mc)*lda, (j+1)*mc, mb, lda );
+			std::cerr<<"C3 <- B3.C1 + C3: C1"<<std::endl;
+						write_field( F, std::cerr,  C+(N-(j+1)*mc-mb)*lda, mb, mc, lda );
+			std::cerr<<"C3 <- B3.C1 + C3: C3="<<std::endl;
+						write_field( F, std::cerr, C+(N-(j+1)*mc)*lda, (j+1)*mc, mc, lda );
+#endif
 
 			int lambda = N - mb - (j+1)*mc;
 			if ( int(mb) < lambda ){
 
-				// 				std::cerr<<"mb<lambda"<<std::endl;
+#if 0
+				std::cerr<<"mb<lambda"<<std::endl;
+#endif
 				typename Field::Element * tmp = new typename Field::Element[lambda*mc];
 
 				// tmp <- C1
@@ -140,7 +156,9 @@ FFPACK::KGFast ( const Field& F, std::list<Polynomial>& charp,
 				delete[] tmp;
 			}
 			else if ( lambda > 0 ){
-				// 				std::cerr<<"lambda>0"<<std::endl;
+#if 0
+				std::cerr<<"lambda>0"<<std::endl;
+#endif
 
 				typename Field::Element * tmp = new typename Field::Element[mb*mc];
 				// C1 <- B2.C2 + C1
@@ -163,7 +181,9 @@ FFPACK::KGFast ( const Field& F, std::list<Polynomial>& charp,
 				delete[] tmp;
 			}
 			else{
-				// 				std::cerr<<"lambda<0"<<std::endl;
+#if 0
+				std::cerr<<"lambda<0"<<std::endl;
+#endif
 				mb = N - (j+1)*mc;
 				typename Field::Element * tmp = new typename Field::Element[mb*mc];
 

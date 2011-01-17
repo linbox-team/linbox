@@ -149,7 +149,7 @@
 
 #ifndef __FFLAS__GENERIC
 template <>
-class FFLAS::Mjoin(ftrmm, Mjoin(__FFLAS__SIDE, Mjoin(__FFLAS__UPLO, Mjoin(__FFLAS__TRANS, __FFLAS__DIAG))))<__FFLAS__ELEMENT> {
+class FFLAS::Mjoin(ftrmm, Mjoin(__FFLAS__SIDE, Mjoin(__FFLAS__UPLO, Mjoin(__FFLAS__TRANS, __FFLAS__DIAG))))<__FFLAS__ELEMENT>{
 public:
 
 template <class Field>
@@ -181,7 +181,7 @@ void operator () (const Field& F, const size_t M, const size_t N,
 	static typename Field::Element one;
 	F.init(one, 1.0);
 
-#if 0
+#if 1
 	size_t nsplit = DotProdBound (F, 0, one,
 #ifdef __FFLAS__DOUBLE
 				    FflasDouble
@@ -190,7 +190,7 @@ void operator () (const Field& F, const size_t M, const size_t N,
 #endif
 				    );
 #endif
-	size_t nsplit = (size_t) F.AccBound(one);
+	// size_t nsplit = (size_t) F.AccBound(one);
 
 	size_t nbblocsplit = (__FFLAS__Na-1) / nsplit;
 	size_t nrestsplit = ((__FFLAS__Na-1) % nsplit) +1;
@@ -234,7 +234,7 @@ void operator()	(const Field& F, const size_t M, const size_t N,
 {
 
 	static typename Field::Element one;
-	F.init(one, 1UL);
+	F.init(one, 1.0);
 	if (__FFLAS__Na == 1)
 #ifdef __FFLAS__NONUNIT
 		fscal(F, __FFLAS__Bdim, *A, B, __FFLAS__Bnorminc);
@@ -296,4 +296,3 @@ void operator()	(const Field& F, const size_t M, const size_t N,
 #undef __FFLAS__Bnorminc
 #undef Mjoin
 #undef my_join
-

@@ -160,8 +160,7 @@
 
 #ifndef __FFLAS__GENERIC
 template <>
-class FFLAS::Mjoin(ftrsm, Mjoin(__FFLAS__SIDE, Mjoin(__FFLAS__UPLO, Mjoin(__FFLAS__TRANS, __FFLAS__DIAG))))<__FFLAS__ELEMENT>
-{
+class FFLAS::Mjoin(ftrsm, Mjoin(__FFLAS__SIDE, Mjoin(__FFLAS__UPLO, Mjoin(__FFLAS__TRANS, __FFLAS__DIAG))))<__FFLAS__ELEMENT>{
 public:
 
 // TRSM with delayed updates: assumes input in Zp and ensures output in Zp.
@@ -268,16 +267,16 @@ void operator () (const Field& F, const size_t M, const size_t N,
 
 	static __FFLAS__DOMAIN D;
 	size_t nblas = TRSMBound<Field> (F);
-#if 0
+#if 1
 	size_t ndel = DotProdBound (F, 0, one,
 #ifdef __FFLAS__DOUBLE
-				    FflasDouble);
+				    FflasDouble
 #else
-	                            FflasFloat);
+	                            FflasFloat
 #endif
+				    );
 #endif
-
-	size_t ndel = (size_t) F.AccBound(one);
+	// size_t ndel = (size_t) F.AccBound(one);
 
         ndel = (ndel / nblas)*nblas;
 	size_t nsplit = ndel;
@@ -309,8 +308,7 @@ void operator () (const Field& F, const size_t M, const size_t N,
 #else // __FFLAS__GENERIC
 
 template <class Element>
-class FFLAS::Mjoin(ftrsm, Mjoin(__FFLAS__SIDE, Mjoin(__FFLAS__UPLO, Mjoin(__FFLAS__TRANS, __FFLAS__DIAG))))
-{
+class FFLAS::Mjoin(ftrsm, Mjoin(__FFLAS__SIDE, Mjoin(__FFLAS__UPLO, Mjoin(__FFLAS__TRANS, __FFLAS__DIAG)))) {
 public:
 
 template<class Field>
@@ -389,5 +387,3 @@ void operator()	(const Field& F, const size_t M, const size_t N,
 #undef __FFLAS__Arowinc
 #undef Mjoin
 #undef my_join
-
-

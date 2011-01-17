@@ -24,11 +24,11 @@ FFPACK::CharPoly (const Field& F, std::list<Polynomial>& charp, const size_t N,
 	}
 	case FfpackKG:{
 		return KellerGehrig (F, charp, N, A, lda);
-		//break;
+		// break;
 	}
 	case FfpackDanilevski:{
 		return Danilevski (F, charp, N, A, lda);
-		//break;
+		// break;
 	}
 	case FfpackKGFast:{
 		size_t mc, mb, j;
@@ -36,7 +36,7 @@ FFPACK::CharPoly (const Field& F, std::list<Polynomial>& charp, const size_t N,
 			std::cerr<<"NON GENERIC MATRIX PROVIDED TO KELLER-GEHRIG-FAST"<<std::endl;
 		}
 		return charp;
-		//break;
+		// break;
 	}
  	case FfpackKGFastG:{
  		return KGFast_generalized (F, charp, N, A, lda);

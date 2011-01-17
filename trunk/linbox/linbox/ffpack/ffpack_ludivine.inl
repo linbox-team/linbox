@@ -27,7 +27,7 @@ FFPACK::LUdivine_gauss( const Field& F, const FFLAS_DIAG Diag,
 			typename Field::Element * A, const size_t lda, size_t*P,
 			size_t *Q, const FFPACK_LUDIVINE_TAG LuTag)
 {
-	typename Field::Element mone,one,zero;
+	static typename Field::Element mone,one,zero;
 	F.init(one,1.0);
 	F.init(zero,0.0);
 	F.neg (mone, one);
@@ -176,10 +176,10 @@ class FFPACK::callLUdivine_small<double> {
 public:
 	template <class Field>
 	inline size_t
-	operator()( const Field& F, const FFLAS_DIAG Diag,  const FFLAS_TRANSPOSE ,
+	operator()( const Field& F, const FFLAS_DIAG Diag,  const FFLAS_TRANSPOSE trans,
 		    const size_t M, const size_t N,
 		    typename Field::Element * A, const size_t lda, size_t*P,
-		    size_t *Q, const FFPACK_LUDIVINE_TAG ){
+		    size_t *Q, const FFPACK_LUDIVINE_TAG LuTag){
 
 		if ( !(M && N) ) return 0;
 		typedef typename Field::Element elt;
@@ -393,7 +393,7 @@ FFPACK::LUdivine (const Field& F, const FFLAS_DIAG Diag, const FFLAS_TRANSPOSE t
 
 	if ( !(M && N) ) return 0;
 	typedef typename Field::Element elt;
-	elt Mone, one, zero;
+	static elt Mone, one, zero;
 	F.init(Mone, -1.0);
 	F.init(one,1.0);
 	F.init(zero,0.0);
@@ -587,7 +587,7 @@ FFPACK::LUdivine_construct( const Field& F, const FFLAS_DIAG Diag,
 			    const size_t kg_mc =0, const size_t kg_mb=0, const size_t kg_j=0)
 {
 
-	typename Field::Element Mone, one, zero;
+	static typename Field::Element Mone, one, zero;
 	F.init(Mone, -1.0);
 	F.init(one, 1.0);
 	F.init(zero,0.0);
@@ -701,7 +701,7 @@ FFPACK::TURBO (const Field& F, const size_t M, const size_t N,
 
 	if ( !(M && N) ) return 0;
 	typedef typename Field::Element elt;
-	elt Mone, one, zero;
+	static elt Mone, one, zero;
 	F.init(Mone, -1.0);
 	F.init(one,1.0);
 	F.init(zero,0.0);
@@ -722,15 +722,19 @@ FFPACK::TURBO (const Field& F, const size_t M, const size_t N,
 	// Step 1: NW = L1.Q1.U1.P1
 	size_t mloc = mo2;
 	size_t nloc = no2;
-	// 	Timer tim;
-	// 	tim.clear();
-	// 	tim.start();
+#if 0
+	Timer tim;
+	tim.clear();
+	tim.start();
+#endif
 	q1 = LUdivine( F, FflasNonUnit, FflasNoTrans, mloc, no2, NW, ld1, P1, Q1, FfpackLQUP, cutoff);
 
-	// 	tim.stop();
-	// 	cerr<<"LQUP1:"<<tim.realtime()<<std::endl;
-	// 	tim.start();
-#ifdef LB_DEBUG
+#if 0
+	tim.stop();
+	cerr<<"LQUP1:"<<tim.realtime()<<std::endl;
+	tim.start();
+#endif
+#if LB_DEBUG
 	std::cerr<<"NW= L1.Q1.U1.P1"<<std::endl;
 	write_field(F,std::cerr,NW,M,N,lda);
 #endif
@@ -760,9 +764,11 @@ FFPACK::TURBO (const Field& F, const size_t M, const size_t N,
 	write_field(F,std::cerr,SW,M-mo2,no2,ld3);
 #endif
 
-	// 	tim.stop();
-	// 	std::cerr<<"L^-1:"<<tim.realtime()<<std::endl;
-	// 	tim.start();
+#if 0
+	tim.stop();
+	std::cerr<<"L^-1:"<<tim.realtime()<<std::endl;
+	tim.start();
+#endif
 
 	// N1 = SW_{1,q1} . U1^-1
 	ftrsm( F, FflasRight, FflasUpper, FflasNoTrans, FflasNonUnit, M-mo2, q1, one, NW, ld1 , SW, ld3 );
@@ -771,9 +777,11 @@ FFPACK::TURBO (const Field& F, const size_t M, const size_t N,
 	write_field(F,std::cerr,SW,M-mo2,no2,ld3);
 #endif
 
-	// 	tim.stop();
-	// 	std::cerr<<"trsm:"<<tim.realtime()<<std::endl;
-	// 	tim.start();
+#if 0
+	tim.stop();
+	std::cerr<<"trsm:"<<tim.realtime()<<std::endl;
+	tim.start();
+#endif
 
 	// I1 = SW_{q1+1,n} - N1.G1
 	fgemm(F, FflasNoTrans, FflasNoTrans, M-mo2,  no2-q1, q1, Mone, SW, ld3, NW+q1, ld1, one, SW+q1, ld3);
@@ -781,9 +789,12 @@ FFPACK::TURBO (const Field& F, const size_t M, const size_t N,
 	std::cerr<<" I1 = SW_{q1+1,n} - N1.G1"<<std::endl;
 	write_field(F,std::cerr,SW,M-mo2,no2,ld3);
 #endif
-	// 	tim.stop();
-	// 	std::cerr<<"fgemm1:"<<tim.realtime()<<std::endl;
-	// 	tim.start();
+
+#if 0
+	tim.stop();
+	std::cerr<<"fgemm1:"<<tim.realtime()<<std::endl;
+	tim.start();
+#endif
 
 	// E1 = SE - N1.B1_{1,q1}
 	fgemm( F, FflasNoTrans, FflasNoTrans, M-mo2, N-no2, q1, Mone, SW, ld3, NE, ld2, one, SE, ld4);
@@ -791,9 +802,12 @@ FFPACK::TURBO (const Field& F, const size_t M, const size_t N,
 	std::cerr<<"  E1 = SE - N1.B1_{1,q1}"<<std::endl;
 	write_field(F,std::cerr,SE,M-mo2,N-no2,ld4);
 #endif
-	// 	tim.stop();
-	// 	std::cerr<<"fgemm2:"<<tim.realtime()<<std::endl;
-	// 	tim.start();
+
+#if 0
+	tim.stop();
+	std::cerr<<"fgemm2:"<<tim.realtime()<<std::endl;
+	tim.start();
+#endif
 
 
 	//Step 2: E1 = L2.Q2.U2.P2
@@ -804,9 +818,12 @@ FFPACK::TURBO (const Field& F, const size_t M, const size_t N,
 	std::cerr<<"  E1 = L2.Q2.U2.P2"<<std::endl;
 	write_field(F,std::cerr,SE,M-mo2,N-no2,ld4);
 #endif
-	// 	tim.stop();
-	// 	std::cerr<<"LQUP2:"<<tim.realtime()<<std::endl;
-	// 	tim.start();
+
+#if 0
+	tim.stop();
+	std::cerr<<"LQUP2:"<<tim.realtime()<<std::endl;
+	tim.start();
+#endif
 
 	// [I2;F2] = L2^-1.I1
 	solveLB( F, FflasLeft, mloc, no2-q1, q2, SE, ld4, Q2, SW+q1, ld3);
@@ -828,34 +845,42 @@ FFPACK::TURBO (const Field& F, const size_t M, const size_t N,
 	write_field(F,std::cerr,NE,mo2,N-no2,ld2);
 #endif
 	// Updating P
-	//	for (size_t i=no2;i<N;++i)
-	//	P[i] += no2;
-	// 	tim.stop();
-	// 	std::cerr<<"L2^-1:"<<tim.realtime()<<std::endl;
-	// 	tim.start();
+#if 0
+	for (size_t i=no2;i<N;++i)
+		P[i] += no2;
+	tim.stop();
+	std::cerr<<"L2^-1:"<<tim.realtime()<<std::endl;
+	tim.start();
+#endif
 
 	//alternative: de 0 a q2 avant
 	// N2 = B1_{q1+1,mo2} . V2^-1
 	ftrsm(F, FflasRight, FflasUpper,FflasNoTrans,FflasNonUnit, mo2-q1, q2, one, SE, ld4, NE+q1*ld2,ld2);
-	// 	tim.stop();
-	// 	std::cerr<<"trsm2:"<<tim.realtime()<<std::endl;
-	// 	tim.start();
+#if 0
+	tim.stop();
+	std::cerr<<"trsm2:"<<tim.realtime()<<std::endl;
+	tim.start();
+#endif
 
 	// H2 = B1_{q1+1,mo2;q2,N-no2} - N2.E2
 	fgemm(F, FflasNoTrans, FflasNoTrans, mo2-q1, N-no2-q2, q2, Mone, NE+q1*ld2, ld2, SE+q2, ld4, one, NE+q1*ld2+q2, ld2);
 
-	// 	tim.stop();
-	// 	std::cerr<<"fgemm12:"<<tim.realtime()<<std::endl;
-	// 	tim.start();
-	// O2 = NW_{q1+1,mo2;q1+1,N-no2} = - N2.I2
-	//write_field (F,cerr<<"avant O2"<<endl, A, M, N, lda);
+#if 0
+	tim.stop();
+	std::cerr<<"fgemm12:"<<tim.realtime()<<std::endl;
+	tim.start();
+	O2 = NW_{q1+1,mo2;q1+1,N-no2} = - N2.I2
+	write_field (F,cerr<<"avant O2"<<endl, A, M, N, lda);
+#endif
 
 	fgemm(F, FflasNoTrans, FflasNoTrans, mo2-q1, no2-q1, q2, Mone, NE+q1*ld2, ld2, SW+q1, ld3, zero,
 	      NW+q1*(ld1+1), ld1);
 	//	write_field (F,cerr<<"apres O2"<<endl, A, M, N, lda);
-	// 	tim.stop();
-	// 	std::cerr<<"fgemm22:"<<tim.realtime()<<std::endl;
-	// 	tim.start();
+#if 0
+	tim.stop();
+	std::cerr<<"fgemm22:"<<tim.realtime()<<std::endl;
+	tim.start();
+#endif
 
 
 	//Step 3: F2 = L3.Q3.U3.P3
@@ -879,22 +904,25 @@ FFPACK::TURBO (const Field& F, const size_t M, const size_t N,
 	for (size_t i = q2; i < q2+q3b; ++i)
 		P2[i] += q2;
 
-	// 	tim.stop();
-	// 	std::cerr<<"LQUP3et3bis:"<<tim.realtime()<<std::endl;
-	// 	tim.start();
+#if 0
+	tim.stop();
+	std::cerr<<"LQUP3et3bis:"<<tim.realtime()<<std::endl;
+	tim.start();
+#endif
 
 	if (( q3 < no2-q1) && (q3b<mo2-q1)){
 
 		// [O3;_] = L3b^-1.O2
 		if (q3b>0){
-			// 			if ( mo2-q1 < N-no2-q2+q1)
-			// 				// L is expanded to a Lower triangular matrix
-			// 				solveLB( F, FflasLeft,mloc, no2-q1, q3b, NE+q1*ld2+q2 , ld2, rP3b, NW+q1*(ld1+1), ld1);
-			//			else{
+#if 0
+			if ( mo2-q1 < N-no2-q2+q1)
+				// L is expanded to a Lower triangular matrix
+				solveLB( F, FflasLeft,mloc, no2-q1, q3b, NE+q1*ld2+q2 , ld2, rP3b, NW+q1*(ld1+1), ld1);
+			else
+#endif
 			//std::cerr<<"USING SOLVELB2"<<std::endl;
 			//no modification of L
 			solveLB2( F, FflasLeft,mloc, no2-q1, q3b, NE+q1*ld2+q2 , ld2, Q1+q1, NW+q1*(ld1+1), ld1);
-			//			}
 #ifdef LB_DEBUG
 			std::cerr<<"O2 avant="<<std::endl;
 			write_field(F,std::cerr,NW+q1*(ld1+1),mloc,no2-q1,ld1);
@@ -949,22 +977,26 @@ FFPACK::TURBO (const Field& F, const size_t M, const size_t N,
 		mloc = mo2-q1-q3b;
 		nloc = no2-q1-q3;
 
-		// size_t * rP4 = new size_t[mloc];
-		// 		for (size_t j=0;j<mo2-q1;++j)
-		// 			rP4[j]=0;
+#if 0
+		size_t * rP4 = new size_t[mloc];
+		for (size_t j=0;j<mo2-q1;++j)
+			rP4[j]=0;
+#endif
 		q4 = LUdivine( F, FflasNonUnit, FflasNoTrans, mloc, nloc, NW+(q1+q3b)*ld1+q1+q3, ld1, P1+q1+q3, Q1+q1+q3b, FfpackLQUP, cutoff);
 
 		// Updating P
 		for (size_t i=q1+q3;i<q1+q3+q4;++i)
 			P1[i] += q3;
 
-		//		size_t tmp;
-		// 			if (rP4[j]!=j){
-		// 				//	std::cerr<<"(rP3b["<<j<<"]="<<rP3b[j]<<std::endl;
-		// 				tmp = Q[j+q1+q3b];
-		// 				Q[j+q1+q3b] = Q[rP3b[j]+q1+q3b];
-		// 				Q[rP3b[j]+q1+q3b] = tmp;
-		// 			}
+#if 0
+		size_t tmp;
+			if (rP4[j]!=j){
+				//	std::cerr<<"(rP3b["<<j<<"]="<<rP3b[j]<<std::endl;
+				tmp = Q[j+q1+q3b];
+				Q[j+q1+q3b] = Q[rP3b[j]+q1+q3b];
+				Q[rP3b[j]+q1+q3b] = tmp;
+			}
+#endif
 
 		// A faire si plusieurs niveaux recursifs
 		// [G1;O3] = [G1;O3].P4
