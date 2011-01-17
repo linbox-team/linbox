@@ -37,18 +37,21 @@ namespace LinBox
 {
 #endif
 
-// The use of the small size LQUP is currently disabled:
-// need for a better handling of element base (double, float, generic) combined
-// with different thresholds.
-// TransPosed version has to be implemented too.
+	// The use of the small size LQUP is currently disabled:
+	// need for a better handling of element base (double, float, generic) combined
+	// with different thresholds.
+	// TransPosed version has to be implemented too.
+#ifndef __FFPACK_LUDIVINE_CUTOFF
 #define __FFPACK_LUDIVINE_CUTOFF 0
+#endif
 
+#ifndef __FFPACK_CHARPOLY_THRESHOLD
 #define __FFPACK_CHARPOLY_THRESHOLD 30
-
-	/** \brief Set of elimination based routines for dense linear algebra
+#endif
+	/** Set of elimination based routines for dense linear algebra
 	 * with matrices over finite prime field of characteristic less than 2^26.
 	 *
-	 * \details This class only provides a set of static member functions.
+	 *  This class only provides a set of static member functions.
 	 *  No instantiation is allowed.
 	 *
 	 * It enlarges the set of BLAS routines of the class FFLAS, with higher
@@ -61,7 +64,7 @@ namespace LinBox
 	public:
 		enum FFPACK_LUDIVINE_TAG
 		{
-		       	FfpackLQUP=1,
+			FfpackLQUP=1,
 			FfpackSingular=2
 		};
 
@@ -84,10 +87,8 @@ namespace LinBox
 			FfpackKGF=2
 		};
 
-		/** @brief  Computes the rank of the given matrix using a LQUP factorization.
-		 * using LQUP factorization.
-		 * @warning The input matrix is modified.
-		 * @param F field
+		/** Computes the rank of the given matrix using a LQUP factorization.
+		 * The input matrix is modified.
 		 * @param M row dimension of the matrix
 		 * @param N column dimension of the matrix
 		 * @param A input matrix
@@ -590,145 +591,6 @@ namespace LinBox
 			}
 		}
 
-		/**
-		 * Invert the given matrix in place
-		 * or computes its nullity if it is singular.
-		 * An inplace 2n^3 algorithm is used.
-		 * @param F The computation domain
-		 * @param M order of the matrix
-		 * @param A input matrix
-		 * @param lda leading dimension of A
-		 * @param nullity dimension of the kernel of A
-		 */
-		/// Invert a matrix or return its nullity
-		template <class Field>
-		static typename Field::Element*
-		Invert (const Field& F, const size_t M,
-			typename Field::Element * A, const size_t lda,
-			int& nullity)
-		{
-
-			size_t * P = new size_t[M];
-			size_t * Q = new size_t[M];
-			size_t R =  ReducedColumnEchelonForm (F, M, M, A, lda, P, Q);
-			nullity = M - R;
-			applyP (F, FflasLeft, FflasTrans, M, 0, R, A, lda, P);
-			delete [] P;
-			delete [] Q;
-			return A;
-		}
-
-		/**
-		 * Invert the given matrix in place
-		 * or computes its nullity if it is singular.
-		 *
-		 * Partial doc.
-		 *
-		 * @param F The computation domain
-		 * @param M order of the matrix
-		 * @param A input matrix
-		 * @param lda leading dimension of A
-		 * @param X
-		 * @param ldx
-		 * @param nullity dimension of the kernel of A
-		 */
-		/// Invert a matrix or return its nullity
-
-		template <class Field>
-		static typename Field::Element*
-		Invert (const Field& F, const size_t M,
-			typename Field::Element * A, const size_t lda,
-			typename Field::Element * X, const size_t ldx,
-			int& nullity)
-		{
-
-			Invert (F,  M, A, lda, nullity);
-			for (size_t i=0; i<M; ++i)
-				fcopy (F, M, X+i*ldx, 1, A+i*lda,1);
-			return X;
-
-		}
-
-		/**
-		 * Invert the given matrix or computes its nullity if it is singular.
-		 * An 2n^3 algorithm is used.
-		 * The input matrix is modified.
-		 * @param F
-		 * @param M order of the matrix
-		 * @param A input matrix
-		 * @param lda leading dimension of A
-		 * @param X inverse of A
-		 * @param ldx leading dimension of X
-		 * @param nullity dimension of the kernel of A
-		 */
-		/// Invert a matrix or return its nullity
-		template <class Field>
-		static typename Field::Element*
-		Invert2( const Field& F, const size_t M,
-			 typename Field::Element * A, const size_t lda,
-			 typename Field::Element * X, const size_t ldx,
-			 int& nullity)
-		{
-
-			typename Field::Element one, zero;
-			F.init(one,1.0);
-			F.init(zero,0.0);
-
-			size_t *P = new size_t[M];
-			size_t *rowP = new size_t[M];
-
-			// Timer t1;
-			// 		t1.clear();
-			// 		t1.start();
-
-			nullity = M - LUdivine( F, FflasNonUnit, FflasNoTrans, M, M, A, lda, P, rowP, FfpackLQUP);
-
-			// 		t1.stop();
-			//cerr<<"LU --> "<<t1.usertime()<<endl;
-
-			if (nullity > 0){
-				delete[] P;
-				delete[] rowP;
-				return NULL;
-			} else {
-				// Initializing X to 0
-				// 			t1.clear();
-				// 			t1.start();
-				for (size_t i=0; i<M; ++i)
-					for (size_t j=0; j<M;++j)
-						F.assign(*(X+i*ldx+j), zero);
-
-				// X = L^-1 in n^3/3
-				ftrtri (F, FflasLower, FflasUnit, M, A, lda);
-				for (size_t i=0; i<M; ++i){
-					for (size_t j=i; j<M; ++j)
-						F.assign(*(X +i*ldx+j),zero);
-					F.assign (*(X+i*(ldx+1)), one);
-				}
-				for (size_t i=1; i<M; ++i)
-					fcopy (F, i, (X+i*ldx), 1, (A+i*lda), 1);
-				// 			t1.stop();
-				//cerr<<"U^-1 --> "<<t1.usertime()<<endl;
-
-				//invL( F, M, A, lda, X, ldx );
-				// X = Q^-1.X is not necessary since Q = Id
-
-				// X = U^-1.X
-				// 			t1.clear();
-				//			t1.start();
-				ftrsm( F, FflasLeft, FflasUpper, FflasNoTrans, FflasNonUnit,
-				       M, M, one, A, lda , X, ldx);
-				//			t1.stop();
-				//cerr<<"ftrsm --> "<<t1.usertime()<<endl;
-
-				// X = P^-1.X
-				applyP( F, FflasLeft, FflasTrans, M, 0, M, X, ldx, P );
-
-				delete[] P;
-				delete[] rowP;
-				return X;
-			}
-		}
 
 
 		/**
@@ -821,7 +683,7 @@ namespace LinBox
 		 * @param rkprofile return the rank profile as an array of row indexes, of dimension r=rank(A)
 		 *
 		 * rkprofile is allocated during the computation.
-		 * Returns R
+		 * @returns R
 		 */
 		template <class Field>
 		static size_t RowRankProfile (const Field& F, const size_t M, const size_t N,
@@ -854,7 +716,7 @@ namespace LinBox
 		 *
 		 * A is modified
 		 * rkprofile is allocated during the computation.
-		 * \return R
+		 * @returns R
 		 */
 		template <class Field>
 		static size_t ColumnRankProfile (const Field& F, const size_t M, const size_t N,
@@ -890,7 +752,7 @@ namespace LinBox
 		 *
 		 * rowindices and colindices are allocated during the computation.
 		 * A is modified
-		 * \returns R
+		 * @returns R
 		 */
 		template <class Field>
 		static size_t RowRankProfileSubmatrixIndices (const Field& F,
@@ -988,11 +850,11 @@ namespace LinBox
 		 * @param A input matrix of dimension M x N
 		 * @param lda
 		 * @param X the output matrix
-		 * @param R
+		 * @param[out] R
 		 *
 		 * A is not modified
 		 * X is allocated during the computation.
-		 * Returns R
+		 * @return R
 		 */
 		template <class Field>
 		static size_t RowRankProfileSubmatrix (const Field& F,
@@ -1019,7 +881,8 @@ namespace LinBox
 		}
 
 		/**
-		 * Compute the r*r submatrix X of A, by picking the row rank profile rows of A.
+		 * Compute the \f$ r\times r\f$ submatrix X of A, by picking the row rank profile rows of A.
+		 *
 		 *
 		 * @param F
 		 * @param M
@@ -1118,7 +981,6 @@ namespace LinBox
 		 * a block agorithm and return its rank.
 		 * The permutations P and Q are represented
 		 * using LAPACK's convention.
-		 * @param F
 		 * @param Diag  precise whether U should have a unit diagonal or not
 		 * @param trans
 		 * @param M matrix row dimension
@@ -1150,15 +1012,77 @@ namespace LinBox
 		LUdivine_small (const Field& F, const FFLAS_DIAG Diag,  const FFLAS_TRANSPOSE trans,
 				const size_t M, const size_t N,
 				typename Field::Element * A, const size_t lda,
-				size_t* P, size_t* Q, const FFPACK_LUDIVINE_TAG LuTag=FfpackLQUP);
+				size_t* P, size_t* Q,
+				const FFPACK_LUDIVINE_TAG LuTag=FfpackLQUP);
 
 		template <class Field>
 		static size_t
 		LUdivine_gauss (const Field& F, const FFLAS_DIAG Diag,
 				const size_t M, const size_t N,
 				typename Field::Element * A, const size_t lda,
-				size_t* P, size_t* Q, const FFPACK_LUDIVINE_TAG LuTag=FfpackLQUP);
+				size_t* P, size_t* Q,
+				const FFPACK_LUDIVINE_TAG LuTag=FfpackLQUP);
 
+
+		/** Apply a permutation submatrix of P (between ibeg and iend) to a matrix
+		 * to (iend-ibeg) vectors of size M stored in A (as column for NoTrans
+		 * and rows for Trans).
+		 * Side==FflasLeft for row permutation Side==FflasRight for a column
+		 * permutation
+		 * Trans==FflasTrans for the inverse permutation of P
+		 * @param F
+		 * @param Side
+		 * @param Trans
+		 * @param M
+		 * @param ibeg
+		 * @param iend
+		 * @param A
+		 * @param lda
+		 * @param P
+		 * @warning not sure the submatrix is still a permutation and the one we expect in all cases... examples for iend=2, ibeg=1 and P=[2,2,2]
+		 */
+		template<class Field>
+		static void
+		applyP( const Field& F,
+			const FFLAS_SIDE Side,
+			const FFLAS_TRANSPOSE Trans,
+			const size_t M, const int ibeg, const int iend,
+			typename Field::Element * A, const size_t lda, const size_t * P )
+		{
+
+			if ( Side == FflasRight )
+				if ( Trans == FflasTrans )
+					for (size_t j = 0 ; j < M ; ++j){
+						for ( size_t i=ibeg; i<(size_t) iend; ++i)
+							if ( P[i]> i )
+								std::swap(A[j*lda+P[i]],A[j*lda+i]);
+						//fswap( F, M, A + P[i]*1, lda, A + i*1, lda );
+					}
+				else // Trans == FflasNoTrans
+					for (size_t j = 0 ; j < M ; ++j){
+						for (int i=iend; i-->ibeg; )
+							if ( P[i]>(size_t)i )
+								std::swap(A[j*lda+P[i]],A[j*lda+i]);
+						//fswap( F, M, A + P[i]*1, lda, A + i*1, lda );
+					}
+			else // Side == FflasLeft
+				if ( Trans == FflasNoTrans )
+					for (size_t i=ibeg; i<(size_t)iend; ++i){
+						if ( P[i]> (size_t) i )
+							fswap( F, M,
+							       A + P[i]*lda, 1,
+							       A + i*lda, 1 );
+					}
+				else // Trans == FflasTrans
+					for (int i=iend; i-->ibeg; ){
+						if ( P[i]> (size_t) i ){
+							fswap( F, M,
+							       A + P[i]*lda, 1,
+							       A + i*lda, 1 );
+						}
+					}
+
+		}
 
 
 		/**
@@ -1234,21 +1158,30 @@ namespace LinBox
 			fgemm (F, FflasNoTrans, FflasNoTrans, N1, N1, N2, one,
 			       A+N1, lda, A+N1*lda, lda, one, A, lda);
 
-			ftrmm (F, FflasRight, FflasLower, FflasNoTrans, (diag == FflasUnit) ? FflasNonUnit : FflasUnit, N1, N2, one, A + N1*(lda+1), lda, A + N1, lda);
+			ftrmm (F, FflasRight, FflasLower, FflasNoTrans,
+			       (diag == FflasUnit) ? FflasNonUnit : FflasUnit,
+			       N1, N2, one, A + N1*(lda+1), lda, A + N1, lda);
 
-			ftrmm (F, FflasLeft, FflasUpper, FflasNoTrans, diag, N2, N1, one, A + N1*(lda+1), lda, A + N1*lda, lda);
+			ftrmm (F, FflasLeft, FflasUpper, FflasNoTrans, diag, N2, N1,
+			       one, A + N1*(lda+1), lda, A + N1*lda, lda);
 
 			ftrtrm (F, diag, N2, A + N1*(lda+1), lda);
 
 		}
 
+		/*****************/
+		/* ECHELON FORMS */
+		/*****************/
+
 		/**
 		 * Compute the Column Echelon form of the input matrix in-place.
 		 *
 		 * After the computation A = [ M \ V ] such that AU = C is a column echelon
-		 * decomposition of A, with U = P^T [ V + Ir ] and C = M //+ Q [ Ir   ]
-		 *                                  [ 0 In-r ]           //    [    0 ]
+		 * decomposition of A, with U = P^T [   V    ] and C = M + Q [ Ir ]
+		 *                                  [ 0 In-r ]               [ 0  ]
 		 * Qt = Q^T
+		 * If transform=false, the matrix U is not computed.
+		 * See also test-colechelon for an example of use
 		 * @param F
 		 * @param M
 		 * @param N
@@ -1256,52 +1189,22 @@ namespace LinBox
 		 * @param lda
 		 * @param P
 		 * @param Qt
+		 * @param transform
 		 */
 		template <class Field>
 		static size_t
 		ColumnEchelonForm (const Field& F, const size_t M, const size_t N,
 				   typename Field::Element * A, const size_t lda,
-				   size_t* P, size_t* Qt)
-		{
-
-			typename Field::Element one, mone;
-			F.init (one, 1.0);
-			F.neg (mone, one);
-			size_t r;
-
-#if 0
-			Timer t1;
-			t1.clear();
-			t1.start();
-#endif
-			r = LUdivine (F, FflasUnit, FflasNoTrans, M, N, A, lda, P, Qt);
-#if 0
-			t1.stop();
-			cerr<<"LU --> "<<t1.usertime()<<endl;
-
-			Timer t2;
-			t2.clear();
-			t2.start();
-#endif
-			ftrtri (F, FflasUpper, FflasUnit, r, A, lda);
-
-
-			ftrmm (F, FflasLeft, FflasUpper, FflasNoTrans, FflasUnit, r, N-r,
-			       mone, A, lda, A+r, lda);
-#if 0
-			t2.stop();
-			cerr<<"U^-1 --> "<<t2.usertime()<<endl;
-#endif
-			return r;
-		}
-
+				   size_t* P, size_t* Qt, bool transform = true);
 		/**
 		 * Compute the Row Echelon form of the input matrix in-place.
 		 *
-		 * After the computation A = [ L \ M ] such that L A = R is a column echelon
-		 * decomposition of A, with L =  [ L+Ir  0   ] P  and R = M
-		 *                               [      In-r ]
+		 * After the computation A = [ L \ M ] such that L A = R is a row echelon
+		 * decomposition of A, with L =  [ L  0   ] P  and R = M + [Ir 0] Q^T
+		 *                               [    In-r]
 		 * Qt = Q^T
+		 * If transform=false, the matrix L is not computed.
+		 * See also test-rowechelon for an example of use
 		 * @param F
 		 * @param M
 		 * @param N
@@ -1309,53 +1212,24 @@ namespace LinBox
 		 * @param lda
 		 * @param P
 		 * @param Qt
+		 * @param transform
 		 */
 		template <class Field>
 		static size_t
 		RowEchelonForm (const Field& F, const size_t M, const size_t N,
 				typename Field::Element * A, const size_t lda,
-				size_t* P, size_t* Qt)
-		{
-
-			typename Field::Element one, mone;
-			F.init (one, 1.0);
-			F.neg (mone, one);
-			size_t r;
-#if 0
-			Timer t1;
-			t1.clear();
-			t1.start();
-#endif
-			r = LUdivine (F, FflasUnit, FflasTrans,  M, N, A, lda, P, Qt);
-#if 0
-			t1.stop();
-			cerr<<"LU --> "<<t1.usertime()<<endl;
-
-			Timer t2;
-			t2.clear();
-			t2.start();
-#endif
-			ftrtri (F, FflasLower, FflasUnit, r, A, lda);
-
-
-			ftrmm (F, FflasRight, FflasLower, FflasNoTrans, FflasUnit, M-r, r,
-			       mone, A, lda, A+r*lda, lda);
-
-#if 0
-			t2.stop();
-			cerr<<"U^-1 --> "<<t2.usertime()<<endl;
-#endif
-			return r;
-		}
+				size_t* P, size_t* Qt, const bool transform = false);
 
 		/**
 		 * Compute the Reduced Column Echelon form of the input matrix in-place.
 		 *
-		 * After the computation A = [  V  ] such that AU = R is a reduced column echelon
+		 * After the computation A = [ V   ] such that AU = R is a reduced col echelon
 		 *                           [ M 0 ]
 		 * decomposition of A, where U = P^T [ V      ] and R = Q [ Ir   ]
 		 *                                   [ 0 In-r ]           [ M  0 ]
 		 * Qt = Q^T
+		 * If transform=false, the matrix U is not computed and the matrix A = R
+		 *
 		 * @param F
 		 * @param M
 		 * @param N
@@ -1363,57 +1237,23 @@ namespace LinBox
 		 * @param lda
 		 * @param P
 		 * @param Qt
-
+		 * @param transform
 		 */
 		template <class Field>
 		static size_t
 		ReducedColumnEchelonForm (const Field& F, const size_t M, const size_t N,
 					  typename Field::Element * A, const size_t lda,
-					  size_t* P, size_t* Qt)
-		{
-
-			typename Field::Element one, mone;
-			F.init (one, 1.0);
-			F.neg (mone, one);
-			size_t r;
-
-			r = ColumnEchelonForm (F, M, N, A, lda, P, Qt);
-#if 0
-					Timer t1;
-					t1.clear();
-					t1.start();
-#endif
-			// M = Q^T M
-			for (size_t i=0; i<r; ++i){
-				if ( Qt[i]> (size_t) i ){
-					fswap( F, i+1,
-					       A + Qt[i]*lda, 1,
-					       A + i*lda, 1 );
-				}
-			}
-
-			ftrtri (F, FflasLower, FflasNonUnit, r, A, lda);
-
-			ftrmm (F, FflasRight, FflasLower, FflasNoTrans, FflasNonUnit, M-r, r,
-			       one, A, lda, A+r*lda, lda);
-
-			ftrtrm (F, FflasUnit, r, A, lda);
-#if 0
-					t1.stop();
-			cerr<<"U^-1L^-1 --> "<<t1.usertime()<<endl;
-#endif
-			return r;
-
-		}
+					  size_t* P, size_t* Qt, const bool transform = true);
 
 		/**
 		 * Compute the Reduced Row Echelon form of the input matrix in-place.
 		 *
-		 * After the computation A = [  V  ] such that L A = R is a reduced row echelon
-		 *                           [ M 0 ]
-		 * decomposition of A, where L =  [ V      ] P^T and R =  [ Ir M  ] Q
-		 *                                [ 0 In-r ]              [ 0     ]
+		 * After the computation A = [ V1 M ] such that L A = R is a reduced row echelon
+		 *                           [ V2 0 ]
+		 * decomposition of A, where L =  [ V1  0   ] P and R =  [ Ir M  ] Q^T
+		 *                                [ V2 In-r ]            [ 0     ]
 		 * Qt = Q^T
+		 * If transform=false, the matrix U is not computed and the matrix A = R
 		 * @param F
 		 * @param M
 		 * @param N
@@ -1421,110 +1261,202 @@ namespace LinBox
 		 * @param lda
 		 * @param P
 		 * @param Qt
+		 * @param transform
 		 */
 		template <class Field>
 		static size_t
 		ReducedRowEchelonForm (const Field& F, const size_t M, const size_t N,
 				       typename Field::Element * A, const size_t lda,
-				       size_t* P, size_t* Qt)
+				       size_t* P, size_t* Qt, const bool transform = true);
+
+		/**
+		 * Variant by the block recursive algorithm (See A. Storjohann Thesis 2000)
+		 * !!!!!! Warning !!!!!!
+		 * This code is NOT WORKING properly for some echelon structures.
+		 * This is due to a limitation of the way we represent permutation matrices
+		 * (LAPACK's standard):
+		 *  - a composition of transpositions Tij of the form
+		 *    P = T_{1,j1} o T_{2,j2] o...oT_{r,jr}, with jk>k for all 0 < k <= r <= n
+		 *  - The permutation on the columns, performed by this block recursive algorithm
+		 *  cannot be represented with such a composition.
+		 * Consequently this function should only be used for benchmarks
+		 */
+		template <class Field>
+		static size_t
+		ReducedRowEchelonForm2 (const Field& F, const size_t M, const size_t N,
+					typename Field::Element * A, const size_t lda,
+					size_t* P, size_t* Qt, const bool transform = true){
+			for (size_t i=0; i<N; ++i)
+				Qt[i] = i;
+			return REF (F, M, N, A, lda, 0, 0, N, P, Qt);
+
+		}
+
+		template <class Field>
+		static size_t
+		REF (const Field& F, const size_t M, const size_t N,
+		     typename Field::Element * A, const size_t lda,
+		     const size_t colbeg, const size_t rowbeg, const size_t colsize,
+		     size_t* Qt, size_t* P);
+
+		/*****************/
+		/*   INVERSION   */
+		/*****************/
+		/**
+		 * Invert the given matrix in place
+		 * or computes its nullity if it is singular.
+		 * An inplace 2n^3 algorithm is used.
+		 * @param F The computation domain
+		 * @param M order of the matrix
+		 * @param A input matrix
+		 * @param lda leading dimension of A
+		 * @param nullity dimension of the kernel of A
+		 */
+		/// Invert a matrix or return its nullity
+		template <class Field>
+		static typename Field::Element*
+		Invert (const Field& F, const size_t M,
+			typename Field::Element * A, const size_t lda,
+			int& nullity)
 		{
 
-			typename Field::Element one, mone;
-			F.init (one, 1.0);
-			F.neg (mone, one);
-			size_t r;
+			size_t * P = new size_t[M];
+			size_t * Q = new size_t[M];
+			size_t R =  ReducedColumnEchelonForm (F, M, M, A, lda, P, Q);
+			nullity = M - R;
+			applyP (F, FflasLeft, FflasTrans, M, 0, R, A, lda, P);
+			delete [] P;
+			delete [] Q;
+			return A;
+		}
 
-			r = RowEchelonForm (F, M, N, A, lda, P, Qt);
+		/**
+		 * Invert the given matrix in place
+		 * or computes its nullity if it is singular.
+		 *
+		 * Partial doc.
+		 *
+		 * @param F The computation domain
+		 * @param M order of the matrix
+		 * @param A input matrix
+		 * @param lda leading dimension of A
+		 * @param X
+		 * @param ldx
+		 * @param nullity dimension of the kernel of A
+		 */
+		/// Invert a matrix or return its nullity
+
+		template <class Field>
+		static typename Field::Element*
+		Invert (const Field& F, const size_t M,
+			typename Field::Element * A, const size_t lda,
+			typename Field::Element * X, const size_t ldx,
+			int& nullity)
+		{
+
+			Invert (F,  M, A, lda, nullity);
+			for (size_t i=0; i<M; ++i)
+				fcopy (F, M, X+i*ldx, 1, A+i*lda,1);
+			return X;
+
+		}
+
+		/**
+		 * Invert the given matrix or computes its nullity if it is singular.
+		 * An 2n^3 algorithm is used.
+		 * The input matrix is modified.
+		 * @param F
+		 * @param M order of the matrix
+		 * @param A input matrix
+		 * @param lda leading dimension of A
+		 * @param X inverse of A
+		 * @param ldx leading dimension of X
+		 * @param nullity dimension of the kernel of A
+		 */
+		/// Invert a matrix or return its nullity
+		template <class Field>
+		static typename Field::Element*
+		Invert2( const Field& F, const size_t M,
+			 typename Field::Element * A, const size_t lda,
+			 typename Field::Element * X, const size_t ldx,
+			 int& nullity)
+		{
+
+			typename Field::Element one, zero;
+			F.init(one,1.0);
+			F.init(zero,0.0);
+
+			size_t *P = new size_t[M];
+			size_t *rowP = new size_t[M];
 
 #if 0
 			Timer t1;
 			t1.clear();
 			t1.start();
-			M = M Q^T
 #endif
-			for (int i=0; i<r; ++i){
-				if ( Qt[i]> (size_t) i ){
-					fswap( F, i+1,
-					       A + Qt[i], lda,
-					       A + i, lda );
-				}
-			}
 
-			ftrtri (F, FflasUpper, FflasNonUnit, r, A, lda);
-
-			ftrmm (F, FflasLeft, FflasUpper, FflasNoTrans, FflasNonUnit, r, N-r,
-			       one, A, lda, A+r, lda);
-
-			ftrtrm (F, FflasNonUnit, r, A, lda);
+			nullity = M - LUdivine( F, FflasNonUnit, FflasNoTrans, M, M, A, lda, P, rowP, FfpackLQUP);
 
 #if 0
 			t1.stop();
-			cerr<<"U^-1L^-1 --> "<<t1.usertime()<<endl;
+			cerr<<"LU --> "<<t1.usertime()<<endl;
 #endif
 
-			return r;
+			if (nullity > 0){
+				delete[] P;
+				delete[] rowP;
+				return NULL;
+			} else {
+				// Initializing X to 0
+#if 0
+				t1.clear();
+				t1.start();
+#endif
+				for (size_t i=0; i<M; ++i)
+					for (size_t j=0; j<M;++j)
+						F.assign(*(X+i*ldx+j), zero);
 
+				// X = L^-1 in n^3/3
+				ftrtri (F, FflasLower, FflasUnit, M, A, lda);
+				for (size_t i=0; i<M; ++i){
+					for (size_t j=i; j<M; ++j)
+						F.assign(*(X +i*ldx+j),zero);
+					F.assign (*(X+i*(ldx+1)), one);
+				}
+				for (size_t i=1; i<M; ++i)
+					fcopy (F, i, (X+i*ldx), 1, (A+i*lda), 1);
+#if 0
+				t1.stop();
+				cerr<<"U^-1 --> "<<t1.usertime()<<endl;
+
+				invL( F, M, A, lda, X, ldx );
+				// X = Q^-1.X is not necessary since Q = Id
+
+				// X = U^-1.X
+				t1.clear();
+				t1.start();
+#endif
+				ftrsm( F, FflasLeft, FflasUpper, FflasNoTrans, FflasNonUnit,
+				       M, M, one, A, lda , X, ldx);
+#if 0
+				t1.stop();
+				cerr<<"ftrsm --> "<<t1.usertime()<<endl;
+#endif
+
+				// X = P^-1.X
+				applyP( F, FflasLeft, FflasTrans, M, 0, M, X, ldx, P );
+
+				delete[] P;
+				delete[] rowP;
+				return X;
+			}
 		}
 
-		/** Apply a permutation submatrix of P (between ibeg and iend) to a matrix
-		 * to (iend-ibeg) vectors of size M stored in A (as column for NoTrans
-		 * and rows for Trans).
-		 * Side==FflasLeft for row permutation Side==FflasRight for a column
-		 * permutation
-		 * Trans==FflasTrans for the inverse permutation of P
-		 * @param F
-		 * @param Side
-		 * @param Trans
-		 * @param M
-		 * @param ibeg
-		 * @param iend
-		 * @param A
-		 * @param lda
-		 * @param P
-		 * @warning not sure the submatrix is still a permutation and the one we expect in all cases... examples for iend=2, ibeg=1 and P=[2,2,2]
-		 */
-		template<class Field>
-		static void
-		applyP( const Field& F,
-			const FFLAS_SIDE Side,
-			const FFLAS_TRANSPOSE Trans,
-			const size_t M, const int ibeg, const int iend,
-			typename Field::Element * A, const size_t lda, const size_t * P )
-		{
 
-			if ( Side == FflasRight )
-				if ( Trans == FflasTrans )
-					for (size_t j = 0 ; j < M ; ++j){
-						for ( size_t i=ibeg; i<(size_t) iend; ++i)
-							if ( P[i]> i )
-								std::swap(A[j*lda+P[i]],A[j*lda+i]);
-						//fswap( F, M, A + P[i]*1, lda, A + i*1, lda );
-					}
-				else // Trans == FflasNoTrans
-					for (size_t j = 0 ; j < M ; ++j){
-						for (int i=iend; i-->ibeg; )
-							if ( P[i]>(size_t)i )
-								std::swap(A[j*lda+P[i]],A[j*lda+i]);
-						//fswap( F, M, A + P[i]*1, lda, A + i*1, lda );
-					}
-			else // Side == FflasLeft
-				if ( Trans == FflasNoTrans )
-					for (size_t i=ibeg; i<(size_t)iend; ++i){
-						if ( P[i]> (size_t) i )
-							fswap( F, M,
-							       A + P[i]*lda, 1,
-							       A + i*lda, 1 );
-					}
-				else // Trans == FflasTrans
-					for (int i=iend; i-->ibeg; ){
-						if ( P[i]> (size_t) i ){
-							fswap( F, M,
-							       A + P[i]*lda, 1,
-							       A + i*lda, 1 );
-						}
-					}
+		/*****************************/
+		/* CHARACTERISTIC POLYNOMIAL */
+		/*****************************/
 
-		}
 
 		/**
 		 * Compute the characteristic polynomial of A using Krylov
@@ -1535,6 +1467,49 @@ namespace LinBox
 		CharPoly( const Field& F, std::list<Polynomial>& charp, const size_t N,
 			  typename Field::Element * A, const size_t lda,
 			  const FFPACK_CHARPOLY_TAG CharpTag= FfpackArithProg);
+
+		template<class Polynomial, class Field>
+		Polynomial & mulpoly(const Field& F, Polynomial &res, const Polynomial & P1, const Polynomial & P2){
+			size_t i,j;
+			// Warning: assumes that res is allocated to the size of the product
+			res.resize(P1.size()+P2.size()-1);
+			for (i=0;i<res.size();i++)
+				F.assign(res[i], 0.0);
+			for ( i=0;i<P1.size();i++)
+				for ( j=0;j<P2.size();j++)
+					F.axpyin(res[i+j],P1[i],P2[j]);
+			return res;
+		}
+
+		template <class Field, class Polynomial>
+		static std::list<Polynomial>&
+		CharPoly( const Field& F, Polynomial& charp, const size_t N,
+			  typename Field::Element * A, const size_t lda,
+			  const FFPACK_CHARPOLY_TAG CharpTag= FfpackArithProg){
+
+			std::list<Polynomial> factor_list;
+			CharPoly (F, factor_list, N, A, lda, CharpTag);
+			typename std::list<std::vector<typename Field::Element> >::const_iterator it;
+			it = factor_list.begin();
+			//		std::vector<Element>* tmp = new std::vector<Element> (n+1);
+			charp.resize(N+1);
+
+			Polynomial P = *(it++);
+			while( it!=factor_list.end() ){
+				mulpoly (F,charp, P, *it);
+				P = charp;
+
+				//	delete &(*it);
+				++it;
+			}
+			return charp;
+
+
+		}
+
+		/**********************/
+		/* MINIMAL POLYNOMIAL */
+		/**********************/
 
 		/**
 		 * Compute the minimal polynomial of (A,v) using an LUP
@@ -1832,8 +1807,9 @@ namespace LinBox
 #include "ffpack_charpoly.inl"
 #include "ffpack_krylovelim.inl"
 #include "ffpack_frobenius.inl"
+#include "ffpack_echelonforms.inl"
 #ifdef _LINBOX_LINBOX_CONFIG_H
-} // LinBox
+	} // LinBox
 #endif
 
 #endif // __LINBOX_ffpack_H

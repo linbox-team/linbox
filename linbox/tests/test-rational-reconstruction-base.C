@@ -146,7 +146,6 @@ static bool testRandomFraction (size_t n, size_t d, int iterations)
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: rational reconstruction (MaxQ, incremental, classic) failed" << endl;
 		}
-		std::cout << "ok1" << std::endl;
 
 		RReconstruction<PID_integer, FastRationalReconstruction<PID_integer> > RR1_2(Z,QUADRATIC,0,10);
 		RationalRemainder2< VarPrecEarlySingleCRA< Modular<double> >,

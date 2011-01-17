@@ -28,8 +28,7 @@ FFLAS::ftrmm (const Field& F, const FFLAS_SIDE Side,
 {
 	if (!M || !N ) return;
 
-	if ( Side==FflasLeft )
-	{
+	if ( Side==FflasLeft ){
 		if ( Uplo==FflasUpper){
 			if (TransA == FflasNoTrans){
 				if (Diag == FflasUnit)

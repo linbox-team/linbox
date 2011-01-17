@@ -310,11 +310,11 @@ FFPACK::KGFast_generalized (const Field& F, std::list<Polynomial>& charp,
 
 			printA(F,std::cerr<<"A="<<std::endl,E,C,lda,B,T,me,mc,lambda,mu);
 
-
-			// 			std::cerr<<"LUP="<<std::endl;
-			// 			write_field (F, std::cerr, LUP, mc, mc, mc);
-			//std::cerr<<" "<<r;
-
+#if 0
+			std::cerr<<"LUP="<<std::endl;
+			write_field (F, std::cerr, LUP, mc, mc, mc);
+			std::cerr<<" "<<r;
+#endif
 			// E'1 <- C11^-1 E1
 			std::cerr<<"// E'1 <- C11^-1 E1";
 #endif
@@ -342,9 +342,10 @@ FFPACK::KGFast_generalized (const Field& F, std::list<Polynomial>& charp,
 			printA(F,std::cerr<<"A="<<std::endl,E,C,lda,B,T,me,mc,lambda,mu);
 #endif
 
-			// 			std::cerr<<"Apres B1<-C1^-1"<<std::endl;
-			// 			write_field (F, std::cerr, A, N, N, lda);
-
+#if 0
+			std::cerr<<"Apres B1<-C1^-1"<<std::endl;
+			write_field (F, std::cerr, A, N, N, lda);
+#endif
 			// E'2 <- E2 - C21.E'1
 #ifdef LB_DEBUG
 			std::cerr<<"// E'2 <- E2 - C21.E'1";
@@ -397,10 +398,10 @@ FFPACK::KGFast_generalized (const Field& F, std::list<Polynomial>& charp,
 			std::cerr<<"..done"<<std::endl;
 
 			printA(F,std::cerr<<"A="<<std::endl,E,C,lda,B,T,me,mc,lambda,mu);
-
-			// 			std::cerr<<"Apres shift de B"<<std::endl;
-			//             write_field (F, std::cerr, A, N, N, lda);
-
+#if 0
+			std::cerr<<"Apres shift de B"<<std::endl;
+			write_field (F, std::cerr, A, N, N, lda);
+#endif
 			// C'2 <- T C2
 			std::cerr<<"// C'2 <- T C2";
 #endif

@@ -33,6 +33,14 @@
 
 //#define __LINBOX_HAVE_CBLAS
 
+#ifdef CUDA_BLAS
+
+#define sgemv_ cublas_sgemv
+#define sgemm_ cublas_sgemm
+#define strsm_ cublas_strsm
+#define strmm_ cublas_strmm
+
+#endif
 
 #ifndef __LINBOX_HAVE_CBLAS
 
@@ -275,6 +283,7 @@ extern "C" {
 #endif
 
 #ifdef  __LINBOX_HAVE_DTRTRI
+
 	int clapack_dtrtri(const enum CBLAS_ORDER Order,const enum CBLAS_UPLO Uplo,
 			   const enum CBLAS_DIAG Diag,const int N, double *A, const int lda)
 	{
@@ -371,4 +380,3 @@ extern "C" {
 #endif
 
 #endif //__LINBOX_config_blas_H
-

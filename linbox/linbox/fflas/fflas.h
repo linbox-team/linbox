@@ -58,7 +58,6 @@ namespace LinBox
 #define FLOAT_MANTISSA 24
 
 //#define LB_TRTR
-
 /// @brief FFLAS: <b>F</b>inite <b>F</b>ield <b>L</b>inear <b>A</b>lgebra <b>S</b>ubroutines.
 class FFLAS {
 
@@ -106,13 +105,15 @@ public:
 //---------------------------------------------------------------------
 // Level 1 routines
 //---------------------------------------------------------------------
-	/** fscal.
-	 * \f$x \gets a \cdot x\f$
+	/** fscal
+	 * \f$x \gets a \cdot x\f$.
 	 * @param F field
 	 * @param n size of the vectors
 	 * @param alpha homotÃ©ti scalar
 	 * \param X vector in \p F
 	 * \param incX stride of \p X
+	 * @internal
+	 * @todo check if comparison with +/-1,0 is necessary.
 	 */
 	template<class Field>
 	static void
@@ -602,7 +603,7 @@ public:
 			  typename Field::Element * C, const size_t ldc );
 
 	/**
-	 * Makes a copy of the matrix M into a new allocated space.
+	 * MatCopy makes a copy of the matrix M into a new allocated space.
 	 * @param F field
 	 * @param M rows of \p A
 	 * @param N cols of \p A
@@ -817,7 +818,10 @@ protected:
 	 * Generic implementation for positive representations
 	 */
 	template <class Field>
-	static double computeFactor (const Field& F, const size_t w);
+	static double computeFactorWino (const Field& F, const size_t w);
+
+	template <class Field>
+	static double computeFactorClassic (const Field& F);
 
 
 	/**
@@ -857,7 +861,7 @@ protected:
 				    typename Field::Element* C, const size_t ldc,
 				    const size_t  ); //kmax
 
-	template<class Field>
+	template <class Field>
 	static void MatVectProd (const Field& F,
 				 const FFLAS_TRANSPOSE TransA,
 				 const size_t M, const size_t N,
@@ -867,7 +871,7 @@ protected:
 				 const typename Field::Element beta,
 				 typename Field::Element * Y, const size_t incY);
 
-	template<class Field>
+	template <class Field>
 	static void ClassicMatmul(const Field& F,
 				  const FFLAS_TRANSPOSE ta,
 				  const FFLAS_TRANSPOSE tb,
@@ -881,7 +885,7 @@ protected:
 
 	// Winograd Multiplication  alpha.A(n*k) * B(k*m) + beta . C(n*m)
 	// WinoCalc performs the 22 Winograd operations
-	template<class Field>
+	template <class Field>
 	static void WinoCalc (const Field& F,
 			      const FFLAS_TRANSPOSE ta,
 			      const FFLAS_TRANSPOSE tb,
@@ -1064,7 +1068,6 @@ protected:
 	class fsubmTransNoTrans;
 	template<class Element>
 	class fsubmNoTransNoTrans;
-
 
 
 }; // class FFLAS
