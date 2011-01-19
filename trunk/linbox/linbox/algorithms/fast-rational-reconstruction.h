@@ -180,7 +180,7 @@ namespace LinBox
 			}
 
 			_Z.mul(n,x, ai);
-			_Z.axmyin(n,m,ci);
+			_Z.maxpyin(n,m,ci);
 			//n = x_in*ai-m*ci;
 			d = ai;
 			return true;
@@ -363,9 +363,9 @@ namespace LinBox
 				}
 
 				_Z.mul(cur_ri,m,di);
-				_Z.axmyin(cur_ri,n,bi);
+				_Z.maxpyin(cur_ri,n,bi);
 				_Z.mul(cur_rinext,n,ai);
-				_Z.axmyin(cur_rinext,m,ci);
+				_Z.maxpyin(cur_rinext,m,ci);
 				this->C.mul_counter+=4;
 
 				if (cur_ri < 0) {
@@ -464,9 +464,9 @@ namespace LinBox
 				this->C.mul_counter+=8;
 
 				_Z.mul(cur_ri,m,di);
-				_Z.axmyin(cur_ri,n,bi);
+				_Z.maxpyin(cur_ri,n,bi);
 				_Z.mul(cur_rinext,n,ai);
-				_Z.axmyin(cur_rinext,m,ci);
+				_Z.maxpyin(cur_rinext,m,ci);
 				this->C.mul_counter+=4;
 				//ri = m*di - n*bi;
 				//rinext = -m*ci + n*ai;
@@ -774,7 +774,7 @@ namespace LinBox
 			}
 #endif
 			_Z.mul(n,x, maxQ.a);
-			_Z.axmyin(n,m,maxQ.c);
+			_Z.maxpyin(n,m,maxQ.c);
 			//n = x_in*ai-m*ci;
 			d = maxQ.a;
 
@@ -967,9 +967,9 @@ namespace LinBox
 				queueMax._maxSize -=2;
 
 				_Z.mul(cur_ri,m,di);
-				_Z.axmyin(cur_ri,n,bi);
+				_Z.maxpyin(cur_ri,n,bi);
 				_Z.mul(cur_rinext,n,ai);
-				_Z.axmyin(cur_rinext,m,ci);
+				_Z.maxpyin(cur_rinext,m,ci);
 				this->C.mul_counter+=4;
 
 				if (cur_ri < 0) {
@@ -1085,9 +1085,9 @@ namespace LinBox
 				this->C.mul_counter+=8;
 
 				_Z.mul(cur_ri,m,di);
-				_Z.axmyin(cur_ri,n,bi);
+				_Z.maxpyin(cur_ri,n,bi);
 				_Z.mul(cur_rinext,n,ai);
-				_Z.axmyin(cur_rinext,m,ci);
+				_Z.maxpyin(cur_rinext,m,ci);
 				this->C.mul_counter+=4;
 
 				if (cur_ri < 0) {

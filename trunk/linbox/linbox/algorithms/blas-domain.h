@@ -438,6 +438,22 @@ namespace LinBox
 			return muladdin(_One,C,_One,A,B);
 		}
 
+		//! maxpy.
+		//! D = C - A*B
+		template <class Operand1, class Operand2, class Operand3>
+		Operand1& maxpy(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C)const
+		{
+			return muladd(D,_One,C,_MOne,A,B);
+		}
+
+		//! maxpyin.
+		//! C -= A*B
+		template <class Operand1, class Operand2, class Operand3>
+		Operand1& maxpyin(Operand1& C, const Operand2& A, const Operand3& B) const
+		{
+			return muladdin(_One,C,_MOne,A,B);
+		}
+
 		//! axmy.
 		//! D= A*B - C
 		template <class Operand1, class Operand2, class Operand3>

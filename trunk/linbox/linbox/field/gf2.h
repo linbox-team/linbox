@@ -845,25 +845,27 @@ namespace LinBox
 			Rep tmp; this->mul(tmp, a, x);
 			return this->sub(r,y,tmp);
 		}
-		// -- axmyin: r <- r - a * x
+		// -- axmyin: r <-  a * x - r
 		Rep& axmyin (Rep& r, const Rep a, const Rep x) const
 		{
-			Rep tmp; this->mul(tmp, a, x);
-			return this->subin(r,tmp);
+			maxpyin(r,a,x);
+			return negin(r);
 		}
 		std::_Bit_reference axmyin (std::_Bit_reference r, const Rep a, const Rep x) const
 		{
-			Rep tmp; this->mul(tmp, a, x);
-			return this->subin(r,tmp);
+			maxpyin(r,a,x);
+			return negin(r);
 		}
 		// -- maxpyin: r <- r - a * x
 		Rep& maxpyin (Rep& r, const Rep a, const Rep x) const
 		{
-			return axmyin(r,a,x);
+			Rep tmp; this->mul(tmp, a, x);
+			return this->subin(r,tmp);
 		}
 		std::_Bit_reference maxpyin (std::_Bit_reference r, const Rep a, const Rep x) const
 		{
-			return axmyin(r,a,x);
+			Rep tmp; this->mul(tmp, a, x);
+			return this->subin(r,tmp);
 		}
 
 

@@ -81,6 +81,7 @@ BASIC_TESTS =  \
 		test-ftrmm                      \
 		test-cra                        \
 		test-cradomain                  \
+		#  test-integer-tools              \
 		test-rational-reconstruction-base
 
 # tests of components not adhering to LinBox requirements.
@@ -527,8 +528,8 @@ test_cra_SOURCES =                      \
         test-cra.C                      \
         test-common.h
 
-test_cradomain_SOURCES =                      \
-        test-cradomain.C                      \
+test_cradomain_SOURCES =                \
+        test-cradomain.C                \
         test-common.h
 
 
@@ -558,5 +559,8 @@ test_ispossemidef_SOURCES=            \
         test-common.h                 \
         test-ispossemidef.C
 
-test_ftrmm_SOURCES = \
-					 test-ftrmm.C
+test_ftrmm_SOURCES =                  \
+		test-ftrmm.C
+
+#  test_integer_tools_SOURCES =          \
+		#  test-integer-tools.C

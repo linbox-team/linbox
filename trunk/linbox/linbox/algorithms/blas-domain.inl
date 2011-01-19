@@ -337,13 +337,14 @@ namespace LinBox
 	template<class Field>
 	class 	BlasMatrixDomainMulAdd<Field,BlasMatrix<typename Field::Element>,BlasMatrix<typename Field::Element>, BlasMatrix<typename Field::Element> > {
 	public:
-		BlasMatrix<typename Field::Element>& operator()(const Field& F,
-								BlasMatrix<typename Field::Element>& D,
-								const typename Field::Element& beta,
-								const BlasMatrix<typename Field::Element>& C,
-								const typename Field::Element& alpha,
-								const BlasMatrix<typename Field::Element>& A,
-								const BlasMatrix<typename Field::Element>& B) const
+		BlasMatrix<typename Field::Element>&
+		operator()(const Field& F,
+			   BlasMatrix<typename Field::Element>& D,
+			   const typename Field::Element& beta,
+			   const BlasMatrix<typename Field::Element>& C,
+			   const typename Field::Element& alpha,
+			   const BlasMatrix<typename Field::Element>& A,
+			   const BlasMatrix<typename Field::Element>& B) const
 		{
 			linbox_check( A.coldim() == B.rowdim());
 			linbox_check( C.rowdim() == A.rowdim());
@@ -364,12 +365,13 @@ namespace LinBox
 		}
 
 
-		BlasMatrix<typename Field::Element>&operator() (const Field& F,
-								const typename Field::Element& beta,
-								BlasMatrix<typename Field::Element>& C,
-								const typename Field::Element& alpha,
-								const BlasMatrix<typename Field::Element>& A,
-								const BlasMatrix<typename Field::Element>& B) const
+		BlasMatrix<typename Field::Element>&
+		operator() (const Field& F,
+			    const typename Field::Element& beta,
+			    BlasMatrix<typename Field::Element>& C,
+			    const typename Field::Element& alpha,
+			    const BlasMatrix<typename Field::Element>& A,
+			    const BlasMatrix<typename Field::Element>& B) const
 		{
 			linbox_check( A.coldim() == B.rowdim());
 			linbox_check( C.rowdim() == A.rowdim());
