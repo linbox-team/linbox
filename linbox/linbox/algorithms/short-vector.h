@@ -130,7 +130,7 @@ namespace LinBox
 			y[2]=tmp;
 		}
 
-		inline void axmyin(integer r[3], const integer &a, const integer y[3])
+		inline void maxpyin(integer r[3], const integer &a, const integer y[3])
 		{
 			if ((a.bitsize()<32) && (a >= 0)){
 				unsigned long aa= a;
@@ -139,9 +139,9 @@ namespace LinBox
 				mpz_submul_ui(r[2].get_mpz(), y[2].get_mpz(), aa);
 			}
 			else {
-				integer::axmyin(r[0],a,y[0]);
-				integer::axmyin(r[1],a,y[1]);
-				integer::axmyin(r[2],a,y[2]);
+				integer::maxpyin(r[0],a,y[0]);
+				integer::maxpyin(r[1],a,y[1]);
+				integer::maxpyin(r[2],a,y[2]);
 			}
 		}
 
@@ -186,7 +186,7 @@ namespace LinBox
 			r=b1b2/lb1;
 			integer a[3], la;
 			assign(a,b2);
-			axmyin(a,r,b1);
+			maxpyin(a,r,b1);
 			la= (-r*(b1b2))<<1;
 			integer::axpyin(la, r*r, lb1);
 			la+=lb2;
@@ -195,14 +195,14 @@ namespace LinBox
 				assign(b2,b1);lb2=lb1;
 				assign(b1,a);lb1=la;
 				std::swap(b2b3,b1b3);
-				integer::axmyin(b1b2,r,lb2);
-				integer::axmyin(b1b3,r, b2b3);
+				integer::maxpyin(b1b2,r,lb2);
+				integer::maxpyin(b1b3,r, b2b3);
 				binaryGaussReduce();
 			}else{
 				if (la < lb2){
 					assign(b2,a);lb2=la;
-					integer::axmyin(b2b3,r, b1b3);
-					integer::axmyin(b1b2,r,lb1);
+					integer::maxpyin(b2b3,r, b1b3);
+					integer::maxpyin(b1b2,r,lb1);
 				}
 			}
 		}
@@ -344,16 +344,16 @@ namespace LinBox
 				integer::div(B1B3LB1, b1b3, lb1);
 
 				TMP= integer(integer(1));
-				integer::axmyin(TMP, B1B2LB1, B1B2LB2);
+				integer::maxpyin(TMP, B1B2LB1, B1B2LB2);
 
 
 				y2= B2B3LB2;
-				integer::axmyin(y2, B1B2LB2, B1B3LB1);
+				integer::maxpyin(y2, B1B2LB2, B1B3LB1);
 				integer::divin(y2,TMP);
 				integer::negin(y2);
 
 				y1= B1B3LB1;
-				integer::axmyin(y1, B1B2LB1, B2B3LB2);
+				integer::maxpyin(y1, B1B2LB1, B2B3LB2);
 				integer::divin(y1,TMP);
 				integer::negin(y1);
 
@@ -545,7 +545,7 @@ namespace LinBox
 			}
 		}
 
-		static LargeDouble& axmyin(LargeDouble &x, const LargeDouble &a, const LargeDouble &y)
+		static LargeDouble& maxpyin(LargeDouble &x, const LargeDouble &a, const LargeDouble &y)
 		{
 
 			long e = a._e + y._e;

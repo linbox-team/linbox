@@ -114,7 +114,7 @@ namespace LinBox
 				a = r0;
 				r0 = u;	// r0 <-- num
 
-				_Z.axmyin(a,u,q); // num <-- r0-q*num
+				_Z.maxpyin(a,u,q); // num <-- r0-q*num
 				//++this->C.mul_counter;
 				//if (a == 0) return false;
 
@@ -122,14 +122,14 @@ namespace LinBox
 				b = t0;
 				t0 = u;	// t0 <-- den
 
-				_Z.axmyin(b,u,q); // den <-- t0-q*den
+				_Z.maxpyin(b,u,q); // den <-- t0-q*den
 				//++this->C.mul_counter;
 
 				//u = s1;
 				//s1 = s0;
 				//s0 = u;
 
-				//_Z.axmyin(s0,u,q);
+				//_Z.maxpyin(s0,u,q);
 				//++this->C.mul_counter;
 
 			}
@@ -153,9 +153,9 @@ namespace LinBox
 						gar2 -= a;
 					}
 
-					//_Z.axmyin(r0,q,a);
+					//_Z.maxpyin(r0,q,a);
 					r0 = ganum;
-					_Z.axmyin(t0,q,b);
+					_Z.maxpyin(t0,q,b);
 					//++this->C.mul_counter;++this->C.mul_counter;
 					if (t0 < 0) {
 						a = -r0;
@@ -276,7 +276,7 @@ namespace LinBox
 					a = r0;
 					r0 = u;	// r0 <-- num
 
-					_Z.axmyin(a,u,q); // num <-- r0-q*num
+					_Z.maxpyin(a,u,q); // num <-- r0-q*num
 					//++this->C.mul_counter;
 					//if (a == 0) return false;
 
@@ -284,7 +284,7 @@ namespace LinBox
 					b = t0;
 					t0 = u;	// t0 <-- den
 
-					_Z.axmyin(b,u,q); // den <-- t0-q*den
+					_Z.maxpyin(b,u,q); // den <-- t0-q*den
 					//++this->C.mul_counter;
 				}
 
