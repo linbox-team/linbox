@@ -417,6 +417,26 @@ namespace LinBox
 						  typename MatrixTraits<Matrix3>::MatrixCategory ());
 		}
 
+		/*!  General matrix multiply
+		 * \f$ D \gets \alpha A B + \beta C\f$.
+		 * @todo not efficient...
+		 */
+		template <class Matrix1, class Matrix2, class Matrix3>
+		inline Matrix1 &muladd (Matrix1                       & D,
+					const typename Field::Element & beta,
+					const Matrix1                 & C,
+					const typename Field::Element & alpha,
+					const Matrix2                 & A,
+					const Matrix3                 & B) const
+		{
+			mul(D,A,B); // D = AB
+			mulin(D,alpha); // D = alpha D
+			Matrix1 CC(C);
+			mulin(CC,beta);   // C = beta C
+			addin(D,CC);   // D = D+C
+			return D;
+		}
+
 		/*! @todo Need documentation of these methods */
 		//@{
 		template<class Matrix1, class Matrix2>
