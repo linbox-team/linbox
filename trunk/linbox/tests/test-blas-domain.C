@@ -36,6 +36,7 @@
 #include <linbox/util/commentator.h>
 #include <linbox/algorithms/blas-domain.h>
 #include "linbox/field/PID-integer.h"
+// #include "linbox/algorithms/matrix-hom.h"
 
 #include "linbox/matrix/random-matrix.h"
 
@@ -158,23 +159,32 @@ bool CheckMulAdd( const Integer & alpha , const BlasMatrix<Integer> & A , const 
 	BlasMatrix<Integer> D(M,N);
 
 	Integer p = Integer::random_between(10,12) ;
+	nextprime(p,p); //!@bug si p n'est pas premier, fgemm fait n'importe quoi (division par alpha)
 	ModularField Zp (p);
 
 	BlasMatrixDomain<ModularField> BMD (Zp);
 	MatrixDomain<ModularField>      MD (Zp);
 
+	// Ep = b C + a A B
 	ZMD.muladd(D,beta,C,alpha,A,B);
 	BlasMatrix<Element> Dp(D,Zp); // D mod p
 
 	BlasMatrix<Element> Ap(A,Zp);
 	BlasMatrix<Element> Bp(B,Zp);
 	BlasMatrix<Element> Cp(C,Zp);
+	// BlasMatrix<Element> Ap(A.rowdim(),A.coldim());
+	// BlasMatrix<Element> Bp(B.rowdim(),B.coldim());
+	// BlasMatrix<Element> Cp(C.rowdim(),C.coldim());
+	// MatrixHom::map(Ap,A,Zp);
+	// MatrixHom::map(Bp,B,Zp);
+	// MatrixHom::map(Cp,C,Zp);
 	BlasMatrix<Element> Ep(M,N);  // D mod p
 
 	Element ap, bp ;
 	Zp.init(ap,alpha);
 	Zp.init(bp,beta);
 
+	// Ep = bp Cp + ap Ap Bp mod p
 	BMD.muladd(Ep,bp,Cp,ap,Ap,Bp);
 
 	bool pass = MD.areEqual(Ep,Dp);
@@ -196,9 +206,10 @@ bool CheckMulAdd( const Integer & alpha , const BlasMatrix<Integer> & A , const 
 		std::cout << "evalm(E-alpha*A.B-beta*C);" << std::endl;
 		std::cout << "#########################################" << std::endl;
 #endif
-		mycommentator.report() << " *** BMD ERROR *** " << std::endl;
+		mycommentator.report() << " *** BMD ERROR (" << alpha << ',' << beta << ") *** " << std::endl;
 	}
 
+	// Ep = bp Cp + ap Ap Bp mod p
 	MD.muladd(Ep,bp,Cp,ap,Ap,Bp);
 	bool all = MD.areEqual(Ep,Dp);
 	if (!all) {
@@ -224,6 +235,7 @@ static bool testMulAddAgain (const Field& F, size_t n, int iterations)
 	bool ret = true;
 
 	size_t ll = 17 ;
+	Integer::seeding();
 #if 0
 	size_t lA = 15 ;
 	size_t lB = 18 ;

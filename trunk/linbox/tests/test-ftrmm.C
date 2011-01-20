@@ -457,9 +457,11 @@ int test_applyP(const Field & F)
 template<class Field, FFLAS::FFLAS_TRANSPOSE ATRANS, FFLAS::FFLAS_TRANSPOSE BTRANS>
 int test_fgemm(const Field & F)
 {
-	size_t M    = random()%_LB_MAX_SZ ; // rows of (t)A and C
-	size_t N    = random()%_LB_MAX_SZ ; // cols of (t)B and C
-	size_t K    = random()%_LB_MAX_SZ ; // cols of (t)A, rows of (t)B
+	size_t M    = random()%_LB_MAX_SZ+1 ; // rows of (t)A and C
+	size_t N    = random()%_LB_MAX_SZ+1 ; // cols of (t)B and C
+	size_t K    = random()%_LB_MAX_SZ+1 ; // cols of (t)A, rows of (t)B
+
+	//!@bug if beta != 0 but A and B are 0 (or don't exist) then C != beta C
 
 	size_t lda  = random()%(_LB_MAX_SZ/2) ;
 	if (ATRANS == FFLAS::FflasTrans) lda += M ; else lda += K ;
@@ -487,8 +489,15 @@ int test_fgemm(const Field & F)
 	typedef typename Field::Element Element;
 
 	Element alpha, beta ;
-	G.random(alpha);
-	G.random(beta);
+	// G.random(alpha);
+	// G.random(beta);
+	alpha = Integer::random<false>(2);
+	if (abs(alpha) > 1.5 ) G.random(alpha);
+	beta  = Integer::random<false>(2);
+	if (abs(beta) >1.5 ) G.random(beta);
+	// std::cout << alpha << ',' << beta << std::endl;
+	F.init(alpha,alpha);
+	F.init(beta,beta);
 
 
 	Element * A = new Element[rowA*lda];
@@ -499,8 +508,6 @@ int test_fgemm(const Field & F)
 	assert(C);
 	Element * D = new Element[rowC*ldc] ; // backup de C
 	assert(D);
-
-
 
 	for (size_t i = 0 ; i < rowA*lda ; ++i) G.random( *(A+i) ) ;
 	for (size_t i = 0 ; i < rowB*ldb ; ++i) G.random( *(B+i) ) ;
@@ -783,6 +790,8 @@ int main()
 	std::cout << "# \033[1;33m>\033[0m ftr(s/m)m  passed " << ret << "/" << tot << "tests" <<std::endl;
 #endif
 	if (ret != tot) fail=true;
+	if (fail)
+		std::cout << "# \033[1;31m>\033[0m ftr(s/m)m failed" << std::endl;
 	int our = tot = 6*_LB_ITERS*2 ;
 #ifdef __LINBOX_HAVE_INT64
 	our = tot = tot+2*_LB_ITERS*2 ;
@@ -808,7 +817,10 @@ int main()
 #ifdef DEBUG
 	std::cout << "# \033[1;33m>\033[0m applyP  passed " << our << "/" << tot << "tests" <<std::endl;
 #endif
-	if(our != tot) fail = true;
+	if (our != tot) fail = true;
+	if (our != tot)
+		std::cout << "# \033[1;31m>\033[0m applyP failed" << std::endl;
+
 
 	our = tot = 4*_LB_ITERS*6 ;
 #ifdef __LINBOX_HAVE_INT64
@@ -868,8 +880,8 @@ int main()
 #endif
 	if(our != tot) fail = true;
 
-	if (fail)
-		std::cout << "# \033[1;31m>\033[0m ftrsm failed" << std::endl;
+	if (our != tot)
+		std::cout << "# \033[1;31m>\033[0m fgemm failed" << std::endl;
 	return false ;
 
 }

@@ -29,6 +29,7 @@
  * @warning A <code>BlasMatrixDomain<Field></code> should be templated by a
  * \link LinBox::Modular Modular\endlink field. In particular, this domain
  * is not suitable for integers.
+ * @warning A \e Field does mean here a \e Field and not a general \f$\mathbf{Z}/m\mathbf{Z}\f$ \e ring. You'll be warned...
  */
 
 #ifndef __LINBOX_blas_matrix_domain_H
