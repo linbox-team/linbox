@@ -35,6 +35,9 @@
 #include <linbox/randiter/nonzero.h>
 #include <linbox/util/commentator.h>
 #include <linbox/algorithms/blas-domain.h>
+#include "linbox/field/PID-integer.h"
+
+#include "linbox/matrix/random-matrix.h"
 
 #include <vector>
 
@@ -46,7 +49,8 @@ const int maxpretty = 35;
 
 string blank;
 
-const char* pretty(string a) {
+const char* pretty(string a)
+{
 
 	blank = "     " + a;
 	int msgsize= maxpretty - blank.size();
@@ -59,7 +63,8 @@ const char* pretty(string a) {
 
 
 template <class Field>
-static bool testMulAdd (const Field& F, size_t n, int iterations) {
+static bool testMulAdd (const Field& F, size_t n, int iterations)
+{
 
 	typedef typename Field::Element     Element;
 	typedef typename Field::RandIter   RandIter;
@@ -136,14 +141,172 @@ static bool testMulAdd (const Field& F, size_t n, int iterations) {
 	return ret;
 }
 
+// computes D = alpha A B + beta C on integers and check the result is ok mod p.
+// actually we check the mod p muladd here...
+bool CheckMulAdd( const Integer & alpha , const BlasMatrix<Integer> & A , const BlasMatrix<Integer> & B , const Integer & beta , const BlasMatrix<Integer> & C)
+{
 
+	size_t M = C.rowdim();
+	size_t N = C.coldim();
+
+	typedef Modular<double>       ModularField ;
+	typedef ModularField::Element      Element ;
+
+	PID_integer ZZ ;
+	MatrixDomain<PID_integer> ZMD(ZZ);
+
+	BlasMatrix<Integer> D(M,N);
+
+	Integer p = Integer::random_between(10,12) ;
+	ModularField Zp (p);
+
+	BlasMatrixDomain<ModularField> BMD (Zp);
+	MatrixDomain<ModularField>      MD (Zp);
+
+	ZMD.muladd(D,beta,C,alpha,A,B);
+	BlasMatrix<Element> Dp(D,Zp); // D mod p
+
+	BlasMatrix<Element> Ap(A,Zp);
+	BlasMatrix<Element> Bp(B,Zp);
+	BlasMatrix<Element> Cp(C,Zp);
+	BlasMatrix<Element> Ep(M,N);  // D mod p
+
+	Element ap, bp ;
+	Zp.init(ap,alpha);
+	Zp.init(bp,beta);
+
+	BMD.muladd(Ep,bp,Cp,ap,Ap,Bp);
+
+	bool pass = MD.areEqual(Ep,Dp);
+	if (!pass) {
+#if 0
+		std::cout << "#########################################" << std::endl;
+		std::cout << "p := " << p << ';' << std::endl;
+		std::cout << "ap,bp := " << ap << ',' << bp << ';' << std::endl;
+		Ap.write(std::cout << "Ap :=", true) << ";" << std::endl;
+		Bp.write(std::cout << "Bp :=", true) << ";" << std::endl;
+		Cp.write(std::cout << "Cp :=", true) << ";" << std::endl;
+		Dp.write(std::cout << "Dp :=", true) << ";" << std::endl;
+		Ep.write(std::cout << "Ep :=", true) << ";" << std::endl;
+		std::cout << "alpha,beta := " << alpha << ',' << beta << ';' << std::endl;
+		A.write(std::cout << "A :=",true) << ';' << std::endl;
+		B.write(std::cout << "B :=",true) << ';' << std::endl;
+		C.write(std::cout << "C :=",true) << ';' << std::endl;
+		D.write(std::cout << "E :=",true) << ';' << std::endl;
+		std::cout << "evalm(E-alpha*A.B-beta*C);" << std::endl;
+		std::cout << "#########################################" << std::endl;
+#endif
+		mycommentator.report() << " *** BMD ERROR *** " << std::endl;
+	}
+
+	MD.muladd(Ep,bp,Cp,ap,Ap,Bp);
+	bool all = MD.areEqual(Ep,Dp);
+	if (!all) {
+		mycommentator.report() << " *** MD ERROR *** " << std::endl;
+	}
+
+	return pass&all ;
+
+}
+
+
+template <class Field>
+static bool testMulAddAgain (const Field& F, size_t n, int iterations)
+{
+
+	typedef BlasMatrix<Integer>         IMatrix;
+
+	//Commentator mycommentator;
+	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	mycommentator.start (pretty("Testing muladd again"),"testMulAddAgain",iterations);
+
+	bool ret = true;
+
+	size_t ll = 17 ;
+#if 0
+	size_t lA = 15 ;
+	size_t lB = 18 ;
+	size_t lC = 19 ;
+
+	PID_integer ZZ ;
+
+	typedef RandomIntegerIter<>                       IntRandIter ;
+	typedef RandomDenseMatrix<IntRandIter, PID_integer > IntRand_t;
+
+	IntRandIter RA(lA);
+	IntRandIter RB(lB);
+	IntRandIter RC(lC);
+
+	IntRand_t Arand (ZZ,RA);
+	IntRand_t Brand (ZZ,RB);
+	IntRand_t Crand (ZZ,RC);
+#endif
+
+	for (int k=0;k<iterations; ++k) {
+
+		mycommentator.progress(k);
+		IMatrix A(n,n),B(n,n),C(n,n),D(n,n),E(n,n);
+
+		Integer a , b;
+#if 0
+		Arand.random<IMatrix>(A);
+		Brand.random<IMatrix>(B);
+		Crand.random<IMatrix>(C);
+#endif
+		for (size_t i=0;i<n;++i)
+			for (size_t j=0;j<n;++j){
+				A.setEntry(i,j,Integer::random());
+				B.setEntry(i,j,Integer::random());
+				C.setEntry(i,j,Integer::random());
+			}
+
+		a = 1 ; b = 1 ;
+		if (!CheckMulAdd(a,A,B,b,C)) ret = false ;
+		a = 1 ; b = -1 ;
+		if (!CheckMulAdd(a,A,B,b,C)) ret = false ;
+		a = -1 ; b = 1 ;
+		if (!CheckMulAdd(a,A,B,b,C)) ret = false ;
+		a = -1 ; b = -1 ;
+		if (!CheckMulAdd(a,A,B,b,C)) ret = false ;
+		a = 0 ; b = 1 ;
+		if (!CheckMulAdd(a,A,B,b,C)) ret = false ;
+		a = 1 ; b = 0 ;
+		if (!CheckMulAdd(a,A,B,b,C)) ret = false ;
+		a = 0 ; b = -1 ;
+		if (!CheckMulAdd(a,A,B,b,C)) ret = false ;
+		a = -1 ; b = 0 ;
+		if (!CheckMulAdd(a,A,B,b,C)) ret = false ;
+		a = Integer::random<false>(ll) ; b = 1 ;
+		if (!CheckMulAdd(a,A,B,b,C)) ret = false ;
+		a =Integer::random<false>(ll) ; b = -1 ;
+		if (!CheckMulAdd(a,A,B,b,C)) ret = false ;
+		a =  1 ; b = Integer::random<false>(ll) ;
+		if (!CheckMulAdd(a,A,B,b,C)) ret = false ;
+		a = -1 ; b = Integer::random<false>(ll) ;
+		if (!CheckMulAdd(a,A,B,b,C)) ret = false ;
+		a = 0 ; b = Integer::random<false>(ll) ;
+		if (!CheckMulAdd(a,A,B,b,C)) ret = false ;
+		a = Integer::random<false>(ll) ; b = 0 ;
+		if (!CheckMulAdd(a,A,B,b,C)) ret = false ;
+		a = Integer::random<false>(ll) ; b = Integer::random<false>(ll) ;
+		if (!CheckMulAdd(a,A,B,b,C)) ret = false ;
+
+	}
+
+
+	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testMulAddAgain");
+
+	return ret;
+}
 
 /*
  *  Testing the rank of dense matrices using BlasDomain
  *  construct a n*n matrices of rank r and compute the rank
  */
 template <class Field>
-static bool testRank (const Field& F,size_t n, int iterations) {
+static bool testRank (const Field& F,size_t n, int iterations)
+{
 
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
@@ -206,7 +369,8 @@ static bool testRank (const Field& F,size_t n, int iterations) {
  *  construct a n*n matrices of determinant d and compute the determinant
  */
 template <class Field>
-static bool testDet (const Field& F,size_t n, int iterations) {
+static bool testDet (const Field& F,size_t n, int iterations)
+{
 
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
@@ -269,7 +433,8 @@ static bool testDet (const Field& F,size_t n, int iterations) {
  *  construct a non-singular n*n matrices
  */
 template <class Field>
-static bool testInv (const Field& F,size_t n, int iterations) {
+static bool testInv (const Field& F,size_t n, int iterations)
+{
 
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
@@ -340,7 +505,8 @@ static bool testInv (const Field& F,size_t n, int iterations) {
  * Test resolution of linear system with a triangular matrix
  */
 template <class Field>
-static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterations) {
+static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterations)
+{
 
 	typedef typename Field::Element                  Element;
 	typedef BlasMatrix<Element>                       Matrix;
@@ -453,7 +619,8 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
  * Test resolution of linear system with a matrix
  */
 template <class Field>
-static bool testSolve (const Field& F, size_t m, size_t n, int iterations) {
+static bool testSolve (const Field& F, size_t m, size_t n, int iterations)
+{
 
 	typedef typename Field::Element                  Element;
 	typedef BlasMatrix<Element>                       Matrix;
@@ -570,7 +737,8 @@ static bool testSolve (const Field& F, size_t m, size_t n, int iterations) {
  */
 
 template <class Field>
-static bool testPermutation (const Field& F, size_t m, int iterations) {
+static bool testPermutation (const Field& F, size_t m, int iterations)
+{
 
 	typedef typename Field::Element                  Element;
 	typedef BlasMatrix<Element>                       Matrix;
@@ -875,7 +1043,8 @@ static bool testPermutation (const Field& F, size_t m, int iterations) {
  * Test of the LQUPMatrix class
  */
 template <class Field>
-static bool testLQUP (const Field& F, size_t m, size_t n, int iterations) {
+static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
+{
 
 	typedef typename Field::Element                  Element;
 	typedef BlasMatrix<Element>                       Matrix;
@@ -979,7 +1148,8 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations) {
 }
 
 template <class Field>
-static bool testMinPoly (const Field& F, size_t n, int iterations) {
+static bool testMinPoly (const Field& F, size_t n, int iterations)
+{
 	typedef typename Field::Element                  Element;
 	typedef BlasMatrix<Element>                       Matrix;
 	typedef typename Field::RandIter                RandIter;
@@ -1059,7 +1229,8 @@ static bool testMinPoly (const Field& F, size_t n, int iterations) {
 }
 
 template <class Field>
-static bool testCharPoly (const Field& F, size_t n, int iterations) {
+static bool testCharPoly (const Field& F, size_t n, int iterations)
+{
 	typedef typename Field::Element                  Element;
 	typedef BlasMatrix<Element>                       Matrix;
 	typedef typename Field::RandIter                RandIter;
@@ -1133,7 +1304,8 @@ static bool testCharPoly (const Field& F, size_t n, int iterations) {
 }
 
 template<class T, template <class T> class Container>
-std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
+std::ostream& operator<< (std::ostream& o, const Container<T>& C)
+{
 	for(typename Container<T>::const_iterator refs =  C.begin();
 	    refs != C.end() ;
 	    ++refs )
@@ -1141,11 +1313,12 @@ std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
 	return o << std::endl;
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
 
 	static size_t n = 40;
 	static integer q = 1000003U;
-	static int iterations = 1;
+	static int iterations = 2;
 
     static Argument args[] = {
         { 'n', "-n N", "Set dimension of test matrices to NxN", TYPE_INT,     &n },
@@ -1175,6 +1348,7 @@ int main(int argc, char **argv) {
 	//std::cout << "no blas tests for now" << std::endl;
 	// no slow test while I work on io
 	if (!testMulAdd (F,n,iterations)) pass=false;
+	if (!testMulAddAgain (F,n,iterations)) pass=false;
  	if (!testRank (F, n, iterations))   pass = false;
  	if (!testDet  (F, n, iterations)) pass = false;
  	if (!testInv  (F, n, iterations)) pass = false;

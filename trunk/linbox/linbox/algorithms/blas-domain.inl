@@ -338,11 +338,11 @@ namespace LinBox
 	class 	BlasMatrixDomainMulAdd<Field,BlasMatrix<typename Field::Element>,BlasMatrix<typename Field::Element>, BlasMatrix<typename Field::Element> > {
 	public:
 		BlasMatrix<typename Field::Element>&
-		operator()(const Field& F,
-			   BlasMatrix<typename Field::Element>& D,
-			   const typename Field::Element& beta,
+		operator()(const Field                              & F,
+			   BlasMatrix<typename Field::Element>      & D,
+			   const typename Field::Element            & beta,
 			   const BlasMatrix<typename Field::Element>& C,
-			   const typename Field::Element& alpha,
+			   const typename Field::Element            & alpha,
 			   const BlasMatrix<typename Field::Element>& A,
 			   const BlasMatrix<typename Field::Element>& B) const
 		{
@@ -353,6 +353,7 @@ namespace LinBox
 			linbox_check( D.coldim() == C.coldim());
 
 			D=C;
+			// linbox_check(D.getPointer() != C.getPointer());
 
 			FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 				      C.rowdim(), C.coldim(), A.coldim(),
@@ -366,10 +367,10 @@ namespace LinBox
 
 
 		BlasMatrix<typename Field::Element>&
-		operator() (const Field& F,
-			    const typename Field::Element& beta,
-			    BlasMatrix<typename Field::Element>& C,
-			    const typename Field::Element& alpha,
+		operator() (const Field                              & F,
+			    const typename Field::Element            & beta,
+			    BlasMatrix<typename Field::Element>      & C,
+			    const typename Field::Element            & alpha,
 			    const BlasMatrix<typename Field::Element>& A,
 			    const BlasMatrix<typename Field::Element>& B) const
 		{
