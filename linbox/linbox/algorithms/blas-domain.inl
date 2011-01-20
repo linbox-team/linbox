@@ -355,6 +355,11 @@ namespace LinBox
 			D=C;
 			// linbox_check(D.getPointer() != C.getPointer());
 
+			// std::cout << "alpha :" << alpha << std::endl;
+			// std::cout << "beta  :" << beta  << std::endl;
+			// D.write(std::cout << "Dfgem :=" ) <<','<< std::endl;
+			// A.write(std::cout << "Afgem :=" ) <<','<< std::endl;
+			// B.write(std::cout << "Bfgem :=" ) <<','<< std::endl;
 			FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 				      C.rowdim(), C.coldim(), A.coldim(),
 				      alpha,
@@ -362,6 +367,10 @@ namespace LinBox
 				      B.getPointer(), B.getStride(),
 				      beta,
 				      D.getPointer(), D.getStride());
+			// D.write(std::cout << "Dfgem :=" ) <<','<< std::endl;
+			// std::cout << A.getStride() << "," << A.coldim() << std::endl;
+			// std::cout << B.getStride() << "," << B.coldim() << std::endl;
+			// std::cout << D.getStride() << "," << D.coldim() << std::endl;
 			return D;
 		}
 

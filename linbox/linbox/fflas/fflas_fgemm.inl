@@ -241,6 +241,7 @@ inline void FFLAS::ClassicMatmul (const DoubleDomain& ,
 				  DoubleDomain::Element * Cd, const size_t ldc,
 				  const size_t kmax, const FFLAS_BASE base)
 {
+
 	cblas_dgemm (CblasRowMajor, (CBLAS_TRANSPOSE) ta, (CBLAS_TRANSPOSE) tb,
 		     m, n, k, (DoubleDomain::Element) alpha,
 		     Ad, lda, Bd, ldb, (DoubleDomain::Element) beta,Cd, ldc);
