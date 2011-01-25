@@ -441,8 +441,23 @@ namespace LinBox
 		{}
 	};
 
-	//Using numerical methods to symbolically solve linear systems.
+	//Using Wan's numeric/symbolic method to solve linear systems.
 	//based on a preprinted article, submitted to JSC 2004
+	struct WanTraits : public Specifier
+	{
+		WanTraits ( Preconditioner preconditioner = NO_PRECONDITIONER,
+				  size_t          rank          = RANK_UNKNOWN)
+		{
+			Specifier::_preconditioner=(preconditioner);
+
+			Specifier::_rank=(rank) ;
+		}
+		WanTraits( const Specifier& S) :
+		       	Specifier(S)
+	       	{}
+	};
+
+	//Using numerical methods to symbolically solve linear systems.
 	struct NumericalTraits : public Specifier
 	{
 		NumericalTraits ( Preconditioner preconditioner = NO_PRECONDITIONER,
