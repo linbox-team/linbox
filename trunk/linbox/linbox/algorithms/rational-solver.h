@@ -896,7 +896,18 @@ namespace LinBox
 	/* HYBRID Num/Sym */
 	/*----------------*/
 
-	/** \brief partial specialization of p-adic based solver with a hybrid Numeric/Symbolic computation.
+	/** \brief solver using a hybrid Numeric/Symbolic computation.
+		template argument Field and RandomPrime are not used.
+		Keep it just for interface consistency.
+	 */
+	template <class Ring, class Field, class RandomPrime>
+	class RationalSolver<Ring, Field, RandomPrime, NumericalTraits>; 
+	
+
+
+	/** \brief solver using a hybrid Numeric/Symbolic computation.
+	 *
+	 *   This is the original numerix/symbolic solver, now replaced by an enhanced version.
 	 *
 	 *   See the following reference for details on this implementation:
 	 *   @bib
@@ -908,149 +919,7 @@ namespace LinBox
 	//template argument Field and RandomPrime are not used.
 	//Keep it just for interface consistency.
 	template <class Ring, class Field, class RandomPrime>
-	class RationalSolver<Ring, Field, RandomPrime, NumericalTraits> {
-
-	protected:
-		Ring r;
-
-	public:
-		typedef typename Ring::Element Integer;
-
-		RationalSolver(const Ring& _r = Ring()) :
-			r(_r),IPromiseMyCoefficientsAreSmallAndIWontCry(false)
-		{}
-
-
-#if  __LINBOX_HAVE_DGETRF && __LINBOX_HAVE_DGETRI
-		template <class IMatrix, class OutVector, class InVector>
-		SolverReturnStatus solve(OutVector& num, Integer& den,
-					 const IMatrix& M, const InVector& b) const
-		{
-
-			if(M. rowdim() != M. coldim()) {
-				throw(PreconditionFailed(__func__,__FILE__,__LINE__," Matrix is not square...")) ;
-				return SS_FAILED;
-			}
-
-			linbox_check((b.size() == M.rowdim()) && (num. size() == M.coldim()));
-			int n = M. rowdim();
-			Integer tmp_I; integer tmp;
-			typename InVector::const_iterator b_p;
-			if (!IPromiseMyCoefficientsAreSmallAndIWontCry) {
-				integer mentry, bnorm; mentry = 1; bnorm = 1;
-				typename IMatrix::ConstRawIterator raw_p;
-				for (raw_p = M. rawBegin(); raw_p != M. rawEnd(); ++ raw_p) {
-					r. convert (tmp, *raw_p);
-					tmp = abs (tmp);
-					if (tmp > mentry) mentry = tmp;
-				}
-
-				for (b_p = b. begin(); b_p != b.  end(); ++ b_p) {
-					r. init (tmp_I, *b_p);
-					r. convert (tmp, tmp_I);
-					tmp = abs (tmp);
-					if (tmp > bnorm) bnorm = tmp;
-				}
-
-				integer threshold; threshold = 1; threshold <<= 50;
-
-				if ((mentry > threshold) || (bnorm > threshold))  {
-#ifdef DEBUG
-					std::cerr << __func__ << " (" << __FILE__ << ';' << __LINE__ << ") Entries in matrix are too big for NumericalTraits... Failed" << std::endl;
-#endif
-					return SS_FAILED;
-				}
-			}
-			// else {
-
-			double* DM = new double [n * n];
-			double* Db = new double [n];
-			double* DM_p, *Db_p;
-			typename IMatrix::ConstRawIterator raw_p;
-			for (raw_p = M. rawBegin(), DM_p = DM; raw_p != M. rawEnd(); ++ raw_p, ++ DM_p) {
-				r. convert (tmp, *raw_p);
-				*DM_p = (double) tmp;
-			}
-
-			for (b_p = b. begin(), Db_p = Db; b_p != b. begin() + n; ++ b_p, ++ Db_p) {
-				r. init (tmp_I, *b_p);
-				r. convert (tmp, tmp_I);
-				*Db_p = (double) tmp;
-			}
-
-			integer* numx = new integer[n];
-			integer denx;
-			int ret;
-			ret = cblas_rsol (n, DM, numx, denx, Db);
-			delete[] DM; delete[] Db;
-
-			if (ret == 0){
-				r. init (den, denx);
-				typename OutVector::iterator num_p;
-				integer* numx_p = numx;
-				for (num_p = num. begin(); num_p != num. end(); ++ num_p, ++ numx_p)
-					r. init (*num_p, *numx_p);
-			}
-			delete[] numx;
-
-			if (ret == 0) return SS_OK;
-			else return SS_FAILED;
-			// }
-
-		}
-#else
-		template <class IMatrix, class OutVector, class InVector>
-		SolverReturnStatus solve(OutVector& num, Integer& den,
-					 const IMatrix& M, const InVector& b) const
-		{
-#ifdef DEBUG
-			std::cerr << __func__ << " (" << __FILE__ << ';' << __LINE__ <<"LinBox does not have \"dgetrf\" and \"dgetri\" mandatory for \'RationalSolver<...,NumericalTraits>\'" << std::endl;
-#endif
-			return SS_FAILED;
-		}
-#endif
-
-	public:
-		//print out a vector
-		template <class Elt>
-		inline static int printvec (const Elt* v, int n);
-		/** Compute the OO-norm of a mtrix */
-		inline static double cblas_dOOnorm(const double* M, int m, int n);
-		/** compute the maximam of absolute value of an array*/
-		inline static double cblas_dmax (const int N, const double* a, const int inc);
-		/* apply  y <- Ax */
-		inline static int cblas_dapply (int m, int n, const double* A, const double* x, double* y);
-		inline static int cblas_mpzapply (int m, int n, const double* A, const integer* x, integer* y);
-		//update the numerator; num = num * 2^shift + d;
-		inline static int update_num (integer* num, int n, const double* d, int shift);
-		//update r = r * shift - M d, where norm (r) < 2^32;
-		inline static int update_r_int (double* r, int n, const double* M, const double* d, int shift);
-		//update r = r * shift - M d, where 2^32 <= norm (r) < 2^53
-		inline static int update_r_ll (double* r, int n, const double* M, const double* d, int shift);
-		/** compute  the hadamard bound*/
-		inline static int cblas_hbound (integer& b, int m, int n, const double* M);
-
-#if __LINBOX_HAVE_DGETRF && __LINBOX_HAVE_DGETRI
-		// compute the inverse of a general matrix
-		inline static int cblas_dgeinv(double* M, int n);
-		/* solve Ax = b
-		 * A, the integer matrix
-		 * b, integer rhs
-		 * Return value
-		 * 0, ok.
-		 * 1, the matrix is not invertible in floating point operations.
-		 * 2, the matrix is not well conditioned.
-		 * 3, incorrect answer, possible ill-conditioned.
-		 */
-		inline static int cblas_rsol (int n, const double* M, integer* numx, integer& denx, double* b);
-#endif
-		void hasSmallCoeffs() {
-			IPromiseMyCoefficientsAreSmallAndIWontCry = true  ;
-		}
-	private:
-		bool IPromiseMyCoefficientsAreSmallAndIWontCry ;
-
-	};
+	class RationalSolver<Ring, Field, RandomPrime, WanTraits> ;
 
 	/*--------------*/
 	/* BLOCK HANKEL */
