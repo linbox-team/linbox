@@ -87,7 +87,7 @@ namespace LinBox
 		 * @param  R RandIterEnvelope object.
 		 */
 		RandIterEnvelope (const RandIterEnvelope &R) :
-			_randIter (R._randIter)
+			RandIterAbstract(R), _randIter (R._randIter)
 		{}
 
 		/** Destructor.

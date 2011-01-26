@@ -335,11 +335,11 @@ namespace LinBox
 		}
 
 	protected:
-
 		std::vector<Element>  _rep;
 		size_t                _rows, _cols;
 		Element *             _ptr;
-	};
+
+	}; //class DenseMatrixBase 
 
 	/*! Write a matrix to a stream.
 	 * The C++ way using <code>operator<<</code>

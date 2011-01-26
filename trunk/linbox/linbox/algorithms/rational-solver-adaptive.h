@@ -40,7 +40,8 @@ namespace LinBox
 		{
 			linbox_check ((M. rowdim() == M. coldim()) && (b.size() == M.rowdim()) && (num. size() ==M.coldim()));
 			typedef Modular<int32> Field;
-			RationalSolver<IRing, Field, RandomPrimeIterator, NumericalTraits> numerical_solver;
+			RationalSolver<IRing, Field, RandomPrimeIterator, WanTraits> numerical_solver;
+			//RationalSolver<IRing, Field, RandomPrimeIterator, NumericalTraits> numerical_solver;
 			SolverReturnStatus ret;
 			ret = numerical_solver. solve(num, den, M, b);
 

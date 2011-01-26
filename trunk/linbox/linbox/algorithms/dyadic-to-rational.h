@@ -22,12 +22,6 @@
 
 namespace LinBox{
 
-// partial_hegcd - half extended partial gcd. Definition is below rational_reconstruction.
-/* see if needed
-template<class Ring> 
-bool partial_hegcd(Ring& Z, typename Ring::Element& e, typename Ring::Element& b, const typename Ring::Element& n, const typename Ring::Element& d, const typename Ring::Element& denBound);
-*/
-
 /** Rational reconstruction of a/b from n/d with denominator bound B.
  * We give a/b, the continued fraction approximant of n/d that  
  * satisfies |a/b - n/d| < 1/2d (well approximated) and 0 < b <= B.  
