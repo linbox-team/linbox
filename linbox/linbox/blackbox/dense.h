@@ -349,7 +349,7 @@ namespace LinBox
 	};
 
 	/** Dense matrix factory.
-	 * This class ingerits \ref BlackboxFactory and provides a method for using a
+	 * This class inherits \ref BlackboxFactory and provides a method for using a
 	 * \ref DenseMatrixBase object with integer or rational data type as input to
 	 * the high-level intger and rational solutions functions.
 	 */

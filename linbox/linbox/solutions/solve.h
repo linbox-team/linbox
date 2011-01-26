@@ -94,7 +94,7 @@ namespace LinBox
 	}
 
 	//! @todo temporary - fix this
-#define inBlasRange(p) true
+//#define inBlasRange(p) true
 
 	template <class Vector, class BB>
 	Vector& solve(Vector& x, const BB& A, const Vector& b,
