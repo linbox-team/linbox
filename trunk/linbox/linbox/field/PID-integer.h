@@ -73,7 +73,7 @@ namespace LinBox
 		/// maxpyin
 		inline Element& maxpyin (integer &r, const integer& a, const integer& x) const
 		{
-			return Integer::maxpyin(r,a,x);
+			return Integer::axpyin(r,-a,x);
 		}
 
 		/// axpy
@@ -399,13 +399,15 @@ namespace LinBox
 				u = num;
 				num = r0;  	// num <-- r0
 				r0 = u;	// r0 <-- num
-				Integer::maxpyin(num,u,q);
+				maxpyin(num,u,q);
+				//Integer::maxpyin(num,u,q);
 				if (num == 0) return false;
 
 				u = den;
 				den = t0;  	// num <-- r0
 				t0 = u;	// r0 <-- num
-				Integer::maxpyin(den,u,q);
+				maxpyin(den,u,q);
+				//Integer::maxpyin(den,u,q);
 			}
 
 			if (reduce) {
@@ -421,8 +423,10 @@ namespace LinBox
 						gar2 -= num;
 					}
 
-					Integer::maxpyin(r0,q,num);
-					Integer::maxpyin(t0,q,den);
+					maxpyin(r0,q,num);
+					//Integer::maxpyin(r0,q,num);
+					maxpyin(t0,q,den);
+					//Integer::maxpyin(t0,q,den);
 
 					if (t0 < 0) {
 						num = -r0;

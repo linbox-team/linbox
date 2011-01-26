@@ -2,9 +2,12 @@
 #define __DYADICTORATIONAL_H
 /* dyadic-to-rational.h
  *
- * dyadicToRational reconstructs a rational a/b from dyadic approximation n/2^k, 
+ * dyadicToRational reconstructs a rational a/b from dyadic approximation n/2^k.
+ *
+ * It is used in rational-solver-sn
+ *
  * "Rational reconstruction" starts from a p-adic approximation.  
- * This is different, though very similar
+ * This is different though very similar
  *
  *  Evolved by bds from rational-reconstruction2.h by Z. Wan. 
  *
@@ -20,19 +23,22 @@
 namespace LinBox{
 
 // partial_hegcd - half extended partial gcd. Definition is below rational_reconstruction.
+/* see if needed
 template<class Ring> 
 bool partial_hegcd(Ring& Z, typename Ring::Element& e, typename Ring::Element& b, const typename Ring::Element& n, const typename Ring::Element& d, const typename Ring::Element& denBound);
-/*
-template<class Ring> bool partial_hegcd(const Ring& Z, 
-	typename Ring::Element& e, typename Ring::Element& b, 
-	const typename Ring::Element& n, const typename Ring::Element& d, 
-	const typename Ring::Element& denBound);
-	*/
+*/
 
 /** Rational reconstruction of a/b from n/d with denominator bound B.
- * We give a/b, the first continued fraction approximant of n/d that  
- * satisfies |a/b - n/d| < 1/2d and b <= B.  That is to say, a/b is the fraction with 
- * the smallest denominator b of which n/d is the base d floating point approximation.
+ * We give a/b, the continued fraction approximant of n/d that  
+ * satisfies |a/b - n/d| < 1/2d (well approximated) and 0 < b <= B.  
+ * Return value is 0, if no such approximant exists. 
+ * Return value is 1, if either 
+ *   (i) a second well approximated rational with denominator bounded by B may exist, or 
+ *   (ii) the well approximated condition is not met for a/b. 
+ *   In these cases, a/b may be used speculatively.
+ * Return value is 2, if the approximant is guaranteed (because bB <= d).
+
+ * If no fraction is well approximated the last b <= B in the remainder sequence of n,d is given. 
  * 
  * If d = 2^k and n = sum_i=l to k n_i 2^i, then * n/d = sum_{i=l down to 0} n_i/2^{k-i}
  * is a {\em dyadic rational}.  Numbers of this form are produced for example by 
@@ -41,7 +47,7 @@ template<class Ring> bool partial_hegcd(const Ring& Z,
  * If it is known that n/d is the most accurate approximation with denominator d
  * to a/b, and that the denominator b is bounded by B, i.e. b <= B, then such a/b is 
  * uniquely determined, provided d >= bB.
- * ...and such a/b is returned by dyadicToRational() when possible.
+ * ...in that case, such a/b is returned by dyadicToRational().
  * This follows from two facts:
  * First, by definition, n/d is an accurate approximation to a/b 
  * with b <= d when |n/d - a/b| < 1/2d.  
@@ -51,8 +57,11 @@ template<class Ring> bool partial_hegcd(const Ring& Z,
  * we have 1/bb' <= |a/b - a'/b'| <= |a/b - n/d| + |n/d - a'/b'| <= 1/2d + 1/2d = 1/d.
  * So bb' > d >= bB, thus b' > B.
  * 
- * In summary: If it exists, the unique a/b is returned such that n/d approximates a/b 
- * to within 1/2d and b <= B.  Otherwise failure is signaled.
+ * In summary: If it exists, the unique a/b is given such that n/d approximates a/b 
+ * to within 1/2d and b <= B.  Otherwise a plausible a/b is given or failure is signaled.
+ *
+ * "Symbolic-Numeric Exact Rational Linear System Solver" by Saunders, Wood, Youse.
+ * describes the construction.
  */
 template<class Ring> 
 int dyadicToRational (
@@ -64,18 +73,11 @@ int dyadicToRational (
 	typedef typename Ring::Element Int;
 	Int e; Z.init(e);// error term
 
-/*
-	Int foo = 2^40;
-	Int nq = n/foo;
-	Int nr = n%foo;
-	Int dq = d/foo;
-	if (nr >= foo/2) nq += 1;
-*/
-
 	Int an; Z.init(an); Z.abs(an, n/*q*/);
 	
+	// Partial_hegcd is defined below.
 	bool found = partial_hegcd(Z, e, b, an, d/*q*/, B); // e = b*an - ?*d and |b| <= B
-	a = (e - b*an)/d/*q*/; //div is exact 
+	a = (e - b*an)/d; //div is exact 
 	// now a/b is solution but signs may be wrong
 	Z.abs(b,b);
 	Z.abs(a,a);
@@ -85,7 +87,7 @@ int dyadicToRational (
 	bool guarantee = b*B < d;
 	if ((!found && b > 0) || (found && ! guarantee)) return 1;
 	if (found && guarantee) return 2;
-	return 0;
+	return 0; // b == 0
 }
 
 /** partial_hegcd() sets e, b from the remainder sequence of n,d.
@@ -94,36 +96,19 @@ int dyadicToRational (
  * b to the corresponding q_i (coefficient of n) 
  * such that 2r_i < |q_i| and |q_i| <= B (the given denominator bound). 
  * True is returned iff such e, b exist.  
+ *
  * If not, b is the largest q_i such that |q_i| <= B, 
- * and e is the corresponding remainder.
+ * and e is the corresponding remainder.  In this case b is the denominator 
+ * of a plausibly approximated but not well approximated rational.  
+ * It can be used speculatively.
  */
 // later reintroduce swapping trick
 template<class Ring> 
 bool partial_hegcd(Ring& Z, typename Ring::Element& e, typename Ring::Element& b, const typename Ring::Element& n, const typename Ring::Element& d, const typename Ring::Element& denBound){
-/*
-Half extended half gcd.  Assuming positive n and d.
-The remainder sequence of n and d satisfies
-r_i = q_i n - p_i d, with 0 <= r_i < r_{i-1},  for i > 1.
-Also, q_i's alternate in sign, with  abs(q_i) > abs(q_{i-1}), for i > 1.
-Thus r's are decreasing and q's increasing in abs value.
-When successful, partial_hegcd() sets e and b such that e is the first r_i and 
-b is the corresponding q_i such that 2*r_i < |q_i|, returning true.  
-However, this would be useless to us if |q_i| > B, so we bail out returning false in that case, but giving the previous line for speculation..
-*/
 	typedef typename Ring::Element integer;
 	integer quo, r, tmp;  Z.init(quo); Z.init(r); Z.init(tmp);
 	bool withinbound, wellapproximated;
    
-/*
-	integer thresh, tmp; Z.init(thresh, d); Z.init(tmp, 2);
-	Z.quoin(thresh, Z.mulin(tmp, denBound)); // thresh = d/(2*denBound).
-	//std::cout << " d: " << d << std::endl;
-	//std::cout << " denBound: " << denBound << std::endl;
-	//std::cout << " thresh = d/2*denBound: " << thresh << std::endl;
-	//while ( r1 >= thresh && Z.abs(tmp, b1) <= denBound) {
-	//while ( 2*r1 > tmp && tmp <= denBound) { // tmp = |b1|
-*/
-	
 	integer b0; Z.init(b0, 1); // and a0 = -0
 	integer r0; Z.init(r0, n); // so that r0 = b0*n - a0*d 
 	integer b1; Z.init(b1, -0); // and a1 = 1
@@ -145,24 +130,9 @@ However, this would be useless to us if |q_i| > B, so we bail out returning fals
 	if (! withinbound) {e = r0; b = b0;} // make available for speculation
 	return withinbound;
 
-/*
-	// how valid?
-	//Z.abs(tmp, b1);
-	//if (Z.compare(tmp, denBound) > 0) {// abs(b1) > denBound
-	if (Z.compare(Z.mulin(tmp, denBound), d) > 0) {// abs(b1)*denBound > d
-		//e = r0; Z.abs(b, b0); 
-		//Z.mul(tmp, b, denBound);
-		//return Z.compare(tmp, d) > 0; // b0*denBound > d
-		return false; 
-		//std::cerr << "taking the bound exit" << std::endl;
-		//return false; //e = r0; b = b0; 
-	}
-	return true;
-*/
 } // partial_hegcd
 
 // vector rational reconstruction building num, den from numx, denx
-#if 1
 template<class Ring> 
 int dyadicToRational(
 	const Ring& Z,
@@ -188,16 +158,9 @@ int dyadicToRational(
 	int ret = 2; // 2 means guaranteed, 1 possible, 0 fail.
 	for (size_t i = 0; i < num.size(); ++i) {
 		Z.abs(nx, numx[i]);
-		//if (i == 0) std::cerr << "nx " << nx << std::endl;
 		Z.mul(tmp, nx, den);
 		Z.quoRem(num[i], e, tmp, denx); //nx*den - num[i]*denx = e, with num[i] and e nonneg.
-		/* we need |nx/denx - num[i]/den| == e/den*denx <= 1/2denx, 
-		   so 2e <= den.  
-		   [ garbage: or e > denx/2 and
-		   |nx/denx - (num[i]+1)/den| == (e-denx)/den*denx <= 1/2denx,
-		   so 2(e-denx) >= -den.  or 
-		   ]
-		*/
+		// we need |nx/denx - num[i]/den| == e/den*denx <= 1/2denx, so 2e <= den.  
 		// adjust to balanced remainder e.
 		if (Z.compare(e, denx2) >= 0) {Z.subin(e, denx), Z.addin(num[i], one); }
 		//nx*den = num[i]*denx + e , thus |nx/denx - num[i]/den| = e/denx*den
@@ -206,13 +169,10 @@ int dyadicToRational(
 		Z.mul(tmp, two, Z.abs(e));
 		if ( Z.compare(tmp, den) > 0)// 2|e| > den 
 		{   // we failed, so need another reconstruction
-	//std::cout << nx << " " << denx << " " << denBound << std::endl;
 			int oneret = dyadicToRational (Z, tmp, tmp_den, nx, denx, denBound);
-	//std::cout << " " << oneret << " " << tmp << " " << tmp_den << std::endl;
 			if (oneret == 1) ret = 1;
 			if ( oneret == 0 ) return oneret; 
 			//std::cerr << i << " tmp " << tmp << " num[i] " << num[i] << std::endl;
-		//if (i == 0) std::cerr << "numi " << num[i] << std::endl;
 			num[i] = tmp;
 
 			Z.lcm (den_lcm, tmp_den, den);
@@ -233,7 +193,6 @@ int dyadicToRational(
 	}
 	// now fix shorties
 	Int t; Z.init(t, 1);
-	//std::cerr << "stack size is " << S.size() << std::endl;
 	while ( S.size() > 1 ) {
 		Z.mulin(t, S.top().second);
 		int k = S.top().first; S.pop();
@@ -247,7 +206,7 @@ int dyadicToRational(
 
 } // vector dyadicToRational
 
-#else
+/* ****
 // vector rational reconstruction building num, den from numx, denx
 // This one -- very inefficient -- just reconstructs each one, then goes thru to fix for lcm.
 void rational_reconstruction(std::vector<integer>& num, integer& den, std::vector<integer>& numx, integer& denx, integer& denBound) {
@@ -264,7 +223,7 @@ void rational_reconstruction(std::vector<integer>& num, integer& den, std::vecto
 		num[i] *= missing_factor;
 	}
 } // vector rational_reconstruction
-#endif
+**** */
 
 }// LinBox
 #endif // __DYADICTORATIONAL_H
