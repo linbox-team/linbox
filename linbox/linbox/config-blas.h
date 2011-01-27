@@ -74,16 +74,13 @@ extern "C" {
 // define external link to LAPACK routines
 extern "C" {
 
-#ifdef  __LINBOX_HAVE_DGETRF
+#ifdef  __LINBOX_HAVE_LAPACK
 	void dgetrf_ (const int *, const int *, double *, const int *, int *, int *);
-#endif
-#ifdef  __LINBOX_HAVE_DGETRI
 	void dgetri_ (const int *, double *, const int *, const int *, double *, const int *, int *);
-#endif
-#ifdef  __LINBOX_HAVE_DTRTRI
 	void dtrtri_ (const char *, const char *, const int *, double *, const int *, int *);
 #endif
 	void dswap_ (const int *, double *, const int *, double *, const int *);
+	
 }
 
 // define C wrappers
@@ -225,7 +222,7 @@ extern "C" {
 
 	// LAPACK routines
 
-#ifdef  __LINBOX_HAVE_DGETRF
+#ifdef  __LINBOX_HAVE_LAPACK
 
 	// return A=P.L.U (L unitary) with ColMajor
 	// return A=L.U.P (U unitary) with RowMajor
@@ -236,9 +233,7 @@ extern "C" {
 		dgetrf_ ( &M, &N, A, &lda, ipiv, &info);
 		return info;
 	}
-#endif
 
-#ifdef  __LINBOX_HAVE_DGETRI
 	int clapack_dgetri(const enum CBLAS_ORDER Order, const int N, double *A,
 			   const int lda, const int *ipiv)
 	{
@@ -280,9 +275,6 @@ extern "C" {
 #endif
 		return info;
 	}
-#endif
-
-#ifdef  __LINBOX_HAVE_DTRTRI
 
 	int clapack_dtrtri(const enum CBLAS_ORDER Order,const enum CBLAS_UPLO Uplo,
 			   const enum CBLAS_DIAG Diag,const int N, double *A, const int lda)
@@ -295,12 +287,12 @@ extern "C" {
 
 		return info;
 	}
-#endif
+#endif // ifdef  __LINBOX_HAVE_LAPACK
 
 
 }
 
-#else
+#else // defined __LINBOX_HAVE_CBLAS
 extern "C" {
 
 
@@ -377,6 +369,7 @@ extern "C" {
 	int clapack_dtrtri(const enum CBLAS_ORDER Order,const enum CBLAS_UPLO Uplo,
 			   const enum CBLAS_DIAG Diag,const int N, double *A, const int lda);
 }
-#endif
+
+#endif // ifndef __LINBOX_HAVE_CBLAS
 
 #endif //__LINBOX_config_blas_H
