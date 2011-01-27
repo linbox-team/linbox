@@ -53,6 +53,7 @@ if test -n "$BLAS_VAL"; then
 		if test -r "$BLAS_VAL/lib/libcblas.a" ; then
 			ATLAS_NEEDED=`nm -u $BLAS_VAL/lib/libcblas.a | grep ATL`
 			if test -n "$ATLAS_NEEDED"; then
+### lapack_atlas is for hmrg at udel.  What a kludge that this specialization is here.
 				ATLAS_LIBS="-llapack -lcblas -latlas"
 			else
 				ATLAS_LIBS="-lcblas -llapack"
@@ -208,11 +209,11 @@ if test "x$blas_found" = "xyes"; then
 		echo "whether your BLAS are good. I am assuming it is."
 	fi
 
-## Check for dgetrf (mainly for Goto less than 1.7)
-	AC_MSG_CHECKING(for dgetrf)
+## Check for lapack 
+	AC_MSG_CHECKING(for lapack)
 	AC_TRY_RUN(
 	[#define __LINBOX_CONFIGURATION
-	 #define __LINBOX_HAVE_DGETRF 1
+	 #define __LINBOX_HAVE_LAPACK 1
        	 #include "linbox/config-blas.h"
 	 int main () {  double a[4] = {1.,2.,3.,4.};
 			int ipiv[2];
@@ -233,110 +234,11 @@ if test "x$blas_found" = "xyes"; then
 
 	if test "x$dgetrf_found" = "xyes"; then
 		AC_MSG_RESULT(found)
-		AC_DEFINE(HAVE_DGETRF,1,[Define if dgetrf is available])
+		AC_DEFINE(HAVE_LAPACK,1,[Define if lapack is available])
 	else
 		AC_MSG_RESULT(disabling)
-		#AC_DEFINE(HAVE_DGETRF,0,[Define if dgetrf is available])
+		#AC_DEFINE(HAVE_LAPACK,0,[Define if lapack is available])
 	fi
-
-## Check for dtrtri (mainly for Goto less than 1.7)
-	AC_MSG_CHECKING(for dtrtri)
-	AC_TRY_RUN(
-	[#define __LINBOX_CONFIGURATION
-	 #define __LINBOX_HAVE_DTRTRI
-       	 #include "linbox/config-blas.h"
-	 int main () {  double a[4] = {1.,2.,3.,4.};
-			int ipiv[2];
-			clapack_dtrtri(CblasRowMajor,CblasUpper,CblasNonUnit,2, a, 2);
-			if ( (a[0]!=1.) && (a[1]!=-0.5) && (a[2]!=0.) && (a[3]!=0.25))
-				return -1;
-			else
-				return 0;
-		      }
-	],[
-	dtrtri_found="yes"
-	break
-	],[
-	dtrtri_problem="$problem"
-	],[
-	break
-	])
-
-	if test "x$dtrtri_found" = "xyes"; then
-		AC_MSG_RESULT(found)
-		AC_DEFINE(HAVE_DTRTRI,1,[Define if dtrtri is available])
-	else
-		AC_MSG_RESULT(disabling)
-	fi
-
-
-## Check for dgetri (mainly for Goto less than 1.7)
-	AC_MSG_CHECKING(for dgetri)
-	AC_TRY_RUN(
-	[#define __LINBOX_CONFIGURATION
-	 #define __LINBOX_HAVE_DGETRF 1
-	 #define __LINBOX_HAVE_DGETRI 1
-       	 #include "linbox/config-blas.h"
-	 int main () {  double a[4] = {2.,0.5,4.,1.};
-			int ipiv[2] = {2,2};
-			clapack_dgetri(CblasRowMajor, 2, a, 2, ipiv);
-			if ( (a[0]!=-2.) && (a[1]!=1.) && (a[2]!=1.5) && (a[3]!=-0.5))
-				return -1;
-			else
-				return 0;
-		      }
-	],[
-	dgetri_found="yes"
-	break
-	],[
-	dgetri_problem="autoimplement"
-	],[
-	break
-	])
-
-	if test "x$dgetri_problem" = "xautoimplement"; then
-		if test "x$dtrtri_found" = "xyes"; then
-			AC_MSG_RESULT(no)
-			AC_MSG_CHECKING(for autoimplementation of dgetri)
-			AC_TRY_RUN(
-			[#define __LINBOX_CONFIGURATION
-		 	 #define __LINBOX_AUTOIMPLEMENT_DGETRI
-		 	 #define __LINBOX_HAVE_DGETRI
-		 	 #define __LINBOX_HAVE_DTRTRI
-	 	 	 #include "linbox/config-blas.h"
-		 	 int main () {  double a[4] = {2.,0.5,4.,1.};
-					int ipiv[2] = {2,2};
-					clapack_dgetri(CblasRowMajor, 2, a, 2, ipiv);
-					if ( (a[0]!=-2.) && (a[1]!=1.) && (a[2]!=1.5) && (a[3]!=-0.5))
-						return -1;
-					else
-						return 0;
-				      }
-			],[
-			dgetri_found="yes"
-			break
-			],[
-			dgetri_problem="$problem"
-			],[
-			break
-			])
-			if test "x$dgetri_found" = "xyes"; then
-				AC_MSG_RESULT(working)
-				AC_DEFINE(HAVE_DGETRI,1,[Define if dgetri is available])
-				AC_DEFINE(AUTOIMPLEMENT_DGETRI,,[Enable Autoimplementation of dgetri routine with dtrti and dtrsm])
-			else
-				AC_MSG_RESULT(disabling)
-				AC_DEFINE(HAVE_DGETRI,0,[Define if dgetri is available])
-			fi
-		else
-			AC_MSG_RESULT(disabling)
-			#AC_DEFINE(HAVE_DGETRI,0,[Define if dgetri is available])
-		fi
-	else
-		AC_MSG_RESULT(working)
-		AC_DEFINE(HAVE_DGETRI,1,[Define if dgetri is available])
-	fi
-
 
 	ifelse([$2], , :, [$2])
 

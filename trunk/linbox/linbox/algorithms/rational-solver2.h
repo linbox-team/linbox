@@ -68,7 +68,7 @@ namespace LinBox
 		{}
 
 
-#if  __LINBOX_HAVE_DGETRF && __LINBOX_HAVE_DGETRI
+#if  __LINBOX_HAVE_LAPACK
 		template <class IMatrix, class OutVector, class InVector>
 		SolverReturnStatus solve(OutVector& num, Integer& den,
 					 const IMatrix& M, const InVector& b) const
@@ -166,7 +166,7 @@ namespace LinBox
 		/** compute  the hadamard bound*/
 		inline static int cblas_hbound (integer& b, int m, int n, const double* M);
 
-#if __LINBOX_HAVE_DGETRF && __LINBOX_HAVE_DGETRI
+#if __LINBOX_HAVE_LAPACK
 		// compute the inverse of a general matrix
 		inline static int cblas_dgeinv(double* M, int n);
 		/* solve Ax = b
@@ -181,7 +181,7 @@ namespace LinBox
 		inline static int cblas_rsol (int n, const double* M, integer* numx, integer& denx, double* b);
 #endif
 	};
-#if __LINBOX_HAVE_DGETRF && __LINBOX_HAVE_DGETRI
+#if __LINBOX_HAVE_LAPACK
 	template <class Ring, class Field, class RandomPrime>
 	inline int RationalSolver<Ring, Field, RandomPrime, WanTraits>::cblas_dgeinv(double* M, int n)
 	{
