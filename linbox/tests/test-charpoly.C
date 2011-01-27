@@ -161,6 +161,7 @@ static bool testNilpotentCharpoly (Field &F, size_t n)
 	report << "characteristic polynomial is: ";
 	printPolynomial (F, report, phi);
 
+	linbox_check(n);
 	for (i = 0; i < n - 1; i++)
 		if (!F.isZero (phi[i]))
 			lowerTermsCorrect = false;
@@ -168,7 +169,7 @@ static bool testNilpotentCharpoly (Field &F, size_t n)
 	if (phi.size () != n + 1 || !F.isOne (phi[n]) || !lowerTermsCorrect) {
 		ret = false;
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: characteristic polynomial is incorrect" << endl;
+			<< "ERROR: characteristic polynomial is incorrect (should be x^" << n << ')' << endl;
 	}
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testNilpotentCharpoly");
