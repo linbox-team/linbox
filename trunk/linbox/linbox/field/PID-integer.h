@@ -73,6 +73,7 @@ namespace LinBox
 		/// maxpyin
 		inline Element& maxpyin (integer &r, const integer& a, const integer& x) const
 		{
+			// return Integer::maxpyin(r,a,x);
 			return Integer::axpyin(r,-a,x);
 		}
 
