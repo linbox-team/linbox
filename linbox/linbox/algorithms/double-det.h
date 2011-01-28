@@ -20,6 +20,7 @@
 #include "linbox/solutions/solve.h"
 #include "linbox/solutions/methods.h"
 #include <vector>
+
 namespace LinBox
 {
 
