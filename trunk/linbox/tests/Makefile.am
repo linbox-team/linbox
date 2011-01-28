@@ -119,7 +119,8 @@ USE_FAILING_TESTS =
 # a benchmarker, not to be included in check.
 BENCHMARKS =                    \
         benchmark-fields        \
-        benchmark-blas-domain
+        benchmark-blas-domain   \
+        test-solve-nonsingular
 
 # historical tests, no longer in use
 #        test-nag-sparse                  replaced by tripplesbb
@@ -561,6 +562,10 @@ test_ispossemidef_SOURCES=            \
 
 test_ftrmm_SOURCES =                  \
 		test-ftrmm.C
+
+test_solve_nonsingular_SOURCES=       \
+		test-common.h                   \
+		test-solve-nonsingular.C
 
 #  test_integer_tools_SOURCES =          \
 		#  test-integer-tools.C
