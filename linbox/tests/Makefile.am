@@ -76,6 +76,7 @@ BASIC_TESTS =  \
         test-smith-form-binary          \
         test-rational-solver            \
         test-rational-solver-adaptive   \
+        test-dyadic-to-rational   \
         test-last-invariant-factor      \
         test-charpoly                   \
 		test-ftrmm                      \
@@ -523,6 +524,10 @@ test_mg_block_lanczos_SOURCES =         \
 
 test_rational_solver_adaptive_SOURCES = \
         test-rational-solver-adaptive.C \
+        test-common.h
+
+test_dyadic_to_rational_SOURCES = \
+        test-dyadic-to-rational.C \
         test-common.h
 
 test_cra_SOURCES =                      \
