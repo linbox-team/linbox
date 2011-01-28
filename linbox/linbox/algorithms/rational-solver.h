@@ -902,8 +902,6 @@ namespace LinBox
 	 */
 	template <class Ring, class Field, class RandomPrime>
 	class RationalSolver<Ring, Field, RandomPrime, NumericalTraits>; 
-	
-
 
 	/** \brief solver using a hybrid Numeric/Symbolic computation.
 	 *
