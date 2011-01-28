@@ -80,7 +80,7 @@ extern "C" {
 	void dtrtri_ (const char *, const char *, const int *, double *, const int *, int *);
 #endif
 	void dswap_ (const int *, double *, const int *, double *, const int *);
-	
+
 }
 
 // define C wrappers

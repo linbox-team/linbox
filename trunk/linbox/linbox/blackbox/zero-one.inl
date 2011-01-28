@@ -17,6 +17,9 @@
  * @brief NO DOC
  */
 
+#ifndef __LINBOX_bb_zero_one_INL
+#define __LINBOX_bb_zero_one_INL
+
 namespace LinBox
 {
 	/*! Raw iterator.
@@ -79,19 +82,27 @@ namespace LinBox
 	 */
 	template<class Field> typename
 	ZeroOne<Field>::RawIterator ZeroOne<Field>::rawBegin()
-	{ return RawIterator( 0, _F.init(_tmp, 1) ); }
+	{
+	       	return RawIterator( 0, _F.init(_tmp, 1) );
+	}
 
 	template<class Field> typename
 	ZeroOne<Field>::RawIterator ZeroOne<Field>::rawEnd()
-	{ return RawIterator( _nnz, _F.init(_tmp, 1) ); }
+	{
+	       	return RawIterator( _nnz, _F.init(_tmp, 1) );
+	}
 
 	template<class Field>
 	const typename ZeroOne<Field>::RawIterator ZeroOne<Field>::rawBegin() const
-	{ return RawIterator(0, _F.init(_tmp, 1) ); }
+	{
+	       	return RawIterator(0, _F.init(_tmp, 1) );
+	}
 
 	template<class Field>
 	const typename ZeroOne<Field>::RawIterator ZeroOne<Field>::rawEnd() const
-	{ return RawIterator(_nnz, _F.init(_tmp, 1) ); }
+	{
+	       	return RawIterator(_nnz, _F.init(_tmp, 1) );
+	}
 
 	/*! RawIndexIterator.
 	 * @ingroup iterators
@@ -187,11 +198,12 @@ namespace LinBox
 		dynamic = false;
 	}
 
-
 	template<class Field>
 	ZeroOne<Field>::ZeroOne(Field F, Index* rowP, Index* colP, Index rows, Index cols, Index NNz, bool rowSort, bool colSort):
 		_F(F), _rows(rows), _cols(cols), _nnz(NNz), _rowP(rowP), _colP(colP), _rowSort(rowSort), _colSort(colSort) , dynamic(false)
-	{ srand(time(NULL)); }
+	{
+	       	srand(time(NULL));
+	}
 
 	template<class Field>
 	ZeroOne<Field>::~ZeroOne()
@@ -473,3 +485,5 @@ namespace LinBox
 	}
 
 }//End of LinBox
+
+#endif // __LINBOX_bb_zero_one_INL

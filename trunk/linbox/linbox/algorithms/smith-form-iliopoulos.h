@@ -37,9 +37,10 @@ namespace LinBox
 	 * Compute Smith Form by elimination modulo m, for some modulus m such
 	 * as S(n), the last invariant factor.
 	 * The elimination method is originally described in
-	 * "Worst Case Complexity Bounds on Algorithms for computing the Canonical
+	 * @bib
+	 * <i>Worst Case Complexity Bounds on Algorithms for computing the Canonical
 	 *  Structure of Finite Abelian Groups and the Hermite and Smith Normal
-	 * Forms of an Integer Matrix", by Costas Iliopoulos.
+	 * Forms of an Integer Matrix</i>, by Costas Iliopoulos.
 	 */
 
 	class SmithFormIliopoulos{

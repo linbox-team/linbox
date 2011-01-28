@@ -45,7 +45,6 @@ namespace LinBox
 	 A {0, 1,-1} matrix can be effecively represented as the \ref Dif of two ZeroOne's.
 	 \ingroup blackbox
 	 */
-
 	template<class _Field>
 	class ZeroOne : public BlackboxInterface {
 	protected:
@@ -62,7 +61,7 @@ namespace LinBox
 		// Destructor, once again do nothing
 		~ZeroOne();
 
-		/** \brief
+		/** apply.
 		 *
 		 * Uses one of the three
 		 * private utility functions. It calls the generalized utility function
@@ -71,8 +70,11 @@ namespace LinBox
 		 */
 		template<class OutVector, class InVector>
 		OutVector& apply(OutVector& y, const InVector& x) const // y = Ax;
-		{ return applySpecialization(y,x,getType(_F)); }
-		/** \brief
+		{
+			return applySpecialization(y,x,getType(_F));
+		}
+
+		/** applyTranspose.
 		 *
 		 * Uses one of the three
 		 * private utility functions, in the manner described above.  Worthy of
@@ -80,23 +82,29 @@ namespace LinBox
 		 * positions to the _apply functions as if they were rows, and row positions
 		 * as if they were columns, as if the matrix had been transposed.
 		 */
-
 		template<class OutVector, class InVector>
 		OutVector& applyTranspose(OutVector& y, const InVector& x) const // y = ATx
-		{ return applyTransposeSpecialization(y,x,getType(_F));}
+		{
+			return applyTransposeSpecialization(y,x,getType(_F));
+		}
 
-		size_t rowdim() const { return _rows; }
+		size_t rowdim() const
+		{
+			return _rows;
+		}
 
-		size_t coldim() const { return _cols; }
-
+		size_t coldim() const
+		{
+			return _cols;
+		}
 
 		template<typename _Tp1>
-		struct rebind
-		{
+		struct rebind {
 			typedef ZeroOne<_Tp1> other;
 			void operator() (other & Ap,
 					 const Self_t& A,
-					 const _Tp1& F) {
+					 const _Tp1& F)
+			{
 				// ZeroOne does not store any field element
 			}
 		};
@@ -106,20 +114,23 @@ namespace LinBox
 			_F(F),
 			_rows(Z.rowdim()), _cols(Z.coldim()), _nnz(Z.nnz()),
 			_rowP(new Index[Z.nnz()]), _colP(new Index[Z.nnz()]),
-			_rowSort(Z.isRowSorted()), _colSort(Z.isColSorted()) {
+			_rowSort(Z.isRowSorted()), _colSort(Z.isColSorted()),
+			dynamic(true)
+		{
 
-				Index * rowit = _rowP;
-				Index * colit = _colP;
+			Index * rowit = _rowP;
+			Index * colit = _colP;
 
-				for(typename ZeroOne<_Tp1>::RawIndexIterator it = Z.indexBegin();
-				    it != Z.indexEnd(); ++it,++rowit,++colit) {
-					*rowit = (*it).first;
-					*colit = (*it).second;
-				}
+			for(typename ZeroOne<_Tp1>::RawIndexIterator it = Z.indexBegin();
+			    it != Z.indexEnd(); ++it,++rowit,++colit) {
+				*rowit = (*it).first;
+				*colit = (*it).second;
 			}
+		}
 
-		/** RawIterator class.  Iterates straight through the values of the matrix
-		*/
+		/** RawIterator class.
+		 * Iterates straight through the values of the matrix
+		 */
 		class RawIterator;
 
 		RawIterator rawBegin();
@@ -127,7 +138,8 @@ namespace LinBox
 		const RawIterator rawBegin() const;
 		const RawIterator rawEnd() const;
 
-		/** RawIndexIterator - Iterates through the i and j of the current element
+		/** RawIndexIterator.
+		 * Iterates through the i and j of the current element
 		 * and when accessed returns an STL pair containing the coordinates
 		 */
 		class RawIndexIterator;
@@ -136,11 +148,12 @@ namespace LinBox
 		RawIndexIterator indexEnd();
 		const RawIndexIterator indexEnd() const;
 
-		/** Read the matrix from a stream in the JGD's SMS format
+		/** Read the matrix from a stream in the JGD's SMS format.
 		 *  @param is Input stream from which to read the matrix
 		 *  @return Reference to input stream
 		 */
-		std::istream &read (std::istream &is){
+		std::istream &read (std::istream &is)
+		{
 			size_t i, j, k, m, n;
 
 			char buf[80];
@@ -179,49 +192,54 @@ namespace LinBox
 			return out;
 		}
 
-		const Field& field() const { return _F; }
+		const Field& field() const
+		{
+			return _F;
+		}
 
-		bool isRowSorted() const { return _rowSort; }
-		bool isColSorted() const { return _colSort; }
+		bool isRowSorted() const
+		{
+			return _rowSort;
+		}
+		bool isColSorted() const
+		{
+			return _colSort;
+		}
 
-		size_t nnz() const { return _nnz; };
+		size_t nnz() const
+		{
+			return _nnz;
+		};
 
 
 	protected:
 
 
-		Field _F; // The field used by this class
+		Field _F; //!< @internal The field used by this class
 
-		/* A temporary element used for initalization for the rawBegin() and
+		/*! @internal A temporary element used for initalization for the rawBegin() and
 		 * rawEnd() methods of the ZeroOne class.  Is used to initalize a 1
 		 * so that the RawIterator returned stores a 1
 		 */
-
 		Element _tmp;
 
-
-		/* _rowP is a pointer to an array of row indexes.  _colP is a pointer
-		 * to an array of column indexes. These two are the other arrays of a
-		 * NAGSparse format Matrix.  _rows and _cols are the number of rows and
-		 * columns of the Matrix if it were in dense format.  _nnz is the Number of
-		 * Non-Zero elements in the Matrix.  It also happens to be the length of
-		 * the three NAGSparse arrays.
-		 */
-
-		Index _rows, _cols, _nnz;
-		mutable Index* _rowP ;
-		mutable Index* _colP;
+		Index _rows ;          //!<@internal number of rows of the Matrix
+		Index _cols ;          //!<@internal number of columns
+		Index _nnz;            //!<@internal Number of  Non-Zero elements in the Matrix.  It also happens to be the length of  the three NAGSparse arrays.
+		mutable Index* _rowP ; //!<@internal pointer to an array of row indexes.
+		mutable Index* _colP;  //!<@internal pointer to an array of column indexes. (\c _rowP and \c _colP are the other arrays of a  NAGSparse format Matrix.)
 		mutable bool _rowSort ;
-		mutable bool _colSort; // status flags for sorting state
-		bool dynamic;
+		mutable bool _colSort; //!<@internal status flags for sorting state
+		bool dynamic;          // NO DOC
 
-		/* Non blackbox function.  Tells the number of nonzero entries
-		*/
+		/*! Tells the number of nonzero entries.
+		 * Non blackbox function.
+		 */
 		void rowSort() const;
 		void colSort() const;
 
-		void _qsort(size_t start, size_t endp1, int &mode) const; // QuickSort function for when there is no sorting
-		size_t _part( size_t start, size_t endp1, int &mode) const; // Partition for quicksort
+		void _qsort(size_t start, size_t endp1, int &mode) const;   //!< @internal QuickSort function for when there is no sorting
+		size_t _part( size_t start, size_t endp1, int &mode) const; //!< @internal Partition for quicksort
 
 	private:
 
