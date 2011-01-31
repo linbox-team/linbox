@@ -82,8 +82,9 @@ BASIC_TESTS =  \
 		test-ftrmm                      \
 		test-cra                        \
 		test-cradomain                  \
-		#  test-integer-tools              \
 		test-rational-reconstruction-base
+
+#  test-integer-tools
 
 # tests of components not adhering to LinBox requirements.
 NONCOMPLIANT_TESTS =                   \
@@ -574,3 +575,9 @@ test_solve_nonsingular_SOURCES=       \
 
 #  test_integer_tools_SOURCES =          \
 		#  test-integer-tools.C
+
+tests: checker
+	checker
+
+checker: checker.C
+	

@@ -41,7 +41,6 @@
 #include "linbox/blackbox/quad-matrix.h"
 
 #include "test-blackbox.h"
-//#include "test-generic-for-quad.h"
 
 using namespace LinBox;
 

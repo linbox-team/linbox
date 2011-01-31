@@ -36,7 +36,7 @@
 #include "linbox/field/gf2.h"
 #include "linbox/field/modular.h"
 
-#include "test-generic-for-quad.h"
+#include "test-field.h"
 // #include "test-generic.h"
 // #include "test-vector-domain.h"
 
@@ -266,40 +266,8 @@ int main (int argc, char **argv)
 
 	commentator.start ("Testing GF2", "main", 10);
 
-	if (!testFieldNegation         (F, "GF2", iterations))      pass = false; commentator.progress ();
-	if (!testFieldInversion        (F, "GF2", iterations))      pass = false; commentator.progress ();
-	if (!testFieldAxioms           (F, "GF2", iterations))      pass = false; commentator.progress ();
-	if (!testFieldAssociativity    (F, "GF2", iterations))      pass = false; commentator.progress ();
-	if (!testFieldCharacteristic   (F, "GF2", iterations))      pass = false; commentator.progress ();
-	if (!testGeometricSummation    (F, "GF2", iterations, 100)) pass = false; commentator.progress ();
-	if (!testFreshmansDream        (F, "GF2", iterations))      pass = false; commentator.progress ();
-	if (!testArithmeticConsistency (F, "GF2", iterations))      pass = false; commentator.progress ();
-	if (!testAxpyConsistency       (F, "GF2", iterations))      pass = false; commentator.progress ();
 
-	commentator.stop (MSG_STATUS (pass), (const char *) 0, "main");
-
-	if (!testRandomIterator (F, "GF2", trials, categories, hist_level)) pass = false;
-
-	commentator.start ("Testing VectorDomain <GF2>", "main");
-
-	if (!testDotProductGF2 (F, "dense/dense", stream1, stream2)) pass = false;
-	if (!testDotProductGF2 (F, "dense/sparse", stream1, stream3)) pass = false;
-
-	if (!testAddMul (F, "dense", stream1, stream2)) pass = false;
-	if (!testAddMul (F, "sparse", stream3, stream4)) pass = false;
-
-	if (!testSubMul (F, "dense", stream1, stream2)) pass = false;
-	if (!testSubMul (F, "sparse", stream3, stream4)) pass = false;
-
-	if (!testAXPY (F, "dense", stream1, stream2)) pass = false;
-	if (!testAXPY (F, "sparse", stream3, stream4)) pass = false;
-
-	if (!testCopyEqual (F, "dense/dense", stream1, stream2)) pass = false;
-	if (!testCopyEqual (F, "dense/sparse", stream1, stream3)) pass = false;
-	if (!testCopyEqual (F, "sparse/dense", stream3, stream1)) pass = false;
-	if (!testCopyEqual (F, "sparse/sparse", stream3, stream4)) pass = false;
-
-	commentator.stop (MSG_STATUS (pass), (const char *) 0, "main");
+	if (!testField (F, "GF2"))      pass = false; commentator.progress ();
 
 #if 0
 	FieldArchetype K(new LargeModular(101));

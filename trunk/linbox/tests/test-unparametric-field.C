@@ -49,7 +49,6 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	cout << endl << "Unparametrix<double> field test suite" << endl;
 	cout.flush ();
 	bool pass = true;
 
@@ -58,6 +57,9 @@ int main (int argc, char **argv)
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+
+ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+        report << endl << "Unparametrix<double> field test suite" << endl;
 
 	if (!runFieldTests (F, "UnparametricField<double>", iterations, n, false)) pass = false;
 

@@ -790,8 +790,10 @@ int main()
 	std::cout << "# \033[1;33m>\033[0m ftr(s/m)m  passed " << ret << "/" << tot << "tests" <<std::endl;
 #endif
 	if (ret != tot) fail=true;
+#ifdef DEBUG
 	if (fail)
 		std::cout << "# \033[1;31m>\033[0m ftr(s/m)m failed" << std::endl;
+#endif
 	int our = tot = 6*_LB_ITERS*2 ;
 #ifdef __LINBOX_HAVE_INT64
 	our = tot = tot+2*_LB_ITERS*2 ;
