@@ -44,8 +44,6 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	cout << endl << "ParamFuzzy field approximation test suite" << endl;
-	cout.flush ();
 	bool pass = true;
 
 	ParamFuzzy F(.0000001);
@@ -53,6 +51,9 @@ int main (int argc, char **argv)
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+        report << endl << "ParamFuzzy field approximation test suite" << endl;
 
 	/* I am distressed that this field passes the testField()
 	   We need a test that distinguishes exact fields from

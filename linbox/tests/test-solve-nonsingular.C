@@ -77,6 +77,8 @@ void generateProblem(const Ring& R, Matrix &D, Vector &b,
 	VectorWrapper::ensureDim (x, stream1.n ());
 	VectorWrapper::ensureDim (y, stream1.n ());
 
+	std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+
 	int n = d.size();
 
 	bool zeroEntry;
@@ -88,7 +90,7 @@ void generateProblem(const Ring& R, Matrix &D, Vector &b,
 	} while (zeroEntry);
 
 	//  set up RHS
-	std::cerr << "Setting up RHS... ";
+	report << "Setting up RHS... ";
 	int randLim = R_CEILING;
  	switch (mt) {
 		//  random RHSs
@@ -114,9 +116,9 @@ void generateProblem(const Ring& R, Matrix &D, Vector &b,
 		case hilb: b[0] = 1; break;
 		case je2: b[n-1] = 1; break;
 	}
-	std::cerr << "Done." << endl;
+	report << "Done." << endl;
 
-	std::cerr << "Setting up matrix order " << n << "... ";
+	report << "Setting up matrix order " << n << "... ";
 	//  set up Matrix
 	typename Ring::Element tmp;
  	switch (mt) {
@@ -180,7 +182,7 @@ void generateProblem(const Ring& R, Matrix &D, Vector &b,
 				}
 			break;
 	}
-	cerr << "Done." << endl;
+	report << "Done." << endl;
 
 	stream1.reset ();
    	stream2.reset ();
@@ -201,12 +203,12 @@ bool testRandomSolve (const Ring& R, RSolver& rsolver, Matrix& D, Vector &b) {
 	for(int i=0; i<n; ++i) tmpb[i] = b[i];
 
 	//std::ostringstream str;
-	std::ostream &report = cerr;
-	//std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	//std::ostream &report = cerr;
+	std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		
 	//  print small mats
 	if(n <= 20){ 
-		report << "Matrix: " << endl; D.write(std::cout);
+		report << "Matrix: " << endl; D.write(report);
 		VD.write (report << "Right-hand side:  ", b) << endl;
 	}
 
@@ -284,6 +286,12 @@ int main(int argc, char** argv) {
    };
 	parseArguments (argc, argv, args);
 	
+	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+
+	std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+
 	typedef PID_integer	Ring;  		Ring R;
 
 	typedef ParamFuzzy Field;
@@ -334,18 +342,18 @@ int main(int argc, char** argv) {
 			default:
 						 break;
 		}
-		std::cerr << "numsym: " << (pass ? "pass" : "fail") << std::endl << std::endl;
+		report << "numsym: " << (pass ? "pass" : "fail") << std::endl << std::endl;
 	}
 	if(run & 2){
 		RationalSolver<Ring, ZField, RandomPrimeIterator, WanTraits> rsolver(R);
 		pass = testRandomSolve(R, rsolver, A, b);
-		std::cerr << "zw: " << (pass ? "pass" : "fail") << std::endl << std::endl;
+		report << "zw: " << (pass ? "pass" : "fail") << std::endl << std::endl;
 	}
 	if(run & 4){
 		RandomPrimeIterator genprime( 26-(int)ceil(log((double)n)*0.7213475205) );
 		RationalSolver<Ring, DField, RandomPrimeIterator, DixonTraits> rsolver(R, genprime);
 		pass = testRandomSolve(R, rsolver, A, b);
-		std::cerr << "dixon: " << (pass ? "pass" : "fail") << std::endl << std::endl;
+		report << "dixon: " << (pass ? "pass" : "fail") << std::endl << std::endl;
 	}
 
 	return pass ? 0 : -1;
