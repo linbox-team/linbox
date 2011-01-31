@@ -77,9 +77,10 @@ int main (int argc, char **argv)
 	//cout.flush ();
 	bool pass = true;
 
-	GivaroZpz<Std16> F1 (q);
+//	GivaroZpz<Std16> F1 (q); // Does not work with q > 256
+        GivaroZpz<Std16> F1 ( (q<256?q:integer(101)) ); // Does not work with q > 256
 	GivaroZpz<Std32> F2 (q);
-//	GivaroZpz<Log16> F3 (q);
+//	GivaroZpz<Log16> F3 (q); // Does not work with q > 256
 	GivaroMontg F3 (39989);
 	GivaroGfq F4 (q, 1);
 	GivaroGfq F5 (11, e);
