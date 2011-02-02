@@ -3,7 +3,7 @@
 
 /* Copyright (C) 2010 LinBox
  *
- * Time-stamp: <16 Dec 10 19:20:04 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <02 Feb 11 15:27:16 Jean-Guillaume.Dumas@imag.fr>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -220,7 +220,7 @@ bool TestCra(int N, int S, size_t seed)
 	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT,
 							   INTERNAL_DESCRIPTION);
 
-	size_t new_seed = (seed?(seed):(LinBox::BaseTimer::seed())) ;
+	size_t new_seed = (seed?(seed):(BaseTimer::seed())) ;
 	report << "TestCra(" << N << ',' << S << ',' << new_seed << ')' << std::endl;
 	Integer::seeding(new_seed);
 
