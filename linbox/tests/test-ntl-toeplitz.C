@@ -79,10 +79,10 @@ int main(int argc, char* argv[])
 	report <<  "The modulus is " << q << std::endl;
 	//NTL::ZZ_p::init(modulus); // NOTE: This is essential for using NTL
 
-	commentator.start("Toeplitz black box test suite", "Toeplitz");
+	LinBox::commentator.start("Toeplitz black box test suite", "Toeplitz");
 	report  <<"     \tDimension= " << n << "\t modulus= " << q << endl;
 
-	typedef NTL_ZZ_p Field;
+	typedef LinBox::NTL_ZZ_p Field;
 	typedef Field::Element element;
 	typedef std::vector<element> Vector;
 
@@ -140,7 +140,7 @@ int main(int argc, char* argv[])
 	//TT.print();
 
 	pass = testBlackbox(TT);
-	commentator.stop("Toeplitz black box test suite");
+	LinBox::commentator.stop("Toeplitz black box test suite");
 	return pass ? 0 : -1;
 }
 

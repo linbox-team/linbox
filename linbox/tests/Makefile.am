@@ -73,6 +73,7 @@ BASIC_TESTS =  \
         test-zero-one           \
         test-solve              \
         test-nullspace                  \
+        test-smith-form     \
         test-smith-form-binary          \
         test-rational-solver            \
         test-rational-solver-adaptive   \
@@ -476,8 +477,6 @@ test_smith_form_binary_SOURCES=  \
         test-common.h            \
         test-smith-form-binary.C
 
-# NTL test
-#        test-smith-form     \
 test_smith_form_SOURCES=    \
         test-common.h       \
         test-smith-form.C

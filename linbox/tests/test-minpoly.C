@@ -396,7 +396,7 @@ int main (int argc, char **argv)
 // /////////////// finite field part //////////////////
 	if (q > 5 && q % 2 != 0 && q % 3 != 0 && q % 5 != 0 )
 	{
-	//typedef Modular<LinBox::uint32> Field;
+	//typedef Modular<uint32> Field;
 	//typedef Modular<int> Field;
 	typedef Modular<double> Field;
 	Field F (q);
@@ -455,7 +455,7 @@ int main (int argc, char **argv)
 
 #if 0
 
-        Modular<LinBox::uint32> F (q);
+        Modular<uint32> F (q);
 
 
 	commentator.start("Hybrid prime field minpoly test suite", "Hminpoly");

@@ -40,8 +40,9 @@
 
 int main(int argc, char **argv)
 {
+	using LinBox::commentator;
 	bool pass = true;
-	LinBox::uint32 prime = 31337;
+	uint32 prime = 31337;
 	size_t *rows, *cols, i;
 	static size_t n = 1000, iter = 1;
 
@@ -54,9 +55,9 @@ int main(int argc, char **argv)
 
 	parseArguments(argc, argv, args);
 
-	typedef LinBox::ZeroOne<LinBox::Modular<LinBox::uint32> > Matrix;
+	typedef LinBox::ZeroOne<LinBox::Modular<uint32> > Matrix;
 
-	LinBox::Modular<LinBox::uint32> afield(prime);
+	LinBox::Modular<uint32> afield(prime);
 
 	rows = new size_t[3 * n];
 	cols = new size_t[3 * n];

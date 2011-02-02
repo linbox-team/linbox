@@ -58,18 +58,18 @@ int main (int argc, char **argv)
 
 	// need to test generic def, test nonsense attempts, etc.
 
-	Modular<LinBox::uint32> F_uint32 ((uint32) q);
-	Modular<LinBox::uint16> F_uint16 ((uint16) q);
-	ImageField<Modular<LinBox::uint16>, Modular<LinBox::uint32> > IF32(F_uint16, F_uint32);
+	Modular<uint32> F_uint32 ((uint32) q);
+	Modular<uint16> F_uint16 ((uint16) q);
+	ImageField<Modular<uint16>, Modular<uint32> > IF32(F_uint16, F_uint32);
 
-	LinBox::uint16 a=2, b;
-	LinBox::uint32 z=2, w;
+	uint16 a=2, b;
+	uint32 z=2, w;
 	IF32.image(w, a);
 	pass = pass && IF32.areEqual(z, w);
 	IF32.preimage(b, z);
 	pass = pass && F_uint16.areEqual(a, b);
 
-	LinBox::uint32 x, y;
+	uint32 x, y;
 	IF32.smul(x, 2, 3);
 	IF32.mul(y, 2, 3);
 	pass = pass && IF32.areEqual(x, y);

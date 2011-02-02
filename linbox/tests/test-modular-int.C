@@ -70,7 +70,7 @@ int main (int argc, char **argv)
 	commentator.start("Modular<int32> field test suite", "Modular<int32>");
 	bool pass = true;
 
-	Modular<LinBox::int32> F_int (1073741789);//(2147483629);//(2147483647);
+	Modular<int32> F_int (1073741789);//(2147483629);//(2147483647);
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);

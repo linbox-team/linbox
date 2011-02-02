@@ -277,7 +277,7 @@ int main(int argc, char** argv)
 	//typedef GivaroZpz<Std32> Field;
 	typedef Modular<double> Field;
 	//typedef Modular<float> Field;
-	//typedef Modular<LinBox::uint32> Field;
+	//typedef Modular<uint32> Field;
 	//------------------------------------------------------------------------
 
 	bool pass = true;

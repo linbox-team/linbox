@@ -41,6 +41,8 @@ namespace LinBox
 	 */
 	typedef Integer integer;
 
+#if 0
+// These integer types are defined by Givaro
 	/// int8.
 	typedef signed __LINBOX_INT8 int8;
 	/// int16.
@@ -71,6 +73,8 @@ namespace LinBox
 
 	/// unsigned int64.
 	typedef unsigned __LINBOX_INT64 uint64;
+
+#endif
 
 	// Huh? -bds
 	template< class T >
@@ -106,7 +110,6 @@ namespace LinBox
 
 // Temporary dependency to GIVARO >= 3.3.4
 #include <givaro/givconfig.h>
-#if GIVARO_VERSION < 30304
 #include <math.h>
 // Natural logarithm of a
 // log(2) being close to 0.69314718055994531
@@ -115,6 +118,5 @@ inline double naturallog(const Integer& a) {
   double d = mpz_get_d_2exp( &exp, (mpz_ptr)(LinBox::SpyInteger::get_rep(a) ) );
   return (double)exp*0.69314718055994531+log(d);
 }
-#endif
 #endif // __LINBOX_integer_H
 

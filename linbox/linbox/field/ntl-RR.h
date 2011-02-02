@@ -80,6 +80,9 @@ namespace LinBox
 	template <>
 	NTL::RR& Caster(NTL::RR& x, const double& y)
 	{ return x = NTL::to_RR((long)(y)); }
+	template <>
+	NTL::RR& Caster(NTL::RR& x, const int& y)
+	{ return x = NTL::to_RR((long)(y)); }
 
 	/** Conversion of field element to an integer.
 	 * This function assumes the output field element x has already been

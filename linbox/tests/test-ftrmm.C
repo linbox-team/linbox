@@ -419,8 +419,10 @@ int test_applyP(const Field & F)
 		for (size_t j = 0 ; j < N && !err ; ++j)
 			if (!F.areEqual(*(A+i*lda+j),*(B+i*lda+j)))
 				err = -1  ;
+#ifdef DEBUG
 	if (err)
 		std::cout << "# \033[1;31m>\033[0m row applyP failed" << std::endl;
+#endif
 
 	size_t * Q = new size_t[N] ;
 
@@ -445,8 +447,10 @@ int test_applyP(const Field & F)
 		for (size_t j = 0 ; j < N && !eur ; ++j)
 			if (!F.areEqual(*(A+i*lda+j),*(B+i*lda+j)))
 				err = -1  ;
+#ifdef DEBUG
 	if (eur)
 		std::cout << "# \033[1;31m>\033[0mcol applyP failed" << std::endl;
+#endif 
 
 	delete[] A;
 	delete[] B ;
@@ -495,7 +499,9 @@ int test_fgemm(const Field & F)
 	if (abs(alpha) > 1.5 ) G.random(alpha);
 	beta  = Integer::random<false>(2);
 	if (abs(beta) >1.5 ) G.random(beta);
+#ifdef DEBUG
 	// std::cout << alpha << ',' << beta << std::endl;
+#endif
 	F.init(alpha,alpha);
 	F.init(beta,beta);
 
@@ -586,13 +592,12 @@ int test_fgemm(const Field & F)
 
 int main()
 {
-#warning "This tests fails"
 	//typedef ModularBalanced<float>  FieldF;
 	typedef Modular<float>          FieldF;
 	//typedef ModularBalanced<double> FieldD;
 	typedef Modular<double>         FieldD;
-	//typedef ModularBalanced<LinBox::int32>  FieldI;
-	typedef Modular<LinBox::int32>          FieldI;
+	//typedef ModularBalanced<int32>  FieldI;
+	typedef Modular<int32>          FieldI;
 	//!@bug : this one completely fails :
 	//typedef Modular<Integer>          FieldI;
 
@@ -820,8 +825,10 @@ int main()
 	std::cout << "# \033[1;33m>\033[0m applyP  passed " << our << "/" << tot << "tests" <<std::endl;
 #endif
 	if (our != tot) fail = true;
+#ifdef DEBUG
 	if (our != tot)
 		std::cout << "# \033[1;31m>\033[0m applyP failed" << std::endl;
+#endif
 
 
 	our = tot = 4*_LB_ITERS*6 ;
@@ -882,8 +889,10 @@ int main()
 #endif
 	if(our != tot) fail = true;
 
+#ifdef DEBUG
 	if (our != tot)
 		std::cout << "# \033[1;31m>\033[0m fgemm failed" << std::endl;
+#endif
 	return false ;
 
 }

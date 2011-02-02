@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
 	NTL::ZZ_p::init(modulus); // NOTE: This is essential for using NTL
 
 
-	commentator.start("Hankel black box test test suite", "Hankel");
+	LinBox::commentator.start("Hankel black box test test suite", "Hankel");
 	report << "\tn= " <<  n << " \tq= " << q <<   endl ;
 
 	typedef LinBox::UnparametricField<NTL::ZZ_p> Field;
@@ -143,7 +143,7 @@ int main(int argc, char* argv[])
 
 	pass = testBlackbox(TT);
 
-	commentator.stop("Hankel black box test test suite");
+	LinBox::commentator.stop("Hankel black box test test suite");
 	return pass ? 0 : -1;
 
 }

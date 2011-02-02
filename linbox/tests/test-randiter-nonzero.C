@@ -100,7 +100,7 @@ int main (int argc, char **argv)
 	};
 
 	parseArguments (argc, argv, args);
-	Modular<LinBox::uint32> F (q);
+	Modular<uint32> F (q);
 
 	srand (time (NULL));
 

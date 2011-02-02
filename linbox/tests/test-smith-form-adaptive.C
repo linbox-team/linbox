@@ -40,6 +40,7 @@
 #include "test-common.h"
 #include <linbox/blackbox/dense.h>
 #include <linbox/algorithms/smith-form-adaptive.h>
+using namespace LinBox; // fragile
 
 
 template <class Ring, class SmithForm, class Vector>

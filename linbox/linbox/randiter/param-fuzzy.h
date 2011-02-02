@@ -29,7 +29,7 @@
 
 #include <iostream>
 #include <vector>
-#include <time.h>
+#include <cstdlib>
 
 #include "linbox/integer.h"
 #include "linbox/element/abstract.h"
@@ -51,7 +51,7 @@ namespace LinBox
 		       	/*_F (F),*/ _size (size), _seed (seed)
 		{
 			/*if (_size == 0) F.cardinality (_size);*/
-			if (_seed == 0) _seed = std::time (NULL);
+			if (_seed == 0) _seed = time (NULL);
 		}
 
 		ParamFuzzyRandIter (const ParamFuzzy &F,
@@ -60,7 +60,7 @@ namespace LinBox
 		       	_F (F), _size (size), _seed (seed)
 		{
 			if (_size == 0) F.cardinality (_size);
-			if (_seed == 0) _seed = std::time (NULL);
+			if (_seed == 0) _seed = time (NULL);
 		}
 
 		ParamFuzzyRandIter (const ParamFuzzyRandIter &R) :

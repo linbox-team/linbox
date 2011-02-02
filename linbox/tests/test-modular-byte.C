@@ -65,7 +65,7 @@ int main (int argc, char **argv)
 
 	commentator.start("Modular<int8> field test suite", "Modular<int8>");
 	bool pass = true;
-	Modular<LinBox::int8> F(q);
+	Modular<int8> F(q);
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);

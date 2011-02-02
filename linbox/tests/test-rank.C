@@ -289,7 +289,7 @@ int main (int argc, char **argv)
 
 	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 	<< "over Modular<uint32>" << endl;
-	Modular<LinBox::uint32> F (q);
+	Modular<uint32> F (q);
 	if (!testRankMethods (F, n, iterations, sparsity)) pass = false;
 	if (!testZeroAndIdentRank (F, n, 1)) pass = false;
 

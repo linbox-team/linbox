@@ -48,7 +48,7 @@
 int main(int argc, char **argv)
 {
   bool pass = true;
-  LinBox::uint32 prime = 31337;
+  uint32 prime = 31337;
   static size_t n = 100000;
 
   static Argument args[] =
@@ -60,8 +60,8 @@ int main(int argc, char **argv)
 
   parseArguments(argc, argv, args);
 
-  typedef LinBox::Modular<LinBox::uint32> Field;
-  //typedef LinBox::Modular<LinBox::uint32> Field;
+  typedef LinBox::Modular<uint32> Field;
+  //typedef LinBox::Modular<uint32> Field;
   typedef LinBox::ZeroOne<Field> Matrix;
 
   Field afield(prime);

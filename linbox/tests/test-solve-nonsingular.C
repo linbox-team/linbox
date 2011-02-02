@@ -295,7 +295,7 @@ int main(int argc, char** argv) {
 	typedef PID_integer	Ring;  		Ring R;
 
 	typedef ParamFuzzy Field;
-	typedef Modular<LinBox::int32> ZField;
+	typedef Modular<int32> ZField;
 	typedef Modular<double> DField;
 
 	typedef BlasBlackbox<Field> Matrix;

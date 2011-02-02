@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
 	report <<  "Dimension (m+n) is " << m+n << std::endl;
 	NTL::ZZ_p::init(modulus); // NOTE: This is essential for using NTL
 
-	commentator.start("Sylvester black box test suite", "Sylvester");
+	LinBox::commentator.start("Sylvester black box test suite", "Sylvester");
 	report <<"Dimension(m+n)= " << m+n << "\t modulus= " << q << endl;
 
 	typedef LinBox::UnparametricField<NTL::ZZ_p> Field;
@@ -151,7 +151,7 @@ int main(int argc, char* argv[])
 	report <<"<====\tDone Sylvester matrix black box test suite" << endl;
 
 
-	commentator.stop("Sylvester black box test suite");
+	LinBox::commentator.stop("Sylvester black box test suite");
 	return pass ? 0 : -1;
 
 }

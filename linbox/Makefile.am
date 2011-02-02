@@ -6,6 +6,14 @@ ACLOCAL_AMFLAGS = -I macros
 
 SUBDIRS=linbox macros tests interfaces doc examples
 
+# kludge to escape autotools tyranny
+#Check: check-recursive
+#check-recursive:
+#	(cd tests; make tests)
+
+tests: tests/checker 
+	(cd tests; make tests)
+
 docs:doc/linbox-html/index.html
 
 doc/linbox-html/index.html:
@@ -15,7 +23,6 @@ docs_dev:doc/linbox-dev-html/index.html
 
 doc/linbox-dev-html/index.html:
 	(cd doc; make docs_dev)
-
 
 examples:
 	(cd examples; make examples)
