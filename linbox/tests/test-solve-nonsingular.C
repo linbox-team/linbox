@@ -1,6 +1,6 @@
 /* -*- mode:C++ -*- */
-/* File: solve-nonsigular.C 
-	This file was used to generate solver comparison data for the paper "Symbolic-Numeric Exact Rational Linear System Solver" submitted to ISSAC'11 
+/* File: solve-nonsigular.C
+	This file was used to generate solver comparison data for the paper "Symbolic-Numeric Exact Rational Linear System Solver" submitted to ISSAC'11
 */
 
 #include <iostream>
@@ -26,9 +26,9 @@
 #endif
 
 //or #include "other-numeric-solver.h"
-/* a numeric solver is a FAIBB (fast approximate inverse blackbox). It provides 
+/* a numeric solver is a FAIBB (fast approximate inverse blackbox). It provides
  * 1. constructor from whatever parameters
- * 2. init(A) // init from a matrix of double.  evolve this a bit... 
+ * 2. init(A) // init from a matrix of double.  evolve this a bit...
  *    LU or other initial prep may happen at this moment.
  * 3. solve(x, b) // x <-- A^{-1}b approximately, for vector of double x, b.
  * 4. apply(y, x) // y <-- Ax, approximately, for vector of double y, x.
@@ -38,7 +38,7 @@
 /* rational-solver provides
  * 1. constructor with a numerical solver as argument (call it NS).
  * 2. solve(num, den, A, b, NS)
- *    In our impl, solve prepares the double versions of A, b, initializes the NS, 
+ *    In our impl, solve prepares the double versions of A, b, initializes the NS,
  *    and calls rsol().
  */
 
@@ -53,7 +53,7 @@
 
 using namespace LinBox;
 
-enum MatType {diag=0, tref=1, hilb=2, zo=3, rand_sp=4, 
+enum MatType {diag=0, tref=1, hilb=2, zo=3, rand_sp=4,
 				I=5, jordan2=6, rand_near_sing=7, Hadamard=8, minIJ=9,
 				maxIJ=10, DlehmerD=11, je1=12, je2=13 };
 enum SolverType {diagonal, lapack, matlab, superlu, dixon};
@@ -61,7 +61,7 @@ enum SolverType {diagonal, lapack, matlab, superlu, dixon};
 size_t nextPower2(size_t n){
     size_t p = 1;
     while(p < n) p <<= 1;
-    return p; 
+    return p;
 }
 
 template<class Ring, class Matrix, class Vector>
@@ -97,10 +97,10 @@ void generateProblem(const Ring& R, Matrix &D, Vector &b,
 		case zo: //randLim = 10000;
 		//case random:
 		case I:
-		case diag: stream2.next (b); 
+		case diag: stream2.next (b);
 			//  special case?
 			if (n == 4) for (size_t i = 0; i < b.size(); ++i) b[i] = 2*(i+1);
-			for (size_t i = 0; i < b.size(); ++i) b[i] %= randLim; 
+			for (size_t i = 0; i < b.size(); ++i) b[i] %= randLim;
 			break;
 		//  RHS with just first element 1
 		//case zo:
@@ -130,29 +130,29 @@ void generateProblem(const Ring& R, Matrix &D, Vector &b,
 		case DlehmerD: qlehmer(R, D, n); break;
 		case je1:
 		case je2: jordanform(R, D, n); break;
-		case rand_sp: 
-			randomMat(R, D, n, k); break;	
+		case rand_sp:
+			randomMat(R, D, n, k); break;
 			//  modified for steffy's random model
 			/*
 			randomMat(R, D, n, n);
 			R.init(tmp, 10000);
 			for(int i=0; i<n; ++i)
-				D.setEntry(i, i, tmp);	
-			break;	
+				D.setEntry(i, i, tmp);
+			break;
 			*/
-		case diag: 
+		case diag:
 		  {
 		  //typename Ring::Element product;
 		  //R.init(product, 1);
 		  randLim = 100000;
-		  for(int i = 0; i < n; ++i) { 
+		  for(int i = 0; i < n; ++i) {
 		    int x = d[i]%randLim;
 			if (x == 0) x = 1;
-			R.init (tmp,  x); 
+			R.init (tmp,  x);
 			//R.mulin(product, tmp);
 			//if (n == 4) tmp = i+1;
 			//if (tmp == 4) tmp = -4;
-			D.setEntry(i, i, tmp); 
+			D.setEntry(i, i, tmp);
 		  }
 		  }
 		  break;
@@ -205,16 +205,16 @@ bool testRandomSolve (const Ring& R, RSolver& rsolver, Matrix& D, Vector &b) {
 	//std::ostringstream str;
 	//std::ostream &report = cerr;
 	std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-		
+
 	//  print small mats
-	if(n <= 20){ 
+	if(n <= 20){
 		report << "Matrix: " << endl; D.write(report);
 		VD.write (report << "Right-hand side:  ", b) << endl;
 	}
 
 	std::vector<typename Ring::Element> num(n);
 	typename Ring::Element den;
-	LinBox::Timer timer;
+	Timer timer;
 
 	timer.clear(); timer.start();
 	int solveResult = rsolver.solve(num, den, D, b);
@@ -222,7 +222,7 @@ bool testRandomSolve (const Ring& R, RSolver& rsolver, Matrix& D, Vector &b) {
 
 	report << "Total time: " << timer << endl;
 
-	if(n <= 20){	
+	if(n <= 20){
 		VD.write (report << "solution numerator: ", num) << endl;
 		report << "solution denominator: " << den << endl;
 	}
@@ -245,9 +245,9 @@ bool testRandomSolve (const Ring& R, RSolver& rsolver, Matrix& D, Vector &b) {
 	rsolver.writeVec(num, "first value in numerator", 0, 1, out);
 	out << endl << endl << "denominator: " << endl << den << endl;
 #endif
-		
+
 	if ( solveResult != 0 ) {
-	    report << "ERROR: Did not return OK solving status" << endl;		  
+	    report << "ERROR: Did not return OK solving status" << endl;
 		return false;
 	}
 	if ( solveResult == 0 && R.isZero(den) ) {
@@ -257,15 +257,15 @@ bool testRandomSolve (const Ring& R, RSolver& rsolver, Matrix& D, Vector &b) {
 	if ( solveResult == 0 && !VD.areEqual(D.apply(y, num), VD.mulin(tmpb, den)) ) {
 		report << "ERROR: Computed solution is incorrect" << endl;
 		return false;
-	} 
+	}
 	else {
 	   return true;
 	}
-}	
+}
 
 int main(int argc, char** argv) {
 	bool pass = true;
-	int run = 1; 
+	int run = 1;
     static size_t n = 10;
 	static size_t k = 10;
 	bool e = false;
@@ -285,7 +285,7 @@ int main(int argc, char** argv) {
 		//{ '\0' }
    };
 	parseArguments (argc, argv, args);
-	
+
 	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);

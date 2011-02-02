@@ -152,7 +152,7 @@ namespace LinBox
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for characteristic polynomial computation\n");
 
-		BlasBlackbox< typename Blackbox::Field > BBB (A);
+		BlasBlackbox< typename Blackbox::Field >     BBB (A);
 		BlasMatrixDomain< typename Blackbox::Field > BMD (BBB.field());
 		return BMD.charpoly (P, static_cast<BlasMatrix<typename Blackbox::Field::Element> >(BBB));
 	}

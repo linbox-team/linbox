@@ -577,7 +577,7 @@ test_solve_nonsingular_SOURCES=       \
 		#  test-integer-tools.C
 
 tests: checker
-	checker
+	./checker
 
 checker: checker.C
-	
+

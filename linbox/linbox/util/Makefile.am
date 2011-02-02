@@ -1,9 +1,13 @@
 # Copyright (c) 2010 the LinBox group
 # This file is part of LinBox
 # see COPYING for licence
-INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/linbox
+#we now need to include givaro headers for timer ? (oupa ? plus moche que ça tu meurs)
+INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/linbox $(GIVARO_CFLAGS)
+LIBS=-lgivaro
 
-AM_CFLAGS=-g -Wall  -Wextra -Wno-unused-parameter -O2
+
+
+AM_CXXFLAGS=-g -Wall  -Wextra -Wno-unused-parameter -O2
 
 SUBDIRS=formats
 
@@ -13,25 +17,24 @@ noinst_LTLIBRARIES=libutil.la
 
 
 libutil_la_SOURCES=	\
-	timer.C		\
-	error.C		\
+	error.C		    \
 	commentator.C	\
 	debug.C
 
 #libutil_la_LIBADD=	\
 #	gmp++/libgmpxx.la
 
-pkgincludesub_HEADERS=\
-	debug.h				\
-	error.h				\
+pkgincludesub_HEADERS=      \
+	debug.h				    \
+	timer.h				    \
+	error.h				    \
 	commentator.h 			\
 	contracts.h 			\
-	timer.h				\
 	prime-stream.h			\
 	field-axpy.h			\
 	matrix-stream.h			\
 	matrix-stream.inl		\
-	mpicpp.h			\
+	mpicpp.h			    \
 	mpicpp.inl
 
 EXTRA_DIST = util.doxy

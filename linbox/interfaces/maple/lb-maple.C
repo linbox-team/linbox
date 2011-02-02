@@ -156,7 +156,7 @@ extern "C" {
 
 		std::stringstream *buffer= new std::stringstream();//std::string(buffer_data, m*n));
 
-		//LinBox::Timer chrono;
+		//Timer chrono;
 		//chrono.start();
 		if (setting.storage == RTABLE_RECT)
 			DenseMatrixToBuffer(kv, A, *buffer, m, n, setting);

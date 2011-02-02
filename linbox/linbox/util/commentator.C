@@ -44,7 +44,6 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/util/debug.h"
-#include "linbox/util/timer.h"
 
 namespace LinBox
 {
