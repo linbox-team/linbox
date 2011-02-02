@@ -71,7 +71,7 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 	Vector<GF2>::Dense::const_iterator i2;
 	Vector<Modular<uint16> >::Dense::iterator j1, j2;
 
-	LinBox::Timer timer;
+	Timer timer;
 	double totaltime = 0.0;
 
 	while (stream1 && stream2) {
@@ -165,7 +165,7 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 	Vector<GF2>::Sparse::const_iterator i2;
 	Vector<Modular<uint16> >::Dense::iterator j1;
 
-	LinBox::Timer timer;
+	Timer timer;
 	double totaltime = 0.0;
 
 	while (stream1 && stream2) {

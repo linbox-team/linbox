@@ -153,6 +153,12 @@ static bool testNilpotentCharpoly (Field &F, size_t n)
 	stream.next (v);
 	Blackbox A (F, stream);
 
+	ostream &who = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+	who << "Matrix:" << endl;
+	A.write (who, FORMAT_PRETTY);
+
+
+
 	Polynomial phi;
 
 	charpoly (phi, A);

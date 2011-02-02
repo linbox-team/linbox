@@ -51,7 +51,7 @@ unsigned long& TempLRank(unsigned long& r, char * filename, const Field& F)
 	LinBox::MatrixStream< Field > msf( F, input );
 	LinBox::SparseMatrix<Field,typename LinBox::Vector<Field>::SparseSeq> FA(msf);
 	input.close();
-	LinBox::Timer tim; tim.start();
+	Timer tim; tim.start();
 	LinBox::rankin(r, FA);
 	tim.stop();
 	F.write(std::cout << "Rank over ") << " is " << r << ' ' << tim << std::endl;
@@ -64,7 +64,7 @@ unsigned long& TempLRank(unsigned long& r, char * filename, const LinBox::GF2& F
 	LinBox::ZeroOne<LinBox::GF2> A;
 	A.read(input);
 	input.close();
-	LinBox::Timer tim; tim.start();
+	Timer tim; tim.start();
 	LinBox::rankin(r, A, LinBox::Method::SparseElimination() );
 	tim.stop();
 	F2.write(std::cout << "Rank over ") << " is " << r << ' ' << tim << std::endl;
@@ -174,7 +174,7 @@ int main (int argc, char **argv)
 
 	PID_integer::Element val_A;
 
-	LinBox::Timer chrono; chrono.start();
+	Timer chrono; chrono.start();
 	if (argc >= 3) {
 		Transpose<Blackbox> T(&A);
 		if (strcmp(argv[2],"-ata") == 0) {

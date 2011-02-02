@@ -119,7 +119,7 @@ int main (int argc, char **argv)
 			F.write(cout, *it) << " ";
 		std::cout << "]" << std::endl;
 
-		LinBox::Timer chrono;
+		Timer chrono;
 
 		// Sparse Elimination
 		chrono.clear();
@@ -216,7 +216,7 @@ int main (int argc, char **argv)
 		std::cout << "]" << std::endl;
 
 
-		LinBox::Timer chrono;
+		Timer chrono;
 
 		// Wiedemann
 		chrono.start();

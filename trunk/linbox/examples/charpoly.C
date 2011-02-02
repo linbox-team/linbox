@@ -115,7 +115,7 @@ int main (int argc, char **argv)
 		typedef GivPolynomialRing<PID_integer,Dense> IntPolRing;
 		IntPolRing::Element c_A;
 
-		LinBox::Timer tim; tim.clear();tim.start();charpoly (c_A, A, Method::Blackbox());
+		Timer tim; tim.clear();tim.start();charpoly (c_A, A, Method::Blackbox());
 		tim.stop();
 
 		cout << "Characteristic Polynomial is ";
@@ -154,7 +154,7 @@ int main (int argc, char **argv)
 		B.read (input);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
 		GivPolynomialRing<Field,Dense>::Element c_B;
-		LinBox::Timer tim; tim.clear();tim.start();
+		Timer tim; tim.clear();tim.start();
 		charpoly (c_B, B);
 		tim.stop();
 

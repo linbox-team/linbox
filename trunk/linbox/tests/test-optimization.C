@@ -57,7 +57,7 @@ int main (int argc, char ** argv)
 	std::ostream& report = commentator.report();
 
 	Modular<double> F(17);
-	LinBox::Timer chrono;
+	Timer chrono;
 
 	double *A, *C;
 	A = new double[nmax*nmax];

@@ -534,7 +534,9 @@ namespace LinBox
 			   , const char * //msgclass
 			   , long //time_type
 			  )
-		{ stop (msg); }
+		{
+			stop (msg);
+		}
 
 		/** @internal
 		 * Report progress.
@@ -556,7 +558,9 @@ namespace LinBox
 		 * @param msgclass Class of message
 		 */
 		void report (const char *msg, long msglevel, const char *msgclass)
-		{ report ((MessageLevel) msglevel, msgclass) << msg << std::endl; }
+		{
+			report ((MessageLevel) msglevel, msgclass) << msg << std::endl;
+		}
 
 		/** @internal
 		 * Test whether message is printed.
@@ -564,7 +568,9 @@ namespace LinBox
 		 * @param msgclass Class of message
 		 */
 		bool printed (long msglevel, const char *msgclass)
-		{ return isPrinted (_activities.size (), (MessageLevel) msglevel, msgclass); }
+		{
+			return isPrinted (_activities.size (), (MessageLevel) msglevel, msgclass);
+		}
 
 		//@} Legacy commentator interface
 

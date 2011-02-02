@@ -407,10 +407,13 @@ inline void FFLAS::ClassicMatmul (const Modular<double> & F,
 		remblock = kmax;
 		--nblock;
 	}
-	if (F.areEqual (Mone, beta)) _beta = -1.0;
-	else _beta = beta;
-	if (F.areEqual (Mone, alpha)) _alpha = -1.0;
-	else{
+	if (F.areEqual (Mone, beta))
+		_beta = -1.0;
+	else
+		_beta = beta;
+	if (F.areEqual (Mone, alpha))
+		_alpha = -1.0;
+	else {
 		_alpha = 1.0;
 		if (! F.areEqual (one, alpha)) {
 			// Compute y = A*x + beta/alpha.y
@@ -419,13 +422,18 @@ inline void FFLAS::ClassicMatmul (const Modular<double> & F,
 		}
 	}
 	size_t shiftA, shiftB;
-	if (ta == FflasTrans) shiftA = k2*lda;
-	else shiftA = k2;
-	if (tb == FflasTrans) shiftB = k2;
-	else shiftB = k2*ldb;
+	if (ta == FflasTrans)
+		shiftA = k2*lda;
+	else
+		shiftA = k2;
+	if (tb == FflasTrans)
+		shiftB = k2;
+	else
+		shiftB = k2*ldb;
 
 	ClassicMatmul (DoubleDomain(), ta, tb, m, n, remblock, _alpha, A+nblock*shiftA, lda,
-		       B+nblock*shiftB, ldb, _beta, C, ldc, kmax,base );
+		       B+nblock*shiftB, ldb, _beta, C, ldc, kmax, base );
+
 	double * Ci;
 #if 0 /* timing */
         Timer t;
@@ -433,6 +441,7 @@ inline void FFLAS::ClassicMatmul (const Modular<double> & F,
 	t.start();
 #endif
 //#pragma omp parallel for schedule(static) private (Ci)
+//!@todo init only if remblock!=0 and _beta == 0
 	for (Ci = C; Ci < C+m*ldc; Ci += ldc)
 		for (size_t j=0; j < n;++j)
 			F.init(*(Ci+j),*(Ci+j));
@@ -444,7 +453,7 @@ inline void FFLAS::ClassicMatmul (const Modular<double> & F,
 
 	for (size_t i = 0; i < nblock; ++i) {
 		ClassicMatmul (DoubleDomain(), ta, tb, m, n, k2, _alpha, A+i*shiftA, lda,
-			       B+i*shiftB, ldb, one, C, ldc, kmax,base);
+			       B+i*shiftB, ldb, one, C, ldc, kmax, base);
 //#pragma omp parallel for schedule(static) private (Ci)
 		for (Ci = C; Ci < C+m*ldc; Ci += ldc)
 			for (size_t j=0; j < n;++j)
