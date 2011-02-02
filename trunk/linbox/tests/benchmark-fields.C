@@ -231,10 +231,10 @@ void fieldTest( const Field& f, double* array, long iter = 1000000, bool fulltes
  * (one floating-point and one int operation) can be executed on the current
  * machine.
  */
-int64 getOps(int unit)
+int64_t getOps(int unit)
 {
-	int64 ops = 1;
-	int64 i = 0;
+	int64_t ops = 1;
+	int64_t i = 0;
 	int a = 13;
 	double b = 1.3;
 	LinBox::UserTimer opsClock;
@@ -279,7 +279,7 @@ void printTimings( double* timings, bool fulltest = false )
 }
 
 template <class Field>
-void doTest(const char* name, integer& p, integer& exp, int64& iter, bool fulltest = false)
+void doTest(const char* name, integer& p, integer& exp, int64_t& iter, bool fulltest = false)
 {
 	static double mops[11];
 	if( FieldTraits<Field>::goodModulus( p ) &&
@@ -298,11 +298,11 @@ void doTest(const char* name, integer& p, integer& exp, int64& iter, bool fullte
 
 int main(int argc, char** argv)
 {
-	int64 ops = getOps(1);
+	int64_t ops = getOps(1);
 	std::cout << "timings recorded in mops.  Bigger is better." << std::endl;
 	std::cout << "Ops per sec, roughly: " << ops << std::endl;
-	//int64 iterations = ops/16;
-	int64 iterations = ops;
+	//int64_t iterations = ops/16;
+	int64_t iterations = ops;
 	integer prime(101), exp(1);
 	if( argc >= 2 ) prime = integer( argv[1] );
 	if( argc >= 3 ) exp = integer( argv[2] );
@@ -335,16 +335,16 @@ int main(int argc, char** argv)
 	<< std::setw(12) << "axpy/(mul+add)"
 	<< std::endl;
 
-	doTest< Modular<int8> >( "Modular<int8>", prime, exp, iterations, fulltest );
-	doTest< Modular<int16> >( "Modular<int16>", prime, exp, iterations, fulltest );
-	doTest< Modular<int32> >( "Modular<int32>", prime, exp, iterations, fulltest );
+	doTest< Modular<int8_t> >( "Modular<int8_t>", prime, exp, iterations, fulltest );
+	doTest< Modular<int16_t> >( "Modular<int16_t>", prime, exp, iterations, fulltest );
+	doTest< Modular<int32_t> >( "Modular<int32_t>", prime, exp, iterations, fulltest );
 	//doTest< Modular<int> >( "Modular<int>", prime, exp, iterations, fulltest );
 	doTest< Modular<double> >( "Modular<double>", prime, exp, iterations, fulltest );
 	doTest< Modular<float> >( "Modular<float>", prime, exp, iterations, fulltest );
 
-	//doTest< ModularBalanced<int8> >( "ModularBalanced<int8>", prime, exp, iterations, fulltest );
-	//doTest< ModularBalanced<int16> >( "ModularBalanced<int16>", prime, exp, iterations, fulltest );
-	doTest< ModularBalanced<int32> >( "ModularBalanced<int32>", prime, exp, iterations, fulltest );
+	//doTest< ModularBalanced<int8_t> >( "ModularBalanced<int8_t>", prime, exp, iterations, fulltest );
+	//doTest< ModularBalanced<int16_t> >( "ModularBalanced<int16_t>", prime, exp, iterations, fulltest );
+	doTest< ModularBalanced<int32_t> >( "ModularBalanced<int32_t>", prime, exp, iterations, fulltest );
 	doTest< ModularBalanced<double> >( "ModularBalanced<double>", prime, exp, iterations, fulltest );
 	doTest< ModularBalanced<float> >( "ModularBalanced<float>", prime, exp, iterations, fulltest );
 
@@ -363,7 +363,7 @@ int main(int argc, char** argv)
 	//	doTest< GF2 >( "GF2", prime, exp, iterations, fulltest );
 	doTest< GMPRationalField >( "GMPRationalField", prime, exp, iterations, fulltest );
 	//if (prime == 2)
-	doTest< PIRModular<int32> >( "PIRModular<int32>", prime, exp, iterations, fulltest );
+	doTest< PIRModular<int32_t> >( "PIRModular<int32_t>", prime, exp, iterations, fulltest );
 	doTest< Local2_32 >( "Local2_32", prime, exp, iterations, fulltest );
 
 	return 0;

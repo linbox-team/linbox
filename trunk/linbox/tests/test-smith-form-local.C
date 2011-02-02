@@ -173,7 +173,7 @@ static bool testLocalSmith (const LocalPIR &R, VectorStream<vector<typename Loca
 
 		MatrixDomain<LocalPIR> MR(R);
 
-		LinBox::Timer timer;
+		Timer timer;
 
 		timer.start();
 		MR.mul(A,Lm,D);
@@ -256,7 +256,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	typedef PIRModular<int32> Ring;
+	typedef PIRModular<int32_t> Ring;
 	//typedef PIRModular<dense> Ring;
 	typedef vector<Ring::Element> Vector;
 
@@ -269,7 +269,7 @@ int main (int argc, char **argv)
 
 	RandomDenseStream<Ring, Vector> stream (R, n, iterations);
 
-	if (!testLocalSmith<Ring> (R, stream, "PIRModular<int32>")) pass = false;
+	if (!testLocalSmith<Ring> (R, stream, "PIRModular<int32_t>")) pass = false;
 
 	// power of 2 test
 	Local2_32 R2;

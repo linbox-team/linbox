@@ -56,8 +56,8 @@ int main (int argc, char **argv)
 	long unsigned int r;
 
 	if (argc == 4) {
-		LinBox::int64 p = atoi(argv[2]);
-		LinBox::int64 q = atoi(argv[3]);
+		LinBox::int64_t p = atoi(argv[2]);
+		LinBox::int64_t q = atoi(argv[3]);
 		typedef GivaroZpz<Std64> Field;
 		Field F(q);
 		MatrixStream<Field> ms( F, input );

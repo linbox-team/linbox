@@ -122,24 +122,24 @@ namespace LinBox
 #ifdef __LINBOX_field_modular_H
 // including specialization to modular
 //#include "linbox/field/modular.h"
-/// Specialization to Modular<uint16> --> Modular<uint_32>.
+/// Specialization to Modular<uint16_t> --> Modular<uint_32>.
 // Just a trial.  delete this when better examples exist.
 namespace LinBox
 {
-	template<> inline Hom<Modular<uint16>, Modular<uint32> >::
-	Hom(const Modular<uint16>& S, const Modular<uint32>& T ) :
+	template<> inline Hom<Modular<uint16_t>, Modular<uint32_t> >::
+	Hom(const Modular<uint16_t>& S, const Modular<uint32_t>& T ) :
 		_source(S),_target(T)
 	{
 		integer ps, pt;
 		if (S.characteristic(ps) != T.characteristic(pt)) throw NoHomError();
 	}
 
-	template<> inline Modular<uint32>::Element& Hom<Modular<uint16>, Modular<uint32> >::
-	image(Modular<uint32>::Element& t, const Modular<uint16>::Element& s) { return t = s; }
+	template<> inline Modular<uint32_t>::Element& Hom<Modular<uint16_t>, Modular<uint32_t> >::
+	image(Modular<uint32_t>::Element& t, const Modular<uint16_t>::Element& s) { return t = s; }
 
 	// assumes t normalized.
-	template<> inline Modular<uint16>::Element& Hom<Modular<uint16>, Modular<uint32> >::
-	preimage(Modular<uint16>::Element& s, const Modular<uint32>::Element& t) { return s = t; }
+	template<> inline Modular<uint16_t>::Element& Hom<Modular<uint16_t>, Modular<uint32_t> >::
+	preimage(Modular<uint16_t>::Element& s, const Modular<uint32_t>::Element& t) { return s = t; }
 
 }// namespace LinBox
 #endif //__LINBOX_field_modular_H

@@ -40,29 +40,29 @@ namespace LinBox
 
 	static const int N = 624;                // length of state vector
 	static const int M = 397;                // a period parameter
-	static const uint32 K = 0x9908B0DFU;     // a magic constant
+	static const uint32_t K = 0x9908B0DFU;     // a magic constant
 
-	static inline uint32 hiBit (uint32 u)    // mask all but highest   bit of u
+	static inline uint32_t hiBit (uint32_t u)    // mask all but highest   bit of u
 	{ return (u) & 0x80000000U; }
-	static inline uint32 loBit (uint32 u)    // mask all but lowest    bit of u
+	static inline uint32_t loBit (uint32_t u)    // mask all but lowest    bit of u
 	{ return (u) & 0x00000001U; }
-	static inline uint32 loBits (uint32 u)   // mask     the highest   bit of u
+	static inline uint32_t loBits (uint32_t u)   // mask     the highest   bit of u
 	{ return (u) & 0x7FFFFFFFU; }
-	static inline uint32 mixBits (uint32 u, uint32 v)   // move hi bit of u to hi bit of v
+	static inline uint32_t mixBits (uint32_t u, uint32_t v)   // move hi bit of u to hi bit of v
 	{ return hiBit (u) | loBits(v); }
 
-	MersenneTwister::MersenneTwister (uint32 seed) :
+	MersenneTwister::MersenneTwister (uint32_t seed) :
 		_state (N + 1), _left (-1)
 	{
 		setSeed (seed);
 	}
 
-	uint32 MersenneTwister::reload ()
+	uint32_t MersenneTwister::reload ()
 	{
-		std::vector<uint32>::iterator p0 = _state.begin ();
-		std::vector<uint32>::iterator p2 = _state.begin () + 2;
-		std::vector<uint32>::iterator pM = _state.begin () + M;
-		uint32 s0, s1;
+		std::vector<uint32_t>::iterator p0 = _state.begin ();
+		std::vector<uint32_t>::iterator p2 = _state.begin () + 2;
+		std::vector<uint32_t>::iterator pM = _state.begin () + M;
+		uint32_t s0, s1;
 		int j;
 
 		if (_left < -1)
@@ -84,9 +84,9 @@ namespace LinBox
 	}
 
 
-	uint32 MersenneTwister::randomInt ()
+	uint32_t MersenneTwister::randomInt ()
 	{
-		uint32 y;
+		uint32_t y;
 
 		if (--_left < 0)
 			return (reload ());
@@ -118,12 +118,12 @@ namespace LinBox
 	/* N.B. The following is adapted from Glib 2.2, g_rand_int_range
 	*/
 
-	uint32 MersenneTwister::randomIntRange (uint32 start, uint32 end)
+	uint32_t MersenneTwister::randomIntRange (uint32_t start, uint32_t end)
 	{
 		linbox_check (end > start);
 
-		uint32 dist = end - start;
-		uint32 random;
+		uint32_t dist = end - start;
+		uint32_t random;
 
 		/* All tricks doing modulo calculations do not have a perfect
 		 * distribution -> We must use the slower way through gdouble for
@@ -142,18 +142,18 @@ namespace LinBox
 			double double_rand =
 			randomInt () * (doubleTransform + doubleTransform * doubleTransform);
 
-			random = (uint32) (double_rand * dist);
+			random = (uint32_t) (double_rand * dist);
 		} else {
 			/* Now we use g_rand_double_range (), which will set 52 bits for
 			   us, so that it is safe to round and still get a decent
 			   distribution */
-			random = (uint32) randomDoubleRange (0, dist);
+			random = (uint32_t) randomDoubleRange (0, dist);
 		}
 
 		return start + random;
 	}
 
-	void MersenneTwister::setSeed (uint32 seed)
+	void MersenneTwister::setSeed (uint32_t seed)
 	{
 		//
 		// We initialize _state[0..(N-1)] via the generator
@@ -201,8 +201,8 @@ namespace LinBox
 		// so-- that's why the only change I made is to restrict to odd seeds.
 		//
 
-		uint32 x = (seed | 1U) & 0xFFFFFFFFU;
-		std::vector<uint32>::iterator s = _state.begin ();
+		uint32_t x = (seed | 1U) & 0xFFFFFFFFU;
+		std::vector<uint32_t>::iterator s = _state.begin ();
 		int j;
 
 		for (_left = 0, *s++ = x, j = N; --j; *s++ = (x *= 69069U) & 0xFFFFFFFFU) ;

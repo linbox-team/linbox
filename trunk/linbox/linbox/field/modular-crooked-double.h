@@ -85,7 +85,7 @@ namespace LinBox
 
 		ModularCrooked () {}
 
-		ModularCrooked (int32 p, float f = 0.5, int exp = 1) :
+		ModularCrooked (int32_t p, float f = 0.5, int exp = 1) :
 			modulus((double)p), up_mod( std::ceil((p-1.)*f) ), lo_mod( up_mod-modulus+1 ),lmodulus (p)
 		{
 			if(modulus <= 1)

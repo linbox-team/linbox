@@ -47,7 +47,7 @@ namespace LinBox
 
 	/** \brief Fast arithmetic mod 2^32, including gcd.
 	 *
-	 * Extend UnparametricField<uint32> which is a representation
+	 * Extend UnparametricField<uint32_t> which is a representation
 	 * of Z_2^32. It is especially fast because it uses hardware arithmetic
 	 * directly.  This ring is a Local Principal Ideal Ring.
 	 *
@@ -62,16 +62,16 @@ namespace LinBox
 	 * \ingroup field
 	 */
 
-	struct Local2_32: public UnparametricField<uint32>
+	struct Local2_32: public UnparametricField<uint32_t>
 	{
 	public:
 
-		typedef UnparametricField<uint32>::Element Element;
+		typedef UnparametricField<uint32_t>::Element Element;
 		typedef enum {_min=0,_max=32} Exponent; // enum?
 		//Exponent& init(Exponent& a) { return a = 32; }
 
 		Local2_32 (int p=2, int exp=32) :
-			UnparametricField<uint32>(p,exp)
+			UnparametricField<uint32_t>(p,exp)
 		{
 			if(p != 2) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be 2");
 			if(exp != 32) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 32");
@@ -204,7 +204,7 @@ namespace LinBox
 
 			Element u, v, q, r;
 
-			int64  u0, u1, u2;
+			int64_t  u0, u1, u2;
 
 			u1 = 1; //v1 = 0;
 			u2 = 0; //v2 = 1;
@@ -266,7 +266,7 @@ namespace LinBox
 			d = u;
 			s = u1;
 
-			t = ((int64) d - u1 * (int64) a) / (int64)b;
+			t = ((int64_t) d - u1 * (int64_t) a) / (int64_t)b;
 
 			//std::cout << "XGCD is called: d, s, t, a, b, sa + tb: " << d << ' '
 			//<< s << ' ' << t << ' ' << a << ' ' << b << ' ' << s * a + t * b << '\n';

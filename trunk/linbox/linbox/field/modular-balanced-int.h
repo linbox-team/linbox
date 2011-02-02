@@ -437,9 +437,9 @@ namespace LinBox
 			return *this;
 		}
 
-		inline int64& mulacc (const Element &a, const Element &x)
+		inline int64_t& mulacc (const Element &a, const Element &x)
 		{
-			int64 t = (int64) a * (int64)   x;
+			int64_t t = (int64_t) a * (int64_t)   x;
 			if (_times < blocksize) {
 				++_times;
 				return _y += t;
@@ -452,7 +452,7 @@ namespace LinBox
 			}
 		}
 
-		inline int64& accumulate (const Element &t)
+		inline int64_t& accumulate (const Element &t)
 		{
 			if (_times < blocksize) {
 				++_times;
@@ -495,13 +495,13 @@ namespace LinBox
 	private:
 
 		Field _F;
-		int64 _y;
+		int64_t _y;
 		int _times;
 		static const int blocksize = 32;
 
 		inline void normalize()
 		{
-			_y = (int)_y -(int)(int64)((double) _y * _F.modulusinv) * (int)_F.modulus;
+			_y = (int)_y -(int)(int64_t)((double) _y * _F.modulusinv) * (int)_F.modulus;
 		}
 
 	};
@@ -527,8 +527,8 @@ namespace LinBox
 			typename Vector1::const_iterator pv1,pv1e;
 			typename Vector2::const_iterator pv2;
 
-			int64 y = 0;
-			int64 t;
+			int64_t y = 0;
+			int64_t t;
 			int times = 0;
 
 			pv1 = pv1e = v1.begin();
@@ -537,14 +537,14 @@ namespace LinBox
 			for(int i = 0; i < v1.size() / blocksize ;++i) {
 				pv1e = pv1e + blocksize;
 				for(;pv1 != pv1e;++pv1,++pv2) {
-					t = (((int64) *pv1 ) * ((int64) *pv2 ));
+					t = (((int64_t) *pv1 ) * ((int64_t) *pv2 ));
 					y += t;
 				}
 				normalize(y);
 			}
 
 			for(;pv1 != v1.end(); ++pv1, ++pv2) {
-				t = (((int64) *pv1 ) * ((int64) *pv2 ));
+				t = (((int64_t) *pv1 ) * ((int64_t) *pv2 ));
 				y += t;
 			}
 
@@ -565,8 +565,8 @@ namespace LinBox
 			typename Vector1::first_type::const_iterator i_idx, i_idxe;
 			typename Vector1::second_type::const_iterator i_elt;
 
-			int64 y = 0;
-			int64 t;
+			int64_t y = 0;
+			int64_t t;
 
 			i_idx = i_idxe = v1.first.begin();
 			i_elt = v1.second.begin();
@@ -574,7 +574,7 @@ namespace LinBox
 			for(int i = 0; i < v1.first.size() / blocksize ; ++i) {
 				i_idxe = i_idxe + blocksize;
 				for(;i_idx!= i_idxe;++i_idx, ++i_elt) {
-					t = ( (int64) *i_elt ) * ( (int64) v2[*i_idx] );
+					t = ( (int64_t) *i_elt ) * ( (int64_t) v2[*i_idx] );
 					y += t;
 				}
 				normalize(y);
@@ -582,7 +582,7 @@ namespace LinBox
 
 
 			for(;i_idx!= v1.first.end();++i_idx, ++i_elt) {
-				t = ( (int64) *i_elt ) * ( (int64) v2[*i_idx] );
+				t = ( (int64_t) *i_elt ) * ( (int64_t) v2[*i_idx] );
 				y += t;
 			}
 
@@ -595,9 +595,9 @@ namespace LinBox
 			return res;
 		}
 
-		inline void normalize(int64& _y) const
+		inline void normalize(int64_t& _y) const
 		{
-			_y = (int)_y -(int)(int64)((double) _y * _F.modulusinv) * (int)_F.modulus;
+			_y = (int)_y -(int)(int64_t)((double) _y * _F.modulusinv) * (int)_F.modulus;
 		}
 
 	};

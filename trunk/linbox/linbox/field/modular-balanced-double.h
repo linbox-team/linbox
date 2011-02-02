@@ -89,7 +89,7 @@ namespace LinBox
 
 		ModularBalanced () {}
 
-		ModularBalanced (int32 p, int exp = 1) :
+		ModularBalanced (int32_t p, int exp = 1) :
 			modulus((double)p),
 			half_mod( (p-1.)/2),
 			mhalf_mod(half_mod-modulus+1),

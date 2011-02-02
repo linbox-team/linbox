@@ -40,6 +40,7 @@
 //#include "linbox/blackbox/apply.h"
 #include "linbox/algorithms/last-invariant-factor.h"
 #include "linbox/algorithms/rational-solver.h"
+#include <vector>
 
 namespace LinBox
 {
@@ -210,16 +211,16 @@ namespace LinBox
 		double s1 = t1.time(), s2 = t2.time();
 
 		if (t1.time() < t2.time()) {
-			//cout << "ratim " << flush;
+			//cout << "ratim " << std::flush;
 			iteration.setSwitcher(1);
 		} else {
-			//cout << "intim " << flush;
+			//cout << "intim " << std::flush;
 			iteration.setSwitcher(2);
 			s1 = s2;
 		}
 
 		//switch: LIF
-		vector<typename PID_integer::Element> v(A.rowdim()), r(A.rowdim());
+		std::vector<typename PID_integer::Element> v(A.rowdim()), r(A.rowdim());
 		++genprime;
 		for(size_t i=0; i < v.size(); ++i) {
 			v[i] = rand() % (*genprime) ;
@@ -233,14 +234,14 @@ namespace LinBox
 
 		Integer lif = 1;
 		if ((s1 > 4*s2) && (!term)){
-			//cout << "lif " << flush;
+			//cout << "lif " << std::flush;
 			RationalSolver < PID_integer , Modular<double>, RandomPrimeIterator, DixonTraits > RSolver;
 			LastInvariantFactor < PID_integer ,RationalSolver < PID_integer, Modular<double>, RandomPrimeIterator, DixonTraits > >  LIF(RSolver);
-			vector<Integer> r_num2 (Atilde. coldim());
+			std::vector<Integer> r_num2 (Atilde. coldim());
 			t1.clear();
 			t1.start();
 			if (LIF.lastInvariantFactor1(lif, r_num2, Atilde)==0) {
-				cerr << "error in LIF\n" << flush;
+				std::cerr << "error in LIF\n" << std::flush;
 				dd = 0;
 			}
 			t1.stop();
@@ -271,7 +272,7 @@ namespace LinBox
 				if (cra(5,dd,iteration,genprime) ) {
 					cra.getResidue(dd);
 					num *=dd;
-					//cout << "without lif " << flush;
+					//cout << "without lif " << std::flush;
 				} else rrterm = false;
 			} else 	{//we use num approx by lif
 				t1.stop();
@@ -283,7 +284,7 @@ namespace LinBox
 						cra.getResidue(dd);
 						num *=dd;
 						den *=lif;
-						//cout << "with lif " << flush;
+						//cout << "with lif " << std::flush;
 					} else rrterm = false;
 				} else t2.stop();
 			}
@@ -292,11 +293,11 @@ namespace LinBox
 				Rationals Q;
 				Q.init(d, num, den);
 				Q.get_den(t,d);Q.get_num(tt,d);
-				//cout << "terminated by RR at step "<< (int)(log(k)/log(2)) << " in " << flush;
+				//cout << "terminated by RR at step "<< (int)(log(k)/log(2)) << " in " << std::flush;
 				t0.stop();
 				return d;
 			} else {
-				//cout << "rollback" << flush;
+				//cout << "rollback" << std::flush;
 				cra.changePreconditioner(lif,1);
 			}
 		}
@@ -309,7 +310,7 @@ namespace LinBox
 		Q.init(d, dd,M);
 		Q.get_den(t, d);
 		//err = M/t;
-		//cout << "terminated by ET at step "<< (int)(log(k)/log(2)) << "in " << flush;
+		//cout << "terminated by ET at step "<< (int)(log(k)/log(2)) << "in " << std::flush;
 
 		commentator.stop ("done", NULL, "Iminpoly");
 

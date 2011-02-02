@@ -85,7 +85,7 @@ template <class I> void display(I b, I e);
 
 int main(int argc, char* argv[])
 {
-	typedef PIRModular<int32> PIR;
+	typedef PIRModular<int32_t> PIR;
 
 	if (argc < 5) {
 
@@ -113,7 +113,7 @@ int main(int argc, char* argv[])
 
 	string format = (argc >= 6 ? argv[5] : "");
 
-	LinBox::UserTimer T;
+	UserTimer T;
 
 	if (algo == "adaptive")
 	{
@@ -166,7 +166,7 @@ int main(int argc, char* argv[])
 
 		display(p.begin(), p.end());
 
-		cout << "# ilio, PIR-Modular-int32(" << m << "), n = " << n << endl;
+		cout << "# ilio, PIR-Modular-int32_t(" << m << "), n = " << n << endl;
 
 		cout << "T" << n << "ilio" << m << " := ";
 	}
@@ -174,7 +174,7 @@ int main(int argc, char* argv[])
 	else if (algo == "local") { // m must be a prime power
 
 		if (format == "sparse" ) {
-			typedef Modular<int32> Field;
+			typedef Modular<int32_t> Field;
 			Field F(m);
 			std::ifstream input (argv[4]);
 			if (!input) { std::cerr << "Error opening matrix file: " << argv[1] << std::endl; return -1; }
@@ -214,7 +214,7 @@ int main(int argc, char* argv[])
 
 			//display(local.begin(), local.end());
 			display(pl.begin(), pl.end());
-			cout << "# local, PowerGaussDomain<int32>(" << m << "), n = " << n << endl;
+			cout << "# local, PowerGaussDomain<int32_t>(" << m << "), n = " << n << endl;
 
 		} else {
 
@@ -244,7 +244,7 @@ int main(int argc, char* argv[])
 
 			display(p.begin(), p.end());
 
-			cout << "# local, PIR-Modular-int32(" << m << "), n = " << n << endl;
+			cout << "# local, PIR-Modular-int32_t(" << m << "), n = " << n << endl;
 
 		}
 		cout << "T" << n << "local" << m << " := ";

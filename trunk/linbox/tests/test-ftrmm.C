@@ -450,7 +450,7 @@ int test_applyP(const Field & F)
 #ifdef DEBUG
 	if (eur)
 		std::cout << "# \033[1;31m>\033[0mcol applyP failed" << std::endl;
-#endif 
+#endif
 
 	delete[] A;
 	delete[] B ;
@@ -596,8 +596,8 @@ int main()
 	typedef Modular<float>          FieldF;
 	//typedef ModularBalanced<double> FieldD;
 	typedef Modular<double>         FieldD;
-	//typedef ModularBalanced<int32>  FieldI;
-	typedef Modular<int32>          FieldI;
+	//typedef ModularBalanced<int32_t>  FieldI;
+	typedef Modular<int32_t>          FieldI;
 	//!@bug : this one completely fails :
 	//typedef Modular<Integer>          FieldI;
 
@@ -613,8 +613,8 @@ int main()
 	FieldI FI2(106739);
 	int tot = 6;
 #ifdef __LINBOX_HAVE_INT64
-	//        typedef ModularBalanced<int64>  FieldU;
-	typedef Modular<int64>          FieldU;
+	//        typedef ModularBalanced<int64_t>  FieldU;
+	typedef Modular<int64_t>          FieldU;
 	FieldU FU(13);
 	FieldU FU2(13132153);
 	tot += 2 ;

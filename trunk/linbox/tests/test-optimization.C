@@ -46,8 +46,8 @@ int main (int argc, char ** argv)
 
 	static Argument args[] = {
 		{ 'n', "-n n", "Operate over the \"field\" GF(Q) [1] for integer modulus.", TYPE_INT, &n },
-		{ 'm', "-m m", "Operate over the \"field\" GF(Q) [1] for uint32 modulus.", TYPE_INT, &nmax },
-		{ 'p', "-p p", "Operate over the \"field\" GF(Q) [1] for uint16 modulus.", TYPE_INT, &prec },
+		{ 'm', "-m m", "Operate over the \"field\" GF(Q) [1] for uint32_t modulus.", TYPE_INT, &nmax },
+		{ 'p', "-p p", "Operate over the \"field\" GF(Q) [1] for uint16_t modulus.", TYPE_INT, &prec },
 		END_OF_ARGUMENTS
 	};
 

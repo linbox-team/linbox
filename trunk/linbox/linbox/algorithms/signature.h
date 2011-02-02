@@ -299,7 +299,7 @@ namespace LinBox
 		static Vector& symmetricLU (Vector& v, const Matrix& IM)
 		{
 
-			typedef Modular<int32> Field;
+			typedef Modular<int32_t> Field;
 			typedef Field::Element Element;
 			typedef DenseMatrix<Field> FMatrix;
 			RandomPrimeIterator primeg(20);

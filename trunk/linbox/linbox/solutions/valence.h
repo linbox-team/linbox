@@ -262,7 +262,7 @@ namespace LinBox
 		static void valence(Integer& val, const Blackbox& A)
 		{
 			commentator. start ("Valence (AAT)", "Valence");
-			typedef Modular<int32> Field;
+			typedef Modular<int32_t> Field;
 			typedef typename MatrixHomTrait<Blackbox, Field>::value_type FBlackbox;
 			int n_bit = (int)(log((double)Field::getMaxModulus()) / M_LN2 - 2);
 			unsigned long d;
@@ -285,7 +285,7 @@ namespace LinBox
 		static void valence(Integer& val, unsigned long d, const Blackbox& A)
 		{
 
-			typedef Modular<int32> Field;
+			typedef Modular<int32_t> Field;
 			typedef typename MatrixHomTrait<Blackbox, Field>::value_type FBlackbox;
 			int n_bit = (int)(log((double)Field::getMaxModulus()) / M_LN2 - 2);
 			RandomPrimeIterator rg(n_bit);

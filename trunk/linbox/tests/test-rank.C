@@ -288,8 +288,8 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 
 	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
-	<< "over Modular<uint32>" << endl;
-	Modular<uint32> F (q);
+	<< "over Modular<uint32_t>" << endl;
+	Modular<uint32_t> F (q);
 	if (!testRankMethods (F, n, iterations, sparsity)) pass = false;
 	if (!testZeroAndIdentRank (F, n, 1)) pass = false;
 

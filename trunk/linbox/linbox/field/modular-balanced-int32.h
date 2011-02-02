@@ -23,9 +23,9 @@
  */
 
 
-/*! @file field/modular-balanced-int32.h
+/*! @file field/modular-balanced-int32_t.h
  * @ingroup field
- * @brief Balanced representation of <code>Z/mZ</code> over \c int32 .
+ * @brief Balanced representation of <code>Z/mZ</code> over \c int32_t .
  */
 
 #ifndef __LINBOX_modular_balanced_int32_H
@@ -46,7 +46,7 @@
 #define LINBOX_MAX_INT 2147483647
 #endif
 
-// replaced by FieldTraits<Modular<int32> >::maxModulus(integer&)
+// replaced by FieldTraits<Modular<int32_t> >::maxModulus(integer&)
 // #ifndef LINBOX_MAX_MODULUS
 // #define LINBOX_MAX_MODULUS 1073741824
 
@@ -72,27 +72,27 @@ namespace LinBox
 	struct ClassifyRing<ModularBalanced<Element> >;
 
 	template<>
-	struct ClassifyRing<ModularBalanced<int32> > {
+	struct ClassifyRing<ModularBalanced<int32_t> > {
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
 	/// \ingroup field
 	template <>
-	class ModularBalanced<int32> : public FieldInterface {
+	class ModularBalanced<int32_t> : public FieldInterface {
 	protected:
-		int32 modulus;
-		int32 halfmodulus;
-		int32 nhalfmodulus;
+		int32_t modulus;
+		int32_t halfmodulus;
+		int32_t nhalfmodulus;
 		double modulusinv;
 
 	public:
 
-		friend class FieldAXPY<ModularBalanced<int32> >;
-		friend class DotProductDomain<ModularBalanced<int32> >;
+		friend class FieldAXPY<ModularBalanced<int32_t> >;
+		friend class DotProductDomain<ModularBalanced<int32_t> >;
 
-		typedef int32 Element;
-		typedef ModularBalancedRandIter<int32> RandIter;
-		typedef NonzeroRandIter<ModularBalanced<int32>,RandIter> NonZeroRandIter;
+		typedef int32_t Element;
+		typedef ModularBalancedRandIter<int32_t> RandIter;
+		typedef NonzeroRandIter<ModularBalanced<int32_t>,RandIter> NonZeroRandIter;
 
 		//default modular field,taking 65521 as default modulus
 		ModularBalanced () :
@@ -103,7 +103,7 @@ namespace LinBox
 			nhalfmodulus = halfmodulus-65520;
 		}
 
-		ModularBalanced (int32 value, int exp = 1)  :
+		ModularBalanced (int32_t value, int exp = 1)  :
 			modulus(value)
 		{
 			//std::cout << value << std::endl;
@@ -113,16 +113,16 @@ namespace LinBox
 			if(exp != 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
 			if(value <= 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			integer max;
-			if(value > FieldTraits<Modular<int32> >::maxModulus(max)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
+			if(value > FieldTraits<Modular<int32_t> >::maxModulus(max)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 			if( ! (value % 2) ) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be odd");
 
 		}
 
-		ModularBalanced (const ModularBalanced<int32>& mf) :
+		ModularBalanced (const ModularBalanced<int32_t>& mf) :
 			modulus(mf.modulus),halfmodulus(mf.halfmodulus),nhalfmodulus(mf.nhalfmodulus),modulusinv(mf.modulusinv)
 		{ }
 
-		const ModularBalanced &operator=(const ModularBalanced<int32> &F) {
+		const ModularBalanced &operator=(const ModularBalanced<int32_t> &F) {
 			modulus = F.modulus;
 			halfmodulus = F.halfmodulus;
 			nhalfmodulus = F.nhalfmodulus;
@@ -161,7 +161,7 @@ namespace LinBox
 
 
 		std::ostream &write (std::ostream &os) const {
-			return os << "balanced int32 mod " << modulus;
+			return os << "balanced int32_t mod " << modulus;
 		}
 
 		std::istream &read (std::istream &is) {
@@ -171,7 +171,7 @@ namespace LinBox
 			modulusinv = 1 /((double) modulus );
 			if(modulus <= 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			integer max;
-			if(modulus > FieldTraits<Modular<int32> >::maxModulus(max)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
+			if(modulus > FieldTraits<Modular<int32_t> >::maxModulus(max)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 			if( ! (modulus % 2) ) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be oddd");
 
 			return is;
@@ -265,10 +265,10 @@ namespace LinBox
 		}
 
 		inline Element &mul (Element &x, const Element &y, const Element &z) const {
-			int32 q;
+			int32_t q;
 
-			q  = (int32) ((((double) y) * ((double) z)) * modulusinv);  // q could be off by (+/-) 1
-			x = (int32) (y*z - q*modulus);
+			q  = (int32_t) ((((double) y) * ((double) z)) * modulusinv);  // q could be off by (+/-) 1
+			x = (int32_t) (y*z - q*modulus);
 
 			if (x > halfmodulus)
 				x -= modulus;
@@ -289,7 +289,7 @@ namespace LinBox
 		}
 
 		inline Element &inv (Element &x, const Element &y) const {
-			int32 d, t;
+			int32_t d, t;
 			XGCD(d, x, t, y, modulus);
 			if (d != 1)
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"InvMod: inverse undefined");
@@ -306,10 +306,10 @@ namespace LinBox
 				      const Element &a,
 				      const Element &x,
 				      const Element &y) const {
-			int32 q;
+			int32_t q;
 
-			q  = (int32) (((((double) a) * ((double) x)) + (double)y) * modulusinv);  // q could be off by (+/-) 1
-			r = (int32) (a * x + y - q*modulus);
+			q  = (int32_t) (((((double) a) * ((double) x)) + (double)y) * modulusinv);  // q could be off by (+/-) 1
+			r = (int32_t) (a * x + y - q*modulus);
 
 
 			if (r > halfmodulus)
@@ -357,10 +357,10 @@ namespace LinBox
 
 		inline Element &axpyin (Element &r, const Element &a, const Element &x) const
 		{
-			int32 q;
+			int32_t q;
 
-			q  = (int32) (((((double) a)*((double) x)) + (double)r) * modulusinv);  // q could be off by (+/-) 1
-			r = (int32) (a * x + r - q*modulus);
+			q  = (int32_t) (((((double) a)*((double) x)) + (double)r) * modulusinv);  // q could be off by (+/-) 1
+			r = (int32_t) (a * x + r - q*modulus);
 
 
 			if (r > halfmodulus)
@@ -371,15 +371,15 @@ namespace LinBox
 			return r;
 		}
 
-		static inline int32 getMaxModulus()
+		static inline int32_t getMaxModulus()
 		{ return 1073741824; } // 2^30
 
 	private:
 
-		inline static void XGCD(int32& d, int32& s, int32& t, int32 a, int32 b) {
-			int32  u, v, u0, v0, u1, v1, u2, v2, q, r;
+		inline static void XGCD(int32_t& d, int32_t& s, int32_t& t, int32_t a, int32_t b) {
+			int32_t  u, v, u0, v0, u1, v1, u2, v2, q, r;
 
-			int32 aneg = 0, bneg = 0;
+			int32_t aneg = 0, bneg = 0;
 
 			if (a < 0) {
 				if (a < -LINBOX_MAX_INT) throw PreconditionFailed(__func__,__FILE__,__LINE__,"XGCD: integer overflow");
@@ -424,11 +424,11 @@ namespace LinBox
 	};
 
 	template <>
-	class FieldAXPY<ModularBalanced<int32> > {
+	class FieldAXPY<ModularBalanced<int32_t> > {
 	public:
 
-		typedef int32 Element;
-		typedef ModularBalanced<int32> Field;
+		typedef int32_t Element;
+		typedef ModularBalanced<int32_t> Field;
 
 		FieldAXPY (const Field &F) :
 			_F (F),_y(0),_times(0)
@@ -439,15 +439,15 @@ namespace LinBox
 			_F (faxpy._F), _y (0),_times(0)
 		{}
 
-		FieldAXPY<ModularBalanced<int32> > &operator = (const FieldAXPY &faxpy) {
+		FieldAXPY<ModularBalanced<int32_t> > &operator = (const FieldAXPY &faxpy) {
 			_F = faxpy._F;
 			_y = faxpy._y;
 			_times = faxpy._times;
 			return *this;
 		}
 
-		inline int64& mulacc (const Element &a, const Element &x) {
-			int64 t = (int64) a * (int64)   x;
+		inline int64_t& mulacc (const Element &a, const Element &x) {
+			int64_t t = (int64_t) a * (int64_t)   x;
 			if (_times < blocksize) {
 				++_times;
 				return _y += t;
@@ -460,7 +460,7 @@ namespace LinBox
 			}
 		}
 
-		inline int64& accumulate (const Element &t) {
+		inline int64_t& accumulate (const Element &t) {
 			if (_times < blocksize) {
 				++_times;
 				return _y += t;
@@ -499,27 +499,27 @@ namespace LinBox
 	private:
 
 		Field _F;
-		int64 _y;
-		int32 _times;
-		static const int32 blocksize = 32;
+		int64_t _y;
+		int32_t _times;
+		static const int32_t blocksize = 32;
 
 		inline void normalize() {
-			_y = (int32)_y -(int32)(int64)((double) _y * _F.modulusinv) * (int32)_F.modulus;
+			_y = (int32_t)_y -(int32_t)(int64_t)((double) _y * _F.modulusinv) * (int32_t)_F.modulus;
 		}
 
 	};
 
 
 	template <>
-	class DotProductDomain<ModularBalanced<int32> > : private virtual VectorDomainBase<ModularBalanced<int32> > {
+	class DotProductDomain<ModularBalanced<int32_t> > : private virtual VectorDomainBase<ModularBalanced<int32_t> > {
 
 	private:
-		const int32 blocksize;
+		const int32_t blocksize;
 
 	public:
-		typedef int32 Element;
-		DotProductDomain (const ModularBalanced<int32> &F) :
-			VectorDomainBase<ModularBalanced<int32> > (F) ,blocksize(32)
+		typedef int32_t Element;
+		DotProductDomain (const ModularBalanced<int32_t> &F) :
+			VectorDomainBase<ModularBalanced<int32_t> > (F) ,blocksize(32)
 		{ }
 
 	protected:
@@ -530,9 +530,9 @@ namespace LinBox
 			typename Vector1::const_iterator pv1,pv1e;
 			typename Vector2::const_iterator pv2;
 
-			int64 y = 0;
-			int64 t;
-			// int32 times = 0;
+			int64_t y = 0;
+			int64_t t;
+			// int32_t times = 0;
 
 			pv1 = pv1e = v1.begin();
 			pv2 = v2.begin();
@@ -540,14 +540,14 @@ namespace LinBox
 			for(size_t i = 0; i < v1.size() / blocksize ;++i) {
 				pv1e = pv1e + blocksize;
 				for(;pv1 != pv1e;++pv1,++pv2) {
-					t = (((int64) *pv1 ) * ((int64) *pv2 ));
+					t = (((int64_t) *pv1 ) * ((int64_t) *pv2 ));
 					y += t;
 				}
 				normalize(y);
 			}
 
 			for(;pv1 != v1.end(); ++pv1, ++pv2) {
-				t = (((int64) *pv1 ) * ((int64) *pv2 ));
+				t = (((int64_t) *pv1 ) * ((int64_t) *pv2 ));
 				y += t;
 			}
 
@@ -568,8 +568,8 @@ namespace LinBox
 			typename Vector1::first_type::const_iterator i_idx, i_idxe;
 			typename Vector1::second_type::const_iterator i_elt;
 
-			int64 y = 0;
-			int64 t;
+			int64_t y = 0;
+			int64_t t;
 
 			i_idx = i_idxe = v1.first.begin();
 			i_elt = v1.second.begin();
@@ -577,7 +577,7 @@ namespace LinBox
 			for(size_t i = 0; i < v1.first.size() / blocksize ; ++i) {
 				i_idxe = i_idxe + blocksize;
 				for(;i_idx!= i_idxe;++i_idx, ++i_elt) {
-					t = ( (int64) *i_elt ) * ( (int64) v2[*i_idx] );
+					t = ( (int64_t) *i_elt ) * ( (int64_t) v2[*i_idx] );
 					y += t;
 				}
 				normalize(y);
@@ -585,7 +585,7 @@ namespace LinBox
 
 
 			for(;i_idx!= v1.first.end();++i_idx, ++i_elt) {
-				t = ( (int64) *i_elt ) * ( (int64) v2[*i_idx] );
+				t = ( (int64_t) *i_elt ) * ( (int64_t) v2[*i_idx] );
 				y += t;
 			}
 
@@ -598,9 +598,9 @@ namespace LinBox
 			return res;
 		}
 
-		inline void normalize(int64& _y) const
+		inline void normalize(int64_t& _y) const
 		{
-			_y = (int32)_y -(int32)(int64)((double) _y * _F.modulusinv) * (int32)_F.modulus;
+			_y = (int32_t)_y -(int32_t)(int64_t)((double) _y * _F.modulusinv) * (int32_t)_F.modulus;
 		}
 
 	};

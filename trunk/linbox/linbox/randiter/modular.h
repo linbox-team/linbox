@@ -202,13 +202,13 @@ namespace LinBox
 	};
 
 	template <>
-	class ModularBase<uint16>::RandIter {
+	class ModularBase<uint16_t>::RandIter {
 		MersenneTwister _r;
-		uint16 _size;
-		uint16 _seed;
+		uint16_t _size;
+		uint16_t _seed;
 
 	public:
-		typedef uint16 Element;
+		typedef uint16_t Element;
 
 		RandIter (const Modular<Element> &F, const integer &size = 0, const integer &seed = 0)
 		{
@@ -245,13 +245,13 @@ namespace LinBox
 	};
 
 	template <>
-	class ModularBase<uint32>::RandIter {
+	class ModularBase<uint32_t>::RandIter {
 		MersenneTwister _r;
-		uint32 _size;
-		uint32 _seed;
+		uint32_t _size;
+		uint32_t _seed;
 
 	public:
-		typedef uint32 Element;
+		typedef uint32_t Element;
 
 		RandIter (const Modular<Element> &F, const integer &size = 0, const integer &seed = 0)
 		{
@@ -288,13 +288,13 @@ namespace LinBox
 	};
 
 	template <>
-	class ModularBase<uint64>::RandIter {
+	class ModularBase<uint64_t>::RandIter {
 		MersenneTwister _r;
-		uint64 _size;
-		uint64 _seed;
+		uint64_t _size;
+		uint64_t _seed;
 
 	public:
-		typedef uint64 Element;
+		typedef uint64_t Element;
 
 		RandIter (const Modular<Element> &F, const integer &size = 0, const integer &seed = 0)
 		{

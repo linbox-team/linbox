@@ -229,7 +229,7 @@ int main(int argc, char** argv)
 
 		RandomDenseStream<Ring> s1 (R, n, iterations);
 
-		typedef Modular<int32> Field;
+		typedef Modular<int32_t> Field;
 		typedef RationalSolver<Ring, Field, LinBox::RandomPrimeIterator> Solver;
 		typedef LastInvariantFactor<Ring, Solver> LIF;
 		typedef OneInvariantFactor<Ring, LIF, SCompose, RandomMatrix>  OIF;
@@ -255,7 +255,7 @@ int main(int argc, char** argv)
 
 		RandomDenseStream<Ring> s1 (R, n, iterations);
 
-		typedef Modular<int32> Field;
+		typedef Modular<int32_t> Field;
 		typedef RationalSolver<Ring, Field, LinBox::RandomPrimeIterator> Solver;
 		typedef LastInvariantFactor<Ring, Solver> LIF;
 		typedef OneInvariantFactor<Ring, LIF, SCompose, RandomMatrix>  OIF;

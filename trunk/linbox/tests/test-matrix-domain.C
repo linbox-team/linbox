@@ -1456,14 +1456,14 @@ int main (int argc, char **argv)
 		{ 'n', "-n N", "Set row of test matrices to N.", TYPE_INT,     &n },
 		{ 'm', "-m M", "Set column of test vectors to M.", TYPE_INT,     &m },
 		{ 'k', "-k K", "K nonzero elements per row/column in sparse matrices.", TYPE_INT,     &k },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] for uint32 modulus.", TYPE_INTEGER, &q },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] for uint32_t modulus.", TYPE_INTEGER, &q },
 		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
 		END_OF_ARGUMENTS
 	};
 
 	parseArguments (argc, argv, args);
 
-	typedef Modular<uint32> Field;
+	typedef Modular<uint32_t> Field;
 	typedef Field::Element Element;
 
 	Field F (q);

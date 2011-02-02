@@ -83,7 +83,7 @@ namespace LinBox
 
 		Modular () {}
 
-		Modular (int32 p, int exp = 1)  :
+		Modular (int32_t p, int exp = 1)  :
 			modulus((float)p), lmodulus(p)//, inv_modulus(1./(float)p)
 		{
 			if(modulus <= 1)

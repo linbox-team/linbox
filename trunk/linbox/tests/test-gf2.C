@@ -41,8 +41,8 @@
 // #include "test-vector-domain.h"
 
 using namespace LinBox;
-//using uint16;
-//using uint32;
+//using uint16_t;
+//using uint32_t;
 
 static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 			       VectorStream<Vector<GF2>::Dense> &stream1,
@@ -54,12 +54,12 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 
 	Vector<GF2>::Dense v1, v2;
 
-	Modular<uint16> MF (2);
-	VectorDomain<Modular<uint16> > MF_VD (MF);
+	Modular<uint16_t> MF (2);
+	VectorDomain<Modular<uint16_t> > MF_VD (MF);
 
-	LinBox::Vector<Modular<uint16> >::Dense w1 (stream1.dim ()), w2 (stream1.dim ());
+	LinBox::Vector<Modular<uint16_t> >::Dense w1 (stream1.dim ()), w2 (stream1.dim ());
 
-	uint16 sigma;
+	uint16_t sigma;
 	bool rho;
 
 	LinBox::VectorDomain<GF2> VD (F);
@@ -69,7 +69,7 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 
 	Vector<GF2>::Dense::const_iterator i1;
 	Vector<GF2>::Dense::const_iterator i2;
-	Vector<Modular<uint16> >::Dense::iterator j1, j2;
+	Vector<Modular<uint16_t> >::Dense::iterator j1, j2;
 
 	Timer timer;
 	double totaltime = 0.0;
@@ -148,13 +148,13 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 	Vector<GF2>::Dense v1;
 	Vector<GF2>::Sparse v2;
 
-	Modular<uint16> MF (2);
-	VectorDomain<Modular<uint16> > MF_VD (MF);
+	Modular<uint16_t> MF (2);
+	VectorDomain<Modular<uint16_t> > MF_VD (MF);
 
-	LinBox::Vector<Modular<uint16> >::Dense w1 (stream1.dim ());
-	LinBox::Vector<Modular<uint16> >::SparseSeq w2;
+	LinBox::Vector<Modular<uint16_t> >::Dense w1 (stream1.dim ());
+	LinBox::Vector<Modular<uint16_t> >::SparseSeq w2;
 
-	uint16 sigma;
+	uint16_t sigma;
 	bool rho;
 
 	LinBox::VectorDomain<GF2> VD (F);
@@ -163,7 +163,7 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 
 	Vector<GF2>::Dense::const_iterator i1;
 	Vector<GF2>::Sparse::const_iterator i2;
-	Vector<Modular<uint16> >::Dense::iterator j1;
+	Vector<Modular<uint16_t> >::Dense::iterator j1;
 
 	Timer timer;
 	double totaltime = 0.0;
@@ -185,7 +185,7 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 		w2.clear ();
 
 		for (i2 = v2.begin (); i2 != v2.end (); ++i2)
-			w2.push_back (std::pair<size_t, uint16> (*i2, 1));
+			w2.push_back (std::pair<size_t, uint16_t> (*i2, 1));
 
 		std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector 1:  ";
@@ -253,7 +253,7 @@ int main (int argc, char **argv)
 
 	GF2 F;
 
-	uint32 seed = time (NULL);
+	uint32_t seed = time (NULL);
 
 	RandomDenseStreamGF2 stream1 (F, seed, n, iterations), stream2 (F, seed ^ 0xdeadbeef, n, iterations);
 	RandomSparseStreamGF2<Vector<GF2>::Sparse>

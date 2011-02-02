@@ -124,7 +124,7 @@ namespace LinBox
 		}
 
 
-		uint32& random (uint32& a)  const
+		uint32_t& random (uint32_t& a)  const
 		{ return a = MT.randomInt(); }
 
 		MersenneTwister& getMT() { return MT; }

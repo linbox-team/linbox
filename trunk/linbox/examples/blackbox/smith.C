@@ -45,7 +45,7 @@ using namespace std;
 using namespace LinBox;
 #ifndef BIG
 #include "linbox/field/PIR-modular-int32.h"
-typedef PIRModular<int32> PIR;
+typedef PIRModular<int32_t> PIR;
 #else
 #include "linbox/field/PIR-ntl-ZZ_p.h"
 typedef PIR_ntl_ZZ_p PIR;
@@ -123,7 +123,7 @@ int main(int argc, char* argv[])
 
 		display(p.begin(), p.end());
 
-		cout << "# ilio, PIR-Modular-int32(" << m << "), n = " << n << endl;
+		cout << "# ilio, PIR-Modular-int32_t(" << m << "), n = " << n << endl;
 
 		cout << "T" << n << "ilio" << m << " := ";
 	}
@@ -156,7 +156,7 @@ int main(int argc, char* argv[])
 
 		display(p.begin(), p.end());
 
-		cout << "# local, PIR-Modular-int32(" << m << "), n = " << n << endl;
+		cout << "# local, PIR-Modular-int32_t(" << m << "), n = " << n << endl;
 
 		cout << "T" << n << "local" << m << " := ";
 	}

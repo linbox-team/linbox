@@ -93,7 +93,7 @@ namespace LinBox
 			zero(0.0),one(0.0),mone(0.0)
 		{}
 
-		Modular (int32 p, int exp = 1) :
+		Modular (int32_t p, int exp = 1) :
 			modulus((double)p), lmodulus(p)//, inv_modulus(1./(double)p)
 			, zero(0.0), one(1.0), mone(modulus-1.0)
 		{

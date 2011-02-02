@@ -7,7 +7,7 @@
 #define debug2(x, y) debug(x); y
 #else
 #define debug(x)
-#define debug2(x, y) 
+#define debug2(x, y)
 #define debugneol(x)
 #endif
 
@@ -24,14 +24,14 @@ int zw_shift(NumericSolver &_S, size_t n, FVector &r, FVector &x){
 	// compute possible shift
 	int zw_shift;
 	double normr1, normr2, normr3, shift1, shift2;
-	normr1 = zw_dmax(n, &*r.begin(), 1); 
-	normr2 = zw_dmax(n, &*ax.begin(), 1); 
-	normr3 = zw_dmax(n, &*x.begin(), 1); 
+	normr1 = zw_dmax(n, &*r.begin(), 1);
+	normr2 = zw_dmax(n, &*ax.begin(), 1);
+	normr3 = zw_dmax(n, &*x.begin(), 1);
 
 	//cerr << normr1 << " " << normr2 << " " << normr3 << endl;
 	//try to find a good scalar
-	if (normr2 <.0000000001) 
-		zw_shift = 30; 
+	if (normr2 <.0000000001)
+		zw_shift = 30;
 	else {
 		shift1 = floor(log_2 (normr1 / normr2)) - 2;
 		zw_shift = (int)(30 < shift1 ? 30 : shift1);
@@ -82,12 +82,12 @@ int rat_sol(IVector& numx, Int& denx, FVector& xs_int, FVector& xs_frac, IVector
 		//  x = DM^{-1}*r
 		_S.solve(nextx, r);
 
-		for(size_t i=0; i<n; i++){  
+		for(size_t i=0; i<n; i++){
 			// TODO - analyze logic here
 			//  quo[i] = xs_frac[i] / nextx[i] - 1;
 			//_F.div(quo[i], xs_frac[i], nextx[i]);
-			//_F.subin(quo[i], one); 
-			_F.sub(quo[i], xs_frac[i], nextx[i]); 
+			//_F.subin(quo[i], one);
+			_F.sub(quo[i], xs_frac[i], nextx[i]);
 		}
 
 		double q = zw_dmax(n, &*quo.begin(), 1);
@@ -103,26 +103,26 @@ int rat_sol(IVector& numx, Int& denx, FVector& xs_int, FVector& xs_frac, IVector
 		*/
 
 		//if (q == 0.0)   (QUIT HERE??)
-		if (q < threshold) { 
+		if (q < threshold) {
 			HIT++;
 			// update numx and denx
-			denx <<= shift; 
+			denx <<= shift;
 			update_num (numx, xs_int);
 
 			if(_VDF.isZero(r))
 				return 2;
-			
+
 			// consider increasing the shift for next iteration
 			upshift();
 
 			// make x = nextx, then compute new residual, xs_int, xs_frac
-			swap(x, nextx); 
+			swap(x, nextx);
 			copy(r.begin(), r.end(), lastr.begin());
 			copy(b.begin(), b.end(), lastb.begin());
 			update_xs(xs_int, xs_frac, x);
 			if(exact_apply) update_r_exact(b, r, xs_int, IM);
 			else update_r(r, xs_int);
-		} 
+		}
 		else {  //  q >= threshold, back-off
 			MISS++;
 
@@ -133,9 +133,9 @@ int rat_sol(IVector& numx, Int& denx, FVector& xs_int, FVector& xs_frac, IVector
 				std::cerr << "Iterations: " << iterations << std::endl;
 				writeVec(b, "b", 0, 5); writeVec(r, "r", 0, 5);
 				*/
-				return -1; 
+				return -1;
 			}
-			
+
 			downshift();
 			//-- compute xs_int, xs_frac, r (residue)
 			// but use last r as input
@@ -173,7 +173,7 @@ inline void upshift(){
 			break;
 		case SHIFT_SHRINK:
 			debugneol("H");
-			break;	
+			break;
 	}
 	if(shift > SHIFT_BOUND){
 		shift_max = shift = SHIFT_BOUND;
@@ -221,9 +221,9 @@ inline void downshift(){
 
 inline void update_xs(FVector& xs_int, FVector& xs_frac, FVector& x){
 	Float scalar, tmp;
-	int64 shifted = ((int64)1 << shift);
+	int64_t shifted = ((int64_t)1 << shift);
 	_F.init(scalar, shifted);
-	
+
 	//  make xs_int and xs_frac such that x*scalar = xs_int + xs_frac.
 	for(size_t i = 0; i < xs_int.size(); ++i){
 		// TODO: tmp can overflow a double
@@ -232,13 +232,13 @@ inline void update_xs(FVector& xs_int, FVector& xs_frac, FVector& x){
 		// TODO: TRY THIS xs_int[i] = ceiling(tmp);
 		xs_frac[i] = tmp - xs_int[i];
 	}
-	return;	
+	return;
 }
 
 inline void update_r(FVector& r, FVector& xs_int){
 	Float scalar;
 	size_t n = r.size();
-	int64 shifted = ((int64)1 << shift);
+	int64_t shifted = ((int64_t)1 << shift);
 	_F.init(scalar, shifted);
 	FVector y(n);
 
@@ -256,7 +256,7 @@ inline void update_r_exact(IVector& r_exact, FVector& r, FVector& xs_int, IMatri
 
 	IVector x_i(n), y_i(n);
 
-	typename Ring::Element scalar = ((int64)1 << shift);
+	typename Ring::Element scalar = ((int64_t)1 << shift);
 
 	// update r = r * 2^shift - Mat*xs_int
 	//  r *= 2 ^shift
@@ -265,7 +265,7 @@ inline void update_r_exact(IVector& r_exact, FVector& r, FVector& xs_int, IMatri
 	// determine if exact apply is needed
 	double vnorm = zw_dOOnorm(&*xs_int.begin(), n, 1);
 
-	int64 th = ((int64)1 << 52);  // double mantissa
+	int64_t th = ((int64_t)1 << 52);  // double mantissa
 	Float thresh;
 	_F.init(thresh, th);
 
@@ -290,7 +290,7 @@ inline void update_r_exact(IVector& r_exact, FVector& r, FVector& xs_int, IMatri
 	_VDR.subin(r_exact, y_i);
 
 	//  convert exactly computed residue back to double (for next solve)
-	typename FVector::iterator rp = r.begin(); 
+	typename FVector::iterator rp = r.begin();
 	typename IVector::iterator rep = r_exact.begin();
 	for(; rp!= r.end(); ++rp, ++rep)
 		_F.init(*rp, *rep);
@@ -371,7 +371,7 @@ inline static double zw_dOOnorm(const double* M, int m, int n) {
 		norm = cblas_dasum (n, p ,1);
 		if (norm < old) norm = old;
 		p += n;
-	}	
+	}
 	return norm;
 }
 
@@ -398,7 +398,7 @@ inline static int zw_hbound (integer& b, int m, int n, const double* M){
  *  tag:  prepend this to output
  *  bound:  upper bound on printed value (0 - ignore bound) */
 template<class Vec>
-std::ostream& writeVec(Vec& out, const char *tag="", integer bound=/*40000000*/0, 
+std::ostream& writeVec(Vec& out, const char *tag="", integer bound=/*40000000*/0,
 		size_t numEntries=5, std::ostream &os=std::cerr){
 	os << tag << ": [";
 
@@ -432,7 +432,7 @@ void writeVecFile(Vec& out, const char* file){
 // to write diagnostic info to files for further testing
 template <class Matrix>
 void dumpData(const Matrix &M, const IVector &b, IVector &numx, integer &denx, integer &denBound){
-#ifdef SPITOUT 
+#ifdef SPITOUT
 	std::ofstream matout;
 	matout.open("debug.mat", std::ios::out);
 	M.write(matout);
