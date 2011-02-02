@@ -85,7 +85,7 @@ int main (int argc, char **argv)
 
 	commentator.start("triplesbb black box test suite", "triplesbb");
 
-	typedef Modular<LinBox::uint32> Field;
+	typedef Modular<uint32> Field;
 	typedef Field::Element Element;
 	typedef vector <Element> Vector;
 	typedef TriplesBB<Field> Blackbox;

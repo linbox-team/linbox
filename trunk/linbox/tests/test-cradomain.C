@@ -302,12 +302,12 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator.start("CRA-Domain test suite", "CRADom");
+	LinBox::commentator.start("CRA-Domain test suite", "CRADom");
 	bool pass = true;
 
 	for(int i=0; pass && i<iterations; ++i)
 		pass &= TestCra(n,s,seed);
 
-	commentator.stop(MSG_STATUS (pass), (const char *) 0,"CRA-Domain test suite");
+	LinBox::commentator.stop(MSG_STATUS (pass), (const char *) 0,"CRA-Domain test suite");
 	return pass ? 0 : -1;
 }

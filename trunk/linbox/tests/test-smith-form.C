@@ -29,15 +29,19 @@
 
 
 #include <time.h>
-#ifdef __LINBOX_HAVE_NTL
-#include <linbox/field/ntl-ZZ.h>
-#endif
+//#ifdef __LINBOX_HAVE_NTL
+//#include <linbox/field/ntl-ZZ.h>
+//#endif
 #include <linbox/field/PID-integer.h>
 #include <linbox/util/commentator.h>
 #include <linbox/vector/stream.h>
 #include "test-common.h"
 #include <linbox/blackbox/dense.h>
 #include <linbox/solutions/smith-form.h>
+using LinBox::commentator;
+using LinBox::Commentator;
+using LinBox::integer; 
+using LinBox::DenseMatrix;
 
 template <class Ring, class Vector>
 bool testRandom(const Ring& R,
@@ -53,13 +57,13 @@ bool testRandom(const Ring& R,
         bool ret = true;
         bool iter_passed = true;
 
-        VectorDomain<Ring> VD (R);
+        LinBox::VectorDomain<Ring> VD (R);
 
 	Vector d, x;
 
-	VectorWrapper::ensureDim (d, stream1.n ());
+	LinBox::VectorWrapper::ensureDim (d, stream1.n ());
 
-	VectorWrapper::ensureDim (x, stream1.n ());
+	LinBox::VectorWrapper::ensureDim (x, stream1.n ());
 
 
 	int n = d. size();
@@ -184,17 +188,17 @@ int main(int argc, char** argv)
 	};
 
 	parseArguments (argc, argv, args);
-#ifdef __LINBOX_HAVE_NTL
-	typedef NTL_ZZ      Ring;
-#else
-	typedef PID_integer      Ring;
-#endif
+//#ifdef __LINBOX_HAVE_NTL
+//	typedef LinBox::NTL_ZZ      Ring;
+//#else
+	typedef LinBox::PID_integer      Ring;
+//#endif
 	Ring R;
 
 	commentator.start("Smith form test suite", "Smith");
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
-	RandomDenseStream<Ring> s1 (R, n, iterations);
+	LinBox::RandomDenseStream<Ring> s1 (R, n, iterations);
 	if (!testRandom(R, s1)) pass = false;
 
 	commentator.stop("Smith form test suite");

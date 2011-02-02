@@ -85,7 +85,7 @@ template <class I> void display(I b, I e);
 
 int main(int argc, char* argv[])
 {
-	typedef PIRModular<LinBox::int32> PIR;
+	typedef PIRModular<int32> PIR;
 
 	if (argc < 5) {
 
@@ -174,7 +174,7 @@ int main(int argc, char* argv[])
 	else if (algo == "local") { // m must be a prime power
 
 		if (format == "sparse" ) {
-			typedef Modular<LinBox::int32> Field;
+			typedef Modular<int32> Field;
 			Field F(m);
 			std::ifstream input (argv[4]);
 			if (!input) { std::cerr << "Error opening matrix file: " << argv[1] << std::endl; return -1; }

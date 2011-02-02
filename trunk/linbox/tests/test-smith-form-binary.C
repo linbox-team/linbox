@@ -50,6 +50,7 @@
 #include <linbox/util/commentator.h>
 #include <linbox/vector/stream.h>
 #include "test-common.h"
+using namespace LinBox;
 
 template <class Ring, class SmithForm, class Vector>
 bool testRandom(const Ring& R,
@@ -228,7 +229,7 @@ int main(int argc, char** argv)
 
 		RandomDenseStream<Ring> s1 (R, n, iterations);
 
-		typedef Modular<LinBox::int32> Field;
+		typedef Modular<int32> Field;
 		typedef RationalSolver<Ring, Field, LinBox::RandomPrimeIterator> Solver;
 		typedef LastInvariantFactor<Ring, Solver> LIF;
 		typedef OneInvariantFactor<Ring, LIF, SCompose, RandomMatrix>  OIF;
@@ -254,7 +255,7 @@ int main(int argc, char** argv)
 
 		RandomDenseStream<Ring> s1 (R, n, iterations);
 
-		typedef Modular<LinBox::int32> Field;
+		typedef Modular<int32> Field;
 		typedef RationalSolver<Ring, Field, LinBox::RandomPrimeIterator> Solver;
 		typedef LastInvariantFactor<Ring, Solver> LIF;
 		typedef OneInvariantFactor<Ring, LIF, SCompose, RandomMatrix>  OIF;

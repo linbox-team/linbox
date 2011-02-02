@@ -896,7 +896,7 @@ int main(int argc, char** argv)
 #warning "some tests don't compile or fail"
 	/* Modular int32 */
 	{
-		typedef Modular<LinBox::int32> Field;
+		typedef Modular<int32> Field;
 
 		Field F (q);
 
@@ -920,7 +920,7 @@ int main(int argc, char** argv)
 #if 0 // fails
 	/* Modular Balanced int32 */
 	{
-		typedef ModularBalanced<LinBox::int32 > Field ;
+		typedef ModularBalanced<int32 > Field ;
 
 		Field F (q);
 
@@ -944,7 +944,7 @@ int main(int argc, char** argv)
 #if 0 // no NonZeroRandIter
 	/* Modular uint32 */
 	{
-		typedef Modular<LinBox::uint32> Field;
+		typedef Modular<uint32> Field;
 
 		Field F (q);
 

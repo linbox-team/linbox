@@ -41,8 +41,8 @@
 // #include "test-vector-domain.h"
 
 using namespace LinBox;
-using LinBox::uint16;
-using LinBox::uint32;
+//using uint16;
+//using uint32;
 
 static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 			       VectorStream<Vector<GF2>::Dense> &stream1,

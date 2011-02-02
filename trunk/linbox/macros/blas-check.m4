@@ -54,7 +54,7 @@ if test -n "$BLAS_VAL"; then
 			ATLAS_NEEDED=`nm -u $BLAS_VAL/lib/libcblas.a | grep ATL`
 			if test -n "$ATLAS_NEEDED"; then
 ### lapack_atlas is for hmrg at udel.  What a kludge that this specialization is here.
-				ATLAS_LIBS="-llapack -lcblas -latlas"
+				ATLAS_LIBS="-llapack -llapack_atlas -lcblas -latlas"
 			else
 				ATLAS_LIBS="-lcblas -llapack"
 			fi
@@ -63,7 +63,7 @@ if test -n "$BLAS_VAL"; then
 		elif test -r "$BLAS_VAL/libcblas.a" ; then
 			ATLAS_NEEDED=`nm -u $BLAS_VAL/libcblas.a | grep ATL`
 			if test -n "$ATLAS_NEEDED"; then
-				ATLAS_LIBS="-llapack -lcblas -latlas"
+				ATLAS_LIBS="-llapack -llapack_atlas -lcblas -latlas"
 			else
 				ATLAS_LIBS="-lcblas -llapack"
 			fi
@@ -134,7 +134,7 @@ else
 
 			ATLAS_NEEDED=`nm -u $BLAS_HOME/lib/libcblas.a | grep ATL`
 			if test -n "$ATLAS_NEEDED"; then
-				ATLAS_LIBS="-llapack -lcblas -latlas"
+				ATLAS_LIBS="-llapack -llapack_atlas -lcblas -latlas"
 			else
 				ATLAS_LIBS="-lcblas -llapack"
 			fi
@@ -147,7 +147,7 @@ else
 		elif test -r "$BLAS_HOME/libcblas.a"; then
 			ATLAS_NEEDED=`nm -u $BLAS_HOME/lib/libcblas.a | grep ATL`
 			if test -n "$ATLAS_NEEDED"; then
-				ATLAS_LIBS="-llapack -lcblas -latlas"
+				ATLAS_LIBS="-llapack -llapack_atlas -lcblas -latlas"
 			else
 				ATLAS_LIBS="-lcblas -llapack"
 			fi

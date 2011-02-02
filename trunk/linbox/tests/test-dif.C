@@ -183,7 +183,7 @@ int main (int argc, char **argv)
 		END_OF_ARGUMENTS
 	};
 
-	typedef Modular<LinBox::int32> Field;
+	typedef Modular<int32> Field;
 
 	parseArguments (argc, argv, args);
 	Field F (101);

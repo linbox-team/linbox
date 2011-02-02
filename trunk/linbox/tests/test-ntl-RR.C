@@ -32,8 +32,8 @@
 
 using namespace LinBox;
 
-int main (int argc, char **argv)
-{
+int main (int argc, char **argv) {
+
 	static size_t n = 10000;
 	static int iterations = 1;
 

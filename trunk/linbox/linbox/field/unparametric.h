@@ -35,6 +35,9 @@
 #include "linbox/randiter/unparametric.h"
 #include "linbox/linbox-config.h"
 #include <linbox/field/field-traits.h>
+//#if __LINBOX_HAVE_NTL
+//#include <linbox/field/ntl-RR.h>
+//#endif // __LINBOX_HAVE_NTL
 
 namespace LinBox
 {
@@ -44,6 +47,15 @@ namespace LinBox
 	{
 		return t = static_cast<Target>(s);
 	}
+
+//#if __LINBOX_HAVE_NTL
+//	typedef NTL::RR Targ;
+//	template <>
+//	Targ& Caster<Targ, int> (Targ& t, const int& s)
+//	{
+//		return t = s;
+//	}
+//#endif // __LINBOX_HAVE_NTL
 
 	template <class Ring>
 	struct ClassifyRing;

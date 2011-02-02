@@ -48,7 +48,7 @@
 
 #include "test-common.h"
 
-using namespace LinBox;
+//using namespace LinBox;
 
 /* Display a help message on command usage */
 
@@ -135,8 +135,8 @@ void parseArguments (int argc, char **argv, Argument *args, bool printDefaults)
 	for (i = 1; i < argc; i++) {
 		if (argv[i][0] == '-') {
 			if (argv[i][1] == 0) {
-			commentator.setBriefReportStream (cout);
-			commentator.setReportStream (cout);
+			LinBox::commentator.setBriefReportStream (cout);
+			LinBox::commentator.setReportStream (cout);
 			std::cout << "Writing report data to cout (intermingled with brief report)" << std::endl << std::endl;
 			std::cout.flush ();
 			}
@@ -168,8 +168,8 @@ void parseArguments (int argc, char **argv, Argument *args, bool printDefaults)
 
 				case TYPE_INTEGER:
 					{
-						integer tmp(argv[i+1]);
-						*(integer *) current->data = tmp;
+						LinBox::integer tmp(argv[i+1]);
+						*(LinBox::integer *) current->data = tmp;
 					}
 					i++;
 					break;
@@ -184,8 +184,8 @@ void parseArguments (int argc, char **argv, Argument *args, bool printDefaults)
 				break;
 			}
 		} else {
-		    commentator.setBriefReportStream(cout);
-			commentator.setDefaultReportFile (argv[i]);
+		    LinBox::commentator.setBriefReportStream(cout);
+			LinBox::commentator.setDefaultReportFile (argv[i]);
 			std::cout << "Writing report data to " << argv[i] << std::endl << std::endl;
 			std::cout.flush ();
 		}
@@ -214,7 +214,7 @@ std::ostream& writeCommandString (std::ostream& os, Argument *args, char* progra
 	return os << std::endl;
 }
 
-bool isPower (integer n, integer m)
+bool isPower (LinBox::integer n, LinBox::integer m)
 {
 	return (n == 1) || (((n % m) == 0) && isPower (n/m, m));
 }

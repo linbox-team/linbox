@@ -39,6 +39,7 @@
 #include "test-common.h"
 #include "linbox/vector/stream.h"
 #include "linbox/util/commentator.h"
+using namespace LinBox; // fragile
 
 /// Testing Nonsingular Random Diagonal solve.
 template <class Ring, class Field, class Vector>
@@ -187,7 +188,7 @@ int main(int argc, char** argv)
 
 	parseArguments (argc, argv, args);
 
-	typedef Modular<LinBox::int32> Field;
+	typedef Modular<int32> Field;
 
 	typedef PID_integer     Ring;
 

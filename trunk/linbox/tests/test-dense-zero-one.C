@@ -116,8 +116,8 @@ struct BlackboxDomain : public _Field
 
 } // LinBox
 
-using namespace LinBox;
 using namespace std;
+using namespace LinBox;
 
 template <class Blackbox>
 bool testAssociativity(Blackbox& A)
@@ -153,7 +153,7 @@ void testTiming(Blackbox & A)
 	size_t m = A.rowdim(), n = A.coldim();
 	size_t k = (m + n)/2;
 
-	UserTimer timer;
+	LinBox::UserTimer timer;
 
 	Block B(n,k), C(m,k), D(k,m), E(k,n), F(k,k);
 	MD.random(B); MD.random(D);
@@ -204,7 +204,7 @@ void blockSizeTimingTest(Blackbox & A, size_t size)
 	Dom MD = A.domain();
 	size_t m = A.rowdim();
 
-	UserTimer timer;
+	LinBox::UserTimer timer;
 
 	Block B(m,m), C(m,m), D(m,m);
 	MD.random(B); MD.random(D);
@@ -242,7 +242,7 @@ void stressTest (Blackbox & A)
 	size_t m = 30000;
 	size_t n = 2000;
 
-	UserTimer timer;
+	LinBox::UserTimer timer;
 
 	Block B(m,n), C(m,n);
 	MD.random(B);
@@ -275,7 +275,7 @@ void largeTest (Blackbox & A)
 	size_t m = A.coldim();
 	size_t n = 2000;
 
-	UserTimer timer;
+	LinBox::UserTimer timer;
 
 	Block B(m,n), C(m,n);
 	MD.random(B);

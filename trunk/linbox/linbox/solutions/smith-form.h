@@ -29,6 +29,7 @@
 #include <linbox/util/error.h>
 #include <linbox/algorithms/matrix-hom.h>
 #include <linbox/algorithms/smith-form-adaptive.h>
+#include <linbox/field/PID-integer.h>
 //#include <linbox/algorithms/smith-form.h>
 //#include <linbox/algorithms/smith-form-local.h>
 
@@ -84,7 +85,7 @@ namespace LinBox
 			  const DomainCategory  &tag,
 			  const SmithMethod  &M)
 	{
-		throw LinboxError( "Smith form solution implemented only for DenseMatrix<NTL_ZZ>");
+		throw LinboxError( "Smith form solution implemented only for DenseMatrix<PID_integer>");
 	}
 
 	// The smithForm with default Method
@@ -145,7 +146,7 @@ namespace LinBox
 	// The smithForm with Hybrid Method
 	template<>
 	std::list<std::pair<integer, size_t> > &smithForm(std::list<std::pair<integer, size_t> >& S,
-							  const DenseMatrix<NTL_ZZ> 	&A,
+							  const DenseMatrix<PID_integer> 	&A,
 							  const RingCategories::IntegerTag          &tag,
 							  const Method::Hybrid& M)
 	{

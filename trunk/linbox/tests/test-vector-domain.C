@@ -136,9 +136,9 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 
 	Modular<integer> F_integer (q1);
-	Modular<LinBox::uint32> F_uint32 ((LinBox::uint32) q2);
-	Modular<LinBox::uint16> F_uint16 ((LinBox::uint16) q3);
-	Modular<LinBox::uint8> F_uint8 ((LinBox::uint8) q4);
+	Modular<uint32> F_uint32 ((uint32) q2);
+	Modular<uint16> F_uint16 ((uint16) q3);
+	Modular<uint8> F_uint8 ((uint8) q4);
 
 	commentator.start("Vector domain test suite", "VectorDomain");
 
