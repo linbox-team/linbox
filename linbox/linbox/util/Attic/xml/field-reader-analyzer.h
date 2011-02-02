@@ -330,9 +330,9 @@ namespace LinBox
 			// LinBox types:
 			//   - GF2
 			//   - Modular<type> where type is one of
-			//          - uint8
-			//          - uint16
-			//          - uint32
+			//          - uint8_t
+			//          - uint16_t
+			//          - uint32_t
 			//          - integer (This is the default for both
 			//                     Modular & for all Finite fields in LB)
 			//
@@ -340,7 +340,7 @@ namespace LinBox
 			// packages:
 			//   - From NTL:
 			//      - NTL::ZZ_p (defaults to modular<integer>)
-			//      - NTL::zz_p (this one defaults to modular<uint32>)
+			//      - NTL::zz_p (this one defaults to modular<uint32_t>)
 			//
 			//   - From Givaro:
 			//      - GivaroZpz (defaults to modular<integer>)
@@ -357,15 +357,15 @@ namespace LinBox
 								  return FT(p, AuxUserData);
 							  }
 							  else if(_implDetail == "modular-uint8") {
-								  Modular<uint8>* p = new Modular<uint8>(_R);
+								  Modular<uint8_t>* p = new Modular<uint8_t>(_R);
 								  return FT(p, AuxUserData);
 							  }
 							  else if(_implDetail == "modular-uint16") {
-								  Modular<uint16>* p = new Modular<uint16>(_R);
+								  Modular<uint16_t>* p = new Modular<uint16_t>(_R);
 								  return FT(p, AuxUserData);
 							  }
-							  else if(_implDetail == "modular-uint32") {
-								  Modular<uint32>* p = new Modular<uint32>(_R);
+							  else if(_implDetail == "modular-uint32_t") {
+								  Modular<uint32_t>* p = new Modular<uint32_t>(_R);
 								  return FT(p, AuxUserData);
 							  }
 							  else if(_implDetail == "modular-integer") {
@@ -380,7 +380,7 @@ namespace LinBox
 #ifdef __LINBOX_HAVE_NTL // if we have NTL
 								  UnparametricField<NTL::zz_p> *p = new UnparametricField<NTL::zz_p>(_R);
 #else // the default
-								  Modular<uint32> *p = new Modular<uint32>(_R);
+								  Modular<uint32_t> *p = new Modular<uint32_t>(_R);
 #endif
 								  return FT(p, AuxUserData);
 
@@ -398,7 +398,7 @@ namespace LinBox
 #ifdef __LINBOX_HAVE_GIVARO // if we have Givaro
 GivaroZpz<Std16> *p = new GivaroZpz<Std16>(_R);
 #else
-Modular<uint16> *p = new Modular<uint16>(_R);
+Modular<uint16_t> *p = new Modular<uint16_t>(_R);
 #endif
 return FT(p, AuxUserData);
 }
@@ -406,7 +406,7 @@ else if(_implDetail == "givaro-zpz-std32") {
 #ifdef __LINBOX_HAVE_GIVARO
 GivaroZpz<Std32> *p = new GivaroZpz<Std32>(_R);
 #else
-Modular<uint32> *p = new Modular<uint32>(_R);
+Modular<uint32_t> *p = new Modular<uint32_t>(_R);
 #endif
 return FT(p, AuxUserData);
 }
@@ -562,9 +562,9 @@ void* FieldReaderAnalyzer::makeField(FunctorType &FT) const
 		// LinBox types:
 		//   - GF2
 		//   - Modular<type> where type is one of
-		//          - uint8
-		//          - uint16
-		//          - uint32
+		//          - uint8_t
+		//          - uint16_t
+		//          - uint32_t
 		//          - integer (This is the default for both
 		//                     Modular & for all Finite fields in LB)
 		//
@@ -572,7 +572,7 @@ void* FieldReaderAnalyzer::makeField(FunctorType &FT) const
 		// packages:
 		//   - From NTL:
 		//      - NTL::ZZ_p (defaults to modular<integer>)
-		//      - NTL::zz_p (this one defaults to modular<uint32>)
+		//      - NTL::zz_p (this one defaults to modular<uint32_t>)
 		//
 		//   - From Givaro:
 		//      - GivaroZpz (defaults to modular<integer>)
@@ -589,15 +589,15 @@ void* FieldReaderAnalyzer::makeField(FunctorType &FT) const
 							  return FT(p);
 						  }
 						  else if(_implDetail == "modular-uint8") {
-							  Modular<uint8>* p = new Modular<uint8>(_R);
+							  Modular<uint8_t>* p = new Modular<uint8_t>(_R);
 							  return FT(p);
 						  }
 						  else if(_implDetail == "modular-uint16") {
-							  Modular<uint16>* p = new Modular<uint16>(_R);
+							  Modular<uint16_t>* p = new Modular<uint16_t>(_R);
 							  return FT(p);
 						  }
-						  else if(_implDetail == "modular-uint32") {
-							  Modular<uint32>* p = new Modular<uint32>(_R);
+						  else if(_implDetail == "modular-uint32_t") {
+							  Modular<uint32_t>* p = new Modular<uint32_t>(_R);
 							  return FT(p);
 						  }
 						  else if(_implDetail == "modular-integer") {
@@ -612,7 +612,7 @@ void* FieldReaderAnalyzer::makeField(FunctorType &FT) const
 #ifdef __LINBOX_HAVE_NTL // if we have NTL
 							  UnparametricField<NTL::zz_p> *p = new UnparametricField<NTL::zz_p>(_R);
 #else // the default
-							  Modular<uint32> *p = new Modular<uint32>(_R);
+							  Modular<uint32_t> *p = new Modular<uint32_t>(_R);
 #endif
 							  return FT(p);
 
@@ -630,7 +630,7 @@ void* FieldReaderAnalyzer::makeField(FunctorType &FT) const
 #ifdef __LINBOX_HAVE_GIVARO // if we have Givaro
 GivaroZpz<Std16> *p = new GivaroZpz<Std16>(_R);
 #else
-Modular<uint16> *p = new Modular<uint16>(_R);
+Modular<uint16_t> *p = new Modular<uint16_t>(_R);
 #endif
 return FT(p);
 }
@@ -638,7 +638,7 @@ else if(_implDetail == "givaro-zpz-std32") {
 #ifdef __LINBOX_HAVE_GIVARO
 GivaroZpz<Std32> *p = new GivaroZpz<Std32>(_R);
 #else
-Modular<uint32> *p = new Modular<uint32>(_R);
+Modular<uint32_t> *p = new Modular<uint32_t>(_R);
 #endif
 return FT(p);
 }

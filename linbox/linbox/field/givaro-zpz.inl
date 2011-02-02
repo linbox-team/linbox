@@ -27,17 +27,17 @@ namespace LinBox
 	inline GivaroZpz<Std32>::Element &DotProductDomain<GivaroZpz<Std32> >::dotSpecializedDD
 	(GivaroZpz<Std32>::Element &res, const Vector1 &v1, const Vector2 &v2) const
 	{
-		uint64 inter,best ;
+		uint64_t inter,best ;
 		inter=best=0;
 		if (v1.size()==0) return res=GivaroZpz<Std32>::Element(0);
 		else {
 
-			uint64 size      = v1.size();
-			uint64 min       = Max / (Corr+ (uint64)(_F.characteristic()-1)*(uint64)(_F.characteristic()-1));
-			uint64 min_size  =  (size < min ? size : min);
-			uint64 good1     = (size > min_size ?  size - min_size: 0);
-			uint64 good2     = (long)(size / min_size)* min_size ;
-			uint64 good_size = (good1 > good2 ? good1 : good2 );
+			uint64_t size      = v1.size();
+			uint64_t min       = Max / (Corr+ (uint64_t)(_F.characteristic()-1)*(uint64_t)(_F.characteristic()-1));
+			uint64_t min_size  =  (size < min ? size : min);
+			uint64_t good1     = (size > min_size ?  size - min_size: 0);
+			uint64_t good2     = (long)(size / min_size)* min_size ;
+			uint64_t good_size = (good1 > good2 ? good1 : good2 );
 
 			typename Vector1::const_iterator i=v1.begin();
 			typename Vector2::const_iterator j=v2.begin();
@@ -45,20 +45,20 @@ namespace LinBox
 			unsigned long k=0;
 
 			for (;k<min_size;i++,j++,k++)
-				best+=(uint64)*i * (uint64)*j;
+				best+=(uint64_t)*i * (uint64_t)*j;
 
 			for (inter=best;k<good_size;inter=best) {
 				for (unsigned long l=0;l<min_size;i++,j++,k++,l++)
-					best+= (uint64)*i * (uint64)*j;
+					best+= (uint64_t)*i * (uint64_t)*j;
 				if (inter > best) best+=Corr;
 			}
 
 			for (;k<size;i++,j++,k++)
-				best+= (uint64)*i * (uint64)*j;
+				best+= (uint64_t)*i * (uint64_t)*j;
 			if (inter > best) best+=Corr;
 
 
-			return res =  best % (uint64)_F.characteristic();
+			return res =  best % (uint64_t)_F.characteristic();
 		}
 	}
 
@@ -66,17 +66,17 @@ namespace LinBox
 	inline GivaroZpz<Std32>::Element &DotProductDomain<GivaroZpz<Std32> >::dotSpecializedDSP
 	(GivaroZpz<Std32>::Element &res, const Vector1 &v1, const Vector2 &v2) const
 	{
-		uint64 inter,best ;
+		uint64_t inter,best ;
 		inter=best=0;
 		if ((v1.first).size()== 0)
 			return res=GivaroZpz<Std32>::Element(0);
 		else {
-			uint64 size      = (v1.first).size();
-			uint64 min       = Max / (Corr+ (uint64)(_F.characteristic()-1)*(uint64)(_F.characteristic()-1));
-			uint64 min_size  =  (size < min ? size : min);
-			uint64 good1     = (size > min_size ?  size - min_size: 0);
-			uint64 good2     = (long)(size / min_size)* min_size ;
-			uint64 good_size = (good1 > good2 ? good1 : good2 );
+			uint64_t size      = (v1.first).size();
+			uint64_t min       = Max / (Corr+ (uint64_t)(_F.characteristic()-1)*(uint64_t)(_F.characteristic()-1));
+			uint64_t min_size  =  (size < min ? size : min);
+			uint64_t good1     = (size > min_size ?  size - min_size: 0);
+			uint64_t good2     = (long)(size / min_size)* min_size ;
+			uint64_t good_size = (good1 > good2 ? good1 : good2 );
 
 			typename Vector1::first_type::const_iterator i_idx  =  v1.first.begin ();
 			typename Vector1::second_type::const_iterator i_elt =  v1.second.begin ();
@@ -84,16 +84,16 @@ namespace LinBox
 			unsigned long k=0;
 
 			for (;k<min_size;i_idx++,i_elt++,k++)
-				best+=(uint64)*i_elt * (uint64)v2[*i_idx];
+				best+=(uint64_t)*i_elt * (uint64_t)v2[*i_idx];
 
 			for (inter=best;k<good_size;inter=best) {
 				for (unsigned long l=0;l<min_size;i_idx++,i_elt++,k++,l++)
-					best+= (uint64)*i_elt * (uint64)v2[*i_idx];
+					best+= (uint64_t)*i_elt * (uint64_t)v2[*i_idx];
 				if (inter > best) best+=Corr;
 			}
 
 			for (;k<size;i_idx++,i_elt++,k++)
-				best+= (uint64)*i_elt * (uint64)v2[*i_idx];
+				best+= (uint64_t)*i_elt * (uint64_t)v2[*i_idx];
 			if (inter > best) best+=Corr;
 
 			return res =  best % _F.characteristic();
@@ -106,38 +106,38 @@ namespace LinBox
 	inline GivaroZpz<Std16>::Element &DotProductDomain<GivaroZpz<Std16> >::dotSpecializedDD
 	(GivaroZpz<Std16>::Element &res, const Vector1 &v1, const Vector2 &v2) const
 	{
-		uint32 inter,best ;
+		uint32_t inter,best ;
 		inter=best=0;
 		if (v1.size() == 0)
 			return  res=GivaroZpz<Std16>::Element(0);
 		else {
-			uint32 size      = v1.size();
-			uint32 min       = Max / (Corr+ ((uint32)_F.characteristic()-1)*(uint32)(_F.characteristic()-1));
-			uint32 min_size  =  (size < min ? size : min);
-			uint32 good1     = (size > min_size ?  size - min_size: 0);
-			uint32 good2     = (long)(size / min_size)* min_size ;
-			uint32 good_size = (good1 > good2 ? good1 : good2 );
+			uint32_t size      = v1.size();
+			uint32_t min       = Max / (Corr+ ((uint32_t)_F.characteristic()-1)*(uint32_t)(_F.characteristic()-1));
+			uint32_t min_size  =  (size < min ? size : min);
+			uint32_t good1     = (size > min_size ?  size - min_size: 0);
+			uint32_t good2     = (long)(size / min_size)* min_size ;
+			uint32_t good_size = (good1 > good2 ? good1 : good2 );
 
 
 			typename Vector1::const_iterator i=v1.begin();
 			typename Vector2::const_iterator j=v2.begin();
 
-			uint32 k=0;
+			uint32_t k=0;
 
 			for (;k<min_size;i++,j++,k++)
-				best+=(uint32)*i * (uint32)*j;
+				best+=(uint32_t)*i * (uint32_t)*j;
 
 			for (inter=best;k<good_size;inter=best) {
 				for (unsigned long l=0;l<min_size;i++,j++,k++,l++)
-					best+= (uint32)*i * (uint32)*j;
+					best+= (uint32_t)*i * (uint32_t)*j;
 				if (inter > best) best+=Corr;
 			}
 
 			for (;k<size;i++,j++,k++)
-				best+= (uint32)*i * (uint32)*j;
+				best+= (uint32_t)*i * (uint32_t)*j;
 			if (inter > best) best+=Corr;
 
-			return res = best % (uint32)_F.characteristic();
+			return res = best % (uint32_t)_F.characteristic();
 		}
 	}
 
@@ -145,36 +145,36 @@ namespace LinBox
 	inline GivaroZpz<Std16>::Element &DotProductDomain<GivaroZpz<Std16> >::dotSpecializedDSP
 	(GivaroZpz<Std16>::Element &res, const Vector1 &v1, const Vector2 &v2) const
 	{
-		uint32 inter,best ;
+		uint32_t inter,best ;
 		inter=best=0;
 		if ((v1.first).size()==0)
 			return  res=GivaroZpz<Std16>::Element(0);
 		else {
-			uint32 size      = (v1.first).size();
-			uint32 min       = Max / (Corr+ (uint32)(_F.characteristic()-1)*(uint32)(_F.characteristic()-1));
-			uint32 min_size  =  (size < min ? size : min);
-			uint32 good1     = (size > min_size ?  size - min_size: 0);
-			uint32 good2     = (long)(size / min_size)* min_size ;
-			uint32 good_size = (good1 > good2 ? good1 : good2 );
+			uint32_t size      = (v1.first).size();
+			uint32_t min       = Max / (Corr+ (uint32_t)(_F.characteristic()-1)*(uint32_t)(_F.characteristic()-1));
+			uint32_t min_size  =  (size < min ? size : min);
+			uint32_t good1     = (size > min_size ?  size - min_size: 0);
+			uint32_t good2     = (long)(size / min_size)* min_size ;
+			uint32_t good_size = (good1 > good2 ? good1 : good2 );
 
 			typename Vector1::first_type::const_iterator i_idx  =  v1.first.begin ();
 			typename Vector1::second_type::const_iterator i_elt =  v1.second.begin ();
-			uint32 k=0;
+			uint32_t k=0;
 
 			for (;k<min_size;i_idx++,i_elt++,k++)
-				best+=(uint32)*i_elt * (uint32)v2[*i_idx];
+				best+=(uint32_t)*i_elt * (uint32_t)v2[*i_idx];
 
 			for (inter=best;k<good_size;inter=best) {
 				for (unsigned long l=0;l<min_size;i_idx++,i_elt++,k++,l++)
-					best+= (uint32)*i_elt * (uint32)v2[*i_idx];
+					best+= (uint32_t)*i_elt * (uint32_t)v2[*i_idx];
 				if (inter > best) best+=Corr;
 			}
 
 			for (;k<size;i_idx++,i_elt++,k++)
-				best+= (uint32)*i_elt * (uint32)v2[*i_idx];
+				best+= (uint32_t)*i_elt * (uint32_t)v2[*i_idx];
 			if (inter > best) best+=Corr;
 
-			return res =  best % (uint32)_F.characteristic();
+			return res =  best % (uint32_t)_F.characteristic();
 		}
 	}
 
@@ -185,7 +185,7 @@ namespace LinBox
 	bool GivaroZpz<Std16>::toTag(Writer &W) const
 	{
 		string s;
-		int16 m = ZpzDom<Std16>::residu();
+		int16_t m = ZpzDom<Std16>::residu();
 
 		W.setTagName("field");
 		W.setAttribute("implDetail", "givaro-zpz-std16");
@@ -207,7 +207,7 @@ namespace LinBox
 	bool GivaroZpz<Std32>::toTag(Writer &W) const
 	{
 		string s;
-		int32 m = ZpzDom<Std32>::residu();
+		int32_t m = ZpzDom<Std32>::residu();
 
 		W.setTagName("field");
 		W.setAttribute("implDetail", "givaro-zpz-std32");
@@ -230,7 +230,7 @@ namespace LinBox
 	bool GivaroZpz<Log16>::toTag(Writer &W) const
 	{
 		string s;
-		int16 m = ZpzDom<Log16>::residu();
+		int16_t m = ZpzDom<Log16>::residu();
 
 		W.setTagName("field");
 		W.setAttribute("implDetail", "givaro-zpz-log16");

@@ -197,16 +197,16 @@ namespace LinBox
 			return x = static_cast<long>(z); //rounds towards 0
 		}
 
-		static uint64 getMaxModulus();
+		static uint64_t getMaxModulus();
 
 	}; // class GivaroZpz<TAG>
 
 
-	template <> uint64 GivaroZpz<Std32>::getMaxModulus() { return 46339; } // 2^15.5-1
-	template <> uint64 GivaroZpz<Std64>::getMaxModulus() { return 3037000499ULL; } // 2^15.5-1
-	template <> uint64 GivaroZpz<Unsigned32>::getMaxModulus() { return 65535; } // 2^16-1
-	template <> uint64 GivaroZpz<Std16>::getMaxModulus() { return 255; }   // 2^8-1
-	template <> uint64 GivaroZpz<Log16>::getMaxModulus() { return 32767; } // 2^15 - 1
+	template <> uint64_t GivaroZpz<Std32>::getMaxModulus() { return 46339; } // 2^15.5-1
+	template <> uint64_t GivaroZpz<Std64>::getMaxModulus() { return 3037000499ULL; } // 2^15.5-1
+	template <> uint64_t GivaroZpz<Unsigned32>::getMaxModulus() { return 65535; } // 2^16-1
+	template <> uint64_t GivaroZpz<Std16>::getMaxModulus() { return 255; }   // 2^8-1
+	template <> uint64_t GivaroZpz<Log16>::getMaxModulus() { return 32767; } // 2^15 - 1
 
 	/** Specialisation of the convert function for the zech log representation
 	 *	of givaro-zpz (GivaroZpz<Log16>.
@@ -256,7 +256,7 @@ namespace LinBox
 		typedef GivaroZpz<Std32> Field;
 
 		FieldAXPY (const Field &F) :
-			_F (F) , Corr(uint64(-1) % (uint64)F.characteristic() +1)
+			_F (F) , Corr(uint64_t(-1) % (uint64_t)F.characteristic() +1)
 		{ _y = 0; }
 		FieldAXPY (const FieldAXPY &faxpy) :
 			_F (faxpy._F), _y (0) , Corr(faxpy.Corr)
@@ -265,9 +265,9 @@ namespace LinBox
 		FieldAXPY<GivaroZpz<Std32> > &operator = (const FieldAXPY &faxpy)
 		{ _F = faxpy._F; _y = faxpy._y; Corr = faxpy.Corr; return *this; }
 
-		inline uint64& mulacc (const Element &a, const Element &x)
+		inline uint64_t& mulacc (const Element &a, const Element &x)
 		{
-			uint64 t = (uint64) a * (uint64) x;
+			uint64_t t = (uint64_t) a * (uint64_t) x;
 			_y += t;
 			if (_y < t)
 				return _y += Corr;
@@ -275,19 +275,19 @@ namespace LinBox
 				return _y;
 		}
 
-		inline uint64& accumulate (const Element &t)
+		inline uint64_t& accumulate (const Element &t)
 		{
 			_y += t;
-			if (_y < (uint64)t)
+			if (_y < (uint64_t)t)
 				return _y += Corr;
 			else
 				return _y;
 		}
 
 		inline Element &get (Element &y) {
-			_y %= (uint64) _F.characteristic();
-			if ((int64) _y < 0) _y += _F.characteristic();
-			y = (uint32) _y;
+			_y %= (uint64_t) _F.characteristic();
+			if ((int64_t) _y < 0) _y += _F.characteristic();
+			y = (uint32_t) _y;
 			return y;
 		}
 
@@ -301,8 +301,8 @@ namespace LinBox
 	private:
 
 		Field _F;
-		uint64 _y;
-		uint64 Corr;
+		uint64_t _y;
+		uint64_t Corr;
 	};
 
 
@@ -318,7 +318,7 @@ namespace LinBox
 		typedef GivaroZpz<Std16> Field;
 
 		FieldAXPY (const Field &F) :
-			_F (F) , Corr(uint32(-1) % (uint32)F.characteristic() +1)
+			_F (F) , Corr(uint32_t(-1) % (uint32_t)F.characteristic() +1)
 		{ _y = 0; }
 		FieldAXPY (const FieldAXPY &faxpy) :
 			_F (faxpy._F), _y (0) , Corr(faxpy.Corr)
@@ -327,9 +327,9 @@ namespace LinBox
 		FieldAXPY<GivaroZpz<Std16> > &operator = (const FieldAXPY &faxpy)
 		{ _F = faxpy._F; _y = faxpy._y; Corr = faxpy.Corr; return *this; }
 
-		inline uint32& mulacc (const Element &a, const Element &x)
+		inline uint32_t& mulacc (const Element &a, const Element &x)
 		{
-			uint32 t = (uint32) a * (uint32) x;
+			uint32_t t = (uint32_t) a * (uint32_t) x;
 			_y += t;
 
 			if (_y < t)
@@ -338,20 +338,20 @@ namespace LinBox
 				return _y;
 		}
 
-		inline uint32& accumulate (const Element &t)
+		inline uint32_t& accumulate (const Element &t)
 		{
 			_y += t;
 
-			if (_y < (uint32)t)
+			if (_y < (uint32_t)t)
 				return _y += Corr;
 			else
 				return _y;
 		}
 
 		inline Element &get (Element &y) {
-			_y %= (uint32) _F.characteristic();
-			if ((int32) _y < 0) _y += _F.characteristic();
-			y = (uint16) _y;
+			_y %= (uint32_t) _F.characteristic();
+			if ((int32_t) _y < 0) _y += _F.characteristic();
+			y = (uint16_t) _y;
 			return y;
 		}
 
@@ -365,8 +365,8 @@ namespace LinBox
 	private:
 
 		Field _F;
-		uint32 _y;
-		uint32 Corr;
+		uint32_t _y;
+		uint32_t Corr;
 	};
 
 
@@ -382,8 +382,8 @@ namespace LinBox
 
 		DotProductDomain (const GivaroZpz<Std32> &F) :
 			VectorDomainBase<GivaroZpz<Std32> > (F) ,
-			Corr(uint64(-1) % (uint64)F.characteristic() +1),
-			Max(uint64(-1))
+			Corr(uint64_t(-1) % (uint64_t)F.characteristic() +1),
+			Max(uint64_t(-1))
 		{}
 
 	protected:
@@ -394,8 +394,8 @@ namespace LinBox
 		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const;
 
 	private:
-		uint64 Corr;
-		uint64 Max;
+		uint64_t Corr;
+		uint64_t Max;
 	};
 
 	// Specialization of DotProductDomain for GivaroZpz<Std16> field
@@ -409,8 +409,8 @@ namespace LinBox
 
 		DotProductDomain (const GivaroZpz<Std16> &F) :
 			VectorDomainBase<GivaroZpz<Std16> > (F) ,
-			Corr(uint32(-1) % (uint32)F.characteristic() +1),
-			Max(uint32(-1))
+			Corr(uint32_t(-1) % (uint32_t)F.characteristic() +1),
+			Max(uint32_t(-1))
 		{}
 
 	protected:
@@ -421,8 +421,8 @@ namespace LinBox
 		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const;
 
 	private:
-		uint32 Corr;
-		uint32 Max;
+		uint32_t Corr;
+		uint32_t Max;
 	};
 
 } // namespace LinBox

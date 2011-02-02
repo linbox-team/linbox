@@ -47,7 +47,7 @@
 using namespace LinBox;
 using namespace std;
 
-typedef Modular<uint32> Field;
+typedef Modular<uint32_t> Field;
 
 typedef vector <Field::Element> Vector;
 typedef vector <Field::Element> Polynomial;

@@ -57,9 +57,9 @@ int main (int argc, char **argv)
 
 	static Argument args[] = {
 		{ 'K', "-K Q", "Operate over the \"field\" GF(Q) [1] for integer modulus.", TYPE_INTEGER, &q1 },
-		{ 'Q', "-Q Q", "Operate over the \"field\" GF(Q) [1] for uint32 modulus.", TYPE_INTEGER, &q2 },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] for uint16 modulus.", TYPE_INTEGER, &q3 },
-		{ 'p', "-p P", "Operate over the \"field\" GF(Q) [1] for uint8 modulus.", TYPE_INT, &q4 },
+		{ 'Q', "-Q Q", "Operate over the \"field\" GF(Q) [1] for uint32_t modulus.", TYPE_INTEGER, &q2 },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] for uint16_t modulus.", TYPE_INTEGER, &q3 },
+		{ 'p', "-p P", "Operate over the \"field\" GF(Q) [1] for uint8_t modulus.", TYPE_INT, &q4 },
 		{ 'n', "-n N", "Set dimension of test vectors to NxN.", TYPE_INT,     &n },
 		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
 		{ 't', "-t T", "Number of trials for the random iterator test.", TYPE_INT, &trials },
@@ -74,9 +74,9 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	Modular<integer> F_integer (q1);
-	Modular<uint32> F_uint32 ((uint32) q2);
-	Modular<uint16> F_uint16 ((uint16) q3);
-	Modular<uint8> F_uint8 ((uint8) q4);
+	Modular<uint32_t> F_uint32_t ((uint32_t) q2);
+	Modular<uint16_t> F_uint16_t ((uint16_t) q3);
+	Modular<uint8_t> F_uint8_t ((uint8_t) q4);
 	Modular<float> F_float ((float) q4);
 
 	// Make sure some more detailed messages get printed
@@ -84,15 +84,15 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	if (!runFieldTests (F_integer,"Modular<integer>", iterations, n, false)) pass = false;
-	if (!runFieldTests (F_uint32, "Modular<uint32>",  iterations, n, false)) pass = false;
-	if (!runFieldTests (F_uint16, "Modular<uint16>",  iterations, n, false)) pass = false;
-	if (!runFieldTests (F_uint8,  "Modular<uint8>",   iterations, n, false)) pass = false;
+	if (!runFieldTests (F_uint32_t, "Modular<uint32_t>",  iterations, n, false)) pass = false;
+	if (!runFieldTests (F_uint16_t, "Modular<uint16_t>",  iterations, n, false)) pass = false;
+	if (!runFieldTests (F_uint8_t,  "Modular<uint8_t>",   iterations, n, false)) pass = false;
 	if (!runFieldTests (F_float,  "Modular<float>",   iterations, n, false)) pass = false;
 
 	if (!testRandomIterator (F_integer, "Modular<integer>", trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F_uint32,  "Modular<uint32>",  trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F_uint16,  "Modular<uint16>",  trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F_uint8,    "Modular<uint8>",  trials, categories, hist_level)) pass = false;
+	if (!testRandomIterator (F_uint32_t,  "Modular<uint32_t>",  trials, categories, hist_level)) pass = false;
+	if (!testRandomIterator (F_uint16_t,  "Modular<uint16_t>",  trials, categories, hist_level)) pass = false;
+	if (!testRandomIterator (F_uint8_t,    "Modular<uint8_t>",  trials, categories, hist_level)) pass = false;
 
 	commentator.stop("Modular test suite");
 	return pass ? 0 : -1;

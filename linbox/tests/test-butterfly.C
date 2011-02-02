@@ -308,7 +308,7 @@ int main (int argc, char **argv)
 		END_OF_ARGUMENTS
 	};
 
-	typedef Modular<uint32> Field;
+	typedef Modular<uint32_t> Field;
 
 	parseArguments (argc, argv, args);
 	Field F (q);

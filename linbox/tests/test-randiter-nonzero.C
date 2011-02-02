@@ -100,7 +100,7 @@ int main (int argc, char **argv)
 	};
 
 	parseArguments (argc, argv, args);
-	Modular<uint32> F (q);
+	Modular<uint32_t> F (q);
 
 	srand (time (NULL));
 

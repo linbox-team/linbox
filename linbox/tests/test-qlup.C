@@ -345,8 +345,8 @@ int main (int argc, char **argv)
 
         {
             commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
-                << "over Modular<uint32>" << endl;
-            typedef Modular<uint32> Field;
+                << "over Modular<uint32_t>" << endl;
+            typedef Modular<uint32_t> Field;
             Field F (q);
             typedef SparseMatrix<Field, Sparse_Vector<Field::Element> > Blackbox;
             typedef RandomSparseStream<Field, Sparse_Vector<Field::Element> > RandStream;

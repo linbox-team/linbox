@@ -431,7 +431,7 @@ namespace LinBox
 	public:
 		typedef BitVector Vector;
 
-		RandomDenseStreamGF2 (const GF2 &, uint32 seed, size_t n, size_t m = 0) :
+		RandomDenseStreamGF2 (const GF2 &, uint32_t seed, size_t n, size_t m = 0) :
 			MT (seed), _n (n), _m (m), _j (0)
 		{}
 
@@ -477,7 +477,7 @@ namespace LinBox
 		typedef GF2 Field;
 		typedef _Vector Vector;
 
-		RandomSparseStreamGF2 (const GF2 &, uint32 seed, double p, size_t n, size_t m = 0) :
+		RandomSparseStreamGF2 (const GF2 &, uint32_t seed, double p, size_t n, size_t m = 0) :
 			MT (seed), _n (n), _m (m), _j (0)
 		{ setP (p); }
 

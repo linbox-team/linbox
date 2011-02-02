@@ -41,7 +41,7 @@ int main (int argc, char **argv)
 	static int hist_level = 1;
 
 	static Argument args[] = {
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] for uint16 modulus.", TYPE_INTEGER, &q },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] for uint16_t modulus.", TYPE_INTEGER, &q },
 		{ 'n', "-n N", "Set dimension of test vectors to NxN.", TYPE_INT,     &n },
 		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
 		{ 't', "-t T", "Number of trials for the random iterator test.", TYPE_INT, &trials },
@@ -55,19 +55,19 @@ int main (int argc, char **argv)
 	commentator.start("Hom test suite", "Hom");
 	bool pass = true;
 
-	Modular<uint32> F_uint32 ((uint32) q);
-	Modular<uint16> F_uint16 ((uint16) q);
-	Hom<Modular<uint16>, Modular<uint32> > iso(F_uint16, F_uint32);
+	Modular<uint32_t> F_uint32_t ((uint32_t) q);
+	Modular<uint16_t> F_uint16_t ((uint16_t) q);
+	Hom<Modular<uint16_t>, Modular<uint32_t> > iso(F_uint16_t, F_uint32_t);
 
-	uint16 x=2, y;
-	uint32 z=2, w;
+	uint16_t x=2, y;
+	uint32_t z=2, w;
 	iso.image(w, x);
-	pass = pass && F_uint32.areEqual(z, w);
+	pass = pass && F_uint32_t.areEqual(z, w);
 	iso.preimage(y, z);
-	pass = pass && F_uint16.areEqual(x, y);
+	pass = pass && F_uint16_t.areEqual(x, y);
 
 	/* for image field!
-	uint32 x, y, z, w;
+	uint32_t x, y, z, w;
 	iso.smul(x, 2, 3);
 	iso.mul(y, 2, 3);
 	pass = pass && iso.areEqual(x, y);

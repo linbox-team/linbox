@@ -894,9 +894,9 @@ int main(int argc, char** argv)
 
 	}
 #warning "some tests don't compile or fail"
-	/* Modular int32 */
+	/* Modular int32_t */
 	{
-		typedef Modular<int32> Field;
+		typedef Modular<int32_t> Field;
 
 		Field F (q);
 
@@ -918,9 +918,9 @@ int main(int argc, char** argv)
 	}
 
 #if 0 // fails
-	/* Modular Balanced int32 */
+	/* Modular Balanced int32_t */
 	{
-		typedef ModularBalanced<int32 > Field ;
+		typedef ModularBalanced<int32_t > Field ;
 
 		Field F (q);
 
@@ -942,9 +942,9 @@ int main(int argc, char** argv)
 #endif
 
 #if 0 // no NonZeroRandIter
-	/* Modular uint32 */
+	/* Modular uint32_t */
 	{
-		typedef Modular<uint32> Field;
+		typedef Modular<uint32_t> Field;
 
 		Field F (q);
 
@@ -966,7 +966,7 @@ int main(int argc, char** argv)
 #endif
 
 #if 0 // no NonZeroRandIter
-	/* GivaroZpz int32 */
+	/* GivaroZpz int32_t */
 	{
 		typedef GivaroZpz<Std32> Field;
 

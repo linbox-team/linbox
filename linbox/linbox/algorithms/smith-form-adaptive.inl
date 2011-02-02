@@ -108,7 +108,7 @@ namespace LinBox
 			std::cout << "Call of ffpack is done\n";
 			delete[] A_local;
 #endif
-			typedef Modular<int32> Field;
+			typedef Modular<int32_t> Field;
 			typedef DenseMatrix<Field> FMatrix;
 			MatrixRank<typename Matrix::Field, Field> MR;
 			Field F(p); FMatrix A_local(A, F);
@@ -121,9 +121,9 @@ namespace LinBox
 				*s_p = 0;
 			report << "      Done\n";
 		} else {
-			report << "      Compute local smith at " << p <<'^' << e << " using PIRModular<int32>\n";
+			report << "      Compute local smith at " << p <<'^' << e << " using PIRModular<int32_t>\n";
 			long m = 1; int i = 0; for (i = 0; i < e; ++ i) m *= p;
-			typedef PIRModular<int32> PIR;
+			typedef PIRModular<int32_t> PIR;
 			PIR R(m);
 			DenseMatrix <PIR> A_local(R, A.rowdim(), A.coldim());
 			SmithFormLocal <PIR> SF;
@@ -181,7 +181,7 @@ namespace LinBox
 
 		linbox_check ((p > 0) && ( e >= 0));
 		integer m = 1; int i = 0; for ( i = 0; i < e; ++ i) m *= p;
-		if (((p == 2) && (e <= 32)) || (m <= PIRModular<int32>::getMaxModulus()))
+		if (((p == 2) && (e <= 32)) || (m <= PIRModular<int32_t>::getMaxModulus()))
 			compute_local_long (s, A, p, e);
 		else
 			compute_local_big (s, A, p, e);
@@ -251,10 +251,10 @@ namespace LinBox
 		linbox_check ((s. size() >= (unsigned long)order) && (m > 0));
 		if (m == 1)
 			report << "   Not rough part." << std::endl;
-		else if ( m <=  PIRModular<int32>::getMaxModulus() ) {
+		else if ( m <=  PIRModular<int32_t>::getMaxModulus() ) {
 			report << "    Elimination starts:\n";
-			PIRModular<int32> R (m);
-			DenseMatrix<PIRModular<int32> > A_ilio(R, A.rowdim(), A.coldim());
+			PIRModular<int32_t> R (m);
+			DenseMatrix<PIRModular<int32_t> > A_ilio(R, A.rowdim(), A.coldim());
 			MatrixHom::map (A_ilio, A, R);
 			SmithFormIliopoulos::smithFormIn (A_ilio);
 			int i; std::vector<integer>::iterator s_p;
@@ -325,7 +325,7 @@ namespace LinBox
 			if (*prime_p == 2) extra = 32;
 			else {
 				// cheating here, try to use the max word size modular
-				extra = (int)(floor(log((double)PIRModular<int32>::getMaxModulus() - 1) / log (double(*prime_p))));
+				extra = (int)(floor(log((double)PIRModular<int32_t>::getMaxModulus() - 1) / log (double(*prime_p))));
 			}
 			do {
 				integer m = 1;

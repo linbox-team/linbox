@@ -72,13 +72,13 @@ namespace LinBox
 		 *  this constructor use the ZpzDom<TAG> constructor
 		 */
 		GivaroMontg(const integer& p) :
-			Montgomery<Std32>(static_cast<uint32>(long(p))) { }
+			Montgomery<Std32>(static_cast<uint32_t>(long(p))) { }
 
 		/** Constructor from an integer (takes degree of extension as 2nd parameter, must be 1)
 		 *  this constructor use the ZpzDom<TAG> constructor
 		 */
 	  	GivaroMontg(const integer& p, const integer& k) :
-			Montgomery<Std32>(static_cast<uint32>(long(p))) {
+			Montgomery<Std32>(static_cast<uint32_t>(long(p))) {
 
 			if (k!=1)
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");

@@ -556,8 +556,8 @@ protected:
 /* Specialization of gcd_poweroftwo for Int64
 */
 template<>
-PowerOfTwoModular<int64>::Element&
-PowerOfTwoModular<int64>::gcd_poweroftwo (Element &x,const Element &y) const
+PowerOfTwoModular<int64_t>::Element&
+PowerOfTwoModular<int64_t>::gcd_poweroftwo (Element &x,const Element &y) const
 {
 	return x=GCD2E64(y);
 }

@@ -113,15 +113,15 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, char * filename, Integer 
 	LinBox::FieldTraits<LinBox::GivaroZpz<Std64> >::maxModulus(maxmod);
 	if (p <= maxmod) {
 		typedef LinBox::GivaroZpz<Std64> Ring;
-		int64 lp(p);
-		Integer q = pow(p,e); int64 lq(q);
+		int64_t lp(p);
+		Integer q = pow(p,e); int64_t lq(q);
 		if (q > Integer(lq)) {
 			std::cerr << "Sorry power rank mod large composite not yet implemented" << std::endl;
 			q = p;
 			do {
-				q *= p; lq = (int64)q;
+				q *= p; lq = (int64_t)q;
 			} while (q == Integer(lq));
-			q/=p; lq = (int64)q;
+			q/=p; lq = (int64_t)q;
 			std::cerr << "Trying: " << lq << std::endl;
 		}
 		Ring F(lq);

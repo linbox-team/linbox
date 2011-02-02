@@ -179,11 +179,11 @@ bool testRandom(const Ring& R,
 
 		else {
 
-			report << "Using PIRModular<int32>\n";
+			report << "Using PIRModular<int32_t>\n";
 
-			PIRModular<int32> PIR(s % LINBOX_MAX_MODULUS);
+			PIRModular<int32_t> PIR(s % LINBOX_MAX_MODULUS);
 
-			DenseMatrix<PIRModular<int32> > Ap(PIR, A.rowdim(), A.coldim());
+			DenseMatrix<PIRModular<int32_t> > Ap(PIR, A.rowdim(), A.coldim());
 
 			MatrixHom::map (Ap, A, PIR);
 

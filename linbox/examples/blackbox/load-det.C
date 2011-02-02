@@ -46,7 +46,7 @@ using namespace LinBox;
 using namespace std;
 
 // Select our field: integers modulo a word-size (max. 31-bit) modulus
-typedef Modular<uint32> Field;
+typedef Modular<uint32_t> Field;
 
 // Select our black box: a sparse matrix over the above-mentioned field with
 // default application vector and row representation types

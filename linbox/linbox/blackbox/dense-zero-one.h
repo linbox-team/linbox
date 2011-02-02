@@ -21,8 +21,8 @@
 #include <linbox/blackbox/blackbox-interface.h>
 
 
-//const size_t SIZE = sizeof(LinBox::uint64) * 8;
-#define SIZE  (sizeof(LinBox::uint64) * 8)
+//const size_t SIZE = sizeof(LinBox::uint64_t) * 8;
+#define SIZE  (sizeof(LinBox::uint64_t) * 8)
 
 
 namespace LinBox
@@ -39,7 +39,7 @@ namespace LinBox
 		typedef typename MatrixDomain::Block Block;
 		typedef MatrixDomain Field;
 
-		typedef LinBox::uint64 PackedUnit;
+		typedef LinBox::uint64_t PackedUnit;
 		typedef DenseZeroOne<MatrixDomain> Self_t;
 
 		/* Notes:

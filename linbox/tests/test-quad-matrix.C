@@ -65,7 +65,7 @@ int main (int argc, char **argv)
 
 	srand (time (NULL));
 
-	typedef Modular<uint32> Field;
+	typedef Modular<uint32_t> Field;
 	typedef ZOQuad <Field> BlackBox;
 
 	Field F (q);

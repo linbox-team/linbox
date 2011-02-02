@@ -72,7 +72,7 @@ int main()
 	/* Using the parameterized domain capabilities, several domains
 	 * representing integers modulo may be used simultaneously. */
 
-	Modular<uint32> D(3), K(7);
+	Modular<uint32_t> D(3), K(7);
 
 	divide_ex(D);  divide_ex(K);
 

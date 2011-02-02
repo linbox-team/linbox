@@ -104,11 +104,11 @@ namespace LinBox
 		}
 
 		/** @brief
-		 *   Init from an int64
+		 *   Init from an int64_t
 		 */
-		inline Element& init (Element& x, const int64& y) const {
+		inline Element& init (Element& x, const int64_t& y) const {
 			bool isNeg = false;
-			uint64 t;
+			uint64_t t;
 			if( y < 0 ) {
 				isNeg = true;
 				t = y * -1;
@@ -120,11 +120,11 @@ namespace LinBox
 		}
 
 		/** @brief
-		 *   Init from a uint64
+		 *   Init from a uint64_t
 		 */
-		inline Element& init (Element& x, const uint64& y) const {
-			uint64 shift = (uint64)1 << 32;
-			uint32 temp = y % shift;
+		inline Element& init (Element& x, const uint64_t& y) const {
+			uint64_t shift = (uint64_t)1 << 32;
+			uint32_t temp = y % shift;
 			NTL::conv (x,temp);
 			x <<= 32;
 			temp = y / shift;

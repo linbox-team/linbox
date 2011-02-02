@@ -55,13 +55,13 @@ namespace LinBox
 		{
 			return i = static_cast<integer>(Field::getMaxModulus());
 		}
-		static uint64 & maxModulus( uint64& i )
+		static uint64_t & maxModulus( uint64_t& i )
 		{
-			return i = static_cast<uint64>(Field::getMaxModulus());
+			return i = static_cast<uint64_t>(Field::getMaxModulus());
 		}
-		static uint32 & maxModulus( uint32& i )
+		static uint32_t & maxModulus( uint32_t& i )
 		{
-			return i = static_cast<uint32>(Field::getMaxModulus());
+			return i = static_cast<uint32_t>(Field::getMaxModulus());
 		}
 
 		static bool goodModulus( const integer& i )

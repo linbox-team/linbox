@@ -365,9 +365,9 @@ namespace LinBox
 
 		_F.characteristic(_prime);
 
-		uint32 prime = static_cast<uint32>(_prime);
+		uint32_t prime = static_cast<uint32_t>(_prime);
 
-		uint64 accum =0;
+		uint64_t accum =0;
 
 		for(; ip <_rowP+nnz(); ++ip,++jp)
 		{
@@ -441,7 +441,7 @@ namespace LinBox
 		//std::cout<<"Called specialization\n";
 		linbox_check((y.size()==coldim())&&(x.size()==rowdim()));
 
-		std::vector<uint64> y_c (y.size(),0);
+		std::vector<uint64_t> y_c (y.size(),0);
 
 		typename OutVector::iterator yp;
 		typename InVector::const_iterator xp;
@@ -453,7 +453,7 @@ namespace LinBox
 		ip=_rowP;
 		jp=_colP;
 		size_t rowI =0;
-		std::vector<uint64>::iterator y_cp;
+		std::vector<uint64_t>::iterator y_cp;
 		y_cp=y_c.begin();
 
 		for(; ip <_rowP+nnz(); ++ip,++jp)
@@ -474,7 +474,7 @@ namespace LinBox
 
 		integer _prime;
 		_F.characteristic(_prime);
-		uint32 prime = static_cast<uint32>(_prime);
+		uint32_t prime = static_cast<uint32_t>(_prime);
 
 		yp=y.begin();
 		y_cp=y_c.begin();

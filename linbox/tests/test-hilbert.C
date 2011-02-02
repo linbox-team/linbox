@@ -61,7 +61,7 @@ int main (int argc, char **argv)
 	};
 
 	parseArguments (argc, argv, args);
-	typedef Modular<uint32> Field;
+	typedef Modular<uint32_t> Field;
 	Field F (q);
 
 	srand (time (NULL));

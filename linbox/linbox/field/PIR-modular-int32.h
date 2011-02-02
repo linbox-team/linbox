@@ -60,34 +60,34 @@ namespace LinBox
 	struct ClassifyRIng<PIRModular<Element> >;
 
 	template <>
-	struct ClassifyRIng<PIRModular<int32> >  {
+	struct ClassifyRIng<PIRModular<int32_t> >  {
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
 	/// \ingroup ring
 	template <>
-	class PIRModular<int32> : public Modular<int32> {
+	class PIRModular<int32_t> : public Modular<int32_t> {
 
 	public:
 
-		friend class FieldAXPY<PIRModular<int32> >;
+		friend class FieldAXPY<PIRModular<int32_t> >;
 
-		friend class DotProductDomain<PIRModular<int32> >;
+		friend class DotProductDomain<PIRModular<int32_t> >;
 
-		friend class MVProductDomain<PIRModular<int32> >;
+		friend class MVProductDomain<PIRModular<int32_t> >;
 
-		typedef int32 Element;
+		typedef int32_t Element;
 
-		typedef ModularRandIter<int32> RandIter;
+		typedef ModularRandIter<int32_t> RandIter;
 
 		//default modular field,taking 65521 as default modulus
 		PIRModular () :
-			Modular<int32>(65521)
+			Modular<int32_t>(65521)
 		{
 		}
 
-		PIRModular (int32 value, int32 exp = 1) :
-			Modular<int32>(value,exp)
+		PIRModular (int32_t value, int32_t exp = 1) :
+			Modular<int32_t>(value,exp)
 		{ }
 
 
@@ -244,9 +244,9 @@ namespace LinBox
 		}
 
 	private:
-		static void GCD (int32& g, int32 a, int32 b) {
+		static void GCD (int32_t& g, int32_t a, int32_t b) {
 
-			int32  u, v, q, r;
+			int32_t  u, v, q, r;
 
 			if (a < 0) {
 				if (a < -LINBOX_MAX_INT) throw PreconditionFailed(__func__,__FILE__,__LINE__,"XGCD: integer overflow");
@@ -272,10 +272,10 @@ namespace LinBox
 
 		}
 
-		static void XGCD(int32& d, int32& s, int32& t, int32 a, int32 b) {
-			int32  u, v, u0, v0, u1, v1, u2, v2, q, r;
+		static void XGCD(int32_t& d, int32_t& s, int32_t& t, int32_t a, int32_t b) {
+			int32_t  u, v, u0, v0, u1, v1, u2, v2, q, r;
 
-			int32 aneg = 0, bneg = 0;
+			int32_t aneg = 0, bneg = 0;
 
 			if (a < 0) {
 				if (a < -LINBOX_MAX_INT) throw PreconditionFailed(__func__,__FILE__,__LINE__,"XGCD: integer overflow");
@@ -318,11 +318,11 @@ namespace LinBox
 		}
 
 
-		static void HXGCD (int32& d, int32& s, int32 a, int32 b) {
+		static void HXGCD (int32_t& d, int32_t& s, int32_t a, int32_t b) {
 
-			int32  u, v, u0, u1, u2, q, r;
+			int32_t  u, v, u0, u1, u2, q, r;
 
-			int32 aneg = 0;
+			int32_t aneg = 0;
 
 			if (a < 0) {
 				if (a < -LINBOX_MAX_INT) throw PreconditionFailed(__func__,__FILE__,__LINE__,"XGCD: integer overflow");
@@ -364,11 +364,11 @@ namespace LinBox
 	};
 
 	template <>
-	class FieldAXPY<PIRModular<int32> > {
+	class FieldAXPY<PIRModular<int32_t> > {
 	public:
 
-		typedef int32 Element;
-		typedef PIRModular<int32> Field;
+		typedef int32_t Element;
+		typedef PIRModular<int32_t> Field;
 
 		FieldAXPY (const Field &F) :
 			_F (F),_y(0)
@@ -379,14 +379,14 @@ namespace LinBox
 			_F (faxpy._F), _y (0)
 		{}
 
-		FieldAXPY<PIRModular<int32> > &operator = (const FieldAXPY &faxpy) {
+		FieldAXPY<PIRModular<int32_t> > &operator = (const FieldAXPY &faxpy) {
 			_F = faxpy._F;
 			_y = faxpy._y;
 			return *this;
 		}
 
-		inline uint64& mulacc (const Element &a, const Element &x) {
-			uint64 t = (uint64) a * (uint64) x;
+		inline uint64_t& mulacc (const Element &a, const Element &x) {
+			uint64_t t = (uint64_t) a * (uint64_t) x;
 			_y += t;
 			if (_y < t)
 				return _y += _F._two64;
@@ -394,16 +394,16 @@ namespace LinBox
 				return _y;
 		}
 
-		inline uint64& accumulate (const Element &t) {
+		inline uint64_t& accumulate (const Element &t) {
 			_y += t;
-			if (_y < (uint64)t)
+			if (_y < (uint64_t)t)
 				return _y += _F._two64;
 			else
 				return _y;
 		}
 
 		inline Element& get (Element &y) {
-			y =_y % (uint64) _F.modulus;
+			y =_y % (uint64_t) _F.modulus;
 			return y;
 		}
 
@@ -419,17 +419,17 @@ namespace LinBox
 
 	protected:
 		Field _F;
-		uint64 _y;
+		uint64_t _y;
 	};
 
 
 	template <>
-	class DotProductDomain<PIRModular<int32> > : public virtual VectorDomainBase<PIRModular<int32> > {
+	class DotProductDomain<PIRModular<int32_t> > : public virtual VectorDomainBase<PIRModular<int32_t> > {
 
 	public:
-		typedef int32 Element;
-		DotProductDomain (const PIRModular<int32> &F) :
-			VectorDomainBase<PIRModular<int32> > (F)
+		typedef int32_t Element;
+		DotProductDomain (const PIRModular<int32_t> &F) :
+			VectorDomainBase<PIRModular<int32_t> > (F)
 		{}
 
 
@@ -441,18 +441,18 @@ namespace LinBox
 			typename Vector1::const_iterator i;
 			typename Vector2::const_iterator j;
 
-			uint64 y = 0;
-			uint64 t;
+			uint64_t y = 0;
+			uint64_t t;
 
 			for (i = v1.begin (), j = v2.begin (); i < v1.end (); ++i, ++j) {
-				t = ( (uint64) *i ) * ( (uint64) *j );
+				t = ( (uint64_t) *i ) * ( (uint64_t) *j );
 				y += t;
 
 				if (y < t)
 					y += _F._two64;
 			}
 
-			y %= (uint64) _F.modulus;
+			y %= (uint64_t) _F.modulus;
 			return res = y;
 
 		}
@@ -463,11 +463,11 @@ namespace LinBox
 			typename Vector1::first_type::const_iterator i_idx;
 			typename Vector1::second_type::const_iterator i_elt;
 
-			uint64 y = 0;
-			uint64 t;
+			uint64_t y = 0;
+			uint64_t t;
 
 			for (i_idx = v1.first.begin (), i_elt = v1.second.begin (); i_idx != v1.first.end (); ++i_idx, ++i_elt) {
-				t = ( (uint64) *i_elt ) * ( (uint64) v2[*i_idx] );
+				t = ( (uint64_t) *i_elt ) * ( (uint64_t) v2[*i_idx] );
 				y += t;
 
 				if (y < t)
@@ -475,24 +475,24 @@ namespace LinBox
 			}
 
 
-			y %= (uint64) _F.modulus;
+			y %= (uint64_t) _F.modulus;
 
 			return res = y;
 		}
 	};
 
 
-	// Specialization of MVProductDomain for int32 modular field
+	// Specialization of MVProductDomain for int32_t modular field
 	template <>
-	class MVProductDomain<PIRModular<int32> > {
+	class MVProductDomain<PIRModular<int32_t> > {
 	public:
 
-		typedef int32 Element;
+		typedef int32_t Element;
 
 	protected:
 		template <class Vector1, class Matrix, class Vector2>
 		inline Vector1 &mulColDense
-		(const VectorDomain<PIRModular<int32> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const
+		(const VectorDomain<PIRModular<int32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const
 		{
 			return mulColDenseSpecialized
 			(VD, w, A, v, typename VectorTraits<typename Matrix::Column>::VectorCategory ());
@@ -501,27 +501,27 @@ namespace LinBox
 	private:
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColDenseSpecialized
-		(const VectorDomain<PIRModular<int32> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		(const VectorDomain<PIRModular<int32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 		 VectorCategories::DenseVectorTag) const;
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColDenseSpecialized
-		(const VectorDomain<PIRModular<int32> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		(const VectorDomain<PIRModular<int32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 		 VectorCategories::SparseSequenceVectorTag) const;
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColDenseSpecialized
-		(const VectorDomain<PIRModular<int32> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		(const VectorDomain<PIRModular<int32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 		 VectorCategories::SparseAssociativeVectorTag) const;
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColDenseSpecialized
-		(const VectorDomain<PIRModular<int32> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		(const VectorDomain<PIRModular<int32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 		 VectorCategories::SparseParallelVectorTag) const;
 
-		mutable std::vector<uint64> _tmp;
+		mutable std::vector<uint64_t> _tmp;
 	};
 
 	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<PIRModular<int32> >::mulColDenseSpecialized
-	(const VectorDomain<PIRModular<int32> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	Vector1 &MVProductDomain<PIRModular<int32_t> >::mulColDenseSpecialized
+	(const VectorDomain<PIRModular<int32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::DenseVectorTag) const
 	{
 
@@ -531,9 +531,9 @@ namespace LinBox
 		typename Matrix::ConstColIterator i = A.colBegin ();
 		typename Vector2::const_iterator j;
 		typename Matrix::Column::const_iterator k;
-		std::vector<uint64>::iterator l;
+		std::vector<uint64_t>::iterator l;
 
-		uint64 t;
+		uint64_t t;
 
 		if (_tmp.size () < w.size ())
 			_tmp.resize (w.size ());
@@ -542,7 +542,7 @@ namespace LinBox
 
 		for (j = v.begin (); j != v.end (); ++j, ++i) {
 			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l) {
-				t = ((uint64) *k) * ((uint64) *j);
+				t = ((uint64_t) *k) * ((uint64_t) *j);
 
 				*l += t;
 
@@ -560,8 +560,8 @@ namespace LinBox
 	}
 
 	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<PIRModular<int32> >::mulColDenseSpecialized
-	(const VectorDomain<PIRModular<int32> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	Vector1 &MVProductDomain<PIRModular<int32_t> >::mulColDenseSpecialized
+	(const VectorDomain<PIRModular<int32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::SparseSequenceVectorTag) const
 	{
 		linbox_check (A.coldim () == v.size ());
@@ -570,9 +570,9 @@ namespace LinBox
 		typename Matrix::ConstColIterator i = A.colBegin ();
 		typename Vector2::const_iterator j;
 		typename Matrix::Column::const_iterator k;
-		std::vector<uint64>::iterator l;
+		std::vector<uint64_t>::iterator l;
 
-		uint64 t;
+		uint64_t t;
 
 		if (_tmp.size () < w.size ())
 			_tmp.resize (w.size ());
@@ -581,7 +581,7 @@ namespace LinBox
 
 		for (j = v.begin (); j != v.end (); ++j, ++i) {
 			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l) {
-				t = ((uint64) k->second) * ((uint64) *j);
+				t = ((uint64_t) k->second) * ((uint64_t) *j);
 
 				_tmp[k->first] += t;
 
@@ -599,8 +599,8 @@ namespace LinBox
 	}
 
 	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<PIRModular<int32> >::mulColDenseSpecialized
-	(const VectorDomain<PIRModular<int32> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	Vector1 &MVProductDomain<PIRModular<int32_t> >::mulColDenseSpecialized
+	(const VectorDomain<PIRModular<int32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::SparseAssociativeVectorTag) const
 	{
 
@@ -610,9 +610,9 @@ namespace LinBox
 		typename Matrix::ConstColIterator i = A.colBegin ();
 		typename Vector2::const_iterator j;
 		typename Matrix::Column::const_iterator k;
-		std::vector<uint64>::iterator l;
+		std::vector<uint64_t>::iterator l;
 
-		uint64 t;
+		uint64_t t;
 
 		if (_tmp.size () < w.size ())
 			_tmp.resize (w.size ());
@@ -621,7 +621,7 @@ namespace LinBox
 
 		for (j = v.begin (); j != v.end (); ++j, ++i) {
 			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l) {
-				t = ((uint64) k->second) * ((uint64) *j);
+				t = ((uint64_t) k->second) * ((uint64_t) *j);
 
 				_tmp[k->first] += t;
 
@@ -639,8 +639,8 @@ namespace LinBox
 	}
 
 	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<PIRModular<int32> >::mulColDenseSpecialized
-	(const VectorDomain<PIRModular<int32> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	Vector1 &MVProductDomain<PIRModular<int32_t> >::mulColDenseSpecialized
+	(const VectorDomain<PIRModular<int32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 	 VectorCategories::SparseParallelVectorTag) const
 	{
 
@@ -651,9 +651,9 @@ namespace LinBox
 		typename Vector2::const_iterator j;
 		typename Matrix::Column::first_type::const_iterator k_idx;
 		typename Matrix::Column::second_type::const_iterator k_elt;
-		std::vector<uint64>::iterator l;
+		std::vector<uint64_t>::iterator l;
 
-		uint64 t;
+		uint64_t t;
 
 		if (_tmp.size () < w.size ())
 			_tmp.resize (w.size ());
@@ -665,7 +665,7 @@ namespace LinBox
 			     k_idx != i->first.end ();
 			     ++k_idx, ++k_elt, ++l)
 			{
-				t = ((uint64) *k_elt) * ((uint64) *j);
+				t = ((uint64_t) *k_elt) * ((uint64_t) *j);
 
 				_tmp[*k_idx] += t;
 

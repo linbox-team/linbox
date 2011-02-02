@@ -65,7 +65,7 @@ int main (int argc, char **argv)
 
 	commentator.start("Scalar black box test suite", "Scalar");
 
-	typedef Modular<uint32> Field;
+	typedef Modular<uint32_t> Field;
 
 	Field F (q);
 	Field::Element d;

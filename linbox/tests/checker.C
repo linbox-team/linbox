@@ -19,6 +19,7 @@ here to build_n_run() or no_build_n_run() (possibly commented out).
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 //#include <iomanip>
 using namespace std;
 
@@ -146,9 +147,9 @@ build |wc" should yield the same number of lines.
 //	if (flag > 0) cout << "	Givaro tests" << endl;
 	build_n_run("test-givaro-zpz", counter, flag);
 	build_n_run("test-givaro-zpzuns", counter, flag);
-	build_n_run("test-rat-solve", counter, flag);
+	build_n_run("test-rat-solve", counter, flag); // "infinite loop");
 	build_n_run("test-rat-minpoly", counter, flag); // "intermittent failures");
-#else 
+#else
 	if (flag > 0) cout << "	not doing Givaro dependent tests" << endl;
 	cout << "Configuration problem?  __LINBOX_HAVE_GIVARO is not set, but LinBox requires Givaro" << endl;
 	counter.skipped += 4;
@@ -159,7 +160,7 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-rational-solver-adaptive", counter, flag);
 	// needs output cleanup.  Resolve whether a benchmark or a test.
 	build_n_run("test-solve-nonsingular", counter, flag);
-#else 
+#else
 	if (flag > 0) cout << "	not doing Lapack dependent tests" << endl;
 	no_build_n_run("test-rational-solver-adaptive", counter, flag);
 	// needs output cleanup.  Resolve whether a benchmark or a test.
@@ -175,7 +176,7 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-ntl-sylvester", counter, flag);
 	build_n_run("test-toeplitz-det", counter, flag);
 	build_n_run("test-ntl-RR", counter, flag);
-#else 
+#else
 	if (flag > 0) cout << "	not doing NTL dependent tests" << endl;
 	no_build_n_run("test-ntl-lzz_p", counter, flag);
 	no_build_n_run("test-ntl-ZZ_p", counter, flag);
@@ -226,7 +227,7 @@ build |wc" should yield the same number of lines.
 #if 0
 	if (flag > 0) cout << "	Non tests" << endl;
 	no_build_n_run("test-template", counter, flag, "yup, model for tests, not an actual test");
-	// test-common.C is included in test-common.h, 
+	// test-common.C is included in test-common.h,
 	//  but could be separately compiled (no templates).
 	no_build_n_run("test-common", counter, flag, "not a test");
 	no_build_n_run("test-fields", counter, flag, "deprecated");
@@ -293,7 +294,9 @@ void build_n_run(string s, counts& cnt, int flag) {
 
 	} else { // build success
 		if (flag >= 1) { cout << "\b\b\b\b\b  run"; cout.flush(); }
-		status = system(s.c_str());
+		std::ostringstream prog ;
+		prog << "./" << s ;
+		status = system(prog.str().c_str());
 		if (status != 0) {
 			if (flag >= 1) cout << " FAILS" << endl;
 			if (flag >= 3) system ("cat checkdata");

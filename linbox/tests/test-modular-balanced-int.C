@@ -23,8 +23,8 @@
 
 /*! @file  tests/test-modular-balanced-int.C
  * @ingroup tests
- * @brief  tests only runFieldTests on modular-balanced-int32
- * @test   tests only runFieldTests on modular-balanced-int32
+ * @brief  tests only runFieldTests on modular-balanced-int32_t
+ * @test   tests only runFieldTests on modular-balanced-int32_t
  */
 
 
@@ -58,9 +58,9 @@ int main (int argc, char **argv)
 
 	static Argument args[] = {
 		{ 'K', "-K Q", "Operate over the \"field\" GF(Q) [1] for integer modulus.", TYPE_INTEGER, &q1 },
-		{ 'Q', "-Q Q", "Operate over the \"field\" GF(Q) [1] for uint32 modulus.", TYPE_INTEGER, &q2 },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] for uint16 modulus.", TYPE_INTEGER, &q3 },
-		{ 'p', "-p P", "Operate over the \"field\" GF(Q) [1] for uint8 modulus.", TYPE_INT, &q4 },
+		{ 'Q', "-Q Q", "Operate over the \"field\" GF(Q) [1] for uint32_t modulus.", TYPE_INTEGER, &q2 },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] for uint16_t modulus.", TYPE_INTEGER, &q3 },
+		{ 'p', "-p P", "Operate over the \"field\" GF(Q) [1] for uint8_t modulus.", TYPE_INT, &q4 },
 		{ 'n', "-n N", "Set dimension of test vectors to NxN.", TYPE_INT,     &n },
 		{ 'i', "-i I", "Perform each test for I iterations.", TYPE_INT,     &iterations },
 		{ 't', "-t T", "Number of trials for the random iterator test.", TYPE_INT, &trials },
@@ -71,18 +71,18 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator.start("ModularBalanced<int32> field test suite", "ModularBalanced<int32>");
+	commentator.start("ModularBalanced<int32_t> field test suite", "ModularBalanced<int32_t>");
 	bool pass = true;
 
-	ModularBalanced<int32> F_int (1073741789);//(2147483629);//(2147483647);
+	ModularBalanced<int32_t> F_int (1073741789);//(2147483629);//(2147483647);
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	if (!runFieldTests (F_int,  "ModularBalanced<int32>",  iterations, n, false)) pass = false;
-	if (!testRandomIterator (F_int,  "ModularBalanced<int32>", trials, categories, hist_level)) pass = false;
+	if (!runFieldTests (F_int,  "ModularBalanced<int32_t>",  iterations, n, false)) pass = false;
+	if (!testRandomIterator (F_int,  "ModularBalanced<int32_t>", trials, categories, hist_level)) pass = false;
 
-	commentator.stop("ModularBalanced<int32> field test suite");
+	commentator.stop("ModularBalanced<int32_t> field test suite");
 	return pass ? 0 : -1;
 }

@@ -47,7 +47,7 @@ namespace LinBox
 	class BitVector::reference {
 	public:
 
-		reference (std::vector<unsigned long>::iterator word, uint8 position) :
+		reference (std::vector<unsigned long>::iterator word, uint8_t position) :
 			_word (word), _pos (position)
 		{}
 
@@ -92,7 +92,7 @@ namespace LinBox
 		unsigned long get_bit ()           { return *_word & (1UL << _pos); }
 
 		std::vector<unsigned long>::iterator _word;
-		uint8                         _pos;
+		uint8_t                         _pos;
 	};
 
 	inline std::istream &operator >> (std::istream &is, BitVector::reference &a)
@@ -108,11 +108,11 @@ namespace LinBox
 			_word (r._word), _pos (r._pos)
 		{}
 
-		const_reference (std::vector<unsigned long>::iterator word, uint8 position) :
+		const_reference (std::vector<unsigned long>::iterator word, uint8_t position) :
 			_word (word), _pos (position)
 		{}
 
-		const_reference (std::vector<unsigned long>::const_iterator word, uint8 position) :
+		const_reference (std::vector<unsigned long>::const_iterator word, uint8_t position) :
 			_word (word), _pos (position)
 		{}
 
@@ -125,7 +125,7 @@ namespace LinBox
 		friend class const_iterator;
 
 		std::vector<unsigned long>::const_iterator _word;
-		uint8                               _pos;
+		uint8_t                               _pos;
 	};
 
 	inline std::ostream &operator << (std::ostream &os, BitVector::const_reference &a)
@@ -144,7 +144,7 @@ namespace LinBox
 		iterator () :
 			_ref (std::vector<unsigned long>::iterator (), 0UL)
 		{}
-		iterator (std::vector<unsigned long>::iterator word, uint8 position) :
+		iterator (std::vector<unsigned long>::iterator word, uint8_t position) :
 			_ref (word, position)
 		{}
 		iterator (const iterator &i) :
@@ -178,7 +178,7 @@ namespace LinBox
 		iterator operator + (difference_type i) const
 		{
 			std::vector<unsigned long>::iterator new_word = _ref._word + (i >> __LINBOX_LOGOF_SIZE);
-			uint8 new_pos = _ref._pos + (i & __LINBOX_POS_ALL_ONES);
+			uint8_t new_pos = _ref._pos + (i & __LINBOX_POS_ALL_ONES);
 
 			new_word += new_pos >> __LINBOX_LOGOF_SIZE;
 			new_pos &= __LINBOX_POS_ALL_ONES;
@@ -260,7 +260,7 @@ namespace LinBox
 		const_iterator () :
 			_ref (std::vector<unsigned long>::const_iterator (), 0UL)
 		{}
-		const_iterator (std::vector<unsigned long>::const_iterator word, uint8 position) :
+		const_iterator (std::vector<unsigned long>::const_iterator word, uint8_t position) :
 			_ref (word, position)
 		{}
 		const_iterator (const const_iterator &i) :
@@ -301,7 +301,7 @@ namespace LinBox
 		const_iterator operator + (long i) const
 		{
 			std::vector<unsigned long>::const_iterator new_word = _ref._word + (i >> __LINBOX_LOGOF_SIZE);
-			uint8 new_pos = _ref._pos + (i & __LINBOX_POS_ALL_ONES);
+			uint8_t new_pos = _ref._pos + (i & __LINBOX_POS_ALL_ONES);
 
 			new_word += new_pos >> __LINBOX_LOGOF_SIZE;
 			new_pos &= __LINBOX_POS_ALL_ONES;

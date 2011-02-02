@@ -127,7 +127,7 @@ namespace LinBox
 		/** Constructor from an integer.
 		*/
 		GivaroExtension(const integer& p, const integer& k=1) :
-			Extension<GivaroField<BaseField> >(static_cast<typename Extension< GivaroField< BaseField > >::Residu_t >(int32(p)), static_cast<typename Extension< GivaroField< BaseField > >::Residu_t>(int32(k)))
+			Extension<GivaroField<BaseField> >(static_cast<typename Extension< GivaroField< BaseField > >::Residu_t >(int32_t(p)), static_cast<typename Extension< GivaroField< BaseField > >::Residu_t>(int32_t(k)))
 		{
 		}
 
@@ -135,7 +135,7 @@ namespace LinBox
 		*/
 		GivaroExtension(const BaseField& bF, const integer& ext=1) :
 			Extension<GivaroField<BaseField> >( GivaroField<BaseField>(bF),
-							    static_cast<typename Extension< GivaroField< BaseField > >::Residu_t>(int32(ext)))
+							    static_cast<typename Extension< GivaroField< BaseField > >::Residu_t>(int32_t(ext)))
 		{
 		}
 
@@ -159,7 +159,7 @@ namespace LinBox
 #ifndef __INTEL_COMPILER
 	template<>
 	#endif
-	class GivaroExtension<GivaroGfq> : public Extension<GFqDom<int32> >, public FieldInterface {
+	class GivaroExtension<GivaroGfq> : public Extension<GFqDom<int32_t> >, public FieldInterface {
 
 		typedef GivaroExtension<GivaroGfq> Self_t;
 	public:
@@ -167,26 +167,26 @@ namespace LinBox
 		/** Element type.
 		 *  This type is inherited from the Givaro class Extension
 		 */
-		typedef Extension<GFqDom<int32> >::Element Element;
+		typedef Extension<GFqDom<int32_t> >::Element Element;
 
 		/** RandIter type.
 		 *  This type is inherited from the Givaro class GFqDom<TAG>
 		 */
-		typedef GIV_ExtensionrandIter< Extension< GFqDom<int32> >, LinBox::integer >  RandIter;
+		typedef GIV_ExtensionrandIter< Extension< GFqDom<int32_t> >, LinBox::integer >  RandIter;
 
 		/** Constructor from an integer.
 		*/
 		GivaroExtension(const integer& p, const integer& k=1) :
-			Extension<GFqDom<int32> >(static_cast< Extension<GFqDom<int32> >::Residu_t>(int32(p)),
-						  static_cast< Extension<GFqDom<int32> >::Residu_t>(int32(k)))
+			Extension<GFqDom<int32_t> >(static_cast< Extension<GFqDom<int32_t> >::Residu_t>(int32_t(p)),
+						  static_cast< Extension<GFqDom<int32_t> >::Residu_t>(int32_t(k)))
 		{
 		}
 
 		/** Constructor extension of a base field.
 		*/
 		GivaroExtension(const GivaroGfq& bF, const integer& ext=1) :
-			Extension<GFqDom<int32> >( static_cast< const Extension< GFqDom< int32 > >::BaseField_t &>(bF),
-						   static_cast< Extension<GFqDom<int32> >::Residu_t >(int32(ext)))
+			Extension<GFqDom<int32_t> >( static_cast< const Extension< GFqDom< int32_t > >::BaseField_t &>(bF),
+						   static_cast< Extension<GFqDom<int32_t> >::Residu_t >(int32_t(ext)))
 		{
 		}
 
@@ -194,7 +194,7 @@ namespace LinBox
 		/** Copy Constructor.
 		*/
 		GivaroExtension(const Self_t& F) :
-			Extension<GFqDom<int32> >(F)
+			Extension<GFqDom<int32_t> >(F)
 		{ }
 
 	}; // class GivaroExtension
