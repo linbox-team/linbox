@@ -47,6 +47,11 @@ AC_CHECK_SIZEOF(long, 32)
 AC_CHECK_SIZEOF(long long, 64)
 AC_CHECK_SIZEOF(__int64, 64)
 
+# Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS([float.h limits.h stddef.h stdlib.h string.h sys/time.h stdint.h])
+
+
 # check endianness of the architecture
 AC_C_BIGENDIAN(
   [AC_DEFINE(HAVE_BIG_ENDIAN, 1, [Define that architecture uses big endian storage])],
