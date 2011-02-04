@@ -189,7 +189,7 @@ static bool testRandomMinpoly (Field &F, VectorStream<Vector> &stream)
 	// try it with the random cstor of diagonal
 	LinBox::Diagonal <Field> D(F, 10);
 	unsigned long r;
-	rank(r, D, Method::Wiedemann());
+	LinBox::rank(r, D, Method::Wiedemann());
 	if (r != 10)
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: zeroes in random diagonal" << endl;

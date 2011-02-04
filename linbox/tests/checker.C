@@ -53,9 +53,9 @@ int main(int argc, char* argv[]){
 		if (argc > 2) flag += 5; // force rebuilds
 	}
 
-#if 0
 	// the setup
 	system("rm -f checkdata");
+#if 0
 	string compiler;
 	//system("make -n ");
 	system("make -n checkerdata > checkdata");
@@ -286,6 +286,7 @@ void build_n_run(string s, counts& cnt, int flag) {
 	}
 	cmd = "make " + s + " 2>> checkdata >> checkdata";
 	int status = system(cmd.c_str());
+	if (status == 2) goto abort; // valid on at least one platform.
 	if (status != 0) { // build failure
 		if (flag >= 1) cout << " FAILS" << endl;
 		if (flag >= 3) system ("cat checkdata; rm checkdata");
@@ -297,6 +298,7 @@ void build_n_run(string s, counts& cnt, int flag) {
 		std::ostringstream prog ;
 		prog << "./" << s ;
 		status = system(prog.str().c_str());
+		if (status == 2) goto abort; // valid on at least one platform.
 		if (status != 0) {
 			if (flag >= 1) cout << " FAILS" << endl;
 			if (flag >= 3) system ("cat checkdata");
@@ -309,5 +311,9 @@ void build_n_run(string s, counts& cnt, int flag) {
 		}
 	}
 	if (flag >= 3) system("rm -f checkdata");
+	return;
+abort: 
+	cout << endl << "Interrupted, aborting." << endl;
+	exit(-1);
 }
 

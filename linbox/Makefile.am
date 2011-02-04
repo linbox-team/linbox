@@ -6,13 +6,15 @@ ACLOCAL_AMFLAGS = -I macros
 
 SUBDIRS=linbox macros tests interfaces doc examples
 
-# kludge to escape autotools tyranny
-#Check: check-recursive
-#check-recursive:
-#	(cd tests; make tests)
+# I intend to pare down the target "check" so as to be a smaller check used 
+# at installation time with a focus on confirming that dependencies on 
+# other packages and compilation environment are in order.  In contrast, the 
+# target "fullcheck" should become as exhaustive as possible to serve 
+# developers for regression testing. -bds 2011Feb ...also benchmarks will be.
 
-tests: tests/checker
-	(cd tests; make tests)
+#  Fullcheck provides a full check for regression testing purposes.
+fullcheck:
+	(cd tests; make fullcheck)
 
 docs:doc/linbox-html/index.html
 

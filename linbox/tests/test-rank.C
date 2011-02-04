@@ -77,16 +77,16 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double s
 		F.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)) << endl;
 		A.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION),FORMAT_MAPLE ) << endl;
 
-		rank (rank_blackbox, A, Method::Blackbox ());
+		LinBox::rank (rank_blackbox, A, Method::Blackbox ());
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "blackbox rank " << rank_blackbox << endl;
-		rank (rank_elimination, A, Method::Elimination());
+		LinBox::rank (rank_elimination, A, Method::Elimination());
 		if (rank_blackbox != rank_elimination) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: blackbox rank != elimination rank " << rank_elimination << endl;
 			ret = false;
 		}
-		rank (rank_hybrid, A, Method::Hybrid());
+		LinBox::rank (rank_hybrid, A, Method::Hybrid());
 		if (rank_blackbox != rank_hybrid) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: blackbox rank != hybrid rank " << rank_hybrid << endl;
