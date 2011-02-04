@@ -87,7 +87,7 @@ int test_ftrmm(std::ostream & report, const Field & F)
 	assert(D);
 
 	typedef typename Field::RandIter RandIter;
-	std::cout << '#' ;
+	report << '#' ;
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
 
@@ -319,7 +319,7 @@ int test_ftrmm(std::ostream & report, const Field & F)
 					report << "T" ;
 				else
 					report << "LinearAlgebra:-Transpose(T)" ;
-			std:: cout << "  mod " << F.characteristic() << ':' << std::endl;
+			report << "  mod " << F.characteristic() << ':' << std::endl;
 			report << "linalg:-iszero(C - N  mod " << F.characteristic() << "),";
 			report << "linalg:-iszero(B - N  mod " << F.characteristic() << ");"  <<  std::endl;
 
