@@ -32,6 +32,10 @@
 #include "gmp++/gmp++.h"
 
 #include <cfloat> // BB : needed on some rare platforms...
+#ifdef __LINBOX_HAVE_STDINT_H
+#define __STDC_LIMIT_MACROS
+#include <stdint.h>
+#endif
 
 namespace LinBox
 {
