@@ -11,7 +11,7 @@ SUBDIRS=linbox macros tests interfaces doc examples
 #check-recursive:
 #	(cd tests; make tests)
 
-tests: tests/checker 
+tests: tests/checker
 	(cd tests; make tests)
 
 docs:doc/linbox-html/index.html

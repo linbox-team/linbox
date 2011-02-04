@@ -6,7 +6,7 @@
   These tests are to aid development and serve for unit and regression testing.
   Some contain useful timing measurements.
 
-  Do <code>make tests</code> to try the lot.  
+  Do <code>make tests</code> to try the lot.
   See checker.C for more information on LinBox tests.
 
   There are some benchmarks.  For instance benchmark-fields is intended to help

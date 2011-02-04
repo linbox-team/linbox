@@ -37,9 +37,9 @@
 #include <linbox/randiter/random-prime.h>
 #include <linbox/util/commentator.h>
 #include <linbox/vector/stream.h>
-#include "test-common.h"
-#include <linbox/blackbox/dense.h>
 #include <linbox/algorithms/smith-form-adaptive.h>
+#include <linbox/blackbox/dense.h>
+#include "test-common.h"
 using namespace LinBox; // fragile
 
 
