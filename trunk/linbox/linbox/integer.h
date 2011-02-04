@@ -27,6 +27,7 @@
 #ifndef __LINBOX_integer_H
 #define __LINBOX_integer_H
 
+//#include <cstdint>
 #include "linbox/linbox-config.h"
 
 #include "gmp++/gmp++.h"
@@ -112,7 +113,11 @@ namespace LinBox
 
 }
 
-// Temporary dependency to GIVARO >= 3.3.4
+// Dependency to GIVARO >= 3.3.4
+/* givaro/givconfig.h so provides the fixed width integer types such as 
+ * int16_t, uint8_t, etc.  The typenames int16, uint8, etc are no longer used 
+ * in LinBox or Givaro.
+ */
 #include <givaro/givconfig.h>
 #include <math.h>
 // Natural logarithm of a

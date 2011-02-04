@@ -19,9 +19,10 @@ AM_OUTPUT_DEPENDENCY_COMMANDS
 # Give a sane default for CFLAGS and CXXFLAGS
 # The sane thing is to define the flags differenly in tests, examples, interfaces, etc.  -bds
 #DEFAULT_CFLAGS="-O2 -Wall"
+#DEFAULT_CXXFLAGS="-std=c++0x"
 
 CFLAGS=${CFLAGS:-$DEFAULT_CFLAGS}
-CXXFLAGS=${CXXFLAGS:-$DEFAULT_CFLAGS}
+CXXFLAGS=${CXXFLAGS:-$DEFAULT_CXXFLAGS}
 
 AM_ACLOCAL_INCLUDE(macros)
 

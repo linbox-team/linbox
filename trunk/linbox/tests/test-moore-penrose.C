@@ -267,7 +267,7 @@ static bool testRandomApply1 (Field                 &F,
 		}
 
 		Submatrix<Blackbox> Aprime (A, 0, 0, MIN (n, m), MIN (n, m));
-		rank (rank_A, Aprime, Method::Wiedemann());
+		LinBox::rank (rank_A, Aprime, Method::Wiedemann());
 
 		if (rank_A == r) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)

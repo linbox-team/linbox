@@ -16,7 +16,7 @@
 int main (int argc, char **argv) { 
 
 	// customize optional args
-	size_t n = 100;
+	size_t n = 10;
 
 	// run test
 	LinBox::commentator.start("DyadicToRational unit/regression test");
