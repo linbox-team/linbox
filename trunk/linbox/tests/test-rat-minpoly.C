@@ -65,7 +65,7 @@ static bool testDiagRatCharpoly (size_t n, int iterations)
 
 		commentator.startIteration (i);
 
-		int k = ceil(n/2);
+		size_t k = ceil(n/2);
 		for (j=0; j < k; ++j) {
 			integer tmp_n, tmp_d;
 			GMPRationalField::Element tmp, abstmp;
@@ -89,7 +89,7 @@ static bool testDiagRatCharpoly (size_t n, int iterations)
 		if (k%2==0) Q.negin(cn);
 
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		// ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		charpoly (c, A);
 
 		if ( (c.size() == k+1) && ((!Q.areEqual(c[0] , c0)) || (!Q.areEqual(c[k-1] , cn) ) ) ) {

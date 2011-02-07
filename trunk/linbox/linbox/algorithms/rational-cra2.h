@@ -269,7 +269,7 @@ namespace LinBox
 						Vect<Integer, Alloc<Integer> > r ; Builder_.getResidue(r);
 						if (RR_.reconstructRational(num,den,r,M) ) {
 							Vect<Integer, Alloc<Integer> > vnum(num),vden(m_in.size(),den);
-							for (int i=0; i < vnum.size(); ++ i) {
+							for (int i=0; i < (int)vnum.size(); ++ i) {
 								if (vnum[i]==0) vnum[i] = 1; // no prec
 							}
 							Builder_.productin(vnum, f_in); Builder_.productin(vden,m_in);
