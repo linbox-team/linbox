@@ -72,7 +72,7 @@ namespace LinBox
 				      const std::vector<Integer>& vm = std::vector<Integer>(0)) :
 			EarlySingleCRA<Domain>(EARLY), FullMultipCRA<Domain>(b), vfactor_(vf), vmultip_(vm)
 		{
-			for (int i=0; i < vfactor_.size(); ++i) {
+			for (int i=0; i < (int)vfactor_.size(); ++i) {
 				if (vfactor_[i]==0) vfactor_[i]=1;
 			}
 		}
@@ -377,7 +377,7 @@ namespace LinBox
 			typename Vect::const_iterator itf, itm, itf2, itm2;
 
 			vfactor_ = vf;
-			for (int i=0; i < vfactor_.size(); ++i) {
+			for (int i=0; i < (int)vfactor_.size(); ++i) {
 				if (vfactor_[i]==0) vfactor_[i]=1;	//if factor ==0 set no factor
 			}
 			vmultip_ = vm;
