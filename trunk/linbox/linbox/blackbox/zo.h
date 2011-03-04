@@ -107,7 +107,8 @@ namespace LinBox
 			init(indexPairs);
 		}
 		ZeroOne(const ZeroOne<Field>& A) :
-			// better keep the commented out statements below for later debugging  _F(A._F), _index(A._index), _rowdim(A._rowdim), _coldim(A._coldim), sorted(A.sorted)
+			// better keep the commented out statements below for later debugging  
+			_F(A._F), _index(A._index), _rowdim(A._rowdim), _coldim(A._coldim), sorted(A.sorted)
 		{
 #if 0
 			std::cout << " copy constructor of zero-one matrix: A.rowdim = "  << A._rowdim << " A.coldim = " << A._coldim << std::endl;
