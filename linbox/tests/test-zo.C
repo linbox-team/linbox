@@ -98,7 +98,7 @@ int main(int argc, char **argv)
                 }
             //std::cout << std::endl;
         }
-    ZeroOne<Field> testMatrix(afield, rows, cols, n, n, npr * n );
+    Matrix testMatrix(afield, rows, cols, n, n, npr * n );
 
   /*
   Matrix testMatrix(afield);
