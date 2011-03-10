@@ -20,8 +20,6 @@
 
 #include "linbox/linbox-config.h"
 
-#include <iostream>
-#include <fstream>
 #include <vector>
 #include <functional>
 
@@ -33,7 +31,6 @@
 #include "linbox/field/local2_32.h"
 #include "linbox/blackbox/dense.h"
 #include "linbox/algorithms/smith-form-local.h"
-#include "linbox/vector/stream.h"
 #include <linbox/matrix/matrix-domain.h>
 #include <linbox/util/timer.h>
 
@@ -58,9 +55,9 @@ public:
 	typedef void result_type;
 	void operator()(typename LocalPIR::Element& d, const LocalPIR& R) const
 	{
-		typename LocalPIR::Element x = d;
+		typename LocalPIR::Element x; R.init(x, 2);  R.mulin(x, d);
 		if (R.isUnit(d)) R.divin(d, d);
-		else R.gcd(d, x, x);
+		else R.gcd(d, d, x);
 	}
 };
 
@@ -74,26 +71,19 @@ public:
 	typedef void result_type;
 	void operator()(LocalPIR::Element& d, const LocalPIR& R) const
 	{
-
-
 		if(d != 0)    {
-
 			int r = 1;
-
 			while ( !(d & 1) ) {
 				d >>= 1;
 				r <<= 1;
 			}
-
 			d = r;
 		}
-
-
 	}
 };
 
 template <class LocalPIR>
-class pplt {
+class pplt { // prime power less than
 public:
 	pplt(LocalPIR R) : _R_(R){}
 	bool operator() (typename LocalPIR::Element a, typename LocalPIR::Element b)
@@ -125,125 +115,80 @@ public:
 #endif
 
 template <class LocalPIR>
-static bool testLocalSmith (const LocalPIR &R, VectorStream<vector<typename LocalPIR::Element> > &stream, string s)
+static bool testLocalSmith (const LocalPIR &R, vector<typename LocalPIR::Element>& d, string s)
 {
-	typedef vector <typename LocalPIR::Element> Vector;
 	typedef typename LocalPIR::Element Elt;
 	typedef DenseMatrix<LocalPIR> Blackbox;
 
-	commentator.start ("Testing local smith on random dense matrices", "testLocalSmith", stream.m ());
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << s << endl;
 
+	MatrixDomain<LocalPIR> MR (R);
 	VectorDomain<LocalPIR> VD (R);
 
 	bool ret = true;
-	size_t i;
-	size_t n = stream.n();
+	size_t i,j;
+	size_t n = d.size();
 
-	Vector d;
+	report << "Input vector:  ";
+	VD.write (report, d);
+	report << endl;
 
-	VectorWrapper::ensureDim (d, stream.dim ());
+	// set up A equiv diag d.
+	Blackbox L (R, n, n), D (R, n, n), U (R, n, n), A (R, n, n);
+	for( i = 0; i < n; ++i ) 
+		{ D[i][i] = d[i]; L[i][i]=U[i][i]=1; }
+	for (i = 0; i < n; ++ i)
+		for ( j = 0; j < i; ++ j) {
+			D[i][j] = D[j][i] = 0;
+			L[i][j] = rand() % 10;
+			L[j][i] = 0;
+			U[j][i] = rand() % 10;
+			U[i][j] = 0;
+		}
+	MR.mul(A,L,D);
+	MR.mulin(A,U);
 
-	while (stream) {
-		commentator.startIteration (stream.j ());
+	list< Elt > Inv;
+	SmithFormLocal< LocalPIR > SmithForm;
+	//timer.start();
+	SmithForm( Inv, A, R );
+	//timer.stop();
+	//report << "Time " << timer <<"\n"; report.flush();
 
-		stream.next (d);
+	report << "Computed invariants: ";
+	report << "[";
+	typedef typename list<Elt>::iterator listptr;
+	for (listptr p = Inv.begin(); p != Inv.end(); ++p)
+		report << *p << ", ";
+	//report << "\b\b]" << endl;
+	report << "normalize done" << endl; report.flush();
 
-		report << "Input vector:  ";
-		VD.write (report, d);
-		report << endl;
+	// figure true invariants
+	pplt<LocalPIR> lt(R);
+	for_each(d.begin(), d.end(), bind2nd(foobar<LocalPIR>(), R));
+	stable_sort(d.begin(), d.end(), lt);
+	report << "True invariants: ";
+	VD.write (report, d) << endl; report.flush();
 
-		Blackbox Lm (R, n, n), D (R, n, n), U (R, n, n), A (R, n, n);
-		for( i = 0; i < n; ++i ) {D[i][i] = d[i];Lm[i][i]=U[i][i]=1;}
-
-		size_t j;
-
-		for (i = 0; i < n; ++ i)
-			for ( j = 0; j < i; ++ j) {
-
-				D[i][j] = D[j][i] = 0;
-
-				Lm[i][j] = rand() % 10;
-				Lm[j][i] = 0;
-
-				U[j][i] = rand() % 10;
-				U[i][j] = 0;
-			}
-
-		MatrixDomain<LocalPIR> MR(R);
-
-		Timer timer;
-
-		timer.start();
-		MR.mul(A,Lm,D);
-
-		MR.mulin(A,U);
-		timer.stop();
-		report << "Two matrix multiplication: " << timer << "\n";
-
-		//for( i = 0; i < n; ++i ) D[i][i] = rand() % 10 + 1;
-
-		list< typename LocalPIR::Element > L;
-		SmithFormLocal< LocalPIR > SmithForm;
-		timer.start();
-		SmithForm( L, A, R );
-		timer.stop();
-		report << "Time " << timer <<"\n";
-
-		report.flush();
-		report << "Computed invariants: ";
-
-		report << "[";
-		typedef typename list<Elt>::iterator listptr;
-		for (listptr p = L.begin(); p != L.end(); ++p)
-			report << *p << ", ";
-		report << "\b\b]" << endl;
-
-		pplt<LocalPIR> lt(R);
-		report << "normalize done" << endl;
-		report.flush();
-
-		for_each(d.begin(), d.end(), bind2nd(foobar<LocalPIR>(), R));
-		timer.start();
-		stable_sort(d.begin(), d.end(), lt);
-		timer.stop();
-		report << "Sorting " << timer <<"\n";
-
-		report << "sort done" << endl;
-		report.flush();
-
-		report << "True invariants: ";
-		VD.write (report, d);
-		report << endl;
-		report << flush;
-
-		if ( L.size() != D.rowdim() ) {ret = false; break;}
-		typedef typename Vector::iterator vectptr;
-		listptr p; vectptr q;
-		for (p = L.begin(), q = d.begin();
-		     q != d.end();
-		     ++p, ++q)
-			if ( !R.areEqual (*p, *q ) )
-			{
-				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Computed invariants incorrect" << endl;
-				ret = false;
-			}
-		commentator.stop("done");
+	typename vector<Elt>::iterator q; 
+	listptr p; 
+	for (p = Inv.begin(), q = d.begin(); q != d.end(); ++p, ++q)
+	{
+		if ( !R.areEqual (*p, *q ) ) {
+			report << "ERROR: Computed invariants incorrect" << endl;
+			ret = false;
+		}
 		commentator.progress();
 	}
-
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDiagonalTrace");
-
 	return ret;
 }
 
 int main (int argc, char **argv)
 {
-	bool pass = true;
+	bool pass = true, pass1 = true;
 
-	static size_t n = 2;
+	static size_t n = 6;
 	static integer q = 101;
 	static int iterations = 1;
 
@@ -256,28 +201,50 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	typedef PIRModular<int32_t> Ring;
-	//typedef PIRModular<dense> Ring;
-	typedef vector<Ring::Element> Vector;
-
-	Ring R (32768);
-	// 	Ring R (536870912);
-
 	commentator.start("Local Smith Form test suite", "LocalSmith");
-
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-	RandomDenseStream<Ring, Vector> stream (R, n, iterations);
+#if 0
+//PIRModular does not currently support the local ring interface -bds Mar2011
+  { // first local ring type
+	typedef PIRModular<int32_t> LocalPID;
+	LocalPID R (536870912); // 2^32
+	//typedef PIRModular<dense> LocalPID;
+	//LocalPID R (32768);
+	vector<LocalPID::Element> d(n);
 
-	if (!testLocalSmith<Ring> (R, stream, "PIRModular<int32_t>")) pass = false;
+	commentator.start ("Testing local smith on singular dense mat over PIRModular", "testSingular");
+	for( size_t i = 0; i < n; ++i ) d[i] = i;
+	if (!testLocalSmith<LocalPID> (R, d, "PIRModular<int32_t>")) pass1 = false;
+	commentator.stop ("testSingular");
 
-	// power of 2 test
-	Local2_32 R2;
-	RandomDenseStream<Local2_32, vector<Local2_32::Element> >
-	stream2 (R2, n, iterations);
-	if (!testLocalSmith<Local2_32> (R2, stream2, "Local2_32")) pass = false;
+	commentator.start ("Testing local smith on nonsingular dense mat over PIRModular", "testNonsingular");
+	for( size_t i = 0; i < n; ++i ) d[i] = i+1;
+	if (!testLocalSmith<LocalPID> (R, d, "PIRModular<int32_t>")) pass1 = false;
+	commentator.stop ("testNonsingular");
+  }
+  if (not pass1) report << "PIRModular FAIL" << std::endl;
+#endif
+
+  { // second local ring type
+	typedef Local2_32 LocalPID;
+	LocalPID R;
+	vector<LocalPID::Element> d(n);
+
+	commentator.start ("Testing local smith on singular dense mat over Local2_32", "testSingular");
+	for( size_t i = 0; i < n; ++i ) d[i] = i;
+	if (!testLocalSmith<LocalPID> (R, d, "Local2_32")) pass = false;
+	commentator.stop ("testSingular");
+
+	commentator.start ("Testing local smith on nonsingular dense mat over Local2_32", "testNonsingular");
+	for( size_t i = 0; i < n; ++i ) d[i] = i+1;
+	if (!testLocalSmith<LocalPID> (R, d, "Local2_32")) pass = false;
+	commentator.stop ("testNonsingular");
+  }
+  if (not pass) report << "PIRModular FAIL" << std::endl;
 
 	commentator.stop("Local Smith Form test suite");
-	return pass ? 0 : -1;
+	return pass and pass1 ? 0 : -1;
 }
 

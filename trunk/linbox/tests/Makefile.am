@@ -77,7 +77,6 @@ BASIC_TESTS =  \
         test-smith-form-binary          \
         test-rational-solver            \
         test-rational-solver-adaptive   \
-        test-dyadic-to-rational   \
         test-last-invariant-factor      \
         test-charpoly                   \
 		test-ftrmm                      \
@@ -110,6 +109,7 @@ FAILING_TESTS =                \
         test-rat-minpoly       \
         test-smith-form-local        \
         test-smith-form-adaptive     \
+        test-dyadic-to-rational   \
         test-mg-block-lanczos        \
         test-la-block-lanczos
 
