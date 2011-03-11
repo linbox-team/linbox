@@ -316,31 +316,33 @@ int main(int argc, char** argv) {
 		switch (st){
 #ifdef __LINBOX_HAVE_LAPACK
 			case lapack: {
-							 typedef LPS<Matrix> NumSolver;	NumSolver numSolver;
-							 RationalSolverSN<Ring, NumSolver > rsolver(R, numSolver, e);
-							 pass = pass && testRandomSolve(R, rsolver, A, b);
-						 }
-						 break;
+				 report << "Using lapack numeric solver." << endl;
+				 typedef LPS<Matrix> NumSolver;	NumSolver numSolver;
+				 RationalSolverSN<Ring, NumSolver > rsolver(R, numSolver, e);
+				 pass = pass && testRandomSolve(R, rsolver, A, b);
+				}
+				break;
 #endif
 #ifdef __LINBOX_HAVE_MATLAB
 			case matlab: {
-							 typedef MLS<Matrix> NumSolver;	NumSolver numSolver;
-							 RationalSolverSN<Ring, NumSolver > rsolver(R, numSolver, e);
-							 pass = pass && testRandomSolve(R, rsolver, A, b);
-						 }
-						 break;
+				 report << "Using matlab numeric solver." << endl;
+				 typedef MLS<Matrix> NumSolver;	NumSolver numSolver;
+				 RationalSolverSN<Ring, NumSolver > rsolver(R, numSolver, e);
+				 pass = pass && testRandomSolve(R, rsolver, A, b);
+				}
+				break;
 #endif
 						 /*
-							case superlu: {
-							cerr << "Using SuperLU solver." << endl;
-							typedef SLU<Matrix> NumSolver;	NumSolver numSolver(file);
-							SNRationalSolver<Ring, NumSolver > rsolver(R, numSolver);
-							pass = pass && testRandomSolve(R, rsolver, s1, s2, mt, 1, e, k);
-							}
-							break;
+			case superlu: {
+				report << "Using SuperLU numeric solver." << endl;
+				typedef SLU<Matrix> NumSolver;	NumSolver numSolver(file);
+				SNRationalSolver<Ring, NumSolver > rsolver(R, numSolver);
+				pass = pass && testRandomSolve(R, rsolver, s1, s2, mt, 1, e, k);
+				}
+				break;
 						  */
 			default:
-						 break;
+				 break;
 		}
 		report << "numsym: " << (pass ? "pass" : "fail") << std::endl << std::endl;
 	}

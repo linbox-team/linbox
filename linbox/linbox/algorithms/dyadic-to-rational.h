@@ -16,9 +16,9 @@
 
 #include <stack>
 #include <assert.h>
+#include <vector>
 
-#include <linbox/integer.h>
-#include <linbox/util/commentator.h>
+//#include <linbox/integer.h>
 
 namespace LinBox{
 
@@ -71,17 +71,20 @@ int dyadicToRational (
 
 	// Partial_hegcd is defined below.
 	bool found = partial_hegcd(Z, e, b, an, d/*q*/, B); // e = b*an - ?*d and |b| <= B
-	a = (e - b*an)/d; //div is exact
+	Z.axmyin(e, b, an); 
+	Z.div(a, e, d); //a = (e - b*an)/d, div is exact.
+//std::cout << "Z.axmyin(e, b, an); " << e << " " << b << " " << an << ", a = e/d exact " << a << " " << d << std::endl;
 	// now a/b is solution but signs may be wrong
-	Z.abs(b,b);
 	Z.abs(a,a);
+	Z.abs(b,b);
 	Int zero; Z.init(zero, 0);
 	if (Z.compare(n, zero) < 0)  Z.negin(a); // a = -a;
 
+//std::cout << "DtR in n, d " << n << " "<< d << ", bound " << B << ", out a, b " << a << " " << b << std::endl; 
 	bool guarantee = b*B < d;
-	if ((!found && b > 0) || (found && ! guarantee)) return 1;
 	if (found && guarantee) return 2;
-	return 0; // b == 0
+	if (b == 0) return 0;
+	return 1; //if ((!found && b > 0) || (found && ! guarantee)) return 1;
 }
 
 /** partial_hegcd() sets e, b from the remainder sequence of n,d.
@@ -99,30 +102,36 @@ int dyadicToRational (
 // later reintroduce swapping trick
 template<class Ring>
 bool partial_hegcd(Ring& Z, typename Ring::Element& e, typename Ring::Element& b, const typename Ring::Element& n, const typename Ring::Element& d, const typename Ring::Element& denBound){
-	typedef typename Ring::Element integer;
-	integer quo, r, tmp;  Z.init(quo); Z.init(r); Z.init(tmp);
+	typedef typename Ring::Element Int;
+	Int quo, r, tmp;  Z.init(quo); Z.init(r); Z.init(tmp);
 	bool withinbound, wellapproximated;
 
-	integer b0; Z.init(b0, 1); // and a0 = -0
-	integer r0; Z.init(r0, n); // so that r0 = b0*n - a0*d
-	integer b1; Z.init(b1, -0); // and a1 = 1
-	integer r1; Z.init(r1, d); // so that r1 = b1*n - a1*d
+	Int b0; Z.init(b0, 1); // and a0 = -0
+	Int r0; Z.init(r0, n); // so that r0 = b0*n - a0*d
+	Int b1; Z.init(b1, -0); // and a1 = 1
+	Int r1; Z.init(r1, d); // so that r1 = b1*n - a1*d
+//std::cout << "init 1 -0: " << b0 << " " << b1 << std::endl;
 
 	do {
+//std::cout << "quorem from " << r0 << " " << b0 << " and " << r1 << " " << b1 << std::endl;
 		Z.quoRem(quo, e, r0, r1);
 		//integer::divmod (quo, e, r0, r1);
 		b = b0;
-		Z.axmyin(b, quo, b1);// b = b0 - quo*b1;
+		Z.axmyin(b, quo, b1);
+		Z.negin(b); // b = b0 - quo*b1;
+//std::cout << "Z.axmyin(b, quo, b1);// b = b0 - quo*b1;" << b << " " << b0 << " " << quo << " " << b1 << std::endl;
 		r0 = r1; b0 = b1;
 		r1 = e; b1 = b;
 		//assert(r1 >= 0);
-		Z.abs(tmp, b1);
+		Z.abs(tmp, b);
 		withinbound = (Z.compare(tmp, denBound) <= 0);
-	    wellapproximated = (Z.compare(2*r1 , tmp) <= 0);
+	    wellapproximated = (Z.compare(2*e , tmp) <= 0);
 	}
 	while ( ! wellapproximated && withinbound );
 	if (! withinbound) {e = r0; b = b0;} // make available for speculation
+//std::cout << "withinbound " << withinbound << " e b " << e << " " << b << ", n/d " << n << "/" << d << ", denBound " << denBound << std::endl;
 	return withinbound;
+	// returning with first well approximated (small remainder e) or last within bound denom b.
 
 } // partial_hegcd
 
@@ -229,23 +238,27 @@ using namespace LinBox;
 #include <cmath>
 #include <linbox/field/PID-integer.h>
 #include "linbox/util/timer.h"
+#include <linbox/util/commentator.h>
 
-int test1(size_t k, size_t dxs, size_t denBs) {
+int test1(size_t k, size_t dxa, size_t denBs) {
+
 /* Check reconstruction of i/k when it is well approximated
-by something over dxs and when the denominator bound (for k) is denBs.
+by something over dxa and when the denominator bound (for k) is denBs.
 Values of numerator i from -k-2 to k+2 are checked.
+When dxa^2 <= denBs, 2 should be returned.
 */
 	typedef PID_integer Ring; Ring Z;
 	typedef Ring::Element Int;
 
+//std::cout << "test1(k " << k << ", dxa " << dxa << ", denBs " << denBs << ")" << std::endl;
 	// k is our denominator
 	Int denB = denBs; // denominator bound
 	// approximate(i*k^2)/k for i = 0..k-1
 	size_t kp = k+2;
 	size_t kp2 = 2*kp;
 	std::vector<Int> nx(kp2);
-	Int dx = dxs;
-	for (size_t i = 0; i < kp2 ; ++i) nx[i] = floor(double((i-kp)*dx)/k + 0.5);
+	for (size_t i = 0; i < kp2 ; ++i) Z.init(nx[i],floor(((double(i)-double(kp))*dxa)/k + 0.5));
+	// |nx[i]/dxa - (i-kp)/k| <= 1/2dxa
 	std::vector<Int> n(kp2);
 	Int d;
 	bool pass = true;
@@ -253,75 +266,87 @@ Values of numerator i from -k-2 to k+2 are checked.
 	int ret = 2;
 
 	// check of individual reconstructions
-	Int nn; Z.init(nn);
+	Int dx; Z.init(dx, dxa);
 	int c;
-	claim = true;
 	// individual reconstructions
 	for (size_t i = 0; i < kp2 ; ++i) {
-//	std::cout << nx[i] << " " << dx << " " << denB << std::endl;
-		c = dyadicToRational(Z, nn, d, nx[i], dx, denB);
-//	std::cout << " " << c << " " << nn << " " << d << std::endl;
-		claim = c > 0  && (nn*k == (i-kp)*d);
-		if ( c == 2 ) claim = claim && d*denB < dx;
+	    bool loopclaim = true;
+//std::cout << nx[i] << " " << dx << " " << denB << std::endl;
+		c = dyadicToRational(Z, n[i], d, nx[i], dx, denB);
+//std::cout << " c " << c << " n " << n[i] << " d " << d << " nx " << nx[i] << " dx " << dx << " denB " << denB << std::endl;
+		loopclaim = ((c > 0)  && (n[i]*k == ((int(i)-int(kp))*d)));
+		if ( c == 2 ) loopclaim = loopclaim && d*denB < dx;
 		if (c < ret) ret = c;
-		if (! claim) ret = 0;
-		//if (! claim) std::cout << "F " << pass << claim << ret << std::endl;
-		//if (! claim) std::cout << "F2 i " << i << " nx " << nx[i] << " nn " << nn[i] << " d " << d << std::endl;
-		pass = pass && claim;
+		if (! loopclaim) ret = 0;
+//if (! claim) std::cout << "F " << pass << claim << ret << std::endl;
+		//if (! loopclaim) 
+//std::cout << "F2 " << loopclaim << " i " << i << " nx/dx " << nx[i] << "/" << dx << ", n/d " << n[i] << "/" << d << std::endl;
+		pass = pass && loopclaim;
 	}
-	//std::cout << "i " << pass << claim << ret << std::endl;
-	pass = pass && claim;
+//std::cout << "result, pass " << pass << " ret " << ret << std::endl;
 
+#if 1
 	// check vector reconstruction
 	c = dyadicToRational(Z, n, d, nx, dx, denB);
+	commentator.report() << "In test1 dyadicToRational returns " << c << std::endl;
 	claim = 0 < c;
 	if (claim) {
-		for (size_t i = 0; i < k ; ++i) claim = claim && (n[i] == (long unsigned int) i-kp);
-		pass = pass && claim;
-		if (!claim) {
-			commentator.report() << "first example fails" << std::endl;
-			commentator.report() << "data for first example" << std::endl;
-			for (size_t i = 0; i < 10 ; ++i)
-				commentator.report() << nx[i] << std::endl;
-			commentator.report() << dx << " den in" << std::endl;
-			commentator.report() << "results for first example" << std::endl;
-			for (size_t i = 0; i < 10 ; ++i)
-				commentator.report() << n[i] << std::endl;
-			commentator.report() << d << " den out" << std::endl;
-		}
+		for (size_t i = 0; i < k ; ++i) claim = claim && (n[i] == (int(i)-int(kp)));
 	}
+	pass = pass && claim;
+	if (!claim) {
+		commentator.report() << "first example fails" << std::endl;
+		commentator.report() << "data for first example" << std::endl;
+		for (size_t i = 0; i < 10 ; ++i)
+			commentator.report() << nx[i] << std::endl;
+		commentator.report() << dx << " den in" << std::endl;
+		commentator.report() << "results for first example" << std::endl;
+		for (size_t i = 0; i < 10 ; ++i)
+			commentator.report() << n[i] << std::endl;
+		commentator.report() << d << " den out" << std::endl;
+	}
+
 	if (c < ret) ret = c;
 	if (! claim) ret = 0;
 	pass = pass && claim;
-	//std::cout << "v " << pass << claim << ret << std::endl;
+//std::cout << "v " << pass << claim << ret << std::endl;
+#endif
 
 	//return pass;
 	return ret;
 }
 
-bool testDyadicToRational(size_t k, bool benchmarking = false) {
+bool testDyadicToRational(size_t k = 10, bool benchmarking = false) {
 	typedef PID_integer Ring; Ring Z;
 	typedef Ring::Element Int;
 	bool pass = true;
+	bool claim = false;
+	size_t pow2 = 1; // upperbound for k.
+	for (size_t i = k; i > 0; i >>= 1) pow2 *= 2;
 
 	UserTimer clock;
 	double totaltime = 0;
 
 	clock.clear(); clock.start();
-	pass = pass && 1 == test1(k, k*k, k); // some 1's and some 2's
-	pass = pass && 1 == test1(k, k*k, k*k); // all 1's
-	pass = pass && 2 == test1(k, k*k+2*k, k+1); // all 2's
+	claim = 1 <= test1(k, pow2*pow2, k); // some 1's and some 2's
+	if (!claim) commentator.report() << "failure: 1 !=test1(k, k*k, k)" << std::endl;
+	pass = pass && claim;
+	claim = 1 == test1(k, k*k, k*k); // all 1's
+	if (!claim) commentator.report() << "failure: 1 !=test1(k, k*k, k*k)" << std::endl;
+	pass = pass && claim;
+	claim = 2 == test1(k, k*k+2*k + 1, k+1); // all 2's
+	if (!claim) commentator.report() << "failure: 2 !=test1(k, (k + 1)^2, k+1)" << std::endl;
+	pass = pass && claim;
 	clock.stop(); totaltime += clock.time();
 
-	bool claim = false;
-
-// special case
-	Int B = 1000000000;
-	Int B2 = B*B;
+#if 1
+// special case 1
+	Int B; Z.init(B, 1000000000);
+	Int B2; Z.init(B2); B2 = B*B;
 	Int denB = 4*B+294967296; // 2^32
 
 	Int d;
-	Int dx = denB*denB; // 2^64
+	Int dxs = denB*denB; // 2^64
 	size_t k2 = 10;
 	std::vector<Int> nx;
 	std::vector<Int> n;
@@ -339,10 +364,11 @@ bool testDyadicToRational(size_t k, bool benchmarking = false) {
 	nx[8] =-228*B2-416339507*B-338896853;
 	nx[9] = -14*B2-398832745*B-762391791;
 
-	claim = 0 < dyadicToRational(Z, n, d, nx, dx, denB);
+	claim = 0 < dyadicToRational(Z, n, d, nx, dxs, denB);
+
+	if (!claim) commentator.report() << "in special case 1 failure claimed" << std::endl;
 
 	pass = pass && claim;
-	if (!claim) commentator.report() << "second ratrecon claims failure but should succeed" << std::endl;
 
 	std::vector<Int> ntrue(k2);
 	Int dentrue = 691617936;
@@ -362,22 +388,22 @@ bool testDyadicToRational(size_t k, bool benchmarking = false) {
 
 	if (!claim)
 	{
-	commentator.report() << "data for second example" << std::endl;
+	commentator.report() << "data for failing special case 1" << std::endl;
 	for (size_t i = 0; i < k2 ; ++i)
 		commentator.report() << nx[i] << std::endl;
-	commentator.report() << dx << " den in" << std::endl;
-	commentator.report() << "results for second example" << std::endl;
+	commentator.report() << dxs << " den in" << std::endl;
+	commentator.report() << "results for failing special case 1" << std::endl;
 	for (size_t i = 0; i < k2 ; ++i)
 		commentator.report() << n[i] << std::endl;
 	commentator.report() << d << " den out" << std::endl;
 	}
 
-#if 0
-// I don't have evidence now that this case should not work
+#endif
+#if 1
 // case where false should be returned.
 	denB = 1023*B+948656640;
 
-	dx = 4*B2+611686018*B+427387904;
+	dxs = 4*B2+611686018*B+427387904;
 	size_t k3 = 10;
 	nx.resize(k3);
 	n.resize(k3);
@@ -395,10 +421,10 @@ bool testDyadicToRational(size_t k, bool benchmarking = false) {
 
 
 	// this should fail
-	claim = 0 < dyadicToRational(Z, n, d, nx, dx, denB);
-	//std::cout << "d " << d << " dx " << dx << " denB " << denB << std::endl;
+	claim = 2 > dyadicToRational(Z, n, d, nx, dxs, denB);
+//std::cout << "d " << d << " dxs " << dxs << " denB " << denB << std::endl;
 
-    pass = pass && !claim;
+    pass = pass && claim;
 	if (claim) commentator.report() << "third ratrecon falsely claims success" << std::endl;
 #endif
 

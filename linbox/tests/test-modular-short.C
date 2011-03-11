@@ -36,7 +36,7 @@
 #include "linbox/field/modular-short.h"
 
 #include "test-common.h"
-#include "test-generic.h"
+#include "test-field.h"
 
 using namespace LinBox;
 

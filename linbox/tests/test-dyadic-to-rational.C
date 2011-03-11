@@ -8,15 +8,26 @@
 
 #include "linbox/linbox-config.h"
 #include "linbox/util/commentator.h"
+#include "test-common.h"
+
 #define TestingDyadicToRational 
 #include "linbox/algorithms/dyadic-to-rational.h" // can assume commentator and config loaded
 #undef TestingDyadicToRational 
-#include "test-common.h"
 
 int main (int argc, char **argv) { 
 
 	// customize optional args
 	size_t n = 10;
+
+	static Argument args[] = {
+		{ 'n', "-n N", "Set dimension of test matrices to NxN.",                 TYPE_INT,     &n },
+		END_OF_ARGUMENTS
+	};
+	parseArguments (argc, argv, args);
+
+	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	// run test
 	LinBox::commentator.start("DyadicToRational unit/regression test");
@@ -24,7 +35,7 @@ int main (int argc, char **argv) {
 	LinBox::commentator.stop("DyadicToRational unit/regression test");
 	return pass ? 0 : -1;
 
-	/* parseArguments sets n, q, ac, av. Ac is number of remaining args, av is array of remaining args.
+	/* parseArguments sets flags n and q, and arg structure ac, av, where ac, av refer to remaining args after flag processing.
 	 Any -n <n>, -q <q>, -h flag, and first non-option arg will have been stripped from av.
 	 The first non-option arg is used as file name for commentator output.
 	 from av.  Ac is argc less the arguments thus stripped and handled.

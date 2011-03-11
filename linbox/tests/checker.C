@@ -97,7 +97,7 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-diagonal", counter, flag);
 	build_n_run("test-dif", counter, flag);
 	build_n_run("test-direct-sum", counter, flag);
-	no_build_n_run("test-dyadic-to-rational", counter, flag, "bds responsible");
+	build_n_run("test-dyadic-to-rational", counter, flag, "bds responsible");
 	build_n_run("test-ffpack", counter, flag);
 	build_n_run("test-frobenius", counter, flag);
 	build_n_run("test-ftrmm", counter, flag);
@@ -121,6 +121,7 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-modular-short", counter, flag);
 	build_n_run("test-moore-penrose", counter, flag);
 	build_n_run("test-nullspace", counter, flag);
+	build_n_run("test-PID-integer", counter, flag);
 	build_n_run("test-qlup", counter, flag);
 	build_n_run("test-randiter-nonzero", counter, flag);
 	build_n_run("test-rank", counter, flag);
@@ -160,7 +161,7 @@ build |wc" should yield the same number of lines.
 	if (flag > 0) cout << "	Lapack dependent tests" << endl;
 	build_n_run("test-rational-solver-adaptive", counter, flag);
 	// needs output cleanup.  Resolve whether a benchmark or a test.
-	no_build_n_run("test-solve-nonsingular", counter, flag, "bds responsible");
+	build_n_run("test-solve-nonsingular", counter, flag, "bds responsible");
 #else
 	if (flag > 0) cout << "	not doing Lapack dependent tests" << endl;
 	no_build_n_run("test-rational-solver-adaptive", counter, flag);
@@ -214,9 +215,7 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-smith-form-local", counter, flag, "bds"); //"intermittent failures");
 
 	if (flag > 0) cout << "	Immature tests" << endl;
-	no_build_n_run("test-quad-matrix", counter, flag, "half baked, bds responsible");
-	no_build_n_run("test-dense-zero-one", counter, flag, "half baked, bds responsible");
-	build_n_run("test-zo", counter, flag, "half baked, BY responsible");
+	no_build_n_run("test-quad-matrix", counter, flag, "half baked, bds responsible"); no_build_n_run("test-dense-zero-one", counter, flag, "half baked, bds responsible"); build_n_run("test-zo", counter, flag, "half baked, BY responsible");
 	// test-integer-tools -- there is no test-integer-tools.C file
 	// no one has taken these on.
 	//no_build_n_run("test-mg-block-lanczos", counter, flag, "make fails, nobody responsible");

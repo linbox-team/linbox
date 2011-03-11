@@ -57,6 +57,7 @@ BASIC_TESTS =  \
         test-modular-int        \
         test-modular-short      \
         test-block-ring         \
+        test-PID-integer        \
         test-moore-penrose      \
         test-randiter-nonzero   \
         test-rank               \
@@ -213,6 +214,11 @@ test_modular_SOURCES =                        \
 
 test_block_ring_SOURCES =                 \
         test-block-ring.C                 \
+        test-field.h                      \
+        test-common.h
+
+test_PID_integer_SOURCES =                 \
+        test-PID-integer.C                 \
         test-field.h                      \
         test-common.h
 
