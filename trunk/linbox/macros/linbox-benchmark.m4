@@ -57,13 +57,13 @@ if test $res = no ; then
 	echo "for your distribution, or get the source tarball from"
     echo "http://www.gnuplot.info/download.html                "
 else
-AC_DEFINE([HAVE_GNUPLOT] ,[1] , [gnuplot available as external program])
+AC_DEFINE(HAVE_GNUPLOT, 1, [gnuplot available as external program])
 fi
 
 AC_MSG_CHECKING(whether ps2pdf works)
 res=yes;
 export PATH=$GHOSTSCRIPT_PATH
-(ps2pdf --version) < /dev/null > /dev/null 2>&1 || res=no
+(ps2pdf --version -) < /dev/null > /dev/null 2>&1 || res=no
 AC_MSG_RESULT([$res])
 if test $res = no ; then
 	echo
@@ -72,7 +72,7 @@ if test $res = no ; then
 	echo "for your distribution, or get the source tarball from  "
     echo "http://pages.cs.wisc.edu/~ghost/                       "
 else
-AC_DEFINE([HAVE_GHOSTSCRIPT] ,[1] , [ps2pdf available as external program])
+AC_DEFINE(HAVE_GHOSTSCRIPT, 1, [ps2pdf available as external program])
 fi
 
 dnl  AM_CONDITIONAL(LINBOX_BUILD_BENCH, true)
