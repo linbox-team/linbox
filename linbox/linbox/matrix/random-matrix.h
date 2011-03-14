@@ -33,6 +33,8 @@
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/randiter/random-integer.h"
 #include "linbox/randiter/random-prime.h"
+#include "linbox/matrix/matrix-permutation.h"
+#include "linbox/algorithms/blas-domain.h"
 
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/algorithms/cra-full-multip-fixed.h"

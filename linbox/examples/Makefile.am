@@ -70,8 +70,8 @@ LINBOX_BIN=@bindir@
 
 
 # for compilation of new examples
-%:%.C
+.C:
 	$(CXX) $(SAFER_FLAGS) -O2 $(CXXFLAGS) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $@ $(LDFLAGS) $(LDADD) $(LOADLIBES) $(top_srcdir)/linbox/.libs/liblinbox.a
 
-%:%.cpp
+.cpp:
 	$(CXX) $(SAFER_FLAGS) $(CXXFLAGS) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.cpp -o $@ $(LDFLAGS) $(LDADD) $(LOADLIBES) $(top_srcdir)/linbox/.libs/liblinbox.a
