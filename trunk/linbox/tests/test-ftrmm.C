@@ -910,13 +910,13 @@ int main(int ac, char ** av)
 #endif
 	if(our != tot) fail = true;
 
+	commentator.stop(MSG_STATUS (!fail), (const char *) 0,"ftrmm et al full tests suite");
 #ifdef DEBUG
 	if (our != tot)
 		report << "# \033[1;31m>\033[0m fgemm failed" << std::endl;
-	return fail ;
 #endif
-	commentator.stop(MSG_STATUS (!fail), (const char *) 0,"ftrmm et al full tests suite");
-	return false ;
+	return fail ;
+	// return false ;
 
 }
 

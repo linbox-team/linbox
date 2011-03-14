@@ -165,6 +165,7 @@ exit 1
 ])
 LB_CHECK_EXPAT
 
+LB_BENCH
 LB_OPT
 LB_DOC
 
@@ -203,5 +204,6 @@ interfaces/maple/Makefile
 interfaces/kaapi/Makefile
 interfaces/sage/Makefile
 macros/Makefile
+benchmarks/Makefile
 ])
 

@@ -1,17 +1,17 @@
 /** \ingroup linbox
-  \defgroup tests tests
-
-  \brief Correctness tests for LinBox components.
-
-  These tests are to aid development and serve for unit and regression testing.
-  Some contain useful timing measurements.
-
-  Do <code>make tests</code> to try the lot.
-  See checker.C for more information on LinBox tests.
-
-  There are some benchmarks.  For instance benchmark-fields is intended to help
-  choose the most efficient field representation on a given platform.
-
+ * \defgroup tests tests
+ *
+ *  \brief Correctness tests for LinBox components.
+ *
+ *  These tests are to aid development and serve for unit and regression testing.
+ *  Some contain useful timing measurements.
+ *
+ *  Do <code>make tests</code> to try the lot.
+ *  See checker.C for more information on LinBox tests.
+ *
+ *  There are some benchmarks.  For instance benchmark-fields is intended to help
+ *  choose the most efficient field representation on a given platform.
+ *
  */
 
 // vim:syntax=doxygen
