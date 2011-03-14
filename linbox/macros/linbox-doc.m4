@@ -1,3 +1,6 @@
+# Copyright (c) the LinBox group
+# This file is part of LinBox
+# see COPYING for licence
 
 AC_DEFUN([LB_DOC],
 [
@@ -40,7 +43,7 @@ export PATH=$DOXYGEN_PATH
 	exit -1
 }
 AC_MSG_RESULT(yes)
-AM_CONDITIONAL(LINBOX_BUILD_DOC, true)	
+AM_CONDITIONAL(LINBOX_BUILD_DOC, true)
 ],
 [
 AC_MSG_RESULT(no)

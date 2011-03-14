@@ -1,8 +1,13 @@
+# Copyright (c) the LinBox group
+# This file is part of LinBox
+# see COPYING for licence
+
+
 AC_DEFUN([LB_CHECK_SAGE],
 [
 AC_MSG_CHECKING([whether to compile the sage interface])
 
-AC_ARG_ENABLE(sage, 
+AC_ARG_ENABLE(sage,
 [  --enable-sage Enable the compilation of the sage interface],
 [
 AC_MSG_RESULT(yes)

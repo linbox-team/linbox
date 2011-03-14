@@ -10,6 +10,11 @@
 # Shamelessly stolen from Owen Taylor
 
 
+# Copyright (c) the LinBox group
+# This file is part of LinBox
+# see COPYING for licence
+
+
 
 
 #Enables the compilation of the drivers
@@ -33,16 +38,16 @@ AC_DEFUN([LB_CHECK_MAPLE],
 [
 
 AC_ARG_WITH(maple,
-[ --with-maple=<path>|yes|no Use Maple library. If argument is no, you do not 
-  			    have the library installed on your machine (set as 
-			    default). If argument is yes or <empty> that means 
+[ --with-maple=<path>|yes|no Use Maple library. If argument is no, you do not
+  			    have the library installed on your machine (set as
+			    default). If argument is yes or <empty> that means
 			    the library is well installed and so reachable.
 			    Otherwise you give the <path> to the directory which
-			    contains the Software. 
+			    contains the Software.
 	    ],
             [if test "$withval" = yes ; then
-		MAPLE_HOME_PATH="${DEFAULT_CHECKING_PATH} unknown"	
-	      elif test "$withval" != no ; then			
+		MAPLE_HOME_PATH="${DEFAULT_CHECKING_PATH} unknown"
+	      elif test "$withval" != no ; then
 		MAPLE_HOME_PATH="$withval ${DEFAULT_CHECKING_PATH} unknown"
 	     fi	],
 	    [])
@@ -63,13 +68,13 @@ if test ${LIB_DIR} = "NONE/lib" ; then
 fi
 
 
-for MAPLE_HOME in ${MAPLE_HOME_PATH} 
+for MAPLE_HOME in ${MAPLE_HOME_PATH}
 do
 		if test "x$MAPLE_HOME" != "xunknown"; then
 			if test -r "${MAPLE_HOME}/bin/maple.system.type" && test -r "${MAPLE_HOME}/extern/include/maplec.h" ; then
 				MAPLE_BIN=${MAPLE_HOME}/`${MAPLE_HOME}/bin/maple.system.type`
-			else			
-				MAPLE_BIN=""								
+			else
+				MAPLE_BIN=""
 			fi
 		else
 			if test -r "/usr/local/bin/xmaple" && test -r "/usr/local/bin/maple.system.type"; then
@@ -79,12 +84,12 @@ do
 					MAPLE_HOME=`sed -ne "s/MAPLE='\(.*\)'/\\1/p" /usr/bin/xmaple`
 					MAPLE_BIN="${MAPLE_HOME}/"`${MAPLE_HOME}/bin/maple.system.type`
 			else
-					MAPLE_BIN=""				
+					MAPLE_BIN=""
 			fi
-		fi					
-	
+		fi
+
 		if test -z "${MAPLE_BIN}" ; then
-			maple_found="no"			
+			maple_found="no"
 		else
 			maple_found="yes"
 			if test $have_shared = "yes"; then
@@ -95,26 +100,26 @@ do
 					AC_MSG_RESULT(problem)
 					echo " your version of Maple is too old, at least version 9 is recquired. Disabling."
 					break
-				else			
-					AC_MSG_RESULT(found)	
+				else
+					AC_MSG_RESULT(found)
 					LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${MAPLE_BIN}:${LIB_DIR}"
 					LD_RUN_PATH="${LD_RUN_PATH}:${MAPLE_BIN}:${LIB_DIR}"
 					export LD_LIBRARY_PATH
 					export LD_RUN_PATH
 					MAPLE_LIBS="-L${MAPLE_BIN} -lmaplec -lstdc++"
-					MAPLE_CFLAGS="-I${MAPLE_HOME}/extern/include"				
+					MAPLE_CFLAGS="-I${MAPLE_HOME}/extern/include"
        					AC_SUBST(MAPLE_LIBS)
 					AC_SUBST(MAPLE_CFLAGS)
 					AC_SUBST(MAPLE_HOME)
 					AC_SUBST(MAPLE_VERSION)
 					if test ${MAPLE_VERSION} -ge 10 	; then
-						AC_DEFINE_UNQUOTED(MAPLE_GMP_ACCESS,, [define is the version of Maple have access function to gmp data])	
+						AC_DEFINE_UNQUOTED(MAPLE_GMP_ACCESS,, [define is the version of Maple have access function to gmp data])
 					fi
 					AC_DEFINE(HAVE_MAPLE,1,[Define if MAPLE is installed])
 					HAVE_MAPLE=yes
 					break
 				fi
-			else			
+			else
 				AC_MSG_RESULT(problem)
 				echo " you need to give option --enable-shared to allow Maple interfacing. Disabling."
 				break

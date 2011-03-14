@@ -1,5 +1,8 @@
 # Check for GMP
 # Modified by Pascal Giorgi, 2003-12-03
+# Copyright (c) the LinBox group
+# This file is part of LinBox
+# see COPYING for licence
 
 dnl LB_CHECK_GMP ([MINIMUM-VERSION [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl
@@ -9,10 +12,10 @@ AC_DEFUN([LB_CHECK_GMP],
 [
 AC_ARG_WITH(gmp,
 [  --with-gmp= <path>|yes Use GMP library. This library is mandatory for LinBox
-	                 compilation. If argument is yes or <empty> that means 
+	                 compilation. If argument is yes or <empty> that means
    	       		 the library is reachable with the standard search path
 			 "/usr" or "/usr/local" (set as default). Otherwise you
-			 give the <path> to the directory which contain the 
+			 give the <path> to the directory which contain the
 			 library.
 ],
 		[if test "$withval" = yes ; then
@@ -30,18 +33,18 @@ BACKUP_LIBS=${LIBS}
 
 AC_MSG_CHECKING(for GMP >= $min_gmp_version)
 
-for GMP_HOME in ${GMP_HOME_PATH} 
-  do	
+for GMP_HOME in ${GMP_HOME_PATH}
+  do
 	if test -r "$GMP_HOME/include/gmp.h"; then
 
 		if test "x$GMP_HOME" != "x/usr" -a "x$GMP_HOME" != "x/usr/local"; then
 			GMP_CFLAGS="-I${GMP_HOME}/include"
-			GMP_LIBS="-L${GMP_HOME}/lib -lgmpxx -lgmp"	
+			GMP_LIBS="-L${GMP_HOME}/lib -lgmpxx -lgmp"
 		else
 			GMP_CFLAGS=
-			GMP_LIBS="-lgmpxx -lgmp"		
+			GMP_LIBS="-lgmpxx -lgmp"
 		fi
-	
+
 		CXXFLAGS="${CXXFLAGS} ${GMP_CFLAGS}"
 		LIBS="${LIBS} ${GMP_LIBS}"
 
@@ -75,12 +78,12 @@ for GMP_HOME in ${GMP_HOME_PATH}
 						GMP_VERSION=""
 						AC_SUBST(GMP_VERSION)
 					],[
-						gmp_found="no"	
+						gmp_found="no"
 						AC_MSG_RESULT(no)
 					],[
 						dnl This should never happen
 						AC_MSG_RESULT(no)
-					])				
+					])
 				],[
 					AC_MSG_RESULT(no)
 					AC_DEFINE(GMP_VERSION_3,1,[Define if GMP is version 3.xxx])
@@ -92,28 +95,28 @@ for GMP_HOME in ${GMP_HOME_PATH}
 				])
 				ifelse([$2], , :, [$2])
 				break
-			],[			
+			],[
 				gmp_problem="$gmp_problem $GMP_HOME"
 				unset GMP_CFLAGS
-				unset GMP_LIBS	
+				unset GMP_LIBS
 			],[
 				AC_MSG_RESULT(unknown)
 				echo "WARNING: You appear to be cross compiling, so there is no way to determine"
 				echo "whether your GMP version is new enough. I am assuming it is."
 				AC_SUBST(GMP_CFLAGS)
 				AC_SUBST(GMP_LIBS)
-				AC_DEFINE(HAVE_GMP,1,[Define if GMP is installed])	
+				AC_DEFINE(HAVE_GMP,1,[Define if GMP is installed])
 				ifelse([$2], , :, [$2])
 				break
-			])	
+			])
 		],[
-		gmp_found="no"	
+		gmp_found="no"
 		unset GMP_CFLAGS
-		unset GMP_LIBS	
+		unset GMP_LIBS
 		])
 
 	else
-		gmp_found="no"	
+		gmp_found="no"
 	fi
 done
 

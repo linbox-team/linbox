@@ -1,3 +1,9 @@
+# Copyright (c) the LinBox group
+# This file is part of LinBox
+# see COPYING for licence
+
+
+
 AC_DEFUN([LB_OPT],
 [
 AC_MSG_CHECKING([whether to use run time optimization])

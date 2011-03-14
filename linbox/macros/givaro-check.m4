@@ -1,4 +1,7 @@
 # Check for GIVARO
+# Copyright (c) the LinBox group
+# This file is part of LinBox
+# see COPYING for licence
 # Bradford Hovinen, 2001-06-13
 # Modified by Pascal Giorgi, 2003-12-03
 # Inspired by gnome-bonobo-check.m4 by Miguel de Icaza, 99-04-12

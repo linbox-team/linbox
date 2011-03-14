@@ -7,6 +7,10 @@
 # stolen back from Frank Belew
 # stolen from Manish Singh
 # Shamelessly stolen from Owen Taylor
+# Copyright (c) the LinBox group
+# This file is part of LinBox
+# see COPYING for licence
+
 
 dnl LB_CHECK_NTL ([MINIMUM-VERSION [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl
@@ -18,11 +22,11 @@ AC_DEFUN([LB_CHECK_NTL],
 
 AC_ARG_WITH(ntl,
 [  --with-ntl=<path>|yes|no  Use NTL library. If argument is no, you do not have
-                            the library installed on your machine (set as 
-			    default). If argument is yes or <empty> that means 
-			    the library is reachable with the standard search 
-			    path (/usr or /usr/local). Otherwise you give the 
-			    <path> to the directory which contain the library. 
+                            the library installed on your machine (set as
+			    default). If argument is yes or <empty> that means
+			    the library is reachable with the standard search
+			    path (/usr or /usr/local). Otherwise you give the
+			    <path> to the directory which contain the library.
 	     ],
 	     [if test "$withval" = yes ; then
 			NTL_HOME_PATH="${DEFAULT_CHECKING_PATH}"
@@ -42,8 +46,8 @@ if test -n "$NTL_HOME_PATH"; then
 AC_MSG_CHECKING(for NTL >= $min_ntl_version)
 fi
 
-for NTL_HOME in ${NTL_HOME_PATH} 
- do	
+for NTL_HOME in ${NTL_HOME_PATH}
+ do
 if test -r "$NTL_HOME/include/NTL/ZZ.h"; then
 
 	if test "x$NTL_HOME" != "x/usr" -a "x$NTL_HOME" != "x/usr/local"; then
@@ -51,9 +55,9 @@ if test -r "$NTL_HOME/include/NTL/ZZ.h"; then
 		NTL_LIBS="-L${NTL_HOME}/lib -lntl"
 	else
 		NTL_CFLAGS=
-		NTL_LIBS="-lntl"		
-	fi	
-	CXXFLAGS="${BACKUP_CXXFLAGS} ${NTL_CFLAGS} ${GMP_CFLAGS}" 
+		NTL_LIBS="-lntl"
+	fi
+	CXXFLAGS="${BACKUP_CXXFLAGS} ${NTL_CFLAGS} ${GMP_CFLAGS}"
 	LIBS="${BACKUP_LIBS} ${NTL_LIBS} ${GMP_LIBS}"
 
 	AC_TRY_LINK(
@@ -62,32 +66,32 @@ if test -r "$NTL_HOME/include/NTL/ZZ.h"; then
 	[
 	AC_TRY_RUN(
 	[#include <NTL/version.h>
-	int main () { if (NTL_MAJOR_VERSION < 5) return -1; else return 0; }	
-	],[
-	ntl_found="yes"	
-	break
-	],[	
-	ntl_problem="$problem $NTL_HOME"	
-	unset NTL_CFLAGS
-	unset NTL_LIBS	
+	int main () { if (NTL_MAJOR_VERSION < 5) return -1; else return 0; }
 	],[
 	ntl_found="yes"
-	ntl_cross="yes"	
 	break
-	])	
+	],[
+	ntl_problem="$problem $NTL_HOME"
+	unset NTL_CFLAGS
+	unset NTL_LIBS
+	],[
+	ntl_found="yes"
+	ntl_cross="yes"
+	break
+	])
 	],
 	[
 	ntl_found="no"
 	ntl_checked="$checked $NTL_HOME"
 	unset NTL_CFLAGS
-	unset NTL_LIBS	
+	unset NTL_LIBS
 	])
 else
 	ntl_found="no"
 fi
 done
 
-if test "x$ntl_found" = "xyes" ; then		
+if test "x$ntl_found" = "xyes" ; then
 	AC_SUBST(NTL_CFLAGS)
 	AC_SUBST(NTL_LIBS)
 	AC_DEFINE(HAVE_NTL,1,[Define if NTL is installed])
@@ -109,8 +113,8 @@ elif test   "x$ntl_found" = "xno";  then
 	if test "x$NTL_HOME" != "x/usr" -a "x$NTL_HOME" != "x/usr/local" ; then
 		AC_MSG_WARN(NTL >= $min_ntl_version was not found. LinBox also requires the NTL namespace to be enabled.  Please make sure NTL is compiled correctly.)
 	fi
-	ifelse([$3], , :, [$3])	
-fi	
+	ifelse([$3], , :, [$3])
+fi
 
 
 
