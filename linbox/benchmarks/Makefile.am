@@ -27,8 +27,8 @@ EXTRA_PROGRAMS= $(BENCHS)
 
 benchmarks: ${EXTRA_PROGRAMS}
 
-benchmark_matmul_SOURCES         = benchmark-matmul.C
-benchmark_fgemm_SOURCES          = benchmark-fgemm.C
+#  benchmark_matmul_SOURCES         = benchmark-matmul.C
+#  benchmark_fgemm_SOURCES          = benchmark-fgemm.C
 
 LINBOX=@prefix@
 
