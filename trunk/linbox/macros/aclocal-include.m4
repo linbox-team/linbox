@@ -1,7 +1,12 @@
+# Copyright (c) 2011 the LinBox group
+# This file is part of LinBox
+# see COPYING for licence
+
+
 # aclocal-include.m4
-# 
+#
 # This macro adds the name macrodir to the set of directories
-# that `aclocal' searches for macros.  
+# that `aclocal' searches for macros.
 
 # serial 1
 

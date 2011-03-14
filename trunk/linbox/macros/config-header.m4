@@ -1,3 +1,7 @@
+# Copyright (c) 2011 the LinBox group
+# This file is part of LinBox
+# see COPYING for licence
+
 
 
 AC_DEFUN([AX_PREFIX_CONFIG_H],[AC_REQUIRE([AC_CONFIG_HEADER])

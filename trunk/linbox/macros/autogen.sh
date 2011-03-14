@@ -1,5 +1,9 @@
 #!/bin/sh
 # Run this to generate all the initial makefiles, etc.
+# Copyright (c) 2011 the LinBox group
+# This file is part of LinBox
+# see COPYING for licence
+
 
 DIE=0
 

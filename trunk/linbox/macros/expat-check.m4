@@ -1,4 +1,7 @@
 # Check for expat
+# Copyright (c) the LinBox group
+# This file is part of LinBox
+# see COPYING for licence
 # Rich Seagraves
 # stolen from Pascal Giorgi, 2001-12-10
 # Inspired by gnome-bonobo-check.m4 by Miguel de Icaza, 99-04-12
@@ -15,13 +18,13 @@ AC_DEFUN([LB_CHECK_EXPAT],
 [
 
 AC_ARG_WITH(expat,
-[  --with-expat=<path>|yes|no Use Expat library. If argument is no, you do not 
-                             have the library installed on your machine (set 
-			     as default). If argument is yes or <empty> that 
+[  --with-expat=<path>|yes|no Use Expat library. If argument is no, you do not
+                             have the library installed on your machine (set
+			     as default). If argument is yes or <empty> that
 			     means the library is reachable with the standard
-			     search path (/usr or /usr/local). Otherwise you 
+			     search path (/usr or /usr/local). Otherwise you
 			     give the <path> to the directory which contain the
-			     library. 
+			     library.
 	     ],
 	     [if test "$withval" = yes ; then
 			EXPAT_HOME_PATH="${DEFAULT_CHECKING_PATH}"
@@ -42,7 +45,7 @@ if test -n "$EXPAT_HOME_PATH"; then
 AC_MSG_CHECKING(for EXPAT >= $min_expat_version)
 fi
 
-for EXPAT_HOME in ${EXPAT_HOME_PATH} 
+for EXPAT_HOME in ${EXPAT_HOME_PATH}
  do
 if test -r "$EXPAT_HOME/include/expat.h"; then
 
@@ -51,10 +54,10 @@ if test -r "$EXPAT_HOME/include/expat.h"; then
 		EXPAT_LIBS="-L${EXPAT_HOME}/lib -lexpat"
 	else
 		EXPAT_CFLAGS=
-		EXPAT_LIBS="-lexpat"		
+		EXPAT_LIBS="-lexpat"
 	fi
-	
-	CXXFLAGS="${BACKUP_CXXFLAGS} ${EXPAT_CFLAGS} ${GMP_CFLAGS}" 
+
+	CXXFLAGS="${BACKUP_CXXFLAGS} ${EXPAT_CFLAGS} ${GMP_CFLAGS}"
 	LIBS="${BACKUP_LIBS} ${EXPAT_LIBS} ${GMP_LIBS}"
 	AC_TRY_LINK(
 	[#include <expat.h>],
@@ -64,17 +67,17 @@ if test -r "$EXPAT_HOME/include/expat.h"; then
 	[#include <expat.h>
 	 int main () {  if(XML_MAJOR_VERSION < 1  || (XML_MAJOR_VERSION == 1 && XML_MINOR_VERSION < 95)) return -1;  else return 0; }
 	],[
-	expat_found="yes"	
+	expat_found="yes"
 	break
-	],[	
-	expat_problem="$problem $EXPAT_HOME"	
+	],[
+	expat_problem="$problem $EXPAT_HOME"
 	unset EXPAT_CFLAGS
-	unset EXPAT_LIBS	
+	unset EXPAT_LIBS
 	],[
 	expat_found="yes"
 	expat_cross="yes"
 	break
-	])	
+	])
 	],
 	[
 	expat_found="no"
@@ -87,9 +90,9 @@ else
 fi
 done
 
-if test "x$expat_found" = "xyes" ; then		
+if test "x$expat_found" = "xyes" ; then
 	AC_SUBST(EXPAT_CFLAGS)
-	AC_SUBST(EXPAT_LIBS)	
+	AC_SUBST(EXPAT_LIBS)
 	AC_DEFINE(XMLENABLED,1,[Define if Expat is installed])
 	HAVE_EXPAT=yes
 	if test "x$expat_cross" != "xyes"; then
@@ -104,11 +107,11 @@ elif test -n "$expat_problem"; then
 	AC_MSG_RESULT(problem)
 	echo "Sorry, your EXPAT version is too old. Disabling."
 	ifelse([$3], , :, [$3])
-elif test "x$expat_found" = "xno" ; then	
+elif test "x$expat_found" = "xno" ; then
 	AC_MSG_RESULT(not found)
 	ifelse([$3], , :, [$3])
-fi	
-	
+fi
+
 AM_CONDITIONAL(LINBOX_HAVE_EXPAT, test "x$HAVE_EXPAT" = "xyes")
 
 CXXFLAGS=${BACKUP_CXXFLAGS}
