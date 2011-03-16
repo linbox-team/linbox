@@ -54,89 +54,148 @@ namespace LinBox
 {
 
 
-	/*! @brief represents a table of values to plot.
+	/*! @brief Represents a table of values to plot.
 	 * list of values are reprensented by vectors.  the table is a vector
 	 * of these vectors.
 	 *
-	 * @warning NaN, inf are used as missing data instead of a more genenal
-	 * <code> union { double ; char } </code> which is either
-	 * { <double>, 'o'} (a float) or {0, 'x'} (a missing value). Could be a
-	 * string as well.
+	 * @warning NaN, inf are used as missing data. More genenally
+	 * we could store data in strings.
 	 */
-
 	class PlotStyle {
 	public:
-		enum TermType { png, pdf, eps, svg } ;
-		enum StyleType {histogram,lines} ;
+		//! What format the plot should be in?
+		enum TermType {
+			png, //!< png. Portable Network Graphics file.
+			pdf, //!< pdf. Portable Document Format actually, this is eps converted to pdf.
+			eps, //!< eps. Encapsulated PostScript. Cool for inclusion in LaTex files. This is the default.
+		       	svg, //!< sgv. Scalable Vector Graphics.
+			none //!< don't know yet...
+		} ;
 
-		PlotStyle()
+		//! What style of graphic : histogram (bars), lines between points ?
+		enum StyleType {
+			histogram, //! histogram plot. bars
+			lines,     //! points with lines. this is the default.
+			points     //! only points
+		} ;
+
+		/*! @brief Constructor.
+		 * By default, creates an eps plot with lines joining data points.
+		 */
+		PlotStyle() :
+			_term_(eps),_style_(lines)
 		{
 
 		}
 
-		void setTitle ( std::string  titre
+		/*! @brief sets the titles in the graph.
+		 * @param titre Title of the graph
+		 * @param titre_y Title of the y-axis (series)
+		 * @param titre_x Title of the x-axis (data points)
+		 */
+		void setTitle ( std::string    titre
 				, std::string  titre_y
 				, std::string  titre_x)
 		{
-			_title_ = titre ;
+			_title_   = titre ;
 			_title_x_ = titre_x ;
 			_title_y_ = titre_y ;
 		}
 
+		/*! @brief Gets the title of the graph.
+		 * @return a gnuplot command to set the title of the graph.
+		 */
 		std::string getTitle()
 		{
-			std::string title = "#title\nset title \"" ;
-			title += _title_ ;
-			title += "\"";
+			std::string title = "#title\nset title \""  + _title_ + '\"';
+			if (!_title_x_.empty())
+				title +="\nset xlabel \"" + _title_x_ +'\"' ;
+			if (!_title_y_.empty())
+				title +="\nset ylabel \"" + _title_y_ +'\"' ;
 			return title ;
 		}
+
+		/*! @brief Gets the title of points abscissa.
+		 * @return a gnuplot command to set the title of the abscissa.
+		 */
 		std::string getTitleX()
 		{
-			return _title_x_ ;
+			return "\nset xlabel \"" + _title_x_ + '\"' ;
 		}
+
+		/*! @brief Gets the title of the series.
+		 * @return a gnuplot command to set the title of the ordinate (series).
+		 */
 		std::string getTitleY()
 		{
-			return _title_y_ ;
+			return "\nset ylabel \"" + _title_y_ + '\"' ;
 		}
 
-		std::string getUnit()
+		/*! @brief get the title string.
+		 * @param index can be (0,1,2)
+		 * @param out the corresponding string ( title , x title , y title)
+		 */
+		std::string getRawTitle(int index=0)
 		{
-			return _unit_ ;
+			switch (index) {
+			case 0 :
+				return _title_ ;
+			case 1 :
+				return _title_x_ ;
+			case 2 :
+				return _title_y_ ;
+			default :
+				return "bad index" ;
+			}
 		}
 
-		void setUnit(std::string unit)
-		{
-			_unit_ = unit ;
-		}
-
+		/*! @brief Sets the output format.
+		 * @sa TermType
+		 * @param term type
+		 */
 		void setTerm( enum TermType term)
 		{
 			_term_ = term ;
 		}
 
+#if 0
+		/*! Set additionnal term features
+		 */
 		void setTermOption(std::string & opts)
 		{
 			_termopts_ = opts;
 		}
+#endif
 
+		/*! @brief Gets the output format.
+		 * @return string for setting the expected output format in gnuplot.
+		 */
 		std::string getTerm()
 		{
+			std::string term = "#term\nset term " ;
 			switch(_term_) {
 			case (png) :
-				return "#term\nset term png enhanced" ;
+				term += "png enhanced" ;
 			case (pdf) :
 				std::cerr << "warning, pdf not really working for now" << std::endl;
-				return "#term\nset term postscript eps enhanced color" ;
+				term += "postscript eps enhanced color" ;
 			case (eps) :
-				return "#term\nset term postscript eps enhanced color" ;
+				term += "postscript eps enhanced color" ;
 			case (svg) :
-				return "#term\nset term svg" ;
+				term += "svg" ;
+			case (none) :
 			default :
-				std::cerr  << "unknown term set" << std::endl;
-				return "set unknown term" ;
+				std::cerr  << " *** error ***" << std::endl << "No supported term set" << std::endl;
+				term += "unknown" ;
 			}
+			return term ;
 		}
 
+		/*! @brief Gets the graph output extension.
+		 * By default, this is ".eps".
+		 * @return a string for this extension, including the sepatating dot.
+		 *
+		 */
 		std::string getExt()
 		{
 			switch(_term_) {
@@ -157,25 +216,45 @@ namespace LinBox
 			}
 		}
 
+		/*! @brief gets the style of the graph.
+		 * This is very user-tweakable !!
+		 * @return the style for gnuplot.
+		 */
 		std::string getStyle()
 		{
 			return "#style\n"+_styleopts_ ;
 		}
 
+		/*! @brief sets the style of the graph.
+		 * This is very user-tweakable !!
+		 * @param style the style for gnuplot as a gnuplot command.
+		 */
 		void setStyle(std::string style)
 		{
 			_styleopts_ = style ;
 		}
+
+		/*! @brief adds some style line to the graph.
+		 * This is very user-tweakable !!
+		 * @param style a style line for gnuplot as a gnuplot command.
+		 */
 		void addStyle(std::string style)
 		{
 			_styleopts_ += "\n" + style ;
 		}
 
+		/*! @brief sets the legend position.
+		 * @param keypos the arguments to key (where the legend should be put)
+		 * can be : inside, outside,...
+		 */
 		void setKeyPos(std::string keypos)
 		{
 			_legend_pos_ = keypos ;
 		}
 
+		/*! @brief Gets the legend position.
+		 * by default, it is "on".
+		 */
 		std::string getKeyPos()
 		{
 			std::string lgd ="#legend\nset key " ;
@@ -186,6 +265,10 @@ namespace LinBox
 			return lgd;
 		}
 
+		/*! @brief Gets the name of the output graph.
+		 * @param basnam the raw name for the output.
+		 * @return basnam+extenstion.
+		 */
 		std::string getOutput(std::string basnam)
 		{
 			std::string setout = "#output\nset output \'" ;
@@ -200,11 +283,22 @@ namespace LinBox
 			return setout ;
 		}
 
+		/*! @brief Sets the type of plot.
+		 * @param type the type.
+		 * @sa StyleType
+		 *
+		 */
 		void setType(enum StyleType type)
 		{
 			_style_ = type ;
 		}
 
+		/*! @brief Sets the type of plot.
+		 * default is points joined with colored lines.
+		 * @return a string for gnuplot to set the plot type.
+		 * @sa StyleType
+		 *
+		 */
 		std::string getType()
 		{
 			std::string mystyle = "#style\n" ;
@@ -214,6 +308,8 @@ namespace LinBox
 				break;
 			case (lines) :
 				mystyle += "set style data linespoints " ;
+				break;
+			case (points) :
 				break;
 			default :
 				mystyle += "#style unknown." ;
@@ -243,6 +339,10 @@ namespace LinBox
 
 		}
 
+		/*! @brief adds a set of columns to use.
+		 * @param cols a list of column to use.
+		 * @pre \p _usingcols_ is not empty, ie \c setUsingSeries has already been called.
+		 */
 		void addUsingSeries(std::list<index_t> cols)
 		{
 			linbox_check(!cols.empty());
@@ -273,6 +373,12 @@ namespace LinBox
 
 		}
 
+		/*! @brief adds contiguous columns to use.
+		 * @param cols all colums between \c cols.first and \c cols.second
+		 * will be used.
+		 * @pre \p _usingcols_ is not empty, ie \c setUsingSeries has already been called.
+		 *
+		 */
 		void addUsingSeries(std::pair<index_t,index_t> cols)
 		{
 			linbox_check(!_usingcols_.empty());
@@ -285,6 +391,10 @@ namespace LinBox
 
 
 
+		/*! @brief Gets the plot command line.
+		 * @param File the name of/path to the data file (with extension)
+		 * @return a gnuplot "plot" command stream.
+		 */
 		std::string getPlotCommand(std::string File)
 		{
 			std::string PC = "#plot\nplot \'" + File + "\' ";
@@ -301,15 +411,15 @@ namespace LinBox
 		std::string                         _title_x_   ;   //!< title for the points
 		std::string                         _title_y_   ;   //!< title for the series
 		/*  units */
-		std::string                         _unit_      ;
+		// std::string                         _unit_      ;
 		/*  terminal output */
-		enum TermType                       _term_      ;
-		std::string                         _termopts_  ;
+		enum TermType                       _term_      ; //!< output data format.
+		// std::string                         _termopts_  ;
 		/*  plotting style */
-		enum StyleType                      _style_     ;
-		std::string                         _styleopts_ ;
+		enum StyleType                      _style_     ; //!< line/bar style
+		std::string                         _styleopts_ ; //!< gp style command.
 		/*  columns to use */
-		std::string                         _usingcols_ ;
+		std::string                         _usingcols_ ; //!< columns to be used (gp command)
 
 
 	} ;
@@ -339,34 +449,54 @@ namespace LinBox
 		~PlotData() {} ;
 
 		//! copy constructor.
-		PlotData(const PlotData & PD):
+		//! @param PD a PlotData to copy.
+		PlotData(const PlotData<NAM> & PD):
 			_tableau_(PD.getTable()),_nb_points_(PD.getPointsDim()),_nb_series_(PD.getSeriesDim()),_serie_name_(PD.getSerieNames()),_absci_name_(PD.getAbsciNames())
 		{
 
 		}
 
+		/*! @brief get the number of series.
+		 * @return number of series.
+		 */
 		index_t getSeriesDim()
 		{
 			return _nb_series_ ;
 		}
 
+		/*! @brief get the common number of points in each serie.
+		 * @return number of points.
+		 */
 		index_t getPointsDim()
 		{
 			return _nb_points_ ;
 		}
 
+		/*! @brief Sets the name of a serie.
+		 * @param i index of the serie
+		 * @param nom name of the serie
+		 */
 		void setSerieName(index_t i, std::string nom)
 		{
 			linbox_check(i<_nb_series_);
 			_serie_name_[i] = nom ;
 		}
 
+		/*! @brief Sets the name of a point.
+		 * @param i index for the the point
+		 * @param nom name of the point
+		 */
 		void setAbsciName(index_t j, NAM nom)
 		{
 			linbox_check(j<_nb_points_);
 			_absci_name_[j] = nom ;
 		}
 
+		/*! @brief gets the name of a serie.
+		 * Defaults to \c "serie.i"
+		 * @param i its index.
+		 * @return its name.
+		 */
 		std::string getSerieName(index_t i)
 		{
 			linbox_check(i<_nb_series_);
@@ -378,22 +508,37 @@ namespace LinBox
 			return(_serie_name_[i]);
 		}
 
+		/*! @brief gets the name of a point.
+		 * @param j its index.
+		 * @return its name.
+		 * @warning no default. \c setAbsciName has to be used beforehands.
+		 */
 		NAM getAbsciName(index_t j)
 		{
 			linbox_check(j<_nb_points_);
 			return(_absci_name_[j]) ;
 		}
 
+		/*! @brief gets all the names in the series.
+		 * @return a vector of names.
+		 */
 		std::vector<std::string > getSerieNames()
 		{
 			return _serie_name_ ;
 		}
 
+		/*! @brief gets all the names in the points.
+		 * @return a vector of names.
+		 */
 		std::vector<NAM > getAbsciNames()
 		{
 			return _absci_name_ ;
 		}
 
+		/*! @brief modifies the number of series.
+		 * @param n the new number of series. Some data will be lost if n is smaller than
+		 * the current size.
+		 */
 		void resizeSeries( index_t & n)
 		{
 			if (n<_nb_series_) {
@@ -403,6 +548,10 @@ namespace LinBox
 			return;
 		}
 
+		/*! @brief modifies the number of points.
+		 * @param n the new number of points in every series. Some data
+		 * will be lost if n is smaller than the current size.
+		 */
 		void resizePoints( index_t & n)
 		{
 			if (n<_nb_points_) {
@@ -412,6 +561,11 @@ namespace LinBox
 				_tableau_[i].resize(n);
 		}
 
+		/*! @brief sets a new entry.
+		 * @param i index of the serie
+		 * @param j index of the point
+		 * @param val value to be inserted.
+		 */
 		void setEntry(index_t i, index_t j, float val)
 		{
 			linbox_check(i<_nb_series_);
@@ -420,6 +574,11 @@ namespace LinBox
 			return ;
 		}
 
+		/*! @brief gets a value for an entry.
+		 * @param i index of the serie
+		 * @param j index of the point
+		 * @return val value of point j in serie j.
+		 */
 		float getEntry(index_t i, index_t j)
 		{
 			linbox_check(i<_nb_series_);
@@ -427,6 +586,9 @@ namespace LinBox
 			return _tableau_[i][j] ;
 		}
 
+		/*! gets a reference to the array of data.
+		 * @return a reference to the member \c _tableau_ representing the data.
+		 */
 		std::vector<std::vector< float > > & getTable()
 		{
 			return _tableau_ ;
@@ -437,8 +599,8 @@ namespace LinBox
 	template<class NAM>
 	class PlotGraph {
 	private :
-		PlotData<NAM>          & _data_ ;
-		PlotStyle             & _style_ ;
+		PlotData<NAM>          & _data_ ;   //!< reference to the data points
+		PlotStyle             & _style_ ;   //!< reference to a plotting style
 		std::string         _filename_  ;   //!< name for the output file (without extension). a random \c _XXXXXX suffix will be added to make it unique.
 
 		/*! @internal
@@ -489,14 +651,57 @@ namespace LinBox
 
 		}
 
+		/*! @brief Sets a new data structure.
+		 * @param data a reference to a PlotData class.
+		 */
+		void setData( PlotData<NAM> & data )
+		{
+			_data_ = data ;
+		}
+
+		/*! @brief Gets the data.
+		 * @param[in,out] data a reference to a PlotData class.
+		 */
+		PlotData<NAM> & refData( PlotData<NAM> & data)
+		{
+			return data = _data_ ;
+		}
+
+		/*! @brief Sets a new style structure.
+		 * @param style a reference to a PlotData class.
+		 */
+		void setStyle( PlotStyle & style )
+		{
+			_style_ = style ;
+		}
+
+		/*! @brief Gets the style.
+		 * @param[in,out] style a reference to a PlotData class.
+		 */
+		PlotStyle & refStyle( PlotStyle & style)
+		{
+			return style = _style_ ;
+		}
+
 	public :
 
+		/*! @brief Constructor for the PlotGraph class.
+		 * Plots a series of data according to a style.
+		 * @param data data to be plot, will be processed by the style
+		 * @param style sets parameters to gnuplot to achieve a nice
+		 * plot.
+		 */
 		PlotGraph( PlotData<NAM> & data, PlotStyle & style ) :
 			_data_(data),_style_(style)
 		{
 			srand(time(NULL));
 		}
 
+		/*! @brief sets the ouput file name.
+		 * All output is put in a "data" subfolder.
+		 * @warning Since no file is overwritten, this
+		 * directory can rapidly get very populated.
+		 */
 		void setOutFilename( std::string filename )
 		{
 			if ( filename.empty() ) {
@@ -509,13 +714,7 @@ namespace LinBox
 
 		} ;
 
-		// ~PlotData() {} ;
-
-		// no copy constructor.
-
-		/*! Prints data in a latex tabular.
-		 * @todo 1ère case : titre_y,titre_y ;
-		 * @todo unités.
+		/*! @brief Prints data in a latex tabular.
 		 */
 		void print_latex()
 		{
@@ -532,6 +731,7 @@ namespace LinBox
 			std::ofstream FN(unique_filename.c_str());
 			//!@todo check FN opened.
 			// begin
+			FN << "\%\\usepackage{slashbox}" << std::endl;
 			FN << "\\begin{table}" << std::endl;
 			FN << "\\centering"    << std::endl;
 			// format
@@ -539,6 +739,15 @@ namespace LinBox
 			for (index_t j = nb_points ; j-- ; )
 				FN << 'c' ;
 			FN << "|}" << std::endl;
+			// top left case
+			std::string series = _style_.getRawTitle(2);
+			std::string points = _style_.getRawTitle(1);
+			if (!points.empty()) {
+				FN << "\\backslashbox{" << points << "}{" << series << "}" ;
+			}
+			else {
+				FN << series ;
+			}
 			// first line
 			for (index_t j = 0 ; j < nb_points ; ++j ) {
 				FN << " & " <<  _data_.getAbsciName(j) ;
@@ -554,14 +763,9 @@ namespace LinBox
 					FN << "\\\\" ;
 				FN << std::endl;
 			}
-			// commenting out what is not printed yet.
-			FN << "\% unit is : "      <<  _style_.getUnit() << std::endl;
-			FN << "\% title is : "     <<  _style_.getTitle() << std::endl;
-			FN << "\% row title is : " <<  _style_.getTitleX() << std::endl;
-			FN << "\% col title is : " <<  _style_.getTitleY() << std::endl;
 			// end
 			FN << "\\end{tabular}" << std::endl;
-			FN << "\\caption{<+" << "Caption text+>}" << std::endl;
+			FN << "\\caption{" << _style_.getRawTitle() << "}" << std::endl;
 			FN << "\\label{tab:<+" << "label+>}" << std::endl;
 			FN << "\\end{table}" << std::endl ;
 
@@ -572,9 +776,10 @@ namespace LinBox
 
 		}
 
-		/*!Plots the data with gnuplot.
+		/*!@brief Plots the data with gnuplot.
 		 * Produces data in a .dat file, creates a .gp gnuplot script and
-		 * outputs a graph.
+		 * outputs a graph calling gnuplot.
+		 * @warning If gnuplot is not available, fall back to the latex method.
 		 */
 		void print_gnuplot()
 		{
