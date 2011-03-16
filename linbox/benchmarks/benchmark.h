@@ -176,13 +176,17 @@ namespace LinBox
 			switch(_term_) {
 			case (png) :
 				term += "png enhanced" ;
+				break;
 			case (pdf) :
 				std::cerr << "warning, pdf not really working for now" << std::endl;
 				term += "postscript eps enhanced color" ;
+				break;
 			case (eps) :
 				term += "postscript eps enhanced color" ;
+				break;
 			case (svg) :
 				term += "svg" ;
+				break;
 			case (none) :
 			default :
 				std::cerr  << " *** error ***" << std::endl << "No supported term set" << std::endl;
@@ -320,6 +324,30 @@ namespace LinBox
 		}
 
 		/*! @brief tells which columns to use.
+		 * @param col a column to use.
+		 */
+		void setUsingSeries(index_t col)
+		{
+			linbox_check(col>1);
+			std::ostringstream usingcols ;
+			usingcols << " using " << col << ":xtic(1) title columnheader(" << col << ")" ;
+			_usingcols_ = usingcols.str();
+		}
+
+		/*! @brief adds a column to use
+		 * @param col a  column to use.
+		 * @pre \p _usingcols_ is not empty, ie \c setUsingSeries has already been called.
+		 */
+		void addUsingSeries(index_t col)
+		{
+			linbox_check(col>2);
+			linbox_check(!_usingcols_.empty());
+			std::ostringstream usingcols ;
+			usingcols << ", \'\' u " << col << " ti col " ;
+			_usingcols_ += usingcols.str();
+		}
+
+		/*! @brief tells which columns to use.
 		 * @param cols a list of column to use.
 		 */
 		void setUsingSeries(std::list<index_t> cols)
@@ -328,7 +356,7 @@ namespace LinBox
 			std::list<index_t>::iterator it = cols.begin();
 			// no way to check *it< coldim...
 			std::ostringstream usingcols ;
-			usingcols << " u" << *it << ":xtic(1) title columnheader(" << *it << ")" ;
+			usingcols << " using " << *it << ":xtic(1) title columnheader(" << *it << ")" ;
 			++it ;
 			for (;it != cols.end();++it) {
 				usingcols << ", \'\' u " << *it << " ti col " ;
@@ -354,8 +382,6 @@ namespace LinBox
 
 			}
 			_usingcols_ += usingcols.str();
-
-
 		}
 
 		/*! @brief tells which columns to use.
@@ -388,8 +414,6 @@ namespace LinBox
 			_usingcols_ += usingcols.str();
 
 		}
-
-
 
 		/*! @brief Gets the plot command line.
 		 * @param File the name of/path to the data file (with extension)
@@ -441,6 +465,8 @@ namespace LinBox
 		PlotData(index_t nb_pts, index_t nb_srs=1) :
 			_tableau_(nb_srs),_nb_points_(nb_pts),_nb_series_(nb_srs),_serie_name_(nb_srs),_absci_name_(nb_pts)
 		{
+			linbox_check(nb_srs);
+			linbox_check(nb_pts);
 			for (index_t i = 0 ; i < nb_srs ; ++i)
 				_tableau_[i].resize(nb_pts);
 		}
@@ -722,7 +748,7 @@ namespace LinBox
 			index_t nb_series = _data_.getSeriesDim();
 
 			linbox_check(nb_points);
-			linbox_check(nb_series_);
+			linbox_check(nb_series);
 			// srand(time(NULL));
 			// std::ostringstream unique_filename  ;
 			std::string unique_filename = _randomName();
