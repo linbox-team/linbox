@@ -11,7 +11,7 @@ all all-local: $(USE_TARGETS)
 install install-data-local: $(INSTALL_TARGETS)
 
 docs :
-	sed -i 's/^\\version.*/\\version\ $(VERSION)/' mainpage.doxy
+	sed -i 's/\\version\s1.*/\\version\ $(VERSION)/' mainpage.doxy
 	if test -d linbox-html ; then echo exists; else mkdir linbox-html ; fi
 	if test -d linbox-dev-html ; then echo exists; else mkdir linbox-dev-html ; fi
 	cp index-dev.html linbox-dev-html/index.html

@@ -22,7 +22,12 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/*! @file benchmarks/benchmark-fgemm.C */
+/*! @file benchmarks/benchmark-fgemm.C
+ * @ingroup benchmarks
+ * @brief Benchmarking dense matrix multiplication on finite fields.
+ * This file benchmarks the FFPACK::fgemm implementation for various fields,
+ * shape and parameters. Actually, we use the wrapper member \c mul of LinBox::BlasMatrixDomain.
+ */
 
 #include "benchmarks/benchmark.h"
 #include "linbox/util/timer.h"
@@ -105,7 +110,7 @@ void bench_square( index_t min, index_t max, int step )
 	typedef LinBox::Modular<double> Field ;
 	typedef LinBox::Modular<float> Gield ;
 
-	int nb_pts = (max-min)/step ;
+	int nb_pts = (int) std::ceil((double)(max-min)/(double)step) ;
 	LinBox::PlotData<index_t>  Data(nb_pts,4);
 	Field F(13) ;
 	launch_bench_square(F,min,max,step,Data,0);
