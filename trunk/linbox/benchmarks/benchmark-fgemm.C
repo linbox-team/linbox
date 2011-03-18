@@ -30,7 +30,7 @@
  */
 
 #include "benchmarks/benchmark.h"
-#include "linbox/util/timer.h"
+#include "linbox/util/error.h"
 #include "linbox/field/modular.h"
 #include "linbox/field/modular-balanced.h"
 #include "linbox/ffpack/ffpack.h"
@@ -42,12 +42,23 @@
 /*        Outils          */
 /* ********************** */
 
+bool keepon(index_t & repet, Timer & tim)
+{
+	if (tim.userElapsedTime() < 0.5) {
+		++repet ;
+		return true;
+	}
+	if (repet<1)
+		return true
+	return false ;
+}
+
 double fgemm_mflops(int m, int n, int k)
 {
 	return (double)m*(double)n/1e6*(double)k ;
 }
 
-double compute_mflops(Timer & t, double mflo, int rpt = 1)
+double compute_mflops(const Timer & t, const double mflo, const int rpt = 1)
 {
 	linbox_check(rpt);
 	return (double) ((mflo*rpt)/t.usertime());
@@ -69,15 +80,15 @@ void launch_bench_square(Field & F // const problem
 			 , index_t series_nb)
 {
 	index_t l = 0 ;
-	Timer fgemm_tim ;
-	fgemm_tim.clear();
+	Timer fgemm_sq_tim ;
+	fgemm_sq_tim.clear();
 	double mflops ;
 	typedef typename Field::Element  Element;
 	typedef typename Field::RandIter Randiter ;
 	Randiter R(F) ;
 	LinBox::BlasMatrixDomain<Field> BMD(F) ;
 	LinBox::RandomDenseMatrix<Randiter,Field> RandMat(F,R);
-	index_t repet = 3 ;
+	// index_t repet = 3 ;
 	for ( index_t i = min ; i < max ; i += step , ++l ) {
 		int ii = i ; // sinon, le constructeur le plus proche serait (_Matrix,_Field)... n'impnawak...
 		LinBox::BlasMatrix<Element> A (ii,ii);
@@ -88,20 +99,14 @@ void launch_bench_square(Field & F // const problem
 		RandMat.random(C);
 		if (!series_nb)
 			Data.setAbsciName(l,i); // only write abscissa for serie 0
-		int temoin = 0 ; // makes sure mul is computed at almost no cost.
-		index_t j = 0 ;
-		fgemm_tim.clear() ;
-		fgemm_tim.start() ;
-		for (; j < repet ; ++j ) {
+		index_t j = 0 ; // number of repets.
+		// fgemm_sq_tim.clear() ;
+		fgemm_sq_tim.start() ;
+		while( keepon(j,fgemm_sq_tim) ) {
 			BMD.mul(C,A,B) ; // C = AB
-			temoin += (int)std::abs(C.getEntry(0,0))+1 ;
-			if (fgemm_tim.usertime()>0.5) {
-				++j;
-				break;
-			}
 		}
-		fgemm_tim.stop();
-		if (temoin == 0) {
+		fgemm_sq_tim.stop();
+		if (!j){
 			std::cout << "multiplication did not happen" << std::endl;
 		}
 #ifdef _LB_DEBUG
@@ -109,7 +114,7 @@ void launch_bench_square(Field & F // const problem
 			std::cout << i << ',' << j << std::endl;
 		}
 #endif
-		mflops = compute_mflops(fgemm_tim,fgemm_mflops(i,i,i),j);
+		mflops = compute_mflops(fgemm_sq_tim,fgemm_mflops(i,i,i),j);
 		Data.setEntry(series_nb,l,mflops);
 	}
 	std::ostringstream nam ;
@@ -137,15 +142,15 @@ void launch_bench_blas(index_t min, index_t max, int step
 	typedef LinBox::Modular<T> Field ;
 	Field F((int)charact);
 	index_t l = 0 ;
-	Timer fgemm_tim ;
-	fgemm_tim.clear();
+	Timer fgemm_blas_tim ;
+	fgemm_blas_tim.clear();
 	double mflops ;
 	typedef typename Field::Element  Element ;
 	typedef typename Field::RandIter Randiter;
 	Randiter R(F) ;
 	// LinBox::BlasMatrixDomain<Field> BMD(F) ;
 	// LinBox::RandomDenseMatrix<Randiter,Field> RandMat(F,R);
-	index_t repet = 3 ;
+	// index_t repet = 3 ;
 	index_t mm = max * max ;
 	Element *  A = new Element[mm] ;
 	Element *  B = new Element[mm] ;
@@ -159,22 +164,18 @@ void launch_bench_blas(index_t min, index_t max, int step
 	for ( index_t i = min ; i < max ; i += step , ++l ) {
 		int ii = i ; // sinon, le constructeur le plus proche serait (_Matrix,_Field)... n'impnawak...
 		index_t j = 0 ;
-		fgemm_tim.clear() ;
-		fgemm_tim.start() ;
-		for (; j < repet ; ++j ) {
+		fgemm_blas_tim.clear() ;
+		fgemm_blas_tim.start() ;
+		while(keepon(j,fgemm_blas_tim)) {
 			LinBox::FFLAS::fgemm(G,LinBox::FFLAS::FflasNoTrans,LinBox::FFLAS::FflasNoTrans,
-						     ii,ii,ii,
-						     1.,
-						     A,ii,B,ii,
-						     0.,
-						     C,ii) ; // the last 2 arguments are superfluous and meaningless.
-			if (fgemm_tim.usertime()>0.5) {
-				++j;
-				break;
-			}
+					     ii,ii,ii,
+					     1.,
+					     A,ii,B,ii,
+					     0.,
+					     C,ii) ; // the last 2 arguments are superfluous and meaningless.
 		}
-		fgemm_tim.stop();
-		mflops = compute_mflops(fgemm_tim,fgemm_mflops(i,i,i),j);
+		fgemm_blas_tim.stop();
+		mflops = compute_mflops(fgemm_blas_tim,fgemm_mflops(i,i,i),j);
 		Data.setEntry(series_nb,l,mflops);
 	}
 
@@ -205,35 +206,29 @@ void launch_bench_rectangular(Field & F // const problem
 			    , LinBox::PlotData<std::string> & Data
 			    , index_t point_nb)
 {
-	Timer fgemm_tim ;
-	fgemm_tim.clear();
+	Timer fgemm_rect_tim ;
+	fgemm_rect_tim.clear();
 	double mflops ;
 	typedef typename Field::Element  Element;
 	typedef typename Field::RandIter Randiter ;
 	Randiter R(F) ;
 	LinBox::BlasMatrixDomain<Field> BMD(F) ;
 	LinBox::RandomDenseMatrix<Randiter,Field> RandMat(F,R);
-	index_t repet = 3 ;
+	// index_t repet = 3 ;
 	LinBox::BlasMatrix<Element> A (m,k);
 	LinBox::BlasMatrix<Element> B (k,n);
 	LinBox::BlasMatrix<Element> C (m,n);
 	RandMat.random(A);
 	RandMat.random(B);
 	RandMat.random(C);
-	int temoin = 0 ; // makes sure mul is computed at almost no cost.
 	index_t j = 0 ;
-	fgemm_tim.clear() ;
-	fgemm_tim.start() ;
-	for (; j < repet ; ++j ) {
+	fgemm_rect_tim.clear() ;
+	fgemm_rect_tim.start() ;
+	while (keepon(j,fgemm_rect_tim)) {
 		BMD.mul(C,A,B) ; // C = AB
-		temoin += (int)std::abs(C.getEntry(0,0))+1 ;
-		if (fgemm_tim.usertime()>0.5) {
-			++j;
-			break;
-		}
 	}
-	fgemm_tim.stop();
-	if (temoin == 0) {
+	fgemm_rect_tim.stop();
+	if (!j) {
 		std::cout << "multiplication did not happen" << std::endl;
 	}
 #ifdef _LB_DEBUG
@@ -241,7 +236,7 @@ void launch_bench_rectangular(Field & F // const problem
 		std::cout << point_nb << std::endl;
 	}
 #endif
-	mflops = compute_mflops(fgemm_tim,fgemm_mflops(m,k,n),j);
+	mflops = compute_mflops(fgemm_rect_tim,fgemm_mflops(m,k,n),j);
 	Data.setEntry(0,point_nb,mflops);
 	std::ostringstream nam ;
 	nam << "\"(" << m << ',' << k << ',' << n << ")\"" ;
@@ -308,7 +303,7 @@ void bench_blas( index_t min, index_t max, int step )
 
 }
 
-/*!  Benchmark fgemm Y=AX for several fields.
+/*! @brief Benchmark square fgemm Y=AX for several fields.
  * @param min min size
  * @param max max size
  * @param step step of the size between 2 benchmarks
@@ -372,23 +367,24 @@ void bench_square( index_t min, index_t max, int step, int charac )
 }
 
 
-/*!  Benchmark fgemm Y=AX for several shapes.
+/*! @brief Benchmark fgemm Y=AX for several shapes.
  * Let n=k^2.
  * we test the following shapes :
- * (1,nk,nk), (nk,1,nk), (nk,nk,1),
- * (k,nk,n), (nk,k,n),(nk,n,k)
- * (k,n,nk), (n,k,nk),(n,nk,k)
- * (n,n,n),
+ * - (l,nk,nk), (nk,l,nk), (nk,nk,l) : like vector-product
+ * - (kl,nk,n), (nk,kl,n),(nk,n,kl)     : one small rectangular matrix
+ * - (kl,n,nk), (n,kl,nk),(n,nk,kl)     : same
+ * - (nl,n,n),(n,nl,n),(n,n,nl)         : square (or close to)
+ * .
  * @param k parameter.
+ * @param charac characteristic of the field.
  * @param l small parameter (ie close to 1)
  */
-void bench_rectangular( index_t k, index_t l = 2 )
+void bench_rectangular( index_t k, int charac, index_t l = 2 )
 {
 	int n  = k*k ;
 	int nk = n*k ;
 	int kl = k*l ;
 	int nl = n*l ;
-	int charac = 2011 ;
 	typedef LinBox::Modular<double> Field ;
 	Field F(charac) ;
 
@@ -439,22 +435,49 @@ void bench_rectangular( index_t k, index_t l = 2 )
 
 }
 
-/*  Benchmark fgemm Y=AX against available BLAS cblas_dgemm */
-
 /*  Benchmark fgemm Y = a AX + b Y for various (a,b) couples */
 
 /*  main */
 
 int main( int ac, char ** av)
 {
-	//! @todo parse arguments here.
-	bench_blas(100,1500,100);
+	/*  Argument parsing/setting */
 
-	bench_square(100,1500,100,13);
-	bench_square(100,1500,100,2011);
-	bench_square(100,1500,100,65537);
+	static size_t       min = 100;     /*  min size */
+	static size_t       max = 1500;    /*  max size (not included) */
+	static size_t       step = 100;    /*  step between 2 sizes */
 
-	bench_rectangular(20);
+        static Argument as[] = {
+                { 'm', "-m min", "Set minimal size of matrix to test."    , TYPE_INT , &min },
+                { 'M', "-M Max", "Set maximal size."                      , TYPE_INT , &max },
+                { 's', "-s step", "Sets the gap between two matrix sizes.", TYPE_INT , &step },
+		END_OF_ARGUMENTS
+        };
+
+	parseArguments (ac, av, as);
+
+	if (min >= max) {
+		throw LinBox::LinBoxError("min value should be smaller than max...");
+	}
+	if (min + step >= max) {
+		std::cout << "Warning : your x axis has only one point. You should have a smaller step." << std::endl;
+	}
+
+	//! @todo use commentator.
+
+
+	// against pure blas routine
+	bench_blas(min,max,step);
+
+	// square for various fields
+	bench_square(min,max,step,13);
+	bench_square(min,max,step,2011);
+	bench_square(min,max,step,65537);
+
+	// various shapes.
+	int cube = (int) std::pow(max,double(1/3.));
+	// std::cout << cube << std::endl;
+	bench_rectangular(cube,2011);
 
 	return EXIT_SUCCESS ;
 }

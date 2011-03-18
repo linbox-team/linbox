@@ -158,8 +158,8 @@ namespace LinBox
 
 		}
 	};
-	/*! @internal A function is "not implemented yet(tm)".
-	 * where, why ?
+	/*! @internal Something went wrong.
+	 * what ?
 	 */
 	class LinBoxFailure : public NotImplementedYet {
 	public:
@@ -190,6 +190,47 @@ namespace LinBox
 		}
 	};
 
+	/*! @internal Something is wrong.
+	 * what ?
+	 */
+	class LinBoxError : public NotImplementedYet {
+	public:
+		/*! @internal
+		 * User failed.
+		 * The parameter help debugging/explaining.
+		 * @param function usually \c __func__, the function that threw the error
+		 * @param file     usually \c __FILE__, the file where this function is
+		 * @param line     usually \c __LINE__, the line where it happened
+		 * @param what     what happened ? should not be NULL...
+		 */
+		LinBoxError(const char * what,
+			    const char * function='\0',
+			    const char* file='\0',
+			    int line=-1)
+		{
+			if (_errorStream == (std::ostream *) 0)
+				_errorStream = &std::cerr;
+
+			(*_errorStream) << std::endl << std::endl;
+			(*_errorStream) << " *** ERROR *** : " << what << std::endl;
+			if (function) {
+				(*_errorStream) << "(at " << function ;
+				if (file) {
+					(*_errorStream) << " in " << file ;
+					if (line>=0)
+						(*_errorStream) << ':' <<  line ;
+					(*_errorStream) << ")" ;
+				}
+			}
+			else if (file) { // extremely unlikely...
+				(*_errorStream) << "(in " << file ;
+				if (line>=0)
+					(*_errorStream) << ':' <<  line ;
+				(*_errorStream) << ")" ;
+			}
+			(*_errorStream) << std::endl;
+		}
+	};
 }
 
 #ifdef LinBoxSrcOnly
