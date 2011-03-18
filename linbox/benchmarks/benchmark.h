@@ -64,26 +64,44 @@ namespace LinBox
 	class PlotStyle {
 	public:
 		//! What format the plot should be in?
-		enum TermType {
-			png, //!< png. Portable Network Graphics file.
-			pdf, //!< pdf. Portable Document Format actually, this is eps converted to pdf.
-			eps, //!< eps. Encapsulated PostScript. Cool for inclusion in LaTex files. This is the default.
-		       	svg, //!< sgv. Scalable Vector Graphics.
-			none //!< don't know yet...
-		} ;
+		struct Term
+		{
+			enum Type {
+				png  = 100, //!< png. Portable Network Graphics file.
+				pdf  = 101, //!< pdf. Portable Document Format actually, this is eps converted to pdf.
+				eps  = 102, //!< eps. Encapsulated PostScript. Cool for inclusion in LaTex files. This is the default.
+				svg  = 103, //!< sgv. Scalable Vector Graphics.
+				other= 104 //!< don't know yet...
+			} ;
+		};
 
-		//! What style of graphic : histogram (bars), lines between points ?
-		enum StyleType {
-			histogram, //! histogram plot. bars
-			lines,     //! points with lines. this is the default.
-			points     //! only points
-		} ;
+		// enum NoType { other = 0 } ;
+		//! What style of graphic : histogram ? graph ?
+		struct Plot
+		{
+			enum Type {
+				histo = 200, //! histogram plot. This is the default. x ticks are evenly spaced, whatever there value and are labelled with their value.
+				graph = 201, //! standard plot. Plots y_i=f(x) with x in the first colum and y_i in ith column. x-ticks are well spaced.
+				other = 202  //! other (ie user supplied).
+			} ;
+		};
+
+		struct Line
+		{
+			enum Type {
+				lines      = 300,  //! lines.
+				histogram  = 301,  //! histogram (boxes).
+				linespoints= 302,  //! lines with points. (default)
+				points     = 303,  //! only the points.
+				other      = 304   //! rien.
+			} ;
+		};
 
 		/*! @brief Constructor.
-		 * By default, creates an eps plot with lines joining data points.
+		 * By default, creates an histogram representing the data in an eps plot.
 		 */
 		PlotStyle() :
-			_term_(eps),_style_(lines)
+			_term_(Term::eps),_plot_type_(Plot::histo),_line_type_(Line::histogram)
 		{
 
 		}
@@ -153,7 +171,7 @@ namespace LinBox
 		 * @sa TermType
 		 * @param term type
 		 */
-		void setTerm( enum TermType term)
+		void setTerm( enum Term::Type term)
 		{
 			_term_ = term ;
 		}
@@ -174,20 +192,20 @@ namespace LinBox
 		{
 			std::string term = "#term\nset term " ;
 			switch(_term_) {
-			case (png) :
+			case (Term::png) :
 				term += "png enhanced" ;
 				break;
-			case (pdf) :
+			case (Term::pdf) :
 				std::cerr << "warning, pdf not really working for now" << std::endl;
 				term += "postscript eps enhanced color" ;
 				break;
-			case (eps) :
+			case (Term::eps) :
 				term += "postscript eps enhanced color" ;
 				break;
-			case (svg) :
+			case (Term::svg) :
 				term += "svg" ;
 				break;
-			case (none) :
+			case (Term::other) :
 			default :
 				std::cerr  << " *** error ***" << std::endl << "No supported term set" << std::endl;
 				term += "unknown" ;
@@ -203,16 +221,16 @@ namespace LinBox
 		std::string getExt()
 		{
 			switch(_term_) {
-			case (png) :
+			case (Term::png) :
 				return ".png" ;
-			case (pdf) :
+			case (Term::pdf) :
 #ifndef __LINBOX_HAVE_GHOSTSCRIPT
 				std::cerr << "warning, pdf not available. falling back to eps" << std::endl;
 #endif
 				return ".pdf" ;
-			case (eps) :
+			case (Term::eps) :
 				return ".eps" ;
-			case (svg) :
+			case (Term::svg) :
 				return ".svg" ;
 			default :
 				std::cerr << "unknown extension set" << std::endl;
@@ -220,6 +238,7 @@ namespace LinBox
 			}
 		}
 
+#if 0
 		/*! @brief gets the style of the graph.
 		 * This is very user-tweakable !!
 		 * @return the style for gnuplot.
@@ -237,15 +256,7 @@ namespace LinBox
 		{
 			_styleopts_ = style ;
 		}
-
-		/*! @brief adds some style line to the graph.
-		 * This is very user-tweakable !!
-		 * @param style a style line for gnuplot as a gnuplot command.
-		 */
-		void addStyle(std::string style)
-		{
-			_styleopts_ += "\n" + style ;
-		}
+#endif
 
 		/*! @brief sets the legend position.
 		 * @param keypos the arguments to key (where the legend should be put)
@@ -289,48 +300,85 @@ namespace LinBox
 
 		/*! @brief Sets the type of plot.
 		 * @param type the type.
-		 * @sa StyleType
+		 * @sa PlotType
 		 *
 		 */
-		void setType(enum StyleType type)
+		void setPlotType(enum Plot::Type type)
 		{
-			_style_ = type ;
+			_plot_type_ = type ;
+			// _plot_extra_ = moreargs ;
 		}
 
-		/*! @brief Sets the type of plot.
-		 * default is points joined with colored lines.
+		/*! @brief Sets the way dots are linked.
+		 * @sa LineType
+		 * @param linetype type
+		 */
+		void setLineType( enum Line::Type type)
+		{
+			_line_type_ = type ;
+		}
+
+		/*! @brief Gets the type of plot.
+		 * default is histogram, or if graph is supplied, then the default is linespoints.
+		 * Can be totally customized.
 		 * @return a string for gnuplot to set the plot type.
-		 * @sa StyleType
+		 * @sa PlotType
 		 *
 		 */
-		std::string getType()
+		std::string getPlotType()
 		{
-			std::string mystyle = "#style\n" ;
-			switch(_style_) {
-			case (histogram) :
-				mystyle += "set style data histogram " ;
-				break;
-			case (lines) :
-				mystyle += "set style data linespoints " ;
-				break;
-			case (points) :
-				break;
-			default :
-				mystyle += "#style unknown." ;
-				break;
+			_styleopts_ += "\nset datafile missing \"inf\"" ;
+			std::string mystyle = "#style\nset style data " ;
+			if (_line_type_ != Line::other) {
+				switch (_line_type_) {
+				case (Line::lines) :
+					mystyle += "lines" ;
+					break;
+				case (Line::histogram) :
+					mystyle += "histogram" ;
+					break;
+				case (Line::points) :
+					mystyle += "points" ;
+					break;
+				case (Line::linespoints) :
+					mystyle += "linespoints" ;
+					break;
+				default :
+					std::cout << __func__ << " : you should have set the LineType when ploting PlotType::graph !" << std::endl;
+					mystyle += "other" ;
+				}
 			}
-			mystyle += "\nset datafile missing \"inf\"" ;
+			else { // userd defined datastyle
+				return _styleopts_  ;
+			}
+			// some more style args :
+			mystyle += "\n" + _styleopts_ + "\n";
 			return mystyle ;
+		}
+
+		/*! @brief adds some style line to the graph.
+		 * This is very user-tweakable !!
+		 * @param style a style line for gnuplot as a gnuplot command.
+		 */
+		void addPlotType(std::string style)
+		{
+			_styleopts_ += "\n" + style ;
 		}
 
 		/*! @brief tells which columns to use.
 		 * @param col a column to use.
 		 */
-		void setUsingSeries(index_t col)
+		void setUsingSeries(index_t col, std::string moreargs= "")
 		{
 			linbox_check(col>1);
 			std::ostringstream usingcols ;
-			usingcols << " using " << col << ":xtic(1) title columnheader(" << col << ")" ;
+			if (_plot_type_ == Plot::histo) {
+				usingcols << " using " << col << ":xtic(1) title columnheader(" << col << ") "  << moreargs << " ";
+			}
+			else {
+				linbox_check(_plot_type_ == Plot::graph);
+				usingcols << " using 1:" << col << " title columnheader(" << col << ") "  << moreargs << " ";
+			}
 			_usingcols_ = usingcols.str();
 		}
 
@@ -338,50 +386,72 @@ namespace LinBox
 		 * @param col a  column to use.
 		 * @pre \p _usingcols_ is not empty, ie \c setUsingSeries has already been called.
 		 */
-		void addUsingSeries(index_t col)
+		void addUsingSeries(index_t col, std::string moreargs= "")
 		{
 			linbox_check(col>2);
 			linbox_check(!_usingcols_.empty());
 			std::ostringstream usingcols ;
-			usingcols << ", \'\' u " << col << " ti col " ;
+			usingcols << ", \'\' using " ;
+			if (_plot_type_ == Plot::graph)
+				usingcols << "1:" ;
+			usingcols << col << " ti col "  << moreargs << " ";
 			_usingcols_ += usingcols.str();
 		}
 
 		/*! @brief tells which columns to use.
 		 * @param cols a list of column to use.
 		 */
-		void setUsingSeries(std::list<index_t> cols)
+		void setUsingSeries(std::list<index_t> cols, std::string moreargs= "")
 		{
 			linbox_check(!cols.empty());
 			std::list<index_t>::iterator it = cols.begin();
 			// no way to check *it< coldim...
 			std::ostringstream usingcols ;
-			usingcols << " using " << *it << ":xtic(1) title columnheader(" << *it << ")" ;
-			++it ;
-			for (;it != cols.end();++it) {
-				usingcols << ", \'\' u " << *it << " ti col " ;
-
+			if (_plot_type_ == Plot::histo) {
+				usingcols << " using " << *it << ":xtic(1) title columnheader(" << *it << ") " << moreargs << " " ;
+				++it ;
+				for (;it != cols.end();++it) {
+					usingcols << ", \'\' using " << *it << " ti col "  << moreargs << " ";
+				}
 			}
+			else {
+				linbox_check(_plot_type_ == Plot::graph);
+				usingcols << " using 1:" << *it << " title columnheader(" << *it << ") "  << moreargs << " ";
+				++it ;
+				for (;it != cols.end();++it) {
+					usingcols << ", \'\' using 1:" << *it << " ti col "  << moreargs << " ";
+				}
+			}
+
 			_usingcols_ = usingcols.str();
-
-
+			return;
 		}
 
 		/*! @brief adds a set of columns to use.
 		 * @param cols a list of column to use.
 		 * @pre \p _usingcols_ is not empty, ie \c setUsingSeries has already been called.
 		 */
-		void addUsingSeries(std::list<index_t> cols)
+		void addUsingSeries(std::list<index_t> cols, std::string moreargs= "")
 		{
 			linbox_check(!cols.empty());
 			linbox_check(!_usingcols_.empty());
 			std::list<index_t>::iterator it = cols.begin();
 			std::ostringstream usingcols ;
-			for (;it != cols.end();++it) {
-				usingcols << ", \'\' u " << *it << " ti col " ;
+			if (_plot_type_ == Plot::histo) {
+				for (;it != cols.end();++it) {
+					usingcols << ", \'\' using " << *it << " ti col "  << moreargs << " ";
 
+				}
+			}
+			else {
+				linbox_check(_plot_type_ == Plot::graph);
+				for (;it != cols.end();++it) {
+					usingcols << ", \'\' using 1:" << *it << " ti col "  << moreargs << " ";
+
+				}
 			}
 			_usingcols_ += usingcols.str();
+			return;
 		}
 
 		/*! @brief tells which columns to use.
@@ -389,27 +459,42 @@ namespace LinBox
 		 * will be used.
 		 *
 		 */
-		void setUsingSeries(std::pair<index_t,index_t> cols)
+		void setUsingSeries(std::pair<index_t,index_t> cols, std::string moreargs= "")
 		{
 			std::ostringstream usingcols ;
-			usingcols << " using " << cols.first << ":xtic(1) title columnheader(" << cols.first << ")" ;
-			usingcols << ", for [i=" << cols.first+1 << ":" << cols.second << "] \'\' using i title columnheader(i) " ;
+			if (_plot_type_ == Plot::histo) {
+				usingcols << " using " << cols.first << ":xtic(1) title columnheader(" << cols.first << ") "  << moreargs << " ";
+				usingcols << ", for [i=" << cols.first+1 << ":" << cols.second << "] \'\' using i title columnheader(i) "  << moreargs << " ";
+			}
+			else {
+				linbox_check(_plot_type_ == Plot::graph);
+				usingcols << " using 1:" << cols.first << " title columnheader(" << cols.first << ") "  << moreargs << " ";
+				usingcols << ", for [i=" << cols.first+1 << ":" << cols.second << "] \'\' using 1:i title columnheader(i) "  << moreargs << " ";
+			}
 
 			_usingcols_ = usingcols.str();
+			return;
 
 		}
 
 		/*! @brief adds contiguous columns to use.
-		 * @param cols all colums between \c cols.first and \c cols.second
-		 * will be used.
-		 * @pre \p _usingcols_ is not empty, ie \c setUsingSeries has already been called.
+		 * @param cols all colums between \c cols.first and \c
+		 * cols.second will be used.
+		 * @pre \p _usingcols_ is not empty, ie \c setUsingSeries has
+		 * already been called.
 		 *
 		 */
-		void addUsingSeries(std::pair<index_t,index_t> cols)
+		void addUsingSeries(std::pair<index_t,index_t> cols, std::string moreargs= "")
 		{
 			linbox_check(!_usingcols_.empty());
 			std::ostringstream usingcols ;
-			usingcols << ", for i=[" << cols.first << ":" << cols.second << "] \'\' using i title columnheader(i) " ;
+			if (_plot_type_ == Plot::histo) {
+				usingcols << ", for i=[" << cols.first << ":" << cols.second << "] \'\' using i title columnheader(i) " << moreargs << " ";
+			}
+			else {
+				usingcols << ", for i=[" << cols.first << ":" << cols.second << "] \'\' using 1:i title columnheader(i) "  << moreargs << " ";
+				linbox_check(_plot_type_ == Plot::graph);
+			}
 
 			_usingcols_ += usingcols.str();
 
@@ -424,6 +509,7 @@ namespace LinBox
 			std::string PC = "#plot\nplot \'" + File + "\' ";
 			PC += _usingcols_ ;
 			return PC ;
+			// "plot './data/fgemm_square_2ex03aS2.dat'  using 1:2 title columnheader(2), for [i=3:5] '' using 1:i title  columnheader(i)"
 		}
 
 	private :
@@ -437,10 +523,12 @@ namespace LinBox
 		/*  units */
 		// std::string                         _unit_      ;
 		/*  terminal output */
-		enum TermType                       _term_      ; //!< output data format.
+		enum Term::Type                       _term_      ; //!< output data format.
 		// std::string                         _termopts_  ;
 		/*  plotting style */
-		enum StyleType                      _style_     ; //!< line/bar style
+		enum Plot::Type                       _plot_type_ ; //!< histogram/graph style
+		// std::string                         _plot_extra_; //!< extra specification for the plot style. default empty.
+		enum Line::Type                       _line_type_ ; //!< style for the representation of points
 		std::string                         _styleopts_ ; //!< gp style command.
 		/*  columns to use */
 		std::string                         _usingcols_ ; //!< columns to be used (gp command)
@@ -694,7 +782,7 @@ namespace LinBox
 		}
 
 		/*! @brief Sets a new style structure.
-		 * @param style a reference to a PlotData class.
+		 * @param style a reference to a PlotStyle class.
 		 */
 		void setStyle( PlotStyle & style )
 		{
@@ -702,7 +790,7 @@ namespace LinBox
 		}
 
 		/*! @brief Gets the style.
-		 * @param[in,out] style a reference to a PlotData class.
+		 * @param[in,out] style a reference to a PlotStyle class.
 		 */
 		PlotStyle & refStyle( PlotStyle & style)
 		{
@@ -840,13 +928,12 @@ namespace LinBox
 			}
 
 			/*  Ploting script */
-			PF << "#" << _filename_ << std::endl;
-			PF << _style_.getTerm() << std::endl;
-			PF << _style_.getOutput(unique_filename)  << std::endl;
-			PF << _style_.getTitle() << std::endl;
-			PF << _style_.getKeyPos() << std::endl ;
-			PF << _style_.getType() << std::endl;
-			PF << _style_.getStyle() << std::endl;
+			PF << "#" << _filename_                    << std::endl;
+			PF << _style_.getTerm()                    << std::endl;
+			PF << _style_.getOutput(unique_filename)   << std::endl;
+			PF << _style_.getTitle()                   << std::endl;
+			PF << _style_.getKeyPos()                  << std::endl;
+			PF << _style_.getPlotType()                << std::endl;
 #if 0
 			for (index_t i = 0 ; i < nb_series ; ++i) {
 				PF << "set style line " << _style_.getLineStyle() << std::endl;
