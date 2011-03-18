@@ -45,6 +45,8 @@
 #include <stdlib.h>
 #include "linbox/integer.h"
 #include "linbox/util/debug.h"
+#include "tests/test-common.h"
+#include "linbox/util/timer.h"
 #include <string>
 #include <fstream>
 
@@ -288,7 +290,7 @@ namespace LinBox
 		{
 			std::string setout = "#output\nset output \'" ;
 #ifdef __LINBOX_HAVE_GHOSTSCRIPT
-			if (_term_ == pdf)
+			if (_term_ == Term::pdf)
 				setout += "| ps2pdf - " ;
 			setout += basnam + getExt() + '\'' ;
 #else
