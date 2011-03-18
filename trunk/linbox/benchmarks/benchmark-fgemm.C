@@ -34,8 +34,13 @@
 #include "linbox/field/modular.h"
 #include "linbox/field/modular-balanced.h"
 #include "linbox/ffpack/ffpack.h"
+#include "linbox/fflas/fflas.h"
 #include "linbox/matrix/random-matrix.h"
 #include "linbox/matrix/blas-matrix.h"
+
+/* ********************** */
+/*        Outils          */
+/* ********************** */
 
 double fgemm_mflops(int m, int n, int k)
 {
@@ -115,124 +120,74 @@ void launch_bench_square(Field & F // const problem
 
 }
 
-/*! Benchmark fgemm Y=AX for several sizes of sqare matrices.
- * @param min min size
- * @param max max size
- * @param step step of the size between 2 benchmarks
- * @param charac characteristic of the field.
+/*! @internal
+ * @brief launches the benchmarks for the square case directly BLAS.
+ * @param min min size to bench
+ * @param max max size to bench
+ * @param step step between two sizes
+ * @param Data where data is stored
+ * @param series_nb index of the current series.
  */
-void bench_square( index_t min, index_t max, int step )
+template<class T>
+void launch_bench_blas(index_t min, index_t max, int step
+		       , LinBox::PlotData<index_t> & Data
+		       , index_t series_nb
+		       , index_t charact)
 {
-	typedef LinBox::Modular<double> Field ;
-	typedef LinBox::Modular<float> Gield ;
+	typedef LinBox::Modular<T> Field ;
+	Field F((int)charact);
+	index_t l = 0 ;
+	Timer fgemm_tim ;
+	fgemm_tim.clear();
+	double mflops ;
+	typedef typename Field::Element  Element ;
+	typedef typename Field::RandIter Randiter;
+	Randiter R(F) ;
+	// LinBox::BlasMatrixDomain<Field> BMD(F) ;
+	// LinBox::RandomDenseMatrix<Randiter,Field> RandMat(F,R);
+	index_t repet = 3 ;
+	index_t mm = max * max ;
+	Element *  A = new Element[mm] ;
+	Element *  B = new Element[mm] ;
+	Element *  C = new Element[mm] ;
+	for (index_t j = 0 ; j < mm ; ++j) R.random(A[j]);
+	for (index_t j = 0 ; j < mm ; ++j) R.random(B[j]);
+	for (index_t j = 0 ; j < mm ; ++j) R.random(C[j]);
+	typedef typename LinBox::UnparametricField<T> FloatingDomain ;
+	FloatingDomain G ;
 
-	int nb_pts = (int) std::ceil((double)(max-min)/(double)step) ;
-	int it = 0 ; int nb = 4 ;
-	LinBox::PlotData<index_t>  Data(nb_pts,nb);
-	Field F(13) ;
-	launch_bench_square(F,min,max,step,Data,it++);
-	Field G(2011) ;
-	launch_bench_square(G,min,max,step,Data,it++);
-	Gield H(13) ;
-	launch_bench_square(H,min,max,step,Data,it++);
-	Gield I(2011) ;
-	launch_bench_square(I,min,max,step,Data,it++);
-	linbox_check(it==nb);
+	for ( index_t i = min ; i < max ; i += step , ++l ) {
+		int ii = i ; // sinon, le constructeur le plus proche serait (_Matrix,_Field)... n'impnawak...
+		index_t j = 0 ;
+		fgemm_tim.clear() ;
+		fgemm_tim.start() ;
+		for (; j < repet ; ++j ) {
+			LinBox::FFLAS::fgemm(G,LinBox::FFLAS::FflasNoTrans,LinBox::FFLAS::FflasNoTrans,
+						     ii,ii,ii,
+						     1.,
+						     A,ii,B,ii,
+						     0.,
+						     C,ii) ; // the last 2 arguments are superfluous and meaningless.
+			if (fgemm_tim.usertime()>0.5) {
+				++j;
+				break;
+			}
+		}
+		fgemm_tim.stop();
+		mflops = compute_mflops(fgemm_tim,fgemm_mflops(i,i,i),j);
+		Data.setEntry(series_nb,l,mflops);
+	}
 
-
-	LinBox::PlotStyle Style;
-	// Style.setTerm(LinBox::PlotStyle::pdf);
-	// Style.setTerm(LinBox::PlotStyle::png);
-	// Style.setTerm(LinBox::PlotStyle::svg);
-	Style.setTerm(LinBox::PlotStyle::eps);
-	Style.setTitle("fgemm","x","y");
-	// Style.setType(LinBox::PlotStyle::histogram);
-	// Style.setStyle("set style histogram cluster gap 1");
-	// Style.addStyle("set style fill solid border -1");
-	// Style.addStyle("set boxwidth 0.9");
-
-	Style.setType(LinBox::PlotStyle::lines);
-	Style.setUsingSeries(std::pair<index_t,index_t>(2,it));
-
-	LinBox::PlotGraph<index_t> Graph(Data,Style);
-	Graph.setOutFilename("fgemm_square");
-
-	// Graph.plot();
-
-	Graph.print_gnuplot();
-
-	Graph.print_latex();
-
-	return ;
+	delete[] A ;
+	delete[] B ;
+	delete[] C ;
+	std::ostringstream nam ;
+	nam << '\"' ;
+	G.write(nam);
+	nam << '\"' ;
+	Data.setSerieName(series_nb,nam.str());
 
 }
-
-/*!  Benchmark fgemm Y=AX for several fields.
- * @param min min size
- * @param max max size
- * @param step step of the size between 2 benchmarks
- * @param charac characteristic of the field.
- */
-void bench_square2( index_t min, index_t max, int step, int charac )
-{
-
-	int nb = 1 ;// une col de plus (la première)
-	typedef LinBox::Modular<double>          Field0 ; ++nb ;
-	typedef LinBox::Modular<float>           Field1 ; ++nb ;
-	typedef LinBox::Modular<int32_t>         Field2 ; ++nb ;
-	typedef LinBox::ModularBalanced<double>  Field3 ; ++nb ;
-	typedef LinBox::ModularBalanced<float>   Field4 ; ++nb ;
-	typedef LinBox::ModularBalanced<int32_t> Field5 ; ++nb ;
-	// GivaroZpZ
-
-	int nb_pts = (int) std::ceil((double)(max-min)/(double)step) ;
-	LinBox::PlotData<index_t>  Data(nb_pts,nb);
-	int it = 0 ;
-	Field0 F0(charac) ;
-	launch_bench_square(F0,min,max,step,Data,it++);
-	if (charac < 2048) {
-		Field1 F1(charac) ;
-		launch_bench_square(F1,min,max,step,Data,it++);
-	}
-	Field2 F2(charac) ;
-	launch_bench_square(F2,min,max,step,Data,it++);
-	Field3 F3(charac) ;
-	launch_bench_square(F3,min,max,step,Data,it++);
-	if (charac < 2048) {
-		Field4 F4(charac) ;
-		launch_bench_square(F4,min,max,step,Data,it++);
-	}
-	Field5 F5(charac) ;
-	launch_bench_square(F5,min,max,step,Data,it++);
-	linbox_check(it <= nb);
-
-	LinBox::PlotStyle Style;
-	// Style.setTerm(LinBox::PlotStyle::pdf);
-	// Style.setTerm(LinBox::PlotStyle::png);
-	// Style.setTerm(LinBox::PlotStyle::svg);
-	Style.setTerm(LinBox::PlotStyle::eps);
-	Style.setTitle("fgemm","x","y");
-	// Style.setType(LinBox::PlotStyle::histogram);
-	// Style.setStyle("set style histogram cluster gap 1");
-	// Style.addStyle("set style fill solid border -1");
-	// Style.addStyle("set boxwidth 0.9");
-
-	Style.setType(LinBox::PlotStyle::lines);
-	Style.setUsingSeries(std::pair<index_t,index_t>(2,it));
-
-	LinBox::PlotGraph<index_t> Graph(Data,Style);
-	Graph.setOutFilename("fgemm_square2");
-
-	// Graph.plot();
-
-	Graph.print_gnuplot();
-
-	Graph.print_latex();
-
-	return ;
-
-}
-
 
 /*! @internal
  * @brief launches the benchmarks for the square case.
@@ -294,6 +249,129 @@ void launch_bench_rectangular(Field & F // const problem
 }
 
 
+/* ********************** */
+/*        Tests           */
+/* ********************** */
+
+
+/*! Benchmark fgemm Y=AX for several sizes of sqare matrices.
+ * @param min min size
+ * @param max max size
+ * @param step step of the size between 2 benchmarks
+ * @param charac characteristic of the field.
+ */
+void bench_blas( index_t min, index_t max, int step )
+{
+	//!@todo compare to cblas_dgemm instead.
+	typedef LinBox::Modular<double> DoubleField ;
+	typedef LinBox::Modular<float>  FloatField ;
+
+	int nb_pts = (int) std::ceil((double)(max-min)/(double)step) ;
+	int it = 0 ; int nb = 5 ;
+	LinBox::PlotData<index_t>  Data(nb_pts,nb);
+	FloatField F0(13) ;
+	launch_bench_square(F0,min,max,step,Data,it++);
+	launch_bench_blas<float>(min,max,step,Data,it++,13);
+
+	DoubleField F1(65537) ;
+	launch_bench_square(F1,min,max,step,Data,it++);
+	launch_bench_blas<double>(min,max,step,Data,it++,65537);
+
+	linbox_check(it+1==nb);
+
+
+	LinBox::PlotStyle Style;
+	// Style.setTerm(LinBox::PlotStyle::pdf);
+	// Style.setTerm(LinBox::PlotStyle::png);
+	// Style.setTerm(LinBox::PlotStyle::svg);
+	Style.setTerm(LinBox::PlotStyle::Term::eps);
+	Style.setTitle("fgemm","x","y");
+	// Style.setType(LinBox::PlotStyle::histogram);
+	// Style.setStyle("set style histogram cluster gap 1");
+	// Style.addStyle("set style fill solid border -1");
+	// Style.addStyle("set boxwidth 0.9");
+
+	Style.setPlotType(LinBox::PlotStyle::Plot::graph);
+	Style.setLineType(LinBox::PlotStyle::Line::linespoints);
+	Style.setUsingSeries(std::pair<index_t,index_t>(2,nb));
+
+	LinBox::PlotGraph<index_t> Graph(Data,Style);
+	Graph.setOutFilename("fgemm_blas");
+
+	// Graph.plot();
+
+	Graph.print_gnuplot();
+
+	Graph.print_latex();
+
+	return ;
+
+}
+
+/*!  Benchmark fgemm Y=AX for several fields.
+ * @param min min size
+ * @param max max size
+ * @param step step of the size between 2 benchmarks
+ * @param charac characteristic of the field.
+ */
+void bench_square( index_t min, index_t max, int step, int charac )
+{
+
+	int nb = 1 ;// une col de plus (la première)
+	typedef LinBox::Modular<double>          Field0 ; ++nb ;
+	typedef LinBox::Modular<float>           Field1 ; ++nb ;
+	typedef LinBox::Modular<int32_t>         Field2 ; ++nb ;
+	typedef LinBox::ModularBalanced<double>  Field3 ; ++nb ;
+	typedef LinBox::ModularBalanced<float>   Field4 ; ++nb ;
+	typedef LinBox::ModularBalanced<int32_t> Field5 ; ++nb ;
+	// GivaroZpZ
+
+	int nb_pts = (int) std::ceil((double)(max-min)/(double)step) ;
+	LinBox::PlotData<index_t>  Data(nb_pts,nb);
+	int it = 0 ;
+	Field0 F0(charac) ;
+	launch_bench_square(F0,min,max,step,Data,it++);
+	if (charac < 2048) {
+		Field1 F1(charac) ;
+		launch_bench_square(F1,min,max,step,Data,it++);
+	}
+	Field2 F2(charac) ;
+	launch_bench_square(F2,min,max,step,Data,it++);
+	Field3 F3(charac) ;
+	launch_bench_square(F3,min,max,step,Data,it++);
+	if (charac < 2048) {
+		Field4 F4(charac) ;
+		launch_bench_square(F4,min,max,step,Data,it++);
+	}
+	Field5 F5(charac) ;
+	launch_bench_square(F5,min,max,step,Data,it++);
+	linbox_check(it <= nb);
+
+	LinBox::PlotStyle Style;
+	// Style.setTerm(LinBox::PlotStyle::Term::pdf);
+	// Style.setTerm(LinBox::PlotStyle::Term::png);
+	// Style.setTerm(LinBox::PlotStyle::Term::svg);
+	Style.setTerm(LinBox::PlotStyle::Term::eps);
+	Style.setTitle("fgemm","x","y");
+
+	Style.setPlotType(LinBox::PlotStyle::Plot::graph);
+	Style.setLineType(LinBox::PlotStyle::Line::linespoints);
+	Style.setUsingSeries(std::pair<index_t,index_t>(2,it));
+
+	LinBox::PlotGraph<index_t> Graph(Data,Style);
+	Graph.setOutFilename("fgemm_square");
+
+	// Graph.plot();
+
+	Graph.print_gnuplot();
+
+	Graph.print_latex();
+
+	return ;
+
+}
+
+
 /*!  Benchmark fgemm Y=AX for several shapes.
  * Let n=k^2.
  * we test the following shapes :
@@ -302,44 +380,47 @@ void launch_bench_rectangular(Field & F // const problem
  * (k,n,nk), (n,k,nk),(n,nk,k)
  * (n,n,n),
  * @param k parameter.
+ * @param l small parameter (ie close to 1)
  */
-void bench_rectangular( index_t k )
+void bench_rectangular( index_t k, index_t l = 2 )
 {
 	int n  = k*k ;
 	int nk = n*k ;
+	int kl = k*l ;
+	int nl = n*l ;
 	int charac = 2011 ;
 	typedef LinBox::Modular<double> Field ;
 	Field F(charac) ;
 
-	index_t it = 0 ; index_t nb = 10 ;
+	index_t it = 0 ; index_t nb = 12 ;
 	LinBox::PlotData<std::string>  Data(nb,1);
 	Data.setSerieName(0,"mflops");
-	launch_bench_rectangular(F,1,nk,nk,Data,it++);
-	launch_bench_rectangular(F,nk,1,nk,Data,it++);
-	launch_bench_rectangular(F,nk,nk,1,Data,it++);
+	launch_bench_rectangular(F,l,nk,nk,Data,it++);
+	launch_bench_rectangular(F,nk,l,nk,Data,it++);
+	launch_bench_rectangular(F,nk,nk,l,Data,it++);
 
-	launch_bench_rectangular(F,k,nk,n,Data,it++);
-	launch_bench_rectangular(F,nk,k,n,Data,it++);
-	launch_bench_rectangular(F,nk,n,k,Data,it++);
+	launch_bench_rectangular(F,kl,nk,n,Data,it++);
+	launch_bench_rectangular(F,nk,kl,n,Data,it++);
+	launch_bench_rectangular(F,nk,n,kl,Data,it++);
 
-	launch_bench_rectangular(F,n,nk,k,Data,it++);
-	launch_bench_rectangular(F,nk,n,k,Data,it++);
-	launch_bench_rectangular(F,nk,k,n,Data,it++);
+	launch_bench_rectangular(F,n,nk,kl,Data,it++);
+	launch_bench_rectangular(F,nk,n,kl,Data,it++);
+	launch_bench_rectangular(F,nk,kl,n,Data,it++);
 
-	launch_bench_rectangular(F,n,n,n,Data,it++);
+	launch_bench_rectangular(F,nl,n,n,Data,it++);
+	launch_bench_rectangular(F,n,nl,n,Data,it++);
+	launch_bench_rectangular(F,n,n,nl,Data,it++);
+	//!@todo resize if it>nb !!
 
 	linbox_check(it==nb);
 
 	LinBox::PlotStyle Style;
-	// Style.setTerm(LinBox::PlotStyle::pdf);
-	// Style.setTerm(LinBox::PlotStyle::png);
-	// Style.setTerm(LinBox::PlotStyle::svg);
-	Style.setTerm(LinBox::PlotStyle::eps);
+	Style.setTerm(LinBox::PlotStyle::Term::eps);
 	Style.setTitle("fgemm","x","y");
-	Style.setType(LinBox::PlotStyle::histogram);
-	Style.setStyle("set style histogram cluster gap 1");
-	Style.addStyle("set style fill solid border -1");
-	Style.addStyle("set boxwidth 0.9");
+	Style.setPlotType(LinBox::PlotStyle::Plot::histo);
+	Style.addPlotType("set style histogram cluster gap 1");
+	Style.addPlotType("set style fill solid border -1");
+	Style.addPlotType("set boxwidth 0.9");
 	//! @todo make long legends oblique.
 
 	// Style.setType(LinBox::PlotStyle::lines);
@@ -366,11 +447,14 @@ void bench_rectangular( index_t k )
 
 int main( int ac, char ** av)
 {
+	//! @todo parse arguments here.
+	bench_blas(100,1500,100);
 
-	bench_square(100,1500,100);
-	bench_square2(100,1500,100,13);
-	// bench_square2(100,1500,100,2011);
-	bench_square2(100,1500,100,65537);
+	bench_square(100,1500,100,13);
+	bench_square(100,1500,100,2011);
+	bench_square(100,1500,100,65537);
 
 	bench_rectangular(20);
+
+	return EXIT_SUCCESS ;
 }
