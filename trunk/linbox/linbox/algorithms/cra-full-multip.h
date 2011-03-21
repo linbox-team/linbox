@@ -41,7 +41,7 @@
 namespace LinBox
 {
 
-	/*! NO DOC.
+	/*! NO DOC...
 	 * @ingroup CRA
 	 * @bib
 	 * - Jean-Guillaume Dumas, Thierry Gautier et Jean-Louis Roch.  <i>Generic design

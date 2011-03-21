@@ -21,17 +21,15 @@
  * Boston, MA 02111-1307, USA.
  */
 
-
-
-
+/*! @file algorithms/rational-solver2.h
+ * @brief NO DOC
+ * @bib
+ * Implementation of the algorithm in manuscript, available at
+ * http://www.cis.udel.edu/~wan/jsc_wan.ps
+ */
 
 #ifndef __LINBOX_rational_solver2__H
 #define __LINBOX_rational_solver2__H
-
-/*! @brief NO DOC
- * @bib
- * Implementation the algorithm in manuscript, available at http://www.cis.udel.edu/~wan/jsc_wan.ps
- */
 
 #include <memory.h>
 #include <iostream>
@@ -48,8 +46,10 @@ namespace LinBox
 	 *
 	 *   See the following reference for details on this implementation:
 	 *   @bib
-	 *   - Zhendong Wan <i>Exactly solve integer linear systems using numerical methods.</i>
-	 *   Submitted to Journal of Symbolic Computation, 2004.
+	 *   - Zhendong Wan <i>Exactly solve integer linear systems using
+	 *   numerical methods.</i> Submitted to Journal of Symbolic
+	 *   Computation, 2004.
+	 *   .
 	 *
 	 */
 	//template argument Field and RandomPrime are not used.

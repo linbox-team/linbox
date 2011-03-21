@@ -21,12 +21,18 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/*! @file algorithms/blackbox-block-container-base.h
+ * @ingroup algorithms
+ * @brief NO DOC
+ */
+
+
 
 #ifndef __LINBOX_blackbox_block_container_base_H
 #define __LINBOX_blackbox_block_container_base_H
 
 
-#include "time.h" // for seeding
+#include <time.h> // for seeding
 
 #include <linbox/blackbox/archetype.h>
 #include <linbox/matrix/blas-matrix.h>
@@ -46,16 +52,16 @@ namespace LinBox
 #endif
 
 	/** \brief A base class for BlackboxBlockContainer.
-	 * The primary member function is begin().
+	 * The primary member function is \c begin().
 
 	 * It returns an iterator which after i increments (++) dereferences to
-	 * $U A^i V$, for $U$ and $V$ determined by the init function.
-	 * It is designed to be used with implementations of Block Berlekamp-Massey
-	 * such as BlockMasseyDomain.
+	 * \f$U A^i V\f$, for \f$U\f$ and \f$V\f$ determined by the init
+	 * function.  It is designed to be used with implementations of Block
+	 * Berlekamp-Massey such as BlockMasseyDomain.
 	 *
-	 * Subclasses complete the implementation by defining _launch() and _wait().
+	 * Subclasses complete the implementation by defining \c _launch() and
+	 * \c _wait().
 	 */
-
 	template<class _Field, class _Blackbox>
 	class BlackboxBlockContainerBase {
 	public:
@@ -128,12 +134,12 @@ namespace LinBox
 		friend class const_iterator;
 
 		/** Launches a process to do the computation of the next sequence
-		 *  value: $U A^{i+1} V$.  ...or just does it.
+		 *  value: \f$U A^{i+1} V\f$.  ...or just does it.
 		 */
 		virtual void _launch() = 0;
 
-		/** If a separate process is computing the next value of $U A^{i+1} V$,
-		 * _wait() blocks until the value is ready.
+		/** If a separate process is computing the next value of \f$U
+		 * A^{i+1} V\f$, \c _wait() blocks until the value is ready.
 		 */
 		virtual void _wait() = 0;
 
@@ -221,3 +227,4 @@ namespace LinBox
 }
 
 #endif // __LINBOX_blackbox_block_container_base_H
+

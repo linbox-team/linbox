@@ -293,7 +293,7 @@ namespace LinBox
 
 namespace LinBox
 {
-	/*! NO DOC.
+	/*! NO DOC..
 	 * @ingroup CRA
 	 * Version of LinBox::FullMultipCRA for matrices.
 	 */

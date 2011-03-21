@@ -25,6 +25,7 @@
 /*! @file algorithms/rational-reconstruction.h
  * @ingroup algorithms
  * @brief NO DOC
+ * @bug demander FPLLL comme dépendance optionnelle...
  */
 
 #ifndef __LINBOX_reconstruction_H
@@ -47,7 +48,6 @@
 
 
 //#define __LINBOX_HAVE_FPLLL
-//!@bug demander FPLLL comme dépendance optionnelle...
 #ifdef __LINBOX_HAVE_FPLLL
 extern "C" {
 #include <libfplll/myheuristic.h>
@@ -59,9 +59,12 @@ extern "C" {
 namespace LinBox
 {
 
-	/// \brief Limited doc so far.  Used, for instance, after LiftingContainer.
+	/*! \brief Limited doc so far.
+	 * Used, for instance, after LiftingContainer.
+	 */
 	template< class _LiftingContainer,
-	class RatRecon = RReconstruction<typename _LiftingContainer::Ring, ClassicMaxQRationalReconstruction<typename _LiftingContainer::Ring> > >
+	class RatRecon = RReconstruction<typename _LiftingContainer::Ring, ClassicMaxQRationalReconstruction<typename _LiftingContainer::Ring> >
+	>
 	class RationalReconstruction {
 
 	public:
@@ -111,12 +114,14 @@ namespace LinBox
 			return _lcontainer;
 		}
 
-		/** \brief  Handler to switch between different rational reconstruction strategy.
-		 *  Allow  early termination and direct fast method
-		 *  Switch is made by using a threshold as the third argument
-		 *  (default is set to that of constructor THRESHOLD
-		 * 0    -> direct method
-		 * > 0  -> early termination with
+		/** Handler to switch between different rational
+		 * reconstruction strategy.
+		 *  Allow  early termination and direct fast method Switch is
+		 *  made by using a threshold as the third argument (default is
+		 *  set to that of constructor THRESHOLD
+		 *  - \f$0\f$   -> direct method
+		 *  - \f$>0\f$  -> early termination with
+		 *  .
 		 */
 		template <class Vector>
 		bool getRational(Vector& num, Integer& den, int switcher) const
@@ -134,6 +139,8 @@ namespace LinBox
 			return 1;
 		}
 
+		/*! no doc.
+		*/
 		template <class Vector>
 		bool getRational(Vector& num, Integer& den) const
 		{
@@ -149,7 +156,9 @@ namespace LinBox
 			return 1;
 		}
 
-		/*! @todo WHY a dot product here ?  */
+		/*! No doc.
+		 * @todo WHY a dot product here ?
+		 */
 		template <class InVect1, class InVect2>
 		Integer& dot (Integer& d, const InVect1& v1, const InVect2& v2) const
 		{
@@ -375,9 +384,10 @@ namespace LinBox
 		 *  An early termination technique is used.
 		 *  Answer is a vector of pair (num, den)
 		 *
-		 * Note, this may fail.
-		 * Generically, the probability of failure should be 1/p^n where n is the number of elements being constructed
-		 * since p is usually quite large this should be ok
+		 * @note this may fail:  generically, the probability of
+		 * failure should be 1/p^n where n is the number of elements
+		 * being constructed since p is usually quite large this should
+		 * be ok.
 		 */
 		template<class Vector>
 		bool getRational2(Vector& num, Integer& den) const
@@ -400,26 +410,34 @@ namespace LinBox
 			std::vector<Integer> zz(_lcontainer.size(), modulus);   // stores each truncated p-adic approximation
 			_r.init(modulus, 1);
 
-			size_t len = _lcontainer.length(); // should be ceil(log(2*numbound*denbound)/log(prime))
-
-			// should grow in rough proportion to overall num/denbound,
-			// but MUST have product less than p^i / 2
-			// The heuristic used here is
-			// -bound when i=1  : N[0]=D[0]=sqrt(1/2)
-			// -bound when i=len: N[len] = N*sqrt(p^len /2/N/D) , D[len] = D*sqrt(p^len /2/N/D)
-			// -with a geometric series in between
-
-			// 2 different ways to compute growing num bound (den is always picked as p^len/2/num)
-			// when log( prime ^ len) is not too big (< 150 digits) we use logs stored as double; this way for very
-			// small primes we don't accumulate multiplicative losses in precision
-
-			// when log( prime ^ len) is very big we keep multiplying a factor into the num/den bound
-			// at each level of reconstruction
-
-			// note: currently it is usually the case that numbound > denbound. If it ever
-			// happens that denbound >>> numbound, then denbound should be computed first at each step
-			// and then numbound set to p^i / 2 / denbound, for less accumulated precision loss
-
+			size_t len = _lcontainer.length();
+			/* should be ceil(log(2*numbound*denbound)/log(prime))
+			 *
+			 * should grow in rough proportion to overall
+			 * num/denbound, but MUST have product less than p^i/2
+			 * The heuristic used here is
+			 * - bound when i=1  : N[0]=D[0]=sqrt(1/2)
+			 * - bound when i=len: N[len] = N*sqrt(p^len /2/N/D),
+			 *   D[len] = D*sqrt(p^len /2/N/D)
+			 * - with a geometric series in between
+			 *
+			 * 2 different ways to compute growing num bound (den
+			 * is always picked as p^len/2/num)
+			 * - when log( prime ^ len) is not too big (< 150
+			 *   digits) we use logs stored as double; this way for
+			 *   very small primes we don't accumulate
+			 *   multiplicative losses in precision
+			 *
+			 * - when log( prime ^ len) is very big we keep
+			 *   multiplying a factor into the num/den bound at
+			 *   each level of reconstruction
+			 *
+			 * note: currently it is usually the case that $numbound
+			 * > denbound$. If it ever happens that $denbound >>>
+			 * numbound$, then denbound should be computed first at
+			 * each step and then numbound set to p^i/2/denbound,
+			 * for less accumulated precision loss
+			 */
 			double dtmp;
 			double half_log_p = 0.5 * log(_r.convert(dtmp, prime));
 			const double half_log_2 = 0.34657359027997265472;
@@ -663,9 +681,14 @@ namespace LinBox
 				_r. divin (den, g);
 			}
 			return true; //lifted ok, assuming norm was correct
-		}
+		} // end of getRational2
 
-		/** NO DOC. */
+		/** @brief NO DOC.
+		 * @param y   ?
+		 * @param Pol ?
+		 * @param deg ?
+		 * @param x   ?
+		 */
 		template <class ConstIterator>
 		void PolEval(Vector& y, ConstIterator& Pol, size_t deg, Integer &x) const
 		{
@@ -698,7 +721,7 @@ namespace LinBox
 
 				_r.mul(x,x1,x2);
 			}
-		} // end of getRational2
+		}
 
 
 		/** Reconstruct a vector of rational numbers
@@ -801,45 +824,44 @@ namespace LinBox
 			/*
 			 * Baby-Step/ Giant-Step Polynomial evaluation of digit approximation
 			 */
-			/*
-			   {
-			// store intermediate baby-step/ giant-step polynomial evaluation of the approximation in prime
-			std::vector<Vector> baby_approx (sqrt_length+1,zero_digit);
+#if 0
+			{
+				// store intermediate baby-step/ giant-step polynomial evaluation of the approximation in prime
+				std::vector<Vector> baby_approx (sqrt_length+1,zero_digit);
 
-			// perform baby-step
-			int skip=-sqrt_length;
-			for (int k=0;k<sqrt_length;++k){
-			skip+=sqrt_length;
-			for (int i= sqrt_length-1; i>=0; --i)
-			for (size_t j=0;j<size;++j) {
-			_r.mulin(baby_approx[k][j] , prime);
-			_r.addin(baby_approx[k][j], digit_approximation[skip+i][j]);
-			}
-			}
+				// perform baby-step
+				int skip=-sqrt_length;
+				for (int k=0;k<sqrt_length;++k){
+					skip+=sqrt_length;
+					for (int i= sqrt_length-1; i>=0; --i)
+						for (size_t j=0;j<size;++j) {
+							_r.mulin(baby_approx[k][j] , prime);
+							_r.addin(baby_approx[k][j], digit_approximation[skip+i][j]);
+						}
+				}
 
-			for (int i= length -1; i>= skip+sqrt_length; --i)
-			for (size_t j=0;j<size;++j) {
-			_r.mulin(baby_approx[sqrt_length][j] , prime);
-			_r.addin(baby_approx[sqrt_length][j], digit_approximation[i][j]);
-			}
+				for (int i= length -1; i>= skip+sqrt_length; --i)
+					for (size_t j=0;j<size;++j) {
+						_r.mulin(baby_approx[sqrt_length][j] , prime);
+						_r.addin(baby_approx[sqrt_length][j], digit_approximation[i][j]);
+					}
 
-			LinBox::integer p_to_sqrt, p;
-			_r.convert(p,prime);
-			p_to_sqrt= pow(p,sqrt_length);
-			Integer prime_to_sqrt;
-			_r.init(prime_to_sqrt, p_to_sqrt);
+				LinBox::integer p_to_sqrt, p;
+				_r.convert(p,prime);
+				p_to_sqrt= pow(p,sqrt_length);
+				Integer prime_to_sqrt;
+				_r.init(prime_to_sqrt, p_to_sqrt);
 
 
-			// perform giant step
-			for (int i= sqrt_length; i>= 0; --i)
-			for (size_t j=0;j<size;j++) {
-			_r.mulin(real_approximation[j] , prime_to_sqrt );
-			_r.addin(real_approximation[j], baby_approx[i][j]);
-			}
+				// perform giant step
+				for (int i= sqrt_length; i>= 0; --i)
+					for (size_t j=0;j<size;j++) {
+						_r.mulin(real_approximation[j] , prime_to_sqrt );
+						_r.addin(real_approximation[j], baby_approx[i][j]);
+					}
 			}
 			eval_bsgs.stop();
-			*/
-
+#endif
 			eval_dac.start();
 			Integer xeval=prime;
 			typename std::vector<Vector>::const_iterator poly_digit= digit_approximation.begin();

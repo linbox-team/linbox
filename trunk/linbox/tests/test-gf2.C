@@ -44,6 +44,9 @@ using namespace LinBox;
 //using uint16_t;
 //using uint32_t;
 
+#warning "much of the code is dead here"
+
+#if 0 /*  dead code */
 static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 			       VectorStream<Vector<GF2>::Dense> &stream1,
 			       VectorStream<Vector<GF2>::Dense> &stream2)
@@ -228,6 +231,7 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 
 	return ret;
 }
+#endif
 
 int main (int argc, char **argv)
 {

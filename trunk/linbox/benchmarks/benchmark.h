@@ -62,6 +62,7 @@ namespace LinBox
 	 *
 	 * @warning NaN, inf are used as missing data. More genenally
 	 * we could store data in strings.
+         * @todo Allow for 'speed up against col X' style
 	 */
 	class PlotStyle {
 	public:
@@ -538,7 +539,13 @@ namespace LinBox
 
 	} ;
 
-	// the minimal data to plot.
+	/*! @brief The raw data to plot.
+	 * Represents the series of points and the labels for the points (X)
+	 * axis and the series (Y) axis.  The internal representation is a
+	 * vector of vector, each series of point being a vector of double.
+	 * @tparam NAM the X axis is parametered by NAM (string, int, double...)
+	 * @todo write members that permute, add, scale,... data.
+	 */
 	template<class NAM>
 	class PlotData {
 	private :
@@ -712,6 +719,14 @@ namespace LinBox
 
 	};
 
+	/*! @brief The graph.
+	 * This class joins a PlotStyle and a PlotData to build up a graph.  A
+	 * filename should be provided as well, indicating where the output
+	 * graph and scripts will be generated.
+	 *
+	 * @warning the filename will get a random suffix before the extension
+	 * so as not to overwrite files "par inadvertance".
+	 */
 	template<class NAM>
 	class PlotGraph {
 	private :
