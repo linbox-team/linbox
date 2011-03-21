@@ -21,21 +21,31 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/*! @file algorithms/blackbox-block-container.h
+ * @ingroup algorithms
+ * @brief no doc.
+ */
+
 #ifndef __LINBOX_blackbox_block_container_H
 #define __LINBOX_blackbox_block_container_H
 
-#include "time.h"
 
 #include <linbox/algorithms/blackbox-block-container-base.h>
 #include <linbox/matrix/blas-matrix.h>
 #include <linbox/algorithms/blas-domain.h>
-#include <linbox/util/timer.h>
 
 #define _BBC_TIMING
+
+#ifdef _BBC_TIMING
+#include <time.h>
+#include <linbox/util/timer.h>
+#endif
 
 namespace LinBox
 {
 
+	/*! @brief no doc.
+	 */
 	template<class _Field, class _Blackbox>
 	class BlackboxBlockContainer : public BlackboxBlockContainerBase<_Field,_Blackbox> {
 	public:
@@ -141,6 +151,8 @@ namespace LinBox
 		void _wait () {}
 	};
 
+	/*! @brief no doc.
+	 */
 	template<class _Field, class _Blackbox>
 	class BlackboxBlockContainerRecord : public BlackboxBlockContainerBase<_Field,_Blackbox> {
 
@@ -505,4 +517,3 @@ namespace LinBox
 #undef _BBC_TIMING
 
 #endif // __LINBOX_blackbox_block_container_H
-
