@@ -332,6 +332,7 @@ namespace LinBox
 			return C;
 		}
 	};
+
 	//  general matrix-matrix multiplication and addition with scaling
 	// D= beta.C + alpha.A*B
 	template<class Field>
@@ -398,7 +399,197 @@ namespace LinBox
 		}
 	};
 
+	template<class Field>
+	class 	BlasMatrixDomainMulAdd<Field,BlasMatrix<typename Field::Element>,TransposedBlasMatrix<BlasMatrix<typename Field::Element> >, BlasMatrix<typename Field::Element> > {
+	public:
+		BlasMatrix<typename Field::Element>&
+		operator()(const Field                              & F,
+			   BlasMatrix<typename Field::Element>      & D,
+			   const typename Field::Element            & beta,
+			   const BlasMatrix<typename Field::Element>& C,
+			   const typename Field::Element            & alpha,
+			   const TransposedBlasMatrix<BlasMatrix<typename Field::Element> >& A,
+			   const BlasMatrix<typename Field::Element>& B) const
+		{
+			linbox_check( A.getMatrix().coldim() == B.rowdim());
+			linbox_check( C.rowdim() == A.getMatrix().rowdim());
+			linbox_check( C.coldim() == B.coldim());
+			linbox_check( D.rowdim() == C.rowdim());
+			linbox_check( D.coldim() == C.coldim());
 
+			D=C;
+			// linbox_check(D.getPointer() != C.getPointer());
+
+			// std::cout << "alpha :" << alpha << std::endl;
+			// std::cout << "beta  :" << beta  << std::endl;
+			// D.write(std::cout << "Dfgem :=" ) <<','<< std::endl;
+			// A.write(std::cout << "Afgem :=" ) <<','<< std::endl;
+			// B.write(std::cout << "Bfgem :=" ) <<','<< std::endl;
+			FFLAS::fgemm( F, FFLAS::FflasTrans, FFLAS::FflasNoTrans,
+				      C.rowdim(), C.coldim(), A.getMatrix().coldim(),
+				      alpha,
+				      A.getMatrix().getPointer(), A.getMatrix().getStride(),
+				      B.getPointer(), B.getStride(),
+				      beta,
+				      D.getPointer(), D.getStride());
+			// D.write(std::cout << "Dfgem :=" ) <<','<< std::endl;
+			// std::cout << A.getStride() << "," << A.coldim() << std::endl;
+			// std::cout << B.getStride() << "," << B.coldim() << std::endl;
+			// std::cout << D.getStride() << "," << D.coldim() << std::endl;
+			return D;
+		}
+
+
+		BlasMatrix<typename Field::Element>&
+		operator() (const Field                              & F,
+			    const typename Field::Element            & beta,
+			    BlasMatrix<typename Field::Element>      & C,
+			    const typename Field::Element            & alpha,
+			    const TransposedBlasMatrix<BlasMatrix<typename Field::Element> >& A,
+			    const BlasMatrix<typename Field::Element>& B) const
+		{
+			linbox_check( A.getMatrix().coldim() == B.rowdim());
+			linbox_check( C.rowdim() == A.getMatrix().rowdim());
+			linbox_check( C.coldim() == B.coldim());
+
+			FFLAS::fgemm( F, FFLAS::FflasTrans, FFLAS::FflasNoTrans,
+				      C.rowdim(), C.coldim(), A.getMatrix().coldim(),
+				      alpha,
+				      A.getMatrix().getPointer(), A.getMatrix().getStride(),
+				      B.getPointer(), B.getStride(),
+				      beta,
+				      C.getPointer(), C.getStride());
+			return C;
+		}
+	};
+
+	template<class Field>
+	class 	BlasMatrixDomainMulAdd<Field,BlasMatrix<typename Field::Element>,TransposedBlasMatrix<BlasMatrix<typename Field::Element> >, TransposedBlasMatrix<BlasMatrix<typename Field::Element> > > {
+	public:
+		BlasMatrix<typename Field::Element>&
+		operator()(const Field                              & F,
+			   BlasMatrix<typename Field::Element>      & D,
+			   const typename Field::Element            & beta,
+			   const BlasMatrix<typename Field::Element>& C,
+			   const typename Field::Element            & alpha,
+			   const TransposedBlasMatrix<BlasMatrix<typename Field::Element> >& A,
+			   const TransposedBlasMatrix<BlasMatrix<typename Field::Element> >& B) const
+		{
+			linbox_check( A.getMatrix().coldim() == B.getMatrix().rowdim());
+			linbox_check( C.rowdim() == A.getMatrix().rowdim());
+			linbox_check( C.coldim() == B.getMatrix().coldim());
+			linbox_check( D.rowdim() == C.rowdim());
+			linbox_check( D.coldim() == C.coldim());
+
+			D=C;
+			// linbox_check(D.getPointer() != C.getPointer());
+
+			// std::cout << "alpha :" << alpha << std::endl;
+			// std::cout << "beta  :" << beta  << std::endl;
+			// D.write(std::cout << "Dfgem :=" ) <<','<< std::endl;
+			// A.write(std::cout << "Afgem :=" ) <<','<< std::endl;
+			// B.write(std::cout << "Bfgem :=" ) <<','<< std::endl;
+			FFLAS::fgemm( F, FFLAS::FflasTrans, FFLAS::FflasNoTrans,
+				      C.rowdim(), C.coldim(), A.getMatrix().coldim(),
+				      alpha,
+				      A.getMatrix().getPointer(), A.getMatrix().getStride(),
+				      B.getMatrix().getPointer(), B.getMatrix().getStride(),
+				      beta,
+				      D.getPointer(), D.getStride());
+			// D.write(std::cout << "Dfgem :=" ) <<','<< std::endl;
+			// std::cout << A.getStride() << "," << A.coldim() << std::endl;
+			// std::cout << B.getStride() << "," << B.coldim() << std::endl;
+			// std::cout << D.getStride() << "," << D.coldim() << std::endl;
+			return D;
+		}
+
+
+		BlasMatrix<typename Field::Element>&
+		operator() (const Field                              & F,
+			    const typename Field::Element            & beta,
+			    BlasMatrix<typename Field::Element>      & C,
+			    const typename Field::Element            & alpha,
+			    const TransposedBlasMatrix<BlasMatrix<typename Field::Element> >& A,
+			    const TransposedBlasMatrix<BlasMatrix<typename Field::Element> >& B) const
+		{
+			linbox_check( A.getMatrix().coldim() == B.getMatrix().rowdim());
+			linbox_check( C.rowdim() == A.getMatrix().rowdim());
+			linbox_check( C.coldim() == B.getMatrix().coldim());
+
+			FFLAS::fgemm( F, FFLAS::FflasTrans, FFLAS::FflasTrans,
+				      C.rowdim(), C.coldim(), A.getMatrix().coldim(),
+				      alpha,
+				      A.getMatrix().getPointer(), A.getMatrix().getStride(),
+				      B.getMatrix().getPointer(), B.getMatrix().getStride(),
+				      beta,
+				      C.getPointer(), C.getStride());
+			return C;
+		}
+	};
+
+	template<class Field>
+	class 	BlasMatrixDomainMulAdd<Field,BlasMatrix<typename Field::Element>,BlasMatrix<typename Field::Element>, TransposedBlasMatrix<BlasMatrix<typename Field::Element> > > {
+	public:
+		BlasMatrix<typename Field::Element>&
+		operator()(const Field                              & F,
+			   BlasMatrix<typename Field::Element>      & D,
+			   const typename Field::Element            & beta,
+			   const BlasMatrix<typename Field::Element>& C,
+			   const typename Field::Element            & alpha,
+			   const BlasMatrix<typename Field::Element>& A,
+			   const TransposedBlasMatrix<BlasMatrix<typename Field::Element> >& B) const
+		{
+			linbox_check( A.coldim() == B.getMatrix().rowdim());
+			linbox_check( C.rowdim() == A.rowdim());
+			linbox_check( C.coldim() == B.getMatrix().coldim());
+			linbox_check( D.rowdim() == C.rowdim());
+			linbox_check( D.coldim() == C.coldim());
+
+			D=C;
+			// linbox_check(D.getPointer() != C.getPointer());
+
+			// std::cout << "alpha :" << alpha << std::endl;
+			// std::cout << "beta  :" << beta  << std::endl;
+			// D.write(std::cout << "Dfgem :=" ) <<','<< std::endl;
+			// A.write(std::cout << "Afgem :=" ) <<','<< std::endl;
+			// B.write(std::cout << "Bfgem :=" ) <<','<< std::endl;
+			FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasTrans,
+				      C.rowdim(), C.coldim(), A.coldim(),
+				      alpha,
+				      A.getPointer(), A.getStride(),
+				      B.getMatrix().getPointer(), B.getMatrix().getStride(),
+				      beta,
+				      D.getPointer(), D.getStride());
+			// D.write(std::cout << "Dfgem :=" ) <<','<< std::endl;
+			// std::cout << A.getStride() << "," << A.coldim() << std::endl;
+			// std::cout << B.getStride() << "," << B.coldim() << std::endl;
+			// std::cout << D.getStride() << "," << D.coldim() << std::endl;
+			return D;
+		}
+
+
+		BlasMatrix<typename Field::Element>&
+		operator() (const Field                              & F,
+			    const typename Field::Element            & beta,
+			    BlasMatrix<typename Field::Element>      & C,
+			    const typename Field::Element            & alpha,
+			    const BlasMatrix<typename Field::Element>& A,
+			    const TransposedBlasMatrix<BlasMatrix<typename Field::Element> >& B) const
+		{
+			linbox_check( A.coldim() == B.getMatrix().rowdim());
+			linbox_check( C.rowdim() == A.rowdim());
+			linbox_check( C.coldim() == B.getMatrix().coldim());
+
+			FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasTrans,
+				      C.rowdim(), C.coldim(), A.coldim(),
+				      alpha,
+				      A.getPointer(), A.getStride(),
+				      B.getMatrix().getPointer(), B.getMatrix().getStride(),
+				      beta,
+				      C.getPointer(), C.getStride());
+			return C;
+		}
+	};
 
 	/*
 	 * specialization for Operand1 and Operand3 of type std::vector<Element>

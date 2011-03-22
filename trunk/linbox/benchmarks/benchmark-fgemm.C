@@ -37,6 +37,7 @@
 #include "linbox/fflas/fflas.h"
 #include "linbox/matrix/random-matrix.h"
 #include "linbox/matrix/blas-matrix.h"
+#include "linbox/algorithms/blas-domain.h"
 
 /* ********************** */
 /*        Outils          */
@@ -44,12 +45,10 @@
 
 bool keepon(index_t & repet, Timer & tim)
 {
-	if (tim.userElapsedTime() < 0.5) {
+	if (repet<1 || tim.userElapsedTime() < 0.5) {
 		++repet ;
 		return true;
 	}
-	if (repet<1)
-		return true
 	return false ;
 }
 
@@ -243,11 +242,134 @@ void launch_bench_rectangular(Field & F // const problem
 	Data.setAbsciName(point_nb,nam.str());
 }
 
+/*! @internal
+ * @brief launches the benchmarks for various parameters of a, b.
+ * D = aAB+bC and C = aAB+bC ("in place" versions)
+ * Are tested the following couples \c (a,b) (where \c p is invertible in \p F. This has
+ * to be true when \c a=p.) :
+ * - b=0 and a=1,-1,p ;
+ * - a=1 and b=1,-1,p ;
+ * - a=-1 and id. ;
+ * - a=p and id. ;
+ * .
+ * We call xA = ^tA if tA is true, A otherwise.
+ * @param F field
+ * @param m rows in xA
+ * @param k cols in xA and rows in xB
+ * @param n cols in xB
+ * @param alpha alpha (not zero)
+ * @param beta beta
+ * @param tA is A transposed ?
+ * @param tB is B transposed ?
+ * @param Data where data is stored
+ * @param point_nb point to be computed
+ */
+template<class Field>
+void launch_bench_scalar(Field & F // const problem
+			 , int m, int k, int n
+			 , const typename Field::Element & alpha, const typename Field::Element & beta
+			 , bool tA, bool tB
+			 , LinBox::PlotData<std::string> & Data
+			 , index_t point_nb
+			 , bool inplace = false)
+{
+	Timer fgemm_scal_tim ;
+	fgemm_scal_tim.clear();
+	double mflops ;
+	typedef typename Field::Element  Element;
+	typedef typename Field::RandIter Randiter ;
+	typedef typename LinBox::BlasMatrix<Element >  Matrix ;
+	typedef typename LinBox::TransposedBlasMatrix<Matrix > TransposedMatrix ;
+	Randiter R(F) ;
+	LinBox::BlasMatrixDomain<Field> BMD(F) ;
+	LinBox::RandomDenseMatrix<Randiter,Field> RandMat(F,R);
+	// index_t repet = 3 ;
+	int mm = tA?k:m ;
+	int kk = tA?m:k ;
+	int nn = tB?k:n ;
+	//! @todo SNIFF !!!
+	// Matrix A (mm,kk);
+	// Matrix B (kk,nn);
+	// Matrix C (m,n);
+	// Matrix D (m,n);
+	// TransposedMatrix At(A);
+	// TransposedMatrix Bt(B);
+	LinBox::BlasMatrix<Element > A (mm,kk);
+	LinBox::BlasMatrix<Element > B (kk,nn);
+	LinBox::BlasMatrix<Element > C (m,n);
+	LinBox::BlasMatrix<Element > D (m,n);
+
+	RandMat.random(A);
+	RandMat.random(B);
+	RandMat.random(C);
+
+
+	LinBox::TransposedBlasMatrix<LinBox::BlasMatrix<Element > > At(A);
+	LinBox::TransposedBlasMatrix<LinBox::BlasMatrix<Element > > Bt(B);
+
+	index_t j = 0 ;
+	fgemm_scal_tim.clear() ;
+	fgemm_scal_tim.start() ;
+	while (keepon(j,fgemm_scal_tim)) {
+		if (inplace) {
+			if (tA) {
+				if (tB) {
+					BMD.muladdin(beta,C,alpha,At,Bt) ; // C = alphaAB+beta C
+				}
+				else{
+					BMD.muladdin(beta,C,alpha,At,B) ;
+				}
+			}
+			else {
+				if (tB) {
+					BMD.muladdin(beta,C,alpha,A,Bt) ;
+				}
+				else{
+					BMD.muladdin(beta,C,alpha,A,B) ;
+				}
+
+			}
+		}
+		else {
+			if (tA) {
+				if (tB) {
+					BMD.muladd(D,beta,C,alpha,At,Bt) ; // D = alphaAB+beta C
+				}
+				else{
+					BMD.muladd(D,beta,C,alpha,At,B) ;
+				}
+			}
+			else {
+				if (tB) {
+					BMD.muladd(D,beta,C,alpha,A,Bt) ;
+				}
+				else{
+					BMD.muladd(D,beta,C,alpha,A,B) ;
+				}
+
+			}
+		}
+	}
+	fgemm_scal_tim.stop();
+	if (!j) {
+		std::cout << "multiplication did not happen" << std::endl;
+	}
+#ifdef _LB_DEBUG
+	else {
+		std::cout << point_nb << std::endl;
+	}
+#endif
+	mflops = compute_mflops(fgemm_scal_tim,fgemm_mflops(m,k,n),j);
+	Data.setEntry(0,point_nb,mflops);
+	std::ostringstream nam ;
+	nam << "\"(" << m << ',' << k << ',' << n << ")\"" ;
+	Data.setAbsciName(point_nb,nam.str());
+}
+
 
 /* ********************** */
 /*        Tests           */
 /* ********************** */
-
 
 /*! Benchmark fgemm Y=AX for several sizes of sqare matrices.
  * @param min min size
@@ -366,7 +488,6 @@ void bench_square( index_t min, index_t max, int step, int charac )
 
 }
 
-
 /*! @brief Benchmark fgemm Y=AX for several shapes.
  * Let n=k^2.
  * we test the following shapes :
@@ -435,6 +556,155 @@ void bench_rectangular( index_t k, int charac, index_t l = 2 )
 
 }
 
+/*! @brief Benchmark fgemm \f$D\gets\alpha A B+\beta C\f$ for general \f$\alpha,\beta\f$.
+ * @param k parameter.
+ * @param charac characteristic of the field.
+ * @param inplace "inplace" matmul (ie. C=D is overwritten)
+ */
+void bench_scalar( index_t k, int charac, bool inplace )
+{
+	typedef LinBox::Modular<double> Field ;
+	typedef Field::Element Element;
+	typedef Field::RandIter Randiter ;
+	Field F(charac) ;
+
+	index_t it = 0 ; index_t nb = 12 ;
+	LinBox::PlotData<std::string>  Data(nb,1);
+	Data.setSerieName(0,"fgemm");
+
+	Element one, zero, mone, alpha, beta ;
+	F.init(one,1);
+	F.init(mone,-1);
+	F.init(zero,0);
+
+
+	Randiter R(F) ;
+	linbox_check(charac >=5) ;
+
+	do { R.random(alpha) ; } // non trivial alpha
+	while (F.areEqual(alpha,one) || F.areEqual(alpha,mone) || F.areEqual(alpha,zero)) ;
+
+	do { R.random(beta) ; }// non trivial beta
+	while (F.areEqual(beta,one) || F.areEqual(beta,mone) || F.areEqual(beta,zero)) ;
+
+
+	// D = AB + beta C
+	launch_bench_scalar(F,k,k,k,one,zero,0,0,Data,it++,inplace);
+	launch_bench_scalar(F,k,k,k,one,mone,0,0,Data,it++,inplace);
+	launch_bench_scalar(F,k,k,k,one,one ,0,0,Data,it++,inplace);
+	launch_bench_scalar(F,k,k,k,one,beta,0,0,Data,it++,inplace);
+
+	// D = -AB + beta C
+	launch_bench_scalar(F,k,k,k,mone,zero,0,0,Data,it++,inplace);
+	launch_bench_scalar(F,k,k,k,mone,mone,0,0,Data,it++,inplace);
+	launch_bench_scalar(F,k,k,k,mone,one ,0,0,Data,it++,inplace);
+	launch_bench_scalar(F,k,k,k,mone,beta,0,0,Data,it++,inplace);
+
+	// D = alpha AB + beta C
+	launch_bench_scalar(F,k,k,k,alpha,zero,0,0,Data,it++,inplace);
+	launch_bench_scalar(F,k,k,k,alpha,mone,0,0,Data,it++,inplace);
+	launch_bench_scalar(F,k,k,k,alpha,one ,0,0,Data,it++,inplace);
+	launch_bench_scalar(F,k,k,k,alpha,beta,0,0,Data,it++,inplace);
+
+
+	linbox_check(it==nb);
+
+	LinBox::PlotStyle Style;
+	Style.setTerm(LinBox::PlotStyle::Term::eps);
+	Style.setTitle("fgemm","x","y");
+	Style.setPlotType(LinBox::PlotStyle::Plot::histo);
+	Style.addPlotType("set style histogram cluster gap 1");
+	Style.addPlotType("set style fill solid border -1");
+	Style.addPlotType("set boxwidth 0.9");
+
+	// Style.setType(LinBox::PlotStyle::lines);
+	Style.setUsingSeries(2);
+
+	LinBox::PlotGraph<std::string> Graph(Data,Style);
+	Graph.setOutFilename("fgemm_scal");
+
+	// Graph.plot();
+
+	Graph.print_gnuplot();
+
+	Graph.print_latex();
+
+	return ;
+
+}
+
+/*! @brief Benchmark fgemm \f$D\gets\alpha A^x B^y+\beta C\f$ for \f$x,y=1,\top\f$ (transpose or not).
+ * @param k parameter.
+ * @param charac characteristic of the field.
+ * @param inplace "inplace" matmul (ie. C=D is overwritten)
+ */
+void bench_transpose( index_t k, int charac, bool inplace )
+{
+	typedef LinBox::Modular<double> Field ;
+	typedef Field::Element Element;
+	typedef Field::RandIter Randiter ;
+	Field F(charac) ;
+
+	index_t it = 0 ; index_t nb = 8 ;
+	LinBox::PlotData<std::string>  Data(nb,1);
+	Data.setSerieName(0,"fgemm");
+
+	Element one, zero, mone, alpha, beta ;
+	F.init(one,1);
+	F.init(mone,-1);
+	F.init(zero,0);
+
+
+	Randiter R(F) ;
+	linbox_check(charac >=5) ;
+
+	do { R.random(alpha) ; } // non trivial alpha
+	while (F.areEqual(alpha,one) || F.areEqual(alpha,mone) || F.areEqual(alpha,zero)) ;
+
+	do { R.random(beta) ; }// non trivial beta
+	while (F.areEqual(beta,one) || F.areEqual(beta,mone) || F.areEqual(beta,zero)) ;
+
+
+	// D = A^xB^y
+	launch_bench_scalar(F,k,k,k,one,zero,0,0,Data,it++,inplace);
+	launch_bench_scalar(F,k,k,k,one,zero,1,0,Data,it++,inplace);
+	launch_bench_scalar(F,k,k,k,one,zero,0,1,Data,it++,inplace);
+	launch_bench_scalar(F,k,k,k,one,zero,1,1,Data,it++,inplace);
+
+	// D = alpha A^xB^y + beta C
+	launch_bench_scalar(F,k,k,k,alpha,beta,0,0,Data,it++,inplace);
+	launch_bench_scalar(F,k,k,k,alpha,beta,1,0,Data,it++,inplace);
+	launch_bench_scalar(F,k,k,k,alpha,beta,0,1,Data,it++,inplace);
+	launch_bench_scalar(F,k,k,k,alpha,beta,1,1,Data,it++,inplace);
+
+
+	linbox_check(it==nb);
+
+	LinBox::PlotStyle Style;
+	Style.setTerm(LinBox::PlotStyle::Term::eps);
+	Style.setTitle("fgemm","x","y");
+	Style.setPlotType(LinBox::PlotStyle::Plot::histo);
+	Style.addPlotType("set style histogram cluster gap 1");
+	Style.addPlotType("set style fill solid border -1");
+	Style.addPlotType("set boxwidth 0.9");
+
+	// Style.setType(LinBox::PlotStyle::lines);
+	Style.setUsingSeries(2);
+
+	LinBox::PlotGraph<std::string> Graph(Data,Style);
+	Graph.setOutFilename("fgemm_trans");
+
+	// Graph.plot();
+
+	Graph.print_gnuplot();
+
+	Graph.print_latex();
+
+	return ;
+
+}
+
+
 /*  Benchmark fgemm Y = a AX + b Y for various (a,b) couples */
 
 /*  main */
@@ -479,5 +749,12 @@ int main( int ac, char ** av)
 	// std::cout << cube << std::endl;
 	bench_rectangular(cube,2011);
 
+	// various parameters
+	bench_scalar(max,65537,false);
+	bench_scalar(max,65537,true);
+
+	bench_transpose(max,65537,true);
+	bench_transpose(max,65537,true);
+	// various parameters
 	return EXIT_SUCCESS ;
 }
