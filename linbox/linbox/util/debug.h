@@ -158,6 +158,7 @@ namespace LinBox
 
 		}
 	};
+
 	/*! @internal Something went wrong.
 	 * what ?
 	 */
