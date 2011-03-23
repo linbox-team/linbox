@@ -35,29 +35,30 @@ namespace LinBox
 
 	/** @brief Matrix transpose
 	 *
-	 * This class takes a matrix meeting the @ref DenseMatrixBase archetype and
-	 * switches the row and column iterators, giving the transpose of the original
-	 * matrix. It is generic with respect to the matrix given.
+	 * This class takes a matrix meeting the @ref DenseMatrixBase archetype
+	 * and switches the row and column iterators, giving the transpose of
+	 * the original matrix. It is generic with respect to the matrix given.
 	 *
-	 * If the matrix given has limited iterators, then its transpose will have
-	 * limited iterators as well. In particular, if the matrix given has only row
-	 * iterators, then the transpose object will have only column iterators, and
-	 * vice versa.
+	 * If the matrix given has limited iterators, then its transpose will
+	 * have limited iterators as well. In particular, if the matrix given
+	 * has only row iterators, then the transpose object will have only
+	 * column iterators, and vice versa.
 	 *
-	 * This class differs from @ref Transpose in that it constructs a full matrix
-	 * representation, with row and/or column iterators. It does not include any
-	 * logic for matrix-vector products, and does not meet the
-	 * @ref BlackboxArchetype interface. Nor does it make such assumptions about
-	 * the matrix given.
+	 * This class differs from @ref Transpose in that it constructs a full
+	 * matrix representation, with row and/or column iterators. It does not
+	 * include any logic for matrix-vector products, and does not meet the
+	 * @ref BlackboxArchetype interface. Nor does it make such assumptions
+	 * about the matrix given.
 	 *
-	 * This class gives a constant matrix as output. It provides no iterators for
-	 * modification of the data in the matrix.
+	 * This class gives a constant matrix as output. It provides no
+	 * iterators for modification of the data in the matrix.
 	 *
-	 * The input/output functionality of this class passes requests directly through
-	 * to the underlying matrix. In particular, the output will be the transpose of
-	 * the matrix expected and the input will expect the transpose of the matrix
-	 * given. Thus, it is not recommended to use TransposeMatrix for reading and
-	 * writing matrices, except for testing purposes.
+	 * The input/output functionality of this class passes requests
+	 * directly through to the underlying matrix. In particular, the output
+	 * will be the transpose of the matrix expected and the input will
+	 * expect the transpose of the matrix given. Thus, it is not
+	 * recommended to use TransposeMatrix for reading and writing matrices,
+	 * except for testing purposes.
 	 */
 
 	template <class Matrix, class Trait = typename MatrixTraits<Matrix>::MatrixCategory>

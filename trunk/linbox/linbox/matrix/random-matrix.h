@@ -71,16 +71,20 @@ namespace LinBox
 	protected:
 
 	private :
-		Field     & F_ ; //!< The field containing the random entries.
+		Field      F_ ; //!< The field containing the random entries. @todo is there a copy made ?
 		/*! How are entries generated ?
 		 * @pre need only provide <code>elmt& random(elmt&);</code>
 		 * @see \ref LinBox::RandIterArchetype
 		 */
-		Randiter  & R_ ;
+		Randiter   R_ ;
 		// Matrix    & A_ ; //!< The resulting random matrix
 	public :
 		/// constructor
 		RandomDenseMatrix(Field & F, Randiter & R) :
+			F_(F), R_(R)
+		{  }
+
+		RandomDenseMatrix(const Field & F, Randiter & R) :
 			F_(F), R_(R)
 		{  }
 
