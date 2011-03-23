@@ -66,10 +66,10 @@ void fieldTest( const Field& f, double* array, long iter = 1000000, bool fulltes
 
 	// initialize a few field elements,
 	typedef typename Field::Element Element;
-	register Element returnValue; f.init(returnValue, 1);
-	register Element s; f.init(s, 0);
+	Element returnValue; f.init(returnValue, 1);
+	Element s; f.init(s, 0);
 
-	register Element a, b, c;
+	Element a, b, c;
 	typename Field::RandIter r(f);
 	r.random( a ); r.random( b ); r.random( c );
 	std::vector<Element> dv1( vectorSize ), dv2( vectorSize );
@@ -113,7 +113,7 @@ void fieldTest( const Field& f, double* array, long iter = 1000000, bool fulltes
 
 	VectorDomain<Field> VD( f );
 
-	LinBox::UserTimer timer;
+	UserTimer timer;
 	double overHeadTime;
 
 	timer.clear(); timer.start();
@@ -237,7 +237,7 @@ int64_t getOps(int unit)
 	int64_t i = 0;
 	int a = 13;
 	double b = 1.3;
-	LinBox::UserTimer opsClock;
+	UserTimer opsClock;
 	opsClock.clear();
 	long double c;
 	while( opsClock.time() < unit ) {

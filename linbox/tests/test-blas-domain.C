@@ -220,9 +220,9 @@ bool CheckMulAdd( const Integer & alpha , const BlasMatrix<Integer> & A , const 
 
 }
 
-
+// tests MulAdd for various parameters alpha and beta.
 template <class Field>
-static bool testMulAddAgain (const Field& F, size_t n, int iterations)
+static bool testMulAddAgain (const Field& , size_t n, int iterations)
 {
 
 	typedef BlasMatrix<Integer>         IMatrix;
@@ -312,6 +312,86 @@ static bool testMulAddAgain (const Field& F, size_t n, int iterations)
 	return ret;
 }
 
+// tests MulAdd for various shapes and values of transposition.
+template <class Field>
+static bool testMulAddShapeTrans (const Field &F, size_t m, size_t n, size_t k, int iterations)
+{
+	bool ret = true ;
+	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	mycommentator.start (pretty("Testing muladd for shapes and transposition"),"testMulAddShapeTrans",iterations);
+
+
+	typedef typename Field::Element Element;
+	typedef BlasMatrix<Element> Matrix ;
+	typedef TransposedBlasMatrix<Matrix> TransposedMatrix ;
+	typedef typename Field::RandIter Randiter ;
+	Randiter R(F) ;
+	RandomDenseMatrix<Randiter,Field> RandMat(F,R);
+
+	BlasMatrixDomain<Field> BMD (F);
+	MatrixDomain<Field>      MD (F);
+
+	// input matrix
+	Matrix A(m,k);
+	Matrix B(k,n);
+	Matrix C(m,n);
+	// result matrix
+	Matrix D(m,n);
+	Matrix E(m,n);
+
+	// random A,B
+	RandMat.random(A);
+	RandMat.random(B);
+	RandMat.random(C);
+
+	// hard tranpose A,B
+	Matrix A1 (k,m) ;
+	A.transpose(A1) ;
+	Matrix B1 (n,k) ;
+	B.transpose(B1) ;
+	TransposedMatrix tA(A1); // t(tA)=A
+	TransposedMatrix tB(B1); // t(tB)=B
+
+	// random alpha, beta
+	Element alpha ;
+	do {R.random(alpha);} while (F.isZero(alpha)); // nonzerorandom
+
+	Element beta ;
+	R.random(beta);
+
+	// témoin.
+	MD.muladd(D,beta,C,alpha,A,B);
+
+	// A,B
+	BMD.muladd(E,beta,C,alpha,A,B);
+	if (!MD.areEqual(E,D)) {
+		ret = false ;
+		mycommentator.report() << " *** BMD ERROR (" << alpha << ',' << beta << ") (noTrans, noTrans) *** " << std::endl;
+	}
+
+	BMD.muladd(E,beta,C,alpha,A,tB);
+	if (!MD.areEqual(E,D))  {
+		ret = false ;
+		mycommentator.report() << " *** BMD ERROR (" << alpha << ',' << beta << ") (noTrans, Trans) *** " << std::endl;
+	}
+
+	BMD.muladd(E,beta,C,alpha,tA,B);
+	if (!MD.areEqual(E,D)) {
+		ret = false ;
+		mycommentator.report() << " *** BMD ERROR (" << alpha << ',' << beta << ") (Trans, noTrans) *** " << std::endl;
+	}
+
+	BMD.muladd(E,beta,C,alpha,tA,tB);
+	if (!MD.areEqual(E,D)) {
+		ret = false ;
+		mycommentator.report() << " *** BMD ERROR (" << alpha << ',' << beta << ") (Trans, Trans) *** " << std::endl;
+	}
+
+
+	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testMulAddShapeTrans");
+	return ret ;
+}
 /*
  *  Testing the rank of dense matrices using BlasDomain
  *  construct a n*n matrices of rank r and compute the rank
@@ -1359,17 +1439,24 @@ int main(int argc, char **argv)
 
 	//std::cout << "no blas tests for now" << std::endl;
 	// no slow test while I work on io
-	if (!testMulAdd (F,n,iterations)) pass=false;
-	if (!testMulAddAgain (F,n,iterations)) pass=false;
- 	if (!testRank (F, n, iterations))   pass = false;
- 	if (!testDet  (F, n, iterations)) pass = false;
- 	if (!testInv  (F, n, iterations)) pass = false;
- 	if (!testTriangularSolve (F,n,n,iterations)) pass=false;
- 	if (!testSolve (F,n,n,iterations)) pass=false;
- 	if (!testPermutation (F,n,iterations)) pass=false;
- 	if (!testLQUP (F,n,n,iterations)) pass=false;
- 	if (!testMinPoly (F,n,iterations)) pass=false;
-	if (!testCharPoly (F,n,iterations)) pass=false;
+	if (!testMulAdd (F,n,iterations))                     pass=false;
+	if (!testMulAddAgain (F,n,iterations))                pass=false;
+	int m = n+n/2 ; int k = 2*n+1 ;
+	if (!testMulAddShapeTrans (F,n,m,k,iterations))       pass=false;
+	if (!testMulAddShapeTrans (F,n,k,m,iterations))       pass=false;
+	if (!testMulAddShapeTrans (F,m,n,k,iterations))       pass=false;
+	if (!testMulAddShapeTrans (F,m,k,n,iterations))       pass=false;
+	if (!testMulAddShapeTrans (F,k,n,m,iterations))       pass=false;
+	if (!testMulAddShapeTrans (F,k,m,n,iterations))       pass=false;
+ 	if (!testRank (F, n, iterations))                     pass=false;
+ 	if (!testDet  (F, n, iterations))                     pass=false;
+ 	if (!testInv  (F, n, iterations))                     pass=false;
+ 	if (!testTriangularSolve (F,n,n,iterations))          pass=false;
+ 	if (!testSolve (F,n,n,iterations))                    pass=false;
+ 	if (!testPermutation (F,n,iterations))                pass=false;
+ 	if (!testLQUP (F,n,n,iterations))                     pass=false;
+ 	if (!testMinPoly (F,n,iterations))                    pass=false;
+	if (!testCharPoly (F,n,iterations))                   pass=false;
 	//
 
 	commentator.stop("BlasMatrixDomain test suite");

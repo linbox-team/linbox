@@ -264,8 +264,8 @@ namespace LinBox
 			_alloc(false),_plloc(false)
 		{
 			//std::cerr<<"Je passe par le constructeur non const"<<std::endl;
-			linbox_check(_QQ.getOrder()==A.rowdim());
-			linbox_check(_PP.getOrder()==A.coldim());
+			linbox_check(_QQ.getOrder()<=A.rowdim());
+			linbox_check(_PP.getOrder()<=A.coldim());
 
 			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, _m, _n,
 						 _LU.getPointer(),_LU.getStride(),

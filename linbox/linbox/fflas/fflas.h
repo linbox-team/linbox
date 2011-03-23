@@ -432,7 +432,6 @@ public:
 	 * \param n see \p B
 	 * \param alpha scalar
 	 * \param beta scalar
-	 * \param w recursive levels of Winograd's algorithm are used
 	 * \param A \f$\mathrm{op}(A)\f$ is \f$m \times k\f$
 	 * \param B \f$\mathrm{op}(B)\f$ is \f$k \times n\f$
 	 * \param C \f$C\f$ is \f$m \times n\f$
@@ -440,6 +439,7 @@ public:
 	 * \param ldb leading dimension of \p B
 	 * \param ldc leading dimension of \p C
 	 * \param w recursive levels of Winograd's algorithm are used
+	 * @warning beta \e must be invertible
 	 */
 	template<class Field>
 	static typename Field::Element*
@@ -493,6 +493,7 @@ public:
 	 * \param lda leading dimension of \p A
 	 * \param ldb leading dimension of \p B
 	 * \param ldc leading dimension of \p C
+	 * @warning beta \e must be invertible
 	 */
 	template<class Field>
 	static typename Field::Element*
