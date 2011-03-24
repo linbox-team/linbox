@@ -42,15 +42,27 @@
 #include <cstdlib>
 #include <cstring>
 #include <cmath>
+#include <list>
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/archetype.h"
 
 #include "test-common.h"
 
-//using namespace LinBox;
+//! outputs a list of ints on ostream.
+std::ostream & operator<<( std::ostream & o, std::list<int> & l)
+{
+	for (std::list<int>::iterator it = l.begin() ; it != l.end() ; ) {
+		o << *it ;
+		++it ;
+		if (it != l.end())
+			o << ',' ;
+	}
+	return o ;
+}
 
 /* Display a help message on command usage */
+
 
 void printHelpMessage (const char *program, Argument *args, bool printDefaults = false)
 {
@@ -64,7 +76,7 @@ void printHelpMessage (const char *program, Argument *args, bool printDefaults =
 	std::cout << std::endl;
 	std::cout << "Where [options] are the following:" << std::endl;
 
-	for (i = 0; args[i].c != '\0'; i++) {
+	for (i = 0; args[i].c != '\0'; ++i) {
 		if (args[i].example != 0) {
 			std::cout << "  " << args[i].example;
 			l = 10 - strlen (args[i].example);
@@ -93,6 +105,8 @@ void printHelpMessage (const char *program, Argument *args, bool printDefaults =
 			case TYPE_DOUBLE:
 				cout << *(double *) args[i].data;
 				break;
+			case TYPE_INTLIST:
+				cout << *(std::list<int> *) args[i].data ;
 			}
 			std::cout << ")";
 		}
@@ -117,7 +131,7 @@ Argument *findArgument (Argument *args, char c)
 {
 	int i;
 
-	for (i = 0; args[i].c != '\0' && args[i].c != c; i++) ;
+	for (i = 0; args[i].c != '\0' && args[i].c != c; ++i) ;
 
 	if (args[i].c != '\0')
 		return &(args[i]);
@@ -127,18 +141,73 @@ Argument *findArgument (Argument *args, char c)
 
 /* Parse command line arguments */
 
+/*! @internal
+ *  @brief transforms a string list of ints to a list of int
+ *  string "12,13,15"  is turned into list of ints {12,13,15}
+ *  @param outlist list once converted
+ *  @param instring list to be converted
+ *  @return status message.
+ */
+int getListArgs(std::list<int> & outlist, std::string & instring)
+{
+	int start = 0 ;
+	int count = 0 ;
+	size_t i = 0 ;
+	for( ; i < instring.size() ; ++i) {
+		if (isdigit(instring[i])) {
+			++count;
+			continue ;
+		}
+		if (ispunct(instring[i])) {
+			if (!count) {
+				std::cout  << std::endl << "ill formed list " << instring << std::endl;
+				for (size_t sp = 0 ; sp < 16+i ; ++sp)
+					std::cout << '-' ;
+				std::cout << '^' << std::endl;
+				return(1);
+			}
+			int j = atoi(instring.substr(start,count).c_str());
+			outlist.push_front(j);
+			count =  0 ;
+			start = i+1 ;
+		}
+		else {
+			std::cout << std::endl << "ill formed list " << instring << std::endl;
+			for (size_t sp = 0 ; sp < 16+i ; ++sp)
+				std::cout << '-' ;
+			std::cout << '^' << std::endl;
+			return(1);
+		}
+
+	}
+	std::cout << std::endl;
+	if (!count) {
+		std::cout  << std::endl << "ill formed list " << instring << std::endl;
+		for (size_t sp = 0 ; sp < 15+i ; ++sp)
+			std::cout << '-' ;
+		std::cout << '^' << std::endl;
+		return(1);
+	}
+
+	int j = atoi(instring.substr(start,count).c_str());
+	outlist.push_front(j);
+
+	return 0 ;
+}
+
+
 void parseArguments (int argc, char **argv, Argument *args, bool printDefaults)
 {
 	int i;
 	Argument *current;
 
-	for (i = 1; i < argc; i++) {
+	for (i = 1; i < argc; ++i) {
 		if (argv[i][0] == '-') {
 			if (argv[i][1] == 0) {
-			LinBox::commentator.setBriefReportStream (cout);
-			LinBox::commentator.setReportStream (cout);
-			std::cout << "Writing report data to cout (intermingled with brief report)" << std::endl << std::endl;
-			std::cout.flush ();
+				LinBox::commentator.setBriefReportStream (cout);
+				LinBox::commentator.setReportStream (cout);
+				std::cout << "Writing report data to cout (intermingled with brief report)" << std::endl << std::endl;
+				std::cout.flush ();
 			}
 			else if (argv[i][1] == 'h' || argv[i][1] == '?') {
 				printHelpMessage (argv[0], args, printDefaults);
@@ -153,17 +222,17 @@ void parseArguments (int argc, char **argv, Argument *args, bool printDefaults)
 						break;
 					}
 					*(bool *) current->data =
-						(argv[i+1][0] == '+'
-						 || argv[i+1][0] == 'Y'
-						 || argv[i+1][0] == 'y'
-						 || argv[i+1][0] == 'T'
-						 || argv[i+1][0] == 't') ;
-					i++;
+					(argv[i+1][0] == '+'
+					 || argv[i+1][0] == 'Y'
+					 || argv[i+1][0] == 'y'
+					 || argv[i+1][0] == 'T'
+					 || argv[i+1][0] == 't') ;
+					++i;
 					break;
 
 				case TYPE_INT:
 					*(int *) current->data = atoi (argv[i+1]);
-					i++;
+					++i;
 					break;
 
 				case TYPE_INTEGER:
@@ -171,13 +240,22 @@ void parseArguments (int argc, char **argv, Argument *args, bool printDefaults)
 						LinBox::integer tmp(argv[i+1]);
 						*(LinBox::integer *) current->data = tmp;
 					}
-					i++;
+					++i;
 					break;
 
 				case TYPE_DOUBLE:
 					*(double *) current->data = atof (argv[i+1]);
-					i++;
+					++i;
 					break;
+
+				case TYPE_INTLIST:
+					std::string lst = argv[i+1] ;
+					std::list<int> LST ;
+					getListArgs(LST,lst);
+					*(std::list<int> *) current->data = LST ;
+					++i;
+					break;
+
 				}
 			} else {
 				std::cerr << "ERROR: Bad argument " << argv[i] << std::endl;
@@ -194,7 +272,7 @@ void parseArguments (int argc, char **argv, Argument *args, bool printDefaults)
 
 std::ostream& writeCommandString (std::ostream& os, Argument *args, char* programName) {
 	os << programName;
-	for (int i = 0; args[i].c != '\0'; i++) {
+	for (int i = 0; args[i].c != '\0'; ++i) {
 		cout << " -" << args[i].c;
 		switch (args[i].type) {
 		case TYPE_NONE:
@@ -208,6 +286,9 @@ std::ostream& writeCommandString (std::ostream& os, Argument *args, char* progra
 			break;
 		case TYPE_DOUBLE:
 			os << ' ' << *(double *) args[i].data;
+			break;
+		case TYPE_INTLIST:
+			os << ' ' << *(std::list<int> *) args[i].data;
 			break;
 		}
 	}

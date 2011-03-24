@@ -43,14 +43,47 @@
 /*        Outils          */
 /* ********************** */
 
-bool keepon(index_t & repet, Timer & tim)
+/*! @brief Watches a timer and a number and repet and signals if over.
+ *
+ * We want at least 2 repetions but not more than maxtime spent on timing.
+ *
+ * @param repet number of previous repetitions. Should be 0 on the first time
+ * \c whatchon is called.
+ * @param tim timer to watch
+ * @param maxtime maximum time (in seconds) until \c watchon tells stop.
+ * @return \c true if we conditions are not met to stop, \c false otherwise.
+ * @pre \c tim was clear at the beginning and never started.
+ *
+ */
+bool keepon(index_t & repet, Timer & tim, double maxtime=0.5)
 {
-	if (repet<1 || tim.userElapsedTime() < 0.5) {
+	if (repet<2 || tim.usertime() < maxtime) {
 		++repet ;
 		return true;
 	}
 	return false ;
 }
+
+/*! @brief Watches a timer and a number and repet and signals if over.
+ *
+ * We want at least 2 repetions but not more than maxtime spent on timing.
+ *
+ * @param repet number of previous repetitions. Should be 0 on the first time \c whatchon is called.
+ * @param tim timer to watch
+ * @param maxtime maximum time (in seconds) until \c watchon tells stop.
+ * @return \c true if we conditions are not met to stop, \c false otherwise.
+ * @pre \c tim should have been started previously !
+ *
+ */
+bool whatchon(index_t & repet, Timer & tim, double maxtime=0.5)
+{
+	if (repet<2 || tim.userElapsedTime() < maxtime) {
+		++repet ;
+		return true;
+	}
+	return false ;
+}
+
 
 double fgemm_mflops(int m, int n, int k)
 {
@@ -80,7 +113,7 @@ void launch_bench_square(Field & F // const problem
 {
 	index_t l = 0 ;
 	Timer fgemm_sq_tim ;
-	fgemm_sq_tim.clear();
+	Timer chrono ;
 	double mflops ;
 	typedef typename Field::Element  Element;
 	typedef typename Field::RandIter Randiter ;
@@ -93,18 +126,19 @@ void launch_bench_square(Field & F // const problem
 		LinBox::BlasMatrix<Element> A (ii,ii);
 		LinBox::BlasMatrix<Element> B (ii,ii);
 		LinBox::BlasMatrix<Element> C (ii,ii);
-		RandMat.random(A);
-		RandMat.random(B);
-		RandMat.random(C);
 		if (!series_nb)
 			Data.setAbsciName(l,i); // only write abscissa for serie 0
 		index_t j = 0 ; // number of repets.
-		// fgemm_sq_tim.clear() ;
-		fgemm_sq_tim.start() ;
+		fgemm_sq_tim.clear() ;
 		while( keepon(j,fgemm_sq_tim) ) {
+			RandMat.random(A);
+			RandMat.random(B);
+			RandMat.random(C);
+			chrono.clear() ; chrono.start() ;
 			BMD.mul(C,A,B) ; // C = AB
+			chrono.stop();
+			fgemm_sq_tim += chrono ;
 		}
-		fgemm_sq_tim.stop();
 		if (!j){
 			std::cout << "multiplication did not happen" << std::endl;
 		}
@@ -142,7 +176,7 @@ void launch_bench_blas(index_t min, index_t max, int step
 	Field F((int)charact);
 	index_t l = 0 ;
 	Timer fgemm_blas_tim ;
-	fgemm_blas_tim.clear();
+	Timer chrono ;
 	double mflops ;
 	typedef typename Field::Element  Element ;
 	typedef typename Field::RandIter Randiter;
@@ -154,26 +188,28 @@ void launch_bench_blas(index_t min, index_t max, int step
 	Element *  A = new Element[mm] ;
 	Element *  B = new Element[mm] ;
 	Element *  C = new Element[mm] ;
-	for (index_t j = 0 ; j < mm ; ++j) R.random(A[j]);
-	for (index_t j = 0 ; j < mm ; ++j) R.random(B[j]);
-	for (index_t j = 0 ; j < mm ; ++j) R.random(C[j]);
 	typedef typename LinBox::UnparametricField<T> FloatingDomain ;
 	FloatingDomain G ;
 
 	for ( index_t i = min ; i < max ; i += step , ++l ) {
 		int ii = i ; // sinon, le constructeur le plus proche serait (_Matrix,_Field)... n'impnawak...
+		index_t mimi = (index_t) ii*ii ;
 		index_t j = 0 ;
 		fgemm_blas_tim.clear() ;
-		fgemm_blas_tim.start() ;
 		while(keepon(j,fgemm_blas_tim)) {
+			for (index_t j = 0 ; j < mimi ; ++j) R.random(A[j]);
+			for (index_t j = 0 ; j < mimi ; ++j) R.random(B[j]);
+			for (index_t j = 0 ; j < mimi ; ++j) R.random(C[j]);
+			chrono.clear(); chrono.start() ;
 			LinBox::FFLAS::fgemm(G,LinBox::FFLAS::FflasNoTrans,LinBox::FFLAS::FflasNoTrans,
 					     ii,ii,ii,
 					     1.,
 					     A,ii,B,ii,
 					     0.,
-					     C,ii) ; // the last 2 arguments are superfluous and meaningless.
+					     C,ii) ;
+			chrono.stop() ;
+			fgemm_blas_tim += chrono ;
 		}
-		fgemm_blas_tim.stop();
 		mflops = compute_mflops(fgemm_blas_tim,fgemm_mflops(i,i,i),j);
 		Data.setEntry(series_nb,l,mflops);
 	}
@@ -201,12 +237,12 @@ void launch_bench_blas(index_t min, index_t max, int step
  */
 template<class Field>
 void launch_bench_rectangular(Field & F // const problem
-			    , int m, int k, int n
-			    , LinBox::PlotData<std::string> & Data
-			    , index_t point_nb)
+			      , int m, int k, int n
+			      , LinBox::PlotData<std::string> & Data
+			      , index_t point_nb)
 {
 	Timer fgemm_rect_tim ;
-	fgemm_rect_tim.clear();
+	Timer chrono ; chrono.clear();
 	double mflops ;
 	typedef typename Field::Element  Element;
 	typedef typename Field::RandIter Randiter ;
@@ -217,16 +253,17 @@ void launch_bench_rectangular(Field & F // const problem
 	LinBox::BlasMatrix<Element> A (m,k);
 	LinBox::BlasMatrix<Element> B (k,n);
 	LinBox::BlasMatrix<Element> C (m,n);
-	RandMat.random(A);
-	RandMat.random(B);
-	RandMat.random(C);
 	index_t j = 0 ;
 	fgemm_rect_tim.clear() ;
-	fgemm_rect_tim.start() ;
 	while (keepon(j,fgemm_rect_tim)) {
+		RandMat.random(A);
+		RandMat.random(B);
+		RandMat.random(C);
+		chrono.clear() ; chrono.start() ;
 		BMD.mul(C,A,B) ; // C = AB
+		chrono.stop();
+		fgemm_rect_tim += chrono ;
 	}
-	fgemm_rect_tim.stop();
 	if (!j) {
 		std::cout << "multiplication did not happen" << std::endl;
 	}
@@ -264,16 +301,16 @@ void launch_bench_rectangular(Field & F // const problem
  * @param Data where data is stored
  * @param point_nb point to be computed
  */
-template<class Field>
+template<class Field, bool tA, bool tB>
 void launch_bench_scalar(Field & F // const problem
 			 , int m, int k, int n
 			 , const typename Field::Element & alpha, const typename Field::Element & beta
-			 , bool tA, bool tB
 			 , LinBox::PlotData<std::string> & Data
 			 , index_t point_nb
 			 , bool inplace = false)
 {
 	Timer fgemm_scal_tim ;
+	Timer chrono ;
 	fgemm_scal_tim.clear();
 	double mflops ;
 	typedef typename Field::Element  Element;
@@ -299,18 +336,18 @@ void launch_bench_scalar(Field & F // const problem
 	LinBox::BlasMatrix<Element > C (m,n);
 	LinBox::BlasMatrix<Element > D (m,n);
 
-	RandMat.random(A);
-	RandMat.random(B);
-	RandMat.random(C);
-
 
 	LinBox::TransposedBlasMatrix<LinBox::BlasMatrix<Element > > At(A);
 	LinBox::TransposedBlasMatrix<LinBox::BlasMatrix<Element > > Bt(B);
 
 	index_t j = 0 ;
-	fgemm_scal_tim.clear() ;
-	fgemm_scal_tim.start() ;
 	while (keepon(j,fgemm_scal_tim)) {
+		RandMat.random(A);
+		RandMat.random(B);
+		RandMat.random(C);
+
+		chrono.clear() ; chrono.start();
+
 		if (inplace) {
 			if (tA) {
 				if (tB) {
@@ -349,8 +386,9 @@ void launch_bench_scalar(Field & F // const problem
 
 			}
 		}
+
+		chrono.stop() ; fgemm_scal_tim += chrono ;
 	}
-	fgemm_scal_tim.stop();
 	if (!j) {
 		std::cout << "multiplication did not happen" << std::endl;
 	}
@@ -589,22 +627,22 @@ void bench_scalar( index_t k, int charac, bool inplace )
 
 
 	// D = AB + beta C
-	launch_bench_scalar(F,k,k,k,one,zero,0,0,Data,it++,inplace);
-	launch_bench_scalar(F,k,k,k,one,mone,0,0,Data,it++,inplace);
-	launch_bench_scalar(F,k,k,k,one,one ,0,0,Data,it++,inplace);
-	launch_bench_scalar(F,k,k,k,one,beta,0,0,Data,it++,inplace);
+	launch_bench_scalar<Field,0,0>(F,k,k,k,one,zero,Data,it++,inplace);
+	launch_bench_scalar<Field,0,0>(F,k,k,k,one,mone,Data,it++,inplace);
+	launch_bench_scalar<Field,0,0>(F,k,k,k,one,one ,Data,it++,inplace);
+	launch_bench_scalar<Field,0,0>(F,k,k,k,one,beta,Data,it++,inplace);
 
 	// D = -AB + beta C
-	launch_bench_scalar(F,k,k,k,mone,zero,0,0,Data,it++,inplace);
-	launch_bench_scalar(F,k,k,k,mone,mone,0,0,Data,it++,inplace);
-	launch_bench_scalar(F,k,k,k,mone,one ,0,0,Data,it++,inplace);
-	launch_bench_scalar(F,k,k,k,mone,beta,0,0,Data,it++,inplace);
+	launch_bench_scalar<Field,0,0>(F,k,k,k,mone,zero,Data,it++,inplace);
+	launch_bench_scalar<Field,0,0>(F,k,k,k,mone,mone,Data,it++,inplace);
+	launch_bench_scalar<Field,0,0>(F,k,k,k,mone,one ,Data,it++,inplace);
+	launch_bench_scalar<Field,0,0>(F,k,k,k,mone,beta,Data,it++,inplace);
 
 	// D = alpha AB + beta C
-	launch_bench_scalar(F,k,k,k,alpha,zero,0,0,Data,it++,inplace);
-	launch_bench_scalar(F,k,k,k,alpha,mone,0,0,Data,it++,inplace);
-	launch_bench_scalar(F,k,k,k,alpha,one ,0,0,Data,it++,inplace);
-	launch_bench_scalar(F,k,k,k,alpha,beta,0,0,Data,it++,inplace);
+	launch_bench_scalar<Field,0,0>(F,k,k,k,alpha,zero,Data,it++,inplace);
+	launch_bench_scalar<Field,0,0>(F,k,k,k,alpha,mone,Data,it++,inplace);
+	launch_bench_scalar<Field,0,0>(F,k,k,k,alpha,one ,Data,it++,inplace);
+	launch_bench_scalar<Field,0,0>(F,k,k,k,alpha,beta,Data,it++,inplace);
 
 
 	linbox_check(it==nb);
@@ -666,16 +704,16 @@ void bench_transpose( index_t k, int charac, bool inplace )
 
 
 	// D = A^xB^y
-	launch_bench_scalar(F,k,k,k,one,zero,0,0,Data,it++,inplace);
-	launch_bench_scalar(F,k,k,k,one,zero,1,0,Data,it++,inplace);
-	launch_bench_scalar(F,k,k,k,one,zero,0,1,Data,it++,inplace);
-	launch_bench_scalar(F,k,k,k,one,zero,1,1,Data,it++,inplace);
+	launch_bench_scalar<Field,0,0>(F,k,k,k,one,zero,Data,it++,inplace);
+	launch_bench_scalar<Field,1,0>(F,k,k,k,one,zero,Data,it++,inplace);
+	launch_bench_scalar<Field,0,1>(F,k,k,k,one,zero,Data,it++,inplace);
+	launch_bench_scalar<Field,1,1>(F,k,k,k,one,zero,Data,it++,inplace);
 
 	// D = alpha A^xB^y + beta C
-	launch_bench_scalar(F,k,k,k,alpha,beta,0,0,Data,it++,inplace);
-	launch_bench_scalar(F,k,k,k,alpha,beta,1,0,Data,it++,inplace);
-	launch_bench_scalar(F,k,k,k,alpha,beta,0,1,Data,it++,inplace);
-	launch_bench_scalar(F,k,k,k,alpha,beta,1,1,Data,it++,inplace);
+	launch_bench_scalar<Field,0,0>(F,k,k,k,alpha,beta,Data,it++,inplace);
+	launch_bench_scalar<Field,1,0>(F,k,k,k,alpha,beta,Data,it++,inplace);
+	launch_bench_scalar<Field,0,1>(F,k,k,k,alpha,beta,Data,it++,inplace);
+	launch_bench_scalar<Field,1,1>(F,k,k,k,alpha,beta,Data,it++,inplace);
 
 
 	linbox_check(it==nb);
@@ -716,13 +754,17 @@ int main( int ac, char ** av)
 	static size_t       min = 100;     /*  min size */
 	static size_t       max = 1500;    /*  max size (not included) */
 	static size_t       step = 100;    /*  step between 2 sizes */
+	static std::list<int> lst  ;       /*  what bench to start ? */
+	lst.push_front(1);// ={1,2} vivement le nouveau std...
+	lst.push_front(2);
 
-        static Argument as[] = {
-                { 'm', "-m min", "Set minimal size of matrix to test."    , TYPE_INT , &min },
-                { 'M', "-M Max", "Set maximal size."                      , TYPE_INT , &max },
-                { 's', "-s step", "Sets the gap between two matrix sizes.", TYPE_INT , &step },
+	static Argument as[] = {
+		{ 'm', "-m min" , "Set minimal size of matrix to test."    , TYPE_INT , &min },
+		{ 'M', "-M Max" , "Set maximal size."                      , TYPE_INT , &max },
+		{ 's', "-s step", "Sets the gap between two matrix sizes.", TYPE_INT , &step },
+		{ 'l', "-l list", "Only launches a subset of available benchmarks\n - 1: compare to raw blas\n - 2:various square sizes\n - 3:various shapes\n - 4: various parameters (a,b)\n - 5 : various transp. combinations", TYPE_INTLIST, &lst },
 		END_OF_ARGUMENTS
-        };
+	};
 
 	parseArguments (ac, av, as);
 
@@ -734,27 +776,56 @@ int main( int ac, char ** av)
 	}
 
 	//! @todo use commentator.
+	lst.unique();
+	lst.sort();
+	if (lst.empty()) {
+		std::cerr << "Warning, you are not benchmarking anything. Please check the -l value." << std::endl;
+	}
+	std::list<int>::iterator it = lst.begin();
 
+	/* against pure blas routine */
+	if (*it == 1) {
+		std::cout << "bench 1 : blas" << std::endl;
+		bench_blas(min,max,step);
+		if (++it == lst.end()) return EXIT_SUCCESS ;
+	}
 
-	// against pure blas routine
-	bench_blas(min,max,step);
+	/* square for various fields */
+	if (*it == 2) {
+		std::cout << "bench 2 : square" << std::endl;
+		bench_square(min,max,step,13);
+		bench_square(min,max,step,2011);
+		bench_square(min,max,step,65537);
+		if (++it == lst.end()) return EXIT_SUCCESS ;
+	}
 
-	// square for various fields
-	bench_square(min,max,step,13);
-	bench_square(min,max,step,2011);
-	bench_square(min,max,step,65537);
+	/* various shapes. */
+	if (*it == 3) {
+		std::cout << "bench 3 : shapes" << std::endl;
+		int cube = (int) std::pow(max,double(1/3.));
+		bench_rectangular(cube,2011);
+		if (++it == lst.end()) return EXIT_SUCCESS ;
+	}
 
-	// various shapes.
-	int cube = (int) std::pow(max,double(1/3.));
-	// std::cout << cube << std::endl;
-	bench_rectangular(cube,2011);
+	/* various parameters */
+	if (*it == 4) {
+		std::cout << "bench 4 : scalars" << std::endl;
+		bench_scalar(max,65537,false);
+		bench_scalar(max,65537,true);
+		if (++it == lst.end()) return EXIT_SUCCESS ;
+	}
 
-	// various parameters
-	bench_scalar(max,65537,false);
-	bench_scalar(max,65537,true);
-
-	bench_transpose(max,65537,true);
-	bench_transpose(max,65537,true);
-	// various parameters
+	/* various tranpositions */
+	if (*it == 5) {
+		std::cout << "bench 2 : transp" << std::endl;
+		bench_transpose(max,65537,true);
+		bench_transpose(max,65537,true);
+		if (++it != lst.end())  {
+			std::cerr << "*** error *** your list contains (at least) one unknown element : " << *it << '!' << std::endl;
+		}
+	}
+	else {
+		std::cerr << "*** error *** your list contains (at least) one unknown element : " << *it << '!' << std::endl;
+	}
 	return EXIT_SUCCESS ;
 }
