@@ -22,10 +22,10 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/*! @file benchmarks/benchmark-fgemm.C
+/*! @file benchmarks/benchmark-ftrXm.C
  * @ingroup benchmarks
- * @brief Benchmarking dense matrix multiplication on finite fields.
- * This file benchmarks the FFLAS::fgemm implementation for various fields,
+ * @brief Benchmarking triangular matrix multiplication on finite fields.
+ * This file benchmarks the FFLAS::ftrmm, FFLAS::ftrsm implementation for various fields,
  * shape and parameters. Actually, we use the wrapper member \c mul of LinBox::BlasMatrixDomain.
  */
 
@@ -105,11 +105,11 @@ double compute_mflops(const Timer & t, const double mflo, const int rpt = 1)
  * @param Data where data is stored
  * @param series_nb index of the current series.
  */
-template<class Field>
+template<class Field, bool LeftSide, bool UnitDiag, bool TriSup>
 void launch_bench_square(Field & F // const problem
-			 , index_t min, index_t max, int step
-			 , LinBox::PlotData<index_t> & Data
-			 , index_t series_nb)
+			, index_t min, index_t max, int step
+			, LinBox::PlotData<index_t> & Data
+			, index_t series_nb)
 {
 	index_t l = 0 ;
 	Timer fgemm_sq_tim ;
@@ -118,24 +118,29 @@ void launch_bench_square(Field & F // const problem
 	typedef typename Field::Element  Element;
 	typedef typename Field::RandIter Randiter ;
 	Randiter R(F) ;
+	LinBox::NonzeroRandIter<Field> Rn(F,R);
 	LinBox::BlasMatrixDomain<Field> BMD(F) ;
 	LinBox::RandomDenseMatrix<Randiter,Field> RandMat(F,R);
 	// index_t repet = 3 ;
 	for ( index_t i = min ; i < max ; i += step , ++l ) {
 		int ii = i ; // sinon, le constructeur le plus proche serait (_Matrix,_Field)... n'impnawak...
-		LinBox::BlasMatrix<Element> A (ii,ii);
+		LinBox::TriangularBlasMatrix<Element> A (ii,ii,
+							 (TriSup?LinBox::BlasTag::up:LinBox::BlasTag::low),
+							 (UnitDiag?LinBox::BlasTag::unit:LinBox::BlasTag::nonunit));
 		LinBox::BlasMatrix<Element> B (ii,ii);
-		LinBox::BlasMatrix<Element> C (ii,ii);
 		if (!series_nb)
 			Data.setAbsciName(l,i); // only write abscissa for serie 0
 		index_t j = 0 ; // number of repets.
 		fgemm_sq_tim.clear() ;
 		while( keepon(j,fgemm_sq_tim) ) {
 			RandMat.random(A);
+			for (size_t k=0 ; k<(size_t)ii ; ++k) Rn.random(A.refEntry(k,k)) ;
 			RandMat.random(B);
-			RandMat.random(C);
 			chrono.clear() ; chrono.start() ;
-			BMD.mul(C,A,B) ; // C = AB
+			if(LeftSide)
+				BMD.mulin_left(B,A) ;  // B <- BA
+			else
+				BMD.mulin_right(A,B) ; // B <- AB
 			chrono.stop();
 			fgemm_sq_tim += chrono ;
 		}
@@ -150,14 +155,24 @@ void launch_bench_square(Field & F // const problem
 		mflops = compute_mflops(fgemm_sq_tim,fgemm_mflops(i,i,i),j);
 		Data.setEntry(series_nb,l,mflops);
 	}
-	std::ostringstream nam ;
-	nam << '\"' ;
-	F.write(nam);
-	nam << '\"' ;
-	Data.setSerieName(series_nb,nam.str());
+	std::string nam = '\"';
+	if (TriSup)
+		nam += "upper " ;
+	else
+		nam += "lower " ;
+	if (LeftSide)
+		nam += "left " ;
+	else
+		nam += "right " ;
+	if (UnitDiag)
+		nam += "non-" ;
+	nam += "uniti\"" ;
+
+	Data.setSerieName(series_nb,nam);
 
 }
 
+#if 0 /*  to be updated */
 /*! @internal
  * @brief launches the benchmarks for the square case directly BLAS.
  * @param min min size to bench
@@ -404,10 +419,72 @@ void launch_bench_scalar(Field & F // const problem
 	Data.setAbsciName(point_nb,nam.str());
 }
 
+#endif
 
 /* ********************** */
 /*        Tests           */
 /* ********************** */
+
+/*! @brief Benchmark square fgemm Y=AX for several fields.
+ * @param min min size
+ * @param max max size
+ * @param step step of the size between 2 benchmarks
+ * @param charac characteristic of the field.
+ */
+void bench_square( index_t min, index_t max, int step, int charac )
+{
+
+	int nb = 9 ;// une col de plus (la première)
+	typedef LinBox::Modular<double>          Field ; ++nb ;
+
+	int nb_pts = (int) std::ceil((double)(max-min)/(double)step) ;
+	LinBox::PlotData<index_t>  Data(nb_pts,nb);
+	LinBox::PlotStyle Style;
+	int it = 0 ;
+	Field F(charac) ;
+	std::cout << "0..";
+	launch_bench_square<Field,true,true,true>(F,min,max,step,Data,it++);
+	std::cout << "1..";
+	launch_bench_square<Field,true,true,false>(F,min,max,step,Data,it++);
+	std::cout << "2..";
+	launch_bench_square<Field,true,false,true>(F,min,max,step,Data,it++);
+	std::cout << "3..";
+	launch_bench_square<Field,true,false,false>(F,min,max,step,Data,it++);
+	std::cout << "4..";
+	launch_bench_square<Field,false,true,true>(F,min,max,step,Data,it++);
+	std::cout << "5..";
+	launch_bench_square<Field,false,true,false>(F,min,max,step,Data,it++);
+	std::cout << "6..";
+	launch_bench_square<Field,false,false,true>(F,min,max,step,Data,it++);
+	std::cout << "7..";
+	launch_bench_square<Field,false,false,false>(F,min,max,step,Data,it++);
+	std::cout << "9!!" << std::endl;
+
+
+
+	linbox_check(it <= nb);
+
+	Style.setTerm(LinBox::PlotStyle::Term::eps);
+	Style.setTitle("ftrmm","x","y");
+
+	Style.setPlotType(LinBox::PlotStyle::Plot::graph);
+	Style.setLineType(LinBox::PlotStyle::Line::linespoints);
+	Style.setUsingSeries(std::pair<index_t,index_t>(2,nb));
+
+	LinBox::PlotGraph<index_t> Graph(Data,Style);
+	Graph.setOutFilename("ftrmm_square");
+
+	// Graph.plot();
+
+	Graph.print_gnuplot();
+
+	Graph.print_latex();
+
+	return ;
+
+}
+
+#if 0 /*  to be ported */
 
 /*! Benchmark fgemm Y=AX for several sizes of sqare matrices.
  * @param min min size
@@ -463,68 +540,6 @@ void bench_blas( index_t min, index_t max, int step )
 
 }
 
-/*! @brief Benchmark square fgemm Y=AX for several fields.
- * @param min min size
- * @param max max size
- * @param step step of the size between 2 benchmarks
- * @param charac characteristic of the field.
- */
-void bench_square( index_t min, index_t max, int step, int charac )
-{
-
-	int nb = 1 ;// une col de plus (la première)
-	typedef LinBox::Modular<double>          Field0 ; ++nb ;
-	typedef LinBox::Modular<float>           Field1 ; ++nb ;
-	typedef LinBox::Modular<int32_t>         Field2 ; ++nb ;
-	typedef LinBox::ModularBalanced<double>  Field3 ; ++nb ;
-	typedef LinBox::ModularBalanced<float>   Field4 ; ++nb ;
-	typedef LinBox::ModularBalanced<int32_t> Field5 ; ++nb ;
-	// GivaroZpZ
-
-	int nb_pts = (int) std::ceil((double)(max-min)/(double)step) ;
-	LinBox::PlotData<index_t>  Data(nb_pts,nb);
-	int it = 0 ;
-	Field0 F0(charac) ;
-	launch_bench_square(F0,min,max,step,Data,it++);
-	if (charac < 2048) {
-		Field1 F1(charac) ;
-		launch_bench_square(F1,min,max,step,Data,it++);
-	}
-	Field2 F2(charac) ;
-	launch_bench_square(F2,min,max,step,Data,it++);
-	Field3 F3(charac) ;
-	launch_bench_square(F3,min,max,step,Data,it++);
-	if (charac < 2048) {
-		Field4 F4(charac) ;
-		launch_bench_square(F4,min,max,step,Data,it++);
-	}
-	Field5 F5(charac) ;
-	launch_bench_square(F5,min,max,step,Data,it++);
-	linbox_check(it <= nb);
-
-	LinBox::PlotStyle Style;
-	// Style.setTerm(LinBox::PlotStyle::Term::pdf);
-	// Style.setTerm(LinBox::PlotStyle::Term::png);
-	// Style.setTerm(LinBox::PlotStyle::Term::svg);
-	Style.setTerm(LinBox::PlotStyle::Term::eps);
-	Style.setTitle("fgemm","x","y");
-
-	Style.setPlotType(LinBox::PlotStyle::Plot::graph);
-	Style.setLineType(LinBox::PlotStyle::Line::linespoints);
-	Style.setUsingSeries(std::pair<index_t,index_t>(2,it));
-
-	LinBox::PlotGraph<index_t> Graph(Data,Style);
-	Graph.setOutFilename("fgemm_square");
-
-	// Graph.plot();
-
-	Graph.print_gnuplot();
-
-	Graph.print_latex();
-
-	return ;
-
-}
 
 /*! @brief Benchmark fgemm Y=AX for several shapes.
  * Let n=k^2.
@@ -742,8 +757,7 @@ void bench_transpose( index_t k, int charac, bool inplace )
 
 }
 
-
-/*  Benchmark fgemm Y = a AX + b Y for various (a,b) couples */
+#endif
 
 /*  main */
 
@@ -778,6 +792,10 @@ int main( int ac, char ** av)
 	//! @todo use commentator.
 	lst.unique();
 	lst.sort();
+
+	bench_square(min,max,step,2011);
+
+#if 0 /*  to be uncommented */
 	if (lst.empty()) {
 		std::cerr << "Warning, you are not benchmarking anything. Please check the -l value." << std::endl;
 	}
@@ -827,5 +845,6 @@ int main( int ac, char ** av)
 	else {
 		std::cerr << "*** error *** your list contains (at least) one unknown element : " << *it << '!' << std::endl;
 	}
+#endif
 	return EXIT_SUCCESS ;
 }

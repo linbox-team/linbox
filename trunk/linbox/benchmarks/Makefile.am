@@ -12,21 +12,24 @@ AM_CPPFLAGS= $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
 LDADD= $(NTL_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) $(GMP_LIBS)
 
 BENCH_BASIC=               \
-		benchmark-fgemm
+		benchmark-fgemm    \
+		benchmark-ftrXm
 TODO=
 		benchmark-matmul   \
 		benchmark-fixedcra \
 		benchmark-spmv     \
 		benchmark-fields
 
-BENCH_ALGOS=               \
+#  BENCH_ALGOS=               \
+TODO=
 		benchmark-solve    \
 		benchmark-rank     \
 		benchmark-det      \
 		benchmark-nullspace
 
-BENCH_FORMS=               \
-		benchmark-lu       \
+#  BENCH_FORMS=               \
+TODO=
+		benchmark-lu
 		benchmark-echelon  \
 		benchmark-hermite  \
 		benchmark-smith
@@ -35,12 +38,15 @@ EXTRA_PROGRAMS= $(BENCH_BASIC)
 
 EXTRA_DIST= benchmark.h benchmark.doxy
 
+SUBDIRS=data
+
 benchmarks: ${EXTRA_PROGRAMS}
 
 ### BASE BENCHMARK ###
 
-#  benchmark_matmul_SOURCES         = benchmark-matmul.C
 benchmark_fgemm_SOURCES          = benchmark-fgemm.C
+benchmark_ftrXm_SOURCES          = benchmark-ftrXm.C
+#  benchmark_matmul_SOURCES         = benchmark-matmul.C
 #  benchmark_fixedcra_SOURCES       = benchmark-fixedcra.C
 #  benchmark_spmv_SOURCES           = benchmark-spmv.C
 #  benchmark_fields_SOURCES         = benchmark-fields.C
