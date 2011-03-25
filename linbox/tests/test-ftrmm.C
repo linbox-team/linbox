@@ -100,14 +100,16 @@ int test_ftrmm(std::ostream & report, const Field & F)
 #ifdef _LB_DEBUG
 	Element * E = new Element[rows*lda]; // copy of A
 	assert(E);
-	for (size_t i = 0 ; i < rows*lda ; ++i) *(E+i) = *(A+i);
+	FFLAS::fcopy(F,rows*lda,E,1,A,1);
+	// for (size_t i = 0 ; i < rows*lda ; ++i) *(E+i) = *(A+i);
 #endif
 
 	for (size_t i = 0 ; i < rows*ldb  ; ++i) G.random( *(B+i) ) ;
 
 	Element zero ; F.init(zero,0UL);
 	for (size_t i = 0 ; i < M*N ; ++i) *(C+i) = zero;
-	for (size_t i = 0 ; i < rows*ldb ; ++i) *(D+i) = *(B+i);
+	// for (size_t i = 0 ; i < rows*ldb ; ++i) *(D+i) = *(B+i);
+	FFLAS::fcopy(F,rows*ldb,D,1,B,1);
 	Element alpha ;
 	//! @todo F.isInvertible()
 	//! @todo InvertibleRandomIter
@@ -273,17 +275,24 @@ int test_ftrmm(std::ostream & report, const Field & F)
 	/*  compute B with ftrmm */
 	FFLAS::ftrmm(F,Side,UpLo,Trans,Diag,M,N,alpha,A,lda,B,ldb);
 
-	/*  checking  */
+	/*  checking C==B */
 	int err = 0 ;
 	for (size_t i = 0 ; i < M && !err ; ++i)
 		for (size_t j = 0 ; j < N && !err ; ++j)
 			if (!F.areEqual(*(C+i*N+j),*(B+i*ldb+j)))
 				err = -1  ;
+	if (err)
+		report << "# *** error *** ftrmm fails" << std::endl;
+	else {
 	// checking B has nothing written outside B...
 	for (size_t i = M ; i < rows && !err ; ++i)
 		for (size_t j = N ; j < ldb  && !err ; ++j)
 			if (!F.areEqual(*(D+i*ldb+j),*(B+i*ldb+j)))
 				err = -1  ;
+	if (err)
+		report << "# *** error *** ftrmm writes outside : failure." << std::endl;
+
+	}
 #ifdef _LB_DEBUG
 	{
 		if (err)
@@ -351,7 +360,8 @@ int test_ftrmm(std::ostream & report, const Field & F)
 
 	int eur = 0 ;
 
-	for (size_t i = 0 ; i < rows*ldb ; ++i) *(B+i) = *(D+i);
+	// for (size_t i = 0 ; i < rows*ldb ; ++i) *(B+i) = *(D+i);
+	FFLAS::fcopy(F,rows*ldb,B,1,D,1);
 	if (Diag == FFLAS::FflasNonUnit)
 		for (size_t i = 0 ; i < K ; ++i) Gn.random(*(A+i*(lda+1))) ; // invertible diag !
 	FFLAS::ftrmm(F, Side, UpLo, Trans, Diag, M, N, alpha,    A, lda, B, ldb);
