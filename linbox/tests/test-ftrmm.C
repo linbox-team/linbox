@@ -53,26 +53,30 @@ using namespace LinBox ;
 template<class Field, FFLAS::FFLAS_SIDE Side,FFLAS::FFLAS_UPLO UpLo, FFLAS::FFLAS_TRANSPOSE Trans, FFLAS::FFLAS_DIAG Diag >
 int test_ftrmm(std::ostream & report, const Field & F)
 {
-	size_t M    = random()%_LB_MAX_SZ ;
-	size_t N    = random()%_LB_MAX_SZ ; // B is MxN in a ldb*rows table
-	size_t ldb  = random()%_LB_MAX_SZ+1 ;
-	size_t lda  = random()%_LB_MAX_SZ+1 ;
-	while (ldb<N || ldb<M) ldb = random()%_LB_MAX_SZ;
+	linbox_check(_LB_MAX_SZ>3);
+	size_t M    = random()%(_LB_MAX_SZ/2) ;
+	size_t N    = random()%(_LB_MAX_SZ/2) ; // B is £MxN£ in a £ldb x rows£ table
+	size_t ldb  = random()%_LB_MAX_SZ ;
+	size_t lda  = random()%_LB_MAX_SZ ;
+	size_t K    ;                           // A is £KxK£
+	while (ldb<N) ldb = random()%_LB_MAX_SZ; // £ldb >= N£
+	if (Side == FFLAS::FflasRight){
+		K = N ;
+	}
+	else {
+		K = M ;
+	}
+	while (lda<K) lda = random()%_LB_MAX_SZ; // £ldba>= N£
 
-	size_t Ldim = M; // A is MxM or NxN in a lda x rows table
-	if (Side == FFLAS::FflasRight) Ldim = N ; // A = N x lda, else A is M x lda.
-	while (lda<Ldim)  lda  = random()%_LB_MAX_SZ ;
+	assert(N    <= ldb);
+	assert(K    <= lda);
 
-	size_t rows = std::max(N,M)+3;
+	size_t rows = std::max(N,M)+3; // number of rows in A and B as a big table. (it is still M or N as a matrix)
 
 #ifdef _LB_DEBUG
 	report << "#M x N :"<< M << 'x' << N << std::endl;
 	report << "#lda x ldb :"<< lda << 'x' << ldb << std::endl;
 #endif
-	assert(N    <= ldb);
-	assert(M    <= ldb);
-	assert(Ldim <= lda);
-	assert(rows >= Ldim);
 	assert(rows >= M);
 
 	typedef typename Field::Element Element;
@@ -286,10 +290,10 @@ int test_ftrmm(std::ostream & report, const Field & F)
 		{
 			report<<"#-------------T-------------" <<std::endl;
 			report << "T :=" ;
-			write_field(F,report,UpLo,Diag,E,Ldim,Ldim,lda,true);
+			write_field(F,report,UpLo,Diag,E,rows,lda,lda,true);
 			report << ':' << std::endl;
 			report<<"#------------TT--------------" <<std::endl;
-			report << "TT := " ; write_field(F,report,E,Ldim,Ldim,lda,true);
+			report << "TT := " ; write_field(F,report,E,rows,lda,lda,true);
 			report << ':' << std::endl;
 
 			report<<"#-------------M-------------" <<std::endl;
@@ -349,14 +353,14 @@ int test_ftrmm(std::ostream & report, const Field & F)
 
 	for (size_t i = 0 ; i < rows*ldb ; ++i) *(B+i) = *(D+i);
 	if (Diag == FFLAS::FflasNonUnit)
-		for (size_t i = 0 ; i < Ldim ; ++i) Gn.random(*(A+i*(lda+1))) ; // invertible diag !
+		for (size_t i = 0 ; i < K ; ++i) Gn.random(*(A+i*(lda+1))) ; // invertible diag !
 	FFLAS::ftrmm(F, Side, UpLo, Trans, Diag, M, N, alpha,    A, lda, B, ldb);
 	/* revert with ftrsm  */
 	FFLAS::ftrsm(F, Side, UpLo, Trans, Diag, M, N, invalpha, A, lda, B, ldb);
 	//! @todo check ftrsm fails nicely with non invertible A !
 
-	for (size_t i = 0 ; i < M && !eur ; ++i)
-		for (size_t j = 0 ; j < N && !eur ; ++j)
+	for (size_t i = 0 ; i < rows && !eur ; ++i)
+		for (size_t j = 0 ; j < ldb && !eur ; ++j)
 			if (!F.areEqual(*(D+i*ldb+j),*(B+i*ldb+j)))
 				eur = -1  ;
 
