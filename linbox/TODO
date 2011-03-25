@@ -21,3 +21,6 @@ Before meeting:
  - Add solver, determinant to Jean-Guillaume's code?
  - Add more pivoting strategies?
  - New Compose implementation?
+
+----
+ - NoCblasErrorChecks on release version ?

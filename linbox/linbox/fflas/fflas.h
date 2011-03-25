@@ -367,7 +367,7 @@ public:
 // Level 3 routines
 //---------------------------------------------------------------------
 
-	/** @brief ftrsm: TRiangular System solve with matrix.
+	/** @brief ftrsm: <b>TR</b>iangular <b>S</b>ystem solve with <b>M</b>atrix.
 	 * Computes  \f$ B \gets \alpha \mathrm{op}(A^{-1}) B\f$ or  \f$B \gets \alpha B \mathrm{op}(A^{-1})\f$.
 	 * \param F field
 	 * \param Side if \c Side==FflasLeft then  \f$ B \gets \alpha \mathrm{op}(A^{-1}) B\f$ is computed.
@@ -394,13 +394,13 @@ public:
 	       typename Field::Element * A, const size_t lda,
 	       typename Field::Element * B, const size_t ldb);
 
-	/** @brief ftrmm: TRiangular Matrix Multiply.
+	/** @brief ftrmm: <b>TR</b>iangular <b>M</b>atrix <b>M</b>ultiply.
 	 * Computes  \f$ B \gets \alpha \mathrm{op}(A) B\f$ or  \f$B \gets \alpha B \mathrm{op}(A)\f$.
 	 * @param F field
 	 * \param Side if \c Side==FflasLeft then  \f$ B \gets \alpha \mathrm{op}(A) B\f$ is computed.
 	 * \param Uplo if \c Uplo==FflasUpper then \p A is upper triangular
 	 * \param TransA if \c TransA==FflasTrans then \f$\mathrm{op}(A)=A^t\f$.
-	 * \param Diag if \c Diag==FflasUnit then \p A is unit.
+	 * \param Diag if \c Diag==FflasUnit then \p A is implicitly unit.
 	 * \param M rows of \p B
 	 * \param N cols of \p B
 	 * @param alpha scalar

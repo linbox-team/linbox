@@ -917,7 +917,7 @@ namespace LinBox
 	 * of type TriangularBlasMatrix<Element>
 	 */
 
-	// Matrix permutation product C = A*B
+	// Matrix/Triangular product C = A*B
 	template<class Field>
 	class BlasMatrixDomainMul<Field,BlasMatrix<typename Field::Element>,BlasMatrix<typename Field::Element>, TriangularBlasMatrix<typename Field::Element> > {
 	public:
