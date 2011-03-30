@@ -13,10 +13,10 @@ LDADD= $(NTL_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) $(GMP_LIBS)
 
 BENCH_BASIC=               \
 		benchmark-fgemm    \
+		benchmark-crafixed \
 		benchmark-ftrXm
 TODO=
 		benchmark-matmul   \
-		benchmark-fixedcra \
 		benchmark-spmv     \
 		benchmark-fields
 
@@ -46,8 +46,8 @@ benchmarks: ${EXTRA_PROGRAMS}
 
 benchmark_fgemm_SOURCES          = benchmark-fgemm.C
 benchmark_ftrXm_SOURCES          = benchmark-ftrXm.C
+benchmark_crafixed_SOURCES       = benchmark-crafixed.C
 #  benchmark_matmul_SOURCES         = benchmark-matmul.C
-#  benchmark_fixedcra_SOURCES       = benchmark-fixedcra.C
 #  benchmark_spmv_SOURCES           = benchmark-spmv.C
 #  benchmark_fields_SOURCES         = benchmark-fields.C
 

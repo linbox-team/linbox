@@ -315,9 +315,14 @@ void launch_bench_rectangular(Field & F // const problem
 	Data.setEntry(0,point_nb,mflops);
 	std::ostringstream nam ;
 	if (LeftSide)
-		nam << "\"(" << k << ':' << m << ',' << n << ")\"" ;
+		nam << "\"(" << k << ':' << m << ',' << n << ")" ;
 	else
-		nam << "\"(" << m << ',' << n << ':' << k << ")\"" ;
+		nam << "\"(" << m << ',' << n << ':' << k << ")" ;
+	nam << " (" << (UnitDiag?"":"non") << "unit) on ";
+	F.write(nam);
+	nam << '\"' ;
+
+
 	Data.setAbsciName(point_nb,nam.str());
 	return ;
 }
@@ -401,9 +406,12 @@ void launch_bench_scalar(Field & F // const problem
 	nam << "\"(" << m << 'x' << n << ") ";
 	nam << "B=" << alpha << " " ;
 	if (LeftSide)
-		nam <<  (tA?"t":"")<< "A.B\"" ;
+		nam <<  (tA?"t":"")<< "A.B" ;
 	else
-		nam <<  "B." << (tA?"t":"")<< "A\"" ;
+		nam <<  "B." << (tA?"t":"")<< "A" ;
+	nam << " (" << (UnitDiag?"":"non") << "unit) on ";
+	F.write(nam);
+	nam << '\"' ;
 
 	Data.setAbsciName(point_nb,nam.str());
 }
@@ -519,7 +527,7 @@ void bench_fields( index_t min, index_t max, int step )
 	Style.setUsingSeries(std::pair<index_t,index_t>(2,nb));
 
 	LinBox::PlotGraph<index_t> Graph(Data,Style);
-	Graph.setOutFilename("ftrmm_square");
+	Graph.setOutFilename("ftrmm_fields");
 
 	// Graph.plot();
 
@@ -708,8 +716,8 @@ int main( int ac, char ** av)
 	/*  Argument parsing/setting */
 
 	static size_t       min = 100;     /*  min size */
-	static size_t       max = 1500;    /*  max size (not included) */
-	static size_t       step = 100;    /*  step between 2 sizes */
+	static size_t       max = 2000;    /*  max size (not included) */
+	static size_t       step = 200;    /*  step between 2 sizes */
 	static std::list<int> lst  ;       /*  what bench to start ? */
 	lst.push_front(1);// ={1,2} vivement le nouveau std...
 	lst.push_front(2);
