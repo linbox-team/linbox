@@ -950,7 +950,8 @@ namespace LinBox
 
 	// In-place matrix*triangular matrix product
 	template<class Field>
-	class BlasMatrixDomainMulin<Field,BlasMatrix<typename Field::Element>, TriangularBlasMatrix<typename Field::Element> >{
+	class BlasMatrixDomainMulin<Field,BlasMatrix<typename Field::Element>,
+	      TriangularBlasMatrix<typename Field::Element> >{
 	public:
 		BlasMatrix<typename Field::Element>& operator()( const Field& F,
 								 BlasMatrix<typename Field::Element>& A,
@@ -979,6 +980,52 @@ namespace LinBox
 			return A;
 		}
 	};
+
+
+	/*! @internal In-place matrix*triangular matrix product with transpose.
+	 */
+	template<class Field>
+	class BlasMatrixDomainMulin<Field,BlasMatrix<typename Field::Element>,
+	      TransposedBlasMatrix<TriangularBlasMatrix<typename Field::Element> > >{
+	public:
+		BlasMatrix<typename Field::Element>& operator()( const Field& F,
+								 BlasMatrix<typename Field::Element>& A,
+								 const TransposedBlasMatrix< TriangularBlasMatrix<typename Field::Element> >& B) const
+		{
+			typename Field::Element one;
+			F.init(one, 1UL);
+			linbox_check( B.getMatrix().coldim() == A.coldim() );
+
+			FFLAS::ftrmm( F, FFLAS::FflasRight,
+				      (B.getMatrix().getUpLo()==BlasTag::up)?FFLAS::FflasUpper:FFLAS::FflasLower,
+				      FFLAS::FflasTrans,
+				      (B.getMatrix().getDiag()==BlasTag::unit)?FFLAS::FflasUnit:FFLAS::FflasNonUnit,
+				      A.rowdim(), A.coldim(),
+				      one,
+				      B.getMatrix().getPointer(), B.getMatrix().getStride(),
+				      A.getPointer(), A.getStride() );
+			return A;
+		}
+
+		BlasMatrix<typename Field::Element>& operator()( const Field& F,
+								 const TransposedBlasMatrix< TriangularBlasMatrix< typename Field::Element> >& B,
+								 BlasMatrix<typename Field::Element>& A) const
+		{
+			linbox_check( B.getMatrix().coldim() == A.rowdim() );
+			typename Field::Element one;
+			F.init(one, 1UL);
+			FFLAS::ftrmm( F, FFLAS::FflasLeft,
+				      (B.getMatrix().getUpLo()==BlasTag::up)?FFLAS::FflasUpper:FFLAS::FflasLower,
+				      FFLAS::FflasTrans,
+				      (B.getMatrix().getDiag()==BlasTag::unit)?FFLAS::FflasUnit:FFLAS::FflasNonUnit,
+				      A.rowdim(), A.coldim(), one,
+				      B.getMatrix().getPointer(), B.getMatrix().getStride(),
+				      A.getPointer(), A.getStride() );
+			return A;
+		}
+	};
+
+
 
 	/*
 	 * specialization for Operand1 of type TriangularBlasMatrix<Element> and Operand2 of type BlasPermutation

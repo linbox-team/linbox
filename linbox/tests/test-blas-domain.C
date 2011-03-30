@@ -392,6 +392,132 @@ static bool testMulAddShapeTrans (const Field &F, size_t m, size_t n, size_t k, 
 	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testMulAddShapeTrans");
 	return ret ;
 }
+
+// tests MulAdd for various shapes and values of transposition.
+template<class Field, bool LeftSide, bool UnitDiag>
+static bool testTriangMulShapeTrans (const Field &F, size_t m, size_t n, int iterations)
+{
+	bool ret = true ;
+	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	mycommentator.start (pretty("Testing triangular matmul for shapes and transposition"),"testTriangMulShapeTrans",iterations);
+
+
+	typedef typename Field::Element                               Element;
+	typedef BlasMatrix<Element>                                   Matrix ;
+	typedef TriangularBlasMatrix<Element>               TriangularMatrix ;
+	typedef TransposedBlasMatrix<Matrix>                TransposedMatrix ;
+	typedef TransposedBlasMatrix<TriangularMatrix > TransposedTriangular ;
+	typedef typename Field::RandIter                            Randiter ;
+	Randiter R(F) ;
+	RandomDenseMatrix<Randiter,Field> RandMat(F,R);
+
+	Element one ;
+	F.init(one,1);
+
+	BlasMatrixDomain<Field> BMD (F);
+	MatrixDomain<Field>      MD (F);
+
+	int k = LeftSide?m:n ;
+	// input matrix
+	Matrix A(k,k); // A = L+U-I. Either L or U is unit.
+	Matrix B(m,n);
+	// result matrix
+	Matrix D(m,n);
+	Matrix E(m,n);
+
+	// random A,B
+	RandMat.random(A);
+	RandMat.random(B);
+
+	// hard tranpose A,B
+	Matrix A1 (k,k) ;
+	A.transpose(A1) ;
+
+
+
+	/*  test (L+U-I) B+B = LB+UB */
+	if (LeftSide)
+		BMD.muladd(D,one,B,one,A,B);
+	else
+		BMD.muladd(D,one,B,one,B,A);
+
+	/****  DIRECT ****/
+	{
+		/*  L */
+		TriangularMatrix L (A, BlasTag::low,
+				    (UnitDiag?BlasTag::unit:BlasTag::nonunit));
+
+		/*  U */
+		TriangularMatrix U (A, BlasTag::up,
+				    (!UnitDiag?BlasTag::unit:BlasTag::nonunit));
+
+		/*  make product */
+		E = B ;
+		// Matrix G(m,n);
+		// G = E ;
+		Matrix G((const Matrix&)E); //!@warning on n'oublie pas l'esperluette !!!
+		if(LeftSide) {
+			BMD.mulin_right(L,E) ; // B <- AB
+			BMD.mulin_right(U,G) ;
+		}
+		else {
+			BMD.mulin_left(G,L) ;  // B <- BA
+			BMD.mulin_left(E,U) ;
+		}
+		BMD.addin(E,G);
+
+		/*  check equality */
+		if (!MD.areEqual(E,D)) {
+			ret = false ;
+			mycommentator.report() << " *** BMD ERROR (" << (LeftSide?"left":"right") << ',' << (UnitDiag?" L":" U") << " is unit) *** " << std::endl;
+		}
+		else {
+			mycommentator.report() << " direct triangular multiplication ok." << std::endl;
+		}
+	}
+	/****  Transpose ****/
+	{
+		/*  L */
+		TriangularMatrix L1 (A1, BlasTag::low,
+				    (UnitDiag?BlasTag::unit:BlasTag::nonunit));
+
+		/*  U */
+		TriangularMatrix U1 (A1, BlasTag::up,
+				    (!UnitDiag?BlasTag::unit:BlasTag::nonunit));
+
+		TransposedTriangular L(L1);
+		TransposedTriangular U(U1);
+		/*  make product */
+		E = B ;
+		// Matrix G(m,n);
+		// G = E ;
+		Matrix G((const Matrix&)E); //!@warning on n'oublie pas l'esperluette !!!
+		if(LeftSide) {
+			BMD.mulin_right(L,E) ; // B <- AB
+			BMD.mulin_right(U,G) ;
+		}
+		else {
+			BMD.mulin_left(G,L) ;  // B <- BA
+			BMD.mulin_left(E,U) ;
+		}
+		BMD.addin(E,G);
+
+		/*  check equality */
+		if (!MD.areEqual(E,D)) {
+			ret = false ;
+			mycommentator.report() << " *** BMD ERROR Transpose (" << (LeftSide?"left":"right") << ',' << (UnitDiag?" L":" U") << " is unit) *** " << std::endl;
+		}
+		else {
+			mycommentator.report() << " transposed triangular multiplication ok." << std::endl;
+		}
+	}
+
+	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testMulAddShapeTrans");
+	return ret ;
+}
+
+
 /*
  *  Testing the rank of dense matrices using BlasDomain
  *  construct a n*n matrices of rank r and compute the rank
@@ -827,7 +953,6 @@ static bool testSolve (const Field& F, size_t m, size_t n, int iterations)
 /*
  * Test of the BlasPermutations
  */
-
 template <class Field>
 static bool testPermutation (const Field& F, size_t m, int iterations)
 {
@@ -1414,7 +1539,7 @@ int main(int argc, char **argv)
 
     static Argument args[] = {
         { 'n', "-n N", "Set dimension of test matrices to NxN", TYPE_INT,     &n },
-        { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1]", TYPE_INTEGER, &q },
+        { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1]",  TYPE_INTEGER, &q },
         { 'i', "-i I", "Perform each test for I iterations",    TYPE_INT,     &iterations },
 	END_OF_ARGUMENTS
     };
@@ -1448,6 +1573,14 @@ int main(int argc, char **argv)
 	if (!testMulAddShapeTrans (F,m,k,n,iterations))       pass=false;
 	if (!testMulAddShapeTrans (F,k,n,m,iterations))       pass=false;
 	if (!testMulAddShapeTrans (F,k,m,n,iterations))       pass=false;
+	if (!testTriangMulShapeTrans<Field,true,true>   (F,m,n,iterations))     pass=false;
+	if (!testTriangMulShapeTrans<Field,true,true>   (F,n,m,iterations))     pass=false;
+	if (!testTriangMulShapeTrans<Field,false,true>  (F,m,n,iterations))     pass=false;
+	if (!testTriangMulShapeTrans<Field,false,true>  (F,n,m,iterations))     pass=false;
+	if (!testTriangMulShapeTrans<Field,true,false>  (F,m,n,iterations))     pass=false;
+	if (!testTriangMulShapeTrans<Field,true,false>  (F,n,m,iterations))     pass=false;
+	if (!testTriangMulShapeTrans<Field,false,false> (F,m,n,iterations))     pass=false;
+	if (!testTriangMulShapeTrans<Field,false,false> (F,n,m,iterations))     pass=false;
  	if (!testRank (F, n, iterations))                     pass=false;
  	if (!testDet  (F, n, iterations))                     pass=false;
  	if (!testInv  (F, n, iterations))                     pass=false;

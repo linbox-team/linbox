@@ -41,27 +41,23 @@ EXTRA_PROGRAMS= $(EXAMPLES) $(USE_GIVARONTL_EXAMPLES)
 
 examples: ${EXTRA_PROGRAMS}
 
-dot_product_SOURCES = \
-	dot-product.C
-
-doubledet_SOURCES= doubledet.C
+dot_product_SOURCES    = dot-product.C
+doubledet_SOURCES      = doubledet.C
 #linbox_program_SOURCES = \
 #	linbox-program.C
-
-
-checksolve_SOURCES = checksolve.C
-charpoly_SOURCES = charpoly.C
+checksolve_SOURCES     = checksolve.C
+charpoly_SOURCES       = charpoly.C
 graph_charpoly_SOURCES = graph-charpoly.C
-det_SOURCES = det.C
-rank_SOURCES = rank.C
-smith_SOURCES = smith.C
-minpoly_SOURCES = minpoly.C
-valence_SOURCES = valence.C
-solve_SOURCES = solve.C
-echelon_SOURCES=echelon.C
-smithvalence_SOURCES=smithvalence.C
-sparseelimdet_SOURCES=sparseelimdet.C
-sparseelimrank_SOURCES=sparseelimrank.C
+det_SOURCES            = det.C
+rank_SOURCES           = rank.C
+smith_SOURCES          = smith.C
+minpoly_SOURCES        = minpoly.C
+valence_SOURCES        = valence.C
+solve_SOURCES          = solve.C
+echelon_SOURCES        = echelon.C
+smithvalence_SOURCES   = smithvalence.C
+sparseelimdet_SOURCES  = sparseelimdet.C
+sparseelimrank_SOURCES = sparseelimrank.C
 LINBOX=@prefix@
 
 # no /bin if LinBox is uncompiled
