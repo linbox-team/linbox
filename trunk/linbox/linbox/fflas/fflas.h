@@ -381,7 +381,8 @@ public:
 	 * @param lda leading dim of \p A
 	 * @param B matrix of size \p MxN
 	 * @param ldb leading dim of \p B
-	 * @warning unsafe with \c Trans==FflasTrans (debugging in progress)
+	 * @bug unsafe with \c Trans==FflasTrans (debugging in progress)
+	 * @bug \f$\alpha\f$ must be non zero.
 	 */
 	template<class Field>
 	static void
@@ -408,7 +409,7 @@ public:
 	 * @param lda leading dim of \p A
 	 * @param B matrix of size \p MxN
 	 * @param ldb leading dim of \p B
-	 * @warning unsafe with \c Trans==FflasTrans (debugging in progress)
+	 * @bug unsafe with \c Trans==FflasTrans (debugging in progress)
 	 */
 	template<class Field>
 	static void
@@ -439,7 +440,8 @@ public:
 	 * \param ldb leading dimension of \p B
 	 * \param ldc leading dimension of \p C
 	 * \param w recursive levels of Winograd's algorithm are used
-	 * @warning beta \e must be invertible
+	 * @warning \f$\beta\f$ \e must be invertible
+	 * @bug \f$\alpha\f$ must be non zero.
 	 */
 	template<class Field>
 	static typename Field::Element*

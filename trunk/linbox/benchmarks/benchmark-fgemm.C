@@ -27,6 +27,7 @@
  * @brief Benchmarking dense matrix multiplication on finite fields.
  * This file benchmarks the FFLAS::fgemm implementation for various fields,
  * shape and parameters. Actually, we use the wrapper member \c mul of LinBox::BlasMatrixDomain.
+ * @todo make graphs look better (legends, units,...)
  */
 
 #include "benchmarks/benchmark.h"
@@ -296,10 +297,11 @@ void launch_bench_rectangular(Field & F // const problem
  * @param n cols in xB
  * @param alpha alpha (not zero)
  * @param beta beta
- * @param tA is A transposed ?
- * @param tB is B transposed ?
+ * @tparam tA is A transposed ?
+ * @tparam tB is B transposed ?
  * @param Data where data is stored
  * @param point_nb point to be computed
+ * @param inplace in place or not (ie C is overwritten or not ? default = \c false.
  */
 template<class Field, bool tA, bool tB>
 void launch_bench_scalar(Field & F // const problem
@@ -324,21 +326,20 @@ void launch_bench_scalar(Field & F // const problem
 	int mm = tA?k:m ;
 	int kk = tA?m:k ;
 	int nn = tB?k:n ;
-	//! @todo SNIFF !!!
-	// Matrix A (mm,kk);
-	// Matrix B (kk,nn);
-	// Matrix C (m,n);
-	// Matrix D (m,n);
-	// TransposedMatrix At(A);
-	// TransposedMatrix Bt(B);
-	LinBox::BlasMatrix<Element > A (mm,kk);
-	LinBox::BlasMatrix<Element > B (kk,nn);
-	LinBox::BlasMatrix<Element > C (m,n);
-	LinBox::BlasMatrix<Element > D (m,n);
+	Matrix A (mm,kk);
+	Matrix B (kk,nn);
+	Matrix C (m,n);
+	Matrix D (m,n);
+	TransposedMatrix At(A);
+	TransposedMatrix Bt(B);
+	// LinBox::BlasMatrix<Element > A (mm,kk);
+	// LinBox::BlasMatrix<Element > B (kk,nn);
+	// LinBox::BlasMatrix<Element > C (m,n);
+	// LinBox::BlasMatrix<Element > D (m,n);
 
 
-	LinBox::TransposedBlasMatrix<LinBox::BlasMatrix<Element > > At(A);
-	LinBox::TransposedBlasMatrix<LinBox::BlasMatrix<Element > > Bt(B);
+	// LinBox::TransposedBlasMatrix<LinBox::BlasMatrix<Element > > At(A);
+	// LinBox::TransposedBlasMatrix<LinBox::BlasMatrix<Element > > Bt(B);
 
 	index_t j = 0 ;
 	while (keepon(j,fgemm_scal_tim)) {
@@ -400,7 +401,9 @@ void launch_bench_scalar(Field & F // const problem
 	mflops = compute_mflops(fgemm_scal_tim,fgemm_mflops(m,k,n),j);
 	Data.setEntry(0,point_nb,mflops);
 	std::ostringstream nam ;
-	nam << "\"(" << m << ',' << k << ',' << n << ")\"" ;
+	nam << "\"(" << m << ',' << k << ',' << n << ") ";
+	nam << (inplace?"C":"D") << "=" << alpha << " "  ;
+	nam << (tA?"t":"")<< "A." <<  (tB?"t":"")<< "B+" << beta << " C\"" ;
 	Data.setAbsciName(point_nb,nam.str());
 }
 
@@ -573,10 +576,11 @@ void bench_rectangular( index_t k, int charac, index_t l = 2 )
 	Style.setTerm(LinBox::PlotStyle::Term::eps);
 	Style.setTitle("fgemm","x","y");
 	Style.setPlotType(LinBox::PlotStyle::Plot::histo);
+	Style.setXtics(LinBox::PlotStyle::Options::oblique);// make long legends oblique.
 	Style.addPlotType("set style histogram cluster gap 1");
 	Style.addPlotType("set style fill solid border -1");
 	Style.addPlotType("set boxwidth 0.9");
-	//! @todo make long legends oblique.
+
 
 	// Style.setType(LinBox::PlotStyle::lines);
 	Style.setUsingSeries(2);
@@ -651,6 +655,7 @@ void bench_scalar( index_t k, int charac, bool inplace )
 	Style.setTerm(LinBox::PlotStyle::Term::eps);
 	Style.setTitle("fgemm","x","y");
 	Style.setPlotType(LinBox::PlotStyle::Plot::histo);
+	Style.setXtics(LinBox::PlotStyle::Options::oblique);// make long legends oblique.
 	Style.addPlotType("set style histogram cluster gap 1");
 	Style.addPlotType("set style fill solid border -1");
 	Style.addPlotType("set boxwidth 0.9");
@@ -722,6 +727,7 @@ void bench_transpose( index_t k, int charac, bool inplace )
 	Style.setTerm(LinBox::PlotStyle::Term::eps);
 	Style.setTitle("fgemm","x","y");
 	Style.setPlotType(LinBox::PlotStyle::Plot::histo);
+	Style.setXtics(LinBox::PlotStyle::Options::oblique);// make long legends oblique.
 	Style.addPlotType("set style histogram cluster gap 1");
 	Style.addPlotType("set style fill solid border -1");
 	Style.addPlotType("set boxwidth 0.9");

@@ -100,6 +100,14 @@ namespace LinBox
 			} ;
 		};
 
+		struct Options
+		{
+			enum Type {
+				oblique = 400,
+				other   = 401
+			};
+		};
+
 		/*! @brief Constructor.
 		 * By default, creates an histogram representing the data in an eps plot.
 		 */
@@ -270,8 +278,9 @@ namespace LinBox
 			_legend_pos_ = keypos ;
 		}
 
+
 		/*! @brief Gets the legend position.
-		 * by default, it is "on".
+		 * by default, it is "under".
 		 */
 		std::string getKeyPos()
 		{
@@ -279,8 +288,30 @@ namespace LinBox
 			if (!_legend_pos_.empty())
 				lgd +=  _legend_pos_ ;
 			else
-				lgd += " on default" ;
+				lgd += " under" ;
 			return lgd;
+		}
+
+		/*! @brief sets the  position of the labels on the X absciss.
+		 * @param ticslegend the arguments to xtics
+		 */
+		void setXtics ( enum Options::Type opt, std::string more="")
+		{
+			_xtics_ =  "#xtics\nset xtics ";
+			if (opt == Options::oblique)
+				_xtics_ =  "nomirror rotate by -45 scale 0 ";
+			else {
+				linbox_check(opt == Options::other);
+				_xtics_ += more ;
+			}
+		}
+
+		/*! @brief Gets the legend position.
+		 * by default, it is 45° inclined (use in on long tics legends).
+		 */
+		std::string getXtics()
+		{
+			return _xtics_ ;
 		}
 
 		/*! @brief Gets the name of the output graph.
@@ -523,15 +554,16 @@ namespace LinBox
 		std::string                         _title_     ;   //!< name of the graph
 		std::string                         _title_x_   ;   //!< title for the points
 		std::string                         _title_y_   ;   //!< title for the series
+		std::string                         _xtics_     ;   //!< format for the x tics.
 		/*  units */
-		// std::string                         _unit_      ;
+		// std::string                      _unit_      ;
 		/*  terminal output */
-		enum Term::Type                       _term_      ; //!< output data format.
-		// std::string                         _termopts_  ;
+		enum Term::Type                     _term_      ; //!< output data format.
+		// std::string                      _termopts_  ;
 		/*  plotting style */
-		enum Plot::Type                       _plot_type_ ; //!< histogram/graph style
+		enum Plot::Type                     _plot_type_ ; //!< histogram/graph style
 		// std::string                         _plot_extra_; //!< extra specification for the plot style. default empty.
-		enum Line::Type                       _line_type_ ; //!< style for the representation of points
+		enum Line::Type                     _line_type_ ; //!< style for the representation of points
 		std::string                         _styleopts_ ; //!< gp style command.
 		/*  columns to use */
 		std::string                         _usingcols_ ; //!< columns to be used (gp command)
@@ -950,6 +982,7 @@ namespace LinBox
 			PF << _style_.getOutput(unique_filename)   << std::endl;
 			PF << _style_.getTitle()                   << std::endl;
 			PF << _style_.getKeyPos()                  << std::endl;
+			PF << _style_.getXtics()                   << std::endl;
 			PF << _style_.getPlotType()                << std::endl;
 #if 0
 			for (index_t i = 0 ; i < nb_series ; ++i) {
