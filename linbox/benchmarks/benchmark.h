@@ -299,7 +299,7 @@ namespace LinBox
 		{
 			_xtics_ =  "#xtics\nset xtics ";
 			if (opt == Options::oblique)
-				_xtics_ =  "nomirror rotate by -45 scale 0 ";
+				_xtics_ +=  "nomirror rotate by -45 scale 0 ";
 			else {
 				linbox_check(opt == Options::other);
 				_xtics_ += more ;
