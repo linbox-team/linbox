@@ -170,6 +170,11 @@ LB_OPT
 LB_DOC
 
 
+if test ! -d ./benchmarks/data  ; then 
+	echo "Creating data dir in benchmark" ;
+	mkdir ./benchmarks/data  ; 
+fi
+
 # this is bogus so far as I can tell.  -bds
 #CXXFLAGS="${GMP_CFLAGS} ${NTL_CFLAGS} ${GIVARO_CFLAGS} ${SACLIB_CFLAGS} ${CXXFLAGS}"
 #AC_SUBST(CXXFLAGS)
