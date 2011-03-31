@@ -116,6 +116,7 @@ int test_ftrmm(std::ostream & report, const Field & F)
 	Element invalpha ;
 	F.init(invalpha,0UL);
 	Gn.random(alpha);
+	// F.init(alpha,1UL);
 	F.inv(invalpha,alpha);
 
 	/* *************** */
