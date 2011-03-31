@@ -1530,38 +1530,12 @@ std::ostream& operator<< (std::ostream& o, const Container<T>& C)
 	return o << std::endl;
 }
 
-int main(int argc, char **argv)
+
+// returns true if ok, false if not.
+template<class Field>
+int launch_tests(Field & F, int n, int iterations)
 {
-
-	static size_t n = 40;
-	static integer q = 1000003U;
-	static int iterations = 2;
-
-    static Argument args[] = {
-        { 'n', "-n N", "Set dimension of test matrices to NxN", TYPE_INT,     &n },
-        { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1]",  TYPE_INTEGER, &q },
-        { 'i', "-i I", "Perform each test for I iterations",    TYPE_INT,     &iterations },
-	END_OF_ARGUMENTS
-    };
-
-	parseArguments (argc, argv, args);
-
-	typedef Modular<double> Field;
-	//typedef Modular<int> Field;
-	//typedef Modular<float> Field;
-
-	Field F (q);
-
-	bool pass = true;
-
-	srand (time (NULL));
-
-
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-
-	commentator.start("BlasMatrixDomain test suite", "BlasMatrixDomain");
-
+	bool pass = true ;
 	//std::cout << "no blas tests for now" << std::endl;
 	// no slow test while I work on io
 	if (!testMulAdd (F,n,iterations))                     pass=false;
@@ -1591,8 +1565,50 @@ int main(int argc, char **argv)
  	if (!testMinPoly (F,n,iterations))                    pass=false;
 	if (!testCharPoly (F,n,iterations))                   pass=false;
 	//
+	//
+	return pass ;
 
-	commentator.stop("BlasMatrixDomain test suite");
+}
+
+int main(int argc, char **argv)
+{
+
+	static size_t n = 40;
+	static integer q = 1000003U;
+	static int iterations = 2;
+
+    static Argument args[] = {
+        { 'n', "-n N", "Set dimension of test matrices to NxN", TYPE_INT,     &n },
+        { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1]",  TYPE_INTEGER, &q },
+        { 'i', "-i I", "Perform each test for I iterations",    TYPE_INT,     &iterations },
+	END_OF_ARGUMENTS
+    };
+
+	parseArguments (argc, argv, args);
+
+	typedef Modular<double> Field;
+	//typedef Modular<int> Field;
+	//typedef Modular<float> Field;
+
+	Field F (q);
+	// ModularBalanced<double> G(q);
+	Modular<float> H(2011);
+
+	bool pass = true;
+
+	srand (time (NULL));
+
+
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+
+	commentator.start("BlasMatrixDomain test suite", "BlasMatrixDomain");
+
+	pass &= launch_tests(F,n,iterations);
+	// pass &= launch_tests(G,n,iterations);
+	pass &= launch_tests(H,n,iterations);
+
+	commentator.stop(MSG_STATUS (pass), (const char *) 0,"BlasMatrixDomain test suite");
 	return pass ? 0 : -1;
 }
 

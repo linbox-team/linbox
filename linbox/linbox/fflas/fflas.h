@@ -441,7 +441,6 @@ public:
 	 * \param ldc leading dimension of \p C
 	 * \param w recursive levels of Winograd's algorithm are used
 	 * @warning \f$\beta\f$ \e must be invertible
-	 * @bug \f$\alpha\f$ must be non zero.
 	 */
 	template<class Field>
 	static typename Field::Element*
