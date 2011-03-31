@@ -38,8 +38,6 @@ EXTRA_PROGRAMS= $(BENCH_BASIC)
 
 EXTRA_DIST= benchmark.h benchmark.doxy
 
-SUBDIRS=data
-
 benchmarks: ${EXTRA_PROGRAMS}
 
 ### BASE BENCHMARK ###
