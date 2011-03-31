@@ -7,7 +7,7 @@ LIBS=-lgivaro
 
 
 
-AM_CXXFLAGS=-g -Wall  -Wextra -Wno-unused-parameter -O2
+AM_CXXFLAGS=-g -Wall  -Wextra -Wno-unused-parameter -O2 -pipe
 
 SUBDIRS=formats
 
