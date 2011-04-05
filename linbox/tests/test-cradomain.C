@@ -55,7 +55,7 @@ struct Interator {
 	{
 		for(std::vector<Integer>::iterator it=_v.begin();
 		    it != _v.end(); ++it) {
-			Integer::random(*it, s);
+			Integer::random<false>(*it, s);
 			double ds = naturallog(*it);
 			maxsize = (maxsize<ds?ds:maxsize);
 		}
@@ -158,8 +158,8 @@ std::ostream& operator<< (std::ostream& o, const std::vector<Integer>& C) {
         o << (*refs) << ' ' ;
     return o << ']';
 }
-    
-    
+
+
 
 
 template<typename Builder, typename Iter, typename RandGen, typename BoundType>
@@ -296,13 +296,13 @@ bool TestCra(int N, int S, size_t seed)
                 PrimeSize += naturallog(*genprime);
             }
         }
-        
+
         std::vector<Integer>::iterator psit = PrimeSet.begin();
-        
-	pass &= TestOneCRA< 
+
+	pass &= TestOneCRA<
             LinBox::GivaroRnsFixedCRA< LinBox::Modular<double> >,
-            Interator, 
-            std::vector<Integer>::iterator, 
+            Interator,
+            std::vector<Integer>::iterator,
             std::vector<Integer> >(
                  report, iteration, psit, N, PrimeSet);
 
