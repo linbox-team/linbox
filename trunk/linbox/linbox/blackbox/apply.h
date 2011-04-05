@@ -293,7 +293,7 @@ namespace LinBox
 
 	// special function to split an integer matrix in q-adic representation in an array of double
 	template <class Domain, class IMatrix>
-	void create_MatrixQadic (const Domain &D, const IMatrix &M, double *chunks, size_t num_chunks, const integer& shift=0);
+	void create_MatrixQadic (const Domain &D, const IMatrix &M, double *chunks, size_t num_chunks, const integer shift=0);
 
 
 	// special function to split an integer vector in q-adic representation in an array of double
@@ -1083,7 +1083,7 @@ namespace LinBox
 				 const IMatrix          &M,
 				 double            *chunks,
 				 size_t         num_chunks,
-				 const integer    &shift=0)
+				 const integer    shift)
 	{
 
 		typename IMatrix::ConstRawIterator it= M.rawBegin();
