@@ -74,7 +74,6 @@ BASIC_TESTS =  \
         test-zero-one           \
         test-solve              \
         test-nullspace                  \
-        test-smith-form     \
         test-smith-form-binary          \
         test-rational-solver            \
         test-rational-solver-adaptive   \
@@ -146,6 +145,7 @@ GIVARO_TESTS =                        \
         test-givaro-zpzuns
 
 NTL_TESTS =                           \
+        test-smith-form               \
         test-ntl-lzz_p                \
         test-ntl-ZZ_p                 \
         test-ntl-toeplitz             \

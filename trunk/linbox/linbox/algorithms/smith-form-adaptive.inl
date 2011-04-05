@@ -171,6 +171,13 @@ namespace LinBox
 		}
 		return;
 	}
+#else
+	template <class Matrix>
+	void SmithFormAdaptive::compute_local_big (std::vector<integer>& s, const Matrix& A, long p, long e)
+	{
+		throw(LinBoxError("you need NTL to use SmithFormAdaptive",__func__,__FILE__,__LINE__));
+	}
+
 #endif
 
 	/* Compute the local smith form at prime p
@@ -294,6 +301,12 @@ namespace LinBox
 			report << "    Elimination ends.\n";
 		}
 		report << "Compuation of the k-rough part of the invariant factors finishes.\n";
+	}
+#else
+	template <class Matrix>
+	void SmithFormAdaptive::smithFormRough  (std::vector<integer>& s, const Matrix& A, integer m)
+	{
+		throw(LinBoxError("you need NTL to use SmithFormAdaptive",__func__,__FILE__,__LINE__));
 	}
 #endif
 

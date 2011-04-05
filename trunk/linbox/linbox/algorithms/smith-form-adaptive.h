@@ -25,6 +25,7 @@
 #define __LINBOX_smith_form_adaptive_H
 
 /*! @file algorithms/smith-form-adaptive.h
+ * @ingroup algorithms
  * Implement the adaptive algorithm for Smith form computation
  */
 

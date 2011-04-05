@@ -262,19 +262,6 @@ namespace std
 		return o;
 	}
 
-	std::ostream & operator<<(std::ostream&o, const std::vector<unsigned long> & v)
-	{
-		o << '[' ;
-		size_t i = 0  ;
-		for (; i < v.size()-1 ; ++i)
-			o << v[i] << ',' ;
-		if (v.size())
-			o <<  v[i] ;
-		o << ']' ;
-		return o;
-	}
-
-
 
 	/*! Prints a pair.
 	 * @param o output stream
