@@ -242,83 +242,99 @@ namespace LinBox
 #include <linbox/util/debug.C>
 #endif
 
-
-/*! Prints a vector on output.
- * @param o output stream
- * @param v vector
- * @warning <<(ostream&,T&) exists !
- */
-template<typename T>
-std::ostream & operator<<(std::ostream&o, const std::vector<T> & v)
+namespace std
 {
-	o << '[' ;
-	size_t i = 0  ;
-	for (; i < v.size()-1 ; ++i)
-		o << v[i] << ',' ;
-	if (v.size())
-		o <<  v[i] ;
-	o << ']' ;
-	return o;
-}
-
-/*! Prints a pair.
- * @param o output stream
- * @param C a pair
- * @warning <<(ostream&,T&) exists !
- */
-template<class S, class T>
-std::ostream& operator<<(std::ostream& o, const std::pair<S, T> & C)
-{
-		o << '(' << C.first << ", " << C.second << ')';
-	return o ;
-}
-
-/*! Prints a list.
- * @param o output stream
- * @param C a pair
- * @warning <<(ostream&,T&) exists !
- */
-template<class T>
-std::ostream& operator<< (std::ostream& o, const std::list<T> & L)
-{
-	typename std::list<T>::const_iterator it = L.begin() ;
-	o << '{' ;
-	for (; ;) {
-		o << *it ;
-		++it ;
-		if (it != L.end())
-		       o << ", " ;
-		else
-			break;
+	/*! Prints a vector on output.
+	 * @param o output stream
+	 * @param v vector
+	 * @warning <<(ostream&,T&) exists !
+	 */
+	template<class T>
+	std::ostream & operator<<(std::ostream&o, const std::vector<T> & v)
+	{
+		o << '[' ;
+		size_t i = 0  ;
+		for (; i < v.size()-1 ; ++i)
+			o << v[i] << ',' ;
+		if (v.size())
+			o <<  v[i] ;
+		o << ']' ;
+		return o;
 	}
-	return o ;
-}
+
+	std::ostream & operator<<(std::ostream&o, const std::vector<unsigned long> & v)
+	{
+		o << '[' ;
+		size_t i = 0  ;
+		for (; i < v.size()-1 ; ++i)
+			o << v[i] << ',' ;
+		if (v.size())
+			o <<  v[i] ;
+		o << ']' ;
+		return o;
+	}
+
+
+
+	/*! Prints a pair.
+	 * @param o output stream
+	 * @param C a pair
+	 * @warning <<(ostream&,T&) exists !
+	 */
+	template<class S, class T>
+	std::ostream& operator<<(std::ostream& o, const std::pair<S, T> & C)
+	{
+		o << '(' << C.first << ", " << C.second << ')';
+		return o ;
+	}
+
+	/*! Prints a list.
+	 * @param o output stream
+	 * @param C a pair
+	 * @warning <<(ostream&,T&) exists !
+	 */
+	template<class T>
+	std::ostream& operator<< (std::ostream& o, const std::list<T> & L)
+	{
+		typename std::list<T>::const_iterator it = L.begin() ;
+		o << '{' ;
+		for (; ;) {
+			o << *it ;
+			++it ;
+			if (it != L.end())
+				o << ", " ;
+			else
+				break;
+		}
+		return o ;
+	}
 
 #if 0
-std::ostream &operator << (std::ostream &out, const std::vector<bool> &S)
-{
-	std::vector<bool>::const_iterator i;
+	std::ostream &operator << (std::ostream &out, const std::vector<bool> &S)
+	{
+		std::vector<bool>::const_iterator i;
 
-	for (i = S.begin (); i != S.end (); ++i) {
-		out << ((*i) ? "1" : "0");
-		if (i != S.end () - 1)
-			out << ", ";
+		for (i = S.begin (); i != S.end (); ++i) {
+			out << ((*i) ? "1" : "0");
+			if (i != S.end () - 1)
+				out << ", ";
+		}
+
+		return out;
 	}
 
-	return out;
-}
-
-template<class T, template <class T> class Container>
-std::ostream& operator<< (std::ostream& o, const Container<T>& C)
-{
-	for(typename Container<T>::const_iterator refs =  C.begin();
-	    refs != C.end() ;
-	    ++refs )
-		o << (*refs) << " " ;
-	return o << std::endl;
-}
+	template<class T, template <class T> class Container>
+	std::ostream& operator<< (std::ostream& o, const Container<T>& C)
+	{
+		for(typename Container<T>::const_iterator refs =  C.begin();
+		    refs != C.end() ;
+		    ++refs )
+			o << (*refs) << " " ;
+		return o << std::endl;
+	}
 
 #endif
+}
 
 #endif // __LINBOX_util_debug_H
 
