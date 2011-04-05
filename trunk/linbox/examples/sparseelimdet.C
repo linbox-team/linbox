@@ -33,16 +33,6 @@
 #include <vector>
 #include <utility>
 
-template<class T>
-std::ostream& operator<< (std::ostream& o, const std::vector<std::pair<size_t, T> >& C) {
-	for(typename std::vector<std::pair<size_t, T> >::const_iterator refs =  C.begin();
-	    refs != C.end() ;
-	    ++refs )
-		o << '(' << refs->first << ';' << refs->second << ')';
-	return o << std::endl;
-}
-
-
 #include "linbox/field/modular-double.h"
 #include "linbox/field/gf2.h"
 #include "linbox/blackbox/sparse.h"

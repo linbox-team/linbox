@@ -241,18 +241,6 @@ void WhisartTraceTranspose(
 }
 #endif
 
-template<class T>
-std::ostream& operator<< (std::ostream& o, const std::vector<T>& C)
-{
-	o << '[';
-	if (C.size() == 0) return o << ']';
-	if (C.size() == 1) return o << C.front() << ']';
-	size_t emu = C.size()-1;
-	for(size_t i = 0; i<emu; ++i)
-		o << C[i] << ' ';
-	return o << C.back() << ']';
-}
-
 struct OMPTimer
 {
 	double _c;
