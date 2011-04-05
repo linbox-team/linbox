@@ -3,7 +3,7 @@
 /* linbox/algorithms/cra-domain-seq.h
  * Copyright (C) 1999-2010 The LinBox group
  *
- * Time-stamp: <30 Mar 10 15:03:17 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <01 Apr 11 15:47:48 Jean-Guillaume.Dumas@imag.fr>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -93,10 +93,10 @@ namespace LinBox
 		{
 			commentator.start ("Modular iteration", "mmcrait");
 			if (IterCounter==0) {
-				++primeiter;
 				++IterCounter;
 				Domain D(*primeiter);
 				commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
+				++primeiter;
 				DomainElement r; D.init(r);
 				Builder_.initialize( D, Iteration(r, D) );
 			}
@@ -105,7 +105,7 @@ namespace LinBox
 			int maxnoncoprime = 1000;
 
 			while( ! Builder_.terminated() ) {
-				++primeiter; ++IterCounter;
+				++IterCounter;
 				while(Builder_.noncoprime(*primeiter) ) {
 					++primeiter;
 					++coprime;
@@ -117,6 +117,7 @@ namespace LinBox
 				coprime =0;
 				Domain D(*primeiter);
 				commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
+                                ++primeiter; 
 				DomainElement r; D.init(r);
 				Builder_.progress( D, Iteration(r, D) );
 			}
@@ -136,10 +137,10 @@ namespace LinBox
 			int i=0;
 			if ((IterCounter ==0) && (k !=0)) {
 				++i;
-				++primeiter;
 				++IterCounter;
 				Domain D(*primeiter);
 				commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
+				++primeiter;
 				DomainElement r; D.init(r);
 				Builder_.initialize( D, Iteration(r, D) );
 			}
@@ -150,7 +151,6 @@ namespace LinBox
 			while ((k <0) || (i < k)) {
 				if (Builder_.terminated()) break;
 				++i;
-				++primeiter;
 				while(Builder_.noncoprime(*primeiter)) {
 					++primeiter;
 					++coprime;
@@ -163,6 +163,7 @@ namespace LinBox
 
 				Domain D(*primeiter);
 				commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
+				++primeiter;
 				DomainElement r; D.init(r);
 				Builder_.progress( D, Iteration(r, D) );
 			}
@@ -175,13 +176,12 @@ namespace LinBox
 		template<class Iterator, class Function, class PrimeIterator>
 		Iterator& operator() (Iterator& res, Function& Iteration, PrimeIterator& primeiter)
 		{
-
 			commentator.start ("Modular vectorized iteration", "mmcravit");
 
 			if (IterCounter==0) {
-				++primeiter;
 				Domain D(*primeiter);
 				commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
+				++primeiter;
 				typename CRATemporaryVectorTrait<Function, DomainElement>::Type_t r;
 				Builder_.initialize( D, Iteration(r, D) );
 			}
@@ -190,7 +190,7 @@ namespace LinBox
 			int maxnoncoprime = 1000;
 
 			while( ! Builder_.terminated() ) {
-				++primeiter; ++IterCounter;
+				++IterCounter;
 				while(Builder_.noncoprime(*primeiter) ) {
 					++primeiter;
 					++coprime;
@@ -200,8 +200,9 @@ namespace LinBox
 					}
 				}
 
-				Domain D(*primeiter);
+                                Domain D(*primeiter);
 				commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
+                                ++primeiter; 
 				typename CRATemporaryVectorTrait<Function, DomainElement>::Type_t r;
 				Builder_.progress( D, Iteration(r, D) );
 			}
@@ -220,10 +221,10 @@ namespace LinBox
 			int i=0;
 			if ((IterCounter ==0) && (k !=0)) {
 				++i;
-				++primeiter;
 				++IterCounter;
 				Domain D(*primeiter);
 				commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
+				++primeiter;
 				typename CRATemporaryVectorTrait<Function, DomainElement>::Type_t r;
 				Builder_.initialize( D, Iteration(r, D) );
 			}
@@ -235,7 +236,6 @@ namespace LinBox
 				if (Builder_.terminated()) break;
 				++i;
 				++IterCounter;
-				++primeiter;
 
 				while(Builder_.noncoprime(*primeiter) ) {
 					++primeiter;
@@ -248,6 +248,8 @@ namespace LinBox
 
 				coprime =0;
 				Domain D(*primeiter);
+				++primeiter;
+
 				typename CRATemporaryVectorTrait<Function, DomainElement>::Type_t r;
 				Builder_.progress( D, Iteration(r, D) );
 			}
