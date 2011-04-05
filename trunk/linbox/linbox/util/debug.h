@@ -266,7 +266,7 @@ std::ostream & operator<<(std::ostream&o, const std::vector<T> & v)
  * @warning <<(ostream&,T&) exists !
  */
 template<class S, class T>
-std::ostream& operator<< (std::ostream& o, const std::pair<S, T> >& C)
+std::ostream& operator<<(std::ostream& o, const std::pair<S, T> & C)
 {
 		o << '(' << C.first << ", " << C.second << ')';
 	return o ;
@@ -278,9 +278,9 @@ std::ostream& operator<< (std::ostream& o, const std::pair<S, T> >& C)
  * @warning <<(ostream&,T&) exists !
  */
 template<class T>
-std::ostream& operator<< (std::ostream& o, const std::list<T> >& L)
+std::ostream& operator<< (std::ostream& o, const std::list<T> & L)
 {
-	typedef std::list<T>::const_iterator it = L.begin() ;
+	typename std::list<T>::const_iterator it = L.begin() ;
 	o << '{' ;
 	for (; ;) {
 		o << *it ;
