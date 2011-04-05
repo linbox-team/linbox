@@ -84,7 +84,7 @@ namespace LinBox
 	public:
 		/*! Constructor.
 		 * @param p is a pair such that
-		 * - \c p.first is the size of a residue, it would be 1 for \"FullSingle\"
+		 * - \c p.first is the size of a residue (ie. it would be 1 for \"FullSingle\")
 		 * - \c p.second is the theoretical upperbound (natural logarithm) on the size of the integers to reconstruct.
 		 * .
 		 */
