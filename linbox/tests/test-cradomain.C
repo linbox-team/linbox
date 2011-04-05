@@ -3,7 +3,7 @@
 
 /* Copyright (C) 2010 LinBox
  *
- * Time-stamp: <02 Feb 11 15:27:16 Jean-Guillaume.Dumas@imag.fr>
+ * Time-stamp: <05 Apr 11 11:01:44 Jean-Guillaume.Dumas@imag.fr>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,6 +33,7 @@
 #include "linbox/algorithms/cra-early-multip.h"
 #include "linbox/algorithms/cra-full-multip.h"
 #include "linbox/algorithms/cra-full-multip-fixed.h"
+#include "linbox/algorithms/cra-givrnsfixed.h"
 #include "linbox/randiter/random-prime.h"
 
 struct Interator {
@@ -148,6 +149,18 @@ struct InteratorBlas : public Interator {
 };
 
 #include <typeinfo>
+
+std::ostream& operator<< (std::ostream& o, const std::vector<Integer>& C) {
+    o << '[';
+    for(std::vector<Integer>::const_iterator refs =  C.begin();
+        refs != C.end() ;
+        ++refs )
+        o << (*refs) << ' ' ;
+    return o << ']';
+}
+    
+    
+
 
 template<typename Builder, typename Iter, typename RandGen, typename BoundType>
 bool TestOneCRA(std::ostream& report, Iter& iteration, RandGen& genprime, size_t N, const BoundType& bound)
@@ -273,6 +286,25 @@ bool TestCra(int N, int S, size_t seed)
 	     InteratorBlas< LinBox::Modular<double> >,
 	     LinBox::RandomPrimeIterator>(
 					  report, iterationBlas, genprime, N, std::pair<size_t,double>(N,3*iterationIt.getLogSize()+15) );
+
+
+        std::vector<Integer> PrimeSet;
+        double PrimeSize = 0.0;
+        for( ; PrimeSize < (iterationIt.getLogSize()+1); ++genprime ) {
+            if (find(PrimeSet.begin(), PrimeSet.end(), *genprime) == PrimeSet.end()) {
+                PrimeSet.push_back( *genprime );
+                PrimeSize += naturallog(*genprime);
+            }
+        }
+        
+        std::vector<Integer>::iterator psit = PrimeSet.begin();
+        
+	pass &= TestOneCRA< 
+            LinBox::GivaroRnsFixedCRA< LinBox::Modular<double> >,
+            Interator, 
+            std::vector<Integer>::iterator, 
+            std::vector<Integer> >(
+                 report, iteration, psit, N, PrimeSet);
 
 
 	if (pass) report << "TestCra(" << N << ',' << S << ')' << ", passed." << std::endl;
