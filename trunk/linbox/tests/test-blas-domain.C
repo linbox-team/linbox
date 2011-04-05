@@ -1520,15 +1520,6 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 	return ret;
 }
 
-template<class T, template <class T> class Container>
-std::ostream& operator<< (std::ostream& o, const Container<T>& C)
-{
-	for(typename Container<T>::const_iterator refs =  C.begin();
-	    refs != C.end() ;
-	    ++refs )
-		o << (*refs) << " " ;
-	return o << std::endl;
-}
 
 
 // returns true if ok, false if not.
