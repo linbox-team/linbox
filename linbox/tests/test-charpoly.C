@@ -24,15 +24,6 @@
 #include <fstream>
 #include <vector>
 #include <cstdio>
-template<class T, template <class T> class Container>
-std::ostream& operator<< (std::ostream& o, const Container<T>& C)
-{
-	for(typename Container<T>::const_iterator refs =  C.begin();
-	    refs != C.end() ;
-	    ++refs )
-		o << (*refs) << " " ;
-	return o << std::endl;
-}
 
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/scalar-matrix.h"

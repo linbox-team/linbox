@@ -49,18 +49,6 @@
 
 #include "test-common.h"
 
-//! outputs a list of ints on ostream.
-std::ostream & operator<<( std::ostream & o, std::list<int> & l)
-{
-	for (std::list<int>::iterator it = l.begin() ; it != l.end() ; ) {
-		o << *it ;
-		++it ;
-		if (it != l.end())
-			o << ',' ;
-	}
-	return o ;
-}
-
 /* Display a help message on command usage */
 
 

@@ -38,15 +38,6 @@
 using namespace LinBox;
 using namespace std;
 
-template<class T, template <class ,class> class Container, template <class> class Alloc>
-std::ostream& operator<< (std::ostream& o, const Container<T, Alloc<T> >& C)
-{
-	for(typename Container<T, Alloc<T> >::const_iterator refs =  C.begin();
-	    refs != C.end() ;
-	    ++refs )
-		o << (*refs) << " " ;
-	return o;
-}
 
 int main (int argc, char **argv)
 {

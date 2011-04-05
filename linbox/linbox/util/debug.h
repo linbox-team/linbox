@@ -39,6 +39,7 @@
 #include <sstream>
 #include "linbox/util/error.h"
 #include <vector>
+#include <list>
 
 /*! Check an assertion (à la \c std::assert).
  * If in DEBUG mode, throws a \ref PreconditionFailed exception.
@@ -306,6 +307,17 @@ std::ostream &operator << (std::ostream &out, const std::vector<bool> &S)
 
 	return out;
 }
+
+template<class T, template <class T> class Container>
+std::ostream& operator<< (std::ostream& o, const Container<T>& C)
+{
+	for(typename Container<T>::const_iterator refs =  C.begin();
+	    refs != C.end() ;
+	    ++refs )
+		o << (*refs) << " " ;
+	return o << std::endl;
+}
+
 #endif
 
 #endif // __LINBOX_util_debug_H
