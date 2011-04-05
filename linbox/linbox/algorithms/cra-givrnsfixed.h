@@ -52,16 +52,18 @@ namespace LinBox
 
 		std::vector< std::vector< Integer > > 	residues;
 		Integer _product;
+		Integer _midprod;
 
 	public:
 		GivaroRnsFixedCRA(const std::vector<Integer>& primes)
-				: Father_t(primes), 
-				  nbloops(primes.size()), 
+				: Father_t(primes),
+				  nbloops(primes.size()),
 				  iterationnumber(0),
 				  _product(1)
 		{
 			for(size_t i=0; i<primes.size(); ++i)
 				_product *= primes[i];
+			Integer::div(_midprod,_product,2);
 		}
 
 		Integer& getModulus(Integer& m)
@@ -84,17 +86,17 @@ namespace LinBox
 
 		template< template<class, class> class Vect, template <class> class Alloc>
 		void progress (const Domain& D, const Vect<DomainElement, Alloc<DomainElement> >& e)
-		{			
+		{
 			++iterationnumber;
-			typename Vect<DomainElement, Alloc<DomainElement> >::const_iterator eit=e.begin(); 
+			typename Vect<DomainElement, Alloc<DomainElement> >::const_iterator eit=e.begin();
 			std::vector<std::vector< Integer > >::iterator rit = residues.begin();
-			
+
 			for( ; eit != e.end(); ++eit, ++rit) {
 				Integer tmp;
 				D.convert(tmp, *eit);
 				rit->push_back(tmp);
 			}
-			
+
 		}
 
 		template<template<class, class> class Vect, template <class> class Alloc>
@@ -104,6 +106,11 @@ namespace LinBox
 			for(std::vector<std::vector< Integer > >::const_iterator rit = residues.begin(); rit != residues.end(); ++rit) {
 				Integer tmp;
 				RnsToRing(tmp, *rit);
+				linbox_check(tmp>=0);
+				linbox_check(tmp<_product);
+				if (tmp>_midprod)
+					tmp -= _product ;
+				linbox_check(tmp<=_midprod);
 				d.push_back(tmp);
 			}
 			return d;
