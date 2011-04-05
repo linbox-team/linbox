@@ -253,13 +253,13 @@ namespace std
 	std::ostream & operator<<(std::ostream&o, const std::vector<T> & v)
 	{
 		o << '[' ;
-		size_t i = 0  ;
-		for (; i < v.size()-1 ; ++i)
-			o << v[i] << ',' ;
-		if (v.size())
+		if (v.size()) {
+			size_t i = 0  ;
+			for (; i < v.size()-1 ; ++i)
+				o << v[i] << ',' ;
 			o <<  v[i] ;
-		o << ']' ;
-		return o;
+		}
+		return o << ']' ;
 	}
 
 
@@ -285,15 +285,15 @@ namespace std
 	{
 		typename std::list<T>::const_iterator it = L.begin() ;
 		o << '{' ;
-		for (; ;) {
-			o << *it ;
-			++it ;
-			if (it != L.end())
-				o << ", " ;
-			else
-				break;
-		}
-		return o ;
+		if (it != L.end() )
+			while(true) {
+				o << *it ;
+				if (++it != L.end())
+					o << ", " ;
+				else
+					break;
+			}
+		return o << '}' ;
 	}
 
 #if 0

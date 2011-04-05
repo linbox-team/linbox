@@ -261,7 +261,7 @@ else
 int main(int ac, char** av)
 {
 	static size_t m = 10 ;
-	static size_t l = 10 ;
+	static size_t l = 200 ;
 	static size_t n = 10 ;
 	LinBox::PlotData<index_t>  Data(n,m);
 	bench_cra<true>(n,m,l,Data);
