@@ -43,13 +43,6 @@ do { for (size_t i = 0 ; pass && i < iters ; ++i) {  command } } while(0)
 
 using namespace LinBox ;
 
-template< class T >
-std::ostream & operator<<(std::ostream & o, const std::vector<T> & v)
-{
-	for (size_t i = 0 ; i < v.size() ; ++i )
-		o << v[i] << ' ';
-	return o;
-}
 
 // testing EarlySingleCRA
 template< class T >

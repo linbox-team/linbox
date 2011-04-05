@@ -150,17 +150,6 @@ struct InteratorBlas : public Interator {
 
 #include <typeinfo>
 
-std::ostream& operator<< (std::ostream& o, const std::vector<Integer>& C) {
-    o << '[';
-    for(std::vector<Integer>::const_iterator refs =  C.begin();
-        refs != C.end() ;
-        ++refs )
-        o << (*refs) << ' ' ;
-    return o << ']';
-}
-
-
-
 
 template<typename Builder, typename Iter, typename RandGen, typename BoundType>
 bool TestOneCRA(std::ostream& report, Iter& iteration, RandGen& genprime, size_t N, const BoundType& bound)
@@ -181,12 +170,6 @@ bool TestOneCRA(std::ostream& report, Iter& iteration, RandGen& genprime, size_t
 
 	}
 	return locpass;
-}
-
-std::ostream& operator<<(std::ostream& out,
-			 const std::pair<size_t,double>& B)
-{
-	return out << B.first << ',' << B.second;
 }
 
 template<typename Builder, typename Iter, typename RandGen, typename BoundType>
