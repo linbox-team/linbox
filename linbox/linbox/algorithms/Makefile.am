@@ -9,7 +9,7 @@ libalgorithms_la_SOURCES= diophantine-solver.C
 
 #  AM_CPPFLAGS= $(CBLAS_FLAG) $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
 
-AM_CXXFLAGS = -O2 -Wall -Wextra -Wno-unused-parameter -pipe -DDISABLE_COMMENTATOR $(CBLAS_FLAG) $(GMP_CFLAGS) $(NTL_CFLAGS) $(ATLAS_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
+AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DDISABLE_COMMENTATOR $(CBLAS_FLAG) $(GMP_CFLAGS) $(NTL_CFLAGS) $(ATLAS_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
 
 pkgincludesub_HEADERS =         \
     blackbox-container.h        \
@@ -104,7 +104,8 @@ pkgincludesub_HEADERS =         \
     echelon-form.h              \
     toeplitz-det.h              \
     dense-nullspace.h dense-nullspace.inl   \
-	linbox-tags.h
+	linbox-tags.h               \
+	rns.h rns.inl
 
 EXTRA_DIST =                    \
              algorithms.doxy    \

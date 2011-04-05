@@ -5,11 +5,12 @@
 
 INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/linbox
 
-SAFER_FLAGS=-g -Wall -Wextra -Wno-unused-parameter
+#  SAFER_FLAGS=-g -Wall -Wextra -Wno-unused-parameter
 
-AM_CXXFLAGS= $(SAFER_FLAGS) -DLinBoxSrcOnly -O2
+AM_CXXFLAGS= @DEFAULT_CFLAGS@ -DLinBoxSrcOnly
 AM_CPPFLAGS= $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
 LDADD= $(NTL_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) $(GMP_LIBS)
+AM_LDFLAGS=-static
 
 BENCH_BASIC=               \
 		benchmark-fgemm    \

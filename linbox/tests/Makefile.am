@@ -4,9 +4,10 @@
 
 INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/linbox
 # AM_LDFLAGS = -llapack -lcblas -latlas
-SAFER_FLAGS = -g -Wall -Wextra -Wno-unused-parameter
+#  SAFER_FLAGS = -g -Wall -Wextra -Wno-unused-parameter
 # bds: no need to optimize for unit/regression tests, and opt adds a lot to compilation time
-AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly
+AM_CXXFLAGS = @TESTS_CFLAGS@ -DLinBoxSrcOnly
+#  AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly
 #AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly -O2
 # AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -DDEBUG -O0
 # AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -D__LINBOX_HAVE_DGETRF -D__LINBOX_HAVE_DGETRI
@@ -16,9 +17,11 @@ SUBDIRS = data
 
 AM_CPPFLAGS= $(CBLAS_FLAG) $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
 LDADD = $(BLAS_LIBS) $(NTL_LIBS) $(GIVARO_LIBS) $(GMP_LIBS)  $(LIDIA_LIBS)
+AM_LDFLAGS=-static
 
-EXTRA_DIST=\
-test-common.C
+EXTRA_DIST=            \
+		test-common.C
+#  test-generic-for-quad.h
 
 # Put an entry for your test-mycomponent.C here (or in one of the other test groups).
 # Don't forget to add a test_mycomponent_SOURCES entry below.
@@ -97,8 +100,8 @@ NONCOMPLIANT_TESTS =                   \
 
 
 DUBIOUS_TESTS =                 \
-        test-quad-matrix        \
-        test-zo
+		test-zo
+#  test-quad-matrix
 
 NONCOMPILING_TESTS =           \
         test-dense-zero-one
@@ -435,11 +438,11 @@ test_param_fuzzy_SOURCES =                \
         test-generic.h                    \
         test-common.h
 
-test_quad_matrix_SOURCES =                \
-        test-quad-matrix.C                \
-        test-generic-for-quad.h           \
-        test-generic.h                    \
-        test-common.h
+#  test_quad_matrix_SOURCES =                \
+#  test-quad-matrix.C                \
+#  test-generic-for-quad.h           \
+#  test-generic.h                    \
+#  test-common.h
 
 test_zo_SOURCES =                        \
         test-zo.C                        \

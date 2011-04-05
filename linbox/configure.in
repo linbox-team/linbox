@@ -3,7 +3,8 @@
 # see COPYING for licence
 AC_PREREQ(2.61)
 #AC_INIT(linbox/linbox.doxy)
-AC_INIT(linbox, 1.1.7,linbox-use@googlegroups.com) 
+AC_INIT([LinBox], [1.1.7],[linbox-use@googlegroups.com],[linbox],
+		[http://www.linalg.org/]) 
 AC_CONFIG_MACRO_DIR([macros])
 AM_INIT_AUTOMAKE([1.8 gnu no-dependencies])
 AM_CONFIG_HEADER([config.h])
@@ -16,18 +17,52 @@ AM_MAINTAINER_MODE
 AM_DEP_TRACK
 AM_OUTPUT_DEPENDENCY_COMMANDS 
 
+AM_ACLOCAL_INCLUDE(macros)
+
+# work around to fix the backward compatibility issue of automake 1.10 with 1.9 (pb with MKDIR_P)
+AC_SUBST([MKDIR_P])
+
+
 # Give a sane default for CFLAGS and CXXFLAGS
 # The sane thing is to define the flags differenly in tests, examples, interfaces, etc.  -bds
 #DEFAULT_CFLAGS="-O2 -Wall"
 #DEFAULT_CXXFLAGS="-std=c++0x"
 
-CFLAGS=${CFLAGS:-$DEFAULT_CFLAGS}
-CXXFLAGS=${CXXFLAGS:-$DEFAULT_CXXFLAGS}
+# CFLAGS=${CFLAGS:-$DEFAULT_CFLAGS}
+# CXXFLAGS=${CXXFLAGS:-$DEFAULT_CXXFLAGS}
 
-AM_ACLOCAL_INCLUDE(macros)
+AC_SUBST([DEFAULT_CFLAGS])
+AC_SUBST([DEBUG_CFLAGS])
+AC_SUBST([TESTS_CFLAGS])
 
-# work around to fix the backward compatibility issue of automake 1.10 with 1.9 (pb with MKDIR_P)
-AC_SUBST([MKDIR_P])
+TESTS_CFLAGS="-O0"
+DEFAULT_CFLAGS="-O2 -pipe"
+DEBUG_CFLAGS="-g -Wall"
+
+# disable default -g -O2 CXXFLAGS
+: ${CXXFLAGS=""}
+
+#set CXX
+AC_PROG_CC([gcc icc])
+AC_PROG_CXX([g++ icpc icc])
+
+if  test "x${CXX}" = "xicpc" -o "x${CXX}" = "xicc"  ; then
+	DEBUG_CFLAGS="${DEBUG_CFLAGS} -Wcheck"
+	# DEFAULT_CFLAGS+="-fast"
+else
+	if test "x${CXX}" = "xg++"  ; then
+		DEBUG_CFLAGS="${DEBUG_CFLAGS} -Wextra -Wno-unused-parameter"
+	else
+		AC_MSG_ERROR([please set environment variable 'CXX' to 'g++' or 'icpc']) ;
+	fi
+fi
+
+# CFLAGS=${CFLAGS:-$(DEFAULT_CFLAGS)}
+# CXXFLAGS="${DEFAULT_CFLAGS} ${DEBUG_CFLAGS}"
+DEFAULT_CFLAGS="${DEFAULT_CFLAGS} ${DEBUG_CFLAGS}"
+TESTS_CFLAGS="${TESTS_CFLAGS} ${DEBUG_CFLAGS}"
+
+
 AC_PROG_CC
 AC_PROG_CXX
 AC_HEADER_STDC
@@ -36,6 +71,11 @@ AC_HEADER_STDC
 #AM_PROG_LIBTOOL
 # JGD 08.06.2004 : new name
 AC_PROG_LIBTOOL
+
+# newer libtool...
+LT_PREREQ([2.2])
+LT_INIT
+
 
 
 
@@ -179,7 +219,11 @@ fi
 #CXXFLAGS="${GMP_CFLAGS} ${NTL_CFLAGS} ${GIVARO_CFLAGS} ${SACLIB_CFLAGS} ${CXXFLAGS}"
 #AC_SUBST(CXXFLAGS)
 
-AC_OUTPUT([
+CXXFLAGS="${GMP_CFLAGS} ${CXXFLAGS}"
+AC_SUBST(CXXFLAGS)
+
+
+AC_CONFIG_FILES([
 Makefile
 linbox-config
 examples/Makefile
@@ -211,4 +255,4 @@ interfaces/sage/Makefile
 macros/Makefile
 benchmarks/Makefile
 ])
-
+AC_OUTPUT
