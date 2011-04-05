@@ -76,11 +76,12 @@ namespace LinBox
 		 * remainder process on sufficiently many primes to meet the
 		 * termination condition.
 		 *
-		 * \param Iteration  Function object of two arguments, \c Iteration(r, p),
-		 * given prime \p p it outputs residue(s) \p r. This loop may be
-		 * parallelized.  \p Iteration  must be reentrant, thread safe. For example,
-		 * \p Iteration may be returning the coefficients of the minimal polynomial
-		 * of a matrix \c mod \p p.
+		 * \param Iteration  Function object of two arguments, \c
+		 * Iteration(r, F), given prime field \p F it outputs
+		 * residue(s) \p r. This loop may be parallelized.  \p
+		 * Iteration  must be reentrant, thread safe. For example, \p
+		 * Iteration may be returning the coefficients of the minimal
+		 * polynomial of a matrix \c mod \p F.
 		 *
 		 * @warning  We won't detect bad primes.
 		 *

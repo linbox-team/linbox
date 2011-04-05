@@ -37,20 +37,6 @@
 // BlasPermutation
 namespace LinBox
 {
-	template<class T>
-	std::ostream & operator<<(std::ostream & o, const std::vector<T> & V)
-	{
-		o << '{' ;
-		if (!V.size())
-			return o << '}' ;
-		size_t i = 0 ;
-		if (V.size() >1 ) {
-			for ( ; i < V.size()-1 ; ++i)
-				o << V[i] << ' ';
-		}
-		o << V[i] << '}' ;
-		return o ;
-	}
 	template<class _Uint>
 	BlasPermutation<_Uint>::BlasPermutation() :
 	       	r_(0),n_(-1),P_(0),Q_(0),inv_(false)

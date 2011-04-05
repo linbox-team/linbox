@@ -29,6 +29,7 @@
 /*! @file util/debug.h
  * @ingroup util
  * Various utilities for debugging.
+ * @todo we should put vector printing elsewhere.
  */
 
 #ifndef __LINBOX_util_debug_H
@@ -37,6 +38,7 @@
 #include <iostream>
 #include <sstream>
 #include "linbox/util/error.h"
+#include <vector>
 
 /*! Check an assertion (à la \c std::assert).
  * If in DEBUG mode, throws a \ref PreconditionFailed exception.
@@ -237,6 +239,73 @@ namespace LinBox
 #ifdef LinBoxSrcOnly
 // for all-source compilation
 #include <linbox/util/debug.C>
+#endif
+
+
+/*! Prints a vector on output.
+ * @param o output stream
+ * @param v vector
+ * @warning <<(ostream&,T&) exists !
+ */
+template<typename T>
+std::ostream & operator<<(std::ostream&o, const std::vector<T> & v)
+{
+	o << '[' ;
+	size_t i = 0  ;
+	for (; i < v.size()-1 ; ++i)
+		o << v[i] << ',' ;
+	if (v.size())
+		o <<  v[i] ;
+	o << ']' ;
+	return o;
+}
+
+/*! Prints a pair.
+ * @param o output stream
+ * @param C a pair
+ * @warning <<(ostream&,T&) exists !
+ */
+template<class S, class T>
+std::ostream& operator<< (std::ostream& o, const std::pair<S, T> >& C)
+{
+		o << '(' << C.first << ", " << C.second << ')';
+	return o ;
+}
+
+/*! Prints a list.
+ * @param o output stream
+ * @param C a pair
+ * @warning <<(ostream&,T&) exists !
+ */
+template<class T>
+std::ostream& operator<< (std::ostream& o, const std::list<T> >& L)
+{
+	typedef std::list<T>::const_iterator it = L.begin() ;
+	o << '{' ;
+	for (; ;) {
+		o << *it ;
+		++it ;
+		if (it != L.end())
+		       o << ", " ;
+		else
+			break;
+	}
+	return o ;
+}
+
+#if 0
+std::ostream &operator << (std::ostream &out, const std::vector<bool> &S)
+{
+	std::vector<bool>::const_iterator i;
+
+	for (i = S.begin (); i != S.end (); ++i) {
+		out << ((*i) ? "1" : "0");
+		if (i != S.end () - 1)
+			out << ", ";
+	}
+
+	return out;
+}
 #endif
 
 #endif // __LINBOX_util_debug_H

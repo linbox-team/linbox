@@ -45,19 +45,6 @@ namespace LinBox
 
 #ifdef DETAILED_TRACE
 
-	std::ostream &operator << (std::ostream &out, const std::vector<bool> &S)
-	{
-		std::vector<bool>::const_iterator i;
-
-		for (i = S.begin (); i != S.end (); ++i) {
-			out << ((*i) ? "1" : "0");
-			if (i != S.end () - 1)
-				out << ", ";
-		}
-
-		return out;
-	}
-
 	template <class Field, class Matrix>
 	void BLTraceReport (std::ostream &out, MatrixDomain<Field> &MD, const char *text, size_t iter, const Matrix &M)
 	{
