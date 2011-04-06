@@ -51,7 +51,7 @@ namespace LinBox
 		typedef typename std::iterator_traits<Iterator>::difference_type difference_type;
 		typedef typename std::iterator_traits<Iterator>::pointer	    pointer;
 		typedef typename std::iterator_traits<Iterator>::reference	    reference;
-		typedef const reference	                                    const_reference;
+		typedef const value_type&	                                    const_reference;
 		typedef Iterator                                            iterator;
 		//typedef typename ConstIteratorType<Iterator>::const_iterator         const_iterator;
 

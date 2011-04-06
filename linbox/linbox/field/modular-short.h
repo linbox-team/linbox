@@ -87,44 +87,52 @@ namespace LinBox
 	 */
 	template <>
 	class Modular<int16_t> : public FieldInterface {
+	public:
+		typedef int16_t Element;
 	protected:
-		int16_t modulus;
+		Element modulus;
 		double modulusinv;
 
 	public:
-		friend class FieldAXPY<Modular<int16_t> >;
-		friend class DotProductDomain<Modular<int16_t> >;
-		friend class MVProductDomain<Modular<int16_t> >;
+		friend class FieldAXPY<Modular<Element> >;
+		friend class DotProductDomain<Modular<Element> >;
+		friend class MVProductDomain<Modular<Element> >;
 
-		typedef int16_t Element;
-		typedef ModularRandIter<int16_t> RandIter;
+		typedef ModularRandIter<Element> RandIter;
 
-		//default modular field,taking 65521 as default modulus
+		//default modular field,taking 251 as default modulus
 		Modular () :
 			modulus(251)
-		{modulusinv=1/(double)251;}
-
-		Modular (int value, int exp = 1)  :
-			modulus(value)
 		{
-			modulusinv = 1 / ((double) value);
-			if(value<=1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
-			integer max;
-			if(value>FieldTraits< Modular<int16_t> >::maxModulus(max)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
-			if(exp != 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
+			modulusinv=1/(double)251;
 		}
 
-		Modular(const Modular<int16_t>& mf) :
-			modulus(mf.modulus),modulusinv(mf.modulusinv){}
+		Modular (int value, int exp = 1)  :
+			modulus((Element)value)
+		{
+			modulusinv = 1 / ((double) value);
+			if(value<=1)
+				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
+			integer max;
+			if(value>FieldTraits< Modular<Element> >::maxModulus(max))
+				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
+			if(exp != 1)
+				throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
+		}
 
-		const Modular &operator=(const Modular<int16_t> &F) {
+		Modular(const Modular<Element>& mf) :
+			modulus(mf.modulus),modulusinv(mf.modulusinv)
+		{}
+
+		const Modular &operator=(const Modular<Element> &F)
+		{
 			modulus = F.modulus;
 			modulusinv = F.modulusinv;
 			return *this;
 		}
 
-
-		inline integer &cardinality (integer &c) const{
+		inline integer &cardinality (integer &c) const
+		{
 			return c = modulus;
 		}
 
@@ -140,17 +148,18 @@ namespace LinBox
 
 		inline std::ostream &write (std::ostream &os) const
 		{
-			return os << "int16_t mod " << modulus;
+			return os << "Element mod " << modulus;
 		}
 
-		inline std::istream &read (std::istream &is) {
+		inline std::istream &read (std::istream &is)
+		{
 			int prime;
 			is >> prime;
-			modulus = prime;
-			modulusinv = 1 /((double) modulus );
-			if(prime <= 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
+					if(prime <= 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			integer max;
-			if(prime > FieldTraits< Modular<int16_t> >::maxModulus(max)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
+			if(prime > FieldTraits< Modular<Element> >::maxModulus(max)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
+			modulus = (Element) prime;
+			modulusinv = 1 /((double) modulus );
 
 			return is;
 		}
@@ -175,15 +184,17 @@ namespace LinBox
 		}
 
 		inline Element &init (Element &x, const integer &y) const  {
-			x = Element(y % (long)modulus);
-			if (x < 0) x += modulus;
+			x = Element(y % (unsigned long)modulus);
+			if (x < 0)
+				x += modulus;
 			return x;
 		}
 
 		inline Element& init(Element& x, int y =0) const
 		{
-			x = y % modulus;
-			if ( x < 0 ) x += modulus;
+			x = (Element)(y % modulus);
+			if ( x < 0 )
+				x += modulus;
 			return x;
 		}
 
@@ -230,24 +241,26 @@ namespace LinBox
 		inline Element &add (Element &x, const Element &y, const Element &z) const
 		{
 			x = y + z;
-			if ( (uint16_t)x >= (uint16_t)modulus ) x =( (uint16_t)x )- modulus;
+			if ( (uint16_t)x >= (uint16_t)modulus )
+				x = (Element) (( (uint16_t)x )- modulus);
 			return x;
 		}
 
 		inline Element &sub (Element &x, const Element &y, const Element &z) const
 		{
 			x = y - z;
-			if (x < 0) x += modulus;
+			if (x < 0)
+				x += modulus;
 			return x;
 		}
 
 		inline Element &mul (Element &x, const Element &y, const Element &z) const
 		{
-			int16_t q;
+			Element q;
 
 			double ab=((double) y)* ((double) z);
-			q  = (int16_t)(ab*modulusinv);  // q could be off by (+/-) 1
-			x = (int16_t) (ab - ((double) q )* ((double) modulus));
+			q  = (Element)(ab*modulusinv);  // q could be off by (+/-) 1
+			x = (Element) (ab - ((double) q )* ((double) modulus));
 
 
 			if (x >= modulus)
@@ -267,13 +280,15 @@ namespace LinBox
 
 		inline Element &neg (Element &x, const Element &y) const
 		{
-			if(y==0) return x=0;
-			else return x=modulus-y;
+			if(y==0)
+				return x=0;
+			else
+				return x= modulus-y;
 		}
 
 		inline Element &inv (Element &x, const Element &y) const
 		{
-			int16_t d, t;
+			Element d, t;
 			XGCD(d, x, t, y, modulus);
 			if (d != 1)
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"InvMod: inverse undefined");
@@ -289,11 +304,11 @@ namespace LinBox
 				      const Element &x,
 				      const Element &y) const
 		{
-			int16_t q;
+			Element q;
 
 			double ab=((double) a)* ((double) x) + ( double ) y;
-			q  = (int16_t)(ab*modulusinv);  // q could be off by (+/-) 1
-			r = (int16_t) (ab - ((double) q )* ((double) modulus));
+			q  = (Element)(ab*modulusinv);  // q could be off by (+/-) 1
+			r = (Element) (ab - ((double) q )* ((double) modulus));
 
 
 			if (r >= modulus)
@@ -308,7 +323,8 @@ namespace LinBox
 		inline Element &addin (Element &x, const Element &y) const
 		{
 			x += y;
-			if ( ((uint16_t) x) >= (uint16_t)modulus ) x = ((uint16_t) x)-modulus;
+			if ( ((uint16_t) x) >= (uint16_t)modulus )
+				x = Element( ((uint16_t) x)-modulus );
 			return x;
 		}
 
@@ -343,11 +359,11 @@ namespace LinBox
 		inline Element &axpyin (Element &r, const Element &a, const Element &x) const
 		{
 
-			int16_t q;
+			Element q;
 
 			double ab = ((double) a)* ((double) x) + ( double ) r;
-			q  = (int16_t)(ab*modulusinv);  // q could be off by (+/-) 1
-			r = (int16_t) (ab - ((double) q )* ((double) modulus));
+			q  = (Element)(ab*modulusinv);  // q could be off by (+/-) 1
+			r = (Element) (ab - ((double) q )* ((double) modulus));
 
 
 			if (r >= modulus)
@@ -358,15 +374,16 @@ namespace LinBox
 			return r;
 		}
 
-		static inline int16_t getMaxModulus()
+		static inline Element getMaxModulus()
 		{ return 32767; } // 2^15 - 1
 
 	private:
 
-		static void XGCD(int16_t& d, int16_t& s, int16_t& t, int16_t a, int16_t b) {
-			int16_t  u, v, u0, v0, u1, v1, u2, v2, q, r;
+		static void XGCD(int16_t& d, int16_t& s, int16_t& t, int16_t a, int16_t b)
+		{
+			Element u, v, u0, v0, u1, v1, u2, v2, q, r;
 
-			int16_t aneg = 0, bneg = 0;
+			Element aneg = 0, bneg = 0;
 
 			if (a < 0) {
 				if (a < -LINBOX_MAX_INT16) throw PreconditionFailed(__func__,__FILE__,__LINE__,"XGCD: integer overflow");
@@ -383,6 +400,7 @@ namespace LinBox
 			u1 = 1; v1 = 0;
 			u2 = 0; v2 = 1;
 			u = a; v = b;
+
 
 			while (v != 0) {
 				q = u / v;

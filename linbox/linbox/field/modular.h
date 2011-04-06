@@ -664,7 +664,6 @@ namespace LinBox
 	template <>
 	class Modular<uint8_t> : public FieldInterface, public ModularBase<uint8_t> {
 	public:
-
 		typedef uint8_t Element;
 		const Element zero,one;
 		Element mone;
@@ -673,19 +672,25 @@ namespace LinBox
 			zero(0),one(1),_k (0)
 		{}
 		Modular (uint32_t modulus) :
-			ModularBase<uint8_t> (modulus),
-			zero(0),one(1),mone(modulus-1),
+			ModularBase<Element> (modulus),
+			zero(0),one(1),mone((Element)(modulus-1)),
 			_k (((uint64_t) -1LL) / ((modulus - 1) * (modulus - 1))),
-			_pinv (1.0 / (double) ((uint8_t) modulus)) {}
+			_pinv (1.0 / (double) ((Element) modulus))
+		{
+			linbox_check(modulus < UINT8_MAX/2);
+		}
 		Modular (const integer &modulus) :
-			ModularBase<uint8_t> ((long) modulus),
+			ModularBase<Element> ((long) modulus),
 			zero(0),one(1),mone(modulus-1),
-			_k (((uint64_t) -1LL) / (((uint8_t)modulus - 1) * ((uint8_t)modulus - 1))),
-			_pinv (1.0 / (double) ((uint8_t) modulus)) {}
+			_k (((uint64_t) -1LL) / (((Element)modulus - 1) * ((Element)modulus - 1))),
+			_pinv (1.0 / (double) ((Element) modulus))
+		{
+			linbox_check(modulus < UINT8_MAX/2);
+		}
 
 		const Modular &operator=(const Modular &F)
 		{
-			ModularBase<uint8_t>::_modulus = F._modulus;
+			ModularBase<Element>::_modulus = F._modulus;
 			_k = F._k;
 			_pinv = F._pinv;
 			mone = F.mone;
@@ -694,8 +699,9 @@ namespace LinBox
 
 		Element &init (Element &x, const integer &y = 0) const
 		{
-			x = (unsigned short) (abs (y) % integer (ModularBase<Element>::_modulus));
-			if (y < 0) x = ModularBase<Element>::_modulus - x;
+			x = (Element) (abs (y) % integer (ModularBase<Element>::_modulus));
+			if (y < 0)
+				x = Element(ModularBase<Element>::_modulus - x);
 			return x;
 		}
 
@@ -706,22 +712,29 @@ namespace LinBox
 			return x = (Element) (z);
 		}
 
+		/*! add elements
+		 * @todo is it faster to use uint32 and multiple casts ?
+		 */
 		Element &add (Element &x, const Element &y, const Element &z) const
 		{
 			uint32_t t = (uint32_t) y + (uint32_t) z;
-			if (t >= (uint32_t) ModularBase<Element>::_modulus) t -= ModularBase<Element>::_modulus;
-			return x = t;
+			if (t >= (uint32_t) ModularBase<Element>::_modulus)
+				t -= ModularBase<Element>::_modulus;
+			return x = (Element)t;
 		}
 
 		Element &sub (Element &x, const Element &y, const Element &z) const
 		{
 			int32_t t = (int32_t) y - (int32_t) z;
-			if (t < 0) t += ModularBase<Element>::_modulus;
-			return x = t;
+			if (t < 0)
+				t += ModularBase<Element>::_modulus;
+			return x =  (Element)t;
 		}
 
 		Element &mul (Element &x, const Element &y, const Element &z) const
-		{ return x = ((uint32_t) y * (uint32_t) z) % (uint32_t) ModularBase<Element>::_modulus; }
+		{
+			return x = Element( ((uint32_t) y * (uint32_t) z) % (uint32_t) ModularBase<Element>::_modulus );
+	       	}
 
 		Element &div (Element &x, const Element &y, const Element &z) const
 		{
@@ -731,7 +744,12 @@ namespace LinBox
 		}
 
 		Element &neg (Element &x, const Element &y) const
-		{ if (y == 0) return x = y; else return x = ModularBase<Element>::_modulus - y; }
+		{
+			if (y == 0)
+				return x = y;
+			else
+				return x = (Element) (ModularBase<Element>::_modulus - y);
+		}
 
 		Element &inv (Element &x, const Element &y) const
 		{
@@ -756,7 +774,7 @@ namespace LinBox
 			if (tx < 0) tx += ModularBase<Element>::_modulus;
 
 			// now x_int = gcd (modulus,residue)
-			return x = tx;
+			return x = (Element) tx;
 		}
 
 		Element &axpy (Element &r,
@@ -764,7 +782,7 @@ namespace LinBox
 			       const Element &x,
 			       const Element &y) const
 		{
-			r = ((uint32_t) a * (uint32_t) x + (uint32_t) y) % (uint32_t) ModularBase<Element>::_modulus;
+			r = Element(((uint32_t) a * (uint32_t) x + (uint32_t) y) % (uint32_t) ModularBase<Element>::_modulus) ;
 			return r;
 		}
 
@@ -772,19 +790,22 @@ namespace LinBox
 		{
 			uint32_t t = (long) x + (long) y;
 			if (t >= (uint32_t) ModularBase<Element>::_modulus) t -= ModularBase<Element>::_modulus;
-			return x = t;
+			return x = (Element) t;
 		}
 
+		/*! subin.
+		 * @todo why \c long here ?
+		 */
 		Element &subin (Element &x, const Element &y) const
 		{
 			long t = x - y;
 			if (t < 0) t += ModularBase<Element>::_modulus;
-			return x = t;
+			return x = (Element) t;
 		}
 
 		Element &mulin (Element &x, const Element &y) const
 		{
-			x = ((uint32_t) x * (uint32_t) y) % (uint32_t) ModularBase<Element>::_modulus;
+			x = (Element)( ((uint32_t) x * (uint32_t) y) % (uint32_t) ModularBase<Element>::_modulus );
 			return x;
 		}
 
@@ -796,22 +817,29 @@ namespace LinBox
 		}
 
 		Element &negin (Element &x) const
-		{ if (x == 0) return x; else return x = ModularBase<Element>::_modulus - x; }
+		{
+			if (x == 0)
+				return x;
+			else
+				return x = Element(ModularBase<Element>::_modulus - x);
+		}
 
 		Element &invin (Element &x) const
-		{ return inv (x, x); }
+		{
+		       	return inv (x, x);
+		}
 
 		Element &axpyin (Element &r, const Element &a, const Element &x) const
 		{
-			r = ((uint32_t) r + (uint32_t) a * (uint32_t) x) % (uint32_t) ModularBase<Element>::_modulus;
+			r = (Element)( ((uint32_t) r + (uint32_t) a * (uint32_t) x) % (uint32_t) ModularBase<Element>::_modulus);
 			return r;
 		}
 
 	private:
 
-		friend class FieldAXPY<Modular<uint8_t> >;
-		friend class DotProductDomain<Modular<uint8_t> >;
-		friend class MVProductDomain<Modular<uint8_t> >;
+		friend class FieldAXPY<Modular<Element> >;
+		friend class DotProductDomain<Modular<Element> >;
+		friend class MVProductDomain<Modular<Element> >;
 
 		// Number of times one can perform an axpy into a long long
 		// before modding out is mandatory.
@@ -836,17 +864,21 @@ namespace LinBox
 			zero(0),one(1),_k (0)
 		{}
 		Modular (uint32_t modulus) :
-			ModularBase<uint16_t> (modulus),
-			zero(0),one(1),mone(modulus-1),
+			ModularBase<Element> (modulus),
+			zero(0),one(1),mone((Element)(modulus-1)),
 			_k (((uint64_t) -1LL) / ((ModularBase<Element>::_modulus - 1) * (ModularBase<Element>::_modulus - 1))),
-			_pinv (1.0 / (double) ((uint16_t) ModularBase<Element>::_modulus))
-		{}
+			_pinv (1.0 / (double) ((Element) ModularBase<Element>::_modulus))
+		{
+			linbox_check(modulus<UINT16_MAX/2);
+		}
 		Modular (const integer &modulus) :
-			ModularBase<uint16_t> ((long) modulus),
-			zero(0),one(1),mone(modulus-1),
+			ModularBase<Element> ((long) modulus),
+			zero(0),one(1),mone(Element(modulus-1)),
 			_k (((uint64_t) -1LL) / ((ModularBase<Element>::_modulus - 1) * (ModularBase<Element>::_modulus - 1))),
-			_pinv (1.0 / (double) ((uint16_t) ModularBase<Element>::_modulus))
-		{}
+			_pinv (1.0 / (double) ((Element) ModularBase<Element>::_modulus))
+		{
+			linbox_check(modulus<UINT16_MAX/2);
+		}
 
 		const Modular &operator=(const Modular &F)
 		{
@@ -859,33 +891,38 @@ namespace LinBox
 		Element &init (Element &x, const integer &y = 0) const
 		{
 			x = abs (y) % integer (ModularBase<Element>::_modulus);
-			if (y < 0) x = ModularBase<Element>::_modulus - x;
+			if (y < 0)
+				x = Element(ModularBase<Element>::_modulus - x);
 			return x;
 		}
 
 		Element &init (Element &x, const double &y) const
 		{
 			double z = fmod(y, (double)_modulus);
-			if (z < 0) z += (double) _modulus;
+			if (z < 0)
+				z += (double) _modulus;
 			return x = (Element) (z);
 		}
 
 		Element &add (Element &x, const Element &y, const Element &z) const
 		{
 			uint32_t t = (uint32_t) y + (uint32_t) z;
-			if (t >= (uint32_t) ModularBase<Element>::_modulus) t -= ModularBase<Element>::_modulus;
-			return x = t;
+			if (t >= (uint32_t) ModularBase<Element>::_modulus)
+				t -= ModularBase<Element>::_modulus;
+			return x = (Element) t;
 		}
 
 		Element &sub (Element &x, const Element &y, const Element &z) const
 		{
 			int32_t t = (int32_t) y - (int32_t) z;
 			if (t < 0) t += ModularBase<Element>::_modulus;
-			return x = t;
+			return x =  (Element) t;
 		}
 
 		Element &mul (Element &x, const Element &y, const Element &z) const
-		{ return x = ((uint32_t) y * (uint32_t) z) % (uint32_t) ModularBase<Element>::_modulus; }
+		{
+			return x = (Element) ( ((uint32_t) y * (uint32_t) z) % (uint32_t) ModularBase<Element>::_modulus);
+		}
 
 		Element &div (Element &x, const Element &y, const Element &z) const
 		{
@@ -895,7 +932,12 @@ namespace LinBox
 		}
 
 		Element &neg (Element &x, const Element &y) const
-		{ if (y == 0) return x = y; else return x = ModularBase<Element>::_modulus - y; }
+		{
+		       	if (y == 0)
+				return x = y;
+			else
+				return x = (Element)(  ModularBase<Element>::_modulus - y);
+		}
 
 		Element &inv (Element &x, const Element &y) const
 		{
@@ -920,7 +962,7 @@ namespace LinBox
 			if (tx < 0) tx += ModularBase<Element>::_modulus;
 
 			// now x_int = gcd (modulus,residue)
-			return x = tx;
+			return x = (Element)  tx;
 		}
 
 		Element &axpy (Element &r,
@@ -928,7 +970,7 @@ namespace LinBox
 			       const Element &x,
 			       const Element &y) const
 		{
-			r = ((uint32_t) a * (uint32_t) x + (uint32_t) y) % (uint32_t) ModularBase<Element>::_modulus;
+			r =  (Element)( ((uint32_t) a * (uint32_t) x + (uint32_t) y) % (uint32_t) ModularBase<Element>::_modulus );
 			return r;
 		}
 
@@ -936,19 +978,19 @@ namespace LinBox
 		{
 			uint32_t t = (long) x + (long) y;
 			if (t >= (uint32_t) ModularBase<Element>::_modulus) t -= ModularBase<Element>::_modulus;
-			return x = t;
+			return x = (Element)  t;
 		}
 
 		Element &subin (Element &x, const Element &y) const
 		{
 			long t = x - y;
 			if (t < 0) t += ModularBase<Element>::_modulus;
-			return x = t;
+			return x =  (Element) t;
 		}
 
 		Element &mulin (Element &x, const Element &y) const
 		{
-			x = ((uint32_t) x * (uint32_t) y) % (uint32_t) ModularBase<Element>::_modulus;
+			x =  (Element)( ((uint32_t) x * (uint32_t) y) % (uint32_t) ModularBase<Element>::_modulus);
 			return x;
 		}
 
@@ -960,22 +1002,29 @@ namespace LinBox
 		}
 
 		Element &negin (Element &x) const
-		{ if (x == 0) return x; else return x = ModularBase<Element>::_modulus - x; }
+		{
+			if (x == 0)
+				return x;
+			else
+				return x = (Element) ( ModularBase<Element>::_modulus - x);
+	       	}
 
 		Element &invin (Element &x) const
-		{ return inv (x, x); }
+		{
+		       	return inv (x, x);
+		}
 
 		Element &axpyin (Element &r, const Element &a, const Element &x) const
 		{
-			r = ((uint32_t) r + (uint32_t) a * (uint32_t) x) % (uint32_t) ModularBase<Element>::_modulus;
+			r = (Element) ( ((uint32_t) r + (uint32_t) a * (uint32_t) x) % (uint32_t) ModularBase<Element>::_modulus);
 			return r;
 		}
 
 	private:
 
-		friend class FieldAXPY<Modular<uint16_t> >;
-		friend class DotProductDomain<Modular<uint16_t> >;
-		friend class MVProductDomain<Modular<uint16_t> >;
+		friend class FieldAXPY<Modular<Element> >;
+		friend class DotProductDomain<Modular<Element> >;
+		friend class MVProductDomain<Modular<Element> >;
 
 		// Number of times one can perform an axpy into a long long
 		// before modding out is mandatory.

@@ -72,7 +72,7 @@ namespace LinBox
 		long r = 2;
 		double g;
 
-		while ((g = nroot (a, r, 0.1)) >= 2) {
+		while ((g = nroot ((double)a, r, 0.1)) >= 2) {
 			l = (long) floor (g);
 			if (g-double (l) > 0.1)
 				++l;
@@ -157,7 +157,7 @@ namespace LinBox
 
 	void Commentator::stop (const char *msg, const char *long_msg, const char *fn)
 	{
-		float realtime, usertime, systime;
+		double realtime, usertime, systime;
 		Activity *top_act;
 
 		linbox_check (_activities.top () != (Activity *) 0);
@@ -696,7 +696,7 @@ namespace LinBox
 
 		if (ch != EOF) {
 			char cbuf[1];
-			cbuf[0] = ch;
+			cbuf[0] = (char)ch;
 			if (writeData (cbuf, 1) != 1)
 				return EOF;
 		}

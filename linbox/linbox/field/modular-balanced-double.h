@@ -91,7 +91,7 @@ namespace LinBox
 
 		ModularBalanced (int32_t p, int exp = 1) :
 			modulus((double)p),
-			half_mod( (p-1.)/2),
+			half_mod (double((p-1)/2)),
 			mhalf_mod(half_mod-modulus+1),
 			lmodulus (p)
 		{
@@ -111,7 +111,7 @@ namespace LinBox
 
 		ModularBalanced (double p) :
 			modulus (p),
-			half_mod ((p-1)/2),
+			half_mod (double((int)(p-1)/2)),
 			mhalf_mod(half_mod-modulus+1),
 			lmodulus ((unsigned long)p)
 		{
@@ -128,7 +128,7 @@ namespace LinBox
 
 		ModularBalanced (long int p) :
 			modulus((double)p),
-			half_mod ((p-1)/2),
+			half_mod (double((long int)(p-1)/2)),
 			mhalf_mod(half_mod-modulus+1),
 			lmodulus(p)
 		{
@@ -143,7 +143,7 @@ namespace LinBox
 
 		ModularBalanced (const integer& p) :
 			modulus((double) p),
-			half_mod ((p-1)/2),
+			half_mod (double((p-1)/2)),
 			mhalf_mod(half_mod-modulus+1),
 			lmodulus(p)
 		{
@@ -155,9 +155,9 @@ namespace LinBox
 		}
 
 		ModularBalanced (const ModularBalanced<double>& mf) :
-			modulus (mf.modulus),
+			modulus  (mf.modulus),
 			half_mod (mf.half_mod),
-			mhalf_mod(half_mod-modulus+1),
+			mhalf_mod(mf.mhalf_mod),
 			lmodulus (mf.lmodulus) {}
 
 		const ModularBalanced &operator= (const ModularBalanced<double> &F) {

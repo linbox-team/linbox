@@ -263,7 +263,7 @@ namespace LinBox
 						else currentCol = 4;
 						break;
 					case 5:
-						ch = this->sin->get();
+						ch = (char)this->sin->get();
 						if( ch == '{' ) {
 							array = false;
 							currentCol = 6;
