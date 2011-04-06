@@ -198,7 +198,9 @@ void delayed (const Field& F, const size_t M, const size_t N,
 #endif
 #endif
 		for (size_t i = 0; i < __FFLAS__Na; ++i){
+#ifdef _LB_DEBUG
 			if ( F.isZero(*(A+i*(lda+1))) ) throw PreconditionFailed(__func__,__FILE__,__LINE__,"Triangular matrix not invertible");
+#endif
 			F.inv (inv, *(A + i * (lda+1)));
 			fscal (F, __FFLAS__Normdim, inv, Ai, __FFLAS__Anorminc);
 			fscal (F, __FFLAS__Bdim, inv, Bi, __FFLAS__Bnorminc);
@@ -325,7 +327,9 @@ void operator()	(const Field& F, const size_t M, const size_t N,
 
 #ifndef __FFLAS__UNIT
 		typename Field::Element inv;
+#ifdef _LB_DEBUG
 		if ( F.isZero(*A) ) throw PreconditionFailed(__func__,__FILE__,__LINE__,"Triangular matrix not invertible");
+#endif
 		F.inv(inv, *A);
 		FFLAS::fscal(F, __FFLAS__Bdim, inv, B, __FFLAS__Bnorminc);
 #endif //__FFLAS__UNIT

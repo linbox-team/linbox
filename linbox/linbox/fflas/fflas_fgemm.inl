@@ -69,6 +69,7 @@ inline void FFLAS::ClassicMatmul (const Field& F,
 				if (! F.areEqual (one, alpha)) {
 					// Compute y = A*x + beta/alpha.y
 					// and after y *= alpha
+					linbox_check(!F.isZero(alpha));
 					F.div (tmp, beta, alpha);
 					F.convert (betad, tmp);
 				}
@@ -139,6 +140,7 @@ inline void FFLAS::ClassicMatmul (const Field& F,
 				if (! F.areEqual (one, alpha)) {
 					// Compute y = A*x + beta/alpha.y
 					// and after y *= alpha
+					linbox_check(!F.isZero(alpha));
 					F.div (tmp, beta, alpha);
 					F.convert (betad, tmp);
 				}
@@ -195,6 +197,7 @@ inline void FFLAS::ClassicMatmul (const Field& F,
 					F.assign (*(C+i*ldc+j), zero);
 		else {
 			typename Field::Element betadivalpha;
+			linbox_check(!F.isZero(alpha));
 			F.div (betadivalpha, beta, alpha);
 			for (size_t i = 0; i < m; ++i)
 				for (size_t j = 0; j < n; ++j)
@@ -295,6 +298,7 @@ inline void FFLAS::ClassicMatmul (const ModularBalanced<double> & F,
 		if (! F.areEqual (one, alpha)) {
 			// Compute y = A*x + beta/alpha.y
 			// and after y *= alpha
+			linbox_check(!F.isZero(alpha));
 			F.divin (_beta, alpha);
 		}
 	}
@@ -355,6 +359,7 @@ inline void FFLAS::ClassicMatmul (const ModularBalanced<float> & F,
 		if (! F.areEqual (one, alpha)) {
 			// Compute y = A*x + beta/alpha.y
 			// and after y *= alpha
+			linbox_check(!F.isZero(alpha));
 			F.divin (_beta, alpha);
 		}
 	}
@@ -418,6 +423,7 @@ inline void FFLAS::ClassicMatmul (const Modular<double> & F,
 		if (! F.areEqual (one, alpha)) {
 			// Compute y = A*x + beta/alpha.y
 			// and after y *= alpha
+			linbox_check(!F.isZero(alpha));
 			F.divin (_beta, alpha);
 		}
 	}
@@ -497,6 +503,7 @@ inline void FFLAS::ClassicMatmul (const Modular<float> & F,
 		if (! F.areEqual (one, alpha)) {
 			// Compute y = A*x + beta/alpha.y
 			// and after y *= alpha
+			linbox_check(!F.isZero(alpha));
 			F.divin (_beta, alpha);
 		}
 	}
@@ -1087,6 +1094,7 @@ inline void  FFLAS::WinoMain (const Field& F,
 					if (! F.areEqual (one, alpha)) {
 						// Compute C = A*B + beta/alpha.C
 						// and after C *= alpha
+						linbox_check(!F.isZero(alpha));
 						F.div (_betabis, beta, alpha);
 						F.convert (betad, _betabis);
 					}
@@ -1137,6 +1145,7 @@ inline void  FFLAS::WinoMain (const Field& F,
 					if (! F.areEqual (one, alpha)) {
 						// Compute C = A*B + beta/alpha.C
 						// and after C *= alpha
+						linbox_check(!F.isZero(alpha));
 						F.div (_betabis, beta, alpha);
 						F.convert (betad, _betabis);
 					}
@@ -1209,8 +1218,10 @@ inline void FFLAS::WinoMain (const ModularBalanced<double>& F,
 			else{
 				// Compute C = A*B + beta/alpha.C
 				// and then C *= alpha
-				if (! F.areEqual (1.0, alpha))
+				if (! F.areEqual (1.0, alpha)) {
+					linbox_check(!F.isZero(alpha));
 					F.divin (_beta, alpha);
+				}
 				_alpha = 1.0;
 			}
 
@@ -1269,8 +1280,10 @@ inline void FFLAS::WinoMain (const ModularBalanced<float>& F,
 			else {
 				// Compute C = A*B + beta/alpha.C
 				// and then C *= alpha
-				if (! F.areEqual (1.0, alpha))
+				if (! F.areEqual (1.0, alpha)) {
+					linbox_check(!F.isZero(alpha));
 					F.divin (_beta, alpha);
+				}
 				_alpha = 1.0;
 			}
 #if 0 /* BB : inutile */
@@ -1326,8 +1339,10 @@ inline void FFLAS::WinoMain (const Modular<double>& F,
 			else{
 				// Compute C = A*B + beta/alpha.C
 				// and then C *= alpha
-				if (! F.areEqual (1.0, alpha))
+				if (! F.areEqual (1.0, alpha)) {
+					linbox_check(!F.isZero(alpha));
 					F.divin (_beta, alpha);
+				}
 				_alpha = 1.0;
 			}
 
@@ -1398,8 +1413,10 @@ inline void FFLAS::WinoMain (const Modular<float>& F,
 			else {
 				// Compute C = A*B + beta/alpha.C
 				// and then C *= alpha
-				if (! F.areEqual (1.0, alpha))
+				if (! F.areEqual (1.0, alpha)) {
+					linbox_check(!F.isZero(alpha));
 					F.divin (_beta, alpha);
+				}
 				_alpha = 1.0;
 			}
 #if 0 /* BB: inutile */
@@ -1551,6 +1568,13 @@ FFLAS::fgemm<UnparametricField<double> > ( const UnparametricField<double>& F,
 
 	if (!(m && n && k)) return C;
 
+	if (F.isZero (alpha)){
+			for (size_t i = 0; i<m; ++i)
+				fscal(F, n, beta, C + i*ldc, 1);
+			return C;
+	}
+
+
 	WinoMain (F, ta, tb, m, n, k, alpha, A, lda, B, ldb, beta,
 		  C, ldc, k+1, w, FflasDouble);
 	return C;
@@ -1573,6 +1597,12 @@ FFLAS::fgemm<UnparametricField<float> > ( const UnparametricField<float>& F,
 {
 
 	if (!(m && n && k)) return C;
+
+	if (F.isZero (alpha)){
+			for (size_t i = 0; i<m; ++i)
+				fscal(F, n, beta, C + i*ldc, 1);
+			return C;
+	}
 
 	WinoMain (F, ta, tb, m, n, k, alpha, A, lda, B, ldb, beta,
 		  C, ldc, k+1, w, FflasFloat);

@@ -440,7 +440,7 @@ public:
 	 * \param ldb leading dimension of \p B
 	 * \param ldc leading dimension of \p C
 	 * \param w recursive levels of Winograd's algorithm are used
-	 * @warning \f$\beta\f$ \e must be invertible
+	 * @warning \f$\alpha\f$ \e must be invertible
 	 */
 	template<class Field>
 	static typename Field::Element*
@@ -494,7 +494,7 @@ public:
 	 * \param lda leading dimension of \p A
 	 * \param ldb leading dimension of \p B
 	 * \param ldc leading dimension of \p C
-	 * @warning beta \e must be invertible
+	 * @warning \f$\alpha\f$ \e must be invertible
 	 */
 	template<class Field>
 	static typename Field::Element*
@@ -518,6 +518,14 @@ public:
 			return C;
 		}
 
+#ifdef _LB_DEBUG
+		/*  check if alpha is invertible. XXX do it in F.isInvertible(Element&) ? */
+		typename Field::Element e ;
+		F.init(e,1);
+		F.divin(e,alpha);
+		F.mulin(e,alpha);
+		linbox_check(F.isOne(e));
+#endif
 		size_t w, kmax;
  		FFLAS_BASE base;
 
