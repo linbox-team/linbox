@@ -135,11 +135,18 @@ namespace LinBox
 	}
 
 	template<> inline Modular<uint32_t>::Element& Hom<Modular<uint16_t>, Modular<uint32_t> >::
-	image(Modular<uint32_t>::Element& t, const Modular<uint16_t>::Element& s) { return t = s; }
+	image(Modular<uint32_t>::Element& t, const Modular<uint16_t>::Element& s)
+	{
+	       	return t = s;
+	}
 
 	// assumes t normalized.
 	template<> inline Modular<uint16_t>::Element& Hom<Modular<uint16_t>, Modular<uint32_t> >::
-	preimage(Modular<uint16_t>::Element& s, const Modular<uint32_t>::Element& t) { return s = t; }
+	preimage(Modular<uint16_t>::Element& s, const Modular<uint32_t>::Element& t)
+	{
+		linbox_check(t < UINT8_MAX) ;
+	       	return s = (uint16_t) t;
+	}
 
 }// namespace LinBox
 #endif //__LINBOX_field_modular_H

@@ -47,8 +47,10 @@ AC_PROG_CC([gcc icc])
 AC_PROG_CXX([g++ icpc icc])
 
 if  test "x${CXX}" = "xicpc" -o "x${CXX}" = "xicc"  ; then
-	DEBUG_CFLAGS="${DEBUG_CFLAGS} -Wcheck"
+	DEBUG_CFLAGS="${DEBUG_CFLAGS} -Wbrief -Wpointer-arith -Wuninitialized"
+	# DEBUG_CFLAGS+="-Wcheck"
 	# DEFAULT_CFLAGS+="-fast"
+	#warning #2259: non-pointer conversion from "XXX" to "YYY" may lose significant bits -> -wd2259
 else
 	if test "x${CXX}" = "xg++"  ; then
 		DEBUG_CFLAGS="${DEBUG_CFLAGS} -Wextra -Wno-unused-parameter"

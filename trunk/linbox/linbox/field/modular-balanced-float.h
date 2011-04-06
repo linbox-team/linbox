@@ -19,6 +19,11 @@
 #ifndef __LINBOX_modular_balanced_float_H
 #define __LINBOX_modular_balanced_float_H
 
+#ifdef __INTEL_COMPILER
+#define FmodF fmodf
+#else
+#define FmodF fmod
+#endif
 
 #include "linbox/linbox-config.h"
 #include "linbox/integer.h"
@@ -63,34 +68,37 @@ namespace LinBox
 	/// \ingroup field
 	template <>
 	class ModularBalanced<float> : public FieldInterface {
+	private :
+
+	public :
+		typedef float Element;
 
 	protected:
 
-		float  modulus;
-		float half_mod;
-		float mhalf_mod;
+		Element  modulus;
+		Element half_mod;
+		Element mhalf_mod;
 		unsigned long   lmodulus;
 
 	public:
-		friend class FieldAXPY<ModularBalanced<float> >;
-		friend class DotProductDomain<ModularBalanced<float> >;
+		friend class FieldAXPY<ModularBalanced<Element> >;
+		friend class DotProductDomain<ModularBalanced<Element> >;
 		friend class MultiModFloat;
 
-		typedef float Element;
-		typedef ModularBalancedRandIter<float> RandIter;
-		typedef NonzeroRandIter<ModularBalanced<float>,ModularBalancedRandIter<float> > NonZeroRandIter;
+		typedef ModularBalancedRandIter<Element> RandIter;
+		typedef NonzeroRandIter<ModularBalanced<Element>,ModularBalancedRandIter<Element> > NonZeroRandIter;
 
-		static ClassifyRing <ModularBalanced<float> >::categoryTag
+		static ClassifyRing <ModularBalanced<Element> >::categoryTag
 		getCategory()
 		{
-			return ClassifyRing<ModularBalanced<float> >::categoryTag();
+			return ClassifyRing<ModularBalanced<Element> >::categoryTag();
 		}
 
 		ModularBalanced () {}
 
 		ModularBalanced (int32_t p, int exp = 1) :
-			modulus((float)p),
-			half_mod( (p-1.)/2),
+			modulus((Element)p),
+			half_mod( Element((p-1)/2)),
 			mhalf_mod( half_mod-p+1),
 			lmodulus (p)
 		{
@@ -102,15 +110,15 @@ namespace LinBox
 								__LINE__,
 								"exponent must be 1");
 			integer max;
-			if (modulus > (float) FieldTraits<ModularBalanced<float> >::maxModulus(max))
+			if (modulus > (Element) FieldTraits<ModularBalanced<Element> >::maxModulus(max))
 				throw PreconditionFailed (__func__,
 							  __LINE__,
 							  "modulus is too big");
 		}
 
-		ModularBalanced (float p) :
+		ModularBalanced (Element p) :
 			modulus (p),
-			half_mod ((p-1)/2),
+			half_mod( Element((p-1)/2)),
 			mhalf_mod( half_mod-p+1),
 			lmodulus ((unsigned long)p)
 		{
@@ -119,31 +127,31 @@ namespace LinBox
 							 __LINE__,
 							 "modulus must be > 1");
 			integer max;
-			if (modulus > (float) FieldTraits<ModularBalanced<float> >::maxModulus(max))
+			if (modulus > (Element) FieldTraits<ModularBalanced<Element> >::maxModulus(max))
 				throw PreconditionFailed (__func__,
 							  __LINE__,
 							  "modulus is too big");
 		}
 
 		ModularBalanced (long int p) :
-			modulus((float)p),
-			half_mod ((p-1)/2),
+			modulus((Element)p),
+			half_mod( Element((p-1)/2)),
 			mhalf_mod( half_mod-p+1),
 			lmodulus(p)
 		{
-			if ((float) modulus <= 1)
+			if ((Element) modulus <= 1)
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			integer max;
-			if ((float) modulus > (float) FieldTraits<ModularBalanced<float> >::maxModulus(max))
+			if ((Element) modulus > (Element) FieldTraits<ModularBalanced<Element> >::maxModulus(max))
 				throw PreconditionFailed (__func__,
 							  __LINE__,
 							  "modulus is too big");
 		}
 
 		ModularBalanced (const integer& p) :
-			modulus((float) p),
-			half_mod ((p-1)/2),
-			mhalf_mod( half_mod-(float)p+1),
+			modulus((Element) p),
+			half_mod( Element((p-1)/2)),
+			mhalf_mod( half_mod-(Element)p+1),
 			lmodulus(p)
 		{
 			if(modulus <= 1)
@@ -153,13 +161,13 @@ namespace LinBox
 
 		}
 
-		ModularBalanced (const ModularBalanced<float>& mf) :
+		ModularBalanced (const ModularBalanced<Element>& mf) :
 			modulus (mf.modulus),
 			half_mod (mf.half_mod),
 			mhalf_mod( mf.mhalf_mod),
 			lmodulus (mf.lmodulus) {}
 
-		const ModularBalanced &operator= (const ModularBalanced<float> &F) {
+		const ModularBalanced &operator= (const ModularBalanced<Element> &F) {
 			modulus = F.modulus;
 			half_mod = F.half_mod;
 			mhalf_mod = F.mhalf_mod;
@@ -188,7 +196,7 @@ namespace LinBox
 			else return x = integer (y);
 		}
 
-		inline float &convert (float &x, const Element& y) const
+		inline Element &convert (Element &x, const Element& y) const
 		{ return x=y; }
 
 		inline double &convert (double &x, const Element& y) const
@@ -197,7 +205,7 @@ namespace LinBox
 
 		std::ostream &write (std::ostream &os) const
 		{
-			return os << "balanced float mod " << int(modulus);
+			return os << "balanced Element mod " << int(modulus);
 		}
 
 		std::istream &read (std::istream &is) {
@@ -221,7 +229,7 @@ namespace LinBox
 		std::istream &read (std::istream &is, Element &x) const
 		{
 			integer tmp;
-			// JGD : should'nt it be float tmp ???
+			// JGD : should'nt it be Element tmp ???
 			is >> tmp;
 			init(x,tmp);
 			return is;
@@ -237,10 +245,10 @@ namespace LinBox
 			return x;
 		}
 
-		inline Element& init(Element& x, const float y =0) const
+		inline Element& init(Element& x, const Element y =0) const
 		{
 
-			x = fmod (y, modulus);
+			x = fmodf (y, modulus);
 			if (x > half_mod) return   x -= modulus;
 			else if (x < mhalf_mod) return x += modulus;
 			else return x;
@@ -330,7 +338,7 @@ namespace LinBox
 			}
 			if (tx > half_mod ) return x = tx - modulus;
 			if ( tx < mhalf_mod ) return x = tx + modulus;
-			return x = (float) tx;
+			return x = (Element) tx;
 		}
 
 		inline Element &axpy (Element &r,
@@ -402,7 +410,7 @@ namespace LinBox
 			return 0;
 		}
 
-		static inline float getMaxModulus()
+		static inline Element getMaxModulus()
 		{ return 2048.; } // 2^11
 
 	};
@@ -410,13 +418,12 @@ namespace LinBox
 	template <>
 	class FieldAXPY<ModularBalanced<float> > {
 	public:
-
 		typedef float Element;
-		typedef ModularBalanced<float> Field;
+		typedef ModularBalanced<Element> Field;
 
 		FieldAXPY (const Field &F) :
 			_F (F),
-			_y(0.) , _bound( (float) (((1ULL << 24) - (int) (_F.modulus*_F.modulus))))
+			_y(0.) , _bound( (Element) (((1ULL << 24) - (int) (_F.modulus*_F.modulus))))
 		{}
 
 		FieldAXPY (const FieldAXPY &faxpy) :
@@ -424,7 +431,7 @@ namespace LinBox
 			_y(faxpy._y), _bound(faxpy._bound)
 		{}
 
-		FieldAXPY<ModularBalanced<float> > &operator = (const FieldAXPY &faxpy) {
+		FieldAXPY<ModularBalanced<Element> > &operator = (const FieldAXPY &faxpy) {
 			_F = faxpy._F;
 			_y= faxpy._y;
 			_bound= faxpy._bound;
@@ -440,7 +447,7 @@ namespace LinBox
 		inline Element& accumulate (const Element &tmp) {
 			_y += tmp;
 			if (_y > _bound)
-				return _y = fmod (_y, _F.modulus);
+				return _y = fmodf (_y, _F.modulus);
 			else
 				return _y;
 		}
@@ -453,7 +460,7 @@ namespace LinBox
 		}
 
 		inline Element& get (Element &y) {
-			_y = fmod (_y, _F.modulus);
+			_y =  fmodf (_y, _F.modulus);
 			return y=_y ;
 		}
 
@@ -469,30 +476,26 @@ namespace LinBox
 		inline Element& set (const Element &tmp) {
 			_y = tmp;
 			if (_y > _bound)
-				return _y = fmod (_y, _F.modulus);
+				return _y =  fmodf (_y, _F.modulus);
 			else
 				return _y;
 		}
 
 	private:
 		Field _F;
-		float _y;
-		float _bound;
+		Element _y;
+		Element _bound;
 	};
 
 
 	template <>
 	class DotProductDomain<ModularBalanced<float> > : private virtual VectorDomainBase<ModularBalanced<float> > {
-	private:
-		float _bound;
-		size_t _nmax;
-
-	public:
+		public:
 		typedef float Element;
-		DotProductDomain (const ModularBalanced<float> &F) :
-			VectorDomainBase<ModularBalanced<float> > (F), _bound( (float) ( (1ULL<<24) - (int) (_F.modulus*_F.modulus)))
+		DotProductDomain (const ModularBalanced<Element> &F) :
+			VectorDomainBase<ModularBalanced<Element> > (F), _bound( (Element) ( (1ULL<<24) - (int) (_F.modulus*_F.modulus)))
 		{
-			_nmax= (size_t)floor((float(1<<11)* float(1<<11)*2.)/ (_F.modulus * _F.modulus));
+			_nmax= (size_t)floor((Element(1<<11)* Element(1<<11)*2.)/ (_F.modulus * _F.modulus));
 		}
 
 	protected:
@@ -500,25 +503,25 @@ namespace LinBox
 		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const
 		{
 
-			float y = 0.;
-			float t = 0.;
+			Element y = 0.;
+			Element t = 0.;
 			if (v1.size() < _nmax) {
 				for (size_t i = 0; i< v1.size();++i)
 					y += v1[i] * v2[i] ;
-				y = fmod(y, _F.modulus);
+				y =  fmodf(y, _F.modulus);
 			}
 			else{
 				size_t i=0;
 				for (;i< v1.size()- _nmax ;i=i+_nmax){
 					for (size_t j=i;j<i+_nmax;++j)
 						y += v1[j] * v2[j];
-					t+=fmod(y, _F.modulus);
+					t+= fmodf(y, _F.modulus);
 					y=0.;
 				}
 				for (;i < v1.size();++i)
 					y += v1[i] * v2[i];
-				t+=fmod(y, _F.modulus);
-				y = fmod(t, _F.modulus);
+				t+= fmodf(y, _F.modulus);
+				y = fmodf(t, _F.modulus);
 			}
 			return res = y;
 		}
@@ -527,35 +530,41 @@ namespace LinBox
 		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const
 		{
 
-			float y = 0.;
-			float t =0.;
+			Element y = 0.;
+			Element t =0.;
 
 
 			if (v1.first.size() < _nmax) {
 				for (size_t i=0;i<v1.first.size();++i)
 					y+= v1.second[i] * v2[v1.first[i]];
-				y = fmod(y, _F.modulus);
+				y = fmodf(y, _F.modulus);
 			}
 			else {
 				size_t i=0;
 				for (;i< v1.first.size()- _nmax ;i=i+_nmax){
 					for (size_t j=i;j<i+_nmax;++j)
 						y += v1.second[j] * v2[v1.first[j]];
-					t+=fmod(y, _F.modulus);
+					t+=fmodf(y, _F.modulus);
 					y=0.;
 				}
 				for (;i < v1.first.size();++i)
 					y += v1.second[i] * v2[v1.first[i]];
-				t+= fmod(y, _F.modulus);
-				y = fmod(t, _F.modulus);
+				t+= fmodf(y, _F.modulus);
+				y = fmodf(t, _F.modulus);
 			}
 			return res = y;
 		}
+	private:
+		Element _bound;
+		size_t _nmax;
+
 	};
 }
 
 #include "linbox/randiter/modular-balanced.h"
 #include "linbox/randiter/nonzero.h"
+
+#undef FmodF
 
 #endif //__LINBOX_modular_balanced_float_H
 

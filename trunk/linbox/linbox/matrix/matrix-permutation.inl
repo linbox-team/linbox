@@ -39,14 +39,14 @@ namespace LinBox
 {
 	template<class _Uint>
 	BlasPermutation<_Uint>::BlasPermutation() :
-	       	r_(0),n_(-1),P_(0),Q_(0),inv_(false)
+	       	r_(0),n_((_Uint)-1),P_(0),Q_(0),inv_(false)
 	{
 		std::cout << "NULL permutation created. Beware !" << std::endl;
 	};
 
 	template<class _Uint>
 	BlasPermutation<_Uint>::BlasPermutation(size_t n) :
-	       	r_(n),n_(-1),P_(n),Q_(0),inv_(false)
+	       	r_(n),n_((_Uint)-1),P_(n),Q_(0),inv_(false)
 	{ };
 
 
@@ -56,7 +56,7 @@ namespace LinBox
 	// n_ is not computed here.
 	template<class _Uint>
 	BlasPermutation<_Uint>::BlasPermutation(const _Uint *P, const _Uint & r ) :
-	       	r_(r), n_(-1),P_(0),Q_(0),inv_(false)
+	       	r_(r), n_((_Uint)-1),P_(0),Q_(0),inv_(false)
 	{
 		// std::cout << "CTOR 2" << std::endl;
 		// std::cout << "got : perm of " << r << std::endl;
@@ -82,7 +82,7 @@ namespace LinBox
 	// n_ is not computed here.
 	template<class _Uint>
 	BlasPermutation<_Uint>::BlasPermutation(const std::vector<_Uint> & P) :
-	       	r_(P.size()), n_(-1),P_(0),Q_(0),inv_(false)
+	       	r_(P.size()), n_((_Uint)-1),P_(0),Q_(0),inv_(false)
 	{
 		if ( !r_ )  {
 			// n_ = 0 ;
@@ -96,7 +96,7 @@ namespace LinBox
 	// n_ is not computed here.
 	template<class _Uint>
 	BlasPermutation<_Uint>::BlasPermutation(const MatrixPermutation<_Uint> & P) :
-	       	r_(P.getSize()), n_(/*P.getSize()*/-1),P_(P.getSize()),Q_(P),inv_(false)
+	       	r_(P.getSize()), n_((_Uint)/*P.getSize()*/-1),P_(P.getSize()),Q_(P),inv_(false)
 	{
 		if ( !r_ ) {
 			return ;
@@ -136,7 +136,7 @@ namespace LinBox
 	void BlasPermutation<_Uint>::setOrder( size_t r)
 	{
 		r_ = r  ;
-		n_ = -1 ;
+		n_ = (_Uint) -1 ;
 	}
 
 

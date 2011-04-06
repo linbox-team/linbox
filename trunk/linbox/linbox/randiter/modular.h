@@ -235,9 +235,14 @@ namespace LinBox
 
 		~RandIter () {}
 		RandIter &operator= (const RandIter &r)
-		{ _r = r._r; return *this; }
+		{
+			_r = r._r;
+			return *this;
+	       	}
 		Element &random (Element &a) const
-		{ return a = _r.randomIntRange (0, _size); }
+		{
+			return a = (Element)_r.randomIntRange (0, _size);
+		}
 		ElementAbstract &random (ElementAbstract &a)  const
 		{ return a = ElementEnvelope <Modular<Element> >
 			(_r.randomIntRange (0, _size)); }

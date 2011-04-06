@@ -86,15 +86,16 @@ namespace LinBox
 	 */
 	template <>
 	class Modular<int8_t> : public FieldInterface {
+	public:
+		typedef int8_t Element;
 	protected:
-		int8_t modulus;
+		Element modulus;
 		double modulusinv;
 	public:
-		friend class FieldAXPY<Modular<int8_t> >;
-		friend class DotProductDomain<Modular<int8_t> >;
-		friend class MVProductDomain<Modular<int8_t> >;
+		friend class FieldAXPY<Modular<Element> >;
+		friend class DotProductDomain<Modular<Element> >;
+		friend class MVProductDomain<Modular<Element> >;
 
-		typedef int8_t Element;
 		typedef ModularRandIter<Element> RandIter;
 
 		//default modular field,taking 65521 as default modulus
@@ -109,14 +110,14 @@ namespace LinBox
 			if(exp != 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
 			if(value <= 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			integer max;
-			if(value > FieldTraits< Modular<int8_t> >::maxModulus(max)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
+			if(value > FieldTraits< Modular<Element> >::maxModulus(max)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 		}
 
-		Modular(const Modular<int8_t>& mf) :
+		Modular(const Modular<Element>& mf) :
 			modulus(mf.modulus),modulusinv(mf.modulusinv)
 		{}
 
-		Modular &operator=(const Modular<int8_t> &F) {
+		Modular &operator=(const Modular<Element> &F) {
 			modulus = F.modulus;
 			modulusinv = F.modulusinv;
 			return *this;
@@ -139,7 +140,7 @@ namespace LinBox
 
 		inline std::ostream &write (std::ostream &os) const
 		{
-			return os << "int8_t mod " << (int)modulus;
+			return os << "Element mod " << (int)modulus;
 		}
 
 		inline std::istream &read (std::istream &is) {
@@ -149,7 +150,7 @@ namespace LinBox
 			modulusinv = 1 /((double) modulus );
 			if(prime <= 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			integer max;
-			if(prime > FieldTraits< Modular<int8_t> >::maxModulus(max)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
+			if(prime > FieldTraits< Modular<Element> >::maxModulus(max)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 
 			return is;
 		}
@@ -169,7 +170,7 @@ namespace LinBox
 
 
 		inline Element &init (Element &x, const integer &y) const  {
-			x =(int8_t)((int16_t) (y % (long) (modulus)));
+			x =(Element)((int16_t) (y % (long) (modulus)));
 			if (x < 0) x += modulus;
 			return x;
 		}
@@ -212,7 +213,8 @@ namespace LinBox
 		inline Element &add (Element &x, const Element &y, const Element &z) const
 		{
 			x = y + z;
-			if ( (uint8_t)x >= modulus ) x =( (uint8_t)x )- modulus;
+			if ( (uint8_t)x >= modulus )
+				x =Element(( (uint8_t)x )- modulus);
 			return x;
 		}
 
@@ -290,7 +292,8 @@ namespace LinBox
 		inline Element &addin (Element &x, const Element &y) const
 		{
 			x += y;
-			if ( ((uint8_t) x) >= modulus ) x = ((uint8_t) x)-modulus;
+			if ( ((uint8_t) x) >= modulus )
+				x = Element( ((uint8_t) x)-modulus );
 			return x;
 		}
 
@@ -341,15 +344,16 @@ namespace LinBox
 			return r;
 		}
 
-		static inline int8_t getMaxModulus() { return 127; } // 2^7-1
+		static inline Element getMaxModulus() { return 127; } // 2^7-1
 
 
 	private:
 
-		static void XGCD(int8_t& d, int8_t& s, int8_t& t, int8_t a, int8_t b) {
-			int8_t  u, v, u0, v0, u1, v1, u2, v2, q, r;
+		static void XGCD(Element& d, Element& s, Element& t, Element a, Element b)
+		{
+			Element  u, v, u0, v0, u1, v1, u2, v2, q, r;
 
-			int8_t aneg = 0, bneg = 0;
+			Element aneg = 0, bneg = 0;
 
 			if (a < 0) {
 				if (a < -LINBOX_MAX_INT8) throw PreconditionFailed(__func__,__FILE__,__LINE__,"XGCD: integer overflow");

@@ -18,6 +18,13 @@
 #ifndef __LINBOX_modular_float_H
 #define __LINBOX_modular_float_H
 
+#ifdef __INTEL_COMPILER
+#define FmodF fmodf
+#else
+#define FmodF fmod
+#endif
+
+
 
 #include "linbox/linbox-config.h"
 #include "linbox/integer.h"
@@ -217,7 +224,7 @@ namespace LinBox
 			//Some odds donot support it. It is in C99.
 			//tmp = round (y);
 
-			x = fmod (y, modulus);
+			x = fmodf (y, modulus);
 
 			/*
 			   if (tmp > modulus)
@@ -242,7 +249,7 @@ namespace LinBox
 		inline Element& init(Element& x, double y) const
 		{
 
-			x = fmod (y, double(modulus));
+			x = (Element) fmod (y, double(modulus));
 
 			if (x < 0) x += modulus;
 			return x;
@@ -251,7 +258,7 @@ namespace LinBox
 		inline Element& init(Element& x, unsigned long y) const
 		{
 
-			x = fmod (float(y), modulus);
+			x = fmodf (float(y), modulus);
 
 			if (x < 0) x += modulus;
 			return x;
@@ -259,7 +266,7 @@ namespace LinBox
 		inline Element& init(Element& x, int y) const
 		{
 
-			x = fmod (float(y), modulus);
+			x = fmodf (float(y), modulus);
 
 			if (x < 0) x += modulus;
 			return x;
@@ -305,7 +312,7 @@ namespace LinBox
 		inline Element &mul (Element &x, const Element &y, const Element &z) const
 		{
 			float tmp= y*z;
-			x= fmod(tmp, modulus);
+			x= fmodf(tmp, modulus);
 			//x= tmp - floor(tmp*inv_modulus)*modulus;
 
 			return x;
@@ -359,7 +366,7 @@ namespace LinBox
 				      const Element &y) const
 		{
 			float tmp = a * x + y;
-			return r= fmod(tmp, modulus);
+			return r= fmodf(tmp, modulus);
 			//return r= tmp- floor(tmp*inv_modulus)*modulus;
 
 		}
@@ -402,7 +409,7 @@ namespace LinBox
 		inline Element &axpyin (Element &r, const Element &a, const Element &x) const
 		{
 			float tmp = r + a * x;
-			return r = fmod(tmp, modulus);
+			return r = fmodf(tmp, modulus);
 
 			//return r= tmp- floor(tmp*inv_modulus)*modulus;
 		}
@@ -467,14 +474,14 @@ namespace LinBox
 		{
 			_y += tmp;
 			if (_y > _bound)
-				return _y = fmod (_y, _F.modulus);
+				return _y = fmodf (_y, _F.modulus);
 			else
 				return _y;
 		}
 
 		inline Element& get (Element &y)
 		{
-			_y = fmod (_y, _F.modulus);
+			_y = fmodf (_y, _F.modulus);
 			return y=_y ;
 		}
 
@@ -526,7 +533,7 @@ namespace LinBox
 			{
 				for (size_t i = 0; i< v1.size();++i)
 					y += v1[i] * v2[i] ;
-				y = fmod(y, _F.modulus);
+				y = fmodf(y, _F.modulus);
 			}
 			else
 			{
@@ -535,13 +542,13 @@ namespace LinBox
 				{
 					for (size_t j=i;j<i+_nmax;++j)
 						y += v1[j] * v2[j];
-					t+=fmod(y, _F.modulus);
+					t+=fmodf(y, _F.modulus);
 					y=0.;
 				}
 				for (;i < v1.size();++i)
 					y += v1[i] * v2[i];
-				t+=fmod(y, _F.modulus);
-				y = fmod(t, _F.modulus);
+				t+=fmodf(y, _F.modulus);
+				y = fmodf(t, _F.modulus);
 			}
 			return res = y;
 		}
@@ -558,7 +565,7 @@ namespace LinBox
 			{
 				for (size_t i=0;i<v1.first.size();++i)
 					y+= v1.second[i] * v2[v1.first[i]];
-				y = fmod(y, _F.modulus);
+				y = fmodf(y, _F.modulus);
 			}
 			else
 			{
@@ -567,13 +574,13 @@ namespace LinBox
 				{
 					for (size_t j=i;j<i+_nmax;++j)
 						y += v1.second[j] * v2[v1.first[j]];
-					t+=fmod(y, _F.modulus);
+					t+=fmodf(y, _F.modulus);
 					y=0.;
 				}
 				for (;i < v1.first.size();++i)
 					y += v1.second[i] * v2[v1.first[i]];
-				t+= fmod(y, _F.modulus);
-				y = fmod(t, _F.modulus);
+				t+= fmodf(y, _F.modulus);
+				y = fmodf(t, _F.modulus);
 			}
 			return res = y;
 		}
@@ -581,6 +588,8 @@ namespace LinBox
 }
 
 #include "linbox/randiter/modular.h"
+
+#undef FmodF
 
 #endif //__LINBOX_modular_float_H
 
