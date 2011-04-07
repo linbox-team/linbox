@@ -167,6 +167,8 @@ LB_MISC
 LB_DRIVER
 
 AC_LANG_CPLUSPLUS
+
+
 LB_CHECK_GMP(,,[
 echo '*******************************************************************************'
 echo ' ERROR: GMP not found!'
@@ -177,6 +179,8 @@ echo ' --with-gmp=<prefix> when running configure.'
 echo '*******************************************************************************'
 exit 1
 ])
+
+LB_CHECK_IML
 
 LB_CHECK_NTL
 LB_CHECK_GIVARO(,,[
