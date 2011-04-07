@@ -14,4 +14,5 @@ EXTRA_DIST=\
 	expat-check.m4		\
 	config-header.m4	\
 	linbox-misc.m4		\
+	iml-check.m4        \
 	maple-check-version.mpl
