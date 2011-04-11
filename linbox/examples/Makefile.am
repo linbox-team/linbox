@@ -3,7 +3,7 @@
 # see COPYING for licence
 
 #INCLUDES=-I$(top_srcdir)
-INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/linbox
+AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox
 
 #if LinBoxSrcOnly
 #AM_CPPFLAGS=-g -DLinBoxSrcOnly $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
@@ -18,7 +18,7 @@ INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/linbox
 
 # AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly -DDEBUG -O0
 AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DLinBoxSrcOnly
-AM_CPPFLAGS= $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
+AM_CPPFLAGS += $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
 #LDADD = $(NTL_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) $(GMP_LIBS)  "-Wl,-enable-auto-import"
 LDADD = $(NTL_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) $(GMP_LIBS)
 #  AM_LDFLAGS=-static
@@ -67,8 +67,8 @@ LINBOX_BIN=@bindir@
 
 
 # for compilation of new examples
-.C:
-	$(CXX) $(SAFER_FLAGS) -O2 $(CXXFLAGS) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $@ $(LDFLAGS) $(LDADD) $(LOADLIBES) $(top_srcdir)/linbox/.libs/liblinbox.a
+%:%.C
+	$(CXX) $(CXXFLAGS) $(AM_CXXFLAGS) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $@ $(LDFLAGS) $(LDADD) $(LOADLIBES) $(top_srcdir)/linbox/.libs/liblinbox.a
 
-.cpp:
-	$(CXX) $(SAFER_FLAGS) $(CXXFLAGS) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.cpp -o $@ $(LDFLAGS) $(LDADD) $(LOADLIBES) $(top_srcdir)/linbox/.libs/liblinbox.a
+%:%.cpp
+	$(CXX)  $(CXXFLAGS) $(AM_CXXFLAGS) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.cpp -o $@ $(LDFLAGS) $(LDADD) $(LOADLIBES) $(top_srcdir)/linbox/.libs/liblinbox.a

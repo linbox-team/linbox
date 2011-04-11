@@ -34,15 +34,20 @@ AC_ARG_WITH(givaro,
 	     fi],
 	     [GIVARO_HOME_PATH="${DEFAULT_CHECKING_PATH}"])
 
-min_givaro_version=ifelse([$1], ,3.3.0,$1)
+dnl -------------- dnl
+dnl GIVARO VERSION dnl
+dnl -------------- dnl
 
+version_min=30305
+min_givaro_version=ifelse([$1], ,3.3.5,$1)
+max_givaro_version=ifelse([$2], ,3.4.0,$2)
 
 dnl Check for existence
 
 BACKUP_CXXFLAGS=${CXXFLAGS}
 BACKUP_LIBS=${LIBS}
 
-AC_MSG_CHECKING(for GIVARO >= $min_givaro_version)
+AC_MSG_CHECKING(for GIVARO >= $min_givaro_version and < $max_givaro_version)
 
 for GIVARO_HOME in ${GIVARO_HOME_PATH}
  do
@@ -64,7 +69,7 @@ if test -r "$GIVARO_HOME/include/givaro/givconfig.h"; then
 	[
 	AC_TRY_RUN(
 	[#include <givaro/givconfig.h>
-	 int main () { if (GIVARO_VERSION < 30300 || GIVARO_VERSION>0x030000) return -1; else return 0; /* old version of Givaro are defined as hexa 0x03yyzz*/ }
+	 int main () { if (GIVARO_VERSION < $version_min || GIVARO_VERSION >= (($version_min/100+1)*100) || GIVARO_VERSION>0x030000) return -1; else return 0; /* old version of Givaro are defined as hexa 0x03yyzz*/ }
 	],[
 	givaro_found="yes"
 	break
