@@ -6,7 +6,7 @@ AC_PREREQ(2.61)
 AC_INIT([LinBox], [1.1.7],[linbox-use@googlegroups.com],[linbox],
 		[http://www.linalg.org/]) 
 AC_CONFIG_MACRO_DIR([macros])
-AM_INIT_AUTOMAKE([1.8 gnu no-dependencies])
+AM_INIT_AUTOMAKE([1.8 gnu no-dependencies -Wall -Wno-portability])
 AM_CONFIG_HEADER([config.h])
 AX_PREFIX_CONFIG_H(linbox/linbox-config.h, __LINBOX)
 AC_PATH_PROG(RM, rm, $FALSE)
@@ -187,7 +187,7 @@ LB_CHECK_GIVARO(,,[
 echo '*******************************************************************************'
 echo ' ERROR: GIVARO not found!'
 echo
-echo ' GIVARO version 3.3.4 or greater is required for this library to compile.'
+echo ' GIVARO version 3.3.5 or greater (<3.4) is required for this library to compile.'
 echo ' Please make sure GIVARO is installed and specify its location with the'
 echo ' option --with-givaro=<prefix> when running configure.'
 echo '*******************************************************************************'
