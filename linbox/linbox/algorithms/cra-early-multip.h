@@ -190,6 +190,8 @@ namespace LinBox
 
 	protected:
 
+		/*! @bug why a dot product here ?
+		 */
 		template <template<class T> class Vect1, class Vect2>
 		Integer& dot (Integer& z, const Integer& D, const Vect1<Integer>& v1, const Vect2& v2)
 		{
@@ -202,6 +204,8 @@ namespace LinBox
 			return z;
 		}
 
+		/*! @bug why a dot product here ?
+		 */
 		template <template <class> class Alloc, template<class, class> class Vect1, class Vect2>
 		DomainElement& dot (DomainElement& z, const Domain& D,
 				    const Vect1<DomainElement, Alloc<DomainElement> >& v1,
