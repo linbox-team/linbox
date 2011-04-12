@@ -126,14 +126,14 @@ namespace LinBox
 	}
 
 	template<bool Unsigned>
-	template<typename Iteration>
+	template<typename Function>
 	void
-	RNS<Unsigned>::cra(Ivect & result, Iteration & iter)
+	RNS<Unsigned>::cra(Ivect & result, Function & unitCRA)
 	{
 		std::vector<std::vector<double> > residues(_size_);
 		for (size_t i = 0 ; i < _size_ ; ++i) {
 			residues[i].resize(result.size());
-			iter(residues[i],_PrimeDoms_[i]);
+			unitCRA(residues[i],_PrimeDoms_[i]); // creates residue list
 		}
 
 		for (size_t i = 0 ; i < result.size() ; ++i) {
@@ -255,14 +255,14 @@ namespace LinBox
 	}
 
 	template<bool Unsigned>
-	template<class Iteration>
+	template<class Function>
 	void
-	RNSfixed<Unsigned>::cra(Ivect & result, Iteration & iter)
+	RNSfixed<Unsigned>::cra(Ivect & result, Function & unitCRA)
 	{
 		std::vector<std::vector<double> > residues(_size_);
 		for (size_t i = 0 ; i < _size_ ; ++i) {
 			residues[i].resize(result.size());
-			iter(residues[i],Modular<double>(_Primes_[i]));
+			unitCRA(residues[i],Modular<double>(_Primes_[i]));
 		}
 
 		for (size_t i = 0 ; i < result.size() ; ++i) {
