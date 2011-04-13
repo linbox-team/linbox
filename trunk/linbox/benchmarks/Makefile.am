@@ -45,7 +45,10 @@ benchmarks: ${EXTRA_PROGRAMS}
 
 benchmark_fgemm_SOURCES          = benchmark-fgemm.C
 benchmark_ftrXm_SOURCES          = benchmark-ftrXm.C
+
 benchmark_crafixed_SOURCES       = benchmark-crafixed.C
+benchmark_crafixed_CPPFLAGS      = $(IML_CFLAGS) $(AM_CPPFLAGS)
+benchmark_crafixed_LDADD         = $(IML_LIBS) $(LDADD)
 #  benchmark_matmul_SOURCES         = benchmark-matmul.C
 #  benchmark_spmv_SOURCES           = benchmark-spmv.C
 #  benchmark_fields_SOURCES         = benchmark-fields.C

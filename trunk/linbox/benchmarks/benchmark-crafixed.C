@@ -47,26 +47,27 @@
 #include "linbox/algorithms/blas-domain.h"
 #include "linbox/algorithms/rns.h"
 
+#include <linbox/algorithms/cra-domain.h>
+#include "linbox/algorithms/cra-early-multip.h"
 
-// #define _LB_LOG2 0.6931471807
-#define _LB_LOG2 0.30102999566398119521
+#ifdef __LINBOX_HAVE_IML
+#include "linbox/util/iml_wrapper.h"
+#endif
 
+#define _LB_LOG2 0.69314718055994530941
+// #define _LB_LOG2 0.30102999566398119521
 
 // typedef std::vector<LinBox::integer> Ivect ;
 // typedef std::vector<double>          Fvect ;
 
 struct ReductVect {
 	std::vector<Integer>              & _v ;
-	// Fvect                             & _w ;
-	mutable std::vector<double>         _r ;
 
 	ReductVect(std::vector<Integer> &v) :
 		_v(v)
-   	{
-		_r.resize(v.size());
-	} ;
+   	{ } ;
 
-	template<class Field>
+	template<typename Field>
 	std::vector<typename Field::Element> &
 	operator()(std::vector<typename Field::Element> & r, const Field & F) const
 	{
@@ -74,48 +75,51 @@ struct ReductVect {
 		typedef std::vector<Element>               Fvect;
 		typedef typename Fvect::iterator            Iter;
 
-
 		//! @todo LinBox hom or magic here ?
 		std::vector<Integer>::iterator j = _v.begin();
 
-		for (Iter i = r.begin() ; i != r.end() ; ++i,++j) {
+		for (Iter i =  r.begin() ; i !=  r.end() ; ++i,++j) {
 			F.init(*i,*j);
 		}
 		return r ;
 	}
 
-#if 0
-	template<class Field>
-	std::vector<typename Field::Element>::iterator &
-	operator()(std::vector<typename Field::Element>::iterator & r, const Field & F) const
+};
+
+struct ReductVectIterator ;
+namespace LinBox
+{
+	template<class Element> struct CRATemporaryVectorTrait<ReductVectIterator ,Element> {
+		typedef typename std::vector<double>::iterator Type_t;
+	};
+}
+
+struct ReductVectIterator  {
+	std::vector<Integer>              & _v ;
+	mutable std::vector<double>         _r ;
+
+	ReductVectIterator(std::vector<Integer> &v) :
+		_v(v)
+   	{
+		_r.resize(v.size());
+	} ;
+
+	template<typename Iterator, typename Field>
+	Iterator &
+	operator()(Iterator & r, const Field & F) const
 	{
 		typedef typename Field::Element          Element;
 		typedef std::vector<Element>               Fvect;
 		typedef typename Fvect::iterator            Iter;
 
-		Fvect  _r (_v.size()) ;
 		//! @todo LinBox hom or magic here ?
 		std::vector<Integer>::iterator j = _v.begin();
-		for (Iter i = _r.begin() ; i != _r.end() ; ++i,++j) {
+		for (std::vector<double>::iterator i = _r.begin() ; i != _r.end() ; ++i,++j) {
 			F.init(*i,*j);
 		}
-		return r=_r.begin() ;
+		return r= _r.begin() ;
 	}
 
-#endif
-	std::vector<double>::iterator &
-	operator()(std::vector<double>::iterator & r, const LinBox::Modular<double> & F) const
-	{
-		// std::vector<double>  _r (_v.size()) ;
-		//! @todo LinBox hom or magic here ?
-		std::vector<Integer>::iterator j = _v.begin();
-		typedef std::vector<double>::iterator Iter ;
-		for (Iter i = _r.begin() ; i != _r.end() ; ++i,++j) {
-			F.init(*i,*j);
-		}
-		// std::cout << _r << std::endl;
-		return r=_r.begin() ;
-	}
 
 };
 
@@ -133,12 +137,6 @@ struct ReductPoint {
 	}
 };
 
-namespace LinBox
-{
-	template<class Element> struct CRATemporaryVectorTrait<ReductVect ,Element> {
-		typedef typename std::vector<double>::iterator Type_t;
-	};
-}
 
 
 /*! Bench CRA.
@@ -162,7 +160,7 @@ int bench_cra(int n, int m, unsigned int l
 		size_t PrimeSize = 22;
 		double logV = l*_LB_LOG2 ;
 		if (!Unsigned) logV += _LB_LOG2 ;
-		// std::cout << logV << std::endl;
+		std::cout << "size to reconstruct : " << logV << std::endl;
 		LinBox::RandomPrimeIterator genprime( PrimeSize );
 		for (size_t i = 0 ; i < (size_t) m ; ++i) { // repeat m times
 			// create the vector to reconstruct
@@ -170,8 +168,16 @@ int bench_cra(int n, int m, unsigned int l
 			for (Ivect::iterator it = V.begin() ; it != V.end() ; ++it) {
 				Integer::random_lessthan<Unsigned>(*it,l) ;
 			}
+#ifdef _LB_DEBUG
+			for (Ivect::iterator it = V.begin() ; it != V.end() ; ++it) {
+				if (naturallog(*it) > logV) {
+					std::cout << *it << " too big (" << naturallog(*it) << ")" << std::endl;
+				}
+			}
+#endif
+
 			LinBox::ChineseRemainder<  CRAbase >  cra( std::pair<size_t,double>(n, logV) );
-			ReductVect iteration(V);
+			ReductVectIterator iteration(V);
 			chrono.clear(); chrono.start();
 			Ivect::iterator Rit = R.begin();
 			cra(Rit, iteration, genprime);
@@ -181,13 +187,43 @@ int bench_cra(int n, int m, unsigned int l
 				std::cerr << "*** LinBox CRA failed " << (Unsigned?"positive":"general") << " ***" << std::endl;
 				std::cerr << R << std::endl << "expecting " << std::endl << V << std::endl;
 			}
-			else
-				std::cerr << "ok" << std::endl;
+			// else
+			// std::cerr << "ok" << std::endl;
 		}
 		std::cout << "LinBox CRA :" << tim << std::endl;
 	}
 
-	{/*  do givaro crt */
+	{ /* LinBox Early CRA */
+		tim.clear();
+		typedef LinBox::Modular<double> ModularField ;
+		typedef LinBox::EarlyMultipCRA< ModularField > CRAbase ;
+		size_t PrimeSize = 22;
+		LinBox::RandomPrimeIterator genprime( PrimeSize );
+		for (size_t i = 0 ; i < (size_t) m ; ++i) { // repeat m times
+			// create the vector to reconstruct
+			Ivect V(n),R(n) ;
+			for (Ivect::iterator it = V.begin() ; it != V.end() ; ++it) {
+				Integer::random_lessthan<Unsigned>(*it,l) ;
+			}
+
+			LinBox::ChineseRemainder<  CRAbase >  cra (4);
+			ReductVect iteration(V);
+			chrono.clear(); chrono.start();
+			// Ivect::iterator Rit = R.begin();
+			cra(R, iteration, genprime);
+			chrono.stop();
+			tim += chrono ;
+			if (!std::equal(R.begin(),R.end(),V.begin())) {
+				std::cerr << "*** LinBox early CRA failed " << (Unsigned?"positive":"general") << " ***" << std::endl;
+				std::cerr << R << std::endl << "expecting " << std::endl << V << std::endl;
+			}
+			// else
+			// std::cerr << "ok" << std::endl;
+		}
+		std::cout << "LinBox early CRA :" << tim << std::endl;
+	}
+
+	{ /*  do givaro crt */
 		// Init RNS
 		typedef LinBox::Modular<double> ModularField ;
 		tim.clear();
@@ -210,14 +246,14 @@ int bench_cra(int n, int m, unsigned int l
 				std::cerr << "*** Givaro CRT failed " << (Unsigned?"positive":"general") << "***" << std::endl;
 				std::cerr << R << std::endl << "expecting " << std::endl << V << std::endl;
 			}
-else
-				std::cerr << "ok" << std::endl;
+			// else
+			// std::cerr << "ok" << std::endl;
 
 		}
 		std::cout << "GivCRT :" << tim << std::endl;
 	}
 
-	{/*  do givaro fixed  */
+	{ /*  do givaro fixed  */
 		// Init RNS
 		typedef LinBox::Modular<double> ModularField ;
 		tim.clear();
@@ -240,17 +276,82 @@ else
 				std::cerr << "*** givaro fixed failed " << (Unsigned?"positive":"general") << "***" << std::endl;
 				std::cerr << R << std::endl << "expecting " << std::endl << V << std::endl;
 			}
-			else
-				std::cerr << "ok" << std::endl;
+			// else
+			// std::cerr << "ok" << std::endl;
 
 		}
 		std::cout << "Giv CRT Fixed :" << tim << std::endl;
 	}
 
-	/*  do iml cra/mixed */
-	// Init RNS
-	for (size_t i = 0 ; i < (size_t) m ; ++i) { // repeat m times
+#if 1 /*  IML */
+#ifdef __LINBOX_HAVE_IML
+	{ /*  do iml cra */
+		typedef LinBox::Modular<double> ModularField ;
+		tim.clear();
+
+		/* Init RNS */
+		chrono.clear() ; chrono.start() ;
+		long basislen = 0 ;
+		IML::Double primesize;
+		Integer product ;
+		primesize = pow(2,22);
+		product = pow((Integer)2,l);
+		// mpz_init(maxi); mpz_init(mp_maxInter);
+		// comment les trouver ?
+
+		IML::FiniteField ** RNS = IML::findRNS(primesize,product.get_mpz(),&basislen);
+		IML::FiniteField * liftbasis = RNS[0] ; // findLiftbasisSmall(n, maxi, &basislen);
+		IML::FiniteField * cmbasis   = RNS[1] ; // combBasis(basislen,basis);
+		mpz_t mp_prod ;
+		IML::FiniteField * bdcoeffs = NULL ;
+		IML::Double * Vp = IML_XMALLOC(IML::Double,n*basislen);
+		if (!Unsigned) {
+			mpz_init(mp_prod);
+			IML::basisProd(basislen,liftbasis,mp_prod);
+			bdcoeffs =  IML::repBound(basislen, liftbasis, cmbasis) ;
+		}
+		chrono.stop();
+		tim += chrono;
+
+		/*  loop m times */
+		for (size_t i = 0 ; i < (size_t) m ; ++i) { // repeat m times
+			/*  init result */
+			Ivect V(n),R(n) ;
+			for (Ivect::iterator it = V.begin() ; it != V.end() ; ++it) {
+				Integer::random_lessthan<Unsigned>(*it,l) ;
+			}
+			ReductVect iteration(V);
+			for (size_t j = 0 ; j < (size_t)basislen ; ++j) {
+				std::vector<double> G ;
+				iteration(G,ModularField((Integer)liftbasis[j]));
+				for (size_t k = 0 ; k < (size_t)n ; ++k)
+					Vp[j+k*basislen] = G[k] ;
+			}
+
+			/*  CRA */
+
+			// fooooooooooooooor
+			if (!Unsigned) {
+				for (size_t j = 0 ; j < (size_t)n ; ++j)
+					IML::ChineseRemainderPos(basislen, liftbasis, cmbasis, Vp+j, R[j].get_mpz());
+			}
+			else {
+				for (size_t j = 0 ; j < (size_t)n ; ++j)
+					IML::ChineseRemainder(basislen, mp_prod, liftbasis, cmbasis, bdcoeffs, Vp+j, R[j].get_mpz()) ;
+
+			}
+			IML_XFREE(cmbasis);
+			IML_XFREE(liftbasis);
+			if (!Unsigned) {
+				mpz_clear(mp_prod);
+				IML_XFREE(bdcoeffs);
+			}
+			/*  END */
+		}
 	}
+#endif // __LINBOX_HAVE_IML
+#endif
+
 	/*  do ntl cra */
 	// Init primes
 	for (size_t i = 0 ; i < (size_t) m ; ++i) { // repeat m times
