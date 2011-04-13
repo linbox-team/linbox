@@ -38,9 +38,9 @@ dnl -------------- dnl
 dnl GIVARO VERSION dnl
 dnl -------------- dnl
 
-version_min=30305
-min_givaro_version=ifelse([$1], ,3.3.5,$1)
-max_givaro_version=ifelse([$2], ,3.4.0,$2)
+version_min=30400
+min_givaro_version=ifelse([$1], ,3.4.0,$1)
+max_givaro_version=ifelse([$2], ,3.5.0,$2)
 
 dnl Check for existence
 
@@ -65,7 +65,7 @@ if test -r "$GIVARO_HOME/include/givaro/givconfig.h"; then
 
 	AC_TRY_LINK(
 	[#include <givaro/givinteger.h>],
-	[Integer a;],
+	[Givaro::Integer a;],
 	[
 	AC_TRY_RUN(
 	[#include <givaro/givconfig.h>

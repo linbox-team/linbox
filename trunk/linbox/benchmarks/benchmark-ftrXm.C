@@ -53,6 +53,8 @@
 #define _LB_TSUP   true
 #define _LB_TLOW   false
 
+using LinBox::Timer ;
+
 /* ********************** */
 /*        Outils          */
 /* ********************** */

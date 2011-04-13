@@ -40,22 +40,22 @@ namespace LinBox
 	 * @bib
 	 */
 	template<class Domain_Type>
-	struct GivaroRnsFixedCRA : public RNSsystemFixed<Integer> {
-		typedef Domain_Type			Domain;
-		typedef typename Domain::Element DomainElement;
+	struct GivaroRnsFixedCRA : public Givaro::RNSsystemFixed<integer> {
+		typedef Domain_Type			                      Domain;
+		typedef typename Domain::Element           DomainElement;
 
-		typedef RNSsystemFixed<Integer>			Father_t;
-		typedef GivaroRnsFixedCRA<Domain> 		Self_t;
+		typedef Givaro::RNSsystemFixed<integer>			Father_t;
+		typedef GivaroRnsFixedCRA<Domain> 		          Self_t;
 
 		const size_t				nbloops;
 		size_t					iterationnumber;
 
-		std::vector< std::vector< Integer > > 	residues;
-		Integer _product;
-		Integer _midprod;
+		std::vector< std::vector< integer > > 	residues;
+		integer _product;
+		integer _midprod;
 
 	public:
-		GivaroRnsFixedCRA(const std::vector<Integer>& primes)
+		GivaroRnsFixedCRA(const std::vector<integer>& primes)
 				: Father_t(primes),
 				  nbloops(primes.size()),
 				  iterationnumber(0),
@@ -63,7 +63,7 @@ namespace LinBox
 		{
 			for(size_t i=0; i<primes.size(); ++i)
 				_product *= primes[i];
-			Integer::div(_midprod,_product,2);
+			Givaro::Integer::div(_midprod,_product,2);
 		}
 
 		Integer& getModulus(Integer& m)

@@ -1038,7 +1038,7 @@ namespace LinBox
 			// find a pseudo nth primitive root of unity
 			for (;;) {
 				// compute the nth primitive root
-				w=  (long) ::powmod(_gen, _pl>>lpts, _p);
+				w=  (long) Givaro::powmod(_gen, _pl>>lpts, _p);
 				if ((w !=1) && (w != _pl-1))
 					break;
 
@@ -1255,7 +1255,7 @@ namespace LinBox
 			for (;;) {
 
 				// compute the nth primitive root
-				w=  (long) ::powmod(_gen, _pl>>lpts, _p);
+				w=  (long) Givaro::powmod(_gen, _pl>>lpts, _p);
 				//std::cout<<w<<" : "<<_gen<<"\n"<<(_pl>>lpts)<<"\n";
 
 				if ((w !=1) && (w != _pl-1))
@@ -1410,7 +1410,7 @@ namespace LinBox
 			for (;;) {
 
 				// compute the nth primitive root
-				w=  (long) ::powmod(_gen, _pl>>lpts, _p);
+				w=  (long) Givaro::powmod(_gen, _pl>>lpts, _p);
 				//std::cout<<w<<" : "<<_gen<<"\n"<<(_pl>>lpts)<<"\n";
 
 				if ((w !=1) && (w != _pl-1))

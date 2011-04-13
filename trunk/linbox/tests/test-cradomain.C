@@ -35,17 +35,20 @@
 #include "linbox/algorithms/cra-full-multip-fixed.h"
 #include "linbox/algorithms/cra-givrnsfixed.h"
 #include "linbox/randiter/random-prime.h"
+#include "linbox/integer.h"
+
+using namespace LinBox;
 
 struct Interator {
-	std::vector<Integer> _v;
+	std::vector<integer> _v;
 	double maxsize;
 
-	Interator(const std::vector<Integer>& v) :
+	Interator(const std::vector<integer>& v) :
 		_v(v), maxsize(0.0)
 	{
-		for(std::vector<Integer>::const_iterator it=_v.begin();
+		for(std::vector<integer>::const_iterator it=_v.begin();
 		    it != _v.end(); ++it) {
-			double ds = naturallog(*it);
+			double ds = Givaro::naturallog(*it);
 			maxsize = (maxsize<ds?ds:maxsize);
 		}
 	}
@@ -53,15 +56,15 @@ struct Interator {
 	Interator(int n, int s) :
 		_v(n), maxsize(0.0)
 	{
-		for(std::vector<Integer>::iterator it=_v.begin();
+		for(std::vector<integer>::iterator it=_v.begin();
 		    it != _v.end(); ++it) {
 			Integer::random<false>(*it, s);
-			double ds = naturallog(*it);
+			double ds = Givaro::naturallog(*it);
 			maxsize = (maxsize<ds?ds:maxsize);
 		}
 	}
 
-	const std::vector<Integer>& getVector()
+	const std::vector<integer>& getVector()
 	{
 	       	return _v;
        	}
@@ -75,7 +78,7 @@ struct Interator {
 							 const Field& F) const
 	{
 		v.resize(_v.size());
-		std::vector<Integer>::const_iterator vit=_v.begin();
+		std::vector<integer>::const_iterator vit=_v.begin();
 		typename std::vector<typename Field::Element>::iterator eit=v.begin();
 		for( ; vit != _v.end(); ++vit, ++eit){
 			F.init(*eit, *vit);
@@ -97,7 +100,7 @@ struct InteratorIt : public Interator {
 
 	mutable std::vector<double> _C;
 
-	InteratorIt(const std::vector<Integer>& v) :
+	InteratorIt(const std::vector<integer>& v) :
 		Interator(v), _C(v.size())
 	{}
 	InteratorIt(int n, int s) :
@@ -107,7 +110,7 @@ struct InteratorIt : public Interator {
 	template<typename Iterator, typename Field>
 	Iterator& operator()(Iterator& res, const Field& F) const
 	{
-		std::vector<Integer>::const_iterator vit=this->_v.begin();
+		std::vector<integer>::const_iterator vit=this->_v.begin();
 		std::vector<double>::iterator eit=_C.begin();
 		for( ; vit != _v.end(); ++vit, ++eit) {
 			F.init(*eit, *vit);
@@ -133,12 +136,12 @@ struct InteratorBlas : public Interator {
 	typedef typename Matrix::pointer Pointer;
 	mutable Matrix _C;
 
-	InteratorBlas(const std::vector<Integer>& v) : Interator(v), _C((int)v.size(), (int)1) {}
+	InteratorBlas(const std::vector<integer>& v) : Interator(v), _C((int)v.size(), (int)1) {}
 	InteratorBlas(int n, int s) : Interator(n,s), _C(n,1) {}
 
 	Pointer& operator()(Pointer& res, const Field& F) const
 	{
-		std::vector<Integer>::const_iterator vit=this->_v.begin();
+		std::vector<integer>::const_iterator vit=this->_v.begin();
 		res = _C.getWritePointer();
 		for( ; vit != _v.end(); ++vit, ++res)
 			F.init(*res, *vit);
@@ -156,14 +159,14 @@ bool TestOneCRA(std::ostream& report, Iter& iteration, RandGen& genprime, size_t
 {
 	report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
 	LinBox::ChineseRemainder< Builder > cra( bound );
-	std::vector<Integer> Res(N);
+	std::vector<integer> Res(N);
 	cra( Res, iteration, genprime);
 	bool locpass = std::equal( Res.begin(), Res.end(), iteration.getVector().begin() );
 	if (locpass) report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
 	else {
 		report << "***ERROR***: ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;
-		std::vector<Integer>::const_iterator Rit=Res.begin();
-		std::vector<Integer>::const_iterator Oit=iteration.getVector().begin();
+		std::vector<integer>::const_iterator Rit=Res.begin();
+		std::vector<integer>::const_iterator Oit=iteration.getVector().begin();
 		for( ; Rit!=Res.end(); ++Rit, ++Oit)
 			if (*Rit != *Oit)
 				report << *Rit <<  " != " << * Oit << std::endl;
@@ -177,15 +180,15 @@ bool TestOneCRAbegin(std::ostream& report, Iter& iteration, RandGen& genprime, s
 {
 	report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
 	LinBox::ChineseRemainder< Builder > cra( bound );
-	std::vector<Integer> Res(N);
-	std::vector<Integer>::iterator ResIT= Res.begin();
+	std::vector<integer> Res(N);
+	std::vector<integer>::iterator ResIT= Res.begin();
 	cra( ResIT, iteration, genprime);
 	bool locpass = std::equal( Res.begin(), Res.end(), iteration.getVector().begin() );
 	if (locpass) report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << ", passed."  << std::endl;
 	else {
 		report << "***ERROR***: ChineseRemainder<" << typeid(Builder).name() << ">(" << iteration.getLogSize() << ')' << "***ERROR***"  << std::endl;
-		std::vector<Integer>::const_iterator Rit=Res.begin();
-		std::vector<Integer>::const_iterator Oit=iteration.getVector().begin();
+		std::vector<integer>::const_iterator Rit=Res.begin();
+		std::vector<integer>::const_iterator Oit=iteration.getVector().begin();
 		for( ; Rit!=Res.end(); ++Rit, ++Oit)
 			if (*Rit != *Oit)
 				report << *Rit <<  " != " << * Oit << std::endl;
@@ -199,7 +202,7 @@ bool TestOneCRAWritePointer(std::ostream& report, Iter& iteration, RandGen& genp
 {
 	report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
 	LinBox::ChineseRemainder< Builder > cra( bound );
-	LinBox::BlasMatrix<Integer> Res( (int)N, (int)N);
+	LinBox::BlasMatrix<integer> Res( (int)N, (int)N);
 	cra( Res.getWritePointer(), iteration, genprime);
 	bool locpass = std::equal( iteration.getVector().begin(), iteration.getVector().end(), Res.getWritePointer() );
 
@@ -271,22 +274,22 @@ bool TestCra(int N, int S, size_t seed)
 					  report, iterationBlas, genprime, N, std::pair<size_t,double>(N,3*iterationIt.getLogSize()+15) );
 
 
-        std::vector<Integer> PrimeSet;
+        std::vector<integer> PrimeSet;
         double PrimeSize = 0.0;
         for( ; PrimeSize < (iterationIt.getLogSize()+1); ++genprime ) {
             if (find(PrimeSet.begin(), PrimeSet.end(), *genprime) == PrimeSet.end()) {
                 PrimeSet.push_back( *genprime );
-                PrimeSize += naturallog(*genprime);
+                PrimeSize += Givaro::naturallog(*genprime);
             }
         }
 
-        std::vector<Integer>::iterator psit = PrimeSet.begin();
+        std::vector<integer>::iterator psit = PrimeSet.begin();
 
 	pass &= TestOneCRA<
             LinBox::GivaroRnsFixedCRA< LinBox::Modular<double> >,
             Interator,
-            std::vector<Integer>::iterator,
-            std::vector<Integer> >(
+            std::vector<integer>::iterator,
+            std::vector<integer> >(
                  report, iteration, psit, N, PrimeSet);
 
 

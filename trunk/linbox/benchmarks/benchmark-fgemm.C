@@ -44,6 +44,8 @@
 /*        Outils          */
 /* ********************** */
 
+using Givaro::Timer;
+
 /*! @brief Watches a timer and a number and repet and signals if over.
  *
  * We want at least 2 repetions but not more than maxtime spent on timing.

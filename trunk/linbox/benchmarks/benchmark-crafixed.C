@@ -49,21 +49,24 @@
 
 #include <linbox/algorithms/cra-domain.h>
 #include "linbox/algorithms/cra-early-multip.h"
+#include "linbox/integer.h"
 
 #ifdef __LINBOX_HAVE_IML
 #include "linbox/util/iml_wrapper.h"
 #endif
 
 #define _LB_LOG2 0.69314718055994530941
-// #define _LB_LOG2 0.30102999566398119521
+
+using Givaro::Timer ;
+using LinBox::integer;
 
 // typedef std::vector<LinBox::integer> Ivect ;
 // typedef std::vector<double>          Fvect ;
 
 struct ReductVect {
-	std::vector<Integer>              & _v ;
+	std::vector<integer>              & _v ;
 
-	ReductVect(std::vector<Integer> &v) :
+	ReductVect(std::vector<integer> &v) :
 		_v(v)
    	{ } ;
 
@@ -76,7 +79,7 @@ struct ReductVect {
 		typedef typename Fvect::iterator            Iter;
 
 		//! @todo LinBox hom or magic here ?
-		std::vector<Integer>::iterator j = _v.begin();
+		std::vector<integer>::iterator j = _v.begin();
 
 		for (Iter i =  r.begin() ; i !=  r.end() ; ++i,++j) {
 			F.init(*i,*j);
@@ -95,10 +98,10 @@ namespace LinBox
 }
 
 struct ReductVectIterator  {
-	std::vector<Integer>              & _v ;
+	std::vector<integer>              & _v ;
 	mutable std::vector<double>         _r ;
 
-	ReductVectIterator(std::vector<Integer> &v) :
+	ReductVectIterator(std::vector<integer> &v) :
 		_v(v)
    	{
 		_r.resize(v.size());
@@ -113,7 +116,7 @@ struct ReductVectIterator  {
 		typedef typename Fvect::iterator            Iter;
 
 		//! @todo LinBox hom or magic here ?
-		std::vector<Integer>::iterator j = _v.begin();
+		std::vector<integer>::iterator j = _v.begin();
 		for (std::vector<double>::iterator i = _r.begin() ; i != _r.end() ; ++i,++j) {
 			F.init(*i,*j);
 		}
@@ -125,9 +128,9 @@ struct ReductVectIterator  {
 
 template<class Field>
 struct ReductPoint {
-	Integer & _v ;
+	integer & _v ;
 	typedef typename Field::Element Element;
-	ReductPoint(Integer &v) :
+	ReductPoint(integer &v) :
 		_v(v)
    	{} ;
 	Element & operator()(Element & r, const Field & F)
@@ -166,7 +169,7 @@ int bench_cra(int n, int m, unsigned int l
 			// create the vector to reconstruct
 			Ivect V(n),R(n) ;
 			for (Ivect::iterator it = V.begin() ; it != V.end() ; ++it) {
-				Integer::random_lessthan<Unsigned>(*it,l) ;
+				integer::random_lessthan<Unsigned>(*it,l) ;
 			}
 #ifdef _LB_DEBUG
 			for (Ivect::iterator it = V.begin() ; it != V.end() ; ++it) {
@@ -203,7 +206,7 @@ int bench_cra(int n, int m, unsigned int l
 			// create the vector to reconstruct
 			Ivect V(n),R(n) ;
 			for (Ivect::iterator it = V.begin() ; it != V.end() ; ++it) {
-				Integer::random_lessthan<Unsigned>(*it,l) ;
+				integer::random_lessthan<Unsigned>(*it,l) ;
 			}
 
 			LinBox::ChineseRemainder<  CRAbase >  cra (4);
@@ -235,7 +238,7 @@ int bench_cra(int n, int m, unsigned int l
 		for (size_t i = 0 ; i < (size_t) m ; ++i) { // repeat m times
 			Ivect V(n),R(n) ;
 			for (Ivect::iterator it = V.begin() ; it != V.end() ; ++it) {
-				Integer::random_lessthan<Unsigned>(*it,l) ;
+				integer::random_lessthan<Unsigned>(*it,l) ;
 			}
 			ReductVect iteration(V);
 			chrono.clear(); chrono.start();
@@ -265,7 +268,7 @@ int bench_cra(int n, int m, unsigned int l
 		for (size_t i = 0 ; i < (size_t) m ; ++i) { // repeat m times
 			Ivect V(n),R(n) ;
 			for (Ivect::iterator it = V.begin() ; it != V.end() ; ++it) {
-				Integer::random_lessthan<Unsigned>(*it,l) ;
+				integer::random_lessthan<Unsigned>(*it,l) ;
 			}
 			ReductVect iteration(V);
 			chrono.clear(); chrono.start();
@@ -293,9 +296,9 @@ int bench_cra(int n, int m, unsigned int l
 		chrono.clear() ; chrono.start() ;
 		long basislen = 0 ;
 		IML::Double primesize;
-		Integer product ;
+		integer product ;
 		primesize = pow(2,22);
-		product = pow((Integer)2,l);
+		product = pow((integer)2,l);
 		// mpz_init(maxi); mpz_init(mp_maxInter);
 		// comment les trouver ?
 
@@ -318,12 +321,12 @@ int bench_cra(int n, int m, unsigned int l
 			/*  init result */
 			Ivect V(n),R(n) ;
 			for (Ivect::iterator it = V.begin() ; it != V.end() ; ++it) {
-				Integer::random_lessthan<Unsigned>(*it,l) ;
+				integer::random_lessthan<Unsigned>(*it,l) ;
 			}
 			ReductVect iteration(V);
 			for (size_t j = 0 ; j < (size_t)basislen ; ++j) {
 				std::vector<double> G ;
-				iteration(G,ModularField((Integer)liftbasis[j]));
+				iteration(G,ModularField((integer)liftbasis[j]));
 				for (size_t k = 0 ; k < (size_t)n ; ++k)
 					Vp[j+k*basislen] = G[k] ;
 			}

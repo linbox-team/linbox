@@ -112,10 +112,11 @@ int main (int argc, char **argv)
 		PID_integer ZZ;
 		DenseMatrix<PID_integer > A (ZZ);
 		A.read (input);
-		typedef GivPolynomialRing<PID_integer,Dense> IntPolRing;
+		typedef GivPolynomialRing<PID_integer,Givaro::Dense> IntPolRing;
 		IntPolRing::Element c_A;
 
-		Timer tim; tim.clear();tim.start();charpoly (c_A, A, Method::Blackbox());
+		Timer tim; tim.clear();tim.start();
+		charpoly (c_A, A, Method::Blackbox());
 		tim.stop();
 
 		cout << "Characteristic Polynomial is ";
@@ -153,7 +154,7 @@ int main (int argc, char **argv)
 		DenseMatrix<Field> B (F);
 		B.read (input);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
-		GivPolynomialRing<Field,Dense>::Element c_B;
+		GivPolynomialRing<Field,Givaro::Dense>::Element c_B;
 		Timer tim; tim.clear();tim.start();
 		charpoly (c_B, B);
 		tim.stop();
