@@ -82,7 +82,6 @@ BASIC_TESTS =  \
         test-rational-solver-adaptive   \
         test-last-invariant-factor      \
         test-charpoly                   \
-		test-ftrmm                      \
 		test-cra                        \
 		test-cradomain                  \
 		test-rational-reconstruction-base
@@ -106,14 +105,15 @@ DUBIOUS_TESTS =                 \
 NONCOMPILING_TESTS =           \
         test-dense-zero-one
 
-FAILING_TESTS =                \
-        test-rat-charpoly      \
-        test-rat-solve         \
-        test-rat-minpoly       \
-        test-smith-form-local        \
-        test-smith-form-adaptive     \
-        test-dyadic-to-rational   \
-        test-mg-block-lanczos        \
+FAILING_TESTS =                  \
+        test-rat-charpoly        \
+		test-rat-solve           \
+		test-rat-minpoly         \
+		test-smith-form-local    \
+		test-smith-form-adaptive \
+		test-dyadic-to-rational  \
+		test-mg-block-lanczos    \
+		test-ftrmm               \
         test-la-block-lanczos
 
 USE_NONCOMPILING_TESTS =
