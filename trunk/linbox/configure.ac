@@ -3,7 +3,7 @@
 # see COPYING for licence
 AC_PREREQ(2.61)
 #AC_INIT(linbox/linbox.doxy)
-AC_INIT([LinBox], [1.1.7],[linbox-use@googlegroups.com],[linbox],
+AC_INIT([LinBox], [1.1.8],[linbox-use@googlegroups.com],[linbox],
 		[http://www.linalg.org/])
 AC_CONFIG_MACRO_DIR([macros])
 AC_CONFIG_AUX_DIR([build-aux])
