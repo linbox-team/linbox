@@ -36,6 +36,6 @@ benchmarks:
 
 bin_SCRIPTS=linbox-config
 
-VERSION=1.1.7
+VERSION=1.1.8
 
-EXTRA_DIST=incremente-versions
+#  EXTRA_DIST=incremente-versions
