@@ -38,7 +38,7 @@ namespace LinBox
 		typedef RingCategories::RationalTag categoryTag;
 	};
 
-	class GivaroRational : public UnparametricField<Rational>
+	class GivaroRational : public UnparametricField<Givaro::Rational>
 	{
 
 	public:
@@ -46,33 +46,47 @@ namespace LinBox
 		/** Element type.
 		 *
 		 */
-		typedef  Rational Element;
+		typedef  Givaro::Rational Element;
 
 
 		Element& init(Element& x , const integer& y) const
-		{ return x=Rational(y);}
+		{
+			return x=Element(y);
+		}
 
 		Element& init(Element& x , const integer& n,const integer& d) const
-		{ return x=Rational(n,d);}
+		{
+			return x=Element(n,d);
+		}
 
 		template<class XX>
 		Element& init(Element& x , const XX& y) const
-		{ return x=Rational(y);}
+		{
+			return x=Element(y);
+		}
 
 		integer& convert(integer& i, const Element& r) const
-		{ return i=r.nume(); }
+		{
+			return i=r.nume();
+		}
 
 
-		Element& assign(Element& x , const Rational& y) const
-		{ return x=y;}
+		Element& assign(Element& x , const Element& y) const
+		{
+			return x=y;
+		}
 
 		// x = numerator of y
 		integer& get_num (integer& x, const Element& y)  const
-		{ return x = y.nume(); }
+		{
+			return x = y.nume();
+		}
 
 		// x = denominator of y
 		integer& get_den (integer& x, const Element& y) const
-		{ return x = y.deno(); }
+		{
+			return x = y.deno();
+		}
 
 
 	}; // class
@@ -97,7 +111,8 @@ namespace LinBox
 
 		Hom(const Source& S, const Target& T) :
 			_source (S), _target(T)
-		{ }
+		{
+}
 		Elt& image(Elt& t, const SrcElt& s)
 		{
 			_source. get_num (num, s);
@@ -111,18 +126,25 @@ namespace LinBox
 				_target. init (tmp, den);
 				_target. init (t, num);
 				return _target. divin (t, tmp);
-			}
+
+}
 			// 			_target. init (t, den);
 			// 			return _target. invin (t);
-		}
+
+}
 		SrcElt& preimage(SrcElt& s, const Elt& t)
 		{
 			_target. convert (num, t);
 			_source. init (s, num);
 			return s;
-		}
-		const Source& source() { return _source;}
-		const Target& target() { return _target;}
+
+}
+		const Source& source() {
+return _source;
+}
+		const Target& target() {
+return _target;
+}
 
 	protected:
 		integer num, den;
@@ -142,24 +164,32 @@ namespace LinBox
 
 		Hom(const Source& S, const Target& T) :
 			_source (S), _target(T)
-		{}
+		{
+}
 		Elt& image(Elt& t, const SrcElt& s) {
 			_target.assign(t, s);
 			return t;
 
-		}
+
+}
 		SrcElt& preimage(SrcElt& s, const Elt& t)
 		{
 			_source.assign(s, t);
 			return s;
-		}
-		const Source& source() { return _source;}
-		const Target& target() { return _target;}
+
+}
+		const Source& source() {
+return _source;
+}
+		const Target& target() {
+return _target;
+}
 
 	protected:
 		Source _source;
 		Target _target;
 	}; // end Hom
+
 }
 
 #endif // __LINBOX_givaro_rational_H

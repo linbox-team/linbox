@@ -119,7 +119,7 @@ namespace LinBox
 		 */
 		inline  Element& gcd (Element& g, const Element& a, const Element& b) const
 		{
-			return ::gcd(g,a,b);
+			return Givaro::gcd(g,a,b);
 		}
 
 		/** @brief gcdin(g, b)
@@ -139,7 +139,7 @@ namespace LinBox
 		 */
 		inline  Element& xgcd (Element& g, Element& s, Element& t, const Element& a, const Element& b) const
 		{
-			return ::gcd(g,a,b,s,t);
+			return Givaro::gcd(g,a,b,s,t);
 		}
 
 		/** @brief lcm (c, a, b)
@@ -180,7 +180,7 @@ namespace LinBox
 
 		inline  void reconstructRational (Element& a, Element& b, const Element& x, const Element& m) const
 		{
-			RationalReconstruction(a,b, x, m, ::sqrt(m), true, true);
+			RationalReconstruction(a,b, x, m, Givaro::sqrt(m), true, true);
 		}
 
 		inline  void reconstructRational (Element& a, Element& b, const Element& x, const Element& m, const Element& bound) const
@@ -258,7 +258,7 @@ namespace LinBox
 		 */
 		inline Element& sqrt(Element& x, const Element& y) const
 		{
-			return ::sqrt(x,y);
+			return Givaro::sqrt(x,y);
 		}
 
 		inline  Element powtwo(Element& z, const Element& x) const

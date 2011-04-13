@@ -188,7 +188,7 @@ LB_CHECK_GIVARO(,,[
 echo '*******************************************************************************'
 echo ' ERROR: GIVARO not found!'
 echo
-echo ' GIVARO version 3.3.5 or greater (<3.4) is required for this library to compile.'
+echo ' GIVARO version 3.4.0 or greater (<3.5) is required for this library to compile.'
 echo ' Please make sure GIVARO is installed and specify its location with the'
 echo ' option --with-givaro=<prefix> when running configure.'
 echo '*******************************************************************************'

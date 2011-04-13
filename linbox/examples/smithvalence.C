@@ -41,8 +41,11 @@
 #include "linbox/solutions/valence.h"
 #include "linbox/algorithms/smith-form-sparseelim-local.h"
 #include "linbox/util/matrix-stream.h"
+#include "linbox/integer.h"
 
 #include <givaro/givintnumtheo.h>
+
+using LinBox::integer;
 
 template<class Field>
 unsigned long& TempLRank(unsigned long& r, char * filename, const Field& F)
@@ -51,7 +54,7 @@ unsigned long& TempLRank(unsigned long& r, char * filename, const Field& F)
 	LinBox::MatrixStream< Field > msf( F, input );
 	LinBox::SparseMatrix<Field,typename LinBox::Vector<Field>::SparseSeq> FA(msf);
 	input.close();
-	Timer tim; tim.start();
+	Givaro::Timer tim; tim.start();
 	LinBox::rankin(r, FA);
 	tim.stop();
 	F.write(std::cout << "Rank over ") << " is " << r << ' ' << tim << std::endl;
@@ -64,7 +67,7 @@ unsigned long& TempLRank(unsigned long& r, char * filename, const LinBox::GF2& F
 	LinBox::ZeroOne<LinBox::GF2> A;
 	A.read(input);
 	input.close();
-	Timer tim; tim.start();
+	Givaro::Timer tim; tim.start();
 	LinBox::rankin(r, A, LinBox::Method::SparseElimination() );
 	tim.stop();
 	F2.write(std::cout << "Rank over ") << " is " << r << ' ' << tim << std::endl;
@@ -73,22 +76,22 @@ unsigned long& TempLRank(unsigned long& r, char * filename, const LinBox::GF2& F
 
 
 
-unsigned long& LRank(unsigned long& r, char * filename, Integer p)
+unsigned long& LRank(unsigned long& r, char * filename, integer p)
 {
 
-	Integer maxmod16; LinBox::FieldTraits<LinBox::GivaroZpz<Std16> >::maxModulus(maxmod16);
-	Integer maxmod32; LinBox::FieldTraits<LinBox::GivaroZpz<Std32> >::maxModulus(maxmod32);
-	Integer maxmod53; LinBox::FieldTraits<LinBox::Modular<double> >::maxModulus(maxmod53);
-	Integer maxmod64; LinBox::FieldTraits<LinBox::GivaroZpz<Std64> >::maxModulus(maxmod64);
+	integer maxmod16; LinBox::FieldTraits<LinBox::GivaroZpz<Givaro::Std16> >::maxModulus(maxmod16);
+	integer maxmod32; LinBox::FieldTraits<LinBox::GivaroZpz<Givaro::Std32> >::maxModulus(maxmod32);
+	integer maxmod53; LinBox::FieldTraits<LinBox::Modular<double> >::maxModulus(maxmod53);
+	integer maxmod64; LinBox::FieldTraits<LinBox::GivaroZpz<Givaro::Std64> >::maxModulus(maxmod64);
 	if (p == 2) {
 		LinBox::GF2 F2;
 		return TempLRank(r, filename, F2);
 	} else if (p <= maxmod16) {
-		typedef LinBox::GivaroZpz<Std16> Field;
+		typedef LinBox::GivaroZpz<Givaro::Std16> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
 	} else if (p <= maxmod32) {
-		typedef LinBox::GivaroZpz<Std32> Field;
+		typedef LinBox::GivaroZpz<Givaro::Std32> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
 	} else if (p <= maxmod53) {
@@ -96,31 +99,31 @@ unsigned long& LRank(unsigned long& r, char * filename, Integer p)
 		Field F(p);
 		return TempLRank(r, filename, F);
 	} else if (p <= maxmod64) {
-		typedef LinBox::GivaroZpz<Std64> Field;
+		typedef LinBox::GivaroZpz<Givaro::Std64> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
 	} else {
-		typedef LinBox::GivaroZpz<Integer> Field;
+		typedef LinBox::GivaroZpz<integer> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
 	}
 	return r;
 }
 
-std::vector<size_t>& PRank(std::vector<size_t>& ranks, char * filename, Integer p, size_t e, size_t intr)
+std::vector<size_t>& PRank(std::vector<size_t>& ranks, char * filename, integer p, size_t e, size_t intr)
 {
-	Integer maxmod;
-	LinBox::FieldTraits<LinBox::GivaroZpz<Std64> >::maxModulus(maxmod);
+	integer maxmod;
+	LinBox::FieldTraits<LinBox::GivaroZpz<Givaro::Std64> >::maxModulus(maxmod);
 	if (p <= maxmod) {
-		typedef LinBox::GivaroZpz<Std64> Ring;
+		typedef LinBox::GivaroZpz<Givaro::Std64> Ring;
 		int64_t lp(p);
-		Integer q = pow(p,e); int64_t lq(q);
-		if (q > Integer(lq)) {
+		integer q = pow(p,e); int64_t lq(q);
+		if (q > integer(lq)) {
 			std::cerr << "Sorry power rank mod large composite not yet implemented" << std::endl;
 			q = p;
 			do {
 				q *= p; lq = (int64_t)q;
-			} while (q == Integer(lq));
+			} while (q == integer(lq));
 			q/=p; lq = (int64_t)q;
 			std::cerr << "Trying: " << lq << std::endl;
 		}
@@ -174,7 +177,7 @@ int main (int argc, char **argv)
 
 	PID_integer::Element val_A;
 
-	Timer chrono; chrono.start();
+	Givaro::Timer chrono; chrono.start();
 	if (argc >= 3) {
 		Transpose<Blackbox> T(&A);
 		if (strcmp(argv[2],"-ata") == 0) {
@@ -187,7 +190,7 @@ int main (int argc, char **argv)
 			valence(val_A, C);
 		} else {
 			std::cout << "Suppose primes are contained in " << argv[2] << std::endl;
-			val_A = Integer(argv[2]);
+			val_A = integer(argv[2]);
 		}
 	} else {
 		if (A.rowdim() != A.coldim()) {
@@ -199,17 +202,17 @@ int main (int argc, char **argv)
 
 	std::cout << "Valence is " << val_A << std::endl;
 
-	std::vector<Integer> Moduli;
+	std::vector<integer> Moduli;
 	std::vector<size_t> exponents;
-	IntFactorDom<> FTD;
+	Givaro::IntFactorDom<> FTD;
 
-	typedef std::pair<Integer,unsigned long> PairIntRk;
+	typedef std::pair<integer,unsigned long> PairIntRk;
 	std::vector< PairIntRk > smith;
 
 
-	Integer coprimeV=2;
+	integer coprimeV=2;
 	if (argc >= 4) {
-		coprimeV = Integer(argv[3]);
+		coprimeV = integer(argv[3]);
 	}
 	while ( gcd(val_A,coprimeV) > 1 ) {
 		FTD.nextprimein(coprimeV);
@@ -219,7 +222,7 @@ int main (int argc, char **argv)
 		std::cout << "Suppose " << argv[3] << " is coprime with Smith form" << std::endl;
 	}
 
-	std::cout << "Integer rank: " << std::endl;
+	std::cout << "integer rank: " << std::endl;
 
 	unsigned long coprimeR; LRank(coprimeR, argv[1], coprimeV);
 	smith.push_back(PairIntRk(coprimeV, coprimeR));
@@ -228,15 +231,15 @@ int main (int argc, char **argv)
 	std::cout << "Some factors (5000 factoring loop bound): ";
 	FTD.set(Moduli, exponents, val_A, 5000);
 	std::vector<size_t>::const_iterator eit=exponents.begin();
-	for(std::vector<Integer>::const_iterator mit=Moduli.begin();
+	for(std::vector<integer>::const_iterator mit=Moduli.begin();
 	    mit != Moduli.end(); ++mit,++eit)
 		std::cout << *mit << '^' << *eit << ' ';
 	std::cout << std::endl;
 
-	std::vector<Integer> SmithDiagonal(coprimeR,Integer(1));
+	std::vector<integer> SmithDiagonal(coprimeR,integer(1));
 
 
-	for(std::vector<Integer>::const_iterator mit=Moduli.begin();
+	for(std::vector<integer>::const_iterator mit=Moduli.begin();
 	    mit != Moduli.end(); ++mit) {
 		unsigned long r; LRank(r, argv[1], *mit);
 		//             std::cerr << "Rank mod " << *mit << " is " << r << std::endl;
@@ -276,9 +279,9 @@ int main (int argc, char **argv)
 		}
 	}
 
-	Integer si=1;
+	integer si=1;
 	size_t num=0;
-	for( std::vector<Integer>::const_iterator dit=SmithDiagonal.begin();
+	for( std::vector<integer>::const_iterator dit=SmithDiagonal.begin();
 	     dit != SmithDiagonal.end(); ++dit) {
 		if (*dit == si) ++num;
 		else {

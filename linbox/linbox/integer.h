@@ -44,7 +44,8 @@ namespace LinBox
 	 * Integer representation from <a href=http://ljk.imag.fr/CASYS/LOGICIELS/givaro/>Givaro</a>.
 	 * @ingroup integers
 	 */
-	typedef Integer integer;
+	typedef Givaro::Integer integer;
+	typedef Givaro::Integer Integer;
 
 #if 0
 // These integer types are defined by Givaro
@@ -114,15 +115,15 @@ namespace LinBox
 }
 
 // Dependency to GIVARO >= 3.3.4
-/* givaro/givconfig.h so provides the fixed width integer types such as 
- * int16_t, uint8_t, etc.  The typenames int16, uint8, etc are no longer used 
+/* givaro/givconfig.h so provides the fixed width integer types such as
+ * int16_t, uint8_t, etc.  The typenames int16, uint8, etc are no longer used
  * in LinBox or Givaro.
  */
 #include <givaro/givconfig.h>
 #include <math.h>
 // Natural logarithm of a
 // log(2) being close to 0.69314718055994531
-inline double naturallog(const Integer& a) {
+inline double naturallog(const Givaro::Integer& a) {
   signed long int exp;
   double d = mpz_get_d_2exp( &exp, (mpz_ptr)(LinBox::SpyInteger::get_rep(a) ) );
   return (double)exp*0.69314718055994531+log(d);

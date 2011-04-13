@@ -66,7 +66,7 @@ static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 	typedef typename Dom::Element Element;
 	typedef vector<Element> Vector;
 	typedef ScalarMatrix<Dom> Blackbox;
-	typedef GivPolynomialRing<Dom, Dense> PolDom;
+	typedef GivPolynomialRing<Dom, Givaro::Dense> PolDom;
 	typedef typename PolDom::Element Polynomial;
 	//typedef Vector Polynomial;
 
@@ -126,7 +126,7 @@ template <class Field>
 static bool testNilpotentCharpoly (Field &F, size_t n)
 {
 	typedef vector <typename Field::Element> Vector;
-// 	typedef GivPolynomialRing<Field, Dense> PolDom;
+// 	typedef GivPolynomialRing<Field, Givaro::Dense> PolDom;
 // 	typedef typename PolDom::Element Polynomial;
 	typedef Vector Polynomial;
 	typedef pair <vector <size_t>, vector <typename Field::Element> > Row;
@@ -194,7 +194,7 @@ bool testRandomCharpoly (Field                 &F,
 			VectorStream<Row>    &A_stream,
 			VectorStream<Vector> &v_stream)
 {
-	//typedef GivPolynomialRing<Field, Dense> PolDom;
+	//typedef GivPolynomialRing<Field, Givaro::Dense> PolDom;
 	//typedef typename PolDom::Element Polynomial;
 	typedef std::vector<typename Field::Element> Polynomial;
 	typedef SparseMatrix <Field> Blackbox;
