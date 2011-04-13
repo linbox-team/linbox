@@ -4,8 +4,9 @@
 AC_PREREQ(2.61)
 #AC_INIT(linbox/linbox.doxy)
 AC_INIT([LinBox], [1.1.7],[linbox-use@googlegroups.com],[linbox],
-		[http://www.linalg.org/]) 
+		[http://www.linalg.org/])
 AC_CONFIG_MACRO_DIR([macros])
+AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([1.8 gnu no-dependencies -Wall -Wno-portability])
 AM_CONFIG_HEADER([config.h])
 AX_PREFIX_CONFIG_H(linbox/linbox-config.h, __LINBOX)
@@ -15,7 +16,7 @@ RM="$RM -f"
 
 AM_MAINTAINER_MODE
 AM_DEP_TRACK
-AM_OUTPUT_DEPENDENCY_COMMANDS 
+AM_OUTPUT_DEPENDENCY_COMMANDS
 
 AM_ACLOCAL_INCLUDE(macros)
 
@@ -216,9 +217,9 @@ LB_OPT
 LB_DOC
 
 
-if test ! -d ./benchmarks/data  ; then 
+if test ! -d ./benchmarks/data  ; then
 	echo "Creating data dir in benchmark" ;
-	mkdir ./benchmarks/data  ; 
+	mkdir ./benchmarks/data  ;
 fi
 
 # this is bogus so far as I can tell.  -bds

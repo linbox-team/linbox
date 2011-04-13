@@ -63,7 +63,10 @@ if ("$answ" == "y") then
     if ("$newv" != "$verb") then
 		echo -n "Confirmation of incrementation ? (yes/no)"
 		set answ = $<
+        set backupconf = $conf.back$$
 		if ("$answ" == "yes") then
+			\cp -p $conf $backupconf
+            echo "Back-up of $conf made in $backupconf. Now overwriting $conf."
 			\mv -f $tmpfile $conf
 		else
 			echo "$answ read. Not incrementing anything."
@@ -99,13 +102,14 @@ if ("$answ" == "y") then
 		set answ = $<
 		if ("$answ" == "yes") then
 			\mv -f $tmpfile $ver
+			\rm -f $backupconf
 		else
 			echo "$answ read. Not incrementing anything."
-			echo "*** WARNING *** you have incremented the verion in"
-			echo "configure.ac but not in Makefile.am \!\!\!"
+			echo " your old $conf is restored..."
 			\rm -f $tmpfile
+			\mv -f $backupconf $conf
             #this is an error
-			exit 1
+			exit 0
 		endif
 
 	endif
