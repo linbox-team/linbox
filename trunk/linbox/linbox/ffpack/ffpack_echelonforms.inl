@@ -109,8 +109,8 @@ FFPACK::ReducedRowEchelonForm (const Field& F, const size_t M, const size_t N,
 	size_t r;
 	r = RowEchelonForm (F, M, N, A, lda, P, Qt, transform);
 	// M = M Q
-	for (int i=0; i<r; ++i){
-		if ( Qt[i]> (size_t) i ){
+	for (size_t i=0; i<r; ++i){
+		if ( Qt[i]>  i ){
 			fswap( F, i,
 			       A + Qt[i], lda,
 			       A + i, lda );
