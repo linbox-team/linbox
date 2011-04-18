@@ -36,7 +36,7 @@ namespace LinBox
 	 *  @tparam Domain
 	 *  @tparam StorageTag
 	 */
-	template <class Domain, class StorageTag=Givaro::Dense>
+	template <class Domain, class StorageTag=::Givaro::Dense>
 	class GivPolynomialRing : public ::Givaro::Poly1Dom<GivaroField<Domain>,StorageTag> {
 	public:
 
@@ -69,7 +69,7 @@ namespace LinBox
 #include "NTL/ZZXFactoring.h"
 namespace LinBox
 {
-	typedef GivPolynomialRing<UnparametricField<integer>,Givaro::Dense> GivPolIntDense;
+	typedef GivPolynomialRing<UnparametricField<integer>,::Givaro::Dense> GivPolIntDense;
 
 	template <>
 	template <>
@@ -106,7 +106,7 @@ namespace LinBox
 #include <linbox/field/PID-integer.h>
 namespace LinBox
 {
-	typedef GivPolynomialRing<PID_integer,Givaro::Dense> GivPolPIDIntDense;
+	typedef GivPolynomialRing<PID_integer,::Givaro::Dense> GivPolPIDIntDense;
 	template <>
 	template <>
 	std::vector<GivPolPIDIntDense::Element* >&
@@ -171,7 +171,7 @@ namespace LinBox
 
 #endif
 
-	typedef GivPolynomialRing<Modular<double>,Givaro::Dense> GivPolMdDense;
+	typedef GivPolynomialRing<Modular<double>,::Givaro::Dense> GivPolMdDense;
 	template <>
 	template <>
 	std::vector<GivPolMdDense::Element *>&
@@ -183,7 +183,7 @@ namespace LinBox
 		_domain.characteristic(charac);
 		double p = charac;
 		typedef GivaroField<Modular<double> > GivModDouble;
-		typedef ::Givaro::Poly1FactorDom< GivModDouble,Givaro::Dense, GivModDouble::RandIter> PolysDouble;
+		typedef ::Givaro::Poly1FactorDom< GivModDouble,::Givaro::Dense, GivModDouble::RandIter> PolysDouble;
 
 
 		PolysDouble PFD(*this, GivModDouble::RandIter(_domain));

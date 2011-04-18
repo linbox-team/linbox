@@ -360,7 +360,7 @@ void printPolynomial (const Field &F, const Polynomial &v)
 
 Integers ZZ;
 SpyInteger spy;
-typedef GivPolynomialRing<Integers,Givaro::Dense> IntPolRing;
+typedef GivPolynomialRing<Integers,::Givaro::Dense> IntPolRing;
 
 DenseMatrix<Integers> new_matrix(mpz_t** matrix, size_t nrows, size_t ncols)
 {
