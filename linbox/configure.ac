@@ -2,7 +2,7 @@
 # This file is part of LinBox (and probably stolen here and there)
 # see COPYING for licence
 AC_PREREQ(2.61)
-#AC_INIT(linbox/linbox.doxy)
+
 AC_INIT([LinBox], [1.2.0],[linbox-use@googlegroups.com],[linbox],
 		[http://www.linalg.org/])
 AC_CONFIG_MACRO_DIR([macros])
@@ -23,56 +23,70 @@ AM_ACLOCAL_INCLUDE(macros)
 # work around to fix the backward compatibility issue of automake 1.10 with 1.9 (pb with MKDIR_P)
 AC_SUBST([MKDIR_P])
 
+AC_LANG([C++])
 
-# Give a sane default for CFLAGS and CXXFLAGS
-# The sane thing is to define the flags differenly in tests, examples, interfaces, etc.  -bds
-#DEFAULT_CFLAGS="-O2 -Wall"
-#DEFAULT_CXXFLAGS="-std=c++0x"
+AC_DEBUG
+# AC_FULL_DEBUG
+AC_WARNINGS
 
 # CFLAGS=${CFLAGS:-$DEFAULT_CFLAGS}
 # CXXFLAGS=${CXXFLAGS:-$DEFAULT_CXXFLAGS}
+
+######################################################
+# Try and pass different flags according to compiler #
+######################################################
+
+
+# disable default -g -O2 CXXFLAGS
+: ${CXXFLAGS=""}
+
+#set CXX
+AC_PROG_CXX
+
+AC_COMPILER_NAME
 
 AC_SUBST([DEFAULT_CFLAGS])
 AC_SUBST([DEBUG_CFLAGS])
 AC_SUBST([TESTS_CFLAGS])
 
 TESTS_CFLAGS="-O0"
-DEFAULT_CFLAGS="-O2 -pipe"
-DEBUG_CFLAGS="-g -Wall"
+DEBUG_CFLAGS=""  #those are CPPFLAGS
+DEFAULT_CFLAGS="-pipe -Wall"
 
-# disable default -g -O2 CXXFLAGS
-: ${CXXFLAGS=""}
-
-#set CXX
-AC_PROG_CC([gcc icc])
-AC_PROG_CXX([g++ icpc icc])
-
-if  test "x${CXX}" = "xicpc" -o "x${CXX}" = "xicc"  ; then
-	DEBUG_CFLAGS="${DEBUG_CFLAGS} -Wbrief -Wpointer-arith -Wuninitialized"
-	# DEBUG_CFLAGS+="-Wcheck"
-	# DEFAULT_CFLAGS+="-fast"
-	#warning #2259: non-pointer conversion from "XXX" to "YYY" may lose significant bits -> -wd2259
+if test "x$DBG" = "xyes" ; then
+	DEFAULT_CFLAGS="-O0 ${DEFAULT_CFLAGS} -g -pg" #those are CXXFLAGS
+	DEBUG_CFLAGS="${DEBUG_CFLAGS} -DDEBUG -D_LB_DEBUG"
 else
-	if test "x${CXX}" = "xg++"  ; then
-		DEBUG_CFLAGS="${DEBUG_CFLAGS} -Wextra -Wno-unused-parameter"
+	DEFAULT_CFLAGS="-O2 ${DEFAULT_CFLAGS} -DNDEBUG -U_LB_DEBUG"
+fi
+
+
+
+if test "x$WARN" = "xyes" ; then
+	# if  test "x${CXX}" = "xicpc" -o "x${CXX}" = "xicc"  ; then
+	if test "x${CCNAM}" = "xicc" ; then
+		DEBUG_CFLAGS="${DEBUG_CFLAGS} -Wcheck"
+		# DEBUG_CFLAGS="-fast"
 	else
-		AC_MSG_ERROR([please set environment variable 'CXX' to 'g++' or 'icpc']) ;
+		if test "x${CCNAM}" = "xgcc"  ; then
+			DEBUG_CFLAGS="${DEBUG_CFLAGS} -Wextra -Wno-unused-parameter"
+		else
+			echo
+			echo "*******************************************************"
+			echo "unsupported compiler ($CCNAM). Please file a bug."
+			echo "*******************************************************"
+			echo
+			DEBUG_CFLAGS="${DEBUG_CFLAGS}"
+		fi
 	fi
 fi
 
-# CFLAGS=${CFLAGS:-$(DEFAULT_CFLAGS)}
-# CXXFLAGS="${DEFAULT_CFLAGS} ${DEBUG_CFLAGS}"
+
 DEFAULT_CFLAGS="${DEFAULT_CFLAGS} ${DEBUG_CFLAGS}"
 TESTS_CFLAGS="${TESTS_CFLAGS} ${DEBUG_CFLAGS}"
 
 
-AC_PROG_CC
-AC_PROG_CXX
 AC_HEADER_STDC
-#AC_DISABLE_SHARED
-#AC_DISABLE_STATIC
-#AM_PROG_LIBTOOL
-# JGD 08.06.2004 : new name
 AC_PROG_LIBTOOL
 
 # newer libtool...
