@@ -48,7 +48,7 @@ struct Interator {
 	{
 		for(std::vector<integer>::const_iterator it=_v.begin();
 		    it != _v.end(); ++it) {
-			double ds = Givaro::naturallog(*it);
+			double ds = ::Givaro::naturallog(*it);
 			maxsize = (maxsize<ds?ds:maxsize);
 		}
 	}
@@ -59,7 +59,7 @@ struct Interator {
 		for(std::vector<integer>::iterator it=_v.begin();
 		    it != _v.end(); ++it) {
 			Integer::random<false>(*it, s);
-			double ds = Givaro::naturallog(*it);
+			double ds = ::Givaro::naturallog(*it);
 			maxsize = (maxsize<ds?ds:maxsize);
 		}
 	}
@@ -279,7 +279,7 @@ bool TestCra(int N, int S, size_t seed)
         for( ; PrimeSize < (iterationIt.getLogSize()+1); ++genprime ) {
             if (find(PrimeSet.begin(), PrimeSet.end(), *genprime) == PrimeSet.end()) {
                 PrimeSet.push_back( *genprime );
-                PrimeSize += Givaro::naturallog(*genprime);
+                PrimeSize += ::Givaro::naturallog(*genprime);
             }
         }
 

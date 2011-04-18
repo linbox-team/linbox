@@ -188,8 +188,8 @@ int main(int argc, char* argv[])
 
 			Integer p(m), im(m);
 			// Should better ask user to give the prime !!!
-			for(unsigned int k = 2; ( ( ! Givaro::probab_prime(p) ) && (p > 1) ); ++k)
-				Givaro::root( p, im, k );
+			for(unsigned int k = 2; ( ( ! ::Givaro::probab_prime(p) ) && (p > 1) ); ++k)
+				::Givaro::root( p, im, k );
 
 			// using Sparse Elimination
 			LinBox::PowerGaussDomain< Field > PGD( F );

@@ -141,7 +141,7 @@ namespace LinBox
 				}
 				Integer tmp;
 				D.characteristic(tmp);
-				double ltp = Givaro::naturallog(tmp);
+				double ltp = ::Givaro::naturallog(tmp);
 				di = *_dsz_it + ltp;
 				this->totalsize += ltp;
 				mi.mulin(tmp);
@@ -152,7 +152,7 @@ namespace LinBox
 				// Put the new residue here and exit
 				Integer tmp;
 				D.characteristic(tmp);
-				double ltp = Givaro::naturallog(tmp);
+				double ltp = ::Givaro::naturallog(tmp);
 				_mod_it->initialize(tmp);
 				*_dsz_it = ltp;
 				this->totalsize += ltp;
@@ -384,7 +384,7 @@ namespace LinBox
 				}
 				Integer tmp;
 				D.characteristic(tmp);
-				double ltp = Givaro::naturallog(tmp);
+				double ltp = ::Givaro::naturallog(tmp);
 				di = *_dsz_it + ltp;
 				this->totalsize += ltp;
 				mi.mulin(tmp);
@@ -395,7 +395,7 @@ namespace LinBox
 				// Put the new residue here and exit
 				Integer tmp;
 				D.characteristic(tmp);
-				double ltp = Givaro::naturallog(tmp);
+				double ltp = ::Givaro::naturallog(tmp);
 				_mod_it->initialize(tmp);
 				*_dsz_it = ltp;
 				this->totalsize += ltp;

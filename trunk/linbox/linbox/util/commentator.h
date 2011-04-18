@@ -614,7 +614,7 @@ namespace LinBox
 			const char              *_fn;
 			unsigned long            _len;
 			unsigned long            _progress;
-			Givaro::Timer                    _timer;
+			::Givaro::Timer                    _timer;
 			Estimator                _estimate;
 		};
 

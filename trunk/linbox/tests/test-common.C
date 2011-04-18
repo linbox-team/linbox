@@ -88,7 +88,7 @@ void printHelpMessage (const char *program, Argument *args, bool printDefaults =
 				cout << *(int *) args[i].data;
 				break;
 			case TYPE_INTEGER:
-				cout << *(Givaro::Integer *) args[i].data;
+				cout << *(::Givaro::Integer *) args[i].data;
 				break;
 			case TYPE_DOUBLE:
 				cout << *(double *) args[i].data;
@@ -270,7 +270,7 @@ std::ostream& writeCommandString (std::ostream& os, Argument *args, char* progra
 			os << ' ' << *(int *) args[i].data;
 			break;
 		case TYPE_INTEGER:
-			os << ' ' << *(Givaro::Integer *) args[i].data;
+			os << ' ' << *(::Givaro::Integer *) args[i].data;
 			break;
 		case TYPE_DOUBLE:
 			os << ' ' << *(double *) args[i].data;

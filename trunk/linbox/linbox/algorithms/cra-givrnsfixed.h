@@ -40,11 +40,11 @@ namespace LinBox
 	 * @bib
 	 */
 	template<class Domain_Type>
-	struct GivaroRnsFixedCRA : public Givaro::RNSsystemFixed<integer> {
+	struct GivaroRnsFixedCRA : public ::Givaro::RNSsystemFixed<integer> {
 		typedef Domain_Type			                      Domain;
 		typedef typename Domain::Element           DomainElement;
 
-		typedef Givaro::RNSsystemFixed<integer>			Father_t;
+		typedef ::Givaro::RNSsystemFixed<integer>			Father_t;
 		typedef GivaroRnsFixedCRA<Domain> 		          Self_t;
 
 		const size_t				nbloops;
@@ -63,7 +63,7 @@ namespace LinBox
 		{
 			for(size_t i=0; i<primes.size(); ++i)
 				_product *= primes[i];
-			Givaro::Integer::div(_midprod,_product,2);
+			::Givaro::Integer::div(_midprod,_product,2);
 		}
 
 		Integer& getModulus(Integer& m)

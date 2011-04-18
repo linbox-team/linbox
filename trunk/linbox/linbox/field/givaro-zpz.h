@@ -67,12 +67,12 @@ namespace LinBox
 	/** \brief wrapper of Givaro's ZpzDom.
 	  \ingroup field
 
-	 *  Most methods are inherited from Givaro::ZpzDom<Givaro::Std16>, Givaro::ZpzDom<Givaro::Std32>
-	 *  and Givaro::ZpzDom<log16> classes of Givaro.
+	 *  Most methods are inherited from ::Givaro::ZpzDom<Givaro::Std16>, ::Givaro::ZpzDom<Givaro::Std32>
+	 *  and ::Givaro::ZpzDom<log16> classes of Givaro.
 	 *  These classes allow to construct only finite field with a prime modulus.
 	 */
 
-	template <class TAG> class GivaroZpz : public Givaro::ZpzDom<TAG>, public FieldInterface
+	template <class TAG> class GivaroZpz : public ::Givaro::ZpzDom<TAG>, public FieldInterface
 	{
 
 	private:
@@ -85,28 +85,28 @@ namespace LinBox
 		//typedef integer Integer;
 
 		/** Element type.
-		 *  This type is inherited from the Givaro class Givaro::ZpzDom<TAG>
+		 *  This type is inherited from the Givaro class ::Givaro::ZpzDom<TAG>
 		 */
-		typedef typename Givaro::ZpzDom<TAG>::Rep Element;
+		typedef typename ::Givaro::ZpzDom<TAG>::Rep Element;
 
 		/** RandIter type
-		 *  This type is inherited from the Givaro class Givaro::ZpzDom<TAG>
+		 *  This type is inherited from the Givaro class ::Givaro::ZpzDom<TAG>
 		 */
-		typedef Givaro::GIV_randIter< Givaro::ZpzDom<TAG>, integer > RandIter;
+		typedef ::Givaro::GIV_randIter< ::Givaro::ZpzDom<TAG>, integer > RandIter;
 
 		/** Constructor from an integer
-		 *  this constructor use the Givaro::ZpzDom<TAG> constructor
+		 *  this constructor use the ::Givaro::ZpzDom<TAG> constructor
 		 */
 		GivaroZpz (const integer &p) :
-			Givaro::ZpzDom<TAG> (static_cast<typename Givaro::ZpzDom<TAG>::Residu_t> (p))
+			::Givaro::ZpzDom<TAG> (static_cast<typename ::Givaro::ZpzDom<TAG>::Residu_t> (p))
 		{}
 
 
 		/** Constructor from an integer (takes degree of extension as 2nd parameter, must be 1)
-		 *  this constructor use the Givaro::ZpzDom<TAG> constructor
+		 *  this constructor use the ::Givaro::ZpzDom<TAG> constructor
 		 */
 		GivaroZpz (const integer &p, const integer& k) :
-			Givaro::ZpzDom<TAG> (static_cast<typename Givaro::ZpzDom<TAG>::Residu_t> (p))
+			::Givaro::ZpzDom<TAG> (static_cast<typename ::Givaro::ZpzDom<TAG>::Residu_t> (p))
 		{
 
 			if (k!=1)
@@ -114,17 +114,17 @@ namespace LinBox
 		}
 
 		/** Copy constructor.
-		 * This copy constructor use the Givaro::ZpzDom<TAG> copy constructor
+		 * This copy constructor use the ::Givaro::ZpzDom<TAG> copy constructor
 		 */
 		GivaroZpz (const GivaroZpz<TAG>& F) :
-			Givaro::ZpzDom<TAG> (F)
+			::Givaro::ZpzDom<TAG> (F)
 		{}
 
 
 		// Rich Seagraves 7-16-2003
 		// As is, this operator is an infinite loop
 		// By not providing an operator= in GivaroZpz,
-		// the operator= in the base class (Givaro::ZpzDom<TAG>) is called
+		// the operator= in the base class (::Givaro::ZpzDom<TAG>) is called
 		// automatically by the rules of C++, which I'm guessing is
 		// the "Right Thing" for this operator
 		//
@@ -141,16 +141,16 @@ namespace LinBox
 		 * @return integer representing characteristic of the domain.
 		 */
 		integer &characteristic (integer &c) const
-		{ return c = integer (Givaro::ZpzDom<TAG>::size ()); }
+		{ return c = integer (::Givaro::ZpzDom<TAG>::size ()); }
 		long characteristic() const
-		{return static_cast<int>(Givaro::ZpzDom<TAG>::size());}
+		{return static_cast<int>(::Givaro::ZpzDom<TAG>::size());}
 
 		/** Cardinality.
 		 * Return integer representing cardinality of the domain.
 		 * @return integer representing cardinality of the domain
 		 */
 		integer &cardinality (integer &c) const
-		{ return c = integer (Givaro::ZpzDom<TAG>::size ()); }
+		{ return c = integer (::Givaro::ZpzDom<TAG>::size ()); }
 
 		/** Conversion of field base element to an integer.
 		 * This function assumes the output field base element x has already been
@@ -181,10 +181,10 @@ namespace LinBox
 		Element &init (Element &x , const integer &y = 0) const
 		{
 			//
-			//	AU 28/03/07 no cast to long allows to use Givaro::ZpzDom<integer>
+			//	AU 28/03/07 no cast to long allows to use ::Givaro::ZpzDom<integer>
 			//
 			//Givaro::ZpzDom<TAG>::init (x, (long) (y% integer(this->_p)));
-			Givaro::ZpzDom<TAG>::init (x, (y% integer(this->_p)));
+			::Givaro::ZpzDom<TAG>::init (x, (y% integer(this->_p)));
 			return x;
 		}
 

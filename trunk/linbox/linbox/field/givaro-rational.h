@@ -46,7 +46,7 @@ namespace LinBox
 		/** Element type.
 		 *
 		 */
-		typedef  Givaro::Rational Element;
+		typedef  ::Givaro::Rational Element;
 
 
 		Element& init(Element& x , const integer& y) const
