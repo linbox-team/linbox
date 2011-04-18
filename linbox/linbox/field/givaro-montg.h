@@ -49,37 +49,37 @@ namespace LinBox
 		typedef RingCategories::ModularTag categoryTag;
 	};
 	/**
-	 \brief wrapper of Givaro's ::Givaro::Montgomery<::Givaro::Std32>.
+	 \brief wrapper of Givaro's ::Givaro::Montgomery< ::Givaro::Std32>.
 	 \ingroup field
 
 	 *  This class is a modular representation with a ::Givaro::Montgomery reduction
 	 */
-	class GivaroMontg : public ::Givaro::Montgomery<::Givaro::Std32>, public FieldInterface {
+	class GivaroMontg : public ::Givaro::Montgomery< ::Givaro::Std32>, public FieldInterface {
 
 	public:
 
 		/** Element type.
-		 *  This type is inherited from the Givaro class ::Givaro::Montgomery<::Givaro::Std32>
+		 *  This type is inherited from the Givaro class ::Givaro::Montgomery< ::Givaro::Std32>
 		 */
-		typedef  ::Givaro::Montgomery<::Givaro::Std32>::Rep Element;
+		typedef  ::Givaro::Montgomery< ::Givaro::Std32>::Rep Element;
 
 		/** RandIter type
-		 *  This type is inherited from the Givaro class ::Givaro::Montgomery<::Givaro::Std32>
+		 *  This type is inherited from the Givaro class ::Givaro::Montgomery< ::Givaro::Std32>
 		 */
-		typedef ::Givaro::GIV_randIter< ::Givaro::Montgomery<::Givaro::Std32>, LinBox::integer >  RandIter;
+		typedef ::Givaro::GIV_randIter< ::Givaro::Montgomery< ::Givaro::Std32>, LinBox::integer >  RandIter;
 
 		/** Constructor from an integer
 		 *  this constructor use the ZpzDom<TAG> constructor
 		 */
 		GivaroMontg(const integer& p) :
-			::Givaro::Montgomery<::Givaro::Std32>(static_cast<uint32_t>(long(p)))
+			::Givaro::Montgomery< ::Givaro::Std32>(static_cast<uint32_t>(long(p)))
 		{ }
 
 		/** Constructor from an integer (takes degree of extension as 2nd parameter, must be 1)
 		 *  this constructor use the ZpzDom<TAG> constructor
 		 */
 	  	GivaroMontg(const integer& p, const integer& k) :
-			::Givaro::Montgomery<::Givaro::Std32>(static_cast<uint32_t>(long(p)))
+			::Givaro::Montgomery< ::Givaro::Std32>(static_cast<uint32_t>(long(p)))
 		{
 
 			if (k!=1)
@@ -94,12 +94,12 @@ namespace LinBox
 		 */
 		integer& characteristic(integer& c) const
 		{
-			return c=integer(static_cast<long>(::Givaro::Montgomery<::Givaro::Std32>::characteristic()));
+			return c=integer(static_cast<long>(::Givaro::Montgomery< ::Givaro::Std32>::characteristic()));
 		}
 
 		long characteristic() const
 		{
-			return static_cast<long>(::Givaro::Montgomery<::Givaro::Std32>::characteristic());
+			return static_cast<long>(::Givaro::Montgomery< ::Givaro::Std32>::characteristic());
 		}
 
 
@@ -112,7 +112,7 @@ namespace LinBox
 		 */
 		integer& cardinality(integer& c) const
 		{
-		       	return c=integer(static_cast<long>(::Givaro::Montgomery<::Givaro::Std32>::size()));
+		       	return c=integer(static_cast<long>(::Givaro::Montgomery< ::Givaro::Std32>::size()));
 		}
 
 
@@ -128,12 +128,12 @@ namespace LinBox
 		 */
 		Element& init(Element& x , const integer& y=0) const
 		{
-			return ::Givaro::Montgomery<::Givaro::Std32>::init( x,long(y % (integer)_p));
+			return ::Givaro::Montgomery< ::Givaro::Std32>::init( x,long(y % (integer)_p));
 		}
 
 		Element& init(Element& x , const double y) const
 		{
-		       	return ::Givaro::Montgomery<::Givaro::Std32>::init( x, y);
+		       	return ::Givaro::Montgomery< ::Givaro::Std32>::init( x, y);
 		}
 
 		/** Conversion of field base element to an integer.
@@ -146,19 +146,19 @@ namespace LinBox
 		integer& convert(integer& x, const Element& y) const
 		{
 			long tmp;
-			//	return x = *(new integer(Montgomery<::Givaro::Std32>::convert(tmp,y)));
-			return x = integer(::Givaro::Montgomery<::Givaro::Std32>::convert(tmp,y));
+			//	return x = *(new integer(Montgomery< ::Givaro::Std32>::convert(tmp,y)));
+			return x = integer(::Givaro::Montgomery< ::Givaro::Std32>::convert(tmp,y));
 		}
 
 		double& convert(double& x, const Element& y) const
 		{
-			return ::Givaro::Montgomery<::Givaro::Std32>::convert( x, y);
+			return ::Givaro::Montgomery< ::Givaro::Std32>::convert( x, y);
 		}
 
 #if 0
 		bool isZero(const Element& x) const
 		{
-		       	return ::Givaro::Montgomery<::Givaro::Std32>::isZero(x);
+		       	return ::Givaro::Montgomery< ::Givaro::Std32>::isZero(x);
 		}
 #endif
 
