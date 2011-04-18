@@ -1,0 +1,28 @@
+Instructions for making a LinBox release:
+
+1. Run 'svn up ' to make sure you are fully up to date and on the
+   HEAD branch [1]
+2. Update the version number in Makefile.am next to 'VERSION = ', and in configure.in:3
+3. Run 'make distcheck' on your local copy of LinBox. If there are any
+   problems, fix them and commit the fixes to CVS. Usually problems
+   will be things like header files that are not being installed, but
+   should be. Make sure 'make distcheck' runs once without having any
+   errors before moving onto the next step. Also, record all of the
+   changes you make in ChangeLog.
+4. Add a ChangeLog entry for Makefile.am with the text 'New version
+   <version>' where <version> is the version you are releasing.
+5. Make sure everything in your local copy of LinBox is committed. In
+   particular, either commit or eliminate anything from step 1 that
+   was marked modified.
+6. Run 'make dist' (or 'make distcheck') so that the last ChangeLog
+   entry is included in your tarball.
+7. Copy the tarball produced in step 6 to the web server.
+8. Update the LinBox web site with information on the new release --
+   mention it in news.html and update the latest version information
+   in index.html and download.html
+
+[1] Of course, this assumes that you want to release from the head
+    branch. If HEAD represents the development version and you
+    actually want to release from a stable branch, you should use
+      cvs up -dP -r linbox-<version>
+    where <version> is the version identifier in the stable branch

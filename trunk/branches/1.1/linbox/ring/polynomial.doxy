@@ -1,0 +1,8 @@
+// Copyright (C) 2010 LinBox, GNU LGPL, see COPYING for licence information
+
+/*! @ingroup ring
+ * @defgroup polynomials Polynomials
+ * @brief NO DOC YET
+ */
+
+// vim:syn=doxygen

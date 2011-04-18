@@ -1,0 +1,206 @@
+// Copyright (C) 2005 David Saunders, 2010 LinBox.
+// This file is part of LinBox, see COPYING for licence information.
+/*!  \page tuto LinBox tutorial
+
+The person requiring some exact linear algebra computation may exploit LinBox
+at any of four general levels.  In order from least involved with the details
+to most involved, they are:
+
+<ol>
+<li>
+Access using a LinBox web server.
+</li>
+
+The user at this level must attend to preparation of a matrix in a suitable
+file format and invoking the webservice.  The server itself should provide
+adequate documentation for this.  Servers are generally available at <a
+href="http://www.linalg.org" target="_blank">linalg.org</a>.
+
+<li>
+Access using compiled codes.  Full programs exist in the examples directory and
+can be used through an interface to LinBox in a general purposes system such as
+Maple or <a href="http://www.sagemath.org"  target="_blank">SAGE</a>.
+</li>
+
+The user at this level must see to installation, and then attend to preparation
+of her matrix in a suitable file format and to the form of the program or
+procedure invocation.  A number of programs are available in the examples
+directory distributed with LinBox providing for rank, determinant, linear
+system solution, etc.  The documentation of the examples module should serve
+for this level of access.
+
+<!-- what about interfaces maple and gap - can they be documented now? -->
+
+<li>
+Use of LinBox as a programmers library for exact linear algebra functions.
+</li>
+
+At this level a user must do at least the following:
+<ol type="a">
+<li>
+Choose a field or ring representation and construct a specific field or ring
+object \c R.
+</li>
+<li>
+Choose a blackbox or matrix representation suitable to your data and construct
+specific matrix \c A over \c R.
+</li>
+<li>
+Call needed algorithm.  The solutions directory is designed to support this by
+providing functions with simple problem oriented interfaces (\c rank(), \c
+det(), \c solve()), yet allowing some user control of algorithm details.  The
+programmer may be providing some of the parts such as an application specific
+blackbox matrix class.
+</li>
+</ol>
+
+<li>
+Power development.
+</li>
+
+Again, this is use of LinBox as a library, but with hands fully on the details.
+The programmer at this level apparently needs the best opportunities for high
+performance and is willing to use the more complicated internal interfaces to
+get it.  Direct calls to functions in the algorithms directory and perhaps to
+related packages such as \c FFLAS, \c FFPACK, or other components are being
+used.  The programmer working at this level of intimacy with LinBox is likely
+to develop some components that ought to be included in future releases of
+LinBox.  Such contributions are warmly welcomed.  The online documentation
+system is intended primarily for the programmer at level 3.  Thus documentation
+is not generated to the last internal detail.  It is supposed that the level 4
+(and 3) programmer, when studying internal details, will be best served by
+reading the code.  It is possible, if you wish, to set <a
+href="http://www.doxygen.org/" target="_blank">doxygen</a> parameters so as to
+have a documentation listing for every class and function.  Good luck
+separating wheat from chaff in that case.
+
+</ol>
+
+
+In this tutorial we will discuss a simple application at level 3,  the design
+of a program to compute the determinant of a sparse matrix over
+\f$\mathbf{GF}(101)\f$.  The programmer has 3 major issues: field, matrix,
+algorithm.
+
+The basic algorithm choice is between blackbox and elimination algorithms.
+If our matrix is \c A, then the algorithm call may look like
+\code
+det(d, A, Method::Blackbox());
+//or
+det(d, A, Method::Elimination());
+\endcode
+To have access to this determinant function just <code>\#include <linbox/solutions/det.h></code>.
+
+The larger and sparser the matrix the more likely that the blackbox algorithm
+is fastest.  Hybrids are under development to help make this choice, and even
+to make it at run time adaptively.  The last argument to the solutions
+functions is a method object which specifies the algorithm to be used.  In each
+case there is a default, so this argument is optional.  Also, some method
+objects may be constructed so as to convey more detail about the algorithm to
+use.  For example it may help to promise that the matrix is nonsingular or
+symmetric or to request a particular algorithm variant.  The blackbox algorithm
+based fundamentally on Wiedemann's approach is specified by
+\c Method::Wiedemann, see \c solutions/methods.h for more details.  Specification of
+a blocked blackbox algorithm may be advantageous (in the future).   Elimination
+is likely fastest if the matrix is not extremely sparse or not large or not
+subject to rapid fill-in.
+
+Of course, first we must construct the matrix and field.  For the field, you
+must first choose the class (representation type) of field and then instantiate
+your specific field.
+
+\code
+#include <linbox/field/modular.h>
+
+
+typedef Modular<short> Field;
+Field F(101);
+\endcode
+
+It is a good idea to use a \p typedef, making it easy to change representations
+later.  The \ref modular field representations are LinBox's own and contain
+some useful optimizations.  Another possibility is use of <a
+href="http://shoup.net/ntl/" target="_blank">NTL</a>'s \c NTL::ZZ_p class.  The
+LinBox wrapper of that, called \p LinBox::NTL_ZZ_p is found in \c
+field/ntl-ZZ_p.h.  Or use a <a
+href="http://ljk.imag.fr/CASYS/LOGICIELS/givaro/" target="_blank">Givaro</a>
+table based representation, \c LinBox::GivaroGfq in \c field/givaro-gfq.h
+...and there are many other options.  The program \c tests/test-fields.C will
+provide some timing data on the basic functions of each representation.  In
+%LinBox, a \p Field class and the class representing the field entries are
+distinct types.  The field object owns the arithmetic operations, whereas the
+entry objects may be of a primitive type such as \c short, \c int, \c double.
+Each field class \p Fld has the embedded class \c Fld::Element for it's
+elements.
+
+\code
+Field::Element a, b, c;
+F.init(a, 2); F.init(b, 3);
+F.mul(c, a, b); // c <- a*b
+F.write(cout, c);
+\endcode
+
+<!-- put here a diatribe on field and element representations -->
+
+You have seen that the field representations are in subdirectory
+\c linbox/field.  Similarly the matrix representations are in
+\c linbox/blackbox.  All of these are are suitable for blackbox
+algorithms.  Only those deriving from representations in \c linbox/matrix
+are suitable for elimination.  For a sparse matrix, \c LinBox::TriplesBB is a
+good representation choice if a blackbox algorithm is to be used.  For a
+\f$\{0,1\}-\f$incidence matrix, the class \c LinBox::ZeroOne will be more economical of
+space and time.  On the other hand, if elimination is to be used, those will
+not serve at all, but \c LinBox::SparseMatrix, which allows internal
+modification, will do the trick.  The ordinary matrix representation is
+\c LinBox::DenseMatrix.  If your matrix structure allows you to compute
+matrix-vector products in a way faster than these classes provide, you can gain
+by defining your own matrix class adhering to the \ref blackbox interface.  The main
+components of the blackbox interface are member functions \c apply() and
+\c applyTranspose() functions. \c A.apply(y, x) performs \f$y \gets Ax\f$.
+
+Then there is the question of initializing matrix
+entries.  Two basic approaches are illustrated here.
+
+\code
+TriplesBB A;
+A.read("triples-file"); // initialize A from data in file (including shape).
+\endcode
+
+Or a program can add entries to a sparse or dense matrix one by one using the \c setEntry
+function.
+
+\code
+SparseMatrix B(100, 200); // 100 by 200 zero matrix (so far).
+for ( ... )
+{
+   Field::Element v;
+   F.init(v, ...);
+   B.setEntry(i, j, v);  // put nonzero v in i,j position.
+}
+\endcode
+
+Putting it all together, we may have a program looking like this.
+\code
+#include <linbox/field/modular.h>
+#include <linbox/blackbox/dense.h>
+#include <linbox/solutions/det.h>
+
+using namespace LinBox;
+
+main()
+{
+    typedef Modular<double> Field;
+    typedef DenseMatrix<Field> Matrix;
+    Field F(65521);
+    Matrix A; A.read("datafile");
+    Field::Element d;
+    det(d, A, blasElimination);
+    F.write(cout << "the determinant is ", d) << endl;
+}
+\endcode
+
+This tutorial should continue with a discussion of compilation issues, but it
+doesn't.  Something useful may be learned from examining the Makefile.am in the examples directory.
+*/
+
+// vim:syntax=doxygen

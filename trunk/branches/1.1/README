@@ -1,0 +1,32 @@
+  ******  The Linbox Library  ******  
+
+PURPOSE:
+
+The Linbox library provides functionalities for exact linear algebra.
+See doc/mainpage.doxy for more info.
+
+INSTALLATION:
+
+See doc/install*html for particulars.
+See INSTALL for generic installation information.
+
+
+AVAILABILITY: from linalg.org
+
+
+REQUIREMENTS:  GMP, ATLAS (or other cblas, lapack), NTL, Givaro
+See  doc/install*html for details.
+
+This library requires the GNU C++ compiler (gcc-2.95.1 or newer) or any 
+compiler supporting advanced template features.
+
+
+==========================================================
+The linbox website is http://linalg.org
+
+Corrections, suggestions and comments to : 
+linbox-use@googlegroups.com
+ 
+Last update : 2009 September
+ 
+

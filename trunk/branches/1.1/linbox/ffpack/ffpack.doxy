@@ -1,0 +1,8 @@
+/** \ingroup linbox
+    \defgroup ffpack ffpack
+
+	\brief Class FFPACK provides functions using fflas much as Lapack uses BLAS.
+
+*/
+
+// vim:syn=doxygen

@@ -1,0 +1,96 @@
+/** \page Archetypes
+  \brief %LinBox uses common object interfaces and archetypical instantiations.
+  This is done for
+  several key concepts including blackbox matrices, fields, random iterators, and vectors.
+
+  %LinBox objects and algorithms are parameterized by types which must meet the 
+  interface requirements described here.  Parameterization is via C++ templates.
+  The interface concepts are specified in classes called archetypes.
+
+  The archetype classes are similar in spirit to Java interfaces.  
+  However most of them are also instantiable and their instances are concrete objects.
+  Originally archetypes were pure virtual classes and algorithms 
+  with archetype arguments could be written and separately compiled.
+  However virtual classes cannot also provide templated member functions,
+  and %LinBox is moving to greater use of template member functions. 
+In some cases, 
+  we forgo the separate complation and code bloat avoidance mechanism 
+  in favor of speed and flexibility using template members.
+
+  Archetypes exist for fields, field elements, random iterators, vectors,
+  blackbox matrices, dense matrices, and sparse matrices.
+
+- Blackbox matrix archetype
+    LinBox::BlackboxArchetype in linbox/blackbox/archetype.h specifies this interface in detail.
+    It is a parent class from which the various blackbox classes inherit.
+
+- Sparse Matrix interface.  This extends the blackbox interface
+    and provides facilities for some direct methods.
+
+- Dense Matrix interface.  This extends the blackbox interface
+    and provides facilities for some direct methods and block methods
+    (dense matrices in lieu of vectors as arguments to black box apply).
+
+- Field archetype.  This provides the basic 
+    arithmetic functionality of a field.  The interface is used
+    more generally for representations of commutative rings with 1.
+    LinBox::FieldArchetype in linbox/field/archetype.h specifies this interface in detail
+    and sets it up in such a way that algorithms can be compiled
+    once against the field archetype.  
+    Alternatively, and with some performance gain,
+    one can compile an algorithm separately against each field class used.
+    For a listing of the field implementations see LinBox::FieldInterface .
+
+- Random iterator archetype.  %LinBox fields (and rings) provide a random iterator
+    type.  Objects of this type can be used to generate elements at random.
+    RandIterArchetype in linbox/randiter/archetype.h specifies this interface in detail.
+
+- Element archetype.  To allow for high performance, it must
+    be possible to use any C++ type to represent elments of fields and rings.
+    This includes the primitive types such as int and float.  To support 
+    this, our element type requires only: a public default constructor, 
+    a copy constructor, an assignment operator, and a destructor.
+    ElementArchetype in linbox/element/archetype.h specifies this interface in detail.
+
+- Dense vector interface.  This is the interface for vectors to which blackboxes
+    are applied (the vector of a matrix vector product). 
+    This is simply the std::vector<Elt> interface, where Elt is the element type of the field involved.
+    But we do not use the functionality concerning resizing vectors, {\tt resize, push_back}, etc.
+    An example of a class meeting this interface is LinBox::SubVector .
+
+- Sparse vector interfaces.  We are experimenting with two or three
+    variant interfaces for manipulation of sparse vectors.
+
+
+These additional interfaces are under construction.
+- Target Domain interface.  This extends the field (or ring) interface.
+    It has members dealing with the ring as a module over another.
+    This interface is designed primarily with three applications in mind.
+    - finite field extensions \f$K \subset F\f$.
+    - \f$Z -> Zp\f$.
+    - conversions among isomorphic representations, as used for
+        instance in implementing the Toeplitz matrix class.
+  
+- Ring homomorphism interface.  This is used by the 
+    target rings.
+
+- Polynomial interface.  This may become the std::vector
+    interface (including the resizing functionality) together
+    with a handful of functions for manipulating polynomials.
+    %LinBox' design intentions are to exploit other software for
+    any serious polynomial manipulation.
+
+
+In general, there are three uses for the archetypes classes:
+
+- To define the common object interface of the concept, 
+    i.e., specify what an classes must have to meet the interface.
+
+- To allow distribution of compiled code and prototype library components.  Thus it is possible to compile algorithms with the archetypes 
+    as parameters and call the compiled code with objects of other classes 
+    meeting the interface.
+
+- To control code bloat. (by means of separate compilation as sketched in the item above)
+
+  
+*/
