@@ -33,6 +33,8 @@
 #include <iostream>
 #include <omp.h>
 
+#include <givaro/givintnumtheo.h>
+using namespace Givaro;
 #include "linbox/field/gf2.h"
 #include "linbox/field/modular-double.h"
 #include "linbox/field/givaro-zpz.h"
@@ -45,7 +47,6 @@
 #include "linbox/algorithms/smith-form-sparseelim-local.h"
 #include "linbox/util/matrix-stream.h"
 
-#include <givaro/givintnumtheo.h>
 
 template<class Field>
 unsigned long& TempLRank(unsigned long& r, char * filename, const Field& F)
@@ -235,7 +236,7 @@ int main (int argc, char **argv)
 
 	std::cout << "num procs: " << omp_get_num_procs() << std::endl;
 	std::cout << "max threads: " << omp_get_max_threads() << std::endl;
-#pragma omp parallel for shared(SmithDiagonal, Moduli, coprimeR) schedule(dynamic)
+#pragma omp parallel for shared(SmithDiagonal, Moduli, coprimeR) 
 	for(size_t j=0; j<Moduli.size(); ++j) {
 		unsigned long r; LRank(r, argv[1], Moduli[j]);
 		std::cerr << "Rank mod " << Moduli[j] << " is " << r << " on thread: " << omp_get_thread_num() << std::endl;
