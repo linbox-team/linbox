@@ -37,22 +37,22 @@ namespace LinBox
 	 *  @tparam StorageTag
 	 */
 	template <class Domain, class StorageTag=Givaro::Dense>
-	class GivPolynomialRing : public Givaro::Poly1Dom<GivaroField<Domain>,StorageTag> {
+	class GivPolynomialRing : public ::Givaro::Poly1Dom<GivaroField<Domain>,StorageTag> {
 	public:
 
-		//	using Givaro::Poly1Dom<Domain,StorageTag>::eval;
-		typedef typename Givaro::Poly1Dom<Domain,StorageTag>::Element Element;
+		//	using ::Givaro::Poly1Dom<Domain,StorageTag>::eval;
+		typedef typename ::Givaro::Poly1Dom<Domain,StorageTag>::Element Element;
 
 		typedef Element Polynomial;
 
 		GivPolynomialRing () {}
 
 		GivPolynomialRing (const Domain& D) :
-			Givaro::Poly1Dom<GivaroField<Domain>,StorageTag>(D, Givaro::Indeter())
+			::Givaro::Poly1Dom<GivaroField<Domain>,StorageTag>(D, ::Givaro::Indeter())
 		{}
 
-		GivPolynomialRing (const Domain& D, const Givaro::Indeter& I) :
-			Givaro::Poly1Dom<GivaroField<Domain>,StorageTag>(D, I)
+		GivPolynomialRing (const Domain& D, const ::Givaro::Indeter& I) :
+			::Givaro::Poly1Dom<GivaroField<Domain>,StorageTag>(D, I)
 		{}
 
 		template<class PolyCont>
@@ -138,7 +138,7 @@ namespace LinBox
 		return factors;
 	}
 
-	typedef GivPolynomialRing< NTL_ZZ , Givaro::Dense> GivPolZZDense;
+	typedef GivPolynomialRing< NTL_ZZ , ::Givaro::Dense> GivPolZZDense;
 	template <>
 	template <>
 	std::vector<GivPolZZDense::Element* >&
@@ -183,7 +183,7 @@ namespace LinBox
 		_domain.characteristic(charac);
 		double p = charac;
 		typedef GivaroField<Modular<double> > GivModDouble;
-		typedef Givaro::Poly1FactorDom< GivModDouble,Givaro::Dense, GivModDouble::RandIter> PolysDouble;
+		typedef ::Givaro::Poly1FactorDom< GivModDouble,Givaro::Dense, GivModDouble::RandIter> PolysDouble;
 
 
 		PolysDouble PFD(*this, GivModDouble::RandIter(_domain));

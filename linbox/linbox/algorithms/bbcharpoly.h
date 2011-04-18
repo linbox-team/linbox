@@ -129,7 +129,7 @@ namespace LinBox
 			typename Blackbox::Field intRing = A.field();
 			typedef Modular<uint32_t> Field;
 			typedef typename Blackbox::template rebind<Field>::other FieldBlackbox;
-			typedef GivPolynomialRing<typename Blackbox::Field, Givaro::Dense> IntPolyDom;
+			typedef GivPolynomialRing<typename Blackbox::Field, ::Givaro::Dense> IntPolyDom;
 			typedef typename IntPolyDom::Element IntPoly;
 			typedef GivPolynomialRing<Field>::Element FieldPoly;
 			// Set of factors-multiplicities sorted by degree
@@ -230,7 +230,7 @@ namespace LinBox
 		{
 			commentator.start ("Modular Blackbox Charpoly ", "MbbCharpoly");
 			typedef typename Blackbox::Field Field;
-			typedef GivPolynomialRing<Field, Givaro::Dense> PolyDom;
+			typedef GivPolynomialRing<Field, ::Givaro::Dense> PolyDom;
 			typedef typename PolyDom::Element Polynomial;
 			// Set of factors-multiplicities sorted by degree
 			typedef std::multimap<unsigned long,FactorMult<Polynomial>* > FactPoly;
@@ -344,7 +344,7 @@ namespace LinBox
 		{
 			typedef std::multimap<unsigned long, FactorMult<FieldPoly,IntPoly>* > FactPoly;
 			typedef typename Blackbox::Field Field;
-			typedef GivPolynomialRing<Field, Givaro::Dense> PolyDom;
+			typedef GivPolynomialRing<Field, ::Givaro::Dense> PolyDom;
 			typename FactPoly::iterator itf = factCharPoly.begin();
 			typename std::multimap<FactorMult<FieldPoly,IntPoly>*,bool>::iterator lead_it;
 			Field F = A.field();

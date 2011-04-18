@@ -89,7 +89,7 @@ namespace LinBox
 
 
         /*! @internal
-	 * Spy structure to have access to protected members of Givaro::Integer.
+	 * Spy structure to have access to protected members of ::Givaro::Integer.
 	 */
 	struct SpyInteger
 	{

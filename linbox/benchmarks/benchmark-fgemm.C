@@ -44,7 +44,7 @@
 /*        Outils          */
 /* ********************** */
 
-using Givaro::Timer;
+using ::Givaro::Timer;
 
 /*! @brief Watches a timer and a number and repet and signals if over.
  *
