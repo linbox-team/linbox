@@ -210,7 +210,7 @@ int main (int argc, char **argv)
 // 	NTL::zz_p::init(q1); // Done in the constructor
 	Field F1(q1);
 
-        GivaroZpz<Givaro::Std32> F2(q2);
+        GivaroZpz<::Givaro::Std32> F2(q2);
 
 	typedef vector<Field::Element> Vector;
 
