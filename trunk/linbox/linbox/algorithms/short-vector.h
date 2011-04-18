@@ -375,8 +375,8 @@ namespace LinBox
 				x_tmp = SEL(la, x12, x20, x21, x22); if (la < lmin_a) {lmin_a=la;x1=x12;x2=x_tmp;}
 
 
-				//if (::abs(x1)-::abs(y1)  != 1) std::cout<<"|x1|-|y1|: "<<::abs(x1)-::abs(y1)<<"\n";
-				//if (::abs(x2)-::abs(y2)  != 1) std::cout<<"|x2|-|y2|: "<<::abs(x2)-::abs(y2)<<"\n";
+				//if (::abs(x1)-::abs(y1)  != 1) std::cout<<"|x1|-|y1|: "<< ::abs(x1)-::abs(y1)<<"\n";
+				//if (::abs(x2)-::abs(y2)  != 1) std::cout<<"|x2|-|y2|: "<< ::abs(x2)-::abs(y2)<<"\n";
 
 			}
 

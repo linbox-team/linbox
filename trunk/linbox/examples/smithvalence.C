@@ -79,19 +79,19 @@ unsigned long& TempLRank(unsigned long& r, char * filename, const LinBox::GF2& F
 unsigned long& LRank(unsigned long& r, char * filename, integer p)
 {
 
-	integer maxmod16; LinBox::FieldTraits<LinBox::GivaroZpz<::Givaro::Std16> >::maxModulus(maxmod16);
-	integer maxmod32; LinBox::FieldTraits<LinBox::GivaroZpz<::Givaro::Std32> >::maxModulus(maxmod32);
+	integer maxmod16; LinBox::FieldTraits<LinBox::GivaroZpz< ::Givaro::Std16> >::maxModulus(maxmod16);
+	integer maxmod32; LinBox::FieldTraits<LinBox::GivaroZpz< ::Givaro::Std32> >::maxModulus(maxmod32);
 	integer maxmod53; LinBox::FieldTraits<LinBox::Modular<double> >::maxModulus(maxmod53);
-	integer maxmod64; LinBox::FieldTraits<LinBox::GivaroZpz<::Givaro::Std64> >::maxModulus(maxmod64);
+	integer maxmod64; LinBox::FieldTraits<LinBox::GivaroZpz< ::Givaro::Std64> >::maxModulus(maxmod64);
 	if (p == 2) {
 		LinBox::GF2 F2;
 		return TempLRank(r, filename, F2);
 	} else if (p <= maxmod16) {
-		typedef LinBox::GivaroZpz<::Givaro::Std16> Field;
+		typedef LinBox::GivaroZpz< ::Givaro::Std16> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
 	} else if (p <= maxmod32) {
-		typedef LinBox::GivaroZpz<::Givaro::Std32> Field;
+		typedef LinBox::GivaroZpz< ::Givaro::Std32> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
 	} else if (p <= maxmod53) {
@@ -99,7 +99,7 @@ unsigned long& LRank(unsigned long& r, char * filename, integer p)
 		Field F(p);
 		return TempLRank(r, filename, F);
 	} else if (p <= maxmod64) {
-		typedef LinBox::GivaroZpz<::Givaro::Std64> Field;
+		typedef LinBox::GivaroZpz< ::Givaro::Std64> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
 	} else {
@@ -113,9 +113,9 @@ unsigned long& LRank(unsigned long& r, char * filename, integer p)
 std::vector<size_t>& PRank(std::vector<size_t>& ranks, char * filename, integer p, size_t e, size_t intr)
 {
 	integer maxmod;
-	LinBox::FieldTraits<LinBox::GivaroZpz<::Givaro::Std64> >::maxModulus(maxmod);
+	LinBox::FieldTraits<LinBox::GivaroZpz< ::Givaro::Std64> >::maxModulus(maxmod);
 	if (p <= maxmod) {
-		typedef LinBox::GivaroZpz<::Givaro::Std64> Ring;
+		typedef LinBox::GivaroZpz< ::Givaro::Std64> Ring;
 		int64_t lp(p);
 		integer q = pow(p,e); int64_t lq(q);
 		if (q > integer(lq)) {

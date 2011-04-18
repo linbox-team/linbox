@@ -159,7 +159,7 @@ namespace LinBox
 #ifndef __INTEL_COMPILER
 	template<>
 	#endif
-	class GivaroExtension<GivaroGfq> : public ::Givaro::Extension<::Givaro::GFqDom<int32_t> >, public FieldInterface {
+	class GivaroExtension<GivaroGfq> : public ::Givaro::Extension< ::Givaro::GFqDom<int32_t> >, public FieldInterface {
 
 		typedef GivaroExtension<GivaroGfq> Self_t;
 	public:
@@ -167,7 +167,7 @@ namespace LinBox
 		/** Element type.
 		 *  This type is inherited from the Givaro class Extension
 		 */
-		typedef ::Givaro::Extension<::Givaro::GFqDom<int32_t> >::Element Element;
+		typedef ::Givaro::Extension< ::Givaro::GFqDom<int32_t> >::Element Element;
 
 		/** RandIter type.
 		 *  This type is inherited from the Givaro class GFqDom<TAG>
@@ -177,16 +177,16 @@ namespace LinBox
 		/** Constructor from an integer.
 		*/
 		GivaroExtension(const integer& p, const integer& k=1) :
-			::Givaro::Extension<::Givaro::GFqDom<int32_t> >(static_cast< ::Givaro::Extension<::Givaro::GFqDom<int32_t> >::Residu_t>(int32_t(p)),
-						  static_cast< ::Givaro::Extension<::Givaro::GFqDom<int32_t> >::Residu_t>(int32_t(k)))
+			::Givaro::Extension< ::Givaro::GFqDom<int32_t> >(static_cast< ::Givaro::Extension< ::Givaro::GFqDom<int32_t> >::Residu_t>(int32_t(p)),
+						  static_cast< ::Givaro::Extension< ::Givaro::GFqDom<int32_t> >::Residu_t>(int32_t(k)))
 		{
 		}
 
 		/** Constructor extension of a base field.
 		*/
 		GivaroExtension(const GivaroGfq& bF, const integer& ext=1) :
-			::Givaro::Extension<::Givaro::GFqDom<int32_t> >( static_cast< const ::Givaro::Extension< ::Givaro::GFqDom< int32_t > >::BaseField_t &>(bF),
-						   static_cast< ::Givaro::Extension<::Givaro::GFqDom<int32_t> >::Residu_t >(int32_t(ext)))
+			::Givaro::Extension< ::Givaro::GFqDom<int32_t> >( static_cast< const ::Givaro::Extension< ::Givaro::GFqDom< int32_t > >::BaseField_t &>(bF),
+						   static_cast< ::Givaro::Extension< ::Givaro::GFqDom<int32_t> >::Residu_t >(int32_t(ext)))
 		{
 		}
 
@@ -194,7 +194,7 @@ namespace LinBox
 		/** Copy Constructor.
 		*/
 		GivaroExtension(const Self_t& F) :
-			::Givaro::Extension<::Givaro::GFqDom<int32_t> >(F)
+			::Givaro::Extension< ::Givaro::GFqDom<int32_t> >(F)
 		{ }
 
 	}; // class GivaroExtension
