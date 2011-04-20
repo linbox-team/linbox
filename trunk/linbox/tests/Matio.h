@@ -26,7 +26,7 @@
 #include <cstring>
 #include <stdio.h>
 #include <stdlib.h>
-#include "linbox/fflas/fflas.h"
+#include "fflas-ffpack/fflas/fflas.h"
 
 
 

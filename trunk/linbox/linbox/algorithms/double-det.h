@@ -11,7 +11,7 @@
 #ifndef __LINBOX_doubledet_H
 #define __LINBOX_doubledet_H
 
-#include "linbox/ffpack/ffpack.h"
+#include "fflas-ffpack/ffpack/ffpack.h"
 #include "linbox/algorithms/matrix-hom.h"
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/algorithms/cra-full-multip.h"

@@ -28,7 +28,7 @@
 #define __LINBOX_blas_blackbox_H
 
 #include <linbox/matrix/blas-matrix.h>
-#include <linbox/fflas/fflas.h>
+#include <fflas-ffpack/fflas/fflas.h>
 #include <linbox/matrix/matrix-domain.h>
 #include <linbox/field/hom.h>
 #include <linbox/field/multimod-field.h>

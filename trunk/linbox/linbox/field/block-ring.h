@@ -16,7 +16,7 @@
 #include "linbox/field/field-interface.h"
 //#include "linbox/matrix/blas-domain.h"
 #include "linbox/algorithms/blas-domain.h"
-#include "linbox/fflas/fflas.h"
+#include "fflas-ffpack/fflas/fflas.h"
 
 namespace LinBox
 {

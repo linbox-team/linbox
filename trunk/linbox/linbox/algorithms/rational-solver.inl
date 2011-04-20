@@ -42,8 +42,8 @@
 #include <linbox/algorithms/blackbox-block-container.h>
 #include <linbox/algorithms/block-massey-domain.h>
 #include <linbox/algorithms/vector-fraction.h>
-#include <linbox/ffpack/ffpack.h>
-#include <linbox/fflas/fflas.h>
+#include <fflas-ffpack/ffpack/ffpack.h>
+#include <fflas-ffpack/fflas/fflas.h>
 #include <linbox/solutions/methods.h>
 #include <linbox/util/debug.h>
 #include <linbox/linbox-config.h>

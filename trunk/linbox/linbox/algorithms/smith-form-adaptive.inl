@@ -42,7 +42,7 @@
 #include <linbox/algorithms/matrix-hom.h>
 #include <linbox/blackbox/random-matrix.h>
 #include <linbox/blackbox/scompose.h>
-#include <linbox/ffpack/ffpack.h>
+#include <fflas-ffpack/ffpack/ffpack.h>
 #include <linbox/algorithms/smith-form-binary.h>
 #include <linbox/algorithms/smith-form-adaptive.inl>
 #include <linbox/solutions/valence.h>

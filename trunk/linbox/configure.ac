@@ -213,17 +213,37 @@ LB_CHECK_LIDIA
 LB_CHECK_MAPLE
 LB_CHECK_SAGE
 #LB_CHECK_ATLAS
-LB_CHECK_BLAS(,,[
+
+# LB_CHECK_BLAS(,,[
+# echo ''
+# echo '*******************************************************************************'
+# echo ' ERROR: BLAS not found!'
+# echo
+# echo ' BLAS routines are required for this library to compile. Please'
+# echo ' make sure BLAS are installed and specify its location with the option'
+# echo ' --with-blas=<lib> when running configure.'
+# echo '*******************************************************************************'
+# exit 1
+# ])
+
+
+LB_CHECK_FFLAFLAS(,,[
 echo ''
 echo '*******************************************************************************'
-echo ' ERROR: BLAS not found!'
+echo ' ERROR: Fflas-Ffpack not found!'
 echo
-echo ' BLAS routines are required for this library to compile. Please'
-echo ' make sure BLAS are installed and specify its location with the option'
-echo ' --with-blas=<lib> when running configure.'
+echo ' Fflas-Ffpack routines are required for this library to compile. Please'
+echo ' make sure they are installed and specify its location with the option'
+echo ' --with-fflas-ffpack=<lib> when running configure.'
 echo '*******************************************************************************'
 exit 1
 ])
+
+
+AC_MSG_RESULT($BLAS_LIBS)
+AC_MSG_RESULT($BLAS_CFLAGS)
+
+
 LB_CHECK_EXPAT
 
 LB_BENCH
