@@ -273,8 +273,6 @@ examples/Readme-make
 doc/Makefile
 linbox/Makefile
 linbox/algorithms/Makefile
-linbox/fflas/Makefile
-linbox/ffpack/Makefile
 linbox/blackbox/Makefile
 linbox/element/Makefile
 linbox/field/Makefile
