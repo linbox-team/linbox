@@ -26,8 +26,8 @@
 
 #include "linbox/matrix/blas-matrix.h"
 
-#include "linbox/ffpack/ffpack.h" // LU
-#include "linbox/fflas/fflas.h" // trsm
+#include "fflas-ffpack/ffpack/ffpack.h" // LU
+#include "fflas-ffpack/fflas/fflas.h" // trsm
 
 //#include "Matio.h" // write_field ;
 #include <iostream>

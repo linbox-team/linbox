@@ -47,6 +47,10 @@ for FFLAFLAS_HOME in ${FFLAFLAS_HOME_PATH}
   do
     if test -r "$FFLAFLAS_HOME/include/fflas-ffpack/fflas-ffpack.h"; then
 
+		BLAS_LIBS=`$FFLAFLAS_HOME/bin/fflasffpack-config --blas-libs`
+		dnl  BLAS_CFLAGS=`$FFLAFLAS_HOME/bin/fflasffpack-config --cflags`
+
+
        if test "x$FFLAFLAS_HOME" != "x/usr" -a "x$FFLAFLAS_HOME" != "x/usr/local"; then
            FFLAFLAS_CFLAGS="-I${FFLAFLAS_HOME}/include"
        else
@@ -68,6 +72,7 @@ for FFLAFLAS_HOME in ${FFLAFLAS_HOME_PATH}
        fflaflas_checked="$checked $FFLAFLAS_HOME"
        unset FFLAFLAS_CFLAGS
 	   unset FFLAFLAS_LOC
+	   unset BLAS_LIBS
        ])
 	   dnl  AC_MSG_RESULT(found in $fflaflas_checked ? $fflaflas_found)
     else
@@ -80,6 +85,7 @@ if test "x$fflaflas_found" = "xyes" ; then
     AC_SUBST(FFLAFLAS_CFLAGS)
     AC_SUBST(FFLAFLAS_LIBS)
 	AC_SUBST(FFLAFLAS_LOC)
+	AC_SUBST(BLAS_LIBS)
     AC_DEFINE(HAVE_FFLAFLAS,1,[Define if FFLAFLAS is installed])
     HAVE_FFLAFLAS=yes
     if test "x$fflasflas_cross" != "xyes"; then

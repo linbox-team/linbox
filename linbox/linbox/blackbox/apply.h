@@ -48,7 +48,7 @@
 
 
 #ifdef __LINBOX_BLAS_AVAILABLE
-#include <linbox/fflas/fflas.h>
+#include <fflas-ffpack/fflas/fflas.h>
 #endif
 
 //#define DEBUG_CHUNK_SETUP

@@ -42,7 +42,7 @@
 #include <linbox/randiter/random-prime.h>
 //#include <linbox/solutions/minpoly.h>
 #include <linbox/util/commentator.h>
-#include <linbox/ffpack/ffpack.h>
+#include <fflas-ffpack/ffpack/ffpack.h>
 #include <linbox/algorithms/cra-early-multip.h>
 
 namespace LinBox

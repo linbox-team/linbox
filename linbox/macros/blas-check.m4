@@ -85,7 +85,7 @@ if test -n "$BLAS_VAL"; then
 	else
 		BLAS_LIBS="$BLAS_VAL"
 	fi
-	CXXFLAGS="${BACKUP_CXXFLAGS} ${CBLAS_FLAG}"
+	CXXFLAGS="${BACKUP_CXXFLAGS} ${CBLAS_FLAG} ${FFLAFLAS_CFLAGS}"
 	LIBS="${BACKUP_LIBS} ${BLAS_LIBS}"
 
 	AC_TRY_LINK(
@@ -154,7 +154,7 @@ else
 			BLAS_LIBS="-L${BLAS_HOME} ${ATLAS_LIBS}"
 		fi
 
-		CXXFLAGS="${BACKUP_CXXFLAGS} ${CBLAS_FLAG}"
+		CXXFLAGS="${BACKUP_CXXFLAGS} ${CBLAS_FLAG} ${FFLAFLAS_CFLAGS}"
 		LIBS="${BACKUP_LIBS} ${BLAS_LIBS}"
 
 		AC_TRY_LINK(
@@ -209,7 +209,7 @@ if test "x$blas_found" = "xyes"; then
 		echo "whether your BLAS are good. I am assuming it is."
 	fi
 
-## Check for lapack 
+## Check for lapack
 	AC_MSG_CHECKING(for lapack)
 	AC_TRY_RUN(
 	[#define __LINBOX_CONFIGURATION
@@ -268,7 +268,7 @@ if test "x$blas_found" != "xyes" ; then
 		else
 			BLAS_LIBS=$BLAS_VAL
 		fi
-		CXXFLAGS="${BACKUP_CXXFLAGS} ${CBLAS_FLAG}"
+		CXXFLAGS="${BACKUP_CXXFLAGS} ${CBLAS_FLAG} ${FFLAFLAS_CFLAGS}"
 		LIBS="${BACKUP_LIBS} ${BLAS_LIBS}"
 
 		AC_TRY_LINK(
@@ -331,7 +331,7 @@ if test "x$blas_found" != "xyes" ; then
 				BLAS_LIBS="-L${BLAS_HOME} -lblas"
 			fi
 
-			CXXFLAGS="${BACKUP_CXXFLAGS} ${CBLAS_FLAG}"
+			CXXFLAGS="${BACKUP_CXXFLAGS} ${CBLAS_FLAG} ${FFLAFLAS_CFLAGS}"
 			LIBS="${BACKUP_LIBS} ${BLAS_LIBS}"
 
 			AC_TRY_LINK(

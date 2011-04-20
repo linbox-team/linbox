@@ -23,8 +23,8 @@
 
 #include <cassert>
 #include "linbox/linbox-config.h"
-#include "linbox/fflas/fflas.h"
-#include "linbox/ffpack/ffpack.h"
+#include "fflas-ffpack/fflas/fflas.h"
+#include "fflas-ffpack/ffpack/ffpack.h"
 #include "linbox/integer.h" // for fflas on integers...
 
 //!@todo !

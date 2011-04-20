@@ -18,7 +18,7 @@
 #include "../linbox/matrix/matrix-domain.h"
 //#include "linbox/field/givaro-zpz.h"
 #include "../linbox/field/modular.h"
-//#include "linbox/ffpack/ffpack.h"
+//#include "fflas-ffpack/ffpack/ffpack.h"
 #include "../linbox/algorithms/dense-nullspace.h"
 #include <vector>
 #include "./test-common.h"

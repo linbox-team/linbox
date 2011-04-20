@@ -46,7 +46,7 @@
 #include <linbox/algorithms/echelon-form.h>
 #include "linbox/algorithms/gauss.h"
 #include "linbox/algorithms/smith-form-adaptive.h"
-#include "linbox/ffpack/ffpack.h"
+#include "fflas-ffpack/ffpack/ffpack.h"
 #include <linbox/solutions/rank.h>
 #include <linbox/solutions/det.h>
 #include <linbox/solutions/solve.h>

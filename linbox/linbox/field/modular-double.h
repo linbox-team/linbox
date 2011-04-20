@@ -160,10 +160,21 @@ namespace LinBox
 		}
 
 		integer &characteristic (integer &c) const
-		{ return c = integer(modulus); }
+		{
+			return c = integer(modulus);
+		}
+
+		template<class T>
+		T &characteristic (T &c) const
+		{
+			return c = T(modulus);
+		}
+
 
 		size_t characteristic () const
-		{ return modulus; }
+		{
+		       	return modulus;
+		}
 
 		integer &convert (integer &x, const Element &y) const
 		{
@@ -174,6 +185,13 @@ namespace LinBox
 		{
 			return x=y;
 		}
+
+		template<class T>
+		T &convert (T &x, const Element& y) const
+		{
+			return x=T(y);
+		}
+
 
 		std::ostream &write (std::ostream &os) const
 		{
