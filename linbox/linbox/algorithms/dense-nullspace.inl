@@ -316,7 +316,7 @@ namespace LinBox
 		}
 
 		for (size_t i = 0 ; i < coker_dim ; ++i)	// copy U2 to result V before updating with U1
-			FFPACK::fcopy (F, R, V + i * ldV, 1, A + (R + i)*lda, 1);
+			FFLAS::fcopy (F, R, V + i * ldV, 1, A + (R + i)*lda, 1);
 		typename Field::Element one, minus_one ;
 		F.init(one,1UL);
 		F.neg(minus_one, one);
