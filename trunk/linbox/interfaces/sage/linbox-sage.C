@@ -160,6 +160,8 @@ template<class Element>
 Element* linbox_modn_dense_minpoly (Element modulus, Element ** mp, size_t* degree,
 				    size_t n, Element *matrix)
 {
+	typedef  Modular<Element> Field;
+	typedef  std::vector<Element> Polynomial;
 
 	Modular<Element> F(modulus);
 	// Warning: super sketchy memory alloc here!!!!
@@ -168,7 +170,8 @@ Element* linbox_modn_dense_minpoly (Element modulus, Element ** mp, size_t* degr
 	size_t * P = new size_t[n];
 
 	// FIXME: check the memory management: better to allocate mp in sage
-	FFPACK::MinPoly (F, *minP, n, matrix, n, X, n, P);
+	// FFPACK::MinPoly<Field,Polynomial> (F, *minP, n, matrix, n, X, n, P);
+	FFPACK::MinPoly<Field,Polynomial> (F, *minP, n, matrix, n, X, n, P);
 	*degree=minP->size()-1;
 
 	*mp = &(*minP)[0];
