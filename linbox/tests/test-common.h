@@ -30,24 +30,7 @@
 
 using namespace std;
 
-enum ArgumentType {
-	TYPE_NONE, TYPE_INT, TYPE_INTEGER, TYPE_DOUBLE, TYPE_INTLIST
-};
-#define TYPE_BOOL TYPE_NONE
-
-#define END_OF_ARGUMENTS \
-     { '\0', "\0", "\0", TYPE_NONE, NULL }
-
-struct Argument
-{
-	char             c;
-	const char      *example    ;
-	const char      *helpString ;
-	ArgumentType     type       ;
-	void            *data       ;
-};
-// example may be passed as null and will be generated intelligently
-// eg "-b {YN+-}" for bools, "-v v" for all else
+#include "fflas-ffpack/utils/args-parser.h"
 
 template <class Field, class Vector>
 void printVector (Field &F, ostream &output, const Vector &v)
@@ -365,10 +348,6 @@ interpolatePoly (const Field                            &F,
 	return f;
 }
 
-void parseArguments (int argc, char **argv, Argument *args, bool printDefaults = true);
-
-/** writes the values of all arguments, preceded by the programName */
-std::ostream& writeCommandString (std::ostream& os, Argument *args, char* programName);
 
 bool isPower        (LinBox::integer n, LinBox::integer m);
 

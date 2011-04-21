@@ -39,7 +39,7 @@
 #include "linbox/field/modular-double.h"
 #include "linbox/field/modular-balanced-float.h"
 #include "linbox/field/modular-float.h"
-#include "Matio.h"
+#include "fflas-ffpack/utils/Matio.h"
 #include "test-common.h"
 
 //#define _LB_TIME
