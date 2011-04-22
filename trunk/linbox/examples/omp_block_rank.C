@@ -29,6 +29,7 @@
  */
 
 #include <iostream>
+#include <fstream>
 #include <omp.h>
 #include <givaro/givtimer.h>
 #include <givaro/givpoly1crt.h>
@@ -241,17 +242,8 @@ void WhisartTraceTranspose(
 }
 #endif
 
-struct OMPTimer
-{
-	double _c;
-	void start() { _c = omp_get_wtime(); }
-	void stop() { _c = omp_get_wtime() - _c; }
-	void clear() { _c = 0.0; }
-	double usertime() { return _c; }
-	friend std::ostream& operator<<(std::ostream& o, const OMPTimer& t) {
-		return o << t._c << 's';
-	}
-};
+using namespace Givaro;
+
 
 template<class Field>
 int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
@@ -269,21 +261,21 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 	typename Field::RandIter generator (F,c,seed);
 	LinBox::VectorDomain<Field> VD(F);
 
-	ifstream input (argv[1]);
+	std::ifstream input (argv[1]);
 	LinBox::MatrixStream<Field> ms( F, input );
 	typedef LinBox::SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq > Blackbox;
 	typedef LinBox::BlasBlackbox<Field> Block_t;
 
 	Blackbox B (ms);
 
-	std::cerr << "B is " << B.rowdim() << " by " << B.coldim() << endl;
+	std::cerr << "B is " << B.rowdim() << " by " << B.coldim() << std::endl;
 	long M = B.rowdim() ;
 	long N = B.coldim();
 	long R = (M<N?M:N);
 	long S = (M>N?M:N);
 
-	long nb = (argc>3 ? atoi(argv[3]) : omp_get_max_threads() );
-	std::cerr << "block size: " << nb << endl;
+	int nb = (argc>3 ? atoi(argv[3]) : omp_get_max_threads() );
+	std::cerr << "block size: " << nb << std::endl;
 
 	chrono1.start();
 	std::vector< std::vector< typename Field::Element > > LV(nb);
@@ -551,7 +543,7 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 
 
 	std::cerr << "Rank |\t Time-genvect\t Time-seq\t Time-SB\t Time-Interp |\t Total-Time" << std::endl;
-	std::cout << (deg-val) << std::scientific << setprecision(3)
+	std::cout << (deg-val) << std::scientific << std::setprecision(3)
 	<< " |\t" << chrono1.usertime()
 	<< '\t' << chrono2.usertime()
 	<< '\t' << chrono3.usertime()
