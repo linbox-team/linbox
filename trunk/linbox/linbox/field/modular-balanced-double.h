@@ -2,7 +2,7 @@
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/field/modular-balanced-double.h
  * Copyright (C) 2003 Pascal Giorgi
- *               2008 Clement Pernet
+ *               2005,2008 Clement Pernet
  * Written by Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
  * and Clement Pernet <Clement.Pernet@imag.fr>
  *
@@ -31,6 +31,7 @@
 #include "linbox/field/field-traits.h"
 #include "linbox/randiter/modular-balanced.h"
 #include "linbox/randiter/nonzero.h"
+#include "fflas-ffpack/field/modular-balanced-double.h"
 
 
 // Namespace in which all LinBox code resides
@@ -62,14 +63,14 @@ namespace LinBox
 	 * necessary, at the cost of a more expensive reduction.
 	 */
 	template<>
-	class ModularBalanced<double> : public FieldInterface {
+	class ModularBalanced<double> : public FieldInterface,
+	      public FFPACK::ModularBalanced<double> {
 
 	protected:
-
-		double  modulus;
-		double half_mod;
-		double mhalf_mod;
-		unsigned long   lmodulus;
+		// double  modulus;
+		// double half_mod;
+		// double mhalf_mod;
+		// unsigned long   lmodulus;
 
 	public:
 		friend class FieldAXPY<ModularBalanced<double> >;
@@ -77,8 +78,8 @@ namespace LinBox
 		friend class MultiModDouble;
 
 		typedef double Element;
-		typedef ModularBalancedRandIter<double> RandIter;
-		typedef NonzeroRandIter<ModularBalanced<double>, RandIter > NonZeroRandIter;
+		// typedef ModularBalancedRandIter<double> RandIter;
+		// typedef NonzeroRandIter<ModularBalanced<double>, RandIter > NonZeroRandIter;
 
 		static ClassifyRing <ModularBalanced<double> >::categoryTag getCategory()
 		{
@@ -87,14 +88,16 @@ namespace LinBox
 
 		// const bool balanced ;
 
-		ModularBalanced () {}
+		// ModularBalanced () {}
 
+#if 0
 		ModularBalanced (int32_t p, int exp = 1) :
 			modulus((double)p),
 			half_mod (double((p-1)/2)),
 			mhalf_mod(half_mod-modulus+1),
 			lmodulus (p)
 		{
+#ifdef DEBUG
 			if(modulus <= 1)
 				throw PreconditionFailed(__func__,
 							 __LINE__,
@@ -107,6 +110,7 @@ namespace LinBox
 				throw PreconditionFailed (__func__,
 							  __LINE__,
 							  "modulus is too big");
+#endif
 		}
 
 		ModularBalanced (double p) :
@@ -115,6 +119,7 @@ namespace LinBox
 			mhalf_mod(half_mod-modulus+1),
 			lmodulus ((unsigned long)p)
 		{
+#ifdef DEBUG
 			if (modulus <= 1)
 				throw PreconditionFailed(__func__,
 							 __LINE__,
@@ -124,6 +129,7 @@ namespace LinBox
 				throw PreconditionFailed (__func__,
 							  __LINE__,
 							  "modulus is too big");
+#endif
 		}
 
 		ModularBalanced (long int p) :
@@ -140,63 +146,74 @@ namespace LinBox
 							  __LINE__,
 							  "modulus is too big");
 		}
+#endif
 
 		ModularBalanced (const integer& p) :
-			modulus((double) p),
-			half_mod (double((p-1)/2)),
-			mhalf_mod(half_mod-modulus+1),
-			lmodulus(p)
+			FFPACK::ModularBalanced<double>((unsigned long)p)
 		{
+#ifdef DEBUG
+			if (p > (integer) ULONG_MAX)
+				throw PreconditionFailed(__func__,__FILE__,__LINE__,"prime too big");
 			if(modulus <= 1)
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			if(modulus > getMaxModulus())
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
+#endif
 
 		}
 
+#if 0
 		ModularBalanced (const ModularBalanced<double>& mf) :
-			modulus  (mf.modulus),
-			half_mod (mf.half_mod),
-			mhalf_mod(mf.mhalf_mod),
-			lmodulus (mf.lmodulus) {}
+			FFPACK::ModularBalanced<double>(mf)
+		      {}
 
-		const ModularBalanced &operator= (const ModularBalanced<double> &F) {
-			modulus = F.modulus;
-			half_mod = F.half_mod;
+		const ModularBalanced &operator= (const ModularBalanced<double> &F)
+		{
+			modulus   = F.modulus;
+			half_mod  = F.half_mod;
 			mhalf_mod = F.mhalf_mod;
-			lmodulus= F.lmodulus;
+			lmodulus  = F.lmodulus;
+			balanced  = F.balanced;
 			return *this;
 		}
+#endif
 
 
-		inline integer &cardinality (integer &c) const{
-			return c = integer(modulus);
-		}
-
-		inline integer &characteristic (integer &c) const
+		integer &cardinality (integer &c) const
 		{
 			return c = integer(modulus);
 		}
-		inline size_t characteristic () const
+
+		integer &characteristic (integer &c) const
+		{
+			return c = integer(modulus);
+		}
+
+		size_t characteristic () const
 		{
 			return modulus;
 		}
 
+		long unsigned characteristic(long unsigned int&p) const { return FFPACK::ModularBalanced<double>::characteristic(p) ; }
+		double & convert(double &x, const Element &y) const { return FFPACK::ModularBalanced<double>::convert(x,y) ; }
+		float & convert(float&x, const Element &y) const { return FFPACK::ModularBalanced<double>::convert(x,y) ; }
 
-		inline integer &convert (integer &x, const Element &y) const
+
+		integer &convert (integer &x, const Element &y) const
 		{
 			if ( y < 0. ) return x = integer (y + modulus) ;
 			else return x = integer (y);
 		}
 
-		inline double &convert (double &x, const Element& y) const
+#if 0
+		double &convert (double &x, const Element& y) const
 		{
 			return x=y;
 		}
 
 		std::ostream &write (std::ostream &os) const
 		{
-			return os << "balanced double mod " << int(modulus);
+			return os << "balanced double mod " << (long int)modulus;
 		}
 
 		std::istream &read (std::istream &is)
@@ -215,26 +232,28 @@ namespace LinBox
 
 		std::ostream &write (std::ostream &os, const Element &x) const
 		{
-			return os << int(x);
+			return os << (long) x;
 		}
 
 		std::istream &read (std::istream &is, Element &x) const
 		{
-			integer tmp;
-			// JGD : should'nt it be double tmp ???
+			unsigned long tmp;
 			is >> tmp;
 			init(x,tmp);
 			return is;
 		}
+#endif
 
 
-		inline Element &init (Element &x, const integer &y) const  {
+		Element &init (Element &x, const integer &y) const
+		{
 			x = (Element)(y%lmodulus);
 			if (x<mhalf_mod) return x += modulus ;
 			else if (x>half_mod) return x += modulus ;
 			return  x ;
 		}
 
+#if 0
 		inline Element& init(Element& x, const double y =0) const
 		{
 
@@ -268,12 +287,15 @@ namespace LinBox
 		{
 			return x == 1.;
 		}
+#endif
 
+		//! @bug faux si modulus==2
 		inline bool isMinusOne (const Element &x) const
 		{
 			return (x == -1.);
 		}
 
+#if 0
 		inline Element &add (Element &x,
 				     const Element &y,
 				     const Element &z) const
@@ -294,20 +316,23 @@ namespace LinBox
 			return x;
 		}
 
-		inline Element &mul (Element &x, const Element &y, const Element &z) const
+		inline Element &mul (Element &x,
+				     const Element &y, const Element &z) const
 		{
 			x = y * z;
 			return init (x,x);
 		}
 
-		inline Element &div (Element &x, const Element &y, const Element &z) const
+		inline Element &div (Element &x,
+				     const Element &y, const Element &z) const
 		{
 			Element temp;
 			inv (temp, z);
 			return mul (x, y, temp);
 		}
 
-		inline Element &neg (Element &x, const Element &y) const
+		inline Element &neg (Element &x,
+				     const Element &y) const
 		{
 			return x = -y;
 		}
@@ -331,9 +356,10 @@ namespace LinBox
 				temp = ty; ty = tx - q * ty;
 				tx = temp;
 			}
+
 			if (tx > half_mod ) return x = tx - modulus;
-			if ( tx < mhalf_mod ) return x = tx + modulus;
-			return x = (double) tx;
+			else if ( tx < mhalf_mod ) return x = tx + modulus;
+			else return x = (double) tx;
 		}
 
 		inline Element &axpy (Element &r,
@@ -373,7 +399,7 @@ namespace LinBox
 
 		inline Element &negin (Element &x) const
 		{
-			return x = -x;
+			return x = - x;
 		}
 
 		inline Element &invin (Element &x) const
@@ -386,6 +412,13 @@ namespace LinBox
 			r += a * x;
 			return init (r, r);
 		}
+
+		static inline double getMaxModulus()
+		{
+			return 67108864.0;  // 2^26
+		}
+
+#endif
 
 		unsigned long AccBound(const Element&r) const
 		{
@@ -406,10 +439,6 @@ namespace LinBox
 		}
 
 
-		static inline double getMaxModulus()
-		{
-			return 67108864.0;  // 2^26
-		}
 
 	};
 

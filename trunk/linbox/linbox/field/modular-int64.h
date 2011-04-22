@@ -21,9 +21,9 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/*! @file field/modular-int64.h
+/*! @file field/modular-int64_t.h
  * @ingroup field
- * @brief  representation of <code>Z/mZ</code> over \c int64 .
+ * @brief  representation of <code>Z/mZ</code> over \c int64_t .
  */
 #ifndef __LINBOX_modular_int64_H
 #define __LINBOX_modular_int64_H
@@ -37,6 +37,8 @@
 #include "linbox/field/field-traits.h"
 #include "linbox/util/debug.h"
 #include "linbox/field/field-traits.h"
+
+#include "fflas-ffpack/field/modular-int64.h"
 
 #ifndef _LB_MAX_INT
 #ifdef __x86_64__
@@ -68,12 +70,12 @@ namespace LinBox
 	struct ClassifyRing<Modular<Element> >;
 
 	template <>
-	struct ClassifyRing<Modular<int64> >
+	struct ClassifyRing<Modular<int64_t> >
 	{ typedef RingCategories::ModularTag categoryTag; };
 
 
 
-	/** \brief Specialization of Modular to int64 element type with efficient dot product.
+	/** \brief Specialization of Modular to int64_t element type with efficient dot product.
 	 *
 	 * Efficient element operations for dot product, mul, axpy, by using floating point
 	 * inverse of modulus (borrowed from NTL) and some use of non-normalized intermediate values.
@@ -86,60 +88,19 @@ namespace LinBox
 	 \ingroup field
 	 */
 	template <>
-	class Modular<int64> : public FieldInterface {
-
-	protected:
-
-		int64 modulus;
-
-		double modulusinv;
-
-		int64 _two64;
+	class Modular<int64_t> : public FieldInterface,
+	      public FFPACK::Modular<int64_t>	{
 
 	public:
+		typedef int64_t Element;
 
-		friend class FieldAXPY<Modular<int64> >;
-		friend class DotProductDomain<Modular<int64> >;
-		friend class MVProductDomain<Modular<int64> >;
+		friend class FieldAXPY<Modular<int64_t> >;
+		friend class DotProductDomain<Modular<int64_t> >;
+		friend class MVProductDomain<Modular<int64_t> >;
 
-		typedef int64 Element;
-		typedef ModularRandIter<int64> RandIter;
+		typedef ModularRandIter<int64_t> RandIter;
 
 		//default modular field,taking 65521 as default modulus
-		Modular () :
-			modulus(65521)
-		{
-			modulusinv=1/(double)65521;
-
-			_two64 = (int64) ((uint64) (-1) % (uint64) 65521);
-			_two64 += 1;
-			if (_two64 >= 65521) _two64 -= 65521;
-		}
-
-		Modular (int64 value, int64 exp = 1) :
-			modulus(value)
-		{
-			modulusinv = 1 / ((double) value);
-			if(exp != 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
-			if(value<=1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
-			int64 max;
-			FieldTraits<Modular<int64 > >::maxModulus((uint64&)max) ;
-			if( value > max ) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
-			_two64 = (int64) ((uint64) (-1) % (uint64) value);
-			_two64 += 1;
-			if (_two64 >= value) _two64 -= value;
-		}
-
-		Modular(const Modular<int64>& mf) :
-			modulus(mf.modulus),modulusinv(mf.modulusinv),_two64(mf._two64){}
-
-		const Modular &operator=(const Modular<int64> &F)
-		{
-			modulus = F.modulus;
-			modulusinv = F.modulusinv;
-			_two64 = F._two64;
-			return *this;
-		}
 
 		inline integer &cardinality (integer &c) const
 		{
@@ -161,75 +122,6 @@ namespace LinBox
 			return x = y;
 		}
 
-		inline int64 &convert (int64 &x, const Element &y) const
-		{
-			return x = y;
-		}
-
-		inline double &convert (double &x, const Element &y) const
-		{
-			return x = (double) y;
-		}
-
-		inline float &convert (float &x, const Element &y) const
-		{
-			return x = (float) y;
-		}
-
-		inline std::ostream &write (std::ostream &os) const
-		{
-			return os << "int64 mod " << modulus;
-		}
-
-		inline std::istream &read (std::istream &is)
-		{
-			is >> modulus;
-			modulusinv = 1 /((double) modulus );
-			if(modulus <= 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
-			int64 max;
-			FieldTraits< Modular<int64> >::maxModulus((uint64&)max) ;
-			if(modulus > max ) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
-			_two64 = (int64) ((uint64) (-1) % (uint64) modulus);
-			_two64 += 1;
-			if (_two64 >= modulus) _two64 -= modulus;
-
-			return is;
-		}
-
-		inline std::ostream &write (std::ostream &os, const Element &x) const
-		{
-			return os << x;
-		}
-
-		inline std::istream &read (std::istream &is, Element &x) const
-		{
-			integer tmp;
-			is >> tmp;
-			init(x,tmp);
-			return is;
-		}
-
-		inline Element &init (Element & x, const double &y) const
-		{
-			double z = fmod(y, (double)modulus);
-			if (z < 0) z += (double)modulus;
-			//z += 0.5; // C Pernet Sounds nasty and not necessary
-			return x = static_cast<long>(z); //rounds towards 0
-		}
-
-		inline Element &init (Element & x, const float &y) const
-		{
-			return init(x , (double) y);
-		}
-
-		template<class Element1>
-		inline Element &init (Element & x, const Element1 &y) const
-		{
-			x = y % modulus;
-			if (x < 0) x += modulus;
-			return x;
-		}
-
 		inline Element &init (Element &x, const integer &y) const
 		{
 			x = Element (y % modulus);
@@ -237,236 +129,18 @@ namespace LinBox
 			return x;
 		}
 
-		inline Element& init(Element& x, int y =0) const
-		{
-			x = y % modulus;
-			if ( x < 0 ) x += modulus;
-			return x;
-		}
-
-		inline Element& init(Element& x, long y) const
-		{
-			x = y % modulus;
-			if ( x < 0 ) x += modulus;
-			return x;
-		}
-
-		inline Element& assign(Element& x, const Element& y) const
-		{
-			return x = y;
-		}
-
-		inline bool areEqual (const Element &x, const Element &y) const
-		{
-			return x == y;
-		}
-
-		inline  bool isZero (const Element &x) const
-		{
-			return x == 0;
-		}
-
-		inline bool isOne (const Element &x) const
-		{
-			return x == 1;
-		}
-
-		inline Element &add (Element &x, const Element &y, const Element &z) const
-		{
-			x = y + z;
-			if ( x >= modulus ) x -= modulus;
-			return x;
-		}
-
-		inline Element &sub (Element &x, const Element &y, const Element &z) const
-		{
-			x = y - z;
-			if (x < 0) x += modulus;
-			return x;
-		}
-
-		inline Element &mul (Element &x, const Element &y, const Element &z) const
-		{
-			int64 q;
-
-			q  = (int64) ((((double) y)*((double) z)) * modulusinv);  // q could be off by (+/-) 1
-			x = (int64) (y*z - q*modulus);
-
-
-			if (x >= modulus)
-				x -= modulus;
-			else if (x < 0)
-				x += modulus;
-
-			return x;
-		}
-
-		inline Element &div (Element &x, const Element &y, const Element &z) const
-		{
-			Element temp;
-			inv (temp, z);
-			return mul (x, y, temp);
-		}
-
-		inline Element &neg (Element &x, const Element &y) const
-		{
-			if(y == 0) return x=0;
-			else return x = modulus-y;
-		}
-
-		inline Element &inv (Element &x, const Element &y) const
-		{
-			int64 d, t;
-			XGCD(d, x, t, y, modulus);
-			if (d != 1)
-			{
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,"InvMod: Input is not invertible ");
-			}
-			if (x < 0)
-				x += modulus;
-			return x;
-
-		}
-
-		inline Element &axpy (Element &r,
-				      const Element &a,
-				      const Element &x,
-				      const Element &y) const
-		{
-			int64 q;
-
-			q  = (int64) (((((double) a) * ((double) x)) + (double)y) * modulusinv);  // q could be off by (+/-) 1
-			r = (int64) (a * x + y - q*modulus);
-
-
-			if (r >= modulus)
-				r -= modulus;
-			else if (r < 0)
-				r += modulus;
-
-			return r;
-
-		}
-
-		inline Element &addin (Element &x, const Element &y) const
-		{
-			x += y;
-			if (  x >= modulus ) x -= modulus;
-			return x;
-		}
-
-		inline Element &subin (Element &x, const Element &y) const
-		{
-			x -= y;
-			if (x < 0) x += modulus;
-			return x;
-		}
-
-		inline Element &mulin (Element &x, const Element &y) const
-		{
-			return mul(x,x,y);
-		}
-
-		inline Element &divin (Element &x, const Element &y) const
-		{
-			return div(x,x,y);
-		}
-
-		inline Element &negin (Element &x) const
-		{
-			if (x == 0) return x;
-			else return x = modulus - x;
-		}
-
-		inline Element &invin (Element &x) const
-		{
-			return inv (x, x);
-		}
-
-		inline Element &axpyin (Element &r, const Element &a, const Element &x) const
-		{
-			int64 q;
-
-			q  = (int64) (((((double) a) * ((double) x)) + (double) r) * modulusinv);  // q could be off by (+/-) 1
-			r = (int64) (a * x + r - q*modulus);
-
-
-			if (r >= modulus)
-				r -= modulus;
-			else if (r < 0)
-				r += modulus;
-
-			return r;
-		}
-
-		static inline int64 getMaxModulus()
-		{
-#ifdef __x86_64__
-			return 4611686018427387904L;  // 2^62 in long long
-#else
-			return 4611686018427387904LL;  // 2^62 in long
-#endif
-		}
 
 	private:
 
-		static void XGCD(int64& d, int64& s, int64& t, int64 a, int64 b)
-		{
-			int64  u, v, u0, v0, u1, v1, u2, v2, q, r;
-
-			int64 aneg = 0, bneg = 0;
-
-			if (a < 0)
-			{
-				if (a < -LINBOX_MAX_INT) throw PreconditionFailed(__func__,__FILE__,__LINE__,"XGCD: integer overflow");
-				a = -a;
-				aneg = 1;
-			}
-
-			if (b < 0)
-			{
-				if (b < -LINBOX_MAX_INT) throw PreconditionFailed(__func__,__FILE__,__LINE__,"XGCD: integer overflow");
-				b = -b;
-				bneg = 1;
-			}
-
-			u1 = 1; v1 = 0;
-			u2 = 0; v2 = 1;
-			u = a; v = b;
-
-			while (v != 0)
-			{
-				q = u / v;
-				r = u % v;
-				u = v;
-				v = r;
-				u0 = u2;
-				v0 = v2;
-				u2 =  u1 - q*u2;
-				v2 = v1- q*v2;
-				u1 = u0;
-				v1 = v0;
-			}
-
-			if (aneg)
-				u1 = -u1;
-
-			if (bneg)
-				v1 = -v1;
-
-			d = u;
-			s = u1;
-			t = v1;
-		}
 
 	};
 
 	template <>
-	class FieldAXPY<Modular<int64> > {
+	class FieldAXPY<Modular<int64_t> > {
 	public:
 
-		typedef int64 Element;
-		typedef Modular<int64> Field;
+		typedef int64_t Element;
+		typedef Modular<int64_t> Field;
 
 		FieldAXPY (const Field &F) :
 			_F (F),_y(0)
@@ -477,16 +151,16 @@ namespace LinBox
 			_F (faxpy._F), _y (0)
 		{}
 
-		FieldAXPY<Modular<int64> > &operator = (const FieldAXPY &faxpy)
+		FieldAXPY<Modular<int64_t> > &operator = (const FieldAXPY &faxpy)
 		{
 			_F = faxpy._F;
 			_y = faxpy._y;
 			return *this;
 		}
 
-		inline uint64& mulacc (const Element &a, const Element &x)
+		inline uint64_t& mulacc (const Element &a, const Element &x)
 		{
-			uint64 t = (uint64) a * (uint64) x;
+			uint64_t t = (uint64_t) a * (uint64_t) x;
 			_y += t;
 			if (_y < t)
 				return _y += _F._two64;
@@ -494,10 +168,10 @@ namespace LinBox
 				return _y;
 		}
 
-		inline uint64& accumulate (const Element &t)
+		inline uint64_t& accumulate (const Element &t)
 		{
 			_y += t;
-			if (_y < (uint64)t)
+			if (_y < (uint64_t)t)
 				return _y += _F._two64;
 			else
 				return _y;
@@ -505,7 +179,7 @@ namespace LinBox
 
 		inline Element& get (Element &y)
 		{
-			y =_y % (uint64) _F.modulus;
+			y =_y % (uint64_t) _F.modulus;
 			return y;
 		}
 
@@ -522,17 +196,17 @@ namespace LinBox
 
 	protected:
 		Field _F;
-		uint64 _y;
+		uint64_t _y;
 	};
 
 
 	template <>
-	class DotProductDomain<Modular<int64> > : private virtual VectorDomainBase<Modular<int64> > {
+	class DotProductDomain<Modular<int64_t> > : private virtual VectorDomainBase<Modular<int64_t> > {
 
 	public:
-		typedef int64 Element;
-		DotProductDomain (const Modular<int64> &F) :
-			VectorDomainBase<Modular<int64> > (F)
+		typedef int64_t Element;
+		DotProductDomain (const Modular<int64_t> &F) :
+			VectorDomainBase<Modular<int64_t> > (F)
 		{}
 
 
@@ -544,19 +218,19 @@ namespace LinBox
 			typename Vector1::const_iterator i;
 			typename Vector2::const_iterator j;
 
-			uint64 y = 0;
-			uint64 t;
+			uint64_t y = 0;
+			uint64_t t;
 
 			for (i = v1.begin (), j = v2.begin (); i < v1.end (); ++i, ++j)
 			{
-				t = ( (uint64) *i ) * ( (uint64) *j );
+				t = ( (uint64_t) *i ) * ( (uint64_t) *j );
 				y += t;
 
 				if (y < t)
 					y += _F._two64;
 			}
 
-			y %= (uint64) _F.modulus;
+			y %= (uint64_t) _F.modulus;
 			return res = y;
 
 		}
@@ -567,12 +241,12 @@ namespace LinBox
 			typename Vector1::first_type::const_iterator i_idx;
 			typename Vector1::second_type::const_iterator i_elt;
 
-			uint64 y = 0;
-			uint64 t;
+			uint64_t y = 0;
+			uint64_t t;
 
 			for (i_idx = v1.first.begin (), i_elt = v1.second.begin (); i_idx != v1.first.end (); ++i_idx, ++i_elt)
 			{
-				t = ( (uint64) *i_elt ) * ( (uint64) v2[*i_idx] );
+				t = ( (uint64_t) *i_elt ) * ( (uint64_t) v2[*i_idx] );
 				y += t;
 
 				if (y < t)
@@ -580,24 +254,24 @@ namespace LinBox
 			}
 
 
-			y %= (uint64) _F.modulus;
+			y %= (uint64_t) _F.modulus;
 
 			return res = y;
 		}
 	};
 
-	// Specialization of MVProductDomain for int64 modular field
+	// Specialization of MVProductDomain for int64_t modular field
 
 	template <>
-	class MVProductDomain<Modular<int64> > {
+	class MVProductDomain<Modular<int64_t> > {
 	public:
 
-		typedef int64 Element;
+		typedef int64_t Element;
 
 	protected:
 		template <class Vector1, class Matrix, class Vector2>
 		inline Vector1 &mulColDense
-		(const VectorDomain<Modular<int64> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const
+		(const VectorDomain<Modular<int64_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const
 		{
 			return mulColDenseSpecialized
 			(VD, w, A, v, typename VectorTraits<typename Matrix::Column>::VectorCategory ());
@@ -606,27 +280,27 @@ namespace LinBox
 	private:
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColDenseSpecialized
-		(const VectorDomain<Modular<int64> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		(const VectorDomain<Modular<int64_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 		 VectorCategories::DenseVectorTag) const;
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColDenseSpecialized
-		(const VectorDomain<Modular<int64> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		(const VectorDomain<Modular<int64_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 		 VectorCategories::SparseSequenceVectorTag) const;
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColDenseSpecialized
-		(const VectorDomain<Modular<int64> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		(const VectorDomain<Modular<int64_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 		 VectorCategories::SparseAssociativeVectorTag) const;
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColDenseSpecialized
-		(const VectorDomain<Modular<int64> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		(const VectorDomain<Modular<int64_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
 		 VectorCategories::SparseParallelVectorTag) const;
 
-		mutable std::vector<uint64> _tmp;
+		mutable std::vector<uint64_t> _tmp;
 	};
 
 	template <class Vector1, class Matrix, class Vector2>
-	Vector1 & MVProductDomain<Modular<int64> >::
-	mulColDenseSpecialized (const VectorDomain<Modular<int64> > &VD,
+	Vector1 & MVProductDomain<Modular<int64_t> >::
+	mulColDenseSpecialized (const VectorDomain<Modular<int64_t> > &VD,
 				Vector1 &w,
 				const Matrix &A,
 				const Vector2 &v,
@@ -639,9 +313,9 @@ namespace LinBox
 		typename Matrix::ConstColIterator i = A.colBegin ();
 		typename Vector2::const_iterator j;
 		typename Matrix::Column::const_iterator k;
-		std::vector<uint64>::iterator l;
+		std::vector<uint64_t>::iterator l;
 
-		uint64 t;
+		uint64_t t;
 
 		if (_tmp.size () < w.size ())
 			_tmp.resize (w.size ());
@@ -652,7 +326,7 @@ namespace LinBox
 		{
 			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l)
 			{
-				t = ((uint64) *k) * ((uint64) *j);
+				t = ((uint64_t) *k) * ((uint64_t) *j);
 
 				*l += t;
 
@@ -670,8 +344,8 @@ namespace LinBox
 	}
 
 	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Modular<int64> >::
-	mulColDenseSpecialized (const VectorDomain<Modular<int64> > &VD,
+	Vector1 &MVProductDomain<Modular<int64_t> >::
+	mulColDenseSpecialized (const VectorDomain<Modular<int64_t> > &VD,
 				Vector1 &w,
 				const Matrix &A,
 				const Vector2 &v,
@@ -683,9 +357,9 @@ namespace LinBox
 		typename Matrix::ConstColIterator i = A.colBegin ();
 		typename Vector2::const_iterator j;
 		typename Matrix::Column::const_iterator k;
-		std::vector<uint64>::iterator l;
+		std::vector<uint64_t>::iterator l;
 
-		uint64 t;
+		uint64_t t;
 
 		if (_tmp.size () < w.size ())
 			_tmp.resize (w.size ());
@@ -696,7 +370,7 @@ namespace LinBox
 		{
 			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l)
 			{
-				t = ((uint64) k->second) * ((uint64) *j);
+				t = ((uint64_t) k->second) * ((uint64_t) *j);
 
 				_tmp[k->first] += t;
 
@@ -714,8 +388,8 @@ namespace LinBox
 	}
 
 	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Modular<int64> > ::
-	mulColDenseSpecialized(const VectorDomain<Modular<int64> > &VD,
+	Vector1 &MVProductDomain<Modular<int64_t> > ::
+	mulColDenseSpecialized(const VectorDomain<Modular<int64_t> > &VD,
 			       Vector1 &w,
 			       const Matrix &A,
 			       const Vector2 &v,
@@ -728,9 +402,9 @@ namespace LinBox
 		typename Matrix::ConstColIterator i = A.colBegin ();
 		typename Vector2::const_iterator j;
 		typename Matrix::Column::const_iterator k;
-		std::vector<uint64>::iterator l;
+		std::vector<uint64_t>::iterator l;
 
-		uint64 t;
+		uint64_t t;
 
 		if (_tmp.size () < w.size ())
 			_tmp.resize (w.size ());
@@ -741,7 +415,7 @@ namespace LinBox
 		{
 			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l)
 			{
-				t = ((uint64) k->second) * ((uint64) *j);
+				t = ((uint64_t) k->second) * ((uint64_t) *j);
 
 				_tmp[k->first] += t;
 
@@ -759,8 +433,8 @@ namespace LinBox
 	}
 
 	template <class Vector1, class Matrix, class Vector2>
-	Vector1 &MVProductDomain<Modular<int64> > ::
-	mulColDenseSpecialized (const VectorDomain<Modular<int64> > &VD,
+	Vector1 &MVProductDomain<Modular<int64_t> > ::
+	mulColDenseSpecialized (const VectorDomain<Modular<int64_t> > &VD,
 				Vector1 &w,
 				const Matrix &A,
 				const Vector2 &v,
@@ -774,9 +448,9 @@ namespace LinBox
 		typename Vector2::const_iterator j;
 		typename Matrix::Column::first_type::const_iterator k_idx;
 		typename Matrix::Column::second_type::const_iterator k_elt;
-		std::vector<uint64>::iterator l;
+		std::vector<uint64_t>::iterator l;
 
-		uint64 t;
+		uint64_t t;
 
 		if (_tmp.size () < w.size ())
 			_tmp.resize (w.size ());
@@ -789,7 +463,7 @@ namespace LinBox
 			     k_idx != i->first.end ();
 			     ++k_idx, ++k_elt, ++l)
 			{
-				t = ((uint64) *k_elt) * ((uint64) *j);
+				t = ((uint64_t) *k_elt) * ((uint64_t) *j);
 
 				_tmp[*k_idx] += t;
 

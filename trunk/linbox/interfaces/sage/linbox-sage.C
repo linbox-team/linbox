@@ -225,7 +225,7 @@ Element* linbox_modn_dense_charpoly (Element modulus, Element *& cp, size_t n, E
 	it = P_list.begin();
 	P = *(it++);
 	while( it!=P_list.end() ){
-		mulpoly (F,*tmp, P, *it);
+		::mulpoly (F,*tmp, P, *it);
 		P = *tmp;
 		//	delete &(*it);
 		++it;

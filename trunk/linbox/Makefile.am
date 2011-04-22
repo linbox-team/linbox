@@ -36,6 +36,27 @@ benchmarks:
 
 bin_SCRIPTS=linbox-config
 
+#  bundled:
+#  cd build ;
+#  echo "getting fflas-ffpack$(VER)" ;
+#  wget http://fflas-ffpack$(VER).tar.gz;
+#  echo "getting givaro$(VER)" ;
+#  wget http://givaro$(VER).tar.gz;
+#  echo "installing fflas-ffpack in build-dev/tmp"
+#  cd fflas-ffpack ;
+#  ./configure --prefix=./tmp/ ;
+#  make install ;
+#  echo "installing Givaro in build/tmp"
+#  cd ../Givaro ;
+#  ./configure --prefix=./tmp/ ;
+#  make install ;
+#  echo "building linbox"
+#  cd .. ;
+#  ./configure XXX ;
+#  make && make install ;
+
+
+
 VERSION=1.2.0
 
 #  EXTRA_DIST=incremente-versions
