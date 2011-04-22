@@ -26,6 +26,7 @@ AC_ARG_WITH(fflas-ffpack,
 		search path (/usr or /usr/local). Otherwise you give
 		the <path> to the directory which contains the
 		library.
+        Available at "http://linalg.org/projects/fflas-ffpack".
 	],
     [if test "$withval" = yes ; then
         FFLAFLAS_HOME_PATH="${DEFAULT_CHECKING_PATH}"

@@ -37,6 +37,7 @@
 #include <linbox/field/field-traits.h>
 #include "linbox/randiter/nonzero.h"
 
+#include "fflas-ffpack/field/modular-float.h"
 
 // Namespace in which all LinBox code resides
 namespace LinBox
@@ -63,380 +64,345 @@ namespace LinBox
 
 	/// \ingroup field
 	template <>
-	class Modular<float> : public FieldInterface {
-
-	protected:
-
-		float  modulus;
-		unsigned long   lmodulus;
-
-		//float inv_modulus;
-
-	public:
-		friend class FieldAXPY<Modular<float> >;
-		friend class DotProductDomain<Modular<float> >;
-		friend class MultiModFloat;
-
-		typedef float Element;
-		typedef ModularRandIter<float> RandIter;
-		typedef NonzeroRandIter<Modular<float>, ModularRandIter<float> > NonZeroRandIter;
-
-		static ClassifyRing<Modular<float> >::categoryTag getCategory()
-		{
-			return ClassifyRing<Modular<float> >::categoryTag();
-		}
-
-
-
-		Modular () {}
-
-		Modular (int32_t p, int exp = 1)  :
-			modulus((float)p), lmodulus(p)//, inv_modulus(1./(float)p)
-		{
-			if(modulus <= 1)
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
-			if( exp != 1 ) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
-			integer max;
-			if(modulus > (float) FieldTraits<Modular<float> >::maxModulus(max))
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
-
-		}
-
-		Modular (float p) :
-			modulus(p), lmodulus((unsigned long)p)
-		{
-			if( modulus <= 1 )
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
-			integer max;
-			if( modulus > (float) FieldTraits<Modular<float> >::maxModulus(max))
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
-		}
-
-		Modular (long int p) :
-			modulus((float)p), lmodulus(p)
-		{
-			if( (float) modulus <= 1 )
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
-			integer max;
-			if( (float) modulus > (float) FieldTraits<Modular<float> >::maxModulus(max))
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
-		}
-
-		Modular (const integer& p) :
-			modulus((float) p), lmodulus(p) //, inv_modulus(1./(float)p)
-		{
-			if(modulus <= 1)
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
-			integer max;
-			if(modulus > (float) FieldTraits<Modular<float> >::maxModulus(max))
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
-
-		}
-
-		Modular(const Modular<float>& mf) :
-			modulus(mf.modulus), lmodulus(mf.lmodulus)//,inv_modulus(mf.inv_modulus)
-		{}
-
-		const Modular &operator=(const Modular<float> &F)
-		{
-			modulus = F.modulus;
-			lmodulus= F.lmodulus;
-			//inv_modulus = F.inv_modulus;
-			return *this;
-		}
-
-
-		integer &cardinality (integer &c) const
-		{
-			return c = integer(modulus);
-		}
-
-		integer &characteristic (integer &c) const
-		{ return c = integer(modulus); }
-
-		size_t characteristic () const
-		{ return modulus; }
-
-
-		integer &convert (integer &x, const Element &y) const
-		{ return x = integer(y); }
-
-		double  &convert (double &x, const Element &y) const
-		{ return x = y; }
-
-		float   &convert (float &x, const Element& y) const
-		{ return x=y; }
-
-		std::ostream &write (std::ostream &os) const
-		{
-			return os << "float mod " << (int)modulus;
-		}
-
-		std::istream &read (std::istream &is)
-		{
-			is >> modulus;
-			if(modulus <= 1)
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
-			if(modulus > 94906265)
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
-
-			return is;
-		}
-
-		std::ostream &write (std::ostream &os, const Element &x) const
-		{
-			return os << x;
-		}
-
-		std::istream &read (std::istream &is, Element &x) const
-		{
-			integer tmp;
-			// JGD : should'nt it be float tmp ???
-			is >> tmp;
-			init(x,tmp);
-			return is;
-		}
-
-
-		Element &init (Element &x, const integer &y) const
-		{
-			x = (Element)(y%lmodulus);
-			if (x<0) return x+=modulus ;
-			return x;
-		}
-
-		inline Element& init(Element& x, float y =0.0) const
-		{
-
-			//float tmp = y;
-
-			/*
-			   int sign=0;
-			   if (tmp < 0.0)
-			   {
-			   tmp=-tmp;
-			   sign=1;
-			   }
-			   */
-
-			//			tmp = floor (y + 0.5);
-
-			//Some odds donot support it. It is in C99.
-			//tmp = round (y);
-
-			x = fmodf (y, modulus);
-
-			/*
-			   if (tmp > modulus)
-			   tmp -= (modulus * floor( tmp*inv_modulus));
-
-			   if ( (!tmp) || (tmp == modulus) )
-			   {
-			   return x = 0.0;
-
-			   }
-			   else
-			   if (sign)
-			   return x = modulus-tmp;
-			   else
-			   return x = tmp;
-			   */
-
-			if (x < 0) x += modulus;
-			return x;
-		}
-
-		inline Element& init(Element& x, double y) const
-		{
-
-			x = (Element) fmod (y, double(modulus));
-
-			if (x < 0) x += modulus;
-			return x;
-		}
-
-		inline Element& init(Element& x, unsigned long y) const
-		{
-
-			x = fmodf (float(y), modulus);
-
-			if (x < 0) x += modulus;
-			return x;
-		}
-		inline Element& init(Element& x, int y) const
-		{
-
-			x = fmodf (float(y), modulus);
-
-			if (x < 0) x += modulus;
-			return x;
-		}
-
-
-
-		inline Element& assign(Element& x, const Element& y) const
-		{
-			return x = y;
-		}
-
-
-		inline bool areEqual (const Element &x, const Element &y) const
-		{
-			return x == y;
-		}
-
-		inline  bool isZero (const Element &x) const
-		{
-			return x == 0.;
-		}
-
-		inline bool isOne (const Element &x) const
-		{
-			return x == 1.;
-		}
-
-		inline Element &add (Element &x, const Element &y, const Element &z) const
-		{
-			x = y + z;
-			if ( x >= modulus ) x -= modulus;
-			return x;
-		}
-
-		inline Element &sub (Element &x, const Element &y, const Element &z) const
-		{
-			x = y - z;
-			if (x < 0) x += modulus;
-			return x;
-		}
-
-		inline Element &mul (Element &x, const Element &y, const Element &z) const
-		{
-			float tmp= y*z;
-			x= fmodf(tmp, modulus);
-			//x= tmp - floor(tmp*inv_modulus)*modulus;
-
-			return x;
-		}
-
-		inline Element &div (Element &x, const Element &y, const Element &z) const
-		{
-			Element temp;
-			inv (temp, z);
-			return mul (x, y, temp);
-		}
-
-		inline Element &neg (Element &x, const Element &y) const
-		{
-			if(y == 0) return x = 0;
-			else return x = modulus - y;
-		}
-
-		inline Element &inv (Element &x, const Element &y) const
-		{
-			// The extended Euclidean algoritm
-			int x_int, y_int, q, tx, ty, temp;
-			x_int = int (modulus);
-			y_int = int (y);
-			tx = 0;
-			ty = 1;
-
-			while (y_int != 0)
-			{
-				// always: gcd (modulus,residue) = gcd (x_int,y_int)
-				//         sx*modulus + tx*residue = x_int
-				//         sy*modulus + ty*residue = y_int
-				q = x_int / y_int; // integer quotient
-				temp = y_int; y_int = x_int - q * y_int;
-				x_int = temp;
-				temp = ty; ty = tx - q * ty;
-				tx = temp;
-			}
-
-			if (tx < 0) tx += (int)modulus;
-
-			// now x_int = gcd (modulus,residue)
-			return x = (float)tx;
-
-
-		}
-
-		inline Element &axpy (Element &r,
-				      const Element &a,
-				      const Element &x,
-				      const Element &y) const
-		{
-			float tmp = a * x + y;
-			return r= fmodf(tmp, modulus);
-			//return r= tmp- floor(tmp*inv_modulus)*modulus;
-
-		}
-
-		inline Element &addin (Element &x, const Element &y) const
-		{
-			x += y;
-			if (  x >= modulus ) x -= modulus;
-			return x;
-		}
-
-		inline Element &subin (Element &x, const Element &y) const
-		{
-			x -= y;
-			if (x < 0.) x += modulus;
-			return x;
-		}
-
-		inline Element &mulin (Element &x, const Element &y) const
-		{
-			return mul(x,x,y);
-		}
-
-		inline Element &divin (Element &x, const Element &y) const
-		{
-			return div(x,x,y);
-		}
-
-		inline Element &negin (Element &x) const
-		{
-			if (x == 0.) return x;
-			else return x = modulus - x;
-		}
-
-		inline Element &invin (Element &x) const
-		{
-			return inv (x, x);
-		}
-
-		inline Element &axpyin (Element &r, const Element &a, const Element &x) const
-		{
-			float tmp = r + a * x;
-			return r = fmodf(tmp, modulus);
-
-			//return r= tmp- floor(tmp*inv_modulus)*modulus;
-		}
-
-		unsigned long AccBound(const Element&r) const
-		{
-			Element one, zero ; init(one,1UL) ; init(zero,0UL);
-			double max_double = (double) (1ULL<<FLT_MANT_DIG) - modulus ;
-			double p = modulus-1 ;
-			if (areEqual(zero,r))
-				return (unsigned long) (double(max_double)/p) ;
-			else if (areEqual(one,r))
-			{
-				if (modulus>= getMaxModulus())
-					return 0 ;
-				else
-					return (unsigned long) (double(max_double)/(modulus*modulus)) ;
-			} else
-				throw LinboxError("Bad input, expecting 0 or 1");
-			return 0;
-		}
-
-
-		static inline float getMaxModulus()
-		{ return 4096.0; } // floor( 2^12 )
-
-	};
+	class Modular<float> : public FieldInterface,
+	      public FFPACK::Modular<float>	{
+
+	      public :
+		      typedef float Element;
+
+#if 0
+	      protected:
+
+		      Element         modulus;
+		      unsigned long   lmodulus;
+
+		      //Element inv_modulus;
+#endif
+
+	      public:
+		      friend class FieldAXPY<Modular<Element> >;
+		      friend class DotProductDomain<Modular<Element> >;
+		      friend class MultiModFloat;
+
+		      // typedef ModularRandIter<Element> RandIter;
+		      // typedef NonzeroRandIter<Modular<Element>, ModularRandIter<Element> > NonZeroRandIter;
+
+		      static ClassifyRing<Modular<Element> >::categoryTag getCategory()
+		      {
+			      return ClassifyRing<Modular<Element> >::categoryTag();
+		      }
+
+
+
+#if 0
+		      Modular () {}
+
+		      Modular (int32_t p, int exp = 1)  :
+			      modulus((Element)p), lmodulus(p)//, inv_modulus(1./(Element)p)
+		      {
+#ifdef DEBUG
+			      if(modulus <= 1)
+				      throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
+			      if( exp != 1 ) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
+			      integer max;
+			      if(modulus > (Element) FieldTraits<Modular<Element> >::maxModulus(max))
+				      throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
+#endif
+
+		      }
+
+		      Modular (Element p) :
+			      modulus(p), lmodulus((unsigned long)p)
+		      {
+#ifdef DEBUG
+			      if( modulus <= 1 )
+				      throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
+			      integer max;
+			      if( modulus > (Element) FieldTraits<Modular<Element> >::maxModulus(max))
+				      throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
+#endif
+		      }
+
+		      Modular (long int p) :
+			      modulus((Element)p), lmodulus(p)
+		      {
+#ifdef DEBUG
+			      if( (Element) modulus <= 1 )
+				      throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
+			      integer max;
+			      if( (Element) modulus > (Element) FieldTraits<Modular<Element> >::maxModulus(max))
+				      throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
+#endif
+		      }
+
+#endif
+		      Modular (const integer& p) :
+			      FFPACK::Modular<float>((unsigned long)p)
+		      {
+#ifdef DEBUG
+			      if(modulus <= 1)
+				      throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
+			      integer max;
+			      if(modulus > (Element) FieldTraits<Modular<Element> >::maxModulus(max))
+				      throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
+#endif
+
+		      }
+
+#if 0
+		      Modular(const Modular<Element>& mf) :
+			      modulus(mf.modulus), lmodulus(mf.lmodulus)//,inv_modulus(mf.inv_modulus)
+		      {}
+
+		      const Modular &operator=(const Modular<Element> &F)
+		      {
+			      modulus = F.modulus;
+			      lmodulus= F.lmodulus;
+			      //inv_modulus = F.inv_modulus;
+			      return *this;
+		      }
+#endif
+
+
+		      integer &cardinality (integer &c) const
+		      {
+			      return c = integer(modulus);
+		      }
+
+		      integer &characteristic (integer &c) const
+		      { return c = integer(modulus); }
+
+
+		      integer &convert (integer &x, const Element &y) const
+		      {
+			      return x = integer(y);
+		      }
+
+		      template<class T>T&convert(T&x,const Element&y)const{return x=T(y);}
+		      template<class T>T&characteristic(T&x)const{return x=T(lmodulus);}
+
+#if 0
+		      double  &convert (double &x, const Element &y) const
+		      {
+			      return x = y;
+		      }
+
+		      Element   &convert (Element &x, const Element& y) const
+		      {
+			      return x=y;
+		      }
+
+		      std::ostream &write (std::ostream &os) const
+		      {
+			      return os << "float mod " << (int)modulus;
+		      }
+
+		      std::istream &read (std::istream &is)
+		      {
+			      is >> modulus;
+#ifdef DEBUG
+			      if(modulus <= 1)
+				      throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
+			      if(modulus > 94906265)
+				      throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
+#endif
+
+			      return is;
+		      }
+
+		      std::ostream &write (std::ostream &os, const Element &x) const
+		      {
+			      return os << x;
+		      }
+
+		      std::istream &read (std::istream &is, Element &x) const
+		      {
+			      unsigned long tmp;
+			      is >> tmp;
+			      init(x,tmp);
+			      return is;
+		      }
+
+#endif
+
+		      Element &init (Element &x, const integer &y) const
+		      {
+			      x = (Element)(y%lmodulus);
+
+			      if (x<0) return x+=modulus ;
+			      return x;
+		      }
+
+
+
+
+#if 0
+		      inline Element& assign(Element& x, const Element& y) const
+		      {
+			      return x = y;
+		      }
+
+
+		      inline bool areEqual (const Element &x, const Element &y) const
+		      {
+			      return x == y;
+		      }
+
+		      inline  bool isZero (const Element &x) const
+		      {
+			      return x == 0.;
+		      }
+
+		      inline bool isOne (const Element &x) const
+		      {
+			      return x == 1.;
+		      }
+
+		      inline Element &add (Element &x, const Element &y, const Element &z) const
+		      {
+			      x = y + z;
+			      if ( x >= modulus ) x -= modulus;
+			      return x;
+		      }
+
+		      inline Element &sub (Element &x, const Element &y, const Element &z) const
+		      {
+			      x = y - z;
+			      if (x < 0) x += modulus;
+			      return x;
+		      }
+
+		      inline Element &mul (Element &x, const Element &y, const Element &z) const
+		      {
+			      Element tmp= y*z;
+			      x= fmodf(tmp, modulus);
+			      //x= tmp - floor(tmp*inv_modulus)*modulus;
+
+			      return x;
+		      }
+
+		      inline Element &div (Element &x, const Element &y, const Element &z) const
+		      {
+			      Element temp;
+			      inv (temp, z);
+			      return mul (x, y, temp);
+		      }
+
+		      inline Element &neg (Element &x, const Element &y) const
+		      {
+			      if(y == 0) return x = 0;
+			      else return x = modulus - y;
+		      }
+
+		      inline Element &inv (Element &x, const Element &y) const
+		      {
+			      // The extended Euclidean algoritm
+			      int x_int, y_int, q, tx, ty, temp;
+			      x_int = int (modulus);
+			      y_int = int (y);
+			      tx = 0;
+			      ty = 1;
+
+			      while (y_int != 0) {
+				      // always: gcd (modulus,residue) = gcd (x_int,y_int)
+				      //         sx*modulus + tx*residue = x_int
+				      //         sy*modulus + ty*residue = y_int
+				      q = x_int / y_int; // integer quotient
+				      temp = y_int; y_int = x_int - q * y_int;
+				      x_int = temp;
+				      temp = ty; ty = tx - q * ty;
+				      tx = temp;
+			      }
+
+			      if (tx < 0) tx += (int)modulus;
+
+			      // now x_int = gcd (modulus,residue)
+			      return x = (Element)tx;
+
+
+		      }
+
+		      inline Element &axpy (Element &r,
+					    const Element &a,
+					    const Element &x,
+					    const Element &y) const
+		      {
+			      Element tmp = a * x + y;
+			      return r= fmodf(tmp, modulus);
+			      //return r= tmp- floor(tmp*inv_modulus)*modulus;
+
+		      }
+
+		      inline Element &addin (Element &x, const Element &y) const
+		      {
+			      x += y;
+			      if (  x >= modulus ) x -= modulus;
+			      return x;
+		      }
+
+		      inline Element &subin (Element &x, const Element &y) const
+		      {
+			      x -= y;
+			      if (x < 0.) x += modulus;
+			      return x;
+		      }
+
+		      inline Element &mulin (Element &x, const Element &y) const
+		      {
+			      return mul(x,x,y);
+		      }
+
+		      inline Element &divin (Element &x, const Element &y) const
+		      {
+			      return div(x,x,y);
+		      }
+
+		      inline Element &negin (Element &x) const
+		      {
+			      if (x == 0.) return x;
+			      else return x = modulus - x;
+		      }
+
+		      inline Element &invin (Element &x) const
+		      {
+			      return inv (x, x);
+		      }
+
+		      inline Element &axpyin (Element &r, const Element &a, const Element &x) const
+		      {
+			      Element tmp = r + a * x;
+			      return r = fmodf(tmp, modulus);
+
+			      //return r= tmp- floor(tmp*inv_modulus)*modulus;
+		      }
+
+		      static inline Element getMaxModulus()
+		      {
+			      return 4096.0;  // floor( 2^12 )
+		      }
+#endif
+
+		      unsigned long AccBound(const Element&r) const
+		      {
+			      Element one, zero ; init(one,1UL) ; init(zero,0UL);
+			      double max_double = (double) (1ULL<<FLT_MANT_DIG) - modulus ;
+			      double p = modulus-1 ;
+			      if (areEqual(zero,r))
+				      return (unsigned long) (double(max_double)/p) ;
+			      else if (areEqual(one,r))
+			      {
+				      if (modulus>= getMaxModulus())
+					      return 0 ;
+				      else
+					      return (unsigned long) (double(max_double)/(modulus*modulus)) ;
+			      } else
+				      throw LinboxError("Bad input, expecting 0 or 1");
+			      return 0;
+		      }
+
+
+
+	      };
 
 	template <>
 	class FieldAXPY<Modular<float> > {

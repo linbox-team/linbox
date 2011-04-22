@@ -175,6 +175,12 @@ namespace LinBox
 		       	return c = _modulus;
 		}
 
+		unsigned long &characteristic (unsigned long &c) const
+		{
+		       	return c = _modulus;
+		}
+
+
 		integer characteristic () const
 		{
 			return  _modulus;
