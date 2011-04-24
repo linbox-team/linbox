@@ -49,9 +49,10 @@ AC_SUBST([DEFAULT_CFLAGS])
 AC_SUBST([DEBUG_CFLAGS])
 AC_SUBST([TESTS_CFLAGS])
 
-TESTS_CFLAGS="-O0 -pipe -Wall"
-DEBUG_CFLAGS="-g"  #those are CPPFLAGS
-DEFAULT_CFLAGS="-pipe -Wall"
+TESTS_CFLAGS="-O0 -g"
+DEBUG_CFLAGS="-g"
+DEFAULT_CFLAGS="-pipe"
+WARN_CFLAGS="-Wall"
 
 if test "x$DBG" = "xyes" ; then
 	DEFAULT_CFLAGS="-O0 ${DEFAULT_CFLAGS} -g -pg" #those are CXXFLAGS
@@ -65,25 +66,25 @@ fi
 if test "x$WARN" = "xyes" ; then
 	# if  test "x${CXX}" = "xicpc" -o "x${CXX}" = "xicc"  ; then
 	if test "x${CCNAM}" = "xicc" ; then
-		DEBUG_CFLAGS="${DEBUG_CFLAGS} -Wcheck"
+		WARN_CFLAGS="${WARN_CFLAGS} -Wcheck"
 		# DEBUG_CFLAGS="-fast"
 	else
 		if test "x${CCNAM}" = "xgcc"  ; then
-			DEBUG_CFLAGS="${DEBUG_CFLAGS} -Wextra -Wno-unused-parameter"
+			WARN_CFLAGS="${WARN_CFLAGS} -Wextra -Wno-unused-parameter"
 		else
 			echo
 			echo "*******************************************************"
 			echo "unsupported compiler ($CCNAM). Please file a bug."
 			echo "*******************************************************"
 			echo
-			DEBUG_CFLAGS="${DEBUG_CFLAGS}"
+			WARN_CFLAGS="${WARN_CFLAGS}"
 		fi
 	fi
 fi
 
 
-DEFAULT_CFLAGS="${DEFAULT_CFLAGS} ${DEBUG_CFLAGS}"
-TESTS_CFLAGS="${TESTS_CFLAGS} ${DEBUG_CFLAGS}"
+DEFAULT_CFLAGS="${DEFAULT_CFLAGS} ${WARN_CFLAGS} ${DEBUG_CFLAGS}"
+TESTS_CFLAGS="${TESTS_CFLAGS} ${WARN_CFLAGS} ${DEBUG_CFLAGS}"
 
 
 AC_HEADER_STDC
