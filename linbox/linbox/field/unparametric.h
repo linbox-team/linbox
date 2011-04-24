@@ -79,15 +79,19 @@ namespace LinBox
 	 * \ingroup field
 	 * \defgroup UnparametricField UnparametricField
 	 *
-	 * A field having an interface similar to that of floats is adapted to LinBox.
+	 * A field having an interface similar to that of floats is adapted to
+	 * LinBox.
 	 *
-	 *  Used to generate efficient field classes for unparameterized fields (or hidden parameter fields).
+	 *  Used to generate efficient field classes for unparameterized fields
+	 *  (or hidden parameter fields).
 	 *
-	 *  Some fields are implemented by definition of the C++ arithmetic operators, such as z = x*y,
-	 *  for z, y, z instances of a type K.   The LinBox field
-	 *  Unparametric<K> is the adaptation to LinBox.
+	 *  Some fields are implemented by definition of the C++ arithmetic
+	 *  operators, such as <code>z = x*y</code>, for \c x, \c y, \c z
+	 *  instances of a type \c K.  The LinBox field LinBox::Unparametric<K>
+	 *  is the adaptation to LinBox.
 	 *
-	 *  For a typical unparametric field, some of the methods must be defined in a specialization.
+	 *  For a typical unparametric field, some of the methods must be
+	 *  defined in a specialization.
 	 */
 	template <class K>
 	class UnparametricField : public FieldInterface,
@@ -120,6 +124,7 @@ namespace LinBox
 		 *  This constructor must be defined in a specialization.
 		 */
 		UnparametricField(integer q = 0, size_t e = 1) :
+			FFPACK::UnparametricField<K>((unsigned long)q,(unsigned long)e),
 			_p(q), _card(q == 0 ? integer(-1) : pow(q, e) )
 			{}  // assuming q is a prime or zero.
 
@@ -130,14 +135,19 @@ namespace LinBox
 
 
 		// field/ntl-ZZ_p.h me les demande... //
-		Element &inv (Element &x, const Element &y) const { return FFPACK::UnparametricField<K>::inv(x,y); }
-		Element &invin (Element &x) const { return FFPACK::UnparametricField<K>::invin(x);}
-		std::ostream &write (std::ostream &os) const { return FFPACK::UnparametricField<K>::write(os);}
-		std::ostream &write (std::ostream &os, const int &p) const { return FFPACK::UnparametricField<K>::write(os,p);}
-		bool isZero (const Element &x) const { return FFPACK::UnparametricField<K>::isZero(x); }
-		bool isOne (const Element &x) const { return FFPACK::UnparametricField<K>::isOne(x) ; }
-		long unsigned int characteristic(long unsigned int&p) const {return FFPACK::UnparametricField<K>::characteristic(p);}
-		long unsigned int characteristic() const  {return FFPACK::UnparametricField<K>::characteristic();};
+
+		Element&inv (Element&x, const Element&y)const{return FFPACK::UnparametricField<K>::inv(x,y);}
+		Element&invin (Element&x)const{return FFPACK::UnparametricField<K>::invin(x);}
+		std::ostream&write (std::ostream&os)const{return FFPACK::UnparametricField<K>::write(os);}
+		std::ostream&write (std::ostream&os, const Element&p)const{return FFPACK::UnparametricField<K>::write(os,p);}
+		bool isZero(const Element&x)const{return FFPACK::UnparametricField<K>::isZero(x);}
+		bool isOne(const Element&x)const{return FFPACK::UnparametricField<K>::isOne(x);}
+		long unsigned int characteristic(long unsigned int&p)const{return FFPACK::UnparametricField<K>::characteristic(p);}
+		long unsigned int characteristic()const{return FFPACK::UnparametricField<K>::characteristic();};
+		template<typename Src>Element&init(Element&x, const Src&s)const{return Caster (x, s);}
+		std::istream&read(std::istream&is, Element&x)const{return FFPACK::UnparametricField<K>::read(is,x);}
+		template<typename T>T&convert(T&x,const Element&y)const{return Caster(x,y);}
+
 		// fin des trucs zarbs //
 
 		/// c := cardinality of this field (-1 if infinite).

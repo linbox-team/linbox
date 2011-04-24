@@ -182,7 +182,7 @@ namespace LinBox
 
 		      template<class T>T&convert(T&x,const Element&y)const{return x=T(y);}
 		      template<class T>T&characteristic(T&x)const{return x=T(lmodulus);}
-		      template<class T>T&init(T&x)const{return init(x,x);}
+		      template<class T>T&init(T&x)const{return init(x,0);}
 
 #if 0
 		      Element &convert (Element &x, const Element& y) const
