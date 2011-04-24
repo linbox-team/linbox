@@ -50,7 +50,7 @@ AC_SUBST([DEBUG_CFLAGS])
 AC_SUBST([TESTS_CFLAGS])
 
 TESTS_CFLAGS="-O0 -pipe -Wall"
-DEBUG_CFLAGS=""  #those are CPPFLAGS
+DEBUG_CFLAGS="-g"  #those are CPPFLAGS
 DEFAULT_CFLAGS="-pipe -Wall"
 
 if test "x$DBG" = "xyes" ; then
