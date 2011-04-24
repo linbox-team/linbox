@@ -77,10 +77,10 @@ namespace LinBox
 	class ModularBalanced<int32_t> : public FieldInterface,
 	      public FFPACK::ModularBalanced<int32_t>	{
 	protected:
-		int32_t modulus;
-		int32_t halfmodulus;
-		int32_t nhalfmodulus;
-		double modulusinv;
+		// int32_t modulus;
+		// int32_t halfmodulus;
+		// int32_t nhalfmodulus;
+		// double modulusinv;
 
 	public:
 
