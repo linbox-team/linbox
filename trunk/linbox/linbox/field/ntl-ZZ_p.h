@@ -18,8 +18,12 @@
  * @brief NO DOC
  */
 
-#ifndef __LINBOX_field_ntl_UPPER_ZZ_p_H
-#define __LINBOX_field_ntl_UPPER_ZZ_p_H
+#ifndef __LINBOX_field_ntl_z_p_H
+#define __LINBOX_field_ntl_z_p_H
+
+#ifndef __LINBOX_HAVE_NTL
+#error "you need NTL here"
+#endif
 
 #include <sys/time.h>
 #include "linbox/linbox-config.h"
