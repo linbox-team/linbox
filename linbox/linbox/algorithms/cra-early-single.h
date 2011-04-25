@@ -123,6 +123,8 @@ namespace LinBox
 			return d=residue_;
 		}
 
+		// virtual Integer& result(Integer& n, Integer& d) = 0 ; // rational pure virtual
+
 		virtual Integer& getResidue(Integer& r )
 		{
 			return r= residue_;
