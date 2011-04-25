@@ -4,6 +4,7 @@
 
 AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox
 # AM_LDFLAGS = -llapack -lcblas -latlas
+AM_LDFLAGS = $(top_srcdir)/linbox/.libs/liblinbox.a
 #  SAFER_FLAGS = -g -Wall -Wextra -Wno-unused-parameter
 # bds: no need to optimize for unit/regression tests, and opt adds a lot to compilation time
 AM_CXXFLAGS = @TESTS_CFLAGS@ -DLinBoxSrcOnly
@@ -17,7 +18,7 @@ SUBDIRS = data
 
 AM_CPPFLAGS+= $(CBLAS_FLAG) $(FFLAFLAS_CFLAGS) $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
 LDADD = $(BLAS_LIBS) $(NTL_LIBS) $(GIVARO_LIBS) $(GMP_LIBS)  $(LIDIA_LIBS)
-AM_LDFLAGS=-static
+AM_LDFLAGS+=-static
 
 EXTRA_DIST=            \
 		test-common.C
@@ -54,7 +55,9 @@ BASIC_TESTS =  \
         test-matrix-stream      \
         test-minpoly            \
         test-modular            \
-        test-modular-balanced-int\
+        test-modular-balanced-int    \
+        test-modular-balanced-float  \
+        test-modular-balanced-double \
         test-modular-byte       \
         test-modular-double     \
         test-modular-float      \
@@ -482,6 +485,16 @@ test_modular_byte_SOURCES =          \
 
 test_modular_balanced_int_SOURCES =  \
         test-modular-balanced-int.C  \
+        test-generic.h               \
+        test-common.h
+
+test_modular_balanced_double_SOURCES =  \
+        test-modular-balanced-double.C  \
+        test-generic.h               \
+        test-common.h
+
+test_modular_balanced_float_SOURCES =  \
+        test-modular-balanced-float.C  \
         test-generic.h               \
         test-common.h
 

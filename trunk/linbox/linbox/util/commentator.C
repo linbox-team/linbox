@@ -45,6 +45,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/util/debug.h"
 
+
 namespace LinBox
 {
 	// -----------------------------------------------------
@@ -84,6 +85,7 @@ namespace LinBox
 		return 0;
 	}
 
+#ifndef DISABLE_COMMENTATOR
 	Commentator::Commentator () :
 		// cnull (new nullstreambuf), _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
 		cnull ("/dev/null"), _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
@@ -742,6 +744,8 @@ namespace LinBox
 		return n;
 	}
 
+#endif
 	// Default global commentator
 	Commentator commentator;
 }
+

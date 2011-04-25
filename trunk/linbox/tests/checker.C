@@ -115,6 +115,8 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-minpoly", counter, flag);
 	build_n_run("test-modular", counter, flag);
 	build_n_run("test-modular-balanced-int", counter, flag);
+	build_n_run("test-modular-balanced-float", counter, flag);
+	build_n_run("test-modular-balanced-double", counter, flag);
 	build_n_run("test-modular-byte", counter, flag);
 	build_n_run("test-modular-double", counter, flag);
 	build_n_run("test-modular-float", counter, flag);

@@ -82,6 +82,7 @@
 #define LVL_NEVER  =  (2*PRINT_EVERYTHING)
 
 #ifndef DISABLE_COMMENTATOR
+
 namespace LinBox
 {
 	// Forward declaration

@@ -114,9 +114,10 @@ namespace LinBox
 			      return c = integer(modulus);
 		      }
 
-		      long unsigned characteristic(long unsigned int&p) const { return FFPACK::ModularBalanced<float>::characteristic(p) ; }
-		      double & convert(double &x, const Element &y) const { return FFPACK::ModularBalanced<float>::convert(x,y) ; }
-		      float & convert(float&x, const Element &y) const { return FFPACK::ModularBalanced<float>::convert(x,y) ; }
+		      long unsigned characteristic(long unsigned int&p)const{return FFPACK::ModularBalanced<float>::characteristic(p) ; }
+		      unsigned long characteristic()const{return FFPACK::ModularBalanced<float>::characteristic();}
+		      double&convert(double &x,const Element&y)const{return FFPACK::ModularBalanced<float>::convert(x,y) ; }
+		      float&convert(float&x,const Element&y)const{return FFPACK::ModularBalanced<float>::convert(x,y) ; }
 
 
 		      inline integer &convert (integer &x, const Element &y) const
