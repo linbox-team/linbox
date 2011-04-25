@@ -75,8 +75,8 @@ namespace LinBox
 		      friend class DotProductDomain<Modular<Element> >;
 		      friend class MultiModFloat;
 
-		      // typedef ModularRandIter<Element> RandIter;
-		      // typedef NonzeroRandIter<Modular<Element>, ModularRandIter<Element> > NonZeroRandIter;
+		      typedef ModularRandIter<Element> RandIter;
+		      typedef NonzeroRandIter<Modular<Element>, ModularRandIter<Element> > NonZeroRandIter;
 
 		      static ClassifyRing<Modular<Element> >::categoryTag getCategory()
 		      {
@@ -113,6 +113,7 @@ namespace LinBox
 
 		      template<class T>T&convert(T&x,const Element&y)const{return x=T(y);}
 		      template<class T>T&characteristic(T&x)const{return x=T(lmodulus);}
+		      unsigned long characteristic(void)const{return FFPACK::Modular<float>::characteristic();}
 
 		      Element &init (Element &x, const integer &y) const
 		      {

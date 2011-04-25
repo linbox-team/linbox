@@ -601,7 +601,12 @@ bool testGeometricSummation (const Field &F, const char *name, unsigned int iter
 	for (unsigned int i = 0; i < iterations; i++) {
 		LinBox::commentator.startIteration (i);
 
-		do r.random (a); while (F.areEqual (a, one));
+		size_t no_bad_loop = F.characteristic(); ///2+5 ;
+		do r.random (a); while (F.areEqual (a, one) && --no_bad_loop);
+		if (!no_bad_loop) {
+			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR) << " *** ERROR *** could not find an element different form 1..." << std::endl;
+			return false;
+		}
 
 		ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Random element a: ";
@@ -1036,17 +1041,19 @@ bool testRanditerBasic(const Field &F, const char *name, unsigned int iterations
 template <class Field>
 bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, size_t n, bool runCharacteristicTest = true)
 	// n is not used.
-{	ostringstream str;
+{
+
+	ostringstream str;
 
 	str << "\t--Testing " << desc << " field" << ends;
 	char * st = new char[str.str().size()];
 	strcpy (st, str.str().c_str());
 	LinBox::commentator.start (st, "runFieldTests");
-	bool ret =  runBasicRingTests(F, desc, iterations, runCharacteristicTest)
-	&& testInvDivConsistency(F, desc, iterations)
-	&& testFieldInversion (F, desc, iterations)
-	&& testFieldCommutativity (F, desc, iterations)
-	&& testFreshmansDream(F, desc, iterations);
+	bool ret =  runBasicRingTests(F, desc, iterations, runCharacteristicTest) ;
+	ret &= testInvDivConsistency(F, desc, iterations) ;
+	ret &= testFieldInversion (F, desc, iterations) ;
+	ret &= testFieldCommutativity (F, desc, iterations) ;
+	ret &= testFreshmansDream(F, desc, iterations);
 
 	LinBox::commentator.stop (MSG_STATUS (ret));
 	delete[] st;
@@ -1065,22 +1072,28 @@ bool runBasicRingTests (const Field &F, const char *desc, unsigned int iteration
 
 	LinBox::commentator.start (st, "runBasicRingTests", runCharacteristicTest ? 11 : 10);
 
-	if (!testField                 (F, string(str.str()).c_str()))                pass = false; LinBox::commentator.progress ();
-	if (!testFieldNegation         (F, desc, iterations))                    pass = false; LinBox::commentator.progress ();
-	if (!testFieldDistributivity           (F, desc, iterations))                    pass = false; LinBox::commentator.progress ();
-	if (!testFieldAssociativity    (F, desc, iterations))                    pass = false; LinBox::commentator.progress ();
+	if (!testField                     (F, string(str.str()).c_str()))           pass = false;
+	LinBox::commentator.progress ();
+	if (!testFieldNegation             (F, desc, iterations))                    pass = false;
+       	LinBox::commentator.progress ();
+	if (!testFieldDistributivity       (F, desc, iterations))                    pass = false;
+       	LinBox::commentator.progress ();
+	if (!testFieldAssociativity        (F, desc, iterations))                    pass = false;
+       	LinBox::commentator.progress ();
 
 	if (runCharacteristicTest) {
-		if (!testFieldCharacteristic (F, desc, iterations))
-			pass = false;
-
+		if (!testFieldCharacteristic (F, desc, iterations))                  pass = false;
 		LinBox::commentator.progress ();
 	}
 
-	if (!testGeometricSummation    (F, desc, iterations, 100))               pass = false; LinBox::commentator.progress ();
-	if (!testRingArithmeticConsistency (F, desc, iterations))                    pass = false; LinBox::commentator.progress ();
-	if (!testAxpyConsistency       (F, desc, iterations))                    pass = false; LinBox::commentator.progress ();
-	if (!testRanditerBasic       (F, desc, iterations))                    pass = false; LinBox::commentator.progress ();
+	if (!testGeometricSummation        (F, desc, iterations, 100))               pass = false;
+       	LinBox::commentator.progress ();
+	if (!testRingArithmeticConsistency (F, desc, iterations))                    pass = false;
+       	LinBox::commentator.progress ();
+	if (!testAxpyConsistency           (F, desc, iterations))                    pass = false;
+       	LinBox::commentator.progress ();
+	if (!testRanditerBasic             (F, desc, iterations))                    pass = false;
+       	LinBox::commentator.progress ();
 
 	LinBox::commentator.stop (MSG_STATUS (pass), (const char *) 0, "runBasicRingTests");
 	delete[] st;

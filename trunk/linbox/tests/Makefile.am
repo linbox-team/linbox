@@ -57,6 +57,7 @@ BASIC_TESTS =  \
         test-modular-balanced-int\
         test-modular-byte       \
         test-modular-double     \
+        test-modular-float      \
         test-modular-int        \
         test-modular-short      \
         test-block-ring         \
@@ -467,6 +468,12 @@ test_modular_double_SOURCES =                \
         test-modular-double.C                \
         test-generic.h                       \
         test-common.h
+
+test_modular_float_SOURCES =                \
+        test-modular-float.C                \
+        test-generic.h                       \
+        test-common.h
+
 
 test_modular_byte_SOURCES =          \
         test-modular-byte.C          \
