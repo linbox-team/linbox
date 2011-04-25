@@ -105,6 +105,8 @@ namespace LinBox
 		       	return c = modulus;
 		}
 
+		unsigned long characteristic()const{return FFPACK::ModularBalanced<int32_t>::characteristic();}
+
 		// this function converts an int to a natural number ?
 		integer &convert (integer &x, const Element &y) const
 		{

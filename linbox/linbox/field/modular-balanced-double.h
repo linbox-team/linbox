@@ -67,10 +67,6 @@ namespace LinBox
 	      public FFPACK::ModularBalanced<double> {
 
 	protected:
-		// double  modulus;
-		// double half_mod;
-		// double mhalf_mod;
-		// unsigned long   lmodulus;
 
 	public:
 		friend class FieldAXPY<ModularBalanced<double> >;
@@ -78,8 +74,8 @@ namespace LinBox
 		friend class MultiModDouble;
 
 		typedef double Element;
-		// typedef ModularBalancedRandIter<double> RandIter;
-		// typedef NonzeroRandIter<ModularBalanced<double>, RandIter > NonZeroRandIter;
+		typedef ModularBalancedRandIter<double> RandIter;
+		typedef NonzeroRandIter<ModularBalanced<double>, RandIter > NonZeroRandIter;
 
 		static ClassifyRing <ModularBalanced<double> >::categoryTag getCategory()
 		{
@@ -110,15 +106,10 @@ namespace LinBox
 			return c = integer(modulus);
 		}
 
-		size_t characteristic () const
-		{
-			return modulus;
-		}
-
 		long unsigned characteristic(long unsigned int&p) const { return FFPACK::ModularBalanced<double>::characteristic(p) ; }
 		double & convert(double &x, const Element &y) const { return FFPACK::ModularBalanced<double>::convert(x,y) ; }
 		float & convert(float&x, const Element &y) const { return FFPACK::ModularBalanced<double>::convert(x,y) ; }
-
+		unsigned long characteristic()const{return FFPACK::ModularBalanced<double>::characteristic();}
 
 		integer &convert (integer &x, const Element &y) const
 		{
