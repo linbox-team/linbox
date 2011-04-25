@@ -601,7 +601,7 @@ bool testGeometricSummation (const Field &F, const char *name, unsigned int iter
 	for (unsigned int i = 0; i < iterations; i++) {
 		LinBox::commentator.startIteration (i);
 
-		size_t no_bad_loop = F.characteristic(); ///2+5 ;
+		size_t no_bad_loop = F.characteristic()/2+5 ;
 		do r.random (a); while (F.areEqual (a, one) && --no_bad_loop);
 		if (!no_bad_loop) {
 			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR) << " *** ERROR *** could not find an element different form 1..." << std::endl;

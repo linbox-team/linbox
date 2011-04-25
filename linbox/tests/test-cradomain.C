@@ -213,11 +213,13 @@ bool TestOneCRAWritePointer(std::ostream& report, Iter& iteration, RandGen& genp
 	return locpass;
 }
 
+
 bool TestCra(int N, int S, size_t seed)
 {
 
 	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT,
 							   INTERNAL_DESCRIPTION);
+	// std::ostream &report = std::cout;
 
 	size_t new_seed = (seed?(seed):(BaseTimer::seed())) ;
 	report << "TestCra(" << N << ',' << S << ',' << new_seed << ')' << std::endl;

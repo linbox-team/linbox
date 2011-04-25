@@ -199,11 +199,25 @@ namespace LinBox
 
 		/// is infinite (signified by -1 here)
 		integer &cardinality (integer &c) const
-		{ return c = _cardinality; }
+		{
+			return c = _cardinality;
+		}
 
 		/// of the rationals is 0.
 		integer &characteristic (integer &c) const
-		{ return c = _characteristic; }
+		{
+			return c = _characteristic;
+		}
+
+		integer cardinality () const
+		{
+			return _cardinality ;
+		}
+
+		integer characteristic () const
+		{
+			return _characteristic ;
+		}
 
 		//@} Object Management
 

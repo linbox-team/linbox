@@ -19,6 +19,11 @@
 #ifndef __LINBOX_modular_balanced_double_H
 #define __LINBOX_modular_balanced_double_H
 
+#ifdef __INTEL_COMPILER
+#define FmodF fmodf
+#else
+#define FmodF fmod
+#endif
 
 #include "linbox/linbox-config.h"
 #include "linbox/integer.h"
@@ -31,6 +36,7 @@
 #include "linbox/field/field-traits.h"
 #include "linbox/randiter/modular-balanced.h"
 #include "linbox/randiter/nonzero.h"
+
 #include "fflas-ffpack/field/modular-balanced-double.h"
 
 
@@ -66,90 +72,90 @@ namespace LinBox
 	class ModularBalanced<double> : public FieldInterface,
 	      public FFPACK::ModularBalanced<double> {
 
-	protected:
+	      protected:
 
-	public:
-		friend class FieldAXPY<ModularBalanced<double> >;
-		friend class DotProductDomain<ModularBalanced<double> >;
-		friend class MultiModDouble;
+	      public:
+		      friend class FieldAXPY<ModularBalanced<double> >;
+		      friend class DotProductDomain<ModularBalanced<double> >;
+		      friend class MultiModDouble;
 
-		typedef double Element;
-		typedef ModularBalancedRandIter<double> RandIter;
-		typedef NonzeroRandIter<ModularBalanced<double>, RandIter > NonZeroRandIter;
+		      typedef double Element;
+		      typedef ModularBalancedRandIter<double> RandIter;
+		      typedef NonzeroRandIter<ModularBalanced<double>, RandIter > NonZeroRandIter;
 
-		static ClassifyRing <ModularBalanced<double> >::categoryTag getCategory()
-		{
-			return ClassifyRing<ModularBalanced<double> >::categoryTag();
-		}
+		      static ClassifyRing <ModularBalanced<double> >::categoryTag getCategory()
+		      {
+			      return ClassifyRing<ModularBalanced<double> >::categoryTag();
+		      }
 
-		ModularBalanced (const integer& p) :
-			FFPACK::ModularBalanced<double>((unsigned long)p)
-		{
+		      ModularBalanced (const integer& p) :
+			      FFPACK::ModularBalanced<double>((unsigned long)p)
+		      {
 #ifdef DEBUG
-			if (p > (integer) ULONG_MAX)
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,"prime too big");
-			if(modulus <= 1)
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
-			if(modulus > getMaxModulus())
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
+			      if (p > (integer) ULONG_MAX)
+				      throw PreconditionFailed(__func__,__FILE__,__LINE__,"prime too big");
+			      if(modulus <= 1)
+				      throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
+			      if(modulus > getMaxModulus())
+				      throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 #endif
 
-		}
+		      }
 
-		integer &cardinality (integer &c) const
-		{
-			return c = integer(modulus);
-		}
+		      integer &cardinality (integer &c) const
+		      {
+			      return c = integer(modulus);
+		      }
 
-		integer &characteristic (integer &c) const
-		{
-			return c = integer(modulus);
-		}
+		      integer &characteristic (integer &c) const
+		      {
+			      return c = integer(modulus);
+		      }
 
-		long unsigned characteristic(long unsigned int&p) const { return FFPACK::ModularBalanced<double>::characteristic(p) ; }
-		double & convert(double &x, const Element &y) const { return FFPACK::ModularBalanced<double>::convert(x,y) ; }
-		float & convert(float&x, const Element &y) const { return FFPACK::ModularBalanced<double>::convert(x,y) ; }
-		unsigned long characteristic()const{return FFPACK::ModularBalanced<double>::characteristic();}
+		      long unsigned characteristic(long unsigned int&p) const { return FFPACK::ModularBalanced<double>::characteristic(p) ; }
+		      double & convert(double &x, const Element &y) const { return FFPACK::ModularBalanced<double>::convert(x,y) ; }
+		      float & convert(float&x, const Element &y) const { return FFPACK::ModularBalanced<double>::convert(x,y) ; }
+		      unsigned long characteristic()const{return FFPACK::ModularBalanced<double>::characteristic();}
 
-		integer &convert (integer &x, const Element &y) const
-		{
-			if ( y < 0. ) return x = integer (y + modulus) ;
-			else return x = integer (y);
-		}
+		      integer &convert (integer &x, const Element &y) const
+		      {
+			      if ( y < 0. ) return x = integer (y + modulus) ;
+			      else return x = integer (y);
+		      }
 
-		Element &init (Element &x, const integer &y) const
-		{
-			x = (Element)(y%lmodulus);
-			if (x<mhalf_mod) return x += modulus ;
-			else if (x>half_mod) return x += modulus ;
-			return  x ;
-		}
+		      Element &init (Element &x, const integer &y) const
+		      {
+			      x = (Element)(y%lmodulus);
+			      if (x<mhalf_mod) return x += modulus ;
+			      else if (x>half_mod) return x += modulus ;
+			      return  x ;
+		      }
 
-		//! @bug faux si modulus==2
-		inline bool isMinusOne (const Element &x) const
-		{
-			return (x == -1.);
-		}
+		      //! @bug faux si modulus==2
+		      inline bool isMinusOne (const Element &x) const
+		      {
+			      return (x == -1.);
+		      }
 
-		unsigned long AccBound(const Element&r) const
-		{
-			Element one, zero ; init(one,1UL) ; init(zero,0UL);
-			double max_double = (double) (1ULL<<DBL_MANT_DIG) - modulus ;
-			double p = std::max(half_mod,-mhalf_mod) ;
-			if (areEqual(zero,r))
-				return (unsigned long) (double(max_double)/p) ;
-			else if (areEqual(one,r))
-			{
-				if (modulus>= getMaxModulus())
-					return 0 ;
-				else
-					return (unsigned long) (double(max_double)/(p*p)) ;
-			} else
-				throw LinboxError("Bad input, expecting 0 or 1");
-			return 0;
-		}
+		      unsigned long AccBound(const Element&r) const
+		      {
+			      Element one, zero ; init(one,1UL) ; init(zero,0UL);
+			      double max_double = (double) (1ULL<<DBL_MANT_DIG) - modulus ;
+			      double p = std::max(half_mod,-mhalf_mod) ;
+			      if (areEqual(zero,r))
+				      return (unsigned long) (double(max_double)/p) ;
+			      else if (areEqual(one,r))
+			      {
+				      if (modulus>= getMaxModulus())
+					      return 0 ;
+				      else
+					      return (unsigned long) (double(max_double)/(p*p)) ;
+			      } else
+				      throw LinboxError("Bad input, expecting 0 or 1");
+			      return 0;
+		      }
 
-	};
+	      };
 
 	//! Specialization  of FieldAXPY.
 	template <>

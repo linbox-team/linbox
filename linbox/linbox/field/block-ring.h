@@ -217,14 +217,27 @@ namespace LinBox
 			return c;
 		}
 
-
 		integer& characteristic(integer &c) const
 		{
 			return _F.characteristic(c);
 		}
 
+		unsigned long cardinality() const
+		{
+			return _F. cardinality() ;
+		}
+
+		unsigned long characteristic() const
+		{
+			return _F. characteristic() ;
+		}
+
+
+
 		size_t dim() const
-		{ return _b; }
+		{
+			return _b;
+		}
 
 
 		//Operations
