@@ -76,13 +76,6 @@ namespace LinBox
 
 	      protected:
 
-#if 0
-		      Element  modulus;
-		      Element half_mod;
-		      Element mhalf_mod;
-		      unsigned long   lmodulus;
-#endif
-
 	      public:
 		      friend class FieldAXPY<ModularBalanced<Element> >;
 		      friend class DotProductDomain<ModularBalanced<Element> >;
@@ -97,62 +90,6 @@ namespace LinBox
 			      return ClassifyRing<ModularBalanced<Element> >::categoryTag();
 		      }
 
-		      // ModularBalanced () {}
-
-#if 0
-		      ModularBalanced (int32_t p, int exp = 1) :
-			      modulus((Element)p),
-			      half_mod( Element((p-1)/2)),
-			      mhalf_mod( half_mod-p+1),
-			      lmodulus (p)
-		      {
-			      if(modulus <= 1)
-				      throw PreconditionFailed(__func__,
-							       __LINE__,
-							       "modulus must be > 1");
-			      if( exp != 1 ) throw PreconditionFailed(__func__,
-								      __LINE__,
-								      "exponent must be 1");
-			      integer max;
-			      if (modulus > (Element) FieldTraits<ModularBalanced<Element> >::maxModulus(max))
-				      throw PreconditionFailed (__func__,
-								__LINE__,
-								"modulus is too big");
-		      }
-
-		      ModularBalanced (Element p) :
-			      modulus (p),
-			      half_mod( Element((p-1)/2)),
-			      mhalf_mod( half_mod-p+1),
-			      lmodulus ((unsigned long)p)
-		      {
-			      if (modulus <= 1)
-				      throw PreconditionFailed(__func__,
-							       __LINE__,
-							       "modulus must be > 1");
-			      integer max;
-			      if (modulus > (Element) FieldTraits<ModularBalanced<Element> >::maxModulus(max))
-				      throw PreconditionFailed (__func__,
-								__LINE__,
-								"modulus is too big");
-		      }
-
-		      ModularBalanced (long int p) :
-			      modulus((Element)p),
-			      half_mod( Element((p-1)/2)),
-			      mhalf_mod( half_mod-p+1),
-			      lmodulus(p)
-		      {
-			      if ((Element) modulus <= 1)
-				      throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
-			      integer max;
-			      if ((Element) modulus > (Element) FieldTraits<ModularBalanced<Element> >::maxModulus(max))
-				      throw PreconditionFailed (__func__,
-								__LINE__,
-								"modulus is too big");
-		      }
-#endif
-
 		      ModularBalanced (const integer& p) :
 			      FFPACK::ModularBalanced<float>((unsigned long)p)
 		      {
@@ -166,24 +103,9 @@ namespace LinBox
 
 		      }
 
-#if 0
-		      ModularBalanced (const ModularBalanced<Element>& mf) :
-			      modulus (mf.modulus),
-			      half_mod (mf.half_mod),
-			      mhalf_mod( mf.mhalf_mod),
-			      lmodulus (mf.lmodulus) {}
 
-		      const ModularBalanced &operator= (const ModularBalanced<Element> &F) {
-			      modulus = F.modulus;
-			      half_mod = F.half_mod;
-			      mhalf_mod = F.mhalf_mod;
-			      lmodulus= F.lmodulus;
-			      return *this;
-		      }
-#endif
-
-
-		      inline integer &cardinality (integer &c) const{
+		      inline integer &cardinality (integer &c) const
+		      {
 			      return c = integer(modulus);
 		      }
 
@@ -196,60 +118,12 @@ namespace LinBox
 		      double & convert(double &x, const Element &y) const { return FFPACK::ModularBalanced<float>::convert(x,y) ; }
 		      float & convert(float&x, const Element &y) const { return FFPACK::ModularBalanced<float>::convert(x,y) ; }
 
-#if 0
-		      inline size_t characteristic () const
-		      {
-			      return modulus;
-		      }
-#endif
 
 		      inline integer &convert (integer &x, const Element &y) const
 		      {
 			      if ( y < 0. ) return x = integer (y + modulus) ;
 			      else return x = integer (y);
 		      }
-
-#if 0
-		      inline Element &convert (Element &x, const Element& y) const
-		      { return x=y; }
-
-		      inline double &convert (double &x, const Element& y) const
-		      { return x=y; }
-
-
-		      std::ostream &write (std::ostream &os) const
-		      {
-			      return os << "balanced Element mod " << int(modulus);
-		      }
-
-		      std::istream &read (std::istream &is) {
-			      is >> modulus;
-#ifdef DEBUG
-			      if(modulus <= 1)
-				      throw PreconditionFailed (__func__,
-								__LINE__,
-								"modulus must be > 1");
-			      if(modulus > getMaxModulus())
-				      throw PreconditionFailed (__func__,
-								__LINE__,
-								"modulus is too big");
-#endif
-			      return is;
-		      }
-
-		      std::ostream &write (std::ostream &os, const Element &x) const
-		      {
-			      return os << int(x);
-		      }
-
-		      std::istream &read (std::istream &is, Element &x) const
-		      {
-			      unsigned long tmp;
-			      is >> tmp;
-			      init(x,tmp);
-			      return is;
-		      }
-#endif
 
 
 		      inline Element &init (Element &x, const integer &y) const
@@ -261,163 +135,10 @@ namespace LinBox
 			      return x;
 		      }
 
-#if 0
-		      inline Element& init(Element& x, const Element y =0) const
-		      {
-
-			      x = fmodf (y, modulus);
-
-			      if ( x > half_mod ) return x -= modulus;
-			      else if ( x < mhalf_mod ) return x +=  modulus;
-			      else return x ;
-		      }
-
-		      inline Element& assign(Element& x, const Element& y) const
-		      {
-			      return x = y;
-		      }
-
-		      inline bool areEqual (const Element &x, const Element &y) const
-		      {
-			      return x == y;
-		      }
-
-		      inline  bool isZero (const Element &x) const
-		      {
-			      return x == 0.;
-		      }
-
-		      inline bool isOne (const Element &x) const
-		      {
-			      return x == 1.;
-		      }
-#endif
-
 		      inline bool isMinusOne (const Element &x) const
 		      {
 			      return (x == -1.);
 		      }
-
-#if 0
-		      inline Element &add (Element &x,
-					   const Element &y, const Element &z) const
-		      {
-			      x = y + z;
-			      if ( x > half_mod ) return x -= modulus;
-			      if ( x < mhalf_mod ) return x += modulus;
-			      else return x;
-		      }
-
-		      inline Element &sub (Element &x,
-					   const Element &y, const Element &z) const
-		      {
-			      x = y - z;
-			      if (x > half_mod) return x -= modulus;
-			      if (x < mhalf_mod) return x += modulus;
-			      else return x;
-		      }
-
-		      inline Element &mul (Element &x,
-					   const Element &y, const Element &z) const
-		      {
-			      x = y * z;
-			      return init (x,x);
-		      }
-
-		      inline Element &div (Element &x, const Element &y, const Element &z) const
-		      {
-			      inv (x, z);
-			      return mulin (x, y);
-		      }
-
-		      inline Element &neg (Element &x, const Element &y) const
-		      {
-			      return x = -y;
-		      }
-
-		      inline Element &inv (Element &x, const Element &y) const
-		      {
-			      // The extended Euclidean algoritm
-			      int x_int, y_int, q, tx, ty, temp;
-			      x_int = int (modulus);
-			      y_int = (y < 0.) ? int(y + modulus) : int(y);
-			      tx = 0;
-			      ty = 1;
-
-			      while (y_int != 0) {
-				      // always: gcd (modulus,residue) = gcd (x_int,y_int)
-				      //         sx*modulus + tx*residue = x_int
-				      //         sy*modulus + ty*residue = y_int
-				      q = x_int / y_int; // integer quotient
-				      temp = y_int; y_int = x_int - q * y_int;
-				      x_int = temp;
-				      temp = ty; ty = tx - q * ty;
-				      tx = temp;
-			      }
-
-			      if (tx > half_mod ) return x = tx - modulus;
-			      else if ( tx < mhalf_mod ) return x = tx + modulus;
-			      return x = (Element) tx;
-		      }
-
-		      inline Element &axpy (Element &r,
-					    const Element &a,
-					    const Element &x,
-					    const Element &y) const
-		      {
-			      r = a * x + y;
-			      return init (r, r);
-		      }
-
-		      inline Element &addin (Element &x, const Element &y) const
-		      {
-			      x += y;
-			      if ( x > half_mod ) return x -= modulus;
-			      else if ( x < mhalf_mod ) return x += modulus;
-			      return x;
-		      }
-
-		      inline Element &subin (Element &x, const Element &y) const
-		      {
-			      x -= y;
-			      if ( x > half_mod ) return x -= modulus;
-			      else if ( x < mhalf_mod ) return x += modulus;
-			      return x;
-		      }
-
-		      inline Element &mulin (Element &x, const Element &y) const
-		      {
-			      return mul(x,x,y);
-		      }
-
-		      inline Element &divin (Element &x, const Element &y) const
-		      {
-			      return div(x,x,y);
-		      }
-
-		      inline Element &negin (Element &x) const
-		      {
-			      return x = -x;
-		      }
-
-		      inline Element &invin (Element &x) const
-		      {
-			      return inv (x, x);
-		      }
-
-		      inline Element &axpyin (Element &r, const Element &a, const Element &x) const
-		      {
-			      r += a * x;
-			      return init (r, r);
-		      }
-
-		      static inline Element getMaxModulus()
-		      {
-			      return 2048.;  // 2^11
-		      }
-
-
-#endif
 
 		      unsigned long AccBound(const Element&r) const
 		      {

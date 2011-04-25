@@ -831,7 +831,7 @@ namespace LinBox
 			LEVEL_ALWAYS       =  0,
 			LEVEL_IMPORTANT    =  1,
 			LEVEL_NORMAL       =  2,
-			LEVEL_UNIMPORTANT  =  3,
+			LEVEL_UNIMPORTANT  =  3
 		};
 
 		inline std::ostream &report (long , const char *) { return cnull; }

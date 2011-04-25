@@ -44,8 +44,8 @@
 
 #include "fflas-ffpack/field/modular-balanced-int32.h"
 
-#ifndef LINBOX_MAX_INT
-#define LINBOX_MAX_INT 2147483647
+#ifndef LINBOX_MAX_INT /* 2147483647 */
+#define LINBOX_MAX_INT INT32_MAX
 #endif
 
 
@@ -106,7 +106,8 @@ namespace LinBox
 		}
 
 		// this function converts an int to a natural number ?
-		integer &convert (integer &x, const Element &y) const {
+		integer &convert (integer &x, const Element &y) const
+		{
 			if(y >= 0)
 				return x = y;
 			else
@@ -116,8 +117,12 @@ namespace LinBox
 		Element &init (Element &x, const integer &y) const
 		{
 			x = y % (long)modulus;
-			if (x < nhalfmodulus) x += modulus;
-			else if (x > halfmodulus) x -= modulus;
+
+			if (x < nhalfmodulus)
+				x += modulus;
+			else if (x > halfmodulus)
+				x -= modulus;
+
 			return x;
 		}
 
@@ -140,14 +145,16 @@ namespace LinBox
 			_F (faxpy._F), _y (0),_times(0)
 		{}
 
-		FieldAXPY<ModularBalanced<int32_t> > &operator = (const FieldAXPY &faxpy) {
+		FieldAXPY<ModularBalanced<int32_t> > &operator = (const FieldAXPY &faxpy)
+		{
 			_F = faxpy._F;
 			_y = faxpy._y;
 			_times = faxpy._times;
 			return *this;
 		}
 
-		inline int64_t& mulacc (const Element &a, const Element &x) {
+		inline int64_t& mulacc (const Element &a, const Element &x)
+		{
 			int64_t t = (int64_t) a * (int64_t)   x;
 			if (_times < blocksize) {
 				++_times;
@@ -161,7 +168,8 @@ namespace LinBox
 			}
 		}
 
-		inline int64_t& accumulate (const Element &t) {
+		inline int64_t& accumulate (const Element &t)
+		{
 			if (_times < blocksize) {
 				++_times;
 				return _y += t;
@@ -174,7 +182,8 @@ namespace LinBox
 			}
 		}
 
-		inline Element& get (Element &y) {
+		inline Element& get (Element &y)
+		{
 
 			normalize();
 
@@ -188,12 +197,14 @@ namespace LinBox
 			return y;
 		}
 
-		inline FieldAXPY &assign (const Element y) {
+		inline FieldAXPY &assign (const Element y)
+		{
 			_y = y;
 			return *this;
 		}
 
-		inline void reset() {
+		inline void reset()
+		{
 			_y = 0;
 		}
 

@@ -39,8 +39,8 @@
 
 #include "fflas-ffpack/field/modular-int32.h"
 
-#ifndef LINBOX_MAX_INT
-#define LINBOX_MAX_INT 2147483647
+#ifndef LINBOX_MAX_INT /* 2147483647 */
+#define LINBOX_MAX_INT INT32_MAX
 #endif
 
 // Namespace in which all LinBox code resides
@@ -91,10 +91,6 @@ namespace LinBox
 	      public ::FFPACK::Modular<int32_t> {
 
 	protected:
-
-		// int32_t modulus;
-		// double modulusinv;
-		// int32_t _two64;
 
 	public:
 
