@@ -81,10 +81,10 @@ namespace LinBox
 		{
 			RecCounter =0;
 			if (_M == QUADRATIC) {
-				RecCounter = (int)sqrt(rbound_);//RecCounter^2 < rbound_ <=(RecCounter+1)^2
+				RecCounter = (size_t)sqrt(rbound_);//RecCounter^2 < rbound_ <=(RecCounter+1)^2
 			}
 			else if (_M == GEOMETRIC) {
-				RecCounter = (int)((double)log(rbound_)/log(2));//2^RecCounter < rbound_ <=2^(RecCounter+1)
+				RecCounter = (size_t)((double)log(rbound_)/log(2));//2^RecCounter < rbound_ <=2^(RecCounter+1)
 			}
 
 		}

@@ -31,14 +31,18 @@
  */
 
 #include "linbox/linbox-config.h"
+
 #include <iostream>
+#include <vector>
+
 #include <linbox/integer.h>
 #include <linbox/matrix/matrix-domain.h>
 #include "linbox/field/givaro-zpz.h"
 #include "linbox/field/modular.h"
 #include "linbox/field/modular-balanced.h"
 #include "fflas-ffpack/ffpack/ffpack.h"
-#include <vector>
+#include "linbox/util/commentator.h"
+
 #include "test-common.h"
 
 #define _LB_FULL_TEST
@@ -432,6 +436,7 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 template <class Field>
 static bool testMinPoly (const Field& F, size_t n, int iterations)
 {
+	std::cerr << "Minpoly on " << F  << std::endl;
 	typedef typename Field::Element                  Element;
 	typedef typename Field::RandIter                RandIter;
 	typedef vector<Element>                       Polynomial;
@@ -502,30 +507,34 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 		}
 		if(!ret) cerr<<"MinP(aIn)!=X-a"<<endl;
 
-// 		for (size_t i=0;i<n-1;++i){
-// 			for (size_t j=0; j<n; ++j)
-// 				F.assign(*(A+i*n+j),zero);
-// 			F.assign(*(A+i*n+i+1),one);
-// 		}
-// 		for (size_t j=0;j<n;++j)
-// 			F.assign(*(A+(n-1)*n+j),zero);
+#if 1 /*  ??? */
+		for (size_t i=0;i<n-1;++i){
+			for (size_t j=0; j<n; ++j)
+				F.assign(*(A+i*n+j),zero);
+			F.assign(*(A+i*n+i+1),one);
+		}
+		for (size_t j=0;j<n;++j)
+			F.assign(*(A+(n-1)*n+j),zero);
 
-// 		for (size_t i=0; i<n ;++i)
-// 			Perm[i]=0;
-// 		FFPACK::MinPoly( F, P, n, A, n, X, n, Perm );
+		for (size_t i=0; i<n ;++i)
+			Perm[i]=0;
+		FFPACK::MinPoly( F, P, n, A, n, X, n, Perm );
 
-// 		if ( P.size() !=n+1 )
-// 			ret = false;
-// 		for (size_t i=0; i<n;++i)
-// 			if ( !F.areEqual(P[i], zero) )
-// 				ret = false;
-// 		if ( !F.areEqual(P[n], one) )
-// 			ret = false;
-// 		if(!ret) cerr<<"MinP(J)!=X^n"<<endl;
+		if ( P.size() !=n+1 )
+			ret = false;
+		for (size_t i=0; i<n;++i)
+			if ( !F.areEqual(P[i], zero) )
+				ret = false;
+		if ( !F.areEqual(P[n], one) )
+			ret = false;
+		if(!ret) cerr<<"MinP(J)!=X^n"<<endl;
+#endif
 		delete[] A;
 		delete[] X;
 		delete[] Perm;
 	}
+
+	std::cerr << "stop" << std::endl;
 
 	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testMinPoly");
 

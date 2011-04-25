@@ -117,6 +117,7 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-modular-balanced-int", counter, flag);
 	build_n_run("test-modular-byte", counter, flag);
 	build_n_run("test-modular-double", counter, flag);
+	build_n_run("test-modular-float", counter, flag);
 	build_n_run("test-modular-int", counter, flag);
 	build_n_run("test-modular-short", counter, flag);
 	build_n_run("test-moore-penrose", counter, flag);
@@ -310,7 +311,7 @@ void build_n_run(string s, counts& cnt, int flag, string r) {
 	}
 	if (flag >= 3) system("rm -f checkdata");
 	return;
-abort: 
+abort:
 	cout << endl << "Interrupted, aborting." << endl;
 	exit(-1);
 }
