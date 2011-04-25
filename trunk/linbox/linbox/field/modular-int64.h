@@ -40,11 +40,11 @@
 
 #include "fflas-ffpack/field/modular-int64.h"
 
-#ifndef _LB_MAX_INT
+#ifndef LINBOX_MAX_INT64 /*  18446744073709551615L(L) is UINT64_MAX*/
 #ifdef __x86_64__
-#define _LB_MAX_INT 18446744073709551615L
+#define LINBOX_MAX_INT64 INT64_MAX
 #else
-#define _LB_MAX_INT 18446744073709551615LL
+#define LINBOX_MAX_INT64 INT64_MAX
 #endif
 #endif
 
@@ -70,8 +70,9 @@ namespace LinBox
 	struct ClassifyRing<Modular<Element> >;
 
 	template <>
-	struct ClassifyRing<Modular<int64_t> >
-	{ typedef RingCategories::ModularTag categoryTag; };
+	struct ClassifyRing<Modular<int64_t> > {
+	       	typedef RingCategories::ModularTag categoryTag;
+	};
 
 
 
@@ -99,8 +100,6 @@ namespace LinBox
 		friend class MVProductDomain<Modular<int64_t> >;
 
 		typedef ModularRandIter<int64_t> RandIter;
-
-		//default modular field,taking 65521 as default modulus
 
 		inline integer &cardinality (integer &c) const
 		{
@@ -483,7 +482,7 @@ namespace LinBox
 
 }
 
-#undef _LB_MAX_INT
+#undef LINBOX_MAX_INT64
 
 #include "linbox/randiter/modular.h"
 
