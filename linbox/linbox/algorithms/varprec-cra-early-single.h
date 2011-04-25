@@ -47,8 +47,6 @@ namespace LinBox
 	 * factor may be changed by changeFactor function, residues stored in FullMultipCRA are recomputed in this case,
 	 * FullMulpitCRA should consist of vectors of size 0, but errors happen.
 	 */
-
-
 	template<class Domain_Type>
 	struct VarPrecEarlySingleCRA: public EarlySingleCRA<Domain_Type>, FullMultipCRA<Domain_Type> {
 
@@ -65,15 +63,31 @@ namespace LinBox
 		Integer factor_;
 		Integer multip_;
 
-		VarPrecEarlySingleCRA(const unsigned long EARLY = DEFAULT_EARLY_TERM_THRESHOLD, const double b=0.0, const Integer& f=Integer(1), const Integer& m=Integer(1)) :
-			EarlySingleCRA<Domain>(EARLY), FullMultipCRA<Domain>(b), factor_(f), multip_(m)
-		{ if (factor_ == 0 ) factor_ = 1;}
+		VarPrecEarlySingleCRA(const unsigned long EARLY = DEFAULT_EARLY_TERM_THRESHOLD
+				      , const double b=0.0
+				      , const Integer& f=Integer(1)
+				      , const Integer& m=Integer(1)) :
+			EarlySingleCRA<Domain>(EARLY)
+			, FullMultipCRA<Domain>(b)
+			, factor_(f)
+			, multip_(m)
+		{
+			if (factor_ == 0 )
+			       	factor_ = 1;
+		}
 
 		VarPrecEarlySingleCRA(const VarPrecEarlySingleCRA& other) :
-			EarlySingleCRA<Domain>(other.EARLY_TERM_THRESHOLD), FullMultipCRA<Domain>(other.LOGARITHMIC_UPPER_BOUND), factor_(other.factor_), multip_(other.multip_)
-		{factor_ = 1; }
+			EarlySingleCRA<Domain>(other.EARLY_TERM_THRESHOLD)
+			, FullMultipCRA<Domain>(other.LOGARITHMIC_UPPER_BOUND)
+			, factor_(other.factor_), multip_(other.multip_)
+		{
+			factor_ = 1;
+		}
 
-		int getThreshold(int& t) {return t = EarlySingleCRA<Domain>::EARLY_TERM_THRESHOLD;}
+		int getThreshold(int& t)
+		{
+			return t = EarlySingleCRA<Domain>::EARLY_TERM_THRESHOLD;
+		}
 
 		Integer& getModulus(Integer& m)
 		{
@@ -119,7 +133,7 @@ namespace LinBox
 			FullMultipCRA<Domain>::initialize(D, v);
 		}
 
-		void progress (const Integer& D, Integer& e)
+		void progress (const Integer& D,const  Integer& e)
 		{
 
 			Integer z;
@@ -170,7 +184,6 @@ namespace LinBox
 			if (FullMultipCRA<Domain>::LOGARITHMIC_UPPER_BOUND> 1.0) ET = ET || FullMultipCRA<Domain>::terminated();
 			return ET;
 		}
-
 
 		bool noncoprime(const Integer& i) const
 		{

@@ -40,12 +40,12 @@
 namespace LinBox
 {
 
-/** @name Vector traits.
- * Vector traits are use to allow template specialization to choose different
- * code for dense and sparse vectors.
-	\ingroup vector
- */
-//@{
+	/** @name Vector traits.
+	 * Vector traits are use to allow template specialization to choose different
+	 * code for dense and sparse vectors.
+	 \ingroup vector
+	 */
+	//@{
 
 	/** \brief List of vector categories.
 
@@ -55,68 +55,68 @@ namespace LinBox
 	 * These types allow us to use template specialization to use different
 	 * code for different types of vectors.
 	 */
-        struct VectorCategories
-        {
-            struct GenericVectorTag {
-                friend std::ostream& operator<< (std::ostream& o,
-                                                 const GenericVectorTag& ) {
-                    return o << "GenericVectorTag";
-                }
-            };
+	struct VectorCategories
+	{
+		struct GenericVectorTag {
+			friend std::ostream& operator<< (std::ostream& o,
+							 const GenericVectorTag& ) {
+				return o << "GenericVectorTag";
+			}
+		};
 
-                // These are valid for GF2 only
+		// These are valid for GF2 only
 
-            struct SparseZeroOneVectorTag : public GenericVectorTag {
-                friend std::ostream& operator<< (std::ostream& o,
-                                                 const SparseZeroOneVectorTag& ) {
-                    return o << "SparseZeroOneVectorTag";
-                }
-            };
-                // These are valid for all fields
-            struct DenseVectorTag : public SparseZeroOneVectorTag {
-                    // Inherits from SparseZeroOneVectorTag:
-                    // This simplifies gf2 management of vectors
-                    // and makes Dense vector also a generic vector
-                friend std::ostream& operator<< (std::ostream& o,
-                                                 const DenseVectorTag& ) {
-                    return o << "DenseVectorTag";
-                }
-            };
+		struct SparseZeroOneVectorTag : public GenericVectorTag {
+			friend std::ostream& operator<< (std::ostream& o,
+							 const SparseZeroOneVectorTag& ) {
+				return o << "SparseZeroOneVectorTag";
+			}
+		};
+		// These are valid for all fields
+		struct DenseVectorTag : public SparseZeroOneVectorTag {
+			// Inherits from SparseZeroOneVectorTag:
+			// This simplifies gf2 management of vectors
+			// and makes Dense vector also a generic vector
+			friend std::ostream& operator<< (std::ostream& o,
+							 const DenseVectorTag& ) {
+				return o << "DenseVectorTag";
+			}
+		};
 
-            struct SparseVectorTag : public GenericVectorTag {
-                friend std::ostream& operator<< (std::ostream& o,
-                                                 const SparseVectorTag& ) {
-                    return o << "SparseVectorTag";
-                }
-            };
+		struct SparseVectorTag : public GenericVectorTag {
+			friend std::ostream& operator<< (std::ostream& o,
+							 const SparseVectorTag& ) {
+				return o << "SparseVectorTag";
+			}
+		};
 
-            struct SparseSequenceVectorTag : public SparseVectorTag {
-                friend std::ostream& operator<< (std::ostream& o,
-                                                 const SparseSequenceVectorTag& ) {
-                    return o << "SparseSequenceVectorTag";
-                }
-            };
-            struct SparseAssociativeVectorTag : public SparseVectorTag {
-                friend std::ostream& operator<< (std::ostream& o,
-                                                 const SparseAssociativeVectorTag& ) {
-                    return o << "SparseAssociativeVectorTag";
-                }
-            };
-            struct SparseParallelVectorTag : public SparseVectorTag {
-                friend std::ostream& operator<< (std::ostream& o,
-                                                 const SparseParallelVectorTag& ) {
-                    return o << "SparseParallelVectorTag";
-                }
-            };
+		struct SparseSequenceVectorTag : public SparseVectorTag {
+			friend std::ostream& operator<< (std::ostream& o,
+							 const SparseSequenceVectorTag& ) {
+				return o << "SparseSequenceVectorTag";
+			}
+		};
+		struct SparseAssociativeVectorTag : public SparseVectorTag {
+			friend std::ostream& operator<< (std::ostream& o,
+							 const SparseAssociativeVectorTag& ) {
+				return o << "SparseAssociativeVectorTag";
+			}
+		};
+		struct SparseParallelVectorTag : public SparseVectorTag {
+			friend std::ostream& operator<< (std::ostream& o,
+							 const SparseParallelVectorTag& ) {
+				return o << "SparseParallelVectorTag";
+			}
+		};
 
-            struct DenseZeroOneVectorTag : public DenseVectorTag {
-                friend std::ostream& operator<< (std::ostream& o,
-                                                 const DenseZeroOneVectorTag& ) {
-                    return o << "DenseZeroOneVectorTag";
-                }
-            };
+		struct DenseZeroOneVectorTag : public DenseVectorTag {
+			friend std::ostream& operator<< (std::ostream& o,
+							 const DenseZeroOneVectorTag& ) {
+				return o << "DenseZeroOneVectorTag";
+			}
+		};
 
-        };
+	};
 
 	// Helper structure used for various STL's sorts (std::list::sort and std::stable_sort)
 	// for comparison of two pairs of elements (by their first elements)
@@ -125,7 +125,7 @@ namespace LinBox
 		public std::binary_function<const std::pair<size_t, Element>&, const std::pair<size_t, Element>&, bool >
 	{
 		bool operator() (const std::pair<size_t, Element>& p1, const std::pair<size_t, Element>& p2)
-			{ return p1.first < p2.first; }
+		{ return p1.first < p2.first; }
 	};
 
 
@@ -206,20 +206,22 @@ namespace LinBox
 	{
 		template <class T>
 		class CompareSparseEntries {
-		    public:
-                        template<typename PairType>
+		public:
+			template<typename PairType>
 			inline bool operator () (const PairType &i, const size_t j) const
-				{ return i.first < j; }
+			{ return i.first < j; }
 		};
 
 		template <class Field, class Vector>
 		inline typename Field::Element &refSpecialized
-			(Vector &v, size_t i, VectorCategories::DenseVectorTag)
-			{ return v[i]; }
+		(Vector &v, size_t i, VectorCategories::DenseVectorTag)
+		{
+		       	return v[i];
+		}
 
 		template <class Field, class Vector>
 		inline typename Field::Element &refSpecialized
-			(Vector &v, size_t i, VectorCategories::SparseSequenceVectorTag)
+		(Vector &v, size_t i, VectorCategories::SparseSequenceVectorTag)
 		{
 			static typename Field::Element zero;
 			typename Vector::iterator j;
@@ -239,12 +241,14 @@ namespace LinBox
 
 		template <class Field, class Vector>
 		inline typename Field::Element &refSpecialized
-			(Vector &v, size_t i, VectorCategories::SparseAssociativeVectorTag)
-			{ return v[i]; }
+		(Vector &v, size_t i, VectorCategories::SparseAssociativeVectorTag)
+		{
+			return v[i];
+		}
 
 		template <class Field, class Vector>
 		inline typename Field::Element &refSpecialized
-			(Vector &v, size_t i, VectorCategories::SparseParallelVectorTag)
+		(Vector &v, size_t i, VectorCategories::SparseParallelVectorTag)
 		{
 			static typename Field::Element zero;
 			typename Vector::first_type::iterator j_idx;
@@ -269,16 +273,20 @@ namespace LinBox
 
 		template <class Field, class Vector>
 		inline typename Field::Element &ref (Vector &v, size_t i)
-			{ return refSpecialized<Field, Vector> (v, i, typename VectorTraits<Vector>::VectorCategory()); }
+		{
+			return refSpecialized<Field, Vector> (v, i, typename VectorTraits<Vector>::VectorCategory());
+		}
 
 		template <class Field, class Vector>
 		inline const typename Field::Element &constRefSpecialized
-			(Vector &v, size_t i, VectorCategories::DenseVectorTag)
-			{ return v[i]; }
+		(Vector &v, size_t i, VectorCategories::DenseVectorTag)
+		{
+			return v[i];
+		}
 
 		template <class Field, class Vector>
 		inline const typename Field::Element &constRefSpecialized
-			(Vector &v, size_t i, VectorCategories::SparseSequenceVectorTag)
+		(Vector &v, size_t i, VectorCategories::SparseSequenceVectorTag)
 		{
 			static typename Field::Element zero;
 			typename Vector::const_iterator j;
@@ -296,12 +304,14 @@ namespace LinBox
 
 		template <class Field, class Vector>
 		inline const typename Field::Element &constRefSpecialized
-			(Vector &v, size_t i, VectorCategories::SparseAssociativeVectorTag)
-			{ return v[i]; }
+		(Vector &v, size_t i, VectorCategories::SparseAssociativeVectorTag)
+		{
+			return v[i];
+		}
 
 		template <class Field, class Vector>
 		inline typename Field::Element &constRefSpecialized
-			(Vector &v, size_t i, VectorCategories::SparseParallelVectorTag)
+		(Vector &v, size_t i, VectorCategories::SparseParallelVectorTag)
 		{
 			static typename Field::Element zero;
 			typename Vector::first_type::iterator j_idx;
@@ -322,35 +332,44 @@ namespace LinBox
 
 		template <class Vector>
 		inline void ensureDimSpecialized (Vector &v, size_t n, VectorCategories::DenseZeroOneVectorTag)
-			{ v.resize (n); }
+		{
+			v.resize (n);
+		}
+
 
 		template <class Vector>
 		inline void ensureDimSpecialized (Vector &v, size_t n, VectorCategories::SparseZeroOneVectorTag)
-			{}
+		{}
 
 		template <class Field, class Vector>
 		inline const typename Field::Element &constRef (Vector &v, size_t i)
-			{ return constRefSpecialized<Field, Vector> (v, i, typename VectorTraits<Vector>::VectorCategory()); }
+		{
+			return constRefSpecialized<Field, Vector> (v, i, typename VectorTraits<Vector>::VectorCategory());
+		}
 
 		template <class Vector>
 		inline void ensureDimSpecialized (Vector &v, size_t n, VectorCategories::DenseVectorTag)
-			{ v.resize (n); }
+		{
+			v.resize (n);
+		}
 
 		template <class Vector>
 		inline void ensureDimSpecialized (Vector &v, size_t n, VectorCategories::SparseSequenceVectorTag)
-			{}
+		{}
 
 		template <class Vector>
 		inline void ensureDimSpecialized (Vector &v, size_t n, VectorCategories::SparseAssociativeVectorTag)
-			{}
+		{}
 
 		template <class Vector>
 		inline void ensureDimSpecialized (Vector &v, size_t n, VectorCategories::SparseParallelVectorTag)
-			{}
+		{}
 
 		template <class Vector>
 		inline void ensureDim (Vector &v, size_t n)
-			{ ensureDimSpecialized (v, n, typename VectorTraits<Vector>::VectorCategory()); }
+		{
+			ensureDimSpecialized (v, n, typename VectorTraits<Vector>::VectorCategory());
+		}
 	} // Namespace VectorWrapper
 
 	// Now we create some "canonical" vector types, so that users don't
@@ -367,89 +386,89 @@ namespace LinBox
 	template <class Element>
 	struct RawVector
 	{
-            typedef std::vector<Element> Dense;
-            typedef std::pair<std::vector<size_t>, std::vector<Element> > Sparse;
-            typedef std::vector<std::pair<size_t, Element> > SparseSeq;
-            typedef std::map<size_t, Element> SparseMap;
-            typedef std::pair<std::vector<size_t>, std::vector<Element> > SparsePar;
+		typedef std::vector<Element> Dense;
+		typedef std::pair<std::vector<size_t>, std::vector<Element> > Sparse;
+		typedef std::vector<std::pair<size_t, Element> > SparseSeq;
+		typedef std::map<size_t, Element> SparseMap;
+		typedef std::pair<std::vector<size_t>, std::vector<Element> > SparsePar;
 
-            template<class VType> static size_t size(const VType& d) { return d.size(); }
-            static size_t size(const Sparse& d) { return d.first.size(); }
-//             static size_t size(const SparsePar& d) { return d.first.size(); }
+		template<class VType> static size_t size(const VType& d) { return d.size(); }
+		static size_t size(const Sparse& d) { return d.first.size(); }
+		//             static size_t size(const SparsePar& d) { return d.first.size(); }
 
-            template<class VType>
-            static VType& convert(VType& u, const VType& v) { return u = v; }
+		template<class VType>
+		static VType& convert(VType& u, const VType& v) { return u = v; }
 
-            static Dense& convert(Dense& u, const SparseSeq& v) {
-                for(typename SparseSeq::const_iterator sit = v.begin(); sit != v.end(); ++sit) {
-                    if (sit->first > u.size()) u.resize(sit->first);
-                    u[sit->first] = sit->second;
-                }
-                return u;
-            }
-            static Sparse& convert(Sparse& u, const SparseSeq& v) {
-                u.first.resize(v.size());
-                u.second.resize(v.size());
-                typename SparseSeq::const_iterator ssit = v.begin();
-                std::vector<size_t>::iterator vit = u.first.begin();
-                typename std::vector<Element>::iterator eit = u.second.begin();
-                for(; ssit != v.end(); ++ssit, ++vit, ++eit) {
-                    *vit = ssit->first;
-                    *eit = ssit->second;
-                }
-                return u;
-            }
-             static SparseSeq& convert(SparseSeq& u, const Sparse& v) {
-                u.resize(v.first.size());
-                typename SparseSeq::iterator ssit = u.begin();
-                std::vector<size_t>::const_iterator vit = v.first.begin();
-                typename std::vector<Element>::const_iterator eit = v.second.begin();
-                for(; ssit != u.end(); ++ssit, ++vit, ++eit) {
-                    ssit->first = *vit;
-                    ssit->second = *eit;
-                }
-                return u;
-            }
+		static Dense& convert(Dense& u, const SparseSeq& v) {
+			for(typename SparseSeq::const_iterator sit = v.begin(); sit != v.end(); ++sit) {
+				if (sit->first > u.size()) u.resize(sit->first);
+				u[sit->first] = sit->second;
+			}
+			return u;
+		}
+		static Sparse& convert(Sparse& u, const SparseSeq& v) {
+			u.first.resize(v.size());
+			u.second.resize(v.size());
+			typename SparseSeq::const_iterator ssit = v.begin();
+			std::vector<size_t>::iterator vit = u.first.begin();
+			typename std::vector<Element>::iterator eit = u.second.begin();
+			for(; ssit != v.end(); ++ssit, ++vit, ++eit) {
+				*vit = ssit->first;
+				*eit = ssit->second;
+			}
+			return u;
+		}
+		static SparseSeq& convert(SparseSeq& u, const Sparse& v) {
+			u.resize(v.first.size());
+			typename SparseSeq::iterator ssit = u.begin();
+			std::vector<size_t>::const_iterator vit = v.first.begin();
+			typename std::vector<Element>::const_iterator eit = v.second.begin();
+			for(; ssit != u.end(); ++ssit, ++vit, ++eit) {
+				ssit->first = *vit;
+				ssit->second = *eit;
+			}
+			return u;
+		}
 
-                // TODO : other convertions
+		// TODO : other convertions
 
-  	};
+	};
 
 	template <class Field>
 	struct Vector : public RawVector<typename Field::Element>
 	{
-            typedef typename Field::Element Element;
+		typedef typename Field::Element Element;
 
-            template<class U>
-            struct rebind {
-                typedef Vector<U> other;
-            };
+		template<class U>
+		struct rebind {
+			typedef Vector<U> other;
+		};
 	};
 
 
-    	template<class T, class U>
-    	struct Rebind< std::vector<T>, U > {
-        	typedef typename Vector<U>::Dense other;
-    	};
+	template<class T, class U>
+	struct Rebind< std::vector<T>, U > {
+		typedef typename Vector<U>::Dense other;
+	};
 
 
 	template<class T, class U>
 	struct Rebind< std::pair<std::vector<size_t>, std::vector<T> >,U > {
-	    typedef typename Vector<U>::Sparse other;
+		typedef typename Vector<U>::Sparse other;
 	};
 
 	template<class T, class U>
 	struct Rebind< std::vector<std::pair<size_t, T> >, U > {
-	    typedef typename Vector<U>::SparseSeq other;
+		typedef typename Vector<U>::SparseSeq other;
 	};
 
 	template<class T, class U>
 	struct Rebind< std::map<size_t, T>, U > {
-	    typedef typename Vector<U>::SparseMap other;
+		typedef typename Vector<U>::SparseMap other;
 	};
 
 
-//@} Vector traits
+	//@} Vector traits
 
 } // namespace LinBox
 
