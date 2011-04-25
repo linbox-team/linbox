@@ -34,10 +34,10 @@
 #include "linbox/util/debug.h"
 #include <math.h>
 #include <linbox/field/field-traits.h>
+#include "linbox/randiter/modular-balanced.h"
+#include "linbox/randiter/nonzero.h"
 
 #include "fflas-ffpack/field/modular-balanced-float.h"
-
-
 
 
 // Namespace in which all LinBox code resides
@@ -47,12 +47,6 @@ namespace LinBox
 	template< class Element >
 	class ModularBalanced;
 
-	template< class Element >
-	class ModularBalancedRandIter;
-
-	template <class Field, class RandIter>
-	class NonZeroRandIter;
-
 	template <class Ring>
 	struct ClassifyRing;
 
@@ -60,8 +54,7 @@ namespace LinBox
 	struct ClassifyRing<ModularBalanced<Element> >;
 
 	template <>
-	struct ClassifyRing<ModularBalanced<float> >
-	{
+	struct ClassifyRing<ModularBalanced<float> > {
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
@@ -82,7 +75,7 @@ namespace LinBox
 		      friend class MultiModFloat;
 
 		      typedef ModularBalancedRandIter<Element> RandIter;
-		      typedef NonzeroRandIter<ModularBalanced<Element>,ModularBalancedRandIter<Element> > NonZeroRandIter;
+		      typedef NonzeroRandIter<ModularBalanced<Element>, RandIter > NonZeroRandIter;
 
 		      static ClassifyRing <ModularBalanced<Element> >::categoryTag
 		      getCategory()

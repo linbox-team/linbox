@@ -90,6 +90,7 @@ namespace LinBox
 		typedef int16_t Element;
 	protected:
 		Element modulus;
+		unsigned long lmodulus;
 		double modulusinv;
 
 	public:
@@ -101,13 +102,13 @@ namespace LinBox
 
 		//default modular field,taking 251 as default modulus
 		Modular () :
-			modulus(251)
+			modulus(251),lmodulus(251)
 		{
 			modulusinv=1/(double)251;
 		}
 
 		Modular (int value, int exp = 1)  :
-			modulus((Element)value)
+			modulus((Element)value),lmodulus((unsigned long) value)
 		{
 			modulusinv = 1 / ((double) value);
 #ifdef DEBUG
@@ -122,13 +123,14 @@ namespace LinBox
 		}
 
 		Modular(const Modular<Element>& mf) :
-			modulus(mf.modulus),modulusinv(mf.modulusinv)
+			modulus(mf.modulus),lmodulus(mf. lmodulus),modulusinv(mf.modulusinv)
 		{}
 
 		const Modular &operator=(const Modular<Element> &F)
 		{
-			modulus = F.modulus;
-			modulusinv = F.modulusinv;
+			modulus    = F. modulus;
+			lmodulus   = F. lmodulus ;
+			modulusinv = F. modulusinv;
 			return *this;
 		}
 
@@ -141,6 +143,17 @@ namespace LinBox
 		{
 			return c = modulus;
 		}
+
+		inline unsigned long cardinality () const
+		{
+			return  lmodulus;
+		}
+
+		inline unsigned  long characteristic () const
+		{
+			return  lmodulus;
+		}
+
 
 		inline integer &convert (integer &x, const Element &y) const
 		{

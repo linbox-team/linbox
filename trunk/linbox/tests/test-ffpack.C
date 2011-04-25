@@ -436,7 +436,6 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 template <class Field>
 static bool testMinPoly (const Field& F, size_t n, int iterations)
 {
-	std::cerr << "Minpoly on " << F  << std::endl;
 	typedef typename Field::Element                  Element;
 	typedef typename Field::RandIter                RandIter;
 	typedef vector<Element>                       Polynomial;
@@ -534,7 +533,6 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 		delete[] Perm;
 	}
 
-	std::cerr << "stop" << std::endl;
 
 	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testMinPoly");
 

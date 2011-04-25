@@ -89,6 +89,7 @@ namespace LinBox
 		typedef int8_t Element;
 	protected:
 		Element modulus;
+		unsigned long lmodulus ;
 		double modulusinv;
 	public:
 		friend class FieldAXPY<Modular<Element> >;
@@ -99,13 +100,13 @@ namespace LinBox
 
 		//default modular field,taking 65521 as default modulus
 		Modular () :
-			modulus(13)
+			modulus(13),lmodulus(13)
 		{
 			modulusinv=1/(double)13;
 		}
 
 		Modular (int value, int exp = 1)  :
-			modulus(Element(value))
+			modulus(Element(value)),lmodulus((unsigned int)value)
 		{
 			modulusinv = 1 / ((double) value);
 #ifdef DEBUG
@@ -117,12 +118,13 @@ namespace LinBox
 		}
 
 		Modular(const Modular<Element>& mf) :
-			modulus(mf.modulus),modulusinv(mf.modulusinv)
+			modulus(mf.modulus),lmodulus(mf.lmodulus),modulusinv(mf.modulusinv)
 		{}
 
 		Modular &operator=(const Modular<Element> &F)
 		{
-			modulus = F.modulus;
+			modulus    = F.modulus;
+			lmodulus   = F.lmodulus;
 			modulusinv = F.modulusinv;
 			return *this;
 		}
@@ -138,6 +140,17 @@ namespace LinBox
 			return c = modulus;
 		}
 
+		inline unsigned long cardinality () const
+		{
+			return  lmodulus;
+		}
+
+		inline unsigned  long characteristic () const
+		{
+			return  lmodulus;
+		}
+
+
 		inline integer &convert (integer &x, const Element &y) const
 		{
 			return x = y;
@@ -148,7 +161,8 @@ namespace LinBox
 			return os << "Element mod " << (int)modulus;
 		}
 
-		inline std::istream &read (std::istream &is) {
+		inline std::istream &read (std::istream &is)
+		{
 			int prime;
 			is >> prime;
 			modulus = (Element) prime;
