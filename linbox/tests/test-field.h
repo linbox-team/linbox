@@ -78,6 +78,7 @@ template<class Field>
 bool testField (Field &F, const char *title, bool fieldp = true)
 {
 	LinBox::commentator.start (title, "testField", 5);
+	// ostream &report = std::cout ;
 	ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 	typename Field::Element zero, one, two, three;
@@ -137,7 +138,7 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	F.convert (m, a);
 	report << "Result of convert: " << m << endl;
 
-	if (m != n) part_pass = reportError( "F.convert (m, F.init (a, n)) != n", pass);
+	if (m != LinBox::integer(a)) part_pass = reportError( "F.convert (m, F.init (a, n)) != n", pass);
 
 	LinBox::commentator.stop (MSG_STATUS (part_pass));
 	LinBox::commentator.progress ();
