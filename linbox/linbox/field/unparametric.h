@@ -146,6 +146,7 @@ namespace LinBox
 		long unsigned int characteristic()const{return FFPACK::UnparametricField<K>::characteristic();};
 		template<typename Src>Element&init(Element&x, const Src&s)const{return Caster (x, s);}
 		std::istream&read(std::istream&is, Element&x)const{return FFPACK::UnparametricField<K>::read(is,x);}
+		std::istream&read(std::istream&is)const{return FFPACK::UnparametricField<K>::read(is);}
 		template<typename T>T&convert(T&x,const Element&y)const{return Caster(x,y);}
 
 		// fin des trucs zarbs //

@@ -100,7 +100,6 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-dyadic-to-rational", counter, flag, "bds responsible");
 	build_n_run("test-ffpack", counter, flag);
 	build_n_run("test-frobenius", counter, flag);
-	build_n_run("test-ftrmm", counter, flag);
 	build_n_run("test-getentry", counter, flag);
 	build_n_run("test-gf2", counter, flag);
 	build_n_run("test-gmp-rational", counter, flag);
@@ -145,13 +144,14 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-rational-solver", counter, flag);
 	build_n_run("test-trace", counter, flag);
 	build_n_run("test-triplesbb", counter, flag);
+	build_n_run("test-unparametric-field", counter, flag); //has been useful in num/sym.
 	build_n_run("test-vector-domain", counter, flag);
 	build_n_run("test-zero-one", counter, flag);
 
 #if __LINBOX_HAVE_GIVARO
 //	if (flag > 0) cout << "	Givaro tests" << endl;
 	build_n_run("test-givaro-zpz", counter, flag);
-	build_n_run("test-givaro-zpzuns", counter, flag);
+	build_n_run("test-givaro-zpzuns", counter, flag, "intermittent failures");
 	build_n_run("test-rat-solve", counter, flag); // "infinite loop");
 	build_n_run("test-rat-minpoly", counter, flag); // "intermittent failures");
 #else
@@ -210,12 +210,12 @@ build |wc" should yield the same number of lines.
 
 	// tests of "doubles as a field" which doesn't adhere to LinBox field or ring specs.
 	if (flag > 0) cout << "	Noncompliant tests" << endl;
-	build_n_run("test-unparametric-field", counter, flag); //has been useful in num/sym.
 	build_n_run("test-param-fuzzy", counter, flag);
 
 #if 1
 	if (flag > 0) cout << "	Tests requiring further development" << endl;
 	build_n_run("test-smith-form-local", counter, flag, "bds"); //"intermittent failures");
+	build_n_run("test-ftrmm", counter, flag, "bb");
 
 	if (flag > 0) cout << "	Immature tests" << endl;
 	no_build_n_run("test-quad-matrix", counter, flag, "half baked, bds responsible"); no_build_n_run("test-dense-zero-one", counter, flag, "half baked, bds responsible"); build_n_run("test-zo", counter, flag, "half baked, BY responsible");
