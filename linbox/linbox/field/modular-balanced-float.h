@@ -115,8 +115,10 @@ namespace LinBox
 
 		      inline integer &convert (integer &x, const Element &y) const
 		      {
-			      if ( y < 0. ) return x = integer (y + modulus) ;
-			      else return x = integer (y);
+			      // if ( y < 0. )
+				      // return x = integer (y + modulus) ;
+			      // else
+				      return x = integer (y);
 		      }
 
 
