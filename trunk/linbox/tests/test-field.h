@@ -129,7 +129,8 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	if (F.cardinality (m) <= 0)
 		n = 49193295;   // Just using some odd value
 	else
-		n -= 1;
+		n = n/2-1;
+	if (!n) ++n;
 
 
 	report << "Initial integer: " << n << endl;
@@ -138,7 +139,7 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	F.convert (m, a);
 	report << "Result of convert: " << m << endl;
 
-	if (m != LinBox::integer(a)) part_pass = reportError( "F.convert (m, F.init (a, n)) != n", pass);
+	if (m != n) part_pass = reportError( "F.convert (m, F.init (a, n)) != n", pass);
 
 	LinBox::commentator.stop (MSG_STATUS (part_pass));
 	LinBox::commentator.progress ();

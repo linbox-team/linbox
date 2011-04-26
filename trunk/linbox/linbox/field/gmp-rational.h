@@ -105,7 +105,9 @@ namespace LinBox
 		 * Also vacuous
 		 */
 		GMPRationalField &operator= (const GMPRationalField &)
-		{ return *this; }
+		{
+			return *this;
+		}
 
 		/** Initialization of field element from an integer.
 		 * Behaves like C++ allocator construct.
