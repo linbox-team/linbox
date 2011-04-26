@@ -88,13 +88,13 @@ BASIC_TESTS =  \
         test-charpoly                   \
 		test-cra                        \
 		test-cradomain                  \
+        test-unparametric-field         \
 		test-rational-reconstruction-base
 
 #  test-integer-tools
 
 # tests of components not adhering to LinBox requirements.
 NONCOMPLIANT_TESTS =                   \
-        test-unparametric-field        \
         test-ntl-RR                    \
         test-param-fuzzy
 
