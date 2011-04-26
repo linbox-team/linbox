@@ -119,15 +119,14 @@ namespace LinBox
 
 		      integer &convert (integer &x, const Element &y) const
 		      {
-			      if ( y < 0. ) return x = integer (y + modulus) ;
-			      else return x = integer (y);
+			      return x = integer (y);
 		      }
 
 		      Element &init (Element &x, const integer &y) const
 		      {
 			      x = (Element)(y%lmodulus);
 			      if (x<mhalf_mod) return x += modulus ;
-			      else if (x>half_mod) return x += modulus ;
+			      else if (x>half_mod) return x -= modulus ;
 			      return  x ;
 		      }
 

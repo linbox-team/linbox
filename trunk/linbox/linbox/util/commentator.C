@@ -746,6 +746,6 @@ namespace LinBox
 
 #endif
 	// Default global commentator
-	Commentator commentator;
+	Commentator commentator ;
 }
 
