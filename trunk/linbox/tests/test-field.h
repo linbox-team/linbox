@@ -32,6 +32,11 @@
 /* Modular exponentiation */
 using namespace std;
 
+// LinBox::Commentator commentator(std::cout);
+
+using LinBox::commentator ;
+
+
 template <class Field>
 typename Field::Element& expt (const Field &F, typename Field::Element &res, const typename Field::Element &a, LinBox::integer &n)
 {
@@ -58,7 +63,7 @@ typename Field::Element& expt (const Field &F, typename Field::Element &res, con
 
 bool reportError(string rep, bool& flag)
 {
-	ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR);
+	ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR);
 	report << "ERROR: " << rep << endl;
 	return flag = false;
 }
@@ -77,9 +82,9 @@ bool reportError(string rep, bool& flag)
 template<class Field>
 bool testField (Field &F, const char *title, bool fieldp = true)
 {
-	LinBox::commentator.start (title, "testField", 5);
+	commentator.start (title, "testField", 5);
 	// ostream &report = std::cout ;
-	ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 	typename Field::Element zero, one, two, three;
 	F.init(zero, 0); F.init(one, 1); F.init(two, 2); F.init(three, 3);
@@ -94,20 +99,20 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	LinBox::integer n, m;
 	bool pass = true, part_pass = true;
 
-	LinBox::commentator.start ("\t--Testing characteristic/cardinality match");
+	commentator.start ("\t--Testing characteristic/cardinality match");
 
 	F.characteristic (n);
 	F.cardinality (m);
 
 	if (n > 0 && !isPower (m, n)) part_pass = reportError("Characteristic, cardinality mismatch", pass);
 
-	LinBox::commentator.stop (MSG_STATUS (part_pass));
-	LinBox::commentator.progress ();
+	commentator.stop (MSG_STATUS (part_pass));
+	commentator.progress ();
 
 	/* tests for presence of members with minimal check of semantics */
 	// these checks need improvement
 
-	LinBox::commentator.start ("\t--Testing correctness of 0 and 1");
+	commentator.start ("\t--Testing correctness of 0 and 1");
 	part_pass = true;
 
 	if (!F.isZero (zero)) {
@@ -120,10 +125,10 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	}
 
 
-	LinBox::commentator.stop (MSG_STATUS (part_pass));
-	LinBox::commentator.progress ();
+	commentator.stop (MSG_STATUS (part_pass));
+	commentator.progress ();
 
-	LinBox::commentator.start ("\t--Testing init/convert");
+	commentator.start ("\t--Testing init/convert");
 	part_pass = true;
 
 	if (F.cardinality (m) <= 0)
@@ -141,10 +146,10 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 
 	if (m != n) part_pass = reportError( "F.convert (m, F.init (a, n)) != n", pass);
 
-	LinBox::commentator.stop (MSG_STATUS (part_pass));
-	LinBox::commentator.progress ();
+	commentator.stop (MSG_STATUS (part_pass));
+	commentator.progress ();
 
-	LinBox::commentator.start ("\t--Testing field arithmetic");
+	commentator.start ("\t--Testing field arithmetic");
 	part_pass = true;
 
 	F.init (b, n-2);
@@ -204,10 +209,10 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	if ( !F.areEqual (a, f) || !F.areEqual (d, a) )
 		part_pass = reportError( "Results of axpy incorrect", pass);
 
-	LinBox::commentator.stop (MSG_STATUS (part_pass));
-	LinBox::commentator.progress ();
+	commentator.stop (MSG_STATUS (part_pass));
+	commentator.progress ();
 
-	LinBox::commentator.start ("\t--Testing summation of powers of 2");
+	commentator.start ("\t--Testing summation of powers of 2");
 
 	//,..
 	// 2^101 - 1 vs 1 + 2 + 4 + ... + 2^100
@@ -237,8 +242,8 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	if (!F.areEqual (a, d))
 		part_pass = reportError( "2^101 - 1 != 1 + 2(1 + ... + 2(1)...), with 100 '+'s: ", pass);
 
-	LinBox::commentator.stop (MSG_STATUS (part_pass));
-	LinBox::commentator.progress ();
+	commentator.stop (MSG_STATUS (part_pass));
+	commentator.progress ();
 
 	/*! @todo untested so far :
 	 * - ostream &write (ostream &os) const
@@ -249,7 +254,7 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	 * .
 	 */
 
-	LinBox::commentator.stop (MSG_STATUS (pass), (const char *) 0, "testField");
+	commentator.stop (MSG_STATUS (pass), (const char *) 0, "testField");
 
 	return pass;
 }
@@ -269,7 +274,7 @@ bool testFieldNegation (const Field &F, const char *name, unsigned int iteration
 	str << "\t--Testing " << name << " negation" << ends;
 	char * st = new char[str.str().size()];
 	strcpy (st, str.str().c_str());
-	LinBox::commentator.start (st, "testFieldNegation", iterations);
+	commentator.start (st, "testFieldNegation", iterations);
 
 	typename Field::Element a, neg_a, neg_a_a, zero;
 	F.init(a,0); F.init(neg_a,0); F.init(neg_a_a,0); F.init (zero, 0);
@@ -278,11 +283,11 @@ bool testFieldNegation (const Field &F, const char *name, unsigned int iteration
 	bool ret = true;
 
 	for (unsigned int i = 0; i < iterations; i++) {
-		LinBox::commentator.startIteration (i);
+		commentator.startIteration (i);
 
 		r.random (a);
 
-		ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Random element a: ";
 		F.write (report, a) << endl;
 
@@ -298,11 +303,11 @@ bool testFieldNegation (const Field &F, const char *name, unsigned int iteration
 
 		if (!F.areEqual (neg_a_a, zero)) reportError("a + -a != 0" , ret);
 
-		LinBox::commentator.stop ("done");
-		LinBox::commentator.progress ();
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFieldNegation");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFieldNegation");
 	delete[] st;
 	return ret;
 }
@@ -319,7 +324,7 @@ bool testFieldInversion (const Field &F, const char *name, unsigned int iteratio
 	str << "\t--Testing " << name << " inversion" << ends;
 	char * st = new char[str.str().size()];
 	strcpy (st, str.str().c_str());
-	LinBox::commentator.start (st, "testFieldInversion", iterations);
+	commentator.start (st, "testFieldInversion", iterations);
 
 	typename Field::Element a, ainv, aainv, one;
 	F.init (a,0); F.init (ainv,0); F.init (aainv,0);
@@ -330,11 +335,11 @@ bool testFieldInversion (const Field &F, const char *name, unsigned int iteratio
 
 
 	for (unsigned int i = 0; i < iterations; i++) {
-		LinBox::commentator.startIteration (i);
+		commentator.startIteration (i);
 
 		do r.random (a); while (F.isZero (a));
 
-		ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Random element a: ";
 		F.write (report, a) << endl;
 
@@ -348,11 +353,11 @@ bool testFieldInversion (const Field &F, const char *name, unsigned int iteratio
 
 		if (!F.areEqual (aainv, one)) reportError("a a^-1 != 1", ret);
 
-		LinBox::commentator.stop ("done");
-		LinBox::commentator.progress ();
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFieldInversion");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFieldInversion");
 	delete[] st;
 	return ret;
 }
@@ -371,7 +376,7 @@ bool testFieldDistributivity(const Field &F, const char *name, unsigned int iter
 	str << "\t--Testing " << name << " distributivity" << ends;
 	char * st = new char[str.str().size()];
 	strcpy (st, str.str().c_str());
-	LinBox::commentator.start (st, "testFieldDistributivity", iterations);
+	commentator.start (st, "testFieldDistributivity", iterations);
 
 	typename Field::Element a, b, c, a_b, a_bc, ac, bc, ac_bc, ca_b, ca, cb, ca_cb;
 	F.init (a,0); F.init (b,0); F.init (c,0);
@@ -384,13 +389,13 @@ bool testFieldDistributivity(const Field &F, const char *name, unsigned int iter
 	bool ret = true;
 
 	for (unsigned int i = 0; i < iterations; i++) {
-		LinBox::commentator.startIteration (i);
+		commentator.startIteration (i);
 
 		r.random (a);
 		r.random (b);
 		r.random (c);
 
-		ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Random elements a = ";
 		F.write (report, a) << ", b = ";
 		F.write (report, b) << ", c = ";
@@ -420,11 +425,11 @@ bool testFieldDistributivity(const Field &F, const char *name, unsigned int iter
 		if (!F.areEqual (a_bc, ac_bc) || !F.areEqual (ca_b, ca_cb))
 			reportError("Operations were not distributative", ret);
 
-		LinBox::commentator.stop ("done");
-		LinBox::commentator.progress ();
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFieldDistributivity");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFieldDistributivity");
 	delete[] st;
 	return ret;
 }
@@ -445,7 +450,7 @@ bool testFieldCommutativity (const Field &F, const char *name, unsigned int iter
 	str << "\t--Testing " << name << " commutativity," << ends;
 	char * st = new char[str.str().size()];
 	strcpy (st, str.str().c_str());
-	LinBox::commentator.start (st, "testFieldCommutativity", iterations);
+	commentator.start (st, "testFieldCommutativity", iterations);
 
 	typename Field::Element a, b, ab, ba, a_b, b_a;
 	F.init (a,0); F.init (b,0);
@@ -458,12 +463,12 @@ bool testFieldCommutativity (const Field &F, const char *name, unsigned int iter
 	bool ret = true;
 
 	for (unsigned int i = 0; i < iterations; i++) {
-		LinBox::commentator.startIteration (i);
+		commentator.startIteration (i);
 
 		r.random (a);
 		r.random (b);
 
-		ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Random elements a = ";
 		F.write (report, a) << ", b = ";
 		F.write (report, b) << endl;
@@ -495,11 +500,11 @@ bool testFieldCommutativity (const Field &F, const char *name, unsigned int iter
 
 
 
-		LinBox::commentator.stop ("done");
-		LinBox::commentator.progress ();
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFieldCommutativity");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFieldCommutativity");
 	delete[] st;
 	return ret;
 }
@@ -518,7 +523,7 @@ bool testFieldAssociativity (const Field &F, const char *name, unsigned int iter
 	str << "\t--Testing " << name << " associativity" << ends;
 	char * st = new char[str.str().size()];
 	strcpy (st, str.str().c_str());
-	LinBox::commentator.start (st, "testFieldAssociativity", iterations);
+	commentator.start (st, "testFieldAssociativity", iterations);
 
 	typename Field::Element a, b, c, a_b, b_c, a_bc, ab_c;
 	F.init (a,0); F.init (b,0); F.init (c,0);
@@ -528,13 +533,13 @@ bool testFieldAssociativity (const Field &F, const char *name, unsigned int iter
 	bool ret = true;
 
 	for (unsigned int i = 0; i < iterations; i++) {
-		LinBox::commentator.startIteration (i);
+		commentator.startIteration (i);
 
 		r.random (a);
 		r.random (b);
 		r.random (c);
 
-		ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Random elements a = ";
 		F.write (report, a) << ", b = ";
 		F.write (report, b) << ", c = ";
@@ -566,11 +571,11 @@ bool testFieldAssociativity (const Field &F, const char *name, unsigned int iter
 
 		if (!F.areEqual (ab_c, a_bc)) reportError( "Results are not equal", ret);
 
-		LinBox::commentator.stop ("done");
-		LinBox::commentator.progress ();
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFieldAssociativity");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFieldAssociativity");
 	delete[] st;
 	return ret;
 }
@@ -589,7 +594,7 @@ bool testGeometricSummation (const Field &F, const char *name, unsigned int iter
 	str << "\t--Testing " << name << " geometric summation" << ends;
 	char * st = new char[str.str().size()];
 	strcpy (st, str.str().c_str());
-	LinBox::commentator.start (st, "testGeometricSummation", iterations);
+	commentator.start (st, "testGeometricSummation", iterations);
 
 	typename Field::Element a, a_n, k, zero, one;
 	typename Field::RandIter r (F);
@@ -601,16 +606,16 @@ bool testGeometricSummation (const Field &F, const char *name, unsigned int iter
 	bool ret = true;
 
 	for (unsigned int i = 0; i < iterations; i++) {
-		LinBox::commentator.startIteration (i);
+		commentator.startIteration (i);
 
 		size_t no_bad_loop = F.characteristic()/2+5 ;
 		do r.random (a); while (F.areEqual (a, one) && --no_bad_loop);
 		if (!no_bad_loop) {
-			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR) << " *** ERROR *** could not find an element different form 1..." << std::endl;
+			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR) << " *** ERROR *** could not find an element different form 1..." << std::endl;
 			return false;
 		}
 
-		ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Random element a: ";
 		F.write (report, a) << endl;
 
@@ -645,11 +650,11 @@ bool testGeometricSummation (const Field &F, const char *name, unsigned int iter
 
 		if (!F.areEqual (k, a_n)) reportError("Field elements are not equal", ret);
 
-		LinBox::commentator.stop ("done");
-		LinBox::commentator.progress ();
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testGeometricSummation");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testGeometricSummation");
 	delete[] st;
 	return ret;
 }
@@ -669,7 +674,7 @@ bool testFieldCharacteristic (const Field &F, const char *name, unsigned int ite
 	str << "\t--Testing " << name << " characteristic" << ends;
 	char * st = new char[str.str().size()];
 	strcpy (st, str.str().c_str());
-	LinBox::commentator.start (string(str.str()).c_str(), "testFieldCharacteristic", iterations);
+	commentator.start (string(str.str()).c_str(), "testFieldCharacteristic", iterations);
 
 	LinBox::integer p, j;
 	typename Field::Element a, sigma, zero;
@@ -681,15 +686,15 @@ bool testFieldCharacteristic (const Field &F, const char *name, unsigned int ite
 
 	bool ret = true;
 
-	ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Field characteristic: " << p << endl;
 
 	for (unsigned int i = 0; i < iterations; i++) {
-		LinBox::commentator.startIteration (i);
+		commentator.startIteration (i);
 
 		r.random (a);
 
-		ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Random element a: ";
 		F.write (report, a) << endl;
 
@@ -704,11 +709,11 @@ bool testFieldCharacteristic (const Field &F, const char *name, unsigned int ite
 
 		if (!F.isZero (sigma)) reportError("p a != 0", ret);
 
-		LinBox::commentator.stop ("done");
-		LinBox::commentator.progress ();
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFieldCharacteristic");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFieldCharacteristic");
 	delete[] st;
 	return ret;
 }
@@ -727,14 +732,14 @@ bool testFreshmansDream (const Field &F, const char *name, unsigned int iteratio
 	str << "\t--Testing " << name << " Freshman's Dream" << ends;
 	char * st = new char[str.str().size()];
 	strcpy (st, str.str().c_str());
-	LinBox::commentator.start (st, "testFreshmansDream", iterations);
+	commentator.start (st, "testFreshmansDream", iterations);
 
 	LinBox::integer c, j;
 
 	F.characteristic (c);
 
 	if (c == 0) {
-		LinBox::commentator.stop ("skipping", "Field characteristic is 0, so this test makes no sense", "testFreshmansDream");
+		commentator.stop ("skipping", "Field characteristic is 0, so this test makes no sense", "testFreshmansDream");
 		delete[] st;
 		return true;
 	}
@@ -748,12 +753,12 @@ bool testFreshmansDream (const Field &F, const char *name, unsigned int iteratio
 	F.init (a_b_p,0); F.init (a_p,0); F.init (b_p,0); F.init (a_p_b_p,0);
 
 	for (unsigned int i = 0; i < iterations; i++) {
-		LinBox::commentator.startIteration (i);
+		commentator.startIteration (i);
 
 		r.random (a);
 		r.random (b);
 
-		ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Random elements a = ";
 		F.write (report, a) << ", b = ";
 		F.write (report, b) << endl;
@@ -784,11 +789,11 @@ bool testFreshmansDream (const Field &F, const char *name, unsigned int iteratio
 
 		if (!F.areEqual (a_b_p, a_p_b_p)) reportError("(a + b)^p != a^p + b^p", ret);
 
-		LinBox::commentator.stop ("done");
-		LinBox::commentator.progress ();
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFreshmansDream");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFreshmansDream");
 	delete[]  st;
 	return ret;
 }
@@ -816,7 +821,7 @@ bool testRingArithmeticConsistency (const Field &F, const char *name, unsigned i
 	str << "\t--Testing " << name << " in-place/out-of-place arithmetic consistency" << ends;
 	char * st = new char[str.str().size()];
 	strcpy (st, str.str().c_str());
-	LinBox::commentator.start (st, "testRingArithmeticConsistency", iterations);
+	commentator.start (st, "testRingArithmeticConsistency", iterations);
 
 	bool ret = true;
 
@@ -825,7 +830,7 @@ bool testRingArithmeticConsistency (const Field &F, const char *name, unsigned i
 	F.init (a,0); F.init (b,0); F.init (c1,0); F.init (c2,0);
 
 	for (unsigned int i = 0; i < iterations; i++) {
-		LinBox::commentator.startIteration (i);
+		commentator.startIteration (i);
 
 		r.random (a);
 		r.random (b);
@@ -834,7 +839,7 @@ bool testRingArithmeticConsistency (const Field &F, const char *name, unsigned i
 		if (F.isZero (a) && !F.isZero (b))
 			std::swap (a, b);
 
-		ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Random elements a = ";
 		F.write (report, a) << ", b = ";
 		F.write (report, b) << endl;
@@ -879,11 +884,11 @@ bool testRingArithmeticConsistency (const Field &F, const char *name, unsigned i
 
 		if (!F.areEqual (c1, c2)) reportError("Consistency failure for multiplication", ret);
 
-		LinBox::commentator.stop ("done");
-		LinBox::commentator.progress ();
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRingArithmeticConsistency");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRingArithmeticConsistency");
 	delete[] st;
 	return ret;
 }
@@ -895,7 +900,7 @@ bool testInvDivConsistency (const Field &F, const char *name, unsigned int itera
 	str << "\t--Testing " << name << " in-place/out-of-place inv and div consistency" << ends;
 	char * st = new char[str.str().size()];
 	strcpy (st, str.str().c_str());
-	LinBox::commentator.start (st, "testInvDivConsistency", iterations);
+	commentator.start (st, "testInvDivConsistency", iterations);
 
 	bool ret = true;
 
@@ -904,7 +909,7 @@ bool testInvDivConsistency (const Field &F, const char *name, unsigned int itera
 	F.init (a,0); F.init (b,0); F.init (c1,0); F.init (c2,0);
 
 	for (unsigned int i = 0; i < iterations; i++) {
-		LinBox::commentator.startIteration (i);
+		commentator.startIteration (i);
 
 		r.random (a); r.random (b);
 
@@ -912,7 +917,7 @@ bool testInvDivConsistency (const Field &F, const char *name, unsigned int itera
 		if (F.isZero (a) && !F.isZero (b))
 			std::swap (a, b);
 
-		ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Random elements a = ";
 		F.write (report, a) << ", b = ";
 		F.write (report, b) << endl;
@@ -940,11 +945,11 @@ bool testInvDivConsistency (const Field &F, const char *name, unsigned int itera
 			if (!F.areEqual (c1, c2)) reportError("Consistency failure for inversion", ret);
 		}
 
-		LinBox::commentator.stop ("done");
-		LinBox::commentator.progress ();
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testInvDivConsistency");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testInvDivConsistency");
 	delete[] st;
 	return ret;
 }
@@ -962,7 +967,7 @@ bool testAxpyConsistency (const Field &F, const char *name, unsigned int iterati
 	str << "\t--Testing " << name << " axpy/add-mul consistency" << ends;
 	char * st = new char[str.str().size()];
 	strcpy (st, str.str().c_str());
-	LinBox::commentator.start (st, "testAxpyConsistency", iterations);
+	commentator.start (st, "testAxpyConsistency", iterations);
 
 	bool ret = true;
 
@@ -972,13 +977,13 @@ bool testAxpyConsistency (const Field &F, const char *name, unsigned int iterati
 	F.init (c1,0); F.init (c2,0); F.init (c3,0);
 
 	for (unsigned int i = 0; i < iterations; i++) {
-		LinBox::commentator.startIteration (i);
+		commentator.startIteration (i);
 
 		r.random (a);
 		r.random (x);
 		r.random (y);
 
-		ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Random elements a = ";
 		F.write (report, a) << ", x = ";
 		F.write (report, x) << ", y = ";
@@ -997,11 +1002,11 @@ bool testAxpyConsistency (const Field &F, const char *name, unsigned int iterati
 
 		if (!F.areEqual (c1, c2) || !F.areEqual (c1, c3)) reportError("Consistency failure for axpy", ret);
 
-		LinBox::commentator.stop ("done");
-		LinBox::commentator.progress ();
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testAxpyConsistency");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testAxpyConsistency");
 	delete[] st;
 	return ret;
 }
@@ -1019,7 +1024,7 @@ bool testRanditerBasic(const Field &F, const char *name, unsigned int iterations
 	str << "\t--Testing " << name << " randiter basic operation " << ends;
 	char * st = new char[str.str().size()];
 	strcpy (st, str.str().c_str());
-	LinBox::commentator.start (st, "testRanditerBasic", iterations);
+	commentator.start (st, "testRanditerBasic", iterations);
 
 	typename Field::RandIter r (F);
 	typename Field::Element a;
@@ -1032,7 +1037,7 @@ bool testRanditerBasic(const Field &F, const char *name, unsigned int iterations
 
 	}
 
-	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRanditerBasic");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRanditerBasic");
 	delete[] st;
 	return ret;
 }
@@ -1050,14 +1055,14 @@ bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, s
 	str << "\t--Testing " << desc << " field" << ends;
 	char * st = new char[str.str().size()];
 	strcpy (st, str.str().c_str());
-	LinBox::commentator.start (st, "runFieldTests");
+	commentator.start (st, "runFieldTests");
 	bool ret =  runBasicRingTests(F, desc, iterations, runCharacteristicTest) ;
 	ret &= testInvDivConsistency(F, desc, iterations) ;
 	ret &= testFieldInversion (F, desc, iterations) ;
 	ret &= testFieldCommutativity (F, desc, iterations) ;
 	ret &= testFreshmansDream(F, desc, iterations);
 
-	LinBox::commentator.stop (MSG_STATUS (ret));
+	commentator.stop (MSG_STATUS (ret));
 	delete[] st;
 	return ret;
 }
@@ -1072,32 +1077,32 @@ bool runBasicRingTests (const Field &F, const char *desc, unsigned int iteration
 	char * st = new char[str.str().size()];
 	strcpy (st, str.str().c_str());
 
-	LinBox::commentator.start (st, "runBasicRingTests", runCharacteristicTest ? 11 : 10);
+	commentator.start (st, "runBasicRingTests", runCharacteristicTest ? 11 : 10);
 
 	if (!testField                     (F, string(str.str()).c_str()))           pass = false;
-	LinBox::commentator.progress ();
+	commentator.progress ();
 	if (!testFieldNegation             (F, desc, iterations))                    pass = false;
-       	LinBox::commentator.progress ();
+       	commentator.progress ();
 	if (!testFieldDistributivity       (F, desc, iterations))                    pass = false;
-       	LinBox::commentator.progress ();
+       	commentator.progress ();
 	if (!testFieldAssociativity        (F, desc, iterations))                    pass = false;
-       	LinBox::commentator.progress ();
+       	commentator.progress ();
 
 	if (runCharacteristicTest) {
 		if (!testFieldCharacteristic (F, desc, iterations))                  pass = false;
-		LinBox::commentator.progress ();
+		commentator.progress ();
 	}
 
 	if (!testGeometricSummation        (F, desc, iterations, 100))               pass = false;
-       	LinBox::commentator.progress ();
+       	commentator.progress ();
 	if (!testRingArithmeticConsistency (F, desc, iterations))                    pass = false;
-       	LinBox::commentator.progress ();
+       	commentator.progress ();
 	if (!testAxpyConsistency           (F, desc, iterations))                    pass = false;
-       	LinBox::commentator.progress ();
+       	commentator.progress ();
 	if (!testRanditerBasic             (F, desc, iterations))                    pass = false;
-       	LinBox::commentator.progress ();
+       	commentator.progress ();
 
-	LinBox::commentator.stop (MSG_STATUS (pass), (const char *) 0, "runBasicRingTests");
+	commentator.stop (MSG_STATUS (pass), (const char *) 0, "runBasicRingTests");
 	delete[] st;
 	return pass;
 }
@@ -1123,9 +1128,9 @@ bool testRandomIterator (const Field &F, const char *text,
 	char * st = new char[str.str().size()];
 	strcpy (st, str.str().c_str());
 
-	LinBox::commentator.start (st, "testRandomIterator");
+	commentator.start (st, "testRandomIterator");
 
-	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
+	std::ostream &report = commentator.report (LinBox::Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
 
 	/* This test either passes or runs a lot of times */
 	for (int i = 1;
@@ -1135,7 +1140,7 @@ bool testRandomIterator (const Field &F, const char *text,
 			report << "Warning! Probable failure of uniformity" << std::endl;
 	};
 
-	LinBox::commentator.stop (MSG_STATUS (true), (const char *) 0, "testRandomIterator");
+	commentator.stop (MSG_STATUS (true), (const char *) 0, "testRandomIterator");
 
 	delete[] st;
 	return true;
@@ -1158,8 +1163,8 @@ bool testRandomIteratorStep (const Field &F,
 
 	//str << "\t--Testing " << text << "::RandIter" << std::ends;
 
-	//LinBox::commentator.start (str.str ().c_str (), "testRandomIteratorStep");
-	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
+	//commentator.start (str.str ().c_str (), "testRandomIteratorStep");
+	std::ostream &report = commentator.report (LinBox::Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
 
 	bool ret = true;
 
@@ -1256,7 +1261,7 @@ bool testRandomIteratorStep (const Field &F,
 			reportError("Difference values do not appear to be uniformly distributed", ret);
 	}
 
-	//LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomIteratorStep");
+	//commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomIteratorStep");
 	return ret;
 }
 //@}
