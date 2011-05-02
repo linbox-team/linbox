@@ -87,8 +87,9 @@ namespace LinBox
 
 #ifndef DISABLE_COMMENTATOR
 	Commentator::Commentator () :
-		// cnull (new nullstreambuf), _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
-		cnull ("/dev/null"), _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
+		// cnull (new nullstreambuf)
+		cnull ("/dev/null")
+		, _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
 		_show_timing (true), _show_progress (true), _show_est_time (true)
 	{
 		//registerMessageClass (BRIEF_REPORT,         std::clog, 1, LEVEL_IMPORTANT);
@@ -102,8 +103,9 @@ namespace LinBox
 		registerMessageClass (INTERNAL_DESCRIPTION, _report);
 	}
 	Commentator::Commentator (std::ostream& out) :
-		// cnull (new nullstreambuf), _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
-		cnull ("/dev/null"), _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
+		// cnull (new nullstreambuf)
+		cnull ("/dev/null")
+		, _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
 		_show_timing (true), _show_progress (true), _show_est_time (true)
 	{
 		//registerMessageClass (BRIEF_REPORT,         out, 1, LEVEL_IMPORTANT);

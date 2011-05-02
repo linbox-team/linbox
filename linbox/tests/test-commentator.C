@@ -22,6 +22,7 @@
  * @ingroup tests
  * @brief no doc.
  * @test tests LinBox::Commentator
+ * @bug this test does not even test if anything is outputted (and it passes even though)
  */
 
 #include "linbox/linbox-config.h"
