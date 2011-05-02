@@ -55,7 +55,7 @@ if test -r "$GIVARO_HOME/include/givaro/givconfig.h"; then
 
 	if test "x$GIVARO_HOME" != "x/usr" -a "x$GIVARO_HOME" != "x/usr/local"; then
 		GIVARO_CFLAGS="-I${GIVARO_HOME}/include"
-		GIVARO_LIBS="-L${GIVARO_HOME}/lib -lgivaro"
+		GIVARO_LIBS="-L${GIVARO_HOME}/lib -lgivaro ${GIVARO_HOME}/lib/libgivaro.so"
 	else
 		GIVARO_CFLAGS=
 		GIVARO_LIBS="-lgivaro"
@@ -99,6 +99,7 @@ done
 if test "x$givaro_found" = "xyes" ; then
 	AC_SUBST(GIVARO_CFLAGS)
 	AC_SUBST(GIVARO_LIBS)
+	dnl  echo $GIVARO_CFLAGS $GIVARO_LIBS
 	AC_DEFINE(HAVE_GIVARO,1,[Define if GIVARO is installed])
 	HAVE_GIVARO=yes
 	if test "x$givaro_cross" != "xyes"; then
