@@ -40,6 +40,8 @@ endif
 
 EXTRA_PROGRAMS= $(EXAMPLES) $(USE_GIVARONTL_EXAMPLES)
 
+CLEANFILES=$(EXTRA_PROGRAMS)
+
 examples: ${EXTRA_PROGRAMS}
 
 dot_product_SOURCES    = dot-product.C
