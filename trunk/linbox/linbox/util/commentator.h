@@ -110,8 +110,7 @@ namespace LinBox
 		void *_act;
 	};
 
-	/**
-	 * Give information to user during runtime.
+	/** @brief Give information to user during runtime.
 	 * \ingroup util
 	 *
 	 * This object is used for reporting information about a computation to
@@ -159,7 +158,6 @@ namespace LinBox
 	 * The commentator allows very precise control over what gets
 	 * printed. See the Configuration section below.
 	 */
-
 	class Commentator {
 	public:
 		/** @internal
@@ -297,7 +295,9 @@ namespace LinBox
 		 */
 
 		ActivityState saveActivityState () const
-		{ return ActivityState (_activities.top ()); }
+		{
+		       	return ActivityState (_activities.top ());
+		}
 
 		/** @internal
 		 * Restore activity state.
@@ -324,8 +324,10 @@ namespace LinBox
 		 *
 		 * This affects only the brief report
 		 */
-		enum OutputFormat
-		{ OUTPUT_CONSOLE, OUTPUT_PIPE };
+		enum OutputFormat {
+		       	OUTPUT_CONSOLE,
+		       	OUTPUT_PIPE
+		};
 
 		enum EstimationMethod {
 			BEST_ESTIMATE,
@@ -462,7 +464,9 @@ namespace LinBox
 		bool isPrinted (unsigned long level,
 				const char *msg_class,
 				const char *fn = (const char *) 0)
-		{ return isPrinted (_activities.size (), level, msg_class, fn); }
+		{
+		       	return isPrinted (_activities.size (), level, msg_class, fn);
+		}
 
 		/** @internal
 		 * Determine whether the stream given is the null stream.
@@ -470,7 +474,9 @@ namespace LinBox
 		 * @return true if stream is the null stream; false otherwise
 		 */
 		bool isNullStream (const std::ostream &str)
-		{ return &str == &cnull; }
+		{
+			return &str == &cnull;
+		}
 
 		/** @internal
 		 * Set output stream for brief report.
@@ -586,11 +592,24 @@ namespace LinBox
 		struct nullstreambuf : public std::streambuf {
 			nullstreambuf() {};
 			// GV modidied seek_dir twice
-			std::streampos seekoff(std::streambuf::off_type, std::ios::seekdir, std::ios::openmode) {return 0;}
-			std::streampos seekpos(std::streambuf::pos_type, std::ios::openmode) {return 0;}
-			std::streampos sys_seek(std::streambuf::off_type, std::ios::seekdir) {return 0;}
-			std::streamsize showmanyc () {return 0;}
-			void imbue(const std::locale &loc) {}
+			std::streampos seekoff(std::streambuf::off_type, std::ios::seekdir, std::ios::openmode)
+			{
+				return 0;
+			}
+			std::streampos seekpos(std::streambuf::pos_type, std::ios::openmode)
+			{
+				return 0;
+			}
+			std::streampos sys_seek(std::streambuf::off_type, std::ios::seekdir)
+			{
+				return 0;
+			}
+			std::streamsize showmanyc ()
+			{
+				return 0;
+			}
+			void imbue(const std::locale &loc)
+			{}
 		};
 #endif
 
@@ -753,8 +772,14 @@ namespace LinBox
 			std::streamsize xsputn (const char *text, std::streamsize n);
 			int writeData (const char *text, std::streamsize n);
 
-			const Commentator &comm () const { return _comm; }
-			std::ostream &stream () const { return _stream; }
+			const Commentator &comm () const
+			{
+			       	return _comm;
+			}
+			std::ostream &stream () const
+			{
+			       	return _stream;
+			}
 		};
 
 		const char     *_msg_class; // Name of this message class
@@ -804,12 +829,20 @@ namespace LinBox
 	public:
 		friend class Commentator;
 
-		inline MessageClass (const char *, std::ostream &, unsigned long = 1, unsigned long = 2) {}
-		inline MessageClass () {}
-		inline void setMaxDepth (long ) {}
-		inline void setMaxDetailLevel (long ) {}
-		inline void setPrintParameters (unsigned long, unsigned long , const char *) {}
-		inline bool isPrinted (unsigned long , unsigned long , const char * = (const char *) 0) { return false; }
+		inline MessageClass (const char *, std::ostream &, unsigned long = 1, unsigned long = 2)
+	       	{}
+		inline MessageClass ()
+	       	{}
+		inline void setMaxDepth (long )
+	       	{}
+		inline void setMaxDetailLevel (long )
+	       	{}
+		inline void setPrintParameters (unsigned long, unsigned long , const char *)
+	       	{}
+		inline bool isPrinted (unsigned long , unsigned long , const char * = (const char *) 0)
+		{
+		       	return false;
+		}
 	};
 
 	class Commentator {
@@ -822,11 +855,16 @@ namespace LinBox
 		inline Commentator () :
 			cnull ("/dev/null")
 		{}
-		inline  ~Commentator () {}
-		inline void start (const char *, const char * = (const char *) 0, unsigned long = 0) {}
-		inline void startIteration (unsigned int , unsigned long = 0) {}
-		inline void stop (const char *, const char * = (const char *) 0, const char * = (const char *) 0) {}
-		inline void progress (long = -1, long = -1) {}
+		inline  ~Commentator ()
+	       	{}
+		inline void start (const char *, const char * = (const char *) 0, unsigned long = 0)
+	       	{}
+		inline void startIteration (unsigned int , unsigned long = 0)
+		{}
+		inline void stop (const char *, const char * = (const char *) 0, const char * = (const char *) 0)
+		{}
+		inline void progress (long = -1, long = -1)
+	       	{}
 
 		enum MessageLevel {
 			LEVEL_ALWAYS       =  0,
@@ -835,11 +873,18 @@ namespace LinBox
 			LEVEL_UNIMPORTANT  =  3
 		};
 
-		inline std::ostream &report (long , const char *) { return cnull; }
-		inline void indent (std::ostream &) {}
+		inline std::ostream &report (long , const char *)
+		{
+		       	return cnull;
+		}
 
-		enum OutputFormat
-		{ OUTPUT_CONSOLE, OUTPUT_PIPE };
+		inline void indent (std::ostream &)
+		{}
+
+		enum OutputFormat {
+		       	OUTPUT_CONSOLE,
+			OUTPUT_PIPE
+		};
 
 		enum EstimationMethod {
 			BEST_ESTIMATE,
@@ -852,31 +897,62 @@ namespace LinBox
 			LONG_TIMING
 		};
 
-		inline void setMaxDepth (long ) {}
-		inline void setMaxDetailLevel (long ) {}
+		inline void setMaxDepth (long )
+	       	{}
+		inline void setMaxDetailLevel (long )
+		{}
 		inline MessageClass &registerMessageClass (const char *, std::ostream &, unsigned long = 1, unsigned long = 2)
-		{ return _msgcls; }
+		{
+		       	return _msgcls;
+		}
 		inline MessageClass &cloneMessageClass (const char *, const char *)
-		{ return _msgcls; }
+		{
+		       	return _msgcls;
+	       	}
 		inline MessageClass &cloneMessageClass (const char *, const char *, std::ostream &)
-		{ return _msgcls; }
+		{
+		       	return _msgcls;
+	       	}
 		inline MessageClass &getMessageClass (const char *)
-		{ return _msgcls; }
-		inline void setPrintParameters (unsigned long , unsigned long , const char * = (const char *) 0) {}
-		inline void setBriefReportParameters (OutputFormat , bool , bool , bool ) {}
+		{
+		       	return _msgcls;
+	       	}
+		inline void setPrintParameters (unsigned long , unsigned long , const char * = (const char *) 0)
+	       	{}
+		inline void setBriefReportParameters (OutputFormat , bool , bool , bool )
+	       	{}
 		inline bool isPrinted (unsigned long , unsigned long , const char *, const char * = (const char *) 0)
-		{ return false; }
-		inline bool isPrinted (unsigned long , const char *, const char * = (const char *) 0) { return false; }
-		inline bool isNullStream (const std::ostream &) { return true; }
-		inline void setBriefReportStream (std::ostream &) {}
-		inline void setReportStream (std::ostream &) {}
-		inline void setMessageClassStream (const char *, std::ostream &) {}
-		inline void setDefaultReportFile (const char *) {}
-		inline void start (const char *, const char *, long , const char *) {}
-		inline void stop (const char *, long , const char *, long) {}
-		inline void progress (const char *, long , long , long ) {}
-		inline void report (const char *, long , const char *) {}
-		inline bool printed (long , const char *) { return false; }
+		{
+		       	return false;
+	       	}
+		inline bool isPrinted (unsigned long , const char *, const char * = (const char *) 0)
+		{
+		       	return false;
+		}
+		inline bool isNullStream (const std::ostream &)
+		{
+		       	return true;
+		}
+		inline void setBriefReportStream (std::ostream &)
+		{}
+		inline void setReportStream (std::ostream &)
+	       	{}
+		inline void setMessageClassStream (const char *, std::ostream &)
+	       	{}
+		inline void setDefaultReportFile (const char *)
+	       	{}
+		inline void start (const char *, const char *, long , const char *)
+	       	{}
+		inline void stop (const char *, long , const char *, long)
+	       	{}
+		inline void progress (const char *, long , long , long )
+	       	{}
+		inline void report (const char *, long , const char *)
+	       	{}
+		inline bool printed (long , const char *)
+		{
+		       	return false;
+		}
 
 		std::ofstream cnull;
 
@@ -886,10 +962,22 @@ namespace LinBox
 		struct nullstreambuf : public std::streambuf {
 			nullstreambuf () {};
 			~nullstreambuf () {};
-			inline std::streampos seekoff (std::streambuf::off_type, std::ios::seekdir, std::ios::openmode) { return 0; }
-			inline std::streampos seekpos (std::streambuf::pos_type, std::ios::openmode) { return 0; }
-			inline std::streampos sys_seek (std::streambuf::off_type, std::ios::seekdir) { return 0; }
-			inline std::streamsize showmanyc () { return 0; }
+			inline std::streampos seekoff (std::streambuf::off_type, std::ios::seekdir, std::ios::openmode)
+			{
+			       	return 0;
+			}
+			inline std::streampos seekpos (std::streambuf::pos_type, std::ios::openmode)
+			{
+			       	return 0;
+			}
+			inline std::streampos sys_seek (std::streambuf::off_type, std::ios::seekdir)
+			{
+			       	return 0;
+			}
+			inline std::streamsize showmanyc ()
+			{
+			       	return 0;
+			}
 			inline void imbue (const std::locale &loc) {}
 		};
 #endif

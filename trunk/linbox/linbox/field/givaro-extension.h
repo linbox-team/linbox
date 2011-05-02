@@ -121,7 +121,8 @@ namespace LinBox
 		typedef ::Givaro::GIV_ExtensionrandIter< ::Givaro::Extension<GivaroField<BaseField> >, LinBox::integer >  RandIter;
 
 
-		GivaroExtension() {}
+		GivaroExtension()
+		{}
 
 
 		/** Constructor from an integer.
@@ -131,11 +132,11 @@ namespace LinBox
 		{
 		}
 
-		/** Constructor extension of a base field
+		/** Constructor extension of a base field.
 		*/
 		GivaroExtension(const BaseField& bF, const integer& ext=1) :
 			::Givaro::Extension<GivaroField<BaseField> >( GivaroField<BaseField>(bF),
-							    static_cast<typename ::Givaro::Extension< GivaroField< BaseField > >::Residu_t>(int32_t(ext)))
+								      static_cast<typename ::Givaro::Extension< GivaroField< BaseField > >::Residu_t>(int32_t(ext)))
 		{
 		}
 
