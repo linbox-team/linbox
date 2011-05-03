@@ -10,7 +10,7 @@ AC_DEFUN([LB_BENCH],
 dnl  AC_MSG_CHECKING(whether to try and benchmark linbox\n)
 
 AC_ARG_WITH(benchdir,
-[  --with-benchdir=<path> Where the LinBox benchmarks should be performed],
+[AC_HELP_STRING([--with-benchdir=<path>], [Where the LinBox benchmarks should be performed])],
             [
 		LINBOX_BENCH_PATH="$withval"
 	    ],
@@ -21,7 +21,7 @@ AC_ARG_WITH(benchdir,
 AC_SUBST(LINBOX_BENCH_PATH)
 
 AC_ARG_WITH(gnuplot,
-[  --with-gnuplot=<path> Give the path to Gnuplot. ],
+[AC_HELP_STRING([--with-gnuplot=<path>], [Give the path to Gnuplot. ])],
             [
 		GNUPLOT_PATH="$PATH $withval"
 	    ],
@@ -29,7 +29,7 @@ AC_ARG_WITH(gnuplot,
 		GNUPLOT_PATH="$PATH"
 	    ])
 AC_ARG_WITH(ghostscript,
-[  --with-ghostscript=<path> Give the path to ghostscript. ],
+[AC_HELP_STRING([--with-ghostscript=<path>], [Give the path to ghostscript. ])],
             [
 		GHOSTSCRIPT_PATH="$PATH $withval"
 	    ],
