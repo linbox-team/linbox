@@ -21,13 +21,13 @@ AC_DEFUN([LB_CHECK_IML],
 [
 
 AC_ARG_WITH(iml,
-[  --with-iml=<path>|yes Use IML library. This library is mandatory for
+[AC_HELP_STRING([--with-iml=<path>|yes], [Use IML library. This library is (not yet) mandatory for
     LinBox compilation. If argument is yes or <empty> or <bad> :)
     that means the library is reachable with the standard
     search path (/usr or /usr/local). Otherwise you give
     the <path> to the directory which contains the
     library.
-],
+])],
     [if test "$withval" = yes ; then
         IML_HOME_PATH="${DEFAULT_CHECKING_PATH}"
         elif test "$withval" != no ; then

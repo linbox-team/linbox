@@ -20,13 +20,13 @@ AC_DEFUN([LB_CHECK_GIVARO],
 [
 
 AC_ARG_WITH(givaro,
-[  --with-givaro=<path>|yes Use Givaro library. This library is mandatory for
+[AC_HELP_STRING([--with-givaro=<path>|yes], [Use Givaro library. This library is mandatory for
                            LinBox compilation. If argument is yes or <empty>
 			   that means the library is reachable with the standard
 			   search path (/usr or /usr/local). Otherwise you give
 			   the <path> to the directory which contains the
 			   library.
-],
+])],
 	     [if test "$withval" = yes ; then
 			GIVARO_HOME_PATH="${DEFAULT_CHECKING_PATH}"
 	      elif test "$withval" != no ; then

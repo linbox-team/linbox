@@ -8,7 +8,7 @@ AC_DEFUN([LB_CHECK_SAGE],
 AC_MSG_CHECKING([whether to compile the sage interface])
 
 AC_ARG_ENABLE(sage,
-[  --enable-sage Enable the compilation of the sage interface],
+[AC_HELP_STRING([--enable-sage], [Enable the compilation of the sage interface])],
 [
 AC_MSG_RESULT(yes)
 sage_interface="yes"

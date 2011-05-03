@@ -9,7 +9,7 @@ AC_MSG_CHECKING(whether to build documentation)
 
 
 AC_ARG_WITH(docdir,
-[  --with-docdir=<path> Where the LinBox documentation should be installed],
+[AC_HELP_STRING([--with-docdir=<path>], [Where the LinBox documentation should be installed])],
             [
 		LINBOX_DOC_PATH="$withval"
 	    ],
@@ -20,7 +20,7 @@ AC_ARG_WITH(docdir,
 AC_SUBST(LINBOX_DOC_PATH)
 
 AC_ARG_WITH(doxygen,
-[  --with-doxygen=<path> Give the path to Doxygen. Note: --enable-doc needed],
+[AC_HELP_STRING([--with-doxygen=<path>], [Give the path to Doxygen. Note: --enable-doc needed])],
             [
 		DOXYGEN_PATH="$PATH $withval"
 	    ],
@@ -28,7 +28,7 @@ AC_ARG_WITH(doxygen,
 		DOXYGEN_PATH="$PATH"
 	    ])
 
-AC_ARG_ENABLE(doc,[  --enable-doc Enable building documentation],
+AC_ARG_ENABLE(doc,[AC_HELP_STRING([--enable-doc], [Enable building documentation])],
 [
 AC_MSG_RESULT(yes)
 AC_MSG_CHECKING(whether doxygen works)

@@ -9,7 +9,7 @@ AC_DEFUN([LB_OPT],
 AC_MSG_CHECKING([whether to use run time optimization])
 
 AC_ARG_ENABLE(optimization,
-[  --enable-optimization  Enable run time optimization in LinBox code],
+[AC_HELP_STRING([--enable-optimization], [Enable run time optimization in LinBox code (only Strassen matrix threshold for now)])],
 [
 AC_MSG_RESULT(yes)
 

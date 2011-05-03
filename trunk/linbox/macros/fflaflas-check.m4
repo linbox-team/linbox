@@ -20,14 +20,14 @@ AC_DEFUN([LB_CHECK_FFLAFLAS],
 [
 
 AC_ARG_WITH(fflas-ffpack,
-	[  --with-fflas-ffpack=<path>|yes Use Fflas-Ffpack library. This library is mandatory for
+	[AC_HELP_STRING([--with-fflas-ffpack=<path>|yes], [Use Fflas-Ffpack library. This library is mandatory for
 		LinBox compilation. If argument is yes or <empty> or <bad> :)
 		that means the library is reachable with the standard
 		search path (/usr or /usr/local). Otherwise you give
 		the <path> to the directory which contains the
 		library.
         Available at "http://linalg.org/projects/fflas-ffpack".
-	],
+	])],
     [if test "$withval" = yes ; then
         FFLAFLAS_HOME_PATH="${DEFAULT_CHECKING_PATH}"
         elif test "$withval" != no ; then

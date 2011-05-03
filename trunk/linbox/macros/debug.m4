@@ -9,7 +9,7 @@ dnl enable basic debug mode.
 AC_DEFUN([AC_DEBUG],
 [AC_MSG_CHECKING([whether to enable debugging options in the library])
   AC_ARG_ENABLE(debug,
-[  --enable-debug  enable debugging options in library],
+[AC_HELP_STRING([--enable-debug], [enable debugging options in library])],
       USE_DEBUG=$enableval,
       USE_DEBUG=no)
   AC_MSG_RESULT([$USE_DEBUG])
@@ -38,7 +38,7 @@ dnl Enable warnings from compiler.
 AC_DEFUN([AC_WARNINGS],
 [AC_MSG_CHECKING([whether to enable warnings when compiling the library])
   AC_ARG_ENABLE(warnings,
-[  --enable-warnings  enable warings when compiling the library],
+[AC_HELP_STRING([--enable-warnings],  [enable warings when compiling the library])],
       USE_WARNINGS=$enableval,
       USE_WARNINGS=no)
   AC_MSG_RESULT([$USE_WARNINGS])
