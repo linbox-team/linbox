@@ -85,9 +85,9 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	if (!runFieldTests (F1, "2", iterations, n, false)) pass = false;
+	if (!runFieldTests (F1, "2",     iterations, n, false)) pass = false;
 	if (!runFieldTests (F2, "10733", iterations, n, false)) pass = false;
-	if (!runFieldTests (F3, "3", iterations, n, false)) pass = false;
+	if (!runFieldTests (F3, "3",     iterations, n, false)) pass = false;
 	if (!runFieldTests (F4, "32749", iterations, n, false)) pass = false;
 	if (!runFieldTests (F5, "65521", iterations, n, false)) pass = false;
 

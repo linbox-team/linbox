@@ -151,7 +151,7 @@ build |wc" should yield the same number of lines.
 #if __LINBOX_HAVE_GIVARO
 //	if (flag > 0) cout << "	Givaro tests" << endl;
 	build_n_run("test-givaro-zpz", counter, flag);
-	build_n_run("test-givaro-zpzuns", counter, flag, "intermittent failures");
+	build_n_run("test-givaro-zpzuns", counter, flag, "may fail on small fields because of supposed non-randomness or failure to find a non trivial element");
 	build_n_run("test-rat-solve", counter, flag); // "infinite loop");
 	build_n_run("test-rat-minpoly", counter, flag); // "intermittent failures");
 #else

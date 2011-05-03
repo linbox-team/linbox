@@ -121,6 +121,7 @@ namespace LinBox
 		{}
 
 
+#if 0
 		// Rich Seagraves 7-16-2003
 		// As is, this operator is an infinite loop
 		// By not providing an operator= in GivaroZpz,
@@ -131,26 +132,40 @@ namespace LinBox
 		/** Operator =
 		*/
 		/*
-		   GivaroZpz<TAG>& operator= (const GivaroZpz<TAG>& F) {
+		   GivaroZpz<TAG>& operator= (const GivaroZpz<TAG>& F)
+		   {
 		   return (*this)=F;
 		   }
 		   */
+#endif
 
 		/** Characteristic.
 		 * Return integer representing characteristic of the domain.
 		 * @return integer representing characteristic of the domain.
 		 */
 		integer &characteristic (integer &c) const
-		{ return c = integer (::Givaro::ZpzDom<TAG>::size ()); }
+		{
+		       	return c = integer (::Givaro::ZpzDom<TAG>::size ());
+		}
+
 		long characteristic() const
-		{return static_cast<int>(::Givaro::ZpzDom<TAG>::size());}
+		{
+			return static_cast<int>(::Givaro::ZpzDom<TAG>::size());
+		}
 
 		/** Cardinality.
 		 * Return integer representing cardinality of the domain.
 		 * @return integer representing cardinality of the domain
 		 */
 		integer &cardinality (integer &c) const
-		{ return c = integer (::Givaro::ZpzDom<TAG>::size ()); }
+		{
+			return c = integer (::Givaro::ZpzDom<TAG>::size ());
+		}
+
+		integer cardinality () const
+		{
+			return integer (::Givaro::ZpzDom<TAG>::size ());
+		}
 
 		/** Conversion of field base element to an integer.
 		 * This function assumes the output field base element x has already been
@@ -160,14 +175,20 @@ namespace LinBox
 		 * @param y constant field base element.
 		 */
 		integer &convert (integer &x, const Element &y) const
-		{ return x = integer (y); }
+		{
+		       	return x = integer (y);
+		}
 
 		double &convert (double& x, const Element& y) const
-		{ return x = static_cast<double>(y); }
+		{
+		       	return x = static_cast<double>(y);
+		}
 
 		template<class Type>
 		Type &convert (Type& x, const Element& y) const
-		{ return x = static_cast<Type>(y); }
+		{
+		       	return x = static_cast<Type>(y);
+		}
 
 
 		/** Initialization of field base element from an integer.

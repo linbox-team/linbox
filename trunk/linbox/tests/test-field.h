@@ -598,6 +598,7 @@ bool testGeometricSummation (const Field &F, const char *name, unsigned int iter
 
 	typename Field::Element a, a_n, k, zero, one;
 	typename Field::RandIter r (F);
+	typename LinBox::NonzeroRandIter<Field> z(F,r);
 
 	F.init (zero, 0);
 	F.init (one, 1);
@@ -608,11 +609,11 @@ bool testGeometricSummation (const Field &F, const char *name, unsigned int iter
 	for (unsigned int i = 0; i < iterations; i++) {
 		commentator.startIteration (i);
 
-		size_t no_bad_loop = F.characteristic()/2+5 ;
-		do r.random (a); while (F.areEqual (a, one) && --no_bad_loop);
+		size_t no_bad_loop = F.cardinality()+10 ;
+		do z.random (a); while (F.areEqual (a, one) && --no_bad_loop);
 		if (!no_bad_loop) {
-			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR) << " *** ERROR *** could not find an element different form 1..." << std::endl;
-			return false;
+			reportError(" *** ERROR *** could not find an element different form 1...",ret);
+			break;
 		}
 
 		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
@@ -811,9 +812,11 @@ bool testFreshmansDream (const Field &F, const char *name, unsigned int iteratio
 
 template <class Field>
 bool testArithmeticConsistency (const Field &F, const char *name, unsigned int iterations)
-{  return testRingArithmeticConsistency(F, name, iterations)
+{
+	return testRingArithmeticConsistency(F, name, iterations)
 	&& testInvDivConsistency(F, name, iterations);
 }
+
 template <class Field>
 bool testRingArithmeticConsistency (const Field &F, const char *name, unsigned int iterations)
 {
@@ -1093,8 +1096,10 @@ bool runBasicRingTests (const Field &F, const char *desc, unsigned int iteration
 		commentator.progress ();
 	}
 
-	if (!testGeometricSummation        (F, desc, iterations, 100))               pass = false;
-       	commentator.progress ();
+	if (F.cardinality() != 2) // otherwise it is not very interesting to find a element not zero and not one !
+		if (!testGeometricSummation        (F, desc, iterations, 100))               pass = false;
+	commentator.progress ();
+
 	if (!testRingArithmeticConsistency (F, desc, iterations))                    pass = false;
        	commentator.progress ();
 	if (!testAxpyConsistency           (F, desc, iterations))                    pass = false;
