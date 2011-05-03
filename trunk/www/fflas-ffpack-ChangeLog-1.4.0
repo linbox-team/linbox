@@ -1,0 +1,9 @@
+April 2011:
+* Ported library to autotools
+* Starting porting tests/ for "make check"
+* Updated fields with LinBox (which depends fully on them now)
+* removed as many _LINBOX_LINBOX_CONFIG_H as possible
+* added utils/ for utilities. Also used by LinBox. Will probably turn into some
+  sort of common utils/ shared by Givaro/LinBox/Fflas-Ffpack
+* minor bugs corrected
+* some documentation (+framework) added.
