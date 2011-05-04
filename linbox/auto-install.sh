@@ -12,6 +12,7 @@ STABLE=true
 DEBUG=""
 WARNINGS=""
 OPTIM="--enable-optimization"
+CHECK=false
 #options
 PREFIX="--prefix=/tmp"
 BLAS=""
@@ -56,6 +57,8 @@ help() {
 	echo "                         Default : empty"
 	echo " --enable-debug        : build in debugging mode."
 	echo "                         Default : no."
+	echo " --enable-check        : run make check."
+	echo "                         Default : no."
 	echo " --enable-warnings     : build with extra compile warnings."
 	echo "                         Default : no."
 	echo " --enable-optimization : build with compile-time optimization."
@@ -85,6 +88,12 @@ for i in $* ; do
 		;;
 	"--no-enable-debug")
 		DEBUG="";
+		;;
+	"--enable-check")
+		CHECK=true;
+		;;
+	"--no-enable-check")
+		CHECK=false;
 		;;
 	"--enable-warnings")
 		WARNINGS=$i;
@@ -136,6 +145,10 @@ for i in $* ; do
 			"--enable-debug")
 				[[ "$QUOI" =~ y|yes|Y|1 ]] && DEBUG="--enable-debug" || DEBUG=""
 				;;
+		"--enable-check")
+				[[ "$QUOI" =~ y|yes|Y|1 ]] && CHECK="true" || CHECK="false"
+				;;
+
 			*)
 				echo "unkown swith option $i" ;
 				help ;
@@ -178,6 +191,7 @@ if [ "$STABLE" = "true" ]; then
 	if [ -f fflas-ffpack-$STABLE_FFLAS.tar.gz ] ; then
 		echo "already there"
 	   	echo -ne "${BEG}fetching md5sum" ; 
+		[ -f fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum ] && rm fflas-ffpack-${STABLE_FFLAS}.tar.gz.md5sum ;
 		wget http://linalg.org/fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum >/dev/null 2>&1 || die
 		[ -f fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum ] || die
 		cool
@@ -277,7 +291,7 @@ else
 	./autogen.sh $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS || die
 fi
 
-echo -e "${BEG}installing Fflas-Ffpack..."
+echo -e "${BEG}building Fflas-Ffpack..."
 echo "make CXXFLAGS+=\"$EXTRA\""
 if [ -n "$EXTRA" ] ; then
 	make "CXXFLAGS+=\"$EXTRA\"" || die
@@ -285,6 +299,13 @@ else
 	make || die
 fi
 
+if [ "$CHECK" = "true" ] ; then
+	echo -e "${BEG}checking Fflas-Ffpack..."
+	make check || die
+fi
+
+
+echo -e "${BEG}installing Fflas-Ffpack..."
 make install || die
 
 cool
@@ -318,7 +339,7 @@ else
 	./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $WARNINGS || die
 fi
 
-echo -e "${BEG}installing Givaro..."
+echo -e "${BEG}building Givaro..."
 echo "make CXXFLAGS+=\"$EXTRA\""
 
 if [ -n "$EXTRA" ] ; then
@@ -327,6 +348,12 @@ else
 	make || die
 fi
 
+if [ "$CHECK" = "true" ] ; then
+	echo -e "${BEG}checking Fflas-Ffpack..."
+	make check || die
+fi
+
+echo -e "${BEG}installing Givaro..."
 make install || die
 
 #return in build
