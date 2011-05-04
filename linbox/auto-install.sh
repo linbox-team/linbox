@@ -4,6 +4,10 @@
 # Written by BB <bboyer@imag.fr>
 # see COPYING for more details.
 
+
+# TODO : create .extracted, .configured, .build, .installed and use a switch
+# (like --force) when you want to rebuild
+
 STABLE_FFLAS=1.4.0
 STABLE_GIVARO=3.4.0
 
@@ -14,7 +18,8 @@ WARNINGS=""
 OPTIM="--enable-optimization"
 CHECK=false
 #options
-PREFIX="--prefix=/tmp"
+PREFIX_LOC="/tmp"
+PREFIX="--prefix=$PREFIX_LOC"
 BLAS=""
 NTL=""
 EXTRA=""
@@ -123,6 +128,7 @@ for i in $* ; do
 		case "$QUI" in
 			"--prefix")
 				PREFIX=$i
+				PREFIX_LOC=$QUOI
 				;;
 			"--extra-flags")
 				EXTRA=$QUOI
@@ -278,6 +284,7 @@ if [ -f Makefile ] ; then
 	echo -e "${BEG}cleaning Fflas-Ffpack..."
 	make clean || die
 	make distclean || die 
+	# make unistall || die
 	cool
 fi
 
@@ -326,6 +333,7 @@ if [ -f Makefile ] ; then
 	echo -e "${BEG}cleaning Givaro..."
 	make clean || die
 	make distclean || die 
+	# make unistall || die
 	cool
 fi
 
@@ -358,5 +366,51 @@ make install || die
 
 #return in build
 cd ..
+
+cool
+
+#return in linbox
+cd ..
+
+#####################
+#  cleaning LinBox  #
+#####################
+
+if [ -f Makefile ] ; then
+	echo -e "${BEG}cleaning LinBox..."
+	make clean || die
+	make distclean || die 
+	# make unistall || die
+	cool
+fi
+
+echo -e "${BEG}configuring LinBox..."
+
+
+GIVARO="--with-givaro=$PREFIX_LOC"
+FFLAFLAS="--with-fflas-ffpack=$PREFIX_LOC"
+
+# if [ "$STABLE" = "true" ]; then
+# ./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $GIVARO $FFLAFLAS $WARNINGS || die
+# else
+./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $BLAS $GIVARO $FFLAFLAS $WARNINGS || die
+# fi
+
+echo -e "${BEG}building LinBox..."
+echo "make CXXFLAGS+=\"$EXTRA\""
+
+if [ -n "$EXTRA" ] ; then
+	make "CXXFLAGS+=\"$EXTRA\"" || die
+else
+	make || die
+fi
+
+if [ "$CHECK" = "true" ] ; then
+	echo -e "${BEG}checking LinBox..."
+	make check || die
+fi
+
+echo -e "${BEG}installing LinBox..."
+make install || die
 
 cool
