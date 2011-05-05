@@ -106,7 +106,7 @@ namespace LinBox
 		 * @param modulus constant reference to integer prime modulus
 		 */
 		ModularBase (unsigned long modulus) :
-			_modulus (modulus)
+			_modulus ((Element)modulus)
 		{}
 
 		/*- Constructor from an integer.
@@ -115,7 +115,7 @@ namespace LinBox
 		 * @param modulus constant reference to integer prime modulus
 		 */
 		ModularBase (const integer &modulus) :
-			_modulus (modulus)
+			_modulus ((Element) modulus)
 		{}
 
 		/*- Copy constructor.

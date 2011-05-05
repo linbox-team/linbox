@@ -72,7 +72,7 @@ namespace LinBox
 				RecCounter = (int)sqrt((double)rbound_);//RecCounter^2 < rbound_ <=(RecCounter+1)^2
 			}
 			else if (_M == GEOMETRIC) {
-				RecCounter = log((double)rbound_) ;//2^RecCounter < rbound_ <=2^(RecCounter+1)
+				RecCounter = (size_t) log((double)rbound_) ;//2^RecCounter < rbound_ <=2^(RecCounter+1)
 			}
 		}
 

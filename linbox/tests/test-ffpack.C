@@ -794,8 +794,8 @@ int main(int argc, char** argv)
 {
 	bool pass = true;
 
-	static size_t n = 130+(int)130*drand48();
-	static size_t m = 130+(int)130*drand48();
+	static size_t n = 130+(size_t)(130*drand48());
+	static size_t m = 130+(size_t)(130*drand48());
 	static integer q = 653;
 	static int iterations =1;
 

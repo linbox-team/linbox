@@ -54,7 +54,9 @@ namespace LinBox
 		~reference () {}
 
 		reference &operator = (reference &a)
-		{ return *this = (bool) a; }
+		{
+			return *this = (bool) a;
+		}
 
 		reference &operator = (bool v)
 		{
@@ -63,43 +65,77 @@ namespace LinBox
 		}
 
 		reference &operator &= (reference &a)
-		{ *_word &= ~(1UL << _pos) | (a.get_bit () << (_pos - a._pos)); return *this; }
+		{
+			*_word &= ~(1UL << _pos) | (a.get_bit () << (_pos - a._pos));
+			return *this;
+		}
 
 		reference &operator &= (bool v)
-		{ *_word &= ~(1UL << _pos) | (v & (1UL << _pos)); return *this; }
+		{
+			*_word &= ~(1UL << _pos) | (v & (1UL << _pos));
+			return *this;
+		}
 
 		reference &operator |= (reference &a)
-		{ *_word |= a.get_bit () << (_pos - a._pos); return *this; }
+		{
+			*_word |= a.get_bit () << (_pos - a._pos);
+			return *this;
+		}
 
 		reference &operator |= (bool v)
-		{ *_word |= v & (1UL << _pos); return *this; }
+		{
+			*_word |= v & (1UL << _pos);
+			return *this;
+		}
 
 		reference &operator ^= (reference &a)
-		{ *_word ^= a.get_bit () << (_pos - a._pos); return *this; }
+		{
+			*_word ^= a.get_bit () << (_pos - a._pos);
+			return *this;
+		}
 
 		reference &operator ^= (bool v)
-		{ *_word ^= v & (1UL << _pos); return *this; }
+		{
+			*_word ^= v & (1UL << _pos);
+			return *this;
+		}
 
 		operator bool (void) const
-		{ return (*_word >> _pos) & 1UL; }
+		{
+			return (*_word >> _pos) & 1UL;
+		}
 
 	private:
 		friend class iterator;
 		friend class const_iterator;
 		friend class const_reference;
 
-		unsigned long neg_mask_word (void) { return *_word & ~(1UL << _pos); }
-		unsigned long get_bit ()           { return *_word & (1UL << _pos); }
+		unsigned long neg_mask_word (void)
+		{
+			return *_word & ~(1UL << _pos);
+		}
+		unsigned long get_bit ()
+		{
+			return *_word & (1UL << _pos);
+		}
 
 		std::vector<unsigned long>::iterator _word;
 		uint8_t                         _pos;
 	};
 
 	inline std::istream &operator >> (std::istream &is, BitVector::reference &a)
-	{ bool v; is >> v; a = v; return is; }
+	{
+		bool v;
+		is >> v;
+		a = v;
+		return is;
+	}
 
 	inline std::ostream &operator << (std::ostream &os, BitVector::reference &a)
-	{ os << bool (a); return os; }
+	{
+		os << bool (a);
+		return os;
+	}
 
 	class BitVector::const_reference {
 	public:
@@ -119,7 +155,9 @@ namespace LinBox
 		~const_reference () {}
 
 		operator bool (void) const
-		{ return (*_word >> _pos) & 1UL; }
+		{
+			return (*_word >> _pos) & 1UL;
+		}
 
 	private:
 		friend class const_iterator;
@@ -129,7 +167,10 @@ namespace LinBox
 	};
 
 	inline std::ostream &operator << (std::ostream &os, BitVector::const_reference &a)
-	{ os << bool (a); return os; }
+	{
+		os << bool (a);
+		return os;
+	}
 
 	// class BitVector::iterator : public std::iterator <std::random_access_iterator_tag, bool>
 	class BitVector::iterator : public std::_Bit_iterator {
@@ -178,7 +219,7 @@ namespace LinBox
 		iterator operator + (difference_type i) const
 		{
 			std::vector<unsigned long>::iterator new_word = _ref._word + (i >> __LINBOX_LOGOF_SIZE);
-			uint8_t new_pos = _ref._pos + (i & __LINBOX_POS_ALL_ONES);
+			uint8_t new_pos = _ref._pos + (uint8_t) (i & __LINBOX_POS_ALL_ONES);
 
 			new_word += new_pos >> __LINBOX_LOGOF_SIZE;
 			new_pos &= __LINBOX_POS_ALL_ONES;
@@ -194,7 +235,7 @@ namespace LinBox
 		iterator &operator += (difference_type i)
 		{
 			_ref._word += i >> __LINBOX_LOGOF_SIZE;
-			_ref._pos  += i & __LINBOX_POS_ALL_ONES;
+			_ref._pos  += (uint8_t) i & __LINBOX_POS_ALL_ONES;
 			_ref._word += _ref._pos >> __LINBOX_LOGOF_SIZE;
 			_ref._pos  &= __LINBOX_POS_ALL_ONES;
 			return *this;
@@ -218,28 +259,44 @@ namespace LinBox
 		}
 
 		iterator operator - (difference_type i) const
-		{ return *this + -i; }
+		{
+			return *this + -i;
+		}
 
 		iterator &operator -= (difference_type i)
-		{ return *this += -i; }
+		{
+			return *this += -i;
+		}
 
 		difference_type operator - (iterator &i) const
-		{ return (_ref._word - i._ref._word) * __LINBOX_BITSOF_LONG + (_ref._pos - i._ref._pos); }
+		{
+			return (_ref._word - i._ref._word) * __LINBOX_BITSOF_LONG + (_ref._pos - i._ref._pos);
+		}
 
 		reference operator [] (long i)
-		{ return *(*this + i); }
+		{
+			return *(*this + i);
+		}
 
 		reference operator * ()
-		{ return _ref; }
+		{
+			return _ref;
+		}
 
 		const_reference operator * () const
-		{ return _ref; }
+		{
+			return _ref;
+		}
 
 		bool operator == (const iterator &c) const
-		{ return (_ref._word == c._ref._word) && (_ref._pos == c._ref._pos); }
+		{
+			return (_ref._word == c._ref._word) && (_ref._pos == c._ref._pos);
+		}
 
 		bool operator != (const iterator &c) const
-		{ return (_ref._word != c._ref._word) || (_ref._pos != c._ref._pos); }
+		{
+			return (_ref._word != c._ref._word) || (_ref._pos != c._ref._pos);
+		}
 
 	protected:
 		friend class const_iterator;
@@ -336,31 +393,49 @@ namespace LinBox
 		}
 
 		const_iterator operator - (difference_type i) const
-		{ return *this + -i; }
+		{
+			return *this + -i;
+		}
 
 		const_iterator &operator -= (difference_type i)
-		{ return *this += -i; }
+		{
+			return *this += -i;
+		}
 
 		difference_type operator - (const_iterator &i) const
-		{ return (_ref._word - i._ref._word) * __LINBOX_BITSOF_LONG + (_ref._pos - i._ref._pos); }
+		{
+			return (_ref._word - i._ref._word) * __LINBOX_BITSOF_LONG + (_ref._pos - i._ref._pos);
+		}
 
 		const_reference operator [] (difference_type i) const
-		{ return *(*this + i); }
+		{
+			return *(*this + i);
+		}
 
 		const_reference operator * () const
-		{ return _ref; }
+		{
+			return _ref;
+		}
 
 		bool operator == (const const_iterator &c) const
-		{ return (_ref._word == c._ref._word) && (_ref._pos == c._ref._pos); }
+		{
+			return (_ref._word == c._ref._word) && (_ref._pos == c._ref._pos);
+		}
 
 		bool operator == (const BitVector::iterator &c) const
-		{ return (this->_ref._word == c._ref._word) && (this->_ref._pos == c._ref._pos); }
+		{
+			return (this->_ref._word == c._ref._word) && (this->_ref._pos == c._ref._pos);
+		}
 
 		bool operator != (const const_iterator &c) const
-		{ return (_ref._word != c._ref._word) || (_ref._pos != c._ref._pos); }
+		{
+			return (_ref._word != c._ref._word) || (_ref._pos != c._ref._pos);
+		}
 
 		bool operator != (const BitVector::iterator &c) const
-		{ return (_ref._word != c._ref._word) || (_ref._pos != c._ref._pos); }
+		{
+			return (_ref._word != c._ref._word) || (_ref._pos != c._ref._pos);
+		}
 
 	protected:
 
@@ -368,10 +443,14 @@ namespace LinBox
 	};
 
 	inline BitVector::iterator BitVector::begin (void)
-	{ return iterator (_v.begin (), 0UL); }
+	{
+		return iterator (_v.begin (), 0UL);
+	}
 
 	inline BitVector::const_iterator BitVector::begin (void) const
-	{ return const_iterator (_v.begin (), 0UL); }
+	{
+		return const_iterator (_v.begin (), 0UL);
+	}
 
 	inline BitVector::iterator BitVector::end (void)
 	{
@@ -390,22 +469,34 @@ namespace LinBox
 	}
 
 	inline BitVector::reverse_iterator BitVector::rbegin (void)
-	{ return reverse_iterator (end () - 1UL); }
+	{
+		return reverse_iterator (end () - 1UL);
+	}
 
 	inline BitVector::const_reverse_iterator BitVector::rbegin (void) const
-	{ return const_reverse_iterator (end () - 1UL); }
+	{
+		return const_reverse_iterator (end () - 1UL);
+	}
 
 	inline BitVector::reverse_iterator BitVector::rend (void)
-	{ return reverse_iterator (begin () - 1UL); }
+	{
+		return reverse_iterator (begin () - 1UL);
+	}
 
 	inline BitVector::const_reverse_iterator BitVector::rend (void) const
-	{ return const_reverse_iterator (begin () - 1UL); }
+	{
+		return const_reverse_iterator (begin () - 1UL);
+	}
 
 	inline BitVector::reference BitVector::operator[] (BitVector::size_type n)
-	{ return *(begin () + n); }
+	{
+		return *(begin () + n);
+	}
 
 	inline BitVector::const_reference BitVector::operator[] (BitVector::size_type n) const
-	{ return *(begin () + n); }
+	{
+		return *(begin () + n);
+	}
 
 	inline BitVector::reference BitVector::at (BitVector::size_type n)
 	{
@@ -424,10 +515,14 @@ namespace LinBox
 	}
 
 	inline BitVector::reference BitVector::front (void)
-	{ return reference (_v.begin (), 0UL); }
+	{
+		return reference (_v.begin (), 0UL);
+	}
 
 	inline BitVector::const_reference BitVector::front (void) const
-	{ return const_reference (_v.begin (), 0UL); }
+	{
+		return const_reference (_v.begin (), 0UL);
+	}
 
 	inline BitVector::reference BitVector::back (void)
 	{
@@ -478,7 +573,10 @@ namespace LinBox
 	}
 
 	inline void BitVector::resize (BitVector::size_type new_size, bool val)
-	{_v.resize ((new_size >> __LINBOX_LOGOF_SIZE) + ((new_size & __LINBOX_POS_ALL_ONES) ? 1UL : 0UL), val ? __LINBOX_ALL_ONES : 0UL); _size = new_size; }
+	{
+		_v.resize ((new_size >> __LINBOX_LOGOF_SIZE) + ((new_size & __LINBOX_POS_ALL_ONES) ? 1UL : 0UL), val ? __LINBOX_ALL_ONES : 0UL);
+		_size = new_size;
+	}
 
 	inline bool BitVector::operator == (const BitVector &v) const
 	{
@@ -499,21 +597,25 @@ namespace LinBox
 			return false;
 	}
 
-	/*
-	   namespace VectorWrapper
-{
-template <class Field, class Vector, class Trait>
-inline BitVector::reference refSpecialized
-(Vector &v, size_t i, VectorCategories::DenseZeroOneVectorTag<Trait>)
-{ return v[i]; }
+#if 0
+	namespace VectorWrapper
+	{
+		template <class Field, class Vector, class Trait>
+		inline BitVector::reference refSpecialized
+		(Vector &v, size_t i, VectorCategories::DenseZeroOneVectorTag<Trait>)
+		{
+			return v[i];
+		}
 
-template <class Field, class Vector, class Trait>
-inline BitVector::const_reference constRefSpecialized
-(const Vector &v, size_t i, VectorCategories::DenseZeroOneVectorTag<Trait>)
-{ return v[i]; }
+		template <class Field, class Vector, class Trait>
+		inline BitVector::const_reference constRefSpecialized
+		(const Vector &v, size_t i, VectorCategories::DenseZeroOneVectorTag<Trait>)
+		{
+			return v[i];
+		}
 
-}
-*/
+	}
+#endif
 
 } // namespace LinBox
 
