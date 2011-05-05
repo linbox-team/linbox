@@ -606,11 +606,12 @@ bool testGeometricSummation (const Field &F, const char *name, unsigned int iter
 	F.init (a,0); F.init (a_n,0); F.init (k,0);
 
 	bool ret = true;
+        LinBox::Integer card; F.cardinality(card);
 
 	for (unsigned int i = 0; i < iterations; i++) {
 		commentator.startIteration (i);
 
-		size_t no_bad_loop = F.cardinality()+10 ;
+		size_t no_bad_loop = card+10 ;
 		do z.random (a); while (F.areEqual (a, one) && --no_bad_loop);
 		if (!no_bad_loop) {
 			reportError(" *** ERROR *** could not find an element different form 1...",ret);
@@ -1096,8 +1097,9 @@ bool runBasicRingTests (const Field &F, const char *desc, unsigned int iteration
 		if (!testFieldCharacteristic (F, desc, iterations))                  pass = false;
 		commentator.progress ();
 	}
+        LinBox::integer card;
 
-	if (F.cardinality() != 2) // otherwise it is not very interesting to find a element not zero and not one !
+	if (F.cardinality(card) != 2) // otherwise it is not very interesting to find a element not zero and not one !
 		if (!testGeometricSummation        (F, desc, iterations, 100))               pass = false;
 	commentator.progress ();
 
