@@ -9,7 +9,9 @@
 # (like --force) when you want to rebuild
 
 STABLE_FFLAS=1.4.0
-STABLE_GIVARO=3.4.0
+STABLE_GIVARO=3.4.1
+GIV_TAR=123
+GIV_MD5=124
 
 #switches
 STABLE=true
@@ -226,16 +228,16 @@ if [ "$STABLE" = "true" ]; then
 		echo "already there"
 	   	echo -ne "${BEG}fetching md5sum" ; 
 		[ -f givaro-$STABLE_GIVARO.tar.gz.md5sum ] && rm givaro-${STABLE_GIVARO}.tar.gz.md5sum ;
-		wget --no-check-certificate https://forge.imag.fr/frs/download.php/122/givaro-$STABLE_GIVARO.tar.gz.md5sum >/dev/null 2>&1 || die
+		wget --no-check-certificate https://forge.imag.fr/frs/download.php/$GIV_MD5/givaro-$STABLE_GIVARO.tar.gz.md5sum >/dev/null 2>&1 || die
 		[ -f givaro-$STABLE_GIVARO.tar.gz.md5sum ] || die
 		cool
 		echo -ne "${BEG}"
 		md5sum -c givaro-$STABLE_GIVARO.tar.gz.md5sum || die
 	else
-		wget --no-check-certificate https://forge.imag.fr/frs/download.php/121/givaro-$STABLE_GIVARO.tar.gz.md5sum >/dev/null 2>&1 || die
+		wget --no-check-certificate https://forge.imag.fr/frs/download.php/$GIV_TAR/givaro-$STABLE_GIVARO.tar.gz >/dev/null 2>&1 || die
 		[ -f givaro-$STABLE_GIVARO.tar.gz ] || die
 	   	echo -ne "${BEG}fetching md5sum" ; 
-		wget --no-check-certificate https://forge.imag.fr/frs/download.php/122/givaro-$STABLE_GIVARO.tar.gz.md5sum >/dev/null 2>&1 || die
+		wget --no-check-certificate https://forge.imag.fr/frs/download.php/$GIV_MD5/givaro-$STABLE_GIVARO.tar.gz.md5sum >/dev/null 2>&1 || die
 		cool
 		echo -ne "${BEG}"
 		md5sum -c givaro-$STABLE_GIVARO.tar.gz.md5sum || die
