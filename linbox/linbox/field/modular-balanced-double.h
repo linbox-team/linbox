@@ -116,6 +116,7 @@ namespace LinBox
 		      double & convert(double &x, const Element &y) const { return FFPACK::ModularBalanced<double>::convert(x,y) ; }
 		      float & convert(float&x, const Element &y) const { return FFPACK::ModularBalanced<double>::convert(x,y) ; }
 		      unsigned long characteristic()const{return FFPACK::ModularBalanced<double>::characteristic();}
+		      unsigned long cardinality()const{return FFPACK::ModularBalanced<double>::cardinality();}
 
 		      integer &convert (integer &x, const Element &y) const
 		      {

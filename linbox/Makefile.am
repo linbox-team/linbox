@@ -41,4 +41,5 @@ bundled:
 
 VERSION=1.2.0
 
-#  EXTRA_DIST=incremente-versions
+EXTRA_DIST=auto-install.sh
+#incremente-versions

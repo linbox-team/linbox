@@ -198,6 +198,7 @@ namespace LinBox
 			::Givaro::Extension< ::Givaro::GFqDom<int32_t> >(F)
 		{ }
 
+
 	}; // class GivaroExtension
 
 
