@@ -109,6 +109,7 @@ namespace LinBox
 
 		      long unsigned characteristic(long unsigned int&p)const{return FFPACK::ModularBalanced<float>::characteristic(p) ; }
 		      unsigned long characteristic()const{return FFPACK::ModularBalanced<float>::characteristic();}
+		      unsigned long cardinality()const{return FFPACK::ModularBalanced<float>::cardinality();}
 		      double&convert(double &x,const Element&y)const{return FFPACK::ModularBalanced<float>::convert(x,y) ; }
 		      float&convert(float&x,const Element&y)const{return FFPACK::ModularBalanced<float>::convert(x,y) ; }
 

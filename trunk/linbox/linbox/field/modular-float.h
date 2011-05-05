@@ -114,6 +114,7 @@ namespace LinBox
 		      template<class T>T&convert(T&x,const Element&y)const{return x=T(y);}
 		      template<class T>T&characteristic(T&x)const{return x=T(lmodulus);}
 		      unsigned long characteristic(void)const{return FFPACK::Modular<float>::characteristic();}
+		      unsigned long cardinality(void)const{return FFPACK::Modular<float>::cardinality();}
 
 		      Element &init (Element &x, const integer &y) const
 		      {

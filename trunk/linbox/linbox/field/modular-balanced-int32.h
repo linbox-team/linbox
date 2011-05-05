@@ -93,7 +93,7 @@ namespace LinBox
 
 		ModularBalanced(int32_t p, int32_t e=1) :
 			FFPACK::ModularBalanced<int32_t>(p,e)
-		      {}
+		{}
 
 		integer &cardinality (integer &c) const
 		{
@@ -106,6 +106,7 @@ namespace LinBox
 		}
 
 		unsigned long characteristic()const{return FFPACK::ModularBalanced<int32_t>::characteristic();}
+		unsigned long cardinality ()const{return FFPACK::ModularBalanced<int32_t>::cardinality();}
 
 		// this function converts an int to a natural number ?
 		integer &convert (integer &x, const Element &y) const

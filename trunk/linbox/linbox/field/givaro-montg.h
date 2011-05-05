@@ -115,6 +115,11 @@ namespace LinBox
 		       	return c=integer(static_cast<long>(::Givaro::Montgomery< ::Givaro::Std32>::size()));
 		}
 
+		long cardinality() const
+		{
+			return static_cast<long>(::Givaro::Montgomery< ::Givaro::Std32>::size());
+		}
+
 
 		/** Initialization of field base Element from an integer.
 		 * Behaves like C++ allocator construct.
