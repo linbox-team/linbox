@@ -97,7 +97,9 @@ namespace LinBox
 		 * @return reference to Modular object for self
 		 */
 		const GF2 &operator = (const GF2 &F)
-		{ return *this; }
+		{
+			return *this;
+		}
 
 		/** Initialization of field base element from an integer.
 		 * Behaves like C++ allocator construct.
@@ -110,31 +112,49 @@ namespace LinBox
 		 * @param y integer.
 		 */
 		Element &init (Element &x, const int &y = 0) const
-		{ return x = y & 1; }
+		{
+			return x = y & 1;
+		}
 
 		Element &init (Element &x, const unsigned int &y = 0) const
-		{ return x = y & 1; }
+		{
+			return x = y & 1;
+		}
 
 		Element &init (Element &x, const long &y = 0) const
-		{ return x = y & 1; }
+		{
+			return x = y & 1;
+		}
 
 		Element &init (Element &x, const unsigned long &y = 0) const
-		{ return x = y & 1; }
+		{
+			return x = y & 1;
+		}
 
 		Element &init (Element &x, const float &y) const
-		{ return x = static_cast<unsigned char>(y) & 1; }
+		{
+			return x = static_cast<unsigned char>(y) & 1;
+		}
 
 		Element &init (Element &x, const double &y) const
-		{ return x = static_cast<unsigned char>(y) & 1; }
+		{
+			return x = static_cast<unsigned char>(y) & 1;
+		}
 
 		Element &init (Element &x, const integer &y) const
-		{ return x = static_cast<long>(y) & 1; }
+		{
+			return x = static_cast<long>(y) & 1;
+		}
 
 		BitVector::reference init (BitVector::reference x, const integer &y = 0) const
-		{ return x = long (y) & 1; }
+		{
+			return x = long (y) & 1;
+		}
 
 		std::_Bit_reference init (std::_Bit_reference x, const integer &y = 0) const
-		{ return x = long (y) & 1; }
+		{
+			return x = long (y) & 1;
+		}
 
 		/** Conversion of field base element to a template class T.
 		 * This function assumes the output field base element x has already been
@@ -144,7 +164,9 @@ namespace LinBox
 		 * @param y constant field base element.
 		 */
 		integer &convert (integer &x, Element y) const
-		{ return x = y; }
+		{
+			return x = y;
+		}
 
 		std::_Bit_reference convert (std::_Bit_reference x, Element y) const
 		{
@@ -159,22 +181,34 @@ namespace LinBox
 
 #if 0
 		unsigned int &convert (unsigned int &x, Element y) const
-		{ return x = static_cast<unsigned int>(y); }
+		{
+			return x = static_cast<unsigned int>(y);
+		}
 
 		int &convert (int &x, Element y) const
-		{ return x = static_cast<int>(y); }
+		{
+			return x = static_cast<int>(y);
+		}
 
 		unsigned long &convert (unsigned long &x, Element y) const
-		{ return x = static_cast<unsigned long>(y); }
+		{
+			return x = static_cast<unsigned long>(y);
+		}
 
 		long &convert (long &x, Element y) const
-		{ return x = static_cast<int>(y); }
+		{
+			return x = static_cast<int>(y);
+		}
 
 		float &convert (float &x, Element y) const
-		{ return x = static_cast<float>(y); }
+		{
+			return x = static_cast<float>(y);
+		}
 
 		double &convert (double &x, Element y) const
-		{ return x = static_cast<double>(y); }
+		{
+			return x = static_cast<double>(y);
+		}
 #endif
 
 		/** Assignment of one field base element to another.
@@ -185,13 +219,19 @@ namespace LinBox
 		 * @param  y field base element.
 		 */
 		Element &assign (Element &x, Element y) const
-		{ return x = y; }
+		{
+			return x = y;
+		}
 
 		BitVector::reference assign (BitVector::reference x, Element y) const
-		{ return x = y; }
+		{
+			return x = y;
+		}
 
 		std::_Bit_reference assign (std::_Bit_reference x, Element y) const
-		{ return x = y; }
+		{
+			return x = y;
+		}
 
 		/** Cardinality.
 		 * Return integer representing cardinality of the domain.
@@ -201,7 +241,9 @@ namespace LinBox
 		 * @return integer representing cardinality of the domain
 		 */
 		integer &cardinality (integer &c) const
-		{ return c = 2; }
+		{
+			return c = 2;
+		}
 
 		/** Characteristic.
 		 * Return integer representing characteristic of the domain.
@@ -210,7 +252,9 @@ namespace LinBox
 		 * @return integer representing characteristic of the domain.
 		 */
 		integer &characteristic (integer &c) const
-		{ return c = 2; }
+		{
+			return c = 2;
+		}
 
 		//@} Object Management
 
@@ -230,7 +274,9 @@ namespace LinBox
 		 * @param  y field base element
 		 */
 		bool areEqual (Element x, Element y) const
-		{ return x == y; }
+		{
+			return x == y;
+		}
 
 		/** Zero equality.
 		 * Test if field base element is equal to zero.
@@ -240,7 +286,9 @@ namespace LinBox
 		 * @param  x field base element.
 		 */
 		bool isZero (Element x) const
-		{ return !x; }
+		{
+			return !x;
+		}
 
 		/** One equality.
 		 * Test if field base element is equal to one.
@@ -250,7 +298,9 @@ namespace LinBox
 		 * @param  x field base element.
 		 */
 		bool isOne (Element x) const
-		{ return x; }
+		{
+			return x;
+		}
 
 		//@} Arithmetic Operations
 
@@ -262,14 +312,18 @@ namespace LinBox
 		 * @param  os  output stream to which field is written.
 		 */
 		std::ostream &write (std::ostream &os) const
-		{ return os << "integers mod 2"; }
+		{
+			return os << "integers mod 2";
+		}
 
 		/** Read field.
 		 * @return input stream from which field is read.
 		 * @param  is  input stream from which field is read.
 		 */
 		std::istream &read (std::istream &is)
-		{ return is; }
+		{
+			return is;
+		}
 
 		/** Print field base element.
 		 * This function assumes the field base element has already been
@@ -279,7 +333,9 @@ namespace LinBox
 		 * @param  x   field base element.
 		 */
 		std::ostream &write (std::ostream &os, Element x) const
-		{ return os << x; }
+		{
+			return os << x;
+		}
 
 		/** Read field base element.
 		 * @pre This function assumes the field base element has already been
@@ -289,7 +345,8 @@ namespace LinBox
 		 * @param  x   field base element.
 		 */
 		std::istream &read (std::istream &is, Element &x) const
-		{ is >> x; return is; }
+		{ is >> x; return is;
+		}
 
 		/** Read field base element.
 		 * @param is input stream
@@ -297,7 +354,8 @@ namespace LinBox
 		 * @return  \c is
 		 */
 		std::istream &read (std::istream &is, BitVector::reference x) const
-		{ is >> x; return is; }
+		{ is >> x; return is;
+		}
 
 		/** Read field base element.
 		 * @param is input stream
@@ -305,7 +363,8 @@ namespace LinBox
 		 * @return  \c is
 		 */
 		std::istream &read (std::istream &is, std::_Bit_reference x) const
-		{ bool a; is >> a; x=a; return is; }
+		{ bool a; is >> a; x=a; return is;
+		}
 
 		//@}
 
@@ -327,7 +386,9 @@ namespace LinBox
 		 * @param  z field base element.
 		 */
 		Element &add (Element &x, Element y, Element z) const
-		{ return x = y ^ z; }
+		{
+			return x = y ^ z;
+		}
 
 		/** Addition.
 		 * @param x
@@ -335,7 +396,9 @@ namespace LinBox
 		 * @param z
 		 */
 		BitVector::reference add (BitVector::reference x, Element y, Element z) const
-		{ return x = y ^ z; }
+		{
+			return x = y ^ z;
+		}
 
 		/** Addition.
 		 * @param x
@@ -343,7 +406,9 @@ namespace LinBox
 		 * @param z
 		 */
 		std::_Bit_reference add (std::_Bit_reference x, Element y, Element z) const
-		{ return x = y ^ z; }
+		{
+			return x = y ^ z;
+		}
 
 		/** Subtraction.
 		 * x = y - z
@@ -355,7 +420,9 @@ namespace LinBox
 		 * @param  z field base element.
 		 */
 		Element &sub (Element &x, Element y, Element z) const
-		{ return x = y ^ z; }
+		{
+			return x = y ^ z;
+		}
 
 		/** Subtraction.
 		 * @param x
@@ -363,7 +430,9 @@ namespace LinBox
 		 * @param z
 		 */
 		BitVector::reference sub (BitVector::reference x, Element y, Element z) const
-		{ return x = y ^ z; }
+		{
+			return x = y ^ z;
+		}
 
 		/** Subtraction.
 		 * @param x
@@ -371,7 +440,9 @@ namespace LinBox
 		 * @param z
 		 */
 		std::_Bit_reference sub (std::_Bit_reference x, Element y, Element z) const
-		{ return x = y ^ z; }
+		{
+			return x = y ^ z;
+		}
 
 		/** Multiplication.
 		 * x = y * z
@@ -383,7 +454,9 @@ namespace LinBox
 		 * @param  z field base element.
 		 */
 		Element &mul (Element &x, Element y, Element z) const
-		{ return x = y & z; }
+		{
+			return x = y & z;
+		}
 
 		/** Multiplication.
 		 * @param x
@@ -391,7 +464,9 @@ namespace LinBox
 		 * @param z
 		 */
 		BitVector::reference mul (BitVector::reference x, Element y, Element z) const
-		{ return x = y & z; }
+		{
+			return x = y & z;
+		}
 
 		/** Multiplication.
 		 * @param x
@@ -399,7 +474,9 @@ namespace LinBox
 		 * @param z
 		 */
 		std::_Bit_reference mul (std::_Bit_reference x, Element y, Element z) const
-		{ return x = y & z; }
+		{
+			return x = y & z;
+		}
 
 		/** Division.
 		 * x = y / z
@@ -412,7 +489,9 @@ namespace LinBox
 		 * @bug z is unused
 		 */
 		Element &div (Element &x, Element y, Element z ) const
-		{ return x = y; }
+		{
+			return x = y;
+		}
 
 		/** Division.
 		 * @param x
@@ -420,7 +499,9 @@ namespace LinBox
 		 * @param z
 		 */
 		BitVector::reference div (BitVector::reference x, Element y, Element z ) const
-		{ return x = y; }
+		{
+			return x = y;
+		}
 
 		/** Division.
 		 * @param x
@@ -428,7 +509,9 @@ namespace LinBox
 		 * @param z
 		 */
 		std::_Bit_reference div (std::_Bit_reference x, Element y, Element z ) const
-		{ return x = y; }
+		{
+			return x = y;
+		}
 
 		/** Additive Inverse (Negation).
 		 * x = - y
@@ -439,7 +522,9 @@ namespace LinBox
 		 * @param  y field base element.
 		 */
 		Element &neg (Element &x, Element y) const
-		{ return x = y; }
+		{
+			return x = y;
+		}
 
 		/** Additive Inverse (Negation).
 		 * @return reference to x.
@@ -447,7 +532,9 @@ namespace LinBox
 		 * @param  y
 		 */
 		BitVector::reference neg (BitVector::reference x, Element y) const
-		{ return x = y; }
+		{
+			return x = y;
+		}
 
 		/** Additive Inverse (Negation).
 		 * @return reference to x.
@@ -455,7 +542,9 @@ namespace LinBox
 		 * @param  y
 		 */
 		std::_Bit_reference neg (std::_Bit_reference x, Element y) const
-		{ return x = y; }
+		{
+			return x = y;
+		}
 
 		/** Multiplicative Inverse.
 		 * x = 1 / y
@@ -466,7 +555,9 @@ namespace LinBox
 		 * @param  y field base element.
 		 */
 		Element &inv (Element &x, Element y) const
-		{ return x = y; }
+		{
+			return x = y;
+		}
 
 		/** Multiplicative Inverse.
 		 * @return reference to x.
@@ -474,7 +565,9 @@ namespace LinBox
 		 * @param  y
 		 */
 		BitVector::reference inv (BitVector::reference x, Element y) const
-		{ return x = y; }
+		{
+			return x = y;
+		}
 
 		/** Multiplicative Inverse.
 		 * @return reference to x.
@@ -482,7 +575,9 @@ namespace LinBox
 		 * @param  y
 		 */
 		std::_Bit_reference inv (std::_Bit_reference x, Element y) const
-		{ return x = y; }
+		{
+			return x = y;
+		}
 
 		/** Natural AXPY.
 		 * r  = a * x + y
@@ -498,7 +593,9 @@ namespace LinBox
 					   Element a,
 					   Element x,
 					   Element y) const
-		{ return r = (a & x) ^ y; }
+		{
+			return r = (a & x) ^ y;
+		}
 
 		/** Natural AXPY.
 		 * @return reference to r.
@@ -511,7 +608,9 @@ namespace LinBox
 					  Element a,
 					  Element x,
 					  Element y) const
-		{ return r = (a & x) ^ y; }
+		{
+			return r = (a & x) ^ y;
+		}
 
 		/** Natural AXPY.
 		 * @return reference to r.
@@ -521,7 +620,9 @@ namespace LinBox
 		 * @param  y
 		 */
 		Element &axpy (Element &r, Element a, Element x, Element y) const
-		{ return r = (a & x) ^ y; }
+		{
+			return r = (a & x) ^ y;
+		}
 
 		//@} Arithmetic Operations
 
@@ -539,7 +640,9 @@ namespace LinBox
 		 * @param  y field base element.
 		 */
 		Element &addin (Element &x, Element y) const
-		{ return x ^= y; }
+		{
+			return x ^= y;
+		}
 
 		/** Inplace Addition.
 		 * @return reference to x.
@@ -547,7 +650,9 @@ namespace LinBox
 		 * @param  y
 		 */
 		BitVector::reference addin (BitVector::reference x, Element y) const
-		{ return x ^= y; }
+		{
+			return x ^= y;
+		}
 
 		/** Inplace Addition.
 		 * @return reference to x.
@@ -555,7 +660,9 @@ namespace LinBox
 		 * @param  y
 		 */
 		std::_Bit_reference addin (std::_Bit_reference x, Element y) const
-		{ return x = x ^ y; }
+		{
+			return x = x ^ y;
+		}
 
 		/** Inplace Subtraction.
 		 * x -= y
@@ -566,7 +673,9 @@ namespace LinBox
 		 * @param  y field base element.
 		 */
 		Element &subin (Element &x, Element y) const
-		{ return x ^= y; }
+		{
+			return x ^= y;
+		}
 
 		/** Inplace Subtraction.
 		 * @return reference to x.
@@ -574,7 +683,9 @@ namespace LinBox
 		 * @param  y
 		 */
 		BitVector::reference subin (BitVector::reference x, Element y) const
-		{ return x ^= y; }
+		{
+			return x ^= y;
+		}
 
 		/** Inplace Subtraction.
 		 * @return reference to x.
@@ -582,7 +693,9 @@ namespace LinBox
 		 * @param  y
 		 */
 		std::_Bit_reference subin (std::_Bit_reference x, Element y) const
-		{ return x = x ^ y; }
+		{
+			return x = x ^ y;
+		}
 
 		/** Inplace Multiplication.
 		 * x *= y
@@ -593,7 +706,9 @@ namespace LinBox
 		 * @param  y field base element.
 		 */
 		Element &mulin (Element &x, Element y) const
-		{ return x &= y; }
+		{
+			return x &= y;
+		}
 
 		/** Inplace Multiplication.
 		 * @return reference to x.
@@ -601,7 +716,9 @@ namespace LinBox
 		 * @param  y
 		 */
 		BitVector::reference mulin (BitVector::reference x, Element y) const
-		{ return x &= y; }
+		{
+			return x &= y;
+		}
 
 		/** Inplace Multiplication.
 		 * @return reference to x.
@@ -609,7 +726,9 @@ namespace LinBox
 		 * @param  y
 		 */
 		Element& mulin (std::_Bit_reference& x, Element y) const
-		{ return mulin((bool&)x,y); }
+		{
+			return mulin((bool&)x,y);
+		}
 
 		/** Inplace Division.
 		 * x /= y
@@ -621,7 +740,9 @@ namespace LinBox
 		 * @bug y is unused
 		 */
 		Element &divin (Element &x, Element y ) const
-		{ return x; }
+		{
+			return x;
+		}
 
 		/** Inplace Division.
 		 * @return reference to x.
@@ -630,7 +751,9 @@ namespace LinBox
 		 * @bug y is unused
 		 */
 		BitVector::reference divin (BitVector::reference x, Element y ) const
-		{ return x; }
+		{
+			return x;
+		}
 
 		/** Inplace Division.
 		 * @return reference to x.
@@ -639,7 +762,9 @@ namespace LinBox
 		 * @bug y is unused
 		 */
 		std::_Bit_reference divin (std::_Bit_reference x, Element y ) const
-		{ return x; }
+		{
+			return x;
+		}
 
 		/** Inplace Additive Inverse (Inplace Negation).
 		 * x = - x
@@ -649,7 +774,9 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 */
 		Element &negin (Element &x) const
-		{ return x; }
+		{
+			return x;
+		}
 
 		/** Inplace Additive Inplace (Inplace Negation).
 		 * @return reference to x.
@@ -657,7 +784,9 @@ namespace LinBox
 		 * @bug y is unused
 		 */
 		BitVector::reference negin (BitVector::reference x) const
-		{ return x; }
+		{
+			return x;
+		}
 
 		/** Inplace Additive Inplace (Inplace Negation).
 		 * @return reference to x.
@@ -665,7 +794,9 @@ namespace LinBox
 		 * @bug y is unused
 		 */
 		std::_Bit_reference negin (std::_Bit_reference x) const
-		{ return x; }
+		{
+			return x;
+		}
 
 		/** Inplace Multiplicative Inverse.
 		 * x = 1 / x
@@ -675,21 +806,27 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 */
 		Element &invin (Element &x) const
-		{ return x; }
+		{
+			return x;
+		}
 
 		/** Inplace Multiplicative Inverse.
 		 * @return reference to x.
 		 * @param  x
 		 */
 		BitVector::reference invin (BitVector::reference x) const
-		{ return x; }
+		{
+			return x;
+		}
 
 		/** Inplace Multiplicative Inverse.
 		 * @return reference to x.
 		 * @param  x
 		 */
 		std::_Bit_reference invin (std::_Bit_reference x) const
-		{ return x; }
+		{
+			return x;
+		}
 
 		/** Inplace AXPY.
 		 * r  += a * x
@@ -702,7 +839,9 @@ namespace LinBox
 		 * @param  x field element.
 		 */
 		Element &axpyin (Element &r, Element a, Element x) const
-		{ return r ^= a & x; }
+		{
+			return r ^= a & x;
+		}
 
 		/** Inplace AXPY.
 		 * @return reference to r.
@@ -711,7 +850,9 @@ namespace LinBox
 		 * @param  x
 		 */
 		BitVector::reference axpyin (BitVector::reference r, Element a, Element x) const
-		{ return r ^= a & x; }
+		{
+			return r ^= a & x;
+		}
 
 		/** Inplace AXPY.
 		 * @return reference to r.
@@ -720,7 +861,9 @@ namespace LinBox
 		 * @param  x
 		 */
 		std::_Bit_reference axpyin (std::_Bit_reference r, Element a, Element x) const
-		{ return r = r ^ (a & x); }
+		{
+			return r = r ^ (a & x);
+		}
 
 		/** Inplace AXPY.
 		 * @return reference to r.
@@ -729,7 +872,9 @@ namespace LinBox
 		 * @param  x
 		 */
 		Element &axpyin (Element &r, const std::_Bit_reference a, Element x) const
-		{ return r ^= a & x; }
+		{
+			return r ^= a & x;
+		}
 
 		/** Inplace AXPY.
 		 * @return reference to r.
@@ -738,7 +883,9 @@ namespace LinBox
 		 * @param  x
 		 */
 		std::_Bit_reference axpyin (std::_Bit_reference r, const std::_Bit_reference a, Element x) const
-		{ return r = r ^ (a & x); }
+		{
+			return r = r ^ (a & x);
+		}
 
 		/** Inplace AXPY.
 		 * @return reference to r.
@@ -747,7 +894,9 @@ namespace LinBox
 		 * @param  x
 		 */
 		Element &axpyin (Element &r, Element a, const std::_Bit_reference x) const
-		{ return r ^= a & static_cast<bool>(x); }
+		{
+			return r ^= a & static_cast<bool>(x);
+		}
 
 		/** Inplace AXPY.
 		 * @return reference to r.
@@ -756,7 +905,9 @@ namespace LinBox
 		 * @param  x
 		 */
 		std::_Bit_reference axpyin (std::_Bit_reference r, Element a, const std::_Bit_reference x) const
-		{ return r = r ^ (a & static_cast<bool>(x)); }
+		{
+			return r = r ^ (a & static_cast<bool>(x));
+		}
 
 		/** Inplace AXPY.
 		 * @return reference to r.
@@ -765,7 +916,9 @@ namespace LinBox
 		 * @param  x
 		 */
 		Element &axpyin (Element &r, const std::_Bit_reference a, const std::_Bit_reference x) const
-		{ return r ^= a & static_cast<bool>(x); }
+		{
+			return r ^= a & static_cast<bool>(x);
+		}
 
 		/** Inplace AXPY.
 		 * @return reference to r.
@@ -774,11 +927,16 @@ namespace LinBox
 		 * @param  x
 		 */
 		std::_Bit_reference axpyin (std::_Bit_reference r, const std::_Bit_reference a, const std::_Bit_reference x) const
-		{ return r = r ^ (a & static_cast<bool>(x)); }
+		{
+			return r = r ^ (a & static_cast<bool>(x));
+		}
 
 		//@} Inplace Arithmetic Operations
 
-		static inline int getMaxModulus() { return 2; }
+		static inline int getMaxModulus()
+		{
+			return 2;
+		}
 
 	}; // class GF2
 
@@ -880,44 +1038,80 @@ namespace LinBox
 		{
 			integer c;
 			BaseField::characteristic(c);
-		       	return UTT(c);
-	       	}
+			return UTT(c);
+		}
 
-		UTT characteristic() const  { integer c; BaseField::characteristic(c); return UTT(c); }
-		UTT cardinality() const  { integer c; BaseField::cardinality(c); return UTT(c); }
+		UTT characteristic() const
+		{
+			integer c; BaseField::characteristic(c); return UTT(c);
+		}
+		UTT cardinality() const
+		{
+			integer c; BaseField::cardinality(c); return UTT(c);
+		}
 		UTT exponent() const
-		{ return 1; }
-		UTT size() const  { integer c; BaseField::cardinality(c); return UTT(c); }
+		{
+			return 1;
+		}
+		UTT size() const
+		{ integer c; BaseField::cardinality(c); return UTT(c);
+		}
 
 
 		// ----- random generators
 		template<class RandIter> Rep& random(RandIter& g, Rep& r) const
-		{ return r = g() ; }
+		{
+			return r = g() ;
+		}
 		template<class RandIter> Rep& random(RandIter& g, Rep& r, long s) const
-		{ return r = g() ; }
+		{
+			return r = g() ;
+		}
 		template<class RandIter> Rep& random(RandIter& g, Rep& r, const Rep& b) const
-		{ return r = g() ; }
+		{
+			return r = g() ;
+		}
 		template<class RandIter> Rep& nonzerorandom(RandIter& g, Rep& r) const
-		{ return r = g() ; }
+		{
+			return r = g() ;
+		}
 		template<class RandIter> Rep& nonzerorandom(RandIter& g, Rep& r, long s) const
-		{ return r = g() ; }
+		{
+			return r = g() ;
+		}
 		template<class RandIter> Rep& nonzerorandom(RandIter& g, Rep& r, const Rep& b) const
-		{ return r = g() ; }
+		{
+			return r = g() ;
+		}
 
 		template<class RandIter> std::_Bit_reference random(RandIter& g, std::_Bit_reference r) const
-		{ return r = g() ; }
+		{
+			return r = g() ;
+		}
 		template<class RandIter> std::_Bit_reference random(RandIter& g, std::_Bit_reference r, long s) const
-		{ return r = g() ; }
+		{
+			return r = g() ;
+		}
 		template<class RandIter> std::_Bit_reference random(RandIter& g, std::_Bit_reference r, const std::_Bit_reference b) const
-		{ return r = g() ; }
+		{
+			return r = g() ;
+		}
 		template<class RandIter> std::_Bit_reference nonzerorandom(RandIter& g, std::_Bit_reference r) const
-		{ return r = g() ; }
+		{
+			return r = g() ;
+		}
 		template<class RandIter> std::_Bit_reference nonzerorandom(RandIter& g, std::_Bit_reference r, long s) const
-		{ return r = g() ; }
+		{
+			return r = g() ;
+		}
 		template<class RandIter> std::_Bit_reference nonzerorandom(RandIter& g, std::_Bit_reference r, const Rep& b) const
-		{ return r = g() ; }
+		{
+			return r = g() ;
+		}
 		template<class RandIter> std::_Bit_reference nonzerorandom(RandIter& g, std::_Bit_reference r, const std::_Bit_reference b) const
-		{ return r = g() ; }
+		{
+			return r = g() ;
+		}
 
 	};
 
@@ -943,14 +1137,22 @@ namespace LinBox
 		Hom(const Source& S, const Target& ) :
 			_source (S)
 		{}
-		Elt& image(Elt& t, const SrcElt& s) {
+		Elt& image(Elt& t, const SrcElt& s)
+		{
 			return _source.assign (t, s);
 		}
-		SrcElt& preimage(SrcElt& s, const Elt& t) {
+		SrcElt& preimage(SrcElt& s, const Elt& t)
+		{
 			return _source.assign (s, t);
 		}
-		const Source& source() { return _source;}
-		const Target& target() { return _source;}
+		const Source& source()
+		{
+			return _source;
+		}
+		const Target& target()
+		{
+			return _source;
+		}
 
 	protected:
 		Source _source;
@@ -966,10 +1168,12 @@ namespace LinBox
 		Hom(const Source& S, const Target& T) :
 			_source(S), _target(T)
 		{ }
-		Elt& image(Elt& t, const SrcElt& s) {
+		Elt& image(Elt& t, const SrcElt& s)
+		{
 			return _source.convert(t,s);
 		}
-		SrcElt& preimage(SrcElt& s, const Elt& t) {
+		SrcElt& preimage(SrcElt& s, const Elt& t)
+		{
 			return _target.convert(s,t);
 		}
 		std::_Bit_reference preimage(std::_Bit_reference s, const Elt& t) const
@@ -978,8 +1182,14 @@ namespace LinBox
 			return s = _target.convert(ts, t);
 		}
 
-		const Source& source() { return _source;}
-		const Target& target() { return _target;}
+		const Source& source()
+		{
+			return _source;
+		}
+		const Target& target()
+		{
+			return _target;
+		}
 
 	private:
 		Source _source;
@@ -1013,7 +1223,9 @@ namespace LinBox
 		 * The default behaviour is a no-op.
 		 */
 		Elt& image(Elt& t, const SrcElt& s) const
-		{return _target.assign(t,s);}
+		{
+			return _target.assign(t,s);
+		}
 
 		/** If possible, preimage(s,t) assigns a value to s such that
 		 * the image of s is t.  Otherwise behaviour is unspecified.
@@ -1033,9 +1245,13 @@ namespace LinBox
 		}
 
 		const Source& source() const
-		{ return _source;}
+		{
+			return _source;
+		}
 		const Target& target() const
-		{ return _target;}
+		{
+			return _target;
+		}
 
 	private:
 		Source _source;
