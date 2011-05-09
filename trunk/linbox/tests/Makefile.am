@@ -609,4 +609,12 @@ fullcheck: checker
 
 checker: checker.C
 
-CLEANFILES=$(FAILING_TESTS) $(NONCOMPLIANT_TESTS) $(BENCHMARKS)
+CLEANFILES= checker               \
+			$(BASIC_TESTS)        \
+			$(FAILING_TESTS)      \
+			$(NONCOMPLIANT_TESTS) \
+			$(BENCHMARKS)         \
+			$(DUBIOUS_TESTS)      \
+			$(NTL_TESTS)          \
+			$(GIVARO_TESTS)       \
+			$(ATLAS_TESTS)
