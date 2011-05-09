@@ -241,7 +241,13 @@ namespace LinBox
 		iterator &operator += (difference_type i)
 		{
 			_ref._word += i >> __LINBOX_LOGOF_SIZE;
+#ifdef __INTEL_COMPILER
+#pragma warning(disable:2259)
+#endif
 			_ref._pos  += (uint8_t) (i & __LINBOX_POS_ALL_ONES);
+#ifdef __INTEL_COMPILER
+#pragma warning(enable:2259)
+#endif
 			_ref._word += _ref._pos >> __LINBOX_LOGOF_SIZE;
 			_ref._pos  &= __LINBOX_POS_ALL_ONES;
 			return *this;
@@ -364,8 +370,13 @@ namespace LinBox
 		const_iterator operator + (long i) const
 		{
 			std::vector<unsigned long>::const_iterator new_word = _ref._word + (i >> __LINBOX_LOGOF_SIZE);
-			uint8_t new_pos = _ref._pos + (i & __LINBOX_POS_ALL_ONES);
-
+#ifdef __INTEL_COMPILER
+#pragma warning(disable:2259)
+#endif
+			uint8_t new_pos = _ref._pos + (uint8_t) (i & __LINBOX_POS_ALL_ONES);
+#ifdef __INTEL_COMPILER
+#pragma warning(enable:2259)
+#endif
 			new_word += new_pos >> __LINBOX_LOGOF_SIZE;
 			new_pos &= __LINBOX_POS_ALL_ONES;
 
@@ -375,7 +386,13 @@ namespace LinBox
 		const_iterator &operator += (long i)
 		{
 			_ref._word += i >> __LINBOX_LOGOF_SIZE;
-			_ref._pos  += i & __LINBOX_POS_ALL_ONES;
+#ifdef __INTEL_COMPILER
+#pragma warning(disable:2259)
+#endif
+			_ref._pos  += (uint8_t) (i & __LINBOX_POS_ALL_ONES);
+#ifdef __INTEL_COMPILER
+#pragma warning(enable:2259)
+#endif
 			_ref._word += _ref._pos >> __LINBOX_LOGOF_SIZE;
 			_ref._pos  &= __LINBOX_POS_ALL_ONES;
 			return *this;
