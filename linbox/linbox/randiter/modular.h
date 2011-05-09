@@ -29,8 +29,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __LINBOX_large_modular_randiter_H
-#define __LINBOX_large_modular_randiter_H
+#ifndef __LINBOX_randiter_modular_H
+#define __LINBOX_randiter_modular_H
 
 #include <iostream>
 #include <vector>
@@ -205,7 +205,7 @@ namespace LinBox
 	class ModularBase<uint16_t>::RandIter {
 		MersenneTwister _r;
 		uint16_t _size;
-		uint16_t _seed;
+		time_t _seed;
 
 	public:
 		typedef uint16_t Element;
@@ -253,7 +253,7 @@ namespace LinBox
 	class ModularBase<uint32_t>::RandIter {
 		MersenneTwister _r;
 		uint32_t _size;
-		uint32_t _seed;
+		time_t _seed;
 
 	public:
 		typedef uint32_t Element;
@@ -296,7 +296,7 @@ namespace LinBox
 	class ModularBase<uint64_t>::RandIter {
 		MersenneTwister _r;
 		uint64_t _size;
-		uint64_t _seed;
+		time_t _seed;
 
 	public:
 		typedef uint64_t Element;
@@ -337,5 +337,5 @@ namespace LinBox
 
 }// namespace LinBox
 
-#endif // __LINBOX_large_modular_randiter_H
+#endif // __LINBOX_randiter_modular_H
 

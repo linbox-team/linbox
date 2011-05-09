@@ -44,7 +44,7 @@ size_t & RandIntInInt ( const size_t & s, size_t & RIII, const int & seed = 0 )
 	 *	srandom ( seed );
 	 */
 	double alea = rand();
-	RIII          = (size_t) s * (alea/(RAND_MAX+1.0));
+	RIII          = (size_t) ((double)s * (alea/(RAND_MAX+1.0)));
 	assert(RIII<s);
 	return RIII ;
 }
