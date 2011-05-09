@@ -395,7 +395,9 @@ namespace LinBox
 
 		static inline Element getMaxModulus()
 		{
-			return 32767;  // 2^15 - 1
+			// return 32767;  // 2^15 - 1
+			linbox_check(180*181 < INT16_MAX);
+			return 181 ;
 		}
 
 	private:
