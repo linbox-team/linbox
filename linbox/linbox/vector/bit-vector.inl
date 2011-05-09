@@ -224,7 +224,7 @@ namespace LinBox
 #endif
 			uint8_t new_pos = _ref._pos + (uint8_t) (i & __LINBOX_POS_ALL_ONES);
 #ifdef __INTEL_COMPILER
-#pragma warning(disable:2259)
+#pragma warning(enable:2259)
 #endif
 
 			new_word += new_pos >> __LINBOX_LOGOF_SIZE;
