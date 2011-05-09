@@ -215,7 +215,7 @@ namespace LinBox
 			double z = fmod(y, (double) this->_p);
 			if (z < 0) z += (double) this->_p;
 			z += 0.5;
-			return x = static_cast<long>(z); //rounds towards 0
+			return x = static_cast<Element>(z); //rounds towards 0
 		}
 
 		static uint64_t getMaxModulus();
