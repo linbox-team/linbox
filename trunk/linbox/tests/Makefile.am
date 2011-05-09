@@ -84,6 +84,7 @@ BASIC_TESTS =  \
         test-smith-form-binary          \
         test-rational-solver            \
         test-rational-solver-adaptive   \
+        test-solve-nonsingular          \
         test-last-invariant-factor      \
         test-charpoly                   \
 		test-cra                        \
@@ -129,8 +130,7 @@ USE_FAILING_TESTS =
 # a benchmarker, not to be included in check.
 BENCHMARKS =                    \
         benchmark-fields        \
-        benchmark-blas-domain   \
-        test-solve-nonsingular
+        benchmark-blas-domain
 
 # historical tests, no longer in use
 #        test-nag-sparse                  replaced by tripplesbb
@@ -609,3 +609,4 @@ fullcheck: checker
 
 checker: checker.C
 
+CLEANFILES=$(FAILING_TESTS) $(NONCOMPLIANT_TESTS) $(BENCHMARKS)
