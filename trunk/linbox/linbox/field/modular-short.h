@@ -100,9 +100,9 @@ namespace LinBox
 
 		typedef ModularRandIter<Element> RandIter;
 
-		//default modular field,taking 17 as default modulus
+		//default modular field,taking 251 as default modulus
 		Modular () :
-			modulus(17),lmodulus(modulus)
+			modulus(251),lmodulus(modulus)
 		{
 			modulusinv=1/(double)modulus;
 		}
