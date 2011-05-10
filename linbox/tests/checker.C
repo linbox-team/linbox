@@ -26,15 +26,24 @@ using namespace std;
 #include "../linbox/linbox-config.h"
 
 struct counts {
-	int pass; int buildfail; int runfail; int skipped;
-	counts() : pass(0), buildfail(0), runfail(0), skipped(0) {}
-	int total() { return pass + buildfail + runfail; }
+	int      pass;
+       	int buildfail;
+	int   runfail;
+	int   skipped;
+	counts() :
+		pass(0), buildfail(0), runfail(0), skipped(0)
+	{}
+	int total()
+	{
+	       	return pass + buildfail + runfail;
+       	}
 };
 
 void build_n_run(string s, counts& cnt, int flag = 2, string r = "") ;
 void no_build_n_run(string s, counts& cnt, int flag = 2, string r = "") ;
 
-int main(int argc, char* argv[]){
+int main(int argc, char* argv[])
+{
 	int flag = 1; // default verbosity, no force
 	if (argc < 2) {
 		cout << "usage: " << argv[0] << " [summary,default,errors,verbose] [c]" << endl;
@@ -44,7 +53,8 @@ int main(int argc, char* argv[]){
 		cout << "  errors: also any build and run output for error cases." << endl;
 		cout << "  verbose: also any build and run output for each test." << endl;
 		cout << "  2nd arg, if present, forces rebuild of all tests." << endl;
-	} else {
+	}
+       	else {
 		if (argv[1][0] == 's') flag = 0; // summary
 		if (argv[1][0] == 'd') flag = 1; // default
 		if (argv[1][0] == 'w') flag = 2; // errors
@@ -263,7 +273,8 @@ build |wc" should yield the same number of lines.
 	return counter.buildfail || counter.runfail ? -1 : 0;
 }
 
-void no_build_n_run(string s, counts& cnt, int flag, string r) {
+void no_build_n_run(string s, counts& cnt, int flag, string r)
+{
 	if (flag >= 5) flag -= 5;
 	if (flag > 0) {
 		cout.width(35); cout << left << s;
@@ -294,7 +305,8 @@ void build_n_run(string s, counts& cnt, int flag, string r) {
 		cnt.buildfail++;
 		// if (flag == 2) could grep for first "error" in compiler output
 
-	} else { // build success
+	}
+       	else { // build success
 		if (flag >= 1) { cout << "\b\b\b\b\b  run"; cout.flush(); }
 		std::ostringstream prog ;
 		prog << "./" << s ;
@@ -304,7 +316,8 @@ void build_n_run(string s, counts& cnt, int flag, string r) {
 			if (flag >= 1) cout << " FAILS" << endl;
 			if (flag >= 3) system ("cat checkdata");
 			cnt.runfail++;
-		} else {
+		}
+	       	else {
 			if (flag >= 1) cout << "\b\b\b\bOK  " << endl;
 			if (flag >= 2) system ("grep \"warn\" checkdata");
 			cnt.pass++;

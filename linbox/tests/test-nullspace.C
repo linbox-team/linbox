@@ -215,7 +215,8 @@ static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank,
 				delete[] Abis;
 				break ;
 			}
-		} else {
+		}
+		else {
 			NullSpaceBasis (F, LinBoxTag::Left,m,n,A,ld_a,Kern,ld_k,ker_dim);
 			if (ker_dim != (wd_a - rank) ) {
 				ret = false;
@@ -236,7 +237,8 @@ static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank,
 		if ( a_droite){
 			FFLAS::fgemm(F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, wd_a, ld_ker, ld_a,
 				     one, Abis, ld_a, Kern, ld_ker , zero, NullMat, ld_n);
-		}else{
+		}
+		else{
 			FFLAS::fgemm(F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, wd_ker,ld_a, ld_ker,
 				     one,  Kern, ld_ker , Abis, ld_a, zero, NullMat, ld_n);
 		}

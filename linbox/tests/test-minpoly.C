@@ -366,9 +366,9 @@ static bool testGramMinpoly (Field &F, size_t n)
 
 int main (int argc, char **argv)
 {
-        commentator.setMaxDetailLevel (-1);
+	commentator.setMaxDetailLevel (-1);
 
-        commentator.setMaxDepth (-1);
+	commentator.setMaxDepth (-1);
 	bool pass = true;
 
 	static size_t n = 10;
@@ -393,69 +393,70 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-// /////////////// finite field part //////////////////
+	// /////////////// finite field part //////////////////
 	if (q > 5 && q % 2 != 0 && q % 3 != 0 && q % 5 != 0 )
 	{
-	//typedef Modular<uint32_t> Field;
-	//typedef Modular<int> Field;
-	typedef Modular<double> Field;
-	Field F (q);
-	srand (time (NULL));
+		//typedef Modular<uint32_t> Field;
+		//typedef Modular<int> Field;
+		typedef Modular<double> Field;
+		Field F (q);
+		srand (time (NULL));
 
-	commentator.start("Blackbox prime field minpoly test suite", "Wminpoly");
+		commentator.start("Blackbox prime field minpoly test suite", "Wminpoly");
 
-	//no symmetrizing
-	if (!testZeroMinpoly  	  (F, n)) pass = false;
-	if (!testIdentityMinpoly  (F, n)) pass = false;
-	if (!testNilpotentMinpoly (F, n)) pass = false;
-	//if (!testRandomMinpoly    (F, n)) pass = false;
-	if (!testGramMinpoly      (F, n)) pass = false;
+		//no symmetrizing
+		if (!testZeroMinpoly  	  (F, n)) pass = false;
+		if (!testIdentityMinpoly  (F, n)) pass = false;
+		if (!testNilpotentMinpoly (F, n)) pass = false;
+		//if (!testRandomMinpoly    (F, n)) pass = false;
+		if (!testGramMinpoly      (F, n)) pass = false;
 
-	// symmetrizing
-	//if (!testZeroMinpoly  	  (F, n, true)) pass = false;
-	if (!testIdentityMinpoly  (F, n, true)) pass = false;
-	//if (!testNilpotentMinpoly (F, n, true)) pass = false;
-	//if (!testRandomMinpoly    (F, n, true)) pass = false;
-	//if (!testGramMinpoly      (F, n, true)) pass = false;
-	//need other tests...
+		// symmetrizing
+		//if (!testZeroMinpoly  	  (F, n, true)) pass = false;
+		if (!testIdentityMinpoly  (F, n, true)) pass = false;
+		//if (!testNilpotentMinpoly (F, n, true)) pass = false;
+		//if (!testRandomMinpoly    (F, n, true)) pass = false;
+		//if (!testGramMinpoly      (F, n, true)) pass = false;
+		//need other tests...
 
-	commentator.stop("Blackbox prime field minpoly test suite");
-	}else{
+		commentator.stop("Blackbox prime field minpoly test suite");
+	}
+	else{
 
-	int p;
-	if (q % 2 == 0) p = 2;
-	if (q % 3 == 0) p = 3;
-	if (q % 5 == 0) p = 5;
-	int e = 0;  do {++e; q = q/p; } while (q > 1);
-	typedef GivaroGfq Field;
-	Field F (p, e);
-	srand (time (NULL));
+		int p;
+		if (q % 2 == 0) p = 2;
+		if (q % 3 == 0) p = 3;
+		if (q % 5 == 0) p = 5;
+		int e = 0;  do {++e; q = q/p; } while (q > 1);
+		typedef GivaroGfq Field;
+		Field F (p, e);
+		srand (time (NULL));
 
-	commentator.start("Blackbox non-prime field minpoly test suite", "Wminpoly");
-        ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-        F.write(report);
+		commentator.start("Blackbox non-prime field minpoly test suite", "Wminpoly");
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		F.write(report);
 
-	//no symmetrizing
-	if (!testZeroMinpoly  	  (F, n)) pass = false;
-	if (!testIdentityMinpoly  (F, n)) pass = false;
-	if (!testNilpotentMinpoly (F, n)) pass = false;
-	//if (!testRandomMinpoly    (F, n)) pass = false;
-	if (!testGramMinpoly      (F, n)) pass = false;
+		//no symmetrizing
+		if (!testZeroMinpoly  	  (F, n)) pass = false;
+		if (!testIdentityMinpoly  (F, n)) pass = false;
+		if (!testNilpotentMinpoly (F, n)) pass = false;
+		//if (!testRandomMinpoly    (F, n)) pass = false;
+		if (!testGramMinpoly      (F, n)) pass = false;
 
-	// symmetrizing
-	//if (!testZeroMinpoly  	  (F, n, true)) pass = false;
-	if (!testIdentityMinpoly  (F, n, true)) pass = false;
-	//if (!testNilpotentMinpoly (F, n, true)) pass = false;
-	//if (!testRandomMinpoly    (F, n, true)) pass = false;
-	//if (!testGramMinpoly      (F, n, true)) pass = false;
-	//need other tests...
+		// symmetrizing
+		//if (!testZeroMinpoly  	  (F, n, true)) pass = false;
+		if (!testIdentityMinpoly  (F, n, true)) pass = false;
+		//if (!testNilpotentMinpoly (F, n, true)) pass = false;
+		//if (!testRandomMinpoly    (F, n, true)) pass = false;
+		//if (!testGramMinpoly      (F, n, true)) pass = false;
+		//need other tests...
 
-	commentator.stop("Blackbox non-prime field minpoly test suite");
+		commentator.stop("Blackbox non-prime field minpoly test suite");
 	}
 
 #if 0
 
-        Modular<uint32_t> F (q);
+	Modular<uint32_t> F (q);
 
 
 	commentator.start("Hybrid prime field minpoly test suite", "Hminpoly");
@@ -473,7 +474,7 @@ int main (int argc, char **argv)
 	if (!testNilpotentMinpoly (F, n, Method::Elimination())) pass = false;
 	commentator.stop("Elimination prime field minpoly test suite");
 
-// /////////////// integer part //////////////////
+	// /////////////// integer part //////////////////
 	typedef vector<PID_integer::Element> ZDenseVector;
 	typedef SparseMatrix<PID_integer>::Row ZSparseVector;
 	//typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
@@ -487,11 +488,11 @@ int main (int argc, char **argv)
 	commentator.start("Blackbox integer minpoly test suite", "WIminpoly");
 
 	RandomDenseStream<PID_integer, ZDenseVector, NonzeroRandIter<PID_integer> >
-		zv_stream (Z, NonzeroRandIter<PID_integer> (Z, PID_integer::RandIter (Z)), n, numVectors);
+	zv_stream (Z, NonzeroRandIter<PID_integer> (Z, PID_integer::RandIter (Z)), n, numVectors);
 	RandomSparseStream<PID_integer, ZSparseVector, NonzeroRandIter<PID_integer> >
-		zA_stream (Z, NonzeroRandIter<PID_integer> (Z, PID_integer::RandIter (Z)), (double) k / (double) n, n, n);
+	zA_stream (Z, NonzeroRandIter<PID_integer> (Z, PID_integer::RandIter (Z)), (double) k / (double) n, n, n);
 
-            // Hybrid
+	// Hybrid
 	//no symmetrizing
 	if (!testIdentityMinpoly  (Z, n)) pass = false;
 	if (!testNilpotentMinpoly (Z, n)) pass = false;

@@ -79,6 +79,7 @@ int main (int argc, char **argv)
 	Modular<uint8_t> F_uint8_t ((uint8_t) q4);
 	Modular<float> F_float ((float) q4);
 
+
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);

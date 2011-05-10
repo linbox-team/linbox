@@ -76,6 +76,10 @@ int main (int argc, char **argv)
 	ModularBalanced<double> G_int (2011);
 	ModularBalanced<double> H_int (3);
 
+	integer k = FieldTraits<ModularBalanced<double> >::maxModulus() ;
+	prevprime(k,k);
+	ModularBalanced<double> I_int(k);
+
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
@@ -88,6 +92,9 @@ int main (int argc, char **argv)
 
 	if (!runFieldTests (H_int,  "ModularBalanced<double>",  iterations, n, false)) pass = false;
 	// if (!testRandomIterator (H_int,  "ModularBalanced<double>", trials, categories, hist_level)) pass = false;
+
+	if (!runFieldTests (I_int,  "ModularBalanced<double>",  iterations, n, false)) pass = false;
+	// if (!testRandomIterator (I_int,  "ModularBalanced<double>", trials, categories, hist_level)) pass = false;
 
 
 	commentator.stop("ModularBalanced<double> field test suite");
