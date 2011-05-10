@@ -52,15 +52,18 @@ protected:
 				casenumber = 2;
 				_BB_domain->Apply( v, u);  // v <- B(B^i u_0) = B^(i+1) u_0
 				DOTPROD(_value,u,v);       // t <- u^t v = u_0^t B^(2i+1) u_0
-			} else {
+			}
+			else {
 				casenumber = -1;
 				DOTPROD(_value,v,v);       // t <- v^t v = u_0^t B^(2i+2) u_0
 			}
-		} else {
+		}
+		else {
 			if (casenumber == 0) {
 				casenumber = 1;
 				DOTPROD(_value,u,u);       // t <- u^t u = u_0^t B^(2i+4) u_0
-			} else {
+			}
+			else {
 				casenumber = 0;
 				_BB_domain->Apply( u, v);  // u <- B(B^(i+1) u_0) = B^(i+2) u_0
 				DOTPROD(_value,v,u);       // t <- v^t u = u_0^t B^(2i+3) u_0
