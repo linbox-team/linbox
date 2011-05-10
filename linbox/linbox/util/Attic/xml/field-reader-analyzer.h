@@ -148,7 +148,7 @@ namespace LinBox
 #include "linbox/field/ntl.h"
 #endif
 
-/*
+#if 0
 #ifdef __LINBOX_HAVE_GIVARO
 #include "linbox/field/givaro.h"
 #endif
@@ -156,7 +156,8 @@ namespace LinBox
 #ifdef __LINBOX_HAVE_LIDIA
 #include "linbox/field/lidia.h"
 #endif
-*/
+#endif
+
 
 namespace LinBox
 {
@@ -393,391 +394,394 @@ namespace LinBox
 #endif
 								  return FT(p, AuxUserData);
 							  }
-							  /*
-							     else if(_implDetail == "givaro-zpz-std16") {
+#if 0
+							  else if(_implDetail == "givaro-zpz-std16") {
 #ifdef __LINBOX_HAVE_GIVARO // if we have Givaro
-GivaroZpz<Std16> *p = new GivaroZpz<Std16>(_R);
+								  GivaroZpz<Std16> *p = new GivaroZpz<Std16>(_R);
 #else
-Modular<uint16_t> *p = new Modular<uint16_t>(_R);
+								  Modular<uint16_t> *p = new Modular<uint16_t>(_R);
 #endif
-return FT(p, AuxUserData);
-}
-else if(_implDetail == "givaro-zpz-std32") {
+								  return FT(p, AuxUserData);
+							  }
+							  else if(_implDetail == "givaro-zpz-std32") {
 #ifdef __LINBOX_HAVE_GIVARO
-GivaroZpz<Std32> *p = new GivaroZpz<Std32>(_R);
+								  GivaroZpz<Std32> *p = new GivaroZpz<Std32>(_R);
 #else
-Modular<uint32_t> *p = new Modular<uint32_t>(_R);
+								  Modular<uint32_t> *p = new Modular<uint32_t>(_R);
 #endif
-return FT(p, AuxUserData);
-}
-else if(_implDetail == "givaro-zpz-log16") {
+								  return FT(p, AuxUserData);
+							  }
+							  else if(_implDetail == "givaro-zpz-log16") {
 #ifdef __LINBOX_HAVE_GIVARO
-GivaroZpz<Log16> *p = new GivaroZpz<Log16>(_R);
+								  GivaroZpz<Log16> *p = new GivaroZpz<Log16>(_R);
 #else
-						  // crap, we're screwed, just throw the
-						  // exception and bail
-						  throw NoTableFiniteInLinBox;
+								  // crap, we're screwed, just throw the
+								  // exception and bail
+								  throw NoTableFiniteInLinBox;
 #endif
-return FT(p, AuxUserData);
-}
-*/
-else { // we take our chances w/ Modular<integer>
-	Modular<integer> *p = new Modular<integer>(_R);
-	return FT(p, AuxUserData);
-}
-break;
-}
+								  return FT(p, AuxUserData);
+							  }
+#endif
+							  else { // we take our chances w/ Modular<integer>
+								  Modular<integer> *p = new Modular<integer>(_R);
+								  return FT(p, AuxUserData);
+							  }
+							  break;
+						  }
 
-// LinBox doesn't have any native support for FiniteExtension
-// fields, so if there is nothing, the  NoFiniteExtenedInLinBox
-// exception is thrown.  The follwing plug-in packages
-// are supported:
-//  - From NTL - NTL::ZZ_pE
-//  - From Givaro - GivaroGfq
-//  - From Lidia - LidiaGfq
-// By default if there is nothing to fall back on, so if
-// there isn't a field to match _implDetail, try to use any
-// field.  If that doesn't work, just throw the error
+						  // LinBox doesn't have any native support for FiniteExtension
+						  // fields, so if there is nothing, the  NoFiniteExtenedInLinBox
+						  // exception is thrown.  The follwing plug-in packages
+						  // are supported:
+						  //  - From NTL - NTL::ZZ_pE
+						  //  - From Givaro - GivaroGfq
+						  //  - From Lidia - LidiaGfq
+						  // By default if there is nothing to fall back on, so if
+						  // there isn't a field to match _implDetail, try to use any
+						  // field.  If that doesn't work, just throw the error
 
-case FieldReaderAnalyzer::FiniteExtended : {
+		case FieldReaderAnalyzer::FiniteExtended : {
 
-						   if(_implDetail == "ntl-ZZpE") {
+								   if(_implDetail == "ntl-ZZpE") {
 #ifdef __LINBOX_HAVE_NTL
-							   UnparametricField<NTL::ZZ_pE>* p = new UnparametricField<NTL::ZZ_pE>(_R);
-							   return FT(p, AuxUserData);
+									   UnparametricField<NTL::ZZ_pE>* p = new UnparametricField<NTL::ZZ_pE>(_R);
+									   return FT(p, AuxUserData);
 #endif // if we don't have the package, fall through to the
-							   // "we'll use anything!" stage
-						   }
-						   /*
-						      else if(_implDetail == "givaro-gfq") {
+									   // "we'll use anything!" stage
+								   }
+#if 0
+								   else if(_implDetail == "givaro-gfq") {
 #ifdef __LINBOX_HAVE_GIVARO
-GivaroGfq *p = new GivaroGfq(_R);
-return FT(p, AuxUserData);
+									   GivaroGfq *p = new GivaroGfq(_R);
+									   return FT(p, AuxUserData);
 #endif
-}
-else if(_implDetail == "lidia-gfq") {
+								   }
+								   else if(_implDetail == "lidia-gfq") {
 #ifdef __LINBOX_HAVE_LIDIA
-LidiaGfq *p = new LidiaGfq(_R);
-return FT(p, AuxUserData);
+									   LidiaGfq *p = new LidiaGfq(_R);
+									   return FT(p, AuxUserData);
 #endif
-}
-*/
-// Now we are in desperation mode, just use the first
-// plug-in package that we've got
-//
+								   }
+#endif
+								   // Now we are in desperation mode, just use the first
+								   // plug-in package that we've got
+								   //
 
-else {
-	/*
+								   else {
+#if 0
 #ifdef __LINBOX_HAVE_GIVARO
-GivaroGfq *p = new GivaroGfq(_R);
-return FT(p, AuxUserData);
+									   GivaroGfq *p = new GivaroGfq(_R);
+									   return FT(p, AuxUserData);
 #elif __LINBOX_HAVE_LIDIA
-LidiaGfq *p = new LidiaGfq(_R);
-return FT(p, AuxUserData);
-*/
+									   LidiaGfq *p = new LidiaGfq(_R);
+									   return FT(p, AuxUserData);
+#endif
+#endif
+
 #ifdef __LINBOX_HAVE_NTL // Our last resort
-	UnparametricField<NTL::ZZ_pE> *p = new UnparametricField<NTL::ZZ_pE>(_R);
-	return FT(p, AuxUserData);
+									   UnparametricField<NTL::ZZ_pE> *p = new UnparametricField<NTL::ZZ_pE>(_R);
+									   return FT(p, AuxUserData);
 #else // uh-oh, we're cooked
-	throw NoFiniteExtendedInLinBox;
+									   throw NoFiniteExtendedInLinBox;
 #endif
-}
-break;
-}
-// In this case there is only one rational class in
-// LinBox, GMPRationalField, so just use it
+								   }
+								   break;
+							   }
+							   // In this case there is only one rational class in
+							   // LinBox, GMPRationalField, so just use it
 
-case FieldReaderAnalyzer::Rational : {
-					     GMPRationalField *p = new GMPRationalField(_R);
-					     return FT(p, AuxUserData);
-					     break;
-				     }
+		case FieldReaderAnalyzer::Rational : {
+							     GMPRationalField *p = new GMPRationalField(_R);
+							     return FT(p, AuxUserData);
+							     break;
+						     }
 
-// For this type, there are the following Native LinBox
-// types: UnparametricField<double> (not a good one)
-// From plug-in packages, there is NTL, with NTL::RR
-// If NTL is not present, use UnparametricField
-case FieldReaderAnalyzer::Real : {
+						     // For this type, there are the following Native LinBox
+						     // types: UnparametricField<double> (not a good one)
+						     // From plug-in packages, there is NTL, with NTL::RR
+						     // If NTL is not present, use UnparametricField
+		case FieldReaderAnalyzer::Real : {
 
-					 // There's no need to check implDetail in this case,
-					 // because there's only one field which properly
-					 // produces a real field, NTL::RR.  Let's hope we
-					 // have it
+							 // There's no need to check implDetail in this case,
+							 // because there's only one field which properly
+							 // produces a real field, NTL::RR.  Let's hope we
+							 // have it
 #ifdef __LINBOX_HAVE_NTL
-					 UnparametricField<NTL::RR>* p = new UnparametricField<NTL::RR>(_R);
+							 UnparametricField<NTL::RR>* p = new UnparametricField<NTL::RR>(_R);
 #else
-					 UnparametricField<double>* p = new UnparametricField<double>(_R);
+							 UnparametricField<double>* p = new UnparametricField<double>(_R);
 #endif
-					 return FT(p, AuxUserData);
-					 break;
-				 }
+							 return FT(p, AuxUserData);
+							 break;
+						 }
 
-// Integer case.  At present there is no "integer" field, it
-// is assumed that calculations will be carried out in the
-// integer domain by reducing the field mod a group of primes
-// then building the result back up using the CRT
-// In any event, this functionality has yet to be added to
-// LinBox, so just use UnparametricField<integer>
-case FieldReaderAnalyzer::Integer : {
+						 // Integer case.  At present there is no "integer" field, it
+						 // is assumed that calculations will be carried out in the
+						 // integer domain by reducing the field mod a group of primes
+						 // then building the result back up using the CRT
+						 // In any event, this functionality has yet to be added to
+						 // LinBox, so just use UnparametricField<integer>
+		case FieldReaderAnalyzer::Integer : {
 
-					    UnparametricField<integer> *p = new UnparametricField<integer>(_R);
-					    return FT(p, AuxUserData);
-					    break;
-				    }
+							    UnparametricField<integer> *p = new UnparametricField<integer>(_R);
+							    return FT(p, AuxUserData);
+							    break;
+						    }
 
-// We don't know what it is, but this is the best we can approximate
-// go with it, and try.  If the compiler can't sort it out, there's no chance
-// so we need to add a new type.
-//
-case FieldReaderAnalyzer::Unknown : {
-					    UnparametricField<integer> *p = new UnparametricField<integer>(_R);
-					    return FT(p, AuxUserData);
-					    break;
-				    }
+						    // We don't know what it is, but this is the best we can approximate
+						    // go with it, and try.  If the compiler can't sort it out, there's no chance
+						    // so we need to add a new type.
+						    //
+		case FieldReaderAnalyzer::Unknown : {
+							    UnparametricField<integer> *p = new UnparametricField<integer>(_R);
+							    return FT(p, AuxUserData);
+							    break;
+						    }
 
-case FieldReaderAnalyzer::NotField:
-default:
-throw ReaderNotAField();
-break;
-}
+		case FieldReaderAnalyzer::NotField:
+		default:
+						    throw ReaderNotAField();
+						    break;
+		}
 
-// we never get here, but for good measure
-return NULL;
-}
+		// we never get here, but for good measure
+		return NULL;
+	}
 
 
-// makeField - The second of two.  This one is exactly like the
-// first above, except that it essentially doesn't expect a user
-// supplied Data Structure (so as a result it doesn't call the
-// functor with such a Data Type, doesn't take a user data structure,
-// and isn't templatized for a user data structure
-//
-template<class FunctorType>
-void* FieldReaderAnalyzer::makeField(FunctorType &FT) const
-{
+	// makeField - The second of two.  This one is exactly like the
+	// first above, except that it essentially doesn't expect a user
+	// supplied Data Structure (so as a result it doesn't call the
+	// functor with such a Data Type, doesn't take a user data structure,
+	// and isn't templatized for a user data structure
+	//
+	template<class FunctorType>
+	void* FieldReaderAnalyzer::makeField(FunctorType &FT) const
+	{
 
-	switch(whatType()) {
+		switch(whatType()) {
 
-		// For this type, there are the follwing Native
-		// LinBox types:
-		//   - GF2
-		//   - Modular<type> where type is one of
-		//          - uint8_t
-		//          - uint16_t
-		//          - uint32_t
-		//          - integer (This is the default for both
-		//                     Modular & for all Finite fields in LB)
-		//
-		// There are also the following types that come from plug-in
-		// packages:
-		//   - From NTL:
-		//      - NTL::ZZ_p (defaults to modular<integer>)
-		//      - NTL::zz_p (this one defaults to modular<uint32_t>)
-		//
-		//   - From Givaro:
-		//      - GivaroZpz (defaults to modular<integer>)
-		//          The above is templatized on either Std16, Std32,
-		//          or Log16.  Detect each in the _implDetail attrib
-		//          Also, as LinBox has no native Table based finite,
-		//          there is no default, so throw the exception
-		//          NoTableFiniteInLinBox
+			// For this type, there are the follwing Native
+			// LinBox types:
+			//   - GF2
+			//   - Modular<type> where type is one of
+			//          - uint8_t
+			//          - uint16_t
+			//          - uint32_t
+			//          - integer (This is the default for both
+			//                     Modular & for all Finite fields in LB)
+			//
+			// There are also the following types that come from plug-in
+			// packages:
+			//   - From NTL:
+			//      - NTL::ZZ_p (defaults to modular<integer>)
+			//      - NTL::zz_p (this one defaults to modular<uint32_t>)
+			//
+			//   - From Givaro:
+			//      - GivaroZpz (defaults to modular<integer>)
+			//          The above is templatized on either Std16, Std32,
+			//          or Log16.  Detect each in the _implDetail attrib
+			//          Also, as LinBox has no native Table based finite,
+			//          there is no default, so throw the exception
+			//          NoTableFiniteInLinBox
 
-	case FieldReaderAnalyzer::Finite: {
+		case FieldReaderAnalyzer::Finite: {
 
-						  if(_implDetail == "gf2") {
-							  GF2* p = new GF2(_R);
-							  return FT(p);
-						  }
-						  else if(_implDetail == "modular-uint8") {
-							  Modular<uint8_t>* p = new Modular<uint8_t>(_R);
-							  return FT(p);
-						  }
-						  else if(_implDetail == "modular-uint16") {
-							  Modular<uint16_t>* p = new Modular<uint16_t>(_R);
-							  return FT(p);
-						  }
-						  else if(_implDetail == "modular-uint32_t") {
-							  Modular<uint32_t>* p = new Modular<uint32_t>(_R);
-							  return FT(p);
-						  }
-						  else if(_implDetail == "modular-integer") {
-							  Modular<integer> *p = new Modular<integer>(_R);
-							  return FT(p);
-						  }
-						  else if(_implDetail == "modular") {
-							  Modular<integer> *p = new Modular<integer>(_R);
-							  return FT(p);
-						  }
-						  else if(_implDetail == "ntl-zzp") {
+							  if(_implDetail == "gf2") {
+								  GF2* p = new GF2(_R);
+								  return FT(p);
+							  }
+							  else if(_implDetail == "modular-uint8") {
+								  Modular<uint8_t>* p = new Modular<uint8_t>(_R);
+								  return FT(p);
+							  }
+							  else if(_implDetail == "modular-uint16") {
+								  Modular<uint16_t>* p = new Modular<uint16_t>(_R);
+								  return FT(p);
+							  }
+							  else if(_implDetail == "modular-uint32_t") {
+								  Modular<uint32_t>* p = new Modular<uint32_t>(_R);
+								  return FT(p);
+							  }
+							  else if(_implDetail == "modular-integer") {
+								  Modular<integer> *p = new Modular<integer>(_R);
+								  return FT(p);
+							  }
+							  else if(_implDetail == "modular") {
+								  Modular<integer> *p = new Modular<integer>(_R);
+								  return FT(p);
+							  }
+							  else if(_implDetail == "ntl-zzp") {
 #ifdef __LINBOX_HAVE_NTL // if we have NTL
-							  UnparametricField<NTL::zz_p> *p = new UnparametricField<NTL::zz_p>(_R);
+								  UnparametricField<NTL::zz_p> *p = new UnparametricField<NTL::zz_p>(_R);
 #else // the default
-							  Modular<uint32_t> *p = new Modular<uint32_t>(_R);
+								  Modular<uint32_t> *p = new Modular<uint32_t>(_R);
 #endif
-							  return FT(p);
+								  return FT(p);
 
-						  }
-						  else if(_implDetail == "ntl-ZZp") {
+							  }
+							  else if(_implDetail == "ntl-ZZp") {
 #ifdef __LINBOX_HAVE_NTL // if we have NTL
-							  UnparametricField<NTL::ZZ_p> *p = new UnparametricField<NTL::ZZ_p>(_R);
+								  UnparametricField<NTL::ZZ_p> *p = new UnparametricField<NTL::ZZ_p>(_R);
 #else
-							  Modular<integer> *p = new Modular<integer>(_R);
+								  Modular<integer> *p = new Modular<integer>(_R);
 #endif
-							  return FT(p);
-						  }
-						  /*
-						     else if(_implDetail == "givaro-zpz-std16") {
+								  return FT(p);
+							  }
+#if 0
+							  else if(_implDetail == "givaro-zpz-std16") {
 #ifdef __LINBOX_HAVE_GIVARO // if we have Givaro
-GivaroZpz<Std16> *p = new GivaroZpz<Std16>(_R);
+								  GivaroZpz<Std16> *p = new GivaroZpz<Std16>(_R);
 #else
-Modular<uint16_t> *p = new Modular<uint16_t>(_R);
+								  Modular<uint16_t> *p = new Modular<uint16_t>(_R);
 #endif
-return FT(p);
-}
-else if(_implDetail == "givaro-zpz-std32") {
+								  return FT(p);
+							  }
+							  else if(_implDetail == "givaro-zpz-std32") {
 #ifdef __LINBOX_HAVE_GIVARO
-GivaroZpz<Std32> *p = new GivaroZpz<Std32>(_R);
+								  GivaroZpz<Std32> *p = new GivaroZpz<Std32>(_R);
 #else
-Modular<uint32_t> *p = new Modular<uint32_t>(_R);
+								  Modular<uint32_t> *p = new Modular<uint32_t>(_R);
 #endif
-return FT(p);
-}
-else if(_implDetail == "givaro-zpz-log16") {
+								  return FT(p);
+							  }
+							  else if(_implDetail == "givaro-zpz-log16") {
 #ifdef __LINBOX_HAVE_GIVARO
-GivaroZpz<Log16> *p = new GivaroZpz<Log16>(_R);
+								  GivaroZpz<Log16> *p = new GivaroZpz<Log16>(_R);
 #else
 
-					  // crap, we're screwed, just throw the
-					  // exception and bail
-					  throw NoTableFiniteInLinBox;
+								  // crap, we're screwed, just throw the
+								  // exception and bail
+								  throw NoTableFiniteInLinBox;
 #endif
-return FT(p);
-}
-*/
-else { // we take our chances w/ Modular<integer>
-	Modular<integer> *p = new Modular<integer>(_R);
-	return FT(p);
-}
-break;
-}
+								  return FT(p);
+							  }
+#endif
+							  else { // we take our chances w/ Modular<integer>
+								  Modular<integer> *p = new Modular<integer>(_R);
+								  return FT(p);
+							  }
+							  break;
+						  }
 
-// LinBox doesn't have any native support for FiniteExtension
-// fields, so if there is nothing, the  NoFiniteExtenedInLinBox
-// exception is thrown.  The follwing plug-in packages
-// are supported:
-//  - From NTL - NTL::ZZ_pE
-//  - From Givaro - GivaroGfq
-//  - From Lidia - LidiaGfq
-// By default if there is nothing to fall back on, so if
-// there isn't a field to match _implDetail, try to use any
-// field.  If that doesn't work, just throw the error
+						  // LinBox doesn't have any native support for FiniteExtension
+						  // fields, so if there is nothing, the  NoFiniteExtenedInLinBox
+						  // exception is thrown.  The follwing plug-in packages
+						  // are supported:
+						  //  - From NTL - NTL::ZZ_pE
+						  //  - From Givaro - GivaroGfq
+						  //  - From Lidia - LidiaGfq
+						  // By default if there is nothing to fall back on, so if
+						  // there isn't a field to match _implDetail, try to use any
+						  // field.  If that doesn't work, just throw the error
 
-case FieldReaderAnalyzer::FiniteExtended : {
+		case FieldReaderAnalyzer::FiniteExtended : {
 
-						   if(_implDetail == "ntl-ZZpE") {
+								   if(_implDetail == "ntl-ZZpE") {
 #ifdef __LINBOX_HAVE_NTL
-							   UnparametricField<NTL::ZZ_pE>* p = new UnparametricField<NTL::ZZ_pE>(_R);
-							   return FT(p);
+									   UnparametricField<NTL::ZZ_pE>* p = new UnparametricField<NTL::ZZ_pE>(_R);
+									   return FT(p);
 #endif // if we don't have the package, fall through to the
-							   // "we'll use anything!" stage
-						   }
-						   /*
-						      else if(_implDetail == "givaro-gfq") {
+									   // "we'll use anything!" stage
+								   }
+#if 0
+								   else if(_implDetail == "givaro-gfq") {
 #ifdef __LINBOX_HAVE_GIVARO
-GivaroGfq *p = new GivaroGfq(_R);
-return FT(p);
+									   GivaroGfq *p = new GivaroGfq(_R);
+									   return FT(p);
 #endif
-}
-else if(_implDetail == "lidia-gfq") {
+								   }
+								   else if(_implDetail == "lidia-gfq") {
 #ifdef __LINBOX_HAVE_LIDIA
-LidiaGfq *p = new LidiaGfq(_R);
-return FT(p);
+									   LidiaGfq *p = new LidiaGfq(_R);
+									   return FT(p);
 #endif
-}
-*/
-// Now we are in desperation mode, just use the first
-// plug-in package that we've got
-//
-else {
-	/*
+								   }
+#endif
+								   // Now we are in desperation mode, just use the first
+								   // plug-in package that we've got
+								   //
+								   else {
+#if 0
 #ifdef __LINBOX_HAVE_GIVARO
-GivaroGfq *p = new GivaroGfq(_R);
-return FT(p);
+									   GivaroGfq *p = new GivaroGfq(_R);
+									   return FT(p);
 #elif __LINBOX_HAVE_LIDIA
-LidiaGfq *p = new LidiaGfq(_R);
-return FT(p);
-*/
+									   LidiaGfq *p = new LidiaGfq(_R);
+									   return FT(p);
+#endif
+#endif
 #ifdef __LINBOX_HAVE_NTL // Our last resort
-	UnparametricField<NTL::ZZ_pE> *p = new UnparametricField<NTL::ZZ_pE>(_R);
-	return FT(p);
+									   UnparametricField<NTL::ZZ_pE> *p = new UnparametricField<NTL::ZZ_pE>(_R);
+									   return FT(p);
 #else // uh-oh, we're cooked
-	throw NoFiniteExtendedInLinBox;
+									   throw NoFiniteExtendedInLinBox;
 #endif
-}
-break;
-}
+								   }
+								   break;
+							   }
 
-// In this case there is only one rational class in
-// LinBox, GMPRationalField, so just use it
+							   // In this case there is only one rational class in
+							   // LinBox, GMPRationalField, so just use it
 
-case FieldReaderAnalyzer::Rational : {
-					     GMPRationalField *p = new GMPRationalField(_R);
-					     return FT(p);
-					     break;
-				     }
+		case FieldReaderAnalyzer::Rational : {
+							     GMPRationalField *p = new GMPRationalField(_R);
+							     return FT(p);
+							     break;
+						     }
 
-// For this type, there are the following Native LinBox
-// types: UnparametricField<double> (not a good one)
-// From plug-in packages, there is NTL, with NTL::RR
-// If NTL is not present, use UnparametricField
-case FieldReaderAnalyzer::Real : {
+						     // For this type, there are the following Native LinBox
+						     // types: UnparametricField<double> (not a good one)
+						     // From plug-in packages, there is NTL, with NTL::RR
+						     // If NTL is not present, use UnparametricField
+		case FieldReaderAnalyzer::Real : {
 
-					 // There's no need to check implDetail in this case,
-					 // because there's only one field which properly
-					 // produces a real field, NTL::RR.  Let's hope we
-					 // have it
+							 // There's no need to check implDetail in this case,
+							 // because there's only one field which properly
+							 // produces a real field, NTL::RR.  Let's hope we
+							 // have it
 #ifdef __LINBOX_HAVE_NTL
-					 UnparametricField<NTL::RR>* p = new UnparametricField<NTL::RR>(_R);
+							 UnparametricField<NTL::RR>* p = new UnparametricField<NTL::RR>(_R);
 #else
-					 UnparametricField<double>* p = new UnparametricField<double>(_R);
+							 UnparametricField<double>* p = new UnparametricField<double>(_R);
 #endif
-					 return FT(p);
-					 break;
-				 }
+							 return FT(p);
+							 break;
+						 }
 
-// Integer case.  At present there is no "integer" field, it
-// is assumed that calculations will be carried out in the
-// integer domain by reducing the field mod a group of primes
-// then building the result back up using the CRT
-// In any event, this functionality has yet to be added to
-// LinBox, so just use UnparametricField<integer>
-case FieldReaderAnalyzer::Integer : {
+						 // Integer case.  At present there is no "integer" field, it
+						 // is assumed that calculations will be carried out in the
+						 // integer domain by reducing the field mod a group of primes
+						 // then building the result back up using the CRT
+						 // In any event, this functionality has yet to be added to
+						 // LinBox, so just use UnparametricField<integer>
+		case FieldReaderAnalyzer::Integer : {
 
-					    UnparametricField<integer> *p = new UnparametricField<integer>(_R);
-					    return FT(p);
-					    break;
-				    }
+							    UnparametricField<integer> *p = new UnparametricField<integer>(_R);
+							    return FT(p);
+							    break;
+						    }
 
-// we don't know what type we have, this is an anonymous type.  This is the best I can
-// do to recover without dying.  If this doesn't work, a new type should definately be
-// added.
-//
-case FieldReaderAnalyzer::Unknown: {
-					   UnparametricField<integer> *p = new UnparametricField<integer>(_R);
-					   return FT(p);
-					   break;
-				   }
+						    // we don't know what type we have, this is an anonymous type.  This is the best I can
+						    // do to recover without dying.  If this doesn't work, a new type should definately be
+						    // added.
+						    //
+		case FieldReaderAnalyzer::Unknown: {
+							   UnparametricField<integer> *p = new UnparametricField<integer>(_R);
+							   return FT(p);
+							   break;
+						   }
 
 
-case FieldReaderAnalyzer::NotField:
-default:
-throw ReaderNotAField();
-break;
-}
+		case FieldReaderAnalyzer::NotField:
+		default:
+						   throw ReaderNotAField();
+						   break;
+		}
 
-// we never get here, but for good measure
-return NULL;
-}
+		// we never get here, but for good measure
+		return NULL;
+	}
 
 } // namespace LinBox
 

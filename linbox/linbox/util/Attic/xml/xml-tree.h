@@ -942,101 +942,99 @@ void XMLTree::write(std::ostream &out)
 	// valid XML to the std::ostream
 }
 
-
-
-/*
-   The following block of code is an iterative version of the code that
-   is currently implemented above.  I opted for the recursive version because
-   it eliminates the reliance on RTTI to work properly.  The write
-   function for each individual class in the representation tree is a
-   virtual function.  That way, if we add more classes into the node
-   hierarchy, I don't have to do a complicated re-write of this function.
-
-   I'm saving this in case I have to go back (and because I thought it was
-cool :-) ).
+#if 0 /* The following block of code is an iterative version of the code that
+       * is currently implemented above.  I opted for the recursive version because
+       * it eliminates the reliance on RTTI to work properly.  The write
+       * function for each individual class in the representation tree is a
+       * virtual function.  That way, if we add more classes into the node
+       * hierarchy, I don't have to do a complicated re-write of this function.
+       *
+       * I'm saving this in case I have to go back (and because I thought it was
+       * cool :-) ).
+       */
 
 
 bool XMLTree::write(std::ostream &out) {
-std::stack< std::pair<node*, std::list<node*>::iterator> > theStack;
-std::list<node*>::iterator li;
-std::pair<node*, std::list<node*>::iterator> holder;
-node * currPtr;
-TagNode* tagPtr;
-DataNode* dataPtr;
-int i, depth;
-bool newFlag = false;
+	std::stack< std::pair<node*, std::list<node*>::iterator> > theStack;
+	std::list<node*>::iterator li;
+	std::pair<node*, std::list<node*>::iterator> holder;
+	node * currPtr;
+	TagNode* tagPtr;
+	DataNode* dataPtr;
+	int i, depth;
+	bool newFlag = false;
 
-if( !initFlag) return false;
-holder.first = &Tree;
-holder.second = Tree.children.begin();
-theStack.push(holder);
-currPtr = &Tree;
-depth = -1;
-
-while( !theStack.empty() ) { // Go until there's nothing left on the std::stack
-
-if(newFlag) { // If we've encountered a child
-switch(currPtr->Ident) { // Check what the child is
-
-case Data: // We have data
-dataPtr = dynamic_cast<DataNode*>(currPtr);
-for(i = 0; i < depth; ++i) out << "\t";
-out << dataPtr->data << endl; // Just print the data
-newFlag = false;
-depth = depth - 1; // re-adjust depth
-break;
-
-case Tag: // We have a new tag
-tagPtr = dynamic_cast<TagNode*>(currPtr);
-for(i = 0; i < depth; i++) out << "\t"; // Proper indent
-out << "<" << tagPtr->tag; // print the tag opener
-for(std::list<DataNode>::iterator di = tagPtr->attrib.begin(); di != tagPtr->attrib.end(); ++di) {
-out << " " << di->data << " = \"";
-++di;
-out << di->data << "\"";
-}
-if( !tagPtr->children.empty() ) { // check whether the tag has children
-out << ">" << endl; // If so, print the > tag ender
-newFlag = true;     // Signal next time that there are children
-depth = depth + 1;  // Adjust depth
-li = tagPtr->children.begin(); // Get the std::list iterator
-holder.first = currPtr;
-currPtr = *li;
-holder.second = ++li;  // Save the current child to the std::stack, and set the new child
-theStack.push(holder);  // as the current pointer
-}
-else {  // There are no children, this is an open and close tag
-newFlag = false; // No more children
-depth = depth - 1; // subtract the depth
-out << "/>" << endl; // print the start and end closer for tag
-}
-break;
-} // close the switch
-} // close the up-most if
-else {
-holder = theStack.top(); // Get the outer most tag
-theStack.pop(); // Get this off so we can update/remove it
-tagPtr = dynamic_cast<TagNode*>(holder.first); // Cast it properly
-li = holder.second;
-if( li != tagPtr->children.end() ) { // There are more children to process
-	depth = depth + 1; // Reset the variables for a new child
-	newFlag = true;
-	currPtr = *li;     // Get the pointer to the new child
-	holder.second = ++li; // Save the new iterator position
+	if( !initFlag) return false;
+	holder.first = &Tree;
+	holder.second = Tree.children.begin();
 	theStack.push(holder);
-}
-else {
-	if(tagPtr->Ident != Root) { // If we aren't at the rootnode
-		for(i = 0; i < depth; i++) out << "\t"; // print the end tag
-		out << "</" << tagPtr->tag << ">" << endl;
-	}
-	depth = depth - 1; // Close up shop
-	newFlag = false;
-}
-}
-}
+	currPtr = &Tree;
+	depth = -1;
 
-return true;
+	while( !theStack.empty() ) { // Go until there's nothing left on the std::stack
+
+		if(newFlag) { // If we've encountered a child
+			switch(currPtr->Ident) { // Check what the child is
+
+			case Data: // We have data
+				dataPtr = dynamic_cast<DataNode*>(currPtr);
+				for(i = 0; i < depth; ++i) out << "\t";
+				out << dataPtr->data << endl; // Just print the data
+				newFlag = false;
+				depth = depth - 1; // re-adjust depth
+				break;
+
+			case Tag: // We have a new tag
+				tagPtr = dynamic_cast<TagNode*>(currPtr);
+				for(i = 0; i < depth; i++) out << "\t"; // Proper indent
+				out << "<" << tagPtr->tag; // print the tag opener
+				for(std::list<DataNode>::iterator di = tagPtr->attrib.begin(); di != tagPtr->attrib.end(); ++di) {
+					out << " " << di->data << " = \"";
+					++di;
+					out << di->data << "\"";
+				}
+				if( !tagPtr->children.empty() ) { // check whether the tag has children
+					out << ">" << endl; // If so, print the > tag ender
+					newFlag = true;     // Signal next time that there are children
+					depth = depth + 1;  // Adjust depth
+					li = tagPtr->children.begin(); // Get the std::list iterator
+					holder.first = currPtr;
+					currPtr = *li;
+					holder.second = ++li;  // Save the current child to the std::stack, and set the new child
+					theStack.push(holder);  // as the current pointer
+				}
+				else {  // There are no children, this is an open and close tag
+					newFlag = false; // No more children
+					depth = depth - 1; // subtract the depth
+					out << "/>" << endl; // print the start and end closer for tag
+				}
+				break;
+			} // close the switch
+		} // close the up-most if
+		else {
+			holder = theStack.top(); // Get the outer most tag
+			theStack.pop(); // Get this off so we can update/remove it
+			tagPtr = dynamic_cast<TagNode*>(holder.first); // Cast it properly
+			li = holder.second;
+			if( li != tagPtr->children.end() ) { // There are more children to process
+				depth = depth + 1; // Reset the variables for a new child
+				newFlag = true;
+				currPtr = *li;     // Get the pointer to the new child
+				holder.second = ++li; // Save the new iterator position
+				theStack.push(holder);
+			}
+			else {
+				if(tagPtr->Ident != Root) { // If we aren't at the rootnode
+					for(i = 0; i < depth; i++) out << "\t"; // print the end tag
+					out << "</" << tagPtr->tag << ">" << endl;
+				}
+				depth = depth - 1; // Close up shop
+				newFlag = false;
+			}
+		}
+	}
+
+	return true;
 }
 
 */
@@ -1115,6 +1113,8 @@ void finish(void* dataforme, const char *tagname)
 	ParseData->currLeaf.pop(); // Pop off the top-most tag, it's done for now
 	return;
 }
+
+#endif
 
 #endif //__LINBOX_xml_tree_H
 
