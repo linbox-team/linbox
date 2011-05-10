@@ -415,7 +415,8 @@ void linbox_integer_dense_minpoly_hacked(mpz_t* *mp, size_t* degree, size_t n, m
 	size_t m;
 	if (n % 4 == 0 || !do_minpoly) {
 		m = n + 1;
-	} else {
+	}
+	else {
 		m = n;
 	}
 
@@ -686,7 +687,8 @@ unsigned long linbox_modn_sparse_matrix_rank(mod_int modulus,
 
 	if(!gauss) {
 		dom.InPlaceLinearPivoting(M_rank, M_det, M, numrows, numcols);
-	} else {
+	}
+	else {
 		dom.NoReordering(M_rank, M_det, M, numrows, numcols);
 	}
 
