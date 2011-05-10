@@ -206,7 +206,8 @@ namespace LinBox
 			commentator.stop ( "first step", NULL, "det");
 			commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 			<< "Iterations done " << iteration.iterations() << "\n";
-		} else {}
+		}
+		else {}
 #endif
 		Integer res;
 
@@ -374,7 +375,8 @@ namespace LinBox
 					<< "Iterations done " << iteration.iterations()<<"(" << iteration.iterations2() << ")\n";
 					//<< "bonus size " << log2(bonus) << "\n";
 
-				} else {
+				}
+				else {
 					/* enter the cra loop */
 					//cra3(k,iteration, genprime);
 					while (!cra3.terminated()) {
@@ -391,7 +393,8 @@ namespace LinBox
 					<< "Iterations done " << iteration.iterations()<< "(" << iteration.iterations2() << ")\n";
 					//<< "bonus size " << log2(bonus) << "\n";
 				}
-			} else {
+			}
+			else {
 				//cra2(k,iteration, genprime);
 				while (!cra2.terminated()) {
 					++genprime;
@@ -406,7 +409,8 @@ namespace LinBox
 				commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 				<< "Iterations done " << iteration.iterations()<< "(" << iteration.iterations2() << ")\n";
 			}
-		} else {
+		}
+		else {
 			while (!cra2.terminated()) {
 				++genprime;
 				while (cra2.noncoprime(*genprime)) ++genprime;
@@ -481,7 +485,8 @@ namespace LinBox
 			commentator.stop ( "first step", NULL, "det");
 			commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 			<< "Iterations done " << iteration.iterations() << "\n";
-		} else
+		}
+		else
 #endif
 			Integer p;
 		Integer res;
@@ -641,7 +646,8 @@ namespace LinBox
 					<< "Iterations done " << iteration.iterations()<<"(" << iteration.iterations2() << ")\n";
 					//<< "bonus size " << log2(bonus) << "\n";
 
-				} else {
+				}
+				else {
 					// enter the cra loop
 					//cra3(k,iteration, genprime);
 					while (!cra3.terminated()) {
@@ -658,7 +664,8 @@ namespace LinBox
 					<< "Iterations done " << iteration.iterations()<< "(" << iteration.iterations2() << ")\n";
 					//<< "bonus size " << log2(bonus) << "\n";
 				}
-			} else {
+			}
+			else {
 				//cra2(k,iteration, genprime);
 				while (!cra2.terminated()) {
 					genprime.randomPrime(p);
@@ -673,7 +680,8 @@ namespace LinBox
 				commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 				<< "Iterations done " << iteration.iterations()<< "(" << iteration.iterations2() << ")\n";
 			}
-		} else {
+		}
+		else {
 			while (!cra2.terminated()) {
 				genprime.randomPrime(p);
 				while (cra2.noncoprime(p)) genprime.randomPrime(p);

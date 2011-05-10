@@ -282,11 +282,13 @@ namespace LinBox
 								Builder_.changePreconditioner(f_in,m_in);//not optimal, may restore results
 								Builder_.changeVector();
 							}
-						} else {  //back to original preconditioners
+						}
+						else {  //back to original preconditioners
 							Builder_.changePreconditioner(f_in,m_in);
 							Builder_.changeVector();
 						}
-					} else {
+					}
+					else {
 						//heuristics: reconstruction of vector
 						Integer r ; Builder_.getResidue(r);
 						Integer n,d;
@@ -360,7 +362,8 @@ namespace LinBox
 						if (Builder_.changePreconditioner(vnum,vden)) break;
 						else Builder_.changePreconditioner(f_in,m_in);//not optimal, may restore results
 					}
-				} else {
+				}
+				else {
 					Integer r ; Builder_.getResidue(r);
 					Integer n,d;
 					if (RR_.reconstructRational(n,d,r,M)) {

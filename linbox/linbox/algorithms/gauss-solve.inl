@@ -47,7 +47,8 @@ namespace LinBox
 			typename _Field::RandIter generator(_F);
 			for(typename Vector1::iterator it=w.begin()+rank;it!=w.end();++it)
 				generator.random( *it );
-		} else {
+		}
+		else {
 			for(typename Vector1::iterator it=w.begin()+rank;it!=w.end();++it)
 				_F.init(*it,0);
 		}

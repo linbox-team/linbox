@@ -38,19 +38,18 @@ namespace LinBox
 	  whether zero or not, by rational solving.
 	  */
 	template<class _Ring,
-	class _Solver>
-
+		class _Solver>
 	class LastInvariantFactor {
 
 	public:
 
-		typedef _Ring Ring;
-		typedef _Solver Solver;
+		typedef _Ring                     Ring;
+		typedef _Solver                 Solver;
 		typedef typename Ring::Element Integer;
 
 	protected:
 
-		Ring r;
+		Ring        r;
 		Solver solver;
 		int threshold;
 

@@ -65,7 +65,8 @@ namespace LinBox
 		{
 			if (switcher ==1) {
 				t1->operator()(P,F);
-			} else {
+			}
+			else {
 				t2->operator()(P,F);
 			}
 			return P;
@@ -213,7 +214,8 @@ namespace LinBox
 		if (t1.time() < t2.time()) {
 			//cout << "ratim " << std::flush;
 			iteration.setSwitcher(1);
-		} else {
+		}
+		else {
 			//cout << "intim " << std::flush;
 			iteration.setSwitcher(2);
 			s1 = s2;
@@ -273,8 +275,10 @@ namespace LinBox
 					cra.getResidue(dd);
 					num *=dd;
 					//cout << "without lif " << std::flush;
-				} else rrterm = false;
-			} else 	{//we use num approx by lif
+				}
+				else rrterm = false;
+			}
+			else 	{//we use num approx by lif
 				t1.stop();
 				t2.start();
 				if ((rrterm = RR.reconstructRational(num,den,res,m))) {
@@ -285,8 +289,10 @@ namespace LinBox
 						num *=dd;
 						den *=lif;
 						//cout << "with lif " << std::flush;
-					} else rrterm = false;
-				} else t2.stop();
+					}
+					else rrterm = false;
+				}
+				else t2.stop();
 			}
 			if (rrterm) {
 				integer t,tt;
@@ -296,7 +302,8 @@ namespace LinBox
 				//cout << "terminated by RR at step "<< (int)(log(k)/log(2)) << " in " << std::flush;
 				t0.stop();
 				return d;
-			} else {
+			}
+			else {
 				//cout << "rollback" << std::flush;
 				cra.changePreconditioner(lif,1);
 			}

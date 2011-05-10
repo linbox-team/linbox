@@ -351,7 +351,8 @@ namespace LinBox
 					status = INCONSISTENT;
 				else
 					status = FAILED;
-			} else
+			}
+			else
 				status = FAILED;
 
 			break;
@@ -389,7 +390,8 @@ namespace LinBox
 						status = INCONSISTENT;
 					else
 						status = FAILED;
-				} else
+				}
+				else
 					status = FAILED;
 			}
 		}
@@ -431,7 +433,8 @@ namespace LinBox
 				VectorWrapper::ensureDim (PAvpb, A.rowdim ());
 				P->apply (PAvpb, Avpb);
 				_VD.copy (bp, PAvpb, 0, r);
-			} else {
+			}
+			else {
 				_VD.copy (bp, Avpb, 0, r);
 			}
 
@@ -459,7 +462,8 @@ namespace LinBox
 			VectorWrapper::ensureDim (Qinvx, A.coldim ());
 			_VD.copy (Qinvx, xp);
 			Q->apply (x, Qinvx);
-		} else {
+		}
+		else {
 			_VD.copy (x, xp);
 		}
 
@@ -512,7 +516,8 @@ namespace LinBox
 			VectorWrapper::ensureDim (xp, r);
 			status = solveNonsingular (Ap, xp, Av, false);
 			_VD.copy (x, xp);
-		} else
+		}
+		else
 			status = solveNonsingular (A, x, Av, false);
 
 		if (status == SINGULAR) {

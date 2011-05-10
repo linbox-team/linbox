@@ -142,7 +142,8 @@ namespace LinBox
 				mi.mulin(tmp);
 				mi.mulin(*_mod_it);
 				*_occ_it = false;
-			} else {
+			}
+			else {
 				Integer tmp = D;
 				_mod_it->initialize(tmp);
 				*_dsz_it = ::Givaro::naturallog(tmp);
@@ -164,7 +165,8 @@ namespace LinBox
 					mi.mulin(*_mod_it);
 					di += *_dsz_it;
 					*_occ_it = false;
-				} else {
+				}
+				else {
 					*_dsz_it = di;
 					*_mod_it = mi;
 					*_tab_it = ri;
@@ -205,7 +207,8 @@ namespace LinBox
 				mi.mulin(tmp);
 				mi.mulin(*_mod_it);
 				*_occ_it = false;
-			} else {
+			}
+			else {
 				// Lower shelf is free
 				// Put the new residue here and exit
 				Integer tmp; D.characteristic(tmp);
@@ -245,7 +248,8 @@ namespace LinBox
 
 					di += *_dsz_it;
 					*_occ_it = false;
-				} else {
+				}
+				else {
 					// This shelf is free
 					// Put the new combination here and exit
 					*_dsz_it = di;
@@ -286,7 +290,8 @@ namespace LinBox
 							normalize(*t0_it = *t_it, *t_it, _mod_it->operator()());
 						//RadixPrimeProd_.resize(1);
 						return d;
-					} else {
+					}
+					else {
 						// There are other shelves
 						// The result is initialized with this shelf
 						// The for loop will combine the other shelves m with the actual one

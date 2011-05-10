@@ -147,7 +147,8 @@ namespace LinBox
 				mi.mulin(tmp);
 				mi.mulin(*_mod_it);
 				*_occ_it = false;
-			} else {
+			}
+			else {
 				// Lower shelf is free
 				// Put the new residue here and exit
 				Integer tmp;
@@ -193,7 +194,8 @@ namespace LinBox
 
 					di += *_dsz_it;
 					*_occ_it = false;
-				} else {
+				}
+				else {
 					// This shelf is free
 					// Put the new combination here and exit
 					*_dsz_it = di;
@@ -390,7 +392,8 @@ namespace LinBox
 				mi.mulin(tmp);
 				mi.mulin(*_mod_it);
 				*_occ_it = false;
-			} else {
+			}
+			else {
 				// Lower shelf is free
 				// Put the new residue here and exit
 				Integer tmp;
@@ -436,7 +439,8 @@ namespace LinBox
 
 					di += *_dsz_it;
 					*_occ_it = false;
-				} else {
+				}
+				else {
 					// This shelf is free
 					// Put the new combination here and exit
 					*_dsz_it = di;

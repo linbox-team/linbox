@@ -31,7 +31,8 @@ namespace LinBox
 		if (rank == 0) {
 			for(size_t i=0; i<U.coldim(); ++i)
 				x.setEntry(i,i,_F.one);
-		} else {
+		}
+		else {
 			unsigned long nullity = U.coldim()-rank;
 			if (nullity != 0) {
 				// compute U2T s.t. U = [ U1 | -U2T^T ]
@@ -99,7 +100,8 @@ namespace LinBox
 				if (nextnonzero(j,Ni,A)) {
 					A[i] = A[j];
 					A[j].resize(0);
-				} else {
+				}
+				else {
 					break;
 				}
 			}
