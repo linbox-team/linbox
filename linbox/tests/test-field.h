@@ -924,11 +924,12 @@ bool testRingTrivia (const Field &F, const char *name)
 	typename Field::Element one, mone, zero ;
 	LinBox::integer pun = 1 ;
 	LinBox::integer mun = -1 ;
+	LinBox::integer zer = 0 ;
 	F.init(one,pun);
 	F.init(mone,mun);
 	F.neg(mone,one);
 	// F.init(mone,-1L);
-	F.init(zero,0UL);
+	F.init(zero,zer);
 
 	rapport << "1 - 1 = " ;
 	typename Field::Element nil ;
