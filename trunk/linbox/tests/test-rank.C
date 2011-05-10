@@ -282,7 +282,7 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 
 	srand (time (NULL));
-	srand48 (time (NULL));
+	// srand48 (time (NULL));
 
 	commentator.start("rank solution test suite", "rank");
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);

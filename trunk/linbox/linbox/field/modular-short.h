@@ -100,11 +100,11 @@ namespace LinBox
 
 		typedef ModularRandIter<Element> RandIter;
 
-		//default modular field,taking 251 as default modulus
+		//default modular field,taking 17 as default modulus
 		Modular () :
-			modulus(251),lmodulus(251)
+			modulus(17),lmodulus(modulus)
 		{
-			modulusinv=1/(double)251;
+			modulusinv=1/(double)modulus;
 		}
 
 		Modular (int value, int exp = 1)  :
@@ -230,7 +230,8 @@ namespace LinBox
 			return x = static_cast<long>(z); //rounds towards 0
 		}
 
-		inline Element &init (Element &x, const float &y) const  {
+		inline Element &init (Element &x, const float &y) const
+		{
 			return init (x, (double) y);
 		}
 
@@ -395,9 +396,9 @@ namespace LinBox
 
 		static inline Element getMaxModulus()
 		{
-			// return 32767;  // 2^15 - 1
-			linbox_check(180*181 < INT16_MAX);
-			return 181 ;
+			return 32767;  // 2^15 - 1
+			// linbox_check(180*181 < INT16_MAX);
+			// return 181 ;
 		}
 
 	private:

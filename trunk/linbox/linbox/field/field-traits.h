@@ -64,13 +64,21 @@ namespace LinBox
 			return i = static_cast<uint32_t>(Field::getMaxModulus());
 		}
 
+		static integer maxModulus()
+		{
+			return static_cast<integer>(Field::getMaxModulus());
+		}
+
 		static bool goodModulus( const integer& i )
 		{
 			integer max;
 			maxModulus( max );
-			if( max == -1 ) return ( i >= 2 );
-			else if( max == 0 ) return ( i == 0 );
-			else return ( i >= 2 && i <= max );
+			if( max == -1 )
+				return ( i >= 2 );
+			else if( max == 0 )
+				return ( i == 0 );
+			else
+				return ( i >= 2 && i <= max );
 		}
 
 		static integer& maxExponent( integer& i )
@@ -82,8 +90,10 @@ namespace LinBox
 		{
 			integer max;
 			maxExponent( max );
-			if( max == -1 ) return ( i >= 1 );
-			else return ( i >= 1 && i <= max );
+			if( max == -1 )
+				return ( i >= 1 );
+			else
+				return ( i >= 1 && i <= max );
 		}
 	};
 
