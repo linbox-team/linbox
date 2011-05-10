@@ -618,3 +618,7 @@ CLEANFILES= checker               \
 			$(NTL_TESTS)          \
 			$(GIVARO_TESTS)       \
 			$(ATLAS_TESTS)
+
+
+#  %:%.C
+#  $(CXX) $(OPTFLAGS) $(AM_CPPFLAGS) $(AM_CXXFLAGS) $*.C -o $*  `$(GIVARO_BIN)/givaro-config --cflags` `$(FFLAFLAS_BIN)/fflasffpack-config --cflags`  $(LDADD)  `$(GIVARO_BIN)/givaro-config --libs` `$(FFLAFLAS_BIN)/ffasffpack-config --libs`
