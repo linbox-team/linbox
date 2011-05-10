@@ -220,7 +220,8 @@ namespace LinBox
 				std::vector<Integer> v;
 				FullMultipCRA<Domain>::result(v);
 				return r = v.front();
-			} else {
+			}
+			else {
 				Integer z;
 				EarlySingleCRA<Domain>::result(z);
 				return (r=factor_*z/multip_);
@@ -233,7 +234,8 @@ namespace LinBox
 				std::vector<Integer> v;
 				FullMultipCRA<Domain>::result(v);
 				return q = v.front();
-			} else {
+			}
+			else {
 				Integer z;
 				EarlySingleCRA<Domain>::result(z);//residue
 				return (q=Quotient(factor_*z,multip_));
@@ -248,7 +250,8 @@ namespace LinBox
 				std::vector<Integer> v;
 				FullMultipCRA<Domain>::result(v);
 				return num = v.front();
-			} else {
+			}
+			else {
 				Integer z;
 				EarlySingleCRA<Domain>::result(z);
 				den = multip_;

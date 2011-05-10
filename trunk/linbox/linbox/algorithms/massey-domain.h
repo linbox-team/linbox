@@ -252,7 +252,8 @@ namespace LinBox
 
 				if (_F.isZero (d)) {
 					++x;
-				} else {
+				}
+				else {
 					if (L > (N >> 1)) {
 						// -----------------------------------------------
 						// C = C + (Polynome(X,x,-d/b) * B);
@@ -266,20 +267,23 @@ namespace LinBox
 									_F.mul (C[i], Ds, B[i-x]);
 								for (; i > c_deg; --i)
 									_F.assign (C[i], Zero);
-							} else {
+							}
+							else {
 								for (; i > c_deg; --i)
 									_F.mul (C[i], Ds, B[i-x]);
 								for (; i >= x; --i)
 									_F.axpyin (C[i], Ds, B[i-x]);
 							}
-						} else {
+						}
+						else {
 							for (; i >= x; --i)
 								_F.axpyin (C[i], Ds, B[i-x]);
 						}
 						// -----------------------------------------------
 						c_deg = v_degree(C);
 						++x;
-					} else {
+					}
+					else {
 						// -----------------------------------------------
 						// C = C + (Polynome(X,x,-d/b) * B); 					//
 						_F.divin (_F.neg (Ds, d), b);
@@ -292,13 +296,15 @@ namespace LinBox
 									_F.mul (C[i], Ds, B[i-x]);
 								for (; i > c_deg; --i)
 									_F.assign (C[i], Zero);
-							} else {
+							}
+							else {
 								for (; i > c_deg; --i)
 									_F.mul (C[i], Ds, B[i-x]);
 								for (; i >= x; --i)
 									_F.axpy (C[i], Ds, B[i-x], B[i] = C[i]);
 							}
-						} else {
+						}
+						else {
 							for (i = c_deg; i > l_deg; --i)
 								B[i] = C[i];
 							for (; i >= x; --i)

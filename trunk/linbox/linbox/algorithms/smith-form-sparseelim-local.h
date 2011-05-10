@@ -146,7 +146,8 @@ namespace LinBox
 				if (indpermut != indcol)
 					lignepivot[0].first = (indcol);
 				indcol++ ;
-			} else
+			}
+			else
 				indpermut = -1;
 		}
 
@@ -178,7 +179,8 @@ namespace LinBox
 							indpermut = lignepivot[p].first;
 							lignepivot[p].second = (lignepivot[0].second);
 							lignepivot[0].second = (ttm);
-						} else {
+						}
+						else {
 							E ttm = lignepivot[p];
 							indpermut = ttm.first;
 							for(long m=p;m;--m)
@@ -191,9 +193,11 @@ namespace LinBox
 					indcol++ ;
 					for(j=nj;j--;)
 						--columns[ lignepivot[j].first ];
-				} else
+				}
+				else
 					indpermut = -2;
-			} else
+			}
+			else
 				indpermut = -1;
 		}
 
@@ -231,7 +235,8 @@ namespace LinBox
 							F tmp = lignecourante[0].second ;
 							lignecourante[0].second = (lignecourante[j_head].second );
 							lignecourante[j_head].second = (tmp);
-						} else {
+						}
+						else {
 							// zero <--> non zero
 							E tmp = lignecourante[j_head];
 							--columns[ tmp.first ];
@@ -277,7 +282,8 @@ namespace LinBox
 							else
 								--columns[ lignecourante[m++].first ];
 							//                         m++;
-						} else if (isNZero(tmp = ((UModulo)(headcoeff * lignepivot[l].second)) %(UModulo)MOD)) {
+						}
+						else if (isNZero(tmp = ((UModulo)(headcoeff * lignepivot[l].second)) %(UModulo)MOD)) {
 							++columns[j_piv];
 							*ci++ =  E(j_piv, tmp );
 						}
@@ -288,7 +294,8 @@ namespace LinBox
 
 					construit.erase(ci,construit.end());
 					lignecourante = construit;
-				} else
+				}
+				else
 					// -------------------------------------------
 					// Permutation
 					if (indpermut != (long)k) {

@@ -198,7 +198,8 @@ namespace LinBox
 				integer::maxpyin(b1b2,r,lb2);
 				integer::maxpyin(b1b3,r, b2b3);
 				binaryGaussReduce();
-			}else{
+			}
+			else{
 				if (la < lb2){
 					assign(b2,a);lb2=la;
 					integer::maxpyin(b2b3,r, b1b3);

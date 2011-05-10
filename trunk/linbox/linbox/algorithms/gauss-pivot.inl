@@ -53,7 +53,8 @@ namespace LinBox
 				if (indpermut == static_cast<long>(indcol)) {
 					indpermut = lignepivot[p].first;
 					std::swap( lignepivot[p].second, lignepivot[0].second);
-				} else {
+				}
+				else {
 					E ttm = lignepivot[p];
 					indpermut = ttm.first;
 
@@ -74,7 +75,8 @@ namespace LinBox
 
 			if (pivoting) _F.negin(determinant);
 			++indcol;
-		} else
+		}
+		else
 			indpermut = -1;
 
 		//        std::cerr << "SFP END : lignepivot: [";
@@ -104,7 +106,8 @@ namespace LinBox
 				_F.negin(determinant);
 			}
 			++indcol;
-		} else
+		}
+		else
 			indpermut = -1;
 	}
 

@@ -291,7 +291,8 @@ namespace LinBox
 					if (_VD.areEqual (ATAx, ATb)) {
 						commentator.stop ("passed");
 						success = true;
-					} else {
+					}
+					else {
 						commentator.stop ("FAILED");
 						success = false;
 					}
@@ -304,7 +305,8 @@ namespace LinBox
 					if (_VD.areEqual (Ax, b)) {
 						commentator.stop ("passed");
 						success = true;
-					} else {
+					}
+					else {
 						commentator.stop ("FAILED");
 						success = false;
 					}
@@ -892,7 +894,8 @@ namespace LinBox
 				eliminate_col (_M, row, 0, _indices, Mjj_inv);
 
 				++Ni;
-			} else {
+			}
+			else {
 #ifdef MGBL_DETAILED_TRACE
 				commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 				<< "No pivot found for column " << _indices[row] << std::endl;
@@ -981,7 +984,8 @@ namespace LinBox
 			if (*l) {
 				for (i = A.rowBegin (), k2 = k1->begin (); i != A.rowEnd (); ++i, ++k2)
 					_VD.dot (*k2, *i, *j);
-			} else
+			}
+			else
 				_VD.subin (*k1, *k1);
 		}
 
@@ -1252,7 +1256,8 @@ namespace LinBox
 						typename Matrix::ConstColIterator col = M.colBegin () + i;
 						if (!_VD.isZero (*col))
 							return false;
-					} else
+					}
+					else
 						return false;
 				}
 				else if (!_F.isZero (M.getEntry (i, j)) && !_F.areEqual (M.getEntry (i, j), neg_one))

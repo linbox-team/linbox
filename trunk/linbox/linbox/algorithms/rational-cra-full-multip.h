@@ -87,7 +87,8 @@ namespace LinBox
 							}
 						}
 						return num;
-					} else {
+					}
+					else {
 						for( ; t0_it != num.end(); ++t0_it, ++t_it)
 							*t0_it  = *t_it;
 						++_mod_it; ++_tab_it;

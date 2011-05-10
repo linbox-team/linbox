@@ -244,7 +244,8 @@ namespace LinBox
 			//t_cra.stop();
 			//std::cerr<<"CRA : "<<t_cra.usertime()<<"s"<<std::endl;
 
-		} else {
+		}
+		else {
 			ChineseRemainder <EarlyMultipCRA <Modular<double> > > cra(4UL);
 			cra (dd, iteration, genprime);
 		}

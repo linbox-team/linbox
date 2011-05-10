@@ -136,7 +136,8 @@ namespace LinBox
 					if (x_in <0) {
 						if ((-x_in) > m) x_in %= m;
 						if (x_in < 0) x_in += m;
-					} else {
+					}
+					else {
 						if (x_in > m) x_in %= m;
 					}
 					if (x_in > 0) res = res && _RR.reconstructRational(*it_a, new_den,x_in,m);
@@ -166,7 +167,8 @@ namespace LinBox
 					if (x_in <0) {
 						if ((-(x_in)) > m) x_in %= m;
 						if (x_in < 0) x_in += m;
-					} else {
+					}
+					else {
 						if (x_in > m) x_in %= m;
 					}
 					if (x_in > 0) res = res && _RR.reconstructRational(a[i], new_den,x_in,m);
@@ -205,7 +207,8 @@ namespace LinBox
 					x_in %= m;
 				if (x<0)
 					x_in += m;
-			} else {
+			}
+			else {
 				if (x>m)
 					x_in %= m;
 			}
@@ -226,7 +229,8 @@ namespace LinBox
 					x_in %= m;
 				if (x<0)
 					x_in += m;
-			} else {
+			}
+			else {
 				if (x>m)
 					x_in %= m;
 			}
@@ -246,7 +250,8 @@ namespace LinBox
 					x_in %= m;
 				if (x<0)
 					x_in += m;
-			} else {
+			}
+			else {
 				if (x>m)
 					x_in %= m;
 			}

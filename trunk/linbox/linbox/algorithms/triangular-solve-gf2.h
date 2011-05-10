@@ -62,7 +62,8 @@ namespace LinBox
 					VD.dotSpecialized(tmp, x, *row, DZOtag, SZOtag);
 					F2.addin(tmp,*vec);
 					F2.assign(*res,tmp);
-				} else {
+				}
+				else {
 					// Consistency check
 					if( ! F2.isZero(*vec) ) {
 						consistant = false;
@@ -76,7 +77,8 @@ namespace LinBox
 				VD.dotSpecialized(tmp, x, *row, DZOtag, SZOtag);
 				F2.addin(tmp,*vec);
 				F2.assign(*res,tmp);
-			} else {
+			}
+			else {
 				// Consistency check
 				if( ! F2.isZero(*vec) ) consistant = false;
 			}
