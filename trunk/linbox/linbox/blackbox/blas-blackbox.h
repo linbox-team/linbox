@@ -149,7 +149,8 @@ namespace LinBox
 					      &x[0],1,
 					      this->_Zero,
 					      &y[0],1);
-			} else {
+			}
+			else {
 				_MD. vectorMul (y, *this, x);
 #if 0
 				typename BlasMatrix<Element>::ConstRowIterator i = this->rowBegin ();
