@@ -216,7 +216,8 @@ int main(int argc, char* argv[])
 			display(pl.begin(), pl.end());
 			cout << "# local, PowerGaussDomain<int32_t>(" << m << "), n = " << n << endl;
 
-		} else {
+		}
+		else {
 
 			PIR R(m);
 

@@ -86,23 +86,28 @@ unsigned long& LRank(unsigned long& r, char * filename, integer p)
 	if (p == 2) {
 		LinBox::GF2 F2;
 		return TempLRank(r, filename, F2);
-	} else if (p <= maxmod16) {
+	}
+	else if (p <= maxmod16) {
 		typedef LinBox::GivaroZpz< ::Givaro::Std16> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
-	} else if (p <= maxmod32) {
+	}
+	else if (p <= maxmod32) {
 		typedef LinBox::GivaroZpz< ::Givaro::Std32> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
-	} else if (p <= maxmod53) {
+	}
+	else if (p <= maxmod53) {
 		typedef LinBox::Modular<double> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
-	} else if (p <= maxmod64) {
+	}
+	else if (p <= maxmod64) {
 		typedef LinBox::GivaroZpz< ::Givaro::Std64> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
-	} else {
+	}
+	else {
 		typedef LinBox::GivaroZpz<integer> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
@@ -139,7 +144,8 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, char * filename, integer 
 		for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
 			std::cout << *rit << ' ';
 		std::cout << std::endl;
-	} else {
+	}
+	else {
 		std::cerr << "Sorry power rank mod large composite not yet implemented" << std::endl;
 		std::cerr << "Assuming integer rank" << std::endl;
 		ranks.resize(0); ranks.push_back(intr);
@@ -184,19 +190,23 @@ int main (int argc, char **argv)
 			Compose< Transpose<Blackbox>, Blackbox > C (&T, &A);
 			std::cout << "A^T A is " << C.rowdim() << " by " << C.coldim() << std::endl;
 			valence(val_A, C);
-		} else if (strcmp(argv[2],"-aat") == 0) {
+		}
+		else if (strcmp(argv[2],"-aat") == 0) {
 			Compose< Blackbox, Transpose<Blackbox> > C (&A, &T);
 			std::cout << "A A^T is " << C.rowdim() << " by " << C.coldim() << std::endl;
 			valence(val_A, C);
-		} else {
+		}
+		else {
 			std::cout << "Suppose primes are contained in " << argv[2] << std::endl;
 			val_A = integer(argv[2]);
 		}
-	} else {
+	}
+	else {
 		if (A.rowdim() != A.coldim()) {
 			std::cerr << "Valence works only on square matrices, try either to change the dimension in the matrix file, or to compute the valence of A A^T or A^T A, via the -aat or -ata options."  << std::endl;
 			exit(0);
-		} else
+		}
+		else
 			valence (val_A, A);
 	}
 
@@ -257,7 +267,8 @@ int main (int argc, char **argv)
 			ranks.push_back(sit->second);
 			if (*eit > 1) {
 				PRank(ranks, argv[1], sit->first, *eit, coprimeR);
-			} else {
+			}
+			else {
 				PRank(ranks, argv[1], sit->first, 2, coprimeR);
 			}
 			if (ranks.size() == 1) ranks.push_back(coprimeR);

@@ -70,16 +70,19 @@ int main (int argc, char **argv)
 			Compose< Transpose<Blackbox>, Blackbox > C (&T, &A);
 			std::cout << "A^T A is " << C.rowdim() << " by " << C.coldim() << std::endl;
 			valence(val_A, C);
-		} else {
+		}
+		else {
 			Compose< Blackbox, Transpose<Blackbox> > C (&A, &T);
 			std::cout << "A A^T is " << C.rowdim() << " by " << C.coldim() << std::endl;
 			valence(val_A, C);
 		}
-	} else {
+	}
+	else {
 		if (A.rowdim() != A.coldim()) {
 			std::cerr << "Valence works only on square matrices, try either to change the dimension in the matrix file, or to compute the valence of A A^T or A^T A, via the -aat or -ata options."  << std::endl;
 			exit(0);
-		} else
+		}
+		else
 			valence (val_A, A);
 	}
 

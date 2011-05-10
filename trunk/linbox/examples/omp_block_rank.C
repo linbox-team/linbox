@@ -351,7 +351,8 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 			}
 			std::cerr << "Thread[" << omp_get_thread_num() << "]: Done BTB-Serie[k][" << j << ']' << std::endl;
 		}
-	} else {
+	}
+	else {
 #pragma omp parallel for firstprivate(B) schedule(static)
 		for(int j=0; j<nb; ++j) {
 			std::vector< typename Field::Element > v(S),u(S),w(R);
@@ -423,7 +424,8 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 		chrono3.stop();
 		std::cerr<<"is " << rdeg << ", done.\n";
 		std::cerr << "Estimated rank: " << rank << std::endl;
-	} else {
+	}
+	else {
 		chrono3.stop();
 		std::cerr<<  "\n*** WARNING *** Insufficient information, interpolation required. You might also try again with a larger field.\n";
 		F.write(std::cerr<<  "det(bm[0]): ", d0) << std::endl;
@@ -510,7 +512,8 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 
 		F.write(std::cerr << "Trace D2 B^T D1 B D2: ", t) << std::endl;
 
-	} else {
+	}
+	else {
 		typedef LinBox::Compose< LinBox::Diagonal<Field>, Blackbox > DA_BB;
 		typedef LinBox::Compose< DA_BB, LinBox::Diagonal<Field> > DAD_BB;
 		typedef LinBox::Transpose<Blackbox> AT_BB;
@@ -534,7 +537,8 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 		std::cerr << "*** FAILURE (" << (deg-val) << ") ***" << std::endl;
 		F.write(std::cerr << "Trace: ", t) << std::endl;
 		F.write(std::cerr << "Minpo: ", p2) << std::endl;
-	} else {
+	}
+	else {
 		//         std::cerr << "Degree - valuation: " << (deg-val) << std::endl;
 		std::cerr << "MONTE CARLO RANK: " << (deg-val) << std::endl;
 	}
@@ -560,12 +564,15 @@ int main (int argc, char **argv)
 	if (extend > 1) {
 		std::cerr << "*** WARNING *** would be best using an extension field of degree " << extend << std::endl;
 	}
-	//     if (extend > 1) {
-	//         typedef LinBox::GivaroGfq Field;
-	//         Field EF( (unsigned long)c, extend);
-	//         EF.write(std::cerr << "Using an extension field ") << std::endl;
-	//         return OMP_BLOCK_RANK_main(EF,argc,argv);
-	//     } else {
+#if 0
+	if (extend > 1) {
+		typedef LinBox::GivaroGfq Field;
+		Field EF( (unsigned long)c, extend);
+		EF.write(std::cerr << "Using an extension field ") << std::endl;
+		return OMP_BLOCK_RANK_main(EF,argc,argv);
+	}
+#endif
+	// else {
 	typedef LinBox::Modular<double> Field;
 	Field F(c);
 	return OMP_BLOCK_RANK_main(F,argc,argv);
