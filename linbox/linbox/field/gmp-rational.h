@@ -617,7 +617,8 @@ namespace LinBox
 				mpz_set_str (mpq_denref (x.rep), buffer, 10);
 				mpq_canonicalize (x.rep);
 				return is;
-			} else {
+			}
+			else {
 				mpz_set_si (mpq_denref (x.rep), 1L);
 			}
 
@@ -655,9 +656,11 @@ namespace LinBox
 				bool minus = false;
 				if (endc == '-') {
 					minus = true;
-				} else if (endc == '+') {
+				}
+				else if (endc == '+') {
 					minus = false;
-				} else {
+				}
+				else {
 					is.putback(endc);
 				}
 
@@ -673,7 +676,8 @@ namespace LinBox
 				for (integer it=0; it< pow; ++it) powten *=10;
 				if (minus) {
 					div(x,x,powten);
-				} else {
+				}
+				else {
 					mul(x,x,powten);
 				}
 			}

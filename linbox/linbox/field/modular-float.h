@@ -137,7 +137,8 @@ namespace LinBox
 					      return 0 ;
 				      else
 					      return (unsigned long) (double(max_double)/(modulus*modulus)) ;
-			      } else
+			      }
+			      else
 				      throw LinboxError("Bad input, expecting 0 or 1");
 			      return 0;
 		      }
