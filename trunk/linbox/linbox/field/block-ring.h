@@ -72,10 +72,12 @@ namespace LinBox
 			Element& operator= (const Element& e) {
 				if (matrix == e.matrix) {
 					return *this;
-				}  else if (e.matrix == 0) {
+				}
+				else if (e.matrix == 0) {
 					release();
 					return *this;
-				} else {
+				}
+				else {
 					//set(new Matrix(*(e.matrix))); // does this really copy?
 					clone(e);
 					return *this;
@@ -567,7 +569,8 @@ namespace LinBox
 				n -= 1;
 				expt(res, a, n);
 				res*=a;
-			} else {
+			}
+			else {
 				n /= 2;
 				expt(res, a, n);
 				res*=res;

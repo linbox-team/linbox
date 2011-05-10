@@ -119,10 +119,12 @@ namespace LinBox
 			_source. get_den (den, s);
 			if (den == 1) {
 				return _target.init(t,num);
-			} else if (num == 1) {
+			}
+			else if (num == 1) {
 				_target.init(t,den);
 				return _target.invin(t);
-			} else {
+			}
+			else {
 				_target. init (tmp, den);
 				_target. init (t, num);
 				return _target. divin (t, tmp);

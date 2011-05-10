@@ -270,7 +270,8 @@ namespace LinBox
 				z<<=(unsigned long int)x;
 				//cout << "z"<< z;
 				return z;
-			} else {
+			}
+			else {
 				Element n,m;
 				quoRem(n,m,x,(Element)(LONG_MAX-1));
 				for (int i=0; i < n; ++i) {
@@ -365,7 +366,8 @@ namespace LinBox
 					x %= m;
 				if (x<0)
 					x += m;
-			} else {
+			}
+			else {
 				if (x>m)
 					x %= m;
 			}
@@ -373,7 +375,8 @@ namespace LinBox
 			if (x == 0) {
 				a = 0;
 				b = 1;
-			} else {
+			}
+			else {
 				bool res = ratrecon(a,b,x,m,k, reduce, recursive);
 				if (recursive)
 					for( Element newk = k + 1; (!res) && (newk<f) ; ++newk)
@@ -433,7 +436,8 @@ namespace LinBox
 					if (t0 < 0) {
 						num = -r0;
 						den = -t0;
-					} else {
+					}
+					else {
 						num = r0;
 						den = t0;
 					}
