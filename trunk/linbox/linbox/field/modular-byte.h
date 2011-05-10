@@ -211,6 +211,14 @@ namespace LinBox
 			return x;
 		}
 
+	inline Element& init(Element& x, long unsigned y) const
+		{
+			x = Element (y % lmodulus);
+			if ( x < 0 ) x += modulus;
+			return x;
+		}
+
+
 		inline Element& assign(Element& x, const Element& y) const
 		{
 			return x=y;
