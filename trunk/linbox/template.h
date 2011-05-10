@@ -64,7 +64,8 @@ namespace LinBox
 		toto() ;
 		if (a) {
 			b();
-		} else {
+		}
+	       	else {
 			c() ;
 		}
 	}
@@ -89,7 +90,9 @@ namespace LinBox
 		int _p ;
 		int _q ;
 	public :
-		A() : _p(0), _q(0) {} ;
+		A() :
+			_p(0), _q(0)
+	       	{} ;
 		A(int q) :
 			_p(1), _q(q)
 		{} ;

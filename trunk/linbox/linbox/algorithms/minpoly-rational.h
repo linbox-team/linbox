@@ -64,7 +64,8 @@ namespace LinBox
 		{
 			if (switcher ==1) {
 				t1->operator()(P,F);
-			} else {
+			}
+			else {
 				t2->operator()(P,F);
 			}
 			return P;
@@ -214,7 +215,8 @@ namespace LinBox
 		if (t1.time() < t2.time()) {
 			//cout << "ratim";
 			iteration.setSwitcher(1);
-		} else {
+		}
+		else {
 			//cout << "intim";
 			iteration.setSwitcher(2);
 		}
@@ -250,7 +252,8 @@ namespace LinBox
 								break;
 							}
 						}
-					} else {
+					}
+					else {
 						terminated = false;
 					}
 					//set p

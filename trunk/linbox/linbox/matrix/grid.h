@@ -262,7 +262,8 @@ namespace LinBox
 				A[Y.i] = X;
 				X->next = tmp;
 				if (tmp != NULL) tmp->prev = X;
-			} else {
+			}
+			else {
 				GridElement<Element>* tmp = AT[Y.j];
 				AT[Y.j] = X;
 				X->up = tmp;
@@ -336,7 +337,8 @@ namespace LinBox
 							pivotFound = true;
 							row2=i;
 							ini = i+1; break;
-						} else
+						}
+						else
 							if ((abs(x2)==1/*rowGcd[i]*/) && (abs(x2)== 1/*colGcd[j2]*/)) {
 								size_t jj = j1;
 								Element xx = x1;
@@ -380,13 +382,15 @@ namespace LinBox
 							if (z==0) {
 								//std::cout << ".....deleting \n" << std::flush;
 								p2next = deleteElement(p2next);
-							} else {
+							}
+							else {
 								//std::cout << ".....new value\n" << std::flush;
 								p2next->setElement(z);
 								p2 = p2next;
 								p2next = p2next->up;
 							}
-						} else {
+						}
+						else {
 							//std::cout << "adding " << p1->getI() << " row\n" << std::flush;
 							_F.init(z, x*y);
 							ijElement<Element> X(p1->getI(), j2, z);
@@ -409,7 +413,8 @@ namespace LinBox
 							break;
 						}
 					}
-				} else {
+				}
+				else {
 					std::cout << "Elimination of " << S-1<< " rows at rank " <<rank << "\n" << std::flush;
 
 					size_t i =0;
@@ -440,11 +445,13 @@ namespace LinBox
 									min_col = colOcc[r_p->getJ()];
 									_F.init(x1, r_p->getX());
 									j = r_p->getJ();
-								} else {
+								}
+								else {
 									j_pts.push_back( pair<size_t, GridElement<Element>*>  (r_p->getJ(), NULL));
 									jnext_pts.push_back( pair<Element, GridElement<Element>*>  (r_p->getX(), AT[r_p->getJ()]));
 								}
-							} else {
+							}
+							else {
 								j_pts.push_back(pair<size_t, GridElement<Element>*>  (r_p->getJ(), NULL));
 								jnext_pts.push_back(pair<Element, GridElement<Element>*>  (r_p->getX(), AT[r_p->getJ()]));
 							}
@@ -490,13 +497,15 @@ namespace LinBox
 										if (z==0) {
 											//std::cout << ".....deleting \n" << std::flush;
 											p2next->second = deleteElement(p2next->second);
-										} else {
+										}
+										else {
 											//std::cout << ".....new value\n" << std::flush;
 											p2next->second->setElement(z);
 											p2->second = p2next->second;
 											p2next->second = p2next->second->up;
 										}
-									} else {
+									}
+									else {
 										//std::cout << "adding " << p1->getI() << " row\n" << std::flush;
 										_F.init(z, x*y);
 										ijElement<Element> X(p1->getI(), p2->first, z);
