@@ -608,7 +608,8 @@ int test_fgemm(std::ostream & report, const Field & F)
 
 	if (err) {
 		report << "# \033[1;31m>\033[0mfgemm failed  " << std::endl;
-	} else{
+	}
+	else{
 		report << "# \033[1;32m>\033[0mfgemm success " << std::endl;
 	}
 

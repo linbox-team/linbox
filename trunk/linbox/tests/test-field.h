@@ -51,7 +51,8 @@ typename Field::Element& expt (const Field &F, typename Field::Element &res, con
 		n -= 1;
 		expt (F, res, a, n);
 		F.mulin (res, a);
-	} else {
+	}
+	else {
 		n /= 2;
 		expt (F, res, a, n);
 		typename Field::Element tmp;
@@ -815,8 +816,12 @@ bool testFreshmansDream (const Field &F, const char *name, unsigned int iteratio
 template <class Field>
 bool testArithmeticConsistency (const Field &F, const char *name, unsigned int iterations)
 {
-	return testRingArithmeticConsistency(F, name, iterations)
-	&& testInvDivConsistency(F, name, iterations);
+	bool ret = true ;
+
+	ret &= testRingArithmeticConsistency(F, name, iterations) ;
+	ret &= testInvDivConsistency(F, name, iterations);
+
+	return ret;
 }
 
 template <class Field>
@@ -891,6 +896,38 @@ bool testRingArithmeticConsistency (const Field &F, const char *name, unsigned i
 
 		commentator.stop ("done");
 		commentator.progress ();
+	}
+
+	/*  some trivial tests */
+
+
+	ostream &rapport = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+
+	typename Field::Element one, mone, zero ;
+	F.init(one,1UL);
+	F.init(mone,0UL);
+	F.neg(mone,one);
+	// F.init(mone,-1L);
+	F.init(zero,0UL);
+
+	rapport << " 1 - 1 = " ;
+	typename Field::Element nil ;
+
+	F.add(nil,one,mone);
+
+	F.write(rapport,nil) << std::endl ;
+
+	if ( !F.areEqual(nil,zero) ) {
+		reportError("1+1!=0", ret);
+	}
+
+	typename Field::Element un ;
+	rapport << " -1 * -1 = " ;
+	F.mul(un,mone,mone);
+	F.write(rapport,un) << std::endl ;
+
+	if ( !F.areEqual(un,one) ) {
+		reportError("-1 * -1 != 1", ret);
 	}
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRingArithmeticConsistency");
@@ -1103,7 +1140,7 @@ bool runBasicRingTests (const Field &F, const char *desc, unsigned int iteration
 		if (!testGeometricSummation        (F, desc, iterations, 100))               pass = false;
 	commentator.progress ();
 
-	if (!testRingArithmeticConsistency (F, desc, iterations))                    pass = false;
+	if (!testArithmeticConsistency (F, desc, iterations))                    pass = false;
        	commentator.progress ();
 	if (!testAxpyConsistency           (F, desc, iterations))                    pass = false;
        	commentator.progress ();

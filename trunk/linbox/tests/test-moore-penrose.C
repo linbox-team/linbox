@@ -272,7 +272,8 @@ static bool testRandomApply1 (Field                 &F,
 		if (rank_A == r) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 				<< "Rank is correct. Good." << endl;
-		} else
+		}
+		else
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "Rank is incorrect (" << rank_A << "). Not good." << endl;
 

@@ -336,7 +336,8 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 					F.assign (*(B+i*m+j),zero);
 				for (size_t i=j;i<m;++i)
 					Gn.random (*(B+i*m+j));
-			} else
+			}
+			else
 				for (size_t i=0;i<m;++i)
 					F.assign (*(B+i*m+j), zero);
 		// Create C a random matrix of rank n/2
@@ -346,7 +347,8 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 					F.assign (*(C+i*n+j),zero);
 				for (size_t j = i; j < n; ++j)
 					Gn.random (*(C+i*n+j));
-			} else
+			}
+			else
 				for (size_t j = 0; j < n; ++j)
 					F.assign (*(C+i*n+j),zero);
 

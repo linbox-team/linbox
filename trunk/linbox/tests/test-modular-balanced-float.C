@@ -71,6 +71,9 @@ int main (int argc, char **argv)
 	ModularBalanced<float> F_int (4093);//(2147483629);//(2147483647);
 	ModularBalanced<float> G_int (2011);
 	ModularBalanced<float> H_int (3);
+	integer k = FieldTraits<ModularBalanced<float> >::maxModulus() ;
+	prevprime(k,k);
+	ModularBalanced<float> I_int(k);
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
@@ -84,6 +87,11 @@ int main (int argc, char **argv)
 
 	if (!runFieldTests (H_int,  "ModularBalanced<float>",  iterations, n, false)) pass = false;
 	// if (!testRandomIterator (H_int,  "ModularBalanced<float>", trials, categories, hist_level)) pass = false;
+
+	if (!runFieldTests (I_int,  "ModularBalanced<float>",  iterations, n, false)) pass = false;
+	// if (!testRandomIterator (I_int,  "ModularBalanced<float>", trials, categories, hist_level)) pass = false;
+
+
 
 
 	commentator.stop("ModularBalanced<float> field test suite");

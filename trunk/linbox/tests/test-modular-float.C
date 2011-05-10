@@ -67,6 +67,10 @@ int main (int argc, char **argv)
 	// Modular<float> F (2011);
 	// Modular<float> G (4093);
 	//Modular<float> H (1099511627689);
+	integer k = FieldTraits<Modular<float> >::maxModulus() ;
+	prevprime(k,k);
+	Modular<float> I_int(k);
+
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
@@ -86,6 +90,10 @@ int main (int argc, char **argv)
 	// if (!runFieldTests (F,   "Modular<float>",  iterations, n, false)) pass = false;
 	// report << "Field G" << std::endl;
 	// if (!runFieldTests (G,   "Modular<float>",  iterations, n, false)) pass = false;
+
+	if (!runFieldTests (I_int,  "Modular<float>",  iterations, n, false)) pass = false;
+	// if (!testRandomIterator (I_int,  "Modular<float>", trials, categories, hist_level)) pass = false;
+
 
 	commentator.stop("Modular<float> field test suite");
 	return pass ? 0 : -1;
