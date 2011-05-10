@@ -53,11 +53,13 @@ namespace LinBox
 				if (i != this->back()) {
 					this->push_back( i );
 					return _tobecomputed = true;
-				} else {
+				}
+				else {
 					return _tobecomputed;
 				}
 
-			} else {
+			}
+			else {
 				this->push_back( i );
 				return _tobecomputed = false;
 			}

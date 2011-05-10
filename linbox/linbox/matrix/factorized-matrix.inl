@@ -412,7 +412,8 @@ namespace LinBox
 						if (!F.areEqual (*(W + i*ldw + j), *(Bp + R + i*ldb +j)))
 							consistent = false;
 				delete[] W;
-			} else {
+			}
+			else {
 				FFLAS::fgemm (F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 					      X.rowdim(), B.coldim() - R, R,
 					      one, Xp, X.getStride(), A.getPointer() + R, A.getStride,
@@ -726,7 +727,8 @@ namespace LinBox
 					if (!F.areEqual (W[i], b[i + R]))
 						consistent = false;
 				delete[] W;
-			} else {
+			}
+			else {
 				FFLAS::fgemv (F, FFLAS::FflasTrans,
 					      R, b.size() - R,
 					      one, A.getPointer() + R, A.getStride, xp, 1,

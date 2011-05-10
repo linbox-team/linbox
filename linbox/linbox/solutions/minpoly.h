@@ -156,7 +156,8 @@ namespace LinBox
 			commentator.stop ("done", NULL, "blasconvert");
 
 			return BMD.minpoly (P, static_cast<const BlasMatrix<typename Blackbox::Field::Element>& >(BBB));
-		} else {
+		}
+		else {
 			BlasBlackbox< typename Blackbox::Field > BBB (A);
 			BlasMatrixDomain< typename Blackbox::Field > BMD (BBB.field());
 			commentator.stop ("done", NULL, "blasconvert");
@@ -176,7 +177,8 @@ namespace LinBox
 			// Will make a word size extension
 			// when field size is too small
 			return minpoly(P, A, tag, Method::ExtensionWiedemann (M));
-		} else
+		}
+		else
 			return minpoly(P, A, tag, Method::Wiedemann (M));
 	}
 

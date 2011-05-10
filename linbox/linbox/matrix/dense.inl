@@ -851,7 +851,8 @@ namespace LinBox
 
 				os << "]" << std::endl;
 			}
-		} else {
+		}
+		else {
 
 			os << "Matrix( " << rowdim() << ',' << coldim() << ",[" ;
 			for (p = rowBegin (); p != rowEnd (); ) {
@@ -913,7 +914,8 @@ namespace LinBox
 
 				os << "]" << std::endl;
 			}
-		} else {
+		}
+		else {
 
 			os << "Matrix( " << rowdim() << ',' << coldim() << ",[" ;
 			for (p = rowBegin (); p != rowEnd (); ) {

@@ -92,7 +92,7 @@ namespace LinBox
 #ifdef DEBUG
 			      if(modulus <= 1)
 				      throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
-			      if(modulus > 94906265)
+			      if(modulus > getMaxModulus())
 				      throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 #endif
 		      }
@@ -153,7 +153,8 @@ namespace LinBox
 					      return 0 ;
 				      else
 					      return (unsigned long) (Element(max_Element)/(modulus*modulus)) ;
-			      } else
+			      }
+			      else
 				      throw LinboxError("Bad input, expecting 0 or 1");
 			      return 0;
 		      }

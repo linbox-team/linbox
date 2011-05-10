@@ -138,7 +138,8 @@ namespace LinBox
 		{
 			if (_c_idx < _c_dim - 1){
 				++_cur; ++_c_idx;
-			} else {
+			}
+			else {
 				_cur = _cur + _stride - _c_dim + 1;
 				_c_idx = 0;
 			}
@@ -229,7 +230,8 @@ namespace LinBox
 		{
 			if (_c_idx < _c_dim - 1){
 				++_cur; ++_c_idx;
-			} else {
+			}
+			else {
 				_cur = _cur + _stride - _c_dim + 1;
 				_c_idx = 0;
 			}

@@ -157,7 +157,8 @@ namespace LinBox
 			if (pos == _finish) {
 				push_back(c);
 				newpos = _finish-1;
-			} else {
+			}
+			else {
 				if (allocated > size())
 					newpos = insertwithspace(pos,c);
 				else
@@ -175,7 +176,8 @@ namespace LinBox
 			if (pos == _finish) {
 				for(const_iterator iter=beg; iter != end; ++iter)
 					push_back(*iter);
-			} else {
+			}
+			else {
 				for(const_iterator iter=beg; iter != end; ++iter)
 					insert(pos, *iter);
 			}
@@ -192,7 +194,8 @@ namespace LinBox
 			iterator ppos=pos+1;
 			if ( ppos == _finish) {
 				pop_back();
-			} else {
+			}
+			else {
 				*(pos)=*(ppos);
 				erase(ppos);
 			}
@@ -212,7 +215,8 @@ namespace LinBox
 			const size_t lmf = last-first;
 			if ( last == _finish) {
 				for(size_t i=0; i<lmf; ++i) pop_back();
-			} else {
+			}
+			else {
 				iterator nf(first), nl(last);
 				for( ; (nf != last) && (nl != _finish); ++nf, ++nl)
 					*(nf) = *(nl);
@@ -277,7 +281,8 @@ namespace LinBox
 			REQUIRE( (pos-begin()) >= 0 );
 			if (pos == _finish) {
 				push_back(c);
-			} else {
+			}
+			else {
 				insertwithspace(pos+1, *(pos));
 				*(pos) = c;
 			}
