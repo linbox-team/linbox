@@ -920,9 +920,12 @@ bool testRingTrivia (const Field &F, const char *name)
 
 	ostream &rapport = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
+	//!@todo enable init with 1UL et -1L pour GMPRationalElement
 	typename Field::Element one, mone, zero ;
-	F.init(one,1UL);
-	F.init(mone,0UL);
+	LinBox::integer pun = 1 ;
+	LinBox::integer mun = -1 ;
+	F.init(one,pun);
+	F.init(mone,mun);
 	F.neg(mone,one);
 	// F.init(mone,-1L);
 	F.init(zero,0UL);
@@ -947,7 +950,7 @@ bool testRingTrivia (const Field &F, const char *name)
 		reportError("-1 * -1 != 1", ret);
 	}
 
-	F.init(nil,one);
+	F.init(nil,pun);
 	rapport << "-1 +  -1 * -1 = " ;
 	F.axpy(nil,mone,mone,mone) ;
 	F.write(rapport,nil) << std::endl ;
