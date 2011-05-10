@@ -58,14 +58,14 @@ namespace LinBox
 	 * @param x field element to contain output (reference returned).
 	 * @param y integer.
 	 */
-	/*
-	   template <>
-	   NTL::zz_p& UnparametricField<NTL::zz_p>::init(NTL::zz_p& x, const integer& y) const
-	   { return x = NTL::to_zz_p(y%NTL::zz_p::modulus()); }
-	   template <>
-	   NTL::zz_p& UnparametricField<NTL::zz_p>::init(NTL::zz_p& x, const double& y) const
-	   {   return x = NTL::to_zz_p((long)(y)%NTL::zz_p::modulus()); }
-	   */
+#if 0
+	template <>
+	NTL::zz_p& UnparametricField<NTL::zz_p>::init(NTL::zz_p& x, const integer& y) const
+	{ return x = NTL::to_zz_p(y%NTL::zz_p::modulus()); }
+	template <>
+	NTL::zz_p& UnparametricField<NTL::zz_p>::init(NTL::zz_p& x, const double& y) const
+	{   return x = NTL::to_zz_p((long)(y)%NTL::zz_p::modulus()); }
+#endif
 	template<>
 	NTL::zz_p& Caster(NTL::zz_p& x, const integer& y)
 	{ return x = NTL::to_zz_p(y%NTL::zz_p::modulus()); }
@@ -239,12 +239,6 @@ namespace LinBox
 		{
 			return x = NTL::to_zz_p((long)(y));
 		}
-
-		NTL::zz_p& init(NTL::zz_p& x, const long int y) const
-		{
-			return x = NTL::to_zz_p(y);
-		}
-
 
 		template <class ANY>
 		ANY& convert(ANY& x, const NTL::zz_p& y) const
