@@ -256,7 +256,8 @@ namespace LinBox
 				if (firstrow) {
 					os << "[";
 					firstrow =false;
-				} else
+				}
+				else
 					os << ", [";
 
 				long i=0;

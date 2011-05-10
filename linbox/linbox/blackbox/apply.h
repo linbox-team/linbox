@@ -561,7 +561,8 @@ namespace LinBox
 							_D.init(y[i],ctd[i]);
 						delete[] ctd;
 						delete[] dx;
-					} else {
+					}
+					else {
 						/*
 						 * rc: number of vectors to recombine
 						 * (the idea is that to compute a polynomial in the base 2^chunksize
@@ -1110,7 +1111,8 @@ namespace LinBox
 
 				if (tmp ==0) {
 					*pdbl=0;
-				} else
+				}
+				else
 					if (tmp > 0) {
 
 						//if (sizeof(long)==8 ) {
@@ -1138,7 +1140,8 @@ namespace LinBox
 						}
 						if ((tmpbitsize - j*64) > 48 )
 							*pdbl = double((tmp[tmpsize-1] >> 48)& 0xFFFF);
-						//} else {
+						//}
+						// else {
 #else
 						// specialization for 32bits integer limbs
 						for (j=0; j<tmpsize-1; j++) {
