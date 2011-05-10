@@ -56,11 +56,12 @@ namespace LinBox
 
 	public:
 		/*! Constructor.
-		 * @param bits size of primes (in bits)
+		 * @param bits size of primes (in bits). Default is 25 so it
+		 * can fit in a <code>Linbox::Modular<double></code>.
 		 * @param seed if \c 0 a seed will be generated, otherwise, the
 		 * provided seed will be use.
 		 */
-		RandomPrimeIterator(unsigned int bits = 30, unsigned long seed = 0) :
+		RandomPrimeIterator(unsigned int bits = 25, unsigned long seed = 0) :
 			_bits(bits), _shift(integer(1)<<_bits)
 		{
 			linbox_check(bits >1);
@@ -132,11 +133,12 @@ namespace LinBox
 
 	public:
 		/*! Constructor.
-		 * @param bits max size of primes (in bits)
+		 * @param bits max size of primes (in bits). Default is 25 so it
+		 * can fit in a <code>Linbox::Modular<double></code>.
 		 * @param seed if \c 0 a seed will be generated, otherwise, the
 		 * provided seed will be use.
 		 */
-		RandomPrimeIter(unsigned int bits = 30, unsigned long seed = 0) :
+		RandomPrimeIter(unsigned int bits = 25, unsigned long seed = 0) :
 			_bits(bits)
 		{
 			linbox_check(bits >1);
