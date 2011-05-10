@@ -225,7 +225,7 @@ build |wc" should yield the same number of lines.
 #if 1
 	if (flag > 0) cout << "	Tests requiring further development" << endl;
 	build_n_run("test-smith-form-local", counter, flag, "bds"); //"intermittent failures");
-	build_n_run("test-ftrmm", counter, flag, "bb");
+	no_build_n_run("test-ftrmm", counter, flag, "bb/cp");
 
 	if (flag > 0) cout << "	Immature tests" << endl;
 	no_build_n_run("test-quad-matrix", counter, flag, "half baked, bds responsible"); no_build_n_run("test-dense-zero-one", counter, flag, "half baked, bds responsible"); build_n_run("test-zo", counter, flag, "half baked, BY responsible");
@@ -284,7 +284,8 @@ void no_build_n_run(string s, counts& cnt, int flag, string r)
 	cnt.skipped++;
 }
 
-void build_n_run(string s, counts& cnt, int flag, string r) {
+void build_n_run(string s, counts& cnt, int flag, string r)
+{
 // ignore r.
 	string cmd;
 	if (flag >= 5) { // force build
