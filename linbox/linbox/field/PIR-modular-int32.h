@@ -26,13 +26,11 @@
 
 #include <linbox/field/modular-int32.h>
 #ifndef LINBOX_MAX_INT
-// #define LINBOX_MAX_INT 2147483647
-#define LINBOX_MAX_INT INT32_MAX
+#define LINBOX_MAX_INT 2147483647
 #endif
 
 #ifndef LINBOX_MAX_MODULUS
-// #define LINBOX_MAX_MODULUS 1073741824
-#define LINBOX_MAX_MODULUS INT32_MAX/2+1
+#define LINBOX_MAX_MODULUS 1073741824
 #endif
 #include <linbox/field/field-traits.h>
 
