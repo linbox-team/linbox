@@ -571,7 +571,8 @@ namespace LinBox
 			if (i->second <= level) {
 				j = i++;
 				config.erase (j);
-			} else {
+			}
+			else {
 				++i;
 			}
 		}
@@ -586,7 +587,8 @@ namespace LinBox
 			if (i->second > level) {
 				j = i++;
 				config.erase (j);
-			} else {
+			}
+			else {
 				++i;
 			}
 		}
