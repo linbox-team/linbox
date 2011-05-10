@@ -85,23 +85,28 @@ unsigned long& LRank(unsigned long& r, char * filename, Integer p)
 	if (p == 2) {
 		LinBox::GF2 F2;
 		return TempLRank(r, filename, F2);
-	} else if (p <= maxmod16) {
+	}
+	else if (p <= maxmod16) {
 		typedef LinBox::GivaroZpz<Std16> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
-	} else if (p <= maxmod32) {
+	}
+	else if (p <= maxmod32) {
 		typedef LinBox::GivaroZpz<Std32> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
-	} else if (p <= maxmod53) {
+	}
+	else if (p <= maxmod53) {
 		typedef LinBox::Modular<double> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
-	} else if (p <= maxmod64) {
+	}
+	else if (p <= maxmod64) {
 		typedef LinBox::GivaroZpz<Std64> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
-	} else {
+	}
+	else {
 		typedef LinBox::GivaroZpz<Integer> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
@@ -138,7 +143,8 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, char * filename, Integer 
 		for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
 			std::cout << *rit << ' ';
 		std::cout << std::endl;
-	} else {
+	}
+	else {
 		std::cerr << "*** WARNING *** Sorry power rank mod large composite not yet implemented" << std::endl;
 		std::cerr << "*** WARNING *** Assuming integer rank, extra factors in the Smith form could be missing" << std::endl;
 		ranks.resize(0); ranks.push_back(intr);
@@ -180,19 +186,23 @@ int main (int argc, char **argv)
 			Compose< Transpose<Blackbox>, Blackbox > C (&T, &A);
 			std::cout << "A^T A is " << C.rowdim() << " by " << C.coldim() << std::endl;
 			valence(val_A, C);
-		} else if (strcmp(argv[2],"-aat") == 0) {
+		}
+		else if (strcmp(argv[2],"-aat") == 0) {
 			Compose< Blackbox, Transpose<Blackbox> > C (&A, &T);
 			std::cout << "A A^T is " << C.rowdim() << " by " << C.coldim() << std::endl;
 			valence(val_A, C);
-		} else {
+		}
+		else {
 			std::cout << "Suppose primes are contained in " << argv[2] << std::endl;
 			val_A = Integer(argv[2]);
 		}
-	} else {
+	}
+	else {
 		if (A.rowdim() != A.coldim()) {
 			std::cerr << "Valence works only on square matrices, try either to change the dimension in the matrix file, or to compute the valence of A A^T or A^T A, via the -aat or -ata options."  << std::endl;
 			exit(0);
-		} else
+		}
+		else
 			valence (val_A, A);
 	}
 
@@ -236,7 +246,7 @@ int main (int argc, char **argv)
 
 	std::cout << "num procs: " << omp_get_num_procs() << std::endl;
 	std::cout << "max threads: " << omp_get_max_threads() << std::endl;
-#pragma omp parallel for shared(SmithDiagonal, Moduli, coprimeR) 
+#pragma omp parallel for shared(SmithDiagonal, Moduli, coprimeR)
 	for(size_t j=0; j<Moduli.size(); ++j) {
 		unsigned long r; LRank(r, argv[1], Moduli[j]);
 		std::cerr << "Rank mod " << Moduli[j] << " is " << r << " on thread: " << omp_get_thread_num() << std::endl;
@@ -265,7 +275,8 @@ int main (int argc, char **argv)
 			ranks.push_back(sit->second);
 			if (*eit > 1) {
 				PRank(ranks, argv[1], sit->first, *eit, coprimeR);
-			} else {
+			}
+			else {
 				PRank(ranks, argv[1], sit->first, 2, coprimeR);
 			}
 			if (ranks.size() == 1) ranks.push_back(coprimeR);

@@ -57,7 +57,8 @@ std::ostream& prettyprintIntegerPolynomial (std::ostream& out, const Field &F, c
 	size_t n = v.size()-1;
 	if (n == 0) {
 		F.write(out, v[0]);
-	} else {
+	}
+	else {
 		if(v[n] != 0) {
 			if (v[n] != 1) F.write(out, v[n]) << '*';
 			out << 'X';

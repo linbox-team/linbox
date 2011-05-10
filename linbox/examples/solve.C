@@ -70,7 +70,8 @@ int main (int argc, char **argv)
 		if (!invect) {
 			createB = true;
 			ModComp = 2;
-		} else {
+		}
+		else {
 			createB = false;
 			ModComp = 0;
 		}
@@ -81,7 +82,8 @@ int main (int argc, char **argv)
 		invect.open (argv[2], std::ifstream::in);
 		if (!invect) {
 			createB = true;
-		} else
+		}
+		else
 			createB = false;
 	}
 
@@ -106,7 +108,8 @@ int main (int argc, char **argv)
 				else
 					F.init(*it,1);
 			A.apply(B,U);
-		} else {
+		}
+		else {
 			for(std::vector<Field::Element>::iterator it=B.begin();
 			    it != B.end(); ++it)
 				invect >> *it;
@@ -184,7 +187,8 @@ int main (int argc, char **argv)
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<< std::endl;
 #endif
 
-	} else {
+	}
+	else {
 
 		PID_integer ZZ;
 		MatrixStream< PID_integer > ms( ZZ, input );
@@ -202,7 +206,8 @@ int main (int argc, char **argv)
 					*it = -1;
 				else
 					*it = 1;
-		} else {
+		}
+		else {
 			for(std::vector<PID_integer::Element>::iterator it=B.begin();
 			    it != B.end(); ++it)
 				invect >> *it;
