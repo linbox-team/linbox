@@ -898,6 +898,23 @@ bool testRingArithmeticConsistency (const Field &F, const char *name, unsigned i
 		commentator.progress ();
 	}
 
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRingArithmeticConsistency");
+	delete[] st;
+	return ret;
+}
+
+template <class Field>
+bool testRingTrivia (const Field &F, const char *name)
+{
+	//! @bug BlockRing does not know about 0 and 1 !
+	std::ostringstream str;
+	str << "\t--Testing " << name << " units" << ends;
+	char * st = new char[str.str().size()];
+	strcpy (st, str.str().c_str());
+	commentator.start (st, "testRingTrivia");
+
+	bool ret = true;
+
 	/*  some trivial tests */
 
 
@@ -910,7 +927,7 @@ bool testRingArithmeticConsistency (const Field &F, const char *name, unsigned i
 	// F.init(mone,-1L);
 	F.init(zero,0UL);
 
-	rapport << " 1 - 1 = " ;
+	rapport << "1 - 1 = " ;
 	typename Field::Element nil ;
 
 	F.add(nil,one,mone);
@@ -922,7 +939,7 @@ bool testRingArithmeticConsistency (const Field &F, const char *name, unsigned i
 	}
 
 	typename Field::Element un ;
-	rapport << " -1 * -1 = " ;
+	rapport << "-1 * -1 = " ;
 	F.mul(un,mone,mone);
 	F.write(rapport,un) << std::endl ;
 
@@ -930,10 +947,21 @@ bool testRingArithmeticConsistency (const Field &F, const char *name, unsigned i
 		reportError("-1 * -1 != 1", ret);
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRingArithmeticConsistency");
+	F.init(nil,one);
+	rapport << "-1 +  -1 * -1 = " ;
+	F.axpy(nil,mone,mone,mone) ;
+	F.write(rapport,nil) << std::endl ;
+
+	if ( !F.areEqual(nil,zero) ) {
+		reportError("-1+(-1*-1)!=0", ret);
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRingTrivia");
 	delete[] st;
 	return ret;
 }
+
+
 
 template <class Field>
 bool testInvDivConsistency (const Field &F, const char *name, unsigned int iterations)
@@ -1103,6 +1131,7 @@ bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, s
 	ret &= testFieldInversion (F, desc, iterations) ;
 	ret &= testFieldCommutativity (F, desc, iterations) ;
 	ret &= testFreshmansDream(F, desc, iterations);
+	ret &= testRingTrivia(F,desc);
 
 	commentator.stop (MSG_STATUS (ret));
 	delete[] st;
@@ -1136,9 +1165,10 @@ bool runBasicRingTests (const Field &F, const char *desc, unsigned int iteration
 	}
         LinBox::integer card;
 
-	if (F.cardinality(card) != 2) // otherwise it is not very interesting to find a element not zero and not one !
+	if (F.cardinality(card) != 2) { // otherwise it is not very interesting to find a element not zero and not one !
 		if (!testGeometricSummation        (F, desc, iterations, 100))               pass = false;
-	commentator.progress ();
+		commentator.progress ();
+	}
 
 	if (!testArithmeticConsistency (F, desc, iterations))                    pass = false;
        	commentator.progress ();
