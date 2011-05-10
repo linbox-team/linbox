@@ -420,6 +420,13 @@ namespace LinBox
 			return x;
 		}
 
+		Element &init (Element &x, const long int y ) const
+		{
+			x = y % ModularBase<Element>::_modulus;
+			if (x < 0) x += ModularBase<Element>::_modulus;
+			return x;
+		}
+
 		/*- Initialization of field base element from a double.
 		 * Behaves like C++ allocator construct.
 		 * This function assumes the output field base element x has already been
@@ -726,7 +733,7 @@ namespace LinBox
 			_k (((uint64_t) -1LL) / ((modulus - 1) * (modulus - 1))),
 			_pinv (1.0 / (double) ((Element) modulus))
 		{
-			linbox_check(modulus < UINT8_MAX/2);
+			linbox_check(modulus < UINT8_MAX);
 		}
 		Modular (const integer &modulus) :
 			ModularBase<Element> ((long) modulus),
@@ -734,7 +741,7 @@ namespace LinBox
 			_k (((uint64_t) -1LL) / (((Element)modulus - 1) * ((Element)modulus - 1))),
 			_pinv (1.0 / (double) ((Element) modulus))
 		{
-			linbox_check(modulus < UINT8_MAX/2);
+			linbox_check(modulus < UINT8_MAX);
 		}
 
 		const Modular &operator=(const Modular &F)
@@ -918,7 +925,7 @@ namespace LinBox
 			_k (((uint64_t) -1LL) / ((ModularBase<Element>::_modulus - 1) * (ModularBase<Element>::_modulus - 1))),
 			_pinv (1.0 / (double) ((Element) ModularBase<Element>::_modulus))
 		{
-			linbox_check(modulus<UINT16_MAX/2);
+			linbox_check(modulus<UINT16_MAX);
 		}
 		Modular (const integer &modulus) :
 			ModularBase<Element> ((long) modulus),
@@ -926,7 +933,7 @@ namespace LinBox
 			_k (((uint64_t) -1LL) / ((ModularBase<Element>::_modulus - 1) * (ModularBase<Element>::_modulus - 1))),
 			_pinv (1.0 / (double) ((Element) ModularBase<Element>::_modulus))
 		{
-			linbox_check(modulus<UINT16_MAX/2);
+			linbox_check(modulus<UINT16_MAX);
 		}
 
 		const Modular &operator=(const Modular &F)
@@ -1345,7 +1352,8 @@ namespace LinBox
 			if (!i--) {
 				i = _F._k;
 				return _y = _y % (uint32_t) _F._modulus + t;
-			} else
+			}
+			else
 				return _y += t;
 		}
 
@@ -1355,7 +1363,8 @@ namespace LinBox
 			if (!i--) {
 				i = _F._k;
 				return _y = _y % (uint32_t) _F._modulus + t;
-			} else
+			}
+			else
 				return _y += t;
 		}
 
@@ -1414,7 +1423,8 @@ namespace LinBox
 			if (!i--) {
 				i = _F._k;
 				return _y = _y % (uint64_t) _F._modulus + t;
-			} else
+			}
+			else
 				return _y += t;
 		}
 
@@ -1423,7 +1433,8 @@ namespace LinBox
 			if (!i--) {
 				i = _F._k;
 				return _y = _y % (uint64_t) _F._modulus + t;
-			} else
+			}
+			else
 				return _y += t;
 		}
 

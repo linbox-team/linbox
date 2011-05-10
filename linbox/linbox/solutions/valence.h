@@ -215,7 +215,8 @@ namespace LinBox
 					if ( local_radius > _aat_radius) {
 						_aat_radius1 = _aat_radius;
 						_aat_radius = local_radius;
-					} else
+					}
+					else
 						_aat_radius1 = local_radius;
 				}
 			}
@@ -264,7 +265,8 @@ namespace LinBox
 			commentator. start ("Valence (AAT)", "Valence");
 			typedef Modular<int32_t> Field;
 			typedef typename MatrixHomTrait<Blackbox, Field>::value_type FBlackbox;
-			int n_bit = (int)(log((double)Field::getMaxModulus()) / M_LN2 - 2);
+			double log_max_mod = log((double)FieldTraits<Field>::maxModulus()) ;
+			int n_bit = (int)(log_max_mod / M_LN2 - 2);
 			unsigned long d;
 			RandomPrimeIterator g(n_bit); Field::Element v;
 			++g; Field F(*g);
@@ -287,7 +289,9 @@ namespace LinBox
 
 			typedef Modular<int32_t> Field;
 			typedef typename MatrixHomTrait<Blackbox, Field>::value_type FBlackbox;
-			int n_bit = (int)(log((double)Field::getMaxModulus()) / M_LN2 - 2);
+
+			double log_max_mod = log((double)FieldTraits<Field>::maxModulus()) ;
+			int n_bit = (int)(log_max_mod / M_LN2 - 2);
 			RandomPrimeIterator rg(n_bit);
 			std::vector<integer> Lv, Lm;
 			unsigned long d1; Field::Element v; integer im = 1;

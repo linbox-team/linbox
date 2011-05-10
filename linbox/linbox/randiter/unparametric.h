@@ -88,7 +88,8 @@ namespace LinBox
 				    ) :
 			_size(size), _seed(seed)
 		{
-			if (_seed == integer(0)) _seed = integer(time(NULL));
+			if (_seed == integer(0))
+				_seed = Integer::random();
 
 			integer cardinality; F.cardinality(cardinality);
 			if ( (cardinality != integer(-1)) && (_size > cardinality) )
@@ -168,7 +169,9 @@ namespace LinBox
 		/// Default constructor
 		UnparametricRandIter(void) :
 			_size(0), _seed(0)
-		{ time(NULL); }
+		{
+			time(NULL);
+		}
 
 		//@}
 

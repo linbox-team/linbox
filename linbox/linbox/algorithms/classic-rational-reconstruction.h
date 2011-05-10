@@ -73,7 +73,8 @@ namespace LinBox
 			if (x == 0) {
 				a = 0;
 				b = 1;
-			} else {
+			}
+			else {
 				res = ratrecon(a,b,x,m,a_bound);
 				if (_recursive) {
 					for(Element newbound = a_bound + 1; (!res) && (newbound<x) ; ++newbound)
@@ -160,7 +161,8 @@ namespace LinBox
 					if (t0 < 0) {
 						a = -r0;
 						b = -t0;
-					} else {
+					}
+					else {
 						a = r0;
 						b = t0;
 					}

@@ -49,7 +49,8 @@ namespace LinBox
 			if (p != 0) {
 				if (indpermut == static_cast<long>(indcol)) {
 					indpermut = lignepivot[p];
-				} else {
+				}
+				else {
 					E ttm = lignepivot[p];
 					indpermut = ttm;
 
@@ -67,15 +68,17 @@ namespace LinBox
 			}
 
 			++indcol;
-		} else
+		}
+		else
 			indpermut = -1;
-
-		//        std::cerr << "SFP END : lignepivot: [";
-		//         for(typename Vector::const_iterator refs =  lignepivot.begin();
-		//             refs != lignepivot.end() ;
-		//             ++refs )
-		//             std::cerr << '(' << refs->first << ';' << refs->second << ')';
-		//         std::cerr << "]" << std::endl;
+#if 0
+		std::cerr << "SFP END : lignepivot: [";
+		for(typename Vector::const_iterator refs =  lignepivot.begin();
+		    refs != lignepivot.end() ;
+		    ++refs )
+			std::cerr << '(' << refs->first << ';' << refs->second << ')';
+		std::cerr << "]" << std::endl;
+#endif
 	}
 
 	template <class Vector> inline void
@@ -92,7 +95,8 @@ namespace LinBox
 				lignepivot.front() = indcol;
 			}
 			++indcol;
-		} else
+		}
+		else
 			indpermut = -1;
 	}
 
