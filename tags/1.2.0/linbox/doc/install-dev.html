@@ -1,0 +1,138 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<!--  Copyright (C) 2005 LinBox team, part of LinBox, GNU LGPL, see COPYING
+-->
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.76 [en] (X11; U; SunOS 5.8 sun4u) [Netscape]">
+   <link href="doxygen.css" rel="stylesheet" type="text/css">
+   <title>linbox: Installation (for developers)</title>
+</head>
+<body text="#000000" bgcolor="#FFFFFF" link="#0000EE" vlink="#551A8B" alink="#FF0000">
+&nbsp;
+<center>
+<p><b><font size=+2>How to install LinBox (for developers using cvs)</font></b></center>
+
+<p><br>
+<blockquote>See also <a href="HACKING">HACKING</a>.&nbsp; Once the LinBox
+module has been checked out using cvs,
+<p><b>1. </b>Make sure the bin of <tt>autoconf</tt>, <tt>automake</tt>
+and <tt>libtool </tt>are in your path.<b> </b>Depending on your system
+installation (see <a href="HACKING">HACKING</a>), you may also need
+to set the environment variable <tt>ACLOCAL_FLAGS</tt> to <tt>"-I &lt;automake,
+libtool prefix&gt;/share/aclocal"</tt>.</blockquote>
+
+<blockquote>
+<b>2.</b> Go to the newly-created linbox directory and
+run the script
+<b>autogen.sh,</b> optionally you may specify the LinBox
+installation directory or an optional package directory using prefixes:
+<blockquote><tt>&gt; cd linbox</tt>
+<br><tt>&gt; ./autogen.sh [--prefix=&lt;inst. dir.&gt; --with-package=&lt;location&gt; --enable-feature]</tt></blockquote>
+<a href="http://swox.com/gmp">Gmp</a> is required and its location
+must be specified &lt;gmp location&gt; is not a standard location such as
+<tt>/usr</tt> or <tt>/usr/loca</tt>l:
+<blockquote><tt>&gt;&nbsp;./autogen.sh --with-gmp= &lt;gmp location&gt;
+[...]</tt></blockquote>
+<a href="http://math-atlas.sourceforge.net/">Atlas</a>, or other source of BLAS, is also required and its location
+must be specified if not standard.
+<blockquote><tt>&gt;&nbsp;./autogen.sh --with-atlas= &lt;atlas location&gt;
+[...]</tt></blockquote>
+This sets up the library and runs&nbsp; .<tt>/configure</tt>
+
+<p> <b>3.</b> Optional configurations
+
+<blockquote> 
+<b> 3.1.</b> Where to put the <tt>include/</tt> and <tt>lib/</tt> directories:
+<blockquote><tt>--prefix= &lt;chosen installation directory&gt;</tt>
+<br>Ex:&nbsp; <tt>--prefix= `pwd` </tt>will put the files within the current
+directory</blockquote>
+
+<p><b> 3.2.</b> The use of an optional package is switched on by specifying the directory
+where it can be found:
+<blockquote>
+--with-package=&lt;package_directory&gt;
+<br>
+<br>
+&lt;package_directory&gt; can be left blank if the package is installed in a standard directory (<tt>/usr</tt> or <tt>/usr/local</tt>)
+<br>
+Ex: <tt> --with-givaro</tt> will enable the use of Givaro library and assume it is installed in a standard directory
+<br>
+<br>
+<b>Available packages are the following:</b>
+<br>
+<br>
+	  <table  border="3" style="text-align: left; margin-left: 30pt;" cellpadding="5" cellspacing="5">
+	    <tr>
+	      <td> <a href="http://ljk.imag.fr/CASYS/LOGICIELS/givaro"> Givaro </a> </td>
+	      <td> <tt> --with-givaro= &lt;givaro_directory&gt;</tt> </td>
+	      <td> used for finite field arithmetic.</td>
+	    </tr>
+	    <tr>
+	      <td> <a href="http://www.informatik.tu-darmstadt.de/TI/LiDIA/"> Lidia </a></td>
+	      <td> <tt> --with-lidia= &lt;lidia_directory&gt;</tt> </td>
+	      <td> used for finite field arithmetic.</td>
+	    </tr>
+	    <tr>
+	      <td> <a href="http://shoup.net/ntl/">NTL</a></td>
+	      <td> <tt> --with-ntl= &lt;ntl_directory&gt;</tt></td>
+	      <td> used for finite field, polynomial arithmetic.</td>
+	    </tr>
+	    <tr>
+	      <td> <a href="ftp://ftp.risc.uni-linz.ac.at/pub/saclib/"> Saclib </a></td>
+	      <td> <tt> --with-saclib= &lt;saclib_directory&gt;</td>
+	      <td> not yet used </td>
+	    </tr>
+	    <tr>
+	      <td> <a href="http://www.maplesoft.com/"> Maple </a></td>
+	      <td> <tt> --with-maple= &lt;maple-directory&gt;&nbsp; </tt></td>
+	      <td> used to create an interface with Maple.</td>
+	    </tr>
+	    <tr>
+	      <td> <a href="http://www.doxygen.org/"> Doxygen </a></td>
+	      <td> <tt> --with-doxygen= &lt;doxygen-path&gt;&nbsp; </tt></td>
+	      <td>used to create the html reference manual.</td>
+	    </tr>
+	  </table>
+	  
+	  <br>
+	  Note: 
+	  <blockquote>
+	    <p> the use of <tt> --with-default= &lt;default_directory&gt;</tt> can add a special directory to the default location of library
+	    <p> the use of <tt> --with-all</tt> specifies that all packages will be used
+	  </blockquote>
+	</blockquote>
+
+<p><b> 3.3.</b> The use of special feature is switched on by calling the enable parameter:
+<blockquote>
+<tt> --enable-feature</tt>
+<br>
+Ex: <tt> --enable-shared</tt>  will turn on the build of shared library
+<br>
+<br>
+<b>Available extra features are the following:</b>
+<br>
+<br>
+	  <table  border="3" style="text-align: left; margin-left: 30pt;" cellpadding="5" cellspacing="5">
+	    <tr>
+	      <td> <tt> --enable-optimization</tt> </td>
+	      <td> turn on runtime optimization during the configuration </td>
+	    </tr>
+	    <tr>
+	      <td> <tt> --enable-doc</tt> </td>
+	      <td> turn on the build of documentation via Doxygen.</td>
+	    </tr>
+	  </table>
+	  
+
+</blockquote>
+</blockquote>
+<b>4.&nbsp; </b>Install the library:
+<blockquote><tt>&gt;&nbsp; make install</tt></blockquote>
+</blockquote>
+
+<hr WIDTH="100%">
+<div align=right><font size=-1>Copyright 1999-2005 The Linbox Group.</font></div>
+
+</body>
+</html>

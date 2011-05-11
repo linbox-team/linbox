@@ -1,0 +1,14 @@
+// Copyright (C) 2010 Brice Boyer, part of LinBox, GNU LGPL, see COPYING
+
+/*! @ingroup field
+  @defgroup modular Modular
+
+  @brief Modular Field is a representation of \f$\mathbf{Z}/p\mathbf{Z}\f$.
+
+  - Modular
+  - Modular Balanced
+
+ */
+
+// vim:syntax=doxygen
+
