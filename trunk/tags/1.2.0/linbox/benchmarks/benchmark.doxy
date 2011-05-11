@@ -1,0 +1,25 @@
+/*! \ingroup linbox
+ * \defgroup benchmarks
+ * @brief This directory is used to perform benchmarks on LinBox.
+ * The benchmarks are meant for :
+ * - the \e user to guide her through the various choices of
+ * algorithms/implementation provided in her particular case.
+ * - the \e developper to test her new algorithms against the others or check
+ * that the newest shiny subroutine she just wrote didn't deteriorate too much
+ * the performance of LinBox :) (regression testing purpose).
+ * .
+ *
+ * Bencharmks can be grouped in :
+ * - basic routines (fflas/ffpack, integer operations,...) ;
+ * - algorithms ;
+ * - solutions.
+ * .
+ *
+ * When another free library (NTL, IML,...) provides a routine that exists in
+ * LinBox, we want to be able to compare it to our implementation.
+ *
+ * Default parameters can be changed on the command-line, just as in \c
+ * examples/ and \c tests/.
+ */
+
+// vim:syntax=doxygen
