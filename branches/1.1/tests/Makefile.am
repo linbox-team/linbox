@@ -4,6 +4,7 @@
 
 AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox
 # AM_LDFLAGS = -llapack -lcblas -latlas
+AM_LDFLAGS = $(top_srcdir)/linbox/.libs/liblinbox.a
 #  SAFER_FLAGS = -g -Wall -Wextra -Wno-unused-parameter
 # bds: no need to optimize for unit/regression tests, and opt adds a lot to compilation time
 AM_CXXFLAGS = @TESTS_CFLAGS@ -DLinBoxSrcOnly
@@ -15,9 +16,9 @@ AM_CXXFLAGS = @TESTS_CFLAGS@ -DLinBoxSrcOnly
 
 SUBDIRS = data
 
-AM_CPPFLAGS+= $(CBLAS_FLAG) $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
+AM_CPPFLAGS+= $(CBLAS_FLAG) $(FFLAFLAS_CFLAGS) $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
 LDADD = $(BLAS_LIBS) $(NTL_LIBS) $(GIVARO_LIBS) $(GMP_LIBS)  $(LIDIA_LIBS)
-AM_LDFLAGS=-static
+AM_LDFLAGS+=-static
 
 EXTRA_DIST=            \
 		test-common.C
@@ -54,9 +55,12 @@ BASIC_TESTS =  \
         test-matrix-stream      \
         test-minpoly            \
         test-modular            \
-        test-modular-balanced-int\
+        test-modular-balanced-int    \
+        test-modular-balanced-float  \
+        test-modular-balanced-double \
         test-modular-byte       \
         test-modular-double     \
+        test-modular-float      \
         test-modular-int        \
         test-modular-short      \
         test-block-ring         \
@@ -80,17 +84,18 @@ BASIC_TESTS =  \
         test-smith-form-binary          \
         test-rational-solver            \
         test-rational-solver-adaptive   \
+        test-solve-nonsingular          \
         test-last-invariant-factor      \
         test-charpoly                   \
 		test-cra                        \
 		test-cradomain                  \
+        test-unparametric-field         \
 		test-rational-reconstruction-base
 
 #  test-integer-tools
 
 # tests of components not adhering to LinBox requirements.
 NONCOMPLIANT_TESTS =                   \
-        test-unparametric-field        \
         test-ntl-RR                    \
         test-param-fuzzy
 
@@ -125,8 +130,7 @@ USE_FAILING_TESTS =
 # a benchmarker, not to be included in check.
 BENCHMARKS =                    \
         benchmark-fields        \
-        benchmark-blas-domain   \
-        test-solve-nonsingular
+        benchmark-blas-domain
 
 # historical tests, no longer in use
 #        test-nag-sparse                  replaced by tripplesbb
@@ -468,6 +472,12 @@ test_modular_double_SOURCES =                \
         test-generic.h                       \
         test-common.h
 
+test_modular_float_SOURCES =                \
+        test-modular-float.C                \
+        test-generic.h                       \
+        test-common.h
+
+
 test_modular_byte_SOURCES =          \
         test-modular-byte.C          \
         test-generic.h               \
@@ -475,6 +485,16 @@ test_modular_byte_SOURCES =          \
 
 test_modular_balanced_int_SOURCES =  \
         test-modular-balanced-int.C  \
+        test-generic.h               \
+        test-common.h
+
+test_modular_balanced_double_SOURCES =  \
+        test-modular-balanced-double.C  \
+        test-generic.h               \
+        test-common.h
+
+test_modular_balanced_float_SOURCES =  \
+        test-modular-balanced-float.C  \
         test-generic.h               \
         test-common.h
 
@@ -589,3 +609,16 @@ fullcheck: checker
 
 checker: checker.C
 
+CLEANFILES= checker               \
+			$(BASIC_TESTS)        \
+			$(FAILING_TESTS)      \
+			$(NONCOMPLIANT_TESTS) \
+			$(BENCHMARKS)         \
+			$(DUBIOUS_TESTS)      \
+			$(NTL_TESTS)          \
+			$(GIVARO_TESTS)       \
+			$(ATLAS_TESTS)
+
+
+#  %:%.C
+#  $(CXX) $(OPTFLAGS) $(AM_CPPFLAGS) $(AM_CXXFLAGS) $*.C -o $*  `$(GIVARO_BIN)/givaro-config --cflags` `$(FFLAFLAS_BIN)/fflasffpack-config --cflags`  $(LDADD)  `$(GIVARO_BIN)/givaro-config --libs` `$(FFLAFLAS_BIN)/ffasffpack-config --libs`

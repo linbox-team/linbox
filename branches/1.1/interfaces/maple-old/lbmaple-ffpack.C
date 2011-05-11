@@ -28,8 +28,8 @@
 
 #include "linbox/field/modular.h"
 #include "linbox/field/givaro-zpz.h"
-#include "linbox/fflas/fflas.h"
-#include "linbox/ffpack/ffpack.h"
+#include "fflas-ffpack/fflas/fflas.h"
+#include "fflas-ffpack/ffpack/ffpack.h"
 #include "maplec.h"
 
 using namespace LinBox;

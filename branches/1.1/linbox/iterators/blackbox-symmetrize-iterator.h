@@ -55,7 +55,8 @@ namespace LinBox
 				casenumber = 0;
 				_BB_domain->Apply(v, u);
 				DOTPROD(_value,v,v);
-			} else {
+			}
+			else {
 				casenumber = 1;
 				_BB_domain->ApplyTrans( u, v);
 				DOTPROD(_value,u,u);

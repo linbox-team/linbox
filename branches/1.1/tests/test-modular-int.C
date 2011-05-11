@@ -71,6 +71,10 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	Modular<int32_t> F_int (1073741789);//(2147483629);//(2147483647);
+	integer k = FieldTraits<Modular<int32_t> >::maxModulus() ;
+	prevprime(k,k);
+	Modular<int32_t> I_int(k);
+
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
@@ -78,6 +82,10 @@ int main (int argc, char **argv)
 
 	if (!runFieldTests (F_int,  "Modular<int32_t>",  iterations, n, false)) pass = false;
 	if (!testRandomIterator (F_int,  "Modular<int32_t>", trials, categories, hist_level)) pass = false;
+
+	if (!runFieldTests (I_int,  "Modular<int32_t>",  iterations, n, false)) pass = false;
+	if (!testRandomIterator (I_int,  "Modular<int32_t>", trials, categories, hist_level)) pass = false;
+
 
 	commentator.stop("Modular<int32_t> field test suite");
 	return pass ? 0 : -1;

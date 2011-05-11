@@ -1,10 +1,10 @@
 # Copyright (c) 2010 the LinBox group
 # This file is part of LinBox
 # see COPYING for licence
-AM_CPPFLAGS=-I$(top_srcdir)/linbox $(GMP_CFLAGS)
+AM_CPPFLAGS=-I$(top_srcdir)/linbox
 pkgincludesubdir=$(pkgincludedir)/randiter
 
-AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DDISABLE_COMMENTATOR $(GMP_CFLAGS) $(NTL_CFLAGS) $(ATLAS_CFLAGS) $(GIVARO_CFLAGS)
+AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DDISABLE_COMMENTATOR $(GMP_CFLAGS) $(NTL_CFLAGS) $(ATLAS_CFLAGS) $(GIVARO_CFLAGS)  $(FFLAFLAS_CFLAGS)
 
 BASIC_HDRS =            \
     abstract.h          \

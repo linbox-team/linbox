@@ -28,7 +28,7 @@
 #define __LINBOX_blas_blackbox_H
 
 #include <linbox/matrix/blas-matrix.h>
-#include <linbox/fflas/fflas.h>
+#include <fflas-ffpack/fflas/fflas.h>
 #include <linbox/matrix/matrix-domain.h>
 #include <linbox/field/hom.h>
 #include <linbox/field/multimod-field.h>
@@ -149,7 +149,8 @@ namespace LinBox
 					      &x[0],1,
 					      this->_Zero,
 					      &y[0],1);
-			} else {
+			}
+			else {
 				_MD. vectorMul (y, *this, x);
 #if 0
 				typename BlasMatrix<Element>::ConstRowIterator i = this->rowBegin ();

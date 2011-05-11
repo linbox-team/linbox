@@ -67,12 +67,12 @@ namespace LinBox
 	/** \brief wrapper of Givaro's ZpzDom.
 	  \ingroup field
 
-	 *  Most methods are inherited from ZpzDom<Std16>, ZpzDom<Std32>
-	 *  and ZpzDom<log16> classes of Givaro.
+	 *  Most methods are inherited from ::Givaro::ZpzDom< ::Givaro::Std16>, ::Givaro::ZpzDom< ::Givaro::Std32>
+	 *  and ::Givaro::ZpzDom<log16> classes of Givaro.
 	 *  These classes allow to construct only finite field with a prime modulus.
 	 */
 
-	template <class TAG> class GivaroZpz : public ZpzDom<TAG>, public FieldInterface
+	template <class TAG> class GivaroZpz : public ::Givaro::ZpzDom<TAG>, public FieldInterface
 	{
 
 	private:
@@ -85,28 +85,28 @@ namespace LinBox
 		//typedef integer Integer;
 
 		/** Element type.
-		 *  This type is inherited from the Givaro class ZpzDom<TAG>
+		 *  This type is inherited from the Givaro class ::Givaro::ZpzDom<TAG>
 		 */
-		typedef typename ZpzDom<TAG>::Rep Element;
+		typedef typename ::Givaro::ZpzDom<TAG>::Rep Element;
 
 		/** RandIter type
-		 *  This type is inherited from the Givaro class ZpzDom<TAG>
+		 *  This type is inherited from the Givaro class ::Givaro::ZpzDom<TAG>
 		 */
-		typedef GIV_randIter< ZpzDom<TAG>, integer > RandIter;
+		typedef ::Givaro::GIV_randIter< ::Givaro::ZpzDom<TAG>, integer > RandIter;
 
 		/** Constructor from an integer
-		 *  this constructor use the ZpzDom<TAG> constructor
+		 *  this constructor use the ::Givaro::ZpzDom<TAG> constructor
 		 */
 		GivaroZpz (const integer &p) :
-			ZpzDom<TAG> (static_cast<typename ZpzDom<TAG>::Residu_t> (p))
+			::Givaro::ZpzDom<TAG> (static_cast<typename ::Givaro::ZpzDom<TAG>::Residu_t> (p))
 		{}
 
 
 		/** Constructor from an integer (takes degree of extension as 2nd parameter, must be 1)
-		 *  this constructor use the ZpzDom<TAG> constructor
+		 *  this constructor use the ::Givaro::ZpzDom<TAG> constructor
 		 */
 		GivaroZpz (const integer &p, const integer& k) :
-			ZpzDom<TAG> (static_cast<typename ZpzDom<TAG>::Residu_t> (p))
+			::Givaro::ZpzDom<TAG> (static_cast<typename ::Givaro::ZpzDom<TAG>::Residu_t> (p))
 		{
 
 			if (k!=1)
@@ -114,43 +114,58 @@ namespace LinBox
 		}
 
 		/** Copy constructor.
-		 * This copy constructor use the ZpzDom<TAG> copy constructor
+		 * This copy constructor use the ::Givaro::ZpzDom<TAG> copy constructor
 		 */
 		GivaroZpz (const GivaroZpz<TAG>& F) :
-			ZpzDom<TAG> (F)
+			::Givaro::ZpzDom<TAG> (F)
 		{}
 
 
+#if 0
 		// Rich Seagraves 7-16-2003
 		// As is, this operator is an infinite loop
 		// By not providing an operator= in GivaroZpz,
-		// the operator= in the base class (ZpzDom<TAG>) is called
+		// the operator= in the base class (::Givaro::ZpzDom<TAG>) is called
 		// automatically by the rules of C++, which I'm guessing is
 		// the "Right Thing" for this operator
 		//
 		/** Operator =
 		*/
 		/*
-		   GivaroZpz<TAG>& operator= (const GivaroZpz<TAG>& F) {
+		   GivaroZpz<TAG>& operator= (const GivaroZpz<TAG>& F)
+		   {
 		   return (*this)=F;
 		   }
 		   */
+#endif
 
 		/** Characteristic.
 		 * Return integer representing characteristic of the domain.
 		 * @return integer representing characteristic of the domain.
 		 */
 		integer &characteristic (integer &c) const
-		{ return c = integer (ZpzDom<TAG>::size ()); }
+		{
+		       	return c = integer (::Givaro::ZpzDom<TAG>::size ());
+		}
+
 		long characteristic() const
-		{return static_cast<int>(ZpzDom<TAG>::size());}
+		{
+			return static_cast<int>(::Givaro::ZpzDom<TAG>::size());
+		}
 
 		/** Cardinality.
 		 * Return integer representing cardinality of the domain.
 		 * @return integer representing cardinality of the domain
 		 */
 		integer &cardinality (integer &c) const
-		{ return c = integer (ZpzDom<TAG>::size ()); }
+		{
+			return c = integer (::Givaro::ZpzDom<TAG>::size ());
+		}
+
+		integer cardinality () const
+		{
+			return integer (::Givaro::ZpzDom<TAG>::size ());
+		}
 
 		/** Conversion of field base element to an integer.
 		 * This function assumes the output field base element x has already been
@@ -160,14 +175,20 @@ namespace LinBox
 		 * @param y constant field base element.
 		 */
 		integer &convert (integer &x, const Element &y) const
-		{ return x = integer (y); }
+		{
+		       	return x = integer (y);
+		}
 
 		double &convert (double& x, const Element& y) const
-		{ return x = static_cast<double>(y); }
+		{
+		       	return x = static_cast<double>(y);
+		}
 
 		template<class Type>
 		Type &convert (Type& x, const Element& y) const
-		{ return x = static_cast<Type>(y); }
+		{
+		       	return x = static_cast<Type>(y);
+		}
 
 
 		/** Initialization of field base element from an integer.
@@ -181,10 +202,10 @@ namespace LinBox
 		Element &init (Element &x , const integer &y = 0) const
 		{
 			//
-			//	AU 28/03/07 no cast to long allows to use ZpzDom<integer>
+			//	AU 28/03/07 no cast to long allows to use ::Givaro::ZpzDom<integer>
 			//
-			//ZpzDom<TAG>::init (x, (long) (y% integer(this->_p)));
-			ZpzDom<TAG>::init (x, (y% integer(this->_p)));
+			//Givaro::ZpzDom<TAG>::init (x, (long) (y% integer(this->_p)));
+			::Givaro::ZpzDom<TAG>::init (x, (y% integer(this->_p)));
 			return x;
 		}
 
@@ -194,7 +215,7 @@ namespace LinBox
 			double z = fmod(y, (double) this->_p);
 			if (z < 0) z += (double) this->_p;
 			z += 0.5;
-			return x = static_cast<long>(z); //rounds towards 0
+			return x = static_cast<Element>(z); //rounds towards 0
 		}
 
 		static uint64_t getMaxModulus();
@@ -202,35 +223,35 @@ namespace LinBox
 	}; // class GivaroZpz<TAG>
 
 
-	template <> uint64_t GivaroZpz<Std32>::getMaxModulus() { return 46339; } // 2^15.5-1
-	template <> uint64_t GivaroZpz<Std64>::getMaxModulus() { return 3037000499ULL; } // 2^15.5-1
-	template <> uint64_t GivaroZpz<Unsigned32>::getMaxModulus() { return 65535; } // 2^16-1
-	template <> uint64_t GivaroZpz<Std16>::getMaxModulus() { return 255; }   // 2^8-1
-	template <> uint64_t GivaroZpz<Log16>::getMaxModulus() { return 32767; } // 2^15 - 1
+	template <> uint64_t GivaroZpz< ::Givaro::Std32>::getMaxModulus() { return 46339; } // 2^15.5-1
+	template <> uint64_t GivaroZpz< ::Givaro::Std64>::getMaxModulus() { return 3037000499ULL; } // 2^15.5-1
+	template <> uint64_t GivaroZpz< ::Givaro::Unsigned32>::getMaxModulus() { return 65535; } // 2^16-1
+	template <> uint64_t GivaroZpz< ::Givaro::Std16>::getMaxModulus() { return 255; }   // 2^8-1
+	template <> uint64_t GivaroZpz< ::Givaro::Log16>::getMaxModulus() { return 32767; } // 2^15 - 1
 
 	/** Specialisation of the convert function for the zech log representation
-	 *	of givaro-zpz (GivaroZpz<Log16>.
+	 *	of givaro-zpz (GivaroZpz< ::Givaro::Log16>.
 	 *  this function translates the internal representation to the real
 	 *	value of the element.
 	 *	This can have no sense but can be usefull
 	 *  NB : the init function for this specialisation does the same thing.
 	 *  the function transaltes the values to her internal representation.
 	 */
-	template <> integer& GivaroZpz<Log16>::convert(integer& x, const Element& y) const
+	template <> integer& GivaroZpz< ::Givaro::Log16>::convert(integer& x, const Element& y) const
 	{
 		if (y>=this->_p) return x = 0;
 		int tmp = _tab_rep2value[y];
 		return x = integer (tmp);
 	}
 
-	template <> double& GivaroZpz<Log16>::convert(double& x, const Element& y) const
+	template <> double& GivaroZpz< ::Givaro::Log16>::convert(double& x, const Element& y) const
 	{
 		if (y>=this->_p) return x = 0.0;
 		int tmp = _tab_rep2value[y];
 		return x = (double) tmp;
 	}
 
-	template <> GivaroZpz<Log16>::Element& GivaroZpz<Log16>::init(GivaroZpz<Log16>::Element& x, const double& y) const
+	template <> GivaroZpz< ::Givaro::Log16>::Element& GivaroZpz< ::Givaro::Log16>::init(GivaroZpz< ::Givaro::Log16>::Element& x, const double& y) const
 	{
 		double z = fmod(y, (double) this->_p);
 		if (z < 0) z += this->_p;
@@ -238,22 +259,22 @@ namespace LinBox
 		return x = _tab_value2rep[static_cast<long>(z)]; //rounds towards 0
 	}
 
-	template <> GivaroZpz<Log16>::Element& GivaroZpz<Log16>::init(GivaroZpz<Log16>::Element& x, const integer& y) const
+	template <> GivaroZpz< ::Givaro::Log16>::Element& GivaroZpz< ::Givaro::Log16>::init(GivaroZpz< ::Givaro::Log16>::Element& x, const integer& y) const
 	{
 		int tmp =(int) (y % (integer)this->_p);
 		if (tmp < 0 ) tmp += this->_p;
 		return x = _tab_value2rep[tmp];
 	}
 
-	/* Specialization of FieldAXPY for GivaroZpz<Std32> Field */
+	/* Specialization of FieldAXPY for GivaroZpz< ::Givaro::Std32> Field */
 
 
 	template <>
-	class FieldAXPY<GivaroZpz<Std32> > {
+	class FieldAXPY<GivaroZpz< ::Givaro::Std32> > {
 	public:
 
-		typedef GivaroZpz<Std32>::Element Element;
-		typedef GivaroZpz<Std32> Field;
+		typedef GivaroZpz< ::Givaro::Std32>::Element Element;
+		typedef GivaroZpz< ::Givaro::Std32> Field;
 
 		FieldAXPY (const Field &F) :
 			_F (F) , Corr(uint64_t(-1) % (uint64_t)F.characteristic() +1)
@@ -262,7 +283,7 @@ namespace LinBox
 			_F (faxpy._F), _y (0) , Corr(faxpy.Corr)
 		{}
 
-		FieldAXPY<GivaroZpz<Std32> > &operator = (const FieldAXPY &faxpy)
+		FieldAXPY<GivaroZpz< ::Givaro::Std32> > &operator = (const FieldAXPY &faxpy)
 		{ _F = faxpy._F; _y = faxpy._y; Corr = faxpy.Corr; return *this; }
 
 		inline uint64_t& mulacc (const Element &a, const Element &x)
@@ -308,14 +329,14 @@ namespace LinBox
 
 
 
-	/* Specialization of FieldAXPY for GivaroZpz<Std32> Field */
+	/* Specialization of FieldAXPY for GivaroZpz< ::Givaro::Std32> Field */
 
 	template <>
-	class FieldAXPY<GivaroZpz<Std16> > {
+	class FieldAXPY<GivaroZpz< ::Givaro::Std16> > {
 	public:
 
-		typedef GivaroZpz<Std16>::Element Element;
-		typedef GivaroZpz<Std16> Field;
+		typedef GivaroZpz< ::Givaro::Std16>::Element Element;
+		typedef GivaroZpz< ::Givaro::Std16> Field;
 
 		FieldAXPY (const Field &F) :
 			_F (F) , Corr(uint32_t(-1) % (uint32_t)F.characteristic() +1)
@@ -324,7 +345,7 @@ namespace LinBox
 			_F (faxpy._F), _y (0) , Corr(faxpy.Corr)
 		{}
 
-		FieldAXPY<GivaroZpz<Std16> > &operator = (const FieldAXPY &faxpy)
+		FieldAXPY<GivaroZpz< ::Givaro::Std16> > &operator = (const FieldAXPY &faxpy)
 		{ _F = faxpy._F; _y = faxpy._y; Corr = faxpy.Corr; return *this; }
 
 		inline uint32_t& mulacc (const Element &a, const Element &x)
@@ -371,17 +392,17 @@ namespace LinBox
 
 
 
-	// Specialization of DotProductDomain for GivaroZpz<Std32> field
+	// Specialization of DotProductDomain for GivaroZpz< ::Givaro::Std32> field
 
 	template <>
-	class DotProductDomain<GivaroZpz<Std32> > :  private virtual VectorDomainBase<GivaroZpz<Std32> > {
+	class DotProductDomain<GivaroZpz< ::Givaro::Std32> > :  private virtual VectorDomainBase<GivaroZpz< ::Givaro::Std32> > {
 
 	public:
 
-		typedef GivaroZpz<Std32>::Element Element;
+		typedef GivaroZpz< ::Givaro::Std32>::Element Element;
 
-		DotProductDomain (const GivaroZpz<Std32> &F) :
-			VectorDomainBase<GivaroZpz<Std32> > (F) ,
+		DotProductDomain (const GivaroZpz< ::Givaro::Std32> &F) :
+			VectorDomainBase<GivaroZpz< ::Givaro::Std32> > (F) ,
 			Corr(uint64_t(-1) % (uint64_t)F.characteristic() +1),
 			Max(uint64_t(-1))
 		{}
@@ -398,17 +419,17 @@ namespace LinBox
 		uint64_t Max;
 	};
 
-	// Specialization of DotProductDomain for GivaroZpz<Std16> field
+	// Specialization of DotProductDomain for GivaroZpz< ::Givaro::Std16> field
 
 	template <>
-	class DotProductDomain<GivaroZpz<Std16> > :  private virtual VectorDomainBase<GivaroZpz<Std16> > {
+	class DotProductDomain<GivaroZpz< ::Givaro::Std16> > :  private virtual VectorDomainBase<GivaroZpz< ::Givaro::Std16> > {
 
 	public:
 
-		typedef GivaroZpz<Std16>::Element Element;
+		typedef GivaroZpz< ::Givaro::Std16>::Element Element;
 
-		DotProductDomain (const GivaroZpz<Std16> &F) :
-			VectorDomainBase<GivaroZpz<Std16> > (F) ,
+		DotProductDomain (const GivaroZpz< ::Givaro::Std16> &F) :
+			VectorDomainBase<GivaroZpz< ::Givaro::Std16> > (F) ,
 			Corr(uint32_t(-1) % (uint32_t)F.characteristic() +1),
 			Max(uint32_t(-1))
 		{}

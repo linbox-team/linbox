@@ -137,7 +137,8 @@ namespace LinBox
 				Mul(_W,*this->_BB,this->_V);
 				_BMD.mul(this->_value, this->_U, _W);
 				this->casenumber = 0;
-			} else {
+			}
+			else {
 				Mul(this->_V,*this->_BB,_W);
 				_BMD.mul(this->_value, this->_U, this->_V);
 				this->casenumber = 1;
@@ -390,7 +391,8 @@ namespace LinBox
 				Mul(_W,*this->_BB,this->_V);
 				_BMD.mul(this->_value, this->_U, _W);
 				this->casenumber = 0;
-			} else {
+			}
+			else {
 				Mul(this->_V,*this->_BB,_W);
 				_BMD.mul(this->_value, this->_U, this->_V);
 				this->casenumber = 1;
@@ -416,7 +418,8 @@ namespace LinBox
 				}
 
 				this->casenumber = 0;
-			} else {
+			}
+			else {
 				Mul(this->_V,*this->_BB,_W);
 
 				std::vector<Element> tmp(block);

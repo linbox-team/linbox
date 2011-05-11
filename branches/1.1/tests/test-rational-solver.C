@@ -188,6 +188,7 @@ int main(int argc, char** argv)
 	parseArguments (argc, argv, args);
 
 	typedef Modular<int32_t> Field;
+	// typedef Modular<double> Field;
 
 	typedef PID_integer     Ring;
 

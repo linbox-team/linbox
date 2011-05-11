@@ -88,6 +88,7 @@ namespace LinBox
 		ModularCrooked (int32_t p, float f = 0.5, int exp = 1) :
 			modulus((double)p), up_mod( std::ceil((p-1.)*f) ), lo_mod( up_mod-modulus+1 ),lmodulus (p)
 		{
+#ifdef DEBUG
 			if(modulus <= 1)
 				throw PreconditionFailed(__func__,
 							 __LINE__,
@@ -100,11 +101,13 @@ namespace LinBox
 				throw PreconditionFailed (__func__,
 							  __LINE__,
 							  "modulus is too big");
+#endif
 		}
 
 		ModularCrooked (double p, float f = 0.5) :
 			modulus((double)p), up_mod( std::ceil((p-1.)*f) ), lo_mod( up_mod-modulus+1 ),lmodulus (p)
 		{
+#ifdef DEBUG
 			if (modulus <= 1)
 				throw PreconditionFailed(__func__,
 							 __LINE__,
@@ -114,11 +117,13 @@ namespace LinBox
 				throw PreconditionFailed (__func__,
 							  __LINE__,
 							  "modulus is too big");
+#endif
 		}
 
 		ModularCrooked (long int p, float f = 0.5) :
 			modulus((double)p), up_mod( std::ceil((p-1.)*f) ), lo_mod(  up_mod-modulus+1 ),lmodulus (p)
 		{
+#ifdef DEBUG
 			if ((double) modulus <= 1)
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			integer max;
@@ -126,15 +131,18 @@ namespace LinBox
 				throw PreconditionFailed (__func__,
 							  __LINE__,
 							  "modulus is too big");
+#endif
 		}
 
 		ModularCrooked (const integer& p, float f = 0.5)  :
 			modulus((double)p), up_mod( std::ceil((double)(p-1)*f) ), lo_mod(  up_mod-modulus+1 ),lmodulus (p)
 		{
+#ifdef DEBUG
 			if(modulus <= 1)
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			if(modulus > getMaxModulus())
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
+#endif
 
 		}
 
@@ -200,6 +208,7 @@ namespace LinBox
 		std::istream &read (std::istream &is)
 		{
 			is >> modulus;
+#ifdef DEBUG
 			if(modulus <= 1)
 				throw PreconditionFailed (__func__,
 							  __LINE__,
@@ -208,6 +217,7 @@ namespace LinBox
 				throw PreconditionFailed (__func__,
 							  __LINE__,
 							  "modulus is too big");
+#endif
 			return is;
 		}
 
@@ -394,7 +404,8 @@ namespace LinBox
 					return 0 ;
 				else
 					return (unsigned long) (double(max_double)/(p*p)) ;
-			} else
+			}
+			else
 				throw LinboxError("Bad input, expecting 0 or 1");
 			return 0;
 		}

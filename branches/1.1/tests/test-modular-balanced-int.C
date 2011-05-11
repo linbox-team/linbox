@@ -44,6 +44,8 @@
 
 using namespace LinBox;
 
+/*! @bug the arguments are meaningless
+ */
 int main (int argc, char **argv)
 {
 	static integer q1("18446744073709551557");
@@ -75,6 +77,11 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	ModularBalanced<int32_t> F_int (1073741789);//(2147483629);//(2147483647);
+	ModularBalanced<int32_t> G_int (2147483647);
+	ModularBalanced<int32_t> H_int (3);
+	integer k = FieldTraits<ModularBalanced<int32_t> >::maxModulus() ;
+	prevprime(k,k);
+	ModularBalanced<int32_t> I_int(k);
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
@@ -82,6 +89,17 @@ int main (int argc, char **argv)
 
 	if (!runFieldTests (F_int,  "ModularBalanced<int32_t>",  iterations, n, false)) pass = false;
 	if (!testRandomIterator (F_int,  "ModularBalanced<int32_t>", trials, categories, hist_level)) pass = false;
+
+	if (!runFieldTests (G_int,  "ModularBalanced<int32_t>",  iterations, n, false)) pass = false;
+	if (!testRandomIterator (G_int,  "ModularBalanced<int32_t>", trials, categories, hist_level)) pass = false;
+
+	if (!runFieldTests (H_int,  "ModularBalanced<int32_t>",  iterations, n, false)) pass = false;
+	if (!testRandomIterator (H_int,  "ModularBalanced<int32_t>", trials, categories, hist_level)) pass = false;
+
+
+	if (!runFieldTests (I_int,  "ModularBalanced<int32_t>",  iterations, n, false)) pass = false;
+	// if (!testRandomIterator (I_int,  "ModularBalanced<int32_t>", trials, categories, hist_level)) pass = false;
+
 
 	commentator.stop("ModularBalanced<int32_t> field test suite");
 	return pass ? 0 : -1;

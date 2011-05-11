@@ -445,10 +445,10 @@ namespace LinBox
 	inline int RationalSolver<Ring, Field, RandomPrime, WanTraits>::printvec (const Elt* v, int n)
 	{
 		const Elt* p;
-		std::cout << "[";
+		std::cout << '[';
 		for (p = v; p != v + n; ++ p)
 			std::cout << *p << ' ';
-		std::cout << ']' << std::endl;
+		std::cout << ']';
 		return 0;
 	}
 

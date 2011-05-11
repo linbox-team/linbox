@@ -18,8 +18,6 @@
  * @test NO DOC
  */
 
-
-
 #include "linbox/linbox-config.h"
 
 #include <iostream>
@@ -54,7 +52,6 @@ using namespace LinBox;
  *
  * Return true on success and false on failure
  */
-
 template <class Field, class Vector>
 static bool testIdentityInverse (const Field &F, VectorStream<Vector> &stream)
 {
@@ -119,6 +116,7 @@ static bool testIdentityInverse (const Field &F, VectorStream<Vector> &stream)
 	return ret;
 }
 
+
 /* Test 2: Inverse of Hilbert matrix
  *
  * Constructs an n x n Hilbert matrix and a black box for its inverse. Applies
@@ -130,7 +128,6 @@ static bool testIdentityInverse (const Field &F, VectorStream<Vector> &stream)
  *
  * Return true on success and false on failure
  */
-
 template <class Field, class Vector>
 static bool testHilbertInverse (const Field &F, VectorStream<Vector> &stream)
 {
@@ -189,6 +186,7 @@ static bool testHilbertInverse (const Field &F, VectorStream<Vector> &stream)
 	return ret;
 }
 
+
 /* Test 3: Inverse of Vandermonde matrix
  *
  * Computes a random Vandermonde matrix and its inverse. This inverse is a
@@ -205,7 +203,6 @@ static bool testHilbertInverse (const Field &F, VectorStream<Vector> &stream)
  *
  * Return true on success and false on failure
  */
-
 template <class Field, class Vector>
 static bool testVandermondeInverse (const Field           &F,
 				    VectorStream<Vector> &x_stream,
@@ -300,6 +297,7 @@ static bool testVandermondeInverse (const Field           &F,
 	return ret;
 }
 
+
 /* Test 3: Inverse of diagonal inverse
  *
  * Constructs a random nonsingular diagonal matrix and its inverse, and extracts
@@ -312,7 +310,6 @@ static bool testVandermondeInverse (const Field           &F,
  *
  * Return true on success and false on failure
  */
-
 template <class Field, class Vector>
 static bool testDiagonalInverse (const Field &F, VectorStream<Vector> &stream)
 {
@@ -386,6 +383,7 @@ static bool testDiagonalInverse (const Field &F, VectorStream<Vector> &stream)
 	return ret;
 }
 
+
 /* Test 3: Random transpose
  *
  * Compute the inverse of a random dense matrix and apply its transpose to
@@ -397,7 +395,6 @@ static bool testDiagonalInverse (const Field &F, VectorStream<Vector> &stream)
  *
  * Return true on success and false on failure
  */
-
 template <class Field, class Vector>
 static bool testRandomTranspose (Field &F,
 				 VectorStream<Vector> &stream1,
@@ -427,6 +424,7 @@ static bool testRandomTranspose (Field &F,
 
 	return ret;
 }
+
 
 int main (int argc, char **argv)
 {

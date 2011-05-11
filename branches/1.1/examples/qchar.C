@@ -292,13 +292,15 @@ void i_vti_v(RBlackbox& Res, DenseMatrix<Rationals >& M, DVector& den, Integer& 
 
 				if (i==k) {
 					nume_ik = deno_ik-nume_ik;
-				} else {
+				}
+				else {
 					nume_ik = -nume_ik;
 				}
 
 				if (j==k) {
 					nume_jk = deno_jk-nume_jk;
-				} else {
+				}
+				else {
 					nume_jk = -nume_jk;
 				}
 				//cout << nume_ik << nume_jk;
@@ -326,7 +328,8 @@ void i_vti_v(RBlackbox& Res, DenseMatrix<Rationals >& M, DVector& den, Integer& 
 					Res.setEntry(j,i,q);
 					cout << i << " " << j << " " << q_num << "/" << q_den << "\n";
 					cout << j << " " << i << " " << q_num << "/" << q_den << "\n";
-				} else {
+				}
+				else {
 					den[i]=lcm(den[i], q_den);
 					Res.setEntry(i,j,q);
 					cout << i << " " << j << " " << q_num << "/" << q_den << "\n";
@@ -457,7 +460,8 @@ void generate_precRatMat(string& filename, RMatrix& M, DVector& den, Integer& de
 						c=xstr[i];
 						++i;
 					}
-				} else {
+				}
+				else {
 					cout << "wrong number format at .";
 					break;
 				}
@@ -497,7 +501,8 @@ void generate_precRatMat(string& filename, RMatrix& M, DVector& den, Integer& de
 			dplaces -=exp;
 			if (exp > 0) {
 				for (int i=0; i < exp; ++i) ten /=10;
-			} else if (exp < 0) {
+			}
+			else if (exp < 0) {
 				for (int i=0; i < exp; ++i) ten *=10;
 			}
 			//double nume = x * (double)ten;

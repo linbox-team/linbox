@@ -268,7 +268,8 @@ namespace LinBox
 			if ((FullMultipCRA<Domain>::LOGARITHMIC_UPPER_BOUND> 1.0) && ( FullMultipCRA<Domain>::terminated() )) {
 				FullMultipCRA<Domain>::result(r);
 				return r ;
-			} else {
+			}
+			else {
 				//Integer M; getModulus(m);
 				Vect<Integer, Alloc<Integer> > z,vf, vm;
 				FullMultipCRA<Domain>::result(z);
@@ -300,7 +301,8 @@ namespace LinBox
 				FullMultipCRA<Domain>::result(num);
 				den = 1;
 				return num;
-			} else {
+			}
+			else {
 				Vect<Integer, Alloc<Integer> > z,vf, vm;
 				FullMultipCRA<Domain>::result(z);//vector of non prec results
 
@@ -346,7 +348,8 @@ namespace LinBox
 					q.push_back(Quotient(*it,1UL));
 				}
 				return q;
-			} else {
+			}
+			else {
 				Vect<Integer, Alloc<Integer> > z,vf, vm;
 				FullMultipCRA<Domain>::result(z);
 				typename Vect<Integer, Alloc<Integer> >::const_iterator it = z.begin(),itf,itm;

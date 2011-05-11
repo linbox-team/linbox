@@ -37,14 +37,13 @@
 #include "linbox/util/debug.h"
 #include "linbox/field/field-traits.h"
 
-#ifndef LINBOX_MAX_INT16
-#define LINBOX_MAX_INT16 32767
+#ifndef LINBOX_MAX_INT16 /* 32767 */
+#define LINBOX_MAX_INT16 INT16_MAX
 #endif
 
-// This is replaced by FieldTraits< Modular<int16_t> >::maxModulus(integer&)
-// #ifndef LINBOX_MAX_INT16_MODULUS
-// #define LINBOX_MAX_INT16_MODULUS 32767
-// #endif
+#ifdef __ICC /*  pas content avec x = -x par exemple */
+#pragma warning(disable:2259)
+#endif
 
 // Namespace in which all LinBox code resides
 namespace LinBox
@@ -91,6 +90,7 @@ namespace LinBox
 		typedef int16_t Element;
 	protected:
 		Element modulus;
+		unsigned long lmodulus;
 		double modulusinv;
 
 	public:
@@ -102,15 +102,16 @@ namespace LinBox
 
 		//default modular field,taking 251 as default modulus
 		Modular () :
-			modulus(251)
+			modulus(251),lmodulus(modulus)
 		{
-			modulusinv=1/(double)251;
+			modulusinv=1/(double)modulus;
 		}
 
 		Modular (int value, int exp = 1)  :
-			modulus((Element)value)
+			modulus((Element)value),lmodulus((unsigned long) value)
 		{
 			modulusinv = 1 / ((double) value);
+#ifdef DEBUG
 			if(value<=1)
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			integer max;
@@ -118,16 +119,18 @@ namespace LinBox
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
 			if(exp != 1)
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
+#endif
 		}
 
 		Modular(const Modular<Element>& mf) :
-			modulus(mf.modulus),modulusinv(mf.modulusinv)
+			modulus(mf.modulus),lmodulus(mf. lmodulus),modulusinv(mf.modulusinv)
 		{}
 
 		const Modular &operator=(const Modular<Element> &F)
 		{
-			modulus = F.modulus;
-			modulusinv = F.modulusinv;
+			modulus    = F. modulus;
+			lmodulus   = F. lmodulus ;
+			modulusinv = F. modulusinv;
 			return *this;
 		}
 
@@ -140,6 +143,17 @@ namespace LinBox
 		{
 			return c = modulus;
 		}
+
+		inline unsigned long cardinality () const
+		{
+			return  lmodulus;
+		}
+
+		inline unsigned  long characteristic () const
+		{
+			return  lmodulus;
+		}
+
 
 		inline integer &convert (integer &x, const Element &y) const
 		{
@@ -155,9 +169,11 @@ namespace LinBox
 		{
 			int prime;
 			is >> prime;
-					if(prime <= 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
+#ifdef DEBUG
+			if(prime <= 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
 			integer max;
 			if(prime > FieldTraits< Modular<Element> >::maxModulus(max)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
+#endif
 			modulus = (Element) prime;
 			modulusinv = 1 /((double) modulus );
 
@@ -183,7 +199,8 @@ namespace LinBox
 			return init( x, static_cast<integer>(y) );
 		}
 
-		inline Element &init (Element &x, const integer &y) const  {
+		inline Element &init (Element &x, const integer &y) const
+		{
 			x = Element(y % (unsigned long)modulus);
 			if (x < 0)
 				x += modulus;
@@ -213,7 +230,8 @@ namespace LinBox
 			return x = static_cast<long>(z); //rounds towards 0
 		}
 
-		inline Element &init (Element &x, const float &y) const  {
+		inline Element &init (Element &x, const float &y) const
+		{
 			return init (x, (double) y);
 		}
 
@@ -290,8 +308,10 @@ namespace LinBox
 		{
 			Element d, t;
 			XGCD(d, x, t, y, modulus);
+#ifdef DEBUG
 			if (d != 1)
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"InvMod: inverse undefined");
+#endif
 			if (x < 0)
 				return x += modulus;
 			else
@@ -375,7 +395,11 @@ namespace LinBox
 		}
 
 		static inline Element getMaxModulus()
-		{ return 32767; } // 2^15 - 1
+		{
+			return 32767;  // 2^15 - 1
+			// linbox_check(180*181 < INT16_MAX);
+			// return 181 ;
+		}
 
 	private:
 
@@ -386,13 +410,17 @@ namespace LinBox
 			Element aneg = 0, bneg = 0;
 
 			if (a < 0) {
+#ifdef DEBUG
 				if (a < -LINBOX_MAX_INT16) throw PreconditionFailed(__func__,__FILE__,__LINE__,"XGCD: integer overflow");
+#endif
 				a = -a;
 				aneg = 1;
 			}
 
 			if (b < 0) {
+#ifdef DEBUG
 				if (b < -LINBOX_MAX_INT16) throw PreconditionFailed(__func__,__FILE__,__LINE__,"XGCD: integer overflow");
+#endif
 				b = -b;
 				bneg = 1;
 			}
@@ -732,6 +760,10 @@ namespace LinBox
 
 
 }
+
+#ifdef __ICC
+#pragma warning(enable:2259)
+#endif
 
 #include "linbox/randiter/modular.h"
 #endif //__LINBOX_modular_short_H

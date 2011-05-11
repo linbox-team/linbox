@@ -36,6 +36,10 @@ benchmarks:
 
 bin_SCRIPTS=linbox-config
 
-VERSION=1.1.8
+bundled:
+	sh auto-install.sh
 
-#  EXTRA_DIST=incremente-versions
+VERSION=1.2.0
+
+EXTRA_DIST=auto-install.sh
+#incremente-versions

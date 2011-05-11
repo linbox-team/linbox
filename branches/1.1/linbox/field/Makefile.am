@@ -15,7 +15,6 @@ BASIC_HDRS =            \
     gmp-rational.h      \
     modular.h           \
     modular.inl         \
-    modular-int.h       \
     modular-int32.h     \
     modular-int64.h     \
     modular-short.h     \
@@ -23,7 +22,6 @@ BASIC_HDRS =            \
     modular-balanced.h  \
     modular-balanced-double.h   \
     modular-balanced-float.h    \
-    modular-balanced-int.h      \
     modular-balanced-int32.h    \
     modular-balanced-int64.h    \
     modular-crooked-double.h    \
@@ -33,7 +31,6 @@ BASIC_HDRS =            \
     gf2.inl             \
     hom.h               \
     map.h               \
-    PIR-modular-int.h   \
     PIR-modular-int32.h \
     local2_32.h         \
     PID-integer.h       \

@@ -18,11 +18,11 @@
 #include "../linbox/matrix/matrix-domain.h"
 //#include "linbox/field/givaro-zpz.h"
 #include "../linbox/field/modular.h"
-//#include "linbox/ffpack/ffpack.h"
+//#include "fflas-ffpack/ffpack/ffpack.h"
 #include "../linbox/algorithms/dense-nullspace.h"
 #include <vector>
 #include "./test-common.h"
-//#include "Matio.h" // write_field ;
+// #include "fflas-ffpack/utils/Matio.h"
 #include "linbox/algorithms/linbox-tags.h"
 
 using namespace LinBox;
@@ -44,7 +44,7 @@ size_t & RandIntInInt ( const size_t & s, size_t & RIII, const int & seed = 0 )
 	 *	srandom ( seed );
 	 */
 	double alea = rand();
-	RIII          = (size_t) s * (alea/(RAND_MAX+1.0));
+	RIII          = (size_t) ((double)s * (alea/(RAND_MAX+1.0)));
 	assert(RIII<s);
 	return RIII ;
 }
@@ -215,7 +215,8 @@ static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank,
 				delete[] Abis;
 				break ;
 			}
-		} else {
+		}
+		else {
 			NullSpaceBasis (F, LinBoxTag::Left,m,n,A,ld_a,Kern,ld_k,ker_dim);
 			if (ker_dim != (wd_a - rank) ) {
 				ret = false;
@@ -236,7 +237,8 @@ static bool testNullSpaceBasis (const Field& F, size_t m, size_t n, size_t rank,
 		if ( a_droite){
 			FFLAS::fgemm(F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, wd_a, ld_ker, ld_a,
 				     one, Abis, ld_a, Kern, ld_ker , zero, NullMat, ld_n);
-		}else{
+		}
+		else{
 			FFLAS::fgemm(F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, wd_ker,ld_a, ld_ker,
 				     one,  Kern, ld_ker , Abis, ld_a, zero, NullMat, ld_n);
 		}

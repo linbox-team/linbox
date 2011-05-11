@@ -48,7 +48,7 @@
 
 
 #ifdef __LINBOX_BLAS_AVAILABLE
-#include <linbox/fflas/fflas.h>
+#include <fflas-ffpack/fflas/fflas.h>
 #endif
 
 //#define DEBUG_CHUNK_SETUP
@@ -185,11 +185,11 @@ namespace LinBox
 					else {
 						size_t j=0;
 						for (;j<tmp.size();++j){
-							*ptr= 0xFFFFFFFF^x[i][j];
+							*ptr= double(0xFFFFFFFF^x[i][j]);
 							ptr+= n;
 						}
 						for (;j<maxword-1;++j){
-							*ptr= 0xFFFFFFFF;
+							*ptr= double(0xFFFFFFFF);
 							ptr+= n;
 						}
 						*ptr=1;
@@ -561,7 +561,8 @@ namespace LinBox
 							_D.init(y[i],ctd[i]);
 						delete[] ctd;
 						delete[] dx;
-					} else {
+					}
+					else {
 						/*
 						 * rc: number of vectors to recombine
 						 * (the idea is that to compute a polynomial in the base 2^chunksize
@@ -1110,7 +1111,8 @@ namespace LinBox
 
 				if (tmp ==0) {
 					*pdbl=0;
-				} else
+				}
+				else
 					if (tmp > 0) {
 
 						//if (sizeof(long)==8 ) {
@@ -1118,40 +1120,41 @@ namespace LinBox
 
 						// specialization for 64bits integer limbs
 						for (j=0; j<tmpsize-1; j++) {
-							*pdbl        =  tmp[j]        & 0xFFFF;
-							*(pdbl+mn)   = (tmp[j] >> 16) & 0xFFFF;
-							*(pdbl+2*mn) = (tmp[j] >> 32) & 0xFFFF;
-							*(pdbl+3*mn) = (tmp[j] >> 48) & 0xFFFF;
+							*pdbl        = double( tmp[j]        & 0xFFFF);
+							*(pdbl+mn)   = double((tmp[j] >> 16) & 0xFFFF);
+							*(pdbl+2*mn) = double((tmp[j] >> 32) & 0xFFFF);
+							*(pdbl+3*mn) = double((tmp[j] >> 48) & 0xFFFF);
 							pdbl      += 4*mn;
 						}
 						if ((tmpbitsize - j*64) > 0 ) {
-							*pdbl = tmp[tmpsize-1]&0xFFFF;
+							*pdbl = double(tmp[tmpsize-1]&0xFFFF);
 							pdbl+=mn;
 						}
 						if ((tmpbitsize - j*64) > 16 ) {
-							*pdbl = (tmp[tmpsize-1] >> 16)& 0xFFFF;
+							*pdbl = double((tmp[tmpsize-1] >> 16)& 0xFFFF);
 							pdbl+=mn;
 						}
 						if ((tmpbitsize - j*64) > 32 ) {
-							*pdbl = (tmp[tmpsize-1] >> 32)& 0xFFFF;
+							*pdbl = double((tmp[tmpsize-1] >> 32)& 0xFFFF);
 							pdbl+=mn;
 						}
 						if ((tmpbitsize - j*64) > 48 )
-							*pdbl = (tmp[tmpsize-1] >> 48)& 0xFFFF;
-						//} else {
+							*pdbl = double((tmp[tmpsize-1] >> 48)& 0xFFFF);
+						//}
+						// else {
 #else
 						// specialization for 32bits integer limbs
 						for (j=0; j<tmpsize-1; j++) {
-							*pdbl      = tmp[j] &  0xFFFF;
+							*pdbl      = double(tmp[j] &  0xFFFF);
 							*(pdbl+mn) = tmp[j] >> 16;
 							pdbl      += 2*mn;
 						}
 						if ((tmpbitsize - j*32) > 16 ) {
-							*pdbl      = tmp[tmpsize-1] &  0xFFFF;
+							*pdbl      = double(tmp[tmpsize-1] &  0xFFFF);
 							*(pdbl+mn) = tmp[tmpsize-1] >> 16;
 						}
 						else {
-							*pdbl      = tmp[tmpsize-1] & 0xFFFF;
+							*pdbl      = double(tmp[tmpsize-1] & 0xFFFF);
 						}
 						//}
 #endif
@@ -1161,59 +1164,59 @@ namespace LinBox
 #if __LINBOX_SIZEOF_LONG == 8
 						// specialization for 64bits integer limbs
 						for (j=0; j<tmpsize-1; j++) {
-							*pdbl        = 0xFFFF ^ ( tmp[j]        & 0xFFFF);
-							*(pdbl+mn)   = 0xFFFF ^ ((tmp[j] >> 16) & 0xFFFF);
-							*(pdbl+2*mn) = 0xFFFF ^ ((tmp[j] >> 32) & 0xFFFF);
-							*(pdbl+3*mn) = 0xFFFF ^ ((tmp[j] >> 48) & 0xFFFF);
+							*pdbl        = double(0xFFFF ^ ( tmp[j]        & 0xFFFF));
+							*(pdbl+mn)   = double(0xFFFF ^ ((tmp[j] >> 16) & 0xFFFF));
+							*(pdbl+2*mn) = double(0xFFFF ^ ((tmp[j] >> 32) & 0xFFFF));
+							*(pdbl+3*mn) = double(0xFFFF ^ ((tmp[j] >> 48) & 0xFFFF));
 							pdbl        += 4*mn;
 						}
 
 						j=j<<2;
 						if ((tmpbitsize - j*64) > 0 ) {
-							*pdbl = 0xFFFF ^ (tmp[tmpsize-1]&0xFFFF);
+							*pdbl = double(0xFFFF ^ (tmp[tmpsize-1]&0xFFFF));
 							pdbl+=mn;
 							++j;
 						}
 						if ((tmpbitsize - j*64) > 16 ) {
-							*pdbl = 0xFFFF ^ ((tmp[tmpsize-1] >> 16)& 0xFFFF);
+							*pdbl = double(0xFFFF ^ ((tmp[tmpsize-1] >> 16)& 0xFFFF));
 							pdbl+=mn;
 							++j;
 						}
 						if ((tmpbitsize - j*64) > 32 ) {
-							*pdbl = 0xFFFF ^ ((tmp[tmpsize-1] >> 32)& 0xFFFF);
+							*pdbl = double(0xFFFF ^ ((tmp[tmpsize-1] >> 32)& 0xFFFF));
 							pdbl+=mn;
 							++j;
 						}
 						if ((tmpbitsize - j*64) > 48 ) {
-							*pdbl = 0xFFFF ^ ((tmp[tmpsize-1] >> 48)& 0xFFFF);
+							*pdbl = double(0xFFFF ^ ((tmp[tmpsize-1] >> 48)& 0xFFFF));
 							++j;
 						}
 
 						for (; j<num_chunks-1; j++, pdbl += mn)
-							*pdbl      = 0xFFFF;
+							*pdbl      = double(0xFFFF);
 						*pdbl = 1;
 #else
 						// specialization for 32bits integer limb
 						for (j=0; j<tmpsize-1; j++) {
-							*pdbl      = 0xFFFF ^ (tmp[j] & 0xFFFF);
-							*(pdbl+mn) = 0xFFFF ^ (tmp[j] >> 16);
+							*pdbl      = double(0xFFFF ^ (tmp[j] & 0xFFFF));
+							*(pdbl+mn) = double(0xFFFF ^ (tmp[j] >> 16));
 							pdbl      += 2*mn;
 						}
 						j=j<<1;
 						if ((tmpbitsize -j*32) > 16) {
-							*pdbl      = 0xFFFF ^ (tmp[tmpsize-1] & 0xFFFF);
-							*(pdbl+mn) = 0xFFFF ^ (tmp[tmpsize-1] >> 16);
+							*pdbl      = double(0xFFFF ^ (tmp[tmpsize-1] & 0xFFFF));
+							*(pdbl+mn) = double(0xFFFF ^ (tmp[tmpsize-1] >> 16));
 							pdbl      += 2*mn;
 							j+=2;
 						}
 						else {
-							*pdbl      = 0xFFFF ^ (tmp[tmpsize-1] & 0xFFFF);
+							*pdbl      = double(0xFFFF ^ (tmp[tmpsize-1] & 0xFFFF));
 							pdbl      += mn;
 							j+=1;
 						}
 
 						for (; j<num_chunks-1; j++, pdbl += mn)
-							*pdbl      = 0xFFFF;
+							*pdbl      = double(0xFFFF);
 						*pdbl = 1;
 #endif
 					}
@@ -1258,39 +1261,39 @@ namespace LinBox
 #if __LINBOX_SIZEOF_LONG == 8
 						// specialization for 64bits integer limbs
 						for (j=0; j<tmpsize-1; j++) {
-							*pdbl     =  tmp[j]        & 0xFFFF;
-							*(pdbl+1) = (tmp[j] >> 16) & 0xFFFF;
-							*(pdbl+2) = (tmp[j] >> 32) & 0xFFFF;
-							*(pdbl+3) = (tmp[j] >> 48) & 0xFFFF;
+							*pdbl     = double( tmp[j]        & 0xFFFF);
+							*(pdbl+1) = double((tmp[j] >> 16) & 0xFFFF);
+							*(pdbl+2) = double((tmp[j] >> 32) & 0xFFFF);
+							*(pdbl+3) = double((tmp[j] >> 48) & 0xFFFF);
 							pdbl     += 4;
 						}
 						if ((tmpbitsize - j*64) > 0 ) {
-							*pdbl = tmp[tmpsize-1]&0xFFFF;
+							*pdbl = double(tmp[tmpsize-1]&0xFFFF);
 							pdbl++;
 						}
 						if ((tmpbitsize - j*64) > 16 ) {
-							*pdbl = (tmp[tmpsize-1] >> 16)& 0xFFFF;
+							*pdbl = double((tmp[tmpsize-1] >> 16)& 0xFFFF);
 							pdbl++;
 						}
 						if ((tmpbitsize - j*64) > 32 ) {
-							*pdbl = (tmp[tmpsize-1] >> 32)& 0xFFFF;
+							*pdbl = double((tmp[tmpsize-1] >> 32)& 0xFFFF);
 							pdbl++;
 						}
 						if ((tmpbitsize - j*64) > 48 )
-							*pdbl = (tmp[tmpsize-1] >> 48)& 0xFFFF;
+							*pdbl = double((tmp[tmpsize-1] >> 48)& 0xFFFF);
 #else
 						// specialization for 32bits integer limbs
 						for (j=0; j<tmpsize-1; j++) {
-							*pdbl     = tmp[j] &  0xFFFF;
+							*pdbl     = double(tmp[j] &  0xFFFF);
 							*(pdbl+1) = tmp[j] >> 16;
 							pdbl     += 2;
 						}
 						if ((tmpbitsize - j*32) > 16 ) {
-							*pdbl     = tmp[tmpsize-1] &  0xFFFF;
+							*pdbl     = double(tmp[tmpsize-1] &  0xFFFF);
 							*(pdbl+1) = tmp[tmpsize-1] >> 16;
 						}
 						else {
-							*pdbl      = tmp[tmpsize-1] & 0xFFFF;
+							*pdbl      = double(tmp[tmpsize-1] & 0xFFFF);
 						}
 #endif
 					}
@@ -1299,59 +1302,59 @@ namespace LinBox
 #if __LINBOX_SIZEOF_LONG == 8
 						// specialization for 64bits integer limbs
 						for (j=0; j<tmpsize-1; j++) {
-							*pdbl     = 0xFFFF ^ ( tmp[j]        & 0xFFFF);
-							*(pdbl+1) = 0xFFFF ^ ((tmp[j] >> 16) & 0xFFFF);
-							*(pdbl+2) = 0xFFFF ^ ((tmp[j] >> 32) & 0xFFFF);
-							*(pdbl+3) = 0xFFFF ^ ((tmp[j] >> 48) & 0xFFFF);
+							*pdbl     = (double) (0xFFFF ^ ( tmp[j]        & 0xFFFF));
+							*(pdbl+1) = (double) (0xFFFF ^ ((tmp[j] >> 16) & 0xFFFF));
+							*(pdbl+2) = (double) (0xFFFF ^ ((tmp[j] >> 32) & 0xFFFF));
+							*(pdbl+3) = (double) (0xFFFF ^ ((tmp[j] >> 48) & 0xFFFF));
 							pdbl     += 4   ;
 						}
 
 						j=j<<2;
 						if ((tmpbitsize - j*64) > 0 ) {
-							*pdbl = 0xFFFF ^ (tmp[tmpsize-1]&0xFFFF);
+							*pdbl = (double) (0xFFFF ^ (tmp[tmpsize-1]&0xFFFF));
 							pdbl++;
 							++j;
 						}
 						if ((tmpbitsize - j*64) > 16 ) {
-							*pdbl = 0xFFFF ^ ((tmp[tmpsize-1] >> 16)& 0xFFFF);
+							*pdbl = (double) (0xFFFF ^ ((tmp[tmpsize-1] >> 16)& 0xFFFF));
 							pdbl++;
 							++j;
 						}
 						if ((tmpbitsize - j*64) > 32 ) {
-							*pdbl = 0xFFFF ^ ((tmp[tmpsize-1] >> 32)& 0xFFFF);
+							*pdbl = (double) (0xFFFF ^ ((tmp[tmpsize-1] >> 32)& 0xFFFF));
 							pdbl++;
 							++j;
 						}
 						if ((tmpbitsize - j*64) > 48 ) {
-							*pdbl = 0xFFFF ^ ((tmp[tmpsize-1] >> 48)& 0xFFFF);
+							*pdbl = (double) (0xFFFF ^ ((tmp[tmpsize-1] >> 48)& 0xFFFF));
 							++j;
 						}
 
 						for (; j<num_chunks-1; j++, pdbl += mn)
-							*pdbl      = 0xFFFF;
+							*pdbl      = (double) (0xFFFF);
 						*pdbl = 1;
 #else
 						// specialization for 32bits integer limb
 						for (j=0; j<tmpsize-1; j++) {
-							*pdbl      = 0xFFFF ^ (tmp[j] & 0xFFFF);
-							*(pdbl+1) = 0xFFFF ^ (tmp[j] >> 16);
+							*pdbl      = (double) (0xFFFF ^ (tmp[j] & 0xFFFF));
+							*(pdbl+1)  = (double) (0xFFFF ^ (tmp[j] >> 16));
 							pdbl      += 2;
 						}
 						j=j<<1;
 						if ((tmpbitsize -j*32) > 16) {
-							*pdbl      = 0xFFFF ^ (tmp[tmpsize-1] & 0xFFFF);
-							*(pdbl+1) = 0xFFFF ^ (tmp[tmpsize-1] >> 16);
+							*pdbl      = (double) (0xFFFF ^ (tmp[tmpsize-1] & 0xFFFF));
+							*(pdbl+1)  = (double) (0xFFFF ^ (tmp[tmpsize-1] >> 16));
 							pdbl      += 2;
 							j+=2;
 						}
 						else {
-							*pdbl      = 0xFFFF ^ (tmp[tmpsize-1] & 0xFFFF);
+							*pdbl      = (double) (0xFFFF ^ (tmp[tmpsize-1] & 0xFFFF));
 							pdbl      += 1;
 							j+=1;
 						}
 
 						for (; j<num_chunks-1; j++, pdbl += mn)
-							*pdbl      = 0xFFFF;
+							*pdbl      = (double) (0xFFFF);
 						*pdbl = 1;
 #endif
 					}
@@ -1397,12 +1400,12 @@ namespace LinBox
 #if __LINBOX_SIZEOF_LONG == 8
 						// specialization for 64bits integer limbs
 						for (j=0; j<tmpsize-1; j++) {
-							*pdbl     =  tmp[j] & 0xFFFFFFFF;
-							*(pdbl+1) =  tmp[j] >> 32;
+							*pdbl     =  double(tmp[j] & 0xFFFFFFFF);
+							*(pdbl+1) =  double(tmp[j] >> 32);
 							pdbl     += 2;
 						}
 						if ((tmpbitsize - j*64) > 0 ) {
-							*pdbl = tmp[tmpsize-1]&0xFFFFFFFF;
+							*pdbl = double(tmp[tmpsize-1]&0xFFFFFFFF);
 							pdbl++;
 						}
 #else
@@ -1418,37 +1421,37 @@ namespace LinBox
 #if __LINBOX_SIZEOF_LONG == 8
 						// specialization for 64bits integer limbs
 						for (j=0; j<tmpsize; j++) {
-							*pdbl     = 0xFFFFFFFF ^ ( tmp[j] & 0xFFFFFFFF);
-							*(pdbl+2) = 0xFFFFFFFF ^ ( tmp[j] >> 32);
+							*pdbl     = double(0xFFFFFFFF ^ ( tmp[j] & 0xFFFFFFFF));
+							*(pdbl+2) = double(0xFFFFFFFF ^ ( tmp[j] >> 32));
 							pdbl     += 2   ;
 						}
 
 						j=j<<2;
 						if ((tmpbitsize - j*64) > 0 ) {
-							*pdbl = 0xFFFFFFFF ^ (tmp[tmpsize-1]&0xFFFFFFFF);
+							*pdbl = double(0xFFFFFFFF ^ (tmp[tmpsize-1]&0xFFFFFFFF));
 							pdbl++;
 							++j;
 						}
 
 						if ((tmpbitsize - j*64) > 32 ) {
-							*pdbl = 0xFFFF ^ (tmp[tmpsize-1] >> 32);
+							*pdbl = double(0xFFFF ^ (tmp[tmpsize-1] >> 32));
 							pdbl++;
 							++j;
 						}
 
 						for (; j<num_chunks-1; j++, pdbl += mn)
-							*pdbl      = 0xFFFFFFFF;
+							*pdbl      = double(0xFFFFFFFF);
 						*pdbl = 1;
 #else
 						// specialization for 32bits integer limb
 						for (j=0; j<tmpsize-1; j++) {
-							*pdbl      = 0xFFFFFFFF ^ tmp[j];
+							*pdbl      = double(0xFFFFFFFF ^ tmp[j]);
 							pdbl      += 1;
 						}
 						j=j<<1;
 
 						for (; j<num_chunks-1; j++, pdbl += mn)
-							*pdbl      = 0xFFFF;
+							*pdbl      = double(0xFFFF);
 						*pdbl = 1;
 #endif
 

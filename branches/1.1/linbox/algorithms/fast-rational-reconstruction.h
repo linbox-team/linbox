@@ -70,7 +70,8 @@ namespace LinBox
 				a=x;
 				b=1;
 				return true;
-			} else if (m-x < a_bound) {
+			}
+			else if (m-x < a_bound) {
 				a = x-m;
 				b = 1;
 				return true;
@@ -85,7 +86,8 @@ namespace LinBox
 					return true;
 				}
 				return false;
-			} else {
+			}
+			else {
 				//either case (i) or false
 				return false;
 			}
@@ -107,7 +109,8 @@ namespace LinBox
 			if (log_h < ULONG_MAX) {
 				h<<=log_h;
 				return h;
-			} else {
+			}
+			else {
 				Element n,m;
 				quoRem(n,m,log_h,(Element)(ULONG_MAX-1));
 				for (int i=0; i < n; ++i) {
@@ -323,7 +326,8 @@ namespace LinBox
 					++this->C.div_counter;
 					cur_ainext = cur_qinext + 1;
 					ai=1; bi=1; ci=1; di=0;
-				} else {
+				}
+				else {
 					cur_ri = m;
 					cur_rinext = n;
 					_Z.quo(cur_ainext,m,n);
@@ -377,11 +381,13 @@ namespace LinBox
 					++this->C.div_counter;
 					_Z.axpy(cur_ainext, ai,cur_qinext,bi);
 					++this->C.mul_counter;
-				} else {
+				}
+				else {
 					cur_ainext = m+1;//infinity
 					cur_qinext = cur_ainext;
 				}
-			} else { //if (h <= d-1)  // modification of Wan&Pan
+			}
+			else { //if (h <= d-1)  // modification of Wan&Pan
 				Element a1,a2,b1,b2,c1,c2,d1,d2;
 				a1=a2=d1=d2=1;
 				b1=b2=c1=c2=0;
@@ -422,7 +428,8 @@ namespace LinBox
 					if (n2 >0) {
 						if (a1 < powh) {
 							if (!fastEEA(a2,b2,c2,d2,m2,log_m,n2, powtwo(sqrth,_k), _k)) return false;
-						} else {
+						}
+						else {
 							ai = a1; bi = b1; ci=c1; di = d1;
 							cur_ri = m2;
 							cur_rinext = n2;
@@ -432,7 +439,8 @@ namespace LinBox
 							++this->C.mul_counter;
 							return true;
 						}
-					} else {
+					}
+					else {
 						ai = a1; bi = b1; ci=c1; di = d1;
 						cur_ri = m2;
 						cur_rinext = n2;
@@ -440,7 +448,8 @@ namespace LinBox
 						cur_ainext = m+1;
 						return true;
 					}
-				} else {//ri_next == 0 || cur_ainext >powh
+				}
+				else {//ri_next == 0 || cur_ainext >powh
 					ai = a1; bi = b1; ci=c1; di = d1;
 					if (cur_rinext<=0) {
 						cur_ainext = m +1;
@@ -479,7 +488,8 @@ namespace LinBox
 					++this->C.div_counter;
 					_Z.axpy(cur_ainext, ai,cur_qinext,bi);
 					++this->C.mul_counter;
-				} else {
+				}
+				else {
 					cur_ainext = m+1;//infinity
 					cur_qinext = cur_ainext;
 					return true;
@@ -503,7 +513,8 @@ namespace LinBox
 					return false;
 				}
 				/* //modification of Wan&Pan
-				   } else {//h=d, h = d+1;
+				   }
+				   else {//h=d, h = d+1;
 				   Element hh = powh;
 				   size_t log_hh = h;
 				   hh = powh >> 1;
@@ -683,13 +694,15 @@ namespace LinBox
 				push_back(bottom);
 				return false;
 				++_size;
-			} else {
+			}
+			else {
 				if (!this->empty()) {
 					top = this->front();
 					this->pop_front();
 					push_back(bottom);
 
-				} else {
+				}
+				else {
 					top=bottom;
 				}
 				return true;
@@ -921,7 +934,8 @@ namespace LinBox
 							if (maxQ.q.bitsize() > T.bitsize() + c) return true;
 						}
 					}
-				} else {
+				}
+				else {
 					//we do not have to treat identity;
 					cur_ri = m;
 					cur_rinext = n;
@@ -961,7 +975,8 @@ namespace LinBox
 					bi = Q_i_2.b;
 					ci = Q_i_2.c;
 					di = Q_i_2.d;// Q(i-2)= Q*(i-2) q*(i-1)
-				}  else {
+				}
+				else {
 					queueMax.clear();
 				}
 				queueMax._maxSize -=2;
@@ -981,7 +996,8 @@ namespace LinBox
 					++this->C.div_counter;
 					_Z.axpy(cur_ainext, ai,cur_qinext,bi);
 					++this->C.mul_counter;
-				} else {//should never happen
+				}
+				else {//should never happen
 					cur_ainext = m+1;//infinity
 					cur_qinext = cur_ainext;
 				}
@@ -1042,7 +1058,8 @@ namespace LinBox
 					if (n2 >0) {
 						if (a1 < powh) {
 							if (!fastQMaxEEA(a2,b2,c2,d2,m2,log_m,n2, powtwo(sqrth,_k), _k, queueTmp,maxQTmp)) return false;
-						} else {
+						}
+						else {
 							ai = a1; bi = b1; ci=c1; di = d1;
 							cur_ri = m2;
 							cur_rinext = n2;
@@ -1052,7 +1069,8 @@ namespace LinBox
 							++this->C.mul_counter;
 							return true;
 						}
-					} else {
+					}
+					else {
 						ai = a1; bi = b1; ci=c1; di = d1;
 						cur_ri = m2;
 						cur_rinext = n2;
@@ -1060,7 +1078,8 @@ namespace LinBox
 						cur_ainext = m+1;
 						return true;
 					}
-				} else {//ri_next == 0 || cur_ainext >powh
+				}
+				else {//ri_next == 0 || cur_ainext >powh
 					ai = a1; bi = b1; ci=c1; di = d1;
 					if (cur_rinext<=0) {
 						cur_ainext = m +1;
@@ -1100,7 +1119,8 @@ namespace LinBox
 					++this->C.div_counter;
 					_Z.axpy(cur_ainext, ai,cur_qinext,bi);
 					++this->C.mul_counter;
-				} else {
+				}
+				else {
 					cur_ainext = m+1;//infinity
 					cur_qinext = cur_ainext;
 				}
@@ -1132,7 +1152,8 @@ namespace LinBox
 						ci = Q.c;
 						di = Q.d;
 						//qi = Q.q;
-					} else {
+					}
+					else {
 						//update queue;
 						Q=queueTmp.front();
 						queueTmp.pop_front();

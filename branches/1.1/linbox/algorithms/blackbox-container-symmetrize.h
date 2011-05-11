@@ -74,7 +74,8 @@ namespace LinBox
 				this->casenumber = 0;
 				this->_BB->apply (this->v, this->u);
 				this->_VD.dot (this->_value, this->v, this->v);
-			} else {
+			}
+			else {
 				this->casenumber = 1;
 				this->_BB->applyTranspose (this->u, this->v);
 				this->_VD.dot (this->_value, this->u, this->u);

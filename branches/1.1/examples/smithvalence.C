@@ -51,7 +51,7 @@ unsigned long& TempLRank(unsigned long& r, char * filename, const Field& F)
 	LinBox::MatrixStream< Field > msf( F, input );
 	LinBox::SparseMatrix<Field,typename LinBox::Vector<Field>::SparseSeq> FA(msf);
 	input.close();
-	Timer tim; tim.start();
+	::Givaro::Timer tim; tim.start();
 	LinBox::rankin(r, FA);
 	tim.stop();
 	F.write(std::cout << "Rank over ") << " is " << r << ' ' << tim << std::endl;
@@ -64,7 +64,7 @@ unsigned long& TempLRank(unsigned long& r, char * filename, const LinBox::GF2& F
 	LinBox::ZeroOne<LinBox::GF2> A;
 	A.read(input);
 	input.close();
-	Timer tim; tim.start();
+	::Givaro::Timer tim; tim.start();
 	LinBox::rankin(r, A, LinBox::Method::SparseElimination() );
 	tim.stop();
 	F2.write(std::cout << "Rank over ") << " is " << r << ' ' << tim << std::endl;
@@ -76,31 +76,36 @@ unsigned long& TempLRank(unsigned long& r, char * filename, const LinBox::GF2& F
 unsigned long& LRank(unsigned long& r, char * filename, Integer p)
 {
 
-	Integer maxmod16; LinBox::FieldTraits<LinBox::GivaroZpz<Std16> >::maxModulus(maxmod16);
-	Integer maxmod32; LinBox::FieldTraits<LinBox::GivaroZpz<Std32> >::maxModulus(maxmod32);
-	Integer maxmod53; LinBox::FieldTraits<LinBox::Modular<double> >::maxModulus(maxmod53);
-	Integer maxmod64; LinBox::FieldTraits<LinBox::GivaroZpz<Std64> >::maxModulus(maxmod64);
+	integer maxmod16; LinBox::FieldTraits<LinBox::GivaroZpz< ::Givaro::Std16> >::maxModulus(maxmod16);
+	integer maxmod32; LinBox::FieldTraits<LinBox::GivaroZpz< ::Givaro::Std32> >::maxModulus(maxmod32);
+	integer maxmod53; LinBox::FieldTraits<LinBox::Modular<double> >::maxModulus(maxmod53);
+	integer maxmod64; LinBox::FieldTraits<LinBox::GivaroZpz< ::Givaro::Std64> >::maxModulus(maxmod64);
 	if (p == 2) {
 		LinBox::GF2 F2;
 		return TempLRank(r, filename, F2);
-	} else if (p <= maxmod16) {
-		typedef LinBox::GivaroZpz<Std16> Field;
+	}
+	else if (p <= maxmod16) {
+		typedef LinBox::GivaroZpz< ::Givaro::Std16> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
-	} else if (p <= maxmod32) {
-		typedef LinBox::GivaroZpz<Std32> Field;
+	}
+	else if (p <= maxmod32) {
+		typedef LinBox::GivaroZpz< ::Givaro::Std32> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
-	} else if (p <= maxmod53) {
+	}
+	else if (p <= maxmod53) {
 		typedef LinBox::Modular<double> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
-	} else if (p <= maxmod64) {
-		typedef LinBox::GivaroZpz<Std64> Field;
+	}
+	else if (p <= maxmod64) {
+		typedef LinBox::GivaroZpz< ::Givaro::Std64> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
-	} else {
-		typedef LinBox::GivaroZpz<Integer> Field;
+	}
+	else {
+		typedef LinBox::GivaroZpz<integer> Field;
 		Field F(p);
 		return TempLRank(r, filename, F);
 	}
@@ -109,10 +114,10 @@ unsigned long& LRank(unsigned long& r, char * filename, Integer p)
 
 std::vector<size_t>& PRank(std::vector<size_t>& ranks, char * filename, Integer p, size_t e, size_t intr)
 {
-	Integer maxmod;
-	LinBox::FieldTraits<LinBox::GivaroZpz<Std64> >::maxModulus(maxmod);
+	integer maxmod;
+	LinBox::FieldTraits<LinBox::GivaroZpz< ::Givaro::Std64> >::maxModulus(maxmod);
 	if (p <= maxmod) {
-		typedef LinBox::GivaroZpz<Std64> Ring;
+		typedef LinBox::GivaroZpz< ::Givaro::Std64> Ring;
 		int64_t lp(p);
 		Integer q = pow(p,e); int64_t lq(q);
 		if (q > Integer(lq)) {
@@ -136,7 +141,8 @@ std::vector<size_t>& PRank(std::vector<size_t>& ranks, char * filename, Integer 
 		for(std::vector<size_t>::const_iterator rit=ranks.begin(); rit != ranks.end(); ++rit)
 			std::cout << *rit << ' ';
 		std::cout << std::endl;
-	} else {
+	}
+	else {
 		std::cerr << "Sorry power rank mod large composite not yet implemented" << std::endl;
 		std::cerr << "Assuming integer rank" << std::endl;
 		ranks.resize(0); ranks.push_back(intr);
@@ -174,26 +180,30 @@ int main (int argc, char **argv)
 
 	PID_integer::Element val_A;
 
-	Timer chrono; chrono.start();
+	::Givaro::Timer chrono; chrono.start();
 	if (argc >= 3) {
 		Transpose<Blackbox> T(&A);
 		if (strcmp(argv[2],"-ata") == 0) {
 			Compose< Transpose<Blackbox>, Blackbox > C (&T, &A);
 			std::cout << "A^T A is " << C.rowdim() << " by " << C.coldim() << std::endl;
 			valence(val_A, C);
-		} else if (strcmp(argv[2],"-aat") == 0) {
+		}
+		else if (strcmp(argv[2],"-aat") == 0) {
 			Compose< Blackbox, Transpose<Blackbox> > C (&A, &T);
 			std::cout << "A A^T is " << C.rowdim() << " by " << C.coldim() << std::endl;
 			valence(val_A, C);
-		} else {
+		}
+		else {
 			std::cout << "Suppose primes are contained in " << argv[2] << std::endl;
 			val_A = Integer(argv[2]);
 		}
-	} else {
+	}
+	else {
 		if (A.rowdim() != A.coldim()) {
 			std::cerr << "Valence works only on square matrices, try either to change the dimension in the matrix file, or to compute the valence of A A^T or A^T A, via the -aat or -ata options."  << std::endl;
 			exit(0);
-		} else
+		}
+		else
 			valence (val_A, A);
 	}
 
@@ -201,7 +211,7 @@ int main (int argc, char **argv)
 
 	std::vector<Integer> Moduli;
 	std::vector<size_t> exponents;
-	IntFactorDom<> FTD;
+	::Givaro::IntFactorDom<> FTD;
 
 	typedef std::pair<Integer,unsigned long> PairIntRk;
 	std::vector< PairIntRk > smith;
@@ -254,7 +264,8 @@ int main (int argc, char **argv)
 			ranks.push_back(sit->second);
 			if (*eit > 1) {
 				PRank(ranks, argv[1], sit->first, *eit, coprimeR);
-			} else {
+			}
+			else {
 				PRank(ranks, argv[1], sit->first, 2, coprimeR);
 			}
 			if (ranks.size() == 1) ranks.push_back(coprimeR);

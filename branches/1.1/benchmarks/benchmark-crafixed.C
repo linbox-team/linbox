@@ -57,6 +57,9 @@
 #define _LB_LOG2 0.69314718055994530941
 // #define _LB_LOG2 0.30102999566398119521
 
+using ::Givaro::Timer ;
+using LinBox::integer;
+
 // typedef std::vector<LinBox::integer> Ivect ;
 // typedef std::vector<double>          Fvect ;
 

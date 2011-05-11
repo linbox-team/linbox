@@ -216,7 +216,7 @@ namespace LinBox
 			WD.pseudo_minpoly (phi, res);
 			commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Pseudo Minpoly degree: " << res << std::endl;
 
-			commentator.start ("Monte Carlo certification", "trace");
+			commentator.start ("Monte Carlo certification (1)", "trace");
 			typename Field::Element t, p2; F.init(p2, 0UL);
 			trace(t, B);
 			if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
@@ -226,25 +226,27 @@ namespace LinBox
 			bool tryagain = (! F.areEqual( t, p2 ));
 			while( tryagain ) {
 				commentator.stop ("fail", NULL, "trace");
+#if 0
 
-				//                 Permutation<Field> P(A.rowdim(), F);
-				//                 for (i = 0; i < A.rowdim (); ++i)
-				//                     P.permute( rand() % A.rowdim() , rand() % A.rowdim() );
-				//                 for (i = 0; i < A.rowdim (); ++i)
-				//                     P.permute( rand() % A.rowdim() , rand() % A.rowdim() );
+				Permutation<Field> P(A.rowdim(), F);
+				for (i = 0; i < A.rowdim (); ++i)
+					P.permute( rand() % A.rowdim() , rand() % A.rowdim() );
+				for (i = 0; i < A.rowdim (); ++i)
+					P.permute( rand() % A.rowdim() , rand() % A.rowdim() );
 
-				//                 Transpose< Permutation<Field> > TP(&P);
-				//                 typedef Compose< Permutation<Field>, Blackbox > BlackboxP;
-				//                 typedef Compose< Compose< Permutation<Field>, Blackbox >, Transpose< Permutation<Field> > > BlackboxPAP;
-				//                 BlackboxP PA(&P, &A);
-				//                 BlackboxPAP BP( &PA , &TP );
+				Transpose< Permutation<Field> > TP(&P);
+				typedef Compose< Permutation<Field>, Blackbox > BlackboxP;
+				typedef Compose< Compose< Permutation<Field>, Blackbox >, Transpose< Permutation<Field> > > BlackboxPAP;
+				BlackboxP PA(&P, &A);
+				BlackboxPAP BP( &PA , &TP );
 
-				//                 for (i = 0; i < A.coldim (); i++)
-				//                     do iter.random (d1[i]); while (F.isZero (d1[i]));
-				//                 Diagonal<Field> D1 (F, d1);
-				//                 Compose<Diagonal<Field>,BlackboxPAP > B1 (&D1, &BP);
-				//                 typedef Compose<Compose<Diagonal<Field>,BlackboxPAP >, Diagonal<Field> > BlackBox2;
-				//                 BlackBox2 B (&B1, &D1);
+				for (i = 0; i < A.coldim (); i++)
+					do iter.random (d1[i]); while (F.isZero (d1[i]));
+				Diagonal<Field> D1 (F, d1);
+				Compose<Diagonal<Field>,BlackboxPAP > B1 (&D1, &BP);
+				typedef Compose<Compose<Diagonal<Field>,BlackboxPAP >, Diagonal<Field> > BlackBox2;
+				BlackBox2 B (&B1, &D1);
+#endif
 
 				for (i = 0; i < A.coldim (); i++)
 					do iter.random (d1[i]); while (F.isZero (d1[i]));
@@ -257,7 +259,7 @@ namespace LinBox
 
 				WD.pseudo_minpoly (phi, rk);
 				commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Permuted pseudo Minpoly degree: " << res << std::endl;
-				commentator.start ("Monte Carlo certification", "trace");
+				commentator.start ("Monte Carlo certification (2)", "trace");
 				if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
 
 				trace(t, B);
@@ -297,7 +299,7 @@ namespace LinBox
 
 				WD.pseudo_minpoly (phi, rk);
 				commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Butterfly pseudo Minpoly degree: " << res << std::endl;
-				commentator.start ("Monte Carlo certification", "trace");
+				commentator.start ("Monte Carlo certification (3)", "trace");
 				if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
 
 				trace(t, PAP);
@@ -319,7 +321,8 @@ namespace LinBox
 			commentator.stop ("done", NULL, "srank");
 
 			return res;
-		} else {
+		}
+		else {
 
 			commentator.start ("Rank", "wrank");
 
@@ -353,7 +356,7 @@ namespace LinBox
 			std::vector<typename Field::Element> phi;
 			WD.pseudo_minpoly (phi, res);
 			commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Pseudo Minpoly degree: " << res << std::endl;
-			commentator.start ("Monte Carlo certification", "trace");
+			commentator.start ("Monte Carlo certification (4)", "trace");
 
 			typename Field::Element t, p2; F.init(p2, 0UL);
 			//             trace(t, B);
@@ -394,7 +397,7 @@ namespace LinBox
 
 				MD.pseudo_minpoly (phi, rk);
 				commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Permuted pseudo Minpoly degree: " << rk << std::endl;
-				commentator.start ("Monte Carlo certification", "trace");
+				commentator.start ("Monte Carlo certification (5)", "trace");
 				if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
 
 				//                 trace(t, B);
@@ -438,7 +441,7 @@ namespace LinBox
 
 				MD.pseudo_minpoly (phi, rk);
 				commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Butterfly pseudo Minpoly degree: " << rk << std::endl;
-				commentator.start ("Monte Carlo certification", "trace");
+				commentator.start ("Monte Carlo certification (6)", "trace");
 				if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
 
 				//                 trace(t, B);
@@ -486,7 +489,7 @@ namespace LinBox
 				      const RingCategories::IntegerTag    &tag,
 				      const Method::SparseElimination     &M)
 	{
-		commentator.start ("Integer Rank", "irank");
+		commentator.start ("Integer Rank inplace", "irank");
 		typedef Modular<double> Field;
 		integer mmodulus;
 		FieldTraits<Field>::maxModulus(mmodulus);
@@ -653,9 +656,11 @@ namespace LinBox
 					typedef typename Blackbox::template rebind< GivaroExtension<Field>  >::other FBlackbox;
 					FBlackbox Ap(A, EF);
 					rank(r, Ap, tag, Method::Wiedemann(m));
-				} else
+				}
+				else
 					rank(r, A, tag, Method::Wiedemann(m));
-			} else {
+			}
+			else {
 				unsigned long extend = (unsigned long)FF_EXPONENT_MAX(c,(integer)LINBOX_EXTENSION_DEGREE_MAX);
 				if (extend > 1) {
 					commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Word size extension : " << extend << std::endl;
@@ -663,10 +668,12 @@ namespace LinBox
 					typedef typename Blackbox::template rebind< GivaroGfq >::other FBlackbox;
 					FBlackbox Ap(A, EF);
 					rank(r, Ap, tag, Method::Wiedemann(m));
-				} else
+				}
+				else
 					rank(r, A, tag, Method::Wiedemann(m));
 			}
-		} else
+		}
+		else
 			rank(r, A, tag, Method::Wiedemann(m));
 		commentator.stop ("done", NULL, "extend");
 		return r;

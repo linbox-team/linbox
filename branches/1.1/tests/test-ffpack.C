@@ -31,13 +31,18 @@
  */
 
 #include "linbox/linbox-config.h"
+
 #include <iostream>
+#include <vector>
+
 #include <linbox/integer.h>
 #include <linbox/matrix/matrix-domain.h>
 #include "linbox/field/givaro-zpz.h"
 #include "linbox/field/modular.h"
-#include "linbox/ffpack/ffpack.h"
-#include <vector>
+#include "linbox/field/modular-balanced.h"
+#include "fflas-ffpack/ffpack/ffpack.h"
+#include "linbox/util/commentator.h"
+
 #include "test-common.h"
 
 #define _LB_FULL_TEST
@@ -331,7 +336,8 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 					F.assign (*(B+i*m+j),zero);
 				for (size_t i=j;i<m;++i)
 					Gn.random (*(B+i*m+j));
-			} else
+			}
+			else
 				for (size_t i=0;i<m;++i)
 					F.assign (*(B+i*m+j), zero);
 		// Create C a random matrix of rank n/2
@@ -341,7 +347,8 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 					F.assign (*(C+i*n+j),zero);
 				for (size_t j = i; j < n; ++j)
 					Gn.random (*(C+i*n+j));
-			} else
+			}
+			else
 				for (size_t j = 0; j < n; ++j)
 					F.assign (*(C+i*n+j),zero);
 
@@ -501,30 +508,33 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 		}
 		if(!ret) cerr<<"MinP(aIn)!=X-a"<<endl;
 
-// 		for (size_t i=0;i<n-1;++i){
-// 			for (size_t j=0; j<n; ++j)
-// 				F.assign(*(A+i*n+j),zero);
-// 			F.assign(*(A+i*n+i+1),one);
-// 		}
-// 		for (size_t j=0;j<n;++j)
-// 			F.assign(*(A+(n-1)*n+j),zero);
+#if 1 /*  ??? */
+		for (size_t i=0;i<n-1;++i){
+			for (size_t j=0; j<n; ++j)
+				F.assign(*(A+i*n+j),zero);
+			F.assign(*(A+i*n+i+1),one);
+		}
+		for (size_t j=0;j<n;++j)
+			F.assign(*(A+(n-1)*n+j),zero);
 
-// 		for (size_t i=0; i<n ;++i)
-// 			Perm[i]=0;
-// 		FFPACK::MinPoly( F, P, n, A, n, X, n, Perm );
+		for (size_t i=0; i<n ;++i)
+			Perm[i]=0;
+		FFPACK::MinPoly( F, P, n, A, n, X, n, Perm );
 
-// 		if ( P.size() !=n+1 )
-// 			ret = false;
-// 		for (size_t i=0; i<n;++i)
-// 			if ( !F.areEqual(P[i], zero) )
-// 				ret = false;
-// 		if ( !F.areEqual(P[n], one) )
-// 			ret = false;
-// 		if(!ret) cerr<<"MinP(J)!=X^n"<<endl;
+		if ( P.size() !=n+1 )
+			ret = false;
+		for (size_t i=0; i<n;++i)
+			if ( !F.areEqual(P[i], zero) )
+				ret = false;
+		if ( !F.areEqual(P[n], one) )
+			ret = false;
+		if(!ret) cerr<<"MinP(J)!=X^n"<<endl;
+#endif
 		delete[] A;
 		delete[] X;
 		delete[] Perm;
 	}
+
 
 	commentator.stop(MSG_STATUS (ret), (const char *) 0, "testMinPoly");
 
@@ -786,8 +796,8 @@ int main(int argc, char** argv)
 {
 	bool pass = true;
 
-	static size_t n = 130+(int)130*drand48();
-	static size_t m = 130+(int)130*drand48();
+	static size_t n = 130+(size_t)(130*drand48());
+	static size_t m = 130+(size_t)(130*drand48());
 	static integer q = 653;
 	static int iterations =1;
 
@@ -850,7 +860,7 @@ int main(int argc, char** argv)
 
 	/* Modular Balanced Double */
 	{
-		typedef ModularBalanced<double> Field;
+		typedef LinBox::ModularBalanced<double> Field;
 
 		Field F (q);
 

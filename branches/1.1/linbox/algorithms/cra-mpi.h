@@ -106,7 +106,8 @@ namespace LinBox
 					if(first_time){
 						Builder_.initialize(D, r);
 						first_time = false;
-					} else
+					}
+					else
 						Builder_.progress( D, r );
 					//  queue a new prime if applicable
 					if(! Builder_.terminated()){

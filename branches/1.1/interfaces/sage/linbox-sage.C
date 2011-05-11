@@ -46,7 +46,7 @@
 #include <linbox/algorithms/echelon-form.h>
 #include "linbox/algorithms/gauss.h"
 #include "linbox/algorithms/smith-form-adaptive.h"
-#include "linbox/ffpack/ffpack.h"
+#include "fflas-ffpack/ffpack/ffpack.h"
 #include <linbox/solutions/rank.h>
 #include <linbox/solutions/det.h>
 #include <linbox/solutions/solve.h>
@@ -142,6 +142,10 @@ EXTERN float linbox_modn_dense_det_float (float modulus, float* matrix, size_t n
 template<class Element>
 Element* linbox_modn_dense_minpoly (Element modulus, Element ** mp, size_t* degree,
 				    size_t n, Element *matrix) {
+	typedef  Modular<Element> Field;
+	typedef  std::vector<Element> Polynomial;
+	typedef  Modular<Element> Field;
+	typedef  std::vector<Element> Polynomial;
 
 	Modular<Element> F(modulus);
 	    // Warning: super sketchy memory alloc here!!!!
@@ -150,7 +154,8 @@ Element* linbox_modn_dense_minpoly (Element modulus, Element ** mp, size_t* degr
 	size_t * P = new size_t[n];
 
 	// FIXME: check the memory management: better to allocate mp in sage
-	FFPACK::MinPoly (F, *minP, n, matrix, n, X, n, P);
+	// FFPACK::MinPoly<Field,Polynomial> (F, *minP, n, matrix, n, X, n, P);
+	FFPACK::MinPoly<Field,Polynomial> (F, *minP, n, matrix, n, X, n, P);
 	*degree=minP->size()-1;
 
 	*mp = &(*minP)[0];
@@ -198,7 +203,7 @@ Element* linbox_modn_dense_charpoly (Element modulus, Element *& cp, size_t n, E
 	it = P_list.begin();
 	P = *(it++);
 	while( it!=P_list.end() ){
-		mulpoly (F,*tmp, P, *it);
+		::mulpoly (F,*tmp, P, *it);
 		P = *tmp;
 		//	delete &(*it);
 		++it;
@@ -312,7 +317,7 @@ void printPolynomial (const Field &F, const Polynomial &v)
 
 Integers ZZ;
 SpyInteger spy;
-typedef GivPolynomialRing<Integers,Dense> IntPolRing;
+typedef GivPolynomialRing<Integers,::Givaro::Dense> IntPolRing;
 
 DenseMatrix<Integers> new_matrix(mpz_t** matrix, size_t nrows, size_t ncols) {
   DenseMatrix<Integers> A ( ZZ, nrows, ncols);
@@ -353,16 +358,18 @@ void set_matrix(mpz_t** matrix, BlasMatrix<Element>& A, size_t nrows, size_t nco
      }
 }
 
-void linbox_integer_dense_minpoly_hacked(mpz_t* *mp, size_t* degree, size_t n, mpz_t** matrix, int do_minpoly) {
-     /* We program around a bizarre bug in linbox, where minpoly doesn't work
-	on matrices that are n x n with n divisible by 4!
-     */
-     size_t m;
-     if (n % 4 == 0 || !do_minpoly) {
-	 m = n + 1;
-     } else {
-	 m = n;
-     }
+void linbox_integer_dense_minpoly_hacked(mpz_t* *mp, size_t* degree, size_t n, mpz_t** matrix, int do_minpoly)
+{
+	/* We program around a bizarre bug in linbox, where minpoly doesn't work
+	   on matrices that are n x n with n divisible by 4!
+	   */
+	size_t m;
+	if (n % 4 == 0 || !do_minpoly) {
+		m = n + 1;
+	}
+	else {
+		m = n;
+	}
 
      DenseMatrix<Integers> A( ZZ, m, m);
 
@@ -615,11 +622,12 @@ unsigned long linbox_modn_sparse_matrix_rank(mod_int modulus,
 
   SparseMatrixGFp M( linbox_new_modn_sparse_matrix(modulus, numrows, numcols, rows) );
 
-  if(!gauss) {
-    dom.InPlaceLinearPivoting(M_rank, M_det, M, numrows, numcols);
-  } else {
-    dom.NoReordering(M_rank, M_det, M, numrows, numcols);
-  }
+	if(!gauss) {
+		dom.InPlaceLinearPivoting(M_rank, M_det, M, numrows, numcols);
+	}
+	else {
+		dom.NoReordering(M_rank, M_det, M, numrows, numcols);
+	}
 
   //*pivots = (int*)calloc(sizeof(int), dom.pivots.size());
 

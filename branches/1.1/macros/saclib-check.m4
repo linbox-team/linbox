@@ -20,14 +20,14 @@ AC_DEFUN([LB_CHECK_SACLIB],
 [
 
 AC_ARG_WITH(saclib,
-[  --with-saclib=<path>|yes|no Use Saclib library. If argument is no, you do
+[AC_HELP_STRING([--with-saclib=<path>|yes|no], [Use Saclib library. If argument is no, you do
                               not have the library installed on your machine
 			      (set as default). If argument is yes or <empty>
 			      that means the library is reachable with the
 			      standard search path (/usr or /usr/local).
 			      Otherwise you give the <path> to the directory
 			      which contain the library.
-	     ],
+	     ])],
 	     [if test "$withval" = yes ; then
 			SACLIB_HOME_PATH="${DEFAULT_CHECKING_PATH}"
 	      elif test "$withval" != no ; then

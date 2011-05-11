@@ -57,15 +57,18 @@ namespace LinBox
 					this->casenumber = 2;
 					this->_BB->apply (this->v, this->u);                // this->v <- B(B^i u_0) = B^(i+1) u_0
 					this->_VD.dot (this->_value, this->u, this->v);     // t <- this->u^t this->v = u_0^t B^(2i+1) u_0
-				} else {
+				}
+				else {
 					this->casenumber = -1;
 					this->_VD.dot (this->_value, this->v, this->v);     // t <- this->v^t this->v = u_0^t B^(2i+2) u_0
 				}
-			} else {
+			}
+			else {
 				if (this->casenumber == 0) {
 					this->casenumber = 1;
 					this->_VD.dot (this->_value, this->u, this->u);     // t <- this->u^t this->u = u_0^t B^(2i+4) u_0
-				} else {
+				}
+				else {
 					this->casenumber = 0;
 					this->_BB->apply (this->u, this->v);                // this->u <- B(B^(i+1) u_0) = B^(i+2) u_0
 					this->_VD.dot (this->_value, this->v, this->u);     // t <- this->v^t this->u = u_0^t B^(2i+3) u_0

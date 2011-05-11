@@ -45,7 +45,7 @@ struct Interator {
 	{
 		for(std::vector<Integer>::const_iterator it=_v.begin();
 		    it != _v.end(); ++it) {
-			double ds = naturallog(*it);
+			double ds = ::Givaro::naturallog(*it);
 			maxsize = (maxsize<ds?ds:maxsize);
 		}
 	}
@@ -56,7 +56,7 @@ struct Interator {
 		for(std::vector<Integer>::iterator it=_v.begin();
 		    it != _v.end(); ++it) {
 			Integer::random<false>(*it, s);
-			double ds = naturallog(*it);
+			double ds = ::Givaro::naturallog(*it);
 			maxsize = (maxsize<ds?ds:maxsize);
 		}
 	}
@@ -210,11 +210,13 @@ bool TestOneCRAWritePointer(std::ostream& report, Iter& iteration, RandGen& genp
 	return locpass;
 }
 
+
 bool TestCra(int N, int S, size_t seed)
 {
 
 	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT,
 							   INTERNAL_DESCRIPTION);
+	// std::ostream &report = std::cout;
 
 	size_t new_seed = (seed?(seed):(BaseTimer::seed())) ;
 	report << "TestCra(" << N << ',' << S << ',' << new_seed << ')' << std::endl;
@@ -276,7 +278,7 @@ bool TestCra(int N, int S, size_t seed)
         for( ; PrimeSize < (iterationIt.getLogSize()+1); ++genprime ) {
             if (find(PrimeSet.begin(), PrimeSet.end(), *genprime) == PrimeSet.end()) {
                 PrimeSet.push_back( *genprime );
-                PrimeSize += naturallog(*genprime);
+                PrimeSize += ::Givaro::naturallog(*genprime);
             }
         }
 

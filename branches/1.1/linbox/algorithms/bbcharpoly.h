@@ -129,7 +129,7 @@ namespace LinBox
 			typename Blackbox::Field intRing = A.field();
 			typedef Modular<uint32_t> Field;
 			typedef typename Blackbox::template rebind<Field>::other FieldBlackbox;
-			typedef GivPolynomialRing<typename Blackbox::Field, Dense> IntPolyDom;
+			typedef GivPolynomialRing<typename Blackbox::Field, ::Givaro::Dense> IntPolyDom;
 			typedef typename IntPolyDom::Element IntPoly;
 			typedef GivPolynomialRing<Field>::Element FieldPoly;
 			// Set of factors-multiplicities sorted by degree
@@ -188,7 +188,8 @@ namespace LinBox
 					FFM->multiplicity = 1; // The last factor is present in minpoly
 					goal -= deg-intFactors[i]->size()+1;
 					leadingBlocks.insert (std::pair<FM*,bool>(FFM,false));
-				} else {
+				}
+				else {
 					FieldPoly* fp=new FieldPoly(intFactors[i]->size());
 					typename IntPoly::template rebind<Field>() (*fp, *(intFactors[i]), F);
 					FFM = new FM (fp,intFactors[i],1,NULL);
@@ -230,7 +231,7 @@ namespace LinBox
 		{
 			commentator.start ("Modular Blackbox Charpoly ", "MbbCharpoly");
 			typedef typename Blackbox::Field Field;
-			typedef GivPolynomialRing<Field, Dense> PolyDom;
+			typedef GivPolynomialRing<Field, ::Givaro::Dense> PolyDom;
 			typedef typename PolyDom::Element Polynomial;
 			// Set of factors-multiplicities sorted by degree
 			typedef std::multimap<unsigned long,FactorMult<Polynomial>* > FactPoly;
@@ -289,7 +290,8 @@ namespace LinBox
 						goal -= deg-factors[i]->size()+1;
 						leadingBlocks.insert (std::pair<FactorMult<Polynomial>*,bool>(FFM,false));
 						delete factors[i] ;
-					} else {
+					}
+					else {
 						FFM = new FactorMult<Polynomial> (factors[i],factors[i],1,NULL);
 						//std::cerr<<"Inserting new factor : "<<*factors[i]<<std::endl;
 						factCharPoly.insert (std::pair<size_t, FactorMult<Polynomial>* > (factors[i]->size()-1, FFM));
@@ -344,7 +346,7 @@ namespace LinBox
 		{
 			typedef std::multimap<unsigned long, FactorMult<FieldPoly,IntPoly>* > FactPoly;
 			typedef typename Blackbox::Field Field;
-			typedef GivPolynomialRing<Field, Dense> PolyDom;
+			typedef GivPolynomialRing<Field, ::Givaro::Dense> PolyDom;
 			typename FactPoly::iterator itf = factCharPoly.begin();
 			typename std::multimap<FactorMult<FieldPoly,IntPoly>*,bool>::iterator lead_it;
 			Field F = A.field();
@@ -363,7 +365,8 @@ namespace LinBox
 				/* The matrix Pi (A) */
 				if (F.isZero (itf->second->fieldP->operator[](0))){
 					rank (r, A, M) ;
-				} else {
+				}
+				else {
 					PolynomialBB<Blackbox, FieldPoly > PA (A, *itf->second->fieldP);
 					rank (r, PA,  M) ;
 				}
@@ -419,7 +422,8 @@ namespace LinBox
 						currFFM->update (n,&goal);
 						currFFM->multiplicity = tmp;
 					}
-				} else {
+				}
+				else {
 					int lbm;
 					if (currFFM->dep != NULL){
 
@@ -434,7 +438,8 @@ namespace LinBox
 						} while (currFFM!=NULL);
 						lbm /= k;
 						goal -= (lbm-1)*(lead_it->first->fieldP->size()-1);
-					}else {
+					}
+					else {
 						lbm = (n-lead_it->first->multiplicity) / (lead_it->first->fieldP->size()-1);
 						goal -=  (lbm-1)*(lead_it->first->fieldP->size()-1);
 					}

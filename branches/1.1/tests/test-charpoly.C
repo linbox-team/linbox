@@ -36,6 +36,7 @@
 
 using namespace LinBox;
 
+
 /* Test 1: charpoly of the identity matrix
  *
  * Construct the identity matrix and compute its characteristic polynomial. Confirm
@@ -66,11 +67,11 @@ static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 	typedef typename Dom::Element Element;
 	typedef vector<Element> Vector;
 	typedef ScalarMatrix<Dom> Blackbox;
-	typedef GivPolynomialRing<Dom, Dense> PolDom;
+	typedef GivPolynomialRing<Dom, ::Givaro::Dense> PolDom;
 	typedef typename PolDom::Element Polynomial;
 	//typedef Vector Polynomial;
 
-	commentator.start ("Testing identity Charpoly", "testIdentityCharpoly");
+	LinBox::commentator.start ("Testing identity Charpoly", "testIdentityCharpoly");
 
 	bool ret = true;
 	Element one; Z.init(one, 1);
@@ -84,7 +85,7 @@ static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 
 	charpoly (phi, A);
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = LinBox::commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Characteristic polynomial is: ";
 	printPolynomial<Dom, Polynomial> (Z, report, phi);
 
@@ -103,11 +104,11 @@ static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 	if (! Z.areEqual(val2, pow2)) ret = false;
 
 	if (! ret){
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		LinBox::commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: Characteristic polynomial is incorrect" << endl;
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testIdentityCharpoly");
+	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testIdentityCharpoly");
 
 	return ret;
 }
@@ -126,13 +127,13 @@ template <class Field>
 static bool testNilpotentCharpoly (Field &F, size_t n)
 {
 	typedef vector <typename Field::Element> Vector;
-// 	typedef GivPolynomialRing<Field, Dense> PolDom;
+// 	typedef GivPolynomialRing<Field, ::Givaro::Dense> PolDom;
 // 	typedef typename PolDom::Element Polynomial;
 	typedef Vector Polynomial;
 	typedef pair <vector <size_t>, vector <typename Field::Element> > Row;
 	typedef SparseMatrix <Field> Blackbox;
 
-	commentator.start ("Testing nilpotent charpoly", "testNilpotentCharpoly");
+	LinBox::commentator.start ("Testing nilpotent charpoly", "testNilpotentCharpoly");
 
 	bool ret = true;
 	bool lowerTermsCorrect = true;
@@ -144,7 +145,7 @@ static bool testNilpotentCharpoly (Field &F, size_t n)
 	stream.next (v);
 	Blackbox A (F, stream);
 
-	ostream &who = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &who = LinBox::commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 	who << "Matrix:" << endl;
 	A.write (who, FORMAT_PRETTY);
 
@@ -154,7 +155,7 @@ static bool testNilpotentCharpoly (Field &F, size_t n)
 
 	charpoly (phi, A);
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = LinBox::commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "characteristic polynomial is: ";
 	printPolynomial (F, report, phi);
 
@@ -165,11 +166,11 @@ static bool testNilpotentCharpoly (Field &F, size_t n)
 
 	if (phi.size () != n + 1 || !F.isOne (phi[n]) || !lowerTermsCorrect) {
 		ret = false;
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		LinBox::commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: characteristic polynomial is incorrect (should be x^" << n << ')' << endl;
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testNilpotentCharpoly");
+	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testNilpotentCharpoly");
 
 	return ret;
 }
@@ -194,12 +195,12 @@ bool testRandomCharpoly (Field                 &F,
 			VectorStream<Row>    &A_stream,
 			VectorStream<Vector> &v_stream)
 {
-	//typedef GivPolynomialRing<Field, Dense> PolDom;
+	//typedef GivPolynomialRing<Field, ::Givaro::Dense> PolDom;
 	//typedef typename PolDom::Element Polynomial;
 	typedef std::vector<typename Field::Element> Polynomial;
 	typedef SparseMatrix <Field> Blackbox;
 
-	commentator.start ("Testing sparse random charpoly", "testRandomCharpoly", 1);
+	LinBox::commentator.start ("Testing sparse random charpoly", "testRandomCharpoly", 1);
 
 	bool ret = true;
 
@@ -211,7 +212,7 @@ bool testRandomCharpoly (Field                 &F,
 	A_stream.reset ();
 	Blackbox A (F, A_stream);
 
-	ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = LinBox::commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Matrix:" << endl;
 	A.write (report, FORMAT_PRETTY);
 
@@ -222,7 +223,7 @@ bool testRandomCharpoly (Field                 &F,
 	report << "characteristic polynomial is: ";
 	printPolynomial (F, report, phi);
 
-	commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+	LinBox::commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 		<< "deg charpoly (A) = " << phi.size () - 1 << endl;
 
 	v_stream.reset ();
@@ -239,10 +240,10 @@ bool testRandomCharpoly (Field                 &F,
 	}
 
 	if (!ret)
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		LinBox::commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: Output vector was incorrect" << endl;
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomCharpoly");
+	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomCharpoly");
 	return ret;
 }
 #endif
@@ -278,11 +279,11 @@ int main (int argc, char **argv)
 	Field F (q);
 	srand (time (NULL));
 
-	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	LinBox::commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
+	LinBox::commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
+	LinBox::commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = LinBox::commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << endl << "Black box characteristic polynomial of a matrix over a prime field test suite" << endl;
 
 	RandomDenseStream<Field, DenseVector, NonzeroRandIter<Field> >
@@ -303,9 +304,9 @@ int main (int argc, char **argv)
 	PID_integer  Z;
 	srand (time (NULL));
 
-	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	LinBox::commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
+	LinBox::commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
+	LinBox::commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	report << endl << "Black box characteristic polynomial of an integer matrix test suite" << endl;
 

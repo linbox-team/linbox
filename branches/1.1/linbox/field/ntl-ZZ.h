@@ -61,24 +61,29 @@ namespace LinBox
 
 		typedef NTL::ZZ Element;
 
-		NTL_ZZ(int p = 0, int exp = 1) {
+		NTL_ZZ(int p = 0, int exp = 1)
+		{
 			if( p != 0 ) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be 0 (no modulus)");
 			if( exp != 1 ) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
 		}
 
-		inline integer& cardinality (integer& c) const {
+		inline integer& cardinality (integer& c) const
+		{
 			return c = -1;
 		}
 
-		inline integer& characteristic (integer& c)const   {
+		inline integer& characteristic (integer& c)const
+		{
 			return c = 0;
 		}
 
-		std::ostream& write (std::ostream& out) const  {
+		std::ostream& write (std::ostream& out) const
+		{
 			return out << "NTL ZZ Ring";
 		}
 
-		std::istream& read (std::istream& in) const  {
+		std::istream& read (std::istream& in) const
+		{
 			return in;
 		}
 
@@ -86,7 +91,8 @@ namespace LinBox
 		 *  Init x from y.
 		 */
 		template<class Element2>
-		inline Element& init (Element& x,  const Element2& y) const  {
+		inline Element& init (Element& x,  const Element2& y) const
+		{
 
 			NTL::conv (x, y);
 
@@ -96,7 +102,8 @@ namespace LinBox
 		/** @brief
 		 *   Init from a NTL::ZZ
 		 */
-		inline Element& init (Element& x, const Element& y) const {
+		inline Element& init (Element& x, const Element& y) const
+		{
 
 			x = y;
 
@@ -106,7 +113,8 @@ namespace LinBox
 		/** @brief
 		 *   Init from an int64_t
 		 */
-		inline Element& init (Element& x, const int64_t& y) const {
+		inline Element& init (Element& x, const int64_t& y) const
+		{
 			bool isNeg = false;
 			uint64_t t;
 			if( y < 0 ) {
@@ -122,7 +130,8 @@ namespace LinBox
 		/** @brief
 		 *   Init from a uint64_t
 		 */
-		inline Element& init (Element& x, const uint64_t& y) const {
+		inline Element& init (Element& x, const uint64_t& y) const
+		{
 			uint64_t shift = (uint64_t)1 << 32;
 			uint32_t temp = y % shift;
 			NTL::conv (x,temp);
@@ -136,7 +145,8 @@ namespace LinBox
 		 *  I don't  know how to init from integer efficiently.
 		 */
 		// c_str is safer than data, Z. W and BDS
-		inline Element& init (Element& x, const integer& y) const {
+		inline Element& init (Element& x, const integer& y) const
+		{
 
 			return x=NTL::to_ZZ((std::string(y)).c_str());
 		}
@@ -144,7 +154,8 @@ namespace LinBox
 		/** @brief
 		 *  Convert y to an Element.
 		 */
-		inline integer& convert (integer& x, const Element& y) const {
+		inline integer& convert (integer& x, const Element& y) const
+		{
 			bool neg=false;
 			if (sign(y) <0)
 				neg=true;
@@ -166,7 +177,8 @@ namespace LinBox
 			return x;
 		}
 
-		inline double& convert (double& x, const Element& y) const {
+		inline double& convert (double& x, const Element& y) const
+		{
 			return x=NTL::to_double(y);
 		}
 
@@ -175,28 +187,32 @@ namespace LinBox
 		/** @brief
 		 *  x = y.
 		 */
-		inline Element&  assign (Element& x, const Element& y)  const {
+		inline Element&  assign (Element& x, const Element& y)  const
+		{
 			return x = y;
 		}
 
 		/** @brief
 		 *  Test if x == y
 		 */
-		inline bool areEqual (const Element& x ,const Element& y) const  {
+		inline bool areEqual (const Element& x ,const Element& y) const
+		{
 			return x == y;
 		}
 
 		/** @brief
 		 *  Test if x == 0
 		 */
-		inline bool isZero (const Element& x) const  {
+		inline bool isZero (const Element& x) const
+		{
 			return NTL::IsZero (x);
 		}
 
 		/** @brief
 		 *  Test if x == 1
 		 */
-		inline bool isOne (const Element& x) const  {
+		inline bool isOne (const Element& x) const
+		{
 			return NTL::IsOne (x);
 		}
 
@@ -205,7 +221,8 @@ namespace LinBox
 		/** @brief
 		 *  return x = y + z
 		 */
-		inline Element& add (Element& x, const Element& y, const Element& z) const  {
+		inline Element& add (Element& x, const Element& y, const Element& z) const
+		{
 
 			NTL::add (x, y, z);
 
@@ -215,7 +232,8 @@ namespace LinBox
 		/** @brief
 		 *  return x = y - z
 		 */
-		inline Element& sub (Element& x, const Element& y, const Element& z) const  {
+		inline Element& sub (Element& x, const Element& y, const Element& z) const
+		{
 
 			NTL::sub (x, y, z);
 
@@ -226,7 +244,8 @@ namespace LinBox
 		 *  return x = y * z
 		 */
 		template <class Int>
-		inline Element& mul (Element& x, const Element& y, const Int& z) const  {
+		inline Element& mul (Element& x, const Element& y, const Int& z) const
+		{
 
 			NTL::mul (x, y, z);
 
@@ -237,7 +256,8 @@ namespace LinBox
 		 *  If z divides y, return x = y / z,
 		 *  otherwise, throw an exception
 		 */
-		inline Element& div (Element& x, const Element& y, const Element& z) const {
+		inline Element& div (Element& x, const Element& y, const Element& z) const
+		{
 
 			Element q, r;
 
@@ -254,7 +274,8 @@ namespace LinBox
 		 *  If y is a unit, return x = 1 / y,
 		 *  otherwsie, throw an exception
 		 */
-		inline Element& inv (Element& x, const Element& y) const {
+		inline Element& inv (Element& x, const Element& y) const
+		{
 
 			if ( NTL::IsOne (y)) return x = y;
 
@@ -267,7 +288,8 @@ namespace LinBox
 		/** @brief
 		 *  return x = -y;
 		 */
-		inline Element& neg (Element& x, const Element& y) const  {
+		inline Element& neg (Element& x, const Element& y) const
+		{
 
 			NTL::negate (x, y);
 
@@ -278,9 +300,9 @@ namespace LinBox
 		/** @brief
 		 *  return r = a x + y
 		 */
-
 		template <class Int>
-		inline Element& axpy (Element& r, const Element& a, const Int& x, const Element& y) const  {
+		inline Element& axpy (Element& r, const Element& a, const Int& x, const Element& y) const
+		{
 
 			NTL::mul (r, a, x);
 
@@ -293,7 +315,8 @@ namespace LinBox
 		/** @brief
 		 *  return x += y;
 		 */
-		inline Element& addin (Element& x, const Element& y) const {
+		inline Element& addin (Element& x, const Element& y) const
+		{
 
 			return x += y;
 		}
@@ -301,7 +324,8 @@ namespace LinBox
 		/** @brief
 		 *  return x -= y;
 		 */
-		inline Element& subin (Element& x, const Element& y)  const {
+		inline Element& subin (Element& x, const Element& y)  const
+		{
 
 			return x -= y;
 		}
@@ -310,7 +334,8 @@ namespace LinBox
 		 *  return x *= y;
 		 */
 		template<class Int>
-		inline Element& mulin (Element& x, const Int& y)  const {
+		inline Element& mulin (Element& x, const Int& y)  const
+		{
 
 			return x *= y;
 		}
@@ -319,7 +344,8 @@ namespace LinBox
 		 *  If y divides x, return x /= y,
 		 *  otherwise throw an exception
 		 */
-		inline Element& divin (Element& x, const Element& y) const {
+		inline Element& divin (Element& x, const Element& y) const
+		{
 
 			div (x, x, y);
 
@@ -342,7 +368,8 @@ namespace LinBox
 		/** @brief
 		 *  return x = -x;
 		 */
-		inline Element& negin (Element& x) const  {
+		inline Element& negin (Element& x) const
+		{
 
 			NTL::negate (x, x);
 
@@ -353,7 +380,8 @@ namespace LinBox
 		 *  return r += a x
 		 */
 		template <class Int>
-		inline Element& axpyin (Element& r, const Element& a, const Int& x) const  {
+		inline Element& axpyin (Element& r, const Element& a, const Int& x) const
+		{
 
 			return r += a * x;
 		}
@@ -364,7 +392,8 @@ namespace LinBox
 		/** @brief
 		 *  out << y;
 		 */
-		std::ostream& write(std::ostream& out,const Element& y) const  {
+		std::ostream& write(std::ostream& out,const Element& y) const
+		{
 
 			out << y;
 
@@ -375,7 +404,8 @@ namespace LinBox
 		/** @brief
 		 *  read x from istream in
 		 */
-		std::istream& read(std::istream& in, Element& x) const {
+		std::istream& read(std::istream& in, Element& x) const
+		{
 
 			return in >> x;
 		}
@@ -387,7 +417,8 @@ namespace LinBox
 		/** @brief
 		 *  Test if x is a unit.
 		 */
-		inline bool isUnit (const Element& x) const {
+		inline bool isUnit (const Element& x) const
+		{
 
 			return (NTL::IsOne (x) || NTL::IsOne (-x));
 		}
@@ -395,7 +426,8 @@ namespace LinBox
 		/** @brief
 		 *  return g = gcd (a, b)
 		 */
-		inline Element& gcd (Element& g, const Element& a, const Element& b) const {
+		inline Element& gcd (Element& g, const Element& a, const Element& b) const
+		{
 
 			NTL::GCD (g, a, b);
 
@@ -405,7 +437,8 @@ namespace LinBox
 		/** @brief
 		 *  return g = gcd (g, b)
 		 */
-		inline Element& gcdin (Element& g, const Element& b) const {
+		inline Element& gcdin (Element& g, const Element& b) const
+		{
 
 			NTL::GCD (g, g, b);
 
@@ -418,7 +451,8 @@ namespace LinBox
 		 *  Euclidean algorithm applied to |a| and |b|, with the signs then
 		 *  adjusted according to the signs of a and b.
 		 */
-		inline Element& xgcd (Element& g, Element& s, Element& t, const Element& a, const Element& b)const {
+		inline Element& xgcd (Element& g, Element& s, Element& t, const Element& a, const Element& b)const
+		{
 
 			NTL::XGCD (g,s,t,a,b);
 
@@ -428,7 +462,8 @@ namespace LinBox
 		/** @brief
 		 *  c = lcm (a, b)
 		 */
-		inline Element& lcm (Element& c, const Element& a, const Element& b) const {
+		inline Element& lcm (Element& c, const Element& a, const Element& b) const
+		{
 
 
 			if (NTL::IsZero (a) || NTL::IsZero (b)) return c = NTL::ZZ::zero();
@@ -451,7 +486,8 @@ namespace LinBox
 		/** @brief
 		 *  l = lcm (l, b)
 		 */
-		inline Element& lcmin (Element& l, const Element& b) const {
+		inline Element& lcmin (Element& l, const Element& b) const
+		{
 
 			if (NTL::IsZero (l) || NTL::IsZero (b))
 
@@ -483,7 +519,8 @@ namespace LinBox
 		 *  x = floor ( sqrt(y)).
 		 */
 
-		inline Element& sqrt (Element& x, const Element& y) const  {
+		inline Element& sqrt (Element& x, const Element& y) const
+		{
 
 			NTL::SqrRoot(x,y);
 
@@ -501,7 +538,8 @@ namespace LinBox
 		 */
 
 		inline long reconstructRational (Element& a, Element& b, const Element& x, const Element& m,
-						 const Element& a_bound, const Element& b_bound) const {
+						 const Element& a_bound, const Element& b_bound) const
+		{
 
 			return NTL::ReconstructRational(a,b,x,m,a_bound,b_bound);
 		}
@@ -510,7 +548,8 @@ namespace LinBox
 		/** @brief
 		 *  q = floor (x/y);
 		 */
-		inline Element& quo (Element& q, const Element& a, const Element& b) const {
+		inline Element& quo (Element& q, const Element& a, const Element& b) const
+		{
 
 			NTL::div (q, a, b);
 
@@ -520,7 +559,8 @@ namespace LinBox
 		/** @brief
 		 *  r = remindar of  a / b
 		 */
-		inline Element& rem (Element& r, const Element& a, const Element& b) const  {
+		inline Element& rem (Element& r, const Element& a, const Element& b) const
+		{
 
 			NTL::rem (r, a, b);
 
@@ -530,7 +570,8 @@ namespace LinBox
 		/** @brief
 		 *  a = quotient (a, b)
 		 */
-		inline Element& quoin (Element& a, const Element& b) const  {
+		inline Element& quoin (Element& a, const Element& b) const
+		{
 
 			return a /= b;
 
@@ -539,7 +580,8 @@ namespace LinBox
 		/** @brief
 		 *  a = quotient (a, b)
 		 */
-		inline Element& remin (Element& x, const Element& y)  const {
+		inline Element& remin (Element& x, const Element& y)  const
+		{
 			return x %= y;
 		}
 
@@ -548,7 +590,8 @@ namespace LinBox
 		 * q = [a/b], r = a - b*q
 		 * |r| < |b|, and if r != 0, sign(r) = sign(b)
 		 */
-		inline void quoRem (Element& q, Element& r, const Element& a, const Element& b) const {
+		inline void quoRem (Element& q, Element& r, const Element& a, const Element& b) const
+		{
 
 			NTL::DivRem(q,r,a,b);
 		}
@@ -556,7 +599,8 @@ namespace LinBox
 		/** @brief
 		 *  Test if b | a.
 		 */
-		inline bool isDivisor (const Element& a, const Element& b) const {
+		inline bool isDivisor (const Element& a, const Element& b) const
+		{
 
 			if ( NTL::IsZero (a) ) return true;
 
@@ -576,7 +620,8 @@ namespace LinBox
 		 * return 0, if a = b;
 		 * return -1. if a < b
 		 */
-		inline long compare (const Element& a, const Element& b) const {
+		inline long compare (const Element& a, const Element& b) const
+		{
 
 			return NTL::compare (a, b);
 		}
@@ -584,7 +629,8 @@ namespace LinBox
 		/** return the absolute value
 		 * x = abs (a);
 		 */
-		inline Element& abs (Element& x, const Element& a) const {
+		inline Element& abs (Element& x, const Element& a) const
+		{
 
 			NTL::abs (x, a);
 
@@ -592,7 +638,10 @@ namespace LinBox
 		}
 
 
-		static inline int getMaxModulus() { return 0; } // no modulus
+		static inline int getMaxModulus()
+		{
+			return 0;
+		} // no modulus
 
 	};
 
@@ -610,7 +659,9 @@ namespace LinBox
 		 */
 		FieldAXPY (const Field &F) :
 			_F (F)
-		{ _y = 0; }
+		{
+			_y = 0;
+		}
 
 		/** Copy constructor.
 		 * @param faxpy
@@ -623,7 +674,10 @@ namespace LinBox
 		 * @param faxpy
 		 */
 		FieldAXPY<Field> &operator = (const FieldAXPY &faxpy)
-		{ _y = faxpy._y; return *this; }
+		{
+			_y = faxpy._y;
+			return *this;
+		}
 
 		/** Add a*x to y
 		 * y += a*x.
@@ -654,7 +708,8 @@ namespace LinBox
 			return _y += a * x;
 		}
 
-		inline Element& mulacc (const Element& a, const Element& b) {
+		inline Element& mulacc (const Element& a, const Element& b)
+		{
 
 			return _y += a * b;
 		}
@@ -677,7 +732,8 @@ namespace LinBox
 			return *this;
 		}
 
-		inline void reset() {
+		inline void reset()
+		{
 			_y = 0;
 		}
 

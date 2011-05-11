@@ -47,7 +47,8 @@ namespace LinBox
 			Father_t(EARLY)
 		{}
 
-		void progress (const Domain& D, const DomainElement& e) {
+		void progress (const Domain& D, const DomainElement& e)
+		{
 			DomainElement u0, m0;
 
 			fieldreconstruct(this->residue_, D, e, D.init(u0,this->residue_), D.init(m0,this->primeProd_), Integer(this->residue_), this->primeProd_);
@@ -64,18 +65,54 @@ namespace LinBox
 			}
 		}
 
-		void initialize (const Domain& D, const DomainElement& e) {
+		void progress (const Integer & D, const Integer & e)
+		{
+			Integer u0 = this->residue_   %D;
+			Integer	m0 = this->primeProd_ %D;
+
+			fieldreconstruct(this->residue_, D, e, u0, m0, Integer(this->residue_), this->primeProd_);
+			this->primeProd_ *= this->nextM_;
+			Integer a, b;
+			_ZZ.reconstructRational(a, b, this->residue_, this->primeProd_);
+			if ((a == Numer0) && (b == Denom0))
+				++this->occurency_;
+			else {
+				this->occurency_ = 1;
+				Numer0 = a;
+				Denom0 = b;
+			}
+		}
+
+
+		void initialize (const Domain& D, const DomainElement& e)
+		{
 			Father_t::initialize(D, e);
 			_ZZ.reconstructRational(Numer0, Denom0, this->residue_, this->primeProd_);
 		}
 
-		Integer& result(Integer& Num, Integer& Den) {
+		void initialize (const Integer& D, const Integer& e)
+	       	{
+			Father_t::initialize(D, e);
+			_ZZ.reconstructRational(Numer0, Denom0, this->residue_, this->primeProd_);
+		}
+
+		Integer& result(Integer& Num, Integer& Den)
+		{
 			Den = Denom0;
 			return Num=Numer0;
 		}
+
+		Integer& result(Integer& d)
+		{
+			throw "not a good idea calling this function here !!" ;
+		}
 	protected:
 
-		Integer& fieldreconstruct(Integer& res, const Domain& D1, const DomainElement& u1, DomainElement& u0, DomainElement& m0, const Integer& r0, const Integer& P0) {
+		Integer& fieldreconstruct(Integer& res, const Domain& D1,
+					  const DomainElement& u1, DomainElement& u0,
+					  DomainElement& m0, const Integer& r0,
+					  const Integer& P0)
+		{
 			// u0 and m0 are modified
 			D1.negin(u0);   	// u0 <-- -u0
 			D1.addin(u0,u1);	// u0 <-- u1-u0
@@ -83,6 +120,20 @@ namespace LinBox
 			D1.mulin(u0, m0);   // u0 <-- (u1-u0)( m0^{-1} mod m1 )
 			D1.convert(res, u0);// res <-- (u1-u0)( m0^{-1} mod m1 )         and res <  m1
 			res *= P0;      	// res <-- (u1-u0)( m0^{-1} mod m1 ) m0      and res <= (m0m1-m0)
+			return res += r0;   // res <-- u0 + (u1-u0)( m0^{-1} mod m1 ) m0 and res <  m0m1
+		}
+
+		Integer& fieldreconstruct(Integer& res, const Integer& D,
+					  const Integer & u1, Integer & u0,
+					  Integer & m0, const Integer& r0,
+					  const Integer& P0)
+		{
+			// u0 and m0 are modified
+			inv(m0,m0,D);           // m0 <-- m0^{-1} mod m1
+			u0 = (u1-u0) ;
+			u0 *= m0 ;
+			u0 %= D  ;              // u0 <-- (u1-u0)( m0^{-1} mod m1 )
+			res = u0*P0 ;        	// res <-- (u1-u0)( m0^{-1} mod m1 ) m0      and res <= (m0m1-m0)
 			return res += r0;   // res <-- u0 + (u1-u0)( m0^{-1} mod m1 ) m0 and res <  m0m1
 		}
 	};

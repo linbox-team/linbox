@@ -99,7 +99,8 @@ namespace LinBox
 				rowi.insert(there, j);
 				++_nnz;
 			}
-		} else {
+		}
+		else {
 			if ( (there != rowi.end() ) && (*there == j) ) {
 				rowi.erase(there);
 				--_nnz;
@@ -157,14 +158,16 @@ namespace LinBox
 					out << (i+1) << ' ' << (*it+1) << " 1\n";
 			}
 			return out << "0 0 0" << std::endl;
-		} else if (format == FORMAT_MAPLE) {
+		}
+		else if (format == FORMAT_MAPLE) {
 			out << '[';
 			bool firstrow=true;
 			for (const_iterator i = begin (); i != end (); ++i) {
 				if (firstrow) {
 					out << '[';
 					firstrow =false;
-				} else
+				}
+				else
 					out << ", [";
 
 				Row_t::const_iterator j = i->begin ();
@@ -182,7 +185,8 @@ namespace LinBox
 				out << ']';
 			}
 			return out << ']';
-		} else
+		}
+		else
 			return out << "ZeroOne over GF(2), format other than SMS or Maple not implemented" << std::endl;
 	}
 

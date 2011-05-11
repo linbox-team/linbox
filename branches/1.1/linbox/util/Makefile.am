@@ -2,7 +2,7 @@
 # This file is part of LinBox
 # see COPYING for licence
 #we now need to include givaro headers for timer ? (oupa ? plus moche que ça tu meurs)
-AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox $(GIVARO_CFLAGS)
+AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox $(FFLAFLAS_CFLAGS) $(GIVARO_CFLAGS)
 LIBS=-lgivaro
 
 

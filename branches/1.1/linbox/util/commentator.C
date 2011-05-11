@@ -45,6 +45,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/util/debug.h"
 
+
 namespace LinBox
 {
 	// -----------------------------------------------------
@@ -84,9 +85,11 @@ namespace LinBox
 		return 0;
 	}
 
+#ifndef DISABLE_COMMENTATOR
 	Commentator::Commentator () :
-		// cnull (new nullstreambuf), _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
-		cnull ("/dev/null"), _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
+		// cnull (new nullstreambuf)
+		cnull ("/dev/null")
+		, _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
 		_show_timing (true), _show_progress (true), _show_est_time (true)
 	{
 		//registerMessageClass (BRIEF_REPORT,         std::clog, 1, LEVEL_IMPORTANT);
@@ -100,8 +103,9 @@ namespace LinBox
 		registerMessageClass (INTERNAL_DESCRIPTION, _report);
 	}
 	Commentator::Commentator (std::ostream& out) :
-		// cnull (new nullstreambuf), _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
-		cnull ("/dev/null"), _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
+		// cnull (new nullstreambuf)
+		cnull ("/dev/null")
+		, _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
 		_show_timing (true), _show_progress (true), _show_est_time (true)
 	{
 		//registerMessageClass (BRIEF_REPORT,         out, 1, LEVEL_IMPORTANT);
@@ -223,7 +227,7 @@ namespace LinBox
 		linbox_check (_activities.top () != (Activity *) 0);
 
 		Activity *act = _activities.top ();
-		Timer tmp = act->_timer;
+		::Givaro::Timer tmp = act->_timer;
 		act->_timer.stop ();
 
 		if (k == -1)
@@ -567,7 +571,8 @@ namespace LinBox
 			if (i->second <= level) {
 				j = i++;
 				config.erase (j);
-			} else {
+			}
+			else {
 				++i;
 			}
 		}
@@ -582,7 +587,8 @@ namespace LinBox
 			if (i->second > level) {
 				j = i++;
 				config.erase (j);
-			} else {
+			}
+			else {
 				++i;
 			}
 		}
@@ -742,6 +748,8 @@ namespace LinBox
 		return n;
 	}
 
+#endif
 	// Default global commentator
-	Commentator commentator;
+	Commentator commentator ;
 }
+

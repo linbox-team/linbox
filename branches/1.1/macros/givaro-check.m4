@@ -20,13 +20,13 @@ AC_DEFUN([LB_CHECK_GIVARO],
 [
 
 AC_ARG_WITH(givaro,
-[  --with-givaro=<path>|yes Use Givaro library. This library is mandatory for
+[AC_HELP_STRING([--with-givaro=<path>|yes], [Use Givaro library. This library is mandatory for
                            LinBox compilation. If argument is yes or <empty>
 			   that means the library is reachable with the standard
 			   search path (/usr or /usr/local). Otherwise you give
 			   the <path> to the directory which contains the
 			   library.
-],
+])],
 	     [if test "$withval" = yes ; then
 			GIVARO_HOME_PATH="${DEFAULT_CHECKING_PATH}"
 	      elif test "$withval" != no ; then
@@ -55,7 +55,7 @@ if test -r "$GIVARO_HOME/include/givaro/givconfig.h"; then
 
 	if test "x$GIVARO_HOME" != "x/usr" -a "x$GIVARO_HOME" != "x/usr/local"; then
 		GIVARO_CFLAGS="-I${GIVARO_HOME}/include"
-		GIVARO_LIBS="-L${GIVARO_HOME}/lib -lgivaro"
+		GIVARO_LIBS="-L${GIVARO_HOME}/lib -lgivaro ${GIVARO_HOME}/lib/libgivaro.so"
 	else
 		GIVARO_CFLAGS=
 		GIVARO_LIBS="-lgivaro"
@@ -99,6 +99,7 @@ done
 if test "x$givaro_found" = "xyes" ; then
 	AC_SUBST(GIVARO_CFLAGS)
 	AC_SUBST(GIVARO_LIBS)
+	dnl  echo $GIVARO_CFLAGS $GIVARO_LIBS
 	AC_DEFINE(HAVE_GIVARO,1,[Define if GIVARO is installed])
 	HAVE_GIVARO=yes
 	if test "x$givaro_cross" != "xyes"; then

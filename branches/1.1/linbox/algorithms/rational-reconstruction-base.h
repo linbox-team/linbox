@@ -72,7 +72,7 @@ namespace LinBox
 				RecCounter = (int)sqrt((double)rbound_);//RecCounter^2 < rbound_ <=(RecCounter+1)^2
 			}
 			else if (_M == GEOMETRIC) {
-				RecCounter = log((double)rbound_) ;//2^RecCounter < rbound_ <=2^(RecCounter+1)
+				RecCounter = (size_t) log((double)rbound_) ;//2^RecCounter < rbound_ <=2^(RecCounter+1)
 			}
 		}
 
@@ -81,10 +81,10 @@ namespace LinBox
 		{
 			RecCounter =0;
 			if (_M == QUADRATIC) {
-				RecCounter = (int)sqrt(rbound_);//RecCounter^2 < rbound_ <=(RecCounter+1)^2
+				RecCounter = (size_t)sqrt((double)rbound_);//RecCounter^2 < rbound_ <=(RecCounter+1)^2
 			}
 			else if (_M == GEOMETRIC) {
-				RecCounter = (int)((double)log(rbound_)/log(2));//2^RecCounter < rbound_ <=2^(RecCounter+1)
+				RecCounter = (size_t)((double)log((double)rbound_)/log(2));//2^RecCounter < rbound_ <=2^(RecCounter+1)
 			}
 
 		}
@@ -136,7 +136,8 @@ namespace LinBox
 					if (x_in <0) {
 						if ((-x_in) > m) x_in %= m;
 						if (x_in < 0) x_in += m;
-					} else {
+					}
+					else {
 						if (x_in > m) x_in %= m;
 					}
 					if (x_in > 0) res = res && _RR.reconstructRational(*it_a, new_den,x_in,m);
@@ -166,7 +167,8 @@ namespace LinBox
 					if (x_in <0) {
 						if ((-(x_in)) > m) x_in %= m;
 						if (x_in < 0) x_in += m;
-					} else {
+					}
+					else {
 						if (x_in > m) x_in %= m;
 					}
 					if (x_in > 0) res = res && _RR.reconstructRational(a[i], new_den,x_in,m);
@@ -205,7 +207,8 @@ namespace LinBox
 					x_in %= m;
 				if (x<0)
 					x_in += m;
-			} else {
+			}
+			else {
 				if (x>m)
 					x_in %= m;
 			}
@@ -226,7 +229,8 @@ namespace LinBox
 					x_in %= m;
 				if (x<0)
 					x_in += m;
-			} else {
+			}
+			else {
 				if (x>m)
 					x_in %= m;
 			}
@@ -246,7 +250,8 @@ namespace LinBox
 					x_in %= m;
 				if (x<0)
 					x_in += m;
-			} else {
+			}
+			else {
 				if (x>m)
 					x_in %= m;
 			}

@@ -22,7 +22,7 @@ AC_DEFUN([LB_DRIVER],
 [
 AC_MSG_CHECKING([whether to compile the drivers])
 
-AC_ARG_ENABLE(drivers, [  --enable-drivers Enable the compilation of the drivers],
+AC_ARG_ENABLE(drivers, [AC_HELP_STRING([--enable-drivers], [Enable the compilation of the drivers])],
 [
 AC_MSG_RESULT(yes)
 compile_drivers="yes"
@@ -38,13 +38,13 @@ AC_DEFUN([LB_CHECK_MAPLE],
 [
 
 AC_ARG_WITH(maple,
-[ --with-maple=<path>|yes|no Use Maple library. If argument is no, you do not
+[AC_HELP_STRING([--with-maple=<path>|yes|no], [Use Maple library. If argument is no, you do not
   			    have the library installed on your machine (set as
 			    default). If argument is yes or <empty> that means
 			    the library is well installed and so reachable.
 			    Otherwise you give the <path> to the directory which
 			    contains the Software.
-	    ],
+	    ])],
             [if test "$withval" = yes ; then
 		MAPLE_HOME_PATH="${DEFAULT_CHECKING_PATH} unknown"
 	      elif test "$withval" != no ; then
@@ -52,8 +52,8 @@ AC_ARG_WITH(maple,
 	     fi	],
 	    [])
 
-AC_ARG_ENABLE(shared,
-[  --enable-shared Check for shared compilation (needed by --with-maple)],
+AC_ARG_ENABLE(shared, dnl this name is a bad idea
+[AC_HELP_STRING([--enable-shared], [Check for shared compilation (needed by --with-maple)])],
 	      [have_shared="$enableval"],
               [have_shared="no"])
 

@@ -60,7 +60,8 @@ namespace LinBox
 					F.addin(tmp,*vec);
 					F.divin(tmp,row->front().second);
 					F.assign(*res,tmp);
-				} else {
+				}
+				else {
 					// Consistency check
 					if( ! F.isZero(*vec) ) {
 						consistant = false;
@@ -77,7 +78,8 @@ namespace LinBox
 				F.addin(tmp,*vec);
 				F.divin(tmp,row->front().second);
 				F.assign(*res,tmp);
-			} else {
+			}
+			else {
 				// Consistency check
 				if( ! F.isZero(*vec) ) consistant = false;
 			}
