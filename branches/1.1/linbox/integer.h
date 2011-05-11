@@ -115,8 +115,8 @@ namespace LinBox
 }
 
 // Dependency to GIVARO >= 3.3.4
-/* givaro/givconfig.h so provides the fixed width integer types such as 
- * int16_t, uint8_t, etc.  The typenames int16, uint8, etc are no longer used 
+/* givaro/givconfig.h so provides the fixed width integer types such as
+ * int16_t, uint8_t, etc.  The typenames int16, uint8, etc are no longer used
  * in LinBox or Givaro.
  */
 #include <givaro/givconfig.h>

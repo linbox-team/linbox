@@ -146,6 +146,8 @@ Element* linbox_modn_dense_minpoly (Element modulus, Element ** mp, size_t* degr
 	typedef  std::vector<Element> Polynomial;
 	typedef  Modular<Element> Field;
 	typedef  std::vector<Element> Polynomial;
+	typedef  Modular<Element> Field;
+	typedef  std::vector<Element> Polynomial;
 
 	Modular<Element> F(modulus);
 	    // Warning: super sketchy memory alloc here!!!!
