@@ -28,10 +28,6 @@
  * @test no doc.
  */
 
-#ifndef __LINBOX_HAVE_NTL
-#error "you can't compile this test without NTL enabled. Please make sure you configured Linbox with --with-ntl=path/to/ntl"
-#endif
-
 
 
 #include <linbox/field/ntl-ZZ.h>
@@ -49,6 +45,11 @@
 #include <linbox/vector/stream.h>
 #include "test-common.h"
 #include <linbox/algorithms/matrix-hom.h>
+
+#ifndef __LINBOX_HAVE_NTL
+#error "you can't compile this test without NTL enabled. Please make sure you configured Linbox with --with-ntl=path/to/ntl"
+#endif
+
 
 
 using namespace LinBox;
