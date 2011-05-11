@@ -14,7 +14,7 @@ SUBDIRS=linbox macros tests interfaces doc examples benchmarks
 
 #  Fullcheck provides a full check for regression testing purposes.
 fullcheck:
-	(cd tests; make fullcheck)
+	(make ; cd tests; make fullcheck)
 
 docs:doc/linbox-html/index.html
 

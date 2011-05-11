@@ -28,7 +28,9 @@
  * @test no doc.
  */
 
-
+#ifndef __LINBOX_HAVE_NTL
+#error "you can't compile this test without NTL enabled. Please make sure you configured Linbox with --with-ntl=path/to/ntl"
+#endif
 
 
 

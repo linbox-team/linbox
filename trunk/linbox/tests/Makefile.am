@@ -14,14 +14,17 @@ AM_CXXFLAGS = @TESTS_CFLAGS@ -DLinBoxSrcOnly
 # AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -D__LINBOX_HAVE_DGETRF -D__LINBOX_HAVE_DGETRI
 # AM_CFLAGS = -g -Wall
 
-SUBDIRS = data
+SUBDIRS = data matrix
 
 AM_CPPFLAGS+= $(CBLAS_FLAG) $(FFLAFLAS_CFLAGS) $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
 LDADD = $(BLAS_LIBS) $(NTL_LIBS) $(GIVARO_LIBS) $(GMP_LIBS)  $(LIDIA_LIBS)
 AM_LDFLAGS+=-static
 
 EXTRA_DIST=            \
-		test-common.C
+		test-common.C  \
+		tests.doxy     \
+		checker.C
+
 #  test-generic-for-quad.h
 
 # Put an entry for your test-mycomponent.C here (or in one of the other test groups).
@@ -31,65 +34,66 @@ EXTRA_DIST=            \
 # Note that among the available groups are NONCOMPILING_TESTS and FAILING_TESTS, which
 # will be ignored by "make check" and can be temporary storage for problematic tests.
 BASIC_TESTS =  \
-        test-bitonic-sort       \
-        test-blas-domain        \
-        test-butterfly          \
-        test-commentator        \
-        test-companion          \
-        test-dense              \
-        test-det                \
-        test-diagonal           \
-        test-dif                \
-        test-direct-sum         \
-        test-ffpack             \
-        test-frobenius          \
-        test-getentry           \
-        test-gf2                \
-        test-gmp-rational       \
-        test-hilbert            \
-        test-hom                \
-        test-inverse            \
-        test-isposdef           \
-        test-ispossemidef       \
-        test-matrix-domain      \
-        test-matrix-stream      \
-        test-minpoly            \
-        test-modular            \
-        test-modular-balanced-int    \
-        test-modular-balanced-float  \
-        test-modular-balanced-double \
-        test-modular-byte       \
-        test-modular-double     \
-        test-modular-float      \
-        test-modular-int        \
-        test-modular-short      \
-        test-block-ring         \
-        test-PID-integer        \
-        test-moore-penrose      \
-        test-randiter-nonzero   \
-        test-rank               \
-        test-rational-matrix-factory \
-        test-scalar-matrix      \
-        test-sparse             \
-        test-subiterator        \
-        test-submatrix          \
-        test-subvector          \
-        test-trace              \
-        test-triplesbb          \
-        test-vector-domain      \
-        test-qlup               \
-        test-zero-one           \
-        test-solve              \
-        test-nullspace                  \
-        test-smith-form-binary          \
-        test-rational-solver            \
-        test-rational-solver-adaptive   \
-        test-solve-nonsingular          \
-        test-last-invariant-factor      \
-        test-charpoly                   \
-		test-cra                        \
-		test-cradomain                  \
-        test-unparametric-field         \
+        test-bitonic-sort             \
+        test-blas-domain              \
+        test-butterfly                \
+        test-commentator              \
+        test-companion                \
+        test-dense                    \
+        test-det                      \
+        test-diagonal                 \
+        test-dif                      \
+        test-direct-sum               \
+        test-ffpack                   \
+        test-frobenius                \
+        test-getentry                 \
+        test-gf2                      \
+        test-gmp-rational             \
+        test-hilbert                  \
+        test-hom                      \
+        test-inverse                  \
+        test-isposdef                 \
+        test-ispossemidef             \
+        test-matrix-domain            \
+        test-matrix-stream            \
+        test-minpoly                  \
+        test-modular                  \
+        test-modular-balanced-int     \
+        test-modular-balanced-float   \
+        test-modular-balanced-double  \
+        test-modular-byte             \
+        test-modular-double           \
+        test-modular-float            \
+        test-modular-int              \
+        test-modular-short            \
+        test-block-ring               \
+        test-PID-integer              \
+        test-moore-penrose            \
+        test-randiter-nonzero         \
+        test-rank                     \
+        test-rational-matrix-factory  \
+        test-scalar-matrix            \
+        test-sparse                   \
+        test-subiterator              \
+        test-submatrix                \
+        test-subvector                \
+        test-sum                      \
+        test-trace                    \
+        test-triplesbb                \
+        test-vector-domain            \
+        test-qlup                     \
+        test-zero-one                 \
+        test-solve                    \
+        test-nullspace                \
+        test-smith-form-binary        \
+        test-rational-solver          \
+        test-rational-solver-adaptive \
+        test-solve-nonsingular        \
+        test-last-invariant-factor    \
+        test-charpoly                 \
+        test-cra                      \
+        test-cradomain                \
+        test-unparametric-field       \
 		test-rational-reconstruction-base
 
 #  test-integer-tools
@@ -158,7 +162,6 @@ NTL_TESTS =                           \
         test-ntl-toeplitz             \
         test-ntl-hankel               \
         test-ntl-sylvester            \
-        test-sum                      \
         test-smith-form-iliopoulos    \
         test-toeplitz-det
 
@@ -602,7 +605,7 @@ test_solve_nonsingular_SOURCES=       \
 		test-solve-nonsingular.C
 
 #  test_integer_tools_SOURCES =          \
-		#  test-integer-tools.C
+#  test-integer-tools.C
 
 fullcheck: checker
 	./checker

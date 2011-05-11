@@ -51,6 +51,8 @@ pkgincludesub_HEADERS =         \
     cra-early-multip.h          \
     cra-early-single.h          \
     cra-full-multip.h           \
+	cra-full-multip-fixed.h     \
+	cra-givrnsfixed.h           \
     lazy-product.h              \
     rational-cra.h              \
     rational-cra2.h             \
@@ -76,9 +78,14 @@ pkgincludesub_HEADERS =         \
     matrix-inverse.h            \
     matrix-hom.h                \
     matrix-rank.h               \
+	numeric-solver-lapack.h     \
+	rational-solver-sn.h        \
+	rational-solver-sn.inl      \
+	dyadic-to-rational.h        \
     rational-reconstruction.h   \
     rational-reconstruction-base.h          \
     classic-rational-reconstruction.h       \
+	fast-rational-reconstruction.h          \
     rational-solver.h           \
     rational-solver2.h          \
     rational-solver.inl         \

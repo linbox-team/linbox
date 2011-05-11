@@ -1,3 +1,29 @@
+2011-05-11 bboyer
+        linbox-1.2.0 released:
+	* Many many bug fixes, many memleaks, much code beautify.
+	* Licence/copyright added to (hopefully) every file.
+	* Vi/emacs magic lines for auto-indentation.
+	* Some documentation added + improved Doxygen framework (dev/user
+	documentation, more *.doxy items, bug/todo list, bibliography list)
+	* Upgrade to givaro 3.4.0 series ( new namespace, new API for integer
+	operations, a few new functions (naturallog...) )
+	* Upgrade to fflas-ffpack 1.4.0 (new namespace, new includes)
+	* Some initial work introduced here and there (matrix permutation
+	representations, symbolic/numeric solver, sparse matrix
+	representation...)
+	* CRA algorithms reworked and tested, some added.
+	* Timer moved to Givaro
+	* Some debug/util moved to FflasFfpack
+	* Better configure.ac/Makefiles (more options, icc/gcc
+	customisation,...)
+	* More m4 rules
+	* Possibility to use IML functions as a shared library (and some
+	examples given)
+	* 'make fullcheck' checks all possible tests given and reports
+	* Auto-installer from sources/svn with plenty of options
+	* Some new field functions like characteristic()
+	* Work on synchronising field member functions signatures for
+	better compatibility between all fields (in progress)
 2010-11-03 cpernet
 	linbox-1.1.7 released:
 	* bug fixes and minor enhancements

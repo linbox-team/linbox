@@ -31,7 +31,9 @@
 #include "linbox/field/archetype.h"
 #include "linbox/field/modular.h"
 #include "linbox/field/givaro.h"
+#ifdef __LINBOX_HAVE_NTL
 #include "linbox/field/ntl-lzz_p.h"
+#endif
 #include "linbox/vector/vector-domain.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/scalar-matrix.h"
@@ -205,9 +207,13 @@ int main (int argc, char **argv)
 		END_OF_ARGUMENTS
 	};
 
+#ifdef __LINBOX_HAVE_NTL
 //        typedef UnparametricField<NTL::zz_p> Field;
         typedef NTL_zz_p Field;
 // 	NTL::zz_p::init(q1); // Done in the constructor
+#else
+	typedef Modular<int32_t> Field ;
+#endif
 	Field F1(q1);
 
         GivaroZpz< ::Givaro::Std32> F2(q2);

@@ -142,7 +142,6 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-rat-charpoly", counter, flag);//, "infinite loop, cp responsible?");
 	build_n_run("test-scalar-matrix", counter, flag);
 	build_n_run("test-smith-form-binary", counter, flag);
-	build_n_run("test-smith-form-iliopoulos", counter, flag);
 	build_n_run("test-solve", counter, flag);
 	build_n_run("test-sparse", counter, flag);
 	build_n_run("test-subiterator", counter, flag);
@@ -191,6 +190,7 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-toeplitz-det", counter, flag);
 	build_n_run("test-smith-form", counter, flag);
 	build_n_run("test-smith-form-adaptive", counter, flag);
+	build_n_run("test-smith-form-iliopoulos", counter, flag);
 #else
 	if (flag > 0) cout << "	not doing NTL dependent tests" << endl;
 	no_build_n_run("test-ntl-hankel", counter, flag);
@@ -202,6 +202,7 @@ build |wc" should yield the same number of lines.
 	no_build_n_run("test-toeplitz-det", counter, flag, "can we have non NTL version?");
 	no_build_n_run("test-smith-form", counter, flag);
 	no_build_n_run("test-smith-form-adaptive", counter, flag);
+	no_build_n_run("test-smith-form-iliopoulos", counter, flag);
 #endif
 
 #if __LINBOX_HAVE_LIDIA

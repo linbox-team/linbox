@@ -287,6 +287,7 @@ linbox/util/formats/Makefile
 linbox/vector/Makefile
 tests/Makefile
 tests/data/Makefile
+tests/matrix/Makefile
 interfaces/Makefile
 interfaces/driver/Makefile
 interfaces/maple/Makefile
