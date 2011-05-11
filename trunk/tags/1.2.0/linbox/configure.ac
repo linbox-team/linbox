@@ -247,15 +247,9 @@ exit 1
 
 LB_CHECK_EXPAT
 
-LB_BENCH
 LB_OPT
 LB_DOC
 
-
-if test ! -d ./benchmarks/data  ; then
-	echo "Creating data dir in benchmark" ;
-	mkdir ./benchmarks/data  ;
-fi
 
 # this is bogus so far as I can tell.  -bds
 #CXXFLAGS="${GMP_CFLAGS} ${NTL_CFLAGS} ${GIVARO_CFLAGS} ${SACLIB_CFLAGS} ${CXXFLAGS}"
@@ -294,6 +288,5 @@ interfaces/maple/Makefile
 interfaces/kaapi/Makefile
 interfaces/sage/Makefile
 macros/Makefile
-benchmarks/Makefile
 ])
 AC_OUTPUT
