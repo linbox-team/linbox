@@ -11,7 +11,7 @@
 #ifndef __LINBOX_doubledet_H
 #define __LINBOX_doubledet_H
 
-#include "linbox/ffpack/ffpack.h"
+#include "fflas-ffpack/ffpack/ffpack.h"
 #include "linbox/algorithms/matrix-hom.h"
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/algorithms/cra-full-multip.h"
@@ -244,7 +244,8 @@ namespace LinBox
 			//t_cra.stop();
 			//std::cerr<<"CRA : "<<t_cra.usertime()<<"s"<<std::endl;
 
-		} else {
+		}
+		else {
 			ChineseRemainder <EarlyMultipCRA <Modular<double> > > cra(4UL);
 			cra (dd, iteration, genprime);
 		}

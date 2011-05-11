@@ -2,7 +2,7 @@
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/field/modular-balanced-double.h
  * Copyright (C) 2003 Pascal Giorgi
- *               2008 Clement Pernet
+ *               2005,2008 Clement Pernet
  * Written by Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
  * and Clement Pernet <Clement.Pernet@imag.fr>
  *
@@ -19,6 +19,11 @@
 #ifndef __LINBOX_modular_balanced_double_H
 #define __LINBOX_modular_balanced_double_H
 
+#ifdef __INTEL_COMPILER
+#define FmodF fmodf
+#else
+#define FmodF fmod
+#endif
 
 #include "linbox/linbox-config.h"
 #include "linbox/integer.h"
@@ -31,6 +36,8 @@
 #include "linbox/field/field-traits.h"
 #include "linbox/randiter/modular-balanced.h"
 #include "linbox/randiter/nonzero.h"
+
+#include "fflas-ffpack/field/modular-balanced-double.h"
 
 
 // Namespace in which all LinBox code resides
@@ -62,356 +69,94 @@ namespace LinBox
 	 * necessary, at the cost of a more expensive reduction.
 	 */
 	template<>
-	class ModularBalanced<double> : public FieldInterface {
+	class ModularBalanced<double> : public FieldInterface,
+	      public FFPACK::ModularBalanced<double> {
 
-	protected:
+	      protected:
 
-		double  modulus;
-		double half_mod;
-		double mhalf_mod;
-		unsigned long   lmodulus;
+	      public:
+		      friend class FieldAXPY<ModularBalanced<double> >;
+		      friend class DotProductDomain<ModularBalanced<double> >;
+		      friend class MultiModDouble;
 
-	public:
-		friend class FieldAXPY<ModularBalanced<double> >;
-		friend class DotProductDomain<ModularBalanced<double> >;
-		friend class MultiModDouble;
+		      typedef double Element;
+		      typedef ModularBalancedRandIter<double> RandIter;
+		      typedef NonzeroRandIter<ModularBalanced<double>, RandIter > NonZeroRandIter;
 
-		typedef double Element;
-		typedef ModularBalancedRandIter<double> RandIter;
-		typedef NonzeroRandIter<ModularBalanced<double>, RandIter > NonZeroRandIter;
+		      static ClassifyRing <ModularBalanced<double> >::categoryTag getCategory()
+		      {
+			      return ClassifyRing<ModularBalanced<double> >::categoryTag();
+		      }
 
-		static ClassifyRing <ModularBalanced<double> >::categoryTag getCategory()
-		{
-			return ClassifyRing<ModularBalanced<double> >::categoryTag();
-		}
+		      ModularBalanced (const integer& p) :
+			      FFPACK::ModularBalanced<double>((unsigned long)p)
+		      {
+#ifdef DEBUG
+			      if (p > (integer) ULONG_MAX)
+				      throw PreconditionFailed(__func__,__FILE__,__LINE__,"prime too big");
+			      if(modulus <= 1)
+				      throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
+			      if(modulus > getMaxModulus())
+				      throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
+#endif
 
-		// const bool balanced ;
+		      }
 
-		ModularBalanced () {}
+		      integer &cardinality (integer &c) const
+		      {
+			      return c = integer(modulus);
+		      }
 
-		ModularBalanced (int32_t p, int exp = 1) :
-			modulus((double)p),
-			half_mod (double((p-1)/2)),
-			mhalf_mod(half_mod-modulus+1),
-			lmodulus (p)
-		{
-			if(modulus <= 1)
-				throw PreconditionFailed(__func__,
-							 __LINE__,
-							 "modulus must be > 1");
-			if( exp != 1 ) throw PreconditionFailed(__func__,
-								__LINE__,
-								"exponent must be 1");
-			integer max;
-			if (modulus > (double) FieldTraits<ModularBalanced<double> >::maxModulus(max))
-				throw PreconditionFailed (__func__,
-							  __LINE__,
-							  "modulus is too big");
-		}
+		      integer &characteristic (integer &c) const
+		      {
+			      return c = integer(modulus);
+		      }
 
-		ModularBalanced (double p) :
-			modulus (p),
-			half_mod (double((int)(p-1)/2)),
-			mhalf_mod(half_mod-modulus+1),
-			lmodulus ((unsigned long)p)
-		{
-			if (modulus <= 1)
-				throw PreconditionFailed(__func__,
-							 __LINE__,
-							 "modulus must be > 1");
-			integer max;
-			if (modulus > (double) FieldTraits<ModularBalanced<double> >::maxModulus(max))
-				throw PreconditionFailed (__func__,
-							  __LINE__,
-							  "modulus is too big");
-		}
+		      long unsigned characteristic(long unsigned int&p) const { return FFPACK::ModularBalanced<double>::characteristic(p) ; }
+		      double & convert(double &x, const Element &y) const { return FFPACK::ModularBalanced<double>::convert(x,y) ; }
+		      float & convert(float&x, const Element &y) const { return FFPACK::ModularBalanced<double>::convert(x,y) ; }
+		      unsigned long characteristic()const{return FFPACK::ModularBalanced<double>::characteristic();}
+		      unsigned long cardinality()const{return FFPACK::ModularBalanced<double>::cardinality();}
 
-		ModularBalanced (long int p) :
-			modulus((double)p),
-			half_mod (double((long int)(p-1)/2)),
-			mhalf_mod(half_mod-modulus+1),
-			lmodulus(p)
-		{
-			if ((double) modulus <= 1)
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
-			integer max;
-			if ((double) modulus > (double) FieldTraits<ModularBalanced<double> >::maxModulus(max))
-				throw PreconditionFailed (__func__,
-							  __LINE__,
-							  "modulus is too big");
-		}
+		      integer &convert (integer &x, const Element &y) const
+		      {
+			      return x = integer (y);
+		      }
 
-		ModularBalanced (const integer& p) :
-			modulus((double) p),
-			half_mod (double((p-1)/2)),
-			mhalf_mod(half_mod-modulus+1),
-			lmodulus(p)
-		{
-			if(modulus <= 1)
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be > 1");
-			if(modulus > getMaxModulus())
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus is too big");
+		      Element &init (Element &x, const integer &y) const
+		      {
+			      x = (Element)(y%lmodulus);
+			      if (x<mhalf_mod) return x += modulus ;
+			      else if (x>half_mod) return x -= modulus ;
+			      return  x ;
+		      }
 
-		}
+		      //! @bug faux si modulus==2
+		      inline bool isMinusOne (const Element &x) const
+		      {
+			      return (x == -1.);
+		      }
 
-		ModularBalanced (const ModularBalanced<double>& mf) :
-			modulus  (mf.modulus),
-			half_mod (mf.half_mod),
-			mhalf_mod(mf.mhalf_mod),
-			lmodulus (mf.lmodulus) {}
+		      unsigned long AccBound(const Element&r) const
+		      {
+			      Element one, zero ; init(one,1UL) ; init(zero,0UL);
+			      double max_double = (double) (1ULL<<DBL_MANT_DIG) - modulus ;
+			      double p = std::max(half_mod,-mhalf_mod) ;
+			      if (areEqual(zero,r))
+				      return (unsigned long) (double(max_double)/p) ;
+			      else if (areEqual(one,r))
+			      {
+				      if (modulus>= getMaxModulus())
+					      return 0 ;
+				      else
+					      return (unsigned long) (double(max_double)/(p*p)) ;
+			      }
+			      else
+				      throw LinboxError("Bad input, expecting 0 or 1");
+			      return 0;
+		      }
 
-		const ModularBalanced &operator= (const ModularBalanced<double> &F) {
-			modulus = F.modulus;
-			half_mod = F.half_mod;
-			mhalf_mod = F.mhalf_mod;
-			lmodulus= F.lmodulus;
-			return *this;
-		}
-
-
-		inline integer &cardinality (integer &c) const{
-			return c = integer(modulus);
-		}
-
-		inline integer &characteristic (integer &c) const
-		{
-			return c = integer(modulus);
-		}
-		inline size_t characteristic () const
-		{
-			return modulus;
-		}
-
-
-		inline integer &convert (integer &x, const Element &y) const
-		{
-			if ( y < 0. ) return x = integer (y + modulus) ;
-			else return x = integer (y);
-		}
-
-		inline double &convert (double &x, const Element& y) const
-		{
-			return x=y;
-		}
-
-		std::ostream &write (std::ostream &os) const
-		{
-			return os << "balanced double mod " << int(modulus);
-		}
-
-		std::istream &read (std::istream &is)
-		{
-			is >> modulus;
-			if(modulus <= 1)
-				throw PreconditionFailed (__func__,
-							  __LINE__,
-							  "modulus must be > 1");
-			if(modulus > getMaxModulus())
-				throw PreconditionFailed (__func__,
-							  __LINE__,
-							  "modulus is too big");
-			return is;
-		}
-
-		std::ostream &write (std::ostream &os, const Element &x) const
-		{
-			return os << int(x);
-		}
-
-		std::istream &read (std::istream &is, Element &x) const
-		{
-			integer tmp;
-			// JGD : should'nt it be double tmp ???
-			is >> tmp;
-			init(x,tmp);
-			return is;
-		}
-
-
-		inline Element &init (Element &x, const integer &y) const  {
-			x = (Element)(y%lmodulus);
-			if (x<mhalf_mod) return x += modulus ;
-			else if (x>half_mod) return x += modulus ;
-			return  x ;
-		}
-
-		inline Element& init(Element& x, const double y =0) const
-		{
-
-			x = fmod (y, modulus);
-			if (x > half_mod) return   x -= modulus;
-			else if (x < mhalf_mod) return x += modulus;
-			else return x;
-		}
-
-		inline Element& assign(Element& x, const Element& y) const
-		{
-			return x = y;
-		}
-
-		/*! Tests equality.
-		 * @param x element
-		 * @param y element
-		 * @warning \c x and \c y are supposed to be reduced.
-		 */
-		inline bool areEqual (const Element &x, const Element &y) const
-		{
-			return x == y;
-		}
-
-		inline  bool isZero (const Element &x) const
-		{
-			return x == 0.;
-		}
-
-		inline bool isOne (const Element &x) const
-		{
-			return x == 1.;
-		}
-
-		inline bool isMinusOne (const Element &x) const
-		{
-			return (x == -1.);
-		}
-
-		inline Element &add (Element &x,
-				     const Element &y,
-				     const Element &z) const
-		{
-			x = y + z;
-			if ( x > half_mod ) return x -= modulus;
-			if ( x < mhalf_mod ) return x += modulus;
-			return x;
-		}
-
-		inline Element &sub (Element &x,
-				     const Element &y,
-				     const Element &z) const
-		{
-			x = y - z;
-			if (x > half_mod) return x -= modulus;
-			if (x < mhalf_mod) return x += modulus;
-			return x;
-		}
-
-		inline Element &mul (Element &x, const Element &y, const Element &z) const
-		{
-			x = y * z;
-			return init (x,x);
-		}
-
-		inline Element &div (Element &x, const Element &y, const Element &z) const
-		{
-			Element temp;
-			inv (temp, z);
-			return mul (x, y, temp);
-		}
-
-		inline Element &neg (Element &x, const Element &y) const
-		{
-			return x = -y;
-		}
-
-		inline Element &inv (Element &x, const Element &y) const
-		{
-			// The extended Euclidean algoritm
-			int x_int, y_int, q, tx, ty, temp;
-			x_int = int (modulus);
-			y_int = (y < 0.) ? int(y + modulus) : int(y);
-			tx = 0;
-			ty = 1;
-
-			while (y_int != 0) {
-				// always: gcd (modulus,residue) = gcd (x_int,y_int)
-				//         sx*modulus + tx*residue = x_int
-				//         sy*modulus + ty*residue = y_int
-				q = x_int / y_int; // integer quotient
-				temp = y_int; y_int = x_int - q * y_int;
-				x_int = temp;
-				temp = ty; ty = tx - q * ty;
-				tx = temp;
-			}
-			if (tx > half_mod ) return x = tx - modulus;
-			if ( tx < mhalf_mod ) return x = tx + modulus;
-			return x = (double) tx;
-		}
-
-		inline Element &axpy (Element &r,
-				      const Element &a,
-				      const Element &x,
-				      const Element &y) const
-		{
-			r = a * x + y;
-			return init (r, r);
-		}
-
-		inline Element &addin (Element &x, const Element &y) const
-		{
-			x += y;
-			if ( x > half_mod ) return x -= modulus;
-			if ( x < mhalf_mod ) return x += modulus;
-			return x;
-		}
-
-		inline Element &subin (Element &x, const Element &y) const
-		{
-			x -= y;
-			if ( x > half_mod ) return x -= modulus;
-			if ( x < mhalf_mod ) return x += modulus;
-			return x;
-		}
-
-		inline Element &mulin (Element &x, const Element &y) const
-		{
-			return mul(x,x,y);
-		}
-
-		inline Element &divin (Element &x, const Element &y) const
-		{
-			return div(x,x,y);
-		}
-
-		inline Element &negin (Element &x) const
-		{
-			return x = -x;
-		}
-
-		inline Element &invin (Element &x) const
-		{
-			return inv (x, x);
-		}
-
-		inline Element &axpyin (Element &r, const Element &a, const Element &x) const
-		{
-			r += a * x;
-			return init (r, r);
-		}
-
-		unsigned long AccBound(const Element&r) const
-		{
-			Element one, zero ; init(one,1UL) ; init(zero,0UL);
-			double max_double = (double) (1ULL<<DBL_MANT_DIG) - modulus ;
-			double p = std::max(half_mod,-mhalf_mod) ;
-			if (areEqual(zero,r))
-				return (unsigned long) (double(max_double)/p) ;
-			else if (areEqual(one,r))
-			{
-				if (modulus>= getMaxModulus())
-					return 0 ;
-				else
-					return (unsigned long) (double(max_double)/(p*p)) ;
-			} else
-				throw LinboxError("Bad input, expecting 0 or 1");
-			return 0;
-		}
-
-
-		static inline double getMaxModulus()
-		{
-			return 67108864.0;  // 2^26
-		}
-
-	};
+	      };
 
 	//! Specialization  of FieldAXPY.
 	template <>

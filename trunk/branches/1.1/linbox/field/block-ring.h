@@ -16,7 +16,7 @@
 #include "linbox/field/field-interface.h"
 //#include "linbox/matrix/blas-domain.h"
 #include "linbox/algorithms/blas-domain.h"
-#include "linbox/fflas/fflas.h"
+#include "fflas-ffpack/fflas/fflas.h"
 
 namespace LinBox
 {
@@ -72,10 +72,12 @@ namespace LinBox
 			Element& operator= (const Element& e) {
 				if (matrix == e.matrix) {
 					return *this;
-				}  else if (e.matrix == 0) {
+				}
+				else if (e.matrix == 0) {
 					release();
 					return *this;
-				} else {
+				}
+				else {
 					//set(new Matrix(*(e.matrix))); // does this really copy?
 					clone(e);
 					return *this;
@@ -98,9 +100,9 @@ namespace LinBox
 				Scalar* a=A.matrix->getPointer();
 				Scalar* b=  matrix->getPointer();
 
-				for(size_t i=0; i < rows*cols; i++) {
+				for(size_t i=0; i < rows*cols; ++i) {
 					*b=*a;
-					a++; b++;
+					++a; ++b;
 				}
 
 
@@ -141,8 +143,8 @@ namespace LinBox
 			Element& random(Element& e) const
 			{
 				// e must be init'd
-				for(size_t i=0; i < e. matrix -> rowdim(); i++)
-					for(size_t j=0; j < e. matrix -> coldim(); j++)
+				for(size_t i=0; i < e. matrix -> rowdim(); ++i)
+					for(size_t j=0; j < e. matrix -> coldim(); ++j)
 						r.random(e.matrix->refEntry(i,j));
 				return e;
 			}
@@ -217,14 +219,27 @@ namespace LinBox
 			return c;
 		}
 
-
 		integer& characteristic(integer &c) const
 		{
 			return _F.characteristic(c);
 		}
 
+		unsigned long cardinality() const
+		{
+			return _F. cardinality() ;
+		}
+
+		unsigned long characteristic() const
+		{
+			return _F. characteristic() ;
+		}
+
+
+
 		size_t dim() const
-		{ return _b; }
+		{
+			return _b;
+		}
 
 
 		//Operations
@@ -335,9 +350,9 @@ namespace LinBox
 			//FFLAS::fcopy(_F, rows*cols, b, 1, c, 1); // C = B
 
 
-			for(size_t i=0; i < rows*cols; i++) {
+			for(size_t i=0; i < rows*cols; ++i) {
 				_F.add(*c,*a,*b);
-				a++; b++; c++;
+				++a; ++b; c++;
 			}
 
 			//Scalar alpha; _F.init(alpha, 1);
@@ -355,9 +370,9 @@ namespace LinBox
 			Scalar* a=A.matrix->getPointer();
 			Scalar* b=B.matrix->getPointer();
 
-			for(size_t i=0; i < r*c; i++) {
+			for(size_t i=0; i < r*c; ++i) {
 				_F.addin(*a,*b);
-				a++; b++;
+				++a; ++b;
 			}
 
 			return A;
@@ -376,9 +391,9 @@ namespace LinBox
 			Scalar* c=C.matrix->getPointer();
 
 
-			for(size_t i=0; i < rows*cols; i++) {
+			for(size_t i=0; i < rows*cols; ++i) {
 				_F.sub(*c,*a,*b);
-				a++; b++; c++;
+				++a; ++b; c++;
 			}
 
 			return C;
@@ -394,9 +409,9 @@ namespace LinBox
 			Scalar* a=A.matrix->getPointer();
 			Scalar* b=B.matrix->getPointer();
 
-			for(size_t i=0; i < r*c; i++) {
+			for(size_t i=0; i < r*c; ++i) {
 				_F.subin(*a,*b);
-				a++; b++;
+				++a; ++b;
 			}
 
 			return A;
@@ -412,9 +427,9 @@ namespace LinBox
 			Scalar* a=A.matrix->getPointer();
 			Scalar* b=B.matrix->getPointer();
 
-			for(size_t i=0; i < r*c; i++) {
+			for(size_t i=0; i < r*c; ++i) {
 				_F.neg(*b,*a);
-				a++; b++;
+				++a; ++b;
 			}
 
 			return B;
@@ -429,9 +444,9 @@ namespace LinBox
 
 			Scalar* a=A.matrix->getPointer();
 
-			for(size_t i=0; i < r*c; i++) {
+			for(size_t i=0; i < r*c; ++i) {
 				_F.negin(*a);
-				a++;
+				++a;
 			}
 
 			return A;
@@ -446,13 +461,13 @@ namespace LinBox
 			Scalar* a=A.matrix->getPointer();
 			Scalar* b=B.matrix->getPointer();
 
-			for(size_t i=0; i < r*c; i++) {
+			for(size_t i=0; i < r*c; ++i) {
 
 				if(!_F.areEqual(*a,*b)) {
 					return false;
 				}
 
-				a++; b++;
+				++a; ++b;
 			}
 			return true;
 		}
@@ -468,8 +483,8 @@ namespace LinBox
 
 			Scalar* x=X.matrix->getPointer();
 
-			for(size_t i=1; i <= n; i++)
-				for(size_t j=1; j <= n; j++)
+			for(size_t i=1; i <= n; ++i)
+				for(size_t j=1; j <= n; ++j)
 				{
 					if(i==j) { // on the diagonal
 						if(!_F.isOne(*x)) {
@@ -498,7 +513,7 @@ namespace LinBox
 
 			Scalar* x=X.matrix->getPointer();
 
-			for(size_t i=0; i < r*c; i++)
+			for(size_t i=0; i < r*c; ++i)
 			{
 				if(!_F.isZero(*x)) {
 					return false;
@@ -554,7 +569,8 @@ namespace LinBox
 				n -= 1;
 				expt(res, a, n);
 				res*=a;
-			} else {
+			}
+			else {
 				n /= 2;
 				expt(res, a, n);
 				res*=res;

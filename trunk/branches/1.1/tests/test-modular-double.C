@@ -68,6 +68,10 @@ int main (int argc, char **argv)
 	Modular<double> F (32749);
 	Modular<double> G (65521);
 	//Modular<double> H (1099511627689);
+	integer k = FieldTraits<Modular<double> >::maxModulus() ;
+	prevprime(k,k);
+	Modular<double> I_int(k);
+
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
@@ -87,6 +91,10 @@ int main (int argc, char **argv)
 	if (!runFieldTests (F,  "Modular<double>",  iterations, n, false)) pass = false;
 	report << "Field G" << std::endl;
 	if (!runFieldTests (G,  "Modular<double>",  iterations, n, false)) pass = false;
+
+	if (!runFieldTests (I_int,  "Modular<double>",  iterations, n, false)) pass = false;
+	// if (!testRandomIterator (I_int,  "Modular<double>", trials, categories, hist_level)) pass = false;
+
 
 	commentator.stop("Modular<double> field test suite");
 	return pass ? 0 : -1;

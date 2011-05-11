@@ -26,15 +26,24 @@ using namespace std;
 #include "../linbox/linbox-config.h"
 
 struct counts {
-	int pass; int buildfail; int runfail; int skipped;
-	counts() : pass(0), buildfail(0), runfail(0), skipped(0) {}
-	int total() { return pass + buildfail + runfail; }
+	int      pass;
+       	int buildfail;
+	int   runfail;
+	int   skipped;
+	counts() :
+		pass(0), buildfail(0), runfail(0), skipped(0)
+	{}
+	int total()
+	{
+	       	return pass + buildfail + runfail;
+       	}
 };
 
 void build_n_run(string s, counts& cnt, int flag = 2, string r = "") ;
 void no_build_n_run(string s, counts& cnt, int flag = 2, string r = "") ;
 
-int main(int argc, char* argv[]){
+int main(int argc, char* argv[])
+{
 	int flag = 1; // default verbosity, no force
 	if (argc < 2) {
 		cout << "usage: " << argv[0] << " [summary,default,errors,verbose] [c]" << endl;
@@ -44,7 +53,8 @@ int main(int argc, char* argv[]){
 		cout << "  errors: also any build and run output for error cases." << endl;
 		cout << "  verbose: also any build and run output for each test." << endl;
 		cout << "  2nd arg, if present, forces rebuild of all tests." << endl;
-	} else {
+	}
+       	else {
 		if (argv[1][0] == 's') flag = 0; // summary
 		if (argv[1][0] == 'd') flag = 1; // default
 		if (argv[1][0] == 'w') flag = 2; // errors
@@ -100,7 +110,6 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-dyadic-to-rational", counter, flag, "bds responsible");
 	build_n_run("test-ffpack", counter, flag);
 	build_n_run("test-frobenius", counter, flag);
-	build_n_run("test-ftrmm", counter, flag);
 	build_n_run("test-getentry", counter, flag);
 	build_n_run("test-gf2", counter, flag);
 	build_n_run("test-gmp-rational", counter, flag);
@@ -115,8 +124,11 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-minpoly", counter, flag);
 	build_n_run("test-modular", counter, flag);
 	build_n_run("test-modular-balanced-int", counter, flag);
+	build_n_run("test-modular-balanced-float", counter, flag);
+	build_n_run("test-modular-balanced-double", counter, flag);
 	build_n_run("test-modular-byte", counter, flag);
 	build_n_run("test-modular-double", counter, flag);
+	build_n_run("test-modular-float", counter, flag);
 	build_n_run("test-modular-int", counter, flag);
 	build_n_run("test-modular-short", counter, flag);
 	build_n_run("test-moore-penrose", counter, flag);
@@ -129,8 +141,6 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-rational-reconstruction-base", counter, flag);
 	build_n_run("test-rat-charpoly", counter, flag);//, "infinite loop, cp responsible?");
 	build_n_run("test-scalar-matrix", counter, flag);
-	build_n_run("test-smith-form", counter, flag);
-	build_n_run("test-smith-form-adaptive", counter, flag);
 	build_n_run("test-smith-form-binary", counter, flag);
 	build_n_run("test-smith-form-iliopoulos", counter, flag);
 	build_n_run("test-solve", counter, flag);
@@ -142,13 +152,14 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-rational-solver", counter, flag);
 	build_n_run("test-trace", counter, flag);
 	build_n_run("test-triplesbb", counter, flag);
+	build_n_run("test-unparametric-field", counter, flag); //has been useful in num/sym.
 	build_n_run("test-vector-domain", counter, flag);
 	build_n_run("test-zero-one", counter, flag);
 
 #if __LINBOX_HAVE_GIVARO
 //	if (flag > 0) cout << "	Givaro tests" << endl;
 	build_n_run("test-givaro-zpz", counter, flag);
-	build_n_run("test-givaro-zpzuns", counter, flag);
+	build_n_run("test-givaro-zpzuns", counter, flag, "may fail on small fields because of supposed non-randomness or failure to find a non trivial element");
 	build_n_run("test-rat-solve", counter, flag); // "infinite loop");
 	build_n_run("test-rat-minpoly", counter, flag); // "intermittent failures");
 #else
@@ -178,6 +189,8 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-ntl-RR", counter, flag);
 	build_n_run("test-ntl-ZZ_p", counter, flag);
 	build_n_run("test-toeplitz-det", counter, flag);
+	build_n_run("test-smith-form", counter, flag);
+	build_n_run("test-smith-form-adaptive", counter, flag);
 #else
 	if (flag > 0) cout << "	not doing NTL dependent tests" << endl;
 	no_build_n_run("test-ntl-hankel", counter, flag);
@@ -187,6 +200,8 @@ build |wc" should yield the same number of lines.
 	no_build_n_run("test-ntl-sylvester", counter, flag);
 	no_build_n_run("test-ntl-ZZ_p", counter, flag);
 	no_build_n_run("test-toeplitz-det", counter, flag, "can we have non NTL version?");
+	no_build_n_run("test-smith-form", counter, flag);
+	no_build_n_run("test-smith-form-adaptive", counter, flag);
 #endif
 
 #if __LINBOX_HAVE_LIDIA
@@ -207,12 +222,12 @@ build |wc" should yield the same number of lines.
 
 	// tests of "doubles as a field" which doesn't adhere to LinBox field or ring specs.
 	if (flag > 0) cout << "	Noncompliant tests" << endl;
-	build_n_run("test-unparametric-field", counter, flag); //has been useful in num/sym.
 	build_n_run("test-param-fuzzy", counter, flag);
 
 #if 1
 	if (flag > 0) cout << "	Tests requiring further development" << endl;
 	build_n_run("test-smith-form-local", counter, flag, "bds"); //"intermittent failures");
+	no_build_n_run("test-ftrmm", counter, flag, "bb/cp");
 
 	if (flag > 0) cout << "	Immature tests" << endl;
 	no_build_n_run("test-quad-matrix", counter, flag, "half baked, bds responsible"); no_build_n_run("test-dense-zero-one", counter, flag, "half baked, bds responsible"); build_n_run("test-zo", counter, flag, "half baked, BY responsible");
@@ -260,7 +275,8 @@ build |wc" should yield the same number of lines.
 	return counter.buildfail || counter.runfail ? -1 : 0;
 }
 
-void no_build_n_run(string s, counts& cnt, int flag, string r) {
+void no_build_n_run(string s, counts& cnt, int flag, string r)
+{
 	if (flag >= 5) flag -= 5;
 	if (flag > 0) {
 		cout.width(35); cout << left << s;
@@ -270,7 +286,8 @@ void no_build_n_run(string s, counts& cnt, int flag, string r) {
 	cnt.skipped++;
 }
 
-void build_n_run(string s, counts& cnt, int flag, string r) {
+void build_n_run(string s, counts& cnt, int flag, string r)
+{
 // ignore r.
 	string cmd;
 	if (flag >= 5) { // force build
@@ -291,7 +308,8 @@ void build_n_run(string s, counts& cnt, int flag, string r) {
 		cnt.buildfail++;
 		// if (flag == 2) could grep for first "error" in compiler output
 
-	} else { // build success
+	}
+       	else { // build success
 		if (flag >= 1) { cout << "\b\b\b\b\b  run"; cout.flush(); }
 		std::ostringstream prog ;
 		prog << "./" << s ;
@@ -301,7 +319,8 @@ void build_n_run(string s, counts& cnt, int flag, string r) {
 			if (flag >= 1) cout << " FAILS" << endl;
 			if (flag >= 3) system ("cat checkdata");
 			cnt.runfail++;
-		} else {
+		}
+	       	else {
 			if (flag >= 1) cout << "\b\b\b\bOK  " << endl;
 			if (flag >= 2) system ("grep \"warn\" checkdata");
 			cnt.pass++;
@@ -310,7 +329,7 @@ void build_n_run(string s, counts& cnt, int flag, string r) {
 	}
 	if (flag >= 3) system("rm -f checkdata");
 	return;
-abort: 
+abort:
 	cout << endl << "Interrupted, aborting." << endl;
 	exit(-1);
 }

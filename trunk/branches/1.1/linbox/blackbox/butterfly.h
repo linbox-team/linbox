@@ -445,7 +445,8 @@ namespace LinBox
 			<< "Offset reset to zero." << std::endl;
 
 			j = 0;
-		} else
+		}
+		else
 			j %= n;
 
 		if (n == n_p) {
@@ -518,7 +519,8 @@ namespace LinBox
 				s_1 = r;
 			else
 				s_1 = n - n_p - j;
-		} else
+		}
+		else
 			s_1 = 0;
 
 		size_t s_2 = 0;
@@ -564,7 +566,8 @@ namespace LinBox
 				y_1 = setButterfly (std::vector<bool>(x.begin (), x.begin () + (n - n_p)), j);
 				y_2 = setButterfly (std::vector<bool>(x.begin () + (n - n_p), x.end ()), 0);
 
-			} else {
+			}
+			else {
 				commentator.indent (report);
 				report << "  A: j >= (n - n_p).  j_1 = 0, j_2 = j - (n - n_p) = "
 				<< j - (n - n_p) << std::endl;
@@ -596,7 +599,8 @@ namespace LinBox
 				     iter != (y_3.begin () + (n - n_p));
 				     iter++)
 					*iter = true;
-			} else {
+			}
+			else {
 				commentator.indent (report);
 				report << "  A: j >= (n - n_p).  j_1 = j + r - n - r_1 = "
 				<< j + r - n - r_1 << ", j_2 = j - (n - n_p) = "
@@ -636,7 +640,8 @@ namespace LinBox
 				     iter != (y_3.begin () + (j + r_1 - n + n_p));
 				     iter++)
 					*iter = true;
-			} else {
+			}
+			else {
 				commentator.indent (report);
 				report << "  A: j >= (n - n_p).  j_1 = j + r - n_p - r_1 = "
 				<< j + r - n_p - r_1 << ", j_2 = j - (n - n_p) = "

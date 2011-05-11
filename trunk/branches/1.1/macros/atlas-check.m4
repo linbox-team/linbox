@@ -18,13 +18,13 @@ AC_DEFUN([LB_CHECK_ATLAS],
 [
 
 AC_ARG_WITH(atlas,
-	    [  --with-atlas=<path>|yes|no
-					   Use Atlas library.
+	    [AC_HELP_STRING([--with-atlas=<path>|yes|no],
+					   [Use Atlas library.
 					   If argument is no, you do not have the library installed on your machine (set as default).
 					   If argument is yes or <empty> that means the library is reachable with the standard
 					   search path (/usr or /usr/local).
 	 				   Otherwise you give the <path> to the directory which contain the library.
-	     ],
+	     ])],
 	     [if test "$withval" = yes ; then
 			ATLAS_HOME_PATH="${DEFAULT_CHECKING_PATH}"
 	      elif test "$withval" != no ; then
@@ -33,10 +33,10 @@ AC_ARG_WITH(atlas,
 	     [])
 
 AC_ARG_WITH(atlas-includes,
-	    [  --with-atlas-includes=<path>
-					   Useful for multi-platform installation.
+	    [AC_HELP_STRING([--with-atlas-includes=<path>],
+					   [Useful for multi-platform installation.
 					   Add the path of ATLAS platform dependant headers.
-					   Need --with-atlas=<generic path> option.
+					   Need --with-atlas=<generic path> option.])
 	     ],
 	     [ if test -n "$withval" ; then
 			OPT_ATLAS_CFLAGS="$withval"
@@ -45,11 +45,11 @@ AC_ARG_WITH(atlas-includes,
 	     [])
 
 AC_ARG_WITH(atlas-libraries,
-	    [  --with-atlas-libraries=<path>
-					   Useful for multi-platform installation.
+	    [AC_HELP_STRING([--with-atlas-libraries=<path>],
+					   [Useful for multi-platform installation.
 					   Add the path of ATLAS platform dependant libraries.
 					   Need --with-atlas=<generic path> option.
-	     ],
+	     ])],
 	     [ if test -n "$withval" ; then
 			OPT_ATLAS_LIBS="$withval"
 	       fi

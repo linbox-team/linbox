@@ -34,7 +34,7 @@
 #include <linbox/config-blas.h>
 #include <linbox/linbox-config.h>
 #include <linbox/field/modular-double.h>
-#include <linbox/fflas/fflas.h>
+#include <fflas-ffpack/fflas/fflas.h>
 #include <linbox/util/timer.h>
 
 #include "test-common.h"

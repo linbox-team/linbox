@@ -113,7 +113,8 @@ namespace LinBox
 #endif // INCLUDE_TIMING
 
 				this->casenumber = 0;
-			} else {
+			}
+			else {
 #ifdef INCLUDE_TIMING
 				_timer.start ();
 #endif // INCLUDE_TIMING

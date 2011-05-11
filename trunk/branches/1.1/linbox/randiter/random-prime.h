@@ -56,7 +56,8 @@ namespace LinBox
 
 	public:
 		/*! Constructor.
-		 * @param bits size of primes (in bits)
+		 * @param bits size of primes (in bits). Default is 30 so it
+		 * can fit in a <code>Linbox::Modular<double></code>.
 		 * @param seed if \c 0 a seed will be generated, otherwise, the
 		 * provided seed will be use.
 		 */
@@ -132,7 +133,8 @@ namespace LinBox
 
 	public:
 		/*! Constructor.
-		 * @param bits max size of primes (in bits)
+		 * @param bits max size of primes (in bits). Default is 30 so it
+		 * can fit in a <code>Linbox::Modular<double></code>.
 		 * @param seed if \c 0 a seed will be generated, otherwise, the
 		 * provided seed will be use.
 		 */
@@ -215,7 +217,7 @@ namespace LinBox
 		{
 			linbox_check(_low_bits < _bits);
 			// integer::random_exact(a,_bits);
-			unsigned long ze_bits = _low_bits+(_bits - _low_bits)*drand48() ;
+			unsigned long ze_bits = _low_bits+(unsigned long)((_bits - _low_bits)*drand48()) ;
 			linbox_check (!(ze_bits<_low_bits) && !(ze_bits>_bits));
 			integer::random(a,ze_bits-1); //!@todo uses random_between when givaro is released.
 			a = (integer(1)<<ze_bits) - a;

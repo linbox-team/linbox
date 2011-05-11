@@ -105,7 +105,9 @@ namespace LinBox
 		 * Also vacuous
 		 */
 		GMPRationalField &operator= (const GMPRationalField &)
-		{ return *this; }
+		{
+			return *this;
+		}
 
 		/** Initialization of field element from an integer.
 		 * Behaves like C++ allocator construct.
@@ -199,11 +201,25 @@ namespace LinBox
 
 		/// is infinite (signified by -1 here)
 		integer &cardinality (integer &c) const
-		{ return c = _cardinality; }
+		{
+			return c = _cardinality;
+		}
 
 		/// of the rationals is 0.
 		integer &characteristic (integer &c) const
-		{ return c = _characteristic; }
+		{
+			return c = _characteristic;
+		}
+
+		integer cardinality () const
+		{
+			return _cardinality ;
+		}
+
+		integer characteristic () const
+		{
+			return _characteristic ;
+		}
 
 		//@} Object Management
 
@@ -601,7 +617,8 @@ namespace LinBox
 				mpz_set_str (mpq_denref (x.rep), buffer, 10);
 				mpq_canonicalize (x.rep);
 				return is;
-			} else {
+			}
+			else {
 				mpz_set_si (mpq_denref (x.rep), 1L);
 			}
 
@@ -639,9 +656,11 @@ namespace LinBox
 				bool minus = false;
 				if (endc == '-') {
 					minus = true;
-				} else if (endc == '+') {
+				}
+				else if (endc == '+') {
 					minus = false;
-				} else {
+				}
+				else {
 					is.putback(endc);
 				}
 
@@ -657,7 +676,8 @@ namespace LinBox
 				for (integer it=0; it< pow; ++it) powten *=10;
 				if (minus) {
 					div(x,x,powten);
-				} else {
+				}
+				else {
 					mul(x,x,powten);
 				}
 			}

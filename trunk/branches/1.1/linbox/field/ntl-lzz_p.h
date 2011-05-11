@@ -58,14 +58,14 @@ namespace LinBox
 	 * @param x field element to contain output (reference returned).
 	 * @param y integer.
 	 */
-	/*
-	   template <>
-	   NTL::zz_p& UnparametricField<NTL::zz_p>::init(NTL::zz_p& x, const integer& y) const
-	   { return x = NTL::to_zz_p(y%NTL::zz_p::modulus()); }
-	   template <>
-	   NTL::zz_p& UnparametricField<NTL::zz_p>::init(NTL::zz_p& x, const double& y) const
-	   {   return x = NTL::to_zz_p((long)(y)%NTL::zz_p::modulus()); }
-	   */
+#if 0
+	template <>
+	NTL::zz_p& UnparametricField<NTL::zz_p>::init(NTL::zz_p& x, const integer& y) const
+	{ return x = NTL::to_zz_p(y%NTL::zz_p::modulus()); }
+	template <>
+	NTL::zz_p& UnparametricField<NTL::zz_p>::init(NTL::zz_p& x, const double& y) const
+	{   return x = NTL::to_zz_p((long)(y)%NTL::zz_p::modulus()); }
+#endif
 	template<>
 	NTL::zz_p& Caster(NTL::zz_p& x, const integer& y)
 	{ return x = NTL::to_zz_p(y%NTL::zz_p::modulus()); }
@@ -228,19 +228,23 @@ namespace LinBox
 			return x = NTL::to_zz_p(static_cast<long>(z)); //rounds towards 0
 		}
 
-		NTL::zz_p &init (NTL::zz_p &x, const integer &y=0) const {
+		NTL::zz_p &init (NTL::zz_p &x, const integer &y=0) const
+		{
 			NTL::ZZ tmp= NTL::to_ZZ(std::string(y).data());
 			return x = NTL::to_zz_p(tmp);
 		}
 
-
 		template <class ANY>
 		NTL::zz_p& init(NTL::zz_p& x, const ANY& y) const
-		{ return x = NTL::to_zz_p((long)(y)); }
+		{
+			return x = NTL::to_zz_p((long)(y));
+		}
 
 		template <class ANY>
 		ANY& convert(ANY& x, const NTL::zz_p& y) const
-		{ return x = (ANY)(rep(y)); }
+		{
+		       	return x = (ANY)(rep(y));
+		}
 
 		static inline integer getMaxModulus()
 		{ return integer( NTL_SP_BOUND ); }
@@ -251,7 +255,8 @@ namespace LinBox
 			return res;
 		}
 
-		NTL::zz_p& powin( NTL::zz_p& x, long exp ) const {
+		NTL::zz_p& powin( NTL::zz_p& x, long exp ) const
+		{
 			return x = NTL::power(x,exp);
 		}
 	};

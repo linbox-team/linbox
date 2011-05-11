@@ -877,7 +877,8 @@ namespace LinBox
 	{
 		if (i == 0 && len == 0) {
 			copy (res, v);
-		} else {
+		}
+		else {
 			Vector1 res_part;
 
 			copy (res_part, v);
@@ -961,7 +962,8 @@ namespace LinBox
 		if (len == 0) {
 			part_idx_end = res_part.first.end ();
 			part_elt_end = res_part.second.end ();
-		} else {
+		}
+		else {
 			part_idx_end = std::lower_bound (res_part.first.begin (), res_part.first.end (), len);
 			part_elt_end = res_part.second.begin () + (part_idx_end - res_part.first.begin ());
 		}
@@ -1055,7 +1057,8 @@ namespace LinBox
 		if (len == 0) {
 			v_idx_end = v.first.end ();
 			v_elt_end = v.second.end ();
-		} else {
+		}
+		else {
 			v_idx_end = std::lower_bound (v.first.begin (), v.first.end (), len);
 			v_elt_end = v.second.begin () + (v_idx_end - v.first.begin ());
 		}
@@ -1125,7 +1128,8 @@ namespace LinBox
 				if (!VectorDomainBase<Field>::_F.isZero (tmp))
 					res.push_back (std::pair <size_t, Element> (j->first, tmp));
 				i++;
-			} else {
+			}
+			else {
 				res.push_back (*j);
 			}
 		}
@@ -1160,7 +1164,8 @@ namespace LinBox
 			if (i != y.end () && i->first == j->first) {
 				res[j->first] = VectorDomainBase<Field>::_F.add (tmp, i->second, j->second);
 				i++;
-			} else {
+			}
+			else {
 				res[j->first] = j->second;
 			}
 		}
@@ -1203,7 +1208,8 @@ namespace LinBox
 					res.second.push_back (tmp);
 				}
 				++i_idx; ++i_elt;
-			} else {
+			}
+			else {
 				res.first.push_back (*j_idx);
 				res.second.push_back (*j_elt);
 			}
@@ -1326,7 +1332,8 @@ namespace LinBox
 				if (!VectorDomainBase<Field>::_F.isZero (tmp))
 					res.push_back (std::pair <size_t, Element> (j->first, tmp));
 				i++;
-			} else {
+			}
+			else {
 				res.push_back (std::pair <size_t, Element> (j->first, VectorDomainBase<Field>::_F.neg (tmp, j->second)));
 			}
 		}
@@ -1361,7 +1368,8 @@ namespace LinBox
 			if (i != y.end () && i->first == j->first) {
 				res[j->first] = VectorDomainBase<Field>::_F.sub (tmp, i->second, j->second);
 				i++;
-			} else {
+			}
+			else {
 				res[j->first] = VectorDomainBase<Field>::_F.neg (tmp, j->second);
 			}
 		}
@@ -1404,7 +1412,8 @@ namespace LinBox
 					res.second.push_back (tmp);
 				}
 				++i_idx; ++i_elt;
-			} else {
+			}
+			else {
 				res.first.push_back (*j_idx);
 				res.second.push_back (VectorDomainBase<Field>::_F.neg (tmp, *j_elt));
 			}
@@ -1903,7 +1912,8 @@ namespace LinBox
 					res.second.push_back (tmp);
 				}
 				++i_idx; ++i_elt;
-			} else {
+			}
+			else {
 				res.first.push_back (*j_idx);
 				res.second.push_back (VectorDomainBase<Field>::_F.mul (tmp, *j_elt, a));
 			}

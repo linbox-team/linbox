@@ -3,7 +3,7 @@
 # see COPYING for licence
 AM_CPPFLAGS=-I$(top_srcdir)
 
-SUBDIRS=util element field randiter vector matrix blackbox switch algorithms solutions fflas ffpack ring
+SUBDIRS=util element field randiter vector matrix blackbox switch algorithms solutions ring
 
 BASIC_HDRS =    \
     integer.h   \

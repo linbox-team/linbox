@@ -53,18 +53,19 @@ namespace LinBox
 		Element &next (Element &a)
 		{
 
-			/** LinBox::Integer doesnot support prevprime */
-			/*
-			   if (_move_up == true) {
-			   nextprime (_curr, _curr);
-			   a = _curr;
-			   _curr += 2L;
-			   } else {
-			   prevprime (_curr, _curr);
-			   a = _curr;
-			   _curr -= 2L;
-			   }
-			   */
+			/** @warning LinBox::Integer does not support prevprime */
+#if 0
+			if (_move_up == true) {
+				nextprime (_curr, _curr);
+				a = _curr;
+				_curr += 2L;
+			}
+			else {
+				prevprime (_curr, _curr);
+				a = _curr;
+				_curr -= 2L;
+			}
+#endif
 
 			nextprime (_curr, _curr);
 			a = _curr;

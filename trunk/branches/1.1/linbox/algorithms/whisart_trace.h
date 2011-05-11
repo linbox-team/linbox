@@ -119,7 +119,8 @@ namespace LinBox
 						       const Field& F,
 						       const LinBox::Diagonal<Field>& ExtD,
 						       const BB& A,
-						       const LinBox::Diagonal<Field>& InD, RawIndexedTags::NoRawIndexed t)
+						       const LinBox::Diagonal<Field>& InD,
+						       RawIndexedTags::NoRawIndexed t)
 	{
 		// Trace of ExtD A^T  InD A ExtD
 		Transpose<BB> AT (&A);
@@ -142,7 +143,8 @@ namespace LinBox
 					      const Field& F,
 					      const LinBox::Diagonal<Field>& ExtD,
 					      const BB& A,
-					      const LinBox::Diagonal<Field>& InD, RawIndexedTags::HasRawIndexed )
+					      const LinBox::Diagonal<Field>& InD,
+					      RawIndexedTags::HasRawIndexed )
 	{
 		// Trace of ExtD B InD B^T ExtD
 		// is sum ExtD_i^2 B_{i,j} InD_j
@@ -167,7 +169,8 @@ namespace LinBox
 						       const Field& F,
 						       const LinBox::Diagonal<Field>& ExtD,
 						       const BB& A,
-						       const LinBox::Diagonal<Field>& InD, RawIndexedTags::HasRawIndexed )
+						       const LinBox::Diagonal<Field>& InD,
+						       RawIndexedTags::HasRawIndexed )
 	{
 		// Trace of ExtD B^T  InD B ExtD
 		// is sum ExtD_j^2 B_{i,j} InD_i
@@ -175,7 +178,8 @@ namespace LinBox
 		for(typename BB::ConstRawIndexedIterator it = A.rawIndexedBegin();
 		    it != A.rawIndexedEnd(); ++it) {
 
-			typename Field::Element tmp,e,i; F.init(tmp);F.init(e);F.init(i);
+			typename Field::Element tmp,e,i;
+			F.init(tmp);F.init(e);F.init(i);
 
 			F.mul(tmp, it.value(),it.value());
 			ExtD.getEntry(e, it.colIndex(),it.colIndex());

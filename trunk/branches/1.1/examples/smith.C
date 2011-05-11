@@ -188,8 +188,8 @@ int main(int argc, char* argv[])
 
 			Integer p(m), im(m);
 			// Should better ask user to give the prime !!!
-			for(unsigned int k = 2; ( ( ! ::probab_prime(p) ) && (p > 1) ); ++k)
-				::root( p, im, k );
+			for(unsigned int k = 2; ( ( ! ::Givaro::probab_prime(p) ) && (p > 1) ); ++k)
+				::Givaro::root( p, im, k );
 
 			// using Sparse Elimination
 			LinBox::PowerGaussDomain< Field > PGD( F );
@@ -216,7 +216,8 @@ int main(int argc, char* argv[])
 			display(pl.begin(), pl.end());
 			cout << "# local, PowerGaussDomain<int32_t>(" << m << "), n = " << n << endl;
 
-		} else {
+		}
+		else {
 
 			PIR R(m);
 

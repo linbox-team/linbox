@@ -38,7 +38,7 @@ namespace LinBox
 		typedef RingCategories::RationalTag categoryTag;
 	};
 
-	class GivaroRational : public UnparametricField<Rational>
+	class GivaroRational : public UnparametricField< ::Givaro::Rational>
 	{
 
 	public:
@@ -46,7 +46,7 @@ namespace LinBox
 		/** Element type.
 		 *
 		 */
-		typedef  Rational Element;
+		typedef  ::Givaro::Rational Element;
 
 
 		Element& init(Element& x , const integer& y) const
@@ -104,10 +104,12 @@ namespace LinBox
 			_source. get_den (den, s);
 			if (den == 1) {
 				return _target.init(t,num);
-			} else if (num == 1) {
+			}
+			else if (num == 1) {
 				_target.init(t,den);
 				return _target.invin(t);
-			} else {
+			}
+			else {
 				_target. init (tmp, den);
 				_target. init (t, num);
 				return _target. divin (t, tmp);

@@ -23,8 +23,8 @@
 
 #include <cassert>
 #include "linbox/linbox-config.h"
-#include "linbox/fflas/fflas.h"
-#include "linbox/ffpack/ffpack.h"
+#include "fflas-ffpack/fflas/fflas.h"
+#include "fflas-ffpack/ffpack/ffpack.h"
 #include "linbox/integer.h" // for fflas on integers...
 
 //!@todo !
@@ -39,7 +39,7 @@
 #include "linbox/field/modular-double.h"
 #include "linbox/field/modular-balanced-float.h"
 #include "linbox/field/modular-float.h"
-#include "Matio.h"
+#include "fflas-ffpack/utils/Matio.h"
 #include "test-common.h"
 
 //#define _LB_TIME
@@ -608,7 +608,8 @@ int test_fgemm(std::ostream & report, const Field & F)
 
 	if (err) {
 		report << "# \033[1;31m>\033[0mfgemm failed  " << std::endl;
-	} else{
+	}
+	else{
 		report << "# \033[1;32m>\033[0mfgemm success " << std::endl;
 	}
 

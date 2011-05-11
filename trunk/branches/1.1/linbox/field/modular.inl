@@ -71,7 +71,8 @@ inline uint8_t &DotProductDomain<Modular<uint8_t> >::dotSpecializedDSP
 			y += (uint64_t) *i_elt * (uint64_t) v2[*i_idx];
 
 		return res = y % (uint64_t) _F._modulus;
-	} else {
+	}
+	else {
 		typename Vector1::first_type::const_iterator iterend = v1.first.begin () + v1.first.size() % _F._k;
 
 		for (; i_idx != iterend; ++i_idx, ++i_elt)
@@ -141,7 +142,8 @@ inline uint16_t &DotProductDomain<Modular<uint16_t> >::dotSpecializedDSP
 			y += (uint64_t) *i_elt * (uint64_t) v2[*i_idx];
 
 		return res = y % (uint64_t) _F._modulus;
-	} else {
+	}
+	else {
 		typename Vector1::first_type::const_iterator iterend = v1.first.begin () + v1.first.size() % _F._k;
 
 		for (; i_idx != iterend; ++i_idx, ++i_elt)

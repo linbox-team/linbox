@@ -45,7 +45,8 @@ namespace LinBox
 						if ( static_cast<long>(pin_it->first) == indpermut) {
 							// Both there
 							std::swap( kin_it->second, pin_it->second);
-						} else {
+						}
+						else {
 							// Only k there
 							kin_it->first = indpermut;
 							typename Vector::value_type etmp = *kin_it;
@@ -56,7 +57,8 @@ namespace LinBox
 								*current = *next;
 							*pin_it = etmp;
 						}
-					} else {
+					}
+					else {
 						--pin_it;
 						// Only k there
 						kin_it->first = indpermut;
@@ -67,7 +69,8 @@ namespace LinBox
 							*current = *next;
 						*pin_it = etmp;
 					}
-				} else {
+				}
+				else {
 					if (pin_it != lignecourante.end()) {
 						if ( static_cast<long>(pin_it->first) == indpermut) {
 							// Only indpermut there
@@ -81,17 +84,18 @@ namespace LinBox
 						} // else Nobody
 					} // else Nobody
 				}
-			} // else rien de supérieur à k dans l
-			// donc rien à permuter
+			} // else rien de supÃ©rieur Ã  k dans l
+			// donc rien Ã  permuter
 		}
 
-		//         std::cerr << "E PERMUTE: " << indpermut << " <--> " << k << " of  [";
-		//         for(typename Vector::const_iterator refs =  lignecourante.begin();
-		//             refs != lignecourante.end() ;
-		//             ++refs )
-		//             std::cerr << '(' << refs->first << ';' << refs->second << ')';
-		//         std::cerr << "]" << std::endl;
-
+#if 0
+		std::cerr << "E PERMUTE: " << indpermut << " <--> " << k << " of  [";
+		for(typename Vector::const_iterator refs =  lignecourante.begin();
+		    refs != lignecourante.end() ;
+		    ++refs )
+			std::cerr << '(' << refs->first << ';' << refs->second << ')';
+		std::cerr << "]" << std::endl;
+#endif
 	}
 
 
@@ -110,24 +114,29 @@ namespace LinBox
 
 		unsigned long k = indcol - 1;
 		unsigned long nj = lignecourante.size () ;
-		//         std::cerr << "BEGIN ELIMINATE, k: " << k << ", nj: " << nj << ", indpermut: " << indpermut << ", indcol: " << indcol << std::endl;
-		//         std::cerr << "lignepivot: [";
-		//         for(typename Vector::const_iterator refs =  lignepivot.begin();
-		//             refs != lignepivot.end() ;
-		//             ++refs )
-		//             std::cerr << '(' << refs->first << ';' << refs->second << ')';
-		//         std::cerr << "], lignecour: [";
-		//         for(typename Vector::const_iterator refs =  lignecourante.begin();
-		//             refs != lignecourante.end() ;
-		//             ++refs )
-		//             std::cerr << '(' << refs->first << ';' << refs->second << ')';
-		//         std::cerr << ']' << std::endl;
+#if 0
+		std::cerr << "BEGIN ELIMINATE, k: " << k << ", nj: " << nj << ", indpermut: " << indpermut << ", indcol: " << indcol << std::endl;
+		std::cerr << "lignepivot: [";
+		for(typename Vector::const_iterator refs =  lignepivot.begin();
+		    refs != lignepivot.end() ;
+		    ++refs )
+			std::cerr << '(' << refs->first << ';' << refs->second << ')';
+		std::cerr << "], lignecour: [";
+		for(typename Vector::const_iterator refs =  lignecourante.begin();
+		    refs != lignecourante.end() ;
+		    ++refs )
+			std::cerr << '(' << refs->first << ';' << refs->second << ')';
+		std::cerr << ']' << std::endl;
+#endif
 		if (nj > 0) {
 			unsigned long j_head = 0;
 
-			for (; j_head < nj; ++j_head)
+			for (; j_head < nj; ++j_head) {
 				if (static_cast<long>(lignecourante[j_head].first) >= indpermut) break;
-			//         std::cerr << "ELIMINATE, j_head: " << j_head << std::endl;
+#if 0
+				std::cerr << "ELIMINATE, j_head: " << j_head << std::endl;
+#endif
+				}
 
 			if (j_head < nj) {
 				if (static_cast<long>(lignecourante[j_head].first) == indpermut) {
@@ -137,7 +146,8 @@ namespace LinBox
 						if (lignecourante[0].first == k) {
 							// non zero  <--> non zero
 							std::swap( lignecourante[0].second, lignecourante[j_head].second);
-						} else {
+						}
+						else {
 							// zero <--> non zero
 							E tmp = lignecourante[j_head];
 							--columns[tmp.first];
@@ -200,18 +210,21 @@ namespace LinBox
 							if (! _F.isZero (tmp)) {
 								_F.assign (lignecourante[m].second, tmp);
 								construit[j++] = lignecourante[m++];
-							} else
+							}
+							else
 								--columns[lignecourante[m++].first];
-						} else {
+						}
+						else {
 							Element tmp;
 
 							_F.mul (tmp, headcoeff, lignepivot[l].second);
 
-							//                             if (! _F.isZero (tmp)) {
+							// if (! _F.isZero (tmp)) {
 							++columns[j_piv];
 							construit[j++] = E (j_piv, tmp);
-							//                             } else
-							//                                 std::cerr << "NEVER HAPPENED" << std::endl;
+							// }
+							// else
+							// std::cerr << "NEVER HAPPENED" << std::endl;
 
 						}
 
@@ -224,17 +237,20 @@ namespace LinBox
 
 					construit.resize (j);
 					lignecourante = construit;
-				} else {
+				}
+				else {
 					// -------------------------------------------
 					// j_head < nj but nothing under the pivot
 					// Permutation
-					//                 std::cerr << "----------------------------------------------------------" << std::endl;
-					//                 std::cerr << "j_head < nj" << std::endl;
-					//                 std::cerr << "j_head: " << j_head << ", nj: " << nj << ", k:" << k
-					// //                         // << "lignepivot: " << lignepivot
-					// //                         // << ", lignecour: " << lignecourante
-					//                           << std::endl;
-					//                 std::cerr << "----------------------------------------------------------" << std::endl;
+#if 0
+					std::cerr << "----------------------------------------------------------" << std::endl;
+					std::cerr << "j_head < nj" << std::endl;
+					std::cerr << "j_head: " << j_head << ", nj: " << nj << ", k:" << k
+					// << "lignepivot: " << lignepivot
+					// << ", lignecour: " << lignecourante
+					<< std::endl;
+					std::cerr << "----------------------------------------------------------" << std::endl;
+#endif
 					if (indpermut != static_cast<long>(k)) {
 						if (j_head>0) {
 							unsigned long l = 0;
@@ -258,16 +274,19 @@ namespace LinBox
 						} // else // zero <--> zero
 					}
 				}
-			} else {
+			}
+			else {
 				// -------------------------------------------
 				// j_head >= nj > 0
-				//                 std::cerr << "----------------------------------------------------------" << std::endl;
-				//                 std::cerr << "j_head >= nj > 0" << std::endl;
-				//                 std::cerr << "j_head: " << j_head << ", nj: " << nj << ", k:" << k
-				// //                         // << "lignepivot: " << lignepivot
-				// //                         // << ", lignecour: " << lignecourante
-				//                           << std::endl;
-				//                 std::cerr << "----------------------------------------------------------" << std::endl;
+#if 0
+				std::cerr << "----------------------------------------------------------" << std::endl;
+				std::cerr << "j_head >= nj > 0" << std::endl;
+				std::cerr << "j_head: " << j_head << ", nj: " << nj << ", k:" << k
+				// << "lignepivot: " << lignepivot
+				// << ", lignecour: " << lignecourante
+				<< std::endl;
+				std::cerr << "----------------------------------------------------------" << std::endl;
+#endif
 				if (indpermut != static_cast<long>(k)) {
 					unsigned long l = 0;
 
@@ -294,19 +313,20 @@ namespace LinBox
 		}
 
 
-		//         std::cerr << "END ELIMINATE, k: " << k << ", nj: " << nj << ", indpermut: " << indpermut << ", indcol: " << indcol << std::endl;
-		//         std::cerr << "lignepivot: [";
-		//         for(typename Vector::const_iterator refs =  lignepivot.begin();
-		//             refs != lignepivot.end() ;
-		//             ++refs )
-		//             std::cerr << '(' << refs->first << ';' << refs->second << ')';
-		//         std::cerr << "], lignecour: [";
-		//         for(typename Vector::const_iterator refs =  lignecourante.begin();
-		//             refs != lignecourante.end() ;
-		//             ++refs )
-		//             std::cerr << '(' << refs->first << ';' << refs->second << ')';
-		//         std::cerr << ']' << std::endl;
-
+#if 0
+		std::cerr << "END ELIMINATE, k: " << k << ", nj: " << nj << ", indpermut: " << indpermut << ", indcol: " << indcol << std::endl;
+		std::cerr << "lignepivot: [";
+		for(typename Vector::const_iterator refs =  lignepivot.begin();
+		    refs != lignepivot.end() ;
+		    ++refs )
+			std::cerr << '(' << refs->first << ';' << refs->second << ')';
+		std::cerr << "], lignecour: [";
+		for(typename Vector::const_iterator refs =  lignecourante.begin();
+		    refs != lignecourante.end() ;
+		    ++refs )
+			std::cerr << '(' << refs->first << ';' << refs->second << ')';
+		std::cerr << ']' << std::endl;
+#endif
 	}
 
 
@@ -325,24 +345,29 @@ namespace LinBox
 
 		unsigned long k = indcol - 1;
 		unsigned long nj = lignecourante.size () ;
-		//         std::cerr << "BEGIN ELIMINATE, k: " << k << ", nj: " << nj << ", indpermut: " << indpermut << ", indcol: " << indcol << std::endl;
-		//         std::cerr << "lignepivot: [";
-		//         for(typename Vector::const_iterator refs =  lignepivot.begin();
-		//             refs != lignepivot.end() ;
-		//             ++refs )
-		//             std::cerr << '(' << refs->first << ';' << refs->second << ')';
-		//         std::cerr << "], lignecour: [";
-		//         for(typename Vector::const_iterator refs =  lignecourante.begin();
-		//             refs != lignecourante.end() ;
-		//             ++refs )
-		//             std::cerr << '(' << refs->first << ';' << refs->second << ')';
-		//         std::cerr << ']' << std::endl;
+#if 0
+		std::cerr << "BEGIN ELIMINATE, k: " << k << ", nj: " << nj << ", indpermut: " << indpermut << ", indcol: " << indcol << std::endl;
+		std::cerr << "lignepivot: [";
+		for(typename Vector::const_iterator refs =  lignepivot.begin();
+		    refs != lignepivot.end() ;
+		    ++refs )
+			std::cerr << '(' << refs->first << ';' << refs->second << ')';
+		std::cerr << "], lignecour: [";
+		for(typename Vector::const_iterator refs =  lignecourante.begin();
+		    refs != lignecourante.end() ;
+		    ++refs )
+			std::cerr << '(' << refs->first << ';' << refs->second << ')';
+		std::cerr << ']' << std::endl;
+#endif
 		if (nj > 0) {
 			unsigned long j_head = 0;
 
-			for (; j_head < nj; ++j_head)
+			for (; j_head < nj; ++j_head) {
 				if (static_cast<long>(lignecourante[j_head].first) >= indpermut) break;
-			//         std::cerr << "ELIMINATE, j_head: " << j_head << std::endl;
+#if 0
+				std::cerr << "ELIMINATE, j_head: " << j_head << std::endl;
+#endif
+				}
 
 			if (j_head < nj) {
 				if (static_cast<long>(lignecourante[j_head].first) == indpermut) {
@@ -352,7 +377,8 @@ namespace LinBox
 						if (lignecourante[0].first == k) {
 							// non zero  <--> non zero
 							std::swap( lignecourante[0].second, lignecourante[j_head].second);
-						} else {
+						}
+						else {
 							// zero <--> non zero
 							E tmp = lignecourante[j_head];
 							--columns[tmp.first];
@@ -417,18 +443,21 @@ namespace LinBox
 							if (! _F.isZero (tmp)) {
 								_F.assign (lignecourante[m].second, tmp);
 								construit[j++] = lignecourante[m++];
-							} else
+							}
+							else
 								--columns[lignecourante[m++].first];
-						} else {
+						}
+						else {
 							Element tmp;
 
 							_F.mul (tmp, headcoeff, lignepivot[l].second);
 
-							//                             if (! _F.isZero (tmp)) {
+							// if (! _F.isZero (tmp)) {
 							++columns[j_piv];
 							construit[j++] = E (j_piv, tmp);
-							//                             } else
-							//                                 std::cerr << "NEVER HAPPENED" << std::endl;
+							// }
+							// else
+							// std::cerr << "NEVER HAPPENED" << std::endl;
 
 						}
 
@@ -441,17 +470,20 @@ namespace LinBox
 
 					construit.resize (j);
 					lignecourante = construit;
-				} else {
+				}
+				else {
 					// -------------------------------------------
 					// j_head < nj but nothing under the pivot
 					// Permutation
-					//                 std::cerr << "----------------------------------------------------------" << std::endl;
-					//                 std::cerr << "j_head < nj" << std::endl;
-					//                 std::cerr << "j_head: " << j_head << ", nj: " << nj << ", k:" << k
-					// //                         // << "lignepivot: " << lignepivot
-					// //                         // << ", lignecour: " << lignecourante
-					//                           << std::endl;
-					//                 std::cerr << "----------------------------------------------------------" << std::endl;
+#if 0
+					std::cerr << "----------------------------------------------------------" << std::endl;
+					std::cerr << "j_head < nj" << std::endl;
+					std::cerr << "j_head: " << j_head << ", nj: " << nj << ", k:" << k
+					// << "lignepivot: " << lignepivot
+					// << ", lignecour: " << lignecourante
+					<< std::endl;
+					std::cerr << "----------------------------------------------------------" << std::endl;
+#endif
 					if (indpermut != static_cast<long>(k)) {
 						if (j_head>0) {
 							unsigned long l = 0;
@@ -475,16 +507,19 @@ namespace LinBox
 						} // else // zero <--> zero
 					}
 				}
-			} else {
+			}
+			else {
 				// -------------------------------------------
 				// j_head >= nj > 0
-				//                 std::cerr << "----------------------------------------------------------" << std::endl;
-				//                 std::cerr << "j_head >= nj > 0" << std::endl;
-				//                 std::cerr << "j_head: " << j_head << ", nj: " << nj << ", k:" << k
-				// //                         // << "lignepivot: " << lignepivot
-				// //                         // << ", lignecour: " << lignecourante
-				//                           << std::endl;
-				//                 std::cerr << "----------------------------------------------------------" << std::endl;
+#if 0
+				std::cerr << "----------------------------------------------------------" << std::endl;
+				std::cerr << "j_head >= nj > 0" << std::endl;
+				std::cerr << "j_head: " << j_head << ", nj: " << nj << ", k:" << k
+				// << "lignepivot: " << lignepivot
+				// << ", lignecour: " << lignecourante
+				<< std::endl;
+				std::cerr << "----------------------------------------------------------" << std::endl;
+#endif
 				if (indpermut != static_cast<long>(k)) {
 					unsigned long l = 0;
 
@@ -510,20 +545,20 @@ namespace LinBox
 			}
 		}
 
-
-		//         std::cerr << "END ELIMINATE, k: " << k << ", nj: " << nj << ", indpermut: " << indpermut << ", indcol: " << indcol << std::endl;
-		//         std::cerr << "lignepivot: [";
-		//         for(typename Vector::const_iterator refs =  lignepivot.begin();
-		//             refs != lignepivot.end() ;
-		//             ++refs )
-		//             std::cerr << '(' << refs->first << ';' << refs->second << ')';
-		//         std::cerr << "], lignecour: [";
-		//         for(typename Vector::const_iterator refs =  lignecourante.begin();
-		//             refs != lignecourante.end() ;
-		//             ++refs )
-		//             std::cerr << '(' << refs->first << ';' << refs->second << ')';
-		//         std::cerr << ']' << std::endl;
-
+#if 0
+		std::cerr << "END ELIMINATE, k: " << k << ", nj: " << nj << ", indpermut: " << indpermut << ", indcol: " << indcol << std::endl;
+		std::cerr << "lignepivot: [";
+		for(typename Vector::const_iterator refs =  lignepivot.begin();
+		    refs != lignepivot.end() ;
+		    ++refs )
+			std::cerr << '(' << refs->first << ';' << refs->second << ')';
+		std::cerr << "], lignecour: [";
+		for(typename Vector::const_iterator refs =  lignecourante.begin();
+		    refs != lignecourante.end() ;
+		    ++refs )
+			std::cerr << '(' << refs->first << ';' << refs->second << ')';
+		std::cerr << ']' << std::endl;
+#endif
 	}
 
 
@@ -554,7 +589,8 @@ namespace LinBox
 						if (lignecourante[0].first == k) {
 							// non zero  <--> non zero
 							std::swap( lignecourante[0].second, lignecourante[j_head].second);
-						} else {
+						}
+						else {
 							// zero <--> non zero
 							E tmp = lignecourante[j_head];
 							tmp.first = k;
@@ -610,16 +646,18 @@ namespace LinBox
 							if (! _F.isZero (tmp)) {
 								_F.assign (lignecourante[m].second, tmp);
 								construit[j++] = lignecourante[m++];
-							} else
+							}
+							else
 								++m;
 
-						} else {
+						}
+						else {
 							Element tmp;
 							_F.mul (tmp, headcoeff, lignepivot[l].second);
-							//                             if (! _F.isZero (tmp))
+							// if (! _F.isZero (tmp))
 							construit[j++] = E (j_piv, tmp);
-							//                             else
-							//                                 std::cerr << "NEVER HAPPENED" << std::endl;
+							// else
+							// std::cerr << "NEVER HAPPENED" << std::endl;
 						}
 						l++;
 					}
@@ -630,7 +668,8 @@ namespace LinBox
 
 					construit.resize (j);
 					lignecourante = construit;
-				} else {
+				}
+				else {
 					// -------------------------------------------
 					// j_head < nj but nothing under the pivot
 					// Permutation
@@ -655,17 +694,20 @@ namespace LinBox
 						} // else // zero <--> zero
 					}
 				}
-			} else {
+			}
+			else {
 				// -------------------------------------------
 				// -------------------------------------------
 				// j_head >= nj > 0
-				//                 std::cerr << "----------------------------------------------------------" << std::endl;
-				//                 std::cerr << "j_head >= nj > 0" << std::endl;
-				//                 std::cerr << "j_head: " << j_head << ", nj: " << nj << ", k:" << k
-				//                         // << "lignepivot: " << lignepivot
-				//                         //  << ", lignecour: " << lignecourante
-				//                           << std::endl;
-				//                 std::cerr << "----------------------------------------------------------" << std::endl;
+#if 0
+				std::cerr << "----------------------------------------------------------" << std::endl;
+				std::cerr << "j_head >= nj > 0" << std::endl;
+				std::cerr << "j_head: " << j_head << ", nj: " << nj << ", k:" << k
+				// << "lignepivot: " << lignepivot
+				//  << ", lignecour: " << lignecourante
+				<< std::endl;
+				std::cerr << "----------------------------------------------------------" << std::endl;
+#endif
 				if (indpermut != static_cast<long>(k)) {
 					unsigned long l = 0;
 
@@ -727,7 +769,8 @@ void GaussDomain<_Field>::permute (Vector              &lignecourante,
 					if ( static_cast<long>(lignecourante[pin].first) == indpermut) {
 						// Both there
 						std::swap( lignecourante[kin].second, lignecourante[pin].second);
-					} else {
+					}
+					else {
 						// Only k there
 						lignecourante[kin].first = indpermut;
 						typename Vector::value_type etmp = lignecourante[kin];
@@ -736,7 +779,8 @@ void GaussDomain<_Field>::permute (Vector              &lignecourante,
 							lignecourante[i] = lignecourante[i+1];
 						lignecourante[pin] = etmp;
 					}
-				} else {
+				}
+				else {
 					pin = nj-1;
 					// Only k there
 					lignecourante[kin].first = indpermut;
@@ -746,7 +790,8 @@ void GaussDomain<_Field>::permute (Vector              &lignecourante,
 					lignecourante[pin] = etmp;
 
 				}
-			} else {
+			}
+			else {
 				if (pin < nj) {
 					if ( static_cast<long>(lignecourante[pin].first) == indpermut) {
 						// Only indpermut there
@@ -758,8 +803,8 @@ void GaussDomain<_Field>::permute (Vector              &lignecourante,
 					} // else Nobody
 				} // else Nobody
 			}
-		} // else rien de supérieur à k dans l
-		// donc rien à permuter
+		} // else rien de supÃ©rieur Ã  k dans l
+		// donc rien Ã  permuter
 	}
 #if 0
 	std::cerr << "E PERMUTE: " << indpermut << " <--> " << k << " of  [";

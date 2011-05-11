@@ -73,14 +73,14 @@ int main (int argc, char **argv)
 
         parseArguments (argc, argv, args);
 
-	//cout << endl << "GivaroZpz<Std16> field test suite" << endl;
+	//cout << endl << "GivaroZpz< ::Givaro::Std16> field test suite" << endl;
 	//cout.flush ();
 	bool pass = true;
 
-//	GivaroZpz<Std16> F1 (q); // Does not work with q > 256
-        GivaroZpz<Std16> F1 ( (q<256?q:integer(101)) ); // Does not work with q > 256
-	GivaroZpz<Std32> F2 (q);
-//	GivaroZpz<Log16> F3 (q); // Does not work with q > 256
+//	GivaroZpz< ::Givaro::Std16> F1 (q); // Does not work with q > 256
+        GivaroZpz< ::Givaro::Std16> F1 ( (q<256?q:integer(101)) ); // Does not work with q > 256
+	GivaroZpz< ::Givaro::Std32> F2 (q);
+//	GivaroZpz< ::Givaro::Log16> F3 (q); // Does not work with q > 256
 	GivaroMontg F3 (39989);
 	GivaroGfq F4 (q, 1);
 	GivaroGfq F5 (11, e);
@@ -91,8 +91,8 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	if (!runFieldTests (F1, "GivaroZpz<Std16>", iterations, n, false)) pass = false;
-	if (!runFieldTests (F2, "GivaroZpz<Std32>", iterations, n, false)) pass = false;
+	if (!runFieldTests (F1, "GivaroZpz< ::Givaro::Std16>", iterations, n, false)) pass = false;
+	if (!runFieldTests (F2, "GivaroZpz< ::Givaro::Std32>", iterations, n, false)) pass = false;
 	if (!runFieldTests (F3, "GivaroMontg", iterations, n, false)) pass = false;
 	if (!runFieldTests (F4, "GivaroGfq (prime)", iterations, n, false)) pass = false;
 	if (!runFieldTests (F5, "GivaroGfq (simple extension)", iterations, n, false)) pass = false;
@@ -100,8 +100,8 @@ int main (int argc, char **argv)
 	if (!runFieldTests (F7, "GivaroExtension (large polynomial extension)", iterations, n, false)) pass = false;
 
 
-	if (!testRandomIterator (F1,  "GivaroZpz<Std16>", trials, categories, hist_level)) pass = false;
-	if (!testRandomIterator (F2,  "GivaroZpz<Std32>", trials, categories, hist_level)) pass = false;
+	if (!testRandomIterator (F1,  "GivaroZpz< ::Givaro::Std16>", trials, categories, hist_level)) pass = false;
+	if (!testRandomIterator (F2,  "GivaroZpz< ::Givaro::Std32>", trials, categories, hist_level)) pass = false;
 	if (!testRandomIterator (F3,  "GivaroMontgomery", trials, categories, hist_level)) pass = false;
 	if (!testRandomIterator (F4,  "GivaroGfq (prime)", trials, categories, hist_level)) pass = false;
 	if (!testRandomIterator (F5,  "GivaroGfq (simple extension)", trials, categories, hist_level)) pass = false;
@@ -112,27 +112,27 @@ int main (int argc, char **argv)
 
 #if TEST_ARCHETYPES
 
-	GivaroZpz<Std16> * K1g = new GivaroZpz<Std16> (101);
+	GivaroZpz< ::Givaro::Std16> * K1g = new GivaroZpz< ::Givaro::Std16> (101);
 	FieldArchetype K1(K1g);
-	if (!testField<FieldArchetype> (K1, "Testing archetype with envelope of GivaroZpz<Std16> field"))
+	if (!testField<FieldArchetype> (K1, "Testing archetype with envelope of GivaroZpz< ::Givaro::Std16> field"))
 		pass = false;
 	delete K1g;
 #endif
 
 #if TEST_ARCHETYPES
-	GivaroZpz<Std32> * K2g = new GivaroZpz<Std32>(101);
+	GivaroZpz< ::Givaro::Std32> * K2g = new GivaroZpz< ::Givaro::Std32>(101);
 	FieldArchetype K2(K2g);
 
-	if (!testField<FieldArchetype> (K2, "Testing archetype with envelope of GivaroZpz<Std32> field"))
+	if (!testField<FieldArchetype> (K2, "Testing archetype with envelope of GivaroZpz< ::Givaro::Std32> field"))
 		pass = false;
 	delete K2g;
 #endif
 
 #if TEST_ARCHETYPES
-	GivaroZpz<Log16> * K3g = new GivaroZpz<Log16>(101);
+	GivaroZpz< ::Givaro::Log16> * K3g = new GivaroZpz< ::Givaro::Log16>(101);
 	FieldArchetype K3(K3g);
 
-	if (!testField<FieldArchetype> (K3, "Testing archetype with envelope of GivaroZpz<Log16> field"))
+	if (!testField<FieldArchetype> (K3, "Testing archetype with envelope of GivaroZpz< ::Givaro::Log16> field"))
 		pass = false;
 	delete K3g;
 #endif

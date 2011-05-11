@@ -22,6 +22,7 @@
  * @ingroup tests
  * @brief run runFieldTests testRandomIterator tests on modular-short
  * @test run runFieldTests testRandomIterator tests on modular-short
+ * short is int16_t
  */
 
 
@@ -71,6 +72,10 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	Modular<short> F_int (32749);
+	// Modular<short> F_int (101);
+	integer k = FieldTraits<Modular<short> >::maxModulus() ;
+	prevprime(k,k);
+	Modular<short> G_int(k);
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
@@ -78,6 +83,11 @@ int main (int argc, char **argv)
 
 	if (!runFieldTests (F_int,  "Modular<short>",  iterations, n, false)) pass = false;
 	if (!testRandomIterator (F_int,  "Modular<short>", trials, categories, hist_level)) pass = false;
+
+	if (!runFieldTests (G_int,  "Modular<short>",  iterations, n, false)) pass = false;
+	if (!testRandomIterator (G_int,  "Modular<short>", trials, categories, hist_level)) pass = false;
+
+
 
 	commentator.stop("Modular<short> field test suite");
 	return pass ? 0 : -1;

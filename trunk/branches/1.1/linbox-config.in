@@ -1,5 +1,9 @@
 #! /bin/sh
 
+# Copyright (c) the LinBox group
+# This file is part of LinBox (and probably stolen here and there)
+# see COPYING for licence
+
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 includedir=@includedir@

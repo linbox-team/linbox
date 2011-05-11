@@ -106,7 +106,7 @@ namespace LinBox
 		 * @param modulus constant reference to integer prime modulus
 		 */
 		ModularBase (unsigned long modulus) :
-			_modulus (modulus)
+			_modulus ((Element)modulus)
 		{}
 
 		/*- Constructor from an integer.
@@ -115,7 +115,7 @@ namespace LinBox
 		 * @param modulus constant reference to integer prime modulus
 		 */
 		ModularBase (const integer &modulus) :
-			_modulus (modulus)
+			_modulus ((Element) modulus)
 		{}
 
 		/*- Copy constructor.
@@ -136,13 +136,19 @@ namespace LinBox
 		 * @param y constant field base element.
 		 */
 		integer &convert (integer &x, const Element &y) const
-		{ return x = y; }
+		{
+			return x = y;
+		}
 
 		double &convert (double& x, const Element &y) const
-		{return  x= (double) y;}
+		{
+			return  x= (double) y;
+		}
 
 		float &convert (float& x, const Element &y) const
-		{return  x= (float) y;}
+		{
+			return  x= (float) y;
+		}
 
 		/*- Assignment of one field base element to another.
 		 * This function assumes both field base elements have already been
@@ -152,7 +158,9 @@ namespace LinBox
 		 * @param  y field base element.
 		 */
 		Element &assign (Element &x, const Element &y) const
-		{ return x = y; }
+		{
+			return x = y;
+		}
 
 		/*- Cardinality.
 		 * Return integer representing cardinality of the domain.
@@ -162,7 +170,14 @@ namespace LinBox
 		 * @return integer representing cardinality of the domain
 		 */
 		integer &cardinality (integer &c) const
-		{ return c = _modulus; }
+		{
+			return c = _modulus;
+		}
+
+		integer cardinality () const
+		{
+			return  _modulus;
+		}
 
 		/*- Characteristic.
 		 * Return integer representing characteristic of the domain.
@@ -172,8 +187,14 @@ namespace LinBox
 		 */
 		integer &characteristic (integer &c) const
 		{
-		       	return c = _modulus;
+			return c = _modulus;
 		}
+
+		unsigned long &characteristic (unsigned long &c) const
+		{
+			return c = _modulus;
+		}
+
 
 		integer characteristic () const
 		{
@@ -198,7 +219,9 @@ namespace LinBox
 		 * @param  y field base element
 		 */
 		bool areEqual (const Element &x, const Element &y) const
-		{ return x == y; }
+		{
+			return x == y;
+		}
 
 		/*- Zero equality.
 		 * Test if field base element is equal to zero.
@@ -208,7 +231,9 @@ namespace LinBox
 		 * @param  x field base element.
 		 */
 		bool isZero (const Element &x) const
-		{ return x == 0; }
+		{
+			return x == 0;
+		}
 
 		/*- One equality.
 		 * Test if field base element is equal to one.
@@ -218,7 +243,9 @@ namespace LinBox
 		 * @param  x field base element.
 		 */
 		bool isOne (const Element &x) const
-		{ return x == 1; }
+		{
+			return x == 1;
+		}
 
 
 		//@} Arithmetic Operations
@@ -231,13 +258,17 @@ namespace LinBox
 		 * @param  os  output stream to which field is written.
 		 */
 		std::ostream &write (std::ostream &os) const
-		{ return os << "Modular field, mod " << _modulus; }
+		{
+			return os << "Modular field, mod " << _modulus;
+		}
 
 		/*- Read field.
 		 * @return input stream from which field is read.
 		 * @param  is  input stream from which field is read.
 		 */
-		std::istream &read (std::istream &is) { return is >> _modulus; }
+		std::istream &read (std::istream &is) {
+			return is >> _modulus;
+		}
 
 
 		/*- Print field base element.
@@ -248,7 +279,9 @@ namespace LinBox
 		 * @param  x   field base element.
 		 */
 		std::ostream &write (std::ostream &os, const Element &x) const
-		{ return os << (int) x; }
+		{
+			return os << (int) x;
+		}
 
 
 		/*- Read field base element.
@@ -351,7 +384,9 @@ namespace LinBox
 	public:
 
 		static inline Element getMaxModulus()
-		{ return Element((1ULL<<(sizeof(Element)*8-1))-1); }
+		{
+			return Element((1ULL<<(sizeof(Element)*8-1))-1);
+		}
 
 
 		/*- Initialization of field base element from an integer.
@@ -379,6 +414,13 @@ namespace LinBox
 		}
 
 		Element &init (Element &x, const int y ) const
+		{
+			x = y % ModularBase<Element>::_modulus;
+			if (x < 0) x += ModularBase<Element>::_modulus;
+			return x;
+		}
+
+		Element &init (Element &x, const long int y ) const
 		{
 			x = y % ModularBase<Element>::_modulus;
 			if (x < 0) x += ModularBase<Element>::_modulus;
@@ -461,7 +503,9 @@ namespace LinBox
 		 * @param  z field base element.
 		 */
 		Element &mul (Element &x, const Element &y, const Element &z) const
-		{ return x = (y * z) % ModularBase<Element>::_modulus; }
+		{
+			return x = (y * z) % ModularBase<Element>::_modulus;
+		}
 
 		/* Division.
 		 * x = y / z
@@ -488,7 +532,12 @@ namespace LinBox
 		 * @param  y field base element.
 		 */
 		Element &neg (Element &x, const Element &y) const
-		{ if (y == 0) return x = y; else return x = ModularBase<Element>::_modulus - y; }
+		{
+			if (y == 0)
+				return x = y;
+			else
+				return x = ModularBase<Element>::_modulus - y;
+		}
 
 		/* Multiplicative Inverse.
 		 * x = 1 / y
@@ -619,7 +668,12 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 */
 		Element &negin (Element &x) const
-		{ if (x == 0) return x; else return x = ModularBase<Element>::_modulus - x; }
+		{
+			if (x == 0)
+				return x;
+			else
+				return x = ModularBase<Element>::_modulus - x;
+		}
 
 		/* Inplace Multiplicative Inverse.
 		 * x = 1 / x
@@ -629,7 +683,9 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 */
 		Element &invin (Element &x) const
-		{ return inv (x, x); }
+		{
+			return inv (x, x);
+		}
 
 		/* Inplace AXPY.
 		 * r  += a * x
@@ -677,7 +733,7 @@ namespace LinBox
 			_k (((uint64_t) -1LL) / ((modulus - 1) * (modulus - 1))),
 			_pinv (1.0 / (double) ((Element) modulus))
 		{
-			linbox_check(modulus < UINT8_MAX/2);
+			linbox_check(modulus < UINT8_MAX);
 		}
 		Modular (const integer &modulus) :
 			ModularBase<Element> ((long) modulus),
@@ -685,7 +741,7 @@ namespace LinBox
 			_k (((uint64_t) -1LL) / (((Element)modulus - 1) * ((Element)modulus - 1))),
 			_pinv (1.0 / (double) ((Element) modulus))
 		{
-			linbox_check(modulus < UINT8_MAX/2);
+			linbox_check(modulus < UINT8_MAX);
 		}
 
 		const Modular &operator=(const Modular &F)
@@ -734,7 +790,7 @@ namespace LinBox
 		Element &mul (Element &x, const Element &y, const Element &z) const
 		{
 			return x = Element( ((uint32_t) y * (uint32_t) z) % (uint32_t) ModularBase<Element>::_modulus );
-	       	}
+		}
 
 		Element &div (Element &x, const Element &y, const Element &z) const
 		{
@@ -826,7 +882,7 @@ namespace LinBox
 
 		Element &invin (Element &x) const
 		{
-		       	return inv (x, x);
+			return inv (x, x);
 		}
 
 		Element &axpyin (Element &r, const Element &a, const Element &x) const
@@ -869,7 +925,7 @@ namespace LinBox
 			_k (((uint64_t) -1LL) / ((ModularBase<Element>::_modulus - 1) * (ModularBase<Element>::_modulus - 1))),
 			_pinv (1.0 / (double) ((Element) ModularBase<Element>::_modulus))
 		{
-			linbox_check(modulus<UINT16_MAX/2);
+			linbox_check(modulus<UINT16_MAX);
 		}
 		Modular (const integer &modulus) :
 			ModularBase<Element> ((long) modulus),
@@ -877,7 +933,7 @@ namespace LinBox
 			_k (((uint64_t) -1LL) / ((ModularBase<Element>::_modulus - 1) * (ModularBase<Element>::_modulus - 1))),
 			_pinv (1.0 / (double) ((Element) ModularBase<Element>::_modulus))
 		{
-			linbox_check(modulus<UINT16_MAX/2);
+			linbox_check(modulus<UINT16_MAX);
 		}
 
 		const Modular &operator=(const Modular &F)
@@ -933,7 +989,7 @@ namespace LinBox
 
 		Element &neg (Element &x, const Element &y) const
 		{
-		       	if (y == 0)
+			if (y == 0)
 				return x = y;
 			else
 				return x = (Element)(  ModularBase<Element>::_modulus - y);
@@ -1007,11 +1063,11 @@ namespace LinBox
 				return x;
 			else
 				return x = (Element) ( ModularBase<Element>::_modulus - x);
-	       	}
+		}
 
 		Element &invin (Element &x) const
 		{
-		       	return inv (x, x);
+			return inv (x, x);
 		}
 
 		Element &axpyin (Element &r, const Element &a, const Element &x) const
@@ -1092,7 +1148,9 @@ namespace LinBox
 		}
 
 		Element &mul (Element &x, const Element &y, const Element &z) const
-		{ return x = ((uint64_t) y * (uint64_t) z) % (uint64_t) ModularBase<Element>::_modulus; }
+		{
+			return x = ((uint64_t) y * (uint64_t) z) % (uint64_t) ModularBase<Element>::_modulus;
+		}
 
 		Element &div (Element &x, const Element &y, const Element &z) const
 		{
@@ -1102,7 +1160,12 @@ namespace LinBox
 		}
 
 		Element &neg (Element &x, const Element &y) const
-		{ if (y == 0) return x = y; else return x = ModularBase<Element>::_modulus - y; }
+		{
+			if (y == 0)
+				return x = y;
+			else
+				return x = ModularBase<Element>::_modulus - y;
+		}
 
 		Element &inv (Element &x, const Element &y) const
 		{
@@ -1168,10 +1231,17 @@ namespace LinBox
 		}
 
 		Element &negin (Element &x) const
-		{ if (x == 0) return x; else return x = ModularBase<Element>::_modulus - x; }
+		{
+			if (x == 0)
+				return x;
+			else
+				return x = ModularBase<Element>::_modulus - x;
+		}
 
 		Element &invin (Element &x) const
-		{ return inv (x, x); }
+		{
+			return inv (x, x);
+		}
 
 		Element &axpyin (Element &r, const Element &a, const Element &x) const
 		{
@@ -1217,18 +1287,30 @@ namespace LinBox
 		{}
 
 		FieldAXPY<Modular <Element> > &operator = (const FieldAXPY &faxpy)
-		{ _F = faxpy._F; _y = faxpy._y; return *this; }
+		{
+			_F = faxpy._F;
+			_y = faxpy._y;
+			return *this;
+		}
 
 		inline Element& mulacc (const Element &a, const Element &x)
-		{ return accumulate(a * x); }
+		{
+			return accumulate(a * x);
+		}
 
 		inline Element& accumulate (const Element &t)
-		{ return _y+=t; }
+		{
+			return _y+=t;
+		}
 
-		inline Element &get (Element &y) { _y %= _F._modulus; y = _y; return y; }
+		inline Element &get (Element &y) { _y %= _F._modulus; y = _y; return y;
+		}
 
 		inline FieldAXPY &assign (const Element y)
-		{ _y = y; return *this; }
+		{
+			_y = y;
+			return *this;
+		}
 
 		inline void reset() {
 			_F.init(_y, 0);
@@ -1257,7 +1339,11 @@ namespace LinBox
 		{}
 
 		FieldAXPY<Modular<uint8_t> > &operator = (const FieldAXPY &faxpy)
-		{ _F = faxpy._F; _y = faxpy._y; return *this; }
+		{
+			_F = faxpy._F;
+			_y = faxpy._y;
+			return *this;
+		}
 
 		inline uint64_t& mulacc (const Element &a, const Element &x)
 		{
@@ -1266,7 +1352,8 @@ namespace LinBox
 			if (!i--) {
 				i = _F._k;
 				return _y = _y % (uint32_t) _F._modulus + t;
-			} else
+			}
+			else
 				return _y += t;
 		}
 
@@ -1276,7 +1363,8 @@ namespace LinBox
 			if (!i--) {
 				i = _F._k;
 				return _y = _y % (uint32_t) _F._modulus + t;
-			} else
+			}
+			else
 				return _y += t;
 		}
 
@@ -1289,7 +1377,11 @@ namespace LinBox
 		}
 
 		inline FieldAXPY &assign (const Element y)
-		{ _y = y; i = _F._k; return *this; }
+		{
+			_y = y;
+			i = _F._k;
+			return *this;
+		}
 
 		inline void reset() {
 			_y = 0;
@@ -1318,7 +1410,11 @@ namespace LinBox
 		{}
 
 		FieldAXPY<Modular<uint16_t> > &operator = (const FieldAXPY &faxpy)
-		{ _F = faxpy._F; _y = faxpy._y; return *this; }
+		{
+			_F = faxpy._F;
+			_y = faxpy._y;
+			return *this;
+		}
 
 		inline uint64_t& mulacc (const Element &a, const Element &x)
 		{
@@ -1327,7 +1423,8 @@ namespace LinBox
 			if (!i--) {
 				i = _F._k;
 				return _y = _y % (uint64_t) _F._modulus + t;
-			} else
+			}
+			else
 				return _y += t;
 		}
 
@@ -1336,7 +1433,8 @@ namespace LinBox
 			if (!i--) {
 				i = _F._k;
 				return _y = _y % (uint64_t) _F._modulus + t;
-			} else
+			}
+			else
 				return _y += t;
 		}
 
@@ -1349,7 +1447,11 @@ namespace LinBox
 		}
 
 		inline FieldAXPY &assign (const Element y)
-		{ _y = y; i = _F._k; return *this; }
+		{
+			_y = y;
+			i = _F._k;
+			return *this;
+		}
 
 		inline void reset() {
 			_y = 0;
@@ -1372,14 +1474,19 @@ namespace LinBox
 		typedef Modular<uint32_t> Field;
 
 		FieldAXPY (const Field &F) :
-			_F (F)
-		{ _y = 0; }
+			_F (F), _y(0)
+		{ }
+
 		FieldAXPY (const FieldAXPY &faxpy) :
 			_F (faxpy._F), _y (0)
 		{}
 
 		FieldAXPY<Modular<uint32_t> > &operator = (const FieldAXPY &faxpy)
-		{ _F = faxpy._F; _y = faxpy._y; return *this; }
+		{
+			_F = faxpy._F;
+			_y = faxpy._y;
+			return *this;
+		}
 
 		inline uint64_t& mulacc (const Element &a, const Element &x)
 		{
@@ -1403,7 +1510,9 @@ namespace LinBox
 		}
 
 		inline uint64_t& accumulate_special (const Element &t)
-		{ return _y += t; }
+		{
+			return _y += t;
+		}
 
 		inline Element &get (Element &y) {
 			_y %= (uint64_t) _F._modulus;
@@ -1412,7 +1521,10 @@ namespace LinBox
 		}
 
 		inline FieldAXPY &assign (const Element y)
-		{ _y = y; return *this; }
+		{
+			_y = y;
+			return *this;
+		}
 
 		inline void reset() {
 			_y = 0;
@@ -1497,8 +1609,7 @@ namespace LinBox
 		inline Vector1 &mulColDense
 		(const VectorDomain<Modular<uint8_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const
 		{
-			return mulColDenseSpecialized
-			(VD, w, A, v, typename VectorTraits<typename Matrix::Column>::VectorCategory ());
+			return mulColDenseSpecialized (VD, w, A, v, typename VectorTraits<typename Matrix::Column>::VectorCategory ());
 		}
 
 	private:
@@ -1535,8 +1646,7 @@ namespace LinBox
 		inline Vector1 &mulColDense
 		(const VectorDomain<Modular<uint16_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const
 		{
-			return mulColDenseSpecialized
-			(VD, w, A, v, VectorTraits<typename Matrix::Column>::VectorCategory ());
+			return mulColDenseSpecialized (VD, w, A, v, VectorTraits<typename Matrix::Column>::VectorCategory ());
 		}
 
 	private:
@@ -1573,8 +1683,7 @@ namespace LinBox
 		inline Vector1 &mulColDense
 		(const VectorDomain<Modular<uint32_t> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const
 		{
-			return mulColDenseSpecialized
-			(VD, w, A, v, typename VectorTraits<typename Matrix::Column>::VectorCategory ());
+			return mulColDenseSpecialized (VD, w, A, v, typename VectorTraits<typename Matrix::Column>::VectorCategory ());
 		}
 
 	private:

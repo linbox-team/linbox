@@ -129,7 +129,8 @@ public:
 			sprintf(UT,"gunzip -c %s > %s", mat_file, File_Name);
 			system(UT);
 			sprintf(UT,"\\rm %s", File_Name);
-		} else
+		}
+		else
 			File_Name = mat_file;
 
 		FILE* FileDes = fopen(File_Name, "r");
@@ -187,7 +188,8 @@ public:
 			sprintf(UT,"gunzip -c %s | head -1 > %s", mat_file, File_Name);
 			system(UT);
 			sprintf(UT,"\\rm %s", File_Name);
-		} else
+		}
+		else
 			File_Name = mat_file;
 
 		FILE* FileDes = fopen(File_Name, "r");
@@ -216,7 +218,8 @@ public:
 			sprintf(UT,"gunzip -c %s > %s", mat_file, File_Name);
 			system(UT);
 			sprintf(UT,"\\rm %s", File_Name);
-		} else
+		}
+		else
 			File_Name = mat_file;
 
 		FILE* FileDes = fopen(File_Name, "r");

@@ -235,14 +235,16 @@ namespace LinBox
 							    readMatlab (A, is, F, buf);
 						    else
 							    readPretty (A, is, F, buf);
-					    } else if (std::isdigit (c)) {
+					    }
+					    else if (std::isdigit (c)) {
 						    do str >> c; while (str && (isspace (c) || std::isdigit (c)));
 
 						    if (c == 'M')
 							    return readGuillaume (A, is, F, buf);
 						    else
 							    return readTurner (A, is, F, buf);
-					    } else
+					    }
+					    else
 						    throw InvalidMatrixInput ();
 					    break;
 				    }
@@ -363,7 +365,8 @@ namespace LinBox
 				if (firstrow) {
 					os << "[";
 					firstrow =false;
-				} else
+				}
+				else
 					os << ", [";
 
 				j = i->begin ();
@@ -503,7 +506,8 @@ namespace LinBox
 				if (firstrow) {
 					os << "[";
 					firstrow =false;
-				} else
+				}
+				else
 					os << ", [";
 
 				j_idx = i->first.begin ();
@@ -703,7 +707,8 @@ namespace LinBox
 
 		if (v.size () == 0) {
 			v.push_back ( value_type(j, value));
-		} else {
+		}
+		else {
 			iter = std::lower_bound (v.begin (), v.end (), j, VectorWrapper::CompareSparseEntries<Element> ());
 
 			if (iter == v.end () || iter->first != j)
@@ -724,7 +729,8 @@ namespace LinBox
 		if (v.size () == 0) {
 			v.push_back (std::pair <size_t, Element> (j, zero));
 			return v.front ().second;
-		} else {
+		}
+		else {
 			iter = std::lower_bound (v.begin (), v.end (), j, VectorWrapper::CompareSparseEntries<Element> ());
 
 			if (iter == v.end () || iter->first != j)
@@ -786,13 +792,15 @@ namespace LinBox
 		if (v.first.size () == 0) {
 			v.first.push_back (j);
 			v.second.push_back (value);
-		} else {
+		}
+		else {
 			iter = std::lower_bound (v.first.begin (), v.first.end (), j);
 
 			if (iter == v.first.end () || *iter != j) {
 				iter = v.first.insert (iter, j);
 				v.second.insert (v.second.begin () + (iter - v.first.begin ()), value);
-			} else
+			}
+			else
 				*(v.second.begin () + (iter - v.first.begin ())) = value;
 		}
 	}
@@ -810,7 +818,8 @@ namespace LinBox
 			v.first.push_back (j);
 			v.second.push_back (zero);
 			return v.second.front ();
-		} else {
+		}
+		else {
 			iter = std::lower_bound (v.first.begin (), v.first.end (), j);
 
 			if (iter == v.first.end () || *iter != j) {

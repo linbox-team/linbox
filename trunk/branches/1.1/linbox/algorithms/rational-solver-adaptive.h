@@ -40,6 +40,7 @@ namespace LinBox
 		{
 			linbox_check ((M. rowdim() == M. coldim()) && (b.size() == M.rowdim()) && (num. size() ==M.coldim()));
 			typedef Modular<int32_t> Field;
+			// typedef Modular<double> Field;
 			RationalSolver<IRing, Field, RandomPrimeIterator, WanTraits> numerical_solver;
 			//RationalSolver<IRing, Field, RandomPrimeIterator, NumericalTraits> numerical_solver;
 			SolverReturnStatus ret;
@@ -67,6 +68,7 @@ namespace LinBox
 		static SolverReturnStatus solveNonsingular(OutVector& num, typename IRing::Element& den, const DenseMatrix<IRing>& M, const Container<typename IRing::Element> & b) {
 			linbox_check ((M. rowdim() == M. coldim()) && (b.size() == M.rowdim()) && (num. size() ==M.coldim()));
 			typedef Modular<int32_t> Field;
+			// typedef Modular<double> Field;
 			RationalSolver<IRing, Field, RandomPrimeIterator, NumericalTraits> numerical_solver;
 			SolverReturnStatus ret;
 			ret = numerical_solver. solve(num, den, M, b);

@@ -96,7 +96,7 @@ namespace LinBox
 			std::vector< std::vector<Integer> >::iterator _tab_it = RadixResidues_.begin();
 			std::vector< bool >::iterator    _occ_it = RadixOccupancy_.begin();
 			_mod_it->initialize(D);
-			*_dsz_it = naturallog(D);
+			*_dsz_it =  ::Givaro::naturallog(D);
 
 			typename Vect::const_iterator e_it = e.begin();
 			_tab_it->resize(e.size());
@@ -138,14 +138,15 @@ namespace LinBox
 					smallbigreconstruct(*ri_it,  *t0_it, invprod );
 				}
 				Integer tmp = D;
-				di = *_dsz_it + naturallog(tmp);
+				di = *_dsz_it + ::Givaro::naturallog(tmp);
 				mi.mulin(tmp);
 				mi.mulin(*_mod_it);
 				*_occ_it = false;
-			} else {
+			}
+			else {
 				Integer tmp = D;
 				_mod_it->initialize(tmp);
-				*_dsz_it = naturallog(tmp);
+				*_dsz_it = ::Givaro::naturallog(tmp);
 				typename Vect<Integer, Alloc<Integer> >::const_iterator e_it = e.begin();
 				_tab_it->resize(e.size());
 				std::vector<Integer>::iterator t0_it= _tab_it->begin();
@@ -164,7 +165,8 @@ namespace LinBox
 					mi.mulin(*_mod_it);
 					di += *_dsz_it;
 					*_occ_it = false;
-				} else {
+				}
+				else {
 					*_dsz_it = di;
 					*_mod_it = mi;
 					*_tab_it = ri;
@@ -199,17 +201,18 @@ namespace LinBox
 				for( ; ri_it != ri.end(); ++e_it, ++ri_it, ++ t0_it)
 					fieldreconstruct(*ri_it, D, *e_it, *t0_it, invP0, (*_mod_it).operator()() );
 				Integer tmp; D.characteristic(tmp);
-				double ltp = naturallog(tmp);
+				double ltp = ::Givaro::naturallog(tmp);
 				di = *_dsz_it + ltp;
 				totalsize += ltp;
 				mi.mulin(tmp);
 				mi.mulin(*_mod_it);
 				*_occ_it = false;
-			} else {
+			}
+			else {
 				// Lower shelf is free
 				// Put the new residue here and exit
 				Integer tmp; D.characteristic(tmp);
-				double ltp = naturallog(tmp);
+				double ltp =  ::Givaro::naturallog(tmp);
 				_mod_it->initialize(tmp);
 				*_dsz_it = ltp;
 				totalsize += ltp;
@@ -245,7 +248,8 @@ namespace LinBox
 
 					di += *_dsz_it;
 					*_occ_it = false;
-				} else {
+				}
+				else {
 					// This shelf is free
 					// Put the new combination here and exit
 					*_dsz_it = di;
@@ -286,7 +290,8 @@ namespace LinBox
 							normalize(*t0_it = *t_it, *t_it, _mod_it->operator()());
 						//RadixPrimeProd_.resize(1);
 						return d;
-					} else {
+					}
+					else {
 						// There are other shelves
 						// The result is initialized with this shelf
 						// The for loop will combine the other shelves m with the actual one
@@ -330,7 +335,7 @@ namespace LinBox
 			RadixPrimeProd_.resize(1);
 			RadixPrimeProd_.front() = Product;
 			RadixSizes_.resize(1);
-			RadixSizes_.front() = naturallog(Product());
+			RadixSizes_.front() =  ::Givaro::naturallog(Product());
 			RadixResidues_.resize(1);
 			RadixResidues_.front() = d;
 			RadixOccupancy_.resize(1);

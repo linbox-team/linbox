@@ -163,7 +163,8 @@ namespace LinBox
 					if (_VD.areEqual (Ax, b)) {
 						commentator.stop ("passed");
 						success = true;
-					} else {
+					}
+					else {
 						commentator.stop ("FAILED");
 						success = false;
 
@@ -972,7 +973,8 @@ namespace LinBox
 #endif
 			ret = new Iterate (*this, _x.rowdim (), _traits.blockingFactor (), iter);
 			return ret;
-		} else {
+		}
+		else {
 #ifdef LABL_DETAILED_TRACE
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 			<< "Taking iterate structure from trash can..." << std::endl;
@@ -1181,7 +1183,8 @@ namespace LinBox
 			DenseSubmatrix<Element> That (*T, _N - rho, s + rho, rho, _N - s - rho);
 
 			_solver._MD.axpyin (Mhat, transpose (That), Mbar);
-		} else {
+		}
+		else {
 			DenseSubmatrix<Element> Mcheck (M, 0, s, M.rowdim (), _N - s);
 
 			_solver._MD.permuteColumns (Mcheck, P.begin (), P.end ());
@@ -1228,7 +1231,8 @@ namespace LinBox
 				DenseSubmatrix<Element> Mcheck (M, *si, 0, _N - *si, M.coldim ());
 				_solver._MD.permuteRows (Mcheck, Pi->begin (), Pi->end ());
 			}
-		} else {
+		}
+		else {
 			for (Pi = _P.begin (), si = _s.begin (); Pi != _P.end (); ++Pi, ++si) {
 				DenseSubmatrix<Element> Mcheck (M, 0, *si, M.rowdim (), _N - *si);
 				_solver._MD.permuteColumns (Mcheck, Pi->begin (), Pi->end ());
@@ -1484,7 +1488,8 @@ namespace LinBox
 					report << "okay" << std::endl;
 					report << "Inner product is" << std::endl;
 					_MD.write (report, _T2);
-				} else {
+				}
+				else {
 					report << "ERROR" << std::endl << "Computed: " << std::endl;
 					_MD.write (report, _T1);
 					report << "Cached: " << std::endl;

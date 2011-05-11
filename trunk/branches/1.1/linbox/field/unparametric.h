@@ -1,8 +1,10 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+
 /* linbox/field/unparametric.h
  * Copyright (C) 1999-2005 William J Turner,
  *               2001 Bradford Hovinen
+ *               2005 Clement Pernet
  *
  * Written by W. J. Turner <wjturner@acm.org>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
@@ -35,9 +37,11 @@
 #include "linbox/randiter/unparametric.h"
 #include "linbox/linbox-config.h"
 #include <linbox/field/field-traits.h>
+#include <fflas-ffpack/field/unparametric.h>
 //#if __LINBOX_HAVE_NTL
 //#include <linbox/field/ntl-RR.h>
 //#endif // __LINBOX_HAVE_NTL
+
 
 namespace LinBox
 {
@@ -48,14 +52,16 @@ namespace LinBox
 		return t = static_cast<Target>(s);
 	}
 
-//#if __LINBOX_HAVE_NTL
-//	typedef NTL::RR Targ;
-//	template <>
-//	Targ& Caster<Targ, int> (Targ& t, const int& s)
-//	{
-//		return t = s;
-//	}
-//#endif // __LINBOX_HAVE_NTL
+#if 0
+#if __LINBOX_HAVE_NTL
+	typedef NTL::RR Targ;
+	template <>
+	Targ& Caster<Targ, int> (Targ& t, const int& s)
+	{
+		return t = s;
+	}
+#endif // __LINBOX_HAVE_NTL
+#endif
 
 	template <class Ring>
 	struct ClassifyRing;
@@ -73,18 +79,23 @@ namespace LinBox
 	 * \ingroup field
 	 * \defgroup UnparametricField UnparametricField
 	 *
-	 * A field having an interface similar to that of floats is adapted to LinBox.
+	 * A field having an interface similar to that of floats is adapted to
+	 * LinBox.
 	 *
-	 *  Used to generate efficient field classes for unparameterized fields (or hidden parameter fields).
+	 *  Used to generate efficient field classes for unparameterized fields
+	 *  (or hidden parameter fields).
 	 *
-	 *  Some fields are implemented by definition of the C++ arithmetic operators, such as z = x*y,
-	 *  for z, y, z instances of a type K.   The LinBox field
-	 *  Unparametric<K> is the adaptation to LinBox.
+	 *  Some fields are implemented by definition of the C++ arithmetic
+	 *  operators, such as <code>z = x*y</code>, for \c x, \c y, \c z
+	 *  instances of a type \c K.  The LinBox field LinBox::Unparametric<K>
+	 *  is the adaptation to LinBox.
 	 *
-	 *  For a typical unparametric field, some of the methods must be defined in a specialization.
+	 *  For a typical unparametric field, some of the methods must be
+	 *  defined in a specialization.
 	 */
 	template <class K>
-	class UnparametricField : public FieldInterface {
+	class UnparametricField : public FieldInterface,
+		public  FFPACK::UnparametricField<K> {
 	protected:
 		integer _p; integer _card;
 	public:
@@ -113,191 +124,50 @@ namespace LinBox
 		 *  This constructor must be defined in a specialization.
 		 */
 		UnparametricField(integer q = 0, size_t e = 1) :
+			FFPACK::UnparametricField<K>((unsigned long)q,(unsigned long)e),
 			_p(q), _card(q == 0 ? integer(-1) : pow(q, e) )
 			{}  // assuming q is a prime or zero.
 
 		/// construct this field as copy of F.
 		UnparametricField (const UnparametricField &F) :
-			_p(F._p), _card(F._card)
+			FFPACK::UnparametricField<K>(F),_p(F._p), _card(F._card)
 		{}
 
-		///
-		~UnparametricField () {}
 
-		/* Assignment operator.
-		 * Assigns UnparametricField object F to field.
-		 * @param  F UnparametricField object.
-		 */
-		// I believe this should be virtual -bds
-		///
-		const UnparametricField &operator=(const UnparametricField &F) const
-		{ return *this; }
-		//@} Field Object Basics.
+		// field/ntl-ZZ_p.h me les demande... //
 
-		/** @name Data Object Management.
-		 * first argument is set and the value is also returned.
-		 */
-		//@{
+		Element&inv (Element&x, const Element&y)const{return FFPACK::UnparametricField<K>::inv(x,y);}
+		Element&invin (Element&x)const{return FFPACK::UnparametricField<K>::invin(x);}
+		std::ostream&write (std::ostream&os)const{return FFPACK::UnparametricField<K>::write(os);}
+		std::ostream&write (std::ostream&os, const Element&p)const{return FFPACK::UnparametricField<K>::write(os,p);}
+		bool isZero(const Element&x)const{return FFPACK::UnparametricField<K>::isZero(x);}
+		bool isOne(const Element&x)const{return FFPACK::UnparametricField<K>::isOne(x);}
+		long unsigned int characteristic(long unsigned int&p)const{return FFPACK::UnparametricField<K>::characteristic(p);}
+		long unsigned int characteristic()const{return FFPACK::UnparametricField<K>::characteristic();};
+		long unsigned int cardinality()const{return FFPACK::UnparametricField<K>::cardinality();};
+		template<typename Src>Element&init(Element&x, const Src&s)const{return Caster (x, s);}
+		std::istream&read(std::istream&is, Element&x)const{return FFPACK::UnparametricField<K>::read(is,x);}
+		std::istream&read(std::istream&is)const{return FFPACK::UnparametricField<K>::read(is);}
+		template<typename T>T&convert(T&x,const Element&y)const{return Caster(x,y);}
 
-		Element& init (Element& x) const
-		{
-			return x;
-
-		}
-
-		/// x := y.  Caution: it is via cast to long.  Good candidate for specialization.
-		template <typename Src>
-		Element& init (Element& x, const Src& s) const
-		{
-			return Caster (x, s);
-
-		}
-
-
-		/// x :=  y.  Caution: it is via cast to long.  Good candidate for specialization. --dpritcha
-
-		template <typename T>
-		T& convert (T &x, const Element &y) const
-		{return Caster (x,y);}
-
-		///
-		Element &assign (Element &x, const Element &y) const
-		{ return x = y; }
+		// fin des trucs zarbs //
 
 		/// c := cardinality of this field (-1 if infinite).
 		integer &cardinality (integer &c) const
-		{ return c = _card; }
+		{
+			return c = _card;
+		}
 
 		/// c := characteristic of this field (zero or prime).
 		integer &characteristic (integer &c) const
-		{ return c = _p; }
+		{
+			return c = _p;
+		}
 
 		//@} Data Object Management
 
-		/// @name Comparison Predicates
-		//@{
-		///  x == y
-		bool areEqual (const Element &x, const Element &y) const
-		{ return x == y; }
-
-		///  x == 0
-		bool isZero (const Element &x) const
-		{ return x == Element (0); }
-
-		///  x == 1
-		bool isOne (const Element &x) const
-		{ return x == Element (1); }
-		//@} Comparison Predicates
 
 
-		/** @name Arithmetic Operations
-		 * The first argument is set and is also the return value.
-		 */
-		//@{
-
-		/// x := y + z
-		Element &add (Element &x, const Element &y, const Element &z) const
-		{ return x = y + z; }
-
-		/// x := y - z
-		Element &sub (Element &x, const Element &y, const Element &z) const
-		{ return x = y - z; }
-
-		/// x := y*z
-		Element &mul (Element &x, const Element &y, const Element &z) const
-		{ return x = y * z; }
-
-		/// x := y/z
-		Element &div (Element &x, const Element &y, const Element &z) const
-		{ return x = y / z; }
-
-		/// x := -y
-		Element &neg (Element &x, const Element &y) const
-		{ return x = - y; }
-
-		/// x := 1/y
-		Element &inv (Element &x, const Element &y) const
-		{ return x = Element (1) / y; }
-
-		/// z := a*x + y
-		// more optimal implementation, if available, can be defined in a template specialization.
-		Element &axpy (Element &z,
-			       const Element &a,
-			       const Element &x,
-			       const Element &y) const
-		{ return z = a * x + y; }
-
-		//@} Arithmetic Operations
-
-		/** @name Inplace Arithmetic Operations
-		 * The first argument is modified and the result is the return value.
-		 */
-		//@{
-
-		/// x := x + y
-		Element &addin (Element &x, const Element &y) const
-		{ return x += y; }
-
-		/// x := x - y
-		Element &subin (Element &x, const Element &y) const
-		{ return x -= y; }
-
-		/// x := x*y
-		Element &mulin (Element &x, const Element &y) const
-		{ return x *= y; }
-
-		/// x := x/y
-		Element &divin (Element &x, const Element &y) const
-		{ return x /= y; }
-
-		/// x := -x
-		Element &negin (Element &x) const
-		{ return x = - x; }
-
-		/// x := 1/x
-		Element &invin (Element &x) const
-		{ return x = Element (1) / x; }
-
-		/// y := a*x + y
-		Element &axpyin (Element &y, const Element &a, const Element &x) const
-		{ return y += a * x; }
-
-		//@} Inplace Arithmetic Operations
-
-		/** @name Input/Output Operations */
-		//@{
-
-		/** Print field.
-		 * @return output stream to which field is written.
-		 * @param  os  output stream to which field is written.
-		 */
-		std::ostream &write (std::ostream &os) const
-		{ return os << "unparameterized field(" << sizeof(Element) <<',' << typeid(Element).name() << ')'; }
-
-		/** Read field.
-		 * @return input stream from which field is read.
-		 * @param  is  input stream from which field is read.
-		 */
-		std::istream &read (std::istream &is) const
-		{ return is; }
-
-		/** Print field element.
-		 * @return output stream to which field element is written.
-		 * @param  os  output stream to which field element is written.
-		 * @param  x   field element.
-		 */
-		std::ostream &write (std::ostream &os, const Element &x) const
-		{ return os << x; }
-
-		/** Read field element.
-		 * @return input stream from which field element is read.
-		 * @param  is  input stream from which field element is read.
-		 * @param  x   field element.
-		 */
-		std::istream &read (std::istream &is, Element &x) const
-		{ return is >> x; }
-
-		//@}
 
 		//@} Common Object Interface
 
@@ -320,12 +190,17 @@ namespace LinBox
 		 * @return constant reference to field object
 		 */
 		const K &operator () (void) const
-		{ return Element (); }
+		{
+			return Element ();
+		}
 
 		/** Access operator.
 		 * @return reference to field object
 		 */
-		K &operator () (void) { return Element (); }
+		K &operator () (void)
+		{
+			return Element ();
+		}
 
 		//@} Implementation-Specific Methods
 

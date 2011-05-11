@@ -28,7 +28,7 @@
 #include <linbox/field/modular-double.h>
 #include <linbox/field/modular-int32.h>
 #include <linbox/algorithms/cra-early-multip.h>
-#include <linbox/ffpack/ffpack.h>
+#include <fflas-ffpack/ffpack/ffpack.h>
 #include <linbox/randiter/random-prime.h>
 #include <linbox/matrix/blas-matrix.h>
 #include <linbox/algorithms/blas-domain.h>
@@ -300,6 +300,7 @@ namespace LinBox
 		{
 
 			typedef Modular<int32_t> Field;
+			// typedef Modular<double> Field;
 			typedef Field::Element Element;
 			typedef DenseMatrix<Field> FMatrix;
 			RandomPrimeIterator primeg(20);

@@ -198,7 +198,8 @@ namespace LinBox
 				integer::maxpyin(b1b2,r,lb2);
 				integer::maxpyin(b1b3,r, b2b3);
 				binaryGaussReduce();
-			}else{
+			}
+			else{
 				if (la < lb2){
 					assign(b2,a);lb2=la;
 					integer::maxpyin(b2b3,r, b1b3);
@@ -375,8 +376,8 @@ namespace LinBox
 				x_tmp = SEL(la, x12, x20, x21, x22); if (la < lmin_a) {lmin_a=la;x1=x12;x2=x_tmp;}
 
 
-				//if (::abs(x1)-::abs(y1)  != 1) std::cout<<"|x1|-|y1|: "<<::abs(x1)-::abs(y1)<<"\n";
-				//if (::abs(x2)-::abs(y2)  != 1) std::cout<<"|x2|-|y2|: "<<::abs(x2)-::abs(y2)<<"\n";
+				//if (::abs(x1)-::abs(y1)  != 1) std::cout<<"|x1|-|y1|: "<< ::abs(x1)-::abs(y1)<<"\n";
+				//if (::abs(x2)-::abs(y2)  != 1) std::cout<<"|x2|-|y2|: "<< ::abs(x2)-::abs(y2)<<"\n";
 
 			}
 

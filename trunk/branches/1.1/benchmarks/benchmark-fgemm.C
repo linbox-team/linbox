@@ -34,8 +34,8 @@
 #include "linbox/util/error.h"
 #include "linbox/field/modular.h"
 #include "linbox/field/modular-balanced.h"
-#include "linbox/ffpack/ffpack.h"
-#include "linbox/fflas/fflas.h"
+#include "fflas-ffpack/ffpack/ffpack.h"
+#include "fflas-ffpack/fflas/fflas.h"
 #include "linbox/matrix/random-matrix.h"
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/algorithms/blas-domain.h"
@@ -43,6 +43,8 @@
 /* ********************** */
 /*        Outils          */
 /* ********************** */
+
+using ::Givaro::Timer;
 
 /*! @brief Watches a timer and a number and repet and signals if over.
  *

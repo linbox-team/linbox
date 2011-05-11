@@ -42,7 +42,7 @@
 #include <linbox/algorithms/matrix-hom.h>
 #include <linbox/blackbox/random-matrix.h>
 #include <linbox/blackbox/scompose.h>
-#include <linbox/ffpack/ffpack.h>
+#include <fflas-ffpack/ffpack/ffpack.h>
 #include <linbox/algorithms/smith-form-binary.h>
 #include <linbox/algorithms/smith-form-adaptive.inl>
 #include <linbox/solutions/valence.h>
@@ -80,7 +80,8 @@ namespace LinBox
 			for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() + order; ++ s_p, ++ l_p)
 				*s_p = *l_p;
 			report << "     Done\n";
-		} else if (e == 1) {
+		}
+		else if (e == 1) {
 			report << "      Compute local smith at prime " << p << ", by rank.\n";
 #if 0 /*Meet trouble to call ffpack routine*/
 			Modular<double> F (p); Modular<double>::Element elt;
@@ -120,7 +121,8 @@ namespace LinBox
 			for (; s_p != s. begin() + order; ++ s_p)
 				*s_p = 0;
 			report << "      Done\n";
-		} else {
+		}
+		else {
 			report << "      Compute local smith at " << p <<'^' << e << " using PIRModular<int32_t>\n";
 			long m = 1; int i = 0; for (i = 0; i < e; ++ i) m *= p;
 			typedef PIRModular<int32_t> PIR;
@@ -165,7 +167,8 @@ namespace LinBox
 			for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() + order; ++ s_p, ++ l_p)
 				R. convert(*s_p, *l_p);
 			report << "      Done \n";
-		} else {
+		}
+		else {
 			std::cout << "Compute local smith at " << p << '^' << e << std::endl;
 			std::cerr << "Not implemented yet.\n";
 		}
@@ -188,7 +191,7 @@ namespace LinBox
 
 		linbox_check ((p > 0) && ( e >= 0));
 		integer m = 1; int i = 0; for ( i = 0; i < e; ++ i) m *= p;
-		if (((p == 2) && (e <= 32)) || (m <= PIRModular<int32_t>::getMaxModulus()))
+		if (((p == 2) && (e <= 32)) || (m <= FieldTraits<PIRModular<int32_t> >::maxModulus()))
 			compute_local_long (s, A, p, e);
 		else
 			compute_local_big (s, A, p, e);
@@ -258,7 +261,7 @@ namespace LinBox
 		linbox_check ((s. size() >= (unsigned long)order) && (m > 0));
 		if (m == 1)
 			report << "   Not rough part." << std::endl;
-		else if ( m <=  PIRModular<int32_t>::getMaxModulus() ) {
+		else if ( m <=  FieldTraits< PIRModular<int32_t> >::maxModulus() ) {
 			report << "    Elimination starts:\n";
 			PIRModular<int32_t> R (m);
 			DenseMatrix<PIRModular<int32_t> > A_ilio(R, A.rowdim(), A.coldim());
@@ -338,7 +341,8 @@ namespace LinBox
 			if (*prime_p == 2) extra = 32;
 			else {
 				// cheating here, try to use the max word size modular
-				extra = (int)(floor(log((double)PIRModular<int32_t>::getMaxModulus() - 1) / log (double(*prime_p))));
+				double log_max_mod = log((double) FieldTraits<PIRModular<int32_t> >:: maxModulus() - 1) ;
+				extra = (int)(floor(log_max_mod / log (double(*prime_p))));
 			}
 			do {
 				integer m = 1;
@@ -387,7 +391,7 @@ namespace LinBox
 		report <<"   Compute the degree of min poly of AA^T: \n";
 		typedef Modular<int> Field;
 		integer Val; Field::Element v; unsigned long degree;
-		RandomPrimeIterator rg ((int)(log( (double)(Field::getMaxModulus()) ) / M_LN2 - 2));
+		RandomPrimeIterator rg ((int)(log( (double)(FieldTraits<Field>::maxModulus()) ) /  M_LN2 - 2));
 		Field F (*rg);
 		typename MatrixHomTrait<Matrix, Field>::value_type Ap(F, A.rowdim(), A.coldim());
 		MatrixHom::map (Ap, A, F);
@@ -505,7 +509,7 @@ namespace LinBox
 		report <<"   Compute the degree of min poly of AA^T: \n";
 		typedef Modular<int> Field;
 		integer Val; Field::Element v; unsigned long degree;
-		RandomPrimeIterator rg ((int)(log( (double)(Field::getMaxModulus()) ) / M_LN2 - 2));
+		RandomPrimeIterator rg ((int)(log( (double)(FieldTraits<Field>::maxModulus()) ) / M_LN2 - 2));
 		Field F (*rg);
 		typename MatrixHomTrait<DenseMatrix<IRing>, Field>::value_type Ap(F,A.rowdim(),A.coldim());
 		MatrixHom::map (Ap, A, F);

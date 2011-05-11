@@ -123,6 +123,8 @@ namespace LinBox
 			return d=residue_;
 		}
 
+		// virtual Integer& result(Integer& n, Integer& d) = 0 ; // rational pure virtual
+
 		virtual Integer& getResidue(Integer& r )
 		{
 			return r= residue_;
@@ -163,7 +165,8 @@ namespace LinBox
 			Integer m0 = primeProd_;//1
 			if (u0 == u1) {
 				++occurency_;
-			} else {
+			}
+			else {
 				occurency_ = 1;
 				inv(m0, m0, D); // res <-- m0^{-1} mod m1//1
 				u0 = u1 - u0;           // tmp <-- (u1-u0)//e
@@ -198,7 +201,8 @@ namespace LinBox
 			DomainElement u0;
 			if (D.areEqual( D.init(u0, residue_), e)) {
 				++occurency_;
-			} else {
+			}
+			else {
 				occurency_ = 1;
 
 				D.negin(u0);       	// u0  <-- -u0

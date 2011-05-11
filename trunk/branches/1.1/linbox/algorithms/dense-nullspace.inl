@@ -26,8 +26,8 @@
 
 #include "linbox/matrix/blas-matrix.h"
 
-#include "linbox/ffpack/ffpack.h" // LU
-#include "linbox/fflas/fflas.h" // trsm
+#include "fflas-ffpack/ffpack/ffpack.h" // LU
+#include "fflas-ffpack/fflas/fflas.h" // trsm
 
 //#include "Matio.h" // write_field ;
 #include <iostream>
@@ -316,7 +316,7 @@ namespace LinBox
 		}
 
 		for (size_t i = 0 ; i < coker_dim ; ++i)	// copy U2 to result V before updating with U1
-			FFPACK::fcopy (F, R, V + i * ldV, 1, A + (R + i)*lda, 1);
+			FFLAS::fcopy (F, R, V + i * ldV, 1, A + (R + i)*lda, 1);
 		typename Field::Element one, minus_one ;
 		F.init(one,1UL);
 		F.neg(minus_one, one);

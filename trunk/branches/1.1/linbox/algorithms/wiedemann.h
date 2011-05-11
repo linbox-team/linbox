@@ -88,13 +88,15 @@ namespace LinBox
 			MasseyDomain< Field, BlackboxContainer<Field, Squarize<Blackbox> > > WD (&TF, M.earlyTermThreshold ());
 
 			WD.minpoly (P, deg);
-		} else if (M.symmetric ()) {
+		}
+		else if (M.symmetric ()) {
 			typedef BlackboxContainerSymmetric<Field, Blackbox> BBContainerSym;
 			BBContainerSym TF (&A, A.field(), i);
 			MasseyDomain< Field, BBContainerSym > WD (&TF, M.earlyTermThreshold ());
 
 			WD.minpoly (P, deg);
-		} else {
+		}
+		else {
 			typedef BlackboxContainer<Field, Blackbox> BBContainer;
 			BBContainer TF (&A, A.field(), i);
 			MasseyDomain< Field, BBContainer > WD (&TF, M.earlyTermThreshold ());
@@ -158,10 +160,12 @@ namespace LinBox
 				minpoly(eP, Ap, tag, Method::Wiedemann(M));
 
 				return PreMap<Field, GivaroExtension<Field> >(F,EF)(P, eP);
-			} else
+			}
+			else
 				return minpoly(P, A, tag, Method::Wiedemann(M));
 
-		} else {
+		}
+		else {
 			unsigned long extend = (unsigned long)FF_EXPONENT_MAX(c,(integer)LINBOX_EXTENSION_DEGREE_MAX);
 			if (extend > 1) {
 				commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Word size extension : " << extend << std::endl;
@@ -172,7 +176,8 @@ namespace LinBox
 				minpoly(eP, Ap, tag, Method::Wiedemann(M));
 				return PreMap<Field, GivaroGfq >(F,EF)(P, eP);
 
-			} else
+			}
+			else
 				return minpoly(P, A, tag, Method::Wiedemann(M));
 		}
 	}

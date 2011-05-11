@@ -143,7 +143,8 @@ namespace LinBox
 			randomInt () * (doubleTransform + doubleTransform * doubleTransform);
 
 			random = (uint32_t) (double_rand * dist);
-		} else {
+		}
+		else {
 			/* Now we use g_rand_double_range (), which will set 52 bits for
 			   us, so that it is safe to round and still get a decent
 			   distribution */

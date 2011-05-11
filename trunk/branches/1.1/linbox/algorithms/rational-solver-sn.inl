@@ -407,7 +407,8 @@ std::ostream& writeVec(Vec& out, const char *tag="", integer bound=/*40000000*/0
 		if(bound && ((integer)(out[i]) > bound || (integer)(out[i]) < -bound)){
 			os << " entry over bound ]"  << std::endl;
 			return os;
-		} else
+		}
+		else
 			os << " " << out[i];
 	}
 	if(out.size() > numEntries)

@@ -130,7 +130,8 @@ namespace LinBox
 
 				const_cast<integer&>(_seed) = s;
 				mpz_set_si (mpq_denref (a.rep), value);
-			} else {
+			}
+			else {
 				unsigned int s;
 				int num, den;
 
@@ -141,7 +142,8 @@ namespace LinBox
 					unsigned long tmp = _size;
 					num %= tmp;
 					den = 1L;
-				} else {
+				}
+				else {
 					den = rand_r (&s);
 				}
 

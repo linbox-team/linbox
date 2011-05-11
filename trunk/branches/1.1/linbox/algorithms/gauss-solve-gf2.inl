@@ -51,7 +51,8 @@ namespace LinBox
 			typename GF2::RandIter generator(F2);
 			for(typename Vector1::iterator it=w.begin()+rank;it!=w.end();++it)
 				generator.random( *it );
-		} else {
+		}
+		else {
 			for(typename Vector1::iterator it=w.begin()+rank;it!=w.end();++it)
 				F2.init(*it,0);
 		}

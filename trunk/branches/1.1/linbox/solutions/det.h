@@ -268,7 +268,8 @@ namespace LinBox
 				commentator.stop ("done", NULL, "sdet");
 
 				return d;
-		} else {
+		}
+		else {
 			commentator.start ("Wiedemann Determinant", "wdet");
 			linbox_check (A.coldim () == A.rowdim ());
 
