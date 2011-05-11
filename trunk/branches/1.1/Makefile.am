@@ -30,7 +30,7 @@ examples:
 	(cd examples; make examples)
 
 benchmarks:
-	(cd benchmarks, make benchmarks)
+	(cd benchmarks; make benchmarks)
 
 .PHONY:examples benchmarks
 
