@@ -7,6 +7,10 @@
 
 # TODO : create .extracted, .configured, .build, .installed and use a switch
 # (like --force) when you want to rebuild
+# TODO : manage icc/gcc
+# TODO : add gmp in givaro and use auto-install in givaro
+# TODO : use an optionnal message in die function.
+# TODO : add options to make like '-j'
 
 STABLE_FFLAS=1.4.0
 STABLE_GIVARO=3.4.1
@@ -392,11 +396,11 @@ echo -e "${BEG}configuring LinBox..."
 GIVARO="--with-givaro=$PREFIX_LOC"
 FFLAFLAS="--with-fflas-ffpack=$PREFIX_LOC"
 
-# if [ "$STABLE" = "true" ]; then
-# ./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $GIVARO $FFLAFLAS $WARNINGS || die
-# else
-./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $BLAS $GIVARO $FFLAFLAS $WARNINGS || die
-# fi
+if [ -x autogen.sh ] ;  then 
+	./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $BLAS $GIVARO $FFLAFLAS $WARNINGS || die
+else
+	./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $GIVARO $FFLAFLAS $WARNINGS || die
+fi
 
 echo -e "${BEG}building LinBox..."
 echo "make CXXFLAGS+=\"$EXTRA\""
@@ -415,4 +419,13 @@ fi
 echo -e "${BEG}installing LinBox..."
 make install || die
 
+cool
+
+echo
+echo -e "${BEG}Don't forget to run something like"
+echo -e " *   'export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:$PREFIX_LOC/lib'"
+echo -e " * to ensure you don't get undefined symobols !"
+echo 
+echo -e " * Happy LinBoxing ! (installed in $PREFIX_LOC)"
+echo
 cool

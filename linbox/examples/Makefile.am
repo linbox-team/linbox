@@ -42,6 +42,8 @@ EXTRA_PROGRAMS= $(EXAMPLES) $(USE_GIVARONTL_EXAMPLES)
 
 CLEANFILES=$(EXTRA_PROGRAMS)
 
+EXTRA_DIST = examples.doxy
+
 examples: ${EXTRA_PROGRAMS}
 
 dot_product_SOURCES    = dot-product.C
