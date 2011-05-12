@@ -139,315 +139,317 @@
 					Here is some examples of use:
 					</p>
 					<!-- <blockquote style="margin-left : -10px;"> -->
-					<blockquote>
+						<blockquote>
+							<p>
+							<tt>A:=Matrix(100,rand(1..100));</tt><br>
+							<tt>b:=Vector(100,rand(1..100));</tt><br><br>
+
+							<tt>#determinant of A</tt><br>
+							<tt>d1:=lbDeterminant(A); # over the integer </tt><br>
+							<tt>d2:=lbDeterminant(65521,A); # over GF(65521)</tt><br><br>
+
+							<tt>#characteristic polynomial of A</tt><br>
+							<tt>P1:=lbCharpoly(A,'x'); # over the integer</tt><br>
+							<tt>P2:=lbCharpoly(65521,A,'x'); # over GF(65521)</tt><br><br>
+
+							<tt># resolution of Ax=b</tt><br>
+							<tt>x1:=lbSolving(A,b); # over the integer</tt><br>
+							<tt>x2:=lbSolving(65521,A,b); # over GF(65521)</tt><br><br>
+							<tt> ...</tt>
+							</p>
+						</blockquote>
+
+
+
+						<a name="performances"></a>
+						<h3>Performances</h3>
 						<p>
-						<tt>A:=Matrix(100,rand(1..100));</tt><br>
-						<tt>b:=Vector(100,rand(1..100));</tt><br><br>
-
-						<tt>#determinant of A</tt><br>
-						<tt>d1:=lbDeterminant(A); # over the integer </tt><br>
-						<tt>d2:=lbDeterminant(65521,A); # over GF(65521)</tt><br><br>
-
-						<tt>#characteristic polynomial of A</tt><br>
-						<tt>P1:=lbCharpoly(A,'x'); # over the integer</tt><br>
-						<tt>P2:=lbCharpoly(65521,A,'x'); # over GF(65521)</tt><br><br>
-
-						<tt># resolution of Ax=b</tt><br>
-						<tt>x1:=lbSolving(A,b); # over the integer</tt><br>
-						<tt>x2:=lbSolving(65521,A,b); # over GF(65521)</tt><br><br>
-						<tt> ...</tt>
+						you can find below some performance comparisons between our LinBox-Maple interface and LinearAlgebra module of Maple.
+						The matrices are dense with integers coefficient lying in [1..100]. Computation are done on a PIV-3.2Ghz, 1Gb RAM.
 						</p>
-					</blockquote>
+
+						<table>
+							<tr>
+								<td>
+									<table border="1" cellpadding="1" cellspacing="1" class="PerformanceTable" >
+										<caption>
+											<b>Determinant</b>
+										</caption>
+										<thead>
+											<tr class="Header" style="text-align: center;">
+												<td> n </td> <td>50 </td> <td>100 </td> <td>200</td> <td>400</td>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td> Maple </td> <td> 0.214s</td> <td>1.609s</td> <td> 16.073s</td> <td> 536.533s</td>
+											</tr>
+											<tr>
+												<td> LinBox</td> <td> 0.014s</td> <td> 0.094s</td> <td> 0.502s</td> <td> 1.771s</td>
+											</tr>
+											<tr >
+												<td > speedup </td> <td class="Fastest"> 15.28</td> <td class="Fastest"> 17.11</td> <td class="Fastest" > 32.01</td> <td class="Fastest">302.95 </td>
+											</tr>
+										</tbody>
+									</table>
+								</td>
+								<td>
+									<table border="1" cellpadding="1" cellspacing="1" class="PerformanceTable" >
+										<caption>
+											<b>Rank</b>
+										</caption>
+										<thead>
+											<tr class="Header" style="text-align: center;">
+												<td> n </td> <td>50 </td> <td>100 </td> <td>200</td> <td>400</td>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td> Maple </td> <td> 0.463s</td> <td>1.439s</td> <td> 17.104s</td> <td> 542.702s</td>
+											</tr>
+											<tr>
+												<td> LinBox</td> <td> 0.006s</td> <td> 0.016s</td> <td> 0.083s</td> <td> 0.298s</td>
+											</tr>
+											<tr >
+												<td > speedup </td> <td class="Fastest"> 77.16</td> <td class="Fastest"> 89.93</td> <td class="Fastest" > 206.07</td> <td class="Fastest">1821.14 </td>
+											</tr>
+										</tbody>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<table border="1" cellpadding="1" cellspacing="1" class="PerformanceTable" >
+										<caption>
+											<b>System Solving</b>
+										</caption>
+										<thead>
+											<tr class="Header" style="text-align: center;">
+												<td> n </td> <td>50 </td> <td>100 </td> <td>200</td> <td>400</td>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td> Maple </td> <td> 0.331s</td> <td>0.886s</td> <td> 4.126s</td> <td> 52.002s</td>
+											</tr>
+											<tr>
+												<td> LinBox</td> <td> 0.013s</td> <td> 0.053s</td> <td> 0.398s</td> <td> 2.552s</td>
+											</tr>
+											<tr >
+												<td > speedup </td> <td class="Fastest"> 25.46</td> <td class="Fastest"> 16,71</td> <td class="Fastest" > 10.36</td> <td class="Fastest">20.37 </td>
+											</tr>
+										</tbody>
+									</table>
+								</td>
+								<td>
+									<table border="1" cellpadding="1" cellspacing="1" class="PerformanceTable" >
+										<caption>
+											<b>Characteristic Polynomial</b>
+										</caption>
+										<thead>
+											<tr class="Header" style="text-align: center;">
+												<td> n </td> <td>20 </td> <td>40 </td> <td>80</td> <td>160</td>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td> Maple </td> <td> 0.121s</td> <td>2.223s</td> <td> 40.434s</td> <td> 906.416s</td>
+											</tr>
+											<tr>
+												<td> LinBox</td> <td> 0.007s</td> <td> 0.018s</td> <td> 0.143s</td> <td> 1.336s</td>
+											</tr>
+											<tr >
+												<td > speedup </td> <td class="Fastest"> 17.28</td> <td class="Fastest"> 123.50</td> <td class="Fastest" > 282.75</td> <td class="Fastest">678.45 </td>
+											</tr>
+										</tbody>
+									</table>
+								</td>
+							</tr>
+						</table>
 
 
+						<a name="bugs"></a>
+						<h3>Known bugs</h3>
+						<p>
+						Unfortunately, some bugs present in Maple API lead to problem in our interface.
+						In particular, you can find below a list of known bugs in our interface due to Maple bugs:
+						</p>
+						<ol>
+							<li> <b>Maple v9.0</b>: the <tt>with(LinBox);</tt> leads to an error in loading the module.
+							This is due to a non re-evaluation of the Maple define_external when loading module.
+							The only alternative, to my knowledge, to fix this problem for our LinBox interface is to replace the
+							<tt>with(LinBox);</tt> command with
+							<p>
+							<q><!-- no blockquote inside a li !! -->
+								<tt>read("LINBOX_PATH/lib/lb-maple.mpl");</tt><br>
+								<tt>Dev:-lbStart();</tt>.
+							</q>
+							</p>
+							Here again, the LINBOX_PATH variable should be replaced by the LinBox installation path.
+							This alternative should work but is not fully satisfying. Any idea would be helpful on this.
+							</li>
+							<li> <b>Maple v10.0 </b>: our interface is unfortunately suffering from a conversion error
+							in low level function of Maple API. In particular, the conversion of immediate negative integers
+							are bugged and always returns zero. Therefore, right now negative integer greater than <tt>-2^31+1</tt>
+							on (32 bits machine) or <tt>-2^63+1</tt> on (64 bits machine) are not supported. Hopefully, this problem should
+							be fixed in newer Maple release. We are working hard to find a good solution for this problem in our interface.
+							</li>
 
-					<a name="performances"></a>
-					<h3>Performances</h3>
-					<p>
-					you can find below some performance comparisons between our LinBox-Maple interface and LinearAlgebra module of Maple.
-					The matrices are dense with integers coefficient lying in [1..100]. Computation are done on a PIV-3.2Ghz, 1Gb RAM.
-					</p>
+						</ol>
 
-					<table>
-						<tr>
-							<td>
-								<table border="1" cellpadding="1" cellspacing="1" class="PerformanceTable" >
-									<caption>
-										<b>Determinant</b>
-									</caption>
-									<thead>
-										<tr class="Header" style="text-align: center;">
-											<td> n </td> <td>50 </td> <td>100 </td> <td>200</td> <td>400</td>
-										</tr>
-									</thead>
-									<tbody>
-										<tr>
-											<td> Maple </td> <td> 0.214s</td> <td>1.609s</td> <td> 16.073s</td> <td> 536.533s</td>
-										</tr>
-										<tr>
-											<td> LinBox</td> <td> 0.014s</td> <td> 0.094s</td> <td> 0.502s</td> <td> 1.771s</td>
-										</tr>
-										<tr >
-											<td > speedup </td> <td class="Fastest"> 15.28</td> <td class="Fastest"> 17.11</td> <td class="Fastest" > 32.01</td> <td class="Fastest">302.95 </td>
-										</tr>
-									</tbody>
-								</table>
-							</td>
-							<td>
-								<table border="1" cellpadding="1" cellspacing="1" class="PerformanceTable" >
-									<caption>
-										<b>Rank</b>
-									</caption>
-									<thead>
-										<tr class="Header" style="text-align: center;">
-											<td> n </td> <td>50 </td> <td>100 </td> <td>200</td> <td>400</td>
-										</tr>
-									</thead>
-									<tbody>
-										<tr>
-											<td> Maple </td> <td> 0.463s</td> <td>1.439s</td> <td> 17.104s</td> <td> 542.702s</td>
-										</tr>
-										<tr>
-											<td> LinBox</td> <td> 0.006s</td> <td> 0.016s</td> <td> 0.083s</td> <td> 0.298s</td>
-										</tr>
-										<tr >
-											<td > speedup </td> <td class="Fastest"> 77.16</td> <td class="Fastest"> 89.93</td> <td class="Fastest" > 206.07</td> <td class="Fastest">1821.14 </td>
-										</tr>
-									</tbody>
-								</table>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<table border="1" cellpadding="1" cellspacing="1" class="PerformanceTable" >
-									<caption>
-										<b>System Solving</b>
-									</caption>
-									<thead>
-										<tr class="Header" style="text-align: center;">
-											<td> n </td> <td>50 </td> <td>100 </td> <td>200</td> <td>400</td>
-										</tr>
-									</thead>
-									<tbody>
-										<tr>
-											<td> Maple </td> <td> 0.331s</td> <td>0.886s</td> <td> 4.126s</td> <td> 52.002s</td>
-										</tr>
-										<tr>
-											<td> LinBox</td> <td> 0.013s</td> <td> 0.053s</td> <td> 0.398s</td> <td> 2.552s</td>
-										</tr>
-										<tr >
-											<td > speedup </td> <td class="Fastest"> 25.46</td> <td class="Fastest"> 16,71</td> <td class="Fastest" > 10.36</td> <td class="Fastest">20.37 </td>
-										</tr>
-									</tbody>
-								</table>
-							</td>
-							<td>
-								<table border="1" cellpadding="1" cellspacing="1" class="PerformanceTable" >
-									<caption>
-										<b>Characteristic Polynomial</b>
-									</caption>
-									<thead>
-										<tr class="Header" style="text-align: center;">
-											<td> n </td> <td>20 </td> <td>40 </td> <td>80</td> <td>160</td>
-										</tr>
-									</thead>
-									<tbody>
-										<tr>
-											<td> Maple </td> <td> 0.121s</td> <td>2.223s</td> <td> 40.434s</td> <td> 906.416s</td>
-										</tr>
-										<tr>
-											<td> LinBox</td> <td> 0.007s</td> <td> 0.018s</td> <td> 0.143s</td> <td> 1.336s</td>
-										</tr>
-										<tr >
-											<td > speedup </td> <td class="Fastest"> 17.28</td> <td class="Fastest"> 123.50</td> <td class="Fastest" > 282.75</td> <td class="Fastest">678.45 </td>
-										</tr>
-									</tbody>
-								</table>
-							</td>
-						</tr>
-					</table>
+						<!--
+						This is an interface between the LinBox library of
+						functions and utilities for the Maple computer algebra
+						system.  It allows you to call LinBox functions from a
+						Maple session.  It is currently under development by Rich
+						Seagraves at the University of Delaware.  Any ideas or
+						suggestions are more than welcome.  The package is made up
+						of a small library that wraps LinBox functions, and a
+						Maple module called LinBox that contains all procedures
+						and external calling definitions.  A new version of the
+						interface is underway that does such things as providing
+						external storage of LinBox BlackBox and Vector types, as
+						well as access to other LinBox functions.
+						</p>
 
+						<h3>Requirements</h3>
 
-					<a name="bugs"></a>
-					<h3>Known bugs</h3>
-					<p>
-					Unfortunately, some bugs present in Maple API lead to problem in our interface.
-					In particular, you can find below a list of known bugs in our interface due to Maple bugs:
-					</p>
-					<ol>
-						<li> <b>Maple v9.0</b>: the <tt>with(LinBox);</tt> leads to an error in loading the module.
-						This is due to a non re-evaluation of the Maple define_external when loading module.
-						The only alternative, to my knowledge, to fix this problem for our LinBox interface is to replace the
-						<tt>with(LinBox);</tt> command with
-						<!-- <p> -->
-						<!-- <q>|+ no blockquote inside a li !! +| -->
-							<tt>read("LINBOX_PATH/lib/lb-maple.mpl");</tt><br>
-							<tt>Dev:-lbStart();</tt>.
-						<!-- </q> -->
-						<!-- </p> -->
-						Here again, the LINBOX_PATH variable should be replaced by the LinBox installation path.
-						This alternative should work but is not fully satisfying. Any idea would be helpful on this.
-						</li>
-						<li> <b>Maple v10.0 </b>: our interface is unfortunately suffering from a conversion error
-						in low level function of Maple API. In particular, the conversion of immediate negative integers
-						are bugged and always returns zero. Therefore, right now negative integer greater than <tt>-2^31+1</tt>
-						on (32 bits machine) or <tt>-2^63+1</tt> on (64 bits machine) are not supported. Hopefully, this problem should
-						be fixed in newer Maple release. We are working hard to find a good solution for this problem in our interface.
-						</li>
+						<p>
+						The interface requires the following packges:
+						</p>
 
-					</ol>
+						<ol>
+							<li>Maple v6.0 or greater</li>
+							<li>LinBox</li>
+							<li>GMP v3.2 or greater (for LinBox)</li>
+							<li>unix make utility</li>
+						</ol>
 
-					<!--
-					This is an interface between the LinBox library of
-					functions and utilities for the Maple computer algebra
-					system.  It allows you to call LinBox functions from a
-					Maple session.  It is currently under development by Rich
-					Seagraves at the University of Delaware.  Any ideas or
-					suggestions are more than welcome.  The package is made up
-					of a small library that wraps LinBox functions, and a
-					Maple module called LinBox that contains all procedures
-					and external calling definitions.  A new version of the
-					interface is underway that does such things as providing
-					external storage of LinBox BlackBox and Vector types, as
-					well as access to other LinBox functions.
-					</p>
+						<p>
+						It is recommended you have the following
+						</p>
 
-					<h3>Requirements</h3>
+						<ol>
+							<li>Maple v7.0 or later</li>
+							<li>g++ 3.0 or later (compiler on which this library was tested).</li>
+							<li>GNU make utility (gmake).</li>
+						</ol>
 
-					<p>
-					The interface requires the following packges:
-					</p>
+						<h3>Availability</h3>
 
-					<ol>
-						<li>Maple v6.0 or greater</li>
-						<li>LinBox</li>
-						<li>GMP v3.2 or greater (for LinBox)</li>
-						<li>unix make utility</li>
-					</ol>
+						<p>
+						The current release of this library can be obtained via
+						HTTP from <a href="http://www.eecis.udel.edu/~seagrave/MapleLB.tgz">http://www.eecis.udel.edu/~seagrave/MapleLB.tgz</a>.
+						The package can also be obtained from the LinBox team's
+						CVS server at linbox.pc.cis.udel.edu.  Contact <a
+							href="mailto:root@linbox.pc.cis.udel.edu">root@linbox.pc.cis.udel.edu</a>
+						for access to that server.  The bleeding edge version of
+						the package is availabe from that server under the unit
+						name MapleLB
+						</p>
 
-					<p>
-					It is recommended you have the following
-					</p>
+						<p>
+						At the moment, the package has been tested under SUN
+						Solaris and theoretically will only work on Unix variant
+						systems (sorry Window's users, my knowledge of .dll files
+						is lacking).  As more people download the package and test
+						it out, I can make it more robust.  If a Windows user
+						feels up to figuring out a window's build system, I would
+						be more than happy to include it.
+						</p>
 
-					<ol>
-						<li>Maple v7.0 or later</li>
-						<li>g++ 3.0 or later (compiler on which this library was tested).</li>
-						<li>GNU make utility (gmake).</li>
-					</ol>
+						<h3>Installation</h3>
 
-					<h3>Availability</h3>
+						<p>
+						The interface is pretty simple at this point, 1 include
+						file and a source file.  Thus the build system is little
+						more than a <tt>makefile</tt> that requires some editing.
+						You will need to know where Maple, GMP, and LinBox are
+						installed on your system.  Edit the <tt>makefile</tt> to
+						reflect these locations.  Once that's done, just type
+						</p>
 
-					<p>
-					The current release of this library can be obtained via
-					HTTP from <a href="http://www.eecis.udel.edu/~seagrave/MapleLB.tgz">http://www.eecis.udel.edu/~seagrave/MapleLB.tgz</a>.
-					The package can also be obtained from the LinBox team's
-					CVS server at linbox.pc.cis.udel.edu.  Contact <a
-						href="mailto:root@linbox.pc.cis.udel.edu">root@linbox.pc.cis.udel.edu</a>
-					for access to that server.  The bleeding edge version of
-					the package is availabe from that server under the unit
-					name MapleLB
-					</p>
+						<blockquote>
+							<p><tt>gmake install</tt></p>
+						</blockquote>
 
-					<p>
-					At the moment, the package has been tested under SUN
-					Solaris and theoretically will only work on Unix variant
-					systems (sorry Window's users, my knowledge of .dll files
-					is lacking).  As more people download the package and test
-					it out, I can make it more robust.  If a Windows user
-					feels up to figuring out a window's build system, I would
-					be more than happy to include it.
-					</p>
+						<p>
+						and the <tt>makefile</tt> should do the rest.
+						</p>
 
-					<h3>Installation</h3>
+						<h3>Usage</h3>
 
-					<p>
-					The interface is pretty simple at this point, 1 include
-					file and a source file.  Thus the build system is little
-					more than a <tt>makefile</tt> that requires some editing.
-					You will need to know where Maple, GMP, and LinBox are
-					installed on your system.  Edit the <tt>makefile</tt> to
-					reflect these locations.  Once that's done, just type
-					</p>
+						<p>
+						The <tt>makefile</tt> will generate a script file
+						containing the proper definition of the interface for your
+						system.  It is called linbox.mpl.  In Maple, type
+						'<tt>read "/directory/you/installed/to/linbox.mpl";</tt>'
+						at the prompt to get the module.  The package also
+						contains worksheet called <tt>demonstration.mws</tt> that
+						demonstrates the usage of the interface.
+						</p>
 
-					<blockquote>
-						<p><tt>gmake install</tt></p>
-					</blockquote>
+						<h3>Wow, this interface is horrible.  What's wrong with you? :-)</h3>
 
-					<p>
-					and the <tt>makefile</tt> should do the rest.
-					</p>
+						<p>
+						Hey, give me a break, this is a demonstration.  I've got
+						something better in the works.  If you think it's that
+						bad, why not send me some constructive criticism or help.
+						I always love help.
+						</p>
 
-					<h3>Usage</h3>
+						<h3>Contact</h3>
 
-					<p>
-					The <tt>makefile</tt> will generate a script file
-					containing the proper definition of the interface for your
-					system.  It is called linbox.mpl.  In Maple, type
-					'<tt>read "/directory/you/installed/to/linbox.mpl";</tt>'
-					at the prompt to get the module.  The package also
-					contains worksheet called <tt>demonstration.mws</tt> that
-					demonstrates the usage of the interface.
-					</p>
+						<p>
+						You can contact the author, Rich Seagraves, at <a
+							href="mailto:seagrave@cis.udel.edu">seagrave@cis.udel.edu</a>.
+						</p>
+						-->
+					</td>
+				</tr>
+				<!--
+				<tr>
+					<td colspan="2" id="BottomPart">
+						<hr>
 
-					<h3>Wow, this interface is horrible.  What's wrong with you? :-)</h3>
+						<a href="http://validator.w3.org/check/referer">
+							<img src="http://validator.w3.org/images/vh40"
+							alt="Valid HTML 4.0!">
+						</a>
 
-					<p>
-					Hey, give me a break, this is a demonstration.  I've got
-					something better in the works.  If you think it's that
-					bad, why not send me some constructive criticism or help.
-					I always love help.
-					</p>
+						<a href="http://jigsaw.w3.org/css-validator">
+							<img src="http://jigsaw.w3.org/css-validator/images/vcss.gif"
+							alt="Valid CSS!">
+						</a>
 
-					<h3>Contact</h3>
+						Page prepared by Rich Seagraves <a href="mailto:seagrave@cis.udel.edu">&lt;<i>seagrave@cis.udel.edu</i>&gt;</a>,<br>
+						Bradford Hovinen <a href="mailto:bghovinen@math.uwaterloo.ca">&lt;<i>bghovinen@math.uwaterloo.ca</i>&gt;</a>,<br>
+						Dave Saunders <a href="mailto:saunders@cis.udel.edu">&lt;<i>saunders@cis.udel.edu</i>&gt;</a><br>
+						This page's URL: <a href="http://www.linalg.org/maple-linbox.html">http://www.linalg.org/maple-linbox.html</a><br>
+						Page created: 8 August 2002<br>
+						Page last updated: 21 September 2002<br>
+					</td>
+				</tr>
+				-->
+				<tr>
+					<td colspan="2" id="BottomPart">
+						<hr>
 
-					<p>
-					You can contact the author, Rich Seagraves, at <a
-						href="mailto:seagrave@cis.udel.edu">seagrave@cis.udel.edu</a>.
-					</p>
-				</td>
-			</tr>
+						<a href="http://validator.w3.org/check/referer">
+							<img src="http://validator.w3.org/images/vh40"
+							alt="Valid HTML 4.0!">
+						</a>
 
-			<tr>
-				<td colspan="2" id="BottomPart">
-					<hr>
-
-					<a href="http://validator.w3.org/check/referer">
-						<img src="http://validator.w3.org/images/vh40"
-						alt="Valid HTML 4.0!">
-					</a>
-
-					<a href="http://jigsaw.w3.org/css-validator">
-						<img src="http://jigsaw.w3.org/css-validator/images/vcss.gif"
-						alt="Valid CSS!">
-					</a>
-
-					Page prepared by Rich Seagraves <a href="mailto:seagrave@cis.udel.edu">&lt;<i>seagrave@cis.udel.edu</i>&gt;</a>,<br>
-					Bradford Hovinen <a href="mailto:bghovinen@math.uwaterloo.ca">&lt;<i>bghovinen@math.uwaterloo.ca</i>&gt;</a>,<br>
-					Dave Saunders <a href="mailto:saunders@cis.udel.edu">&lt;<i>saunders@cis.udel.edu</i>&gt;</a><br>
-					This page's URL: <a href="http://www.linalg.org/maple-linbox.html">http://www.linalg.org/maple-linbox.html</a><br>
-					Page created: 8 August 2002<br>
-					Page last updated: 21 September 2002<br>
-					-->
-					<tr>
-						<td colspan="2" id="BottomPart">
-							<hr>
-
-							<a href="http://validator.w3.org/check/referer">
-								<img src="http://validator.w3.org/images/vh40"
-								alt="Valid HTML 4.0!">
-							</a>
-
-							<a href="http://jigsaw.w3.org/css-validator">
-								<img src="http://jigsaw.w3.org/css-validator/images/vcss.gif"
-								alt="Valid CSS!">
-							</a>
-							Page prepared by Pascal Giorgi <a href="mailto:pascal.giorgi@univ-perp.fr">&lt;<i>pascal.giorgi@univ-perp.fr</i>&gt;</a>,<br>
-							This page's URL: <a href="http://www.linalg.org/maple-linbox.html">http://www.linalg.org/maple-linbox.html</a><br>
-							Page created: 1 February 2007<br>
-							Page last updated: 1 February 2007<br>
-						</td>
-					</tr>
-				</td>
+						<a href="http://jigsaw.w3.org/css-validator">
+							<img src="http://jigsaw.w3.org/css-validator/images/vcss.gif"
+							alt="Valid CSS!">
+						</a>
+						Page prepared by Pascal Giorgi <a href="mailto:pascal.giorgi@univ-perp.fr">&lt;<i>pascal.giorgi@univ-perp.fr</i>&gt;</a>,<br>
+						This page's URL: <a href="http://www.linalg.org/maple-linbox.html">http://www.linalg.org/maple-linbox.html</a><br>
+						Page created: 1 February 2007<br>
+						Page last updated: 1 February 2007<br>
+					</td>
+				</tr>
 			</tr>
 		</table>
 	</body>
