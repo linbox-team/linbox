@@ -114,9 +114,11 @@
 					Maple module knowledge. This is achieved by adding the path of the LinBox-Maple module to the "libname" variable of Maple.
 					You can do this permanently by setting this variable in your <tt>.mapleinit</tt> file
 					located in your home directory (file can be created if it does not exist). This file should contain
+					</p>
 					<blockquote>
 						<p><tt> libname:="LINBOX_PATH/lib/LinBoxMaple", libname:</tt></p>
 					</blockquote>
+					<p>
 					where you would have replaced  <tt>LINBOX_PATH</tt> by the installation path of the LinBox library.
 					</p>
 					<a name="usage"></a>
@@ -135,7 +137,7 @@
 					<p>
 					For all these functions, you have access to either a computation over the integer or over a small prime field.
 					Here is some examples of use:
-					<blockquote left-margin="-10px">
+					<blockquote style="margin-left="-10px";">
 						<p>
 						<tt>A:=Matrix(100,rand(1..100));</tt><br/>
 						<tt>b:=Vector(100,rand(1..100));</tt><br/><br/>
