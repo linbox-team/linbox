@@ -3,7 +3,7 @@
 	<head>
 		<title>Exact computational linear algebra tools</title>
 		<link rel="stylesheet" href="linbox.css" title="linbox" type="text/css">
-		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<meta name="keywords" content="linear algebra computation, symbolic computation, exact computation, linbox, Smith form, GAP homology package, simplicial homology, Wiedemann, Lanczos">
 		<meta name="description" content="Home page for project LinBox, a library for high-performance exact linear algebraic computations.">
 		<link rel="icon" type="image/png" href="/favicon.png" >
@@ -278,12 +278,12 @@
 						This is due to a non re-evaluation of the Maple define_external when loading module.
 						The only alternative, to my knowledge, to fix this problem for our LinBox interface is to replace the
 						<tt>with(LinBox);</tt> command with
-						<p>
-						<q><!-- no blockquote inside a li !! -->
+						<!-- <p> -->
+						<!-- <q>|+ no blockquote inside a li !! +| -->
 							<tt>read("LINBOX_PATH/lib/lb-maple.mpl");</tt><br>
 							<tt>Dev:-lbStart();</tt>.
-						</q>
-						</p>
+						<!-- </q> -->
+						<!-- </p> -->
 						Here again, the LINBOX_PATH variable should be replaced by the LinBox installation path.
 						This alternative should work but is not fully satisfying. Any idea would be helpful on this.
 						</li><br>
