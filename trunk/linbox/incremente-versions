@@ -8,15 +8,15 @@
 set conf = configure.ac
 set ver  = Makefile.am
 
+#verbatim second argument of AC_INIT
+set verb = `grep ^AC_INIT $conf | cut -d',' -f2`
+#removes spaces and brackets
+set vern = `echo "$verb" | sed 's/ //g;s/\[//;s/\]//'`
+echo "Current version is $vern."
+
 echo -n "Increment library version ? (y/n)"
 set answ = $<
 if ("$answ" == "y") then
-	#verbatim second argument of AC_INIT
-	set verb = `grep ^AC_INIT $conf | cut -d',' -f2`
-	echo "$verb"
-	#removes spaces and brackets
-	set vern = `echo "$verb" | sed 's/ //g;s/\[//;s/\]//'`
-	echo "$vern"
 	set line = `fgrep -n  ^AC_INIT $conf  | cut -d':' -f1`  #gets the line
     set macro = `echo "$vern" | cut -d'.' -f1` #a version number is macro.minor.micro
     set minor = `echo "$vern" | cut -d'.' -f2`
@@ -74,11 +74,8 @@ if ("$answ" == "y") then
 		echo -n "Incrementing Makefile revision accordingly"
 		set tmpfile = `mktemp` #tempfile
 		set sedfile = `mktemp` #tempfile
-		echo $tmpfile
-		echo $sedfile
 		switch ($increm)
 			case 0:
-				echo 0 
 				echo -n "s/VERSION.*/VERSION=$macro.$minor.$pmicro/"  >> $sedfile
 				breaksw
 			case 1:
