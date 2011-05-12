@@ -85,7 +85,7 @@ namespace LinBox
 				}
 
 #pragma omp parallel for
-				for(long i=0;i<NN;++i) {
+				for(size_t i=0;i<NN;++i) {
 					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
 				}
 #pragma omp barrier
@@ -125,7 +125,7 @@ namespace LinBox
 				}
 
 #pragma omp parallel for
-				for(long i=0;i<NN;++i) {
+				for(size_t i=0;i<NN;++i) {
 					Iteration(ROUNDresidues[i], ROUNDdomains[i]);
 				}
 #pragma omp barrier
