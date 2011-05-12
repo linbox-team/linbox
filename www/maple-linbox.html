@@ -128,31 +128,31 @@
 					Hence, you get access to five solutions to exact linear algebra problem. namely
 					</p>
 					<ul>
-						<li><tt>lbDeterminant</tt> -> Determinant computation</li>
-						<li><tt>lbRank</tt> -> Rank computation </li>
-						<li><tt>lbMinpoly</tt> -> Minimal Polynomial computation </li>
-						<li><tt>lbCharpoly</tt> -> Characteristic Polynomial computation </li>
-						<li><tt>lbSolving</tt> -> Linear System solving </li>
+						<li><tt>lbDeterminant</tt> -&gt; Determinant computation</li>
+						<li><tt>lbRank</tt> -&gt; Rank computation </li>
+						<li><tt>lbMinpoly</tt> -&gt; Minimal Polynomial computation </li>
+						<li><tt>lbCharpoly</tt> -&gt; Characteristic Polynomial computation </li>
+						<li><tt>lbSolving</tt> -&gt; Linear System solving </li>
 					</ul>
 					<p>
 					For all these functions, you have access to either a computation over the integer or over a small prime field.
 					Here is some examples of use:
-					<blockquote style="margin-left="-10px";">
+					<blockquote style="margin-left : -10px;">
 						<p>
-						<tt>A:=Matrix(100,rand(1..100));</tt><br/>
-						<tt>b:=Vector(100,rand(1..100));</tt><br/><br/>
+						<tt>A:=Matrix(100,rand(1..100));</tt><br>
+						<tt>b:=Vector(100,rand(1..100));</tt><br><br>
 
-						<tt>#determinant of A</tt><br/>
-						<tt>d1:=lbDeterminant(A); # over the integer </tt><br/>
-						<tt>d2:=lbDeterminant(65521,A); # over GF(65521)</tt><br/><br/>
+						<tt>#determinant of A</tt><br>
+						<tt>d1:=lbDeterminant(A); # over the integer </tt><br>
+						<tt>d2:=lbDeterminant(65521,A); # over GF(65521)</tt><br><br/>
 
-						<tt>#characteristic polynomial of A</tt><br/>
-						<tt>P1:=lbCharpoly(A,'x'); # over the integer</tt><br/>
-						<tt>P2:=lbCharpoly(65521,A,'x'); # over GF(65521)</tt><br/><br/>
+						<tt>#characteristic polynomial of A</tt><br>
+						<tt>P1:=lbCharpoly(A,'x'); # over the integer</tt><br>
+						<tt>P2:=lbCharpoly(65521,A,'x'); # over GF(65521)</tt><br><br>
 
-						<tt># resolution of Ax=b</tt><br/>
-						<tt>x1:=lbSolving(A,b); # over the integer</tt><br/>
-						<tt>x2:=lbSolving(65521,A,b); # over GF(65521)</tt><br/><br/>
+						<tt># resolution of Ax=b</tt><br>
+						<tt>x1:=lbSolving(A,b); # over the integer</tt><br>
+						<tt>x2:=lbSolving(65521,A,b); # over GF(65521)</tt><br><br>
 						<tt> ...</tt>
 						</p>
 					</blockquote>
