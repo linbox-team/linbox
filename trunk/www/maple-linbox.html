@@ -137,6 +137,7 @@
 					<p>
 					For all these functions, you have access to either a computation over the integer or over a small prime field.
 					Here is some examples of use:
+					</p>
 					<blockquote style="margin-left : -10px;">
 						<p>
 						<tt>A:=Matrix(100,rand(1..100));</tt><br>
@@ -144,7 +145,7 @@
 
 						<tt>#determinant of A</tt><br>
 						<tt>d1:=lbDeterminant(A); # over the integer </tt><br>
-						<tt>d2:=lbDeterminant(65521,A); # over GF(65521)</tt><br><br/>
+						<tt>d2:=lbDeterminant(65521,A); # over GF(65521)</tt><br><br>
 
 						<tt>#characteristic polynomial of A</tt><br>
 						<tt>P1:=lbCharpoly(A,'x'); # over the integer</tt><br>
@@ -156,7 +157,6 @@
 						<tt> ...</tt>
 						</p>
 					</blockquote>
-					</p>
 
 
 
@@ -272,26 +272,26 @@
 					<p>
 					Unfortunately, some bugs present in Maple API lead to problem in our interface.
 					In particular, you can find below a list of known bugs in our interface due to Maple bugs:
+					</p>
 					<ol>
 						<li> <b>Maple v9.0</b>: the <tt>with(LinBox);</tt> leads to an error in loading the module.
 						This is due to a non re-evaluation of the Maple define_external when loading module.
 						The only alternative, to my knowledge, to fix this problem for our LinBox interface is to replace the
 						<tt>with(LinBox);</tt> command with
 						<blockquote>
-							<tt>read("LINBOX_PATH/lib/lb-maple.mpl");Dev:-lbStart();</tt>.
+							<p><tt>read("LINBOX_PATH/lib/lb-maple.mpl");Dev:-lbStart();</tt>.</p>
 						</blockquote>
 						Here again, the LINBOX_PATH variable should be replaced by the LinBox installation path.
 						This alternative should work but is not fully satisfying. Any idea would be helpful on this.
-						</li><br/>
+						</li><br>
 						<li> <b>Maple v10.0 </b>: our interface is unfortunately suffering from a conversion error
 						in low level function of Maple API. In particular, the conversion of immediate negative integers
 						are bugged and always returns zero. Therefore, right now negative integer greater than <tt>-2^31+1</tt>
 						on (32 bits machine) or <tt>-2^63+1</tt> on (64 bits machine) are not supported. Hopefully, this problem should
 						be fixed in newer Maple release. We are working hard to find a good solution for this problem in our interface.
-						</li><br/>
+						</li><br>
 
 					</ol>
-					</p>
 
 					<!--
 					This is an interface between the LinBox library of
