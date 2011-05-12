@@ -101,7 +101,7 @@
 					you have to specify the installation directory of Maple to the configure script with the option <tt>--with-maple</tt>.
 					An example of installation enabling LinBox-Maple interface will look like:
 					<blockquote>
-						<p><tt>./configure --with-maple=Maple_installation_path --enable-shared</p></tt>
+						<p><tt>./configure --with-maple=Maple_installation_path --enable-shared</tt></p>
 					</blockquote>
 					The flag <tt>--enable-shared</tt> is mandatory to enable the compilation of LinBox-Maple interface.
 					Due to the heaviness of the generated library, you can turn off the static compilation of LinBox to save
@@ -115,7 +115,7 @@
 					You can do this permanently by setting this variable in your <tt>.mapleinit</tt> file
 					located in your home directory (file can be created if it does not exist). This file should contain
 					<blockquote>
-						<tt> libname:="LINBOX_PATH/lib/LinBoxMaple", libname:</tt>
+						<p><tt> libname:="LINBOX_PATH/lib/LinBoxMaple", libname:</tt></p>
 					</blockquote>
 					where you would have replaced  <tt>LINBOX_PATH</tt> by the installation path of the LinBox library.
 					</p>
@@ -124,6 +124,7 @@
 					<p>
 					You can access the Linbox-Maple functionalities in your Maple session in loading the LinBox Module with the command line <tt>with(LinBox);</tt>
 					Hence, you get access to five solutions to exact linear algebra problem. namely
+					</p>
 					<ul>
 						<li><tt>lbDeterminant</tt> -> Determinant computation</li>
 						<li><tt>lbRank</tt> -> Rank computation </li>
@@ -131,9 +132,11 @@
 						<li><tt>lbCharpoly</tt> -> Characteristic Polynomial computation </li>
 						<li><tt>lbSolving</tt> -> Linear System solving </li>
 					</ul>
+					<p>
 					For all these functions, you have access to either a computation over the integer or over a small prime field.
 					Here is some examples of use:
 					<blockquote left-margin="-10px">
+						<p>
 						<tt>A:=Matrix(100,rand(1..100));</tt><br/>
 						<tt>b:=Vector(100,rand(1..100));</tt><br/><br/>
 
@@ -149,6 +152,7 @@
 						<tt>x1:=lbSolving(A,b); # over the integer</tt><br/>
 						<tt>x2:=lbSolving(65521,A,b); # over GF(65521)</tt><br/><br/>
 						<tt> ...</tt>
+						</p>
 					</blockquote>
 					</p>
 
