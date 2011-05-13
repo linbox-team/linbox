@@ -38,7 +38,12 @@ BEG="\033[1;32m * \033[0m"
 #########
 
 die() {
-	echo -e "\n\033[1;31m * \033[0mfailed" ;   
+	echo -ne "\n\033[1;31m * \033[0mfailed" ;   
+	if [ -n $1 ] ; then
+		echo " ($1)"
+	else 
+		echo ""
+	fi
 	exit -1 ;  
 }
 
