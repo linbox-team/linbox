@@ -344,7 +344,7 @@ namespace LinBox
 		// Make an m x m lambda-sparse matrix, c.f. Mulders (2000)
 		SparseMatrix<Field> *makeLambdaSparseMatrix (size_t m);
 
-		WiedemannTraits _traits;
+		WiedemannTraits                      _traits;
 		const Field                         &_F;
 		typename Field::RandIter             _randiter;
 		VectorDomain<Field>                  _VD;

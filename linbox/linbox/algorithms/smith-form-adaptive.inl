@@ -63,7 +63,7 @@ namespace LinBox
 	{
 		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 
-		int order = A. rowdim() < A. coldim() ? A. rowdim() : A. coldim();
+		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		linbox_check ((s. size() >= (unsigned long)order) && (p > 0) && ( e >= 0));
 		if (e == 0) return;
 
@@ -112,7 +112,8 @@ namespace LinBox
 			typedef Modular<int32_t> Field;
 			typedef DenseMatrix<Field> FMatrix;
 			MatrixRank<typename Matrix::Field, Field> MR;
-			Field F(p); FMatrix A_local(A, F);
+			Field F((unsigned long)p);
+			FMatrix A_local(A, F);
 			long rank = MR. rankIn (A_local);
 
 			std::vector <integer>::iterator s_p;
@@ -124,9 +125,12 @@ namespace LinBox
 		}
 		else {
 			report << "      Compute local smith at " << p <<'^' << e << " using PIRModular<int32_t>\n";
-			long m = 1; int i = 0; for (i = 0; i < e; ++ i) m *= p;
+			long m = 1;
+			int i = 0;
+			for (i = 0; i < e; ++ i)
+				m *= p;
 			typedef PIRModular<int32_t> PIR;
-			PIR R(m);
+			PIR R((unsigned int)m);
 			DenseMatrix <PIR> A_local(R, A.rowdim(), A.coldim());
 			SmithFormLocal <PIR> SF;
 			std::list <PIR::Element> l;
@@ -149,7 +153,7 @@ namespace LinBox
 	{
 
 		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
-		int order = A. rowdim() < A. coldim() ? A. rowdim() : A. coldim();
+		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		linbox_check ((s. size() >= (unsigned long) order) && (p > 0) && ( e >= 0));
 		integer T; T = order; T <<= 20; T = pow (T, (int) sqrt((double)order));
 		NTL::ZZ m;  NTL::conv(m, 1); int i = 0; for (i = 0; i < e; ++ i) m *= p;
@@ -212,7 +216,7 @@ namespace LinBox
 		//....
 		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation the k-smooth part of the invariant factors starts(via local and rank):" << std::endl;
-		int order = A. rowdim() < A. coldim() ? A. rowdim() : A. coldim();
+		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		linbox_check (s. size() >= (unsigned long)order);
 		std::vector<long>::const_iterator sev_p; const long* prime_p; std::vector<integer>::iterator s_p;
 		std::vector<integer> local(order); std::vector<integer>::iterator local_p;
@@ -227,7 +231,8 @@ namespace LinBox
 			int extra = 1;
 			do {
 
-				if ((*prime_p == 2) && (*sev_p < 32)) extra = 32 - *sev_p;
+				if ((*prime_p == 2) && (*sev_p < 32))
+					extra =  32 -(int) *sev_p;
 				integer m = 1;
 				for (int i = 0; i < *sev_p + extra; ++ i) m *= * prime_p;
 				report << "   Compute the local smith form mod " << *prime_p <<"^" << *sev_p + extra << std::endl;
@@ -256,7 +261,7 @@ namespace LinBox
 
 		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Compuation of the k-rough part f the invariant factors starts(via EGV+ or Iliopolous):\n";
-		int order = A. rowdim() < A. coldim() ? A. rowdim() : A. coldim();
+		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		integer T; T = order; T <<= 20; T = pow (T, (int) sqrt((double)order));
 		linbox_check ((s. size() >= (unsigned long)order) && (m > 0));
 		if (m == 1)
@@ -323,7 +328,7 @@ namespace LinBox
 		//....
 		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation the local smith form at each possible prime:\n";
-		int order = A. rowdim() < A. coldim() ? A. rowdim() : A. coldim();
+		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		linbox_check (s. size() >= (unsigned long)order);
 		std::vector<long>::const_iterator sev_p; const long* prime_p; std::vector<integer>::iterator s_p;
 		std::vector<integer> local(order); std::vector<integer>::iterator local_p;
@@ -495,7 +500,7 @@ namespace LinBox
 		report << "Computation of the invariant factors starts (via an adaptive alg):" << std::endl;
 
 		// compute the rank over a random prime field.
-		int order = A. rowdim() < A. coldim() ? A. rowdim() : A. coldim();
+		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		report << "Computation of the rank starts:\n";
 		typedef typename DenseMatrix<IRing>::Field Ring;
 		unsigned long r;
@@ -510,7 +515,7 @@ namespace LinBox
 		typedef Modular<int> Field;
 		integer Val; Field::Element v; unsigned long degree;
 		RandomPrimeIterator rg ((int)(log( (double)(FieldTraits<Field>::maxModulus()) ) / M_LN2 - 2));
-		Field F (*rg);
+		Field F ((unsigned long)*rg);
 		typename MatrixHomTrait<DenseMatrix<IRing>, Field>::value_type Ap(F,A.rowdim(),A.coldim());
 		MatrixHom::map (Ap, A, F);
 		Valence::one_valence (v, degree, Ap);

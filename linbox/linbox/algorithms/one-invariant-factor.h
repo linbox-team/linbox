@@ -179,9 +179,9 @@ namespace LinBox
 				}
 				*/
 				// Always use LAR please refer ISSAC'04 paper by BDS and ZW
-				randomMatrix.randomMatrix(L, r, i, A.rowdim());
+				randomMatrix.randomMatrix(L, r, i, (int)A.rowdim());
 
-				randomMatrix.randomMatrix(R, r, A.coldim(), i);
+				randomMatrix.randomMatrix(R, r, (int)A.coldim(), i);
 
 				compose.compose(LAR, *L, A, *R);
 
@@ -245,8 +245,8 @@ namespace LinBox
 			for (count =0; count < threshold; ++ count) {
 				r.assign (prev, oif); r. assign (p_bonus, bonus);
 				// Always use LAR please refer ISSAC'04 papre by BDS and ZW
-				randomMatrix.randomMatrix(L, r, i, A.rowdim());
-				randomMatrix.randomMatrix(R, r, A.coldim(), i);
+				randomMatrix.randomMatrix(L, r, i, (int)A.rowdim());
+				randomMatrix.randomMatrix(R, r, (int)A.coldim(), i);
 				compose.compose(LAR, *L, A, *R);
 				lif.lastInvariantFactor_Bonus(tmp_i, bonus, *LAR, PrimeL);
 

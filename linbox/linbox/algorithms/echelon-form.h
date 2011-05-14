@@ -104,7 +104,7 @@ namespace LinBox
 			for (size_t i=0; i<rank;++i)
 				for (size_t j=0;j<n;++j)
 					E.setEntry(i,j, At.getEntry(j,i));
-			return rank;
+			return (int)rank;
 		}
 
 
@@ -231,7 +231,7 @@ namespace LinBox
 			// permute L such that L<-Q.E
 			_BMD.mulin_right(Q,E);
 
-			return rank;
+			return (int)rank;
 		}
 
 		template<class Matrix>

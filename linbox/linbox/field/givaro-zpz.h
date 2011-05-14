@@ -72,8 +72,7 @@ namespace LinBox
 	 *  These classes allow to construct only finite field with a prime modulus.
 	 */
 
-	template <class TAG> class GivaroZpz : public ::Givaro::ZpzDom<TAG>, public FieldInterface
-	{
+	template <class TAG> class GivaroZpz : public ::Givaro::ZpzDom<TAG>, public FieldInterface {
 
 	private:
 
@@ -145,7 +144,7 @@ namespace LinBox
 		 */
 		integer &characteristic (integer &c) const
 		{
-		       	return c = integer (::Givaro::ZpzDom<TAG>::size ());
+			return c = integer (::Givaro::ZpzDom<TAG>::size ());
 		}
 
 		long characteristic() const
@@ -176,18 +175,18 @@ namespace LinBox
 		 */
 		integer &convert (integer &x, const Element &y) const
 		{
-		       	return x = integer (y);
+			return x = integer (y);
 		}
 
 		double &convert (double& x, const Element& y) const
 		{
-		       	return x = static_cast<double>(y);
+			return x = static_cast<double>(y);
 		}
 
 		template<class Type>
 		Type &convert (Type& x, const Element& y) const
 		{
-		       	return x = static_cast<Type>(y);
+			return x = static_cast<Type>(y);
 		}
 
 
@@ -209,6 +208,22 @@ namespace LinBox
 			return x;
 		}
 
+		Element &init (Element &x , const long &y ) const
+		{
+			return ::Givaro::ZpzDom<TAG>::init (x, y ) ;
+
+		}
+		Element &init (Element &x , const int &y ) const
+		{
+			return ::Givaro::ZpzDom<TAG>::init (x, y ) ;
+
+		}
+
+		Element &init (Element &x , const unsigned long &y ) const
+		{
+			return ::Givaro::ZpzDom<TAG>::init (x, y ) ;
+
+		}
 
 		Element &init (Element &x , const double &y ) const
 		{
@@ -340,13 +355,20 @@ namespace LinBox
 
 		FieldAXPY (const Field &F) :
 			_F (F) , Corr(uint32_t(-1) % (uint32_t)F.characteristic() +1)
-		{ _y = 0; }
+		{
+			_y = 0;
+		}
 		FieldAXPY (const FieldAXPY &faxpy) :
 			_F (faxpy._F), _y (0) , Corr(faxpy.Corr)
 		{}
 
 		FieldAXPY<GivaroZpz< ::Givaro::Std16> > &operator = (const FieldAXPY &faxpy)
-		{ _F = faxpy._F; _y = faxpy._y; Corr = faxpy.Corr; return *this; }
+		{
+			_F = faxpy._F;
+			_y = faxpy._y;
+			Corr = faxpy.Corr;
+			return *this;
+		}
 
 		inline uint32_t& mulacc (const Element &a, const Element &x)
 		{
@@ -369,17 +391,23 @@ namespace LinBox
 				return _y;
 		}
 
-		inline Element &get (Element &y) {
+		inline Element &get (Element &y)
+		{
 			_y %= (uint32_t) _F.characteristic();
-			if ((int32_t) _y < 0) _y += _F.characteristic();
+			if ((int32_t) _y < 0)
+				_y += (Element) _F.characteristic();
 			y = (uint16_t) _y;
 			return y;
 		}
 
 		inline FieldAXPY &assign (const Element y)
-		{ _y = y; return *this; }
+		{
+			_y = y;
+			return *this;
+		}
 
-		inline void reset() {
+		inline void reset()
+		{
 			_y = 0;
 		}
 

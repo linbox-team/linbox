@@ -171,7 +171,7 @@ namespace LinBox
 			}
 
 
-			oif.oneInvariantFactor(sf[Ar - 1], A, Ar, PrimeL);
+			oif.oneInvariantFactor(sf[Ar - 1], A, (int)Ar, PrimeL);
 
 			report << "Biggest invariant factor = ";
 
@@ -180,7 +180,7 @@ namespace LinBox
 			report << '\n' << std::flush;
 
 			// binary search smith form
-			smithFormBinarySearch (sf, A, 1, Ar, PrimeL);
+			smithFormBinarySearch (sf, A, 1, (int)Ar, PrimeL);
 
 			report << "Smith Form:[ ";
 
@@ -244,7 +244,7 @@ namespace LinBox
 			// filter out primes in PRIME from lif
 			for ( Prime_p = PrimeL.begin(); Prime_p != PrimeL.end(); ++ Prime_p) {
 
-				r.init (p, *Prime_p);
+				r.init (p,(unsigned long) *Prime_p);
 
 				do {
 					r.quoRem(quo,rem,fif,p);

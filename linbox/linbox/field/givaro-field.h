@@ -99,9 +99,13 @@ namespace LinBox
 
 		// ----- random generators
 		template<class RandIter> Rep& random(RandIter& g, Rep& r) const
-		{ return this->init(r,g()) ; }
+		{
+			return this->init(r,g()) ;
+		}
 		template<class RandIter> Rep& random(RandIter& g, Rep& r, long s) const
-		{ return this->init(r,g()) ; }
+		{
+			return this->init(r,g()) ;
+		}
 		template<class RandIter> Rep& random(RandIter& g, Rep& r, const Rep& b) const
 		{ return this->init(r,g()) ; }
 		template<class RandIter> Rep& nonzerorandom(RandIter& g, Rep& r) const

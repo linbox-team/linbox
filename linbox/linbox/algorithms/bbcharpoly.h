@@ -60,24 +60,24 @@ namespace LinBox
 				if (dep->dep != NULL){
 					FactorMult<FieldPoly,IntPoly>*curr = dep;
 					int k = dep->update (n,goal)+1;
-					int d = (dep->fieldP->size()-1)/k;
-					int tmp = (n-dep->multiplicity) / d;
+					int d = ((int)dep->fieldP->size()-1)/k;
+					int tmp = (int)(n-dep->multiplicity) / d;
 					int i = k-1;
 					while (curr->dep!=NULL){
 						curr = curr->dep;
-						tmp-=i*curr->multiplicity;
+						tmp-=i*(int)curr->multiplicity;
 						--i;
 					}
-					tmp = tmp/k + (multiplicity - dep->multiplicity) / d;
+					tmp = tmp/k + (int)(multiplicity - dep->multiplicity) / d;
 					dep->multiplicity = tmp ;
 					//std::cerr<<"Updating "<<*dep->fieldP<<" --> mul = "<<tmp<<std::endl;
 
-					*goal -= tmp * (dep->fieldP->size()-1);
+					*goal -= tmp * ((int)dep->fieldP->size()-1);
 					return k;
 				}
 				else{
-					int tmp =  (n - 2 * dep->multiplicity + multiplicity) / (dep->fieldP->size()-1);
-					*goal -= tmp * (dep->fieldP->size()-1);
+					int tmp =  (int)((n - 2 * dep->multiplicity + multiplicity) / (dep->fieldP->size()-1));
+					*goal -= tmp * ((int)dep->fieldP->size()-1);
 					//std::cerr<<"Updating (leaf)"<<*dep->fieldP<<" --> mul = "<<tmp<<std::endl;
 					dep->multiplicity = tmp;
 					return 1;
@@ -162,7 +162,7 @@ namespace LinBox
 			Field F(*primeg);
 
 			/* Building the structure of factors */
-			int goal = n;
+			int goal =(int) n;
 
 			for (size_t i = 0; i < intFactors.size(); ++i) {
 				unsigned long deg =  (intFactors[i]->size()-1);
@@ -186,7 +186,7 @@ namespace LinBox
 					delete tmp;
 					--factnum;
 					FFM->multiplicity = 1; // The last factor is present in minpoly
-					goal -= deg-intFactors[i]->size()+1;
+					goal -= (int)deg-(int)intFactors[i]->size()+1;
 					leadingBlocks.insert (std::pair<FM*,bool>(FFM,false));
 				}
 				else {
@@ -195,7 +195,7 @@ namespace LinBox
 					FFM = new FM (fp,intFactors[i],1,NULL);
 					factCharPoly.insert (std::pair<size_t, FM* > (intFactors[i]->size()-1, FFM));
 					leadingBlocks.insert (std::pair<FM*,bool>(FFM,false));
-					goal -= deg;
+					goal -= (int)deg;
 				}
 			}
 
@@ -331,7 +331,7 @@ namespace LinBox
 			else if ( goal > 0 ){
 				for (size_t i=i0; i<ufv.size(); ++i){
 					ufv[i].multiplicity++;
-					trials( sols, goal - ufv[i].fieldP->size()+1, ufv, i );
+					trials( sols, goal - (int)ufv[i].fieldP->size()+1, ufv, (int)i );
 					ufv[i].multiplicity--;
 				}
 			}
@@ -417,7 +417,7 @@ namespace LinBox
 						rank (r, PA, M) ;
 						//std::cerr<<"extra factor : "<<*currFFM->fieldP<<" --> "<<r<<std::endl;
 
-						int tmp = currFFM->multiplicity;
+						int tmp = (int)currFFM->multiplicity;
 						currFFM->multiplicity = r;
 						currFFM->update (n,&goal);
 						currFFM->multiplicity = tmp;
@@ -428,20 +428,20 @@ namespace LinBox
 					if (currFFM->dep != NULL){
 
 						int k = currFFM->update (n,&goal)+1;
-						int d = (lead_it->first->fieldP->size()-1) / k;
+						int d = (int)(lead_it->first->fieldP->size()-1) / k;
 
-						lbm = (n-lead_it->first->multiplicity) / d;
+						lbm = (int)(n-lead_it->first->multiplicity) / d;
 						currFFM = currFFM->dep;
 						do{
-							lbm -= currFFM->multiplicity * (currFFM->fieldP->size()-1);
+							lbm -= (int)(currFFM->multiplicity * (currFFM->fieldP->size()-1));
 							currFFM = currFFM->dep;
 						} while (currFFM!=NULL);
 						lbm /= k;
-						goal -= (lbm-1)*(lead_it->first->fieldP->size()-1);
+						goal -= (lbm-1)*((int)lead_it->first->fieldP->size()-1);
 					}
 					else {
-						lbm = (n-lead_it->first->multiplicity) / (lead_it->first->fieldP->size()-1);
-						goal -=  (lbm-1)*(lead_it->first->fieldP->size()-1);
+						lbm = (int)((n-lead_it->first->multiplicity) / ((int)lead_it->first->fieldP->size()-1));
+						goal -=  (lbm-1)*((int)lead_it->first->fieldP->size()-1);
 					}
 					lead_it->first->multiplicity = lbm;
 				}

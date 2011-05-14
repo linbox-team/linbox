@@ -316,7 +316,7 @@ namespace LinBox
 		 * @param m Number of vectors to return (0 for unlimited)
 		 * @param seed
 		 */
-		RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0, int seed=time (NULL));
+		RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0, int seed=(int)time (NULL));
 
 		/** Get next element
 		 * @param v Vector into which to generate random vector
@@ -363,10 +363,10 @@ namespace LinBox
 		RandomSparseStream (const Field &F, double p, size_t n, size_t m = 0) :
 			_F (F), _r1 (F), _r (F, _r1),
 			_n (n), _p (p), _m (m), _j (0),
-			MT (time (NULL))
+			MT ((uint32_t)time (NULL))
 		{ linbox_check ((p >= 0.0) && (p <= 1.0)); _F.init (_zero, 0); }
 
-		RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0, int seed=time (NULL)) :
+		RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0, int seed=(int)time (NULL)) :
 			_F (F), _r1 (r), _r (F, _r1), _n (n), _p (p), _m (m), _j (0),
 			MT (seed)
 		{ linbox_check ((p >= 0.0) && (p <= 1.0)); _F.init (_zero, 0); }
@@ -422,10 +422,10 @@ namespace LinBox
 
 		RandomSparseStream (const Field &F, double p, size_t n, size_t m = 0) :
 			_F (F), _r1 (F), _r (F, _r1), _n (n), _m (m), _j (0),
-			MT (time (NULL))
+			MT ((uint32_t)time (NULL))
 		{ setP (p); }
 
-		RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0, int seed=time (NULL)) :
+		RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0, int seed=(int)time (NULL)) :
 			_F (F), _r1 (r), _r (F, _r1), _n (n), _p (p), _m (m), _j (0),
 			MT (seed)
 		{ setP (p); }
@@ -499,10 +499,10 @@ namespace LinBox
 		RandomSparseStream (const Field &F, double p, size_t n, size_t m = 0) :
 			_F (F), _r1 (F), _r (F, _r1),
 			_n (n), _k ((long) (p * n)), _j (0), _m (m),
-			MT (time (NULL))
+			MT ((uint32_t)time (NULL))
 		{}
 
-		RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0, int seed=time (NULL)) :
+		RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0, int seed=(int)time (NULL)) :
 			_F (F), _r1 (F), _r (F, _r1), _n (n), _k ((long) (p * n)), _j (0), _m (m),
 			MT (seed)
 		{}
@@ -557,10 +557,10 @@ namespace LinBox
 
 		RandomSparseStream (const Field &F, double p, size_t n, size_t m = 0) :
 			_F (F), _r1 (F), _r (F, _r1), _n (n), _m (m), _j (0),
-			MT (time (NULL))
+			MT ((uint32_t)time (NULL))
 		{ setP (p); }
 
-		RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0, int seed=time (NULL)) :
+		RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0, int seed=(int)time (NULL)) :
 			_F (F), _r1 (r), _r (F, _r1), _n (n), _m (m), _j (0),
 			MT (seed)
 		{ setP (p); }

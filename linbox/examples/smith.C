@@ -201,10 +201,12 @@ int main(int argc, char* argv[])
 			List L;
 			for ( std::vector<std::pair<size_t,size_t> >::iterator
 			      p = local.begin(); p != local.end(); ++p) {
-				for(size_t i = 0; i < p->first; ++i) L.push_back(p->second);
+				for(size_t i = 0; i < (size_t) p->first; ++i)
+					L.push_back((Field::Element)p->second);
 			}
 			size_t m = (B.rowdim() > B.coldim() ? B.coldim() : B.rowdim());
-			for (size_t i = L.size(); i < m; ++i) L.push_back(0);
+			for (size_t i = L.size(); i < m; ++i)
+				L.push_back(0);
 
 			list<pair<Field::Element, size_t> > pl;
 
@@ -485,14 +487,14 @@ void scramble(DenseMatrix<Ring>& M)
 
 	Ring R = M.field();
 
-	int N,n = M.rowdim(); // number of random basic row and col ops.
+	int N,n = (int)M.rowdim(); // number of random basic row and col ops.
 	N = n;
 
 	for (int k = 0; k < N; ++k) {
 
-		int i = rand()%M.rowdim();
+		int i = rand()%(int)M.rowdim();
 
-		int j = rand()%M.coldim();
+		int j = rand()%(int)M.coldim();
 
 		if (i == j) continue;
 
@@ -596,7 +598,7 @@ struct pwrlist
 	}
 	integer operator[](int e)
 	{
-		for (int i = m.size(); i <= e; ++i) m.push_back(m[1]*m[i-1]);
+		for (int i = (int)m.size(); i <= e; ++i) m.push_back(m[1]*m[i-1]);
 		return m[e];
 	}
 };

@@ -403,7 +403,7 @@ namespace LinBox
 		}
 
 		inline Element& get (Element &y) {
-			y =_y % (uint64_t) _F.modulus;
+			y = Element(_y % (uint64_t) _F.modulus);
 			return y;
 		}
 
@@ -453,7 +453,7 @@ namespace LinBox
 			}
 
 			y %= (uint64_t) _F.modulus;
-			return res = y;
+			return res = Element(y);
 
 		}
 

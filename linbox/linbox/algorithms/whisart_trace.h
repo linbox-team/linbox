@@ -179,7 +179,9 @@ namespace LinBox
 		    it != A.rawIndexedEnd(); ++it) {
 
 			typename Field::Element tmp,e,i;
-			F.init(tmp);F.init(e);F.init(i);
+			F.init(tmp,0UL);
+			F.init(e,0UL);
+			F.init(i,0UL);
 
 			F.mul(tmp, it.value(),it.value());
 			ExtD.getEntry(e, it.colIndex(),it.colIndex());

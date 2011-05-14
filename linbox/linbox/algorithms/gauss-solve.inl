@@ -63,8 +63,8 @@ namespace LinBox
 		typename Field::Element det;
 		unsigned long rank;
 		Matrix L(_F, A.rowdim(), A.rowdim());
-		Permutation<Field> Q(A.rowdim(),_F);
-		Permutation<Field> P(A.coldim(),_F);
+		Permutation<Field> Q((int)A.rowdim(),_F);
+		Permutation<Field> P((int)A.coldim(),_F);
 
 		this->QLUPin(rank, det, Q, L, A, P, A.rowdim(), A.coldim() );
 
