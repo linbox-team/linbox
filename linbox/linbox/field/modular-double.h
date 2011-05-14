@@ -123,7 +123,8 @@ namespace LinBox
 		      Element &init (Element &x, const integer &y) const
 		      {
 			      x = (Element)(y%lmodulus);
-			      if (x<0) x+= lmodulus ;
+			      if (x<0)
+				      x+= (double)lmodulus ;
 			      linbox_check(x < lmodulus);
 			      linbox_check(!(x < 0));
 			      return x  ;

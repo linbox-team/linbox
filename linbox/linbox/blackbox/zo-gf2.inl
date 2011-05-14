@@ -288,9 +288,9 @@ namespace LinBox
 				 LightContainer<LightContainer<size_t> >::const_iterator rowend,
 				 size_t colidx,
 				 LightContainer<size_t>::const_iterator colbeg) :
-			_rowbeg( LightContainer<LightContainer<size_t> >::iterator(rowbeg) ),
-			_rowend( LightContainer<LightContainer<size_t> >::iterator(rowend) ),
-			_colbeg( LightContainer<size_t>::iterator(colbeg) ),
+			_rowbeg( LightContainer<LightContainer<size_t> >::const_iterator(rowbeg) ),
+			_rowend( LightContainer<LightContainer<size_t> >::const_iterator(rowend) ),
+			_colbeg( LightContainer<size_t>::const_iterator(colbeg) ),
 			_row(rowidx),
 			_col(colidx)
 		{
@@ -364,8 +364,8 @@ namespace LinBox
 			return std::pair<size_t,size_t>(_row, _col);
 		}
 	private:
-		LightContainer<LightContainer<size_t> >::iterator _rowbeg, _rowend;
-		LightContainer<size_t>::iterator _colbeg;
+		LightContainer<LightContainer<size_t> >::const_iterator _rowbeg, _rowend;
+		LightContainer<size_t>::const_iterator _colbeg;
 		size_t _row, _col;
 	};
 

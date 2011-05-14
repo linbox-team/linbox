@@ -139,7 +139,7 @@ namespace LinBox
 				num = rand_r (&s);
 
 				if (_size > 0) {
-					unsigned long tmp = _size;
+					int tmp = (int)_size;
 					num %= tmp;
 					den = 1L;
 				}

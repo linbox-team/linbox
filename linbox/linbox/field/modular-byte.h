@@ -193,28 +193,28 @@ namespace LinBox
 		inline Element &init (Element &x, const integer &y) const
 		{
 			x =(Element)((int16_t) (y % (long) (modulus)));
-			if (x < 0) x += modulus;
+			if (x < 0) x=Element(x+modulus);
 			return x;
 		}
 
 		inline Element& init(Element& x, int y =0) const
 		{
-			x = y % modulus;
-			if ( x < 0 ) x += modulus;
+			x = Element(y % int(modulus));
+			if ( x < 0 ) x=Element(x+modulus);
 			return x;
 		}
 
 		inline Element& init(Element& x, long y) const
 		{
-			x = y % modulus;
-			if ( x < 0 ) x += modulus;
+			x = Element(y % long(modulus));
+			if ( x < 0 ) x=Element(x+modulus);
 			return x;
 		}
 
 	inline Element& init(Element& x, long unsigned y) const
 		{
 			x = Element (y % lmodulus);
-			if ( x < 0 ) x += modulus;
+			if ( x < 0 ) x=Element(x+modulus);
 			return x;
 		}
 
@@ -242,7 +242,7 @@ namespace LinBox
 
 		inline Element &add (Element &x, const Element &y, const Element &z) const
 		{
-			x = y + z;
+			x = Element(y + z);
 			if ( (uint8_t)x >= modulus )
 				x =Element(( (uint8_t)x )- modulus);
 			return x;
@@ -250,8 +250,8 @@ namespace LinBox
 
 		inline Element &sub (Element &x, const Element &y, const Element &z) const
 		{
-			x = y - z;
-			if (x < 0) x += modulus;
+			x = Element(y - z);
+			if (x < 0) x=Element(x+modulus);
 			return x;
 		}
 
@@ -265,9 +265,9 @@ namespace LinBox
 
 
 			if (x >= modulus)
-				x -= modulus;
+				x=Element(x-modulus);
 			else if (x < 0)
-				x += modulus;
+				x=Element(x+modulus);
 
 			return x;
 		}
@@ -282,7 +282,7 @@ namespace LinBox
 		inline Element &neg (Element &x, const Element &y) const
 		{
 			if(y==0) return x=0;
-			else return x=modulus-y;
+			else return x=Element(modulus-y);
 		}
 
 		inline Element &inv (Element &x, const Element &y) const
@@ -294,7 +294,7 @@ namespace LinBox
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"InvMod: inverse undefined");
 #endif
 			if (x < 0)
-				return x += modulus;
+				return x=Element(x+modulus);
 			else
 				return x;
 		}
@@ -312,9 +312,9 @@ namespace LinBox
 
 
 			if (r >= modulus)
-				r -= modulus;
+				r=Element(r-modulus);
 			else if (x < 0)
-				r += modulus;
+				r=Element(r+modulus);
 
 			return r;
 
@@ -322,7 +322,7 @@ namespace LinBox
 
 		inline Element &addin (Element &x, const Element &y) const
 		{
-			x += y;
+			x = Element(x+y);
 			if ( ((uint8_t) x) >= modulus )
 				x = Element( ((uint8_t) x)-modulus );
 			return x;
@@ -330,8 +330,8 @@ namespace LinBox
 
 		inline Element &subin (Element &x, const Element &y) const
 		{
-			x -= y;
-			if (x < 0) x += modulus;
+			x = Element(x-y);
+			if (x < 0) x=Element(x+modulus);
 			return x;
 		}
 
@@ -348,7 +348,7 @@ namespace LinBox
 		inline Element &negin (Element &x) const
 		{
 			if (x == 0) return x;
-			else return x = modulus - x;
+			else return x = Element(modulus - x);
 		}
 
 		inline Element &invin (Element &x) const
@@ -368,9 +368,9 @@ namespace LinBox
 
 
 			if (r >= modulus)
-				r -= modulus;
+				r=Element(r-modulus);
 			else if (x < 0)
-				r += modulus;
+				r=Element(r+modulus);
 
 			return r;
 		}
@@ -385,7 +385,7 @@ namespace LinBox
 
 		static void XGCD(Element& d, Element& s, Element& t, Element a, Element b)
 		{
-			Element  u, v, u0, v0, u1, v1, u2, v2, q, r;
+			int32_t u, v, u0, v0, u1, v1, u2, v2, q, r;
 
 			Element aneg = 0, bneg = 0;
 
@@ -393,7 +393,7 @@ namespace LinBox
 #ifdef DEBUG
 				if (a < -LINBOX_MAX_INT8) throw PreconditionFailed(__func__,__FILE__,__LINE__,"XGCD: integer overflow");
 #endif
-				a = -a;
+				a = Element(-a);
 				aneg = 1;
 			}
 
@@ -401,7 +401,7 @@ namespace LinBox
 #ifdef DEBUG
 				if (b < -LINBOX_MAX_INT8) throw PreconditionFailed(__func__,__FILE__,__LINE__,"XGCD: integer overflow");
 #endif
-				b = -b;
+				b = (Element)-b;
 				bneg = 1;
 			}
 
@@ -428,9 +428,9 @@ namespace LinBox
 			if (bneg)
 				v1 = -v1;
 
-			d = u;
-			s = u1;
-			t = v1;
+			d = Element(u);
+			s = Element(u1);
+			t = Element(v1);
 		}
 
 	};
@@ -472,7 +472,7 @@ namespace LinBox
 
 		inline Element& get (Element &y)
 		{
-			y =_y % (uint64_t) _F.modulus;
+			y = Element(_y % (uint64_t) _F.modulus);
 			return y;
 		}
 

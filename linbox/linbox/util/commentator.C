@@ -417,7 +417,7 @@ namespace LinBox
 				messageClass._stream << std::endl;
 			else if (_show_progress && activity._len > 0) {
 				messageClass._stream << "  0%";
-				_last_line_len = strlen ("  0%");
+				_last_line_len = (int)strlen ("  0%");
 			}
 			else
 				_last_line_len = 0;
@@ -450,7 +450,7 @@ namespace LinBox
 					str.width (3);
 					str << floor (percent + 0.5) << '%' << std::ends;
 					old_len = _last_line_len;
-					_last_line_len = strlen (str.str ().c_str ());
+					_last_line_len = (int)strlen (str.str ().c_str ());
 					messageClass._stream << str.str ();
 					for (int i = 0; i < (int) (old_len - _last_line_len); i++)
 						messageClass._stream << ' ';
@@ -707,7 +707,7 @@ namespace LinBox
 				return EOF;
 		}
 
-		pbump (-n);
+		pbump((int)-n);
 		return 0;
 	}
 
@@ -745,7 +745,7 @@ namespace LinBox
 
 		_stream.flush ();
 
-		return n;
+		return int(n);
 	}
 
 #endif

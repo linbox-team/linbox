@@ -201,8 +201,8 @@ namespace LinBox
 			linbox_check(num. size() == (size_t)_lcontainer.size());
 			typedef Vector IVector;
 			typedef std::vector<IVector> LVector;
-			int n = num. size();
-			int len = _lcontainer. length();
+			int n   = (int)num. size();
+			int len = (int)_lcontainer. length();
 			Integer prime = _lcontainer.prime();//prime
 			LVector digits; //Store all p-adic digits
 			digits. resize (len); //reserve space for all digits
@@ -295,16 +295,14 @@ namespace LinBox
 					}
 
 					if (!_r. isZero (rem1)) {
-						int status;
-						status = _r.reconstructRational(tmp_num, tmp_den, c1, modulus, numbound, denbound);
+						int status = (int)_r.reconstructRational(tmp_num, tmp_den, c1, modulus, numbound, denbound);
 						if(status) {
 							_r. assign (c1_den, tmp_den); _r. assign (c1_num, tmp_num);
 						}
 					}
 
 					if (!_r. isZero (rem2)) {
-						int status;
-						status = _r.reconstructRational(tmp_num, tmp_den, c2, modulus, numbound, denbound);
+						int  status =(int)  _r.reconstructRational(tmp_num, tmp_den, c2, modulus, numbound, denbound);
 						if(status) {
 							_r. assign (c2_den, tmp_den); _r. assign (c2_num, tmp_num);
 						}
@@ -342,8 +340,7 @@ namespace LinBox
 				else if (_r. compare(abs_neg, numbound) < 0)
 					_r. assign (*num_p, neg_res);
 				else {
-					int status;
-					status = _r. reconstructRational(tmp_num, tmp_den, *res_p, modulus, numbound, denbound);
+					int status= (int) _r. reconstructRational(tmp_num, tmp_den, *res_p, modulus, numbound, denbound);
 					if (!status) {
 						std::cout << "ERROR in reconstruction ? (1)\n" << std::endl;
 #ifdef DEBUG_RR

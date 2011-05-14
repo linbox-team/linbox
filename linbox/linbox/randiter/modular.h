@@ -95,7 +95,7 @@ namespace LinBox
 			<< " and seed " << _seed << std::endl;
 
 			// Seed random number generator
-			srand (_seed);
+			srand ((unsigned)_seed);
 		}
 
 		/** Copy constructor.
@@ -226,7 +226,7 @@ namespace LinBox
 			if ((_size == 0) || (_size > double (c)))
 				_size = c;
 
-			_r.setSeed (_seed);
+			_r.setSeed ((uint32_t)_seed);
 		}
 
 		RandIter (const ModularBase<Element>::RandIter &r) :
@@ -244,8 +244,10 @@ namespace LinBox
 			return a = (Element)_r.randomIntRange (0, _size);
 		}
 		ElementAbstract &random (ElementAbstract &a)  const
-		{ return a = ElementEnvelope <Modular<Element> >
-			(_r.randomIntRange (0, _size)); }
+		{
+			return a = ElementEnvelope <Modular<Element> >
+			((Element)_r.randomIntRange (0, _size));
+		}
 
 	};
 
@@ -274,7 +276,7 @@ namespace LinBox
 			if ((_size == 0) || (_size > double (c)))
 				_size = c;
 
-			_r.setSeed (_seed);
+			_r.setSeed ((uint32_t)_seed);
 		}
 
 		RandIter (const ModularBase<Element>::RandIter &r) :
@@ -283,12 +285,19 @@ namespace LinBox
 
 		~RandIter () {}
 		RandIter &operator= (const RandIter &r)
-		{ _r = r._r; return *this; }
+		{
+			_r = r._r;
+			return *this;
+		}
 		Element &random (Element &a) const
-		{ return a = _r.randomIntRange (0, _size); }
+		{
+			return a = _r.randomIntRange (0, _size);
+		}
 		ElementAbstract &random (ElementAbstract &a) const
-		{ return a = ElementEnvelope <Modular<Element> >
-			(_r.randomIntRange (0, _size)); }
+		{
+			return a = ElementEnvelope <Modular<Element> >
+			(_r.randomIntRange (0, _size));
+		}
 
 	};
 
@@ -317,7 +326,7 @@ namespace LinBox
 			if ((_size == 0) || (_size > double (c)))
 				_size = c;
 
-			_r.setSeed (_seed);
+			_r.setSeed ((uint32_t)_seed);
 		}
 
 		RandIter (const ModularBase<Element>::RandIter &r) :
@@ -326,12 +335,19 @@ namespace LinBox
 
 		~RandIter () {}
 		RandIter &operator= (const RandIter &r)
-		{ _r = r._r; return *this; }
+		{
+			_r = r._r;
+			return *this;
+		}
 		Element &random (Element &a) const
-		{ return a = _r.randomIntRange (0, _size); }
+		{
+			return a = (Element)_r.randomIntRange (0, (uint32_t)_size);
+		}
 		ElementAbstract &random (ElementAbstract &a) const
-		{ return a = ElementEnvelope <Modular<Element> >
-			(_r.randomIntRange (0, _size)); }
+		{
+			return a = ElementEnvelope <Modular<Element> >
+			((Element)_r.randomIntRange (0, (uint32_t)_size));
+		}
 
 	};
 

@@ -360,8 +360,8 @@ namespace LinBox
 #endif
 			linbox_check(A.rowdim() == b.size());
 			int n,m;
-			n=A.rowdim();
-			m=A.coldim();
+			n=(int)A.rowdim();
+			m=(int)A.coldim();
 
 			//assert(m == n); //logic may not work otherwise
 			linbox_check( m == n );

@@ -63,7 +63,7 @@ namespace LinBox
 			long _seed = seed;
 
 			if (_seed == 0) _seed = time (NULL);
-			MT.setSeed (_seed);
+			MT.setSeed ((uint32_t)_seed);
 		}
 
 		/// constructor

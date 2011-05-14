@@ -709,7 +709,7 @@ namespace LinBox
 				if (!checkBlasPrime(_prime)){
 					if (FMP != NULL) delete FMP;
 					FMP = new BlasBlackbox<Field>(*F, A.rowdim(),A.coldim());
-					notfr = MatrixInverse::matrixInverseIn(*F,*FMP);
+					notfr = (int)MatrixInverse::matrixInverseIn(*F,*FMP);
 				}
 				else {
 					BlasBlackbox<Field> *invA = new BlasBlackbox<Field>(*F, A.rowdim(),A.coldim());
