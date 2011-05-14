@@ -201,8 +201,8 @@ namespace LinBox
 			double *ydbl= new double[maxword*m];
 
 			cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
-				    maxword,m,n, 1,
-				    xdbl,n, At_dbl, m, 0, ydbl, m);
+				    (int) maxword,(int) m,(int) n, 1,
+				    xdbl,(int) n, At_dbl, (int) m, 0, ydbl, (int) m);
 
 			delete At_dbl;
 			delete xdbl;
@@ -554,8 +554,8 @@ namespace LinBox
 					}
 					if (num_chunks == 1) {
 						double *ctd = new double[_m];
-						cblas_dgemv(CblasRowMajor, CblasNoTrans, _m, _n,
-							    1, chunks, _n, dx, 1, 0, ctd, 1);
+						cblas_dgemv(CblasRowMajor, CblasNoTrans, (int) _m, (int) _n,
+							    1,  chunks, (int) _n, dx, 1, 0,  ctd, 1);
 
 						for (size_t i=0;i<_n;++i)
 							_D.init(y[i],ctd[i]);
@@ -572,12 +572,12 @@ namespace LinBox
 						 *    +   BBBBDDDDFFFF00      of
 						 * also note that we need separate blocks for positive and negative entries)
 						 */
-						 int rc = (52 / chunk_size) + 1; //constant at 4 for now
+						 int rc = int(52 / chunk_size) + 1; //constant at 4 for now
 						 /*
 						 * rclen: number of bytes in each of these OR-ed vectors
 						 * needs room to hold (max long long) << (num_chunks * chunksize)
 						 */
-						int rclen = num_chunks*2 + 5;
+						int rclen = (int)num_chunks*2 + 5;
 
 						unsigned char* combined = new unsigned char[rc*_n*rclen];
 						memset(combined, 0, rc*_n*rclen);
@@ -602,7 +602,9 @@ namespace LinBox
 						std::cout<<"- A.x chunk---------------------\n";
 #endif
 						for (size_t i=0; i<num_chunks; i++) {
-							cblas_dgemv(CblasRowMajor, CblasNoTrans, _m, _n, 1, chunks + (_m*_n*i), _n, dx, 1, 0, ctd, 1);
+							cblas_dgemv(CblasRowMajor, CblasNoTrans,
+								    (int) _m, (int) _n, 1,
+								    chunks + (_m*_n*i),(int)  _n, dx, 1, 0, ctd, 1);
 #ifdef DEBUG_CHUNK_APPLY
 							for (size_t j=0;j<_n;j++)
 								std::cout<<integer(*(ctd+j))<<",";
@@ -687,8 +689,8 @@ namespace LinBox
 					chrono.clear();
 					chrono.start();
 #endif
-					cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, _m, num_chunks, _n, 1.,
-						    chunks, _n, vchunks, num_chunks, 0., ctd, num_chunks);
+					cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, (int) _m, (int) num_chunks, (int) _n, 1.,
+						    chunks, (int) _n, vchunks, (int) num_chunks, 0., ctd, (int) num_chunks);
 
 #ifdef TIMING_APPLY
 					chrono.stop();
@@ -788,8 +790,8 @@ namespace LinBox
 #endif
 					// perform multiplication componentwise
 					for (size_t i=0;i< rns_size; ++i)
-						cblas_dgemv(CblasRowMajor, CblasNoTrans, _m, _n,
-							    1, chunks+i*_m*_n, _n, vchunks+i*_n, 1, 0, ctd+i*_m, 1);
+						cblas_dgemv(CblasRowMajor, CblasNoTrans, (int) _m, (int) _n,
+							    1, chunks+i*_m*_n, (int) _n, vchunks+i*_n, 1, 0, ctd+i*_m, 1);
 #ifdef TIMING_APPLY
 					chrono.stop();
 					_apply+=chrono;
@@ -919,8 +921,8 @@ namespace LinBox
 				if (num_chunks == 1) {
 					double *ctd = new double[_m*_k];
 					cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
-						    _m,_k,_n, 1,
-						    chunks,_n, dX, _k, 0, ctd, _k);
+						    (int) _m,(int) _k,(int) _n, 1,
+						    chunks,(int) _n, dX, (int) _k, 0, ctd, (int) _k);
 
 					for (size_t i=0;i<_m;++i)
 						for (size_t j=0;j<_k;++j)
@@ -958,8 +960,8 @@ namespace LinBox
 
 					for (size_t i=0; i<num_chunks; i++) {
 						cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
-							    _m,_k,_n, 1,
-							    chunks+(_m*_n*i),_n, dX, _k, 0, ctd, _k);
+							    (int) _m,(int) _k,(int) _n, 1,
+							    chunks+(_m*_n*i),(int) _n, dX, (int) _k, 0, ctd, (int) _k);
 
 						if (!use_neg || i<num_chunks-1)
 							for (size_t j=0; j<_m*_k; j++) {

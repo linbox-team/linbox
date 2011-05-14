@@ -101,7 +101,7 @@ namespace LinBox
 					return BAD_FORMAT;
 				this->knowM = true;
 				currentCol = 2;
-				i = pastNum - cand;
+				i = int(pastNum - cand);
 			}
 			else {
 				currentCol = i;
@@ -123,7 +123,7 @@ namespace LinBox
 					return BAD_FORMAT;
 				this->knowN = true;
 				currentCol = 4;
-				i = pastNum - cand;
+				i = int(pastNum - cand);
 			}
 			else {
 				currentCol = i;
@@ -381,7 +381,7 @@ namespace LinBox
 
 			if( candidate ) {
 				lineend = currentCol <= 5;
-				i = currentCol;
+				i = int(currentCol);
 				if( !lineend ) currentCol = 5;
 				while( !lineend && currentCol < 7 ) {
 					while( candidate[i] && isspace(candidate[i]) )

@@ -844,7 +844,7 @@ namespace LinBox
 
 		Element &addin (Element &x, const Element &y) const
 		{
-			uint32_t t = (long) x + (long) y;
+			uint32_t t = uint32_t((long) x + (long) y);
 			if (t >= (uint32_t) ModularBase<Element>::_modulus) t -= ModularBase<Element>::_modulus;
 			return x = (Element) t;
 		}
@@ -1032,7 +1032,7 @@ namespace LinBox
 
 		Element &addin (Element &x, const Element &y) const
 		{
-			uint32_t t = (long) x + (long) y;
+			uint32_t t = uint32_t( (long) x + (long) y );
 			if (t >= (uint32_t) ModularBase<Element>::_modulus) t -= ModularBase<Element>::_modulus;
 			return x = (Element)  t;
 		}
@@ -1149,7 +1149,7 @@ namespace LinBox
 
 		Element &mul (Element &x, const Element &y, const Element &z) const
 		{
-			return x = ((uint64_t) y * (uint64_t) z) % (uint64_t) ModularBase<Element>::_modulus;
+			return x = Element( ((uint64_t) y * (uint64_t) z) % (uint64_t) ModularBase<Element>::_modulus);
 		}
 
 		Element &div (Element &x, const Element &y, const Element &z) const
@@ -1190,7 +1190,7 @@ namespace LinBox
 			if (tx < 0) tx += ModularBase<Element>::_modulus;
 
 			// now x_int = gcd (modulus,residue)
-			return x = tx;
+			return x = Element(tx);
 		}
 
 		Element &axpy (Element &r,
@@ -1198,7 +1198,7 @@ namespace LinBox
 			       const Element &x,
 			       const Element &y) const
 		{
-			r = ((uint64_t) a * (uint64_t) x + (uint64_t) y) % (uint64_t) ModularBase<Element>::_modulus;
+			r = Element( ((uint64_t) a * (uint64_t) x + (uint64_t) y) % (uint64_t) ModularBase<Element>::_modulus );
 			if ((int32_t) r < 0) r += ModularBase<Element>::_modulus;
 			return r;
 		}
@@ -1219,7 +1219,7 @@ namespace LinBox
 
 		Element &mulin (Element &x, const Element &y) const
 		{
-			x = ((uint64_t) x * (uint64_t) y) % (uint64_t) ModularBase<Element>::_modulus;
+			x = Element( ((uint64_t) x * (uint64_t) y) % (uint64_t) ModularBase<Element>::_modulus );
 			return x;
 		}
 
@@ -1245,7 +1245,7 @@ namespace LinBox
 
 		Element &axpyin (Element &r, const Element &a, const Element &x) const
 		{
-			r = ((uint64_t) r + (uint64_t) a * (uint64_t) x) % (uint64_t) ModularBase<Element>::_modulus;
+			r = Element( ((uint64_t) r + (uint64_t) a * (uint64_t) x) % (uint64_t) ModularBase<Element>::_modulus );
 			if ((int32_t) r < 0) r += ModularBase<Element>::_modulus;
 			return r;
 		}
@@ -1259,7 +1259,7 @@ namespace LinBox
 			for (int i = 0; i < 6; ++i)
 				two_64 = (two_64 * two_64) % ModularBase<Element>::_modulus;
 
-			_two_64 = two_64;
+			_two_64 = (Element) two_64;
 		}
 
 		friend class FieldAXPY<Modular<uint32_t> >;
@@ -1332,10 +1332,16 @@ namespace LinBox
 		typedef Modular<uint8_t> Field;
 
 		FieldAXPY (const Field &F) :
-			_F (F), i (F._k)
-		{ _y = 0; }
+			_F (F),
+			i ( (int)F._k)
+		{
+			_y = 0;
+		}
+
 		FieldAXPY (const FieldAXPY &faxpy) :
-			_F (faxpy._F), _y (0), i (faxpy._F._k)
+			_F (faxpy._F),
+			_y (0),
+			i ((int)faxpy._F._k)
 		{}
 
 		FieldAXPY<Modular<uint8_t> > &operator = (const FieldAXPY &faxpy)
@@ -1350,7 +1356,7 @@ namespace LinBox
 			uint32_t t = (uint32_t) a * (uint32_t) x;
 
 			if (!i--) {
-				i = _F._k;
+				i = int(_F._k);
 				return _y = _y % (uint32_t) _F._modulus + t;
 			}
 			else
@@ -1361,29 +1367,31 @@ namespace LinBox
 		{
 
 			if (!i--) {
-				i = _F._k;
+				i = int( _F._k );
 				return _y = _y % (uint32_t) _F._modulus + t;
 			}
 			else
 				return _y += t;
 		}
 
-		inline Element &get (Element &y) {
+		inline Element &get (Element &y)
+		{
 			_y %= (uint32_t) _F._modulus;
 			if ((int32_t) _y < 0) _y += _F._modulus;
 			y = (uint8_t) _y;
-			i = _F._k;
+			i = int(_F._k);
 			return y;
 		}
 
 		inline FieldAXPY &assign (const Element y)
 		{
 			_y = y;
-			i = _F._k;
+			i = int(_F._k);
 			return *this;
 		}
 
-		inline void reset() {
+		inline void reset()
+		{
 			_y = 0;
 		}
 
@@ -1403,10 +1411,11 @@ namespace LinBox
 		typedef Modular<uint16_t> Field;
 
 		FieldAXPY (const Field &F) :
-			_F (F), i (F._k)
+			_F (F),
+			i ((int)F._k)
 		{ _y = 0; }
 		FieldAXPY (const FieldAXPY &faxpy) :
-			_F (faxpy._F), _y (0), i (faxpy._F._k)
+			_F (faxpy._F), _y (0), i ((int) faxpy._F._k)
 		{}
 
 		FieldAXPY<Modular<uint16_t> > &operator = (const FieldAXPY &faxpy)
@@ -1421,7 +1430,7 @@ namespace LinBox
 			uint64_t t = (long long) a * (long long) x;
 
 			if (!i--) {
-				i = _F._k;
+				i = (int) _F._k;
 				return _y = _y % (uint64_t) _F._modulus + t;
 			}
 			else
@@ -1431,29 +1440,31 @@ namespace LinBox
 		inline uint64_t& accumulate (const Element &t)
 		{
 			if (!i--) {
-				i = _F._k;
+				i = (int) _F._k;
 				return _y = _y % (uint64_t) _F._modulus + t;
 			}
 			else
 				return _y += t;
 		}
 
-		inline Element &get (Element &y) {
+		inline Element &get (Element &y)
+		{
 			_y %= (uint64_t) _F._modulus;
 			if ((int64_t) _y < 0) _y += _F._modulus;
 			y = (uint16_t) _y;
-			i = _F._k;
+			i = (int) _F._k;
 			return y;
 		}
 
 		inline FieldAXPY &assign (const Element y)
 		{
 			_y = y;
-			i = _F._k;
+			i = (int) _F._k;
 			return *this;
 		}
 
-		inline void reset() {
+		inline void reset()
+		{
 			_y = 0;
 		}
 

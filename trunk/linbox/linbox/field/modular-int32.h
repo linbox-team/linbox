@@ -208,7 +208,7 @@ namespace LinBox
 
 		 Element& get (Element &y)
 		{
-			y =_y % (uint64_t) _F.modulus;
+			y = Element (_y % (uint64_t) _F.modulus);
 			return y;
 		}
 
@@ -260,7 +260,7 @@ namespace LinBox
 			}
 
 			y %= (uint64_t) _F.modulus;
-			return res = y;
+			return res = Element(y);
 
 		}
 
@@ -377,10 +377,10 @@ namespace LinBox
 		linbox_check (A.coldim () == v.size ());
 		linbox_check (A.rowdim () == w.size ());
 
-		typename Matrix::ConstColIterator i = A.colBegin ();
-		typename Vector2::const_iterator j;
+		typename Matrix::ConstColIterator       i = A.colBegin ();
+		typename Vector2::const_iterator        j;
 		typename Matrix::Column::const_iterator k;
-		std::vector<uint64_t>::iterator l;
+		std::vector<uint64_t>::iterator         l;
 
 		uint64_t t;
 
@@ -389,10 +389,8 @@ namespace LinBox
 
 		std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
 
-		for (j = v.begin (); j != v.end (); ++j, ++i)
-		{
-			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l)
-			{
+		for (j = v.begin (); j != v.end (); ++j, ++i) {
+			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l) {
 				t = ((uint64_t) k->second) * ((uint64_t) *j);
 
 				_tmp[k->first] += t;
@@ -403,9 +401,10 @@ namespace LinBox
 		}
 
 		typename Vector1::iterator w_j;
+		typedef typename Vector1::value_type Element;
 
 		for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
-			*w_j = *l % VD.field ().modulus;
+			*w_j = (Element)( *l % VD.field ().modulus );
 
 		return w;
 	}

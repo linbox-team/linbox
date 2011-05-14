@@ -32,7 +32,7 @@
 template <class Field, class Polynomial>
 void printPolynomial (const Field &F, const Polynomial &v)
 {
-	for (int i = v.size () - 1; i >= 0; i--) {
+	for (int i = (int)v.size () ; i-- ; ) {
 		F.write (std::cout, v[i]);
 		if (i > 0)
 			std::cout << " x^" << i << " + ";

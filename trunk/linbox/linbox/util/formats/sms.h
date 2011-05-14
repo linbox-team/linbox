@@ -60,13 +60,13 @@ namespace LinBox
 			this->_m = strtoul(firstLine,&restLine,0);
 			if( this->_m == 0 && restLine == firstLine )
 				return NO_FORMAT;
-			i = restLine - firstLine;
+			i = int(restLine - firstLine);
 
 			// Read n
 			this->_n = strtoul(firstLine+i,&restLine,0);
 			if( this->_n == 0 && restLine == firstLine+i )
 				return NO_FORMAT;
-			i = restLine - firstLine;
+			i = int(restLine - firstLine);
 
 			// Read "M" or "R" or "P" or "I"
 			while( firstLine[i] && isspace(firstLine[i]) )

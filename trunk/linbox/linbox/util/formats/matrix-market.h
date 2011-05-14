@@ -48,8 +48,9 @@ namespace LinBox
 	class integer;
 #endif
 
-	static bool equalCaseInsensitive(const std::string s1, const char* s2) {
-		int len = s1.size();
+	static bool equalCaseInsensitive(const std::string s1, const char* s2)
+	{
+		int len = int(s1.size());
 		int counter = 0;
 		while( counter < len && s2[counter] != '\0' &&
 		       toupper(s1[counter]) == toupper(s2[counter]) ) ++counter;
@@ -67,7 +68,8 @@ namespace LinBox
 		bool pattern;
 		bool symmetric;
 
-		MatrixStreamError readHeader() {
+		MatrixStreamError readHeader()
+		{
 			//Skip comments
 			this->ms->readWhiteSpace();
 			while( !this->sin->eof() && this->sin->peek() == '%' ) {
@@ -106,7 +108,8 @@ namespace LinBox
 		}
 
 	protected:
-		MatrixStreamError nextTripleImpl( size_t& i, size_t& j, Element& v ) {
+		MatrixStreamError nextTripleImpl( size_t& i, size_t& j, Element& v )
+		{
 			if( currentCol == 0 && currentRow == 0 ) {
 				MatrixStreamError mse = readHeader();
 				if( mse != GOOD ) return mse;
@@ -152,7 +155,8 @@ namespace LinBox
 			return GOOD;
 		}
 
-		MatrixStreamError initImpl( const char* firstLine ) {
+		MatrixStreamError initImpl( const char* firstLine )
+		{
 			std::string st(firstLine);
 			std::stringstream stin(st);
 
@@ -196,18 +200,26 @@ namespace LinBox
 		}
 
 	public:
-		MatrixMarketReader() {
+		MatrixMarketReader()
+		{
 			entriesLeft = -1;
 			currentCol = currentRow = 0;
 		}
 
-		bool isSparse() const { return !array; }
+		bool isSparse() const
+		{
+			return !array;
+		}
 
 		const char* getName() const
-		{ return "Matrix Market Format"; }// LinBox__FORMAT_MATRIX_MARKET_H::name;
+		{
+			return "Matrix Market Format";
+		}// LinBox__FORMAT_MATRIX_MARKET_H::name;
 
 		const char* shortName() const
-		{ return "mm"; }// LinBox__FORMAT_MATRIX_MARKET_H::shortname;
+		{
+			return "mm"; // LinBox__FORMAT_MATRIX_MARKET_H::shortname;
+		}
 	};
 
 }

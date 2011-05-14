@@ -26,7 +26,7 @@ namespace LinBox
 	{
 		Element determinant;
 		const GF2 F2;
-		Permutation<GF2> P(A.coldim(),F2);
+		Permutation<GF2> P((int)A.coldim(),F2);
 
 		if (reord == SparseEliminationTraits::PIVOT_NONE)
 			return NoReordering(rank, determinant, A,  Ni, Nj);

@@ -222,7 +222,7 @@ namespace LinBox
 			if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
 
 			int nbperm = 0; unsigned long rk;
-			int logn = 2*(unsigned long)floor( log( (double)A.rowdim() ) );
+			int logn = (int)(2*(unsigned long)floor( log( (double)A.rowdim() ) ));
 			bool tryagain = (! F.areEqual( t, p2 ));
 			while( tryagain ) {
 				commentator.stop ("fail", NULL, "trace");
@@ -364,11 +364,11 @@ namespace LinBox
 			if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
 
 			int nbperm = 0; unsigned long rk;
-			int logn = 2*(unsigned long)floor( log( (double)A.rowdim() ) );
+			int logn = (int)(2*(unsigned long)floor( log( (double)A.rowdim() ) ));
 			bool tryagain = (! F.areEqual( t, p2 ));
 			while( tryagain ) {
 				commentator.stop ("fail", NULL, "trace");
-				Permutation<Field> P(A.rowdim(), F);
+				Permutation<Field> P((int)A.rowdim(), F);
 				for (i = 0; i < A.rowdim (); ++i)
 					P.permute( rand() % A.rowdim() , rand() % A.rowdim() );
 				for (i = 0; i < A.rowdim (); ++i)
@@ -615,7 +615,7 @@ namespace LinBox
 		typedef Modular<double> Field;
 		integer mmodulus;
 		FieldTraits<Field>::maxModulus(mmodulus);
-		RandomPrimeIterator genprime( (long) floor (log((double)mmodulus) ) );
+		RandomPrimeIterator genprime( (unsigned) floor (log((double)mmodulus) ) );
 		++genprime;
 		typedef typename Blackbox::template rebind< Field >::other FBlackbox;
 		Field Fp(*genprime);

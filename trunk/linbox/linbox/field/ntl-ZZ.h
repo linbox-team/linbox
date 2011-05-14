@@ -133,10 +133,10 @@ namespace LinBox
 		inline Element& init (Element& x, const uint64_t& y) const
 		{
 			uint64_t shift = (uint64_t)1 << 32;
-			uint32_t temp = y % shift;
+			uint32_t temp = uint32_t(y % shift);
 			NTL::conv (x,temp);
 			x <<= 32;
-			temp = y / shift;
+			temp = (uint32_t)(y / shift);
 			x += temp;
 			return x;
 		}

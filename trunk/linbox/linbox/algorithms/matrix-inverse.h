@@ -146,8 +146,10 @@ namespace LinBox
 
 				//matrix is indexed by 0, instead of 1.
 
-				for (cur_cp = cur_c -> begin() + (A.rowdim() - 1), tmp_r = tmp.rowBegin() + ( A.rowdim() - 1);
-				     cur_cp != cur_c -> begin() - 1; -- cur_cp, -- tmp_r) {
+				for (cur_cp = cur_c -> begin() + (A.rowdim() - 1),
+				     tmp_r = tmp.rowBegin() + ( (int)A.rowdim() - 1);
+				     cur_cp != cur_c -> begin() - 1;
+				     -- cur_cp, -- tmp_r) {
 
 					F.assign (tmp_e, *cur_cp);
 

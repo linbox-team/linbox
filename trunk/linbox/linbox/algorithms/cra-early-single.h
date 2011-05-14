@@ -68,7 +68,10 @@ namespace LinBox
 	public:
 
 		EarlySingleCRA(const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD) :
-			primeProd_(1UL), nextM_(1UL), occurency_(0), EARLY_TERM_THRESHOLD(EARLY-1)
+			primeProd_(1UL),
+			nextM_(1UL),
+			occurency_(0U),
+			EARLY_TERM_THRESHOLD((unsigned)EARLY-1)
 		{
 #ifdef CRATIMING
 			clearTimers();
