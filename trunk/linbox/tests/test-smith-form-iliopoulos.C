@@ -79,11 +79,11 @@ bool testRandom(const Ring& R,
 
 	VectorWrapper::ensureDim (x, stream1.n ());
 
-	int n = d. size();
+	int n = (int)d. size();
 
 	 while (stream1) {
 
-                commentator.startIteration (stream1.j ());
+                commentator.startIteration ((unsigned)stream1.j ());
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
@@ -184,7 +184,7 @@ bool testRandom(const Ring& R,
 
 			report << "Using PIRModular<int32_t>\n";
 
-			PIRModular<int32_t> PIR(s % LINBOX_MAX_MODULUS);
+			PIRModular<int32_t> PIR( (int32_t)(s % LINBOX_MAX_MODULUS));
 
 			DenseMatrix<PIRModular<int32_t> > Ap(PIR, A.rowdim(), A.coldim());
 

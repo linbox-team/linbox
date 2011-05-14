@@ -222,7 +222,7 @@ namespace LinBox
 
 		NTL::zz_p& init(NTL::zz_p& x, const double& y) const
 		{
-			double z = fmod(y,NTL::zz_p::modulus());
+			double z = fmod(y,(double)NTL::zz_p::modulus());
 			if (z > 0) z += 0.5;
 			else z -= 0.5;
 			return x = NTL::to_zz_p(static_cast<long>(z)); //rounds towards 0

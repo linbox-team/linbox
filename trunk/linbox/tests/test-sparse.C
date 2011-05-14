@@ -77,7 +77,7 @@ static bool testIdentityApply (Field &F, const char *text, VectorStream<Vector> 
 	VectorWrapper::ensureDim (w, stream.n ());
 
 	while (stream) {
-		commentator.startIteration (stream.j ());
+		commentator.startIteration ((unsigned)stream.j ());
 
 		iter_passed = true;
 
@@ -156,7 +156,7 @@ static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector>
 	VectorWrapper::ensureDim (w, stream.n ());
 
 	while (stream) {
-		commentator.startIteration (stream.j ());
+		commentator.startIteration ((unsigned)stream.j ());
 
 		iter_passed = true;
 		even = false;
@@ -254,7 +254,7 @@ bool testRandomApply1 (Field &F, const char *text, unsigned int iterations, Vect
 	VectorWrapper::ensureDim (w, A_stream.m ());
 
 	for (i = 0; i < iterations; i++) {
-		commentator.startIteration (i);
+		commentator.startIteration ((unsigned)i);
 
 		iter_passed = true;
 
@@ -339,7 +339,7 @@ bool testRandomApply2 (Field &F, const char *text, unsigned int iterations, Vect
 		F.init (VectorWrapper::ref<Field> (v, k), 1);
 
 	for (i = 0; i < iterations; i++) {
-		commentator.startIteration (i);
+		commentator.startIteration ((unsigned)i);
 
 		iter_passed = true;
 

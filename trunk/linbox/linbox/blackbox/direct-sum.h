@@ -305,8 +305,8 @@ namespace LinBox
 				const Subvector<typename InVector::const_iterator> x1(x.begin() + offset_x, x.begin() + (offset_x + (*bp)->coldim()));
 				Subvector<typename OutVector::iterator> y1(y.begin() + offset_y, y.begin() + (offset_y + (*bp)->rowdim()));
 				(*bp)->apply(y1,x1);
-				offset_x += (*bp)->coldim();
-				offset_y += (*bp)->rowdim();
+				offset_x += (int) (*bp)->coldim();
+				offset_y += (int) (*bp)->rowdim();
 			}
 			return y;
 
@@ -325,8 +325,8 @@ namespace LinBox
 				const Subvector<typename InVector::const_iterator> x1(x.begin() + offset_x, x.begin() + (offset_x + (*bp)->rowdim()));
 				Subvector<typename OutVector::iterator> y1(y.begin() + offset_y, y.begin() + (offset_y + (*bp)->coldim()));
 				(*bp)->applyTranspose(y1,x1);
-				offset_x += (*bp)->rowdim();
-				offset_y += (*bp)->coldim();
+				offset_x += (int) (*bp)->rowdim();
+				offset_y += (int) (*bp)->coldim();
 			}
 			return y;
 		}
@@ -626,8 +626,8 @@ namespace LinBox
 				const Subvector<typename InVector::const_iterator> x1(x.begin() + offset_x, x.begin() + (offset_x + bp->coldim()));
 				Subvector<typename OutVector::iterator> y1(y.begin() + offset_y, y.begin() + (offset_y + bp->rowdim()));
 				bp->apply(y1,x1);
-				offset_x += bp->coldim();
-				offset_y += bp->rowdim();
+				offset_x += (int) bp->coldim();
+				offset_y += (int) bp->rowdim();
 			}
 			return y;
 
@@ -646,8 +646,8 @@ namespace LinBox
 				const Subvector<typename InVector::const_iterator> x1(x.begin() + offset_x, x.begin() + (offset_x + bp->rowdim()));
 				Subvector<typename OutVector::iterator> y1(y.begin() + offset_y, y.begin() + (offset_y + bp->coldim()));
 				bp->applyTranspose(y1,x1);
-				offset_x += bp->rowdim();
-				offset_y += bp->coldim();
+				offset_x += (int)bp->rowdim();
+				offset_y += (int)bp->coldim();
 			}
 			return y;
 		}
@@ -668,7 +668,8 @@ namespace LinBox
 		ListBB_t& getDataSum() { return _VB_data; }
 		const ListBB_t& getDataSum() const { return _VB_data; }
 
-		size_t size() const {
+		size_t size() const
+		{
 			return this->_VB_data.size();
 		}
 

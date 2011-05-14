@@ -581,7 +581,7 @@ namespace LinBox
 	template<class NAM>
 	class PlotData {
 	private :
-		std::vector< std::vector< float > >  _tableau_   ;   //!< data. \c _tableau_[i][j] is the \e jth value of serie \e i.
+		std::vector< std::vector< double > >  _tableau_   ;   //!< data. \c _tableau_[i][j] is the \e jth value of serie \e i.
 		index_t                              _nb_points_ ;   //!< number of points in each series. (size of \c _tableau_[0])
 		index_t                              _nb_series_ ;   //!< number of series. (size of \c _tableau_)
 		std::vector< std::string >           _serie_name_;   //!< name for each serie of points
@@ -721,7 +721,7 @@ namespace LinBox
 		 * @param j index of the point
 		 * @param val value to be inserted.
 		 */
-		void setEntry(index_t i, index_t j, float val)
+		void setEntry(index_t i, index_t j, double val)
 		{
 			linbox_check(i<_nb_series_);
 			linbox_check(j<_nb_points_);
@@ -734,7 +734,7 @@ namespace LinBox
 		 * @param j index of the point
 		 * @return val value of point j in serie j.
 		 */
-		float getEntry(index_t i, index_t j)
+		double getEntry(index_t i, index_t j)
 		{
 			linbox_check(i<_nb_series_);
 			linbox_check(j<_nb_points_);
@@ -857,7 +857,7 @@ namespace LinBox
 		PlotGraph( PlotData<NAM> & data, PlotStyle & style ) :
 			_data_(data),_style_(style)
 		{
-			srand(time(NULL));
+			srand((unsigned)time(NULL));
 		}
 
 		/*! @brief sets the ouput file name.

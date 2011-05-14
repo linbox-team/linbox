@@ -54,7 +54,7 @@ const char* pretty(string a)
 {
 
 	blank = "     " + a;
-	int msgsize= maxpretty - blank.size();
+	int msgsize= maxpretty - (int)blank.size();
 	string dot(".");
 	for (int i=0;i<msgsize ;++i)
 		 blank+=dot;
@@ -418,7 +418,7 @@ static bool testTriangMulShapeTrans (const Field &F, size_t m, size_t n, int ite
 	BlasMatrixDomain<Field> BMD (F);
 	MatrixDomain<Field>      MD (F);
 
-	int k = LeftSide?m:n ;
+	int k =(int) (LeftSide?m:n) ;
 	// input matrix
 	Matrix A(k,k); // A = L+U-I. Either L or U is unit.
 	Matrix B(m,n);
@@ -546,7 +546,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
 		mycommentator.progress(k);
 		BlasMatrix<Element> A(n,n),S(n,n), L(n,n);
 
-		r = random() % n;
+		r = (unsigned int)(random() % n);
 		// create S as an upper triangular matrix with r nonzero rows
 		for (size_t i=0;i<r;++i){
 			S.setEntry(i,i,Gn.random(tmp));
@@ -1587,7 +1587,7 @@ int main(int argc, char **argv)
 
 	bool pass = true;
 
-	srand (time (NULL));
+	srand ((unsigned)time (NULL));
 
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
@@ -1595,9 +1595,9 @@ int main(int argc, char **argv)
 
 	commentator.start("BlasMatrixDomain test suite", "BlasMatrixDomain");
 
-	pass &= launch_tests(F,n,iterations);
+	pass &= launch_tests(F,(int)n,iterations);
 	// pass &= launch_tests(G,n,iterations);
-	pass &= launch_tests(H,n,iterations);
+	pass &= launch_tests(H,(int)n,iterations);
 
 	commentator.stop(MSG_STATUS (pass), (const char *) 0,"BlasMatrixDomain test suite");
 	return pass ? 0 : -1;

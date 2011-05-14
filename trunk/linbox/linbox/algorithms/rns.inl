@@ -42,7 +42,7 @@ namespace LinBox
 		_bit_(l),  _ps_(ps)
 	{
 		linbox_check(ps<30); // oupa, mais moins qu'un unsigned long
-		unsigned int nb_primes = std::ceil(double(l)/double(ps));
+		unsigned int nb_primes = (unsigned int) std::ceil(double(l)/double(ps));
 		// integer maxint = Integer::pow(2,l); XXX je veux faire ça !!!!!!
 		integer maxint = pow((integer)2,(Unsigned?l:l+1));
 		_primes_.resize(nb_primes);
@@ -55,7 +55,7 @@ namespace LinBox
 			while(tries < 3) { // if we fail 3 times to insert, we don't have enough primes to sample.
 				if (curint>maxint)
 					break;
-				RandomPrimeIterator genprimes(_ps_+penalty);
+				RandomPrimeIterator genprimes( (unsigned int) (_ps_+penalty) );
 				unsigned long p = genprimes.randomPrime() ;
 				++genprimes;
 				primeset.insert(p);
@@ -131,7 +131,7 @@ namespace LinBox
 	RNS<Unsigned>::cra(Ivect & result, Function & unitCRA)
 	{
 		std::vector<std::vector<double> > residues(_size_);
-		for (size_t i = 0 ; i < _size_ ; ++i) {
+		for (int i = 0 ; i < (int)_size_ ; ++i) {
 			residues[i].resize(result.size());
 			unitCRA(residues[i],_PrimeDoms_[i]); // creates residue list
 		}
@@ -168,7 +168,7 @@ namespace LinBox
 		_bit_(l),  _ps_(ps)
 	{
 		linbox_check(ps<30); // oupa, mais moins qu'un unsigned long
-		unsigned int nb_primes = std::ceil(double(l)/double(ps));
+		unsigned int nb_primes = (unsigned int) std::ceil(double(l)/double(ps));
 		// integer maxint = Integer::pow(2,l); XXX je veux faire ça !!!!!!
 		integer maxint = pow((integer)2,(Unsigned?l:l+1));
 		// std::cout << "target max int : " << maxint << std::endl;
@@ -182,7 +182,7 @@ namespace LinBox
 			while(tries < 3) { // if we fail 3 times to insert, we don't have enough primes to sample.
 				if (curint>maxint)
 					break;
-				RandomPrimeIterator genprimes(_ps_+penalty);
+				RandomPrimeIterator genprimes((unsigned int) (_ps_+penalty) );
 				unsigned long p = genprimes.randomPrime() ;
 				++genprimes;
 				primeset.insert(p);

@@ -82,7 +82,7 @@ static bool testIdentityApply (Field &F, VectorStream<Vector> &stream)
 	VectorWrapper::ensureDim (w, stream.n ());
 
 	while (stream) {
-		commentator.startIteration (i);
+		commentator.startIteration ((unsigned)i);
 
 		iter_passed = true;
 
@@ -150,7 +150,7 @@ static bool testRandomMinpoly (Field &F, VectorStream<Vector> &stream)
 	VectorWrapper::ensureDim (d, stream.n ());
 
 	while (stream) {
-		commentator.startIteration (stream.j ());
+		commentator.startIteration ((unsigned)stream.j ());
 
 		F.init (pi, 1);
 
@@ -306,7 +306,7 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Field F (q);
 
-	srand (time (NULL));
+	srand ((unsigned)time (NULL));
 
 	commentator.start("Diagonal matrix black box test suite", "diagonal");
 

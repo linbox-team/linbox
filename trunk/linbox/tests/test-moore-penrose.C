@@ -160,7 +160,7 @@ static bool testIdentityApply (Field                                           &
 	MoorePenrose<Blackbox> Adagger (&A, r);
 
 	while (stream) {
-		commentator.startIteration (i);
+		commentator.startIteration ((unsigned)i);
 
 		iter_passed = true;
 
@@ -249,7 +249,7 @@ static bool testRandomApply1 (Field                 &F,
 	typename Field::Element x;
 
 	for (i = 0; i < iterations; i++) {
-		commentator.startIteration (i);
+		commentator.startIteration ((unsigned)i);
 		iter_passed = true;
 
 		commentator.start ("Building requisite random sparse matrix");
@@ -356,7 +356,7 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Field F (q);
 
-	srand (time (NULL));
+	srand ((unsigned)time (NULL));
 
 	commentator.start("MoorePenrose black box test suite", "MoorePenrose");
 

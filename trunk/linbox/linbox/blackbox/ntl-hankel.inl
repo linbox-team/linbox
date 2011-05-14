@@ -168,13 +168,13 @@ namespace LinBox
 	template <class Field>
 	void Hankel<Field>::setToUniModLT()
 	{
-		int L = (this->rowDim-1)<<1;
+		int L = int(this->rowDim-1)<<1;
 		this->shape.shape(BlackboxSpecifier::UNIMOD_LT);
 
 		Element one,zero;
 		this->K.init(one,1);
 		this->K.init(zero,0);
-		for (int i=this->rowDim-1; i <= L; i++ ) {
+		for (int i= int(this->rowDim)-1; i <= L; i++ ) {
 			// zero out the below-diagonal entries
 			this->P.setCoeff(this->pdata,i,zero);
 		}
@@ -247,7 +247,7 @@ namespace LinBox
 #ifdef DBGMSGS
 		std::cout <<"pxOut is " << pxOut << std::endl;
 #endif
-		int N = this->rowdim();
+		int N = (int)this->rowdim();
 		for ( int i= 0; i < N; i++)
 			this->P.getCoeff(v_out[N-1-i], pxOut, N-1+i);
 

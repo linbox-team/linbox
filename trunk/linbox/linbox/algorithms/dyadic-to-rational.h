@@ -71,7 +71,7 @@ int dyadicToRational (
 
 	// Partial_hegcd is defined below.
 	bool found = partial_hegcd(Z, e, b, an, d/*q*/, B); // e = b*an - ?*d and |b| <= B
-	Z.axmyin(e, b, an); 
+	Z.axmyin(e, b, an);
 	Z.div(a, e, d); //a = (e - b*an)/d, div is exact.
 //std::cout << "Z.axmyin(e, b, an); " << e << " " << b << " " << an << ", a = e/d exact " << a << " " << d << std::endl;
 	// now a/b is solution but signs may be wrong
@@ -80,7 +80,7 @@ int dyadicToRational (
 	Int zero; Z.init(zero, 0);
 	if (Z.compare(n, zero) < 0)  Z.negin(a); // a = -a;
 
-//std::cout << "DtR in n, d " << n << " "<< d << ", bound " << B << ", out a, b " << a << " " << b << std::endl; 
+//std::cout << "DtR in n, d " << n << " "<< d << ", bound " << B << ", out a, b " << a << " " << b << std::endl;
 	bool guarantee = b*B < d;
 	if (found && guarantee) return 2;
 	if (b == 0) return 0;
@@ -198,8 +198,9 @@ int dyadicToRational(
 	Int t; Z.init(t, 1);
 	while ( S.size() > 1 ) {
 		Z.mulin(t, S.top().second);
-		int k = S.top().first; S.pop();
-		int j = S.top().first;
+		int k = (int)S.top().first;
+		S.pop();
+		int j = (int)S.top().first;
 		for (int i = k-1; i >= j; --i) {
 			Z.mulin(num[i], t);
 		}
@@ -257,7 +258,8 @@ When dxa^2 <= denBs, 2 should be returned.
 	size_t kp = k+2;
 	size_t kp2 = 2*kp;
 	std::vector<Int> nx(kp2);
-	for (size_t i = 0; i < kp2 ; ++i) Z.init(nx[i],floor(((double(i)-double(kp))*dxa)/k + 0.5));
+	for (size_t i = 0; i < kp2 ; ++i)
+		Z.init(nx[i],floor(((double(i)-double(kp))*(double)dxa)/(double)k + 0.5));
 	// |nx[i]/dxa - (i-kp)/k| <= 1/2dxa
 	std::vector<Int> n(kp2);
 	Int d;
@@ -279,7 +281,7 @@ When dxa^2 <= denBs, 2 should be returned.
 		if (c < ret) ret = c;
 		if (! loopclaim) ret = 0;
 //if (! claim) std::cout << "F " << pass << claim << ret << std::endl;
-		//if (! loopclaim) 
+		//if (! loopclaim)
 //std::cout << "F2 " << loopclaim << " i " << i << " nx/dx " << nx[i] << "/" << dx << ", n/d " << n[i] << "/" << d << std::endl;
 		pass = pass && loopclaim;
 	}

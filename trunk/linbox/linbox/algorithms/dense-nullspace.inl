@@ -167,7 +167,7 @@ namespace LinBox
 
 		}
 		FFPACK::applyP(F, FFLAS::FflasLeft, FFLAS::FflasTrans,
-			       ker_dim, 0, R, V, ldV , P);				//  X = P^{-1}V
+			       ker_dim, 0, (int)R, V, ldV , P);				//  X = P^{-1}V
 		delete[] P;
 		return V;
 
@@ -215,7 +215,7 @@ namespace LinBox
 		Identity(F,V,ldV,R,0,N,ker_dim);
 		// write_field (F, std::cout<<"V init   ="<<std::endl, V, N, ker_dim, ker_dim,true);
 		FFPACK::applyP(F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
-			       ker_dim, 0, R, V, ldV, Qt);			//  V = Q V
+			       ker_dim, 0, (int)R, V, ldV, Qt);			//  V = Q V
 
 		// write_field (F, std::cout<<"V reordered   ="<<std::endl, V, N,ker_dim, ker_dim,true);
 
@@ -237,7 +237,8 @@ namespace LinBox
 			}
 
 			//FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, M,0,M, A, N, Q );
-			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans, N,0,N, A, N, Qt );
+			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
+					N,0,(int)N, A, N, Qt );
 			for ( size_t i=0; i< N; ++i )
 				*(A+N*i+i) = one ;
 
@@ -267,7 +268,7 @@ namespace LinBox
 					*(L+i*N+j) = zero ;
 
 			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
-					N,0,R, L, N, Qt );
+					N,0,(int)R, L, N, Qt );
 			for ( size_t i=0; i< N; ++i )
 				*(L+N*i+i) = one ;
 			// fin de L.
@@ -344,7 +345,7 @@ namespace LinBox
 #endif
 
 		FFPACK::applyP(F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
-			       coker_dim, 0, R, V, ldV , P);		// X = P^{-1}V
+			       coker_dim, 0,(int) R, V, ldV , P);		// X = P^{-1}V
 		delete[] P;
 		return V;
 
@@ -398,7 +399,7 @@ namespace LinBox
 		Identity(F,V,ldV,0,R,coker_dim,M);
 		// write_field (F, std::cout<<"V init   ="<<std::endl, V, coker_dim, M, M,true);
 		FFPACK::applyP(F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
-			       coker_dim, 0, R, V, ldV, Q); // V = V  tQ
+			       coker_dim, 0, (int)R, V, ldV, Q); // V = V  tQ
 
 		//write_field (F, std::cout<<"V reordered   ="<<std::endl, V, coker_dim, M, M,true);
 
@@ -409,7 +410,8 @@ namespace LinBox
 				for (size_t j = i ; j<N; ++j )
 					*(A+i*N+j) = zero;
 
-			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, M,0,M, A, N, Q );
+			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
+					M,0,(int)M, A, N, Q );
 			for ( size_t i=0; i< M; ++i )
 				*(A+N*i+i) = one ;
 
@@ -428,7 +430,8 @@ namespace LinBox
 				for (; j<M; ++j )
 					*(L+i*M+j) = zero;
 			}
-			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, M,0,R, L, M, Q );
+			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
+					M,0,(int)R, L, M, Q );
 			for ( size_t i=0; i< M; ++i )
 				*(L+M*i+i) = one ;
 

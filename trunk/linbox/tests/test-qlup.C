@@ -63,7 +63,7 @@ bool testQLUP(const Field &F, size_t n, unsigned int iterations, int rseed, doub
 	RandStream stream (F, generator, sparsity, n, n);
 
 	for (size_t i = 0; i < iterations; ++i) {
-		commentator.startIteration (i);
+		commentator.startIteration ((unsigned)i);
 
 
 		stream.reset();
@@ -89,8 +89,8 @@ bool testQLUP(const Field &F, size_t n, unsigned int iterations, int rseed, doub
 		GaussDomain<Field> GD ( F );
 		typename Field::Element determinant;
 		Blackbox L(F, A.rowdim(), A.coldim());
-		Permutation<Field> Q(A.rowdim(),F);
-		Permutation<Field> P(A.coldim(),F);
+		Permutation<Field> Q((int)A.rowdim(),F);
+		Permutation<Field> P((int)A.coldim(),F);
 
 		GD.QLUPin(rank, determinant,
 			  Q, L, A, P,
@@ -167,7 +167,7 @@ bool testQLUPsolve(const Field &F, size_t n, unsigned int iterations, int rseed,
         GF2 F2; GF2::RandIter bitgenerator(F2,2,rseed); GF2::Element randomsolve;
 
 	for (size_t i = 0; i < iterations; ++i) {
-		commentator.startIteration (i);
+		commentator.startIteration ((unsigned)i);
 
 		stream.reset();
 		Blackbox A (F, stream);
@@ -248,7 +248,7 @@ bool testQLUPnullspace(const Field &F, size_t n, unsigned int iterations, int rs
 	RandStream stream (F, generator, sparsity, n, n, rseed);
 
 	for (size_t i = 0; i < iterations; ++i) {
-		commentator.startIteration (i);
+		commentator.startIteration ((unsigned)i);
 
 		stream.reset();
 		Blackbox A (F, stream);
@@ -325,7 +325,7 @@ int main (int argc, char **argv)
 	//static integer q = 1000003U;
 	static int iterations = 2;
         static double sparsity = 0.05;
-        static int rseed = time(NULL);
+        static int rseed = (unsigned)time(NULL);
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },

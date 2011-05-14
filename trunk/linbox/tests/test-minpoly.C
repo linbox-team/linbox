@@ -400,7 +400,7 @@ int main (int argc, char **argv)
 		//typedef Modular<int> Field;
 		typedef Modular<double> Field;
 		Field F (q);
-		srand (time (NULL));
+		srand ((unsigned)time (NULL));
 
 		commentator.start("Blackbox prime field minpoly test suite", "Wminpoly");
 
@@ -430,7 +430,7 @@ int main (int argc, char **argv)
 		int e = 0;  do {++e; q = q/p; } while (q > 1);
 		typedef GivaroGfq Field;
 		Field F (p, e);
-		srand (time (NULL));
+		srand ((unsigned)time (NULL));
 
 		commentator.start("Blackbox non-prime field minpoly test suite", "Wminpoly");
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -479,7 +479,7 @@ int main (int argc, char **argv)
 	typedef SparseMatrix<PID_integer>::Row ZSparseVector;
 	//typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
 	PID_integer Z;
-	srand (time (NULL));
+	srand ((unsigned)time (NULL));
 
 	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);

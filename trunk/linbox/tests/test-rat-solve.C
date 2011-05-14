@@ -74,7 +74,7 @@ static bool testNonsingularRatIntSolve (size_t n, int iterations)
 			Q.init(true_x[j] , b[j] * tmp_d, tmp_n);
 		}
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		// ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		solve (x, A, b);
 		for (j=0; j < n; ++j) {
 			if (!Q.areEqual(x[j] ,true_x[j])) {
@@ -139,7 +139,7 @@ static bool testNonsingularRatRatSolve (size_t n, int iterations)
 			Q.init(true_x[j] , tmp_bn * tmp_d, tmp_bd * tmp_n);
 		}
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		// ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		solve (x, A, b);
 
 		for (j=0; j < n; ++j) {

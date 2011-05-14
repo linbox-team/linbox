@@ -69,11 +69,11 @@ bool testRandomSolve (const Ring& R,
         VectorWrapper::ensureDim (x, stream1.n ());
         VectorWrapper::ensureDim (y, stream1.n ());
 
-	int n = d. size();
+	int n = (int)d. size();
 
 	while (stream1 && stream2) {
 
-		commentator.startIteration (stream1.j ());
+		commentator.startIteration ((unsigned)stream1.j ());
 
                 //ActivityState state = commentator.saveActivityState ();
 

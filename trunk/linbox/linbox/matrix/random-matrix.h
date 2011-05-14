@@ -216,7 +216,7 @@ namespace LinBox
 		size_t r = P.getOrder();
 		size_t n = r ; // no size given ?
 		for (size_t i = 0 ; i < r ; ++i) {
-			Pt[i] = i + size_t( (n-i)*( drand48() ) ) ;
+			Pt[i] = i + size_t(double (n-i)*( drand48() ) ) ;
 		}
 		return ;
 	}

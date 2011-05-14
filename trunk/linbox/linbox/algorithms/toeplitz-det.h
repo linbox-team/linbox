@@ -51,7 +51,7 @@ namespace LinBox
 			( res, CField.powin( F.leadCoeff( temp, f2 ),
 					     F.deg(f1) - F.deg(fi) ) );
 			if( !((F.deg(f2)-F.deg(f1))%2) && !((F.deg(f1)-n)%2) )
-				sign *= -1;
+				sign = (short)-sign;
 			f1 = f2;
 			f2 = fi;
 		}

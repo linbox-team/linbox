@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
 	ostream& report = commentator.report();
 	bool pass = true;
 #ifdef __LINBOX_HAVE_NTL
-	srand(time(0));
+	srand((unsigned)time(0));
 	RandomPrimeIterator rp;
 	NTL_zz_p::RandIter randit;
 	report << "\tUsing random primes and square matrices of size 2 to " << N_BOUND << endl;

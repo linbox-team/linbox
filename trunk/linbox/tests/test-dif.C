@@ -72,7 +72,7 @@ static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream
 	//F.init (neg_one, -1);
 
 	while (stream1) {
-		commentator.startIteration (stream1.j ());
+		commentator.startIteration ((unsigned)stream1.j ());
 		iter_passed = true;
 
 		stream1.next (d1);

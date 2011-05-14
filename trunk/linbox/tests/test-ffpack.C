@@ -56,7 +56,7 @@ const char* pretty(string a)
 {
 
 	blank = "     " + a;
-	int msgsize= maxpretty - blank.size();
+	int msgsize= maxpretty - (int)blank.size();
 	string dot(".");
 	for (int i=0;i<msgsize ;++i)
 		blank+=dot;
@@ -95,7 +95,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
 		Element * S = new Element[n*n];
 		Element * L = new Element[n*n];
 
-		r = rand() % n;
+		r = (unsigned)( rand() % n );
 		// create S as an upper triangular matrix with r nonzero rows
 		for (size_t i=0;i<r;++i){
 			for (size_t j=0;j<i;++j)
@@ -125,7 +125,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
 		delete[] S;
 
 		// compute the rank of A
-		unsigned int rank= FFPACK::Rank( F, n, n, A, n);
+		unsigned int rank= (unsigned int) FFPACK::Rank( F, n, n, A, n);
                 delete[] A;
 		if (rank!=r)
 			ret=false;
@@ -168,7 +168,7 @@ static bool testTURBO (const Field& F,size_t n, int iterations)
 		Element * S = new Element[n*n];
 		Element * L = new Element[n*n];
 
-		r = rand() % n;
+		r = (unsigned)(rand() % n);
 		// create S as an upper triangular matrix with r nonzero rows
 		for (size_t i=0;i<r;++i){
 			for (size_t j=0;j<i;++j)
@@ -199,7 +199,7 @@ static bool testTURBO (const Field& F,size_t n, int iterations)
 		// compute the rank of A
 		size_t * P = new size_t[n];
 		size_t * Q = new size_t[n];
-		unsigned int rank= FFPACK::TURBO( F, n, n,
+		unsigned int rank= (unsigned)FFPACK::TURBO( F, n, n,
 						  A,n, P, Q, 100);
 // 						  A, n, A+no2,n,
 // 						    A+no2*n, n, A+no2*(n+1), n );
@@ -383,8 +383,8 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 			for (size_t j = i; j < m; ++j)
 				F.assign (*(L+i*m+j), zero );
 		}
-		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, m,
-				  0, r, L, m, Q);
+		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
+				m, 0,(int) r, L, m, Q);
 		for (size_t i=0; i<m; ++i)
 			F.assign( *(L+i*m+i), one);
 		for (size_t i=0; i<m; ++i){
@@ -398,11 +398,11 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations)
 // 		write_field (F, cerr<<"U"<<endl, U, m, n, n);
 		// C = U*P
 		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, m,
-				  0, r, U, n, P);
+				  0, (int) r, U, n, P);
 		//		write_field (F, cerr<<"UP"<<endl, U, m, n, n);
 		// C = Q*C
 		FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, n,
-				  0, r, U, n, Q);
+				  0, (int) r, U, n, Q);
 		//		write_field (F, cerr<<"QUP"<<endl, U, m, n, n);
 
 		delete[] P;
@@ -774,10 +774,14 @@ static bool testapplyP (const Field& F,size_t n, int iterations)
 
 		//  compute A=LS
 
-		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, n, 0, n, A, n, P );
-		FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans, n, 0, n, A, n, P );
-		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans, n, 0, n, A, n, P );
-		FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, n, 0, n, A, n, P );
+		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
+				n, 0,(int)  n, A, n, P );
+		FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
+				n, 0,(int)  n, A, n, P );
+		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans,
+				n, 0,(int)  n, A, n, P );
+		FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans,
+				n, 0,(int)  n, A, n, P );
 
 		for (size_t i=0;i<n*n;++i)
 			if ( !F.areEqual(*(Ab+i),*(A+i)) )
@@ -817,7 +821,7 @@ int main(int argc, char** argv)
 
 		Field F (q);
 
-		srand(time (NULL));
+		srand((unsigned)time (NULL));
 
 		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
@@ -841,7 +845,7 @@ int main(int argc, char** argv)
 
 		Field F (q);
 
-		srand(time (NULL));
+		srand((unsigned)time (NULL));
 
 		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
@@ -864,7 +868,7 @@ int main(int argc, char** argv)
 
 		Field F (q);
 
-		srand(time (NULL));
+		srand((unsigned)time (NULL));
 
 		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
@@ -887,7 +891,7 @@ int main(int argc, char** argv)
 
 		Field F (q);
 
-		srand(time (NULL));
+		srand((unsigned)time (NULL));
 
 		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
@@ -910,7 +914,7 @@ int main(int argc, char** argv)
 
 		Field F (q);
 
-		srand(time (NULL));
+		srand((unsigned)time (NULL));
 
 		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
@@ -934,7 +938,7 @@ int main(int argc, char** argv)
 
 		Field F (q);
 
-		srand(time (NULL));
+		srand((unsigned)time (NULL));
 
 		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
@@ -958,7 +962,7 @@ int main(int argc, char** argv)
 
 		Field F (q);
 
-		srand(time (NULL));
+		srand((unsigned)time (NULL));
 
 		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
@@ -982,7 +986,7 @@ int main(int argc, char** argv)
 
 		Field F (q);
 
-		srand(time (NULL));
+		srand((unsigned)time (NULL));
 
 		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 		commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);

@@ -86,17 +86,17 @@ namespace LinBox
 
 		if (!_QQ.isIdentity())
 			FFPACK::applyP( _F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
-					_m,0,_QQ.getOrder(),
+					_m,0,(int)_QQ.getOrder(),
 					L.getWritePointer(), _m, _QQ.getPointer() );
 		for ( size_t i=0; i<_m; ++i )
 			L.setEntry( i, i, one );
 		if (_QLUP) {
 			if (!_QQ.isIdentity()) {
 				FFPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
-						_m,0,_QQ.getOrder(),
+						_m,0,(int)_QQ.getOrder(),
 						L.getWritePointer(), _m, _QQ.getPointer() );
 				FFPACK::applyP( _F, FFLAS::FflasRight, FFLAS::FflasTrans,
-						_m,0,_QQ.getOrder(),
+						_m,0,(int)_QQ.getOrder(),
 						L.getWritePointer(), _m, _QQ.getPointer() );
 
 			}
@@ -139,7 +139,7 @@ namespace LinBox
 
 		if (!_QQ.isIdentity())
 			FFPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FflasTrans,
-					_n, 0, _QQ.getOrder(),
+					_n, 0,(int) _QQ.getOrder(),
 					S.getWritePointer(), _n, _QQ.getPointer() );
 		return S;
 	}

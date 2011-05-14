@@ -74,7 +74,7 @@ int main (int argc, char ** argv)
 		report << std::endl
 		<< "fgemm " << FFLAS::WinoSteps(n) << "Wino: " << n << "x" << n << ": "
 		<< chrono.usertime() << " s, "
-		<< (2.0/chrono.usertime()*n/100.0*n/100.0*n/100.0) << " Mffops"
+		<< (2.0/chrono.usertime()*(double)n/100.0*(double)n/100.0*(double)n/100.0) << " Mffops"
 		<< std::endl;
 
 		n+=prec;

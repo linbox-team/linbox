@@ -706,13 +706,13 @@ namespace LinBox
 		typename Row::iterator iter;
 
 		if (v.size () == 0) {
-			v.push_back ( value_type(j, value));
+			v.push_back ( value_type((unsigned)j, value));
 		}
 		else {
 			iter = std::lower_bound (v.begin (), v.end (), j, VectorWrapper::CompareSparseEntries<Element> ());
 
 			if (iter == v.end () || iter->first != j)
-				iter = v.insert (iter, value_type(j, value));
+				iter = v.insert (iter, value_type((unsigned)j, value));
 			else
 				iter->second = value;
 		}

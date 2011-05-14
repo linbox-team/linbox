@@ -62,7 +62,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	srand (time (NULL));
+	srand ((unsigned int) time (NULL));
 
 	commentator.start("Companion matrix black box test suite", "companion");
 

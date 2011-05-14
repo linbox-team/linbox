@@ -102,7 +102,7 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Modular<uint32_t> F (q);
 
-	srand (time (NULL));
+	srand ((unsigned)time (NULL));
 
 	commentator.start("Nonzero random iterator test suite", "NonzeroRandIter");
 

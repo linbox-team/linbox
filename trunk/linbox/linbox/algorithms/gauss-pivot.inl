@@ -69,7 +69,7 @@ namespace LinBox
 			if (indpermut != static_cast<long>(indcol)) {
 				// std::cerr << "Permuting col: " << indpermut << " <--> " << indcol << std::endl;
 				// no need to decrement/increment, already done during the search
-				lignepivot[0].first = indcol;
+				lignepivot[0].first = (unsigned)indcol;
 				pivoting = true;
 			}
 
@@ -102,7 +102,7 @@ namespace LinBox
 			_F.mulin(determinant, lignepivot[0].second);
 			if (indpermut != static_cast<long>(indcol)){
 				// std::cerr << "Permuting col: " << lignepivot[0].first << " <--> " << indcol << std::endl;
-				lignepivot[0].first = indcol;
+				lignepivot[0].first = (unsigned)indcol;
 				_F.negin(determinant);
 			}
 			++indcol;

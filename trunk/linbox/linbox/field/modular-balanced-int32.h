@@ -106,7 +106,10 @@ namespace LinBox
 		}
 
 		unsigned long characteristic()const{return FFPACK::ModularBalanced<int32_t>::characteristic();}
+		unsigned long characteristic(unsigned long&p)const{return FFPACK::ModularBalanced<int32_t>::characteristic(p);}
 		unsigned long cardinality ()const{return FFPACK::ModularBalanced<int32_t>::cardinality();}
+		double&convert(double&x,const Element&y)const{return FFPACK::ModularBalanced<int32_t>::convert(x,y);}
+		float&convert(float&x,const Element&y)const{return FFPACK::ModularBalanced<int32_t>::convert(x,y);}
 
 		// this function converts an int to a natural number ?
 		integer &convert (integer &x, const Element &y) const
@@ -119,7 +122,7 @@ namespace LinBox
 
 		Element &init (Element &x, const integer &y) const
 		{
-			x = y % (long)modulus;
+			x = Element(y % (long)modulus);
 
 			if (x < nhalfmodulus)
 				x += modulus;
@@ -190,7 +193,7 @@ namespace LinBox
 
 			normalize();
 
-			y = _y;
+			y = Element(_y);
 
 			if (y > _F.halfmodulus)
 				y -= _F.modulus;

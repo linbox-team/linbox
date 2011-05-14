@@ -40,7 +40,7 @@
 #include <linbox/solutions/smith-form.h>
 using LinBox::commentator;
 using LinBox::Commentator;
-using LinBox::integer; 
+using LinBox::integer;
 using LinBox::DenseMatrix;
 
 template <class Ring, class Vector>
@@ -66,11 +66,11 @@ bool testRandom(const Ring& R,
 	LinBox::VectorWrapper::ensureDim (x, stream1.n ());
 
 
-	int n = d. size();
+	int n = (int)d. size();
 
 	 while (stream1) {
 
-                commentator.startIteration (stream1.j ());
+                commentator.startIteration ((unsigned)stream1.j ());
 
 		std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 

@@ -201,7 +201,7 @@ namespace LinBox
 			FieldTraits<Field>::maxModulus(mmodulus);
 			long bit1 = (long) floor (log((double)mmodulus)/M_LN2);
 			long bit2 = (long) floor (log(sqrt(double(4503599627370496LL/n)))/M_LN2);
-			RandomPrimeIterator primeg(bit1 < bit2 ? bit1 : bit2);
+			RandomPrimeIterator primeg(unsigned(bit1 < bit2 ? bit1 : bit2));
 
 			Field::Element* FA = new Field::Element[n*n];
 			size_t* P= new size_t[n], *PQ = new size_t[n];
@@ -304,7 +304,7 @@ namespace LinBox
 			typedef Field::Element Element;
 			typedef DenseMatrix<Field> FMatrix;
 			RandomPrimeIterator primeg(20);
-			Field F (*primeg);
+			Field F ((unsigned long)*primeg);
 			FMatrix FM(F, IM.rowdim(), IM.coldim());
 			//std::cout << "Random prime " << p << "\n";
 
@@ -317,7 +317,7 @@ namespace LinBox
 			typedef FMatrix::Row Row;
 			//the index is 0-based.
 			int i = 0;
-			int n = M. rowdim();
+			int n = (int) M. rowdim();
 			std::vector<int> P(n);
 
 			for (i = 0; i < n; ++ i)
@@ -393,13 +393,13 @@ namespace LinBox
 			typedef Modular<double> Field;
 			typedef Field::Element Element;
 
-			int n = M. rowdim();
+			int n = (int)M. rowdim();
 
 			integer mmodulus;
 			FieldTraits<Field>::maxModulus(mmodulus);
 			long bit1 = (long) floor (log((double)mmodulus)/M_LN2);
 			long bit2 = (long) floor (log(sqrt(double(4503599627370496LL/n)))/M_LN2);
-			RandomPrimeIterator primeg(bit1 < bit2 ? bit1 : bit2);
+			RandomPrimeIterator primeg((unsigned)(bit1 < bit2 ? bit1 : bit2));
 
 			Field::Element* FA = new Field::Element[n*n], *p;
 

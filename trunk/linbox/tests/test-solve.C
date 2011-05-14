@@ -85,7 +85,7 @@ static bool testIdentitySolve (const Field          &F,
 	MethodTraits traits (method);
 
 	while (stream) {
-		commentator.startIteration (stream.j ());
+		commentator.startIteration ((unsigned)stream.j ());
 
 		iter_passed = true;
 
@@ -177,7 +177,7 @@ static bool testNonsingularSolve (const Field          &F,
 	MethodTraits traits (method);
 
 	while (stream1 && stream2) {
-		commentator.startIteration (stream1.j ());
+		commentator.startIteration ((unsigned)stream1.j ());
 
 		ActivityState state = commentator.saveActivityState ();
 
@@ -293,7 +293,7 @@ static bool testSingularConsistentSolve (const Field          &F,
 	traits.preconditioner (MethodTraits::NO_PRECONDITIONER);
 
 	while (stream1 && stream2) {
-		commentator.startIteration (stream1.j ());
+		commentator.startIteration ((unsigned)stream1.j ());
 
 		ActivityState state = commentator.saveActivityState ();
 
@@ -414,7 +414,7 @@ static bool testSingularInconsistentSolve (const Field          &F,
 	traits.preconditioner (MethodTraits::NONE);
 
 	while (stream1 && stream2) {
-		commentator.startIteration (stream1.j ());
+		commentator.startIteration ((unsigned)stream1.j ());
 
 		stream1.next (d1);
 		stream2.next (b);
@@ -537,7 +537,7 @@ static bool testSingularPreconditionedSolve (const Field                  &F,
 	traits.preconditioner (preconditioner);
 
 	while (stream1 && stream2) {
-		commentator.startIteration (stream1.j ());
+		commentator.startIteration ((unsigned)stream1.j ());
 
 		stream1.next (d1);
 		stream2.next (b);
@@ -654,7 +654,7 @@ static bool testRandomSolve (const Field                  &F,
 	MethodTraits traits (method);
 
 	while (b_stream) {
-		commentator.startIteration (b_stream.pos ());
+		commentator.startIteration ((unsigned)b_stream.pos ());
 
 		iter_passed = true;
 

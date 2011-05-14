@@ -215,7 +215,7 @@ namespace LinBox
 			    BlasMatrix<typename Field::Element>   &A) const
 		{
 
-			return FFPACK::Rank(F, A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
+			return (unsigned int) FFPACK::Rank(F, A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
 		}
 	};
 

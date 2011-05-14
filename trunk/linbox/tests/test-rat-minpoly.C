@@ -65,7 +65,7 @@ static bool testDiagRatCharpoly (size_t n, int iterations)
 
 		commentator.startIteration (i);
 
-		size_t k = ceil(n/2);
+		size_t k = (size_t)ceil((double)n/2);
 		for (j=0; j < k; ++j) {
 			integer tmp_n, tmp_d;
 			GMPRationalField::Element tmp, abstmp;

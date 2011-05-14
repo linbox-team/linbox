@@ -99,7 +99,8 @@ static bool testSubvector(Field &F, size_t n)
 	typedef typename Subvect::reverse_iterator	ReverseSubiterator;
 
 	Vector v(n);
-	for (size_t z = 0; z < n; z++) v[z] = z;
+	for (size_t z = 0; z < n; z++)
+		v[z] = (Element)z;
 
 	printVector(F, report, v);
 

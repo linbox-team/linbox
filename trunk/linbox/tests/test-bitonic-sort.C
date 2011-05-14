@@ -167,7 +167,7 @@ int main(int argc, char** argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	if (!testRandom(report, n, iterations)) pass = false;
+	if (!testRandom(report, (int)n, iterations)) pass = false;
 	commentator.stop("sort network test suite");
 
 	return pass ? 0 : -1;

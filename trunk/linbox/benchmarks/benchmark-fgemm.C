@@ -204,7 +204,7 @@ void launch_bench_blas(index_t min, index_t max, int step
 			for (index_t j = 0 ; j < mimi ; ++j) R.random(B[j]);
 			for (index_t j = 0 ; j < mimi ; ++j) R.random(C[j]);
 			chrono.clear(); chrono.start() ;
-			LinBox::FFLAS::fgemm(G,LinBox::FFLAS::FflasNoTrans,LinBox::FFLAS::FflasNoTrans,
+			FFLAS::fgemm(G,FFLAS::FflasNoTrans,FFLAS::FflasNoTrans,
 					     ii,ii,ii,
 					     1.,
 					     A,ii,B,ii,
@@ -759,9 +759,9 @@ int main( int ac, char ** av)
 {
 	/*  Argument parsing/setting */
 
-	static size_t       min = 100;     /*  min size */
-	static size_t       max = 1500;    /*  max size (not included) */
-	static size_t       step = 100;    /*  step between 2 sizes */
+	static index_t       min  = 100;     /*  min size */
+	static index_t       max  = 1500;    /*  max size (not included) */
+	static index_t       step = 100;    /*  step between 2 sizes */
 	static std::list<int> lst  ;       /*  what bench to start ? */
 	lst.push_front(1);// ={1,2} vivement le nouveau std...
 	lst.push_front(2);

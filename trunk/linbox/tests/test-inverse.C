@@ -81,7 +81,7 @@ static bool testIdentityInverse (const Field &F, VectorStream<Vector> &stream)
 	VectorWrapper::ensureDim (w, stream.n ());
 
 	while (stream) {
-		commentator.startIteration (stream.j ());
+		commentator.startIteration ((unsigned)stream.j ());
 
 		iter_passed = true;
 
@@ -229,7 +229,7 @@ static bool testVandermondeInverse (const Field           &F,
 	VectorWrapper::ensureDim (z, x_stream.n ());
 
 	while (x_stream) {
-		commentator.startIteration (x_stream.j ());
+		commentator.startIteration ((unsigned)x_stream.j ());
 
 		/* Evaluation points */
 		x_stream.next (x);
@@ -333,7 +333,7 @@ static bool testDiagonalInverse (const Field &F, VectorStream<Vector> &stream)
 	VectorWrapper::ensureDim (DTe, stream.n ());
 
 	while (stream) {
-		commentator.startIteration (stream.j ());
+		commentator.startIteration ((unsigned)stream.j ());
 
 		iter_passed = true;
 
@@ -449,7 +449,7 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Field F (q);
 
-	srand (time (NULL));
+	srand ((unsigned)time (NULL));
 
 	commentator.start("Inverse black box test suite", "Inverse");
 
