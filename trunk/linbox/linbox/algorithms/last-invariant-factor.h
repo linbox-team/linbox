@@ -134,7 +134,7 @@ namespace LinBox
 				for ( Prime_p = PrimeL.begin();
 				      Prime_p != PrimeL.end();
 				      ++ Prime_p) {
-					r.init (pri, *Prime_p);
+					r.init (pri, (unsigned long) *Prime_p);
 					do {
 						r.quoRem(quo,rem,lif,pri);
 						if (r.isZero(rem)) r.assign(lif,quo);

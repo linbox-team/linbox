@@ -74,7 +74,7 @@ namespace LinBox
 		if (A.rowdim() != A.coldim() ) _traits.singular (singular = WiedemannTraits::SINGULAR);
 		ReturnStatus status = FAILED;
 
-		unsigned int tries = _traits.maxTries ();
+		unsigned int tries = (int)_traits.maxTries ();
 
 		unsigned long r = (unsigned long) -1;
 
@@ -97,7 +97,7 @@ namespace LinBox
 					case SINGULAR:
 						commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 						<< "System found to be singular. Reverting to nonsingular solver." << std::endl;
-						tries = _traits.maxTries ();
+						tries = (int)_traits.maxTries ();
 						singular = WiedemannTraits::SINGULAR;
 						break;
 					default:
@@ -225,7 +225,7 @@ namespace LinBox
 
 			VectorWrapper::ensureDim (z, A.rowdim ());
 
-			for (int i = m_A.size () - 1; --i > 0;) {
+			for (int i = (int) m_A.size () - 1; --i > 0;) {
 				if ((m_A.size () - i) & (0xff == 0))
 					commentator.progress (m_A.size () - i);
 
@@ -589,7 +589,7 @@ namespace LinBox
 		RandomSparseStream<Field> stream (_F, _randiter, init_p, m, m);
 
 		for (unsigned int i = 0; i < m; ++i) {
-			new_p = log_m / (m - i + 1);
+			new_p = log_m / double(m - i + 1);
 
 			if (init_p < new_p)
 				stream.setP (init_p);

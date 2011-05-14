@@ -941,12 +941,12 @@ namespace LinBox
 					 * also note that we need separate blocks for positive and negative entries)
 					 */
 
-					int rc = (52 / chunk_size) + 1; //constant at 4 for now
+					int rc = int(52 / chunk_size) + 1; //constant at 4 for now
 
 					//rclen: number of bytes in each of these OR-ed vectors
 					// needs room to hold (max long long) << (num_chunks * chunksize)
 
-					int rclen = num_chunks*2 + 5;
+					int rclen = (int)num_chunks*2 + 5;
 
 					// cout << "rc= " << rc << ", rclen = " << rclen << endl;
 

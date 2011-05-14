@@ -319,6 +319,28 @@ namespace LinBox
 			return x=Element(y);
 		}
 
+		inline Element& init(Element& x, const unsigned long& y) const
+		{
+			return x=Element(y);
+		}
+
+		inline Element& init(Element& x, const long& y) const
+		{
+			return x=Element(y);
+		}
+
+		inline Element& init(Element& x, const unsigned int & y) const
+		{
+			return x=Element(y);
+		}
+
+		inline Element& init(Element& x, const int& y) const
+		{
+			return x=Element(y);
+		}
+
+
+
 		inline integer& convert(integer& x, const Element& y) const
 		{
 			return x=y;

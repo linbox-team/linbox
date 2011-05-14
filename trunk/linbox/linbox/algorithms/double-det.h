@@ -59,14 +59,16 @@ namespace LinBox
 			F.negin(d);
 
 		// Trick: instead of Right-Trans, do Left-NoTrans in order to use inc*
-		FFPACK::applyP (F, FFLAS::FflasLeft, FFLAS::FflasNoTrans, 1, 0, N-1,
-				b, incb, P);
-		FFPACK::applyP (F, FFLAS::FflasLeft, FFLAS::FflasNoTrans, 1, 0, N-1,
-				c, incc, P);
+		FFPACK::applyP (F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
+				1, 0,(int) N-1, b, incb, P);
+		FFPACK::applyP (F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
+				1, 0,(int) N-1, c, incc, P);
 		FFLAS::ftrsv (F, FFLAS::FflasUpper, FFLAS::FflasTrans,
-			      FFLAS::FflasUnit, N, A, lda, b, incb);
+			      FFLAS::FflasUnit,
+			      N, A, lda, b, (int)incb);
 		FFLAS::ftrsv (F, FFLAS::FflasUpper, FFLAS::FflasTrans,
-			      FFLAS::FflasUnit, N, A, lda, c, incc);
+			      FFLAS::FflasUnit,
+			      N, A, lda, c, (int)incc);
 
 
 		F.mul (d1, d, *(b + (N-1) * incb));

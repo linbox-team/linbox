@@ -1126,11 +1126,37 @@ namespace LinBox
 			return x;
 		}
 
+		Element &init (Element &x, const long int &y = 0) const
+		{
+			x = abs (y) % integer (ModularBase<Element>::_modulus);
+			if (y < 0) x = ModularBase<Element>::_modulus - x;
+			return x;
+		}
+
+		Element &init (Element &x, const int &y = 0) const
+		{
+			x = abs (y) % integer (ModularBase<Element>::_modulus);
+			if (y < 0) x = ModularBase<Element>::_modulus - x;
+			return x;
+		}
+
+		Element &init (Element &x, const long unsigned int &y = 0) const
+		{
+			x = Element(y %  (ModularBase<Element>::_modulus));
+			return x;
+		}
+
 		Element &init (Element &x, const double &y) const
 		{
 			double z = fmod(y, (double)_modulus);
 			if (z < 0) z += (double) _modulus;
 			return x = (Element) (z);
+		}
+
+		template< class XXX>
+		Element& init(Element & x, const XXX & y) const
+		{
+			return init(x,double(y));
 		}
 
 		Element &add (Element &x, const Element &y, const Element &z) const

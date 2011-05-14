@@ -62,7 +62,7 @@ namespace LinBox
 		long rank(const IMatrix& A) const
 		{
 
-			Field F (*rp);
+			Field F ((unsigned long)*rp);
 
 			DenseMatrix<Field> Ap(F, A.rowdim(), A.coldim());
 

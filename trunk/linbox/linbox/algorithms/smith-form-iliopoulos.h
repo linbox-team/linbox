@@ -439,7 +439,7 @@ namespace LinBox
 
 			diagonalizationIn(A, r);
 
-			int min = A.rowdim() <= A.coldim() ? A.rowdim() : A.coldim();
+			int min = (int)(A.rowdim() <= A.coldim() ? A.rowdim() : A.coldim());
 
 			int i, j;
 

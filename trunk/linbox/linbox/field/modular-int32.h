@@ -110,6 +110,14 @@ namespace LinBox
 			FFPACK::Modular<int32_t>(value,exp)
 		      {}
 
+		Modular (long value) :
+			FFPACK::Modular<int32_t>(value)
+		      {}
+
+		Modular (unsigned long value) :
+			FFPACK::Modular<int32_t>(value)
+		      {}
+
 		 integer &cardinality (integer &c) const
 		{
 			return c = modulus;
@@ -362,9 +370,10 @@ namespace LinBox
 		}
 
 		typename Vector1::iterator w_j;
+		typedef typename Vector1::value_type elements ;
 
 		for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
-			*w_j = *l % VD.field ().modulus;
+			*w_j = elements(*l % VD.field ().modulus);
 
 		return w;
 	}

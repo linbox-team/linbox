@@ -302,7 +302,7 @@ namespace LinBox
 
 			do {
 				++rg;
-				Field F(*rg);
+				Field F((unsigned long)*rg);
 				FBlackbox Ap(A, F);
 				one_valence(v, d1, Ap);
 				if (d1 == d) {

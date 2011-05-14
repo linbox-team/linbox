@@ -82,7 +82,7 @@ namespace LinBox
 							    p->begin());
 					if ( q != p->begin() )
 						swap_ranges(A.colBegin()->begin(), A.colBegin()->end(),
-							    (A.colBegin() + (q - p->begin()))->begin());
+							    (A.colBegin() + (int)(q - p->begin()))->begin());
 
 					// eliminate step - crude and for dense only - fix later
 					// Want to use a block method or "left looking" elimination.

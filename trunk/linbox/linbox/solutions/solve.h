@@ -480,24 +480,24 @@ namespace LinBox
 		switch ( m.singular() ) {
 		case Specifier::SINGULARITY_UNKNOWN:
 			switch (A.rowdim() == A.coldim() ?
-				status=rsolve.solveNonsingular(x, d, A, b, false ,m.maxTries()) : SS_SINGULAR) {
+				status=rsolve.solveNonsingular(x, d, A, b, false ,(int)m.maxTries()) : SS_SINGULAR) {
 			case SS_OK:
 				m.singular(Specifier::NONSINGULAR);
 				break;
 			case SS_SINGULAR:
 				switch (m.solution()){
 				case DixonTraits::DETERMINIST:
-					status= rsolve.monolithicSolve(x, d, A, b, false, false, m.maxTries(),
+					status= rsolve.monolithicSolve(x, d, A, b, false, false, (int)m.maxTries(),
 								       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 					break;
 				case DixonTraits::RANDOM:
-					status= rsolve.monolithicSolve(x, d, A, b, false, true, m.maxTries(),
+					status= rsolve.monolithicSolve(x, d, A, b, false, true, (int)m.maxTries(),
 								       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 					break;
 				case DixonTraits::DIOPHANTINE:
 					{
 						DiophantineSolver<RationalSolver<Ring,Field,RandomPrimeIterator, DixonTraits> > dsolve(rsolve);
-						status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
+						status= dsolve.diophantineSolve(x, d, A, b, (int)m.maxTries(),
 										(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 					}
 					break;
@@ -511,27 +511,27 @@ namespace LinBox
 			break;
 
 		case Specifier::NONSINGULAR:
-			rsolve.solveNonsingular(x, d, A, b, false ,m.maxTries());
+			rsolve.solveNonsingular(x, d, A, b, false ,(int)m.maxTries());
 			break;
 
 		case Specifier::SINGULAR:
 			switch (m.solution()){
 			case DixonTraits::DETERMINIST:
 				status= rsolve.monolithicSolve(x, d, A, b,
-							       false, false, m.maxTries(),
+							       false, false, (int)m.maxTries(),
 							       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 				break;
 
 			case DixonTraits::RANDOM:
 				status= rsolve.monolithicSolve(x, d, A, b,
-							       false, true, m.maxTries(),
+							       false, true, (int)m.maxTries(),
 							       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 				break;
 
 			case DixonTraits::DIOPHANTINE:
 				{
 					DiophantineSolver<RationalSolver<Ring,Field,RandomPrimeIterator, DixonTraits> > dsolve(rsolve);
-					status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
+					status= dsolve.diophantineSolve(x, d, A, b, (int)m.maxTries(),
 									(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 				}
 				break;
@@ -573,23 +573,23 @@ namespace LinBox
 		switch ( m.singular() ) {
 		case Specifier::SINGULARITY_UNKNOWN:
 			switch (A.rowdim() == A.coldim() ?
-				status=rsolve.solveNonsingular(x, d, A, b, false ,m.maxTries()) : SS_SINGULAR) {
+				status=rsolve.solveNonsingular(x, d, A, b, false ,(int)m.maxTries()) : SS_SINGULAR) {
 			case SS_OK:
 				m.singular(Specifier::NONSINGULAR);
 				break;
 			case SS_SINGULAR:
 				switch (m.solution()){
 				case DixonTraits::DETERMINIST:
-					status= rsolve.monolithicSolve(x, d, A, b, false, false, m.maxTries(),
+					status= rsolve.monolithicSolve(x, d, A, b, false, false, (int)m.maxTries(),
 								       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 					break;
 				case DixonTraits::RANDOM:
-					status= rsolve.monolithicSolve(x, d, A, b, false, true, m.maxTries(),
+					status= rsolve.monolithicSolve(x, d, A, b, false, true, (int)m.maxTries(),
 								       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 					break;
 				case DixonTraits::DIOPHANTINE:
 					DiophantineSolver<RationalSolver<Ring,Field,RandomPrimeIterator, DixonTraits> > dsolve(rsolve);
-					status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
+					status= dsolve.diophantineSolve(x, d, A, b, (int)m.maxTries(),
 									(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 					break;
 					//default:
@@ -599,26 +599,26 @@ namespace LinBox
 			}
 
 		case Specifier::NONSINGULAR:
-			rsolve.solveNonsingular(x, d, A, b, false ,m.maxTries());
+			rsolve.solveNonsingular(x, d, A, b, false ,(int)m.maxTries());
 			break;
 
 		case Specifier::SINGULAR:
 			switch (m.solution()){
 			case DixonTraits::DETERMINIST:
 				status= rsolve.monolithicSolve(x, d, A, b,
-							       false, false, m.maxTries(),
+							       false, false, (int)m.maxTries(),
 							       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 				break;
 
 			case DixonTraits::RANDOM:
 				status= rsolve.monolithicSolve(x, d, A, b,
-							       false, true, m.maxTries(),
+							       false, true, (int)m.maxTries(),
 							       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 				break;
 
 			case DixonTraits::DIOPHANTINE:
 				DiophantineSolver<RationalSolver<Ring,Field,RandomPrimeIterator, DixonTraits> > dsolve(rsolve);
-				status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
+				status= dsolve.diophantineSolve(x, d, A, b, (int)m.maxTries(),
 								(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 				break;
 
@@ -664,7 +664,7 @@ namespace LinBox
 		switch ( m.singular() ) {
 		case Specifier::SINGULARITY_UNKNOWN:
 			switch (A.rowdim() == A.coldim() ?
-				status=rsolve.solveNonsingular(x, d, A, b,m.maxTries()) : SS_SINGULAR) {
+				status=rsolve.solveNonsingular(x, d, A, b,(int)m.maxTries()) : SS_SINGULAR) {
 			case SS_OK:
 				m.singular(Specifier::NONSINGULAR);
 				break;
@@ -672,17 +672,17 @@ namespace LinBox
 			case SS_SINGULAR:
 				switch (m.solution()){
 				case DixonTraits::DETERMINIST:
-					status= rsolve.monolithicSolve(x, d, A, b, false, false, m.maxTries(),
+					status= rsolve.monolithicSolve(x, d, A, b, false, false, (int)m.maxTries(),
 								       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 					break;
 				case DixonTraits::RANDOM:
-					status= rsolve.monolithicSolve(x, d, A, b, false, true, m.maxTries(),
+					status= rsolve.monolithicSolve(x, d, A, b, false, true, (int)m.maxTries(),
 								       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 					break;
 				case DixonTraits::DIOPHANTINE:
 					{
 						DiophantineSolver<RationalSolver<Ring,Field,RandomPrimeIterator, DixonTraits> > dsolve(rsolve);
-						status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
+						status= dsolve.diophantineSolve(x, d, A, b, (int)m.maxTries(),
 										(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 					}
 					break;
@@ -697,7 +697,7 @@ namespace LinBox
 			break;
 
 		case Specifier::NONSINGULAR:
-			rsolve.solveNonsingular(x, d, A, b, m.maxTries());
+			rsolve.solveNonsingular(x, d, A, b, (int)m.maxTries());
 			break;
 
 		case Specifier::SINGULAR:
@@ -705,20 +705,20 @@ namespace LinBox
 			switch (m.solution()){
 			case DixonTraits::DETERMINIST:
 				status= rsolve.monolithicSolve(x, d, A, b,
-							       false, false, m.maxTries(),
+							       false, false, (int)m.maxTries(),
 							       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 				break;
 
 			case DixonTraits::RANDOM:
 				status= rsolve.monolithicSolve(x, d, A, b,
-							       false, true, m.maxTries(),
+							       false, true, (int)m.maxTries(),
 							       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 				break;
 
 			case DixonTraits::DIOPHANTINE:
 				{
 					DiophantineSolver<RationalSolver<Ring,Field,RandomPrimeIterator, DixonTraits> > dsolve(rsolve);
-					status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
+					status= dsolve.diophantineSolve(x, d, A, b, (int)m.maxTries(),
 									(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 				}
 				break;

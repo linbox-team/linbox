@@ -188,7 +188,7 @@ inline uint32_t &DotProductDomain<Modular<uint32_t> >::dotSpecializedDD
 
 	y %= (uint64_t) _F._modulus;
 
-	return res = y;
+	return res = (uint32_t) y;
 }
 
 template <class Vector1, class Vector2>
@@ -211,7 +211,7 @@ inline uint32_t &DotProductDomain<Modular<uint32_t> >::dotSpecializedDSP
 
 	y %= (uint64_t) _F._modulus;
 
-	return res = y;
+	return res = (uint32_t)y;
 }
 
 template <class Vector1, class Matrix, class Vector2>
@@ -276,6 +276,7 @@ Vector1 &MVProductDomain<Modular<uint8_t> >::mulColDenseSpecialized
 	std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
 
 	l_end = _tmp.begin () + w.size ();
+
 
 	do {
 		j = v.begin ();
@@ -607,9 +608,10 @@ Vector1 &MVProductDomain<Modular<uint32_t> >::mulColDenseSpecialized
 	}
 
 	typename Vector1::iterator w_j;
+	typedef typename Vector1::value_type element;
 
 	for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
-		*w_j = *l % VD.field ()._modulus;
+		*w_j = (element)(*l % VD.field ()._modulus);
 
 	return w;
 }

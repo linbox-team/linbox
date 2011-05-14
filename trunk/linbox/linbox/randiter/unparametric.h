@@ -101,7 +101,7 @@ namespace LinBox
 #endif // TRACE
 
 			// Seed random number generator
-			srand(static_cast<long>(_seed));
+			srand((unsigned)_seed);
 
 		} // UnparametricRandIter(const UnparametricField<K>&, const integer&, const integer&)
 
