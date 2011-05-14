@@ -219,6 +219,12 @@ namespace LinBox
 
 		}
 
+		Element &init (Element &x , const unsigned&y ) const
+		{
+			return ::Givaro::ZpzDom<TAG>::init (x, y ) ;
+
+		}
+
 		Element &init (Element &x , const unsigned long &y ) const
 		{
 			return ::Givaro::ZpzDom<TAG>::init (x, y ) ;

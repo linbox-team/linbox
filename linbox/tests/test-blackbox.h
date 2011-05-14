@@ -218,7 +218,7 @@ testBlackbox(BB &A)
 
 	LinBox::commentator.setMaxDepth(-1);
 	bool ret = true;
-	typename BB::Field F = A.field();
+	Field F = A.field();
 
 	/* timing tests */   // I changed the order of all tests. Timing now is the first set of tests and then linearity and transpose
 	{
