@@ -27,6 +27,7 @@ namespace LinBox
 	inline GivaroZpz< ::Givaro::Std32>::Element &DotProductDomain<GivaroZpz< ::Givaro::Std32> >::dotSpecializedDD
 	(GivaroZpz< ::Givaro::Std32>::Element &res, const Vector1 &v1, const Vector2 &v2) const
 	{
+		typedef typename GivaroZpz<Givaro::Std32>::Element Element;
 		uint64_t inter,best ;
 		inter=best=0;
 		if (v1.size()==0) return res=GivaroZpz< ::Givaro::Std32>::Element(0);
@@ -58,7 +59,7 @@ namespace LinBox
 			if (inter > best) best+=Corr;
 
 
-			return res =  best % (uint64_t)_F.characteristic();
+			return res =  Element(best % (uint64_t)_F.characteristic());
 		}
 	}
 

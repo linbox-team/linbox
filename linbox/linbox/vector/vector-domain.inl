@@ -2353,7 +2353,7 @@ namespace LinBox
 
 		//z.w. Does it require max bigger the maximal index of v?
 		if (v. first. size() > 0)
-			max = *std::max_element(v. first. begin(), v. first. end());
+			max = (unsigned)(*std::max_element(v. first. begin(), v. first. end()));
 
 		for (Iterator i = P_start; i != P_end; ++i)
 			max = std::max (max, std::max (i->first, i->second));

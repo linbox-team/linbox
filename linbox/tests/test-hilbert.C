@@ -64,7 +64,7 @@ int main (int argc, char **argv)
 	typedef Modular<uint32_t> Field;
 	Field F (q);
 
-	srand (time (NULL));
+	srand ((unsigned)time (NULL));
 
 	commentator.start("Hilbert matrix blackbox test suite", "Hilbert");
 

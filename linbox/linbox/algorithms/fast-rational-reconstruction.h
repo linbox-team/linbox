@@ -421,9 +421,10 @@ namespace LinBox
 					d1 = c1;
 					c1 = tmp;
 
-					int k = a1.bitsize()-1 ;
+					int k = (int)a1.bitsize()-1 ;
 					int _k;
-					if (h-k > 2) _k = h-k-2;
+					if (h-k > 2)
+						_k = (int)(h-k-2);
 					else _k = 0;
 					if (n2 >0) {
 						if (a1 < powh) {
@@ -1052,7 +1053,8 @@ namespace LinBox
 
 					size_t k = a1.bitsize()-1 ;
 					int _k;
-					if (h-k>2) _k = h-k-2;
+					if (h-k>2)
+						_k = (int)(h-k-2);
 					else _k = 0;
 
 					if (n2 >0) {

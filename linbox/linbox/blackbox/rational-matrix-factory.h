@@ -277,7 +277,8 @@ typedef typename Rationals::Element Quotient;
 
 		Atilde.resize(_A->rowdim(),_A->coldim());
 	        std::vector<integer> di(_A->rowdim());
-	        for (size_t i=0; i < _A->rowdim(); ++i) denominator(di[i],i);
+	        for (size_t i=0; i < (size_t)_A->rowdim(); ++i)
+			denominator(di[(int)i],(int)i);
 
 		for( size_t i=0; i < _A->rowdim(); ++i) {
                         for (size_t j=0; j < _A->coldim(); ++j) {

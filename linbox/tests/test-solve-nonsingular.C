@@ -69,7 +69,8 @@ void generateProblem(const Ring& R, Matrix &D, Vector &b,
 		LinBox::VectorStream<Vector>& stream1,
 		LinBox::VectorStream<Vector>& stream2,
 		MatType mt,
-		int k = 10){
+		int k = 10)
+{
 
 	Vector d, x, y;
 	VectorWrapper::ensureDim (d, stream1.n ());
@@ -79,7 +80,7 @@ void generateProblem(const Ring& R, Matrix &D, Vector &b,
 
 	std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-	int n = d.size();
+	int n =(int) d.size();
 
 	bool zeroEntry;
 	do {
@@ -192,7 +193,7 @@ void generateProblem(const Ring& R, Matrix &D, Vector &b,
 template <class Ring, class RSolver, class Matrix, class Vector>
 bool testRandomSolve (const Ring& R, RSolver& rsolver, Matrix& D, Vector &b) {
 
-	int n = b.size();
+	int n = (int) b.size();
 	Vector d, tmpb, x, y;
 	VectorWrapper::ensureDim (d, n);
 	VectorWrapper::ensureDim (x, n);
@@ -309,7 +310,7 @@ int main(int argc, char** argv) {
 
 	CommonMatrix A(R, n, n);
 	Vector b(n);
-	generateProblem(R, A, b, s1, s2, mt, k);
+	generateProblem(R, A, b, s1, s2, mt, (int) k);
 
 	if(run & 1){
 		/*  choose your numerical solver */

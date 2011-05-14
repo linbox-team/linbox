@@ -399,7 +399,7 @@ namespace LinBox
 			std::vector< LazyProduct >::iterator _mod_it = FullMultipCRA<Domain>::RadixPrimeProd_.end();// list of prime products
 			std::vector< std::vector<Integer> >::iterator _tab_it = FullMultipCRA<Domain>::RadixResidues_.end();// list of residues as vectors of size 1
 			std::vector< bool >::iterator    _occ_it = FullMultipCRA<Domain>::RadixOccupancy_.end();//flags of occupied fields
-			int n = FullMultipCRA<Domain>::RadixOccupancy_.size();
+			int n = (int)FullMultipCRA<Domain>::RadixOccupancy_.size();
 			//std::vector<Integer> ri(1); LazyProduct mi; double di;
 			//could be much faster if max occupandy is stored
 			int prev_shelf=0, shelf = 0; Integer prev_residue_=0;

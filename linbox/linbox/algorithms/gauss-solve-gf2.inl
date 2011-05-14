@@ -70,8 +70,8 @@ namespace LinBox
 		unsigned long rank;
 		const GF2 F2;
 		SparseSeqMatrix L(F2, A.rowdim(), A.rowdim());
-		Permutation<GF2> Q(A.rowdim(),F2);
-		Permutation<GF2> P(A.coldim(),F2);
+		Permutation<GF2> Q((int)A.rowdim(),F2);
+		Permutation<GF2> P((int)A.coldim(),F2);
 
 
 

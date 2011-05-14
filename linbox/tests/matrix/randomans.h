@@ -17,7 +17,7 @@ Matrix& randomAns(const Ring& R, Matrix& Mat, size_t n, size_t epr){
 	vector<int> usedV(epr);
 	typename Ring::Element tmp;
 
-	srand(time(NULL));
+	srand((unsigned)time(NULL));
 
 	//  build first n-1 rows
 	for(size_t i = 0; i < n-1; ++i) {
@@ -34,11 +34,11 @@ Matrix& randomAns(const Ring& R, Matrix& Mat, size_t n, size_t epr){
 			val = neg*(rand()%CEILING);
 			//  choose random location for value
 			do{
-				pos = rand()%n;  // pos in [0, n)
+				pos = int(rand()%n);  // pos in [0, n)
 			}
 			while(used(usedV, pos));
 			usedV[k] = pos;  //  record location
-			
+
 			//std::cerr << "\t set value " << val << " in pos " << pos << std::endl;
 			//  finally, set entry
 			Mat.setEntry(i, pos, R.init(tmp, val));
@@ -50,7 +50,7 @@ Matrix& randomAns(const Ring& R, Matrix& Mat, size_t n, size_t epr){
 	for(size_t i=0; i<n; ++i)
 		R.init(tmps[i], 0);
 
-	//  build last row incorporate every row 
+	//  build last row incorporate every row
 	for(size_t i = 0; i < n-1; ++i){
 		neg = 1;
 		if(rand()%2) neg = -1;
@@ -64,11 +64,11 @@ Matrix& randomAns(const Ring& R, Matrix& Mat, size_t n, size_t epr){
 		Mat.setEntry(n-1, i, tmps[i]);
 
 	//  add one to random value
-	size_t wildcard = rand()%n;	
+	size_t wildcard = rand()%n;
 	R.init(tmp, Mat.getEntry(n-1, wildcard));
 	R.addin(tmp, 1);
 	Mat.setEntry(n-1, wildcard, tmp);
-			
+
 	return Mat;
 }
 

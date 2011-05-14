@@ -114,7 +114,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	srand (time (NULL));
+	srand ((unsigned)time (NULL));
 
 	commentator.start("IsPositiveDefinite solution test suite", "IsPositiveDefinite");
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);

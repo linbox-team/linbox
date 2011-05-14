@@ -84,7 +84,7 @@ static bool testDiagRatCharpoly (size_t n, int iterations)
 		}
 		if (n%2==0) Q.negin(cn);
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		// ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		charpoly (c, A);
 		if ((!Q.areEqual(c[0] , c0)) || (!Q.areEqual(c[n-1] , cn) ) ) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)

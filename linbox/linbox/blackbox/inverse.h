@@ -115,7 +115,7 @@ namespace LinBox
 					field().mul (_minpoly[i-1], _mp1[i], a0);
 			}
 
-			int n = _minpoly.size () - 1;
+			int n = (int) _minpoly.size () - 1;
 
 			_VD.mul (y, x, _minpoly[n]);
 
@@ -158,7 +158,7 @@ namespace LinBox
 					field().mul (_transposeMinpoly[i-1], _mp1[i], a0);
 			}
 
-			int n = _transposeMinpoly.size () - 1;
+			int n = (int) _transposeMinpoly.size () - 1;
 
 			_VD.mul (y, x, _transposeMinpoly[n]);
 

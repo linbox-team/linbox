@@ -152,7 +152,8 @@ namespace LinBox
 						}
 						long npiv=LigneA_k->size();
 						for (ll = k+1; ll < static_cast<long>(Ni); ++ll) {
-							E hc; hc.first=rank-1;
+							E hc;
+							hc.first=(unsigned)rank-1;
 							eliminate (hc.second, LigneA[ll], *LigneA_k, rank, c, npiv, col_density);
 							if(! _F.isZero(hc.second)) LigneL[ll].push_back(hc);
 						}
@@ -163,7 +164,7 @@ namespace LinBox
 					nbelem += LigneA_k->size ();
 #endif
 				}
-				E one(k,Eone);
+				E one((unsigned)k,Eone);
 				LigneL[k].push_back(one);
 				//                 LigneL.write(rep << "L:= ", FORMAT_MAPLE) << std::endl;
 				//                 LigneA.write(rep << "U:= ", FORMAT_MAPLE) << std::endl;
@@ -178,7 +179,7 @@ namespace LinBox
 				}
 			}
 
-			E one(last,Eone);
+			E one((unsigned)last,Eone);
 			LigneL[last].push_back(one);
 
 #ifdef __LINBOX_COUNT__

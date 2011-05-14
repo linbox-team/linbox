@@ -217,7 +217,7 @@ void printPolynomial (Field &F, ostream &output, const Polynomial &v)
 	if (v.size () == 0 || val == v.size ())
 		output << "0";
 
-	for (i = v.size () - 1; i >= 0; i--) {
+	for (i = (int)v.size () - 1; i >= 0; i--) {
 		if (F.isZero (v[i]))
 			continue;
 
@@ -250,7 +250,7 @@ applyPoly (const Field                             &F,
 
 	VD.mul (w, v, phi[phi.size () - 1]);
 
-	for (i = phi.size () - 2; i >= 0; i--) {
+	for (i = (int)phi.size () - 2; i >= 0; i--) {
 		A.apply (z, w);
 		VD.axpy (w, phi[i], v, z);
 	}
@@ -278,7 +278,7 @@ multiEvalPoly (const Field                            &F,
 	for (j = 0; j < v.size (); j++)
 		w[j] = phi[phi.size () - 1];
 
-	for (i = phi.size () - 2; i >= 0; i--) {
+	for (i = (int)phi.size () - 2; i >= 0; i--) {
 		for (j = 0; j < v.size (); j++) {
 			F.axpy (tmp, w[j], v[j], phi[i]);
 			w[j] = tmp;

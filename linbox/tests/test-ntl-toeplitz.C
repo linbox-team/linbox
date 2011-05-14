@@ -95,7 +95,7 @@ int main(int argc, char* argv[])
 	LinBox::Toeplitz<Field> T(F);
 
 	// Use a special constructor to construct a matrix of dim TSIZE
-	int TSIZE = 2*n-1;
+	int TSIZE = 2*int(n)-1;
 	Vector tdata(TSIZE);
 	report << "The random vector is:" << std::endl;
 	for (unsigned int i=0; i < tdata.size(); i++) {

@@ -74,7 +74,7 @@ testTranspose (Field                             &F,
 	report << "Blackbox transpose test [that u^T(Av) == (uA)^T v]" << std::endl;
 
 	while (stream1 && stream2) {
-		LinBox::commentator.startIteration (stream1.j ());
+		LinBox::commentator.startIteration ((unsigned int) stream1.j ());
 
 		stream1.next (u);
 		stream2.next (v);
@@ -153,7 +153,7 @@ testLinearity (Field                             &F,
 	report << "Blackbox linearity test [that A.apply to (ax + y) == a A.apply to x + A.apply to y]" << std::endl;
 
 	while (stream1 && stream2) {
-		LinBox::commentator.startIteration (stream1.j ());
+		LinBox::commentator.startIteration ((unsigned int) stream1.j ());
 
 		iter_passed = true;
 

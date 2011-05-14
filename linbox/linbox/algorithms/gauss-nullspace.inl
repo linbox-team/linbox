@@ -55,7 +55,7 @@ namespace LinBox
 					// Solve for upper part of basis
 					upperTriangularSparseSolve(W1Ti, rank, U, U2T[i]);
 					// Add identity for lower part
-					W1Ti.push_back( typename SparseVect::Element(rank+i, _F.one ) );
+					W1Ti.push_back( typename SparseVect::Element((unsigned)(rank+i), _F.one ) );
 
 					for(size_t j=0; j<W1Ti.size(); ++j) {
 						// P.applyTranspose(x[i],W1T[i]);
@@ -86,7 +86,7 @@ namespace LinBox
 		unsigned long rank;
 		size_t Ni(A.rowdim()),Nj(A.coldim());
 
-		Permutation<Field> P(Nj,_F);
+		Permutation<Field> P((int)Nj,_F);
 
 		// A.write( std::cerr << "A:=", FORMAT_MAPLE ) << ';' << std::endl;
 		this->InPlaceLinearPivoting(rank, det, A, P, Ni, Nj );

@@ -44,7 +44,7 @@ using namespace LinBox;
 template <class Field, class Polynomial>
 void printPolynomial(const Field& F, const Polynomial& P)
 {
-	int n= P.size()-1;
+	int n= (int) P.size()-1;
 	for (int i=0;i<n;++i)
 		cout<<P[i]<<" ";
 	cout<<endl;

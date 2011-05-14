@@ -101,7 +101,7 @@ bool whatchon(index_t & repet, Timer & tim, double maxtime=0.5)
 }
 
 
-double ftrmm_mflops(int m, int n, int k)
+double ftrmm_mflops(index_t m, index_t n, index_t k)
 {
 	return (double)m*(double)n/1e6*(double)k ;
 }
@@ -231,9 +231,9 @@ void launch_bench_blas(index_t min, index_t max, int step
 			for (index_t j = 0 ; j < mimi ; ++j) R.random(B[j]);
 			for (index_t j = 0 ; j < mimi ; ++j) R.random(C[j]);
 			chrono.clear(); chrono.start() ;
-			LinBox::FFLAS::ftrmm(G,LinBox::FFLAS::FflasLeft,LinBox::FFLAS::FflasUpper,
-					     LinBox::FFLAS::FflasNoTrans,
-					     LinBox::FFLAS::FflasUnit,
+			FFLAS::ftrmm(G,FFLAS::FflasLeft,FFLAS::FflasUpper,
+					     FFLAS::FflasNoTrans,
+					     FFLAS::FflasUnit,
 					     ii,ii,
 					     1.,
 					     A,ii, B,ii) ;
@@ -267,7 +267,7 @@ void launch_bench_blas(index_t min, index_t max, int step
  */
 template<class Field, bool LeftSide, bool UnitDiag, bool TriSup>
 void launch_bench_rectangular(Field & F // const problem
-			      , int m, int n
+			      , index_t m, index_t n
 			      , LinBox::PlotData<std::string> & Data
 			      , index_t point_nb)
 {
@@ -283,12 +283,12 @@ void launch_bench_rectangular(Field & F // const problem
 	LinBox::BlasMatrixDomain<Field> BMD(F) ;
 	LinBox::RandomDenseMatrix<Randiter,Field> RandMat(F,R);
 
-	size_t k = (LeftSide?m:n);
+	index_t k = (LeftSide?m:n);
 
 	TriangularMatrix A (k,k,
 			    (TriSup?LinBox::BlasTag::up:LinBox::BlasTag::low),
 			    (UnitDiag?LinBox::BlasTag::unit:LinBox::BlasTag::nonunit));
-	Matrix B (m,n);
+	Matrix B ((int)m,(int)n);
 
 	index_t j = 0 ;
 	ftrmm_rect_tim.clear() ;
@@ -313,7 +313,7 @@ void launch_bench_rectangular(Field & F // const problem
 		std::cout << point_nb << std::endl;
 	}
 #endif
-	mflops = compute_mflops(ftrmm_rect_tim,ftrmm_mflops(m,k,n),j);
+	mflops = compute_mflops(ftrmm_rect_tim,ftrmm_mflops(m,k,n),(int)j);
 	Data.setEntry(0,point_nb,mflops);
 	std::ostringstream nam ;
 	if (LeftSide)
@@ -363,7 +363,7 @@ void launch_bench_scalar(Field & F // const problem
 	LinBox::BlasMatrixDomain<Field> BMD(F) ;
 	LinBox::RandomDenseMatrix<Randiter,Field> RandMat(F,R);
 
-	size_t k = (LeftSide?m:n);
+	index_t k = (LeftSide?m:n);
 
 	TriangularMatrix A (k,k,
 			    (TriSup?LinBox::BlasTag::up:LinBox::BlasTag::low),
@@ -402,7 +402,7 @@ void launch_bench_scalar(Field & F // const problem
 		std::cout << point_nb << std::endl;
 	}
 #endif
-	mflops = compute_mflops(ftrmm_scal_tim,ftrmm_mflops(m,k,n),j);
+	mflops = compute_mflops(ftrmm_scal_tim,ftrmm_mflops(m,k,n),(int)j);
 	Data.setEntry(0,point_nb,mflops);
 	std::ostringstream nam ;
 	nam << "\"(" << m << 'x' << n << ") ";
@@ -610,6 +610,7 @@ void bench_rectangular( index_t k, int charac )
 	index_t it = 0 ; index_t nb = 6 ;
 	LinBox::PlotData<std::string>  Data(nb,1);
 	Data.setSerieName(0,"mflops");
+
 	launch_bench_rectangular<Field,_LB_LEFT,_LB_UNIT,_LB_TSUP>(F,2*k,2*k,Data,it++);
 	launch_bench_rectangular<Field,_LB_RITE,_LB_UNIT,_LB_TSUP>(F,2*k,2*k,Data,it++);
 
@@ -717,9 +718,9 @@ int main( int ac, char ** av)
 {
 	/*  Argument parsing/setting */
 
-	static size_t       min = 100;     /*  min size */
-	static size_t       max = 2000;    /*  max size (not included) */
-	static size_t       step = 200;    /*  step between 2 sizes */
+	static index_t  min = 100;     /*  min size */
+	static index_t  max = 2000;    /*  max size (not included) */
+	static index_t step = 200;    /*  step between 2 sizes */
 	static std::list<int> lst  ;       /*  what bench to start ? */
 	lst.push_front(1);// ={1,2} vivement le nouveau std...
 	lst.push_front(2);

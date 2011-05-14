@@ -52,7 +52,7 @@ int test_early_single(std::ostream & report, size_t PrimeSize, size_t Size)
 	typedef typename std::vector<T> Vect ;
 	typedef typename Vect::iterator Iterator;
 	Vect primes(Size) ;
-	RandomPrimeIterator RP(PrimeSize);
+	RandomPrimeIterator RP((unsigned )PrimeSize);
 	/*  primes, probably not all coprime... */
 	for (size_t i = 0 ; i < Size ; ++i) {
 		primes[i] = RP.randomPrime() ;
@@ -129,7 +129,7 @@ int test_early_multip(std::ostream & report, size_t PrimeSize, size_t Taille, si
 
 	/*  primes */
 	Vect primes(Size) ;
-	RandomPrimeIterator RP(PrimeSize);
+	RandomPrimeIterator RP((unsigned )PrimeSize);
 	for (size_t i = 0 ; i < Size ; ++i) {
 		primes[i] = RP.randomPrime() ;
 		++RP ;
@@ -213,7 +213,7 @@ int test_full_multip_matrix(std::ostream & report, size_t PrimeSize, size_t Size
 
 	Vect primes(Size) ;
 	/*  probably not all coprime... */
-	RandomPrimeIterator RP(PrimeSize);
+	RandomPrimeIterator RP((unsigned )PrimeSize);
 	for (size_t i = 0 ; i < Size ; ++i) {
 		primes[i] = RP.randomPrime() ;
 		++RP ;
@@ -232,7 +232,7 @@ int test_full_multip_matrix(std::ostream & report, size_t PrimeSize, size_t Size
 	Iterator  genprime =   primes.begin()  ; // prime iterator
 	MatIterator residu = residues.begin()  ; // residu iterator
 
-	double LogIntSize = (PrimeSize+1)*std::log(2)+std::log(Size)+1 ;
+	double LogIntSize = (double)(PrimeSize+1)*std::log(2)+std::log((double)Size)+1 ;
 
 	std::pair<size_t,double> my_pair(dims.first*dims.second,LogIntSize)  ;
 
@@ -308,7 +308,7 @@ int test_full_multip(std::ostream & report, size_t PrimeSize, size_t Size, size_
 
 	Vect primes(Size) ;
 	/*  probably not all coprime... */
-	RandomPrimeIterator RP(PrimeSize);
+	RandomPrimeIterator RP((unsigned )PrimeSize);
 	for (size_t i = 0 ; i < Size ; ++i) {
 		primes[i] = RP.randomPrime() ;
 		++RP ;
@@ -326,7 +326,7 @@ int test_full_multip(std::ostream & report, size_t PrimeSize, size_t Size, size_
 	Iterator   genprime =   primes.begin()  ; // prime iterator
 	VectIterator residu = residues.begin()  ; // residu iterator
 
-	double LogIntSize = PrimeSize*std::log(2)+std::log(Size)+1 ;
+	double LogIntSize = (double)PrimeSize*std::log(2)+std::log((double)Size)+1 ;
 
 	report << "FullMultipCRA (" <<  LogIntSize << ')' << std::endl;
 	FullMultipCRA<ModularField> cra( LogIntSize ) ;
@@ -398,7 +398,7 @@ int test_full_multip_fixed(std::ostream & report, size_t PrimeSize, size_t Size,
 
 	Vect primes(Size) ;
 	/*  probably not all coprime... */
-	RandomPrimeIterator RP(PrimeSize);
+	RandomPrimeIterator RP((unsigned )PrimeSize);
 	for (size_t i = 0 ; i < Size ; ++i) {
 		primes[i] = RP.randomPrime() ;
 		++RP ;
@@ -415,7 +415,7 @@ int test_full_multip_fixed(std::ostream & report, size_t PrimeSize, size_t Size,
 	Iterator   genprime =   primes.begin()  ; // prime iterator
 	VectIterator residu = residues.begin()  ; // residu iterator
 
-	double LogIntSize = PrimeSize*std::log(2)+std::log(Size) ;
+	double LogIntSize = (double)PrimeSize*std::log(2)+std::log((double)Size) ;
 
 	std::pair<size_t,double> my_pair(Taille,LogIntSize)  ;
 
@@ -551,7 +551,7 @@ int main(int ac, char ** av)
 
 	bool pass = true ;
 
-	srand(time(NULL));             // seeding
+	srand((unsigned)time(NULL));             // seeding
 	size_t PrimeSize   =  p;       // size of the residues/primes
 	size_t Size        =  n ;      // nb of residues/primes
 	size_t Taille      =  2*Size ; // nb of vectors of residues

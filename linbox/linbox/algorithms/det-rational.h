@@ -175,7 +175,7 @@ namespace LinBox
 		RationalMatrixFactory<PID_integer,Rationals, DenseMatrix<Rationals > > FA(&A);
 		Integer di=1;
 
-		for (int i=A.rowdim()-1; i >= 0 ; --i) {
+		for (int i=(int)A.rowdim()-1; i >= 0 ; --i) {
 			FA.denominator(di,i);
 			M *=di;
 		}
@@ -203,10 +203,10 @@ namespace LinBox
 		t1.clear();
 		t2.clear();
 		t1.start();
-		term = cra(k,dd,iteration1,genprime);
+		term =  cra((int)k,dd,iteration1,genprime);
 		t1.stop();
 		t2.start();
-		term = cra(k,dd,iteration2,genprime);
+		term =  cra((int)k,dd,iteration2,genprime);
 		t2.stop();
 
 		double s1 = t1.time(), s2 = t2.time();
@@ -252,7 +252,7 @@ namespace LinBox
 
 		k *= 2;
 		t1.clear();t2.clear();
-		while (! cra(k,dd, iteration, genprime)) {
+		while (! cra((int)k,dd, iteration, genprime)) {
 			k *=2;
 			Integer m,res,res1; //Integer r; Integer a,b;
 			cra.getModulus(m);

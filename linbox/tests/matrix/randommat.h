@@ -39,18 +39,18 @@ Matrix& randomMat(const Ring& R, Matrix& Mat, size_t n, size_t epr){
 			val = neg*(rand()%CEILING);
 			//  choose random location for value
 			do{
-				pos = rand()%n;  // pos in [0, n)
+				pos = int(rand()%n);  // pos in [0, n)
 			}
 			while(used(usedV, pos));
 			usedV[k] = pos;  //  record location
-			
+
 			//std::cerr << "\t set value " << val << " in pos " << pos << std::endl;
 			//  finally, set entry
 			//Mat.setEntry(i, pos, R.init(tmp, 1));
 			Mat.setEntry(i, pos, R.init(tmp, val));
 		}
 	}
-			
+
 	return Mat;
 }
 

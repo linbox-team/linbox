@@ -61,7 +61,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	srand (time (NULL));
+	srand ((unsigned)time (NULL));
 
 	commentator.start("Scalar black box test suite", "Scalar");
 

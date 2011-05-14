@@ -131,7 +131,7 @@ namespace LinBox
 					}
 					if (! F.isZero(tmp)) {
 						F.divin(tmp,row->front().second);
-						x.insert(x.begin(), typename Vector1::value_type(i, tmp));
+						x.insert(x.begin(), typename Vector1::value_type((unsigned)i, tmp));
 					}
 				}
 			}
@@ -142,7 +142,7 @@ namespace LinBox
 					if (! F.isZero(tmp)) {
 						F.negin(tmp);
 						F.divin(tmp,row->front().second);
-						x.insert(x.begin(), typename Vector1::value_type(i, tmp));
+						x.insert(x.begin(), typename Vector1::value_type((unsigned)i, tmp));
 					}
 				}
 			}

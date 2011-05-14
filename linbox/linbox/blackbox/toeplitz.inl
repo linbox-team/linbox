@@ -172,11 +172,11 @@ namespace LinBox
 		Element temp;
 
 		os<< this->rowDim << " " << this->colDim << " " << this->shape.shape() << std::endl;
-		N = this->rowDim + this->colDim -1;
+		N = (int) (this->rowDim + this->colDim) -1;
 
 		if ( N < 20 )             // Print small matrices in dense format
 		{
-			for (i = this->colDim-1; i < N; i++)
+			for (i = (int)this->colDim-1; i < N; i++)
 			{
 				for ( j = 0; j < this->colDim ; j++)
 					os << " " ;

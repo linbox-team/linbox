@@ -48,7 +48,7 @@ namespace LinBox
 						}
 						else {
 							// Only k there
-							kin_it->first = indpermut;
+							kin_it->first = (unsigned)indpermut;
 							typename Vector::value_type etmp = *kin_it;
 							--pin_it;
 							typename Vector::iterator current = kin_it;
@@ -61,7 +61,7 @@ namespace LinBox
 					else {
 						--pin_it;
 						// Only k there
-						kin_it->first = indpermut;
+						kin_it->first = (unsigned)indpermut;
 						typename Vector::value_type etmp = *kin_it;
 						typename Vector::iterator current = kin_it;
 						typename Vector::iterator next = kin_it; ++next;
@@ -74,7 +74,7 @@ namespace LinBox
 					if (pin_it != lignecourante.end()) {
 						if ( static_cast<long>(pin_it->first) == indpermut) {
 							// Only indpermut there
-							pin_it->first = k;
+							pin_it->first = (unsigned)k;
 							typename Vector::value_type etmp = *pin_it;
 							typename Vector::iterator current = pin_it;
 							typename Vector::iterator prev = pin_it; --prev;
@@ -152,7 +152,7 @@ namespace LinBox
 							E tmp = lignecourante[j_head];
 							--columns[tmp.first];
 							++columns[k];
-							tmp.first = k;
+							tmp.first = (unsigned)k;
 
 							for (long l = j_head; l > 0; l--)
 								lignecourante[l] = lignecourante[l-1];
@@ -221,7 +221,7 @@ namespace LinBox
 
 							// if (! _F.isZero (tmp)) {
 							++columns[j_piv];
-							construit[j++] = E (j_piv, tmp);
+							construit[j++] = E ((unsigned)j_piv, tmp);
 							// }
 							// else
 							// std::cerr << "NEVER HAPPENED" << std::endl;
@@ -263,7 +263,7 @@ namespace LinBox
 								E tmp = lignecourante[l];
 								--columns[k];
 								++columns[indpermut];
-								tmp.first = indpermut;
+								tmp.first = (unsigned)indpermut;
 
 								unsigned long bjh = j_head-1;
 								for (; l < bjh; ++l)
@@ -298,7 +298,7 @@ namespace LinBox
 						E tmp = lignecourante[l];
 						--columns[k];
 						++columns[indpermut];
-						tmp.first = indpermut;
+						tmp.first = (unsigned)indpermut;
 
 						unsigned long bjh = nj - 1;
 						for (; l < bjh; ++l)
@@ -383,7 +383,7 @@ namespace LinBox
 							E tmp = lignecourante[j_head];
 							--columns[tmp.first];
 							++columns[k];
-							tmp.first = k;
+							tmp.first = (unsigned)k;
 
 							for (long l = j_head; l > 0; l--)
 								lignecourante[l] = lignecourante[l-1];
@@ -454,7 +454,7 @@ namespace LinBox
 
 							// if (! _F.isZero (tmp)) {
 							++columns[j_piv];
-							construit[j++] = E (j_piv, tmp);
+							construit[j++] = E ((unsigned)j_piv, tmp);
 							// }
 							// else
 							// std::cerr << "NEVER HAPPENED" << std::endl;
@@ -496,7 +496,7 @@ namespace LinBox
 								E tmp = lignecourante[l];
 								--columns[k];
 								++columns[indpermut];
-								tmp.first = indpermut;
+								tmp.first = (unsigned)indpermut;
 
 								unsigned long bjh = j_head-1;
 								for (; l < bjh; ++l)
@@ -531,7 +531,7 @@ namespace LinBox
 						E tmp = lignecourante[l];
 						--columns[k];
 						++columns[indpermut];
-						tmp.first = indpermut;
+						tmp.first = (unsigned)indpermut;
 
 						unsigned long bjh = nj - 1;
 						for (; l < bjh; ++l)

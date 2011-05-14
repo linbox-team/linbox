@@ -264,7 +264,7 @@ namespace LinBox
 				size_t factnum = factors.size();
 
 				/* Building the structure of factors */
-				int goal = n;
+				int goal = (int)n;
 
 				for (size_t i = 0; i < factors.size(); ++i) {
 					unsigned long deg =  (factors[i]->size()-1);
@@ -287,7 +287,7 @@ namespace LinBox
 						delete tmp;
 						--factnum;
 						FFM->multiplicity = 1; // The last factor is present in minpoly
-						goal -= deg-factors[i]->size()+1;
+						goal -= (int)(deg-factors[i]->size())+1;
 						leadingBlocks.insert (std::pair<FactorMult<Polynomial>*,bool>(FFM,false));
 						delete factors[i] ;
 					}
@@ -296,7 +296,7 @@ namespace LinBox
 						//std::cerr<<"Inserting new factor : "<<*factors[i]<<std::endl;
 						factCharPoly.insert (std::pair<size_t, FactorMult<Polynomial>* > (factors[i]->size()-1, FFM));
 						leadingBlocks.insert (std::pair<FactorMult<Polynomial>*,bool>(FFM,false));
-						goal -= deg;
+						goal -= (int)deg;
 					}
 				}
 				findMultiplicities ( A, factCharPoly, leadingBlocks, goal, M);

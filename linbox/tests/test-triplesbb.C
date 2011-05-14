@@ -81,7 +81,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	srand (time (NULL));
+	srand ((unsigned)time (NULL));
 
 	commentator.start("triplesbb black box test suite", "triplesbb");
 

@@ -326,7 +326,7 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	for(int i=0; pass && i<iterations; ++i)
-		pass &= TestCra(n,s,seed);
+		pass &= TestCra((int)n,(int)s,seed);
 
 	LinBox::commentator.stop(MSG_STATUS (pass), (const char *) 0,"CRA-Domain test suite");
 	return pass ? 0 : -1;

@@ -174,7 +174,7 @@ namespace LinBox
 		if (_size == 0)
 			elt = rand();
 		else
-			elt = static_cast<long>((double(rand())/RAND_MAX)*double(_size));
+			elt = static_cast<double>((double(rand())/RAND_MAX)*double(_size));
 
 #ifdef TRACE
 		double temp = elt;

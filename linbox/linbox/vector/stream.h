@@ -498,7 +498,7 @@ namespace LinBox
 
 		RandomSparseStream (const Field &F, double p, size_t n, size_t m = 0) :
 			_F (F), _r1 (F), _r (F, _r1),
-			_n (n), _k ((long) (p * n)), _j (0), _m (m),
+			_n (n), _k ((long) (p * (double)n)), _j (0), _m (m),
 			MT ((uint32_t)time (NULL))
 		{}
 
@@ -519,7 +519,7 @@ namespace LinBox
 
 			for (i = 0; i < _k; i++) {
 				_r.random (x);
-				while (!_F.isZero (v[idx = MT.randomIntRange (0, _n)])) ;
+				while (!_F.isZero (v[idx = MT.randomIntRange (0, (uint32_t)_n)])) ;
 				v[idx] = x;
 			}
 

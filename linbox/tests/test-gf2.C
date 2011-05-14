@@ -257,7 +257,7 @@ int main (int argc, char **argv)
 
 	GF2 F;
 
-	uint32_t seed = time (NULL);
+	uint32_t seed = (unsigned)time (NULL);
 
 	RandomDenseStreamGF2 stream1 (F, seed, n, iterations), stream2 (F, seed ^ 0xdeadbeef, n, iterations);
 	RandomSparseStreamGF2<Vector<GF2>::Sparse>

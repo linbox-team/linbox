@@ -65,7 +65,7 @@ static bool testSetButterfly (const Field &F, VectorStream<Vector> &stream, size
 	VectorDomain<Field> VD (F);
 
 	while (stream) {
-		commentator.startIteration (stream.j ());
+		commentator.startIteration ((unsigned int)stream.j ());
 
 		stream >> v_p;
 		typename LinBox::Vector<Field>::Dense v (stream.n ());
@@ -161,7 +161,7 @@ static bool testCekstvSwitch (const Field &F, unsigned int iterations, size_t n,
 	F.init (one, 1);
 
 	while (stream) {
-		commentator.startIteration (stream.pos ());
+		commentator.startIteration ((unsigned int)stream.pos ());
 
 		stream >> d1;
 

@@ -1227,7 +1227,7 @@ bool testPermutation (const Field &F, const char *text, const Matrix &M)
 	bool ret = true;
 
 	MatrixDomain<Field> MD (F);
-	MersenneTwister MT (time (NULL));
+	MersenneTwister MT ((unsigned)time (NULL));
 
 	typename MatrixDomain<Field>::Permutation P, Pinv;
 
@@ -1236,8 +1236,8 @@ bool testPermutation (const Field &F, const char *text, const Matrix &M)
 		unsigned int row1, row2;
 
 		do {
-			row1 = MT.randomInt () % M.rowdim ();
-			row2 = MT.randomInt () % M.rowdim ();
+			row1 = (unsigned)(MT.randomInt () % M.rowdim ());
+			row2 = (unsigned)(MT.randomInt () % M.rowdim ());
 		} while (row1 == row2);
 
 		P.push_back (typename MatrixDomain<Field>::Transposition (row1, row2));
@@ -1279,8 +1279,8 @@ bool testPermutation (const Field &F, const char *text, const Matrix &M)
 		unsigned int col1, col2;
 
 		do {
-			col1 = MT.randomInt () % M.coldim ();
-			col2 = MT.randomInt () % M.coldim ();
+			col1 = (unsigned)(MT.randomInt () % M.coldim ());
+			col2 = (unsigned)(MT.randomInt () % M.coldim ());
 		} while (col1 == col2);
 
 		P.push_back (typename MatrixDomain<Field>::Transposition (col1, col2));

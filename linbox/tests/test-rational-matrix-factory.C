@@ -118,7 +118,7 @@ static bool testDiagonalMatrix (size_t n)
 	}
 
 	for (j=0; j < n; ++j) {
-		FA.denominator(d,j);
+		FA.denominator(d,(int)j);
 		report << "True common denominator for " << j+1 <<  "th row: " << j+1 << endl;
 		report << "Computed common denominator for " << j+1 <<  "th row: " << d << endl;
 		if (d != (integer)(j+1)) {

@@ -176,7 +176,7 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 		}
 
 		for (j = n / 2; j < n; j++) {
-			k = rand () % (n / 2);
+			k =int( rand () % (n / 2) );
 			d[j] = d[k];
 			F.mulin (pi, d[j]);
 		}

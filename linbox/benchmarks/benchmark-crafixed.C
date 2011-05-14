@@ -150,7 +150,7 @@ struct ReductPoint {
  * @param Data collects timings
  */
 template<bool Unsigned>
-int bench_cra(int n, int m, unsigned int l
+int bench_cra(index_t  n, index_t m, index_t l
 	      , LinBox::PlotData<index_t> & Data)
 {
 
@@ -160,7 +160,7 @@ int bench_cra(int n, int m, unsigned int l
 		tim.clear();
 		typedef LinBox::Modular<double> ModularField ;
 		typedef LinBox::FullMultipFixedCRA< ModularField > CRAbase ;
-		size_t PrimeSize = 22;
+		unsigned int PrimeSize = 22;
 		double logV = l*_LB_LOG2 ;
 		if (!Unsigned) logV += _LB_LOG2 ;
 		std::cout << "size to reconstruct : " << logV << std::endl;
@@ -200,7 +200,7 @@ int bench_cra(int n, int m, unsigned int l
 		tim.clear();
 		typedef LinBox::Modular<double> ModularField ;
 		typedef LinBox::EarlyMultipCRA< ModularField > CRAbase ;
-		size_t PrimeSize = 22;
+		unsigned int PrimeSize = 22;
 		LinBox::RandomPrimeIterator genprime( PrimeSize );
 		for (size_t i = 0 ; i < (size_t) m ; ++i) { // repeat m times
 			// create the vector to reconstruct
@@ -364,9 +364,9 @@ int bench_cra(int n, int m, unsigned int l
 
 int main(int ac, char** av)
 {
-	static size_t m = 10 ;
-	static size_t l = 200 ;
-	static size_t n = 10 ;
+	static index_t m = 10 ;
+	static index_t l = 200 ;
+	static index_t n = 10 ;
 	LinBox::PlotData<index_t>  Data(n,m);
 	bench_cra<true>(n,m,l,Data);
 	bench_cra<false>(n,m,l,Data);

@@ -98,7 +98,7 @@ namespace LinBox
 			<< " and seed " << _seed << std::endl;
 
 			// Seed random number generator
-			srand (_seed);
+			srand ((unsigned)_seed);
 		}
 
 		/** Copy constructor.

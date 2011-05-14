@@ -113,10 +113,12 @@ void RandomMatrixWithRank(const Field & F,
 	// create Q a random permutation of size \p m
 	size_t *Q = new size_t[m];
 	RandomPermutation(Q,m);
-	FFPACK::applyP(F, FFLAS::FflasLeft, FFLAS::FflasNoTrans, n, 0, m, C, n, Q );
+	FFPACK::applyP(F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
+		       n, 0, (int)m, C, n, Q );
 	//PrintLapackPermutation(P,n,std::cout << "P == ");
 	//write_field (F, std::cout<<"C_perm1="<<std::endl, C, m, n, n);
-	FFPACK::applyP(F, FFLAS::FflasRight, FFLAS::FflasNoTrans, m, 0, n, C, n, P );
+	FFPACK::applyP(F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
+		       m, 0, (int)n, C, n, P );
 	//PrintLapackPermutation(Q,m,std::cout << "Q == ");
 	//write_field (F, std::cout<<"C_perm2="<<std::endl, C, m, n, n);
 	// A = B*C (m x n format), of rank \p rank

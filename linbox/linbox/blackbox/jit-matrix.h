@@ -97,11 +97,12 @@ namespace LinBox
 	template <class Field, class JIT_EntryGenerator>
 	template <class OutVector, class InVector>
 	inline OutVector& JIT_Matrix<Field, JIT_EntryGenerator>::apply (OutVector& y, const InVector& x)
-	{	Element entry;  _F.init(entry);
-		for (size_t i = 0; i < _m; ++i)
-		{   _F.init(y[i], 0);
-			for (size_t j = 0; j < _n; ++j)
-			{
+	{
+		Element entry;
+		_F.init(entry,0);
+		for (size_t i = 0; i < _m; ++i) {
+			_F.init(y[i], 0);
+			for (size_t j = 0; j < _n; ++j) {
 				_gen(entry, i, j);
 
 				_F.axpyin (y[i], entry, x[j]);
@@ -114,11 +115,14 @@ namespace LinBox
 	template <class Field, class JIT_EntryGenerator>
 	template <class OutVector, class InVector>
 	inline OutVector& JIT_Matrix<Field, JIT_EntryGenerator>::applyTranspose (OutVector& y, const InVector& x)
-	{	Element entry;  _F.init(entry);
-		for (size_t i = 0; i < _m; ++i)
-		{   _F.init(y[i], 0);
-			for (size_t j = 0; j < _n; ++j)
-			{ _F.axpyin ( y[i], x[j], _gen(entry, j, i) ); }
+	{
+		Element entry;
+		_F.init(entry,0);
+		for (size_t i = 0; i < _m; ++i) {
+			_F.init(y[i], 0);
+			for (size_t j = 0; j < _n; ++j) {
+				_F.axpyin ( y[i], x[j], _gen(entry, j, i) );
+			}
 		}
 		return y;
 	} // applyTranspose

@@ -160,7 +160,7 @@ namespace LinBox
 				}
 			}
 			else {//if (inc == -1)
-				int i = x.size()-1;
+				int i = (int)x.size()-1;
 				for (; i >=0; --i ) {
 					Element x_in(x[i]);
 					x_in *=old_den;
@@ -181,7 +181,7 @@ namespace LinBox
 					else {
 						//std::cout << a[i] << "/" << b*new_den << "\n";
 						if (new_den > 1) {
-							for (int j = a.size()-1; j > i ; --j) {
+							for (int j = (int)a.size()-1; j > i ; --j) {
 								a[j] *=new_den;
 							}
 							b *= new_den;

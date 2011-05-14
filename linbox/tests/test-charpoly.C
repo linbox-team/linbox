@@ -54,7 +54,7 @@ typename Dom::Element eval (const Dom& D,
 			    const typename Dom::Element x)
 {
 	typename Dom::Element tmp = P[P.size()-1];
-	for (int i = P.size()-2; i >= 0; --i){
+	for (int i = (int)P.size()-2; i >= 0; --i){
 		D.mulin (tmp, x);
 		D.addin (tmp, P[i]);
 	}
@@ -277,7 +277,7 @@ int main (int argc, char **argv)
 	typedef SparseMatrix<Field>::Row SparseVector;
 	//typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
 	Field F (q);
-	srand (time (NULL));
+	srand ((unsigned)time (NULL));
 
 	LinBox::commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
 	LinBox::commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
@@ -302,7 +302,7 @@ int main (int argc, char **argv)
 	typedef SparseMatrix<PID_integer>::Row ZSparseVector;
 	typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
 	PID_integer  Z;
-	srand (time (NULL));
+	srand ((unsigned)time (NULL));
 
 	LinBox::commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
 	LinBox::commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);

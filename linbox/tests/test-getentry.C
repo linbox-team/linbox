@@ -203,7 +203,7 @@ static bool testDiagonalgetEntry (const Field &F, VectorStream<vector<typename F
 	VectorWrapper::ensureDim (d, stream.dim ());
 
 	while (stream) {
-		commentator.startIteration (stream.j ());
+		commentator.startIteration ((unsigned)stream.j ());
 
 		stream.next (d);
 

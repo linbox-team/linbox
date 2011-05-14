@@ -113,7 +113,8 @@ namespace LinBox
 			void operator() (other & Ap, const Self_t& A, const _Tp1& F)
 			{
 				Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);
-				typename _Tp1::Element e; F.init(e);
+				typename _Tp1::Element e;
+				F.init(e,0UL);
 				hom.image (e, A._v);
 				Ap.setScalar(e);
 			}

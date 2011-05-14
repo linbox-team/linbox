@@ -136,7 +136,7 @@ static bool testLocalSmith (const LocalPIR &R, vector<typename LocalPIR::Element
 
 	// set up A equiv diag d.
 	Blackbox L (R, n, n), D (R, n, n), U (R, n, n), A (R, n, n);
-	for( i = 0; i < n; ++i ) 
+	for( i = 0; i < n; ++i )
 		{ D[i][i] = d[i]; L[i][i]=U[i][i]=1; }
 	for (i = 0; i < n; ++ i)
 		for ( j = 0; j < i; ++ j) {
@@ -171,8 +171,8 @@ static bool testLocalSmith (const LocalPIR &R, vector<typename LocalPIR::Element
 	report << "True invariants: ";
 	VD.write (report, d) << endl; report.flush();
 
-	typename vector<Elt>::iterator q; 
-	listptr p; 
+	typename vector<Elt>::iterator q;
+	listptr p;
 	for (p = Inv.begin(), q = d.begin(); q != d.end(); ++p, ++q)
 	{
 		if ( !R.areEqual (*p, *q ) ) {
@@ -233,12 +233,14 @@ int main (int argc, char **argv)
 	vector<LocalPID::Element> d(n);
 
 	commentator.start ("Testing local smith on singular dense mat over Local2_32", "testSingular");
-	for( size_t i = 0; i < n; ++i ) d[i] = i;
+	for( size_t i = 0; i < n; ++i )
+		d[i] = (LocalPID::Element) i;
 	if (!testLocalSmith<LocalPID> (R, d, "Local2_32")) pass = false;
 	commentator.stop ("testSingular");
 
 	commentator.start ("Testing local smith on nonsingular dense mat over Local2_32", "testNonsingular");
-	for( size_t i = 0; i < n; ++i ) d[i] = i+1;
+	for( size_t i = 0; i < n; ++i )
+		d[i] = (LocalPID::Element) i+1;
 	if (!testLocalSmith<LocalPID> (R, d, "Local2_32")) pass = false;
 	commentator.stop ("testNonsingular");
   }

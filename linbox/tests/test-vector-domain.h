@@ -64,7 +64,7 @@ static bool testDotProduct (Field &F, const char *text, LinBox::VectorStream<Vec
 	double totaltime = 0.0;
 
 	while (stream1 && stream2) {
-		LinBox::commentator.startIteration (stream1.j ());
+		LinBox::commentator.startIteration ((unsigned)stream1.j ());
 
 		F.init (sigma, 0);
 
@@ -105,7 +105,7 @@ static bool testDotProduct (Field &F, const char *text, LinBox::VectorStream<Vec
 	}
 
 	LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
-	<< "Average time for dot product: " << totaltime / stream1.m () << std::endl;
+	<< "Average time for dot product: " << (double)totaltime / (double)stream1.m () << std::endl;
 
 	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDotProduct");
 
@@ -153,7 +153,7 @@ static bool testAddMul (Field &F, const char *text, LinBox::VectorStream<Vector>
 	LinBox::VectorDomain<Field> VD (F);
 
 	while (stream1 && stream2) {
-		LinBox::commentator.startIteration (stream1.j ());
+		LinBox::commentator.startIteration ((unsigned)stream1.j ());
 
 		iter_passed = true;
 
@@ -256,7 +256,7 @@ static bool testSubMul (Field &F, const char *text, LinBox::VectorStream<Vector>
 	LinBox::VectorDomain<Field> VD (F);
 
 	while (stream1 && stream2) {
-		LinBox::commentator.startIteration (stream1.j ());
+		LinBox::commentator.startIteration ((unsigned)stream1.j ());
 
 		iter_passed = true;
 
@@ -357,7 +357,7 @@ static bool testAXPY (Field &F, const char *text, LinBox::VectorStream<Vector> &
 	LinBox::VectorDomain<Field> VD (F);
 
 	while (stream1 && stream2) {
-		LinBox::commentator.startIteration (stream1.j ());
+		LinBox::commentator.startIteration ((unsigned)stream1.j ());
 
 		iter_passed = true;
 
@@ -435,7 +435,7 @@ static bool testCopyEqual (Field &F, const char *text, LinBox::VectorStream<Vect
 	LinBox::VectorDomain<Field> VD (F);
 
 	while (stream) {
-		LinBox::commentator.startIteration (stream.j ());
+		LinBox::commentator.startIteration ((unsigned)stream.j ());
 
 		iter_passed = true;
 

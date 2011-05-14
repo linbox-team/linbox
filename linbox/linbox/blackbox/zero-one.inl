@@ -194,7 +194,7 @@ namespace LinBox
 	ZeroOne<Field>::ZeroOne(const Field& F) :
 	       	_F(F)
        	{
-		srand( time(NULL) );
+		srand((unsigned int) time(NULL) );
 		dynamic = false;
 	}
 
@@ -202,7 +202,7 @@ namespace LinBox
 	ZeroOne<Field>::ZeroOne(Field F, Index* rowP, Index* colP, Index rows, Index cols, Index NNz, bool rowSort, bool colSort):
 		_F(F), _rows(rows), _cols(cols), _nnz(NNz), _rowP(rowP), _colP(colP), _rowSort(rowSort), _colSort(colSort) , dynamic(false)
 	{
-	       	srand(time(NULL));
+	       	srand((unsigned)time(NULL));
 	}
 
 	template<class Field>
@@ -241,7 +241,7 @@ namespace LinBox
 		if( (e - p) <= 1) ;
 		else
 		{
-			i = 1 + _part(p, e, mode);
+			i = 1 + (int)_part(p, e, mode);
 			_qsort(p, i, mode);
 			_qsort(i, e, mode);
 		}
@@ -251,7 +251,7 @@ namespace LinBox
 	size_t ZeroOne<Field>::_part(size_t p, size_t e, int &mode) const
 	{
 		size_t rtemp, ctemp, rowval, colval;
-		int i = p + rand() % (e - p), j = e;
+		int i = int(p +(int) rand() % (e - p)), j =(int) e;
 		rtemp = _rowP[p];
 		ctemp = _colP[p];
 		_rowP[p] = _rowP[i];
@@ -260,7 +260,7 @@ namespace LinBox
 		_colP[i] = ctemp;
 		rowval = _rowP[p];
 		colval = _colP[p];
-		i = p - 1;
+		i = (int)p - 1;
 
 		if(mode == 0)
 		{ // Row mode, go by row order, then column
@@ -349,6 +349,7 @@ namespace LinBox
 
 		typename OutVector::iterator yp;
 		typename InVector::const_iterator xp;
+		typedef typename OutVector::value_type val_t ;
 		Index* ip, *jp;
 
 		for(yp = y.begin(); yp != y.end(); ++yp)
@@ -375,7 +376,7 @@ namespace LinBox
 				accum=accum+*(xp + *jp);
 			else
 			{
-				*yp= accum % prime;
+				*yp= (val_t)(accum % prime);
 				if((*ip-rowI)==1)
 					++yp;
 				else
@@ -386,7 +387,7 @@ namespace LinBox
 			}
 		}
 		if(rowI)
-			*yp=accum % prime;
+			*yp= val_t(accum % prime);
 
 		return y;
 	}
@@ -443,8 +444,9 @@ namespace LinBox
 
 		std::vector<uint64_t> y_c (y.size(),0);
 
-		typename OutVector::iterator yp;
-		typename InVector::const_iterator xp;
+		typename OutVector::iterator         yp;
+		typename InVector::const_iterator    xp;
+		typedef typename OutVector::value_type   val_t ;
 		Index* ip, *jp;
 
 		rowSort();
@@ -458,10 +460,10 @@ namespace LinBox
 
 		for(; ip <_rowP+nnz(); ++ip,++jp)
 		{
-			if( *ip == rowI)
+			if( *ip == rowI) {
 				*(y_cp+*jp) += *xp;
-			else
-			{
+			}
+			else {
 				if((*ip-rowI)==1)
 					++xp;
 				else
@@ -479,7 +481,7 @@ namespace LinBox
 		yp=y.begin();
 		y_cp=y_c.begin();
 		for(;yp!=y.end();++yp,++y_cp)
-			*yp = (*y_cp) % prime;
+			*yp =(val_t)( (*y_cp) % prime );
 
 		return y;
 	}
