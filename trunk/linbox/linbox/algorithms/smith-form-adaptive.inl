@@ -201,8 +201,8 @@ namespace LinBox
 			compute_local_big (s, A, p, e);
 
 		// normalize the answer
-		for (std::vector<integer>::iterator p = s. begin(); p != s. end(); ++ p)
-			*p = gcd (*p, m);
+		for (std::vector<integer>::iterator p_it = s. begin(); p_it != s. end(); ++ p_it)
+			*p_it = gcd (*p_it, m);
 	}
 
 	/* Compute the k-smooth part of the invariant factor, where k = 100.

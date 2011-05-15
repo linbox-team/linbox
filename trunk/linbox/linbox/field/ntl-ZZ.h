@@ -156,9 +156,9 @@ namespace LinBox
 		 */
 		inline integer& convert (integer& x, const Element& y) const
 		{
-			bool neg=false;
+			bool Neg=false;
 			if (sign(y) <0)
-				neg=true;
+				Neg=true;
 			long b = NumBytes(y);
 			unsigned char* byteArray;
 			byteArray = new unsigned char[(size_t)b ];
@@ -172,7 +172,7 @@ namespace LinBox
 				x += integer(byteArray[i]);
 			}
 			delete [] byteArray;
-			if (neg)
+			if (Neg)
 				x=-x;
 			return x;
 		}

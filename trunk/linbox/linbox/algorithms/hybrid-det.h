@@ -216,13 +216,15 @@ namespace LinBox
 		double time1, time2;
 		BT.start();
 #endif
-                ++genprime;
-                myModular D(*genprime);
-                iteration.primes[early_counter] = *genprime;
-                myModular::Element r;
-                D.init(r,0);
-                cra.initialize( D, iteration(r, D));
-                ++early_counter;
+		{
+			++genprime;
+			myModular D(*genprime);
+			iteration.primes[early_counter] = *genprime;
+			myModular::Element r;
+			D.init(r,0);
+			cra.initialize( D, iteration(r, D));
+			++early_counter;
+		}
 
 		while ( early_counter < myfactor && !cra.terminated() ) {
 			++genprime;
