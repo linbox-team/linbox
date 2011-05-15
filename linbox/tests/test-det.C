@@ -432,7 +432,7 @@ bool testIntegerDetGen (size_t n, int iterations)
  	 	report << "Computed integer determinant (Default): " << det_A << endl;
 		if (det_A != pi){
 	 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-	 			<< "ERROR: Default Computed determinant is incorrect" << endl;
+	 			<< "ERROR: Default (integer dense) Computed determinant is incorrect" << endl;
 	 		ret = false;
 	 	}
 

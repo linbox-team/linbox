@@ -200,12 +200,12 @@ int main(int argc, char* argv[])
 			typedef list< Field::Element > List;
 			List L;
 			for ( std::vector<std::pair<size_t,size_t> >::iterator
-			      p = local.begin(); p != local.end(); ++p) {
-				for(size_t i = 0; i < (size_t) p->first; ++i)
-					L.push_back((Field::Element)p->second);
+			      p_it = local.begin(); p_it != local.end(); ++p_it) {
+				for(size_t i = 0; i < (size_t) p_it->first; ++i)
+					L.push_back((Field::Element)p_it->second);
 			}
-			size_t m = (B.rowdim() > B.coldim() ? B.coldim() : B.rowdim());
-			for (size_t i = L.size(); i < m; ++i)
+			size_t M = (B.rowdim() > B.coldim() ? B.coldim() : B.rowdim());
+			for (size_t i = L.size(); i < M; ++i)
 				L.push_back(0);
 
 			list<pair<Field::Element, size_t> > pl;
@@ -216,7 +216,7 @@ int main(int argc, char* argv[])
 
 			//display(local.begin(), local.end());
 			display(pl.begin(), pl.end());
-			cout << "# local, PowerGaussDomain<int32_t>(" << m << "), n = " << n << endl;
+			cout << "# local, PowerGaussDomain<int32_t>(" << M << "), n = " << n << endl;
 
 		}
 		else {
@@ -342,7 +342,7 @@ void Mat(DenseMatrix<PIR>& M, PIR& R, int n,
 
 		M. resize (rdim, cdim);
 
-		integer val;
+		integer Val;
 
 		if (format == "dense" ) {
 
@@ -350,9 +350,9 @@ void Mat(DenseMatrix<PIR>& M, PIR& R, int n,
 
 				for ( int j = 0; j < cdim; ++ j) {
 
-					in >> val;
+					in >> Val;
 
-					R. init (M[i][j], val);
+					R. init (M[i][j], Val);
 
 				}
 		}
@@ -606,18 +606,18 @@ struct pwrlist
 // Read "1" or "q" or "q^e", for some (small) exponent e.
 // Return value of the power of q at q = _q.
 template <class num>
-num& qread(num& val, pwrlist& M, istream& in)
+num& qread(num& Val, pwrlist& M, istream& in)
 {
 	char c;
 	in >> c; // next nonwhitespace
-	if (c == '0') return val = 0;
-	if (c == '1') return val = 1;
+	if (c == '0') return Val = 0;
+	if (c == '1') return Val = 1;
 	if (c != 'p' && c != 'q') { cout << "exiting due to unknown char " << c << endl; exit(-1);}
 	in.get(c);
-	if (c !='^') {in.putback(c); return val = M[1];}
+	if (c !='^') {in.putback(c); return Val = M[1];}
 	else
 	{ int expt; in >> expt;
-		return val = M[expt];
+		return Val = M[expt];
 	};
 }
 
@@ -628,9 +628,9 @@ void KratMat(DenseMatrix<PIR>& M, PIR& R, int q, istream& in)
 	for (unsigned int i = 0; i < M.rowdim(); ++ i)
 
 		for ( unsigned int j = 0; j < M.coldim(); ++ j) {
-			int val;
-			qread(val, pwrs, in);
-			R. init (M[i][j], val);
+			int Val;
+			qread(Val, pwrs, in);
+			R. init (M[i][j], Val);
 		}
 }
 

@@ -187,8 +187,8 @@ namespace LinBox
 		else
 		{                    // Print large matrices' first row and col
 			os << "[";
-			for (size_t i = this->rowDim + this->colDim - 2; i> 0;i--)
-				this->K.write(os, this->P.getCoeff(temp,this->pdata,i) ) << " ";
+			for (size_t ii = this->rowDim + this->colDim - 2; ii> 0;ii--)
+				this->K.write(os, this->P.getCoeff(temp,this->pdata,ii) ) << " ";
 			this->K.write(os,this->P.getCoeff(temp,this->pdata,0)) << "]\n";
 			this->P.write(os, this->pdata) << std::endl;
 		} //[v(2n-2),....,v(0)]; where v(0) is the top right entry of the matrix

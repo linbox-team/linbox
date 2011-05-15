@@ -125,7 +125,7 @@ bool testRandom(const Ring& R,
 
 		xi_p = xi. begin();
 		for (cpt_p = cpt.begin(); cpt_p != cpt.end(); ++ cpt_p) {
-			for (size_t i = 0; i < cpt_p -> second; ++ i, ++ xi_p)
+			for (size_t ii = 0; ii < cpt_p -> second; ++ ii, ++ xi_p)
 				*xi_p = cpt_p -> first;
 		}
 

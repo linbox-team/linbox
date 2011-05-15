@@ -158,25 +158,25 @@ bool testRandom(const Ring& R,
 
 			report << "Computed Smith form: \n";
 
-			for ( unsigned int i = 0; i < A. rowdim(); ++ i)
-				report << Ap[i][i] << " ";
+			for ( unsigned int ii = 0; ii < A. rowdim(); ++ ii)
+				report << Ap[ii][ii] << " ";
 
 			report << '\n';
 
-			int i = 0;
+			int ii = 0;
 
 			typename std::vector<typename Ring::Element>::iterator p1;
 
 
-			for (p1 = x. begin(); p1 != x. end(); ++ p1, ++ i) {
+			for (p1 = x. begin(); p1 != x. end(); ++ p1, ++ ii) {
 
-				if (PIR.isZero(Ap[i][i]))
+				if (PIR.isZero(Ap[ii][ii]))
 
 					R.assign (*p1, s);
 
 				else
 
-					R.assign (*p1, NTL::rep(Ap[i][i]));
+					R.assign (*p1, NTL::rep(Ap[ii][ii]));
 			}
 		}
 
@@ -195,24 +195,20 @@ bool testRandom(const Ring& R,
 
 			report << "Computed Smith form: \n";
 
-			for ( unsigned int i = 0; i < A. rowdim(); ++ i)
-				report << Ap[i][i] << " ";
+			for ( unsigned int ii = 0; ii < A. rowdim(); ++ ii)
+				report << Ap[ii][ii] << " ";
 
 			report << '\n';
 
 
 			typename std::vector<typename Ring::Element>::iterator p1;
-			int i = 0;
+			int ii = 0;
 
-			for (p1 = x. begin(); p1 != x. end(); ++ p1, ++ i) {
-
-				if (PIR.isZero(Ap[i][i]))
-
+			for (p1 = x. begin(); p1 != x. end(); ++ p1, ++ ii) {
+				if (PIR.isZero(Ap[ii][ii]))
 					R.assign (*p1, s);
-
 				else
-
-					R.init (*p1, Ap[i][i]);
+					R.init (*p1, Ap[ii][ii]);
 			}
 		}
 
