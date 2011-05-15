@@ -251,13 +251,13 @@ namespace LinBox
 			while (! cra.terminated() ){
 				// get a prime.
 				++primeg; while(cra.noncoprime(*primeg)) ++primeg;
-				Field K(*primeg);
+				Field K3(*primeg);
 				//clog << "Computing blackbox matrix mod " << prime;
 				for (p = FA, raw_p = M. rawBegin(); p != FA + (n*n); ++ p, ++ raw_p)
-					K. init (*p, *raw_p);
+					K3. init (*p, *raw_p);
 
 				//clog << "\rComputing lup mod " << prime << ". ";
-				FFPACK::LUdivine(K, FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, n, n, FA, n, P, PQ, FFPACK::FfpackLQUP);
+				FFPACK::LUdivine(K3, FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, n, n, FA, n, P, PQ, FFPACK::FfpackLQUP);
 
 				faithful = true;
 				for ( j = 0, P_p = P, PQ_p = PQ; j < n; ++ j, ++ P_p, ++ PQ_p)
@@ -271,17 +271,19 @@ namespace LinBox
 					continue;
 				}
 
-				K. init (tmp, 1UL);
+				K3. init (tmp, 1UL);
 
 				for (j = 0, vp = v.begin(); vp != v.end(); ++j, ++vp) {
-					K.mulin(tmp, *(FA + (j * n + j)));
-					K.assign(*vp, tmp);
+					K3.mulin(tmp, *(FA + (j * n + j)));
+					K3.assign(*vp, tmp);
 				}
-				// 		  std::cout << "Faithful image:[";
-				// 		  for (int l = 0; l < v. size(); ++ l)
-				// 		  std::cout << v[l] << ", ";
-				// 		  std::cout << "]\n";
-				cra. progress(K, v);
+#if 0
+				std::cout << "Faithful image:[";
+				for (int l = 0; l < v. size(); ++ l)
+					std::cout << v[l] << ", ";
+				std::cout << "]\n";
+#endif
+				cra. progress(K3, v);
 			}
 
 			delete[] FA;

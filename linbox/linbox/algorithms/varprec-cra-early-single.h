@@ -294,12 +294,13 @@ namespace LinBox
 				++shelf;
 				if (*_occ_it) {
 					Integer D = _mod_it->operator()();
-					Integer e;
+					Integer e_i;
 
-					inv(e,factor_,D);
-					e *= (_tab_it->front());
-					e *=multip_;
-					e %=D ;
+					inv(e_i,factor_,D);
+					//!@todo use faster mul/mod here !
+					Integer::mulin(e_i, (_tab_it->front()));
+					Integer::mulin(e_i, multip_);
+					e_i %=D ;
 
 
 					prev_residue_ = EarlySingleCRA<Domain>::residue_;

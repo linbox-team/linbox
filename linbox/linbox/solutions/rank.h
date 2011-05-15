@@ -203,12 +203,10 @@ namespace LinBox
 				do iter.random (d1[i]); while (F.isZero (d1[i]));
 
 
-			Diagonal<Field> D1 (F, d1);
-
-
-			Compose<Diagonal<Field>,Blackbox > B1 (&D1, &A);
 			typedef Compose<Compose<Diagonal<Field>,Blackbox >, Diagonal<Field> > BlackBox1;
-			BlackBox1 B (&B1, &D1);
+			Diagonal<Field> D0 (F, d1);
+			Compose<Diagonal<Field>,Blackbox > B0 (&D0, &A);
+			BlackBox1 B (&B0, &D0);
 
 			BlackboxContainerSymmetric<Field, BlackBox1> TF (&B, F, iter);
 			MasseyDomain<Field, BlackboxContainerSymmetric<Field, BlackBox1> > WD (&TF, M.earlyTermThreshold ());
@@ -252,17 +250,17 @@ namespace LinBox
 					do iter.random (d1[i]); while (F.isZero (d1[i]));
 				Diagonal<Field> D1 (F, d1);
 				Compose<Diagonal<Field>,Blackbox > B1 (&D1, &A);
-				BlackBox1 B (&B1, &D1);
+				BlackBox1 B2 (&B1, &D1);
 
-				BlackboxContainerSymmetric<Field, BlackBox1> TF (&B, F, iter);
-				MasseyDomain<Field, BlackboxContainerSymmetric<Field, BlackBox1> > WD (&TF, M.earlyTermThreshold ());
+				BlackboxContainerSymmetric<Field, BlackBox1> TF1 (&B2, F, iter);
+				MasseyDomain<Field, BlackboxContainerSymmetric<Field, BlackBox1> > WD1 (&TF1, M.earlyTermThreshold ());
 
-				WD.pseudo_minpoly (phi, rk);
+				WD1.pseudo_minpoly (phi, rk);
 				commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Permuted pseudo Minpoly degree: " << res << std::endl;
 				commentator.start ("Monte Carlo certification (2)", "trace");
 				if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
 
-				trace(t, B);
+				trace(t, B2);
 
 				tryagain = (! F.areEqual( t, p2 ));
 				if (res > rk)
@@ -294,10 +292,10 @@ namespace LinBox
 				typedef Compose< Compose< ButD, Blackbox > , Transpose< ButD > > BlackBoxBAB;
 				BlackBoxBAB PAP(&B1, &TP);
 
-				BlackboxContainerSymmetric<Field, BlackBoxBAB> TF (&PAP, F, iter);
-				MasseyDomain<Field, BlackboxContainerSymmetric<Field, BlackBoxBAB> > WD (&TF, M.earlyTermThreshold ());
+				BlackboxContainerSymmetric<Field, BlackBoxBAB> TF1 (&PAP, F, iter);
+				MasseyDomain<Field, BlackboxContainerSymmetric<Field, BlackBoxBAB> > WD1 (&TF1, M.earlyTermThreshold ());
 
-				WD.pseudo_minpoly (phi, rk);
+				WD1.pseudo_minpoly (phi, rk);
 				commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "Butterfly pseudo Minpoly degree: " << res << std::endl;
 				commentator.start ("Monte Carlo certification (3)", "trace");
 				if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
@@ -338,20 +336,20 @@ namespace LinBox
 			for (i = 0; i < A.rowdim (); i++)
 				do iter.random (d2[i]); while (F.isZero (d2[i]));
 
-			Diagonal<Field> D1 (F, d1), D2 (F, d2);
-			Transpose<Blackbox> AT (&A);
+			Diagonal<Field> D1_i (F, d1), D2_i (F, d2);
+			Transpose<Blackbox> AT_i (&A);
 
-			Compose<Diagonal<Field>,Transpose<Blackbox> > B1 (&D1, &AT);
-			Compose<Compose<Diagonal<Field>,Transpose<Blackbox> >, Diagonal<Field> > B2 (&B1, &D2);
-			Compose<Compose<Compose<Diagonal<Field>,Transpose<Blackbox> >, Diagonal<Field> >, Blackbox> B3 (&B2, &A);
+			Compose<Diagonal<Field>,Transpose<Blackbox> > B1_i (&D1_i, &AT_i);
+			Compose<Compose<Diagonal<Field>,Transpose<Blackbox> >, Diagonal<Field> > B2_i (&B1_i, &D2_i);
+			Compose<Compose<Compose<Diagonal<Field>,Transpose<Blackbox> >, Diagonal<Field> >, Blackbox> B3_i (&B2_i, &A);
 			// Here there is an extra diagonal computation
 			// The probability of success is also divided by two, as
-			// D2^2 contains only squares and squares are half the total elements
+			// D2_i^2 contains only squares and squares are half the total elements
 			typedef Compose<Compose<Compose<Compose<Diagonal<Field>,Transpose<Blackbox> >, Diagonal<Field> >, Blackbox>, Diagonal<Field> > Blackbox1;
-			Blackbox1 B (&B3, &D1);
+			Blackbox1 B_i (&B3_i, &D1_i);
 
-			BlackboxContainerSymmetric<Field, Blackbox1> TF (&B, F, iter);
-			MasseyDomain<Field, BlackboxContainerSymmetric<Field, Blackbox1> > WD (&TF, M.earlyTermThreshold ());
+			BlackboxContainerSymmetric<Field, Blackbox1> TF_i (&B_i, F, iter);
+			MasseyDomain<Field, BlackboxContainerSymmetric<Field, Blackbox1> > WD (&TF_i, M.earlyTermThreshold ());
 
 			std::vector<typename Field::Element> phi;
 			WD.pseudo_minpoly (phi, res);
@@ -359,8 +357,8 @@ namespace LinBox
 			commentator.start ("Monte Carlo certification (4)", "trace");
 
 			typename Field::Element t, p2; F.init(p2, 0UL);
-			//             trace(t, B);
-			WhisartTraceTranspose(t, F, D1, A, D2);
+			//             trace(t, B_i);
+			WhisartTraceTranspose(t, F, D1_i, A, D2_i);
 			if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
 
 			int nbperm = 0; unsigned long rk;

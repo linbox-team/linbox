@@ -476,12 +476,12 @@ namespace LinBox
 		typedef GF2 Field;
 		typedef _Vector Vector;
 
-		RandomSparseStreamGF2 (const GF2 &, uint32_t seed, double p, size_t n, size_t m = 0) :
-			MT (seed), _n (n), _m (m), _j (0)
+		RandomSparseStreamGF2 (const GF2 &, uint32_t seed, double p, size_t N, size_t M = 0) :
+			MT (seed), _n (N), _m (M), _j (0)
 		{ setP (p); }
 
-		RandomSparseStreamGF2 (const GF2 &F, const GF2RandIter& r, double p, size_t n, size_t m = 0) :
-			MT (r.getMT()), _n (n), _m (m), _j (0)
+		RandomSparseStreamGF2 (const GF2 &F, const GF2RandIter& r, double p, size_t N, size_t M = 0) :
+			MT (r.getMT()), _n (N), _m (M), _j (0)
 		{ setP (p); }
 
 		Vector &get (Vector &v);

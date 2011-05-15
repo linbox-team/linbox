@@ -28,7 +28,7 @@ namespace LinBox
 	{
 		struct Generic{};
 		struct Local{};
-	};
+	}
 
 	template<class BB> struct TraceCategory		{ typedef TraceTags::Generic Tag; };
 
@@ -78,7 +78,7 @@ namespace LinBox
 	typename BB::Field::Element & trace(typename BB::Field::Element & t, const BB& A, TraceTags::Local tt)
 	{ return A.trace(t); }
 
-}; // namespace LinBox
+} // namespace LinBox
 
 #endif // __LINBOX_trace_H
 

@@ -21,7 +21,7 @@ namespace LinBox
 
 
 	template <class SparseSeqMatrix, class Perm, class Vector1, class Vector2>
-	Vector1& GaussDomain<GF2>::solve(Vector1& x, Vector1& w, unsigned long rank,
+	Vector1& GaussDomain<GF2>::solve(Vector1& x, Vector1& w, unsigned long Rank,
 					 const Perm& Q, const SparseSeqMatrix& L,
 					 const SparseSeqMatrix& U, const Perm& P,
 					 const Vector2& b) const
@@ -39,7 +39,7 @@ namespace LinBox
 	}
 
 	template <class SparseSeqMatrix, class Perm, class Vector1, class Vector2>
-	Vector1& GaussDomain<GF2>::solve(Vector1& x, unsigned long rank,
+	Vector1& GaussDomain<GF2>::solve(Vector1& x, unsigned long Rank,
 					 const Perm& Q, const SparseSeqMatrix& L,
 					 const SparseSeqMatrix& U, const Perm& P,
 					 const Vector2& b, bool randomsol) const
@@ -49,15 +49,15 @@ namespace LinBox
 		const GF2 F2;
 		if (randomsol) {
 			typename GF2::RandIter generator(F2);
-			for(typename Vector1::iterator it=w.begin()+rank;it!=w.end();++it)
+			for(typename Vector1::iterator it=w.begin()+Rank;it!=w.end();++it)
 				generator.random( *it );
 		}
 		else {
-			for(typename Vector1::iterator it=w.begin()+rank;it!=w.end();++it)
+			for(typename Vector1::iterator it=w.begin()+Rank;it!=w.end();++it)
 				F2.init(*it,0);
 		}
 
-		return this->solve(x, w, rank, Q, L, U, P, b);
+		return this->solve(x, w, Rank, Q, L, U, P, b);
 	}
 
 	template <class SparseSeqMatrix, class Vector1, class Vector2>
@@ -66,8 +66,8 @@ namespace LinBox
 					   const Vector2& b, bool randomsol) const
 	{
 
-		typename GF2::Element det;
-		unsigned long rank;
+		typename GF2::Element Det;
+		unsigned long Rank;
 		const GF2 F2;
 		SparseSeqMatrix L(F2, A.rowdim(), A.rowdim());
 		Permutation<GF2> Q((int)A.rowdim(),F2);
@@ -75,9 +75,9 @@ namespace LinBox
 
 
 
-		this->QLUPin(rank, det, Q, L, A, P, A.rowdim(), A.coldim() );
+		this->QLUPin(Rank, Det, Q, L, A, P, A.rowdim(), A.coldim() );
 
-		return this->solve(x, rank, Q, L, A, P, b, randomsol);
+		return this->solve(x, Rank, Q, L, A, P, b, randomsol);
 	}
 
 } // namespace LinBox

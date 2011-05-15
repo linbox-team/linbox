@@ -106,10 +106,10 @@ namespace LinBox
 
 			Field F = Ap.field();
 
-			typename DenseMatrix<Field>::RowIterator cur_r, tmp_r;
-			typename DenseMatrix<Field>::ColIterator cur_c, tmp_c;
-			typename DenseMatrix<Field>::Row::iterator cur_rp, tmp_rp;
-			typename DenseMatrix<Field>::Col::iterator tmp_cp;
+			typename DenseMatrix<Field>::RowIterator     cur_r,  tmp_r;
+			typename DenseMatrix<Field>::ColIterator     cur_c,  tmp_c;
+			typename DenseMatrix<Field>::Row::iterator  cur_rp, tmp_rp;
+			typename DenseMatrix<Field>::Col::iterator          tmp_cp;
 
 			Element tmp_e;
 
@@ -119,7 +119,7 @@ namespace LinBox
 
 			int offset_c = 0;
 
-			int r = 0;
+			int R = 0;
 
 			for(cur_r = Ap. rowBegin(), cur_c = Ap. colBegin(); (cur_r != Ap. rowEnd())&&(cur_c != Ap.colEnd());) {
 
@@ -172,10 +172,10 @@ namespace LinBox
 				++ cur_c;
 				++ offset_r;
 				++ offset_c;
-				++ r;
+				++ R;
 
 			}
-			return r;
+			return R;
 		}
 	};
 

@@ -83,9 +83,11 @@ namespace LinBox
 		Integer & operator() (Integer& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
 		{
 			++genprime;
-			Domain D(*genprime);
-			DomainElement r; D.init(r);
-			Builder_.initialize( D, Iteration(r, D) );
+			{
+				Domain D(*genprime);
+				DomainElement r; D.init(r);
+				Builder_.initialize( D, Iteration(r, D) );
+			}
 			while( ! Builder_.terminated() ) {
 				++genprime; while(Builder_.noncoprime(*genprime) ) ++genprime;
 				Domain D(*genprime);
@@ -99,9 +101,11 @@ namespace LinBox
 		Vect<Integer, Alloc<Integer> > & operator() (Vect<Integer, Alloc<Integer> >& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
 		{
 			++genprime;
-			Domain D(*genprime);
-			Vect<DomainElement, Alloc<DomainElement> > r;
-			Builder_.initialize( D, Iteration(r, D) );
+			{
+				Domain D(*genprime);
+				Vect<DomainElement, Alloc<DomainElement> > r;
+				Builder_.initialize( D, Iteration(r, D) );
+			}
 			while( ! Builder_.terminated() ) {
 				++genprime; while(Builder_.noncoprime(*genprime) ) ++genprime;
 				Domain D(*genprime);

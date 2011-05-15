@@ -97,7 +97,7 @@ namespace LinBox
 			}
 			u = u1 ;
 			return u3 ;
-		} ;
+		}
 
 		template<class Modulo, class Modulo2>
 		Modulo MY_Zpz_inv (const Modulo a, const Modulo2 pp)
@@ -126,13 +126,13 @@ namespace LinBox
 				mb = r;
 			}
 			return ma;
-		};
+		}
 
 		template<class Ring1, class Ring2>
 		bool MY_divides(Ring1 a, Ring2 b)
 		{
 			return (!(b%a));
-		};
+		}
 
 		// ------------------------------------------------
 		// Pivot Searchers and column strategy
@@ -402,8 +402,8 @@ namespace LinBox
 
 					if (c > -2) break;
 					for(unsigned long ii=k;ii<Ni;++ii)
-						for(unsigned long jj=LigneA[ii].size();jj--;)
-							LigneA[ii][jj].second = ( LigneA[ii][jj].second / PRIME);
+						for(unsigned long jjj=LigneA[ii].size();jjj--;)
+							LigneA[ii][jjj].second = ( LigneA[ii][jjj].second / PRIME);
 					MOD = MOD / PRIME;
 					ranks.push_back( indcol );
 					++ind_pow;
@@ -432,8 +432,8 @@ namespace LinBox
 			CherchePivot( PRIME, LigneA[last], indcol, c, col_density );
 			while( c == -2) {
 				ranks.push_back( indcol );
-				for(long jj=LigneA[last].size();jj--;)
-					LigneA[last][jj].second = ( LigneA[last][jj].second / PRIME);
+				for(long jjj=LigneA[last].size();jjj--;)
+					LigneA[last][jjj].second = ( LigneA[last][jjj].second / PRIME);
 				MOD /= PRIME;
 				CherchePivot( PRIME, LigneA[last], indcol, c, col_density );
 			}

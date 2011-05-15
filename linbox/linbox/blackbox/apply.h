@@ -273,14 +273,16 @@ namespace LinBox
 		typedef typename Domain::Element    Element;
 		typedef std::vector<Element>         Vector;
 
-		MatrixApplyDomain(const Domain& D, const IMatrix &M) :
-			_D(D), _M(M)
+		MatrixApplyDomain(const Domain& D, const IMatrix &Mat) :
+			_D(D), _M(Mat)
 		{}
 
 		void setup(LinBox::integer prime){}
 
 		Vector& applyV(Vector& y, Vector& x, Vector& z) const
-		{ return _M.apply(y,x);}
+		{
+			return _M.apply(y,x);
+		}
 
 		Vector& applyVTrans(Vector& y, Vector& x, Vector&z) const
 		{return _M.applyTranspose(y,x);}
@@ -293,7 +295,7 @@ namespace LinBox
 
 	// special function to split an integer matrix in q-adic representation in an array of double
 	template <class Domain, class IMatrix>
-	void create_MatrixQadic (const Domain &D, const IMatrix &M, double *chunks, size_t num_chunks, const integer shift=0);
+	void create_MatrixQadic (const Domain &D, const IMatrix &Mat, double *chunks, size_t num_chunks, const integer shift=0);
 
 
 	// special function to split an integer vector in q-adic representation in an array of double
@@ -302,7 +304,7 @@ namespace LinBox
 
 	// special function to split an integer matrix in an RNS representation in an array of double
 	template <class Domain, class IMatrix>
-	void create_MatrixRNS (const MultiModDouble& F, const Domain &D, const IMatrix &M, double *chunks);
+	void create_MatrixRNS (const MultiModDouble& F, const Domain &D, const IMatrix &Mat, double *chunks);
 
 
 	// special function to split an integer vector in an RNS representation in an array of double
@@ -323,9 +325,11 @@ namespace LinBox
 		typedef IMatrix                       Matrix;
 
 
-		BlasMatrixApplyDomain(const Domain& D, const IMatrix &M) :
-			_D(D), _M(M), _MD(D), _m(M.rowdim()), _n(M.coldim())
-		{ _switcher= Classic;_rns=NULL;}
+		BlasMatrixApplyDomain(const Domain& D, const IMatrix &Mat) :
+			_D(D), _M(Mat), _MD(D), _m(Mat.rowdim()), _n(Mat.coldim())
+		{
+			_switcher= Classic;_rns=NULL;
+		}
 
 
 		~BlasMatrixApplyDomain ()
@@ -1043,8 +1047,8 @@ namespace LinBox
 	class MatrixApplyDomain<Domain, BlasMatrix<typename Domain::Element> > : public BlasMatrixApplyDomain<Domain, BlasMatrix<typename Domain::Element> > {
 
 	public:
-		MatrixApplyDomain (const Domain &D, const  BlasMatrix<typename Domain::Element> &M) :
-			BlasMatrixApplyDomain<Domain, BlasMatrix<typename Domain::Element> > (D,M)
+		MatrixApplyDomain (const Domain &D, const  BlasMatrix<typename Domain::Element> &Mat) :
+			BlasMatrixApplyDomain<Domain, BlasMatrix<typename Domain::Element> > (D,Mat)
 		{}
 
 	};
@@ -1056,8 +1060,8 @@ namespace LinBox
 	class MatrixApplyDomain<Domain, DenseMatrix<Domain> > : public BlasMatrixApplyDomain<Domain, DenseMatrix<Domain> > {
 
 	public:
-		MatrixApplyDomain (const Domain &D, const DenseMatrix<Domain> &M) :
-			BlasMatrixApplyDomain<Domain, DenseMatrix<Domain> > (D,M)
+		MatrixApplyDomain (const Domain &D, const DenseMatrix<Domain> &Mat) :
+			BlasMatrixApplyDomain<Domain, DenseMatrix<Domain> > (D,Mat)
 		{}
 	};
 
@@ -1070,8 +1074,8 @@ namespace LinBox
 	public BlasMatrixApplyDomain<Domain, BlasBlackbox<Domain> > {
 
 	public:
-		MatrixApplyDomain (const Domain &D, const  BlasBlackbox<Domain> &M) :
-			BlasMatrixApplyDomain<Domain, BlasBlackbox<Domain> > (D,M)
+		MatrixApplyDomain (const Domain &D, const  BlasBlackbox<Domain> &Mat) :
+			BlasMatrixApplyDomain<Domain, BlasBlackbox<Domain> > (D,Mat)
 		{}
 
 	};
@@ -1083,17 +1087,17 @@ namespace LinBox
 	 */
 	template <class Domain, class IMatrix>
 	void create_MatrixQadic (const Domain           &D,
-				 const IMatrix          &M,
+				 const IMatrix          &Mat,
 				 double            *chunks,
 				 size_t         num_chunks,
 				 const integer    shift)
 	{
 
-		typename IMatrix::ConstRawIterator it= M.rawBegin();
+		typename IMatrix::ConstRawIterator it= Mat.rawBegin();
 
 		size_t m,n,mn;
-		m  = M.rowdim();
-		n  = M.coldim();
+		m  = Mat.rowdim();
+		n  = Mat.coldim();
 		mn = m*n;
 
 		size_t tmpsize, tmpbitsize, j;
@@ -1466,14 +1470,14 @@ namespace LinBox
 	template <class Domain, class IMatrix>
 	void create_MatrixRNS (const MultiModDouble    &F,
 			       const Domain            &D,
-			       const IMatrix           &M,
+			       const IMatrix           &Mat,
 			       double             *chunks)
 	{
 
 
 		size_t rns_size= F.size();
-		typename IMatrix::ConstRawIterator it = M.rawBegin();
-		size_t mn = M.rowdim()*M.coldim();
+		typename IMatrix::ConstRawIterator it = Mat.rawBegin();
+		size_t mn = Mat.rowdim()*Mat.coldim();
 		integer tmp;
 
 		for (size_t i=0; i< mn; ++i, ++it){

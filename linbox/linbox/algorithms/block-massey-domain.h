@@ -161,8 +161,9 @@ namespace LinBox
 #endif
 
 
-		BlockMasseyDomain (const BlockMasseyDomain<Field, Sequence> &M, unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) :
-			_container(M._container), _F(M._F), _BMD(M._F), _MD(M._F),  EARLY_TERM_THRESHOLD (ett_default)
+		BlockMasseyDomain (const BlockMasseyDomain<Field, Sequence> &Mat, unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) :
+			_container(Mat._container), _F(Mat._F), _BMD(Mat._F),
+			_MD(Mat._F),  EARLY_TERM_THRESHOLD (ett_default)
 		{
 #ifdef _BM_TIMING
 			clearTimer();
@@ -323,15 +324,15 @@ namespace LinBox
 #endif
 
 			unsigned long early_stop=0;
-			long N;
+			long NN;
 
-			for (N = 0; (N < (long)length) && (early_stop < EARLY_TERM_THRESHOLD) ; ++N, ++_iter) {
+			for (NN = 0; (NN < (long)length) && (early_stop < EARLY_TERM_THRESHOLD) ; ++NN, ++_iter) {
 
 				// Get the next coefficient in the sequence
-				S[N]=*_iter;
+				S[NN]=*_iter;
 
 #ifdef  _BM_TIMING
-				if (N != 0){
+				if (NN != 0){
 					tGetCoeff.stop();
 					ttGetCoeff += tGetCoeff;
 				}
@@ -349,10 +350,10 @@ namespace LinBox
 				// view of m first rows of Discrepancy
 				Coefficient Discr(Discrepancy,0,0,m,n);
 
-				_BMD.mul(Discr,Sigma,S[N]);
+				_BMD.mul(Discr,Sigma,S[NN]);
 				for (size_t i=1;i<SigmaBase.size();i++){
 					Coefficient  Sigmaview(SigmaBase[i],0,0,m,m);
-					_BMD.axpyin(Discr,Sigmaview,S[N-i]);
+					_BMD.axpyin(Discr,Sigmaview,S[NN-i]);
 				}
 
 #ifdef _BM_TIMING
@@ -385,7 +386,7 @@ namespace LinBox
 				std::vector<size_t> Perm1(m+n);
 				for (size_t i=0;i<m+n;++i)
 					Perm1[i]=i;
-				if (N>=2) {
+				if (NN>=2) {
 					for (size_t i=0;i<m+n;++i) {
 						size_t idx_min=i;
 						for (size_t j=i+1;j<m+n;++j)
@@ -415,7 +416,7 @@ namespace LinBox
 #endif
 
 #ifdef __CHECK_DISCREPANCY
-				std::cout<<"Discrepancy"<<N<<":=Matrix(";
+				std::cout<<"Discrepancy"<<NN<<":=Matrix(";
 				Discrepancy.write(std::cout,_F,true)<<");"<<std::endl;
 #endif
 
@@ -557,16 +558,16 @@ namespace LinBox
 
 
 #ifdef __DEBUG_MAPLE
-				std::cout<<"\n\nSigmaBase"<<N<<":= ";
+				std::cout<<"\n\nSigmaBase"<<NN<<":= ";
 				write_maple(_F,SigmaBase);
 
-				std::cout<<"order"<<N<<":=<";
+				std::cout<<"order"<<NN<<":=<";
 				for (size_t i=0;i<m+n;++i){
 					std::cout<<order[i];
 					if (i!=m+n-1) std::cout<<",";
 				}
 				std::cout<<">;"<<std::endl;
-				std::cout<<"degree"<<N<<":=<";
+				std::cout<<"degree"<<NN<<":=<";
 				for (size_t i=0;i<m+n;++i){
 					std::cout<<degree[i];
 					if (i!=m+n-1) std::cout<<",";
@@ -578,9 +579,9 @@ namespace LinBox
 #ifdef __CHECK_LOOP
 				std::cout<<"\nCheck validity of current SigmaBase\n";
 				std::cout<<"SigmaBase size: "<<SigmaBase.size()<<std::endl;
-				std::cout<<"Sequence size:  "<<N+1<<std::endl;
-				size_t min_t = (SigmaBase.size() > N+1)? N+1: SigmaBase.size();
-				for (size_t i=min_t - 1 ; i<N+1; ++i){
+				std::cout<<"Sequence size:  "<<NN+1<<std::endl;
+				size_t min_t = (SigmaBase.size() > NN+1)? NN+1: SigmaBase.size();
+				for (size_t i=min_t - 1 ; i<NN+1; ++i){
 					Coefficient Disc(m+n,n);
 					_BMD.mul(Disc,SigmaBase[0],S[i]);
 					for (size_t j=1;j<min_t -1;++j)
@@ -614,7 +615,7 @@ namespace LinBox
 
 			}
 			if ( early_stop == EARLY_TERM_THRESHOLD)
-				std::cout<<"Early termination is used: stop at "<<N<<" from "<<length<<" iterations\n\n";
+				std::cout<<"Early termination is used: stop at "<<NN<<" from "<<length<<" iterations\n\n";
 
 #ifdef __PRINT_SEQUENCE
 			std::cout<<"\n\nSequence:= ";
@@ -663,7 +664,7 @@ namespace LinBox
 #ifdef __CHECK_RESULT
 			std::cout<<"Check minimal polynomial application\n";
 			bool valid=true;
-			for (size_t i=0;i< N - P.size();++i){
+			for (size_t i=0;i< NN - P.size();++i){
 				Coefficient res(m,n);
 				_BMD.mul(res,P[0],S[i]);
 				for (size_t k=1,j=i+1;k<P.size();++k,++j)

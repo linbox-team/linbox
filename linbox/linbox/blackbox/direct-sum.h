@@ -380,7 +380,7 @@ namespace LinBox
 	};
 
 
-}; // namespace LinBox
+} // namespace LinBox
 
 
 namespace LinBox
@@ -683,7 +683,7 @@ namespace LinBox
 
 
 
-}; // namespace LinBox
+} // namespace LinBox
 
 
 #endif // __LINBOX_direct_sum_H

@@ -106,12 +106,13 @@ namespace LinBox
 		template<class Function, class RandPrimeIterator>
 		Integer & operator() (Integer& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
 		{
-
-			++genprime;
-			Domain D(*genprime);
-			DomainElement r; D.init(r);
-			Builder_.initialize( D, Iteration(r, D) );
-			++IterCounter;
+			{
+				++genprime;
+				Domain D(*genprime);
+				DomainElement r; D.init(r);
+				Builder_.initialize( D, Iteration(r, D) );
+				++IterCounter;
+			}
 
 			int coprime =0;
 			int maxnoncoprime = 1000;
@@ -135,9 +136,9 @@ namespace LinBox
 				DomainElement r; D.init(r);
 				Builder_.progress( D, Iteration(r, D) );
 				if (RR_.scheduled(IterCounter-1)) {
-					Integer M ; Builder_.getModulus(M);
-					Integer r ; Builder_.getResidue(r);
-					if (RR_.reconstructRational(num,den,r,M)) {
+					Integer Mint ; Builder_.getModulus(Mint);
+					Integer rint ; Builder_.getResidue(rint);
+					if (RR_.reconstructRational(num,den,rint,Mint)) {
 						Builder_.changePreconditioner(f_in*num,m_in*den);
 						int k ; Builder_.getThreshold(k);
 						if (this->operator()(k,num,den,Iteration,genprime)) break;
@@ -231,11 +232,13 @@ namespace LinBox
 		template<template <class, class> class Vect, template<class> class Alloc,  class Function, class RandPrimeIterator>
 		Vect<Integer, Alloc<Integer> > & operator() (Vect<Integer, Alloc<Integer> >& num, Integer& den, Function& Iteration, RandPrimeIterator& genprime)
 		{
-			++IterCounter;
-			++genprime;
-			Domain D(*genprime);
-			Vect<DomainElement, Alloc<DomainElement>  > r;
-			Builder_.initialize( D, Iteration(r, D) );
+			{
+				++IterCounter;
+				++genprime;
+				Domain D(*genprime);
+				Vect<DomainElement, Alloc<DomainElement>  > r;
+				Builder_.initialize( D, Iteration(r, D) );
+			}
 
 			int coprime =0;
 			int maxnoncoprime = 1000;
@@ -263,18 +266,21 @@ namespace LinBox
 				Builder_.progress( D, Iteration(r, D) );
 
 				if (RR_.scheduled(IterCounter-1) || Builder_.terminated()) {
-					Integer M ; Builder_.getModulus(M);
+					Integer Mint ; Builder_.getModulus(Mint);
 					if ( Builder_.terminated() ) {//early or full termination occurred, check reconstruction of the whole vector
 						//early or full termination
-						Vect<Integer, Alloc<Integer> > r ; Builder_.getResidue(r);
-						if (RR_.reconstructRational(num,den,r,M) ) {
+						Vect<Integer, Alloc<Integer> > r_v ;
+						Builder_.getResidue(r_v);
+						if (RR_.reconstructRational(num,den,r_v,Mint) ) {
 							Vect<Integer, Alloc<Integer> > vnum(num),vden(m_in.size(),den);
 							for (int i=0; i < (int)vnum.size(); ++ i) {
 								if (vnum[i]==0) vnum[i] = 1; // no prec
 							}
-							Builder_.productin(vnum, f_in); Builder_.productin(vden,m_in);
+							Builder_.productin(vnum, f_in);
+							Builder_.productin(vden,m_in);
 							Builder_.changePreconditioner(vnum,vden) ;
-							int k ; Builder_.getThreshold(k);
+							int k ;
+							Builder_.getThreshold(k);
 							if (this->operator()(k,num,den,Iteration,genprime)) {
 								break;
 							}
@@ -290,9 +296,10 @@ namespace LinBox
 					}
 					else {
 						//heuristics: reconstruction of vector
-						Integer r ; Builder_.getResidue(r);
+						Integer rint ;
+						Builder_.getResidue(rint);
 						Integer n,d;
-						if (RR_.reconstructRational(n,d,r,M)) {
+						if (RR_.reconstructRational(n,d,rint,Mint)) {
 							Vect<Integer, Alloc<Integer> > vden(m_in.size(),d);
 							Builder_.productin(vden,m_in);
 							Builder_.changePreconditioner(f_in,vden);

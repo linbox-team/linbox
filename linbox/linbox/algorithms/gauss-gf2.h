@@ -65,14 +65,14 @@ namespace LinBox
 		//@{
 		///
 		///
-		template <class SparseSeqMatrix> unsigned long& rankin(unsigned long &rank,
+		template <class SparseSeqMatrix> unsigned long& rankin(unsigned long &Rank,
 		SparseSeqMatrix        &A,
 		unsigned long  Ni,
 		unsigned long  Nj,
 		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const ;
 
 		///
-		template <class SparseSeqMatrix> unsigned long& rankin(unsigned long &rank,
+		template <class SparseSeqMatrix> unsigned long& rankin(unsigned long &Rank,
 		SparseSeqMatrix        &A,
 		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
 
@@ -139,7 +139,7 @@ namespace LinBox
 		 * In Ganzha et~al. CASC'2002, pages 47--62.
 		 */
 		template <class SparseSeqMatrix, class Perm>
-		unsigned long& QLUPin(unsigned long &rank,
+		unsigned long& QLUPin(unsigned long &Rank,
 				      Element& determinant,
 				      Perm          &Q,
 				      SparseSeqMatrix	    &L,
@@ -149,11 +149,11 @@ namespace LinBox
 				      unsigned long Nj) const;
 
 		template <class SparseSeqMatrix, class Perm, class Vector1, class Vector2>
-		Vector1& solve(Vector1& x, unsigned long rank, const Perm& Q, const SparseSeqMatrix& L, const SparseSeqMatrix& U, const Perm& P, const Vector2& b, bool randomsol=false) const;
+		Vector1& solve(Vector1& x, unsigned long Rank, const Perm& Q, const SparseSeqMatrix& L, const SparseSeqMatrix& U, const Perm& P, const Vector2& b, bool randomsol=false) const;
 
 
 		template <class SparseSeqMatrix, class Perm, class Vector1, class Vector2>
-		Vector1& solve(Vector1& x, Vector1& w, unsigned long rank, const Perm& Q, const SparseSeqMatrix& L, const SparseSeqMatrix& U, const Perm& P, const Vector2& b) const;
+		Vector1& solve(Vector1& x, Vector1& w, unsigned long Rank, const Perm& Q, const SparseSeqMatrix& L, const SparseSeqMatrix& U, const Perm& P, const Vector2& b) const;
 
 
 		template <class SparseSeqMatrix, class Vector1, class Vector2>
@@ -163,17 +163,17 @@ namespace LinBox
 
 
 		template <class SparseSeqMatrix, class Perm>
-		unsigned long& InPlaceLinearPivoting(unsigned long &rank,
+		unsigned long& InPlaceLinearPivoting(unsigned long &Rank,
 						     Element& determinant,
 						     SparseSeqMatrix        &A,
 						     Perm                   &P,
 						     unsigned long Ni,
 						     unsigned long Nj) const;
 		template <class SparseSeqMatrix>
-		unsigned long& NoReordering (unsigned long & rank, Element& , SparseSeqMatrix &, unsigned long , unsigned long ) const
+		unsigned long& NoReordering (unsigned long & Rank, Element& , SparseSeqMatrix &, unsigned long , unsigned long ) const
 		{
 			std::cerr << "Sparse elimination over GF2 without reordering not implemented" << std::endl;
-			return rank;
+			return Rank;
 		}
 
 

@@ -442,10 +442,10 @@ int test_full_multip_fixed(std::ostream & report, size_t PrimeSize, size_t Size,
 			return EXIT_SUCCESS ; // pas la faute à cra...
 		}
 		ModularField F(*genprime);
-		pVectIterator residue_it = residue.begin();
+		pVectIterator residue_jt = residue.begin();
 		for (size_t i = 0 ; i < Taille; ++i)
 			F.init(residue[i],(*residu)[i]);
-		cra.progress(F,residue_it);
+		cra.progress(F,residue_jt);
 		++genprime;
 		++residu ;
 	}

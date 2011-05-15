@@ -130,8 +130,8 @@ namespace LinBox
 			F. init(zero, 0);
 
 			std::vector<typename Field::Element> e(A.coldim(), zero), tmp(A.rowdim());
-			typedef typename DenseSubmatrix<_Element>::ColIterator ColIterator ;
-			ColIterator col_p;
+			typedef typename DenseSubmatrix<_Element>::ColIterator ColIterator_t ;
+			ColIterator_t col_p;
 
 			typename BlasMatrix<Element>::Col::iterator elt_p;
 

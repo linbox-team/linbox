@@ -409,20 +409,21 @@ namespace LinBox
 				++shelf;
 				if (*_occ_it) {
 					Integer D = _mod_it->operator()();
-					Vect e(vfactor_.size());
-					inverse(e,vfactor_,D);
-					productin(e,*_tab_it,D);
-					productin(e,vmultip_,D);
+					Vect e_v(vfactor_.size());
+					inverse(e_v,vfactor_,D);
+					productin(e_v,*_tab_it,D);
+					productin(e_v,vmultip_,D);
 
 					Integer z;
-					dot(z,D, e, randv);
+					dot(z,D, e_v, randv);
 
 
 					prev_residue_ = EarlySingleCRA<Domain>::residue_;
 					EarlySingleCRA<Domain>::progress(D,z);
 
-					if (prev_residue_ == EarlySingleCRA<Domain>::residue_ )
+					if (prev_residue_ == EarlySingleCRA<Domain>::residue_ ) {
 						EarlySingleCRA<Domain>::occurency_ = EarlySingleCRA<Domain>::occurency_ +  (shelf - prev_shelf);
+					}
 					if ( EarlySingleCRA<Domain>::terminated() ) {
 						return true;
 					}

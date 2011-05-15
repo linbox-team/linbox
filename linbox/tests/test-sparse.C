@@ -83,16 +83,16 @@ static bool testIdentityApply (Field &F, const char *text, VectorStream<Vector> 
 
 		stream.next (v);
 
-		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
-		report << "Input vector:  ";
-		VD.write (report, v);
-		report << endl;
+		ostream &Report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		Report << "Input vector:  ";
+		VD.write (Report, v);
+		Report << endl;
 
 		A.apply (w, v);
 
-		report << "Output vector: ";
-		VD.write (report, w);
-		report << endl;
+		Report << "Output vector: ";
+		VD.write (Report, w);
+		Report << endl;
 
 		if (!VD.areEqual (v, w))
 			ret = iter_passed = false;
@@ -166,10 +166,10 @@ static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector>
 		// Make sure last element is nonzero
 		r.random (VectorWrapper::ref<Field> (v, stream.n () - 1));
 
-		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
-		report << "Input vector:  ";
-		VD.write (report, v);
-		report << endl;
+		ostream &Report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		Report << "Input vector:  ";
+		VD.write (Report, v);
+		Report << endl;
 
 		commentator.start ("Applying vectors");
 
@@ -181,9 +181,9 @@ static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector>
 
 		commentator.stop ("Done");
 
-		report << "A^(n-1) v:     ";
-		VD.write (report, even ? w : v);
-		report << endl;
+		Report << "A^(n-1) v:     ";
+		VD.write (Report, even ? w : v);
+		Report << endl;
 
 		if (VD.isZero (even ? w : v)) {
 			ret = false;
@@ -196,9 +196,9 @@ static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector>
 		else
 			A.apply (w, v);
 
-		report << "A^n v:         ";
-		VD.write (report, even ? v : w);
-		report << endl;
+		Report << "A^n v:         ";
+		VD.write (Report, even ? v : w);
+		Report << endl;
 
 		if (!VD.isZero (even ? v : w))
 			ret = iter_passed = false;

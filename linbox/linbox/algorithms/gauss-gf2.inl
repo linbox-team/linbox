@@ -32,7 +32,7 @@ namespace LinBox
 	// Specialization over GF2
 	template <class SparseSeqMatrix, class Perm>
 	inline unsigned long&
-	GaussDomain<GF2>::InPlaceLinearPivoting (unsigned long &rank,
+	GaussDomain<GF2>::InPlaceLinearPivoting (unsigned long &Rank,
 						 bool          &determinant,
 						 SparseSeqMatrix        &LigneA,
 						 Perm           &P,
@@ -64,7 +64,7 @@ namespace LinBox
 
 		long last = Ni - 1;
 		long c;
-		rank = 0;
+		Rank = 0;
 
 #ifdef __LINBOX_OFTEN__
 		long sstep = last/40;
@@ -91,7 +91,7 @@ namespace LinBox
 						sl += LigneA[l].size ();
 
 					commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
-					<< "Fillin (" << rank << "/" << Ni << ") = "
+					<< "Fillin (" << Rank << "/" << Ni << ") = "
 					<< sl
 					<< " (" << double(sl)*100.0/double(Ni-k)/double(Nj-k) << "%, "
 					<< double(sl)/double(Ni-k) << " avg)"
@@ -122,19 +122,19 @@ namespace LinBox
 				}
 
 
-				SparseFindPivotBinary (*LigneA_k, rank, c, col_density, determinant);
+				SparseFindPivotBinary (*LigneA_k, Rank, c, col_density, determinant);
 
 				if (c != -1) {
 					long ll;
-					if ( c != (static_cast<long>(rank)-1) ) {
-						P.permute(rank-1,c);
+					if ( c != (static_cast<long>(Rank)-1) ) {
+						P.permute(Rank-1,c);
 						for (ll=0      ; ll < k ; ++ll)
-							permuteBinary( LigneA[ll], rank, c);
+							permuteBinary( LigneA[ll], Rank, c);
 					}
 					long npiv=LigneA_k->size();
 					for (ll = k+1; ll < static_cast<long>(Ni); ++ll) {
 						bool elim=false;
-						eliminateBinary (elim, LigneA[ll], *LigneA_k, rank, c, npiv, col_density);
+						eliminateBinary (elim, LigneA[ll], *LigneA_k, Rank, c, npiv, col_density);
 					}
 				}
 
@@ -146,12 +146,12 @@ namespace LinBox
 			// LigneA.write(rep << "U:= ", FORMAT_MAPLE) << std::endl;
 		}//for k
 
-		SparseFindPivotBinary ( LigneA[last], rank, c, determinant);
+		SparseFindPivotBinary ( LigneA[last], Rank, c, determinant);
 		if (c != -1) {
-			if ( c != (static_cast<long>(rank)-1) ) {
-				P.permute(rank-1,c);
+			if ( c != (static_cast<long>(Rank)-1) ) {
+				P.permute(Rank-1,c);
 				for (long ll=0      ; ll < last ; ++ll)
-					permuteBinary( LigneA[ll], rank, c);
+					permuteBinary( LigneA[ll], Rank, c);
 			}
 		}
 
@@ -167,11 +167,11 @@ namespace LinBox
 			sl += LigneA[l].size ();
 
 		commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
-		<< "Fillin (" << rank << "/" << Ni << ") = " << sl
+		<< "Fillin (" << Rank << "/" << Ni << ") = " << sl
 		<< std::endl;
 #endif
 
-		if ((rank < Ni) || (rank < Nj) || (Ni == 0) || (Nj == 0))
+		if ((Rank < Ni) || (Rank < Nj) || (Ni == 0) || (Nj == 0))
 			determinant = false;
 
 		integer card;
@@ -182,18 +182,18 @@ namespace LinBox
 		// LigneA.write(rep << "U:= ", FORMAT_MAPLE) << ':' << std::endl;
 
 		commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
-		<< "Rank : " << rank
+		<< "Rank : " << Rank
 		<< " over GF (2)" << std::endl;
 		commentator.stop ("done", 0, "IPLRGF2");
 
 
 
-		return rank;
+		return Rank;
 	}
 
 	// Specialization over GF2
 	template <class SparseSeqMatrix, class Perm> inline unsigned long&
-	GaussDomain<GF2>::QLUPin (unsigned long &rank,
+	GaussDomain<GF2>::QLUPin (unsigned long &Rank,
 				  bool          &determinant,
 				  Perm          &Q,
 				  SparseSeqMatrix        &LigneL,
@@ -240,7 +240,7 @@ namespace LinBox
 
 		long last = Ni - 1;
 		long c;
-		rank = 0;
+		Rank = 0;
 
 #ifdef __LINBOX_OFTEN__
 		long sstep = last/40;
@@ -267,7 +267,7 @@ namespace LinBox
 						sl += LigneA[l].size ();
 
 					commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
-					<< "Fillin (" << rank << "/" << Ni << ") = "
+					<< "Fillin (" << Rank << "/" << Ni << ") = "
 					<< sl
 					<< " (" << double(sl)*100.0/double(Ni-k)/double(Nj-k) << "%, "
 					<< double(sl)/double(Ni-k) << " avg)"
@@ -300,19 +300,19 @@ namespace LinBox
 				}
 
 
-				SparseFindPivotBinary (*LigneA_k, rank, c, col_density, determinant);
+				SparseFindPivotBinary (*LigneA_k, Rank, c, col_density, determinant);
 
 				if (c != -1) {
 					long ll;
-					if ( c != (static_cast<long>(rank)-1) ) {
-						P.permute(rank-1,c);
+					if ( c != (static_cast<long>(Rank)-1) ) {
+						P.permute(Rank-1,c);
 						for (ll=0      ; ll < k ; ++ll)
-							permuteBinary( LigneA[ll], rank, c);
+							permuteBinary( LigneA[ll], Rank, c);
 					}
 					long npiv=LigneA_k->size();
 					for (ll = k+1; ll < static_cast<long>(Ni); ++ll) {
-						E hc; hc=rank-1; bool elim=false;
-						eliminateBinary (elim, LigneA[ll], *LigneA_k, rank, c, npiv, col_density);
+						E hc; hc=Rank-1; bool elim=false;
+						eliminateBinary (elim, LigneA[ll], *LigneA_k, Rank, c, npiv, col_density);
 						if(elim) LigneL[ll].push_back(hc);
 					}
 				}
@@ -327,12 +327,12 @@ namespace LinBox
 			//  LigneA.write(rep << "U:= ", FORMAT_MAPLE) << std::endl;
 		}//for k
 
-		SparseFindPivotBinary ( LigneA[last], rank, c, determinant);
+		SparseFindPivotBinary ( LigneA[last], Rank, c, determinant);
 		if (c != -1) {
-			if ( c != (static_cast<long>(rank)-1) ) {
-				P.permute(rank-1,c);
+			if ( c != (static_cast<long>(Rank)-1) ) {
+				P.permute(Rank-1,c);
 				for (long ll=0      ; ll < last ; ++ll)
-					permuteBinary( LigneA[ll], rank, c);
+					permuteBinary( LigneA[ll], Rank, c);
 			}
 		}
 
@@ -350,11 +350,11 @@ namespace LinBox
 			sl += LigneA[l].size ();
 
 		commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
-		<< "Fillin (" << rank << "/" << Ni << ") = " << sl
+		<< "Fillin (" << Rank << "/" << Ni << ") = " << sl
 		<< std::endl;
 #endif
 
-		if ((rank < Ni) || (rank < Nj) || (Ni == 0) || (Nj == 0))
+		if ((Rank < Ni) || (Rank < Nj) || (Ni == 0) || (Nj == 0))
 			determinant = false;
 
 		integer card;
@@ -372,13 +372,13 @@ namespace LinBox
 		P.write(rep << "P:= ", FORMAT_MAPLE) << ':' << std::endl;
 #endif
 		commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
-		<< "Rank : " << rank
+		<< "Rank : " << Rank
 		<< " over GF (2)" << std::endl;
 		commentator.stop ("done", 0, "IPLRGF2");
 
 
 
-		return rank;
+		return Rank;
 	}
 
 

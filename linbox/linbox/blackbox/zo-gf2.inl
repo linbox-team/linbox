@@ -393,7 +393,7 @@ namespace LinBox
 
 
 
-}; // end of namespace LinBox
+} // end of namespace LinBox
 
 
 // Specialization of getentry

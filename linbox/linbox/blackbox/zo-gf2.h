@@ -73,10 +73,11 @@ namespace LinBox
 			Father_t(static_cast<const Father_t&>(A)), _rowdim(A._rowdim), _coldim(A._coldim), _nnz(A._nnz)
 		{ }
 
-		ZeroOne(const GF2& , size_t* rowP, size_t* colP, const size_t m, const size_t n, const size_t nnz, const bool ,const bool) :
-			Father_t(m), _rowdim(m), _coldim(n), _nnz(nnz)
+		ZeroOne(const GF2& , size_t* rowP, size_t* colP,
+			const size_t m, const size_t n, const size_t Nnz, const bool ,const bool) :
+			Father_t(m), _rowdim(m), _coldim(n), _nnz(Nnz)
 		{
-			for(size_t k=0; k<nnz; ++k)
+			for(size_t k=0; k<Nnz; ++k)
 				this->operator[](rowP[k]).push_back(colP[k]);
 		}
 

@@ -49,8 +49,8 @@ namespace LinBox
 		 * @param  F  Field over which entries exist
 		 * @param  rep  Matrix from which to construct the black box
 		 */
-		MatrixBlackbox (const Field &F, Matrix &rep) :
-			_F (F), _MD (F), _A (rep)
+		MatrixBlackbox (const Field &F, Matrix &Rep) :
+			_F (F), _MD (F), _A (Rep)
 		{}
 
 		/** Constructor with size

@@ -269,8 +269,8 @@ namespace LinBox
 
 			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
 					N,0,(int)R, L, N, Qt );
-			for ( size_t i=0; i< N; ++i )
-				*(L+N*i+i) = one ;
+			for ( size_t ii=0; ii< N; ++ii )
+				*(L+N*ii+ii) = one ;
 			// fin de L.
 			//write_field (F, std::cout<<"U_1="<<std::endl, L, M, M, M,true);
 			FFLAS::ftrsm(F, FFLAS::FflasLeft, FFLAS::FflasUpper,

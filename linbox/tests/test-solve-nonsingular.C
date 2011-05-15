@@ -147,9 +147,9 @@ void generateProblem(const Ring& R, Matrix &D, Vector &b,
 		  //R.init(product, 1);
 		  randLim = 100000;
 		  for(int i = 0; i < n; ++i) {
-		    int x = d[i]%randLim;
-			if (x == 0) x = 1;
-			R.init (tmp,  x);
+		    int xx = d[i]%randLim;
+			if (xx == 0) xx = 1;
+			R.init (tmp,  xx);
 			//R.mulin(product, tmp);
 			//if (n == 4) tmp = i+1;
 			//if (tmp == 4) tmp = -4;
