@@ -514,7 +514,7 @@ namespace LinBox
 
 	// similar class OverUnder<Field>
 
-}; //namespace LinBox
+} //namespace LinBox
 
 #endif // __LINBOX_quad_matrix_H
 
