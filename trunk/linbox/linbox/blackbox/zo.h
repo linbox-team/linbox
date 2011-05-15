@@ -74,24 +74,24 @@ namespace LinBox
 		{}
 
 		// constructor for use by ZOQuad.  Needs work.
-		ZeroOne
-		(const Field& F, IndexVector& index, PointerVector& indexP, Index rowdim, Index coldim, bool sortedBy) :
-			_F(F), _index(index), _indexP(indexP), _rowdim(rowdim), _coldim(coldim), sorted(sortedBy)
+		ZeroOne (const Field& F, IndexVector& index, PointerVector& indexP,
+			 Index Rowdim, Index Coldim, bool sortedBy) :
+			_F(F), _index(index), _indexP(indexP),
+			_rowdim(Rowdim), _coldim(Coldim), sorted(sortedBy)
 		{
 			ptrdiff_t diff = _index.begin() - index.begin();
 			for (size_t i = 0; i < _indexP.size(); ++i)
 				_indexP[i] += diff;
 
-			/*
-			   _indexP.push_back( _index.begin() );
-			   IndexVector::iterator i = _index.begin();
-			   PointerVector::iterator j = indexP.begin();
-			   for( ++j; j < indexP.end(); ++j )
-			   {
-			   _indexP.push_back( i + ( *j - *(j-1) ) );
-			   i = _indexP.back();
-			   }
-			   */
+#if 0
+			_indexP.push_back( _index.begin() );
+			IndexVector::iterator   i = _index.begin();
+			PointerVector::iterator j = indexP.begin();
+			for( ++j; j < indexP.end(); ++j ) {
+				_indexP.push_back( i + ( *j - *(j-1) ) );
+				i = _indexP.back();
+			}
+#endif
 		}
 
 		/** The real constructor /todo give docs here
@@ -107,7 +107,7 @@ namespace LinBox
 			init(indexPairs);
 		}
 		ZeroOne(const ZeroOne<Field>& A) :
-			// better keep the commented out statements below for later debugging  
+			// better keep the commented out statements below for later debugging
 			_F(A._F), _index(A._index), _rowdim(A._rowdim), _coldim(A._coldim), sorted(A.sorted)
 		{
 #if 0
