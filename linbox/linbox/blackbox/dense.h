@@ -152,25 +152,25 @@ namespace LinBox
 		 * @param F Field over which this matrix' arithmetic will be.
 		 * @param M This will contain a complete copy of \ref DenseMatrixBase M.
 		 */
-		DenseMatrix (const Field &F, DenseMatrixBase<Element> &M) :
-			DenseMatrixBase<Element> (M), _F (F), _MD (F), _AT (*this)
+		DenseMatrix (const Field &F, DenseMatrixBase<Element> &Mat) :
+			DenseMatrixBase<Element> (Mat), _F (F), _MD (F), _AT (*this)
 		{}
 
 		/// Copies <i>all</i> matrix data.
-		DenseMatrix (const DenseMatrix &M) :
-			DenseMatrixBase<Element> (M), _F (M._F), _MD (M._F), _AT (*this)
+		DenseMatrix (const DenseMatrix &Mat) :
+			DenseMatrixBase<Element> (Mat), _F (Mat._F), _MD (Mat._F), _AT (*this)
 		{}
 
 
 		/** Assignment operator makes a complete copy.
 		*/
-		DenseMatrix<Field>& operator= (const DenseMatrix<Field>& M)
+		DenseMatrix<Field>& operator= (const DenseMatrix<Field>& Mat)
 		{
-			(*this)._rep  = M._rep;
-			(*this)._rows = M._rows;
-			(*this)._cols = M._cols;
-			(*this)._MD   = const_cast<MatrixDomain<Field>&>(M._MD);
-			(*this)._F    = const_cast<Field&>(M._F);
+			(*this)._rep  = Mat._rep;
+			(*this)._rows = Mat._rows;
+			(*this)._cols = Mat._cols;
+			(*this)._MD   = const_cast<MatrixDomain<Field>&>(Mat._MD);
+			(*this)._F    = const_cast<Field&>(Mat._F);
 			return (*this);
 		}
 
@@ -192,10 +192,11 @@ namespace LinBox
 		};
 
 		template<typename _Tp1>
-		DenseMatrix (const DenseMatrix<_Tp1> &M, const Field& F) :
-			DenseMatrixBase<Element> (M.rowdim(),M.coldim()), _F (F), _MD (F), _AT (*this)
+		DenseMatrix (const DenseMatrix<_Tp1> &Mat, const Field& F) :
+			DenseMatrixBase<Element> (Mat.rowdim(),Mat.coldim()),
+			_F (F), _MD (F), _AT (*this)
 		{
-			typename DenseMatrix<_Tp1>::template rebind<Field>()(*this, M, F);
+			typename DenseMatrix<_Tp1>::template rebind<Field>()(*this, Mat, F);
 		}
 
 
@@ -204,7 +205,9 @@ namespace LinBox
 		 * @return Number of rows in matrix
 		 */
 		size_t rowdim () const
-		{ return DenseMatrixBase<Element>::rowdim (); }
+		{
+			return DenseMatrixBase<Element>::rowdim ();
+		}
 
 		/*- Get the number of columns in the matrix
 		 * @return Number of columns in matrix

@@ -16,7 +16,7 @@ namespace LinBox
 {
 	template <class _Field>
 	template <class Matrix> unsigned long&
-	GaussDomain<_Field>::rankin(unsigned long &rank,
+	GaussDomain<_Field>::rankin(unsigned long &Rank,
 				    Matrix        &A,
 				    unsigned long  Ni,
 				    unsigned long  Nj,
@@ -24,19 +24,19 @@ namespace LinBox
 	{
 		Element determinant;
 		if (reord == SparseEliminationTraits::PIVOT_NONE)
-			return NoReordering(rank, determinant, A,  Ni, Nj);
+			return NoReordering(Rank, determinant, A,  Ni, Nj);
 		else
-			return InPlaceLinearPivoting(rank, determinant, A, Ni, Nj);
+			return InPlaceLinearPivoting(Rank, determinant, A, Ni, Nj);
 	}
 
 
 	template <class _Field>
 	template <class Matrix> unsigned long&
-	GaussDomain<_Field>::rankin(unsigned long &rank,
+	GaussDomain<_Field>::rankin(unsigned long &Rank,
 				    Matrix        &A,
 				    SparseEliminationTraits::PivotStrategy   reord)  const
 	{
-		return rankin(rank, A,  A.rowdim (), A.coldim (), reord);
+		return rankin(Rank, A,  A.rowdim (), A.coldim (), reord);
 	}
 
 
@@ -52,7 +52,7 @@ namespace LinBox
 
 	template <class _Field>
 	template <class Matrix> unsigned long&
-	GaussDomain<_Field>::rank(unsigned long &rank,
+	GaussDomain<_Field>::rank(unsigned long &Rank,
 				  const Matrix        &A,
 				  unsigned long  Ni,
 				  unsigned long  Nj,
@@ -61,7 +61,7 @@ namespace LinBox
 		Matrix CopyA(Ni);
 		for(unsigned long i = 0; i < Ni; ++i)
 			CopyA[i] = A[i];
-		return rankin(rank, CopyA, Ni, Nj, reord);
+		return rankin(Rank, CopyA, Ni, Nj, reord);
 	}
 } // namespace LinBox
 

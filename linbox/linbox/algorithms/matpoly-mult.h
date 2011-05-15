@@ -547,10 +547,10 @@ namespace LinBox
 				chrono.start();
 				// reconstruct the solution modulo the original prime
 				if (nbrprimes < 2) {
-					for (size_t k=0;k<a.size();++k)
+					for (size_t kk=0;kk<a.size();++kk)
 						for (size_t i=0;i<a[0].rowdim();++i)
 							for (size_t j=0;j<a[0].coldim();++j){
-								_F.init(a[k].refEntry(i,j), a_i[0][k].getEntry(i,j));
+								_F.init(a[kk].refEntry(i,j), a_i[0][kk].getEntry(i,j));
 							}
 				}
 				else {
@@ -564,18 +564,18 @@ namespace LinBox
 					}
 
 					integer res,acc;
-					for (size_t k=0;k<deg;++k)
+					for (size_t kk=0;kk<deg;++kk)
 						for (size_t i=0;i<a[0].rowdim();++i)
 							for (size_t j=0;j<a[0].coldim();++j){
 								acc= integer(0);
 								for (size_t l=0;l<nbrprimes; ++l){
-									f_i[l].mul(tmp, a_i[l][k].getEntry(i,j), crt_inv[l]);
+									f_i[l].mul(tmp, a_i[l][kk].getEntry(i,j), crt_inv[l]);
 									res= f_i[l].convert(res,tmp);
 									acc+= res*crt[l];
 									if (acc > primesprod)
 										acc-= primesprod;
 								}
-								_F.init(a[k].refEntry(i,j), acc);
+								_F.init(a[kk].refEntry(i,j), acc);
 							}
 #ifdef FFT_TIMING
 					chrono.stop();std::cout<<"reconstruction time: "<<chrono<<"\n";
@@ -594,12 +594,12 @@ namespace LinBox
 			linbox_check(2*b.size() == c.size()+1 );
 			linbox_check(b[0].coldim() == c[0].rowdim());
 
-			size_t m = b[0].rowdim();
-			size_t k = b[0].coldim();
-			size_t n = c[0].coldim();
+			size_t mm = b[0].rowdim();
+			size_t kk = b[0].coldim();
+			size_t nn = c[0].coldim();
 
 			typedef  typename Polynomial1::value_type Coefficient;
-			const Coefficient ZeroA(m,n), ZeroB(m,k), ZeroC(k,n);
+			const Coefficient ZeroA(mm,nn), ZeroB(mm,kk), ZeroC(kk,nn);
 
 			size_t deg  = c.size()+1;
 			size_t lpts = 0;
@@ -614,10 +614,13 @@ namespace LinBox
 				// computation done using CRT and few fft primes
 
 				// get number of bits of feasible fft prime
-				int k= b[0].coldim();
-				size_t n=k;
 				size_t ln=0;
-				while ( k>0) {k>>=1; ln++;}
+				int kkk= b[0].coldim();
+				size_t n=kkk;
+				while ( kkk>0) {
+					kkk>>=1;
+					ln++;
+				}
 
 				// taking primes greater than current prime
 				size_t bit = std::max((53-ln)>>1, _p.bitsize());

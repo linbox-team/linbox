@@ -77,11 +77,11 @@ namespace LinBox
 			_F(F), _n(n)
 		{ iter.random(_v); }
 
-		ScalarMatrix(const ScalarMatrix<Field> &M) :
-			_F(M._F)
+		ScalarMatrix(const ScalarMatrix<Field> &Mat) :
+			_F(Mat._F)
 		{
-			_n = M._n;
-			_v = M._v;
+			_n = Mat._n;
+			_v = Mat._v;
 		}
 
 

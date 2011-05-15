@@ -206,7 +206,7 @@ namespace LinBox
 		void maxTries       (unsigned long n)  { _maxTries = n; }
 		void earlyTermThreshold (unsigned long e) { _ett = e; }
 		void blockingFactor (unsigned long b)  { _blockingFactor = b; }
-		void strategy (PivotStrategy strategy) { _strategy = strategy; }
+		void strategy (PivotStrategy Strategy) { _strategy = Strategy; }
 		void shape          (Shape s)          { _shape = s; }
 		void trustability   (double p)         { _provensuccessprobability = p; }
 		void checkResult    (bool s)           { _checkResult = s; }
@@ -289,24 +289,25 @@ namespace LinBox
 		 * @param checkResult
 		 */
 		WiedemannTraits (
-				 bool           symmetric      = NON_SYMMETRIC,
-				 unsigned long  thres          = DEFAULT_EARLY_TERM_THRESHOLD,
-				 size_t         rank           = RANK_UNKNOWN,
-				 Preconditioner preconditioner = SPARSE,
-				 SingularState  singular       = SINGULARITY_UNKNOWN,
-				 bool           certificate    = CERTIFY,
-				 unsigned long  maxTries       = 100,
-				 bool           checkResult    = true
+				 bool           Symmetric      = NON_SYMMETRIC,
+				 unsigned long  Thres          = DEFAULT_EARLY_TERM_THRESHOLD,
+				 size_t         Rank           = RANK_UNKNOWN,
+				 Preconditioner Precond        = SPARSE,
+				 SingularState  Singular       = SINGULARITY_UNKNOWN,
+				 bool           Certificate    = CERTIFY,
+				 unsigned long  MaxTries       = 100,
+				 bool           CheckResult    = true
 				)
 
-		{ Specifier::_preconditioner = preconditioner;
-			Specifier::_rank =(rank);
-			Specifier::_singular =(singular);
-			Specifier::_symmetric =(symmetric);
-			Specifier::_certificate =(certificate);
-			Specifier::_maxTries =(maxTries);
-			Specifier::_ett =(thres);
-			Specifier::_checkResult = (checkResult);
+		{
+			Specifier::_preconditioner = Precond;
+			Specifier::_rank           = (Rank);
+			Specifier::_singular       = (Singular);
+			Specifier::_symmetric      = (Symmetric);
+			Specifier::_certificate    = (Certificate);
+			Specifier::_maxTries       = (MaxTries);
+			Specifier::_ett            = (Thres);
+			Specifier::_checkResult    = (CheckResult);
 		}
 
 		WiedemannTraits( const Specifier& S) :
@@ -317,16 +318,17 @@ namespace LinBox
 	///
 	struct WiedemannExtensionTraits : public WiedemannTraits {
 		WiedemannExtensionTraits (
-					  bool           symmetric      = NON_SYMMETRIC,
-					  unsigned long  thres          = DEFAULT_EARLY_TERM_THRESHOLD,
-					  size_t         rank           = RANK_UNKNOWN,
-					  Preconditioner preconditioner = SPARSE,
-					  SingularState  singular       = SINGULARITY_UNKNOWN,
-					  bool           certificate    = CERTIFY,
-					  unsigned long  maxTries       = 100,
-					  bool           checkResult    = true
+					  bool           Symmetric      = NON_SYMMETRIC,
+					  unsigned long  Thres          = DEFAULT_EARLY_TERM_THRESHOLD,
+					  size_t         Rank           = RANK_UNKNOWN,
+					  Preconditioner Precond        = SPARSE,
+					  SingularState  Singular       = SINGULARITY_UNKNOWN,
+					  bool           Certificate    = CERTIFY,
+					  unsigned long  MaxTries       = 100,
+					  bool           CheckResult    = true
 					 ) :
-			WiedemannTraits(symmetric,thres,rank,preconditioner,singular,certificate,maxTries,checkResult)
+			WiedemannTraits(Symmetric,Thres,Rank,Precond,Singular,
+					Certificate,MaxTries,CheckResult)
 		{}
 		WiedemannExtensionTraits( const Specifier& S) :
 			WiedemannTraits(S)
@@ -341,11 +343,11 @@ namespace LinBox
 		 * @param maxTries Maximum number of trials before giving up and
 		 * returning a failure; default is 100
 		 */
-		LanczosTraits (Preconditioner preconditioner = FULL_DIAGONAL,
-			       unsigned long maxTries       = 100)
+		LanczosTraits (Preconditioner Precond  = FULL_DIAGONAL,
+			       unsigned long  MaxTries = 100)
 		{
-			Specifier::_preconditioner =(preconditioner);
-			Specifier::_maxTries =(maxTries);
+			Specifier::_preconditioner =(Precond);
+			Specifier::_maxTries =(MaxTries);
 		}
 		LanczosTraits( const Specifier& S) :
 		      	Specifier(S)
@@ -361,15 +363,13 @@ namespace LinBox
 		 * returning a failure; default is 100
 		 * @param blockingFactor Blocking factor to use
 		 */
-		BlockLanczosTraits (Preconditioner preconditioner = FULL_DIAGONAL,
-				    unsigned long  maxTries       = 100,
-				    int            blockingFactor = 16)
+		BlockLanczosTraits (Preconditioner Precond        = FULL_DIAGONAL,
+				    unsigned long  MaxTries       = 100,
+				    int            BlockingFactor = 16)
 		{
-			Specifier::_preconditioner =(preconditioner);
-
-			Specifier::_maxTries = (maxTries);
-
-			Specifier::_blockingFactor = (blockingFactor);
+			Specifier::_preconditioner = (Precond);
+			Specifier::_maxTries       = (MaxTries);
+			Specifier::_blockingFactor = (BlockingFactor);
 		}
 
 		BlockLanczosTraits( const Specifier& S) :
@@ -383,9 +383,9 @@ namespace LinBox
 		 *
 		 * @param strategy Pivoting strategy to use
 		 */
-		SparseEliminationTraits (PivotStrategy strategy = PIVOT_LINEAR)
+		SparseEliminationTraits (PivotStrategy Strategy = PIVOT_LINEAR)
 		{
-			Specifier::_strategy = (strategy) ;
+			Specifier::_strategy = (Strategy) ;
 		}
 		SparseEliminationTraits( const EliminationSpecifier& S) :
 		      	Specifier(S)
@@ -399,19 +399,19 @@ namespace LinBox
 			DETERMINIST, RANDOM, DIOPHANTINE
 		};
 
-		DixonTraits ( SolutionType   solution       = DETERMINIST,
-			      SingularState  singular       = SINGULARITY_UNKNOWN,
-			      bool           certificate    = DONT_CERTIFY,
-			      int            maxTries       = 10,
-			      Preconditioner preconditioner = DENSE,
-			      size_t          rank          = RANK_UNKNOWN)
+		DixonTraits ( SolutionType   Solution       = DETERMINIST,
+			      SingularState  Singular       = SINGULARITY_UNKNOWN,
+			      bool           Certificate    = DONT_CERTIFY,
+			      int            MaxTries       = 10,
+			      Preconditioner Precond        = DENSE,
+			      size_t         Rank           = RANK_UNKNOWN)
 		{
-			_solution= (solution);
-			Specifier::_singular= (singular);
-			Specifier::_certificate= (certificate);
-			Specifier::_maxTries= (maxTries);
-			Specifier::_preconditioner=(preconditioner);
-			Specifier::_rank=(rank);
+			_solution                  = (Solution);
+			Specifier::_singular       = (Singular);
+			Specifier::_certificate    = (Certificate);
+			Specifier::_maxTries       = (MaxTries);
+			Specifier::_preconditioner = (Precond);
+			Specifier::_rank           = (Rank);
 		}
 
 		DixonTraits( const Specifier& S) :
@@ -430,11 +430,11 @@ namespace LinBox
 
 	///
 	struct BlockWiedemannTraits : public Specifier {
-		BlockWiedemannTraits ( Preconditioner preconditioner = NO_PRECONDITIONER,
-				       size_t          rank            = RANK_UNKNOWN)
+		BlockWiedemannTraits ( Preconditioner Precond= NO_PRECONDITIONER,
+				       size_t         Rank   = RANK_UNKNOWN)
 		{
-			Specifier::_preconditioner = preconditioner;
-			Specifier::_rank=rank;
+			Specifier::_preconditioner = Precond;
+			Specifier::_rank           = Rank;
 		}
 		BlockWiedemannTraits( const Specifier& S) :
 		       	Specifier(S)
@@ -445,12 +445,11 @@ namespace LinBox
 	//based on a preprinted article, submitted to JSC 2004
 	struct WanTraits : public Specifier
 	{
-		WanTraits ( Preconditioner preconditioner = NO_PRECONDITIONER,
-				  size_t          rank          = RANK_UNKNOWN)
+		WanTraits ( Preconditioner Precond= NO_PRECONDITIONER,
+			    size_t         Rank   = RANK_UNKNOWN)
 		{
-			Specifier::_preconditioner=(preconditioner);
-
-			Specifier::_rank=(rank) ;
+			Specifier::_preconditioner = (Precond);
+			Specifier::_rank           = (Rank) ;
 		}
 		WanTraits( const Specifier& S) :
 		       	Specifier(S)
@@ -460,12 +459,11 @@ namespace LinBox
 	//Using numerical methods to symbolically solve linear systems.
 	struct NumericalTraits : public Specifier
 	{
-		NumericalTraits ( Preconditioner preconditioner = NO_PRECONDITIONER,
-				  size_t          rank          = RANK_UNKNOWN)
+		NumericalTraits ( Preconditioner Precond= NO_PRECONDITIONER,
+				  size_t         Rank   = RANK_UNKNOWN)
 		{
-			Specifier::_preconditioner=(preconditioner);
-
-			Specifier::_rank=(rank) ;
+			Specifier::_preconditioner = (Precond);
+			Specifier::_rank           = (Rank) ;
 		}
 		NumericalTraits( const Specifier& S) :
 		       	Specifier(S)
@@ -474,11 +472,11 @@ namespace LinBox
 
 	///
 	struct BlockHankelTraits : public Specifier {
-		BlockHankelTraits ( Preconditioner preconditioner = NO_PRECONDITIONER,
-				    size_t          rank            = RANK_UNKNOWN)
+		BlockHankelTraits ( Preconditioner Precond= NO_PRECONDITIONER,
+				    size_t         Rank   = RANK_UNKNOWN)
 		{
-			Specifier::_preconditioner = preconditioner;
-			Specifier::_rank=rank;
+			Specifier::_preconditioner = Precond;
+			Specifier::_rank           = Rank;
 		}
 		BlockHankelTraits( const Specifier& S) :
 		       	Specifier(S)
@@ -555,8 +553,9 @@ namespace LinBox
 		 * for correctness after it is computed (very much recommended for the
 		 * randomized algorithms Wiedemann and Lanczos); default is true
 		 */
-		SolverTraits (bool checkResult = true)
-		{                Specifier::_checkResult = checkResult;
+		SolverTraits (bool CheckResult = true)
+		{
+			Specifier::_checkResult = CheckResult;
 		}
 
 		/** Constructor from a MethodTraits structure

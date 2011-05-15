@@ -426,13 +426,12 @@ namespace LinBox
 	}
 	};
 
-	class RandomDenseStreamGF2 : public VectorStream<BitVector>
-	{
+	class RandomDenseStreamGF2 : public VectorStream<BitVector> {
 	public:
 		typedef BitVector Vector;
 
-		RandomDenseStreamGF2 (const GF2 &, uint32_t seed, size_t n, size_t m = 0) :
-			MT (seed), _n (n), _m (m), _j (0)
+		RandomDenseStreamGF2 (const GF2 &, uint32_t seed, size_t nn, size_t mm = 0) :
+			MT (seed), _n (nn), _m (mm), _j (0)
 		{}
 
 		Vector &get (Vector &v)

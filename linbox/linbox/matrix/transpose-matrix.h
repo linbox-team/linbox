@@ -89,8 +89,8 @@ namespace LinBox
 
 		/** Copy constructor
 		*/
-		TransposeMatrix (const TransposeMatrix &M) :
-			_A (M._A)
+		TransposeMatrix (const TransposeMatrix &Mat) :
+			_A (Mat._A)
 		{}
 
 		/** Get the number of rows in the matrix
@@ -304,8 +304,8 @@ namespace LinBox
 			_A (A)
 		{}
 
-		TransposeMatrix (const TransposeMatrix &M) :
-			_A (M._A)
+		TransposeMatrix (const TransposeMatrix &Mat) :
+			_A (Mat._A)
 		{}
 
 		inline size_t rowdim () const
@@ -436,8 +436,8 @@ namespace LinBox
 		TransposeMatrix (Matrix &A) :
 			_A (A)
 		{}
-		TransposeMatrix (const TransposeMatrix &M) :
-			_A (M._A)
+		TransposeMatrix (const TransposeMatrix &Mat) :
+			_A (Mat._A)
 		{}
 
 		inline size_t rowdim () const
@@ -548,8 +548,8 @@ namespace LinBox
 		TransposeMatrix (Matrix &A) :
 			_A (A)
 		{}
-		TransposeMatrix (const TransposeMatrix &M) :
-			_A (M._A)
+		TransposeMatrix (const TransposeMatrix &Mat) :
+			_A (Mat._A)
 		{}
 
 		inline size_t rowdim () const

@@ -410,10 +410,10 @@ namespace LinBox
 		}
 
 		typename Vector1::iterator w_j;
-		typedef typename Vector1::value_type Element;
+		typedef typename Vector1::value_type val_t;
 
 		for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
-			*w_j = (Element)( *l % VD.field ().modulus );
+			*w_j = (val_t)( *l % VD.field ().modulus );
 
 		return w;
 	}

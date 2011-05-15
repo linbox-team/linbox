@@ -104,8 +104,8 @@ namespace LinBox
 		/*! copy constructor.
 		 * @param M Dense matrix to be copied.
 		 */
-		DenseMatrixBase (const DenseMatrixBase &M) :
-			_rep (M._rep),_rows (M._rows), _cols (M._cols), _ptr(&_rep[0])
+		DenseMatrixBase (const DenseMatrixBase &Mat) :
+			_rep (Mat._rep),_rows (Mat._rows), _cols (Mat._cols), _ptr(&_rep[0])
 		{}
 
 		//! destructor.
@@ -114,11 +114,11 @@ namespace LinBox
 		/*! copy operator.
 		 * @param M matrix to be copied.
 		 */
-		DenseMatrixBase& operator= (const DenseMatrixBase& M)
+		DenseMatrixBase& operator= (const DenseMatrixBase& Mat)
 		{
-			(*this)._rep  = M._rep;
-			(*this)._rows = M._rows;
-			(*this)._cols = M._cols;
+			(*this)._rep  = Mat._rep;
+			(*this)._rows = Mat._rows;
+			(*this)._cols = Mat._cols;
 			(*this)._ptr  = &_rep[0];
 			return (*this);
 		}
@@ -339,7 +339,7 @@ namespace LinBox
 		size_t                _rows, _cols;
 		Element *             _ptr;
 
-	}; //class DenseMatrixBase 
+	}; //class DenseMatrixBase
 
 	/*! Write a matrix to a stream.
 	 * The C++ way using <code>operator<<</code>
@@ -347,9 +347,9 @@ namespace LinBox
 	 * @param M matrix to write.
 	 */
 	template<class T>
-	std::ostream& operator<< (std::ostream & o, const DenseMatrixBase<T> & M)
+	std::ostream& operator<< (std::ostream & o, const DenseMatrixBase<T> & Mat)
 	{
-		return M.write(o);
+		return Mat.write(o);
 	}
 
 	template <class Element>

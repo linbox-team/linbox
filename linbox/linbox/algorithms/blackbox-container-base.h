@@ -65,8 +65,8 @@ namespace LinBox
 		{ _size <<= 1; }
 
 		// Pascal Giorgi 16.02.2004
-		BlackboxContainerBase (const Blackbox *BB, const Field &F, unsigned long size) :
-			_F (F), _VD (F), _BB (BB), _size (size)
+		BlackboxContainerBase (const Blackbox *BB, const Field &F, unsigned long Size) :
+			_F (F), _VD (F), _BB (BB), _size (Size)
 		{}
 
 		virtual ~BlackboxContainerBase ()

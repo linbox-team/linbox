@@ -70,12 +70,12 @@ namespace LinBox
 			_end   (iterator (v.begin() + start + (stride * length), stride))
 		{}
 
-		Subvector(iterator begin, iterator end) :
-			_begin(begin), _end(end)
+		Subvector(iterator Begin, iterator End) :
+			_begin(Begin), _end(End)
 		{}
 
-		Subvector(iterator begin, size_type length) :
-			_begin(begin), _end(begin + length)
+		Subvector(iterator Begin, size_type length) :
+			_begin(Begin), _end(Begin + length)
 		{}
 
 		//copy constructor

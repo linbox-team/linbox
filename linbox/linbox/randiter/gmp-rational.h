@@ -114,10 +114,10 @@ namespace LinBox
 		 */
 		Element &random (Element &a)  const
 		{
-			unsigned int s;
 			int value = 0;
 
 			if (_size == 0) {
+			unsigned int s;
 				s = _seed;
 
 				value = rand_r (&s);

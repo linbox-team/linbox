@@ -47,7 +47,7 @@ namespace LinBox
 		D.gcd(gcd, frac.first, frac.second);
 		D.divin(frac.first, gcd);
 		D.divin(frac.second, gcd);
-	};
+	}
 
 	/** utility function to gcd-in a vector of elements over a domain */
 	//this could be replaced by a fancier version that combines elements linearly at random

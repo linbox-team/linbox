@@ -424,9 +424,9 @@ namespace LinBox
 				// Computation of the LQUP decomposition of the discrepancy
 				Coefficient CopyDiscr;
 				CopyDiscr=Discrepancy;
-				BlasPermutation<size_t> P (CopyDiscr.coldim());
+				BlasPermutation<size_t> Pp (CopyDiscr.coldim());
 				BlasPermutation<size_t> Qt (CopyDiscr.rowdim());
-				LQUPMatrix<Field> LQUP(_F, CopyDiscr,P,Qt);
+				LQUPMatrix<Field> LQUP(_F, CopyDiscr,Pp,Qt);
 
 #ifdef _BM_TIMING
 				tLQUP.stop();
@@ -594,13 +594,13 @@ namespace LinBox
 				tNewDiscrepancy.clear();
 				tNewDiscrepancy.start();
 #endif
-				// Discrepancy= BPerm2.U.P from LQUP
+				// Discrepancy= BPerm2.U.Pp from LQUP
 				Coefficient U(m+n,n);
 				TriangularBlasMatrix<Element> trU(U,BlasTag::up,BlasTag::nonunit);
 				LQUP.getU(trU);
 				Discrepancy=U;
-				// BlasPermutation<size_t> P= LQUP.getP();
-				_BMD.mulin_left(Discrepancy,P);
+				// BlasPermutation<size_t> Pp= LQUP.getP();
+				_BMD.mulin_left(Discrepancy,Pp);
 				_BMD.mulin_right(BPerm2,Discrepancy);
 
 #ifdef _BM_TIMING

@@ -22,11 +22,11 @@ namespace LinBox
 				   unsigned long  Nj,
 				   SparseEliminationTraits::PivotStrategy   reord)  const
 	{
-		unsigned long rank;
+		unsigned long Rank;
 		if (reord == SparseEliminationTraits::PIVOT_NONE)
-			NoReordering(rank, determinant, A,  Ni, Nj);
+			NoReordering(Rank, determinant, A,  Ni, Nj);
 		else
-			InPlaceLinearPivoting(rank, determinant, A, Ni, Nj);
+			InPlaceLinearPivoting(Rank, determinant, A, Ni, Nj);
 		return determinant;
 	}
 

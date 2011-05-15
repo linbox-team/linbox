@@ -387,15 +387,15 @@ namespace LinBox
 			for (;iterb!=_b.end();++iterb)
 				normb_sq += (*iterb)*(*iterb);
 
-			LinBox::integer had_sqi, short_sqi, normb_sqi, N, D, L, prime;
+			LinBox::integer had_sqi, short_sqi, normb_sqi, N, D, L, Prime;
 			this->_R.convert(had_sqi, had_sq);
 			this->_R.convert(short_sqi, short_sq);
 			this->_R.convert(normb_sqi, normb_sq);
-			this->_R.convert(prime,_p);
+			this->_R.convert(Prime,_p);
 			D = sqrt(had_sqi) + 1;
 			N = sqrt(had_sqi * normb_sqi / short_sqi) + 1;
 			L = N * D * 2;
-			_length = logp(L,prime) + 1;   // round up instead of down
+			_length = logp(L,Prime) + 1;   // round up instead of down
 #ifdef DEBUG_LC
 			std::cout<<" norms computed, p = "<<_p<<"\n";
 			std::cout<<" N = "<<N<<", D = "<<D<<", length = "<<_length<<"\n";
@@ -408,7 +408,7 @@ namespace LinBox
 			this->_R.init(_numbound,N);
 			this->_R.init(_denbound,D);
 
-			_MAD.setup( prime );
+			_MAD.setup( Prime );
 
 #ifdef DEBUG_LC
 			std::cout<<"lifting container initialized\n";
@@ -872,10 +872,10 @@ namespace LinBox
 				}
 
 				_VDF.mul (_digit_p, _res_p, _MinPoly.back ());
-				FVector z(_Ap.rowdim ());
+				FVector zz(_Ap.rowdim ());
 				for (size_t i = _MinPoly.size () - 1; --i > 0;) {
-					_Ap.apply (z, _digit_p);
-					_VDF.axpy (_digit_p, _MinPoly[i], _res_p, z);
+					_Ap.apply (zz, _digit_p);
+					_VDF.axpy (_digit_p, _MinPoly[i], _res_p, zz);
 				}
 
 				_Ap.apply(error,_digit_p);
@@ -1214,7 +1214,7 @@ namespace LinBox
 #ifdef RSTIMING
 		mutable Timer tGetDigit, ttGetDigit, tGetDigitConvert, ttGetDigitConvert;
 #endif
-		mutable Timer tApplyU, tApplyV, tApplyH, tAcc;;
+		mutable Timer tApplyU, tApplyV, tApplyH, tAcc;
 
 
 		template <class Prime_Type, class VectorIn>

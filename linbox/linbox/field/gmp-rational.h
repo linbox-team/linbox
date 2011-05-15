@@ -30,7 +30,7 @@ namespace LinBox
 {
 
 	// Forward declarations
-	class GMPRationalRandIter;;
+	class GMPRationalRandIter ;
 
 	/**
 	 * \brief Field of rational numbers using GMP

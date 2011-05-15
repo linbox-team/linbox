@@ -169,16 +169,16 @@ namespace LinBox
 			return newpos;
 		}
 
-		iterator insert(iterator pos, const_iterator beg, const_iterator end)
+		iterator insert(iterator pos, const_iterator Beg, const_iterator End)
 		{
 			REQUIRE( (pos-begin()) <= (end()-begin()) );
 			REQUIRE( (pos-begin()) >= 0 );
 			if (pos == _finish) {
-				for(const_iterator iter=beg; iter != end; ++iter)
+				for(const_iterator iter=Beg; iter != End; ++iter)
 					push_back(*iter);
 			}
 			else {
-				for(const_iterator iter=beg; iter != end; ++iter)
+				for(const_iterator iter=Beg; iter != End; ++iter)
 					insert(pos, *iter);
 			}
 			ENSURE( allocated >= size() );

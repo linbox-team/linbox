@@ -30,7 +30,7 @@ namespace LinBox
 {
 	template <class _Field>
 	template <class Matrix, class Perm> inline unsigned long&
-	GaussDomain<_Field>::QLUPin (unsigned long &rank,
+	GaussDomain<_Field>::QLUPin (unsigned long &Rank,
 				     Element       &determinant,
 				     Perm          &Q,
 				     Matrix        &LigneL,
@@ -81,7 +81,7 @@ namespace LinBox
 
 		long last = Ni - 1;
 		long c;
-		rank = 0;
+		Rank = 0;
 
 #ifdef __LINBOX_OFTEN__
 		long sstep = last/40;
@@ -107,7 +107,7 @@ namespace LinBox
 						sl += LigneA[l].size ();
 
 					commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
-					<< "Fillin (" << rank << "/" << Ni << ") = "
+					<< "Fillin (" << Rank << "/" << Ni << ") = "
 					<< sl
 					<< " (" << double(sl)*100.0/double(Ni-k)/double(Nj-k) << "%, "
 					<< double(sl)/double(Ni-k) << " avg)"
@@ -141,20 +141,20 @@ namespace LinBox
 					}
 
 
-					SparseFindPivot (*LigneA_k, rank, c, col_density, determinant);
+					SparseFindPivot (*LigneA_k, Rank, c, col_density, determinant);
 
 					if (c != -1) {
 						long ll;
-						if ( c != (static_cast<long>(rank)-1) ) {
-							P.permute(rank-1,c);
+						if ( c != (static_cast<long>(Rank)-1) ) {
+							P.permute(Rank-1,c);
 							for (ll=0      ; ll < k ; ++ll)
-								permute( LigneA[ll], rank, c);
+								permute( LigneA[ll], Rank, c);
 						}
 						long npiv=LigneA_k->size();
 						for (ll = k+1; ll < static_cast<long>(Ni); ++ll) {
 							E hc;
-							hc.first=(unsigned)rank-1;
-							eliminate (hc.second, LigneA[ll], *LigneA_k, rank, c, npiv, col_density);
+							hc.first=(unsigned)Rank-1;
+							eliminate (hc.second, LigneA[ll], *LigneA_k, Rank, c, npiv, col_density);
 							if(! _F.isZero(hc.second)) LigneL[ll].push_back(hc);
 						}
 					}
@@ -170,12 +170,12 @@ namespace LinBox
 				//                 LigneA.write(rep << "U:= ", FORMAT_MAPLE) << std::endl;
 			}//for k
 
-			SparseFindPivot ( LigneA[last], rank, c, determinant);
+			SparseFindPivot ( LigneA[last], Rank, c, determinant);
 			if (c != -1) {
-				if ( c != (static_cast<long>(rank)-1) ) {
-					P.permute(rank-1,c);
+				if ( c != (static_cast<long>(Rank)-1) ) {
+					P.permute(Rank-1,c);
 					for (long ll=0      ; ll < last ; ++ll)
-						permute( LigneA[ll], rank, c);
+						permute( LigneA[ll], Rank, c);
 				}
 			}
 
@@ -194,11 +194,11 @@ namespace LinBox
 				sl += LigneA[l].size ();
 
 			commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
-			<< "Fillin (" << rank << "/" << Ni << ") = " << sl
+			<< "Fillin (" << Rank << "/" << Ni << ") = " << sl
 			<< std::endl;
 #endif
 
-			if ((rank < Ni) || (rank < Nj) || (Ni == 0) || (Nj == 0))
+			if ((Rank < Ni) || (Rank < Nj) || (Ni == 0) || (Nj == 0))
 				_F.init(determinant,0UL);
 
 			integer card;
@@ -217,18 +217,18 @@ namespace LinBox
 			//             P.write(rep << "P:= ", FORMAT_MAPLE) << ':' << std::endl;
 
 			commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
-			<< "Rank : " << rank
+			<< "Rank : " << Rank
 			<< " over GF (" << card << ")" << std::endl;
 			commentator.stop ("done", 0, "IPLR");
 
 
 
-			return rank;
+			return Rank;
 		}
 
 		template <class _Field>
 		template <class Matrix> inline unsigned long&
-		GaussDomain<_Field>::InPlaceLinearPivoting (unsigned long &rank,
+		GaussDomain<_Field>::InPlaceLinearPivoting (unsigned long &Rank,
 							    Element        &determinant,
 							    Matrix         &LigneA,
 							    unsigned long   Ni,
@@ -262,7 +262,7 @@ namespace LinBox
 
 			long last = Ni - 1;
 			long c;
-			rank = 0;
+			Rank = 0;
 
 #ifdef __LINBOX_OFTEN__
 			long sstep = last/40;
@@ -286,7 +286,7 @@ namespace LinBox
 							sl += LigneA[l].size ();
 
 						commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
-						<< "Fillin (" << rank << "/" << Ni << ") = "
+						<< "Fillin (" << Rank << "/" << Ni << ") = "
 						<< sl
 						<< " (" << double(sl)*100.0/double(Ni-k)/double(Nj-k) << "%, "
 						<< double(sl)/double(Ni-k) << " avg)"
@@ -309,13 +309,13 @@ namespace LinBox
 							LigneA[p] = vtm;
 						}
 
-						//                     LigneA.write(std::cerr << "BEF, k:" << k << ", rank:" << rank << ", c:" << c)<<std::endl;
+						//                     LigneA.write(std::cerr << "BEF, k:" << k << ", Rank:" << Rank << ", c:" << c)<<std::endl;
 
-						SparseFindPivot (LigneA[k], rank, c, col_density, determinant);
-						//                     LigneA.write(std::cerr << "PIV, k:" << k << ", rank:" << rank << ", c:" << c)<<std::endl;
+						SparseFindPivot (LigneA[k], Rank, c, col_density, determinant);
+						//                     LigneA.write(std::cerr << "PIV, k:" << k << ", Rank:" << Rank << ", c:" << c)<<std::endl;
 						if (c != -1) {
 							for (l = k + 1; l < Ni; ++l)
-								eliminate (LigneA[l], LigneA[k], rank, c, col_density);
+								eliminate (LigneA[l], LigneA[k], Rank, c, col_density);
 						}
 
 						//                     LigneA.write(std::cerr << "AFT " )<<std::endl;
@@ -327,7 +327,7 @@ namespace LinBox
 
 				}//for k
 
-				SparseFindPivot (LigneA[last], rank, c, determinant);
+				SparseFindPivot (LigneA[last], Rank, c, determinant);
 
 #ifdef __LINBOX_COUNT__
 				nbelem += LigneA[last].size ();
@@ -341,13 +341,13 @@ namespace LinBox
 					sl += LigneA[l].size ();
 
 				commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
-				<< "Fillin (" << rank << "/" << Ni << ") = " << sl
+				<< "Fillin (" << Rank << "/" << Ni << ") = " << sl
 				<< std::endl;
 #endif
 
 				integer card;
 
-				if ((rank < Ni) || (rank < Nj) || (Ni == 0) || (Nj == 0))
+				if ((Rank < Ni) || (Rank < Nj) || (Ni == 0) || (Nj == 0))
 					_F.init(determinant,0UL);
 
 				_F.write(commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
@@ -355,15 +355,15 @@ namespace LinBox
 				<< " over GF (" << _F.cardinality (card) << ")" << std::endl;
 
 				commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
-				<< "Rank : " << rank
+				<< "Rank : " << Rank
 				<< " over GF (" << card << ")" << std::endl;
 				commentator.stop ("done", 0, "IPLR");
-				return rank;
+				return Rank;
 			}
 
 			template <class _Field>
 			template <class Matrix, class Perm> inline unsigned long&
-			GaussDomain<_Field>::InPlaceLinearPivoting (unsigned long &rank,
+			GaussDomain<_Field>::InPlaceLinearPivoting (unsigned long &Rank,
 								    Element        &determinant,
 								    Matrix         &LigneA,
 								    Perm           &P,
@@ -397,7 +397,7 @@ namespace LinBox
 
 				long last = Ni - 1;
 				long c;
-				rank = 0;
+				Rank = 0;
 
 #ifdef __LINBOX_OFTEN__
 				long sstep = last/40;
@@ -421,7 +421,7 @@ namespace LinBox
 								sl += LigneA[l].size ();
 
 							commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
-							<< "Fillin (" << rank << "/" << Ni << ") = "
+							<< "Fillin (" << Rank << "/" << Ni << ") = "
 							<< sl
 							<< " (" << double(sl)*100.0/double(Ni-k)/double(Nj-k) << "%, "
 							<< double(sl)/double(Ni-k) << " avg)"
@@ -444,18 +444,18 @@ namespace LinBox
 								LigneA[p] = vtm;
 							}
 
-							//                     LigneA.write(std::cerr << "BEF, k:" << k << ", rank:" << rank << ", c:" << c)<<std::endl;
+							//                     LigneA.write(std::cerr << "BEF, k:" << k << ", Rank:" << Rank << ", c:" << c)<<std::endl;
 
-							SparseFindPivot (LigneA[k], rank, c, col_density, determinant);
-							//                     LigneA.write(std::cerr << "PIV, k:" << k << ", rank:" << rank << ", c:" << c)<<std::endl;
+							SparseFindPivot (LigneA[k], Rank, c, col_density, determinant);
+							//                     LigneA.write(std::cerr << "PIV, k:" << k << ", Rank:" << Rank << ", c:" << c)<<std::endl;
 							if (c != -1) {
-								if ( c != (static_cast<long>(rank)-1) )
-									P.permute(rank-1,c);
+								if ( c != (static_cast<long>(Rank)-1) )
+									P.permute(Rank-1,c);
 								for (long ll=0; ll < k ; ++ll)
-									permute( LigneA[ll], rank, c);
+									permute( LigneA[ll], Rank, c);
 
 								for (l = k + 1; l < Ni; ++l)
-									eliminate (LigneA[l], LigneA[k], rank, c, col_density);
+									eliminate (LigneA[l], LigneA[k], Rank, c, col_density);
 							}
 
 							//                     LigneA.write(std::cerr << "AFT " )<<std::endl;
@@ -466,11 +466,11 @@ namespace LinBox
 
 					}//for k
 
-					SparseFindPivot (LigneA[last], rank, c, determinant);
-					if ( (c != -1) && (c != (static_cast<long>(rank)-1) ) ) {
-						P.permute(rank-1,c);
+					SparseFindPivot (LigneA[last], Rank, c, determinant);
+					if ( (c != -1) && (c != (static_cast<long>(Rank)-1) ) ) {
+						P.permute(Rank-1,c);
 						for (long ll=0; ll < last ; ++ll)
-							permute( LigneA[ll], rank, c);
+							permute( LigneA[ll], Rank, c);
 					}
 
 
@@ -486,13 +486,13 @@ namespace LinBox
 						sl += LigneA[l].size ();
 
 					commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
-					<< "Fillin (" << rank << "/" << Ni << ") = " << sl
+					<< "Fillin (" << Rank << "/" << Ni << ") = " << sl
 					<< std::endl;
 #endif
 
 					integer card;
 
-					if ((rank < Ni) || (rank < Nj) || (Ni == 0) || (Nj == 0))
+					if ((Rank < Ni) || (Rank < Nj) || (Ni == 0) || (Nj == 0))
 						_F.init(determinant,0UL);
 
 					_F.write(commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
@@ -500,10 +500,10 @@ namespace LinBox
 					<< " over GF (" << _F.cardinality (card) << ")" << std::endl;
 
 					commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
-					<< "Rank : " << rank
+					<< "Rank : " << Rank
 					<< " over GF (" << card << ")" << std::endl;
 					commentator.stop ("done", 0, "IPLR");
-					return rank;
+					return Rank;
 				}
 
 				template <class _Field>
@@ -526,7 +526,7 @@ namespace LinBox
 
 					typedef typename Matrix::Row          Vector;
 					typedef typename Vector::value_type   E;
-					typedef typename Matrix::Element      Element;
+					// typedef typename Matrix::Element      Elem;
 
 #ifdef __LINBOX_COUNT__
 					long long nbelem = 0;
