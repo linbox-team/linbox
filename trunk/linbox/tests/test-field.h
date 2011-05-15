@@ -698,9 +698,9 @@ bool testFieldCharacteristic (const Field &F, const char *name, unsigned int ite
 
 		r.random (a);
 
-		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
-		report << "Random element a: ";
-		F.write (report, a) << endl;
+		ostream &Report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		Report << "Random element a: ";
+		F.write (Report, a) << endl;
 
 		F.assign (sigma, zero);
 
@@ -708,8 +708,8 @@ bool testFieldCharacteristic (const Field &F, const char *name, unsigned int ite
 		for (j = 0; j < p; j += 1)
 			F.addin (sigma, a);
 
-		report << "p a = ";
-		F.write (report, sigma) << endl;
+		Report << "p a = ";
+		F.write (Report, sigma) << endl;
 
 		if (!F.isZero (sigma)) reportError("p a != 0", ret);
 

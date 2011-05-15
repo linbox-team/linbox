@@ -344,11 +344,11 @@ static bool testSingularConsistentSolve (const Field          &F,
 		}
 		catch (InconsistentSystem<Vector> e) {
 			commentator.restoreActivityState (state);
-			ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR);
-			report << "ERROR: Inconsistent system exception" << endl;
+			ostream &Report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR);
+			Report << "ERROR: Inconsistent system exception" << endl;
 
-			report << "Certificate is: ";
-			VD.write (report, e.u ()) << endl;
+			Report << "Certificate is: ";
+			VD.write (Report, e.u ()) << endl;
 
 			ret = false;
 
@@ -660,9 +660,9 @@ static bool testRandomSolve (const Field                  &F,
 
 		b_stream >> b;
 
-		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
-		report << "Right-hand side b:";
-		VD.write (report, b) << endl;
+		ostream &Report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		Report << "Right-hand side b:";
+		VD.write (Report, b) << endl;
 
 		try {
 			solve (A, x, b, F, traits);
@@ -679,8 +679,8 @@ static bool testRandomSolve (const Field                  &F,
 		}
 
 		if (iter_passed) {
-			report << "Output vector x: ";
-			VD.write (report, x) << endl;
+			Report << "Output vector x: ";
+			VD.write (Report, x) << endl;
 
 			MD.vectorMul (ATAx, ATA, x);
 			MD.vectorMul (ATb, AT, b);

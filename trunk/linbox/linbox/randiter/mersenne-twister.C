@@ -38,9 +38,9 @@ namespace LinBox
 	/* transform [0..2^32] -> [0..1] */
 	static const double doubleTransform = 2.3283064365386962890625e-10;
 
-	static const int N = 624;                // length of state vector
-	static const int M = 397;                // a period parameter
-	static const uint32_t K = 0x9908B0DFU;     // a magic constant
+	static const int Nlen = 624;                // length of state vector
+	static const int Mper = 397;                // a period parameter
+	static const uint32_t Kmag = 0x9908B0DFU;     // a magic constant
 
 	static inline uint32_t hiBit (uint32_t u)    // mask all but highest   bit of u
 	{ return (u) & 0x80000000U; }
@@ -52,7 +52,7 @@ namespace LinBox
 	{ return hiBit (u) | loBits(v); }
 
 	MersenneTwister::MersenneTwister (uint32_t seed) :
-		_state (N + 1), _left (-1)
+		_state (Nlen + 1), _left (-1)
 	{
 		setSeed (seed);
 	}
@@ -61,22 +61,22 @@ namespace LinBox
 	{
 		std::vector<uint32_t>::iterator p0 = _state.begin ();
 		std::vector<uint32_t>::iterator p2 = _state.begin () + 2;
-		std::vector<uint32_t>::iterator pM = _state.begin () + M;
+		std::vector<uint32_t>::iterator pM = _state.begin () + Mper;
 		uint32_t s0, s1;
 		int j;
 
 		if (_left < -1)
 			setSeed (4357U);
 
-		_left = N - 1, _next = _state.begin () + 1;
+		_left = Nlen - 1, _next = _state.begin () + 1;
 
-		for(s0 = _state[0], s1 = _state[1], j = N - M + 1; --j; s0 = s1, s1 = *p2++)
-			*p0++ = *pM++ ^ (mixBits (s0, s1) >> 1) ^ (loBit (s1) ? K : 0U);
+		for(s0 = _state[0], s1 = _state[1], j = Nlen - Mper + 1; --j; s0 = s1, s1 = *p2++)
+			*p0++ = *pM++ ^ (mixBits (s0, s1) >> 1) ^ (loBit (s1) ? Kmag : 0U);
 
-		for(pM = _state.begin (), j = M; --j; s0 = s1, s1 = *p2++)
-			*p0++ = *pM++ ^ (mixBits (s0, s1) >> 1) ^ (loBit (s1) ? K : 0U);
+		for(pM = _state.begin (), j = Mper; --j; s0 = s1, s1 = *p2++)
+			*p0++ = *pM++ ^ (mixBits (s0, s1) >> 1) ^ (loBit (s1) ? Kmag : 0U);
 
-		s1 = _state[0], *p0 = *pM ^ (mixBits (s0, s1) >> 1) ^ (loBit (s1) ? K : 0U);
+		s1 = _state[0], *p0 = *pM ^ (mixBits (s0, s1) >> 1) ^ (loBit (s1) ? Kmag : 0U);
 		s1 ^= (s1 >> 11);
 		s1 ^= (s1 <<  7) & 0x9D2C5680U;
 		s1 ^= (s1 << 15) & 0xEFC60000U;
@@ -206,7 +206,7 @@ namespace LinBox
 		std::vector<uint32_t>::iterator s = _state.begin ();
 		int j;
 
-		for (_left = 0, *s++ = x, j = N; --j; *s++ = (x *= 69069U) & 0xFFFFFFFFU) ;
+		for (_left = 0, *s++ = x, j = Nlen; --j; *s++ = (x *= 69069U) & 0xFFFFFFFFU) ;
 	}
 
 }

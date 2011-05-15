@@ -69,7 +69,7 @@ static bool testIdentity (Field &F, long n, int iterations)
 	int i, j;
 
 	Blackbox I(F, n, n);
-	Matrix K(I);
+	// Matrix K(I);
 	//typename Field::Element x; F.init(x);
 	//F.write(std::cout, K.getEntry(x, i, j)) << std::endl;
 	//Matrix L(K);
@@ -101,8 +101,8 @@ static bool testIdentity (Field &F, long n, int iterations)
 		printVector<Field> (F, report, w);
 
 		Base J (I);
-		Blackbox K(F, J);
-		K.apply (w, v);
+		Blackbox KK(F, J);
+		KK.apply (w, v);
 		report << "Output vector: ";
 		printVector<Field> (F, report, w);
 

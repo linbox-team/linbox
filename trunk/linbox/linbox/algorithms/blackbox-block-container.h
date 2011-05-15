@@ -208,12 +208,12 @@ namespace LinBox
 			else {
 				_rep.resize(_rep.size()-3);
 				size_t block= U0.rowdim();
-				size_t N = U0.coldim()/block;
-				_Special_U.resize(block, std::vector<typename Field::Element>(N));
+				size_t Nn = U0.coldim()/block;
+				_Special_U.resize(block, std::vector<typename Field::Element>(Nn));
 
 				for (size_t i=0;i<block;++i)
-					for (size_t j=0;j<N;++j)
-						F.assign(_Special_U[i][j], U0.getEntry(0, i*N+j));
+					for (size_t j=0;j<Nn;++j)
+						F.assign(_Special_U[i][j], U0.getEntry(0, i*Nn+j));
 
 				for (size_t i=0;i< this->_size-3;++i){
 					_launch_record_notdense();

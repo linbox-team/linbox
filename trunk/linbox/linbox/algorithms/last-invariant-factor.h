@@ -149,15 +149,15 @@ namespace LinBox
 		/** \brief Compute the last invariant factor of an integer matrix,
 		 * by solving linear system,
 		 * ignoring these factors of primes in list PrimeL
-		 * Implement the bonus in ref{....}
+		 * Implement the Bonus in ref{....}
 		 */
 		template<class IMatrix, class Vector>
-		Integer& lastInvariantFactor_Bonus(Integer& lif, Integer& bonus, const IMatrix& A,
+		Integer& lastInvariantFactor_Bonus(Integer& lif, Integer& Bonus, const IMatrix& A,
 						   const Vector& PrimeL) const
 		{
 
 			r. init(lif, 1);
-			r. init (bonus, 1);
+			r. init (Bonus, 1);
 			int count = 0;
 			SolverReturnStatus tmp1, tmp2;
 			// Storage of rational solution
@@ -190,7 +190,7 @@ namespace LinBox
 				r. lcm (lif, lif, r1_den);
 				r. lcm (lif, lif, r2_den);
 
-				// compute the bonus
+				// compute the Bonus
 				Integer g, d, a11, a12, a21, a22, l, c_bonus, c_l;
 				typename std::vector<Integer>::iterator num1_p, num2_p;
 				std::vector<Integer> r1 (A. rowdim());
@@ -226,7 +226,7 @@ namespace LinBox
 					r. divin (c_bonus, l);
 				}
 
-				r. lcmin (bonus, c_bonus);
+				r. lcmin (Bonus, c_bonus);
 			}
 
 			// filter out primes in PRIMEL from lif.
@@ -239,12 +239,12 @@ namespace LinBox
 						else break;
 					} while (true);
 				}
-			r. gcdin (bonus, lif);
-			if (!r. isZero (bonus))
+			r. gcdin (Bonus, lif);
+			if (!r. isZero (Bonus))
 				for ( Prime_p = PrimeL.begin(); Prime_p != PrimeL.end(); ++ Prime_p) {
 					r.init (pri, *Prime_p);
 					do {
-						r.quoRem(quo,rem,bonus,pri);
+						r.quoRem(quo,rem,Bonus,pri);
 						if (r.isZero(rem)) r.assign(lif,quo);
 						else break;
 					} while (true);
@@ -299,10 +299,10 @@ namespace LinBox
 		}
 
 		template<class Vector>
-		Integer& bonus(Integer& bonus, const Integer r1_den,const Integer r2_den, Vector& r1_num, Vector& r2_num) const
+		Integer& bonus(Integer& Bonus, const Integer r1_den,const Integer r2_den, Vector& r1_num, Vector& r2_num) const
 		{
-			if (bonus==0) bonus=1;
-			if (r1_num.size() != r2_num.size()) return bonus=0;
+			if (Bonus==0) Bonus=1;
+			if (r1_num.size() != r2_num.size()) return Bonus=0;
 			Integer g, d, a11, a12, a21, a22, c_bonus, l, c_l;
 			typename std::vector<Integer>::iterator num1_p, num2_p;
 			std::vector<Integer> r1 (r1_num. size());
@@ -337,8 +337,8 @@ namespace LinBox
 				r. divin (c_bonus, l);
 			}
 
-			r. lcmin (bonus, c_bonus);
-			return bonus;
+			r. lcmin (Bonus, c_bonus);
+			return Bonus;
 		}
 
 
@@ -353,14 +353,14 @@ namespace LinBox
 			return lif;
 		}
 
-		/** \brief Compute the last invariant factor with bonus
+		/** \brief Compute the last invariant factor with Bonus
 		*/
 		template<class IMatrix>
-		Integer& lastInvariantFactor_Bonus(Integer& lif, Integer& bonus, const IMatrix& A)  const
+		Integer& lastInvariantFactor_Bonus(Integer& lif, Integer& Bonus, const IMatrix& A)  const
 		{
 
 			std::vector<Integer> empty_v;
-			lastInvariantFactor_Bonus (lif, bonus, A, empty_v);
+			lastInvariantFactor_Bonus (lif, Bonus, A, empty_v);
 			return lif;
 		}
 

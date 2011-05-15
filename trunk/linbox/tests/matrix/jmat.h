@@ -21,4 +21,4 @@ Matrix& jordanform(const Ring& R, Matrix& Mat, size_t n){
 	return Mat;
 }
 
-}; //LinBox
+} //LinBox

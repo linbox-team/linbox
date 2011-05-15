@@ -49,4 +49,4 @@ Matrix& qlehmer(const Ring& R, Matrix& Mat, size_t n){
 	return Mat;
 }
 
-}; //LinBox
+} //LinBox

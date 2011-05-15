@@ -43,7 +43,7 @@ namespace LinBox
 	{
 		struct HasRawIndexed{};
 		struct NoRawIndexed{};
-	};
+	}
 
 	template<class BB> struct RawIndexedCategory {
 	typedef RawIndexedTags::NoRawIndexed Tag;

@@ -98,8 +98,8 @@ namespace LinBox
 		 * Creates new black box objects in dynamic memory.
 		 * @param M constant reference to compose black box matrix
 		 */
-		Permutation (const Permutation &M) :
-			_F(M._F),_indices (M._indices)
+		Permutation (const Permutation &Mat) :
+			_F(Mat._F),_indices (Mat._indices)
 		{}
 
 #ifdef __LINBOX_XMLENABLED

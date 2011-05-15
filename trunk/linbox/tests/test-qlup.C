@@ -114,25 +114,25 @@ bool testQLUP(const Field &F, size_t n, unsigned int iterations, int rseed, doub
 			for(typename std::vector<typename Field::Element>::const_iterator itu=u.begin(); itu!=u.end();++itu)
 				report << *itu << ',';
 			report << "]);\n[";
-			for(typename std::vector<typename Field::Element>::const_iterator itv=v.begin(); itv!=v.end();++itv)
-				report << *itv << ' ';
+			for(typename std::vector<typename Field::Element>::const_iterator itv2=v.begin(); itv2!=v.end();++itv2)
+				report << *itv2 << ' ';
 			report << "]  !=  [";
-			for(typename std::vector<typename Field::Element>::const_iterator itw=w.begin(); itw!=w.end();++itw)
-				report << *itw << ' ';
+			for(typename std::vector<typename Field::Element>::const_iterator itw2=w.begin(); itw2!=w.end();++itw2)
+				report << *itw2 << ' ';
 			report << "]" << std::endl;
 
 
 			report << "w1: [";
-			for(typename std::vector<typename Field::Element>::const_iterator itw=w1.begin(); itw!=w1.end();++itw)
-				report << *itw << ' ';
+			for(typename std::vector<typename Field::Element>::const_iterator itw2=w1.begin(); itw2!=w1.end();++itw2)
+				report << *itw2 << ' ';
 			report << "]" << std::endl;
 			report << "w2: [";
-			for(typename std::vector<typename Field::Element>::const_iterator itw=w2.begin(); itw!=w2.end();++itw)
-				report << *itw << ' ';
+			for(typename std::vector<typename Field::Element>::const_iterator itw2=w2.begin(); itw2!=w2.end();++itw2)
+				report << *itw2 << ' ';
 			report << "]" << std::endl;
 			report << "w3: [";
-			for(typename std::vector<typename Field::Element>::const_iterator itw=w3.begin(); itw!=w3.end();++itw)
-				report << *itw << ' ';
+			for(typename std::vector<typename Field::Element>::const_iterator itw2=w3.begin(); itw2!=w3.end();++itw2)
+				report << *itw2 << ' ';
 			report << "]" << std::endl;
 		}
 

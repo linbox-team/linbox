@@ -45,7 +45,7 @@
 
 using namespace LinBox;
 
-#warning "this test leaks memory at matrix-stream.h:134"
+// #warning "this test leaks memory at matrix-stream.h:134"
 
 /** @file tests/test-matrix-stream.C
 @todo I would like to see a matrix writer that
@@ -72,8 +72,9 @@ integer matrix[rowDim][colDim] = {
 				{0, 0, 0, 0, 0, 0, 0, 400, 0, 0, 0},
 				{1, 0, 0, -13, 0, 1, 0, 300, 0, 10, 1},
 				{0, 0, 6, 0, 0, 0, 0, 200, 0, 1, 0} };
+
 typedef UnparametricField<integer> TestField;
-TestField f;
+TestField ff;
 
 template <class BB>
 bool testMatrix( std::ostream& out, const char* filename, const char* BBName ) ;
@@ -90,7 +91,7 @@ bool testMatrixStream(const string& matfile)
 		pass = false;
 		}
 	out << "\tTesting " << matfile << std::endl;
-	MatrixStream<TestField > ms(f,fin);
+	MatrixStream<TestField > ms(ff,fin);
 	int nzCount = nonZeros;
 	size_t i, j;
 	integer v;
@@ -112,7 +113,7 @@ bool testMatrixStream(const string& matfile)
 		pass = false;
 	}
 	while( pass && ms.nextTriple(i,j,v) ) {
-		if(!f.isZero(v)) --nzCount;
+		if(!ff.isZero(v)) --nzCount;
 		if( i >= rowDim ) {
 			out << "Row index out of bounds in "
 			     << matfile
@@ -165,7 +166,7 @@ bool testMatrixStream(const string& matfile)
 	}
 
 	fin.seekg(0,std::ios::beg);
-	MatrixStream<TestField> ms2(f,fin);
+	MatrixStream<TestField> ms2(ff,fin);
 	std::vector<TestField::Element> array;
 	if( !ms2.getArray(array) ) {
 		ms2.reportError("Problem with getArray",ms2.getLineNumber());
@@ -230,7 +231,7 @@ bool testMatrix( std::ostream& out, const char* filename, const char* BBName )
 		out << "Could not open " << filename << std::endl;
 		return false;
 	}
-	MatrixStream<TestField > ms(f, fin);
+	MatrixStream<TestField > ms(ff, fin);
 	BB m( ms );
 	if( m.rowdim() != rowDim ) {
 		out << "Wrong rowDim in " << BBName << std::endl

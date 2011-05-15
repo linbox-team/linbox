@@ -68,8 +68,8 @@ namespace LinBox
 		 * Creates new black box objects in dynamic memory.
 		 * @param M constant reference to compose black box matrix
 		 */
-		PolynomialBB (const PolynomialBB<Blackbox, Polynomial> &M) :
-			_A_ptr(M._A_ptr), _P_ptr(M._P_ptr), _VD(M._VD)
+		PolynomialBB (const PolynomialBB<Blackbox, Polynomial> &Mat) :
+			_A_ptr(Mat._A_ptr), _P_ptr(Mat._P_ptr), _VD(Mat._VD)
 		{
 		}
 
@@ -213,8 +213,8 @@ namespace LinBox
 		 * Creates new black box objects in dynamic memory.
 		 * @param M constant reference to compose black box matrix
 		 */
-		PolynomialBBOwner (const PolynomialBBOwner<Blackbox, Polynomial> &M) :
-			_A_data(M._A_data), _P_data(M._P_data), _VD(M._VD)
+		PolynomialBBOwner (const PolynomialBBOwner<Blackbox, Polynomial> &Mat) :
+			_A_data(Mat._A_data), _P_data(Mat._P_data), _VD(Mat._VD)
 		{
 		}
 
@@ -284,22 +284,22 @@ namespace LinBox
 		};
 
 		template<typename _BBt, typename _Polt, typename Field>
-		PolynomialBBOwner (const PolynomialBB<_BBt, _Polt> &M, const Field& F) :
+		PolynomialBBOwner (const PolynomialBB<_BBt, _Polt> &Mat, const Field& F) :
 			_VD(F),
-			_A_data(*(M.getBlackbox()), F),
-			_P_data(*(M.getPolynomial()), F)
+			_A_data(*(Mat.getBlackbox()), F),
+			_P_data(*(Mat.getPolynomial()), F)
 		{
-			typename _BBt::template rebind<Field>()(_A_data, *(M.getBlackbox()), F);
-			typename _Polt::template rebind<Field>()(_P_data, *(M.getPolynomial()), F);
+			typename _BBt::template rebind<Field>()(_A_data, *(Mat.getBlackbox()), F);
+			typename _Polt::template rebind<Field>()(_P_data, *(Mat.getPolynomial()), F);
 		}
 
 		template<typename _BBt, typename _Polt, typename Field>
-		PolynomialBBOwner (const PolynomialBBOwner<_BBt, _Polt> &M, const Field& F) :
-			_A_data(M.getDataBlackbox(), F),
-			_P_data(M.getDataPolynomial(), F)
+		PolynomialBBOwner (const PolynomialBBOwner<_BBt, _Polt> &Mat, const Field& F) :
+			_A_data(Mat.getDataBlackbox(), F),
+			_P_data(Mat.getDataPolynomial(), F)
 		{
-			typename _BBt::template rebind<Field>()(_A_data, M.getDataBlackbox(), F);
-			typename _Polt::template rebind<Field>()(_P_data, M.getDataPolynomial(), F);
+			typename _BBt::template rebind<Field>()(_A_data, Mat.getDataBlackbox(), F);
+			typename _Polt::template rebind<Field>()(_P_data, Mat.getDataPolynomial(), F);
 		}
 
 

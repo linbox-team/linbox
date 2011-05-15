@@ -774,9 +774,9 @@ namespace LinBox
 			}
 
 			unsigned long early_stop=0;
-			long N;
+			long NN;
 
-			for (N = 0; (N < (long)length) && (early_stop < 20) ; ++N) {
+			for (NN = 0; (NN < (long)length) && (early_stop < 20) ; ++NN) {
 
 
 				/*
@@ -788,10 +788,10 @@ namespace LinBox
 				// view of m first rows of Discrepancy
 				Coefficient Discr(Discrepancy,0,0,m,n);
 
-				_BMD.mul(Discr,Sigma, PowerSerie[N]);
+				_BMD.mul(Discr,Sigma, PowerSerie[NN]);
 				for (size_t i=1;i<SigmaBase.size();i++){
 					Coefficient  Sigmaview(SigmaBase[i],0,0,m,m);
-					_BMD.axpyin(Discr,Sigmaview,PowerSerie[N-i]);
+					_BMD.axpyin(Discr,Sigmaview,PowerSerie[NN-i]);
 				}
 
 				typename Coefficient::RawIterator _iter_Discr = Discr.rawBegin();
@@ -814,7 +814,7 @@ namespace LinBox
 				std::vector<size_t> Perm1(m+n);
 				for (size_t i=0;i<m+n;++i)
 					Perm1[i]=i;
-				if (N>=1) {
+				if (NN>=1) {
 					for (size_t i=0;i<m+n;++i) {
 						size_t idx_min=i;
 						for (size_t j=i+1;j<m+n;++j)
@@ -915,7 +915,7 @@ namespace LinBox
 
 			}
 			if ( early_stop == 20)
-				std::cout<<"Early termination is used: stop at "<<N<<" from "<<length<<" iterations\n\n";
+				std::cout<<"Early termination is used: stop at "<<NN<<" from "<<length<<" iterations\n\n";
 
 			// extract the first m rows of SigmaBase
 			degree=order;
@@ -997,9 +997,9 @@ namespace LinBox
 			}
 
 			unsigned long early_stop=0;
-			long N;
+			long NN;
 
-			for (N = 0; (N < (long)length) && (early_stop < 20) ; ++N) {
+			for (NN = 0; (NN < (long)length) && (early_stop < 20) ; ++NN) {
 
 
 				/*
@@ -1011,10 +1011,10 @@ namespace LinBox
 				// view of m first rows of Discrepancy
 				Coefficient Discr(Discrepancy,0,0,m,n);
 
-				_BMD.mul(Discr,Sigma, PowerSerie[N]);
+				_BMD.mul(Discr,Sigma, PowerSerie[NN]);
 				for (size_t i=1;i<SigmaBase.size();i++){
 					Coefficient  Sigmaview(SigmaBase[i],0,0,m,m);
-					_BMD.axpyin(Discr,Sigmaview,PowerSerie[N-i]);
+					_BMD.axpyin(Discr,Sigmaview,PowerSerie[NN-i]);
 				}
 
 				typename Coefficient::RawIterator _iter_Discr = Discr.rawBegin();
@@ -1037,7 +1037,7 @@ namespace LinBox
 				std::vector<size_t> Perm1(m+n);
 				for (size_t i=0;i<m+n;++i)
 					Perm1[i]=i;
-				if (N>=1) {
+				if (NN>=1) {
 					for (size_t i=0;i<m+n;++i) {
 						size_t idx_min=i;
 						for (size_t j=i+1;j<m+n;++j)
@@ -1137,7 +1137,7 @@ namespace LinBox
 				_BMD.mulin_right(BPerm2,Discrepancy);
 
 				// save the first pade matrix
-				if (N == degree1 -1) {
+				if (NN == degree1 -1) {
 					// extract the first m rows of SigmaBase
 					long max=order[0];
 					for (size_t i=1;i<m;i++) {
@@ -1157,7 +1157,7 @@ namespace LinBox
 			}
 
 			if ( early_stop == 20)
-				std::cout<<"Early termination is used: stop at "<<N<<" from "<<length<<" iterations\n\n";
+				std::cout<<"Early termination is used: stop at "<<NN<<" from "<<length<<" iterations\n\n";
 
 			// extract the first m rows of SigmaBase
 			degree=order;
@@ -1744,21 +1744,21 @@ namespace LinBox
 				chrono.clear();
 				chrono.start();
 #endif
-				/*
+#if 0
 				// Update  Residual (only monomials greater than k-1)
 				for (size_t i=k;i<length;++i){
-				_BMD.mulin_right(BPerm1,Residual[i]);
-				//_BMD.mulin_right(invL,Residual[i]);
+					_BMD.mulin_right(BPerm1,Residual[i]);
+					//_BMD.mulin_right(invL,Residual[i]);
 
-				// try optimization
-				_BMD.mulin_right(Qt, Residual[i]);
-				BlasMatrix<Element>    R_top(Residual[i], 0,0,rank,n);
-				BlasMatrix<Element> R_bottom(Residual[i], rank,0,m-rank,n);
-				_BMD.axmyin(R_bottom, G, R_top);
+					// try optimization
+					_BMD.mulin_right(Qt, Residual[i]);
+					BlasMatrix<Element>    R_top(Residual[i], 0,0,rank,n);
+					BlasMatrix<Element> R_bottom(Residual[i], rank,0,m-rank,n);
+					_BMD.axmyin(R_bottom, G, R_top);
 
-				_BMD.mulin_right(Q, Residual[i]);
+					_BMD.mulin_right(Q, Residual[i]);
 				}
-				*/
+#endif
 #ifdef _BM_TIMING
 				chrono.stop();
 				ttResidueUp+=chrono;

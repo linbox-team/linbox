@@ -176,8 +176,8 @@ static bool testCekstvSwitch (const Field &F, unsigned int iterations, size_t n,
 
 		report << "Real rank: " << real_r << endl;
 
-		typename Field::RandIter r (F);
-		typename CekstvSwitch<Field>::Factory factory (r);
+		typename Field::RandIter rdtr (F);
+		typename CekstvSwitch<Field>::Factory factory (rdtr);
 		Butterfly<Field, CekstvSwitch<Field> > P (F, n, factory);
 		Butterfly<Field, CekstvSwitch<Field> > Q (F, n, factory);
 		typedef Butterfly<Field, CekstvSwitch<Field> > Blackbox1;

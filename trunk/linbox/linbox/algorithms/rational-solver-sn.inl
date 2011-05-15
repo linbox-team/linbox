@@ -13,16 +13,16 @@
 
 #define log_2(x) (log(x)/M_LN2)
 
-int zw_shift(NumericSolver &_S, size_t n, FVector &r, FVector &x){
+int zw_shift(NumericSolver & NS_S, size_t n, FVector &r, FVector &x){
 	//  ZW method for calculating shift
 	// compute ax
 	FVector ax(n);
-	_S.apply(ax, x);
+	NS_S.apply(ax, x);
 	// compute ax = ax -r, the negative of residual
 	for(size_t i=0; i<n; i++)
 		_F.sub(ax[i], ax[i], r[i]);
 	// compute possible shift
-	int zw_shift;
+	int zw_shift_loc;
 	double normr1, normr2, normr3, shift1, shift2;
 	normr1 = zw_dmax(n, &*r.begin(), 1);
 	normr2 = zw_dmax(n, &*ax.begin(), 1);
@@ -31,17 +31,17 @@ int zw_shift(NumericSolver &_S, size_t n, FVector &r, FVector &x){
 	//cerr << normr1 << " " << normr2 << " " << normr3 << endl;
 	//try to find a good scalar
 	if (normr2 <.0000000001)
-		zw_shift = 30;
+		zw_shift_loc = 30;
 	else {
 		shift1 = floor(log_2 (normr1 / normr2)) - 2;
-		zw_shift = (int)(30 < shift1 ? 30 : shift1);
+		zw_shift_loc = (int)(30 < shift1 ? 30 : shift1);
 	}
 
 	normr3 = normr3 > 2 ? normr3 : 2;
 	shift2 = floor(53. / log_2 (normr3));
-	zw_shift = (int)(zw_shift < shift2 ? zw_shift : shift2);
+	zw_shift_loc = (int)(zw_shift_loc < shift2 ? zw_shift_loc : shift2);
 
-	return zw_shift;
+	return zw_shift_loc;
 }
 
 template <class IMatrix>
@@ -303,14 +303,14 @@ inline int HadamardBound(integer& B, FMatrix& DM) {
 	size_t n = DM.rowdim();
 	zw_hbound (B, n, n, &*DM.rawBegin()); // compute the Hadamard bound
 	B = B * B;
-	double mnorm = zw_dOOnorm(&*DM.rawBegin(), n, n);
+	double mnorm_loc = zw_dOOnorm(&*DM.rawBegin(), n, n);
 
 	// [don't know what this comment is about] should be a check for 2 * mnorm + zw_dmax (n, b, 1);
 	// TODO what is "b"? from copied code it is the RHS array of doubles
 	// zw_max just seems to get abs(max value of b)
 	// next line false, just to compile
 	double *b;
-	B *= 2 * mnorm + zw_dmax (n, b, 1); // [don't know what this factor is about]
+	B *= 2 * mnorm_loc + zw_dmax (n, b, 1); // [don't know what this factor is about]
 	B <<= 1; // [extra factor of 2 for some reason... ]
 	return B;
 }

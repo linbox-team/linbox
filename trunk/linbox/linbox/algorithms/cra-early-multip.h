@@ -171,10 +171,10 @@ namespace LinBox
 				++shelf;
 				if (*_occ_it) {
 					Integer D = _mod_it->operator()();
-					std::vector<Integer> e(randv.size());
-					e = *_tab_it;
+					std::vector<Integer> e_v(randv.size());
+					e_v = *_tab_it;
 					Integer z;
-					dot(z,D, e, randv);
+					dot(z,D, e_v, randv);
 					Integer prev_residue_ = EarlySingleCRA<Domain>::residue_;
 					EarlySingleCRA<Domain>::progress(D,z);
 					if (prev_residue_ == EarlySingleCRA<Domain>::residue_ )

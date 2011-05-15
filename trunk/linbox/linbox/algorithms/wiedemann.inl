@@ -243,10 +243,10 @@ namespace LinBox
 			if (_VD.areEqual (z, b))
 				ret = true;
 			else {
-				std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-				_VD.write(report << "x is ", x) << std::endl;
-				_VD.write(report << "b is ", b) << std::endl;
-				_VD.write(report << "Ax is " , z) << std::endl;
+				std::ostream& Report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+				_VD.write(Report << "x is ", x) << std::endl;
+				_VD.write(Report << "b is ", b) << std::endl;
+				_VD.write(Report << "Ax is " , z) << std::endl;
 
 				ret = false;
 

@@ -481,16 +481,16 @@ namespace LinBox
 					typename Field::Element tmp, e;
 					F.init (d2,1);
 					typename FactPoly::iterator it_f=factCharPoly.begin();
-					PolyDom PD (F);
+					PolyDom PD_f (F);
 					for (size_t i = 0; i < factCharPoly.size()-factnum; ++i, ++it_f){
-						PD.eval (tmp, *it_f->second->fieldP, mgamma);
+						PD_f.eval (tmp, *it_f->second->fieldP, mgamma);
 						for (size_t j=0; j < it_f->second->multiplicity; ++j)
 							F.mulin (d2, tmp);
 					}
 					while ( uf_it != sols.end() ){
 						F.init (e,1);
 						for (size_t i = 0; i < uf_it->size(); ++i){
-							PD.eval( tmp, *(*uf_it)[i].fieldP, mgamma );
+							PD_f.eval( tmp, *(*uf_it)[i].fieldP, mgamma );
 							for (size_t  j=0; j < (*uf_it)[i].multiplicity; ++j)
 								F.mulin( e, tmp );
 						}

@@ -50,14 +50,15 @@ using namespace LinBox;
 
 typedef Modular<uint32_t> Field;
 
-// Constants: we are working with an n x n matrix over GF(q)
-const int n = 10000000;
-const double p = .001;
-const int q = 32749;
-
 /// no command line args
 int main (int argc, char **argv)
 {
+	// Constants: we are working with an n x n matrix over GF(q)
+	const int    n = 10000000;
+	const double p = .001;
+	const int    q = 32749;
+
+
 	commentator.setMaxDepth (1);
 	commentator.setReportStream (std::cout);
 

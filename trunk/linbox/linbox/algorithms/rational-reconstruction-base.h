@@ -64,8 +64,8 @@ namespace LinBox
 	public:
 		typedef typename Ring::Element Element;
 
-		RReconstruction(const Ring& Z=Ring(), const RReconstructionSchedule M = GEOMETRIC, size_t T=DEF_RR_THRESH, size_t b= 0) :
-			_Z(Z), _RR(Z), _M(M), THRESHOLD_(T), rbound_(b)
+		RReconstruction(const Ring& Z=Ring(), const RReconstructionSchedule Meth = GEOMETRIC, size_t T=DEF_RR_THRESH, size_t b= 0) :
+			_Z(Z), _RR(Z), _M(Meth), THRESHOLD_(T), rbound_(b)
 		{
 			RecCounter =0;
 			if (_M == QUADRATIC) {
@@ -76,8 +76,8 @@ namespace LinBox
 			}
 		}
 
-		RReconstruction(const RRBase& RR, const RReconstructionSchedule M = GEOMETRIC, size_t T=DEF_RR_THRESH, size_t b = 0) :
-			_Z(RR._Z), _RR(RR),_M(M), THRESHOLD_(T), rbound_(b)
+		RReconstruction(const RRBase& RR, const RReconstructionSchedule Meth = GEOMETRIC, size_t T=DEF_RR_THRESH, size_t b = 0) :
+			_Z(RR._Z), _RR(RR),_M(Meth), THRESHOLD_(T), rbound_(b)
 		{
 			RecCounter =0;
 			if (_M == QUADRATIC) {
