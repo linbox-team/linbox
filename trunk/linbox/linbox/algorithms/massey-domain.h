@@ -86,10 +86,10 @@ namespace LinBox
 			EARLY_TERM_THRESHOLD (ett_default)
 		{}
 
-		MasseyDomain (const MasseyDomain<Field, Sequence> &M, unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) :
-			_container           (M._container),
-			_F                   (M._F),
-			_VD                  (M._F),
+		MasseyDomain (const MasseyDomain<Field, Sequence> &Mat, unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) :
+			_container           (Mat._container),
+			_F                   (Mat._F),
+			_VD                  (Mat._F),
 			EARLY_TERM_THRESHOLD (ett_default)
 		{}
 
@@ -218,16 +218,16 @@ namespace LinBox
 			_F.assign (b, One);
 
 
-			for (long N = 0; N < END && x < (long) EARLY_TERM_THRESHOLD; ++N, ++_iter) {
+			for (long NN = 0; NN < END && x < (long) EARLY_TERM_THRESHOLD; ++NN, ++_iter) {
 
-				if (!(N % COMMOD))
-					commentator.progress (N);
+				if (!(NN % COMMOD))
+					commentator.progress (NN);
 
 				// ====================================================
 				// Next coefficient in the sequence
 				// Discrepancy computation
 				//
-				S[N] = *_iter;
+				S[NN] = *_iter;
 
 				//
 #ifdef INCLUDE_TIMING
@@ -236,11 +236,11 @@ namespace LinBox
 
 				long poly_len = MIN (L, c_deg);
 				Subvector<typename Polynomial::iterator> Cp (C.begin () + 1, C.begin () + poly_len + 1);
-				Subvector<typename Polynomial::iterator> Sp (S.begin () + (N - poly_len), S.begin () + N);
+				Subvector<typename Polynomial::iterator> Sp (S.begin () + (NN - poly_len), S.begin () + NN);
 				ReverseVector<Subvector<typename Polynomial::iterator> > Spp (Sp);
 				_VD.dot (d, Cp, Spp);
 
-				_F.addin (d, S[N]);
+				_F.addin (d, S[NN]);
 
 #ifdef INCLUDE_TIMING
 				timer.stop ();
@@ -254,7 +254,7 @@ namespace LinBox
 					++x;
 				}
 				else {
-					if (L > (N >> 1)) {
+					if (L > (NN >> 1)) {
 						// -----------------------------------------------
 						// C = C + (Polynome(X,x,-d/b) * B);
 						//
@@ -314,7 +314,7 @@ namespace LinBox
 						for (; i >= 0; --i) B[i] = C[i];
 
 						// -----------------------------------------------
-						L = N+1-L;
+						L = NN+1-L;
 						b_deg = c_deg;
 						c_deg = v_degree (C);
 						b = d;
@@ -347,14 +347,14 @@ namespace LinBox
 			rank = v_degree (phi) - v_val (phi);
 		}
 
-		void valence (Element &valence, unsigned long &rank)
+		void valence (Element &Valence, unsigned long &rank)
 		{
 			commentator.start ("Valence", "LinBox::MasseyDomain::valence");
 
 			std::vector<Element> phi;
 			massey (phi, 1);
 			rank = v_degree (phi) - v_val (phi);
-			valence = phi[v_degree (phi)];
+			Valence = phi[v_degree (phi)];
 
 			commentator.stop ("Done", "Done", "LinBox::MasseyDomain::valence");
 		}

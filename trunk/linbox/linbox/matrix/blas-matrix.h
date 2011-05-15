@@ -774,13 +774,16 @@ namespace LinBox
 		/*! NO DOC
 		 * @param M
 		 */
-		TransposedBlasMatrix ( Matrix& M ) :
-			_M(M)
+		TransposedBlasMatrix ( Matrix& Mat ) :
+			_M(Mat)
 		{}
 
 		/*! NO DOC
 		 */
-		Matrix& getMatrix() const { return _M; }
+		Matrix& getMatrix() const
+		{
+			return _M;
+		}
 
 	protected:
 		Matrix& _M; //!< NO DOC
@@ -799,15 +802,15 @@ namespace LinBox
 		/*! TransposedBlasMatrix.
 		 * NO DOC
 		 */
-		TransposedBlasMatrix ( Matrix& M ) :
-			Matrix(M)
+		TransposedBlasMatrix ( Matrix& Mat ) :
+			Matrix(Mat)
 		{}
 
 		/*! TransposedBlasMatrix.
 		 * NO DOC
 		 */
-		TransposedBlasMatrix ( const Matrix& M ) :
-			Matrix(M)
+		TransposedBlasMatrix ( const Matrix& Mat ) :
+			Matrix(Mat)
 		{}
 
 	};

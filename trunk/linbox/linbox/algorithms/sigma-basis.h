@@ -1243,7 +1243,7 @@ namespace LinBox
 
 #ifdef _BM_TIMING
 			Timer chrono;
-			double tSigmaUp, tResidueUp, tSigmaSh, tResidueSh, tLQUP, tPerm;
+			double /*tSigmaUp, tResidueUp, tSigmaSh, tResidueSh,*/ tLQUP, tPerm;
 			tSigmaUp= tResidueUp= tSigmaSh= tResidueSh= tLQUP= tPerm =0.;
 #endif
 

@@ -19,7 +19,7 @@
 
 // ========================================================================= //
 // (C) The Linbox Group 1999
-// Calcul de rang par la méthode de Gauss pivot par ligne, sur matrice creuse
+// Calcul de rang par la mÃ©thode de Gauss pivot par ligne, sur matrice creuse
 // Time-stamp: <03 Nov 00 19:19:06 Jean-Guillaume.Dumas@imag.fr>
 // ========================================================================= //
 
@@ -70,8 +70,8 @@ namespace LinBox
 
 		//Copy constructor
 		///
-		GaussDomain (const GaussDomain &M) :
-			_F (M._F)
+		GaussDomain (const GaussDomain &Mat) :
+			_F (Mat._F)
 		{}
 
 		/** accessor for the field of computation

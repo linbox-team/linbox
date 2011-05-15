@@ -538,10 +538,10 @@ namespace LinBox
 					if (!verybig)
 						_r.init(numbound, exp(i*half_log_p - half_log_2 + multy * (i - 1)));
 
-					Integer tmp;
-					_r.init(tmp, 2);
-					_r.mulin(tmp, numbound);
-					_r.quo(denbound, modulus, tmp);
+					Integer tmp2;
+					_r.init(tmp2, 2);
+					_r.mulin(tmp2, numbound);
+					_r.quo(denbound, modulus, tmp2);
 				}
 #ifdef DEBUG_RR
 				std::cout << "i, N, D bounds: " << i << ", " << numbound << ", " << denbound << std::endl;

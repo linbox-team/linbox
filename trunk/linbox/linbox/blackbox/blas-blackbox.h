@@ -98,8 +98,9 @@ namespace LinBox
 		}
 
 		// copy
-		BlasBlackbox (const Field& F, BlasMatrix<Element>& M) :
-			BlasMatrix<Element> (M),  _F(F), _MD(F) , _VD(F),  _row(M.rowdim()), _col(M.coldim())
+		BlasBlackbox (const Field& F, BlasMatrix<Element>& Mat) :
+			BlasMatrix<Element> (Mat),  _F(F), _MD(F) , _VD(F),
+			_row(Mat.rowdim()), _col(Mat.coldim())
 		{
 			_F.init(_One,1UL),
 			_F.init(_Zero,0UL);
@@ -107,31 +108,31 @@ namespace LinBox
 	       	}
 
 		template< class Blackbox >
-		BlasBlackbox (const Blackbox& M) :
-			BlasMatrix<Element> (M), _F(M.field()), _MD(M.field()), _VD(M.field()), _row(M.rowdim()), _col(M.coldim())
+		BlasBlackbox (const Blackbox& Mat) :
+			BlasMatrix<Element> (Mat), _F(Mat.field()), _MD(Mat.field()), _VD(Mat.field()), _row(Mat.rowdim()), _col(Mat.coldim())
 		{
 			_F.init( _One, 1UL );
 		       	_F.init( _Zero, 0UL );
 		       	_use_fflas= checkBlasApply(_F, _col);
 		}
 
-		BlasBlackbox (const BlasBlackbox<Field>& M) :
-			BlasMatrix< Element> (M), _F(M._F), _MD(M._F), _VD(M._F),
-			_row(M._row), _col(M._col), _One(M._One), _Zero(M._Zero)
+		BlasBlackbox (const BlasBlackbox<Field>& Mat) :
+			BlasMatrix< Element> (Mat), _F(Mat._F), _MD(Mat._F), _VD(Mat._F),
+			_row(Mat._row), _col(Mat._col), _One(Mat._One), _Zero(Mat._Zero)
 		{
 			_use_fflas= checkBlasApply(_F, _col);
 		}
 
-		BlasBlackbox (const BlasBlackbox<Field>& M, const size_t i0, const size_t j0, const size_t m, const size_t n) :
-			BlasMatrix< Element> (M,i0,j0,m,n), _F(M._F), _MD(M._F), _VD(M._F),
-			_row(m), _col(n), _One(M._One), _Zero(M._Zero)
+		BlasBlackbox (const BlasBlackbox<Field>& Mat, const size_t i0, const size_t j0, const size_t m, const size_t n) :
+			BlasMatrix< Element> (Mat,i0,j0,m,n), _F(Mat._F), _MD(Mat._F), _VD(Mat._F),
+			_row(m), _col(n), _One(Mat._One), _Zero(Mat._Zero)
 		{
 			_use_fflas= checkBlasApply(_F, _col);
 		}
 
-		BlasBlackbox (const Field &F, const BlasBlackbox<Field>& M) :
-			BlasMatrix< Element> (M), _F(M._F), _MD(M._F), _VD(F),
-			_row(M._row), _col(M._col), _One(M._One), _Zero(M._Zero)
+		BlasBlackbox (const Field &F, const BlasBlackbox<Field>& Mat) :
+			BlasMatrix< Element> (Mat), _F(Mat._F), _MD(Mat._F), _VD(F),
+			_row(Mat._row), _col(Mat._col), _One(Mat._One), _Zero(Mat._Zero)
 		{
 			_use_fflas= checkBlasApply(_F, _col);
 		}
@@ -204,14 +205,14 @@ namespace LinBox
 		};
 
 		template<typename _Tp1>
-		BlasBlackbox(const BlasBlackbox<_Tp1>& M, const Field& F) :
-			BlasMatrix<Element>(M.rowdim(),M.coldim()),
+		BlasBlackbox(const BlasBlackbox<_Tp1>& Mat, const Field& F) :
+			BlasMatrix<Element>(Mat.rowdim(),Mat.coldim()),
 			_F(F),_MD(F),_VD(F),
-			_row(M.rowdim()), _col(M.coldim()),
+			_row(Mat.rowdim()), _col(Mat.coldim()),
 			_One(F.one), _Zero(F.zero)
 		{
-			_use_fflas = checkBlasApply(F, M.coldim());
-			typename BlasBlackbox<_Tp1>::template rebind<Field>() (*this, M, F);
+			_use_fflas = checkBlasApply(F, _col);
+			typename BlasBlackbox<_Tp1>::template rebind<Field>() (*this, Mat, F);
 		}
 
 		size_t rowdim() const {return _row;}

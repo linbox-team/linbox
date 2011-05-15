@@ -328,12 +328,12 @@ namespace LinBox
 	/*! Write a matrix to a stream.
 	 * The C++ way using <code>operator<<</code>
 	 * @param o output stream
-	 * @param M matrix to write.
+	 * @param Mat matrix to write.
 	 */
 	template<class T>
-	std::ostream& operator<< (std::ostream & o, const DenseSubmatrix<T> & M)
+	std::ostream& operator<< (std::ostream & o, const DenseSubmatrix<T> & Mat)
 	{
-		return M.write(o);
+		return Mat.write(o);
 	}
 
 

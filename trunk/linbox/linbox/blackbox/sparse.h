@@ -215,9 +215,10 @@ namespace LinBox
 		};
 
 		template<typename _Tp1, typename _Rw1>
-		SparseMatrix (const SparseMatrix<_Tp1, _Rw1> &M, const Field& F) :
-			SparseMatrixBase<Element, _Row> (M.rowdim(),M.coldim()), _F (F), _VD (F), _MD (F), _AT (*this) {
-				typename SparseMatrix<_Tp1,_Rw1>::template rebind<Field,_Row>()(*this, M, F);
+		SparseMatrix (const SparseMatrix<_Tp1, _Rw1> &Mat, const Field& F) :
+			SparseMatrixBase<Element, _Row> (Mat.rowdim(),Mat.coldim()),
+			_F (F), _VD (F), _MD (F), _AT (*this) {
+				typename SparseMatrix<_Tp1,_Rw1>::template rebind<Field,_Row>()(*this, Mat, F);
 			}
 
 
@@ -352,7 +353,6 @@ namespace LinBox
 
 			integer tmp;
 			RowIterator row_p;
-			EltIterator elt_p;
 
 			for ( row_p = _A. rowBegin(); row_p != _A. rowEnd(); ++ row_p) {
 				tmp = 0;

@@ -233,7 +233,7 @@ namespace LinBox
 			}
 
 			for (size_t i=0; i<m; i++) {
-				LinBox::integer result, tmp;
+				LinBox::integer result, tmp2;
 				if (use_neg) {
 					result = -ydbl[(maxword-1)*m+i];
 					result <<= (maxword-1)*32;
@@ -241,10 +241,10 @@ namespace LinBox
 				else
 					result = 0;
 
-				importWords(tmp, rclen, -1, 1, 0, 0, combined1+i*rclen);
-				result += tmp;
-				importWords(tmp, rclen, -1, 1, 0, 0, combined2+i*rclen);
-				result += tmp;
+				importWords(tmp2, rclen, -1, 1, 0, 0, combined1+i*rclen);
+				result += tmp2;
+				importWords(tmp2, rclen, -1, 1, 0, 0, combined2+i*rclen);
+				result += tmp2;
 
 				_D.init(y[i], result);
 			}

@@ -42,12 +42,12 @@ namespace LinBox
 	       	r_(0),n_((_Uint)-1),P_(0),Q_(0),inv_(false)
 	{
 		std::cout << "NULL permutation created. Beware !" << std::endl;
-	};
+	}
 
 	template<class _Uint>
 	BlasPermutation<_Uint>::BlasPermutation(size_t n) :
 	       	r_(n),n_((_Uint)-1),P_(n),Q_(0),inv_(false)
-	{ };
+	{ }
 
 
 	template<class _Uint>

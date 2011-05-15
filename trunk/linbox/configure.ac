@@ -70,7 +70,7 @@ if test "x$WARN" = "xyes" ; then
 		# DEBUG_CFLAGS="-fast"
 	else
 		if test "x${CCNAM}" = "xgcc"  ; then
-			WARN_CFLAGS="${WARN_CFLAGS} -Wextra -Wno-unused-parameter -Wuninitialized -Wconversion -Wcast-qual"
+			WARN_CFLAGS="${WARN_CFLAGS} -Wextra -Wno-unused-parameter -Wuninitialized -Wconversion -Wcast-qual -ansi -pedantic -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings"
 		else
 			echo
 			echo "*******************************************************"

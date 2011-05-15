@@ -763,8 +763,8 @@ namespace LinBox
 			bool _indent_next;
 
 		public:
-			smartStreambuf (const Commentator &comm, std::ostream &stream) :
-				_comm (comm), _stream (stream), _indent_next (true)
+			smartStreambuf (const Commentator &Comm, std::ostream & Stream) :
+				_comm (Comm), _stream (Stream), _indent_next (true)
 			{}
 
 			int sync ();

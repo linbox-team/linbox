@@ -37,23 +37,24 @@ namespace LinBox
 {
 
 	template <class _Element>
-	DenseSubmatrix<_Element>::DenseSubmatrix (DenseMatrixBase<_Element> &M,
+	DenseSubmatrix<_Element>::DenseSubmatrix (DenseMatrixBase<_Element> &Mat,
 						  size_t row,
 						  size_t col,
-						  size_t rowdim,
-						  size_t coldim) :
-		_M (&M), _beg_row (row), _end_row (row + rowdim), _beg_col (col), _end_col (col + coldim)
+						  size_t Rowdim,
+						  size_t Coldim) :
+		_M (&Mat), _beg_row (row), _end_row (row + Rowdim),
+		_beg_col (col), _end_col (col + Coldim)
 	{
 		linbox_check (_beg_row <= _end_row);
 		linbox_check (_beg_col <= _end_col);
-		linbox_check (_end_row <= M.rowdim ());
-		linbox_check (_end_col <= M.coldim ());
+		linbox_check (_end_row <= Mat.rowdim ());
+		linbox_check (_end_col <= Mat.coldim ());
 	}
 
 
 	template <class _Element>
-	DenseSubmatrix<_Element>::DenseSubmatrix (DenseMatrixBase<_Element> &M) :
-		_M(&M), _beg_row(0), _end_row(M.rowdim()), _beg_col(0), _end_col(M.coldim())
+	DenseSubmatrix<_Element>::DenseSubmatrix (DenseMatrixBase<_Element> &Mat) :
+		_M(&Mat), _beg_row(0), _end_row(Mat.rowdim()), _beg_col(0), _end_col(Mat.coldim())
 	{}
 
 
@@ -62,13 +63,13 @@ namespace LinBox
 	DenseSubmatrix<_Element>::DenseSubmatrix (const DenseSubmatrix<_Element> &SM,
 						  size_t row,
 						  size_t col,
-						  size_t rowdim,
-						  size_t coldim) :
+						  size_t Rowdim,
+						  size_t Coldim) :
 		_M (SM._M),
 		_beg_row (SM._beg_row + row),
-		_end_row (SM._beg_row + row + rowdim),
+		_end_row (SM._beg_row + row + Rowdim),
 		_beg_col (SM._beg_col + col),
-		_end_col (SM._beg_col + col + coldim)
+		_end_col (SM._beg_col + col + Coldim)
 	{
 		linbox_check (_beg_row <= _end_row);
 		linbox_check (_beg_col <= _end_col);

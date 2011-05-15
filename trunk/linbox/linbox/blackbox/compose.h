@@ -110,10 +110,12 @@ namespace LinBox
 		 * are not copied.
 		 * @param[in] M blackbox to copy.
 		 */
-		Compose (const Compose<Blackbox1, Blackbox2>& M) :
-			_A_ptr ( M._A_ptr), _B_ptr ( M._B_ptr)
+		Compose (const Compose<Blackbox1, Blackbox2>& Mat) :
+			_A_ptr ( Mat._A_ptr), _B_ptr ( Mat._B_ptr)
 			//{ VectorWrapper::ensureDim (_z, _A_ptr->coldim ()); }
-		{ _z.resize(_A_ptr->coldim());}
+		{
+			_z.resize(_A_ptr->coldim());
+		}
 
 		/// Destructor
 		~Compose () {}
@@ -478,9 +480,11 @@ namespace LinBox
 		 * are not copied.
 		 * \param M matrix to be copied.
 		 */
-		ComposeOwner (const ComposeOwner<Blackbox1, Blackbox2>& M) :
-			_A_data ( M.getLeftData()), _B_data ( M.getRightData())
-		{ _z.resize(_A_data.coldim());}
+		ComposeOwner (const ComposeOwner<Blackbox1, Blackbox2>& Mat) :
+			_A_data ( Mat.getLeftData()), _B_data ( Mat.getRightData())
+		{
+			_z.resize(_A_data.coldim());
+		}
 
 
 		/// Destructor
@@ -540,21 +544,21 @@ namespace LinBox
 
 
 		template<typename _BBt1, typename _BBt2, typename Field>
-		ComposeOwner (const Compose<_BBt1, _BBt2> &M, const Field& F) :
-			_A_data(*(M.getLeftPtr()), F),
-			_B_data(*(M.getRightPtr()), F),
+		ComposeOwner (const Compose<_BBt1, _BBt2> &Mat, const Field& F) :
+			_A_data(*(Mat.getLeftPtr()), F),
+			_B_data(*(Mat.getRightPtr()), F),
 			_z(_A_data.coldim())
 		{
-			typename Compose<_BBt1, _BBt2>::template rebind<Field>()(*this,M,F);
+			typename Compose<_BBt1, _BBt2>::template rebind<Field>()(*this,Mat,F);
 		}
 
 		template<typename _BBt1, typename _BBt2, typename Field>
-		ComposeOwner (const ComposeOwner<_BBt1, _BBt2> &M, const Field& F) :
-			_A_data(M.getLeftData(), F),
-			_B_data(M.getRightData(), F) ,
+		ComposeOwner (const ComposeOwner<_BBt1, _BBt2> &Mat, const Field& F) :
+			_A_data(Mat.getLeftData(), F),
+			_B_data(Mat.getRightData(), F) ,
 			_z(_A_data.coldim())
 		{
-			typename ComposeOwner<_BBt1, _BBt2>::template rebind<Field>()(*this,M,F);
+			typename ComposeOwner<_BBt1, _BBt2>::template rebind<Field>()(*this,Mat,F);
 		}
 
 

@@ -27,9 +27,12 @@ namespace LinBox
 
 	/// limited doc so far.
 	namespace GetEntryTags
-	{	struct GenericBB{};	struct Local{};
-		struct SpecialCDB{}; struct SpecialCBD{}; struct SpecialCDD{};
-	}; // namespace GetEntryTags
+	{	struct GenericBB{};
+		struct Local{};
+		struct SpecialCDB{};
+		struct SpecialCBD{};
+		struct SpecialCDD{};
+	} // namespace GetEntryTags
 
 	template<class BB> struct GetEntryCategory { typedef GetEntryTags::GenericBB Tag; };
 

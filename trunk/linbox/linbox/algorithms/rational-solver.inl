@@ -665,8 +665,8 @@ namespace LinBox
 #ifdef RSTIMING
 			tNonsingularSetup.start();
 #endif
-			typedef typename Field::Element Element;
-			typedef typename Ring::Element Integer;
+			// typedef typename Field::Element Element;
+			// typedef typename Ring::Element Integer;
 
 			// checking size of system
 			linbox_check(A.rowdim() == A.coldim());
@@ -828,8 +828,8 @@ namespace LinBox
 			tSetup.start();
 #endif
 
-			typedef typename Field::Element Element;
-			typedef typename Ring::Element Integer;
+			// typedef typename Field::Element Element;
+			typedef typename Ring::Element  Integer_t;
 			typedef DixonLiftingContainer<Ring, Field,
 				BlasBlackbox<Ring>, BlasBlackbox<Field> > LiftingContainer;
 
@@ -837,7 +837,7 @@ namespace LinBox
 			linbox_check(A.rowdim() == b.size());
 
 			LinBox::integer tmp;
-			Integer _rone,_rzero;
+			Integer_t _rone,_rzero;
 			_R.init(_rone,1);
 			_R.init(_rzero,0);
 
@@ -1086,13 +1086,13 @@ namespace LinBox
 				Ap_minor_inv = new BlasBlackbox<Field>(F, rank, rank);
 				int nullity;
 
-				LinBox::integer tmp=0;
+				LinBox::integer tmp2=0;
 				size_t maxBitSize = 0;
 				for (size_t i=0; i<rank; i++)
 					for (size_t j=0; j<A.coldim(); j++){
 						_R.assign(B->refEntry(i, j), A_check.getEntry(srcRow[i], j));
-						_R.convert(tmp, A_check.getEntry(srcRow[i], j));
-						maxBitSize = std::max(maxBitSize, tmp.bitsize());
+						_R.convert(tmp2, A_check.getEntry(srcRow[i], j));
+						maxBitSize = std::max(maxBitSize, tmp2.bitsize());
 					}
 #ifdef RSTIMING
 				bool firstLoop = true;
@@ -1153,7 +1153,7 @@ namespace LinBox
 					for (size_t i=0;i<rank;++i)
 						for (size_t j=0;j<rank;++j)
 							F.init(Ap_minor.refEntry(i,j),
-							       _R.convert(tmp,A_minor.getEntry(i,j)));
+							       _R.convert(tmp2,A_minor.getEntry(i,j)));
 #ifdef RSTIMING
 					tMakeConditioner.stop();
 					ttMakeConditioner += tMakeConditioner;
@@ -1313,12 +1313,12 @@ namespace LinBox
 				//LiftingContainer lc2(_R, F, BBA_minor, BBA_inv, q, _prime);
 				LiftingContainer lc2(_R, F, A_minor, *Ap_minor_inv, q, _prime);
 
-				RationalReconstruction<LiftingContainer> re(lc2);
+				RationalReconstruction<LiftingContainer> rere(lc2);
 				Vector1 u_num(rank); Integer u_den;
-				if (!re.getRational(u_num, u_den,0)) return SS_FAILED;
+				if (!rere.getRational(u_num, u_den,0)) return SS_FAILED;
 
 #ifdef RSTIMING
-				ttCertSolve.update(re, lc2);
+				ttCertSolve.update(rere, lc2);
 				tCertMaking.start();
 #endif
 				// remainder of code does   z <- denom(partial_cert . Mr) * partial_cert * Qt
@@ -1398,7 +1398,7 @@ namespace LinBox
 		linbox_check(A.rowdim() == A.coldim());
 		linbox_check(A.rowdim() % blocksize == 0);
 
-		typedef typename Field::Element Element;
+		typedef typename Field::Element Element_t;
 
 
 
@@ -1410,7 +1410,7 @@ namespace LinBox
 
 		// precondition Ap  with a random diagonal Matrix
 		typename Field::RandIter G(F,0,123456);
-		std::vector<Element> diag(Ap.rowdim());
+		std::vector<Element_t> diag(Ap.rowdim());
 
 		for(size_t i=0;i<Ap.rowdim();++i){
 			do {
@@ -1428,7 +1428,7 @@ namespace LinBox
 		size_t numblock = n/blocksize;
 
 		// generate randomly U and V
-		BlasMatrix<Element> U(blocksize,A.rowdim()), V(A.coldim(),blocksize);
+		BlasMatrix<Element_t> U(blocksize,A.rowdim()), V(A.coldim(),blocksize);
 
 		for (size_t j=0;j<blocksize; ++j)
 			for (size_t i=j*numblock;i<(j+1)*numblock;++i){
@@ -1455,14 +1455,14 @@ namespace LinBox
 
 		// compute the inverse of the Hankel matrix associated with the Krylov Sequence
 		BlockHankelInverse<Field> Hinv(F, Seq.getRep());
-		std::vector<Element> y(n), x(n, 1);
+		std::vector<Element_t> y(n), x(n, 1);
 
 #ifdef RSTIMING
 		chrono.stop();
 		std::cout<<"inverse block hankel: "<<chrono<<"\n";
 #endif
 
-		typedef BlockHankelLiftingContainer<Ring,Field,IMatrix,Compose<Diagonal<Field>,FMatrix>, BlasMatrix<Element> > LiftingContainer;
+		typedef BlockHankelLiftingContainer<Ring,Field,IMatrix,Compose<Diagonal<Field>,FMatrix>, BlasMatrix<Element_t> > LiftingContainer;
 		LiftingContainer lc(_R, F, A, DAp, D, Hinv, U, V, b, _prime);
 		RationalReconstruction<LiftingContainer > re(lc);
 
@@ -1496,7 +1496,7 @@ namespace LinBox
 
 		linbox_check(A.rowdim() == A.coldim());
 
-		typedef typename Field::Element Element;
+		typedef typename Field::Element Element_t;
 
 		// reduce the matrix mod p
 		Field F(_prime);
@@ -1508,7 +1508,7 @@ namespace LinBox
 		Permutation<Field> P(A.coldim(),F),Q(A.rowdim(),F);
 		FMatrix L(F, A.rowdim(), A.rowdim());
 		unsigned long rank;
-		Element det;
+		Element_t det;
 
 		GaussDomain<Field> GD(F);
 		GD.QLUPin(rank,det,Q,L,*Ap,P,Ap->rowdim(), Ap->coldim());

@@ -91,20 +91,20 @@ namespace LinBox
 		 * @param BB   Black box from which to extract the submatrix
 		 * @param row  First row of the submatrix to extract (1.._BB->rowdim ())
 		 * @param col  First column of the submatrix to extract (1.._BB->coldim ())
-		 * @param rowdim Row dimension
-		 * @param coldim Column dimension
+		 * @param Rowdim Row dimension
+		 * @param Coldim Column dimension
 		 */
 		Submatrix (const Blackbox *BB,
 			   size_t          row,
 			   size_t          col,
-			   size_t          rowdim,
-			   size_t          coldim) :
+			   size_t          Rowdim,
+			   size_t          Coldim) :
 			_BB (BB),
-			_row (row), _col (col), _rowdim (rowdim), _coldim (coldim),
+			_row (row), _col (col), _rowdim (Rowdim), _coldim (Coldim),
 			_z (_BB->coldim ()), _y (_BB->rowdim ())
 		{
-			linbox_check (row + rowdim <= _BB->rowdim ());
-			linbox_check (col + coldim <= _BB->coldim ());
+			linbox_check (row + Rowdim <= _BB->rowdim ());
+			linbox_check (col + Coldim <= _BB->coldim ());
 
 		}
 
@@ -219,15 +219,15 @@ namespace LinBox
 		 * @param BB   Black box from which to extract the submatrix
 		 * @param row  First row of the submatrix to extract (1.._BB->rowdim ())
 		 * @param col  First column of the submatrix to extract (1.._BB->coldim ())
-		 * @param rowdim Row dimension
-		 * @param coldim Column dimension
+		 * @param Rowdim Row dimension
+		 * @param Coldim Column dimension
 		 */
 		Submatrix (const Blackbox *BB,
 			   size_t          row,
 			   size_t          col,
-			   size_t          rowdim,
-			   size_t          coldim) :
-			Father_t(BB,row,col,rowdim,coldim)
+			   size_t          Rowdim,
+			   size_t          Coldim) :
+			Father_t(BB,row,col,Rowdim,Coldim)
 		{}
 	};
 
@@ -258,17 +258,17 @@ namespace LinBox
 		 * @param M Pointer to \ref DenseMatrix  of which to construct submatrix
 		 * @param row Starting row
 		 * @param col Starting column
-		 * @param rowdim Row dimension
-		 * @param coldim Column dimension
+		 * @param Rowdim Row dimension
+		 * @param Coldim Column dimension
 		 */
 
-		Submatrix (const DenseMatrix<Field> *M,
+		Submatrix (const DenseMatrix<Field> *Mat,
 			   size_t row,
 			   size_t col,
-			   size_t rowdim,
-			   size_t coldim) :
-			DenseSubmatrix<Element>(const_cast<DenseMatrix<Field>& >(*M), row, col, rowdim, coldim),
-			f(M -> field()), vd(M -> field())
+			   size_t Rowdim,
+			   size_t Coldim) :
+			DenseSubmatrix<Element>(const_cast<DenseMatrix<Field>& >(*Mat), row, col, Rowdim, Coldim),
+			f(Mat -> field()), vd(Mat -> field())
 		{
 		}
 
@@ -276,16 +276,16 @@ namespace LinBox
 		 * @param M reference to \ref DenseMatrix  of which to construct submatrix
 		 * @param row Starting row
 		 * @param col Starting column
-		 * @param rowdim Row dimension
-		 * @param coldim Column dimension
+		 * @param Rowdim Row dimension
+		 * @param Coldim Column dimension
 		 */
-		Submatrix (const DenseMatrix<Field> &M,
+		Submatrix (const DenseMatrix<Field> &Mat,
 			   size_t row,
 			   size_t col,
-			   size_t rowdim,
-			   size_t coldim) :
-			DenseSubmatrix<Element>(const_cast<DenseMatrix<Field>& >(M), row, col, rowdim, coldim),
-			f(M.field()), vd(M.field()) {
+			   size_t Rowdim,
+			   size_t Coldim) :
+			DenseSubmatrix<Element>(const_cast<DenseMatrix<Field>& >(Mat), row, col, Rowdim, Coldim),
+			f(Mat.field()), vd(Mat.field()) {
 			}
 
 		/** Constructor from an existing submatrix and dimensions
@@ -293,15 +293,15 @@ namespace LinBox
 		 *           construct submatrix
 		 * @param row Starting row
 		 * @param col Starting column
-		 * @param rowdim Row dimension
-		 * @param coldim Column dimension
+		 * @param Rowdim Row dimension
+		 * @param Coldim Column dimension
 		 */
 		Submatrix (const Submatrix<DenseMatrix<Field> > *SM,
 			   size_t row,
 			   size_t col,
-			   size_t rowdim,
-			   size_t coldim ) :
-			DenseSubmatrix<Element> (const_cast<Submatrix<DenseMatrix<Field> >&>(*SM), row, col, rowdim, coldim),
+			   size_t Rowdim,
+			   size_t Coldim ) :
+			DenseSubmatrix<Element> (const_cast<Submatrix<DenseMatrix<Field> >&>(*SM), row, col, Rowdim, Coldim),
 			f (SM ->  field()), vd(SM -> field()){
 			}
 
@@ -310,15 +310,15 @@ namespace LinBox
 		 *           construct submatrix
 		 * @param row Starting row
 		 * @param col Starting column
-		 * @param rowdim Row dimension
-		 * @param coldim Column dimension
+		 * @param Rowdim Row dimension
+		 * @param Coldim Column dimension
 		 */
 		Submatrix (const Submatrix<DenseMatrix<Field> >& SM,
 			   size_t row,
 			   size_t col,
-			   size_t rowdim,
-			   size_t coldim ) :
-			DenseSubmatrix<Element> (const_cast<Submatrix<DenseMatrix<Field> >&>(SM), row, col, rowdim, coldim),
+			   size_t Rowdim,
+			   size_t Coldim ) :
+			DenseSubmatrix<Element> (const_cast<Submatrix<DenseMatrix<Field> >&>(SM), row, col, Rowdim, Coldim),
 			f (SM. field()), vd(SM. field()){
 			}
 
@@ -420,20 +420,20 @@ namespace LinBox
 		 * @param BB   Black box from which to extract the submatrix
 		 * @param row  First row of the submatrix to extract (1.._BB_data.rowdim ())
 		 * @param col  First column of the submatrix to extract (1.._BB_data.coldim ())
-		 * @param rowdim Row dimension
-		 * @param coldim Column dimension
+		 * @param Rowdim Row dimension
+		 * @param Coldim Column dimension
 		 */
 		SubmatrixOwner (const Blackbox *BB,
 				size_t          row,
 				size_t          col,
-				size_t          rowdim,
-				size_t          coldim) :
+				size_t          Rowdim,
+				size_t          Coldim) :
 			_BB_data (*BB),
-			_row (row), _col (col), _rowdim (rowdim), _coldim (coldim),
+			_row (row), _col (col), _rowdim (Rowdim), _coldim (Coldim),
 			_z (_BB_data.coldim ()), _y (_BB_data.rowdim ())
 		{
-			linbox_check (row + rowdim <= _BB_data.rowdim ());
-			linbox_check (col + coldim <= _BB_data.coldim ());
+			linbox_check (row + Rowdim <= _BB_data.rowdim ());
+			linbox_check (col + Coldim <= _BB_data.coldim ());
 
 		}
 
