@@ -304,10 +304,11 @@ namespace LinBox
 
 
 					prev_residue_ = EarlySingleCRA<Domain>::residue_;
-					EarlySingleCRA<Domain>::progress(D,e);
+					EarlySingleCRA<Domain>::progress(D,e_i);
 
-					if (prev_residue_ == EarlySingleCRA<Domain>::residue_ )
+					if (prev_residue_ == EarlySingleCRA<Domain>::residue_ ) {
 						EarlySingleCRA<Domain>::occurency_ = EarlySingleCRA<Domain>::occurency_ +  (shelf - prev_shelf);
+					}
 
 
 
