@@ -156,6 +156,10 @@ namespace LinBox
 			DenseMatrixBase<Element> (Mat), _F (F), _MD (F), _AT (*this)
 		{}
 
+		DenseMatrix (const Field &F, const DenseMatrixBase<Element> &M) :
+			DenseMatrixBase<Element> (M), _F (F), _MD (F), _AT (*this)
+		{}
+
 		/// Copies <i>all</i> matrix data.
 		DenseMatrix (const DenseMatrix &Mat) :
 			DenseMatrixBase<Element> (Mat), _F (Mat._F), _MD (Mat._F), _AT (*this)

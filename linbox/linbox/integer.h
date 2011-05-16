@@ -36,7 +36,15 @@
 #ifdef __LINBOX_HAVE_STDINT_H
 #define __STDC_LIMIT_MACROS
 #include <stdint.h>
+#ifndef INT32_MAX
+#error "INT32_MAX is not defined. It should at least be defined in Givaro..."
 #endif
+#endif
+
+#ifndef FFLAFLAS_VERSION
+#define FFLAFLAS_VERSION __LINBOX_FFLAFFLAS_VERSION
+#endif
+
 
 namespace LinBox
 {
@@ -121,6 +129,12 @@ namespace LinBox
  */
 #include <givaro/givconfig.h>
 #include <math.h>
+
+#ifndef GIVARO_VERSION
+#error "Givaro didn't tell us about his version !"
+#endif
+
+
 namespace LinBox
 {
 // Natural logarithm of a

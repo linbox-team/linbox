@@ -778,6 +778,7 @@ namespace LinBox
 		int m,n;
 		char c;
 		file>>m>>n>>c;
+		// std::cout << m << 'x' << n << ':' << c << std::endl;
 		_rows = m; _cols = n;
 
 		Element zero;
@@ -785,13 +786,13 @@ namespace LinBox
 		_rep.resize(_rows * _cols, zero);
 		_ptr= &_rep[0];
 
-		if ((c != 'M') && (c != 'm'))
-			for (p = rawBegin (); p != rawEnd (); ++p)
-			{
+		if ((c != 'M') && (c != 'm')) {
+			for (p = rawBegin (); p != rawEnd (); ++p) {
 				//file.ignore(1);
 				F.read (file, *p);
 			}
 
+		}
 		else { // sparse file format - needs fixing
 			int i, j;
 			while (true)
@@ -800,7 +801,9 @@ namespace LinBox
 				//file.ignore(1);
 				//if (! file) break;
 				if (i+j <= 0) break;
+				// std::cout << i << ',' << j << ':' ;
 				F.read (file, _rep[_cols*(i-1) + j-1]);
+				// std::cout << _rep[_cols*(i-1) + j-1] << std::endl;
 			}
 		}
 

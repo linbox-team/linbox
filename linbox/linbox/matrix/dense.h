@@ -163,6 +163,7 @@ namespace LinBox
 		}
 
 		/** Read the matrix from an input stream.
+		 * The stream is in SMS or DENSE format
 		 * @param file Input stream from which to read
 		 * @param F Field over which to read
 		 */

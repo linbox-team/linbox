@@ -109,10 +109,11 @@ namespace LinBox
 	       	Modular (int32_t value, int32_t exp=1) :
 			FFPACK::Modular<int32_t>(value,exp)
 		      {}
-
+#if (FFLAFLAS_VERSIONW>10400)
 		Modular (long value) :
 			FFPACK::Modular<int32_t>(value)
 		      {}
+#endif
 
 		Modular (unsigned long value) :
 			FFPACK::Modular<int32_t>(value)
