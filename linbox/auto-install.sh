@@ -12,10 +12,10 @@
 # TODO : use an optionnal message in die function.
 # TODO : add options to make like '-j'
 
-STABLE_FFLAS=1.4.0
-STABLE_GIVARO=3.4.1
-GIV_TAR=123
-GIV_MD5=124
+STABLE_FFLAS=1.4.1
+STABLE_GIVARO=3.4.2
+GIV_TAR=125
+GIV_MD5=126
 
 #switches
 STABLE=true

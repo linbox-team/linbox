@@ -19,20 +19,18 @@ AC_DEFUN([AC_DEBUG],
 ]
 )
 
-dnl enable as much debug flag options as possible
-dnl  AC_DEFUN([AC_FULL_DEBUG],
-dnl  [AC_MSG_CHECKING([whether to enable full debugging mode in the library])
-  dnl  AC_ARG_ENABLE(full-debug,
-dnl  [  --enable-full-debug  enable full debugging options in library],
-	  dnl  USE_FULL_DEBUG=$enableval,
-	  dnl  USE_FULL_DEBUG=no)
-  dnl  AC_MSG_RESULT([$USE_FULL_DEBUG])
-  dnl  AM_CONDITIONAL(FULL_DEBUG, [test $USE_FULL_DEBUG = yes])
-  dnl  FULLDBG=$USE_FULL_DEBUG
-  dnl  AC_SUBST(FULLDBG)dnl
-dnl  ]
-dnl  )
-
+AC_DEFUN([AC_PROFILE],
+[AC_MSG_CHECKING([whether to enable profiling everything in the library])
+  AC_ARG_ENABLE(profile,
+[AC_HELP_STRING([--enable-profile], [enable profiling options in library])],
+      USE_PROFILE=$enableval,
+      USE_PROFILE=no)
+  AC_MSG_RESULT([$USE_PROFILE])
+  AM_CONDITIONAL(PROFILE, [test $USE_PROFILE = yes])
+  PROF=$USE_PROFILE
+  AC_SUBST(PROF)dnl
+]
+)
 
 dnl Enable warnings from compiler.
 AC_DEFUN([AC_WARNINGS],

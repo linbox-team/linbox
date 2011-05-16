@@ -26,7 +26,7 @@ AC_SUBST([MKDIR_P])
 AC_LANG([C++])
 
 AC_DEBUG
-# AC_FULL_DEBUG
+AC_PROFILE
 AC_WARNINGS
 
 # CFLAGS=${CFLAGS:-$DEFAULT_CFLAGS}
@@ -55,13 +55,15 @@ DEFAULT_CFLAGS="-pipe"
 WARN_CFLAGS="-Wall"
 
 if test "x$DBG" = "xyes" ; then
-	DEFAULT_CFLAGS="-O0 ${DEFAULT_CFLAGS} -g -pg" #those are CXXFLAGS
+	DEFAULT_CFLAGS="-O0 ${DEFAULT_CFLAGS} -g" #those are CXXFLAGS
 	DEBUG_CFLAGS="${DEBUG_CFLAGS} -DDEBUG -D_LB_DEBUG"
 else
 	DEFAULT_CFLAGS="-O2 ${DEFAULT_CFLAGS} -DNDEBUG -U_LB_DEBUG"
 fi
 
-
+if test "x$PROF" = "xyes" ; then
+	DEFAULT_CFLAGS="${DEFAULT_CFLAGS} -pg"
+fi
 
 if test "x$WARN" = "xyes" ; then
 	# if  test "x${CXX}" = "xicpc" -o "x${CXX}" = "xicc"  ; then
