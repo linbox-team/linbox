@@ -162,7 +162,7 @@ for i in $* ; do
 			"--enable-debug")
 				[[ "$QUOI" =~ y|yes|Y|1 ]] && DEBUG="--enable-debug" || DEBUG=""
 				;;
-		"--enable-check")
+			"--enable-check")
 				[[ "$QUOI" =~ y|yes|Y|1 ]] && CHECK="true" || CHECK="false"
 				;;
 
@@ -402,9 +402,11 @@ GIVARO="--with-givaro=$PREFIX_LOC"
 FFLAFLAS="--with-fflas-ffpack=$PREFIX_LOC"
 
 if [ -x autogen.sh ] ;  then 
-	./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $BLAS $GIVARO $FFLAFLAS $WARNINGS || die
+	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS"
+	./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS || die
 else
-	./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $GIVARO $FFLAFLAS $WARNINGS || die
+	echo "./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS"
+	./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS || die
 fi
 
 echo -e "${BEG}building LinBox..."
