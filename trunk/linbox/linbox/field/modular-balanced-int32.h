@@ -106,7 +106,9 @@ namespace LinBox
 		}
 
 		unsigned long characteristic()const{return FFPACK::ModularBalanced<int32_t>::characteristic();}
+#if (FFLAFLAS_VERSION>10400)
 		unsigned long characteristic(unsigned long&p)const{return FFPACK::ModularBalanced<int32_t>::characteristic(p);}
+#endif
 		unsigned long cardinality ()const{return FFPACK::ModularBalanced<int32_t>::cardinality();}
 		double&convert(double&x,const Element&y)const{return FFPACK::ModularBalanced<int32_t>::convert(x,y);}
 		float&convert(float&x,const Element&y)const{return FFPACK::ModularBalanced<int32_t>::convert(x,y);}

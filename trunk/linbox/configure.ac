@@ -251,7 +251,6 @@ LB_BENCH
 LB_OPT
 LB_DOC
 
-
 if test ! -d ./benchmarks/data  ; then
 	echo "Creating data dir in benchmark" ;
 	mkdir ./benchmarks/data  ;

@@ -413,14 +413,14 @@ namespace LinBox
 			return x;
 		}
 
-		Element &init (Element &x, const int y ) const
+		Element &init (Element &x, const int y =0) const
 		{
 			x = y % ModularBase<Element>::_modulus;
 			if (x < 0) x += ModularBase<Element>::_modulus;
 			return x;
 		}
 
-		Element &init (Element &x, const long int y ) const
+		Element &init (Element &x, const long int y =0) const
 		{
 			x = y % ModularBase<Element>::_modulus;
 			if (x < 0) x += ModularBase<Element>::_modulus;
@@ -437,14 +437,14 @@ namespace LinBox
 		 * @param x field base element to contain output (reference returned).
 		 * @param y integer.
 		 */
-		Element &init (Element &x, const double &y) const
+		Element &init (Element &x, const double &y=0) const
 		{
 			double z = fmod(y, (double)ModularBase<Element>::_modulus);
 			if (z < 0) z += (double) ModularBase<Element>::_modulus;
 			return x = (Element) (z+.5);
 		}
 
-		Element &init (Element &x, const float &y) const
+		Element &init (Element &x, const float &y=0) const
 		{
 			float z = fmod(y, (float)ModularBase<Element>::_modulus);
 			if (z < 0) z += (float) ModularBase<Element>::_modulus;
@@ -1119,28 +1119,28 @@ namespace LinBox
 			return *this;
 		}
 
-		Element &init (Element &x, const integer &y = 0) const
+		Element &init (Element &x, const integer &y ) const
 		{
 			x = abs (y) % integer (ModularBase<Element>::_modulus);
 			if (y < 0) x = ModularBase<Element>::_modulus - x;
 			return x;
 		}
 
-		Element &init (Element &x, const long int &y = 0) const
+		Element &init (Element &x, const long int &y ) const
 		{
 			x = abs (y) % integer (ModularBase<Element>::_modulus);
 			if (y < 0) x = ModularBase<Element>::_modulus - x;
 			return x;
 		}
 
-		Element &init (Element &x, const int &y = 0) const
+		Element &init (Element &x, const int &y ) const
 		{
 			x = abs (y) % integer (ModularBase<Element>::_modulus);
 			if (y < 0) x = ModularBase<Element>::_modulus - x;
 			return x;
 		}
 
-		Element &init (Element &x, const long unsigned int &y = 0) const
+		Element &init (Element &x, const long unsigned int &y ) const
 		{
 			x = Element(y %  (ModularBase<Element>::_modulus));
 			return x;
@@ -1158,6 +1158,12 @@ namespace LinBox
 		{
 			return init(x,double(y));
 		}
+
+		Element &init (Element &x) const
+		{
+			return x = zero ;
+		}
+
 
 		Element &add (Element &x, const Element &y, const Element &z) const
 		{
