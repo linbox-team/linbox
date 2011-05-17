@@ -65,14 +65,16 @@ if test "x$PROF" = "xyes" ; then
 	DEFAULT_CFLAGS="${DEFAULT_CFLAGS} -pg"
 fi
 
-if test "x$WARN" = "xyes" ; then
-	# if  test "x${CXX}" = "xicpc" -o "x${CXX}" = "xicc"  ; then
+if test "x$WARN" = "xyes" -o "x$WARN" = "xfull" ; then
 	if test "x${CCNAM}" = "xicc" ; then
 		WARN_CFLAGS="${WARN_CFLAGS} -Wcheck"
 		# DEBUG_CFLAGS="-fast"
 	else
 		if test "x${CCNAM}" = "xgcc"  ; then
-			WARN_CFLAGS="${WARN_CFLAGS} -Wextra -Wno-unused-parameter -Wuninitialized -Wconversion -Wcast-qual -ansi -pedantic -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Wno-long-long "
+			WARN_CFLAGS="${WARN_CFLAGS} -Wextra -Wno-unused-parameter"
+			if test "x${WARN}" = "xfull" ; then
+				WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Wconversion -Wcast-qual -ansi -pedantic -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Wno-long-long"
+			fi
 		else
 			echo
 			echo "*******************************************************"

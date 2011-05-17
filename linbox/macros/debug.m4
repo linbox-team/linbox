@@ -36,15 +36,17 @@ dnl Enable warnings from compiler.
 AC_DEFUN([AC_WARNINGS],
 [AC_MSG_CHECKING([whether to enable warnings when compiling the library])
   AC_ARG_ENABLE(warnings,
-[AC_HELP_STRING([--enable-warnings],  [enable warings when compiling the library])],
+[AC_HELP_STRING([--enable-warnings=yes|full|no],  [enable warnings when compiling the library.
+If nothing or yes is given, more aggressive compiler warnings are passed to the compiler.
+If full is given, we become paranoïd about warnings and treat them as errors.])],
       USE_WARNINGS=$enableval,
       USE_WARNINGS=no)
   AC_MSG_RESULT([$USE_WARNINGS])
-  AM_CONDITIONAL(WARNINGS, [test $USE_WARNINGS = yes])
+  dnl  AM_CONDITIONAL(WARNINGS, [test $USE_WARNINGS = yes])
   WARN=$USE_WARNINGS
   AC_SUBST(WARN)dnl
-]
-)
+]dnl
+)dnl
 
 AC_DEFUN([AC_COMPILER_NAME],
 [
