@@ -95,6 +95,16 @@ namespace LinBox
 			_rep (m * n), _rows (m), _cols (n), _ptr(&_rep[0])
 		{}
 
+		/** Constructor.
+		 * @param data vector to take data from (such that <code>A[i,j] == data[i*n+j]</code>)
+		 * @param  m  row dimension
+		 * @param  n  column dimension
+		 */
+		DenseMatrixBase (std::vector<Element> & data,
+				 size_t m, size_t n) :
+			_rep (data), _rows (m), _cols (n), _ptr(&_rep[0])
+		{}
+
 		/** Constructor from a matrix stream.
 		 * @param ms matrix stream
 		 */

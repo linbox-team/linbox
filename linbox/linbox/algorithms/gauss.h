@@ -88,8 +88,8 @@ namespace LinBox
 		//@{
 		///
 		template <class Matrix> unsigned long& rankin(unsigned long &rank,
-		Matrix        &A,
-		SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
+							      Matrix        &A,
+							      SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR) const;
 		///
 		template <class Matrix> unsigned long& rankin(unsigned long &rank,
 		Matrix        &A,
