@@ -907,7 +907,7 @@ int main(int argc, char** argv)
 		if (!testCharPoly (F,n,iterations))     pass = false;
 
 	}
-#warning "some tests don't compile or fail"
+#pragma message "#warning some tests don't compile or fail"
 	/* Modular int32_t */
 	{
 		typedef Modular<int32_t> Field;
