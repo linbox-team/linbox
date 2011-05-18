@@ -66,17 +66,17 @@ namespace LinBox
 			  typename Ring::Element& short_col_sqr, const ItMatrix& A)
 	{
 
-		typedef typename Ring::Element Integer;
-		//Integer sqsum;
+		typedef typename Ring::Element Integer_t;
+		//Integer_t sqsum;
 		//size_t m, n, col=0;
 		//n=A.coldim();
 		//m=A.rowdim();
 		R.init(H_col_sqr, 1);
-		Integer zero;
+		Integer_t zero;
 		R.init(zero,0UL);
 
 		typename ItMatrix::ConstRowIterator row= A.rowBegin();
-		std::vector<Integer> tmp(A.coldim(), zero);
+		std::vector<Integer_t> tmp(A.coldim(), zero);
 		for (; row != A.rowEnd(); row++){
 			typename ItMatrix::ConstRow::const_iterator elm= row->begin();
 			for (size_t i=0; elm != row->end(); elm++, ++i)
@@ -133,16 +133,16 @@ namespace LinBox
 			    typename Ring::Element& short_col_sqr, const Blackbox& A)
 	{
 
-		typedef typename Ring::Element Integer;
-		Integer one,zero,sqsum;
+		typedef typename Ring::Element Integer_t;
+		Integer_t one,zero,sqsum;
 		size_t m,n;
 		n=A.coldim();
 		m=A.rowdim();
 		R.init(one,1);
 		R.init(zero,0);
 		R.init(H_col_sqr, 1);
-		typename std::vector<Integer>::const_iterator iter;
-		std::vector<Integer> e(n,zero),tmp(m);
+		typename std::vector<Integer_t>::const_iterator iter;
+		std::vector<Integer_t> e(n,zero),tmp(m);
 
 		for (size_t i=0;i<n;i++){
 			e[i]=one;
@@ -162,16 +162,16 @@ namespace LinBox
 	void BoundBlackbox (const Ring& R, typename Ring::Element& H_col_sqr,
 			    typename Ring::Element& short_col_sqr, const Compose<Matrix1,Matrix2> & A)
 	{
-		typedef typename Ring::Element Integer;
-		Integer one,zero,sqsum;
+		typedef typename Ring::Element Integer_t;
+		Integer_t one,zero,sqsum;
 		size_t m,n;
 		n=A.coldim();
 		m=A.rowdim();
 		R.init(one,1);
 		R.init(zero,0);
 		R.init(H_col_sqr, 1);
-		typename std::vector<Integer>::const_iterator iter;
-		std::vector<Integer> e(n,zero),tmp(m);
+		typename std::vector<Integer_t>::const_iterator iter;
+		std::vector<Integer_t> e(n,zero),tmp(m);
 		for (size_t i=0;i<n;i++){
 			e[i]=one;
 			A.apply(tmp,e);
@@ -189,16 +189,16 @@ namespace LinBox
 	void BoundBlackbox (const Ring& R, typename Ring::Element& H_col_sqr,
 			    typename Ring::Element& short_col_sqr, const Transpose<Matrix> & A)
 	{
-		typedef typename Ring::Element Integer;
-		Integer one,zero,sqsum;
+		typedef typename Ring::Element Integer_t;
+		Integer_t one,zero,sqsum;
 		size_t m,n;
 		n=A.coldim();
 		m=A.rowdim();
 		R.init(one,1);
 		R.init(zero,0);
 		R.init(H_col_sqr, 1);
-		typename std::vector<Integer>::const_iterator iter;
-		std::vector<Integer> e(n,zero),tmp(m);
+		typename std::vector<Integer_t>::const_iterator iter;
+		std::vector<Integer_t> e(n,zero),tmp(m);
 		for (size_t i=0;i<n;i++){
 			e[i]=one;
 			A.applyTranspose(tmp,e);
@@ -224,16 +224,16 @@ namespace LinBox
 	   template < class Ring, class IMatrix>
 	   void BoundBlackbox (const Ring& R, typename Ring::Element& H_col_sqr,
 			       typename Ring::Element& short_col_sqr, const IMatrix& A) {
-		   typedef typename Ring::Element Integer;
-		   Integer one,zero,sqsum;
+		   typedef typename Ring::Element Integer_t;
+		   Integer_t one,zero,sqsum;
 		   size_t m,n;
 		   n=A.coldim();
 		   m=A.rowdim();
 		   R.init(one,1);
 		   R.init(zero,0);
 		   R.init(H_col_sqr, 1);
-		   typename std::vector<Integer>::const_iterator iter;
-		   std::vector<Integer> e(n,zero),tmp(m);
+		   typename std::vector<Integer_t>::const_iterator iter;
+		   std::vector<Integer_t> e(n,zero),tmp(m);
 		   for (size_t i=0;i<n;i++){
 			   e[i]=one;
 			   A.apply(tmp,e);
@@ -258,8 +258,8 @@ namespace LinBox
 	template <class Ring, class ItMatrix> //iterable matrix
 	void ApplyBound(const Ring& R, typename Ring::Element& bound_A, const ItMatrix& A)
 	{
-		typedef typename Ring::Element Integer;
-		Integer possum, negsum, zero;
+		typedef typename Ring::Element Integer_t;
+		Integer_t possum, negsum, zero;
 		R.init(bound_A, 0);
 		R.init(zero, 0);
 
@@ -287,7 +287,7 @@ namespace LinBox
 	class LiftingContainer {
 	public:
 		typedef _Ring Ring;
-		typedef typename Ring::Element Integer;
+		typedef typename Ring::Element Integer_t;
 
 		// return the length of container
 		virtual size_t length() const =0;
@@ -299,7 +299,7 @@ namespace LinBox
 		virtual const Ring& ring() const = 0;
 
 		// return the prime
-		virtual const Integer& prime () const = 0;
+		virtual const Integer_t& prime () const = 0;
 
 		virtual ~LiftingContainer () {}
 
@@ -311,8 +311,8 @@ namespace LinBox
 	public:
 		typedef _IMatrix                  IMatrix;
 		typedef _Ring                        Ring;
-		typedef typename _Ring::Element   Integer;
-		typedef std::vector<Integer>      IVector;
+		typedef typename _Ring::Element   Integer_t;
+		typedef std::vector<Integer_t>      IVector;
 #ifdef RSTIMING
 		mutable Timer ttSetup, tRingApply, tRingOther, ttRingOther, ttRingApply;
 #endif
@@ -321,25 +321,25 @@ namespace LinBox
 
 		const IMatrix&            _A;
 		Ring                      _R;
-		Integer                   _p;
+		Integer_t                   _p;
 		IVector                   _b;
 		VectorDomain<Ring>      _VDR;
 		size_t               _length;
-		Integer            _numbound;
-		Integer            _denbound;
+		Integer_t            _numbound;
+		Integer_t            _denbound;
 		MatrixApplyDomain<Ring,IMatrix>    _MAD;
 		//BlasApply<Ring>          _BA;
 
 
 
 
-		void convertPrime(Integer& e, const integer& p)
+		void convertPrime(Integer_t& e, const integer& p)
 		{
 			_R.init(e,p);
 		}
 
 
-		void convertPrime(Integer& e, const std::vector<integer>& p)
+		void convertPrime(Integer_t& e, const std::vector<integer>& p)
 		{
 			integer tmp=1;
 			for (size_t i=0;i<p.size();++i)
@@ -359,13 +359,15 @@ namespace LinBox
 			ttSetup.start();
 #endif
 			linbox_check(A.rowdim() == b.size());
+#ifdef DEBUG
 			int n,m;
 			n=(int)A.rowdim();
 			m=(int)A.coldim();
 
 			//assert(m == n); //logic may not work otherwise
 			linbox_check( m == n );
-			// initialise the prime as an Integer
+#endif
+			// initialise the prime as an Integer_t
 			//this->_R.init(_p,p);
 			this->convertPrime(_p, p);
 			//std::cout<<"padic base= "<<_p<<std::endl;
@@ -374,15 +376,15 @@ namespace LinBox
 			// initialize res = b
 			_b.resize(b.size());
 			typename Vector1::const_iterator         b_iter    = b.begin();
-			typename std::vector<Integer>::iterator  res_iter  = _b.begin() ;
+			typename std::vector<Integer_t>::iterator  res_iter  = _b.begin() ;
 			for (; b_iter != b.end(); ++res_iter, ++b_iter)
 				this->_R.init(*res_iter, *b_iter);
 
-			Integer had_sq, short_sq;
+			Integer_t had_sq, short_sq;
 			BoundBlackbox(this->_R, had_sq, short_sq, A);
 
-			typename std::vector<Integer>::const_iterator iterb = _b.begin();
-			Integer normb_sq;
+			typename std::vector<Integer_t>::const_iterator iterb = _b.begin();
+			Integer_t normb_sq;
 			this->_R.init(normb_sq, 0);
 			for (;iterb!=_b.end();++iterb)
 				normb_sq += (*iterb)*(*iterb);
@@ -424,7 +426,7 @@ namespace LinBox
 
 		class const_iterator {
 		private:
-			std::vector<Integer>          _res;
+			std::vector<Integer_t>          _res;
 			const LiftingContainerBase    &_lc;
 			size_t                   _position;
 		public:
@@ -477,7 +479,7 @@ namespace LinBox
 
 				// update _res -= v2
 				_lc._VDR.subin (_res, v2);
-				typename std::vector<Integer>::iterator p0;
+				typename std::vector<Integer_t>::iterator p0;
 				// update _res = _res / p
 				int index=0;
 				for ( p0 = _res.begin(); p0 != _res.end(); ++ p0, ++index){
@@ -574,19 +576,19 @@ namespace LinBox
 		}
 
 		// return the prime
-		virtual const Integer& prime () const
+		virtual const Integer_t& prime () const
 		{
 			return _p;
 		}
 
 		// return the bound for the numerator
-		const Integer numbound() const
+		const Integer_t numbound() const
 		{
 			return _numbound;
 		}
 
 		// return the bound for the denominator
-		const Integer denbound() const
+		const Integer_t denbound() const
 		{
 			return _denbound;
 		}
@@ -615,8 +617,8 @@ namespace LinBox
 		typedef _IMatrix                           IMatrix;
 		typedef _FMatrix                           FMatrix;
 		typedef typename Field::Element            Element;
-		typedef typename IMatrix::Element          Integer;
-		typedef std::vector<Integer>               IVector;
+		typedef typename IMatrix::Element          Integer_t;
+		typedef std::vector<Integer_t>               IVector;
 		typedef std::vector<Element>               FVector;
 
 	protected:
@@ -739,8 +741,8 @@ namespace LinBox
 		typedef _IMatrix                                 IMatrix;
 		typedef _FMatrix                                 FMatrix;
 		typedef typename Field::Element                  Element;
-		typedef typename Ring::Element                   Integer;
-		typedef std::vector<Integer>                     IVector;
+		typedef typename Ring::Element                   Integer_t;
+		typedef std::vector<Integer_t>                     IVector;
 		typedef std::vector<Element>                     FVector;
 		typedef _FPolynomial                         FPolynomial;
 		typedef typename FPolynomial::iterator     FPolyIterator;
@@ -925,8 +927,8 @@ namespace LinBox
 		typedef _IMatrix                              	          IMatrix;
 		typedef _FMatrix                              	          FMatrix;
 		typedef typename Field::Element               	          Element;
-		typedef typename Ring::Element                            Integer;
-		typedef std::vector<Integer>                              IVector;
+		typedef typename Ring::Element                            Integer_t;
+		typedef std::vector<Integer_t>                              IVector;
 		typedef std::vector<Element>                              FVector;
 		typedef BlasMatrix<Element>                           Coefficient;
 		typedef BlasMatrix<Element>                                 Block;
@@ -1189,8 +1191,8 @@ namespace LinBox
 		typedef _IMatrix                           IMatrix;
 		typedef _FMatrix                           FMatrix;
 		typedef typename Field::Element            Element;
-		typedef typename IMatrix::Element          Integer;
-		typedef std::vector<Integer>               IVector;
+		typedef typename IMatrix::Element          Integer_t;
+		typedef std::vector<Integer_t>               IVector;
 		typedef std::vector<Element>               FVector;
 		typedef _Block                               Block;
 
@@ -1441,8 +1443,8 @@ namespace LinBox
 		typedef _IMatrix                           IMatrix;
 		typedef _FMatrix                           FMatrix;
 		typedef typename Field::Element            Element;
-		typedef typename IMatrix::Element          Integer;
-		typedef std::vector<Integer>               IVector;
+		typedef typename IMatrix::Element          Integer_t;
+		typedef std::vector<Integer_t>               IVector;
 		typedef std::vector<Element>               FVector;
 
 	protected:

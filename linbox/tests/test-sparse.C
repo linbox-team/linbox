@@ -325,10 +325,10 @@ bool testRandomApply2 (Field &F, const char *text, unsigned int iterations, Vect
 	typename Field::Element sum;
 
 	integer c;
-	long width;
+	// long width;
 
 	F.characteristic (c);
-	width = logp (c, 10) + 1;
+	// width = logp (c, 10) + 1;
 
 	Vector v, w;
 
