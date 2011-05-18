@@ -642,7 +642,7 @@ namespace LinBox
 		int trials = 0, notfr;
 
 		// history sensitive data for optimal reason
-		static const IMatrix* IMP;
+		// static const IMatrix* IMP;
 
 		BlasBlackbox<Field>* FMP = NULL;
 		Field *F=NULL;
@@ -683,7 +683,7 @@ namespace LinBox
 				// Could delete a non allocated matrix -> segfault
 				if (FMP != NULL) delete FMP;
 
-				IMP = &A;
+				// IMP = &A;
 
 				if (F != NULL) delete F;
 
