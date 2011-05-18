@@ -22,6 +22,7 @@
 //#define DEBUG
 
 #include <cassert>
+#include "linbox/field/modular.h"
 #include "linbox/linbox-config.h"
 #include "fflas-ffpack/fflas/fflas.h"
 #include "fflas-ffpack/ffpack/ffpack.h"
@@ -29,6 +30,7 @@
 
 //!@todo !
 //#define __LINBOX_HAVE_INT64
+
 
 #include "linbox/field/modular-balanced-int32.h"
 #include "linbox/field/modular-int32.h"
