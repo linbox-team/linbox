@@ -59,7 +59,6 @@ pkginclude_HEADERS=\
 		lb-vector.h              \
 		lb-blackbox-functor.h    \
 		lb-domain-collection.h   \
-		lb-driver.h              \
 		lb-interface.h           \
 		lb-vector-abstract.h     \
 		lb-vector-type.h         \
