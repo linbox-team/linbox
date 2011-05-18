@@ -246,7 +246,7 @@ namespace LinBox
 	private:
 		static void GCD (int32_t& g, int32_t a, int32_t b) {
 
-			int32_t  u, v, q, r;
+			int32_t  u, v, /*  q,*/ r;
 
 			if (a < 0) {
 				if (a < -LINBOX_MAX_INT) throw PreconditionFailed(__func__,__FILE__,__LINE__,"XGCD: integer overflow");
@@ -262,7 +262,7 @@ namespace LinBox
 			u = a; v = b;
 
 			while (v != 0) {
-				q = u / v;
+				// q = u / v;
 				r = u % v;
 				u = v;
 				v = r;

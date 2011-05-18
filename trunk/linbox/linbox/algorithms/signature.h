@@ -191,7 +191,7 @@ namespace LinBox
 			//std::cout << "Debug begin with input matrix:\n";
 			//M. write (std::cout);
 			typedef typename Matrix::Field Ring;
-			typedef typename Ring::Element Integer;
+			typedef typename Ring::Element Integer_t;
 			typedef Modular<double> Field;
 			typedef Field::Element Element;
 
@@ -210,7 +210,7 @@ namespace LinBox
 			Field::Element* p; Field::Element tmp;
 			EarlyMultipCRA< Field > cra(3UL);
 
-			Integer m = 1;
+			Integer_t m = 1;
 			std::vector<Field::Element> v(n);
 			size_t j = 0;
 			Field K2;
@@ -391,7 +391,7 @@ namespace LinBox
 		{
 
 			typedef typename Matrix::Field Ring;
-			typedef typename Ring::Element Integer;
+			// typedef typename Ring::Element Integer_t;
 			typedef Modular<double> Field;
 			typedef Field::Element Element;
 

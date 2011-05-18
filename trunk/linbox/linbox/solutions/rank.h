@@ -345,11 +345,11 @@ namespace LinBox
 			// Here there is an extra diagonal computation
 			// The probability of success is also divided by two, as
 			// D2_i^2 contains only squares and squares are half the total elements
-			typedef Compose<Compose<Compose<Compose<Diagonal<Field>,Transpose<Blackbox> >, Diagonal<Field> >, Blackbox>, Diagonal<Field> > Blackbox1;
-			Blackbox1 B_i (&B3_i, &D1_i);
+			typedef Compose<Compose<Compose<Compose<Diagonal<Field>,Transpose<Blackbox> >, Diagonal<Field> >, Blackbox>, Diagonal<Field> > Blackbox0;
+			Blackbox0 B_i (&B3_i, &D1_i);
 
-			BlackboxContainerSymmetric<Field, Blackbox1> TF_i (&B_i, F, iter);
-			MasseyDomain<Field, BlackboxContainerSymmetric<Field, Blackbox1> > WD (&TF_i, M.earlyTermThreshold ());
+			BlackboxContainerSymmetric<Field, Blackbox0> TF_i (&B_i, F, iter);
+			MasseyDomain<Field, BlackboxContainerSymmetric<Field, Blackbox0> > WD (&TF_i, M.earlyTermThreshold ());
 
 			std::vector<typename Field::Element> phi;
 			WD.pseudo_minpoly (phi, res);

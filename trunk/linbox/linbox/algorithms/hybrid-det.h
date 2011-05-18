@@ -180,7 +180,7 @@ namespace LinBox
 		//commentator.setReportStream(std::cout);
 		typedef Modular<double> myModular;
 		typedef typename Blackbox::Field Integers;
-		typedef typename Integers::Element Integer;
+		typedef typename Integers::Element Integer_t;
 
 		commentator.start ("Integer Determinant - hybrid version ", "det");
 		size_t myfactor=5;
@@ -188,14 +188,14 @@ namespace LinBox
 
 		//double a = 0.0;//0.28;//0.0013//if time(lif)/time(10lu) < a * log(lif) then calculate bonus
 
-		Integer lif = 1;
-		Integer bonus = 1;
-		Integer beta = 1;
+		Integer_t lif = 1;
+		Integer_t bonus = 1;
+		Integer_t beta = 1;
 		d=1;
 
 		double p_size = 26-(int)ceil(log((double)A.rowdim())*0.7213475205);
 
-		RandomPrimeIterator genprime( (Integer)p_size );
+		RandomPrimeIterator genprime( (Integer_t)p_size );
 		//cout << "prime size: " << p_size << "\n";
 		EarlySingleCRA<myModular> cra(4UL);
 		IntegerModularDetReduced<Blackbox,MyMethod> iteration(A, M, beta,myfactor);
@@ -209,7 +209,7 @@ namespace LinBox
 		}
 		else {}
 #endif
-		Integer res;
+		Integer_t res;
 
 #ifdef _LB_H_DET_TIMING
 		Timer BT;
@@ -321,7 +321,7 @@ namespace LinBox
 
 		//RandomPrime genprime2( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
 		EarlySingleCRA< Modular<double> > cra2(4UL);
-		Integer k = 1;
+		Integer_t k = 1;
 
 		early_counter = 0;
 		while ( early_counter < myfactor && !cra2.terminated() ) {
@@ -342,7 +342,7 @@ namespace LinBox
 		}
 		else  if (0/* time2 < a*log2(lif)*time1/p_size*/) {
 			typename Vector<Integers>:: Dense r_num2 (A. coldim());
-			Integer lif2=1;
+			Integer_t lif2=1;
 			LIF.lastInvariantFactor1(lif2,r_num2,A);
 			LIF.bonus(bonus,lif, lif2, r_num1,r_num2);
 
@@ -436,7 +436,7 @@ namespace LinBox
 		//        << iteration.iterations2() << " )\n";
 		d = k*beta;
 
-		Integer tmp;
+		Integer_t tmp;
 
 #ifdef _LB_H_DET_TIMING
 		commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
