@@ -69,5 +69,5 @@ ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DES
 		pass = false;
 	// We're going to allow failed tests here because the floating-point
 	// approximation tends to screw things up anyway
-	return 0;
+	return !pass;
 }
