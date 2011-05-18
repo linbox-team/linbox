@@ -36,10 +36,10 @@ docs_dev :
 
 
 install-doc :
-	mkdir $(docdir)
-	cp -r linbox-html $(docdir)/linbox-html
-	cp -r linbox-dev-html $(docdir)/linbox-dev-html
-	cp linbox.html $(docdir)/linbox.html
+	mkdir -p $(DESTDIR)/$(docdir)
+	cp -rp linbox-html $(DESTDIR)/$(docdir)/linbox-html
+	cp -rp linbox-dev-html $(DESTDIR)/$(docdir)/linbox-dev-html
+	cp -p linbox.html $(DESTDIR)/$(docdir)/linbox.html
 
 EXTRA_DIST=             \
     linbox.html         \
