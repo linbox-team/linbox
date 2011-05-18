@@ -27,19 +27,25 @@
  * @test no doc
  */
 
+#include "linbox/linbox-config.h"
 
 
 #include <iostream>
 #include <fstream>
+#include "linbox/field/modular.h" /* WHY ?? */
+/*   otherwise the compiler says :
+ *   /usr/bin/ld: test-optimization.o: undefined reference to symbol 'dtrmm_'
+ *   /usr/bin/ld: note: 'dtrmm_' is defined in DSO  /usr/lib64/libblas.so.3gf so try adding it to the linker command line
+ */
 #include <linbox/config-blas.h>
-#include <linbox/linbox-config.h>
-#include <linbox/field/modular-double.h>
 #include <fflas-ffpack/fflas/fflas.h>
 #include <linbox/util/timer.h>
+#include "linbox/util/commentator.h"
 
 #include "test-common.h"
 
 using namespace LinBox;
+
 int main (int argc, char ** argv)
 {
 	size_t n=300, nmax=1000, prec=256;
