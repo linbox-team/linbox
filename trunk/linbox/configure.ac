@@ -25,9 +25,13 @@ AC_SUBST([MKDIR_P])
 
 AC_LANG([C++])
 
+echo "-----------------------------------------------"
+
 AC_DEBUG
 AC_PROFILE
 AC_WARNINGS
+
+echo "-----------------------------------------------"
 
 # CFLAGS=${CFLAGS:-$DEFAULT_CFLAGS}
 # CXXFLAGS=${CXXFLAGS:-$DEFAULT_CXXFLAGS}
@@ -100,6 +104,7 @@ LT_PREREQ([2.2])
 LT_INIT
 
 
+echo "-----------------------------------------------"
 
 
 # Machine characteristics
@@ -183,12 +188,14 @@ AC_DEFINE_UNQUOTED(INT16, $LINBOX_INT16, Canonical 16-bit data type)
 AC_DEFINE_UNQUOTED(INT32, $LINBOX_INT32, Canonical 32-bit data type)
 AC_DEFINE_UNQUOTED(INT64, $LINBOX_INT64, Canonical 64-bit data type)
 
+echo "-----------------------------------------------"
 # Feature checks
 LB_MISC
 LB_DRIVER
 
 AC_LANG_CPLUSPLUS
 
+echo "-----------------------------------------------"
 
 LB_CHECK_GMP(,,[
 echo '*******************************************************************************'
@@ -268,6 +275,7 @@ fi
 CXXFLAGS="${GMP_CFLAGS} ${CXXFLAGS}"
 AC_SUBST(CXXFLAGS)
 
+echo "-----------------------------------------------"
 
 AC_CONFIG_FILES([
 Makefile
