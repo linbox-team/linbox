@@ -51,6 +51,7 @@ static bool testIdentity (Field &F, long n, int iterations)
 	typedef DenseMatrix <Field> Blackbox;
 
 	commentator.start ("Testing identity apply", "testIdentity", iterations);
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	bool ret = true;
 	bool iter_passed = true;
@@ -78,7 +79,6 @@ static bool testIdentity (Field &F, long n, int iterations)
 		for (j = 0; j < n; j++)
 			r.random (v[j]);
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector: ";
 		printVector<Field> (F, report, v);
 
@@ -112,7 +112,7 @@ int main (int argc, char **argv)
 	static size_t n = 10;
 	static integer q = 101;
 	static int iterations = 2; // was 100
-	static int N = 1;
+	//static int N = 1;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
@@ -130,6 +130,7 @@ int main (int argc, char **argv)
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 
 
@@ -152,55 +153,55 @@ int main (int argc, char **argv)
 					check = bmit.state();
 	}
 	for(list<DenseMatrix<Field> >::iterator it = bmit->begin(); it != bmit->end(); it++)
-					(*it).write();
+					(*it).write(report);
 	if(check.IsSequenceExceeded())
-					cout << "Sequence Exceeded" << endl;
+					report << "Sequence Exceeded" << endl;
 	bmit++;
 	check = bmit.state();
 	if(check.IsSequenceExceeded())
-					cout << "Sequence Exceeded" << endl;
+					report << "Sequence Exceeded" << endl;
 	for(list<DenseMatrix<Field> >::iterator it = bmit->begin(); it != bmit->end(); it++)
-					(*it).write();
+					(*it).write(report);
 	MD.add(S2,D,D);
 	seq.push_back(S2);
 	bmit++;
 	check = bmit.state();
 	if(check.IsSequenceExceeded())
-					cout << "Sequence Exceeded" << endl;
+					report << "Sequence Exceeded" << endl;
 	for(list<DenseMatrix<Field> >::iterator it = bmit->begin(); it != bmit->end(); it++)
-					(*it).write();
+					(*it).write(report);
 	MD.addin(S2,D);
 	seq.push_back(S2);
 	bmit++;
 	check = bmit.state();
 	if(check.IsSequenceExceeded())
-					cout << "Sequence Exceeded" << endl;
+					report << "Sequence Exceeded" << endl;
 	for(list<DenseMatrix<Field> >::iterator it = bmit->begin(); it != bmit->end(); it++)
-					(*it).write();
+					(*it).write(report);
 	if(check.IsGeneratorFound())
-					cout << "Generator Found" << endl;
-	cout << "mu = " << bmit.get_mu() << endl;
-	cout << "sigma = " << bmit.get_sigma() << endl;
-	cout << "beta = " << bmit.get_beta() << endl;
+					report << "Generator Found" << endl;
+	report << "mu = " << bmit.get_mu() << endl;
+	report << "sigma = " << bmit.get_sigma() << endl;
+	report << "beta = " << bmit.get_beta() << endl;
 	BM_Seq<Field>::BM_iterator::TerminationState check2 = bmit2.state();
 	while(!check2.IsGeneratorFound() && !check2.IsSequenceExceeded()){
 					++bmit2;
 					check2 = bmit2.state();
 	}
 	if(bmit==bmit2)
-					cout << "Iterators are equal" << endl;
+					report << "Iterators are equal" << endl;
 	if(bmit2==seq.BM_end())
-					cout << "bmit2 is equal to end" << endl;
+					report << "bmit2 is equal to end" << endl;
 	for(list<DenseMatrix<Field> >::iterator it = bmit2->begin(); it != bmit2->end(); it++)
-					(*it).write();
+					(*it).write(report);
 	BM_Seq<Field>::BM_iterator bmit3 = seq.BM_begin();
 	bmit3 = bmit;
 	if(bmit==bmit3)
-					cout << "Iterators are equal" << endl;
+					report << "Iterators are equal" << endl;
 	vector<DenseMatrix<Field> >gen(bmit.GetGenerator());
 	int d = bmit.get_mu();
 	for(int j = 0; j <= d; j++)
-					gen[j].write();
+					gen[j].write(report);
 
 	commentator.stop("dense matrix black box test suite");
 	return pass ? 0 : -1;
