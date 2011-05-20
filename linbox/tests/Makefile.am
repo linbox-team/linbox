@@ -108,6 +108,7 @@ NONCOMPLIANT_TESTS =                   \
 
 
 DUBIOUS_TESTS =                 \
+	test-bmseq		\
 		test-zo
 #  test-quad-matrix
 
@@ -307,6 +308,10 @@ test_submatrix_SOURCES =                \
 test_scalar_matrix_SOURCES =            \
         test-scalar-matrix.C            \
         test-generic.h                  \
+        test-common.h
+
+test_bmseq_SOURCES =            \
+        test-bmseq.C            \
         test-common.h
 
 test_butterfly_SOURCES =                \

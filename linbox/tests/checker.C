@@ -96,6 +96,7 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-bitonic-sort", counter, flag);
 	build_n_run("test-blas-domain", counter, flag);
 	build_n_run("test-block-ring", counter, flag);
+	build_n_run("test-bmseq", counter, flag);
 	build_n_run("test-butterfly", counter, flag);
 	build_n_run("test-charpoly", counter, flag);//, "intermittent inf loop, bb or cp responsible?");
 	build_n_run("test-commentator", counter, flag);
