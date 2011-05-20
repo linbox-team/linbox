@@ -87,8 +87,8 @@ namespace LinBox {
 				seq.clear();
 				for(typename std::list<value_type>::const_iterator it = S.seq.begin(); it != S.seq.end(); it++)
 								seq.push_back(*it);
-				return *this;
 			}
+			return *this;
 		}
 
 		Field& field(){ return F; }
@@ -172,8 +172,8 @@ namespace LinBox {
 						TerminationState & operator=(const TerminationState & t){
 							if(this != &t){
 								(*this).state = t.state;
-								return *this;
 							}
+							return *this;
 						}
 						bool IsGeneratorUnconfirmed() { return state==GeneratorUnconfirmed; }
 						bool IsGeneratorFound() {return state==GeneratorFound; }
@@ -245,14 +245,11 @@ namespace LinBox {
 						(*this).sigma = it.sigma;
 						(*this).beta = it.beta;
 						(*this)._state = it._state;
-						std::cout << "clearing generator" << std::endl;
 						gen.clear();
-						std::cout << "generator cleared" << std::endl;
 						for(typename std::list<matrix_type>::const_iterator git = it.gen.begin(); git != it.gen.end(); git++)
 							seq.push_back(*git);
-						std::cout << "generator copied" << std::endl;
-						return (*this);
 					}
+					return (*this);
 				}
 
 				bool operator==(const BM_Seq<Field>::BM_iterator& it){
