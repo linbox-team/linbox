@@ -45,7 +45,7 @@ using namespace std;
  */
 
 template <class Field>
-static bool testIdentity (Field &F, long n, int iterations) 
+static bool testIdentity (Field &F, long n, int iterations)
 {
 	typedef typename Vector<Field>::Dense Vector;
 	typedef DenseMatrix <Field> Blackbox;
@@ -118,7 +118,7 @@ int main (int argc, char **argv)
 		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
 		{ 'i', "-i I", "Perform each test for I iterations.",   TYPE_INT,     &iterations },
-		{ '\0' }
+		END_OF_ARGUMENTS
 	};
 
 	typedef Modular<uint32_t> Field;
