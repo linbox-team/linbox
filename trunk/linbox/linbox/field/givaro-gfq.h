@@ -188,6 +188,13 @@ namespace LinBox
 		int32_t characteristic() const
 		{return static_cast<int32_t>(::Givaro::GFqDom<int32_t>::characteristic());}
 
+#if (GIVARO_VERSION<30403)
+		unsigned long characteristic(unsigned long & c) const
+		{return c = static_cast<int32_t>(::Givaro::GFqDom<int32_t>::characteristic());}
+#else
+		unsigned long characteristic(unsigned long & c) const
+		{return Givaro::GFqDom<int32_t>::characteristic(c);}
+#endif
 
 		/** Cardinality.
 		 * Return integer representing cardinality of the domain.

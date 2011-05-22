@@ -147,6 +147,22 @@ namespace LinBox
 			::Givaro::Extension<GivaroField<BaseField> >(F) {
 			}
 
+#if (GIVARO_VERSION<30403)
+		long unsigned int & characteristic(long unsigned int & c) const
+		{
+			return  c = (long unsigned)Givaro::Extension<GivaroField<BaseField> >::characteristic() ;
+		}
+#else
+		long unsigned int & characteristic(long unsigned int & c) const
+		{
+			return  Givaro::Extension<GivaroField<BaseField> >::characteristic(c) ;
+		}
+#endif
+		Integer & characteristic(Integer & c) const
+		{
+			return  Givaro::Extension<GivaroField<BaseField> >::characteristic(c) ;
+		}
+
 	}; // class GivaroExtension
 
 
