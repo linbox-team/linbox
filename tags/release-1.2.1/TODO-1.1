@@ -1,0 +1,56 @@
+1) g++-4 compatibility
+---> OK, JGD 21.12.2006
+
+2) full BLAS compatibility with documentations (at least examples of use with ATLAS, GOTO, MAC BLAS)
+---> Goto BLAS checked, Pascal.
+---> MAC blas ?
+---> lapack ?
+---> 2b) wrappers for clapack_dgetrf et clapack_dgetri
+	4 possible solutions:
+		a) remove hybrid rational solver 
+		b) keep it but it works only with ATLAS (thus correct test-smith-form using #ifdef LINBOX_HAVE_ATLAS)
+		c) Add a  --with-lapack option which must find dgetrf AND dgetri in a classical lapack (we thus provide clapack_dgetri and clapack_dgetrf
+		   within config-blas.h) or which finds clapack_dgetri AND clapack_dgetrf (e.g. in ATLAS).
+		d) For this to work directly with Goto: we provide dgetri using dgetrf and dtrtri and dtrsm of Goto. 
+---> OK, JGD 13.01.2007
+---> there remains to implement a dgetri for GotoBLAS in order to enable Zhendong's numerical solver
+
+3) gmp++ must be totally independent of Linbox and Givaro, add in LinBox and Givaro files to handle differences
+---> OK, JGD 21.12.2006
+
+4) Install documentation with simple examples
+
+5) Data in linbox examples
+
+5b) One example for each solution
+
+6) move complicated and large coded solutions to algorithms directory
+
+7) add #else, at least, throwing LinboxError exception to every #ifdef __LINBOX_HAVE_???
+
+8) read/write matrices and vectors efficiently in a coherent manner for formats
+
+9) document matrices and vectors formats (links to web tutorial, provide data examples)
+
+10) uniformly distributed random integers ! (in checks)
+---> OK
+
+11) add irreducibility test in added constructor of Givaro GFq
+
+12) Maple interface and LinBox drivers
+---> OK, 18.01.2007, Pascal.
+
+13) check valence solutions
+
+14) check generic LU ?
+14b) Uniformize different eliminations (generic LU, sparse elim, dense etc.)
+
+15) check blackbox rank when using extension fields
+
+NEW CODE (Algorithms, Solutions, Checks must be provided plus exceptions for non-handled cases)
+16) sigma base, polynomial matrix multiplication, sparse rational solver, block Hankel/Toeplitz blackbox
+16b) Parallel rank
+17) Smith form
+
+18) hybrid determinant
+---> OK, Anna 10.01.2007

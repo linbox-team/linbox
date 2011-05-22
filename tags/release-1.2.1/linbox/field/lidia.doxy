@@ -1,0 +1,10 @@
+// Copyright (C) 2010 Brice Boyer, part of LinBox, GNU LGPL, see COPYING
+
+/*! @ingroup field
+@defgroup LiDIA LiDIA
+
+@brief NO DOC
+
+*/
+
+// vim:syntax=doxygen
