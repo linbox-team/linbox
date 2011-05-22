@@ -88,7 +88,11 @@ namespace LinBox
 
 		// Access to the modulus, characteristic, size, exponent
 		UTT residu() const
-		{ integer c; BaseField::characteristic(c); return UTT(c); }
+		{
+			integer c;
+			BaseField::characteristic(c);
+			return UTT(c);
+		}
 		UTT characteristic() const  { integer c; BaseField::characteristic(c); return UTT(c); }
 		integer& characteristic(integer& i) const  { return BaseField::characteristic(i); }
 		UTT cardinality() const  { integer c; BaseField::cardinality(c); return UTT(c); }
