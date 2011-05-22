@@ -38,9 +38,9 @@ EXTRA=""
 EXTRA_VAR=""
 IML="--with-iml"
 IML_VAR=""
-SAGE="--with-sage"
+SAGE="--enable-sage"
 SAGE_VAR=""
-DRIV="--with-drivers"
+DRIV="--enable-drivers"
 DRIV_VAR=""
 
 
