@@ -198,7 +198,6 @@ TESTS =                               \
         $(USE_ATLAS_TESTS)
 
 
-CLEANFILES = $(TESTS)
 
 EXTRA_PROGRAMS = \
         $(BASIC_TESTS)                \
@@ -618,6 +617,7 @@ fullcheck: checker
 checker: checker.C
 
 CLEANFILES= checker               \
+			$(TESTS)              \
 			$(BASIC_TESTS)        \
 			$(FAILING_TESTS)      \
 			$(NONCOMPLIANT_TESTS) \
