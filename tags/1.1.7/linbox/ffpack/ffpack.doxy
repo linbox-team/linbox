@@ -1,5 +1,0 @@
-/** \defgroup ffpack linbox/ffpack
-
-\brief Class FFPACK provides functions using fflas much as Lapack uses BLAS.
-
-*/
