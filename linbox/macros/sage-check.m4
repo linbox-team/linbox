@@ -14,18 +14,26 @@ AC_MSG_RESULT(yes)
 sage_interface="yes"
 
 if test "x$HAVE_NTL" = "xyes" ; then
-dnl  AC_CHECK_TOOL(OBJDUMP, objdump, false)
-AC_MSG_CHECKING([whether NTL was built with -fPIC])
-res=yes;
-$OBJDUMP --reloc $NTL_HOME/lib/libntl.a | $EGREP '(GOT|PLT|JU?MP_SLOT)' >/dev/null || res=no
-if test "x$res" = "xno" ; then
-	AC_MSG_RESULT(no)
-	echo
-	echo "You must have NTL compiled with -fPIC for Sage interface  "
-    exit 1
-else
-	AC_MSG_RESULT(yes)
-fi
+	dnl  AC_CHECK_TOOL(OBJDUMP, objdump, false)
+	AC_MSG_CHECKING([whether NTL was built with -fPIC])
+	res=yes;
+	if test -f "$NTL_HOME/lib/libntl.a" ; then
+		$OBJDUMP --reloc $NTL_HOME/lib/libntl.a | $EGREP '(GOT|PLT|JU?MP_SLOT)' >/dev/null || res=no
+	else if  test -f "$NTL_HOME/lib/libntl.so" ; then
+			$OBJDUMP -R $NTL_HOME/lib/libntl.so | $EGREP '(GOT|PLT|JU?MP_SLOT)' >/dev/null || res=no
+		else
+			AC_MSG_RESULT(no, libntl not found !)
+		fi
+	fi
+
+	if test "x$res" = "xno" ; then
+		AC_MSG_RESULT(no)
+		echo
+		echo "You must have NTL compiled with -fPIC for Sage interface  "
+		exit 1
+	else
+		AC_MSG_RESULT(yes)
+	fi
 fi
 
 ],[
