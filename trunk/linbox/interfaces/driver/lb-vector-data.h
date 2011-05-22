@@ -48,7 +48,8 @@ public:
 	VectorSpecFunctor(const Functor &f, void *p) : fct(f), ptr(p) {}
 
 	template<class Domain, class Result>
-	void  operator() (Result& res, Domain *d) const {
+	void  operator() (Result& res, Domain *d) const
+	{
 		fct(res, static_cast<Vector<typename Domain::Element, Alloc<typename Domain::Element> >*> (ptr));
 	}
 };
@@ -111,7 +112,8 @@ private:
 class CopyVectorFunctor {
 public:
 	template<class Vector>
-	void operator()(void *&res, Vector *V) const {
+	void operator()(void *&res, Vector *V) const
+	{
 		res= new Vector(*V);
 	}
 };
@@ -128,16 +130,18 @@ public:
 	RebindVectorFunctor(void *&p) : ptr(p) {}
 
 	template<class Domain>
-	void operator()(const DomainKey &key, Domain *D) const {
+	void operator()(const DomainKey &key, Domain *D) const
+	{
 		RebindVectorFunctor fct(ptr);
 		DomainFunction::call(*D, key, fct);
 	}
 
 
 	template<class DomainSource, class DomainTarget>
-	void operator()(DomainSource &res, DomainTarget *D) const {
+	void operator()(DomainSource &res, DomainTarget *D) const
+	{
 		Vector<typename DomainSource::Element,Alloc<typename DomainSource::Element> > *v_source= static_cast<Vector<typename DomainSource::Element,Alloc<typename DomainSource::Element> > * >  (ptr);
-	Vector<typename DomainTarget::Element,Alloc<typename DomainTarget::Element> > *v_target= new Vector<typename DomainTarget::Element,Alloc<typename DomainTarget::Element> >(v_source->size());
+		Vector<typename DomainTarget::Element,Alloc<typename DomainTarget::Element> > *v_target= new Vector<typename DomainTarget::Element,Alloc<typename DomainTarget::Element> >(v_source->size());
 
 		LinBox::Hom<DomainSource, DomainTarget> hom(res, *D);
 		for (size_t i=0;i<v_source->size();++i)
@@ -159,30 +163,37 @@ protected:
 	DomainKey     key;
 	const char* _info;
 public:
-	VectorEnvelope(void* p, const DomainKey &k, const char* info) : ptr(p), key(k, true), _info(info) {}
+	VectorEnvelope(void* p, const DomainKey &k, const char* Info) :
+		ptr(p), key(k, true), _info(Info)
+	{}
 
 	~VectorEnvelope() {}
 
 	LINBOX_VISITABLE();
 
 	template<class Functor, class Result>
-	void  launch (Result &res, const Functor &fct) const {
+	void  launch (Result &res, const Functor &fct) const
+	{
 		VectorSpecFunctor<Vector, Functor> vs(fct, ptr);
 		DomainFunction::call(res, key, vs);
 	}
 
-	VectorAbstract* clone() const {
+	VectorAbstract* clone() const
+	{
 		CopyVectorFunctor Fct;
 		void *v;
 		launch(v, Fct);
 		return new VectorEnvelope<Vector>(v, key, _info);
 	}
 
-	void * getPtr() const { return ptr;}
+	void * getPtr() const
+	{ return ptr;}
 
-	const DomainKey& getDomainKey() const {return key;}
+	const DomainKey& getDomainKey() const
+	{return key;}
 
-	const char* info() const {
+	const char* info() const
+	{
 		std::string msg= "[ LinBox Vector (storage = ";
 		msg+= std::string(_info);
 		msg+= std::string(", domain = [LinBox Domain (type = ");
@@ -193,7 +204,8 @@ public:
 		return msg.c_str();
 	}
 
-	void rebind(const DomainKey &k) {
+	void rebind(const DomainKey &k)
+	{
 		RebindVectorFunctor<Vector> Fct(ptr);
 		DomainFunction::call(k, key, Fct);
 		key = k;
@@ -214,7 +226,8 @@ public:
 	CreateVectorFunctor( size_t &n) : _dim(n) {}
 
 	template<class Domain>
-	void operator()(void *&res, Domain *D) const {
+	void operator()(void *&res, Domain *D) const
+	{
 		typename Domain::Element zero;
 		D->init(zero, 0UL);
 		res = new Vector<typename Domain::Element, Alloc<typename Domain::Element> >(_dim, zero);
@@ -228,7 +241,8 @@ public:
 	CreateVectorFromStreamFunctor(std::istream &i) : in(i) {}
 
 	template<class Domain>
-	void operator()(void *&res, Domain *D) const {
+	void operator()(void *&res, Domain *D) const
+	{
 		size_t n;
 		LinBox::integer tmp;
 		in>>n;

@@ -53,7 +53,8 @@ public:
 	BlackboxSpecFunctor(const Functor &f, void *p) : fct(f), ptr(p) {}
 
 	template<class Domain, class Result>
-	void  operator()(Result &res, Domain *d) const{
+	void  operator()(Result &res, Domain *d) const
+	{
 		Blackbox<Domain> * b= static_cast<Blackbox<Domain>*> (ptr);
 		fct(res, b);
 	}
@@ -117,7 +118,8 @@ private:
 class CopyBlackboxFunctor {
 public:
 	template<class Blackbox>
-	void operator()(void *&res, Blackbox *B) const {
+	void operator()(void *&res, Blackbox *B) const
+	{
 		res= new Blackbox(static_cast<const Blackbox&>(*B));
 	}
 };
@@ -134,16 +136,18 @@ public:
 	RebindBlackboxFunctor(void *&p) : ptr(p) {}
 
 	template<class Domain>
-	void operator()(const DomainKey &key, Domain *D) const {
+	void operator()(const DomainKey &key, Domain *D) const
+	{
 		RebindBlackboxFunctor fct(ptr);
 		DomainFunction::call(*D, key, fct);
 	}
 
 
 	template<class DomainSource, class DomainTarget>
-	void operator()(DomainSource &res, DomainTarget *D) const {
+	void operator()(DomainSource &res, DomainTarget *D) const
+	{
 		Blackbox<DomainSource> *B_source= static_cast<Blackbox<DomainSource> * >  (ptr);
-		Blackbox<DomainTarget> *B_target;
+		Blackbox<DomainTarget> *B_target = NULL; /*  was not init't */
 		typename Blackbox<DomainSource>::template rebind<DomainTarget>()(*B_target, *B_source, *D);
 		delete B_source;
 		ptr = B_target;
@@ -162,30 +166,39 @@ protected:
 	const char* _info;
 public:
 
-	BlackboxEnvelope(void *p, const DomainKey &k, const char *info) : ptr(p), key(k, true), _info(info) {}
+	BlackboxEnvelope(void *p, const DomainKey &k, const char *Info) :
+		ptr(p), key(k, true), _info(Info)
+	{}
 
 	~BlackboxEnvelope(){}
 
-	BlackboxAbstract* clone() const {
+	BlackboxAbstract* clone() const
+	{
 		CopyBlackboxFunctor Fct;
 		void *b;
 		launch(b, Fct);
 		return new BlackboxEnvelope<Blackbox>(b, key, _info);
 	}
 
-	void * getPtr() const { return ptr;}
+	void * getPtr() const
+	{ return ptr;}
 
-	virtual const DomainKey& getDomainKey() const {return key;}
+	virtual const DomainKey& getDomainKey() const
+	{
+		return key;
+	}
 
 	LINBOX_VISITABLE();
 
 	template<class Functor, class Result>
-	void  launch (Result &res, const Functor &fct) const {
+	void  launch (Result &res, const Functor &fct) const
+	{
 		BlackboxSpecFunctor<Blackbox, Functor> bbs(fct, ptr);
 		DomainFunction::call(res, key, bbs);
 	}
 
-	const char* info() const {
+	const char* info() const
+	{
 		std::string msg= "[ LinBox Blackbox (storage = ";
 		msg+= std::string(_info);
 		msg+= std::string(", domain = [LinBox Domain (type = ");
@@ -196,7 +209,8 @@ public:
 		return msg.c_str();
 	}
 
-	void rebind(const DomainKey &k) {
+	void rebind(const DomainKey &k)
+	{
 		RebindBlackboxFunctor<Blackbox> Fct(ptr);
 		DomainFunction::call(k, key, Fct);
 		key = k;
@@ -219,7 +233,8 @@ public:
 	CreateBlackboxFunctor(size_t &m, size_t &n) : _row(m), _col(n) {}
 
 	template<class Domain>
-	void operator()(void *&res, Domain *D) const {
+	void operator()(void *&res, Domain *D) const
+	{
 		res = new Blackbox<Domain>(*D, _row, _col);
 	}
 };
@@ -231,7 +246,8 @@ public:
 	CreateBlackboxFromStreamFunctor(std::istream &i) : in(i) {}
 
 	template<class Domain>
-	void operator()(void *&res, Domain *D) const {
+	void operator()(void *&res, Domain *D) const
+	{
 		LinBox::MatrixStream<Domain> ms(*D, in);
 		res = new Blackbox<Domain>(ms);
 	}

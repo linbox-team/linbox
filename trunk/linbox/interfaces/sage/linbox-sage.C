@@ -93,7 +93,8 @@ unsigned long int linbox_modn_dense_echelonize (Element modulus, Element* matrix
 		if (i<r)
 			*(matrix + i*(ncols+1)) = 1;
 	}
-	FFPACK::applyP (F, FFLAS::FflasRight, FFLAS::FflasNoTrans, nrows, 0,r, matrix, ncols, Q);
+	FFPACK::applyP (F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
+			nrows, 0,(int)r, matrix, ncols, Q);
 	delete[] P;
 	delete[] Q;
 	return r;
@@ -101,12 +102,12 @@ unsigned long int linbox_modn_dense_echelonize (Element modulus, Element* matrix
 
 EXTERN unsigned long int linbox_modn_dense_echelonize_double (double modulus, double*matrix, size_t nrows, size_t ncols)
 {
-	return linbox_modn_dense_echelonize<double>(modulus, matrix, nrows, ncols);
+	return (unsigned long) linbox_modn_dense_echelonize<double>(modulus, matrix, nrows, ncols);
 }
 
 EXTERN unsigned long int linbox_modn_dense_echelonize_float (float modulus, float * matrix, size_t nrows, size_t ncols)
 {
-	return linbox_modn_dense_echelonize<float>(modulus,matrix,nrows,ncols);
+	return (unsigned long) linbox_modn_dense_echelonize<float>(modulus,matrix,nrows,ncols);
 }
 
 template<class Element>
@@ -196,10 +197,10 @@ Polynomial & mulpoly(const Field& F, Polynomial &res, const Polynomial & P1, con
 	size_t i,j;
 	// Warning: assumes that res is allocated to the size of the product
 	//res.resize(P1.size()+P2.size()-1);
-	for (i=0;i<res.size();i++)
+	for (i=0;i<res.size();++i)
 		F.assign(res[i], 0.0);
-	for ( i=0;i<P1.size();i++)
-		for ( j=0;j<P2.size();j++)
+	for ( i=0;i<P1.size();++i)
+		for ( j=0;j<P2.size();++j)
 			F.axpyin(res[i+j],P1[i],P2[j]);
 	return res;
 
@@ -370,8 +371,8 @@ DenseMatrix<Integers> new_matrix(mpz_t** matrix, size_t nrows, size_t ncols)
 	DenseMatrix<Integers> A ( ZZ, nrows, ncols);
 
 	size_t i, j;
-	for (i=0; i < nrows; i++) {
-		for (j=0; j < ncols; j++) {
+	for (i=0; i < nrows; ++i) {
+		for (j=0; j < ncols; ++j) {
 			Integers::Element t;
 			mpz_set(spy.get_mpz(t), matrix[i][j]);
 			A.setEntry(i, j, t);
@@ -382,12 +383,12 @@ DenseMatrix<Integers> new_matrix(mpz_t** matrix, size_t nrows, size_t ncols)
 
 DenseMatrix<Integers> new_matrix_integers(mpz_t** matrix, size_t nrows, size_t ncols)
 {
-	Integers ZZ;
-	DenseMatrix<Integers> A ( ZZ,nrows, ncols);
+	Integers Z;
+	DenseMatrix<Integers> A ( Z,nrows, ncols);
 
 	size_t i, j;
-	for (i=0; i < nrows; i++) {
-		for (j=0; j < ncols; j++) {
+	for (i=0; i < nrows; ++i) {
+		for (j=0; j < ncols; ++j) {
 			Integers::Element t;
 			mpz_set(spy.get_mpz(t), matrix[i][j]);
 			A.setEntry(i, j, t);
@@ -400,8 +401,8 @@ template<class Element>
 void set_matrix(mpz_t** matrix, BlasMatrix<Element>& A, size_t nrows, size_t ncols)
 {
 	size_t i, j;
-	for (i=0; i < nrows; i++) {
-		for (j=0; j < ncols; j++) {
+	for (i=0; i < nrows; ++i) {
+		for (j=0; j < ncols; ++j) {
 			mpz_set(matrix[i][j], spy.get_mpz(A.getEntry(i,j)));
 		}
 	}
@@ -424,8 +425,8 @@ void linbox_integer_dense_minpoly_hacked(mpz_t* *mp, size_t* degree, size_t n, m
 
 	size_t i, j;
 	Integers::Element t;
-	for (i=0; i < n; i++) {
-		for (j=0; j < n; j++) {
+	for (i=0; i < n; ++i) {
+		for (j=0; j < n; ++j) {
 			mpz_set(spy.get_mpz(t), matrix[i][j]);
 			A.setEntry(i, j, t);
 		}
@@ -456,9 +457,9 @@ void linbox_integer_dense_minpoly_hacked(mpz_t* *mp, size_t* degree, size_t n, m
 			/* x was not a factor of the charpoly after all. */
 			(*mp) = new mpz_t[m_A.size()-1];
 			*degree = m_A.size() - 2;
-			for (size_t i=0; i <= *degree; i++) {
-				mpz_init((*mp)[i]);
-				mpz_set((*mp)[i], spy.get_mpz(m_A[i+1]));
+			for (size_t k=0; k <= *degree; ++k) {
+				mpz_init((*mp)[k]);
+				mpz_set((*mp)[k], spy.get_mpz(m_A[k+1]));
 			}
 			return;
 		}
@@ -466,9 +467,9 @@ void linbox_integer_dense_minpoly_hacked(mpz_t* *mp, size_t* degree, size_t n, m
 
 	(*mp) = new mpz_t[m_A.size()];
 	*degree = m_A.size() - 1;
-	for (size_t i=0; i <= *degree; i++) {
-		mpz_init((*mp)[i]);
-		mpz_set((*mp)[i], spy.get_mpz(m_A[i]));
+	for (size_t k=0; k <= *degree; ++k) {
+		mpz_init((*mp)[k]);
+		mpz_set((*mp)[k], spy.get_mpz(m_A[k]));
 	}
 
 }
@@ -484,7 +485,7 @@ void linbox_integer_dense_charpoly(mpz_t* *mp, size_t* degree, size_t n, mpz_t**
 
 	(*mp) = new mpz_t[m_A.size()];
 	*degree = m_A.size() - 1;
-	for (size_t i=0; i <= *degree; i++) {
+	for (size_t i=0; i <= *degree; ++i) {
 		mpz_init((*mp)[i]);
 		mpz_set((*mp)[i], spy.get_mpz(m_A[i]));
 	}
@@ -502,7 +503,7 @@ void linbox_integer_dense_minpoly(mpz_t* *mp, size_t* degree, size_t n, mpz_t** 
 
 	(*mp) = new mpz_t[m_A.size()];
 	*degree = m_A.size() - 1;
-	for (size_t i=0; i <= *degree; i++) {
+	for (size_t i=0; i <= *degree; ++i) {
 		mpz_init((*mp)[i]);
 		mpz_set((*mp)[i], spy.get_mpz(m_A[i]));
 	}
@@ -518,7 +519,7 @@ int linbox_integer_dense_matrix_matrix_multiply(mpz_t** ans, mpz_t **A, mpz_t **
 						size_t A_nr, size_t A_nc, size_t B_nr, size_t B_nc)
 {
 	typedef PID_integer Integers;
-	Integers ZZ;
+	Integers Z;
 
 	BlasMatrix<Integers::Element> AA(new_matrix_integers(A, A_nr, A_nc));
 	BlasMatrix<Integers::Element> BB(new_matrix_integers(B, B_nr, B_nc));
@@ -526,7 +527,7 @@ int linbox_integer_dense_matrix_matrix_multiply(mpz_t** ans, mpz_t **A, mpz_t **
 		return -1;   // error
 	BlasMatrix<Integers::Element> CC( A_nr, B_nc);
 
-	MatrixDomain<Integers> MD(ZZ);
+	MatrixDomain<Integers> MD(Z);
 
 	MD.mul(CC, AA, BB);
 
@@ -559,15 +560,15 @@ void linbox_integer_dense_det(mpz_t ans, mpz_t** matrix, size_t nrows,
 #ifdef __LINBOX_HAVE_NTL
 DenseMatrix<NTL_ZZ> new_matrix_integer_dense_ntl(mpz_t** matrix, size_t nrows, size_t ncols)
 {
-	NTL_ZZ ZZ;
-	DenseMatrix<NTL_ZZ> A (ZZ,nrows, ncols);
+	NTL_ZZ Z;
+	DenseMatrix<NTL_ZZ> A (Z,nrows, ncols);
 	size_t i, j;
-	for (i=0; i < nrows; i++) {
-		for (j=0; j < ncols; j++) {
+	for (i=0; i < nrows; ++i) {
+		for (j=0; j < ncols; ++j) {
 			NTL_ZZ::Element t;
 			PID_integer::Element s;
 			mpz_set(spy.get_mpz(s), matrix[i][j]);
-			ZZ.init(t, s);
+			Z.init(t, s);
 			A.setEntry(i, j, t);
 		}
 	}
@@ -579,17 +580,17 @@ void linbox_integer_dense_double_det (mpz_t  ans1, mpz_t ans2, mpz_t **a, mpz_t 
 				      size_t n, int proof)
 {
 
-	PID_integer ZZ;
-	BlasBlackbox <PID_integer> A (ZZ, n+1, n);
+	PID_integer Z;
+	BlasBlackbox <PID_integer> A (Z, n+1, n);
 	size_t i, j;
-	for (i=0; i < n-1; i++) {
-		for (j=0; j < n; j++) {
+	for (i=0; i < n-1; ++i) {
+		for (j=0; j < n; ++j) {
 			PID_integer::Element t;
 			mpz_set(spy.get_mpz(t), a[i][j]);
 			A.setEntry(i, j, t);
 		}
 	}
-	for (j=0; j < n; j++) {
+	for (j=0; j < n; ++j) {
 		PID_integer::Element t;
 		mpz_set(spy.get_mpz(t), b[0][j]);
 		A.setEntry (n-1, j, t);
@@ -615,7 +616,7 @@ void linbox_integer_dense_smithform(mpz_t **v,
 	SmithFormAdaptive::smithForm(w, M);
 
 	(*v) = new mpz_t[ncols];
-	for (size_t i=0; i < ncols; i++) {
+	for (size_t i=0; i < ncols; ++i) {
 		mpz_init((*v)[i]);
 		mpz_set((*v)[i], spy.get_mpz(w[i]));
 	}
@@ -649,8 +650,8 @@ static SparseMatrixGFp linbox_new_modn_sparse_matrix(mod_int modulus, size_t num
 
 	struct c_vector_modint_linbox *A = static_cast<struct c_vector_modint_linbox *>(rows);
 
-	for(size_t i = 0; i < numrows; i++) {
-		for(size_t j = 0; j < A[i].num_nonzero; j++) {
+	for(size_t i = 0; i < numrows; ++i) {
+		for(size_t j = 0; j < A[i].num_nonzero; ++j) {
 			M.setEntry(i, A[i].positions[j], A[i].entries[j]);
 		}
 	}
@@ -668,7 +669,7 @@ static std::vector<Element> linbox_new_modn_sparse_vector(mod_int modulus, size_
 	}
 
 	struct c_vector_modint_linbox *vec = static_cast<struct c_vector_modint_linbox*>(_vec);
-	for(size_t i = 0; i < vec->num_nonzero; i++) {
+	for(size_t i = 0; i < vec->num_nonzero; ++i) {
 		A[vec->positions[i]] = vec->entries[i];
 	}
 	return A;
@@ -695,7 +696,7 @@ unsigned long linbox_modn_sparse_matrix_rank(mod_int modulus,
 	//*pivots = (int*)calloc(sizeof(int), dom.pivots.size());
 
 	//   int j=0;
-	//   for(std::vector<int>::const_iterator i= dom.pivots.begin(); i!= dom.pivots.end(); i++, j++){
+	//   for(std::vector<int>::const_iterator i= dom.pivots.begin(); i!= dom.pivots.end(); ++i, ++j){
 	//     (*pivots)[j] = *i;
 	//   }
 
