@@ -18,17 +18,32 @@ GIV_TAR=125
 GIV_MD5=126
 
 #switches
-STABLE=true
+STABLE_VAR="true"
 DEBUG=""
+DEBUG_VAR=""
 WARNINGS=""
+WARNINGS_VAR=""
 OPTIM="--enable-optimization"
-CHECK=false
+OPTIM_VAR=""
+CHECK_VAR=""
 #options
 PREFIX_LOC="/tmp"
+PREFIX_VAR=""
 PREFIX="--prefix=$PREFIX_LOC"
 BLAS=""
-NTL=""
+BLAS_VAR=""
+NTL="--with-ntl"
+NTL_VAR=""
 EXTRA=""
+EXTRA_VAR=""
+IML="--with-iml"
+IML_VAR=""
+SAGE="--with-sage"
+SAGE_VAR=""
+DRIV="--with-drivers"
+DRIV_VAR=""
+
+
 
 DONE="\033[0;36m done !\033[0m"
 BEG="\033[1;32m * \033[0m"
@@ -39,10 +54,10 @@ BEG="\033[1;32m * \033[0m"
 
 die() {
 	echo -ne "\n\033[1;31m * \033[0mfailed" ;   
-	if [ -n $1 ] ; then
+	if [[ -n $1 ]] ; then
 		echo " ($1)"
 	else 
-		echo ""
+		echo "."
 	fi
 	exit -1 ;  
 }
@@ -61,24 +76,40 @@ help() {
 	echo
 	echo " * usage :"
 	echo
-	echo " --stable              : install latest stable versions or latest svn versions."
-	echo "                          Default : yes."
+	echo " --stable=[yes,no]     : install latest stable versions or latest svn versions."
+	echo "                         Default : yes, even if switch ommitted. No argument means yes"
+
 	echo " --prefix=MY/PATH      : install all libraries under MY/PATH."
 	echo "                         Default : /tmp/"
+	echo
+	echo " >> Libraries to seach for <<" 
+	echo 
 	echo " --with-gmp=GMP/PATH   : tell where gmp is."
-	echo "                         Default : /usr, /usr/local"
-	echo " --with-blas=BLAS/PATH : same for Blas installation."
-	echo " --with-ntl=NTL/PATH   : same for NTL."
+	echo "                         Default : /usr, /usr/local. No argument is Default"
+	echo " --with-blas=BLAS/PATH : same as GMP for BLAS. (will check anyway)"
+	echo " --with-ntl=NTL/PATH   : same as GMP for NTL. (default)"
+	echo " --with-iml=IML/PATH   : same as GMP for IML. (default)"
 	echo " --extra-flags=\"\"      : give extra compiler flags."
 	echo "                         Default : empty"
+	echo
+	echo " >> for the next switches, nothing, Y, y, yes or 1 after \"=\"   <<"
+	echo " >> means enabled. Anything else or omission means disabled    <<"
+	echo
 	echo " --enable-debug        : build in debugging mode."
-	echo "                         Default : no."
+	echo "                         Default : disabled."
 	echo " --enable-check        : run make check."
-	echo "                         Default : no."
+	echo "                         Default : disabled."
 	echo " --enable-warnings     : build with extra compile warnings."
-	echo "                         Default : no."
+	echo "                         Default : disabled. May be \'full\' "
 	echo " --enable-optimization : build with compile-time optimization."
-	echo "                         Default : yes."
+	echo "                         Default : enabled."
+	echo " --enable-sage         : build with sage support."
+	echo "                         Default : enabled."
+	echo " --enable-drivers      : build with drivers support."
+	echo "                         Default : enabled."
+	echo 
+	echo " >> calling helllp <<"
+	echo 
 	echo " --help, -h, -?        : print help and exit."
 }
 
@@ -89,43 +120,59 @@ help() {
 for i in $* ; do
 	case "$i" in
 		# switches
-	"--help"|"-h"|"-?") 
+		"--help"|"-h"|"-?") 
 		help
 		exit 0
 		;;
-	"--no-stable")
-		STABLE=false;
-		;;
 	"--stable")
-		#default
+		if [ "x$STABLE_VAR" = "xfalse" ] ; then echo "stable or not ?";              help ; exit -1 ;  fi
+		STABLE_VAR=true;
 		;;
 	"--enable-debug")
-		DEBUG=$i;
-		;;
-	"--no-enable-debug")
-		DEBUG="";
+		if [ "x$DEBUG_VAR" = "xfalse" ]  ; then  echo "enable-debug or not ?" ;        help ; exit -1 ; fi
+		DEBUG="$i";
+		DEBUG_VAR="true";
 		;;
 	"--enable-check")
-		CHECK=true;
-		;;
-	"--no-enable-check")
-		CHECK=false;
+		if [ "x$CHECK_VAR" = "xfalse" ] ; then   echo "enable-check or not ?";        help ; exit -1; fi
+		CHECK_VAR="true";
 		;;
 	"--enable-warnings")
-		WARNINGS=$i;
-		;;
-	"--no-enable-warnings")
-		WARNINGS="";
+		if [ "x$WARNINGS_VAR" = "xfalse" ] ; then   echo "enable-warnings or not ?";     help ; exit -1; fi
+		WARNINGS="$i";
+		WARNINGS_VAR="true";
 		;;
 	"--enable-optimization")
-		OPTIM=$i;
-		;;
-	"--no-enable-optimization")
-		OPTIM="";
+		if	[ "x$OPTIM_VAR" = "xfalse" ] ; then   echo "enable-optimization or not ?"; help ; exit -1; fi
+		OPTIM="$i";
+		OPTIM_VAR="true";
 		;;
 	"--with-ntl")
-		NTL=$i
+		if	[ "x$NTL_VAR" = "xfalse" ] ; then   echo "with-ntl or not ?";            help ; exit -1; fi
+		NTL="$i";
+		NTL_VAR="true";
 		;;
+	"--with-gmp")
+		if	[ "x$GMP_VAR" = "xfalse" ] ; then   echo "with-gmp or not ?";            help ; exit -1; fi
+		GMP="$i"
+		GMP_VAR="true"
+		;;
+	"--with-iml")
+		if	[ "x$IML_VAR" = "xfalse" ] ; then   echo "with-iml or not ?";            help ; exit -1; fi
+		IML="$i "
+		IML_VAR="true"
+		;;
+	"--enable-sage")
+		if	[ "x$SAGE_VAR" = "xfalse" ] ; then  echo "enable-sage or not ?";          help ; exit -1; fi
+		SAGE="$i"
+		SAGE_VAR="true"
+		;;
+	"--enable-drivers")
+		if	[ "x$DRIV_VAR" = "xfalse" ] ; then  echo "enable-drivers or not ?" ;      help ; exit -1; fi
+		DRIV="$i"
+		DRIV_VAR="true"
+		;;
+
 	*)
 		if [[ ! "$i" =~ --.*=.+ ]] ; then
 			echo "bad switch : $i"
@@ -137,35 +184,110 @@ for i in $* ; do
 		QUOI="`echo $i | cut -d'=' -f2`"
 		# echo "$QUI = $QUOI"
 		case "$QUI" in
+			"--stable")
+				OK=2
+				[[ "$QUOI" = "yes" ]]  &&  OK=1  
+				[[ "$QUOI" = "no"  ]]  &&  OK=0   
+				if [[ "$OK" = "2" ]] ; then 
+					echo "stable=[yes/no] !" ; help ; exit -1 ; 
+				fi
+				if	[ "x$STABLE_VAR" = "xfalse" -a "$OK" = "1" ] ; then  echo "stable or not ?";          help ; exit -1; fi
+				if	[ "x$STABLE_VAR" = "xtrue" -a "$OK" = "0" ] ; then  echo "stable or not ?";          help ; exit -1; fi
+				[[ "OK" = "1" ]] && STABLE_VAR="true" || STABLE_VAR="false"
+
+				;;
 			"--prefix")
+				if		[ "x$PREFIX_VAR" = "xtrue" ] ; then  echo "prefix already set ?" ;      help ; exit -1; fi
 				PREFIX=$i
 				PREFIX_LOC=$QUOI
+				PREFIX_VAR="true"
 				;;
 			"--extra-flags")
+				if	[ "x$EXTRA_VAR" = "xtrue" ] ; then  echo "extra-flags already set ?" ;      help ; exit -1; fi
 				EXTRA=$QUOI
+				EXTRA_VAR="true"
 				;;
 			"--with-gmp")
-				GMP=$i
+				if		[ "x$GMP_VAR" = "xtrue" ] ; then  echo "GMP path already set ?" ;      help ; exit -1; fi
+				GMP="$i"
+				GMP_VAR="true"
 				;;
 			"--with-blas")
-				BLAS=$i
+				if	[ "x$BLAS_VAR" = "xtrue" ] ; then  echo "GMP path already set ?" ;      help ; exit -1; fi
+				BLAS="$i"
+				BLAS_VAR="true"
 				;;
 			"--with-ntl")
-				NTL=$i
+				if		[ "x$NTL_VAR" = "xtrue" ] ; then  echo "NTL path already set ?" ;      help ; exit -1; fi
+				NTL="$i"
+				NTL_VAR="true"
+				;;
+			"--with-iml")
+				if	[ "x$IML_VAR" = "xtrue" ] ; then  echo "IML path already set ?" ;      help ; exit -1; fi
+				IML="$i"
+				IML_VAR="true"
 				;;
 			"--enable-optimization")
-				[[ "$QUOI" =~ y|yes|Y|1 ]] && OPTIM="--enable-optimization" || OPTIM=""
+				[[ "$QUOI" =~ y|yes|Y|1 ]] && OK=1 || OK=0
+				if		[ "x$OPTIM_VAR" = "xtrue"  -a "OK" = "0" ] ; then  echo "optim or not optim ?" ;      help ; exit -1; fi
+				if		[ "x$OPTIM_VAR" = "xfalse" -a "OK" = "1" ] ; then  echo "optim or not optim ?" ;      help ; exit -1; fi
+				if	[[ "x$OK" = "x1" ]] ; then  
+					OPTIM=$QUI ; OPTIM_VAR="true" ;
+				else
+					OPTIM_VAR="false" ;
+				fi
 				;;
 			"--enable-warnings")
-				[[ "$QUOI" =~ y|yes|Y|1 ]] && WARNINGS="--enable-warnings" || WARNINGS=""
+				[[ "$QUOI" =~ y|yes|Y|1|full ]] && OK=1 || OK=0
+				if [ "x$WARNING_VAR" = "xtrue"  -a "OK" = "0"  ] ; then  echo "warning or not warning ?" ;      help ; exit -1; fi
+				if [ "x$WARNING_VAR" = "xfalse" -a "OK" = "1"  ] ; then  echo "warning or not warning ?" ;      help ; exit -1; fi
+				if [[ "x$OK" = "x1" ]] ; then
+					WARNINGS=$QUI ; WARNING_VAR="true"
+				else
+					WARNING_VAR="false" 
+				fi
+				[[ "x$QUOI" = "xfull" ]] && WARNINGS=$i
 				;;
 			"--enable-debug")
-				[[ "$QUOI" =~ y|yes|Y|1 ]] && DEBUG="--enable-debug" || DEBUG=""
+				[[ "$QUOI" =~ y|yes|Y|1 ]] && OK=1 || OK=0
+				if		[ "x$DEBUG_VAR" = "xtrue"  -a "OK" = "0"  ] ; then  echo "debug or not debug ?" ;      help ; exit -1; fi
+				if		[ "x$DEBUG_VAR" = "xfalse" -a "OK" = "1"  ] ; then  echo "debug or not debug ?" ;      help ; exit -1; fi
+				if		[[ "x$OK" = "x1" ]] ; then  
+					DEBUG=$QUI ; DEBUG_VAR="true"
+				else
+					DEBUG_VAR="false" 
+				fi
 				;;
 			"--enable-check")
-				[[ "$QUOI" =~ y|yes|Y|1 ]] && CHECK="true" || CHECK="false"
+				[[ "$QUOI" =~ y|yes|Y|1 ]] && OK=1 || OK=0
+				if		[ "x$CHECK_VAR" = "xtrue"  -a "OK" = "0"  ] ; then  echo "check or not check ?" ;      help ; exit -1; fi
+				if		[ "x$CHECK_VAR" = "xfalse" -a "OK" = "1"  ] ; then  echo "check or not check ?" ;      help ; exit -1; fi
+				if		[[ "x$OK" = "x1" ]] ; then 
+					CHECK=$QUI ; CHECK_VAR="true" 
+				else 
+					CHECK_VAR="false"
+				fi
 				;;
-
+			"--enable-sage")
+				[[ "$QUOI" =~ y|yes|Y|1 ]] && OK=1 || OK=0
+				if		[ "x$OPTIM_VAR" = "xtrue"  -a "OK" = "0"  ] ; then  echo "sage or not sage ?" ;      help ; exit -1; fi
+				if		[ "x$OPTIM_VAR" = "xfalse" -a "OK" = "1"  ] ; then  echo "sage or not sage ?" ;      help ; exit -1; fi
+				if		[[ "x$OK" = "x1" ]] ; then 
+					OPTIM=$QUI ; OPTIM_VAR="true" 
+				else
+					OPTIM_VAR="false" 
+				fi
+				;;
+			"--enable-drivers")
+				[[ "$QUOI" =~ y|yes|Y|1 ]] && OK=1 || OK=0
+				if		[ "x$OPTIM_VAR" = "xtrue"  -a "OK" = "0"  ] ; then  echo "drivers or not drivers ?" ;      help ; exit -1; fi
+				if		[ "x$OPTIM_VAR" = "xfalse" -a "OK" = "1"  ] ; then  echo "drivers or not drivers ?" ;      help ; exit -1; fi
+				if		[[ "x$OK" = "x1" ]] ; then 
+					OPTIM=$QUI ; OPTIM_VAR="true"
+				else
+					OPTIM_VAR="false" 
+				fi
+				;;
 			*)
 				echo "unkown swith option $i" ;
 				help ;
@@ -204,10 +326,10 @@ cd build ;
 ### Fflas-ffpack ###
 
 echo -en "${BEG}fecthing Fflas-Ffpack..."
-if [ "$STABLE" = "true" ]; then
+if [ "$STABLE_VAR" = "true" ]; then
 	if [ -f fflas-ffpack-$STABLE_FFLAS.tar.gz ] ; then
 		echo "already there"
-	   	echo -ne "${BEG}fetching md5sum" ; 
+		echo -ne "${BEG}fetching md5sum" ; 
 		[ -f fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum ] && rm fflas-ffpack-${STABLE_FFLAS}.tar.gz.md5sum ;
 		wget http://linalg.org/fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum >/dev/null 2>&1 || die
 		[ -f fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum ] || die
@@ -217,7 +339,7 @@ if [ "$STABLE" = "true" ]; then
 	else
 		wget http://linalg.org/fflas-ffpack-$STABLE_FFLAS.tar.gz  >/dev/null 2>&1 || die
 		[ -f fflas-ffpack-$STABLE_FFLAS.tar.gz ] || die
-	   	echo -ne "${BEG}fetching md5sum" ; 
+		echo -ne "${BEG}fetching md5sum" ; 
 		wget http://linalg.org/fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum >/dev/null 2>&1 || die
 		cool
 		echo -ne "${BEG}"
@@ -232,10 +354,10 @@ fi
 ### Givaro ###
 
 echo -en "${BEG}fecthing Givaro..."
-if [ "$STABLE" = "true" ]; then
+if [ "$STABLE_VAR" = "true" ]; then
 	if [ -f givaro-$STABLE_GIVARO.tar.gz ] ; then
 		echo "already there"
-	   	echo -ne "${BEG}fetching md5sum" ; 
+		echo -ne "${BEG}fetching md5sum" ; 
 		[ -f givaro-$STABLE_GIVARO.tar.gz.md5sum ] && rm givaro-${STABLE_GIVARO}.tar.gz.md5sum ;
 		wget --no-check-certificate https://forge.imag.fr/frs/download.php/$GIV_MD5/givaro-$STABLE_GIVARO.tar.gz.md5sum >/dev/null 2>&1 || die
 		[ -f givaro-$STABLE_GIVARO.tar.gz.md5sum ] || die
@@ -245,7 +367,7 @@ if [ "$STABLE" = "true" ]; then
 	else
 		wget --no-check-certificate https://forge.imag.fr/frs/download.php/$GIV_TAR/givaro-$STABLE_GIVARO.tar.gz >/dev/null 2>&1 || die
 		[ -f givaro-$STABLE_GIVARO.tar.gz ] || die
-	   	echo -ne "${BEG}fetching md5sum" ; 
+		echo -ne "${BEG}fetching md5sum" ; 
 		wget --no-check-certificate https://forge.imag.fr/frs/download.php/$GIV_MD5/givaro-$STABLE_GIVARO.tar.gz.md5sum >/dev/null 2>&1 || die
 		cool
 		echo -ne "${BEG}"
@@ -265,7 +387,7 @@ fi
 ### Fflas-ffpack ###
 
 OK=0
-if [ "$STABLE" = "true" ]; then
+if [ "$STABLE_VAR" = "true" ]; then
 	echo -en "${BEG}extracting Fflas-Ffpack..."
 	tar xzf fflas-ffpack-$STABLE_FFLAS.tar.gz  && OK=1
 	[ "$OK" = "1" ] &&  cool   || die
@@ -274,7 +396,7 @@ fi
 ### Givaro ###
 
 OK=0
-if [ "$STABLE" = "true" ]; then
+if [ "$STABLE_VAR" = "true" ]; then
 	echo -en "${BEG}extracting Givaro..."
 	tar xzf givaro-$STABLE_GIVARO.tar.gz  && OK=1
 	[ "$OK" = "1" ] &&  cool   || die 
@@ -284,7 +406,7 @@ fi
 #  install fflas-ffpack  #
 ##########################
 
-if [ "$STABLE" = "true" ]; then
+if [ "$STABLE_VAR" = "true" ]; then
 	cd fflas-ffpack-$STABLE_FFLAS/ || die
 else
 	cd fflas-ffpack/ || die
@@ -301,7 +423,7 @@ fi
 
 echo -e "${BEG}configuring Fflas-Ffpack..."
 
-if [ "$STABLE" = "true" ]; then
+if [ "$STABLE_VAR" = "true" ]; then
 	echo "./configure  $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS"
 	./configure  $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS || die
 else
@@ -317,7 +439,7 @@ else
 	make || die
 fi
 
-if [ "$CHECK" = "true" ] ; then
+if [ "$CHECK_VAR" = "true" ] ; then
 	echo -e "${BEG}checking Fflas-Ffpack..."
 	make check || die
 fi
@@ -334,7 +456,7 @@ cd ..
 #  install Givaro  #
 ####################
 
-if [ "$STABLE" = "true" ]; then
+if [ "$STABLE_VAR" = "true" ]; then
 	cd givaro-$STABLE_GIVARO || die
 else
 	cd trunk/ || die
@@ -350,7 +472,7 @@ fi
 
 echo -e "${BEG}configuring Givaro..."
 
-if [ "$STABLE" = "true" ]; then
+if [ "$STABLE_VAR" = "true" ]; then
 	echo "./configure  $PREFIX $DEBUG $OPTIM $GMP $WARNINGS"
 	./configure  $PREFIX $DEBUG $OPTIM $GMP $WARNINGS || die
 else
@@ -367,7 +489,7 @@ else
 	make || die
 fi
 
-if [ "$CHECK" = "true" ] ; then
+if [ "$CHECK_VAR" = "true" ] ; then
 	echo -e "${BEG}checking Fflas-Ffpack..."
 	make check || die
 fi
@@ -402,11 +524,11 @@ GIVARO="--with-givaro=$PREFIX_LOC"
 FFLAFLAS="--with-fflas-ffpack=$PREFIX_LOC"
 
 if [ -x autogen.sh ] ;  then 
-	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS"
-	./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS || die
+	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS $IML $SAGE $DRIV"
+	./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS $IML $SAGE $DRIV || die
 else
-	echo "./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS"
-	./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS || die
+	echo "./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS $IML $SAGE $DRIV"
+	./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS  $IML $SAGE $DRIV || die
 fi
 
 echo -e "${BEG}building LinBox..."
@@ -418,7 +540,7 @@ else
 	make || die
 fi
 
-if [ "$CHECK" = "true" ] ; then
+if [ "$CHECK_VAR" = "true" ] ; then
 	echo -e "${BEG}checking LinBox..."
 	make check || die
 fi
