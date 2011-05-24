@@ -257,6 +257,16 @@ namespace LinBox
 			return _M->getEntry (x, i + _beg_row, j + _beg_col);
 		}
 
+		Element & operator[] (size_t i, size_t j)
+		{
+			return refEntry(i,j);
+		}
+
+		const Element & operator[] (size_t i, size_t j) const
+		{
+			return getEntry(i,j);
+		}
+
 		/// iterator to the begining of a row
 		RowIterator rowBegin ();
 		/// iterator to the end of a row

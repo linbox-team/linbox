@@ -38,7 +38,8 @@ namespace LinBox
 			    typename Field::Element& d2,
 			    typename Field::Element* A, const size_t lda,
 			    typename Field::Element* b, const size_t incb,
-			    typename Field::Element* c, const size_t incc){
+			    typename Field::Element* c, const size_t incc)
+	{
 
 		size_t* P = new size_t[N];
 		size_t* Qt = new size_t[N-1];

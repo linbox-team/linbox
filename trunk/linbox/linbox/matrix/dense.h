@@ -241,6 +241,16 @@ namespace LinBox
 			x = _rep[i * _cols + j]; return x;
 		}
 
+		Element & operator[] (size_t i, size_t j)
+		{
+			return refEntry(i,j);
+		}
+
+		const Element & operator[] (size_t i, size_t j) const
+		{
+			return getEntry(i,j);
+		}
+
 		/** @name Column of rows iterator
 		 * \brief
 		 * The column of rows iterator traverses the rows of the
