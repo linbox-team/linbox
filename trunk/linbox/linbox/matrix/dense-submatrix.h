@@ -257,6 +257,7 @@ namespace LinBox
 			return _M->getEntry (x, i + _beg_row, j + _beg_col);
 		}
 
+#if 0 /*  craquage */
 		Element & operator[] (size_t i, size_t j)
 		{
 			return refEntry(i,j);
@@ -266,6 +267,7 @@ namespace LinBox
 		{
 			return getEntry(i,j);
 		}
+#endif
 
 		/// iterator to the begining of a row
 		RowIterator rowBegin ();
