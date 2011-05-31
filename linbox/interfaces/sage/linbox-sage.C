@@ -518,16 +518,16 @@ void linbox_integer_dense_delete_array(mpz_t* f)
 int linbox_integer_dense_matrix_matrix_multiply(mpz_t** ans, mpz_t **A, mpz_t **B,
 						size_t A_nr, size_t A_nc, size_t B_nr, size_t B_nc)
 {
-	typedef PID_integer Integers;
-	Integers Z;
+	typedef PID_integer Integerz;
+	Integerz Z;
 
-	BlasMatrix<Integers::Element> AA(new_matrix_integers(A, A_nr, A_nc));
-	BlasMatrix<Integers::Element> BB(new_matrix_integers(B, B_nr, B_nc));
+	BlasMatrix<Integerz::Element> AA(new_matrix_integers(A, A_nr, A_nc));
+	BlasMatrix<Integerz::Element> BB(new_matrix_integers(B, B_nr, B_nc));
 	if (A_nc != B_nr)
 		return -1;   // error
-	BlasMatrix<Integers::Element> CC( A_nr, B_nc);
+	BlasMatrix<Integerz::Element> CC( A_nr, B_nc);
 
-	MatrixDomain<Integers> MD(Z);
+	MatrixDomain<Integerz> MD(Z);
 
 	MD.mul(CC, AA, BB);
 
@@ -639,8 +639,8 @@ struct c_vector_modint_linbox {
 
 typedef unsigned int mod_int;
 typedef Modular<unsigned int> GFp;
-typedef GFp::Element  Element;
-typedef std::vector <std::pair <size_t, Element> > SparseSeqVectorGFp;
+typedef GFp::Element  GFpElement;
+typedef std::vector <std::pair <size_t, GFpElement> > SparseSeqVectorGFp;
 typedef SparseMatrix<GFp, SparseSeqVectorGFp> SparseMatrixGFp;
 
 static SparseMatrixGFp linbox_new_modn_sparse_matrix(mod_int modulus, size_t numrows, size_t numcols, void *rows)
@@ -658,11 +658,11 @@ static SparseMatrixGFp linbox_new_modn_sparse_matrix(mod_int modulus, size_t num
 	return M;
 }
 
-static std::vector<Element> linbox_new_modn_sparse_vector(mod_int modulus, size_t len, void *_vec)
+static std::vector<GFpElement> linbox_new_modn_sparse_vector(mod_int modulus, size_t len, void *_vec)
 {
 	GFp F(modulus);
 
-	std::vector<GFp::Element> A(len);
+	std::vector<GFpElement> A(len);
 
 	if (_vec==NULL) {
 		return A;
@@ -681,7 +681,7 @@ unsigned long linbox_modn_sparse_matrix_rank(mod_int modulus,
 {
 	GFp F(modulus);
 	unsigned long M_rank;
-	Element M_det;
+	GFpElement M_det;
 	GaussDomain<GFp> dom(F);
 
 	SparseMatrixGFp M( linbox_new_modn_sparse_matrix(modulus, numrows, numcols, rows) );
