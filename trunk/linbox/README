@@ -17,7 +17,7 @@ AVAILABILITY: from linalg.org
 REQUIREMENTS:  GMP, ATLAS (or other cblas, lapack), NTL, Givaro
 See  doc/install*html for details.
 
-This library requires the GNU C++ compiler (gcc-2.95.1 or newer) or any 
+This library requires the GNU C++ compiler (gcc-4.3 or newer) or any 
 compiler supporting advanced template features.
 
 
