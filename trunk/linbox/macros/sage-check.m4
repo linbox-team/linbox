@@ -5,13 +5,14 @@
 
 AC_DEFUN([LB_CHECK_SAGE],
 [
-AC_MSG_CHECKING([whether to compile the sage interface])
+AC_MSG_CHECKING([whether to compile the SAGE interface])
 
 AC_ARG_ENABLE(sage,
-[AC_HELP_STRING([--enable-sage], [Enable the compilation of the sage interface])],
+[AC_HELP_STRING([--enable-sage], [Enable the compilation of the SAGE interface])])
+AM_CONDITIONAL(LINBOX_HAVE_SAGE, test "x$enable_sage" = "xyes")
+AS_IF([test "x$enable_sage" = "xyes"],
 [
 AC_MSG_RESULT(yes)
-sage_interface="yes"
 
 if test "x$HAVE_NTL" = "xyes" ; then
 	dnl  AC_CHECK_TOOL(OBJDUMP, objdump, false)
@@ -38,7 +39,5 @@ fi
 
 ],[
 AC_MSG_RESULT(no)
-sage_interface="no"
 ])
-AM_CONDITIONAL(LINBOX_HAVE_SAGE, test "x$sage_interface" = "xyes")
 ])
