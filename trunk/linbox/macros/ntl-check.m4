@@ -31,9 +31,9 @@ AC_ARG_WITH(ntl,
 	     [if test "$withval" = yes ; then
 			NTL_HOME_PATH="${DEFAULT_CHECKING_PATH}"
 	      elif test "$withval" != no ; then
-			NTL_HOME_PATH="$withval"
+			NTL_HOME_PATH="$withval ${DEFAULT_CHECKING_PATH}"
 	     fi],
-	     [])
+	     [NTL_HOME_PATH=${DEFAULT_CHECKING_PATH}])
 
 min_ntl_version=ifelse([$1], ,5.0,$1)
 

@@ -349,7 +349,7 @@ EXTERN float* linbox_modn_dense_matrix_matrix_general_multiply_float (float modu
   dense over ZZ
  *************************************************************************/
 
-typedef PID_integer Integers;
+typedef PID_integer IntegerRing;
 
 template <class Field, class Polynomial>
 void printPolynomial (const Field &F, const Polynomial &v)
@@ -362,18 +362,18 @@ void printPolynomial (const Field &F, const Polynomial &v)
 	std::cout << std::endl;
 }
 
-Integers ZZ;
+IntegerRing ZZ;
 SpyInteger spy;
-typedef GivPolynomialRing<Integers,::Givaro::Dense> IntPolRing;
+typedef GivPolynomialRing<IntegerRing,::Givaro::Dense> IntPolRing;
 
-DenseMatrix<Integers> new_matrix(mpz_t** matrix, size_t nrows, size_t ncols)
+DenseMatrix<IntegerRing> new_matrix(mpz_t** matrix, size_t nrows, size_t ncols)
 {
-	DenseMatrix<Integers> A ( ZZ, nrows, ncols);
+	DenseMatrix<IntegerRing> A ( ZZ, nrows, ncols);
 
 	size_t i, j;
 	for (i=0; i < nrows; ++i) {
 		for (j=0; j < ncols; ++j) {
-			Integers::Element t;
+			IntegerRing::Element t;
 			mpz_set(spy.get_mpz(t), matrix[i][j]);
 			A.setEntry(i, j, t);
 		}
@@ -381,15 +381,15 @@ DenseMatrix<Integers> new_matrix(mpz_t** matrix, size_t nrows, size_t ncols)
 	return A;
 }
 
-DenseMatrix<Integers> new_matrix_integers(mpz_t** matrix, size_t nrows, size_t ncols)
+DenseMatrix<IntegerRing> new_matrix_integers(mpz_t** matrix, size_t nrows, size_t ncols)
 {
-	Integers Z;
-	DenseMatrix<Integers> A ( Z,nrows, ncols);
+	IntegerRing Z;
+	DenseMatrix<IntegerRing> A ( Z,nrows, ncols);
 
 	size_t i, j;
 	for (i=0; i < nrows; ++i) {
 		for (j=0; j < ncols; ++j) {
-			Integers::Element t;
+			IntegerRing::Element t;
 			mpz_set(spy.get_mpz(t), matrix[i][j]);
 			A.setEntry(i, j, t);
 		}
@@ -421,10 +421,10 @@ void linbox_integer_dense_minpoly_hacked(mpz_t* *mp, size_t* degree, size_t n, m
 		m = n;
 	}
 
-	DenseMatrix<Integers> A( ZZ, m, m);
+	DenseMatrix<IntegerRing> A( ZZ, m, m);
 
 	size_t i, j;
-	Integers::Element t;
+	IntegerRing::Element t;
 	for (i=0; i < n; ++i) {
 		for (j=0; j < n; ++j) {
 			mpz_set(spy.get_mpz(t), matrix[i][j]);
@@ -432,7 +432,7 @@ void linbox_integer_dense_minpoly_hacked(mpz_t* *mp, size_t* degree, size_t n, m
 		}
 	}
 
-	//    vector<Integers::Element> m_A;
+	//    vector<IntegerRing::Element> m_A;
 	IntPolRing::Element m_A;
 
 	if (do_minpoly)
@@ -479,7 +479,7 @@ void linbox_integer_dense_charpoly(mpz_t* *mp, size_t* degree, size_t n, mpz_t**
 	/* THIS IS Broken when n % 4 == 0!!!!  Use above function instead. */
 	/*    linbox_integer_dense_minpoly(mp, degree, n, matrix, 0); */
 
-	DenseMatrix<Integers> A(new_matrix(matrix, n, n));
+	DenseMatrix<IntegerRing> A(new_matrix(matrix, n, n));
 	IntPolRing::Element m_A;
 	charpoly(m_A, A);
 
@@ -497,7 +497,7 @@ void linbox_integer_dense_minpoly(mpz_t* *mp, size_t* degree, size_t n, mpz_t** 
 	/* THIS IS Broken when n % 4 == 0!!!!  Use above function instead. */
 	/*    linbox_integer_dense_minpoly(mp, degree, n, matrix, 0); */
 
-	DenseMatrix<Integers> A(new_matrix(matrix, n, n));
+	DenseMatrix<IntegerRing> A(new_matrix(matrix, n, n));
 	IntPolRing::Element m_A;
 	minpoly(m_A, A);
 
@@ -539,7 +539,7 @@ int linbox_integer_dense_matrix_matrix_multiply(mpz_t** ans, mpz_t **A, mpz_t **
 unsigned long linbox_integer_dense_rank(mpz_t** matrix, size_t nrows,
 					size_t ncols)
 {
-	DenseMatrix<Integers> A(new_matrix(matrix, nrows, ncols));
+	DenseMatrix<IntegerRing> A(new_matrix(matrix, nrows, ncols));
 	unsigned long r;
 	rank(r, A);
 	return r;
@@ -551,8 +551,8 @@ void linbox_integer_dense_det(mpz_t ans, mpz_t** matrix, size_t nrows,
 	commentator.setMaxDetailLevel(0);
 	commentator.setMaxDepth (0);
 
-	DenseMatrix<Integers> A(new_matrix_integers(matrix, nrows, ncols));
-	Integers::Element d;
+	DenseMatrix<IntegerRing> A(new_matrix_integers(matrix, nrows, ncols));
+	IntegerRing::Element d;
 	det(d, A);
 	mpz_set(ans, spy.get_mpz(d));
 }
