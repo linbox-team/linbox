@@ -13,7 +13,7 @@ EXTRA_PROGRAMS =		\
 AM_CXXFLAGS = @DEFAULT_CFLAGS@ -DLinBoxSrcOnly
 AM_CPPFLAGS+= -DLinBoxSrcOnly $(GMP_CFLAGS) $(NTL_CFLAGS) \
 			 -DEXAMPLE_DATADIR=\"$(srcdir)/data\"
-LDADD = $(GMP_LIBS) $(NTL_LIBS) -lgivaro -lclapack -lcblas -latlas
+LDADD = $(GMP_LIBS) $(NTL_LIBS) -lgivaro -lclapack -lcblas -latlas $(LDFLAGS)
 
 ex_fields_SOURCES           = ex-fields.C
 ex_fields_archetype_SOURCES = ex-fields-archetype.C

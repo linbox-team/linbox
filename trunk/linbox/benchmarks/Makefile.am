@@ -10,7 +10,7 @@ AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox
 AM_CXXFLAGS= @DEFAULT_CFLAGS@ -DLinBoxSrcOnly
 AM_CPPFLAGS+= $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(FFLAFLAS_CFLAGS)
 LDADD= $(NTL_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) $(GMP_LIBS)
-AM_LDFLAGS=-static
+AM_LDFLAGS=-static $(LDFLAGS)
 
 BENCH_BASIC=               \
 		benchmark-fgemm    \

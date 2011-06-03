@@ -17,5 +17,5 @@ pkginclude_HEADERS = linbox-sage.h
 #gentoo's linbox-1.1.6-fix-undefined-symbols.patch
 liblinboxsage_la_LIBADD = $(top_builddir)/linbox/liblinbox.la
 
-liblinboxsage_la_LDFLAGS =  $(GIVARO_LIBS) $(GMP_LIBS) $(NTL_LIBS) $(BLAS_LIBS) $(MAPLE_LIBS)  -version-info 0:0:0 #-Wl,-zmuldefs
+liblinboxsage_la_LDFLAGS =  $(GIVARO_LIBS) $(GMP_LIBS) $(NTL_LIBS) $(BLAS_LIBS) $(MAPLE_LIBS) $(LDFLAGS) -version-info 0:0:0 #-Wl,-zmuldefs
 endif
