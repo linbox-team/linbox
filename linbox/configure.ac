@@ -253,6 +253,7 @@ echo '**************************************************************************
 exit 1
 ])
 
+LB_CHECK_LAPACK
 
 # AC_MSG_RESULT($BLAS_LIBS)
 # AC_MSG_RESULT($BLAS_CFLAGS)
