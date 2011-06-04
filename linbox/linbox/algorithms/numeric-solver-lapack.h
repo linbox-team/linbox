@@ -1,12 +1,34 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+
+/* Copyright (C) 2011 LinBox
+ * Written Bryan Youse <>
+ *
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
+ * Boston, MA 02110-1301, USA.
+ */
+
 /* numeric-solver-lapack.h
  *  numeric solver using lapack routines
  *  to support development of iterative numeric/symbolic solver
  */
 
-#ifndef __NUMERIC_SOLVER_LAPACK_H
-#define __NUMERIC_SOLVER_LAPACK_H
+#ifndef __LINBOX_numeric_solver_lapack_H
+#define __LINBOX_numeric_solver_lapack_H
 
 #include <linbox/blackbox/blas-blackbox.h>
 
@@ -43,16 +65,18 @@ namespace LinBox {
 		memcpy((void *)_IM, thedata, sizeof(double)*_m*_n);
 
 		// time to set up inverse of matrix
-		int lda = _n;
-		int P[_n];
+		int lda = (int)_n;
+		int * P = new int[_n];
 		//std::cerr << "Bef getrf: M_0,0 " << *_IM << ", M_n-1,n-1 " << *(_IM+_n*_n-1) << std::endl;
-		int ierr = clapack_dgetrf (CblasRowMajor, _n, _n, _IM, lda, P);
+		int ierr = clapack_dgetrf (CblasRowMajor, (int)_n, (int)_n, _IM, lda, P);
 		//std::cerr << "Aft getrf: M_0,0 " << *_IM << ", M_n-1,n-1 " << *(_IM+_n*_n-1) << std::endl;
 		if (ierr != 0) {
 			//std::cerr << "In LPS::init Matrix is not full rank" << std::endl;
+			delete[] P ;
 			return -1;
 		}
-		clapack_dgetri (CblasRowMajor, _n, _IM, lda, P);
+		clapack_dgetri (CblasRowMajor, (int)_n, _IM, lda, P);
+		delete[] P ;
 
 		return 0;
 	}
@@ -63,7 +87,7 @@ namespace LinBox {
 		const double * bdata = &*(b.begin());
 		double * xdata = &*(x.begin());
 
-		cblas_dgemv(CblasRowMajor, CblasNoTrans, _m, _n, 1, _IM, _n, bdata, 1, 0, xdata, 1);
+		cblas_dgemv(CblasRowMajor, CblasNoTrans, (int)_m, (int)_n, 1, _IM, (int)_n, bdata, 1, 0, xdata, 1);
 
 		return 0;
 	}
@@ -75,11 +99,11 @@ namespace LinBox {
 		double * ydata = &*(y.begin());
 		double *thedata = &*(_Ap->rawBegin());
 
-		cblas_dgemv(CblasRowMajor, CblasNoTrans, _m, _n, 1, thedata, _n, xdata, 1, 0, ydata, 1);
+		cblas_dgemv(CblasRowMajor, CblasNoTrans, (int)_m, (int)_n, 1, thedata, (int)_n, xdata, 1, 0, ydata, 1);
 
 		return y;
 	}
 
 } // namespace LinBox
 
-#endif // __NUMERIC_SOLVER_LAPACK_H
+#endif // __LINBOX_numeric_solver_lapack_H

@@ -68,5 +68,5 @@ int main (int argc, char **argv) {
 
 	// -bds:  Well, compilation is checked at least.  Work needed: A meaningful test is falsifyable.
 
-	return 0;
+	return !pass;
 }

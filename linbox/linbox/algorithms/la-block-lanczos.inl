@@ -330,13 +330,13 @@ namespace LinBox
 
 		typename std::list<Iterate *>::iterator j;
 
-		Iterate *iterate, *next_iterate;
+		Iterate *iterate_here, *next_iterate;
 
 		_iter = 0;
 		_total_dim = 0;
 		_rank = 0;
 
-		const unsigned int N = _traits.blockingFactor ();
+		const unsigned int N =  (unsigned int) _traits.blockingFactor ();
 
 		unsigned int dead_iters = 0;
 		Integer c;
@@ -361,7 +361,7 @@ namespace LinBox
 		unsigned int history_total = 0, history_max = 0;
 
 		// How many iterations between each progress update
-		unsigned int progress_interval = A.rowdim () / _traits.blockingFactor () / 100;
+		unsigned int progress_interval =  (unsigned int) ( A.rowdim () / _traits.blockingFactor () / 100);
 
 		// Make sure there are a minimum of ten
 		if (progress_interval == 0)
@@ -390,8 +390,8 @@ namespace LinBox
 		Matrix    u0 (A.rowdim (), _traits.blockingFactor ());
 		Matrix    v0 (A.rowdim (), _traits.blockingFactor ());
 #else  // Give those variables something just to satisfy the compiler
-#  define AU0 iterate->_u
-#  define AV0 iterate->_v
+#  define AU0 iterate_here->_u
+#  define AV0 iterate_here->_v
 #endif
 
 #ifdef LABL_DETAILED_TRACE
@@ -412,12 +412,12 @@ namespace LinBox
 			TIMER_STOP(terminationCheck);
 
 			// Step 1: Obtain an iterate structure
-			iterate = next_iterate;
+			iterate_here = next_iterate;
 			next_iterate = getNextIterate (_iter + 1);
 			_uAv.extend ();
 
-			LABLTraceReport (reportU, _MD, "u", _iter, iterate->_u);
-			LABLTraceReport (reportU, _MD, "v", _iter, iterate->_v);
+			LABLTraceReport (reportU, _MD, "u", _iter, iterate_here->_u);
+			LABLTraceReport (reportU, _MD, "v", _iter, iterate_here->_v);
 
 			LABLTraceReport (reportU, _MD, "x", _iter, _x);
 
@@ -425,12 +425,12 @@ namespace LinBox
 			TransposeMatrix<Matrix> uTA (_ATu);
 
 			TIMER_START(AV);
-			_MD.blackboxMulRight (uTA, transpose (iterate->_u), A);
-			_MD.blackboxMulLeft (_Av, A, iterate->_v);
+			_MD.blackboxMulRight (uTA, transpose (iterate_here->_u), A);
+			_MD.blackboxMulLeft (_Av, A, iterate_here->_v);
 			TIMER_STOP(AV);
 
 			TIMER_START(innerProducts);
-			_MD.mul (*_uAv.get (_iter, _iter), transpose (iterate->_u), _Av);
+			_MD.mul (*_uAv.get (_iter, _iter), transpose (iterate_here->_u), _Av);
 			_MD.mul (*_uAv.get (_iter + 1, _iter), uTA, _Av);
 			TIMER_STOP(innerProducts);
 
@@ -442,7 +442,7 @@ namespace LinBox
 			TIMER_START(updateInnerProducts);
 			_MD.copy (*_uAv.get (_iter, _iter + 1), *_uAv.get (_iter + 1, _iter));
 
-			for (j = _history.begin (); j != _history.end () && *j != iterate; ++j) {
+			for (j = _history.begin (); j != _history.end () && *j != iterate_here; ++j) {
 				_MD.copy (*_uAv.get (_iter + 1, (*j)->_iter), *_uAv.get (_iter, (*j)->_iter + 1));
 				_MD.copy (*_uAv.get ((*j)->_iter, _iter + 1), *_uAv.get ((*j)->_iter + 1, _iter));
 				compute_alphaAvip1 (j, _iter);
@@ -458,7 +458,7 @@ namespace LinBox
 
 			for (j = _history.begin (); j != _history.end (); ++j) {
 				TIMER_START(tailDecomp);
-				tailDecomp (j, iterate, A);
+				tailDecomp (j, iterate_here, A);
 				TIMER_STOP(tailDecomp);
 
 				// Step 6: Compute projection coefficients
@@ -524,8 +524,8 @@ namespace LinBox
 
 			checkAConjugacy (u0, next_iterate->_v, A, 0, _iter + 1, rho_u_0, N);
 			checkAConjugacy (next_iterate->_u, v0, A, _iter + 1, 0, N, rho_v_0);
-			checkAConjugacy (iterate->_u, next_iterate->_v, A, _iter, _iter + 1, iterate->_rho_u, N);
-			checkAConjugacy (next_iterate->_u, iterate->_v, A, _iter + 1, _iter, N, iterate->_rho_v);
+			checkAConjugacy (iterate_here->_u, next_iterate->_v, A, _iter, _iter + 1, iterate_here->_rho_u, N);
+			checkAConjugacy (next_iterate->_u, iterate_here->_v, A, _iter + 1, _iter, N, iterate_here->_rho_v);
 #endif
 
 			// Step 9: Throw away unneeded iterates and update solution
@@ -534,9 +534,9 @@ namespace LinBox
 			TIMER_STOP(cleanup);
 
 			// Step 10: Prepare for the next iteration
-			history_total += _history.size ();
-			history_max = max ((size_t) history_max, _history.size ());
-			_total_dim += iterate->_rho_u;
+			history_total +=  (unsigned int) _history.size ();
+			history_max =  (unsigned int) std::max ((size_t) history_max, _history.size ());
+			_total_dim += iterate_here->_rho_u;
 			_history.push_back (next_iterate);
 			++_iter;
 
@@ -590,7 +590,7 @@ namespace LinBox
 	 const Matrix1                           &Cv,
 	 unsigned int                             iter)
 	{
-		const unsigned int N = _traits.blockingFactor ();
+		const unsigned int N =  (unsigned int) _traits.blockingFactor ();
 
 		DenseSubmatrix<Element> udotAv ((*l)->_udotAv, 0, 0, Cu.coldim (), N);
 		DenseSubmatrix<Element> uAvdot ((*l)->_uAvdot, 0, 0, N, Cv.rowdim ());
@@ -624,7 +624,7 @@ namespace LinBox
 
 		typename std::list<Iterate *>::iterator j;
 
-		const unsigned int N = _traits.blockingFactor ();
+		const unsigned int N =  (unsigned int) _traits.blockingFactor ();
 
 		unsigned int rho_u = 0, rho_v = 0;
 		typename Field::Element d;
@@ -896,7 +896,7 @@ namespace LinBox
 	{
 		typename std::list<Iterate *>::iterator l = _history.begin (), second;
 
-		const unsigned int N = _traits.blockingFactor ();
+		const unsigned int N =  (unsigned int) _traits.blockingFactor ();
 
 #ifdef LABL_DETAILED_TRACE
 		int discard_count = 0;
@@ -996,7 +996,7 @@ namespace LinBox
 	 ElimStep &step,
 	 unsigned int iter)
 	{
-		const unsigned int N = _traits.blockingFactor ();
+		const unsigned int N =  (unsigned int) _traits.blockingFactor ();
 
 		if (step._nuukAvj == NULL || step._l_iter < _history.front ()->_iter)
 			return;
@@ -1043,7 +1043,7 @@ namespace LinBox
 	 ElimStep &step,
 	 unsigned int iter)
 	{
-		const unsigned int N = _traits.blockingFactor ();
+		const unsigned int N =  (unsigned int) _traits.blockingFactor ();
 
 		if (step._ujAvkmu == NULL || step._l_iter < _history.front ()->_iter)
 			return;
@@ -1092,7 +1092,7 @@ namespace LinBox
 	 Iterate      *l,
 	 unsigned int  rho)
 	{
-		const unsigned int N = _traits.blockingFactor ();
+		const unsigned int N =  (unsigned int) _traits.blockingFactor ();
 
 		_MD.copy (_T1, *_uAv.get (l->_iter, i->_iter));
 		l->_sigma_u.apply (_T1, true);
@@ -1109,7 +1109,7 @@ namespace LinBox
 	 Iterate      *l,
 	 unsigned int  rho)
 	{
-		const unsigned int N = _traits.blockingFactor ();
+		const unsigned int N =  (unsigned int) _traits.blockingFactor ();
 
 		_MD.copy (_T1, *_uAv.get (i->_iter, l->_iter));
 		l->_sigma_v.apply (_T1, false);
@@ -1272,7 +1272,7 @@ namespace LinBox
 		_P.push_back (Permutation (P));
 		_T.push_back (Tnew);
 		_rho.push_back (rho);
-		_s.push_back (_N - rho - T.coldim ());
+		_s.push_back (_N - rho -  (unsigned int) T.coldim ());
 	}
 
 	template <class Field, class Matrix>

@@ -515,7 +515,7 @@ namespace LinBox
 		bool      ret = true, done = false;
 
 		// How many iterations between each progress update
-		unsigned int progress_interval = A.rowdim () / _traits.blockingFactor () / 100;
+		unsigned int progress_interval = (unsigned int) (A.rowdim () / _traits.blockingFactor () / 100);
 
 		// Make sure there are a minimum of ten
 		if (progress_interval == 0)
@@ -888,7 +888,7 @@ namespace LinBox
 
 				// Give the (j, j) entry unity
 				_F.inv (Mjj_inv, _M.getEntry (_indices[row], _indices[row]));
-				_VD.mulin (*(_M.rowBegin () + _indices[row]), Mjj_inv);
+				_VD.mulin (*(_M.rowBegin () + (int)_indices[row]), Mjj_inv);
 
 				// Zero the rest of the column j
 				eliminate_col (_M, row, 0, _indices, Mjj_inv);
@@ -905,17 +905,17 @@ namespace LinBox
 
 				S[_indices[row]] = false;  // Skip column j
 
-				find_pivot_row (_M, row, _N, _indices);
+				find_pivot_row (_M, row, (int)_N, _indices);
 
 				const typename Field::Element &Mjj = _M.refEntry (_indices[row], _indices[row] + _N);
 
 				linbox_check (!_F.isZero (Mjj));
 
 				// Zero the rest of the column j + N
-				eliminate_col (_M, row, _N, _indices, _F.inv (Mjj_inv, Mjj));
+				eliminate_col (_M, row, (int)_N, _indices, _F.inv (Mjj_inv, Mjj));
 
 				// Zero row j
-				_VD.subin (*(_M.rowBegin () + _indices[row]), *(_M.rowBegin () + _indices[row]));
+				_VD.subin (*(_M.rowBegin () + (int)_indices[row]), *(_M.rowBegin () + (int)_indices[row]));
 			}
 		}
 
@@ -928,7 +928,7 @@ namespace LinBox
 		commentator.stop ("done", NULL, "MGBlockLanczosSolver::compute_Winv_S");
 #endif
 
-		return Ni;
+		return (int)Ni;
 	}
 
 	template <class Field, class Matrix>
@@ -1167,13 +1167,13 @@ namespace LinBox
 		typename Matrix::Col col_vec;
 		typename Matrix::Row row_vec;
 
-		col_vec = *(_M.colBegin () + indices[row] + col_offset);
-		row_vec = *(_M.rowBegin () + indices[row]);
+		col_vec = *(_M.colBegin () + (int)indices[row] + col_offset);
+		row_vec = *(_M.rowBegin () + (int)indices[row]);
 
 		for (idx = row; idx < A.rowdim (); ++idx) {
 			if (!_F.isZero (A.getEntry (indices[idx], indices[row] + col_offset))) {
 				if (idx != row) {
-					typename Matrix::Row row1 = *(A.rowBegin () + indices[idx]);
+					typename Matrix::Row row1 = *(A.rowBegin () + (int)indices[idx]);
 					std::swap_ranges (row_vec.begin (), row_vec.end (), row1.begin ());
 				}
 
@@ -1198,20 +1198,20 @@ namespace LinBox
 		typename DenseSubmatrix<Element>::Row pivot_row;
 		typename Field::Element p;
 
-		pivot_row = *(A.rowBegin () + indices[pivot]);
+		pivot_row = *(A.rowBegin () + (int)indices[pivot]);
 
 		for (row = 0; row < pivot; ++row) {
 			const typename Field::Element &Aij = A.getEntry (indices[row], indices[pivot] + col_offset);
 
 			if (!_F.isZero (Aij))
-				_VD.axpyin (*(A.rowBegin () + indices[row]), _F.neg (p, Aij), pivot_row);
+				_VD.axpyin (*(A.rowBegin () +(int) indices[row]), _F.neg (p, Aij), pivot_row);
 		}
 
 		for (++row; row < A.rowdim (); ++row) {
 			const typename Field::Element &Aij = A.getEntry (indices[row], indices[pivot] + col_offset);
 
 			if (!_F.isZero (Aij))
-				_VD.axpyin (*(A.rowBegin () + indices[row]), _F.neg (p, Aij), pivot_row);
+				_VD.axpyin (*(A.rowBegin () + (int) indices[row]), _F.neg (p, Aij), pivot_row);
 		}
 	}
 
