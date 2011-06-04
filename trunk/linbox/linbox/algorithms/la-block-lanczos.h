@@ -75,7 +75,8 @@ namespace LinBox
 				      const BlockLanczosTraits &traits,
 				      typename Field::RandIter r) :
 			_traits (traits), _F (F), _VD (F), _MD (F), _randiter (r),
-			_uAv (this), _eliminator (F, _traits.blockingFactor ())
+			_uAv (this),
+			_eliminator (F, (unsigned int)  _traits.blockingFactor ())
 		{ init_temps (); }
 
 		/** Destructor
@@ -205,7 +206,8 @@ namespace LinBox
 			Iterate (LABlockLanczosSolver &solver, size_t n, size_t N, unsigned int iter) :
 				_udotAvbarinv (N, N), _ubarAvdotinv (N, N),
 				_u (n, N), _v (n, N), _udot (n, N), _vdot (n, N),
-				_sigma_u (solver, N), _sigma_v (solver, N),
+				_sigma_u (solver,  (unsigned int) N),
+			       	_sigma_v (solver,  (unsigned int) N),
 				_udotAv (N, N), _uAvdot (N, N)
 			{ init (iter); }
 

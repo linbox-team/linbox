@@ -54,7 +54,7 @@ namespace LinBox {
 			y %= (uint64_t) _F._modulus;
 		}
 
-		return res = y;
+		return res = (uint8_t) y;
 	}
 
 	template <class Vector1, class Vector2>
@@ -70,7 +70,7 @@ namespace LinBox {
 			for (; i_idx != v1.first.end (); ++i_idx, ++i_elt)
 				y += (uint64_t) *i_elt * (uint64_t) v2[*i_idx];
 
-			return res = y % (uint64_t) _F._modulus;
+			return res = uint8_t (y % (uint64_t) _F._modulus);
 		}
 		else {
 			typename Vector1::first_type::const_iterator iterend = v1.first.begin () + v1.first.size() % _F._k;
@@ -93,7 +93,7 @@ namespace LinBox {
 				y %= (uint64_t) _F._modulus;
 			}
 
-			return res = y;
+			return res = (uint8_t) y;
 		}
 	}
 
@@ -383,9 +383,10 @@ namespace LinBox {
 		} while (j_end != v.end ());
 
 		typename Vector1::iterator w_j;
+		typedef typename Vector1::value_type val_t ;
 
 		for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
-			*w_j = *l;
+			*w_j = (val_t) *l;
 
 		return w;
 	}

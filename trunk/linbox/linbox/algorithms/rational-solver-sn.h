@@ -1,8 +1,30 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* sn-rational-solver.h */
 
-#ifndef __RATIONAL_SOLVER_SN_H
-#define __RATIONAL_SOLVER_SN_H
+/* Copyright (C) 2011 LinBox
+ * Written Bryan Youse <>
+ *
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
+ * Boston, MA 02110-1301, USA.
+ */
+
+#ifndef __LINBOX_rational_solver_sn_H
+#define __LINBOX_rational_solver_sn_H
 
 #include <iostream>
 
@@ -23,9 +45,9 @@ namespace LinBox {
 
 	// bsd and mac problem
 #undef _R
-	
-	/** \brief define the possible return status of the solver's computation. 
-	 */
+
+	/** \brief define the possible return status of the solver's computation.
+	*/
 	enum SNSolverReturnStatus {
 		SNSS_OK, SNSS_FAILED, SNSS_SINGULAR, SNSS_INCONSISTENT
 	};
@@ -33,34 +55,34 @@ namespace LinBox {
 	enum ShiftStatus {
 		SHIFT_GROW, SHIFT_SHRINK, SHIFT_PEAK, SHIFT_SEARCH, SHIFT_MAX
 	};
-    
-/* 
- * A NumericSolver has 
- * init from a matrix A, 
- * solve(double* x, double* b)		// x = A^{-1}b
- * apply(double* y, double * x);		// y = Ax
- */ 
-	
-template<class Ring, class NumericSolver>
-class RationalSolverSN {
+
+	/*
+	 * A NumericSolver has
+	 * init from a matrix A,
+	 * solve(double* x, double* b)		// x = A^{-1}b
+	 * apply(double* y, double * x);		// y = Ax
+	 */
+
+	template<class Ring, class NumericSolver>
+	class RationalSolverSN {
 
 	public:
 		typedef typename Ring::Element Int;
 		typedef std::vector<Int> IVector;
 		// note: the type integer is also used.  For instance, we assume shift operator<< works on integer.
-		typedef ParamFuzzy Field;  
+		typedef ParamFuzzy Field;
 		typedef typename Field::Element Float;
-		typedef std::vector<Float> FVector; 
+		typedef std::vector<Float> FVector;
 		typedef BlasBlackbox<Field> FMatrix;
 
 	protected:
 		Ring _R;
-	 	VectorDomain<Ring> _VDR;
+		VectorDomain<Ring> _VDR;
 		Field _F;
 		VectorDomain<Field> _VDF;
 		NumericSolver _S;
 		//inline static int check (int n, const double* M, integer* numx, integer& denx, double* b) ;
-		//inline void update_r_xs (double* r, double* xs_int, double* xs_frac, 
+		//inline void update_r_xs (double* r, double* xs_int, double* xs_frac,
 		//							int n, const double* M, double* x, int shift);
 		//inline int rat_sol(IVector& numx, Int& denx, NumericSolver& _S, FVector& r, integer Bd);
 		//inline void dyadicToRational(ZIVector& num, Int& den, vector<integer>& numx, integer& denx, integer Bd);
@@ -73,8 +95,9 @@ class RationalSolverSN {
 	public:
 
 		RationalSolverSN(const Ring& R = Ring(), const NumericSolver& S = NumericSolver(),
-				bool ea=false) 
-			: _R(R), _VDR(R), _F(Field()), _VDF(Field()), _S(S), exact_apply(ea) {}
+				 bool ea=false) :
+		       	_R(R), _VDR(R), _F(Field()), _VDF(Field()), _S(S), exact_apply(ea)
+		{}
 
 		/**
 		 * IMatrix is matrix of integer type, eg. BlasBlackbox<PID-integer>
@@ -85,8 +108,9 @@ class RationalSolverSN {
 		//  sparse matrix flag at the end, then avoid copying to DM as well ass
 		//  new method to get hadamard bound and matrix norm!
 		template <class IMatrix, class IVector>
-		SNSolverReturnStatus solve(IVector& num, Int& den, 
-				const IMatrix& M, const IVector& b) {
+		SNSolverReturnStatus solve(IVector& num, Int& den,
+					   const IMatrix& M, const IVector& b)
+		{
 			Timer timer, solve_timer, rr_timer, tt;
 
 			size_t n = b.size();
@@ -111,12 +135,12 @@ class RationalSolverSN {
 			//  why can't i put this in the for loop def???
 			typename FMatrix::RawIterator dm_p = DM.rawBegin();
 			for (typename IMatrix::ConstRawIterator raw_p = M.rawBegin();
-					raw_p != M. rawEnd(); ++ raw_p, ++dm_p) {
+			     raw_p != M. rawEnd(); ++ raw_p, ++dm_p) {
 				_F.init(*dm_p, *raw_p);
 			}
 
 			// build a numeric solver from new double matrix
-			_S.init(DM); 
+			_S.init(DM);
 
 			// r is b as vector of doubles.  (r is initial residual)
 			FVector r(n);
@@ -131,10 +155,10 @@ class RationalSolverSN {
 
 			//  denBound is the Hadamard bound, loopBound is roughly twice as much
 			integer denBound, loopBound;
-			zw_hbound (denBound, n, n, &*(DM.rawBegin()));
+			zw_hbound (denBound, (int)n, (int)n, &*(DM.rawBegin()));
 			loopBound = denBound*denBound;
 
-			mnorm = zw_dOOnorm(&*(DM.rawBegin()), n, n);  //  infinity-norm of matrix
+			mnorm = zw_dOOnorm(&*(DM.rawBegin()), (int)n, (int)n);  //  infinity-norm of matrix
 			//  set max shift to avoid exact applys
 			size_t bits = 0;
 			size_t mn2 = nextPower2((size_t)mnorm);
@@ -143,7 +167,7 @@ class RationalSolverSN {
 			SHIFT_BOUND -= bits;
 			//std::cerr << "BITS" << bits << "MAX" << SHIFT_BOUND << std::endl;
 
-			loopBound *= (2*mnorm + zw_dmax(n, &*(r.begin()), 1));
+			loopBound *= (2*mnorm + zw_dmax((int)n, &*(r.begin()), 1));
 
 			std::vector<integer> numx(n), tnum(n); // numerator of binary expansion
 			integer denx = 1, tden; // denominator of binary expansion (denx is a power of 2).
@@ -176,7 +200,7 @@ class RationalSolverSN {
 #endif
 			//size_t rr_count = 0;
 			//solve_timer.clear(); rr_timer.clear();
-			do{		
+			do{
 				//tt.clear(); tt.start();
 				ret = rat_sol(numx, denx, xs_int, xs_frac, bi, lastb, r, lastr, x, bound, M);
 				//tt.stop(); solve_timer += tt;
@@ -187,54 +211,54 @@ class RationalSolverSN {
 				}
 				else if(ret == 2) denBound = denx; // zero residual
 
-				// we're trying to early-term 
+				// we're trying to early-term
 				//std::cerr << bound << " " << loopBound << std::endl;
 				if(bound < loopBound){
 					//  update bound for next iteration (if applicable)
 					/* it_cost = solve_timer.realtime()/(double)iterations;
-					rr_cost = rr_timer.realtime()/(double)rr_count;
-					std::cerr << "iteration cost: " << it_cost << " v. rr cost: " << rr_cost << std::endl; */
-					Z.sqrt(bound, loopBound*bound);	
+					   rr_cost = rr_timer.realtime()/(double)rr_count;
+					   std::cerr << "iteration cost: " << it_cost << " v. rr cost: " << rr_cost << std::endl; */
+					Z.sqrt(bound, loopBound*bound);
 					bound <<= 2;
-					int rPos = rand()%n;
+					int rPos = rand()%(int)n;
 					//std::cerr << "At iteration " << iterations << ", ";
 					if(dyadicToRational(Z, ay, be, numx[rPos], denx, denBound) /*== 2*/){
-                    	//std::cerr << "Random single worked!  ";
+						//std::cerr << "Random single worked!  ";
 					}
-               else{
-                        //std::cerr << "Random single failed." << std::endl;
+					else{
+						//std::cerr << "Random single failed." << std::endl;
 						continue;
 					}
-            }
-				
+				}
+
 				//tt.clear(); tt.start();
 				recon_status = dyadicToRational(Z, num, den, numx, denx, denBound);
 				//tt.stop(); rr_timer += tt; ++rr_count;
 				//std::cerr << "RRT: " << rr_timer << std::endl;
 
 				recon_success = recon_status > 0;
-				//if(!recon_success) std::cerr << "Full failed!" << std::endl;		
-				//else std::cerr << "Full worked!" << std::endl;		
+				//if(!recon_success) std::cerr << "Full failed!" << std::endl;
+				//else std::cerr << "Full worked!" << std::endl;
 			} while((bound < loopBound) && !recon_success);
 
 			//timer.stop(); std::cerr << "rat_sol time: " << solve_timer.realtime() << " rr time: " << rr_timer.realtime() << " Total: " << timer << std::endl;
 
 			/*writeVec(numx, "numx", 0, 10);
-			std::cerr << denx << std::endl;
-			writeVec(num, "num");
-			std::cerr << "den: (large)" << std::endl;// << den << endl;
-			*/
+			  std::cerr << denx << std::endl;
+			  writeVec(num, "num");
+			  std::cerr << "den: (large)" << std::endl;// << den << endl;
+			  */
 
 			if (recon_success) {
 				/*
-				if(recon_status == 2) std::cerr << "reconstruction guaranteed" << std::endl;
-				else std::cerr << "reconstruction speculative" << std::endl;
+				   if(recon_status == 2) std::cerr << "reconstruction guaranteed" << std::endl;
+				   else std::cerr << "reconstruction speculative" << std::endl;
 
-				std::cerr << "Solve success. Iterations: " << iterations << std::endl;
-				std::cerr << HIT << " hits, " << MISS << " misses. (";
-				fprintf(stderr,  "%.2f", (float)(HIT)/(float)(HIT+MISS)*100.0);
-				std::cerr << "%) Maximum shift: " << shift_max << std::endl;
-				*/
+				   std::cerr << "Solve success. Iterations: " << iterations << std::endl;
+				   std::cerr << HIT << " hits, " << MISS << " misses. (";
+				   fprintf(stderr,  "%.2f", (float)(HIT)/(float)(HIT+MISS)*100.0);
+				   std::cerr << "%) Maximum shift: " << shift_max << std::endl;
+				   */
 			}
 			else{
 				//std::cerr << "rat reconstruction asserts failure" << std::endl;
@@ -253,26 +277,26 @@ class RationalSolverSN {
 			M.apply(y, num);
 			_VDR.mul(z, b, den);
 			if ( !_VDR.areEqual(y, z)) {
-				std::cerr << "fail check: A*x != b exactly" << std::endl;
-				dumpData(M, b, numx, denx, denBound);
-				return SNSS_FAILED;
+			std::cerr << "fail check: A*x != b exactly" << std::endl;
+			dumpData(M, b, numx, denx, denBound);
+			return SNSS_FAILED;
 			}
 			*/
 
 			return SNSS_OK;
 
-	} // solve
+		} // solve
 
 #include "rational-solver-sn.inl"
 
-#if 0  
-//embedded definitions now, so no declarations
-	// functions used by solve()  
-	//protected:
+#if 0
+		//embedded definitions now, so no declarations
+		// functions used by solve()
+		//protected:
 		//print out a vector
 		template <class Elt>
 		inline static int printvec (const Elt* v, int n);
-		/** Compute the OO-norm of a mtrix */ 
+		/** Compute the OO-norm of a mtrix */
 		inline static double zw_dOOnorm(const double* M, int m, int n);
 		/** compute the maximam of absolute value of an array*/
 		inline static double zw_dmax (const int N, const double* a, const int inc);
@@ -289,7 +313,7 @@ class RationalSolverSN {
 		inline static int zw_hbound (integer& b, int m, int n, const double* M);
 		// compute the inverse of a general matrix
 		inline static int zw_dgeinv(double* M, int n);
-		/* solve Ax = b 
+		/* solve Ax = b
 		 * A, the integer matrix
 		 * b, integer rhs
 		 * Return value
@@ -301,8 +325,8 @@ class RationalSolverSN {
 		//inline int rsol (Ring& R, int n, const double* M, integer* numx, integer& denx, double* b);
 #endif
 
-}; // class RationalSolverSN
+	}; // class RationalSolverSN
 
 } // namespace LinBox
 
-#endif // __SNRATIONAL_SOLVER_H
+#endif // __LINBOX_rational_solver_sn_H

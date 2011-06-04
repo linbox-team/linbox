@@ -287,10 +287,10 @@ namespace LinBox
 		_P.clear ();
 		_MD.copy (_A, A);
 		_profile_idx = 0;
-		kthGaussJordan (rank, det, 0, 0, A.coldim (), _one);
+		kthGaussJordan (rank, det, 0, 0,  (unsigned int) A.coldim (), _one);
 
-		buildMinimalPermutation (P, rank, A.rowdim (), _P);
-		buildMinimalPermutationFromProfile (Q, rank, A.coldim (), _profile);
+		buildMinimalPermutation (P, rank,  (unsigned int) A.rowdim (), _P);
+		buildMinimalPermutationFromProfile (Q, rank,  (unsigned int) A.coldim (), _profile);
 
 		_MD.permuteColumns (_U, _P.rbegin (), _P.rend ());
 		_MD.permuteColumns (_U, P.begin (), P.end ());
@@ -418,15 +418,15 @@ namespace LinBox
 
 			DenseSubmatrix<Element> B (_A, 0, s + m1, _A.rowdim (), m2);
 
-			unsigned int P_start = _P.size ();
+			unsigned int P_start = (unsigned int) _P.size ();
 
 			kthGaussJordan (r1, d1, k, s, m1, d0);
 
-			unsigned int P_end = _P.size ();
+			unsigned int P_end =  (unsigned int) _P.size ();
 
 			_MD.permuteRows (B, _P.begin () + P_start, _P.end ());
 
-			unsigned int l1 = _U.rowdim () - (k + r1);
+			unsigned int l1 = (unsigned int) _U.rowdim () - (k + r1);
 
 			DenseSubmatrix<Element> a (_U,    0,      k,      k,  r1);
 			DenseSubmatrix<Element> u (_U,    k,      k,      r1, r1);
@@ -480,7 +480,7 @@ namespace LinBox
 
 			r = r1 + r2;
 
-			unsigned int l2 = _U.rowdim () - (k + r);
+			unsigned int l2 = (unsigned int) _U.rowdim () - (k + r);
 
 			DenseSubmatrix<Element> a1    (_U, 0,      k,      k,  r1);
 			DenseSubmatrix<Element> u1    (_U, k,      k,      r1, r1);

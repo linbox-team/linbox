@@ -83,14 +83,14 @@ static bool testRandomSolve (const Field           &F,
 	LABLSolver lablsolver (F, traits, ri);
 
 	while (y_stream) {
-		commentator.startIteration (y_stream.pos ());
+		commentator.startIteration ( (unsigned int) y_stream.pos ());
 
 		y_stream >> y;
 		A.apply (b, y);
 
-		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
-		report << "Right-hand side b:";
-		VD.write (report, b) << endl;
+		std::ostream &raport = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		raport << "Right-hand side b:";
+		VD.write (raport, b) << endl;
 
 		if (!lablsolver.solve (A, x2, b)) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
@@ -245,6 +245,8 @@ int main (int argc, char **argv)
 		END_OF_ARGUMENTS
 	};
 
+	bool fail = false ;
+
 	typedef Modular<uint8_t> Field;
 
 	parseArguments (argc, argv, args);
@@ -261,9 +263,9 @@ int main (int argc, char **argv)
 	RandomSparseStream<Field> A_stream (F, (double) k / (double) n, n, n);
 	RandomDenseStream<Field> y_stream (F, n, i);
 
-	testRandomSolve (F, A_stream, y_stream, N);
-	testSampleNullspace (F, A_stream, N, i);
-	testRank (F, A_stream, N, i);
+	fail |= testRandomSolve (F, A_stream, y_stream, N);
+	fail |= testSampleNullspace (F, A_stream, N, i);
+	fail |= testRank (F, A_stream, N, i);
 
-	return 0;
+	return fail;
 }

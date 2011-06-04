@@ -115,7 +115,7 @@ int rat_sol(IVector& numx, Int& denx, FVector& xs_int, FVector& xs_frac, IVector
 			_F.sub(quo[i], xs_frac[i], nextx[i]);
 		}
 
-		double q = zw_dmax(n, &*quo.begin(), 1);
+		double q = zw_dmax((int)n, &*quo.begin(), 1);
 
 		//writeVec(nextx, "nextx from loop");  //  DEBUG PRINTOUTS
 		//writeVec(xs_frac, "xs_frac from loop");
@@ -250,7 +250,7 @@ inline void update_xs(FVector& xs_int, FVector& xs_frac, FVector& x)
 {
 	Float scalar, tmp;
 	int64_t shifted = ((int64_t)1 << shift);
-	_F.init(scalar, shifted);
+	_F.init(scalar, (double) shifted);
 
 	//  make xs_int and xs_frac such that x*scalar = xs_int + xs_frac.
 	for(size_t i = 0; i < xs_int.size(); ++i){
@@ -268,7 +268,7 @@ inline void update_r(FVector& r, FVector& xs_int)
 	Float scalar;
 	size_t n = r.size();
 	int64_t shifted = ((int64_t)1 << shift);
-	_F.init(scalar, shifted);
+	_F.init(scalar, (double)shifted);
 	FVector y(n);
 
 	//update r = r * 2^shift - Mat*xs_int
@@ -292,11 +292,11 @@ inline void update_r_exact(IVector& r_exact, FVector& r, FVector& xs_int, IMatri
 	_VDR.mulin(r_exact, scalar);
 
 	// determine if exact apply is needed
-	double vnorm = zw_dOOnorm(&*xs_int.begin(), n, 1);
+	double vnorm = zw_dOOnorm(&*xs_int.begin(), (int)n, 1);
 
 	int64_t th = ((int64_t)1 << 52);  // double mantissa
 	Float thresh;
-	_F.init(thresh, th);
+	_F.init(thresh, (double)th);
 
 	debugneol("vnorm " << vnorm);
 

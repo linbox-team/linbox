@@ -93,75 +93,76 @@ build |wc" should yield the same number of lines.
 */
 
 //BASIC_TESTS
-	build_n_run("test-bitonic-sort", counter, flag);
-	build_n_run("test-blas-domain", counter, flag);
-	build_n_run("test-block-ring", counter, flag);
-	build_n_run("test-bmseq", counter, flag);
-	build_n_run("test-butterfly", counter, flag);
-	build_n_run("test-charpoly", counter, flag);//, "intermittent inf loop, bb or cp responsible?");
-	build_n_run("test-commentator", counter, flag);
-	build_n_run("test-companion", counter, flag);
-	build_n_run("test-cra", counter, flag);
-	build_n_run("test-cradomain", counter, flag);
-	build_n_run("test-dense", counter, flag);
-	build_n_run("test-det", counter, flag);
-	build_n_run("test-diagonal", counter, flag);
-	build_n_run("test-dif", counter, flag);
-	build_n_run("test-direct-sum", counter, flag);
-	build_n_run("test-dyadic-to-rational", counter, flag, "bds responsible");
-	build_n_run("test-ffpack", counter, flag);
-	build_n_run("test-frobenius", counter, flag);
-	build_n_run("test-getentry", counter, flag);
-	build_n_run("test-gf2", counter, flag);
-	build_n_run("test-gmp-rational", counter, flag);
-	build_n_run("test-hilbert", counter, flag);
-	build_n_run("test-hom", counter, flag);
-	build_n_run("test-inverse", counter, flag);
-	build_n_run("test-isposdef", counter, flag);
-	build_n_run("test-ispossemidef", counter, flag);
-	build_n_run("test-last-invariant-factor", counter, flag);
-	build_n_run("test-matrix-domain", counter, flag);
-	build_n_run("test-matrix-stream", counter, flag);
-	build_n_run("test-minpoly", counter, flag);
-	build_n_run("test-modular", counter, flag);
-	build_n_run("test-modular-balanced-int", counter, flag);
-	build_n_run("test-modular-balanced-float", counter, flag);
-	build_n_run("test-modular-balanced-double", counter, flag);
-	build_n_run("test-modular-byte", counter, flag);
-	build_n_run("test-modular-double", counter, flag);
-	build_n_run("test-modular-float", counter, flag);
-	build_n_run("test-modular-int", counter, flag);
-	build_n_run("test-modular-short", counter, flag);
-	build_n_run("test-moore-penrose", counter, flag);
-	build_n_run("test-nullspace", counter, flag);
-	build_n_run("test-PID-integer", counter, flag);
-	build_n_run("test-qlup", counter, flag);
-	build_n_run("test-randiter-nonzero", counter, flag);
-	build_n_run("test-rank", counter, flag);
-	build_n_run("test-rational-matrix-factory ", counter, flag);
-	build_n_run("test-rational-reconstruction-base", counter, flag);
-	build_n_run("test-rat-charpoly", counter, flag);//, "infinite loop, cp responsible?");
-	build_n_run("test-scalar-matrix", counter, flag);
-	build_n_run("test-smith-form-binary", counter, flag);
-	build_n_run("test-solve", counter, flag);
-	build_n_run("test-sparse", counter, flag);
-	build_n_run("test-subiterator", counter, flag);
-	build_n_run("test-submatrix", counter, flag);
-	build_n_run("test-subvector", counter, flag);
-	build_n_run("test-sum", counter, flag);
-	build_n_run("test-rational-solver", counter, flag);
-	build_n_run("test-trace", counter, flag);
-	build_n_run("test-triplesbb", counter, flag);
-	build_n_run("test-unparametric-field", counter, flag); //has been useful in num/sym.
-	build_n_run("test-vector-domain", counter, flag);
-	build_n_run("test-zero-one", counter, flag);
+	build_n_run("test-bitonic-sort",                 counter , flag);
+	build_n_run("test-blas-domain",                  counter , flag);
+	build_n_run("test-block-ring",                   counter , flag);
+	build_n_run("test-bmseq",                        counter , flag);
+	build_n_run("test-butterfly",                    counter , flag);
+	build_n_run("test-charpoly",                     counter , flag);//, "intermittent inf loop, bb or cp responsible?");
+	build_n_run("test-commentator",                  counter , flag);
+	build_n_run("test-companion",                    counter , flag);
+	build_n_run("test-cra",                          counter , flag);
+	build_n_run("test-cradomain",                    counter , flag);
+	build_n_run("test-dense",                        counter , flag);
+	build_n_run("test-det",                          counter , flag);
+	build_n_run("test-diagonal",                     counter , flag);
+	build_n_run("test-dif",                          counter , flag);
+	build_n_run("test-direct-sum",                   counter , flag);
+	build_n_run("test-dyadic-to-rational",           counter , flag, "bds responsible");
+	build_n_run("test-ffpack",                       counter , flag);
+	build_n_run("test-frobenius",                    counter , flag);
+	build_n_run("test-getentry",                     counter , flag);
+	build_n_run("test-gf2",                          counter , flag);
+	build_n_run("test-gmp-rational",                 counter , flag);
+	build_n_run("test-hilbert",                      counter , flag);
+	build_n_run("test-hom",                          counter , flag);
+	build_n_run("test-inverse",                      counter , flag);
+	build_n_run("test-isposdef",                     counter , flag);
+	build_n_run("test-ispossemidef",                 counter , flag);
+	build_n_run("test-last-invariant-factor",        counter , flag);
+	build_n_run("test-matrix-domain",                counter , flag);
+	build_n_run("test-matrix-stream",                counter , flag);
+	build_n_run("test-mg-block-lanczos",             counter , flag);
+	build_n_run("test-minpoly",                      counter , flag);
+	build_n_run("test-modular",                      counter , flag);
+	build_n_run("test-modular-balanced-int",         counter , flag);
+	build_n_run("test-modular-balanced-float",       counter , flag);
+	build_n_run("test-modular-balanced-double",      counter , flag);
+	build_n_run("test-modular-byte",                 counter , flag);
+	build_n_run("test-modular-double",               counter , flag);
+	build_n_run("test-modular-float",                counter , flag);
+	build_n_run("test-modular-int",                  counter , flag);
+	build_n_run("test-modular-short",                counter , flag);
+	build_n_run("test-moore-penrose",                counter , flag);
+	build_n_run("test-nullspace",                    counter , flag);
+	build_n_run("test-PID-integer",                  counter , flag);
+	build_n_run("test-qlup",                         counter , flag);
+	build_n_run("test-randiter-nonzero",             counter , flag);
+	build_n_run("test-rank",                         counter , flag);
+	build_n_run("test-rational-matrix-factory ",     counter , flag);
+	build_n_run("test-rational-reconstruction-base", counter , flag);
+	build_n_run("test-rat-charpoly",                 counter , flag);//, "infinite loop, cp responsible?");
+	build_n_run("test-scalar-matrix",                counter , flag);
+	build_n_run("test-smith-form-binary",            counter , flag);
+	build_n_run("test-solve",                        counter , flag);
+	build_n_run("test-sparse",                       counter , flag);
+	build_n_run("test-subiterator",                  counter , flag);
+	build_n_run("test-submatrix",                    counter , flag);
+	build_n_run("test-subvector",                    counter , flag);
+	build_n_run("test-sum",                          counter , flag);
+	build_n_run("test-rational-solver",              counter , flag);
+	build_n_run("test-trace",                        counter , flag);
+	build_n_run("test-triplesbb",                    counter , flag);
+	build_n_run("test-unparametric-field",           counter , flag); //has been useful in num/sym.
+	build_n_run("test-vector-domain",                counter , flag);
+	build_n_run("test-zero-one",                     counter , flag);
 
 #if __LINBOX_HAVE_GIVARO
 //	if (flag > 0) cout << "	Givaro tests" << endl;
-	build_n_run("test-givaro-zpz", counter, flag);
-	build_n_run("test-givaro-zpzuns", counter, flag, "may fail on small fields because of supposed non-randomness or failure to find a non trivial element");
-	build_n_run("test-rat-solve", counter, flag); // "infinite loop");
-	build_n_run("test-rat-minpoly", counter, flag); // "intermittent failures");
+	build_n_run("test-givaro-zpz",    counter , flag);
+	build_n_run("test-givaro-zpzuns", counter , flag, "may fail on small fields because of supposed non-randomness or failure to find a non trivial element");
+	build_n_run("test-rat-solve",     counter , flag); // "infinite loop");
+	build_n_run("test-rat-minpoly",   counter , flag); // "intermittent failures");
 #else
 	if (flag > 0) cout << "	not doing Givaro dependent tests" << endl;
 	cout << "Configuration problem?  __LINBOX_HAVE_GIVARO is not set, but LinBox requires Givaro" << endl;
@@ -182,28 +183,28 @@ build |wc" should yield the same number of lines.
 
 #if __LINBOX_HAVE_NTL
 	if (flag > 0) cout << "	NTL dependent tests" << endl;
-	build_n_run("test-ntl-hankel", counter, flag);
-	build_n_run("test-ntl-lzz_p", counter, flag);
-	build_n_run("test-ntl-toeplitz", counter, flag);
-	build_n_run("test-ntl-sylvester", counter, flag);
-	build_n_run("test-ntl-RR", counter, flag);
-	build_n_run("test-ntl-ZZ_p", counter, flag);
-	build_n_run("test-toeplitz-det", counter, flag);
-	build_n_run("test-smith-form", counter, flag);
-	build_n_run("test-smith-form-adaptive", counter, flag);
-	build_n_run("test-smith-form-iliopoulos", counter, flag);
+	build_n_run("test-ntl-hankel",            counter , flag);
+	build_n_run("test-ntl-lzz_p",             counter , flag);
+	build_n_run("test-ntl-toeplitz",          counter , flag);
+	build_n_run("test-ntl-sylvester",         counter , flag);
+	build_n_run("test-ntl-RR",                counter , flag);
+	build_n_run("test-ntl-ZZ_p",              counter , flag);
+	build_n_run("test-toeplitz-det",          counter , flag);
+	build_n_run("test-smith-form",            counter , flag);
+	build_n_run("test-smith-form-adaptive",   counter , flag);
+	build_n_run("test-smith-form-iliopoulos", counter , flag);
 #else
 	if (flag > 0) cout << "	not doing NTL dependent tests" << endl;
-	no_build_n_run("test-ntl-hankel", counter, flag);
-	no_build_n_run("test-ntl-lzz_p", counter, flag);
-	no_build_n_run("test-ntl-toeplitz", counter, flag);
-	no_build_n_run("test-ntl-RR", counter, flag);
-	no_build_n_run("test-ntl-sylvester", counter, flag);
-	no_build_n_run("test-ntl-ZZ_p", counter, flag);
-	no_build_n_run("test-toeplitz-det", counter, flag, "can we have non NTL version?");
-	no_build_n_run("test-smith-form", counter, flag);
-	no_build_n_run("test-smith-form-adaptive", counter, flag);
-	no_build_n_run("test-smith-form-iliopoulos", counter, flag);
+	no_build_n_run("test-ntl-hankel",            counter , flag);
+	no_build_n_run("test-ntl-lzz_p",             counter , flag);
+	no_build_n_run("test-ntl-toeplitz",          counter , flag);
+	no_build_n_run("test-ntl-RR",                counter , flag);
+	no_build_n_run("test-ntl-sylvester",         counter , flag);
+	no_build_n_run("test-ntl-ZZ_p",              counter , flag);
+	no_build_n_run("test-toeplitz-det",          counter , flag, "can we have non NTL version?");
+	no_build_n_run("test-smith-form",            counter , flag);
+	no_build_n_run("test-smith-form-adaptive",   counter , flag);
+	no_build_n_run("test-smith-form-iliopoulos", counter , flag);
 #endif
 
 #if __LINBOX_HAVE_LIDIA
@@ -216,10 +217,10 @@ build |wc" should yield the same number of lines.
 
 #if __LINBOX_HAVE_ATLAS
 	if (flag > 0) cout << "	Atlas dependent tests" << endl;
-	build_n_run("./test-optimization", counter, flag);
+	no_build_n_run("./test-optimization", counter, flag, "not a test");
 #else
 	if (flag > 0) cout << "	not doing Atlas dependent test" << endl;
-	no_build_n_run("test-optimization", counter, flag, "?");
+	no_build_n_run("test-optimization", counter, flag, "not a test");
 #endif
 
 	// tests of "doubles as a field" which doesn't adhere to LinBox field or ring specs.
@@ -235,7 +236,7 @@ build |wc" should yield the same number of lines.
 	no_build_n_run("test-quad-matrix", counter, flag, "half baked, bds responsible"); no_build_n_run("test-dense-zero-one", counter, flag, "half baked, bds responsible"); build_n_run("test-zo", counter, flag, "half baked, BY responsible");
 	// test-integer-tools -- there is no test-integer-tools.C file
 	// no one has taken these on.
-	//no_build_n_run("test-mg-block-lanczos", counter, flag, "make fails, nobody responsible");
+	no_build_n_run("test-la-block-lanczos",counter,flag,"segfaults");
 #endif
 
 #if 0
@@ -249,8 +250,8 @@ build |wc" should yield the same number of lines.
 	no_build_n_run("test-image-field", counter, flag, "deprecated");
 
 //BENCHMARKS =
-	build_n_run("benchmark-fields", counter, flag);
-	build_n_run("benchmark-blas-domain", counter, flag);
+	build_n_run("benchmark-fields", counter, flag, "not a test");
+	build_n_run("benchmark-blas-domain", counter, flag, "not a test");
 
 # I put test-gssv_rank in hmrg:~saunders/gen_superlu.  It is not linbox until and unless it is made to work
 # test-gssv is an ntl test
