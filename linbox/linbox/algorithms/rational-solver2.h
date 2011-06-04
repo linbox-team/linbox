@@ -78,15 +78,17 @@ namespace LinBox
 				return SS_FAILED;
 
 			linbox_check((b.size() == M.rowdim()) && (num. size() == M.coldim()));
-			int n = M. rowdim();
+			int n = (int)M. rowdim();
 			integer mentry, bnorm; mentry = 1; bnorm = 1;
 			typename InVector::const_iterator b_p;
 			Integer tmp_I; integer tmp;
-			typename IMatrix::ConstRawIterator raw_p;
-			for (raw_p = M. rawBegin(); raw_p != M. rawEnd(); ++ raw_p) {
-				r. convert (tmp, *raw_p);
-				tmp = abs (tmp);
-				if (tmp > mentry) mentry = tmp;
+			{
+				typename IMatrix::ConstRawIterator raw_p;
+				for (raw_p = M. rawBegin(); raw_p != M. rawEnd(); ++ raw_p) {
+					r. convert (tmp, *raw_p);
+					tmp = abs (tmp);
+					if (tmp > mentry) mentry = tmp;
+				}
 			}
 
 			for (b_p = b. begin(); b_p != b.  end(); ++ b_p) {
@@ -187,13 +189,15 @@ namespace LinBox
 	{
 		enum CBLAS_ORDER order = CblasRowMajor;
 		int lda = n;
-		int P[n];
+		int *P = new int[n];
 		int ierr = clapack_dgetrf (order, n, n, M, lda, P);
 		if (ierr != 0) {
 			std::cerr << "In RationalSolver::cblas_dgeinv Matrix is not full rank" << std::endl;
+			delete[] P ;
 			return -1;
 		}
 		clapack_dgetri (order, n, M, lda, P);
+		delete[] P ;
 		return 0;
 	}
 
@@ -276,7 +280,7 @@ namespace LinBox
 				return 2;
 			}
 
-			int scalar = ((long long int)1 << shift);
+			int scalar = (int) (1UL << shift);
 			for (pd = d, p2 = x; pd != d + n; ++ pd, ++ p2)
 				//better use round, but sun sparc machine doesnot supprot it
 				*pd = floor (*p2 * scalar);
@@ -500,7 +504,7 @@ namespace LinBox
 			for (pd = d; pd != d + n; ++ pd, ++ p2) {
 				tmp -= (long long int)*pd * (long long int) *p2;
 			}
-			*p1 = tmp;
+			*p1 = (double) tmp;
 		}
 		return 0;
 	}

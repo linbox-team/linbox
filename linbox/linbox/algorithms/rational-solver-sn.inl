@@ -1,3 +1,27 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+
+/* Copyright (C) 2011 LinBox
+ * Written Bryan Youse <>
+ *
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
+ * Boston, MA 02110-1301, USA.
+ */
+
 // rational-solver-sn.inl
 // WARNING: this file is included from INSIDE the definition of class LinBox::RationalSolverSN
 
@@ -13,7 +37,8 @@
 
 #define log_2(x) (log(x)/M_LN2)
 
-int zw_shift(NumericSolver & NS_S, size_t n, FVector &r, FVector &x){
+int zw_shift(NumericSolver & NS_S, size_t n, FVector &r, FVector &x)
+{
 	//  ZW method for calculating shift
 	// compute ax
 	FVector ax(n);
@@ -96,11 +121,11 @@ int rat_sol(IVector& numx, Int& denx, FVector& xs_int, FVector& xs_frac, IVector
 		//writeVec(xs_frac, "xs_frac from loop");
 		//writeVec(quo, "quo");
 		/* fails to write!!
-		_VDF.write(std::cerr << "nextx from loop: ", nextx) << std::endl;
-		_VDF.write(std::cerr << "xs_frac from loop: ", xs_frac) << std::endl;
-		_VDF.write(std::cerr << "quo minus 1: ", quo) << std::endl;
-		if ( 0 == iterations%500) std::cerr << iterations << " MAX DIFFERENCE: " << q << std::endl;
-		*/
+		   _VDF.write(std::cerr << "nextx from loop: ", nextx) << std::endl;
+		   _VDF.write(std::cerr << "xs_frac from loop: ", xs_frac) << std::endl;
+		   _VDF.write(std::cerr << "quo minus 1: ", quo) << std::endl;
+		   if ( 0 == iterations%500) std::cerr << iterations << " MAX DIFFERENCE: " << q << std::endl;
+		   */
 
 		//if (q == 0.0)   (QUIT HERE??)
 		if (q < threshold) {
@@ -129,10 +154,10 @@ int rat_sol(IVector& numx, Int& denx, FVector& xs_int, FVector& xs_frac, IVector
 			//  point of no return, quit
 			if (shift < 2){
 				/*
-				std::cerr << "rat_sol failure, no bits in x overlap in nextx." << std::endl;
-				std::cerr << "Iterations: " << iterations << std::endl;
-				writeVec(b, "b", 0, 5); writeVec(r, "r", 0, 5);
-				*/
+				   std::cerr << "rat_sol failure, no bits in x overlap in nextx." << std::endl;
+				   std::cerr << "Iterations: " << iterations << std::endl;
+				   writeVec(b, "b", 0, 5); writeVec(r, "r", 0, 5);
+				   */
 				return -1;
 			}
 
@@ -149,31 +174,32 @@ int rat_sol(IVector& numx, Int& denx, FVector& xs_int, FVector& xs_frac, IVector
 	return 0;
 }// rat_sol
 
-inline void upshift(){
+inline void upshift()
+{
 	switch(sstatus){
 		//  exponential increase
-		case SHIFT_GROW:
-			shift_prev = shift;
-			debugneol("G");
-			shift_max = shift<<=1;
-			break;
-		case SHIFT_SEARCH:
-			shift_prev = shift;
-			debugneol("S");
-			shift = (shift + shift_max)>>1;
-			searchPeak = true;
-			break;
-		case SHIFT_PEAK:
-			debugneol("P");
-			//  maybe increase if we have been successful for a while
-			break;
-		case SHIFT_MAX:
-			debugneol("M");
-			//  machine precision-- can go no higher
-			break;
-		case SHIFT_SHRINK:
-			debugneol("H");
-			break;
+	case SHIFT_GROW:
+		shift_prev = shift;
+		debugneol("G");
+		shift_max = shift<<=1;
+		break;
+	case SHIFT_SEARCH:
+		shift_prev = shift;
+		debugneol("S");
+		shift = (shift + shift_max)>>1;
+		searchPeak = true;
+		break;
+	case SHIFT_PEAK:
+		debugneol("P");
+		//  maybe increase if we have been successful for a while
+		break;
+	case SHIFT_MAX:
+		debugneol("M");
+		//  machine precision-- can go no higher
+		break;
+	case SHIFT_SHRINK:
+		debugneol("H");
+		break;
 	}
 	if(shift > SHIFT_BOUND){
 		shift_max = shift = SHIFT_BOUND;
@@ -182,44 +208,46 @@ inline void upshift(){
 	debug("^shift: "  << shift << "  max: " << shift_max << "  prev: " << shift_prev);
 }
 
-inline void downshift(){
+inline void downshift()
+{
 	/*
 	   shift -= 2;
 	   sstatus = SHIFT_PEAK;
 	   cerr << "peaked at " << shift << endl;
-	 */
+	   */
 	//  back up
 	switch(sstatus){
-		case SHIFT_GROW:
-			debugneol("G");
-		case SHIFT_MAX:
-			debugneol("M");
-		case SHIFT_SEARCH:
-			//  TODO - previous shift could fail
-			debugneol("S");
-			shift_max = shift;
-			shift = (shift_prev + shift)>>1;
-			sstatus = SHIFT_SEARCH;
-			//  searchPeak true means we were going up but got knocked back
-			if(shift == shift_prev || searchPeak)
-				sstatus = SHIFT_PEAK;
-			break;
-		case SHIFT_SHRINK:
-			debugneol("H");
-			shift >>= 1;
-			break;
-		case SHIFT_PEAK:
-			debugneol("P");
-			shift -= 1;
-			break;
-		default:
-			break;
+	case SHIFT_GROW:
+		debugneol("G");
+	case SHIFT_MAX:
+		debugneol("M");
+	case SHIFT_SEARCH:
+		//  TODO - previous shift could fail
+		debugneol("S");
+		shift_max = shift;
+		shift = (shift_prev + shift)>>1;
+		sstatus = SHIFT_SEARCH;
+		//  searchPeak true means we were going up but got knocked back
+		if(shift == shift_prev || searchPeak)
+			sstatus = SHIFT_PEAK;
+		break;
+	case SHIFT_SHRINK:
+		debugneol("H");
+		shift >>= 1;
+		break;
+	case SHIFT_PEAK:
+		debugneol("P");
+		shift -= 1;
+		break;
+	default:
+		break;
 	}
 
 	debug("vshift: "  << shift << "  max: " << shift_max << "  prev: " << shift_prev);
 } // downshift
 
-inline void update_xs(FVector& xs_int, FVector& xs_frac, FVector& x){
+inline void update_xs(FVector& xs_int, FVector& xs_frac, FVector& x)
+{
 	Float scalar, tmp;
 	int64_t shifted = ((int64_t)1 << shift);
 	_F.init(scalar, shifted);
@@ -235,7 +263,8 @@ inline void update_xs(FVector& xs_int, FVector& xs_frac, FVector& x){
 	return;
 }
 
-inline void update_r(FVector& r, FVector& xs_int){
+inline void update_r(FVector& r, FVector& xs_int)
+{
 	Float scalar;
 	size_t n = r.size();
 	int64_t shifted = ((int64_t)1 << shift);
@@ -299,7 +328,8 @@ inline void update_r_exact(IVector& r_exact, FVector& r, FVector& xs_int, IMatri
 } // update_r_exact
 
 // no longer called...
-inline int HadamardBound(integer& B, FMatrix& DM) {
+inline int HadamardBound(integer& B, FMatrix& DM)
+{
 	size_t n = DM.rowdim();
 	zw_hbound (B, n, n, &*DM.rawBegin()); // compute the Hadamard bound
 	B = B * B;
@@ -316,13 +346,14 @@ inline int HadamardBound(integer& B, FMatrix& DM) {
 }
 
 //update num, *num <- *num * 2^shift + d
-inline IVector& update_num (IVector& num, const FVector& d) {
+inline IVector& update_num (IVector& num, const FVector& d)
+{
 	size_t n = d.size();
 	IVector d_i(n);
 	for (size_t i = 0; i < n; ++i) {
 		_R.init(d_i[i], d[i]);
 	}
-	Int scalar; _R.init(scalar, (long long int)1 << shift);
+	Int scalar; _R.init(scalar, 1UL << shift);
 	//  TODO - analyze GMP shifting capability
 	_VDR.mulin(num, scalar);
 	_VDR.addin(num, d_i);
@@ -330,7 +361,8 @@ inline IVector& update_num (IVector& num, const FVector& d) {
 }
 
 //update r = r * shift - M d
-inline static int update_r_ll (double* r, int n, const double* M, const double* d, int shift) {
+inline static int update_r_ll (double* r, int n, const double* M, const double* d, int shift)
+{
 	long long int tmp;
 	double* p1;
 	const double* p2;
@@ -346,13 +378,15 @@ inline static int update_r_ll (double* r, int n, const double* M, const double* 
 	return 0;
 }
 
-inline static size_t nextPower2(size_t n){
+inline static size_t nextPower2(size_t n)
+{
 	size_t p = 1;
 	while(p < n) p <<= 1;
 	return p;
 }
 
-inline static double highAbs(FMatrix M){
+inline static double highAbs(FMatrix M)
+{
 	double max = 0;
 	typename FMatrix::RawIterator ri = M.rawBegin();
 	for(; ri != M.rawEnd(); ++ri){
@@ -362,7 +396,8 @@ inline static double highAbs(FMatrix M){
 	return max;
 }
 
-inline static double zw_dOOnorm(const double* M, int m, int n) {
+inline static double zw_dOOnorm(const double* M, int m, int n)
+{
 	double norm = 0;
 	double old = 0;
 	const double* p;
@@ -375,11 +410,13 @@ inline static double zw_dOOnorm(const double* M, int m, int n) {
 	return norm;
 }
 
-inline static double zw_dmax (const int N, const double* a, const int inc) {
+inline static double zw_dmax (const int N, const double* a, const int inc)
+{
 	return fabs(a[cblas_idamax (N, a, inc)]);
 }
 
-inline static int zw_hbound (integer& b, int m, int n, const double* M){
+inline static int zw_hbound (integer& b, int m, int n, const double* M)
+{
 	double norm = 0;
 	const  double* p;
 	integer tmp;
@@ -399,7 +436,8 @@ inline static int zw_hbound (integer& b, int m, int n, const double* M){
  *  bound:  upper bound on printed value (0 - ignore bound) */
 template<class Vec>
 std::ostream& writeVec(Vec& out, const char *tag="", integer bound=/*40000000*/0,
-		size_t numEntries=5, std::ostream &os=std::cerr){
+		       size_t numEntries=5, std::ostream &os=std::cerr)
+{
 	os << tag << ": [";
 
 	size_t n = (out.size() < numEntries ? out.size() : numEntries);
@@ -418,7 +456,8 @@ std::ostream& writeVec(Vec& out, const char *tag="", integer bound=/*40000000*/0
 }
 
 template<class Vec>
-void writeVecFile(Vec& out, const char* file){
+void writeVecFile(Vec& out, const char* file)
+{
 	std::ofstream os;
 	os.open(file, std::ios::out);
 
@@ -432,7 +471,8 @@ void writeVecFile(Vec& out, const char* file){
 
 // to write diagnostic info to files for further testing
 template <class Matrix>
-void dumpData(const Matrix &M, const IVector &b, IVector &numx, integer &denx, integer &denBound){
+void dumpData(const Matrix &M, const IVector &b, IVector &numx, integer &denx, integer &denBound)
+{
 #ifdef SPITOUT
 	std::ofstream matout;
 	matout.open("debug.mat", std::ios::out);

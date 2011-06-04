@@ -280,12 +280,12 @@ int main (int argc, char **argv)
 				}
 			}
 			std::vector<size_t>::const_iterator rit=ranks.begin();
-			unsigned long modrank = *rit;
+			// unsigned long modrank = *rit;
 			for(++rit; rit!= ranks.end(); ++rit) {
 				if ((*rit)>= coprimeR) break;
 				for(size_t i=(*rit); i < coprimeR; ++i)
 					SmithDiagonal[i] *= sit->first;
-				modrank = *rit;
+				// modrank = *rit;
 			}
 		}
 	}
