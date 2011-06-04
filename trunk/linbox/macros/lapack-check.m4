@@ -27,6 +27,7 @@ AC_TRY_RUN(dnl ICC ?
 ],dnl
 [dnl
    AC_MSG_RESULT(ok)
+   AC_DEFINE(HAVE_LAPACK,1,[Define if LAPACK is available])
    AM_CONDITIONAL(LINBOX_HAVE_LAPACK, true)
 ],dnl
 [
