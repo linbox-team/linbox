@@ -29,7 +29,13 @@ liblbdriver_la_SOURCES= lb-element.C 	\
 			lb-charpoly.C   \
 			lb-solve.C
 
+if [[  "x${CCNAM}" = "xicc" ]] ; then
+liblbdriver_la_LDFLAGS=$(GIVARO_LIBS) $(GMP_LIBS) $(NTL_LIBS) $(BLAS_LIBS) $(LDADD) $(top_srcdir)/linbox/liblinbox.la
+else
 liblbdriver_la_LDFLAGS=$(GIVARO_LIBS) $(GMP_LIBS) $(NTL_LIBS) $(BLAS_LIBS) $(LDADD) $(top_srcdir)/linbox/liblinbox.la -Wl,-zmuldefs
+fi
+
+
 
 pkginclude_HEADERS=\
 		lb-driver.h              \
