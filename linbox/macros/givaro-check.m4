@@ -55,7 +55,8 @@ if test -r "$GIVARO_HOME/include/givaro/givconfig.h"; then
 
 	if test "x$GIVARO_HOME" != "x/usr" -a "x$GIVARO_HOME" != "x/usr/local"; then
 		GIVARO_CFLAGS="-I${GIVARO_HOME}/include"
-		GIVARO_LIBS="-L${GIVARO_HOME}/lib -lgivaro ${GIVARO_HOME}/lib/libgivaro.so"
+		GIVARO_LIBS="-L${GIVARO_HOME}/lib -lgivaro"
+dnl ${GIVARO_HOME}/lib/libgivaro.so"
 	else
 		GIVARO_CFLAGS=
 		GIVARO_LIBS="-lgivaro"
