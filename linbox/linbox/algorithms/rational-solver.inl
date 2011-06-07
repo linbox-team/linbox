@@ -52,14 +52,14 @@
 
 
 
-#ifdef __LINBOX_BLAS_AVAILABLE
+// #ifdef __LINBOX_BLAS_AVAILABLE
 #include <linbox/config-blas.h>
 #include <linbox/blackbox/blas-blackbox.h>
 #include <linbox/matrix/blas-matrix.h>
 #include <linbox/algorithms/blas-domain.h>
 #include <linbox/matrix/factorized-matrix.h>
 #include <linbox/util/timer.h>
-#endif
+// #endif
 
 //#define DEBUG_DIXON
 //#define DEBUG_INC
