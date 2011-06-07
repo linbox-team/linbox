@@ -20,7 +20,10 @@
 #include "linbox/util/commentator.h"
 #include "linbox/util/timer.h"
 
+#ifdef __LINBOX_HAVE_LAPACK
 #include <linbox/algorithms/numeric-solver-lapack.h>
+#endif
+
 #ifdef __LINBOX_HAVE_MATLAB
 	#include <linbox/algorithms/numeric-solver-matlab.h>
 #endif

@@ -47,9 +47,9 @@
 #include <linbox/util/timer.h>
 
 
-#ifdef __LINBOX_BLAS_AVAILABLE
+// #ifdef __LINBOX_BLAS_AVAILABLE
 #include <fflas-ffpack/fflas/fflas.h>
-#endif
+// #endif
 
 //#define DEBUG_CHUNK_SETUP
 //#define DEBUG_CHUNK_APPLY
