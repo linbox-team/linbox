@@ -18,7 +18,7 @@ AC_DEFUN([LB_CHECK_EXPAT],
 [
 
 AC_ARG_WITH(expat,
-[AC_ARG_WITH([--with-expat=<path>|yes|no], [Use Expat library. If argument is no, you do not
+[AC_HELP_STRING([--with-expat=<path>|yes|no], [Use Expat library. If argument is no, you do not
                              have the library installed on your machine (set
 			     as default). If argument is yes or <empty> that
 			     means the library is reachable with the standard
