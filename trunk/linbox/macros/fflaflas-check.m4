@@ -92,7 +92,7 @@ if test "x$fflaflas_found" = "xyes" ; then
     AC_DEFINE(HAVE_FFLAFLAS,1,[Define if FFLAFLAS is installed])
 	FF_VER=`$FFLAFLAS_LOC/bin/fflasffpack-config --decimal-version`
 	AC_DEFINE_UNQUOTED(FFLAFFLAS_VERSION, $FF_VER ,[what version of FFLAFLAS is installed])
-    HAVE_FFLAFLAS=yes
+	HAVE_FFLAFLAS=yes
     if test "x$fflasflas_cross" != "xyes"; then
         AC_MSG_RESULT(found)
     else

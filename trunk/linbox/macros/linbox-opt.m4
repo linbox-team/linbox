@@ -18,7 +18,8 @@ BACKUP_LIBS=${LIBS}
 
 CXXFLAGS=${FFLAFLAS_CFLAGS}
 
-AC_TRY_RUN([ #include "fflasffpack-config.h"
+AC_TRY_RUN(
+[   #include "fflas-ffpack/fflas-ffpack-config.h"
    int main() {
 #ifdef __FFLAFLAS_STRASSEN_OPTIMIZATION
 return 0;

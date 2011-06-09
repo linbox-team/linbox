@@ -102,7 +102,7 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-commentator",                  counter , flag);
 	build_n_run("test-companion",                    counter , flag);
 	build_n_run("test-cra",                          counter , flag);
-	build_n_run("test-cradomain",                    counter , flag);
+	build_n_run("test-cradomain",                    counter , flag,"intermittent failure, as in 1 every 10-20");
 	build_n_run("test-dense",                        counter , flag);
 	build_n_run("test-det",                          counter , flag);
 	build_n_run("test-diagonal",                     counter , flag);
