@@ -25,7 +25,6 @@
 #ifndef __LINBOX_config_blas_H
 #define __LINBOX_config_blas_H
 
-#include <fflas-ffpack/fflas-ffpack-config.h>
 #include <fflas-ffpack/config-blas.h>
 
 #ifdef __FFLAFLAS_HAVE_BLAS
