@@ -18,7 +18,7 @@ CXXFLAGS="${BACKUP_CXXFLAGS} ${FFLAFLAS_CFLAGS} ${BLAS_CFLAGS}"
 LIBS="${BACKUP_LIBS} ${BLAS_LIBS}"
 
 AC_TRY_RUN(dnl ICC ?
-[   #include "fflasffpack-config.h"
+[   #include "fflas-ffpack/fflas-ffpack-config.h"
 	#ifdef __FFLAFLAS_HAVE_LAPACK
 	   int main() { return 0 ; }
    #else

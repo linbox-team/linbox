@@ -25,6 +25,25 @@
 #ifndef __LINBOX_config_blas_H
 #define __LINBOX_config_blas_H
 
+#include <fflas-ffpack/fflas-ffpack-config.h>
 #include <fflas-ffpack/config-blas.h>
+
+#ifdef __FFLAFLAS_HAVE_BLAS
+#define __LINBOX_HAVE_BLAS 1
+#endif
+
+#ifdef __FFLAFLAS_HAVE_CBLAS
+#define __LINBOX_HAVE_CBLAS 1
+#endif
+
+#ifdef __FFLAFLAS_HAVE_LAPACK
+#define __LINBOX_HAVE_LAPACK 1
+#endif
+
+#ifdef __FFLAFLAS_HAVE_CLAPACK
+#define __LINBOX_HAVE_CLAPACK 1
+#endif
+
+
 
 #endif //__LINBOX_config_blas_H

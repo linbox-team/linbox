@@ -253,7 +253,7 @@ echo '**************************************************************************
 exit 1
 ])
 
-LB_CHECK_LAPACK
+# LB_CHECK_LAPACK
 
 # AC_MSG_RESULT($BLAS_LIBS)
 # AC_MSG_RESULT($BLAS_CFLAGS)
@@ -262,7 +262,7 @@ LB_CHECK_LAPACK
 LB_CHECK_EXPAT
 
 LB_BENCH
-LB_OPT
+# LB_OPT
 LB_DOC
 
 if test ! -d ./benchmarks/data  ; then
