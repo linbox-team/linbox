@@ -43,6 +43,4 @@
 #define __LINBOX_HAVE_CLAPACK 1
 #endif
 
-
-
 #endif //__LINBOX_config_blas_H
