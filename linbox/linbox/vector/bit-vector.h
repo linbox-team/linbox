@@ -37,8 +37,7 @@ namespace LinBox
 		t &= 0xf;
 		return bool( (0x6996 >> t) & 0x1);
 	}
-#endif
-#if (__LINBOX_SIZEOF_LONG == 8)
+#elif (__LINBOX_SIZEOF_LONG == 8)
 #define __LINBOX_BITSOF_LONG 64
 #define __LINBOX_BITSOF_LONG_MUN 63
 #define __LINBOX_LOGOF_SIZE 6
@@ -54,6 +53,8 @@ namespace LinBox
 		t &= 0xf;
 		return bool( (0x6996 >> t) & 0x1);
 	}
+#else
+#pragma message "error SIZEOF_LONG not defined !"
 #endif
 
 	/** A vector of boolean 0-1 values, stored compactly to save space.

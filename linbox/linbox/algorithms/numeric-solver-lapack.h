@@ -38,7 +38,12 @@ namespace LinBox {
 	struct LPS {
 
 		LPS() : _Ap(NULL), _IM(NULL), _m(0), _n(0) {}
-		~LPS() { delete _IM; }
+		~LPS() {
+			if(_IM) {
+				// std::cout << "delete" << std::endl;
+				delete[] _IM;
+			}
+		}
 		LPS(Matrix& A) { init(A); }
 		int init(Matrix & A); // set up for solving - expect multiple subsequent calls to solve() and apply().
 
@@ -61,6 +66,7 @@ namespace LinBox {
 		//  kludgey pointer to beginning of double vals
 		void *thedata = &*(_Ap->rawBegin());
 
+		linbox_check(_n);
 		_IM = new double[_n * _n];
 		memcpy((void *)_IM, thedata, sizeof(double)*_m*_n);
 

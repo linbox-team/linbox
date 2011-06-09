@@ -271,17 +271,17 @@ namespace LinBox {
 				return SNSS_FAILED;
 			}
 
-			/*
+#if 0
 			//  Answer checking
 			IVector y(n), z(n);
 			M.apply(y, num);
 			_VDR.mul(z, b, den);
 			if ( !_VDR.areEqual(y, z)) {
-			std::cerr << "fail check: A*x != b exactly" << std::endl;
-			dumpData(M, b, numx, denx, denBound);
-			return SNSS_FAILED;
+				std::cerr << "fail check: A*x != b exactly" << std::endl;
+				dumpData(M, b, numx, denx, denBound);
+				return SNSS_FAILED;
 			}
-			*/
+#endif
 
 			return SNSS_OK;
 
