@@ -58,7 +58,8 @@ namespace LinBox {
 	};
 
 	template <class Matrix>
-	int LPS<Matrix>::init(Matrix& A) {
+	int LPS<Matrix>::init(Matrix& A)
+	{
 		_Ap = &A; // would need memcpy if *_Ap to get mods.
 		_m = A.rowdim();
 		_n = A.coldim();
@@ -73,11 +74,11 @@ namespace LinBox {
 		// time to set up inverse of matrix
 		int lda = (int)_n;
 		int * P = new int[_n];
-		//std::cerr << "Bef getrf: M_0,0 " << *_IM << ", M_n-1,n-1 " << *(_IM+_n*_n-1) << std::endl;
+		// std::cerr << "Bef getrf: M_0,0 " << *_IM << ", M_n-1,n-1 " << *(_IM+_n*_n-1) << std::endl;
 		int ierr = clapack_dgetrf (CblasRowMajor, (int)_n, (int)_n, _IM, lda, P);
-		//std::cerr << "Aft getrf: M_0,0 " << *_IM << ", M_n-1,n-1 " << *(_IM+_n*_n-1) << std::endl;
+		// std::cerr << "Aft getrf: M_0,0 " << *_IM << ", M_n-1,n-1 " << *(_IM+_n*_n-1) << std::endl;
 		if (ierr != 0) {
-			//std::cerr << "In LPS::init Matrix is not full rank" << std::endl;
+			// std::cerr << "In LPS::init Matrix is not full rank" << std::endl;
 			delete[] P ;
 			return -1;
 		}
@@ -89,23 +90,30 @@ namespace LinBox {
 
 	template <class Matrix>
 	template<class Vector>
-	int LPS<Matrix>::solve(Vector& x, const Vector& b) {
+	int LPS<Matrix>::solve(Vector& x, const Vector& b)
+	{
+		linbox_check(typeid(typename Vector::value_type)==typeid(double));
+		// std::cout << "input :" << b << std::endl;
 		const double * bdata = &*(b.begin());
 		double * xdata = &*(x.begin());
 
 		cblas_dgemv(CblasRowMajor, CblasNoTrans, (int)_m, (int)_n, 1, _IM, (int)_n, bdata, 1, 0, xdata, 1);
+		// std::cout << "result to solve :" << x << std::endl;
 
 		return 0;
 	}
 
 	template <class Matrix>
 	template<class Vector>
-	Vector& LPS<Matrix>::apply(Vector& y, const Vector& x) {
+	Vector& LPS<Matrix>::apply(Vector& y, const Vector& x)
+	{
+		// std::cout << "input :" << x << std::endl;
 		const double * xdata = &*(x.begin());
 		double * ydata = &*(y.begin());
 		double *thedata = &*(_Ap->rawBegin());
 
 		cblas_dgemv(CblasRowMajor, CblasNoTrans, (int)_m, (int)_n, 1, thedata, (int)_n, xdata, 1, 0, ydata, 1);
+		// std::cout << "result to apply :" << y << std::endl;
 
 		return y;
 	}

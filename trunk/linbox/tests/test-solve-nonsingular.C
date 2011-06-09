@@ -321,30 +321,32 @@ int main(int argc, char** argv) {
 #ifdef __LINBOX_HAVE_LAPACK
 			case lapack: {
 				 report << "Using lapack numeric solver." << endl;
-				 typedef LPS<Matrix> NumSolver;	NumSolver numSolver;
+				 typedef LPS<Matrix> NumSolver;
+				 NumSolver numSolver;
 				 RationalSolverSN<Ring, NumSolver > rsolver(R, numSolver, e);
-				 pass = pass && testRandomSolve(R, rsolver, A, b);
+				 pass &= testRandomSolve(R, rsolver, A, b);
 				}
 				break;
 #endif
 #ifdef __LINBOX_HAVE_MATLAB
 			case matlab: {
 				 report << "Using matlab numeric solver." << endl;
-				 typedef MLS<Matrix> NumSolver;	NumSolver numSolver;
+				 typedef MLS<Matrix> NumSolver;
+				 NumSolver numSolver;
 				 RationalSolverSN<Ring, NumSolver > rsolver(R, numSolver, e);
-				 pass = pass && testRandomSolve(R, rsolver, A, b);
+				 pass &= testRandomSolve(R, rsolver, A, b);
 				}
 				break;
 #endif
-						 /*
+#if 0 /* NIY */
 			case superlu: {
 				report << "Using SuperLU numeric solver." << endl;
 				typedef SLU<Matrix> NumSolver;	NumSolver numSolver(file);
 				SNRationalSolver<Ring, NumSolver > rsolver(R, numSolver);
-				pass = pass && testRandomSolve(R, rsolver, s1, s2, mt, 1, e, k);
+				pass &= testRandomSolve(R, rsolver, s1, s2, mt, 1, e, k);
 				}
 				break;
-						  */
+#endif
 			default:
 				 break;
 		}

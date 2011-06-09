@@ -124,7 +124,7 @@ namespace LinBox {
 			//MatrixHom::map<FMatrix, IMatrix, Field>(DMp, M, _F);
 
 			if(n != M. rowdim() || n != M. coldim() || n != num.size()) {
-				//std::cerr << "solve fail 1 - dimension mismatch" << std::endl;
+				// std::cerr << "solve fail 1 - dimension mismatch" << std::endl;
 				return SNSS_FAILED;
 			}
 
@@ -206,7 +206,7 @@ namespace LinBox {
 				//tt.stop(); solve_timer += tt;
 
 				if(ret == 1){
-					//std::cerr << "numsym loop failed - likely lack of num accuracy" << std::endl;
+					// std::cerr << "numsym loop failed - likely lack of num accuracy" << std::endl;
 					return SNSS_FAILED;
 				}
 				else if(ret == 2) denBound = denx; // zero residual
@@ -215,9 +215,11 @@ namespace LinBox {
 				//std::cerr << bound << " " << loopBound << std::endl;
 				if(bound < loopBound){
 					//  update bound for next iteration (if applicable)
-					/* it_cost = solve_timer.realtime()/(double)iterations;
+#if 0
+				       	it_cost = solve_timer.realtime()/(double)iterations;
 					   rr_cost = rr_timer.realtime()/(double)rr_count;
-					   std::cerr << "iteration cost: " << it_cost << " v. rr cost: " << rr_cost << std::endl; */
+					   std::cerr << "iteration cost: " << it_cost << " v. rr cost: " << rr_cost << std::endl;
+#endif
 					Z.sqrt(bound, loopBound*bound);
 					bound <<= 2;
 					int rPos = rand()%(int)n;
@@ -243,31 +245,32 @@ namespace LinBox {
 
 			//timer.stop(); std::cerr << "rat_sol time: " << solve_timer.realtime() << " rr time: " << rr_timer.realtime() << " Total: " << timer << std::endl;
 
-			/*writeVec(numx, "numx", 0, 10);
-			  std::cerr << denx << std::endl;
-			  writeVec(num, "num");
-			  std::cerr << "den: (large)" << std::endl;// << den << endl;
-			  */
+#if 0
+			writeVec(numx, "numx", 0, 10);
+			std::cerr << denx << std::endl;
+			writeVec(num, "num");
+			std::cerr << "den: (large)" << std::endl;// << den << endl;
+#endif
 
 			if (recon_success) {
-				/*
-				   if(recon_status == 2) std::cerr << "reconstruction guaranteed" << std::endl;
-				   else std::cerr << "reconstruction speculative" << std::endl;
+#if 0
+				if(recon_status == 2) std::cerr << "reconstruction guaranteed" << std::endl;
+				else std::cerr << "reconstruction speculative" << std::endl;
 
-				   std::cerr << "Solve success. Iterations: " << iterations << std::endl;
-				   std::cerr << HIT << " hits, " << MISS << " misses. (";
-				   fprintf(stderr,  "%.2f", (float)(HIT)/(float)(HIT+MISS)*100.0);
-				   std::cerr << "%) Maximum shift: " << shift_max << std::endl;
-				   */
+				std::cerr << "Solve success. Iterations: " << iterations << std::endl;
+				std::cerr << HIT << " hits, " << MISS << " misses. (";
+				fprintf(stderr,  "%.2f", (float)(HIT)/(float)(HIT+MISS)*100.0);
+				std::cerr << "%) Maximum shift: " << shift_max << std::endl;
+#endif
 			}
 			else{
-				//std::cerr << "rat reconstruction asserts failure" << std::endl;
-				//dumpData(M, b, numx, denx, denBound);
+				// std::cerr << "rat reconstruction asserts failure" << std::endl;
+				// dumpData(M, b, numx, denx, denBound);
 				return SNSS_FAILED;
 			}
 
 			if (_R.isZero(den)) {
-				//std::cerr << "fail: zero denominator after rat-recons" << std::endl;
+				// std::cerr << "fail: zero denominator after rat-recons" << std::endl;
 				return SNSS_FAILED;
 			}
 
@@ -282,7 +285,6 @@ namespace LinBox {
 				return SNSS_FAILED;
 			}
 #endif
-
 			return SNSS_OK;
 
 		} // solve
