@@ -36,7 +36,6 @@ EXTRA_DIST=            \
 BASIC_TESTS =  \
         test-bitonic-sort             \
         test-blas-domain              \
-        test-block-wiedemann          \
         test-butterfly                \
         test-commentator              \
         test-companion                \
@@ -96,6 +95,7 @@ BASIC_TESTS =  \
         test-cradomain                \
 		test-rational-reconstruction-base
 
+#  test-block-wiedemann          \
 #  test-integer-tools
 
 # tests of components not adhering to LinBox requirements.
@@ -545,9 +545,10 @@ test_rational_solver_SOURCES =          \
 test_blas_domain_SOURCES=               \
         test-common.h                   \
         test-blas-domain.C
-test_block_wiedemann_SOURCES=               \
-        test-common.h                   \
-        test-block-wiedemann.C
+
+#  test_block_wiedemann_SOURCES=           \
+		#  test-common.h                   \
+		#  test-block-wiedemann.C
 
 test_ffpack_SOURCES=                    \
         test-common.h                   \
