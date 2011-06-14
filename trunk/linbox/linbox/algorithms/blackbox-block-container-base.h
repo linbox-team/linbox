@@ -77,7 +77,7 @@ namespace LinBox
 		// Sequence constructor from a blackbox and a field
 		// cs set the size of the sequence
 		BlackboxBlockContainerBase (const Blackbox *BD, const Field &F, size_t m, size_t n, size_t seed=time(NULL)) :
-			_F(F)  , _BB(BD), _size(BD->rowdim()/m + BD->coldim()/n +2) , _row(BD->rowdim()),  _col(BD->coldim()), _m(m), _n(n),  _value(m,n), _seed(seed)
+			_F(F)  , _BB(BD), _size(BD->rowdim()/m + BD->coldim()/n +2) , _N(BD->rowdim()),  _m(m), _n(n),  _value(m,n), _seed(seed)
 		{}
 
 
@@ -122,13 +122,6 @@ namespace LinBox
 		// column dimension of the sequence element
 		size_t coldim() const          { return _n; }
 
-		// row dimension of the matrix
-		size_t getrow() const { return _BB->rowdim();}
-
-		// col dimension of the matrix
-		size_t getcol() const { return _BB->rowcol();}
-
-
 	protected:
 
 		friend class const_iterator;
@@ -150,8 +143,7 @@ namespace LinBox
 		Field                        _F;
 		const Blackbox             *_BB;
 		size_t                    _size;
-		size_t                     _row;
-		size_t                     _col;
+		size_t			     _N;
 		size_t                       _m;
 		size_t                       _n;
 
@@ -189,8 +181,10 @@ namespace LinBox
 		void init (const Block& U, const Block& V)
 		{
 
-			linbox_check ( U.coldim() == _row);
-			linbox_check ( V.rowdim() == _col);
+			linbox_check ( U.rowdim() == _m);
+			linbox_check ( U.coldim() == _N);
+			linbox_check ( V.rowdim() == _N);
+			linbox_check ( V.coldim() == _n);
 			casenumber = 1;
 			_U = U;
 			_V = V;

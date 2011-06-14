@@ -96,7 +96,9 @@ namespace LinBox
 			if (IterCounter==0) {
 				++IterCounter;
 				Domain D(*primeiter);
-				commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
+				std::ostream& report = commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+				report << "With prime " << *primeiter << std::endl;
+				//commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
 				++primeiter;
 				DomainElement r; D.init(r);
 				Builder_.initialize( D, Iteration(r, D) );

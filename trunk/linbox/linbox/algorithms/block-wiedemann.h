@@ -86,8 +86,8 @@ namespace LinBox
 			tmp = n;
 			//q = tmp.bitsize()-1;
 			q=sqrt(tmp);
-			cout<<"row block: "<<p<<endl;
-			cout<<"col block: "<<q<<endl;
+			//cout<<"row block: "<<p<<endl;
+			//cout<<"col block: "<<q<<endl;
 
 
 			Block U(p,m), UA(p-1,m), V(n,q);
@@ -100,8 +100,8 @@ namespace LinBox
 				for (size_t j=0;j<m;++j)
 					_rand.random(UA.refEntry(i,j));
 
-			Block::RowIterator        iter_U  = U.rowBegin();
-			Block::ConstRowIterator   iter_UA = UA.rowBegin();
+			typename Block::RowIterator        iter_U  = U.rowBegin();
+			typename Block::ConstRowIterator   iter_UA = UA.rowBegin();
 			++iter_U;
 			for (; iter_UA != UA.rowEnd(); ++iter_UA, ++iter_U)
 				A.applyTranspose( *iter_U , *iter_UA );
@@ -184,12 +184,12 @@ namespace LinBox
 				 * this should decrease the number of sparse apply but increase memory requirement.
 				 */
 				size_t deg = degree[idx];
-				BlasMatrix<Element> idx_poly(deg+1,p-1);
+				Block idx_poly(deg+1,p-1);
 				for (size_t i=0;i<deg+1;++i)
 					for (size_t j=0;j<p-1;++j)
 						idx_poly.setEntry(i,j,minpoly[i].getEntry(idx,j+1));
 
-				BlasMatrix<Element> Combi(deg+1,m);
+				Block Combi(deg+1,m);
 				_BMD.mul(Combi,idx_poly,UA);
 
 

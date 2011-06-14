@@ -124,8 +124,12 @@ namespace LinBox
 		 *  This constructor must be defined in a specialization.
 		 */
 		UnparametricField(integer q = 0, size_t e = 1) :
-			FFPACK::UnparametricField<K>((unsigned long)q,(unsigned long)e),
-			_p(q), _card(q == 0 ? integer(-1) : pow(q, e) )
+			FFPACK::UnparametricField<K>(q, e),
+			//FFPACK::UnparametricField<K>((unsigned long)q,(unsigned long)e)
+			_p(q), 
+			_card(q == 0 ? 
+			integer(-1) : 
+			pow(q, e) )
 			{}  // assuming q is a prime or zero.
 
 		/// construct this field as copy of F.
