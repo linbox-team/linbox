@@ -41,11 +41,10 @@ namespace LinBox
 	template <class _Element>
 	template <class Field>
 	DenseMatrixBase<_Element>::DenseMatrixBase( MatrixStream<Field>& ms ) :
-		_rep(0), _rows(0), _cols(0), _ptr(NULL)
+		_rep(0), _rows(0), _cols(0)
 	{
 		if( !ms.getArray(_rep) || !ms.getRows(_rows) || !ms.getColumns(_cols) )
 			throw ms.reportError(__FUNCTION__,__LINE__);
-		_ptr = &_rep[0];
 	}
 
 	/* Iterator classes */
@@ -784,7 +783,6 @@ namespace LinBox
 		Element zero;
 		F.init(zero,0UL);
 		_rep.resize(_rows * _cols, zero);
-		_ptr= &_rep[0];
 
 		if ((c != 'M') && (c != 'm')) {
 			for (p = rawBegin (); p != rawEnd (); ++p) {

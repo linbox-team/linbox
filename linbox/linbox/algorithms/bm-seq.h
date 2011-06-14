@@ -556,7 +556,7 @@ namespace LinBox {
 				BM_iterator temp(*this);
 
 				//See if a matrix has been pushed on the sequence
-				//if it has, then recompute the seqit since it may
+				//if it has, then recompute the seqel since it may
 				//have become corrupt.
 				//Also reset the size to the correct size of the sequence
 				if(_size < _seq.size()){
@@ -579,16 +579,18 @@ namespace LinBox {
 				//Create a matrix domain for addition and multiplication
 				MatrixDomain<Field> MD(_F);
 				//Compute the discrepancy
-				for(genit = _gen.begin(); genit!=_gen.end(); genit++){
+				for(genit = _gen.begin(); genit!=_gen.end(); genit++, cseqit--){
 					MD.axpyin(disc,*cseqit,*genit);
-					cseqit--;
-				}
+				} // cost: k*n^3 (nxn matrix muladds where k is current generator length)
+				  // is a reductive addition over independent muls.
 				//Compute tau with Algorith3.2
 				matrix_type tau(Algorithm3dot2(disc, _deg, _mu, _sigma, _beta));
+				  // cost: n^3 for elim on n x about 2n
 				//Multiply tau into each matrix in the generator
 				for(genit = _gen.begin(); genit!=_gen.end(); genit++){
 					MD.mulin(*genit,tau);
-				}
+				} // cost: k*n^3 (nxn matrix muls where k is current generator length)
+				  // is k independent muls with a shared mat tau.
 				//Increment the auxiliary degrees and beta
 				for(size_t j = _col; j <_row+_col; j++)
 					_deg[j]++;
@@ -602,7 +604,7 @@ namespace LinBox {
 					_gen.push_back(matrix_type(_F,_col,_row+_col));
 					_gensize++;
 				}
-				//Mimic multiplication be z in the auxiliary columns
+				//Mimic multiplication by z in the auxiliary columns
 				typename std::list<matrix_type>::reverse_iterator g1,g2;
 				g1 = _gen.rbegin();
 				g2 = _gen.rbegin();

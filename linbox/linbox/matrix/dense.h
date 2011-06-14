@@ -92,7 +92,7 @@ namespace LinBox
 		 * @param  n  column dimension
 		 */
 		DenseMatrixBase (size_t m, size_t n) :
-			_rep (m * n), _rows (m), _cols (n), _ptr(&_rep[0])
+			_rep (m * n), _rows (m), _cols (n)
 		{}
 
 		/** Constructor.
@@ -102,7 +102,7 @@ namespace LinBox
 		 */
 		DenseMatrixBase (std::vector<Element> & data,
 				 size_t m, size_t n) :
-			_rep (data), _rows (m), _cols (n), _ptr(&_rep[0])
+			_rep (data), _rows (m), _cols (n)
 		{}
 
 		/** Constructor from a matrix stream.
@@ -115,11 +115,11 @@ namespace LinBox
 		 * @param M Dense matrix to be copied.
 		 */
 		DenseMatrixBase (const DenseMatrixBase &Mat) :
-			_rep (Mat._rep),_rows (Mat._rows), _cols (Mat._cols), _ptr(&_rep[0])
+			_rep (Mat._rep),_rows (Mat._rows), _cols (Mat._cols)
 		{}
 
 		//! destructor.
-		~DenseMatrixBase(){}
+		//~DenseMatrixBase(){}
 
 		/*! copy operator.
 		 * @param M matrix to be copied.
@@ -129,7 +129,6 @@ namespace LinBox
 			(*this)._rep  = Mat._rep;
 			(*this)._rows = Mat._rows;
 			(*this)._cols = Mat._cols;
-			(*this)._ptr  = &_rep[0];
 			return (*this);
 		}
 
@@ -360,7 +359,6 @@ namespace LinBox
 	protected:
 		std::vector<Element>  _rep;
 		size_t                _rows, _cols;
-		Element *             _ptr;
 
 	}; //class DenseMatrixBase
 
