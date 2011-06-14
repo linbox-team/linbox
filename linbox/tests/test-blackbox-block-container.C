@@ -2,7 +2,7 @@
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 
 
-/* tests/test-blackbox-block-container-base.C
+/* tests/test-blackbox-block-container.C
  *
  * Written by bds
  *
@@ -13,7 +13,7 @@
  */
 
 
-/*! @file  tests/test-blackbox-block-container-base.C
+/*! @file  tests/test-blackbox-block-container.C
  * @ingroup tests
  * @brief  no doc
  * @test no doc.
@@ -56,7 +56,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	commentator.start("blackbox block container test suite", "bbc");
+	commentator.start("block container test", "bbbc");
 	ostream& report = commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
 	report << "over Modular<double>" << endl;
 	typedef Modular<double> Field;
@@ -74,6 +74,7 @@ int main (int argc, char **argv)
 
 	// A more thorough test should be constructed.
 
-	commentator.stop("blackbox block container test suite");
+	if (pass) commentator.stop("block container test pass");
+	else commentator.stop("block container test FAIL");
 	return pass ? 0 : -1;
 }
