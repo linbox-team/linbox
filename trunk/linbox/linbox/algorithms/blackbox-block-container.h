@@ -83,7 +83,7 @@ namespace LinBox
 			tSequence.clear();
 			tSequence.start();
 #endif
-			this->init (U0, U0);
+			this->init (U0, V0);
 #ifdef _BBC_TIMING
 			tSequence.stop();
 			ttSequence += tSequence;
