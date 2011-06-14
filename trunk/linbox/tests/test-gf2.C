@@ -271,11 +271,17 @@ int main (int argc, char **argv)
 	commentator.start ("Testing GF2", "main", 10);
 
 
-	if (!testField (F, "GF2"))      pass = false; commentator.progress ();
+	if ( not testField (F, "GF2"))      
+		pass = false; 
+	commentator.progress ();
 
-#if 0
-	FieldArchetype K(new LargeModular(101));
-
+/*
+	if ( not testDotProductGF2 (F, "Testing dot prod", stream1, stream3))
+		pass = false; 
+	commentator.progress ();
+*/
+#if 0 
+	FieldArchetype K(new LargeModular(101)); 
 	if (!testField<FieldArchetype> (K, "Testing archetype with envelope of Modular field"))
 		pass = false;
 #endif

@@ -35,14 +35,10 @@ int main (int argc, char **argv)
 
 	static size_t n = 10;
 	static integer q = 101;
-	static int iterations1 = 100;
-	static int iterations2 = 1;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN.", TYPE_INT,     &n },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1].", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations.",   TYPE_INT,     &iterations1 },
-		{ 'j', "-j J", "Apply test matrix to J vectors.",         TYPE_INT,     &iterations2 },
 		END_OF_ARGUMENTS
 	};
 
@@ -59,17 +55,17 @@ int main (int argc, char **argv)
 
 	size_t  pdeg = 10;
 	plist[0].resize(pdeg+1);
-	for ( size_t ideg=0; ideg < pdeg; ++ideg) r.random(plist[0][ideg]);
+	for ( size_t i=0; i < pdeg; ++i) r.random(plist[0][i]);
 	F.init(plist[0][pdeg],1);
 
 	pdeg = 6;
 	plist[1].resize(pdeg+1);
-	for ( size_t ideg=0; ideg < pdeg; ++ideg) r.random(plist[1][ideg]);
+	for ( size_t i=0; i < pdeg; ++i) r.random(plist[1][i]);
 	F.init(plist[1][pdeg],1);
 
 	pdeg = 4;
 	plist[2].resize(pdeg+1);
-	for ( size_t ideg=0; ideg < pdeg; ++ideg) r.random(plist[2][ideg]);
+	for ( size_t i=0; i < pdeg; ++i) r.random(plist[2][i]);
 	F.init(plist[2][pdeg],1);
 
 	commentator.start("Frobenius form black box test suite", "frobenius");

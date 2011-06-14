@@ -155,7 +155,7 @@ static bool testNonsingularSolve (const Field          &F,
 				  const char           *text,
 				  MethodTraits          method)
 {
-	typedef Diagonal <Field, Vector> Blackbox;
+	typedef Diagonal <Field> Blackbox;
 
 	ostringstream str;
 	str << "Testing nonsingular solve (" << text << ")";
@@ -750,7 +750,7 @@ int main (int argc, char **argv)
 	static size_t r = 20;
 	static size_t N = 16;
 	static integer q = 2147483647U;
-	static int iterations = 5;
+	static int iterations = 1;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set column dimension of test matrices to N.", TYPE_INT,     &n },
@@ -785,10 +785,10 @@ int main (int argc, char **argv)
 // 					      "BlockLanczos", Method::BlockLanczos()))
 					      "Wiedemann", Method::Wiedemann ()))
 		pass = false;
-#if 0
 	if (!testNonsingularSolve            (F, stream1, stream2,
 					      "Wiedemann", Method::Wiedemann ()))
 		pass = false;
+#if 0
 	if (!testSingularConsistentSolve     (F, n, stream3, stream4,
 					      "Wiedemann", Method::Wiedemann ()))
 		pass = false;

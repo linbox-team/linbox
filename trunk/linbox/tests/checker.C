@@ -4,7 +4,9 @@
 /** @file tests/checker.C
 @brief script to run LinBox tests
 
-Checker is compiled and run by the check macro invoked by "make check" in the top source dir or in tests/.  It may be run with "make test" or by "make checker; checker" in /tests, avoiding spurrious output of the autotool's check macro.  Run without args, checker prints an explanation of command line options, then proceeds with default test behaviour.
+Checker is compiled and run by the check macro invoked by "make fullcheck" in the top source dir or in tests/.  
+
+Run without args, checker prints an explanation of command line options, then proceeds with default test behaviour.  "checker -h" just prints the options.
 
 Each LinBox test gets a line below.  A LinBox unit/regresssion test has a default behaviour -- when there are no command line file names -- in which nothing is written to any output stream and the return value is 0 for a passing test, nonzero for any failure.
 
@@ -44,25 +46,37 @@ void no_build_n_run(string s, counts& cnt, int flag = 2, string r = "") ;
 
 int main(int argc, char* argv[])
 {
-	int flag = 1; // default verbosity, no force
-	if (argc < 2) {
-		cout << "usage: " << argv[0] << " [summary,default,errors,verbose] [c]" << endl;
-		cout << "  summary: only 4 lines printed." << endl;
-		cout << "  default: also one line per test." << endl;
-		cout << "  warnings: shows subtest failures." << endl;
-		cout << "  errors: also any build and run output for error cases." << endl;
-		cout << "  verbose: also any build and run output for each test." << endl;
-		cout << "  2nd arg, if present, forces rebuild of all tests." << endl;
+	int f = 0; // force recompile all tests.
+	int flag = 1; // verbosity flag.
+
+	bool check = false;// true for install time check
+	int arg;
+	for (arg = 1; arg < argc && argv[arg][0] == '-'; ++ arg)
+		switch (argv[arg][1]) {
+			case 'f': f = 1; break;
+			case 'v': flag = atoi(argv[++arg]); break;
+			case 'c': check = true; break; 
+			default: 
+		cout << "usage: " << argv[0] << " [-r] [-f n] [test]*" << endl;
+		cout << "  -f 0 for a summary: only 4 lines printed." << endl;
+		cout << "  -f 1 for default: also one line per test." << endl;
+		cout << "  -f 2 for warnings: shows subtest failures." << endl;
+		cout << "  -f 3 for errors: also any build and run output for error cases." << endl;
+		cout << "  -f 4 for verbose: also any build and run output for each test." << endl;
+		cout << "  -r forces rebuild of all tests." << endl;
+		cout << "  if any [test] is present, it is built and run, otherwise all tests are processed." << endl;
 	}
+	flag = flag+5*f; // clean up later
+#if 0
        	else {
 		if (argv[1][0] == 's') flag = 0; // summary
 		if (argv[1][0] == 'd') flag = 1; // default
-		if (argv[1][0] == 'w') flag = 2; // errors
-		if (argv[1][0] == 'e') flag = 3; // verbose
+		if (argv[1][0] == 'w') flag = 2; // warnings
+		if (argv[1][0] == 'e') flag = 3; // errors
 		if (argv[1][0] == 'v') flag = 3; // verbose
-		if (argc > 2) flag += 5; // force rebuilds
+		if (argc > 2 && argv[2] == "rebuild") flag += 5; // force rebuilds
 	}
-
+#endif
 	// the setup
 	system("rm -f checkdata");
 #if 0
@@ -79,6 +93,13 @@ int main(int argc, char* argv[])
 	// the tests
 	counts counter;
 
+	// if only specific test(s) specified
+	if (arg < argc) {
+		for (; arg < argc; ++arg) 
+			build_n_run(argv[arg], counter , flag);
+		return counter.buildfail || counter.runfail ? -1 : 0;
+	}
+
 /*
 Each test gets a line below.  A LinBox unit/regresssion test has a default behaviour -- when there are no command line file names -- in which nothing is written to any output stream and the return value is 0 for a passing test, nonzero for any failure.
 
@@ -92,11 +113,31 @@ Thus "ls test-*.C |wc" and "grep test- checker.C |grep \
 build |wc" should yield the same number of lines.
 */
 
+  if (check) {
+	build_n_run("test-charpoly",                     counter , flag);//, "intermittent inf loop, bb or cp responsible?");
+	build_n_run("test-cra",                          counter , flag);
+	build_n_run("test-det",                          counter , flag);
+	build_n_run("test-frobenius",                    counter , flag);
+	build_n_run("test-rank",                         counter , flag);
+	build_n_run("test-qlup",                         counter , flag);
+	build_n_run("test-solve",                        counter , flag);
+	build_n_run("test-nullspace",                    counter , flag);
+	build_n_run("test-rat-solve",     counter , flag); // "infinite loop");
+	build_n_run("test-rat-minpoly",   counter , flag); // "intermittent failures");
+	build_n_run("test-rational-solver",              counter , flag);
+	build_n_run("test-smith-form",            counter , flag);
+	build_n_run("test-smith-form-adaptive",   counter , flag);
+	build_n_run("test-smith-form-iliopoulos", counter , flag);
+	build_n_run("test-smith-form-binary",            counter , flag);
+	return counter.buildfail || counter.runfail ? -1 : 0;
+  } else { 
 //BASIC_TESTS
 	build_n_run("test-bitonic-sort",                 counter , flag);
+	build_n_run("test-blackbox-block-container",     counter , flag);
 	build_n_run("test-blas-domain",                  counter , flag);
 	build_n_run("test-block-ring",                   counter , flag);
-	build_n_run("test-bmseq",                        counter , flag);
+	no_build_n_run("test-block-wiedemann",              counter , flag, "bds tracking down BlasMatrix bug");
+	no_build_n_run("test-bmseq",                     counter , flag, "under development by George Yuhasz");
 	build_n_run("test-butterfly",                    counter , flag);
 	build_n_run("test-charpoly",                     counter , flag);//, "intermittent inf loop, bb or cp responsible?");
 	build_n_run("test-commentator",                  counter , flag);
@@ -178,7 +219,7 @@ build |wc" should yield the same number of lines.
 	if (flag > 0) cout << "	not doing Lapack dependent tests" << endl;
 	no_build_n_run("test-rational-solver-adaptive", counter, flag);
 	// needs output cleanup.  Resolve whether a benchmark or a test.
-	no_build_n_run("test-solve-nonsingular", counter, flag, "bds responsible");
+	no_build_n_run("test-solve-nonsingular", counter, flag, "Bryan responsible");
 #endif
 
 #if __LINBOX_HAVE_NTL
@@ -261,7 +302,7 @@ build |wc" should yield the same number of lines.
 #        Compose is tested in test-butterfly
 
 #endif
-
+  }
 	// the summary
 	cout << "--------------------------------------------------------------------" << endl;
 	if (counter.buildfail || counter.runfail)
@@ -320,12 +361,12 @@ void build_n_run(string s, counts& cnt, int flag, string r)
 		if (status == 2) goto abort; // valid on at least one platform.
 		if (status != 0) {
 			if (flag >= 1) cout << " FAILS" << endl;
-			if (flag >= 3) system ("cat checkdata");
+			if (flag >= 3) system ("cat checkdata; rm checkdata");
 			cnt.runfail++;
 		}
 	       	else {
 			if (flag >= 1) cout << "\b\b\b\bOK  " << endl;
-			if (flag >= 2) system ("grep \"warn\" checkdata");
+			if (flag >= 2) system ("grep \"warn\" checkdata; rm checkdata");
 			cnt.pass++;
 			//cerr << "ok" << endl;
 		}

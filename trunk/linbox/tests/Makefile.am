@@ -7,10 +7,10 @@ AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox
 AM_LDFLAGS = $(top_srcdir)/linbox/.libs/liblinbox.a
 #  SAFER_FLAGS = -g -Wall -Wextra -Wno-unused-parameter
 # bds: no need to optimize for unit/regression tests, and opt adds a lot to compilation time
-AM_CXXFLAGS = @TESTS_CFLAGS@ -DLinBoxSrcOnly
+#AM_CXXFLAGS = @TESTS_CFLAGS@ -DLinBoxSrcOnly
 #  AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly
 #AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly -O2
-# AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -DDEBUG -O0
+AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -DDEBUG -O0
 # AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -D__LINBOX_HAVE_DGETRF -D__LINBOX_HAVE_DGETRI
 # AM_CFLAGS = -g -Wall
 
@@ -34,18 +34,28 @@ EXTRA_DIST=            \
 # Note that among the available groups are NONCOMPILING_TESTS and FAILING_TESTS, which
 # will be ignored by "make check" and can be temporary storage for problematic tests.
 BASIC_TESTS =  \
+        test-commentator              \
+        test-det                      \
+        test-frobenius                \
+        test-rank                     \
+        test-solve                    \
+        test-nullspace                \
+        test-smith-form-binary        \
+        test-rational-solver          \
+        test-rational-solver-adaptive \
+        test-charpoly                 \
+        test-cra                      
+
+FULLCHECK_TESTS =                 \
         test-bitonic-sort             \
         test-blas-domain              \
         test-butterfly                \
-        test-commentator              \
         test-companion                \
         test-dense                    \
-        test-det                      \
         test-diagonal                 \
         test-dif                      \
         test-direct-sum               \
         test-ffpack                   \
-        test-frobenius                \
         test-getentry                 \
         test-gf2                      \
         test-gmp-rational             \
@@ -70,7 +80,6 @@ BASIC_TESTS =  \
         test-PID-integer              \
         test-moore-penrose            \
         test-randiter-nonzero         \
-        test-rank                     \
         test-rational-matrix-factory  \
         test-scalar-matrix            \
         test-sparse                   \
@@ -83,19 +92,10 @@ BASIC_TESTS =  \
         test-vector-domain            \
         test-qlup                     \
         test-zero-one                 \
-        test-solve                    \
-        test-nullspace                \
-        test-smith-form-binary        \
-        test-rational-solver          \
-        test-rational-solver-adaptive \
-        test-solve-nonsingular        \
         test-last-invariant-factor    \
-        test-charpoly                 \
-        test-cra                      \
         test-cradomain                \
 		test-rational-reconstruction-base
 
-#  test-block-wiedemann          \
 #  test-integer-tools
 
 # tests of components not adhering to LinBox requirements.
@@ -105,7 +105,6 @@ NONCOMPLIANT_TESTS =                   \
 
 #These need clapack
 #test-rational-solver-adaptive
-
 
 DUBIOUS_TESTS =                 \
 	test-unparametric-field       \
@@ -211,6 +210,7 @@ EXTRA_PROGRAMS = \
         $(NONCOMPILING_TESTS)         \
         $(NONCOMPLIANT_TESTS)         \
         $(DUBIOUS_TESTS)              \
+        $(FULLCHECK_TESTS)              \
         $(FAILING_TESTS)
 
 
@@ -546,10 +546,6 @@ test_blas_domain_SOURCES=               \
         test-common.h                   \
         test-blas-domain.C
 
-#  test_block_wiedemann_SOURCES=           \
-		#  test-common.h                   \
-		#  test-block-wiedemann.C
-
 test_ffpack_SOURCES=                    \
         test-common.h                   \
         test-ffpack.C
@@ -609,12 +605,15 @@ test_ispossemidef_SOURCES=            \
 test_ftrmm_SOURCES =                  \
 		test-ftrmm.C
 
-test_solve_nonsingular_SOURCES=       \
-		test-common.h                   \
-		test-solve-nonsingular.C
-
 #  test_integer_tools_SOURCES =          \
 #  test-integer-tools.C
+
+#check: checker  
+#	checker -c
+
+# for compilation of new non-enumerated tests
+%:%.C
+	$(CXX) $(CXXFLAGS) $(AM_CXXFLAGS) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $@ $(LDADD)
 
 fullcheck: checker
 	./checker
@@ -628,10 +627,11 @@ CLEANFILES= checker               \
 			$(NONCOMPLIANT_TESTS) \
 			$(BENCHMARKS)         \
 			$(DUBIOUS_TESTS)      \
+			$(FULLCHECK_TESTS)      \
 			$(NTL_TESTS)          \
 			$(GIVARO_TESTS)       \
 			$(ATLAS_TESTS)
 
 
-#  %:%.C
-#  $(CXX) $(OPTFLAGS) $(AM_CPPFLAGS) $(AM_CXXFLAGS) $*.C -o $*  `$(GIVARO_BIN)/givaro-config --cflags` `$(FFLAFLAS_BIN)/fflasffpack-config --cflags`  $(LDADD)  `$(GIVARO_BIN)/givaro-config --libs` `$(FFLAFLAS_BIN)/ffasffpack-config --libs`
+#%:%.C
+#	$(CXX) $(OPTFLAGS) $(AM_CPPFLAGS) $(AM_CXXFLAGS) $*.C -o $*  `$(GIVARO_BIN)/givaro-config --cflags` `$(FFLAFLAS_BIN)/fflasffpack-config --cflags`  $(LDADD)  `$(GIVARO_BIN)/givaro-config --libs` `$(FFLAFLAS_BIN)/ffasffpack-config --libs`

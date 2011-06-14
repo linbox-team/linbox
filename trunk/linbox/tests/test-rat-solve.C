@@ -74,12 +74,11 @@ static bool testNonsingularRatIntSolve (size_t n, int iterations)
 			Q.init(true_x[j] , b[j] * tmp_d, tmp_n);
 		}
 
-		// ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		//ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		solve (x, A, b);
 		for (j=0; j < n; ++j) {
 			if (!Q.areEqual(x[j] ,true_x[j])) {
-				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-					<< "ERROR: System solution failed" << endl;
+				commentator.report() << "ERROR: System solution failed" << endl;
 				ret = false;
 			}
 		}
@@ -144,8 +143,7 @@ static bool testNonsingularRatRatSolve (size_t n, int iterations)
 
 		for (j=0; j < n; ++j) {
 			if (!Q.areEqual(x[j] ,true_x[j])) {
-				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-					<< "ERROR: System solution failed" << endl;
+				commentator.report() << "ERROR: System solution failed" << endl;
 				ret = false;
 			}
 		}

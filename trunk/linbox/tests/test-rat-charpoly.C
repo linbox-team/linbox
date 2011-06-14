@@ -87,16 +87,14 @@ static bool testDiagRatCharpoly (size_t n, int iterations)
 		// ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		charpoly (c, A);
 		if ((!Q.areEqual(c[0] , c0)) || (!Q.areEqual(c[n-1] , cn) ) ) {
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Sparse charpoly failed" << endl;
+			commentator.report() << "ERROR: Sparse charpoly failed" << endl;
 			ret = false;
 		}
 		c.clear();
 
 		charpoly (c, B);
 		if ((!Q.areEqual(c[0] , c0)) || (!Q.areEqual(c[n-1] , cn) ) ) {
-                        commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-                                << "ERROR: Dense charpoly failed" << endl;
+                        commentator.report() << "ERROR: Dense charpoly failed" << endl;
                         ret = false;
                 }
 
