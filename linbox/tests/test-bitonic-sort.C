@@ -50,116 +50,73 @@ public:
 
 };
 
-bool testRandom (std::ostream& report, int s, int iteration)
+bool testRandom (std::ostream& report, size_t s)
 {
 
 	using namespace std;
 
-	commentator.start ("test bitonic sort", "test bitonic sort", iteration);
+	commentator.start ("test bitonic sort", "test bitonic sort");
 
-	bool iter_passed = true;
 	bool ret = true;
 
 	Comparator comp;
 
-	for (int i = 0; i < iteration; ++ i) {
+	std::vector<int> v(s), d(s);
+	std::vector<int>::iterator p1, p2;
 
-		commentator.startIteration (i);
+	for (p1 = v. begin(), p2 = d.begin(); p1 != v.end(); ++ p1, ++p2)
+		*p1 = *p2 = rand();
 
-		std::vector<int> v(s), d(s);
-
-
-		std::vector<int>::iterator p1, p2;
-
-
-		for (p1 = v. begin(), p2 = d.begin(); p1 != v.end(); ++ p1, ++p2)
-
-			*p1 = *p2 = rand();
-
-		report << "Input vector:  ";
+	report << "Input vector:  ";
 
 
-		for (p1 = v.begin(); p1 != v.end(); ++ p1)
+	for (p1 = v.begin(); p1 != v.end(); ++ p1)
+		report << *p1 << " ";
+	report << endl;
 
-			report << *p1 << " ";
+	bitonicSort(v.begin(), v.end(), comp);
 
-		report << endl;
+	report << "Computed sequence by bitonic sorting network:\n";
 
+	for (p1 = v.begin(); p1 != v.end(); ++ p1)
+		report << *p1 << " ";
+	report << '\n';
 
-		bitonicSort(v.begin(), v.end(), comp);
+	stable_sort(d.begin(), d.end());
 
+	report << "Expected sequence after sorting:\n";
 
+	for (p1 = d.begin(); p1 != d.end(); ++ p1)
+		report << *p1 << " ";
+	report << '\n';
 
-		report << "Computed sequence by bitonic sorting network:\n";
+	for (p1 = v.begin(), p2 = d. begin(); p1 != v.end(); ++ p1, ++ p2)
+		if (*p1 != *p2) {
+			ret = false;
+			break;
+		}
 
+	if (!ret)
+		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		<< "ERROR: Computed Smith form is incorrect" << endl;
 
-		for (p1 = v.begin(); p1 != v.end(); ++ p1)
-
-			report << *p1 << " ";
-
-		report << '\n';
-
-		stable_sort(d.begin(), d.end());
-
-		report << "Expected sequence after sorting:\n";
-
-
-		for (p1 = d.begin(); p1 != d.end(); ++ p1)
-
-			report << *p1 << " ";
-
-		report << '\n';
-
-
-
-		for (p1 = v.begin(), p2 = d. begin(); p1 != v.end(); ++ p1, ++ p2)
-
-			if (*p1 != *p2) {
-
-				ret = iter_passed = false;
-
-				break;
-			}
-
-		if (!iter_passed)
-
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Computed Smith form is incorrect" << endl;
-
-
-
-		commentator.stop ("done");
-
-		commentator.progress ();
-
-	}
-
-
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandom");
+	commentator.stop (MSG_STATUS (ret), NULL, "testRandom");
 
 	return ret;
-
 }
 
 int main(int argc, char** argv)
 {
-
 	using namespace LinBox;
 
 	bool pass = true;
 
 	static size_t n = 512;
 
-	static int iterations = 2;
-
 	static Argument args[] = {
 		{ 'n', "-n N", "Set size of sequence to N.  N must be a power of 2)",  TYPE_INT,     &n },
-		{ 'i', "-i I", "Perform each test for I iterations"
-			,           TYPE_INT,     &iterations },
 		END_OF_ARGUMENTS
 	};
-
-
 	parseArguments (argc, argv, args);
 
 	commentator.start("Sort network test suite", "bitonic sort");
@@ -167,9 +124,8 @@ int main(int argc, char** argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	if (!testRandom(report, (int)n, iterations)) pass = false;
+	if (!testRandom(report, n)) pass = false;
 	commentator.stop("sort network test suite");
 
 	return pass ? 0 : -1;
-
 }
