@@ -48,44 +48,60 @@ If full is given, we become paranoïd about warnings and treat them as errors.])
 ]dnl
 )dnl
 
-AC_DEFUN([AC_COMPILER_NAME],
-[
-AC_MSG_CHECKING(for family name of compiler)
-AC_TRY_RUN(dnl ICC ?
-[   #ifdef __INTEL_COMPILER
-   int main() { return 0 ; }
-   #else
-   pas intel
-   #endif],dnl
-[dnl
-   AC_MSG_RESULT(icc)
-   CCNAM=icc
-   AC_SUBST(CCNAM)
-],dnl GCC ?
-[dnl
-   AC_TRY_RUN(dnl GCC ?
-[#ifdef __GNUC__
-   int main() { return 0 ; }
-   #else
-   pas gcc non plus.
-   #endif],[
-   AC_MSG_RESULT(gcc)
-   CCNAM=gcc
-   AC_SUBST(CCNAM)
-   ],[
-   AC_MSG_RESULT(unknown)
-   CCNAM=unknown
-   AC_SUBST(CCNAM)
-   ],[
-   AC_MSG_RESULT(unknown)
-   CCNAM=unknown
-   AC_SUBST(CCNAM)
-   ])
-],dnl GCC !
-[
-   AC_MSG_RESULT(unknown)
-   CCNAM=unknown
-   AC_SUBST(CCNAM)
-])
+CCNAM=""
+
+AC_DEFUN([AC_COMPILER_NAME], [
+		AC_MSG_CHECKING(for family name of compiler)
+
+		dnl CHECKING for various compilers
+		dnl ICC ?
+		AC_TRY_RUN( [
+           #ifdef __INTEL_COMPILER
+				int main() { return 0 ; }
+			#else
+			   pas intel
+		   #endif],
+		[ AC_MSG_RESULT(icc)
+		CCNAM=icc
+		AC_SUBST(CCNAM)
+		])
+
+dnl PATHSCALE ?
+		AS_IF([ test -z "${CCNAM}"], [
+			AC_TRY_RUN( [
+				#ifdef __PATHSCALE__
+				   int main() { return !(__PATHCC__ >= 4) ; }
+			   #else
+				   pas ekopath non plus.
+				#endif], [
+		AC_MSG_RESULT(eko)
+		CCNAM=eko
+		AC_SUBST(CCNAM) ])
+		])
+
+dnl GCC ?
+		AS_IF([ test -z "${CCNAM}"], [
+			AC_TRY_RUN( [
+				#ifdef __GNUC__
+				   int main() { return !(__GNUC__ >= 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 2)) ; }
+			   #else
+				   pas gcc non plus ???
+				#endif], [
+		AC_MSG_RESULT(gcc)
+		CCNAM=gcc
+		AC_SUBST(CCNAM)
+		])
+		])
+
+		dnl  autre ?
+
+		AS_IF([ test -z "${CCNAM}"],
+				[ AC_MSG_RESULT(unknown)
+				CCNAM=unknown
+				AC_SUBST(CCNAM)
+				echo
+				echo " *** unknow compiler. please file a bug "
+				echo
+				])
 ])
 
