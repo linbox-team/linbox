@@ -70,17 +70,6 @@
 
 #define MSG_STATUS(ret) (ret ? MSG_PASSED : MSG_FAILED)
 
-// Legacy definitions -- please do not use
-#define PRINT_EVERYTHING 100000
-#define PRINT_NOTHING 0
-
-#define LVL_ALWAYS =  1,
-#define LVL_IMP    =  2,
-#define LVL_NORMAL =  3,
-#define LVL_UNIMP  =  4,
-#define LVL_BLABLA =  10,
-#define LVL_NEVER  =  (2*PRINT_EVERYTHING)
-
 #ifndef DISABLE_COMMENTATOR
 
 namespace LinBox
