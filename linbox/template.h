@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) <+year+> LinBox
- * Written by <+someone+> <<+her.mail@somewhere.net+>>
+ * Written by <+someone+> < <+her.mail@somewhere.net+> >
  *
  *
  *
@@ -27,6 +27,7 @@
 /** @file <+directory/file-name.h+>
  * @brief desc
  * long doxy desc
+ * @bib bibliography
  */
 
 #include "<++>"
@@ -46,12 +47,6 @@
 #endif
 
 #endif
-
-
-/*! @file template.h
- * @brief desc
- * what is this (important) file about ?
- */
 
 namespace LinBox
 {
@@ -75,10 +70,11 @@ namespace LinBox
 	case toto:
 		a() ;
 		break;
-	case titi: {
-			   b() ;
-			   break;
-		   }
+	case titi:
+		{
+			b() ;
+			break;
+		}
 	default :
 		   {
 			   b() ;
