@@ -1,9 +1,7 @@
-# Copyright(c)'2011 by The Givaro group
+# Copyright(c)'2011 LinBox
 # Written by BB <bboyer@imag.fr>
-# This file is part of Givaro.
-# Givaro is governed by the CeCILL-B license under French law
-# and abiding by the rules of distribution of free software.
-# see the COPYRIGHT file for more details.
+# This file is part of LinBox.
+# see the COPYING file for more details.
 
 dnl enable basic debug mode.
 AC_DEFUN([AC_DEBUG],
