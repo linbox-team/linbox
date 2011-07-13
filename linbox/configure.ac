@@ -243,7 +243,7 @@ LB_CHECK_SAGE
 # ])
 
 
-LB_CHECK_FFLAS-FFPACK(,,[
+LB_CHECK_FFLAS_FFPACK(,,[
 echo ''
 echo '*******************************************************************************'
 echo ' ERROR: Fflas-Ffpack not found!'
