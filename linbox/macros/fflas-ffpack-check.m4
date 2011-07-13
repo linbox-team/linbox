@@ -12,11 +12,11 @@
 # stolen from Manish Singh
 # Shamelessly stolen from Owen Taylor
 
-dnl LB_CHECK_FFLAFLAS ([MINIMUM-VERSION [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
+dnl LB_CHECK_FFLAS_FFPACK ([MINIMUM-VERSION [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl
-dnl Test for FFLAFLAS and define FFLAFLAS_CFLAGS and FFLAFLAS_LIBS
+dnl Test for FFLAS_FFPACK and define FFLAS_FFPACK_CFLAGS and FFLAS_FFPACK_LIBS
 
-AC_DEFUN([LB_CHECK_FFLAFLAS],
+AC_DEFUN([LB_CHECK_FFLAS_FFPACK],
 [
 
 AC_ARG_WITH(fflas-ffpack,
@@ -29,11 +29,11 @@ AC_ARG_WITH(fflas-ffpack,
         Available at "http://linalg.org/projects/fflas-ffpack".
 	])],
     [if test "$withval" = yes ; then
-        FFLAFLAS_HOME_PATH="${DEFAULT_CHECKING_PATH}"
+        FFLAS_FFPACK_HOME_PATH="${DEFAULT_CHECKING_PATH}"
         elif test "$withval" != no ; then
-        FFLAFLAS_HOME_PATH="$withval ${DEFAULT_CHECKING_PATH}"
+        FFLAS_FFPACK_HOME_PATH="$withval ${DEFAULT_CHECKING_PATH}"
         fi],
-    [FFLAFLAS_HOME_PATH="${DEFAULT_CHECKING_PATH}"])
+    [FFLAS_FFPACK_HOME_PATH="${DEFAULT_CHECKING_PATH}"])
 
 dnl  min_iml_version=ifelse([$1], ,1.0.3,$1)
 
@@ -42,75 +42,75 @@ dnl Check for existence
 BACKUP_CXXFLAGS=${CXXFLAGS}
 BACKUP_LIBS=${LIBS}
 
-AC_MSG_CHECKING(for FFLAFLAS)
+AC_MSG_CHECKING(for FFLAS-FFPACK)
 
-for FFLAFLAS_HOME in ${FFLAFLAS_HOME_PATH}
+for FFLAS_FFPACK_HOME in ${FFLAS_FFPACK_HOME_PATH}
   do
-    if test -r "$FFLAFLAS_HOME/include/fflas-ffpack/fflas-ffpack.h"; then
+    if test -r "$FFLAS_FFPACK_HOME/include/fflas-ffpack/fflas-ffpack.h"; then
 
-		BLAS_LIBS=`$FFLAFLAS_HOME/bin/fflasffpack-config --blas-libs`
-		BLAS_CFLAGS=`$FFLAFLAS_HOME/bin/fflasffpack-config --cflags`
+		BLAS_LIBS=`$FFLAS_FFPACK_HOME/bin/fflasffpack-config --blas-libs`
+		BLAS_CFLAGS=`$FFLAS_FFPACK_HOME/bin/fflasffpack-config --cflags`
 
 
-       if test "x$FFLAFLAS_HOME" != "x/usr" -a "x$FFLAFLAS_HOME" != "x/usr/local"; then
-           FFLAFLAS_CFLAGS="-I${FFLAFLAS_HOME}/include"
+       if test "x$FFLAS_FFPACK_HOME" != "x/usr" -a "x$FFLAS_FFPACK_HOME" != "x/usr/local"; then
+           FFLAS_FFPACK_CFLAGS="-I${FFLAS_FFPACK_HOME}/include"
        else
-           FFLAFLAS_CFLAGS=
+           FFLAS_FFPACK_CFLAGS=
        fi
 
-       CXXFLAGS="${BACKUP_CXXFLAGS} ${FFLAFLAS_CFLAGS} ${BLAS_CFLAGS}"
+       CXXFLAGS="${BACKUP_CXXFLAGS} ${FFLAS_FFPACK_CFLAGS} ${BLAS_CFLAGS}"
        LIBS="${BACKUP_LIBS} ${BLAS_LIBS}"
 
        AC_TRY_LINK(
        [#include "fflas-ffpack/fflas-ffpack.h"],
        [FFLAS::FFLAS_TRANSPOSE a;],
        [
-	   fflaflas_found="yes"
-	   FFLAFLAS_LOC="$FFLAFLAS_HOME"
+	   ffflasffpack_found="yes"
+	   FFLAS-FFPACK_LOC="$FFLAS_FFPACK_HOME"
 	   ],
        [
-       fflaflas_found="no"
-       fflaflas_checked="$checked $FFLAFLAS_HOME"
-       unset FFLAFLAS_CFLAGS
-	   unset FFLAFLAS_LOC
+       ffflasffpack_found="no"
+       ffflasffpack_checked="$checked $FFLAS_FFPACK_HOME"
+       unset FFLAS_FFPACK_CFLAGS
+	   unset FFLAS_FFPACK_LOC
 	   unset BLAS_LIBS
 	   unset BLAS_CFLAGS
        ])
-	   dnl  AC_MSG_RESULT(found in $fflaflas_checked ? $fflaflas_found)
+	   dnl  AC_MSG_RESULT(found in $ffflasffpack_checked ? $ffflasffpack_found)
     else
        fflasflas_found="no"
-	   dnl  AC_MSG_RESULT(not found at all $FFLAFLAS_HOME : $fflaflas_found)
+	   dnl  AC_MSG_RESULT(not found at all $FFLAS_FFPACK_HOME : $ffflasffpack_found)
     fi
 done
 
-if test "x$fflaflas_found" = "xyes" ; then
-    AC_SUBST(FFLAFLAS_CFLAGS)
-    AC_SUBST(FFLAFLAS_LIBS)
-	AC_SUBST(FFLAFLAS_LOC)
+if test "x$ffflasffpack_found" = "xyes" ; then
+    AC_SUBST(FFLAS_FFPACK_CFLAGS)
+    AC_SUBST(FFLAS_FFPACK_LIBS)
+	AC_SUBST(FFLAS_FFPACK_LOC)
 	AC_SUBST(BLAS_LIBS)
 	AC_SUBST(BLAS_CFLAGS)
-    AC_DEFINE(HAVE_FFLAFLAS,1,[Define if FFLAFLAS is installed])
-	FF_VER=`$FFLAFLAS_LOC/bin/fflasffpack-config --decimal-version`
-	AC_DEFINE_UNQUOTED(FFLAFFLAS_VERSION, $FF_VER ,[what version of FFLAFLAS is installed])
-	HAVE_FFLAFLAS=yes
+    AC_DEFINE(HAVE_FFLAS_FFPACK,1,[Define if FFLAS-FFPACK is installed])
+	FF_VER=`$FFLAS_FFPACK_LOC/bin/fflasffpack-config --decimal-version`
+	nC_DEFINE_UNQUOTED(FFLAS_FFPACK_VERSION, $FF_VER ,[what version of FFLAS-FFPACK is installed])
+	HAVE_FFLAS_FFPACK=yes
     if test "x$fflasflas_cross" != "xyes"; then
         AC_MSG_RESULT(found)
     else
         AC_MSG_RESULT(unknown)
         echo "WARNING: You appear to be cross compiling, so there is no way to determine"
-        echo "whether your FFLAFLAS version is new enough. I am assuming it is."
+        echo "whether your FFLAS-FFPACK version is new enough. I am assuming it is."
     fi
     ifelse([$2], , :, [$2])
 elif test -n "$fflasflas_problem"; then
     AC_MSG_RESULT(problem)
-    echo "Sorry, your FFLAFLAS version is too old. Disabling."
+    echo "Sorry, your FFLAS-FFPACK version is too old. Disabling."
     ifelse([$3], , :, [$3])
 elif test "x$fflasflas_found" = "xno" ; then
     AC_MSG_RESULT(not found)
     ifelse([$3], , :, [$3])
 fi
 
-AM_CONDITIONAL(LINBOX_HAVE_FFLAFLAS, test "x$HAVE_FFLAFLAS" = "xyes")
+AM_CONDITIONAL(LINBOX_HAVE_FFLAS_FFPACK, test "x$HAVE_FFLAS_FFPACK" = "xyes")
 
 CXXFLAGS=${BACKUP_CXXFLAGS}
 LIBS=${BACKUP_LIBS}
