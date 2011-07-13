@@ -16,12 +16,12 @@ AC_ARG_ENABLE(optimization,
 BACKUP_CXXFLAGS=${CXXFLAGS}
 BACKUP_LIBS=${LIBS}
 
-CXXFLAGS=${FFLAS-FFPACK_CFLAGS}
+CXXFLAGS=${FFLAS_FFPACK_CFLAGS}
 
 AC_TRY_RUN(
 [   #include "fflas-ffpack/fflas-ffpack-config.h"
    int main() {
-#ifdef __FFLAS-FFPACK_STRASSEN_OPTIMIZATION
+#ifdef __FFLAS_FFPACK_STRASSEN_OPTIMIZATION
 return 0;
 #else
 pas bon !
@@ -29,7 +29,7 @@ pas bon !
 } ],[dnl OK
 	strassen_opti="yes"
 	AC_DEFINE(STRASSEN_OPTIMIZATION,,[Define if optimized  threshold for Strassen-Winograd matrix multiplication is available])
-    WINO="`grep "define.*__FFLAS-FFPACK_WINOTHRESHOLD" ${FFLAS-FFPACK_LOC}/include/fflasffpack-config.h  | awk '{print $NF}'`"
+    WINO="`grep "define.*__FFLAS_FFPACK_WINOTHRESHOLD" ${FFLAS_FFPACK_LOC}/include/fflasffpack-config.h  | awk '{print $NF}'`"
 	AC_MSG_RESULT(ok : $WINO)
 	AC_DEFINE_UNQUOTED(WINOTHRESHOLD, $WINO, [optimized threshold for switching to strassen matrix multiplication])
 	],[ dnl NO

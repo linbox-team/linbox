@@ -66,7 +66,7 @@ for FFLAS_FFPACK_HOME in ${FFLAS_FFPACK_HOME_PATH}
        [FFLAS::FFLAS_TRANSPOSE a;],
        [
 	   ffflasffpack_found="yes"
-	   FFLAS-FFPACK_LOC="$FFLAS_FFPACK_HOME"
+	   FFLAS_FFPACK_LOC="$FFLAS_FFPACK_HOME"
 	   ],
        [
        ffflasffpack_found="no"
