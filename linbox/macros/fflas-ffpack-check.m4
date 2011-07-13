@@ -48,8 +48,8 @@ for FFLAS_FFPACK_HOME in ${FFLAS_FFPACK_HOME_PATH}
   do
     if test -r "$FFLAS_FFPACK_HOME/include/fflas-ffpack/fflas-ffpack.h"; then
 
-		BLAS_LIBS=`$FFLAS_FFPACK_HOME/bin/fflasffpack-config --blas-libs`
-		BLAS_CFLAGS=`$FFLAS_FFPACK_HOME/bin/fflasffpack-config --cflags`
+		BLAS_LIBS=`$FFLAS_FFPACK_HOME/bin/fflas-ffpack-config --blas-libs`
+		BLAS_CFLAGS=`$FFLAS_FFPACK_HOME/bin/fflas-ffpack-config --cflags`
 
 
        if test "x$FFLAS_FFPACK_HOME" != "x/usr" -a "x$FFLAS_FFPACK_HOME" != "x/usr/local"; then
@@ -90,8 +90,8 @@ if test "x$ffflasffpack_found" = "xyes" ; then
 	AC_SUBST(BLAS_LIBS)
 	AC_SUBST(BLAS_CFLAGS)
     AC_DEFINE(HAVE_FFLAS_FFPACK,1,[Define if FFLAS-FFPACK is installed])
-	FF_VER=`$FFLAS_FFPACK_LOC/bin/fflasffpack-config --decimal-version`
-	nC_DEFINE_UNQUOTED(FFLAS_FFPACK_VERSION, $FF_VER ,[what version of FFLAS-FFPACK is installed])
+	FF_VER=`$FFLAS_FFPACK_LOC/bin/fflas-ffpack-config --decimal-version`
+	AC_DEFINE_UNQUOTED(FFLAS_FFPACK_VERSION, $FF_VER ,[what version of FFLAS-FFPACK is installed])
 	HAVE_FFLAS_FFPACK=yes
     if test "x$fflasflas_cross" != "xyes"; then
         AC_MSG_RESULT(found)
