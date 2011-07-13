@@ -7,7 +7,7 @@ EXTRA_DIST=\
 	   config-header.m4        \
 	   debug.m4                \
 	   expat-check.m4          \
-	   fflaflas-check.m4       \
+	   ffflas-ffpack-check.m4       \
 	   givaro-check.m4         \
 	   gmp-check.m4            \
 	   iml-check.m4            \
