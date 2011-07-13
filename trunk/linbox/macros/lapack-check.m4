@@ -14,12 +14,12 @@ AC_MSG_CHECKING(for LAPACK in fflas-ffpack)
 BACKUP_CXXFLAGS=${CXXFLAGS}
 BACKUP_LIBS=${LIBS}
 
-CXXFLAGS="${BACKUP_CXXFLAGS} ${FFLAS-FFPACK_CFLAGS} ${BLAS_CFLAGS}"
+CXXFLAGS="${BACKUP_CXXFLAGS} ${FFLAS_FFPACK_CFLAGS} ${BLAS_CFLAGS}"
 LIBS="${BACKUP_LIBS} ${BLAS_LIBS}"
 
 AC_TRY_RUN(dnl ICC ?
 [   #include "fflas-ffpack/fflas-ffpack-config.h"
-	#ifdef __FFLAS-FFPACK_HAVE_LAPACK
+	#ifdef __FFLAS_FFPACK_HAVE_LAPACK
 	   int main() { return 0 ; }
    #else
    a pas lapack
