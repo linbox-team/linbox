@@ -3,7 +3,6 @@
 # see COPYING for licence
 EXTRA_DIST=\
 	   aclocal-include.m4      \
-	   atlas-check.m4          \
 	   config-header.m4        \
 	   debug.m4                \
 	   expat-check.m4          \
