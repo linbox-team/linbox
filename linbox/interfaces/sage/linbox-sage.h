@@ -105,20 +105,20 @@ EXTERN unsigned long linbox_modn_dense_col_rankprofile_submatrix_indices_float (
 /* linbox_minpoly allocates space for minpoly, so you have to call linbox_delete_array
    to free it up afterwards. */
 
-void linbox_integer_dense_minpoly (mpz_t*& minpoly, size_t& degree, size_t n, mpz_t* matrix);
+void linbox_integer_dense_minpoly (mpz_t*& minpoly, size_t& degree, size_t n, mpz_t** matrix);
 
-void linbox_integer_dense_charpoly (mpz_t*& minpoly, size_t& degree, size_t n, mpz_t* matrix);
+void linbox_integer_dense_charpoly (mpz_t*& minpoly, size_t& degree, size_t n, mpz_t** matrix);
 
 void linbox_integer_dense_delete_array (mpz_t* f);
 
 /* ans must be a pre-allocated and pre-initialized array of GMP ints. */
-int linbox_integer_dense_matrix_matrix_multiply (mpz_t* ans, mpz_t *A, mpz_t *B, size_t m, size_t n, size_t k);
+int linbox_integer_dense_matrix_matrix_multiply (mpz_t** ans, mpz_t **A, mpz_t **B, size_t m, size_t n, size_t k);
 
-unsigned long linbox_integer_dense_rank(mpz_t* matrix, size_t nrows, size_t ncols);
+unsigned long linbox_integer_dense_rank(mpz_t** matrix, size_t nrows, size_t ncols);
 
-void linbox_integer_dense_det(mpz_t ans, mpz_t* matrix, size_t nrows, size_t ncols);
+void linbox_integer_dense_det(mpz_t ans, mpz_t** matrix, size_t nrows, size_t ncols);
 
-void linbox_integer_dense_smithform(mpz_t *&v, mpz_t *matrix, size_t nrows, size_t ncols);
+void linbox_integer_dense_smithform(mpz_t *&v, mpz_t **matrix, size_t nrows, size_t ncols);
 
 void linbox_integer_dense_double_det (mpz_t ans1, mpz_t ans2, mpz_t **a, mpz_t ** b, mpz_t **c, size_t n, int proof);
 
