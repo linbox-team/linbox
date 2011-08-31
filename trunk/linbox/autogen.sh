@@ -23,6 +23,19 @@ TEST_TYPE=-f
 
 DIE=0
 
+# Defaults
+LIBTOOL=libtool
+LIBTOOLIZE=libtoolize
+
+# Fix OSx problem with GNU libtool
+(uname -a|grep -v Darwin) < /dev/null > /dev/null 2>&1 ||
+{
+echo "....Adding fix for OSX"
+LIBTOOL=glibtool
+LIBTOOLIZE=glibtoolize
+}
+
+
 (autoconf --version) < /dev/null > /dev/null 2>&1 || {
 echo
 echo "You must have autoconf installed to compile $PROJECT."
@@ -39,17 +52,9 @@ echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
 DIE=1
  }
 
- (libtool --version) < /dev/null > /dev/null 2>&1 || {
- echo
- echo "You must have libtool installed to compile $PROJECT."
- echo "Download the appropriate package for your distribution,"
- echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
- DIE=1
-}
-
 
 (grep "^AC_PROG_LIBTOOL" configure.ac >/dev/null) && {
-(libtool --version) < /dev/null > /dev/null 2>&1 || {
+($LIBTOOL --version) < /dev/null > /dev/null 2>&1 || {
 echo
 echo "You must have libtool installed to compile $PROJECT."
 echo "Download the appropriate package for your distribution,"
@@ -122,7 +127,7 @@ do
 		fi
 		if grep "^AC_PROG_LIBTOOL" configure.ac >/dev/null; then
 			echo "Running libtoolize..."
-			libtoolize --force --copy
+			$LIBTOOLIZE --force --copy
 		fi
 		echo "Running aclocal $aclocalinclude ..."
 		aclocal $aclocalinclude
