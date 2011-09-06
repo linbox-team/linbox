@@ -46,7 +46,7 @@ AC_MSG_CHECKING(for FFLAS-FFPACK)
 
 for FFLAS_FFPACK_HOME in ${FFLAS_FFPACK_HOME_PATH}
   do
-    if test -r "$FFLAS_FFPACK_HOME/include/fflas-ffpack/fflas-ffpack.h"; then
+    if test -r "$FFLAS_FFPACK_HOME/include/fflas-ffpack/fflas-ffpack.h" -a -x "$FFLAS_FFPACK_HOME/bin/fflas-ffpack-config"; then
 
 		BLAS_LIBS=`$FFLAS_FFPACK_HOME/bin/fflas-ffpack-config --blas-libs`
 		BLAS_CFLAGS=`$FFLAS_FFPACK_HOME/bin/fflas-ffpack-config --cflags`
