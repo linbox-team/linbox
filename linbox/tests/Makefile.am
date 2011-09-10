@@ -10,7 +10,8 @@ AM_LDFLAGS = $(top_srcdir)/linbox/.libs/liblinbox.a
 #AM_CXXFLAGS = @TESTS_CFLAGS@ -DLinBoxSrcOnly
 #  AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly
 #AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly -O2
-AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -DDEBUG -O0
+#  AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -DDEBUG -O0
+AM_CXXFLAGS = -DLinBoxSrcOnly  @TESTS_CFLAGS@ @DEBUG_CFLAGS@
 # AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -D__LINBOX_HAVE_DGETRF -D__LINBOX_HAVE_DGETRI
 # AM_CFLAGS = -g -Wall
 
@@ -44,7 +45,7 @@ BASIC_TESTS =  \
         test-rational-solver          \
         test-rational-solver-adaptive \
         test-charpoly                 \
-        test-cra                      
+        test-cra
 
 FULLCHECK_TESTS =                 \
         test-bitonic-sort             \
@@ -608,7 +609,7 @@ test_ftrmm_SOURCES =                  \
 #  test_integer_tools_SOURCES =          \
 #  test-integer-tools.C
 
-#check: checker  
+#check: checker
 #	checker -c
 
 # for compilation of new non-enumerated tests
@@ -632,6 +633,3 @@ CLEANFILES= checker               \
 			$(GIVARO_TESTS)       \
 			$(ATLAS_TESTS)
 
-
-#%:%.C
-#	$(CXX) $(OPTFLAGS) $(AM_CPPFLAGS) $(AM_CXXFLAGS) $*.C -o $*  `$(GIVARO_BIN)/givaro-config --cflags` `$(FFLAFLAS_BIN)/fflasffpack-config --cflags`  $(LDADD)  `$(GIVARO_BIN)/givaro-config --libs` `$(FFLAFLAS_BIN)/ffasffpack-config --libs`

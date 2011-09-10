@@ -1,5 +1,5 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
+// vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,=s,is,+s
 /* Copyright (C) <+year+> LinBox
  * Written by <+someone+> < <+her.mail@somewhere.net+> >
  *
@@ -55,16 +55,19 @@ namespace LinBox
 	 */
 	template<++>
 	void my_func(T & toto)
-	{
-		toto() ;
-		if (a) {
-			b();
+		{
+			toto() ;
+			if (a) {
+				b();
+			}
+			else {
+				c() ;
+			}
 		}
-	       	else {
-			c() ;
-		}
-	}
 
+	template<class A,
+		class B>
+	void foo() ;
 
 	switch(a) {
 	case toto:
@@ -76,9 +79,9 @@ namespace LinBox
 			break;
 		}
 	default :
-		   {
-			   b() ;
-		   }
+		{
+			b() ;
+		}
 	}
 
 	class A {
@@ -88,10 +91,11 @@ namespace LinBox
 	public :
 		A() :
 			_p(0), _q(0)
-	       	{} ;
-		A(int q) :
-			_p(1), _q(q)
 		{} ;
+
+		A(int q) : _p(1), _q(q)
+		{} ;
+
 		A(int p, int q)
 			: _p(p), _q(q)
 		{} ;
