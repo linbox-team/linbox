@@ -643,6 +643,7 @@ namespace LinBox
 		size_t assign(ANY& dst, const size_t& src) const {
 			return dst = static_cast<ANY>(src);
 		}
+		int characteristic() const { return 0 ; }
 	};
 
 #if 0 /*  original BlasPermutation */
