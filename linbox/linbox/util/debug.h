@@ -46,7 +46,7 @@
  * In REALEASE mode, nothing is checked.
  * @param check assertion to be checked.
  */
-#ifndef DEBUG
+#ifdef NDEBUG // à la assert.
 #  define linbox_check(check)
 #else
 #  ifdef __GNUC__
