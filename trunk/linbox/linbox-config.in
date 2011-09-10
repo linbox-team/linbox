@@ -9,6 +9,18 @@ exec_prefix=@exec_prefix@
 includedir=@includedir@
 libdir=@libdir@
 
+major=`echo @VERSION@ | cut -d'.' -f1`
+minor=`echo @VERSION@ | cut -d'.' -f2`
+micro=`echo @VERSION@ | cut -d'.' -f3`
+decvr=$((((($major*100)+$minor)*100)+$micro))
+
+
+cflags=false
+libs=false
+
+
+
+
 usage()
 {
     cat <<EOF
@@ -20,7 +32,8 @@ Known values for OPTION are:
   --libs		print library linking information
   --cflags		print pre-processor and compiler flags
   --help		display this help and exit
-  --version		output version information
+  --version		output version information string (eg @VERSION@)
+  --decimal-version	output version information number (eg $decvr)
 
 EOF
 
@@ -30,9 +43,6 @@ EOF
 if test $# -eq 0; then
     usage 1
 fi
-
-cflags=false
-libs=false
 
 while test $# -gt 0; do
     case "$1" in
@@ -51,6 +61,11 @@ while test $# -gt 0; do
 
     --version)
 	echo @VERSION@
+	exit 0
+	;;
+
+    --decimal-version)
+	echo $decvr
 	exit 0
 	;;
 
