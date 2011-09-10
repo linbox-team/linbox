@@ -21,8 +21,16 @@
  * Boston, MA 02110-1301, USA.
  */
 
+/*! @file algorithms/linbox-tags.h
+ * @ingroup algorithms
+ * @brief Provides tags for various algorithms/solutions, à la \c FFLAS.
+ * This is a subset of Fflas* enums.
+ */
+
 #ifndef __LINBOX_linbox_tags_H
 #define __LINBOX_linbox_tags_H
+
+#include <fflas-ffpack/fflas/fflas.h>
 
 namespace LinBox
 {
@@ -31,19 +39,34 @@ namespace LinBox
 	 * Tags are simple enums that set a choice in a routine.
 	 * For instance, if the user wants a <i>right</i> nullspace,
 	 * she will use a \c LinBoxTag::Right parameter.
+	 *
+	 * There it total compatiblity with \c FFLAS tags (cross link)
+	 * For instance, in LinBox, it is similar to use \c LinBoxTag::Upper and
+	 * <code>(LinBoxTag::Shape) FFLAS::FflasUpper</code>
+	 *
 	 * @note Tags are not Methods.
 	 */
 	struct LinBoxTag {
 		//! Left/Right Tag
 		enum Side {
-			Left  = 1000, //!< Left
-			Right = 1001  //!< Right
+			Left  = FFLAS::FflasLeft, //!< Left
+			Right = FFLAS::FflasRight  //!< Right
 		};
 
 		enum Transpose {
-			Trans   = 1010,
-			NoTrans = 1011
+			NoTrans = FFLAS::FflasNoTrans,
+			Trans   = FFLAS::FflasTrans
 		};
+
+		enum Shape {
+			Upper = FFLAS::FflasUpper,
+			Lower = FFLAS::FflasLower
+		} ;
+
+		enum Diag {
+			NonUnit = FFLAS::FflasNonUnit,
+			Unit    = FFLAS::FflasUnit
+		} ;
 	} ;
 
 }
