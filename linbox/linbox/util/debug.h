@@ -143,6 +143,17 @@ namespace LinBox
 		 */
 		NotImplementedYet() {}
 
+		NotImplementedYet( const char * why)
+		{
+			if (_errorStream == (std::ostream *) 0)
+				_errorStream = &std::cerr;
+
+			(*_errorStream) << std::endl << std::endl;
+			(*_errorStream) << "*** ERROR ***"  << std::endl;
+			(*_errorStream) << " This function is not implemented yet " ;
+			(*_errorStream)	<< " (" << why << ")" <<std::endl;
+		}
+
 		NotImplementedYet(const char * function,
 				  const char* file,
 				  int line,
@@ -152,7 +163,7 @@ namespace LinBox
 				_errorStream = &std::cerr;
 
 			(*_errorStream) << std::endl << std::endl;
-			(*_errorStream) << "ERROR (at " << function << " in " << file << ':' <<  line << "): " << std::endl;
+			(*_errorStream) << " *** ERROR *** (at " << function << " in " << file << ':' <<  line << "): " << std::endl;
 			(*_errorStream) << " This function is not implemented yet" ;
 			if (why)
 				(*_errorStream)	<< " (" << why << ")" <<std::endl;
