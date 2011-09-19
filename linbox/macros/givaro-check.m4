@@ -39,15 +39,14 @@ dnl GIVARO VERSION dnl
 dnl -------------- dnl
 
 version_min=30400
-min_givaro_version=ifelse([$1], ,3.4.0,$1)
-max_givaro_version=ifelse([$2], ,3.5.0,$2)
+version_max=30600
 
 dnl Check for existence
 
 BACKUP_CXXFLAGS=${CXXFLAGS}
 BACKUP_LIBS=${LIBS}
 
-AC_MSG_CHECKING(for GIVARO >= $min_givaro_version and < $max_givaro_version)
+AC_MSG_CHECKING(for GIVARO >= $version_min and < $version_max)
 
 for GIVARO_HOME in ${GIVARO_HOME_PATH}
  do
@@ -70,7 +69,7 @@ dnl ${GIVARO_HOME}/lib/libgivaro.so"
 	[
 	AC_TRY_RUN(
 	[#include <givaro/givconfig.h>
-	 int main () { if (GIVARO_VERSION < $version_min || GIVARO_VERSION >= (($version_min/100+1)*100) || GIVARO_VERSION>0x030000) return -1; else return 0; /* old version of Givaro are defined as hexa 0x03yyzz*/ }
+	 int main () { if (GIVARO_VERSION < $version_min || GIVARO_VERSION >= $version_max || GIVARO_VERSION>0x030000) return -1; else return 0; /* old version of Givaro are defined as hexa 0x03yyzz*/ }
 	],[
 	givaro_found="yes"
 	break
