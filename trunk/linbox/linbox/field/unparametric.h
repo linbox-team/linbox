@@ -74,6 +74,11 @@ namespace LinBox
 		typedef RingCategories::GenericTag categoryTag;
 	};
 
+	template <>
+	struct ClassifyRing<UnparametricField<integer> > {
+		typedef RingCategories::IntegerTag categoryTag;
+	};
+
 
 	/** \brief Unparameterized field adapter.
 	 * \ingroup field
