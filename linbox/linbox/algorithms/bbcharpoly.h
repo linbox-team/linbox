@@ -107,29 +107,29 @@ namespace LinBox
 		 * of a blackbox.
 		 * @warning not implemented in general cases.
 		 */
-		template < class Blackbox, class Polynomial, class Categorytag >
+		template < class BlackBox, class Polynomial, class Categorytag >
 		static Polynomial&
 		blackboxcharpoly (Polynomial & P,
-				  const Blackbox                   & A,
+				  const BlackBox                   & A,
 				  const Categorytag                & tag,
 				  const Method::Blackbox           & M);
 
 		/** Algorithm computing the integer characteristic polynomial
 		 * of a blackbox.
 		 */
-		template < class Blackbox >
-		static typename GivPolynomialRing<typename Blackbox::Field>::Element&
-		blackboxcharpoly (typename GivPolynomialRing<typename Blackbox::Field>::Element & P,
-				  const Blackbox                   & A,
+		template < class BlackBox >
+		static typename GivPolynomialRing<typename BlackBox::Field>::Element&
+		blackboxcharpoly (typename GivPolynomialRing<typename BlackBox::Field>::Element & P,
+				  const BlackBox                   & A,
 				  const RingCategories::IntegerTag & tag,
 				  const Method::Blackbox           & M)
 		{
-			commentator.start ("Integer Blackbox Charpoly ", "IbbCharpoly");
+			commentator.start ("Integer BlackBox Charpoly ", "IbbCharpoly");
 
-			typename Blackbox::Field intRing = A.field();
+			typename BlackBox::Field intRing = A.field();
 			typedef Modular<uint32_t> Field;
-			typedef typename Blackbox::template rebind<Field>::other FieldBlackbox;
-			typedef GivPolynomialRing<typename Blackbox::Field, ::Givaro::Dense> IntPolyDom;
+			typedef typename BlackBox::template rebind<Field>::other FieldBlackBox;
+			typedef GivPolynomialRing<typename BlackBox::Field, ::Givaro::Dense> IntPolyDom;
 			typedef typename IntPolyDom::Element IntPoly;
 			typedef GivPolynomialRing<Field>::Element FieldPoly;
 			// Set of factors-multiplicities sorted by degree
@@ -199,7 +199,7 @@ namespace LinBox
 				}
 			}
 
-			FieldBlackbox Ap(A, F);
+			FieldBlackBox Ap(A, F);
 
 			findMultiplicities (Ap, factCharPoly, leadingBlocks, goal, M);
 
@@ -222,15 +222,15 @@ namespace LinBox
 		/** Algorithm computing the  characteristic polynomial
 		 * of a blackbox over a prime field.
 		 */
-		template < class Blackbox >
-		static typename GivPolynomialRing<typename Blackbox::Field>::Element&
-		blackboxcharpoly (typename GivPolynomialRing<typename Blackbox::Field>::Element & P,
-				  const Blackbox                                                & A,
+		template < class BlackBox >
+		static typename GivPolynomialRing<typename BlackBox::Field>::Element&
+		blackboxcharpoly (typename GivPolynomialRing<typename BlackBox::Field>::Element & P,
+				  const BlackBox                                                & A,
 				  const RingCategories::ModularTag                              & tag,
 				  const Method::Blackbox                                        & M)
 		{
-			commentator.start ("Modular Blackbox Charpoly ", "MbbCharpoly");
-			typedef typename Blackbox::Field Field;
+			commentator.start ("Modular BlackBox Charpoly ", "MbbCharpoly");
+			typedef typename BlackBox::Field Field;
 			typedef GivPolynomialRing<Field, ::Givaro::Dense> PolyDom;
 			typedef typename PolyDom::Element Polynomial;
 			// Set of factors-multiplicities sorted by degree
@@ -337,15 +337,15 @@ namespace LinBox
 			}
 		}
 
-		template <class Blackbox, class FieldPoly, class IntPoly>
-		static void findMultiplicities( const Blackbox& A,
+		template <class BlackBox, class FieldPoly, class IntPoly>
+		static void findMultiplicities( const BlackBox& A,
 					 std::multimap<unsigned long, FactorMult<FieldPoly,IntPoly>* >& factCharPoly,
 					 std::multimap<FactorMult<FieldPoly,IntPoly>*,bool>& leadingBlocks,
 					 int goal,
 					 const Method::Blackbox &M)
 		{
 			typedef std::multimap<unsigned long, FactorMult<FieldPoly,IntPoly>* > FactPoly;
-			typedef typename Blackbox::Field Field;
+			typedef typename BlackBox::Field Field;
 			typedef GivPolynomialRing<Field, ::Givaro::Dense> PolyDom;
 			typename FactPoly::iterator itf = factCharPoly.begin();
 			typename std::multimap<FactorMult<FieldPoly,IntPoly>*,bool>::iterator lead_it;
@@ -367,7 +367,7 @@ namespace LinBox
 					rank (r, A, M) ;
 				}
 				else {
-					PolynomialBB<Blackbox, FieldPoly > PA (A, *itf->second->fieldP);
+					PolynomialBB<BlackBox, FieldPoly > PA (A, *itf->second->fieldP);
 					rank (r, PA,  M) ;
 				}
 				itf->second->multiplicity = r;
@@ -384,7 +384,7 @@ namespace LinBox
 				if ( lead_it != leadingBlocks.end())
 					lead_it->second = true;
 
-				PolynomialBB<Blackbox, FieldPoly > PA (A, *itf->second->fieldP);
+				PolynomialBB<BlackBox, FieldPoly > PA (A, *itf->second->fieldP);
 				long unsigned int r;
 				rank (r, PA,  M);
 
@@ -412,7 +412,7 @@ namespace LinBox
 					if (currFFM->dep != NULL){
 
 						// Need one more computation:
-						PolynomialBB<Blackbox, FieldPoly > PA (A, *currFFM->fieldP);
+						PolynomialBB<BlackBox, FieldPoly > PA (A, *currFFM->fieldP);
 						long unsigned int r;
 						rank (r, PA, M) ;
 						//std::cerr<<"extra factor : "<<*currFFM->fieldP<<" --> "<<r<<std::endl;
@@ -470,7 +470,7 @@ namespace LinBox
 					//Building the matrix A + gamma.Id mod p
 					F.neg( mgamma, gamma );
 					ScalarMatrix<Field> gammaId( F, n, gamma );
-					Sum<Blackbox,ScalarMatrix<Field> > Agamma(A, gammaId);
+					Sum<BlackBox,ScalarMatrix<Field> > Agamma(A, gammaId);
 
 					// Compute det (A+gamma.Id)
 					det (d, Agamma, M);
