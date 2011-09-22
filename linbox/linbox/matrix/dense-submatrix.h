@@ -52,6 +52,8 @@
 namespace LinBox
 {
 
+	namespace Protected
+	{
 	/** @brief %Submatrix of a dense matrix
 	 *
 	 * This matrix type conforms to the same interface as @ref DenseMatrixBase,
@@ -336,6 +338,7 @@ namespace LinBox
 		size_t _beg_col;
 		size_t _end_col;
 	};
+	} // Protected
 
 	/*! Write a matrix to a stream.
 	 * The C++ way using <code>operator<<</code>
@@ -343,7 +346,7 @@ namespace LinBox
 	 * @param Mat matrix to write.
 	 */
 	template<class T>
-	std::ostream& operator<< (std::ostream & o, const DenseSubmatrix<T> & Mat)
+	std::ostream& operator<< (std::ostream & o, const Protected::DenseSubmatrix<T> & Mat)
 	{
 		return Mat.write(o);
 	}
@@ -353,8 +356,8 @@ namespace LinBox
 	 * @brief MatrixTraits
 	 */
 	template <class Element>
-	struct MatrixTraits< DenseSubmatrix<Element> > {
-		typedef DenseSubmatrix<Element> MatrixType;
+	struct MatrixTraits< Protected::DenseSubmatrix<Element> > {
+		typedef Protected::DenseSubmatrix<Element> MatrixType;
 		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
 	};
 

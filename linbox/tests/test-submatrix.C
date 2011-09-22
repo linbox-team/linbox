@@ -66,7 +66,7 @@ static bool testRandomApply (Field                                       &F,
 			     size_t                                       n,
 			     VectorStream<typename Vector<Field>::Dense> &stream)
 {
-	typedef DenseMatrix <Field> Blackbox;
+	typedef Protected::DenseMatrix <Field> Blackbox;
 
 	commentator.start ("Testing random apply", "testRandomApply", iterations);
 
@@ -167,8 +167,8 @@ static bool testRandomLinearity (const Field                                 &F,
 {
 	commentator.start ("Testing random linearity", "testRandomLinearity", v1_stream.size ());
 
-	DenseMatrix<Field> A (F, A_stream);
-	Submatrix<DenseMatrix<Field> > Ap (&A, 0, 0, v1_stream.dim (), v2_stream.dim ());
+	Protected::DenseMatrix<Field> A (F, A_stream);
+	Submatrix<Protected::DenseMatrix<Field> > Ap (&A, 0, 0, v1_stream.dim (), v2_stream.dim ());
 
 	bool ret = testLinearity (F, Ap, v1_stream, v2_stream);
 
@@ -202,8 +202,8 @@ static bool testRandomTranspose (const Field                                 &F,
 {
 	commentator.start ("Testing random transpose", "testRandomTranspose", v1_stream.size ());
 
-	DenseMatrix<Field> A (F, A_stream);
-	Submatrix<DenseMatrix<Field> > Ap (&A, 0, 0, v1_stream.dim (), v2_stream.dim ());
+	Protected::DenseMatrix<Field> A (F, A_stream);
+	Submatrix<Protected::DenseMatrix<Field> > Ap (&A, 0, 0, v1_stream.dim (), v2_stream.dim ());
 
 	bool ret = testTranspose (F, Ap, v1_stream, v2_stream);
 

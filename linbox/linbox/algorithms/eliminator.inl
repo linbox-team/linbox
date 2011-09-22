@@ -93,7 +93,7 @@ namespace LinBox
 
 		_MD.subin (_A, _A);
 
-		DenseSubmatrix<Element> A1 (_A, 0, 0, A.rowdim (), A.coldim ());
+		Protected::DenseSubmatrix<Element> A1 (_A, 0, 0, A.rowdim (), A.coldim ());
 		_MD.copy (A1, A);
 
 		setIN (_U);
@@ -108,18 +108,18 @@ namespace LinBox
 		_MD.permuteColumns (_U, _P.rbegin (), _P.rend ());
 		_MD.permuteColumns (_U, P.begin (), P.end ());
 
-		DenseSubmatrix<Element> Tu1 (Tu, rank, 0, A.rowdim () - rank, rank);
-		DenseSubmatrix<Element> U2 (_U, rank, 0, A.rowdim () - rank, rank);
+		Protected::DenseSubmatrix<Element> Tu1 (Tu, rank, 0, A.rowdim () - rank, rank);
+		Protected::DenseSubmatrix<Element> U2 (_U, rank, 0, A.rowdim () - rank, rank);
 		_MD.copy (Tu1, U2);
 
-		DenseSubmatrix<Element> Ainv1 (Ainv, 0, 0, rank, rank);
-		DenseSubmatrix<Element> U1 (_U, 0, 0, rank, rank);
+		Protected::DenseSubmatrix<Element> Ainv1 (Ainv, 0, 0, rank, rank);
+		Protected::DenseSubmatrix<Element> U1 (_U, 0, 0, rank, rank);
 		_F.inv (dinv, d);
 		_MD.mul (Ainv1, U1, dinv);
 
-		DenseSubmatrix<Element> Tv1 (Tv, 0, rank, rank, A.coldim () - rank);
-		DenseSubmatrix<Element> U3 (_U, 0, 0, rank, A.rowdim ());
-		DenseSubmatrix<Element> A2 (_A, 0, rank, A.rowdim (), A.coldim () - rank);
+		Protected::DenseSubmatrix<Element> Tv1 (Tv, 0, rank, rank, A.coldim () - rank);
+		Protected::DenseSubmatrix<Element> U3 (_U, 0, 0, rank, A.rowdim ());
+		Protected::DenseSubmatrix<Element> A2 (_A, 0, rank, A.rowdim (), A.coldim () - rank);
 		_MD.copy (A1, A);
 		_MD.permuteColumns (A1, Q.begin (), Q.end ());
 		_MD.permuteRows (A2, P.begin (), P.end ());
@@ -217,7 +217,7 @@ namespace LinBox
 		permute (_T, Qp.rbegin (), Qp.rend ());
 
 		/* Apply final permutations to _U, copying to W */
-		DenseSubmatrix<Element> U1 (_U, rank, 0, _U.rowdim () - rank, _U.coldim ());
+		Protected::DenseSubmatrix<Element> U1 (_U, rank, 0, _U.rowdim () - rank, _U.coldim ());
 		_MD.subin (U1, U1);
 
 		_MD.permuteColumns (_U, _P.rbegin (), _P.rend ());
@@ -295,18 +295,18 @@ namespace LinBox
 		_MD.permuteColumns (_U, _P.rbegin (), _P.rend ());
 		_MD.permuteColumns (_U, P.begin (), P.end ());
 
-		DenseSubmatrix<Element> Tu1 (Tu, rank, 0, A.rowdim () - rank, rank);
-		DenseSubmatrix<Element> U2 (_U, rank, 0, A.rowdim () - rank, rank);
+		Protected::DenseSubmatrix<Element> Tu1 (Tu, rank, 0, A.rowdim () - rank, rank);
+		Protected::DenseSubmatrix<Element> U2 (_U, rank, 0, A.rowdim () - rank, rank);
 		_MD.copy (Tu1, U2);
 
-		DenseSubmatrix<Element> Ainv1 (U, 0, 0, rank, rank);
-		DenseSubmatrix<Element> U1 (_U, 0, 0, rank, rank);
+		Protected::DenseSubmatrix<Element> Ainv1 (U, 0, 0, rank, rank);
+		Protected::DenseSubmatrix<Element> U1 (_U, 0, 0, rank, rank);
 		_F.inv (dinv, det);
 		_MD.mul (Ainv1, U1, dinv);
 
-		DenseSubmatrix<Element> Tv1 (Tv, 0, rank, rank, A.coldim () - rank);
-		DenseSubmatrix<Element> U3 (_U, 0, 0, rank, A.rowdim ());
-		DenseSubmatrix<Element> A2 (_A, 0, rank, A.rowdim (), A.coldim () - rank);
+		Protected::DenseSubmatrix<Element> Tv1 (Tv, 0, rank, rank, A.coldim () - rank);
+		Protected::DenseSubmatrix<Element> U3 (_U, 0, 0, rank, A.rowdim ());
+		Protected::DenseSubmatrix<Element> A2 (_A, 0, rank, A.rowdim (), A.coldim () - rank);
 		_MD.copy (_A, A);
 		_MD.permuteColumns (_A, Q.begin (), Q.end ());
 		_MD.permuteRows (A2, P.begin (), P.end ());
@@ -370,12 +370,12 @@ namespace LinBox
 		report << "Starting column: " << s << std::endl;
 		report << "Column dimension: " << m << std::endl;
 
-		DenseMatrixBase<Element> Acopy (_A);
+		Protected::DenseMatrixBase<Element> Acopy (_A);
 
 		unsigned int P_start = _P.size ();
 #endif
 
-		DenseSubmatrix<Element> Ap (_A, k, s, _A.rowdim () - k, m);
+		Protected::DenseSubmatrix<Element> Ap (_A, k, s, _A.rowdim () - k, m);
 
 		if (_MD.isZero (Ap)) {
 			r = 0;
@@ -416,7 +416,7 @@ namespace LinBox
 			unsigned int r1, r2;
 			typename Field::Element d1, d0inv, d1inv, d1neg;
 
-			DenseSubmatrix<Element> B (_A, 0, s + m1, _A.rowdim (), m2);
+			Protected::DenseSubmatrix<Element> B (_A, 0, s + m1, _A.rowdim (), m2);
 
 			unsigned int P_start = (unsigned int) _P.size ();
 
@@ -428,16 +428,16 @@ namespace LinBox
 
 			unsigned int l1 = (unsigned int) _U.rowdim () - (k + r1);
 
-			DenseSubmatrix<Element> a (_U,    0,      k,      k,  r1);
-			DenseSubmatrix<Element> u (_U,    k,      k,      r1, r1);
-			DenseSubmatrix<Element> c (_U,    k + r1, k,      l1, r1);
+			Protected::DenseSubmatrix<Element> a (_U,    0,      k,      k,  r1);
+			Protected::DenseSubmatrix<Element> u (_U,    k,      k,      r1, r1);
+			Protected::DenseSubmatrix<Element> c (_U,    k + r1, k,      l1, r1);
 
-			DenseSubmatrix<Element> et (_tmp, 0,      0,      k,  m2);
-			DenseSubmatrix<Element> gt (_tmp, 0,      0,      l1, m2);
+			Protected::DenseSubmatrix<Element> et (_tmp, 0,      0,      k,  m2);
+			Protected::DenseSubmatrix<Element> gt (_tmp, 0,      0,      l1, m2);
 
-			DenseSubmatrix<Element> e (_A,    0,      s + m1, k,  m2);
-			DenseSubmatrix<Element> f (_A,    k,      s + m1, r1, m2);
-			DenseSubmatrix<Element> g (_A,    k + r1, s + m1, l1, m2);
+			Protected::DenseSubmatrix<Element> e (_A,    0,      s + m1, k,  m2);
+			Protected::DenseSubmatrix<Element> f (_A,    k,      s + m1, r1, m2);
+			Protected::DenseSubmatrix<Element> g (_A,    k + r1, s + m1, l1, m2);
 
 			_F.inv (d0inv, d0);
 
@@ -466,7 +466,7 @@ namespace LinBox
 			_MD.write (report, _U);
 #endif
 
-			DenseSubmatrix<Element> U1 (_U, 0, k, _U.rowdim (), r1);
+			Protected::DenseSubmatrix<Element> U1 (_U, 0, k, _U.rowdim (), r1);
 
 			_F.neg (d1neg, d1);
 			adddIN (_U, d1neg);
@@ -482,24 +482,24 @@ namespace LinBox
 
 			unsigned int l2 = (unsigned int) _U.rowdim () - (k + r);
 
-			DenseSubmatrix<Element> a1    (_U, 0,      k,      k,  r1);
-			DenseSubmatrix<Element> u1    (_U, k,      k,      r1, r1);
-			DenseSubmatrix<Element> c1    (_U, k + r1, k,      r2, r1);
-			DenseSubmatrix<Element> c1bar (_U, k + r,  k,      l2, r1);
+			Protected::DenseSubmatrix<Element> a1    (_U, 0,      k,      k,  r1);
+			Protected::DenseSubmatrix<Element> u1    (_U, k,      k,      r1, r1);
+			Protected::DenseSubmatrix<Element> c1    (_U, k + r1, k,      r2, r1);
+			Protected::DenseSubmatrix<Element> c1bar (_U, k + r,  k,      l2, r1);
 
-			DenseSubmatrix<Element> &a11 = a1;
-			DenseSubmatrix<Element> &u11 = u1;
-			DenseSubmatrix<Element> &u21 = c1;
-			DenseSubmatrix<Element> &c11 = c1bar;
+			Protected::DenseSubmatrix<Element> &a11 = a1;
+			Protected::DenseSubmatrix<Element> &u11 = u1;
+			Protected::DenseSubmatrix<Element> &u21 = c1;
+			Protected::DenseSubmatrix<Element> &c11 = c1bar;
 
-			DenseSubmatrix<Element> a11t  (_tmp, 0,    0,      k,  r1);
-			DenseSubmatrix<Element> u11t  (_tmp, 0,    0,      r1, r1);
-			DenseSubmatrix<Element> c11t  (_tmp, 0,    0,      l2, r1);
+			Protected::DenseSubmatrix<Element> a11t  (_tmp, 0,    0,      k,  r1);
+			Protected::DenseSubmatrix<Element> u11t  (_tmp, 0,    0,      r1, r1);
+			Protected::DenseSubmatrix<Element> c11t  (_tmp, 0,    0,      l2, r1);
 
-			DenseSubmatrix<Element> a2    (_U, 0,      k + r1, k,  r2);
-			DenseSubmatrix<Element> a2bar (_U, k,      k + r1, r1, r2);
-			DenseSubmatrix<Element> u2    (_U, k + r1, k + r1, r2, r2);
-			DenseSubmatrix<Element> c2    (_U, k + r,  k + r1, l2, r2);
+			Protected::DenseSubmatrix<Element> a2    (_U, 0,      k + r1, k,  r2);
+			Protected::DenseSubmatrix<Element> a2bar (_U, k,      k + r1, r1, r2);
+			Protected::DenseSubmatrix<Element> u2    (_U, k + r1, k + r1, r2, r2);
+			Protected::DenseSubmatrix<Element> c2    (_U, k + r,  k + r1, l2, r2);
 
 			_F.inv (d1inv, d1);
 
@@ -534,9 +534,9 @@ namespace LinBox
 		_F.inv (dinv, d);
 		_F.inv (d0inv, d0);
 
-		DenseMatrixBase<Element> R (_A.rowdim () - k, _A.coldim () - s);
-		DenseSubmatrix<Element> Atest (Acopy, k, s, _A.rowdim () - k, _A.coldim () - s);
-		DenseSubmatrix<Element> Utest (_U, k, k, _U.rowdim () - k, _U.coldim () - k);
+		Protected::DenseMatrixBase<Element> R (_A.rowdim () - k, _A.coldim () - s);
+		Protected::DenseSubmatrix<Element> Atest (Acopy, k, s, _A.rowdim () - k, _A.coldim () - s);
+		Protected::DenseSubmatrix<Element> Utest (_U, k, k, _U.rowdim () - k, _U.coldim () - k);
 		_MD.permuteRows (Acopy, _P.begin () + P_start, _P.end ());
 
 		report << "(" << k << ") PA: " << std::endl;

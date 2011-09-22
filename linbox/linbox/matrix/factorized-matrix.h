@@ -186,10 +186,16 @@ namespace LinBox
 			_m(A.rowdim()), _n(A.coldim()),
 			_alloc(false),_plloc(true)
 		{
-			//std::cerr<<"Je passe par le constructeur non const"<<std::endl;
-			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, _m, _n,
-						 _LU.getPointer(),_LU.getStride(),
-						 _PP.getWritePointer(), _QQ.getWritePointer(), FFPACK::FfpackLQUP );
+			if (!A.coldim() || !A.rowdim()) {
+				// throw LinBoxError("LQUP does not accept empty matrices");
+				_rank = 0 ;
+			}
+			else {
+				//std::cerr<<"Je passe par le constructeur non const"<<std::endl;
+				_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, _m, _n,
+							 _LU.getPointer(),_LU.getStride(),
+							 _PP.getWritePointer(), _QQ.getWritePointer(), FFPACK::FfpackLQUP );
+			}
 			_PP.setOrder(_rank);
 			_QQ.setOrder(_rank);
 

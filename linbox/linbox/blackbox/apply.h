@@ -1057,11 +1057,11 @@ namespace LinBox
 	template<>
 	#endif
 	template <class Domain>
-	class MatrixApplyDomain<Domain, DenseMatrix<Domain> > : public BlasMatrixApplyDomain<Domain, DenseMatrix<Domain> > {
+	class MatrixApplyDomain<Domain, Protected::DenseMatrix<Domain> > : public BlasMatrixApplyDomain<Domain, Protected::DenseMatrix<Domain> > {
 
 	public:
-		MatrixApplyDomain (const Domain &D, const DenseMatrix<Domain> &Mat) :
-			BlasMatrixApplyDomain<Domain, DenseMatrix<Domain> > (D,Mat)
+		MatrixApplyDomain (const Domain &D, const Protected::DenseMatrix<Domain> &Mat) :
+			BlasMatrixApplyDomain<Domain, Protected::DenseMatrix<Domain> > (D,Mat)
 		{}
 	};
 

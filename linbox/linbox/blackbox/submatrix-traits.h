@@ -33,20 +33,20 @@ namespace LinBox
 	class SubMatrixTraits;
 
 	template<class Field>
-	class SubMatrixTraits<DenseMatrix<Field> > {
+	class SubMatrixTraits<Protected::DenseMatrix<Field> > {
 
 	public:
 
-		typedef  Submatrix<DenseMatrix<Field> > value_type;
+		typedef  Submatrix<Protected::DenseMatrix<Field> > value_type;
 	};
 
 
 	template<class Field>
-	class SubMatrixTraits<Submatrix<DenseMatrix<Field> > > {
+	class SubMatrixTraits<Submatrix<Protected::DenseMatrix<Field> > > {
 
 	public:
 
-		typedef Submatrix<DenseMatrix<Field> > value_type;
+		typedef Submatrix<Protected::DenseMatrix<Field> > value_type;
 	};
 
 }

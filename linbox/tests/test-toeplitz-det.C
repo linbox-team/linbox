@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
 	NTL_zz_p CF( *rp );
 	NTL_zz_pX PF(CF);
 
-	DenseMatrix<NTL_zz_p> A(CF,n,n);
+	Protected::DenseMatrix<NTL_zz_p> A(CF,n,n);
 
 	NTL_zz_p::Element temp;
 	NTL_zz_pX::Element poly;

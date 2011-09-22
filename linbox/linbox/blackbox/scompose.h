@@ -69,21 +69,21 @@ namespace LinBox
 
 		// specialization for dense matrix case, explicitly compute the LAR by matrix multiplication
 		template <class Field>
-		static DenseMatrix<Field>*& compose (DenseMatrix<Field>*& LAR,
-						     const DenseMatrix<Field>& L,
-						     const DenseMatrix<Field>& A,
-						     const DenseMatrix<Field>& R)
+		static Protected::DenseMatrix<Field>*& compose (Protected::DenseMatrix<Field>*& LAR,
+						     const Protected::DenseMatrix<Field>& L,
+						     const Protected::DenseMatrix<Field>& A,
+						     const Protected::DenseMatrix<Field>& R)
 		{
 
 			linbox_check (L.coldim() == A.rowdim());
 
 			linbox_check (A.coldim() == R.rowdim());
 
-			LAR = new DenseMatrix<Field>(L.field(), L.rowdim(), R.coldim());
+			LAR = new Protected::DenseMatrix<Field>(L.field(), L.rowdim(), R.coldim());
 
-			typename DenseMatrix<Field>::ConstRowIterator crow_p;
+			typename Protected::DenseMatrix<Field>::ConstRowIterator crow_p;
 
-			typename DenseMatrix<Field>::RowIterator row_p;
+			typename Protected::DenseMatrix<Field>::RowIterator row_p;
 
 			std::vector<typename Field::Element> tmp(R.rowdim());
 
@@ -108,22 +108,22 @@ namespace LinBox
 
 
 
-		// @brief This composeBig creates A + UV for EGV algorithm for the DenseMatrix case.
+		// @brief This composeBig creates A + UV for EGV algorithm for the Protected::DenseMatrix case.
 		template <class Field>
-		static DenseMatrix<Field>*& composeBig (DenseMatrix<Field>*& AUV,
-							const DenseMatrix<Field>& A,
-							const DenseMatrix<Field>& U,
-							const DenseMatrix<Field>& V) {
+		static Protected::DenseMatrix<Field>*& composeBig (Protected::DenseMatrix<Field>*& AUV,
+							const Protected::DenseMatrix<Field>& A,
+							const Protected::DenseMatrix<Field>& U,
+							const Protected::DenseMatrix<Field>& V) {
 
 			linbox_check (U.rowdim() == A.rowdim());
 
 			linbox_check (A.coldim() == V.coldim());
 
-			AUV = new DenseMatrix<Field>(A.field(), A.rowdim(), A.coldim());
+			AUV = new Protected::DenseMatrix<Field>(A.field(), A.rowdim(), A.coldim());
 
-			typename DenseMatrix<Field>::ConstRowIterator crow_p;
+			typename Protected::DenseMatrix<Field>::ConstRowIterator crow_p;
 
-			typename DenseMatrix<Field>::RowIterator row_p;
+			typename Protected::DenseMatrix<Field>::RowIterator row_p;
 
 			for (row_p = AUV -> rowBegin(), crow_p = U.rowBegin();
 			     row_p != AUV -> rowEnd(); ++ row_p, ++ crow_p) {
@@ -132,8 +132,8 @@ namespace LinBox
 
 			}
 
-			typename DenseMatrix<Field>::ConstRawIterator celt_p;
-			typename DenseMatrix<Field>::RawIterator elt_p;
+			typename Protected::DenseMatrix<Field>::ConstRawIterator celt_p;
+			typename Protected::DenseMatrix<Field>::RawIterator elt_p;
 
 			for( elt_p = AUV -> rawBegin(), celt_p = A.rawBegin(); celt_p !=  A.rawEnd(); ++ elt_p, ++ celt_p)
 				A.field().addin(*elt_p,*celt_p);

@@ -176,13 +176,13 @@ namespace LinBox
 
 		const _UnsignedInt* getPointer() const
 		{
-			linbox_check(r_);
+			linbox_check(P_.size());
 			return &P_[0];
 		}
 
 		_UnsignedInt* getWritePointer()
 		{
-			linbox_check(r_);
+			linbox_check(P_.size());
 			return &P_[0];
 		}
 

@@ -50,7 +50,7 @@ namespace LinBox
 	};
 
 	template<class Field>
-	struct RawIndexedCategory< DenseMatrix<Field> > 	{
+	struct RawIndexedCategory< Protected::DenseMatrix<Field> > 	{
 		typedef RawIndexedTags::HasRawIndexed Tag; };
 
 	template<class Field, class Row>

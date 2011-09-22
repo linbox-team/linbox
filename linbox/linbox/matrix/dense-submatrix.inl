@@ -36,6 +36,8 @@
 namespace LinBox
 {
 
+	namespace Protected
+	{
 	template <class _Element>
 	DenseSubmatrix<_Element>::DenseSubmatrix (DenseMatrixBase<_Element> &Mat,
 						  size_t row,
@@ -773,6 +775,7 @@ namespace LinBox
 		if (mapleFormat) os << ']';
 		return os;
 	}
+	} // Protected
 
 
 } // namespace LinBox

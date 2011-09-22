@@ -157,7 +157,7 @@ namespace LinBox
 
 	template <class Rationals, class MyMethod >
 	typename Rationals::Element& rational_det (typename Rationals::Element &d,
-						   const DenseMatrix<Rationals > &A,
+						   const Protected::DenseMatrix<Rationals > &A,
 						   const MyMethod &Met=  Method::Hybrid())
 	{
 
@@ -171,8 +171,8 @@ namespace LinBox
 		Integer F = 1;
 		Integer M = 1;
 
-		//DenseMatrixBase<Quotient> ABase(A);
-		RationalMatrixFactory<PID_integer,Rationals, DenseMatrix<Rationals > > FA(&A);
+		//Protected::DenseMatrixBase<Quotient> ABase(A);
+		RationalMatrixFactory<PID_integer,Rationals, Protected::DenseMatrix<Rationals > > FA(&A);
 		Integer di=1;
 
 		for (int i=(int)A.rowdim()-1; i >= 0 ; --i) {
@@ -181,7 +181,7 @@ namespace LinBox
 		}
 
 		PID_integer Z;
-		DenseMatrix<PID_integer> Atilde(Z,A.rowdim(), A.coldim());
+		Protected::DenseMatrix<PID_integer> Atilde(Z,A.rowdim(), A.coldim());
 		FA.makeAtilde(Atilde);
 
 		UserTimer t0, t1,t2;bool term = false;
@@ -191,10 +191,10 @@ namespace LinBox
 		corrections(Atilde,F);
 
 		ChineseRemainder< VarPrecEarlySingleCRA<Modular<double> > > cra(3UL);
-		MyRationalModularDet<DenseMatrix<Rationals > , MyMethod> iteration1(A, Met, M, F);
-		MyIntegerModularDet<DenseMatrix<PID_integer>, MyMethod> iteration2(Atilde, Met);
-		MyModularDet<MyRationalModularDet<DenseMatrix<Rationals > , MyMethod>,
-		MyIntegerModularDet<DenseMatrix<PID_integer>, MyMethod> >  iteration(&iteration1,&iteration2);
+		MyRationalModularDet<Protected::DenseMatrix<Rationals > , MyMethod> iteration1(A, Met, M, F);
+		MyIntegerModularDet<Protected::DenseMatrix<PID_integer>, MyMethod> iteration2(Atilde, Met);
+		MyModularDet<MyRationalModularDet<Protected::DenseMatrix<Rationals > , MyMethod>,
+		MyIntegerModularDet<Protected::DenseMatrix<PID_integer>, MyMethod> >  iteration(&iteration1,&iteration2);
 
 		RReconstruction<PID_integer, ClassicMaxQRationalReconstruction<PID_integer> > RR;
 

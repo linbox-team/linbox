@@ -105,11 +105,11 @@ namespace LinBox
 		return minpoly(P, A, tag, Method::Blackbox(M));
 	}
 
-	// The minpoly with Hybrid Method on DenseMatrix
+	// The minpoly with Hybrid Method on Protected::DenseMatrix
 	template<class Polynomial, class Field>
 	Polynomial &minpoly (
 			     Polynomial         &P,
-			     const DenseMatrix<Field> 			&A,
+			     const Protected::DenseMatrix<Field> 			&A,
 			     const RingCategories::ModularTag          &tag,
 			     const Method::Hybrid& M)
 	{
@@ -291,7 +291,7 @@ namespace LinBox
 	}
 
 	template < class Field, template<class> class Polynomial, class MyMethod>
-	Polynomial<typename Field::Element> &minpoly (Polynomial<typename Field::Element>& P, const DenseMatrix<Field>& A,
+	Polynomial<typename Field::Element> &minpoly (Polynomial<typename Field::Element>& P, const Protected::DenseMatrix<Field>& A,
 						      const RingCategories::RationalTag& tag, const MyMethod& M)
 	{
 		commentator.start ("Dense Rational Minpoly", "Rminpoly");

@@ -110,10 +110,10 @@ namespace LinBox
 	}
 
 	template<class Randiter,class Field>
-	DenseMatrix<Field> &
+	Protected::DenseMatrix<Field> &
 	random_lu_rank(const Field        & F,
 		       const Randiter     & R,
-		       DenseMatrix<Field> & A,
+		       Protected::DenseMatrix<Field> & A,
 		       int                & rank,
 		       const RingCategories::ModularTag          &tag)
 	{
@@ -289,10 +289,10 @@ namespace LinBox
 	}
 
 	template<class Randiter,class Field>
-	DenseMatrixBase<typename Field::Element> &
+	Protected::DenseMatrixBase<typename Field::Element> &
 	random_lu_rank(const Field         & F,
 		       const Randiter      & R,
-		       DenseMatrixBase<typename Field::Element> &A,
+		       Protected::DenseMatrixBase<typename Field::Element> &A,
 		       int                 & rank,
 		       const RingCategories::IntegerTag          &tag)
 	{
@@ -301,12 +301,12 @@ namespace LinBox
 		 return A ;
 	}
 
-#if 0 /*  DenseMatrixBase spec. */
+#if 0 /*  Protected::DenseMatrixBase spec. */
 	template<class Randiter, class Field>
-	DenseMatrix<Field> &
+	Protected::DenseMatrix<Field> &
 	random_rankupdate( const Field        & F
 			   ,const Randiter    & R
-			   ,DenseMatrix<Field>& A
+			   ,Protected::DenseMatrix<Field>& A
 			   , int              & rank
 			 )
 	{
@@ -314,9 +314,9 @@ namespace LinBox
 		size_t n = A.coldim();
 
 
-		DenseMatrix<Field> D(F,m,rank) ;
-		DenseMatrix<Field> G(F,rank,n) ;
-		RandomDenseMatrix<Randiter, Field> RandMatGen(F,R);
+		Protected::DenseMatrix<Field> D(F,m,rank) ;
+		Protected::DenseMatrix<Field> G(F,rank,n) ;
+		RandomProtected::DenseMatrix<Randiter, Field> RandMatGen(F,R);
 		RandMatGen.random(D) ;
 		RandMatGen.random(G) ;
 		MatrixDomain<Field> MD(F);
@@ -325,10 +325,10 @@ namespace LinBox
 	}
 
 	template<class Randiter>
-	DenseMatrix<PID_integer> &
+	Protected::DenseMatrix<PID_integer> &
 	random_rankupdate( PID_integer               & F //!@bug const !
 			   ,const Randiter           & R
-			   ,DenseMatrix<PID_integer> & A
+			   ,Protected::DenseMatrix<PID_integer> & A
 			   , int                     & rank
 			 )
 	{
@@ -336,14 +336,14 @@ namespace LinBox
 		size_t m = A.rowdim();
 		size_t n = A.coldim();
 
-		DenseMatrix<PID_integer> D(F,(size_t)m,(size_t)rank) ;
-		DenseMatrix<PID_integer> G(F,(size_t)rank,(size_t)n) ;
+		Protected::DenseMatrix<PID_integer> D(F,(size_t)m,(size_t)rank) ;
+		Protected::DenseMatrix<PID_integer> G(F,(size_t)rank,(size_t)n) ;
 		Randiter S_(R);
 		S_.setBits(R.getBits()-1);
-		RandomDenseMatrix<Randiter,PID_integer > RandMatGen(F,S_);
+		RandomProtected::DenseMatrix<Randiter,PID_integer > RandMatGen(F,S_);
 		RandMatGen.random(D) ;
 		RandomIntegerIter<false> T_(3);
-		RandomDenseMatrix<RandomIntegerIter<false>,PID_integer > RandSmallMatGen(F,T_);
+		RandomProtected::DenseMatrix<RandomIntegerIter<false>,PID_integer > RandSmallMatGen(F,T_);
 		RandMatGen.random(G) ;
 		MatrixDomain<PID_integer> MD(F);
 		MD.mul(A,D,G);

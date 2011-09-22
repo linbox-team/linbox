@@ -50,7 +50,7 @@ namespace LinBox {
 	public:
 
 		typedef _Field Field;
-		typedef DenseMatrix<Field> value_type;
+		typedef Protected::DenseMatrix<Field> value_type;
 		typedef typename std::list<value_type>::const_iterator const_iterator;
 		typedef int size_type;
 
@@ -283,7 +283,7 @@ namespace LinBox {
 				_sigma(it._sigma), _gensize(it._gensize),
 				_row(it._row), _col(it._col), _state(it._state) {}
 
-			//Assignment operator not overloaded since DenseMatrix class has overloaded assignment error
+			//Assignment operator not overloaded since Protected::DenseMatrix class has overloaded assignment error
 			//Overloaded assignment operator
 			BM_iterator& operator=(const typename BM_Seq<Field>::BM_iterator& it)
 			{

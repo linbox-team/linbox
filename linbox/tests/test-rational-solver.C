@@ -98,7 +98,7 @@ bool testRandomSolve (const Ring& R,
 
                 //Diagonal<Ring> D(R, d);
 
-		DenseMatrix<Ring> D(R, n, n);
+		Protected::DenseMatrix<Ring> D(R, n, n);
 
 		for(int i = 0; i < n; ++i) R.init (D[i][i],  d[i]);
 

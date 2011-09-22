@@ -104,10 +104,10 @@ namespace LinBox
 
 	}
 
-	// in solveNonsingular, we may work with something that inherits from DenseMatrixBase
+	// in solveNonsingular, we may work with something that inherits from Protected::DenseMatrixBase
 	template <class Ring>
 	void BoundBlackbox(const Ring& R, typename Ring::Element& H_col_sqr,
-			   typename Ring::Element& short_col_sqr, const DenseMatrixBase<typename Ring::Element>& A)
+			   typename Ring::Element& short_col_sqr, const Protected::DenseMatrixBase<typename Ring::Element>& A)
 	{
 		SpecialBound(R, H_col_sqr, short_col_sqr, A);
 	}
@@ -119,10 +119,10 @@ namespace LinBox
 		SpecialBound(R, H_col_sqr, short_col_sqr, A);
 	}
 
-	// in other solvers we generally use BlasBlackbox which inherits from DenseSubmatrix
+	// in other solvers we generally use BlasBlackbox which inherits from Protected::DenseSubmatrix
 	template <class Ring>
 	void BoundBlackbox(const Ring& R, typename Ring::Element& H_col_sqr,
-			   typename Ring::Element& short_col_sqr, const DenseSubmatrix<typename Ring::Element>& A)
+			   typename Ring::Element& short_col_sqr, const Protected::DenseSubmatrix<typename Ring::Element>& A)
 	{
 		SpecialBound(R, H_col_sqr, short_col_sqr, A);
 	}

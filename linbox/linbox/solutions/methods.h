@@ -540,7 +540,7 @@ namespace LinBox
 	}
 
 	template<class Field>
-	bool useBB(const DenseMatrix<Field>& A) { return false; }
+	bool useBB(const Protected::DenseMatrix<Field>& A) { return false; }
 
 	/** Solver traits.
 	 *

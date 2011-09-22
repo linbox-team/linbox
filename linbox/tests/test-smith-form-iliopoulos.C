@@ -95,7 +95,7 @@ bool testRandom(const Ring& R,
 		VD.write (report, d);
                 report << endl;
 
-		DenseMatrix<Ring> D(R, n, n), L(R, n, n), U(R, n, n), A(R,n,n);
+		Protected::DenseMatrix<Ring> D(R, n, n), L(R, n, n), U(R, n, n), A(R,n,n);
 
 		int i, j;
 
@@ -113,7 +113,7 @@ bool testRandom(const Ring& R,
 
 		std::vector<typename Ring::Element> tmp1(n), tmp2(n), e(n);
 
-		typename DenseMatrix<Ring>::ColIterator col_p;
+		typename Protected::DenseMatrix<Ring>::ColIterator col_p;
 
 		i = 0;
 		for (col_p = A.colBegin(); col_p != A.colEnd(); ++ col_p, ++ i) {
@@ -150,7 +150,7 @@ bool testRandom(const Ring& R,
 
 			PIR_ntl_ZZ_p PIR(s);
 
-			DenseMatrix<PIR_ntl_ZZ_p> Ap(PIR, A.rowdim(), A.coldim());
+			Protected::DenseMatrix<PIR_ntl_ZZ_p> Ap(PIR, A.rowdim(), A.coldim());
 
 			MatrixHom::map (Ap, A, PIR);
 
@@ -186,7 +186,7 @@ bool testRandom(const Ring& R,
 
 			PIRModular<int32_t> PIR( (int32_t)(s % LINBOX_MAX_MODULUS));
 
-			DenseMatrix<PIRModular<int32_t> > Ap(PIR, A.rowdim(), A.coldim());
+			Protected::DenseMatrix<PIRModular<int32_t> > Ap(PIR, A.rowdim(), A.coldim());
 
 			MatrixHom::map (Ap, A, PIR);
 

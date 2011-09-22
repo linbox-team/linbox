@@ -41,7 +41,7 @@
 using LinBox::commentator;
 using LinBox::Commentator;
 using LinBox::integer;
-using LinBox::DenseMatrix;
+using LinBox::Protected::DenseMatrix;
 
 template <class Ring, class Vector>
 bool testRandom(const Ring& R,

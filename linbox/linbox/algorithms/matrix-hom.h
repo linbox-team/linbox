@@ -67,8 +67,8 @@ namespace LinBox
 #endif
 
 	template <class RingElement, class Field>
-	struct MatrixHomTrait<DenseMatrixBase<RingElement>, Field> {
-		typedef DenseMatrixBase<typename Field::Element> value_type;
+	struct MatrixHomTrait<Protected::DenseMatrixBase<RingElement>, Field> {
+		typedef Protected::DenseMatrixBase<typename Field::Element> value_type;
 	};
 
 	template <class Ring, class Field>
@@ -87,8 +87,8 @@ namespace LinBox
 	};
 
 	template <class Ring, class Field>
-	struct MatrixHomTrait<DenseMatrix<Ring>, Field> {
-		typedef DenseMatrix<Field> value_type;
+	struct MatrixHomTrait<Protected::DenseMatrix<Ring>, Field> {
+		typedef Protected::DenseMatrix<Field> value_type;
 	};
 
 	template <class Ring, class Field>
@@ -110,13 +110,13 @@ namespace LinBox
 
 		// construct a dense matrix over finite field, such that Ap = A mod p, where F = Ring / <p>
 		template<class Field, class IMatrix>
-		void map (DenseMatrix<Field> &Ap, const IMatrix& A, const Field& F);
+		void map (Protected::DenseMatrix<Field> &Ap, const IMatrix& A, const Field& F);
 
 		// construct a dense matrix over finite field, such that Ap = A mod p, where F = Ring / <p>
 		template<class Ring, class Field>
-		void map (DenseMatrixBase<typename Field::Element> &Ap, const DenseMatrixBase<typename Ring::Element>& A, const Field& F)
+		void map (Protected::DenseMatrixBase<typename Field::Element> &Ap, const Protected::DenseMatrixBase<typename Ring::Element>& A, const Field& F)
 		{
-			typename DenseMatrixBase<typename Ring::Element>::template rebind<Field>()( Ap, A, F);
+			typename Protected::DenseMatrixBase<typename Ring::Element>::template rebind<Field>()( Ap, A, F);
 		}
 
 		// construct a sparse matrix over finite field, such that Ap = A mod p, where F = Ring / <p>
@@ -125,14 +125,14 @@ namespace LinBox
 
 		// construct a dense matrix over finite field, such that Ap = A mod p, where F = Ring / <p>
 		template<class Ring, class Field>
-		void map (DenseMatrix<Field> &Ap, const DenseMatrix<Ring>& A, const Field &F)
+		void map (Protected::DenseMatrix<Field> &Ap, const Protected::DenseMatrix<Ring>& A, const Field &F)
 		{
-			typename DenseMatrix<Ring>::template rebind<Field>()( Ap, A, F);
+			typename Protected::DenseMatrix<Ring>::template rebind<Field>()( Ap, A, F);
 		}
 
 		// construct a dense matrix over finite field, such that Ap = A mod p, where F = Ring / <p>
 		template<class Ring, class Vect, class Field>
-		void map (DenseMatrix<Field> &Ap, const SparseMatrix<Ring, Vect>& A, const Field &F);
+		void map (Protected::DenseMatrix<Field> &Ap, const SparseMatrix<Ring, Vect>& A, const Field &F);
 
 		// construct a sparse matrix over finite field, such that Ap = A mod p, where F = Ring / <p>
 		template<class Ring, class Vect1, class Field, class Vect2>
@@ -183,10 +183,10 @@ namespace LinBox
 	}
 
 	template <class Field, class IMatrix>
-	void MatrixHom::map (DenseMatrix<Field>&Ap, const IMatrix& A, const Field &F)
+	void MatrixHom::map (Protected::DenseMatrix<Field>&Ap, const IMatrix& A, const Field &F)
 	{
 
-		// 		Ap = new DenseMatrix<Field>(F, A.rowdim(), A.coldim());
+		// 		Ap = new Protected::DenseMatrix<Field>(F, A.rowdim(), A.coldim());
 
 		typedef typename IMatrix::Field Ring;
 
@@ -200,9 +200,9 @@ namespace LinBox
 
 		std::vector<typename Ring::Element> e(A.coldim(), zero), tmp(A.rowdim());
 
-		typename DenseMatrix<Field>::ColIterator col_p;
+		typename Protected::DenseMatrix<Field>::ColIterator col_p;
 
-		typename DenseMatrix<Field>::Col::iterator elt_p;
+		typename Protected::DenseMatrix<Field>::Col::iterator elt_p;
 
 		typename std::vector<typename Ring::Element>::iterator e_p, tmp_p;
 
@@ -267,13 +267,13 @@ namespace LinBox
 	}
 
 	template <class Ring, class Vect, class Field>
-	void MatrixHom::map (DenseMatrix<Field>& Ap, const SparseMatrix<Ring, Vect>& A, const Field &F)
+	void MatrixHom::map (Protected::DenseMatrix<Field>& Ap, const SparseMatrix<Ring, Vect>& A, const Field &F)
 	{
 
-		// 		Ap = new DenseMatrix<Field>(F, A.rowdim(), A.coldim());
+		// 		Ap = new Protected::DenseMatrix<Field>(F, A.rowdim(), A.coldim());
 
-		typename DenseMatrix<Field>::Element zero; F. init (zero, 0);
-		typename DenseMatrix<Field>::RawIterator raw_p;
+		typename Protected::DenseMatrix<Field>::Element zero; F. init (zero, 0);
+		typename Protected::DenseMatrix<Field>::RawIterator raw_p;
 		for (raw_p = Ap.rawBegin(); raw_p != Ap.rawEnd(); ++ raw_p)
 			F. assign (*raw_p, zero);
 

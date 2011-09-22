@@ -37,59 +37,62 @@
 namespace LinBox
 {
 
-	template <class Field>
-	template<class Vect1, class Vect2>
-	Vect1& DenseMatrix<Field>::apply (Vect1& y, const Vect2& x) const
+	namespace Protected
 	{
+		template <class Field>
+		template<class Vect1, class Vect2>
+		Vect1& DenseMatrix<Field>::apply (Vect1& y, const Vect2& x) const
+		{
 
 #ifdef __LINBOX_PARALLEL
 
-		return BlackboxParallel (y, *this, x, BBBase::Apply);
+			return BlackboxParallel (y, *this, x, BBBase::Apply);
 #else
 
-		_MD. vectorMul (y, *this, x);
+			_MD. vectorMul (y, *this, x);
 
 #endif
-		return y;
-	}
+			return y;
+		}
 
 
-	template <class Field>
-	template<class Vect1, class Vect2>
-	Vect1& DenseMatrix<Field>::applyTranspose (Vect1& y, const Vect2& x) const
-	{
+		template <class Field>
+		template<class Vect1, class Vect2>
+		Vect1& DenseMatrix<Field>::applyTranspose (Vect1& y, const Vect2& x) const
+		{
 
 #ifdef __LINBOX_PARALLEL
 
-		return BlackboxParallel (y, *this, x, BBBase::ApplyTranspose);
+			return BlackboxParallel (y, *this, x, BBBase::ApplyTranspose);
 #else
 
-		return _MD.vectorMul (y, _AT, x);
+			return _MD.vectorMul (y, _AT, x);
 #endif
 
-	}
+		}
+	} // Protected
 
 	template< class Field, class BElement >
-	DenseMatrix<Field>*
+	Protected::DenseMatrix<Field>*
 	DenseMatrixFactory<Field,BElement>::makeBlackbox( const Field& F )
 	{
-		DenseMatrixBase<typename Field::Element> newBase ( rowdim(), coldim() );
+		Protected::DenseMatrixBase<typename Field::Element> newBase ( rowdim(), coldim() );
 
-		typename DenseMatrixBase<BElement>::ConstRawIterator i;
-		typename DenseMatrixBase<typename Field::Element>::RawIterator j;
+		typename Protected::DenseMatrixBase<BElement>::ConstRawIterator i;
+		typename Protected::DenseMatrixBase<typename Field::Element>::RawIterator j;
 
 		for( i = _A.rawBegin(), j = newBase.rawBegin();
 		     i != _A.rawEnd(), j != newBase.rawEnd();
 		     ++i, ++j )
 			F.init( *j, *i );
 
-		return new DenseMatrix<Field>( F, newBase );
+		return new Protected::DenseMatrix<Field>( F, newBase );
 	}
 
 	template< class Field, class BElement >
 	integer& DenseMatrixFactory<Field,BElement>::maxNorm( integer& res )
 	{
-		typename DenseMatrixBase<BElement>::ConstRawIterator i;
+		typename Protected::DenseMatrixBase<BElement>::ConstRawIterator i;
 		res = 0L;
 		integer tmp;
 
@@ -104,8 +107,8 @@ namespace LinBox
 	template< class Field, class BElement >
 	integer& DenseMatrixFactory<Field,BElement>::hadamardBound(integer& res) const
 	{
-		typename DenseMatrixBase<BElement>::ConstRowIterator r;
-		typename DenseMatrixBase<BElement>::ConstRow::const_iterator c;
+		typename Protected::DenseMatrixBase<BElement>::ConstRowIterator r;
+		typename Protected::DenseMatrixBase<BElement>::ConstRow::const_iterator c;
 
 		res = 1L;
 		integer temp;

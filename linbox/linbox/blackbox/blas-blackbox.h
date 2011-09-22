@@ -236,7 +236,7 @@ namespace LinBox
 		 */
 		std::ostream &write (std::ostream &os) const
 		{
-			return DenseSubmatrix<Element>::write(os, _F);
+			return Protected::DenseSubmatrix<Element>::write(os, _F);
 		}
 
 

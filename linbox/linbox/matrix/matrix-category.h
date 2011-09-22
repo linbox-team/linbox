@@ -49,7 +49,7 @@ namespace LinBox
 
 
 	template <class Element>
-	class MatrixContainerTrait<DenseMatrixBase<Element> > {
+	class MatrixContainerTrait<Protected::DenseMatrixBase<Element> > {
 	public:
 		typedef MatrixContainerCategory::Container Type;
 	};
@@ -62,7 +62,7 @@ namespace LinBox
 
 
 	template <class Field>
-	class MatrixContainerTrait<DenseMatrix<Field> > {
+	class MatrixContainerTrait<Protected::DenseMatrix<Field> > {
 	public:
 		typedef MatrixContainerCategory::Container Type;
 	};
