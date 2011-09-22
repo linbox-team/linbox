@@ -56,7 +56,7 @@ namespace LinBox
 	 * Currently, only dense vectors are supported for this iteration, and it is
 	 * unlikely any other vector archetypes will be supported in the future.
 	 */
-	template <class Field, class Matrix = DenseMatrixBase<typename Field::Element> >
+	template <class Field, class Matrix = Protected::DenseMatrixBase<typename Field::Element> >
 	class MGBlockLanczosSolver {
 	public:
 

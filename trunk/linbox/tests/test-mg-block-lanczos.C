@@ -46,7 +46,7 @@ static bool testRandomSolve (const Field           &F,
 			     VectorStream<Vector2> &y_stream,
 			     size_t                 N)
 {
-	typedef MGBlockLanczosSolver<Field, DenseMatrixBase<typename Field::Element> > MGBLSolver;
+	typedef MGBlockLanczosSolver<Field, Protected::DenseMatrixBase<typename Field::Element> > MGBLSolver;
 
 	commentator.start ("Testing random solve (Block Lanczos)", "testRandomSolve", y_stream.size ());
 
@@ -119,7 +119,7 @@ static bool testSampleNullspace (const Field           &F,
 				 size_t                 N,
 				 unsigned int           num_iter)
 {
-	typedef DenseMatrixBase<typename Field::Element> Matrix;
+	typedef Protected::DenseMatrixBase<typename Field::Element> Matrix;
 	typedef MGBlockLanczosSolver<Field, Matrix> MGBLSolver;
 
 	commentator.start ("Testing sampling from nullspace (Block Lanczos)", "testSampleNullspace", num_iter);

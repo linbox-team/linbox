@@ -87,7 +87,7 @@ namespace LinBox
 			  const DomainCategory  &tag,
 			  const SmithMethod  &M)
 	{
-		throw LinBoxError( "Smith form solution implemented only for DenseMatrix<PID_integer>.\n                 Please reconfigure LinBox with NTL enabled.");
+		throw LinBoxError( "Smith form solution implemented only for Protected::DenseMatrix<PID_integer>.\n                 Please reconfigure LinBox with NTL enabled.");
 	}
 
 	// The smithForm with default Method
@@ -149,7 +149,7 @@ namespace LinBox
 	// The smithForm with Hybrid Method
 	template<>
 	std::list<std::pair<integer, size_t> > &smithForm(std::list<std::pair<integer, size_t> >& S,
-							  const DenseMatrix<PID_integer> 	&A,
+							  const Protected::DenseMatrix<PID_integer> 	&A,
 							  const RingCategories::IntegerTag          &tag,
 							  const Method::Hybrid& M)
 	{
@@ -165,7 +165,7 @@ namespace LinBox
 	// The smithForm with Elimination Method
 	template<class Output, class Ring>
 	Output &smithForm(Output & S,
-			  const DenseMatrix<Ring> &A,
+			  const Protected::DenseMatrix<Ring> &A,
 			  const RingCategories::IntegerTag          &tag,
 			  const Method::Elimination& M)
 	{

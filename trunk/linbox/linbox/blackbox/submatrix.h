@@ -14,7 +14,7 @@
  * ------------------------------------
  * Modified by Zhendong Wan
  *
- * Added specialization for DenseMatrix.
+ * Added specialization for Protected::DenseMatrix.
  *
  * -------
  *
@@ -231,18 +231,20 @@ namespace LinBox
 		{}
 	};
 
-	template <class Field>
-	class DenseMatrix;
+	namespace Protected {
+		template <class Field>
+		class DenseMatrix;
+	}
 
 	/** special case for the submatrix of a dense matrix
 	*/
 	template<class _Field>
-	class Submatrix<DenseMatrix<_Field>, VectorCategories::DenseVectorTag> : public DenseSubmatrix<typename _Field::Element> {
+	class Submatrix<Protected::DenseMatrix<_Field>, VectorCategories::DenseVectorTag> : public Protected::DenseSubmatrix<typename _Field::Element> {
 	public:
 
 		typedef _Field Field;
-		typedef Submatrix<DenseMatrix<_Field>, VectorCategories::DenseVectorTag> Self_t;
-		typedef DenseSubmatrix<typename _Field::Element> Father_t;
+		typedef Submatrix<Protected::DenseMatrix<_Field>, VectorCategories::DenseVectorTag> Self_t;
+		typedef Protected::DenseSubmatrix<typename _Field::Element> Father_t;
 
 	private:
 
@@ -254,37 +256,37 @@ namespace LinBox
 
 		typedef typename Field::Element Element;
 
-		/** Constructor from an existing \ref DenseMatrix  and dimensions
-		 * @param M Pointer to \ref DenseMatrix  of which to construct submatrix
+		/** Constructor from an existing \ref Protected::DenseMatrix  and dimensions
+		 * @param M Pointer to \ref Protected::DenseMatrix  of which to construct submatrix
 		 * @param row Starting row
 		 * @param col Starting column
 		 * @param Rowdim Row dimension
 		 * @param Coldim Column dimension
 		 */
 
-		Submatrix (const DenseMatrix<Field> *Mat,
+		Submatrix (const Protected::DenseMatrix<Field> *Mat,
 			   size_t row,
 			   size_t col,
 			   size_t Rowdim,
 			   size_t Coldim) :
-			DenseSubmatrix<Element>(const_cast<DenseMatrix<Field>& >(*Mat), row, col, Rowdim, Coldim),
+			Protected::DenseSubmatrix<Element>(const_cast<Protected::DenseMatrix<Field>& >(*Mat), row, col, Rowdim, Coldim),
 			f(Mat -> field()), vd(Mat -> field())
 		{
 		}
 
-		/** Constructor from an existing \ref DenseMatrix  and dimensions
-		 * @param M reference to \ref DenseMatrix  of which to construct submatrix
+		/** Constructor from an existing \ref Protected::DenseMatrix  and dimensions
+		 * @param M reference to \ref Protected::DenseMatrix  of which to construct submatrix
 		 * @param row Starting row
 		 * @param col Starting column
 		 * @param Rowdim Row dimension
 		 * @param Coldim Column dimension
 		 */
-		Submatrix (const DenseMatrix<Field> &Mat,
+		Submatrix (const Protected::DenseMatrix<Field> &Mat,
 			   size_t row,
 			   size_t col,
 			   size_t Rowdim,
 			   size_t Coldim) :
-			DenseSubmatrix<Element>(const_cast<DenseMatrix<Field>& >(Mat), row, col, Rowdim, Coldim),
+			Protected::DenseSubmatrix<Element>(const_cast<Protected::DenseMatrix<Field>& >(Mat), row, col, Rowdim, Coldim),
 			f(Mat.field()), vd(Mat.field()) {
 			}
 
@@ -296,12 +298,12 @@ namespace LinBox
 		 * @param Rowdim Row dimension
 		 * @param Coldim Column dimension
 		 */
-		Submatrix (const Submatrix<DenseMatrix<Field> > *SM,
+		Submatrix (const Submatrix<Protected::DenseMatrix<Field> > *SM,
 			   size_t row,
 			   size_t col,
 			   size_t Rowdim,
 			   size_t Coldim ) :
-			DenseSubmatrix<Element> (const_cast<Submatrix<DenseMatrix<Field> >&>(*SM), row, col, Rowdim, Coldim),
+			Protected::DenseSubmatrix<Element> (const_cast<Submatrix<Protected::DenseMatrix<Field> >&>(*SM), row, col, Rowdim, Coldim),
 			f (SM ->  field()), vd(SM -> field()){
 			}
 
@@ -313,12 +315,12 @@ namespace LinBox
 		 * @param Rowdim Row dimension
 		 * @param Coldim Column dimension
 		 */
-		Submatrix (const Submatrix<DenseMatrix<Field> >& SM,
+		Submatrix (const Submatrix<Protected::DenseMatrix<Field> >& SM,
 			   size_t row,
 			   size_t col,
 			   size_t Rowdim,
 			   size_t Coldim ) :
-			DenseSubmatrix<Element> (const_cast<Submatrix<DenseMatrix<Field> >&>(SM), row, col, Rowdim, Coldim),
+			Protected::DenseSubmatrix<Element> (const_cast<Submatrix<Protected::DenseMatrix<Field> >&>(SM), row, col, Rowdim, Coldim),
 			f (SM. field()), vd(SM. field()){
 			}
 
@@ -329,14 +331,14 @@ namespace LinBox
 
 		std::istream& read (std::istream& is) {
 
-			DenseSubmatrix<Element>::read (is, f);
+			Protected::DenseSubmatrix<Element>::read (is, f);
 
 			return is;
 		}
 
 		std::ostream& write (std::ostream& os) const {
 
-			DenseSubmatrix<Element>::write (os, f);
+			Protected::DenseSubmatrix<Element>::write (os, f);
 
 			return os;
 		}
@@ -351,7 +353,7 @@ namespace LinBox
 		template<class Vect1, class Vect2>
 		Vect1 &apply (Vect1 &y, const Vect2 &x) const {
 
-			typename DenseSubmatrix<Element>::ConstRowIterator p;
+			typename Protected::DenseSubmatrix<Element>::ConstRowIterator p;
 
 			typename Vect1::iterator p_y = y.begin ();
 
@@ -372,7 +374,7 @@ namespace LinBox
 		template<class Vect1, class Vect2>
 		Vect1 &applyTranspose (Vect1 &y, const Vect2 &x) const {
 
-			typename DenseSubmatrix<Element>::ConstColIterator colp;
+			typename Protected::DenseSubmatrix<Element>::ConstColIterator colp;
 
 			typename Vect1::iterator p_y = y.begin ();
 
@@ -385,7 +387,7 @@ namespace LinBox
 		template<typename _Tp1>
 		struct rebind
 		{
-			typedef SubmatrixOwner<DenseMatrix<_Tp1>, VectorCategories::DenseVectorTag> other;
+			typedef SubmatrixOwner<Protected::DenseMatrix<_Tp1>, VectorCategories::DenseVectorTag> other;
 
 			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
 

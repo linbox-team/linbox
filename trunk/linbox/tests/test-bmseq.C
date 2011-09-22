@@ -48,7 +48,7 @@ template <class Field>
 static bool testIdentity (Field &F, long n, int iterations)
 {
 	typedef typename Vector<Field>::Dense Vector;
-	typedef DenseMatrix <Field> Blackbox;
+	typedef Protected::DenseMatrix <Field> Blackbox;
 
 	commentator.start ("Testing identity apply", "testIdentity", iterations);
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -126,7 +126,7 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Field F (q);
 
-	commentator.start("Dense matrix black box test suite", "DenseMatrix");
+	commentator.start("Dense matrix black box test suite", "Protected::DenseMatrix");
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
@@ -137,13 +137,13 @@ int main (int argc, char **argv)
 	Field::Element one, zero;
 	F.init(one,1);
 	F.init(zero,0);
-	DenseMatrix<Field> D(F,2,2);
-	DenseMatrix<Field> zero24(F,2,4);
+	Protected::DenseMatrix<Field> D(F,2,2);
+	Protected::DenseMatrix<Field> zero24(F,2,4);
 	for(size_t i=0; i<2; i++)
 		D.setEntry(i,i,one);
 	D.setEntry(1,0,one);
 	BM_Seq<Field> seq(2,D);
-	DenseMatrix<Field> S2(F,2,2);
+	Protected::DenseMatrix<Field> S2(F,2,2);
 	MatrixDomain<Field> MD(F);
 	BM_Seq<Field>::BM_iterator bmit(seq, 0), bmit2(seq.BM_begin());
 	bmit.setDelta(4);
@@ -152,7 +152,7 @@ int main (int argc, char **argv)
 					bmit++;
 					check = bmit.state();
 	}
-	for(list<DenseMatrix<Field> >::iterator it = bmit->begin(); it != bmit->end(); it++)
+	for(list<Protected::DenseMatrix<Field> >::iterator it = bmit->begin(); it != bmit->end(); it++)
 					(*it).write(report);
 	if(check.IsSequenceExceeded())
 					report << "Sequence Exceeded" << endl;
@@ -160,7 +160,7 @@ int main (int argc, char **argv)
 	check = bmit.state();
 	if(check.IsSequenceExceeded())
 					report << "Sequence Exceeded" << endl;
-	for(list<DenseMatrix<Field> >::iterator it = bmit->begin(); it != bmit->end(); it++)
+	for(list<Protected::DenseMatrix<Field> >::iterator it = bmit->begin(); it != bmit->end(); it++)
 					(*it).write(report);
 	MD.add(S2,D,D);
 	seq.push_back(S2);
@@ -168,7 +168,7 @@ int main (int argc, char **argv)
 	check = bmit.state();
 	if(check.IsSequenceExceeded())
 					report << "Sequence Exceeded" << endl;
-	for(list<DenseMatrix<Field> >::iterator it = bmit->begin(); it != bmit->end(); it++)
+	for(list<Protected::DenseMatrix<Field> >::iterator it = bmit->begin(); it != bmit->end(); it++)
 					(*it).write(report);
 	MD.addin(S2,D);
 	seq.push_back(S2);
@@ -176,7 +176,7 @@ int main (int argc, char **argv)
 	check = bmit.state();
 	if(check.IsSequenceExceeded())
 					report << "Sequence Exceeded" << endl;
-	for(list<DenseMatrix<Field> >::iterator it = bmit->begin(); it != bmit->end(); it++)
+	for(list<Protected::DenseMatrix<Field> >::iterator it = bmit->begin(); it != bmit->end(); it++)
 					(*it).write(report);
 	if(check.IsGeneratorFound())
 					report << "Generator Found" << endl;
@@ -192,13 +192,13 @@ int main (int argc, char **argv)
 					report << "Iterators are equal" << endl;
 	if(bmit2==seq.BM_end())
 					report << "bmit2 is equal to end" << endl;
-	for(list<DenseMatrix<Field> >::iterator it = bmit2->begin(); it != bmit2->end(); it++)
+	for(list<Protected::DenseMatrix<Field> >::iterator it = bmit2->begin(); it != bmit2->end(); it++)
 					(*it).write(report);
 	BM_Seq<Field>::BM_iterator bmit3 = seq.BM_begin();
 	bmit3 = bmit;
 	if(bmit==bmit3)
 					report << "Iterators are equal" << endl;
-	vector<DenseMatrix<Field> >gen(bmit.GetGenerator());
+	vector<Protected::DenseMatrix<Field> >gen(bmit.GetGenerator());
 	int d = bmit.get_mu();
 	for(int j = 0; j <= d; j++)
 					gen[j].write(report);

@@ -146,7 +146,7 @@ static bool testDenseMatrixgetEntry (const Field &F, size_t n)
 	F.init(s, 2);
 	size_t m = (n > 10 ? 10 : n);
 	F.init(th, 2*m);
-	DenseMatrix<Field> B(F, n, n);
+	Protected::DenseMatrix<Field> B(F, n, n);
 	for (size_t i = 0; i <  m; ++i)
 		for (size_t j = 0; j < n; ++j)
 			B.setEntry(i, j, s);

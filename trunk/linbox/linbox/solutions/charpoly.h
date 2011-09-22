@@ -114,7 +114,7 @@ namespace LinBox
 	// The charpoly with Hybrid Method
 	template<class Polynomial, class Domain>
 	Polynomial &charpoly (Polynomial            &P,
-			      const DenseMatrix<Domain> &A,
+			      const Protected::DenseMatrix<Domain> &A,
 			      const RingCategories::ModularTag  &tag,
 			      const Method::Hybrid  &M)
 	{
@@ -226,11 +226,11 @@ namespace LinBox
 
 	template < class IntRing, class Polynomial >
 	Polynomial& charpoly (Polynomial                       & P,
-			      const DenseMatrix<IntRing>         & A,
+			      const Protected::DenseMatrix<IntRing>         & A,
 			      const RingCategories::IntegerTag & tag,
 			      const Method::Hybrid             & M)
 	{
-		commentator.start ("DenseMatrix Integer Charpoly", "Icharpoly");
+		commentator.start ("Protected::DenseMatrix Integer Charpoly", "Icharpoly");
 		charpoly(P, A, tag, Method::BlasElimination(M) );
 		commentator.stop ("done", NULL, "Icharpoly");
 		return P;
@@ -469,7 +469,7 @@ namespace LinBox
 	}
 
 	template < class Field, template <class> class Polynomial, class MyMethod>
-	Polynomial<typename Field::Element> &charpoly (Polynomial<typename Field::Element>& P, const DenseMatrix<Field>& A,
+	Polynomial<typename Field::Element> &charpoly (Polynomial<typename Field::Element>& P, const Protected::DenseMatrix<Field>& A,
 						       const RingCategories::RationalTag& tag, const MyMethod& M)
 	{
 		commentator.start ("Dense Rational Charpoly", "Rcharpoly");

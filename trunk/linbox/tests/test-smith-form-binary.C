@@ -92,7 +92,7 @@ bool testRandom(const Ring& R,
 		VD.write (report, d);
                 report << endl;
 
-		DenseMatrix<Ring> D(R, n, n), L(R, n, n), U(R, n, n), A(R,n,n);
+		Protected::DenseMatrix<Ring> D(R, n, n), L(R, n, n), U(R, n, n), A(R,n,n);
 
 		int i, j;
 
@@ -113,7 +113,7 @@ bool testRandom(const Ring& R,
 
 		std::vector<typename Ring::Element> tmp1(n), tmp2(n), e(n);
 
-		typename DenseMatrix<Ring>::ColIterator col_p;
+		typename Protected::DenseMatrix<Ring>::ColIterator col_p;
 
 		i = 0;
 		for (col_p = A.colBegin();

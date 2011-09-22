@@ -159,7 +159,7 @@ namespace LinBox
 
 	template <class Rationals, template <class> class Vector, class MyMethod >
 	Vector<typename Rationals::Element>& rational_charpoly (Vector<typename Rationals::Element> &p,
-								const DenseMatrix<Rationals > &A,
+								const Protected::DenseMatrix<Rationals > &A,
 								const MyMethod &Met=  Method::Hybrid())
 	{
 
@@ -174,8 +174,8 @@ namespace LinBox
 		std::vector<Integer> M(A.rowdim()+1,1);
 		std::vector<Integer> Di(A.rowdim());
 
-		//DenseMatrixBase<Quotient> ABase(A);
-		RationalMatrixFactory<PID_integer,Rationals,DenseMatrix<Rationals > > FA(&A);
+		//Protected::DenseMatrixBase<Quotient> ABase(A);
+		RationalMatrixFactory<PID_integer,Rationals,Protected::DenseMatrix<Rationals > > FA(&A);
 		Integer da=1, di=1; Integer D=1;
 		FA.denominator(da);
 
@@ -191,14 +191,14 @@ namespace LinBox
 		}
 
 		PID_integer Z;
-		DenseMatrix<PID_integer> Atilde(Z,A.rowdim(), A.coldim());
+		Protected::DenseMatrix<PID_integer> Atilde(Z,A.rowdim(), A.coldim());
 		FA.makeAtilde(Atilde);
 
 		ChineseRemainder< EarlyMultipCRA<Modular<double> > > cra(4UL);
-		MyRationalModularCharpoly<DenseMatrix<Rationals > , MyMethod> iteration1(A, Met, M);
-		MyIntegerModularCharpoly<DenseMatrix<PID_integer>, MyMethod> iteration2(Atilde, Met, Di, M);
-		MyModularCharpoly<MyRationalModularCharpoly<DenseMatrix<Rationals > , MyMethod>,
-		MyIntegerModularCharpoly<DenseMatrix<PID_integer>, MyMethod> >  iteration(&iteration1,&iteration2);
+		MyRationalModularCharpoly<Protected::DenseMatrix<Rationals > , MyMethod> iteration1(A, Met, M);
+		MyIntegerModularCharpoly<Protected::DenseMatrix<PID_integer>, MyMethod> iteration2(Atilde, Met, Di, M);
+		MyModularCharpoly<MyRationalModularCharpoly<Protected::DenseMatrix<Rationals > , MyMethod>,
+		MyIntegerModularCharpoly<Protected::DenseMatrix<PID_integer>, MyMethod> >  iteration(&iteration1,&iteration2);
 
 		RReconstruction<PID_integer, ClassicMaxQRationalReconstruction<PID_integer> > RR;
 

@@ -118,7 +118,7 @@ template <class LocalPIR>
 static bool testLocalSmith (const LocalPIR &R, vector<typename LocalPIR::Element>& d, string s)
 {
 	typedef typename LocalPIR::Element Elt;
-	typedef DenseMatrix<LocalPIR> Blackbox;
+	typedef Protected::DenseMatrix<LocalPIR> Blackbox;
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << s << endl;

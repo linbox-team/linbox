@@ -25,7 +25,7 @@ namespace LinBox
 	/**
 	  \brief Smith normal form (invariant factors) of a matrix over a local ring.
 
-	  The matrix must be a DenseMatrix over a LocalPID.
+	  The matrix must be a Protected::DenseMatrix over a LocalPID.
 	  A localPID has the standard ring/field arithmetic functions plus gcdin().
 
 */
@@ -90,7 +90,7 @@ namespace LinBox
 						for ( q = p->begin() + 1, r = A.rowBegin()->begin() + 1, f = *(p -> begin()); q != p->end(); ++q, ++r )
 							R.axpyin( *q, f, *r );
 
-					DenseSubmatrix<Elt> Ap(A, 1, 1, A.rowdim() - 1, A.coldim() - 1);
+					Protected::DenseSubmatrix<Elt> Ap(A, 1, 1, A.rowdim() - 1, A.coldim() - 1);
 					L.push_back(d);
 					return smithStep(L, d, Ap, R);
 				}

@@ -49,13 +49,13 @@ namespace LinBox
 
 		// constructor a random dense matrix, whose entries are random
 		template<class Field>
-		static DenseMatrix<Field>*& randomMatrix( DenseMatrix<Field>*& Ap,
+		static Protected::DenseMatrix<Field>*& randomMatrix( Protected::DenseMatrix<Field>*& Ap,
 							  const Field& f,
 							  int rowdim, int coldim )
 		{
 
-			Ap = new DenseMatrix<Field>(f, rowdim, coldim);
-			typename DenseMatrix<Field>::RawIterator Ap_p;
+			Ap = new Protected::DenseMatrix<Field>(f, rowdim, coldim);
+			typename Protected::DenseMatrix<Field>::RawIterator Ap_p;
 			typename Field::Element zero, one, elt;
 			f. init (one, 1); f. init (zero, 0);
 

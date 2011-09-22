@@ -407,11 +407,11 @@ namespace LinBox
 
 	/// used in smith-binary, for example
 	template<class Field>
-	class ComposeTraits<DenseMatrix<Field> > {
+	class ComposeTraits<Protected::DenseMatrix<Field> > {
 	public:
 
 		// define the return value type
-		typedef DenseMatrix<Field> value_type;         };
+		typedef Protected::DenseMatrix<Field> value_type;         };
 }
 
 

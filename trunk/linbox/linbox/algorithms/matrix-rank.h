@@ -64,7 +64,7 @@ namespace LinBox
 
 			Field F ((unsigned long)*rp);
 
-			DenseMatrix<Field> Ap(F, A.rowdim(), A.coldim());
+			Protected::DenseMatrix<Field> Ap(F, A.rowdim(), A.coldim());
 
 			MatrixHom::map(Ap, A, F);
 
@@ -99,17 +99,17 @@ namespace LinBox
 		}
 
 		// compute rank by Gauss Elimination
-		long rankIn(DenseMatrix<Field>& Ap) const
+		long rankIn(Protected::DenseMatrix<Field>& Ap) const
 		{
 
 			typedef typename Field::Element Element;
 
 			Field F = Ap.field();
 
-			typename DenseMatrix<Field>::RowIterator     cur_r,  tmp_r;
-			typename DenseMatrix<Field>::ColIterator     cur_c,  tmp_c;
-			typename DenseMatrix<Field>::Row::iterator  cur_rp, tmp_rp;
-			typename DenseMatrix<Field>::Col::iterator          tmp_cp;
+			typename Protected::DenseMatrix<Field>::RowIterator     cur_r,  tmp_r;
+			typename Protected::DenseMatrix<Field>::ColIterator     cur_c,  tmp_c;
+			typename Protected::DenseMatrix<Field>::Row::iterator  cur_rp, tmp_rp;
+			typename Protected::DenseMatrix<Field>::Col::iterator          tmp_cp;
 
 			Element tmp_e;
 

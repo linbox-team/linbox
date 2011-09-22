@@ -367,9 +367,9 @@ namespace LinBox
 		return x;
 	}
 
-	// input matrix is a DenseMatrix (no copy)
+	// input matrix is a Protected::DenseMatrix (no copy)
 	template <class RatVector, class Vector, class Ring>
-	RatVector& solve(RatVector& x, const DenseMatrix<Ring>& A, const Vector& b,
+	RatVector& solve(RatVector& x, const Protected::DenseMatrix<Ring>& A, const Vector& b,
 			 const RingCategories::IntegerTag & tag,
 			 const Method::BlasElimination& m)
 	{
@@ -434,10 +434,10 @@ namespace LinBox
 		return solve(x, d, A, b, tag, mDixon);
 	}
 
-	// input matrix is a DenseMatrix (no copy)
+	// input matrix is a Protected::DenseMatrix (no copy)
 	template <class Vector, class Ring>
 	Vector& solve(Vector& x, typename Ring::Element &d,
-		      const DenseMatrix<Ring>& A, const Vector& b,
+		      const Protected::DenseMatrix<Ring>& A, const Vector& b,
 		      const RingCategories::IntegerTag & tag,
 		      const Method::BlasElimination& m)
 	{
@@ -556,7 +556,7 @@ namespace LinBox
 	/** \brief solver specialization with the 2nd API and DixonTraits over integer (no copying)
 	*/
 	template <class Vector, class Ring>
-	Vector& solve(Vector& x, typename Ring::Element &d, const DenseMatrix<Ring>& A, const Vector& b,
+	Vector& solve(Vector& x, typename Ring::Element &d, const Protected::DenseMatrix<Ring>& A, const Vector& b,
 		      const RingCategories::IntegerTag tag, Method::Dixon& m)
 	{
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
@@ -596,6 +596,9 @@ namespace LinBox
 					//	break;
 				}
 				break;
+			default :
+				std::cout << "***error*** not handled case" << std::endl;
+				break ;
 			}
 
 		case Specifier::NONSINGULAR:
@@ -749,7 +752,7 @@ namespace LinBox
 	// (3) as an example of how we might leave an abandoned choice around in a
 	// callable state for future reference
 	template <class Vector, class Field>
-	Vector& solve(Vector& x, const DenseMatrix<Field>& A, const Vector& b,
+	Vector& solve(Vector& x, const Protected::DenseMatrix<Field>& A, const Vector& b,
 		      const RingCategories::IntegerTag & tag,
 		      const BlasEliminationCRASpecifier & m)
 	{ // (low priority) J-G puts in code using CRA object CRA and solve(x, A, b, ModularTag, Method::BlasElimination)
@@ -765,13 +768,13 @@ namespace LinBox
 	Vector& solve(Vector& x, const BB& A, const Vector& b,
 		      const RingCategories::ModularTag & tag,
 		      const Method::NonBlasElimination& m)
-	{	DenseMatrix<typename BB::Field> B(A); // copy
+	{	Protected::DenseMatrix<typename BB::Field> B(A); // copy
 		return solve(x, B, b, tag, m);
 	}
 
 	// specialization when no need to copy
 	template <class Vector, class Field>
-	Vector& solve(Vector& x, const DenseMatrix<Field>& A, const Vector& b,
+	Vector& solve(Vector& x, const Protected::DenseMatrix<Field>& A, const Vector& b,
 		      const RingCategories::ModularTag & tag,
 		      const Method::NonBlasElimination& m)
 	{ //Do we have a non blas elimination?  There was not one in the original solve.h (now algorithms/bbsolve.h).

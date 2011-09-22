@@ -204,7 +204,7 @@ bool testMatrixStream(const string& matfile)
 	}
 
 /* later
-	if( !testMatrix< DenseMatrix<TestField> >
+	if( !testMatrix< Protected::DenseMatrix<TestField> >
 			( out, matfile[0], "Dense BlackBox Matrix" )
 	  ) pass = false;
 	if( !testMatrix< SparseMatrix<TestField> >

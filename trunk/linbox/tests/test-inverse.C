@@ -208,7 +208,7 @@ static bool testVandermondeInverse (const Field           &F,
 				    VectorStream<Vector> &x_stream,
 				    VectorStream<Vector> &v_stream)
 {
-	typedef DenseMatrix <Field> Blackbox;
+	typedef Protected::DenseMatrix <Field> Blackbox;
 
 	commentator.start ("Testing Vandermonde inverse", "testVandermondeInverse", x_stream.m ());
 
@@ -400,7 +400,7 @@ static bool testRandomTranspose (Field &F,
 				 VectorStream<Vector> &stream1,
 				 VectorStream<Vector> &stream2)
 {
-	typedef DenseMatrix <Field> Blackbox;
+	typedef Protected::DenseMatrix <Field> Blackbox;
 
 	commentator.start ("Testing random transpose", "testRandomTranspose", stream1.m ());
 

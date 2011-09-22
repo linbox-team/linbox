@@ -366,9 +366,9 @@ IntegerRing ZZ;
 SpyInteger spy;
 typedef GivPolynomialRing<IntegerRing,::Givaro::Dense> IntPolRing;
 
-DenseMatrix<IntegerRing> new_matrix(mpz_t** matrix, size_t nrows, size_t ncols)
+Protected::DenseMatrix<IntegerRing> new_matrix(mpz_t** matrix, size_t nrows, size_t ncols)
 {
-	DenseMatrix<IntegerRing> A ( ZZ, nrows, ncols);
+	Protected::DenseMatrix<IntegerRing> A ( ZZ, nrows, ncols);
 
 	size_t i, j;
 	for (i=0; i < nrows; ++i) {
@@ -381,10 +381,10 @@ DenseMatrix<IntegerRing> new_matrix(mpz_t** matrix, size_t nrows, size_t ncols)
 	return A;
 }
 
-DenseMatrix<IntegerRing> new_matrix_integers(mpz_t** matrix, size_t nrows, size_t ncols)
+Protected::DenseMatrix<IntegerRing> new_matrix_integers(mpz_t** matrix, size_t nrows, size_t ncols)
 {
 	IntegerRing Z;
-	DenseMatrix<IntegerRing> A ( Z,nrows, ncols);
+	Protected::DenseMatrix<IntegerRing> A ( Z,nrows, ncols);
 
 	size_t i, j;
 	for (i=0; i < nrows; ++i) {
@@ -421,7 +421,7 @@ void linbox_integer_dense_minpoly_hacked(mpz_t* *mp, size_t* degree, size_t n, m
 		m = n;
 	}
 
-	DenseMatrix<IntegerRing> A( ZZ, m, m);
+	Protected::DenseMatrix<IntegerRing> A( ZZ, m, m);
 
 	size_t i, j;
 	IntegerRing::Element t;
@@ -479,7 +479,7 @@ void linbox_integer_dense_charpoly(mpz_t* *mp, size_t* degree, size_t n, mpz_t**
 	/* THIS IS Broken when n % 4 == 0!!!!  Use above function instead. */
 	/*    linbox_integer_dense_minpoly(mp, degree, n, matrix, 0); */
 
-	DenseMatrix<IntegerRing> A(new_matrix(matrix, n, n));
+	Protected::DenseMatrix<IntegerRing> A(new_matrix(matrix, n, n));
 	IntPolRing::Element m_A;
 	charpoly(m_A, A);
 
@@ -497,7 +497,7 @@ void linbox_integer_dense_minpoly(mpz_t* *mp, size_t* degree, size_t n, mpz_t** 
 	/* THIS IS Broken when n % 4 == 0!!!!  Use above function instead. */
 	/*    linbox_integer_dense_minpoly(mp, degree, n, matrix, 0); */
 
-	DenseMatrix<IntegerRing> A(new_matrix(matrix, n, n));
+	Protected::DenseMatrix<IntegerRing> A(new_matrix(matrix, n, n));
 	IntPolRing::Element m_A;
 	minpoly(m_A, A);
 
@@ -539,7 +539,7 @@ int linbox_integer_dense_matrix_matrix_multiply(mpz_t** ans, mpz_t **A, mpz_t **
 unsigned long linbox_integer_dense_rank(mpz_t** matrix, size_t nrows,
 					size_t ncols)
 {
-	DenseMatrix<IntegerRing> A(new_matrix(matrix, nrows, ncols));
+	Protected::DenseMatrix<IntegerRing> A(new_matrix(matrix, nrows, ncols));
 	unsigned long r;
 	rank(r, A);
 	return r;
@@ -551,17 +551,17 @@ void linbox_integer_dense_det(mpz_t ans, mpz_t** matrix, size_t nrows,
 	commentator.setMaxDetailLevel(0);
 	commentator.setMaxDepth (0);
 
-	DenseMatrix<IntegerRing> A(new_matrix_integers(matrix, nrows, ncols));
+	Protected::DenseMatrix<IntegerRing> A(new_matrix_integers(matrix, nrows, ncols));
 	IntegerRing::Element d;
 	det(d, A);
 	mpz_set(ans, spy.get_mpz(d));
 }
 
 #ifdef __LINBOX_HAVE_NTL
-DenseMatrix<NTL_ZZ> new_matrix_integer_dense_ntl(mpz_t** matrix, size_t nrows, size_t ncols)
+Protected::DenseMatrix<NTL_ZZ> new_matrix_integer_dense_ntl(mpz_t** matrix, size_t nrows, size_t ncols)
 {
 	NTL_ZZ Z;
-	DenseMatrix<NTL_ZZ> A (Z,nrows, ncols);
+	Protected::DenseMatrix<NTL_ZZ> A (Z,nrows, ncols);
 	size_t i, j;
 	for (i=0; i < nrows; ++i) {
 		for (j=0; j < ncols; ++j) {
@@ -611,7 +611,7 @@ void linbox_integer_dense_smithform(mpz_t **v,
 {
 	typedef NTL_ZZ Ints;
 	Ints Z;
-	DenseMatrix<Ints> M(new_matrix_integer_dense_ntl(matrix, nrows, ncols));
+	Protected::DenseMatrix<Ints> M(new_matrix_integer_dense_ntl(matrix, nrows, ncols));
 	std::vector<integer> w(ncols);
 	SmithFormAdaptive::smithForm(w, M);
 

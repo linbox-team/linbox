@@ -57,9 +57,9 @@ template <class Field>
 static bool testIdentity (Field &F, long n, int iterations)
 {
 	typedef typename Vector<Field>::Dense Vector;
-	typedef DenseMatrixBase <typename Field::Element> Base;
-	typedef DenseSubmatrix <typename Field::Element> Matrix;
-	typedef DenseMatrix <Field> Blackbox;
+	typedef Protected::DenseMatrixBase <typename Field::Element> Base;
+	typedef Protected::DenseSubmatrix <typename Field::Element> Matrix;
+	typedef Protected::DenseMatrix <Field> Blackbox;
 
 	commentator.start ("Testing identity apply", "testIdentity", iterations);
 
@@ -146,7 +146,7 @@ static bool testVandermonde (Field &F, long n, int iterations, int N)
 {
 	typedef typename Vector<Field>::Dense Vector;
 	typedef vector <typename Field::Element> Polynomial;
-	typedef DenseMatrix <Field> Blackbox;
+	typedef Protected::DenseMatrix <Field> Blackbox;
 
 	commentator.start ("Testing Vandermonde apply", "testVandermonde", iterations);
 
@@ -255,7 +255,7 @@ static bool testRandomLinearity (const Field                                 &F,
 {
 	commentator.start ("Testing random linearity", "testRandomLinearity", v1_stream.size ());
 
-	DenseMatrix<Field> A (F, A_stream);
+	Protected::DenseMatrix<Field> A (F, A_stream);
 
 	bool ret = testLinearity (F, A, v1_stream, v2_stream);
 
@@ -289,7 +289,7 @@ static bool testRandomTranspose (const Field                                 &F,
 {
 	commentator.start ("Testing random transpose", "testRandomTranspose", v1_stream.size ());
 
-	DenseMatrix<Field> A (F, A_stream);
+	Protected::DenseMatrix<Field> A (F, A_stream);
 
 	bool ret = testTranspose (F, A, v1_stream, v2_stream);
 
@@ -324,7 +324,7 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Field F (q);
 
-	commentator.start("Dense matrix black box test suite", "DenseMatrix");
+	commentator.start("Dense matrix black box test suite", "Protected::DenseMatrix");
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);

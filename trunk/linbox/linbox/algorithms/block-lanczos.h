@@ -55,7 +55,7 @@ namespace LinBox
 	 * unlikely any other vector archetypes will be supported in the future.
 	 * @bib [Montgomery '95]
 	 */
-	template <class Field, class Matrix = DenseMatrixBase<typename Field::Element> >
+	template <class Field, class Matrix = Protected::DenseMatrixBase<typename Field::Element> >
 	class BlockLanczosSolver {
 	public:
 
