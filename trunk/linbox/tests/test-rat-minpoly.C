@@ -29,7 +29,7 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/blackbox/sparse.h"
-#include "linbox/blackbox/dense.h"
+#include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/solutions/charpoly.h"
 
 #include "test-common.h"
@@ -55,7 +55,7 @@ static bool testDiagRatCharpoly (size_t n, int iterations)
 
 	GMPRationalField Q;
 	SparseMatrix<GMPRationalField > A(Q,n,n);
-	Protected::DenseMatrix <GMPRationalField > B(Q,n,n);
+	BlasBlackbox <GMPRationalField > B(Q,n,n);
 	std::vector<GMPRationalField::Element> c;
 
 	for (i=0; i < iterations; i++) {

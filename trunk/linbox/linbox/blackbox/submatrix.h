@@ -399,6 +399,168 @@ namespace LinBox
 		};
 	};
 
+	template<class _Field>
+	class Submatrix<BlasBlackbox<_Field>, VectorCategories::DenseVectorTag> : public Protected::DenseSubmatrix<typename _Field::Element> {
+	public:
+
+		typedef _Field Field;
+		typedef Submatrix<BlasBlackbox<_Field>, VectorCategories::DenseVectorTag> Self_t;
+		typedef Protected::DenseSubmatrix<typename _Field::Element> Father_t;
+
+	private:
+
+		Field f;
+
+		VectorDomain<Field> vd;
+
+	public:
+
+		typedef typename Field::Element Element;
+
+		/** Constructor from an existing \ref BlasBlackbox  and dimensions
+		 * @param M Pointer to \ref BlasBlackbox  of which to construct submatrix
+		 * @param row Starting row
+		 * @param col Starting column
+		 * @param Rowdim Row dimension
+		 * @param Coldim Column dimension
+		 */
+
+		Submatrix (const BlasBlackbox<Field> *Mat,
+			   size_t row,
+			   size_t col,
+			   size_t Rowdim,
+			   size_t Coldim) :
+			Protected::DenseSubmatrix<Element>(const_cast<BlasBlackbox<Field>& >(*Mat), row, col, Rowdim, Coldim),
+			f(Mat -> field()), vd(Mat -> field())
+		{
+		}
+
+		/** Constructor from an existing \ref BlasBlackbox  and dimensions
+		 * @param M reference to \ref BlasBlackbox  of which to construct submatrix
+		 * @param row Starting row
+		 * @param col Starting column
+		 * @param Rowdim Row dimension
+		 * @param Coldim Column dimension
+		 */
+		Submatrix (const BlasBlackbox<Field> &Mat,
+			   size_t row,
+			   size_t col,
+			   size_t Rowdim,
+			   size_t Coldim) :
+			Protected::DenseSubmatrix<Element>(const_cast<BlasBlackbox<Field>& >(Mat), row, col, Rowdim, Coldim),
+			f(Mat.field()), vd(Mat.field()) {
+			}
+
+		/** Constructor from an existing submatrix and dimensions
+		 * @param SM pointer to Submatrix from which to
+		 *           construct submatrix
+		 * @param row Starting row
+		 * @param col Starting column
+		 * @param Rowdim Row dimension
+		 * @param Coldim Column dimension
+		 */
+		Submatrix (const Submatrix<BlasBlackbox<Field> > *SM,
+			   size_t row,
+			   size_t col,
+			   size_t Rowdim,
+			   size_t Coldim ) :
+			Protected::DenseSubmatrix<Element> (const_cast<Submatrix<BlasBlackbox<Field> >&>(*SM), row, col, Rowdim, Coldim),
+			f (SM ->  field()), vd(SM -> field()){
+			}
+
+		/** Constructor from an existing submatrix and dimensions
+		 * @param SM reference to Submatrix from which to
+		 *           construct submatrix
+		 * @param row Starting row
+		 * @param col Starting column
+		 * @param Rowdim Row dimension
+		 * @param Coldim Column dimension
+		 */
+		Submatrix (const Submatrix<BlasBlackbox<Field> >& SM,
+			   size_t row,
+			   size_t col,
+			   size_t Rowdim,
+			   size_t Coldim ) :
+			Protected::DenseSubmatrix<Element> (const_cast<Submatrix<BlasBlackbox<Field> >&>(SM), row, col, Rowdim, Coldim),
+			f (SM. field()), vd(SM. field()){
+			}
+
+		const Field& field() const {
+
+			return f;
+		}
+
+		std::istream& read (std::istream& is) {
+
+			Protected::DenseSubmatrix<Element>::read (is, f);
+
+			return is;
+		}
+
+		std::ostream& write (std::ostream& os) const {
+
+			Protected::DenseSubmatrix<Element>::write (os, f);
+
+			return os;
+		}
+
+		/** Generic matrix-vector apply
+		 * <code>y = A * x</code>.
+		 * This version of apply allows use of arbitrary input and output vector         * types.
+		 * @param y Output vector
+		 * @param x Input vector
+		 * @return Reference to output vector
+		 */
+		template<class Vect1, class Vect2>
+		Vect1 &apply (Vect1 &y, const Vect2 &x) const {
+
+			typename Protected::DenseSubmatrix<Element>::ConstRowIterator p;
+
+			typename Vect1::iterator p_y = y.begin ();
+
+			for (p = this->rowBegin (); p != this->rowEnd (); ++p, ++p_y)
+				vd.dot (*p_y, *p, x);
+
+			return y;
+		}
+
+		/** Generic matrix-vector transpose apply
+		 * <code>y = A^T * x</code>
+		 * This version of applyTranspose allows use of arbitrary input and
+		 * output vector types
+		 * @param y Output vector
+		 * @param x Input vector
+		 * @return Reference to output vector
+		 */
+		template<class Vect1, class Vect2>
+		Vect1 &applyTranspose (Vect1 &y, const Vect2 &x) const {
+
+			typename Protected::DenseSubmatrix<Element>::ConstColIterator colp;
+
+			typename Vect1::iterator p_y = y.begin ();
+
+			for (colp = this->colBegin (); colp != this->colEnd (); ++colp, ++p_y)
+				vd. dot (*p_y, *colp, x);
+
+			return y;
+		}
+
+		template<typename _Tp1>
+		struct rebind
+		{
+			typedef SubmatrixOwner<BlasBlackbox<_Tp1>, VectorCategories::DenseVectorTag> other;
+
+			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
+
+				typename other::Father_t A1;
+				typename Father_t::template rebind<_Tp1> () ( A1, static_cast<Father_t>(A), F);
+				Ap = other(A1, A._row, A._col, A._rowdim, A._coldim);
+			}
+
+		};
+	};
+
+
 	//@}
 } // namespace LinBox
 

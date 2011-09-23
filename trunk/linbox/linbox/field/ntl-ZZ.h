@@ -77,6 +77,11 @@ namespace LinBox
 			return c = 0;
 		}
 
+		inline size_t & characteristic (size_t& c)const
+		{
+			return c = 0;
+		}
+
 		std::ostream& write (std::ostream& out) const
 		{
 			return out << "NTL ZZ Ring";

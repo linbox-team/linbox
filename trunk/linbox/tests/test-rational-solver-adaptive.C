@@ -32,7 +32,7 @@
 
 
 #include <linbox/field/PID-integer.h>
-#include <linbox/blackbox/dense.h>
+#include <linbox/blackbox/blas-blackbox.h>
 #include <linbox/blackbox/diagonal.h>
 #include <linbox/algorithms/rational-solver-adaptive.h>
 #include <iostream>
@@ -100,7 +100,7 @@ bool testRandomSolve (const Ring& R,
 
                 //Diagonal<Ring> D(R, d);
 
-		Protected::DenseMatrix<Ring> D(R, n, n);
+		BlasBlackbox<Ring> D(R, n, n);
 
 		for(int i = 0; i < n; ++i) R.init (D[i][i],  d[i]);
 

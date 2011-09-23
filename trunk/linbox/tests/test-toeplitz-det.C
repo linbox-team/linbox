@@ -38,7 +38,7 @@
 #include <linbox/field/ntl-lzz_pX.h>
 #endif
 #include <linbox/solutions/det.h>
-#include <linbox/blackbox/dense.h>
+#include <linbox/blackbox/blas-blackbox.h>
 #include <linbox/randiter/random-prime.h>
 #include <linbox/util/commentator.h>
 #include "test-common.h"
@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
 	NTL_zz_p CF( *rp );
 	NTL_zz_pX PF(CF);
 
-	Protected::DenseMatrix<NTL_zz_p> A(CF,n,n);
+	BlasBlackbox<NTL_zz_p> A(CF,n,n);
 
 	NTL_zz_p::Element temp;
 	NTL_zz_pX::Element poly;

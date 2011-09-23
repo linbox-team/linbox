@@ -34,6 +34,19 @@
 #include <linbox/field/multimod-field.h>
 #include <linbox/util/matrix-stream.h>
 
+#include "linbox/vector/subiterator.h"
+#include "linbox/vector/subvector.h"
+#include "linbox/vector/stream.h"
+#include "linbox/vector/vector-domain.h"
+#include "linbox/matrix/dense.h"
+#include <linbox/matrix/matrix-domain.h>
+#include <linbox/blackbox/blackbox-interface.h>
+#include <linbox/blackbox/factory.h>
+#include <linbox/field/hom.h>
+#include "linbox/util/matrix-stream.h"
+
+
+
 namespace LinBox
 {
 
@@ -95,6 +108,27 @@ namespace LinBox
 			ms.getRows(_row);
 			ms.getColumns(_col);
 			_use_fflas= checkBlasApply(_F, _col);
+		}
+
+		/** Constructor using a finite vector stream (stream of the rows).
+		 * @param  F The field of entries; passed so that arithmetic may be done
+		 *           on elements.
+		 * @param  stream A vector stream to use as a source of vectors for this
+		 *                matrix
+		 */
+		template <class StreamVector>
+		BlasBlackbox (const Field &F, VectorStream<StreamVector> &stream) :
+			BlasMatrix<Element> (stream.size (), stream.dim ()), _F (F), _MD (F), _VD(F), _row(stream.size()), _col(stream.dim())
+		{
+			StreamVector tmp;
+			typename BlasMatrix<Element>::RowIterator p;
+
+			VectorWrapper::ensureDim (tmp, stream.dim ());
+
+			for (p = BlasMatrix<Element>::rowBegin (); p != BlasMatrix<Element>::rowEnd (); ++p) {
+				stream >> tmp;
+				_VD.copy (*p, tmp);
+			}
 		}
 
 		// copy

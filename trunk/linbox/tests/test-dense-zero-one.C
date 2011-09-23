@@ -60,7 +60,7 @@ struct BlackboxDomain : public _Field
 			return B = BlasMatrix<Element>(*this, i, j, m, n);
 		}
 		const Block& subBlock( const Block & B, size_t i, size_t j, size_t m, size_t n ) {
-			return B = BlasMatrix<Element>(static_cast<Protected::DenseMatrixBase<Element> >(*this), i, j, m, n);
+			return B = BlasMatrix<Element>(static_cast<BlasMatrix<Element> >(*this), i, j, m, n);
 		}
 		Block & operator= (BlasMatrix<Element> & rhs){
 			*this = rhs;

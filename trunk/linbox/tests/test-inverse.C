@@ -29,7 +29,7 @@
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/hilbert.h"
-#include "linbox/blackbox/dense.h"
+#include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/blackbox/inverse.h"
 #include "linbox/vector/stream.h"
 
@@ -208,7 +208,7 @@ static bool testVandermondeInverse (const Field           &F,
 				    VectorStream<Vector> &x_stream,
 				    VectorStream<Vector> &v_stream)
 {
-	typedef Protected::DenseMatrix <Field> Blackbox;
+	typedef BlasBlackbox <Field> Blackbox;
 
 	commentator.start ("Testing Vandermonde inverse", "testVandermondeInverse", x_stream.m ());
 
@@ -400,7 +400,7 @@ static bool testRandomTranspose (Field &F,
 				 VectorStream<Vector> &stream1,
 				 VectorStream<Vector> &stream2)
 {
-	typedef Protected::DenseMatrix <Field> Blackbox;
+	typedef BlasBlackbox <Field> Blackbox;
 
 	commentator.start ("Testing random transpose", "testRandomTranspose", stream1.m ());
 

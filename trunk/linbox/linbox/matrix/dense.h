@@ -242,17 +242,6 @@ namespace LinBox
 				x = _rep[i * _cols + j]; return x;
 			}
 
-#if 0 /*  j'ai craqué */
-			Element & operator[] (size_t i, size_t j)
-			{
-				return refEntry(i,j);
-			}
-
-			const Element & operator[] (size_t i, size_t j) const
-			{
-				return getEntry(i,j);
-			}
-#endif
 
 			/** @name Column of rows iterator
 			 * \brief
