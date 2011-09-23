@@ -638,7 +638,7 @@ static bool testRandomSolve (const Field                  &F,
 
 	SparseMatrix<Field> A (F, A_stream);
 	SparseMatrixBase<typename Field::Element> AT (A.coldim (), A.rowdim ());
-	Protected::DenseMatrixBase<typename Field::Element> ATA (A.coldim (), A.coldim ());
+	BlasMatrix<typename Field::Element> ATA (A.coldim (), A.coldim ());
 
 	A.transpose (AT);
 

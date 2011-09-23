@@ -28,6 +28,7 @@
 
 #include <linbox/blackbox/blackbox-interface.h>
 #include <linbox/blackbox/dense.h>
+#include <linbox/blackbox/blas-blackbox.h>
 #include <linbox/blackbox/sparse.h>
 
 namespace LinBox
@@ -82,6 +83,43 @@ namespace LinBox
 
 			return Ap;
 		}
+
+		// constructor a random dense matrix, whose entries are random
+		template<class Field>
+		static BlasBlackbox<Field>*& randomMatrix( BlasBlackbox<Field>*& Ap,
+							  const Field& f,
+							  int rowdim, int coldim )
+		{
+
+			Ap = new BlasBlackbox<Field>(f, rowdim, coldim);
+			typename BlasBlackbox<Field>::RawIterator Ap_p;
+			typename Field::Element zero, one, elt;
+			f. init (one, 1); f. init (zero, 0);
+
+			for (Ap_p = Ap -> rawBegin(); Ap_p != Ap -> rawEnd(); ++ Ap_p)
+				f. assign (*Ap_p, zero);
+
+			if (rowdim < coldim)
+				for (int i = 0; i < rowdim; ++ i) {
+					Ap -> setEntry (i, i, one);
+					for (int j = rowdim; j < coldim; ++ j){
+						f. init (elt, rand()%10);
+						Ap -> setEntry (i, j, elt);
+					}
+				}
+			else
+				for (int i = 0; i < coldim; ++ i) {
+					Ap -> setEntry (i, i, one);
+					for (int j = coldim; j < rowdim; ++ j) {
+						f. init (elt, rand()%10);
+						Ap -> setEntry (j, i, elt);
+					}
+				}
+
+
+			return Ap;
+		}
+
 
 		// constructor a very special random sparse matrix
 		// [I, R] or [I, R]^t, where R is a sparse random matrix.

@@ -49,6 +49,24 @@ namespace LinBox
 		typedef Submatrix<Protected::DenseMatrix<Field> > value_type;
 	};
 
+	template<class Field>
+	class SubMatrixTraits<BlasBlackbox<Field> > {
+
+	public:
+
+		typedef  Submatrix<BlasBlackbox<Field> > value_type;
+	};
+
+
+	template<class Field>
+	class SubMatrixTraits<Submatrix<BlasBlackbox<Field> > > {
+
+	public:
+
+		typedef Submatrix<BlasBlackbox<Field> > value_type;
+	};
+
+
 }
 
 #endif //__LINBOX_submatrix_traits_H

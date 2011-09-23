@@ -259,18 +259,6 @@ namespace LinBox
 			return _M->getEntry (x, i + _beg_row, j + _beg_col);
 		}
 
-#if 0 /*  craquage */
-		Element & operator[] (size_t i, size_t j)
-		{
-			return refEntry(i,j);
-		}
-
-		const Element & operator[] (size_t i, size_t j) const
-		{
-			return getEntry(i,j);
-		}
-#endif
-
 		/// iterator to the begining of a row
 		RowIterator rowBegin ();
 		/// iterator to the end of a row
@@ -296,12 +284,19 @@ namespace LinBox
 		ConstRawIndexedIterator rawIndexedBegin() const;
 		ConstRawIndexedIterator rawIndexedEnd() const;
 
-#if 0 /*  operator[] */
+#if 1 /*  operator[] */
 		/*- Retrieve a reference to a row
 		 * @param i Row index
 		 */
-		Row operator[] (int i);               not actually used, causes a compile error...
-		ConstRow operator[] (int i) const;
+		Row operator[] (int i) { return _M->operator[](i) ; }    //            not actually used, causes a compile error...
+		ConstRow operator[] (int i) const{ return _M->operator[](i) ; }
+
+		//BB. that is one issue...
+		void resize (size_t m, size_t n, const Element& val = Element())
+		{
+			_M->resize(m,n,val);
+		}
+
 #endif
 
 		/*! Creates a transposed matrix of \c *this.

@@ -33,7 +33,7 @@
 #include "linbox/field/gmp-rational.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/sparse.h"
-#include "linbox/blackbox/dense.h"
+#include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/solutions/det.h"
 #include "linbox/solutions/methods.h"
 
@@ -492,7 +492,7 @@ bool testRationalDetGen (size_t n, int iterations)
 		commentator.startIteration (i);
 		GMPRationalField Q;
 		SparseMatrix<GMPRationalField > A (Q, n, n);
-		Protected::DenseMatrix <GMPRationalField > BB(Q, n, n);
+		BlasBlackbox <GMPRationalField > BB(Q, n, n);
 
 	 	GMPRationalField::Element pi(1,1);
  		GMPRationalField::Element det_A, det_B,det_A_H, det_B_H, det_A_B, det_B_B, det_A_E, det_B_E;

@@ -30,6 +30,7 @@
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/vector/stream.h"
+#include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/algorithms/mg-block-lanczos.h"
 
 #include "test-common.h"
@@ -46,7 +47,7 @@ static bool testRandomSolve (const Field           &F,
 			     VectorStream<Vector2> &y_stream,
 			     size_t                 N)
 {
-	typedef MGBlockLanczosSolver<Field, Protected::DenseMatrixBase<typename Field::Element> > MGBLSolver;
+	typedef MGBlockLanczosSolver<Field, BlasMatrix<typename Field::Element> > MGBLSolver;
 
 	commentator.start ("Testing random solve (Block Lanczos)", "testRandomSolve", y_stream.size ());
 
@@ -119,7 +120,7 @@ static bool testSampleNullspace (const Field           &F,
 				 size_t                 N,
 				 unsigned int           num_iter)
 {
-	typedef Protected::DenseMatrixBase<typename Field::Element> Matrix;
+	typedef BlasMatrix<typename Field::Element> Matrix;
 	typedef MGBlockLanczosSolver<Field, Matrix> MGBLSolver;
 
 	commentator.start ("Testing sampling from nullspace (Block Lanczos)", "testSampleNullspace", num_iter);

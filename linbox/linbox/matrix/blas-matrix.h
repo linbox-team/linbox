@@ -238,23 +238,51 @@ namespace LinBox
 		 * @param m rows
 		 * @param n cols
 		 */
-		BlasMatrix (int m, int n) :
+		//@{
+
+		template<class T>
+		BlasMatrix ( unsigned int m, T n) :
 			Protected::DenseSubmatrix<Element>(*(new Protected::DenseMatrixBase<Element> (m,n)),0,0,m,n),
 			_stride(n), _alloc(true)
 		{
 			_ptr = this->_M->FullIterator();
 		}
 
-		/*! Allocates a new \f$ m \times n\f$ matrix.
-		 * @param m rows
-		 * @param n cols
-		 */
-		BlasMatrix (size_t m, size_t n) :
+		template<class T>
+		BlasMatrix (long m, T n) :
 			Protected::DenseSubmatrix<Element>(*(new Protected::DenseMatrixBase<Element> (m,n)),0,0,m,n),
 			_stride(n), _alloc(true)
 		{
 			_ptr = this->_M->FullIterator();
 		}
+
+		template<class T>
+		BlasMatrix (unsigned long m, T  n) :
+			Protected::DenseSubmatrix<Element>(*(new Protected::DenseMatrixBase<Element> (m,n)),0,0,m,n),
+			_stride(n), _alloc(true)
+		{
+			_ptr = this->_M->FullIterator();
+		}
+
+		template<class T>
+		BlasMatrix (int m, T n) :
+			Protected::DenseSubmatrix<Element>(*(new Protected::DenseMatrixBase<Element> (m,n)),0,0,m,n),
+			_stride(n), _alloc(true)
+		{
+			_ptr = this->_M->FullIterator();
+		}
+
+		template<class T>
+		BlasMatrix ( Integer & m, T n) :
+			Protected::DenseSubmatrix<Element>(*(new Protected::DenseMatrixBase<Element> (m,n)),0,0,m,n),
+			_stride(n), _alloc(true)
+		{
+			_ptr = this->_M->FullIterator();
+		}
+
+
+		//@}
+
 
 		/*! Constructor from a matrix stream.
 		 * @param ms matrix stream.

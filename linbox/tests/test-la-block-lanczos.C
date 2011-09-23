@@ -46,7 +46,7 @@ static bool testRandomSolve (const Field           &F,
 			     VectorStream<Vector2> &y_stream,
 			     size_t                 N)
 {
-	typedef LABlockLanczosSolver<Field, Protected::DenseMatrixBase<typename Field::Element> > LABLSolver;
+	typedef LABlockLanczosSolver<Field, BlasMatrix<typename Field::Element> > LABLSolver;
 
 	commentator.start ("Testing random solve (Block Lanczos)", "testRandomSolve", y_stream.size ());
 
@@ -119,7 +119,7 @@ static bool testSampleNullspace (const Field           &F,
 				 size_t                 N,
 				 unsigned int           num_iter)
 {
-	typedef Protected::DenseMatrixBase<typename Field::Element> Matrix;
+	typedef BlasMatrix<typename Field::Element> Matrix;
 	typedef LABlockLanczosSolver<Field, Matrix> LABLSolver;
 
 	commentator.start ("Testing sampling from nullspace (Block Lanczos)", "testSampleNullspace", num_iter);
@@ -179,7 +179,7 @@ static bool testRank (const Field           &F,
 		      size_t                 N,
 		      unsigned int           num_iter)
 {
-	typedef Protected::DenseMatrixBase<typename Field::Element> Matrix;
+	typedef BlasMatrix<typename Field::Element> Matrix;
 	typedef LABlockLanczosSolver<Field, Matrix> LABLSolver;
 
 	commentator.start ("Testing rank (Block Lanczos)", "testRank", num_iter);

@@ -110,7 +110,7 @@ namespace LinBox
 			delete[] A_local;
 #endif
 			typedef Modular<int32_t> Field;
-			typedef Protected::DenseMatrix<Field> FMatrix;
+			typedef BlasBlackbox<Field> FMatrix;
 			MatrixRank<typename Matrix::Field, Field> MR;
 			Field F((unsigned long)p);
 			FMatrix A_local(A, F);
@@ -382,11 +382,11 @@ namespace LinBox
 		report << "Computation of the invariant factors starts (via an adaptive alg):" << std::endl;
 
 		// compute the rank over a random prime field.
-		int order = A. rowdim() < A. coldim() ? A. rowdim() : A. coldim();
+		int order = (A. rowdim() < A. coldim()) ? (int)A. rowdim() : (int)A. coldim();
 		report << "Computation of the rank starts:\n";
 		typedef typename Matrix::Field Ring;
 		unsigned long r;
-		MatrixRank<Ring, Modular<int> > MR;
+		MatrixRank<Ring, Modular<int32_t> > MR;
 		r = MR. rank (A);
 		report << "   Matrix rank over a random prime field: " << r << '\n';
 		report << "Computation of the rank finished.\n";
@@ -394,10 +394,10 @@ namespace LinBox
 		std::vector<long> e(NPrime); std::vector<long>::iterator e_p;
 
 		report <<"   Compute the degree of min poly of AA^T: \n";
-		typedef Modular<int> Field;
+		typedef Modular<int32_t> Field;
 		integer Val; Field::Element v; unsigned long degree;
 		RandomPrimeIterator rg ((int)(log( (double)(FieldTraits<Field>::maxModulus()) ) /  M_LN2 - 2));
-		Field F (*rg);
+		Field F ((unsigned long)*rg);
 		typename MatrixHomTrait<Matrix, Field>::value_type Ap(F, A.rowdim(), A.coldim());
 		MatrixHom::map (Ap, A, F);
 		Valence::one_valence (v, degree, Ap);
@@ -504,7 +504,7 @@ namespace LinBox
 		report << "Computation of the rank starts:\n";
 		typedef typename Protected::DenseMatrix<IRing>::Field Ring;
 		unsigned long r;
-		MatrixRank<Ring, Modular<int> > MR;
+		MatrixRank<Ring, Modular<int32_t> > MR;
 		r = MR. rank (A);
 		report << "   Matrix rank over a random prime field: " << r << '\n';
 		report << "Computation of the rank finished.\n";
@@ -512,7 +512,7 @@ namespace LinBox
 		std::vector<long> e(NPrime); std::vector<long>::iterator e_p;
 
 		report <<"   Compute the degree of min poly of AA^T: \n";
-		typedef Modular<int> Field;
+		typedef Modular<int32_t> Field;
 		integer Val; Field::Element v; unsigned long degree;
 		RandomPrimeIterator rg ((int)(log( (double)(FieldTraits<Field>::maxModulus()) ) / M_LN2 - 2));
 		Field F ((unsigned long)*rg);

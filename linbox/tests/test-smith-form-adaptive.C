@@ -38,7 +38,7 @@
 #include <linbox/util/commentator.h>
 #include <linbox/vector/stream.h>
 #include <linbox/algorithms/smith-form-adaptive.h>
-#include <linbox/blackbox/dense.h>
+#include <linbox/blackbox/blas-blackbox.h>
 #include "test-common.h"
 using namespace LinBox; // fragile
 
@@ -84,7 +84,7 @@ bool testRandom(const Ring& R,
 		VD.write (report, d);
 		report << endl;
 
-		Protected::DenseMatrix<Ring> D(R, n, n), L(R, n, n), U(R, n, n), A(R,n,n);
+		BlasBlackbox<Ring> D(R, n, n), L(R, n, n), U(R, n, n), A(R,n,n);
 
 		int i, j;
 
@@ -105,7 +105,7 @@ bool testRandom(const Ring& R,
 
 			std::vector<typename Ring::Element> tmp1(n), tmp2(n), e(n);
 
-			typename Protected::DenseMatrix<Ring>::ColIterator col_p;
+			typename BlasBlackbox<Ring>::ColIterator col_p;
 
 			i = 0;
 			for (col_p = A.colBegin();

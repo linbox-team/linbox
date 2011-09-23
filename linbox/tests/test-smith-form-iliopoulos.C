@@ -36,7 +36,7 @@
 #include <linbox/field/PIR-modular-int32.h>
 #include <linbox/integer.h>
 #include <linbox/randiter/random-prime.h>
-#include <linbox/blackbox/dense.h>
+#include <linbox/blackbox/blas-blackbox.h>
 #include <linbox/algorithms/last-invariant-factor.h>
 #include <linbox/algorithms/smith-form-iliopoulos.h>
 #include <linbox/algorithms/rational-solver.h>
@@ -95,7 +95,7 @@ bool testRandom(const Ring& R,
 		VD.write (report, d);
                 report << endl;
 
-		Protected::DenseMatrix<Ring> D(R, n, n), L(R, n, n), U(R, n, n), A(R,n,n);
+		BlasBlackbox<Ring> D(R, n, n), L(R, n, n), U(R, n, n), A(R,n,n);
 
 		int i, j;
 
@@ -113,7 +113,7 @@ bool testRandom(const Ring& R,
 
 		std::vector<typename Ring::Element> tmp1(n), tmp2(n), e(n);
 
-		typename Protected::DenseMatrix<Ring>::ColIterator col_p;
+		typename BlasBlackbox<Ring>::ColIterator col_p;
 
 		i = 0;
 		for (col_p = A.colBegin(); col_p != A.colEnd(); ++ col_p, ++ i) {
@@ -150,7 +150,7 @@ bool testRandom(const Ring& R,
 
 			PIR_ntl_ZZ_p PIR(s);
 
-			Protected::DenseMatrix<PIR_ntl_ZZ_p> Ap(PIR, A.rowdim(), A.coldim());
+			BlasBlackbox<PIR_ntl_ZZ_p> Ap(PIR, A.rowdim(), A.coldim());
 
 			MatrixHom::map (Ap, A, PIR);
 
@@ -186,7 +186,7 @@ bool testRandom(const Ring& R,
 
 			PIRModular<int32_t> PIR( (int32_t)(s % LINBOX_MAX_MODULUS));
 
-			Protected::DenseMatrix<PIRModular<int32_t> > Ap(PIR, A.rowdim(), A.coldim());
+			BlasBlackbox<PIRModular<int32_t> > Ap(PIR, A.rowdim(), A.coldim());
 
 			MatrixHom::map (Ap, A, PIR);
 
