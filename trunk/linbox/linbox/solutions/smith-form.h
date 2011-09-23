@@ -146,6 +146,7 @@ namespace LinBox
 #endif
 
 #ifdef __LINBOX_HAVE_NTL
+#if 0
 	// The smithForm with Hybrid Method
 	template<>
 	std::list<std::pair<integer, size_t> > &smithForm(std::list<std::pair<integer, size_t> >& S,
@@ -159,6 +160,22 @@ namespace LinBox
 
 		return S;
 	}
+#endif
+
+	template<>
+	std::list<std::pair<integer, size_t> > &
+	smithForm(std::list<std::pair<integer, size_t> >& S,
+		  const BlasBlackbox<PID_integer> 	&A,
+		  const RingCategories::IntegerTag      &tag,
+		  const Method::Hybrid			& M)
+	{
+		std::vector<integer> v (A.rowdim() < A.coldim() ? A.rowdim() : A.coldim());
+		SmithFormAdaptive::smithForm(v, A);
+		distinct(v.begin(), v.end(), S);
+
+		return S;
+	}
+
 #endif
 
 #if 0

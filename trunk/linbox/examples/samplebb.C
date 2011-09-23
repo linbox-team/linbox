@@ -69,7 +69,7 @@ using std::list;
 using std::vector;
 using LinBox::Companion;
 using LinBox::DirectSum;
-using LinBox::Protected::DenseMatrix;
+using LinBox::BlasBlackbox;
 using LinBox::NTL_ZZ;
 using NTL::ZZX;
 
@@ -135,7 +135,7 @@ void augmentBB(List& L, char* code, int e, int k, const Ring& R)
 }
 
 template < class Ring >
-void scramble(Protected::DenseMatrix<Ring>& M)
+void scramble(BlasBlackbox<Ring>& M)
 {
 
 	Ring R = M.field();
@@ -253,7 +253,7 @@ int main(int ac, char* av[])
 	{	if (opts[0] == 'r')
 		{
 			// into sparse matrix, then 3n row ops with corresponding col ops
-			Protected::DenseMatrix<Ring>* B;//(Z,A.rowdim(), A.coldim());
+			BlasBlackbox<Ring>* B;//(Z,A.rowdim(), A.coldim());
 			//MatrixDomain<Ring> MD(Z);
 			LinBox::MatrixHom::map (B, A, Z);
 

@@ -29,10 +29,12 @@
 #include <linbox/algorithms/rational-solver.h>
 #include <linbox/randiter/random-prime.h>
 #include <linbox/blackbox/dense.h>
+#include <linbox/blackbox/blas-blackbox.h>
 
 namespace LinBox
 {
 
+#if 0 // DenseMatrix version
 	// Generic non-numerical solver requires conversion of the vector
 	template<class IRing, class OutVector, class InVector>
 	struct RationalSolverAdaptiveClass {
@@ -82,11 +84,70 @@ namespace LinBox
 		}
 	};
 
-
 	class RationalSolverAdaptive {
 	public:
 		template<class IRing, class OutVector, class InVector>
 		static SolverReturnStatus solveNonsingular(OutVector& num, typename IRing::Element& den, const Protected::DenseMatrix<IRing>& M, const InVector& b) {
+			return RationalSolverAdaptiveClass<IRing,OutVector,InVector>::solveNonsingular(num, den, M, b);
+		}
+	};
+#endif
+
+	// Generic non-numerical solver requires conversion of the vector
+	template<class IRing, class OutVector, class InVector>
+	struct RationalSolverAdaptiveClass {
+		static SolverReturnStatus solveNonsingular(OutVector& num, typename IRing::Element& den, const BlasBlackbox<IRing>& M, const InVector& b)
+		{
+			linbox_check ((M. rowdim() == M. coldim()) && (b.size() == M.rowdim()) && (num. size() ==M.coldim()));
+			typedef Modular<int32_t> Field;
+			// typedef Modular<double> Field;
+			RationalSolver<IRing, Field, RandomPrimeIterator, WanTraits> numerical_solver;
+			//RationalSolver<IRing, Field, RandomPrimeIterator, NumericalTraits> numerical_solver;
+			SolverReturnStatus ret;
+			ret = numerical_solver. solve(num, den, M, b);
+
+			if (ret != SS_OK) {
+				RationalSolver<IRing, Field, RandomPrimeIterator> solver;
+				std::vector<typename IRing::Element> Ib; Ib.reserve(b.size());
+				typename IRing::Element tmp;
+				for(typename InVector::const_iterator biter = b.begin();
+				    biter != b.end();
+				    ++biter) {
+					Ib.push_back( M.field().init(tmp, *biter) );
+				}
+				ret = solver. solve(num, den, M, Ib);
+			}
+
+			return ret;
+		}
+	};
+
+
+	// Specialization when the vector is already over the ring
+	template<class IRing, class OutVector, template<typename T> class Container>
+	struct RationalSolverAdaptiveClass<IRing, OutVector, Container<typename IRing::Element> > {
+		static SolverReturnStatus solveNonsingular(OutVector& num, typename IRing::Element& den, const BlasBlackbox<IRing>& M, const Container<typename IRing::Element> & b) {
+			linbox_check ((M. rowdim() == M. coldim()) && (b.size() == M.rowdim()) && (num. size() ==M.coldim()));
+			typedef Modular<int32_t> Field;
+			// typedef Modular<double> Field;
+			RationalSolver<IRing, Field, RandomPrimeIterator, NumericalTraits> numerical_solver;
+			SolverReturnStatus ret;
+			ret = numerical_solver. solve(num, den, M, b);
+
+			if (ret != SS_OK) {
+				RationalSolver<IRing, Field, RandomPrimeIterator> solver;
+				ret = solver. solve(num, den, M, b);
+			}
+
+			return ret;
+		}
+	};
+
+
+	class RationalSolverAdaptive {
+	public:
+		template<class IRing, class OutVector, class InVector>
+		static SolverReturnStatus solveNonsingular(OutVector& num, typename IRing::Element& den, const BlasBlackbox<IRing>& M, const InVector& b) {
 			return RationalSolverAdaptiveClass<IRing,OutVector,InVector>::solveNonsingular(num, den, M, b);
 		}
 	};

@@ -98,6 +98,38 @@ namespace LinBox
 			return LAR;
 
 		}
+
+		template <class Field>
+		static BlasBlackbox<Field>*& compose (BlasBlackbox<Field>*& LAR,
+						     const BlasBlackbox<Field>& L,
+						     const BlasBlackbox<Field>& A,
+						     const BlasBlackbox<Field>& R)
+		{
+
+			linbox_check (L.coldim() == A.rowdim());
+
+			linbox_check (A.coldim() == R.rowdim());
+
+			LAR = new BlasBlackbox<Field>(L.field(), L.rowdim(), R.coldim());
+
+			typename BlasBlackbox<Field>::ConstRowIterator crow_p;
+
+			typename BlasBlackbox<Field>::RowIterator row_p;
+
+			std::vector<typename Field::Element> tmp(R.rowdim());
+
+			for (row_p = LAR -> rowBegin(), crow_p = L.rowBegin();
+			     row_p != LAR -> rowEnd(); ++ row_p, ++ crow_p) {
+
+				A.applyTranspose(tmp, *crow_p);
+
+				R.applyTranspose(*row_p, tmp);
+			}
+
+			return LAR;
+
+		}
+
 #if 0
 		//- Compute A + UV, for EGV algorithm, not be used any more.
 		template <class Blackbox>
