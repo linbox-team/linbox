@@ -69,7 +69,7 @@ using namespace std;
 #include "linbox/algorithms/smith-form-local2.h"
 #include <linbox/algorithms/smith-form-iliopoulos.h>
 #include "linbox/algorithms/smith-form-adaptive.h"
-#include "linbox/blackbox/dense.h"
+#include "linbox/blackbox/blas-blackbox.h"
 
 using namespace LinBox;
 
@@ -77,7 +77,7 @@ using namespace LinBox;
 
 
 template<class PIR>
-void Mat(Protected::DenseMatrix<PIR>& M, PIR& R, int n,
+void Mat(BlasBlackbox<PIR>& M, PIR& R, int n,
 	 string src, string file, string format);
 
 template<class I1, class Lp> void distinct (I1 a, I1 b, Lp& c);
@@ -119,7 +119,7 @@ int main(int argc, char* argv[])
 	{
 		typedef PID_integer Ints;
 		Ints Z;
-		Protected::DenseMatrix<Ints> M(Z);
+		BlasBlackbox<Ints> M(Z);
 		Mat(M, Z, n, src, file, format);
 		vector<integer> v(n);
 		T.start();
@@ -142,7 +142,7 @@ int main(int argc, char* argv[])
 
 		PIR R(m);
 
-		Protected::DenseMatrix<PIR> M(R);
+		BlasBlackbox<PIR> M(R);
 
 		Mat(M, R, n, src, file, format);
 
@@ -223,7 +223,7 @@ int main(int argc, char* argv[])
 
 			PIR R(m);
 
-			Protected::DenseMatrix<PIR> M(R);
+			BlasBlackbox<PIR> M(R);
 
 			Mat(M, R, n, src, file, format);
 
@@ -257,7 +257,7 @@ int main(int argc, char* argv[])
 
 		Local2_32 R;
 
-		Protected::DenseMatrix<Local2_32> M(R);
+		BlasBlackbox<Local2_32> M(R);
 
 		Mat(M, R, n, src, file, format);
 
@@ -318,7 +318,7 @@ int main(int argc, char* argv[])
   Also "tref" and file with format "kdense"
   */
 template <class PIR>
-void Mat(Protected::DenseMatrix<PIR>& M, PIR& R, int n,
+void Mat(BlasBlackbox<PIR>& M, PIR& R, int n,
 	 string src, string file, string format) {
 
 	typename PIR::Element zero; R.init(zero, 0);
@@ -404,7 +404,7 @@ void Mat(Protected::DenseMatrix<PIR>& M, PIR& R, int n,
 // This mat will have s, near sqrt(n), distinct invariant factors,
 // each repeated twice), involving the s primes 101, 103, ...
 template <class PIR>
-void RandomRoughMat(Protected::DenseMatrix<PIR>& M, PIR& R, int n) {
+void RandomRoughMat(BlasBlackbox<PIR>& M, PIR& R, int n) {
 	typename PIR::Element zero; R.init(zero, 0);
 	M.resize(n, n, zero);
 	if (n > 10000) {cerr << "n too big" << endl; exit(-1);}
@@ -433,7 +433,7 @@ void RandomRoughMat(Protected::DenseMatrix<PIR>& M, PIR& R, int n) {
 // This mat will have the same nontrivial invariant factors as
 // diag(1,2,3,5,8, ... 999, 0, 1, 2, ...).
 template <class PIR>
-void RandomFromDiagMat(Protected::DenseMatrix<PIR>& M, PIR& R, int n) {
+void RandomFromDiagMat(BlasBlackbox<PIR>& M, PIR& R, int n) {
 	typename PIR::Element zero; R.init(zero, 0);
 	M.resize(n, n, zero);
 
@@ -451,7 +451,7 @@ void RandomFromDiagMat(Protected::DenseMatrix<PIR>& M, PIR& R, int n) {
 // where fib(1) = 1, fib(2) = 2.  But note that, depending on n,
 // the last block may be truncated, thus repeating an earlier fibonacci number.
 template <class PIR>
-void RandomFibMat(Protected::DenseMatrix<PIR>& M, PIR& R, int n) {
+void RandomFibMat(BlasBlackbox<PIR>& M, PIR& R, int n) {
 	typename PIR::Element zero; R.init(zero, 0);
 	M.resize(n, n, zero);
 
@@ -482,7 +482,7 @@ void RandomFibMat(Protected::DenseMatrix<PIR>& M, PIR& R, int n) {
 }
 
 template < class Ring >
-void scramble(Protected::DenseMatrix<Ring>& M)
+void scramble(BlasBlackbox<Ring>& M)
 {
 
 	Ring R = M.field();
@@ -555,7 +555,7 @@ void scramble(Protected::DenseMatrix<Ring>& M)
 
 // Trefethen's challenge #7 mat (primes on diag, 1's on 2^e bands).
 template <class PIR>
-void TrefMat(Protected::DenseMatrix<PIR>& M, PIR& R, int n) {
+void TrefMat(BlasBlackbox<PIR>& M, PIR& R, int n) {
 	typename PIR::Element zero; R.init(zero, 0);
 	M.resize(n, n, zero);
 
@@ -622,7 +622,7 @@ num& qread(num& Val, pwrlist& M, istream& in)
 }
 
 template <class PIR>
-void KratMat(Protected::DenseMatrix<PIR>& M, PIR& R, int q, istream& in)
+void KratMat(BlasBlackbox<PIR>& M, PIR& R, int q, istream& in)
 {
 	pwrlist pwrs(q);
 	for (unsigned int i = 0; i < M.rowdim(); ++ i)

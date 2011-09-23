@@ -24,7 +24,9 @@
 #define __LINBOX_submatrix_traits_H
 
 #include <linbox/blackbox/dense.h>
+#include <linbox/blackbox/blas-blackbox.h>
 #include <linbox/blackbox/submatrix.h>
+
 
 namespace LinBox
 {

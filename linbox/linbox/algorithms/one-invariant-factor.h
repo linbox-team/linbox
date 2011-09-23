@@ -34,9 +34,9 @@ namespace LinBox
 
 	/// \brief Limited doc so far.
 	template<class _Ring,
-	class _LastInvariantFactor,
-	class _Compose,
-	class _RandomMatrix>
+		class _LastInvariantFactor,
+		class _Compose,
+		class _RandomMatrix>
 
 	class OneInvariantFactor {
 
