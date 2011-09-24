@@ -24,6 +24,7 @@
 #ifndef __LINBOX_minpoly_H
 #define __LINBOX_minpoly_H
 
+#include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/solutions/methods.h"
 #include "linbox/util/commentator.h"
 
