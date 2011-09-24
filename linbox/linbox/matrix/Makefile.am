@@ -15,7 +15,7 @@ BASIC_HDRS =                                     \
     blas-matrix.h                                \
     factorized-matrix.h  factorized-matrix.inl   \
     matrix-permutation.h matrix-permutation.inl  \
-    random-matrix.h
+    random-matrix.h      random-matrix.inl
 
 NTL_HDRS =
 GIVARO_HDRS =
