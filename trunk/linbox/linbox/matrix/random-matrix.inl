@@ -111,11 +111,11 @@ namespace LinBox
 
 	template<class Randiter,class Field>
 	BlasBlackbox<Field> &
-	random_lu_rank(const Field        & F,
-		       const Randiter     & R,
-		       BlasBlackbox<Field> & A,
-		       int                & rank,
-		       const RingCategories::ModularTag          &tag)
+	random_lu_rank(const Field			& F,
+		       const Randiter                   & R,
+		       BlasBlackbox<Field>              & A,
+		       int                              & rank,
+		       const RingCategories::ModularTag & tag)
 	{
 		size_t m = A.rowdim() ;
 		size_t n = A.coldim() ;
@@ -208,93 +208,11 @@ namespace LinBox
 
 	template<class Randiter,class Field>
 	BlasMatrix<typename Field::Element> &
-	random_lu_rank(const Field         & F,
-		       const Randiter      & R,
-		       BlasMatrix<typename Field::Element> &A,
-		       int                 & rank,
-		       const RingCategories::IntegerTag          &tag)
-	{
-
-		typedef typename Field::Element Int ;
-		size_t m = A.rowdim() ;
-		size_t n = A.coldim() ;
-
-		linbox_check(m != 0);
-		linbox_check(n != 0);
-		if (rank == -1)
-			rank = (int) ((double)std::min(m,n)*drand48()) ;
-		linbox_check(rank>=0 && rank<=(int)std::min(m,n));
-
-
-		// be ready for PLUQ
-		BlasPermutation<size_t> P(m);
-		BlasMatrix<Int> L(m,m);
-		BlasMatrix<Int> U(m,n);
-		BlasPermutation<size_t> Q(n);
-
-		// be ready for random elements
-		Randiter S_(R);
-		S_.setBits(R.getBits()-1);
-		RandomIntegerIter<false> T_(3);
-		NonzeroRandIter<Field,RandomIntegerIter<false> > U_(F,T_);
-
-		Int one(1),zero(0);
-
-		/* Create L a random invertible lower unit triangular matrix (m x m format) */
-		for (size_t j=0 ; j<m ; ++j)
-			for (size_t i=j+1; i<m;++i)
-				S_.random( L.refEntry( i,j ) );
-#if 1
-		for (size_t i = 0; i < (size_t) m; ++i)
-			U_.random( L.refEntry( i,i ) ); // non zero diagonal
-		for (size_t j=0 ; j<m ; ++j)
-			for (size_t i=0; i<j;++i)
-				L.setEntry( i,j,zero );
-
-
-#endif
-
-		/* Create U a random rank-r upper non-unit triangular matrix (m x n format) */
-		for (size_t i = 0 ; i < (size_t) rank; ++i)
-			for (size_t j = i+1; j < n; ++j)
-				T_.random( U.refEntry( i,j ) ); // r random 'triangular' lines
-		for (size_t i = 0; i < (size_t) rank; ++i)
-			U_.random( U.refEntry( i,i ) ); // non zero diagonal on rank first lines
-#if 1
-		for (size_t i = rank ; i < m ; ++i)
-			for (size_t j = i ; j < n ; ++j)
-				U.setEntry( i,j,zero ) ; //  zero on remaining 'triangular' lines
-#endif
-
-		RandomBlasPermutation(P);
-		RandomBlasPermutation(Q);
-
-		BlasMatrixDomain< Field > BMD(F) ;
-		MatrixDomain< Field > MD(F) ;
-		// LU
-		// L.write(std::cout << "L:=",true ) << ';' << std::endl;
-		// L.write(std::cout << "U:=",true ) << ';' << std::endl;
-
-		MD.mul(A,L,U);
-		// A.write(std::cout << "pre A=",true) << std::endl;
-
-		BMD.mulin_left(A,Q);
-		BMD.mulin_right(P,A);
-
-		// P.write(std::cout<<"P:=",false) << std::endl;
-		// P.write(std::cout<<"Q:=",false) << std::endl;
-		// P.write(std::cout<<"Q:=",true) << std::endl;
-
-		return A ;
-	}
-
-	template<class Randiter,class Field>
-	BlasMatrix<typename Field::Element> &
-	random_lu_rank(const Field         & F,
-		       const Randiter      & R,
-		       BlasMatrix<typename Field::Element> &A,
-		       int                 & rank,
-		       const RingCategories::IntegerTag          &tag)
+	random_lu_rank(const Field			   & F,
+		       const Randiter                      & R,
+		       BlasMatrix<typename Field::Element> & A,
+		       int                                 & rank,
+		       const RingCategories::IntegerTag    & tag)
 	{
 		 BlasMatrix<typename Field::Element> Alink(A);
 		 random_lu_rank(F,R,Alink,rank,RingCategories::IntegerTag());
