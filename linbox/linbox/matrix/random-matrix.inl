@@ -110,10 +110,10 @@ namespace LinBox
 	}
 
 	template<class Randiter,class Field>
-	Protected::DenseMatrix<Field> &
+	BlasBlackbox<Field> &
 	random_lu_rank(const Field        & F,
 		       const Randiter     & R,
-		       Protected::DenseMatrix<Field> & A,
+		       BlasBlackbox<Field> & A,
 		       int                & rank,
 		       const RingCategories::ModularTag          &tag)
 	{
@@ -289,10 +289,10 @@ namespace LinBox
 	}
 
 	template<class Randiter,class Field>
-	Protected::DenseMatrixBase<typename Field::Element> &
+	BlasMatrix<typename Field::Element> &
 	random_lu_rank(const Field         & F,
 		       const Randiter      & R,
-		       Protected::DenseMatrixBase<typename Field::Element> &A,
+		       BlasMatrix<typename Field::Element> &A,
 		       int                 & rank,
 		       const RingCategories::IntegerTag          &tag)
 	{
@@ -301,12 +301,12 @@ namespace LinBox
 		 return A ;
 	}
 
-#if 0 /*  Protected::DenseMatrixBase spec. */
+#if 0 /*  BlasMatrix spec. */
 	template<class Randiter, class Field>
-	Protected::DenseMatrix<Field> &
+	BlasBlackbox<Field> &
 	random_rankupdate( const Field        & F
 			   ,const Randiter    & R
-			   ,Protected::DenseMatrix<Field>& A
+			   ,BlasBlackbox<Field>& A
 			   , int              & rank
 			 )
 	{
@@ -314,9 +314,9 @@ namespace LinBox
 		size_t n = A.coldim();
 
 
-		Protected::DenseMatrix<Field> D(F,m,rank) ;
-		Protected::DenseMatrix<Field> G(F,rank,n) ;
-		RandomProtected::DenseMatrix<Randiter, Field> RandMatGen(F,R);
+		BlasBlackbox<Field> D(F,m,rank) ;
+		BlasBlackbox<Field> G(F,rank,n) ;
+		RandomBlasBlackbox<Randiter, Field> RandMatGen(F,R);
 		RandMatGen.random(D) ;
 		RandMatGen.random(G) ;
 		MatrixDomain<Field> MD(F);
@@ -325,10 +325,10 @@ namespace LinBox
 	}
 
 	template<class Randiter>
-	Protected::DenseMatrix<PID_integer> &
+	BlasBlackbox<PID_integer> &
 	random_rankupdate( PID_integer               & F //!@bug const !
 			   ,const Randiter           & R
-			   ,Protected::DenseMatrix<PID_integer> & A
+			   ,BlasBlackbox<PID_integer> & A
 			   , int                     & rank
 			 )
 	{
@@ -336,14 +336,14 @@ namespace LinBox
 		size_t m = A.rowdim();
 		size_t n = A.coldim();
 
-		Protected::DenseMatrix<PID_integer> D(F,(size_t)m,(size_t)rank) ;
-		Protected::DenseMatrix<PID_integer> G(F,(size_t)rank,(size_t)n) ;
+		BlasBlackbox<PID_integer> D(F,(size_t)m,(size_t)rank) ;
+		BlasBlackbox<PID_integer> G(F,(size_t)rank,(size_t)n) ;
 		Randiter S_(R);
 		S_.setBits(R.getBits()-1);
-		RandomProtected::DenseMatrix<Randiter,PID_integer > RandMatGen(F,S_);
+		RandomBlasBlackbox<Randiter,PID_integer > RandMatGen(F,S_);
 		RandMatGen.random(D) ;
 		RandomIntegerIter<false> T_(3);
-		RandomProtected::DenseMatrix<RandomIntegerIter<false>,PID_integer > RandSmallMatGen(F,T_);
+		RandomBlasBlackbox<RandomIntegerIter<false>,PID_integer > RandSmallMatGen(F,T_);
 		RandMatGen.random(G) ;
 		MatrixDomain<PID_integer> MD(F);
 		MD.mul(A,D,G);

@@ -43,7 +43,7 @@ namespace LinBox
 	 * This is the supporting elimination system for a lookahead-based
 	 * variant of block Lanczos.
 	 */
-	template <class Field, class Matrix = Protected::DenseMatrixBase<typename Field::Element> >
+	template <class Field, class Matrix = BlasMatrix<typename Field::Element> >
 	class Eliminator {
 	public:
 
@@ -227,9 +227,9 @@ namespace LinBox
 
 		mutable Permutation               _P;
 
-		mutable Protected::DenseMatrixBase<Element>  _A;         // Variable
-		mutable Protected::DenseMatrixBase<Element>  _U;         // Variable
-		mutable Protected::DenseMatrixBase<Element>  _tmp;
+		mutable BlasMatrix<Element>  _A;         // Variable
+		mutable BlasMatrix<Element>  _U;         // Variable
+		mutable BlasMatrix<Element>  _tmp;
 
 		// These record the independent rows and columns found during the
 		// elimination process

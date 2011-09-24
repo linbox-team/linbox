@@ -174,7 +174,6 @@ namespace LinBox
 		std::vector<Integer> M(A.rowdim()+1,1);
 		std::vector<Integer> Di(A.rowdim());
 
-		//Protected::DenseMatrixBase<Quotient> ABase(A);
 		RationalMatrixFactory<PID_integer,Rationals,Protected::DenseMatrix<Rationals > > FA(&A);
 		Integer da=1, di=1; Integer D=1;
 		FA.denominator(da);
