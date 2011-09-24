@@ -19,7 +19,6 @@
 #include "linbox/algorithms/wiedemann.h"
 #include "linbox/algorithms/rational-solver.h"
 #include "linbox/algorithms/diophantine-solver.h"
-#include "linbox/blackbox/dense.h"
 #include "linbox/matrix/factorized-matrix.h"
 #include "linbox/util/debug.h"
 #include "linbox/util/error.h"

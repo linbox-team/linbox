@@ -26,11 +26,9 @@
 #define __LINBOX_matrix_category_H
 
 #include <linbox/matrix/sparse.h>
-#include <linbox/matrix/dense.h>
 // #include <linbox/matrix/blas-matrix.h>
 
 #include <linbox/blackbox/sparse.h>
-#include <linbox/blackbox/dense.h>
 // #include <linbox/blackbox/blas-blackbox.h>
 
 
@@ -78,22 +76,8 @@ namespace LinBox
 		typedef MatrixContainerCategory::BlasContainer Type;
 	};
 
-
-	template <class Element>
-	class MatrixContainerTrait<Protected::DenseMatrixBase<Element> > {
-	public:
-		typedef MatrixContainerCategory::Container Type;
-	};
-
 	template <class Element>
 	class MatrixContainerTrait<SparseMatrixBase<Element> > {
-	public:
-		typedef MatrixContainerCategory::Container Type;
-	};
-
-
-	template <class Field>
-	class MatrixContainerTrait<Protected::DenseMatrix<Field> > {
 	public:
 		typedef MatrixContainerCategory::Container Type;
 	};

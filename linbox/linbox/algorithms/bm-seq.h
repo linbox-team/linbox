@@ -38,7 +38,6 @@
 #include <set>
 
 #include <linbox/util/timer.h>
-#include <linbox/blackbox/dense.h>
 #include <linbox/matrix/matrix-domain.h>
 
 

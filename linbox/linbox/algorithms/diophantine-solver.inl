@@ -24,7 +24,6 @@
 #ifndef __LINBOX_diophantine_solver_INL
 #define __LINBOX_diophantine_solver_INL
 
-#include <linbox/blackbox/dense.h>
 #include <linbox/blackbox/sparse.h>
 #include <linbox/blackbox/lambda-sparse.h>
 #include <linbox/algorithms/rational-solver.h>

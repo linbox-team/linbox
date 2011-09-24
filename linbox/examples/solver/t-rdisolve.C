@@ -50,11 +50,9 @@
 #include <linbox/integer.h>
 #include <linbox/field/ntl-ZZ.h>
 #include <linbox/field/modular-int.h>
-#include <linbox/blackbox/dense.h>
 #include <linbox/blackbox/diagonal.h>
 #include <linbox/algorithms/rational-solver.h>
 #include <linbox/algorithms/vector-fraction.h>
-#include <linbox/matrix/dense.h>
 #include <linbox/algorithms/diophantine-solver.h>
 #include <iostream>
 #include <fstream>

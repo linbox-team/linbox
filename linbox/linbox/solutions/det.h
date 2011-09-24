@@ -33,7 +33,6 @@
 #include "linbox/blackbox/compose.h"
 #include "linbox/solutions/methods.h"
 #include "linbox/solutions/getentry.h"
-#include "linbox/blackbox/dense.h"
 
 #include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/matrix/blas-matrix.h"

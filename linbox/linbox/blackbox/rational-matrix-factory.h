@@ -24,8 +24,6 @@
 #define __LINBOX_rational_dense_factory_H
 
 #include <linbox/blackbox/factory.h>
-#include <linbox/blackbox/dense.h>
-//#include <linbox/matrix/dense.h>
 //#include <linbox/field/gmp-rational.h>
 #include <linbox/field/PID-integer.h>
 #include <linbox/integer.h>

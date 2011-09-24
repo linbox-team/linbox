@@ -17,7 +17,6 @@
 #include "linbox/blackbox/archetype.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/matrix/sparse.h"
-#include "linbox/matrix/dense.h"
 #include "linbox/field/rebind.h"
 
 // Namespace in which all LinBox library code resides

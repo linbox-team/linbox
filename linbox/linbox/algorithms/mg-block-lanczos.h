@@ -25,7 +25,6 @@
 #include "linbox/field/archetype.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/blackbox/archetype.h"
-#include "linbox/blackbox/dense.h"
 #include "linbox/matrix/dense-submatrix.h"
 #include "linbox/solutions/methods.h"
 

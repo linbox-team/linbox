@@ -32,7 +32,6 @@
 #include <linbox/util/debug.h>
 #include <linbox/field/PIR-modular-int32.h>
 #include <linbox/field/local2_32.h>
-#include <linbox/blackbox/dense.h>
 #include <linbox/algorithms/smith-form-iliopoulos.h>
 #include <linbox/algorithms/smith-form-local.h>
 #include <linbox/algorithms/rational-solver-adaptive.h>

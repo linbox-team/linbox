@@ -37,7 +37,6 @@
 #  define DEFAULT_EARLY_TERM_THRESHOLD 20
 #endif
 
-#include "linbox/blackbox/dense.h"
 #ifdef __LINBOX_HAVE_MPI
 #include "linbox/util/mpicpp.h"
 #endif

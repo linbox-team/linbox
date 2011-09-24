@@ -59,7 +59,6 @@
 #include <vector>
 #include <linbox/blackbox/direct-sum.h>
 #include <linbox/blackbox/companion.h>
-#include <linbox/blackbox/dense.h>
 #include <linbox/algorithms/matrix-hom.h>
 #include <linbox/field/ntl-ZZ.h>
 #include <NTL/ZZX.h>

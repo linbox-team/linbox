@@ -39,7 +39,6 @@
 
 // #include <linbox/solutions/getentry.h>
 #include <linbox/algorithms/linbox-tags.h>
-#include <linbox/matrix/dense.h>
 #include <linbox/matrix/dense-submatrix.h>
 #include <linbox/util/debug.h>
 #include <linbox/matrix/matrix-category.h>
