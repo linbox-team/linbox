@@ -48,7 +48,8 @@ namespace LinBox
 		static Compose<Blackbox, Blackbox>*& compose (Compose<Blackbox, Blackbox>*& LAR,
 							      const Blackbox& L,
 							      const Blackbox& A,
-							      const Blackbox& R) {
+							      const Blackbox& R)
+		{
 
 			linbox_check (L.coldim() == A.rowdim());
 
@@ -67,6 +68,7 @@ namespace LinBox
 			return LAR;
 		}
 
+#if 0
 		// specialization for dense matrix case, explicitly compute the LAR by matrix multiplication
 		template <class Field>
 		static Protected::DenseMatrix<Field>*& compose (Protected::DenseMatrix<Field>*& LAR,
@@ -98,6 +100,7 @@ namespace LinBox
 			return LAR;
 
 		}
+#endif
 
 		template <class Field>
 		static BlasBlackbox<Field>*& compose (BlasBlackbox<Field>*& LAR,

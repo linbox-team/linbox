@@ -111,10 +111,24 @@ namespace LinBox
 		// not yet a hybrid
 		return charpoly(P, A, tag, Method::Blackbox(M));
 	}
+
+#if 0
 	// The charpoly with Hybrid Method
 	template<class Polynomial, class Domain>
 	Polynomial &charpoly (Polynomial            &P,
 			      const Protected::DenseMatrix<Domain> &A,
+			      const RingCategories::ModularTag  &tag,
+			      const Method::Hybrid  &M)
+	{
+		// not yet a hybrid
+		return charpoly(P, A, tag, Method::BlasElimination(M));
+	}
+#endif
+
+	// The charpoly with Hybrid Method
+	template<class Polynomial, class Domain>
+	Polynomial &charpoly (Polynomial            &P,
+			      const BlasBlackbox<Domain> &A,
 			      const RingCategories::ModularTag  &tag,
 			      const Method::Hybrid  &M)
 	{
@@ -223,6 +237,7 @@ namespace LinBox
 		return charpoly(P, A, tag, Method::Blackbox(M));
 	}
 #endif
+#if 0
 
 	template < class IntRing, class Polynomial >
 	Polynomial& charpoly (Polynomial                       & P,
@@ -235,6 +250,20 @@ namespace LinBox
 		commentator.stop ("done", NULL, "Icharpoly");
 		return P;
 	}
+#endif
+
+	template < class IntRing, class Polynomial >
+	Polynomial& charpoly (Polynomial                       & P,
+			      const BlasBlackbox<IntRing>         & A,
+			      const RingCategories::IntegerTag & tag,
+			      const Method::Hybrid             & M)
+	{
+		commentator.start ("BlasBlackbox Integer Charpoly", "Icharpoly");
+		charpoly(P, A, tag, Method::BlasElimination(M) );
+		commentator.stop ("done", NULL, "Icharpoly");
+		return P;
+	}
+
 
 	template < class IntRing, class Polynomial >
 	Polynomial& charpoly (Polynomial                       & P,
@@ -468,8 +497,10 @@ namespace LinBox
 		return P;
 	}
 
+#if 0
 	template < class Field, template <class> class Polynomial, class MyMethod>
-	Polynomial<typename Field::Element> &charpoly (Polynomial<typename Field::Element>& P, const Protected::DenseMatrix<Field>& A,
+	Polynomial<typename Field::Element> &charpoly (Polynomial<typename Field::Element>& P,
+						       const Protected::DenseMatrix<Field>& A,
 						       const RingCategories::RationalTag& tag, const MyMethod& M)
 	{
 		commentator.start ("Dense Rational Charpoly", "Rcharpoly");

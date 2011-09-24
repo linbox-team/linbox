@@ -45,13 +45,13 @@ namespace LinBox
 		static const int NPrime;// = 25;
 
 		/* Compute the local smith form at prime p, when modular (p^e) fits in long
-		 * Should work with SparseMatrix and Protected::DenseMatrix
+		 * Should work with SparseMatrix and BlasBlackbox
 		 */
 		template <class Matrix>
 		static void compute_local_long (std::vector<integer>& s, const Matrix& A, long p, long e);
 
 		/* Compute the local smith form at prime p, when modular (p^e) doesnot fit in long
-		 * Should work with SparseMatrix and Protected::DenseMatrix
+		 * Should work with SparseMatrix and BlasBlackbox
 		 */
 		template <class Matrix>
 		static void compute_local_big (std::vector<integer>& s, const Matrix& A, long p, long e);
@@ -64,14 +64,14 @@ namespace LinBox
 		/* Compute the k-smooth part of the invariant factor, where k = 100.
 		 * @param sev is the exponent part ...
 		 * By local smith form and rank computation
-		 * Should work with SparseMatrix and Protected::DenseMatrix
+		 * Should work with SparseMatrix and BlasBlackbox
 		 */
 		template <class Matrix>
 		static void smithFormSmooth (std::vector<integer>& s, const Matrix& A, long r, const std::vector<long>& sev);
 
 		/* Compute the k-rough part of the invariant factor, where k = 100.
 		 * By EGV+ algorithm or Iliopoulos' algorithm for Smith form.
-		 * Should work with Protected::DenseMatrix
+		 * Should work with BlasBlackbox
 		 */
 		template <class Matrix>
 		static void smithFormRough  (std::vector<integer>& s, const Matrix& A, integer m );
@@ -79,7 +79,7 @@ namespace LinBox
 		/* Compute the Smith form via valence algorithms
 		 * Compute the local Smith form at each possible prime
 		 * r >= 2;
-		 * Should work with SparseMatrix and Protected::DenseMatrix
+		 * Should work with SparseMatrix and BlasBlackbox
 		 */
 		template <class Matrix>
 		static void smithFormVal (std::vector<integer>&s, const Matrix& A, long r, const std::vector<long>& sev);
@@ -88,13 +88,13 @@ namespace LinBox
 		 *
 		 * Compute the largest invariant factor, then, based on that,
 		 * compute the rough and smooth part, separately.
-		 * Should work with SparseMatrix and Protected::DenseMatrix
+		 * Should work with SparseMatrix and BlasBlackbox
 		 */
 		template <class Matrix>
 		static void smithForm (std::vector<integer>& s, const Matrix& A);
 		/** Specialization for dense case*/
-		template <class IRing>
-		static void smithForm (std::vector<integer>& s, const Protected::DenseMatrix<IRing>& A);
+		// template <class IRing>
+		// static void smithForm (std::vector<integer>& s, const BlasBlackbox<IRing>& A);
 		template <class IRing>
 		static void smithForm (std::vector<integer>& s, const BlasBlackbox<IRing>& A);
 

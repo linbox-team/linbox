@@ -130,11 +130,12 @@ namespace LinBox
 				 const Method::BlasElimination       &M)
 	{
 		// call BlasElimination code
-		Protected::DenseMatrix<typename Blackbox::Field> DA(A.field(), A.rowdim(), A.coldim());
+		BlasBlackbox<typename Blackbox::Field> DA(A.field(), A.rowdim(), A.coldim());
 		MatrixHom::map(DA, A, A. field());
 		return Signature::isPosDef(DA, Signature::BLAS_LPM_Method() );
 	}
 
+#if 0
 	// the isPositiveDefinite with Blas, Protected::DenseMatrix
 	template <class Ring>
 	bool isPositiveDefinite (
@@ -145,6 +146,18 @@ namespace LinBox
 		// call BlasElimination code
 		return Signature::isPosDef(A, Signature::BLAS_LPM_Method() );
 	}
+#endif
+
+	template <class Ring>
+	bool isPositiveDefinite (
+				 const BlasBlackbox<Ring> &A,
+				 const RingCategories::IntegerTag    &tag,
+				 const Method::BlasElimination       &M)
+	{
+		// call BlasElimination code
+		return Signature::isPosDef(A, Signature::BLAS_LPM_Method() );
+	}
+
 
 } // end of LinBox namespace
 

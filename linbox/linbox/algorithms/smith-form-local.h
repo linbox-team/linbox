@@ -25,7 +25,7 @@ namespace LinBox
 	/**
 	  \brief Smith normal form (invariant factors) of a matrix over a local ring.
 
-	  The matrix must be a Protected::DenseMatrix over a LocalPID.
+	  The matrix must be a BlasBlackbox over a LocalPID.
 	  A localPID has the standard ring/field arithmetic functions plus gcdin().
 
 */

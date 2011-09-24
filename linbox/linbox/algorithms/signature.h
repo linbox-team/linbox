@@ -304,7 +304,7 @@ namespace LinBox
 			typedef Modular<int32_t> Field;
 			// typedef Modular<double> Field;
 			typedef Field::Element Element;
-			typedef Protected::DenseMatrix<Field> FMatrix;
+			typedef BlasBlackbox<Field> FMatrix;
 			RandomPrimeIterator primeg(20);
 			Field F ((unsigned long)*primeg);
 			FMatrix FM(F, IM.rowdim(), IM.coldim());
@@ -384,7 +384,7 @@ namespace LinBox
 			return v;
 		}
 
-		// This assumes Matrix is Protected::DenseMatrix
+		// This assumes Matrix is BlasBlackbox
 		// (that it's rawiterator will go thru n^2 values row by row.)
 		template <class Matrix>
 		static long rank_random (const Matrix& M)

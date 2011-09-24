@@ -367,6 +367,7 @@ namespace LinBox
 		return x;
 	}
 
+#if 0
 	// input matrix is a Protected::DenseMatrix (no copy)
 	template <class RatVector, class Vector, class Ring>
 	RatVector& solve(RatVector& x, const Protected::DenseMatrix<Ring>& A, const Vector& b,
@@ -377,6 +378,7 @@ namespace LinBox
 		typename Ring::Element d;
 		std::vector< typename Ring::Element> num(A.coldim());
 		solve (num, d, A, b, tag, mDixon);
+
 		typename RatVector::iterator it_x= x.begin();
 		typename std::vector< typename Ring::Element>::const_iterator it_num= num.begin();
 		integer n,den;
@@ -388,6 +390,7 @@ namespace LinBox
 
 		return x;
 	}
+#endif
 
 	/*
 	 * 2nd integer solver API :
@@ -434,6 +437,7 @@ namespace LinBox
 		return solve(x, d, A, b, tag, mDixon);
 	}
 
+#if 0
 	// input matrix is a Protected::DenseMatrix (no copy)
 	template <class Vector, class Ring>
 	Vector& solve(Vector& x, typename Ring::Element &d,
@@ -444,6 +448,7 @@ namespace LinBox
 		Method::Dixon mDixon(m);
 		return solve(x, d, A, b, tag, mDixon);
 	}
+#endif
 
 	// input matrix is a SparseMatrix (no copy)
 	template <class Vect, class Ring>
@@ -462,7 +467,9 @@ namespace LinBox
 	/** \brief solver specialization with the 2nd API and DixonTraits over integer (no copying)
 	*/
 	template <class Vector, class Ring>
-	Vector& solve(Vector& x, typename Ring::Element &d, const BlasBlackbox<Ring>& A, const Vector& b,
+	Vector& solve(Vector& x, typename Ring::Element &d,
+		      const BlasBlackbox<Ring>& A,
+		      const Vector& b,
 		      const RingCategories::IntegerTag tag, Method::Dixon& m)
 	{
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
@@ -553,10 +560,13 @@ namespace LinBox
 		return x;
 	}
 
+#if 0
 	/** \brief solver specialization with the 2nd API and DixonTraits over integer (no copying)
 	*/
 	template <class Vector, class Ring>
-	Vector& solve(Vector& x, typename Ring::Element &d, const Protected::DenseMatrix<Ring>& A, const Vector& b,
+	Vector& solve(Vector& x, typename Ring::Element &d,
+		      const Protected::DenseMatrix<Ring>& A,
+		      const Vector& b,
 		      const RingCategories::IntegerTag tag, Method::Dixon& m)
 	{
 		if ((A.coldim() != x.size()) || (A.rowdim() != b.size()))
@@ -640,6 +650,7 @@ namespace LinBox
 		}
 		return x;
 	}
+#endif
 
 
 
@@ -768,10 +779,13 @@ namespace LinBox
 	Vector& solve(Vector& x, const BB& A, const Vector& b,
 		      const RingCategories::ModularTag & tag,
 		      const Method::NonBlasElimination& m)
-	{	Protected::DenseMatrix<typename BB::Field> B(A); // copy
+	{
+		// Protected::DenseMatrix<typename BB::Field> B(A); // copy
+		BlasBlackbox<typename BB::Field> B(A); // copy
 		return solve(x, B, b, tag, m);
 	}
 
+#if 0
 	// specialization when no need to copy
 	template <class Vector, class Field>
 	Vector& solve(Vector& x, const Protected::DenseMatrix<Field>& A, const Vector& b,
@@ -780,6 +794,7 @@ namespace LinBox
 	{ //Do we have a non blas elimination?  There was not one in the original solve.h (now algorithms/bbsolve.h).
 		return x;
 	}
+#endif
 
 	// note: no need for NonBlasElimination when RingCategory is integer
 

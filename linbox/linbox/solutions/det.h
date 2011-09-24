@@ -146,10 +146,10 @@ namespace LinBox
 		return detin(d, A, tag, Method::Elimination(Meth));
 	}
 
-	// The det with Hybrid Method on Protected::DenseMatrix
+	// The det with Hybrid Method on BlasBlackbox
 	template<class Field>
 	typename Field::Element &det (typename Field::Element         	&d,
-				      const Protected::DenseMatrix<Field>		&A,
+				      const BlasBlackbox<Field>		&A,
 				      const RingCategories::ModularTag	&tag,
 				      const Method::Hybrid		&Meth)
 	{
@@ -158,7 +158,7 @@ namespace LinBox
 
 	template<class Field>
 	typename Field::Element &detin (typename Field::Element         	&d,
-					Protected::DenseMatrix<Field>			&A,
+					BlasBlackbox<Field>			&A,
 					const RingCategories::ModularTag	&tag,
 					const Method::Hybrid			&Meth)
 	{
@@ -468,7 +468,7 @@ namespace LinBox
 
 
 
-	// This should work for a Protected::DenseMatrix too ?
+	// This should work for a BlasBlackbox too ?
 	/** Rank of Blackbox \p A.
 	  * \ingroup solutions
 	  * A will be modified.
@@ -630,7 +630,7 @@ namespace LinBox
 
 	template<class Field, class MyMethod>
 	typename Field::Element &det (typename Field::Element                 &d,
-				      const Protected::DenseMatrix<Field>                &A,
+				      const BlasBlackbox<Field>                &A,
 				      const RingCategories::RationalTag       &tag,
 				      const MyMethod                          &Meth)
 	{

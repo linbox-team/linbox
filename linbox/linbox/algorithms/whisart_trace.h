@@ -46,8 +46,13 @@ namespace LinBox
 	}
 
 	template<class BB> struct RawIndexedCategory {
-	typedef RawIndexedTags::NoRawIndexed Tag;
+		typedef RawIndexedTags::NoRawIndexed Tag;
 	};
+
+	template<class Field>
+	struct RawIndexedCategory< BlasBlackbox<Field> > 	{
+		typedef RawIndexedTags::HasRawIndexed Tag; };
+
 
 	template<class Field>
 	struct RawIndexedCategory< Protected::DenseMatrix<Field> > 	{

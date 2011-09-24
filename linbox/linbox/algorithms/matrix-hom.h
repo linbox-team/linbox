@@ -108,6 +108,7 @@ namespace LinBox
 			typename IMatrix::template rebind<Field>()( Ap, A, F);
 		}
 
+#if 0
 		// construct a dense matrix over finite field, such that Ap = A mod p, where F = Ring / <p>
 		template<class Field, class IMatrix>
 		void map (Protected::DenseMatrix<Field> &Ap, const IMatrix& A, const Field& F);
@@ -118,11 +119,12 @@ namespace LinBox
 		{
 			typename Protected::DenseMatrixBase<typename Ring::Element>::template rebind<Field>()( Ap, A, F);
 		}
-
+#endif
 		// construct a sparse matrix over finite field, such that Ap = A mod p, where F = Ring / <p>
 		template<class Field, class Vect, class IMatrix>
 		void map (SparseMatrix<Field, Vect> &Ap, const IMatrix& A, const Field &F);
 
+#if 0
 		// construct a dense matrix over finite field, such that Ap = A mod p, where F = Ring / <p>
 		template<class Ring, class Field>
 		void map (Protected::DenseMatrix<Field> &Ap, const Protected::DenseMatrix<Ring>& A, const Field &F)
@@ -133,6 +135,7 @@ namespace LinBox
 		// construct a dense matrix over finite field, such that Ap = A mod p, where F = Ring / <p>
 		template<class Ring, class Vect, class Field>
 		void map (Protected::DenseMatrix<Field> &Ap, const SparseMatrix<Ring, Vect>& A, const Field &F);
+#endif
 
 		// construct a sparse matrix over finite field, such that Ap = A mod p, where F = Ring / <p>
 		template<class Ring, class Vect1, class Field, class Vect2>
@@ -182,6 +185,7 @@ namespace LinBox
 
 	}
 
+#if 0
 	template <class Field, class IMatrix>
 	void MatrixHom::map (Protected::DenseMatrix<Field>&Ap, const IMatrix& A, const Field &F)
 	{
@@ -223,7 +227,7 @@ namespace LinBox
 			r.assign(*e_p, zero);
 		}
 	}
-
+#endif
 
 	template <class Field, class Vect, class IMatrix>
 	void MatrixHom::map (SparseMatrix<Field, Vect> &Ap, const IMatrix& A, const Field &F)
@@ -266,6 +270,7 @@ namespace LinBox
 
 	}
 
+#if 0
 	template <class Ring, class Vect, class Field>
 	void MatrixHom::map (Protected::DenseMatrix<Field>& Ap, const SparseMatrix<Ring, Vect>& A, const Field &F)
 	{
@@ -309,6 +314,7 @@ namespace LinBox
 		}
 		*/
 	}
+#endif
 
 	namespace MatrixHom
 	{

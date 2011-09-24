@@ -105,6 +105,7 @@ namespace LinBox
 		return minpoly(P, A, tag, Method::Blackbox(M));
 	}
 
+#if 0
 	// The minpoly with Hybrid Method on Protected::DenseMatrix
 	template<class Polynomial, class Field>
 	Polynomial &minpoly (
@@ -115,6 +116,7 @@ namespace LinBox
 	{
 		return minpoly(P, A, tag, Method::Elimination(M));
 	}
+#endif
 
 	// The minpoly with Hybrid Method on BlasBlackbox
 	template<class Polynomial, class Field>
@@ -290,8 +292,10 @@ namespace LinBox
 		return P;
 	}
 
+#if 0
 	template < class Field, template<class> class Polynomial, class MyMethod>
-	Polynomial<typename Field::Element> &minpoly (Polynomial<typename Field::Element>& P, const Protected::DenseMatrix<Field>& A,
+	Polynomial<typename Field::Element> &minpoly (Polynomial<typename Field::Element>& P,
+						      const Protected::DenseMatrix<Field>& A,
 						      const RingCategories::RationalTag& tag, const MyMethod& M)
 	{
 		commentator.start ("Dense Rational Minpoly", "Rminpoly");
@@ -299,6 +303,18 @@ namespace LinBox
 		rational_minpoly(P,A,M);
 		return P;
 	}
+#endif
+	template < class Field, template<class> class Polynomial, class MyMethod>
+	Polynomial<typename Field::Element> &minpoly (Polynomial<typename Field::Element>& P,
+						      const BlasBlackbox<Field>& A,
+						      const RingCategories::RationalTag& tag, const MyMethod& M)
+	{
+		commentator.start ("Dense Rational Minpoly", "Rminpoly");
+
+		rational_minpoly(P,A,M);
+		return P;
+	}
+
 } // end of LinBox namespace
 #endif // __LINBOX_minpoly_H
 
