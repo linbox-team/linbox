@@ -104,16 +104,6 @@ namespace LinBox
 
 	}
 
-#if 0
-	// in solveNonsingular, we may work with something that inherits from Protected::DenseMatrixBase
-	template <class Ring>
-	void BoundBlackbox(const Ring& R, typename Ring::Element& H_col_sqr,
-			   typename Ring::Element& short_col_sqr, const Protected::DenseMatrixBase<typename Ring::Element>& A)
-	{
-		SpecialBound(R, H_col_sqr, short_col_sqr, A);
-	}
-#endif
-
 	template <class Ring>
 	void BoundBlackbox(const Ring& R, typename Ring::Element& H_col_sqr,
 			   typename Ring::Element& short_col_sqr,

@@ -406,19 +406,6 @@ namespace LinBox
 		typedef Compose<IMatrix, IMatrix> value_type;
 	};
 
-#if 0
-	/// used in smith-binary, for example
-	template<class Field>
-	class ComposeTraits<Protected::DenseMatrix<Field> > {
-	public:
-
-		// define the return value type
-		typedef Protected::DenseMatrix<Field> value_type;
-	};
-#endif
-	// template<class _Field>
-	// class BlasBlackbox ;
-
 	/// used in smith-binary, for example
 	template<class Field>
 	class ComposeTraits<  BlasBlackbox<Field> > {

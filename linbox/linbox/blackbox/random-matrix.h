@@ -47,43 +47,6 @@ namespace LinBox
 		static Blackbox*& randomMatrix (Blackbox* &, const Field& f,
 						int rowdim, int coldim);
 
-#if 0
-		// constructor a random dense matrix, whose entries are random
-		template<class Field>
-		static Protected::DenseMatrix<Field>*& randomMatrix( Protected::DenseMatrix<Field>*& Ap,
-							  const Field& f,
-							  int rowdim, int coldim )
-		{
-
-			Ap = new Protected::DenseMatrix<Field>(f, rowdim, coldim);
-			typename Protected::DenseMatrix<Field>::RawIterator Ap_p;
-			typename Field::Element zero, one, elt;
-			f. init (one, 1); f. init (zero, 0);
-
-			for (Ap_p = Ap -> rawBegin(); Ap_p != Ap -> rawEnd(); ++ Ap_p)
-				f. assign (*Ap_p, zero);
-
-			if (rowdim < coldim)
-				for (int i = 0; i < rowdim; ++ i) {
-					Ap -> setEntry (i, i, one);
-					for (int j = rowdim; j < coldim; ++ j){
-						f. init (elt, rand()%10);
-						Ap -> setEntry (i, j, elt);
-					}
-				}
-			else
-				for (int i = 0; i < coldim; ++ i) {
-					Ap -> setEntry (i, i, one);
-					for (int j = coldim; j < rowdim; ++ j) {
-						f. init (elt, rand()%10);
-						Ap -> setEntry (j, i, elt);
-					}
-				}
-
-
-			return Ap;
-		}
-#endif
 
 		// constructor a random dense matrix, whose entries are random
 		template<class Field>

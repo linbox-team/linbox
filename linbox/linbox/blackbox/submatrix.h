@@ -237,6 +237,7 @@ namespace LinBox
 		class DenseMatrix;
 	}
 
+#if 0
 	/** special case for the submatrix of a dense matrix
 	*/
 	template<class _Field>
@@ -399,6 +400,7 @@ namespace LinBox
 
 		};
 	};
+#endif
 
 	template<class _Field>
 	class Submatrix<BlasBlackbox<_Field>, VectorCategories::DenseVectorTag> : public Protected::DenseSubmatrix<typename _Field::Element> {

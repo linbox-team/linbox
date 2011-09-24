@@ -68,39 +68,6 @@ namespace LinBox
 			return LAR;
 		}
 
-#if 0
-		// specialization for dense matrix case, explicitly compute the LAR by matrix multiplication
-		template <class Field>
-		static Protected::DenseMatrix<Field>*& compose (Protected::DenseMatrix<Field>*& LAR,
-						     const Protected::DenseMatrix<Field>& L,
-						     const Protected::DenseMatrix<Field>& A,
-						     const Protected::DenseMatrix<Field>& R)
-		{
-
-			linbox_check (L.coldim() == A.rowdim());
-
-			linbox_check (A.coldim() == R.rowdim());
-
-			LAR = new Protected::DenseMatrix<Field>(L.field(), L.rowdim(), R.coldim());
-
-			typename Protected::DenseMatrix<Field>::ConstRowIterator crow_p;
-
-			typename Protected::DenseMatrix<Field>::RowIterator row_p;
-
-			std::vector<typename Field::Element> tmp(R.rowdim());
-
-			for (row_p = LAR -> rowBegin(), crow_p = L.rowBegin();
-			     row_p != LAR -> rowEnd(); ++ row_p, ++ crow_p) {
-
-				A.applyTranspose(tmp, *crow_p);
-
-				R.applyTranspose(*row_p, tmp);
-			}
-
-			return LAR;
-
-		}
-#endif
 
 		template <class Field>
 		static BlasBlackbox<Field>*& compose (BlasBlackbox<Field>*& LAR,
@@ -132,54 +99,6 @@ namespace LinBox
 			return LAR;
 
 		}
-
-#if 0
-		//- Compute A + UV, for EGV algorithm, not be used any more.
-		template <class Blackbox>
-		static Blackbox*& composeBig (Blackbox*& AUV,
-					      const Blackbox& A,
-					      const Blackbox& U,
-					      const Blackbox& V);
-
-
-
-		// @brief This composeBig creates A + UV for EGV algorithm for the Protected::DenseMatrix case.
-		template <class Field>
-		static Protected::DenseMatrix<Field>*& composeBig (Protected::DenseMatrix<Field>*& AUV,
-							const Protected::DenseMatrix<Field>& A,
-							const Protected::DenseMatrix<Field>& U,
-							const Protected::DenseMatrix<Field>& V) {
-
-			linbox_check (U.rowdim() == A.rowdim());
-
-			linbox_check (A.coldim() == V.coldim());
-
-			AUV = new Protected::DenseMatrix<Field>(A.field(), A.rowdim(), A.coldim());
-
-			typename Protected::DenseMatrix<Field>::ConstRowIterator crow_p;
-
-			typename Protected::DenseMatrix<Field>::RowIterator row_p;
-
-			for (row_p = AUV -> rowBegin(), crow_p = U.rowBegin();
-			     row_p != AUV -> rowEnd(); ++ row_p, ++ crow_p) {
-
-				V.applyTranspose(*row_p, *crow_p);
-
-			}
-
-			typename Protected::DenseMatrix<Field>::ConstRawIterator celt_p;
-			typename Protected::DenseMatrix<Field>::RawIterator elt_p;
-
-			for( elt_p = AUV -> rawBegin(), celt_p = A.rawBegin(); celt_p !=  A.rawEnd(); ++ elt_p, ++ celt_p)
-				A.field().addin(*elt_p,*celt_p);
-
-			return AUV;
-
-		}
-#endif
-
-
-
 	};
 }
 

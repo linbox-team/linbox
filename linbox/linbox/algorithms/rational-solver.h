@@ -33,6 +33,7 @@
 
 #include <iostream>
 
+#include <linbox/blackbox/blas-blackbox.h>
 #include <linbox/solutions/methods.h>
 #include <linbox/blackbox/archetype.h>
 #include <linbox/blackbox/lambda-sparse.h>
@@ -901,7 +902,7 @@ namespace LinBox
 		Keep it just for interface consistency.
 	 */
 	template <class Ring, class Field, class RandomPrime>
-	class RationalSolver<Ring, Field, RandomPrime, NumericalTraits>; 
+	class RationalSolver<Ring, Field, RandomPrime, NumericalTraits>;
 
 	/** \brief solver using a hybrid Numeric/Symbolic computation.
 	 *
