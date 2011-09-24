@@ -509,6 +509,7 @@ namespace LinBox
 		commentator.stop ("done", NULL, "Rcharpoly");
 		return P;
 	}
+#endif
 }  // end of LinBox namespace
 #endif // __LINBOX_charpoly_H
 

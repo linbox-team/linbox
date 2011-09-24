@@ -559,6 +559,7 @@ namespace LinBox
 			}
 			return *this;
 		}
+
 		RawIndexedIterator& operator--()
 		{
 			if (_c_idx > 0){
@@ -588,24 +589,40 @@ namespace LinBox
 			return tmp;
 		}
 
-		size_t rowIndex () const { return _r_idx; }
+		size_t rowIndex () const
+		{
+			return _r_idx;
+		}
 
-		size_t colIndex () const { return _c_idx; }
+		size_t colIndex () const
+		{
+			return _c_idx;
+		}
 
 		bool operator != (const ConstRawIndexedIterator& r) const
 		{
 			return ((_c_idx != r._c_idx) || (_r_idx != r._r_idx) ||(_stride != r._stride) || (_c_dim != r._c_dim) );
 		}
 
-		const _Element& operator*() const {return *_cur;}
+		const _Element& operator*() const
+		{
+			return *_cur;
+		}
 
 
-		friend std::ostream& operator<<(std::ostream& out, const ConstRawIndexedIterator m) {
+		friend std::ostream& operator<<(std::ostream& out, const ConstRawIndexedIterator m)
+		{
 			return out /* << m._cur << ' ' */
 			<< m._stride << ' '
 			<< m._c_dim << ' '
 			<< m._r_idx << ' '
 			<< m._c_idx;
+		}
+
+		const Element & value() const
+		{
+			return this->operator*();
+
 		}
 
 	protected:
