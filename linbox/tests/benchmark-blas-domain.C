@@ -388,7 +388,7 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
 		}
 
 		// Create 2 trinagular matrix as view of matrix
-		TriangularMatrix TAl(Al,BlasTag::low,BlasTag::nonunit), TAu(Au,BlasTag::up,BlasTag::nonunit);
+		TriangularMatrix TAl(Al,LinBoxTag::Lower,LinBoxTag::NonUnit), TAu(Au,LinBoxTag::Upper,LinBoxTag::NonUnit);
 
 		// testing solver with matrix right hand side
 		BMD.left_solve(X,TAl,B);
@@ -923,8 +923,8 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
 		BlasPermutation<size_t>  P(A.coldim()),Q(A.rowdim());
 		LQUPMatrix<Field> X(F,A,P,Q);
 
-		TriangularBlasMatrix<Element> L(m,m,BlasTag::low,BlasTag::unit);
-		TriangularBlasMatrix<Element> U(m,n,BlasTag::up,BlasTag::nonunit);
+		TriangularBlasMatrix<Element> L(m,m,LinBoxTag::Lower,LinBoxTag::Unit);
+		TriangularBlasMatrix<Element> U(m,n,LinBoxTag::Upper,LinBoxTag::NonUnit);
 		X.getL(L);
 		X.getU(U);
 		P=X.getP();
@@ -949,8 +949,8 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
 
 		LQUPMatrix<Field> Y(F,A,P,Q);
 
-		TriangularBlasMatrix<Element> L2(m,m,BlasTag::low,BlasTag::unit);
-		TriangularBlasMatrix<Element> U2(m,n,BlasTag::up,BlasTag::nonunit);
+		TriangularBlasMatrix<Element> L2(m,m,LinBoxTag::Lower,LinBoxTag::Unit);
+		TriangularBlasMatrix<Element> U2(m,n,LinBoxTag::Upper,LinBoxTag::NonUnit);
 		Y.getL(L2);
 		Y.getU(U2);
 		P=Y.getP();

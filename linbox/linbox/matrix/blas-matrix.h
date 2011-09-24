@@ -38,6 +38,7 @@
 
 
 // #include <linbox/solutions/getentry.h>
+#include <linbox/algorithms/linbox-tags.h>
 #include <linbox/matrix/dense.h>
 #include <linbox/matrix/dense-submatrix.h>
 #include <linbox/util/debug.h>
@@ -503,24 +504,14 @@ namespace LinBox
 	}; // end of class BlasMatrix
 
 
-	/*! TAG for triangular blas matrix.
-	 * @see \ref FFLAS::FFLAS_DIAG and \ref FFLAS::FFLAS_UPLO enums in \c fflas/fflas.h.
-	 */
-	class BlasTag {
-	public:
-		typedef enum{low,up}       uplo; //!< upper or lower triangular
-		typedef enum{unit,nonunit} diag; //!< unit or non unit diagonal
-	};
-
-
 	//! Triangular BLAS matrix.
 	template <class Element>
 	class TriangularBlasMatrix: public BlasMatrix<Element> {
 
 	protected:
 
-		BlasTag::uplo           _uplo; //!< upper or lower triangular
-		BlasTag::diag           _diag; //!< unit or non unit diagonal
+		LinBoxTag::Shape          _uplo; //!< upper or lower triangular
+		LinBoxTag::Diag           _diag; //!< unit or non unit diagonal
 
 	public:
 
@@ -531,7 +522,7 @@ namespace LinBox
 		 * @param x (upp/low)er matrix
 		 */
 		TriangularBlasMatrix (const size_t m, const size_t n,
-				      BlasTag::uplo x=BlasTag::up, BlasTag::diag y= BlasTag::nonunit) :
+				      LinBoxTag::Shape x=LinBoxTag::Upper, LinBoxTag::Diag y= LinBoxTag::NonUnit) :
 			BlasMatrix<Element>(m, n ) , _uplo(x), _diag(y)
 		{}
 
@@ -541,7 +532,7 @@ namespace LinBox
 		 * @param x (upp/low)er matrix
 		 */
 		TriangularBlasMatrix (const BlasMatrix<Element>& A,
-				      BlasTag::uplo x=BlasTag::up, BlasTag::diag y= BlasTag::nonunit) :
+				      LinBoxTag::Shape x=LinBoxTag::Upper, LinBoxTag::Diag y= LinBoxTag::NonUnit) :
 			BlasMatrix<Element>(A) , _uplo(x), _diag(y)
 		{}
 
@@ -550,7 +541,7 @@ namespace LinBox
 		 * @param y (non)unit diagonal
 		 * @param x (upp/low)er matrix
 		 */
-		TriangularBlasMatrix (BlasMatrix<Element>& A, BlasTag::uplo x=BlasTag::up, BlasTag::diag y= BlasTag::nonunit) :
+		TriangularBlasMatrix (BlasMatrix<Element>& A, LinBoxTag::Shape x=LinBoxTag::Upper, LinBoxTag::Diag y= LinBoxTag::NonUnit) :
 			BlasMatrix<Element>(A), _uplo(x), _diag(y)
 		{}
 
@@ -561,14 +552,14 @@ namespace LinBox
 			BlasMatrix<Element>(A.rowdim(),A.coldim()), _uplo(A._uplo), _diag(A._diag)
 		{
 			switch (A._uplo) {
-			case BlasTag::up:
+			case LinBoxTag::Upper:
 				{
 					for (size_t i=0;i<A.rowdim();++i)
 						for (size_t j=i;j<A.coldim();++j)
 							this->setEntry(i,j,A.getEntry(i,j));
 					break;
 				}
-			case BlasTag::low:
+			case LinBoxTag::Lower:
 				{
 					for (size_t i=0;i<A.rowdim();++i) {
 						for (size_t j=0;j<=i;++j)
@@ -588,11 +579,11 @@ namespace LinBox
 		 * @param x (upp/low)er matrix
 		 */
 		template<class Matrix>
-		TriangularBlasMatrix (const Matrix& A, BlasTag::uplo x=BlasTag::up, BlasTag::diag y= BlasTag::nonunit) :
+		TriangularBlasMatrix (const Matrix& A, LinBoxTag::Shape x=LinBoxTag::Upper, LinBoxTag::Diag y= LinBoxTag::NonUnit) :
 			BlasMatrix<Element>(A.rowdim(),A.coldim()), _uplo(x), _diag(y)
 		{
 			switch (x) {
-			case BlasTag::up:
+			case LinBoxTag::Upper:
 				{
 					for (size_t i=0;i<A.rowdim();++i){
 						for (size_t j=i;j<A.coldim();++j) {
@@ -602,7 +593,7 @@ namespace LinBox
 					}
 					break;
 				}
-			case BlasTag::low:
+			case LinBoxTag::Lower:
 				{
 					for (size_t i=0;i<A.rowdim();++i) {
 						for (size_t j=0;j<=i;++j) {
@@ -619,10 +610,10 @@ namespace LinBox
 		}
 
 		/// get the shape of the matrix (upper or lower)
-		BlasTag::uplo getUpLo() const { return _uplo;}
+		LinBoxTag::Shape getUpLo() const { return _uplo;}
 
 		/// Is the diagonal implicitly unit ?
-		BlasTag::diag getDiag() const { return _diag;}
+		LinBoxTag::Diag getDiag() const { return _diag;}
 
 	}; // end of class TriangularBlasMatrix
 

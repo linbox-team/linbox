@@ -156,7 +156,8 @@ int main(int argc, char* argv[])
 
 		List L;
 
-		for (size_t i = 0; i < M.rowdim(); ++i) L.push_back(M[i][i]);
+		for (size_t i = 0; i < M.rowdim(); ++i)
+			L.push_back(M[(int)i][i]);
 
 		list<pair<PIR::Element, size_t> > p;
 
@@ -507,11 +508,11 @@ void scramble(BlasBlackbox<Ring>& M)
 
 			if (a)
 
-				R.subin(M[l][i], M[l][j]);
+				R.subin(M[(int)l][i], M[(int)l][j]);
 
 			else
 
-				R.addin(M[l][i], M[l][j]);
+				R.addin(M[(int)l][i], M[(int)l][j]);
 
 			//K.axpy(c, M.getEntry(l, i), x, M.getEntry(l, j));
 			//M.setEntry(l, i, c);
