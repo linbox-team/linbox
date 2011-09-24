@@ -542,6 +542,9 @@ namespace LinBox
 	// template<class Field>
 	// bool useBB(const Protected::DenseMatrix<Field>& A) { return false; }
 
+	template<class _Field>
+	class BlasBlackbox ; // forward declaration...
+
 	template<class Field>
 	bool useBB(const BlasBlackbox<Field>& A) { return false; }
 

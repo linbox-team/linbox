@@ -26,10 +26,10 @@
 
 
 
+#include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/solutions/methods.h"
 #include "linbox/util/debug.h"
 #include "linbox/field/field-traits.h"
-#include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/algorithms/blas-domain.h"
 
