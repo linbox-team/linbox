@@ -87,7 +87,7 @@ namespace LinBox
 			  const DomainCategory  &tag,
 			  const SmithMethod  &M)
 	{
-		throw LinBoxError( "Smith form solution implemented only for Protected::DenseMatrix<PID_integer>.\n                 Please reconfigure LinBox with NTL enabled.");
+		throw LinBoxError( "Smith form solution implemented only for NTL.\n                 Please reconfigure LinBox with NTL enabled.");
 	}
 
 	// The smithForm with default Method

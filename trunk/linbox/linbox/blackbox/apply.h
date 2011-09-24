@@ -1053,6 +1053,7 @@ namespace LinBox
 
 	};
 
+#if 0
 #ifndef __INTEL_COMPILER
 	template<>
 	#endif
@@ -1064,6 +1065,7 @@ namespace LinBox
 			BlasMatrixApplyDomain<Domain, Protected::DenseMatrix<Domain> > (D,Mat)
 		{}
 	};
+#endif
 
 
 #ifndef __INTEL_COMPILER

@@ -47,7 +47,7 @@ namespace LinBox
 
 
 template<class Integers, class Rationals, class QMatrix>
-class RationalMatrixFactory //: public Protected::DenseMatrixFactory<Integers,typename Rationals::Element >
+class RationalMatrixFactory //: public MatrixFactory<Integers,typename Rationals::Element >
 {
 //typedef GMPRationalField Rationals;
 typedef typename Rationals::Element Quotient;
@@ -169,7 +169,6 @@ typedef typename Rationals::Element Quotient;
 
 //returns norm of tilde{A} = diag(denAi[i])_A
         Integer& normAtilde(Integer& res) const {
-	        //typedef typename Protected::DenseMatrixBase<Quotient>::ConstRow::const_iterator EltIterator;
                 res = 0L;
 		double dres = 0;
                 //int i=0;
@@ -234,18 +233,7 @@ typedef typename Rationals::Element Quotient;
 		integer minnorm = (ratnorm > normatilde) ? normatilde : ratnorm;
 		return minnorm;
 	}
-#if 0
-	Protected::DenseMatrix< Rationals >& makeA(Protected::DenseMatrix<Rationals >& A) {
-	        //Protected::DenseMatrix<Rationals > local(Q,_A);
-		//return A = local;
 
-		for( int i=0; i < _A->rowdim(); ++i) {
-	                for (int j=0; j < _A->coldim(); ++j) {
-	                        A.setEntry(i,j, _A->getEntry(i,j));
-			}
-		}
-	}
-#endif
 	/*
 	 * Creates Aprim = denA * _A
 	 */

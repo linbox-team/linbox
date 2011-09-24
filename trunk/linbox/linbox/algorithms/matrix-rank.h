@@ -64,7 +64,8 @@ namespace LinBox
 
 			Field F ((unsigned long)*rp);
 
-			Protected::DenseMatrix<Field> Ap(F, A.rowdim(), A.coldim());
+			BlasBlackbox<Field> Ap(F, A.rowdim(), A.coldim());
+			// Protected::DenseMatrix<Field> Ap(F, A.rowdim(), A.coldim());
 
 			MatrixHom::map(Ap, A, F);
 
@@ -118,6 +119,7 @@ namespace LinBox
 			return result;
 		}
 
+#if 0
 		// compute rank by Gauss Elimination
 		long rankIn(Protected::DenseMatrix<Field>& Ap) const
 		{
@@ -197,6 +199,7 @@ namespace LinBox
 			}
 			return R;
 		}
+#endif
 
 		long rankIn(BlasBlackbox<Field>& Ap) const
 		{

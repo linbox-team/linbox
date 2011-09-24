@@ -48,7 +48,7 @@ namespace LinBox
 	 * mutual orthogonality properties. This algorithm was proposed by
 	 * Bradford Hovinen.
 	 */
-	template <class Field, class Matrix = Protected::DenseMatrixBase<typename Field::Element> >
+	template <class Field, class Matrix = BlasMatrix<typename Field::Element> >
 	class LABlockLanczosSolver {
 	public:
 

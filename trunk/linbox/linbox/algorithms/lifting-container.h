@@ -104,6 +104,7 @@ namespace LinBox
 
 	}
 
+#if 0
 	// in solveNonsingular, we may work with something that inherits from Protected::DenseMatrixBase
 	template <class Ring>
 	void BoundBlackbox(const Ring& R, typename Ring::Element& H_col_sqr,
@@ -111,10 +112,12 @@ namespace LinBox
 	{
 		SpecialBound(R, H_col_sqr, short_col_sqr, A);
 	}
+#endif
 
 	template <class Ring>
 	void BoundBlackbox(const Ring& R, typename Ring::Element& H_col_sqr,
-			   typename Ring::Element& short_col_sqr, const BlasBlackbox<Ring>& A)
+			   typename Ring::Element& short_col_sqr,
+			   const BlasBlackbox<Ring>& A)
 	{
 		SpecialBound(R, H_col_sqr, short_col_sqr, A);
 	}
@@ -122,7 +125,8 @@ namespace LinBox
 	// in other solvers we generally use BlasBlackbox which inherits from Protected::DenseSubmatrix
 	template <class Ring>
 	void BoundBlackbox(const Ring& R, typename Ring::Element& H_col_sqr,
-			   typename Ring::Element& short_col_sqr, const Protected::DenseSubmatrix<typename Ring::Element>& A)
+			   typename Ring::Element& short_col_sqr,
+			   const Protected::DenseSubmatrix<typename Ring::Element>& A)
 	{
 		SpecialBound(R, H_col_sqr, short_col_sqr, A);
 	}
@@ -130,7 +134,8 @@ namespace LinBox
 
 	template < class Ring, class Blackbox>
 	void BoundBlackbox (const Ring& R, typename Ring::Element& H_col_sqr,
-			    typename Ring::Element& short_col_sqr, const Blackbox& A)
+			    typename Ring::Element& short_col_sqr,
+			    const Blackbox& A)
 	{
 
 		typedef typename Ring::Element Integer_t;
@@ -160,7 +165,8 @@ namespace LinBox
 
 	template < class Ring, class Matrix1, class Matrix2>
 	void BoundBlackbox (const Ring& R, typename Ring::Element& H_col_sqr,
-			    typename Ring::Element& short_col_sqr, const Compose<Matrix1,Matrix2> & A)
+			    typename Ring::Element& short_col_sqr,
+			    const Compose<Matrix1,Matrix2> & A)
 	{
 		typedef typename Ring::Element Integer_t;
 		Integer_t one,zero,sqsum;
@@ -187,7 +193,8 @@ namespace LinBox
 
 	template < class Ring, class Matrix>
 	void BoundBlackbox (const Ring& R, typename Ring::Element& H_col_sqr,
-			    typename Ring::Element& short_col_sqr, const Transpose<Matrix> & A)
+			    typename Ring::Element& short_col_sqr,
+			    const Transpose<Matrix> & A)
 	{
 		typedef typename Ring::Element Integer_t;
 		Integer_t one,zero,sqsum;
