@@ -31,7 +31,6 @@
 #include <linbox/util/commentator.h>
 #include <linbox/util/timer.h>
 #include <linbox/algorithms/blas-domain.h>
-#include <linbox/blackbox/dense.h>
 #include <linbox/field/unparametric.h>
 #include <linbox/matrix/matrix-domain.h>
 #include <linbox/matrix/blas-matrix.h>

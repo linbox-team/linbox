@@ -26,7 +26,6 @@
 
 #include <linbox/util/debug.h>
 #include <linbox/vector/vector-domain.h>
-#include <linbox/blackbox/dense.h>
 #include <linbox/blackbox/submatrix-traits.h>
 
 namespace LinBox

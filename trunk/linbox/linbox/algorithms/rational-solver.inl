@@ -25,7 +25,6 @@
 #ifndef __LINBOX_rational_solver_INL
 #define __LINBOX_rational_solver_INL
 
-#include <linbox/blackbox/dense.h>
 #include <linbox/blackbox/sparse.h>
 #include <linbox/blackbox/lambda-sparse.h>
 #include <linbox/blackbox/lambda-sparse.h>

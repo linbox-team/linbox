@@ -31,7 +31,6 @@
 
 #include <linbox/util/debug.h>
 #include <linbox/blackbox/blackbox-interface.h>
-#include <linbox/blackbox/dense.h>
 #include <linbox/blackbox/compose.h>
 
 namespace LinBox

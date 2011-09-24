@@ -30,7 +30,6 @@
 #define __LINBOX_dense_submatrix_INL
 
 #include "linbox/util/debug.h"
-#include "linbox/matrix/dense.h"
 #include "linbox/matrix/dense-submatrix.h"
 
 namespace LinBox

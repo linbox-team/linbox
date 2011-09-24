@@ -26,7 +26,6 @@
 
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/transpose.h"
-#include "linbox/blackbox/dense.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/lambda-sparse.h"
 // #include "linbox/blackbox/subrowmatrix.h"
@@ -53,12 +52,6 @@ namespace LinBox
 	struct RawIndexedCategory< BlasBlackbox<Field> > 	{
 		typedef RawIndexedTags::HasRawIndexed Tag; };
 
-
-#if 0
-	template<class Field>
-	struct RawIndexedCategory< Protected::DenseMatrix<Field> > 	{
-		typedef RawIndexedTags::HasRawIndexed Tag; };
-#endif
 
 	template<class Field, class Row>
 	struct RawIndexedCategory< LambdaSparseMatrix<Field,Row> > 	{

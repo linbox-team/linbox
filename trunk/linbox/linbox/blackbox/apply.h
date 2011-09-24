@@ -36,7 +36,6 @@
 #include <linbox/field/multimod-field.h>
 #include <linbox/field/hom.h>
 #include <linbox/randiter/multimod-randomprime.h>
-#include <linbox/blackbox/dense.h>
 #include <linbox/blackbox/sparse.h>
 #include <linbox/blackbox/blas-blackbox.h>
 #include <linbox/matrix/blas-matrix.h>

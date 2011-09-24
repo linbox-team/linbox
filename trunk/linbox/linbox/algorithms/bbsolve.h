@@ -19,7 +19,6 @@
 #include "linbox/algorithms/wiedemann.h"
 #include "linbox/algorithms/lanczos.h"
 #include "linbox/algorithms/mg-block-lanczos.h"
-#include "linbox/blackbox/dense.h"
 #include "linbox/util/debug.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/solutions/methods.h"

@@ -394,7 +394,6 @@ namespace LinBox
 } // namespace LinBox
 
 // was compose-traits.h (by Zhendong Wan)
-#include "linbox/blackbox/dense.h"
 #include "linbox/blackbox/blas-blackbox.h" // ???
 namespace LinBox
 {

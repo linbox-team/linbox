@@ -31,7 +31,6 @@
 //#include "linbox/field/gmp-rational.h"
 #include "linbox/field/PID-integer.h"
 #include "linbox/blackbox/rational-matrix-factory.h"
-#include "linbox/blackbox/dense.h"
 #include "linbox/algorithms/cra-early-multip.h"
 #include "linbox/algorithms/cra-domain.h"
 //#include "linbox/algorithms/rational-cra.h"

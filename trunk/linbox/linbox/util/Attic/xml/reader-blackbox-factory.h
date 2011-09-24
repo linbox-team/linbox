@@ -82,7 +82,6 @@ namespace LinBox
 }
 
 
-#include "linbox/blackbox/dense.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/nag-sparse.h"
 #include "linbox/blackbox/diagonal.h"
