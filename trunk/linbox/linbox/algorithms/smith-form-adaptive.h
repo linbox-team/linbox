@@ -32,6 +32,7 @@
 #include <vector>
 #include <linbox/integer.h>
 #include <linbox/blackbox/dense.h>
+#include <linbox/blackbox/blas-blackbox.h>
 
 namespace LinBox
 {

@@ -30,6 +30,7 @@
 #include <linbox/matrix/dense-submatrix.h>
 #include <linbox/vector/vector-domain.h>
 #include <linbox/blackbox/blackbox-interface.h>
+#include "linbox/blackbox/blas-blackbox.h"
 
 
 // Namespace in which all LinBox library code resides
