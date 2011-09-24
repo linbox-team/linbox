@@ -370,7 +370,7 @@ namespace LinBox
 		report << "Starting column: " << s << std::endl;
 		report << "Column dimension: " << m << std::endl;
 
-		Protected::DenseMatrixBase<Element> Acopy (_A);
+		BlasMatrix<Element> Acopy (_A);
 
 		unsigned int P_start = _P.size ();
 #endif
@@ -534,7 +534,7 @@ namespace LinBox
 		_F.inv (dinv, d);
 		_F.inv (d0inv, d0);
 
-		Protected::DenseMatrixBase<Element> R (_A.rowdim () - k, _A.coldim () - s);
+		BlasMatrix<Element> R (_A.rowdim () - k, _A.coldim () - s);
 		Protected::DenseSubmatrix<Element> Atest (Acopy, k, s, _A.rowdim () - k, _A.coldim () - s);
 		Protected::DenseSubmatrix<Element> Utest (_U, k, k, _U.rowdim () - k, _U.coldim () - k);
 		_MD.permuteRows (Acopy, _P.begin () + P_start, _P.end ());

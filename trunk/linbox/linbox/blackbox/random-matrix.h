@@ -47,7 +47,7 @@ namespace LinBox
 		static Blackbox*& randomMatrix (Blackbox* &, const Field& f,
 						int rowdim, int coldim);
 
-
+#if 0
 		// constructor a random dense matrix, whose entries are random
 		template<class Field>
 		static Protected::DenseMatrix<Field>*& randomMatrix( Protected::DenseMatrix<Field>*& Ap,
@@ -83,6 +83,7 @@ namespace LinBox
 
 			return Ap;
 		}
+#endif
 
 		// constructor a random dense matrix, whose entries are random
 		template<class Field>
