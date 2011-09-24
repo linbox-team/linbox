@@ -34,24 +34,13 @@
 #include <linbox/field/multimod-field.h>
 #include <linbox/util/matrix-stream.h>
 
-#include "linbox/vector/subiterator.h"
-#include "linbox/vector/subvector.h"
-#include "linbox/vector/stream.h"
-#include "linbox/vector/vector-domain.h"
-#include "linbox/matrix/dense.h"
-#include <linbox/matrix/matrix-domain.h>
-#include <linbox/blackbox/blackbox-interface.h>
-#include <linbox/blackbox/factory.h>
-#include <linbox/field/hom.h>
-#include "linbox/util/matrix-stream.h"
-
-
 
 namespace LinBox
 {
 
 	template <class Field>
-	bool checkBlasApply(const Field &F, size_t n) {
+	bool checkBlasApply(const Field &F, size_t n)
+	{
 
 		integer chara, card;
 		F.characteristic(chara);
@@ -84,9 +73,9 @@ namespace LinBox
 		typedef BlasBlackbox<_Field> Self_t;
 
 		BlasBlackbox (const Field& F) :
-		      	_F(F), _MD(F), _VD(F)
+			_F(F), _MD(F), _VD(F)
 		{
-		       	_F.init(_One,1UL) ;
+			_F.init(_One,1UL) ;
 			_F.init(_Zero,0UL);
 			_use_fflas=false;
 		}
@@ -95,7 +84,7 @@ namespace LinBox
 			BlasMatrix<Element> (m,n),  _F(F), _MD(F), _VD(F), _row(m) , _col(n)
 		{
 			_F.init(_One,1UL);
-		       	_F.init(_Zero,0UL);
+			_F.init(_Zero,0UL);
 			typename BlasMatrix<Element>::RawIterator it = this->rawBegin();
 			for (; it != this->rawEnd(); ++it)
 				_F.init(*it, 0);
@@ -139,15 +128,15 @@ namespace LinBox
 			_F.init(_One,1UL),
 			_F.init(_Zero,0UL);
 			_use_fflas= checkBlasApply(_F, _col);
-	       	}
+		}
 
 		template< class Blackbox >
 		BlasBlackbox (const Blackbox& Mat) :
 			BlasMatrix<Element> (Mat), _F(Mat.field()), _MD(Mat.field()), _VD(Mat.field()), _row(Mat.rowdim()), _col(Mat.coldim())
 		{
 			_F.init( _One, 1UL );
-		       	_F.init( _Zero, 0UL );
-		       	_use_fflas= checkBlasApply(_F, _col);
+			_F.init( _Zero, 0UL );
+			_use_fflas= checkBlasApply(_F, _col);
 		}
 
 		BlasBlackbox (const BlasBlackbox<Field>& Mat) :
@@ -298,17 +287,6 @@ namespace LinBox
 		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
 	};
 
-	template <class Field>
-	class MatrixContainerTrait<BlasBlackbox<Field> > {
-	public:
-		typedef MatrixContainerCategory::BlasContainer Type;
-	};
-
-	template <class Field>
-	class MatrixContainerTrait<const BlasBlackbox<Field> > {
-	public:
-		typedef MatrixContainerCategory::BlasContainer Type;
-	};
 
 	template<>
 	class BlasBlackbox<MultiModDouble> {
@@ -323,7 +301,7 @@ namespace LinBox
 		//BlasBlackbox () {}
 
 		BlasBlackbox (const MultiModDouble& F) :
-		       	_F(F) , _rep(F.size()), _entry(F.size())
+			_F(F) , _rep(F.size()), _entry(F.size())
 		{}
 
 		BlasBlackbox (const Field& F, size_t m, size_t n, bool alloc=true) :
@@ -334,8 +312,8 @@ namespace LinBox
 		}
 
 		BlasBlackbox (const BlasBlackbox<MultiModDouble> & A):
-		       	_F(A._F),_row(A._row), _col(A._col),
-		_rep(A._rep.size()), _entry(A._entry)
+			_F(A._F),_row(A._row), _col(A._col),
+			_rep(A._rep.size()), _entry(A._entry)
 		{
 
 			for (size_t i=0;i<_rep.size();++i)
@@ -449,12 +427,6 @@ namespace LinBox
 		Element                _One,_Zero;
 		std::vector<BlasBlackbox<Modular<double> >* > _rep;
 		std::vector<double>       _entry;
-	};
-
-	template <>
-	class MatrixContainerTrait<BlasBlackbox<MultiModDouble> > {
-	public:
-		typedef MatrixContainerCategory::Blackbox Type;
 	};
 
 

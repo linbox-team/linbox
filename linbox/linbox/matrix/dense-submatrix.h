@@ -54,285 +54,285 @@ namespace LinBox
 
 	namespace Protected
 	{
-	/** @brief %Submatrix of a dense matrix
-	 *
-	 * This matrix type conforms to the same interface as @ref DenseMatrixBase,
-	 * except that you cannot resize it. It represents a submatrix of a dense
-	 * matrix. Upon construction, one can freely manipulate the entries in the
-	 * DenseSubmatrix, and the corresponding entries in the underlying
-	 * DenseMatrixBase will be modified.
+		/** @brief %Submatrix of a dense matrix
+		 *
+		 * This matrix type conforms to the same interface as @ref DenseMatrixBase,
+		 * except that you cannot resize it. It represents a submatrix of a dense
+		 * matrix. Upon construction, one can freely manipulate the entries in the
+		 * DenseSubmatrix, and the corresponding entries in the underlying
+		 * DenseMatrixBase will be modified.
 
-	 \ingroup matrix
-	 */
-	template<class _Element>
-	class DenseSubmatrix {
-	public:
-
-		/*  Iterators */
-
-		//! @name Forward declaration of Raw Iterators.
-		//@{
-		// RawIterator.
-		class RawIterator  ;
-		// Const RawIterator.
-		class ConstRawIterator ;
-
-		 // RawIndexed
-		class RawIndexedIterator ;
-		// Const RawIndexed
-		class ConstRawIndexedIterator ;
-		//@}
-
-		typedef _Element                  Element;       //!< Element type
-		typedef DenseSubmatrix<_Element>   Self_t;       //!< Self type
-
-
-		/** @name typedef'd Row Iterators.
-		 *\brief
-		 * The row iterator gives the rows of the
-		 * matrix in ascending order. Dereferencing the iterator yields
-		 * a row vector in dense format
-		 * @{
+		 \ingroup matrix
 		 */
-		typedef typename DenseMatrixBase<Element>::RowIterator            RowIterator;
-		typedef typename DenseMatrixBase<Element>::ConstRowIterator       ConstRowIterator;
-		typedef typename DenseMatrixBase<Element>::Row                    Row;
-		typedef typename DenseMatrixBase<Element>::ConstRow               ConstRow;
-		 //@} Row Iterators
+		template<class _Element>
+		class DenseSubmatrix {
+		public:
 
-		/** @name typedef'd Column Iterators.
-		 *\brief
-		 * The columns iterator gives the columns of the
-		 * matrix in ascending order. Dereferencing the iterator yields
-		 * a column vector in dense format
-		 * @{
-		 */
-		typedef typename DenseMatrixBase<Element>::ColIterator            ColIterator;
-		typedef typename DenseMatrixBase<Element>::ConstColIterator       ConstColIterator;
-		typedef typename DenseMatrixBase<Element>::Col                    Col;
-		typedef typename DenseMatrixBase<Element>::Column                 Column;
-		typedef typename DenseMatrixBase<Element>::ConstCol               ConstCol;
-		//@} // Column Iterators
+			/*  Iterators */
 
+			//! @name Forward declaration of Raw Iterators.
+			//@{
+			// RawIterator.
+			class RawIterator  ;
+			// Const RawIterator.
+			class ConstRawIterator ;
 
-		/*  constructors */
+			// RawIndexed
+			class RawIndexedIterator ;
+			// Const RawIndexed
+			class ConstRawIndexedIterator ;
+			//@}
 
-		/** NULL constructor.  */
-		DenseSubmatrix () :
-			_M(NULL)
-	       	{}
-
-		/** Constructor from an existing @ref DenseMatrixBase  and dimensions.
-		 * \param M Pointer to @ref DenseMatrixBase of which to construct submatrix
-		 * \param row Starting row
-		 * \param col Starting column
-		 * \param rowdim Row dimension
-		 * \param coldim Column dimension
-		 */
-		DenseSubmatrix (DenseMatrixBase<Element> &M,
-				size_t row,
-				size_t col,
-				size_t rowdim,
-				size_t coldim);
-
-		/** Constructor from an existing @ref DenseMatrixBase
-		 * \param M Pointer to @ref DenseMatrixBase of which to construct submatrix
-		 */
-		DenseSubmatrix (DenseMatrixBase<Element> &M);
+			typedef _Element                  Element;       //!< Element type
+			typedef DenseSubmatrix<_Element>   Self_t;       //!< Self type
 
 
-		/** Constructor from an existing submatrix and dimensions
-		 * @param SM Constant reference to DenseSubmatrix from which to
-		 *           construct submatrix
-		 * @param row Starting row
-		 * @param col Starting column
-		 * @param rowdim Row dimension
-		 * @param coldim Column dimension
-		 */
-		DenseSubmatrix (const DenseSubmatrix<Element> &SM,
-				size_t row,
-				size_t col,
-				size_t rowdim,
-				size_t coldim);
+			/** @name typedef'd Row Iterators.
+			 *\brief
+			 * The row iterator gives the rows of the
+			 * matrix in ascending order. Dereferencing the iterator yields
+			 * a row vector in dense format
+			 * @{
+			 */
+			typedef typename DenseMatrixBase<Element>::RowIterator            RowIterator;
+			typedef typename DenseMatrixBase<Element>::ConstRowIterator       ConstRowIterator;
+			typedef typename DenseMatrixBase<Element>::Row                    Row;
+			typedef typename DenseMatrixBase<Element>::ConstRow               ConstRow;
+			//@} Row Iterators
 
-		/** Copy constructor.
-		 * @param SM Submatrix to copy
-		 */
-		DenseSubmatrix (const DenseSubmatrix<Element> &SM);
-
-		/*  Members  */
-
-		/** Assignment operator.
-		 * Assign the given submatrix to this one
-		 * @param SM Submatrix to assign
-		 * @return Reference to this submatrix
-		 */
-		DenseSubmatrix &operator = (const DenseSubmatrix<Element> &SM);
-
-		/** Get the number of rows in the matrix
-		 * @return Number of rows in matrix
-		 */
-		size_t rowdim () const
-		{
-			return _end_row - _beg_row;
-		}
-
-		/** Get the number of columns in the matrix
-		 * @return Number of columns in matrix
-		 */
-		size_t coldim () const
-		{
-			return _end_col - _beg_col;
-		}
-
-		template<typename _Tp1>
-		struct rebind {
-			typedef DenseSubmatrix<typename _Tp1::Element> other;
-		};
+			/** @name typedef'd Column Iterators.
+			 *\brief
+			 * The columns iterator gives the columns of the
+			 * matrix in ascending order. Dereferencing the iterator yields
+			 * a column vector in dense format
+			 * @{
+			 */
+			typedef typename DenseMatrixBase<Element>::ColIterator            ColIterator;
+			typedef typename DenseMatrixBase<Element>::ConstColIterator       ConstColIterator;
+			typedef typename DenseMatrixBase<Element>::Col                    Col;
+			typedef typename DenseMatrixBase<Element>::Column                 Column;
+			typedef typename DenseMatrixBase<Element>::ConstCol               ConstCol;
+			//@} // Column Iterators
 
 
-		/** Read the matrix from an input stream.
-		 * @param file Input stream from which to read
-		 * @param field
-		 */
-		template<class Field>
-		std::istream& read (std::istream &file, const Field& field);
+			/*  constructors */
 
-		/** Write the matrix to an output stream.
-		 * @param os Output stream to which to write
-		 * @param field
-		 * @param mapleFormat write in Maple(r) format ?
-		 */
-		template<class Field>
-		std::ostream& write (std::ostream &os, const Field& field,
-				     bool mapleFormat = false) const;
+			/** NULL constructor.  */
+			DenseSubmatrix () :
+				_M(NULL)
+			{}
 
-		/** Write the matrix to an output stream.
-		 * This a raw version of \c write(os,F) (no field is given).
-		 * @param os Output stream to which to write
-		 * @param mapleFormat write in Maple(r) format ?
-		 */
-		std::ostream& write (std::ostream &os,
-				     bool mapleFormat = false) const;
+			/** Constructor from an existing @ref DenseMatrixBase  and dimensions.
+			 * \param M Pointer to @ref DenseMatrixBase of which to construct submatrix
+			 * \param row Starting row
+			 * \param col Starting column
+			 * \param rowdim Row dimension
+			 * \param coldim Column dimension
+			 */
+			DenseSubmatrix (DenseMatrixBase<Element> &M,
+					size_t row,
+					size_t col,
+					size_t rowdim,
+					size_t coldim);
 
-
-		/** Set the entry at (i, j).
-		 * @param i Row number, 0...rowdim () - 1
-		 * @param j Column number 0...coldim () - 1
-		 * @param a_ij Element to set
-		 */
-		void setEntry (size_t i, size_t j, const Element &a_ij)
-		{
-			_M->setEntry (_beg_row + i, _beg_col + j, a_ij);
-		}
-
-		/** Get a writeable reference to an entry in the matrix.
-		 * @param i Row index of entry
-		 * @param j Column index of entry
-		 * @return Reference to matrix entry
-		 */
-		Element &refEntry (size_t i, size_t j)
-		{
-			return _M->refEntry (i + _beg_row, j + _beg_col);
-		}
-
-		/** Get a read-only individual entry from the matrix.
-		 * @param i Row index
-		 * @param j Column index
-		 * @return Const reference to matrix entry
-		 */
-		const Element &getEntry (size_t i, size_t j) const
-		{
-			return _M->getEntry (i + _beg_row, j + _beg_col);
-		}
-
-		/** Get an entry and store it in the given value.
-		 * This form is more in the Linbox style and is provided for interface
-		 * compatibility with other parts of the library
-		 * @param x Element in which to store result
-		 * @param i Row index
-		 * @param j Column index
-		 * @return Reference to x
-		 */
-		Element &getEntry (Element &x, size_t i, size_t j) const
-		{
-			return _M->getEntry (x, i + _beg_row, j + _beg_col);
-		}
-
-		/// iterator to the begining of a row
-		RowIterator rowBegin ();
-		/// iterator to the end of a row
-		RowIterator rowEnd ();
-		/// const iterator to the begining of a row
-		ConstRowIterator rowBegin () const;
-		/// const iterator to the end of a row
-		ConstRowIterator rowEnd () const;
-
-		ColIterator colBegin ();
-		ColIterator colEnd ();
-		ConstColIterator colBegin () const;
-		ConstColIterator colEnd () const;
-
-		RawIterator rawBegin ();
-		RawIterator rawEnd ();
-		ConstRawIterator rawBegin () const;
-		ConstRawIterator rawEnd () const;
+			/** Constructor from an existing @ref DenseMatrixBase
+			 * \param M Pointer to @ref DenseMatrixBase of which to construct submatrix
+			 */
+			DenseSubmatrix (DenseMatrixBase<Element> &M);
 
 
-		RawIndexedIterator rawIndexedBegin();
-		RawIndexedIterator rawIndexedEnd();
-		ConstRawIndexedIterator rawIndexedBegin() const;
-		ConstRawIndexedIterator rawIndexedEnd() const;
+			/** Constructor from an existing submatrix and dimensions
+			 * @param SM Constant reference to DenseSubmatrix from which to
+			 *           construct submatrix
+			 * @param row Starting row
+			 * @param col Starting column
+			 * @param rowdim Row dimension
+			 * @param coldim Column dimension
+			 */
+			DenseSubmatrix (const DenseSubmatrix<Element> &SM,
+					size_t row,
+					size_t col,
+					size_t rowdim,
+					size_t coldim);
+
+			/** Copy constructor.
+			 * @param SM Submatrix to copy
+			 */
+			DenseSubmatrix (const DenseSubmatrix<Element> &SM);
+
+			/*  Members  */
+
+			/** Assignment operator.
+			 * Assign the given submatrix to this one
+			 * @param SM Submatrix to assign
+			 * @return Reference to this submatrix
+			 */
+			DenseSubmatrix &operator = (const DenseSubmatrix<Element> &SM);
+
+			/** Get the number of rows in the matrix
+			 * @return Number of rows in matrix
+			 */
+			size_t rowdim () const
+			{
+				return _end_row - _beg_row;
+			}
+
+			/** Get the number of columns in the matrix
+			 * @return Number of columns in matrix
+			 */
+			size_t coldim () const
+			{
+				return _end_col - _beg_col;
+			}
+
+			template<typename _Tp1>
+			struct rebind {
+				typedef DenseSubmatrix<typename _Tp1::Element> other;
+			};
+
+
+			/** Read the matrix from an input stream.
+			 * @param file Input stream from which to read
+			 * @param field
+			 */
+			template<class Field>
+			std::istream& read (std::istream &file, const Field& field);
+
+			/** Write the matrix to an output stream.
+			 * @param os Output stream to which to write
+			 * @param field
+			 * @param mapleFormat write in Maple(r) format ?
+			 */
+			template<class Field>
+			std::ostream& write (std::ostream &os, const Field& field,
+					     bool mapleFormat = false) const;
+
+			/** Write the matrix to an output stream.
+			 * This a raw version of \c write(os,F) (no field is given).
+			 * @param os Output stream to which to write
+			 * @param mapleFormat write in Maple(r) format ?
+			 */
+			std::ostream& write (std::ostream &os,
+					     bool mapleFormat = false) const;
+
+
+			/** Set the entry at (i, j).
+			 * @param i Row number, 0...rowdim () - 1
+			 * @param j Column number 0...coldim () - 1
+			 * @param a_ij Element to set
+			 */
+			void setEntry (size_t i, size_t j, const Element &a_ij)
+			{
+				_M->setEntry (_beg_row + i, _beg_col + j, a_ij);
+			}
+
+			/** Get a writeable reference to an entry in the matrix.
+			 * @param i Row index of entry
+			 * @param j Column index of entry
+			 * @return Reference to matrix entry
+			 */
+			Element &refEntry (size_t i, size_t j)
+			{
+				return _M->refEntry (i + _beg_row, j + _beg_col);
+			}
+
+			/** Get a read-only individual entry from the matrix.
+			 * @param i Row index
+			 * @param j Column index
+			 * @return Const reference to matrix entry
+			 */
+			const Element &getEntry (size_t i, size_t j) const
+			{
+				return _M->getEntry (i + _beg_row, j + _beg_col);
+			}
+
+			/** Get an entry and store it in the given value.
+			 * This form is more in the Linbox style and is provided for interface
+			 * compatibility with other parts of the library
+			 * @param x Element in which to store result
+			 * @param i Row index
+			 * @param j Column index
+			 * @return Reference to x
+			 */
+			Element &getEntry (Element &x, size_t i, size_t j) const
+			{
+				return _M->getEntry (x, i + _beg_row, j + _beg_col);
+			}
+
+			/// iterator to the begining of a row
+			RowIterator rowBegin ();
+			/// iterator to the end of a row
+			RowIterator rowEnd ();
+			/// const iterator to the begining of a row
+			ConstRowIterator rowBegin () const;
+			/// const iterator to the end of a row
+			ConstRowIterator rowEnd () const;
+
+			ColIterator colBegin ();
+			ColIterator colEnd ();
+			ConstColIterator colBegin () const;
+			ConstColIterator colEnd () const;
+
+			RawIterator rawBegin ();
+			RawIterator rawEnd ();
+			ConstRawIterator rawBegin () const;
+			ConstRawIterator rawEnd () const;
+
+
+			RawIndexedIterator rawIndexedBegin();
+			RawIndexedIterator rawIndexedEnd();
+			ConstRawIndexedIterator rawIndexedBegin() const;
+			ConstRawIndexedIterator rawIndexedEnd() const;
 
 #if 1 /*  operator[] */
-		/*- Retrieve a reference to a row
-		 * @param i Row index
-		 */
-		Row operator[] (int i) { return _M->operator[](i) ; }    //            not actually used, causes a compile error...
-		ConstRow operator[] (int i) const{ return _M->operator[](i) ; }
+			/*- Retrieve a reference to a row
+			 * @param i Row index
+			 */
+			Row operator[] (int i) { return _M->operator[](i) ; }    //            not actually used, causes a compile error...
+			ConstRow operator[] (int i) const{ return _M->operator[](i) ; }
 
-		//BB. that is one issue...
-		void resize (size_t m, size_t n, const Element& val = Element())
-		{
-			_M->resize(m,n,val);
-		}
+			//BB. that is one issue...
+			void resize (size_t m, size_t n, const Element& val = Element())
+			{
+				_M->resize(m,n,val);
+			}
 
 #endif
 
-		/*! Creates a transposed matrix of \c *this.
-		 * @param[in] tM
-		 * @return the transposed matrix of this.
-		 */
-		DenseSubmatrix<Element> transpose(DenseMatrixBase<Element> & tM)
-		{
-			linbox_check(tM.coldim() == rowdim());
-			linbox_check(tM.rowdim() == coldim());
-			// DenseMatrixBase<Element> tM(coldim(),rowdim());
-			DenseSubmatrix<Element>  tA(tM);
-			for (size_t i = 0 ; i < rowdim(); ++i)
-				for (size_t j = 0 ; j < coldim(); ++j)
-					tA.setEntry(j,i,getEntry(i,j));
-			return tA;
-		}
+			/*! Creates a transposed matrix of \c *this.
+			 * @param[in] tM
+			 * @return the transposed matrix of this.
+			 */
+			DenseSubmatrix<Element> transpose(DenseMatrixBase<Element> & tM)
+			{
+				linbox_check(tM.coldim() == rowdim());
+				linbox_check(tM.rowdim() == coldim());
+				// DenseMatrixBase<Element> tM(coldim(),rowdim());
+				DenseSubmatrix<Element>  tA(tM);
+				for (size_t i = 0 ; i < rowdim(); ++i)
+					for (size_t j = 0 ; j < coldim(); ++j)
+						tA.setEntry(j,i,getEntry(i,j));
+				return tA;
+			}
 
-		/*! Creates a transposed matrix of \c *this.
-		 * @return the transposed matrix of this.
-		 */
-		DenseSubmatrix<Element> & transpose(DenseSubmatrix<Element> & tA)
-		{
-			for (size_t i = 0 ; i < rowdim(); ++i)
-				for (size_t j = 0 ; j < coldim(); ++j)
-					tA.setEntry(j,i,getEntry(i,j));
-			return tA;
-		}
+			/*! Creates a transposed matrix of \c *this.
+			 * @return the transposed matrix of this.
+			 */
+			DenseSubmatrix<Element> & transpose(DenseSubmatrix<Element> & tA)
+			{
+				for (size_t i = 0 ; i < rowdim(); ++i)
+					for (size_t j = 0 ; j < coldim(); ++j)
+						tA.setEntry(j,i,getEntry(i,j));
+				return tA;
+			}
 
-	protected:
-		DenseMatrixBase<Element> *_M;
-		size_t _beg_row;
-		size_t _end_row;
-		size_t _beg_col;
-		size_t _end_col;
-	};
+		protected:
+			DenseMatrixBase<Element> *_M;
+			size_t _beg_row;
+			size_t _end_row;
+			size_t _beg_col;
+			size_t _end_col;
+		};
 	} // Protected
 
 	/*! Write a matrix to a stream.

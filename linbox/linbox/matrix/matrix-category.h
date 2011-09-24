@@ -27,13 +27,20 @@
 
 #include <linbox/matrix/sparse.h>
 #include <linbox/matrix/dense.h>
+// #include <linbox/matrix/blas-matrix.h>
 
 #include <linbox/blackbox/sparse.h>
 #include <linbox/blackbox/dense.h>
+// #include <linbox/blackbox/blas-blackbox.h>
 
 
 namespace LinBox
 {
+	template<class _Field>
+	class BlasBlackbox ;
+
+	template<class _Element>
+	class BlasMatrix ;
 
 	struct MatrixContainerCategory {
 		struct BlasContainer{};
@@ -45,6 +52,30 @@ namespace LinBox
 	class MatrixContainerTrait {
 	public:
 		typedef MatrixContainerCategory::Blackbox Type;
+	};
+
+	template <class Field>
+	class MatrixContainerTrait<BlasBlackbox<Field> > {
+	public:
+		typedef MatrixContainerCategory::BlasContainer Type;
+	};
+
+	template <class Field>
+	class MatrixContainerTrait<const BlasBlackbox<Field> > {
+	public:
+		typedef MatrixContainerCategory::BlasContainer Type;
+	};
+
+	template <class Element>
+	class MatrixContainerTrait<BlasMatrix<Element> > {
+	public:
+		typedef MatrixContainerCategory::BlasContainer Type;
+	};
+
+	template <class Element>
+	class MatrixContainerTrait<const BlasMatrix<Element> > {
+	public:
+		typedef MatrixContainerCategory::BlasContainer Type;
 	};
 
 
@@ -72,6 +103,13 @@ namespace LinBox
 	public:
 		typedef MatrixContainerCategory::Container Type;
 	};
+
+	template <>
+	class MatrixContainerTrait<BlasBlackbox<MultiModDouble> > {
+	public:
+		typedef MatrixContainerCategory::Blackbox Type;
+	};
+
 
 }
 
