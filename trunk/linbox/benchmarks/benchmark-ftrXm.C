@@ -141,8 +141,8 @@ void launch_bench_square(Field & F // const problem
 	for ( index_t i = min ; i < max ; i += step , ++l ) {
 		int ii = i ; // sinon, le constructeur le plus proche serait (_Matrix,_Field)... n'impnawak...
 		LinBox::TriangularBlasMatrix<Element> A (ii,ii,
-							 (TriSup?LinBox::BlasTag::up:LinBox::BlasTag::low),
-							 (UnitDiag?LinBox::BlasTag::unit:LinBox::BlasTag::nonunit));
+							 (TriSup?LinBox::LinBoxTag::Upper:LinBox::LinBoxTag::Lower),
+							 (UnitDiag?LinBox::LinBoxTag::Unit:LinBox::LinBoxTag::NonUnit));
 		LinBox::BlasMatrix<Element> B (ii,ii);
 		if (!series_nb)
 			Data.setAbsciName(l,i); // only write abscissa for serie 0
@@ -286,8 +286,8 @@ void launch_bench_rectangular(Field & F // const problem
 	index_t k = (LeftSide?m:n);
 
 	TriangularMatrix A (k,k,
-			    (TriSup?LinBox::BlasTag::up:LinBox::BlasTag::low),
-			    (UnitDiag?LinBox::BlasTag::unit:LinBox::BlasTag::nonunit));
+			    (TriSup?LinBox::LinBoxTag::Upper:LinBox::LinBoxTag::Lower),
+			    (UnitDiag?LinBox::LinBoxTag::Unit:LinBox::LinBoxTag::NonUnit));
 	Matrix B ((int)m,(int)n);
 
 	index_t j = 0 ;
@@ -366,8 +366,8 @@ void launch_bench_scalar(Field & F // const problem
 	index_t k = (LeftSide?m:n);
 
 	TriangularMatrix A (k,k,
-			    (TriSup?LinBox::BlasTag::up:LinBox::BlasTag::low),
-			    (UnitDiag?LinBox::BlasTag::unit:LinBox::BlasTag::nonunit));
+			    (TriSup?LinBox::LinBoxTag::Upper:LinBox::LinBoxTag::Lower),
+			    (UnitDiag?LinBox::LinBoxTag::Unit:LinBox::LinBoxTag::NonUnit));
 	TransposedTriangular At(A);
 	Matrix B (m,n);
 

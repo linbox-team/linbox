@@ -757,7 +757,8 @@ namespace LinBox
 			if (B.isIdentity()) return A ;
 			linbox_check( A.coldim() >= B.getSize() );
 			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
-					A.rowdim(), 0,(int) B.getOrder(), A.getPointer(), A.getStride(), B.getPointer() );
+					A.rowdim(), 0,(int) B.getOrder(),
+					A.getPointer(), A.getStride(), B.getPointer() );
 			return A;
 		}
 
@@ -784,7 +785,8 @@ namespace LinBox
 			if (B.getMatrix().isIdentity()) return A ;
 			linbox_check( A.coldim() >= B.getMatrix().getSize() );
 			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans,
-					A.rowdim(), 0,(int) B.getMatrix().getOrder(), A.getPointer(), A.getStride(), B.getMatrix().getPointer() );
+					A.rowdim(), 0,(int) B.getMatrix().getOrder(),
+					A.getPointer(), A.getStride(), B.getMatrix().getPointer() );
 			return A;
 		}
 		BlasMatrix<typename Field::Element>& operator()(  const Field& F,
@@ -905,7 +907,8 @@ namespace LinBox
 			if (B.getMatrix().isIdentity()) return A ;
 			linbox_check( A.size() >= B.getMatrix().getSize() );
 			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans,
-					1, 0,(int) B.getMatrix().getOrder(), &A[0], 1, B.getMatrix().getPointer() );
+					1, 0,(int) B.getMatrix().getOrder(),
+					&A[0], 1, B.getMatrix().getPointer() );
 			return A;
 		}
 		std::vector< typename Field::Element>& operator()(  const Field& F,
@@ -969,9 +972,10 @@ namespace LinBox
 			F.init(one, 1UL);
 			linbox_check( A.coldim() == B.rowdim() );
 
-			FFLAS::ftrmm( F, FFLAS::FflasRight, (B.getUpLo()==BlasTag::up)?FFLAS::FflasUpper:FFLAS::FflasLower,
-				      FFLAS::FflasNoTrans,(B.getDiag()==BlasTag::unit)?FFLAS::FflasUnit:FFLAS::FflasNonUnit,
-				      A.rowdim(), A.coldim(), one, B.getPointer(), B.getStride(), A.getPointer(), A.getStride() );
+			FFLAS::ftrmm( F, FFLAS::FflasRight, (FFLAS::FFLAS_UPLO) (B.getUpLo()),
+				      FFLAS::FflasNoTrans,(FFLAS::FFLAS_DIAG) (B.getDiag()),
+				      A.rowdim(), A.coldim(), one,
+				      B.getPointer(), B.getStride(), A.getPointer(), A.getStride() );
 			return A;
 		}
 
@@ -982,9 +986,11 @@ namespace LinBox
 			linbox_check( B.coldim() == A.rowdim() );
 			typename Field::Element one;
 			F.init(one, 1UL);
-			FFLAS::ftrmm( F, FFLAS::FflasLeft, (B.getUpLo()==BlasTag::up)?FFLAS::FflasUpper:FFLAS::FflasLower,
-				      FFLAS::FflasNoTrans,(B.getDiag()==BlasTag::unit)?FFLAS::FflasUnit:FFLAS::FflasNonUnit,
-				      A.rowdim(), A.coldim(), one, B.getPointer(), B.getStride(), A.getPointer(), A.getStride() );
+			FFLAS::ftrmm( F, FFLAS::FflasLeft, (FFLAS::FFLAS_UPLO)(B.getUpLo()),
+				      FFLAS::FflasNoTrans, (FFLAS::FFLAS_DIAG) (B.getDiag()),
+				      A.rowdim(), A.coldim(), one,
+				      B.getPointer(), B.getStride(),
+				      A.getPointer(), A.getStride() );
 			return A;
 		}
 	};
@@ -1005,9 +1011,9 @@ namespace LinBox
 			linbox_check( B.getMatrix().coldim() == A.coldim() );
 
 			FFLAS::ftrmm( F, FFLAS::FflasRight,
-				      (B.getMatrix().getUpLo()==BlasTag::up)?FFLAS::FflasUpper:FFLAS::FflasLower,
+				      (FFLAS::FFLAS_UPLO)(B.getMatrix().getUpLo()),
 				      FFLAS::FflasTrans,
-				      (B.getMatrix().getDiag()==BlasTag::unit)?FFLAS::FflasUnit:FFLAS::FflasNonUnit,
+				      (FFLAS::FFLAS_DIAG) (B.getMatrix().getDiag()),
 				      A.rowdim(), A.coldim(),
 				      one,
 				      B.getMatrix().getPointer(), B.getMatrix().getStride(),
@@ -1023,9 +1029,9 @@ namespace LinBox
 			typename Field::Element one;
 			F.init(one, 1UL);
 			FFLAS::ftrmm( F, FFLAS::FflasLeft,
-				      (B.getMatrix().getUpLo()==BlasTag::up)?FFLAS::FflasUpper:FFLAS::FflasLower,
+				      (FFLAS::FFLAS_UPLO) (B.getMatrix().getUpLo()),
 				      FFLAS::FflasTrans,
-				      (B.getMatrix().getDiag()==BlasTag::unit)?FFLAS::FflasUnit:FFLAS::FflasNonUnit,
+				      (FFLAS::FFLAS_DIAG) (B.getMatrix().getDiag()),
 				      A.rowdim(), A.coldim(), one,
 				      B.getMatrix().getPointer(), B.getMatrix().getStride(),
 				      A.getPointer(), A.getStride() );
@@ -1209,57 +1215,17 @@ namespace LinBox
 								 const TriangularBlasMatrix<typename Field::Element>& A,
 								 BlasMatrix<typename Field::Element>& B) const
 		{
-
 			linbox_check( A.rowdim() == A.coldim());
 			linbox_check( A.coldim() == B.rowdim());
 			typename Field::Element _One;
 			F.init(_One,1UL);
 
-			switch (A.getUpLo()) {
-			case BlasTag::up:
-				switch(A.getDiag()) {
-				case BlasTag::unit:
-					FFLAS::ftrsm( F,
-						      FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
-						      A.rowdim(), B.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
-					break;
-
-				case BlasTag::nonunit: {
-							       //TriangularBlasMatrix<typename Field::Element> Acopy(A);
-							       FFLAS::ftrsm( F,
-									     FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
-									     A.rowdim(), B.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
-							       break; }
-
-				default:
-							       throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
-				}
-				break;
-
-			case BlasTag::low:
-				switch(A.getDiag()) {
-				case BlasTag::unit:
-					FFLAS::ftrsm( F,
-						      FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
-						      A.rowdim(), B.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
-					break;
-
-				case BlasTag::nonunit:
-					{//TriangularBlasMatrix<typename Field::Element> Acopy(A);
-						FFLAS::ftrsm( F,
-							      FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
-							      A.rowdim(), B.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
-						break;}
-
-				default:
-						throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
-				}
-				break;
-
-			default:
-				throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
-
-			}
+			FFLAS::ftrsm( F,
+				      FFLAS::FflasLeft, (FFLAS::FFLAS_UPLO) A.getUpLo(),
+				      FFLAS::FflasNoTrans,(FFLAS::FFLAS_DIAG) A.getDiag(),
+				      A.rowdim(), B.coldim(),
+				      _One,A.getPointer(),A.getStride(),
+				      B.getPointer(),B.getStride());
 
 			return B;
 		}
@@ -1296,43 +1262,14 @@ namespace LinBox
 			typename Field::Element _One;
 			F.init(_One,1UL);
 
-			switch (A.getUpLo()) {
-			case BlasTag::up:
-				switch(A.getDiag()) {
-				case BlasTag::unit:
-					FFLAS::ftrsm( F,
-						      FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
-						      B.rowdim(), A.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
-					break;
-				case BlasTag::nonunit:
-					FFLAS::ftrsm( F,
-						      FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
-						      B.rowdim(), A.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
-					break;
-				default:
-					throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
-				}
-				break;
-			case BlasTag::low:
-				switch(A.getDiag()) {
-				case BlasTag::unit:
-					FFLAS::ftrsm( F,
-						      FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
-						      B.rowdim(), A.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
-					break;
-				case BlasTag::nonunit:
-					FFLAS::ftrsm( F,
-						      FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
-						      B.rowdim(), A.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
-					break;
-				default:
-					throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
-				}
-				break;
-			default:
-				throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
+			FFLAS::ftrsm( F,
+				      FFLAS::FflasRight,(FFLAS::FFLAS_UPLO) A.getUpLo(),
+				      FFLAS::FflasNoTrans,(FFLAS::FFLAS_DIAG) A.getDiag() ,
+				      B.rowdim(), A.coldim(),
+				      _One,A.getPointer(),A.getStride(),
+				      B.getPointer(),B.getStride());
 
-			}
+
 			return B;
 		}
 	};
@@ -1368,14 +1305,14 @@ namespace LinBox
 			linbox_check( A.rowdim() == b.size());
 
 			switch (A.getUpLo()) {
-			case BlasTag::up:
+			case LinBoxTag::Upper:
 				switch(A.getDiag()) {
-				case BlasTag::unit:
+				case LinBoxTag::Unit:
 					FFLAS::ftrsv( F,
 						      FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
 					break;
-				case BlasTag::nonunit:
+				case LinBoxTag::NonUnit:
 					FFLAS::ftrsv( F,
 						      FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
@@ -1384,14 +1321,14 @@ namespace LinBox
 					throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
 				}
 				break;
-			case BlasTag::low:
+			case LinBoxTag::Lower:
 				switch(A.getDiag()) {
-				case BlasTag::unit:
+				case LinBoxTag::Unit:
 					FFLAS::ftrsv( F,
 						      FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
 					break;
-				case BlasTag::nonunit:
+				case LinBoxTag::NonUnit:
 					FFLAS::ftrsv( F,
 						      FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
@@ -1436,14 +1373,14 @@ namespace LinBox
 
 
 			switch (A.getUpLo()) {
-			case BlasTag::up:
+			case LinBoxTag::Upper:
 				switch(A.getDiag()) {
-				case BlasTag::unit:
+				case LinBoxTag::Unit:
 					FFLAS::ftrsv( F,
 						      FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
 					break;
-				case BlasTag::nonunit:
+				case LinBoxTag::NonUnit:
 					FFLAS::ftrsv( F,
 						      FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasNonUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
@@ -1452,14 +1389,14 @@ namespace LinBox
 					throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
 				}
 				break;
-			case BlasTag::low:
+			case LinBoxTag::Lower:
 				switch(A.getDiag()) {
-				case BlasTag::unit:
+				case LinBoxTag::Unit:
 					FFLAS::ftrsv( F,
 						      FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
 					break;
-				case BlasTag::nonunit:
+				case LinBoxTag::NonUnit:
 					FFLAS::ftrsv( F,
 						      FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasNonUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);

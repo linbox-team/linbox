@@ -38,8 +38,8 @@ namespace LinBox
 
 		linbox_check( L.coldim() == _m);
 		linbox_check( L.rowdim() == _m);
-		linbox_check( L.getUpLo() == BlasTag::low);
-		linbox_check( L.getDiag() == BlasTag::unit);
+		linbox_check( L.getUpLo() == LinBoxTag::Lower);
+		linbox_check( L.getDiag() == LinBoxTag::Unit);
 
 		typename Field::Element zero,one;
 		_F.init( zero, 0UL );
@@ -113,8 +113,8 @@ namespace LinBox
 
 		linbox_check( U.rowdim() == _m);
 		linbox_check( U.coldim() == _n);
-		linbox_check( U.getUpLo() == BlasTag::up);
-		linbox_check( U.getDiag() == BlasTag::nonunit);
+		linbox_check( U.getUpLo() == LinBoxTag::Upper);
+		linbox_check( U.getDiag() == LinBoxTag::NonUnit);
 		for ( size_t i=0; i<_m; ++i )
 			for ( size_t j=i; j<_n; ++j )
 				U.setEntry( i, j, _LU.getEntry(i,j) );
