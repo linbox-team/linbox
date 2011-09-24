@@ -539,8 +539,6 @@ namespace LinBox
 		return (A.coldim() > 1000) && (A.rowdim() > 1000);
 	}
 
-	// template<class Field>
-	// bool useBB(const Protected::DenseMatrix<Field>& A) { return false; }
 
 	template<class _Field>
 	class BlasBlackbox ; // forward declaration...

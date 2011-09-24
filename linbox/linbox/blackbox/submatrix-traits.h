@@ -34,6 +34,7 @@ namespace LinBox
 	template<class Matrix>
 	class SubMatrixTraits;
 
+#if 0
 	template<class Field>
 	class SubMatrixTraits<Protected::DenseMatrix<Field> > {
 
@@ -50,6 +51,7 @@ namespace LinBox
 
 		typedef Submatrix<Protected::DenseMatrix<Field> > value_type;
 	};
+#endif
 
 	template<class Field>
 	class SubMatrixTraits<BlasBlackbox<Field> > {

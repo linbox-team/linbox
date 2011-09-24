@@ -54,9 +54,11 @@ namespace LinBox
 		typedef RawIndexedTags::HasRawIndexed Tag; };
 
 
+#if 0
 	template<class Field>
 	struct RawIndexedCategory< Protected::DenseMatrix<Field> > 	{
 		typedef RawIndexedTags::HasRawIndexed Tag; };
+#endif
 
 	template<class Field, class Row>
 	struct RawIndexedCategory< LambdaSparseMatrix<Field,Row> > 	{
