@@ -135,19 +135,6 @@ namespace LinBox
 		return Signature::isPosDef(DA, Signature::BLAS_LPM_Method() );
 	}
 
-#if 0
-	// the isPositiveDefinite with Blas, Protected::DenseMatrix
-	template <class Ring>
-	bool isPositiveDefinite (
-				 const Protected::DenseMatrix<Ring> &A,
-				 const RingCategories::IntegerTag    &tag,
-				 const Method::BlasElimination       &M)
-	{
-		// call BlasElimination code
-		return Signature::isPosDef(A, Signature::BLAS_LPM_Method() );
-	}
-#endif
-
 	template <class Ring>
 	bool isPositiveDefinite (
 				 const BlasBlackbox<Ring> &A,

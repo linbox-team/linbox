@@ -1053,21 +1053,6 @@ namespace LinBox
 
 	};
 
-#if 0
-#ifndef __INTEL_COMPILER
-	template<>
-	#endif
-	template <class Domain>
-	class MatrixApplyDomain<Domain, Protected::DenseMatrix<Domain> > : public BlasMatrixApplyDomain<Domain, Protected::DenseMatrix<Domain> > {
-
-	public:
-		MatrixApplyDomain (const Domain &D, const Protected::DenseMatrix<Domain> &Mat) :
-			BlasMatrixApplyDomain<Domain, Protected::DenseMatrix<Domain> > (D,Mat)
-		{}
-	};
-#endif
-
-
 #ifndef __INTEL_COMPILER
 	template<>
 	#endif
