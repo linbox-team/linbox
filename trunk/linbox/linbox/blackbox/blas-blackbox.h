@@ -130,6 +130,15 @@ namespace LinBox
 			_use_fflas= checkBlasApply(_F, _col);
 		}
 
+		BlasBlackbox (const Field& F, const BlasMatrix<Element>& Mat) :
+			BlasMatrix<Element> (Mat),  _F(F), _MD(F) , _VD(F),
+			_row(Mat.rowdim()), _col(Mat.coldim())
+		{
+			_F.init(_One,1UL),
+			_F.init(_Zero,0UL);
+			_use_fflas= checkBlasApply(_F, _col);
+		}
+
 		template< class Blackbox >
 		BlasBlackbox (const Blackbox& Mat) :
 			BlasMatrix<Element> (Mat), _F(Mat.field()), _MD(Mat.field()), _VD(Mat.field()), _row(Mat.rowdim()), _col(Mat.coldim())
