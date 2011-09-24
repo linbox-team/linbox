@@ -37,7 +37,7 @@
 #define __LINBOX_blas_matrix_H
 
 
-#include <linbox/solutions/getentry.h>
+// #include <linbox/solutions/getentry.h>
 #include <linbox/matrix/dense.h>
 #include <linbox/matrix/dense-submatrix.h>
 #include <linbox/util/debug.h>
@@ -47,33 +47,19 @@
 namespace LinBox
 {
 
-	// forward declaration
-	template<class Element>
-	class BlasMatrix;
-
-	template <class Element>
-	class MatrixContainerTrait<BlasMatrix<Element> > {
-	public:
-		typedef MatrixContainerCategory::BlasContainer Type;
-	};
-
-	template <class Element>
-	class MatrixContainerTrait<const BlasMatrix<Element> > {
-	public:
-		typedef MatrixContainerCategory::BlasContainer Type;
-	};
-
 	/*! BlasMatrix.
 	 * @ingroup matrix
 	 * Limited docs so far.
 	 */
 	template <class _Element>
 	class BlasMatrix : public Protected::DenseSubmatrix<_Element> {
+	private :
+		typedef typename Protected::DenseSubmatrix<_Element> Submatrix_t  ;
 
 	public:
 		typedef _Element                                     Element;
 		// typedef _Element* pointer ?
-		typedef typename Protected::DenseSubmatrix<_Element>::Element * pointer;
+		typedef typename Submatrix_t::Element * pointer;
 		typedef BlasMatrix<Element>                           Self_t;
 
 	protected:
@@ -226,7 +212,7 @@ namespace LinBox
 		/* Constructors. */
 
 		/*! Allocates a new \f$ 0 \times 0\f$ matrix.
-		 */
+		*/
 		BlasMatrix () :
 			Protected::DenseSubmatrix<Element>(*(new Protected::DenseMatrixBase<Element> (0,0)),0,0,0,0),
 			_stride(0),  _alloc(true)
@@ -328,12 +314,12 @@ namespace LinBox
 		/*! Constructor.
 		 * @param A matrix to be copied
 		 * @param F ?
-		*/
+		 */
 		template<class _Matrix, class _Field>
 		BlasMatrix (const _Matrix &A,  const _Field &F) :
-			Protected::DenseSubmatrix<Element>( *(new Protected::DenseMatrixBase<Element> (A.rowdim(),A.coldim())),0,0,A.rowdim(),A.coldim() ),
-			_stride(A.coldim()) ,
-			_alloc(true)
+		Protected::DenseSubmatrix<Element>( *(new Protected::DenseMatrixBase<Element> (A.rowdim(),A.coldim())),0,0,A.rowdim(),A.coldim() ),
+		_stride(A.coldim()) ,
+		_alloc(true)
 		{
 			_ptr = this->_M->FullIterator() ;
 			typename _Matrix::template rebind<_Field>()(*this,A,F);
@@ -383,7 +369,7 @@ namespace LinBox
 #if 1
 		/// Copy Contructor of a matrix (no copy is done, just through pointer)
 		/*! @param A BlasMatrix to be copied
-		 */
+		*/
 		BlasMatrix(BlasMatrix<Element>& A) :
 			Protected::DenseSubmatrix<Element>(A),
 			_stride(A._stride), _alloc(false), _ptr(A._ptr)
@@ -508,7 +494,7 @@ namespace LinBox
 		}
 
 		/*! @internal Is the matrix allocated ?
-		 */
+		*/
 		bool isAllocated()
 		{
 			return _alloc ;
@@ -518,8 +504,8 @@ namespace LinBox
 
 
 	/*! TAG for triangular blas matrix.
-	* @see \ref FFLAS::FFLAS_DIAG and \ref FFLAS::FFLAS_UPLO enums in \c fflas/fflas.h.
-	*/
+	 * @see \ref FFLAS::FFLAS_DIAG and \ref FFLAS::FFLAS_UPLO enums in \c fflas/fflas.h.
+	 */
 	class BlasTag {
 	public:
 		typedef enum{low,up}       uplo; //!< upper or lower triangular
@@ -808,7 +794,7 @@ namespace LinBox
 		{}
 
 		/*! NO DOC
-		 */
+		*/
 		Matrix& getMatrix() const
 		{
 			return _M;

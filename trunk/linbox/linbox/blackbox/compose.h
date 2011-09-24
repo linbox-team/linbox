@@ -394,7 +394,7 @@ namespace LinBox
 } // namespace LinBox
 
 // was compose-traits.h (by Zhendong Wan)
-// #include <linbox/blackbox/dense.h>
+#include "linbox/blackbox/dense.h"
 #include "linbox/blackbox/blas-blackbox.h" // ???
 namespace LinBox
 {
@@ -416,8 +416,8 @@ namespace LinBox
 		typedef Protected::DenseMatrix<Field> value_type;
 	};
 #endif
-	template<class Field>
-	class BlasBlackbox ;
+	// template<class _Field>
+	// class BlasBlackbox ;
 
 	/// used in smith-binary, for example
 	template<class Field>
