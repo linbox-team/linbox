@@ -34,6 +34,7 @@
 #include "linbox/solutions/methods.h"
 #include <vector>
 #include <utility>
+#include "linbox/util/commentator.h"
 
 //$define _LB_CRATIMING
 
@@ -120,7 +121,7 @@ namespace LinBox
 				coprime =0;
 				Domain D(*primeiter);
 				commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
-                                ++primeiter; 
+                                ++primeiter;
 				DomainElement r; D.init(r);
 				Builder_.progress( D, Iteration(r, D) );
 			}
@@ -205,7 +206,7 @@ namespace LinBox
 
                                 Domain D(*primeiter);
 				commentator.report(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "With prime " << *primeiter << std::endl;
-                                ++primeiter; 
+                                ++primeiter;
 				typename CRATemporaryVectorTrait<Function, DomainElement>::Type_t r;
 				Builder_.progress( D, Iteration(r, D) );
 			}
