@@ -66,13 +66,6 @@ namespace LinBox
 	};
 #endif
 
-#if 0
-	template <class RingElement, class Field>
-	struct MatrixHomTrait<Protected::DenseMatrixBase<RingElement>, Field> {
-		typedef Protected::DenseMatrixBase<typename Field::Element> value_type;
-	};
-#endif
-
 	template <class Ring, class Field>
 	struct MatrixHomTrait<SparseMatrix<Ring, typename Vector<Ring>::SparseSeq>, Field> {
 		typedef SparseMatrix<Field, typename Vector<Field>::SparseSeq> value_type;
@@ -87,13 +80,6 @@ namespace LinBox
 	struct MatrixHomTrait<SparseMatrix<Ring, typename Vector<Ring>::SparseMap>, Field> {
 		typedef SparseMatrix<Field, typename Vector<Field>::SparseMap> value_type;
 	};
-
-#if 0
-	template <class Ring, class Field>
-	struct MatrixHomTrait<Protected::DenseMatrix<Ring>, Field> {
-		typedef Protected::DenseMatrix<Field> value_type;
-	};
-#endif
 
 	template <class Ring, class Field>
 	struct MatrixHomTrait<BlasBlackbox<Ring>, Field> {

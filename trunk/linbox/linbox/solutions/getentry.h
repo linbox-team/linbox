@@ -73,7 +73,7 @@ namespace LinBox
 	}
 
 	// BBs that offer a local getEntry.
-	template<class Field> struct GetEntryCategory<Protected::DenseMatrix<Field> > { typedef GetEntryTags::Local Tag; };
+	// template<class Field> struct GetEntryCategory<Protected::DenseMatrix<Field> > { typedef GetEntryTags::Local Tag; };
 	template<class A, class B> struct GetEntryCategory<SparseMatrix<A,B> > { typedef GetEntryTags::Local Tag; };
 	template<class A, class B, class C> struct GetEntryCategory<SparseMatrixBase<A,B,C> > { typedef GetEntryTags::Local Tag; };
 	template<class Field, class Trait> struct GetEntryCategory<Diagonal<Field, Trait> > { typedef GetEntryTags::Local Tag; };
