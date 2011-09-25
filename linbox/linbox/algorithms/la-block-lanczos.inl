@@ -463,19 +463,19 @@ namespace LinBox
 
 				// Step 6: Compute projection coefficients
 				TIMER_START(projectionCoeff);
-				Protected::DenseSubmatrix<Element> Cu (_Cu, 0, 0, N, (*j)->_rho_v);
-				Protected::DenseSubmatrix<Element> Cv (_Cv, 0, 0, (*j)->_rho_u, N);
+				BlasMatrix<Element> Cu (_Cu, 0, 0, N, (*j)->_rho_v);
+				BlasMatrix<Element> Cv (_Cv, 0, 0, (*j)->_rho_u, N);
 
-				Protected::DenseSubmatrix<Element> udotAvbarinv ((*j)->_udotAvbarinv, 0, 0, (*j)->_rho_v, (*j)->_rho_v);
-				Protected::DenseSubmatrix<Element> ubarAvdotinv ((*j)->_ubarAvdotinv, 0, 0, (*j)->_rho_u, (*j)->_rho_u);
+				BlasMatrix<Element> udotAvbarinv ((*j)->_udotAvbarinv, 0, 0, (*j)->_rho_v, (*j)->_rho_v);
+				BlasMatrix<Element> ubarAvdotinv ((*j)->_ubarAvdotinv, 0, 0, (*j)->_rho_u, (*j)->_rho_u);
 
-				Protected::DenseSubmatrix<Element> udot ((*j)->_udot, 0, 0, A.rowdim (), (*j)->_rho_v);
-				Protected::DenseSubmatrix<Element> vdot ((*j)->_vdot, 0, 0, A.rowdim (), (*j)->_rho_u);
+				BlasMatrix<Element> udot ((*j)->_udot, 0, 0, A.rowdim (), (*j)->_rho_v);
+				BlasMatrix<Element> vdot ((*j)->_vdot, 0, 0, A.rowdim (), (*j)->_rho_u);
 
 				_MD.copy (_T1, *_uAv.get (_iter + 1, (*j)->_iter));
 				(*j)->_sigma_v.apply (_T1, false);
 
-				Protected::DenseSubmatrix<Element> uip1Avbarj (_T1, 0, 0, N, (*j)->_rho_v);
+				BlasMatrix<Element> uip1Avbarj (_T1, 0, 0, N, (*j)->_rho_v);
 
 				_MD.mul (Cu, uip1Avbarj, udotAvbarinv);
 				_MD.negin (Cu);
@@ -491,7 +491,7 @@ namespace LinBox
 				_MD.copy (_T1, *_uAv.get ((*j)->_iter, _iter + 1));
 				(*j)->_sigma_u.apply (_T1, true);
 
-				Protected::DenseSubmatrix<Element> ubarjAvip1 (_T1, 0, 0, (*j)->_rho_u, N);
+				BlasMatrix<Element> ubarjAvip1 (_T1, 0, 0, (*j)->_rho_u, N);
 
 				_MD.mul (Cv, ubarAvdotinv, ubarjAvip1);
 				_MD.negin (Cv);
@@ -592,8 +592,8 @@ namespace LinBox
 	{
 		const unsigned int N =  (unsigned int) _traits.blockingFactor ();
 
-		Protected::DenseSubmatrix<Element> udotAv ((*l)->_udotAv, 0, 0, Cu.coldim (), N);
-		Protected::DenseSubmatrix<Element> uAvdot ((*l)->_uAvdot, 0, 0, N, Cv.rowdim ());
+		BlasMatrix<Element> udotAv ((*l)->_udotAv, 0, 0, Cu.coldim (), N);
+		BlasMatrix<Element> uAvdot ((*l)->_uAvdot, 0, 0, N, Cv.rowdim ());
 		_MD.axpyin (*_uAv.get (iter + 1, (*l)->_iter), Cu, udotAv);
 		_MD.axpyin (*_uAv.get ((*l)->_iter, iter + 1), uAvdot, Cv);
 
@@ -639,8 +639,8 @@ namespace LinBox
 			(*l)->_sigma_u.apply (_T1, true);
 			i->_sigma_v.apply (_T1, false);
 
-			Protected::DenseSubmatrix<Element> uhatAvhat (_T1, (*l)->_rho_u, i->_rho_v, N - (*l)->_rho_u, N - i->_rho_v);
-			Protected::DenseSubmatrix<Element> uhatAvhatinv (_W, 0, 0, N - (*l)->_rho_u, N - (*l)->_rho_u);
+			BlasMatrix<Element> uhatAvhat (_T1, (*l)->_rho_u, i->_rho_v, N - (*l)->_rho_u, N - i->_rho_v);
+			BlasMatrix<Element> uhatAvhatinv (_W, 0, 0, N - (*l)->_rho_u, N - (*l)->_rho_u);
 
 #ifdef LABL_DETAILED_TRACE
 			reportN << "ucheck_" << (*l)->_iter << "^TAvcheck_" << i->_iter << ":" << std::endl;
@@ -652,11 +652,11 @@ namespace LinBox
 
 			_eliminator.gaussJordan (uhatAvhatinv, _profile, _P, _T2, _Q, _T3, rho_u, d, uhatAvhat);
 
-			Protected::DenseSubmatrix<Element> mu (uhatAvhatinv, 0, 0, rho_u, rho_u);
-			Protected::DenseSubmatrix<Element> Tu (_T2, rho_u, 0, N - (*l)->_rho_u - rho_u, rho_u);
-			Protected::DenseSubmatrix<Element> Tv (_T3, 0, rho_u, rho_u, N - i->_rho_v - rho_u);
+			BlasMatrix<Element> mu (uhatAvhatinv, 0, 0, rho_u, rho_u);
+			BlasMatrix<Element> Tu (_T2, rho_u, 0, N - (*l)->_rho_u - rho_u, rho_u);
+			BlasMatrix<Element> Tv (_T3, 0, rho_u, rho_u, N - i->_rho_v - rho_u);
 
-			TransposeMatrix<Protected::DenseSubmatrix<Element> > TuT (Tu);
+			TransposeMatrix<BlasMatrix<Element> > TuT (Tu);
 
 			(*l)->_sigma_u.append (_P, TuT, rho_u);
 			(*l)->_sigma_u.applyLast ((*l)->_u, false);
@@ -664,7 +664,7 @@ namespace LinBox
 			i->_sigma_v.append (_Q, Tv, rho_u);
 			i->_sigma_v.applyLast (i->_v, false);
 
-			Protected::DenseSubmatrix<Element> utildel ((*l)->_u, 0, (*l)->_rho_u, (*l)->_u.rowdim (), rho_u);
+			BlasMatrix<Element> utildel ((*l)->_u, 0, (*l)->_rho_u, (*l)->_u.rowdim (), rho_u);
 
 			for (j = l, ++j; j != _history.end (); ++j) {
 #ifdef LABL_DETAILED_TRACE
@@ -674,17 +674,17 @@ namespace LinBox
 				_MD.write (reportN, *_uAv.get ((*j)->_iter, i->_iter + 1));
 #endif
 
-				Protected::DenseSubmatrix<Element> uhatj ((*j)->_u, 0, (*j)->_rho_u, (*j)->_u.rowdim (), N - (*j)->_rho_u);
+				BlasMatrix<Element> uhatj ((*j)->_u, 0, (*j)->_rho_u, (*j)->_u.rowdim (), N - (*j)->_rho_u);
 
 				_MD.copy (_T2, *_uAv.get ((*j)->_iter, i->_iter));
 				i->_sigma_v.apply (_T2, false);
 				_MD.copy (_T5, _T2);
 				(*j)->_sigma_u.apply (_T2, true);
 
-				Protected::DenseSubmatrix<Element> ujhatAvieta (_T2, (*j)->_rho_u, i->_rho_v, N - (*j)->_rho_u, rho_u);
+				BlasMatrix<Element> ujhatAvieta (_T2, (*j)->_rho_u, i->_rho_v, N - (*j)->_rho_u, rho_u);
 
 				if (!_MD.isZero (ujhatAvieta)) {
-					Protected::DenseSubmatrix<Element> ujhatAvietamu (_T3, 0, 0, N - (*j)->_rho_u, rho_u);
+					BlasMatrix<Element> ujhatAvietamu (_T3, 0, 0, N - (*j)->_rho_u, rho_u);
 					_MD.mul (ujhatAvietamu, ujhatAvieta, mu);
 					_MD.negin (ujhatAvietamu);
 					_MD.axpyin (uhatj, utildel, transpose (ujhatAvietamu));
@@ -701,9 +701,9 @@ namespace LinBox
 				(*j)->_steps.back ()._rho = (*l)->_rho_u;
 				(*j)->_steps.back ()._rhop = rho_u;
 
-				Protected::DenseSubmatrix<Element> ultildeAvi (_T4, (*l)->_rho_u, 0, rho_u, N);
-				Protected::DenseSubmatrix<Element> ujAvieta (_T5, 0, i->_rho_v, N, rho_u);
-				Protected::DenseSubmatrix<Element> ujAvietamu (*ujAvietamu_block, 0, 0, N, rho_u);
+				BlasMatrix<Element> ultildeAvi (_T4, (*l)->_rho_u, 0, rho_u, N);
+				BlasMatrix<Element> ujAvieta (_T5, 0, i->_rho_v, N, rho_u);
+				BlasMatrix<Element> ujAvietamu (*ujAvietamu_block, 0, 0, N, rho_u);
 				_MD.mul (ujAvietamu, ujAvieta, mu);
 				_MD.negin (ujAvietamu);
 				_MD.axpyin (*_uAv.get ((*j)->_iter, i->_iter), ujAvietamu, ultildeAvi);
@@ -712,9 +712,9 @@ namespace LinBox
 			}
 
 			if (*l != i) {
-				Protected::DenseSubmatrix<Element> zeta ((*l)->_vdot, 0, (*l)->_rho_u, (*l)->_vdot.rowdim (), rho_u);
-				Protected::DenseSubmatrix<Element> zeta_src (i->_v, 0, i->_rho_v, i->_v.rowdim (), rho_u);
-				Protected::DenseSubmatrix<Element> mu_dest ((*l)->_ubarAvdotinv, (*l)->_rho_u, (*l)->_rho_u, rho_u, rho_u);
+				BlasMatrix<Element> zeta ((*l)->_vdot, 0, (*l)->_rho_u, (*l)->_vdot.rowdim (), rho_u);
+				BlasMatrix<Element> zeta_src (i->_v, 0, i->_rho_v, i->_v.rowdim (), rho_u);
+				BlasMatrix<Element> mu_dest ((*l)->_ubarAvdotinv, (*l)->_rho_u, (*l)->_rho_u, rho_u, rho_u);
 
 				_MD.copy (zeta, zeta_src);
 				_MD.copy (mu_dest, mu);
@@ -722,14 +722,14 @@ namespace LinBox
 				augmentuAvldot (*l, i, _profile, rho_u);
 			}
 
-			Protected::DenseSubmatrix<Element> utildei ((*l)->_u, 0, (*l)->_rho_u, (*l)->_u.rowdim (), rho_u);
-			Protected::DenseSubmatrix<Element> utildei_dest (i->_udot, 0, i->_rho_v, i->_udot.rowdim (), rho_u);
+			BlasMatrix<Element> utildei ((*l)->_u, 0, (*l)->_rho_u, (*l)->_u.rowdim (), rho_u);
+			BlasMatrix<Element> utildei_dest (i->_udot, 0, i->_rho_v, i->_udot.rowdim (), rho_u);
 
 			_MD.copy (utildei_dest, utildei);
 
 			augmentuidotAv (i, *l, rho_u);
 
-			Protected::DenseSubmatrix<Element> mu_dest (i->_udotAvbarinv, i->_rho_v, i->_rho_v, rho_u, rho_u);
+			BlasMatrix<Element> mu_dest (i->_udotAvbarinv, i->_rho_v, i->_rho_v, rho_u, rho_u);
 
 			_MD.copy (mu_dest, mu);
 
@@ -762,7 +762,7 @@ namespace LinBox
 			i->_sigma_u.apply (_T1, true);
 			(*l)->_sigma_v.apply (_T1, false);
 
-			Protected::DenseSubmatrix<Element> uhatAvhat (_T1, i->_rho_u, (*l)->_rho_v, N - i->_rho_u, N - (*l)->_rho_v);
+			BlasMatrix<Element> uhatAvhat (_T1, i->_rho_u, (*l)->_rho_v, N - i->_rho_u, N - (*l)->_rho_v);
 
 #ifdef LABL_DETAILED_TRACE
 			reportN << "ucheck_" << i->_iter << "^TAvcheck_" << (*l)->_iter << ":" << std::endl;
@@ -772,15 +772,15 @@ namespace LinBox
 			_MD.write (reportN, uhatAvhat);
 #endif
 
-			Protected::DenseSubmatrix<Element> uhatAvhatinvT (_W, 0, 0, N - (*l)->_rho_v, N - (*l)->_rho_v);
+			BlasMatrix<Element> uhatAvhatinvT (_W, 0, 0, N - (*l)->_rho_v, N - (*l)->_rho_v);
 
 			_eliminator.gaussJordan (uhatAvhatinvT, _profile, _P, _T2, _Q, _T3, rho_v, d, transpose (uhatAvhat));
 
-			Protected::DenseSubmatrix<Element> nu (uhatAvhatinvT, 0, 0, rho_v, rho_v);
-			Protected::DenseSubmatrix<Element> TuT (_T3, 0, rho_v, rho_v, N - i->_rho_u - rho_v);
-			Protected::DenseSubmatrix<Element> TvT (_T2, rho_v, 0, N - (*l)->_rho_v - rho_v, rho_v);
+			BlasMatrix<Element> nu (uhatAvhatinvT, 0, 0, rho_v, rho_v);
+			BlasMatrix<Element> TuT (_T3, 0, rho_v, rho_v, N - i->_rho_u - rho_v);
+			BlasMatrix<Element> TvT (_T2, rho_v, 0, N - (*l)->_rho_v - rho_v, rho_v);
 
-			TransposeMatrix<Protected::DenseSubmatrix<Element> > Tv (TvT);
+			TransposeMatrix<BlasMatrix<Element> > Tv (TvT);
 
 			(*l)->_sigma_v.append (_P, Tv, rho_v);
 			(*l)->_sigma_v.applyLast ((*l)->_v, false);
@@ -788,7 +788,7 @@ namespace LinBox
 			i->_sigma_u.append (_Q, TuT, rho_v);
 			i->_sigma_u.applyLast (i->_u, false);
 
-			Protected::DenseSubmatrix<Element> vtildel ((*l)->_v, 0, (*l)->_rho_v, (*l)->_v.rowdim (), rho_v);
+			BlasMatrix<Element> vtildel ((*l)->_v, 0, (*l)->_rho_v, (*l)->_v.rowdim (), rho_v);
 
 			for (j = l, ++j; j != _history.end (); ++j) {
 #ifdef LABL_DETAILED_TRACE
@@ -798,17 +798,17 @@ namespace LinBox
 				_MD.write (reportN, *_uAv.get (i->_iter + 1, (*j)->_iter));
 #endif
 
-				Protected::DenseSubmatrix<Element> vhatj ((*j)->_v, 0, (*j)->_rho_v, (*j)->_v.rowdim (), N - (*j)->_rho_v);
+				BlasMatrix<Element> vhatj ((*j)->_v, 0, (*j)->_rho_v, (*j)->_v.rowdim (), N - (*j)->_rho_v);
 
 				_MD.copy (_T2, *_uAv.get (i->_iter, (*j)->_iter));
 				i->_sigma_u.apply (_T2, true);
 				_MD.copy (_T5, _T2);
 				(*j)->_sigma_v.apply (_T2, false);
 
-				Protected::DenseSubmatrix<Element> uizetaAjhat (_T2, i->_rho_u, (*j)->_rho_v, rho_v, N - (*j)->_rho_v);
+				BlasMatrix<Element> uizetaAjhat (_T2, i->_rho_u, (*j)->_rho_v, rho_v, N - (*j)->_rho_v);
 
 				if (!_MD.isZero (uizetaAjhat)) {
-					Protected::DenseSubmatrix<Element> nuTuizetaAjhat (_T3, 0, 0, rho_v, N - (*j)->_rho_v);
+					BlasMatrix<Element> nuTuizetaAjhat (_T3, 0, 0, rho_v, N - (*j)->_rho_v);
 					_MD.mul (nuTuizetaAjhat, transpose (nu), uizetaAjhat);
 					_MD.negin (nuTuizetaAjhat);
 					_MD.axpyin (vhatj, vtildel, nuTuizetaAjhat);
@@ -825,9 +825,9 @@ namespace LinBox
 				(*j)->_steps.back ()._rho = (*l)->_rho_v;
 				(*j)->_steps.back ()._rhop = rho_v;
 
-				Protected::DenseSubmatrix<Element> uiAvltilde (_T4, 0, (*l)->_rho_v, N, rho_v);
-				Protected::DenseSubmatrix<Element> uizetaAvj (_T5, i->_rho_u, 0, rho_v, N);
-				Protected::DenseSubmatrix<Element> nuTuizetaAvj (*nuukAvj_block, 0, 0, rho_v, N);
+				BlasMatrix<Element> uiAvltilde (_T4, 0, (*l)->_rho_v, N, rho_v);
+				BlasMatrix<Element> uizetaAvj (_T5, i->_rho_u, 0, rho_v, N);
+				BlasMatrix<Element> nuTuizetaAvj (*nuukAvj_block, 0, 0, rho_v, N);
 				_MD.mul (nuTuizetaAvj, transpose (nu), uizetaAvj);
 				_MD.negin (nuTuizetaAvj);
 				_MD.axpyin (*_uAv.get (i->_iter, (*j)->_iter), uiAvltilde, nuTuizetaAvj);
@@ -836,9 +836,9 @@ namespace LinBox
 			}
 
 			if (*l != i) {
-				Protected::DenseSubmatrix<Element> eta ((*l)->_udot, 0, (*l)->_rho_v, (*l)->_udot.rowdim (), rho_v);
-				Protected::DenseSubmatrix<Element> eta_src (i->_u, 0, i->_rho_u, i->_u.rowdim (), rho_v);
-				Protected::DenseSubmatrix<Element> nu_dest ((*l)->_udotAvbarinv, (*l)->_rho_v, (*l)->_rho_v, rho_v, rho_v);
+				BlasMatrix<Element> eta ((*l)->_udot, 0, (*l)->_rho_v, (*l)->_udot.rowdim (), rho_v);
+				BlasMatrix<Element> eta_src (i->_u, 0, i->_rho_u, i->_u.rowdim (), rho_v);
+				BlasMatrix<Element> nu_dest ((*l)->_udotAvbarinv, (*l)->_rho_v, (*l)->_rho_v, rho_v, rho_v);
 
 				_MD.copy (eta, eta_src);
 				_MD.copy (nu_dest, transpose (nu));
@@ -846,14 +846,14 @@ namespace LinBox
 				augmentuldotAv (*l, i, _profile, rho_v);
 			}
 
-			Protected::DenseSubmatrix<Element> vtildei ((*l)->_v, 0, (*l)->_rho_v, (*l)->_v.rowdim (), rho_v);
-			Protected::DenseSubmatrix<Element> vtildei_dest (i->_vdot, 0, i->_rho_u, i->_vdot.rowdim (), rho_v);
+			BlasMatrix<Element> vtildei ((*l)->_v, 0, (*l)->_rho_v, (*l)->_v.rowdim (), rho_v);
+			BlasMatrix<Element> vtildei_dest (i->_vdot, 0, i->_rho_u, i->_vdot.rowdim (), rho_v);
 
 			_MD.copy (vtildei_dest, vtildei);
 
 			augmentuAvidot (i, *l, rho_v);
 
-			Protected::DenseSubmatrix<Element> nu_dest (i->_ubarAvdotinv, i->_rho_u, i->_rho_u, rho_v, rho_v);
+			BlasMatrix<Element> nu_dest (i->_ubarAvdotinv, i->_rho_u, i->_rho_u, rho_v, rho_v);
 
 			_MD.copy (nu_dest, transpose (nu));
 
@@ -914,8 +914,8 @@ namespace LinBox
 		       (second != _history.end () && (*second)->_rho_u == N && (*second)->_rho_v == N))
 		{
 			// Step 4: Update solution x
-			Protected::DenseSubmatrix<Element> T1 (_T1, 0, 0, N, _b.coldim ());
-			Protected::DenseSubmatrix<Element> T2 (_T2, 0, 0, N, _b.coldim ());
+			BlasMatrix<Element> T1 (_T1, 0, 0, N, _b.coldim ());
+			BlasMatrix<Element> T2 (_T2, 0, 0, N, _b.coldim ());
 
 			_MD.mul (T1, transpose ((*l)->_u), _b);
 			_MD.mul (T2, (*l)->_ubarAvdotinv, T1);
@@ -1010,12 +1010,12 @@ namespace LinBox
 		report << "Length: " << step._rhop << std::endl;
 #endif
 
-		Protected::DenseSubmatrix<Element> nuukAvj (*step._nuukAvj, 0, 0, step._rhop, N);
+		BlasMatrix<Element> nuukAvj (*step._nuukAvj, 0, 0, step._rhop, N);
 
 		_MD.copy (_T1, *_uAv.get (iter + 1, step._l->_iter));
 		step._l->_sigma_v.apply (_T1, false);
 
-		Protected::DenseSubmatrix<Element> uip1Avltilde (_T1, 0, step._rho, N, step._rhop);
+		BlasMatrix<Element> uip1Avltilde (_T1, 0, step._rho, N, step._rhop);
 
 		_MD.axpyin (*_uAv.get (iter + 1, (*j)->_iter), uip1Avltilde, nuukAvj);
 	}
@@ -1057,12 +1057,12 @@ namespace LinBox
 		report << "Length: " << step._rhop << std::endl;
 #endif
 
-		Protected::DenseSubmatrix<Element> ujAvkmu (*step._ujAvkmu, 0, 0, N, step._rhop);
+		BlasMatrix<Element> ujAvkmu (*step._ujAvkmu, 0, 0, N, step._rhop);
 
 		_MD.copy (_T1, *_uAv.get (step._l->_iter, iter + 1));
 		step._l->_sigma_u.apply (_T1, true);
 
-		Protected::DenseSubmatrix<Element> ultildeAvip1 (_T1, step._rho, 0, step._rhop, N);
+		BlasMatrix<Element> ultildeAvip1 (_T1, step._rho, 0, step._rhop, N);
 
 		_MD.axpyin (*_uAv.get ((*j)->_iter, iter + 1), ujAvkmu, ultildeAvip1);
 	}
@@ -1097,8 +1097,8 @@ namespace LinBox
 		_MD.copy (_T1, *_uAv.get (l->_iter, i->_iter));
 		l->_sigma_u.apply (_T1, true);
 
-		Protected::DenseSubmatrix<Element> utildeAv (_T1, l->_rho_u, 0, rho, N);
-		Protected::DenseSubmatrix<Element> utildeAv_dest (i->_udotAv, i->_rho_v, 0, rho, N);
+		BlasMatrix<Element> utildeAv (_T1, l->_rho_u, 0, rho, N);
+		BlasMatrix<Element> utildeAv_dest (i->_udotAv, i->_rho_v, 0, rho, N);
 
 		_MD.copy (utildeAv_dest, utildeAv);
 	}
@@ -1114,8 +1114,8 @@ namespace LinBox
 		_MD.copy (_T1, *_uAv.get (i->_iter, l->_iter));
 		l->_sigma_v.apply (_T1, false);
 
-		Protected::DenseSubmatrix<Element> uAvtilde (_T1, 0, l->_rho_v, N, rho);
-		Protected::DenseSubmatrix<Element> uAvtilde_dest (i->_uAvdot, 0, i->_rho_u, N, rho);
+		BlasMatrix<Element> uAvtilde (_T1, 0, l->_rho_v, N, rho);
+		BlasMatrix<Element> uAvtilde_dest (i->_uAvdot, 0, i->_rho_u, N, rho);
 
 		_MD.copy (uAvtilde_dest, uAvtilde);
 	}
@@ -1127,10 +1127,10 @@ namespace LinBox
 	 std::vector<unsigned int> &profile,
 	 unsigned int               rho)
 	{
-		Protected::DenseSubmatrix<Element> zeta (l->_udotAv, l->_rho_v, 0, rho, l->_v.coldim ());
+		BlasMatrix<Element> zeta (l->_udotAv, l->_rho_v, 0, rho, l->_v.coldim ());
 		_MD.copy (_T1, *_uAv.get (i->_iter, l->_iter));
 		i->_sigma_u.apply (_T1, true);
-		Protected::DenseSubmatrix<Element> zeta_src (_T1, i->_rho_u, 0, rho, _T1.coldim ());
+		BlasMatrix<Element> zeta_src (_T1, i->_rho_u, 0, rho, _T1.coldim ());
 		_MD.copy (zeta, zeta_src);
 	}
 
@@ -1141,10 +1141,10 @@ namespace LinBox
 	 std::vector<unsigned int> &profile,
 	 unsigned int               rho)
 	{
-		Protected::DenseSubmatrix<Element> zeta (l->_uAvdot, 0, l->_rho_u, l->_u.coldim (), rho);
+		BlasMatrix<Element> zeta (l->_uAvdot, 0, l->_rho_u, l->_u.coldim (), rho);
 		_MD.copy (_T1, *_uAv.get (l->_iter, i->_iter));
 		i->_sigma_v.apply (_T1, false);
-		Protected::DenseSubmatrix<Element> zeta_src (_T1, 0, i->_rho_v, _T1.coldim (), rho);
+		BlasMatrix<Element> zeta_src (_T1, 0, i->_rho_v, _T1.coldim (), rho);
 		_MD.copy (zeta, zeta_src);
 	}
 
@@ -1173,26 +1173,26 @@ namespace LinBox
 	(Matrix1 &M, Permutation &P, Matrix *T, unsigned int rho, unsigned int s, bool left)
 	{
 		if (left) {
-			Protected::DenseSubmatrix<Element> Mcheck (M, s, 0, _N - s, M.coldim ());
+			BlasMatrix<Element> Mcheck (M, s, 0, _N - s, M.coldim ());
 
 			_solver._MD.permuteRows (Mcheck, P.begin (), P.end ());
 
-			Protected::DenseSubmatrix<Element> Mbar (M, s, 0, rho, M.coldim ());
-			Protected::DenseSubmatrix<Element> Mhat (M, s + rho, 0, _N - s - rho, M.coldim ());
+			BlasMatrix<Element> Mbar (M, s, 0, rho, M.coldim ());
+			BlasMatrix<Element> Mhat (M, s + rho, 0, _N - s - rho, M.coldim ());
 
-			Protected::DenseSubmatrix<Element> That (*T, _N - rho, s + rho, rho, _N - s - rho);
+			BlasMatrix<Element> That (*T, _N - rho, s + rho, rho, _N - s - rho);
 
 			_solver._MD.axpyin (Mhat, transpose (That), Mbar);
 		}
 		else {
-			Protected::DenseSubmatrix<Element> Mcheck (M, 0, s, M.rowdim (), _N - s);
+			BlasMatrix<Element> Mcheck (M, 0, s, M.rowdim (), _N - s);
 
 			_solver._MD.permuteColumns (Mcheck, P.begin (), P.end ());
 
-			Protected::DenseSubmatrix<Element> Mbar (M, 0, s, M.rowdim (), rho);
-			Protected::DenseSubmatrix<Element> Mhat (M, 0, s + rho, M.rowdim (), _N - s - rho);
+			BlasMatrix<Element> Mbar (M, 0, s, M.rowdim (), rho);
+			BlasMatrix<Element> Mhat (M, 0, s + rho, M.rowdim (), _N - s - rho);
 
-			Protected::DenseSubmatrix<Element> That (*T, _N - rho, s + rho, rho, _N - s - rho);
+			BlasMatrix<Element> That (*T, _N - rho, s + rho, rho, _N - s - rho);
 
 			_solver._MD.axpyin (Mhat, Mbar, That);
 		}
@@ -1228,13 +1228,13 @@ namespace LinBox
 
 		if (left) {
 			for (Pi = _P.begin (), si = _s.begin (); Pi != _P.end (); ++Pi, ++si) {
-				Protected::DenseSubmatrix<Element> Mcheck (M, *si, 0, _N - *si, M.coldim ());
+				BlasMatrix<Element> Mcheck (M, *si, 0, _N - *si, M.coldim ());
 				_solver._MD.permuteRows (Mcheck, Pi->begin (), Pi->end ());
 			}
 		}
 		else {
 			for (Pi = _P.begin (), si = _s.begin (); Pi != _P.end (); ++Pi, ++si) {
-				Protected::DenseSubmatrix<Element> Mcheck (M, 0, *si, M.rowdim (), _N - *si);
+				BlasMatrix<Element> Mcheck (M, 0, *si, M.rowdim (), _N - *si);
 				_solver._MD.permuteColumns (Mcheck, Pi->begin (), Pi->end ());
 			}
 		}
@@ -1266,7 +1266,7 @@ namespace LinBox
 		Matrix *Tnew = _solver.newBlock ();
 		_solver._MD.subin (*Tnew, *Tnew);
 
-		Protected::DenseSubmatrix<Element> Tnewhat (*Tnew, _N - T.rowdim (), _N - T.coldim (), T.rowdim (), T.coldim ());
+		BlasMatrix<Element> Tnewhat (*Tnew, _N - T.rowdim (), _N - T.coldim (), T.rowdim (), T.coldim ());
 		_solver._MD.copy (Tnewhat, T);
 
 		_P.push_back (Permutation (P));
@@ -1441,7 +1441,7 @@ namespace LinBox
 
 		report << "Checking whether u_" << u_iter << " is A-conjugate to v_" << v_iter << "...";
 
-		Protected::DenseSubmatrix<Element> T1p (_T1, 0, 0, rho_u, rho_v);
+		BlasMatrix<Element> T1p (_T1, 0, 0, rho_u, rho_v);
 
 		Matrix Av (A.rowdim (), _traits.blockingFactor ());
 

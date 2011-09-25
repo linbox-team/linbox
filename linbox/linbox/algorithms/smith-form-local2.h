@@ -102,7 +102,7 @@ namespace LinBox
 						      q != p->end(); ++q, ++r )
 							R.axpyin( *q, f, *r );
 
-					Protected::DenseSubmatrix<Elt> Ap(A, 1, 1, A.rowdim() - 1, A.coldim() - 1);
+					BlasMatrix<Elt> Ap(A, 1, 1, A.rowdim() - 1, A.coldim() - 1);
 					L.push_back(d);
 					return smithStep(L, d, Ap, R);
 				}

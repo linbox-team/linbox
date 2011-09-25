@@ -674,8 +674,8 @@ namespace LinBox
 		_MD.write (report, T);
 #endif
 
-		Protected::DenseSubmatrix<Element> M1 (_M, 0, 0, T.rowdim (), T.coldim ());
-		Protected::DenseSubmatrix<Element> M2 (_M, 0, T.coldim (), T.rowdim (), T.coldim ());
+		BlasMatrix<Element> M1 (_M, 0, 0, T.rowdim (), T.coldim ());
+		BlasMatrix<Element> M2 (_M, 0, T.coldim (), T.rowdim (), T.coldim ());
 
 		_MD.copy (M1, T);
 		setIN (M2);
@@ -1014,7 +1014,7 @@ namespace LinBox
 		// I'm assuming everything left of the column with the index of the pivot row is 0
 		size_t row;
 
-		typename Protected::DenseSubmatrix<Element>::Row pivot_row;
+		typename BlasMatrix<Element>::Row pivot_row;
 		typename Field::Element p;
 
 		pivot_row = *(A.rowBegin () + indices[pivot]);
