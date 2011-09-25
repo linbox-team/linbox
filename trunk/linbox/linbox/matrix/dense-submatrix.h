@@ -284,7 +284,7 @@ namespace LinBox
 			ConstRawIndexedIterator rawIndexedBegin() const;
 			ConstRawIndexedIterator rawIndexedEnd() const;
 
-#if 1 /*  operator[] */
+			/*  operator[] */
 			/*- Retrieve a reference to a row
 			 * @param i Row index
 			 */
@@ -297,34 +297,7 @@ namespace LinBox
 				_M->resize(m,n,val);
 			}
 
-#endif
 
-			/*! Creates a transposed matrix of \c *this.
-			 * @param[in] tM
-			 * @return the transposed matrix of this.
-			 */
-			DenseSubmatrix<Element> transpose(DenseMatrixBase<Element> & tM)
-			{
-				linbox_check(tM.coldim() == rowdim());
-				linbox_check(tM.rowdim() == coldim());
-				// DenseMatrixBase<Element> tM(coldim(),rowdim());
-				DenseSubmatrix<Element>  tA(tM);
-				for (size_t i = 0 ; i < rowdim(); ++i)
-					for (size_t j = 0 ; j < coldim(); ++j)
-						tA.setEntry(j,i,getEntry(i,j));
-				return tA;
-			}
-
-			/*! Creates a transposed matrix of \c *this.
-			 * @return the transposed matrix of this.
-			 */
-			DenseSubmatrix<Element> & transpose(DenseSubmatrix<Element> & tA)
-			{
-				for (size_t i = 0 ; i < rowdim(); ++i)
-					for (size_t j = 0 ; j < coldim(); ++j)
-						tA.setEntry(j,i,getEntry(i,j));
-				return tA;
-			}
 
 		protected:
 			DenseMatrixBase<Element> *_M;
