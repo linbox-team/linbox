@@ -56,7 +56,6 @@ static bool testIdentity (Field &F, long n, int iterations)
 {
 	typedef typename Vector<Field>::Dense Vector;
 	typedef BlasMatrix <typename Field::Element> Base;
-	// typedef Protected::DenseSubmatrix <typename Field::Element> Matrix;
 	typedef BlasBlackbox <Field> Blackbox;
 
 	commentator.start ("Testing identity apply", "testIdentity", iterations);

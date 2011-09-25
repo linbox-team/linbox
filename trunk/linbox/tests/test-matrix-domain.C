@@ -64,8 +64,8 @@ void eliminate (MatrixDomain<Field> &MD, Matrix1 &M, Matrix2 &pivotRow,
 		size_t row, size_t col, size_t rowdim, size_t coldim)
 {
 	BlasMatrix<typename Matrix1::Element> pivotCol (rowdim, 1);
-	Protected::DenseSubmatrix<typename Matrix1::Element> realPivotCol (M, row, col, rowdim, 1);
-	Protected::DenseSubmatrix<typename Matrix1::Element> block (M, row, col, rowdim, coldim);
+	BlasMatrix<typename Matrix1::Element> realPivotCol (M, row, col, rowdim, 1);
+	BlasMatrix<typename Matrix1::Element> block (M, row, col, rowdim, coldim);
 
 	MD.neg (pivotCol, realPivotCol);
 	MD.axpyin (block, pivotCol, pivotRow);
@@ -84,11 +84,11 @@ Matrix1 &inv (MatrixDomain<Field> &MD, Matrix1 &res, const Matrix2 &A)
 	linbox_check (res.rowdim () == A.rowdim ());
 
 	BlasMatrix<typename Matrix1::Element> M (res.rowdim (), res.coldim () * 2);
-	Protected::DenseSubmatrix<typename Matrix1::Element> M1 (M, 0, 0, res.rowdim (), res.coldim ());
-	Protected::DenseSubmatrix<typename Matrix1::Element> M2 (M, 0, res.coldim (), res.rowdim (), res.coldim ());
+	BlasMatrix<typename Matrix1::Element> M1 (M, 0, 0, res.rowdim (), res.coldim ());
+	BlasMatrix<typename Matrix1::Element> M2 (M, 0, res.coldim (), res.rowdim (), res.coldim ());
 
-	StandardBasisStream<Field, typename Protected::DenseSubmatrix<typename Matrix1::Element>::Row> stream (MD.field (), res.coldim ());
-	typename Protected::DenseSubmatrix<typename Matrix1::Element>::RowIterator ip = M2.rowBegin ();
+	StandardBasisStream<Field, typename BlasMatrix<typename Matrix1::Element>::Row> stream (MD.field (), res.coldim ());
+	typename BlasMatrix<typename Matrix1::Element>::RowIterator ip = M2.rowBegin ();
 
 	for (; ip != M2.rowEnd (); ++ip)
 		stream >> *ip;
@@ -122,7 +122,7 @@ Matrix1 &inv (MatrixDomain<Field> &MD, Matrix1 &res, const Matrix2 &A)
 		}
 
 		MD.field ().inv (Mjj_inv, M.getEntry (idx, idx));
-		Protected::DenseSubmatrix<typename Matrix1::Element> realPivotRow (M, idx, idx, 1, M.coldim () - idx);
+		BlasMatrix<typename Matrix1::Element> realPivotRow (M, idx, idx, 1, M.coldim () - idx);
 		MD.mulin (realPivotRow, Mjj_inv);
 
 		if (idx > 0)
