@@ -500,6 +500,97 @@ namespace LinBox
 			return _alloc ;
 		}
 
+		/*! Creates a transposed matrix of \c *this.
+		 * @param[in] tM
+		 * @return the transposed matrix of this.
+		 */
+		BlasMatrix<Element> transpose(BlasMatrix<Element> & tM) const
+		{
+			size_t r = this->rowdim() ;
+			size_t c = this->coldim() ;
+			linbox_check(tM.coldim() == r );
+			linbox_check(tM.rowdim() == c);
+			for (size_t i = 0 ; i < r ; ++i)
+				for (size_t j = 0 ; j < c ; ++j)
+					tM.setEntry(j,i,this->getEntry(i,j));
+			return tM;
+		}
+
+
+		/*! Transpose (inplace).
+		 * If rows and columns agree, we can transpose inplace.
+		 */
+		void transpose()
+		{
+			size_t r = this->rowdim() ;
+			size_t c = this->coldim() ;
+			if ( r == c) {
+				for (size_t i = 0 ; i < r ; ++i)
+					for (size_t j = i+1 ; j < c ; ++j)
+						std::swap(this->refEntry(i,j),this->refEntry(j,i));
+			}
+			else {
+				// maybe this should be possible on a DenseMatrix sharing its data with
+				// a BlasMatrix but with rowdim/coldim integer members.
+				// Or this has an integer rowdim/coldim member, mutable.
+				throw LinBoxError("you cannot transpose a BlasMatrix in place where m != n...");
+			}
+		}
+
+		/*! Reverse the rows of a matrix.
+		 * This is done inplace.
+		 * Let J=antiDiag(1) (or the matrix of the reverse
+		 * permutation or the matrix (i,j) = (i+j+1==m)). Then,
+		 * we compute A <- J.A;
+		 */
+		void reverseRows()
+		{
+			size_t r = this->rowdim()/2 ;
+			typedef UnparametricField<_Element> Field ;
+			Field F ;
+			VectorDomain<Field> Vd(F);
+			for (size_t i = 0 ; i <  r ; ++i) {
+				Vd.swap( this->rowBegin()+i,
+					 this->rowBegin()+(r-1-i) );
+			}
+
+		}
+
+		/*! Reverse the columns of a matrix.
+		 * This is done inplace.
+		 * This is A <- J.A
+		 */
+		void reverseCols()
+		{
+			size_t r = this->rowdim() ;
+			size_t c = this->coldim()/2 ;
+			for (size_t j = 0 ; j < c ; ++j) {
+				for (size_t i = 0 ; i < r ; ++i) {
+					std::swap(this->refEntry(i,j),
+						  this->refEntry(i,c-j-1));
+
+				}
+			}
+		}
+
+		/*! Reverse the rows/columns of a matrix.
+		 * This is done inplace.
+		 * This is A <- J.A.J
+		 */
+		void reverse()
+		{
+			size_t r = this->rowdim() ;
+			size_t c = this->coldim() ;
+			for (size_t j = 0 ; j < c ; ++j) {
+				for (size_t i = 0 ; i < r ; ++i) {
+					std::swap(this->refEntry(i,j),
+						  this->refEntry(r-i-1,c-j-1));
+
+				}
+			}
+		}
+
+
 	}; // end of class BlasMatrix
 
 
