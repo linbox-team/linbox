@@ -17,7 +17,7 @@
 #include <list>
 //#include <algorithm>
 
-#include "linbox/matrix/dense-submatrix.h"
+#include "linbox/matrix/blas-matrix.h"
 
 namespace LinBox
 {
@@ -106,5 +106,5 @@ namespace LinBox
 
 } // end LinBox
 
-#include <linbox/algorithms/smith-form-local2.h>
+#include <linbox/algorithms/smith-form-local2.inl>
 #endif // __LINBOX_smith_form_local_H
