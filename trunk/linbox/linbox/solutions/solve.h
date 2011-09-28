@@ -117,7 +117,7 @@ namespace LinBox
 	{
 		commentator.start ("Sparse Elimination Solve In Place", "sesolvein");
 		GaussDomain<Field> GD ( A.field() );
-		GD.solvein(x, A, b);
+		GD.solvein(x, A, b, true);
 		commentator.stop ("done", NULL, "sesolvein");
 		return x;
 	}
