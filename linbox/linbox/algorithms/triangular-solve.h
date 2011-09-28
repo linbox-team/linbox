@@ -31,14 +31,12 @@ namespace LinBox
 		typename Vector1::iterator res=x.begin();
 		typename Matrix::ConstRowIterator row=U.rowBegin();
 
-		// Find last constrained values of x, U and b
-		//         for( ; (res != x.end()) && (row != U.rowEnd()); ++res, ++row, ++vec) { }
-		size_t last = U.coldim();
-		if( b.size() < last ) last = b.size();
-		res += last;
-		row += last;
-		vec += last;
-
+		// Assume U has form (U1, X | 0, 0), where U1 is invertible.
+		// Discover the rank of U so as to use the bottom of x to seed the solution.
+		for(row = U.rowEnd()-1; row >= U.rowBegin() && row->size() == 0; --row);
+		row++; // now points to first zero row of U.
+		res += row - U.rowBegin();
+		vec += row - U.rowBegin();
 
 		bool consistant = true;
 		for(typename Vector2::const_iterator bcheck=vec; bcheck != b.end(); ++bcheck) {

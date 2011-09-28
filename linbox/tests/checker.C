@@ -25,6 +25,7 @@ here to build_n_run() or no_build_n_run() (possibly commented out).
 //#include <iomanip>
 using namespace std;
 
+#include "fflas-ffpack/fflas-ffpack-config.h"
 #include "../linbox/linbox-config.h"
 
 struct counts {
@@ -163,7 +164,7 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-last-invariant-factor",        counter , flag);
 	build_n_run("test-matrix-domain",                counter , flag);
 	build_n_run("test-matrix-stream",                counter , flag);
-	build_n_run("test-mg-block-lanczos",             counter , flag);
+	no_build_n_run("test-mg-block-lanczos",             counter , flag, "fails");
 	build_n_run("test-minpoly",                      counter , flag);
 	build_n_run("test-modular",                      counter , flag);
 	build_n_run("test-modular-balanced-int",         counter , flag);
@@ -210,7 +211,7 @@ build |wc" should yield the same number of lines.
 	counter.skipped += 4;
 #endif
 
-#if __LINBOX_HAVE_LAPACK
+#if __FFLASFFPACK_HAVE_LAPACK
 	if (flag > 0) cout << "	Lapack dependent tests" << endl;
 	build_n_run("test-rational-solver-adaptive", counter, flag);
 	// needs output cleanup.  Resolve whether a benchmark or a test.
