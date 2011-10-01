@@ -417,6 +417,16 @@ namespace LinBox
 						  typename MatrixTraits<Matrix3>::MatrixCategory ());
 		}
 
+		//! Y <- AX-Y
+		template <class Matrix1, class Matrix2, class Matrix3>
+		inline Matrix1 &axmyin (Matrix1 &Y, const Matrix2 &A, const Matrix3 &X) const
+		{
+			negin(Y);
+			axpyin(Y,A,X);
+			return Y;
+		}
+
+
 		/*!  General matrix multiply
 		 * \f$ D \gets \alpha A B + \beta C\f$.
 		 * @todo not efficient...

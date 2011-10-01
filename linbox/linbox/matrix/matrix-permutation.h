@@ -109,7 +109,7 @@ namespace LinBox
 		void applyPT( BlasPerm & P, enum Side s) ;
 #endif
 
-		// operator =
+		//! copy operator (with copy)
 		BlasPermutation<_UnsignedInt>& operator= (const BlasPermutation<_UnsignedInt> & P)
 		{
 			r_       = P.r_;
@@ -121,15 +121,37 @@ namespace LinBox
 			return (*this) ;
 		}
 
-		/*  size */
+		/*! Returns the size of the permuation.
+		 * If given, we return \p n as we see \p P in \f$S_n\f$.
+		 * We default to the order of the permutation (minimal such \p n)
+		 */
 		_UnsignedInt getSize() const ;
 		// _UnsignedInt getOrder() ;
 
+		/*! Returns the order of the permuation */
 		_UnsignedInt getOrder() const ;
 		void setOrder( size_t r)  ;
 
-		std::vector<_UnsignedInt> & getStorage() ;
-		void resize(_UnsignedInt & s, bool with_zeros=true) ;
+		//! returns a copy of the raw storage.
+		std::vector<_UnsignedInt>  getStorage() const
+		{
+			return P_;
+		};
+
+		// resize a blas permutation.
+		void resize(_UnsignedInt s, bool with_zeros=true)
+		{
+			if (s < r_) {
+				r_ = s ;
+#ifndef NDEBUG
+				std::cout << "*** Warning *** you are resizing a Blas Permutation (possibly corrupting it)" << std::endl;
+#endif
+			}
+				n_ = s ;
+				P_.resize(s);
+				if (Q_.size())
+					Q_.resize(s);
+		}
 
 		// template<class OutVector, class InVector>
 		// OutVector &apply (OutVector &y, const InVector &x)  ;

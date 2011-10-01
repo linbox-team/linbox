@@ -881,7 +881,7 @@ namespace LinBox
 			BlasPermutation<size_t>  TAS_Qt(TAS_factors->rowdim()) ;
 
 			LQUPMatrix<Field>* TAS_LQUP = new LQUPMatrix<Field>(F, *TAS_factors,TAS_P,TAS_Qt);
-			size_t TAS_rank = TAS_LQUP->getrank();
+			size_t TAS_rank = TAS_LQUP->getRank();
 
 			// check consistency. note, getQ returns Qt.
 			// BlasPermutation<size_t>  TAS_P = TAS_LQUP->getP();

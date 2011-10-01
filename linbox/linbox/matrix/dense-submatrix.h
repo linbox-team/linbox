@@ -205,7 +205,7 @@ namespace LinBox
 			 */
 			template<class Field>
 			std::ostream& write (std::ostream &os, const Field& field,
-					     bool mapleFormat = false) const;
+					     bool mapleFormat = true) const;
 
 			/** Write the matrix to an output stream.
 			 * This a raw version of \c write(os,F) (no field is given).
@@ -213,7 +213,7 @@ namespace LinBox
 			 * @param mapleFormat write in Maple(r) format ?
 			 */
 			std::ostream& write (std::ostream &os,
-					     bool mapleFormat = false) const;
+					     bool mapleFormat = true) const;
 
 
 			/** Set the entry at (i, j).

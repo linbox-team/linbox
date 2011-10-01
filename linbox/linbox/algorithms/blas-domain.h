@@ -689,6 +689,91 @@ namespace LinBox
 		}
 		//@}
 
+		template<class Matrix1, class Matrix2>
+		bool areEqual(const Matrix1 & A, const Matrix2 & B)
+		{
+			if ( (A.rowdim() != B.rowdim()) || (A.coldim() != B.coldim()) )
+				return false ;
+			for (size_t i = 0 ; i < A.rowdim() ; ++i)
+				for (size_t j = 0 ; j < A.coldim() ; ++j)
+					if (!_F.areEqual(A.getEntry(i,j),B.getEntry(i,j))) //!@bug use refs
+						return false ;
+			return true ;
+		}
+
+		template<class Matrix>
+		void setIdentity(Matrix & I)
+		{
+			for (size_t i = 0 ; i< I.rowdim() ; ++i)
+				for (size_t j = 0 ; j < I.coldim() ; ++j) {
+					if (i == j)
+						I.setEntry(i,j,_One);
+					else
+						I.setEntry(i,j,_Zero);
+				}
+
+		}
+
+		template<class Matrix>
+		void setZero(Matrix & I)
+		{
+			// use RawIterator
+			for (size_t i = 0 ; i< I.rowdim() ; ++i)
+				for (size_t j = 0 ; j < I.coldim() ; ++j) {
+						I.setEntry(i,j,_Zero);
+				}
+		}
+
+
+		template<class Matrix1>
+		bool isZero(const Matrix1 & A)
+		{
+			for (size_t i = 0 ; i < A.rowdim() ; ++i)
+				for (size_t j = 0 ; j < A.coldim() ; ++j)
+					if (!_F.isZero(A.getEntry(i,j))) //!@bug use refs
+						return false ;
+			return true ;
+		}
+
+		template<class Matrix1>
+		bool isIdentity(const Matrix1 & A)
+		{
+			if (A.rowdim() != A.coldim())
+				return false ;
+			for (size_t i = 0 ; i < A.rowdim() ; ++i)
+				if (!_F.isOne(A.getEntry(i,i)))
+					return false;
+
+			for (size_t i = 0 ; i < A.rowdim() ; ++i)
+				for (size_t j = 0 ; j < i ; ++j)
+					if (!_F.isZero(A.getEntry(i,j))) //!@bug use refs
+						return false ;
+			for (size_t i = 0 ; i < A.rowdim() ; ++i)
+				for (size_t j = i+1 ; j < A.coldim() ; ++j)
+					if (!_F.isZero(A.getEntry(i,j))) //!@bug use refs
+						return false ;
+			return true ;
+		}
+
+		template<class Matrix1>
+		bool isIdentityGeneralized(const Matrix1 & A)
+		{
+			size_t mn = std::min(A.rowdim(),A.coldim());
+			for (size_t i = 0 ; i < mn ; ++i)
+				if (!_F.isOne(A.getEntry(i,i)))
+					return false;
+
+			for (size_t i = 0 ; i < A.rowdim() ; ++i)
+				for (size_t j = 0 ; j < std::min(i,mn) ; ++j)
+					if (!_F.isZero(A.getEntry(i,j))) //!@bug use refs
+						return false ;
+			for (size_t i = 0 ; i < A.rowdim() ; ++i)
+				for (size_t j = i+1 ; j < A.coldim() ; ++j)
+					if (!_F.isZero(A.getEntry(i,j))) //!@bug use refs
+						return false ;
+			return true ;
+		}
+
 	public:
 
 		/** Print matrix.
