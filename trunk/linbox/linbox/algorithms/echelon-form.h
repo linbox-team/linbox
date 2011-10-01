@@ -162,7 +162,7 @@ namespace LinBox
 			LQUPMatrix<Field> LQUP(_F, E,P,Qt);
 
 			// get the rank
-			rank = LQUP.getrank();
+			rank = LQUP.getRank();
 
 			// get permutation Qt
 			// BlasPermutation<size_t> Qt = LQUP.getQ();
@@ -199,7 +199,7 @@ namespace LinBox
 			LQUPMatrix<Field> LQUP(_F, E, P, Qt);
 
 			// get the rank
-			rank = LQUP.getrank();
+			rank = LQUP.getRank();
 
 			// BlasPermutation<size_t> Qt = LQUP.getQ();
 			TransposedBlasMatrix<BlasPermutation<size_t> > Q(Qt);

@@ -733,7 +733,8 @@ namespace LinBox
 
 		typename ConstRow::const_iterator pe;
 
-		if (mapleFormat) os << "[";
+
+		if (mapleFormat) os << "Matrix( " << rowdim() << ',' << coldim() << ",[" ;
 
 		for (p = rowBegin (); p != rowEnd (); ++p) {
 			if (mapleFormat && (p != rowBegin()))
@@ -756,7 +757,7 @@ namespace LinBox
 			else os << ']';
 		}
 
-		if (mapleFormat) os << ']';
+		if (mapleFormat) os << "])";
 		return os;
 	}
 
@@ -769,7 +770,7 @@ namespace LinBox
 
 		typename ConstRow::const_iterator pe;
 
-		if (mapleFormat) os << "[";
+		if (mapleFormat) os << "Matrix( " << rowdim() << ',' << coldim() << ",[" ;
 
 		for (p = rowBegin (); p != rowEnd (); ++p) {
 			if (mapleFormat && (p != rowBegin()))
@@ -788,7 +789,7 @@ namespace LinBox
 			else os << ']';
 		}
 
-		if (mapleFormat) os << ']';
+		if (mapleFormat) os << "])";
 		return os;
 	}
 	} // Protected

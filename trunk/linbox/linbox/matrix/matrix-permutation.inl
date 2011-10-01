@@ -41,7 +41,9 @@ namespace LinBox
 	BlasPermutation<_Uint>::BlasPermutation() :
 	       	r_(0),n_((_Uint)-1),P_(0),Q_(0),inv_(false)
 	{
+#ifndef NDEBUG
 		std::cout << "NULL permutation created. Beware !" << std::endl;
+#endif
 	}
 
 	template<class _Uint>

@@ -134,8 +134,8 @@ namespace LinBox
 	 * permutations.
 	 *
 	 * There are two kind of contructors (with and without permutations)
-	 * and they build a LQUP factorisation of a BlasMatrix/BlasBlackbox on
-	 * a finite field.  There are methods for retrieving L,Q,U and P
+	 * and they build a \c LQUP factorisation of a \c BlasMatrix/\c BlasBlackbox on
+	 * a finite field.  There are methods for retrieving \p L,\p Q,\p U and \p P
 	 * matrices and methods for solving systems.
 	 */
 	template <class Field>
@@ -272,6 +272,10 @@ namespace LinBox
 			//std::cerr<<"Je passe par le constructeur non const"<<std::endl;
 			linbox_check(_QQ.getOrder()<=A.rowdim());
 			linbox_check(_PP.getOrder()<=A.coldim());
+			if (_QQ.getOrder() == 0)
+				_QQ.resize(A.rowdim());
+			if (_PP.getOrder() == 0)
+				_PP.resize(A.coldim());
 
 			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, _m, _n,
 						 _LU.getPointer(),_LU.getStride(),
@@ -358,7 +362,7 @@ namespace LinBox
 		}
 
 		//! get the rank of matrix
-		size_t getrank() const
+		size_t getRank() const
 		{
 			return _rank;
 		}
@@ -383,7 +387,7 @@ namespace LinBox
 		/** Get the <i>transpose</i> of the permutation \p Q.
 		 * @warning This does not return \p Q itself! (because it is
 		 * more difficult to compute) If needed, \p Q can be obtained
-		 * as a \p TransposedBlasMatrix from the return value One
+		 * as a \p TransposedBlasMatrix from the return value. One
 		 * reason this confusion exists is that left-multiplying by
 		 * a permuation matrix corresponds to a row permuation \f$\pi \in S_n\f$,
 		 * while right-multiplying by the same matrix corresponds to

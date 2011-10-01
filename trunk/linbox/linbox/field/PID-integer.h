@@ -140,7 +140,7 @@ namespace LinBox
 		 */
 		inline  Element& xgcd (Element& g, Element& s, Element& t, const Element& a, const Element& b) const
 		{
-#if (GIVARO_VERSION < 30403) // newer givaro has gcd with constant signature "guvab"
+#if (GIVARO_VERSION < 30500) // newer givaro has gcd with constant signature "guvab"
 			return ::Givaro::gcd(g,a,b,s,t);
 #else
 			return ::Givaro::gcd(g,s,t,a,b);

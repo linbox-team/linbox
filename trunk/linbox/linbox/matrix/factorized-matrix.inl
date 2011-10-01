@@ -32,8 +32,9 @@ namespace LinBox
 
 	// get the Matrix L
 	template <class Field>
-	inline TriangularBlasMatrix<typename Field::Element>& LQUPMatrix<Field>::getL( TriangularBlasMatrix<Element >& L,
-										    bool _QLUP ) const
+	inline TriangularBlasMatrix<typename Field::Element>&
+	LQUPMatrix<Field>::getL( TriangularBlasMatrix<Element >& L,
+				 bool _QLUP ) const
 	{
 
 		linbox_check( L.coldim() == _m);
@@ -108,7 +109,8 @@ namespace LinBox
 
 	// get the matrix U
 	template <class Field>
-	inline TriangularBlasMatrix<typename Field::Element>& LQUPMatrix<Field>::getU( TriangularBlasMatrix<typename Field::Element >& U ) const
+	inline TriangularBlasMatrix<typename Field::Element>&
+	LQUPMatrix<Field>::getU( TriangularBlasMatrix<typename Field::Element >& U ) const
 	{
 
 		linbox_check( U.rowdim() == _m);
@@ -123,7 +125,8 @@ namespace LinBox
 
 	// get the Matrix S (from the LSP factorization of A deduced from LQUP)
 	template <class Field>
-	inline BlasMatrix<typename Field::Element>& LQUPMatrix<Field>::getS( BlasMatrix<typename Field::Element >& S) const
+	inline BlasMatrix<typename Field::Element>&
+	LQUPMatrix<Field>::getS( BlasMatrix<typename Field::Element >& S) const
 	{
 
 		linbox_check( S.rowdim() == _m);
@@ -164,7 +167,7 @@ namespace LinBox
 			linbox_check (B.coldim() == X.coldim());
 			int info;
 
-			FFPACK::fgetrs (F, FFLAS::FflasLeft, A.rowdim(), A.coldim(), B.coldim(), A.getrank(),
+			FFPACK::fgetrs (F, FFLAS::FflasLeft, A.rowdim(), A.coldim(), B.coldim(), A.getRank(),
 					A.getPointer(), A.getStride(), A.getP().getPointer(), A.getQ().getPointer(),
 					X.getPointer(), X.getStride(),
 					B.getPointer(), B.getStride(), &info);
@@ -183,7 +186,7 @@ namespace LinBox
 			linbox_check (A.coldim() == A.rowdim());
 			linbox_check (A.coldim() == B.rowdim());
 
-			FFPACK::fgetrs (F, FFLAS::FflasLeft, B.rowdim(), B.coldim(), A.getrank(),
+			FFPACK::fgetrs (F, FFLAS::FflasLeft, B.rowdim(), B.coldim(), A.getRank(),
 					A.getPointer(), A.getStride(),
 					A.getP().getPointer(), A.getQ().getPointer(),
 					B.getPointer(), B.getStride(), &info);
@@ -208,7 +211,7 @@ namespace LinBox
 			linbox_check (B.rowdim() == X.rowdim());
 			int info;
 
-			FFPACK::fgetrs (F, FFLAS::FflasRight, A.rowdim(), A.coldim(), B.rowdim(), A.getrank(),
+			FFPACK::fgetrs (F, FFLAS::FflasRight, A.rowdim(), A.coldim(), B.rowdim(), A.getRank(),
 					A.getPointer(), A.getStride(),
 					A.getP().getPointer(), A.getQ().getPointer(),
 					X.getPointer(), X.getStride(),
@@ -228,7 +231,7 @@ namespace LinBox
 			linbox_check (A.coldim() == A.rowdim());
 			linbox_check (A.rowdim() == B.coldim());
 
-			FFPACK::fgetrs (F, FFLAS::FflasRight, B.rowdim(), B.coldim(), A.getrank(),
+			FFPACK::fgetrs (F, FFLAS::FflasRight, B.rowdim(), B.coldim(), A.getRank(),
 					A.getPointer(), A.getStride(),
 					A.getP().getPointer(), A.getQ().getPointer(),
 					B.getPointer(), B.getStride(), &info);
@@ -261,7 +264,7 @@ namespace LinBox
 
 			linbox_check (A.rowdim() == B.rowdim());
 
-			FFPACK::solveLB2 (F, FFLAS::FflasLeft, B.rowdim(), B.coldim(), A.getrank(),
+			FFPACK::solveLB2 (F, FFLAS::FflasLeft, B.rowdim(), B.coldim(), A.getRank(),
 					  A.getPointer(), A.getStride(),
 					  A.getQ().getPointer(),
 					  B.getPointer(), B.getStride());
@@ -290,7 +293,7 @@ namespace LinBox
 
 			linbox_check( A.rowdim() == B.coldim() );
 
-			FFPACK::solveLB2 (F, FFLAS::FflasRight, B.rowdim(), B.coldim(), A.getrank(),
+			FFPACK::solveLB2 (F, FFLAS::FflasRight, B.rowdim(), B.coldim(), A.getRank(),
 					  A.getPointer(), A.getStride(),
 					  A.getQ().getPointer(), B.getPointer(), B.getStride());
 			return B;
@@ -320,7 +323,7 @@ namespace LinBox
 			F.init(zero, 0UL);
 			F.init(one, 1UL);
 
-			for (size_t i = A.getrank(); i < B.rowdim(); ++i)
+			for (size_t i = A.getRank(); i < B.rowdim(); ++i)
 				for (size_t j = 0; j < B.coldim(); ++j)
 					if (!F.isZero (*(Bp + i*ldb + j)))
 						consistent = false;
@@ -329,13 +332,13 @@ namespace LinBox
 
 			// The last rows of B are now supposed to be 0
 
-			for (size_t i=0; i < A.getrank(); ++i)
+			for (size_t i=0; i < A.getRank(); ++i)
 				FFLAS::fcopy (F, B.coldim(), Xp + i*ldx, 1, Bp + i*ldx,1);
 
 			FFLAS::ftrsm (F, FFLAS::FflasLeft, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit,
-				      A.getrank(), X.coldim(), one, A.getPointer(), A.getStride(), X.getPointer(), X.getStride());
+				      A.getRank(), X.coldim(), one, A.getPointer(), A.getStride(), X.getPointer(), X.getStride());
 
-			for (size_t i=A.getrank(); i < X.rowdim(); ++i)
+			for (size_t i=A.getRank(); i < X.rowdim(); ++i)
 				for (size_t j = 0; j < X.coldim(); ++j)
 					F.assign (*(Xp + i*ldx + j), zero);
 
@@ -356,7 +359,7 @@ namespace LinBox
 			F.init(zero, 0UL);
 			bool consistent = true;
 
-			for (size_t i = A.getrank(); i < B.rowdim(); ++i)
+			for (size_t i = A.getRank(); i < B.rowdim(); ++i)
 				for (size_t j = 0; j < B.coldim(); ++j)
 					if (!F.isZero (*(Bp + i*ldb + j)))
 						consistent = false;
@@ -364,7 +367,7 @@ namespace LinBox
 				throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
 
 			FFLAS::ftrsm (F, FFLAS::FflasLeft, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit,
-				      A.getrank(), B.coldim(), one, A.getPointer(), A.getStride(), Bp, ldb);
+				      A.getRank(), B.coldim(), one, A.getPointer(), A.getStride(), Bp, ldb);
 
 			return B;
 		}
@@ -387,7 +390,7 @@ namespace LinBox
 			F.init(zero, 0UL);
 			typename Field::Element * Bp = B.getPointer();
 			typename Field::Element * Xp = X.getPointer();
-			size_t R = A.getrank();
+			size_t R = A.getRank();
 			size_t ldb = B.getStride();
 			size_t ldx = X.getStride();
 
@@ -446,7 +449,7 @@ namespace LinBox
 			F.init (zero, 0UL);
 			typename Field::Element * Bp = B.getPointer();
 			size_t ldb = B.getStride();
-			size_t R = A.getrank();
+			size_t R = A.getRank();
 
 			FFLAS::ftrsm (F, FFLAS::FflasRight, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit,
 				      B.rowdim(), R, one, A.getPointer(), A.getStride(), B.getPointer(), B.getStride());
@@ -486,7 +489,7 @@ namespace LinBox
 			linbox_check (A.rowdim() == b.size());
 			int info;
 
-			FFPACK::fgetrs (F, FFLAS::FflasLeft, A.rowdim(), A.coldim(), 1, A.getrank(),
+			FFPACK::fgetrs (F, FFLAS::FflasLeft, A.rowdim(), A.coldim(), 1, A.getRank(),
 					A.getPointer(), A.getStride(), A.getP().getPointer(), A.getQ().getPointer(),
 					&x[0], 1, &b[0], 1, &info);
 			if (info > 0)
@@ -504,7 +507,7 @@ namespace LinBox
 			linbox_check (A.coldim() == A.rowdim());
 			linbox_check (A.coldim() == b.size());
 
-			FFPACK::fgetrs (F, FFLAS::FflasLeft, b.size(), 1, A.getrank(),
+			FFPACK::fgetrs (F, FFLAS::FflasLeft, b.size(), 1, A.getRank(),
 					A.getPointer(), A.getStride(),
 					A.getP().getPointer(), A.getQ().getPointer(),
 					&b[0], 1, &info);
@@ -528,7 +531,7 @@ namespace LinBox
 			linbox_check (A.coldim() == b.size());
 			int info;
 
-			FFPACK::fgetrs (F, FFLAS::FflasRight, A.rowdim(), A.coldim(), 1, A.getrank(),
+			FFPACK::fgetrs (F, FFLAS::FflasRight, A.rowdim(), A.coldim(), 1, A.getRank(),
 					A.getPointer(), A.getStride(),
 					A.getP().getPointer(), A.getQ().getPointer(),
 					&x[0], x.size(), &b[0], b.size(), &info);
@@ -547,7 +550,7 @@ namespace LinBox
 			linbox_check (A.coldim() == A.rowdim());
 			linbox_check (A.rowdim() == b.size());
 
-			FFPACK::fgetrs (F, FFLAS::FflasRight, 1, b.size(), A.getrank(),
+			FFPACK::fgetrs (F, FFLAS::FflasRight, 1, b.size(), A.getRank(),
 					A.getPointer(), A.getStride(),
 					A.getP().getPointer(), A.getQ().getPointer(),
 					&b[0], b.size(), &info);
@@ -577,7 +580,7 @@ namespace LinBox
 		{
 			linbox_check (A.rowdim() == b.size());
 
-			FFPACK::solveLB2 (F, FFLAS::FflasLeft, b.size(), 1, A.getrank(),
+			FFPACK::solveLB2 (F, FFLAS::FflasLeft, b.size(), 1, A.getRank(),
 					  A.getPointer(), A.getStride(),
 					  A.getQ().getPointer(), &b[0], 1);
 
@@ -586,7 +589,7 @@ namespace LinBox
 			/* BB: unreachable  !
 			   size_t n = b.size(); // bds: b not B
 			   linbox_check( A.rowdim() == n );
-			   size_t r = A.getrank();
+			   size_t r = A.getRank();
 
 			// To be changed: solveLB is designed for matrices, not for vectors
 			if ( A.rowdim() <= A.coldim() ) {
@@ -620,7 +623,7 @@ namespace LinBox
 		{
 			linbox_check (A.rowdim() == b.size());
 
-			FFPACK::solveLB2 (F, FFLAS::FflasRight, 1, b.size(),  A.getrank(),
+			FFPACK::solveLB2 (F, FFLAS::FflasRight, 1, b.size(),  A.getRank(),
 					  A.getPointer(), A.getStride(),
 					  A.getQ().getPointer(), &b[0], b.size());
 			return b;
@@ -645,7 +648,7 @@ namespace LinBox
 			F.init(zero, 0UL);
 			F.init(one, 1UL);
 
-			for (size_t i = A.getrank(); i < b.size(); ++i)
+			for (size_t i = A.getRank(); i < b.size(); ++i)
 				if (!F.isZero (b[i]))
 					consistent = false;
 			if (!consistent)
@@ -653,13 +656,13 @@ namespace LinBox
 
 			// The last rows of B are now supposed to be 0
 
-			for (size_t i=0; i < A.getrank(); ++i)
+			for (size_t i=0; i < A.getRank(); ++i)
 				F.assign (x[i], b[i]);
 
 			FFLAS::ftrsv (F, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit,
-				      A.getrank(), A.getPointer(), A.getStride(), xp, 1);
+				      A.getRank(), A.getPointer(), A.getStride(), xp, 1);
 
-			for (size_t i=A.getrank(); i < x.size(); ++i)
+			for (size_t i=A.getRank(); i < x.size(); ++i)
 				F.assign (x[i], zero);
 			return x;
 
@@ -677,14 +680,14 @@ namespace LinBox
 			F.init(zero, 0UL);
 			bool consistent = true;
 
-			for (size_t i = A.getrank(); i < b.size(); ++i)
+			for (size_t i = A.getRank(); i < b.size(); ++i)
 				if (!F.isZero (b[i]))
 					consistent = false;
 			if (!consistent)
 				throw  LinboxMathInconsistentSystem ("Linear system is inconsistent");
 
 			FFLAS::ftrsv (F, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit,
-				      A.getrank(), A.getPointer(), A.getStride(), &b[0], 1);
+				      A.getRank(), A.getPointer(), A.getStride(), &b[0], 1);
 
 			return b;
 		}
@@ -706,7 +709,7 @@ namespace LinBox
 			F.init(zero, 0UL);
 			typename Field::Element * bp = b.getPointer();
 			typename Field::Element * xp = x.getPointer();
-			size_t R = A.getrank();
+			size_t R = A.getRank();
 
 			for (size_t i = 0; i < R; ++i)
 				F.assign (x[i], b[i]);
@@ -758,7 +761,7 @@ namespace LinBox
 			F.neg (mone,one);
 			F.init (zero, 0UL);
 			typename Field::Element * bp = &b[0];
-			size_t R = A.getrank();
+			size_t R = A.getRank();
 
 			FFLAS::ftrsv (F, FFLAS::FflasUpper, FFLAS::FflasTrans, FFLAS::FflasNonUnit,
 				      R, one, A.getPointer(), A.getStride(), bp, 1);
