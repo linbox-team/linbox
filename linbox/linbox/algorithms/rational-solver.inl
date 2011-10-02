@@ -692,9 +692,9 @@ namespace LinBox
 
 				MatrixHom::map (*FMP, A, *F); // use MatrixHom to reduce matrix PG 2005-06-16
 #if 0
-				typename BlasBlackbox<Field>::RawIterator iter_p  = FMP->rawBegin();
-				typename IMatrix::ConstRawIterator iter  = A.rawBegin();
-				for (;iter != A.rawEnd();++iter,++iter_p)
+				typename BlasBlackbox<Field>::Iterator iter_p  = FMP->Begin();
+				typename IMatrix::ConstIterator iter  = A.Begin();
+				for (;iter != A.End();++iter,++iter_p)
 					F->init(*iter_p, _R.convert(tmp,*iter));
 #endif
 
@@ -917,8 +917,8 @@ namespace LinBox
 				//special case when A = 0, mod p. dealt with to avoid crash later
 				bool aEmpty = true;
 				if (level >= SL_LASVEGAS) { // in monte carlo, we assume A is actually empty
-					typename BlasBlackbox<Ring>::RawIterator iter = A_check.rawBegin();
-					for (; aEmpty && iter != A_check.rawEnd(); ++iter)
+					typename BlasBlackbox<Ring>::Iterator iter = A_check.Begin();
+					for (; aEmpty && iter != A_check.End(); ++iter)
 						aEmpty &= _R.isZero(*iter);
 				}
 				if (aEmpty) {
@@ -1108,8 +1108,8 @@ namespace LinBox
 						tMakeConditioner.start();
 #endif
 					// compute P a n*r random matrix of entry in [0,1]
-					typename BlasBlackbox<Ring>::RawIterator iter;
-					for (iter = P->rawBegin(); iter != P->rawEnd(); ++iter) {
+					typename BlasBlackbox<Ring>::Iterator iter;
+					for (iter = P->Begin(); iter != P->End(); ++iter) {
 						if (rand() > RAND_MAX/2)
 							_R.assign(*iter, _rone);
 						else

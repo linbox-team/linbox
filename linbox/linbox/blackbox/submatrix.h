@@ -14,7 +14,7 @@
  * ------------------------------------
  * Modified by Zhendong Wan
  *
- * Added specialization for Protected::DenseMatrix.
+ * Added specialization for BlasMatrix.
  *
  * -------
  *
@@ -234,12 +234,12 @@ namespace LinBox
 
 
 	template<class _Field>
-	class Submatrix<BlasBlackbox<_Field>, VectorCategories::DenseVectorTag> : public Protected::DenseSubmatrix<typename _Field::Element> {
+	class Submatrix<BlasBlackbox<_Field>, VectorCategories::DenseVectorTag> : public BlasSubmatrix<typename _Field::Element> {
 	public:
 
 		typedef _Field Field;
 		typedef Submatrix<BlasBlackbox<_Field>, VectorCategories::DenseVectorTag> Self_t;
-		typedef Protected::DenseSubmatrix<typename _Field::Element> Father_t;
+		typedef BlasSubmatrix<typename _Field::Element> Father_t;
 
 	private:
 
@@ -264,7 +264,7 @@ namespace LinBox
 			   size_t col,
 			   size_t Rowdim,
 			   size_t Coldim) :
-			Protected::DenseSubmatrix<Element>(const_cast<BlasBlackbox<Field>& >(*Mat), row, col, Rowdim, Coldim),
+			BlasSubmatrix<Element>(const_cast<BlasBlackbox<Field>& >(*Mat), row, col, Rowdim, Coldim),
 			f(Mat -> field()), vd(Mat -> field())
 		{
 		}
@@ -281,7 +281,7 @@ namespace LinBox
 			   size_t col,
 			   size_t Rowdim,
 			   size_t Coldim) :
-			Protected::DenseSubmatrix<Element>(const_cast<BlasBlackbox<Field>& >(Mat), row, col, Rowdim, Coldim),
+			BlasSubmatrix<Element>(const_cast<BlasBlackbox<Field>& >(Mat), row, col, Rowdim, Coldim),
 			f(Mat.field()), vd(Mat.field()) {
 			}
 
@@ -298,7 +298,7 @@ namespace LinBox
 			   size_t col,
 			   size_t Rowdim,
 			   size_t Coldim ) :
-			Protected::DenseSubmatrix<Element> (const_cast<Submatrix<BlasBlackbox<Field> >&>(*SM), row, col, Rowdim, Coldim),
+			BlasSubmatrix<Element> (const_cast<Submatrix<BlasBlackbox<Field> >&>(*SM), row, col, Rowdim, Coldim),
 			f (SM ->  field()), vd(SM -> field()){
 			}
 
@@ -315,7 +315,7 @@ namespace LinBox
 			   size_t col,
 			   size_t Rowdim,
 			   size_t Coldim ) :
-			Protected::DenseSubmatrix<Element> (const_cast<Submatrix<BlasBlackbox<Field> >&>(SM), row, col, Rowdim, Coldim),
+			BlasSubmatrix<Element> (const_cast<Submatrix<BlasBlackbox<Field> >&>(SM), row, col, Rowdim, Coldim),
 			f (SM. field()), vd(SM. field()){
 			}
 
@@ -326,14 +326,14 @@ namespace LinBox
 
 		std::istream& read (std::istream& is) {
 
-			Protected::DenseSubmatrix<Element>::read (is, f);
+			BlasSubmatrix<Element>::read (is, f);
 
 			return is;
 		}
 
 		std::ostream& write (std::ostream& os) const {
 
-			Protected::DenseSubmatrix<Element>::write (os, f);
+			BlasSubmatrix<Element>::write (os, f);
 
 			return os;
 		}
@@ -348,7 +348,7 @@ namespace LinBox
 		template<class Vect1, class Vect2>
 		Vect1 &apply (Vect1 &y, const Vect2 &x) const {
 
-			typename Protected::DenseSubmatrix<Element>::ConstRowIterator p;
+			typename BlasSubmatrix<Element>::ConstRowIterator p;
 
 			typename Vect1::iterator p_y = y.begin ();
 
@@ -369,7 +369,7 @@ namespace LinBox
 		template<class Vect1, class Vect2>
 		Vect1 &applyTranspose (Vect1 &y, const Vect2 &x) const {
 
-			typename Protected::DenseSubmatrix<Element>::ConstColIterator colp;
+			typename BlasSubmatrix<Element>::ConstColIterator colp;
 
 			typename Vect1::iterator p_y = y.begin ();
 

@@ -331,9 +331,9 @@ inline void update_r_exact(IVector& r_exact, FVector& r, FVector& xs_int, IMatri
 inline int HadamardBound(integer& B, FMatrix& DM)
 {
 	size_t n = DM.rowdim();
-	zw_hbound (B, n, n, &*DM.rawBegin()); // compute the Hadamard bound
+	zw_hbound (B, n, n, &*DM.Begin()); // compute the Hadamard bound
 	B = B * B;
-	double mnorm_loc = zw_dOOnorm(&*DM.rawBegin(), n, n);
+	double mnorm_loc = zw_dOOnorm(&*DM.Begin(), n, n);
 
 	// [don't know what this comment is about] should be a check for 2 * mnorm + zw_dmax (n, b, 1);
 	// TODO what is "b"? from copied code it is the RHS array of doubles
@@ -388,8 +388,8 @@ inline static size_t nextPower2(size_t n)
 inline static double highAbs(FMatrix M)
 {
 	double max = 0;
-	typename FMatrix::RawIterator ri = M.rawBegin();
-	for(; ri != M.rawEnd(); ++ri){
+	typename FMatrix::Iterator ri = M.Begin();
+	for(; ri != M.End(); ++ri){
 		double tmp = fabs(*ri);
 		if(max < tmp) max = tmp;
 	}

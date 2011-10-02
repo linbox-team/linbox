@@ -204,12 +204,12 @@ namespace LinBox
 			Block V(_BB->coldim(), n);
 			_V =V;
 
-			typename Block::RawIterator iter_U = _U.rawBegin();
-			for (; iter_U != _U.rawEnd();++iter_U)
+			typename Block::Iterator iter_U = _U.Begin();
+			for (; iter_U != _U.End();++iter_U)
 				G.random(*iter_U);
 
-			typename Block::RawIterator iter_V = _V.rawBegin();
-			for (; iter_V != _V.rawEnd();++iter_V)
+			typename Block::Iterator iter_V = _V.Begin();
+			for (; iter_V != _V.End();++iter_V)
 				G.random(*iter_V);
 
 			_value = Value(m,n);

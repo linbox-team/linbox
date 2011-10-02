@@ -34,6 +34,13 @@
 #include <linbox/field/multimod-field.h>
 #include <linbox/util/matrix-stream.h>
 
+namespace LinBox
+{
+	namespace Protected
+	{
+
+	}
+}
 
 namespace LinBox
 {
@@ -85,8 +92,8 @@ namespace LinBox
 		{
 			_F.init(_One,1UL);
 			_F.init(_Zero,0UL);
-			typename BlasMatrix<Element>::RawIterator it = this->rawBegin();
-			for (; it != this->rawEnd(); ++it)
+			typename BlasMatrix<Element>::Iterator it = this->Begin();
+			for (; it != this->End(); ++it)
 				_F.init(*it, 0);
 			_use_fflas= checkBlasApply(_F, _col);
 		}
@@ -173,12 +180,13 @@ namespace LinBox
 		Vector1&  apply (Vector1& y, const Vector2& x) const
 		{
 
+			//_stride ?
 			if (_use_fflas){
 
 				FFLAS::fgemv( _F, FFLAS::FflasNoTrans,
 					      this->_row, this->_col,
 					      this->_One,
-					      this->_ptr, this->_stride,
+					      this->_ptr, this->getStride(),
 					      &x[0],1,
 					      this->_Zero,
 					      &y[0],1);
@@ -200,11 +208,12 @@ namespace LinBox
 		Vector1&  applyTranspose (Vector1& y, const Vector2& x) const
 		{
 
+			//_stride ?
 			if (_use_fflas)
 				FFLAS::fgemv( this->_F, FFLAS::FflasTrans,
 					      this->_row, this->_col,
 					      this->_One,
-					      this->_ptr, this->_stride,
+					      this->_ptr, this->getStride(),
 					      &x[0],1,
 					      this->_Zero,
 					      &y[0],1);
@@ -226,12 +235,12 @@ namespace LinBox
 
 			void operator() (other & Ap, const Self_t& A, const _Tp1& F)
 			{
-				typedef typename BlasMatrix<Element>::ConstRawIterator ConstRawIterator ;
-				ConstRawIterator A_p;
-				typename other::RawIterator Ap_p;
+				typedef typename BlasMatrix<Element>::ConstIterator ConstIterator ;
+				ConstIterator A_p;
+				typename other::Iterator Ap_p;
 				Hom<Field, _Tp1> hom(A. field(), F);
-				for (A_p = A. rawBegin(), Ap_p = Ap.rawBegin();
-				     A_p != A. rawEnd(); ++ A_p, ++ Ap_p)
+				for (A_p = A. Begin(), Ap_p = Ap.Begin();
+				     A_p != A. End(); ++ A_p, ++ Ap_p)
 					hom.image (*Ap_p, *A_p);
 			}
 		};
@@ -268,7 +277,7 @@ namespace LinBox
 		 */
 		std::ostream &write (std::ostream &os) const
 		{
-			return Protected::DenseSubmatrix<Element>::write(os, _F);
+			return BlasMatrix<Element>::write(os, _F);
 		}
 
 

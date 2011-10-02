@@ -362,15 +362,15 @@ namespace LinBox
 				ttDiscrepancy += tDiscrepancy;
 #endif
 
-				typename Coefficient::RawIterator _iter_Discr = Discr.rawBegin();
+				typename Coefficient::Iterator _iter_Discr = Discr.Begin();
 
-				while ((_F.isZero(*_iter_Discr) && _iter_Discr != Discr.rawEnd()))
+				while ((_F.isZero(*_iter_Discr) && _iter_Discr != Discr.End()))
 					++_iter_Discr;
 
 				// maybe there is something to do here
 				// increase the last n rows of orders
 				// multiply by X the last n rows of SigmaBase
-				if (_iter_Discr != Discr.rawEnd())
+				if (_iter_Discr != Discr.End())
 					early_stop=0;
 				else {
 					early_stop++;

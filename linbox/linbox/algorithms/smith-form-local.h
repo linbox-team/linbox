@@ -95,8 +95,8 @@ namespace LinBox
 					return smithStep(L, d, Ap, R);
 				}
 			else  {
-				typename Matrix::RawIterator p_it;
-				for (p_it = A.rawBegin(); p_it != A.rawEnd(); ++p_it)
+				typename Matrix::Iterator p_it;
+				for (p_it = A.Begin(); p_it != A.End(); ++p_it)
 					R.divin(*p_it, g);
 				return smithStep(L, R.mulin(d, g), A, R);
 			}

@@ -38,13 +38,13 @@ namespace LinBox
 				// compute U2T s.t. U = [ U1 | -U2T^T ]
 				Matrix U2T(_F,nullity,Rank);
 
-				for(typename Matrix::ConstRawIndexedIterator uit=U.rawIndexedBegin();
-				    uit != U.rawIndexedEnd(); ++uit) {
+				for(typename Matrix::ConstIndexedIterator uit=U.IndexedBegin();
+				    uit != U.IndexedEnd(); ++uit) {
 					if (uit.colIndex() >= Rank)
 						U2T.setEntry(uit.colIndex()-Rank,uit.rowIndex(),uit.value());
 				}
-				for(typename Matrix::RawIterator u2it=U2T.rawBegin();
-				    u2it != U2T.rawEnd(); ++u2it)
+				for(typename Matrix::Iterator u2it=U2T.Begin();
+				    u2it != U2T.End(); ++u2it)
 					_F.negin(*u2it);
 
 

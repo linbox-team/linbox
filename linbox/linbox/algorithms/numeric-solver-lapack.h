@@ -65,7 +65,7 @@ namespace LinBox {
 		_n = A.coldim();
 
 		//  kludgey pointer to beginning of double vals
-		void *thedata = &*(_Ap->rawBegin());
+		void *thedata = &*(_Ap->Begin());
 
 		linbox_check(_n);
 		_IM = new double[_n * _n];
@@ -110,7 +110,7 @@ namespace LinBox {
 		// std::cout << "input :" << x << std::endl;
 		const double * xdata = &*(x.begin());
 		double * ydata = &*(y.begin());
-		double *thedata = &*(_Ap->rawBegin());
+		double *thedata = &*(_Ap->Begin());
 
 		cblas_dgemv(CblasRowMajor, CblasNoTrans, (int)_m, (int)_n, 1, thedata, (int)_n, xdata, 1, 0, ydata, 1);
 		// std::cout << "result to apply :" << y << std::endl;

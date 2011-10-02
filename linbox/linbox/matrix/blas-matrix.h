@@ -28,14 +28,13 @@
  * A \c BlasMatrix<\c _element > represents a matrix as an array of
  * <code>_element</code>s.
  *
- * @todo explain the differences with \c Protected::DenseMatrixBase<\c _element >
- * and \c Protected::DenseSubmatrix<\c _element > or
- * \c DenseMatrix<\c _field >...
  */
 
 #ifndef __LINBOX_blas_matrix_H
 #define __LINBOX_blas_matrix_H
 
+#include "linbox/vector/subiterator.h"
+#include "linbox/vector/subvector.h"
 
 // #include <linbox/solutions/getentry.h>
 #include <linbox/algorithms/linbox-tags.h>
@@ -43,31 +42,56 @@
 #include <linbox/util/debug.h>
 #include <linbox/matrix/matrix-category.h>
 
-#include "linbox/algorithms/cra-full-multip.h"
+// #include "linbox/algorithms/cra-full-multip.h"
+
+
+
+
+// Blas Matrix
 namespace LinBox
 {
 
-	/*! BlasMatrix.
+	/*! Dense matrix representation.
 	 * @ingroup matrix
-	 * Limited docs so far.
+	 * A BlasMatrix is a matrix of \p _Element, with the structure of BLAS matrices.
+	 * It is basically a vector of \p _Element.
+	 * In the Mother model, a BlasMatrix is allocated by the user.
 	 */
 	template <class _Element>
-	class BlasMatrix : public Protected::DenseSubmatrix<_Element> {
-	private :
-		typedef typename Protected::DenseSubmatrix<_Element> Submatrix_t  ;
+	class BlasMatrix {
+		// private :
 
 	public:
-		typedef _Element                                     Element;
-		// typedef _Element* pointer ?
-		typedef typename Submatrix_t::Element * pointer;
-		typedef BlasMatrix<Element>                           Self_t;
+		typedef _Element                            Element;    //!< Element type
+		typedef typename RawVector<Element>::Dense      Rep;    //!< Actually a <code>std::vector<Element></code> (or alike.)
+		// typedef _Element *                          pointer;    //!< pointer to elements type
+		typedef typename Rep::pointer               pointer;    //!< pointer type to elements
+		typedef const pointer                 const_pointer;    //!< const pointer type
+		typedef BlasMatrix<Element>                  Self_t;    //!< Self type
 
 	protected:
-		size_t   _stride;
-		bool      _alloc;
+		size_t      _row;
+		size_t      _col;
+		Rep         _rep;
 		pointer     _ptr;
 
 	private:
+
+#if 0
+		void makePointer()
+		{
+#if 0
+			if (_row && _col) {
+				_ptr = malloc( _row*_col*sizeof(_Element) ) ;
+				linbox_check(_ptr);
+			}
+			else
+				_ptr = NULL ;
+#endif
+			_rep = Rep(_row*_col);
+			_ptr = &_rep[0];
+		}
+#endif
 
 		/*! @internal
 		 * @name create BlasMatrix
@@ -77,69 +101,28 @@ namespace LinBox
 		 * Copy data according to blas container structure.
 		 * Specialisation for BlasContainer.
 		 */
+		void createBlasMatrix (const BlasMatrix<Element> & A) ;
+
+		/*! @internal
+		 * Copy data according to blas container structure.
+		 * Specialisation for BlasContainer.
+		 */
 		template <class _Matrix>
-		void createBlasMatrix (const _Matrix& A, MatrixContainerCategory::BlasContainer)
-		{
-			typename _Matrix::ConstRawIterator         iter_value = A.rawBegin();
-			RawIterator  iter_addr = this->rawBegin();
-			for (;iter_value != A.rawEnd(); ++iter_value,++iter_addr)
-				*iter_addr = *iter_value;
-		}
+		void createBlasMatrix (const _Matrix& A, MatrixContainerCategory::BlasContainer) ;
 
 		/*! @internal
 		 * Copy data according to Matrix container structure.
 		 * Specialisation for Container
 		 */
 		template <class Matrix>
-		void createBlasMatrix (const Matrix& A, MatrixContainerCategory::Container)
-		{
-			// With both iterators, it is Segfaulting !!!!
-			typename Matrix::ConstRawIndexedIterator  iter_index = A.rawIndexedBegin();
-			for (;iter_index != A.rawIndexedEnd(); ++iter_index)
-				this->_M->setEntry( iter_index.rowIndex(),
-						    iter_index.colIndex(),
-						    A.getEntry(iter_index.rowIndex(),iter_index.colIndex())
-						  );
-		}
+		void createBlasMatrix (const Matrix& A, MatrixContainerCategory::Container) ;
 
 		/*! @internal
 		 * Copy data according to blackbox structure.
 		 * Specialisation for Blackbox.
 		 */
 		template <class Matrix>
-		void createBlasMatrix (const Matrix& A, MatrixContainerCategory::Blackbox)
-		{
-			typedef typename Matrix::Field Field;
-			typename Field::Element one, zero;
-			Field F = A.field();
-			F. init(one, 1);
-			F. init(zero, 0);
-
-			std::vector<typename Field::Element> e(A.coldim(), zero), tmp(A.rowdim());
-			typedef typename Protected::DenseSubmatrix<_Element>::ColIterator ColIterator_t ;
-			ColIterator_t col_p;
-
-			typename BlasMatrix<Element>::Col::iterator elt_p;
-
-			typename std::vector<typename Field::Element>::iterator e_p, tmp_p;
-
-
-			for (col_p = Protected::DenseSubmatrix<_Element>:: colBegin(), e_p = e.begin();
-			     e_p != e.end(); ++ col_p, ++ e_p)
-			{
-
-				F.assign(*e_p, one);
-
-				A.apply (tmp, e);
-
-				for (tmp_p = tmp.begin(), elt_p = col_p -> begin();
-				     tmp_p != tmp.end(); ++ tmp_p, ++ elt_p)
-
-					F.assign(*elt_p, *tmp_p);
-
-				F.assign(*e_p, zero);
-			}
-		}
+		void createBlasMatrix (const Matrix& A, MatrixContainerCategory::Blackbox) ;
 
 		/*! @internal
 		 * Copy data according to Matrix container structure (allow submatrix).
@@ -149,20 +132,7 @@ namespace LinBox
 		void createBlasMatrix (const _Matrix& A,
 				       const size_t i0,const size_t j0,
 				       const size_t m, const size_t n,
-				       MatrixContainerCategory::Container)
-		{
-
-			typename _Matrix::ConstRawIterator         iter_value = A.rawBegin();
-			typename _Matrix::ConstRawIndexedIterator  iter_index = A.rawIndexedBegin();
-
-			for (;iter_value != A.rawEnd(); ++iter_value,++iter_index){
-				size_t i,j;
-				i=iter_index.rowIndex();
-				j=iter_index.colIndex();
-				if (( i >= i0) && (i< i0+m) && (j >= j0) && (j < j0+n))
-					this->_M->setEntry(i-i0, j-j0, *iter_value);
-			}
-		}
+				       MatrixContainerCategory::Container) ;
 
 		/*! @internal
 		 * Copy data according to Matrix container structure (allow submatrix).
@@ -172,20 +142,7 @@ namespace LinBox
 		void createBlasMatrix (const Matrix& A,
 				       const size_t i0,const size_t j0,
 				       const size_t m, const size_t n,
-				       MatrixContainerCategory::BlasContainer)
-		{
-
-			typename Matrix::ConstRawIterator         iter_value = A.rawBegin();
-			typename Matrix::ConstRawIndexedIterator  iter_index = A.rawIndexedBegin();
-
-			for (;iter_value != A.rawEnd(); ++iter_value,++iter_index){
-				size_t i,j;
-				i=iter_index.rowIndex();
-				j=iter_index.colIndex();
-				if (( i >= i0) && (i< i0+m) && (j >= j0) && (j < j0+n))
-					this->_M->setEntry(i-i0, j-j0, *iter_value);
-			}
-		}
+				       MatrixContainerCategory::BlasContainer) ;
 
 		/*! @internal
 		 * Copy data according to blackbox structure (allow submatrix).
@@ -196,29 +153,24 @@ namespace LinBox
 		void createBlasMatrix (const Matrix& A,
 				       const size_t i0,const size_t j0,
 				       const size_t m, const size_t n,
-				       MatrixContainerCategory::Blackbox)
-		{
-			throw(NotImplementedYet(__func__,__FILE__,__LINE__,
-						"need to be implemented by succesive apply"));
-		}
+				       MatrixContainerCategory::Blackbox) ;
 
+		void createBlasMatrix (const Element * v) ;
+		void createBlasMatrix (const std::vector<Element> & v) ;
 		/*! @internal
 		 * @}
 		 */
 
 	public:
-		typedef typename Protected::DenseSubmatrix<_Element>::RawIterator RawIterator ; // for nvcc
 
-		/* Constructors. */
+		//////////////////
+		// CONSTRUCTORS //
+		//////////////////
+
 
 		/*! Allocates a new \f$ 0 \times 0\f$ matrix.
 		*/
-		BlasMatrix () :
-			Protected::DenseSubmatrix<Element>(*(new Protected::DenseMatrixBase<Element> (0,0)),0,0,0,0),
-			_stride(0),  _alloc(true)
-		{
-			_ptr = this->_M->FullIterator();
-		}
+		BlasMatrix () ;
 
 		/*! Allocates a new \f$ m \times n\f$ matrix.
 		 * @param m rows
@@ -227,45 +179,19 @@ namespace LinBox
 		//@{
 
 		template<class T>
-		BlasMatrix ( unsigned int m, T n) :
-			Protected::DenseSubmatrix<Element>(*(new Protected::DenseMatrixBase<Element> (m,n)),0,0,m,n),
-			_stride(n), _alloc(true)
-		{
-			_ptr = this->_M->FullIterator();
-		}
+		BlasMatrix ( unsigned int m, T n) ;
 
 		template<class T>
-		BlasMatrix (long m, T n) :
-			Protected::DenseSubmatrix<Element>(*(new Protected::DenseMatrixBase<Element> (m,n)),0,0,m,n),
-			_stride(n), _alloc(true)
-		{
-			_ptr = this->_M->FullIterator();
-		}
+		BlasMatrix (long m, T n) ;
 
 		template<class T>
-		BlasMatrix (unsigned long m, T  n) :
-			Protected::DenseSubmatrix<Element>(*(new Protected::DenseMatrixBase<Element> (m,n)),0,0,m,n),
-			_stride(n), _alloc(true)
-		{
-			_ptr = this->_M->FullIterator();
-		}
+		BlasMatrix (unsigned long m, T  n) ;
 
 		template<class T>
-		BlasMatrix (int m, T n) :
-			Protected::DenseSubmatrix<Element>(*(new Protected::DenseMatrixBase<Element> (m,n)),0,0,m,n),
-			_stride(n), _alloc(true)
-		{
-			_ptr = this->_M->FullIterator();
-		}
+		BlasMatrix (int m, T n) ;
 
 		template<class T>
-		BlasMatrix ( Integer & m, T n) :
-			Protected::DenseSubmatrix<Element>(*(new Protected::DenseMatrixBase<Element> (m,n)),0,0,m,n),
-			_stride(n), _alloc(true)
-		{
-			_ptr = this->_M->FullIterator();
-		}
-
+		BlasMatrix ( Integer & m, T n) ;
 
 		//@}
 
@@ -274,24 +200,13 @@ namespace LinBox
 		 * @param ms matrix stream.
 		 */
 		template< class Field >
-		BlasMatrix(MatrixStream<Field>& ms) :
-			Protected::DenseSubmatrix<Element>(*(new Protected::DenseMatrixBase<Element> (ms))),  _alloc(true)
-		{
-			_ptr = this->_M->FullIterator();
-			_stride= this->coldim();
-		}
+		BlasMatrix(MatrixStream<Field>& ms) ;
 
 		/*! Generic copy constructor from either a blackbox or a matrix container.
 		 * @param A matrix to be copied
 		 */
 		template <class Matrix>
-		BlasMatrix (const Matrix &A) :
-			Protected::DenseSubmatrix<Element>(*(new Protected::DenseMatrixBase<Element> (A.rowdim(),A.coldim())),0,0,A.rowdim(),A.coldim()),
-			_stride(A.coldim()) , _alloc(true)
-		{
-			_ptr = this->_M->FullIterator();
-			createBlasMatrix(A, typename MatrixContainerTrait<Matrix>::Type());
-		}
+		BlasMatrix (const Matrix &A) ;
 
 		/*! Generic copy constructor from either a blackbox or a matrix container (allow submatrix).
 		 * @param A matrix to be copied
@@ -303,239 +218,137 @@ namespace LinBox
 		template <class Matrix>
 		BlasMatrix (const Matrix& A,
 			    const size_t i0, const size_t j0,
-			    const size_t m, const size_t n) :
-			Protected::DenseSubmatrix<Element>( *(new Protected::DenseMatrixBase<Element> (m,n)),0,0,m,n),
-			_stride(A.coldim()) , _alloc(true)
-		{
-			_ptr = this->_M->FullIterator();
-			createBlasMatrix(A, i0, j0, m, n, typename MatrixContainerTrait<Matrix>::Type());
-		}
+			    const size_t m, const size_t n) ;
 
 		/*! Constructor.
 		 * @param A matrix to be copied
-		 * @param F ?
+		 * @param F Field
 		 */
 		template<class _Matrix, class _Field>
-		BlasMatrix (const _Matrix &A,  const _Field &F) :
-		Protected::DenseSubmatrix<Element>( *(new Protected::DenseMatrixBase<Element> (A.rowdim(),A.coldim())),0,0,A.rowdim(),A.coldim() ),
-		_stride(A.coldim()) ,
-		_alloc(true)
-		{
-			_ptr = this->_M->FullIterator() ;
-			typename _Matrix::template rebind<_Field>()(*this,A,F);
-
-		}
-
-#if 1
-		/*! Constructor from matrix (no copy).
-		 * @param A Protected::DenseMatrixBase
-		 */
-		BlasMatrix ( Protected::DenseMatrixBase<Element>& A ) :
-			Protected::DenseSubmatrix<Element>(A,0,0,A.rowdim(),A.coldim()),
-			_stride(A.coldim()) , _alloc(false)
-		{
-			_ptr = this->_M->FullIterator();
-		}
-
-		/*! Constructor from matrix (no copy).
-		 * @param A Protected::DenseMatrixBase
-		 * @param i0
-		 * @param j0
-		 * @param m rows
-		 * @param n columns
-		 */
-		BlasMatrix ( Protected::DenseMatrixBase<Element>& A,
-			     const size_t i0, const size_t j0,
-			     const size_t m, const size_t n) :
-			Protected::DenseSubmatrix<Element>(A,i0,j0,m,n),
-			_stride(A.coldim()) , _alloc(false)
-		{
-			_ptr = this->_M->FullIterator();
-		}
-#endif
-
+		BlasMatrix (const _Matrix &A,  const _Field &F) ;
 
 		/*! Copy Constructor of a matrix (copying data).
 		 * @param A matrix to be copied.
 		 */
-		BlasMatrix (const BlasMatrix<Element>& A) :
-			Protected::DenseSubmatrix<Element>(*(new Protected::DenseMatrixBase<Element> (*A._M)),0,0,A.rowdim(),A.coldim()),
-			_stride(A._stride), _alloc(true)
-		{
-			_ptr = this->_M->FullIterator();
-		}
+		BlasMatrix (const BlasMatrix<Element>& A) ;
 
-
-#if 1
-		/// Copy Contructor of a matrix (no copy is done, just through pointer)
-		/*! @param A BlasMatrix to be copied
-		*/
-		BlasMatrix(BlasMatrix<Element>& A) :
-			Protected::DenseSubmatrix<Element>(A),
-			_stride(A._stride), _alloc(false), _ptr(A._ptr)
-		{}
-
-
-		/// Copy Contructor of a submatrix (no copy is done, just through pointer)
-		/*! @param A BlasMatrix to be copied
-		 * @param i0
-		 * @param j0
-		 * @param m rows
-		 * @param n columns
+		/*! Create a BlasMatrix from a vector of elements
+		 * @param A matrix to be copied.
 		 */
-		BlasMatrix(BlasMatrix<Element>& A, const size_t i, const size_t j, const size_t m, const size_t n) :
-			Protected::DenseSubmatrix<Element>(A,i,j,m,n),
-			_stride(A._stride), _alloc(false),
-			_ptr(A._ptr+ i*A._stride+j)
-		{}
-#endif
+		BlasMatrix (const std::vector<Element>& v, size_t m, size_t n) ;
 
-
-
-#if 0 /*  Create a blas matrix from a pointer of elements
-       *  (without allocating a vector in Protected::DenseMatrixBase...)
-       *  is it possible ? */
-		BlasMatrix(size_t m, size_t n, size_t stride,
-			   Element * A, size_t lda)
-		{
-
-		}
-#endif
-
+		/*! Create a BlasMatrix from an array of elements
+		 * @param A matrix to be copied.
+		 */
+		BlasMatrix (const _Element * v, size_t m, size_t n) ;
 
 		/// Destructor.
-		~BlasMatrix ()
-		{
-			if (_alloc)
-				delete this->_M;
-		}
+		~BlasMatrix () ;
+
+		//! operator = (copying data)
+		BlasMatrix<Element>& operator= (const BlasMatrix<Element>& A) ;
 
 		//! Rebind operator
 		template<typename _Tp1>
-		struct rebind {
-			typedef BlasMatrix<typename _Tp1::Element> other;
+		struct rebind ;
 
-			void operator() (other & Ap, const Self_t& A, const _Tp1& F)
-			{
-				typedef typename Protected::DenseSubmatrix<_Element>::ConstRawIndexedIterator ConstRawIndexedIterator ;
-				typedef typename Protected::DenseSubmatrix<_Element>::ConstRawIterator ConstRawIterator ;
-				ConstRawIterator         iter_value = A.rawBegin();
-				ConstRawIndexedIterator  iter_index = A.rawIndexedBegin();
-				typename _Tp1::Element tmp;
-				for (;iter_value != A.rawEnd(); ++iter_value,++iter_index){
-					F.init(  tmp, *iter_value );
-					Ap.setEntry(iter_index.rowIndex(), iter_index.colIndex(),tmp);
-				}
-#if 0
-				linbox_check( Ap.rowdim() == A.rowdim() );
-				linbox_check( Ap.coldim() == A.coldim() ) ;
-				for (size_t i = 0 ; i < A.rowdim() ; ++i)
-					for (size_t j = 0 ; j < A.coldim() ; ++j) {
-						F.init(Ap.refEntry(i,j),(Element)A.getEntry(i,j));
-					}
-#endif
-				return ;
-			}
-		};
+		//////////////////
+		//  DIMENSIONS  //
+		//////////////////
+
+		/** Get the number of rows in the matrix.
+		 * @returns Number of rows in matrix
+		 */
+		size_t rowdim() const ;
+
+		/** Get the number of columns in the matrix.
+		 * @returns Number of columns in matrix
+		 */
+		size_t coldim() const ;
+
+		/*! Get the stride of the matrix.
+		 */
+		size_t getStride() const;
+
+		/*!Get a reference to the stride of the matrix.
+		 * Modify stride this way.
+		 */
+		size_t& getWriteStride();
 
 
-		//! operator = (copying data)
-		BlasMatrix<Element>& operator= (const BlasMatrix<Element>& A)
-		{
+		/** Resize the matrix to the given dimensions.
+		 * The state of the matrix's entries after a call to this method is
+		 * undefined
+		 * @param m Number of rows
+		 * @param n Number of columns
+		 * @param val
+		 */
+		void resize (size_t m, size_t n, const Element& val = Element()) ;
 
-			Protected::DenseMatrixBase<Element> *tmp= this->_M;
-			this->_M       = new Protected::DenseMatrixBase<Element>(*A._M);
-			if (_alloc) {
-				delete tmp;
-			}
-			this->_beg_row = A._beg_row;
-			this->_end_row = A._end_row;
-			this->_beg_col = A._beg_col;
-			this->_end_col = A._end_col;
-			_ptr     = this->_M->FullIterator();
-			_alloc   = true;
-			_stride  = A._stride;
-
-			return *this;
-		}
+		//////////////////
+		//   ELEMENTS   //
+		//////////////////
 
 		/*! @internal
 		 * Get read-only pointer to the matrix data.
 		 */
-		pointer getPointer() const
-		{
-			return _ptr;
-		}
+		pointer getPointer() const ;
+
+		const_pointer &getConstPointer() const ;
+
 
 		/*! @internal
 		 * Get write pointer to the matrix data.
 		 * Data may be changed this way.
 		 */
-		pointer& getWritePointer()
-		{
-			return _ptr;
-		}
+		pointer& getWritePointer() ;
 
-		/*! @internal
-		 * Get the stride of the matrix
+		/** Set the entry at the (i, j) position to a_ij.
+		 * @param i Row number, 0...rowdim () - 1
+		 * @param j Column number 0...coldim () - 1
+		 * @param a_ij Element to set
 		 */
-		size_t getStride() const
-		{
-			return _stride;
-		}
+		void setEntry (size_t i, size_t j, const Element &a_ij) ;
 
-		/*! @internal
-		 * Get a reference to the stride of the matrix.
-		 * Modify stride this way.
+		/** Get a writeable reference to the entry in the (i, j) position.
+		 * @param i Row index of entry
+		 * @param j Column index of entry
+		 * @returns Reference to matrix entry
 		 */
-		size_t& getWriteStride()
-		{
-			return _stride;
-		}
+		Element &refEntry (size_t i, size_t j) ;
 
-		/*! @internal Is the matrix allocated ?
-		*/
-		bool isAllocated()
-		{
-			return _alloc ;
-		}
+		/** Get a read-only reference to the entry in the (i, j) position.
+		 * @param i Row index
+		 * @param j Column index
+		 * @returns Const reference to matrix entry
+		 */
+		const Element &getEntry (size_t i, size_t j) const ;
+
+		/** Copy the (i, j) entry into x, and return a reference to x.
+		 * This form is more in the Linbox style and is provided for interface
+		 * compatibility with other parts of the library
+		 * @param x Element in which to store result
+		 * @param i Row index
+		 * @param j Column index
+		 * @returns Reference to x
+		 */
+		Element &getEntry (Element &x, size_t i, size_t j) const ;
+
+		///////////////////
+		// TRANSPOSE &AL //
+		///////////////////
 
 		/*! Creates a transposed matrix of \c *this.
 		 * @param[in] tM
 		 * @return the transposed matrix of this.
 		 */
-		BlasMatrix<Element> transpose(BlasMatrix<Element> & tM) const
-		{
-			size_t r = this->rowdim() ;
-			size_t c = this->coldim() ;
-			linbox_check(tM.coldim() == r );
-			linbox_check(tM.rowdim() == c);
-			for (size_t i = 0 ; i < r ; ++i)
-				for (size_t j = 0 ; j < c ; ++j)
-					tM.setEntry(j,i,this->getEntry(i,j));
-			return tM;
-		}
+		BlasMatrix<Element> transpose(BlasMatrix<Element> & tM) const ;
 
 
 		/*! Transpose (inplace).
 		 * If rows and columns agree, we can transpose inplace.
 		 */
-		void transpose()
-		{
-			size_t r = this->rowdim() ;
-			size_t c = this->coldim() ;
-			if ( r == c) {
-				for (size_t i = 0 ; i < r ; ++i)
-					for (size_t j = i+1 ; j < c ; ++j)
-						std::swap(this->refEntry(i,j),this->refEntry(j,i));
-			}
-			else {
-				// maybe this should be possible on a DenseMatrix sharing its data with
-				// a BlasMatrix but with rowdim/coldim integer members.
-				// Or this has an integer rowdim/coldim member, mutable.
-				throw LinBoxError("you cannot transpose a BlasMatrix in place where m != n...");
-			}
-		}
+		void transpose() ;
 
 		/*! Reverse the rows of a matrix.
 		 * This is done inplace.
@@ -543,57 +356,489 @@ namespace LinBox
 		 * permutation or the matrix (i,j) = (i+j+1==m)). Then,
 		 * we compute A <- J.A;
 		 */
-		void reverseRows()
-		{
-			size_t r = this->rowdim()/2 ;
-			typedef UnparametricField<_Element> Field ;
-			Field F ;
-			VectorDomain<Field> Vd(F);
-			for (size_t i = 0 ; i <  r ; ++i) {
-				Vd.swap( this->rowBegin()+i,
-					 this->rowBegin()+(r-1-i) );
-			}
-
-		}
+		void reverseRows() ;
 
 		/*! Reverse the columns of a matrix.
 		 * This is done inplace.
 		 * This is A <- J.A
 		 */
-		void reverseCols()
-		{
-			size_t r = this->rowdim() ;
-			size_t c = this->coldim()/2 ;
-			for (size_t j = 0 ; j < c ; ++j) {
-				for (size_t i = 0 ; i < r ; ++i) {
-					std::swap(this->refEntry(i,j),
-						  this->refEntry(i,c-j-1));
-
-				}
-			}
-		}
+		void reverseCols() ;
 
 		/*! Reverse the rows/columns of a matrix.
 		 * This is done inplace.
 		 * This is A <- J.A.J
 		 */
-		void reverse()
-		{
-			size_t r = this->rowdim() ;
-			size_t c = this->coldim() ;
-			for (size_t j = 0 ; j < c ; ++j) {
-				for (size_t i = 0 ; i < r ; ++i) {
-					std::swap(this->refEntry(i,j),
-						  this->refEntry(r-i-1,c-j-1));
+		void reverse() ;
 
-				}
-			}
-		}
+		///////////////////
+		//      I/O      //
+		///////////////////
 
+		/** Read the matrix from an input stream.
+		 * The stream is in SMS or DENSE format
+		 * @param file Input stream from which to read
+		 * @param F Field over which to read
+		 */
+		template <class Field>
+		std::istream &read (std::istream &file, const Field &F);
+
+		/** Write the matrix to an output stream.
+		 * @todo factorise writing matrices code.
+		 * @param os Output stream to which to write
+		 * @param F Field over which to write
+		 * @param mapleFormat write in Maple format ?
+		 */
+		template <class Field>
+		std::ostream &write (std::ostream &os, const Field &F,
+				     bool mapleFormat=true) const;
+
+		/** Write brutally the matrix to an output stream.
+		 * This a raw version of \c write(os,F) (no field is given).
+		 * @param os Output stream to which to write
+		 * @param mapleFormat write in maple format ?
+		 */
+		std::ostream &write (std::ostream &os,
+				     bool mapleFormat=true) const;
+
+
+		///////////////////
+		//   ITERATORS   //
+		///////////////////
+
+		/** @name Column of rows iterator
+		 * \brief
+		 * The column of rows iterator traverses the rows of the
+		 * matrix in ascending order. Dereferencing the iterator yields
+		 * a row vector in dense format
+		 */
+		//@{
+		typedef Subvector<typename Rep::iterator, typename Rep::const_iterator> Row;
+		typedef Subvector<typename Rep::const_iterator>                    ConstRow;
+
+		/*!  Row Iterator.
+		 * @ingroup iterators
+		 * @brief NO DOC
+		 */
+		class RowIterator;
+		/*! Const Row Iterator.
+		 * @ingroup iterators
+		 * @brief NO DOC
+		 */
+		class ConstRowIterator;
+
+		RowIterator      rowBegin ();
+		RowIterator      rowEnd ();
+		ConstRowIterator rowBegin () const;
+		ConstRowIterator rowEnd   () const;
+		//@}
+
+		/** @name Row of columns iterator
+		 * \brief
+		 * The row of columns iterator traverses the columns of the
+		 * matrix in ascending order. Dereferencing the iterator yields
+		 * a column vector in dense format
+		 */
+		//@{
+		typedef Subvector<Subiterator<typename Rep::iterator> >            Col;
+		typedef Subvector<Subiterator<typename Rep::const_iterator> > ConstCol;
+		typedef Col           Column;
+		typedef ConstCol ConstColumn;
+
+		/*! Col Iterator.
+		 * @ingroup iterators
+		 * @brief NO DOC
+		 */
+		class ColIterator;
+		/*! Const Col Iterator.
+		 * @ingroup iterators
+		 * @brief NO DOC
+		 */
+		class ConstColIterator;
+
+		ColIterator      colBegin ();
+		ColIterator      colEnd ();
+		ConstColIterator colBegin () const;
+		ConstColIterator colEnd ()   const;
+		//@}
+
+		/** @name Iterator
+		 * \brief
+		 *
+		 * The iterator is a method for accessing all entries in the matrix
+		 * in some unspecified order. This can be used, e.g. to reduce all
+		 * matrix entries modulo a prime before passing the matrix into an
+		 * algorithm.
+		 */
+		//@{
+		typedef typename Rep::iterator Iterator;
+		typedef typename Rep::const_iterator ConstIterator;
+
+		Iterator      Begin ();
+		Iterator      End   ();
+		ConstIterator Begin () const;
+		ConstIterator End   () const;
+		//@}
+
+		/** @name Raw Indexed iterator
+		 * \brief
+		 *
+		 * Like the raw iterator, the indexed iterator is a method for
+		 * accessing all entries in the matrix in some unspecified order.
+		 * At each position of the the indexed iterator, it also provides
+		 * the row and column indices of the currently referenced entry.
+		 * This is provided through it's \c rowIndex() and \c colIndex() functions.
+		 */
+		//@{
+		class IndexedIterator;
+		/*! Const Indexed Iterator.
+		 * @ingroup iterators
+		 * @brief NO DOC
+		 */
+		class ConstIndexedIterator;
+
+		IndexedIterator      IndexedBegin ();
+		IndexedIterator      IndexedEnd   ();
+		ConstIndexedIterator IndexedBegin () const;
+		ConstIndexedIterator IndexedEnd   () const;
+		//@}
+
+		/** Retrieve a reference to a row.
+		 * Since rows may also be indexed, this allows A[i][j] notation
+		 * to be used.
+		 * @param i Row index
+		 */
+		//@{
+		Row      operator[] (size_t i) ;
+		ConstRow operator[] (size_t i) const ;
+		//@}
+
+		///////////////////
+		//     MISC     //
+		///////////////////
+
+
+		/** Compute column density.
+		 * @param v
+		 */
+		template <class Vector>
+		Vector &columnDensity (Vector &v) const ;
 
 	}; // end of class BlasMatrix
 
+	template <class Element>
+	struct MatrixTraits< BlasMatrix<Element> > {
+		typedef BlasMatrix<Element> MatrixType;
+		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
+	};
 
+	template <class Element>
+	struct MatrixTraits< const BlasMatrix<Element> > {
+		typedef const BlasMatrix<Element> MatrixType;
+		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
+	};
+
+	/*! Write a matrix to a stream.
+	 * The C++ way using <code>operator<<</code>
+	 * @param o output stream
+	 * @param M matrix to write.
+	 */
+	template<class T>
+	std::ostream& operator<< (std::ostream & o, const BlasMatrix<T> & Mat)
+	{
+		return Mat.write(o);
+	}
+
+} // end of namespace LinBox
+
+// Blas Submatrix
+namespace LinBox
+{
+	/*! Dense Submatrix representation.
+	 * @ingroup matrix
+	 * A @ref BlasSubmatrix is a matrix of \p _Element, with the structure of BLAS matrices.
+	 * It is basically a read/write view on a vector of \p _Element.
+	 * In the Mother model, a @ref BlasSubmatrix is not allocated.
+	 * <p>
+	 * This matrix type conforms to the same interface as @ref BlasMatrix,
+	 * except that you cannot resize it. It represents a submatrix of a dense
+	 * matrix. Upon construction, one can freely manipulate the entries in the
+	 * DenseSubmatrix, and the corresponding entries in the underlying
+	 * @ref BlasMatrix will be modified.
+
+
+	 */
+	template <class _Element>
+	class BlasSubmatrix {
+	public :
+		typedef _Element                  Element;      //!< Element type
+		typedef BlasSubmatrix<_Element>   Self_t;       //!< Self type
+
+
+	protected:
+		BlasMatrix<Element> *_M;       //!< Parent BlasMatrix (ie raw vector)
+		size_t _row;                   //!< row dimension of Submatrix
+		size_t _col;                   //!< col dimension of Submatrix
+		size_t _r0;                    //!< upper left corner row of Submatrix in \p _M
+		size_t _c0;                    //!< upper left corner row of Submatrix in \p _M
+		size_t _stride ;               //!< number of columns in \p _M (or stride of \p _M)
+
+	public:
+
+		//////////////////
+		// CONSTRUCTORS //
+		//////////////////
+
+
+		/*  constructors */
+
+		/** NULL constructor.  */
+		BlasSubmatrix () :
+			_M(NULL),_row(0),_col(0),_r0(0),_c0(0)
+		{}
+
+		/** Constructor from an existing @ref BlasMatrix and dimensions.
+		 * \param M Pointer to @ref BlasMatrix of which to construct submatrix
+		 * \param rowbeg Starting row
+		 * \param colgeb Starting column
+		 * \param Rowdim Row dimension
+		 * \param Coldim Column dimension
+		 */
+		BlasSubmatrix (const BlasMatrix<Element> &M,
+			       size_t rowbeg,
+				size_t colbeg,
+				size_t Rowdim,
+				size_t Coldim);
+
+		/** Constructor from an existing @ref DenseMatrixBase
+		 * \param M Pointer to @ref DenseMatrixBase of which to construct submatrix
+		 */
+		BlasSubmatrix (const BlasMatrix<Element> &M);
+
+
+		/** Constructor from an existing submatrix and dimensions
+		 * @param SM Constant reference to BlasSubmatrix from which to
+		 *           construct submatrix
+		 * @param rowbeg Starting row
+		 * @param colbeg Starting column
+		 * @param Rowdim Row dimension
+		 * @param Coldim Column dimension
+		 */
+		BlasSubmatrix (const BlasSubmatrix<Element> &SM,
+				size_t rowbeg,
+				size_t colbeg,
+				size_t Rowdim,
+				size_t Coldim);
+
+		/** Copy constructor.
+		 * @param SM Submatrix to copy
+		 */
+		BlasSubmatrix (const BlasSubmatrix<Element> &SM);
+
+
+		/*  Members  */
+
+		/** Assignment operator.
+		 * Assign the given submatrix to this one
+		 * This is <i>only</i> renaming !
+		 * There is no copy because BlasSubmatrix owns nothing.
+		 * @param SM Submatrix to assign
+		 * @return Reference to this submatrix
+		 */
+		BlasSubmatrix &operator = (const BlasSubmatrix<Element> &SM);
+
+		template<typename _Tp1>
+		struct rebind {
+			typedef BlasSubmatrix<typename _Tp1::Element> other;
+		};
+
+		//////////////////
+		//  DIMENSIONS  //
+		//////////////////
+
+		/** Get the number of rows in the matrix
+		 * @return Number of rows in matrix
+		 */
+		size_t rowdim () const;
+
+		/** Get the number of columns in the matrix
+		 * @return Number of columns in matrix
+		 */
+		size_t coldim () const ;
+
+		/*! Get the stride of the matrix.
+		 * @return stride of submatrix (number of cols of dense base matrix)
+		 */
+		size_t getStride() const;
+
+
+		///////////////////
+		//      I/O      //
+		///////////////////
+
+		/** Read the matrix from an input stream.
+		 * @param file Input stream from which to read
+		 * @param field
+		 */
+		template<class Field>
+		std::istream& read (std::istream &file, const Field& field);
+
+		/** Write the matrix to an output stream.
+		 * @param os Output stream to which to write
+		 * @param field
+		 * @param mapleFormat write in Maple(r) format ?
+		 */
+		template<class Field>
+		std::ostream& write (std::ostream &os, const Field& field,
+				     bool mapleFormat = true) const;
+
+		/** Write the matrix to an output stream.
+		 * This a raw version of \c write(os,F) (no field is given).
+		 * @param os Output stream to which to write
+		 * @param mapleFormat write in Maple(r) format ?
+		 */
+		std::ostream& write (std::ostream &os,
+				     bool mapleFormat = true) const;
+
+
+		//////////////////
+		//   ELEMENTS   //
+		//////////////////
+
+
+		/** Set the entry at (i, j).
+		 * @param i Row number, 0...rowdim () - 1
+		 * @param j Column number 0...coldim () - 1
+		 * @param a_ij Element to set
+		 */
+		void setEntry (size_t i, size_t j, const Element &a_ij) ;
+
+		/** Get a writeable reference to an entry in the matrix.
+		 * @param i Row index of entry
+		 * @param j Column index of entry
+		 * @return Reference to matrix entry
+		 */
+		Element &refEntry (size_t i, size_t j) ;
+
+		/** Get a read-only individual entry from the matrix.
+		 * @param i Row index
+		 * @param j Column index
+		 * @return Const reference to matrix entry
+		 */
+		const Element &getEntry (size_t i, size_t j) const ;
+
+		/** Get an entry and store it in the given value.
+		 * This form is more in the Linbox style and is provided for interface
+		 * compatibility with other parts of the library
+		 * @param x Element in which to store result
+		 * @param i Row index
+		 * @param j Column index
+		 * @return Reference to x
+		 */
+		Element &getEntry (Element &x, size_t i, size_t j) const ;
+
+
+		///////////////////
+		//   ITERATORS   //
+		///////////////////
+
+		//! @name Forward declaration of Raw Iterators.
+		//@{
+		class Iterator  ;
+		class ConstIterator ;
+
+		class IndexedIterator ;
+		class ConstIndexedIterator ;
+		//@}
+
+
+		/** @name typedef'd Row Iterators.
+		 *\brief
+		 * The row iterator gives the rows of the
+		 * matrix in ascending order. Dereferencing the iterator yields
+		 * a row vector in dense format
+		 * @{
+		 */
+		typedef typename BlasMatrix<Element>::RowIterator            RowIterator;
+		typedef typename BlasMatrix<Element>::ConstRowIterator       ConstRowIterator;
+		typedef typename BlasMatrix<Element>::Row                    Row;
+		typedef typename BlasMatrix<Element>::ConstRow               ConstRow;
+		//@} Row Iterators
+
+		/** @name typedef'd Column Iterators.
+		 *\brief
+		 * The columns iterator gives the columns of the
+		 * matrix in ascending order. Dereferencing the iterator yields
+		 * a column vector in dense format
+		 * @{
+		 */
+		typedef typename BlasMatrix<Element>::ColIterator            ColIterator;
+		typedef typename BlasMatrix<Element>::ConstColIterator       ConstColIterator;
+		typedef typename BlasMatrix<Element>::Col                    Col;
+		typedef typename BlasMatrix<Element>::Column                 Column;
+		typedef typename BlasMatrix<Element>::ConstCol               ConstCol;
+		//@} // Column Iterators
+
+
+
+		RowIterator      rowBegin ();        //!< iterator to the begining of a row
+		RowIterator      rowEnd ();          //!< iterator to the end of a row
+		ConstRowIterator rowBegin () const;  //!< const iterator to the begining of a row
+		ConstRowIterator rowEnd ()   const;  //!< const iterator to the end of a row
+
+		ColIterator      colBegin ();
+		ColIterator      colEnd ();
+		ConstColIterator colBegin () const;
+		ConstColIterator colEnd ()   const;
+
+		Iterator      Begin ();
+		Iterator      End ();
+		ConstIterator Begin () const;
+		ConstIterator End ()   const;
+
+
+		IndexedIterator      IndexedBegin();
+		IndexedIterator      IndexedEnd();
+		ConstIndexedIterator IndexedBegin() const;
+		ConstIndexedIterator IndexedEnd()   const;
+
+		/*!  operator[].
+		 * Retrieve a reference to a row
+		 * @param i Row index
+		 */
+		Row      operator[] (size_t i) ;
+		ConstRow operator[] (size_t i) const ;
+
+	};
+
+
+	template <class Element>
+	struct MatrixTraits< BlasSubmatrix<Element> > {
+		typedef BlasSubmatrix<Element> MatrixType;
+		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
+	};
+
+	template <class Element>
+	struct MatrixTraits< const BlasSubmatrix<Element> > {
+		typedef const BlasSubmatrix<Element> MatrixType;
+		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
+	};
+
+	/*! Write a matrix to a stream.
+	 * The C++ way using <code>operator<<</code>
+	 * @param o output stream
+	 * @param M matrix to write.
+	 */
+	template<class T>
+	std::ostream& operator<< (std::ostream & o, const BlasSubmatrix<T> & Mat)
+	{
+		return Mat.write(o);
+	}
+
+}
+
+// Triangular, Transposed Matrix
+namespace LinBox
+{
 	//! Triangular BLAS matrix.
 	template <class Element>
 	class TriangularBlasMatrix: public BlasMatrix<Element> {
@@ -707,17 +952,10 @@ namespace LinBox
 
 	}; // end of class TriangularBlasMatrix
 
-	template <class Element>
-	struct MatrixTraits< BlasMatrix<Element> > {
-		typedef BlasMatrix<Element> MatrixType;
-		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
-	};
+} // LinBox
 
-	template <class Element>
-	struct MatrixTraits< const BlasMatrix<Element> > {
-		typedef const BlasMatrix<Element> MatrixType;
-		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
-	};
+namespace LinBox
+{
 
 
 	/** Class used for permuting indices.
@@ -740,125 +978,11 @@ namespace LinBox
 		}
 		int characteristic() const { return 0 ; }
 	};
-
-#if 0 /*  original BlasPermutation */
-	// Dan Roche 7-8-04 Changed _P to _PP to avoid confict with a macro defined in
-	// <iostream> somewhere.
-	/*! BlasPermutation.
-	 * Lapack ipiv style compressed permutation.
-	 * @todo to be deprecated
-	 */
-	class BlasPermutation {
+}
 
 
-	public:
-
-		/// null constructor
-		BlasPermutation() {};
-
-		BlasPermutation( const size_t n ) :
-			_PP(n), _order( n ), _size( -1 )
-		{};
-
-		BlasPermutation( const std::vector<size_t> P ) :
-			_PP( P ), _order( P.size() ) , _size( -1 )
-		{};
-
-		BlasPermutation( const std::vector<size_t> P, size_t order ) :
-			_PP( P ), _order( order ) , _size( -1 )
-		{};
-
-		BlasPermutation( const std::vector<size_t> P,
-				 size_t order, size_t size ) :
-			_PP( P ), _order( order ) , _size( size )
-		{};
-
-		BlasPermutation( const BlasPermutation& P) :
-			_PP( P._PP ), _order( P._order ) , _size( size )
-		{};
-
-		BlasPermutation& operator=( const BlasPermutation& P )
-		{
-			_PP    = P._PP;
-			_order = P._order;
-			_size  = P._size ;
-			return *this;
-		}
-
-		const size_t* getPointer() const
-		{
-			return &_PP[0];
-		}
-
-		size_t* getWritePointer()
-		{
-			return &_PP[0];
-		}
-
-		size_t  getOrder()  const
-		{
-			return _order;
-		}
-
-		size_t  getSize()  const
-		{
-			if (_size == -1)
-				_size = (*(std::max_element(_PP.begin(),_PP.end())))+1 ;
-			return _size;
-		}
-
-		BlasPermutation& extendTrivially(const size_t newSize)
-		{
-			if (newSize < _order)
-				std::cerr << "WARNING: attempting to reduce size of permutation.";
-			_PP.resize(newSize);
-			for (size_t i=_order; i<newSize; i++)
-				_PP[i] = i;
-			_order = newSize;
-			return *this;
-		};
-
-	protected:
-
-		std::vector<size_t>  _PP ;    //!< Lapack representation of the permutation
-		size_t               _order;  //!< size of the representation (number of permutations)
-		mutable size_t       _size ;  //!< size of the permutation (computed if necessary)
-
-	private :
-
-		/// compresses PackedPermutation to a smaller \c r_.
-		void Compress_()
-		{
-			if (_order==0) {
-				_PP.resize(0) ;
-				// Id_ = true ;
-				return ;
-			}
-			linbox_check(_order);
-			size_t rr = _order-1 ;
-			while ( rr && (_PP[rr] == 0  )) --rr ;    // removing trailing zeros
-			while ( rr && (_PP[rr] == rr )) --rr ;    // useless information
-			if ((rr == 0) && (_PP[0] == 0)) {
-				_order = 0 ;
-				_size = 0  ;
-				Id_ = true ;
-				_PP.resize(0) ;
-				return ;
-			}
-			_order = rr+1 ;
-			_PP.resize(_order,0);   // done cleaning.
-			// recomputing n_ if lost.
-			if (_size !=  -1) {
-				_size = getSize();
-			}
-			cleaned_ = true ;
-			return ;
-		}
-
-
-	}; // end of class BlasPermutation
-#endif
-
+namespace LinBox
+{
 	/*! TransposedBlasMatrix.
 	 * NO DOC
 	 */
@@ -912,7 +1036,10 @@ namespace LinBox
 	};
 
 
-} // end of namespace LinBox
+}
+
+#include "blas-matrix.inl"
+#include "blas-submatrix.inl"
 
 #endif // __LINBOX_blas_matrix_H
 

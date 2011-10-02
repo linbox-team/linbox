@@ -84,7 +84,7 @@ namespace LinBox
 	 *
 	 * For all of the arithmetic operations that output matrices, it is assumed that
 	 * the output matrix has an efficient row iterator. In typical use, the output
-	 * matrix will be a \ref DenseMatrixBase or a \ref DenseSubmatrix, which has
+	 * matrix will be a \ref BlasMatrix or a \ref BlasSubmatrix, which has
 	 * efficient row and column iterators. In particular, one should not perform
 	 * these arithmetic operations outputting to a \ref SparseMatrixBase.
 	 *
@@ -295,7 +295,7 @@ namespace LinBox
 		 *
 		 * C must support both row and column iterators, and the vector
 		 * representations must be dense. Examples of supported matrices are
-		 * \ref DenseMatrixBase and \ref DenseSubmatrix.
+		 * \ref BlasMatrix and \ref BlasSubmatrix.
 		 *
 		 * Either A or B, or both, may have limited iterators. However, either A
 		 * must support row iterators or B must support column iterators. If

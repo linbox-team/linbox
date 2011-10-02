@@ -1246,8 +1246,8 @@ namespace LinBox
 			magn.start();
 			// magnitude of A and b
 			integer maxValue=0,value, MagnA, Magnb;
-			typename LiftingContainer::IMatrix::ConstRawIterator it = _lcontainer.getMatrix().rawBegin();
-			for (; it != _lcontainer.getMatrix().rawEnd(); ++it) {
+			typename LiftingContainer::IMatrix::ConstIterator it = _lcontainer.getMatrix().Begin();
+			for (; it != _lcontainer.getMatrix().End(); ++it) {
 				_r.convert(value,*it);
 				if (value<0) value=-value;
 				if (value> maxValue)
@@ -1575,8 +1575,8 @@ namespace LinBox
 			magn.start();
 			// magnitude of A and b
 			integer maxValue=0,value, MagnA, Magnb;
-			typename LiftingContainer::IMatrix::ConstRawIterator it = _lcontainer.getMatrix().rawBegin();
-			for (; it != _lcontainer.getMatrix().rawEnd(); ++it) {
+			typename LiftingContainer::IMatrix::ConstIterator it = _lcontainer.getMatrix().Begin();
+			for (; it != _lcontainer.getMatrix().End(); ++it) {
 				_r.convert(value,*it);
 				if (value<0) value=-value;
 				if (value> maxValue)
@@ -1899,8 +1899,8 @@ namespace LinBox
 			magn.start();
 			// magnitude of A and b
 			integer maxValue=0,value, MagnA, Magnb;
-			typename LiftingContainer::IMatrix::ConstRawIterator it = _lcontainer.getMatrix().rawBegin();
-			for (; it != _lcontainer.getMatrix().rawEnd(); ++it) {
+			typename LiftingContainer::IMatrix::ConstIterator it = _lcontainer.getMatrix().Begin();
+			for (; it != _lcontainer.getMatrix().End(); ++it) {
 				_r.convert(value,*it);
 				if (value<0) value=-value;
 				if (value> maxValue)

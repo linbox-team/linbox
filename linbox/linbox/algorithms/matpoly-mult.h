@@ -1178,9 +1178,9 @@ namespace LinBox
 			// #endif
 			for (size_t i=0; i< pts; ++i){
 				if (revbit[i]>i){
-					typename Coefficient::RawIterator it_a1=fft_a[i].rawBegin();
-					typename Coefficient::RawIterator it_a2=fft_a[revbit[i]].rawBegin();
-					for (; it_a1 != fft_a[i].rawEnd(); ++it_a1, ++it_a2){
+					typename Coefficient::Iterator it_a1=fft_a[i].Begin();
+					typename Coefficient::Iterator it_a2=fft_a[revbit[i]].Begin();
+					for (; it_a1 != fft_a[i].End(); ++it_a1, ++it_a2){
 						_F.assign(swapping,*it_a1);
 						_F.assign(*it_a1, *it_a2);
 						_F.assign(*it_a2,swapping);
@@ -1358,9 +1358,9 @@ namespace LinBox
 			// #endif
 			for (size_t i=0; i< pts; ++i){
 				if (revbit[i]>i){
-					typename Coefficient::RawIterator it_a1=fft_a[i].rawBegin();
-					typename Coefficient::RawIterator it_a2=fft_a[revbit[i]].rawBegin();
-					for (; it_a1 != fft_a[i].rawEnd(); ++it_a1, ++it_a2){
+					typename Coefficient::Iterator it_a1=fft_a[i].Begin();
+					typename Coefficient::Iterator it_a2=fft_a[revbit[i]].Begin();
+					for (; it_a1 != fft_a[i].End(); ++it_a1, ++it_a2){
 						_F.assign(swapping,*it_a1);
 						_F.assign(*it_a1, *it_a2);
 						_F.assign(*it_a2,swapping);
@@ -1514,9 +1514,9 @@ namespace LinBox
 			// #endif
 			for (size_t i=0; i< pts; ++i){
 				if (revbit[i]>i){
-					typename Coefficient::RawIterator it_a1=fft_a[i].rawBegin();
-					typename Coefficient::RawIterator it_a2=fft_a[revbit[i]].rawBegin();
-					for (; it_a1 != fft_a[i].rawEnd(); ++it_a1, ++it_a2){
+					typename Coefficient::Iterator it_a1=fft_a[i].Begin();
+					typename Coefficient::Iterator it_a2=fft_a[revbit[i]].Begin();
+					for (; it_a1 != fft_a[i].End(); ++it_a1, ++it_a2){
 						_F.assign(swapping,*it_a1);
 						_F.assign(*it_a1, *it_a2);
 						_F.assign(*it_a2,swapping);
@@ -1561,10 +1561,10 @@ namespace LinBox
 
 		template<class Coeff>
 		inline void Butterfly (Coeff &A, Coeff &B, const Element &alpha) {
-			typename Coeff::RawIterator it_a= A.rawBegin();
-			typename Coeff::RawIterator it_b= B.rawBegin();
+			typename Coeff::Iterator it_a= A.Begin();
+			typename Coeff::Iterator it_b= B.Begin();
 			Element tmp;
-			for (; it_a != A.rawEnd(); ++it_a, ++it_b){
+			for (; it_a != A.End(); ++it_a, ++it_b){
 				_F.assign(tmp,*it_a);
 				_F.addin(*it_a, *it_b);
 				_F.sub(*it_b, tmp, *it_b);

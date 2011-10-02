@@ -50,12 +50,12 @@ namespace LinBox
 				const typename Field::Element                             &a)
 	{
 		R= P[0];
-		typename BlasMatrix<typename Field::Element>::RawIterator it_R;
-		typename BlasMatrix<typename Field::Element>::ConstRawIterator it_P;
+		typename BlasMatrix<typename Field::Element>::Iterator it_R;
+		typename BlasMatrix<typename Field::Element>::ConstIterator it_P;
 		for (size_t k=1; k<P.size(); ++k){
-			it_R = R.rawBegin();
-			it_P = P[k].rawBegin();
-			for (;it_R != R.rawEnd(); ++it_R, ++it_P){
+			it_R = R.Begin();
+			it_P = P[k].Begin();
+			for (;it_R != R.End(); ++it_R, ++it_P){
 				F.mulin(*it_R, a);
 				F.addin(*it_R, *it_P);
 			}

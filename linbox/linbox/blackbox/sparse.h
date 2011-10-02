@@ -22,8 +22,8 @@
  *   - New read/write implementations for SparseMatrixBase, supporting multiple
  *     formats
  *   - Eliminated Gaussian elimination code
- *   - Added iterators, including ColOfRowsIterator, RawIterator, and
- *     RawIndexIterator
+ *   - Added iterators, including ColOfRowsIterator, Iterator, and
+ *     IndexIterator
  *   - Eliminated operator []; added getEntry; changed put_value to setEntry
  * ------------------------------------
  * Modified by W. J. Turner <wjturner@acm.org>
@@ -74,10 +74,10 @@ namespace LinBox
 
 		FileFormatTag Format;
 
-		typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIterator RawIterator;
-		typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIndexedIterator RawIndexedIterator;
-		typedef typename SparseMatrixBase<typename Field::Element, _Row>::ConstRawIterator ConstRawIterator;
-		typedef typename SparseMatrixBase<typename Field::Element, _Row>::ConstRawIndexedIterator ConstRawIndexedIterator;
+		typedef typename SparseMatrixBase<typename Field::Element, _Row>::Iterator Iterator;
+		typedef typename SparseMatrixBase<typename Field::Element, _Row>::IndexedIterator IndexedIterator;
+		typedef typename SparseMatrixBase<typename Field::Element, _Row>::ConstIterator ConstIterator;
+		typedef typename SparseMatrixBase<typename Field::Element, _Row>::ConstIndexedIterator ConstIndexedIterator;
 
 		/** Constructor.
 		 * Builds a zero m x n matrix
@@ -201,9 +201,9 @@ namespace LinBox
 
 				typename _Tp1::Element e;
 				Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);
-				for( typename Self_t::ConstRawIndexedIterator
-				     indices = A.rawIndexedBegin();
-				     (indices != A.rawIndexedEnd()) ;
+				for( typename Self_t::ConstIndexedIterator
+				     indices = A.IndexedBegin();
+				     (indices != A.IndexedEnd()) ;
 				     ++indices ) {
 					//                             hom. image (e, A.getEntry(indices.rowIndex(),indices.colIndex()) );
 					hom. image (e, indices.value() );
@@ -294,13 +294,13 @@ namespace LinBox
 
 		integer &maxNorm (integer &res)
 		{
-			typename SparseMatrixBase<BElement, BRow>::ConstRawIterator i;
+			typename SparseMatrixBase<BElement, BRow>::ConstIterator i;
 
 			res = 0L;
 
 			integer tmp;
 
-			for (i = _A.rawBegin (); i != _A.rawEnd (); ++i) {
+			for (i = _A.Begin (); i != _A.End (); ++i) {
 				tmp = abs (*i);
 
 				if (res < tmp)

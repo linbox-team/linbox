@@ -71,15 +71,15 @@ typedef typename Rationals::Element Quotient;
 	size_t rowdim() { return _A->rowdim(); }
         size_t coldim() { return _A->coldim(); }
 
-	typedef typename QMatrix::ConstRawIterator ConstRawIterator;
+	typedef typename QMatrix::ConstIterator ConstIterator;
         typedef typename QMatrix::ConstRowIterator RowIterator;
 
 	double maxNorm(double& res) const {
-		typename QMatrix::ConstRawIterator i;
+		typename QMatrix::ConstIterator i;
 	        res = 0.0;
 	        double tmp;
 
-		for( i = _A->rawBegin(); i != _A->rawEnd(); ++i ) {
+		for( i = _A->Begin(); i != _A->End(); ++i ) {
 			Integer d,n; Q.get_den(d,*i);Q.get_num(n,*i);
 			tmp = abs( (double)(n)/(double)(d) );
 			if( res < tmp ) res = tmp;
@@ -114,9 +114,9 @@ typedef typename Rationals::Element Quotient;
 	 */
         Integer& denominator(Integer& da) const {
 	    if (denA ==1 ) {
-	        ConstRawIterator i;
+	        ConstIterator i;
 	        //denA = 1L;
-	        for (i = _A->rawBegin (); i != _A->rawEnd (); ++i) {
+	        for (i = _A->Begin (); i != _A->End (); ++i) {
 	 	        Integer d; Q.get_den(d,*i);
 		        lcm(denA,denA,d);
 	        }
@@ -140,10 +140,10 @@ typedef typename Rationals::Element Quotient;
 
 //returns max of abs(numerators) and denominators of _A
 	Integer& rationalNorm(Integer& res) const {
-	        ConstRawIterator i;
+	        ConstIterator i;
 	        res = 0L;
 	        Integer tmp;
-	        for (i = _A->rawBegin (); i != _A->rawEnd (); ++i) {
+	        for (i = _A->Begin (); i != _A->End (); ++i) {
 		        Integer n ;Q.get_num(n,*i);
 		        Integer d ;Q.get_den(d,*i);
 			tmp = abs (n);
@@ -305,7 +305,6 @@ typedef typename Rationals::Element Quotient;
 
 } // namespace LinBox
 
-#include "dense.inl"
 
 #endif  //__LINBOX_rational_dense_factory_H
 

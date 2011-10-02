@@ -373,7 +373,7 @@ namespace LinBox
 				// Combine it with the new residue
 				// The for loop will transmit the resulting
 				// combination to the upper shelf
-				typename Matrix::RawIterator e_it = e.rawBegin();
+				typename Matrix::Iterator e_it = e.Begin();
 				IntVect_Iterator            ri_it = ri.begin();
 				IntVect_ConstIterator       t0_it = _tab_it->begin();
 
@@ -402,7 +402,7 @@ namespace LinBox
 				_mod_it->initialize(tmp);
 				*_dsz_it = ltp;
 				this->totalsize += ltp;
-				typename Matrix::RawIterator e_it = e.rawBegin();
+				typename Matrix::Iterator e_it = e.Begin();
 				_tab_it->resize(this->size);
 				IntVect_Iterator t0_it= _tab_it->begin();
 				for( ; t0_it != _tab_it->end(); ++e_it, ++ t0_it){
@@ -477,7 +477,7 @@ namespace LinBox
 				if (*_occ_it) {
 					// Found the lowest occupied shelf
 					Product = *_mod_it;
-					typename Matrix::RawIterator t0_it = d.rawBegin();
+					typename Matrix::Iterator t0_it = d.Begin();
 					IntVect_Iterator t_it = _tab_it->begin();
 					if (++_occ_it == this->RadixOccupancy_.end()) {
 						// It is the only shelf of the radix
@@ -504,7 +504,7 @@ namespace LinBox
 				if (*_occ_it) {
 					// This shelf is occupied
 					// We need to combine it with the actual value of the result
-					typename Matrix::RawIterator t0_it = d.rawBegin();
+					typename Matrix::Iterator t0_it = d.Begin();
 					IntVect_ConstIterator t_it = _tab_it->begin();
 
 					Integer invprod;
@@ -517,7 +517,7 @@ namespace LinBox
 					Product.mulin(*_mod_it);
 
 					// Moding out and normalization
-					t0_it = d.rawBegin();
+					t0_it = d.Begin();
 					for(size_t i=0;i<this->size; ++i, ++t0_it) {
 						*t0_it %= Product();
 						Integer tmp(*t0_it);

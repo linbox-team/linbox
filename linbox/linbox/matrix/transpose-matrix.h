@@ -69,12 +69,12 @@ namespace LinBox
 
 		typedef typename Matrix::ColIterator RowIterator;
 		typedef typename Matrix::RowIterator ColIterator;
-		typedef typename Matrix::RawIterator RawIterator;
-		typedef typename Matrix::RawIndexedIterator RawIndexedIterator;
+		typedef typename Matrix::Iterator Iterator;
+		typedef typename Matrix::IndexedIterator IndexedIterator;
 		typedef typename Matrix::ConstColIterator ConstRowIterator;
 		typedef typename Matrix::ConstRowIterator ConstColIterator;
-		typedef typename Matrix::ConstRawIterator ConstRawIterator;
-		typedef typename Matrix::ConstRawIndexedIterator ConstRawIndexedIterator;
+		typedef typename Matrix::ConstIterator ConstIterator;
+		typedef typename Matrix::ConstIndexedIterator ConstIndexedIterator;
 
 		typedef typename Matrix::Row Column;
 		typedef typename Matrix::Row Col;
@@ -229,21 +229,21 @@ namespace LinBox
 		 * algorithm.
 		 */
 
-		inline RawIterator rawBegin ()
+		inline Iterator Begin ()
 		{
-			return _A.rawBegin ();
+			return _A.Begin ();
 		}
-		inline RawIterator rawEnd ()
+		inline Iterator End ()
 		{
-			return _A.rawEnd ();
+			return _A.End ();
 		}
-		inline ConstRawIterator rawBegin () const
+		inline ConstIterator Begin () const
 		{
-			return _A.rawBegin ();
+			return _A.Begin ();
 		}
-		inline ConstRawIterator rawEnd () const
+		inline ConstIterator End () const
 		{
-			return _A.rawEnd ();
+			return _A.End ();
 		}
 
 		/** @name Raw Indexed iterator.
@@ -255,21 +255,21 @@ namespace LinBox
 		 * This is provided through it's rowIndex() and colIndex() functions.
 		 */
 
-		inline RawIndexedIterator rawIndexedBegin()
+		inline IndexedIterator IndexedBegin()
 		{
-			return _A.rawIndexedBegin ();
+			return _A.IndexedBegin ();
 		}
-		inline RawIndexedIterator rawIndexedEnd()
+		inline IndexedIterator IndexedEnd()
 		{
-			return _A.rawIndexedEnd ();
+			return _A.IndexedEnd ();
 		}
-		inline ConstRawIndexedIterator rawIndexedBegin() const
+		inline ConstIndexedIterator IndexedBegin() const
 		{
-			return _A.rawIndexedBegin ();
+			return _A.IndexedBegin ();
 		}
-		inline ConstRawIndexedIterator rawIndexedEnd() const
+		inline ConstIndexedIterator IndexedEnd() const
 		{
-			return _A.rawIndexedEnd ();
+			return _A.IndexedEnd ();
 		}
 
 		//@}
@@ -289,12 +289,12 @@ namespace LinBox
 
 		typedef typename Matrix::ColIterator RowIterator;
 		typedef typename Matrix::RowIterator ColIterator;
-		typedef typename Matrix::RawIterator RawIterator;
-		typedef typename Matrix::RawIndexedIterator RawIndexedIterator;
+		typedef typename Matrix::Iterator Iterator;
+		typedef typename Matrix::IndexedIterator IndexedIterator;
 		typedef typename Matrix::ConstColIterator ConstRowIterator;
 		typedef typename Matrix::ConstRowIterator ConstColIterator;
-		typedef typename Matrix::ConstRawIterator ConstRawIterator;
-		typedef typename Matrix::ConstRawIndexedIterator ConstRawIndexedIterator;
+		typedef typename Matrix::ConstIterator ConstIterator;
+		typedef typename Matrix::ConstIndexedIterator ConstIndexedIterator;
 
 		typedef typename Matrix::Row Column;
 		typedef typename Matrix::Row Col;
@@ -374,38 +374,38 @@ namespace LinBox
 			return _A.rowEnd ();
 		}
 
-		inline RawIterator rawBegin ()
+		inline Iterator Begin ()
 		{
-			return _A.rawBegin ();
+			return _A.Begin ();
 		}
-		inline RawIterator rawEnd ()
+		inline Iterator End ()
 		{
-			return _A.rawEnd ();
+			return _A.End ();
 		}
-		inline ConstRawIterator rawBegin () const
+		inline ConstIterator Begin () const
 		{
-			return _A.rawBegin ();
+			return _A.Begin ();
 		}
-		inline ConstRawIterator rawEnd () const
+		inline ConstIterator End () const
 		{
-			return _A.rawEnd ();
+			return _A.End ();
 		}
 
-		inline RawIndexedIterator rawIndexedBegin()
+		inline IndexedIterator IndexedBegin()
 		{
-			return _A.rawIndexedBegin ();
+			return _A.IndexedBegin ();
 		}
-		inline RawIndexedIterator rawIndexedEnd()
+		inline IndexedIterator IndexedEnd()
 		{
-			return _A.rawIndexedEnd ();
+			return _A.IndexedEnd ();
 		}
-		inline ConstRawIndexedIterator rawIndexedBegin() const
+		inline ConstIndexedIterator IndexedBegin() const
 		{
-			return _A.rawIndexedBegin ();
+			return _A.IndexedBegin ();
 		}
-		inline ConstRawIndexedIterator rawIndexedEnd() const
+		inline ConstIndexedIterator IndexedEnd() const
 		{
-			return _A.rawIndexedEnd ();
+			return _A.IndexedEnd ();
 		}
 
 	protected:
@@ -422,11 +422,11 @@ namespace LinBox
 		typedef typename Matrix::Element Element;
 
 		typedef typename Matrix::RowIterator ColIterator;
-		typedef typename Matrix::RawIterator RawIterator;
-		typedef typename Matrix::RawIndexedIterator RawIndexedIterator;
+		typedef typename Matrix::Iterator Iterator;
+		typedef typename Matrix::IndexedIterator IndexedIterator;
 		typedef typename Matrix::ConstRowIterator ConstColIterator;
-		typedef typename Matrix::ConstRawIterator ConstRawIterator;
-		typedef typename Matrix::ConstRawIndexedIterator ConstRawIndexedIterator;
+		typedef typename Matrix::ConstIterator ConstIterator;
+		typedef typename Matrix::ConstIndexedIterator ConstIndexedIterator;
 
 		typedef typename Matrix::Row Column;
 		typedef typename Matrix::Row Col;
@@ -489,38 +489,38 @@ namespace LinBox
 			return _A.rowEnd ();
 		}
 
-		inline RawIterator rawBegin ()
+		inline Iterator Begin ()
 		{
-			return _A.rawBegin ();
+			return _A.Begin ();
 		}
-		inline RawIterator rawEnd ()
+		inline Iterator End ()
 		{
-			return _A.rawEnd ();
+			return _A.End ();
 		}
-		inline ConstRawIterator rawBegin () const
+		inline ConstIterator Begin () const
 		{
-			return _A.rawBegin ();
+			return _A.Begin ();
 		}
-		inline ConstRawIterator rawEnd () const
+		inline ConstIterator End () const
 		{
-			return _A.rawEnd ();
+			return _A.End ();
 		}
 
-		inline RawIndexedIterator rawIndexedBegin()
+		inline IndexedIterator IndexedBegin()
 		{
-			return _A.rawIndexedBegin ();
+			return _A.IndexedBegin ();
 		}
-		inline RawIndexedIterator rawIndexedEnd()
+		inline IndexedIterator IndexedEnd()
 		{
-			return _A.rawIndexedEnd ();
+			return _A.IndexedEnd ();
 		}
-		inline ConstRawIndexedIterator rawIndexedBegin() const
+		inline ConstIndexedIterator IndexedBegin() const
 		{
-			return _A.rawIndexedBegin ();
+			return _A.IndexedBegin ();
 		}
-		inline ConstRawIndexedIterator rawIndexedEnd() const
+		inline ConstIndexedIterator IndexedEnd() const
 		{
-			return _A.rawIndexedEnd ();
+			return _A.IndexedEnd ();
 		}
 
 	protected:
@@ -537,11 +537,11 @@ namespace LinBox
 		typedef typename Matrix::Element Element;
 
 		typedef typename Matrix::ColIterator RowIterator;
-		typedef typename Matrix::RawIterator RawIterator;
-		typedef typename Matrix::RawIndexedIterator RawIndexedIterator;
+		typedef typename Matrix::Iterator Iterator;
+		typedef typename Matrix::IndexedIterator IndexedIterator;
 		typedef typename Matrix::ConstColIterator ConstRowIterator;
-		typedef typename Matrix::ConstRawIterator ConstRawIterator;
-		typedef typename Matrix::ConstRawIndexedIterator ConstRawIndexedIterator;
+		typedef typename Matrix::ConstIterator ConstIterator;
+		typedef typename Matrix::ConstIndexedIterator ConstIndexedIterator;
 
 		typedef typename Matrix::Col Row;
 
@@ -601,38 +601,38 @@ namespace LinBox
 			return _A.colEnd ();
 		}
 
-		inline RawIterator rawBegin ()
+		inline Iterator Begin ()
 		{
-			return _A.rawBegin ();
+			return _A.Begin ();
 		}
-		inline RawIterator rawEnd ()
+		inline Iterator End ()
 		{
-			return _A.rawEnd ();
+			return _A.End ();
 		}
-		inline ConstRawIterator rawBegin () const
+		inline ConstIterator Begin () const
 		{
-			return _A.rawBegin ();
+			return _A.Begin ();
 		}
-		inline ConstRawIterator rawEnd () const
+		inline ConstIterator End () const
 		{
-			return _A.rawEnd ();
+			return _A.End ();
 		}
 
-		inline RawIndexedIterator rawIndexedBegin()
+		inline IndexedIterator IndexedBegin()
 		{
-			return _A.rawIndexedBegin ();
+			return _A.IndexedBegin ();
 		}
-		inline RawIndexedIterator rawIndexedEnd()
+		inline IndexedIterator IndexedEnd()
 		{
-			return _A.rawIndexedEnd ();
+			return _A.IndexedEnd ();
 		}
-		inline ConstRawIndexedIterator rawIndexedBegin() const
+		inline ConstIndexedIterator IndexedBegin() const
 		{
-			return _A.rawIndexedBegin ();
+			return _A.IndexedBegin ();
 		}
-		inline ConstRawIndexedIterator rawIndexedEnd() const
+		inline ConstIndexedIterator IndexedEnd() const
 		{
-			return _A.rawIndexedEnd ();
+			return _A.IndexedEnd ();
 		}
 
 	protected:

@@ -717,7 +717,7 @@ namespace LinBox
 		template<class Matrix>
 		void setZero(Matrix & I)
 		{
-			// use RawIterator
+			// use Iterator
 			for (size_t i = 0 ; i< I.rowdim() ; ++i)
 				for (size_t j = 0 ; j < I.coldim() ; ++j) {
 						I.setEntry(i,j,_Zero);

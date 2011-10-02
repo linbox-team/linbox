@@ -86,13 +86,13 @@ namespace LinBox
 			Modular<double> F (p); Modular<double>::Element elt;
 			int n = A. rowdim(); int m = A. coldim();
 			Modular<double>::Element* A_local = new Modular<double>::Element [n * m];
-			typename Matrix::ConstRawIndexedIterator rawi_p;
-			typename Matrix::ConstRawIterator raw_p;
+			typename Matrix::ConstIndexedIterator rawi_p;
+			typename Matrix::ConstIterator raw_p;
 			Modular<double>::Element* A_local_p;
 			for (A_local_p = A_local; A_local_p != A_local + (n*m); ++ A_local_p)
 				F. init (*A_local_p, 0);
 			integer tmp;
-			for (rawi_p = A. rawIndexedBegin(), raw_p = A. rawBegin(), A_local_p = A_local; rawi_p != A. rawIndexedEnd(); ++ rawi_p, ++ raw_p, ++ A_local_p) {
+			for (rawi_p = A. IndexedBegin(), raw_p = A. Begin(), A_local_p = A_local; rawi_p != A. IndexedEnd(); ++ rawi_p, ++ raw_p, ++ A_local_p) {
 				//F. init (*A_local_p, *raw_p);
 				A. field(). convert (tmp, *raw_p);
 				F. init (elt, tmp);

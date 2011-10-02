@@ -277,7 +277,7 @@ namespace LinBox
 		Element* X = new Element [n*(n+1)];
 		size_t* Perm = new size_t[n];
 		Element* p;
-		typename BlasBlackbox<Ring>::ConstRawIterator raw_p;
+		typename BlasBlackbox<Ring>::ConstIterator raw_p;
 		std::vector<Element> poly (degree + 1);
 		typename std::vector<Element>::iterator poly_ptr;
 
@@ -285,7 +285,7 @@ namespace LinBox
 		do {
 			++primeg; while(cra.noncoprime(*primeg)) ++primeg;
 			Field F(*primeg);
-			for (p = FA, raw_p = M. rawBegin();
+			for (p = FA, raw_p = M. Begin();
 			     p != FA + (n*n); ++ p, ++ raw_p)
 
 				F. init (*p, *raw_p);
@@ -298,7 +298,7 @@ namespace LinBox
 		while (! cra. terminated()) {
 			++primeg; while(cra.noncoprime(*primeg)) ++primeg;
 			Field F(*primeg);
-			for (p = FA, raw_p = M. rawBegin();
+			for (p = FA, raw_p = M. Begin();
 			     p != FA + (n*n); ++ p, ++ raw_p)
 
 				F. init (*p, *raw_p);
@@ -338,11 +338,11 @@ namespace LinBox
 		long bit2 = (long) floor (log(sqrt(double(4503599627370496LL/n)))/M_LN2);
 		RandomPrimeIterator primeg(bit1 < bit2 ? bit1 : bit2);
 
-		typename BlasBlackbox<Ring>::ConstRawIterator raw_p;
+		typename BlasBlackbox<Ring>::ConstIterator raw_p;
 		for (int i = 0; i < n_try; ++ i) {
 			++primeg;
 			Field F(*primeg);
-			for (p = FA, raw_p = M. rawBegin();
+			for (p = FA, raw_p = M. Begin();
 			     p!= FA + (n*n); ++ p, ++ raw_p)
 				F. init (*p, *raw_p);
 

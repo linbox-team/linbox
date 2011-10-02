@@ -155,16 +155,16 @@ void write_sigma(const Field &_F, const char* name, const std::vector<LinBox::Bl
 template<class Container, class Field>
 void scalarmulin(Container& C, const Field& F, const typename Field::Element& x)
 {
-	for(typename Container::RawIterator it=C.rawBegin();it!=C.rawEnd();++it)
+	for(typename Container::Iterator it=C.Begin();it!=C.End();++it)
 		F.mulin(*it, x);
 }
 
 template<class Container1, class Field, class Container2>
 void contaddin(Container1& C, const Field& F, const Container2& V)
 {
-	typename Container1::RawIterator cit=C.rawBegin();
-	typename Container2::ConstRawIterator vit=V.rawBegin();
-	for( ; cit!=C.rawEnd(); ++cit, ++vit)
+	typename Container1::Iterator cit=C.Begin();
+	typename Container2::ConstIterator vit=V.Begin();
+	for( ; cit!=C.End(); ++cit, ++vit)
 		F.addin(*cit, *vit);
 }
 
@@ -205,8 +205,8 @@ void WhisartTrace(
 	// Trace of ExtD B InD B^T ExtD
 	// is sum ExtD_i^2 B_{i,j} InD_j
 	F.init(trace, 0);
-	for(typename BB::ConstRawIndexedIterator it = A.rawIndexedBegin();
-	    it != A.rawIndexedEnd(); ++it) {
+	for(typename BB::ConstIndexedIterator it = A.IndexedBegin();
+	    it != A.IndexedEnd(); ++it) {
 		typename Field::Element tmp,e,i; F.init(tmp);F.init(e);F.init(i);
 		F.mul(tmp,it.value(),it.value());
 		ExtD.getEntry(e, it.rowIndex(),it.rowIndex());
@@ -228,8 +228,8 @@ void WhisartTraceTranspose(
 	// Trace of ExtD B^T  InD B ExtD
 	// is sum ExtD_j^2 B_{i,j} InD_i
 	F.init(trace, 0);
-	for(typename BB::ConstRawIndexedIterator it = A.rawIndexedBegin();
-	    it != A.rawIndexedEnd(); ++it) {
+	for(typename BB::ConstIndexedIterator it = A.IndexedBegin();
+	    it != A.IndexedEnd(); ++it) {
 		typename Field::Element tmp,e,i; F.init(tmp);F.init(e);F.init(i);
 		F.mul(tmp,it.value(),it.value());
 		ExtD.getEntry(e, it.colIndex(),it.colIndex());

@@ -351,8 +351,8 @@ namespace LinBox
 
 		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
 #if 0
-		typename Blackbox::ConstRawIterator it = A.rawBegin();
-		typename Blackbox::ConstRawIterator it_end = A.rawEnd();
+		typename Blackbox::ConstIterator it = A.Begin();
+		typename Blackbox::ConstIterator it_end = A.End();
 		integer max = 1,min=0;
 		while( it != it_end ){
 			//      cerr<<"it="<<(*it)<<endl;
@@ -391,8 +391,8 @@ namespace LinBox
 
 		RandomPrimeIterator genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205));
 #if 0
-		typename Blackbox::ConstRawIterator it = A.rawBegin();
-		typename Blackbox::ConstRawIterator it_end = A.rawEnd();
+		typename Blackbox::ConstIterator it = A.Begin();
+		typename Blackbox::ConstIterator it_end = A.End();
 		integer max = 1,min=0;
 		while( it != it_end ){
 			//      cerr<<"it="<<(*it)<<endl;

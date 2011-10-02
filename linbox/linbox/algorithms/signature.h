@@ -215,7 +215,7 @@ namespace LinBox
 			size_t j = 0;
 			Field K2;
 			bool faithful = true;
-			typename Matrix::ConstRawIterator raw_p;
+			typename Matrix::ConstIterator raw_p;
 
 			do {
 				// get a prime.
@@ -225,7 +225,7 @@ namespace LinBox
 				K2 = K1;
 
 				//clog << "Computing blackbox matrix mod " << prime;
-				for (p = FA, raw_p = M. rawBegin(); p != FA + (n*n); ++ p, ++ raw_p)
+				for (p = FA, raw_p = M. Begin(); p != FA + (n*n); ++ p, ++ raw_p)
 					K1. init (*p, *raw_p);
 
 				//clog << "\rComputing lup mod " << prime << ". ";
@@ -253,7 +253,7 @@ namespace LinBox
 				++primeg; while(cra.noncoprime(*primeg)) ++primeg;
 				Field K3(*primeg);
 				//clog << "Computing blackbox matrix mod " << prime;
-				for (p = FA, raw_p = M. rawBegin(); p != FA + (n*n); ++ p, ++ raw_p)
+				for (p = FA, raw_p = M. Begin(); p != FA + (n*n); ++ p, ++ raw_p)
 					K3. init (*p, *raw_p);
 
 				//clog << "\rComputing lup mod " << prime << ". ";
@@ -409,8 +409,8 @@ namespace LinBox
 			// Compute the rank mod that prime. Accumulate into v with CRA.
 			Field K(*primeg);
 
-			typename Matrix::ConstRawIterator raw_p;
-			for (p = FA, raw_p = M. rawBegin(); p != FA + (n*n); ++ p, ++ raw_p)
+			typename Matrix::ConstIterator raw_p;
+			for (p = FA, raw_p = M. Begin(); p != FA + (n*n); ++ p, ++ raw_p)
 				K. init (*p, *raw_p);
 
 			long r = FFPACK::Rank( K, n, n, FA, n);
