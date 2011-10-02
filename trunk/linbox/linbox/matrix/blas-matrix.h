@@ -50,6 +50,8 @@
 // Blas Matrix
 namespace LinBox
 {
+	template<class _Element>
+	class BlasSubmatrix ;
 
 	/*! Dense matrix representation.
 	 * @ingroup matrix
@@ -592,9 +594,7 @@ namespace LinBox
 		/*  constructors */
 
 		/** NULL constructor.  */
-		BlasSubmatrix () :
-			_M(NULL),_row(0),_col(0),_r0(0),_c0(0)
-		{}
+		BlasSubmatrix () ;
 
 		/** Constructor from an existing @ref BlasMatrix and dimensions.
 		 * \param M Pointer to @ref BlasMatrix of which to construct submatrix
