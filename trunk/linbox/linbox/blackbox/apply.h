@@ -356,7 +356,7 @@ namespace LinBox
 			LinBox::integer tmp=0, maxValue=0;
 			size_t maxBitSize = 0;
 			use_neg = false;
-			typename Matrix::ConstRawIterator it = _M.rawBegin();
+			typename Matrix::ConstIterator it = _M.Begin();
 			for (size_t i=0; i<_m*_n; i++, ++it) {
 				_D.convert(tmp, *it);
 				if (tmp <0) {
@@ -1079,7 +1079,7 @@ namespace LinBox
 				 const integer    shift)
 	{
 
-		typename IMatrix::ConstRawIterator it= Mat.rawBegin();
+		typename IMatrix::ConstIterator it= Mat.Begin();
 
 		size_t m,n,mn;
 		m  = Mat.rowdim();
@@ -1462,7 +1462,7 @@ namespace LinBox
 
 
 		size_t rns_size= F.size();
-		typename IMatrix::ConstRawIterator it = Mat.rawBegin();
+		typename IMatrix::ConstIterator it = Mat.Begin();
 		size_t mn = Mat.rowdim()*Mat.coldim();
 		integer tmp;
 

@@ -1201,10 +1201,10 @@ namespace LinBox
 			linbox_check( X.rowdim() == B.rowdim());
 			linbox_check( X.coldim() == B.coldim());
 
-			typename BlasMatrix<typename Field::Element>::ConstRawIterator  Biter =   B.rawBegin();
-			typename BlasMatrix<typename Field::Element>::RawIterator       Xiter =   X.rawBegin();
+			typename BlasMatrix<typename Field::Element>::ConstIterator  Biter =   B.Begin();
+			typename BlasMatrix<typename Field::Element>::Iterator       Xiter =   X.Begin();
 
-			for (; Biter != B.rawEnd(); ++Biter,++Xiter)
+			for (; Biter != B.End(); ++Biter,++Xiter)
 				F.assign(*Xiter,*Biter);
 
 			return (*this)(F,A,X);
@@ -1243,10 +1243,10 @@ namespace LinBox
 			linbox_check( X.rowdim() == B.rowdim());
 			linbox_check( X.coldim() == B.coldim());
 
-			typename BlasMatrix<typename Field::Element>::ConstRawIterator  Biter =   B.rawBegin();
-			typename BlasMatrix<typename Field::Element>::RawIterator       Xiter =   X.rawBegin();
+			typename BlasMatrix<typename Field::Element>::ConstIterator  Biter =   B.Begin();
+			typename BlasMatrix<typename Field::Element>::Iterator       Xiter =   X.Begin();
 
-			for (; Biter != B.rawEnd(); ++Biter,++Xiter)
+			for (; Biter != B.End(); ++Biter,++Xiter)
 				F.assign(*Xiter,*Biter);
 
 			return (*this)(F,A,X);

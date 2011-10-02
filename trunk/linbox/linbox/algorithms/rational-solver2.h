@@ -83,8 +83,8 @@ namespace LinBox
 			typename InVector::const_iterator b_p;
 			Integer tmp_I; integer tmp;
 			{
-				typename IMatrix::ConstRawIterator raw_p;
-				for (raw_p = M. rawBegin(); raw_p != M. rawEnd(); ++ raw_p) {
+				typename IMatrix::ConstIterator raw_p;
+				for (raw_p = M. Begin(); raw_p != M. End(); ++ raw_p) {
 					r. convert (tmp, *raw_p);
 					tmp = abs (tmp);
 					if (tmp > mentry) mentry = tmp;
@@ -106,8 +106,8 @@ namespace LinBox
 				double* DM = new double [n * n];
 				double* Db = new double [n];
 				double* DM_p, *Db_p;
-				typename IMatrix::ConstRawIterator raw_p;
-				for (raw_p = M. rawBegin(), DM_p = DM; raw_p != M. rawEnd(); ++ raw_p, ++ DM_p) {
+				typename IMatrix::ConstIterator raw_p;
+				for (raw_p = M. Begin(), DM_p = DM; raw_p != M. End(); ++ raw_p, ++ DM_p) {
 					r. convert (tmp, *raw_p);
 					*DM_p = (double) tmp;
 				}

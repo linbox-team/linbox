@@ -100,7 +100,7 @@ struct BlackboxDomain : public _Field
 
 	// Set the entries in a block to zero.
 	void zero( Block& B ) const {
-		for ( typename Block::RawIterator raw = B.rawBegin(); raw != B.rawEnd(); ++raw )
+		for ( typename Block::Iterator raw = B.Begin(); raw != B.End(); ++raw )
 			init(*raw, 0);
 	}
 

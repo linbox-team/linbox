@@ -168,18 +168,18 @@ namespace LinBox
 		 */
 
 		///
-		class RawIterator;
+		class Iterator;
 		///
-		class ConstRawIterator;
+		class ConstIterator;
 
-		/// rawBegin
-		RawIterator rawBegin ();
-		/// rawEnd
-		RawIterator rawEnd ();
-		/// const rawBegin
-		ConstRawIterator rawBegin () const;
-		/// const rawEnd
-		ConstRawIterator rawEnd () const;
+		/// Begin
+		Iterator Begin ();
+		/// End
+		Iterator End ();
+		/// const Begin
+		ConstIterator Begin () const;
+		/// const End
+		ConstIterator End () const;
 
 		/** @name Index iterator
 		 * The index iterator gives the row, column indices of all matrix
@@ -188,19 +188,19 @@ namespace LinBox
 		 * first and second positions, respectively.
 		 */
 
-		/// RawIndexedIterator
-		class RawIndexedIterator;
-		/// ConstRawIndexedIterator
-		class ConstRawIndexedIterator;
+		/// IndexedIterator
+		class IndexedIterator;
+		/// ConstIndexedIterator
+		class ConstIndexedIterator;
 
-		/// rawIndexedBegin
-		RawIndexedIterator rawIndexedBegin ();
-		/// rawIndexedEnd
-		RawIndexedIterator rawIndexedEnd ();
-		/// const rawIndexedBegin
-		ConstRawIndexedIterator rawIndexedBegin () const;
-		/// const rawIndexedEnd
-		ConstRawIndexedIterator rawIndexedEnd () const;
+		/// IndexedBegin
+		IndexedIterator IndexedBegin ();
+		/// IndexedEnd
+		IndexedIterator IndexedEnd ();
+		/// const IndexedBegin
+		ConstIndexedIterator IndexedBegin () const;
+		/// const IndexedEnd
+		ConstIndexedIterator IndexedEnd () const;
 
 		/** Retrieve a row as a writeable reference
 		 * @param i Row index

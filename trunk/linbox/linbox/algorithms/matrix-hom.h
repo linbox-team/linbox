@@ -241,8 +241,8 @@ namespace LinBox
 				Hom<typename IMatrix::Field , Field> hom(A.field(), F);
 				typename Field::Element e, zero;
 				F.init(zero,0UL);
-				for( typename IMatrix::ConstRawIndexedIterator indices = A.rawIndexedBegin();
-				     (indices != A.rawIndexedEnd()) ;
+				for( typename IMatrix::ConstIndexedIterator indices = A.IndexedBegin();
+				     (indices != A.IndexedEnd()) ;
 				     ++indices ) {
 
 					hom. image (e, A.getEntry(indices.rowIndex(),indices.colIndex()) );
@@ -266,10 +266,10 @@ namespace LinBox
 				//Ap = new BlasBlackbox<Field>(F, A.rowdim(), A.coldim());
 				Hom<typename IMatrix::Field , Field> hom(A.field(), F);
 
-				typename IMatrix::ConstRawIterator        iterA  = A.rawBegin();
-				typename BlasBlackbox<Field>::RawIterator iterAp = Ap.rawBegin();
+				typename IMatrix::ConstIterator        iterA  = A.Begin();
+				typename BlasBlackbox<Field>::Iterator iterAp = Ap.Begin();
 
-				for(; iterA != A.rawEnd(); iterA++, iterAp++)
+				for(; iterA != A.End(); iterA++, iterAp++)
 					hom. image (*iterAp, *iterA);
 			}
 		};
@@ -283,10 +283,10 @@ namespace LinBox
 				PID_integer ZZ ;
 				Hom<PID_integer , Field> hom(ZZ, F);
 
-				typename BlasMatrix<integer>::ConstRawIterator        iterA  = A.rawBegin();
-				typename BlasBlackbox<Field>::RawIterator iterAp = Ap.rawBegin();
+				typename BlasMatrix<integer>::ConstIterator        iterA  = A.Begin();
+				typename BlasBlackbox<Field>::Iterator iterAp = Ap.Begin();
 
-				for(; iterA != A.rawEnd(); iterA++, iterAp++)
+				for(; iterA != A.End(); iterA++, iterAp++)
 					hom. image (*iterAp, *iterA);
 			}
 		};

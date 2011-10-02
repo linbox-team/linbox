@@ -55,11 +55,11 @@ namespace LinBox
 		{
 
 			Ap = new BlasBlackbox<Field>(f, rowdim, coldim);
-			typename BlasBlackbox<Field>::RawIterator Ap_p;
+			typename BlasBlackbox<Field>::Iterator Ap_p;
 			typename Field::Element zero, one, elt;
 			f. init (one, 1); f. init (zero, 0);
 
-			for (Ap_p = Ap -> rawBegin(); Ap_p != Ap -> rawEnd(); ++ Ap_p)
+			for (Ap_p = Ap -> Begin(); Ap_p != Ap -> End(); ++ Ap_p)
 				f. assign (*Ap_p, zero);
 
 			if (rowdim < coldim)

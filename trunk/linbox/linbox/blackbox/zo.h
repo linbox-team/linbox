@@ -25,7 +25,7 @@
 #include <linbox/blackbox/blackbox-interface.h>
 #include <linbox/blackbox/quad-matrix.h>
 
-// For STL pair in RawIndexIterator
+// For STL pair in IndexIterator
 #include <utility>
 #include <iterator>
 #include <vector> // For vectors in _col2row and _row2col

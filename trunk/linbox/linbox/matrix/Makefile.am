@@ -8,11 +8,10 @@ BASIC_HDRS =                                     \
     matrix-category.h                            \
     sparse.h             sparse.inl              \
     transpose-matrix.h                           \
-    dense.h              dense.inl               \
-    dense-submatrix.h    dense-submatrix.inl     \
     dense-rows-matrix.h                          \
     matrix-domain.h      matrix-domain.inl       \
     blas-matrix.h                                \
+    blas-matrix.inl      blas-submatrix.inl      \
     factorized-matrix.h  factorized-matrix.inl   \
     matrix-permutation.h matrix-permutation.inl  \
     random-matrix.h      random-matrix.inl

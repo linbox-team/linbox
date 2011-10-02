@@ -1082,10 +1082,10 @@ namespace LinBox
 			     (M1.rowdim()==M2.rowdim()));
 
 
-		typename Matrix1::RawIterator p=M1.rawBegin();
-		for(;p!=M1.rawEnd();++p)
+		typename Matrix1::Iterator p=M1.Begin();
+		for(;p!=M1.End();++p)
 			M1.field().init(*p,0);
-		for(p=M1.rawBegin();p<M1.rawEnd();)
+		for(p=M1.Begin();p<M1.End();)
 		{
 			M1.field().init(*p,1);
 			p=p+M1.rowdim()+1;
@@ -1108,10 +1108,10 @@ namespace LinBox
 
 		if(k==0)
 		{
-			typename Matrix1::RawIterator p=M1.rawBegin();
-			for(;p!=M1.rawEnd();++p)
+			typename Matrix1::Iterator p=M1.Begin();
+			for(;p!=M1.End();++p)
 				M1.field().init(*p,0);
-			for(p=M1.rawBegin();p<M1.rawEnd();)
+			for(p=M1.Begin();p<M1.End();)
 			{
 				M1.field().init(*p,1);
 				p+=M1.rowdim()+1;
@@ -1119,9 +1119,9 @@ namespace LinBox
 			return M1;
 		}
 
-		typename Matrix1::RawIterator p1;
-		typename Matrix2::ConstRawIterator p2;
-		for(p1=M1.rawBegin(),p2=M2.rawBegin();p1!=M1.rawEnd();++p1,++p2)
+		typename Matrix1::Iterator p1;
+		typename Matrix2::ConstIterator p2;
+		for(p1=M1.Begin(),p2=M2.Begin();p1!=M1.End();++p1,++p2)
 			M1.field().assign(*p1,*p2);
 
 		std::vector<bool> bit;

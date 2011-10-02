@@ -222,9 +222,9 @@ namespace LinBox
 
 			r.init(fif,0);
 
-			typename IMatrix::ConstRawIterator A_p;
+			typename IMatrix::ConstIterator A_p;
 
-			for (A_p = A.rawBegin(); A_p != A.rawEnd(); ++ A_p) {
+			for (A_p = A.Begin(); A_p != A.End(); ++ A_p) {
 
 				if (!r.isZero(*A_p)) {
 					r.gcd(fif, fif, *A_p);

@@ -299,7 +299,7 @@ namespace LinBox
 		RowWiseLessThan<Field,Vector> rwlt;
 		if(_RowSortFlag) return; // If already sorted, bail
 
-		std::sort( rawIndexedBegin(), rawIndexedEnd(), rwlt  );
+		std::sort( IndexedBegin(), IndexedEnd(), rwlt  );
 		_RowSortFlag = true;     // Sets the row sort flag
 		_ColSortFlag = false;    // Unset the col sort flag
 
@@ -312,7 +312,7 @@ namespace LinBox
 		ColWiseLessThan<Field,Vector> cwlt;
 		if(_ColSortFlag) return;  // If already sorted, bail
 
-		std::sort( rawIndexedBegin(), rawIndexedEnd(), cwlt );
+		std::sort( IndexedBegin(), IndexedEnd(), cwlt );
 		_ColSortFlag = true;     // Sets the Col sort flag
 		_RowSortFlag = false;    // Unset the Row sort flag
 	}

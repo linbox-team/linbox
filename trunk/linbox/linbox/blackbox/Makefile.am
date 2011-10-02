@@ -21,8 +21,6 @@ BASIC_HDRS =			\
 	sum.h                     \
 	diagonal.h                \
 	moore-penrose.h           \
-	dense.h                   \
-	dense.inl                 \
 	direct-sum.h              \
 	null-matrix.h             \
 	matrix-blackbox.h         \

@@ -133,9 +133,9 @@ namespace LinBox {
 			SHIFT_BOUND = 52;
 
 			//  why can't i put this in the for loop def???
-			typename FMatrix::RawIterator dm_p = DM.rawBegin();
-			for (typename IMatrix::ConstRawIterator raw_p = M.rawBegin();
-			     raw_p != M. rawEnd(); ++ raw_p, ++dm_p) {
+			typename FMatrix::Iterator dm_p = DM.Begin();
+			for (typename IMatrix::ConstIterator raw_p = M.Begin();
+			     raw_p != M. End(); ++ raw_p, ++dm_p) {
 				_F.init(*dm_p, *raw_p);
 			}
 
@@ -155,10 +155,10 @@ namespace LinBox {
 
 			//  denBound is the Hadamard bound, loopBound is roughly twice as much
 			integer denBound, loopBound;
-			zw_hbound (denBound, (int)n, (int)n, &*(DM.rawBegin()));
+			zw_hbound (denBound, (int)n, (int)n, &*(DM.Begin()));
 			loopBound = denBound*denBound;
 
-			mnorm = zw_dOOnorm(&*(DM.rawBegin()), (int)n, (int)n);  //  infinity-norm of matrix
+			mnorm = zw_dOOnorm(&*(DM.Begin()), (int)n, (int)n);  //  infinity-norm of matrix
 			//  set max shift to avoid exact applys
 			size_t bits = 0;
 			size_t mn2 = nextPower2((size_t)mnorm);
