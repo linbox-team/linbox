@@ -220,7 +220,7 @@ namespace LinBox
 		template <class Matrix>
 		BlasMatrix (const Matrix& A,
 			    const size_t i0, const size_t j0,
-			    const size_t m, const size_t n) ;
+			    const size_t m,  const size_t n) ;
 
 		/*! Constructor.
 		 * @param A matrix to be copied
@@ -233,6 +233,11 @@ namespace LinBox
 		 * @param A matrix to be copied.
 		 */
 		BlasMatrix (const BlasMatrix<Element>& A) ;
+
+		/*- Copy Constructor of a matrix (copying data).
+		 * @param A matrix to be copied.
+		 */
+		// BlasMatrix (const BlasSubmatrix<Element>& A) ;
 
 		/*! Create a BlasMatrix from a vector of elements
 		 * @param A matrix to be copied.

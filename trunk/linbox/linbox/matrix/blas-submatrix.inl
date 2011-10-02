@@ -68,8 +68,8 @@ namespace LinBox
 		_r0(row),_c0(col),
 		_stride(Mat.coldim())
 	{
-		linbox_check ( _r0  <  Mat.rowdim() );
-		linbox_check ( _c0  <  Mat.coldim() );
+		linbox_check ( _r0  <= Mat.rowdim() ); // allow for NULL matrix
+		linbox_check ( _c0  <= Mat.coldim() );
 		linbox_check ( _row <= Mat.rowdim() );
 		linbox_check ( _col <= Mat.coldim() );
 	}
@@ -96,8 +96,8 @@ namespace LinBox
 		_r0  ( SM._r0 + row ), _c0 ( SM._c0 + col ),
 		_stride(SM._stride)
 	{
-		linbox_check ( _r0  <  SM._M->rowdim() );
-		linbox_check ( _c0  <  SM._stride );
+		linbox_check ( _r0  <= SM._M->rowdim() ); // allow for NULL matrix
+		linbox_check ( _c0  <= SM._stride );
 		linbox_check ( _row <= SM._M->rowdim() );
 		linbox_check ( _col <= SM._stride );
 	}
@@ -109,8 +109,8 @@ namespace LinBox
 		_r0  ( SM._r0 ),    _c0 (SM._c0 ),
 		_stride(SM._stride)
 	{
-		linbox_check ( _r0  <  SM._M->rowdim() );
-		linbox_check ( _c0  <  SM._stride );
+		linbox_check ( _r0  <=  SM._M->rowdim() ); // allow for NULL matrix
+		linbox_check ( _c0  <=  SM._stride );
 		linbox_check ( _row <= SM._M->rowdim() );
 		linbox_check ( _col <= SM._stride );
 	}
@@ -127,6 +127,7 @@ namespace LinBox
 
 		return *this;
 	}
+
 } // LinBox
 
 ///////////////////

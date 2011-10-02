@@ -405,7 +405,6 @@ namespace LinBox
 
 				eliminationCol (A, r);
 			}
-
 			while (!check(A, r));
 
 			typename SubMatrixTraits<Matrix>::value_type
