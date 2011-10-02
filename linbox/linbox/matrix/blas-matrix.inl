@@ -190,7 +190,7 @@ namespace LinBox
 
 	template <class Element>
 	BlasMatrix<Element>::BlasMatrix () :
-		_row(0),_col(0),_ptr(NULL)
+		_row(0),_col(0),_rep(0),_ptr(NULL)
 	{ }
 
 
@@ -251,7 +251,7 @@ namespace LinBox
 	template <class Element>
 	template< class Field >
 	BlasMatrix<Element>::BlasMatrix(MatrixStream<Field>& ms) :
-		_row(0),_col(0),_rep(NULL)
+		_row(0),_col(0),_rep(0)
 	{
 		if( !ms.getArray(_rep) || !ms.getRows(_row) || !ms.getColumns(_col) )
 			throw ms.reportError(__FUNCTION__,__LINE__);
