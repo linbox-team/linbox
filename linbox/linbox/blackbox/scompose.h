@@ -29,9 +29,9 @@
  * Compute the perturbation A+UV and LAR
  */
 
-#include <linbox/util/debug.h>
-#include <linbox/blackbox/blackbox-interface.h>
-#include <linbox/blackbox/compose.h>
+#include "linbox/util/debug.h"
+#include "linbox/blackbox/blackbox-interface.h"
+#include "linbox/blackbox/compose.h"
 
 namespace LinBox
 {

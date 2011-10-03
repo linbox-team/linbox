@@ -29,9 +29,9 @@
 #define __LINBOX_valence_H
 
 #include <vector>
-#include <linbox/blackbox/transpose.h>
+#include "linbox/blackbox/transpose.h"
 
-#include <linbox/solutions/minpoly.h>
+#include "linbox/solutions/minpoly.h"
 
 namespace LinBox
 {

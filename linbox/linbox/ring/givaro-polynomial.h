@@ -103,7 +103,7 @@ namespace LinBox
 	}
 }
 
-#include <linbox/field/PID-integer.h>
+#include "linbox/field/PID-integer.h"
 namespace LinBox
 {
 	typedef GivPolynomialRing<PID_integer,::Givaro::Dense> GivPolPIDIntDense;

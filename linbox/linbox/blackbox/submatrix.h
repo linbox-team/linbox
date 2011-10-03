@@ -27,9 +27,9 @@
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
 #include "linbox/util/error.h"
-#include <linbox/vector/vector-domain.h>
-#include <linbox/blackbox/blackbox-interface.h>
 #include "linbox/blackbox/blas-blackbox.h"
+#include "linbox/vector/vector-domain.h"
+#include "linbox/blackbox/blackbox-interface.h"
 
 
 // Namespace in which all LinBox library code resides
@@ -156,8 +156,7 @@ namespace LinBox
 
 
 		template<typename _Tp1>
-		struct rebind
-		{
+		struct rebind {
 			typedef SubmatrixOwner<typename Blackbox_t::template rebind<_Tp1>::other, VectorCategories::DenseVectorTag> other;
 			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
 				typename Blackbox_t::template rebind<_Tp1> Rebinder;
@@ -172,23 +171,37 @@ namespace LinBox
 		 * @return integer number of _rows of black box matrix.
 		 */
 		size_t rowdim (void) const
-		{ return _rowdim; }
+		{
+			return _rowdim;
+		}
 
 		/** Retreive _column dimensions of BlackBox matrix.
 		 * Required by abstract base class.
 		 * @return integer number of _columns of black box matrix.
 		 */
 		size_t coldim (void) const
-		{ return _coldim; }
+		{
+			return _coldim;
+		}
 
-		size_t rowfirst() const { return _row; }
-		size_t colfirst() const { return _col; }
+		size_t rowfirst() const
+		{
+			return _row;
+		}
+		size_t colfirst() const
+		{
+			return _col;
+		}
 
+		const Field& field() const
+		{
+			return _BB->field();
+		}
 
-
-		const Field& field() const {return _BB->field();}
-
-		const Blackbox * getPtr() const { return _BB; }
+		const Blackbox * getPtr() const
+		{
+			return _BB;
+		}
 
 	private:
 
@@ -281,8 +294,8 @@ namespace LinBox
 			   size_t Rowdim,
 			   size_t Coldim) :
 			BlasSubmatrix<Element>(const_cast<BlasBlackbox<Field>& >(Mat), row, col, Rowdim, Coldim),
-			f(Mat.field()), vd(Mat.field()) {
-			}
+			f(Mat.field()), vd(Mat.field())
+		{ }
 
 		/** Constructor from an existing submatrix and dimensions
 		 * @param SM pointer to Submatrix from which to
@@ -298,8 +311,9 @@ namespace LinBox
 			   size_t Rowdim,
 			   size_t Coldim ) :
 			BlasSubmatrix<Element> (const_cast<Submatrix<BlasBlackbox<Field> >&>(*SM), row, col, Rowdim, Coldim),
-			f (SM ->  field()), vd(SM -> field()){
-			}
+			f (SM ->  field()), vd(SM -> field())
+		{
+		}
 
 		/** Constructor from an existing submatrix and dimensions
 		 * @param SM reference to Submatrix from which to
@@ -318,19 +332,22 @@ namespace LinBox
 			f (SM. field()), vd(SM. field()){
 			}
 
-		const Field& field() const {
+		const Field& field() const
+		{
 
 			return f;
 		}
 
-		std::istream& read (std::istream& is) {
+		std::istream& read (std::istream& is)
+		{
 
 			BlasSubmatrix<Element>::read (is, f);
 
 			return is;
 		}
 
-		std::ostream& write (std::ostream& os) const {
+		std::ostream& write (std::ostream& os) const
+		{
 
 			BlasSubmatrix<Element>::write (os, f);
 
@@ -345,7 +362,8 @@ namespace LinBox
 		 * @return Reference to output vector
 		 */
 		template<class Vect1, class Vect2>
-		Vect1 &apply (Vect1 &y, const Vect2 &x) const {
+		Vect1 &apply (Vect1 &y, const Vect2 &x) const
+		{
 
 			typename BlasSubmatrix<Element>::ConstRowIterator p;
 
@@ -366,7 +384,8 @@ namespace LinBox
 		 * @return Reference to output vector
 		 */
 		template<class Vect1, class Vect2>
-		Vect1 &applyTranspose (Vect1 &y, const Vect2 &x) const {
+		Vect1 &applyTranspose (Vect1 &y, const Vect2 &x) const
+		{
 
 			typename BlasSubmatrix<Element>::ConstColIterator colp;
 
@@ -379,8 +398,7 @@ namespace LinBox
 		}
 
 		template<typename _Tp1>
-		struct rebind
-		{
+		struct rebind {
 			typedef SubmatrixOwner<BlasBlackbox<_Tp1>, VectorCategories::DenseVectorTag> other;
 
 			void operator() (other & Ap, const Self_t& A, const _Tp1& F) {
@@ -517,22 +535,42 @@ namespace LinBox
 		 * @return integer number of _rows of black box matrix.
 		 */
 		size_t rowdim (void) const
-		{ return _rowdim; }
+		{
+			return _rowdim;
+		}
 
 		/** Retreive _column dimensions of BlackBox matrix.
 		 * Required by abstract base class.
 		 * @return integer number of _columns of black box matrix.
 		 */
 		size_t coldim (void) const
-		{ return _coldim; }
+		{
+			return _coldim;
+		}
 
-		size_t rowfirst() const { return _row; }
-		size_t colfirst() const { return _col; }
+		size_t rowfirst() const
+		{
+			return _row;
+		}
+		size_t colfirst() const
+		{
+			return _col;
+		}
 
-		const Field& field() const {return _BB_data.field();}
+		const Field& field() const
+		{
+			return _BB_data.field();
+		}
 
-		const Blackbox& getData() const {return  _BB_data;}
-		Blackbox& getData() {return  _BB_data;}
+		const Blackbox& getData() const
+		{
+			return  _BB_data;
+		}
+
+		Blackbox& getData()
+		{
+			return  _BB_data;
+		}
 
 	private:
 

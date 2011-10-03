@@ -24,14 +24,14 @@
 #ifndef __LINBOX_lb_blackbox_C
 #define __LINBOX_lb_blackbox_C
 
-#include <linbox-config.h>
+#include "linbox-config.h"
 
 #include <lb-blackbox.h>
 #include <lb-blackbox-function.h>
 
 #include <lb-domain-collection.h>
 
-//#include <linbox/matrix/matrix-category.h>
+//#include "linbox/matrix/matrix-category.h"
 
 /********************************
  * Allocate the global variable *

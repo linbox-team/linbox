@@ -30,12 +30,12 @@
 
 
 
-#include <linbox/field/PID-integer.h>
-#include <linbox/field/modular-int32.h>
-#include <linbox/blackbox/blas-blackbox.h>
-#include <linbox/blackbox/diagonal.h>
-#include <linbox/algorithms/rational-solver.h>
-#include <linbox/randiter/random-prime.h>
+#include "linbox/field/PID-integer.h"
+#include "linbox/field/modular-int32.h"
+#include "linbox/blackbox/blas-blackbox.h"
+#include "linbox/blackbox/diagonal.h"
+#include "linbox/algorithms/rational-solver.h"
+#include "linbox/randiter/random-prime.h"
 #include <iostream>
 #include "test-common.h"
 #include "linbox/vector/stream.h"

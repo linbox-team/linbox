@@ -37,7 +37,7 @@
 #include "linbox/vector/vector-traits.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/util/debug.h"
-#include <linbox/util/commentator.h>
+#include "linbox/util/commentator.h"
 
 namespace LinBox
 {

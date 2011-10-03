@@ -28,15 +28,15 @@
 #define __LINBOX_ntl_gf2e_H
 
 
-#include <linbox/util/debug.h>
-#include <linbox/field/unparametric.h>
-#include <linbox/randiter/unparametric.h>
-#include <linbox/util/debug.h>
+#include "linbox/util/debug.h"
+#include "linbox/field/unparametric.h"
+#include "linbox/randiter/unparametric.h"
+#include "linbox/util/debug.h"
 #include <NTL/GF2XFactoring.h>
 #include <NTL/GF2E.h>
 #include <time.h>
 #include "linbox/linbox-config.h"
-#include <linbox/field/field-traits.h>
+#include "linbox/field/field-traits.h"
 
 namespace LinBox
 {

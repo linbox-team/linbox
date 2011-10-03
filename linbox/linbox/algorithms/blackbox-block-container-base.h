@@ -34,12 +34,12 @@
 
 #include <time.h> // for seeding
 
-#include <linbox/blackbox/archetype.h>
-#include <linbox/matrix/blas-matrix.h>
-#include <linbox/vector/vector-domain.h>
-#include <linbox/matrix/blas-matrix.h>
-#include <linbox/algorithms/blas-domain.h>
-#include <linbox/util/debug.h>
+#include "linbox/blackbox/archetype.h"
+#include "linbox/matrix/blas-matrix.h"
+#include "linbox/vector/vector-domain.h"
+#include "linbox/matrix/blas-matrix.h"
+#include "linbox/algorithms/blas-domain.h"
+#include "linbox/util/debug.h"
 #undef _U
 #undef _V
 #undef _F

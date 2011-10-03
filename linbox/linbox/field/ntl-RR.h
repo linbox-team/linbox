@@ -20,7 +20,7 @@
 
 #include "linbox/field/unparametric.h"
 #include "linbox/linbox-config.h"
-#include <linbox/field/field-traits.h>
+#include "linbox/field/field-traits.h"
 
 // Namespace in which all LinBox library code resides
 namespace LinBox

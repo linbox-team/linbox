@@ -28,13 +28,13 @@
 #define __LINBOX_ntl_lzz_pe_H
 
 
-#include <linbox/field/unparametric.h>
-#include <linbox/randiter/unparametric.h>
+#include "linbox/field/unparametric.h"
+#include "linbox/randiter/unparametric.h"
 #include <NTL/lzz_pXFactoring.h>
 #include <NTL/lzz_pE.h>
 #include <time.h>
 #include "linbox/linbox-config.h"
-#include <linbox/field/field-traits.h>
+#include "linbox/field/field-traits.h"
 
 
 namespace LinBox

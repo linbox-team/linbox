@@ -33,14 +33,14 @@
 
 #include <iostream>
 
-#include <linbox/blackbox/blas-blackbox.h>
-#include <linbox/solutions/methods.h>
-#include <linbox/blackbox/archetype.h>
-#include <linbox/blackbox/lambda-sparse.h>
-#include <linbox/blackbox/compose.h>
-#include <linbox/matrix/blas-matrix.h>
-#include <linbox/algorithms/vector-fraction.h>
-#include <linbox/util/timer.h>
+#include "linbox/blackbox/blas-blackbox.h"
+#include "linbox/solutions/methods.h"
+#include "linbox/blackbox/archetype.h"
+#include "linbox/blackbox/lambda-sparse.h"
+#include "linbox/blackbox/compose.h"
+#include "linbox/matrix/blas-matrix.h"
+#include "linbox/algorithms/vector-fraction.h"
+#include "linbox/util/timer.h"
 
 //#define RSTIMING
 #define DEFAULT_PRIMESIZE 20
@@ -63,7 +63,7 @@ namespace LinBox
 	 *  i.e. solution over the rational for an integer linear system.
 	 *
 	 * \par Headers
-	 *  <code>\#include <linbox/algorithms/rational-solver.h></code>
+	 *  <code>\#include "linbox/algorithms/rational-solver.h></code>
 	 *
 	 *  See the following reference for details on this algorithm:
 	 * \bib
@@ -1031,7 +1031,7 @@ namespace LinBox
 }
 
 
-#include <linbox/algorithms/rational-solver.inl>
+#include "linbox/algorithms/rational-solver.inl"
 
 #endif //__LINBOX_rational_solver_H
 

@@ -19,7 +19,7 @@
 #include <NTL/ZZ_pX.h>
 #include <NTL/ZZ_p.h>
 
-#include <linbox/blackbox/blackbox-interface.h>
+#include "linbox/blackbox/blackbox-interface.h"
 #include "linbox/vector/vector-traits.h"
 
 namespace LinBox
@@ -82,7 +82,7 @@ namespace LinBox
 	};// End, Sylvester
 }
 
-#include <linbox/blackbox/ntl-sylvester.inl>
+#include "linbox/blackbox/ntl-sylvester.inl"
 
 #endif //__LINBOX_ntl_sylvester_H
 

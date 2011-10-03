@@ -36,16 +36,9 @@
 #include "linbox/vector/subiterator.h"
 #include "linbox/vector/subvector.h"
 
-// #include <linbox/solutions/getentry.h>
-#include <linbox/algorithms/linbox-tags.h>
-// #include <linbox/matrix/dense-submatrix.h>
-#include <linbox/util/debug.h>
-#include <linbox/matrix/matrix-category.h>
-
-// #include "linbox/algorithms/cra-full-multip.h"
-
-
-
+#include "linbox/algorithms/linbox-tags.h"
+#include "linbox/util/debug.h"
+#include "linbox/matrix/matrix-category.h"
 
 // Blas Matrix
 namespace LinBox

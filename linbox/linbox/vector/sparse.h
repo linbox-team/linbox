@@ -28,7 +28,7 @@
 #define __LINBOX_sparse_vector_H
 #include <iostream>
 
-#include <linbox/vector/vector-traits.h>
+#include "linbox/vector/vector-traits.h"
 
 // ---------------------------------------------------
 //

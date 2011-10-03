@@ -29,7 +29,7 @@
 // Files of Givaro library
 #include <givaro/givzpz.h>
 #include <givaro/giv_randiter.h>
-#include <linbox/field/field-traits.h>
+#include "linbox/field/field-traits.h"
 
 //--------------------------------------
 

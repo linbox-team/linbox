@@ -27,16 +27,16 @@
 
 #include <vector>
 
-#include <linbox/integer.h>
-#include <linbox/matrix/blas-matrix.h>
-#include <linbox/algorithms/blas-domain.h>
-#include <linbox/algorithms/blackbox-block-container.h>
-#include <linbox/algorithms/block-massey-domain.h>
-#include <linbox/vector/vector-domain.h>
-#include <linbox/blackbox/transpose.h>
+#include "linbox/integer.h"
+#include "linbox/matrix/blas-matrix.h"
+#include "linbox/algorithms/blas-domain.h"
+#include "linbox/algorithms/blackbox-block-container.h"
+#include "linbox/algorithms/block-massey-domain.h"
+#include "linbox/vector/vector-domain.h"
+#include "linbox/blackbox/transpose.h"
 
-#include <linbox/util/error.h>
-#include <linbox/util/debug.h>
+#include "linbox/util/error.h"
+#include "linbox/util/debug.h"
 
 namespace LinBox
 {

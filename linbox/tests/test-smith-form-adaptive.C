@@ -31,14 +31,14 @@
 
 
 
-//#include <linbox/field/ntl-ZZ.h>
-#include <linbox/field/PID-integer.h>
+//#include "linbox/field/ntl-ZZ.h"
+#include "linbox/field/PID-integer.h"
 #include <time.h>
-#include <linbox/randiter/random-prime.h>
-#include <linbox/util/commentator.h>
-#include <linbox/vector/stream.h>
-#include <linbox/algorithms/smith-form-adaptive.h>
-#include <linbox/blackbox/blas-blackbox.h>
+#include "linbox/randiter/random-prime.h"
+#include "linbox/util/commentator.h"
+#include "linbox/vector/stream.h"
+#include "linbox/algorithms/smith-form-adaptive.h"
+#include "linbox/blackbox/blas-blackbox.h"
 #include "test-common.h"
 using namespace LinBox; // fragile
 

@@ -25,7 +25,7 @@
 #define __LINBOX_lb_charpoly_C
 
 
-#include <linbox/solutions/charpoly.h>
+#include "linbox/solutions/charpoly.h"
 #ifdef __LINBOX_HAVE_GIVARO
 #include "linbox/ring/givaro-polynomial.h"
 #endif

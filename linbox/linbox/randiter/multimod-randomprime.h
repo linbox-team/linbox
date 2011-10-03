@@ -14,8 +14,8 @@
 #ifndef __LINBOX_multimod_random_prime_H
 #define __LINBOX_multimod_random_prime_H
 
-#include <linbox/integer.h>
-#include <linbox/util/timer.h>
+#include "linbox/integer.h"
+#include "linbox/util/timer.h"
 #include <vector>
 
 namespace LinBox

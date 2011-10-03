@@ -29,9 +29,9 @@
  */
 
 
-#include <linbox/util/debug.h>
-#include <linbox/algorithms/default.h>
-#include <linbox/util/commentator.h>
+#include "linbox/util/debug.h"
+#include "linbox/algorithms/default.h"
+#include "linbox/util/commentator.h"
 
 namespace LinBox
 {

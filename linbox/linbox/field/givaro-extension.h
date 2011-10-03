@@ -18,13 +18,13 @@
 #define __LINBOX_field_givaro_extension_H
 
 
-#include <linbox/integer.h>
-#include <linbox/field/field-traits.h>
-#include <linbox/field/field-interface.h>
-#include <linbox/util/debug.h>
+#include "linbox/integer.h"
+#include "linbox/field/field-traits.h"
+#include "linbox/field/field-interface.h"
+#include "linbox/util/debug.h"
 #include "linbox/linbox-config.h"
-#include <linbox/field/field-traits.h>
-#include <linbox/field/givaro-gfq.h>
+#include "linbox/field/field-traits.h"
+#include "linbox/field/givaro-gfq.h"
 
 #ifdef __LINBOX_XMLENABLED
 
@@ -43,7 +43,7 @@
 #include <givaro/giv_randiter.h>
 //---------------------------------------------
 // To convert linbox fields to Givaro interface
-#include <linbox/field/givaro-field.h>
+#include "linbox/field/givaro-field.h"
 
 //---------------------------------------------
 // Namespace in which all LinBox code resides

@@ -29,8 +29,8 @@
 
 #include "linbox/field/PID-integer.h"
 
-#include <linbox/algorithms/rational-reconstruction-base.h>
-#include <linbox/algorithms/classic-rational-reconstruction.h>
+#include "linbox/algorithms/rational-reconstruction-base.h"
+#include "linbox/algorithms/classic-rational-reconstruction.h"
 
 //#define RCRATIMING
 

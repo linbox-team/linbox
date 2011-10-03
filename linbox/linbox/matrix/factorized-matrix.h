@@ -34,9 +34,9 @@
 
 #include <vector>
 
-#include <linbox/matrix/blas-matrix.h>
-#include <linbox/blackbox/blas-blackbox.h>
-#include <linbox/algorithms/blas-domain.h>
+#include "linbox/matrix/blas-matrix.h"
+#include "linbox/blackbox/blas-blackbox.h"
+#include "linbox/algorithms/blas-domain.h"
 #include <fflas-ffpack/ffpack/ffpack.h>
 
 #include "linbox/matrix/matrix-permutation.h"
@@ -526,7 +526,7 @@ namespace LinBox
 	//-}
 } // end of namespace LinBox
 
-#include <linbox/matrix/factorized-matrix.inl>
+#include "linbox/matrix/factorized-matrix.inl"
 
 #endif //__LINBOX_factorized_matrix_H
 

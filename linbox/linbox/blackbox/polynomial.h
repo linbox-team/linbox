@@ -24,8 +24,8 @@
 #ifndef __LINBOX_bb_polynomial_H
 #define __LINBOX_bb_polynomial_H
 
-#include <linbox/blackbox/blackbox-interface.h>
-#include <linbox/vector/vector-domain.h>
+#include "linbox/blackbox/blackbox-interface.h"
+#include "linbox/vector/vector-domain.h"
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {

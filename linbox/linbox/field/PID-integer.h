@@ -34,10 +34,10 @@
 #include <limits.h>
 #include <iostream>
 // #include <gmp++/gmp++_int.h>
-#include <linbox/integer.h>
-#include <linbox/field/unparametric.h>
-#include <linbox/field/field-traits.h>
-#include <linbox/field/gmp-rational.h>
+#include "linbox/integer.h"
+#include "linbox/field/unparametric.h"
+#include "linbox/field/field-traits.h"
+#include "linbox/field/gmp-rational.h"
 
 
 namespace LinBox

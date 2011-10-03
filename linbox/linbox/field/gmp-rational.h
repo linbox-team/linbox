@@ -23,7 +23,7 @@
 #include "linbox/element/gmp-rational.h"
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
-#include <linbox/field/field-traits.h>
+#include "linbox/field/field-traits.h"
 
 // Namespace in which all LinBox library code resides
 namespace LinBox

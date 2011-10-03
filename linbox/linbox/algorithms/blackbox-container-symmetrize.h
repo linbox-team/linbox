@@ -24,7 +24,7 @@
 #ifndef __LINBOX_blackbox_container_symmetrize_H
 #define __LINBOX_blackbox_container_symmetrize_H
 
-#include <linbox/algorithms/blackbox-container-base.h>
+#include "linbox/algorithms/blackbox-container-base.h"
 
 namespace LinBox
 {

@@ -36,12 +36,12 @@
 #include <string>
 #include <vector>
 #include "test-common.h"
-#include <linbox/field/unparametric.h>
-#include <linbox/util/matrix-stream.h>
-#include <linbox/integer.h>
-#include <linbox/blackbox/blas-blackbox.h>
-#include <linbox/blackbox/sparse.h>
-#include <linbox/blackbox/blas-blackbox.h>
+#include "linbox/field/unparametric.h"
+#include "linbox/util/matrix-stream.h"
+#include "linbox/integer.h"
+#include "linbox/blackbox/blas-blackbox.h"
+#include "linbox/blackbox/sparse.h"
+#include "linbox/blackbox/blas-blackbox.h"
 
 using namespace LinBox;
 

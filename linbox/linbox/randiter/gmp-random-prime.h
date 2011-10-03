@@ -24,7 +24,7 @@
 #ifndef __LINBOX_gmp_random_prime_H
 #define __LINBOX_gmp_random_prime_H
 
-#include <linbox/integer.h>
+#include "linbox/integer.h"
 
 namespace LinBox
 {

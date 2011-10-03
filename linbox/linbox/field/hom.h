@@ -12,10 +12,10 @@
 #include "linbox/linbox-config.h"
 #include "linbox/field/modular.h"
 #include "linbox/field/PID-integer.h"
-#include <linbox/util/error.h>
+#include "linbox/util/error.h"
 
 #ifdef __LINBOX_HAVE_NTL
-#include <linbox/field/ntl-ZZ.h>
+#include "linbox/field/ntl-ZZ.h"
 #endif //__LINBOX_HAVE_NTL
 
 namespace LinBox

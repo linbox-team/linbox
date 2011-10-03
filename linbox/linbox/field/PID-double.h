@@ -32,8 +32,8 @@
 #ifndef __LINBOX_pid_double_H
 #define __LINBOX_pid_double_H
 
-#include <linbox/field/unparametric.h>
-#include <linbox/field/field-traits.h>
+#include "linbox/field/unparametric.h"
+#include "linbox/field/field-traits.h"
 
 namespace LinBox
 {

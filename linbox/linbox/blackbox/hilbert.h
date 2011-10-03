@@ -22,7 +22,7 @@
 #define __LINBOX_hilbert_H
 
 #include <vector>
-#include <linbox/blackbox/jit-matrix.h>
+#include "linbox/blackbox/jit-matrix.h"
 
 
 namespace LinBox

@@ -28,7 +28,7 @@
 
 #include <map>
 #include <givaro/givconfig.h> // for Signed_Trait
-#include <linbox/algorithms/gauss.h>
+#include "linbox/algorithms/gauss.h"
 
 namespace LinBox
 {

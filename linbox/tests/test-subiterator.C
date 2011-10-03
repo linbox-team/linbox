@@ -31,9 +31,9 @@
 
 
 #include <iostream>
-#include <linbox/util/commentator.h>
+#include "linbox/util/commentator.h"
 #include "test-common.h"
-#include <linbox/vector/subiterator.h>
+#include "linbox/vector/subiterator.h"
 using namespace LinBox;
 bool test() ;
 int main(int argc, char** argv)

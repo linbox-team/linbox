@@ -25,12 +25,12 @@
 #ifndef __LINBOX_matpoly_mult_H
 #define __LINBOX_matpoly_mult_H
 
-#include <linbox/randiter/random-fftprime.h>
-#include <linbox/algorithms/blas-domain.h>
-#include <linbox/matrix/matrix-domain.h>
-#include <linbox/util/error.h>
-#include <linbox/util/debug.h>
-#include <linbox/util/timer.h>
+#include "linbox/randiter/random-fftprime.h"
+#include "linbox/algorithms/blas-domain.h"
+#include "linbox/matrix/matrix-domain.h"
+#include "linbox/util/error.h"
+#include "linbox/util/debug.h"
+#include "linbox/util/timer.h"
 #include <vector>
 #ifdef __LINBOX_HAVE_OPENMP
 #include <omp.h>

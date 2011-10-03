@@ -24,7 +24,7 @@
 #ifndef __LINBOX_pir_modular_int32_H
 #define __LINBOX_pir_modular_int32_H
 
-#include <linbox/field/modular-int32.h>
+#include "linbox/field/modular-int32.h"
 #ifndef LINBOX_MAX_INT
 #define LINBOX_MAX_INT 2147483647
 #endif
@@ -32,7 +32,7 @@
 #ifndef LINBOX_MAX_MODULUS
 #define LINBOX_MAX_MODULUS 1073741824
 #endif
-#include <linbox/field/field-traits.h>
+#include "linbox/field/field-traits.h"
 
 // Namespace in which all LinBox code resides
 namespace LinBox

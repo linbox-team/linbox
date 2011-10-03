@@ -24,7 +24,7 @@
 #ifndef __LINBOX_lb_solve_C
 #define __LINBOX_lb_solve_C
 
-#include <linbox/solutions/solve.h>
+#include "linbox/solutions/solve.h"
 
 #include <lb-solve.h>
 #include <lb-blackbox-function.h>

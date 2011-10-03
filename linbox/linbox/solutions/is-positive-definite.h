@@ -23,7 +23,7 @@
 #define __LINBOX_is_positive_definite_H
 
 #include "linbox/util/error.h"
-#include <linbox/algorithms/matrix-hom.h>
+#include "linbox/algorithms/matrix-hom.h"
 #include "linbox/algorithms/signature.h"
 
 namespace LinBox

@@ -31,20 +31,20 @@
 
 
 
-#include <linbox/field/PID-integer.h>
-#include <linbox/randiter/random-prime.h>
-#include <linbox/field/modular-int32.h>
-#include <linbox/blackbox/blas-blackbox.h>
-#include <linbox/algorithms/matrix-rank.h>
-#include <linbox/algorithms/last-invariant-factor.h>
-#include <linbox/blackbox/scompose.h>
-#include <linbox/blackbox/random-matrix.h>
-#include <linbox/algorithms/rational-solver.h>
+#include "linbox/field/PID-integer.h"
+#include "linbox/randiter/random-prime.h"
+#include "linbox/field/modular-int32.h"
+#include "linbox/blackbox/blas-blackbox.h"
+#include "linbox/algorithms/matrix-rank.h"
+#include "linbox/algorithms/last-invariant-factor.h"
+#include "linbox/blackbox/scompose.h"
+#include "linbox/blackbox/random-matrix.h"
+#include "linbox/algorithms/rational-solver.h"
 #include <time.h>
 
 
-#include <linbox/util/commentator.h>
-#include <linbox/vector/stream.h>
+#include "linbox/util/commentator.h"
+#include "linbox/vector/stream.h"
 #include "test-common.h"
 using namespace LinBox;
 

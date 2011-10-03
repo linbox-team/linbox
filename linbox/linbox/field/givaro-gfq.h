@@ -25,11 +25,11 @@
 #define __LINBOX_field_givaro_gfq_H
 
 
-#include <linbox/integer.h>
-#include <linbox/field/field-traits.h>
-#include <linbox/field/field-interface.h>
-#include <linbox/util/debug.h>
-#include <linbox/field/hom.h>
+#include "linbox/integer.h"
+#include "linbox/field/field-traits.h"
+#include "linbox/field/field-interface.h"
+#include "linbox/util/debug.h"
+#include "linbox/field/hom.h"
 #include "linbox/linbox-config.h"
 
 

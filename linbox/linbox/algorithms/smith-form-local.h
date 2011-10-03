@@ -106,5 +106,5 @@ namespace LinBox
 
 } // end LinBox
 
-#include <linbox/algorithms/smith-form-local2.inl>
+#include "linbox/algorithms/smith-form-local2.inl"
 #endif // __LINBOX_smith_form_local_H

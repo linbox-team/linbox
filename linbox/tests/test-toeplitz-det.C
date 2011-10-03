@@ -32,19 +32,19 @@
 
 #include <iostream>
 #include <vector>
-#include <linbox/blackbox/toeplitz.h>
+#include "linbox/blackbox/toeplitz.h"
 #ifdef __LINBOX_HAVE_NTL
-#include <linbox/field/ntl-lzz_p.h>
-#include <linbox/field/ntl-lzz_pX.h>
+#include "linbox/field/ntl-lzz_p.h"
+#include "linbox/field/ntl-lzz_pX.h"
 #endif
-#include <linbox/solutions/det.h>
-#include <linbox/blackbox/blas-blackbox.h>
-#include <linbox/randiter/random-prime.h>
-#include <linbox/util/commentator.h>
+#include "linbox/solutions/det.h"
+#include "linbox/blackbox/blas-blackbox.h"
+#include "linbox/randiter/random-prime.h"
+#include "linbox/util/commentator.h"
 #include "test-common.h"
 #include <cstdlib>
 #include <ctime>
-#include <linbox/integer.h>
+#include "linbox/integer.h"
 
 using namespace std;
 using namespace LinBox;

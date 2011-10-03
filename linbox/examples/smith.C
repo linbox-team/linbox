@@ -66,7 +66,7 @@ using namespace std;
 #include "linbox/field/local2_32.h"
 #include "linbox/field/PIR-modular-int32.h"
 #include "linbox/algorithms/smith-form-local.h"
-#include <linbox/algorithms/smith-form-iliopoulos.h>
+#include "linbox/algorithms/smith-form-iliopoulos.h"
 #include "linbox/algorithms/smith-form-adaptive.h"
 #include "linbox/blackbox/blas-blackbox.h"
 

@@ -35,8 +35,8 @@
 #include <iostream>
 #include <vector>
 
-#include <linbox/integer.h>
-#include <linbox/matrix/matrix-domain.h>
+#include "linbox/integer.h"
+#include "linbox/matrix/matrix-domain.h"
 #include "linbox/field/givaro-zpz.h"
 #include "linbox/field/modular.h"
 #include "linbox/field/modular-balanced.h"

@@ -25,11 +25,11 @@
 #ifndef __LINBOX_lambda_sparse_H
 #define __LINBOX_lambda_sparse_H
 
-#include <linbox/blackbox/sparse.h>
-#include <linbox/blackbox/archetype.h>
-#include <linbox/vector/stream.h>
-#include <linbox/vector/vector-traits.h>
-#include <linbox/integer.h>
+#include "linbox/blackbox/sparse.h"
+#include "linbox/blackbox/archetype.h"
+#include "linbox/vector/stream.h"
+#include "linbox/vector/vector-traits.h"
+#include "linbox/integer.h"
 
 namespace LinBox
 {

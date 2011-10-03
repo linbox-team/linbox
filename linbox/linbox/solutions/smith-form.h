@@ -26,14 +26,14 @@
 
 #include <list>
 #include <vector>
-#include <linbox/util/error.h>
-#include <linbox/algorithms/matrix-hom.h>
+#include "linbox/util/error.h"
+#include "linbox/algorithms/matrix-hom.h"
 #ifdef __LINBOX_HAVE_NTL
-#include <linbox/algorithms/smith-form-adaptive.h>
+#include "linbox/algorithms/smith-form-adaptive.h"
 #endif
-#include <linbox/field/PID-integer.h>
-//#include <linbox/algorithms/smith-form.h>
-//#include <linbox/algorithms/smith-form-local.h>
+#include "linbox/field/PID-integer.h"
+//#include "linbox/algorithms/smith-form.h"
+//#include "linbox/algorithms/smith-form-local.h"
 
 namespace LinBox
 {

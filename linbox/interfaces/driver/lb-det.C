@@ -24,8 +24,8 @@
 #ifndef __LINBOX_lb_det_C
 #define __LINBOX_lb_det_C
 
-#include <linbox-config.h>
-#include <linbox/solutions/det.h>
+#include "linbox-config.h"
+#include "linbox/solutions/det.h"
 
 #include <lb-det.h>
 #include <lb-blackbox-function.h>

@@ -92,7 +92,7 @@ namespace LinBox
 }
 
 #ifdef LinBoxSrcOnly       // for all-source compilation
-#    include <linbox/util/error.C>
+#include "linbox/util/error.C"
 #endif
 
 #endif // __LINBOX_util_error_H

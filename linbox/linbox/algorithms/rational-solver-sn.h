@@ -28,18 +28,18 @@
 
 #include <iostream>
 
-#include <linbox/integer.h>
-#include <linbox/field/param-fuzzy.h>
-#include <linbox/solutions/methods.h>
-#include <linbox/blackbox/archetype.h>
-#include <linbox/blackbox/blas-blackbox.h>
-#include <linbox/algorithms/dyadic-to-rational.h>
-#include <linbox/blackbox/compose.h>
-#include <linbox/matrix/blas-matrix.h>
-#include <linbox/algorithms/vector-fraction.h>
-#include <linbox/algorithms/matrix-hom.h>
-#include <linbox/util/timer.h>
-#include <linbox/field/PID-integer.h>
+#include "linbox/integer.h"
+#include "linbox/field/param-fuzzy.h"
+#include "linbox/solutions/methods.h"
+#include "linbox/blackbox/archetype.h"
+#include "linbox/blackbox/blas-blackbox.h"
+#include "linbox/algorithms/dyadic-to-rational.h"
+#include "linbox/blackbox/compose.h"
+#include "linbox/matrix/blas-matrix.h"
+#include "linbox/algorithms/vector-fraction.h"
+#include "linbox/algorithms/matrix-hom.h"
+#include "linbox/util/timer.h"
+#include "linbox/field/PID-integer.h"
 
 namespace LinBox {
 

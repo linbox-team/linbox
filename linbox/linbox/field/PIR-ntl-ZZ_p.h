@@ -25,16 +25,16 @@
 #ifndef __LINBOX_pir_ntl_zz_p_H
 #define __LINBOX_pir_ntl_zz_p_H
 
-#include <linbox/field/unparametric.h>
+#include "linbox/field/unparametric.h"
 #include "linbox/linbox-config.h"
-#include <linbox/util/debug.h>
+#include "linbox/util/debug.h"
 #include <NTL/ZZ.h>
 #include <NTL/ZZ_p.h>
 #include "linbox/field/ntl-ZZ_p.h"
-#include <linbox/vector/vector-domain.h>
+#include "linbox/vector/vector-domain.h"
 #include <sstream>
-#include <linbox/integer.h>
-#include <linbox/field/field-traits.h>
+#include "linbox/integer.h"
+#include "linbox/field/field-traits.h"
 
 namespace LinBox
 {

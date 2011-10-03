@@ -8,7 +8,7 @@
 #ifndef __LINBOX_field_traits_H
 #define __LINBOX_field_traits_H
 
-#include <linbox/integer.h>
+#include "linbox/integer.h"
 
 // Namespace in which all LinBox library code resides
 namespace LinBox

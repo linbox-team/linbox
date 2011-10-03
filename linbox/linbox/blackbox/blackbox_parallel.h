@@ -26,12 +26,12 @@
 
 /* parallel apply and apply transpose
  */
-#include <linbox/vector/subvector.h>
-#include <linbox/vector/vector-domain.h>
-#include <linbox/algorithms/density.h>
-#include <linbox/blackbox/blackbox-interface.h>
-#include <linbox/blackbox/subrowmatrix.h>
-#include <linbox/blackbox/blackbox_thread.h>
+#include "linbox/vector/subvector.h"
+#include "linbox/vector/vector-domain.h"
+#include "linbox/algorithms/density.h"
+#include "linbox/blackbox/blackbox-interface.h"
+#include "linbox/blackbox/subrowmatrix.h"
+#include "linbox/blackbox/blackbox_thread.h"
 
 #include <typeinfo>
 

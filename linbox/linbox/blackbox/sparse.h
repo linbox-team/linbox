@@ -43,8 +43,8 @@
 #include "linbox/vector/vector-traits.h"
 #include "linbox/vector/stream.h"
 #include "linbox/util/field-axpy.h"
-#include <linbox/field/hom.h>
-#include <linbox/field/rebind.h>
+#include "linbox/field/hom.h"
+#include "linbox/field/rebind.h"
 
 namespace LinBox
 {

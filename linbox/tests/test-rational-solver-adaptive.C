@@ -31,10 +31,10 @@
 
 
 
-#include <linbox/field/PID-integer.h>
-#include <linbox/blackbox/blas-blackbox.h>
-#include <linbox/blackbox/diagonal.h>
-#include <linbox/algorithms/rational-solver-adaptive.h>
+#include "linbox/field/PID-integer.h"
+#include "linbox/blackbox/blas-blackbox.h"
+#include "linbox/blackbox/diagonal.h"
+#include "linbox/algorithms/rational-solver-adaptive.h"
 #include <iostream>
 #include "test-common.h"
 #include "linbox/vector/stream.h"

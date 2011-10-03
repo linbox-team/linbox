@@ -37,8 +37,8 @@
 #include <list>
 #include <set>
 
-#include <linbox/util/timer.h>
-#include <linbox/matrix/matrix-domain.h>
+#include "linbox/util/timer.h"
+#include "linbox/matrix/matrix-domain.h"
 
 
 

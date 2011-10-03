@@ -25,7 +25,7 @@
 #define __LINBOX_lb_minpoly_C
 
 
-#include <linbox/solutions/minpoly.h>
+#include "linbox/solutions/minpoly.h"
 
 #include <lb-minpoly.h>
 #include <lb-blackbox-function.h>

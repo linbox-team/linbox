@@ -24,7 +24,7 @@
 #ifndef __LINBOX_squarize_H
 #define __LINBOX_squarize_H
 
-#include <linbox/blackbox/blackbox-interface.h>
+#include "linbox/blackbox/blackbox-interface.h"
 
 #ifndef GIVMAX
 #define GIVMAX(a,b) ((b)>(a)?(b):(a))

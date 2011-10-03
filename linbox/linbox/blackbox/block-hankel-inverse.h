@@ -29,11 +29,11 @@
 
 //#define __CHECK_SIGMA_BASIS
 
-#include <linbox/algorithms/sigma-basis.h>
-#include <linbox/blackbox/block-hankel.h>
-//#include <linbox/blackbox/block-toeplitz.h>
-#include <linbox/blackbox/compose.h>
-#include <linbox/vector/vector-domain.h>
+#include "linbox/algorithms/sigma-basis.h"
+#include "linbox/blackbox/block-hankel.h"
+//#include "linbox/blackbox/block-toeplitz.h"
+#include "linbox/blackbox/compose.h"
+#include "linbox/vector/vector-domain.h"
 
 //#define PADEMATRIX
 

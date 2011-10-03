@@ -28,7 +28,7 @@
 /* create a thread, which is bound to  a lwp to run matrix apply
 */
 
-#include <linbox/vector/subvector.h>
+#include "linbox/vector/subvector.h"
 #include <pthread.h>
 #include <signal.h>
 #include <string.h>

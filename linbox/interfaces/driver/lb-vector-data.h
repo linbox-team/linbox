@@ -25,7 +25,7 @@
 #define __LINBOX_lb_vector_data_H
 
 #include <vector>
-#include <linbox/field/hom.h>
+#include "linbox/field/hom.h"
 #include <map>
 #include <utility>
 

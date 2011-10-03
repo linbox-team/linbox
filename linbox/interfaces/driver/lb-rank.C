@@ -25,7 +25,7 @@
 #define __LINBOX_lb_rank_C
 
 
-#include <linbox/solutions/rank.h>
+#include "linbox/solutions/rank.h"
 
 #include <lb-rank.h>
 #include <lb-blackbox-function.h>

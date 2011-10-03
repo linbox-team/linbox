@@ -24,14 +24,14 @@
 #ifndef __LINBOX_diophantine_solver_INL
 #define __LINBOX_diophantine_solver_INL
 
-#include <linbox/blackbox/sparse.h>
-#include <linbox/blackbox/lambda-sparse.h>
-#include <linbox/algorithms/rational-solver.h>
-#include <linbox/algorithms/vector-fraction.h>
-#include <linbox/solutions/methods.h>
-#include <linbox/util/debug.h>
+#include "linbox/blackbox/sparse.h"
+#include "linbox/blackbox/lambda-sparse.h"
+#include "linbox/algorithms/rational-solver.h"
+#include "linbox/algorithms/vector-fraction.h"
+#include "linbox/solutions/methods.h"
+#include "linbox/util/debug.h"
 
-#include <linbox/linbox-config.h>
+#include "linbox/linbox-config.h"
 
 //#define DEBUG_DIO
 //#define INFO_DIO

@@ -26,14 +26,14 @@
 #include "linbox/linbox-config.h"
 #include <iostream>
 #include <string>
-#include <linbox/integer.h>
-#include <linbox/matrix/blas-matrix.h>
-#include <linbox/matrix/matrix-domain.h>
-#include <linbox/vector/vector-domain.h>
-#include <linbox/field/modular.h>
-#include <linbox/randiter/nonzero.h>
-#include <linbox/util/commentator.h>
-#include <linbox/algorithms/blas-domain.h>
+#include "linbox/integer.h"
+#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/matrix-domain.h"
+#include "linbox/vector/vector-domain.h"
+#include "linbox/field/modular.h"
+#include "linbox/randiter/nonzero.h"
+#include "linbox/util/commentator.h"
+#include "linbox/algorithms/blas-domain.h"
 #include "linbox/field/PID-integer.h"
 // #include "linbox/algorithms/matrix-hom.h"
 

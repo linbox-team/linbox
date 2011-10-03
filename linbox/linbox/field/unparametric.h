@@ -33,13 +33,13 @@
 #include <algorithm>
 
 #include "linbox/integer.h"
-#include <linbox/field/field-interface.h>
+#include "linbox/field/field-interface.h"
 #include "linbox/randiter/unparametric.h"
 #include "linbox/linbox-config.h"
-#include <linbox/field/field-traits.h>
+#include "linbox/field/field-traits.h"
 #include <fflas-ffpack/field/unparametric.h>
 //#if __LINBOX_HAVE_NTL
-//#include <linbox/field/ntl-RR.h>
+//#include "linbox/field/ntl-RR.h"
 //#endif // __LINBOX_HAVE_NTL
 
 
@@ -131,9 +131,9 @@ namespace LinBox
 		UnparametricField(integer q = 0, size_t e = 1) :
 			FFPACK::UnparametricField<K>(q, e),
 			//FFPACK::UnparametricField<K>((unsigned long)q,(unsigned long)e)
-			_p(q), 
-			_card(q == 0 ? 
-			integer(-1) : 
+			_p(q),
+			_card(q == 0 ?
+			integer(-1) :
 			pow(q, e) )
 			{}  // assuming q is a prime or zero.
 

@@ -31,15 +31,15 @@
 #include <iostream>
 #include <iomanip>
 
-#include <linbox/util/commentator.h>
-#include <linbox/util/timer.h>
-#include <linbox/field/unparametric.h>
-#include <linbox/matrix/matrix-domain.h>
-#include <linbox/matrix/blas-matrix.h>
-#include <linbox/matrix/factorized-matrix.h>
-#include <linbox/algorithms/blas-domain.h>
+#include "linbox/util/commentator.h"
+#include "linbox/util/timer.h"
+#include "linbox/field/unparametric.h"
+#include "linbox/matrix/matrix-domain.h"
+#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/factorized-matrix.h"
+#include "linbox/algorithms/blas-domain.h"
 
-#include <linbox/util/timer.h>
+#include "linbox/util/timer.h"
 
 //#define  __CHECK_RESULT
 //#define __DEBUG_MAPLE

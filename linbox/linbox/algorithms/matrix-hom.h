@@ -33,15 +33,15 @@
 #ifndef __LINBOX_matrix_hom_H
 #define __LINBOX_matrix_hom_H
 
-#include <linbox/blackbox/blas-blackbox.h>
-#include <linbox/blackbox/sparse.h>
-#include <linbox/blackbox/compose.h>
-#include <linbox/blackbox/polynomial.h>
-#include <linbox/blackbox/scalar-matrix.h>
-#include <linbox/integer.h>
-#include <linbox/field/hom.h>
-#include <linbox/field/multimod-field.h>
-#include <linbox/matrix/matrix-category.h>
+#include "linbox/blackbox/blas-blackbox.h"
+#include "linbox/blackbox/sparse.h"
+#include "linbox/blackbox/compose.h"
+#include "linbox/blackbox/polynomial.h"
+#include "linbox/blackbox/scalar-matrix.h"
+#include "linbox/integer.h"
+#include "linbox/field/hom.h"
+#include "linbox/field/multimod-field.h"
+#include "linbox/matrix/matrix-category.h"
 
 
 namespace LinBox

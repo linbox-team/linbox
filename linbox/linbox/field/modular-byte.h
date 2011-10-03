@@ -34,7 +34,7 @@
 #include "linbox/field/field-interface.h"
 #include "linbox/field/field-traits.h"
 #include "linbox/util/debug.h"
-#include <linbox/field/field-traits.h>
+#include "linbox/field/field-traits.h"
 
 #ifndef LINBOX_MAX_INT8 /* 127 */
 #define LINBOX_MAX_INT8 INT8_MAX
