@@ -77,7 +77,8 @@ namespace LinBox
 			return c = 0;
 		}
 
-		inline size_t & characteristic (size_t& c)const
+		template<class IntType>
+		inline IntType & characteristic (IntType& c)const
 		{
 			return c = 0;
 		}
