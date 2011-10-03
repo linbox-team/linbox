@@ -36,8 +36,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <linbox/integer.h>
-#include <linbox/algorithms/rational-reconstruction2.h>
+#include "linbox/integer.h"
+#include "linbox/algorithms/rational-reconstruction2.h"
 
 namespace LinBox
 {

@@ -30,15 +30,15 @@
 #define __LINBOX_blackbox_block_container_H
 
 
-#include <linbox/algorithms/blackbox-block-container-base.h>
-#include <linbox/matrix/blas-matrix.h>
-#include <linbox/algorithms/blas-domain.h>
+#include "linbox/algorithms/blackbox-block-container-base.h"
+#include "linbox/matrix/blas-matrix.h"
+#include "linbox/algorithms/blas-domain.h"
 
 #define _BBC_TIMING
 
 #ifdef _BBC_TIMING
 #include <time.h>
-#include <linbox/util/timer.h>
+#include "linbox/util/timer.h"
 #endif
 
 namespace LinBox

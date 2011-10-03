@@ -23,14 +23,14 @@
 #ifndef __LINBOX_field_ntl_zz_pe_H
 #define __LINBOX_field_ntl_zz_pe_H
 
-#include <linbox/field/unparametric.h>
-#include <linbox/randiter/unparametric.h>
+#include "linbox/field/unparametric.h"
+#include "linbox/randiter/unparametric.h"
 #include <NTL/ZZ_pXFactoring.h>
 #include <NTL/ZZ_pE.h>
 #include <NTL/ZZ.h>
 #include <time.h>
 #include "linbox/linbox-config.h"
-#include <linbox/field/field-traits.h>
+#include "linbox/field/field-traits.h"
 
 #ifdef __LINBOX_XMLENABLED
 

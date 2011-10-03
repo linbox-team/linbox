@@ -250,7 +250,7 @@ namespace LinBox
 
 #ifdef LinBoxSrcOnly
 // for all-source compilation
-#include <linbox/util/debug.C>
+#include "linbox/util/debug.C"
 #endif
 
 #include <fflas-ffpack/utils/print-utils.h>

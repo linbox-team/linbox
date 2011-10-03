@@ -7,25 +7,25 @@
 #include <fstream>
 #include <cstdlib>
 
-#include <linbox/linbox-config.h>
+#include "linbox/linbox-config.h"
 
-#include <linbox/algorithms/rational-solver.h>
-#include <linbox/randiter/random-prime.h>
+#include "linbox/algorithms/rational-solver.h"
+#include "linbox/randiter/random-prime.h"
 
-#include <linbox/field/PID-integer.h>
-#include <linbox/field/param-fuzzy.h>
-#include <linbox/blackbox/blas-blackbox.h>
+#include "linbox/field/PID-integer.h"
+#include "linbox/field/param-fuzzy.h"
+#include "linbox/blackbox/blas-blackbox.h"
 #include "tests/test-common.h"
 #include "linbox/vector/stream.h"
 #include "linbox/util/commentator.h"
 #include "linbox/util/timer.h"
 
 #ifdef __LINBOX_HAVE_LAPACK
-#include <linbox/algorithms/numeric-solver-lapack.h>
+#include "linbox/algorithms/numeric-solver-lapack.h"
 #endif
 
 #ifdef __LINBOX_HAVE_MATLAB
-	#include <linbox/algorithms/numeric-solver-matlab.h>
+	#include "linbox/algorithms/numeric-solver-matlab.h"
 #endif
 
 //or #include "other-numeric-solver.h"
@@ -37,7 +37,7 @@
  * 4. apply(y, x) // y <-- Ax, approximately, for vector of double y, x.
  */
 
-#include <linbox/algorithms/rational-solver-sn.h>
+#include "linbox/algorithms/rational-solver-sn.h"
 /* rational-solver provides
  * 1. constructor with a numerical solver as argument (call it NS).
  * 2. solve(num, den, A, b, NS)

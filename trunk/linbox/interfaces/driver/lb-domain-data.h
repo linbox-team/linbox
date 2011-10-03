@@ -25,9 +25,9 @@
 #define __LINBOX_lb_domain_data_H
 
 
-#include <linbox-config.h>
-#include <linbox/integer.h>
-#include <linbox/field/field-traits.h>
+#include "linbox-config.h"
+#include "linbox/integer.h"
+#include "linbox/field/field-traits.h"
 
 #include <map>
 #include <utility>

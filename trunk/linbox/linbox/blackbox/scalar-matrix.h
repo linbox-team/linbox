@@ -19,12 +19,12 @@
 #define __LINBOX_scalar_H
 
 #include <algorithm>
-#include <linbox/field/hom.h>
+#include "linbox/field/hom.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
 #include "linbox/linbox-config.h"
 #include "linbox/field/hom.h"
-#include <linbox/blackbox/blackbox-interface.h>
+#include "linbox/blackbox/blackbox-interface.h"
 
 namespace LinBox
 {

@@ -19,7 +19,7 @@
 
 #include "linbox/vector/vector-domain.h"
 #include "linbox/util/debug.h"
-#include <linbox/blackbox/blackbox-interface.h>
+#include "linbox/blackbox/blackbox-interface.h"
 
 // Namespace in which all LinBox library code resides
 namespace LinBox

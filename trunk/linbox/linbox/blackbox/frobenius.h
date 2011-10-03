@@ -15,7 +15,7 @@
 #ifndef __LINBOX_frobenius_H
 #define __LINBOX_frobenius_H
 
-#include <linbox/blackbox/blackbox-interface.h>
+#include "linbox/blackbox/blackbox-interface.h"
 #include "linbox/blackbox/companion.h"
 #include "linbox/blackbox/direct-sum.h"
 #include <vector>

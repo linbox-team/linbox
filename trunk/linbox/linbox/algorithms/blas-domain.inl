@@ -28,9 +28,9 @@
 #ifndef __LINBOX_blas_matrix_domain_INL
 #define __LINBOX_blas_matrix_domain_INL
 
-#include <linbox/blackbox/blas-blackbox.h>
-#include <linbox/matrix/blas-matrix.h>
-#include <linbox/matrix/factorized-matrix.h>
+#include "linbox/blackbox/blas-blackbox.h"
+#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/factorized-matrix.h"
 
 namespace LinBox
 {

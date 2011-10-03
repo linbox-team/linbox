@@ -31,6 +31,8 @@
 #ifndef __LINBOX_bbcontainer_symmetric_H
 #define __LINBOX_bbcontainer_symmetric_H
 
+#error "this file will never compile !"
+
 #include <LinBox/lin_rand.h>
 #include <LinBox/lin_base_bbit.h>
 

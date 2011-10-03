@@ -25,11 +25,11 @@
 #ifndef __LINBOX_matrix_category_H
 #define __LINBOX_matrix_category_H
 
-#include <linbox/matrix/sparse.h>
-// #include <linbox/matrix/blas-matrix.h>
+#include "linbox/matrix/sparse.h"
+// #include "linbox/matrix/blas-matrix.h"
 
-#include <linbox/blackbox/sparse.h>
-// #include <linbox/blackbox/blas-blackbox.h>
+#include "linbox/blackbox/sparse.h"
+// #include "linbox/blackbox/blas-blackbox.h"
 
 
 namespace LinBox

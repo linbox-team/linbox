@@ -31,9 +31,9 @@
 
 
 #include <algorithm>
-#include <linbox/algorithms/bitonic-sort.h>
-#include <linbox/util/commentator.h>
-#include <linbox/vector/stream.h>
+#include "linbox/algorithms/bitonic-sort.h"
+#include "linbox/util/commentator.h"
+#include "linbox/vector/stream.h"
 #include "test-common.h"
 
 using namespace LinBox;

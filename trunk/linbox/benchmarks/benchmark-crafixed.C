@@ -47,7 +47,7 @@
 #include "linbox/algorithms/blas-domain.h"
 #include "linbox/algorithms/rns.h"
 
-#include <linbox/algorithms/cra-domain.h>
+#include "linbox/algorithms/cra-domain.h"
 #include "linbox/algorithms/cra-early-multip.h"
 #include "linbox/integer.h"
 

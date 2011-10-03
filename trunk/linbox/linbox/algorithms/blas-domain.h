@@ -39,10 +39,10 @@
 #include <vector>
 #include <fflas-ffpack/ffpack/ffpack.h>
 #include <fflas-ffpack/fflas/fflas.h>
-//#include <linbox/blackbox/permutation.h>
-#include <linbox/matrix/blas-matrix.h>
-#include <linbox/matrix/matrix-permutation.h>
-#include <linbox/util/debug.h>
+//#include "linbox/blackbox/permutation.h"
+#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/matrix-permutation.h"
+#include "linbox/util/debug.h"
 
 
 namespace LinBox
@@ -809,7 +809,7 @@ namespace LinBox
 
 } /* end of namespace LinBox */
 
-#include <linbox/algorithms/blas-domain.inl>
+#include "linbox/algorithms/blas-domain.inl"
 
 #endif /* __LINBOX_blas_matrix_domain_H */
 

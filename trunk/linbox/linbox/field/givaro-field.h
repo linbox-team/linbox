@@ -12,9 +12,9 @@
 #define __LINBOX_givaro_field_H
 
 #include <givaro/givconfig.h>
-#include <linbox/integer.h>
-#include <linbox/field/field-traits.h>
-#include <linbox/field/field-interface.h>
+#include "linbox/integer.h"
+#include "linbox/field/field-traits.h"
+#include "linbox/field/field-interface.h"
 #include <givaro/givconfig.h>
 
 namespace LinBox

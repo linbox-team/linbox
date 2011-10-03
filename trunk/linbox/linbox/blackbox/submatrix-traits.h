@@ -23,8 +23,8 @@
 #ifndef __LINBOX_submatrix_traits_H
 #define __LINBOX_submatrix_traits_H
 
-#include <linbox/blackbox/blas-blackbox.h>
-#include <linbox/blackbox/submatrix.h>
+#include "linbox/blackbox/blas-blackbox.h"
+#include "linbox/blackbox/submatrix.h"
 
 
 namespace LinBox

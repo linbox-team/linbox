@@ -24,9 +24,9 @@
 #ifndef __LINBOX_smith_form_iliopoulos_H
 #define __LINBOX_smith_form_iliopoulos_H
 
-#include <linbox/util/debug.h>
-#include <linbox/vector/vector-domain.h>
-#include <linbox/blackbox/submatrix-traits.h>
+#include "linbox/util/debug.h"
+#include "linbox/vector/vector-domain.h"
+#include "linbox/blackbox/submatrix-traits.h"
 
 namespace LinBox
 {

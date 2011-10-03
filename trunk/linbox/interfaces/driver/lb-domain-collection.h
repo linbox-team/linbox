@@ -24,7 +24,7 @@
 #ifndef __LINBOX_lb_domain_collection_H
 #define __LINBOX_lb_domain_collection_H
 
-#include <linbox/integer.h>
+#include "linbox/integer.h"
 
 #include <map>
 #include <lb-domain-abstract.h>

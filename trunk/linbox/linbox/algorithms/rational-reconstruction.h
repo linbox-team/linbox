@@ -31,12 +31,12 @@
 #ifndef __LINBOX_reconstruction_H
 #define __LINBOX_reconstruction_H
 
-#include <linbox/algorithms/rational-reconstruction-base.h>
-#include <linbox/algorithms/classic-rational-reconstruction.h>
-//#include <linbox/algorithms/fast-rational-reconstruction.h>
+#include "linbox/algorithms/rational-reconstruction-base.h"
+#include "linbox/algorithms/classic-rational-reconstruction.h"
+//#include "linbox/algorithms/fast-rational-reconstruction.h"
 
-#include <linbox/linbox-config.h>
-#include <linbox/util/debug.h>
+#include "linbox/linbox-config.h"
+#include "linbox/util/debug.h"
 
 //#define DEBUG_RR
 //#define DEBUG_RR_BOUNDACCURACY
@@ -53,7 +53,7 @@ extern "C" {
 #include <libfplll/myheuristic.h>
 #include <libfplll/myproved.h>
 }
-#include <linbox/algorithms/short-vector.h>
+#include "linbox/algorithms/short-vector.h"
 #endif
 
 namespace LinBox

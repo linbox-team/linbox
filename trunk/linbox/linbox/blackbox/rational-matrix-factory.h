@@ -23,10 +23,10 @@
 #ifndef __LINBOX_rational_dense_factory_H
 #define __LINBOX_rational_dense_factory_H
 
-#include <linbox/blackbox/factory.h>
-//#include <linbox/field/gmp-rational.h>
-#include <linbox/field/PID-integer.h>
-#include <linbox/integer.h>
+#include "linbox/blackbox/factory.h"
+//#include "linbox/field/gmp-rational.h"
+#include "linbox/field/PID-integer.h"
+#include "linbox/integer.h"
 
 #include <vector>
 

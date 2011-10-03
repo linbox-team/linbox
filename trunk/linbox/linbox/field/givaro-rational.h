@@ -15,7 +15,7 @@
 
 #include "linbox/integer.h"
 #include "linbox/field/unparametric.h"
-#include <linbox/field/field-traits.h>
+#include "linbox/field/field-traits.h"
 
 
 //------------------------------------

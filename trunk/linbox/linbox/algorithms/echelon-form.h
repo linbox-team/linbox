@@ -26,11 +26,11 @@
 #ifndef __LINBOX_echelon_form_H
 #define __LINBOX_echelon_form_H
 
-#include <linbox/matrix/blas-matrix.h>
-#include <linbox/algorithms/blas-domain.h>
+#include "linbox/matrix/blas-matrix.h"
+#include "linbox/algorithms/blas-domain.h"
 
-#include <linbox/matrix/matrix-domain.h>
-#include <linbox/matrix/factorized-matrix.h>
+#include "linbox/matrix/matrix-domain.h"
+#include "linbox/matrix/factorized-matrix.h"
 
 namespace LinBox
 {

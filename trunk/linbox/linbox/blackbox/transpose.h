@@ -25,7 +25,7 @@
 #ifndef __LINBOX_transpose_H
 #define __LINBOX_transpose_H
 
-#include <linbox/blackbox/blackbox-interface.h>
+#include "linbox/blackbox/blackbox-interface.h"
 
 namespace LinBox
 {

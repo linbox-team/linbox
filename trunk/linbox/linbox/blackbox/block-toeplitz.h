@@ -25,11 +25,11 @@
 #define __LINBOX_block_toeplitz_H
 
 #include <vector>
-#include <linbox/matrix/blas-matrix.h>
-#include <linbox/vector/vector-domain.h>
-#include <linbox/algorithms/blas-domain.h>
-#include <linbox/util/debug.h>
-#include <linbox/blackbox/block-hankel.h>
+#include "linbox/matrix/blas-matrix.h"
+#include "linbox/vector/vector-domain.h"
+#include "linbox/algorithms/blas-domain.h"
+#include "linbox/util/debug.h"
+#include "linbox/blackbox/block-hankel.h"
 
 namespace LinBox
 {

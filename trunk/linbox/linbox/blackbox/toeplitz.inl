@@ -24,7 +24,7 @@
 #include <iostream>
 #include <fstream>
 #include <cassert> // JGD 26.09.2003
-#include <linbox/algorithms/toeplitz-det.h>
+#include "linbox/algorithms/toeplitz-det.h"
 
 namespace LinBox
 {

@@ -24,9 +24,9 @@
 #ifndef __LINBOX_vector_fraction_H
 #define __LINBOX_vector_fraction_H
 
-#include <linbox/linbox-config.h>
+#include "linbox/linbox-config.h"
 #include <stdio.h>
-#include <linbox/vector/vector-traits.h>
+#include "linbox/vector/vector-traits.h"
 #undef _D
 
 namespace LinBox

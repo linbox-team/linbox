@@ -24,9 +24,9 @@
 #ifndef __LINBOX_last_invariant_factor_H
 #define __LINBOX_last_invariant_factor_H
 
-#include <linbox/util/debug.h>
-#include <linbox/algorithms/default.h>
-#include <linbox/algorithms/rational-solver.h>
+#include "linbox/util/debug.h"
+#include "linbox/algorithms/default.h"
+#include "linbox/algorithms/rational-solver.h"
 #include <utility>
 
 namespace LinBox

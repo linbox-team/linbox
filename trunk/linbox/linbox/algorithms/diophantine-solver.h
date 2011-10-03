@@ -25,11 +25,11 @@
 #ifndef __LINBOX_diophantine_solver_H
 #define __LINBOX_diophantine_solver_H
 
-#include <linbox/algorithms/rational-solver.h>
-#include <linbox/solutions/methods.h>
-#include <linbox/blackbox/archetype.h>
-#include <linbox/blackbox/lambda-sparse.h>
-#include <linbox/blackbox/compose.h>
+#include "linbox/algorithms/rational-solver.h"
+#include "linbox/solutions/methods.h"
+#include "linbox/blackbox/archetype.h"
+#include "linbox/blackbox/lambda-sparse.h"
+#include "linbox/blackbox/compose.h"
 
 namespace LinBox
 {
@@ -131,7 +131,7 @@ namespace LinBox
 	};
 
 }
-#include <linbox/algorithms/diophantine-solver.inl>
+#include "linbox/algorithms/diophantine-solver.inl"
 
 #endif //__LINBOX_diophantine_solver_H
 

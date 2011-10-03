@@ -10,7 +10,7 @@
 #ifndef __LINBOX_rational_reconstruction2_H__
 #define __LINBOX_rational_reconstruction2_H__
 
-#include <linbox/integer.h>
+#include "linbox/integer.h"
 
 namespace LinBox
 {

@@ -31,7 +31,7 @@
 #define __LINBOX_butterfly_H
 
 #include <vector>
-#include <linbox/blackbox/blackbox-interface.h>
+#include "linbox/blackbox/blackbox-interface.h"
 
 /*! @file blackbox/butterfly.h
 */

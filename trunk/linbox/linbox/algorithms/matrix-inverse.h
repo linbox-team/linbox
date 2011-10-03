@@ -27,8 +27,8 @@
 #ifndef __LINBOX_matrix_inverse_H
 #define __LINBOX_matrix_inverse_H
 
-#include <linbox/util/debug.h>
-#include <linbox/util/error.h>
+#include "linbox/util/debug.h"
+#include "linbox/util/error.h"
 #include <vector>
 #include <algorithm>
 

@@ -10,7 +10,7 @@
 #ifndef __LINBOX_companion_H
 #define __LINBOX_companion_H
 
-#include <linbox/blackbox/blackbox-interface.h>
+#include "linbox/blackbox/blackbox-interface.h"
 #include "linbox/blackbox/triplesbb.h"
 #include <vector>
 

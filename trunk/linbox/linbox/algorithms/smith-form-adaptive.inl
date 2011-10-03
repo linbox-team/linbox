@@ -27,29 +27,29 @@
 
 #include <math.h>
 #include <vector>
-#include <linbox/linbox-config.h>
-#include <linbox/integer.h>
-#include <linbox/util/debug.h>
-#include <linbox/field/PIR-modular-int32.h>
-#include <linbox/field/local2_32.h>
-#include <linbox/algorithms/smith-form-iliopoulos.h>
-#include <linbox/algorithms/smith-form-local.h>
-#include <linbox/algorithms/rational-solver-adaptive.h>
-#include <linbox/algorithms/last-invariant-factor.h>
-#include <linbox/algorithms/one-invariant-factor.h>
-#include <linbox/algorithms/matrix-rank.h>
-#include <linbox/algorithms/matrix-hom.h>
-#include <linbox/blackbox/random-matrix.h>
-#include <linbox/blackbox/scompose.h>
+#include "linbox/linbox-config.h"
+#include "linbox/integer.h"
+#include "linbox/util/debug.h"
+#include "linbox/field/PIR-modular-int32.h"
+#include "linbox/field/local2_32.h"
+#include "linbox/algorithms/smith-form-iliopoulos.h"
+#include "linbox/algorithms/smith-form-local.h"
+#include "linbox/algorithms/rational-solver-adaptive.h"
+#include "linbox/algorithms/last-invariant-factor.h"
+#include "linbox/algorithms/one-invariant-factor.h"
+#include "linbox/algorithms/matrix-rank.h"
+#include "linbox/algorithms/matrix-hom.h"
+#include "linbox/blackbox/random-matrix.h"
+#include "linbox/blackbox/scompose.h"
 #include <fflas-ffpack/ffpack/ffpack.h>
-#include <linbox/algorithms/smith-form-binary.h>
-#include <linbox/algorithms/smith-form-adaptive.inl>
-#include <linbox/solutions/valence.h>
+#include "linbox/algorithms/smith-form-binary.h"
+#include "linbox/algorithms/smith-form-adaptive.inl"
+#include "linbox/solutions/valence.h"
 
 
 
 #ifdef __LINBOX_HAVE_NTL
-#include <linbox/field/PIR-ntl-ZZ_p.h>
+#include "linbox/field/PIR-ntl-ZZ_p.h"
 #endif
 
 namespace LinBox

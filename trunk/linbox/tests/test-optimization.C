@@ -37,9 +37,9 @@
  *   /usr/bin/ld: test-optimization.o: undefined reference to symbol 'dtrmm_'
  *   /usr/bin/ld: note: 'dtrmm_' is defined in DSO  /usr/lib64/libblas.so.3gf so try adding it to the linker command line
  */
-#include <linbox/config-blas.h>
+#include "linbox/config-blas.h"
 #include <fflas-ffpack/fflas/fflas.h>
-#include <linbox/util/timer.h>
+#include "linbox/util/timer.h"
 #include "linbox/util/commentator.h"
 
 #include "test-common.h"

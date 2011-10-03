@@ -24,19 +24,19 @@
 #ifndef __LINBOX_lb_domain_type_H
 #define __LINBOX_lb_domain_type_H
 
-#include <linbox/field/modular.h>
-#include <linbox/field/PID-integer.h>
-#include <linbox/field/gmp-rational.h>
+#include "linbox/field/modular.h"
+#include "linbox/field/PID-integer.h"
+#include "linbox/field/gmp-rational.h"
 
 #ifdef __LINBOX_HAVE_NTL
-#include <linbox/field/ntl-lzz_p.h>
-#include <linbox/field/ntl-ZZ_p.h>
-#include <linbox/field/ntl-ZZ.h>
+#include "linbox/field/ntl-lzz_p.h"
+#include "linbox/field/ntl-ZZ_p.h"
+#include "linbox/field/ntl-ZZ.h"
 #endif
 
 #ifdef __LINBOX_HAVE_GIVARO
-#include <linbox/field/givaro-zpz.h>
-#include <linbox/field/givaro-gfq.h>
+#include "linbox/field/givaro-zpz.h"
+#include "linbox/field/givaro-gfq.h"
 #endif
 
 /**************************************

@@ -30,8 +30,8 @@
  */
 
 #include <vector>
-#include <linbox/integer.h>
-#include <linbox/blackbox/blas-blackbox.h>
+#include "linbox/integer.h"
+#include "linbox/blackbox/blas-blackbox.h"
 
 namespace LinBox
 {
@@ -102,5 +102,5 @@ namespace LinBox
 	const int SmithFormAdaptive::NPrime = 25;
 }
 
-#include <linbox/algorithms/smith-form-adaptive.inl>
+#include "linbox/algorithms/smith-form-adaptive.inl"
 #endif //__LINBOX_smith_form_adaptive_H

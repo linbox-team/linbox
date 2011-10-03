@@ -28,18 +28,18 @@
 #include <iostream>
 #include <iomanip>
 
-#include <linbox/util/commentator.h>
-#include <linbox/util/timer.h>
-#include <linbox/algorithms/blas-domain.h>
-#include <linbox/field/unparametric.h>
-#include <linbox/matrix/matrix-domain.h>
-#include <linbox/matrix/blas-matrix.h>
-#include <linbox/matrix/factorized-matrix.h>
+#include "linbox/util/commentator.h"
+#include "linbox/util/timer.h"
+#include "linbox/algorithms/blas-domain.h"
+#include "linbox/field/unparametric.h"
+#include "linbox/matrix/matrix-domain.h"
+#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/factorized-matrix.h"
 
-#include <linbox/algorithms/matpoly-mult.h>
-#include <linbox/algorithms/echelon-form.h>
-#include <linbox/vector/subvector.h>
-#include <linbox/util/timer.h>
+#include "linbox/algorithms/matpoly-mult.h"
+#include "linbox/algorithms/echelon-form.h"
+#include "linbox/vector/subvector.h"
+#include "linbox/util/timer.h"
 
 
 //#define OPTMIZED_SIGMA_UPDATE

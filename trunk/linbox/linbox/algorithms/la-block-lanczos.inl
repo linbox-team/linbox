@@ -26,7 +26,6 @@
 
 #include "linbox/util/debug.h"
 #include "linbox/solutions/methods.h"
-#include "linbox/matrix/dense-submatrix.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/transpose.h"

@@ -27,12 +27,12 @@
 #ifndef __LINBOX_blas_blackbox_H
 #define __LINBOX_blas_blackbox_H
 
-#include <linbox/matrix/blas-matrix.h>
+#include "linbox/matrix/blas-matrix.h"
 #include <fflas-ffpack/fflas/fflas.h>
-#include <linbox/matrix/matrix-domain.h>
-#include <linbox/field/hom.h>
-#include <linbox/field/multimod-field.h>
-#include <linbox/util/matrix-stream.h>
+#include "linbox/matrix/matrix-domain.h"
+#include "linbox/field/hom.h"
+#include "linbox/field/multimod-field.h"
+#include "linbox/util/matrix-stream.h"
 
 namespace LinBox
 {

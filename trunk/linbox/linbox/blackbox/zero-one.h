@@ -21,7 +21,7 @@
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
 #include "linbox/field/modular.h"
-#include <linbox/blackbox/blackbox-interface.h>
+#include "linbox/blackbox/blackbox-interface.h"
 
 // For STL pair in IndexIterator
 #include <utility>

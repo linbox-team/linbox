@@ -29,11 +29,11 @@
  * @brief  Undocumented.
  */
 
-#include <linbox/field/PID-integer.h>
-#include <linbox/field/modular-double.h>
-#include <linbox/field/gmp-rational.h>
-#include <linbox/matrix/blas-matrix.h>
-#include <linbox/matrix/sparse.h>
+#include "linbox/field/PID-integer.h"
+#include "linbox/field/modular-double.h"
+#include "linbox/field/gmp-rational.h"
+#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/sparse.h"
 #include "linbox/solutions/charpoly.h"
 #include "linbox/solutions/minpoly.h"
 #include "linbox/ring/givaro-polynomial.h"

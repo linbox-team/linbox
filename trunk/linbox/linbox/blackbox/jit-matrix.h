@@ -11,7 +11,7 @@
 #ifndef __LINBOX_jitmatrix_H
 #define __LINBOX_jitmatrix_H
 
-#include <linbox/blackbox/blackbox-interface.h>
+#include "linbox/blackbox/blackbox-interface.h"
 
 namespace LinBox
 {

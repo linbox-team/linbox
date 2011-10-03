@@ -10,17 +10,17 @@
 #define __LINBOX_quad_matrix_H
 
 #include <algorithm>
-#include <linbox/field/hom.h>
+#include "linbox/field/hom.h"
 #include <vector>
 #include <iterator>
 //#include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
 #include "linbox/linbox-config.h"
-#include <linbox/blackbox/blackbox-interface.h>
-#include <linbox/blackbox/scalar-matrix.h>
-#include <linbox/blackbox/zo.h>
-//#include <linbox/blackbox/side-by-side.h>
-//#include <linbox/blackbox/over-under.h>
+#include "linbox/blackbox/blackbox-interface.h"
+#include "linbox/blackbox/scalar-matrix.h"
+#include "linbox/blackbox/zo.h"
+//#include "linbox/blackbox/side-by-side.h"
+//#include "linbox/blackbox/over-under.h"
 
 namespace LinBox
 {

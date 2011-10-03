@@ -24,7 +24,7 @@
 #ifndef __LINBOX_moore_penrose_H
 #define __LINBOX_moore_penrose_H
 
-#include <linbox/blackbox/blackbox-interface.h>
+#include "linbox/blackbox/blackbox-interface.h"
 #include "linbox/blackbox/submatrix.h"
 #include "linbox/blackbox/inverse.h"
 #include "linbox/blackbox/transpose.h"

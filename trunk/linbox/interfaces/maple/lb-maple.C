@@ -29,7 +29,7 @@
 #include <iostream>
 #include <lb-driver.h>
 #include <lb-maple-utilities.h>
-#include <linbox/util/timer.h>
+#include "linbox/util/timer.h"
 
 extern "C"{
 #include <maplec.h>

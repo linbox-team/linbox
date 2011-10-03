@@ -31,7 +31,7 @@
 
 #include <string>
 #include <sstream>
-#include <linbox/util/matrix-stream.h>
+#include "linbox/util/matrix-stream.h"
 
 #if 0
 namespace LinBox__FORMAT_MATRIX_MARKET_H

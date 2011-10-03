@@ -26,8 +26,8 @@
 #ifndef __LINBOX_bb_nullmatrix_H
 #define __LINBOX_bb_nullmatrix_H
 
-#include <linbox/util/debug.h>
-#include <linbox/blackbox/blackbox-interface.h>
+#include "linbox/util/debug.h"
+#include "linbox/blackbox/blackbox-interface.h"
 
 namespace LinBox
 {

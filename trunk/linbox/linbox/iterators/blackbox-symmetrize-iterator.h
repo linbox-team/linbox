@@ -33,7 +33,7 @@
 // ================================================================
 
 
-#include <linbox/algorithms/blackbox-container-base.h>
+#include "linbox/algorithms/blackbox-container-base.h"
 
 namespace LinBox
 {

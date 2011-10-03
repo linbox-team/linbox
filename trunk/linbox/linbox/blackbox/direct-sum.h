@@ -25,12 +25,12 @@
 #ifndef __LINBOX_direct_sum_H
 #define __LINBOX_direct_sum_H
 
-#include <linbox/blackbox/null-matrix.h>
-#include <linbox/vector/vector-traits.h>
-#include <linbox/blackbox/blackbox-interface.h>
-#include <linbox/vector/subvector.h>
-#include <linbox/matrix/matrix-domain.h>
-#include <linbox/vector/light_container.h>
+#include "linbox/blackbox/null-matrix.h"
+#include "linbox/vector/vector-traits.h"
+#include "linbox/blackbox/blackbox-interface.h"
+#include "linbox/vector/subvector.h"
+#include "linbox/matrix/matrix-domain.h"
+#include "linbox/vector/light_container.h"
 
 namespace LinBox
 {

@@ -24,14 +24,14 @@
 #ifndef __LINBOX_matrix_rank_H
 #define __LINBOX_matrix_rank_H
 
-#include <linbox/util/debug.h>
-#include <linbox/blackbox/sparse.h>
-#include <linbox/solutions/rank.h>
+#include "linbox/util/debug.h"
+#include "linbox/blackbox/sparse.h"
+#include "linbox/solutions/rank.h"
 
-#include <linbox/algorithms/matrix-hom.h>
+#include "linbox/algorithms/matrix-hom.h"
 #include <vector>
 #include <algorithm>
-#include <linbox/randiter/random-prime.h>
+#include "linbox/randiter/random-prime.h"
 
 namespace LinBox
 {

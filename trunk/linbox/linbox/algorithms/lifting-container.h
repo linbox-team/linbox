@@ -32,23 +32,23 @@
 
 #include <vector>
 
-#include <linbox/linbox-config.h>
-#include <linbox/util/debug.h>
-#include <linbox/blackbox/apply.h>
-#include <linbox/algorithms/blackbox-container.h>
-#include <linbox/algorithms/massey-domain.h>
-#include <linbox/algorithms/blackbox-block-container.h>
-#include <linbox/algorithms/block-massey-domain.h>
-#include <linbox/algorithms/gauss.h>
-#include <linbox/blackbox/blas-blackbox.h>
-#include <linbox/vector/vector-domain.h>
-#include <linbox/blackbox/compose.h>
-#include <linbox/blackbox/block-hankel-inverse.h>
-#include <linbox/algorithms/blas-domain.h>
-#include <linbox/field/hom.h>
-#include <linbox/matrix/transpose-matrix.h>
-#include <linbox/blackbox/transpose.h>
-//#include <linbox/algorithms/vector-hom.h>
+#include "linbox/linbox-config.h"
+#include "linbox/util/debug.h"
+#include "linbox/blackbox/apply.h"
+#include "linbox/algorithms/blackbox-container.h"
+#include "linbox/algorithms/massey-domain.h"
+#include "linbox/algorithms/blackbox-block-container.h"
+#include "linbox/algorithms/block-massey-domain.h"
+#include "linbox/algorithms/gauss.h"
+#include "linbox/blackbox/blas-blackbox.h"
+#include "linbox/vector/vector-domain.h"
+#include "linbox/blackbox/compose.h"
+#include "linbox/blackbox/block-hankel-inverse.h"
+#include "linbox/algorithms/blas-domain.h"
+#include "linbox/field/hom.h"
+#include "linbox/matrix/transpose-matrix.h"
+#include "linbox/blackbox/transpose.h"
+//#include "linbox/algorithms/vector-hom.h"
 
 namespace LinBox
 {

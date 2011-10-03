@@ -16,9 +16,9 @@
 #ifndef __LINBOX_subvector_H
 #define __LINBOX_subvector_H
 
-#include <linbox/vector/subiterator.h>
+#include "linbox/vector/subiterator.h"
 #include <iterator>
-#include <linbox/vector/vector-traits.h>
+#include "linbox/vector/vector-traits.h"
 #include <stdexcept>
 
 namespace LinBox

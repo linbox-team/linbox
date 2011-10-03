@@ -26,10 +26,10 @@
 #define __LINBOX_ternary_lattice_H
 
 #include <iostream>
-#include <linbox/blackbox/blas-blackbox.h>
-#include <linbox/field/PID-integer.h>
-#include <linbox/util/timer.h>
-#include <linbox/integer.h>
+#include "linbox/blackbox/blas-blackbox.h"
+#include "linbox/field/PID-integer.h"
+#include "linbox/util/timer.h"
+#include "linbox/integer.h"
 #include <algorithm>
 #include <vector>
 

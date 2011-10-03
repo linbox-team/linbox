@@ -13,9 +13,9 @@
 #define __LINBOX_subrowmatrix_H
 
 #include <iostream>
-#include <linbox/matrix/matrix-domain.h>
-#include <linbox/vector/vector-domain.h>
-#include <linbox/blackbox/blackbox-interface.h>
+#include "linbox/matrix/matrix-domain.h"
+#include "linbox/vector/vector-domain.h"
+#include "linbox/blackbox/blackbox-interface.h"
 
 namespace LinBox
 {

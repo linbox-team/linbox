@@ -30,20 +30,20 @@
 #ifndef __LINBOX_apply_H
 #define __LINBOX_apply_H
 
-#include <linbox/linbox-config.h>
-#include <linbox/integer.h>
-#include <linbox/util/debug.h>
-#include <linbox/field/multimod-field.h>
-#include <linbox/field/hom.h>
-#include <linbox/randiter/multimod-randomprime.h>
-#include <linbox/blackbox/sparse.h>
-#include <linbox/blackbox/blas-blackbox.h>
-#include <linbox/matrix/blas-matrix.h>
-#include <linbox/algorithms/lifting-container.h>
+#include "linbox/linbox-config.h"
+#include "linbox/integer.h"
+#include "linbox/util/debug.h"
+#include "linbox/field/multimod-field.h"
+#include "linbox/field/hom.h"
+#include "linbox/randiter/multimod-randomprime.h"
+#include "linbox/blackbox/sparse.h"
+#include "linbox/blackbox/blas-blackbox.h"
+#include "linbox/matrix/blas-matrix.h"
+#include "linbox/algorithms/lifting-container.h"
 #include <vector>
 
 
-#include <linbox/util/timer.h>
+#include "linbox/util/timer.h"
 
 
 // #ifdef __LINBOX_BLAS_AVAILABLE

@@ -22,8 +22,8 @@
 #include "linbox/util/debug.h"
 #include "linbox/util/matrix-stream.h"
 #include "linbox/field/modular.h"
-#include <linbox/blackbox/blackbox-interface.h>
-#include <linbox/blackbox/quad-matrix.h>
+#include "linbox/blackbox/blackbox-interface.h"
+#include "linbox/blackbox/quad-matrix.h"
 
 // For STL pair in IndexIterator
 #include <utility>

@@ -25,9 +25,9 @@
 #ifndef __LINBOX_field_ntl_zz_px_H
 #define __LINBOX_field_ntl_zz_px_H
 
-#include <linbox/field/unparametric.h>
-#include <linbox/field/ntl-ZZ_p.h>
-#include <linbox/integer.h>
+#include "linbox/field/unparametric.h"
+#include "linbox/field/ntl-ZZ_p.h"
+#include "linbox/integer.h"
 #include <vector>
 #include <NTL/ZZ_pX.h>
 

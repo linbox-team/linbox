@@ -32,32 +32,32 @@
 
 #include "linbox-sage.h"
 
-#include <linbox/util/commentator.h>
+#include "linbox/util/commentator.h"
 
-#include <linbox/blackbox/sparse.h>
+#include "linbox/blackbox/sparse.h"
 
 //#include "linbox/element/givaro-polynomial.h"
 
-#include <linbox/matrix/blas-matrix.h>
-#include <linbox/matrix/sparse.h>
-#include <linbox/vector/sparse.h>
+#include "linbox/matrix/blas-matrix.h"
+#include "linbox/matrix/sparse.h"
+#include "linbox/vector/sparse.h"
 
-#include <linbox/algorithms/blas-domain.h>
-#include <linbox/algorithms/echelon-form.h>
+#include "linbox/algorithms/blas-domain.h"
+#include "linbox/algorithms/echelon-form.h"
 #include "linbox/algorithms/gauss.h"
 #include "linbox/algorithms/smith-form-adaptive.h"
-#include "fflas-ffpack/ffpack/ffpack.h"
-#include <linbox/solutions/rank.h>
-#include <linbox/solutions/det.h>
-#include <linbox/solutions/solve.h>
+#include <fflas-ffpack/ffpack/ffpack.h>
+#include "linbox/solutions/rank.h"
+#include "linbox/solutions/det.h"
+#include "linbox/solutions/solve.h"
 #include "linbox/solutions/methods.h"
-#include <linbox/solutions/minpoly.h>
-#include <linbox/solutions/charpoly.h>
+#include "linbox/solutions/minpoly.h"
+#include "linbox/solutions/charpoly.h"
 #include "linbox/algorithms/double-det.h"
-#include <linbox/integer.h>
-#include <linbox/field/gmp-rational.h>
-#include <linbox/ring/givaro-polynomial.h>
-#include <linbox/field/modular.h>
+#include "linbox/integer.h"
+#include "linbox/field/gmp-rational.h"
+#include "linbox/ring/givaro-polynomial.h"
+#include "linbox/field/modular.h"
 
 using namespace LinBox;
 

@@ -1,3 +1,11 @@
+2011-03-10 bboyer
+        * Implement DublinBox Mother model for dense matrices (BlasM* own, BlasS* share)
+	* Change BlasSubmatrix private members (and add one to make Iterators faster)
+	* Change <> includes to "" so I have no surprise when the compiler looks them in a non expected place
+	* add a const in Field Categories for a weird bug...
+	* RawIterators are renamed to Iterators (impossible to pronounce, easy to misspell)
+	* add functions to blas-domain and blas-matrix
+
 2011-24-09 bboyer
         * replace DenseMatrix(Base) by Blas(Matrix/Blackbox)
 	* put these classes (and DenseSubmatrix) in a Protected namespace (users will be warned...)

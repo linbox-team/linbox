@@ -15,7 +15,7 @@
 
 #include "linbox/vector/vector-domain.h"
 #include "linbox/util/debug.h"
-#include <linbox/blackbox/blackbox-interface.h>
+#include "linbox/blackbox/blackbox-interface.h"
 
 namespace LinBox
 {

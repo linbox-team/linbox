@@ -31,8 +31,8 @@
 #include "linbox/field/local2_32.h"
 #include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/algorithms/smith-form-local.h"
-#include <linbox/matrix/matrix-domain.h>
-#include <linbox/util/timer.h>
+#include "linbox/matrix/matrix-domain.h"
+#include "linbox/util/timer.h"
 
 using namespace LinBox;
 

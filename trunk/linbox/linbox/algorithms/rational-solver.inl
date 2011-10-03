@@ -25,39 +25,39 @@
 #ifndef __LINBOX_rational_solver_INL
 #define __LINBOX_rational_solver_INL
 
-#include <linbox/blackbox/sparse.h>
-#include <linbox/blackbox/lambda-sparse.h>
-#include <linbox/blackbox/lambda-sparse.h>
-#include <linbox/blackbox/transpose.h>
-#include <linbox/blackbox/diagonal.h>
-#include <linbox/blackbox/compose.h>
-#include <linbox/algorithms/lifting-container.h>
-#include <linbox/algorithms/rational-reconstruction.h>
-#include <linbox/algorithms/matrix-inverse.h>
-#include <linbox/algorithms/matrix-hom.h>
-#include <linbox/algorithms/gauss.h>
-#include <linbox/algorithms/blackbox-container.h>
-#include <linbox/algorithms/massey-domain.h>
-#include <linbox/algorithms/blackbox-block-container.h>
-#include <linbox/algorithms/block-massey-domain.h>
-#include <linbox/algorithms/vector-fraction.h>
+#include "linbox/blackbox/sparse.h"
+#include "linbox/blackbox/lambda-sparse.h"
+#include "linbox/blackbox/lambda-sparse.h"
+#include "linbox/blackbox/transpose.h"
+#include "linbox/blackbox/diagonal.h"
+#include "linbox/blackbox/compose.h"
+#include "linbox/algorithms/lifting-container.h"
+#include "linbox/algorithms/rational-reconstruction.h"
+#include "linbox/algorithms/matrix-inverse.h"
+#include "linbox/algorithms/matrix-hom.h"
+#include "linbox/algorithms/gauss.h"
+#include "linbox/algorithms/blackbox-container.h"
+#include "linbox/algorithms/massey-domain.h"
+#include "linbox/algorithms/blackbox-block-container.h"
+#include "linbox/algorithms/block-massey-domain.h"
+#include "linbox/algorithms/vector-fraction.h"
 #include <fflas-ffpack/ffpack/ffpack.h>
 #include <fflas-ffpack/fflas/fflas.h>
-#include <linbox/solutions/methods.h>
-#include <linbox/util/debug.h>
-#include <linbox/linbox-config.h>
-#include <linbox/field/multimod-field.h>
-#include <linbox/blackbox/block-hankel-inverse.h>
+#include "linbox/solutions/methods.h"
+#include "linbox/util/debug.h"
+#include "linbox/linbox-config.h"
+#include "linbox/field/multimod-field.h"
+#include "linbox/blackbox/block-hankel-inverse.h"
 
 
 
 // #ifdef __LINBOX_BLAS_AVAILABLE
-#include <linbox/config-blas.h>
-#include <linbox/blackbox/blas-blackbox.h>
-#include <linbox/matrix/blas-matrix.h>
-#include <linbox/algorithms/blas-domain.h>
-#include <linbox/matrix/factorized-matrix.h>
-#include <linbox/util/timer.h>
+#include "linbox/config-blas.h"
+#include "linbox/blackbox/blas-blackbox.h"
+#include "linbox/matrix/blas-matrix.h"
+#include "linbox/algorithms/blas-domain.h"
+#include "linbox/matrix/factorized-matrix.h"
+#include "linbox/util/timer.h"
 // #endif
 
 //#define DEBUG_DIXON

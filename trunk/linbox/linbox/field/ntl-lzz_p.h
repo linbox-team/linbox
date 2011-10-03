@@ -22,8 +22,8 @@
 #include "linbox/field/unparametric.h"
 #include "linbox/randiter/unparametric.h"
 #include "linbox/linbox-config.h"
-#include <linbox/field/field-traits.h>
-#include <linbox/integer.h>
+#include "linbox/field/field-traits.h"
+#include "linbox/integer.h"
 
 // Namespace in which all LinBox library code resides
 namespace LinBox

@@ -30,7 +30,7 @@
 #include <deque>
 #include <math.h>
 
-#include <linbox/field/PID-integer.h>
+#include "linbox/field/PID-integer.h"
 
 namespace LinBox
 {

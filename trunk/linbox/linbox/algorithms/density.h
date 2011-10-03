@@ -23,7 +23,7 @@
 
 #ifndef __LINBOX_density_H
 #define __LINBOX_density_H
-#include <linbox/vector/vector-traits.h>
+#include "linbox/vector/vector-traits.h"
 
 namespace LinBox
 {

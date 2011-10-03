@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/blackbox/csr.h
- * Compressed Sparse Format BB  
+ * Compressed Sparse Format BB
  * Author: Bryan Youse
  * overhaul of ./zo.h, a CSR formatted BB for {0,1}-Matrices
  * ------------------------------------
@@ -16,7 +16,7 @@
 #include "linbox/util/debug.h"
 #include "linbox/util/matrix-stream.h"
 #include "linbox/field/modular.h"
-#include <linbox/blackbox/blackbox-interface.h>
+#include "linbox/blackbox/blackbox-interface.h"
 
 // For STL pair in IndexIterator
 #include <utility>
@@ -29,7 +29,7 @@ namespace LinBox
 {
 	/** \brief Space efficient representation of sparse matrices.
 	 *
-	 * Compressed Sparse Row/Column (CSR/C) involves two arrays of length NNZ (number of non-zeros) 
+	 * Compressed Sparse Row/Column (CSR/C) involves two arrays of length NNZ (number of non-zeros)
 	 * One of column indices and another of matrix values.
 	 * A third array contains pointers indicating the division of the two NNZ arrays into rows.
 	 * (or vice versa w/r/t rows & columns)
@@ -88,8 +88,8 @@ namespace LinBox
 		}
 
 		/* constructor from a MatrixStream */
-		CSF( MatrixStream<Field>& ms ) : _F(ms.getField()){ 
-			read(ms);	
+		CSF( MatrixStream<Field>& ms ) : _F(ms.getField()){
+			read(ms);
 		}
 
 		//  copy constructor, easy enough
@@ -173,11 +173,11 @@ namespace LinBox
 		}
 
 		double &d00norm(double &norm){
-			norm = 0;	
+			norm = 0;
 			double old = 0, t;
 			//  maximal row inf (OO) norm
 			for(Index i = _ptrs[0]; (size_t)i < _ptrs.size()-1; ++i) {
-				old = norm;	
+				old = norm;
 				for(Index j = _ptrs[i]; j < _ptrs[i+1]; ++j) {
 					_F.convert(t, _vals[j]);
 					norm += abs(t);
@@ -205,7 +205,7 @@ namespace LinBox
 			return res;
 		}
 
-		/** Read the matrix from a matrix stream 
+		/** Read the matrix from a matrix stream
 		 *  @param ms Stream from which to read the matrix
 		 */
 		void read(MatrixStream<Field> &ms) {
@@ -329,8 +329,8 @@ namespace LinBox
 			public:
 				sort_data_by_col(Data d) : _d(d) {}
 				//  col sorted
-				bool operator()(const Triple &a, const Triple &b){ 
-					return (a.first.second < b.first.second || 
+				bool operator()(const Triple &a, const Triple &b){
+					return (a.first.second < b.first.second ||
 						(a.first.second == b.first.second && a.first.first < b.first.first));
 				}
 		};
@@ -358,7 +358,7 @@ namespace LinBox
 			}
 
 			// p represents position in the index/value arrays
-			Index p = 0;  
+			Index p = 0;
 
 			// set up _ptrs
 			_ptrs.push_back(p);

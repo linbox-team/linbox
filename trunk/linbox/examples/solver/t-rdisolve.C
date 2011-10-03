@@ -47,32 +47,32 @@
 #define RSTIMING
 
 
-#include <linbox/integer.h>
-#include <linbox/field/ntl-ZZ.h>
-#include <linbox/field/modular-int.h>
-#include <linbox/blackbox/diagonal.h>
-#include <linbox/algorithms/rational-solver.h>
-#include <linbox/algorithms/vector-fraction.h>
-#include <linbox/algorithms/diophantine-solver.h>
+#include "linbox/integer.h"
+#include "linbox/field/ntl-ZZ.h"
+#include "linbox/field/modular-int.h"
+#include "linbox/blackbox/diagonal.h"
+#include "linbox/algorithms/rational-solver.h"
+#include "linbox/algorithms/vector-fraction.h"
+#include "linbox/algorithms/diophantine-solver.h"
 #include <iostream>
 #include <fstream>
-#include <linbox/randiter/random-prime.h>
+#include "linbox/randiter/random-prime.h"
 
-#include <linbox/field/unparametric.h>
-#include <linbox/field/PID-integer.h>
-#include <linbox/field/PID-double.h>
-#include <linbox/field/ntl.h>
+#include "linbox/field/unparametric.h"
+#include "linbox/field/PID-integer.h"
+#include "linbox/field/PID-double.h"
+#include "linbox/field/ntl.h"
 
-#include <linbox/field/archetype.h>
-//#include <linbox/field/givaro.h>
-#include <linbox/vector/vector-domain.h>
+#include "linbox/field/archetype.h"
+//#include "linbox/field/givaro.h"
+#include "linbox/vector/vector-domain.h"
 
 #include <vector>
 
-#include <linbox/field/archetype.h>
-#include <linbox/vector/vector-domain.h>
+#include "linbox/field/archetype.h"
+#include "linbox/vector/vector-domain.h"
 
-#include <linbox/../tests/test-common.C>
+// #include "linbox/../tests/test-common.C"
 using namespace std;
 using namespace LinBox;
 
