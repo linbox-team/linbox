@@ -38,7 +38,7 @@
 
 // #include <linbox/solutions/getentry.h>
 #include <linbox/algorithms/linbox-tags.h>
-#include <linbox/matrix/dense-submatrix.h>
+// #include <linbox/matrix/dense-submatrix.h>
 #include <linbox/util/debug.h>
 #include <linbox/matrix/matrix-category.h>
 
@@ -588,6 +588,7 @@ namespace LinBox
 		size_t _r0;                    //!< upper left corner row of Submatrix in \p _M
 		size_t _c0;                    //!< upper left corner row of Submatrix in \p _M
 		size_t _stride ;               //!< number of columns in \p _M (or stride of \p _M)
+		size_t _off;
 
 	public:
 

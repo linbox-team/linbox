@@ -25,7 +25,6 @@
 #include "linbox/field/archetype.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/blackbox/archetype.h"
-#include "linbox/matrix/dense-submatrix.h"
 #include "linbox/solutions/methods.h"
 
 // I'm putting everything inside the LinBox namespace so that I can drop all of

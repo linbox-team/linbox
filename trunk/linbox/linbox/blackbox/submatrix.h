@@ -27,7 +27,6 @@
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
 #include "linbox/util/error.h"
-#include <linbox/matrix/dense-submatrix.h>
 #include <linbox/vector/vector-domain.h>
 #include <linbox/blackbox/blackbox-interface.h>
 #include "linbox/blackbox/blas-blackbox.h"

@@ -50,7 +50,7 @@ namespace LinBox
 {
 	template <class _Element>
 	BlasSubmatrix<_Element>::BlasSubmatrix () :
-			_M(NULL),_row(0),_col(0),_r0(0),_c0(0),_stride(0)
+			_M(NULL),_row(0),_col(0),_r0(0),_c0(0),_stride(0),_off(0)
 		{
 #ifndef NDEBU
 			std::cerr << "***Warning*** you are creating a NULL BlasSubmatrix. You are stuck with it now." << std::endl;
@@ -66,11 +66,12 @@ namespace LinBox
 		_M (const_cast<BlasMatrix<_Element>*>(&Mat)),
 		_row (Rowdim), _col(Coldim),
 		_r0(row),_c0(col),
-		_stride(Mat.coldim())
+		_stride(Mat.coldim()),_off(row*_stride+col)
 	{
 		linbox_check ( _r0  <= Mat.rowdim() ); // allow for NULL matrix
 		linbox_check ( _c0  <= Mat.coldim() );
 		linbox_check ( _row <= Mat.rowdim() );
+		linbox_check ( _off <= Mat.rowdim()*Mat.coldim() );
 		linbox_check ( _col <= Mat.coldim() );
 	}
 
@@ -80,7 +81,7 @@ namespace LinBox
 		_M(&Mat),
 		_row(Mat.rowdim()), _col(Mat.coldim()),
 		_r0(0), _c0(0),
-		_stride(Mat.coldim())
+		_stride(Mat.coldim()),_off(0)
 	{}
 
 
@@ -94,12 +95,13 @@ namespace LinBox
 		_M (SM._M),
 		_row ( Rowdim ),      _col ( Coldim ) ,
 		_r0  ( SM._r0 + row ), _c0 ( SM._c0 + col ),
-		_stride(SM._stride)
+		_stride(SM._stride),_off(SM._off+(row*_stride+col))
 	{
 		linbox_check ( _r0  <= SM._M->rowdim() ); // allow for NULL matrix
 		linbox_check ( _c0  <= SM._stride );
 		linbox_check ( _row <= SM._M->rowdim() );
 		linbox_check ( _col <= SM._stride );
+		linbox_check ( _off <= SM._M->rowdim()*(SM._M->coldim()+1) );
 	}
 
 	template <class _Element>
@@ -107,12 +109,13 @@ namespace LinBox
 		_M (SM._M),
 		_row ( SM._row ),  _col ( SM._col ) ,
 		_r0  ( SM._r0 ),    _c0 (SM._c0 ),
-		_stride(SM._stride)
+		_stride(SM._stride),_off(SM._off)
 	{
 		linbox_check ( _r0  <=  SM._M->rowdim() ); // allow for NULL matrix
 		linbox_check ( _c0  <=  SM._stride );
 		linbox_check ( _row <= SM._M->rowdim() );
 		linbox_check ( _col <= SM._stride );
+		linbox_check ( _off <= SM._M->rowdim()*(SM._M->coldim()+1) );
 	}
 
 	template <class _Element>
@@ -124,6 +127,7 @@ namespace LinBox
 		_c0  = SM._c0 ;
 		_col = SM._col;
 		_stride = SM._stride;
+		_off = SM._off ;
 
 		return *this;
 	}
@@ -154,7 +158,7 @@ namespace LinBox
 		/*! @internal
 		 * @brief NO DOC
 		 */
-		Iterator (const typename DenseMatrixBase<_Element>::Iterator& cur,
+		Iterator (const typename BlasMatrix<_Element>::Iterator& cur,
 			     const size_t c_dim,
 			     const size_t stride,
 			     const size_t c_idx) :
@@ -223,7 +227,7 @@ namespace LinBox
 		}
 
 	protected:
-		typename DenseMatrixBase<_Element>::Iterator _cur;
+		typename BlasMatrix<_Element>::Iterator _cur;
 		size_t _c_dim;
 		size_t _stride;
 		size_t _c_idx;
@@ -246,7 +250,7 @@ namespace LinBox
 		/*! @internal
 		 * @brief NO DOC
 		 */
-		ConstIterator (const typename DenseMatrixBase<_Element>::ConstIterator& cur,
+		ConstIterator (const typename BlasMatrix<_Element>::ConstIterator& cur,
 				  const size_t c_dim,
 				  const size_t stride,
 				  const size_t c_idx) :
@@ -308,7 +312,7 @@ namespace LinBox
 		}
 
 	protected:
-		typename DenseMatrixBase<_Element>::ConstIterator _cur;
+		typename BlasMatrix<_Element>::ConstIterator _cur;
 		size_t _c_dim;
 		size_t _stride;
 		size_t _c_idx;
@@ -320,7 +324,7 @@ namespace LinBox
 	public:
 		ConstIterator (){}
 
-		ConstIterator ( const typename DenseMatrixBase<Element>::ConstIterator& cur,
+		ConstIterator ( const typename BlasMatrix<Element>::ConstIterator& cur,
 				   size_t cont_len,
 				   size_t gap_len) :
 			_beg (beg), _cur (cur), _cont_len (cont_len), _gap_len (gap_len)
@@ -378,8 +382,8 @@ namespace LinBox
 		{ return *_cur; }
 
 	protected:
-		typename DenseMatrixBase<Element>::ConstIterator _beg;
-		typename DenseMatrixBase<Element>::ConstIterator _cur;
+		typename BlasMatrix<Element>::ConstIterator _beg;
+		typename BlasMatrix<Element>::ConstIterator _cur;
 		size_t _cont_len;
 		size_t _gap_len;
 	};
@@ -388,28 +392,28 @@ namespace LinBox
 	template <class _Element>
 	typename BlasSubmatrix<_Element>::Iterator BlasSubmatrix<_Element>::Begin ()
 	{
-		return Iterator (_M->Begin () + ( _r0 * _stride + _c0 ),
+		return Iterator (_M->Begin () + ( _off ),
 				    coldim (), _stride, 0);
 	}
 
 	template <class _Element>
 	typename BlasSubmatrix<_Element>::Iterator BlasSubmatrix<_Element>::End ()
 	{
-		return Iterator (_M->Begin () + ( (_r0 + _row) * _stride + _c0 ),
+		return Iterator (_M->Begin () + ( (_row) * _stride + _off ),
 				    coldim (), _stride, 0);
 	}
 
 	template <class _Element>
 	typename BlasSubmatrix<_Element>::ConstIterator BlasSubmatrix<_Element>::Begin () const
 	{
-		return ConstIterator (_M->Begin () + ( _r0 * _stride + _c0 ),
+		return ConstIterator (_M->Begin () + ( _off ),
 					 coldim (), _stride, 0);
 	}
 
 	template <class _Element>
 	typename BlasSubmatrix<_Element>::ConstIterator BlasSubmatrix<_Element>::End () const
 	{
-		return ConstIterator (_M->Begin () + ( (_r0+_row) * _stride + _c0 ),
+		return ConstIterator (_M->Begin () + ( (_row) * _stride + _off ),
 					 coldim (), _stride, 0);
 	}
 
@@ -417,16 +421,16 @@ namespace LinBox
 	template <class Element>
 	typename BlasSubmatrix<Element>::ConstIterator BlasSubmatrix<Element>::Begin () const
 	{
-		return ConstIterator (_M->Begin () + ( _r0 * _stride + _c0 ),
-					 _M->Begin () + ( _r0 * _stride + _c0 ),
+		return ConstIterator (_M->Begin () + ( _off ),
+					 _M->Begin () + ( _off ),
 					 coldim (), _stride - coldim ());
 	}
 
 	template <class Element>
 	typename BlasSubmatrix<Element>::ConstIterator BlasSubmatrix<Element>::End () const
 	{
-		return ConstIterator (_M->Begin () + ( (_r0+_row) * _stride + _c0 ),
-					 _M->Begin () + ( (_r0+_row) * _stride + _c0 ),
+		return ConstIterator (_M->Begin () + ( (_row) * _stride + _off ),
+					 _M->Begin () + ( (_row) * _stride + _off ),
 					 coldim (), _stride - coldim ());
 	}
 #endif
@@ -445,7 +449,7 @@ namespace LinBox
 	public:
 		IndexedIterator (){}
 
-		IndexedIterator (const typename DenseMatrixBase<_Element>::Iterator& cur,
+		IndexedIterator (const typename BlasMatrix<_Element>::Iterator& cur,
 				    size_t c_dim,
 				    size_t stride,
 				    size_t r_idx,
@@ -523,7 +527,7 @@ namespace LinBox
 		const _Element& value () const {return *_cur;}
 
 	protected:
-		typename DenseMatrixBase<_Element>::Iterator _cur;
+		typename BlasMatrix<_Element>::Iterator _cur;
 		size_t _stride;
 		size_t _c_dim;
 		size_t _r_idx;
@@ -533,14 +537,14 @@ namespace LinBox
 	template <class _Element>
 	typename BlasSubmatrix<_Element>::IndexedIterator BlasSubmatrix<_Element>::IndexedBegin ()
 	{
-		return IndexedIterator (_M->Begin () + ( (_r0 * _stride + _c0) ),
+		return IndexedIterator (_M->Begin () + ( (_off) ),
 					   coldim(), _stride, 0, 0);
 	}
 
 	template <class _Element>
 	typename BlasSubmatrix<_Element>::IndexedIterator BlasSubmatrix<_Element>::IndexedEnd ()
 	{
-		return IndexedIterator (_M->Begin () + ( (_r0+_row) * _stride + (_c0+_col) ),
+		return IndexedIterator (_M->Begin () + ( (_row) * _stride + (_col+_off) ),
 					   coldim(), _stride, rowdim()-1, coldim()-1);
 	}
 
@@ -558,7 +562,7 @@ namespace LinBox
 	public:
 		ConstIndexedIterator (){}
 
-		ConstIndexedIterator (const typename DenseMatrixBase<_Element>::ConstIterator& cur,
+		ConstIndexedIterator (const typename BlasMatrix<_Element>::ConstIterator& cur,
 					 size_t c_dim,
 					 size_t stride,
 					 size_t r_idx,
@@ -667,7 +671,7 @@ namespace LinBox
 		}
 
 	protected:
-		typename DenseMatrixBase<_Element>::ConstIterator _cur;
+		typename BlasMatrix<_Element>::ConstIterator _cur;
 		size_t _stride;
 		size_t _c_dim;
 		size_t _r_idx;
@@ -677,14 +681,14 @@ namespace LinBox
 	template <class _Element>
 	typename BlasSubmatrix<_Element>::ConstIndexedIterator BlasSubmatrix<_Element>::IndexedBegin () const
 	{
-		return ConstIndexedIterator (_M->Begin () + ( _r0 * _stride + _c0 ),
+		return ConstIndexedIterator (_M->Begin () + ( _off ),
 						coldim(), _stride, 0, 0);
 	}
 
 	template <class _Element>
 	typename BlasSubmatrix<_Element>::ConstIndexedIterator BlasSubmatrix<_Element>::IndexedEnd () const
 	{
-		return ConstIndexedIterator (_M->Begin () + ( (_r0+_row) * _stride + (_c0+_col) ),
+		return ConstIndexedIterator (_M->Begin () + ( (_row) * _stride + (_off+_col) ),
 						coldim (), _stride, rowdim()-1, coldim()-1);
 	}
 
@@ -692,56 +696,56 @@ namespace LinBox
 	template <class _Element>
 	typename BlasSubmatrix<_Element>::RowIterator BlasSubmatrix<_Element>::rowBegin ()
 	{
-		return RowIterator (_M->Begin () + ( _r0 * _stride + _c0 ),
-				    (_c0+_col) - _c0, _stride);
+		return RowIterator (_M->Begin () + ( _off  ),
+				    _col, _stride);
 	}
 
 	template <class _Element>
 	typename BlasSubmatrix<_Element>::RowIterator BlasSubmatrix<_Element>::rowEnd ()
 	{
-		return RowIterator (_M->Begin () + ( (_r0+_row) * _stride + _c0 ),
-				    (_c0+_col) - _c0, _stride);
+		return RowIterator (_M->Begin () + ( (_row) * _stride + _off ),
+				    _col, _stride);
 	}
 
 	template <class _Element>
 	typename BlasSubmatrix<_Element>::ConstRowIterator BlasSubmatrix<_Element>::rowBegin () const
 	{
-		return ConstRowIterator (_M->Begin () + ( _r0 * _stride + _c0 ),
-					 (_c0+_col) - _c0, _stride);
+		return ConstRowIterator (_M->Begin () + ( _off ),
+					 _col, _stride);
 	}
 
 	template <class _Element>
 	typename BlasSubmatrix<_Element>::ConstRowIterator BlasSubmatrix<_Element>::rowEnd () const
 	{
-		return ConstRowIterator (_M->Begin () + ( (_r0+_row) * _stride + _c0 ),
-					 (_c0+_col) - _c0, _stride);
+		return ConstRowIterator (_M->Begin () + ( (_row) * _stride + _off ),
+					 _col, _stride);
 	}
 
 	template <class _Element>
 	typename BlasSubmatrix<_Element>::ColIterator BlasSubmatrix<_Element>::colBegin ()
 	{
-		return ColIterator (_M->Begin () + ( _c0 + _r0 * _stride ),
+		return ColIterator (_M->Begin () + ( _off ),
 				    _stride, rowdim ());
 	}
 
 	template <class _Element>
 	typename BlasSubmatrix<_Element>::ColIterator BlasSubmatrix<_Element>::colEnd ()
 	{
-		return ColIterator (_M->Begin () + ( (_c0+_col) + _r0 * _stride ),
+		return ColIterator (_M->Begin () + ( (_col) + _off ),
 				    _stride, rowdim ());
 	}
 
 	template <class _Element>
 	typename BlasSubmatrix<_Element>::ConstColIterator BlasSubmatrix<_Element>::colBegin () const
 	{
-		return ConstColIterator (_M->Begin () + ( _c0 + _r0 * _stride ),
+		return ConstColIterator (_M->Begin () + ( _off ),
 					 _stride, rowdim ());
 	}
 
 	template <class _Element>
 	typename BlasSubmatrix<_Element>::ConstColIterator BlasSubmatrix<_Element>::colEnd () const
 	{
-		return ConstColIterator (_M->Begin () + ( (_c0+_col) + _r0 * _stride ),
+		return ConstColIterator (_M->Begin () + ( (_col) + _off ),
 					 _stride, rowdim ());
 	}
 
@@ -749,13 +753,13 @@ namespace LinBox
 	template <class Element>
 	typename BlasSubmatrix<Element>::Row BlasSubmatrix<Element>::operator[] (size_t i)
 	{
-		return Row (_M.Begin () + (_r0+i) * _stride, _M.Begin () + (_r0+i+1) * _stride );
+		return Row (_M.Begin () + (_r0+i) * _stride, _M.Begin () + ((_r0+i) * _stride + _stride) );
 	}
 
 	template <class Element>
 	typename BlasSubmatrix<Element>::ConstRow BlasSubmatrix<Element>::operator[] (size_t i) const
 	{
-		return Row (_M.Begin () + (_r0+i) * _stride, _M.Begin () + (_r0+i+1) * _stride );
+		return Row (_M.Begin () + (_r0+i) * _stride, _M.Begin () + ((_r0+i) * _stride + _stride) );
 	}
 
 }

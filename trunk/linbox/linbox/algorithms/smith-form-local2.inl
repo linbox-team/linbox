@@ -18,7 +18,6 @@
 #include <list>
 //#include <algorithm>
 
-#include "linbox/matrix/dense-submatrix.h"
 #include "linbox/field/local2_32.h"
 
 namespace LinBox
