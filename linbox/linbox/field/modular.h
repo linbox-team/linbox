@@ -63,6 +63,13 @@ namespace LinBox
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
+	template <class Element>
+	struct ClassifyRing<Modular<Element> const>
+	{
+		typedef RingCategories::ModularTag categoryTag;
+	};
+
+
 	/** * <!-- @name ModularBase-->
 	 * \brief Base for prime fields where the elements are represented by various primitive types (and their operations).
 	 * \ingroup field
