@@ -393,28 +393,28 @@ namespace LinBox
 	typename BlasSubmatrix<_Element>::Iterator BlasSubmatrix<_Element>::Begin ()
 	{
 		return Iterator (_M->Begin () + ( _off ),
-				    coldim (), _stride, 0);
+				    _col, _stride, 0);
 	}
 
 	template <class _Element>
 	typename BlasSubmatrix<_Element>::Iterator BlasSubmatrix<_Element>::End ()
 	{
 		return Iterator (_M->Begin () + ( (_row) * _stride + _off ),
-				    coldim (), _stride, 0);
+				    _col, _stride, 0);
 	}
 
 	template <class _Element>
 	typename BlasSubmatrix<_Element>::ConstIterator BlasSubmatrix<_Element>::Begin () const
 	{
 		return ConstIterator (_M->Begin () + ( _off ),
-					 coldim (), _stride, 0);
+					 _col, _stride, 0);
 	}
 
 	template <class _Element>
 	typename BlasSubmatrix<_Element>::ConstIterator BlasSubmatrix<_Element>::End () const
 	{
 		return ConstIterator (_M->Begin () + ( (_row) * _stride + _off ),
-					 coldim (), _stride, 0);
+					 _col, _stride, 0);
 	}
 
 #if 0
@@ -423,7 +423,7 @@ namespace LinBox
 	{
 		return ConstIterator (_M->Begin () + ( _off ),
 					 _M->Begin () + ( _off ),
-					 coldim (), _stride - coldim ());
+					 _col, _stride - _col);
 	}
 
 	template <class Element>
@@ -431,7 +431,7 @@ namespace LinBox
 	{
 		return ConstIterator (_M->Begin () + ( (_row) * _stride + _off ),
 					 _M->Begin () + ( (_row) * _stride + _off ),
-					 coldim (), _stride - coldim ());
+					 _col, _stride - _col);
 	}
 #endif
 
@@ -538,14 +538,14 @@ namespace LinBox
 	typename BlasSubmatrix<_Element>::IndexedIterator BlasSubmatrix<_Element>::IndexedBegin ()
 	{
 		return IndexedIterator (_M->Begin () + ( (_off) ),
-					   coldim(), _stride, 0, 0);
+					   _col , _stride, 0, 0);
 	}
 
 	template <class _Element>
 	typename BlasSubmatrix<_Element>::IndexedIterator BlasSubmatrix<_Element>::IndexedEnd ()
 	{
 		return IndexedIterator (_M->Begin () + ( (_row) * _stride + (_col+_off) ),
-					   coldim(), _stride, rowdim()-1, coldim()-1);
+					   _col, _stride, _row-1, _col-1);
 	}
 
 	/*! Raw Indexed Iterator (const version).
@@ -682,14 +682,14 @@ namespace LinBox
 	typename BlasSubmatrix<_Element>::ConstIndexedIterator BlasSubmatrix<_Element>::IndexedBegin () const
 	{
 		return ConstIndexedIterator (_M->Begin () + ( _off ),
-						coldim(), _stride, 0, 0);
+						_row, _stride, 0, 0);
 	}
 
 	template <class _Element>
 	typename BlasSubmatrix<_Element>::ConstIndexedIterator BlasSubmatrix<_Element>::IndexedEnd () const
 	{
 		return ConstIndexedIterator (_M->Begin () + ( (_row) * _stride + (_off+_col) ),
-						coldim (), _stride, rowdim()-1, coldim()-1);
+						_col, _stride, _row-1, _col-1);
 	}
 
 	////////
@@ -725,28 +725,28 @@ namespace LinBox
 	typename BlasSubmatrix<_Element>::ColIterator BlasSubmatrix<_Element>::colBegin ()
 	{
 		return ColIterator (_M->Begin () + ( _off ),
-				    _stride, rowdim ());
+				    _stride, _row);
 	}
 
 	template <class _Element>
 	typename BlasSubmatrix<_Element>::ColIterator BlasSubmatrix<_Element>::colEnd ()
 	{
 		return ColIterator (_M->Begin () + ( (_col) + _off ),
-				    _stride, rowdim ());
+				    _stride, _row);
 	}
 
 	template <class _Element>
 	typename BlasSubmatrix<_Element>::ConstColIterator BlasSubmatrix<_Element>::colBegin () const
 	{
 		return ConstColIterator (_M->Begin () + ( _off ),
-					 _stride, rowdim ());
+					 _stride, _row);
 	}
 
 	template <class _Element>
 	typename BlasSubmatrix<_Element>::ConstColIterator BlasSubmatrix<_Element>::colEnd () const
 	{
 		return ConstColIterator (_M->Begin () + ( (_col) + _off ),
-					 _stride, rowdim ());
+					 _stride, _row);
 	}
 
 	/*  operators */
@@ -797,7 +797,7 @@ namespace LinBox
 		typename ConstRow::const_iterator pe;
 
 
-		if (mapleFormat) os << "Matrix( " << rowdim() << ',' << coldim() << ",[" ;
+		if (mapleFormat) os << "Matrix( " << _row << ',' << _col << ",[" ;
 
 		for (p = rowBegin (); p != rowEnd (); ++p) {
 			if (mapleFormat && (p != rowBegin()))
@@ -835,7 +835,7 @@ namespace LinBox
 
 		typename ConstRow::const_iterator pe;
 
-		if (mapleFormat) os << "Matrix( " << rowdim() << ',' << coldim() << ",[" ;
+		if (mapleFormat) os << "Matrix( " << _row << ',' << _col << ",[" ;
 
 		for (p = rowBegin (); p != rowEnd (); ++p) {
 			if (mapleFormat && (p != rowBegin()))
