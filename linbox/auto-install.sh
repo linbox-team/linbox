@@ -10,7 +10,6 @@
 # TODO : manage icc/gcc
 # TODO : add gmp in givaro and use auto-install in givaro
 # TODO : use an optionnal message in die function.
-# TODO : add options to make like '-j'
 
 STABLE_FFLAS=1.4.1
 STABLE_GIVARO=3.4.2
@@ -43,7 +42,8 @@ SAGE_VAR=""
 DRIV="--enable-drivers"
 DRIV_VAR=""
 
-
+MAKEOPT= 
+MAKE_VAR=""
 
 DONE="\033[0;36m done !\033[0m"
 BEG="\033[1;32m * \033[0m"
@@ -90,6 +90,8 @@ help() {
 	echo " --with-ntl=NTL/PATH   : same as GMP for NTL. (default)"
 	echo " --with-iml=IML/PATH   : same as GMP for IML. (default)"
 	echo " --extra-flags=\"\"      : give extra compiler flags."
+	echo "                         Default : empty"
+	echo " --make-flags=\"\"      : give extra makefile flags."
 	echo "                         Default : empty"
 	echo
 	echo " >> for the next switches, nothing, Y, y, yes or 1 after \"=\"   <<"
@@ -147,6 +149,22 @@ for i in $* ; do
 		OPTIM="$i";
 		OPTIM_VAR="true";
 		;;
+	"--disable-debug")
+		if [ "x$DEBUG_VAR" = "xtrue" ]  ; then  echo "enable-debug or not ?" ;        help ; exit -1 ; fi
+		DEBUG_VAR="false";
+		;;
+	"--disable-check")
+		if [ "x$CHECK_VAR" = "xtrue" ] ; then   echo "enable-check or not ?";        help ; exit -1; fi
+		CHECK_VAR="false";
+		;;
+	"--disable-warnings")
+		if [ "x$WARNINGS_VAR" = "xtrue" ] ; then   echo "enable-warnings or not ?";     help ; exit -1; fi
+		WARNINGS_VAR="false";
+		;;
+	"--disable-optimization")
+		if	[ "x$OPTIM_VAR" = "xtrue" ] ; then   echo "enable-optimization or not ?"; help ; exit -1; fi
+		OPTIM_VAR="false";
+		;;
 	"--with-ntl")
 		if	[ "x$NTL_VAR" = "xfalse" ] ; then   echo "with-ntl or not ?";            help ; exit -1; fi
 		NTL="$i";
@@ -171,6 +189,16 @@ for i in $* ; do
 		if	[ "x$DRIV_VAR" = "xfalse" ] ; then  echo "enable-drivers or not ?" ;      help ; exit -1; fi
 		DRIV="$i"
 		DRIV_VAR="true"
+		;;
+	"--disable-sage")
+		if	[ "x$SAGE_VAR" = "xtrue" ] ; then  echo "enable-sage or not ?";          help ; exit -1; fi
+		SAGE=""
+		SAGE_VAR="false"
+		;;
+	"--disable-drivers")
+		if	[ "x$DRIV_VAR" = "xtrue" ] ; then  echo "enable-drivers or not ?" ;      help ; exit -1; fi
+		DRIV=""
+		DRIV_VAR="false"
 		;;
 
 	*)
@@ -204,8 +232,13 @@ for i in $* ; do
 				;;
 			"--extra-flags")
 				if	[ "x$EXTRA_VAR" = "xtrue" ] ; then  echo "extra-flags already set ?" ;      help ; exit -1; fi
-				EXTRA=$QUOI
+				EXTRA="$QUOI"
 				EXTRA_VAR="true"
+				;;
+			"--make-flags")
+				if	[ "x$MAKE_VAR" = "xtrue" ] ; then  echo "make-flags already set ?" ;      help ; exit -1; fi
+				MAKEOPT="$QUOI"
+				MAKE_VAR="true"
 				;;
 			"--with-gmp")
 				if		[ "x$GMP_VAR" = "xtrue" ] ; then  echo "GMP path already set ?" ;      help ; exit -1; fi
@@ -283,9 +316,9 @@ for i in $* ; do
 				if		[ "x$OPTIM_VAR" = "xtrue"  -a "OK" = "0"  ] ; then  echo "drivers or not drivers ?" ;      help ; exit -1; fi
 				if		[ "x$OPTIM_VAR" = "xfalse" -a "OK" = "1"  ] ; then  echo "drivers or not drivers ?" ;      help ; exit -1; fi
 				if		[[ "x$OK" = "x1" ]] ; then 
-					OPTIM=$QUI ; OPTIM_VAR="true"
+					DRIV=$QUI ; DRIV_VAR="true"
 				else
-					OPTIM_VAR="false" 
+					DRIV_VAR="false" 
 				fi
 				;;
 			*)
@@ -297,6 +330,8 @@ for i in $* ; do
 		;;
 esac
 done
+
+MAKEPROG="make ${MAKEOPT}"
 
 ######################
 #  create build dir  #
@@ -415,9 +450,9 @@ fi
 
 if [ -f Makefile ] ; then
 	echo -e "${BEG}cleaning Fflas-Ffpack..."
-	make clean || die
-	make distclean || die 
-	# make unistall || die
+	${MAKEPROG} clean || die
+	${MAKEPROG} distclean || die 
+	# ${MAKEPROG} unistall || die
 	cool
 fi
 
@@ -432,21 +467,21 @@ else
 fi
 
 echo -e "${BEG}building Fflas-Ffpack..."
-echo "make CXXFLAGS+=\"$EXTRA\""
+echo "${MAKEPROG} CXXFLAGS+=\"$EXTRA\""
 if [ -n "$EXTRA" ] ; then
-	make "CXXFLAGS+=\"$EXTRA\"" || die
+	${MAKEPROG} "CXXFLAGS+=\"$EXTRA\"" || die
 else
-	make || die
+	${MAKEPROG} || die
 fi
 
 if [ "$CHECK_VAR" = "true" ] ; then
 	echo -e "${BEG}checking Fflas-Ffpack..."
-	make check || die
+	${MAKEPROG} check || die
 fi
 
 
 echo -e "${BEG}installing Fflas-Ffpack..."
-make install || die
+${MAKEPROG} install || die
 
 cool
 #return in build
@@ -464,9 +499,9 @@ fi
 
 if [ -f Makefile ] ; then
 	echo -e "${BEG}cleaning Givaro..."
-	make clean || die
-	make distclean || die 
-	# make unistall || die
+	${MAKEPROG} clean || die
+	${MAKEPROG} distclean || die 
+	# ${MAKEPROG} unistall || die
 	cool
 fi
 
@@ -481,21 +516,21 @@ else
 fi
 
 echo -e "${BEG}building Givaro..."
-echo "make CXXFLAGS+=\"$EXTRA\""
+echo "${MAKEPROG} CXXFLAGS+=\"$EXTRA\""
 
 if [ -n "$EXTRA" ] ; then
-	make "CXXFLAGS+=\"$EXTRA\"" || die
+	${MAKEPROG} "CXXFLAGS+=\"$EXTRA\"" || die
 else
-	make || die
+	${MAKEPROG} || die
 fi
 
 if [ "$CHECK_VAR" = "true" ] ; then
 	echo -e "${BEG}checking Fflas-Ffpack..."
-	make check || die
+	${MAKEPROG} check || die
 fi
 
 echo -e "${BEG}installing Givaro..."
-make install || die
+${MAKEPROG} install || die
 
 #return in build
 cd ..
@@ -511,9 +546,9 @@ cd ..
 
 if [ -f Makefile ] ; then
 	echo -e "${BEG}cleaning LinBox..."
-	make clean || die
-	make distclean || die 
-	# make unistall || die
+	${MAKEPROG} clean || die
+	${MAKEPROG} distclean || die 
+	# ${MAKEPROG} unistall || die
 	cool
 fi
 
@@ -532,21 +567,21 @@ else
 fi
 
 echo -e "${BEG}building LinBox..."
-echo "make CXXFLAGS+=\"$EXTRA\""
+echo "${MAKEPROG} CXXFLAGS+=\"$EXTRA\""
 
 if [ -n "$EXTRA" ] ; then
-	make "CXXFLAGS+=\"$EXTRA\"" || die
+	${MAKEPROG} "CXXFLAGS+=\"$EXTRA\"" || die
 else
-	make || die
+	${MAKEPROG} || die
 fi
 
 if [ "$CHECK_VAR" = "true" ] ; then
 	echo -e "${BEG}checking LinBox..."
-	make check || die
+	${MAKEPROG} check || die
 fi
 
 echo -e "${BEG}installing LinBox..."
-make install || die
+${MAKEPROG} install || die
 
 cool
 
