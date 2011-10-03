@@ -588,7 +588,7 @@ cool
 echo
 echo -e "${BEG}Don't forget to run something like"
 echo -e " *   'export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:$PREFIX_LOC/lib'"
-echo -e " * to ensure you don't get undefined symobols !"
+echo -e " * to ensure you don't get undefined symbols !"
 echo 
 echo -e " * Happy LinBoxing ! (installed in $PREFIX_LOC)"
 echo
