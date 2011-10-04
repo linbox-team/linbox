@@ -188,6 +188,7 @@ namespace LinBox
 		{
 			return _row;
 		}
+
 		size_t colfirst() const
 		{
 			return _col;
@@ -270,7 +271,6 @@ namespace LinBox
 		 * @param Rowdim Row dimension
 		 * @param Coldim Column dimension
 		 */
-
 		Submatrix (const BlasBlackbox<Field> *Mat,
 			   size_t row,
 			   size_t col,
@@ -278,8 +278,7 @@ namespace LinBox
 			   size_t Coldim) :
 			BlasSubmatrix<Element>(const_cast<BlasBlackbox<Field>& >(*Mat), row, col, Rowdim, Coldim),
 			f(Mat -> field()), vd(Mat -> field())
-		{
-		}
+		{ }
 
 		/** Constructor from an existing \ref BlasBlackbox  and dimensions
 		 * @param M reference to \ref BlasBlackbox  of which to construct submatrix
@@ -329,8 +328,8 @@ namespace LinBox
 			   size_t Rowdim,
 			   size_t Coldim ) :
 			BlasSubmatrix<Element> (const_cast<Submatrix<BlasBlackbox<Field> >&>(SM), row, col, Rowdim, Coldim),
-			f (SM. field()), vd(SM. field()){
-			}
+			f (SM. field()), vd(SM. field())
+		{ }
 
 		const Field& field() const
 		{
@@ -405,7 +404,7 @@ namespace LinBox
 
 				typename other::Father_t A1;
 				typename Father_t::template rebind<_Tp1> () ( A1, static_cast<Father_t>(A), F);
-				Ap = other(A1, A._row, A._col, A._rowdim, A._coldim);
+				Ap = other(A1, A.rowfirst(), A.colfirst(), A.rowdim(), A.coldim());
 			}
 
 		};

@@ -47,7 +47,7 @@ namespace LinBox
 	}
 
 	template<class _Element>
-	void BlasMatrix<_Element>::createBlasMatrix (const Element * v)
+	void BlasMatrix<_Element>::createBlasMatrix (const _Element * v)
 	{
 		const_pointer iter_v = v ;
 		const_pointer v_end = v+(_col*_row) ;
@@ -57,9 +57,9 @@ namespace LinBox
 	}
 
 	template<class _Element>
-	void BlasMatrix<_Element>::createBlasMatrix (const std::vector<Element> & v)
+	void BlasMatrix<_Element>::createBlasMatrix (const std::vector< _Element> & v)
 	{
-		typename std::vector<Element>::const_iterator iter_value = v.begin();
+		typename std::vector< _Element>::const_iterator iter_value = v.begin();
 		Iterator  iter_addr = this->Begin();
 		for (;iter_value != v.end(); ++iter_value,++iter_addr)
 			*iter_addr = *iter_value;
@@ -105,7 +105,7 @@ namespace LinBox
 		std::vector<typename Field::Element> e(A.coldim(), zero), tmp(A.rowdim());
 		ColIterator col_p;
 
-		typename BlasMatrix<Element>::Col::iterator elt_p;
+		typename BlasMatrix< _Element>::Col::iterator elt_p;
 
 		typename std::vector<typename Field::Element>::iterator e_p, tmp_p;
 
@@ -188,25 +188,25 @@ namespace LinBox
 {
 
 
-	template <class Element>
-	BlasMatrix<Element>::BlasMatrix () :
+	template <class _Element>
+	BlasMatrix< _Element>::BlasMatrix () :
 		_row(0),_col(0),_rep(0),_ptr(NULL)
 	{ }
 
 
 
-	template <class Element>
+	template <class _Element>
 	template<class T>
-	BlasMatrix<Element>::BlasMatrix ( unsigned int m, T n) :
+	BlasMatrix< _Element>::BlasMatrix ( unsigned int m, T n) :
 		_row(m),_col(n),_rep(_row*_col),_ptr(&_rep[0])
 	{
 		// linbox_check(n>=0);
 		// makePointer();
 	}
 
-	template <class Element>
+	template <class _Element>
 	template<class T>
-	BlasMatrix<Element>::BlasMatrix (long m, T n) :
+	BlasMatrix< _Element>::BlasMatrix (long m, T n) :
 		_row(m),_col(n),_rep(_row*_col),_ptr(&_rep[0])
 	{
 		linbox_check(n>=0);
@@ -214,9 +214,9 @@ namespace LinBox
 		// makePointer();
 	}
 
-	template <class Element>
+	template <class _Element>
 	template<class T>
-	BlasMatrix<Element>::BlasMatrix (unsigned long m, T  n) :
+	BlasMatrix< _Element>::BlasMatrix (unsigned long m, T  n) :
 		_row(m),_col(n),_rep(_row*_col),_ptr(&_rep[0])
 	{
 		//!@todo
@@ -225,9 +225,9 @@ namespace LinBox
 		// makePointer();
 	}
 
-	template <class Element>
+	template <class _Element>
 	template<class T>
-	BlasMatrix<Element>::BlasMatrix (int m, T n) :
+	BlasMatrix< _Element>::BlasMatrix (int m, T n) :
 		_row(m),_col(n),_rep(_row*_col),_ptr(&_rep[0])
 	{
 		linbox_check(n>=0);
@@ -235,9 +235,9 @@ namespace LinBox
 		// makePointer();
 	}
 
-	template <class Element>
+	template <class _Element>
 	template<class T>
-	BlasMatrix<Element>::BlasMatrix ( Integer & m, T n) :
+	BlasMatrix< _Element>::BlasMatrix ( Integer & m, T n) :
 		_row(m),_col(n),_rep(_row*_col),_ptr(&_rep[0])
 	{
 		//!@todo check m,n not too big ?
@@ -248,9 +248,9 @@ namespace LinBox
 
 
 
-	template <class Element>
+	template <class _Element>
 	template< class Field >
-	BlasMatrix<Element>::BlasMatrix(MatrixStream<Field>& ms) :
+	BlasMatrix< _Element>::BlasMatrix(MatrixStream<Field>& ms) :
 		_row(0),_col(0),_rep(0)
 	{
 		if( !ms.getArray(_rep) || !ms.getRows(_row) || !ms.getColumns(_col) )
@@ -258,18 +258,18 @@ namespace LinBox
 		_ptr = &_rep[0];
 	}
 
-	template <class Element>
+	template <class _Element>
 	template <class Matrix>
-	BlasMatrix<Element>::BlasMatrix (const Matrix &A) :
+	BlasMatrix< _Element>::BlasMatrix (const Matrix &A) :
 		_row(A.rowdim()),_col(A.coldim()),_rep(_row*_col),_ptr(&_rep[0])
 	{
 		// makePointer();
 		createBlasMatrix(A, typename MatrixContainerTrait<Matrix>::Type());
 	}
 
-	template <class Element>
+	template <class _Element>
 	template <class Matrix>
-	BlasMatrix<Element>::BlasMatrix (const Matrix& A,
+	BlasMatrix< _Element>::BlasMatrix (const Matrix& A,
 					 const size_t i0, const size_t j0,
 					 const size_t m, const size_t n) :
 		_row(m),_col(n),_rep(_row*_col),_ptr(&_rep[0])
@@ -279,25 +279,25 @@ namespace LinBox
 				 typename MatrixContainerTrait<Matrix>::Type());
 	}
 
-	template <class Element>
+	template <class _Element>
 	template<class _Matrix, class _Field>
-	BlasMatrix<Element>::BlasMatrix (const _Matrix &A,  const _Field &F) :
+	BlasMatrix< _Element>::BlasMatrix (const _Matrix &A,  const _Field &F) :
 		_row(A.rowdim()), _col(A.coldim()),_rep(_row*_col),_ptr(&_rep[0])
 	{
 		// makePointer();
 		typename _Matrix::template rebind<_Field>()(*this,A,F);
 	}
 
-	template <class Element>
-	BlasMatrix<Element>::BlasMatrix (const BlasMatrix<Element>& A) :
+	template <class _Element>
+	BlasMatrix< _Element>::BlasMatrix (const BlasMatrix< _Element>& A) :
 		_row(A.rowdim()), _col(A.coldim()),_rep(_row*_col),_ptr(&_rep[0])
 	{
 		// makePointer();
 		createBlasMatrix(A);
 	}
 
-	template <class Element>
-	BlasMatrix<Element>::BlasMatrix (const std::vector<Element>& v, size_t m, size_t n) :
+	template <class _Element>
+	BlasMatrix< _Element>::BlasMatrix (const std::vector< _Element>& v, size_t m, size_t n) :
 		_row(m), _col(n),_rep(_row*_col),_ptr(&_rep[0])
 	{
 		linbox_check(v.size() == m*n);
@@ -305,16 +305,16 @@ namespace LinBox
 		createBlasMatrix(v);
 	}
 
-	template <class Element>
-	BlasMatrix<Element>::BlasMatrix (const Element * v, size_t m, size_t n) :
+	template <class _Element>
+	BlasMatrix< _Element>::BlasMatrix (const _Element * v, size_t m, size_t n) :
 		_row(m), _col(n),_rep(_row*_col),_ptr(&_rep[0])
 	{
 		// makePointer();
 		createBlasMatrix(v);
 	}
 
-	template <class Element>
-	BlasMatrix<Element>::~BlasMatrix ()
+	template <class _Element>
+	BlasMatrix< _Element>::~BlasMatrix ()
 	{
 		// if (_ptr)
 		// free(_ptr);
@@ -329,9 +329,9 @@ namespace LinBox
 namespace LinBox
 {
 
-	template <class Element>
+	template <class _Element>
 	template <class Field>
-	std::istream &BlasMatrix<Element>::read (std::istream &file, const Field &F)
+	std::istream &BlasMatrix< _Element>::read (std::istream &file, const Field &F)
 	{
 #if 0
 		Iterator p;
@@ -359,7 +359,7 @@ namespace LinBox
 		// std::cout << m << 'x' << n << ':' << c << std::endl;
 		_row = m; _col = n;
 
-		Element zero;
+	 _Element zero;
 		F.init(zero,0UL);
 		// _ptr.resize(_row * _col, zero);
 		resize(_row,_col);
@@ -388,9 +388,9 @@ namespace LinBox
 		return file;
 	}
 
-	template <class Element>
+	template <class _Element>
 	template <class Field>
-	std::ostream& BlasMatrix<Element>::write (std::ostream &os, const Field &F,
+	std::ostream& BlasMatrix< _Element>::write (std::ostream &os, const Field &F,
 						  bool mapleFormat) const
 	{
 
@@ -426,6 +426,13 @@ namespace LinBox
 
 				for (pe = p->begin (); pe != p->end (); ++pe) {
 					os.width (wid);
+					/*!  @warning
+					 * matrix base does not provide this field(), maybe should?
+					 * _M.field ().write (os, *pe);
+					 * os << *pe;
+					 * fixed by using extra field
+					 */
+
 					F.write (os, *pe);
 					os << " ";
 				}
@@ -459,8 +466,8 @@ namespace LinBox
 		return os;
 	}
 
-	template <class Element>
-	std::ostream& BlasMatrix<Element>::write (std::ostream &os,
+	template <class _Element>
+	std::ostream& BlasMatrix< _Element>::write (std::ostream &os,
 						  bool mapleFormat) const
 	{
 
@@ -522,21 +529,9 @@ namespace LinBox
 		return os;
 	}
 
-	template <class Element>
-	BlasMatrix<Element> BlasMatrix<Element>::transpose(BlasMatrix<Element> & tM) const
-	{
-		size_t r = this->rowdim() ;
-		size_t c = this->coldim() ;
-		linbox_check(tM.coldim() == r );
-		linbox_check(tM.rowdim() == c);
-		for (size_t i = 0 ; i < r ; ++i)
-			for (size_t j = 0 ; j < c ; ++j)
-				tM.setEntry(j,i,this->getEntry(i,j));
-		return tM;
-	}
 
-	template <class Element>
-	BlasMatrix<Element>& BlasMatrix<Element>::operator= (const BlasMatrix<Element>& A)
+	template <class _Element>
+	BlasMatrix< _Element>& BlasMatrix< _Element>::operator= (const BlasMatrix< _Element>& A)
 	{
 
 		_col = A.coldim();
@@ -549,16 +544,16 @@ namespace LinBox
 		return *this;
 	}
 
-	template <class Element>
+	template <class _Element>
 	template<typename _Tp1>
-	struct BlasMatrix<Element>::rebind {
+	struct BlasMatrix< _Element>::rebind {
 		typedef BlasMatrix<typename _Tp1::Element> other;
 
 		void operator() (other & Ap, const Self_t& A, const _Tp1& F)
 		{
 #if 0
-			// typedef typename BlasMatrix<Element>::ConstIndexedIterator ConstIndexedIterator ;
-			// typedef typename BlasMatrix<Element>::ConstIterator ConstIterator ;
+			// typedef typename BlasMatrix< _Element>::ConstIndexedIterator ConstIndexedIterator ;
+			// typedef typename BlasMatrix< _Element>::ConstIterator ConstIterator ;
 			ConstIterator         iter_value = A.Begin();
 			ConstIndexedIterator  iter_index = A.IndexedBegin();
 			typename _Tp1::Element tmp;
@@ -588,32 +583,32 @@ namespace LinBox
 namespace LinBox
 {
 
-	template <class Element>
-	size_t BlasMatrix<Element>::rowdim() const
+	template <class _Element>
+	size_t BlasMatrix< _Element>::rowdim() const
 	{
 		return _row ;
 	}
 
-	template <class Element>
-	size_t BlasMatrix<Element>::coldim() const
+	template <class _Element>
+	size_t BlasMatrix< _Element>::coldim() const
 	{
 		return _col ;
 	}
 
-	template <class Element>
-	size_t  BlasMatrix<Element>::getStride() const
+	template <class _Element>
+	size_t  BlasMatrix< _Element>::getStride() const
 	{
 		return _col;
 	}
 
-	template <class Element>
-	size_t&  BlasMatrix<Element>::getWriteStride()
+	template <class _Element>
+	size_t&  BlasMatrix< _Element>::getWriteStride()
 	{
 		return _col;
 	}
 
-	template <class Element>
-	void BlasMatrix<Element>::resize (size_t m, size_t n, const Element& val )
+	template <class _Element>
+	void BlasMatrix< _Element>::resize (size_t m, size_t n, const _Element& val )
 	{
 #ifndef NDEBUG
 		if (_col != n)
@@ -646,48 +641,48 @@ namespace LinBox
 {
 
 
-	template <class Element>
-	typename BlasMatrix<Element>::pointer
-	BlasMatrix<Element>::getPointer() const
+	template <class _Element>
+	typename BlasMatrix< _Element>::pointer
+	BlasMatrix< _Element>::getPointer() const
 	{
 		return _ptr;
 	}
 
-	template <class Element>
-	typename BlasMatrix<Element>::const_pointer &
-	BlasMatrix<Element>::getConstPointer() const
+	template <class _Element>
+	typename BlasMatrix< _Element>::const_pointer &
+	BlasMatrix< _Element>::getConstPointer() const
 	{
 		return (const_pointer)_ptr;
 	}
 
 
-	template <class Element>
-	typename BlasMatrix<Element>::pointer&
-	BlasMatrix<Element>::getWritePointer()
+	template <class _Element>
+	typename BlasMatrix< _Element>::pointer&
+	BlasMatrix< _Element>::getWritePointer()
 	{
 		return _ptr;
 	}
 
-	template <class Element>
-	void  BlasMatrix<Element>::setEntry (size_t i, size_t j, const Element &a_ij)
+	template <class _Element>
+	void BlasMatrix< _Element>::setEntry (size_t i, size_t j, const _Element &a_ij)
 	{
 		_ptr[i * _col + j] = a_ij;
 	}
 
-	template <class Element>
-	Element & BlasMatrix<Element>::refEntry (size_t i, size_t j)
+	template <class _Element>
+ _Element & BlasMatrix< _Element>::refEntry (size_t i, size_t j)
 	{
 		return _ptr[i * _col + j];
 	}
 
-	template <class Element>
-	const Element & BlasMatrix<Element>::getEntry (size_t i, size_t j) const
+	template <class _Element>
+	const _Element & BlasMatrix< _Element>::getEntry (size_t i, size_t j) const
 	{
 		return _ptr[i * _col + j];
 	}
 
-	template <class Element>
-	Element & BlasMatrix<Element>::getEntry (Element &x, size_t i, size_t j) const
+	template <class _Element>
+ _Element & BlasMatrix< _Element>::getEntry (Element &x, size_t i, size_t j) const
 	{
 		x = _ptr[i * _col + j];
 		return x;
@@ -701,9 +696,21 @@ namespace LinBox
 
 namespace LinBox
 {
+	template <class _Element>
+	BlasMatrix< _Element> BlasMatrix< _Element>::transpose(BlasMatrix< _Element> & tM) const
+	{
+		size_t r = this->rowdim() ;
+		size_t c = this->coldim() ;
+		linbox_check(tM.coldim() == r );
+		linbox_check(tM.rowdim() == c);
+		for (size_t i = 0 ; i < r ; ++i)
+			for (size_t j = 0 ; j < c ; ++j)
+				tM.setEntry(j,i,this->getEntry(i,j));
+		return tM;
+	}
 
-	template <class Element>
-	void BlasMatrix<Element>::transpose()
+	template <class _Element>
+	void BlasMatrix< _Element>::transpose()
 	{
 		size_t r = this->rowdim() ;
 		size_t c = this->coldim() ;
@@ -720,11 +727,11 @@ namespace LinBox
 		}
 	}
 
-	template <class Element>
-	void BlasMatrix<Element>::reverseRows()
+	template <class _Element>
+	void BlasMatrix< _Element>::reverseRows()
 	{
 		size_t r = this->rowdim()/2 ;
-		typedef UnparametricField<Element> Field ;
+		typedef UnparametricField< _Element> Field ;
 		Field F ;
 		VectorDomain<Field> Vd(F);
 		for (size_t i = 0 ; i <  r ; ++i) {
@@ -734,8 +741,8 @@ namespace LinBox
 
 	}
 
-	template <class Element>
-	void BlasMatrix<Element>::reverseCols()
+	template <class _Element>
+	void BlasMatrix< _Element>::reverseCols()
 	{
 		size_t r = this->rowdim() ;
 		size_t c = this->coldim()/2 ;
@@ -748,8 +755,8 @@ namespace LinBox
 		}
 	}
 
-	template <class Element>
-	void BlasMatrix<Element>::reverse()
+	template <class _Element>
+	void BlasMatrix< _Element>::reverse()
 	{
 		size_t r = this->rowdim() ;
 		size_t c = this->coldim() ;
@@ -770,8 +777,8 @@ namespace LinBox
 namespace LinBox
 {
 
-	template <class Element>
-	class BlasMatrix<Element>::ConstRowIterator {
+	template <class _Element>
+	class BlasMatrix< _Element>::ConstRowIterator {
 	public:
 		ConstRowIterator (const typename Rep::const_iterator& p, size_t len, size_t d) :
 			_row (p, p + len), _dis (d)
@@ -853,8 +860,8 @@ namespace LinBox
 		size_t _dis;
 	};
 
-	template <class Element>
-	class BlasMatrix<Element>::RowIterator {
+	template <class _Element>
+	class BlasMatrix< _Element>::RowIterator {
 	public:
 		RowIterator (const typename Rep::iterator& p, size_t len, size_t d) :
 			_row (p, p + len), _dis (d)
@@ -941,8 +948,8 @@ namespace LinBox
 		size_t _dis;
 	};
 
-	template <class Element>
-	class BlasMatrix<Element>::ConstColIterator {
+	template <class _Element>
+	class BlasMatrix< _Element>::ConstColIterator {
 	public:
 		ConstColIterator (typename Rep::const_iterator p, size_t stride, size_t len) :
 			_col (Subiterator<typename Rep::const_iterator> (p, stride),
@@ -1020,8 +1027,8 @@ namespace LinBox
 		size_t _stride;
 	};
 
-	template <class Element>
-	class BlasMatrix<Element>::ColIterator {
+	template <class _Element>
+	class BlasMatrix< _Element>::ColIterator {
 	public:
 		ColIterator (typename Rep::iterator p, size_t stride, size_t len) :
 			_col (Subiterator<typename Rep::iterator> (p, stride),
@@ -1109,8 +1116,8 @@ namespace LinBox
 	 * @ingroup iterators
 	 * @brief NO DOC
 	 */
-	template <class Element>
-	class BlasMatrix<Element>::IndexedIterator {
+	template <class _Element>
+	class BlasMatrix< _Element>::IndexedIterator {
 		size_t _r_index;
 		size_t _c_index;
 		size_t _dim;
@@ -1197,13 +1204,13 @@ namespace LinBox
 			return tmp;
 		}
 
-		Element &operator * () const
+	 _Element &operator * () const
 		{
 			return *(_begin + (_r_index * _dim + _c_index));
 		}
 
 
-		Element* operator -> () const
+	 _Element* operator -> () const
 		{
 			return _begin + (_r_index * _dim + _c_index);
 		}
@@ -1219,7 +1226,7 @@ namespace LinBox
 			return _c_index;
 		}
 
-		const Element &value () const
+		const _Element &value () const
 		{
 			return *(_begin + (_r_index * _dim + _c_index));
 		}
@@ -1227,12 +1234,12 @@ namespace LinBox
 
 	};
 
-	template <class Element>
-	class BlasMatrix<Element>::ConstIndexedIterator {
+	template <class _Element>
+	class BlasMatrix< _Element>::ConstIndexedIterator {
 		size_t _r_index;
 		size_t _c_index;
 		size_t _dim;
-		typedef Element value_type;
+		typedef _Element value_type;
 		typename Rep::const_iterator _begin;
 
 	public:
@@ -1317,12 +1324,12 @@ namespace LinBox
 			return tmp;
 		}
 
-		const Element &operator * () const
+		const _Element &operator * () const
 		{
 			return *(_begin + (_r_index * _dim + _c_index));
 		}
 
-		const Element *operator -> () const
+		const _Element *operator -> () const
 		{
 			return _begin + (_r_index * _dim + _c_index);
 		}
@@ -1337,7 +1344,7 @@ namespace LinBox
 			return _c_index;
 		}
 
-		const Element &value() const
+		const _Element &value() const
 		{
 			return *(_begin + (_r_index * _dim + _c_index));
 		}
@@ -1346,133 +1353,132 @@ namespace LinBox
 	/*   */
 
 	// Entry access  view.  Size m*n vector in C (row major) order.
-	template <class Element>
-	typename BlasMatrix<Element>::Iterator BlasMatrix<Element>::Begin ()
+	template <class _Element>
+	typename BlasMatrix< _Element>::Iterator BlasMatrix< _Element>::Begin ()
 	{
 		return _rep.begin ();
 	}
 
-	template <class Element>
-	typename BlasMatrix<Element>::Iterator BlasMatrix<Element>::End ()
+	template <class _Element>
+	typename BlasMatrix< _Element>::Iterator BlasMatrix< _Element>::End ()
 	{
 		return _rep.end ();
 	}
 
-	template <class Element>
-	typename BlasMatrix<Element>::ConstIterator BlasMatrix<Element>::Begin () const
+	template <class _Element>
+	typename BlasMatrix< _Element>::ConstIterator BlasMatrix< _Element>::Begin () const
 	{
 		return _rep.begin ();
 	}
 
-	template <class Element>
-	typename BlasMatrix<Element>::ConstIterator BlasMatrix<Element>::End () const
+	template <class _Element>
+	typename BlasMatrix< _Element>::ConstIterator BlasMatrix< _Element>::End () const
 	{
 		return _rep.end ();
 	}
 
 	/*   Indexed  */
 
-	template <class Element>
-	typename BlasMatrix<Element>::IndexedIterator BlasMatrix<Element>::IndexedBegin ()
+	template <class _Element>
+	typename BlasMatrix< _Element>::IndexedIterator BlasMatrix< _Element>::IndexedBegin ()
 	{
 		return IndexedIterator (coldim (), 0, 0, _rep.begin ());
 	}
 
-	template <class Element>
-	typename BlasMatrix<Element>::IndexedIterator BlasMatrix<Element>::IndexedEnd ()
+	template <class _Element>
+	typename BlasMatrix< _Element>::IndexedIterator BlasMatrix< _Element>::IndexedEnd ()
 	{
 		return IndexedIterator (coldim (), rowdim (), 0, _rep.begin ());
 	}
 
-	template <class Element>
-	typename BlasMatrix<Element>::ConstIndexedIterator BlasMatrix<Element>::IndexedBegin () const
+	template <class _Element>
+	typename BlasMatrix< _Element>::ConstIndexedIterator BlasMatrix< _Element>::IndexedBegin () const
 	{
 		return ConstIndexedIterator (coldim (), 0, 0, _rep.begin ());
 	}
 
-	template <class Element>
-	typename BlasMatrix<Element>::ConstIndexedIterator BlasMatrix<Element>::IndexedEnd () const
+	template <class _Element>
+	typename BlasMatrix< _Element>::ConstIndexedIterator BlasMatrix< _Element>::IndexedEnd () const
 	{
 		return ConstIndexedIterator (coldim (), rowdim (), 0, _rep.begin ());
 	}
 
 	/*  Row  */
 
-	template <class Element>
-	typename BlasMatrix<Element>::RowIterator BlasMatrix<Element>::rowBegin ()
+	template <class _Element>
+	typename BlasMatrix< _Element>::RowIterator BlasMatrix< _Element>::rowBegin ()
 	{
 		return RowIterator (_rep.begin (), _col, _col);
 	}
 
-	template <class Element>
-	typename BlasMatrix<Element>::RowIterator BlasMatrix<Element>::rowEnd ()
+	template <class _Element>
+	typename BlasMatrix< _Element>::RowIterator BlasMatrix< _Element>::rowEnd ()
 	{
 		return RowIterator (_rep.end (), _col, _col);
 	}
 
-	template <class Element>
-	typename BlasMatrix<Element>::ConstRowIterator BlasMatrix<Element>::rowBegin () const
+	template <class _Element>
+	typename BlasMatrix< _Element>::ConstRowIterator BlasMatrix< _Element>::rowBegin () const
 	{
 		return ConstRowIterator (_rep.begin (), _col, _col);
 	}
 
-	template <class Element>
-	typename BlasMatrix<Element>::ConstRowIterator BlasMatrix<Element>::rowEnd () const
+	template <class _Element>
+	typename BlasMatrix< _Element>::ConstRowIterator BlasMatrix< _Element>::rowEnd () const
 	{
 		return ConstRowIterator (_rep.end (), _col, _col);
 	}
 
 	/*  Col */
 
-	template <class Element>
-	typename BlasMatrix<Element>::ColIterator BlasMatrix<Element>::colBegin ()
+	template <class _Element>
+	typename BlasMatrix< _Element>::ColIterator BlasMatrix< _Element>::colBegin ()
 	{
-		return  typename BlasMatrix<Element>::ColIterator (_rep.begin (), _col, _row);
+		return  typename BlasMatrix< _Element>::ColIterator (_rep.begin (), _col, _row);
 	}
 
-	template <class Element>
-	typename BlasMatrix<Element>::ColIterator BlasMatrix<Element>::colEnd ()
+	template <class _Element>
+	typename BlasMatrix< _Element>::ColIterator BlasMatrix< _Element>::colEnd ()
 	{
-		return  typename BlasMatrix<Element>::ColIterator (_rep.begin ()+_col, _col, _row);
+		return  typename BlasMatrix< _Element>::ColIterator (_rep.begin ()+_col, _col, _row);
 	}
 
-	template <class Element>
-	typename BlasMatrix<Element>::ConstColIterator BlasMatrix<Element>::colBegin () const
+	template <class _Element>
+	typename BlasMatrix< _Element>::ConstColIterator BlasMatrix< _Element>::colBegin () const
 	{
-		return  typename BlasMatrix<Element>::ConstColIterator (_rep.begin (), _col, _row);
+		return  typename BlasMatrix< _Element>::ConstColIterator (_rep.begin (), _col, _row);
 	}
 
-	template <class Element>
-	typename BlasMatrix<Element>::ConstColIterator BlasMatrix<Element>::colEnd () const
+	template <class _Element>
+	typename BlasMatrix< _Element>::ConstColIterator BlasMatrix< _Element>::colEnd () const
 	{
-		return  typename BlasMatrix<Element>::ConstColIterator (_rep.begin ()+_col, _col, _row);
+		return  typename BlasMatrix< _Element>::ConstColIterator (_rep.begin ()+_col, _col, _row);
 	}
 
 	/*  operators */
-	template <class Element>
-	typename BlasMatrix<Element>::Row BlasMatrix<Element>::operator[] (size_t i)
+	template <class _Element>
+	typename BlasMatrix< _Element>::Row BlasMatrix< _Element>::operator[] (size_t i)
 	{
-		return Row (_rep.begin () + i * _col, _rep.begin () + (i+1) * _col );
+		return Row (_rep.begin () + i * _col, _rep.begin () + (i * _col +_col));
 	}
 
-	template <class Element>
-	typename BlasMatrix<Element>::ConstRow BlasMatrix<Element>::operator[] (size_t i) const
+	template <class _Element>
+	typename BlasMatrix< _Element>::ConstRow BlasMatrix< _Element>::operator[] (size_t i) const
 	{
-		return Row (_rep.begin () + i * _col, _rep.begin () + (i+1) * _col );
+		return Row (_rep.begin () + i * _col, _rep.begin () + ( i * _col + _col));
 	}
-
 
 } // LinBox
 
-///////////////////
+//////////////////
 //     MISC     //
-///////////////////
+//////////////////
 
 namespace LinBox
 {
-	template <class Element>
+	template <class _Element>
 	template <class Vector>
-	Vector &BlasMatrix<Element>::columnDensity (Vector &v) const
+	Vector &BlasMatrix< _Element>::columnDensity (Vector &v) const
 	{
 		std::fill (v.begin (), v.end (), _row);
 		return v;
@@ -1480,5 +1486,3 @@ namespace LinBox
 
 } // LinBox
 #endif // __LINBOX_blas_matrix_INL
-
-
