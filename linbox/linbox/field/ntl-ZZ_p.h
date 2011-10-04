@@ -27,12 +27,12 @@
 
 #include <sys/time.h>
 #include "linbox/linbox-config.h"
+#include <NTL/ZZ_p.h>
 
 #include "linbox/field/unparametric.h"
 #include "linbox/randiter/unparametric.h"
 #include "linbox/field/field-traits.h"
 
-#include <NTL/ZZ_p.h>
 
 
 // Namespace in which all LinBox library code resides

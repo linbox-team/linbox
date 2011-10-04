@@ -126,7 +126,6 @@ namespace LinBox
 
 		      unsigned long AccBound(const Element&r) const
 		      {
-			      Element one, zero ; init(one,1UL) ; init(zero,0UL);
 			      double max_double = (double) (1ULL<<FLT_MANT_DIG) - modulus ;
 			      double p = modulus-1 ;
 			      if (areEqual(zero,r))

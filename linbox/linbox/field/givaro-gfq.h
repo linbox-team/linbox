@@ -61,7 +61,9 @@ namespace LinBox
 
 	template<>
 	inline integer& FieldTraits<GivaroGfq>::maxModulus( integer& i )
-	{ return i = integer( 32749 ); } // prevprime( 2^15 )
+	{
+		return i = integer( 32749 );  // prevprime( 2^15 )
+	}
 
 	template<>
 	inline bool FieldTraits<GivaroGfq>::goodModulus( const integer& i )
@@ -74,7 +76,9 @@ namespace LinBox
 
 	template<>
 	inline integer& FieldTraits<GivaroGfq>::maxExponent( integer& i )
-	{ return i = 20; } // Cardinality must be <= 2^20
+	{
+		return i = 20;  // Cardinality must be <= 2^20
+	}
 
 
 	/** Wrapper of Givaro's GFqDom<int32_t>  class.
@@ -86,6 +90,9 @@ namespace LinBox
 
 	public:
 
+		using Givaro::GFqDom<int32_t>::one ;
+		using Givaro::GFqDom<int32_t>::zero;
+		Element mone ;
 		/** Element type.
 		 *  This type is inherited from the Givaro class GFqDom<int32_t>
 		 */
@@ -100,7 +107,11 @@ namespace LinBox
 		*/
 		GivaroGfq() :
 			::Givaro::GFqDom<int32_t>()
-		{ }
+		{
+			// Givaro::GFqDom<int32_t>::init(one,1);
+			// Givaro::GFqDom<int32_t>::init(mone,-1);
+			// Givaro::GFqDom<int32_t>::init(zero,0);
+		}
 
 		/** Constructor from an integer
 		 *  this constructor use the ZpzDom<TAG> constructor
@@ -111,9 +122,15 @@ namespace LinBox
 			//enforce that the cardinality must be <2^16, for givaro-gfq
 			int32_t pl=p;
 			for(int32_t i=1;i<k;++i) pl*=(int32_t)p;
-			if(!FieldTraits<GivaroGfq>::goodModulus(p))
+			if(!FieldTraits<GivaroGfq>::goodModulus(p)) {
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus be between 2 and 2^15 and prime");
-			else if(pl>(1<<20)) throw PreconditionFailed(__func__,__FILE__,__LINE__,"cardinality must be < 2^20");
+			}
+			else if(pl>(1<<20))  {
+				throw PreconditionFailed(__func__,__FILE__,__LINE__,"cardinality must be < 2^20");
+			}
+			// Givaro::GFqDom<int32_t>::init(one,1);
+			// Givaro::GFqDom<int32_t>::init(mone,-1);
+			// Givaro::GFqDom<int32_t>::init(zero,0);
 
 		}
 
@@ -124,6 +141,11 @@ namespace LinBox
 		GivaroGfq(const integer& p, const integer& k, const std::vector<integer>& modPoly) :
 			::Givaro::GFqDom<int32_t>(static_cast<UTT>(int32_t(p)), static_cast<UTT>(int32_t(k)))
 		{
+			// Givaro::GFqDom<int32_t>::init(one,1L);
+			// Givaro::GFqDom<int32_t>::init(mone,-1L);
+			// Givaro::GFqDom<int32_t>::init(zero,0L);
+
+
 
 			//enforce that the cardinality must be <2^16, for givaro-gfq
 			int32_t pl=p;
@@ -183,17 +205,25 @@ namespace LinBox
 		 * @return integer representing characteristic of the domain.
 		 */
 		integer& characteristic(integer& c) const
-		{return c=integer(static_cast<int32_t>(::Givaro::GFqDom<int32_t>::characteristic()));}
+		{
+			return c=integer(static_cast<int32_t>(::Givaro::GFqDom<int32_t>::characteristic()));
+		}
 
 		int32_t characteristic() const
-		{return static_cast<int32_t>(::Givaro::GFqDom<int32_t>::characteristic());}
+		{
+			return static_cast<int32_t>(::Givaro::GFqDom<int32_t>::characteristic());
+		}
 
 #if (GIVARO_VERSION<30403)
 		unsigned long characteristic(unsigned long & c) const
-		{return c = static_cast<int32_t>(::Givaro::GFqDom<int32_t>::characteristic());}
+		{
+			return c = static_cast<int32_t>(::Givaro::GFqDom<int32_t>::characteristic());
+		}
 #else
 		unsigned long characteristic(unsigned long & c) const
-		{return Givaro::GFqDom<int32_t>::characteristic(c);}
+		{
+			return Givaro::GFqDom<int32_t>::characteristic(c);
+		}
 #endif
 
 		/** Cardinality.
@@ -204,11 +234,15 @@ namespace LinBox
 		 * @return integer representing cardinality of the domain
 		 */
 		integer& cardinality(integer& c) const
-		{ return c=integer(static_cast<int32_t>(::Givaro::GFqDom<int32_t>::size()));}
+		{
+			return c=integer(static_cast<int32_t>(::Givaro::GFqDom<int32_t>::size()));
+		}
 
 
 		integer cardinality() const
-		{ return integer(static_cast<int32_t>(::Givaro::GFqDom<int32_t>::cardinality()));}
+		{
+			return integer(static_cast<int32_t>(::Givaro::GFqDom<int32_t>::cardinality()));
+		}
 
 
 		/** Initialization of field base Element from an integer.
@@ -222,15 +256,21 @@ namespace LinBox
 		 * @param y integer.
 		 */
 		Element& init(Element& x , const integer& y = 0) const
-		{ return ::Givaro::GFqDom<int32_t>::init( x, int32_t(y % (integer) _q));}
+		{
+			return ::Givaro::GFqDom<int32_t>::init( x, int32_t(y % (integer) _q));
+		}
 
 		// TO BE OPTIMIZED
 		Element& init(Element& x , const float y) const
-		{ return ::Givaro::GFqDom<int32_t>::init( x, (double)y);}
+		{
+			return ::Givaro::GFqDom<int32_t>::init( x, (double)y);
+		}
 
 		template<class YYY>
 		Element& init(Element& x , const YYY& y) const
-		{ return ::Givaro::GFqDom<int32_t>::init( x, y);}
+		{
+			return ::Givaro::GFqDom<int32_t>::init( x, y);
+		}
 
 		/** Conversion of field base Element to an integer.
 		 * This function assumes the output field base Element x has already been
