@@ -107,13 +107,14 @@ namespace LinBox
 		typedef GivaroExtension<GivaroField<BaseField> > Self_t;
 		typedef ::Givaro::Extension<GivaroField<BaseField> >       Extension_t;
 	public:
-		using Extension_t::zero;
-		using Extension_t::one;
-
 		/** Element type.
 		 *  This type is inherited from the Givaro class Extension
 		 */
 		typedef typename ::Givaro::Extension<GivaroField<BaseField> >::Element Element;
+
+		using Extension_t::zero;
+		using Extension_t::one;
+		Element mone ;
 
 		/** RandIter type.
 		 *  This type is inherited from the Givaro class GFqDom<TAG>

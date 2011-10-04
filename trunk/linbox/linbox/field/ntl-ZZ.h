@@ -60,6 +60,7 @@ namespace LinBox
 		typedef NTL_ZZRandIter RandIter;
 
 		typedef NTL::ZZ Element;
+		Element zero,one,mone;
 
 		NTL_ZZ(int p = 0, int exp = 1)
 		{
