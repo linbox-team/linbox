@@ -27,11 +27,14 @@
 #include <ctime>
 #include <vector>
 
+// #include <fflas-ffpack/field/unparametric.h>
+
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
 	// forward declarations
 	template <class K> class UnparametricField;
+	// using FFPACK::UnparametricField ;
 
 	/** Unparameterized random field element generator template.
 	 * Implements LinBox random field element generator common object interface

@@ -56,28 +56,35 @@ namespace LinBox
 	  \ingroup field
 	  */
 
-	class PIR_ntl_ZZ_p : public UnparametricField<NTL::ZZ_p> {
+	class PIR_ntl_ZZ_p :  public NTL_ZZ_p {
+		//public UnparametricField<NTL::ZZ_p> {
 
+		// typedef UnparametricField<NTL::ZZ_p> Father_t ;
+		typedef NTL_ZZ_p Father_t ;
 	public:
-		typedef NTL::ZZ_p Element;
+		typedef Father_t::Element Element;
 
-		template <class Element2>
-		PIR_ntl_ZZ_p(const Element2& d) {
-
-			NTL::ZZ_p::init (NTL::to_ZZ(d));
+		template <class Int_t>
+		PIR_ntl_ZZ_p(const Int_t& d) :
+			Father_t(d)
+		{
+			// NTL::ZZ_p::init (NTL::to_ZZ(d));
 		}
 
-		PIR_ntl_ZZ_p (const NTL::ZZ& d) {
-
-			NTL::ZZ_p::init(d);
-
+		PIR_ntl_ZZ_p (const NTL::ZZ& d) :
+		Father_t(d)
+		{
+			// NTL::ZZ_p::init(d);
 		}
 
-		PIR_ntl_ZZ_p (const integer& d, int exp = 1 ) {
+		PIR_ntl_ZZ_p (const integer& d, int e = 1 )  :
+			Father_t(d,e)
+		{
 
-			if(exp != 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
+			// if(e != 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
+			linbox_check(e == 1);
 
-			NTL::ZZ_p::init (NTL::to_ZZ(((std::string)d). c_str()));
+			// NTL::ZZ_p::init (NTL::to_ZZ(((std::string)d). c_str()));
 
 		}
 

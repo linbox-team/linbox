@@ -69,6 +69,9 @@ namespace LinBox
 	template <class K>
 	class UnparametricField;
 
+	// using FFPACK::UnparametricField ;
+	using FFPACK::UnparametricOperations;
+
 	template <class K>
 	struct ClassifyRing<UnparametricField<K> > {
 		typedef RingCategories::GenericTag categoryTag;
