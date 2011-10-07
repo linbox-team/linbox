@@ -22,6 +22,8 @@
 #ifndef __LINBOX_field_ntl_rr_H
 #define __LINBOX_field_ntl_rr_H
 
+#include "linbox/linbox-config.h"
+
 #ifndef __LINBOX_HAVE_NTL
 #error "you need NTL here"
 #endif
@@ -30,7 +32,6 @@
 #include <NTL/tools.h>
 #include <NTL/RR.h>
 
-#include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 
 #include "linbox/field/unparametric.h"
