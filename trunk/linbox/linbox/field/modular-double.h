@@ -142,7 +142,7 @@ namespace LinBox
 		       */
 		      unsigned long AccBound(const Element r) const
 		      {
-			      Element One, Zero ; init(One,1UL) ; init(Zero,0UL);
+			      // Element One, Zero ; init(One,1UL) ; init(Zero,0UL);
 			      Element max_Element = (Element) (1ULL<<DBL_MANT_DIG) - modulus ; /* other wise 2^52+(2^52-1) */
 			      Element p = modulus-1 ;
 			      if (areEqual(zero,r))
@@ -178,6 +178,7 @@ namespace LinBox
 			_y(faxpy._y), _bound(faxpy._bound)
 		{}
 
+#if 0
 		FieldAXPY<Modular<double> > &operator = (const FieldAXPY &faxpy)
 		{
 			_F = faxpy._F;
@@ -186,6 +187,7 @@ namespace LinBox
 			_bound= faxpy._bound;
 			return *this;
 		}
+#endif
 
 		 Element& mulacc (const Element &a, const Element &x)
 		{
