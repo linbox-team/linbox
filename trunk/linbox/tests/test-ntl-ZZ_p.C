@@ -60,19 +60,21 @@ int main (int argc, char **argv)
 
         parseArguments (argc, argv, args);
 
-	commentator.start("UnparametricField<NTL::ZZ_p> field test suite", "UnparametricField<NTL::ZZ_p>");
+	commentator.start("NTL_ZZ_p field test suite", "NTL_ZZ_p");
 	bool pass = true;
 
 	NTL::ZZ_p::init(NTL::to_ZZ(q));
-	UnparametricField<NTL::ZZ_p> F;
+	// UnparametricField<NTL::ZZ_p> F;
+	NTL_ZZ_p F(q); // XXX is there a q ?
+
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
-	if (!runFieldTests (F, "UnparametricField<NTL::ZZ_p>", iterations, n, false)) pass = false;
+	if (!runFieldTests (F, "NTL_ZZ_p", iterations, n, false)) pass = false;
 
 #if 0
-	FieldArchetype K(new UnparametricField<NTL::ZZ_p>(101));
+	FieldArchetype K(new NTL_ZZ_p(101));
 
 	if (!testField<FieldArchetype> (K, "Testing archetype with envelope of UnField<NTL::ZZ_p> field"))
 		pass = false;
@@ -82,9 +84,10 @@ int main (int argc, char **argv)
 	//
         commentator.start ("\t--Testing init/convert match");
         bool part_pass = true;
-	UnparametricField<NTL::ZZ_p> G;
+	// UnparametricField<NTL::ZZ_p> G;
+	NTL_ZZ_p G(q);
 	NTL::ZZ_p::init(NTL::to_ZZ("1234567890123456789012345678901234568123"));
-	UnparametricField<NTL::ZZ_p>::Element a;
+	NTL_ZZ_p::Element a;
 	LinBox::integer b, c("123456789012345678901234567890");
 	// LinBox::integer b, c("34");
 	G.init(a, c );
@@ -96,6 +99,6 @@ int main (int argc, char **argv)
         commentator.stop(MSG_STATUS (part_pass));
         pass &= part_pass;
 
-	commentator.stop("UnparametricField<NTL::ZZ_p> field test suite");
+	commentator.stop("NTL_ZZ_p field test suite");
 	return pass ? 0 : -1;
 }

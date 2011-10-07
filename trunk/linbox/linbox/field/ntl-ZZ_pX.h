@@ -2,6 +2,7 @@
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* Copyright (C) 2005 LinBox
  * written by Daniel Roche, August 2005
+ * Copyright (C) 2011 LinBox
  *
  *
  *
@@ -21,18 +22,51 @@
  * Boston, MA 02110-1301, USA.
  */
 
+/*! @file field/ntl-ZZ_p.h
+ * @ingroup field
+ * @ingroup NTL
+ * @brief NO DOC
+ */
 
 #ifndef __LINBOX_field_ntl_zz_px_H
 #define __LINBOX_field_ntl_zz_px_H
 
-#include "linbox/field/unparametric.h"
-#include "linbox/field/ntl-ZZ_p.h"
-#include "linbox/integer.h"
+#ifndef __LINBOX_HAVE_NTL
+#error "you need NTL here"
+#endif
+
 #include <vector>
 #include <NTL/ZZ_pX.h>
 
+#include "linbox/linbox-config.h"
+#include "linbox/util/debug.h"
+
+#include "linbox/field/unparametric.h"
+#include "linbox/field/ntl-ZZ_p.h"
+#include "linbox/integer.h"
+
+
+// namespace in which all LinBox code resides
 namespace LinBox
-{ // namespace in which all LinBox code resides
+{
+	class NTL_ZZ_pX_Initialiser {
+	public :
+		NTL_ZZ_pX_Initialiser( const Integer & q, size_t e = 1) {
+			// linbox_check(e == 1);
+			if ( q > 0 )
+				NTL::ZZ_p::init(NTL::to_ZZ((std::string(q)).data())); // it's an error if q not prime, e not 1
+		}
+
+		// template <class ElementInt>
+		// NTL_ZZ_p_Initialiser(const ElementInt& d) {
+		// NTL::ZZ_p::init (NTL::to_ZZ(d));
+		// }
+
+		// NTL_ZZ_p_Initialiser (const NTL::ZZ& d) {
+		// NTL::ZZ_p::init(d);
+		// }
+
+	};
 
 	/** Ring (in fact, a unique factorization domain) of polynomial with
 	 * coefficients in class NTL_ZZ_p (integers mod a wordsize prime).
@@ -40,22 +74,33 @@ namespace LinBox
 	 * Coeff (type), CoeffField (type), getCoeffField, setCoeff, getCoeff,
 	 * leadCoeff, deg
 	 */
-	class NTL_ZZ_pX :public UnparametricField<NTL::ZZ_pX> {
+	class NTL_ZZ_pX : public NTL_ZZ_pX_Initialiser, public FFPACK::UnparametricOperations<NTL::ZZ_pX> {
 	public:
+		typedef NTL::ZZ_pX Element ;
+		typedef FFPACK::UnparametricOperations<Element> Father_t ;
+		typedef UnparametricRandIter<Element> RandIter;
+
+		const Element zero,one,mone ;
+
+
 		typedef NTL_ZZ_p CoeffField;
 		typedef NTL::ZZ_p Coeff;
-		typedef NTL::ZZ_pX Element;
+		// typedef NTL::ZZ_pX Element;
 
 		/** Standard LinBox field constructor.  The paramters here
 		 * (prime, exponent) are only used to initialize the coefficient field.
 		 */
 		NTL_ZZ_pX( const integer& p, size_t e = 1 ) :
-			UnparametricField<NTL::ZZ_pX>(p, e), _CField(p,e)
+			NTL_ZZ_pX_Initialiser(p,e),Father_t ()
+			, zero( NTL::to_ZZ_pX(0)),one( NTL::to_ZZ_pX(1)),mone(-one)
+			, _CField(p,e)
 		{}
 
 		/** Constructor from a coefficient field */
 		NTL_ZZ_pX( CoeffField cf ) :
-			_CField(cf)
+			NTL_ZZ_pX_Initialiser(cf.cardinality()),Father_t ()
+			,zero( NTL::to_ZZ_pX(0)),one( NTL::to_ZZ_pX(1)),mone(-one)
+			,_CField(cf)
 		{}
 
 		/** Initialize p to the constant y (p = y*x^0) */
@@ -130,8 +175,7 @@ namespace LinBox
 		 * of the vector corresponds to the leading coefficients.  That is,
 		 * v[i] = coefficient of x^i.
 		 */
-		std::vector<Coeff>& convert( std::vector<Coeff>& v, const Element& p )
-		const
+		std::vector<Coeff>& convert( std::vector<Coeff>& v, const Element& p ) const
 		{
 			v.clear();
 			for( long i = 0; i <= (long)this->deg(p); ++i )
@@ -155,7 +199,9 @@ namespace LinBox
 
 		/** The LinBox field for coefficients */
 		const CoeffField& getCoeffField() const
-		{ return _CField; }
+		{
+			return _CField;
+		}
 
 		/** Get the degree of a polynomial
 		 * Unlike NTL, deg(0)=0.
@@ -235,16 +281,33 @@ namespace LinBox
 		/** Get characteristic of the field - same as characteristic of
 		 * coefficient field. */
 		integer& characteristic( integer& c ) const
-		{ return _CField.characteristic(c); }
+		{
+			return _CField.characteristic(c);
+		}
 
 		/** Get the cardinality of the field.  Since the cardinality is
 		 * infinite, by convention we return -1.
 		 */
 		integer& cardinality( integer& c ) const
-		{ return c = static_cast<integer>(-1); }
+		{
+			return c = static_cast<integer>(-1);
+		}
 
 		static inline integer getMaxModulus()
-		{ return CoeffField::getMaxModulus(); }
+		{
+			return CoeffField::getMaxModulus();
+		}
+
+		/** Write a description of the field */
+		// Oustide of class definition so write(ostream&,const Element&) from
+		// UnparametricField still works.
+		std::ostream& write( std::ostream& os ) const
+		{
+			return os << "Polynomial ring using NTL::ZZ_pX";
+		}
+
+		std::ostream &write (std::ostream &os, const Element &x) const { return FFPACK::UnparametricOperations<Element>::write(os,x); }
+
 
 	private:
 		/** Conversion to scalar types doesn't make sense and should not be
@@ -254,19 +317,12 @@ namespace LinBox
 		 */
 		template< class ANY >
 		ANY& convert( ANY& x, const Element& y ) const
-		{ return x; }
+		{
+			return x;
+		}
 
 		CoeffField _CField;
 	}; // end of class NTL_ZZ_pX
-
-	/** Write a description of the field */
-	// Oustide of class definition so write(ostream&,const Element&) from
-	// UnparametricField still works.
-	template<>
-	std::ostream& UnparametricField<NTL::ZZ_pX>::write( std::ostream& os ) const
-	{
-		return os << "Polynomial ring using NTL::ZZ_pX";
-	}
 
 
 } // end of namespace LinBox

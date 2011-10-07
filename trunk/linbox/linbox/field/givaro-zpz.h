@@ -87,6 +87,7 @@ namespace LinBox
 		 *  This type is inherited from the Givaro class ::Givaro::ZpzDom<TAG>
 		 */
 		typedef typename ::Givaro::ZpzDom<TAG>::Rep Element;
+		Element zero,one,mone;
 
 		/** RandIter type
 		 *  This type is inherited from the Givaro class ::Givaro::ZpzDom<TAG>

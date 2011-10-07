@@ -20,16 +20,28 @@
  * Boston, MA 02110-1301, USA.
  */
 
+/*! @file field/ntl-ZZ_pE.h
+ * @ingroup field
+ * @ingroup NTL
+ * @brief NO DOC
+ */
+
 #ifndef __LINBOX_field_ntl_zz_pe_H
 #define __LINBOX_field_ntl_zz_pe_H
 
-#include "linbox/field/unparametric.h"
-#include "linbox/randiter/unparametric.h"
+#ifndef __LINBOX_HAVE_NTL
+#error "you need NTL here"
+#endif
+
+#include <time.h>
+#include "linbox/linbox-config.h"
+#include "linbox/util/debug.h"
 #include <NTL/ZZ_pXFactoring.h>
 #include <NTL/ZZ_pE.h>
 #include <NTL/ZZ.h>
-#include <time.h>
-#include "linbox/linbox-config.h"
+
+#include "linbox/field/unparametric.h"
+#include "linbox/randiter/unparametric.h"
 #include "linbox/field/field-traits.h"
 
 #ifdef __LINBOX_XMLENABLED
@@ -44,115 +56,22 @@
 
 #endif //__LINBOX_XMLENABLED
 
-namespace LinBox
-{
 
-	template <class Ring>
-	struct ClassifyRing;
-
-	template<>
-	struct ClassifyRing<UnparametricRandIter<NTL::ZZ_pE> > {
-		typedef RingCategories::ModularTag categoryTag;
-	};
-
-	template<>
-	class UnparametricRandIter<NTL::ZZ_pE>
-	{
-	public:
-		typedef NTL::ZZ_pE Element;
-		UnparametricRandIter<NTL::ZZ_pE>(const UnparametricField<NTL::ZZ_pE>& F =UnparametricField<NTL::ZZ_pE>(),
-						 const size_t& size = 0,
-						 const size_t& seed = 0
-						) :
-			_size(size), _seed(seed)
-		{
-			if(_seed == 0)
-				NTL::SetSeed(NTL::to_ZZ(time(0)));
-			else
-				NTL::SetSeed(NTL::to_ZZ(_seed));
-		}
-
-#ifdef __LINBOX_XMLENABLED
-		UnparametricRandIter(LinBox::Reader &R)
-		{
-			if(!R.expectTagName("randiter")) return;
-			if(!R.expectAttributeNum("seed", _seed) || !R.expectAttributeNum("size", _size)) return;
-
-			if(_seed == 0) _seed = time(NULL);
-
-			NTL::SetSeed(NTL::to_ZZ(_seed));
-		}
-#endif
-
-
-		UnparametricRandIter<NTL::ZZ_pE>(const UnparametricRandIter<NTL::ZZ_pE>& R) :
-			_size(R._size), _seed(R._seed)
-
-		{
-			if(_seed == 0)
-				NTL::SetSeed(NTL::to_ZZ(time(0)));
-			else
-				NTL::SetSeed(NTL::to_ZZ(_seed));
-		}
-		Element& random (Element& x) const
-		{
-			NTL::random(x);
-			return x;
-		}
-
-	protected:
-		size_t _size;
-		size_t _seed;
-	};
-}
 
 namespace LinBox
 {
 
-	/*
-	 * Define a parameterized class to handle easily UnparametricField<NTL::ZZ_pE> field
-	 */
-	class NTL_ZZ_pE : public UnparametricField<NTL::ZZ_pE> {
-	public:
-		NTL_ZZ_pE (const integer &p, const integer &k)
-		{
-
-			NTL::ZZ_p::init(NTL::to_ZZ(std::string(p).data()));
-			NTL::ZZ_pX irredPoly = NTL::BuildIrred_ZZ_pX ((long) k);
-			NTL::ZZ_pE::init(irredPoly);
-		}
-
-	}; // end o class NTL_ZZ_pE
-
-
-
-
-
 	template<>
-	//    NTL::ZZ_pE& UnparametricField<NTL::ZZ_pE>::init (NTL::ZZ_pE &x, const integer &y) const
 	NTL::ZZ_pE& Caster(NTL::ZZ_pE &x, const integer &y)
 	{
 		x=NTL::to_ZZ_pE(static_cast<long>(y));
 		return x;
 	}
 	template<>
-	//    NTL::ZZ_pE& UnparametricField<NTL::ZZ_pE>::init (NTL::ZZ_pE &x, const double &y) const
 	NTL::ZZ_pE& Caster(NTL::ZZ_pE &x, const double &y)
 	{
 		x=NTL::to_ZZ_pE(static_cast<long>(y));
 		return x;
-	}
-
-	template<>
-	bool UnparametricField<NTL::ZZ_pE>::isZero (const NTL::ZZ_pE& a) const
-	{
-		return NTL::IsZero(a);
-	}
-
-	template<>
-	bool UnparametricField<NTL::ZZ_pE>::isOne (const NTL::ZZ_pE& a) const
-	{
-		return NTL::IsOne(a);
 	}
 
 	// Rich Seagraves, 7-15-03
@@ -160,8 +79,7 @@ namespace LinBox
 	// they convert a ZZpE into a padic number, ie a0 + a1x + a2x^2 +... ->
 	// a0 + a1*p + a2*p^2 + ...
 	//
-	template<>
-	//    integer& UnparametricField<NTL::ZZ_pE>::convert(integer& c, const NTL::ZZ_pE& e) const
+
 	integer& Caster(integer& c, const NTL::ZZ_pE& e)
 	{
 		NTL::ZZ_pX poly = rep(e);
@@ -177,36 +95,94 @@ namespace LinBox
 
 		return c;
 	}
+	class NTL_ZZ_pE_Initialiser {
+	public :
+		NTL_ZZ_pE_Initialiser( const Integer & p, size_t k ) {
+			// linbox_check(e == 1);
+			// if ( q > 0 )
+			// NTL::ZZ_p::init(NTL::to_ZZ((std::string(q)).data())); // it's an error if q not prime, e not 1
+			NTL::ZZ_p::init(NTL::to_ZZ(std::string(p).data()));
+			NTL::ZZ_pX irredPoly = NTL::BuildIrred_ZZ_pX ((long) k);
+			NTL::ZZ_pE::init(irredPoly);
 
-	template<>
-	integer& UnparametricField<NTL::ZZ_pE>::characteristic (integer &c) const
+		}
+
+		// template <class ElementInt>
+		// NTL_ZZ_pE_Initialiser(const ElementInt& d) {
+			// NTL::ZZ_p::init (NTL::to_ZZ(d));
+		// }
+
+		// NTL_ZZ_pE_Initialiser (const NTL::ZZ& d) {
+			// NTL::ZZ_p::init(d);
+		// }
+
+	};
+
+
+
+	/**
+	 * @brief Wrapper of ZZ_pE from NTL
+	 * Define a parameterized class to handle easily UnparametricField<NTL::ZZ_pE> field
+	 */
+	class NTL_ZZ_pE : public NTL_ZZ_pE_Initialiser, public UnparametricOperations<NTL::ZZ_pE> {
+	public:
+		typedef NTL::ZZ_pE Element ;
+		typedef FFPACK::UnparametricOperations<Element> Father_t ;
+
+		const Element zero,one,mone ;
+
+
+		NTL_ZZ_pE (const integer &p, const integer &k) :
+			NTL_ZZ_pE_Initialiser(p,k),Father_t ()
+			,zero( NTL::to_ZZ_pE(0)),one( NTL::to_ZZ_pE(1)),mone(-one)
+
+
+		{
+
+				}
+
+
+	bool isZero (const Element& a) const
+	{
+		return NTL::IsZero(a);
+	}
+
+
+	bool isOne (const Element& a) const
+	{
+		return NTL::IsOne(a);
+	}
+
+
+
+	integer& characteristic (integer &c) const
 	{
 		return c=static_cast<integer>(to_long(NTL::ZZ_p::modulus()));
 		//NTL::ZZ_p::modulus();
 	}
 
-	template<>
-	integer& UnparametricField<NTL::ZZ_pE>::cardinality(integer& c) const
+
+	integer& cardinality(integer& c) const
 	{
 		c=static_cast<integer>(to_long(NTL::ZZ_p::modulus()));
-		c=pow(c,NTL::ZZ_pE::degree());
+		c=pow(c,Element::degree());
 		return c;
 	}
-	template<>
-	NTL::ZZ_pE& UnparametricField<NTL::ZZ_pE>::inv(NTL::ZZ_pE& x, const NTL::ZZ_pE& y) const
+
+	Element& inv(Element& x, const Element& y) const
 	{
 		x=NTL::to_ZZ_pE(1)/y;
 		return x;
 	}
-	template<>
-	NTL::ZZ_pE& UnparametricField<NTL::ZZ_pE>::invin(NTL::ZZ_pE& x) const
+
+	Element& invin(Element& x) const
 	{
 		x=NTL::to_ZZ_pE(1)/x;
 		return x;
 	}
 
-	template<>
-	std::istream& UnparametricField<NTL::ZZ_pE>::read(std::istream& is, NTL::ZZ_pE& x) const
+
+	std::istream& read(std::istream& is, Element& x) const
 	{
 		long tmp;
 		is>>tmp;
@@ -218,11 +194,11 @@ namespace LinBox
 
 #ifdef __LINBOX_XMLENABLED
 
-	template <>
-	bool UnparametricField<NTL::ZZ_pE>::toTag(LinBox::Writer &W) const
+
+	bool toTag(LinBox::Writer &W) const
 	{
 		std::string s;
-		NTL::ZZ_pX poly = NTL::ZZ_pE::modulus();
+		NTL::ZZ_pX poly = Element::modulus();
 		long i;
 
 		W.setTagName("field");
@@ -255,8 +231,8 @@ namespace LinBox
 		return true;
 	}
 
-	template <>
-	std::ostream &UnparametricField<NTL::ZZ_pE>::write(std::ostream &os) const
+
+	std::ostream &write(std::ostream &os) const
 	{
 		LinBox::Writer W;
 		if( toTag(W) )
@@ -273,8 +249,8 @@ namespace LinBox
 	// represent e as "<cn>n</cn>" where n = a0 + a1 * p + a2 * p^2 + ...
 	//
 
-	template <>
-	bool UnparametricField<NTL::ZZ_pE>::toTag(LinBox::Writer &W, const Element &e) const
+
+	bool toTag(LinBox::Writer &W, const Element &e) const
 	{
 		NTL::ZZ_pX poly = rep(e);
 		NTL::ZZ accum, base = NTL::ZZ_p::modulus();
@@ -294,8 +270,8 @@ namespace LinBox
 		return true;
 	}
 
-	template <>
-	std::ostream &UnparametricField<NTL::ZZ_pE>::write(std::ostream &os, const Element &e) const
+
+	std::ostream &write(std::ostream &os, const Element &e) const
 	{
 
 		LinBox::Writer W;
@@ -307,8 +283,8 @@ namespace LinBox
 
 
 
-	template <>
-	bool UnparametricField<NTL::ZZ_pE>::fromTag(LinBox::Reader &R, Element &e) const
+
+	bool fromTag(LinBox::Reader &R, Element &e) const
 	{
 		NTL::ZZ total, base = NTL::ZZ_p::modulus(), rem;
 		std::stringstream ss;
@@ -331,8 +307,8 @@ namespace LinBox
 		return true;
 	}
 
-	template <>
-	std::istream &UnparametricField<NTL::ZZ_pE>::read(std::istream &is, Element &e) const
+
+	std::istream &read(std::istream &is, Element &e) const
 	{
 		LinBox::Reader R(is);
 		if( !fromTag(R, e)) {
@@ -349,9 +325,77 @@ namespace LinBox
 #endif
 
 
+	}; // end of class NTL_ZZ_pE
+
+
+
+
+
+
+	template <class Ring>
+	struct ClassifyRing;
+
+	template<>
+	struct ClassifyRing<UnparametricRandIter<NTL::ZZ_pE> > {
+		typedef RingCategories::ModularTag categoryTag;
+	};
 
 
 
 }
 
+namespace LinBox
+{
+
+
+	template<>
+	class UnparametricRandIter<NTL::ZZ_pE> {
+	public:
+		typedef NTL::ZZ_pE Element;
+		UnparametricRandIter<NTL::ZZ_pE>(const NTL_ZZ_pE & F ,
+						 const integer& size =0,
+						 const integer& seed =0
+						) :
+			_size(size), _seed(seed)
+		{
+			if(_seed == 0)
+				NTL::SetSeed(NTL::to_ZZ(time(0)));
+			else
+				NTL::SetSeed( NTL::to_ZZ(static_cast<long>(seed)) );
+		}
+
+#ifdef __LINBOX_XMLENABLED
+		UnparametricRandIter<NTL::ZZ_pE>(LinBox::Reader &R)
+		{
+			if(!R.expectTagName("randiter")) return;
+			if(!R.expectAttributeNum("seed", _seed) || !R.expectAttributeNum("size", _size)) return;
+
+			if(_seed == 0) _seed = time(NULL);
+
+			NTL::SetSeed(NTL::to_ZZ(_seed));
+		}
+#endif
+
+
+		UnparametricRandIter<NTL::ZZ_pE>(const UnparametricRandIter<NTL::ZZ_pE>& R) :
+			_size(R._size), _seed(R._seed)
+
+		{
+			if(_seed == 0)
+				NTL::SetSeed(NTL::to_ZZ(time(0)));
+			else
+				NTL::SetSeed(NTL::to_ZZ( static_cast<long>(_seed)) );
+		}
+
+		NTL::ZZ_pE& random (NTL::ZZ_pE& x) const
+		{
+			NTL::random(x);
+			return x;
+		}
+
+	protected:
+		size_t _size;
+		size_t _seed;
+	};
+}
 #endif //__LINBOX_field_ntl_zz_pe_H

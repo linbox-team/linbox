@@ -73,12 +73,14 @@ int main() {
 	/* The field objects "K_o" and "Q_o" are constructed as in previous examples
 	*/
 
-	UnparametricField<NTL::RR> Q_o;
+	// UnparametricField<NTL::RR> Q_o;
+	NTL_RR Q_o ;
 	NTL::RR::SetPrecision(400);
 	NTL::RR::SetOutputPrecision(50);
 
-	UnparametricField<NTL::zz_p> K_o;
+	// UnparametricField<NTL::zz_p> K_o;
 	NTL::zz_p::init(553);
+	NTL_zz_p K_o ;
 
 	/* These field objects "K_o" and "Q_o" of different types can be converted to
 	 * objects Q and K of a unique type "Field_archetype" for instance using

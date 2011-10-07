@@ -58,7 +58,7 @@ int main (int argc, char **argv)
 
         parseArguments (argc, argv, args);
 
-	commentator.start("UnparametricField<NTL::zz_p> field test suite", "UnparametricField<NTL::zz_p>");
+	commentator.start("NTL_zz_p field test suite", "NTL_zz_p");
 	bool pass = true;
 
 	//NTL::zz_p::init(q);
@@ -68,15 +68,15 @@ int main (int argc, char **argv)
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
-	if (!runFieldTests (F, "UnparametricField<NTL::zz_p>", iterations, n, false)) pass = false;
+	if (!runFieldTests (F, "NTL_zz_p", iterations, n, false)) pass = false;
 
 #if 0
-	FieldArchetype K(new UnparametricField<NTL::zz_p>(101));
+	FieldArchetype K(new NTL_zz_p(101));
 
 	if (!testField<FieldArchetype> (K, "Testing archetype with envelope of UnField<NTL::zz_p> field"))
 		pass = false;
 #endif
 
-	commentator.stop("UnparametricField<NTL::zz_p> field test suite");
+	commentator.stop("NTL_zz_p field test suite");
 	return pass ? 0 : -1;
 }

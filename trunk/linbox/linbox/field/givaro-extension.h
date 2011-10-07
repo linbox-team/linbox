@@ -114,7 +114,7 @@ namespace LinBox
 
 		using Extension_t::zero;
 		using Extension_t::one;
-		Element mone ;
+		const Element mone ;
 
 		/** RandIter type.
 		 *  This type is inherited from the Givaro class GFqDom<TAG>

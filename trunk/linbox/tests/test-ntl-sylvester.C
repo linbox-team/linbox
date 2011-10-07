@@ -72,12 +72,13 @@ int main(int argc, char* argv[])
 	LinBox::commentator.start("Sylvester black box test suite", "Sylvester");
 	report <<"Dimension(m+n)= " << m+n << "\t modulus= " << q << endl;
 
-	typedef LinBox::UnparametricField<NTL::ZZ_p> Field;
+	// typedef LinBox::UnparametricField<NTL::ZZ_p> Field;
+	typedef LinBox::NTL_ZZ_p Field;
 	typedef Field::Element element;
 	typedef std::vector<element> Vector;
 
 	// Now we are using the NTL wrapper as the field, call the instance F
-	Field F;
+	Field F(q); // XXX same bug ?
 	element zero;
 	F.init(zero, 0);
 

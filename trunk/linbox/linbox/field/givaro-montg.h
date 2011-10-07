@@ -62,6 +62,7 @@ namespace LinBox
 		 *  This type is inherited from the Givaro class ::Givaro::Montgomery< ::Givaro::Std32>
 		 */
 		typedef  ::Givaro::Montgomery< ::Givaro::Std32>::Rep Element;
+		Element zero,one,mone;
 
 		/** RandIter type
 		 *  This type is inherited from the Givaro class ::Givaro::Montgomery< ::Givaro::Std32>

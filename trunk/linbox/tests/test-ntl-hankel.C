@@ -83,12 +83,13 @@ int main(int argc, char* argv[])
 	LinBox::commentator.start("Hankel black box test test suite", "Hankel");
 	report << "\tn= " <<  n << " \tq= " << q <<   endl ;
 
-	typedef LinBox::UnparametricField<NTL::ZZ_p> Field;
+	// typedef LinBox::UnparametricField<NTL::ZZ_p> Field;
+	typedef LinBox::NTL_ZZ_p Field;
 	typedef Field::Element element;
 	typedef std::vector<element> Vector;
 
 	// Now we are using the NTL wrapper as the field, call the instance F
-	Field F;
+	Field F(q); //!@bug q or not q ?
 	element zero;
 	F.init(zero, 0);
 
