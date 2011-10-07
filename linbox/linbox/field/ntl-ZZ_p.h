@@ -3,11 +3,10 @@
 /* linbox/field/ntl.h
  * Copyright (C) 1999-2005 William J Turner,
  *               2001 Bradford Hovinen
+ * Copyright (C) 2011 LinBox
  *
  * Written by W. J. Turner <wjturner@acm.org>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
- *
- * ------------------------------------
  *
  * See COPYING for license information.
  */
@@ -18,21 +17,23 @@
  * @brief NO DOC
  */
 
-#ifndef __LINBOX_field_ntl_z_p_H
-#define __LINBOX_field_ntl_z_p_H
+#ifndef __LINBOX_field_ntl_zz_p_H
+#define __LINBOX_field_ntl_zz_p_H
 
 #ifndef __LINBOX_HAVE_NTL
 #error "you need NTL here"
 #endif
 
 #include <sys/time.h>
-#include "linbox/linbox-config.h"
 #include <NTL/ZZ_p.h>
+#include <NTL/ZZ.h>
+
+#include "linbox/linbox-config.h"
+#include "linbox/util/debug.h"
 
 #include "linbox/field/unparametric.h"
 #include "linbox/randiter/unparametric.h"
 #include "linbox/field/field-traits.h"
-
 
 
 // Namespace in which all LinBox library code resides
@@ -49,7 +50,6 @@ namespace LinBox
 	 * @param x reference to integer to contain output (reference returned).
 	 * @param y constant reference to field element.
 	 */
-
 	template <>
 	integer& Caster(integer& x, const NTL::ZZ_p& y)
 	{
@@ -77,7 +77,6 @@ namespace LinBox
 		x = NTL::to_double(NTL::rep(y));
 		return x;
 	}
-
 
 	/**\brief Initialization of field element from an integer.
 	 * Behaves like C++ allocator construct.
@@ -135,9 +134,9 @@ namespace LinBox
 			NTL::ZZ_p::init(d);
 		}
 
+		NTL_ZZ_p_Initialiser () { }
+
 	};
-
-
 
 	/**
 	 *
@@ -148,6 +147,7 @@ namespace LinBox
 	struct NTL_ZZ_p: public NTL_ZZ_p_Initialiser, public FFPACK::UnparametricOperations<NTL::ZZ_p> {
 		typedef NTL::ZZ_p Element ;
 		typedef FFPACK::UnparametricOperations<Element> Father_t ;
+		typedef UnparametricRandIter<Element> RandIter;
 
 		const Element zero,one,mone ;
 
@@ -175,9 +175,10 @@ namespace LinBox
 		{
 			linbox_check(e == 1);
 		}
-		// NTL_ZZ_p() :
-		// Father_t()
-		// {}
+		NTL_ZZ_p() :
+			NTL_ZZ_p_Initialiser(), Father_t()
+			,zero( NTL::to_ZZ_p(0)),one( NTL::to_ZZ_p(1)),mone(-one)
+		{}
 
 		Element& init(Element& x, const integer& y) const
 		{
@@ -249,14 +250,20 @@ namespace LinBox
 
 		template <class ANY> //dpritcha--FIX
 		Element& init(Element& x, const ANY& y) const
-		{ return x = NTL::to_ZZ_p((long)(y)); }
+		{
+			return x = NTL::to_ZZ_p((long)(y));
+		}
 
 		template <class ANY>
 		ANY& convert(ANY& x, const Element& y) const
-		{ return x = (ANY)(rep(y)); }
+		{
+			return x = (ANY)(rep(y));
+		}
 
 		static inline integer getMaxModulus()
-		{ return integer( -1 ); }
+		{
+			return integer( -1 );
+		}
 
 		Element& pow( Element& res, const Element& x, long exp ) const
 		{
@@ -276,7 +283,14 @@ namespace LinBox
 		 * @return integer representing cardinality of the field
 		 */
 		integer& cardinality(integer& c) const
-		{ return c = static_cast<integer>(to_long(Element::modulus())); }
+		{
+			return c = static_cast<integer>(to_long(Element::modulus()));
+		}
+
+		integer cardinality() const
+		{
+			return static_cast<integer>(to_long(Element::modulus()));
+		}
 
 		/** Characteristic.
 		 * Return integer representing characteristic of the field.
@@ -286,7 +300,9 @@ namespace LinBox
 		integer& characteristic(integer& c) const
 		//FIXME we shouldn't go thru long here as p may be larger than that.
 		// check if NTL has cast ZZp to gmp integers.
-		{ return c = static_cast<integer>(to_long(Element::modulus())); }
+		{
+			return c = static_cast<integer>(to_long(Element::modulus()));
+		}
 
 		/** Multiplicative Inverse.
 		 * x = 1 / y
@@ -298,7 +314,9 @@ namespace LinBox
 		 */
 		Element&
 		inv(Element& x, const Element& y) const
-		{ return x = NTL::inv(y); }
+		{
+			return x = NTL::inv(y);
+		}
 
 		/** Zero equality.
 		 * Test if field element is equal to zero.
@@ -309,7 +327,9 @@ namespace LinBox
 		 * @param  x field element.
 		 */
 		bool isZero(const Element& x) const
-		{ return static_cast<bool>(IsZero(x)); }
+		{
+			return static_cast<bool>(IsZero(x));
+		}
 
 		/** One equality.
 		 * Test if field element is equal to one.
@@ -320,7 +340,9 @@ namespace LinBox
 		 * @param  x field element.
 		 */
 		bool isOne(const Element& x) const
-		{ return static_cast<bool>(IsOne(x)); }
+		{
+			return static_cast<bool>(IsOne(x));
+		}
 
 		/** Inplace Multiplicative Inverse.
 		 * x = 1 / x
@@ -330,8 +352,9 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 */
 		Element& invin(Element& x) const
-		{ return x = NTL::inv(x); }
-
+		{
+			return x = NTL::inv(x);
+		}
 
 		/** Print field.
 		 * @return output stream to which field is written.
@@ -342,6 +365,8 @@ namespace LinBox
 			return os << "unparameterized field Element with p = "
 			<< Element::modulus();
 		}
+
+		std::ostream &write (std::ostream &os, const Element &x) const { return FFPACK::UnparametricOperations<Element>::write(os,x); }
 	};
 
 	template <class Ring>
@@ -354,41 +379,55 @@ namespace LinBox
 
 	/// Constructor for random field element generator
 	template <>
-	UnparametricRandIter<NTL::ZZ_p>::UnparametricRandIter (const UnparametricField<NTL::ZZ_p>& F,
-							       const integer& size,
-							       const integer& seed) :
-		_size(size), _seed(seed)
-	{
-		if (_seed == integer(0)) _seed = integer(time(NULL));
+	class UnparametricRandIter<NTL::ZZ_p> {
+	protected:
+		integer _size,_seed;
+	public:
 
-		integer cardinality;
-		F.cardinality(cardinality);
-		if (_size > cardinality)
-			_size = 0;
+		UnparametricRandIter<NTL::ZZ_p> (const NTL_ZZ_p & F,
+						 const integer& size = 0,
+						 const integer& seed = 0) :
+			_size(size), _seed(seed)
+		{
+			if (_seed == integer(0)) _seed = integer(time(NULL));
+
+			integer cardinality;
+			F.cardinality(cardinality);
+			if (_size > cardinality)
+				_size = 0;
 
 #ifdef TRACE
-		std::cout << "created random generator with size " << _size
-		<< " and seed " << _seed << std::endl;
+			std::cout << "created random generator with size " << _size
+			<< " and seed " << _seed << std::endl;
 #endif // TRACE
 
-		// Seed random number generator
-		NTL::SetSeed(NTL::to_ZZ(static_cast<long>(_seed)));
-	}
-
-
-	/// Random field element creator.
-	template <> NTL::ZZ_p& UnparametricRandIter<NTL::ZZ_p>::random(NTL::ZZ_p& x) const
-	{
-		if (_size == 0) {
-			return x = NTL::random_ZZ_p();
+			// Seed random number generator
+			NTL::SetSeed(NTL::to_ZZ(static_cast<long>(_seed)));
 		}
-		else {
-			return x = NTL::to_ZZ_p(NTL::RandomBnd(static_cast<long>(_size)));
+
+		// UnparametricRandIter<NTL::ZZ_p>(const NTL_ZZ_p& R) :
+			// _size(R._size), _seed(R._seed)
+		// {
+			// if(_seed == 0)
+				// NTL::SetSeed(NTL::to_ZZ(time(0)));
+			// else
+				// NTL::SetSeed(NTL::to_ZZ( static_cast<long>(_seed)) );
+		// }
+
+
+		/// Random field element creator.
+		NTL::ZZ_p& random(NTL::ZZ_p& x) const
+		{
+			if (_size == 0) {
+				return x = NTL::random_ZZ_p();
+			}
+			else {
+				return x = NTL::to_ZZ_p(NTL::RandomBnd(static_cast<long>(_size)));
+			}
 		}
-	}
 
 
-
+	};
 
 
 } // namespace LinBox

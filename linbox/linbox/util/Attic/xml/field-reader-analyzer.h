@@ -379,7 +379,7 @@ namespace LinBox
 							  }
 							  else if(_implDetail == "ntl-zzp") {
 #ifdef __LINBOX_HAVE_NTL // if we have NTL
-								  UnparametricField<NTL::zz_p> *p = new UnparametricField<NTL::zz_p>(_R);
+								  NTL_zz_p *p = new NTL_zz_p(_R);
 #else // the default
 								  Modular<uint32_t> *p = new Modular<uint32_t>(_R);
 #endif
@@ -388,7 +388,7 @@ namespace LinBox
 							  }
 							  else if(_implDetail == "ntl-ZZp") {
 #ifdef __LINBOX_HAVE_NTL // if we have NTL
-								  UnparametricField<NTL::ZZ_p> *p = new UnparametricField<NTL::ZZ_p>(_R);
+								  NTL_ZZ_p *p = new NTL_ZZ_p(_R);
 #else
 								  Modular<integer> *p = new Modular<integer>(_R);
 #endif
@@ -613,7 +613,7 @@ namespace LinBox
 							  }
 							  else if(_implDetail == "ntl-zzp") {
 #ifdef __LINBOX_HAVE_NTL // if we have NTL
-								  UnparametricField<NTL::zz_p> *p = new UnparametricField<NTL::zz_p>(_R);
+								  NTL_zz_p *p = new NTL_zz_p(_R);
 #else // the default
 								  Modular<uint32_t> *p = new Modular<uint32_t>(_R);
 #endif
@@ -622,7 +622,7 @@ namespace LinBox
 							  }
 							  else if(_implDetail == "ntl-ZZp") {
 #ifdef __LINBOX_HAVE_NTL // if we have NTL
-								  UnparametricField<NTL::ZZ_p> *p = new UnparametricField<NTL::ZZ_p>(_R);
+								  NTL_ZZ_p *p = new NTL_ZZ_p(_R);
 #else
 								  Modular<integer> *p = new Modular<integer>(_R);
 #endif

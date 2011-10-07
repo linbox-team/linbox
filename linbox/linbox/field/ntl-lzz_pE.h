@@ -2,6 +2,7 @@
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/field/ntl-z_pE.h
  * Copyright (C) 2004  Pascal Giorgi
+ * Copyright (C) 2011 LinBox
  *
  * Written by  Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
  *
@@ -23,22 +24,181 @@
  * Boston, MA 02110-1301, USA.
  */
 
+/*! @file field/ntl-lzz_pE.h
+ * @ingroup field
+ * @ingroup NTL
+ * @brief NO DOC
+ */
 
-#ifndef __LINBOX_ntl_lzz_pe_H
-#define __LINBOX_ntl_lzz_pe_H
+#ifndef __LINBOX_field_ntl_lzz_pe_H
+#define __LINBOX_field_ntl_lzz_pe_H
 
+#ifndef __LINBOX_HAVE_NTL
+#error "you need NTL here"
+#endif
 
-#include "linbox/field/unparametric.h"
-#include "linbox/randiter/unparametric.h"
 #include <NTL/lzz_pXFactoring.h>
 #include <NTL/lzz_pE.h>
 #include <time.h>
 #include "linbox/linbox-config.h"
+#include "linbox/util/debug.h"
+
+#include "linbox/field/unparametric.h"
+#include "linbox/randiter/unparametric.h"
 #include "linbox/field/field-traits.h"
 
 
+
+// Namespace in which all LinBox library code resides
 namespace LinBox
 {
+
+	template<>
+	NTL::zz_pE& Caster(NTL::zz_pE &x, const integer &y)
+	{
+		x=NTL::to_zz_pE(static_cast<long>(y));
+		return x;
+	}
+	template<>
+	NTL::zz_pE& Caster(NTL::zz_pE &x, const double &y)
+	{
+		x=NTL::to_zz_pE(static_cast<long>(y));
+		return x;
+	}
+
+	template<>
+	integer& Caster (integer& x, const NTL::zz_pE &y) {
+		NTL::zz_pX poly = rep(y);
+		integer base = static_cast<integer>(NTL::zz_p::modulus());
+		long i = deg(poly)+1;
+		x = 0;
+		for( ; i-- ; ) {
+			x *= base;
+			x +=  NTL::to_long(rep(coeff(poly, i)));
+		}
+		return x;
+	}
+
+
+	class NTL_zz_pE_Initialiser {
+	public :
+		NTL_zz_pE_Initialiser( const Integer & p, const Integer & k) {
+			NTL::zz_p::init( (long) p);
+			NTL::zz_pX irredPoly = NTL::BuildIrred_zz_pX ((long) k);
+			NTL::zz_pE::init(irredPoly);
+
+		}
+
+		// template <class ElementInt>
+		// NTL_zz_pE_Initialiser(const ElementInt& d) {
+			// NTL::ZZ_p::init (NTL::to_ZZ(d));
+		// }
+
+		// NTL_zz_pE_Initialiser (const NTL::ZZ& d) {
+			// NTL::ZZ_p::init(d);
+		// }
+
+	};
+
+
+
+
+
+	/*! @brief zz_pE
+	 * Define a parameterized class to easily handle UnparametricField<NTL::zz_pE> field
+	 */
+
+	/// \brief for large cardinality, small prime.  \ingroup field
+	class NTL_zz_pE : public NTL_zz_pE_Initialiser, public FFPACK::UnparametricOperations<NTL::zz_pE> {
+	public:
+		typedef NTL::zz_pE Element ;
+		typedef FFPACK::UnparametricOperations<Element> Father_t ;
+		typedef UnparametricRandIter<Element> RandIter;
+
+		const Element zero,one,mone ;
+
+		NTL_zz_pE (const integer &p, const integer &k) :
+			NTL_zz_pE_Initialiser(p,k),Father_t ()
+			,zero( NTL::to_zz_pE(0)),one( NTL::to_zz_pE(1)),mone(-one)
+
+		{
+
+		}
+
+		Element& random (Element& x) const
+		{
+			NTL::random(x);
+			return x;
+		}
+
+
+		bool isZero (const Element& a) const
+		{
+			return NTL::IsZero(a);
+		}
+
+
+		bool isOne (const Element& a) const
+		{
+			return NTL::IsOne(a);
+		}
+
+
+
+		integer& characteristic (integer &c) const
+		{
+			return c = static_cast<integer>(NTL::zz_p::modulus());
+		}
+
+
+		integer& cardinality(integer& c) const
+		{
+			NTL::ZZ card = Element::cardinality();
+			long b = NumBytes(card);
+			unsigned char* byteArray;
+			byteArray = new unsigned char[(size_t)b ];
+			BytesFromZZ(byteArray, card, b);
+
+			integer base(256);
+			c= integer(0);
+
+			for(long i = b - 1; i >= 0; --i) {
+				c *= base;
+				c += integer(byteArray[i]);
+			}
+			delete [] byteArray;
+
+			return c;
+		}
+
+
+
+		Element& inv(Element& x, const Element& y) const
+		{
+			x=one/y;
+			return x;
+		}
+
+		Element& invin(Element& x) const
+		{
+			x=one/x;
+			return x;
+		}
+
+
+
+		std::istream& read(std::istream& is, Element& x) const
+		{
+			long tmp;
+			is>>tmp;
+			x=NTL::to_zz_pE(tmp);
+			return is;
+		}
+	}; // end o class NTL_zz_pE
+
+
+
+
 
 
 	template <class Ring>
@@ -50,11 +210,10 @@ namespace LinBox
 	};
 
 	template<>
-	class UnparametricRandIter<NTL::zz_pE>
-	{
+	class UnparametricRandIter<NTL::zz_pE> {
 	public:
 		typedef NTL::zz_pE Element;
-		UnparametricRandIter<NTL::zz_pE>(const UnparametricField<NTL::zz_pE>& F =UnparametricField<NTL::zz_pE>(),
+		UnparametricRandIter<NTL::zz_pE>(const NTL_zz_pE & F ,
 						 const size_t& size = 0,
 						 const size_t& seed = 0
 						) :
@@ -86,133 +245,6 @@ namespace LinBox
 		size_t _size;
 		size_t _seed;
 	};
-
-
-
-	/*
-	 * Define a parameterized class to easily handle UnparametricField<NTL::zz_pE> field
-	 */
-
-	/// \brief for large cardinality, small prime.  \ingroup field
-	class NTL_zz_pE : public UnparametricField<NTL::zz_pE>
-	{
-	public:
-		NTL_zz_pE (const integer &p, const integer &k)
-		{
-
-			NTL::zz_p::init( (long) p);
-			NTL::zz_pX irredPoly = NTL::BuildIrred_zz_pX ((long) k);
-			NTL::zz_pE::init(irredPoly);
-		}
-
-		Element& random (Element& x) const
-		{
-			NTL::random(x);
-			return x;
-		}
-
-	}; // end o class NTL_zz_pE
-
-
-	/*
-	 * Specialization of UnparametricField<> for NTL::zz_pE type
-	 */
-	template<>
-	//	NTL::zz_pE& UnparametricField<NTL::zz_pE>::init (NTL::zz_pE &x, const integer &y) const
-	NTL::zz_pE& Caster(NTL::zz_pE &x, const integer &y)
-	{
-		x=NTL::to_zz_pE(static_cast<long>(y));
-		return x;
-	}
-	template<>
-	//	NTL::zz_pE& UnparametricField<NTL::zz_pE>::init (NTL::zz_pE &x, const double &y) const
-	NTL::zz_pE& Caster(NTL::zz_pE &x, const double &y)
-	{
-		x=NTL::to_zz_pE(static_cast<long>(y));
-		return x;
-	}
-
-	template<>
-	//	integer& UnparametricField<NTL::zz_pE>::convert (integer& x, const NTL::zz_pE &y) const	{
-	integer& Caster (integer& x, const NTL::zz_pE &y) {
-		NTL::zz_pX poly = rep(y);
-		integer base = static_cast<integer>(NTL::zz_p::modulus());
-		long i = deg(poly)+1;
-		x = 0;
-		for( ; i-- ; ) {
-			x *= base;
-			x +=  NTL::to_long(rep(coeff(poly, i)));
-		}
-		return x;
-	}
-
-
-
-	template<>
-	bool UnparametricField<NTL::zz_pE>::isZero (const NTL::zz_pE& a) const
-	{
-		return NTL::IsZero(a);
-	}
-
-	template<>
-	bool UnparametricField<NTL::zz_pE>::isOne (const NTL::zz_pE& a) const
-	{
-		return NTL::IsOne(a);
-	}
-
-
-	template<>
-	integer& UnparametricField<NTL::zz_pE>::characteristic (integer &c) const
-	{
-		return c = static_cast<integer>(NTL::zz_p::modulus());
-	}
-
-	template<>
-	integer& UnparametricField<NTL::zz_pE>::cardinality(integer& c) const
-	{
-		NTL::ZZ card = NTL::zz_pE::cardinality();
-		long b = NumBytes(card);
-		unsigned char* byteArray;
-		byteArray = new unsigned char[(size_t)b ];
-		BytesFromZZ(byteArray, card, b);
-
-		integer base(256);
-		c= integer(0);
-
-		for(long i = b - 1; i >= 0; --i) {
-			c *= base;
-			c += integer(byteArray[i]);
-		}
-		delete [] byteArray;
-
-		return c;
-	}
-
-
-	template<>
-	NTL::zz_pE& UnparametricField<NTL::zz_pE>::inv(NTL::zz_pE& x, const NTL::zz_pE& y) const
-	{
-		x=NTL::to_zz_pE(1)/y;
-		return x;
-	}
-	template<>
-	NTL::zz_pE& UnparametricField<NTL::zz_pE>::invin(NTL::zz_pE& x) const
-	{
-		x=NTL::to_zz_pE(1)/x;
-		return x;
-	}
-
-
-	template<>
-	std::istream& UnparametricField<NTL::zz_pE>::read(std::istream& is, NTL::zz_pE& x) const
-	{
-		long tmp;
-		is>>tmp;
-		x=NTL::to_zz_pE(tmp);
-		return is;
-	}
-
-
 }
 
 #endif //__LINBOX_ntl_lzz_pe_H
