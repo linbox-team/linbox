@@ -69,6 +69,9 @@ namespace LinBox
 
 	      public :
 		      typedef float Element;
+		      using FFPACK::Modular<float>::one ;
+		      using FFPACK::Modular<float>::zero ;
+		      using FFPACK::Modular<float>::mone ;
 
 	      public:
 		      friend class FieldAXPY<Modular<Element> >;
@@ -161,14 +164,16 @@ namespace LinBox
 			_y(faxpy._y), _bound(faxpy._bound)
 		{}
 
+#if 0
 		FieldAXPY<Modular<float> > &operator = (const FieldAXPY &faxpy)
 		{
-			_F = faxpy._F;
+			_F    = faxpy._F ;
 			//_invmod= faxpy._invmod;
-			_y= faxpy._y;
+			_y    = faxpy._y;
 			_bound= faxpy._bound;
 			return *this;
 		}
+#endif
 
 		inline Element& mulacc (const Element &a, const Element &x)
 		{

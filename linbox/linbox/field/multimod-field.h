@@ -75,7 +75,7 @@ namespace LinBox
 		{
 			_crt_modulo=1;
 			for (size_t i=0; i<_size; ++i){
-				_fields[i]   = Modular<double> (primes[i]);
+				_fields[i]   .assign( Modular<double> (primes[i]) );
 				_crt_modulo *= primes[i];
 			}
 			double tmp;
@@ -94,7 +94,7 @@ namespace LinBox
 		{
 			_crt_modulo=1;
 			for (size_t i=0; i<_size; ++i){
-				_fields[i]   = Modular<double> (primes[i]);
+				_fields[i]  .assign( Modular<double> (primes[i]) );
 				_crt_modulo *= primes[i];
 			}
 			double tmp;
