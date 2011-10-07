@@ -78,17 +78,25 @@ namespace LinBox
 	 */
 	template <>
 	NTL::RR& Caster(NTL::RR& x, const integer& y)
-	{ return x = NTL::to_RR(static_cast<const long&>(y)); }
+	{
+		return x = NTL::to_RR(static_cast<const long&>(y));
+	}
 	template <>
 	NTL::RR& Caster(NTL::RR& x, const double& y)
-	{ return x = NTL::to_RR((long)(y)); }
+	{
+		return x = NTL::to_RR((long)(y));
+	}
 	template <>
 	NTL::RR& Caster(NTL::RR& x, const int& y)
-	{ return x = NTL::to_RR((long)(y)); }
+	{
+		return x = NTL::to_RR((long)(y));
+	}
 
 	template <>
 	NTL::RR& Caster(NTL::RR& x, const long int& y)
-	{ return x = NTL::to_RR((long)(y)); }
+	{
+		return x = NTL::to_RR((long)(y));
+	}
 
 
 
@@ -106,7 +114,9 @@ namespace LinBox
 	 */
 	template <>
 	integer& Caster(integer& x, const NTL::RR& y)
-	{ return x = static_cast<integer>(to_long(y)); }
+	{
+		return x = static_cast<integer>(to_long(y));
+	}
 
 	struct NTL_RR: public NTL_RR_Initialiser, public FFPACK::UnparametricOperations<NTL::RR> {
 		typedef NTL::RR Element ;
@@ -123,67 +133,93 @@ namespace LinBox
 		}
 
 
-	/** Multiplicative Inverse.
-	 * x = 1 / y
-	 * This function assumes both field elements have already been
-	 * constructed and initialized.
-	 * @return reference to x.
-	 * @param  x field element (reference returned).
-	 * @param  y field element.
-	 */
-	Element& inv(Element& x, const Element& y) const
-	{ return x = NTL::inv(y); }
+		/** Multiplicative Inverse.
+		 * x = 1 / y
+		 * This function assumes both field elements have already been
+		 * constructed and initialized.
+		 * @return reference to x.
+		 * @param  x field element (reference returned).
+		 * @param  y field element.
+		 */
+		Element& inv(Element& x, const Element& y) const
+		{
+			return x = NTL::inv(y);
+		}
 
-	/** Zero equality.
-	 * Test if field element is equal to zero.
-	 * This function assumes the field element has already been
-	 * constructed and initialized.
-	 * In this specialization, NTL's IsZero function is called.
-	 * @return boolean true if equals zero, false if not.
-	 * @param  x field element.
-	 */
-	bool isZero(const Element& x) const
-	{ return static_cast<bool>(IsZero(x)); }
+		/** Zero equality.
+		 * Test if field element is equal to zero.
+		 * This function assumes the field element has already been
+		 * constructed and initialized.
+		 * In this specialization, NTL's IsZero function is called.
+		 * @return boolean true if equals zero, false if not.
+		 * @param  x field element.
+		 */
+		bool isZero(const Element& x) const
+		{
+			return static_cast<bool>(IsZero(x));
+		}
 
-	/** One equality.
-	 * Test if field element is equal to one.
-	 * This function assumes the field element has already been
-	 * constructed and initialized.
-	 * In this specialization, NTL's IsOne function is called.
-	 * @return boolean true if equals one, false if not.
-	 * @param  x field element.
-	 */
-	bool isOne(const Element& x) const
-	{ return static_cast<bool>(IsOne(x)); }
+		/** One equality.
+		 * Test if field element is equal to one.
+		 * This function assumes the field element has already been
+		 * constructed and initialized.
+		 * In this specialization, NTL's IsOne function is called.
+		 * @return boolean true if equals one, false if not.
+		 * @param  x field element.
+		 */
+		bool isOne(const Element& x) const
+		{
+			return static_cast<bool>(IsOne(x));
+		}
 
-	/** Inplace Multiplicative Inverse.
-	 * x = 1 / x
-	 * This function assumes both field elements have already been
-	 * constructed and initialized.
-	 * @return reference to x.
-	 * @param  x field element (reference returned).
-	 */
-	Element& invin(Element& x) const
-	{ return x = NTL::inv(x); }
+		/** Inplace Multiplicative Inverse.
+		 * x = 1 / x
+		 * This function assumes both field elements have already been
+		 * constructed and initialized.
+		 * @return reference to x.
+		 * @param  x field element (reference returned).
+		 */
+		Element& invin(Element& x) const
+		{
+			return x = NTL::inv(x);
+		}
 
-	/** Print field.
-	 * @return output stream to which field is written.
-	 * @param  os  output stream to which field is written.
-	 */
-	std::ostream& write(std::ostream& os) const
-	{ return os << "unparameterized field Element"; }
+		/** Print field.
+		 * @return output stream to which field is written.
+		 * @param  os  output stream to which field is written.
+		 */
+		std::ostream& write(std::ostream& os) const
+		{
+			return os << "unparameterized field Element";
+		}
 
-	integer & cardinality(integer &c) const
-	{
-		return c = -1L;
-	}
+		integer & cardinality(integer &c) const
+		{
+			return c = -1L;
+		}
 
-	integer & characteristic(integer &c) const
-	{
-		return c = 0UL;
-	}
+		integer & characteristic(integer &c) const
+		{
+			return c = 0UL;
+		}
 
-		std::ostream &write (std::ostream &os, const Element &x) const { return FFPACK::UnparametricOperations<Element>::write(os,x); }
+		std::ostream &write (std::ostream &os, const Element &x) const {
+			return FFPACK::UnparametricOperations<Element>::write(os,x);
+		}
+
+		template <typename Src>
+		Element& init (Element& x, const Src& s) const
+		{
+			return Caster (x, s);
+		}
+
+		template <typename T>
+		T& convert (T &x, const Element &y) const
+		{
+			return Caster (x,y);
+		}
+
+
 	};
 
 	template <>
