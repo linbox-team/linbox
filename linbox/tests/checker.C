@@ -229,7 +229,7 @@ build |wc" should yield the same number of lines.
 	build_n_run("test-ntl-lzz_p",             counter , flag);
 	build_n_run("test-ntl-toeplitz",          counter , flag);
 	build_n_run("test-ntl-sylvester",         counter , flag);
-	build_n_run("test-ntl-RR",                counter , flag);
+	no_build_n_run("test-ntl-RR",                counter , flag, "floating point equality");
 	build_n_run("test-ntl-ZZ_p",              counter , flag);
 	build_n_run("test-toeplitz-det",          counter , flag);
 	build_n_run("test-smith-form",            counter , flag);
@@ -240,7 +240,7 @@ build |wc" should yield the same number of lines.
 	no_build_n_run("test-ntl-hankel",            counter , flag);
 	no_build_n_run("test-ntl-lzz_p",             counter , flag);
 	no_build_n_run("test-ntl-toeplitz",          counter , flag);
-	no_build_n_run("test-ntl-RR",                counter , flag);
+	no_build_n_run("test-ntl-RR",                counter , flag, "floating point equality");
 	no_build_n_run("test-ntl-sylvester",         counter , flag);
 	no_build_n_run("test-ntl-ZZ_p",              counter , flag);
 	no_build_n_run("test-toeplitz-det",          counter , flag, "can we have non NTL version?");
