@@ -350,9 +350,12 @@ int main (int argc, char **argv)
             Field F (q);
             typedef SparseMatrix<Field, Sparse_Vector<Field::Element> > Blackbox;
             typedef RandomSparseStream<Field, Sparse_Vector<Field::Element> > RandStream;
-            if (!testQLUP<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity)) pass = false;
-            if (!testQLUPsolve<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity)) pass = false;
-            if (!testQLUPnullspace<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity)) pass = false;
+            if (!testQLUP<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity))
+		    pass = false;
+            if (!testQLUPsolve<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity))
+		    pass = false;
+            if (!testQLUPnullspace<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity))
+		    pass = false;
         }
 
         {
@@ -362,9 +365,12 @@ int main (int argc, char **argv)
             Field F (q);
             typedef SparseMatrix<Field, Sparse_Vector<Field::Element> > Blackbox;
             typedef RandomSparseStream<Field, Sparse_Vector<Field::Element> > RandStream;
-            if (!testQLUP<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity)) pass = false;
-            if (!testQLUPsolve<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity)) pass = false;
-            if (!testQLUPnullspace<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity)) pass = false;
+            if (!testQLUP<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity))
+		    pass = false;
+            if (!testQLUPsolve<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity))
+		    pass = false;
+            if (!testQLUPnullspace<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity))
+		    pass = false;
         }
 
         {
@@ -375,9 +381,12 @@ int main (int argc, char **argv)
             Field F (bigQ);
             typedef SparseMatrix<Field, Sparse_Vector<Field::Element> > Blackbox;
             typedef RandomSparseStream<Field, Sparse_Vector<Field::Element> > RandStream;
-            if (!testQLUP<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity)) pass = false;
-            if (!testQLUPsolve<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity)) pass = false;
-            if (!testQLUPnullspace<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity)) pass = false;
+            if (!testQLUP<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity))
+		    pass = false;
+            if (!testQLUPsolve<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity))
+		    pass = false;
+            if (!testQLUPnullspace<Field, Blackbox, RandStream> (F, n, iterations, rseed, sparsity))
+		    pass = false;
         }
 
         {
@@ -387,10 +396,12 @@ int main (int argc, char **argv)
             Field F2;
             typedef LinBox::GaussDomain<LinBox::GF2>::Matrix Blackbox;
             typedef RandomSparseStreamGF2<Blackbox::Row_t> RandStream;
-            if (!testQLUP<Field, Blackbox, RandStream> (F2, n, iterations, rseed, sparsity)) pass = false;
-            if (!testQLUPsolve<Field, Blackbox, RandStream> (F2, n, iterations, rseed, sparsity)) pass = false;
+            if (!testQLUP<Field, Blackbox, RandStream> (F2, n, iterations, rseed, sparsity))
+		    pass = false;
+            if (!testQLUPsolve<Field, Blackbox, RandStream> (F2, n, iterations, rseed, sparsity))
+		    pass = false;
         }
 
-	commentator.stop("QLUP test suite");
+	commentator.stop(MSG_STATUS (pass),"QLUP test suite");
 	return pass ? 0 : -1;
 }

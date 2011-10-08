@@ -390,15 +390,13 @@ namespace LinBox
 			size_t m,n;
 			m = PowerSerie[0].rowdim();
 			n = PowerSerie[0].coldim();
-			Element one;
-			_F.init(one,1UL);
 			const Coefficient ZeroSigma(m,m);
 			const Coefficient ZeroSerie(m,n);
 
 			if (degree == 0) {
 				Coefficient Identity(m,m);
 				for (size_t i=0;i< m;++i)
-					Identity.setEntry(i,i,one);
+					Identity.setEntry(i,i,_F.one);
 				SigmaBase[0]=Identity;
 			}
 
@@ -489,16 +487,13 @@ namespace LinBox
 
 			// Set some useful constants
 			const Coefficient Zero(m,m);
-			Element one, zero;
-			_F.init(one,1UL);
-			_F.init(zero,0UL);
 
 			// Reserve memory for the Sigma Base and set SigmaBase[0] to Identity
 			SigmaBase.reserve(length+1);
 			SigmaBase.resize(1);
 			Coefficient Identity(m,m);
 			for (size_t i=0;i< m;++i)
-				Identity.setEntry(i,i,one);
+				Identity.setEntry(i,i,_F.one);
 			SigmaBase[0]=Identity;
 
 			// Keep track on Sigma Base's row degree
@@ -644,7 +639,7 @@ namespace LinBox
 								  SigmaBase[j].getEntry(*(Qt.getPointer()+i),l));
 					}
 					for (size_t l=0;l<m;++l)
-						_F.assign(SigmaBase[0].refEntry(*(Qt.getPointer()+i),l),zero);
+						_F.assign(SigmaBase[0].refEntry(*(Qt.getPointer()+i),l),_F.zero);
 				}
 #ifdef  _BM_TIMING
 				chrono.stop();
@@ -733,18 +728,14 @@ namespace LinBox
 
 			Coefficient Unit(m+n,m);
 			const Coefficient Zero(m+n,m);
-			Element one,zero,mone;
-			_F.init(one,1L);
-			_F.init(zero,0L);
-			_F.init(mone,-1L);
 			for (size_t i=0;i<m;i++)
-				Unit.setEntry(i,i,one);
+				Unit.setEntry(i,i,_F.one);
 			size_t min_mn=(m <n)? m :n;
 
 			// initialization of discrepancy
 			Coefficient Discrepancy(m+n,n);
 			for (size_t i=0;i<n;i++)
-				Discrepancy.setEntry(i+m,i,one);
+				Discrepancy.setEntry(i+m,i,_F.one);
 
 
 			// initialization of sigma base
@@ -900,7 +891,7 @@ namespace LinBox
 
 				for (size_t j=0;j<n;j++)
 					for (size_t k=0;k<n;++k)
-						_F.assign(SigmaBase[0].refEntry(m+j,k),zero);
+						_F.assign(SigmaBase[0].refEntry(m+j,k),_F.zero);
 
 
 				// Discrepancy= BPerm2.U.P from LQUP
@@ -956,18 +947,14 @@ namespace LinBox
 
 			Coefficient Unit(m+n,m);
 			const Coefficient Zero(m+n,m);
-			Element one,zero,mone;
-			_F.init(one,1L);
-			_F.init(zero,0L);
-			_F.init(mone,-1L);
 			for (size_t i=0;i<m;i++)
-				Unit.setEntry(i,i,one);
+				Unit.setEntry(i,i,_F.one);
 			size_t min_mn=(m <n)? m :n;
 
 			// initialization of discrepancy
 			Coefficient Discrepancy(m+n,n);
 			for (size_t i=0;i<n;i++)
-				Discrepancy.setEntry(i+m,i,one);
+				Discrepancy.setEntry(i+m,i,_F.one);
 
 
 			// initialization of sigma base
@@ -1123,7 +1110,7 @@ namespace LinBox
 
 				for (size_t j=0;j<n;j++)
 					for (size_t k=0;k<n;++k)
-						_F.assign(SigmaBase[0].refEntry(m+j,k),zero);
+						_F.assign(SigmaBase[0].refEntry(m+j,k),_F.zero);
 
 
 				// Discrepancy= BPerm2.U.P from LQUP
@@ -1193,9 +1180,6 @@ namespace LinBox
 			// Set some useful constants
 			const Coefficient Zeromm(m,m);
 			const Coefficient Zeromn(m,n);
-			Element one, zero;
-			_F.init(one,1UL);
-			_F.init(zero,0UL);
 
 			// Reserve memory for the Sigma Base
 			SigmaBase.reserve(length+1);
@@ -1204,7 +1188,7 @@ namespace LinBox
 			// set SigmaBase[0] to Identity
 			Coefficient Identity(m,m);
 			for (size_t i=0;i< m;++i)
-				Identity.setEntry(i,i,one);
+				Identity.setEntry(i,i,_F.one);
 			SigmaBase[0]=Identity;
 
 			// Define Truncated Residual
@@ -1786,7 +1770,7 @@ namespace LinBox
 							_F.assign(SigmaBase[j+1].refEntry(*(Qt.getPointer()+i),l), SigmaBase[j].getEntry(*(Qt.getPointer()+i),l));
 					}
 					for (size_t l=0;l<m;++l)
-						_F.assign(SigmaBase[0].refEntry(*(Qt.getPointer()+i),l),zero);
+						_F.assign(SigmaBase[0].refEntry(*(Qt.getPointer()+i),l),_F.zero);
 				}
 #ifdef _BM_TIMING
 				chrono.stop();
@@ -1838,8 +1822,6 @@ namespace LinBox
 			size_t m,n;
 			m = PowerSerie[0].rowdim();
 			n = PowerSerie[0].coldim();
-			Element one;
-			_F.init(one,1UL);
 			const Coefficient ZeroSigma(m,m);
 			const Coefficient ZeroSerie(m,n);
 			PowerSerie.resize(degree, ZeroSerie);
@@ -1847,7 +1829,7 @@ namespace LinBox
 			if (degree == 0) {
 				Coefficient Identity(m,m);
 				for (size_t i=0;i< m;++i)
-					Identity.setEntry(i,i,one);
+					Identity.setEntry(i,i,_F.one);
 				SigmaBase[0]=Identity;
 			}
 			else {
