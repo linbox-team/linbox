@@ -85,7 +85,6 @@ namespace LinBox
 
 		/// the type in which field elements are represented.
 		typedef ElementArchetype Element;
-		const Element one,mone,zero;
 
 		/// An object of this type is a generator of random field elements.
 		typedef RandIterArchetype RandIter;
