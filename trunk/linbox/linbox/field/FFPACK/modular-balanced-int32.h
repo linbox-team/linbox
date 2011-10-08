@@ -76,6 +76,7 @@ namespace LinBox
 	template <>
 	class ModularBalanced<int32_t> : public FieldInterface,
 	      public FFPACK::ModularBalanced<int32_t>	{
+		      typedef FFPACK::ModularBalanced<int32_t> Father_t ;
 	protected:
 		// int32_t modulus;
 		// int32_t half_mod;
@@ -106,8 +107,12 @@ namespace LinBox
 		}
 
 		unsigned long characteristic()const{return FFPACK::ModularBalanced<int32_t>::characteristic();}
-#if (FFLAFLAS_VERSION>10400)
-		unsigned long characteristic(unsigned long&p)const{return FFPACK::ModularBalanced<int32_t>::characteristic(p);}
+#if (__LINBOX_FFLAS_FFPACK_VERSION>10400)
+		unsigned long &characteristic(unsigned long&p)const{return FFPACK::ModularBalanced<int32_t>::characteristic(p);}
+
+		// using Father_t::characteristic(unsigned long &) ;
+		//
+		//
 #endif
 		unsigned long cardinality ()const{return FFPACK::ModularBalanced<int32_t>::cardinality();}
 		double&convert(double&x,const Element&y)const{return FFPACK::ModularBalanced<int32_t>::convert(x,y);}

@@ -894,7 +894,7 @@ namespace LinBox
 			std::ofstream FN(unique_filename.c_str());
 			//!@todo check FN opened.
 			// begin
-			FN << "\%\\usepackage{slashbox}" << std::endl;
+			FN << "%\\usepackage{slashbox}" << std::endl;
 			FN << "\\begin{table}" << std::endl;
 			FN << "\\centering"    << std::endl;
 			// format
