@@ -4,7 +4,7 @@
 /* linbox/algorithms/block-massey-domain.h
  * Copyright (C) 2002 Pascal Giorgi
  *
- * Written by Pascal Giorgi pascal.giorgi@ens-lyon.fr
+ * Written by Pascal Giorgi pascal.giorgi@lirmm.fr
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,15 +31,27 @@
 #include <iostream>
 #include <iomanip>
 
+<<<<<<< .mine
 #include "linbox/util/commentator.h"
 #include "linbox/util/timer.h"
+#include "linbox/blackbox/dense.h"
 #include "linbox/field/unparametric.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/matrix/factorized-matrix.h"
 #include "linbox/algorithms/blas-domain.h"
+#include "linbox/algorithms/sigma-basis.h"
+=======
+#include <linbox/util/commentator.h>
+#include <linbox/util/timer.h>
+#include <linbox/field/unparametric.h>
+#include <linbox/matrix/matrix-domain.h>
+#include <linbox/matrix/blas-matrix.h>
+#include <linbox/matrix/factorized-matrix.h>
+#include <linbox/algorithms/blas-domain.h>
+>>>>>>> .r3949
 
-#include "linbox/util/timer.h"
+#include <linbox/util/timer.h>
 
 //#define  __CHECK_RESULT
 //#define __DEBUG_MAPLE
@@ -189,7 +201,7 @@ namespace LinBox
 		// left minimal generating polynomial of the sequence
 		void left_minpoly  (std::vector<Coefficient> &P)
 		{
-			masseyblock_left(P);
+			masseyblock_left(P); 
 		}
 
 		void left_minpoly_rec  (std::vector<Coefficient> &P)
@@ -248,7 +260,6 @@ namespace LinBox
 			tSetup.start();
 #endif
 			const size_t length = _container->size ();
-
 			const size_t m = _container->rowdim();
 			const size_t n = _container->coldim();
 
@@ -273,18 +284,12 @@ namespace LinBox
 				Unit.setEntry(i,i,one);
 			size_t min_mn=(m <n)? m :n;
 
-
-
 			// initialization of discrepancy
 			Coefficient Discrepancy(m+n,n);
 			for (size_t i=0;i<n;i++)
 				Discrepancy.setEntry(i+m,i,one);
 
-
 			// initialization of sigma base
-			//std::vector<Coefficient> SigmaBase(length);
-			//SigmaBase.resize(1);
-			//SigmaBase[0]=Unit;
 			std::vector<Coefficient> SigmaBase(1, Unit);
 
 			// initialization of order of sigma base's rows
@@ -302,23 +307,12 @@ namespace LinBox
 			tCheckSequence.clear();
 			tCheckSequence.start();
 #endif
-
-
-
 			// The first sequence element should be of full rank
 			// this is due to the strategy which say that we can compute
 			// only the first column of the approximation of [ S(x) Id]^T
 			// since the other colums have always lower degree.
 			if (_BMD.rank(*_iter)< min_mn)
 				throw PreconditionFailed (__func__, __LINE__, "Bad random Blocks, abort\n");
-#if 0
-			cerr<<"\n**************************************************\n";
-			cerr<<"*** THE FIRST ELEMENT OF SEQUENCE IS SINGULAR  ***\n";
-			cerr<<"***            ALGORTIHM ABORTED               ***\n";
-			cerr<<"**************************************************\n";
-#endif
-
-
 #ifdef _BM_TIMING
 			tCheckSequence.stop();
 			ttCheckSequence += tCheckSequence;
@@ -326,18 +320,15 @@ namespace LinBox
 
 			unsigned long early_stop=0;
 			long NN;
-
 			for (NN = 0; (NN < (long)length) && (early_stop < EARLY_TERM_THRESHOLD) ; ++NN, ++_iter) {
 
 				// Get the next coefficient in the sequence
 				S[NN]=*_iter;
-
 #ifdef  _BM_TIMING
 				if (NN != 0){
 					tGetCoeff.stop();
 					ttGetCoeff += tGetCoeff;
 				}
-
 				tDiscrepancy.clear();
 				tDiscrepancy.start();
 #endif
@@ -375,8 +366,6 @@ namespace LinBox
 				else {
 					early_stop++;
 				}
-
-
 #ifdef _BM_TIMING
 				tGetPermutation.clear();
 				tGetPermutation.start();
@@ -542,13 +531,25 @@ namespace LinBox
 				if (SigmaBase.size()<= (size_t)max_degree)
 				{
 					SigmaBase.resize(size+1,Zero);
-					report << size << std::endl;
+					//report << size << std::endl;
 					size++;
 				}
-					report << "size going in" << size << std::endl;
+				//report << "size going in" << size << std::endl;
 				for (int i= (int)size-2;i>=0;i--)
 					for (size_t j=0;j<n;j++)
 						for (size_t k=0;k<n;++k){
+<<<<<<< .mine
+							// report << " i+1 item: ";
+							// report << SigmaBase[i+1].getEntry(m+j,k) ;
+							// report << " i item: ";
+					 		// report << SigmaBase[i].getEntry(m+j,k)
+							// << std::endl;
+							// typename Field::Element& x = SigmaBase[i+1].refEntry(m+j,k); 
+							// report << &x << " " << x << " &x and x" << std::endl;
+							// x = SigmaBase[i].getEntry(m+j,k); 
+							// report << x << " new x" << std::endl;
+							_F.assign(SigmaBase[i+1].refEntry(m+j,k), SigmaBase[i].getEntry(m+j,k));
+=======
 							report << " i+1 item: ";
 							report << SigmaBase[i+1].getEntry(m+j,k) ;
 							report << " i item: ";
@@ -563,6 +564,7 @@ namespace LinBox
 							refEntry(m+j,k),
 							SigmaBase[i].
 							getEntry(m+j,k));
+>>>>>>> .r3949
 						}
 
 				for (size_t j=0;j<n;j++)
@@ -660,7 +662,7 @@ namespace LinBox
 			tGetMinPoly.clear();
 			tGetMinPoly.start();
 #endif
-			// Get the reverse matrix polynomial of the forst m rows of SigmaBase according to degree.
+			// Get the reverse matrix polynomial of the first m rows of SigmaBase according to degree.
 			degree=order;
 			long max=degree[0];
 			for (size_t i=1;i<m;i++) {
@@ -717,20 +719,21 @@ namespace LinBox
 			for (size_t i=0;i<m;++i)
 				deg[i]=degree[i];
 
-//report << "clearing S " << S.size() << std::endl;
-//S.clear();
-//report << "cleared S " << S.size() << std::endl;
-report << "clearing SigmaBase " << SigmaBase.size() << std::endl;
-SigmaBase.resize(SigmaBase.size()-2);
-report << "clearing last 4 of SigmaBase " << SigmaBase.size() << std::endl;
-SigmaBase.clear();
-report << "cleared SigmaBase " << SigmaBase.size() << std::endl;
+			//report << "clearing S " << S.size() << std::endl;
+			//S.clear();
+			//report << "cleared S " << S.size() << std::endl;
+			// report << "clearing SigmaBase " << SigmaBase.size() << std::endl;
+			// SigmaBase.resize(SigmaBase.size()-2);
+			// report << "clearing last 4 of SigmaBase " << SigmaBase.size() << std::endl;
+			// SigmaBase.clear();
+			// report << "cleared SigmaBase " << SigmaBase.size() << std::endl;
 			return deg;
 		}
 
 
 		std::vector<size_t> masseyblock_left_rec (std::vector<Coefficient> &P)
 		{
+			std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 			// Get information of the Sequence (U.A^i.V)
 			size_t length = _container->size();
@@ -744,7 +747,7 @@ report << "cleared SigmaBase " << SigmaBase.size() << std::endl;
 			const Coefficient Zero(2*m,2*m);
 
 			// Make the Power Serie from  Sequence (U.A^i.V) and Identity
-			_container->recompute(); // make sure sequence is already computed
+			//_container->recompute(); // make sure sequence is already computed
 			std::vector<Coefficient> PowerSerie(length);
 			typename Sequence::const_iterator _iter (_container->begin ());
 			for (size_t i=0;i< length; ++i, ++_iter){
@@ -771,7 +774,8 @@ report << "cleared SigmaBase " << SigmaBase.size() << std::endl;
 			std::vector<Coefficient> SigmaBase(length,Zero);
 
 			// Compute Sigma Base up to the order length - 1
-			PM_Basis(SigmaBase, PowerSerie, length-1, defect);
+			SigmaBasis<Field> SB(_F, PowerSerie);
+			SB.left_basis(SigmaBase, length-1, defect);
 
 			// take the m rows which have lowest defect
 			// compute permutation such that first m rows have lowest defect
@@ -813,7 +817,7 @@ report << "cleared SigmaBase " << SigmaBase.size() << std::endl;
 
 #ifdef __CHECK_RESULT
 			report<<"Check minimal polynomial application\n";
-			_container->recompute();
+			//_container->recompute();
 			typename Sequence::const_iterator _ptr (_container->begin ());
 			for (size_t i=0;i< length; ++i, ++_ptr){
 				PowerSerie[i] = *_ptr;
@@ -850,6 +854,9 @@ report << "cleared SigmaBase " << SigmaBase.size() << std::endl;
 				degree[i] = defect[i];
 			return degree;
 		}
+<<<<<<< .mine
+	
+=======
 
 
 		// Computation of a minimal Sigma Base of a Power Serie up to a degree
@@ -1261,6 +1268,7 @@ report << "cleared SigmaBase " << SigmaBase.size() << std::endl;
 #endif
 		}
 
+>>>>>>> .r3949
 	}; //end of class BlockMasseyDomain
 
 } // end of namespace LinBox

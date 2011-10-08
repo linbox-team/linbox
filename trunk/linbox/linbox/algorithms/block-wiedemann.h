@@ -4,7 +4,7 @@
  * Copyright (C) 2004 Pascal Giorgi
  *
  * Written by Pascal Giorgi pascal.giorgi@ens-lyon.fr
- *
+ * modified by Pascal Giorgi (pascal.giorgi@lirmm.fr) 2011
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -66,12 +66,9 @@ namespace LinBox
 			_F(F), _BMD(F), _VDF(F), _rand(rand)
 		{}
 
-
 		template <class Blackbox>
 		Vector &solveNonSingular (Vector &x, const Blackbox &B, const Vector &y) const
 		{
-
-
 			Transpose<Blackbox> A(B);
 
 			size_t m,n;
@@ -81,13 +78,13 @@ namespace LinBox
 			size_t p,q;
 			integer tmp;
 			tmp = m;
-			//p = tmp.bitsize()-1;
-			p=sqrt(tmp);
+			p = tmp.bitsize()-1;
+			//p=sqrt(tmp);
 			tmp = n;
-			//q = tmp.bitsize()-1;
-			q=sqrt(tmp);
-			//cout<<"row block: "<<p<<endl;
-			//cout<<"col block: "<<q<<endl;
+			q = tmp.bitsize()-1;
+			//q=sqrt(tmp);
+			std::cout<<"row block: "<<p<<std::endl;
+			std::cout<<"col block: "<<q<<std::endl;
 
 
 			Block U(p,m), UA(p-1,m), V(n,q);
@@ -115,7 +112,7 @@ namespace LinBox
 			std::vector<Block> minpoly;
 			std::vector<size_t> degree;
 			MBD.left_minpoly(minpoly,degree);
-
+			MBD.printTimer();
 
 			size_t idx=0;
 			if ( _F.isZero(minpoly[0].getEntry(0,0))) {
@@ -192,7 +189,6 @@ namespace LinBox
 				Block Combi(deg+1,m);
 				_BMD.mul(Combi,idx_poly,UA);
 
-
 				Vector lhs(n),row(m);
 				for (size_t i=0;i<m;++i)
 					row[i]= Combi.getEntry(deg,i);
@@ -207,7 +203,6 @@ namespace LinBox
 				}
 
 				Vector accu (lhs);
-
 
 				A.applyTranspose(lhs,y);
 				_VDF.mulin(lhs,minpoly[deg].getEntry(idx,0));
