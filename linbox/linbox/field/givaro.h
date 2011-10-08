@@ -20,4 +20,3 @@
 #include "linbox/field/Givaro/givaro-field.h"
 
 #endif // __LINBOX_field_givaro_H
-
