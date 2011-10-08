@@ -26,7 +26,7 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/util/timer.h"
-#include "linbox/field/modular-double.h"
+#include "linbox/field/modular.h"
 
 //#include "linbox/field/gmp-rational.h"
 #include "linbox/field/PID-integer.h"

@@ -13,7 +13,7 @@
  * See COPYING for license information.
  */
 
-/*! @file field/ntl-RRph
+/*! @file field/NTL/ntl-RR.h
  * @ingroup field
  * @ingroup NTL
  * @brief NO DOC

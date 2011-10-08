@@ -37,7 +37,7 @@
 #include <vector>
 #include <queue>
 
-#include "linbox/field/modular-balanced-double.h"
+#include "linbox/field/modular-balanced.h"
 
 #include "linbox/util/commentator.h"
 #include "linbox/util/debug.h"

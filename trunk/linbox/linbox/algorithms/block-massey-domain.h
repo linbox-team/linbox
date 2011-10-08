@@ -31,27 +31,16 @@
 #include <iostream>
 #include <iomanip>
 
-<<<<<<< .mine
 #include "linbox/util/commentator.h"
 #include "linbox/util/timer.h"
-#include "linbox/blackbox/dense.h"
 #include "linbox/field/unparametric.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/matrix/factorized-matrix.h"
 #include "linbox/algorithms/blas-domain.h"
 #include "linbox/algorithms/sigma-basis.h"
-=======
-#include <linbox/util/commentator.h>
-#include <linbox/util/timer.h>
-#include <linbox/field/unparametric.h>
-#include <linbox/matrix/matrix-domain.h>
-#include <linbox/matrix/blas-matrix.h>
-#include <linbox/matrix/factorized-matrix.h>
-#include <linbox/algorithms/blas-domain.h>
->>>>>>> .r3949
 
-#include <linbox/util/timer.h>
+#include "linbox/util/timer.h"
 
 //#define  __CHECK_RESULT
 //#define __DEBUG_MAPLE
@@ -201,7 +190,7 @@ namespace LinBox
 		// left minimal generating polynomial of the sequence
 		void left_minpoly  (std::vector<Coefficient> &P)
 		{
-			masseyblock_left(P); 
+			masseyblock_left(P);
 		}
 
 		void left_minpoly_rec  (std::vector<Coefficient> &P)
@@ -538,18 +527,16 @@ namespace LinBox
 				for (int i= (int)size-2;i>=0;i--)
 					for (size_t j=0;j<n;j++)
 						for (size_t k=0;k<n;++k){
-<<<<<<< .mine
 							// report << " i+1 item: ";
 							// report << SigmaBase[i+1].getEntry(m+j,k) ;
 							// report << " i item: ";
 					 		// report << SigmaBase[i].getEntry(m+j,k)
 							// << std::endl;
-							// typename Field::Element& x = SigmaBase[i+1].refEntry(m+j,k); 
+							// typename Field::Element& x = SigmaBase[i+1].refEntry(m+j,k);
 							// report << &x << " " << x << " &x and x" << std::endl;
-							// x = SigmaBase[i].getEntry(m+j,k); 
+							// x = SigmaBase[i].getEntry(m+j,k);
 							// report << x << " new x" << std::endl;
 							_F.assign(SigmaBase[i+1].refEntry(m+j,k), SigmaBase[i].getEntry(m+j,k));
-=======
 							report << " i+1 item: ";
 							report << SigmaBase[i+1].getEntry(m+j,k) ;
 							report << " i item: ";
@@ -564,7 +551,6 @@ namespace LinBox
 							refEntry(m+j,k),
 							SigmaBase[i].
 							getEntry(m+j,k));
->>>>>>> .r3949
 						}
 
 				for (size_t j=0;j<n;j++)
@@ -854,9 +840,6 @@ namespace LinBox
 				degree[i] = defect[i];
 			return degree;
 		}
-<<<<<<< .mine
-	
-=======
 
 
 		// Computation of a minimal Sigma Base of a Power Serie up to a degree
@@ -1268,7 +1251,6 @@ namespace LinBox
 #endif
 		}
 
->>>>>>> .r3949
 	}; //end of class BlockMasseyDomain
 
 } // end of namespace LinBox

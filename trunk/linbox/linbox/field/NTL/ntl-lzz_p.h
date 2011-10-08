@@ -12,7 +12,7 @@
  *
  */
 
-/*! @file field/ntl-lzz_p.h
+/*! @file field/NTL/ntl-lzz_p.h
  * @ingroup field
  * @ingroup NTL
  * @brief NO DOC

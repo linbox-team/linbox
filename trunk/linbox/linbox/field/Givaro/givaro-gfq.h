@@ -13,7 +13,7 @@
  * See COPYING for license information.
  */
 
-/*! @file field/givaro-gfq.h
+/*! @file field/Givaro/givaro-gfq.h
  *
  * @warning This wrapper works only with an improved version of Givaro ;
  * This version of givaro won't be available for public yet ;

@@ -21,7 +21,7 @@
 #include <givaro/givpoly1factor.h>
 #include "linbox/integer.h"
 #include "linbox/field/unparametric.h"
-#include "linbox/field/givaro-field.h"
+#include "linbox/field/givaro.h"
 //#include "linbox/element/givaro-polynomial.h"
 
 
@@ -65,7 +65,7 @@ namespace LinBox
 
 #ifdef __LINBOX_HAVE_NTL
 }
-#include "linbox/field/ntl-ZZ.h"
+#include "linbox/field/ntl.h"
 #include "NTL/ZZXFactoring.h"
 namespace LinBox
 {

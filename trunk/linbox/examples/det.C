@@ -31,7 +31,7 @@
 //#include "linbox-config.h"
 #include <iostream>
 
-#include "linbox/field/modular-double.h"
+#include "linbox/field/modular.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/solutions/det.h"

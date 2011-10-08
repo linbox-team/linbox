@@ -632,7 +632,7 @@ namespace LinBox
 #define LINBOX_EXTENSION_DEGREE_MAX 19
 #endif
 
-#include "linbox/field/givaro-extension.h"
+#include "linbox/field/givaro.h"
 namespace LinBox
 {
 	template <class Blackbox>

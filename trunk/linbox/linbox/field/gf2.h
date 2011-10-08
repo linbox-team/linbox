@@ -944,7 +944,7 @@ namespace LinBox
 
 
 // Specialization of GivaroField for GF2
-#include "linbox/field/givaro-field.h"
+#include "linbox/field/Givaro/givaro-field.h"
 namespace LinBox
 {
 
@@ -1121,7 +1121,7 @@ namespace LinBox
 
 // Specialization of homomorphism for basefield
 #include "linbox/field/hom.h"
-#include "linbox/field/givaro-extension.h"
+#include "linbox/field/Givaro/givaro-extension.h"
 namespace LinBox
 {
 

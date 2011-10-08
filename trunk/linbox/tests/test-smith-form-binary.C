@@ -33,9 +33,9 @@
 
 #include "linbox/field/PID-integer.h"
 #ifdef __LINBOX_HAVE_NTL
-#include "linbox/field/ntl-ZZ.h"
+#include "linbox/field/ntl.h"
 #endif
-#include "linbox/field/modular-int32.h"
+#include "linbox/field/modular.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/algorithms/matrix-rank.h"

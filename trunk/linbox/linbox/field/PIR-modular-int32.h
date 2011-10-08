@@ -24,7 +24,7 @@
 #ifndef __LINBOX_pir_modular_int32_H
 #define __LINBOX_pir_modular_int32_H
 
-#include "linbox/field/modular-int32.h"
+#include "linbox/field/modular.h"
 #ifndef LINBOX_MAX_INT
 #define LINBOX_MAX_INT 2147483647
 #endif

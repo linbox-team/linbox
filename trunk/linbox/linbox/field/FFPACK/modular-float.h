@@ -10,7 +10,7 @@
  * See COPYING for license information.
  */
 
-/*! @file field/modular-float.h
+/*! @file field/FFPACK/modular-float.h
  * @ingroup field
  * @brief  representation of <code>Z/mZ</code> over \c float .
  */
@@ -37,7 +37,7 @@
 #include "linbox/field/field-traits.h"
 #include "linbox/randiter/nonzero.h"
 
-#include "fflas-ffpack/field/modular-float.h"
+#include <fflas-ffpack/field/modular-float.h>
 
 // Namespace in which all LinBox code resides
 namespace LinBox

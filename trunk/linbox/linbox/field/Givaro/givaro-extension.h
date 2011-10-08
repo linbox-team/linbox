@@ -9,7 +9,7 @@
  * See COPYING for license information.
  */
 
-/*! @file field/givaro-extension.h
+/*! @file field/Givaro/givaro-extension.h
  * @ingroup field
  * @brief NO DOC
  */
@@ -24,7 +24,7 @@
 #include "linbox/util/debug.h"
 #include "linbox/linbox-config.h"
 #include "linbox/field/field-traits.h"
-#include "linbox/field/givaro-gfq.h"
+#include "linbox/field/Givaro/givaro-gfq.h"
 
 #ifdef __LINBOX_XMLENABLED
 
@@ -43,7 +43,7 @@
 #include <givaro/giv_randiter.h>
 //---------------------------------------------
 // To convert linbox fields to Givaro interface
-#include "linbox/field/givaro-field.h"
+#include "linbox/field/Givaro/givaro-field.h"
 
 //---------------------------------------------
 // Namespace in which all LinBox code resides

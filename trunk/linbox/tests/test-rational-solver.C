@@ -31,7 +31,7 @@
 
 
 #include "linbox/field/PID-integer.h"
-#include "linbox/field/modular-int32.h"
+#include "linbox/field/modular.h"
 #include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/algorithms/rational-solver.h"

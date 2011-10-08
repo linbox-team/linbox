@@ -11,7 +11,7 @@
  * See COPYING for license information.
  */
 
-/*! @file field/ntl-ZZ_p.h
+/*! @file field/NTL/ntl-ZZ_p.h
  * @ingroup field
  * @ingroup NTL
  * @brief NO DOC

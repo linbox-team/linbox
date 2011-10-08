@@ -24,23 +24,22 @@
  * Boston, MA 02110-1301, USA.
  */
 
-/*! @file field/ntl-GF2E.h
+/*! @file field/NTL/ntl-lzz_pE.h
  * @ingroup field
  * @ingroup NTL
  * @brief NO DOC
  */
 
-#ifndef __LINBOX_field_ntl_gf2e_H
-#define __LINBOX_field_ntl_gf2e_H
+#ifndef __LINBOX_field_ntl_lzz_pe_H
+#define __LINBOX_field_ntl_lzz_pe_H
 
 #ifndef __LINBOX_HAVE_NTL
 #error "you need NTL here"
 #endif
 
-#include <NTL/GF2XFactoring.h>
-#include <NTL/GF2E.h>
+#include <NTL/lzz_pXFactoring.h>
+#include <NTL/lzz_pE.h>
 #include <time.h>
-
 #include "linbox/linbox-config.h"
 #include "linbox/util/debug.h"
 
@@ -49,82 +48,89 @@
 #include "linbox/field/field-traits.h"
 
 
+
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
+
 	template<>
-	//	NTL::GF2E& UnparametricField<NTL::GF2E>::init (NTL::GF2E &x, const integer &y) const
-	NTL::GF2E& Caster(NTL::GF2E &x, const integer &y)
+	NTL::zz_pE& Caster(NTL::zz_pE &x, const integer &y)
 	{
-		x=NTL::to_GF2E(static_cast<long>(y));
+		x=NTL::to_zz_pE(static_cast<long>(y));
 		return x;
 	}
 	template<>
-	//	NTL::GF2E& UnparametricField<NTL::GF2E>::init (NTL::GF2E &x, const double &y) const
-	NTL::GF2E& Caster(NTL::GF2E &x, const double &y)
+	NTL::zz_pE& Caster(NTL::zz_pE &x, const double &y)
 	{
-		x=NTL::to_GF2E(static_cast<long>(y));
+		x=NTL::to_zz_pE(static_cast<long>(y));
 		return x;
 	}
 
-
 	template<>
-	//	integer& UnparametricField<NTL::GF2E>::convert (integer& x, const NTL::GF2E &y) const	{
-	integer& Caster(integer& x, const NTL::GF2E &y)
-	{
-		NTL::GF2X poly = rep(y);
-
-		long i;
+	integer& Caster (integer& x, const NTL::zz_pE &y) {
+		NTL::zz_pX poly = rep(y);
+		integer base = static_cast<integer>(NTL::zz_p::modulus());
+		long i = deg(poly)+1;
 		x = 0;
-		for(i = deg(poly); i >= 0; --i) {
-			x <<= 1;
-			x += rep(coeff(poly, i));
+		for( ; i-- ; ) {
+			x *= base;
+			x +=  NTL::to_long(rep(coeff(poly, i)));
 		}
 		return x;
 	}
 
 
-
-	/// \ingroup field
-
-	class NTL_GF2E_Initialiser {
+	class NTL_zz_pE_Initialiser {
 	public :
-		NTL_GF2E_Initialiser( const Integer & p, size_t k = 1) {
-			linbox_check(p == 2);
-			// if(p != 2) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be 2");
-			NTL::GF2X irredPoly = NTL::BuildSparseIrred_GF2X((long) k);
-			NTL::GF2E::init(irredPoly);
+		NTL_zz_pE_Initialiser( const Integer & p, const Integer & k) {
+			NTL::zz_p::init( (long) p);
+			NTL::zz_pX irredPoly = NTL::BuildIrred_zz_pX ((long) k);
+			NTL::zz_pE::init(irredPoly);
 
 		}
 
 		// template <class ElementInt>
-		// NTL_GF2E_Initialiser(const ElementInt& d) {
+		// NTL_zz_pE_Initialiser(const ElementInt& d) {
 			// NTL::ZZ_p::init (NTL::to_ZZ(d));
 		// }
 
-		// NTL_GF2E_Initialiser (const NTL::ZZ& d) {
+		// NTL_zz_pE_Initialiser (const NTL::ZZ& d) {
 			// NTL::ZZ_p::init(d);
 		// }
 
 	};
 
 
-	/*
-	 * Define a parameterized class to easily handle UnparametricField<NTL::GF2E> field
+
+
+
+	/*! @brief zz_pE
+	 * Define a parameterized class to easily handle UnparametricField<NTL::zz_pE> field
 	 */
 
-	class NTL_GF2E :  public NTL_GF2E_Initialiser, public FFPACK::UnparametricOperations<NTL::GF2E> {
+	/// \brief for large cardinality, small prime.  \ingroup field
+	class NTL_zz_pE : public NTL_zz_pE_Initialiser, public FFPACK::UnparametricOperations<NTL::zz_pE> {
 	public:
-		typedef NTL::GF2E Element ;
+		typedef NTL::zz_pE Element ;
 		typedef FFPACK::UnparametricOperations<Element> Father_t ;
 		typedef UnparametricRandIter<Element> RandIter;
 
 		const Element zero,one,mone ;
 
-		NTL_GF2E (const integer &p, const integer &k) :
-			NTL_GF2E_Initialiser(p,k),Father_t ()
-			,zero( NTL::to_GF2E(0)),one( NTL::to_GF2E(1)),mone(-one)
-		{ }
+		NTL_zz_pE (const integer &p, const integer &k) :
+			NTL_zz_pE_Initialiser(p,k),Father_t ()
+			,zero( NTL::to_zz_pE(0)),one( NTL::to_zz_pE(1)),mone(-one)
+
+		{
+
+		}
+
+		Element& random (Element& x) const
+		{
+			NTL::random(x);
+			return x;
+		}
+
 
 		bool isZero (const Element& a) const
 		{
@@ -137,58 +143,80 @@ namespace LinBox
 			return NTL::IsOne(a);
 		}
 
+
+
 		integer& characteristic (integer &c) const
 		{
-			return c = 2;
+			return c = static_cast<integer>(NTL::zz_p::modulus());
 		}
+
 
 		integer& cardinality(integer& c) const
 		{
-			c=1;
-			c<<= Element::degree();
+			NTL::ZZ card = Element::cardinality();
+			long b = NumBytes(card);
+			unsigned char* byteArray;
+			byteArray = new unsigned char[(size_t)b ];
+			BytesFromZZ(byteArray, card, b);
+
+			integer base(256);
+			c= integer(0);
+
+			for(long i = b - 1; i >= 0; --i) {
+				c *= base;
+				c += integer(byteArray[i]);
+			}
+			delete [] byteArray;
+
 			return c;
 		}
 
+
+
 		Element& inv(Element& x, const Element& y) const
 		{
-			x=NTL::to_GF2E(1)/y;
+			x=one/y;
 			return x;
 		}
 
 		Element& invin(Element& x) const
 		{
-			x=NTL::to_GF2E(1)/x;
+			x=one/x;
 			return x;
 		}
+
+
 
 		std::istream& read(std::istream& is, Element& x) const
 		{
 			long tmp;
 			is>>tmp;
-			x=NTL::to_GF2E(tmp);
+			x=NTL::to_zz_pE(tmp);
 			return is;
 		}
-	}; // end o class NTL_GF2E
+	}; // end o class NTL_zz_pE
+
+
+
+
+
 
 	template <class Ring>
 	struct ClassifyRing;
 
-	template <class Element>
-	struct ClassifyRing<UnparametricRandIter<Element> >;
-
-	template <>
-	struct ClassifyRing<UnparametricRandIter<NTL::GF2E> > {
+	template<>
+	struct ClassifyRing<UnparametricRandIter<NTL::zz_pE> > {
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
 	template<>
-	class UnparametricRandIter<NTL::GF2E> {
+	class UnparametricRandIter<NTL::zz_pE> {
 	public:
-		typedef NTL::GF2E Element;
-		UnparametricRandIter<NTL::GF2E>(const NTL_GF2E & F,
-						const size_t& size = 0,
-						const size_t& seed = 0
-					       ) :
+		typedef NTL::zz_pE Element;
+		UnparametricRandIter<NTL::zz_pE>(const NTL_zz_pE & F ,
+						 const size_t& size = 0,
+						 const size_t& seed = 0
+						) :
 			_size(size), _seed(seed)
 		{
 			if(_seed == 0)
@@ -197,7 +225,7 @@ namespace LinBox
 				NTL::SetSeed(NTL::to_ZZ(_seed));
 		}
 
-		UnparametricRandIter<NTL::GF2E>(const UnparametricRandIter<NTL::GF2E>& R) :
+		UnparametricRandIter<NTL::zz_pE>(const UnparametricRandIter<NTL::zz_pE>& R) :
 			_size(R._size), _seed(R._seed)
 
 		{
@@ -217,9 +245,7 @@ namespace LinBox
 		size_t _size;
 		size_t _seed;
 	};
-
-
 }
 
-#endif //__LINBOX_ntl_gf2e_H
+#endif //__LINBOX_ntl_lzz_pe_H
 

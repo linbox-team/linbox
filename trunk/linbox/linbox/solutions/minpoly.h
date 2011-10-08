@@ -180,7 +180,7 @@ namespace LinBox
 // Chinese Remaindering generic wrappers for integer minpoly
 // ---------------------------------------------------------
 
-#include "linbox/field/modular-double.h"
+#include "linbox/field/modular.h"
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"

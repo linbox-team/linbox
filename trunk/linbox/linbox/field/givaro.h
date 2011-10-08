@@ -12,10 +12,12 @@
 #define __LINBOX_field_givaro_H
 
 #include "linbox/field/field-traits.h"
-#include "linbox/field/givaro-zpz.h"
-#include "linbox/field/givaro-montg.h"
-#include "linbox/field/givaro-gfq.h"
-#include "linbox/field/givaro-extension.h"
+#include "linbox/field/Givaro/givaro-zpz.h"
+#include "linbox/field/Givaro/givaro-montg.h"
+#include "linbox/field/Givaro/givaro-gfq.h"
+#include "linbox/field/Givaro/givaro-extension.h"
+#include "linbox/field/Givaro/givaro-rational.h"
+#include "linbox/field/Givaro/givaro-field.h"
 
 #endif // __LINBOX_field_givaro_H
 

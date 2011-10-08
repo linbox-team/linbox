@@ -35,7 +35,7 @@
 #include <vector>
 #include "linbox/field/ntl.h"
 
-#include "linbox/field/ntl-ZZ_p.h"
+#include "linbox/field/ntl.h"
 #include "linbox/integer.h"
 //#include "linbox/blackbox/ntl-toeplitz.h"
 #include "linbox/blackbox/toeplitz.h"

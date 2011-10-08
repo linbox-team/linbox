@@ -21,7 +21,7 @@
 #include "linbox/blackbox/blackbox-interface.h"
 
 #ifdef __LINBOX_HAVE_NTL
-#include "linbox/field/ntl-ZZ_pX.h"
+#include "linbox/field/ntl.h"
 #endif
 
 //#define DBGMSGS 1

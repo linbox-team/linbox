@@ -20,7 +20,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-/*! @file field/modular-byte.h
+/*! @file field/FFPACK/modular-byte.h
  * @ingroup field
  * @brief  representation of <code>Z/mZ</code> over \c byte .
  */
