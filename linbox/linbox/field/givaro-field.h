@@ -29,8 +29,7 @@ namespace LinBox
 	 *  or a givaro polynomial of a LinBox field ...
 	 */
 	template< class BaseField >
-	struct GivaroField : public BaseField
-	{
+	struct GivaroField : public BaseField {
 		typedef typename BaseField::Element TT;
 		typedef typename Signed_Trait<TT>::unsigned_type UTT;
 		typedef TT Rep;
@@ -95,12 +94,37 @@ namespace LinBox
 			BaseField::characteristic(c);
 			return UTT(c);
 		}
-		UTT characteristic() const  { integer c; BaseField::characteristic(c); return UTT(c); }
-		integer& characteristic(integer& i) const  { return BaseField::characteristic(i); }
-		UTT cardinality() const  { integer c; BaseField::cardinality(c); return UTT(c); }
+
+		UTT characteristic() const
+		{
+			integer c;
+			BaseField::characteristic(c);
+			return UTT(c);
+		}
+
+		integer& characteristic(integer& i) const
+		{
+			return BaseField::characteristic(i);
+		}
+
+		UTT cardinality() const
+		{
+			integer c;
+			BaseField::cardinality(c);
+			return UTT(c);
+		}
+
 		UTT exponent() const
-		{ return 1; }
-		UTT size() const  { integer c; BaseField::cardinality(c); return UTT(c); }
+		{
+			return 1;
+		}
+
+		UTT size() const
+		{
+			integer c;
+			BaseField::cardinality(c);
+			return UTT(c);
+		}
 
 
 		// ----- random generators
@@ -108,18 +132,33 @@ namespace LinBox
 		{
 			return this->init(r,g()) ;
 		}
+
 		template<class RandIter> Rep& random(RandIter& g, Rep& r, long s) const
 		{
 			return this->init(r,g()) ;
 		}
+
 		template<class RandIter> Rep& random(RandIter& g, Rep& r, const Rep& b) const
-		{ return this->init(r,g()) ; }
+		{
+			return this->init(r,g()) ;
+		}
+
 		template<class RandIter> Rep& nonzerorandom(RandIter& g, Rep& r) const
-		{ do { this->init(r,g()); } while( this->isZero(r) ); return r; }
+		{
+			do { this->init(r,g()); } while( this->isZero(r) );
+			return r;
+		}
+
 		template<class RandIter> Rep& nonzerorandom(RandIter& g, Rep& r, long s) const
-		{ do { this->init(r,g()); } while( this->isZero(r) ); return r; }
+		{
+			do { this->init(r,g()); } while( this->isZero(r) );
+			return r;
+		}
+
 		template<class RandIter> Rep& nonzerorandom(RandIter& g, Rep& r, const Rep& b) const
-		{ do { this->init(r,g()); } while( this->isZero(r) ); return r; }
+		{
+			do { this->init(r,g()); } while( this->isZero(r) ); return r;
+		}
 
 	};
 

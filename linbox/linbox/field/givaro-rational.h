@@ -38,8 +38,7 @@ namespace LinBox
 		typedef RingCategories::RationalTag categoryTag;
 	};
 
-	class GivaroRational : public UnparametricField< ::Givaro::Rational>
-	{
+	class GivaroRational : public UnparametricField< ::Givaro::Rational> {
 
 	public:
 

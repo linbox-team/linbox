@@ -195,6 +195,11 @@ namespace LinBox
 			return c = static_cast<integer>(Element::modulus());
 		}
 
+		integer characteristic() const
+		{
+			return static_cast<integer>(Element::modulus());
+		}
+
 		/** Multiplicative Inverse.
 		 * x = 1 / y
 		 * This function assumes both field elements have already been

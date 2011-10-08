@@ -68,8 +68,7 @@ namespace LinBox
 	template<>
 #endif
 	template< class BaseField>
-	struct FieldTraits< GivaroExtension<BaseField> >
-	{
+	struct FieldTraits< GivaroExtension<BaseField> > {
 		typedef RingCategories::ModularTag categoryTag;
 
 		static integer& maxModulus( integer& i )
