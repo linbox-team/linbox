@@ -65,7 +65,11 @@ int main (int argc, char **argv)
 
 	NTL::ZZ_p::init(NTL::to_ZZ(q));
 	// UnparametricField<NTL::ZZ_p> F;
-	NTL_ZZ_p F(q); // XXX is there a q ?
+	// NTL_ZZ_p F(q); // XXX is there a q ?
+	NTL_ZZ_p F;
+
+	if (F.characteristic() != q)
+		return false ;
 
 
 	// Make sure some more detailed messages get printed
@@ -85,7 +89,8 @@ int main (int argc, char **argv)
         commentator.start ("\t--Testing init/convert match");
         bool part_pass = true;
 	// UnparametricField<NTL::ZZ_p> G;
-	NTL_ZZ_p G(q);
+	// NTL_ZZ_p G(q);
+	NTL_ZZ_p G;
 	NTL::ZZ_p::init(NTL::to_ZZ("1234567890123456789012345678901234568123"));
 	NTL_ZZ_p::Element a;
 	LinBox::integer b, c("123456789012345678901234567890");

@@ -121,7 +121,6 @@ namespace LinBox
 			return static_cast<long>(::Givaro::Montgomery< ::Givaro::Std32>::size());
 		}
 
-
 		/** Initialization of field base Element from an integer.
 		 * Behaves like C++ allocator construct.
 		 * This function assumes the output field base Element x has already been

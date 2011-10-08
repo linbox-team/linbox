@@ -290,7 +290,6 @@ namespace LinBox
 
 	/* Specialization of FieldAXPY for GivaroZpz< ::Givaro::Std32> Field */
 
-
 	template <>
 	class FieldAXPY<GivaroZpz< ::Givaro::Std32> > {
 	public:
@@ -347,8 +346,6 @@ namespace LinBox
 		uint64_t _y;
 		uint64_t Corr;
 	};
-
-
 
 
 	/* Specialization of FieldAXPY for GivaroZpz< ::Givaro::Std32> Field */
@@ -424,8 +421,6 @@ namespace LinBox
 		uint32_t _y;
 		uint32_t Corr;
 	};
-
-
 
 	// Specialization of DotProductDomain for GivaroZpz< ::Givaro::Std32> field
 
