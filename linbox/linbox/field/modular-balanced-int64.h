@@ -77,8 +77,8 @@ namespace LinBox
 	      public FFPACK::ModularBalanced<int64_t>	{
 	protected:
 		// int64_t modulus;
-		// int64_t halfmodulus;
-		// int64_t nhalfmodulus;
+		// int64_t half_mod;
+		// int64_t mhalf_mod;
 		// double modulusinv;
 
 	public:
@@ -111,8 +111,8 @@ namespace LinBox
 		Element &init (Element &x, const integer &y) const
 		{
 			x = y % (long) (modulus);
-			if (x < nhalfmodulus) x += modulus;
-			else if (x > halfmodulus) x -= modulus;
+			if (x < mhalf_mod) x += modulus;
+			else if (x > half_mod) x -= modulus;
 			return x;
 		}
 
@@ -184,9 +184,9 @@ namespace LinBox
 
 			y = _y;
 
-			if (y > _F.halfmodulus)
+			if (y > _F.half_mod)
 				y -= _F.modulus;
-			else if (y < _F.nhalfmodulus)
+			else if (y < _F.mhalf_mod)
 				y += _F.modulus;
 
 			return y;
@@ -266,8 +266,8 @@ namespace LinBox
 			normalize(y);
 			res = y;
 
-			if (res > _F.halfmodulus) res -= _F.modulus;
-			else if(res < _F.nhalfmodulus) res += _F.modulus;
+			if (res > _F.half_mod) res -= _F.modulus;
+			else if(res < _F.mhalf_mod) res += _F.modulus;
 
 			return res;
 
@@ -307,8 +307,8 @@ namespace LinBox
 			normalize(y);
 
 			res = y;
-			if (res > _F.halfmodulus) res -= _F.modulus;
-			else if(res < _F.nhalfmodulus) res += _F.modulus;
+			if (res > _F.half_mod) res -= _F.modulus;
+			else if(res < _F.mhalf_mod) res += _F.modulus;
 
 			return res;
 		}

@@ -180,12 +180,18 @@ namespace LinBox
 	class GivaroExtension<GivaroGfq> : public ::Givaro::Extension< ::Givaro::GFqDom<int32_t> >, public FieldInterface {
 
 		typedef GivaroExtension<GivaroGfq> Self_t;
+		typedef ::Givaro::Extension< ::Givaro::GFqDom<int32_t>  >       Extension_t;
 	public:
 
 		/** Element type.
 		 *  This type is inherited from the Givaro class Extension
 		 */
 		typedef ::Givaro::Extension< ::Givaro::GFqDom<int32_t> >::Element Element;
+
+		using Extension_t::zero;
+		using Extension_t::one;
+		const Element mone ;
+
 
 		/** RandIter type.
 		 *  This type is inherited from the Givaro class GFqDom<TAG>
