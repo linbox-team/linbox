@@ -25,6 +25,7 @@
 #ifndef __LINBOX_timer_H
 #define __LINBOX_timer_H
 
+#include <time.h>
 #include <givaro/givtimer.h>
 
 namespace LinBox {
