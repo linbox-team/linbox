@@ -1,7 +1,7 @@
 # Copyright (c) 2010 the LinBox group
 # This file is part of LinBox
 # see COPYING for licence
-pkgincludesubdir=$(pkgincludedir)/NTL
+pkgincludesubdir=$(pkgincludedir)/field/NTL
 
 
 NTL_HDRS =              \

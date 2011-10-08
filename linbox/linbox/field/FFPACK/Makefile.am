@@ -1,7 +1,7 @@
 # Copyright (c) 2010 the LinBox group
 # This file is part of LinBox
 # see COPYING for licence
-pkgincludesubdir=$(pkgincludedir)/field
+pkgincludesubdir=$(pkgincludedir)/field/FFPACK
 
 BASIC_HDRS =            \
     modular.inl         \
