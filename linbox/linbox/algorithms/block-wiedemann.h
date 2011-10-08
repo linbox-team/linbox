@@ -127,7 +127,7 @@ namespace LinBox
 			}
 
 
-			bool classic = false;
+			bool classic = true;
 			if ( classic) {
 				/*
 				 * Compute the solution according to the polynomial combination
@@ -162,11 +162,8 @@ namespace LinBox
 						_VDF.axpy (lhs, combi[k][i], row, lhsbis);
 						A.applyTranspose (lhsbis, lhs);
 					}
-
-
 					_VDF.addin(accu,lhs);
 				}
-
 				Element scaling;
 				_F.init(scaling);
 				_F.neg(scaling,combi[0][0]);

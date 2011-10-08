@@ -42,7 +42,7 @@
 #include "linbox/algorithms/sigma-basis.h"
 
 
-#include <linbox/util/timer.h>
+#include "linbox/util/timer.h"
 
 //#define  __CHECK_RESULT
 //#define __DEBUG_MAPLE
