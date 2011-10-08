@@ -42,9 +42,6 @@ namespace LinBox
 		linbox_check( L.getUpLo() == LinBoxTag::Lower);
 		linbox_check( L.getDiag() == LinBoxTag::Unit);
 
-		typename Field::Element zero,one;
-		_F.init( zero, 0UL );
-		_F.init( one, 1UL );
 #if 0
 		if (_m > _n) {
 			size_t i = 0 ;
@@ -81,7 +78,7 @@ namespace LinBox
 			for (; j< ((i<_n)?i:_n) ; ++j )
 				L.setEntry( i, j, _LU.getEntry(i,j) );
 			for (; j<_m; ++j )
-				L.setEntry( i, j, zero );
+				L.setEntry( i, j, _F.zero );
 		}
 #endif
 
@@ -90,7 +87,7 @@ namespace LinBox
 					_m,0,(int)_QQ.getOrder(),
 					L.getWritePointer(), _m, _QQ.getPointer() );
 		for ( size_t i=0; i<_m; ++i )
-			L.setEntry( i, i, one );
+			L.setEntry( i, i, _F.one );
 		if (_QLUP) {
 			if (!_QQ.isIdentity()) {
 				FFPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
@@ -131,11 +128,9 @@ namespace LinBox
 
 		linbox_check( S.rowdim() == _m);
 		linbox_check( S.coldim() == _n);
-		typename Field::Element zero;
-		_F.init( zero, 0UL);
 		for ( size_t i=0; i<_m; ++i ){
 			for ( size_t j=0; j<i; ++j )
-				S.setEntry( i, j, zero );
+				S.setEntry( i, j, _F.zero );
 			for ( size_t j=i; j<_n; ++j )
 				S.setEntry( i, j, _LU.getEntry(i,j) );
 		}
@@ -319,9 +314,6 @@ namespace LinBox
 			size_t ldx = X.getStride();
 			typename Field::Element * Bp = B.getPointer();
 			typename Field::Element * Xp = X.getPointer();
-			typename Field::Element zero,one;
-			F.init(zero, 0UL);
-			F.init(one, 1UL);
 
 			for (size_t i = A.getRank(); i < B.rowdim(); ++i)
 				for (size_t j = 0; j < B.coldim(); ++j)
@@ -336,11 +328,11 @@ namespace LinBox
 				FFLAS::fcopy (F, B.coldim(), Xp + i*ldx, 1, Bp + i*ldx,1);
 
 			FFLAS::ftrsm (F, FFLAS::FflasLeft, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit,
-				      A.getRank(), X.coldim(), one, A.getPointer(), A.getStride(), X.getPointer(), X.getStride());
+				      A.getRank(), X.coldim(), F.one, A.getPointer(), A.getStride(), X.getPointer(), X.getStride());
 
 			for (size_t i=A.getRank(); i < X.rowdim(); ++i)
 				for (size_t j = 0; j < X.coldim(); ++j)
-					F.assign (*(Xp + i*ldx + j), zero);
+					F.assign (*(Xp + i*ldx + j), F.zero);
 
 			return X;
 
@@ -352,11 +344,8 @@ namespace LinBox
 
 			linbox_check (A.coldim() == A.rowdim());
 			linbox_check (A.coldim() == B.rowdim());
-			typename Field::Element one,zero;
 			typename Field::Element * Bp = B.getPointer();
 			size_t ldb = B.getStride();
-			F.init(one, 1UL);
-			F.init(zero, 0UL);
 			bool consistent = true;
 
 			for (size_t i = A.getRank(); i < B.rowdim(); ++i)
@@ -367,7 +356,7 @@ namespace LinBox
 				throw LinboxMathInconsistentSystem ("Linear system is inconsistent");
 
 			FFLAS::ftrsm (F, FFLAS::FflasLeft, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit,
-				      A.getRank(), B.coldim(), one, A.getPointer(), A.getStride(), Bp, ldb);
+				      A.getRank(), B.coldim(), F.one, A.getPointer(), A.getStride(), Bp, ldb);
 
 			return B;
 		}
@@ -385,9 +374,6 @@ namespace LinBox
 			linbox_check (X.coldim() == A.rowdim());
 			linbox_check (X.rowdim() == B.rowdim());
 			linbox_check (A.coldim() == B.coldim());
-			typename Field::Element one,zero;
-			F.init(one, 1UL);
-			F.init(zero, 0UL);
 			typename Field::Element * Bp = B.getPointer();
 			typename Field::Element * Xp = X.getPointer();
 			size_t R = A.getRank();
@@ -398,7 +384,7 @@ namespace LinBox
 				FFLAS::fcopy (F, R, Xp + i*ldx, 1, Bp + i*ldb,1);
 
 			FFLAS::ftrsm (F, FFLAS::FflasRight, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit,
-				      X.rowdim(), R, one, A.getPointer(), A.getStride(), X.getPointer(), X.getStride());
+				      X.rowdim(), R, F.one, A.getPointer(), A.getStride(), X.getPointer(), X.getStride());
 
 			bool consistent = true;
 			if (B.coldim() > X.coldim()) {
@@ -407,8 +393,8 @@ namespace LinBox
 
 				FFLAS::fgemm (F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 					      X.rowdim(), B.coldim() - R, R,
-					      one, Xp, X.getStride(), A.getPointer() + R, A.getStride,
-					      zero, W, ldw);
+					      F.one, Xp, X.getStride(), A.getPointer() + R, A.getStride,
+					      F.zero, W, ldw);
 
 				for (size_t i = 0; i < B.rowdim(); ++i)
 					for (size_t j = 0; j < B.coldim()-R; ++j)
@@ -419,8 +405,8 @@ namespace LinBox
 			else {
 				FFLAS::fgemm (F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 					      X.rowdim(), B.coldim() - R, R,
-					      one, Xp, X.getStride(), A.getPointer() + R, A.getStride,
-					      zero, Xp + R, X.getStride());
+					      F.one, Xp, X.getStride(), A.getPointer() + R, A.getStride,
+					      F.zero, Xp + R, X.getStride());
 
 				for (size_t i = 0; i < B.rowdim(); ++i)
 					for (size_t j = R; j < B.coldim(); ++j)
@@ -432,7 +418,7 @@ namespace LinBox
 
 			for (size_t i = 0; i < X.rowdim(); ++i)
 				for (size_t j = R; j < X.coldim(); ++j)
-					F.assign (*(Xp + i*ldx + j), zero);
+					F.assign (*(Xp + i*ldx + j), F.zero);
 			return X;
 		}
 
@@ -443,21 +429,17 @@ namespace LinBox
 			linbox_check (A.coldim() == A.rowdim());
 			linbox_check (B.coldim() == A.rowdim());
 
-			typename Field::Element one,zero,mone;
-			F.init (one, 1UL);
-			F.neg (mone,one);
-			F.init (zero, 0UL);
 			typename Field::Element * Bp = B.getPointer();
 			size_t ldb = B.getStride();
 			size_t R = A.getRank();
 
 			FFLAS::ftrsm (F, FFLAS::FflasRight, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit,
-				      B.rowdim(), R, one, A.getPointer(), A.getStride(), B.getPointer(), B.getStride());
+				      B.rowdim(), R, F.one, A.getPointer(), A.getStride(), B.getPointer(), B.getStride());
 
 			FFLAS::fgemm (F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 				      B.rowdim(), B.coldim() - R, R,
-				      one, Bp, B.getStride(), A.getPointer() + R, A.getStride,
-				      mone, Bp + R, B.getStride());
+				      F.one, Bp, B.getStride(), A.getPointer() + R, A.getStride,
+				      F.mone, Bp + R, B.getStride());
 
 			bool consistent = true;
 			for (size_t i = 0; i < B.rowdim(); ++i)
@@ -644,9 +626,6 @@ namespace LinBox
 			bool consistent = true;
 			typename Field::Element * bp = &b[0];           ;
 			typename Field::Element * xp = &x[0];
-			typename Field::Element zero,one;
-			F.init(zero, 0UL);
-			F.init(one, 1UL);
 
 			for (size_t i = A.getRank(); i < b.size(); ++i)
 				if (!F.isZero (b[i]))
@@ -663,7 +642,7 @@ namespace LinBox
 				      A.getRank(), A.getPointer(), A.getStride(), xp, 1);
 
 			for (size_t i=A.getRank(); i < x.size(); ++i)
-				F.assign (x[i], zero);
+				F.assign (x[i], F.zero);
 			return x;
 
 		}
@@ -675,9 +654,6 @@ namespace LinBox
 
 			linbox_check (A.coldim() == A.rowdim());
 			linbox_check (A.coldim() == b.size());
-			typename Field::Element one,zero;
-			F.init(one, 1UL);
-			F.init(zero, 0UL);
 			bool consistent = true;
 
 			for (size_t i = A.getRank(); i < b.size(); ++i)
@@ -704,9 +680,6 @@ namespace LinBox
 		{
 			linbox_check (x.size() == A.rowdim());
 			linbox_check (A.coldim() == b.size());
-			typename Field::Element one,zero;
-			F.init(one, 1UL);
-			F.init(zero, 0UL);
 			typename Field::Element * bp = b.getPointer();
 			typename Field::Element * xp = x.getPointer();
 			size_t R = A.getRank();
@@ -723,8 +696,8 @@ namespace LinBox
 
 				FFLAS::fgemv (F, FFLAS::FflasTrans,
 					      R, b.size() - R,
-					      one, A.getPointer() + R, A.getStride, xp, 1,
-					      zero, W, 1);
+					      F.one, A.getPointer() + R, A.getStride, xp, 1,
+					      F.zero, W, 1);
 
 				for (size_t i = 0; i < b.size() - R; ++i)
 					if (!F.areEqual (W[i], b[i + R]))
@@ -734,8 +707,8 @@ namespace LinBox
 			else {
 				FFLAS::fgemv (F, FFLAS::FflasTrans,
 					      R, b.size() - R,
-					      one, A.getPointer() + R, A.getStride, xp, 1,
-					      zero, xp + R, 1);
+					      F.one, A.getPointer() + R, A.getStride, xp, 1,
+					      F.zero, xp + R, 1);
 
 				for (size_t i = R; i < b.size(); ++i)
 					if (!F.areEqual (x[i], b[i]))
@@ -746,7 +719,7 @@ namespace LinBox
 				throw  LinboxMathInconsistentSystem ("Linear system is inconsistent");
 
 			for (size_t j = R; j < x.size(); ++j)
-				F.assign (x[j], zero);
+				F.assign (x[j], F.zero);
 			return x;
 		}
 		std::vector<typename Field::Element>& operator() ( const Field& F,
@@ -756,20 +729,16 @@ namespace LinBox
 			linbox_check (A.coldim() == A.rowdim());
 			linbox_check (b.size() == A.rowdim());
 
-			typename Field::Element one,zero,mone;
-			F.init (one, 1UL);
-			F.neg (mone,one);
-			F.init (zero, 0UL);
 			typename Field::Element * bp = &b[0];
 			size_t R = A.getRank();
 
 			FFLAS::ftrsv (F, FFLAS::FflasUpper, FFLAS::FflasTrans, FFLAS::FflasNonUnit,
-				      R, one, A.getPointer(), A.getStride(), bp, 1);
+				      R, F.one, A.getPointer(), A.getStride(), bp, 1);
 
 			FFLAS::fgemv (F, FFLAS::FflasTrans,
 				      R, b.size() - R,
-				      one, A.getPointer() + R, A.getStride, bp, 1,
-				      mone, bp + R, 1);
+				      F.one, A.getPointer() + R, A.getStride, bp, 1,
+				      F.mone, bp + R, 1);
 
 			bool consistent = true;
 			for (size_t j = R; j < b.size(); ++j)

@@ -126,6 +126,14 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 		part_pass = reportError( "isOne (1) is false", pass);
 	}
 
+	if (!F.isZero (F.zero)) {
+		part_pass = reportError( "isZero (0) is false", pass);
+	}
+	if (F.isZero (F.one)) part_pass = reportError( "isZero (1) is true", pass);
+	if (F.isOne (F.zero)) part_pass = reportError( "isOne (0) is true", pass);
+	if (!F.isOne (F.one)) {
+		part_pass = reportError( "isOne (1) is false", pass);
+	}
 
 	commentator.stop (MSG_STATUS (part_pass));
 	commentator.progress ();
