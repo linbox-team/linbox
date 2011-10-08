@@ -24,12 +24,12 @@
 #include <fstream>
 #include <vector>
 
+#include "linbox/linbox-config.h"
 #include "linbox/field/archetype.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/integer.h"
 
 using namespace std;
-
 #include "linbox/util/commentator.h"
 #include "fflas-ffpack/utils/args-parser.h"
 
