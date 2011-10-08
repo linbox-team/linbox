@@ -20,7 +20,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-/*! @file field/ntl-ZZ_pE.h
+/*! @file field/NTL/ntl-ZZ_pE.h
  * @ingroup field
  * @ingroup NTL
  * @brief NO DOC

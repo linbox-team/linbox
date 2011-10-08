@@ -11,7 +11,7 @@
  * See COPYING for license information.
  */
 
-/*! @file field/modular-balanced-double.h
+/*! @file field/FFPACK/modular-balanced-double.h
  * @ingroup field
  * @brief Balanced representation of <code>Z/mZ</code> over \c double .
  */
@@ -37,7 +37,7 @@
 #include "linbox/randiter/modular-balanced.h"
 #include "linbox/randiter/nonzero.h"
 
-#include "fflas-ffpack/field/modular-balanced-double.h"
+#include <fflas-ffpack/field/modular-balanced-double.h>
 
 
 // Namespace in which all LinBox code resides

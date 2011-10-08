@@ -15,7 +15,7 @@
 #include "linbox/util/error.h"
 
 #ifdef __LINBOX_HAVE_NTL
-#include "linbox/field/ntl-ZZ.h"
+#include "linbox/field/NTL/ntl-ZZ.h"
 #endif //__LINBOX_HAVE_NTL
 
 namespace LinBox

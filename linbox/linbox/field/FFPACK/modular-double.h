@@ -10,7 +10,7 @@
  * See COPYING for license information.
  */
 
-/*! @file field/modular-double.h
+/*! @file field/FFPACK/modular-double.h
  * @ingroup field
  * @brief Standard representation of <code>Z/mZ</code> over \c double .
  */
@@ -30,7 +30,7 @@
 #include "linbox/randiter/nonzero.h"
 #include "linbox/randiter/modular.h"
 
-#include "fflas-ffpack/field/modular-double.h"
+#include <fflas-ffpack/field/modular-double.h>
 
 
 // Namespace in which all LinBox code resides

@@ -32,7 +32,7 @@
 #include "linbox/field/modular.h"
 #include "linbox/field/givaro.h"
 #ifdef __LINBOX_HAVE_NTL
-#include "linbox/field/ntl-lzz_p.h"
+#include "linbox/field/ntl.h"
 #endif
 #include "linbox/vector/vector-domain.h"
 #include "linbox/blackbox/diagonal.h"

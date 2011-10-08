@@ -478,7 +478,7 @@ namespace LinBox
 
 } // namespace LinBox
 
-#include "linbox/field/givaro-zpz.inl"
+#include "linbox/field/Givaro/givaro-zpz.inl"
 
 #endif // __LINBOX_field_givaro_zpz_H
 

@@ -34,8 +34,7 @@
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/algorithms/blas-domain.h"
 #include "linbox/matrix/matrix-domain.h"
-#include "linbox/field/modular-float.h"
-#include "linbox/field/modular-double.h"
+#include "linbox/field/modular.h"
 
 #include "linbox/blackbox/dense-zero-one.h"
 

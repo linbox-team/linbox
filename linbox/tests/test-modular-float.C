@@ -36,7 +36,7 @@
 #include <vector>
 #include <queue>
 
-#include "linbox/field/modular-float.h"
+#include "linbox/field/modular.h"
 
 #include "test-generic.h"
 #include "test-common.h"

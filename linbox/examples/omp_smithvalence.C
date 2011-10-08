@@ -36,8 +36,8 @@
 #include <givaro/givintnumtheo.h>
 using namespace Givaro;
 #include "linbox/field/gf2.h"
-#include "linbox/field/modular-double.h"
-#include "linbox/field/givaro-zpz.h"
+#include "linbox/field/modular.h"
+#include "linbox/field/givaro.h"
 #include "linbox/field/field-traits.h"
 #include "linbox/blackbox/transpose.h"
 #include "linbox/blackbox/compose.h"

@@ -34,8 +34,7 @@
 #include <vector>
 #include "linbox/blackbox/toeplitz.h"
 #ifdef __LINBOX_HAVE_NTL
-#include "linbox/field/ntl-lzz_p.h"
-#include "linbox/field/ntl-lzz_pX.h"
+#include "linbox/field/ntl.h"
 #endif
 #include "linbox/solutions/det.h"
 #include "linbox/blackbox/blas-blackbox.h"

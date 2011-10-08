@@ -34,7 +34,7 @@
 #include <vector>
 #include <queue>
 
-#include "linbox/field/modular-short.h"
+#include "linbox/field/modular.h"
 
 #include "test-common.h"
 #include "test-field.h"

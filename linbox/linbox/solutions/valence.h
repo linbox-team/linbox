@@ -95,8 +95,8 @@ namespace LinBox
 
 }
 
-#include "linbox/field/modular-double.h"
-#include "linbox/field/givaro-zpz.h"
+#include "linbox/field/modular.h"
+#include "linbox/field/givaro.h"
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/algorithms/cra-early-single.h"
 #include "linbox/randiter/random-prime.h"

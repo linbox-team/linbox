@@ -23,7 +23,7 @@
 #include <vector>
 #include "linbox/field/ntl.h"
 
-#include "linbox/field/ntl-ZZ_p.h"
+#include "linbox/field/ntl.h"
 #include "linbox/integer.h"
 #include "linbox/blackbox/ntl-sylvester.h"
 #include "test-generic.h"

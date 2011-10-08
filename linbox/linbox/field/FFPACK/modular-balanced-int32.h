@@ -23,7 +23,7 @@
  */
 
 
-/*! @file field/modular-balanced-int32_t.h
+/*! @file field/FFPACK/modular-balanced-int32_t.h
  * @ingroup field
  * @brief Balanced representation of <code>Z/mZ</code> over \c int32_t .
  */
@@ -40,9 +40,9 @@
 #include "linbox/util/field-axpy.h"
 #include "linbox/util/debug.h"
 #include "linbox/field/field-traits.h"
-#include "linbox/field/modular-int32.h"
+#include "linbox/field/FFPACK/modular-int32.h"
 
-#include "fflas-ffpack/field/modular-balanced-int32.h"
+#include <fflas-ffpack/field/modular-balanced-int32.h>
 
 #ifndef LINBOX_MAX_INT /* 2147483647 */
 #define LINBOX_MAX_INT INT32_MAX

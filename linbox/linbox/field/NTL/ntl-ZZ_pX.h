@@ -22,7 +22,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-/*! @file field/ntl-ZZ_p.h
+/*! @file field/NTL/ntl-ZZ_p.h
  * @ingroup field
  * @ingroup NTL
  * @brief NO DOC
@@ -42,7 +42,7 @@
 #include "linbox/util/debug.h"
 
 #include "linbox/field/unparametric.h"
-#include "linbox/field/ntl-ZZ_p.h"
+#include "linbox/field/NTL/ntl-ZZ_p.h"
 #include "linbox/integer.h"
 
 

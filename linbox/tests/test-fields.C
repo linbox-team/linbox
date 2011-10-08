@@ -22,17 +22,12 @@
 // #include "linbox/field/givaro-gfq.h"
 
 #ifdef __LINBOX_HAVE_NTL
-#include "linbox/field/ntl-lzz_p.h"
-#include "linbox/field/ntl-ZZ.h"
-#include "linbox/field/ntl-ZZ_p.h"
-#include "linbox/field/ntl-pid-lzz_p.h"
+#include "linbox/field/ntl.h"
+#include "linbox/field/PID-ntl-zz_p.h"
 #include "linbox/field/PIR-ntl-ZZ_p.h"
 #endif
 
 #include "linbox/field/modular.h"
-#include "linbox/field/modular-int32.h"
-#include "linbox/field/modular-int.h"
-#include "linbox/field/modular-double.h"
 #include "linbox/field/field-traits.h"
 #include "linbox/vector/stream.h"
 #include "linbox/integer.h"
@@ -40,8 +35,6 @@
 // #include "linbox/field/gf2.h"
 #include "linbox/field/gmp-rational.h"
 #include "linbox/field/local2_32.h"
-#include "linbox/field/modular-byte.h"
-#include "linbox/field/modular-short.h"
 
 #ifdef __LINBOX_HAVE_LIDIA
 #include "linbox/field/lidia.h"

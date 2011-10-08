@@ -130,7 +130,7 @@ namespace LinBox
 #include "linbox/blackbox/sparse.h"
 #include "linbox/field/modular.h"
 #include "linbox/algorithms/matrix-hom.h"
-#include "linbox/field/givaro-extension.h"
+#include "linbox/field/givaro.h"
 #include "linbox/field/map.h"
 
 namespace LinBox

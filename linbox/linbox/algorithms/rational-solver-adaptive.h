@@ -25,7 +25,7 @@
 #ifndef __LINBOX_rational_solver_adaptive_H
 #define __LINBOX_rational_solver_adaptive_H
 
-#include "linbox/field/modular-int32.h"
+#include "linbox/field/modular.h"
 #include "linbox/algorithms/rational-solver.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/blackbox/blas-blackbox.h"

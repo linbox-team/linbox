@@ -23,7 +23,7 @@
  */
 
 
-/*! @file field/modular-balanced-int64.h
+/*! @file field/FFPACK/modular-balanced-int64.h
  * @ingroup field
  * @brief Balanced representation of <code>Z/mZ</code> over \c int64_t .
  */
@@ -40,7 +40,7 @@
 #include "linbox/util/debug.h"
 #include "linbox/field/field-traits.h"
 
-#include "fflas-ffpack/field/modular-balanced-int64.h"
+#include <fflas-ffpack/field/modular-balanced-int64.h>
 
 #ifndef LINBOX_MAX_INT64
 #ifdef __x86_64__

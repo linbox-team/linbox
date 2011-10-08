@@ -28,7 +28,7 @@
  */
 
 #include "linbox/algorithms/cra-domain.h"
-#include "linbox/field/modular-double.h"
+#include "linbox/field/modular.h"
 #include "linbox/algorithms/blas-domain.h"
 #include "linbox/algorithms/cra-early-multip.h"
 #include "linbox/algorithms/cra-full-multip.h"

@@ -30,8 +30,8 @@
 
 
 
-#include "linbox/field/ntl-ZZ.h"
-#include "linbox/field/modular-int32.h"
+#include "linbox/field/ntl.h"
+#include "linbox/field/modular.h"
 #include "linbox/field/PIR-ntl-ZZ_p.h"
 #include "linbox/field/PIR-modular-int32.h"
 #include "linbox/integer.h"

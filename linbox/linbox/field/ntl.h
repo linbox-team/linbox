@@ -19,12 +19,15 @@
 #ifndef __LINBOX_field_ntl_H
 #define __LINBOX_field_ntl_H
 
-#include "linbox/field/ntl-RR.h"
-#include "linbox/field/ntl-ZZ_p.h"
-#include "linbox/field/ntl-lzz_p.h"
-#include "linbox/field/ntl-ZZ_pE.h"
-#include "linbox/field/ntl-lzz_pE.h"
-#include "linbox/field/ntl-GF2E.h"
+#include "linbox/field/NTL/ntl-RR.h"
+#include "linbox/field/NTL/ntl-ZZ_p.h"
+#include "linbox/field/NTL/ntl-ZZ_pX.h"
+#include "linbox/field/NTL/ntl-lzz_p.h"
+#include "linbox/field/NTL/ntl-lzz_pX.h"
+#include "linbox/field/NTL/ntl-ZZ_pE.h"
+#include "linbox/field/NTL/ntl-lzz_pE.h"
+#include "linbox/field/NTL/ntl-GF2E.h"
+
 
 #endif // __LINBOX_field_ntl_H
 

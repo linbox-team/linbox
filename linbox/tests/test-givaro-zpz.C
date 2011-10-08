@@ -37,10 +37,7 @@
 #include <fstream>
 #include <vector>
 
-#include "linbox/field/givaro-zpz.h"
-#include "linbox/field/givaro-montg.h"
-#include "linbox/field/givaro-gfq.h"
-#include "linbox/field/givaro-extension.h"
+#include "linbox/field/givaro.h"
 
 #include "test-common.h"
 #include "test-generic.h"

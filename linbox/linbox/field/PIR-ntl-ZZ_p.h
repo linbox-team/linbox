@@ -30,7 +30,7 @@
 #include "linbox/util/debug.h"
 #include <NTL/ZZ.h>
 #include <NTL/ZZ_p.h>
-#include "linbox/field/ntl-ZZ_p.h"
+#include "linbox/field/NTL/ntl-ZZ_p.h"
 #include "linbox/vector/vector-domain.h"
 #include <sstream>
 #include "linbox/integer.h"

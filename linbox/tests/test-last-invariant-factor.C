@@ -33,7 +33,7 @@
 
 #include "linbox/field/PID-integer.h"
 #include "linbox/randiter/random-prime.h"
-#include "linbox/field/modular-int32.h"
+#include "linbox/field/modular.h"
 #include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/algorithms/matrix-rank.h"
 #include "linbox/algorithms/last-invariant-factor.h"

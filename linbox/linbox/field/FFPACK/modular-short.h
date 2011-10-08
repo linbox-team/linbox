@@ -21,7 +21,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-/*! @file field/modular-short.h
+/*! @file field/FFPACK/modular-short.h
  * @ingroup field
  * @brief  representation of <code>Z/mZ</code> over \c short .
  */
