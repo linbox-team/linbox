@@ -123,7 +123,7 @@ namespace LinBox
 		{}
 
 		NTL_zz_p() :
-			NTL_zz_p_Initialiser(), Father_t()
+			NTL_zz_p_Initialiser(2,1), Father_t()
 			,zero( NTL::to_zz_p(0)),one( NTL::to_zz_p(1)),mone(-one)
 		{}
 
