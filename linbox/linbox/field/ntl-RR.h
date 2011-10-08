@@ -236,10 +236,10 @@ namespace LinBox
 		{
 			if (_seed == integer(0)) _seed = integer(time(NULL));
 
-			integer cardinality;
-			F.cardinality(cardinality);
-			if (_size > cardinality)
-				_size = 0;
+			// integer cardinality;
+			// F.cardinality(cardinality);
+			// if (_size > cardinality)
+				// _size = 0;
 
 #ifdef TRACE
 			std::cout << "created random generator with size " << _size
