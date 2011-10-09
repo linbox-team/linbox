@@ -75,6 +75,7 @@ namespace LinBox
 		 */
 		ParamFuzzy (const double &value = .000000001) :
 			_fuzz (value)
+			,one(1),zero(0),mone(-one)
 		{}
 
 		/** Copy constructor.
@@ -85,6 +86,7 @@ namespace LinBox
 		 */
 		ParamFuzzy (const ParamFuzzy &F) :
 			_fuzz (F._fuzz)
+			,one(F.one),zero(F.zero),mone(F.mone)
 		{}
 
 		/** Assignment operator.
@@ -407,6 +409,8 @@ namespace LinBox
 
 		/// Private static double for fuzz value
 		double _fuzz;
+	public:
+		const Element one,zero,mone;
 
 	}; // class ParamFuzzy
 
