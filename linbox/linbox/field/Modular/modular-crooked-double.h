@@ -12,7 +12,7 @@
  * See COPYING for license information.
  */
 
-/*! @file field/FFPACK/modular-crooked-double.h
+/*! @file field/Modular/modular-crooked-double.h
  * @ingroup field
  * @brief Crooked  representation of <code>Z/mZ</code> over \c double .
  * This is a balanced representation with more positive (or negative) representants.

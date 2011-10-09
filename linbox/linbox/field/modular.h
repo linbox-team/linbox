@@ -1774,16 +1774,16 @@ namespace LinBox
 
 } // namespace LinBox
 
-#include "linbox/field/FFPACK/modular.inl"
+#include "linbox/field/Modular/modular.inl"
 #include "linbox/randiter/modular.h"
-#include "linbox/field/FFPACK/modular-int32.h"
+#include "linbox/field/Modular/modular-int32.h"
 #ifdef __LINBOX_HAVE_INT64
-#include "linbox/field/FFPACK/modular-int64.h"
+#include "linbox/field/Modular/modular-int64.h"
 #endif
-#include "linbox/field/FFPACK/modular-short.h"
-#include "linbox/field/FFPACK/modular-byte.h"
-#include "linbox/field/FFPACK/modular-double.h"
-#include "linbox/field/FFPACK/modular-float.h"
+#include "linbox/field/Modular/modular-short.h"
+#include "linbox/field/Modular/modular-byte.h"
+#include "linbox/field/Modular/modular-double.h"
+#include "linbox/field/Modular/modular-float.h"
 
 #endif // __LINBOX_field_modular_H
 

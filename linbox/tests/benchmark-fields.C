@@ -23,7 +23,7 @@
 
 #include "linbox/field/modular.h"
 #include "linbox/field/modular-balanced.h"
-#include "linbox/field/FFPACK/modular-crooked-double.h"
+#include "linbox/field/Modular/modular-crooked-double.h"
 #include "linbox/field/field-traits.h"
 #include "linbox/vector/stream.h"
 #include "linbox/integer.h"

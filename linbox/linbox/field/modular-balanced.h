@@ -17,11 +17,11 @@
 #ifndef __LINBOX_modular_balanced_H
 #define __LINBOX_modular_balanced_H
 
-#include "linbox/field/FFPACK/modular-balanced-float.h"
-#include "linbox/field/FFPACK/modular-balanced-double.h"
-#include "linbox/field/FFPACK/modular-balanced-int32.h"
+#include "linbox/field/Modular/modular-balanced-float.h"
+#include "linbox/field/Modular/modular-balanced-double.h"
+#include "linbox/field/Modular/modular-balanced-int32.h"
 #ifdef __LINBOX_HAVE_INT64
-#include "linbox/field/FFPACK/modular-balanced-int64.h"
+#include "linbox/field/Modular/modular-balanced-int64.h"
 #endif
 
 #endif

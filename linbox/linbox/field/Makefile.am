@@ -3,7 +3,7 @@
 # see COPYING for licence
 pkgincludesubdir=$(pkgincludedir)/field
 
-SUBDIRS=NTL Givaro FFPACK
+SUBDIRS=NTL Givaro Modular
 
 BASIC_HDRS =            \
     field-interface.h   \
