@@ -26,8 +26,9 @@ liblbdriver_la_SOURCES= lb-element.C 	\
 			lb-det.C        \
 			lb-rank.C       \
 			lb-minpoly.C    \
-			lb-charpoly.C   \
-			lb-solve.C
+			lb-charpoly.C
+#  \
+			#  lb-solve.C
 
 liblbdriver_la_LDFLAGS=$(GIVARO_LIBS) $(GMP_LIBS) $(NTL_LIBS) $(BLAS_LIBS) $(LDFLAGS) $(top_srcdir)/linbox/liblinbox.la -Wl,-zmuldefs
 
