@@ -204,6 +204,11 @@ namespace LinBox
 			return x = NTL::to_ZZ_p( y );
 		}
 
+		Element& init(Element& x) const
+		{
+			return x = NTL::to_ZZ_p( 0L );
+		}
+
 		/** Specialization for NTL::ZZ.
 		 *
 		 * @return reference to  NTL::ZZ
