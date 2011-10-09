@@ -87,13 +87,16 @@ namespace LinBox
 		/** Default constructor.
 		 * In this implementation, this means copying the field \c E._field.
 		 */
-		FieldEnvelope (void) {}
+		FieldEnvelope (void) :
+			one(),zero(),mone()
+		{}
 
 		/** Constructor from field to be wrapped.
 		 * @param F Field object to be wrapped.
 		 */
 		FieldEnvelope (const Field& F) :
 			_field (F)
+			,one(Element(F.one)),zero(Element(F.zero)),mone(Element(F.mone))
 		{}
 
 		/** Copy constructor.
@@ -105,6 +108,7 @@ namespace LinBox
 		 */
 		FieldEnvelope (const FieldEnvelope& E) :
 			_field (E._field)
+			,one((E.one)),zero((E.zero)),mone((E.mone))
 		{}
 
 #ifdef __LINBOX_XMLENABLED
@@ -561,6 +565,8 @@ namespace LinBox
 		/// Wrapped field.
 		Field _field;
 
+	public:
+		Element one,zero,mone ;
 	}; // class FieldEnvelope
 
 } // namespace LinBox

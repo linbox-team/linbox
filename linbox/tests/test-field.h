@@ -88,8 +88,10 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	// ostream &report = std::cout ;
 	ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
-	typename Field::Element zero, one, two, three;
+	typename Field::Element zero, one, mone, two, three;
 	F.init(zero, 0); F.init(one, 1); F.init(two, 2); F.init(three, 3);
+	F.init(mone);
+	F.neg(mone,one);
 
 	typename Field::Element a, b, c, d, e, f;
 	F.init(a,0); F.init(b,0); F.init(c,0); F.init(d,0); F.init(e,0); F.init(f,0);
@@ -134,6 +136,9 @@ bool testField (Field &F, const char *title, bool fieldp = true)
 	if (!F.isOne (F.one)) {
 		part_pass = reportError( "isOne (1) is false", pass);
 	}
+
+	if ( !F.areEqual(F.mone,mone))
+		part_pass = reportError( "isMOne (-1) is false", pass);
 
 	commentator.stop (MSG_STATUS (part_pass));
 	commentator.progress ();
