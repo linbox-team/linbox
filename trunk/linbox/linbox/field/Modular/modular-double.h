@@ -10,7 +10,7 @@
  * See COPYING for license information.
  */
 
-/*! @file field/FFPACK/modular-double.h
+/*! @file field/Modular/modular-double.h
  * @ingroup field
  * @brief Standard representation of <code>Z/mZ</code> over \c double .
  */

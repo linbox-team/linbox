@@ -10,7 +10,7 @@
  * See COPYING for license information.
  */
 
-/*! @file field/FFPACK/modular-float.h
+/*! @file field/Modular/modular-float.h
  * @ingroup field
  * @brief  representation of <code>Z/mZ</code> over \c float .
  */

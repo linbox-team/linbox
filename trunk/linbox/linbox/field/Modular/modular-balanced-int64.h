@@ -1,8 +1,8 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
-/* Copyright (C) 2009 LinBox
- * Written by C Pernet
- * updated to compilable condition by <brice.boyer@imag.fr>
+/* Copyright (C) 2010 LinBox
+ * Adapted by B Boyer <brice.boyer@imag.fr>
+ * (from other modular-balanced* files)
  *
  *
  *
@@ -23,14 +23,13 @@
  */
 
 
-/*! @file field/FFPACK/modular-balanced-int32_t.h
+/*! @file field/Modular/modular-balanced-int64.h
  * @ingroup field
- * @brief Balanced representation of <code>Z/mZ</code> over \c int32_t .
+ * @brief Balanced representation of <code>Z/mZ</code> over \c int64_t .
  */
 
-#ifndef __LINBOX_modular_balanced_int32_H
-#define __LINBOX_modular_balanced_int32_H
-
+#ifndef __LINBOX_modular_balanced_int64_H
+#define __LINBOX_modular_balanced_int64_H
 
 #include "linbox/linbox-config.h"
 #include "linbox/integer.h"
@@ -40,12 +39,15 @@
 #include "linbox/util/field-axpy.h"
 #include "linbox/util/debug.h"
 #include "linbox/field/field-traits.h"
-#include "linbox/field/FFPACK/modular-int32.h"
 
-#include <fflas-ffpack/field/modular-balanced-int32.h>
+#include <fflas-ffpack/field/modular-balanced-int64.h>
 
-#ifndef LINBOX_MAX_INT /* 2147483647 */
-#define LINBOX_MAX_INT INT32_MAX
+#ifndef LINBOX_MAX_INT64
+#ifdef __x86_64__
+#define LINBOX_MAX_INT64 INT64_MAX
+#else
+#define LINBOX_MAX_INT64 INT64_MAX
+#endif
 #endif
 
 
@@ -57,9 +59,6 @@ namespace LinBox
 	class ModularBalanced;
 	template< class Element >
 	class ModularBalancedRandIter;
-	template< class Field, class RandIter >
-	class NonzeroRandIter;
-
 
 	template <class Ring>
 	struct ClassifyRing;
@@ -68,33 +67,27 @@ namespace LinBox
 	struct ClassifyRing<ModularBalanced<Element> >;
 
 	template<>
-	struct ClassifyRing<ModularBalanced<int32_t> > {
+	struct ClassifyRing<ModularBalanced<int64_t> > {
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
 	/// \ingroup field
 	template <>
-	class ModularBalanced<int32_t> : public FieldInterface,
-	      public FFPACK::ModularBalanced<int32_t>	{
-		      typedef FFPACK::ModularBalanced<int32_t> Father_t ;
+	class ModularBalanced<int64_t> : public FieldInterface
+	      public FFPACK::ModularBalanced<int64_t>	{
 	protected:
-		// int32_t modulus;
-		// int32_t half_mod;
-		// int32_t mhalf_mod;
+		// int64_t modulus;
+		// int64_t half_mod;
+		// int64_t mhalf_mod;
 		// double modulusinv;
 
 	public:
 
-		friend class FieldAXPY<ModularBalanced<int32_t> >;
-		friend class DotProductDomain<ModularBalanced<int32_t> >;
+		friend class FieldAXPY<ModularBalanced<int64_t> >;
+		friend class DotProductDomain<ModularBalanced<int64_t> >;
 
-		typedef int32_t Element;
-		typedef ModularBalancedRandIter<int32_t> RandIter;
-		typedef NonzeroRandIter<ModularBalanced<int32_t>,RandIter> NonZeroRandIter;
-
-		ModularBalanced(int32_t p, int32_t e=1) :
-			FFPACK::ModularBalanced<int32_t>(p,e)
-		{}
+		typedef int64_t Element;
+		typedef ModularBalancedRandIter<int64_t> RandIter;
 
 		integer &cardinality (integer &c) const
 		{
@@ -105,18 +98,6 @@ namespace LinBox
 		{
 		       	return c = modulus;
 		}
-
-		unsigned long characteristic()const{return FFPACK::ModularBalanced<int32_t>::characteristic();}
-#if (__LINBOX_FFLAS_FFPACK_VERSION>10400)
-		unsigned long &characteristic(unsigned long&p)const{return FFPACK::ModularBalanced<int32_t>::characteristic(p);}
-
-		// using Father_t::characteristic(unsigned long &) ;
-		//
-		//
-#endif
-		unsigned long cardinality ()const{return FFPACK::ModularBalanced<int32_t>::cardinality();}
-		double&convert(double&x,const Element&y)const{return FFPACK::ModularBalanced<int32_t>::convert(x,y);}
-		float&convert(float&x,const Element&y)const{return FFPACK::ModularBalanced<int32_t>::convert(x,y);}
 
 		// this function converts an int to a natural number ?
 		integer &convert (integer &x, const Element &y) const
@@ -129,36 +110,35 @@ namespace LinBox
 
 		Element &init (Element &x, const integer &y) const
 		{
-			x = Element(y % (long)modulus);
-
-			if (x < mhalf_mod)
-				x += modulus;
-			else if (x > half_mod)
-				x -= modulus;
-
+			x = y % (long) (modulus);
+			if (x < mhalf_mod) x += modulus;
+			else if (x > half_mod) x -= modulus;
 			return x;
 		}
 
 
+	private:
+
 	};
 
 	template <>
-	class FieldAXPY<ModularBalanced<int32_t> > {
+	class FieldAXPY<ModularBalanced<int64_t> > {
 	public:
 
-		typedef int32_t Element;
-		typedef ModularBalanced<int32_t> Field;
+		typedef int64_t Element;
+		typedef ModularBalanced<int64_t> Field;
 
 		FieldAXPY (const Field &F) :
 			_F (F),_y(0),_times(0)
-		{ }
+		{
+		}
 
 
 		FieldAXPY (const FieldAXPY &faxpy) :
 			_F (faxpy._F), _y (0),_times(0)
 		{}
 
-		FieldAXPY<ModularBalanced<int32_t> > &operator = (const FieldAXPY &faxpy)
+		FieldAXPY<ModularBalanced<int64_t> > &operator = (const FieldAXPY &faxpy)
 		{
 			_F = faxpy._F;
 			_y = faxpy._y;
@@ -169,7 +149,8 @@ namespace LinBox
 		inline int64_t& mulacc (const Element &a, const Element &x)
 		{
 			int64_t t = (int64_t) a * (int64_t)   x;
-			if (_times < blocksize) {
+			if (_times < blocksize)
+			{
 				++_times;
 				return _y += t;
 			}
@@ -183,7 +164,8 @@ namespace LinBox
 
 		inline int64_t& accumulate (const Element &t)
 		{
-			if (_times < blocksize) {
+			if (_times < blocksize)
+			{
 				++_times;
 				return _y += t;
 			}
@@ -200,7 +182,7 @@ namespace LinBox
 
 			normalize();
 
-			y = Element(_y);
+			y = _y;
 
 			if (y > _F.half_mod)
 				y -= _F.modulus;
@@ -225,26 +207,28 @@ namespace LinBox
 
 		Field _F;
 		int64_t _y;
-		int32_t _times;
-		static const int32_t blocksize = 32;
+		int64_t _times;
+		//!@todo tune me ?
+		static const int64_t blocksize = 32;
 
-		inline void normalize() {
-			_y = (int32_t)_y -(int32_t)(int64_t)((double) _y * _F.modulusinv) * (int32_t)_F.modulus;
+		inline void normalize()
+		{
+			_y = (int64_t)_y -(int64_t)(int64_t)((double) _y * _F.modulusinv) * (int64_t)_F.modulus;
 		}
 
 	};
 
 
 	template <>
-	class DotProductDomain<ModularBalanced<int32_t> > : private virtual VectorDomainBase<ModularBalanced<int32_t> > {
+	class DotProductDomain<ModularBalanced<int64_t> > : private virtual VectorDomainBase<ModularBalanced<int64_t> > {
 
 	private:
-		const int32_t blocksize;
+		const int64_t blocksize;
 
 	public:
-		typedef int32_t Element;
-		DotProductDomain (const ModularBalanced<int32_t> &F) :
-			VectorDomainBase<ModularBalanced<int32_t> > (F) ,blocksize(32)
+		typedef int64_t Element;
+		DotProductDomain (const ModularBalanced<int64_t> &F) :
+			VectorDomainBase<ModularBalanced<int64_t> > (F) ,blocksize(32)
 		{ }
 
 	protected:
@@ -257,21 +241,24 @@ namespace LinBox
 
 			int64_t y = 0;
 			int64_t t;
-			// int32_t times = 0;
+			int64_t times = 0;
 
 			pv1 = pv1e = v1.begin();
 			pv2 = v2.begin();
 
-			for(size_t i = 0; i < v1.size() / blocksize ;++i) {
+			for(int i = 0; i < v1.size() / blocksize ;++i)
+			{
 				pv1e = pv1e + blocksize;
-				for(;pv1 != pv1e;++pv1,++pv2) {
+				for(;pv1 != pv1e;++pv1,++pv2)
+				{
 					t = (((int64_t) *pv1 ) * ((int64_t) *pv2 ));
 					y += t;
 				}
 				normalize(y);
 			}
 
-			for(;pv1 != v1.end(); ++pv1, ++pv2) {
+			for(;pv1 != v1.end(); ++pv1, ++pv2)
+			{
 				t = (((int64_t) *pv1 ) * ((int64_t) *pv2 ));
 				y += t;
 			}
@@ -299,9 +286,11 @@ namespace LinBox
 			i_idx = i_idxe = v1.first.begin();
 			i_elt = v1.second.begin();
 
-			for(size_t i = 0; i < v1.first.size() / blocksize ; ++i) {
+			for(int i = 0; i < v1.first.size() / blocksize ; ++i)
+			{
 				i_idxe = i_idxe + blocksize;
-				for(;i_idx!= i_idxe;++i_idx, ++i_elt) {
+				for(;i_idx!= i_idxe;++i_idx, ++i_elt)
+				{
 					t = ( (int64_t) *i_elt ) * ( (int64_t) v2[*i_idx] );
 					y += t;
 				}
@@ -309,7 +298,8 @@ namespace LinBox
 			}
 
 
-			for(;i_idx!= v1.first.end();++i_idx, ++i_elt) {
+			for(;i_idx!= v1.first.end();++i_idx, ++i_elt)
+			{
 				t = ( (int64_t) *i_elt ) * ( (int64_t) v2[*i_idx] );
 				y += t;
 			}
@@ -325,12 +315,16 @@ namespace LinBox
 
 		inline void normalize(int64_t& _y) const
 		{
-			_y = (int32_t)_y -(int32_t)(int64_t)((double) _y * _F.modulusinv) * (int32_t)_F.modulus;
+			_y = (int64_t)_y -(int64_t)(int64_t)((double) _y * _F.modulusinv) * (int64_t)_F.modulus;
 		}
 
 	};
 }
 
-#include "linbox/randiter/modular-balanced.h"
-#endif //__LINBOX_modular_balanced_int32_H
+#undef LINBOX_MAX_INT64
+
+#include "linbox/randiter/modular.h" // do not unse _LB_MAX inside this one !
+
+
+#endif //__LINBOX_modular_balanced_int64_H
 

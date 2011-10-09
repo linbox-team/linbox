@@ -295,7 +295,7 @@ linbox/element/Makefile
 linbox/field/Makefile
 linbox/field/NTL/Makefile
 linbox/field/Givaro/Makefile
-linbox/field/FFPACK/Makefile
+linbox/field/Modular/Makefile
 linbox/matrix/Makefile
 linbox/randiter/Makefile
 linbox/ring/Makefile
