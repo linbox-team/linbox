@@ -245,6 +245,10 @@ namespace LinBox
 			return init (x, (double) y);
 		}
 
+		Element &init(Element &x) const
+		{
+			return x = 0 ;
+		}
 		inline Element& assign(Element& x, const Element& y) const
 		{
 			return x = y;
