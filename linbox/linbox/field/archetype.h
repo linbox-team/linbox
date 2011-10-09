@@ -43,6 +43,7 @@
 #define __LINBOX_field_archetype_H
 
 #include <iostream>
+#include "linbox/util/debug.h"
 #include "linbox/field/field-interface.h"
 #include "linbox/field/abstract.h"
 #include "linbox/field/envelope.h"
