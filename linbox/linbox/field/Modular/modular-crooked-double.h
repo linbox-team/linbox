@@ -244,7 +244,7 @@ namespace LinBox
 			return x;
 		}
 
-		inline Element& init(Element& x, const double y =0) const
+		inline Element& init(Element& x, const double y) const
 		{
 
 			x = drem (y, modulus);
@@ -393,7 +393,6 @@ namespace LinBox
 
 		unsigned long AccBound(const Element&r) const
 		{
-			Element one, zero ; init(one,1UL) ; init(zero,0UL);
 			double max_double = (double) (1ULL<<DBL_MANT_DIG) - modulus ;
 			double p = std::max(up_mod,-lo_mod) ;
 			if (areEqual(zero,r))

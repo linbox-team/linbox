@@ -117,7 +117,7 @@ namespace LinBox
 		      template<class T>T&characteristic(T&x)const{return x=T(lmodulus);}
 		      unsigned long characteristic()const{return FFPACK::Modular<double>::characteristic();}
 		      unsigned long cardinality()const{return FFPACK::Modular<double>::cardinality();}
-		      template<class T>T&init(T&x)const{return init(x,0);}
+		      template<class T>T&init(T&x)const{return init(x);}
 
 		      Element &init (Element &x, const integer &y) const
 		      {

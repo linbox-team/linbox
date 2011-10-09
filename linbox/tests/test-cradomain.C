@@ -328,6 +328,6 @@ int main (int argc, char **argv)
 	for(int i=0; pass && i<iterations; ++i)
 		pass &= TestCra((int)n,(int)s,seed);
 
-	LinBox::commentator.stop(MSG_STATUS (pass), (const char *) 0,"CRA-Domain test suite");
+	LinBox::commentator.stop(MSG_STATUS (pass), "CRA-Domain test suite");
 	return pass ? 0 : -1;
 }

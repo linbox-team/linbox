@@ -131,6 +131,11 @@ namespace LinBox
 			      return  x ;
 		      }
 
+		      Element &init(Element &x) const
+		      {
+			      return x = 0 ;
+		      }
+
 		      //! @bug faux si modulus==2
 		      inline bool isMinusOne (const Element &x) const
 		      {

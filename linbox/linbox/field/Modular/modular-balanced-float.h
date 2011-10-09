@@ -122,7 +122,6 @@ namespace LinBox
 				      return x = integer (y);
 		      }
 
-
 		      inline Element &init (Element &x, const integer &y) const
 		      {
 			      x = (Element)(y%lmodulus);
@@ -130,6 +129,11 @@ namespace LinBox
 			      else if (x < mhalf_mod) return x += modulus;
 
 			      return x;
+		      }
+
+		      Element &init(Element &x) const
+		      {
+			      return x = 0 ;
 		      }
 
 		      inline bool isMinusOne (const Element &x) const
