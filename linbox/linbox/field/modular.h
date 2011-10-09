@@ -29,6 +29,7 @@
  *   - Random Iterators
  *   .
  *
+ * @bug move Element& init(const Element&) to FFPACK. use using more..
  */
 
 #ifndef __LINBOX_field_modular_H
