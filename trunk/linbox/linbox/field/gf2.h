@@ -111,22 +111,22 @@ namespace LinBox
 		 * @param x field base element to contain output (reference returned).
 		 * @param y integer.
 		 */
-		Element &init (Element &x, const int &y = 0) const
+		Element &init (Element &x, const int &y ) const
 		{
 			return x = y & 1;
 		}
 
-		Element &init (Element &x, const unsigned int &y = 0) const
+		Element &init (Element &x, const unsigned int &y ) const
 		{
 			return x = y & 1;
 		}
 
-		Element &init (Element &x, const long &y = 0) const
+		Element &init (Element &x, const long &y ) const
 		{
 			return x = y & 1;
 		}
 
-		Element &init (Element &x, const unsigned long &y = 0) const
+		Element &init (Element &x, const unsigned long &y ) const
 		{
 			return x = y & 1;
 		}
@@ -144,6 +144,12 @@ namespace LinBox
 		Element &init (Element &x, const integer &y) const
 		{
 			return x = static_cast<long>(y) & 1;
+		}
+
+
+		Element &init(Element&x) const
+		{
+			return x = false;
 		}
 
 		BitVector::reference init (BitVector::reference x, const integer &y = 0) const

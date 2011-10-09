@@ -127,6 +127,11 @@ namespace LinBox
 			      return x;
 		      }
 
+		      Element &init(Element &x) const
+		      {
+			      return x = 0 ;
+		      }
+
 		      unsigned long AccBound(const Element&r) const
 		      {
 			      double max_double = (double) (1ULL<<FLT_MANT_DIG) - modulus ;

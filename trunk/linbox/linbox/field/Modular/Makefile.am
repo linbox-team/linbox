@@ -4,6 +4,7 @@
 pkgincludesubdir=$(pkgincludedir)/field/Modular
 
 BASIC_HDRS =            \
+    modular-unsigned.h  \
     modular.inl         \
     modular-int32.h     \
     modular-int64.h     \

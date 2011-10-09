@@ -205,7 +205,7 @@ namespace LinBox
 			return x;
 		}
 
-		inline Element& init(Element& x, int y =0) const
+		inline Element& init(Element& x, int y ) const
 		{
 			x = Element(y % int(modulus));
 			if ( x < 0 ) x=Element(x+modulus);

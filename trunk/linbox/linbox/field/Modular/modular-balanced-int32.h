@@ -139,6 +139,10 @@ namespace LinBox
 			return x;
 		}
 
+		Element &init(Element &x) const
+		{
+			return x = 0 ;
+		}
 
 	};
 

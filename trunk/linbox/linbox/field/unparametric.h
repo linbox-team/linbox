@@ -158,6 +158,7 @@ namespace LinBox
 		long unsigned int characteristic()const{return FFPACK::UnparametricField<K>::characteristic();};
 		long unsigned int cardinality()const{return FFPACK::UnparametricField<K>::cardinality();};
 		template<typename Src>Element&init(Element&x, const Src&s)const{return Caster (x, s);}
+		Element&init(Element&x)const{return Caster (x, 0);}
 		std::istream&read(std::istream&is, Element&x)const{return FFPACK::UnparametricField<K>::read(is,x);}
 		std::istream&read(std::istream&is)const{return FFPACK::UnparametricField<K>::read(is);}
 		template<typename T>T&convert(T&x,const Element&y)const{return Caster(x,y);}
