@@ -14,9 +14,8 @@
 #include <iostream>
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/field/field-interface.h"
-//#include "linbox/matrix/blas-domain.h"
 #include "linbox/algorithms/blas-domain.h"
-#include "fflas-ffpack/fflas/fflas.h"
+#include <fflas-ffpack/fflas/fflas.h>
 
 namespace LinBox
 {
@@ -127,6 +126,7 @@ namespace LinBox
 
 		}; // class Element
 
+		Element one,zero,mone;
 
 		class RandIter {
 			typedef typename _Field::RandIter FieldRandIter;
@@ -154,7 +154,15 @@ namespace LinBox
 
 		BlockRing(const _Field& F, size_t d=1) :
 			_F(F), _D(F), _b(d)
-		{}
+		{
+			one.set(new Matrix(d,d));
+			zero.set(new Matrix(d,d));
+			mone.set(new Matrix(d,d)) ;
+			_D.setIdentity(*(one.matrix));
+			_D.setZero(*(zero.matrix));
+			for (size_t i = 0 ;i < d ;++i)
+				mone.matrix->setEntry(i,i,_F.mone);
+		}
 
 		Element& init(Element& B) const
 		{

@@ -42,7 +42,9 @@
 #include "test-common.h"
 #include "test-generic.h"
 
+#ifndef TEST_ARCHETYPES
 #define TEST_ARCHETYPES 1
+#endif
 
 using namespace LinBox;
 
@@ -84,6 +86,7 @@ int main (int argc, char **argv)
  	GivaroExtension<GivaroGfq> F6 (F5, e );
  	GivaroExtension<> F7 (103, 4 );
 
+	LinBox::commentator.start("Givaro-zpz test suite", "GivZpz");
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
@@ -144,5 +147,6 @@ int main (int argc, char **argv)
 #endif
 
 
+	LinBox::commentator.stop(MSG_STATUS (pass), "GivaroZpz test suite");
 	return pass ? 0 : -1;
 }

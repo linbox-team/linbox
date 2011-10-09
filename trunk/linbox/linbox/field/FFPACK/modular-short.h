@@ -94,6 +94,7 @@ namespace LinBox
 		double modulusinv;
 
 	public:
+		const Element one,zero,mone;
 		friend class FieldAXPY<Modular<Element> >;
 		friend class DotProductDomain<Modular<Element> >;
 		friend class MVProductDomain<Modular<Element> >;
@@ -103,12 +104,14 @@ namespace LinBox
 		//default modular field,taking 251 as default modulus
 		Modular () :
 			modulus(251),lmodulus(modulus)
+			,one((Element)1),zero((Element)0),mone(Element(modulus-(Element)1))
 		{
 			modulusinv=1/(double)modulus;
 		}
 
 		Modular (int value, int exp = 1)  :
 			modulus((Element)value),lmodulus((unsigned long) value)
+			,one((Element)1),zero((Element)0),mone(Element(modulus-(Element)1))
 		{
 			modulusinv = 1 / ((double) value);
 #ifdef DEBUG
@@ -124,6 +127,7 @@ namespace LinBox
 
 		Modular(const Modular<Element>& mf) :
 			modulus(mf.modulus),lmodulus(mf. lmodulus),modulusinv(mf.modulusinv)
+			,one(mf.one),zero(mf.zero),mone(mf.mone)
 		{}
 
 		const Modular &operator=(const Modular<Element> &F)
@@ -131,6 +135,11 @@ namespace LinBox
 			modulus    = F. modulus;
 			lmodulus   = F. lmodulus ;
 			modulusinv = F. modulusinv;
+			F.assign(const_cast<Element&>(one),F.one);
+			F.assign(const_cast<Element&>(zero),F.zero);
+			F.assign(const_cast<Element&>(mone),F.mone);
+
+
 			return *this;
 		}
 
