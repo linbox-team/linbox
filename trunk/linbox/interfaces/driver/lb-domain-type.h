@@ -29,14 +29,11 @@
 #include "linbox/field/gmp-rational.h"
 
 #ifdef __LINBOX_HAVE_NTL
-#include "linbox/field/ntl-lzz_p.h"
-#include "linbox/field/ntl-ZZ_p.h"
-#include "linbox/field/ntl-ZZ.h"
+#include "linbox/field/ntl.h"
 #endif
 
 #ifdef __LINBOX_HAVE_GIVARO
-#include "linbox/field/givaro-zpz.h"
-#include "linbox/field/givaro-gfq.h"
+#include "linbox/field/givaro.h"
 #endif
 
 /**************************************
