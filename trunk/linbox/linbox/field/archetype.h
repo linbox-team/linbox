@@ -92,6 +92,8 @@ namespace LinBox
 		/// @name Object Management
 		//@{
 
+		Element one,zero,mone ;
+
 		/** \brief Copy constructor.
 		 *
 		 * Each field class is expected to provide a copy constructor.
@@ -103,7 +105,8 @@ namespace LinBox
 		 * random element generator to which
 		 * <tt> F._randIter_ptr</tt> points.
 		 */
-		FieldArchetype (const FieldArchetype &F)
+		FieldArchetype (const FieldArchetype &F) :
+			one(F.one),zero(F.zero),mone(F.mone)
 		{
 			if (F._field_ptr != 0) _field_ptr = F._field_ptr->clone ();
 			if (F._elem_ptr != 0) _elem_ptr = F._elem_ptr->clone ();
@@ -146,6 +149,9 @@ namespace LinBox
 				if (F._field_ptr != 0) _field_ptr = F._field_ptr->clone ();
 				if (F._elem_ptr != 0) _elem_ptr = F._elem_ptr->clone ();
 				if (F._randIter_ptr != 0) _randIter_ptr = F._randIter_ptr->clone ();
+				one = F.one ;
+				zero = F.zero ;
+				mone = F.mone ;
 			}
 
 			return *this;
@@ -169,8 +175,10 @@ namespace LinBox
 		 */
 		Element &init (Element &x, const integer &n = 0 ) const
 		{
-			if (x._elem_ptr != 0) delete x._elem_ptr;
-			x._elem_ptr = _elem_ptr->clone ();
+			// if (x._elem_ptr != 0) delete x._elem_ptr;
+			// x._elem_ptr = _elem_ptr->clone ();
+			if (x._elem_ptr == 0)
+				x._elem_ptr = _elem_ptr->clone ();
 			_field_ptr->init (*x._elem_ptr, n);
 			return x;
 		}
@@ -207,8 +215,9 @@ namespace LinBox
 		 */
 		Element &assign (Element &x, const Element &y) const
 		{
-			if (x._elem_ptr == 0)
-				x._elem_ptr = _elem_ptr->clone ();
+			linbox_check(x._elem_ptr != 0);
+			// if (x._elem_ptr == 0)
+				// x._elem_ptr = _elem_ptr->clone ();
 
 			_field_ptr->assign (*x._elem_ptr, *y._elem_ptr);
 			return x;
@@ -631,7 +640,10 @@ namespace LinBox
 		 * @param  f
 		 */
 		template<class Field_qcq>
-		FieldArchetype (Field_qcq *f) { constructor (f, f); }
+		FieldArchetype (Field_qcq *f)
+		{
+			constructor (f, f);
+		}
 
 		//@} Implementation-Specific Methods
 
@@ -673,6 +685,9 @@ namespace LinBox
 			_field_ptr    = field_ptr->clone ();
 			_elem_ptr     = static_cast<ElementAbstract*>  (new typename Field_qcq::Element ());
 			_randIter_ptr = static_cast<RandIterAbstract*> (new typename Field_qcq::RandIter (*field_ptr));
+			one  = static_cast<ElementAbstract*>  (new typename Field_qcq::Element (field_ptr->one) );
+			zero = static_cast<ElementAbstract*>  (new  typename Field_qcq::Element (field_ptr->zero ) );
+			mone = static_cast<ElementAbstract*>  (new  typename Field_qcq::Element (field_ptr->mone ) );
 		}
 
 		/** Template method for constructing archetype from a class not derived

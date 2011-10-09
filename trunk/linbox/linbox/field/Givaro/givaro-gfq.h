@@ -90,9 +90,11 @@ namespace LinBox
 
 	public:
 
-		using Givaro::GFqDom<int32_t>::one ;
-		using Givaro::GFqDom<int32_t>::zero;
-		Element mone ;
+		typedef Givaro::GFqDom<int32_t> Father_t ;
+
+		using Father_t::one ;
+		using Father_t::zero;
+		using Father_t::mone;
 		/** Element type.
 		 *  This type is inherited from the Givaro class GFqDom<int32_t>
 		 */
