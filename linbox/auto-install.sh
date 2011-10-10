@@ -11,10 +11,10 @@
 # TODO : add gmp in givaro and use auto-install in givaro
 # TODO : use an optionnal message in die function.
 
-STABLE_FFLAS=1.4.1
-STABLE_GIVARO=3.4.2
-GIV_TAR=125
-GIV_MD5=126
+STABLE_FFLAS=1.4.3
+STABLE_GIVARO=3.5.0
+GIV_TAR=133
+GIV_MD5=134
 
 #switches
 STABLE_VAR="true"
