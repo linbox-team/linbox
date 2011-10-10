@@ -61,7 +61,7 @@ namespace LinBox
 		unsigned long           _ps_; //!< prime size (minimum)
 
 
-		typedef ::Givaro::RNSsystem<Integer, Field >      CRTSystem;
+		typedef Givaro::RNSsystem<Integer, Field >      CRTSystem;
 		typedef typename CRTSystem::domains               Domains;
 		typedef typename CRTSystem::array                Elements;
 		// typedef typename CRTSystem::ring             Ring;
@@ -136,7 +136,7 @@ namespace LinBox
 		unsigned long           _ps_; //!< prime size (minimum)
 
 
-		typedef ::Givaro::RNSsystemFixed<Integer>       CRTSystemFixed;
+		typedef Givaro::RNSsystemFixed<Integer>       CRTSystemFixed;
 		typedef CRTSystemFixed::array                        Prime_t;
 		// typedef typename CRTSystem::domains       Domains;
 		// typedef typename CRTSystem::array        Elements;
