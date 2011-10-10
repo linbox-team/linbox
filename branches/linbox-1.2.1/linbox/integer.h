@@ -52,8 +52,8 @@ namespace LinBox
 	 * Integer representation from <a href=http://ljk.imag.fr/CASYS/LOGICIELS/givaro/>Givaro</a>.
 	 * @ingroup integers
 	 */
-	typedef ::Givaro::Integer integer;
-	typedef ::Givaro::Integer Integer;
+	typedef Givaro::Integer integer;
+	typedef Givaro::Integer Integer;
 
 #if 0
 // These integer types are defined by Givaro
@@ -97,7 +97,7 @@ namespace LinBox
 
 
         /*! @internal
-	 * Spy structure to have access to protected members of ::Givaro::Integer.
+	 * Spy structure to have access to protected members of Givaro::Integer.
 	 */
 	struct SpyInteger
 	{
@@ -139,7 +139,7 @@ namespace LinBox
 {
 // Natural logarithm of a
 // log(2) being close to 0.69314718055994531
-inline double naturallog(const ::Givaro::Integer& a) {
+inline double naturallog(const Givaro::Integer& a) {
   signed long int exp;
   double d = (double)mpz_get_d_2exp( &exp, (mpz_srcptr)(LinBox::SpyInteger::get_rep(a) ) );
   return (double)exp*0.69314718055994531+log(d);

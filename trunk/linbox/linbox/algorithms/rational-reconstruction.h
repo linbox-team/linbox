@@ -1237,7 +1237,7 @@ namespace LinBox
 			_r.convert(N, _lcontainer.numbound());
 			_r.convert(D, _lcontainer.denbound());
 			_r.convert(mod, prime);
-			::Givaro::root (D, D, k); D+=1;
+		 Givaro::root (D, D, k); D+=1;
 			bound=2*N*D;
 			std::cout<<"size in bit of the bound : "<<bound.bitsize()<<std::endl;
 			size_t minsteps = logp(bound, mod)+1;
@@ -1566,7 +1566,7 @@ namespace LinBox
 			_r.convert(N, _lcontainer.numbound());
 			_r.convert(D, _lcontainer.denbound());
 			_r.convert(mod, prime);
-			::Givaro::root (D, D, k); D+=1;
+		 Givaro::root (D, D, k); D+=1;
 			bound=2*N*D;
 			std::cout<<"size in bit of the bound : "<<bound.bitsize()<<std::endl;
 			size_t minsteps = logp(bound, mod)+1;
@@ -1890,7 +1890,7 @@ namespace LinBox
 			_r.convert(N, _lcontainer.numbound());
 			_r.convert(D, _lcontainer.denbound());
 			_r.convert(mod, prime);
-			::Givaro::root (D, D, k); D+=1;
+		 Givaro::root (D, D, k); D+=1;
 			bound=2*N*D;
 			std::cout<<"size in bit of the bound : "<<bound.bitsize()<<std::endl;
 			size_t minsteps = logp(bound, mod)+1;
@@ -2037,10 +2037,10 @@ namespace LinBox
 
 				// check if the 1st row is the short vector
 				latticeOK=true;
-				tmp = ::Givaro::abs(L3[0][0]*ratio);
+				tmp = Givaro::abs(L3[0][0]*ratio);
 				for (size_t i=1;i<k+1;++i){
 					for (size_t j=0;j<k+1;++j)
-						if (tmp > ::Givaro::abs(L3[i][j])){
+						if (tmp > Givaro::abs(L3[i][j])){
 							latticeOK=false;
 							break;
 						}

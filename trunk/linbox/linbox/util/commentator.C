@@ -227,7 +227,7 @@ namespace LinBox
 		linbox_check (_activities.top () != (Activity *) 0);
 
 		Activity *act = _activities.top ();
-		::Givaro::Timer tmp = act->_timer;
+	 Givaro::Timer tmp = act->_timer;
 		act->_timer.stop ();
 
 		if (k == -1)

@@ -56,7 +56,7 @@ public:
 		typedef typename Field::Element Element;
 #ifdef __LINBOX_HAVE_GIVARO
 		// use givpolynomial du to non genericity of charpoly over integer
-		typename LinBox::GivPolynomialRing<Field, ::Givaro::Dense>::Element pol;
+		typename LinBox::GivPolynomialRing<Field, Givaro::Dense>::Element pol;
 		LinBox::charpoly(pol, *B, meth);
 
 		// convert back the result to std::vector

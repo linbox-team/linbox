@@ -67,7 +67,7 @@ void printPolynomial(const Field& F, const Polynomial& P)
 
 
 typedef ZeroOne<PID_integer> Matrix;
-typedef GivPolynomialRing<PID_integer,::Givaro::Dense> IntPolRing;
+typedef GivPolynomialRing<PID_integer, Givaro::Dense> IntPolRing;
 
 int main (int argc, char **argv)
 {

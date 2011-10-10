@@ -60,7 +60,7 @@ static bool testDotProduct (Field &F, const char *text, LinBox::VectorStream<Vec
 	LinBox::VectorWrapper::ensureDim (v1, stream1.n ());
 	LinBox::VectorWrapper::ensureDim (v2, stream2.n ());
 
-	::Givaro::Timer timer;
+ Givaro::Timer timer;
 	double totaltime = 0.0;
 
 	while (stream1 && stream2) {

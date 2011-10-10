@@ -145,7 +145,7 @@ namespace LinBox
 		commentator.start ("Integer Valence", "Ivalence");
 #if __LINBOX_SIZEOF_LONG == 8
 		RandomPrimeIterator genprime( 31 );
-		ChineseRemainder< EarlySingleCRA< GivaroZpz< ::Givaro::Std64> > > cra(3UL);
+		ChineseRemainder< EarlySingleCRA< GivaroZpz< Givaro::Std64> > > cra(3UL);
 #else
 		RandomPrimeIterator genprime( 26 );
 		ChineseRemainder< EarlySingleCRA< Modular<double> > > cra(3UL);

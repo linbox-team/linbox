@@ -29,10 +29,10 @@
 #include <givaro/givtimer.h>
 
 namespace LinBox {
-typedef ::Givaro::Timer Timer  ;
-typedef ::Givaro::BaseTimer BaseTimer ;
-typedef ::Givaro::UserTimer UserTimer ;
-typedef ::Givaro::SysTimer SysTimer ;
+typedef Givaro::Timer Timer  ;
+typedef Givaro::BaseTimer BaseTimer ;
+typedef Givaro::UserTimer UserTimer ;
+typedef Givaro::SysTimer SysTimer ;
 }
 
 #endif  //__LINBOX_timer_H

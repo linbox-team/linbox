@@ -72,7 +72,7 @@ typedef LinBoxDumbType ntl_domain_list;
 
 #ifdef __LINBOX_HAVE_GIVARO
 typedef LinBoxTypelist < LinBox::GivaroGfq, LinBoxDumbType> DG1;
-typedef LinBoxTypelist < LinBox::GivaroZpz< ::Givaro::Std32>, DG1> DG2;
+typedef LinBoxTypelist < LinBox::GivaroZpz< Givaro::Std32>, DG1> DG2;
 #ifdef __LINBOX_MINIMIZE_DOMAIN
 typedef DG1 givaro_domain_list;
 #else
@@ -117,7 +117,7 @@ void UpdateDomain(){
 #ifdef __LINBOX_HAVE_GIVARO
 	linbox_domain.add("givaro_field_gfq"    , constructDomain<LinBox::GivaroGfq>);
 #ifndef  __LINBOX_MINIMIZE_DOMAIN
-	linbox_domain.add("givaro_field_32"     , constructDomain<LinBox::GivaroZpz< ::Givaro::Std32> >);
+	linbox_domain.add("givaro_field_32"     , constructDomain<LinBox::GivaroZpz< Givaro::Std32> >);
 #endif
 #endif
 }

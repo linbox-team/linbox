@@ -364,7 +364,7 @@ void printPolynomial (const Field &F, const Polynomial &v)
 
 IntegerRing ZZ;
 SpyInteger spy;
-typedef GivPolynomialRing<IntegerRing,::Givaro::Dense> IntPolRing;
+typedef GivPolynomialRing<IntegerRing, Givaro::Dense> IntPolRing;
 
 BlasBlackbox<IntegerRing> new_matrix(mpz_t** matrix, size_t nrows, size_t ncols)
 {

@@ -63,7 +63,7 @@ namespace LinBox
 					integer::random(tmp,cbits);
 					tmp = tmp*p+1;
 					tresh--;
-				} while ((::Givaro::probab_prime(tmp)<2) && (tresh));
+				} while (( Givaro::probab_prime(tmp)<2) && (tresh));
 				cbits++;
 			}
 			while(tresh==0);
