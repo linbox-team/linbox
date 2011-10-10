@@ -4,7 +4,7 @@
 
 ACLOCAL_AMFLAGS = -I macros
 
-SUBDIRS=linbox macros tests interfaces doc examples benchmarks
+SUBDIRS=linbox macros tests interfaces doc examples
 
 # I intend to pare down the target "check" so as to be a smaller check used
 # at installation time with a focus on confirming that dependencies on
@@ -29,10 +29,8 @@ doc/linbox-dev-html/index.html:
 examples:
 	(cd examples; make examples)
 
-benchmarks:
-	(cd benchmarks; make benchmarks)
 
-.PHONY:examples benchmarks
+.PHONY:examples
 
 bin_SCRIPTS=linbox-config
 
