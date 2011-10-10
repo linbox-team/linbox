@@ -1,0 +1,17 @@
+// Copyright (C) 2010 LinBox, GNU LGPL, see COPYING for licence information
+
+/** @ingroup solutions
+@defgroup reducedforms Recuded forms
+@brief NO DOC YET
+
+\section lu LU
+
+\section echelon Echelo
+
+\section frobenius Frobenius
+
+\section smith Smith normal form
+
+*/
+
+// vim:syntax=doxygen
