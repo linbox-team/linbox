@@ -512,10 +512,10 @@ echo -e "${BEG}configuring Fflas-Ffpack..."
 
 if [ "$STABLE_VAR" = "true" ]; then
 	echo "./configure  $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS"
-	./configure  $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS || die
+	./configure  "$PREFIX" "$DEBUG" "$OPTIM" "$BLAS" "$GIVARO" "$WARNINGS" || die
 else
 	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS"
-	./autogen.sh $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS || die
+	./autogen.sh "$PREFIX" "$DEBUG" "$OPTIM" "$BLAS" "$GIVARO" "$WARNINGS" || die
 fi
 
 echo -e "${BEG}building Fflas-Ffpack..."
