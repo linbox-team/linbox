@@ -56,7 +56,7 @@
 using namespace std;
 
 
-#include "linbox/field/modular-int32.h"
+#include "linbox/field/modular.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/algorithms/smith-form-sparseelim-local.h"
 
