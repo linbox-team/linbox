@@ -562,10 +562,11 @@ FFLAFLAS="--with-fflas-ffpack=$PREFIX_LOC"
 
 if [ -x autogen.sh ] ;  then 
 	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS $IML $SAGE $DRIV"
-	./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS $IML $SAGE $DRIV || die
+	./autogen.sh "$PREFIX" "$DEBUG" "$OPTIM" "$GMP" "$BLAS" "$NTL" "$GIVARO" "$FFLAFLAS" "$WARNINGS" "$IML" "$SAGE" "$DRIV" || die
 else
 	echo "./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS $IML $SAGE $DRIV"
-	./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS  $IML $SAGE $DRIV || die
+	# ./configure $PREFIX $DEBUG $OPTIM $GMP $BLAS $NTL $GIVARO $FFLAFLAS $WARNINGS  $IML $SAGE $DRIV || die
+	./configure "$PREFIX" "$DEBUG" "$OPTIM" "$GMP" "$BLAS" "$NTL" "$GIVARO" "$FFLAFLAS" "$WARNINGS" "$IML" "$SAGE" "$DRIV" || die
 fi
 
 echo -e "${BEG}building LinBox..."
