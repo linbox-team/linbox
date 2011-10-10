@@ -1,0 +1,93 @@
+// Copyright (C) 2005 David Saunders, part of LinBox, GNU LGPL, see COPYING
+/** \ingroup linbox
+\defgroup doc doc
+
+\brief This is a discussion of the form and organization of %LinBox documentation.
+
+The doc directory contains
+- in subdirectory linbox-html/ the html documentation, it has been built using <a href=http://www.stack.nl/~dimitri/doxygen/>Doxygen</a>.  Start at
+  <a href="index.html">linbox-html/index.html</a>.
+  <!--
+- in subdirectory latex/ the latex reference manual, built using Doxygen. This amounts to
+everything in the html documentation written out sequentially.
+-->
+- Doxyfile, which specifies parameters for Doxygen to use when building the docs.
+- %doc.doxy, which is the source of this page.
+- %mainpage.doxy, which is the source of linbox-html/index.html.
+- <a href="install-dist.html">install-dist.html</a> and <a href="install-dev.html">install-dev.html</a>, some basic installation information.
+- linbox.html, which can be a handy way to get to linbox-html/index.html.
+
+There is a documentation page for each directory (see <a
+href="modules.html">Modules</a>)
+and each class of the %LinBox distribution.
+A directory (Module) page discusses the primary concepts supported by codes in
+the directory and lists the classes declared in the directory's files.
+A class page discusses properties of the class beyond the
+primary concept(s) that it implements and lists it's documented members.
+
+<!-- Files containing a <code>main()</code>, such as in the examples directory,
+have a file documentation and show up in the "File List" of the
+documentation giving easy access to the source code. -->
+
+Files containing a <code>\\file my_dir/my_file.h</code> documentation show up in
+the <a href=files.html>files</a> list.
+
+<!-- todo discuss the properties of the various doxygen listings. -->
+
+Each documented object (directory, class, member function, ...) has a one line memo
+that appears with it's name or signature in a parent object listing and at the top of
+it's own page if it has one (directory, class, top-level function).
+The memo also reappears as the first line of the fuller documentation.
+
+Some attempt is made to indicate which parts are most relevant to the user.
+<small>HOW??</small>
+
+<h4> Developers: </h4>
+Here are some rules of thumb about the documentation.
+
+Each directory dir/ has a dir/dir.doxy file listing its most user oriented contents and explaining the general nature of them.
+All other documentation is in the header files, a doc comment for each class and for
+each documented member function.
+In tests/ and examples/ there is also some documentation in .C files.
+
+Each documentation comment begins with a <code>\\brief</code> memo.
+Keep in mind that the <code>\\brief</code> text appears with the name/signature line of the object
+right above it.  Thus there is no need to restate information that is plain from the signature
+such as the C++ type of a parameter.  Try to make the brief memo succinctly state what the object
+is for.  The user, looking at the signature and brief memo, will be trying to decide whether,
+at this moment in her study of things, she needs to click on this item for the fuller
+documentation of it.  Try to help.
+
+The brief memo should not contain links to other pages.
+Put desired links in the fuller
+documentation<!--, sometimes explicitly in "see also" section (using "<code>\\see</code>")-->.
+Most particularly the brief memo should not
+contain links to the object of which this item is a member.  Such links
+become links to the current page and are a distraction and annoyance to the reader.
+
+Use documented parameter listings, with <code>\\param arg - ...</code>, when you have something significant to
+say about all or most of the parameters.  When you use <code>\\param</code> for one parameter of a function,
+use it for all of them.  However, it is sometimes better to skip the <code>\\param</code> listing format
+and just discuss in sentences the parameters, their requirements on input, relation to each other,
+and properties on output.  Use your judgement about this on a case by case basis.
+
+Members of archetypes should be thoroughly documented in the archetype and then
+not documented at all in classes adhering to the archetype.  Just a reference to the
+archetype documentation suffices.  See <code>???</code> for an example of this.
+However, if the archetype function has a particular property concerning it's performance
+or use in this particular class, then document that special property.
+See Butterfly for an example of this.
+In many functions the return value is a reference to the first parameter, the primary output paramater.
+parameter and is rarely used in practice.
+In this case, don't use both the <code>\\param</code> and the <code>\\return</code>.  Earlier I proposed not to use <code>\\return</code>
+at all in these situations.  Perhaps we should use <code> \\return arg1 - ...</code> in place of
+<code>\\param arg1 - ... </code>.
+See <code>???</code> for an example of this.
+
+<h4>References</h4>
+References to papers/book can be documented for classes, functions, groups,... and referenced in a <a href="bib.html">Bibliography</a> page
+using :  \n
+<code>\\ref</code> - [Authors] [<i>Title</i>] [journal,conference,book,...] [<a href="">doi</a>].
+*/
+
+// vim:syn=doxygen
