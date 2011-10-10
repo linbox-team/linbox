@@ -119,7 +119,7 @@ help() {
 #  parser  # 
 ############
 
-for i in $* ; do
+for i in "$@" ; do
 	case "$i" in
 		# switches
 		"--help"|"-h"|"-?") 
@@ -247,7 +247,7 @@ for i in $* ; do
 				;;
 			"--with-blas")
 				if	[ "x$BLAS_VAR" = "xtrue" ] ; then  echo "GMP path already set ?" ;      help ; exit -1; fi
-				BLAS="$i"
+				BLAS=$QUI=\"$QUOI\"
 				BLAS_VAR="true"
 				;;
 			"--with-ntl")
@@ -358,34 +358,6 @@ cool
 
 cd build ;
 
-### Fflas-ffpack ###
-
-echo -en "${BEG}fecthing Fflas-Ffpack..."
-if [ "$STABLE_VAR" = "true" ]; then
-	if [ -f fflas-ffpack-$STABLE_FFLAS.tar.gz ] ; then
-		echo "already there"
-		echo -ne "${BEG}fetching md5sum" ; 
-		[ -f fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum ] && rm fflas-ffpack-${STABLE_FFLAS}.tar.gz.md5sum ;
-		wget http://linalg.org/fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum >/dev/null 2>&1 || die
-		[ -f fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum ] || die
-		cool
-		echo -ne "${BEG}"
-		md5sum -c fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum || die
-	else
-		wget http://linalg.org/fflas-ffpack-$STABLE_FFLAS.tar.gz  >/dev/null 2>&1 || die
-		[ -f fflas-ffpack-$STABLE_FFLAS.tar.gz ] || die
-		echo -ne "${BEG}fetching md5sum" ; 
-		wget http://linalg.org/fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum >/dev/null 2>&1 || die
-		cool
-		echo -ne "${BEG}"
-		md5sum -c fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum || die
-	fi
-else
-	OK=0 ;
-	svn co svn://linalg.org/fflas-ffpack 2>&1 >/dev/null && OK=1 
-	[ "$OK" = "1" ] &&  cool  || die
-fi
-
 ### Givaro ###
 
 echo -en "${BEG}fecthing Givaro..."
@@ -414,19 +386,38 @@ else
 	[ "$OK" = "1" ] &&  cool  || die 
 fi
 
+### Fflas-ffpack ###
+
+echo -en "${BEG}fecthing Fflas-Ffpack..."
+if [ "$STABLE_VAR" = "true" ]; then
+	if [ -f fflas-ffpack-$STABLE_FFLAS.tar.gz ] ; then
+		echo "already there"
+		echo -ne "${BEG}fetching md5sum" ; 
+		[ -f fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum ] && rm fflas-ffpack-${STABLE_FFLAS}.tar.gz.md5sum ;
+		wget http://linalg.org/fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum >/dev/null 2>&1 || die
+		[ -f fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum ] || die
+		cool
+		echo -ne "${BEG}"
+		md5sum -c fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum || die
+	else
+		wget http://linalg.org/fflas-ffpack-$STABLE_FFLAS.tar.gz  >/dev/null 2>&1 || die
+		[ -f fflas-ffpack-$STABLE_FFLAS.tar.gz ] || die
+		echo -ne "${BEG}fetching md5sum" ; 
+		wget http://linalg.org/fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum >/dev/null 2>&1 || die
+		cool
+		echo -ne "${BEG}"
+		md5sum -c fflas-ffpack-$STABLE_FFLAS.tar.gz.md5sum || die
+	fi
+else
+	OK=0 ;
+	svn co svn://linalg.org/fflas-ffpack 2>&1 >/dev/null && OK=1 
+	[ "$OK" = "1" ] &&  cool  || die
+fi
+
 
 #####################
 #  extract sources  #
 #####################
-
-### Fflas-ffpack ###
-
-OK=0
-if [ "$STABLE_VAR" = "true" ]; then
-	echo -en "${BEG}extracting Fflas-Ffpack..."
-	tar xzf fflas-ffpack-$STABLE_FFLAS.tar.gz  && OK=1
-	[ "$OK" = "1" ] &&  cool   || die
-fi
 
 ### Givaro ###
 
@@ -437,55 +428,16 @@ if [ "$STABLE_VAR" = "true" ]; then
 	[ "$OK" = "1" ] &&  cool   || die 
 fi
 
-##########################
-#  install fflas-ffpack  #
-##########################
+### Fflas-ffpack ###
 
+OK=0
 if [ "$STABLE_VAR" = "true" ]; then
-	cd fflas-ffpack-$STABLE_FFLAS/ || die
-else
-	cd fflas-ffpack/ || die
+	echo -en "${BEG}extracting Fflas-Ffpack..."
+	tar xzf fflas-ffpack-$STABLE_FFLAS.tar.gz  && OK=1
+	[ "$OK" = "1" ] &&  cool   || die
 fi
 
 
-if [ -f Makefile ] ; then
-	echo -e "${BEG}cleaning Fflas-Ffpack..."
-	${MAKEPROG} clean || die
-	${MAKEPROG} distclean || die 
-	# ${MAKEPROG} unistall || die
-	cool
-fi
-
-echo -e "${BEG}configuring Fflas-Ffpack..."
-
-if [ "$STABLE_VAR" = "true" ]; then
-	echo "./configure  $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS"
-	./configure  $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS || die
-else
-	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS"
-	./autogen.sh $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS || die
-fi
-
-echo -e "${BEG}building Fflas-Ffpack..."
-echo "${MAKEPROG} CXXFLAGS+=\"$EXTRA\""
-if [ -n "$EXTRA" ] ; then
-	${MAKEPROG} "CXXFLAGS+=\"$EXTRA\"" || die
-else
-	${MAKEPROG} || die
-fi
-
-if [ "$CHECK_VAR" = "true" ] ; then
-	echo -e "${BEG}checking Fflas-Ffpack..."
-	${MAKEPROG} check || die
-fi
-
-
-echo -e "${BEG}installing Fflas-Ffpack..."
-${MAKEPROG} install || die
-
-cool
-#return in build
-cd ..
 
 ####################
 #  install Givaro  #
@@ -536,6 +488,56 @@ ${MAKEPROG} install || die
 cd ..
 
 cool
+
+##########################
+#  install fflas-ffpack  #
+##########################
+
+if [ "$STABLE_VAR" = "true" ]; then
+	cd fflas-ffpack-$STABLE_FFLAS/ || die
+else
+	cd fflas-ffpack/ || die
+fi
+
+
+if [ -f Makefile ] ; then
+	echo -e "${BEG}cleaning Fflas-Ffpack..."
+	${MAKEPROG} clean || die
+	${MAKEPROG} distclean || die 
+	# ${MAKEPROG} unistall || die
+	cool
+fi
+
+echo -e "${BEG}configuring Fflas-Ffpack..."
+
+if [ "$STABLE_VAR" = "true" ]; then
+	echo "./configure  $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS"
+	./configure  $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS || die
+else
+	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS"
+	./autogen.sh $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS || die
+fi
+
+echo -e "${BEG}building Fflas-Ffpack..."
+echo "${MAKEPROG} CXXFLAGS+=\"$EXTRA\""
+if [ -n "$EXTRA" ] ; then
+	${MAKEPROG} "CXXFLAGS+=\"$EXTRA\"" || die
+else
+	${MAKEPROG} || die
+fi
+
+if [ "$CHECK_VAR" = "true" ] ; then
+	echo -e "${BEG}checking Fflas-Ffpack..."
+	${MAKEPROG} check || die
+fi
+
+
+echo -e "${BEG}installing Fflas-Ffpack..."
+${MAKEPROG} install || die
+
+cool
+#return in build
+cd ..
 
 #return in linbox
 cd ..
