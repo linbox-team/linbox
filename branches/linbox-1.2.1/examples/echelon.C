@@ -31,7 +31,7 @@
 
 #include <iostream>
 
-#include "linbox/field/modular-double.h"
+#include "linbox/field/modular.h"
 #include "linbox/util/matrix-stream.h"
 #include "linbox/algorithms/echelon-form.h"
 

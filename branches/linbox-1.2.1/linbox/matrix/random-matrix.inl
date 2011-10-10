@@ -19,6 +19,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#ifndef __LINBOX_matrix_random_matrix_INL
+#define __LINBOX_matrix_random_matrix_INL
 /** @file matrix/random-matrix.inl
  * @ingroup matrix
  * @brief Implementation of random matrices.
@@ -28,6 +30,7 @@
 namespace LinBox
 {
 
+	//! This is the namespace all LinBox internal code is in.
 	namespace Protected {
 
 		template<class Randiter,class Field>
@@ -406,6 +409,8 @@ namespace LinBox
 
 
 } // LinBox
+
+#endif // __LINBOX_matrix_random_matrix_INL
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

@@ -37,10 +37,10 @@ EXTRA=""
 EXTRA_VAR=""
 IML="--with-iml"
 IML_VAR=""
-SAGE="--enable-sage"
-SAGE_VAR=""
-DRIV="--enable-drivers"
-DRIV_VAR=""
+SAGE=""
+SAGE_VAR="false"
+DRIV=""
+DRIV_VAR="false"
 
 MAKEOPT= 
 MAKE_VAR=""
@@ -106,9 +106,9 @@ help() {
 	echo " --enable-optimization : build with compile-time optimization."
 	echo "                         Default : enabled."
 	echo " --enable-sage         : build with sage support."
-	echo "                         Default : enabled."
+	echo "                         Default : disabled."
 	echo " --enable-drivers      : build with drivers support."
-	echo "                         Default : enabled."
+	echo "                         Default : disabled."
 	echo 
 	echo " >> calling helllp <<"
 	echo 

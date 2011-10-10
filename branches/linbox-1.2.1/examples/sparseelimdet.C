@@ -33,7 +33,7 @@
 #include <vector>
 #include <utility>
 
-#include "linbox/field/modular-double.h"
+#include "linbox/field/modular.h"
 #include "linbox/field/gf2.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/zero-one.h"

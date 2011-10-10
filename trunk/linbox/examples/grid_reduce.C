@@ -34,8 +34,7 @@
 #include<fstream>
 
 #include "linbox/field/PID-integer.h"
-#include "linbox/field/modular-balanced-int.h"
-#include "linbox/field/modular-int.h"
+#include "linbox/field/modular.h"
 #include "linbox/util/timer.h"
 #include "linbox-config.h"
 #include "linbox/matrix/grid.h"

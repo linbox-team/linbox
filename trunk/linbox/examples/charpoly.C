@@ -31,7 +31,7 @@
 #include <iomanip>
 
 #include "linbox/util/timer.h"
-#include "linbox/field/modular-double.h"
+#include "linbox/field/modular.h"
 #include "linbox/field/unparametric.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/blas-blackbox.h"
