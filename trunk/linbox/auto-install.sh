@@ -461,10 +461,18 @@ echo -e "${BEG}configuring Givaro..."
 
 if [ "$STABLE_VAR" = "true" ]; then
 	echo "./configure  $PREFIX $DEBUG $OPTIM $GMP $WARNINGS"
-	./configure  $PREFIX $DEBUG $OPTIM $GMP $WARNINGS || die
+	echo "./configure  $PREFIX $DEBUG $OPTIM $GMP $WARNINGS" > configure.givaro.exe
+	chmod +x configure.givaro.exe
+	./configure.givaro.exe
+	rm rf configure.givaro.exe
+	#./configure  $PREFIX $DEBUG $OPTIM $GMP $WARNINGS || die
 else
 	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $WARNINGS"
-	./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $WARNINGS || die
+	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $WARNINGS" > autogen.givaro.exe
+	chmod +x autogen.givaro.exe
+	./autogen.givaro.exe
+	rm rf autogen.givaro.exe
+	#./autogen.sh $PREFIX $DEBUG $OPTIM $GMP $WARNINGS || die
 fi
 
 echo -e "${BEG}building Givaro..."
@@ -512,10 +520,18 @@ echo -e "${BEG}configuring Fflas-Ffpack..."
 
 if [ "$STABLE_VAR" = "true" ]; then
 	echo "./configure  $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS"
-	./configure  "$PREFIX" "$DEBUG" "$OPTIM" "$BLAS" "$GIVARO" "$WARNINGS" || die
+	echo "./configure  $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS" > configure.fflas.exe
+	chmod +x configure.fflas.exe
+	./configure.fflas.exe
+	rm rf configure.fflas.exe
+	#./configure  "$PREFIX" "$DEBUG" "$OPTIM" "$BLAS" "$GIVARO" "$WARNINGS" || die
 else
 	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS"
-	./autogen.sh "$PREFIX" "$DEBUG" "$OPTIM" "$BLAS" "$GIVARO" "$WARNINGS" || die
+	echo "./autogen.sh $PREFIX $DEBUG $OPTIM $BLAS $WARNINGS" > configure.fflas.exe
+	chmod +x configure.fflas.exe
+	./configure.fflas.exe
+	rm rf configure.fflas.exe
+	#./autogen.sh "$PREFIX" "$DEBUG" "$OPTIM" "$BLAS" "$GIVARO" "$WARNINGS" || die
 fi
 
 echo -e "${BEG}building Fflas-Ffpack..."
