@@ -49,7 +49,7 @@ typedef Field::Element Element;
 typedef Vector<Integers>::Dense DVector;
 typedef GMPRationalField Rationals;
 typedef Rationals::Element Quotient;
-typedef BlasBlackbox<Integers > Blackbox;
+typedef BlasMatrix<Integers > Blackbox;
 typedef SparseMatrix<Rationals > RBlackbox;
 
 //#define _LB_CONT_FR
@@ -163,7 +163,7 @@ struct PrecRationalModularMinpoly {
 void continuedFractionIn(double x,Integer& num, Integer& den, double epsi,const size_t s, Integer den_bound);
 template <class RMatrix>
 void generate_precRatMat(string& filename, RMatrix& M, DVector& den, Integer& denPrec);
-void i_vti_v(RBlackbox& Res, BlasBlackbox<Rationals >& M, DVector& den, Integer& detPrec);
+void i_vti_v(RBlackbox& Res, BlasMatrix<Rationals >& M, DVector& den, Integer& detPrec);
 
 int main (int argc, char** argv)
 {
@@ -186,7 +186,7 @@ int main (int argc, char** argv)
 	Integer detDen;
 
 	Blackbox DM(Z,n,n);
-	BlasBlackbox<Rationals > In(Q,n,n);
+	BlasMatrix<Rationals > In(Q,n,n);
 	RBlackbox M(Q,n,n);
 	DVector V(n,1);
 
@@ -272,7 +272,7 @@ void continuedFractionIn(Integer& num, Integer& den, double epsi,const size_t s,
 	}
 }
 
-void i_vti_v(RBlackbox& Res, BlasBlackbox<Rationals >& M, DVector& den, Integer& detPrec)
+void i_vti_v(RBlackbox& Res, BlasMatrix<Rationals >& M, DVector& den, Integer& detPrec)
 {
 	detPrec=1;
 	Rationals Q;

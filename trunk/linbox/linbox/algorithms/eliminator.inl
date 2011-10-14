@@ -92,7 +92,7 @@ namespace LinBox
 
 		_MD.subin (_A, _A);
 
-		BlasMatrix<Element> A1 (_A, 0, 0, A.rowdim (), A.coldim ());
+		BlasMatrix<Field> A1 (_A, 0, 0, A.rowdim (), A.coldim ());
 		_MD.copy (A1, A);
 
 		setIN (_U);
@@ -107,18 +107,18 @@ namespace LinBox
 		_MD.permuteColumns (_U, _P.rbegin (), _P.rend ());
 		_MD.permuteColumns (_U, P.begin (), P.end ());
 
-		BlasMatrix<Element> Tu1 (Tu, rank, 0, A.rowdim () - rank, rank);
-		BlasMatrix<Element> U2 (_U, rank, 0, A.rowdim () - rank, rank);
+		BlasMatrix<Field> Tu1 (Tu, rank, 0, A.rowdim () - rank, rank);
+		BlasMatrix<Field> U2 (_U, rank, 0, A.rowdim () - rank, rank);
 		_MD.copy (Tu1, U2);
 
-		BlasMatrix<Element> Ainv1 (Ainv, 0, 0, rank, rank);
-		BlasMatrix<Element> U1 (_U, 0, 0, rank, rank);
+		BlasMatrix<Field> Ainv1 (Ainv, 0, 0, rank, rank);
+		BlasMatrix<Field> U1 (_U, 0, 0, rank, rank);
 		_F.inv (dinv, d);
 		_MD.mul (Ainv1, U1, dinv);
 
-		BlasMatrix<Element> Tv1 (Tv, 0, rank, rank, A.coldim () - rank);
-		BlasMatrix<Element> U3 (_U, 0, 0, rank, A.rowdim ());
-		BlasMatrix<Element> A2 (_A, 0, rank, A.rowdim (), A.coldim () - rank);
+		BlasMatrix<Field> Tv1 (Tv, 0, rank, rank, A.coldim () - rank);
+		BlasMatrix<Field> U3 (_U, 0, 0, rank, A.rowdim ());
+		BlasMatrix<Field> A2 (_A, 0, rank, A.rowdim (), A.coldim () - rank);
 		_MD.copy (A1, A);
 		_MD.permuteColumns (A1, Q.begin (), Q.end ());
 		_MD.permuteRows (A2, P.begin (), P.end ());
@@ -216,7 +216,7 @@ namespace LinBox
 		permute (_T, Qp.rbegin (), Qp.rend ());
 
 		/* Apply final permutations to _U, copying to W */
-		BlasMatrix<Element> U1 (_U, rank, 0, _U.rowdim () - rank, _U.coldim ());
+		BlasMatrix<Field> U1 (_U, rank, 0, _U.rowdim () - rank, _U.coldim ());
 		_MD.subin (U1, U1);
 
 		_MD.permuteColumns (_U, _P.rbegin (), _P.rend ());
@@ -294,18 +294,18 @@ namespace LinBox
 		_MD.permuteColumns (_U, _P.rbegin (), _P.rend ());
 		_MD.permuteColumns (_U, P.begin (), P.end ());
 
-		BlasMatrix<Element> Tu1 (Tu, rank, 0, A.rowdim () - rank, rank);
-		BlasMatrix<Element> U2 (_U, rank, 0, A.rowdim () - rank, rank);
+		BlasMatrix<Field> Tu1 (Tu, rank, 0, A.rowdim () - rank, rank);
+		BlasMatrix<Field> U2 (_U, rank, 0, A.rowdim () - rank, rank);
 		_MD.copy (Tu1, U2);
 
-		BlasMatrix<Element> Ainv1 (U, 0, 0, rank, rank);
-		BlasMatrix<Element> U1 (_U, 0, 0, rank, rank);
+		BlasMatrix<Field> Ainv1 (U, 0, 0, rank, rank);
+		BlasMatrix<Field> U1 (_U, 0, 0, rank, rank);
 		_F.inv (dinv, det);
 		_MD.mul (Ainv1, U1, dinv);
 
-		BlasMatrix<Element> Tv1 (Tv, 0, rank, rank, A.coldim () - rank);
-		BlasMatrix<Element> U3 (_U, 0, 0, rank, A.rowdim ());
-		BlasMatrix<Element> A2 (_A, 0, rank, A.rowdim (), A.coldim () - rank);
+		BlasMatrix<Field> Tv1 (Tv, 0, rank, rank, A.coldim () - rank);
+		BlasMatrix<Field> U3 (_U, 0, 0, rank, A.rowdim ());
+		BlasMatrix<Field> A2 (_A, 0, rank, A.rowdim (), A.coldim () - rank);
 		_MD.copy (_A, A);
 		_MD.permuteColumns (_A, Q.begin (), Q.end ());
 		_MD.permuteRows (A2, P.begin (), P.end ());
@@ -369,12 +369,12 @@ namespace LinBox
 		report << "Starting column: " << s << std::endl;
 		report << "Column dimension: " << m << std::endl;
 
-		BlasMatrix<Element> Acopy (_A);
+		BlasMatrix<Field> Acopy (_A);
 
 		unsigned int P_start = _P.size ();
 #endif
 
-		BlasMatrix<Element> Ap (_A, k, s, _A.rowdim () - k, m);
+		BlasMatrix<Field> Ap (_A, k, s, _A.rowdim () - k, m);
 
 		if (_MD.isZero (Ap)) {
 			r = 0;
@@ -415,7 +415,7 @@ namespace LinBox
 			unsigned int r1, r2;
 			typename Field::Element d1, d0inv, d1inv, d1neg;
 
-			BlasMatrix<Element> B (_A, 0, s + m1, _A.rowdim (), m2);
+			BlasMatrix<Field> B (_A, 0, s + m1, _A.rowdim (), m2);
 
 			unsigned int P_start = (unsigned int) _P.size ();
 
@@ -427,16 +427,16 @@ namespace LinBox
 
 			unsigned int l1 = (unsigned int) _U.rowdim () - (k + r1);
 
-			BlasMatrix<Element> a (_U,    0,      k,      k,  r1);
-			BlasMatrix<Element> u (_U,    k,      k,      r1, r1);
-			BlasMatrix<Element> c (_U,    k + r1, k,      l1, r1);
+			BlasMatrix<Field> a (_U,    0,      k,      k,  r1);
+			BlasMatrix<Field> u (_U,    k,      k,      r1, r1);
+			BlasMatrix<Field> c (_U,    k + r1, k,      l1, r1);
 
-			BlasMatrix<Element> et (_tmp, 0,      0,      k,  m2);
-			BlasMatrix<Element> gt (_tmp, 0,      0,      l1, m2);
+			BlasMatrix<Field> et (_tmp, 0,      0,      k,  m2);
+			BlasMatrix<Field> gt (_tmp, 0,      0,      l1, m2);
 
-			BlasMatrix<Element> e (_A,    0,      s + m1, k,  m2);
-			BlasMatrix<Element> f (_A,    k,      s + m1, r1, m2);
-			BlasMatrix<Element> g (_A,    k + r1, s + m1, l1, m2);
+			BlasMatrix<Field> e (_A,    0,      s + m1, k,  m2);
+			BlasMatrix<Field> f (_A,    k,      s + m1, r1, m2);
+			BlasMatrix<Field> g (_A,    k + r1, s + m1, l1, m2);
 
 			_F.inv (d0inv, d0);
 
@@ -465,7 +465,7 @@ namespace LinBox
 			_MD.write (report, _U);
 #endif
 
-			BlasMatrix<Element> U1 (_U, 0, k, _U.rowdim (), r1);
+			BlasMatrix<Field> U1 (_U, 0, k, _U.rowdim (), r1);
 
 			_F.neg (d1neg, d1);
 			adddIN (_U, d1neg);
@@ -481,24 +481,24 @@ namespace LinBox
 
 			unsigned int l2 = (unsigned int) _U.rowdim () - (k + r);
 
-			BlasMatrix<Element> a1    (_U, 0,      k,      k,  r1);
-			BlasMatrix<Element> u1    (_U, k,      k,      r1, r1);
-			BlasMatrix<Element> c1    (_U, k + r1, k,      r2, r1);
-			BlasMatrix<Element> c1bar (_U, k + r,  k,      l2, r1);
+			BlasMatrix<Field> a1    (_U, 0,      k,      k,  r1);
+			BlasMatrix<Field> u1    (_U, k,      k,      r1, r1);
+			BlasMatrix<Field> c1    (_U, k + r1, k,      r2, r1);
+			BlasMatrix<Field> c1bar (_U, k + r,  k,      l2, r1);
 
-			BlasMatrix<Element> &a11 = a1;
-			BlasMatrix<Element> &u11 = u1;
-			BlasMatrix<Element> &u21 = c1;
-			BlasMatrix<Element> &c11 = c1bar;
+			BlasMatrix<Field> &a11 = a1;
+			BlasMatrix<Field> &u11 = u1;
+			BlasMatrix<Field> &u21 = c1;
+			BlasMatrix<Field> &c11 = c1bar;
 
-			BlasMatrix<Element> a11t  (_tmp, 0,    0,      k,  r1);
-			BlasMatrix<Element> u11t  (_tmp, 0,    0,      r1, r1);
-			BlasMatrix<Element> c11t  (_tmp, 0,    0,      l2, r1);
+			BlasMatrix<Field> a11t  (_tmp, 0,    0,      k,  r1);
+			BlasMatrix<Field> u11t  (_tmp, 0,    0,      r1, r1);
+			BlasMatrix<Field> c11t  (_tmp, 0,    0,      l2, r1);
 
-			BlasMatrix<Element> a2    (_U, 0,      k + r1, k,  r2);
-			BlasMatrix<Element> a2bar (_U, k,      k + r1, r1, r2);
-			BlasMatrix<Element> u2    (_U, k + r1, k + r1, r2, r2);
-			BlasMatrix<Element> c2    (_U, k + r,  k + r1, l2, r2);
+			BlasMatrix<Field> a2    (_U, 0,      k + r1, k,  r2);
+			BlasMatrix<Field> a2bar (_U, k,      k + r1, r1, r2);
+			BlasMatrix<Field> u2    (_U, k + r1, k + r1, r2, r2);
+			BlasMatrix<Field> c2    (_U, k + r,  k + r1, l2, r2);
 
 			_F.inv (d1inv, d1);
 
@@ -533,9 +533,9 @@ namespace LinBox
 		_F.inv (dinv, d);
 		_F.inv (d0inv, d0);
 
-		BlasMatrix<Element> R (_A.rowdim () - k, _A.coldim () - s);
-		BlasMatrix<Element> Atest (Acopy, k, s, _A.rowdim () - k, _A.coldim () - s);
-		BlasMatrix<Element> Utest (_U, k, k, _U.rowdim () - k, _U.coldim () - k);
+		BlasMatrix<Field> R (_A.rowdim () - k, _A.coldim () - s);
+		BlasMatrix<Field> Atest (Acopy, k, s, _A.rowdim () - k, _A.coldim () - s);
+		BlasMatrix<Field> Utest (_U, k, k, _U.rowdim () - k, _U.coldim () - k);
 		_MD.permuteRows (Acopy, _P.begin () + P_start, _P.end ());
 
 		report << "(" << k << ") PA: " << std::endl;

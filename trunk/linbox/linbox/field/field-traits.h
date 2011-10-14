@@ -11,8 +11,7 @@
 #include "linbox/integer.h"
 
 // Namespace in which all LinBox library code resides
-namespace LinBox
-{
+namespace LinBox {
 
 	/*! \brief some basic information about each field or ring.
 	  \ingroup field
@@ -25,7 +24,6 @@ namespace LinBox
 	 * integer is a valid modulus for the given field.
 	 * maxExponent and goodExponent do the same for the prime power.
 	 */
-
 	class RingCategories {
 
 	public:
@@ -40,15 +38,17 @@ namespace LinBox
 		struct RationalTag : public virtual GenericTag{};
 	};
 
+	/*! Default ring category.
+	 */
 	template <class Field>
-	struct ClassifyRing
-	{
+	struct ClassifyRing {
 		typedef	RingCategories::GenericTag categoryTag;
 	};
 
+	/*! FieldTrait.
+	 */
 	template <class Field>
-	struct FieldTraits
-	{
+	struct FieldTraits {
 		typedef typename ClassifyRing<Field>::categoryTag categoryTag;
 
 		static integer& maxModulus( integer& i )
@@ -96,6 +96,38 @@ namespace LinBox
 				return ( i >= 1 && i <= max );
 		}
 	};
+
+
+} // Namespace LinBox
+
+namespace LinBox {
+
+
+	template<class _Field1, class _Field2>
+	bool areFieldEqual (const _Field1 &F, const _Field2 &G)
+	{
+		return false ;
+	}
+
+	template<class _Field, class _Category>
+	bool areFieldEqualSpecialised(const _Field &F, const _Field &G,
+				      const _Category & m)
+	{
+		return false ;
+	}
+
+	template<class _Field>
+	bool areFieldEqualSpecialised(const _Field &F, const _Field &G,
+				      const RingCategories::ModularTag & m)
+	{
+		return ( F.characteristic() == G.characteristic() ) ;
+	}
+
+	template<class _Field>
+	bool areFieldEqual (const _Field &F, const _Field &G)
+	{
+		return areFieldEqualSpecialised( F,G,typename FieldTraits<_Field>::categoryTag() ) ;
+	}
 
 } // Namespace LinBox
 

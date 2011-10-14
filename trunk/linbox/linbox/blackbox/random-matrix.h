@@ -27,7 +27,6 @@
 #define __LINBOX_blackbox_random_matrix_H
 
 #include "linbox/blackbox/blackbox-interface.h"
-#include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/blackbox/sparse.h"
 
 namespace LinBox
@@ -49,13 +48,13 @@ namespace LinBox
 
 		// constructor a random dense matrix, whose entries are random
 		template<class Field>
-		static BlasBlackbox<Field>*& randomMatrix( BlasBlackbox<Field>*& Ap,
+		static BlasMatrix<Field>*& randomMatrix( BlasMatrix<Field>*& Ap,
 							  const Field& f,
 							  int rowdim, int coldim )
 		{
 
-			Ap = new BlasBlackbox<Field>(f, rowdim, coldim);
-			typename BlasBlackbox<Field>::Iterator Ap_p;
+			Ap = new BlasMatrix<Field>(f, rowdim, coldim);
+			typename BlasMatrix<Field>::Iterator Ap_p;
 			typename Field::Element zero, one, elt;
 			f. init (one, 1); f. init (zero, 0);
 

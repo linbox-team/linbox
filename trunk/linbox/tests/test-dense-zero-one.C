@@ -52,16 +52,16 @@ struct BlackboxDomain : public _Field
 	typedef typename _Field::Element Scalar;
 	typedef typename _Field::Element Element; // transitional
 	typedef typename _Field::RandIter RandIter;
-	typedef BlasMatrix<Element> Block;
-	/*struct Block: public BlasMatrix<Element> {
-		Block( int m, int n ): BlasMatrix<Element> ( m, n ) {}
+	typedef BlasMatrix<Field> Block;
+	/*struct Block: public BlasMatrix<Field> {
+		Block( int m, int n ): BlasMatrix<Field> ( m, n ) {}
 		Block& subBlock( Block & B, size_t i, size_t j, size_t m, size_t n ) {
-			return B = BlasMatrix<Element>(*this, i, j, m, n);
+			return B = BlasMatrix<Field>(*this, i, j, m, n);
 		}
 		const Block& subBlock( const Block & B, size_t i, size_t j, size_t m, size_t n ) {
-			return B = BlasMatrix<Element>(static_cast<BlasMatrix<Element> >(*this), i, j, m, n);
+			return B = BlasMatrix<Field>(static_cast<BlasMatrix<Field> >(*this), i, j, m, n);
 		}
-		Block & operator= (BlasMatrix<Element> & rhs){
+		Block & operator= (BlasMatrix<Field> & rhs){
 			*this = rhs;
 			return *this;
 		}

@@ -40,7 +40,6 @@
 #include "linbox/algorithms/blackbox-block-container.h"
 #include "linbox/algorithms/block-massey-domain.h"
 #include "linbox/algorithms/gauss.h"
-#include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/block-hankel-inverse.h"
@@ -107,12 +106,12 @@ namespace LinBox
 	template <class Ring>
 	void BoundBlackbox(const Ring& R, typename Ring::Element& H_col_sqr,
 			   typename Ring::Element& short_col_sqr,
-			   const BlasBlackbox<Ring>& A)
+			   const BlasMatrix<Ring>& A)
 	{
 		SpecialBound(R, H_col_sqr, short_col_sqr, A);
 	}
 
-	// in other solvers we generally use BlasBlackbox which inherits from BlasSubmatrix
+	// in other solvers we generally use BlasMatrix which inherits from BlasSubmatrix
 	template <class Ring>
 	void BoundBlackbox(const Ring& R, typename Ring::Element& H_col_sqr,
 			   typename Ring::Element& short_col_sqr,
@@ -927,8 +926,8 @@ namespace LinBox
 		typedef typename Ring::Element                            Integer_t;
 		typedef std::vector<Integer_t>                              IVector;
 		typedef std::vector<Element>                              FVector;
-		typedef BlasMatrix<Element>                           Coefficient;
-		typedef BlasMatrix<Element>                                 Block;
+		typedef BlasMatrix<Field>                           Coefficient;
+		typedef BlasMatrix<Field>                                 Block;
 		typedef std::vector<Coefficient>                 FBlockPolynomial;
 		typedef BlackboxBlockContainerRecord<Field, FMatrix>     Sequence;
 
@@ -1106,12 +1105,12 @@ namespace LinBox
 			}
 
 			size_t deg = degree[idx];
-			BlasMatrix<Element> idx_poly(deg+1,_m-1);
+			BlasMatrix<Field> idx_poly(_F,deg+1,_m-1);
 			for (size_t i=0;i<deg+1;++i)
 				for (size_t j=0;j<_m-1;++j)
 					idx_poly.setEntry(i,j,minpoly[i].getEntry(idx,j+1));
 
-			BlasMatrix<Element> Combi(deg+1,_row);
+			BlasMatrix<Field> Combi(_F,deg+1,_row);
 			_BMD.mul(Combi,idx_poly,UU);
 
 
@@ -1325,7 +1324,7 @@ namespace LinBox
 			FVector z0(n), b0(n), b1(n);
 			_D.apply(b0, _res_p);
 			_res_p=b0;
-			BlasMatrix<Element> Apib(n, _numblock);
+			BlasMatrix<Field> Apib(_F,n, _numblock);
 			for (size_t i=0;i<n;++i){
 				_F.assign(Apib.refEntry(i,0), _res_p[i]);
 			}
@@ -1347,7 +1346,7 @@ namespace LinBox
 
 			FVector tmp(_numblock);
 			for (size_t i=0; i<_block; ++i){
-				BlasMatrix<Element> T(Apib, i*_numblock, 0, _numblock, _numblock);
+				BlasMatrix<Field> T(_F,Apib, i*_numblock, 0, _numblock, _numblock);
 				_BMD.mul(tmp, _u[i], T);
 				for (size_t j=0;j<_numblock;++j){
 					this->_F.assign(z0[j*_block+i], tmp[j]);

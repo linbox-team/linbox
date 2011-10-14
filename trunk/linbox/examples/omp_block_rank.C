@@ -63,8 +63,8 @@ FFTSeeder  FFTgenerator;
 
 template<class Field>
 void extractLeftSigma(const Field &F,
-		      std::vector<LinBox::BlasMatrix<typename Field::Element> >              &S,
-		      std::vector<LinBox::BlasMatrix<typename Field::Element> >      &SigmaBase,
+		      std::vector<LinBox::BlasMatrix<Field> >        &S,
+		      std::vector<LinBox::BlasMatrix<Field> >&SigmaBase,
 		      std::vector<size_t>                       &defect,
 		      size_t                                      block)
 {
@@ -96,7 +96,7 @@ void extractLeftSigma(const Field &F,
 			max=defect[i];
 
 	// prepare S to receive the sigma base
-	const LinBox::BlasMatrix<Element> Zero(block,block);
+	const LinBox::BlasMatrix<Field> Zero(Z,block,block);
 	S.resize(max+1, Zero);
 
 	// extract the sigma base
@@ -118,7 +118,7 @@ void extractLeftSigma(const Field &F,
 }
 
 template<class Field>
-void write_sigma(const Field &_F, const char* name, const std::vector<LinBox::BlasMatrix<typename Field::Element> > & P)
+void write_sigma(const Field &_F, const char* name, const std::vector<LinBox::BlasMatrix<Field> > & P)
 {
 	size_t m,n;
 	m = P[0].rowdim();
@@ -264,7 +264,7 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 	std::ifstream input (argv[1]);
 	LinBox::MatrixStream<Field> ms( F, input );
 	typedef LinBox::SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq > Blackbox;
-	typedef LinBox::BlasBlackbox<Field> Block_t;
+	typedef LinBox::BlasMatrix<Field> Block_t;
 
 	Blackbox B (ms);
 
@@ -300,7 +300,7 @@ int OMP_BLOCK_RANK_main (const Field& F, int argc, char **argv)
 
 	chrono2.start();
 
-	typedef LinBox::BlasMatrix<typename Field::Element>        Matrix;
+	typedef LinBox::BlasMatrix<Field>        Matrix;
 	typedef std::vector<Matrix>   Polynomial;
 
 

@@ -150,7 +150,7 @@ namespace LinBox
 	template<>
 	std::list<std::pair<integer, size_t> > &
 	smithForm(std::list<std::pair<integer, size_t> >& S,
-		  const BlasBlackbox<PID_integer> 	&A,
+		  const BlasMatrix<PID_integer> 	&A,
 		  const RingCategories::IntegerTag      &tag,
 		  const Method::Hybrid			& M)
 	{

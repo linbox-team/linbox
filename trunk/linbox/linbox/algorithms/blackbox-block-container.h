@@ -52,8 +52,8 @@ namespace LinBox
 		typedef _Field                        Field;
 		typedef typename Field::Element      Element;
 		typedef typename Field::RandIter   RandIter;
-		typedef BlasMatrix<Element>           Block;
-		typedef BlasMatrix<Element>           Value;
+		typedef BlasMatrix<Field>           Block;
+		typedef BlasMatrix<Field>           Value;
 
 		// Default constructor
 		BlackboxBlockContainer () {}
@@ -161,8 +161,8 @@ namespace LinBox
 		typedef _Field                        Field;
 		typedef typename Field::Element      Element;
 		typedef typename Field::RandIter   RandIter;
-		typedef BlasMatrix<Element>           Block;
-		typedef BlasMatrix<Element>           Value;
+		typedef BlasMatrix<Field>           Block;
+		typedef BlasMatrix<Field>           Value;
 
 		enum Launcher {RowUpdate=0, ColUpdate=1, Nothing=2};
 
@@ -410,7 +410,7 @@ namespace LinBox
 
 				std::vector<Element> tmp(block);
 				for (size_t i=0; i<block; ++i){
-					BlasMatrix<Element> T(_W, i*numblock, 0, numblock, block);
+					BlasMatrix<Field> T(_W, i*numblock, 0, numblock, block);
 					_BMD.mul(tmp, _Special_U[i], T);
 					for (size_t j=0;j<block;++j){
 						this->_F.assign(this->_value.refEntry(i,j), tmp[j]);
@@ -424,7 +424,7 @@ namespace LinBox
 
 				std::vector<Element> tmp(block);
 				for (size_t i=0; i< block; ++i){
-					BlasMatrix<Element> T(this->_V, i*numblock, 0, numblock, block);
+					BlasMatrix<Field> T(this->_V, i*numblock, 0, numblock, block);
 					_BMD.mul(tmp, _Special_U[i], T);
 					for (size_t j=0;j<block;++j)
 						this->_F.assign(this->_value.refEntry(i,j), tmp[j]);

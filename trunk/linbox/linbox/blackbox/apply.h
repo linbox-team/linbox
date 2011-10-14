@@ -37,7 +37,6 @@
 #include "linbox/field/hom.h"
 #include "linbox/randiter/multimod-randomprime.h"
 #include "linbox/blackbox/sparse.h"
-#include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/algorithms/lifting-container.h"
 #include <vector>
@@ -94,9 +93,9 @@ namespace LinBox
 
 
 		//#ifdef __LINBOX_BLAS_AVAILABLE
-		inline Vector& applyV(Vector                        &y,
-				      const BlasMatrix<Element>     &A,
-				      const Vector                  &x) const
+		inline Vector& applyV(Vector                       &y,
+				      const BlasMatrix<Domain>     &A,
+				      const Vector                 &x) const
 		{
 
 			if (( _prime > 0) && ( _prime <  67108863)) {
@@ -115,9 +114,9 @@ namespace LinBox
 			return y;
 		}
 
-		inline Vector& applyVTrans(Vector                        &y,
-					   BlasMatrix<Element>           &A,
-					   const Vector                  &x) const
+		inline Vector& applyVTrans(Vector                       &y,
+					   BlasMatrix<Domain>           &A,
+					   const Vector                 &x) const
 		{
 
 			if (( _prime > 0) && ( _prime <  67108863)) {
@@ -131,14 +130,14 @@ namespace LinBox
 					      &y[0],1);
 			}
 			else {
-				TransposeMatrix<const BlasMatrix<Element> > B(A);
+				TransposeMatrix<const BlasMatrix<Domain> > B(A);
 				_MD.vectorMul (y, B, x);
 			}
 			return y;
 		}
 
 		inline Vector& applyVspecial (Vector                        &y,
-					      BlasMatrix<Element>           &A,
+					      BlasMatrix<Domain>            &A,
 					      const Vector                  &x) const
 		{//toto
 
@@ -1043,28 +1042,30 @@ namespace LinBox
 	template<>
 	#endif
 	template <class Domain>
-	class MatrixApplyDomain<Domain, BlasMatrix<typename Domain::Element> > : public BlasMatrixApplyDomain<Domain, BlasMatrix<typename Domain::Element> > {
+	class MatrixApplyDomain<Domain, BlasMatrix<Domain> > : public BlasMatrixApplyDomain<Domain, BlasMatrix<Domain> > {
 
 	public:
-		MatrixApplyDomain (const Domain &D, const  BlasMatrix<typename Domain::Element> &Mat) :
-			BlasMatrixApplyDomain<Domain, BlasMatrix<typename Domain::Element> > (D,Mat)
+		MatrixApplyDomain (const Domain &D, const  BlasMatrix<Domain> &Mat) :
+			BlasMatrixApplyDomain<Domain, BlasMatrix<Domain> > (D,Mat)
 		{}
 
 	};
 
+#if 0
 #ifndef __INTEL_COMPILER
 	template<>
 	#endif
 	template <class Domain>
-	class MatrixApplyDomain<Domain, BlasBlackbox<Domain> > :
-	public BlasMatrixApplyDomain<Domain, BlasBlackbox<Domain> > {
+	class MatrixApplyDomain<Domain, BlasMatrix<Domain> > :
+	public BlasMatrixApplyDomain<Domain, BlasMatrix<Domain> > {
 
 	public:
-		MatrixApplyDomain (const Domain &D, const  BlasBlackbox<Domain> &Mat) :
-			BlasMatrixApplyDomain<Domain, BlasBlackbox<Domain> > (D,Mat)
+		MatrixApplyDomain (const Domain &D, const  BlasMatrix<Domain> &Mat) :
+			BlasMatrixApplyDomain<Domain, BlasMatrix<Domain> > (D,Mat)
 		{}
 
 	};
+#endif
 
 
 

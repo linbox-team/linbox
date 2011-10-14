@@ -158,7 +158,7 @@ namespace LinBox
 
 	template <class Rationals, template <class> class Vector, class MyMethod >
 	Vector<typename Rationals::Element>& rational_minpoly (Vector<typename Rationals::Element> &p,
-							       const BlasBlackbox<Rationals > &A,
+							       const BlasMatrix<Rationals > &A,
 							       const MyMethod &Met=  Method::Hybrid())
 	{
 
@@ -173,7 +173,7 @@ namespace LinBox
 		std::vector<Integer> M(A.rowdim()+1,1);
 		std::vector<Integer> Di(A.rowdim());
 
-		RationalMatrixFactory<PID_integer,Rationals, BlasBlackbox<Rationals > > FA(&A);
+		RationalMatrixFactory<PID_integer,Rationals, BlasMatrix<Rationals > > FA(&A);
 		Integer da=1, di=1; Integer D=1;
 		FA.denominator(da);
 
@@ -189,14 +189,14 @@ namespace LinBox
 		}
 
 		PID_integer Z;
-		BlasBlackbox<PID_integer> Atilde(Z,A.rowdim(), A.coldim());
+		BlasMatrix<PID_integer> Atilde(Z,A.rowdim(), A.coldim());
 		FA.makeAtilde(Atilde);
 
 		ChineseRemainder< EarlyMultipCRA<Modular<double> > > cra(4UL);
-		MyRationalModularMinpoly<BlasBlackbox<Rationals > , MyMethod> iteration1(A, Met, M);
-		MyIntegerModularMinpoly<BlasBlackbox<PID_integer>, MyMethod> iteration2(Atilde, Met, Di, M);
-		MyModularMinpoly<MyRationalModularMinpoly<BlasBlackbox<Rationals > , MyMethod>,
-		MyIntegerModularMinpoly<BlasBlackbox<PID_integer>, MyMethod> >  iteration(&iteration1,&iteration2);
+		MyRationalModularMinpoly<BlasMatrix<Rationals > , MyMethod> iteration1(A, Met, M);
+		MyIntegerModularMinpoly<BlasMatrix<PID_integer>, MyMethod> iteration2(Atilde, Met, Di, M);
+		MyModularMinpoly<MyRationalModularMinpoly<BlasMatrix<Rationals > , MyMethod>,
+		MyIntegerModularMinpoly<BlasMatrix<PID_integer>, MyMethod> >  iteration(&iteration1,&iteration2);
 
 		RReconstruction<PID_integer, ClassicMaxQRationalReconstruction<PID_integer> > RR;
 

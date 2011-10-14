@@ -23,7 +23,6 @@
 #ifndef __LINBOX_submatrix_traits_H
 #define __LINBOX_submatrix_traits_H
 
-#include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/blackbox/submatrix.h"
 
 
@@ -34,19 +33,19 @@ namespace LinBox
 	class SubMatrixTraits;
 
 	template<class Field>
-	class SubMatrixTraits<BlasBlackbox<Field> > {
+	class SubMatrixTraits<BlasMatrix<Field> > {
 
 	public:
 
-		typedef  Submatrix<BlasBlackbox<Field> > value_type;
+		typedef  Submatrix<BlasMatrix<Field> > value_type;
 	};
 
 	template<class Field>
-	class SubMatrixTraits<Submatrix<BlasBlackbox<Field> > > {
+	class SubMatrixTraits<Submatrix<BlasMatrix<Field> > > {
 
 	public:
 
-		typedef Submatrix<BlasBlackbox<Field> > value_type;
+		typedef Submatrix<BlasMatrix<Field> > value_type;
 	};
 
 

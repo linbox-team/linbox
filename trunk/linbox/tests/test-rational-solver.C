@@ -32,7 +32,6 @@
 
 #include "linbox/field/PID-integer.h"
 #include "linbox/field/modular.h"
-#include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/algorithms/rational-solver.h"
 #include "linbox/randiter/random-prime.h"
@@ -98,7 +97,7 @@ bool testRandomSolve (const Ring& R,
 
                 //Diagonal<Ring> D(R, d);
 
-		BlasBlackbox<Ring> D(R, n, n);
+		BlasMatrix<Ring> D(R, n, n);
 
 		for(int i = 0; i < n; ++i) R.init (D[i][i],  d[i]);
 

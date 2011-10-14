@@ -68,7 +68,7 @@ static bool testMulAdd (const Field& F, size_t n, int iterations)
 
 	typedef typename Field::Element     Element;
 	typedef typename Field::RandIter   RandIter;
-	typedef BlasMatrix<Element>          Matrix;
+	typedef BlasMatrix<Field>          Matrix;
 
 	//Commentator mycommentator;
 	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
@@ -166,18 +166,18 @@ bool CheckMulAdd( const Integer & alpha , const BlasMatrix<Integer> & A , const 
 
 	// Ep = b C + a A B
 	ZMD.muladd(D,beta,C,alpha,A,B);
-	BlasMatrix<Element> Dp(D,Zp); // D mod p
+	BlasMatrix<Field> Dp(D,Zp); // D mod p
 
-	BlasMatrix<Element> Ap(A,Zp);
-	BlasMatrix<Element> Bp(B,Zp);
-	BlasMatrix<Element> Cp(C,Zp);
-	// BlasMatrix<Element> Ap(A.rowdim(),A.coldim());
-	// BlasMatrix<Element> Bp(B.rowdim(),B.coldim());
-	// BlasMatrix<Element> Cp(C.rowdim(),C.coldim());
+	BlasMatrix<Field> Ap(A,Zp);
+	BlasMatrix<Field> Bp(B,Zp);
+	BlasMatrix<Field> Cp(C,Zp);
+	// BlasMatrix<Field> Ap(A.rowdim(),A.coldim());
+	// BlasMatrix<Field> Bp(B.rowdim(),B.coldim());
+	// BlasMatrix<Field> Cp(C.rowdim(),C.coldim());
 	// MatrixHom::map(Ap,A,Zp);
 	// MatrixHom::map(Bp,B,Zp);
 	// MatrixHom::map(Cp,C,Zp);
-	BlasMatrix<Element> Ep(M,N);  // D mod p
+	BlasMatrix<Field> Ep(M,N);  // D mod p
 
 	Element ap, bp ;
 	Zp.init(ap,alpha);
@@ -322,7 +322,7 @@ static bool testMulAddShapeTrans (const Field &F, size_t m, size_t n, size_t k, 
 
 
 	typedef typename Field::Element Element;
-	typedef BlasMatrix<Element> Matrix ;
+	typedef BlasMatrix<Field> Matrix ;
 	typedef TransposedBlasMatrix<Matrix> TransposedMatrix ;
 	typedef typename Field::RandIter Randiter ;
 	Randiter R(F) ;
@@ -403,8 +403,8 @@ static bool testTriangMulShapeTrans (const Field &F, size_t m, size_t n, int ite
 
 
 	typedef typename Field::Element                               Element;
-	typedef BlasMatrix<Element>                                   Matrix ;
-	typedef TriangularBlasMatrix<Element>               TriangularMatrix ;
+	typedef BlasMatrix<Field>                                   Matrix ;
+	typedef TriangularBlasMatrix<Field>               TriangularMatrix ;
 	typedef TransposedBlasMatrix<Matrix>                TransposedMatrix ;
 	typedef TransposedBlasMatrix<TriangularMatrix > TransposedTriangular ;
 	typedef typename Field::RandIter                            Randiter ;
@@ -543,7 +543,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
 	for (int k=0;k<iterations; ++k) {
 
 		mycommentator.progress(k);
-		BlasMatrix<Element> A(n,n),S(n,n), L(n,n);
+		BlasMatrix<Field> A(n,n),S(n,n), L(n,n);
 
 		r = (unsigned int)(random() % n);
 		// create S as an upper triangular matrix with r nonzero rows
@@ -611,7 +611,7 @@ static bool testDet (const Field& F,size_t n, int iterations)
 
 		G.random(d);
 
-		BlasMatrix<Element> A(n,n),S(n,n), L(n,n);
+		BlasMatrix<Field> A(n,n),S(n,n), L(n,n);
 
 		// create S as an upper triangular matrix of full rank
 		// with diagonal's element equal to 1 except the first entry wich equals to d
@@ -655,7 +655,7 @@ static bool testInv (const Field& F,size_t n, int iterations)
 
 	typedef typename Field::Element Element;
 	typedef typename Field::RandIter RandIter;
-	typedef  BlasMatrix<Element> Matrix;
+	typedef  BlasMatrix<Field> Matrix;
 
 	//Commentator mycommentator;
 	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
@@ -726,8 +726,8 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
 {
 
 	typedef typename Field::Element                  Element;
-	typedef BlasMatrix<Element>                       Matrix;
-	typedef TriangularBlasMatrix<Element>   TriangularMatrix;
+	typedef BlasMatrix<Field>                       Matrix;
+	typedef TriangularBlasMatrix<Field>   TriangularMatrix;
 	typedef typename Field::RandIter                RandIter;
 
 	//Commentator mycommentator;
@@ -840,7 +840,7 @@ static bool testSolve (const Field& F, size_t m, size_t n, int iterations)
 {
 
 	typedef typename Field::Element                  Element;
-	typedef BlasMatrix<Element>                       Matrix;
+	typedef BlasMatrix<Field>                       Matrix;
 	typedef typename Field::RandIter                RandIter;
 
 	//Commentator mycommentator;
@@ -957,7 +957,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations)
 {
 
 	typedef typename Field::Element                  Element;
-	typedef BlasMatrix<Element>                       Matrix;
+	typedef BlasMatrix<Field>                       Matrix;
 	typedef typename Field::RandIter                RandIter;
 
 	//Commentator mycommentator;
@@ -1263,7 +1263,7 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
 {
 
 	typedef typename Field::Element                  Element;
-	typedef BlasMatrix<Element>                       Matrix;
+	typedef BlasMatrix<Field>                       Matrix;
 	typedef typename Field::RandIter                RandIter;
 
 	//Commentator mycommentator;
@@ -1313,8 +1313,8 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
 		BlasPermutation<size_t>  P(A.coldim()),Q(A.rowdim());
 		LQUPMatrix<Field> X(F,A,P,Q);
 
-		TriangularBlasMatrix<Element> L(m,m,LinBoxTag::Lower,LinBoxTag::Unit);
-		TriangularBlasMatrix<Element> U(m,n,LinBoxTag::Upper,LinBoxTag::NonUnit);
+		TriangularBlasMatrix<Field> L(m,m,LinBoxTag::Lower,LinBoxTag::Unit);
+		TriangularBlasMatrix<Field> U(m,n,LinBoxTag::Upper,LinBoxTag::NonUnit);
 		X.getL(L);
 		X.getU(U);
 		P=X.getP();
@@ -1339,8 +1339,8 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
 
 		LQUPMatrix<Field> Y(F,A,P,Q);
 
-		TriangularBlasMatrix<Element> L2(m,m,LinBoxTag::Lower,LinBoxTag::Unit);
-		TriangularBlasMatrix<Element> U2(m,n,LinBoxTag::Upper,LinBoxTag::NonUnit);
+		TriangularBlasMatrix<Field> L2(m,m,LinBoxTag::Lower,LinBoxTag::Unit);
+		TriangularBlasMatrix<Field> U2(m,n,LinBoxTag::Upper,LinBoxTag::NonUnit);
 		Y.getL(L2);
 		Y.getU(U2);
 		P=Y.getP();
@@ -1367,7 +1367,7 @@ template <class Field>
 static bool testMinPoly (const Field& F, size_t n, int iterations)
 {
 	typedef typename Field::Element                  Element;
-	typedef BlasMatrix<Element>                       Matrix;
+	typedef BlasMatrix<Field>                       Matrix;
 	typedef typename Field::RandIter                RandIter;
 	typedef vector<Element>                       Polynomial;
 	//Commentator mycommentator;
@@ -1448,7 +1448,7 @@ template <class Field>
 static bool testCharPoly (const Field& F, size_t n, int iterations)
 {
 	typedef typename Field::Element                  Element;
-	typedef BlasMatrix<Element>                       Matrix;
+	typedef BlasMatrix<Field>                       Matrix;
 	typedef typename Field::RandIter                RandIter;
 	typedef vector<Element>                       Polynomial;
 	//Commentator mycommentator;

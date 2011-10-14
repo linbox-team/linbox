@@ -18,7 +18,6 @@
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/scalar-matrix.h"
-#include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/solutions/methods.h"

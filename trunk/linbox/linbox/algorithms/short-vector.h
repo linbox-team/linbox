@@ -26,7 +26,6 @@
 #define __LINBOX_ternary_lattice_H
 
 #include <iostream>
-#include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/field/PID-integer.h"
 #include "linbox/util/timer.h"
 #include "linbox/integer.h"
@@ -428,7 +427,7 @@ namespace LinBox
 		void print()
 		{
 			PID_integer Z;
-			BlasBlackbox<PID_integer> M(Z,3,3);
+			BlasMatrix<PID_integer> M(Z,3,3);
 			M.setEntry(0,0,b1[0]);
 			M.setEntry(0,1,b1[1]);
 			M.setEntry(0,2,b1[2]);

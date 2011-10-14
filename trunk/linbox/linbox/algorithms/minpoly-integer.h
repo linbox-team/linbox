@@ -86,13 +86,13 @@ namespace LinBox
 		typedef typename Field::Element Element;
 
 		template <class Poly, class Ring>
-		static Poly& minPolyBlas (Poly& y, const BlasBlackbox<Ring>& M);
+		static Poly& minPolyBlas (Poly& y, const BlasMatrix<Ring>& M);
 
 		template <class Poly, class Ring>
-		static Poly& minPolyBlas (Poly& y, const BlasBlackbox<Ring>& M, int degree);
+		static Poly& minPolyBlas (Poly& y, const BlasMatrix<Ring>& M, int degree);
 
 		template <class Ring>
-		static int minPolyDegreeBlas (const BlasBlackbox<Ring>& M, int n_try = 1);
+		static int minPolyDegreeBlas (const BlasMatrix<Ring>& M, int n_try = 1);
 	};
 
 	template<class _Integer, class _Field>
@@ -254,7 +254,7 @@ namespace LinBox
 
 	template <class _Integer, class _Field>
 	template <class Poly, class Ring>
-	Poly& MinPolyBlas<_Integer, _Field>::minPolyBlas (Poly& y, const BlasBlackbox<Ring>& M)
+	Poly& MinPolyBlas<_Integer, _Field>::minPolyBlas (Poly& y, const BlasMatrix<Ring>& M)
 	{
 		int degree = minPolyDegreeBlas (M);
 		minPolyBlas (y, M, degree);
@@ -263,7 +263,7 @@ namespace LinBox
 
 	template <class _Integer, class _Field>
 	template <class Poly, class Ring>
-	Poly& MinPolyBlas<_Integer, _Field>::minPolyBlas (Poly& y, const BlasBlackbox<Ring>& M, int degree)
+	Poly& MinPolyBlas<_Integer, _Field>::minPolyBlas (Poly& y, const BlasMatrix<Ring>& M, int degree)
 	{
 
 		y. resize (degree + 1);
@@ -277,7 +277,7 @@ namespace LinBox
 		Element* X = new Element [n*(n+1)];
 		size_t* Perm = new size_t[n];
 		Element* p;
-		typename BlasBlackbox<Ring>::ConstIterator raw_p;
+		typename BlasMatrix<Ring>::ConstIterator raw_p;
 		std::vector<Element> poly (degree + 1);
 		typename std::vector<Element>::iterator poly_ptr;
 
@@ -322,7 +322,7 @@ namespace LinBox
 
 	template <class _Integer, class _Field>
 	template <class Ring>
-	int MinPolyBlas<_Integer, _Field>::minPolyDegreeBlas (const BlasBlackbox<Ring>& M, int n_try)
+	int MinPolyBlas<_Integer, _Field>::minPolyDegreeBlas (const BlasMatrix<Ring>& M, int n_try)
 	{
 		size_t n = M. rowdim();
 		int degree = 0;
@@ -338,7 +338,7 @@ namespace LinBox
 		long bit2 = (long) floor (log(sqrt(double(4503599627370496LL/n)))/M_LN2);
 		RandomPrimeIterator primeg(bit1 < bit2 ? bit1 : bit2);
 
-		typename BlasBlackbox<Ring>::ConstIterator raw_p;
+		typename BlasMatrix<Ring>::ConstIterator raw_p;
 		for (int i = 0; i < n_try; ++ i) {
 			++primeg;
 			Field F(*primeg);

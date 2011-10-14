@@ -125,14 +125,14 @@ template<typename Field> struct InteratorBlas;
 namespace LinBox
 {
 	template<class Element,class Field> struct CRATemporaryVectorTrait<InteratorBlas<Field> , Element> {
-		typedef typename LinBox::BlasMatrix<Element>::pointer Type_t;
+		typedef typename LinBox::BlasMatrix<Field>::pointer Type_t;
 	};
 }
 
 template<typename Field>
 struct InteratorBlas : public Interator {
 	typedef typename Field::Element Element;
-	typedef LinBox::BlasMatrix<Element> Matrix;
+	typedef LinBox::BlasMatrix<Field> Matrix;
 	typedef typename Matrix::pointer Pointer;
 	mutable Matrix _C;
 

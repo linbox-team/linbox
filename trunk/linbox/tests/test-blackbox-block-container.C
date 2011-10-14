@@ -61,7 +61,7 @@ int main (int argc, char **argv)
 	report << "over Modular<double>" << endl;
 	typedef Modular<double> Field;
 	typedef BlasMatrix<double> Block;
-	typedef BlasBlackbox<Field> Blackbox;
+	typedef BlasMatrix<Field> Blackbox;
 	Modular<double> F (q);
 
 	Blackbox A(F, n, n);

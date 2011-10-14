@@ -277,8 +277,7 @@ namespace LinBox
 		linbox_check (A.coldim() == A.rowdim()+1);
 
 		const size_t N = A.coldim();
-		//		BlasBlackbox<typename BlackBox::Field> B (A,0,0,N,N);
-		BlasBlackbox<typename BlackBox::Field> B (A.field(),N,N);
+		BlasMatrix<typename BlackBox::Field> B (A.field(),N,N);
 		typename BlackBox::Field::Element den1, den2;
 		std::vector<typename BlackBox::Field::Element> x1(N);
 		for (size_t i=0; i<N; ++i){

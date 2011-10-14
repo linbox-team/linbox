@@ -64,11 +64,11 @@ typename Dom::Element eval (const Dom& D,
 template <class Dom>
 static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false)
 {
-	typedef typename Dom::Element Element;
-	typedef vector<Element> Vector;
-	typedef ScalarMatrix<Dom> Blackbox;
+	typedef typename Dom::Element                Element;
+	typedef vector<Element>                       Vector;
+	typedef ScalarMatrix<Dom>                   Blackbox;
 	typedef GivPolynomialRing<Dom, Givaro::Dense> PolDom;
-	typedef typename PolDom::Element Polynomial;
+	typedef typename PolDom::Element          Polynomial;
 	//typedef Vector Polynomial;
 
 	LinBox::commentator.start ("Testing identity Charpoly", "testIdentityCharpoly");

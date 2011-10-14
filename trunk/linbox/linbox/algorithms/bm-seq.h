@@ -49,7 +49,7 @@ namespace LinBox {
 	public:
 
 		typedef _Field Field;
-		typedef BlasBlackbox<Field> value_type;
+		typedef BlasMatrix<Field> value_type;
 		typedef typename std::list<value_type>::const_iterator const_iterator;
 		typedef int size_type;
 
@@ -282,7 +282,7 @@ namespace LinBox {
 				_sigma(it._sigma), _gensize(it._gensize),
 				_row(it._row), _col(it._col), _state(it._state) {}
 
-			//Assignment operator not overloaded since BlasBlackbox class has overloaded assignment error
+			//Assignment operator not overloaded since BlasMatrix class has overloaded assignment error
 			//Overloaded assignment operator
 			BM_iterator& operator=(const typename BM_Seq<Field>::BM_iterator& it)
 			{

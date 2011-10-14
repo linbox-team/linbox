@@ -322,7 +322,7 @@ static bool testGramMinpoly (Field &F, size_t m, bool symmetrizing, const Meth& 
 	if (n > 30) n = 2;
 	Polynomial phi;
 	typename Field::Element one, zero, neg1; F.init(one, 1); F.init(zero, 0); F.init(neg1); F.neg(neg1, one);
-	BlasBlackbox<Field> A(F, n, n);
+	BlasMatrix<Field> A(F, n, n);
 	for (int i = 0; i < n; ++i) for (int j = 0; j < n; ++j) A.setEntry(i, j, one);
 	for (int i = 0; i < n; ++i) A.setEntry(i, i, zero);
 	minpoly(phi, A, M);

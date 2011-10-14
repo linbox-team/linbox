@@ -69,21 +69,21 @@ namespace LinBox
 
 
 		template <class Field>
-		static BlasBlackbox<Field>*& compose (BlasBlackbox<Field>*& LAR,
-						     const BlasBlackbox<Field>& L,
-						     const BlasBlackbox<Field>& A,
-						     const BlasBlackbox<Field>& R)
+		static BlasMatrix<Field>*& compose (BlasMatrix<Field>*& LAR,
+						     const BlasMatrix<Field>& L,
+						     const BlasMatrix<Field>& A,
+						     const BlasMatrix<Field>& R)
 		{
 
 			linbox_check (L.coldim() == A.rowdim());
 
 			linbox_check (A.coldim() == R.rowdim());
 
-			LAR = new BlasBlackbox<Field>(L.field(), L.rowdim(), R.coldim());
+			LAR = new BlasMatrix<Field>(L.field(), L.rowdim(), R.coldim());
 
-			typename BlasBlackbox<Field>::ConstRowIterator crow_p;
+			typename BlasMatrix<Field>::ConstRowIterator crow_p;
 
-			typename BlasBlackbox<Field>::RowIterator row_p;
+			typename BlasMatrix<Field>::RowIterator row_p;
 
 			std::vector<typename Field::Element> tmp(R.rowdim());
 

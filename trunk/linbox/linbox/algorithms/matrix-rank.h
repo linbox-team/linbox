@@ -63,7 +63,7 @@ namespace LinBox
 
 			Field F ((unsigned long)*rp);
 
-			BlasBlackbox<Field> Ap(F, A.rowdim(), A.coldim());
+			BlasMatrix<Field> Ap(F, A.rowdim(), A.coldim());
 
 			MatrixHom::map(Ap, A, F);
 
@@ -75,13 +75,13 @@ namespace LinBox
 		}
 
 		template<class IRing>
-		long rank(const BlasBlackbox<IRing>& A) const
+		long rank(const BlasMatrix<IRing>& A) const
 		{
 
 			Field F ((unsigned long)*rp);
 			//! bug the following should work :
-			// BlasBlackbox<Field>  Ap(F,A);
-			BlasBlackbox<Field> Ap(F, A.rowdim(), A.coldim());
+			// BlasMatrix<Field>  Ap(F,A);
+			BlasMatrix<Field> Ap(F, A.rowdim(), A.coldim());
 
 			MatrixHom::map(Ap, A, F);
 
@@ -118,17 +118,17 @@ namespace LinBox
 		}
 
 
-		long rankIn(BlasBlackbox<Field>& Ap) const
+		long rankIn(BlasMatrix<Field>& Ap) const
 		{
 
 			typedef typename Field::Element Element;
 
 			Field F = Ap.field();
 
-			typename BlasBlackbox<Field>::RowIterator     cur_r,  tmp_r;
-			typename BlasBlackbox<Field>::ColIterator     cur_c,  tmp_c;
-			typename BlasBlackbox<Field>::Row::iterator  cur_rp, tmp_rp;
-			typename BlasBlackbox<Field>::Col::iterator          tmp_cp;
+			typename BlasMatrix<Field>::RowIterator     cur_r,  tmp_r;
+			typename BlasMatrix<Field>::ColIterator     cur_c,  tmp_c;
+			typename BlasMatrix<Field>::Row::iterator  cur_rp, tmp_rp;
+			typename BlasMatrix<Field>::Col::iterator          tmp_cp;
 
 			Element tmp_e;
 

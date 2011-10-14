@@ -64,7 +64,7 @@ namespace LinBox
 			n = A.coldim();
 
 			// get the transposed of A
-			BlasMatrix<Element> At(n, m);
+			BlasMatrix<Field> At(_F,n, m);
 			for (size_t i=0;i<m;++i)
 				for (size_t j=0;j<n;++j)
 					At.setEntry(j,i,A.getEntry(i,j));
@@ -93,7 +93,7 @@ namespace LinBox
 			n = A.coldim();
 
 			// get the transposed of A
-			BlasMatrix<Element> At(n, m);
+			BlasMatrix<Field> At(_F,n, m);
 			for (size_t i=0;i<m;++i)
 				for (size_t j=0;j<n;++j)
 					At.setEntry(j,i,A.getEntry(i,j));
@@ -159,7 +159,7 @@ namespace LinBox
 			BlasPermutation<size_t> P(E.coldim());
 			BlasPermutation<size_t> Qt(E.rowdim());
 			// compute the LQUP of E
-			LQUPMatrix<Field> LQUP(_F, E,P,Qt);
+			LQUPMatrix<Field> LQUP(E,P,Qt);
 
 			// get the rank
 			rank = LQUP.getRank();
@@ -196,7 +196,7 @@ namespace LinBox
 			BlasPermutation<size_t> P(E.coldim());
 			BlasPermutation<size_t> Qt(E.rowdim());
 
-			LQUPMatrix<Field> LQUP(_F, E, P, Qt);
+			LQUPMatrix<Field> LQUP( E, P, Qt);
 
 			// get the rank
 			rank = LQUP.getRank();
@@ -217,9 +217,9 @@ namespace LinBox
 				E.setEntry(i,i, one);//*(Qt.getPointer()+i),one);
 
 			// Update the first r columns of E by Err^(-1)
-			BlasMatrix<Element> Er(E,0,0,rank,rank);
-			TriangularBlasMatrix<Element> Err(Er, LinBoxTag::Lower, LinBoxTag::Unit);
-			BlasMatrix<Element> En(E,rank,0,m-rank,rank);
+			BlasMatrix<Field> Er(E,0,0,rank,rank);
+			TriangularBlasMatrix<Field> Err(Er, LinBoxTag::Lower, LinBoxTag::Unit);
+			BlasMatrix<Field> En(E,rank,0,m-rank,rank);
 
 			_BMD.right_solve(Err, En);
 

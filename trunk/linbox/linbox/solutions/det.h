@@ -34,7 +34,6 @@
 #include "linbox/solutions/methods.h"
 #include "linbox/solutions/getentry.h"
 
-#include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/algorithms/blackbox-container.h"
 #include "linbox/algorithms/blackbox-container-symmetric.h"
@@ -145,10 +144,10 @@ namespace LinBox
 		return detin(d, A, tag, Method::Elimination(Meth));
 	}
 
-	// The det with Hybrid Method on BlasBlackbox
+	// The det with Hybrid Method on BlasMatrix
 	template<class Field>
 	typename Field::Element &det (typename Field::Element         	&d,
-				      const BlasBlackbox<Field>		&A,
+				      const BlasMatrix<Field>		&A,
 				      const RingCategories::ModularTag	&tag,
 				      const Method::Hybrid		&Meth)
 	{
@@ -157,7 +156,7 @@ namespace LinBox
 
 	template<class Field>
 	typename Field::Element &detin (typename Field::Element         	&d,
-					BlasBlackbox<Field>			&A,
+					BlasMatrix<Field>			&A,
 					const RingCategories::ModularTag	&tag,
 					const Method::Hybrid			&Meth)
 	{
@@ -336,7 +335,7 @@ namespace LinBox
 
 		linbox_check (A.coldim () == A.rowdim ());
 
-		BlasMatrix<typename Field::Element> B(A);
+		BlasMatrix<Field> B(A);
 		BlasMatrixDomain<Field> BMD(F);
 		d= BMD.detin(B);
 		commentator.stop ("done", NULL, "blasdet");
@@ -376,7 +375,7 @@ namespace LinBox
 				      const Method::SparseElimination		&Meth)
 	{
 		if (A.coldim() != A.rowdim())
-			throw LinboxError("LinBox ERROR: matrix must be square for determinant computation\n");                
+			throw LinboxError("LinBox ERROR: matrix must be square for determinant computation\n");
 		commentator.start ("Sparse Elimination Determinant", "SEDet");
 		// We make a copy as these data will be destroyed
 		SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq> A1 (A);
@@ -466,7 +465,7 @@ namespace LinBox
 
 	template<class Field>
 	typename Field::Element &detin (typename Field::Element			&d,
-                                        BlasBlackbox<Field>			&A,
+                                        BlasMatrix<Field>			&A,
                                         const RingCategories::ModularTag	&tag,
 					const Method::Elimination		&Meth)
 	{
@@ -475,7 +474,7 @@ namespace LinBox
 
 	template<class Field>
 	typename Field::Element &detin (typename Field::Element			&d,
-                                        BlasBlackbox<Field>			&A,
+                                        BlasMatrix<Field>			&A,
                                         const RingCategories::ModularTag	&tag,
 					const Method::BlasElimination		&Meth)
 	{
@@ -484,17 +483,17 @@ namespace LinBox
 
 
 
-	// This should work for a BlasBlackbox too ?
+	// This should work for a BlasMatrix too ?
 	/** Rank of Blackbox \p A.
 	  * \ingroup solutions
 	  * A will be modified.
 	  * \param[out]  d determinant of \p A.
-	  * \param       A this BlasBlackbox matrix will be modified in place in the process.
+	  * \param       A this BlasMatrix matrix will be modified in place in the process.
 	  * \return \p d
 	  */
 	template <class Field>
 	typename Field::Element &detin (typename Field::Element             &d,
-					BlasBlackbox<Field>                  &A)
+					BlasMatrix<Field>                  &A)
 	{
 		if (A.coldim() != A.rowdim())
 			throw LinboxError("LinBox ERROR: matrix must be square for determinant computation\n");
@@ -505,7 +504,7 @@ namespace LinBox
 		linbox_check (A.coldim () == A.rowdim ());
 
 		BlasMatrixDomain<Field> BMD(F);
-		d= BMD.detin(static_cast<BlasMatrix<typename Field::Element>& > (A));
+		d= BMD.detin(static_cast<BlasMatrix<Field>& > (A));
 		commentator.stop ("done", NULL, "detin");
 
 		return d;
@@ -646,7 +645,7 @@ namespace LinBox
 
 	template<class Field, class MyMethod>
 	typename Field::Element &det (typename Field::Element                 &d,
-				      const BlasBlackbox<Field>                &A,
+				      const BlasMatrix<Field>                &A,
 				      const RingCategories::RationalTag       &tag,
 				      const MyMethod                          &Meth)
 	{
