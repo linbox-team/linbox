@@ -65,9 +65,9 @@ template <class Field, class Matrix1, class Matrix2>
 void eliminate (MatrixDomain<Field> &MD, Matrix1 &M, Matrix2 &pivotRow,
 		size_t row, size_t col, size_t rowdim, size_t coldim)
 {
-	BlasMatrix<typename Matrix1::Element> pivotCol (rowdim, 1);
-	BlasMatrix<typename Matrix1::Element> realPivotCol (M, row, col, rowdim, 1);
-	BlasMatrix<typename Matrix1::Element> block (M, row, col, rowdim, coldim);
+	BlasMatrix<typename Matrix1::Field> pivotCol (rowdim, 1);
+	BlasMatrix<typename Matrix1::Field> realPivotCol (M, row, col, rowdim, 1);
+	BlasMatrix<typename Matrix1::Field> block (M, row, col, rowdim, coldim);
 
 	MD.neg (pivotCol, realPivotCol);
 	MD.axpyin (block, pivotCol, pivotRow);
@@ -85,12 +85,12 @@ Matrix1 &inv (MatrixDomain<Field> &MD, Matrix1 &res, const Matrix2 &A)
 	linbox_check (res.coldim () == A.coldim ());
 	linbox_check (res.rowdim () == A.rowdim ());
 
-	BlasMatrix<typename Matrix1::Element> M (res.rowdim (), res.coldim () * 2);
-	BlasMatrix<typename Matrix1::Element> M1 (M, 0, 0, res.rowdim (), res.coldim ());
-	BlasMatrix<typename Matrix1::Element> M2 (M, 0, res.coldim (), res.rowdim (), res.coldim ());
+	BlasMatrix<typename Matrix1::Field> M (res.rowdim (), res.coldim () * 2);
+	BlasMatrix<typename Matrix1::Field> M1 (M, 0, 0, res.rowdim (), res.coldim ());
+	BlasMatrix<typename Matrix1::Field> M2 (M, 0, res.coldim (), res.rowdim (), res.coldim ());
 
-	StandardBasisStream<Field, typename BlasMatrix<typename Matrix1::Element>::Row> stream (MD.field (), res.coldim ());
-	typename BlasMatrix<typename Matrix1::Element>::RowIterator ip = M2.rowBegin ();
+	StandardBasisStream<Field, typename BlasMatrix<typename Matrix1::Field>::Row> stream (MD.field (), res.coldim ());
+	typename BlasMatrix<typename Matrix1::Field>::RowIterator ip = M2.rowBegin ();
 
 	for (; ip != M2.rowEnd (); ++ip)
 		stream >> *ip;
@@ -102,8 +102,8 @@ Matrix1 &inv (MatrixDomain<Field> &MD, Matrix1 &res, const Matrix2 &A)
 
 	for (idx = 0; idx < M.rowdim (); ++idx) {
 		if (MD.field ().isZero (M.getEntry (idx, idx))) {
-			typename BlasMatrix<typename Matrix1::Element>::ColIterator col;
-			typename BlasMatrix<typename Matrix1::Element>::Col::iterator i;
+			typename BlasMatrix<typename Matrix1::Field>::ColIterator col;
+			typename BlasMatrix<typename Matrix1::Field>::Col::iterator i;
 			unsigned int c_idx = idx + 1;
 
 			col = M.colBegin () + idx;
@@ -114,7 +114,7 @@ Matrix1 &inv (MatrixDomain<Field> &MD, Matrix1 &res, const Matrix2 &A)
 			if (i == col->end ())
 				throw SingularMatrix ();
 			else {
-				typename BlasMatrix<typename Matrix1::Element>::RowIterator row1, row2;
+				typename BlasMatrix<typename Matrix1::Field>::RowIterator row1, row2;
 
 				row1 = M.rowBegin () + idx;
 				row2 = M.rowBegin () + c_idx;
@@ -124,7 +124,7 @@ Matrix1 &inv (MatrixDomain<Field> &MD, Matrix1 &res, const Matrix2 &A)
 		}
 
 		MD.field ().inv (Mjj_inv, M.getEntry (idx, idx));
-		BlasMatrix<typename Matrix1::Element> realPivotRow (M, idx, idx, 1, M.coldim () - idx);
+		BlasMatrix<typename Matrix1::Field> realPivotRow (M, idx, idx, 1, M.coldim () - idx);
 		MD.mulin (realPivotRow, Mjj_inv);
 
 		if (idx > 0)
@@ -156,7 +156,7 @@ static bool testCopyEqual (Field &F, const char *text, const Matrix &M)
 
 	MatrixDomain<Field> MD (F);
 
-	BlasMatrix<typename Field::Element> M1 (M.rowdim (), M.coldim ());
+	BlasMatrix<Field> M1 (M.rowdim (), M.coldim ());
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M:" << endl;
@@ -195,7 +195,7 @@ static bool testSubinIsZero (Field &F, const char *text, const Matrix &M)
 
 	MatrixDomain<Field> MD (F);
 
-	BlasMatrix<typename Field::Element> M1 (M.rowdim (), M.coldim ());
+	BlasMatrix<Field> M1 (M.rowdim (), M.coldim ());
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M:" << endl;
@@ -235,9 +235,9 @@ static bool testAddNegSub (Field &F, const char *text, const Matrix &M1, const M
 
 	MatrixDomain<Field> MD (F);
 
-	BlasMatrix<typename Field::Element> M3 (M1.rowdim (), M1.coldim ());
-	BlasMatrix<typename Field::Element> M4 (M1.rowdim (), M1.coldim ());
-	BlasMatrix<typename Field::Element> M5 (M1.rowdim (), M1.coldim ());
+	BlasMatrix<Field> M3 (M1.rowdim (), M1.coldim ());
+	BlasMatrix<Field> M4 (M1.rowdim (), M1.coldim ());
+	BlasMatrix<Field> M5 (M1.rowdim (), M1.coldim ());
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M1:" << endl;
@@ -287,8 +287,8 @@ static bool testAddinNeginSub (Field &F, const char *text, const Matrix &M1, con
 
 	MatrixDomain<Field> MD (F);
 
-	BlasMatrix<typename Field::Element> M3 (M1.rowdim (), M1.coldim ());
-	BlasMatrix<typename Field::Element> M4 (M1.rowdim (), M1.coldim ());
+	BlasMatrix<Field> M3 (M1.rowdim (), M1.coldim ());
+	BlasMatrix<Field> M4 (M1.rowdim (), M1.coldim ());
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M1:" << endl;
@@ -345,13 +345,13 @@ static bool testInvMulSquare (Field &F, const char *text, const Matrix &M)
 
 	MatrixDomain<Field> MD (F);
 
-	BlasMatrix<typename Field::Element> Minv (M.rowdim (), M.rowdim ());
-	BlasMatrix<typename Field::Element> M2 (M.rowdim (), M.rowdim ());
+	BlasMatrix<Field> Minv (M.rowdim (), M.rowdim ());
+	BlasMatrix<Field> M2 (M.rowdim (), M.rowdim ());
 
-	StandardBasisStream<Field, typename BlasMatrix<typename Field::Element>::Row> stream (F, M.rowdim ());
+	StandardBasisStream<Field, typename BlasMatrix<Field>::Row> stream (F, M.rowdim ());
 
-	BlasMatrix<typename Field::Element> I (M.rowdim (), M.rowdim ());
-	typename BlasMatrix<typename Field::Element>::RowIterator i = I.rowBegin ();
+	BlasMatrix<Field> I (M.rowdim (), M.rowdim ());
+	typename BlasMatrix<Field>::RowIterator i = I.rowBegin ();
 
 	while (i != I.rowEnd ())
 		stream >> *i++;
@@ -416,17 +416,17 @@ static bool testInvMulOver (Field &F, const char *text, Matrix &M)
 
 	MatrixDomain<Field> MD (F);
 
-	BlasMatrix<typename Field::Element> Minv (M.coldim (), M.coldim ());
-	BlasMatrix<typename Field::Element> M2 (M.coldim (), M.coldim ());
-	BlasMatrix<typename Field::Element> M3 (M.coldim (), M.coldim ());
+	BlasMatrix<Field> Minv (M.coldim (), M.coldim ());
+	BlasMatrix<Field> M2 (M.coldim (), M.coldim ());
+	BlasMatrix<Field> M3 (M.coldim (), M.coldim ());
 
-	BlasMatrix<typename Field::Element> MTM (M.coldim (), M.coldim ());
+	BlasMatrix<Field> MTM (M.coldim (), M.coldim ());
 
-	StandardBasisStream<Field, typename BlasMatrix<typename Field::Element>::Row>
+	StandardBasisStream<Field, typename BlasMatrix<Field>::Row>
 		stream (F, M.coldim ());
 
-	BlasMatrix<typename Field::Element> I (M.coldim (), M.coldim ());
-	typename BlasMatrix<typename Field::Element>::RowIterator i = I.rowBegin ();
+	BlasMatrix<Field> I (M.coldim (), M.coldim ());
+	typename BlasMatrix<Field>::RowIterator i = I.rowBegin ();
 
 	while (i != I.rowEnd ())
 		stream >> *i++;
@@ -497,16 +497,16 @@ static bool testInvMulUnder (Field &F, const char *text, Matrix &M)
 
 	MatrixDomain<Field> MD (F);
 
-	BlasMatrix<typename Field::Element> Minv (M.rowdim (), M.rowdim ());
-	BlasMatrix<typename Field::Element> M2 (M.rowdim (), M.rowdim ());
-	BlasMatrix<typename Field::Element> M3 (M.rowdim (), M.rowdim ());
+	BlasMatrix<Field> Minv (M.rowdim (), M.rowdim ());
+	BlasMatrix<Field> M2 (M.rowdim (), M.rowdim ());
+	BlasMatrix<Field> M3 (M.rowdim (), M.rowdim ());
 
-	BlasMatrix<typename Field::Element> MMT (M.rowdim (), M.rowdim ());
+	BlasMatrix<Field> MMT (M.rowdim (), M.rowdim ());
 
-	StandardBasisStream<Field, typename BlasMatrix<typename Field::Element>::Row> stream (F, M.rowdim ());
+	StandardBasisStream<Field, typename BlasMatrix<Field>::Row> stream (F, M.rowdim ());
 
-	BlasMatrix<typename Field::Element> I (M.rowdim (), M.rowdim ());
-	typename BlasMatrix<typename Field::Element>::RowIterator i = I.rowBegin ();
+	BlasMatrix<Field> I (M.rowdim (), M.rowdim ());
+	typename BlasMatrix<Field>::RowIterator i = I.rowBegin ();
 
 	while (i != I.rowEnd ())
 		stream >> *i++;
@@ -582,16 +582,16 @@ static bool testInvLeftMulinSquare (Field &F, const char *text, const Matrix &M)
 
 	MatrixDomain<Field> MD (F);
 
-	BlasMatrix<typename Field::Element> Minv (M.rowdim (), M.rowdim ());
+	BlasMatrix<Field> Minv (M.rowdim (), M.rowdim ());
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M:" << endl;
 	MD.write (report, M);
 
-	StandardBasisStream<Field, typename BlasMatrix<typename Field::Element>::Row> stream (F, M.rowdim ());
+	StandardBasisStream<Field, typename BlasMatrix<Field>::Row> stream (F, M.rowdim ());
 
-	BlasMatrix<typename Field::Element> I (M.rowdim (), M.rowdim ());
-	typename BlasMatrix<typename Field::Element>::RowIterator i = I.rowBegin ();
+	BlasMatrix<Field> I (M.rowdim (), M.rowdim ());
+	typename BlasMatrix<Field>::RowIterator i = I.rowBegin ();
 
 	while (i != I.rowEnd ())
 		stream >> *i++;
@@ -642,17 +642,17 @@ static bool testInvLeftMulinOver (Field &F, const char *text, Matrix &M)
 
 	MatrixDomain<Field> MD (F);
 
-	BlasMatrix<typename Field::Element> Minv (M.coldim (), M.coldim ());
-	BlasMatrix<typename Field::Element> MTM (M.coldim (), M.coldim ());
+	BlasMatrix<Field> Minv (M.coldim (), M.coldim ());
+	BlasMatrix<Field> MTM (M.coldim (), M.coldim ());
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M:" << endl;
 	MD.write (report, M);
 
-	StandardBasisStream<Field, typename BlasMatrix<typename Field::Element>::Row> stream (F, M.coldim ());
+	StandardBasisStream<Field, typename BlasMatrix<Field>::Row> stream (F, M.coldim ());
 
-	BlasMatrix<typename Field::Element> I (M.coldim (), M.coldim ());
-	typename BlasMatrix<typename Field::Element>::RowIterator i = I.rowBegin ();
+	BlasMatrix<Field> I (M.coldim (), M.coldim ());
+	typename BlasMatrix<Field>::RowIterator i = I.rowBegin ();
 
 	while (i != I.rowEnd ())
 		stream >> *i++;
@@ -705,17 +705,17 @@ static bool testInvLeftMulinUnder (Field &F, const char *text, Matrix &M)
 
 	MatrixDomain<Field> MD (F);
 
-	BlasMatrix<typename Field::Element> Minv (M.rowdim (), M.rowdim ());
-	BlasMatrix<typename Field::Element> MMT (M.rowdim (), M.rowdim ());
+	BlasMatrix<Field> Minv (M.rowdim (), M.rowdim ());
+	BlasMatrix<Field> MMT (M.rowdim (), M.rowdim ());
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M:" << endl;
 	MD.write (report, M);
 
-	StandardBasisStream<Field, typename BlasMatrix<typename Field::Element>::Row> stream (F, M.rowdim ());
+	StandardBasisStream<Field, typename BlasMatrix<Field>::Row> stream (F, M.rowdim ());
 
-	BlasMatrix<typename Field::Element> I (M.rowdim (), M.rowdim ());
-	typename BlasMatrix<typename Field::Element>::RowIterator i = I.rowBegin ();
+	BlasMatrix<Field> I (M.rowdim (), M.rowdim ());
+	typename BlasMatrix<Field>::RowIterator i = I.rowBegin ();
 
 	while (i != I.rowEnd ())
 		stream >> *i++;
@@ -729,7 +729,7 @@ static bool testInvLeftMulinUnder (Field &F, const char *text, Matrix &M)
 		commentator.stop ("ok", (const char *) 0, "testInvLeftMulin");
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
 			<< "WARNING: Matrix was found singular" << endl;
-		// BlasBlackbox<Field> N(F,MMT) ;
+		// BlasMatrix<Field> N(F,MMT) ;
 		// typename Field::Element d;
 		// det(d,N);
 		// if (d != 0) {
@@ -777,16 +777,16 @@ static bool testInvRightMulinSquare (Field &F, const char *text, const Matrix &M
 
 	MatrixDomain<Field> MD (F);
 
-	BlasMatrix<typename Field::Element> Minv (M.rowdim (), M.rowdim ());
+	BlasMatrix<Field> Minv (M.rowdim (), M.rowdim ());
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M:" << endl;
 	MD.write (report, M);
 
-	StandardBasisStream<Field, typename BlasMatrix<typename Field::Element>::Row> stream (F, M.rowdim ());
+	StandardBasisStream<Field, typename BlasMatrix<Field>::Row> stream (F, M.rowdim ());
 
-	BlasMatrix<typename Field::Element> I (M.rowdim (), M.rowdim ());
-	typename BlasMatrix<typename Field::Element>::RowIterator i = I.rowBegin ();
+	BlasMatrix<Field> I (M.rowdim (), M.rowdim ());
+	typename BlasMatrix<Field>::RowIterator i = I.rowBegin ();
 
 	while (i != I.rowEnd ())
 		stream >> *i++;
@@ -836,17 +836,17 @@ static bool testInvRightMulinOver (Field &F, const char *text, Matrix &M)
 
 	MatrixDomain<Field> MD (F);
 
-	BlasMatrix<typename Field::Element> Minv (M.coldim (), M.coldim ());
-	BlasMatrix<typename Field::Element> MTM (M.coldim (), M.coldim ());
+	BlasMatrix<Field> Minv (M.coldim (), M.coldim ());
+	BlasMatrix<Field> MTM (M.coldim (), M.coldim ());
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M:" << endl;
 	MD.write (report, M);
 
-	StandardBasisStream<Field, typename BlasMatrix<typename Field::Element>::Row> stream (F, M.coldim ());
+	StandardBasisStream<Field, typename BlasMatrix<Field>::Row> stream (F, M.coldim ());
 
-	BlasMatrix<typename Field::Element> I (M.coldim (), M.coldim ());
-	typename BlasMatrix<typename Field::Element>::RowIterator i = I.rowBegin ();
+	BlasMatrix<Field> I (M.coldim (), M.coldim ());
+	typename BlasMatrix<Field>::RowIterator i = I.rowBegin ();
 
 	while (i != I.rowEnd ())
 		stream >> *i++;
@@ -898,17 +898,17 @@ static bool testInvRightMulinUnder (Field &F, const char *text, Matrix &M)
 
 	MatrixDomain<Field> MD (F);
 
-	BlasMatrix<typename Field::Element> Minv (M.rowdim (), M.rowdim ());
-	BlasMatrix<typename Field::Element> MMT (M.rowdim (), M.rowdim ());
+	BlasMatrix<Field> Minv (M.rowdim (), M.rowdim ());
+	BlasMatrix<Field> MMT (M.rowdim (), M.rowdim ());
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M:" << endl;
 	MD.write (report, M);
 
-	StandardBasisStream<Field, typename BlasMatrix<typename Field::Element>::Row> stream (F, M.rowdim ());
+	StandardBasisStream<Field, typename BlasMatrix<Field>::Row> stream (F, M.rowdim ());
 
-	BlasMatrix<typename Field::Element> I (M.rowdim (), M.rowdim ());
-	typename BlasMatrix<typename Field::Element>::RowIterator i = I.rowBegin ();
+	BlasMatrix<Field> I (M.rowdim (), M.rowdim ());
+	typename BlasMatrix<Field>::RowIterator i = I.rowBegin ();
 
 	while (i != I.rowEnd ())
 		stream >> *i++;
@@ -961,9 +961,9 @@ static bool testAddMulAxpyin (Field &F, const char *text, Matrix &M1, Matrix &M2
 
 	MatrixDomain<Field> MD (F);
 
-	BlasMatrix<typename Field::Element> M4 (M2.rowdim (), M3.coldim ());
-	BlasMatrix<typename Field::Element> M5 (M1.rowdim (), M1.coldim ());
-	BlasMatrix<typename Field::Element> M6 (M1.rowdim (), M1.coldim ());
+	BlasMatrix<Field> M4 (M2.rowdim (), M3.coldim ());
+	BlasMatrix<Field> M5 (M1.rowdim (), M1.coldim ());
+	BlasMatrix<Field> M6 (M1.rowdim (), M1.coldim ());
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M1:" << endl;
@@ -1015,7 +1015,7 @@ static bool testMVMulSub (Field &F, const char *text, const Matrix &M)
 
 	MatrixDomain<Field> MD (F);
 
-	BlasMatrix<typename Field::Element> M1 (M.rowdim (), M.coldim ());
+	BlasMatrix<Field> M1 (M.rowdim (), M.coldim ());
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M:" << endl;
@@ -1023,7 +1023,7 @@ static bool testMVMulSub (Field &F, const char *text, const Matrix &M)
 
 	StandardBasisStream<Field, typename LinBox::Vector<Field>::Dense> stream (F, M.rowdim ());
 	typename LinBox::Vector<Field>::Dense v (M.coldim ());
-	typename BlasMatrix<typename Field::Element>::ColIterator i = M1.colBegin ();
+	typename BlasMatrix<Field>::ColIterator i = M1.colBegin ();
 
 	for (; i != M1.colEnd (); ++i) {
 		stream >> v;
@@ -1064,7 +1064,7 @@ static bool testMVAxpy (Field &F, const char *text, const Matrix &M)
 	VectorDomain<Field> VD (F);
 	MatrixDomain<Field> MD (F);
 
-	BlasMatrix<typename Field::Element> M1 (M.rowdim (), M.coldim ());
+	BlasMatrix<Field> M1 (M.rowdim (), M.coldim ());
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M1:" << endl;
@@ -1072,7 +1072,7 @@ static bool testMVAxpy (Field &F, const char *text, const Matrix &M)
 
 	StandardBasisStream<Field, typename LinBox::Vector<Field>::Dense> stream (F, M.rowdim ());
 	typename LinBox::Vector<Field>::Dense v (M.coldim ()), w (M.rowdim ());
-	typename BlasMatrix<typename Field::Element>::RowIterator i = M1.rowBegin ();
+	typename BlasMatrix<Field>::RowIterator i = M1.rowBegin ();
 
 	VD.subin (w, w);
 
@@ -1123,11 +1123,11 @@ static bool testLeftBlackboxMul (Field &F, const char *text, const Blackbox &A,
 	VectorDomain<Field> VD (F);
 	MatrixDomain<Field> MD (F);
 
-	BlasMatrix<typename Field::Element> I (A.coldim (), A.coldim ());
-	BlasMatrix<typename Field::Element> AI (A.rowdim (), A.coldim ());
+	BlasMatrix<Field> I (A.coldim (), A.coldim ());
+	BlasMatrix<Field> AI (A.rowdim (), A.coldim ());
 
-	StandardBasisStream<Field, typename BlasMatrix<typename Field::Element>::Row> Istream (F, A.coldim ());
-	typename BlasMatrix<typename Field::Element>::RowIterator i;
+	StandardBasisStream<Field, typename BlasMatrix<Field>::Row> Istream (F, A.coldim ());
+	typename BlasMatrix<Field>::RowIterator i;
 
 	for (i = I.rowBegin (); i != I.rowEnd (); ++i)
 		Istream >> *i;
@@ -1177,11 +1177,11 @@ static bool testRightBlackboxMul (Field &F, const char *text, const Blackbox &A,
 	VectorDomain<Field> VD (F);
 	MatrixDomain<Field> MD (F);
 
-	BlasMatrix<typename Field::Element> I (A.rowdim (), A.rowdim ());
-	BlasMatrix<typename Field::Element> IA (A.rowdim (), A.coldim ());
+	BlasMatrix<Field> I (A.rowdim (), A.rowdim ());
+	BlasMatrix<Field> IA (A.rowdim (), A.coldim ());
 
-	StandardBasisStream<Field, typename BlasMatrix<typename Field::Element>::Row> Istream (F, A.rowdim ());
-	typename BlasMatrix<typename Field::Element>::RowIterator i;
+	StandardBasisStream<Field, typename BlasMatrix<Field>::Row> Istream (F, A.rowdim ());
+	typename BlasMatrix<Field>::RowIterator i;
 
 	for (i = I.rowBegin (); i != I.rowEnd (); ++i)
 		Istream >> *i;
@@ -1485,14 +1485,14 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (3);
 
-	BlasMatrix<Element> M1 (n, m);
-	BlasMatrix<Element> M2 (n, m);
-	BlasMatrix<Element> M3 (m, m);
-	MatrixBlackbox<Field, BlasMatrix<Field::Element> > A1 (F, n, m);
+	BlasMatrix<Field> M1 (n, m);
+	BlasMatrix<Field> M2 (n, m);
+	BlasMatrix<Field> M3 (m, m);
+	MatrixBlackbox<Field, BlasMatrix<Field> > A1 (F, n, m);
 
-	RandomDenseStream<Field, BlasMatrix<Element>::Row> stream1 (F, m);
+	RandomDenseStream<Field, BlasMatrix<Field>::Row> stream1 (F, m);
 
-	BlasMatrix<Element>::RowIterator i;
+	BlasMatrix<Field>::RowIterator i;
 
 	for (i = M1.rowBegin (); i != M1.rowEnd (); ++i)
 		stream1 >> *i;
@@ -1507,7 +1507,7 @@ int main (int argc, char **argv)
 		stream1 >> *i;
 
 	if (!testMatrixDomain (F, "dense", M1, M2, M3, A1, iterations,
-			       MatrixTraits<BlasMatrix<Element> >::MatrixCategory ()))
+			       MatrixTraits<BlasMatrix<Field> >::MatrixCategory ()))
 		pass = false;
 
 	SparseMatrixBase<Element> M4 (n, m);

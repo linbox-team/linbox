@@ -30,7 +30,6 @@
 #include <iostream>
 
 #include "linbox/field/modular.h"
-#include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/solutions/solve.h"
 #include "linbox/util/matrix-stream.h"
 #include "linbox/solutions/methods.h"
@@ -64,7 +63,7 @@ int main (int argc, char **argv)
 	double q = atof(argv[3]);
 	Field F(q);
 	MatrixStream< Field > ms ( F, input );
-	BlasBlackbox<Field> A (ms); // A.write(std::cout);
+	BlasMatrix<Field> A (ms); // A.write(std::cout);
 	cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
 	std::vector<Field::Element> X( A.coldim()),B(A.rowdim());
@@ -80,7 +79,7 @@ int main (int argc, char **argv)
 	std::cout << "(BlasElimination) Solution is [ "<<X<< "]" << std::endl;
 	std::vector<Field::Element> r(A.rowdim());
 	BlasMatrixDomain<Field> BMD(F);
-	BMD.mul(r, static_cast<BlasMatrix<Field::Element>& >(A), X);
+	BMD.mul(r, static_cast<BlasMatrix<Field>& >(A), X);
 	//A.apply (r,X);
 	VectorDomain<Field> VD(F);
 	if (VD.areEqual (r,B))

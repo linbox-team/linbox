@@ -28,7 +28,6 @@
 #include "linbox/field/modular.h"
 #include "linbox/algorithms/rational-solver.h"
 #include "linbox/randiter/random-prime.h"
-#include "linbox/blackbox/blas-blackbox.h"
 
 namespace LinBox
 {
@@ -36,7 +35,7 @@ namespace LinBox
 	// Generic non-numerical solver requires conversion of the vector
 	template<class IRing, class OutVector, class InVector>
 	struct RationalSolverAdaptiveClass {
-		static SolverReturnStatus solveNonsingular(OutVector& num, typename IRing::Element& den, const BlasBlackbox<IRing>& M, const InVector& b)
+		static SolverReturnStatus solveNonsingular(OutVector& num, typename IRing::Element& den, const BlasMatrix<IRing>& M, const InVector& b)
 		{
 			linbox_check ((M. rowdim() == M. coldim()) && (b.size() == M.rowdim()) && (num. size() ==M.coldim()));
 			typedef Modular<int32_t> Field;
@@ -66,7 +65,7 @@ namespace LinBox
 	// Specialization when the vector is already over the ring
 	template<class IRing, class OutVector, template<typename T> class Container>
 	struct RationalSolverAdaptiveClass<IRing, OutVector, Container<typename IRing::Element> > {
-		static SolverReturnStatus solveNonsingular(OutVector& num, typename IRing::Element& den, const BlasBlackbox<IRing>& M, const Container<typename IRing::Element> & b) {
+		static SolverReturnStatus solveNonsingular(OutVector& num, typename IRing::Element& den, const BlasMatrix<IRing>& M, const Container<typename IRing::Element> & b) {
 			linbox_check ((M. rowdim() == M. coldim()) && (b.size() == M.rowdim()) && (num. size() ==M.coldim()));
 			typedef Modular<int32_t> Field;
 			// typedef Modular<double> Field;
@@ -87,7 +86,7 @@ namespace LinBox
 	class RationalSolverAdaptive {
 	public:
 		template<class IRing, class OutVector, class InVector>
-		static SolverReturnStatus solveNonsingular(OutVector& num, typename IRing::Element& den, const BlasBlackbox<IRing>& M, const InVector& b) {
+		static SolverReturnStatus solveNonsingular(OutVector& num, typename IRing::Element& den, const BlasMatrix<IRing>& M, const InVector& b) {
 			return RationalSolverAdaptiveClass<IRing,OutVector,InVector>::solveNonsingular(num, den, M, b);
 		}
 	};

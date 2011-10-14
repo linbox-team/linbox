@@ -26,7 +26,6 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/blackbox/sparse.h"
-#include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/solutions/is-positive-definite.h"
 
 #include "test-common.h"

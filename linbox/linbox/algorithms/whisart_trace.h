@@ -24,6 +24,7 @@
 #ifndef __LINBOX_whisart_trace_H
 #define __LINBOX_whisart_trace_H
 
+#include "linbox/field/modular.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/transpose.h"
 #include "linbox/blackbox/sparse.h"
@@ -49,7 +50,7 @@ namespace LinBox
 	};
 
 	template<class Field>
-	struct IndexedCategory< BlasBlackbox<Field> > 	{
+	struct IndexedCategory< BlasMatrix<Field> > 	{
 		typedef IndexedTags::HasIndexed Tag; };
 
 
@@ -151,7 +152,9 @@ namespace LinBox
 		F.init(tr, 0);
 		for(typename BB::ConstIndexedIterator it = A.IndexedBegin();
 		    it != A.IndexedEnd(); ++it) {
-			typename Field::Element tmp,e,i; F.init(tmp);F.init(e);F.init(i);
+			typename Field::Element tmp,e,i;
+			F.init(tmp);
+			F.init(e);F.init(i);
 			F.mul(tmp,it.value(),it.value());
 			ExtD.getEntry(e, it.rowIndex(),it.rowIndex());
 			InD.getEntry(i, it.colIndex(),it.colIndex());

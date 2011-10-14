@@ -30,7 +30,6 @@
 #ifndef __LINBOX_numeric_solver_lapack_H
 #define __LINBOX_numeric_solver_lapack_H
 
-#include "linbox/blackbox/blas-blackbox.h"
 
 namespace LinBox {
 

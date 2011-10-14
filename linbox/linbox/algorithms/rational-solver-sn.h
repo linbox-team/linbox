@@ -32,7 +32,6 @@
 #include "linbox/field/param-fuzzy.h"
 #include "linbox/solutions/methods.h"
 #include "linbox/blackbox/archetype.h"
-#include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/algorithms/dyadic-to-rational.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/matrix/blas-matrix.h"
@@ -73,7 +72,7 @@ namespace LinBox {
 		typedef ParamFuzzy Field;
 		typedef typename Field::Element Float;
 		typedef std::vector<Float> FVector;
-		typedef BlasBlackbox<Field> FMatrix;
+		typedef BlasMatrix<Field> FMatrix;
 
 	protected:
 		Ring _R;
@@ -100,7 +99,7 @@ namespace LinBox {
 		{}
 
 		/**
-		 * IMatrix is matrix of integer type, eg. BlasBlackbox<PID-integer>
+		 * IMatrix is matrix of integer type, eg. BlasMatrix<PID-integer>
 		 * IVector is linbox Vector of integer, eg. vector<PID-integer::Element>
 		 * M is the matrix, b is rhs.
 		 * num, den are the output  such that M*num = den*b (and den != 0 if successful).

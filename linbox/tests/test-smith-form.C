@@ -36,12 +36,11 @@
 #include "linbox/util/commentator.h"
 #include "linbox/vector/stream.h"
 #include "test-common.h"
-#include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/solutions/smith-form.h"
 using LinBox::commentator;
 using LinBox::Commentator;
 using LinBox::integer;
-using LinBox::BlasBlackbox;
+using LinBox::BlasMatrix;
 
 template <class Ring, class Vector>
 bool testRandom(const Ring& R,
@@ -82,7 +81,7 @@ bool testRandom(const Ring& R,
 		VD.write (report, d);
                 report << endl;
 
-		BlasBlackbox<Ring> D(R, n, n), L(R, n, n), U(R, n, n), A(R,n,n);
+		BlasMatrix<Ring> D(R, n, n), L(R, n, n), U(R, n, n), A(R,n,n);
 
 		int i, j;
 
@@ -103,7 +102,7 @@ bool testRandom(const Ring& R,
 
 		std::vector<typename Ring::Element> tmp1(n), tmp2(n), e(n);
 
-		typename BlasBlackbox<Ring>::ColIterator col_p;
+		typename BlasMatrix<Ring>::ColIterator col_p;
 
 		i = 0;
 		for (col_p = A.colBegin();

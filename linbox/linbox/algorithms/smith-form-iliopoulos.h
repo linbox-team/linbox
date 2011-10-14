@@ -407,9 +407,11 @@ namespace LinBox
 			}
 			while (!check(A, r));
 
-			typename SubMatrixTraits<Matrix>::value_type
-			sub(A, (unsigned int)1, (unsigned int)1,
-			    A.rowdim() - 1, A.coldim() - 1);
+			typedef typename SubMatrixTraits<Matrix>::value_type sub_mat_t ;
+
+			sub_mat_t sub(A,
+				      (unsigned int)1, (unsigned int)1,
+				      A.rowdim() - 1, A.coldim() - 1);
 
 			diagonalizationIn(sub, r);
 

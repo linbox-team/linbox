@@ -33,7 +33,6 @@
 
 #include <iostream>
 
-#include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/solutions/methods.h"
 #include "linbox/blackbox/archetype.h"
 #include "linbox/blackbox/lambda-sparse.h"
@@ -444,7 +443,7 @@ namespace LinBox
 		typedef typename Ring::Element                Integer;
 		typedef typename Field::Element               Element;
 		typedef typename RandomPrime::Prime_Type        Prime;
-		typedef BlasMatrix<Element>               Coefficient;
+		typedef BlasMatrix<Field>               Coefficient;
 		typedef std::vector<Element>              FPolynomial;
 		typedef std::vector<Coefficient>     FBlockPolynomial;
 

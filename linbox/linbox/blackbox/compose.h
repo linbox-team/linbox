@@ -30,6 +30,7 @@
 #include "linbox/util/debug.h"
 #include "linbox/linbox-config.h"
 #include "linbox/blackbox/blackbox-interface.h"
+#include "linbox/matrix/blas-matrix.h"
 
 namespace LinBox
 {
@@ -394,7 +395,6 @@ namespace LinBox
 } // namespace LinBox
 
 // was compose-traits.h (by Zhendong Wan)
-#include "linbox/blackbox/blas-blackbox.h" // ???
 namespace LinBox
 {
 
@@ -407,11 +407,11 @@ namespace LinBox
 
 	/// used in smith-binary, for example
 	template<class Field>
-	class ComposeTraits<  BlasBlackbox<Field> > {
+	class ComposeTraits<  BlasMatrix<Field> > {
 	public:
 
 		// define the return value type
-		typedef BlasBlackbox<Field> value_type;
+		typedef BlasMatrix<Field> value_type;
 	};
 
 }

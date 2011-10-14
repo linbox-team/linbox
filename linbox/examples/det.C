@@ -33,7 +33,6 @@
 
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/sparse.h"
-#include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/solutions/det.h"
 #include "linbox/util/matrix-stream.h"
 
@@ -65,7 +64,7 @@ int main (int argc, char **argv)
 			return -1;
 		}
 		MatrixStream< Integers> ms ( ZZ, input );
-		BlasBlackbox<Integers> A(ms);
+		BlasMatrix<Integers> A(ms);
 		cout << "Matrix is " << A.rowdim() << " by " << A.coldim() << endl;
 
 		Integers::Element det_A;

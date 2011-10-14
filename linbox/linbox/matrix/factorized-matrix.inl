@@ -32,8 +32,8 @@ namespace LinBox
 
 	// get the Matrix L
 	template <class Field>
-	inline TriangularBlasMatrix<typename Field::Element>&
-	LQUPMatrix<Field>::getL( TriangularBlasMatrix<Element >& L,
+	inline TriangularBlasMatrix<Field>&
+	LQUPMatrix<Field>::getL( TriangularBlasMatrix<Field>& L,
 				 bool _QLUP ) const
 	{
 
@@ -106,8 +106,8 @@ namespace LinBox
 
 	// get the matrix U
 	template <class Field>
-	inline TriangularBlasMatrix<typename Field::Element>&
-	LQUPMatrix<Field>::getU( TriangularBlasMatrix<typename Field::Element >& U ) const
+	inline TriangularBlasMatrix<Field>&
+	LQUPMatrix<Field>::getU( TriangularBlasMatrix<Field>& U ) const
 	{
 
 		linbox_check( U.rowdim() == _m);
@@ -122,8 +122,8 @@ namespace LinBox
 
 	// get the Matrix S (from the LSP factorization of A deduced from LQUP)
 	template <class Field>
-	inline BlasMatrix<typename Field::Element>&
-	LQUPMatrix<Field>::getS( BlasMatrix<typename Field::Element >& S) const
+	inline BlasMatrix<Field>&
+	LQUPMatrix<Field>::getS( BlasMatrix<Field>& S) const
 	{
 
 		linbox_check( S.rowdim() == _m);
@@ -145,17 +145,17 @@ namespace LinBox
 
 
 	/*
-	 * Solvers with Matrices: Operand=BlasMatrix<Element>
+	 * Solvers with Matrices: Operand=BlasMatrix<Field>
 	 */
 
 	template <class Field>
-	class FactorizedMatrixLeftSolve<Field, BlasMatrix<typename Field::Element> > {
+	class FactorizedMatrixLeftSolve<Field, BlasMatrix<Field> > {
 	public:
 
-		BlasMatrix<typename Field::Element>& operator() (const Field& F,
+		BlasMatrix<Field>& operator() (const Field& F,
 								 const LQUPMatrix<Field>& A,
-								 BlasMatrix<typename Field::Element>& X,
-								 const BlasMatrix<typename Field::Element>& B) const
+								 BlasMatrix<Field>& X,
+								 const BlasMatrix<Field>& B) const
 		{
 			linbox_check (A.coldim() == X.rowdim());
 			linbox_check (A.rowdim() == B.rowdim());
@@ -172,9 +172,9 @@ namespace LinBox
 			return X;
 		}
 
-		BlasMatrix<typename Field::Element>& operator() (const Field& F,
+		BlasMatrix<Field>& operator() (const Field& F,
 								 const LQUPMatrix<Field>& A,
-								 BlasMatrix<typename Field::Element>& B) const
+								 BlasMatrix<Field>& B) const
 		{
 
 			int info;
@@ -193,13 +193,13 @@ namespace LinBox
 	}; // end of class FactorizedMatrixLeftSolve
 
 	template <class Field>
-	class FactorizedMatrixRightSolve<Field, BlasMatrix<typename Field::Element> > {
+	class FactorizedMatrixRightSolve<Field, BlasMatrix<Field> > {
 	public:
 
-		BlasMatrix<typename Field::Element>& operator() ( const Field& F,
+		BlasMatrix<Field>& operator() ( const Field& F,
 								  const LQUPMatrix<Field>& A,
-								  BlasMatrix<typename Field::Element>& X,
-								  const BlasMatrix<typename Field::Element>& B ) const
+								  BlasMatrix<Field>& X,
+								  const BlasMatrix<Field>& B ) const
 		{
 			linbox_check (A.rowdim() == X.coldim());
 			linbox_check (A.coldim() == B.coldim());
@@ -217,9 +217,9 @@ namespace LinBox
 			return X;
 		}
 
-		BlasMatrix<typename Field::Element>& operator() ( const Field& F,
+		BlasMatrix<Field>& operator() ( const Field& F,
 								  const LQUPMatrix<Field>& A,
-								  BlasMatrix<typename Field::Element>& B ) const
+								  BlasMatrix<Field>& B ) const
 		{
 
 			int info;
@@ -240,21 +240,21 @@ namespace LinBox
 
 
 	template <class Field>
-	class FactorizedMatrixLeftLSolve<Field, BlasMatrix<typename Field::Element> > {
+	class FactorizedMatrixLeftLSolve<Field, BlasMatrix<Field> > {
 	public:
-		BlasMatrix<typename Field::Element>& operator() ( const Field& F,
+		BlasMatrix<Field>& operator() ( const Field& F,
 								  const LQUPMatrix<Field>& A,
-								  BlasMatrix<typename Field::Element>& X,
-								  const BlasMatrix<typename Field::Element>& B ) const
+								  BlasMatrix<Field>& X,
+								  const BlasMatrix<Field>& B ) const
 		{
 			linbox_check (A.rowdim() == B.rowdim());
 			X = B;
 			return  (*this)(F, A, X);
 		}
 
-		BlasMatrix<typename Field::Element>& operator() ( const Field& F,
+		BlasMatrix<Field>& operator() ( const Field& F,
 								  const LQUPMatrix<Field>& A,
-								  BlasMatrix<typename Field::Element>& B ) const
+								  BlasMatrix<Field>& B ) const
 		{
 
 			linbox_check (A.rowdim() == B.rowdim());
@@ -269,21 +269,21 @@ namespace LinBox
 	}; // end of class FactorizedMatrixLeftLSolve
 
 	template <class Field>
-	class FactorizedMatrixRightLSolve<Field, BlasMatrix<typename Field::Element> > {
+	class FactorizedMatrixRightLSolve<Field, BlasMatrix<Field> > {
 	public:
-		BlasMatrix<typename Field::Element>& operator() (const Field& F,
+		BlasMatrix<Field>& operator() (const Field& F,
 								 const LQUPMatrix<Field>& A,
-								 BlasMatrix<typename Field::Element>& X,
-								 const BlasMatrix<typename Field::Element>& B) const
+								 BlasMatrix<Field>& X,
+								 const BlasMatrix<Field>& B) const
 		{
 			linbox_check (A.rowdim() == B.coldim());
 			X = B;
 			return  (*this)( F, A, X );
 		}
 
-		BlasMatrix<typename Field::Element>& operator() (const Field& F,
-								 const BlasMatrix<typename Field::element>& A,
-								 BlasMatrix<typename Field::Element>& B) const
+		BlasMatrix<Field>& operator() (const Field& F,
+								 const BlasMatrix<Field>& A,
+								 BlasMatrix<Field>& B) const
 		{
 
 			linbox_check( A.rowdim() == B.coldim() );
@@ -296,13 +296,13 @@ namespace LinBox
 	}; // end of class FactorizedMatrixRightLsolve
 
 	template <class Field>
-	class FactorizedMatrixLeftUSolve<Field, BlasMatrix<typename Field::Element> > {
+	class FactorizedMatrixLeftUSolve<Field, BlasMatrix<Field> > {
 	public:
 
-		BlasMatrix<typename Field::Element>& operator() ( const Field& F,
+		BlasMatrix<Field>& operator() ( const Field& F,
 								  const LQUPMatrix<Field>& A,
-								  BlasMatrix<typename Field::Element>& X,
-								  const BlasMatrix<typename Field::Element>& B ) const
+								  BlasMatrix<Field>& X,
+								  const BlasMatrix<Field>& B ) const
 		{
 
 			linbox_check (A.coldim() == X.rowdim());
@@ -337,9 +337,9 @@ namespace LinBox
 			return X;
 
 		}
-		BlasMatrix<typename Field::Element>& operator() ( const Field& F,
-								  const BlasMatrix<typename Field::Element>& A,
-								  BlasMatrix<typename Field::Element>& B ) const
+		BlasMatrix<Field>& operator() ( const Field& F,
+								  const BlasMatrix<Field>& A,
+								  BlasMatrix<Field>& B ) const
 		{
 
 			linbox_check (A.coldim() == A.rowdim());
@@ -364,12 +364,12 @@ namespace LinBox
 	}; // end of class FactorizedMatrixLeftUSolve
 
 	template <class Field>
-	class FactorizedMatrixRightUSolve<Field, BlasMatrix<typename Field::Element> > {
+	class FactorizedMatrixRightUSolve<Field, BlasMatrix<Field> > {
 	public:
-		BlasMatrix<typename Field::Element>& operator() ( const Field& F,
+		BlasMatrix<Field>& operator() ( const Field& F,
 								  const LQUPMatrix<Field>& A,
-								  BlasMatrix<typename Field::Element>& X,
-								  const BlasMatrix<typename Field::Element>& B ) const
+								  BlasMatrix<Field>& X,
+								  const BlasMatrix<Field>& B ) const
 		{
 			linbox_check (X.coldim() == A.rowdim());
 			linbox_check (X.rowdim() == B.rowdim());
@@ -422,9 +422,9 @@ namespace LinBox
 			return X;
 		}
 
-		BlasMatrix<typename Field::Element>& operator() ( const Field& F,
+		BlasMatrix<Field>& operator() ( const Field& F,
 								  const LQUPMatrix<Field>& A,
-								  BlasMatrix<typename Field::Element>& B ) const
+								  BlasMatrix<Field>& B ) const
 		{
 			linbox_check (A.coldim() == A.rowdim());
 			linbox_check (B.coldim() == A.rowdim());

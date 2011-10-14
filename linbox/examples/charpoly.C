@@ -34,7 +34,6 @@
 #include "linbox/field/modular.h"
 #include "linbox/field/unparametric.h"
 #include "linbox/blackbox/sparse.h"
-#include "linbox/blackbox/blas-blackbox.h"
 using namespace std;
 
 #include "linbox/solutions/charpoly.h"
@@ -111,7 +110,7 @@ int main (int argc, char **argv)
 	if (argc == 2) {
 
 		PID_integer ZZ;
-		BlasBlackbox<PID_integer > A (ZZ);
+		BlasMatrix<PID_integer > A (ZZ);
 		A.read (input);
 		typedef GivPolynomialRing<PID_integer, Givaro::Dense> IntPolRing;
 		IntPolRing::Element c_A;
@@ -152,7 +151,7 @@ int main (int argc, char **argv)
 		typedef Modular<double> Field;
 		double q = atof(argv[2]);
 		Field F(q);
-		BlasBlackbox<Field> B (F);
+		BlasMatrix<Field> B (F);
 		B.read (input);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
 		GivPolynomialRing<Field, Givaro::Dense>::Element c_B;

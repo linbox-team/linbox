@@ -540,10 +540,10 @@ namespace LinBox
 
 
 	template<class _Field>
-	class BlasBlackbox ; // forward declaration...
+	class BlasMatrix ; // forward declaration...
 
 	template<class Field>
-	bool useBB(const BlasBlackbox<Field>& A) { return false; }
+	bool useBB(const BlasMatrix<Field>& A) { return false; }
 
 
 	/** Solver traits.

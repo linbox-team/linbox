@@ -14,7 +14,6 @@
 
 #include "linbox/field/PID-integer.h"
 #include "linbox/field/param-fuzzy.h"
-#include "linbox/blackbox/blas-blackbox.h"
 #include "tests/test-common.h"
 #include "linbox/vector/stream.h"
 #include "linbox/util/commentator.h"
@@ -302,8 +301,8 @@ int main(int argc, char** argv) {
 	typedef Modular<int32_t> ZField;
 	typedef Modular<double> DField;
 
-	typedef BlasBlackbox<Field> Matrix;
-	typedef BlasBlackbox<Ring> CommonMatrix;
+	typedef BlasMatrix<Field> Matrix;
+	typedef BlasMatrix<Ring> CommonMatrix;
 	typedef vector<Ring::Element> Vector;
 
 	if(mt == Hadamard)

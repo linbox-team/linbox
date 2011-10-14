@@ -75,7 +75,7 @@ namespace LinBox
 		typedef _Field                           Field;
 		typedef typename Field::Element        Element;
 		typedef _Sequence                     Sequence;
-		typedef BlasMatrix<Element>        Coefficient;
+		typedef BlasMatrix<Field>        Coefficient;
 
 
 	private:
@@ -192,7 +192,7 @@ namespace LinBox
 		// left minimal generating polynomial of the sequence
 		void left_minpoly  (std::vector<Coefficient> &P)
 		{
-			masseyblock_left(P); 
+			masseyblock_left(P);
 		}
 
 		void left_minpoly_rec  (std::vector<Coefficient> &P)
@@ -418,7 +418,7 @@ namespace LinBox
 
 #endif
 				// Get the matrix L of LQUP decomposition
-				TriangularBlasMatrix<Element> L(m+n,m+n, LinBoxTag::Lower, LinBoxTag::Unit );
+				TriangularBlasMatrix<Field> L(_F,m+n,m+n, LinBoxTag::Lower, LinBoxTag::Unit );
 				LQUP.getL(L);
 
 				// Get the tranposed  permutation of Q from LQUP
@@ -444,7 +444,7 @@ namespace LinBox
 				tInverseL.start();
 #endif
 				// compute the inverse of L
-				TriangularBlasMatrix<Element> invL (m+n,m+n, LinBoxTag::Lower,LinBoxTag::Unit);
+				TriangularBlasMatrix<Field> invL (_F,m+n,m+n, LinBoxTag::Lower,LinBoxTag::Unit);
 				FFPACK::trinv_left(_F,m+n,L.getPointer(),L.getStride(),invL.getWritePointer(),invL.getStride());
 
 #ifdef _BM_TIMING
@@ -535,9 +535,9 @@ namespace LinBox
 							// report << " i item: ";
 					 		// report << SigmaBase[i].getEntry(m+j,k)
 							// << std::endl;
-							// typename Field::Element& x = SigmaBase[i+1].refEntry(m+j,k); 
+							// typename Field::Element& x = SigmaBase[i+1].refEntry(m+j,k);
 							// report << &x << " " << x << " &x and x" << std::endl;
-							// x = SigmaBase[i].getEntry(m+j,k); 
+							// x = SigmaBase[i].getEntry(m+j,k);
 							// report << x << " new x" << std::endl;
 							_F.assign(SigmaBase[i+1].refEntry(m+j,k), SigmaBase[i].getEntry(m+j,k));
 
@@ -594,7 +594,7 @@ namespace LinBox
 #endif
 				// Discrepancy= BPerm2.U.Pp from LQUP
 				Coefficient U(m+n,n);
-				TriangularBlasMatrix<Element> trU(U,LinBoxTag::Upper,LinBoxTag::NonUnit);
+				TriangularBlasMatrix<Field> trU(U,LinBoxTag::Upper,LinBoxTag::NonUnit);
 				LQUP.getU(trU);
 				//Discrepancy=U;
 				// BlasPermutation<size_t> Pp= LQUP.getP();

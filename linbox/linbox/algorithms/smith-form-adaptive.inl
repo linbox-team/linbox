@@ -71,7 +71,7 @@ namespace LinBox
 			Local2_32 R;
 			std::list <Local2_32::Element> l;
 			SmithFormLocal<Local2_32> SF;
-			BlasBlackbox <Local2_32> A_local(R, A.rowdim(),A.coldim());
+			BlasMatrix <Local2_32> A_local(R, A.rowdim(),A.coldim());
 			MatrixHom::map (A_local, A, R);
 			SF (l, A_local, R);
 			std::list <Local2_32::Element>::iterator l_p;
@@ -109,7 +109,7 @@ namespace LinBox
 			delete[] A_local;
 #endif
 			typedef Modular<int32_t> Field;
-			typedef BlasBlackbox<Field> FMatrix;
+			typedef BlasMatrix<Field> FMatrix;
 			MatrixRank<typename Matrix::Field, Field> MR;
 			Field F((unsigned long)p);
 			FMatrix A_local(A, F);
@@ -130,7 +130,7 @@ namespace LinBox
 				m *= p;
 			typedef PIRModular<int32_t> PIR;
 			PIR R((unsigned int)m);
-			BlasBlackbox <PIR> A_local(R, A.rowdim(), A.coldim());
+			BlasMatrix <PIR> A_local(R, A.rowdim(), A.coldim());
 			SmithFormLocal <PIR> SF;
 			std::list <PIR::Element> l;
 			MatrixHom::map (A_local, A, R);
@@ -160,7 +160,7 @@ namespace LinBox
 		if (1) {
 			report << "      Compute local Smith at " << p << '^' << e << " over PIR-ntl-ZZ_p\n";
 			PIR_ntl_ZZ_p R(m);
-			BlasBlackbox <PIR_ntl_ZZ_p> A_local(R, A.rowdim(), A.coldim());
+			BlasMatrix <PIR_ntl_ZZ_p> A_local(R, A.rowdim(), A.coldim());
 			SmithFormLocal <PIR_ntl_ZZ_p> SF;
 			std::list <PIR_ntl_ZZ_p::Element> l;
 			MatrixHom::map (A_local, A, R);
@@ -268,7 +268,7 @@ namespace LinBox
 		else if ( m <=  FieldTraits< PIRModular<int32_t> >::maxModulus() ) {
 			report << "    Elimination starts:\n";
 			PIRModular<int32_t> R (m);
-			BlasBlackbox<PIRModular<int32_t> > A_ilio(R, A.rowdim(), A.coldim());
+			BlasMatrix<PIRModular<int32_t> > A_ilio(R, A.rowdim(), A.coldim());
 			MatrixHom::map (A_ilio, A, R);
 			SmithFormIliopoulos::smithFormIn (A_ilio);
 			int i; std::vector<integer>::iterator s_p;
@@ -299,7 +299,7 @@ namespace LinBox
 		else {
 			report << "    Elimination start:\n";
 			PIR_ntl_ZZ_p R (m);
-			BlasBlackbox<PIR_ntl_ZZ_p> A_ilio(R, A.rowdim(), A.coldim());
+			BlasMatrix<PIR_ntl_ZZ_p> A_ilio(R, A.rowdim(), A.coldim());
 			MatrixHom::map (A_ilio, A, R);
 			SmithFormIliopoulos::smithFormIn (A_ilio);
 			int i; std::vector<integer>::iterator s_p;
@@ -431,9 +431,9 @@ namespace LinBox
 		typedef OneInvariantFactor<Ring, LIF, SCompose, RandomMatrix>  OIF;
 		OIF oif; oif. setThreshold  (4); oif.getLastInvariantFactor().setThreshold (6);
 		typename Ring::Element _lif, _bonus; integer lif, bonus;
-		//Chnage A to BlasBlackbox
+		//Chnage A to BlasMatrix
 		Ring R(A. field());
-		BlasBlackbox<Ring> DA(R,A.rowdim(),A.coldim());
+		BlasMatrix<Ring> DA(R,A.rowdim(),A.coldim());
 		MatrixHom::map (DA, A, R);
 		do {
 			oif. oneInvariantFactor_Bonus (_lif, _bonus, DA, (int)r);
@@ -491,7 +491,7 @@ namespace LinBox
 	 * then based on that, compute the rough and smooth part, seperately.
 	 */
 	template <class IRing>
-	void SmithFormAdaptive::smithForm (std::vector<integer>& s, const BlasBlackbox<IRing>& A)
+	void SmithFormAdaptive::smithForm (std::vector<integer>& s, const BlasMatrix<IRing>& A)
 	{
 		//commentator.start ("Smith Form starts", "Smithform");
 
@@ -501,7 +501,7 @@ namespace LinBox
 		// compute the rank over a random prime field.
 		int order = (int)(A. rowdim() < A. coldim() ? A. rowdim() : A. coldim());
 		report << "Computation of the rank starts:\n";
-		typedef typename BlasBlackbox<IRing>::Field Ring;
+		typedef typename BlasMatrix<IRing>::Field Ring;
 		unsigned long r;
 		MatrixRank<Ring, Modular<int32_t> > MR;
 		r = MR. rank (A);
@@ -515,7 +515,7 @@ namespace LinBox
 		integer Val; Field::Element v; unsigned long degree;
 		RandomPrimeIterator rg ((int)(log( (double)(FieldTraits<Field>::maxModulus()) ) / M_LN2 - 2));
 		Field F ((unsigned long)*rg);
-		typename MatrixHomTrait<BlasBlackbox <IRing>, Field>::value_type Ap(F,A.rowdim(),A.coldim());
+		typename MatrixHomTrait<BlasMatrix <IRing>, Field>::value_type Ap(F,A.rowdim(),A.coldim());
 		MatrixHom::map (Ap, A, F);
 		Valence::one_valence (v, degree, Ap);
 		report <<"   Degree of minial polynomial of AA^T = " << degree << '\n';
@@ -549,7 +549,7 @@ namespace LinBox
 		typedef OneInvariantFactor<Ring, LIF, SCompose, RandomMatrix>  OIF;
 		OIF oif; oif. setThreshold  (10); oif.getLastInvariantFactor().setThreshold (6);
 		typename Ring::Element _lif, _bonus; integer lif, bonus;
-		//Chnage A to BlasBlackbox
+		//Chnage A to BlasMatrix
 		do {
 			oif. oneInvariantFactor_Bonus (_lif, _bonus, A, (int)r);
 			A. field(). convert (lif, _lif); A. field(). convert (bonus, _bonus);

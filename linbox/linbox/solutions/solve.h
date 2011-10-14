@@ -186,12 +186,12 @@ namespace LinBox
 		      const RingCategories::ModularTag & tag,
 		      const Method::BlasElimination& m)
 	{
-		BlasBlackbox<typename BB::Field> B(A); // copy A into a BlasBlackbox
+		BlasMatrix<typename BB::Field> B(A); // copy A into a BlasMatrix
 		return solve(x, B, b, tag, m);
 	}
 
 	template <class Vector, class Field>
-	Vector& solve(Vector& x, const BlasBlackbox<Field>& A, const Vector& b,
+	Vector& solve(Vector& x, const BlasMatrix<Field>& A, const Vector& b,
 		      const RingCategories::ModularTag & tag,
 		      const Method::BlasElimination& m)
 	{
@@ -332,19 +332,19 @@ namespace LinBox
 	/* Specializations for BlasElimination over the integers
 	*/
 
-	// input matrix is generic (copying it into a BlasBlackbox)
+	// input matrix is generic (copying it into a BlasMatrix)
 	template <class RatVector, class Vector, class BB>
 	RatVector& solve(RatVector& x, const BB& A, const Vector& b,
 			 const RingCategories::IntegerTag & tag,
 			 const Method::BlasElimination& m)
 	{
-		BlasBlackbox<typename BB::Field> B(A); // copy A into a BlasBlackbox
+		BlasMatrix<typename BB::Field> B(A); // copy A into a BlasMatrix
 		return solve(x, B, b, tag, m);
 	}
 
-	// input matrix is a BlasBlackbox (no copy)
+	// input matrix is a BlasMatrix (no copy)
 	template <class RatVector, class Vector, class Ring>
-	RatVector& solve(RatVector& x, const BlasBlackbox<Ring>& A, const Vector& b,
+	RatVector& solve(RatVector& x, const BlasMatrix<Ring>& A, const Vector& b,
 			 const RingCategories::IntegerTag & tag,
 			 const Method::BlasElimination& m)
 	{
@@ -390,23 +390,24 @@ namespace LinBox
 	/* Specialization for BlasElimination over the integers
 	*/
 
-	// input matrix is generic (copying it into a BlasBlackbox)
+	// input matrix is generic (copying it into a BlasMatrix)
 	template <class Vector, class BB>
 	Vector& solve(Vector& x, typename BB::Field::Element &d, const BB& A, const Vector& b,
 		      const RingCategories::IntegerTag & tag,
 		      const Method::BlasElimination& m)
 	{
-		BlasBlackbox<typename BB::Field> B(A); // copy A into a BlasBlackbox
+		BlasMatrix<typename BB::Field> B(A); // copy A into a BlasMatrix
 		return solve(x, d, B, b, tag, m);
 	}
 
-	// input matrix is a BlasBlackbox (no copy)
+	// input matrix is a BlasMatrix (no copy)
 	template <class Vector, class Ring>
 	Vector& solve(Vector& x, typename Ring::Element &d,
-		      const BlasBlackbox<Ring>& A, const Vector& b,
+		      const BlasMatrix<Ring>& A, const Vector& b,
 		      const RingCategories::IntegerTag & tag,
 		      const Method::BlasElimination& m)
 	{
+		//!@bug check we don't copy
 		Method::Dixon mDixon(m);
 		return solve(x, d, A, b, tag, mDixon);
 	}
@@ -429,7 +430,7 @@ namespace LinBox
 	*/
 	template <class Vector, class Ring>
 	Vector& solve(Vector& x, typename Ring::Element &d,
-		      const BlasBlackbox<Ring>& A,
+		      const BlasMatrix<Ring>& A,
 		      const Vector& b,
 		      const RingCategories::IntegerTag tag, Method::Dixon& m)
 	{
@@ -630,7 +631,7 @@ namespace LinBox
 		      const RingCategories::ModularTag & tag,
 		      const Method::NonBlasElimination& m)
 	{
-		BlasBlackbox<typename BB::Field> B(A); // copy
+		BlasMatrix<typename BB::Field> B(A); // copy
 		return solve(x, B, b, tag, m);
 	}
 

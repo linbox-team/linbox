@@ -1617,7 +1617,7 @@ namespace LinBox
 				Timer chrono1,chrono2;
 				chrono1.start();
 #endif
-				std::vector<BlasMatrix<Element> > block(fft.size());
+				std::vector<BlasMatrix<Field> > block(fft.size());
 				int row_idx,row_size;
 				if (i>=nb_bsize) {
 					row_size=lbsize;
@@ -1629,7 +1629,7 @@ namespace LinBox
 				}
 
 				for (size_t j=0;j<fft.size();j++)
-					block[j]=BlasMatrix<Element>(fft[j],row_idx,0,row_size,n);
+					block[j]=BlasMatrix<Field>(fft[j],row_idx,0,row_size,n);
 
 #ifdef FFT_TIMING
 				chrono1.stop();

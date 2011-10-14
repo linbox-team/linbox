@@ -27,8 +27,8 @@
 /*!@internal
  * @file matrix/blas-matrix.inl
  * @ingroup matrix
- * A \c BlasMatrix<\c _element > represents a matrix as an array of
- * <code>_element</code>s.
+ * A \c BlasMatrix<\c _Field > represents a matrix as an array of
+ * <code>_Field</code>s.
  */
 
 #ifndef __LINBOX_blas_submatrix_INL
@@ -48,8 +48,8 @@ namespace LinBox
 
 namespace LinBox
 {
-	template <class _Element>
-	BlasSubmatrix<_Element>::BlasSubmatrix () :
+	template <class _Field>
+	BlasSubmatrix<_Field>::BlasSubmatrix () :
 			_M(NULL),_row(0),_col(0),_r0(0),_c0(0),_stride(0),_off(0)
 		{
 #ifndef NDEBUG
@@ -57,13 +57,13 @@ namespace LinBox
 #endif
 		}
 
-	template <class _Element>
-	BlasSubmatrix<_Element>::BlasSubmatrix (const BlasMatrix<_Element> &Mat,
+	template <class _Field>
+	BlasSubmatrix<_Field>::BlasSubmatrix (const BlasMatrix<_Field> &Mat,
 						size_t row,
 						size_t col,
 						size_t Rowdim,
 						size_t Coldim) :
-		_M (const_cast<BlasMatrix<_Element>*>(&Mat)),
+		_M (const_cast<BlasMatrix<_Field>*>(&Mat)),
 		_row (Rowdim), _col(Coldim),
 		_r0(row),_c0(col),
 		_stride(Mat.coldim()),_off(row*_stride+col)
@@ -76,8 +76,8 @@ namespace LinBox
 	}
 
 
-	template <class _Element>
-	BlasSubmatrix<_Element>::BlasSubmatrix (const BlasMatrix<_Element> &Mat) :
+	template <class _Field>
+	BlasSubmatrix<_Field>::BlasSubmatrix (const BlasMatrix<_Field> &Mat) :
 		_M(&Mat),
 		_row(Mat.rowdim()), _col(Mat.coldim()),
 		_r0(0), _c0(0),
@@ -86,8 +86,8 @@ namespace LinBox
 
 
 
-	template <class _Element>
-	BlasSubmatrix<_Element>::BlasSubmatrix (const BlasSubmatrix<_Element> &SM,
+	template <class _Field>
+	BlasSubmatrix<_Field>::BlasSubmatrix (const BlasSubmatrix<_Field> &SM,
 						size_t row,
 						size_t col,
 						size_t Rowdim,
@@ -104,8 +104,8 @@ namespace LinBox
 		linbox_check ( _off <= SM._M->rowdim()*(SM._M->coldim()+1) );
 	}
 
-	template <class _Element>
-	BlasSubmatrix<_Element>::BlasSubmatrix (const BlasSubmatrix<_Element> &SM) :
+	template <class _Field>
+	BlasSubmatrix<_Field>::BlasSubmatrix (const BlasSubmatrix<_Field> &SM) :
 		_M (SM._M),
 		_row ( SM._row ),  _col ( SM._col ) ,
 		_r0  ( SM._r0 ),    _c0 (SM._c0 ),
@@ -118,8 +118,8 @@ namespace LinBox
 		linbox_check ( _off <= SM._M->rowdim()*(SM._M->coldim()+1) );
 	}
 
-	template <class _Element>
-	BlasSubmatrix<_Element>& BlasSubmatrix<_Element>::operator=(const BlasSubmatrix<_Element> &SM)
+	template <class _Field>
+	BlasSubmatrix<_Field>& BlasSubmatrix<_Field>::operator=(const BlasSubmatrix<_Field> &SM)
 	{
 		_M   = SM._M  ;
 		_r0  = SM._r0 ;
@@ -142,9 +142,8 @@ namespace LinBox
 {
 
 	//!@bug reading a submatrix should not be allowed !!
-	template <class _Element>
-	template <class Field>
-	std::istream& BlasSubmatrix< _Element>::read (std::istream &file, const Field &F)
+	template <class _Field>
+	std::istream& BlasSubmatrix< _Field>::read (std::istream &file)
 	{
 #if 0
 		Iterator p;
@@ -159,7 +158,7 @@ namespace LinBox
 				integer tmp;
 				file>>tmp;cout<<tmp<<endl;
 				//file.ignore(1);
-				F.read (file, *p);
+				_M->_F.read (file, *p);
 			}
 		}
 #endif
@@ -172,14 +171,14 @@ namespace LinBox
 		// std::cout << m << 'x' << n << ':' << c << std::endl;
 		_row = m; _col = n;
 
-		_Element zero;
-		F.init(zero,0UL);
+		_Field zero;
+		_M->_F.init(zero,0UL);
 		// resize(_row,_col);
 
 		if ((c != 'M') && (c != 'm')) {
 		for (p = Begin (); p != End (); ++p) {
 				//file.ignore(1);
-				F.read (file, *p);
+				_M->_F.read (file, *p);
 			}
 
 		}
@@ -192,16 +191,15 @@ namespace LinBox
 				//if (! file) break;
 				if (i+j <= 0) break;
 				// std::cout << i << ',' << j << ':' ;
-				F.read (file, _M->refEntry[i-1, j-1]);
+				_M->_F.read (file, _M->refEntry[i-1, j-1]);
 			}
 		}
 
 		return file;
 	}
 
-	template <class _Element>
-	template <class Field>
-	std::ostream &BlasSubmatrix< _Element>::write (std::ostream &os, const Field &F,
+	template <class _Field>
+	std::ostream &BlasSubmatrix< _Field>::write (std::ostream &os,
 						       bool mapleFormat) const
 	{
 
@@ -214,7 +212,7 @@ namespace LinBox
 
 
 
-			F.cardinality (c);
+			_M->_F.cardinality (c);
 
 			if (c >0)
 				wid = (int) ceil (log ((double) c) / M_LN10);
@@ -223,7 +221,7 @@ namespace LinBox
 				size_t max=0;
 				ConstIterator it = Begin();
 				for (; it != End(); ++it){
-					F.convert(tmp,*it);
+					_M->_F.convert(tmp,*it);
 					if (tmp.bitsize() > max)
 						max= tmp.bitsize();
 				}
@@ -244,7 +242,7 @@ namespace LinBox
 					 * fixed by using extra field
 					 */
 
-					F.write (os, *pe);
+					_M->_F.write (os, *pe);
 				os << " ";
 			}
 
@@ -260,7 +258,7 @@ namespace LinBox
 				os << " [ ";
 
 				for (pe = p->begin (); pe != p->end (); ) {
-					F.write (os, *pe);
+					_M->_F.write (os, *pe);
 					++pe ;
 					if (pe != p->end())
 						os << ", ";
@@ -277,66 +275,6 @@ namespace LinBox
 		return os;
 	}
 
-	template <class _Element>
-	std::ostream &BlasSubmatrix< _Element>::write (std::ostream &os, bool mapleFormat) const
-	{
-		ConstRowIterator p;
-		if (!mapleFormat) {
-			integer c;
-			int wid;
-
-
-
-
-			integer tmp;
-			size_t max=0;
-			ConstIterator it = Begin();
-			for (; it != End(); ++it){
-				tmp = (integer) *it;
-				if (tmp.bitsize() > max)
-					max= tmp.bitsize();
-			}
-			wid= (int) ceil ((double)max / M_LN10)+1;
-
-		for (p = rowBegin (); p != rowEnd (); ++p) {
-				typename ConstRow::const_iterator pe;
-
-				os << "  [ ";
-
-			for (pe = p->begin (); pe != p->end (); ++pe) {
-					os.width (wid);
-				os << *pe;
-				os << " ";
-			}
-
-				os << "]" << std::endl;
-			}
-		}
-		else {
-
-			os << "Matrix( " << rowdim() << ',' << coldim() << ",[" ;
-			for (p = rowBegin (); p != rowEnd (); ) {
-				typename ConstRow::const_iterator pe;
-
-				os << " [ ";
-
-				for (pe = p->begin (); pe != p->end (); ) {
-					os << *pe;
-					++pe ;
-					if (pe != p->end())
-						os << ", ";
-				}
-
-				os << "]" ;
-				++p ;
-				if (p != rowEnd() )
-					os << ',' << std::endl;
-			}
-			os << "])" ;
-		}
-
-		return os;
-	}
 
 
 } // LinBox
@@ -348,20 +286,20 @@ namespace LinBox
 namespace LinBox
 {
 
-	template <class _Element>
-	size_t BlasSubmatrix< _Element>::rowdim() const
+	template <class _Field>
+	size_t BlasSubmatrix< _Field>::rowdim() const
 	{
 		return _row ;
 	}
 
-	template <class _Element>
-	size_t BlasSubmatrix< _Element>::coldim() const
+	template <class _Field>
+	size_t BlasSubmatrix< _Field>::coldim() const
 	{
 		return _col ;
 	}
 
-	template <class _Element>
-	size_t  BlasSubmatrix< _Element>::getStride() const
+	template <class _Field>
+	size_t  BlasSubmatrix< _Field>::getStride() const
 	{
 		return _stride;
 	}
@@ -377,26 +315,26 @@ namespace LinBox
 {
 
 
-	template <class _Element>
-	void BlasSubmatrix< _Element>::setEntry (size_t i, size_t j, const _Element &a_ij)
+	template <class _Field>
+	void BlasSubmatrix< _Field>::setEntry (size_t i, size_t j, const Element &a_ij)
 	{
 		_M->setEntry (_r0 + i, _c0 + j, a_ij);
 	}
 
-	template <class _Element>
- _Element &BlasSubmatrix< _Element>::refEntry (size_t i, size_t j)
+	template <class _Field>
+ typename _Field:: Element &BlasSubmatrix< _Field>::refEntry (size_t i, size_t j)
 	{
 		return _M->refEntry ( _r0+i, _c0+j );
 	}
 
-	template <class _Element>
-	const _Element &BlasSubmatrix< _Element>::getEntry (size_t i, size_t j) const
+	template <class _Field>
+	const typename _Field:: Element &BlasSubmatrix< _Field>::getEntry (size_t i, size_t j) const
 	{
 		return _M->getEntry ( _r0+i , _c0+j );
 	}
 
-	template <class _Element>
- _Element &BlasSubmatrix< _Element>::getEntry (Element &x, size_t i, size_t j) const
+	template <class _Field>
+typename _Field:: Element &BlasSubmatrix< _Field>::getEntry (Element &x, size_t i, size_t j) const
 	{
 		return _M->getEntry (x, _r0+i , _c0+j );
 	}
@@ -427,15 +365,15 @@ namespace LinBox
 	 * matrix entries modulo a prime before passing the matrix into an
 	 * algorithm.
 	 */
-	template <class _Element>
-	class BlasSubmatrix<_Element>::Iterator {
+	template <class _Field>
+	class BlasSubmatrix<_Field>::Iterator {
 	public:
 		Iterator (){}
 
 		/*! @internal
 		 * @brief NO DOC
 		 */
-		Iterator (const typename BlasMatrix<_Element>::Iterator& cur,
+		Iterator (const typename BlasMatrix<_Field>::Iterator& cur,
 			     const size_t c_dim,
 			     const size_t stride,
 			     const size_t c_idx) :
@@ -492,19 +430,19 @@ namespace LinBox
 		}
 
 		//! @internal operator *.
-		_Element& operator * ()
+		_Field& operator * ()
 		{
 			return *_cur;
 		}
 
 		//! @internal operator *.
-		const _Element& operator * () const
+		const _Field& operator * () const
 		{
 			return *_cur;
 		}
 
 	protected:
-		typename BlasMatrix<_Element>::Iterator _cur;
+		typename BlasMatrix<_Field>::Iterator _cur;
 		size_t _c_dim;
 		size_t _stride;
 		size_t _c_idx;
@@ -517,8 +455,8 @@ namespace LinBox
 	 * matrix entries modulo a prime before passing the matrix into an
 	 * algorithm.
 	 */
-	template <class _Element>
-	class BlasSubmatrix<_Element>::ConstIterator {
+	template <class _Field>
+	class BlasSubmatrix<_Field>::ConstIterator {
 	public:
 		//! @internal Null constructor
 		ConstIterator (){}
@@ -527,7 +465,7 @@ namespace LinBox
 		/*! @internal
 		 * @brief NO DOC
 		 */
-		ConstIterator (const typename BlasMatrix<_Element>::ConstIterator& cur,
+		ConstIterator (const typename BlasMatrix<_Field>::ConstIterator& cur,
 				  const size_t c_dim,
 				  const size_t stride,
 				  const size_t c_idx) :
@@ -583,25 +521,25 @@ namespace LinBox
 		}
 
 		//! @internal operator *.
-		const _Element& operator * () const
+		const _Field& operator * () const
 		{
 			return *_cur;
 		}
 
 	protected:
-		typename BlasMatrix<_Element>::ConstIterator _cur;
+		typename BlasMatrix<_Field>::ConstIterator _cur;
 		size_t _c_dim;
 		size_t _stride;
 		size_t _c_idx;
 	};
 
 #if 0
-	template <class _Element>
-	class BlasSubmatrix< _Element>::ConstIterator {
+	template <class _Field>
+	class BlasSubmatrix< _Field>::ConstIterator {
 	public:
 		ConstIterator (){}
 
-		ConstIterator ( const typename BlasMatrix< _Element>::ConstIterator& cur,
+		ConstIterator ( const typename BlasMatrix< _Field>::ConstIterator& cur,
 				   size_t cont_len,
 				   size_t gap_len) :
 			_beg (beg), _cur (cur), _cont_len (cont_len), _gap_len (gap_len)
@@ -648,62 +586,62 @@ namespace LinBox
 			return (_cur != r._cur) || (_beg != r._beg) || (_cont_len != r._cont_len) || (_gap_len != r._gap_len);
 		}
 
-		const _Element& operator*()
+		const _Field& operator*()
 		{ return *_cur; }
 
-	 _Element& operator*()
+	 _Field& operator*()
 		{ return *_cur; }
 
-		const _Element& operator*() const
+		const _Field& operator*() const
 		{ return *_cur; }
 
 	protected:
-		typename BlasMatrix< _Element>::ConstIterator _beg;
-		typename BlasMatrix< _Element>::ConstIterator _cur;
+		typename BlasMatrix< _Field>::ConstIterator _beg;
+		typename BlasMatrix< _Field>::ConstIterator _cur;
 		size_t _cont_len;
 		size_t _gap_len;
 	};
 #endif
 
-	template <class _Element>
-	typename BlasSubmatrix<_Element>::Iterator BlasSubmatrix<_Element>::Begin ()
+	template <class _Field>
+	typename BlasSubmatrix<_Field>::Iterator BlasSubmatrix<_Field>::Begin ()
 	{
 		return Iterator (_M->Begin () + ( _off ),
 				    _col, _stride, 0);
 	}
 
-	template <class _Element>
-	typename BlasSubmatrix<_Element>::Iterator BlasSubmatrix<_Element>::End ()
+	template <class _Field>
+	typename BlasSubmatrix<_Field>::Iterator BlasSubmatrix<_Field>::End ()
 	{
 		return Iterator (_M->Begin () + ( (_row) * _stride + _off ),
 				    _col, _stride, 0);
 	}
 
-	template <class _Element>
-	typename BlasSubmatrix<_Element>::ConstIterator BlasSubmatrix<_Element>::Begin () const
+	template <class _Field>
+	typename BlasSubmatrix<_Field>::ConstIterator BlasSubmatrix<_Field>::Begin () const
 	{
 		return ConstIterator (_M->Begin () + ( _off ),
 					 _col, _stride, 0);
 	}
 
-	template <class _Element>
-	typename BlasSubmatrix<_Element>::ConstIterator BlasSubmatrix<_Element>::End () const
+	template <class _Field>
+	typename BlasSubmatrix<_Field>::ConstIterator BlasSubmatrix<_Field>::End () const
 	{
 		return ConstIterator (_M->Begin () + ( (_row) * _stride + _off ),
 					 _col, _stride, 0);
 	}
 
 #if 0
-	template <class _Element>
-	typename BlasSubmatrix< _Element>::ConstIterator BlasSubmatrix< _Element>::Begin () const
+	template <class _Field>
+	typename BlasSubmatrix< _Field>::ConstIterator BlasSubmatrix< _Field>::Begin () const
 	{
 		return ConstIterator (_M->Begin () + ( _off ),
 					 _M->Begin () + ( _off ),
 					 _col, _stride - _col);
 	}
 
-	template <class _Element>
-	typename BlasSubmatrix< _Element>::ConstIterator BlasSubmatrix< _Element>::End () const
+	template <class _Field>
+	typename BlasSubmatrix< _Field>::ConstIterator BlasSubmatrix< _Field>::End () const
 	{
 		return ConstIterator (_M->Begin () + ( (_row) * _stride + _off ),
 					 _M->Begin () + ( (_row) * _stride + _off ),
@@ -720,12 +658,12 @@ namespace LinBox
 	 * the row and column indices of the currently referenced entry.
 	 * This is provided through it's \c rowIndex() and \c colIndex() functions.
 	 */
-	template <class _Element>
-	class BlasSubmatrix<_Element>::IndexedIterator {
+	template <class _Field>
+	class BlasSubmatrix<_Field>::IndexedIterator {
 	public:
 		IndexedIterator (){}
 
-		IndexedIterator (const typename BlasMatrix<_Element>::Iterator& cur,
+		IndexedIterator (const typename BlasMatrix<_Field>::Iterator& cur,
 				    size_t c_dim,
 				    size_t stride,
 				    size_t r_idx,
@@ -790,33 +728,33 @@ namespace LinBox
 			return ((_c_idx != r._c_idx) || (_r_idx != r._r_idx) ||(_stride != r._stride) || (_c_dim != r._c_dim) );
 		}
 
-		const _Element& operator*() const {return *_cur;}
+		const _Field& operator*() const {return *_cur;}
 
-		_Element& operator*() {return *_cur;}
+		_Field& operator*() {return *_cur;}
 
 		size_t rowIndex () const { return _r_idx; }
 
 		size_t colIndex () const { return _c_idx; }
 
-		const _Element& value () const {return *_cur;}
+		const _Field& value () const {return *_cur;}
 
 	protected:
-		typename BlasMatrix<_Element>::Iterator _cur;
+		typename BlasMatrix<_Field>::Iterator _cur;
 		size_t _stride;
 		size_t _c_dim;
 		size_t _r_idx;
 		size_t _c_idx;
 	};
 
-	template <class _Element>
-	typename BlasSubmatrix<_Element>::IndexedIterator BlasSubmatrix<_Element>::IndexedBegin ()
+	template <class _Field>
+	typename BlasSubmatrix<_Field>::IndexedIterator BlasSubmatrix<_Field>::IndexedBegin ()
 	{
 		return IndexedIterator (_M->Begin () + ( (_off) ),
 					   _col , _stride, 0, 0);
 	}
 
-	template <class _Element>
-	typename BlasSubmatrix<_Element>::IndexedIterator BlasSubmatrix<_Element>::IndexedEnd ()
+	template <class _Field>
+	typename BlasSubmatrix<_Field>::IndexedIterator BlasSubmatrix<_Field>::IndexedEnd ()
 	{
 		return IndexedIterator (_M->Begin () + ( (_row) * _stride + (_col+_off) ),
 					   _col, _stride, _row-1, _col-1);
@@ -831,12 +769,12 @@ namespace LinBox
 	 * the row and column indices of the currently referenced entry.
 	 * This is provided through it's \c rowIndex() and \c colIndex() functions.
 	 */
-	template <class _Element>
-	class BlasSubmatrix<_Element>::ConstIndexedIterator {
+	template <class _Field>
+	class BlasSubmatrix<_Field>::ConstIndexedIterator {
 	public:
 		ConstIndexedIterator (){}
 
-		ConstIndexedIterator (const typename BlasMatrix<_Element>::ConstIterator& cur,
+		ConstIndexedIterator (const typename BlasMatrix<_Field>::ConstIterator& cur,
 					 size_t c_dim,
 					 size_t stride,
 					 size_t r_idx,
@@ -921,7 +859,7 @@ namespace LinBox
 			return ((_c_idx != r._c_idx) || (_r_idx != r._r_idx) ||(_stride != r._stride) || (_c_dim != r._c_dim) );
 		}
 
-		const _Element& operator*() const
+		const _Field& operator*() const
 		{
 			return *_cur;
 		}
@@ -936,100 +874,100 @@ namespace LinBox
 			<< m._c_idx;
 		}
 
-		const _Element & value() const
+		const _Field & value() const
 		{
 			return this->operator*();
 
 		}
 
 	protected:
-		typename BlasMatrix<_Element>::ConstIterator _cur;
+		typename BlasMatrix<_Field>::ConstIterator _cur;
 		size_t _stride;
 		size_t _c_dim;
 		size_t _r_idx;
 		size_t _c_idx;
 	};
 
-	template <class _Element>
-	typename BlasSubmatrix<_Element>::ConstIndexedIterator BlasSubmatrix<_Element>::IndexedBegin () const
+	template <class _Field>
+	typename BlasSubmatrix<_Field>::ConstIndexedIterator BlasSubmatrix<_Field>::IndexedBegin () const
 	{
 		return ConstIndexedIterator (_M->Begin () + ( _off ),
 						_row, _stride, 0, 0);
 	}
 
-	template <class _Element>
-	typename BlasSubmatrix<_Element>::ConstIndexedIterator BlasSubmatrix<_Element>::IndexedEnd () const
+	template <class _Field>
+	typename BlasSubmatrix<_Field>::ConstIndexedIterator BlasSubmatrix<_Field>::IndexedEnd () const
 	{
 		return ConstIndexedIterator (_M->Begin () + ( (_row) * _stride + (_off+_col) ),
 						_col, _stride, _row-1, _col-1);
 	}
 
 	////////
-	template <class _Element>
-	typename BlasSubmatrix<_Element>::RowIterator BlasSubmatrix<_Element>::rowBegin ()
+	template <class _Field>
+	typename BlasSubmatrix<_Field>::RowIterator BlasSubmatrix<_Field>::rowBegin ()
 	{
 		return RowIterator (_M->Begin () + ( _off  ),
 				    _col, _stride);
 	}
 
-	template <class _Element>
-	typename BlasSubmatrix<_Element>::RowIterator BlasSubmatrix<_Element>::rowEnd ()
+	template <class _Field>
+	typename BlasSubmatrix<_Field>::RowIterator BlasSubmatrix<_Field>::rowEnd ()
 	{
 		return RowIterator (_M->Begin () + ( (_row) * _stride + _off ),
 				    _col, _stride);
 	}
 
-	template <class _Element>
-	typename BlasSubmatrix<_Element>::ConstRowIterator BlasSubmatrix<_Element>::rowBegin () const
+	template <class _Field>
+	typename BlasSubmatrix<_Field>::ConstRowIterator BlasSubmatrix<_Field>::rowBegin () const
 	{
 		return ConstRowIterator (_M->Begin () + ( _off ),
 					 _col, _stride);
 	}
 
-	template <class _Element>
-	typename BlasSubmatrix<_Element>::ConstRowIterator BlasSubmatrix<_Element>::rowEnd () const
+	template <class _Field>
+	typename BlasSubmatrix<_Field>::ConstRowIterator BlasSubmatrix<_Field>::rowEnd () const
 	{
 		return ConstRowIterator (_M->Begin () + ( (_row) * _stride + _off ),
 					 _col, _stride);
 	}
 
-	template <class _Element>
-	typename BlasSubmatrix<_Element>::ColIterator BlasSubmatrix<_Element>::colBegin ()
+	template <class _Field>
+	typename BlasSubmatrix<_Field>::ColIterator BlasSubmatrix<_Field>::colBegin ()
 	{
 		return ColIterator (_M->Begin () + ( _off ),
 				    _stride, _row);
 	}
 
-	template <class _Element>
-	typename BlasSubmatrix<_Element>::ColIterator BlasSubmatrix<_Element>::colEnd ()
+	template <class _Field>
+	typename BlasSubmatrix<_Field>::ColIterator BlasSubmatrix<_Field>::colEnd ()
 	{
 		return ColIterator (_M->Begin () + ( (_col) + _off ),
 				    _stride, _row);
 	}
 
-	template <class _Element>
-	typename BlasSubmatrix<_Element>::ConstColIterator BlasSubmatrix<_Element>::colBegin () const
+	template <class _Field>
+	typename BlasSubmatrix<_Field>::ConstColIterator BlasSubmatrix<_Field>::colBegin () const
 	{
 		return ConstColIterator (_M->Begin () + ( _off ),
 					 _stride, _row);
 	}
 
-	template <class _Element>
-	typename BlasSubmatrix<_Element>::ConstColIterator BlasSubmatrix<_Element>::colEnd () const
+	template <class _Field>
+	typename BlasSubmatrix<_Field>::ConstColIterator BlasSubmatrix<_Field>::colEnd () const
 	{
 		return ConstColIterator (_M->Begin () + ( (_col) + _off ),
 					 _stride, _row);
 	}
 
 	/*  operators */
-	template <class _Element>
-	typename BlasSubmatrix< _Element>::Row BlasSubmatrix< _Element>::operator[] (size_t i)
+	template <class _Field>
+	typename BlasSubmatrix< _Field>::Row BlasSubmatrix< _Field>::operator[] (size_t i)
 	{
 		return Row (_M.Begin () + (_r0+i) * _stride, _M.Begin () + ((_r0+i) * _stride + _stride) );
 	}
 
-	template <class _Element>
-	typename BlasSubmatrix< _Element>::ConstRow BlasSubmatrix< _Element>::operator[] (size_t i) const
+	template <class _Field>
+	typename BlasSubmatrix< _Field>::ConstRow BlasSubmatrix< _Field>::operator[] (size_t i) const
 	{
 		return Row (_M.Begin () + (_r0+i) * _stride, _M.Begin () + ((_r0+i) * _stride + _stride) );
 	}
