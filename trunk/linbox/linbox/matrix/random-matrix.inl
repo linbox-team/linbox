@@ -34,10 +34,10 @@ namespace LinBox
 	namespace Protected {
 
 		template<class Randiter,class Field>
-		BlasBlackbox<Field> &
+		BlasMatrix<Field> &
 		random_lu_rank(const Field			& F,
 			       const Randiter                   & R,
-			       BlasBlackbox<Field>              & A,
+			       BlasMatrix<Field>              & A,
 			       int                              & rank,
 			       const RingCategories::ModularTag & tag)
 		{
@@ -58,11 +58,11 @@ namespace LinBox
 			//Element * L = new Element[m*m] ;
 			//TriangularBlasMatrix<Element> L(m,m,LinBoxTag::Lower,LinBoxTag::Unit);
 			//! @todo !!!
-			BlasMatrix<Element> L(m,m);
+			BlasMatrix<Field> L(F,m,m);
 			// Element * U = new Element[m*n] ;
 			// TriangularBlasMatrix<Element> U(m,n,LinBoxTag::Upper,LinBoxTag::NonUnit);
 			//
-			BlasMatrix<Element> U(m,n);
+			BlasMatrix<Field> U(F,m,n);
 			//size_t  * Q = new size_t [n]   ;
 			BlasPermutation<size_t> Q(n);
 
@@ -111,9 +111,9 @@ namespace LinBox
 			 * de même UL
 			 */
 
-			BlasMatrix<Element> A_ptr(A) ;
+			// BlasMatrix<Field> A_ptr(A) ;
 
-			BMD.mul(A_ptr,L,U);
+			BMD.mul(A,L,U);
 
 			/*!
 			 * @todo create BMD.applyP(A,P,LinBoxTag::Left) ;
@@ -122,8 +122,8 @@ namespace LinBox
 			 * @todo BlasPermutation a un ordre \p p et une taille \p r distinctes !!!
 			 */
 
-			BMD.mulin_left(A_ptr,Q);
-			BMD.mulin_right(P,A_ptr);
+			BMD.mulin_left(A,Q);
+			BMD.mulin_right(P,A);
 
 			return A ;
 
@@ -132,10 +132,10 @@ namespace LinBox
 
 		//!@todo ZZ is A.field() !
 		template<class Randiter, class Ring>
-		BlasBlackbox<Ring> &
+		BlasMatrix<Ring> &
 		random_lu_rank(const Ring          & ZZ,
 			       const Randiter      & R,
-			       BlasBlackbox<Ring>  &A,
+			       BlasMatrix<Ring>  &A,
 			       int                 & rank,
 			       const RingCategories::IntegerTag & tag)
 		{
@@ -153,8 +153,8 @@ namespace LinBox
 
 			// be ready for PLUQ
 			BlasPermutation<size_t> P(m);
-			BlasMatrix<Int> L(m,m);
-			BlasMatrix<Int> U(m,n);
+			BlasMatrix<Ring> L(ZZ,m,m);
+			BlasMatrix<Ring> U(ZZ,m,n);
 			BlasPermutation<size_t> Q(n);
 
 			// be ready for random elements
@@ -201,13 +201,13 @@ namespace LinBox
 			// L.write(std::cout << "U:=",true ) << ';' << std::endl;
 
 			typedef typename Ring::Element Element;
-			BlasMatrix<Element> A_ptr(A) ;
+			// BlasMatrix<Element> A_ptr(A) ;
 
-			MD.mul(A_ptr,L,U);
+			MD.mul(A,L,U);
 			// A.write(std::cout << "pre A=",true) << std::endl;
 
-			BMD.mulin_left(A_ptr,Q);
-			BMD.mulin_right(P,A_ptr);
+			BMD.mulin_left(A,Q);
+			BMD.mulin_right(P,A);
 
 			// P.write(std::cout<<"P:=",false) << std::endl;
 			// P.write(std::cout<<"Q:=",false) << std::endl;
@@ -216,7 +216,7 @@ namespace LinBox
 			return A ;
 		}
 
-
+#if 0
 		template<class Randiter,class Field>
 		BlasMatrix<typename Field::Element> &
 		random_lu_rank(const Field			   & F,
@@ -230,6 +230,7 @@ namespace LinBox
 			return A ;
 		}
 
+#endif
 #if 0 /*  BlasMatrix spec. */
 		template<class Randiter, class Field>
 		BlasBlackbox<Field> &
@@ -281,10 +282,10 @@ namespace LinBox
 #endif
 
 		template<class Randiter,class Field>
-		BlasMatrix<typename Field::Element> &
+		BlasMatrix<Field> &
 		random_rankupdate( Field                & F //!@bug const !
 				   ,const Randiter      & R
-				   ,BlasMatrix<typename Field::Element> & A
+				   ,BlasMatrix<Field> & A
 				   , int                & rank
 				   , const RingCategories::IntegerTag          &tag
 				 )
@@ -293,8 +294,8 @@ namespace LinBox
 			size_t m = A.rowdim();
 			size_t n = A.coldim();
 
-			BlasMatrix<Int> D((size_t)m,(size_t)rank) ;
-			BlasMatrix<Int> G((size_t)rank,(size_t)n) ;
+			BlasMatrix<Field> D(F,(size_t)m,(size_t)rank) ;
+			BlasMatrix<Field> G(F,(size_t)rank,(size_t)n) ;
 			Randiter S_(R);
 			S_.setBits(R.getBits()-1);
 			RandomDenseMatrix<Randiter,Field > RandMatGen(F,S_);
