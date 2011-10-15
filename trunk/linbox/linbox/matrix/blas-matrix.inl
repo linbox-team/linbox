@@ -146,9 +146,9 @@ namespace LinBox
 
 		for (;iter_value != A.End(); ++iter_value,++iter_index){
 			int i,j;
-			i=iter_index.rowIndex()-i0;
-			j=iter_index.colIndex()-j0;
-			if (( i >= 0)  && (j >= 0) && (i< m) && (j < n))
+			i=(int)iter_index.rowIndex()-(int)i0;
+			j=(int)iter_index.colIndex()-(int)j0;
+			if (( i >= 0)  && (j >= 0) && (i< (int)m) && (j < (int)n))
 				setEntry(i, j, *iter_value);
 		}
 	}
@@ -167,9 +167,9 @@ namespace LinBox
 
 		for (;iter_value != A.End(); ++iter_value,++iter_index){
 			int i,j;
-			i=(int)iter_index.rowIndex()-i0;
-			j=(int)iter_index.colIndex()-j0;
-			if ( (i>=0) && (j>=0) && (i< m) && (j < n))
+			i=(int)iter_index.rowIndex()-(int)i0;
+			j=(int)iter_index.colIndex()-(int)j0;
+			if ( (i>=0) && (j>=0) && (i< (int)m) && (j < (int)n))
 				setEntry(i, j, *iter_value);
 		}
 	}
@@ -536,8 +536,8 @@ namespace LinBox
 		_row = A.rowdim();
 		_rep = Rep(_row*_col);
 		_ptr = &_rep[0] ;
-		setField(  A.field() );
-		// makePointer();
+		// const_cast<_Field&>(_F) = A.field();
+		changeField( A.field() );
 		createBlasMatrix(A);
 
 		return *this;

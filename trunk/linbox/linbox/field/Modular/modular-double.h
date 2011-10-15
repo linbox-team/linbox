@@ -121,6 +121,8 @@ namespace LinBox
 		      //!@bug use FFPACK operator
 		      const Modular<double> &operator=(const Modular<double> &F)
 		      {
+			      if ( this == &F)
+				      return *this;
 			      modulus  = F.modulus;
 			      lmodulus = F.lmodulus;
 

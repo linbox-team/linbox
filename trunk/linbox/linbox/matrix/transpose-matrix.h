@@ -119,10 +119,9 @@ namespace LinBox
 		 * @param F
 		 * @return Reference to stream
 		 */
-		template <class Field>
-		inline std::ostream &write (std::ostream &stream, const Field &F) const
+		inline std::ostream &write (std::ostream &stream) const
 		{
-			return _A.write (stream, F);
+			return _A.write (stream);
 		}
 
 		//@} Matrix I/O
@@ -317,10 +316,9 @@ namespace LinBox
 			return _A.rowdim ();
 		}
 
-		template <class Field>
-		inline std::ostream &write (std::ostream &stream, const Field &F) const
+		inline std::ostream &write (std::ostream &stream) const
 		{
-			return _A.write (stream, F);
+			return _A.write (stream);
 		}
 
 		inline void setEntry (size_t i, size_t j, const Element &a_ij)
@@ -449,10 +447,9 @@ namespace LinBox
 			return _A.rowdim ();
 		}
 
-		template <class Field>
-		inline std::ostream &write (std::ostream &stream, const Field &F) const
+		inline std::ostream &write (std::ostream &stream) const
 		{
-			return _A.write (stream, F);
+			return _A.write (stream);
 		}
 
 		inline void setEntry (size_t i, size_t j, const Element &a_ij)
@@ -561,10 +558,9 @@ namespace LinBox
 			return _A.rowdim ();
 		}
 
-		template <class Field>
-		inline std::ostream &write (std::ostream &stream, const Field &F) const
+		inline std::ostream &write (std::ostream &stream) const
 		{
-			return _A.write (stream, F);
+			return _A.write (stream);
 		}
 
 		inline void setEntry (size_t i, size_t j, const Element &a_ij)

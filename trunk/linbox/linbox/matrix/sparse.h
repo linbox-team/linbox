@@ -110,6 +110,9 @@ namespace LinBox
 		public:
 			typedef _Element Element;
 
+			template<class T>
+			Element & init(Element & a, const T & b = 0) const { return a = b ; }
+
 			std::istream &read (std::istream &stream, Element &elt) const
 			{
 				return stream >> elt;
@@ -153,6 +156,9 @@ namespace LinBox
 		class NoField {
 		public:
 			typedef _Element Element;
+
+			template<class T>
+			Element & init(Element & a, const T & b = 0) const { return a = b ; }
 
 			std::istream &read (std::istream &stream, Element &elt) const
 			{
@@ -1235,9 +1241,9 @@ template <class _Element, class _Row>
 class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag > {
 public:
 
-	typedef _Element Element;
-	typedef _Row Row;
-	typedef const Row ConstRow;
+	typedef _Element        Element;
+	typedef _Row                Row;
+	typedef const Row      ConstRow;
 	typedef _SP_BB_VECTOR_<Row> Rep;
 
 	template<typename _Tp1, typename _R1 = typename Rebind<_Row,_Tp1>::other >
@@ -1248,6 +1254,13 @@ public:
 	SparseMatrixBase (size_t m, size_t n) :
 		_A (m), _m (m), _n (n)
 	{}
+
+	template<class Field>
+	SparseMatrixBase (Field & F, size_t m, size_t n) :
+		_A (m), _m (m), _n (n)
+	{}
+
+
 	SparseMatrixBase (const SparseMatrixBase<Element, Row> &A) :
 		_A (A._A), _m (A._m), _n (A._n)
 	{}
@@ -1309,7 +1322,7 @@ public:
 	std::ostream &write (std::ostream &os, FileFormatTag format = FORMAT_PRETTY) const
 	{
 		return SparseMatrixReadWriteHelper<Element, Row>::write
-		(*this, os, SparseMatrixReadWriteHelper<Element, Row>::NoField (),
+		(*this, os, typename SparseMatrixReadWriteHelper<Element, Row>::NoField (),
 		 format);
 	}
 

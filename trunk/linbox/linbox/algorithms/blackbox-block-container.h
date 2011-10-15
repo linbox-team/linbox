@@ -49,11 +49,11 @@ namespace LinBox
 	template<class _Field, class _Blackbox>
 	class BlackboxBlockContainer : public BlackboxBlockContainerBase<_Field,_Blackbox> {
 	public:
-		typedef _Field                        Field;
+		typedef _Field                         Field;
 		typedef typename Field::Element      Element;
-		typedef typename Field::RandIter   RandIter;
-		typedef BlasMatrix<Field>           Block;
-		typedef BlasMatrix<Field>           Value;
+		typedef typename Field::RandIter    RandIter;
+		typedef BlasMatrix<Field>              Block;
+		typedef BlasMatrix<Field>              Value;
 
 		// Default constructor
 		BlackboxBlockContainer () {}
