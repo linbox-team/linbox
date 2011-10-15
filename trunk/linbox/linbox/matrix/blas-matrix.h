@@ -578,6 +578,7 @@ namespace LinBox
 
 		const _Field& field() const;
 		_Field& field() ;
+		void setField(const _Field & F) { _F = F ; };
 
 
 	}; // end of class BlasMatrix
@@ -1244,6 +1245,7 @@ namespace LinBox
 	};
 
 }
+
 #include "blas-matrix.inl"
 #include "blas-submatrix.inl"
 #include "blas-triangularmatrix.inl"

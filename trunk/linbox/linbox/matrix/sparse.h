@@ -1241,8 +1241,9 @@ public:
 	typedef _SP_BB_VECTOR_<Row> Rep;
 
 	template<typename _Tp1, typename _R1 = typename Rebind<_Row,_Tp1>::other >
-	struct rebind
-	{ typedef SparseMatrixBase<typename _Tp1::Element, _R1, VectorCategories::SparseParallelVectorTag> other; };
+	struct rebind {
+		typedef SparseMatrixBase<typename _Tp1::Element, _R1, VectorCategories::SparseParallelVectorTag> other;
+	};
 
 	SparseMatrixBase (size_t m, size_t n) :
 		_A (m), _m (m), _n (n)
@@ -1290,18 +1291,21 @@ public:
 		return SparseMatrixReadWriteHelper<Element, Row>::read
 		(*this, is, F, format);
 	}
+
 	std::istream &read (std::istream &is, FileFormatTag format = FORMAT_DETECT)
 	{
 		return SparseMatrixReadWriteHelper<Element, Row>::read
 		(*this, is, SparseMatrixReadWriteHelper<Element, Row>::NoField (),
 		 format);
 	}
+
 	template <class Field>
 	std::ostream &write (std::ostream &os, const Field &F, FileFormatTag format = FORMAT_PRETTY) const
 	{
 		return SparseMatrixReadWriteHelper<Element, Row>::write
 		(*this, os, F, format);
 	}
+
 	std::ostream &write (std::ostream &os, FileFormatTag format = FORMAT_PRETTY) const
 	{
 		return SparseMatrixReadWriteHelper<Element, Row>::write

@@ -100,8 +100,7 @@ namespace LinBox {
 
 } // Namespace LinBox
 
-namespace LinBox {
-
+namespace LinBox { /*  areFieldEqual  */
 
 	template<class _Field1, class _Field2>
 	bool areFieldEqual (const _Field1 &F, const _Field2 &G)
@@ -113,7 +112,7 @@ namespace LinBox {
 	bool areFieldEqualSpecialised(const _Field &F, const _Field &G,
 				      const _Category & m)
 	{
-		return false ;
+		return true ;
 	}
 
 	template<class _Field>

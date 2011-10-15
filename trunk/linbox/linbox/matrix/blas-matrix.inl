@@ -43,6 +43,12 @@ namespace LinBox
 	template<class _Field>
 	void BlasMatrix<_Field>::createBlasMatrix (const BlasMatrix<_Field>& A)
 	{
+#ifndef NDEBUG
+		if (!areFieldEqual(A.field(),_F)) {
+			A.field().write(std::cout) << "!=" ;
+			_F.write(std::cout) << std::endl;
+		}
+#endif
 		linbox_check( areFieldEqual(A.field(),_F));
 		createBlasMatrix(A,MatrixContainerCategory::BlasContainer());
 	}
@@ -139,10 +145,10 @@ namespace LinBox
 		typename _Matrix::ConstIndexedIterator  iter_index = A.IndexedBegin();
 
 		for (;iter_value != A.End(); ++iter_value,++iter_index){
-			size_t i,j;
+			int i,j;
 			i=iter_index.rowIndex()-i0;
 			j=iter_index.colIndex()-j0;
-			if (( i >= 0) && (i< m) && (j >= 0) && (j < n))
+			if (( i >= 0)  && (j >= 0) && (i< m) && (j < n))
 				setEntry(i, j, *iter_value);
 		}
 	}
@@ -160,13 +166,10 @@ namespace LinBox
 		typename Matrix::ConstIndexedIterator  iter_index = A.IndexedBegin();
 
 		for (;iter_value != A.End(); ++iter_value,++iter_index){
-			size_t i,j;
-			linbox_check(iter_index.rowIndex()>=i0);
-			linbox_check(iter_index.colIndex()>=j0);
-			i=iter_index.rowIndex()-i0;
-			j=iter_index.colIndex()-j0;
-			// if (( i >= 0) && (i< m) && (j >= 0) && (j < n))
-			if ( (i< m) && (j < n))
+			int i,j;
+			i=(int)iter_index.rowIndex()-i0;
+			j=(int)iter_index.colIndex()-j0;
+			if ( (i>=0) && (j>=0) && (i< m) && (j < n))
 				setEntry(i, j, *iter_value);
 		}
 	}
@@ -533,6 +536,7 @@ namespace LinBox
 		_row = A.rowdim();
 		_rep = Rep(_row*_col);
 		_ptr = &_rep[0] ;
+		setField(  A.field() );
 		// makePointer();
 		createBlasMatrix(A);
 

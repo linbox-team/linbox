@@ -118,6 +118,19 @@ namespace LinBox
 		      unsigned long characteristic()const{return FFPACK::Modular<double>::characteristic();}
 		      unsigned long cardinality()const{return FFPACK::Modular<double>::cardinality();}
 
+		      //!@bug use FFPACK operator
+		      const Modular<double> &operator=(const Modular<double> &F)
+		      {
+			      modulus  = F.modulus;
+			      lmodulus = F.lmodulus;
+
+			      F.assign(const_cast<Element&>(one),F.one);
+			      F.assign(const_cast<Element&>(zero),F.zero);
+			      F.assign(const_cast<Element&>(mone),F.mone);
+			      return *this;
+		      }
+
+
 		      Element &init (Element &x, const integer &y) const
 		      {
 			      x = (Element)(y%lmodulus);
@@ -135,7 +148,7 @@ namespace LinBox
 
 		       bool isMinusOne (const Element &x) const
 		      {
-			      return (x == modulus-1.);
+			      return (x == mone);
 		      }
 
 		      /** Max number of operations before reducing

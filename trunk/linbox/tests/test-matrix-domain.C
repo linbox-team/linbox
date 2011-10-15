@@ -65,7 +65,7 @@ template <class Field, class Matrix1, class Matrix2>
 void eliminate (MatrixDomain<Field> &MD, Matrix1 &M, Matrix2 &pivotRow,
 		size_t row, size_t col, size_t rowdim, size_t coldim)
 {
-	BlasMatrix<typename Matrix1::Field> pivotCol (rowdim, 1);
+	BlasMatrix<typename Matrix1::Field> pivotCol (M.field(),rowdim, 1);
 	BlasMatrix<typename Matrix1::Field> realPivotCol (M, row, col, rowdim, 1);
 	BlasMatrix<typename Matrix1::Field> block (M, row, col, rowdim, coldim);
 
