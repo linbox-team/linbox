@@ -55,8 +55,8 @@ template <class Field>
 static bool testIdentity (Field &F, long n, int iterations)
 {
 	typedef typename Vector<Field>::Dense Vector;
-	typedef BlasMatrix<Field> Base;
-	typedef BlasMatrix <Field> Blackbox;
+	typedef BlasMatrix<Field>               Base;
+	typedef BlasMatrix<Field>           Blackbox;
 
 	commentator.start ("Testing identity apply", "testIdentity", iterations);
 
@@ -98,7 +98,7 @@ static bool testIdentity (Field &F, long n, int iterations)
 		printVector<Field> (F, report, w);
 
 		Base J (I);
-		Blackbox KK(F, J);
+		Blackbox KK( J);
 		KK.apply (w, v);
 		report << "Output vector: ";
 		printVector<Field> (F, report, w);

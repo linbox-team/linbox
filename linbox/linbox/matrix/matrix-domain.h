@@ -133,7 +133,7 @@ namespace LinBox
 		template <class Matrix>
 		inline std::ostream &write (std::ostream &os, const Matrix &A) const
 		{
-			return A.write (os, _F);
+			return A.write (os);
 		}
 
 		/** Read matrix.

@@ -722,10 +722,17 @@ namespace LinBox
 		_m(A.rowdim()), _n(A.coldim()),
 		_alloc(true),_plloc(true)
 	{
-
-		_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans,  _m, _n,
-					 _LU.getPointer(),_LU.getStride(),
-					 _PP.getWritePointer(), _QQ.getWritePointer(), FFPACK::FfpackLQUP );
+		if (!A.coldim() || !A.rowdim()) {
+			// throw LinBoxError("LQUP does not accept empty matrices");
+			_rank = 0 ;
+		}
+		else {
+			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans,
+						 _m, _n,
+						 _LU.getPointer(),_LU.getStride(),
+						 _PP.getWritePointer(), _QQ.getWritePointer(),
+						 FFPACK::FfpackLQUP );
+		}
 		_PP.setOrder(_rank);
 		_QQ.setOrder(_rank);
 
@@ -740,10 +747,17 @@ namespace LinBox
 		_m(A.rowdim()), _n(A.coldim()),
 		_alloc(false),_plloc(true)
 	{
-
-		_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans, _m, _n,
-					 _LU.getPointer(),_LU.getStride(),
-					 _PP.getWritePointer(), _QQ.getWritePointer(), FFPACK::FfpackLQUP );
+		if (!A.coldim() || !A.rowdim()) {
+			// throw LinBoxError("LQUP does not accept empty matrices");
+			_rank = 0 ;
+		}
+		else {
+			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans,
+						 _m, _n,
+						 _LU.getPointer(),_LU.getStride(),
+						 _PP.getWritePointer(), _QQ.getWritePointer(),
+						 FFPACK::FfpackLQUP );
+		}
 		_PP.setOrder(_rank);
 		_QQ.setOrder(_rank);
 
@@ -762,9 +776,11 @@ namespace LinBox
 		linbox_check(_PP.getOrder()==A.coldim());
 
 
-		_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans,  _m, _n,
+		_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans,
+					 _m, _n,
 					 _LU.getPointer(),_LU.getStride(),
-					 _PP.getWritePointer(), _QQ.getWritePointer(), FFPACK::FfpackLQUP );
+					 _PP.getWritePointer(), _QQ.getWritePointer(),
+					 FFPACK::FfpackLQUP );
 
 		_PP.setOrder(_rank);
 		_QQ.setOrder(_rank);
@@ -780,13 +796,20 @@ namespace LinBox
 		_alloc(false),_plloc(false)
 	{
 
-		linbox_check(_QQ.getOrder()==A.rowdim());
-		linbox_check(_PP.getOrder()==A.coldim());
+
+		linbox_check(_QQ.getOrder()<=A.rowdim());
+		linbox_check(_PP.getOrder()<=A.coldim());
+		if (_QQ.getOrder() == 0)
+			_QQ.resize(A.rowdim());
+		if (_PP.getOrder() == 0)
+			_PP.resize(A.coldim());
 
 
-		_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans, _m, _n,
+		_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans,
+					 _m, _n,
 					 _LU.getPointer(),_LU.getStride(),
-					 _PP.getWritePointer(), _QQ.getWritePointer(), FFPACK::FfpackLQUP );
+					 _PP.getWritePointer(), _QQ.getWritePointer(),
+					 FFPACK::FfpackLQUP );
 		_PP.setOrder(_rank);
 		_QQ.setOrder(_rank);
 
