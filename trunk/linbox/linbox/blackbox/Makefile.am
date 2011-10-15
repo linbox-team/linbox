@@ -40,7 +40,6 @@ BASIC_HDRS =			\
 	blackbox-interface.h      \
 	random-matrix.h           \
 	lambda-sparse.h           \
-	blas-blackbox.h           \
 	polynomial.h              \
 	block-hankel.h            \
 	block-toeplitz.h          \
