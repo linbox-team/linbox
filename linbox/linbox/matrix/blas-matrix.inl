@@ -531,6 +531,8 @@ namespace LinBox
 	template <class _Field>
 	BlasMatrix< _Field>& BlasMatrix< _Field>::operator= (const BlasMatrix< _Field>& A)
 	{
+		if ( &A == this)
+			return *this;
 
 		_col = A.coldim();
 		_row = A.rowdim();
