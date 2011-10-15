@@ -652,8 +652,10 @@ namespace LinBox
 		// A must decide if dot is possible, not w
 		// 	for (; j != w.end (); ++j, ++i)
 		// 		_VD.dot (*j, v, *i);
-		for (; i != A.rowEnd (); ++j, ++i)
+		for (; i != A.rowEnd (); ++j, ++i) {
+			linbox_check(j != w.end());
 			_VD.dot (*j, v, *i);
+		}
 
 		return w;
 	}
