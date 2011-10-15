@@ -201,7 +201,7 @@
 		Also, if Automake is installed in a place separate
 		from Autoconf, you will need to set the environment
 		variable ACLOCAL_FLAGS to "-I &lt;automake
-		prefix>/share/aclocal", where &lt;prefix&gt; is the install
+		prefix&gt;/share/aclocal", where &lt;prefix&gt; is the install
 		prefix of Automake. Similarly, if Libtool is installed
 		to a separate prefix, you should add "-I &lt;libtool
 		prefix&gt;/share/aclocal" to ACLOCAL_FLAGS, where
@@ -483,12 +483,12 @@ namespace LinBox
 	      </p>
 
 	      <pre>
-#ifndef __MY_HEADER_FILE_H
-#define __MY_HEADER_FILE_H
+#ifndef __LINBOX_my_header_file_H
+#define __LINBOX_my_header_file_H
 
 ... // Your code here
 
-#endif // __MY_HEADER_FILE_H
+#endif // __LINBOX_my_header_file_H
 	      </pre>
 
 	      <p>
