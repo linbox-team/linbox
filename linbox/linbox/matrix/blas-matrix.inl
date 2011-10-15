@@ -219,6 +219,11 @@ namespace LinBox
 		_row(0),_col(0),_rep(0),_ptr(NULL),_F(F),_MD(F),_VD(F),_use_fflas(false)
 	{ }
 
+	template <class _Field>
+	BlasMatrix< _Field>::BlasMatrix () :
+			_row(0),_col(0),_rep(0),_ptr(NULL),
+			_F(Field()),_MD(_F),_VD(_F)
+		{}
 
 
 	template <class _Field>
@@ -285,6 +290,25 @@ namespace LinBox
 		_ptr = &_rep[0];
 		_use_fflas = Protected::checkBlasApply(_F, _col);
 	}
+
+	template <class _Field>
+	template <class StreamVector>
+	BlasMatrix< _Field>::BlasMatrix (const Field &F, VectorStream<StreamVector> &stream) :
+		_row(stream.size ()), _col(stream.dim ()), _rep(_row*_col), _ptr(&_rep[0]),
+		_F (F), _MD (F), _VD(F)
+	{
+		StreamVector tmp;
+		typename BlasMatrix<Field>::RowIterator p;
+
+		VectorWrapper::ensureDim (tmp, stream.dim ());
+
+		for (p = BlasMatrix<Field>::rowBegin (); p != BlasMatrix<Field>::rowEnd (); ++p) {
+			stream >> tmp;
+			_VD.copy (*p, tmp);
+		}
+		_use_fflas = Protected::checkBlasApply(_F, _col);
+	}
+
 
 	template <class _Field>
 	template <class Matrix>
@@ -1455,11 +1479,85 @@ namespace LinBox
 {
 	template <class _Field>
 	template <class Vector>
-	Vector &BlasMatrix< _Field>::columnDensity (Vector &v) const
+	Vector& BlasMatrix< _Field>::columnDensity (Vector &v) const
 	{
 		std::fill (v.begin (), v.end (), _row);
 		return v;
 	}
 
 } // LinBox
+
+///////////////////
+//   BLACK BOX   //
+///////////////////
+
+namespace LinBox
+{
+	template <class _Field>
+	template <class Vector1, class Vector2>
+	Vector1&  BlasMatrix< _Field>::apply (Vector1& y, const Vector2& x) const
+	{
+		//_stride ?
+		if (_use_fflas){
+			//!@bug this supposes &x[0]++ == &x[1]
+			FFLAS::fgemv( _F, FFLAS::FflasNoTrans,
+				      _row, _col,
+				      _F.one,
+				      _ptr, getStride(),
+				      &x[0],1,
+				      _F.zero,
+				      &y[0],1);
+		}
+		else {
+			_MD. vectorMul (y, *this, x);
+#if 0
+			typename BlasMatrix<_Field>::ConstRowIterator i = this->rowBegin ();
+			typename Vector1::iterator j = y.begin ();
+
+			for (; j != y.end (); ++j, ++i)
+				_VD.dot (*j, *i, x);
+#endif
+		}
+		return y;
+	}
+
+	template <class _Field>
+	template <class Vector1, class Vector2>
+	Vector1&  BlasMatrix< _Field>::applyTranspose (Vector1& y, const Vector2& x) const
+	{
+
+		//_stride ?
+		if (_use_fflas) {
+			FFLAS::fgemv( _F, FFLAS::FflasTrans,
+				      _row, _col,
+				      _F.one,
+				      _ptr, getStride(),
+				      &x[0],1,
+				      _F.zero,
+				      &y[0],1);
+		}
+		else {
+			typename BlasMatrix<_Field>::ConstColIterator i = this->colBegin ();
+			typename Vector1::iterator j = y.begin ();
+			for (; j != y.end (); ++j, ++i)
+				_VD.dot (*j, x, *i);
+		}
+
+		return y;
+	}
+
+	template <class _Field>
+	const _Field& BlasMatrix< _Field>::field() const
+	{
+		return _F;
+	}
+
+	template <class _Field>
+	_Field& BlasMatrix< _Field>::field()
+	{
+		return const_cast<_Field&>(_F);
+	}
+}
+
+
 #endif // __LINBOX_blas_matrix_INL
