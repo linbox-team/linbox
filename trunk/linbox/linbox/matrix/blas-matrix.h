@@ -197,6 +197,13 @@ namespace LinBox
 		*/
 		BlasMatrix (const _Field &F) ;
 
+		/*! Allocates a new \f$ 0 \times 0\f$ matrix.
+		*/
+		BlasMatrix () :
+			_row(0),_col(0),_rep(0),_ptr(NULL),
+			_F(Field()),_MD(_F),_VD(_F)
+		{}
+
 		/*! Allocates a new \f$ m \times n\f$ matrix.
 		 * @param m rows
 		 * @param n cols
