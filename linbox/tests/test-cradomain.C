@@ -132,12 +132,13 @@ namespace LinBox
 template<typename Field>
 struct InteratorBlas : public Interator {
 	typedef typename Field::Element Element;
-	typedef LinBox::BlasMatrix<Field> Matrix;
+	typedef LinBox::BlasMatrix<LinBox::UnparametricField<Element> > Matrix;
 	typedef typename Matrix::pointer Pointer;
+	typename LinBox::UnparametricField<Element> _F;
 	mutable Matrix _C;
 
-	InteratorBlas(const std::vector<integer>& v) : Interator(v), _C((int)v.size(), (int)1) {}
-	InteratorBlas(int n, int s) : Interator(n,s), _C(n,1) {}
+	InteratorBlas(const std::vector<integer>& v) : Interator(v),_F(), _C(_F,(int)v.size(), (int)1) {}
+	InteratorBlas(int n, int s) : Interator(n,s), _F(),_C(_F,n,1) {}
 
 	Pointer& operator()(Pointer& res, const Field& F) const
 	{
@@ -202,7 +203,8 @@ bool TestOneCRAWritePointer(std::ostream& report, Iter& iteration, RandGen& genp
 {
 	report << "ChineseRemainder<" << typeid(Builder).name() << ">(" << bound << ')' << std::endl;
 	LinBox::ChineseRemainder< Builder > cra( bound );
-	LinBox::BlasMatrix<integer> Res( (int)N, (int)N);
+	PID_integer Z ;
+	LinBox::BlasMatrix<PID_integer> Res(Z, (int)N, (int)N);
 	cra( Res.getWritePointer(), iteration, genprime);
 	bool locpass = std::equal( iteration.getVector().begin(), iteration.getVector().end(), Res.getWritePointer() );
 

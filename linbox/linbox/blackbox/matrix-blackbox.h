@@ -61,7 +61,7 @@ namespace LinBox
 		 * @param  n  Column dimension
 		 */
 		MatrixBlackbox (const Field &F, size_t m, size_t n) :
-			_F (F), _MD (F), _A (m, n)
+			_F (F), _MD (F), _A (F, m, n)
 		{}
 
 		/** Constructor

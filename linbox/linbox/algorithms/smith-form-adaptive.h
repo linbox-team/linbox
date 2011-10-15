@@ -31,6 +31,7 @@
 
 #include <vector>
 #include "linbox/integer.h"
+#include "linbox/matrix/blas-matrix.h"
 
 namespace LinBox
 {

@@ -36,7 +36,7 @@ namespace LinBox
 		BlasMatrixDomain<_Field> _D;
 		size_t _b;
 
-		typedef BlasMatrix<typename _Field::Element> Matrix;
+		typedef BlasMatrix<_Field> Matrix;
 		typedef typename _Field::Element Scalar;
 
 
@@ -94,7 +94,7 @@ namespace LinBox
 				size_t rows = A.matrix->rowdim();
 				size_t cols = A.matrix->coldim();
 
-				set(new Matrix(rows, cols));
+				set(new Matrix(A.matrix->field(),rows, cols));
 
 				Scalar* a=A.matrix->getPointer();
 				Scalar* b=  matrix->getPointer();
@@ -155,9 +155,9 @@ namespace LinBox
 		BlockRing(const _Field& F, size_t d=1) :
 			_F(F), _D(F), _b(d)
 		{
-			one.set(new Matrix(d,d));
-			zero.set(new Matrix(d,d));
-			mone.set(new Matrix(d,d)) ;
+			one.set(new Matrix(_F,d,d));
+			zero.set(new Matrix(_F,d,d));
+			mone.set(new Matrix(_F,d,d)) ;
 			_D.setIdentity(*(one.matrix));
 			_D.setZero(*(zero.matrix));
 			for (size_t i = 0 ;i < d ;++i)
@@ -167,7 +167,7 @@ namespace LinBox
 		Element& init(Element& B) const
 		{
 			// B is garbage from memory
-			B.set(new Matrix(_b,_b));
+			B.set(new Matrix(_F,_b,_b));
 			return B;
 		}
 
@@ -179,7 +179,7 @@ namespace LinBox
 			if (r == 0) r = _b;
 			if (c == 0) c = _b;
 
-			B.set(new Matrix(r,c));
+			B.set(new Matrix(_F,r,c));
 
 			size_t k = ( (r < c) ? r : c );
 
@@ -550,7 +550,7 @@ namespace LinBox
 		// wrapped read and write element
 		std::ostream& write(std::ostream& os, const Element& A) const
 		{
-			return (A.matrix)->write(os << std::endl, _F);
+			return (A.matrix)->write(os << std::endl);
 		}
 
 
