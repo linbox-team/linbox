@@ -180,7 +180,14 @@ namespace LinBox
 				       const size_t m, const size_t n,
 				       MatrixContainerCategory::Blackbox) ;
 
+		/*!@internal constructor from vector of elements.
+		 * @param v pointer to \c Element s
+		 */
 		void createBlasMatrix ( const Element * v) ;
+
+		/*!@internal constructor from vector of elements.
+		 * @param v std::vector of \c Element s
+		 */
 		void createBlasMatrix ( const std::vector<Element> & v) ;
 		/*! @internal
 		 * @}
@@ -199,10 +206,7 @@ namespace LinBox
 
 		/*! Allocates a new \f$ 0 \times 0\f$ matrix.
 		*/
-		BlasMatrix () :
-			_row(0),_col(0),_rep(0),_ptr(NULL),
-			_F(Field()),_MD(_F),_VD(_F)
-		{}
+		BlasMatrix () ;
 
 		/*! Allocates a new \f$ m \times n\f$ matrix.
 		 * @param m rows
@@ -288,21 +292,8 @@ namespace LinBox
 		 *                matrix
 		 */
 		template <class StreamVector>
-		BlasMatrix (const Field &F, VectorStream<StreamVector> &stream) :
-			_row(stream.size ()), _col(stream.dim ()), _rep(_row*_col), _ptr(&_rep[0]),
-			_F (F), _MD (F), _VD(F)
-		{
-			StreamVector tmp;
-			typename BlasMatrix<Field>::RowIterator p;
+		BlasMatrix (const Field &F, VectorStream<StreamVector> &stream) ;
 
-			VectorWrapper::ensureDim (tmp, stream.dim ());
-
-			for (p = BlasMatrix<Field>::rowBegin (); p != BlasMatrix<Field>::rowEnd (); ++p) {
-				stream >> tmp;
-				_VD.copy (*p, tmp);
-			}
-		_use_fflas = Protected::checkBlasApply(_F, _col);
-		}
 		/// Destructor.
 		~BlasMatrix () ;
 
@@ -443,16 +434,6 @@ namespace LinBox
 		// template <class Field>
 		std::istream &read (std::istream &file/*  , const Field &F*/);
 
-		/*- Write the matrix to an output stream.
-		 * @todo factorise writing matrices code.
-		 * @param os Output stream to which to write
-		 * @param F Field over which to write
-		 * @param mapleFormat write in Maple format ?
-		 */
-		// template <class Field>
-		// std::ostream &write (std::ostream &os, const Field &F,
-				     // bool mapleFormat=true) const;
-
 		/** Write brutally the matrix to an output stream.
 		 * This a raw version of \c write(os,F) (no field is given).
 		 * @param os Output stream to which to write
@@ -590,58 +571,13 @@ namespace LinBox
 
 
 		template <class Vector1, class Vector2>
-		Vector1&  apply (Vector1& y, const Vector2& x) const
-		{
-			//_stride ?
-			if (_use_fflas){
-				//!@bug this supposes &x[0]++ == &x[1]
-				FFLAS::fgemv( _F, FFLAS::FflasNoTrans,
-					      _row, _col,
-					      _F.one,
-					      _ptr, getStride(),
-					      &x[0],1,
-					      _F.zero,
-					      &y[0],1);
-			}
-			else {
-				_MD. vectorMul (y, *this, x);
-#if 0
-				typename BlasMatrix<_Field>::ConstRowIterator i = this->rowBegin ();
-				typename Vector1::iterator j = y.begin ();
-
-				for (; j != y.end (); ++j, ++i)
-					_VD.dot (*j, *i, x);
-#endif
-			}
-			return y;
-		}
+		Vector1&  apply (Vector1& y, const Vector2& x) const ;
 
 		template <class Vector1, class Vector2>
-		Vector1&  applyTranspose (Vector1& y, const Vector2& x) const
-		{
+		Vector1&  applyTranspose (Vector1& y, const Vector2& x) const ;
 
-			//_stride ?
-			if (_use_fflas) {
-				FFLAS::fgemv( _F, FFLAS::FflasTrans,
-					      _row, _col,
-					      _F.one,
-					      _ptr, getStride(),
-					      &x[0],1,
-					      _F.zero,
-					      &y[0],1);
-			}
-			else {
-				typename BlasMatrix<_Field>::ConstColIterator i = this->colBegin ();
-				typename Vector1::iterator j = y.begin ();
-				for (; j != y.end (); ++j, ++i)
-					_VD.dot (*j, x, *i);
-			}
-
-			return y;
-		}
-
-		const Field &field() const  {return _F;}
-		Field &field() {return const_cast<Field&>(_F);}
+		const _Field& field() const;
+		_Field& field() ;
 
 
 	}; // end of class BlasMatrix
@@ -803,14 +739,6 @@ namespace LinBox
 		// template<class Field>
 		std::istream& read (std::istream &file/*, const Field& field*/);
 
-		/*- Write the matrix to an output stream.
-		 * @param os Output stream to which to write
-		 * @param field
-		 * @param mapleFormat write in Maple(r) format ?
-		 */
-		// template<class Field>
-		// std::ostream& write (std::ostream &os, const Field& field,
-				     // bool mapleFormat = true) const;
 
 		/** Write the matrix to an output stream.
 		 * This a raw version of \c write(os,F) (no field is given).
@@ -987,7 +915,6 @@ namespace LinBox
 
 	};
 
-
 	template <class _Field>
 	struct MatrixTraits< BlasSubmatrix<_Field> > {
 		typedef BlasSubmatrix<_Field> MatrixType;
@@ -1028,6 +955,8 @@ namespace LinBox
 	public:
 		typedef _Field                       Field;
 		typedef typename Field::Element      Element;      //!< Element type
+		typedef BlasMatrix<_Field>           Father_t;
+		typedef TriangularBlasMatrix<_Field> Self_t;
 
 
 		/*! Constructor for a new \c TriangularBlasMatrix.
@@ -1036,10 +965,10 @@ namespace LinBox
 		 * @param y (non)unit diagonal
 		 * @param x (upp/low)er matrix
 		 */
-		TriangularBlasMatrix (const size_t m, const size_t n,
-				      LinBoxTag::Shape x=LinBoxTag::Upper, LinBoxTag::Diag y= LinBoxTag::NonUnit) :
-			BlasMatrix<_Field>(m, n ) , _uplo(x), _diag(y)
-		{}
+		TriangularBlasMatrix (const Field & F,
+				      const size_t m, const size_t n,
+				      LinBoxTag::Shape x=LinBoxTag::Upper,
+				      LinBoxTag::Diag y= LinBoxTag::NonUnit) ;
 
 		/*! Constructor from a \c BlasMatrix (copy).
 		 * @param A matrix
@@ -1047,46 +976,22 @@ namespace LinBox
 		 * @param x (upp/low)er matrix
 		 */
 		TriangularBlasMatrix (const BlasMatrix<_Field>& A,
-				      LinBoxTag::Shape x=LinBoxTag::Upper, LinBoxTag::Diag y= LinBoxTag::NonUnit) :
-			BlasMatrix<_Field>(A) , _uplo(x), _diag(y)
-		{}
+				      LinBoxTag::Shape x=LinBoxTag::Upper,
+				      LinBoxTag::Diag y= LinBoxTag::NonUnit) ;
 
 		/*! Constructor from a \c BlasMatrix (no copy).
 		 * @param A matrix
 		 * @param y (non)unit diagonal
 		 * @param x (upp/low)er matrix
 		 */
-		TriangularBlasMatrix (BlasMatrix<_Field>& A, LinBoxTag::Shape x=LinBoxTag::Upper, LinBoxTag::Diag y= LinBoxTag::NonUnit) :
-			BlasMatrix<_Field>(A), _uplo(x), _diag(y)
-		{}
+		TriangularBlasMatrix (BlasMatrix<_Field>& A,
+				      LinBoxTag::Shape x=LinBoxTag::Upper,
+				      LinBoxTag::Diag y= LinBoxTag::NonUnit) ;
 
 		/*! Constructor from a \c TriangularBlasMatrix (copy).
 		 * @param A matrix
 		 */
-		TriangularBlasMatrix (const TriangularBlasMatrix<_Field>& A) :
-			BlasMatrix<_Field>(A.rowdim(),A.coldim()), _uplo(A._uplo), _diag(A._diag)
-		{
-			switch (A._uplo) {
-			case LinBoxTag::Upper:
-				{
-					for (size_t i=0;i<A.rowdim();++i)
-						for (size_t j=i;j<A.coldim();++j)
-							this->setEntry(i,j,A.getEntry(i,j));
-					break;
-				}
-			case LinBoxTag::Lower:
-				{
-					for (size_t i=0;i<A.rowdim();++i) {
-						for (size_t j=0;j<=i;++j)
-							this->setEntry(i,j,A.getEntry(i,j));
-					}
-
-					break;
-				}
-			default:
-				throw LinboxError ("Error in copy constructor of TriangularBlasMatrix (incorrect argument)");
-			}
-		}
+		TriangularBlasMatrix (const TriangularBlasMatrix<_Field>& A) ;
 
 		/*! Generic constructor from a \c Matrix (no copy).
 		 * @param A matrix
@@ -1094,41 +999,15 @@ namespace LinBox
 		 * @param x (upp/low)er matrix
 		 */
 		template<class Matrix>
-		TriangularBlasMatrix (const Matrix& A, LinBoxTag::Shape x=LinBoxTag::Upper, LinBoxTag::Diag y= LinBoxTag::NonUnit) :
-			BlasMatrix<_Field>(A.rowdim(),A.coldim()), _uplo(x), _diag(y)
-		{
-			switch (x) {
-			case LinBoxTag::Upper:
-				{
-					for (size_t i=0;i<A.rowdim();++i){
-						for (size_t j=i;j<A.coldim();++j) {
-							Element tmp;
-							this->setEntry(i,j,getEntry(tmp, A,i,j));
-						}
-					}
-					break;
-				}
-			case LinBoxTag::Lower:
-				{
-					for (size_t i=0;i<A.rowdim();++i) {
-						for (size_t j=0;j<=i;++j) {
-							Element tmp;
-							this->setEntry(i,j,getEntry(tmp, A,i,j));
-						}
-					}
-
-					break;
-				}
-			default:
-				throw LinboxError ("Error in copy constructor of TriangularBlasMatrix (incorrect argument)");
-			}
-		}
+		TriangularBlasMatrix (const Matrix& A,
+				      LinBoxTag::Shape x=LinBoxTag::Upper,
+				      LinBoxTag::Diag y= LinBoxTag::NonUnit) ;
 
 		/// get the shape of the matrix (upper or lower)
-		LinBoxTag::Shape getUpLo() const { return _uplo;}
+		LinBoxTag::Shape getUpLo() const ;
 
 		/// Is the diagonal implicitly unit ?
-		LinBoxTag::Diag getDiag() const { return _diag;}
+		LinBoxTag::Diag getDiag() const ;
 
 	}; // end of class TriangularBlasMatrix
 
@@ -1367,6 +1246,7 @@ namespace LinBox
 }
 #include "blas-matrix.inl"
 #include "blas-submatrix.inl"
+#include "blas-triangularmatrix.inl"
 
 #endif // __LINBOX_blas_matrix_H
 
