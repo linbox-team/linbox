@@ -121,6 +121,9 @@ namespace LinBox
 	template <class _Field>
 	BlasSubmatrix<_Field>& BlasSubmatrix<_Field>::operator=(const BlasSubmatrix<_Field> &SM)
 	{
+		if ( &SM == this)
+			return *this ;
+
 		_M   = SM._M  ;
 		_r0  = SM._r0 ;
 		_row = SM._row;
