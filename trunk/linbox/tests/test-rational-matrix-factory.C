@@ -28,6 +28,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/field/PID-integer.h"
 #include "linbox/field/gmp-rational.h"
+#include "linbox/matrix/blas-matrix.h"
 #include "linbox/blackbox/rational-matrix-factory.h"
 
 #include "test-common.h"

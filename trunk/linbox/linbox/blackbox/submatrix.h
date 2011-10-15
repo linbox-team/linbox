@@ -28,7 +28,9 @@
 #include "linbox/util/debug.h"
 #include "linbox/util/error.h"
 #include "linbox/vector/vector-domain.h"
+#include "linbox/matrix/blas-matrix.h"
 #include "linbox/blackbox/blackbox-interface.h"
+
 
 
 // Namespace in which all LinBox library code resides

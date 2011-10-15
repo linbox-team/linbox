@@ -273,6 +273,29 @@ namespace LinBox
 		BlasMatrix (const _Field &F, const Element * v,
 			    size_t m, size_t n) ;
 
+
+		/** Constructor using a finite vector stream (stream of the rows).
+		 * @param  F The field of entries; passed so that arithmetic may be done
+		 *           on elements
+		 * @param  stream A vector stream to use as a source of vectors for this
+		 *                matrix
+		 */
+		template <class StreamVector>
+		BlasMatrix (const Field &F, VectorStream<StreamVector> &stream) :
+			_row(stream.size ()), _col(stream.dim ()), _rep(_row*_col), _ptr(&_rep[0]),
+			_F (F), _MD (F), _VD(F)
+		{
+			StreamVector tmp;
+			typename BlasMatrix<Field>::RowIterator p;
+
+			VectorWrapper::ensureDim (tmp, stream.dim ());
+
+			for (p = BlasMatrix<Field>::rowBegin (); p != BlasMatrix<Field>::rowEnd (); ++p) {
+				stream >> tmp;
+				_VD.copy (*p, tmp);
+			}
+		_use_fflas = Protected::checkBlasApply(_F, _col);
+		}
 		/// Destructor.
 		~BlasMatrix () ;
 
