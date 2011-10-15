@@ -64,7 +64,6 @@ namespace LinBox
 	}
 }
 
-
 // Blas Matrix
 namespace LinBox
 {
@@ -95,8 +94,8 @@ namespace LinBox
 		Rep			    _rep;
 		pointer			    _ptr;
 		const Field		    & _F;
-		const MatrixDomain<Field>  & _MD;
-		const VectorDomain<Field>  & _VD;
+		const MatrixDomain<Field>    _MD;
+		const VectorDomain<Field>    _VD;
 		bool		     _use_fflas ;
 
 
@@ -1072,7 +1071,6 @@ namespace LinBox
 		int characteristic() const { return 0 ; }
 	};
 }
-
 
 namespace LinBox
 {
