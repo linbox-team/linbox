@@ -580,26 +580,38 @@ namespace LinBox
 		_Field& field() ;
 		// void setField(const _Field & F) { _F = F ; };
 
-		void changeField(const _Field &F)
-		{
-			changeFieldSpecialised(const_cast<_Field&>(_F),F,
-					       typename FieldTraits<_Field>::categoryTag());
-		}
-
 		template<class uselessTag>
-		void changeFieldSpecialised( _Field & G, const _Field & F,
+		void changeFieldSpecialised( _Field & G,
+					     MatrixDomain<_Field> & MD,
+					     VectorDomain<_Field> & VD,
+					     const _Field & F,
 					     const uselessTag & m)
 		{
 			return;
 		}
 
 		void changeFieldSpecialised(      _Field & G,
+						  MatrixDomain<_Field> & MD,
+						  VectorDomain<_Field> & VD,
 					    const _Field & F,
 					    const RingCategories::ModularTag & m)
 		{
 			G=F ;
+			MD = MatrixDomain<_Field>(F);
+			VD = VectorDomain<_Field>(F);
 			return;
 		}
+
+
+		void changeField(const _Field &F)
+		{
+			changeFieldSpecialised(const_cast<_Field&>(_F),
+					       const_cast<MatrixDomain<_Field>&>(_MD),
+					       const_cast<VectorDomain<_Field>&>(_VD),
+					       F,
+					       typename FieldTraits<_Field>::categoryTag());
+		}
+
 
 
 	}; // end of class BlasMatrix

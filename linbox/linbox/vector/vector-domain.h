@@ -720,6 +720,7 @@ namespace LinBox
 		{
 			return DotProductDomain<Field>::dotSpecializedDD (res, v1, v2);
 		}
+
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::SparseSequenceVectorTag,
