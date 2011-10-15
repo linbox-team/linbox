@@ -84,7 +84,7 @@ static bool testMulAdd (const Field& F, size_t n, int iterations)
 	for (int k=0;k<iterations; ++k) {
 
 		mycommentator.progress(k);
-		Matrix A(n,n),B(n,n),C(n,n),D(n,n),T(n,n),R(n,n);
+		Matrix A(F, n,n),B(F, n,n),C(F, n,n),D(F, n,n),T(F, n,n),R(F, n,n);
 		std::vector<Element> x(n),y(n),z(n),t(n);
 
 		Element alpha, beta,malpha,tmp;
@@ -143,26 +143,30 @@ static bool testMulAdd (const Field& F, size_t n, int iterations)
 
 // computes D = alpha A B + beta C on integers and check the result is ok mod p.
 // actually we check the mod p muladd here...
-bool CheckMulAdd( const Integer & alpha , const BlasMatrix<Integer> & A , const BlasMatrix<Integer> & B , const Integer & beta , const BlasMatrix<Integer> & C)
+bool CheckMulAdd( const Integer & alpha ,
+		  const BlasMatrix<PID_integer> & A ,
+		  const BlasMatrix<PID_integer> & B ,
+		  const Integer & beta ,
+		  const BlasMatrix<PID_integer> & C)
 {
 
 	size_t M = C.rowdim();
 	size_t N = C.coldim();
 
-	typedef Modular<double>       ModularField ;
-	typedef ModularField::Element      Element ;
+	typedef Modular<double>       Field ;
+	typedef Field::Element      Element ;
 
 	PID_integer ZZ ;
 	MatrixDomain<PID_integer> ZMD(ZZ);
 
-	BlasMatrix<Integer> D(M,N);
+	BlasMatrix<PID_integer> D(ZZ,M,N);
 
 	Integer p = Integer::random_between(10,12) ;
 	nextprime(p,p); //!@bug si p n'est pas premier, fgemm fait n'importe quoi (division par alpha)
-	ModularField Zp (p);
+	Field Zp (p);
 
-	BlasMatrixDomain<ModularField> BMD (Zp);
-	MatrixDomain<ModularField>      MD (Zp);
+	BlasMatrixDomain<Field> BMD (Zp);
+	MatrixDomain<Field>      MD (Zp);
 
 	// Ep = b C + a A B
 	ZMD.muladd(D,beta,C,alpha,A,B);
@@ -177,7 +181,7 @@ bool CheckMulAdd( const Integer & alpha , const BlasMatrix<Integer> & A , const 
 	// MatrixHom::map(Ap,A,Zp);
 	// MatrixHom::map(Bp,B,Zp);
 	// MatrixHom::map(Cp,C,Zp);
-	BlasMatrix<Field> Ep(M,N);  // D mod p
+	BlasMatrix<Field> Ep(Zp,M,N);  // D mod p
 
 	Element ap, bp ;
 	Zp.init(ap,alpha);
@@ -224,7 +228,8 @@ template <class Field>
 static bool testMulAddAgain (const Field& , size_t n, int iterations)
 {
 
-	typedef BlasMatrix<Integer>         IMatrix;
+	PID_integer ZZ ;
+	typedef BlasMatrix<PID_integer>         IMatrix;
 
 	//Commentator mycommentator;
 	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
@@ -257,7 +262,7 @@ static bool testMulAddAgain (const Field& , size_t n, int iterations)
 	for (int k=0;k<iterations; ++k) {
 
 		mycommentator.progress(k);
-		IMatrix A(n,n),B(n,n),C(n,n),D(n,n),E(n,n);
+		IMatrix A(ZZ, n,n),B(ZZ, n,n),C(ZZ, n,n),D(ZZ, n,n),E(ZZ, n,n);
 
 		Integer a , b;
 #if 0
@@ -332,12 +337,12 @@ static bool testMulAddShapeTrans (const Field &F, size_t m, size_t n, size_t k, 
 	MatrixDomain<Field>      MD (F);
 
 	// input matrix
-	Matrix A(m,k);
-	Matrix B(k,n);
-	Matrix C(m,n);
+	Matrix A(F, m,k);
+	Matrix B(F, k,n);
+	Matrix C(F, m,n);
 	// result matrix
-	Matrix D(m,n);
-	Matrix E(m,n);
+	Matrix D(F, m,n);
+	Matrix E(F, m,n);
 
 	// random A,B
 	RandMat.random(A);
@@ -345,9 +350,9 @@ static bool testMulAddShapeTrans (const Field &F, size_t m, size_t n, size_t k, 
 	RandMat.random(C);
 
 	// hard tranpose A,B
-	Matrix A1 (k,m) ;
+	Matrix A1 (F, k,m) ;
 	A.transpose(A1) ;
-	Matrix B1 (n,k) ;
+	Matrix B1 (F, n,k) ;
 	B.transpose(B1) ;
 	TransposedMatrix tA(A1); // t(tA)=A
 	TransposedMatrix tB(B1); // t(tB)=B
@@ -419,18 +424,18 @@ static bool testTriangMulShapeTrans (const Field &F, size_t m, size_t n, int ite
 
 	int k =(int) (LeftSide?m:n) ;
 	// input matrix
-	Matrix A(k,k); // A = L+U-I. Either L or U is unit.
-	Matrix B(m,n);
+	Matrix A(F, k,k); // A = L+U-I. Either L or U is unit.
+	Matrix B(F, m,n);
 	// result matrix
-	Matrix D(m,n);
-	Matrix E(m,n);
+	Matrix D(F, m,n);
+	Matrix E(F, m,n);
 
 	// random A,B
 	RandMat.random(A);
 	RandMat.random(B);
 
 	// hard tranpose A,B
-	Matrix A1 (k,k) ;
+	Matrix A1 (F, k,k) ;
 	A.transpose(A1) ;
 
 
@@ -543,7 +548,7 @@ static bool testRank (const Field& F,size_t n, int iterations)
 	for (int k=0;k<iterations; ++k) {
 
 		mycommentator.progress(k);
-		BlasMatrix<Field> A(n,n),S(n,n), L(n,n);
+		BlasMatrix<Field> A(F,n,n),S(F,n,n), L(F,n,n);
 
 		r = (unsigned int)(random() % n);
 		// create S as an upper triangular matrix with r nonzero rows
@@ -611,7 +616,7 @@ static bool testDet (const Field& F,size_t n, int iterations)
 
 		G.random(d);
 
-		BlasMatrix<Field> A(n,n),S(n,n), L(n,n);
+		BlasMatrix<Field> A(F,n,n),S(F,n,n), L(F,n,n);
 
 		// create S as an upper triangular matrix of full rank
 		// with diagonal's element equal to 1 except the first entry wich equals to d
@@ -671,7 +676,7 @@ static bool testInv (const Field& F,size_t n, int iterations)
 	MatrixDomain<Field> MD(F);
 	BlasMatrixDomain<Field> BMD(F);
 
-	Matrix Id(n,n);
+	Matrix Id(F, n,n);
 	for (size_t i=0;i<n;++i)
 		Id.setEntry(i,i,One);
 
@@ -680,7 +685,7 @@ static bool testInv (const Field& F,size_t n, int iterations)
 		mycommentator.progress(k);
 
 
-		Matrix A(n,n),S(n,n), L(n,n), invA(n,n);
+		Matrix A(F, n,n),S(F, n,n), L(F, n,n), invA(F, n,n);
 
 		// create S as an upper triangular matrix of full rank
 		// with nonzero random diagonal's element
@@ -749,8 +754,8 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
 
 		mycommentator.progress(k);
 
-		Matrix Al(m,m),Au(m,m);
-		Matrix X(m,n), B(m,n), C(m,n);
+		Matrix Al(F, m,m),Au(F, m,m);
+		Matrix X(F, m,n), B(F, m,n), C(F, m,n);
 
 		std::vector<Element> b(m),x(m),c(m);
 
@@ -862,8 +867,8 @@ static bool testSolve (const Field& F, size_t m, size_t n, int iterations)
 
 		mycommentator.progress(k);
 
-		Matrix A(m,m),L(m,m),S(m,m);
-		Matrix X(m,n), B(m,n), C(m,n);
+		Matrix A(F, m,m),L(F, m,m),S(F, m,m);
+		Matrix X(F, m,n), B(F, m,n), C(F, m,n);
 
 		std::vector<Element> b(m),x(m),c(m);
 
@@ -994,7 +999,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations)
 		}
 
 		//std::cerr<<P<<std::endl;
-		Matrix A(m,m), Abis(m,m), B(m,m), C(m,m), D(m,m);
+		Matrix A(F, m,m), Abis(F, m,m), B(F, m,m), C(F, m,m), D(F, m,m);
 		std::vector<Element> a(m),abis(m),b(m),c(m), d(m);
 		BlasPermutation<size_t>  Perm(P);
 
@@ -1285,7 +1290,7 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
 
 		mycommentator.progress(k);
 
-		Matrix A(m,n), Abis(m,n), B(m,m), C(m,n);
+		Matrix A(F, m,n), Abis(F, m,n), B(F, m,m), C(F, m,n);
 
 
 		// Create B a random matrix of rank n/2
@@ -1311,10 +1316,10 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
 		Abis = A;
 
 		BlasPermutation<size_t>  P(A.coldim()),Q(A.rowdim());
-		LQUPMatrix<Field> X(F,A,P,Q);
+		LQUPMatrix<Field> X(A,P,Q);
 
-		TriangularBlasMatrix<Field> L(m,m,LinBoxTag::Lower,LinBoxTag::Unit);
-		TriangularBlasMatrix<Field> U(m,n,LinBoxTag::Upper,LinBoxTag::NonUnit);
+		TriangularBlasMatrix<Field> L(F,m,m,LinBoxTag::Lower,LinBoxTag::Unit);
+		TriangularBlasMatrix<Field> U(F,m,n,LinBoxTag::Upper,LinBoxTag::NonUnit);
 		X.getL(L);
 		X.getU(U);
 		P=X.getP();
@@ -1337,10 +1342,10 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations)
 
 		Abis = A;
 
-		LQUPMatrix<Field> Y(F,A,P,Q);
+		LQUPMatrix<Field> Y(A,P,Q);
 
-		TriangularBlasMatrix<Field> L2(m,m,LinBoxTag::Lower,LinBoxTag::Unit);
-		TriangularBlasMatrix<Field> U2(m,n,LinBoxTag::Upper,LinBoxTag::NonUnit);
+		TriangularBlasMatrix<Field> L2(F,m,m,LinBoxTag::Lower,LinBoxTag::Unit);
+		TriangularBlasMatrix<Field> U2(F,m,n,LinBoxTag::Upper,LinBoxTag::NonUnit);
 		Y.getL(L2);
 		Y.getU(U2);
 		P=Y.getP();
@@ -1388,7 +1393,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 
 		mycommentator.progress(k);
 
-		Matrix A(n,n);
+		Matrix A(F,n,n);
 		Polynomial P;
 		// Test MinPoly(In) = X-1
 		for (size_t i=0;i<n;++i)
@@ -1469,7 +1474,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 
 		mycommentator.progress(k);
 
-		Matrix A(n,n);
+		Matrix A(F,n,n);
 		list<Polynomial> P;
 		// Test CharPoly(In) = (X-1)^n
 		for (size_t i=0;i<n;++i){

@@ -68,8 +68,8 @@ namespace LinBox
 		typedef _Field                         Field;
 		typedef typename Field::Element      Element;
 		typedef _Blackbox                   Blackbox;
-		typedef BlasMatrix<Element>            Block;
-		typedef BlasMatrix<Element>            Value;
+		typedef BlasMatrix<Field>              Block;
+		typedef BlasMatrix<Field>              Value;
 
 		// Default constructors
 		BlackboxBlockContainerBase () {}
@@ -77,7 +77,8 @@ namespace LinBox
 		// Sequence constructor from a blackbox and a field
 		// cs set the size of the sequence
 		BlackboxBlockContainerBase (const Blackbox *BD, const Field &F, size_t m, size_t n, size_t seed=time(NULL)) :
-			_F(F)  , _BB(BD), _size(BD->rowdim()/m + BD->coldim()/n +2) , _nn(BD->rowdim()),  _m(m), _n(n),  _value(m,n), _seed(seed)
+			_F(F)  , _BB(BD), _size(BD->rowdim()/m + BD->coldim()/n +2)
+			, _nn(BD->rowdim()),  _m(m), _n(n),  _value(_F,m,n), _seed(seed)
 		{}
 
 
@@ -188,7 +189,7 @@ namespace LinBox
 			casenumber = 1;
 			_U = U;
 			_V = V;
-			_value = Value(_m,_n);
+			_value = Value(_F,_m,_n);
 			BlasMatrixDomain<Field> BMD(_F);
 			BMD.mul(_value, _U, _V);
 		}
@@ -212,7 +213,7 @@ namespace LinBox
 			for (; iter_V != _V.End();++iter_V)
 				G.random(*iter_V);
 
-			_value = Value(m,n);
+			_value = Value(_F,m,n);
 			BlasMatrixDomain<Field> BMD(_F);
 			BMD.mul(_value, _U, _V);
 		}
