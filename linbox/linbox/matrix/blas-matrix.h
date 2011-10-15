@@ -90,14 +90,14 @@ namespace LinBox
 		typedef BlasMatrix<_Field>                   Self_t;    //!< Self type
 
 	protected:
-		size_t			_row;
-		size_t			_col;
-		Rep			_rep;
-		pointer			_ptr;
-		const Field		& _F;
-		MatrixDomain<Field>      _MD;
-		VectorDomain<Field>      _VD;
-		bool		 _use_fflas ;
+		size_t			    _row;
+		size_t			    _col;
+		Rep			    _rep;
+		pointer			    _ptr;
+		const Field		    & _F;
+		const MatrixDomain<Field>  & _MD;
+		const VectorDomain<Field>  & _VD;
+		bool		     _use_fflas ;
 
 
 	private:
@@ -578,7 +578,28 @@ namespace LinBox
 
 		const _Field& field() const;
 		_Field& field() ;
-		void setField(const _Field & F) { _F = F ; };
+		// void setField(const _Field & F) { _F = F ; };
+
+		void changeField(const _Field &F)
+		{
+			changeFieldSpecialised(const_cast<_Field&>(_F),F,
+					       typename FieldTraits<_Field>::categoryTag());
+		}
+
+		template<class uselessTag>
+		void changeFieldSpecialised( _Field & G, const _Field & F,
+					     const uselessTag & m)
+		{
+			return;
+		}
+
+		void changeFieldSpecialised(      _Field & G,
+					    const _Field & F,
+					    const RingCategories::ModularTag & m)
+		{
+			G=F ;
+			return;
+		}
 
 
 	}; // end of class BlasMatrix

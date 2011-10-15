@@ -37,12 +37,19 @@ AC_ARG_WITH(fflas-ffpack,
 
 dnl  min_iml_version=ifelse([$1], ,1.0.3,$1)
 
+dnl -------------------- dnl
+dnl FFLAS-FFPACK VERSION dnl
+dnl -------------------- dnl
+
+version_min=10404
+version_max=10405
+
 
 dnl Check for existence
 BACKUP_CXXFLAGS=${CXXFLAGS}
 BACKUP_LIBS=${LIBS}
 
-AC_MSG_CHECKING(for FFLAS-FFPACK)
+AC_MSG_CHECKING(for FFLAS-FFPACK >= $version_min and < $version_max)
 
 for FFLAS_FFPACK_HOME in ${FFLAS_FFPACK_HOME_PATH}
   do
@@ -65,9 +72,18 @@ for FFLAS_FFPACK_HOME in ${FFLAS_FFPACK_HOME_PATH}
        [#include "fflas-ffpack/fflas-ffpack.h"],
        [FFLAS::FFLAS_TRANSPOSE a;],
        [
-	   ffflasffpack_found="yes"
-	   FFLAS_FFPACK_LOC="$FFLAS_FFPACK_HOME"
-	   ],
+
+	FF_VER=`$FFLAS_FFPACK_HOME/bin/fflas-ffpack-config --decimal-version`
+	AS_IF([ test $FF_VER -ge $version_min -a $FF_VER -lt $version_max ],
+		[
+		ffflasffpack_found="yes"
+		FFLAS_FFPACK_LOC="$FFLAS_FFPACK_HOME"
+		],
+		[
+		ffflasffpack_found="no"
+		]
+		)
+	],
        [
        ffflasffpack_found="no"
        ffflasffpack_checked="$checked $FFLAS_FFPACK_HOME"

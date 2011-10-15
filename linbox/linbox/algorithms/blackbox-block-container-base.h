@@ -78,7 +78,8 @@ namespace LinBox
 		// cs set the size of the sequence
 		BlackboxBlockContainerBase (const Blackbox *BD, const Field &F, size_t m, size_t n, size_t seed=time(NULL)) :
 			_F(F)  , _BB(BD), _size(BD->rowdim()/m + BD->coldim()/n +2)
-			, _nn(BD->rowdim()),  _m(m), _n(n),  _value(_F,m,n), _seed(seed)
+			, _nn(BD->rowdim()),  _m(m), _n(n),
+			_U(F,_m,_nn),_V(F,_nn,_n),_value(_F,m,n), _seed(seed)
 		{}
 
 
