@@ -139,6 +139,41 @@ namespace LinBox
 			return x;
 		}
 
+		Element &init (Element &x, const Element &y) const
+		{
+			mpq_set (x.rep, y.rep);
+			return x;
+		}
+
+		Element &init (Element &x, const int &y ) const
+		{
+			mpq_set_si (x. rep, (long)y,1L);
+			//mpq_canonicalize (x.rep);
+			return x;
+		}
+
+		Element &init (Element &x, const long int &y ) const
+		{
+			mpq_set_si (x. rep, (long)y,1L);
+			//mpq_canonicalize (x.rep);
+			return x;
+		}
+
+		Element &init (Element &x, const unsigned int &y ) const
+		{
+			mpq_set_ui (x. rep, (unsigned long)y,1L);
+			//mpq_canonicalize (x.rep);
+			return x;
+		}
+
+		Element &init (Element &x, const long unsigned int &y ) const
+		{
+			mpq_set_ui (x. rep, (long unsigned)y,1L);
+			//mpq_canonicalize (x.rep);
+			return x;
+		}
+
+
 		/** Conversion of field element to an integer.
 		 * This function assumes the output field element x has already been
 		 * constructed, but that it is not already initialized.
