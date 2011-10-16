@@ -33,6 +33,8 @@
 #ifndef __LINBOX_method_H
 #define __LINBOX_method_H
 
+#include <string> // size_t
+
 #ifndef DEFAULT_EARLY_TERM_THRESHOLD
 #  define DEFAULT_EARLY_TERM_THRESHOLD 20
 #endif

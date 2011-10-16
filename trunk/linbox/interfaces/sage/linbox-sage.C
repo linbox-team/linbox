@@ -366,9 +366,9 @@ IntegerRing ZZ;
 SpyInteger spy;
 typedef GivPolynomialRing<IntegerRing, Givaro::Dense> IntPolRing;
 
-BlasBlackbox<IntegerRing> new_matrix(mpz_t** matrix, size_t nrows, size_t ncols)
+BlasMatrix<IntegerRing> new_matrix(mpz_t** matrix, size_t nrows, size_t ncols)
 {
-	BlasBlackbox<IntegerRing> A ( ZZ, nrows, ncols);
+	BlasMatrix<IntegerRing> A ( ZZ, nrows, ncols);
 
 	size_t i, j;
 	for (i=0; i < nrows; ++i) {
@@ -381,10 +381,10 @@ BlasBlackbox<IntegerRing> new_matrix(mpz_t** matrix, size_t nrows, size_t ncols)
 	return A;
 }
 
-BlasBlackbox<IntegerRing> new_matrix_integers(mpz_t** matrix, size_t nrows, size_t ncols)
+BlasMatrix<IntegerRing> new_matrix_integers(mpz_t** matrix, size_t nrows, size_t ncols)
 {
 	IntegerRing Z;
-	BlasBlackbox<IntegerRing> A ( Z,nrows, ncols);
+	BlasMatrix<IntegerRing> A ( Z,nrows, ncols);
 
 	size_t i, j;
 	for (i=0; i < nrows; ++i) {
@@ -397,8 +397,8 @@ BlasBlackbox<IntegerRing> new_matrix_integers(mpz_t** matrix, size_t nrows, size
 	return A;
 }
 
-template<class Element>
-void set_matrix(mpz_t** matrix, BlasMatrix<Element>& A, size_t nrows, size_t ncols)
+template<class Field>
+void set_matrix(mpz_t** matrix, BlasMatrix<Field>& A, size_t nrows, size_t ncols)
 {
 	size_t i, j;
 	for (i=0; i < nrows; ++i) {
@@ -421,7 +421,7 @@ void linbox_integer_dense_minpoly_hacked(mpz_t* *mp, size_t* degree, size_t n, m
 		m = n;
 	}
 
-	BlasBlackbox<IntegerRing> A( ZZ, m, m);
+	BlasMatrix<IntegerRing> A( ZZ, m, m);
 
 	size_t i, j;
 	IntegerRing::Element t;
@@ -479,7 +479,7 @@ void linbox_integer_dense_charpoly(mpz_t* *mp, size_t* degree, size_t n, mpz_t**
 	/* THIS IS Broken when n % 4 == 0!!!!  Use above function instead. */
 	/*    linbox_integer_dense_minpoly(mp, degree, n, matrix, 0); */
 
-	BlasBlackbox<IntegerRing> A(new_matrix(matrix, n, n));
+	BlasMatrix<IntegerRing> A(new_matrix(matrix, n, n));
 	IntPolRing::Element m_A;
 	charpoly(m_A, A);
 
@@ -497,7 +497,7 @@ void linbox_integer_dense_minpoly(mpz_t* *mp, size_t* degree, size_t n, mpz_t** 
 	/* THIS IS Broken when n % 4 == 0!!!!  Use above function instead. */
 	/*    linbox_integer_dense_minpoly(mp, degree, n, matrix, 0); */
 
-	BlasBlackbox<IntegerRing> A(new_matrix(matrix, n, n));
+	BlasMatrix<IntegerRing> A(new_matrix(matrix, n, n));
 	IntPolRing::Element m_A;
 	minpoly(m_A, A);
 
@@ -521,11 +521,11 @@ int linbox_integer_dense_matrix_matrix_multiply(mpz_t** ans, mpz_t **A, mpz_t **
 	typedef PID_integer Integerz;
 	Integerz Z;
 
-	BlasMatrix<Integerz::Element> AA(new_matrix_integers(A, A_nr, A_nc));
-	BlasMatrix<Integerz::Element> BB(new_matrix_integers(B, B_nr, B_nc));
+	BlasMatrix<Integerz> AA(new_matrix_integers(A, A_nr, A_nc));
+	BlasMatrix<Integerz> BB(new_matrix_integers(B, B_nr, B_nc));
 	if (A_nc != B_nr)
 		return -1;   // error
-	BlasMatrix<Integerz::Element> CC( A_nr, B_nc);
+	BlasMatrix<Integerz> CC(Z, A_nr, B_nc);
 
 	MatrixDomain<Integerz> MD(Z);
 
@@ -539,7 +539,7 @@ int linbox_integer_dense_matrix_matrix_multiply(mpz_t** ans, mpz_t **A, mpz_t **
 unsigned long linbox_integer_dense_rank(mpz_t** matrix, size_t nrows,
 					size_t ncols)
 {
-	BlasBlackbox<IntegerRing> A(new_matrix(matrix, nrows, ncols));
+	BlasMatrix<IntegerRing> A(new_matrix(matrix, nrows, ncols));
 	unsigned long r;
 	rank(r, A);
 	return r;
@@ -551,17 +551,17 @@ void linbox_integer_dense_det(mpz_t ans, mpz_t** matrix, size_t nrows,
 	commentator.setMaxDetailLevel(0);
 	commentator.setMaxDepth (0);
 
-	BlasBlackbox<IntegerRing> A(new_matrix_integers(matrix, nrows, ncols));
+	BlasMatrix<IntegerRing> A(new_matrix_integers(matrix, nrows, ncols));
 	IntegerRing::Element d;
 	det(d, A);
 	mpz_set(ans, spy.get_mpz(d));
 }
 
 #ifdef __LINBOX_HAVE_NTL
-BlasBlackbox<NTL_ZZ> new_matrix_integer_dense_ntl(mpz_t** matrix, size_t nrows, size_t ncols)
+BlasMatrix<NTL_ZZ> new_matrix_integer_dense_ntl(mpz_t** matrix, size_t nrows, size_t ncols)
 {
 	NTL_ZZ Z;
-	BlasBlackbox<NTL_ZZ> A (Z,nrows, ncols);
+	BlasMatrix<NTL_ZZ> A (Z,nrows, ncols);
 	size_t i, j;
 	for (i=0; i < nrows; ++i) {
 		for (j=0; j < ncols; ++j) {
@@ -581,7 +581,7 @@ void linbox_integer_dense_double_det (mpz_t  ans1, mpz_t ans2, mpz_t **a, mpz_t 
 {
 
 	PID_integer Z;
-	BlasBlackbox <PID_integer> A (Z, n+1, n);
+	BlasMatrix <PID_integer> A (Z, n+1, n);
 	size_t i, j;
 	for (i=0; i < n-1; ++i) {
 		for (j=0; j < n; ++j) {
@@ -611,7 +611,7 @@ void linbox_integer_dense_smithform(mpz_t **v,
 {
 	typedef NTL_ZZ Ints;
 	Ints Z;
-	BlasBlackbox<Ints> M(new_matrix_integer_dense_ntl(matrix, nrows, ncols));
+	BlasMatrix<Ints> M(new_matrix_integer_dense_ntl(matrix, nrows, ncols));
 	std::vector<integer> w(ncols);
 	SmithFormAdaptive::smithForm(w, M);
 

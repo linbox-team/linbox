@@ -19,15 +19,15 @@ lib_LTLIBRARIES=liblbdriver.la
 
 liblbdriver_la_SOURCES= lb-element.C 	\
 			lb-domain.C     \
-			lb-blackbox.C   \
 			lb-vector.C     \
 			lb-polynomial.C \
-			lb-garbage.C    \
 			lb-det.C        \
 			lb-rank.C       \
+			lb-garbage.C    \
 			lb-minpoly.C    \
+			lb-blackbox.C   \
 			lb-charpoly.C
-#  \
+# \
 			#  lb-solve.C
 
 liblbdriver_la_LDFLAGS=$(GIVARO_LIBS) $(GMP_LIBS) $(NTL_LIBS) $(BLAS_LIBS) $(LDFLAGS) $(top_srcdir)/linbox/liblinbox.la -Wl,-zmuldefs

@@ -24,13 +24,14 @@
 #ifndef __LINBOX_lb_blackbox_type_H
 #define __LINBOX_lb_blackbox_type_H
 
+#include <linbox/matrix/blas-matrix.h>
 
 /****************************************
  * Define the list of all Blackbox Type *
  ****************************************/
 
 // (NEED TO USE ENVELOPE TO DEFINE A CONCRETE TYPE)
-typedef LinBoxTypelist < BlackboxEnvelope< LinBox::BlasBlackbox > , LinBoxDumbType> BL1;
+typedef LinBoxTypelist < BlackboxEnvelope< LinBox::BlasMatrix > , LinBoxDumbType> BL1;
 //typedef LinBoxTypelist < BlackboxEnvelope< LinBox::SparseMatrix > , BL1> BL2;
 
 // define the blackbox typelist
@@ -48,8 +49,8 @@ void UpdateBlackbox() {
 	// Blackbox_Factory::CallBackMap::value_type::second_type(
 	// constructBlackbox_from_size<LinBox::SparseMatrix>, constructBlackbox_from_stream<LinBox::SparseMatrix> ));
 	linbox_blackbox.add("linbox_dense",
-			    Blackbox_Factory::CallBackMap::value_type::second_type( constructBlackbox_from_size<LinBox::BlasBlackbox>,
-										    constructBlackbox_from_stream<LinBox::BlasBlackbox> ));
+			    Blackbox_Factory::CallBackMap::value_type::second_type( constructBlackbox_from_size<LinBox::BlasMatrix >,
+										    constructBlackbox_from_stream<LinBox::BlasMatrix > ));
 }
 
 
