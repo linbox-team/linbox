@@ -39,7 +39,7 @@ bin_SCRIPTS=linbox-config
 bundled:
 	sh auto-install.sh
 
-VERSION=1.2.2
+VERSION=1.3.0
 
 EXTRA_DIST=auto-install.sh
 #incremente-versions
