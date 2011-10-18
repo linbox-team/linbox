@@ -1,4 +1,4 @@
-# Copyright (c) 2010 the LinBox group
+# Copyright (c) 2010-2011 the LinBox group
 # This file is part of LinBox
 # see COPYING for licence
 
@@ -11,7 +11,7 @@ AM_LDFLAGS = $(top_srcdir)/linbox/.libs/liblinbox.a
 #  AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly
 #AM_CXXFLAGS = $(SAFER_FLAGS) -DLinBoxSrcOnly -O2
 #  AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -DDEBUG -O0
-AM_CXXFLAGS = -DLinBoxSrcOnly  @TESTS_CFLAGS@ @DEBUG_CFLAGS@
+AM_CXXFLAGS = -DLinBoxSrcOnly  @TESTS_CFLAGS@
 # AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -D__LINBOX_HAVE_DGETRF -D__LINBOX_HAVE_DGETRI
 # AM_CFLAGS = -g -Wall
 
@@ -49,6 +49,7 @@ BASIC_TESTS =  \
 
 FULLCHECK_TESTS =                 \
         test-bitonic-sort             \
+	test-blackbox-block-container \
         test-blas-domain              \
         test-butterfly                \
         test-companion                \
@@ -83,6 +84,7 @@ FULLCHECK_TESTS =                 \
         test-randiter-nonzero         \
         test-rational-matrix-factory  \
         test-scalar-matrix            \
+	test-solve-nonsingular        \
         test-sparse                   \
         test-subiterator              \
         test-submatrix                \
@@ -95,7 +97,7 @@ FULLCHECK_TESTS =                 \
         test-zero-one                 \
         test-last-invariant-factor    \
         test-cradomain                \
-		test-rational-reconstruction-base
+	test-rational-reconstruction-base
 
 #  test-integer-tools
 
@@ -211,7 +213,7 @@ EXTRA_PROGRAMS = \
         $(NONCOMPILING_TESTS)         \
         $(NONCOMPLIANT_TESTS)         \
         $(DUBIOUS_TESTS)              \
-        $(FULLCHECK_TESTS)              \
+        $(FULLCHECK_TESTS)            \
         $(FAILING_TESTS)
 
 
@@ -224,6 +226,14 @@ test_modular_SOURCES =                        \
         test-generic.h                        \
         test-common.h
 
+test_blackbox_block_container_SOURCES =   \
+	test-blackbox-block-container.C    \
+	test-common.h
+
+test_solve_nonsingular_SOURCES =   \
+	test-solve-nonsingular.C   \
+	test-common.h
+
 test_block_ring_SOURCES =                 \
         test-block-ring.C                 \
         test-field.h                      \
@@ -231,7 +241,7 @@ test_block_ring_SOURCES =                 \
 
 test_PID_integer_SOURCES =                 \
         test-PID-integer.C                 \
-        test-field.h                      \
+        test-field.h                       \
         test-common.h
 
 test_hom_SOURCES =                        \
@@ -262,7 +272,7 @@ test_rational_matrix_factory_SOURCES =  \
         test-rational-matrix-factory.C  \
         test-common.h
 
-test_rational_reconstruction_base_SOURCES =  \
+test_rational_reconstruction_base_SOURCES =    \
 	  test-rational-reconstruction-base.C  \
 	  test-common.h
 
@@ -345,7 +355,7 @@ test_triplesbb_SOURCES =                \
         test-generic.h                  \
         test-common.h
 
-test_hilbert_SOURCES =                        \
+test_hilbert_SOURCES =                              \
         test-hilbert.C        test-generic.h        \
         test-common.h
 
@@ -628,7 +638,7 @@ CLEANFILES= checker               \
 			$(NONCOMPLIANT_TESTS) \
 			$(BENCHMARKS)         \
 			$(DUBIOUS_TESTS)      \
-			$(FULLCHECK_TESTS)      \
+			$(FULLCHECK_TESTS)    \
 			$(NTL_TESTS)          \
 			$(GIVARO_TESTS)       \
 			$(ATLAS_TESTS)
