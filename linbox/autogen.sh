@@ -1,9 +1,27 @@
 #!/bin/sh
+# This file is part of LinBox.
+# See COPYING for details about the licence.
+
 # Run this to generate all the initial makefiles, etc.
 
-echo "$0 $*" > autogen.status
+
+# Recover command line, with double-quotes
+CMDLINE=""
+for arg in "$@"
+do
+    WHO="`echo $arg | cut -d'=' -f1`"
+    WHAT="`echo $arg | cut -s -d'=' -f2`"
+    if test "x$WHAT" = "x"; then
+    	CMDLINE="$CMDLINE $WHO"
+    else
+	CMDLINE="$CMDLINE $WHO=\"$WHAT\""
+    fi
+done
+
+echo  "$0 $CMDLINE" > autogen.status
 chmod +x autogen.status
 
+# Starts configuring
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
 
@@ -11,9 +29,9 @@ PKG_NAME="Linbox Library"
 
 (test -f $srcdir/configure.ac \
 	&& test -f $srcdir/linbox/linbox.doxy) || {
-echo -n "**Error**: Directory "\`$srcdir\'" does not look like the"
-echo " top-level "\`$PKG_NAME\'" directory"
-exit 1
+	echo -n "**Error**: Directory "\`$srcdir\'" does not look like the"
+	echo " top-level "\`$PKG_NAME\'" directory"
+	exit 1
 }
 
 ORIGDIR=`pwd`
@@ -37,40 +55,47 @@ LIBTOOLIZE=glibtoolize
 
 
 (autoconf --version) < /dev/null > /dev/null 2>&1 || {
-echo
-echo "You must have autoconf installed to compile $PROJECT."
-echo "Download the appropriate package for your distribution,"
-echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
-DIE=1
+	echo
+	echo "You must have autoconf installed to compile $PROJECT."
+	echo "Download the appropriate package for your distribution,"
+	echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
+	DIE=1
 }
 
 (automake --version) < /dev/null > /dev/null 2>&1 || {
-echo
-echo "You must have automake installed to compile $PROJECT."
-echo "Download the appropriate package for your distribution,"
-echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
-DIE=1
- }
+	echo
+	echo "You must have automake installed to compile $PROJECT."
+	echo "Download the appropriate package for your distribution,"
+	echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
+	DIE=1
+}
 
+(automake --version) < /dev/null > /dev/null 2>&1 || {
+	echo
+	echo "You must have automake installed to compile $PROJECT."
+	echo "Get ftp://sourceware.cygnus.com/pub/automake/automake-1.4.tar.gz"
+	echo "(or a newer version if it is available)"
+	DIE=1
+}
 
 (grep "^AC_PROG_LIBTOOL" configure.ac >/dev/null) && {
-($LIBTOOL --version) < /dev/null > /dev/null 2>&1 || {
-echo
-echo "You must have libtool installed to compile $PROJECT."
-echo "Download the appropriate package for your distribution,"
-echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
-DIE=1
+  ($LIBTOOL --version) < /dev/null > /dev/null 2>&1 || {
+     echo
+     echo "**Error**: You must have \`libtool' installed to compile $PROJECT."
+     echo "Download the appropriate package for your distribution,"
+     echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
+     DIE=1
   }
 }
 
 grep "^AM_GNU_GETTEXT" configure.ac >/dev/null && {
-grep "sed.*POTFILES" $srcdir/configure.ac >/dev/null || \
+  grep "sed.*POTFILES" $srcdir/configure.ac >/dev/null || \
 	(gettext --version) < /dev/null > /dev/null 2>&1 || {
-echo
-echo "You must have gettext installed to compile $PROJECT."
-echo "Download the appropriate package for your distribution,"
-echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
-DIE=1
+	echo
+	echo "**Error**: You must have \`gettext' installed to compile $PROJECT."
+	echo "Download the appropriate package for your distribution,"
+	echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
+	DIE=1
   }
 }
 
@@ -143,14 +168,15 @@ do
 	fi
 done
 
-conf_flags="--enable-maintainer-mode" #--enable-iso-c
+conf_flags="--enable-maintainer-mode" 
+#--enable-iso-c
 
 cd "$ORIGDIR"
 
 if test x$NOCONFIGURE = x; then
 	echo Running $srcdir/configure $conf_flags "$@" ...
 	$srcdir/configure $conf_flags "$@" \
-		&& echo Now type \`make\' to compile $PROJECT  || exit 1
+		&& echo "Now type \`make' to compile $PROJECT"  || exit 1
 else
 	echo Skipping configure process.
 fi
