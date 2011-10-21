@@ -38,7 +38,7 @@ dnl -------------- dnl
 dnl GIVARO VERSION dnl
 dnl -------------- dnl
 
-version_min=30400
+version_min=30500
 version_max=30600
 
 dnl Check for existence
