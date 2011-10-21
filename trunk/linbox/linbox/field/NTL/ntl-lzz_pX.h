@@ -84,7 +84,7 @@ namespace LinBox
 		typedef NTL::zz_p Coeff;
 		// typedef NTL::zz_pX Element;
 
-		const Element zero,one,mone ;
+		const Element zero,one,mOne ;
 
 
 		/** Standard LinBox field constructor.  The paramters here
@@ -93,14 +93,14 @@ namespace LinBox
 		NTL_zz_pX( const integer& p, size_t e = 1 ) :
 			// UnparametricField<NTL::zz_pX>(p, e), _CField(p,e)
 			NTL_zz_pX_Initialiser(p,e),Father_t ()
-			, zero( NTL::to_zz_pX(0)),one( NTL::to_zz_pX(1)),mone(-one)
+			, zero( NTL::to_zz_pX(0)),one( NTL::to_zz_pX(1)),mOne(-one)
 			, _CField(p,e)
 		{}
 
 		/** Constructor from a coefficient field */
 		NTL_zz_pX( CoeffField cf ) :
 			NTL_zz_pX_Initialiser(cf.cardinality()),Father_t ()
-			,zero( NTL::to_zz_pX(0)),one( NTL::to_zz_pX(1)),mone(-one)
+			,zero( NTL::to_zz_pX(0)),one( NTL::to_zz_pX(1)),mOne(-one)
 			,_CField(cf)
 		{}
 

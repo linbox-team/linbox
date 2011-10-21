@@ -128,7 +128,7 @@ namespace LinBox
 
 			      F.assign(const_cast<Element&>(one),F.one);
 			      F.assign(const_cast<Element&>(zero),F.zero);
-			      F.assign(const_cast<Element&>(mone),F.mone);
+			      F.assign(const_cast<Element&>(mOne),F.mOne);
 			      return *this;
 		      }
 
@@ -150,7 +150,7 @@ namespace LinBox
 
 		       bool isMinusOne (const Element &x) const
 		      {
-			      return (x == mone);
+			      return (x == mOne);
 		      }
 
 		      /** Max number of operations before reducing

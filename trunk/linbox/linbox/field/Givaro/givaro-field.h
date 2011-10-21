@@ -36,14 +36,14 @@ namespace LinBox
 		typedef Rep Element;
 		typedef UTT Residu_t;
 
-		Element zero, one, mone;
+		Element zero, one, mOne;
 		GivaroField() :
 			BaseField()
 		{
 			this->init(zero,0UL);
 			this->init(one, 1UL);
-			init(mone);
-			neg(mone,one);
+			init(mOne);
+			neg(mOne,one);
 		}
 
 		GivaroField(const BaseField& bf) :
@@ -51,9 +51,9 @@ namespace LinBox
 		{
 			this->init(zero,0UL);
 			this->init(one, 1UL);
-			init(mone);
-			neg(mone,one);
-			// neg(init(mone),one);
+			init(mOne);
+			neg(mOne,one);
+			// neg(init(mOne),one);
 		}
 
 

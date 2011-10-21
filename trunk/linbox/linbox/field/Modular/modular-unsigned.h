@@ -34,14 +34,14 @@ namespace LinBox
 	class Modular<uint8_t> : public FieldInterface, public ModularBase<uint8_t> {
 	public:
 		typedef uint8_t Element;
-		const Element zero,one, mone;
+		const Element zero,one, mOne;
 
 		Modular () :
-			zero(0),one(1),mone(0),_k (0)
+			zero(0),one(1),mOne(0),_k (0)
 		{}
 		Modular (uint32_t modulus) :
 			ModularBase<Element> (modulus),
-			zero(0),one(1),mone((Element)(modulus-1)),
+			zero(0),one(1),mOne((Element)(modulus-1)),
 			_k (((uint64_t) -1LL) / ((modulus - 1) * (modulus - 1))),
 			_pinv (1.0 / (double) ((Element) modulus))
 		{
@@ -49,7 +49,7 @@ namespace LinBox
 		}
 		Modular (const integer &modulus) :
 			ModularBase<Element> ((long) modulus),
-			zero(0),one(1),mone(modulus-1),
+			zero(0),one(1),mOne(modulus-1),
 			_k (((uint64_t) -1LL) / (((Element)modulus - 1) * ((Element)modulus - 1))),
 			_pinv (1.0 / (double) ((Element) modulus))
 		{
@@ -63,7 +63,7 @@ namespace LinBox
 			_pinv = F._pinv;
 			F.assign(const_cast<Element&>(one),F.one);
 			F.assign(const_cast<Element&>(zero),F.zero);
-			F.assign(const_cast<Element&>(mone),F.mone);
+			F.assign(const_cast<Element&>(mOne),F.mOne);
 
 
 			return *this;
@@ -370,14 +370,14 @@ namespace LinBox
 
 		typedef uint16_t Element;
 
-		const Element zero,one, mone;
+		const Element zero,one, mOne;
 
 		Modular () :
-			zero(0),one(1),mone(0),_k (0)
+			zero(0),one(1),mOne(0),_k (0)
 		{}
 		Modular (uint32_t modulus) :
 			ModularBase<Element> (modulus),
-			zero(0),one(1),mone((Element)(modulus-1)),
+			zero(0),one(1),mOne((Element)(modulus-1)),
 			_k (((uint64_t) -1LL) / ((ModularBase<Element>::_modulus - 1) * (ModularBase<Element>::_modulus - 1))),
 			_pinv (1.0 / (double) ((Element) ModularBase<Element>::_modulus))
 		{
@@ -385,7 +385,7 @@ namespace LinBox
 		}
 		Modular (const integer &modulus) :
 			ModularBase<Element> ((long) modulus),
-			zero(0),one(1),mone(Element(modulus-1)),
+			zero(0),one(1),mOne(Element(modulus-1)),
 			_k (((uint64_t) -1LL) / ((ModularBase<Element>::_modulus - 1) * (ModularBase<Element>::_modulus - 1))),
 			_pinv (1.0 / (double) ((Element) ModularBase<Element>::_modulus))
 		{
@@ -399,7 +399,7 @@ namespace LinBox
 			_pinv = F._pinv;
 			F.assign(const_cast<Element&>(one),F.one);
 			F.assign(const_cast<Element&>(zero),F.zero);
-			F.assign(const_cast<Element&>(mone),F.mone);
+			F.assign(const_cast<Element&>(mOne),F.mOne);
 			return *this;
 		}
 
@@ -696,16 +696,16 @@ namespace LinBox
 
 		typedef uint32_t Element;
 
-		const Element zero,one,mone ;
+		const Element zero,one,mOne ;
 
 		Modular () :
-			zero(0),one(1),mone(0)
+			zero(0),one(1),mOne(0)
 		{}
 		Modular (uint32_t modulus)  :
-			ModularBase<uint32_t> (modulus),zero(0),one(1),mone(modulus-1)
+			ModularBase<uint32_t> (modulus),zero(0),one(1),mOne(modulus-1)
 		{ init_two_64 (); }
 		Modular (const integer &modulus) :
-			ModularBase<uint32_t> (modulus),zero(0),one(1),mone(modulus-1)
+			ModularBase<uint32_t> (modulus),zero(0),one(1),mOne(modulus-1)
 		{ init_two_64 (); }
 
 		const Modular &operator=(const Modular &F)
@@ -714,7 +714,7 @@ namespace LinBox
 			_two_64 = F._two_64;
 			F.assign(const_cast<Element&>(one),F.one);
 			F.assign(const_cast<Element&>(zero),F.zero);
-			F.assign(const_cast<Element&>(mone),F.mone);
+			F.assign(const_cast<Element&>(mOne),F.mOne);
 
 			return *this;
 		}

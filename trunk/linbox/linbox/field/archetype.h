@@ -93,7 +93,7 @@ namespace LinBox
 		/// @name Object Management
 		//@{
 
-		Element one,zero,mone ;
+		Element one,zero,mOne ;
 
 		/** \brief Copy constructor.
 		 *
@@ -107,7 +107,7 @@ namespace LinBox
 		 * <tt> F._randIter_ptr</tt> points.
 		 */
 		FieldArchetype (const FieldArchetype &F) :
-			one(F.one),zero(F.zero),mone(F.mone)
+			one(F.one),zero(F.zero),mOne(F.mOne)
 		{
 			if (F._field_ptr != 0) _field_ptr = F._field_ptr->clone ();
 			if (F._elem_ptr != 0) _elem_ptr = F._elem_ptr->clone ();
@@ -152,7 +152,7 @@ namespace LinBox
 				if (F._randIter_ptr != 0) _randIter_ptr = F._randIter_ptr->clone ();
 				one = F.one ;
 				zero = F.zero ;
-				mone = F.mone ;
+				mOne = F.mOne ;
 			}
 
 			return *this;
@@ -688,7 +688,7 @@ namespace LinBox
 			_randIter_ptr = static_cast<RandIterAbstract*> (new typename Field_qcq::RandIter (*field_ptr));
 			one  = static_cast<ElementAbstract*>  (new typename Field_qcq::Element (field_ptr->one) );
 			zero = static_cast<ElementAbstract*>  (new  typename Field_qcq::Element (field_ptr->zero ) );
-			mone = static_cast<ElementAbstract*>  (new  typename Field_qcq::Element (field_ptr->mone ) );
+			mOne = static_cast<ElementAbstract*>  (new  typename Field_qcq::Element (field_ptr->mOne ) );
 		}
 
 		/** Template method for constructing archetype from a class not derived

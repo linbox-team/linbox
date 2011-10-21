@@ -52,7 +52,7 @@ namespace LinBox
 
 	class GF2 : public FieldInterface {
 	public:
-		const bool zero,one,mone;
+		const bool zero,one,mOne;
 
 
 		/** Element type
@@ -72,10 +72,10 @@ namespace LinBox
 		/** Default constructor.
 		*/
 		GF2 () :
-			zero(false),one(true),mone(true)
+			zero(false),one(true),mOne(true)
 		{}
 		GF2 (int p, int exp = 1) :
-			zero(false),one(true),mone(true)
+			zero(false),one(true),mOne(true)
 		{
 			if(p != 2) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be 2");
 			if(exp != 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
@@ -88,7 +88,7 @@ namespace LinBox
 		 * @param  F Modular object.
 		 */
 		GF2 (const GF2 & F ) :
-			zero(false),one(true),mone(true) {}
+			zero(false),one(true),mOne(true) {}
 
 		/** Assignment operator.
 		 * Required by the archetype

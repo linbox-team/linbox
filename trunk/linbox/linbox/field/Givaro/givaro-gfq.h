@@ -94,7 +94,7 @@ namespace LinBox
 
 		using Father_t::one ;
 		using Father_t::zero;
-		using Father_t::mone;
+		using Father_t::mOne;
 		/** Element type.
 		 *  This type is inherited from the Givaro class GFqDom<int32_t>
 		 */
@@ -111,7 +111,7 @@ namespace LinBox
 		 Givaro::GFqDom<int32_t>()
 		{
 			// Givaro::GFqDom<int32_t>::init(one,1);
-			// Givaro::GFqDom<int32_t>::init(mone,-1);
+			// Givaro::GFqDom<int32_t>::init(mOne,-1);
 			// Givaro::GFqDom<int32_t>::init(zero,0);
 		}
 
@@ -131,7 +131,7 @@ namespace LinBox
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"cardinality must be < 2^20");
 			}
 			// Givaro::GFqDom<int32_t>::init(one,1);
-			// Givaro::GFqDom<int32_t>::init(mone,-1);
+			// Givaro::GFqDom<int32_t>::init(mOne,-1);
 			// Givaro::GFqDom<int32_t>::init(zero,0);
 
 		}
@@ -144,7 +144,7 @@ namespace LinBox
 		 Givaro::GFqDom<int32_t>(static_cast<UTT>(int32_t(p)), static_cast<UTT>(int32_t(k)))
 		{
 			// Givaro::GFqDom<int32_t>::init(one,1L);
-			// Givaro::GFqDom<int32_t>::init(mone,-1L);
+			// Givaro::GFqDom<int32_t>::init(mOne,-1L);
 			// Givaro::GFqDom<int32_t>::init(zero,0L);
 
 

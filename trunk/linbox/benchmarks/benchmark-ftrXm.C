@@ -665,9 +665,9 @@ void bench_transpose( index_t k, int charac)
 	LinBox::PlotData<std::string>  Data(nb,1);
 	Data.setSerieName(0,"fgemm");
 
-	Element one, zero, mone, alpha, beta ;
+	Element one, zero, mOne, alpha, beta ;
 	F.init(one,1);
-	F.init(mone,-1);
+	F.init(mOne,-1);
 	F.init(zero,0);
 
 
@@ -675,10 +675,10 @@ void bench_transpose( index_t k, int charac)
 	linbox_check(charac >=5) ;
 
 	do { R.random(alpha) ; } // non trivial alpha
-	while (F.areEqual(alpha,one) || F.areEqual(alpha,mone) || F.areEqual(alpha,zero)) ;
+	while (F.areEqual(alpha,one) || F.areEqual(alpha,mOne) || F.areEqual(alpha,zero)) ;
 
 	do { R.random(beta) ; }// non trivial beta
-	while (F.areEqual(beta,one) || F.areEqual(beta,mone) || F.areEqual(beta,zero)) ;
+	while (F.areEqual(beta,one) || F.areEqual(beta,mOne) || F.areEqual(beta,zero)) ;
 
 
 	// D = A^xB^y

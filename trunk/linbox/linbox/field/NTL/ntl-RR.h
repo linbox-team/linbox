@@ -123,11 +123,11 @@ namespace LinBox
 		typedef FFPACK::UnparametricOperations<Element> Father_t ;
 		typedef UnparametricRandIter<Element> RandIter;
 
-		const Element zero,one,mone ;
+		const Element zero,one,mOne ;
 
 		NTL_RR() :
 			NTL_RR_Initialiser(),Father_t ()
-			,zero( NTL::to_RR(0)),one( NTL::to_RR(1)),mone(-one)
+			,zero( NTL::to_RR(0)),one( NTL::to_RR(1)),mOne(-one)
 		{
 			// no default - allow initialization of ZZ_p directly by user.
 		}

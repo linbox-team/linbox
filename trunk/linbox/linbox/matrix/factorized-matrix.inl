@@ -396,7 +396,7 @@ namespace LinBox
 				FFLAS::fgemm (F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 					      B.rowdim(), B.coldim() - R, R,
 					      F.one, Bp, B.getStride(), A.getPointer() + R, A.getStride,
-					      F.mone, Bp + R, B.getStride());
+					      F.mOne, Bp + R, B.getStride());
 
 				bool consistent = true;
 				for (size_t i = 0; i < B.rowdim(); ++i)
@@ -695,7 +695,7 @@ namespace LinBox
 				FFLAS::fgemv (F, FFLAS::FflasTrans,
 					      R, b.size() - R,
 					      F.one, A.getPointer() + R, A.getStride, bp, 1,
-					      F.mone, bp + R, 1);
+					      F.mOne, bp + R, 1);
 
 				bool consistent = true;
 				for (size_t j = R; j < b.size(); ++j)

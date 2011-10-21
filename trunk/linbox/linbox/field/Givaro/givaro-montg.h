@@ -64,7 +64,7 @@ namespace LinBox
 		typedef Givaro::Montgomery< Givaro::Std32> Father_t ;
 		typedef  Father_t::Rep Element;
 		using Father_t::one;
-		using Father_t::mone;
+		using Father_t::mOne;
 		using Father_t::zero;
 
 		/** RandIter type

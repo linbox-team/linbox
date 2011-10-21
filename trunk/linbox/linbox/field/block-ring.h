@@ -126,7 +126,7 @@ namespace LinBox
 
 		}; // class Element
 
-		Element one,zero,mone;
+		Element one,zero,mOne;
 
 		class RandIter {
 			typedef typename _Field::RandIter FieldRandIter;
@@ -157,11 +157,11 @@ namespace LinBox
 		{
 			one.set(new Matrix(_F,d,d));
 			zero.set(new Matrix(_F,d,d));
-			mone.set(new Matrix(_F,d,d)) ;
+			mOne.set(new Matrix(_F,d,d)) ;
 			_D.setIdentity(*(one.matrix));
 			_D.setZero(*(zero.matrix));
 			for (size_t i = 0 ;i < d ;++i)
-				mone.matrix->setEntry(i,i,_F.mone);
+				mOne.matrix->setEntry(i,i,_F.mOne);
 		}
 
 		Element& init(Element& B) const

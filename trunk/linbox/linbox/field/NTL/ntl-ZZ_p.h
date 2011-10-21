@@ -149,7 +149,7 @@ namespace LinBox
 		typedef FFPACK::UnparametricOperations<Element> Father_t ;
 		typedef UnparametricRandIter<Element> RandIter;
 
-		const Element zero,one,mone ;
+		const Element zero,one,mOne ;
 
 		/** @name NTL_ZZ_p
 		 * @brief Arbitrary precision integers modulus a positive integer.
@@ -164,20 +164,20 @@ namespace LinBox
 		 */
 		NTL_ZZ_p(integer q, size_t e = 1) :
 			NTL_ZZ_p_Initialiser(q,e),Father_t ()
-			,zero( NTL::to_ZZ_p(0)),one( NTL::to_ZZ_p(1)),mone(-one)
+			,zero( NTL::to_ZZ_p(0)),one( NTL::to_ZZ_p(1)),mOne(-one)
 		{
 			// no default - allow initialization of ZZ_p directly by user.
 		}
 
 		NTL_ZZ_p( NTL::ZZ d, size_t e = 1) :
 			NTL_ZZ_p_Initialiser(d),Father_t()
-			,zero( NTL::to_ZZ_p(0)),one( NTL::to_ZZ_p(1)),mone(-one)
+			,zero( NTL::to_ZZ_p(0)),one( NTL::to_ZZ_p(1)),mOne(-one)
 		{
 			linbox_check(e == 1);
 		}
 		NTL_ZZ_p() :
 			NTL_ZZ_p_Initialiser(), Father_t()
-			,zero( NTL::to_ZZ_p(0)),one( NTL::to_ZZ_p(1)),mone(-one)
+			,zero( NTL::to_ZZ_p(0)),one( NTL::to_ZZ_p(1)),mOne(-one)
 		{}
 
 		Element& init(Element& x, const integer& y) const
