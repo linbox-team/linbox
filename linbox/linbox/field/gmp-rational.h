@@ -58,7 +58,7 @@ namespace LinBox
 
 		const integer _zero;
 		const integer _one;
-		const integer _mone;
+		const integer _mOne;
 
 	public:
 
@@ -89,8 +89,8 @@ namespace LinBox
 		 */
 
 		GMPRationalField (const GMPRationalField &) :
-			_cardinality (0), _characteristic (0), _zero (0), _one (1), _mone (-1),
-			zero (_zero, _one), one (_one, _one), mOne (_mone, _one)
+			_cardinality (0), _characteristic (0), _zero (0), _one (1), _mOne (-1),
+			zero (_zero, _one), one (_one, _one), mOne (_mOne, _one)
 		{}
 
 		/** Destructor.
@@ -732,8 +732,8 @@ namespace LinBox
 		//@} Common Object Interface
 
 		GMPRationalField (int p = 0, int exp = 1) :
-			_cardinality (0), _characteristic (0), _zero (0), _one (1), _mone (-1),
-			zero (_zero, _one), one (_one, _one), mOne (_mone, _one)
+			_cardinality (0), _characteristic (0), _zero (0), _one (1), _mOne (-1),
+			zero (_zero, _one), one (_one, _one), mOne (_mOne, _one)
 		{
 			if(p != 0) throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus must be 0 (no modulus)");
 			if(exp != 1) throw PreconditionFailed(__func__,__FILE__,__LINE__,"exponent must be 1");
