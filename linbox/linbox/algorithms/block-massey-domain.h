@@ -267,10 +267,10 @@ namespace LinBox
 
 			Coefficient Unit(m+n,m);
 			const Coefficient Zero(m+n,m);
-			Element one,zero,mone;
+			Element one,zero,mOne;
 			_F.init(one,1L);
 			_F.init(zero,0L);
-			_F.init(mone,-1L);
+			_F.init(mOne,-1L);
 			for (size_t i=0;i<m;i++)
 				Unit.setEntry(i,i,one);
 			size_t min_mn=(m <n)? m :n;

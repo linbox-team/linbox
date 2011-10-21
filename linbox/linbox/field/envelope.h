@@ -88,7 +88,7 @@ namespace LinBox
 		 * In this implementation, this means copying the field \c E._field.
 		 */
 		FieldEnvelope (void) :
-			one(),zero(),mone()
+			one(),zero(),mOne()
 		{}
 
 		/** Constructor from field to be wrapped.
@@ -96,7 +96,7 @@ namespace LinBox
 		 */
 		FieldEnvelope (const Field& F) :
 			_field (F)
-			,one(Element(F.one)),zero(Element(F.zero)),mone(Element(F.mone))
+			,one(Element(F.one)),zero(Element(F.zero)),mOne(Element(F.mOne))
 		{}
 
 		/** Copy constructor.
@@ -108,7 +108,7 @@ namespace LinBox
 		 */
 		FieldEnvelope (const FieldEnvelope& E) :
 			_field (E._field)
-			,one((E.one)),zero((E.zero)),mone((E.mone))
+			,one((E.one)),zero((E.zero)),mOne((E.mOne))
 		{}
 
 #ifdef __LINBOX_XMLENABLED
@@ -566,7 +566,7 @@ namespace LinBox
 		Field _field;
 
 	public:
-		Element one,zero,mone ;
+		Element one,zero,mOne ;
 	}; // class FieldEnvelope
 
 } // namespace LinBox

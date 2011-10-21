@@ -129,12 +129,12 @@ namespace LinBox
 		typedef NTL::ZZ_pE Element ;
 		typedef FFPACK::UnparametricOperations<Element> Father_t ;
 
-		const Element zero,one,mone ;
+		const Element zero,one,mOne ;
 
 
 		NTL_ZZ_pE (const integer &p, const integer &k) :
 			NTL_ZZ_pE_Initialiser(p,k),Father_t ()
-			,zero( NTL::to_ZZ_pE(0)),one( NTL::to_ZZ_pE(1)),mone(-one)
+			,zero( NTL::to_ZZ_pE(0)),one( NTL::to_ZZ_pE(1)),mOne(-one)
 
 
 		{

@@ -87,11 +87,11 @@ namespace LinBox
 		 *  This type is inherited from the Givaro class Givaro::ZpzDom<TAG>
 		 */
 		typedef typename Givaro::ZpzDom<TAG>::Rep Element;
-		// Element zero,one,mone;
+		// Element zero,one,mOne;
 		typedef Givaro::ZpzDom<TAG> Father_t ;
 		using  Father_t::one ;
 		using  Father_t::zero ;
-		using  Father_t::mone ;
+		using  Father_t::mOne ;
 
 		/** RandIter type
 		 *  This type is inherited from the Givaro class Givaro::ZpzDom<TAG>

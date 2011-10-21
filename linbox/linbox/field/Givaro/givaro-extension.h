@@ -113,7 +113,7 @@ namespace LinBox
 
 		using Extension_t::zero;
 		using Extension_t::one;
-		using Extension_t::mone;
+		using Extension_t::mOne;
 
 		/** RandIter type.
 		 *  This type is inherited from the Givaro class GFqDom<TAG>
@@ -189,7 +189,7 @@ namespace LinBox
 
 		using Extension_t::zero;
 		using Extension_t::one;
-		using Extension_t::mone;
+		using Extension_t::mOne;
 
 
 		/** RandIter type.

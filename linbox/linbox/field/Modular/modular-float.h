@@ -71,7 +71,7 @@ namespace LinBox
 		      typedef float Element;
 		      using FFPACK::Modular<float>::one ;
 		      using FFPACK::Modular<float>::zero ;
-		      using FFPACK::Modular<float>::mone ;
+		      using FFPACK::Modular<float>::mOne ;
 
 	      public:
 		      friend class FieldAXPY<Modular<Element> >;

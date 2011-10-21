@@ -46,7 +46,7 @@ namespace LinBox
 		 *
 		 */
 		typedef  Givaro::Rational Element;
-		Element zero,one,mone;
+		Element zero,one,mOne;
 
 
 		Element& init(Element& x , const integer& y) const

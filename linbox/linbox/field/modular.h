@@ -345,7 +345,7 @@ namespace LinBox
 	public:
 		typedef _Element Element;
 		typedef typename ModularBase<_Element>::RandIter RandIter;
-		const Element zero,one, mone;
+		const Element zero,one, mOne;
 
 		/*- @name Object Management
 		 * @brief see \ref FieldArchetype  for member specs.
@@ -356,7 +356,7 @@ namespace LinBox
 		/*- Default constructor.
 		*/
 		Modular () :
-			zero(0),one(1),mone(0)
+			zero(0),one(1),mOne(0)
 		{}
 
 		/*- Constructor from an element type
@@ -365,7 +365,7 @@ namespace LinBox
 		 * @param modulus constant reference to integer prime modulus
 		 */
 		Modular (unsigned long modulus) :
-			ModularBase<_Element> (modulus),zero(0),one(1),mone(modulus-1)
+			ModularBase<_Element> (modulus),zero(0),one(1),mOne(modulus-1)
 		{}
 
 		/*- Constructor from an integer
@@ -374,7 +374,7 @@ namespace LinBox
 		 * @param modulus constant reference to integer prime modulus
 		 */
 		Modular (const integer &modulus) :
-			ModularBase<_Element> (modulus),zero(0),one(1),mone(modulus-1)
+			ModularBase<_Element> (modulus),zero(0),one(1),mOne(modulus-1)
 		{}
 
 		/* Assignment operator
@@ -388,7 +388,7 @@ namespace LinBox
 			ModularBase<Element>::_modulus = F._modulus;
 			F.assign(const_cast<Element&>(one),F.one);
 			F.assign(const_cast<Element&>(zero),F.zero);
-			F.assign(const_cast<Element&>(mone),F.mone);
+			F.assign(const_cast<Element&>(mOne),F.mOne);
 
 			return *this;
 		}

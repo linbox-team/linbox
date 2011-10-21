@@ -119,11 +119,11 @@ namespace LinBox
 		typedef FFPACK::UnparametricOperations<Element> Father_t ;
 		typedef UnparametricRandIter<Element> RandIter;
 
-		const Element zero,one,mone ;
+		const Element zero,one,mOne ;
 
 		NTL_GF2E (const integer &p, const integer &k) :
 			NTL_GF2E_Initialiser(p,k),Father_t ()
-			,zero( NTL::to_GF2E(0)),one( NTL::to_GF2E(1)),mone(-one)
+			,zero( NTL::to_GF2E(0)),one( NTL::to_GF2E(1)),mOne(-one)
 		{ }
 
 		bool isZero (const Element& a) const

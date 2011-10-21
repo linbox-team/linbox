@@ -113,18 +113,18 @@ namespace LinBox
 		typedef FFPACK::UnparametricOperations<Element> Father_t ;
 		typedef UnparametricRandIter<NTL::zz_p> RandIter;
 
-		const Element zero,one,mone ;
+		const Element zero,one,mOne ;
 
 
 		//public UnparametricField<Element> {
 		NTL_zz_p(integer p, size_t e = 1) :
 			NTL_zz_p_Initialiser(p,e),Father_t ()
-			,zero( NTL::to_zz_p(0)),one( NTL::to_zz_p(1)),mone(-one)
+			,zero( NTL::to_zz_p(0)),one( NTL::to_zz_p(1)),mOne(-one)
 		{}
 
 		NTL_zz_p() :
 			NTL_zz_p_Initialiser(2,1), Father_t()
-			,zero( NTL::to_zz_p(0)),one( NTL::to_zz_p(1)),mone(-one)
+			,zero( NTL::to_zz_p(0)),one( NTL::to_zz_p(1)),mOne(-one)
 		{}
 
 		Element& init(Element& x, const double& y) const

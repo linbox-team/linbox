@@ -80,7 +80,7 @@ namespace LinBox
 		typedef FFPACK::UnparametricOperations<Element> Father_t ;
 		typedef UnparametricRandIter<Element> RandIter;
 
-		const Element zero,one,mone ;
+		const Element zero,one,mOne ;
 
 
 		typedef NTL_ZZ_p CoeffField;
@@ -92,14 +92,14 @@ namespace LinBox
 		 */
 		NTL_ZZ_pX( const integer& p, size_t e = 1 ) :
 			NTL_ZZ_pX_Initialiser(p,e),Father_t ()
-			, zero( NTL::to_ZZ_pX(0)),one( NTL::to_ZZ_pX(1)),mone(-one)
+			, zero( NTL::to_ZZ_pX(0)),one( NTL::to_ZZ_pX(1)),mOne(-one)
 			, _CField(p,e)
 		{}
 
 		/** Constructor from a coefficient field */
 		NTL_ZZ_pX( CoeffField cf ) :
 			NTL_ZZ_pX_Initialiser(cf.cardinality()),Father_t ()
-			,zero( NTL::to_ZZ_pX(0)),one( NTL::to_ZZ_pX(1)),mone(-one)
+			,zero( NTL::to_ZZ_pX(0)),one( NTL::to_ZZ_pX(1)),mOne(-one)
 			,_CField(cf)
 		{}
 

@@ -1379,13 +1379,13 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	mycommentator.start (pretty("Testing minpoly"),"testMinPoly",iterations);
-	Element tmp, one, zero,mone;
+	Element tmp, one, zero,mOne;
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
 	F.init(one, 1UL);
 	F.init(zero, 0UL);
-	F.neg(mone, one);
-	//F.neg( mone, one);
+	F.neg(mOne, one);
+	//F.neg( mOne, one);
 	bool ret = true;
 	BlasMatrixDomain<Field> BMD(F);
 
@@ -1403,7 +1403,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations)
 
 		if ( P.size() !=2 )
 			ret = false;
-		if ( !F.areEqual(P[0], mone) )
+		if ( !F.areEqual(P[0], mOne) )
 			ret = false;
 		if ( !F.areEqual(P[1], one) )
 			ret = false;
@@ -1460,13 +1460,13 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	mycommentator.start (pretty("Testing charpoly"),"testCharPoly",iterations);
-	Element tmp, one, zero,mone;
+	Element tmp, one, zero,mOne;
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
 	F.init(one, 1UL);
 	F.init(zero, 0UL);
-	F.neg(mone, one);
-	//F.neg( mone, one);
+	F.neg(mOne, one);
+	//F.neg( mOne, one);
 	bool ret = true;
 	BlasMatrixDomain<Field> BMD(F);
 
@@ -1491,7 +1491,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations)
 		while (P_it != P.end()){
 			if ( P_it->size() !=2 )
 				ret = false;
-			if ( !F.areEqual(P_it->operator[](0), mone) )
+			if ( !F.areEqual(P_it->operator[](0), mOne) )
 				ret = false;
 			if ( !F.areEqual(P_it->operator[](1), one) )
 				ret = false;

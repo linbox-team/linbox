@@ -218,7 +218,7 @@ LB_CHECK_GIVARO(,,[
 echo '*******************************************************************************'
 echo ' ERROR: GIVARO not found!'
 echo
-echo ' GIVARO version 3.5.0 or greater (<3.6) is required for this library to compile.'
+echo ' GIVARO version 3.6.0 or greater (<3.7) is required for this library to compile.'
 echo ' Please make sure GIVARO is installed and specify its location with the'
 echo ' option --with-givaro=<prefix> when running configure.'
 echo '*******************************************************************************'
@@ -248,7 +248,7 @@ echo ''
 echo '*******************************************************************************'
 echo ' ERROR: Fflas-Ffpack not found!'
 echo
-echo ' Fflas-Ffpack routines are required for this library to compile. Please'
+echo ' Fflas-Ffpack routines (>=1.4.4) are required for this library to compile. Please'
 echo ' make sure they are installed and specify its location with the option'
 echo ' --with-fflas-ffpack=<lib> when running configure.'
 echo '*******************************************************************************'

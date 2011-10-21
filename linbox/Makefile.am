@@ -23,7 +23,7 @@ doc/linbox-html/index.html:
 
 docs_dev:doc/linbox-dev-html/pages.html
 
-doc/linbox-dev-html/pages.xhtml:
+doc/linbox-dev-html/pages.html:
 	(cd doc; make docs_dev)
 
 examples:
