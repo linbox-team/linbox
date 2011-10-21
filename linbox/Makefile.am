@@ -21,9 +21,9 @@ docs:doc/linbox-html/index.html
 doc/linbox-html/index.html:
 	(cd doc; make docs)
 
-docs_dev:doc/linbox-dev-html/index.html
+docs_dev:doc/linbox-dev-html/pages.html
 
-doc/linbox-dev-html/index.html:
+doc/linbox-dev-html/pages.xhtml:
 	(cd doc; make docs_dev)
 
 examples:
