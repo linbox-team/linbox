@@ -212,6 +212,7 @@ exit 1
 
 LB_CHECK_IML
 LB_CHECK_M4RI
+LB_CHECK_FPLLL
 
 LB_CHECK_NTL
 LB_CHECK_GIVARO(,,[
@@ -224,6 +225,8 @@ echo ' option --with-givaro=<prefix> when running configure.'
 echo '*******************************************************************************'
 exit 1
 ])
+
+
 LB_CHECK_SACLIB
 LB_CHECK_LIDIA
 LB_CHECK_MAPLE
