@@ -79,7 +79,7 @@ if test "x$WARN" = "xyes" -o "x$WARN" = "xfull" ; then
 		if test "x${CCNAM}" = "xgcc" -o "x${CCNAM}" = "xeko" ; then
 			WARN_CFLAGS="${WARN_CFLAGS} -Wextra -Wno-unused-parameter"
 			if test "x${WARN}" = "xfull" ; then
-				WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Wconversion -Wcast-qual -ansi -pedantic -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Wno-long-long"
+				WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Wconversion -Wcast-qual -ansi -pedantic -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Wno-long-long -Wendif-labels -Wswitch -Wsign-compare -Wformat -Wformat-security"
 			fi
 		else
 			echo

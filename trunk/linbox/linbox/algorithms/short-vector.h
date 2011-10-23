@@ -32,7 +32,11 @@
 #include <algorithm>
 #include <vector>
 
-#include <dpe.h>
+#ifdef __LINBOX_HAVE_FPLLL
+#include <fplll/dpe.h>
+#else
+#error "you need fplll here"
+#endif
 #include <math.h>
 
 
@@ -53,8 +57,8 @@ namespace LinBox
 		long   x_e, y_e, z_e;
 		Timer t;
 
-		y_m = mpz_get_d_2exp(&y_e, y.get_mpz());
-		z_m = mpz_get_d_2exp(&z_e, z.get_mpz());
+		y_m = mpz_get_d_2exp(&y_e, y.get_mpz_const());
+		z_m = mpz_get_d_2exp(&z_e, z.get_mpz_const());
 		x_e = y_e - z_e;
 
 
@@ -69,7 +73,7 @@ namespace LinBox
 				int e;
 				x_m = frexp(x_m,&e);
 				x_e +=e;
-				x= round(ldexp(x_m,x_e));
+				x= round(ldexp(x_m,(int)x_e));
 				return 0;
 				//return x= ldexp(x_m,x_e);
 			}
@@ -112,7 +116,7 @@ namespace LinBox
 		inline void EuclideanLength(integer& l, const integer y[3] )
 		{
 			innerProduct(l, y, y);
-			::sqrt(l,l);
+			Givaro::sqrt(l,l);
 		}
 
 		inline void swap(integer x[3], integer y[3] )
@@ -133,9 +137,9 @@ namespace LinBox
 		{
 			if ((a.bitsize()<32) && (a >= 0)){
 				unsigned long aa= a;
-				mpz_submul_ui(r[0].get_mpz(), y[0].get_mpz(), aa);
-				mpz_submul_ui(r[1].get_mpz(), y[1].get_mpz(), aa);
-				mpz_submul_ui(r[2].get_mpz(), y[2].get_mpz(), aa);
+				mpz_submul_ui(r[0].get_mpz(), y[0].get_mpz_const(), aa);
+				mpz_submul_ui(r[1].get_mpz(), y[1].get_mpz_const(), aa);
+				mpz_submul_ui(r[2].get_mpz(), y[2].get_mpz_const(), aa);
 			}
 			else {
 				integer::maxpyin(r[0],a,y[0]);
@@ -148,9 +152,9 @@ namespace LinBox
 		{
 			if ((a.bitsize()<32) && (a >= 0)){
 				unsigned long aa= a;
-				mpz_addmul_ui(r[0].get_mpz(), y[0].get_mpz(), aa);
-				mpz_addmul_ui(r[1].get_mpz(), y[1].get_mpz(), aa);
-				mpz_addmul_ui(r[2].get_mpz(), y[2].get_mpz(), aa);
+				mpz_addmul_ui(r[0].get_mpz(), y[0].get_mpz_const(), aa);
+				mpz_addmul_ui(r[1].get_mpz(), y[1].get_mpz_const(), aa);
+				mpz_addmul_ui(r[2].get_mpz(), y[2].get_mpz_const(), aa);
 			}
 			else {
 				integer::axpyin(r[0],a,y[0]);
@@ -215,7 +219,8 @@ namespace LinBox
 		}
 
 
-		inline integer SEL(integer &l, const integer &x1, const integer &y1, const integer &y2, const integer &y3)
+		inline integer SEL(integer &l, const integer &x1,
+				   const integer &my1, const integer &my2, const integer &y3)
 		{
 			Timer t;
 			t.start();
@@ -229,17 +234,17 @@ namespace LinBox
 			integer::axpyin(l, tmp, x1);
 
 			tmp = rr;
-			integer::axpyin(tmp, y1, lb2);
-			tmp*=y1;
+			integer::axpyin(tmp, my1, lb2);
+			integer::mulin(tmp,my1);
 			tmp_min=tmp;
-			y_min  =y1;
+			y_min  =my1;
 
 			tmp = rr;
-			integer::axpyin(tmp, y2, lb2);
-			tmp*=y2;
+			integer::axpyin(tmp, my2, lb2);
+			integer::mulin(tmp,my2);
 			if (tmp < tmp_min){
 				tmp_min=tmp;
-				y_min=y2;
+				y_min=my2;
 			}
 
 			tmp = rr;
@@ -463,7 +468,7 @@ namespace LinBox
 	public:
 		LargeDouble(const integer &x)
 		{
-			_m=mpz_get_d_2exp(&_e, x.get_mpz());
+			_m=mpz_get_d_2exp(&_e, x.get_mpz_const());
 		}
 
 		LargeDouble() {}
@@ -485,10 +490,11 @@ namespace LinBox
 				if (_m == 0.)
 					return x=integer(0);
 				else
-					return x=integer(round(ldexp(_m,_e)));
+					return x=integer(round(ldexp(_m,(int)_e)));
 			}
 			else{
-				x = (_m* 0x1P53);//9007199254740992;
+				// x = (_m* 0x1P53);//9007199254740992;
+				x = (_m* 9007199254740992UL);
 				x = x<<(_e-53);
 				return x;
 			}
@@ -531,10 +537,10 @@ namespace LinBox
 				else {
 					long ee = x._e - e;
 					if (ee >=0){
-						x._m += ldexp( m, -ee);
+						x._m += ldexp( m, (int)-ee);
 					}
 					else {
-						x._m = m + ldexp( x._m, ee);
+						x._m = m + ldexp( x._m, (int)ee);
 						x._e = e;
 					}
 					int t;
@@ -561,10 +567,10 @@ namespace LinBox
 				else {
 					long ee = x._e - e;
 					if (ee >=0){
-						x._m -= ldexp( m, -ee);
+						x._m -= ldexp( m, (int)-ee);
 					}
 					else {
-						x._m = ldexp( x._m, ee) -m ;
+						x._m = ldexp( x._m, (int)ee) -m ;
 						x._e = e;
 					}
 					int t;
