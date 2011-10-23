@@ -25,7 +25,7 @@
 /*! @file algorithms/rational-reconstruction.h
  * @ingroup algorithms
  * @brief NO DOC
- * @bug demander FPLLL comme dépendance optionnelle...
+ * @todo wrap Mat_ZZ<T>/IntMat in BlasMatrix<T>, BlasMatrix<Integer> e.g.
  */
 
 #ifndef __LINBOX_reconstruction_H
@@ -49,10 +49,14 @@
 
 //#define __LINBOX_HAVE_FPLLL
 #ifdef __LINBOX_HAVE_FPLLL
-extern "C" {
-#include <libfplll/myheuristic.h>
-#include <libfplll/myproved.h>
-}
+// extern "C" {
+// this is a damn FPLLL bug !!!
+#define round
+#define trunc
+#include <fplll/fplll.h>
+#include <fplll/heuristic.h>
+#include <fplll/proved.h>
+// }
 #include "linbox/algorithms/short-vector.h"
 #endif
 
@@ -1686,22 +1690,26 @@ namespace LinBox
 
 
 				// construct the lattice
-				mpz_t **Lattice;
-				Lattice= new mpz_t*[k+2];
-				for (size_t i=0;i<k+2;++i){
-					Lattice[i]= new mpz_t[k+2];
-					for (size_t j=0;j<k+2;++j)
-						mpz_init(Lattice[i][j]);
-				}
+				// mpz_t **Lattice;
+				ZZ_mat<mpz_t> Lattice(k+1,k+1) ;
+				// Lattice= new mpz_t*[k+2];
+				// for (size_t i=0;i<k+2;++i){
+					// Lattice[i]= new mpz_t[k+2];
+					// for (size_t j=0;j<k+2;++j)
+						// mpz_init(Lattice[i][j]);
+				// }
 
 				integer tmp=1;
 				_r.convert(mod, modulus);
 
-				mpz_set(Lattice[1][1], tmp.get_mpz());
-				for (size_t i=2;i< k+2;++i){
-					mpz_set(Lattice[i][i],mod.get_mpz());
+				// mpz_set(Lattice[1][1], tmp.get_mpz());
+				Lattice.Set(0,0,Z_NR<mpz_t>(tmp.get_mpz()));
+				for (size_t i=1;i< k+1;++i){
+					// mpz_set(Lattice[i][i],mod.get_mpz());
+					Lattice.Set(i,i, Z_NR<mpz_t>(mod.get_mpz()) );
 					_r.convert(tmp, real_approximation[bad_num_index+i-2]);
-					mpz_set(Lattice[1][i],tmp.get_mpz());
+					Lattice.Set(0,i,Z_NR<mpz_t>(tmp.get_mpz()));
+					// mpz_set(Lattice[1][i],tmp.get_mpz());
 				}
 
 				// ratio to check the validity of the denominator compare to the entries in the reduced lattice
@@ -1711,17 +1719,19 @@ namespace LinBox
 				// reduce the lattice using LLL algorithm
 				Timer chrono;
 				chrono.start();
-				myLLLproved(Lattice, k+1,k+1);
+				// myLLLproved(Lattice, k+1,k+1);
+				::proved<Integer,double>LLL(Lattice);
+				LLL.LLL();
 				chrono.stop();
 				std::cout<<"lattice reduction time :        "<<chrono<<std::endl;
 
 
 				// check if the 1st row is the short vector
 				latticeOK=true;
-				mpz_mul(tmp.get_mpz(), Lattice[1][1],ratio.get_mpz());
-				for (size_t i=2;i<k+2;++i){
-					for (size_t j=1;j<k+2;++j)
-						if (mpz_cmpabs(tmp.get_mpz() , Lattice[i][j])> 0){
+				mpz_mul(tmp.get_mpz(), Lattice(0,0).GetData(),ratio.get_mpz());
+				for (size_t i=1;i<k+1;++i){
+					for (size_t j=0;j<k+1;++j)
+						if (mpz_cmpabs(tmp.get_mpz() , Lattice(i,j).GetData() )> 0){
 							latticeOK=false;
 							break;
 						}
@@ -1729,15 +1739,15 @@ namespace LinBox
 
 				integer dd;
 				// get the denominator from the lattice
-				mpz_set(dd.get_mpz(),Lattice[1][1]);
+				mpz_set(dd.get_mpz(),Lattice(0,0).GetData());
 
 				//delete the lattice
-				for (size_t i=0;i<k+2;++i){
-					for (size_t j=0;j<k+2;++j)
-						mpz_clear(Lattice[i][j]);
-					delete[] Lattice[i];
-				}
-				delete[] Lattice;
+				// for (size_t i=0;i<k+2;++i){
+					// for (size_t j=0;j<k+2;++j)
+						// mpz_clear(Lattice[i][j]);
+					// delete[] Lattice[i];
+				// }
+				// delete[] Lattice;
 
 
 				if (latticeOK) {// lattice ok
