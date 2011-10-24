@@ -26,6 +26,10 @@
 #ifndef __LINBOX_rational_solver_sn_H
 #define __LINBOX_rational_solver_sn_H
 
+// clobber solaris global numeric constant macros
+#undef _R
+#undef _S
+
 #include <iostream>
 
 #include "linbox/integer.h"

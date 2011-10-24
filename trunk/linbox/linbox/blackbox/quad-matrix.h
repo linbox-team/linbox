@@ -9,6 +9,11 @@
 #ifndef __LINBOX_quad_matrix_H
 #define __LINBOX_quad_matrix_H
 
+// clobber solaris global numeric macros
+#undef _L
+#undef _R
+#undef _U
+
 #include <algorithm>
 #include "linbox/field/hom.h"
 #include <vector>
