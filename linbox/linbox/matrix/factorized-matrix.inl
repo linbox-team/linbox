@@ -743,7 +743,7 @@ namespace LinBox
 		_F(A.field()), _LU(static_cast<BlasMatrix<Field>&> (A)) ,
 		_PP(*(new BlasPermutation<size_t>(A.coldim()))),
 		_QQ(*(new BlasPermutation<size_t>(A.rowdim()))),
-		_PP(A.coldim()), _QQ(A.rowdim()),
+		// _PP(A.coldim()), _QQ(A.rowdim()),
 		_m(A.rowdim()), _n(A.coldim()),
 		_alloc(false),_plloc(true)
 	{
