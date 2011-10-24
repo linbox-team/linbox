@@ -212,6 +212,8 @@ exit 1
 
 LB_CHECK_IML
 LB_CHECK_M4RI
+LB_CHECK_MPFR
+# we nedd mpfr next :
 LB_CHECK_FPLLL
 
 LB_CHECK_NTL
