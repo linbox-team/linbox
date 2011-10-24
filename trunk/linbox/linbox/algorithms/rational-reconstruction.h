@@ -32,37 +32,27 @@
 #ifndef __LINBOX_reconstruction_H
 #define __LINBOX_reconstruction_H
 
+#include "linbox/linbox-config.h"
+#include "linbox/util/debug.h"
+
+
 #include "linbox/algorithms/rational-reconstruction-base.h"
 #include "linbox/algorithms/classic-rational-reconstruction.h"
 //#include "linbox/algorithms/fast-rational-reconstruction.h"
-
-#include "linbox/linbox-config.h"
-#include "linbox/util/debug.h"
 
 //#define DEBUG_RR
 //#define DEBUG_RR_BOUNDACCURACY
 #define DEF_THRESH 50
 
-#ifdef __LINBOX_HAVE_NTL
-#include <NTL/LLL.h>
+
+#if defined(__LINBOX_HAVE_FPLLL) || defined(__LINBOX_HAVE_NTL)
+#include "linbox/algorithms/lattice.h"
 #endif
 
-
-
 #ifdef __LINBOX_HAVE_FPLLL
-// this is a damn FPLLL bug !!!
-#define round
-#define trunc
-#include <fplll/fplll.h>
-#include <fplll/heuristic.h>
-#include <fplll/proved.h>
-#undef round
-#undef trunc
-
 #include "linbox/algorithms/short-vector.h"
 #endif
 
-#include "linbox/algorithms/lattice.h"
 
 
 

@@ -35,6 +35,31 @@
  * @todo This will avoid copy back/forth a BlasMatrix<PID_integer>
  */
 
+#if !defined(__LINBOX_HAVE_FPLLL) && !defined(__LINBOX_HAVE_NTL)
+#error "you need either FPLLL or NTL here"
+#endif
+
+
+#ifdef __LINBOX_HAVE_NTL
+#include <NTL/LLL.h>
+#endif
+
+
+
+#ifdef __LINBOX_HAVE_FPLLL
+// this is a damn FPLLL bug !!!
+#define round
+#define trunc
+#include <fplll/fplll.h>
+#include <fplll/heuristic.h>
+#include <fplll/proved.h>
+#include <fplll/wrapper.h>
+#undef round
+#undef trunc
+
+#endif
+
+
 namespace LinBox
 { /*  Methods */
 
@@ -44,7 +69,7 @@ namespace LinBox
 	 */
 	class latticeMethod {
 		struct genericMethod {};
-
+#ifdef __LINBOX_HAVE_NTL
 		/*! NTL_LLL.
 		 * This is NTL's LLL
 		 * The Defaults are NTL's
@@ -162,6 +187,9 @@ namespace LinBox
 			}
 
 		};
+#endif // __LINBOX_HAVE_NTL
+
+#ifdef __LINBOX_HAVE_FPLLL
 
 		/*! FPLLL LLL.
 		 * Wrapper to fplll
@@ -233,6 +261,7 @@ namespace LinBox
 				return _met;
 			}
 		};
+#endif // __LINBOX_HAVE_FPLLL
 
 
 	};
@@ -241,11 +270,18 @@ namespace LinBox
 
 #include "linbox/algorithms/lattice.inl"
 
+
+#ifdef __LINBOX_HAVE_FPLLL
+#define defaultLllMeth latticeMethod::latticeFPLLL
+#else
+#define defaultLllMeth latticeMethod::latticeNTL_LLL
+#endif
+
 namespace LinBox
 {
 	template<class Ring, class myMethod>
 	void lllReduceIn(BlasMatrix<Ring> & H,
-			 const myMethod   & meth = latticeMethod::latticeNTL_LLL())
+			 const myMethod   & meth = defaultLllMeth())
 	{
 		Ring Z ;
 		BlasMatrix<Ring> U(Z,0,0);
@@ -257,7 +293,7 @@ namespace LinBox
 	template<class Ring, class myMethod>
 	void lllReduceIn(BlasMatrix<Ring> & H,
 			 BlasMatrix<Ring> & U,
-			 const myMethod   & meth = latticeMethod::latticeNTL_LLL())
+			 const myMethod   & meth = defaultLllMeth())
 	{
 		const bool withU = true;
 		lllReduceInBase<Ring,withU>(H,U,meth);
@@ -266,7 +302,7 @@ namespace LinBox
 	template<class Ring, class myMethod>
 	void lllReduce(BlasMatrix<Ring>       & H,
 		       const BlasMatrix<Ring> & A,
-		       const myMethod         & meth = latticeMethod::latticeNTL_LLL())
+		       const myMethod         & meth = defaultLllMeth())
 	{
 		H = A ;
 		lllReduceIn<Ring>(H,meth);
@@ -276,7 +312,7 @@ namespace LinBox
 	void lllReduce(BlasMatrix<Ring>       & H,
 			 BlasMatrix<Ring>     & U,
 		       const BlasMatrix<Ring> & A,
-			 const myMethod       & meth = latticeMethod::latticeNTL_LLL())
+			 const myMethod       & meth = defaultLllMeth())
 	{
 		H = A ;
 		lllReduceIn<Ring>(H,U,meth);
@@ -284,10 +320,6 @@ namespace LinBox
 
 }
 
-/*  Interface to FPLLL */
-namespace LinBox
-{
-
-}
+#undef defaultLllMeth
 
 #endif // __LINBOX_algorithms_lattice_H

@@ -35,6 +35,7 @@
 /*  Interface to NTL LLL */
 namespace LinBox
 {
+#ifdef __LINBOX_HAVE_NTL
 
 	//! @todo we should use mat_ZZ here instead of BlasMatrix<Ring>
 	template<class Ring, bool withU>
@@ -167,11 +168,13 @@ namespace LinBox
 		}
 
 	}
+#endif // __LINBOX_HAVE_NTL
 }
 
 /*  Interface to NTL BKZ */
 namespace LinBox
 {
+#ifdef __LINBOX_HAVE_NTL
 
 	//! @todo we should use mat_ZZ here instead of BlasMatrix<Ring>
 	template<class Ring, bool withU>
@@ -304,12 +307,14 @@ namespace LinBox
 		}
 
 	}
+#endif // __LINBOX_HAVE_NTL
 
 }
 
 /* Interface to FPLLL */
 namespace LinBox
 {
+#ifdef __LINBOX_HAVE_FPLLL
 	//! @bug we suppose Ring and mpz_t understand eachother...
 	template<class Ring, bool withU>
 	void
@@ -363,6 +368,7 @@ namespace LinBox
 		}
 
 	}
+#endif // __LINBOX_HAVE_FPLLL
 
 
 }

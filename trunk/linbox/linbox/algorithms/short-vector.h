@@ -61,6 +61,7 @@ struct StopReduce{};
 namespace LinBox
 {
 
+	//! NO DOC
 	int large_double_division(integer &x, const integer &y, const integer &z)
 	{
 		double x_m, y_m, z_m;
@@ -96,6 +97,7 @@ namespace LinBox
 	}
 
 
+	//! NO DOC
 	class TernaryLattice {
 	public:
 
@@ -112,13 +114,15 @@ namespace LinBox
 		integer B1B2LB1, B1B2LB2, B2B3LB2, B1B3LB1;
 		integer x10,x11,x12,x20,x21,x22;
 
-		inline void innerProduct(integer &z, const integer x[3] , const integer  y[3]){
+		inline void innerProduct(integer &z, const integer x[3] , const integer  y[3])
+		{
 			integer::mul(z,x[0],y[0]);
 			integer::axpyin(z,x[1],y[1]);
 			integer::axpyin(z,x[2],y[2]);
 		}
 
-		inline void SquareEuclideanLength(integer& l, const integer y[3]){
+		inline void SquareEuclideanLength(integer& l, const integer y[3])
+		{
 			innerProduct(l, y, y);
 		}
 
@@ -471,6 +475,7 @@ namespace LinBox
 
 	};
 
+	//! NO DOC
 	class LargeDouble{
 	protected:
 		double _m;
