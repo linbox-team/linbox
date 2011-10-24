@@ -47,24 +47,25 @@ void no_build_n_run(string s, counts& cnt, int flag = 2, string r = "") ;
 
 int main(int argc, char* argv[])
 {
-	int f = 0; // force recompile all tests.
+	int f = 0; // f = 1 ==> force recompile all tests.
 	int flag = 1; // verbosity flag.
 
 	bool check = false;// true for install time check
 	int arg;
 	for (arg = 1; arg < argc && argv[arg][0] == '-'; ++ arg)
 		switch (argv[arg][1]) {
-			case 'f': f = 1; break;
-			case 'v': flag = atoi(argv[++arg]); break;
+			case 'r': f = 1; break;
+			case 'f': flag = atoi(argv[++arg]); break;
 			case 'c': check = true; break; 
 			default: 
-		cout << "usage: " << argv[0] << " [-r] [-f n] [test]*" << endl;
+		cout << "usage: " << argv[0] << " [-r] [-f n] [-c] [test]*" << endl;
 		cout << "  -f 0 for a summary: only 4 lines printed." << endl;
 		cout << "  -f 1 for default: also one line per test." << endl;
 		cout << "  -f 2 for warnings: shows subtest failures." << endl;
 		cout << "  -f 3 for errors: also any build and run output for error cases." << endl;
 		cout << "  -f 4 for verbose: also any build and run output for each test." << endl;
 		cout << "  -r forces rebuild of all tests." << endl;
+		cout << "  -c conducts an install time check (a few selected tests only)." << endl;
 		cout << "  if any [test] is present, it is built and run, otherwise all tests are processed." << endl;
 	}
 	flag = flag+5*f; // clean up later
