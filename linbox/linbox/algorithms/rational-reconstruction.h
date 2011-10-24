@@ -47,16 +47,16 @@
 #endif
 
 
-//#define __LINBOX_HAVE_FPLLL
 #ifdef __LINBOX_HAVE_FPLLL
-// extern "C" {
 // this is a damn FPLLL bug !!!
 #define round
 #define trunc
 #include <fplll/fplll.h>
 #include <fplll/heuristic.h>
 #include <fplll/proved.h>
-// }
+#undef round
+#undef trunc
+
 #include "linbox/algorithms/short-vector.h"
 #endif
 
