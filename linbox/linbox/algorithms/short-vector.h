@@ -2,6 +2,7 @@
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* linbox/algorithms/lifting-container-base.h
  * Copyright (C) 2005  Pascal Giorgi
+ * Copyright (C) 2011  LinBox
  *
  * Written by Pascal Giorgi <pgiorgi@uwaterloo.ca>
  *
@@ -24,6 +25,15 @@
 
 #ifndef __LINBOX_ternary_lattice_H
 #define __LINBOX_ternary_lattice_H
+
+
+/*! @file algorithms/short-vector.h
+ * @brief  NO DOC
+ * @ingroup algorithms
+ * @ingroup lattice
+ *
+ * NO DOC
+ */
 
 #include <iostream>
 #include "linbox/field/PID-integer.h"
