@@ -5,7 +5,7 @@
 
 @brief Lattice reduction (LLL) in LinBox.
 
-This is an interface to fplll.
+This is an interface to fplll/NTL.
 
 NO DOC
 

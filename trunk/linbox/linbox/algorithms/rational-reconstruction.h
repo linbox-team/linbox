@@ -26,6 +26,7 @@
  * @ingroup algorithms
  * @brief NO DOC
  * @todo wrap Mat_ZZ<T>/IntMat in BlasMatrix<T>, BlasMatrix<Integer> e.g.
+ * @bug there seems to be a confusion between Ring _r, [iI]nteger... Besides we have to check that Ring/Integer/NTL_ZZ are the 'same'.
  */
 
 #ifndef __LINBOX_reconstruction_H
@@ -47,6 +48,7 @@
 #endif
 
 
+
 #ifdef __LINBOX_HAVE_FPLLL
 // this is a damn FPLLL bug !!!
 #define round
@@ -60,8 +62,16 @@
 #include "linbox/algorithms/short-vector.h"
 #endif
 
+#include "linbox/algorithms/lattice.h"
+
+
+
 namespace LinBox
 {
+	long NumBytes(const Integer & m)
+	{
+		return ( (m.bitsize()+7 )/8) ;
+	}
 
 	/*! \brief Limited doc so far.
 	 * Used, for instance, after LiftingContainer.
@@ -74,7 +84,7 @@ namespace LinBox
 	public:
 		typedef _LiftingContainer                  LiftingContainer;
 		typedef typename LiftingContainer::Ring                Ring;
-		typedef typename Ring::Element                      Integer;
+		typedef typename Ring::Element                    myInteger;
 		typedef typename LiftingContainer::IVector           Vector;
 		typedef typename LiftingContainer::Field              Field;
 		typedef typename Field::Element                     Element;
@@ -1212,6 +1222,7 @@ namespace LinBox
 		template<class Vector1>
 		bool getRational4(Vector1& num, Integer& den, size_t thresh) const
 		{
+			THIS_CODE_COMPILES_BUT_IS_NOT_TESTED;
 
 #ifdef RSTIMING
 			ttRecon.clear();
@@ -1241,7 +1252,7 @@ namespace LinBox
 			_r.convert(N, _lcontainer.numbound());
 			_r.convert(D, _lcontainer.denbound());
 			_r.convert(mod, prime);
-		 Givaro::root (D, D, k); D+=1;
+			Givaro::root (D, D, k); D+=1;
 			bound=2*N*D;
 			std::cout<<"size in bit of the bound : "<<bound.bitsize()<<std::endl;
 			size_t minsteps = logp(bound, mod)+1;
@@ -1359,22 +1370,28 @@ namespace LinBox
 
 
 				// construct the lattice
-				NTL::mat_ZZ Lattice;
-				NTL::ZZ m, tmp, det;
-				integer tmp_int;
+				integer tmp_int,tmp;
 				_r.convert(mod, modulus);
-				m=NTL::to_ZZ((std::string(mod)).c_str());
-
-
-				Lattice.SetDims(k+1, k+1);
-				NTL::clear(Lattice);
-				Lattice[0][0]=1;
+				// NTL::ZZ m, tmp ;
+				// NTL::mat_ZZ Lattice;
+				// m=NTL::to_ZZ((std::string(mod)).c_str());
+				// Lattice.SetDims(k+1, k+1);
+				// NTL::clear(Lattice);
+				// Lattice[0][0]=1;
+				// for (size_t i= bad_num_index+1;i< bad_num_index+k+1;++i){
+					// Lattice[i][i]=m;//not working when bad index <> 0
+					// _r.convert(tmp_int, real_approximation[i-1]);
+					// tmp=NTL::to_ZZ((std::string(tmp_int)).c_str());
+					// Lattice[0][i]=tmp;//not working when bad index <> 0
+				// }
+				BlasMatrix<Ring> Lattice(_r,k+1,k+1);
+				Lattice.setEntry(0,0,_r.one);
 				for (size_t i= bad_num_index+1;i< bad_num_index+k+1;++i){
-					Lattice[i][i]=m;//not working when bad index <> 0
+					Lattice.setEntry(i,i,mod);//not working when bad index <> 0
 					_r.convert(tmp_int, real_approximation[i-1]);
-					tmp=NTL::to_ZZ((std::string(tmp_int)).c_str());
-					Lattice[0][i]=tmp;//not working when bad index <> 0
+					Lattice.setEntry(0,i,tmp_int);//not working when bad index <> 0
 				}
+
 
 				// ratio to check the validity of the denominator compare to the entries in the reduced lattice
 				NTL::ZZ ratio;
@@ -1384,17 +1401,19 @@ namespace LinBox
 				Timer chrono;
 				chrono.start();
 				//NTL::LLL(det, Lattice);
-				NTL::LLL_XD(Lattice);
+				// NTL::LLL_XD(Lattice);
+				lllReduceIn<Ring>(Lattice,latticeMethod::latticeNTL_LLL());
 				chrono.stop();
 				std::cout<<"lattice reduction time :        "<<chrono<<std::endl;
 
 
 				// check if the 1st row is the short vector
+				// Lattice[i][j] should work. Using standard getEntry though
 				latticeOK=true;
-				tmp=abs(Lattice[0][0])*ratio;
+				tmp=abs(Lattice.getEntry(0,0))*ratio;
 				for (size_t i=1;i<k+1;++i){
 					for (size_t j=0;j<k+1;++j)
-						if (tmp > abs(Lattice[i][j])){
+						if (tmp > abs(Lattice.getEntry(i,j))){
 							latticeOK=false;
 							break;
 						}
@@ -1406,24 +1425,29 @@ namespace LinBox
 				if (latticeOK) {// lattice ok
 					Timer  checknum;
 					checknum.start();
-					bool neg=false;
+					// bool neg=false;
 					// get the denominator from the lattice
-					tmp =Lattice[0][0];
-					if (sign(tmp) <0) neg=true;
-					long b = NumBytes(tmp);
-					unsigned char* byteArray;
-					byteArray = new unsigned char[(size_t)b ];
-					BytesFromZZ(byteArray, tmp, b);
-					integer base(256);
-					integer dd= integer(0);
-					for(long i = b - 1; i >= 0; --i) {
-						dd *= base;
-						dd += integer(byteArray[i]);
-					}
-					delete [] byteArray;
+					// tmp =Lattice.getEntry(0,0);
+					// if (sign(tmp) <0)
+						// neg=true;
+					// long b = NTL::NumBytes(tmp);
+					// long b = NumBytes(tmp);
+					// unsigned char* byteArray;
+					// byteArray = new unsigned char[(size_t)b ];
+					// BytesFromZZ(byteArray, tmp, b);
+					// integer base(256);
+					// integer dd= integer(0);
+					// for(long i = b - 1; i >= 0; --i) {
+						// dd *= base;
+						// dd += integer(byteArray[i]);
+					// }
+					// delete [] byteArray;
+					myInteger dd = Lattice.getEntry(0,0);
+					bool neg = (dd<0);
 					Integer denom;
 					_r.init(denom,dd);
-					if (neg) _r.negin(denom);
+					if (neg)
+						_r.negin(denom);
 
 					neg_denom= neg_denom^neg;
 
@@ -1541,6 +1565,7 @@ namespace LinBox
 		template<class Vector1>
 		bool getRational5(Vector1& num, Integer& den, size_t thresh) const
 		{
+			THIS_CODE_COMPILES_BUT_IS_NOT_TESTED;
 
 #ifdef RSTIMING
 			ttRecon.clear();
@@ -1691,26 +1716,35 @@ namespace LinBox
 
 				// construct the lattice
 				// mpz_t **Lattice;
-				ZZ_mat<mpz_t> Lattice(k+1,k+1) ;
+				// ZZ_mat<mpz_t> Lattice(k+1,k+1) ;
 				// Lattice= new mpz_t*[k+2];
 				// for (size_t i=0;i<k+2;++i){
 					// Lattice[i]= new mpz_t[k+2];
 					// for (size_t j=0;j<k+2;++j)
 						// mpz_init(Lattice[i][j]);
 				// }
+				BlasMatrix<Ring> Lattice(_r,k+1,k+1);
 
 				integer tmp=1;
 				_r.convert(mod, modulus);
 
 				// mpz_set(Lattice[1][1], tmp.get_mpz());
-				Lattice.Set(0,0,Z_NR<mpz_t>(tmp.get_mpz()));
-				for (size_t i=1;i< k+1;++i){
+
+				// Lattice.Set(0,0,Z_NR<mpz_t>(tmp.get_mpz()));
+				// for (size_t i=1;i< k+1;++i){
 					// mpz_set(Lattice[i][i],mod.get_mpz());
-					Lattice.Set(i,i, Z_NR<mpz_t>(mod.get_mpz()) );
-					_r.convert(tmp, real_approximation[bad_num_index+i-2]);
-					Lattice.Set(0,i,Z_NR<mpz_t>(tmp.get_mpz()));
+					// Lattice.Set(i,i, Z_NR<mpz_t>(mod.get_mpz()) );
+					// _r.convert(tmp, real_approximation[bad_num_index+i-1]);
+					// Lattice.Set(0,i,Z_NR<mpz_t>(tmp.get_mpz()));
 					// mpz_set(Lattice[1][i],tmp.get_mpz());
+				// }
+				Lattice.setEntry(0,0,tmp);
+				for (size_t i=1;i< k+1;++i){
+					Lattice.setEntry(i,i, mod );
+					_r.convert(tmp, real_approximation[bad_num_index+i-1]);
+					Lattice.setEntry(0,i,Z_NR<mpz_t>(tmp.get_mpz()));
 				}
+
 
 				// ratio to check the validity of the denominator compare to the entries in the reduced lattice
 				integer ratio;
@@ -1719,19 +1753,21 @@ namespace LinBox
 				// reduce the lattice using LLL algorithm
 				Timer chrono;
 				chrono.start();
+				lllReduceIn<Ring>(Lattice,latticeMethod::latticeFPLLL());
 				// myLLLproved(Lattice, k+1,k+1);
-				::proved<Integer,double>LLL(Lattice);
-				LLL.LLL();
+				// ::proved<Integer,double>LLL(Lattice);
+				// LLL.LLL();
 				chrono.stop();
 				std::cout<<"lattice reduction time :        "<<chrono<<std::endl;
 
 
 				// check if the 1st row is the short vector
 				latticeOK=true;
-				mpz_mul(tmp.get_mpz(), Lattice(0,0).GetData(),ratio.get_mpz());
+				_r.mul(tmp, Lattice.getEntry(0,0),ratio);
+				// mpz_mul(tmp.get_mpz(), Lattice(0,0).GetData(),ratio.get_mpz());
 				for (size_t i=1;i<k+1;++i){
 					for (size_t j=0;j<k+1;++j)
-						if (mpz_cmpabs(tmp.get_mpz() , Lattice(i,j).GetData() )> 0){
+						if (AbsCompare(tmp , Lattice.getEntry(i,j) )> 0){
 							latticeOK=false;
 							break;
 						}
@@ -1739,7 +1775,8 @@ namespace LinBox
 
 				integer dd;
 				// get the denominator from the lattice
-				mpz_set(dd.get_mpz(),Lattice(0,0).GetData());
+				// mpz_set(dd.get_mpz(),Lattice(0,0).GetData());
+				dd = Lattice.getEntry(0,0);
 
 				//delete the lattice
 				// for (size_t i=0;i<k+2;++i){
