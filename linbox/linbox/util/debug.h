@@ -60,6 +60,9 @@
 #  endif
 #endif
 
+#define THIS_CODE_COMPILES_BUT_IS_NOT_TESTED \
+     std::cout << "*** Warning *** " << std::endl << __func__ << " in " << __FILE__ << ':' << __LINE__ << " is not tested" << std::endl;
+
 namespace LinBox
 {
 	/*!  A precondtion failed.

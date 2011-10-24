@@ -78,14 +78,14 @@ pkgincludesub_HEADERS =         \
     matrix-inverse.h            \
     matrix-hom.h                \
     matrix-rank.h               \
-	numeric-solver-lapack.h     \
-	rational-solver-sn.h        \
-	rational-solver-sn.inl      \
-	dyadic-to-rational.h        \
+    numeric-solver-lapack.h     \
+    rational-solver-sn.h        \
+    rational-solver-sn.inl      \
+    dyadic-to-rational.h        \
     rational-reconstruction.h   \
     rational-reconstruction-base.h          \
     classic-rational-reconstruction.h       \
-	fast-rational-reconstruction.h          \
+    fast-rational-reconstruction.h          \
     rational-solver.h           \
     rational-solver2.h          \
     rational-solver.inl         \
@@ -102,6 +102,7 @@ pkgincludesub_HEADERS =         \
     vector-fraction.h           \
     whisart_trace.h             \
     cia.h                       \
+    lattice.h lattice.inl      \
     bbcharpoly.h                \
     charpoly-rational.h         \
     minpoly-integer.h           \
@@ -111,9 +112,9 @@ pkgincludesub_HEADERS =         \
     echelon-form.h              \
     toeplitz-det.h              \
     dense-nullspace.h dense-nullspace.inl   \
-	linbox-tags.h               \
-	bm-seq.h                    \
-	rns.h rns.inl
+    linbox-tags.h               \
+    bm-seq.h                    \
+    rns.h rns.inl
 
 EXTRA_DIST =                    \
              algorithms.doxy    \
@@ -122,6 +123,7 @@ EXTRA_DIST =                    \
              lanczos.doxy       \
              sigmabasis.doxy    \
              elimination.doxy   \
+	     lattice.doxy       \
              diophantine.doxy
 
 
