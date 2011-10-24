@@ -19,4 +19,6 @@ EXTRA_DIST=\
 	   maple-check.m4          \
 	   ntl-check.m4            \
 	   saclib-check.m4         \
+	   mpfr-check.m4           \
+	   fplll-check.m4          \
 	   sage-check.m4
