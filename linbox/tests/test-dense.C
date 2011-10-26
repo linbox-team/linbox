@@ -52,7 +52,7 @@ using namespace LinBox;
  */
 
 template <class Field>
-static bool testIdentity (Field &F, long n, int iterations)
+static bool testIdentity (Field &F, size_t n, int iterations)
 {
 	typedef typename Vector<Field>::Dense Vector;
 	typedef BlasMatrix<Field>               Base;
@@ -63,8 +63,6 @@ static bool testIdentity (Field &F, long n, int iterations)
 	bool ret = true;
 	bool iter_passed = true;
 
-	int i, j;
-
 	Blackbox I(F, n, n);
 	// Matrix K(I);
 	//typename Field::Element x; F.init(x);
@@ -74,20 +72,20 @@ static bool testIdentity (Field &F, long n, int iterations)
 
 	F.init (one, 1);
 
-	for (i = 0; i < n; i++)
+	for (size_t i = 0; i < n; i++)
 		I.setEntry (i, i, one);
 
 	Vector v(n), w(n);
 	typename Field::RandIter r (F);
 
-	for (i = 0; i < iterations; i++) {
+	for (int i = 0; i < iterations; i++) {
 		char buf[80];
 		snprintf (buf, 80, "Iteration %d", i);
 		commentator.start (buf);
 
 		iter_passed = true;
 
-		for (j = 0; j < n; j++)
+		for (size_t j = 0; j < n; j++)
 			r.random (v[j]);
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -103,7 +101,7 @@ static bool testIdentity (Field &F, long n, int iterations)
 		report << "Output vector: ";
 		printVector<Field> (F, report, w);
 
-		for (j = 0; j < n; j++)
+		for (size_t j = 0; j < n; j++)
 			if (!F.areEqual (w[j], v[j]))
 				ret = iter_passed = false;
 
@@ -139,7 +137,7 @@ static bool testIdentity (Field &F, long n, int iterations)
  */
 
 template <class Field>
-static bool testVandermonde (Field &F, long n, int iterations, int N)
+static bool testVandermonde (Field &F, size_t n, int iterations, int N)
 {
 	typedef typename Vector<Field>::Dense Vector;
 	typedef vector <typename Field::Element> Polynomial;
