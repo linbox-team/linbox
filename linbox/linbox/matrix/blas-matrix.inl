@@ -232,7 +232,7 @@ namespace LinBox
 
 	template <class _Field>
 	template<class T>
-	BlasMatrix< _Field>::BlasMatrix ( const _Field &F, unsigned int m, T n) :
+	BlasMatrix< _Field>::BlasMatrix ( const _Field &F, uint32_t m, T n) :
 		_row(m),_col(n),_rep(_row*_col),_ptr(&_rep[0]),
 		_F(F),_MD(F),_VD(F)
 	{
@@ -241,7 +241,7 @@ namespace LinBox
 
 	template <class _Field>
 	template<class T>
-	BlasMatrix< _Field>::BlasMatrix (const _Field &F, long m, T n) :
+	BlasMatrix< _Field>::BlasMatrix (const _Field &F, int64_t m, T n) :
 		_row(m),_col(n),_rep(_row*_col),_ptr(&_rep[0]),
 		_F(F),_MD(F),_VD(F)
 	{
@@ -252,7 +252,7 @@ namespace LinBox
 
 	template <class _Field>
 	template<class T>
-	BlasMatrix< _Field>::BlasMatrix (const _Field &F, unsigned long m, T  n) :
+	BlasMatrix< _Field>::BlasMatrix (const _Field &F, uint64_t m, T  n) :
 		_row(m),_col(n),_rep(_row*_col),_ptr(&_rep[0]),
 		_F(F),_MD(F),_VD(F)
 	{
@@ -265,7 +265,7 @@ namespace LinBox
 
 	template <class _Field>
 	template<class T>
-	BlasMatrix< _Field>::BlasMatrix (const _Field &F, int m, T n) :
+	BlasMatrix< _Field>::BlasMatrix (const _Field &F, int32_t m, T n) :
 		_row(m),_col(n),_rep(_row*_col),_ptr(&_rep[0]),
 		_F(F),_MD(F),_VD(F)
 	{

@@ -27,10 +27,6 @@
 #ifndef __LINBOX_factorized_matrix_H
 #define __LINBOX_factorized_matrix_H
 
-#if 0
-#undef _P
-#undef _Q
-#endif
 
 #include <vector>
 
