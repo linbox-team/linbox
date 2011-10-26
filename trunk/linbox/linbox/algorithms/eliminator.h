@@ -29,7 +29,6 @@
 #undef _S
 #undef _M
 #undef _N
-#undef _P
 #undef _U
 #undef _T
 
@@ -223,7 +222,7 @@ namespace LinBox
 
 		// Temporaries used in the computation
 
-		mutable Permutation               _P;
+		mutable Permutation               _myPerm;
 
 		mutable BlasMatrix<Field>  _A;         // Variable
 		mutable BlasMatrix<Field>  _U;         // Variable

@@ -96,15 +96,15 @@ namespace LinBox
 		_MD.copy (A1, A);
 
 		setIN (_U);
-		_P.clear ();
+		_myPerm.clear ();
 		_profile_idx = 0;
 
 		kthGaussJordan (rank, d, 0, 0, A.coldim (), _one);
 
-		buildMinimalPermutation (P, rank, A.rowdim (), _P);
+		buildMinimalPermutation (P, rank, A.rowdim (), _myPerm);
 		buildMinimalPermutationFromProfile (Q, rank, A.coldim (), _profile);
 
-		_MD.permuteColumns (_U, _P.rbegin (), _P.rend ());
+		_MD.permuteColumns (_U, _myPerm.rbegin (), _myPerm.rend ());
 		_MD.permuteColumns (_U, P.begin (), P.end ());
 
 		BlasMatrix<Field> Tu1 (Tu, rank, 0, A.rowdim () - rank, rank);
@@ -199,7 +199,7 @@ namespace LinBox
 		/* Initialise temporaries for the computation */
 
 		setIN (_U);
-		_P.clear ();
+		_myPerm.clear ();
 		_profile.resize (A.coldim ());
 		_profile_idx = 0;
 		std::fill (_T.begin (), _T.end (), false);
@@ -211,7 +211,7 @@ namespace LinBox
 		/* Set _S based on the permutation */
 		std::fill (_S.begin (), _S.begin () + rank, true);
 		std::fill (_S.begin () + rank, _S.end (), false);
-		permute (_S, _P.rbegin (), _P.rend ());
+		permute (_S, _myPerm.rbegin (), _myPerm.rend ());
 
 		permute (_T, Qp.rbegin (), Qp.rend ());
 
@@ -219,7 +219,7 @@ namespace LinBox
 		BlasMatrix<Field> U1 (_U, rank, 0, _U.rowdim () - rank, _U.coldim ());
 		_MD.subin (U1, U1);
 
-		_MD.permuteColumns (_U, _P.rbegin (), _P.rend ());
+		_MD.permuteColumns (_U, _myPerm.rbegin (), _myPerm.rend ());
 
 		/* Divide _U by the determinant and copy to W */
 		_F.invin (d);
@@ -283,15 +283,15 @@ namespace LinBox
 			*i = idx;
 
 		setIN (_U);
-		_P.clear ();
+		_myPerm.clear ();
 		_MD.copy (_A, A);
 		_profile_idx = 0;
 		kthGaussJordan (rank, det, 0, 0,  (unsigned int) A.coldim (), _one);
 
-		buildMinimalPermutation (P, rank,  (unsigned int) A.rowdim (), _P);
+		buildMinimalPermutation (P, rank,  (unsigned int) A.rowdim (), _myPerm);
 		buildMinimalPermutationFromProfile (Q, rank,  (unsigned int) A.coldim (), _profile);
 
-		_MD.permuteColumns (_U, _P.rbegin (), _P.rend ());
+		_MD.permuteColumns (_U, _myPerm.rbegin (), _myPerm.rend ());
 		_MD.permuteColumns (_U, P.begin (), P.end ());
 
 		BlasMatrix<Field> Tu1 (Tu, rank, 0, A.rowdim () - rank, rank);
@@ -345,8 +345,8 @@ namespace LinBox
 	}
 
 	/* Perform the kth indexed Gauss-Jordan transform on _A, storing the
-	 * transformation matrix in _U and the permutation in _P. The caller is
-	 * responsible for ensuring that _U and _P are the identity and that _A is set
+	 * transformation matrix in _U and the permutation in _myPerm. The caller is
+	 * responsible for ensuring that _U and _myPerm are the identity and that _A is set
 	 * to a copy of the input on the initial call.
 	 */
 
@@ -371,7 +371,7 @@ namespace LinBox
 
 		BlasMatrix<Field> Acopy (_A);
 
-		unsigned int P_start = _P.size ();
+		unsigned int P_start = _myPerm.size ();
 #endif
 
 		BlasMatrix<Field> Ap (_A, k, s, _A.rowdim () - k, m);
@@ -390,7 +390,7 @@ namespace LinBox
 
 			_T[s] = true;  // This column is independent
 
-			if (_indices[i] != k) _P.push_back (Transposition (_indices[i], k));
+			if (_indices[i] != k) _myPerm.push_back (Transposition (_indices[i], k));
 
 			r = 1;
 			_A.getEntry (d, _indices[i], s);
@@ -417,13 +417,13 @@ namespace LinBox
 
 			BlasMatrix<Field> B (_A, 0, s + m1, _A.rowdim (), m2);
 
-			unsigned int P_start = (unsigned int) _P.size ();
+			unsigned int P_start = (unsigned int) _myPerm.size ();
 
 			kthGaussJordan (r1, d1, k, s, m1, d0);
 
-			unsigned int P_end =  (unsigned int) _P.size ();
+			unsigned int P_end =  (unsigned int) _myPerm.size ();
 
-			_MD.permuteRows (B, _P.begin () + P_start, _P.end ());
+			_MD.permuteRows (B, _myPerm.begin () + P_start, _myPerm.end ());
 
 			unsigned int l1 = (unsigned int) _U.rowdim () - (k + r1);
 
@@ -469,7 +469,7 @@ namespace LinBox
 
 			_F.neg (d1neg, d1);
 			adddIN (_U, d1neg);
-			_MD.permuteRows (U1, _P.begin () + P_end, _P.end ());
+			_MD.permuteRows (U1, _myPerm.begin () + P_end, _myPerm.end ());
 			adddIN (_U, d1);
 
 #ifdef ELIM_DETAILED_TRACE
@@ -526,7 +526,7 @@ namespace LinBox
 		_MD.write (report, _U);
 
 		report << "(" << k << ") Finished P: " << std::endl;
-		reportPermutation (report, _P);
+		reportPermutation (report, _myPerm);
 
 		typename Field::Element dinv, d0inv;
 
@@ -536,7 +536,7 @@ namespace LinBox
 		BlasMatrix<Field> R (_A.rowdim () - k, _A.coldim () - s);
 		BlasMatrix<Field> Atest (Acopy, k, s, _A.rowdim () - k, _A.coldim () - s);
 		BlasMatrix<Field> Utest (_U, k, k, _U.rowdim () - k, _U.coldim () - k);
-		_MD.permuteRows (Acopy, _P.begin () + P_start, _P.end ());
+		_MD.permuteRows (Acopy, _myPerm.begin () + P_start, _myPerm.end ());
 
 		report << "(" << k << ") PA: " << std::endl;
 		_MD.write (report, Acopy);

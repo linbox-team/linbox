@@ -649,7 +649,7 @@ namespace LinBox
 			_MD.write (reportN, uhatAvhat);
 #endif
 
-			_eliminator.gaussJordan (uhatAvhatinv, _profile, _P, _T2, _Q, _T3, rho_u, d, uhatAvhat);
+			_eliminator.gaussJordan (uhatAvhatinv, _profile, _myPerm, _T2, _Q, _T3, rho_u, d, uhatAvhat);
 
 			BlasMatrix<Field> mu (uhatAvhatinv, 0, 0, rho_u, rho_u);
 			BlasMatrix<Field> Tu (_T2, rho_u, 0, N - (*l)->_rho_u - rho_u, rho_u);
@@ -657,7 +657,7 @@ namespace LinBox
 
 			TransposeMatrix<BlasMatrix<Field> > TuT (Tu);
 
-			(*l)->_sigma_u.append (_P, TuT, rho_u);
+			(*l)->_sigma_u.append (_myPerm, TuT, rho_u);
 			(*l)->_sigma_u.applyLast ((*l)->_u, false);
 
 			i->_sigma_v.append (_Q, Tv, rho_u);
@@ -773,7 +773,7 @@ namespace LinBox
 
 			BlasMatrix<Field> uhatAvhatinvT (_W, 0, 0, N - (*l)->_rho_v, N - (*l)->_rho_v);
 
-			_eliminator.gaussJordan (uhatAvhatinvT, _profile, _P, _T2, _Q, _T3, rho_v, d, transpose (uhatAvhat));
+			_eliminator.gaussJordan (uhatAvhatinvT, _profile, _myPerm, _T2, _Q, _T3, rho_v, d, transpose (uhatAvhat));
 
 			BlasMatrix<Field> nu (uhatAvhatinvT, 0, 0, rho_v, rho_v);
 			BlasMatrix<Field> TuT (_T3, 0, rho_v, rho_v, N - i->_rho_u - rho_v);
@@ -781,7 +781,7 @@ namespace LinBox
 
 			TransposeMatrix<BlasMatrix<Field> > Tv (TvT);
 
-			(*l)->_sigma_v.append (_P, Tv, rho_v);
+			(*l)->_sigma_v.append (_myPerm, Tv, rho_v);
 			(*l)->_sigma_v.applyLast ((*l)->_v, false);
 
 			i->_sigma_u.append (_Q, TuT, rho_v);
@@ -1203,7 +1203,7 @@ namespace LinBox
 	{
 		linbox_check (M.coldim () == _N);
 
-		typename std::vector<Permutation>::iterator Pi = _P.begin ();
+		typename std::vector<Permutation>::iterator Pi = _myPerm.begin ();
 		typename std::vector<Matrix *>::iterator Ti = _T.begin ();
 		typename std::vector<unsigned int>::iterator rhoi = _rho.begin ();
 		typename std::vector<unsigned int>::iterator si = _s.begin ();
@@ -1226,13 +1226,13 @@ namespace LinBox
 		typename std::vector<Permutation>::iterator Pi;
 
 		if (left) {
-			for (Pi = _P.begin (), si = _s.begin (); Pi != _P.end (); ++Pi, ++si) {
+			for (Pi = _myPerm.begin (), si = _s.begin (); Pi != _myPerm.end (); ++Pi, ++si) {
 				BlasMatrix<Field> Mcheck (M, *si, 0, _N - *si, M.coldim ());
 				_solver._MD.permuteRows (Mcheck, Pi->begin (), Pi->end ());
 			}
 		}
 		else {
-			for (Pi = _P.begin (), si = _s.begin (); Pi != _P.end (); ++Pi, ++si) {
+			for (Pi = _myPerm.begin (), si = _s.begin (); Pi != _myPerm.end (); ++Pi, ++si) {
 				BlasMatrix<Field> Mcheck (M, 0, *si, M.rowdim (), _N - *si);
 				_solver._MD.permuteColumns (Mcheck, Pi->begin (), Pi->end ());
 			}
@@ -1247,7 +1247,7 @@ namespace LinBox
 	{
 		linbox_check (M.coldim () == _N);
 
-		applyOne (M, _P.back (), _T.back (), _rho.back (), _s.back (), left);
+		applyOne (M, _myPerm.back (), _T.back (), _rho.back (), _s.back (), left);
 		return M;
 	}
 
@@ -1268,7 +1268,7 @@ namespace LinBox
 		BlasMatrix<Field> Tnewhat (*Tnew, _N - T.rowdim (), _N - T.coldim (), T.rowdim (), T.coldim ());
 		_solver._MD.copy (Tnewhat, T);
 
-		_P.push_back (Permutation (P));
+		_myPerm.push_back (Permutation (P));
 		_T.push_back (Tnew);
 		_rho.push_back (rho);
 		_s.push_back (_N - rho -  (unsigned int) T.coldim ());
@@ -1280,7 +1280,7 @@ namespace LinBox
 		for (typename std::vector<Matrix *>::iterator i = _T.begin (); i != _T.end (); ++i)
 			_solver._ip_trashcan.push (*i);
 
-		_P.clear ();
+		_myPerm.clear ();
 		_T.clear ();
 		_rho.clear ();
 		_s.clear ();
@@ -1307,12 +1307,12 @@ namespace LinBox
 	template <class Field, class Matrix>
 	void LABlockLanczosSolver<Field, Matrix>::BasisTransformation::reportComplete (std::ostream &out)
 	{
-		typename std::vector<Permutation>::iterator Pi = _P.begin ();
+		typename std::vector<Permutation>::iterator Pi = _myPerm.begin ();
 		typename std::vector<Matrix *>::iterator Ti = _T.begin ();
 		typename std::vector<unsigned int>::iterator rhoi = _rho.begin ();
 		typename std::vector<unsigned int>::iterator si = _s.begin ();
 
-		while (Pi != _P.end ()) {
+		while (Pi != _myPerm.end ()) {
 			out << "Permutation: ";
 			_solver._eliminator.writePermutation (out, *Pi) << std::endl;
 

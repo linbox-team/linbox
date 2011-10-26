@@ -32,7 +32,6 @@
 #undef _I
 #undef _C
 #undef _W
-#undef _P
 #undef _Q
 
 namespace LinBox
@@ -119,7 +118,7 @@ namespace LinBox
 		class BasisTransformation {
 			LABlockLanczosSolver      &_solver;
 
-			std::vector<Permutation>   _P;
+			std::vector<Permutation>   _myPerm;
 			std::vector<Matrix *>      _T;
 			std::vector<unsigned int>  _rho;
 			std::vector<unsigned int>  _s;
@@ -330,7 +329,7 @@ namespace LinBox
 		Matrix            _Cu;           // N x N
 		Matrix            _Cv;           // N x N
 
-		Permutation       _P;
+		Permutation       _myPerm;
 		Permutation       _Q;
 
 		Matrix            _v0;           // n x N
