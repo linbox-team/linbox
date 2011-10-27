@@ -39,6 +39,29 @@ bin_SCRIPTS=linbox-config
 bundled:
 	sh auto-install.sh
 
+uninstall-hook:
+	(test -d "$(includedir)/linbox" && rmdir "$(bindir)" \
+		"$(libdir)" \
+		"$(mandir)/man1" \
+		"$(mandir)" \
+		"$(includedir)/linbox/algorithms" \
+		"$(includedir)/linbox/blackbox" \
+		"$(includedir)/linbox/element" \
+		"$(includedir)/linbox/field/Givaro" \
+		"$(includedir)/linbox/field/Modular" \
+		"$(includedir)/linbox/field/NTL" \
+		"$(includedir)/linbox/field/" \
+		"$(includedir)/linbox/kaapi" \
+		"$(includedir)/linbox/matrix" \
+		"$(includedir)/linbox/randiter" \
+		"$(includedir)/linbox/ring" \
+		"$(includedir)/linbox/solutions" \
+		"$(includedir)/linbox/switch" \
+		"$(includedir)/linbox/util/formats" \
+		"$(includedir)/linbox/util" \
+		"$(includedir)/linbox/vector" \
+		"$(includedir)/linbox" ) || true
+
 VERSION=1.3.0
 
 EXTRA_DIST=auto-install.sh
