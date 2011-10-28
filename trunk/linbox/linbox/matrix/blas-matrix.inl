@@ -252,7 +252,7 @@ namespace LinBox
 
 #ifdef __GNUC__
 #ifndef __x86_64__
-#if (__GNUC__ == 4 && __GNUC_MINOR__ ==4 && __GNUC_PATCHLEVEL==5)
+#if (__GNUC__ == 4 && __GNUC_MINOR__ ==4 && __GNUC_PATCHLEVEL__==5)
 	template <class _Field>
 	template<class T>
 	BlasMatrix< _Field>::BlasMatrix (const _Field &F, const long & m, const T& n) :
