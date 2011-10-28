@@ -212,21 +212,23 @@ namespace LinBox
 		 * @param n cols
 		 */
 		//@{
+		template<class T>
+		BlasMatrix (const _Field &F, const long &m, const T &n) ;
 
 		template<class T>
-		BlasMatrix (const _Field &F, uint64_t m, T n) ;
+		BlasMatrix (const _Field &F, const uint64_t &m, const T &n) ;
 
 		template<class T>
-		BlasMatrix (const _Field &F, int64_t m, T n) ;
+		BlasMatrix (const _Field &F, const int64_t &m, const T &n) ;
 
 		template<class T>
-		BlasMatrix (const _Field &F, uint32_t m, T  n) ;
+		BlasMatrix (const _Field &F, const uint32_t &m, const T  &n) ;
 
 		template<class T>
-		BlasMatrix (const _Field &F, int32_t m, T n) ;
+		BlasMatrix (const _Field &F, const int32_t &m, const T &n) ;
 
 		template<class T>
-		BlasMatrix (const _Field &F, Integer & m, T n) ;
+		BlasMatrix (const _Field &F, const Integer & m, const T &n) ;
 
 		//@}
 
