@@ -4,7 +4,6 @@
 
 # Run this to generate all the initial makefiles, etc.
 
-
 # Recover command line, with double-quotes
 CMDLINE=""
 for arg in "$@"
@@ -70,13 +69,6 @@ LIBTOOLIZE=glibtoolize
 	DIE=1
 }
 
-(automake --version) < /dev/null > /dev/null 2>&1 || {
-	echo
-	echo "You must have automake installed to compile $PROJECT."
-	echo "Get ftp://sourceware.cygnus.com/pub/automake/automake-1.4.tar.gz"
-	echo "(or a newer version if it is available)"
-	DIE=1
-}
 
 (grep "^AC_PROG_LIBTOOL" configure.ac >/dev/null) && {
   ($LIBTOOL --version) < /dev/null > /dev/null 2>&1 || {
