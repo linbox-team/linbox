@@ -1,68 +1,50 @@
 # Copyright (c) 2010 the LinBox group
 # This file is part of LinBox
 # see COPYING for licence
+AM_CPPFLAGS=-I$(top_srcdir)
 
-ACLOCAL_AMFLAGS = -I macros
+SUBDIRS=util element field randiter vector matrix blackbox switch algorithms solutions ring
 
-SUBDIRS=linbox macros tests interfaces doc examples benchmarks
+BASIC_HDRS =    \
+    integer.h   \
+    config-blas.h   linbox-config.h
 
-# I intend to pare down the target "check" so as to be a smaller check used
-# at installation time with a focus on confirming that dependencies on
-# other packages and compilation environment are in order.  In contrast, the
-# target "fullcheck" should become as exhaustive as possible to serve
-# developers for regression testing. -bds 2011Feb ...also benchmarks will be.
+NTL_HDRS =
 
-#  Fullcheck provides a full check for regression testing purposes.
-fullcheck:
-	(make ; cd tests; make fullcheck)
+GIVARO_HDRS =
 
-docs:doc/linbox-html/index.html
+LIDIA_HDRS =
 
-doc/linbox-html/index.html:
-	(cd doc; make docs)
+if LINBOX_HAVE_NTL
+USE_NTL_HDRS = $(NTL_HDRS)
+endif
 
-docs_dev:doc/linbox-dev-html/pages.html
+if LINBOX_HAVE_GIVARO
+USE_GIVARO_HDRS = $(GIVARO_HDRS)
+endif
 
-doc/linbox-dev-html/pages.html:
-	(cd doc; make docs_dev)
+if LINBOX_HAVE_LIDIA
+USE_LIDIA_HDRS = $(LIDIA_HDRS)
+endif
 
-examples:
-	(cd examples; make examples)
+pkginclude_HEADERS =        \
+    $(BASIC_HDRS)           \
+    $(USE_NTL_HDRS)         \
+    $(USE_GIVARO_HDRS)      \
+    $(USE_LIDIA_HDRS)
 
-benchmarks:
-	(cd benchmarks; make benchmarks)
+EXTRA_DIST =            \
+    $(NTL_HDRS)         \
+    $(GIVARO_HDRS)      \
+    $(LIDIA_HDRS)       \
+    linbox.doxy         \
+    archetypes.doxy
 
-.PHONY:examples benchmarks
+lib_LTLIBRARIES=liblinbox.la
 
-bin_SCRIPTS=linbox-config
+liblinbox_la_SOURCES = dummy.C
 
-bundled:
-	sh auto-install.sh
-
-uninstall-hook:
-	(test -d "$(includedir)/linbox" && rmdir "$(bindir)" \
-		"$(libdir)" \
-		"$(mandir)/man1" \
-		"$(mandir)" \
-		"$(includedir)/linbox/algorithms" \
-		"$(includedir)/linbox/blackbox" \
-		"$(includedir)/linbox/element" \
-		"$(includedir)/linbox/field/Givaro" \
-		"$(includedir)/linbox/field/Modular" \
-		"$(includedir)/linbox/field/NTL" \
-		"$(includedir)/linbox/field/" \
-		"$(includedir)/linbox/kaapi" \
-		"$(includedir)/linbox/matrix" \
-		"$(includedir)/linbox/randiter" \
-		"$(includedir)/linbox/ring" \
-		"$(includedir)/linbox/solutions" \
-		"$(includedir)/linbox/switch" \
-		"$(includedir)/linbox/util/formats" \
-		"$(includedir)/linbox/util" \
-		"$(includedir)/linbox/vector" \
-		"$(includedir)/linbox" ) || true
-
-VERSION=1.3.0
-
-EXTRA_DIST=auto-install.sh
-#incremente-versions
+liblinbox_la_LIBADD =           \
+    util/libutil.la             \
+    randiter/libranditer.la     \
+    algorithms/libalgorithms.la

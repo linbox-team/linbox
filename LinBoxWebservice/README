@@ -1,8 +1,0 @@
-1) Run 'ant.generate.service'
-2) Run 'ant.generate.middleman'
-3) Shutdown, start up tomcat
-4) Run 'ant.generate.queue.client'
-5) Run 'ant.generate.user.client'
-6) Start up rmi with /opt/jdk1.5.0_05/bin/rmiregistry
-7) Run 'ant.run.queueclient'
-8) Run 'ant.run.user.client -Darg1=rank -Darg2=matrices/mat2.txt'
