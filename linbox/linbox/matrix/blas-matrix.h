@@ -212,8 +212,14 @@ namespace LinBox
 		 * @param n cols
 		 */
 		//@{
+#ifdef __GNUC__
+#ifndef __x86_64__
+#if (__GNUC__ == 4 && __GNUC_MINOR__ ==4 && __GNUC_PATCHLEVEL==5)
 		template<class T>
 		BlasMatrix (const _Field &F, const long &m, const T &n) ;
+#endif
+#endif
+#endif
 
 		template<class T>
 		BlasMatrix (const _Field &F, const uint64_t &m, const T &n) ;
