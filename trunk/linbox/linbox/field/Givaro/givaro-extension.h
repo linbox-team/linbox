@@ -18,11 +18,11 @@
 #define __LINBOX_field_givaro_extension_H
 
 
+#include "linbox/linbox-config.h"
 #include "linbox/integer.h"
 #include "linbox/field/field-traits.h"
 #include "linbox/field/field-interface.h"
 #include "linbox/util/debug.h"
-#include "linbox/linbox-config.h"
 #include "linbox/field/field-traits.h"
 #include "linbox/field/Givaro/givaro-gfq.h"
 
@@ -100,7 +100,7 @@ namespace LinBox
 	 *  of Givaro.
 	 *  These class allow to construct only extension field with a prime characteristic.
 	 */
-	template< class BaseField = GivaroGfq>
+	template< class BaseField = LinBox::GivaroGfq>
 	class GivaroExtension : public Givaro::Extension<GivaroField<BaseField> >, public FieldInterface {
 
 		typedef GivaroExtension<GivaroField<BaseField> > Self_t;
@@ -175,8 +175,8 @@ namespace LinBox
 	 */
 #ifndef __INTEL_COMPILER
 	template<>
-	#endif
-	class GivaroExtension<GivaroGfq> : public Givaro::Extension< Givaro::GFqDom<int32_t> >, public FieldInterface {
+#endif
+	class GivaroExtension<LinBox::GivaroGfq> : public Givaro::Extension< Givaro::GFqDom<int32_t> >, public FieldInterface {
 
 		typedef GivaroExtension<GivaroGfq> Self_t;
 		typedef Givaro::Extension< Givaro::GFqDom<int32_t>  >       Extension_t;

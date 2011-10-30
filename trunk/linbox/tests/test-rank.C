@@ -32,6 +32,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
 #include "linbox/field/PID-integer.h"
+#include "linbox/field/gf2.h"
 #include "linbox/field/givaro.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/sparse.h"
