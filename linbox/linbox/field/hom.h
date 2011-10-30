@@ -594,6 +594,62 @@ namespace LinBox
 }
 #endif // __LINBOX_field_gf2_H
 
+#ifdef __LINBOX_field_givaro_gfq_H
+namespace LinBox
+{
+	template<>
+	class Hom <GivaroGfq,GivaroGfq> {
+	public:
+		typedef GivaroGfq Source;
+		typedef GivaroGfq Target;
+
+		typedef Source::Element SrcElt;
+		typedef Target::Element Elt;
+
+		//Hom(){}
+		/**
+		 * Construct a homomorphism from a specific source ring S and target
+		 * field T with Hom(S, T).
+		 * Specializations define all actual homomorphisms.
+		 */
+		Hom(const Source& S, const Target& T) :
+			_source(S), _target(T)
+		{ }
+
+		/**
+		 * image(t, s) implements the homomorphism, assigning the
+		 * t the value of the image of s under the mapping.
+		 *
+		 * The default behaviour goes through integers.
+		 */
+		Elt& image(Elt& t, const SrcElt& s)
+		{
+			return _target.init(t, _source.convert(tmp,s));
+		}
+
+		/** If possible, preimage(s,t) assigns a value to s such that
+		 * the image of s is t.  Otherwise behaviour is unspecified.
+		 * An error may be thrown, a conventional value may be set, or
+		 * an arb value set.
+		 *
+		 * The default behaviour goes through integers.
+		 */
+		SrcElt& preimage(SrcElt& s, const Elt& t)
+		{
+			return _source.init(s, _target.convert(tmp,t));
+		}
+		const Source& source() { return _source;}
+		const Target& target() { return _target;}
+
+	private:
+		integer tmp;
+		Source _source;
+		Target _target;
+	}; // end Hom
+}
+#endif
+
+
 
 #endif // __LINBOX_hom_H
 
