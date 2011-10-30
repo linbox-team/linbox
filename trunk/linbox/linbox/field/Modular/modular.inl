@@ -125,7 +125,7 @@ namespace LinBox {
 			y %= (uint64_t) _F._modulus;
 		}
 
-		return res = y;
+		return res = (uint16_t) y;
 	}
 
 	template <class Vector1, class Vector2>

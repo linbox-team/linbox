@@ -44,17 +44,6 @@
  * See COPYING for license information.
  */
 
-#ifndef __LINBOX_vector_stream_H
-#define __LINBOX_vector_stream_H
-
-#include <vector>
-#include <cmath>
-
-#include "linbox/vector/vector-traits.h"
-#include "linbox/util/debug.h"
-#include "linbox/randiter/nonzero.h"
-#include "linbox/randiter/mersenne-twister.h"
-
 /**
  * @file vector/stream.h
  *
@@ -63,6 +52,19 @@
  * Random, sparse, basis vectors,...
  */
 
+#ifndef __LINBOX_vector_stream_H
+#define __LINBOX_vector_stream_H
+
+#include <vector>
+#include <cmath>
+
+#include "linbox/util/debug.h"
+#include "linbox/vector/vector-traits.h"
+#include "linbox/randiter/nonzero.h"
+#include "linbox/randiter/mersenne-twister.h"
+
+
+// stream
 namespace LinBox
 {
 
@@ -185,7 +187,11 @@ namespace LinBox
 		size_t  _m;
 		size_t  _j;
 	};
+}
 
+// Dense
+namespace LinBox
+{
 	/** @brief Random dense vector stream.
 	 * Generates a sequence of random dense vectors over a given field
 	 */
@@ -289,6 +295,11 @@ namespace LinBox
 		size_t       _j;
 	};
 
+}
+
+//Sparse
+namespace LinBox
+{
 	/** @brief Random sparse vector stream.
 	 * Generates a sequence of random sparse vectors over a given field
 	 */
@@ -631,7 +642,11 @@ namespace LinBox
 		size_t                            _j;
 		MersenneTwister                   MT;
 	};
+}
 
+// standard basis
+namespace LinBox
+{
 	/** @brief Stream for \f$e_1,\cdots,e_n\f$.
 	 * Generates the sequence (e_1,...,e_n) over a given field
 	 *
@@ -851,5 +866,131 @@ namespace LinBox
 
 } // namespace LinBox
 
+// Specialization of RandomDenseStream for GF2
+#ifdef __LINBOX_field_gf2_H
+namespace LinBox
+{
+	class RandomDenseStreamGF2 : public VectorStream<BitVector> {
+	public:
+		typedef BitVector Vector;
+
+		RandomDenseStreamGF2 (const GF2 &, uint32_t seed, size_t nn, size_t mm = 0) :
+			MT (seed), _n (nn), _m (mm), _j (0)
+		{}
+
+		Vector &get (Vector &v)
+		{
+			Vector::word_iterator i;
+
+			if (_m > 0 && _j++ >= _m)
+				return v;
+
+			for (i = v.wordBegin (); i != v.wordEnd (); i++)
+				*i = MTrandomInt<__LINBOX_BITSOF_LONG>()(MT);
+
+			const size_t zeroing = __LINBOX_BITSOF_LONG - (v.size() % __LINBOX_BITSOF_LONG);
+			*(v.wordRbegin()) <<= zeroing;
+			*(v.wordRbegin()) >>= zeroing;
+			return v;
+		}
+
+		size_t size () const
+		{ return _m; }
+		size_t pos () const
+		{ return _j; }
+		size_t dim () const
+		{ return _n; }
+		operator bool () const
+		{ return _m == 0 || _j < _m; }
+		void reset () { _j = 0; }
+
+	private:
+		MersenneTwister MT;
+		size_t          _n;
+		size_t          _m;
+		size_t          _j;
+	};
+}
+
+// Specialization of RandomSparseStream
+namespace LinBox
+{
+
+	template <class _Vector = Vector<GF2>::Sparse>
+	class RandomSparseStreamGF2 : public VectorStream<_Vector> {
+	public:
+		typedef GF2 Field;
+		typedef _Vector Vector;
+
+		RandomSparseStreamGF2 (const GF2 &, uint32_t seed, double p, size_t N, size_t M = 0) :
+			MT (seed), _n (N), _m (M), _j (0)
+		{ setP (p); }
+
+		RandomSparseStreamGF2 (const GF2 &F, const GF2RandIter& r, double p, size_t N, size_t M = 0) :
+			MT (r.getMT()), _n (N), _m (M), _j (0)
+		{ setP (p); }
+
+		Vector &get (Vector &v);
+
+		size_t size () const
+		{ return _m; }
+		size_t pos () const
+		{ return _j; }
+		size_t dim () const
+		{ return _n; }
+		operator bool () const
+		{ return _m == 0 || _j < _m; }
+		void reset () { _j = 0; }
+
+		void setP (double p)
+		{
+			linbox_check ((p >= 0.0) && (p <= 1.0));
+			_p = p;
+			_1_log_1mp   = 1 / log (1 - _p);
+		}
+
+	private:
+		MersenneTwister MT;
+		size_t _n;
+		double _p;
+		double _1_log_1mp;
+		size_t _m;
+		size_t _j;
+	};
+
+	template <class _Vector>
+	_Vector &RandomSparseStreamGF2<_Vector>::get (_Vector &v)
+	{
+		size_t i = (size_t) -1;
+		double val;
+		int skip;
+
+		if (_m > 0 && _j++ >= _m)
+			return v;
+
+		v.clear ();
+
+		while (1) {
+			val = (double) MT.randomDouble ();
+			skip = (int) (ceil (log (val) * _1_log_1mp));
+
+			if (skip <= 0)
+				i++;
+			else
+				i += skip;
+
+			if (i >= _n) break;
+
+			v.push_back (i);
+		}
+
+		return v;
+	}
+
+}
+#endif // __LINBOX_field_gf2_H
+
+
 #endif // __LINBOX_vector_stream_H
+
 

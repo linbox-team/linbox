@@ -16,15 +16,15 @@
 #include <iostream>
 #include <vector>
 
-#include "time.h"
+#include <time.h>
+#include "linbox/linbox-config.h"
 #include "linbox/integer.h"
-#include "linbox/field/modular.h"
+// #include "linbox/field/modular.h"
 #include "linbox/element/abstract.h"
 #include "linbox/element/envelope.h"
 #include "linbox/util/commentator.h"
 #include "linbox/randiter/mersenne-twister.h"
 #include "linbox/vector/bit-vector.h"
-#include "linbox/linbox-config.h"
 
 #ifdef __LINBOX_XMLENABLED
 
@@ -135,6 +135,31 @@ namespace LinBox
 		MersenneTwister MT;
 
 	}; // class GF2RandIter
+
+} // namespace LinBox
+
+namespace LinBox
+{
+
+	template<size_t bitsize>
+	struct MTrandomInt {
+		template<typename M32Twister>
+		unsigned __LINBOX_INT32 operator() (M32Twister& MT) const
+		{
+			return MT.randomInt();
+		}
+	};
+
+	template<>
+	struct MTrandomInt<64> {
+		template<typename M32Twister>
+		unsigned __LINBOX_INT64 operator() (M32Twister& MT) const
+		{
+			unsigned __LINBOX_INT64 tmp = MT.randomInt();
+			tmp <<=32;
+			return tmp += MT.randomInt();
+		}
+	};
 
 } // namespace LinBox
 
