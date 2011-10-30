@@ -71,8 +71,8 @@ namespace LinBox
 	 *  and Givaro::ZpzDom<log16> classes of Givaro.
 	 *  These classes allow to construct only finite field with a prime modulus.
 	 */
-
-	template <class TAG> class GivaroZpz : public Givaro::ZpzDom<TAG>, public FieldInterface {
+	template <class TAG>
+	class GivaroZpz : public Givaro::ZpzDom<TAG>, public FieldInterface {
 
 	private:
 

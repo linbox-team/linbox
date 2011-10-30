@@ -1179,9 +1179,12 @@ namespace LinBox
 #ifdef __LINBOX_field_gf2_H
 namespace LinBox
 {
+	/*! Specialization of MatrixDomain for GF2.
+	 * @bug this is half done and makes MatrixDomain on GF2 hardly usable.
+	 * @todo this is where m4ri will play.
+	 */
 	template <>
-	class MatrixDomain<GF2>
-	{
+	class MatrixDomain<GF2> {
 	public:
 		MatrixDomain (const GF2 &F) :
 			_VD (F)
@@ -1211,7 +1214,9 @@ namespace LinBox
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
 					 MatrixCategories::RowColMatrixTag) const
-		{ return mulRowSpecialized (w, A, v, typename VectorTraits<Vector1>::VectorCategory ()); }
+		{
+			return mulRowSpecialized (w, A, v, typename VectorTraits<Vector1>::VectorCategory ());
+		}
 
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
@@ -1279,6 +1284,7 @@ namespace LinBox
 		typename Matrix::ConstColIterator i = A.colBegin ();
 		typename Vector2::const_iterator j = v.begin ();
 
+		//!@bug what's happening here ?
 		_VD.subin (w, w);
 
 		for (; j != v.end (); ++j, ++i)

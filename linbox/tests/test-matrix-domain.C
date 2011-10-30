@@ -39,6 +39,8 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
+#include "linbox/field/modular-balanced.h"
+#include "linbox/field/givaro.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/vector/stream.h"
@@ -1450,6 +1452,73 @@ bool testMatrixDomain (const Field &F, const char *text,
 	return pass;
 }
 
+template <class Field>
+bool launchTestMatrixDomain(const Field &F, size_t m, size_t n, size_t k, int iterations)
+{
+
+	bool pass = true ;
+	typedef typename Field::Element Element ;
+	BlasMatrix<Field> M1 (F, n, m);
+	BlasMatrix<Field> M2 (F, n, m);
+	BlasMatrix<Field> M3 (F, m, m);
+	MatrixBlackbox<Field, BlasMatrix<Field> > A1 (F, n, m);
+
+	RandomDenseStream<Field, typename BlasMatrix<Field>::Row> stream1 (F, m);
+
+	typename BlasMatrix<Field>::RowIterator i;
+
+	for (i = M1.rowBegin (); i != M1.rowEnd (); ++i)
+		stream1 >> *i;
+
+	for (i = M2.rowBegin (); i != M2.rowEnd (); ++i)
+		stream1 >> *i;
+
+	for (i = M3.rowBegin (); i != M3.rowEnd (); ++i)
+		stream1 >> *i;
+
+	for (i = A1.rep ().rowBegin (); i != A1.rep ().rowEnd (); ++i)
+		stream1 >> *i;
+
+	if (!testMatrixDomain (F, "dense", M1, M2, M3, A1, iterations,
+			       typename MatrixTraits<BlasMatrix<Field> >::MatrixCategory ()))
+		pass = false;
+
+	SparseMatrixBase<Element> M4 (n, m);
+	SparseMatrixBase<Element> M5 (n, m);
+	SparseMatrixBase<Element> M6 (m, m);
+	MatrixBlackbox<Field, SparseMatrixBase<Element> > A2 (F, n, m);
+
+	RandomSparseStream<Field, typename SparseMatrixBase<Element>::Row> stream2 (F, (double) k / (double) n, m);
+
+	typename SparseMatrixBase<Element>::RowIterator i2;
+
+	for (i2 = M4.rowBegin (); i2 != M4.rowEnd (); ++i2)
+		stream2 >> *i2;
+
+	for (i2 = M5.rowBegin (); i2 != M5.rowEnd (); ++i2)
+		stream2 >> *i2;
+
+	for (i2 = M6.rowBegin (); i2 != M6.rowEnd (); ++i2)
+		stream2 >> *i2;
+
+	for (i2 = A2.rep ().rowBegin (); i2 != A2.rep ().rowEnd (); ++i2)
+		stream2 >> *i2;
+
+	if (!testMatrixDomain (F, "sparse row-wise", M4, M5, M6, A2, iterations,
+			       typename MatrixTraits<SparseMatrixBase<Element> >::MatrixCategory ()))
+		pass = false;
+
+	TransposeMatrix<SparseMatrixBase<Element> > M7 (M4);
+	TransposeMatrix<SparseMatrixBase<Element> > M8 (M5);
+	TransposeMatrix<SparseMatrixBase<Element> > M9 (M6);
+
+	if (!testMatrixDomain (F, "sparse column-wise", M7, M8, M9, A2, iterations,
+			       typename MatrixTraits<TransposeMatrix<SparseMatrixBase<Element> > >::MatrixCategory ()))
+		pass = false;
+
+	return pass ;
+}
+
 int main (int argc, char **argv)
 {
 	bool pass = true;
@@ -1472,10 +1541,10 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	if (k >= m) k = m/2+1 ;
 
-	typedef Modular<uint32_t> Field;
-	typedef Field::Element Element;
 
-	Field F (q);
+	Modular<uint32_t>                F1 (q);
+	ModularBalanced<int32_t>         F2 (q);
+	GivaroZpz<Givaro::Unsigned32>    F3(q);
 
 	commentator.start("Matrix domain test suite", "MatrixDomain");
 
@@ -1485,63 +1554,9 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (3);
 
-	BlasMatrix<Field> M1 (F, n, m);
-	BlasMatrix<Field> M2 (F, n, m);
-	BlasMatrix<Field> M3 (F, m, m);
-	MatrixBlackbox<Field, BlasMatrix<Field> > A1 (F, n, m);
-
-	RandomDenseStream<Field, BlasMatrix<Field>::Row> stream1 (F, m);
-
-	BlasMatrix<Field>::RowIterator i;
-
-	for (i = M1.rowBegin (); i != M1.rowEnd (); ++i)
-		stream1 >> *i;
-
-	for (i = M2.rowBegin (); i != M2.rowEnd (); ++i)
-		stream1 >> *i;
-
-	for (i = M3.rowBegin (); i != M3.rowEnd (); ++i)
-		stream1 >> *i;
-
-	for (i = A1.rep ().rowBegin (); i != A1.rep ().rowEnd (); ++i)
-		stream1 >> *i;
-
-	if (!testMatrixDomain (F, "dense", M1, M2, M3, A1, iterations,
-			       MatrixTraits<BlasMatrix<Field> >::MatrixCategory ()))
-		pass = false;
-
-	SparseMatrixBase<Element> M4 (n, m);
-	SparseMatrixBase<Element> M5 (n, m);
-	SparseMatrixBase<Element> M6 (m, m);
-	MatrixBlackbox<Field, SparseMatrixBase<Field::Element> > A2 (F, n, m);
-
-	RandomSparseStream<Field, SparseMatrixBase<Element>::Row> stream2 (F, (double) k / (double) n, m);
-
-	SparseMatrixBase<Element>::RowIterator i2;
-
-	for (i2 = M4.rowBegin (); i2 != M4.rowEnd (); ++i2)
-		stream2 >> *i2;
-
-	for (i2 = M5.rowBegin (); i2 != M5.rowEnd (); ++i2)
-		stream2 >> *i2;
-
-	for (i2 = M6.rowBegin (); i2 != M6.rowEnd (); ++i2)
-		stream2 >> *i2;
-
-	for (i2 = A2.rep ().rowBegin (); i2 != A2.rep ().rowEnd (); ++i2)
-		stream2 >> *i2;
-
-	if (!testMatrixDomain (F, "sparse row-wise", M4, M5, M6, A2, iterations,
-			       MatrixTraits<SparseMatrixBase<Element> >::MatrixCategory ()))
-		pass = false;
-
-	TransposeMatrix<SparseMatrixBase<Element> > M7 (M4);
-	TransposeMatrix<SparseMatrixBase<Element> > M8 (M5);
-	TransposeMatrix<SparseMatrixBase<Element> > M9 (M6);
-
-	if (!testMatrixDomain (F, "sparse column-wise", M7, M8, M9, A2, iterations,
-			       MatrixTraits<TransposeMatrix<SparseMatrixBase<Element> > >::MatrixCategory ()))
-		pass = false;
+	pass &= launchTestMatrixDomain(F1,m,n,k,iterations);
+	pass &= launchTestMatrixDomain(F2,m,n,k,iterations);
+	pass &= launchTestMatrixDomain(F3,m,n,k,iterations);
 
 	commentator.stop (MSG_STATUS (pass), "Matrix domain test suite");
 	return pass ? 0 : -1;
