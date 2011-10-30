@@ -281,7 +281,7 @@ namespace LinBox
 			}
 
 			normalize(y);
-			res = y;
+			res = (Element) y;
 
 			if (res > _F.half_mod) res -= _F.modulus;
 			else if(res < _F.mhalf_mod) res += _F.modulus;
@@ -320,7 +320,7 @@ namespace LinBox
 
 			normalize(y);
 
-			res = y;
+			res = (Element) y;
 			if (res > _F.half_mod) res -= _F.modulus;
 			else if(res < _F.mhalf_mod) res += _F.modulus;
 

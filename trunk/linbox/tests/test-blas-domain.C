@@ -27,10 +27,13 @@
 #include <iostream>
 #include <string>
 #include "linbox/integer.h"
+#include "linbox/field/gf2.h"
+#include "linbox/field/modular.h"
+#include "linbox/field/modular-balanced.h"
+#include "linbox/field/givaro.h"
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/vector/vector-domain.h"
-#include "linbox/field/modular.h"
 #include "linbox/randiter/nonzero.h"
 #include "linbox/util/commentator.h"
 #include "linbox/algorithms/blas-domain.h"
@@ -1585,9 +1588,14 @@ int main(int argc, char **argv)
 	//typedef Modular<int> Field;
 	//typedef Modular<float> Field;
 
-	Field F (q);
-	// ModularBalanced<double> G(q);
-	Modular<float> H(2011);
+	Field F1 (q);
+	ModularBalanced<double> F2(q);
+	Modular<float> F3(2011);
+	GF2 F4 ;
+// #pragma message "#warning GivaroZpz is not working at all"
+	GivaroZpz<Givaro::Unsigned32> F5(2001);
+	Modular<bool> F6 ;
+	// BB. (Blas)MatrixDomain are not very generic...
 
 	bool pass = true;
 
@@ -1599,9 +1607,13 @@ int main(int argc, char **argv)
 
 	commentator.start("BlasMatrixDomain test suite", "BlasMatrixDomain");
 
-	pass &= launch_tests(F,(int)n,iterations);
-	// pass &= launch_tests(G,n,iterations);
-	pass &= launch_tests(H,(int)n,iterations);
+	pass &= launch_tests(F1,(int)n,iterations);
+	pass &= launch_tests(F2,(int)n,iterations);
+	pass &= launch_tests(F3,(int)n,iterations);
+#pragma message "#warning GF2 is not working at all -> working on m4ri"
+	// pass &= launch_tests(F4,(int)n,iterations);
+	// pass &= launch_tests(F5,(int)n,iterations);
+	// pass &= launch_tests(F6,(int)n,iterations);
 
 	commentator.stop(MSG_STATUS (pass), (const char *) 0,"BlasMatrixDomain test suite");
 	return pass ? 0 : -1;
