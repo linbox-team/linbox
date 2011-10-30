@@ -78,7 +78,7 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 	double totaltime = 0.0;
 
 	while (stream1 && stream2) {
-		LinBox::commentator.startIteration (stream1.j ());
+		LinBox::commentator.startIteration ((unsigned int)stream1.j ());
 
 		stream1.next (v1);
 		stream2.next (v2);
@@ -130,7 +130,7 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 	}
 
 	LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
-		<< "Average time for dot product: " << totaltime / stream1.m () << std::endl;
+		<< "Average time for dot product: " << totaltime / (double)stream1.m () << std::endl;
 
 	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDotProduct");
 
@@ -172,7 +172,7 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 	double totaltime = 0.0;
 
 	while (stream1 && stream2) {
-		LinBox::commentator.startIteration (stream1.j ());
+		LinBox::commentator.startIteration ((unsigned int)stream1.j ());
 
 		stream1.next (v1);
 		stream2.next (v2);
@@ -222,7 +222,7 @@ static bool testDotProductGF2 (const GF2 &F, const char *, //desc,
 	}
 
 	LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
-		<< "Average time for dot product: " << totaltime / stream1.m () << std::endl;
+		<< "Average time for dot product: " << totaltime / (double)stream1.m () << std::endl;
 
 	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDotProduct");
 
@@ -271,17 +271,17 @@ int main (int argc, char **argv)
 	commentator.start ("Testing GF2", "main", 10);
 
 
-	if ( not testField (F, "GF2"))      
-		pass = false; 
+	if ( not testField (F, "GF2"))
+		pass = false;
 	commentator.progress ();
 
 /*
 	if ( not testDotProductGF2 (F, "Testing dot prod", stream1, stream3))
-		pass = false; 
+		pass = false;
 	commentator.progress ();
 */
-#if 0 
-	FieldArchetype K(new LargeModular(101)); 
+#if 0
+	FieldArchetype K(new LargeModular(101));
 	if (!testField<FieldArchetype> (K, "Testing archetype with envelope of Modular field"))
 		pass = false;
 #endif

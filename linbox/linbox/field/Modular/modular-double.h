@@ -180,6 +180,12 @@ namespace LinBox
 
 	      };
 
+} // LinBox
+
+// FieldAXPY/DotProductDomain
+namespace LinBox
+{
+
 	template <>
 	class FieldAXPY<Modular<double> > {
 	public:

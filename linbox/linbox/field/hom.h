@@ -451,5 +451,149 @@ namespace LinBox
 }
 #endif //__LINBOX_field_gmp_rational_H
 
+#ifdef __LINBOX_field_gf2_H
+namespace LinBox
+{
+
+	template <>
+	class Hom<GF2,GF2> {
+
+	public:
+		typedef GF2 Target;
+		typedef GF2 Source;
+		typedef Source::Element SrcElt;
+		typedef Target::Element Elt;
+
+		Hom(const Source& S, const Target& ) :
+			_source (S)
+		{}
+		Elt& image(Elt& t, const SrcElt& s)
+		{
+			return _source.assign (t, s);
+		}
+		SrcElt& preimage(SrcElt& s, const Elt& t)
+		{
+			return _source.assign (s, t);
+		}
+		const Source& source()
+		{
+			return _source;
+		}
+		const Target& target()
+		{
+			return _source;
+		}
+
+	protected:
+		Source _source;
+	};
+
+	template<class Target >
+	class Hom<GF2, Target > {
+	public:
+		typedef GF2 Source;
+		typedef typename GF2::Element SrcElt;
+		typedef typename Target::Element Elt;
+
+		Hom(const Source& S, const Target& T) :
+			_source(S), _target(T)
+		{ }
+		Elt& image(Elt& t, const SrcElt& s)
+		{
+			return _source.convert(t,s);
+		}
+		SrcElt& preimage(SrcElt& s, const Elt& t)
+		{
+			return _target.convert(s,t);
+		}
+		std::_Bit_reference preimage(std::_Bit_reference s, const Elt& t) const
+		{
+			int ts;
+			return s = _target.convert(ts, t);
+		}
+
+		const Source& source()
+		{
+			return _source;
+		}
+		const Target& target()
+		{
+			return _target;
+		}
+
+	private:
+		Source _source;
+		Target _target;
+	}; // end Hom
+
+
+}
+
+#include "linbox/field/Givaro/givaro-extension.h"
+namespace LinBox
+{
+	template<>
+	class Hom < GF2, GivaroExtension<GF2> > {
+		typedef GF2 Source;
+		typedef GivaroExtension<GF2> Target;
+	public:
+		typedef Source::Element SrcElt;
+		typedef Target::Element Elt;
+
+		//Hom(){}
+		/**
+		 * Construct a homomorphism from a specific source ring S and target
+		 * field T with Hom(S, T).  The default behaviour is error.
+		 * Specializations define all actual homomorphisms.
+		 */
+		Hom(const Source& S, const Target& T) :
+			_source(S), _target(T)
+		{}
+
+		/**
+		 * image(t, s) implements the homomorphism, assigning the
+		 * t the value of the image of s under the mapping.
+		 *
+		 * The default behaviour is a no-op.
+		 */
+		Elt& image(Elt& t, const SrcElt& s) const
+		{
+			return _target.assign(t,s);
+		}
+
+		/** If possible, preimage(s,t) assigns a value to s such that
+		 * the image of s is t.  Otherwise behaviour is unspecified.
+		 * An error may be thrown, a conventional value may be set, or
+		 * an arb value set.
+		 *
+		 * The default behaviour is a no-op.
+		 */
+		SrcElt& preimage(SrcElt& s, const Elt& t) const
+		{
+			return _target.convert(s, t);
+		}
+		std::_Bit_reference preimage(std::_Bit_reference s, const Elt& t) const
+		{
+			bool ts;
+			return s = _target.convert(ts, t);
+		}
+
+		const Source& source() const
+		{
+			return _source;
+		}
+		const Target& target() const
+		{
+			return _target;
+		}
+
+	private:
+		Source _source;
+		Target _target;
+	}; // end Hom
+}
+#endif // __LINBOX_field_gf2_H
+
+
 #endif // __LINBOX_hom_H
 
