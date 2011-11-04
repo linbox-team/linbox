@@ -22,8 +22,9 @@
  * Boston, MA 02110-1301, USA.
  */
 
-/** @file matrix-permutation.inl
- * @brief Implementation of matrix-permutation.h
+/** @internal
+ * @file permutation-permutation.inl
+ * @brief Implementation of permutation-matrix.h
  */
 
 #ifndef __LINBOX_matrix_permutation_INL

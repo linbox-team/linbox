@@ -34,7 +34,7 @@
 #include "linbox/algorithms/blas-domain.h"
 #include <fflas-ffpack/ffpack/ffpack.h>
 
-#include "linbox/matrix/matrix-permutation.h"
+#include "linbox/matrix/permutation-matrix.h"
 
 namespace LinBox
 {

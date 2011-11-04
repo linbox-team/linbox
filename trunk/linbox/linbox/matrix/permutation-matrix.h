@@ -22,7 +22,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-/** @file matrix/matrix-permutation.h
+/** @file matrix/permutation-matrix.h
  * @ingroup matrix
  * A permutation class for operations on permutations, their representations
  * and matrix row/column permuting.
@@ -380,6 +380,6 @@ namespace LinBox
 }
 #endif
 
-#include "matrix-permutation.inl"
+#include "permutation-matrix.inl"
 
 #endif //__LINBOX_matrix_permutation_H
