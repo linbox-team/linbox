@@ -14,7 +14,7 @@ BASIC_HDRS =                                     \
     blas-matrix.inl      blas-submatrix.inl      \
     factorized-matrix.h  factorized-matrix.inl   \
     blas-triangularmatrix.inl                    \
-    matrix-permutation.h matrix-permutation.inl  \
+    permutation-matrix.h permutation-matrix.inl  \
     random-matrix.h      random-matrix.inl
 
 NTL_HDRS =
