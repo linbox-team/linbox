@@ -189,10 +189,9 @@
 	      </p>
 
 	      <p>
-		You will need GNU Autoconf, GNU Automake, GNU Libtool,
-		the GNU multiprecision library (GMP), and a BLAS implementation to compile
-		LinBox. Make sure the bin directories of the first
-		three of those are all in your PATH, e.g. if you have
+		You will need GNU Autoconf, GNU Automake, and GNU Libtool.
+		Make sure the bin directories of these tools are in 
+		your PATH, e.g. if you have
 		Libtool installed in /usr/local/algebra/libtool, make
 		sure /usr/local/algebra/libtool/bin is in your PATH.
 	      </p>
@@ -209,15 +208,6 @@
 	      </p>
 
 	      <p>
-		Of the four tools mentioned, only GMP and BLAS are
-		required if you are installing from a tarball. GNU
-		Autoconf, GNU Automake, and GNU Libtool are only
-		required for users of Subversion and those individuals
-		interested in doing major development work on the
-		library.
-	      </p>
-
-	      <p>
 		See <a
 		href="http://www.gnu.org/software/autoconf/">http://www.gnu.org/software/autoconf/</a>
 		for GNU Autoconf, <a
@@ -226,6 +216,14 @@
 		href="http://www.gnu.org/software/libtool/">http://www.gnu.org/software/libtool/</a>
 		for GNU Libtool.
 	      </p>
+
+	      <p>
+		GNU Autoconf, GNU Automake, and GNU Libtool are only
+		required for checkouts from subversion.
+		  But whether you are installing from a tarball release or from an svn revision, the packages on which LinBox depends will be needed: 
+		the GNU multiprecision library (GMP), Givaro, fflas-ffpack, and a BLAS implementation, optionally NTL. 
+	      </p>
+
 	    </li>
 
 	    <li>
@@ -252,21 +250,44 @@
 
 	      <table border="0" cellpadding="4" cellspacing="0">
 		<tr>
-		  <td><tt>--with-gmp-prefix=&lt;prefix&gt;</tt></td>
+		  <td><tt>--with-gmp=&lt;gmp-prefix&gt;</tt></td>
 		  <td>Prefix of your GMP installation</td>
 		</tr>
 
 		<tr>
-		  <td><tt>--with-ntl-prefix=&lt;prefix&gt;</tt></td>
-		  <td>Prefix of your NTL installation</td>
+		  <td><tt>--with-blas=&lt;blas-prefix&gt;</tt></td>
+		  <td>Prefix of your BLAS installation</td>
+		  <td>There is an ATLAS variant.</td>
+		</tr>
+
+		<tr>
+		  <td><tt>--with-givaro=&lt;givaro-prefix&gt;</tt></td>
+		  <td>Prefix of your GIVARO installation</td>
+		</tr>
+
+		<tr>
+		  <td><tt>--with-fflas-ffpack=&lt;fflas-ffpack-prefix&gt;</tt></td>
+		  <td>Prefix of your FFLAS_FFPACK installation</td>
+		</tr>
+
+		<tr>
+		  <td><tt>--with-ntl=&lt;ntl-prefix&gt;</tt></td>
+		  <td>Prefix of your optional NTL installation</td>
+		</tr>
+
+		<tr>
+		  <td><tt>--with-lapack=&lt;lapack-prefix&gt;</tt></td>
+		  <td>Prefix of your optional LAPACK installation</td>
 		</tr>
 	      </table>
 
 	      <p>
 		GMP is <i>required</i> for the library to compile, so you
 		must specify <tt>--with-gmp-prefix=&lt;prefix&gt;</tt>
-		if <tt>&lt;prefix&gt;</tt> is not a standard location
-		such as /usr or /usr/local
+		if <tt>&lt;prefix&gt;</tt> 
+		For each package, this specification is needed only if the package is not installed at a standard location
+		such as /usr or /usr/local.
+		It is also necessary to set your LD_LIBRARY_PATH to support dynamic linking with the lib directory of any of the packages installed in a nonstandard place.
 	      </p>
 	    </li>
 
