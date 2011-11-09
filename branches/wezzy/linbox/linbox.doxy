@@ -1,0 +1,20 @@
+// Copyright (C) 2010 LinBox, GNU LGPL, see COPYING for licence information
+
+/*+ \defgroup linbox LinBox
+ *
+ * \brief This is the LinBox library proper.
+ *
+ *
+ */
+
+/*! @namespace LinBox
+ * @brief Namespace in which all linbox code resides.
+ *
+ * The subdirectories of \c linbox/ contain the template source code for all
+ * the LinBox functionality.  See the <a href=modules.html>Modules</a> list for
+ * the documentation of the main parts of linbox.
+ *
+ * @warning The timer comes from Givaro and lives in its anonymous namespace.
+ */
+
+// vim:syn=doxygen
