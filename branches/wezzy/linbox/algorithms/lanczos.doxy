@@ -1,0 +1,10 @@
+// Copyright (C) 2010 LinBox, GNU LGPL, see COPYING for licence information
+
+/** @ingroup algorithms
+  @defgroup lanczos Lanczos
+  @brief NO DOC YET
+
+
+ */
+
+// vim:syntax=doxygen

@@ -1,0 +1,9 @@
+/** \page randomFEGW Random field element generator wrappers
+
+  @see \ref Fields
+  @see Field Wrappers
+
+  @brief Wrappers to make \ref LinBox random field element generators.
+*/
+
+// vim:syn=doxygen

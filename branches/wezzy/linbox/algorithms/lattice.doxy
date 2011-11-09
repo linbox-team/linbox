@@ -1,0 +1,14 @@
+// Copyright (C) 2011 Brice Boyer, part of LinBox, GNU LGPL, see COPYING
+/*!
+\ingroup algorithms
+\defgroup lattice Lattice reductions
+
+@brief Lattice reduction (LLL) in LinBox.
+
+This is an interface to fplll/NTL.
+
+NO DOC
+
+*/
+
+// vim:syntax=doxygen
