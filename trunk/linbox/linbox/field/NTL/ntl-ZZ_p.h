@@ -147,7 +147,9 @@ namespace LinBox
 	struct NTL_ZZ_p: public NTL_ZZ_p_Initialiser, public FFPACK::UnparametricOperations<NTL::ZZ_p> {
 		typedef NTL::ZZ_p Element ;
 		typedef FFPACK::UnparametricOperations<Element> Father_t ;
+
 		typedef UnparametricRandIter<Element> RandIter;
+		typedef NonzeroRandIter<NTL_ZZ_p, RandIter > NonZeroRandIter;
 
 		const Element zero,one,mOne ;
 
@@ -209,6 +211,17 @@ namespace LinBox
 			return x = NTL::to_ZZ_p( 0L );
 		}
 
+		Element& init(Element& x, const Element& y) const
+		{
+			return x = y ;
+		}
+
+		template <class ANY> //dpritcha--FIX
+		Element& init(Element& x, const ANY& y) const
+		{
+			return x = NTL::to_ZZ_p((long)(y));
+		}
+
 		/** Specialization for NTL::ZZ.
 		 *
 		 * @return reference to  NTL::ZZ
@@ -253,12 +266,6 @@ namespace LinBox
 			return x;
 		}
 
-		template <class ANY> //dpritcha--FIX
-		Element& init(Element& x, const ANY& y) const
-		{
-			return x = NTL::to_ZZ_p((long)(y));
-		}
-
 		template <class ANY>
 		ANY& convert(ANY& x, const Element& y) const
 		{
@@ -280,7 +287,6 @@ namespace LinBox
 		{
 			return x = NTL::power(x,exp);
 		}
-
 
 		/** Cardinality.
 		 * Return integer representing cardinality of the field.
@@ -307,6 +313,11 @@ namespace LinBox
 		// check if NTL has cast ZZp to gmp integers.
 		{
 			return c = static_cast<integer>(to_long(Element::modulus()));
+		}
+
+		size_t& characteristic(size_t & c) const
+		{
+			return c = to_long(Element::modulus());
 		}
 
 		integer characteristic() const

@@ -31,6 +31,9 @@
 #include "linbox/field/modular.h"
 #include "linbox/field/modular-balanced.h"
 #include "linbox/field/givaro.h"
+#ifdef __LINBOX_HAVE_NTL
+#include "linbox/field/ntl.h"
+#endif
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/vector/vector-domain.h"
@@ -975,7 +978,7 @@ static bool testPermutation (const Field& F, size_t m, int iterations)
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G);
-	Element One,zero,tmp,tmp2;
+	Element One,zero,tmp;
 	F.init(One,1UL);
 	F.init(zero,0UL);
 
@@ -993,18 +996,19 @@ static bool testPermutation (const Field& F, size_t m, int iterations)
 		Field Z2(2);
 		RandIter G2(Z2);
 
-		for (size_t i=0; i<m; ++i){
-			G.random(tmp);
-			if ( Z2.isZero(G2.random(tmp2) ) )
-				P[i] = i + ( (size_t) tmp % (m-i) );
-			else
-				P[i] = i;
-		}
+		// for (size_t i=0; i<m; ++i){
+			// G.random(tmp);
+			// if ( Z2.isZero(G2.random(tmp2) ) )
+				// P[i] = i + ( (size_t) random() % (m-i) );
+			// else
+				// P[i] = i;
+		// }
 
 		//std::cerr<<P<<std::endl;
 		Matrix A(F, m,m), Abis(F, m,m), B(F, m,m), C(F, m,m), D(F, m,m);
 		std::vector<Element> a(m),abis(m),b(m),c(m), d(m);
-		BlasPermutation<size_t>  Perm(P);
+		BlasPermutation<size_t>  Perm(m);
+		RandomBlasPermutation(Perm);
 
 		// Create A a random matrix
 		for (size_t i=0;i<m;++i)
@@ -1592,10 +1596,14 @@ int main(int argc, char **argv)
 	ModularBalanced<double> F2(q);
 	Modular<float> F3(2011);
 	GF2 F4 ;
-// #pragma message "#warning GivaroZpz is not working at all"
 	GivaroZpz<Givaro::Unsigned32> F5(2001);
 	Modular<bool> F6 ;
 	// BB. (Blas)MatrixDomain are not very generic...
+#ifdef __LINBOX_HAVE_NTL
+	NTL::ZZ_p::init(NTL::to_ZZ((size_t)q));
+	NTL_ZZ_p F7;
+#endif
+
 
 	bool pass = true;
 
@@ -1612,8 +1620,13 @@ int main(int argc, char **argv)
 	pass &= launch_tests(F3,(int)n,iterations);
 #pragma message "#warning GF2 is not working at all -> working on m4ri"
 	// pass &= launch_tests(F4,(int)n,iterations);
-	// pass &= launch_tests(F5,(int)n,iterations);
 	// pass &= launch_tests(F6,(int)n,iterations);
+#pragma message "#warning GivaroZpz is not working at all"
+	// pass &= launch_tests(F5,(int)n,iterations);
+#ifdef __LINBOX_HAVE_NTL
+#pragma message "#warning NTL_ZZp is not working at all"
+	// pass &= launch_tests(F7,(int)n,iterations);
+#endif
 
 	commentator.stop(MSG_STATUS (pass), (const char *) 0,"BlasMatrixDomain test suite");
 	return pass ? 0 : -1;

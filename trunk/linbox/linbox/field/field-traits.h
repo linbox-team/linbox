@@ -24,19 +24,16 @@ namespace LinBox {
 	 * integer is a valid modulus for the given field.
 	 * maxExponent and goodExponent do the same for the prime power.
 	 */
-	class RingCategories {
-
-	public:
-
-		//generic ring.
+	namespace RingCategories {
+		//! generic ring.
 		struct GenericTag{};
-		//If it is isomorphic to Z/mZ, for some m or its extensions.
+		//! If it is isomorphic to Z/mZ, for some m or its extensions.
 		struct ModularTag : public virtual GenericTag{};
-		//If it is isomorphic to Z
+		//! If it is isomorphic to Z
 		struct IntegerTag : public virtual GenericTag{};
-		//If it is isomorphic to Q
+		//! If it is isomorphic to Q
 		struct RationalTag : public virtual GenericTag{};
-	};
+	}
 
 	/*! Default ring category.
 	 */
@@ -55,10 +52,12 @@ namespace LinBox {
 		{
 			return i = static_cast<integer>(Field::getMaxModulus());
 		}
+
 		static uint64_t & maxModulus( uint64_t& i )
 		{
 			return i = static_cast<uint64_t>(Field::getMaxModulus());
 		}
+
 		static uint32_t & maxModulus( uint32_t& i )
 		{
 			return i = static_cast<uint32_t>(Field::getMaxModulus());
