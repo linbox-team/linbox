@@ -32,12 +32,13 @@
 #include <string>
 #include <algorithm>
 
+#include "linbox/linbox-config.h"
 #include "linbox/integer.h"
 #include "linbox/field/field-interface.h"
 #include "linbox/randiter/unparametric.h"
-#include "linbox/linbox-config.h"
 #include "linbox/field/field-traits.h"
 #include <fflas-ffpack/field/unparametric.h>
+#include "linbox/randiter/nonzero.h"
 //#if __LINBOX_HAVE_NTL
 //#include "linbox/field/ntl-RR.h"
 //#endif // __LINBOX_HAVE_NTL
@@ -123,6 +124,9 @@ namespace LinBox
 
 		/// Type of random field element generators.
 		typedef UnparametricRandIter<K> RandIter;
+		/// Type of non zero random field element generators.
+		typedef NonzeroRandIter<UnparametricField<K>, RandIter > NonZeroRandIter;
+
 
 		/** @name Field Object Basics.
 		*/
