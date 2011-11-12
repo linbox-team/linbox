@@ -79,7 +79,7 @@ namespace LinBox
 		ModularRandIter (const Modular<Element> &F,
 				 const integer &size = 0,
 				 const integer &seed = 0) :
-			_F (F), _size (size), _seed (seed)
+			_field (F), _size (size), _seed (seed)
 		{
 			if (_seed == 0) _seed = time (NULL);
 
@@ -106,7 +106,7 @@ namespace LinBox
 		 * @param  R ModularRandIter object.
 		 */
 		ModularRandIter (const ModularRandIter<Element> &R) :
-			_F (R._F), _size (R._size), _seed (R._seed)
+			_field (R._field), _size (R._size), _seed (R._seed)
 		{}
 
 		/** Destructor.
@@ -135,7 +135,7 @@ namespace LinBox
 		 * @return reference to random field element
 		 */
 		Element &random (Element &a) const
-		{ return _F.init(a,rand()); }
+		{ return _field.init(a,rand()); }
 
 		/** Random field element creator.
 		 * This returns a random field element from the information supplied
@@ -145,10 +145,10 @@ namespace LinBox
 		 */
 		Element &nonzerorandom (Element &a) const
 		{
-			//return a = rand() % (_F.modulus -1) + 1;
+			//return a = rand() % (_field.modulus -1) + 1;
 
-			// CPernet: stupidly slow, but now way to get _F.modulus without changing the interface
-			while (_F.isZero (random(a))) ;
+			// CPernet: stupidly slow, but now way to get _field.modulus without changing the interface
+			while (_field.isZero (random(a))) ;
 			return a;
 		}
 
@@ -169,7 +169,7 @@ namespace LinBox
 	private:
 
 		/// Field in which arithmetic is done
-		Modular<Element> _F;
+		Modular<Element> _field;
 
 		/// Sampling size
 		integer _size;

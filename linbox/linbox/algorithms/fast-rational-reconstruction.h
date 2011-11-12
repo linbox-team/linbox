@@ -44,11 +44,11 @@ namespace LinBox
 	protected:
 		size_t _threshold;
 	public:
-		const Ring _Z;
+		const Ring _intRing;
 		typedef typename Ring::Element Element;
 
 		FastRationalReconstruction(const Ring& Z) :
-			RReconstructionBase<Ring>(Z), _Z(Z)
+			RReconstructionBase<Ring>(Z), _intRing(Z)
 		{
 			_threshold = __FASTRR_DEFAULT_THRESHOLD;
 			if (_threshold < 2) _threshold = 2;
@@ -58,7 +58,7 @@ namespace LinBox
 
 		bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m) const
 		{
-			Element a_bound; _Z.sqrt(a_bound, m/2);
+			Element a_bound; _intRing.sqrt(a_bound, m/2);
 			reconstructRational(a,b,x,m,a_bound);
 			return (a < a_bound);
 		}
@@ -82,7 +82,7 @@ namespace LinBox
 			if (m/bound > 1) {
 				fastReconstructRational(a,b,x,m,m/bound);
 
-				if (_Z.abs(a) < a_bound) {
+				if (_intRing.abs(a) < a_bound) {
 					return true;
 				}
 				return false;
@@ -136,11 +136,11 @@ namespace LinBox
 			size_t log_bound = d_bound.bitsize()-1;
 			Element ai, bi, ci, di;
 			ai=1;bi=0;ci=0;di=1;
-			Element bound;  _Z.powtwo(bound, log_bound);
+			Element bound;  _intRing.powtwo(bound, log_bound);
 
 			cur_ri = m;
 			cur_rinext = x;
-			_Z.quo(cur_ainext, cur_ri, cur_rinext);
+			_intRing.quo(cur_ainext, cur_ri, cur_rinext);
 			cur_qinext = cur_ainext;//  ri/ri_next
 
 			if (!fastEEA (ai,bi,ci,di,m,log_m,x,bound, log_bound)) return false;
@@ -160,12 +160,12 @@ namespace LinBox
 					ai = cur_ainext;
 					bi = tmp;
 					tmp = ci;
-					_Z.axpy(ci, cur_qinext,tmp, di);
+					_intRing.axpy(ci, cur_qinext,tmp, di);
 					++this->C.mul_counter;
 					di = tmp;
 
 					tmp = cur_rinext;
-					_Z.axpy(cur_rinext, -cur_qinext, tmp, cur_ri);
+					_intRing.axpy(cur_rinext, -cur_qinext, tmp, cur_ri);
 					cur_ri = tmp;
 
 					if (cur_rinext==0 ) {
@@ -175,15 +175,15 @@ namespace LinBox
 					}
 
 					++this->C.mul_counter;
-					_Z.quo(cur_qinext, cur_rinext, cur_ri);
+					_intRing.quo(cur_qinext, cur_rinext, cur_ri);
 					++this->C.div_counter;
-					_Z.axpy(cur_ainext, ai, cur_qinext, bi);
+					_intRing.axpy(cur_ainext, ai, cur_qinext, bi);
 					++this->C.mul_counter;
 				}
 			}
 
-			_Z.mul(n,x, ai);
-			_Z.maxpyin(n,m,ci);
+			_intRing.mul(n,x, ai);
+			_intRing.maxpyin(n,m,ci);
 			//n = x_in*ai-m*ci;
 			d = ai;
 			return true;
@@ -206,15 +206,15 @@ namespace LinBox
 				//before last matrix we know next call to prevEEA is Id
 			}
 			Element qi;
-			_Z.quo(qi, ai, bi);
+			_intRing.quo(qi, ai, bi);
 			++this->C.div_counter;
 
-			_Z.axpy(bprev, -qi, bi,ai);
-			_Z.axpy(dprev, -qi, di,ci);
+			_intRing.axpy(bprev, -qi, bi,ai);
+			_intRing.axpy(dprev, -qi, di,ci);
 			++this->C.mul_counter;++this->C.mul_counter;
 			Element tmp;
 			tmp = cur_ri;
-			_Z.axpy(cur_ri, tmp, qi, cur_rinext);
+			_intRing.axpy(cur_ri, tmp, qi, cur_rinext);
 			//cur_ri = cur_ri *qi + cur_rinext;
 			cur_rinext = tmp;
 			cur_ainext = ai;
@@ -234,12 +234,12 @@ namespace LinBox
 
 			Element ainext,cinext;
 			Element qinext;
-			_Z.quo(qinext,ri,rinext);
+			_intRing.quo(qinext,ri,rinext);
 			++this->C.div_counter;
 			while (1) {
 				++K;
 				//ainext = ai*qinext + bi;
-				_Z.axpy(ainext, ai,qinext,bi);
+				_intRing.axpy(ainext, ai,qinext,bi);
 				++this->C.mul_counter;
 				if (bound < ainext) {
 					cur_ri = ri;
@@ -252,13 +252,13 @@ namespace LinBox
 					bi = ai;
 					ai = ainext;
 					Element temp = ci;
-					_Z.axpy(ci, temp,qinext,di);
+					_intRing.axpy(ci, temp,qinext,di);
 					++this->C.mul_counter;
 					di = temp;
 
 					temp = ri;
 					ri=rinext;
-					_Z.axpy(rinext, -qinext,ri,temp);//rinext = ri-qinext*rinext
+					_intRing.axpy(rinext, -qinext,ri,temp);//rinext = ri-qinext*rinext
 					++this->C.mul_counter;
 					if (rinext==0) {
 						//ainext = infinity
@@ -268,7 +268,7 @@ namespace LinBox
 						cur_qinext = cur_ainext;//infinity
 						return true;
 					}
-					_Z.quo(qinext,ri,rinext);
+					_intRing.quo(qinext,ri,rinext);
 					++this->C.div_counter;
 				}
 			}
@@ -322,7 +322,7 @@ namespace LinBox
 				if ((n << 1) > m) {
 					cur_ri = n;
 					cur_rinext = m-n;
-					_Z.quo(cur_qinext, cur_ri, cur_rinext);
+					_intRing.quo(cur_qinext, cur_ri, cur_rinext);
 					++this->C.div_counter;
 					cur_ainext = cur_qinext + 1;
 					ai=1; bi=1; ci=1; di=0;
@@ -330,7 +330,7 @@ namespace LinBox
 				else {
 					cur_ri = m;
 					cur_rinext = n;
-					_Z.quo(cur_ainext,m,n);
+					_intRing.quo(cur_ainext,m,n);
 					++this->C.div_counter;
 					cur_qinext = cur_ainext;
 				}
@@ -366,10 +366,10 @@ namespace LinBox
 					ai = aistar; bi =bistar; ci = cistar; di= distar;
 				}
 
-				_Z.mul(cur_ri,m,di);
-				_Z.maxpyin(cur_ri,n,bi);
-				_Z.mul(cur_rinext,n,ai);
-				_Z.maxpyin(cur_rinext,m,ci);
+				_intRing.mul(cur_ri,m,di);
+				_intRing.maxpyin(cur_ri,n,bi);
+				_intRing.mul(cur_rinext,n,ai);
+				_intRing.maxpyin(cur_rinext,m,ci);
 				this->C.mul_counter+=4;
 
 				if (cur_ri < 0) {
@@ -377,9 +377,9 @@ namespace LinBox
 					cur_rinext = -cur_rinext;
 				}
 				if (cur_rinext>0) {
-					_Z.quo(cur_qinext,cur_ri,cur_rinext);
+					_intRing.quo(cur_qinext,cur_ri,cur_rinext);
 					++this->C.div_counter;
-					_Z.axpy(cur_ainext, ai,cur_qinext,bi);
+					_intRing.axpy(cur_ainext, ai,cur_qinext,bi);
 					++this->C.mul_counter;
 				}
 				else {
@@ -408,7 +408,7 @@ namespace LinBox
 					log_m = rinext.bitsize()-1;
 					Element m2, n2;
 					m2 = rinext;
-					_Z.axpy(n2, -cur_qinext, rinext, ri);
+					_intRing.axpy(n2, -cur_qinext, rinext, ri);
 					++this->C.mul_counter;
 
 					/* compute Q(i+1) */
@@ -416,7 +416,7 @@ namespace LinBox
 					a1 = cur_ainext;
 					b1 = tmp;
 					tmp = c1;
-					_Z.axpy (tmp, cur_qinext, c1, d1);
+					_intRing.axpy (tmp, cur_qinext, c1, d1);
 					++this->C.mul_counter;
 					d1 = c1;
 					c1 = tmp;
@@ -434,9 +434,9 @@ namespace LinBox
 							ai = a1; bi = b1; ci=c1; di = d1;
 							cur_ri = m2;
 							cur_rinext = n2;
-							_Z.quo(cur_qinext,m2,n2);
+							_intRing.quo(cur_qinext,m2,n2);
 							++this->C.div_counter;
-							_Z.axpy(cur_ainext,a1,cur_qinext,b1);
+							_intRing.axpy(cur_ainext,a1,cur_qinext,b1);
 							++this->C.mul_counter;
 							return true;
 						}
@@ -459,24 +459,24 @@ namespace LinBox
 					return true;
 				}
 
-				_Z.mul(ai,b1,c2);
-				_Z.axpyin(ai,a1,a2);
+				_intRing.mul(ai,b1,c2);
+				_intRing.axpyin(ai,a1,a2);
 				//aistar = a1*a2 + b1*c2;
-				_Z.mul(bi,b1,d2);
-				_Z.axpyin(bi, a1,b2);
+				_intRing.mul(bi,b1,d2);
+				_intRing.axpyin(bi, a1,b2);
 				//bistar = a1*b2 + b1*d2;
-				_Z.mul(ci,d1,c2);
-				_Z.axpyin(ci, c1,a2);
+				_intRing.mul(ci,d1,c2);
+				_intRing.axpyin(ci, c1,a2);
 				//cistar = c1*a2 + d1*c2;
-				_Z.mul(di,d1,d2);
-				_Z.axpyin(di, c1,b2);
+				_intRing.mul(di,d1,d2);
+				_intRing.axpyin(di, c1,b2);
 				//distar = c1*b2 + d1*d2;
 				this->C.mul_counter+=8;
 
-				_Z.mul(cur_ri,m,di);
-				_Z.maxpyin(cur_ri,n,bi);
-				_Z.mul(cur_rinext,n,ai);
-				_Z.maxpyin(cur_rinext,m,ci);
+				_intRing.mul(cur_ri,m,di);
+				_intRing.maxpyin(cur_ri,n,bi);
+				_intRing.mul(cur_rinext,n,ai);
+				_intRing.maxpyin(cur_rinext,m,ci);
 				this->C.mul_counter+=4;
 				//ri = m*di - n*bi;
 				//rinext = -m*ci + n*ai;
@@ -485,9 +485,9 @@ namespace LinBox
 					cur_rinext = -cur_rinext;
 				}
 				if (cur_rinext>0) {
-					_Z.quo(cur_qinext,cur_ri,cur_rinext);
+					_intRing.quo(cur_qinext,cur_ri,cur_rinext);
 					++this->C.div_counter;
-					_Z.axpy(cur_ainext, ai,cur_qinext,bi);
+					_intRing.axpy(cur_ainext, ai,cur_qinext,bi);
 					++this->C.mul_counter;
 				}
 				else {
@@ -562,7 +562,7 @@ namespace LinBox
 						ai = ainext;
 						Element temp = ci;
 						//ci = ci*qinext + di;
-						_Z.axpy(ci, ci,qinext,di);
+						_intRing.axpy(ci, ci,qinext,di);
 						++this->C.mul_counter;
 						di = temp;
 
@@ -570,7 +570,7 @@ namespace LinBox
 						ri=rinext;
 						//rinext=qinext*ri+temp;
 						//rinext = temp - qinext*ri;
-						_Z.axpy(rinext, -qinext,ri,temp);
+						_intRing.axpy(rinext, -qinext,ri,temp);
 						++this->C.mul_counter;
 						if (rinext==0) {
 							cur_ri = ri;
@@ -579,9 +579,9 @@ namespace LinBox
 							cur_qinext = m+1;
 							return true;
 						}
-						_Z.quo(qinext,ri,rinext);
+						_intRing.quo(qinext,ri,rinext);
 						++this->C.div_counter;
-						_Z.axpy(ainext, ai,qinext,bi);
+						_intRing.axpy(ainext, ai,qinext,bi);
 						++this->C.mul_counter;
 					}
 				}
@@ -596,20 +596,20 @@ namespace LinBox
 	template <class Ring>
 	class QMatrix {
 	public:
-		Ring _Z;
+		Ring _intRing;
 		typedef typename Ring::Element Element;
 
 		Element a,b,c,d;
 		Element q;
 
 		QMatrix(const Ring Z) :
-			_Z(Z)
+			_intRing(Z)
 		{
 			a=1;b=0;c=0;d=1;q=0;
 		}
 
 		QMatrix(const QMatrix& Q) :
-			_Z(Q._Z)
+			_intRing(Q._intRing)
 		{
 			a = Q.a;
 			b = Q.b;
@@ -619,7 +619,7 @@ namespace LinBox
 		}
 
 		QMatrix(Ring Z,const Element& ai, const Element& bi, const Element& ci, const Element& di, const Element& qi=0) :
-			_Z(Z)
+			_intRing(Z)
 		{
 			a = ai;
 			b = bi;
@@ -643,17 +643,17 @@ namespace LinBox
 
 		void leftmultiply(const Element& ai,const Element& bi,const Element& ci,const Element& di) {
 			Element tmpa,tmpb,tmpc,tmpd;
-			_Z.mul(tmpa,ai,a);
-			_Z.axpyin(tmpa,bi,c);
+			_intRing.mul(tmpa,ai,a);
+			_intRing.axpyin(tmpa,bi,c);
 
-			_Z.mul(tmpb,ai,b);
-			_Z.axpyin(tmpb,bi,d);
+			_intRing.mul(tmpb,ai,b);
+			_intRing.axpyin(tmpb,bi,d);
 
-			_Z.mul(tmpc,ci,a);
-			_Z.axpyin(tmpc,di,c);
+			_intRing.mul(tmpc,ci,a);
+			_intRing.axpyin(tmpc,di,c);
 
-			_Z.mul(tmpd,ci,b);
-			_Z.axpyin(tmpd,di,d);
+			_intRing.mul(tmpd,ci,b);
+			_intRing.axpyin(tmpd,di,d);
 
 			a = tmpa; b = tmpb; c = tmpc; d = tmpd;
 		}
@@ -727,11 +727,11 @@ namespace LinBox
 	template <class Ring>
 	class FastMaxQRationalReconstruction: public FastRationalReconstruction<Ring> {
 	public:
-		const Ring _Z;
+		const Ring _intRing;
 		typedef typename Ring::Element Element;
 
 		FastMaxQRationalReconstruction(const Ring& Z) :
-			FastRationalReconstruction<Ring>(Z), _Z(Z)
+			FastRationalReconstruction<Ring>(Z), _intRing(Z)
 		{}
 
 		bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m) const
@@ -768,12 +768,12 @@ namespace LinBox
 
 			cur_ri = m;
 			cur_rinext = x;
-			_Z.quo(cur_ainext, cur_ri, cur_rinext);
+			_intRing.quo(cur_ainext, cur_ri, cur_rinext);
 			cur_qinext = cur_ainext;//  ri/ri_next
 
 			Element powh;
 			myQueue<Ring > queueMax(0);
-			QMatrix<Ring > maxQ(_Z);
+			QMatrix<Ring > maxQ(_intRing);
 
 			if (!fastQMaxEEA (ai,bi,ci,di,m,log_m,x,powtwo(powh,log_m+1), log_m+1,queueMax,maxQ)) {
 				return false;
@@ -787,8 +787,8 @@ namespace LinBox
 				std::cout << "Queue is not empty\n - sth wrong" << std::flush;
 			}
 #endif
-			_Z.mul(n,x, maxQ.a);
-			_Z.maxpyin(n,m,maxQ.c);
+			_intRing.mul(n,x, maxQ.a);
+			_intRing.maxpyin(n,m,maxQ.c);
 			//n = x_in*ai-m*ci;
 			d = maxQ.a;
 
@@ -807,14 +807,14 @@ namespace LinBox
 			if (rinext==0) return true;
 			Element ainext,cinext;
 			Element qinext;
-			_Z.quo(qinext,ri,rinext);
+			_intRing.quo(qinext,ri,rinext);
 			++this->C.div_counter;
 
 			ainext =qinext;
 			while (ainext <= powh) {
 
-				QMatrix<Ring> newQ(_Z,ai,bi,ci,di,qinext);
-				QMatrix<Ring> top(_Z);
+				QMatrix<Ring> newQ(_intRing,ai,bi,ci,di,qinext);
+				QMatrix<Ring> top(_intRing);
 				if (queueMax.pushpop(top, newQ)) {
 					if (maxQ.q < top.q) {
 						maxQ = top;
@@ -827,13 +827,13 @@ namespace LinBox
 				bi = ai;
 				ai = ainext;
 				Element temp = ci;
-				_Z.axpy(ci, temp,qinext,di);
+				_intRing.axpy(ci, temp,qinext,di);
 				++this->C.mul_counter;
 				di = temp;
 
 				temp = ri;
 				ri=rinext;
-				_Z.axpy(rinext, -qinext,ri,temp);//rinext = ri-qinext*rinext
+				_intRing.axpy(rinext, -qinext,ri,temp);//rinext = ri-qinext*rinext
 				++this->C.mul_counter;
 
 				if (rinext==0) {
@@ -845,9 +845,9 @@ namespace LinBox
 					return true;
 				}
 
-				_Z.quo(qinext,ri,rinext);
+				_intRing.quo(qinext,ri,rinext);
 				++this->C.div_counter;
-				_Z.axpy(ainext, ai,qinext,bi);
+				_intRing.axpy(ainext, ai,qinext,bi);
 				++this->C.mul_counter;
 
 			}
@@ -875,8 +875,8 @@ namespace LinBox
 				cur_ainext = m+1;//infinity
 				cur_qinext = m+1;
 				ai=1; bi=1; ci=1; di=0;
-				QMatrix<Ring> newQ(_Z,1,0,0,1,1);
-				QMatrix<Ring> top(_Z);
+				QMatrix<Ring> newQ(_intRing,1,0,0,1,1);
+				QMatrix<Ring> top(_intRing);
 				if (queueMax.pushpop(top, newQ)) {
 					if (maxQ.q < top.q) {
 						maxQ = top;
@@ -904,8 +904,8 @@ namespace LinBox
 					cur_rinext = 0;
 					cur_ainext = m+1;
 					cur_qinext = m+1;
-					QMatrix<Ring> newQ(_Z,1,0,0,1,m);
-					QMatrix<Ring> top(_Z);
+					QMatrix<Ring> newQ(_intRing,1,0,0,1,m);
+					QMatrix<Ring> top(_intRing);
 					if (queueMax.pushpop(top, newQ)) {
 						if (maxQ.q < top.q) {
 							maxQ = top;
@@ -923,12 +923,12 @@ namespace LinBox
 				if ((n << 1) > m) {
 					cur_ri = n;
 					cur_rinext = m-n;
-					_Z.quo(cur_qinext, cur_ri, cur_rinext);
+					_intRing.quo(cur_qinext, cur_ri, cur_rinext);
 					++this->C.div_counter;
 					cur_ainext = cur_qinext + 1;
 					ai=1; bi=1; ci=1; di=0;
-					QMatrix<Ring> newQ(_Z,1,0,0,1,1);
-					QMatrix<Ring> top(_Z);
+					QMatrix<Ring> newQ(_intRing,1,0,0,1,1);
+					QMatrix<Ring> top(_intRing);
 					if (queueMax.pushpop(top, newQ)) {
 						if (maxQ.q < top.q) {
 							maxQ = top;
@@ -940,7 +940,7 @@ namespace LinBox
 					//we do not have to treat identity;
 					cur_ri = m;
 					cur_rinext = n;
-					_Z.quo(cur_ainext,m,n);
+					_intRing.quo(cur_ainext,m,n);
 					++this->C.div_counter;
 					cur_qinext = cur_ainext;
 				}
@@ -982,10 +982,10 @@ namespace LinBox
 				}
 				queueMax._maxSize -=2;
 
-				_Z.mul(cur_ri,m,di);
-				_Z.maxpyin(cur_ri,n,bi);
-				_Z.mul(cur_rinext,n,ai);
-				_Z.maxpyin(cur_rinext,m,ci);
+				_intRing.mul(cur_ri,m,di);
+				_intRing.maxpyin(cur_ri,n,bi);
+				_intRing.mul(cur_rinext,n,ai);
+				_intRing.maxpyin(cur_rinext,m,ci);
 				this->C.mul_counter+=4;
 
 				if (cur_ri < 0) {
@@ -993,9 +993,9 @@ namespace LinBox
 					cur_rinext = -cur_rinext;
 				}
 				if (cur_rinext>0) {
-					_Z.quo(cur_qinext,cur_ri,cur_rinext);
+					_intRing.quo(cur_qinext,cur_ri,cur_rinext);
 					++this->C.div_counter;
-					_Z.axpy(cur_ainext, ai,cur_qinext,bi);
+					_intRing.axpy(cur_ainext, ai,cur_qinext,bi);
 					++this->C.mul_counter;
 				}
 				else {//should never happen
@@ -1024,11 +1024,11 @@ namespace LinBox
 				size_t log_m;
 
 				myQueue<Ring> queueTmp (queueMax._maxSize);
-				QMatrix<Ring> maxQTmp(_Z);
+				QMatrix<Ring> maxQTmp(_intRing);
 				if ((rinext > 0) && (cur_ainext <= powh)){
 
-					QMatrix<Ring> newQ(_Z,ai,bi,ci,di,cur_qinext);
-					QMatrix<Ring> top(_Z);
+					QMatrix<Ring> newQ(_intRing,ai,bi,ci,di,cur_qinext);
+					QMatrix<Ring> top(_intRing);
 					if (queueMax.pushpop(top, newQ)) {
 						if (maxQ.q < top.q) {
 							maxQ = top;
@@ -1039,14 +1039,14 @@ namespace LinBox
 					log_m = rinext.bitsize()-1;
 					Element m2, n2;
 					m2 = rinext;
-					_Z.axpy(n2, -cur_qinext, rinext, ri);
+					_intRing.axpy(n2, -cur_qinext, rinext, ri);
 					++this->C.mul_counter;
 					/* compute Q(i+1) */
 					Element tmp = a1;
 					a1 = cur_ainext;
 					b1 = tmp;
 					tmp = c1;
-					_Z.axpy (tmp, cur_qinext, c1, d1);
+					_intRing.axpy (tmp, cur_qinext, c1, d1);
 					++this->C.mul_counter;
 					d1 = c1;
 					c1 = tmp;
@@ -1065,9 +1065,9 @@ namespace LinBox
 							ai = a1; bi = b1; ci=c1; di = d1;
 							cur_ri = m2;
 							cur_rinext = n2;
-							_Z.quo(cur_qinext,m2,n2);
+							_intRing.quo(cur_qinext,m2,n2);
 							++this->C.div_counter;
-							_Z.axpy(cur_ainext,a1,cur_qinext,b1);
+							_intRing.axpy(cur_ainext,a1,cur_qinext,b1);
 							++this->C.mul_counter;
 							return true;
 						}
@@ -1091,24 +1091,24 @@ namespace LinBox
 					return true;
 				}
 
-				_Z.mul(ai,b1,c2);
-				_Z.axpyin(ai,a1,a2);
+				_intRing.mul(ai,b1,c2);
+				_intRing.axpyin(ai,a1,a2);
 				//aistar = a1*a2 + b1*c2;
-				_Z.mul(bi,b1,d2);
-				_Z.axpyin(bi, a1,b2);
+				_intRing.mul(bi,b1,d2);
+				_intRing.axpyin(bi, a1,b2);
 				//bistar = a1*b2 + b1*d2;
-				_Z.mul(ci,d1,c2);
-				_Z.axpyin(ci, c1,a2);
+				_intRing.mul(ci,d1,c2);
+				_intRing.axpyin(ci, c1,a2);
 				//cistar = c1*a2 + d1*c2;
-				_Z.mul(di,d1,d2);
-				_Z.axpyin(di, c1,b2);
+				_intRing.mul(di,d1,d2);
+				_intRing.axpyin(di, c1,b2);
 				//distar = c1*b2 + d1*d2;
 				this->C.mul_counter+=8;
 
-				_Z.mul(cur_ri,m,di);
-				_Z.maxpyin(cur_ri,n,bi);
-				_Z.mul(cur_rinext,n,ai);
-				_Z.maxpyin(cur_rinext,m,ci);
+				_intRing.mul(cur_ri,m,di);
+				_intRing.maxpyin(cur_ri,n,bi);
+				_intRing.mul(cur_rinext,n,ai);
+				_intRing.maxpyin(cur_rinext,m,ci);
 				this->C.mul_counter+=4;
 
 				if (cur_ri < 0) {
@@ -1117,9 +1117,9 @@ namespace LinBox
 				}
 
 				if (cur_rinext>0) {
-					_Z.quo(cur_qinext,cur_ri,cur_rinext);
+					_intRing.quo(cur_qinext,cur_ri,cur_rinext);
 					++this->C.div_counter;
-					_Z.axpy(cur_ainext, ai,cur_qinext,bi);
+					_intRing.axpy(cur_ainext, ai,cur_qinext,bi);
 					++this->C.mul_counter;
 				}
 				else {
@@ -1128,7 +1128,7 @@ namespace LinBox
 				}
 
 				//multiply queueTmp by a1b1c1d1
-				QMatrix<Ring > Q_i(_Z,a1,b1,c1,d1);
+				QMatrix<Ring > Q_i(_intRing,a1,b1,c1,d1);
 				//update maximum
 				if (maxQ.q < maxQTmp.q) {
 					maxQTmp.leftmultiply(Q_i);
@@ -1136,7 +1136,7 @@ namespace LinBox
 					if (maxQ.q.bitsize() > T.bitsize() + c) return true;
 				}
 				int K=0;
-				QMatrix<Ring > Q(_Z);
+				QMatrix<Ring > Q(_intRing);
 				while (!queueTmp.empty()) {
 					if (ai > powh) {
 						++K;
@@ -1147,7 +1147,7 @@ namespace LinBox
 						cur_ainext = ai;
 						cur_qinext = Q.q;
 						Element tmp = cur_ri;
-						_Z.axpy(cur_ri,tmp,Q.q,rinext);
+						_intRing.axpy(cur_ri,tmp,Q.q,rinext);
 						cur_rinext = cur_ri;
 						ai = Q.a;
 						bi = Q.b;
@@ -1163,7 +1163,7 @@ namespace LinBox
 						if (maxQ.q < Q.q) {
 							Q.leftmultiply(Q_i);
 						}
-						QMatrix<Ring > top(_Z);
+						QMatrix<Ring > top(_intRing);
 						if (queueMax.pushpop(top, Q)) {
 							if (maxQ.q < top.q) {
 								maxQ = top;
@@ -1225,8 +1225,8 @@ namespace LinBox
 				}
 				else {
 
-					QMatrix<Ring > Q(_Z,ai,bi,ci,di,qinext);
-					QMatrix<Ring > top(_Z);
+					QMatrix<Ring > Q(_intRing,ai,bi,ci,di,qinext);
+					QMatrix<Ring > top(_intRing);
 					if (queueMax.pushpop(top, Q)) {
 						if (maxQ.q < top.q) {
 							maxQ = top;
@@ -1238,7 +1238,7 @@ namespace LinBox
 					ai = ainext;
 					Element temp = ci;
 					//ci = ci*qinext + di;
-					_Z.axpy(ci, ci,qinext,di);
+					_intRing.axpy(ci, ci,qinext,di);
 					++this->C.mul_counter;
 					di = temp;
 					//qi = qinext;
@@ -1247,7 +1247,7 @@ namespace LinBox
 					ri=rinext;
 					//rinext=qinext*ri+temp;
 					//rinext = temp - qinext*ri;
-					_Z.axpy(rinext, -qinext,ri,temp);
+					_intRing.axpy(rinext, -qinext,ri,temp);
 					++this->C.mul_counter;
 
 					if (rinext==0) {
@@ -1257,10 +1257,10 @@ namespace LinBox
 						cur_qinext = m+1;
 						return true;
 					}
-					_Z.quo(qinext,ri,rinext);
+					_intRing.quo(qinext,ri,rinext);
 					++this->C.div_counter;
 
-					_Z.axpy(ainext, ai,qinext,bi);
+					_intRing.axpy(ainext, ai,qinext,bi);
 					++this->C.mul_counter;
 				}
 			}

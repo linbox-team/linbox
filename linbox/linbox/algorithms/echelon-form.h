@@ -40,7 +40,7 @@ namespace LinBox
 
 	private:
 
-		Field                      _F;
+		Field                      _field;
 		BlasMatrixDomain<Field>  _BMD;
 		MatrixDomain<Field>       _MD;
 
@@ -49,7 +49,7 @@ namespace LinBox
 
 		// constructor
 		EchelonFormDomain(const Field &F) :
-			_F(F), _BMD(F), _MD(F)
+			_field(F), _BMD(F), _MD(F)
 		{}
 
 
@@ -64,7 +64,7 @@ namespace LinBox
 			n = A.coldim();
 
 			// get the transposed of A
-			BlasMatrix<Field> At(_F,n, m);
+			BlasMatrix<Field> At(_field,n, m);
 			for (size_t i=0;i<m;++i)
 				for (size_t j=0;j<n;++j)
 					At.setEntry(j,i,A.getEntry(i,j));
@@ -93,7 +93,7 @@ namespace LinBox
 			n = A.coldim();
 
 			// get the transposed of A
-			BlasMatrix<Field> At(_F,n, m);
+			BlasMatrix<Field> At(_field,n, m);
 			for (size_t i=0;i<m;++i)
 				for (size_t j=0;j<n;++j)
 					At.setEntry(j,i,A.getEntry(i,j));
@@ -153,8 +153,8 @@ namespace LinBox
 			m = E.rowdim();
 			n = E.coldim();
 			Element zero, one;
-			_F.init(zero,0);
-			_F.init(one,1);
+			_field.init(zero,0);
+			_field.init(one,1);
 
 			BlasPermutation<size_t> P(E.coldim());
 			BlasPermutation<size_t> Qt(E.rowdim());
@@ -189,8 +189,8 @@ namespace LinBox
 			m = E.rowdim();
 			n = E.coldim();
 			Element zero, one;
-			_F.init(zero,0);
-			_F.init(one,1);
+			_field.init(zero,0);
+			_field.init(one,1);
 
 			// compute the LQUP of E
 			BlasPermutation<size_t> P(E.coldim());
@@ -246,13 +246,13 @@ namespace LinBox
 			for (size_t i=0;i<m-1;++i){
 				std::cout<<"[";
 				for (size_t j=0;j<n-1;++j)
-					_F.write(std::cout,A.getEntry(i,j))<<",";
-				_F.write(std::cout, A.getEntry(i,n-1))<<"] , ";
+					_field.write(std::cout,A.getEntry(i,j))<<",";
+				_field.write(std::cout, A.getEntry(i,n-1))<<"] , ";
 			}
 			std::cout<<"[";
 			for (size_t j=0;j<n-1;++j)
-				_F.write(std::cout,A.getEntry(m-1,j))<<",";
-			_F.write(std::cout, A.getEntry(m-1,n-1))<<"]]);\n ";
+				_field.write(std::cout,A.getEntry(m-1,j))<<",";
+			_field.write(std::cout, A.getEntry(m-1,n-1))<<"]]);\n ";
 		}
 
 	};

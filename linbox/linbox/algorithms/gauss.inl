@@ -62,8 +62,8 @@ namespace LinBox
 		long long nbelem = 0;
 #endif
 
-		Element Eone; _F.init(Eone,1UL);
-		_F.init(determinant,1UL);
+		Element Eone; _field.init(Eone,1UL);
+		_field.init(determinant,1UL);
 		// allocation of the column density
 		std::vector<size_t> col_density (Nj);
 
@@ -136,7 +136,7 @@ namespace LinBox
 				if (p != k) {
 					//                         std::cerr << "Permuting rows: " << k << " <--> " << p << std::endl;
 					invQ.push_front( std::pair<size_t,size_t>(k,p) );
-					_F.negin(determinant);
+					_field.negin(determinant);
 					std::swap( *LigneA_k, LigneA[p]);
 					std::swap( LigneL[k], LigneL[p]);
 				}
@@ -156,7 +156,7 @@ namespace LinBox
 						E hc;
 						hc.first=(unsigned)Rank-1;
 						eliminate (hc.second, LigneA[ll], *LigneA_k, Rank, c, npiv, col_density);
-						if(! _F.isZero(hc.second)) LigneL[ll].push_back(hc);
+						if(! _field.isZero(hc.second)) LigneL[ll].push_back(hc);
 					}
 				}
 
@@ -200,12 +200,12 @@ namespace LinBox
 #endif
 
 		if ((Rank < Ni) || (Rank < Nj) || (Ni == 0) || (Nj == 0))
-			_F.init(determinant,0UL);
+			_field.init(determinant,0UL);
 
 		integer card;
-		_F.write(commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
+		_field.write(commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
 			 << "Determinant : ", determinant)
-		<< " over GF (" << _F.cardinality (card) << ")" << std::endl;
+		<< " over GF (" << _field.cardinality (card) << ")" << std::endl;
 
 		for(std::deque<std::pair<size_t,size_t> >::const_iterator it = invQ.begin(); it!=invQ.end();++it)
 			Q.permute( it->first, it->second );
@@ -244,14 +244,14 @@ namespace LinBox
 		//    long Ni = LigneA.n_row (), Nj = LigneA.n_col ();
 		commentator.start ("Gaussian elimination with reordering",
 				   "IPLR", Ni);
-		_F.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+		_field.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 			  << "Gaussian elimination on " << Ni << " x " << Nj << " matrix, over: ") << std::endl;
 
 #ifdef __LINBOX_COUNT__
 		long long nbelem = 0;
 #endif
 
-		_F.init(determinant,1UL);
+		_field.init(determinant,1UL);
 		Vector Vzer (0);
 		// allocation of the column density
 		std::vector<size_t> col_density (Nj);
@@ -304,7 +304,7 @@ namespace LinBox
 						}
 
 					if (p != k) {
-						_F.negin(determinant);
+						_field.negin(determinant);
 						Vector vtm = LigneA[k];
 						LigneA[k] = LigneA[p];
 						LigneA[p] = vtm;
@@ -349,11 +349,11 @@ namespace LinBox
 			integer card;
 
 			if ((Rank < Ni) || (Rank < Nj) || (Ni == 0) || (Nj == 0))
-				_F.init(determinant,0UL);
+				_field.init(determinant,0UL);
 
-			_F.write(commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
+			_field.write(commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
 				 << "Determinant : ", determinant)
-			<< " over GF (" << _F.cardinality (card) << ")" << std::endl;
+			<< " over GF (" << _field.cardinality (card) << ")" << std::endl;
 
 			commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
 			<< "Rank : " << Rank
@@ -380,14 +380,14 @@ namespace LinBox
 			//    long Ni = LigneA.n_row (), Nj = LigneA.n_col ();
 			commentator.start ("Gaussian elimination with reordering",
 					   "IPLR", Ni);
-			_F.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+			_field.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 				  << "Gaussian elimination on " << Ni << " x " << Nj << " matrix, over: ") << std::endl;
 
 #ifdef __LINBOX_COUNT__
 			long long nbelem = 0;
 #endif
 
-			_F.init(determinant,1UL);
+			_field.init(determinant,1UL);
 			// allocation of the column density
 			std::vector<size_t> col_density (Nj);
 
@@ -440,7 +440,7 @@ namespace LinBox
 						}
 
 					if (p != k) {
-						_F.negin(determinant);
+						_field.negin(determinant);
 						Vector vtm = LigneA[k];
 						LigneA[k] = LigneA[p];
 						LigneA[p] = vtm;
@@ -495,11 +495,11 @@ namespace LinBox
 			integer card;
 
 			if ((Rank < Ni) || (Rank < Nj) || (Ni == 0) || (Nj == 0))
-				_F.init(determinant,0UL);
+				_field.init(determinant,0UL);
 
-			_F.write(commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
+			_field.write(commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
 				 << "Determinant : ", determinant)
-			<< " over GF (" << _F.cardinality (card) << ")" << std::endl;
+			<< " over GF (" << _field.cardinality (card) << ")" << std::endl;
 
 			commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
 			<< "Rank : " << Rank
@@ -535,7 +535,7 @@ namespace LinBox
 #endif
 			Vector Vzer (0);
 
-			_F.init(determinant,1UL);
+			_field.init(determinant,1UL);
 			long last = Ni - 1;
 			long c;
 			unsigned long indcol (0);
@@ -571,13 +571,13 @@ namespace LinBox
 
 			if ((res < Ni) || (res < Nj))
 				if ((res < Ni) || (res < Nj) || (Ni == 0) || (Nj == 0))
-					_F.init(determinant,0UL);
+					_field.init(determinant,0UL);
 
 			integer card;
 
-			_F.write(commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
+			_field.write(commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
 				 << "Determinant : ", determinant)
-			<< " over GF (" << _F.cardinality (card) << ")" << std::endl;
+			<< " over GF (" << _field.cardinality (card) << ")" << std::endl;
 
 			commentator.report (Commentator::LEVEL_NORMAL, PARTIAL_RESULT)
 			<< "Rank : " << res
@@ -594,7 +594,7 @@ namespace LinBox
 					    unsigned long  indcol,
 					    long  indpermut) const
 		{
-			static typename _Field::Element zero = _F.init(zero);
+			static typename _Field::Element zero = _field.init(zero);
 
 			long n = lignecur.size () ;
 			long k = indcol - 1 ;
@@ -607,14 +607,14 @@ namespace LinBox
 			}
 
 			typename Vector::value_type headcoeff;
-			_F.divin (_F.neg (headcoeff, lignecur[k]), lignepivot[k]);
+			_field.divin (_field.neg (headcoeff, lignecur[k]), lignepivot[k]);
 
 
 
 			// LU in place
-			_F.assign (lignecur[k], zero);
+			_field.assign (lignecur[k], zero);
 			for (long j = k; ++j < n;)
-				_F.axpyin (lignecur[j], headcoeff, lignepivot[j]) ;
+				_field.axpyin (lignecur[j], headcoeff, lignepivot[j]) ;
 		}
 
 		template <class _Field>
@@ -636,11 +636,11 @@ namespace LinBox
 
 			typename Vector::value_type headcoeff;
 			// LU in place
-			_F.div (headcoeff, lignecur[k], lignepivot[k]);
-			_F.assign (lignecur[k], headcoeff);
-			_F.negin (headcoeff);
+			_field.div (headcoeff, lignecur[k], lignepivot[k]);
+			_field.assign (lignecur[k], headcoeff);
+			_field.negin (headcoeff);
 			for (long j = k; ++j < n;)
-				_F.axpyin (lignecur[j],headcoeff,lignepivot[j]);
+				_field.axpyin (lignecur[j],headcoeff,lignepivot[j]);
 		}
 
 

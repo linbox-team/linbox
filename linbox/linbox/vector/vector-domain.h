@@ -60,17 +60,17 @@ namespace LinBox
 	class VectorDomainBase {
 	public:
 		VectorDomainBase (const Field &F) :
-			_F (F), accu(F)
+			_field (F), accu(F)
 		{}
 
 		VectorDomainBase& operator= (const VectorDomainBase& VD)
-		{	_F = VD._F;
+		{	_field = VD._field;
 			accu = VD.accu;
 			return *this;
 		}
 
 	protected:
-		Field _F;
+		Field _field;
 		mutable FieldAXPY<Field> accu;
 	};
 
@@ -134,7 +134,7 @@ namespace LinBox
 		 * @param  VD VectorDomain object.
 		 */
 		VectorDomain (const VectorDomain &VD) :
-			VectorDomainBase<Field> (VD._F), DotProductDomain<Field> (VD._F)
+			VectorDomainBase<Field> (VD._field), DotProductDomain<Field> (VD._field)
 		{}
 
 		/** Assignment operator.
@@ -143,8 +143,8 @@ namespace LinBox
 		 */
 		VectorDomain &operator = (const VectorDomain &VD)
 		{
-			VectorDomainBase<Field>::_F = VD._F;
-			VectorDomainBase<Field>::accu = VD.accu;
+			VectorDomainBase<Field>:: _field = VD._field;
+			VectorDomainBase<Field>:: accu = VD.accu;
 			return *this;
 		}
 
@@ -156,7 +156,7 @@ namespace LinBox
 
 		const Field &field () const
 		{
-			return VectorDomainBase<Field>::_F;
+			return VectorDomainBase<Field>:: _field;
 		}
 
 		/** Vector input/output operations
@@ -1310,14 +1310,14 @@ namespace LinBox
 		typedef bool Element;
 
 		VectorDomain (const VectorDomain &VD) :
-			VectorDomainBase<GF2> (VD._F), DotProductDomain<GF2> (VD._F)
+			VectorDomainBase<GF2> (VD._field), DotProductDomain<GF2> (VD._field)
 		{}
 
 		VectorDomain &operator = (const VectorDomain &) { return *this; }
 
 		const GF2 &field () const
 		{
-			return _F;
+			return _field;
 		}
 
 		template <class Vector>

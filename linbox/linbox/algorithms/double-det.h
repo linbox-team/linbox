@@ -83,13 +83,13 @@ namespace LinBox
 	template <class BlackBox>
 	struct IntegerDoubleDetIteration{
 
-		const BlackBox& _A;
+		const BlackBox& _matA;
 		const typename BlackBox::Field::Element _s1;
 		const typename BlackBox::Field::Element _s2;
 		IntegerDoubleDetIteration(const BlackBox& A,
 					  const typename BlackBox::Field::Element& s1,
 					  const typename BlackBox::Field::Element& s2) :
-			_A(A), _s1(s1), _s2(s2)
+			_matA(A), _s1(s1), _s2(s2)
 		{}
 
 		template<class Field>
@@ -103,8 +103,8 @@ namespace LinBox
 			dd.resize(2);
 			F.init(s1p, _s1);
 			F.init(s2p, _s2);
-			FBlackbox Ap(_A, F);
-			const size_t N = _A.coldim();
+			FBlackbox Ap(_matA, F);
+			const size_t N = _matA.coldim();
 			//Timer tim;
 			//tim.clear();
 			//tim.start();

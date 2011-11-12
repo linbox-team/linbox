@@ -42,11 +42,11 @@ namespace LinBox
 		/// return 1/(i+j+2), zero based indexing.
 		Element& operator()(Element &entry, size_t i, size_t j) const
 		{
-			return entry = _H[i+j+1];
+			return entry = _vecH[i+j+1];
 		}
 
 	private:
-		std::vector<Element> _H;
+		std::vector<Element> _vecH;
 
 	}; // Hilbert_JIT_Entry
 
@@ -58,12 +58,12 @@ namespace LinBox
 		F.init(one, 1);
 		F.init(temp, 0);
 
-		_H = std::vector<Element>(m+n, temp);
+		_vecH = std::vector<Element>(m+n, temp);
 
 		typename std::vector<Element>::iterator iter;
 
-		// the ith entry of _H = 1/(i+1)
-		for (iter=_H.begin(); iter != _H.end(); iter++) {
+		// the ith entry of _vecH = 1/(i+1)
+		for (iter=_vecH.begin(); iter != _vecH.end(); iter++) {
 			F.addin(temp, one);
 			F.inv(*iter, temp);
 		}

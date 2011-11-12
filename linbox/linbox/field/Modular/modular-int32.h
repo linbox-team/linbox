@@ -181,17 +181,17 @@ namespace LinBox
 		typedef Modular<int32_t> Field;
 
 		FieldAXPY (const Field &F) :
-			_F (F),_y(0)
+			_field (F),_y(0)
 		{ }
 
 
 		FieldAXPY (const FieldAXPY &faxpy) :
-			_F (faxpy._F), _y (0)
+			_field (faxpy._field), _y (0)
 		{}
 
 		FieldAXPY<Modular<int32_t> > &operator = (const FieldAXPY &faxpy)
 		{
-			_F = faxpy._F;
+			_field = faxpy._field;
 			_y = faxpy._y;
 			return *this;
 		}
@@ -201,7 +201,7 @@ namespace LinBox
 			uint64_t t = (uint64_t) a * (uint64_t) x;
 			_y += t;
 			if (_y < t)
-				return _y += _F._two64;
+				return _y += _field._two64;
 			else
 				return _y;
 		}
@@ -210,14 +210,14 @@ namespace LinBox
 		{
 			_y += t;
 			if (_y < (uint64_t)t)
-				return _y += _F._two64;
+				return _y += _field._two64;
 			else
 				return _y;
 		}
 
 		 Element& get (Element &y)
 		{
-			y = Element (_y % (uint64_t) _F.modulus);
+			y = Element (_y % (uint64_t) _field.modulus);
 			return y;
 		}
 
@@ -233,7 +233,7 @@ namespace LinBox
 		}
 
 	protected:
-		Field _F;
+		Field _field;
 		uint64_t _y;
 	};
 
@@ -265,10 +265,10 @@ namespace LinBox
 				y += t;
 
 				if (y < t)
-					y += _F._two64;
+					y += _field._two64;
 			}
 
-			y %= (uint64_t) _F.modulus;
+			y %= (uint64_t) _field.modulus;
 			return res = Element(y);
 
 		}
@@ -288,11 +288,11 @@ namespace LinBox
 				y += t;
 
 				if (y < t)
-					y += _F._two64;
+					y += _field._two64;
 			}
 
 
-			y %= (uint64_t) _F.modulus;
+			y %= (uint64_t) _field.modulus;
 
 			return res = y;
 		}

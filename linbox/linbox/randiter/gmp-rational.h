@@ -60,7 +60,7 @@ namespace LinBox
 		GMPRationalRandIter (const GMPRationalField &F,
 				     const integer &size = 0,
 				     const integer &seed = 0) :
-			_F (F), _size (size), _seed (seed)
+			_field (F), _size (size), _seed (seed)
 		{
 			if (seed == 0)
 				_seed = time (NULL);
@@ -71,13 +71,13 @@ namespace LinBox
 		/// Copy constructor
 		/// @param R Random iterator to copy.
 		GMPRationalRandIter (const GMPRationalRandIter& R) :
-			_F (R._F), _size (R._size), _seed (R._seed)
+			_field (R._field), _size (R._size), _seed (R._seed)
 		{}
 
 
 #ifdef __LINBOX_XMLENABLED
 		GMPRationalRandIter(LinBox::Reader &R) :
-			_F(R.Down(1))
+			_field(R.Down(1))
 		{
 			R.Up(1);
 			if(!R.expectTagName("randiter")) return;
@@ -102,7 +102,7 @@ namespace LinBox
 		GMPRationalRandIter& operator=(const GMPRationalRandIter& R)
 		{
 			if (this != &R) { // guard against self-assignment
-				_F = R._F;
+				_field = R._field;
 				_seed = R._seed;
 				_size = R._size;
 			}
@@ -175,7 +175,7 @@ namespace LinBox
 
 	private:
 
-		GMPRationalField _F; //!< @internal rational field
+		GMPRationalField _field; //!< @internal rational field
 		integer _size;       //!< @internal ??
 		integer _seed;       //!< @internal seed
 

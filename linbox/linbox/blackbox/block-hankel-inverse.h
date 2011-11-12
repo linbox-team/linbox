@@ -49,7 +49,7 @@ namespace LinBox
 		typedef typename Field::Element Element;
 		typedef BlasMatrix<Element> Coefficient;
 	private:
-		Field                   _F;
+		Field                   _field;
 		VectorDomain<Field>    _VD;
 		BlockHankel<Field>    *_H1;
 		BlockHankel<Field>    *_T1;
@@ -65,7 +65,7 @@ namespace LinBox
 		// all different elements in the Hankel representation
 		// vector is of odd size and represent the 1st column and last row append together
 		BlockHankelInverse(const Field &F, const std::vector<BlasMatrix<Element> > &P) :
-			_F(F), _VD(F), _BMD(F)
+			_field(F), _VD(F), _BMD(F)
 		{
 			//write_maple("UAV",P);
 
@@ -75,7 +75,7 @@ namespace LinBox
 			size_t colblock = rowblock;
 			_row = _col = colblock*block;
 			Element one;
-			_F.init(one, 1UL);
+			_field.init(one, 1UL);
 			_numblock=rowblock;
 			_block= block;
 
@@ -235,7 +235,7 @@ namespace LinBox
 			rev_poly.erase(rev_poly.begin());
 
 
-			_H1 = new BlockHankel<Field>  (_F, rev_poly, BlockHankelTag::up); // V
+			_H1 = new BlockHankel<Field>  (_field, rev_poly, BlockHankelTag::up); // V
 
 			rev_poly.resize(SRP2.size());
 			const BlasMatrix<Element> Zero(block,block);
@@ -246,12 +246,12 @@ namespace LinBox
 
 
 
-			_H2 = new BlockHankel<Field>  (_F, rev_poly, BlockHankelTag::up); // Q
+			_H2 = new BlockHankel<Field>  (_field, rev_poly, BlockHankelTag::up); // Q
 
-			_T1 = new BlockHankel<Field>  (_F, SLP1, BlockHankelTag::up); // Qstar
+			_T1 = new BlockHankel<Field>  (_field, SLP1, BlockHankelTag::up); // Qstar
 
 			SLP2.erase(SLP2.begin());
-			_T2 = new BlockHankel<Field>  (_F, SLP2, BlockHankelTag::up); // Vstar
+			_T2 = new BlockHankel<Field>  (_field, SLP2, BlockHankelTag::up); // Vstar
 
 		}
 
@@ -275,7 +275,7 @@ namespace LinBox
 			// reverse y according to block structure
 			for (size_t i=0; i< _numblock; ++i)
 				for (size_t j=0;j<_block;++j){
-					_F.assign(rev_y[(_numblock-i-1)*_block+j], y[i*_block+j]);
+					_field.assign(rev_y[(_numblock-i-1)*_block+j], y[i*_block+j]);
 				}
 
 			_T1->apply(z1, rev_y);
@@ -298,7 +298,7 @@ namespace LinBox
 
 		size_t coldim() const { return _col;}
 
-		const Field& field() const { return _F;}
+		const Field& field() const { return _field;}
 
 	protected:
 
@@ -313,7 +313,7 @@ namespace LinBox
 				std::cout<<defect[i]<<",";
 			std::cout<<"\n";
 			for (size_t i=0;i<SigmaBase.size();++i)
-				SigmaBase[i].write(std::cout,_F);
+				SigmaBase[i].write(std::cout,_field);
 #endif
 
 			// take the block rows which have lowest defect
@@ -341,7 +341,7 @@ namespace LinBox
 			size_t idx=0;
 			for (size_t i=0; i<2*block;++i){
 				for (size_t j=0;j<2*block;++j)
-					if (!_F.isZero(SigmaBase[0].getEntry(i,j))){
+					if (!_field.isZero(SigmaBase[0].getEntry(i,j))){
 						notnull[idx]=i;
 						++idx;
 						break;
@@ -380,7 +380,7 @@ namespace LinBox
 			std::cout<<"\n";
 
 			for (size_t i=0;i<SigmaBase.size();++i)
-				SigmaBase[i].write(std::cout,_F);
+				SigmaBase[i].write(std::cout,_field);
 #endif
 
 			// take the m rows which have lowest defect
@@ -408,7 +408,7 @@ namespace LinBox
 			size_t idx=0;
 			for (size_t i=0; i<2*block;++i){
 			for (size_t j=0;j<2*block;++j)
-			if (!_F.isZero(SigmaBase[0].getEntry(i,j))){
+			if (!_field.isZero(SigmaBase[0].getEntry(i,j))){
 			notnull[idx]=i;
 			++idx;
 			break;
@@ -455,26 +455,26 @@ namespace LinBox
 				for (size_t i=0;i<m-1;++i){
 					std::cout<<"[";
 					for (size_t j=0;j<n-1;++j)
-						_F.write(std::cout,P[k].getEntry(i,j))<<",";
-					_F.write(std::cout, P[k].getEntry(i,n-1))<<"] , ";
+						_field.write(std::cout,P[k].getEntry(i,j))<<",";
+					_field.write(std::cout, P[k].getEntry(i,n-1))<<"] , ";
 				}
 				std::cout<<"[";
 				for (size_t j=0;j<n-1;++j)
-					_F.write(std::cout,P[k].getEntry(m-1,j))<<",";
-				_F.write(std::cout, P[k].getEntry(m-1,n-1))<<"]]) , ";
+					_field.write(std::cout,P[k].getEntry(m-1,j))<<",";
+				_field.write(std::cout, P[k].getEntry(m-1,n-1))<<"]]) , ";
 			}
 
 			std::cout<<"Matrix([";
 			for (size_t i=0;i<m-1;++i){
 				std::cout<<"[";
 				for (size_t j=0;j<n-1;++j)
-					_F.write(std::cout,P[P.size()-1].getEntry(i,j))<<",";
-				_F.write(std::cout, P[P.size()-1].getEntry(i,n-1))<<"] , ";
+					_field.write(std::cout,P[P.size()-1].getEntry(i,j))<<",";
+				_field.write(std::cout, P[P.size()-1].getEntry(i,n-1))<<"] , ";
 			}
 			std::cout<<"[";
 			for (size_t j=0;j<n-1;++j)
-				_F.write(std::cout,P[P.size()-1].getEntry(m-1,j))<<",";
-			_F.write(std::cout, P[P.size()-1].getEntry(m-1,n-1))<<"]])]; \n";
+				_field.write(std::cout,P[P.size()-1].getEntry(m-1,j))<<",";
+			_field.write(std::cout, P[P.size()-1].getEntry(m-1,n-1))<<"]])]; \n";
 		}
 
 

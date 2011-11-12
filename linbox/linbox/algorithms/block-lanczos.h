@@ -29,9 +29,9 @@
 // this in to LinBox easily at a later date, without any messy porting.
 
 // Fix for Solaris wierdness
-#undef _S
-#undef _M
-#undef _N
+#undef _vecS
+#undef _matM
+#undef _block
 
 namespace LinBox
 {
@@ -65,10 +65,10 @@ namespace LinBox
 		 *               options for the solver
 		 */
 		BlockLanczosSolver (const Field &F, const BlockLanczosTraits &traits) :
-			_traits (traits), _F (F), _VD (F), _MD (F), _randiter (F), _N (traits.blockingFactor ())
+			_traits (traits), _field (F), _VD (F), _MD (F), _randiter (F), _block (traits.blockingFactor ())
 		{
 			init_temps ();
-			_F.init (_one, 1);
+			_field.init (_one, 1);
 		}
 
 		/** Constructor with a random iterator.
@@ -78,10 +78,10 @@ namespace LinBox
 		 * @param r Random iterator to use for randomization
 		 */
 		BlockLanczosSolver (const Field &F, const BlockLanczosTraits &traits, typename Field::RandIter r) :
-			_traits (traits), _F (F), _VD (F), _MD (F), _randiter (r), _N (traits.blockingFactor ())
+			_traits (traits), _field (F), _VD (F), _MD (F), _randiter (r), _block (traits.blockingFactor ())
 		{
 			init_temps ();
-			_F.init (_one, 1);
+			_field.init (_one, 1);
 		}
 
 		/** Solve the linear system Ax = b.
@@ -203,21 +203,21 @@ namespace LinBox
 		// Private variables
 
 		const BlockLanczosTraits _traits;
-		const Field              &_F;
+		const Field              &_field;
 		VectorDomain<Field>       _VD;
 		MatrixDomain<Field>       _MD;
 		typename Field::RandIter  _randiter;
 
 		// Temporaries used in the computation
 
-		Matrix  _V[3];             // n x N
+		Matrix  _matV[3];             // n x N
 		Matrix  _AV;               // n x N
 		Matrix  _VTAV;             // N x N
 		Matrix  _Winv[2];          // N x N
 		Matrix  _AVTAVSST_VTAV;    // N x N
-		Matrix  _T;                // N x N
+		Matrix  _matT;                // N x N
 		Matrix  _DEF;              // N x N
-		std::vector<bool>         _S;                // N-vector of bools
+		std::vector<bool>         _vecS;                // N-vector of bools
 
 		mutable typename Vector<Field>::Dense _tmp;  // N
 
@@ -225,11 +225,11 @@ namespace LinBox
 
 		std::vector<size_t>       _indices;          // N
 
-		mutable Matrix _M;         // N x 2N
+		mutable Matrix _matM;         // N x 2N
 
 		// Blocking factor
 
-		size_t                    _N;
+		size_t                    _block;
 
 		// Construct a transpose matrix on the fly
 		template <class Matrix1>

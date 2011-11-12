@@ -85,7 +85,7 @@ namespace LinBox
 			return status;
 		}
 
-		VectorFraction<Ring> y(_R,x.size());
+		VectorFraction<Ring> y(_ring,x.size());
 		y. numer = x;
 		y. denom = den;
 		VectorFraction<Ring> y0(y);
@@ -93,7 +93,7 @@ namespace LinBox
 		Integer ODB = y0.denom, n1; //ODB -- original denominator bound. equal to g(y0) from Muld+Storj.
 		if (level >= SL_CERTIFIED) {
 			lastCertificate.copy(_rationalSolver.lastCertificate);
-			_R.assign(n1, _rationalSolver.lastZBNumer);
+			_ring.assign(n1, _rationalSolver.lastZBNumer);
 		}
 
 		Integer upperDenBound = ODB;
@@ -101,7 +101,7 @@ namespace LinBox
 		if (level >= SL_LASVEGAS)
 			lowerDenBound = _rationalSolver.lastCertifiedDenFactor;
 		else
-			_R.init(lowerDenBound, 1);
+			_ring.init(lowerDenBound, 1);
 #ifdef DEBUG_DIO
 		std::cout << "lower bound on denominator: " << lowerDenBound << std::endl;
 		std::cout << "upper bound on denominator: " << upperDenBound << std::endl;
@@ -110,7 +110,7 @@ namespace LinBox
 		numFailedCallsToSolver = 0;
 		numRevelantSolutions=1;
 		int boredom = 0; //used in monte carlo, when we assume there's a diophantine solution
-		while (! _R.areEqual(upperDenBound, lowerDenBound)) {
+		while (! _ring.areEqual(upperDenBound, lowerDenBound)) {
 			_rationalSolver.chooseNewPrime();
 			status = _rationalSolver.monolithicSolve(x, den, A, b, (level >= SL_LASVEGAS), true, 1, level);
 			numSolutionsNeeded++;
@@ -121,7 +121,7 @@ namespace LinBox
 				numFailedCallsToSolver++;
 				continue;
 			}
-			VectorFraction<Ring> yhat(_R, x.size());
+			VectorFraction<Ring> yhat(_ring, x.size());
 			yhat. numer = x;
 			yhat. denom = den;
 			// goodCombination first represents whether a decrease in upperDenBound is achieved
@@ -146,14 +146,14 @@ namespace LinBox
 			else if (level == SL_LASVEGAS) {
 #ifdef DEBUG_DIO
 				goodCombination =
-				!_R.isDivisor(lowerDenBound, _rationalSolver.lastCertifiedDenFactor);
+				!_ring.isDivisor(lowerDenBound, _rationalSolver.lastCertifiedDenFactor);
 #endif
-				_R.lcmin(lowerDenBound, _rationalSolver.lastCertifiedDenFactor);
+				_ring.lcmin(lowerDenBound, _rationalSolver.lastCertifiedDenFactor);
 			}
 			else { //level == SL_CERTIFIED
 
 				// 				paranoid check
-				// 				if (_R.isZero(_rationalSolver.lastCertifiedDenFactor)) {
+				// 				if (_ring.isZero(_rationalSolver.lastCertifiedDenFactor)) {
 				// 					std::cout << "ERROR: got a 0 den factor" << std::endl;
 				// 					return SS_FAILED;
 				// 				}

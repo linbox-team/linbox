@@ -52,18 +52,18 @@ namespace LinBox
 		typedef BlasMatrix<Element>           Block;
 
 	protected:
-		Field                         _F;
+		Field                         _field;
 		BlasMatrixDomain<Field>     _BMD;
 		VectorDomain<Field>         _VDF;
 		RandIter                   _rand;
 
 	public:
 		BlockWiedemannSolver (const Field &F) :
-			_F(F), _BMD(F), _VDF(F), _rand(F)
+			_field(F), _BMD(F), _VDF(F), _rand(F)
 		{}
 
 		BlockWiedemannSolver (const Field &F, const RandIter &rand) :
-			_F(F), _BMD(F), _VDF(F), _rand(rand)
+			_field(F), _BMD(F), _VDF(F), _rand(rand)
 		{}
 
 		template <class Blackbox>
@@ -106,7 +106,7 @@ namespace LinBox
 			for (size_t i=0;i<m;++i)
 				U.setEntry(0,i,y[i]);
 
-			BlackboxBlockContainer<Field,Transpose<Blackbox> > Sequence (&A,_F,U,V);
+			BlackboxBlockContainer<Field,Transpose<Blackbox> > Sequence (&A,_field,U,V);
 			BlockMasseyDomain <Field,BlackboxBlockContainer<Field,Transpose<Blackbox> > > MBD(&Sequence);
 
 			std::vector<Block> minpoly;
@@ -115,10 +115,10 @@ namespace LinBox
 			MBD.printTimer();
 
 			size_t idx=0;
-			if ( _F.isZero(minpoly[0].getEntry(0,0))) {
+			if ( _field.isZero(minpoly[0].getEntry(0,0))) {
 
 				size_t i=1;
-				while ( _F.isZero(minpoly[0].getEntry(i,0)))
+				while ( _field.isZero(minpoly[0].getEntry(i,0)))
 					++i;
 				if (i == m)
 					throw LinboxError(" block minpoly: matrix seems to be singular - abort");
@@ -165,9 +165,9 @@ namespace LinBox
 					_VDF.addin(accu,lhs);
 				}
 				Element scaling;
-				_F.init(scaling);
-				_F.neg(scaling,combi[0][0]);
-				_F.invin(scaling);
+				_field.init(scaling);
+				_field.neg(scaling,combi[0][0]);
+				_field.invin(scaling);
 				_VDF.mul(x,accu,scaling);
 
 			}
@@ -211,9 +211,9 @@ namespace LinBox
 
 				_VDF.addin(accu,lhs);
 				Element scaling;
-				_F.init(scaling);
-				_F.neg(scaling,minpoly[0].getEntry(idx,0));
-				_F.invin(scaling);
+				_field.init(scaling);
+				_field.neg(scaling,minpoly[0].getEntry(idx,0));
+				_field.invin(scaling);
 				_VDF.mul(x,accu,scaling);
 			}
 

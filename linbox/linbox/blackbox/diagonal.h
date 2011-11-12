@@ -102,7 +102,7 @@ namespace LinBox
 		void randomNonsingular();
 
 		/// \brief the field of the entries
-		const Field& field() const{ return _F; }
+		const Field& field() const{ return _field; }
 
 		/** Get an entry and store it in the given value.
 		 * This form is more in the LinBox style and is provided for interface
@@ -113,7 +113,7 @@ namespace LinBox
 		 * @return Reference to x
 		 */
 		Element &getEntry (Element &x, size_t i, size_t j) const {
-			return (i==j?_F.assign(x,_v[i]):_F.init(x,0));
+			return (i==j?_field.assign(x,_v[i]):_field.init(x,0));
 		}
 
 
@@ -136,7 +136,7 @@ namespace LinBox
 
 		template<typename _Tp1, typename _Vc1>
 		Diagonal(const Diagonal<_Tp1,_Vc1>& D, const Field& F) :
-			_F(F), _n(D.rowdim()), _v(D.rowdim())
+			_field(F), _n(D.rowdim()), _v(D.rowdim())
 		{
 			typename Diagonal<_Tp1,_Vc1>::template rebind<Field>() (*this, D, F);
 		}
@@ -147,7 +147,7 @@ namespace LinBox
 		std::ostream& write(std::ostream& out) {
 			out << "diag(";
 			for (typename std::vector<Element>::iterator p = _v.begin(); p != _v.end(); ++p)
-				_F.write(out, *p) << ", ";
+				_field.write(out, *p) << ", ";
 			return out << "\b\b)";
 		}
 
@@ -157,7 +157,7 @@ namespace LinBox
 	private:
 
 		// Field for arithmetic
-		Field _F;
+		Field _field;
 
 		// Number of rows and columns of square matrix.
 		size_t _n;
@@ -191,7 +191,7 @@ namespace LinBox
 
 		size_t rowdim(void) const { return _n; }
 		size_t coldim(void) const { return _n; }
-		const Field& field() const {return _F;}
+		const Field& field() const {return _field;}
 		/** Get an entry and store it in the given value.
 		 * This form is more in the LinBox style and is provided for interface
 		 * compatibility with other parts of the library
@@ -202,7 +202,7 @@ namespace LinBox
 		 */
 		Element &getEntry (Element &x, size_t i, size_t j) const
 		{
-			return (i==j?_F.assign(x,_v[i]):_F.init(x));
+			return (i==j?_field.assign(x,_v[i]):_field.init(x));
 		}
 
 
@@ -225,7 +225,7 @@ namespace LinBox
 
 		template<typename _Tp1, typename _Vc1>
 		Diagonal(const Diagonal<_Tp1,_Vc1>& D, const Field& F) :
-			_F(F), _n(D.rowdim()), _v(D.rowdim())
+			_field(F), _n(D.rowdim()), _v(D.rowdim())
 		{
 			typename Diagonal<_Tp1,_Vc1>::template rebind<Field>() (*this, D, F);
 		}
@@ -239,7 +239,7 @@ namespace LinBox
 	private:
 
 		// Field for arithmetic
-		Field _F;
+		Field _field;
 
 		// Number of rows and columns of square matrix.
 		size_t _n;
@@ -275,7 +275,7 @@ namespace LinBox
 
 		size_t rowdim(void) const { return _n; }
 		size_t coldim(void) const { return _n; }
-		const Field field() const { return _F; }
+		const Field field() const { return _field; }
 
 		/** Get an entry and store it in the given value.
 		 * This form is more in the LinBox style and is provided for interface
@@ -287,7 +287,7 @@ namespace LinBox
 		 */
 		Element &getEntry (Element &x, size_t i, size_t j) const
 		{
-			return (i==j?_F.assign(x,_v[i]):_F.init(x));
+			return (i==j?_field.assign(x,_v[i]):_field.init(x));
 		}
 
 
@@ -309,7 +309,7 @@ namespace LinBox
 
 		template<typename _Tp1, typename _Vc1>
 		Diagonal(const Diagonal<_Tp1,_Vc1>& D, const Field& F) :
-			_F(F), _n(D.rowdim()), _v(D.rowdim())
+			_field(F), _n(D.rowdim()), _v(D.rowdim())
 		{
 			typename Diagonal<_Tp1,_Vc1>::template rebind<Field>() (*this, D, F);
 		}
@@ -322,7 +322,7 @@ namespace LinBox
 	private:
 
 		// Field for arithmetic
-		Field _F;
+		Field _field;
 
 		// Number of rows and columns of square matrix.
 		size_t _n;
@@ -337,7 +337,7 @@ namespace LinBox
 	template <class Field>
 	inline Diagonal<Field, VectorCategories::DenseVectorTag >::Diagonal(const Field F,
 									    const std::vector<typename Field::Element>& v) :
-		_F(F), _n(v.size()), _v(v)
+		_field(F), _n(v.size()), _v(v)
 	{}
 
 
@@ -351,7 +351,7 @@ namespace LinBox
 	inline Diagonal<_Field, VectorCategories::DenseVectorTag>::Diagonal(const Field F,
 									    const size_t n,
 									    bool nonsing) :
-		_F(F), _n(n), _v(n)
+		_field(F), _n(n), _v(n)
 	{
 		typename Field::RandIter r(F);
 		typedef typename std::vector<typename Field::Element>::iterator iter;
@@ -366,7 +366,7 @@ namespace LinBox
 	inline Diagonal<Field, VectorCategories::DenseVectorTag >::Diagonal(const Field F,
 									    const size_t n,
 									    typename Field::RandIter& iter) :
-		_F(F), _n(n), _v(n)
+		_field(F), _n(n), _v(n)
 	{
 #if 0
 		for (typename std::vector<typename Field::Element>::iterator
@@ -380,7 +380,7 @@ namespace LinBox
 	template <class _Field>
 	inline void Diagonal<_Field, VectorCategories::DenseVectorTag>::random()
 	{
-		typename Field::RandIter r(_F);
+		typename Field::RandIter r(_field);
 		typedef typename std::vector<typename Field::Element>::iterator iter;
 		for (iter i = _v.begin(); i < _v.end(); ++i)
 			r.random(*i);
@@ -390,10 +390,10 @@ namespace LinBox
 	template <class _Field>
 	inline void Diagonal<_Field, VectorCategories::DenseVectorTag>::randomNonsingular()
 	{
-		typename Field::RandIter r(_F);
+		typename Field::RandIter r(_field);
 		typedef typename std::vector<typename Field::Element>::iterator iter;
 		for (iter i = _v.begin(); i < _v.end(); ++i)
-			while (_F.isZero(r.random(*i))) ;
+			while (_field.isZero(r.random(*i))) ;
 	}
 
 	/*! generic apply.
@@ -421,7 +421,7 @@ namespace LinBox
 		for (y_iter = y.begin ();
 		     y_iter != y.end ();
 		     y_iter++, v_iter++, x_iter++)
-			_F.mul (*y_iter, *v_iter, *x_iter);
+			_field.mul (*y_iter, *v_iter, *x_iter);
 
 		return y;
 	} // Vector& Diagonal<DenseVectorTag>::apply(Vector& y, const Vector&) const
@@ -435,7 +435,7 @@ namespace LinBox
 	template <class Field>
 	inline Diagonal<Field, VectorCategories::SparseSequenceVectorTag >::Diagonal(const Field F,
 										     const std::vector<typename Field::Element>& v) :
-		_F(F), _n(v.size()), _v(v)
+		_field(F), _n(v.size()), _v(v)
 	{}
 
 	/** apply for sparse sequence vectors.
@@ -453,8 +453,8 @@ namespace LinBox
 		// create field elements and size_t to be used in calculations
 		size_t i;
 		Element zero, entry;
-		_F.init (zero, 0);
-		_F.init (entry, 0);
+		_field.init (zero, 0);
+		_field.init (entry, 0);
 
 		// Create iterators for input and stored vectors
 		typename std::vector<Element>::const_iterator v_iter;
@@ -468,8 +468,8 @@ namespace LinBox
 		// of stored vector and insert non-zero elements into output vector
 		for (x_iter = x.begin (); x_iter != x.end (); x_iter++) {
 			i = (*x_iter).first;
-			_F.mul (entry, *(v_iter + i), (*x_iter).second);
-			if (!_F.isZero (entry)) y.push_back ( std::pair<size_t, Element>(i, entry));
+			_field.mul (entry, *(v_iter + i), (*x_iter).second);
+			if (!_field.isZero (entry)) y.push_back ( std::pair<size_t, Element>(i, entry));
 		}
 
 		return y;
@@ -483,7 +483,7 @@ namespace LinBox
 	 */
 	template <class Field>
 	inline Diagonal<Field, VectorCategories::SparseAssociativeVectorTag >::Diagonal(const Field F, const std::vector<typename Field::Element>& v) :
-		_F(F), _n(v.size()), _v(v)
+		_field(F), _n(v.size()), _v(v)
 	{}
 
 	/** apply for sparse associative vectors.
@@ -501,8 +501,8 @@ namespace LinBox
 		// create field elements and size_t to be used in calculations
 		size_t i;
 		Element zero, entry;
-		_F.init (zero, 0);
-		_F.init (entry, 0);
+		_field.init (zero, 0);
+		_field.init (entry, 0);
 
 		// Create iterators for input and stored vectors
 		typename std::vector<Element>::const_iterator v_iter;
@@ -517,8 +517,8 @@ namespace LinBox
 		for (x_iter = x.begin (); x_iter != x.end (); x_iter++)
 		{
 			i = x_iter->first;
-			_F.mul (entry, *(v_iter + i), (*x_iter).second);
-			if (!_F.isZero (entry)) y.insert (y.end (), std::pair<size_t, Element>(i, entry));
+			_field.mul (entry, *(v_iter + i), (*x_iter).second);
+			if (!_field.isZero (entry)) y.insert (y.end (), std::pair<size_t, Element>(i, entry));
 		}
 
 		return y;

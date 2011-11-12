@@ -43,17 +43,17 @@ namespace LinBox
 		const bool _reduce;
 		const bool _recursive;
 	public:
-		const Ring _Z;
+		const Ring _intRing;
 		typedef typename Ring::Element Element;
 
 		ClassicRationalReconstruction(const Ring& Z, const bool reduce = true, const bool recursive = false) :
 			RReconstructionBase<Ring>(Z),
-			_reduce(reduce), _recursive (recursive), _Z(Z)
+			_reduce(reduce), _recursive (recursive), _intRing(Z)
 		{}
 
 		ClassicRationalReconstruction<Ring> (const ClassicRationalReconstruction<Ring>& RR):
-			RReconstructionBase<Ring>(RR._Z),
-			_reduce(RR._reduce), _recursive(RR._recursive), _Z(RR._Z)
+			RReconstructionBase<Ring>(RR._intRing),
+			_reduce(RR._reduce), _recursive(RR._recursive), _intRing(RR._intRing)
 		{}
 
 		~ClassicRationalReconstruction() {}
@@ -61,7 +61,7 @@ namespace LinBox
 		//Wang method
 		bool reconstructRational(Element& a, Element& b, const Element& x, const Element& m) const
 		{
-			Element a_bound; _Z.sqrt(a_bound, m/2);
+			Element a_bound; _intRing.sqrt(a_bound, m/2);
 			bool res = reconstructRational(a,b,x,m,a_bound);
 			res = res && (b <= a_bound);
 			return res;
@@ -108,14 +108,14 @@ namespace LinBox
 			{
 
 				q = r0;
-				_Z.divin(q,a);        // r0/num
+				_intRing.divin(q,a);        // r0/num
 				//++this->C.div_counter;
 
 				u = a;
 				a = r0;
 				r0 = u;	// r0 <-- num
 
-				_Z.maxpyin(a,u,q); // num <-- r0-q*num
+				_intRing.maxpyin(a,u,q); // num <-- r0-q*num
 				//++this->C.mul_counter;
 				//if (a == 0) return false;
 
@@ -123,21 +123,21 @@ namespace LinBox
 				b = t0;
 				t0 = u;	// t0 <-- den
 
-				_Z.maxpyin(b,u,q); // den <-- t0-q*den
+				_intRing.maxpyin(b,u,q); // den <-- t0-q*den
 				//++this->C.mul_counter;
 
 				//u = s1;
 				//s1 = s0;
 				//s0 = u;
 
-				//_Z.maxpyin(s0,u,q);
+				//_intRing.maxpyin(s0,u,q);
 				//++this->C.mul_counter;
 
 			}
 
 			//if (den < 0) {
-			//	_Z.negin(num);
-			//      _Z.negin(den);
+			//	_intRing.negin(num);
+			//      _intRing.negin(den);
 			//}
 
 			if ((a>0) && (_reduce)) {
@@ -146,7 +146,7 @@ namespace LinBox
 				// (ii)
 				Element gg;
 				//++this->C.gcd_counter;
-				if (_Z.gcd(gg,a,b) != 1) {
+				if (_intRing.gcd(gg,a,b) != 1) {
 
 					Element ganum, gar2;
 					for( q = 1, ganum = r0-a, gar2 = r0 ; (ganum >= a_bound) || (gar2<a_bound); ++q ) {
@@ -154,9 +154,9 @@ namespace LinBox
 						gar2 -= a;
 					}
 
-					//_Z.maxpyin(r0,q,a);
+					//_intRing.maxpyin(r0,q,a);
 					r0 = ganum;
-					_Z.maxpyin(t0,q,b);
+					_intRing.maxpyin(t0,q,b);
 					//++this->C.mul_counter;++this->C.mul_counter;
 					if (t0 < 0) {
 						a = -r0;
@@ -181,7 +181,7 @@ namespace LinBox
 						}
 						return false;
 					}
-					if (_Z.gcd(gg,a,b) != 1) {
+					if (_intRing.gcd(gg,a,b) != 1) {
 						if (!_recursive)
 							std::cerr
 							<< "*** Error *** There exists no rational reconstruction of "
@@ -206,8 +206,8 @@ namespace LinBox
 				}
 				// (i)
 				if (b < 0) {
-					_Z.negin(a);
-					_Z.negin(b);
+					_intRing.negin(a);
+					_intRing.negin(b);
 				}
 
 				// std::cerr << "RatRecon End " << num << "/" << den << std::endl;
@@ -223,15 +223,15 @@ namespace LinBox
 		template <class Ring>
 		class ClassicMaxQRationalReconstruction:public ClassicRationalReconstruction<Ring> {
 		public:
-			const Ring _Z;
+			const Ring _intRing;
 			typedef typename Ring::Element Element;
 
 			ClassicMaxQRationalReconstruction(const Ring& Z, const bool reduce = true, const bool recursive = false) :
-				ClassicRationalReconstruction<Ring>(Z,reduce,recursive), _Z(Z)
+				ClassicRationalReconstruction<Ring>(Z,reduce,recursive), _intRing(Z)
 		       	{}
 
 			ClassicMaxQRationalReconstruction(const ClassicMaxQRationalReconstruction<Ring>& RR) :
-				ClassicRationalReconstruction<Ring>(RR), _Z(RR._Z)
+				ClassicRationalReconstruction<Ring>(RR), _intRing(RR._intRing)
 			{}
 
 			~ClassicMaxQRationalReconstruction() {}
@@ -265,7 +265,7 @@ namespace LinBox
 				while((a>0) && (r0.bitsize() > T.bitsize() + c))
 				{
 					q = r0;
-					_Z.divin(q,a);        // r0/num
+					_intRing.divin(q,a);        // r0/num
 					//++this->C.div_counter;
 					if (q > qmax) {
 						amax = a;
@@ -278,7 +278,7 @@ namespace LinBox
 					a = r0;
 					r0 = u;	// r0 <-- num
 
-					_Z.maxpyin(a,u,q); // num <-- r0-q*num
+					_intRing.maxpyin(a,u,q); // num <-- r0-q*num
 					//++this->C.mul_counter;
 					//if (a == 0) return false;
 
@@ -286,7 +286,7 @@ namespace LinBox
 					b = t0;
 					t0 = u;	// t0 <-- den
 
-					_Z.maxpyin(b,u,q); // den <-- t0-q*den
+					_intRing.maxpyin(b,u,q); // den <-- t0-q*den
 					//++this->C.mul_counter;
 				}
 
@@ -294,12 +294,12 @@ namespace LinBox
 				b = bmax;
 
 				if (b < 0) {
-					_Z.negin(a);
-					_Z.negin(b);
+					_intRing.negin(a);
+					_intRing.negin(b);
 				}
 
 				Element gg;
-				_Z.gcd(gg,a,b);
+				_intRing.gcd(gg,a,b);
 				//++this->C.gcd_counter;
 
 				//if (q > T)

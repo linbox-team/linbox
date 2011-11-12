@@ -41,7 +41,7 @@ namespace LinBox
 		 *               options for the solver
 		 */
 		LanczosSolver (const Field &F, const LanczosTraits &traits) :
-			_traits (traits), _F (F), _randiter (F), _VD (F)
+			_traits (traits), _field (F), _randiter (F), _VD (F)
 		{}
 
 		/** @brief Constructor with a random iterator
@@ -51,7 +51,7 @@ namespace LinBox
 		 * @param r Random iterator to use for randomization
 		 */
 		LanczosSolver (const Field &F, const LanczosTraits &traits, typename Field::RandIter r) :
-			_traits (traits), _F (F), _randiter (r), _VD (F)
+			_traits (traits), _field (F), _randiter (r), _VD (F)
 		{}
 
 		/** Solve the linear system Ax = b.
@@ -82,7 +82,7 @@ namespace LinBox
 		bool iterate (const Blackbox &A, Vector &x, const Vector &b);
 
 		const LanczosTraits &_traits;
-		const Field                       &_F;
+		const Field                       &_field;
 		typename Field::RandIter           _randiter;
 		VectorDomain<Field>                _VD;
 

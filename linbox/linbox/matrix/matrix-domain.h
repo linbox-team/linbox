@@ -98,13 +98,13 @@ namespace LinBox
 		/// Constructor.
 		//! @param F field for MatrixDomain operations.
 		MatrixDomain (const Field &F) :
-			_F (F), _VD (F)
+			_field (F), _VD (F)
 		{}
 
 		/// Copy operator.
 		MatrixDomain& operator= (const MatrixDomain& MD)
 		{
-			_F = MD._F;
+			_field = MD._field;
 			_VD = MD._VD;
 			return *this;
 		}
@@ -117,11 +117,11 @@ namespace LinBox
 		//@{
 		const Field &field () const
 		{
-			return _F;
+			return _field;
 		}
 		Field &field ()
 		{
-			return _F;
+			return _field;
 		}
 		//@}
 
@@ -144,7 +144,7 @@ namespace LinBox
 		template <class Matrix>
 		inline std::istream &read (std::istream &is, Matrix &A) const
 		{
-			return A.read (is, _F);
+			return A.read (is, _field);
 		}
 
 		/** Matrix copy
@@ -1169,7 +1169,7 @@ namespace LinBox
 			return permuteColsByCol (A, P_start, P_end);
 		}
 
-		Field         _F;
+		Field         _field;
 		VectorDomain<Field>  _VD;
 	};
 

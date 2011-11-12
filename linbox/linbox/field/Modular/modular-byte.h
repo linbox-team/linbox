@@ -456,17 +456,17 @@ namespace LinBox
 		typedef Modular<int8_t> Field;
 
 		FieldAXPY (const Field &F) :
-			_F (F),_y(0)
+			_field (F),_y(0)
 		{
 		}
 
 		FieldAXPY (const FieldAXPY &faxpy) :
-			_F (faxpy._F), _y (0)
+			_field (faxpy._field), _y (0)
 		{}
 
 		FieldAXPY<Modular<int8_t> > &operator = (const FieldAXPY &faxpy)
 		{
-			_F = faxpy._F;
+			_field = faxpy._field;
 			_y = faxpy._y;
 
 			return *this;
@@ -485,7 +485,7 @@ namespace LinBox
 
 		inline Element& get (Element &y)
 		{
-			y = Element(_y % (uint64_t) _F.modulus);
+			y = Element(_y % (uint64_t) _field.modulus);
 			return y;
 		}
 
@@ -502,7 +502,7 @@ namespace LinBox
 
 	private:
 
-		Field _F;
+		Field _field;
 		uint64_t _y;
 		uint8_t _two_64;
 	};
@@ -533,7 +533,7 @@ namespace LinBox
 			}
 
 
-			y %= (uint64_t) _F.modulus;
+			y %= (uint64_t) _field.modulus;
 
 			return res = y;
 
@@ -551,7 +551,7 @@ namespace LinBox
 				y += ( (uint16_t) *i_elt ) * ( (uint16_t) v2[*i_idx] );
 			}
 
-			y %= (uint64_t) _F.modulus;
+			y %= (uint64_t) _field.modulus;
 
 			return res = y;
 

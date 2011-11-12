@@ -65,7 +65,7 @@ namespace LinBox
 		 * @param s	scalar, a field element, to be used as the diagonal of the matrix.
 		 */
 		ScalarMatrix (const Field &F, const size_t n, const Element &s) :
-			_F(F), _n(n), _v(s)
+			_field(F), _n(n), _v(s)
 		{}
 
 		/** Constructor from a random element.
@@ -74,11 +74,11 @@ namespace LinBox
 		 * @param iter Random iterator from which to get the diagonal scalar element.
 		 */
 		ScalarMatrix (const Field &F, const size_t n, const typename Field::RandIter& iter) :
-			_F(F), _n(n)
+			_field(F), _n(n)
 		{ iter.random(_v); }
 
 		ScalarMatrix(const ScalarMatrix<Field> &Mat) :
-			_F(Mat._F)
+			_field(Mat._field)
 		{
 			_n = Mat._n;
 			_v = Mat._v;
@@ -122,7 +122,7 @@ namespace LinBox
 
 		template<typename _Tp1>
 		ScalarMatrix (const ScalarMatrix<_Tp1>& S, const Field &F) :
-			_F(F), _n(S.rowdim())
+			_field(F), _n(S.rowdim())
 		{
 			typename ScalarMatrix<_Tp1>::template rebind<Field>() (*this, S, F);
 		}
@@ -132,26 +132,26 @@ namespace LinBox
 
 		size_t coldim(void) const { return _n; }
 
-		const Field& field() const {return _F;}
+		const Field& field() const {return _field;}
 
 		// for a specialization in solutions
 		Element& trace(Element& t) const
-		{	Element n; _F.init(n, _n);
-			return _F.mul(t, _v, n);
+		{	Element n; _field.init(n, _n);
+			return _field.mul(t, _v, n);
 		}
 
 		Element& getEntry(Element& x, const size_t i, const size_t j) const
 		{
-			return (i==j?_F.assign(x,_v):_F.init(x,0));
+			return (i==j?_field.assign(x,_v):_field.init(x,0));
 		}
 
 
-		Element& getScalar(Element& x) const { return this->_F.assign(x,this->_v); }
-		Element& setScalar(const Element& x) { return this->_F.assign(this->_v,x); }
+		Element& getScalar(Element& x) const { return this->_field.assign(x,this->_v); }
+		Element& setScalar(const Element& x) { return this->_field.assign(this->_v,x); }
 
 	protected:
 
-		Field _F;   // Field for arithmetic
+		Field _field;   // Field for arithmetic
 
 		size_t _n;  // Number of rows and columns of square matrix.
 
@@ -184,14 +184,14 @@ namespace LinBox
 		linbox_check (y.size() >= _n);
 		typename OutVector::iterator y_iter = y.begin ();
 
-		if (_F.isZero(_v)) // just write zeroes
+		if (_field.isZero(_v)) // just write zeroes
 			for ( ; y_iter != y.end ();  ++y_iter) *y_iter = _v;
-		else if (_F.isOne(_v) ) // just copy
+		else if (_field.isOne(_v) ) // just copy
 			copy(x.begin(), x.end(), y.begin());
 		else // use actual muls
 		{   typename InVector::const_iterator x_iter = x.begin ();
 			for (  ; y_iter != y.end () ; ++y_iter, ++x_iter )
-				_F.mul (*y_iter, _v, *x_iter);
+				_field.mul (*y_iter, _v, *x_iter);
 		}
 		return y;
 
@@ -211,13 +211,13 @@ namespace LinBox
 
 		// field element to be used in calculations
 		Element entry;
-		_F.init (entry, 0); // needed?
+		_field.init (entry, 0); // needed?
 
 		// For each element, multiply input element with corresponding element
 		// of stored scalar and insert non-zero elements into output vector
 		for ( typename InVector::const_iterator x_iter = x.begin (); x_iter != x.end (); ++x_iter)
-		{	_F.mul (entry, _v, x_iter->second);
-			if (!_F.isZero (entry)) y.push_back (make_pair (x_iter->first, entry));
+		{	_field.mul (entry, _v, x_iter->second);
+			if (!_field.isZero (entry)) y.push_back (make_pair (x_iter->first, entry));
 		}
 
 		return y;
@@ -233,14 +233,14 @@ namespace LinBox
 
 		// create field elements and size_t to be used in calculations
 		Element entry;
-		_F.init (entry, 0);
+		_field.init (entry, 0);
 
 		// Iterator over indices of input vector.
 		// For each element, multiply input element with
 		// stored scalar and insert non-zero elements into output vector
 		for ( typename InVector::const_iterator x_iter = x.begin (); x_iter != x.end (); ++x_iter)
-		{	_F.mul (entry, _v, x_iter->second);
-			if (!_F.isZero (entry)) y.insert (y.end (), make_pair (x_iter->first, entry));
+		{	_field.mul (entry, _v, x_iter->second);
+			if (!_field.isZero (entry)) y.insert (y.end (), make_pair (x_iter->first, entry));
 		}
 
 		return y;

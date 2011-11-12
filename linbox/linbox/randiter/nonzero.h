@@ -47,11 +47,11 @@ namespace LinBox
 		typedef typename Field::Element Element;
 
 		NonzeroRandIter (const Field &F, const RandIter &r) :
-			_F (F), _r (r)
+			_field (F), _r (r)
 		{}
 
 		NonzeroRandIter (const NonzeroRandIter& R) :
-			_F (R._F), _r (R._r)
+			_field (R._field), _r (R._r)
 		{}
 
 		~NonzeroRandIter()
@@ -60,7 +60,7 @@ namespace LinBox
 		NonzeroRandIter& operator=(const NonzeroRandIter& R)
 		{
 			if (this != &R) { // guard against self-assignment
-				_F = R._F;
+				_field = R._field;
 				_r = R._r;
 			}
 
@@ -70,7 +70,7 @@ namespace LinBox
 		template<class Elt>
 		Elt &random (Elt &a)  const
 		{
-			do _r.random (a); while (_F.isZero (a));
+			do _r.random (a); while (_field.isZero (a));
 			return a;
 		}
 
@@ -90,7 +90,7 @@ namespace LinBox
 
 	private:
 
-		Field    _F;
+		Field    _field;
 		RandIter _r;
 
 	}; // class NonzeroRandIter

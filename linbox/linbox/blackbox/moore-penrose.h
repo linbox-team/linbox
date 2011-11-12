@@ -74,48 +74,48 @@ namespace LinBox
 		 *  @param rank
 		 */
 		MoorePenrose (const Blackbox *A, size_t rank) :
-			_A (A), _rank (rank)
+			_matA (A), _rank (rank)
 		{
-			_B1 = new Submatrix<Blackbox> (_A, 0, 0, rank, rank);
-			_F = new Submatrix<Blackbox> (_A, 0, 0, _A->rowdim (), rank);
-			_GG = new Submatrix<Blackbox> (_A, 0, 0, rank, _A->coldim ());
-			_FT = new Transpose<Submatrix<Blackbox> > (_F);
-			_GT = new Transpose<Submatrix<Blackbox> > (_GG);
-			_FTF = new Compose<Transpose<Submatrix<Blackbox> >,Submatrix<Blackbox> > (_FT, _F);
-			_GGT = new Compose<Submatrix<Blackbox>, Transpose<Submatrix<Blackbox> > > (_GG, _GT);
-			_FTFinv = new Inverse<Compose<Transpose<Submatrix<Blackbox> >,Submatrix<Blackbox> > > ( _FTF);
-			_GGTinv = new Inverse<Compose<Submatrix<Blackbox>, Transpose<Submatrix<Blackbox> > > > ( _GGT);
-		}
+			_matB1     = new Submatrix<Blackbox> (_matA, 0, 0, rank, rank);
+			_matF      = new Submatrix<Blackbox> (_matA, 0, 0, _matA->rowdim (), rank);
+			_matGG     = new Submatrix<Blackbox> (_matA, 0, 0, rank, _matA->coldim ());
+			_matFT     = new Transpose<Submatrix<Blackbox> > (_matF);
+			_matGT     = new Transpose<Submatrix<Blackbox> > (_matGG);
+			_matFTF    = new Compose<Transpose<Submatrix<Blackbox> >,Submatrix<Blackbox> > (_matFT, _matF);
+			_matGGT    = new Compose<Submatrix<Blackbox>, Transpose<Submatrix<Blackbox> > > (_matGG, _matGT);
+			_matFTFinv = new Inverse<Compose<Transpose<Submatrix<Blackbox> >,Submatrix<Blackbox> > > ( _matFTF);
+			_matGGTinv = new Inverse<Compose<Submatrix<Blackbox>, Transpose<Submatrix<Blackbox> > > > ( _matGGT);
+			}
 
 		/** Copy constructor
 		*/
 		MoorePenrose (const MoorePenrose &A) :
-			_A (A._A),
-			_B1 (A._B1),
-			_F (A._F),
-			_GG (A._GG),
-			_FT (A._FT),
-			_GT (A._GT),
-			_FTF (A._FTF),
-			_GGT (A._GGT),
-			_FTFinv (A._FTFinv),
-			_GGTinv (A._GGTinv),
-			_rank (A._rank)
+			_matA      ( A._matA),
+			_matB1     ( A._matB1),
+			_matF      ( A._matF),
+			_matGG     ( A._matGG),
+			_matFT     ( A._matFT),
+			_matGT     ( A._matGT),
+			_matFTF    ( A._matFTF),
+			_matGGT    ( A._matGGT),
+			_matFTFinv ( A._matFTFinv),
+			_matGGTinv ( A._matGGTinv),
+			_rank      ( A._rank)
 		{}
 
 		/** Destructor
 		*/
 		~MoorePenrose ()
 		{
-			delete _GGTinv;
-			delete _FTFinv;
-			delete _GGT;
-			delete _FTF;
-			delete _GT;
-			delete _FT;
-			delete _GG;
-			delete _F;
-			delete _B1;
+			delete _matGGTinv;
+			delete _matFTFinv;
+			delete _matGGT;
+			delete _matFTF;
+			delete _matGT;
+			delete _matFT;
+			delete _matGG;
+			delete _matF;
+			delete _matB1;
 		}
 
 
@@ -135,11 +135,11 @@ namespace LinBox
 			InVector _z1 (_rank);
 			InVector _z2 (_rank);
 
-			_F->applyTranspose (_z1, x);
-			_FTFinv->apply (_z2, _z1);
-			_B1->apply (_z1, _z2);
-			_GGTinv->apply (_z2, _z1);
-			_GG->applyTranspose (y, _z2);
+			_matF->applyTranspose (_z1, x);
+			_matFTFinv->apply (_z2, _z1);
+			_matB1->apply (_z1, _z2);
+			_matGGTinv->apply (_z2, _z1);
+			_matGG->applyTranspose (y, _z2);
 
 			return y;
 		}
@@ -159,11 +159,11 @@ namespace LinBox
 			InVector _z1 (_rank);
 			InVector _z2 (_rank);
 
-			_GG->apply (_z1, x);
-			_GGTinv->applyTranspose (_z2, _z1);
-			_B1->applyTranspose (_z1, _z2);
-			_FTFinv->applyTranspose (_z2, _z1);
-			_F->apply (y, _z2);
+			_matGG->apply (_z1, x);
+			_matGGTinv->applyTranspose (_z2, _z1);
+			_matB1->applyTranspose (_z1, _z2);
+			_matFTFinv->applyTranspose (_z2, _z1);
+			_matF->apply (y, _z2);
 
 			return y;
 		}
@@ -174,29 +174,33 @@ namespace LinBox
 		 * @return integer number of _rows of black box matrix.
 		 */
 		size_t rowdim (void) const
-		{ return _A->coldim (); }
+		{
+			return _matA->coldim ();
+		}
 
 		/** Retreive _column dimensions of BlackBox matrix.
 		 * Required by abstract base class.
 		 * @return integer number of _columns of black box matrix.
 		 */
 		size_t coldim (void) const
-		{ return _A->rowdim (); }
+		{
+			return _matA->rowdim ();
+		}
 
-		const Field& field() { return _A -> field(); }
+		const Field& field() { return _matA -> field(); }
 
 	private:
 
-		const Blackbox  *_A;
-		Submatrix<Blackbox>  *_B1;
-		Submatrix<Blackbox>  *_F;
-		Submatrix<Blackbox>  *_GG;
-		Transpose<Submatrix<Blackbox> >  *_FT;
-		Transpose<Submatrix<Blackbox> >  *_GT;
-		Compose<Transpose<Submatrix<Blackbox> >,Submatrix<Blackbox> >  *_FTF;
-		Compose<Submatrix<Blackbox>, Transpose<Submatrix<Blackbox> > >  *_GGT;
-		Inverse<Compose<Transpose<Submatrix<Blackbox> >,Submatrix<Blackbox> > >  *_FTFinv;
-		Inverse<Compose<Submatrix<Blackbox>, Transpose<Submatrix<Blackbox> >  > >  *_GGTinv;
+		const Blackbox       * _matA;
+		Submatrix<Blackbox>  * _matB1;
+		Submatrix<Blackbox>  * _matF;
+		Submatrix<Blackbox>  * _matGG;
+		Transpose<Submatrix<Blackbox> >  *_matFT;
+		Transpose<Submatrix<Blackbox> >  *_matGT;
+		Compose<Transpose<Submatrix<Blackbox> >,Submatrix<Blackbox> >   * _matFTF;
+		Compose<Submatrix<Blackbox>, Transpose<Submatrix<Blackbox> > >  * _matGGT;
+		Inverse<Compose<Transpose<Submatrix<Blackbox> >,Submatrix<Blackbox> > >    * _matFTFinv;
+		Inverse<Compose<Submatrix<Blackbox>, Transpose<Submatrix<Blackbox> >  > >  * _matGGTinv;
 
 		size_t     _rank;
 	};

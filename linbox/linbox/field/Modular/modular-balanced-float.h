@@ -169,17 +169,17 @@ namespace LinBox
 		typedef ModularBalanced<Element> Field;
 
 		FieldAXPY (const Field &F) :
-			_F (F),
-			_y(0.) , _bound( (Element) (((1ULL << 24) - (int) (_F.modulus*_F.modulus))))
+			_field (F),
+			_y(0.) , _bound( (Element) (((1ULL << 24) - (int) (_field.modulus*_field.modulus))))
 		{}
 
 		FieldAXPY (const FieldAXPY &faxpy) :
-			_F (faxpy._F),
+			_field (faxpy._field),
 			_y(faxpy._y), _bound(faxpy._bound)
 		{}
 
 		FieldAXPY<ModularBalanced<Element> > &operator = (const FieldAXPY &faxpy) {
-			_F = faxpy._F;
+			_field = faxpy._field;
 			_y= faxpy._y;
 			_bound= faxpy._bound;
 			return *this;
@@ -194,20 +194,20 @@ namespace LinBox
 		inline Element& accumulate (const Element &tmp) {
 			_y += tmp;
 			if (_y > _bound)
-				return _y = fmodf (_y, _F.modulus);
+				return _y = fmodf (_y, _field.modulus);
 			else
 				return _y;
 		}
 		inline Element& subumulate (const Element &tmp) {
 			_y -= tmp;
 			if (_y < 0)
-				return _y += _F.modulus;
+				return _y += _field.modulus;
 			else
 				return _y;
 		}
 
 		inline Element& get (Element &y) {
-			_y =  fmodf (_y, _F.modulus);
+			_y =  fmodf (_y, _field.modulus);
 			return y=_y ;
 		}
 
@@ -223,13 +223,13 @@ namespace LinBox
 		inline Element& set (const Element &tmp) {
 			_y = tmp;
 			if (_y > _bound)
-				return _y =  fmodf (_y, _F.modulus);
+				return _y =  fmodf (_y, _field.modulus);
 			else
 				return _y;
 		}
 
 	private:
-		Field _F;
+		Field _field;
 		Element _y;
 		Element _bound;
 	};
@@ -240,9 +240,9 @@ namespace LinBox
 	public:
 		typedef float Element;
 		DotProductDomain (const ModularBalanced<Element> &F) :
-			VectorDomainBase<ModularBalanced<Element> > (F), _bound( (Element) ( (1ULL<<24) - (int) (_F.modulus*_F.modulus)))
+			VectorDomainBase<ModularBalanced<Element> > (F), _bound( (Element) ( (1ULL<<24) - (int) (_field.modulus*_field.modulus)))
 		{
-			_nmax= (size_t)floor((Element(1<<11)* Element(1<<11)*2.)/ (_F.modulus * _F.modulus));
+			_nmax= (size_t)floor((Element(1<<11)* Element(1<<11)*2.)/ (_field.modulus * _field.modulus));
 		}
 
 	protected:
@@ -255,20 +255,20 @@ namespace LinBox
 			if (v1.size() < _nmax) {
 				for (size_t i = 0; i< v1.size();++i)
 					y += v1[i] * v2[i] ;
-				y =  fmodf(y, _F.modulus);
+				y =  fmodf(y, _field.modulus);
 			}
 			else{
 				size_t i=0;
 				for (;i< v1.size()- _nmax ;i=i+_nmax){
 					for (size_t j=i;j<i+_nmax;++j)
 						y += v1[j] * v2[j];
-					t+= fmodf(y, _F.modulus);
+					t+= fmodf(y, _field.modulus);
 					y=0.;
 				}
 				for (;i < v1.size();++i)
 					y += v1[i] * v2[i];
-				t+= fmodf(y, _F.modulus);
-				y = fmodf(t, _F.modulus);
+				t+= fmodf(y, _field.modulus);
+				y = fmodf(t, _field.modulus);
 			}
 			return res = y;
 		}
@@ -284,20 +284,20 @@ namespace LinBox
 			if (v1.first.size() < _nmax) {
 				for (size_t i=0;i<v1.first.size();++i)
 					y+= v1.second[i] * v2[v1.first[i]];
-				y = fmodf(y, _F.modulus);
+				y = fmodf(y, _field.modulus);
 			}
 			else {
 				size_t i=0;
 				for (;i< v1.first.size()- _nmax ;i=i+_nmax){
 					for (size_t j=i;j<i+_nmax;++j)
 						y += v1.second[j] * v2[v1.first[j]];
-					t+=fmodf(y, _F.modulus);
+					t+=fmodf(y, _field.modulus);
 					y=0.;
 				}
 				for (;i < v1.first.size();++i)
 					y += v1.second[i] * v2[v1.first[i]];
-				t+= fmodf(y, _F.modulus);
-				y = fmodf(t, _F.modulus);
+				t+= fmodf(y, _field.modulus);
+				y = fmodf(t, _field.modulus);
 			}
 			return res = y;
 		}

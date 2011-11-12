@@ -224,7 +224,7 @@ namespace LinBox
 		 *               options for the solver
 		 */
 		WiedemannSolver (const Field &F, const WiedemannTraits &traits) :
-			_traits (traits), _F (F), _randiter (F), _VD (F)
+			_traits (traits), _field (F), _randiter (F), _VD (F)
 		{}
 
 		/*! Constructor with a random iterator.
@@ -237,7 +237,7 @@ namespace LinBox
 		WiedemannSolver (const Field &F,
 				 const WiedemannTraits &traits,
 				 typename Field::RandIter r) :
-			_traits (traits), _F (F), _randiter (r), _VD (F)
+			_traits (traits), _field (F), _randiter (r), _VD (F)
 		{}
 
 		/// \ingroup algorithms
@@ -345,7 +345,7 @@ namespace LinBox
 		SparseMatrix<Field> *makeLambdaSparseMatrix (size_t m);
 
 		WiedemannTraits                      _traits;
-		const Field                         &_F;
+		const Field                         &_field;
 		typename Field::RandIter             _randiter;
 		VectorDomain<Field>                  _VD;
 	};

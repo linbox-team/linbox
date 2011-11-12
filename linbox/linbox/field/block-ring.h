@@ -32,8 +32,8 @@ namespace LinBox
 	template < class _Field >
 	class BlockRing : public FieldInterface {
 	public:
-		_Field _F;
-		BlasMatrixDomain<_Field> _D;
+		_Field _field;
+		BlasMatrixDomain<_Field> _blasMatrixDomain;
 		size_t _b;
 
 		typedef BlasMatrix<_Field> Matrix;
@@ -138,7 +138,7 @@ namespace LinBox
 			RandIter(const BlockRing<_Field>& BR,
 				 const integer size=0,
 				 const integer seed=0) :
-				r(BR._F, size, seed), dim(BR._b) {}
+				r(BR._field, size, seed), dim(BR._b) {}
 
 			Element& random(Element& e) const
 			{
@@ -153,21 +153,21 @@ namespace LinBox
 
 
 		BlockRing(const _Field& F, size_t d=1) :
-			_F(F), _D(F), _b(d)
+			_field(F), _blasMatrixDomain(F), _b(d)
 		{
-			one.set(new Matrix(_F,d,d));
-			zero.set(new Matrix(_F,d,d));
-			mOne.set(new Matrix(_F,d,d)) ;
-			_D.setIdentity(*(one.matrix));
-			_D.setZero(*(zero.matrix));
+			one.set(new Matrix(_field,d,d));
+			zero.set(new Matrix(_field,d,d));
+			mOne.set(new Matrix(_field,d,d)) ;
+			_blasMatrixDomain.setIdentity(*(one.matrix));
+			_blasMatrixDomain.setZero(*(zero.matrix));
 			for (size_t i = 0 ;i < d ;++i)
-				mOne.matrix->setEntry(i,i,_F.mOne);
+				mOne.matrix->setEntry(i,i,_field.mOne);
 		}
 
 		Element& init(Element& B) const
 		{
 			// B is garbage from memory
-			B.set(new Matrix(_F,_b,_b));
+			B.set(new Matrix(_field,_b,_b));
 			return B;
 		}
 
@@ -179,11 +179,11 @@ namespace LinBox
 			if (r == 0) r = _b;
 			if (c == 0) c = _b;
 
-			B.set(new Matrix(_F,r,c));
+			B.set(new Matrix(_field,r,c));
 
 			size_t k = ( (r < c) ? r : c );
 
-			typename _Field::Element N; _F.init(N, n);
+			typename _Field::Element N; _field.init(N, n);
 
 			for (size_t i = 0; i < k; ++i) (B.matrix)->setEntry(i, i, N);
 
@@ -195,14 +195,14 @@ namespace LinBox
 		template <typename ints>
 		ints& convert(ints& x) const
 		{
-			return _F.convert(x);
+			return _field.convert(x);
 		}
 
 
 		template <typename ints>
 		ints& convert(ints& x, const Element &A) const
 		{
-			return _F.convert(x, *(A.matrix->getPointer()));
+			return _field.convert(x, *(A.matrix->getPointer()));
 		}
 
 		Element& assign(Element &A, const Element &B) const
@@ -215,9 +215,9 @@ namespace LinBox
 		{
 			// c = p^(b^2)
 
-			_F.cardinality(c);
+			_field.cardinality(c);
 
-			if(c > 1) // _F is a finite field
+			if(c > 1) // _field is a finite field
 			{
 				integer tmp, n;
 				n = _b*_b;
@@ -229,17 +229,17 @@ namespace LinBox
 
 		integer& characteristic(integer &c) const
 		{
-			return _F.characteristic(c);
+			return _field.characteristic(c);
 		}
 
 		unsigned long cardinality() const
 		{
-			return _F. cardinality() ;
+			return _field. cardinality() ;
 		}
 
 		unsigned long characteristic() const
 		{
-			return _F. characteristic() ;
+			return _field. characteristic() ;
 		}
 
 
@@ -260,7 +260,7 @@ namespace LinBox
 
 		Element& mul(Element& C, const Element& A, const Element& B) const
 		{
-			_D.mul(*(C.matrix), *(A.matrix), *(B.matrix));
+			_blasMatrixDomain.mul(*(C.matrix), *(A.matrix), *(B.matrix));
 			return C;
 		}
 
@@ -268,21 +268,21 @@ namespace LinBox
 		//non-commutative: use mulin_left: A = A*B
 		Element& mulin(Element& A, const Element& B) const
 		{
-			_D.mulin_left(*(A.matrix), *(B.matrix));
+			_blasMatrixDomain.mulin_left(*(A.matrix), *(B.matrix));
 			return A;
 		}
 
 		// D = A*X+Y
 		Element& axpy(Element& D, const Element& A, const Element& X, const Element& Y) const
 		{
-			_D.axpy(*(D.matrix), *(A.matrix), *(X.matrix), *(Y.matrix));
+			_blasMatrixDomain.axpy(*(D.matrix), *(A.matrix), *(X.matrix), *(Y.matrix));
 			return D;
 		}
 
 		// R = A*X+R
 		Element& axpyin(Element& R, const Element& A, const Element& X) const
 		{
-			_D.axpyin(*(R.matrix), *(A.matrix), *(X.matrix));
+			_blasMatrixDomain.axpyin(*(R.matrix), *(A.matrix), *(X.matrix));
 			return R;
 		}
 
@@ -296,7 +296,7 @@ namespace LinBox
 
 			int nullflag = 0;
 
-			_D.inv(*(B.matrix), *(A.matrix), nullflag);
+			_blasMatrixDomain.inv(*(B.matrix), *(A.matrix), nullflag);
 
 			if (nullflag)
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"InvMatrix: inverse undefined");
@@ -310,10 +310,10 @@ namespace LinBox
 
 			int nullflag = 0;
 
-			//_D.invin(A, A, nullflag);
+			//_blasMatrixDomain.invin(A, A, nullflag);
 
 			Element B;  init(B, A.matrix->rowdim(), A.matrix->coldim());
-			_D.inv(*(B.matrix), *(A.matrix), nullflag);
+			_blasMatrixDomain.inv(*(B.matrix), *(A.matrix), nullflag);
 
 			if (nullflag)
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"InvMatrix: inverse undefined");
@@ -328,7 +328,7 @@ namespace LinBox
 		Element& div(Element& C, const Element& A, const Element& B) const
 		{
 
-			_D.right_solve(*(C.matrix),*(B.matrix),*(A.matrix));
+			_blasMatrixDomain.right_solve(*(C.matrix),*(B.matrix),*(A.matrix));
 			return C;
 		}
 
@@ -336,7 +336,7 @@ namespace LinBox
 		//A = A*B^{-1};
 		Element& divin( Element& A, const Element& B) const
 		{
-			_D.right_solve(*(B.matrix),*(A.matrix));
+			_blasMatrixDomain.right_solve(*(B.matrix),*(A.matrix));
 			return A;
 		}
 
@@ -355,16 +355,16 @@ namespace LinBox
 			Scalar* b=B.matrix->getPointer();
 			Scalar* c=C.matrix->getPointer();
 
-			//FFLAS::fcopy(_F, rows*cols, b, 1, c, 1); // C = B
+			//FFLAS::fcopy(_field, rows*cols, b, 1, c, 1); // C = B
 
 
 			for(size_t i=0; i < rows*cols; ++i) {
-				_F.add(*c,*a,*b);
+				_field.add(*c,*a,*b);
 				++a; ++b; c++;
 			}
 
-			//Scalar alpha; _F.init(alpha, 1);
-			//FFLAS::faxpy(_F, rows*cols, alpha, a, 1, c, 1);
+			//Scalar alpha; _field.init(alpha, 1);
+			//FFLAS::faxpy(_field, rows*cols, alpha, a, 1, c, 1);
 
 			return C;
 		}
@@ -379,7 +379,7 @@ namespace LinBox
 			Scalar* b=B.matrix->getPointer();
 
 			for(size_t i=0; i < r*c; ++i) {
-				_F.addin(*a,*b);
+				_field.addin(*a,*b);
 				++a; ++b;
 			}
 
@@ -400,7 +400,7 @@ namespace LinBox
 
 
 			for(size_t i=0; i < rows*cols; ++i) {
-				_F.sub(*c,*a,*b);
+				_field.sub(*c,*a,*b);
 				++a; ++b; c++;
 			}
 
@@ -418,7 +418,7 @@ namespace LinBox
 			Scalar* b=B.matrix->getPointer();
 
 			for(size_t i=0; i < r*c; ++i) {
-				_F.subin(*a,*b);
+				_field.subin(*a,*b);
 				++a; ++b;
 			}
 
@@ -436,7 +436,7 @@ namespace LinBox
 			Scalar* b=B.matrix->getPointer();
 
 			for(size_t i=0; i < r*c; ++i) {
-				_F.neg(*b,*a);
+				_field.neg(*b,*a);
 				++a; ++b;
 			}
 
@@ -453,7 +453,7 @@ namespace LinBox
 			Scalar* a=A.matrix->getPointer();
 
 			for(size_t i=0; i < r*c; ++i) {
-				_F.negin(*a);
+				_field.negin(*a);
 				++a;
 			}
 
@@ -471,7 +471,7 @@ namespace LinBox
 
 			for(size_t i=0; i < r*c; ++i) {
 
-				if(!_F.areEqual(*a,*b)) {
+				if(!_field.areEqual(*a,*b)) {
 					return false;
 				}
 
@@ -495,12 +495,12 @@ namespace LinBox
 				for(size_t j=1; j <= n; ++j)
 				{
 					if(i==j) { // on the diagonal
-						if(!_F.isOne(*x)) {
+						if(!_field.isOne(*x)) {
 							return false;
 						}
 					}
 					else {
-						if(!_F.isZero(*x)) {
+						if(!_field.isZero(*x)) {
 							return false;
 						}
 					}
@@ -523,7 +523,7 @@ namespace LinBox
 
 			for(size_t i=0; i < r*c; ++i)
 			{
-				if(!_F.isZero(*x)) {
+				if(!_field.isZero(*x)) {
 					return false;
 				}
 
@@ -537,7 +537,7 @@ namespace LinBox
 		//stubs for read and write field
 		std::ostream& write(std::ostream& os) const
 		{
-			return _F.write(os << "Dimension " << _b << " square matrices over ");
+			return _field.write(os << "Dimension " << _b << " square matrices over ");
 		}
 
 
@@ -557,7 +557,7 @@ namespace LinBox
 		std::istream& read(std::istream& is, const Element& A) const
 		{
 
-			return (A.matrix)->read(is, _F);
+			return (A.matrix)->read(is, _field);
 		}
 
 

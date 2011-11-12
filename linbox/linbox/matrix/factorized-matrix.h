@@ -71,10 +71,10 @@ namespace LinBox
 
 	protected:
 
-		Field                     _F;
-		BlasMatrix<Field>       &_LU;
-		BlasPermutation<size_t> &_PP;
-		BlasPermutation<size_t> &_QQ;  //note: this is actually Qt!
+		Field                     _field;
+		BlasMatrix<Field>       &_factLU;
+		BlasPermutation<size_t> &_permP;
+		BlasPermutation<size_t> &_permQ;  //note: this is actually Qt!
 		size_t                    _m;
 		size_t                    _n;
 		size_t                 _rank;
@@ -86,27 +86,27 @@ namespace LinBox
 #if 0
 		//! Contruction of LQUP factorization of A (making a copy of A)
 		LQUPMatrix (const Field& F, const BlasMatrix<Field>& A) :
-			_F(F), _LU(*(new BlasMatrix<Field> (A))) ,
-			_PP(*(new BlasPermutation<size_t>(A.coldim()))),
-			_QQ(*(new BlasPermutation<size_t>(A.rowdim()))),
+			_field(F), _factLU(*(new BlasMatrix<Field> (A))) ,
+			_permP(*(new BlasPermutation<size_t>(A.coldim()))),
+			_permQ(*(new BlasPermutation<size_t>(A.rowdim()))),
 			_m(A.rowdim()), _n(A.coldim()),
 			_alloc(true),_plloc(true)
 		{
 			//std::cerr<<"Je passe par le constructeur const"<<std::endl;
 
-			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans, _m, _n,
-						 _LU.getPointer(),_LU.getStride(),
-						 _PP.getWritePointer(), _QQ.getWritePointer(), FFPACK::FfpackLQUP );
-			_PP.setOrder(_rank);
-			_QQ.setOrder(_rank);
+			_rank= FFPACK::LUdivine( _field,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans, _m, _n,
+						 _factLU.getPointer(),_factLU.getStride(),
+						 _permP.getWritePointer(), _permQ.getWritePointer(), FFPACK::FfpackLQUP );
+			_permP.setOrder(_rank);
+			_permQ.setOrder(_rank);
 
 		}
 
 		//! Contruction of LQUP factorization of A (in-place in A)
 		LQUPMatrix (const Field& F, BlasMatrix<Field>& A) :
-			_F(F), _LU(A) ,
-			_PP(*(new BlasPermutation<size_t>(A.coldim()))),
-			_QQ(*(new BlasPermutation<size_t>(A.rowdim()))),
+			_field(F), _factLU(A) ,
+			_permP(*(new BlasPermutation<size_t>(A.coldim()))),
+			_permQ(*(new BlasPermutation<size_t>(A.rowdim()))),
 			_m(A.rowdim()), _n(A.coldim()),
 			_alloc(false),_plloc(true)
 		{
@@ -116,12 +116,12 @@ namespace LinBox
 			}
 			else {
 				//std::cerr<<"Je passe par le constructeur non const"<<std::endl;
-				_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, _m, _n,
-							 _LU.getPointer(),_LU.getStride(),
-							 _PP.getWritePointer(), _QQ.getWritePointer(), FFPACK::FfpackLQUP );
+				_rank= FFPACK::LUdivine( _field,FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, _m, _n,
+							 _factLU.getPointer(),_factLU.getStride(),
+							 _permP.getWritePointer(), _permQ.getWritePointer(), FFPACK::FfpackLQUP );
 			}
-			_PP.setOrder(_rank);
-			_QQ.setOrder(_rank);
+			_permP.setOrder(_rank);
+			_permQ.setOrder(_rank);
 
 		}
 
@@ -130,20 +130,20 @@ namespace LinBox
 		 */
 		LQUPMatrix (const BlasMatrix<Field>& A,
 			    BlasPermutation<size_t> & P, BlasPermutation<size_t> & Q) :
-			_F(F), _LU(*(new BlasMatrix<Field> (A))) ,
-			_PP(P), _QQ(Q),
+			_field(F), _factLU(*(new BlasMatrix<Field> (A))) ,
+			_permP(P), _permQ(Q),
 			_m(A.rowdim()), _n(A.coldim()),
 			_alloc(true),_plloc(false)
 		{
 			//std::cerr<<"Je passe par le constructeur const"<<std::endl;
 
-			linbox_check(_QQ.getOrder()==A.rowdim());
-			linbox_check(_PP.getOrder()==A.coldim());
-			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans, _m, _n,
-						 _LU.getPointer(),_LU.getStride(),
-						 _PP.getWritePointer(), _QQ.getWritePointer(), FFPACK::FfpackLQUP );
-			_PP.setOrder(_rank);
-			_QQ.setOrder(_rank);
+			linbox_check(_permQ.getOrder()==A.rowdim());
+			linbox_check(_permP.getOrder()==A.coldim());
+			_rank= FFPACK::LUdivine( _field,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans, _m, _n,
+						 _factLU.getPointer(),_factLU.getStride(),
+						 _permP.getWritePointer(), _permQ.getWritePointer(), FFPACK::FfpackLQUP );
+			_permP.setOrder(_rank);
+			_permQ.setOrder(_rank);
 
 
 		}
@@ -153,23 +153,23 @@ namespace LinBox
 		 */
 		LQUPMatrix ( BlasMatrix<Field>& A,
 			    BlasPermutation<size_t> & P, BlasPermutation<size_t> & Q) :
-			_F(F), _LU(A) , _PP(P), _QQ(Q),
+			_field(F), _factLU(A) , _permP(P), _permQ(Q),
 			_m(A.rowdim()), _n(A.coldim()),
 			_alloc(false),_plloc(false)
 		{
 			//std::cerr<<"Je passe par le constructeur non const"<<std::endl;
-			linbox_check(_QQ.getOrder()<=A.rowdim());
-			linbox_check(_PP.getOrder()<=A.coldim());
-			if (_QQ.getOrder() == 0)
-				_QQ.resize(A.rowdim());
-			if (_PP.getOrder() == 0)
-				_PP.resize(A.coldim());
+			linbox_check(_permQ.getOrder()<=A.rowdim());
+			linbox_check(_permP.getOrder()<=A.coldim());
+			if (_permQ.getOrder() == 0)
+				_permQ.resize(A.rowdim());
+			if (_permP.getOrder() == 0)
+				_permP.resize(A.coldim());
 
-			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, _m, _n,
-						 _LU.getPointer(),_LU.getStride(),
-						 _PP.getWritePointer(), _QQ.getWritePointer(), FFPACK::FfpackLQUP );
-			_PP.setOrder(_rank);
-			_QQ.setOrder(_rank);
+			_rank= FFPACK::LUdivine( _field,FFLAS::FflasNonUnit, FFLAS::FflasNoTrans, _m, _n,
+						 _factLU.getPointer(),_factLU.getStride(),
+						 _permP.getWritePointer(), _permQ.getWritePointer(), FFPACK::FfpackLQUP );
+			_permP.setOrder(_rank);
+			_permQ.setOrder(_rank);
 
 		}
 #endif
@@ -259,7 +259,7 @@ namespace LinBox
 		*/
 		Element* getPointer() const ;
 
-		/*! @internal get  the stride in \c _LU
+		/*! @internal get  the stride in \c _factLU
 		*/
 		size_t getStride() const ;
 

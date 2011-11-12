@@ -60,7 +60,7 @@ namespace LinBox
 
 		// constructor of the sequence from a blackbox, a field and one block projection
 		BlackboxBlockContainer(const _Blackbox *D, const Field &F, const Block  &U0) :
-			BlackboxBlockContainerBase<Field,_Blackbox> (D, F, U0.rowdim(), U0.coldim()) , _W(D->rowdim(), U0.coldim()), _BMD(F)
+			BlackboxBlockContainerBase<Field,_Blackbox> (D, F, U0.rowdim(), U0.coldim()) , _blockW(D->rowdim(), U0.coldim()), _BMD(F)
 		{
 #ifdef _BBC_TIMING
 			clearTimer();
@@ -77,7 +77,7 @@ namespace LinBox
 		// constructor of the sequence from a blackbox, a field and two blocks projection
 		BlackboxBlockContainer(const _Blackbox *D, const Field &F, const Block &U0, const Block& V0) :
 			BlackboxBlockContainerBase<Field,_Blackbox> (D, F,U0.rowdim(), V0.coldim())
-			, _W(F,D->rowdim(), V0.coldim()), _BMD(F)
+			, _blockW(F,D->rowdim(), V0.coldim()), _BMD(F)
 		{
 #ifdef _BBC_TIMING
 			clearTimer();
@@ -94,7 +94,7 @@ namespace LinBox
 		//  constructor of the sequence from a blackbox, a field and two blocks random projection
 		BlackboxBlockContainer(const _Blackbox *D, const Field &F, size_t m, size_t n, size_t seed= time(NULL)) :
 			BlackboxBlockContainerBase<Field, _Blackbox> (D, F, m, n,seed)
-			, _W(F,D->rowdim(), n), _BMD(F)
+			, _blockW(F,D->rowdim(), n), _BMD(F)
 		{
 #ifdef _BBC_TIMING
 			clearTimer();
@@ -121,7 +121,7 @@ namespace LinBox
 
 
 	protected:
-		Block                        _W;
+		Block                        _blockW;
 		BlasMatrixDomain<Field>    _BMD;
 
 #ifdef _BBC_TIMING
@@ -136,13 +136,13 @@ namespace LinBox
 			tSequence.start();
 #endif
 			if (this->casenumber) {
-				Mul(_W,*this->_BB,this->_V);
-				_BMD.mul(this->_value, this->_U, _W);
+				Mul(_blockW,*this->_BB,this->_blockV);
+				_BMD.mul(this->_value, this->_blockU, _blockW);
 				this->casenumber = 0;
 			}
 			else {
-				Mul(this->_V,*this->_BB,_W);
-				_BMD.mul(this->_value, this->_U, this->_V);
+				Mul(this->_blockV,*this->_BB,_blockW);
+				_BMD.mul(this->_value, this->_blockU, this->_blockV);
 				this->casenumber = 1;
 			}
 #ifdef _BBC_TIMING
@@ -174,11 +174,11 @@ namespace LinBox
 		// constructor of the sequence from a blackbox, a field and one block projection
 		BlackboxBlockContainerRecord(const _Blackbox *D, const Field &F, const Block  &U0) :
 			BlackboxBlockContainerBase<Field,_Blackbox> (D, F, U0.rowdim(), U0.coldim())
-			, _W(F, D->rowdim(), U0.coldim()), _BMD(F), _launcher(Nothing), _iter(1)
+			, _blockW(F, D->rowdim(), U0.coldim()), _BMD(F), _launcher(Nothing), _iter(1)
 		{
 			this->init (U0, U0);
 			_rep = std::vector<Value> (this->_size, Value(F));
-			_Vcopy = this->_V;
+			_Vcopy = this->_blockV;
 			for (size_t i=0;i< this->_size;++i){
 				_rep[i] = this->_value;
 				_launch_record();
@@ -189,7 +189,7 @@ namespace LinBox
 		// constructor of the sequence from a blackbox, a field and two blocks projection
 		BlackboxBlockContainerRecord(const _Blackbox *D, const Field &F, const Block &U0, const Block& V0, bool denseblock= true) :
 			BlackboxBlockContainerBase<Field,_Blackbox> (D, F,U0.rowdim(), V0.coldim())
-			, _W(F,D->rowdim(), V0.coldim()), _BMD(F),  _launcher(Nothing), _iter(1)
+			, _blockW(F,D->rowdim(), V0.coldim()), _BMD(F),  _launcher(Nothing), _iter(1)
 		{
 #ifdef _BBC_TIMING
 			clearTimer();
@@ -200,7 +200,7 @@ namespace LinBox
 
 
 			_rep = std::vector<Value> (this->_size, Value(F));
-			_Vcopy = this->_V;
+			_Vcopy = this->_blockV;
 			if (denseblock) {
 				for (size_t i=0;i< this->_size;++i){
 					_rep[i] = this->_value;
@@ -234,7 +234,7 @@ namespace LinBox
 		//  constructor of the sequence from a blackbox, a field and two blocks random projection
 		BlackboxBlockContainerRecord(const _Blackbox *D, const Field &F, size_t m, size_t n, size_t seed= time(NULL)) :
 			BlackboxBlockContainerBase<Field, _Blackbox> (D, F, m, n,seed),
-			_W(D->rowdim(), n), _BMD(F), _launcher(Nothing), _iter(1)
+			_blockW(D->rowdim(), n), _BMD(F), _launcher(Nothing), _iter(1)
 		{
 #ifdef _BBC_TIMING
 			clearTimer();
@@ -243,7 +243,7 @@ namespace LinBox
 #endif
 			this->init (m,n);
 			_rep = std::vector<Value> (this->_size);
-			_Vcopy = this->_V;
+			_Vcopy = this->_blockV;
 			for (size_t i=0;i< this->_size;++i){
 				_rep[i] = this->_value;
 				_launch_record();
@@ -295,7 +295,7 @@ namespace LinBox
 			tSequence.start();
 #endif
 			std::vector<Element> _col_value(this->_m);
-			_BMD.mul(_col_value, this->_U, b);
+			_BMD.mul(_col_value, this->_blockU, b);
 			this->_value  = _rep[0];
 			for (size_t j=0; j< this->_m; ++j)
 				this->_value.setEntry(j, _upd_idx, _col_value[j]);
@@ -371,7 +371,7 @@ namespace LinBox
 
 	protected:
 
-		Block                           _W;
+		Block                           _blockW;
 		Block                       _Vcopy;
 		BlasMatrixDomain<Field>       _BMD;
 		std::vector<Value>            _rep;
@@ -390,13 +390,13 @@ namespace LinBox
 		void _launch_record ()
 		{
 			if (this->casenumber) {
-				Mul(_W,*this->_BB,this->_V);
-				_BMD.mul(this->_value, this->_U, _W);
+				Mul(_blockW,*this->_BB,this->_blockV);
+				_BMD.mul(this->_value, this->_blockU, _blockW);
 				this->casenumber = 0;
 			}
 			else {
-				Mul(this->_V,*this->_BB,_W);
-				_BMD.mul(this->_value, this->_U, this->_V);
+				Mul(this->_blockV,*this->_BB,_blockW);
+				_BMD.mul(this->_value, this->_blockU, this->_blockV);
 				this->casenumber = 1;
 			}
 		}
@@ -405,31 +405,31 @@ namespace LinBox
 		// launcher of computation of sequence element
 		void _launch_record_notdense ()
 		{
-			size_t block= this->_V.coldim();
+			size_t block= this->_blockV.coldim();
 			size_t numblock=_Special_U[0].size();
 			if (this->casenumber) {
-				Mul(_W,*this->_BB,this->_V);
+				Mul(_blockW,*this->_BB,this->_blockV);
 
 				std::vector<Element> tmp(block);
 				for (size_t i=0; i<block; ++i){
-					BlasMatrix<Field> T(_W, i*numblock, 0, numblock, block);
+					BlasMatrix<Field> T(_blockW, i*numblock, 0, numblock, block);
 					_BMD.mul(tmp, _Special_U[i], T);
 					for (size_t j=0;j<block;++j){
-						this->_F.assign(this->_value.refEntry(i,j), tmp[j]);
+						this->_field.assign(this->_value.refEntry(i,j), tmp[j]);
 					}
 				}
 
 				this->casenumber = 0;
 			}
 			else {
-				Mul(this->_V,*this->_BB,_W);
+				Mul(this->_blockV,*this->_BB,_blockW);
 
 				std::vector<Element> tmp(block);
 				for (size_t i=0; i< block; ++i){
-					BlasMatrix<Field> T(this->_V, i*numblock, 0, numblock, block);
+					BlasMatrix<Field> T(this->_blockV, i*numblock, 0, numblock, block);
 					_BMD.mul(tmp, _Special_U[i], T);
 					for (size_t j=0;j<block;++j)
-						this->_F.assign(this->_value.refEntry(i,j), tmp[j]);
+						this->_field.assign(this->_value.refEntry(i,j), tmp[j]);
 				}
 
 				this->casenumber = 1;
@@ -473,7 +473,7 @@ namespace LinBox
 				if ( _case == 1) {
 					this->_BB->apply(_w,_u);
 					std::vector<Element> _col_value(this->_m);
-					_BMD.mul(_col_value, this->_U, _w);
+					_BMD.mul(_col_value, this->_blockU, _w);
 					this->_value  = _rep[_iter];
 					for (size_t j=0; j< this->_m; ++j)
 						this->_value.setEntry(j, _upd_idx, _col_value[j]);
@@ -483,7 +483,7 @@ namespace LinBox
 				else {
 					this->_BB->apply(_u,_w);
 					std::vector<Element> _col_value(this->_m);
-					_BMD.mul(_col_value, this->_U, _u);
+					_BMD.mul(_col_value, this->_blockU, _u);
 					this->_value  = _rep[_iter];
 					for (size_t j=0; j< this->_m; ++j)
 						this->_value.setEntry(j, _upd_idx, _col_value[j]);

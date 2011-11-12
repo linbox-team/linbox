@@ -419,11 +419,11 @@ namespace LinBox
 		typedef std::vector<double> Element;
 
 		DotProductDomain (const MultiModDouble &F) :
-			VectorDomainBase<MultiModDouble > (F) //, _invmod(1./_F.modulus)
+			VectorDomainBase<MultiModDouble > (F) //, _invmod(1./_field.modulus)
 		{
 			for (size_t i=0; i<F.size();++i){
-				//_bound[i]=  (double) (1<<53 - (int) (_F.getModulo(i)*_F.getModulo(i))))
-				_nmax[i] =  (size_t)floor((double(1<<26)* double(1<<26)*2.)/ (_F.getModulo(i) * _F.getModulo(i)));
+				//_bound[i]=  (double) (1<<53 - (int) (_field.getModulo(i)*_field.getModulo(i))))
+				_nmax[i] =  (size_t)floor((double(1<<26)* double(1<<26)*2.)/ (_field.getModulo(i) * _field.getModulo(i)));
 			}
 		}
 
@@ -432,26 +432,26 @@ namespace LinBox
 		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const
 		{
 
-			for (size_t k=0;k<_F.size();++k){
+			for (size_t k=0;k<_field.size();++k){
 				double y = 0.;
 				double t = 0.;
 				if (v1.size() < _nmax[k]) {
 					for (size_t i = 0; i< v1.size();++i)
 						y += v1[i][k] * v2[i][k] ;
-					y = fmod(y, _F.getModulo(k));
+					y = fmod(y, _field.getModulo(k));
 				}
 				else{
 					size_t i=0;
 					for (;i< v1.size()- _nmax[k] ;i=i+_nmax[k]){
 						for (size_t j=i;j<i+_nmax[k];++j)
 							y += v1[j][k] * v2[j][k];
-						t+=fmod(y, _F.getModulo(k));
+						t+=fmod(y, _field.getModulo(k));
 						y=0.;
 					}
 					for (;i < v1.size();++i)
 						y += v1[i][k] * v2[i][k];
-					t+=fmod(y, _F.getModulo(k));
-					y = fmod(t, _F.getModulo(k));
+					t+=fmod(y, _field.getModulo(k));
+					y = fmod(t, _field.getModulo(k));
 				}
 				res[k]=y;
 			}
@@ -462,27 +462,27 @@ namespace LinBox
 		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const
 		{
 
-			for (size_t k=0;k<_F.size();++k){
+			for (size_t k=0;k<_field.size();++k){
 				double y = 0.;
 				double t =0.;
 
 				if (v1.first.size() < _nmax[k]) {
 					for (size_t i=0;i<v1.first.size();++i)
 						y+= v1.second[i] * v2[v1.first[i]];
-					y = fmod(y, _F.getModulo(k));
+					y = fmod(y, _field.getModulo(k));
 				}
 				else {
 					size_t i=0;
 					for (;i< v1.first.size()- _nmax[k] ;i=i+_nmax[k]){
 						for (size_t j=i;j<i+_nmax[k];++j)
 							y += v1.second[j] * v2[v1.first[j]];
-						t+=fmod(y, _F.getModulo(k));
+						t+=fmod(y, _field.getModulo(k));
 						y=0.;
 					}
 					for (;i < v1.first.size();++i)
 						y += v1.second[i] * v2[v1.first[i]];
-					t+= fmod(y, _F.getModulo(k));
-					y = fmod(t, _F.getModulo(k));
+					t+= fmod(y, _field.getModulo(k));
+					y = fmod(t, _field.getModulo(k));
 				}
 			}
 			return res;

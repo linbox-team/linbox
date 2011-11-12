@@ -27,13 +27,6 @@
 #include "linbox/solutions/methods.h"
 #include "linbox/algorithms/eliminator.h"
 
-// Fix for Solaris wierdness
-#undef _N
-#undef _I
-#undef _C
-#undef _W
-#undef _Q
-
 namespace LinBox
 {
 
@@ -58,7 +51,7 @@ namespace LinBox
 		 */
 		LABlockLanczosSolver (const Field &F,
 				      const BlockLanczosTraits &traits) :
-			_traits (traits), _F (F), _VD (F), _MD (F), _randiter (F),
+			_traits (traits), _field (F), _VD (F), _MD (F), _randiter (F),
 			_uAv (this), _eliminator (F, _traits.blockingFactor ())
 		{ init_temps (); }
 
@@ -71,7 +64,7 @@ namespace LinBox
 		LABlockLanczosSolver (const Field &F,
 				      const BlockLanczosTraits &traits,
 				      typename Field::RandIter r) :
-			_traits (traits), _F (F), _VD (F), _MD (F), _randiter (r),
+			_traits (traits), _field (F), _VD (F), _MD (F), _randiter (r),
 			_uAv (this),
 			_eliminator (F, (unsigned int)  _traits.blockingFactor ())
 		{ init_temps (); }
@@ -118,12 +111,12 @@ namespace LinBox
 		class BasisTransformation {
 			LABlockLanczosSolver      &_solver;
 
-			std::vector<Permutation>   _myPerm;
-			std::vector<Matrix *>      _T;
+			std::vector<Permutation>   _permP;
+			std::vector<Matrix *>      _multiMat;
 			std::vector<unsigned int>  _rho;
 			std::vector<unsigned int>  _s;
 
-			unsigned int _N;
+			unsigned int _number;
 
 			template <class Matrix1>
 			void applyOne (Matrix1 &M, Permutation &P, Matrix *T, unsigned int rho, unsigned int s, bool left);
@@ -147,7 +140,7 @@ namespace LinBox
 			void report (std::ostream &out);
 
 			BasisTransformation (LABlockLanczosSolver<Field, Matrix> &solver, unsigned int N) :
-				_solver (solver), _N (N)
+				_solver (solver), _number (N)
 			{ reset (); }
 
 			~BasisTransformation ();
@@ -309,7 +302,7 @@ namespace LinBox
 		// Private variables
 
 		const BlockLanczosTraits  _traits;
-		const Field               &_F;
+		const Field               &_field;
 		VectorDomain<Field>        _VD;
 		MatrixDomain<Field>        _MD;
 		typename Field::RandIter   _randiter;
@@ -321,7 +314,7 @@ namespace LinBox
 		mutable Matrix    _T3;           // N x N
 		mutable Matrix    _T4;           // N x N
 		mutable Matrix    _T5;           // N x N
-		mutable Matrix    _W;            // N x N
+		mutable Matrix    _matW;            // N x N
 
 		Matrix            _ATu;          // n x N
 		Matrix            _Av;           // n x N
@@ -329,8 +322,8 @@ namespace LinBox
 		Matrix            _Cu;           // N x N
 		Matrix            _Cv;           // N x N
 
-		Permutation       _myPerm;
-		Permutation       _Q;
+		Permutation       _permP;
+		Permutation       _permQ;
 
 		Matrix            _v0;           // n x N
 		Matrix            _b;            // n x <=N

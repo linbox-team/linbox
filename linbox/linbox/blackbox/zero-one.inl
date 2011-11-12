@@ -83,25 +83,25 @@ namespace LinBox
 	template<class Field> typename
 	ZeroOne<Field>::Iterator ZeroOne<Field>::Begin()
 	{
-	       	return Iterator( 0, _F.init(_tmp, 1) );
+	       	return Iterator( 0, _field.init(_tmp, 1) );
 	}
 
 	template<class Field> typename
 	ZeroOne<Field>::Iterator ZeroOne<Field>::End()
 	{
-	       	return Iterator( _nnz, _F.init(_tmp, 1) );
+	       	return Iterator( _nnz, _field.init(_tmp, 1) );
 	}
 
 	template<class Field>
 	const typename ZeroOne<Field>::Iterator ZeroOne<Field>::Begin() const
 	{
-	       	return Iterator(0, _F.init(_tmp, 1) );
+	       	return Iterator(0, _field.init(_tmp, 1) );
 	}
 
 	template<class Field>
 	const typename ZeroOne<Field>::Iterator ZeroOne<Field>::End() const
 	{
-	       	return Iterator(_nnz, _F.init(_tmp, 1) );
+	       	return Iterator(_nnz, _field.init(_tmp, 1) );
 	}
 
 	/*! IndexIterator.
@@ -192,7 +192,7 @@ namespace LinBox
 
 	template<class Field>
 	ZeroOne<Field>::ZeroOne(const Field& F) :
-	       	_F(F)
+	       	_field(F)
        	{
 		srand((unsigned int) time(NULL) );
 		dynamic = false;
@@ -201,7 +201,7 @@ namespace LinBox
 	template<class Field>
 	ZeroOne<Field>::ZeroOne(Field F, Index* rowP, Index* colP,
 				Index rows, Index cols, Index NNz, bool RowSort, bool ColSort):
-		_F(F), _rows(rows), _cols(cols), _nnz(NNz), _rowP(rowP), _colP(colP), _rowSort(RowSort), _colSort(ColSort) , dynamic(false)
+		_field(F), _rows(rows), _cols(cols), _nnz(NNz), _rowP(rowP), _colP(colP), _rowSort(RowSort), _colSort(ColSort) , dynamic(false)
 	{
 	       	srand((unsigned)time(NULL));
 	}
@@ -312,7 +312,7 @@ namespace LinBox
 
 		// 0 out y.  Note, this implementation assumes a dense vector.
 		for(yp = y.begin(); yp != y.end(); ++yp)
-			_F.init(*yp , 0);
+			_field.init(*yp , 0);
 
 		rowSort();
 
@@ -325,7 +325,7 @@ namespace LinBox
 		for(; ip <_rowP+nnz(); ++ip,++jp)
 		{
 			if( *ip == rowI)
-				_F.addin(*yp,*(xp + *jp));
+				_field.addin(*yp,*(xp + *jp));
 			else
 			{
 				if((*ip-rowI)==1)
@@ -334,7 +334,7 @@ namespace LinBox
 					yp=y.begin()+*ip;
 
 				rowI=*ip;
-				_F.addin(*yp,*(xp + *jp));
+				_field.addin(*yp,*(xp + *jp));
 			}
 		}
 		return y;
@@ -354,7 +354,7 @@ namespace LinBox
 		Index* ip, *jp;
 
 		for(yp = y.begin(); yp != y.end(); ++yp)
-			_F.init(*yp , 0);
+			_field.init(*yp , 0);
 
 		rowSort();
 
@@ -365,7 +365,7 @@ namespace LinBox
 		size_t rowI =0;
 		integer _prime;
 
-		_F.characteristic(_prime);
+		_field.characteristic(_prime);
 
 		uint32_t prime = static_cast<uint32_t>(_prime);
 
@@ -406,7 +406,7 @@ namespace LinBox
 
 		// 0 out y.  Note, this implementation assumes a dense vector.
 		for(yp = y.begin(); yp != y.end(); ++yp)
-			_F.init(*yp , 0);
+			_field.init(*yp , 0);
 
 		rowSort();
 
@@ -419,7 +419,7 @@ namespace LinBox
 		for(; ip <_rowP+nnz(); ++ip,++jp)
 		{
 			if( *ip == rowI)
-				_F.addin(*(yp+*jp),*xp);
+				_field.addin(*(yp+*jp),*xp);
 			else
 			{
 				if((*ip-rowI)==1)
@@ -428,7 +428,7 @@ namespace LinBox
 					xp=x.begin()+*ip;
 
 				rowI=*ip;
-				_F.addin(*(yp+*jp),*xp);
+				_field.addin(*(yp+*jp),*xp);
 			}
 		}
 
@@ -476,7 +476,7 @@ namespace LinBox
 		}
 
 		integer _prime;
-		_F.characteristic(_prime);
+		_field.characteristic(_prime);
 		uint32_t prime = static_cast<uint32_t>(_prime);
 
 		yp=y.begin();

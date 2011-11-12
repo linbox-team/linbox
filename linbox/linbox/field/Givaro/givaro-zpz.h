@@ -302,14 +302,14 @@ namespace LinBox
 		typedef GivaroZpz< Givaro::Std32> Field;
 
 		FieldAXPY (const Field &F) :
-			_F (F) , Corr(uint64_t(-1) % (uint64_t)F.characteristic() +1)
+			_field (F) , Corr(uint64_t(-1) % (uint64_t)F.characteristic() +1)
 		{ _y = 0; }
 		FieldAXPY (const FieldAXPY &faxpy) :
-			_F (faxpy._F), _y (0) , Corr(faxpy.Corr)
+			_field (faxpy._field), _y (0) , Corr(faxpy.Corr)
 		{}
 
 		FieldAXPY<GivaroZpz< Givaro::Std32> > &operator = (const FieldAXPY &faxpy)
-		{ _F = faxpy._F; _y = faxpy._y; Corr = faxpy.Corr; return *this; }
+		{ _field = faxpy._field; _y = faxpy._y; Corr = faxpy.Corr; return *this; }
 
 		inline uint64_t& mulacc (const Element &a, const Element &x)
 		{
@@ -331,8 +331,8 @@ namespace LinBox
 		}
 
 		inline Element &get (Element &y) {
-			_y %= (uint64_t) _F.characteristic();
-			if ((int64_t) _y < 0) _y += _F.characteristic();
+			_y %= (uint64_t) _field.characteristic();
+			if ((int64_t) _y < 0) _y += _field.characteristic();
 			y = (uint32_t) _y;
 			return y;
 		}
@@ -346,7 +346,7 @@ namespace LinBox
 
 	private:
 
-		Field _F;
+		Field _field;
 		uint64_t _y;
 		uint64_t Corr;
 	};
@@ -362,17 +362,17 @@ namespace LinBox
 		typedef GivaroZpz< Givaro::Std16> Field;
 
 		FieldAXPY (const Field &F) :
-			_F (F) , Corr(uint32_t(-1) % (uint32_t)F.characteristic() +1)
+			_field (F) , Corr(uint32_t(-1) % (uint32_t)F.characteristic() +1)
 		{
 			_y = 0;
 		}
 		FieldAXPY (const FieldAXPY &faxpy) :
-			_F (faxpy._F), _y (0) , Corr(faxpy.Corr)
+			_field (faxpy._field), _y (0) , Corr(faxpy.Corr)
 		{}
 
 		FieldAXPY<GivaroZpz< Givaro::Std16> > &operator = (const FieldAXPY &faxpy)
 		{
-			_F = faxpy._F;
+			_field = faxpy._field;
 			_y = faxpy._y;
 			Corr = faxpy.Corr;
 			return *this;
@@ -401,9 +401,9 @@ namespace LinBox
 
 		inline Element &get (Element &y)
 		{
-			_y %= (uint32_t) _F.characteristic();
+			_y %= (uint32_t) _field.characteristic();
 			if ((int32_t) _y < 0)
-				_y += (Element) _F.characteristic();
+				_y += (Element) _field.characteristic();
 			y = (uint16_t) _y;
 			return y;
 		}
@@ -421,7 +421,7 @@ namespace LinBox
 
 	private:
 
-		Field _F;
+		Field _field;
 		uint32_t _y;
 		uint32_t Corr;
 	};

@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
 /* -*- mode: C++; style: linux -*- */
-/* 
+/*
  * Written by Bryan Youse
  * See COPYING for license information.
  */
@@ -14,7 +14,7 @@ namespace LinBox
 	{
 		linbox_check((y.size()==rowdim())&&(x.size()==coldim()));
 
-		FieldAXPY<Field> accum (_F);
+		FieldAXPY<Field> accum (_field);
 
 		typename OutVector::iterator yp;
 		typename InVector::const_iterator xp;
@@ -56,7 +56,7 @@ namespace LinBox
 
 		linbox_check((y.size()==rowdim())&&(x.size()==coldim()));
 
-		FieldAXPY<Field> accum (_F);
+		FieldAXPY<Field> accum (_field);
 
 		typename OutVector::iterator yp;
 		typename InVector::const_iterator xp;
@@ -108,7 +108,7 @@ namespace LinBox
 			   accum.accumulate_special( *(xp + *(jp-1)) );
 			   accum.get(*yp);
 			   accum.reset();
-			   
+
 
 		}
 
@@ -128,7 +128,7 @@ namespace LinBox
 	   {
 	   linbox_check((y.size()==coldim())&&(x.size()==rowdim()));
 
-	   FieldAXPY<Field> accum (_F);
+	   FieldAXPY<Field> accum (_field);
 
 	   typename OutVector::iterator yp;
 	   typename InVector::const_iterator xp;
@@ -159,7 +159,7 @@ namespace LinBox
 	{
 		linbox_check((y.size()==coldim())&&(x.size()==rowdim()));
 
-		FieldAXPY<Field> accum (_F);
+		FieldAXPY<Field> accum (_field);
 
 		typename OutVector::iterator yp;
 		typename InVector::const_iterator xp;
