@@ -89,19 +89,19 @@ namespace LinBox
 		 */
 #if 0
 		SparseMatrix (const Field &F) :
-			SparseMatrixBase<Element, _Row> (0,0), _F (F), _VD (F), _MD (F), _AT (*this)
+			SparseMatrixBase<Element, _Row> (0,0), _field (F), _VD (F), _MD (F), _AT (*this)
 		{
 			std::cerr << "default cstor" << std::endl;
 		}
 
 		SparseMatrix (const Field &F, size_t m, size_t n) :
-			SparseMatrixBase<Element, _Row> (m, n), _F (F), _VD (F), _MD (F), _AT (*this)
+			SparseMatrixBase<Element, _Row> (m, n), _field (F), _VD (F), _MD (F), _AT (*this)
 		{
 			std::cerr << "default cstor : " <<  m << "x" << n << std::endl;
 		}
 #endif
 		SparseMatrix (const Field &F, size_t m=0, size_t n=0) :
-			SparseMatrixBase<Element, _Row> (m, n), _F (F), _VD (F), _MD (F), _AT (*this)
+			SparseMatrixBase<Element, _Row> (m, n), _field (F), _VD (F), _MD (F), _AT (*this)
 		{ }
 
 		/** Constructor from a vector stream
@@ -111,7 +111,7 @@ namespace LinBox
 		template<class VectStream>
 		SparseMatrix (const Field &F, VectStream &stream) :
 			SparseMatrixBase<Element, _Row> (stream.size (), stream.dim ()),
-			_F (F), _VD (F), _MD (F), _AT (*this)
+			_field (F), _VD (F), _MD (F), _AT (*this)
 		{
 			typename SparseMatrixBase<Element, _Row>::RowIterator i;
 
@@ -124,20 +124,20 @@ namespace LinBox
 		 * @param ms A matrix stream properly initialized
 		 */
 		SparseMatrix( MatrixStream<Field>& ms ) :
-			SparseMatrixBase<Element,_Row>(ms), _F(ms.getField()), _VD(ms.getField()), _MD(ms.getField()), _AT(*this)
+			SparseMatrixBase<Element,_Row>(ms), _field(ms.getField()), _VD(ms.getField()), _MD(ms.getField()), _AT(*this)
 		{ }
 
 		/** Copy constructor
 		*/
 		SparseMatrix (const SparseMatrix<Field, Row> &B) :
-			SparseMatrixBase<Element, _Row> (B), _F (B._F), _VD (B._F), _MD (B._F), _AT (*this)
+			SparseMatrixBase<Element, _Row> (B), _field (B._field), _VD (B._field), _MD (B._field), _AT (*this)
 		{ }
 
 		/** Row type Converter constructor
 		*/
 		template<class VectorType>
 		SparseMatrix (const SparseMatrix<Field, VectorType> &B) :
-			SparseMatrixBase<Element, _Row> (B), _F (B._F), _VD (B._F), _MD (B._F), _AT (*this)
+			SparseMatrixBase<Element, _Row> (B), _field (B._field), _VD (B._field), _MD (B._field), _AT (*this)
 		{ }
 
 		/** Destructor. */
@@ -217,7 +217,7 @@ namespace LinBox
 		template<typename _Tp1, typename _Rw1>
 		SparseMatrix (const SparseMatrix<_Tp1, _Rw1> &Mat, const Field& F) :
 			SparseMatrixBase<Element, _Row> (Mat.rowdim(),Mat.coldim()),
-			_F (F), _VD (F), _MD (F), _AT (*this) {
+			_field (F), _VD (F), _MD (F), _AT (*this) {
 				typename SparseMatrix<_Tp1,_Rw1>::template rebind<Field,_Row>()(*this, Mat, F);
 			}
 
@@ -242,7 +242,7 @@ namespace LinBox
 		 * @return Reference to input stream
 		 */
 		std::istream &read (std::istream &is, FileFormatTag format = FORMAT_DETECT)
-		{ return SparseMatrixBase<Element, _Row>::read (is, _F, format); }
+		{ return SparseMatrixBase<Element, _Row>::read (is, _field, format); }
 
 		/** Write the matrix to a stream in the given format
 		 * @param os Output stream to which to write the matrix
@@ -250,17 +250,17 @@ namespace LinBox
 		 * @return Reference to output stream
 		 */
 		std::ostream &write (std::ostream &os, FileFormatTag format = FORMAT_PRETTY) const
-		{ return SparseMatrixBase<Element, _Row>::write (os, _F, format); }
+		{ return SparseMatrixBase<Element, _Row>::write (os, _field, format); }
 
 		// JGD 28.08.2002
 		/** Access to the base field
 		*/
 		const Field& field () const
-		{ return _F;}
+		{ return _field;}
 
 	protected:
 
-		const Field                             _F;      // Field used for all arithmetic
+		const Field                             _field;      // Field used for all arithmetic
 		VectorDomain<Field>                     _VD;     // Vector domain for matrix operations
 		MatrixDomain<Field>                     _MD;     // Matrix domain for matrix operations
 
@@ -280,12 +280,12 @@ namespace LinBox
 	class Row      = typename LinBox::Vector<Field>::Sparse,
 	class BRow     = typename LinBox::RawVector<BElement>::Sparse>
 	class SparseMatrixFactory : public BlackboxFactory<Field,SparseMatrix<Field,Row> > {//otot
-		const SparseMatrixBase<BElement, BRow> &_A;
+		const SparseMatrixBase<BElement, BRow> &_matA;
 
 	public:
 
 		SparseMatrixFactory (const SparseMatrixBase<BElement, BRow> &A) :
-			_A (A)
+			_matA (A)
 		{}
 
 		// FIXME: This function assumes basically that the matrix is over the integers
@@ -300,7 +300,7 @@ namespace LinBox
 
 			integer tmp;
 
-			for (i = _A.Begin (); i != _A.End (); ++i) {
+			for (i = _matA.Begin (); i != _matA.End (); ++i) {
 				tmp = abs (*i);
 
 				if (res < tmp)
@@ -311,9 +311,9 @@ namespace LinBox
 		}
 
 		size_t rowdim ()
-		{ return _A.rowdim (); }
+		{ return _matA.rowdim (); }
 		size_t coldim ()
-		{ return _A.coldim (); }
+		{ return _matA.coldim (); }
 
 		// A better bound for determinant of an integer sparse matrix, ZW
 		integer &hadamardBound (integer& res) const
@@ -332,7 +332,7 @@ namespace LinBox
 			RowIterator row_p;
 			EltIterator elt_p;
 
-			for (row_p = _A. rowBegin(); row_p != _A. rowEnd(); ++ row_p) {
+			for (row_p = _matA. rowBegin(); row_p != _matA. rowEnd(); ++ row_p) {
 				tmp = 0;
 
 				for (elt_p = row_p -> second. begin(); elt_p != row_p -> second. end(); ++ elt_p)
@@ -354,7 +354,7 @@ namespace LinBox
 			integer tmp;
 			RowIterator row_p;
 
-			for ( row_p = _A. rowBegin(); row_p != _A. rowEnd(); ++ row_p) {
+			for ( row_p = _matA. rowBegin(); row_p != _matA. rowEnd(); ++ row_p) {
 				tmp = 0;
 
 				for (EltIterator elt_p = row_p -> begin(); elt_p != row_p -> end(); ++ elt_p)
@@ -378,7 +378,7 @@ namespace LinBox
 			RowIterator row_p;
 			EltIterator elt_p;
 
-			for ( row_p = _A. rowBegin(); row_p != _A. rowEnd(); ++ row_p) {
+			for ( row_p = _matA. rowBegin(); row_p != _matA. rowEnd(); ++ row_p) {
 				tmp = 0;
 
 				for (elt_p = row_p -> begin(); elt_p != row_p -> end(); ++ elt_p)

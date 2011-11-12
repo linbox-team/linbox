@@ -25,12 +25,6 @@
 #include "linbox/blackbox/archetype.h"
 #include "linbox/solutions/methods.h"
 
-// Fix for Solaris wierdness
-#undef _S
-#undef _M
-#undef _N
-#undef _U
-#undef _T
 
 namespace LinBox
 {
@@ -213,26 +207,26 @@ namespace LinBox
 
 		// Private variables
 
-		const Field                      &_F;
+		const Field                      &_field;
 		VectorDomain<Field>               _VD;
 		MatrixDomain<Field>               _MD;
-		unsigned int                      _N;
+		unsigned int                      _number;
 
 		typename Field::Element           _one;
 
 		// Temporaries used in the computation
 
-		mutable Permutation               _myPerm;
+		mutable Permutation               _perm;
 
-		mutable BlasMatrix<Field>  _A;         // Variable
-		mutable BlasMatrix<Field>  _U;         // Variable
+		mutable BlasMatrix<Field>  _matA;         // Variable
+		mutable BlasMatrix<Field>  _matU;         // Variable
 		mutable BlasMatrix<Field>  _tmp;
 
 		// These record the independent rows and columns found during the
 		// elimination process
 
-		mutable std::vector<bool>         _S;         // Independent rows
-		mutable std::vector<bool>         _T;         // Independent columns
+		mutable std::vector<bool>         _indepRows;         // Independent rows
+		mutable std::vector<bool>         _indepCols;         // Independent columns
 
 		std::vector<unsigned int>         _profile;
 		unsigned int                      _profile_idx;

@@ -40,7 +40,7 @@ namespace LinBox
 		typename SparseMatrixBase<BElement, BRow>::ConstIterator i;
 		typename SparseMatrixBase<BElement, BRow>::ConstIndexedIterator j;
 
-		for (i = _A.Begin (), j = _A.IndexedBegin (); i != _A.End (); ++i, ++j)
+		for (i = _matA.Begin (), j = _matA.IndexedBegin (); i != _matA.End (); ++i, ++j)
 			F.init (A->refEntry (j.rowIndex (), j.colIndex ()), *i);
 
 		return A;

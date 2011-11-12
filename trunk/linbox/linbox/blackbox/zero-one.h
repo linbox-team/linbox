@@ -71,7 +71,7 @@ namespace LinBox
 		template<class OutVector, class InVector>
 		OutVector& apply(OutVector& y, const InVector& x) const // y = Ax;
 		{
-			return applySpecialization(y,x,getType(_F));
+			return applySpecialization(y,x,getType(_field));
 		}
 
 		/** applyTranspose.
@@ -85,7 +85,7 @@ namespace LinBox
 		template<class OutVector, class InVector>
 		OutVector& applyTranspose(OutVector& y, const InVector& x) const // y = ATx
 		{
-			return applyTransposeSpecialization(y,x,getType(_F));
+			return applyTransposeSpecialization(y,x,getType(_field));
 		}
 
 		size_t rowdim() const
@@ -111,7 +111,7 @@ namespace LinBox
 
 		template<typename _Tp1>
 		ZeroOne(const ZeroOne<_Tp1>& Z, const Field& F) :
-			_F(F),
+			_field(F),
 			_rows(Z.rowdim()), _cols(Z.coldim()), _nnz(Z.nnz()),
 			_rowP(new Index[Z.nnz()]), _colP(new Index[Z.nnz()]),
 			_rowSort(Z.isRowSorted()), _colSort(Z.isColSorted()),
@@ -194,7 +194,7 @@ namespace LinBox
 
 		const Field& field() const
 		{
-			return _F;
+			return _field;
 		}
 
 		bool isRowSorted() const
@@ -215,7 +215,7 @@ namespace LinBox
 	protected:
 
 
-		Field _F; //!< @internal The field used by this class
+		Field _field; //!< @internal The field used by this class
 
 		/*! @internal A temporary element used for initalization for the Begin() and
 		 * End() methods of the ZeroOne class.  Is used to initalize a 1

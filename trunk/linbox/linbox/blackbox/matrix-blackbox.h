@@ -49,7 +49,7 @@ namespace LinBox
 		 * @param  rep  Matrix from which to construct the black box
 		 */
 		MatrixBlackbox (const Field &F, Matrix &Rep) :
-			_F (F), _MD (F), _A (Rep)
+			_field (F), _MD (F), _matA (Rep)
 		{}
 
 		/** Constructor with size
@@ -61,7 +61,7 @@ namespace LinBox
 		 * @param  n  Column dimension
 		 */
 		MatrixBlackbox (const Field &F, size_t m, size_t n) :
-			_F (F), _MD (F), _A (F, m, n)
+			_field (F), _MD (F), _matA (F, m, n)
 		{}
 
 		/** Constructor
@@ -74,13 +74,13 @@ namespace LinBox
 		 */
 		template <class Row>
 		MatrixBlackbox (const Field &F, VectorStream<Row> &stream) :
-			_F (F), _MD (F), _A (stream)
+			_field (F), _MD (F), _matA (stream)
 		{}
 
 		/** Copy constructor
 		*/
 		MatrixBlackbox (const MatrixBlackbox &B) :
-			_F (B._F), _MD (B._F), _A (B._A)
+			_field (B._field), _MD (B._field), _matA (B._matA)
 		{}
 
 		/** Destructor. */
@@ -109,7 +109,7 @@ namespace LinBox
 		 */
 		template <class Vector1, class Vector2>
 		inline Vector1 &apply (Vector1 &y, const Vector2 &x) const
-		{ return _MD.vectorMul (y, _A, x); }
+		{ return _MD.vectorMul (y, _matA, x); }
 
 		/** Matrix-vector product
 		 * \f$y = A x\f$.
@@ -128,7 +128,7 @@ namespace LinBox
 		 */
 		template <class Vector1, class Vector2>
 		inline Vector1 &applyTranspose (Vector1 &y, const Vector2 &x) const
-		{ return _MD.vectorMul (y, TransposeMatrix<const Matrix> (_A), x); }
+		{ return _MD.vectorMul (y, TransposeMatrix<const Matrix> (_matA), x); }
 
 		/** Transpose matrix-vector product
 		 * \f$y = A^T x\f$.
@@ -143,42 +143,42 @@ namespace LinBox
 		 * @return integer number of rows of SparseMatrix0Base matrix.
 		 */
 		inline size_t rowdim () const
-		{ return _A.rowdim (); }
+		{ return _matA.rowdim (); }
 
 		/** Retreive column dimensions of Sparsemat matrix.
 		 * @return integer number of columns of SparseMatrix0Base matrix.
 		 */
 		inline size_t coldim () const
-		{ return _A.coldim (); }
+		{ return _matA.coldim (); }
 
 		/** Read the matrix from a stream
 		 * @param is Input stream from which to read the matrix
 		 * @return Reference to input stream
 		 */
 		inline std::istream &read (std::istream &is)
-		{ return _MD.read (is, _A); }
+		{ return _MD.read (is, _matA); }
 
 		/** Write the matrix to a stream
 		 * @param os Output stream to which to write the matrix
 		 * @return Reference to output stream
 		 */
 		inline std::ostream &write (std::ostream &os) const
-		{ return _MD.write (os, _A); }
+		{ return _MD.write (os, _matA); }
 
 		/** Return a reference to the base field
 		*/
-		inline const Field &field () const { return _F;}
+		inline const Field &field () const { return _field;}
 
 		/** Return a reference to the underlying representation
 		*/
-		inline Matrix &rep () { return _A; }
+		inline Matrix &rep () { return _matA; }
 
 	private:
 
-		const Field         &_F;      // Field used for all arithmetic
+		const Field         &_field;      // Field used for all arithmetic
 		MatrixDomain<Field>  _MD;     // Matrix domain for matrix-vector
 		// operations
-		Matrix               _A;      // Underlying matrix representation
+		Matrix               _matA;      // Underlying matrix representation
 	};
 
 } // namespace LinBox

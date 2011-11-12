@@ -27,7 +27,6 @@
 #include "linbox/linbox-config.h"
 #include <stdio.h>
 #include "linbox/vector/vector-traits.h"
-#undef _D
 
 namespace LinBox
 {
@@ -86,7 +85,7 @@ namespace LinBox
 
 		Vector numer;
 		Element denom;
-		const Domain& _D;
+		const Domain& _domain;
 		Element zero;
 
 		/**
@@ -96,7 +95,7 @@ namespace LinBox
 		VectorFraction(const Domain& D, FVector& frac
 			       //,bool alreadyReduced = false
 			      ) :
-			_D(D)
+			_domain(D)
 		{
 			bool alreadyReduced = false;
 			typename FVector::iterator i;
@@ -123,7 +122,7 @@ namespace LinBox
 
 		/** allocating constructor, returns [0, 0, ... 0]/1 */
 		VectorFraction(const Domain& D, size_t n) :
-			_D(D)
+			_domain(D)
 		{
 			D.init(zero, 0);
 			D.init(denom, 1);
@@ -136,7 +135,7 @@ namespace LinBox
 
 		/** copy constructor */
 		VectorFraction(const VectorFraction<Domain>& VF) :
-			_D(VF._D)
+			_domain(VF._domain)
 		{
 			copy(VF);
 		}
@@ -144,24 +143,24 @@ namespace LinBox
 		/** copy without construction */
 		void copy(const VectorFraction<Domain>& VF)
 		{
-			//assumes _D = VF._D
+			//assumes _domain = VF._domain
 			denom = VF.denom;
 			numer.resize(VF.numer.size());
 			typename Vector::iterator i;
 			typename Vector::const_iterator j;
 
 			for (i=numer.begin(), j=VF.numer.begin(); i!=numer.end(); i++, j++)
-				_D.assign(*i, *j);
+				_domain.assign(*i, *j);
 		}
 
 		/** clear and resize without construction */
 		void clearAndResize(size_t size)
 		{
-			_D.init(denom, 1);
+			_domain.init(denom, 1);
 			typename Vector::iterator i;
 			numer.resize(size);
 			for (i=numer.begin(); i!=numer.end(); i++)
-				_D.init(*i, 0);
+				_domain.init(*i, 0);
 		}
 
 		/**
@@ -172,22 +171,22 @@ namespace LinBox
 		 */
 		bool combineSolution(const VectorFraction<Domain>& other)
 		{
-			if (_D.isDivisor(other.denom, denom)) return false;
-			if (_D.isDivisor(denom, other.denom)) {
+			if (_domain.isDivisor(other.denom, denom)) return false;
+			if (_domain.isDivisor(denom, other.denom)) {
 				denom = other.denom;
 				numer = other.numer;
 				return true;
 			}
 			Element s, t, g;
-			_D.xgcd(g, s, t, denom, other.denom);
-			if (_D.areEqual(g, denom)) ; //do nothing
+			_domain.xgcd(g, s, t, denom, other.denom);
+			if (_domain.areEqual(g, denom)) ; //do nothing
 			else {
 				denom = g;
 				typename Vector::iterator it=numer.begin();
 				typename Vector::const_iterator io=other.numer.begin();
 				for (; it != numer.end(); it++, io++) {
-					_D.mulin(*it, s);
-					_D.axpyin(*it, t, *io);
+					_domain.mulin(*it, s);
+					_domain.axpyin(*it, t, *io);
 				}
 				return true;
 			}
@@ -205,11 +204,11 @@ namespace LinBox
 		{
 
 			//this means that new solution won't reduce g
-			if (_D.isDivisor(other.denom, g)) return false;
+			if (_domain.isDivisor(other.denom, g)) return false;
 
 			//short-circuit in case the new solution is completely better than old one
 			Element _dtmp;
-			if (_D.isDivisor(g, _D.gcd(_dtmp, denBound, other.denom))) {
+			if (_domain.isDivisor(g, _domain.gcd(_dtmp, denBound, other.denom))) {
 				denom = other.denom;
 				numer = other.numer;
 				g = _dtmp;
@@ -217,27 +216,27 @@ namespace LinBox
 			}
 
 			Element A, g2, lincomb;
-			_D.gcd(g, other.denom, g); //we know this reduces g
+			_domain.gcd(g, other.denom, g); //we know this reduces g
 
 			// find A s.t. gcd(denBound, denom + A*other.denom) = g
 			// strategy: pick random values of A <= d(y_0)
 			integer tmp;
-			_D.convert(tmp, denBound);
-			typename Domain::RandIter randiter(_D, tmp); //seed omitted
+			_domain.convert(tmp, denBound);
+			typename Domain::RandIter randiter(_domain, tmp); //seed omitted
 			// TODO: I don't think this random iterator has high-quality low order bits, which are needed
 			do {
 				randiter.random(A);
-				_D.assign(lincomb, denom);
-				_D.axpyin(lincomb, A, other.denom);
-				_D.gcd(g2, lincomb, denBound);
+				_domain.assign(lincomb, denom);
+				_domain.axpyin(lincomb, A, other.denom);
+				_domain.gcd(g2, lincomb, denBound);
 			}
-			while (!_D.areEqual(g, g2));
+			while (!_domain.areEqual(g, g2));
 
-			_D.assign(denom, lincomb);
+			_domain.assign(denom, lincomb);
 			typename Vector::iterator it=numer.begin();
 			typename Vector::const_iterator io=other.numer.begin();
 			for (; it != numer.end(); it++, io++)
-				_D.axpyin(*it, A, *io);
+				_domain.axpyin(*it, A, *io);
 			return true;
 		}
 
@@ -252,10 +251,10 @@ namespace LinBox
 					const Element& n2, const Element d2)
 		{
 			//this means that new solution won't reduce g
-			if (_D.isDivisor(d1, d2)) return false;
+			if (_domain.isDivisor(d1, d2)) return false;
 
 			//short-circuit in case the new solution is completely better than old one
-			if (_D.isDivisor(d2, d1)) {
+			if (_domain.isDivisor(d2, d1)) {
 				copy(other);
 				n1 = n2;
 				d1 = d2;
@@ -264,33 +263,33 @@ namespace LinBox
 
 			Element A, g, l, n1d2_g, n2d1_g, lincomb, g2, tmpe, one;
 
-			_D.gcd(g, d1, d2);   //compute gcd
-			_D.mul(l, d1, d2);
-			_D.divin(l, g);      //compute lcm
+			_domain.gcd(g, d1, d2);   //compute gcd
+			_domain.mul(l, d1, d2);
+			_domain.divin(l, g);      //compute lcm
 
-			_D.div(n1d2_g, d2, g);
-			_D.mulin(n1d2_g, n1);   //compute n1.d2/g
-			_D.div(n2d1_g, d1, g);
-			_D.mulin(n2d1_g, n2);   //compute n2.d1/g
+			_domain.div(n1d2_g, d2, g);
+			_domain.mulin(n1d2_g, n1);   //compute n1.d2/g
+			_domain.div(n2d1_g, d1, g);
+			_domain.mulin(n2d1_g, n2);   //compute n2.d1/g
 
 			// find A s.t. gcd(denBound, denom + A*other.denom) = g
 			// strategy: pick random values of A <= lcm(d(denom), d(other.denom))
 			integer tmp;
-			_D.mul(tmpe, denom, other.denom);
-			_D.convert(tmp, tmpe);
-			_D.init(one, 1);
-			typename Domain::RandIter randiter(_D, tmp); //seed omitted
+			_domain.mul(tmpe, denom, other.denom);
+			_domain.convert(tmp, tmpe);
+			_domain.init(one, 1);
+			typename Domain::RandIter randiter(_domain, tmp); //seed omitted
 			// TODO: I don't think this random iterator has high-quality low order bits, which are needed
 			do {
 				randiter.random(A);
-				_D.assign(lincomb, n1d2_g);
-				_D.axpyin(lincomb, A, n2d1_g);
-				_D.gcd(g2, lincomb, l);
+				_domain.assign(lincomb, n1d2_g);
+				_domain.axpyin(lincomb, A, n2d1_g);
+				_domain.gcd(g2, lincomb, l);
 			}
-			while (!_D.areEqual(one, g2));
+			while (!_domain.areEqual(one, g2));
 
 			this->axpyin(A, other);
-			_D.lcmin(d1, d2);
+			_domain.lcmin(d1, d2);
 
 			return true;
 		}
@@ -302,28 +301,28 @@ namespace LinBox
 		VectorFraction<Domain>& axpyin(Element& a, const VectorFraction<Domain>& x)
 		{
 			Element a_prime, gcd_a_xdenom, xdenom_prime;
-			_D.gcd(gcd_a_xdenom, a, x.denom);
-			_D.div(a_prime, a, gcd_a_xdenom);
-			_D.div(xdenom_prime, x.denom, gcd_a_xdenom);
+			_domain.gcd(gcd_a_xdenom, a, x.denom);
+			_domain.div(a_prime, a, gcd_a_xdenom);
+			_domain.div(xdenom_prime, x.denom, gcd_a_xdenom);
 
 			Element cdf; //common denominator factor; multiply both sides by this and divide at end
-			_D.gcd(cdf, denom, xdenom_prime);
-			_D.divin(denom, cdf);
-			_D.divin(xdenom_prime, cdf);
+			_domain.gcd(cdf, denom, xdenom_prime);
+			_domain.divin(denom, cdf);
+			_domain.divin(xdenom_prime, cdf);
 
 			// we perform numer[i] = xdenom_prime * numer[i] + a_prime * denom * x.denom[i]
 			// so multiply denom into a_prime and save a multiplication on each entry
-			_D.mulin(a_prime, denom);
+			_domain.mulin(a_prime, denom);
 
 			typename Vector::iterator i = this->numer.begin();
 			typename Vector::const_iterator j = x.numer.begin();
 			for (; i != this->numer.end(); i++, j++) {
-				_D.mulin(*i, xdenom_prime);
-				_D.axpyin(*i, a_prime, *j);
+				_domain.mulin(*i, xdenom_prime);
+				_domain.axpyin(*i, a_prime, *j);
 			}
 
-			_D.mulin(denom, cdf);
-			_D.mulin(denom, xdenom_prime);
+			_domain.mulin(denom, cdf);
+			_domain.mulin(denom, xdenom_prime);
 			simplify();
 			return *this;
 		}
@@ -346,8 +345,8 @@ namespace LinBox
 			typename Vector::const_iterator it=numer.begin();
 			typename FVector::iterator ir=result.begin();
 			for (; it != numer.end(); it++, ir++) {
-				_D.assign(ir->first, *it);
-				_D.assign(ir->second, denom);
+				_domain.assign(ir->first, *it);
+				_domain.assign(ir->second, denom);
 			}
 			return result;
 		}
@@ -357,12 +356,12 @@ namespace LinBox
 		{
 			typename Vector::iterator i;
 			Element gcd;
-			_D.init(gcd, denom);
-			vectorGcdIn(gcd, _D, numer);
+			_domain.init(gcd, denom);
+			vectorGcdIn(gcd, _domain, numer);
 
-			_D.divin(denom, gcd);
+			_domain.divin(denom, gcd);
 			for (i=numer.begin(); i!=numer.end(); i++)
-				_D.divin(*i, gcd);
+				_domain.divin(*i, gcd);
 			return (*this);
 		}
 	};

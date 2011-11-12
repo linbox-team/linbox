@@ -60,14 +60,14 @@ namespace LinBox
 		 * @param F field F in which arithmetic is done
 		 */
 		FieldAXPY (const Field &F) :
-		       	_F (F)
-		{ _F.init (_y, 0); }
+		       	_field (F)
+		{ _field.init (_y, 0); }
 
 		/** Copy constructor.
 		 * @param faxpy
 		 */
 		FieldAXPY (const FieldAXPY<Field> &faxpy) :
-		       	_F (faxpy._F), _y (faxpy._y)
+		       	_field (faxpy._field), _y (faxpy._y)
 	       	{}
 
 		/** Assignment operator
@@ -82,10 +82,10 @@ namespace LinBox
 		 * @param x constant reference to element x
 		 */
             inline Element& mulacc (const Element &a, const Element &x)
-                { return _F.axpyin (_y, a, x); }
+                { return _field.axpyin (_y, a, x); }
 
             inline Element& accumulate (const Element &t)
-                { return _F.addin (_y, t); }
+                { return _field.addin (_y, t); }
 
 		/** Retrieve y
 		 *
@@ -105,14 +105,14 @@ namespace LinBox
 		}
 
 		inline void reset() {
-			_F.init(_y,0);
+			_field.init(_y,0);
 		}
 
 	    protected:
 
 		/// Field in which arithmetic is done
 		/// Not sure why it must be mutable, but the compiler complains otherwise
-		Field _F;
+		Field _field;
 
 		/// Field element for arithmetic
 		Element _y;

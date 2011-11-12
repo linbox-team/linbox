@@ -133,18 +133,18 @@ namespace LinBox
 		typedef ModularBalanced<int64_t> Field;
 
 		FieldAXPY (const Field &F) :
-			_F (F),_y(0),_times(0)
+			_field (F),_y(0),_times(0)
 		{
 		}
 
 
 		FieldAXPY (const FieldAXPY &faxpy) :
-			_F (faxpy._F), _y (0),_times(0)
+			_field (faxpy._field), _y (0),_times(0)
 		{}
 
 		FieldAXPY<ModularBalanced<int64_t> > &operator = (const FieldAXPY &faxpy)
 		{
-			_F = faxpy._F;
+			_field = faxpy._field;
 			_y = faxpy._y;
 			_times = faxpy._times;
 			return *this;
@@ -188,10 +188,10 @@ namespace LinBox
 
 			y = _y;
 
-			if (y > _F.half_mod)
-				y -= _F.modulus;
-			else if (y < _F.mhalf_mod)
-				y += _F.modulus;
+			if (y > _field.half_mod)
+				y -= _field.modulus;
+			else if (y < _field.mhalf_mod)
+				y += _field.modulus;
 
 			return y;
 		}
@@ -209,7 +209,7 @@ namespace LinBox
 
 	private:
 
-		Field _F;
+		Field _field;
 		int64_t _y;
 		int64_t _times;
 		//!@todo tune me ?
@@ -217,7 +217,7 @@ namespace LinBox
 
 		inline void normalize()
 		{
-			_y = (int64_t)_y -(int64_t)(int64_t)((double) _y * _F.modulusinv) * (int64_t)_F.modulus;
+			_y = (int64_t)_y -(int64_t)(int64_t)((double) _y * _field.modulusinv) * (int64_t)_field.modulus;
 		}
 
 	};
@@ -270,8 +270,8 @@ namespace LinBox
 			normalize(y);
 			res = y;
 
-			if (res > _F.half_mod) res -= _F.modulus;
-			else if(res < _F.mhalf_mod) res += _F.modulus;
+			if (res > _field.half_mod) res -= _field.modulus;
+			else if(res < _field.mhalf_mod) res += _field.modulus;
 
 			return res;
 
@@ -311,15 +311,15 @@ namespace LinBox
 			normalize(y);
 
 			res = y;
-			if (res > _F.half_mod) res -= _F.modulus;
-			else if(res < _F.mhalf_mod) res += _F.modulus;
+			if (res > _field.half_mod) res -= _field.modulus;
+			else if(res < _field.mhalf_mod) res += _field.modulus;
 
 			return res;
 		}
 
 		inline void normalize(int64_t& _y) const
 		{
-			_y = (int64_t)_y -(int64_t)(int64_t)((double) _y * _F.modulusinv) * (int64_t)_F.modulus;
+			_y = (int64_t)_y -(int64_t)(int64_t)((double) _y * _field.modulusinv) * (int64_t)_field.modulus;
 		}
 
 	};

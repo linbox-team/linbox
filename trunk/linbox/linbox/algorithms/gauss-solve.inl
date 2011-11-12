@@ -44,13 +44,13 @@ namespace LinBox
 		Vector1 w(U.coldim());
 		if (randomsol) {
 			// Random solution is in output
-			typename _Field::RandIter generator(_F);
+			typename _Field::RandIter generator(_field);
 			for(typename Vector1::iterator it=w.begin()+Rank;it!=w.end();++it)
 				generator.random( *it );
 		}
 		else {
 			for(typename Vector1::iterator it=w.begin()+Rank;it!=w.end();++it)
-				_F.init(*it,0);
+				_field.init(*it,0);
 		}
 		return this->solve(x, w, Rank, Q, L, U, P, b);
 	}
@@ -62,9 +62,9 @@ namespace LinBox
 
 		typename Field::Element Det;
 		unsigned long Rank;
-		Matrix L(_F, A.rowdim(), A.rowdim());
-		Permutation<Field> Q((int)A.rowdim(),_F);
-		Permutation<Field> P((int)A.coldim(),_F);
+		Matrix L(_field, A.rowdim(), A.rowdim());
+		Permutation<Field> Q((int)A.rowdim(),_field);
+		Permutation<Field> P((int)A.coldim(),_field);
 
 		this->QLUPin(Rank, Det, Q, L, A, P, A.rowdim(), A.coldim() );
 

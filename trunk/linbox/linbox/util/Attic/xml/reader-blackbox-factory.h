@@ -76,7 +76,7 @@ namespace LinBox
 
 		int _type;
 		std::string _implDetail;
-		Reader _R;
+		Reader _reader;
 	};
 
 }
@@ -124,43 +124,43 @@ namespace LinBox
 		std::string s;
 
 
-		_R = R;
-		if(!_R.expectTagName("MatrixOver") | !_R.expectChildTag()) {
+		_reader = R;
+		if(!_reader.expectTagName("MatrixOver") | !_reader.expectChildTag()) {
 			_isBlackbox = false;
 			_hasField = false;
 			_type = ReaderBlackBoxFactory::NotBlackBox;
 			_implDetail = s;
 			return false;
 		}
-		if(!_R.checkAttributeString("implDetail", _implDetail))
+		if(!_reader.checkAttributeString("implDetail", _implDetail))
 			_implDetail = s;
 
-		_R.traverseChild();
-		if(_R.checkTagName("field")) {
-			_R.upToParent();
+		_reader.traverseChild();
+		if(_reader.checkTagName("field")) {
+			_reader.upToParent();
 			_hasField = true;
-			_R.getNextChild();
-			if(!_R.expectChildTag()) {
+			_reader.getNextChild();
+			if(!_reader.expectChildTag()) {
 				_isBlackbox = false;
 				_hasField = false;
 				_type = ReaderBlackBoxFactory::NotBlackBox;
 				_implDetail = s;
 				return false;
 			}
-			_R.traverseChild();
+			_reader.traverseChild();
 		}
 		else {
 			_hasField = false;
 		}
 
-		if(_R.checkTagName("matrix"))
+		if(_reader.checkTagName("matrix"))
 			_type = ReaderBlackBoxFactory::Dense;
-		else if(_R.checkTagName("sparseMatrix"))
+		else if(_reader.checkTagName("sparseMatrix"))
 			_type = ReaderBlackBoxFactory::Sparse;
 		else
 			_type = ReaderBlackBoxFactory::Special;
 
-		_R.Up(1).Left(1);
+		_reader.Up(1).Left(1);
 		_isBlackbox = true;
 		return true;
 	}
@@ -206,8 +206,8 @@ namespace LinBox
 
 		if(_hasField) {
 
-			FA.reset(_R.Down(1));
-			_R.Up(1);
+			FA.reset(_reader.Down(1));
+			_reader.Up(1);
 
 			// calls the overloaded operator() method of this
 			// class for the proper use of the field analyzer
@@ -217,25 +217,25 @@ namespace LinBox
 		else {
 
 			// go on the major types
-			_R.Down(1);
-			if(_R.checkTagName("permutation")) {
-				Permutation<Vector>* p = new Permutation<Vector>(_R.Up(1));
+			_reader.Down(1);
+			if(_reader.checkTagName("permutation")) {
+				Permutation<Vector>* p = new Permutation<Vector>(_reader.Up(1));
 				return p;
 			}
 
-			else if(_R.checkTagName("compose")) {
+			else if(_reader.checkTagName("compose")) {
 				Compose<Vector>* p =
-				new Compose<Vector>(_R.Up(1));
+				new Compose<Vector>(_reader.Up(1));
 				return p;
 			}
 			/*
-			   else if(_R.checkTagName("transpose")) {
-			   Transpose<Vector>* p = new Transpose<Vector>(_R.Up(1));
+			   else if(_reader.checkTagName("transpose")) {
+			   Transpose<Vector>* p = new Transpose<Vector>(_reader.Up(1));
 			   return p;
 			   }
 			   */
 			else {
-				_R.Up(1);
+				_reader.Up(1);
 				throw UnSupportedMatrixType();
 			}
 		}
@@ -268,80 +268,80 @@ namespace LinBox
 
 
 								     if(_implDetail == "sparse-sequence") {
-									     SparseMatrix<Field, Vector, vector<pair<size_t, Element> > >* p = new SparseMatrix<Field, Vector, vector<pair<size_t, Element> > >(_R);
+									     SparseMatrix<Field, Vector, vector<pair<size_t, Element> > >* p = new SparseMatrix<Field, Vector, vector<pair<size_t, Element> > >(_reader);
 
 									     return p;
 								     }
 								     else if(_implDetail == "sparse-associative") {
-									     SparseMatrix<Field, Vector, map<size_t, Element> >* p = new SparseMatrix<Field, Vector, map<size_t, Element> >(_R);
+									     SparseMatrix<Field, Vector, map<size_t, Element> >* p = new SparseMatrix<Field, Vector, map<size_t, Element> >(_reader);
 									     return p;
 								     }
 								     else if(_implDetail == "sparse-parallel") {
-									     SparseMatrix<Field, Vector, pair<vector<size_t>, vector<Element> > >* p = new SparseMatrix<Field, Vector, pair<vector<size_t>, vector<Element> > >(_R);
+									     SparseMatrix<Field, Vector, pair<vector<size_t>, vector<Element> > >* p = new SparseMatrix<Field, Vector, pair<vector<size_t>, vector<Element> > >(_reader);
 									     return p;
 								     }
 								     else if(_implDetail == "triplesbb") {
-									     TriplesBB<Field, Vector>* p = new TriplesBB<Field, Vector>(_R);
+									     TriplesBB<Field, Vector>* p = new TriplesBB<Field, Vector>(_reader);
 									     return p;
 								     }
 								     // This is our fall-back case
 								     else {
-									     SparseMatrix<Field, Vector, vector<pair<size_t, Element> > >* p = new SparseMatrix<Field, Vector, vector<pair<size_t, Element> > >(_R);
+									     SparseMatrix<Field, Vector, vector<pair<size_t, Element> > >* p = new SparseMatrix<Field, Vector, vector<pair<size_t, Element> > >(_reader);
 									     return p;
 								     }
 							     }
 							     break;
 
 		case ReaderBlackBoxFactory<Vector>::Dense : {
-								    DenseMatrix<Field, Vector>* p = new DenseMatrix<Field, Vector>(_R);
+								    DenseMatrix<Field, Vector>* p = new DenseMatrix<Field, Vector>(_reader);
 								    return p;
 							    }
 							    break;
 
 		case ReaderBlackBoxFactory<Vector>::Special : {
 								      if(_implDetail == "scalar") {
-									      ScalarMatrix<Field, Vector>* p = new ScalarMatrix<Field, Vector>(_R);
+									      ScalarMatrix<Field, Vector>* p = new ScalarMatrix<Field, Vector>(_reader);
 									      return p;
 								      }
 								      else if(_implDetail == "zero-one") {
-									      ZeroOne<Field, Vector>* p = new ZeroOne<Field, Vector>(_R);
+									      ZeroOne<Field, Vector>* p = new ZeroOne<Field, Vector>(_reader);
 									      return p;
 								      }
 								      else if(_implDetail == "diagonal-dense") {
-									      Diagonal<Field, Vector>* p = new Diagonal<Field, Vector>(_R);
+									      Diagonal<Field, Vector>* p = new Diagonal<Field, Vector>(_reader);
 									      return p;
 								      }
 								      else if(_implDetail == "diagonal-sequence") {
-									      Diagonal<Field, Vector>* p = new Diagonal<Field, Vector>(_R);
+									      Diagonal<Field, Vector>* p = new Diagonal<Field, Vector>(_reader);
 									      return p;
 								      }
 								      else if(_implDetail == "diagonal-associative") {
-									      Diagonal<Field, Vector>* p = new Diagonal<Field, Vector>(_R);
+									      Diagonal<Field, Vector>* p = new Diagonal<Field, Vector>(_reader);
 									      return p;
 								      }
 								      else if(_implDetail == "ntl-toeplitz") {
-									      Toeplitz<Field, Vector>* p = new Toeplitz<Field, Vector>(_R);
+									      Toeplitz<Field, Vector>* p = new Toeplitz<Field, Vector>(_reader);
 									      return p;
 								      }
 								      /*
 									 else if(_implDetail == "sum") {
-									 Sum<Field, Vector>* p = new Sum<Field, Vector>(_R);
+									 Sum<Field, Vector>* p = new Sum<Field, Vector>(_reader);
 									 return p;
 									 }
 									 else if(_implDetail == "dif") {
-									 Dif<Field, Vector>* p = new Dif<Field, Vector>(_R);
+									 Dif<Field, Vector>* p = new Dif<Field, Vector>(_reader);
 									 return p;
 									 }
 									 else if(_implDetail == "submatrix") {
-									 Submatrix<Field, Vector>* p = new Submatrix<Field, Vector>(_R);
+									 Submatrix<Field, Vector>* p = new Submatrix<Field, Vector>(_reader);
 									 return p;
 									 }
 									 else if(_implDetail == "inverse") {
-									 Inverse<Field, Vector>* p = new Inverse<Field, Vector>(_R);
+									 Inverse<Field, Vector>* p = new Inverse<Field, Vector>(_reader);
 									 return p;
 									 }
 									 else if(_implDetail == "moore-penrose") {
-									 MoorePenrose<Field, Vector>* p = new MoorePenrose<Field, Vector>(_R);
+									 MoorePenrose<Field, Vector>* p = new MoorePenrose<Field, Vector>(_reader);
 									 return p;
 									 }
 									 */

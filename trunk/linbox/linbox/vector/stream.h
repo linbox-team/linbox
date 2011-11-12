@@ -257,11 +257,11 @@ namespace LinBox
 		typedef RandomDenseStream<Field, Vector, RandIter, VectorCategories::DenseVectorTag > Self_t;
 
 		RandomDenseStream (const Field &F, size_t nn, size_t mm = 0) :
-			_F (F), _r (F), _n (nn), _m (mm), _j (0)
+			_field (F), _r (F), _n (nn), _m (mm), _j (0)
 		{}
 
 		RandomDenseStream (const Field &F, const RandIter &r, size_t nn, size_t mm = 0) :
-			_F (F), _r (r), _n (nn), _m (mm), _j (0)
+			_field (F), _r (r), _n (nn), _m (mm), _j (0)
 		{}
 
 		Vector &get (Vector &v)
@@ -288,7 +288,7 @@ namespace LinBox
 		void reset () { _j = 0; }
 
 	private:
-		const Field &_F;
+		const Field &_field;
 		RandIter     _r;
 		size_t       _n;
 		size_t       _m;
@@ -372,18 +372,18 @@ namespace LinBox
 		typedef RandomSparseStream<Field, Vector, RandIter, VectorCategories::DenseVectorTag > Self_t;
 
 		RandomSparseStream (const Field &F, double p, size_t N, size_t M = 0) :
-			_F (F), _r1 (F), _r (F, _r1),
+			_field (F), _r1 (F), _r (F, _r1),
 			_n (N), _p (p), _m (M), _j (0),
 			MT ((uint32_t)time (NULL))
 		{
 			linbox_check ((p >= 0.0) && (p <= 1.0));
-			_F.init (_zero, 0);
+			_field.init (_zero, 0);
 		}
 
 		RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0, int seed=(int)time (NULL)) :
-			_F (F), _r1 (r), _r (F, _r1), _n (n), _p (p), _m (m), _j (0),
+			_field (F), _r1 (r), _r (F, _r1), _n (n), _p (p), _m (m), _j (0),
 			MT (seed)
-		{ linbox_check ((p >= 0.0) && (p <= 1.0)); _F.init (_zero, 0); }
+		{ linbox_check ((p >= 0.0) && (p <= 1.0)); _field.init (_zero, 0); }
 
 		Vector &get (Vector &v)
 		{
@@ -398,7 +398,7 @@ namespace LinBox
 				if (val < _p)
 					_r.random (*i);
 				else
-					_F.assign (*i, _zero);
+					_field.assign (*i, _zero);
 			}
 
 			return v;
@@ -416,7 +416,7 @@ namespace LinBox
 		void setP (double p) { linbox_check ((p >= 0.0) && (p <= 1.0)); _p = p; }
 
 	private:
-		const Field                      &_F;
+		const Field                      &_field;
 		typename Field::Element           _zero;
 		RandIter                          _r1;
 		NonzeroRandIter<Field, RandIter>  _r;
@@ -435,13 +435,13 @@ namespace LinBox
 		typedef RandomSparseStream<Field, Vector, RandIter, VectorCategories::SparseSequenceVectorTag > Self_t;
 
 		RandomSparseStream (const Field &F, double p, size_t N, size_t M = 0) :
-			_F (F), _r1 (F), _r (F, _r1), _n (N), _m (M), _j (0),
+			_field (F), _r1 (F), _r (F, _r1), _n (N), _m (M), _j (0),
 			MT ((uint32_t)time (NULL))
 		{ setP (p); }
 
 		RandomSparseStream (const Field &F, const RandIter &r, double p,
 				    size_t N, size_t M = 0, int seed=(int)time (NULL)) :
-			_F (F), _r1 (r), _r (F, _r1), _n (N), _p (p), _m (M), _j (0),
+			_field (F), _r1 (r), _r (F, _r1), _n (N), _p (p), _m (M), _j (0),
 			MT (seed)
 		{ setP (p); }
 
@@ -493,7 +493,7 @@ namespace LinBox
 		}
 
 	private:
-		const Field                      &_F;
+		const Field                      &_field;
 		RandIter                          _r1;
 		NonzeroRandIter<Field, RandIter>  _r;
 		size_t                            _n;
@@ -512,14 +512,14 @@ namespace LinBox
 		typedef RandomSparseStream<Field, Vector, RandIter, VectorCategories::SparseAssociativeVectorTag > Self_t;
 
 		RandomSparseStream (const Field &F, double p, size_t N, size_t M = 0) :
-			_F (F), _r1 (F), _r (F, _r1),
+			_field (F), _r1 (F), _r (F, _r1),
 			_n (N), _k ((long) (p * (double)N)), _j (0), _m (M),
 			MT ((uint32_t)time (NULL))
 		{}
 
 		RandomSparseStream (const Field &F, const RandIter &r, double p, size_t N,
 				    size_t M = 0, int seed=(int)time (NULL)) :
-			_F (F), _r1 (F), _r (F, _r1), _n (N), _k ((long) (p * N)), _j (0), _m (M),
+			_field (F), _r1 (F), _r (F, _r1), _n (N), _k ((long) (p * N)), _j (0), _m (M),
 			MT (seed)
 		{}
 
@@ -535,7 +535,7 @@ namespace LinBox
 
 			for (i = 0; i < _k; i++) {
 				_r.random (x);
-				while (!_F.isZero (v[idx = MT.randomIntRange (0, (uint32_t)_n)])) ;
+				while (!_field.isZero (v[idx = MT.randomIntRange (0, (uint32_t)_n)])) ;
 				v[idx] = x;
 			}
 
@@ -554,7 +554,7 @@ namespace LinBox
 		void setP (double p) { _k = (long) (p * _n); }
 
 	private:
-		const Field                      &_F;
+		const Field                      &_field;
 		RandIter                          _r1;
 		NonzeroRandIter<Field, RandIter>  _r;
 		size_t                            _n;
@@ -572,12 +572,12 @@ namespace LinBox
 		typedef RandomSparseStream<Field, Vector, RandIter, VectorCategories::SparseParallelVectorTag > Self_t;
 
 		RandomSparseStream (const Field &F, double p, size_t nn, size_t mm = 0) :
-			_F (F), _r1 (F), _r (F, _r1), _n (nn), _m (mm), _j (0),
+			_field (F), _r1 (F), _r (F, _r1), _n (nn), _m (mm), _j (0),
 			MT ((uint32_t)time (NULL))
 		{ setP (p); }
 
 		RandomSparseStream (const Field &F, const RandIter &r, double p, size_t nn, size_t mm = 0, int seed=(int)time (NULL)) :
-			_F (F), _r1 (r), _r (F, _r1), _n (nn), _m (mm), _j (0),
+			_field (F), _r1 (r), _r (F, _r1), _n (nn), _m (mm), _j (0),
 			MT (seed)
 		{ setP (p); }
 
@@ -632,7 +632,7 @@ namespace LinBox
 		}
 
 	private:
-		const Field                      &_F;
+		const Field                      &_field;
 		RandIter                          _r1;
 		NonzeroRandIter<Field, RandIter>  _r;
 		size_t                            _n;
@@ -697,7 +697,7 @@ namespace LinBox
 		void reset ();
 
 	private:
-		const Field              &_F;
+		const Field              &_field;
 		size_t                    _n;
 		size_t                    _j;
 	};
@@ -710,7 +710,7 @@ namespace LinBox
 		typedef StandardBasisStream<Field, Vector, VectorCategories::DenseVectorTag > Self_t;
 
 		StandardBasisStream (const Field &F, size_t N) :
-			_F (F), _n (N), _j (0)
+			_field (F), _n (N), _j (0)
 		{}
 
 		Vector &get (Vector &v)
@@ -721,9 +721,9 @@ namespace LinBox
 
 			for (i = v.begin (), idx = 0; i != v.end (); i++, idx++) {
 				if (idx == _j)
-					_F.init (*i, 1);
+					_field.init (*i, 1);
 				else
-					_F.assign (*i, zero);
+					_field.assign (*i, zero);
 			}
 
 			_j++;
@@ -742,7 +742,7 @@ namespace LinBox
 		void reset () { _j = 0; }
 
 	private:
-		const Field              &_F;
+		const Field              &_field;
 		size_t                    _n;
 		size_t                    _j;
 	};
@@ -755,8 +755,8 @@ namespace LinBox
 		typedef StandardBasisStream<Field, Vector, VectorCategories::SparseSequenceVectorTag > Self_t;
 
 		StandardBasisStream (Field &F, size_t N) :
-			_F (F), _n (N), _j (0)
-		{ _F.init (_one, 1); }
+			_field (F), _n (N), _j (0)
+		{ _field.init (_one, 1); }
 
 		Vector &get (Vector &v)
 		{
@@ -779,7 +779,7 @@ namespace LinBox
 		void reset () { _j = 0; }
 
 	private:
-		const Field              &_F;
+		const Field              &_field;
 		size_t                    _n;
 		size_t                    _j;
 		typename Field::Element   _one;
@@ -793,8 +793,8 @@ namespace LinBox
 		typedef StandardBasisStream<Field, Vector, VectorCategories::SparseAssociativeVectorTag > Self_t;
 
 		StandardBasisStream (Field &F, size_t N) :
-			_F (F), _n (N), _j (0)
-		{ _F.init (_one, 1); }
+			_field (F), _n (N), _j (0)
+		{ _field.init (_one, 1); }
 
 		Vector &get (Vector &v)
 		{
@@ -817,7 +817,7 @@ namespace LinBox
 		void reset () { _j = 0; }
 
 	private:
-		const Field              &_F;
+		const Field              &_field;
 		size_t                    _n;
 		size_t                    _j;
 		typename Field::Element   _one;
@@ -831,8 +831,8 @@ namespace LinBox
 		typedef StandardBasisStream<Field, Vector, VectorCategories::SparseParallelVectorTag> Self_t;
 
 		StandardBasisStream (Field &F, size_t N) :
-			_F (F), _n (N), _j (0)
-		{ _F.init (_one, 1); }
+			_field (F), _n (N), _j (0)
+		{ _field.init (_one, 1); }
 
 		Vector &get (Vector &v)
 		{
@@ -858,7 +858,7 @@ namespace LinBox
 		void reset () { _j = 0; }
 
 	private:
-		const Field              &_F;
+		const Field              &_field;
 		size_t                    _n;
 		size_t                    _j;
 		typename Field::Element   _one;

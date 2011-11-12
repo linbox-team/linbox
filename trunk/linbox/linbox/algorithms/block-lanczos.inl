@@ -34,11 +34,6 @@
 // I'm putting everything inside the LinBox namespace so that I can drop all of
 // this in to LinBox easily at a later date, without any messy porting.
 
-// Fix for Solaris wierdness
-#undef _S
-#undef _M
-#undef _N
-
 namespace LinBox
 {
 
@@ -130,13 +125,13 @@ namespace LinBox
 		Vector d1, d2, b1, b2, bp, y, Ax, ATAx, ATb;
 
 		// Get the temporaries into the right sizes
-		_V[0].resize (A.coldim (), _N);
-		_V[1].resize (A.coldim (), _N);
-		_V[2].resize (A.coldim (), _N);
-		_AV.resize (A.coldim (), _N);
+		_matV[0].resize (A.coldim (), _block);
+		_matV[1].resize (A.coldim (), _block);
+		_matV[2].resize (A.coldim (), _block);
+		_AV.resize (A.coldim (), _block);
 
-		NonzeroRandIter<Field> real_ri (_F, _randiter);
-		RandomDenseStream<Field, Vector, NonzeroRandIter<Field> > stream (_F, real_ri, A.coldim ());
+		NonzeroRandIter<Field> real_ri (_field, _randiter);
+		RandomDenseStream<Field, Vector, NonzeroRandIter<Field> > stream (_field, real_ri, A.coldim ());
 
 		for (unsigned int i = 0; !success && i < _traits.maxTries (); ++i) {
 			std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
@@ -166,7 +161,7 @@ namespace LinBox
 					VectorWrapper::ensureDim (y, A.coldim ());
 
 					stream >> d1;
-					Diagonal<Field> D (_F, d1);
+					Diagonal<Field> D (_field, d1);
 					Compose<Blackbox, Diagonal<Field> > B (&A, &D);
 
 					report << "Random D: ";
@@ -191,7 +186,7 @@ namespace LinBox
 					typedef Compose<PC2, CO1> CO2;
 
 					stream >> d1;
-					PC1 D (_F, d1);
+					PC1 D (_field, d1);
 					PC2 AT (&A);
 					CO1 B1 (&D, &A);
 					CO2 B (&AT, &B1);
@@ -224,8 +219,8 @@ namespace LinBox
 					typedef Compose<PC1, CO3> CO4;
 
 					stream >> d1 >> d2;
-					PC1 D1 (_F, d1);
-					PC1 D2 (_F, d2);
+					PC1 D1 (_field, d1);
+					PC1 D2 (_field, d2);
 					PC2 AT (&A);
 					CO1 B1 (&A, &D1);
 					CO2 B2 (&D2, &B1);
@@ -356,11 +351,11 @@ namespace LinBox
 	template <class Blackbox, class Vector>
 	bool BlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A, Vector &x, const Vector &b)
 	{
-		linbox_check (_V[0].rowdim () == A.rowdim ());
-		linbox_check (_V[1].rowdim () == A.rowdim ());
-		linbox_check (_V[2].rowdim () == A.rowdim ());
-		linbox_check (_V[0].coldim () == _V[1].coldim ());
-		linbox_check (_V[0].coldim () == _V[2].coldim ());
+		linbox_check (_matV[0].rowdim () == A.rowdim ());
+		linbox_check (_matV[1].rowdim () == A.rowdim ());
+		linbox_check (_matV[2].rowdim () == A.rowdim ());
+		linbox_check (_matV[0].coldim () == _matV[1].coldim ());
+		linbox_check (_matV[0].coldim () == _matV[2].coldim ());
 
 		commentator.start ("Block Lanczos iteration", "BlockLanczosSolver::iterate", A.rowdim ());
 
@@ -392,25 +387,25 @@ namespace LinBox
 		TIMER_DECLARE(solution);
 		TIMER_DECLARE(orthogonalization)
 
-		// Get a random fat vector _V[0]
-		RandomDenseStream<Field, typename Matrix::Col> stream (_F, _randiter, A.coldim ());
+		// Get a random fat vector _matV[0]
+		RandomDenseStream<Field, typename Matrix::Col> stream (_field, _randiter, A.coldim ());
 
-		for (k = _V[0].colBegin (); k != _V[0].colEnd (); ++k)
+		for (k = _matV[0].colBegin (); k != _matV[0].colEnd (); ++k)
 			stream >> *k;
 
 		TIMER_START(AV);
-		_MD.blackboxMulLeft (_AV, A, _V[0]);
+		_MD.blackboxMulLeft (_AV, A, _matV[0]);
 		TIMER_STOP(AV);
 
 		std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 		// Initialize S_-1 to IN
-		std::fill (_S.begin (), _S.end (), true);
+		std::fill (_vecS.begin (), _vecS.end (), true);
 
 		// Iteration 1
 		TIMER_START(Winv);
-		_MD.mul (_VTAV, transpose (_V[0]), _AV);
-		Ni = compute_Winv_S (_Winv[0], _S, _VTAV);
+		_MD.mul (_VTAV, transpose (_matV[0]), _AV);
+		Ni = compute_Winv_S (_Winv[0], _vecS, _VTAV);
 		TIMER_STOP(Winv);
 
 		// Check for catastrophic breakdown
@@ -427,45 +422,45 @@ namespace LinBox
 #endif
 
 		TIMER_START(solution);
-		vectorMulTranspose (tmp, _V[0], b, _S);
+		vectorMulTranspose (tmp, _matV[0], b, _vecS);
 		_MD.vectorMul (tmp1, _Winv[0], tmp);
-		vectorMul (x, _V[0], tmp1, _S);
+		vectorMul (x, _matV[0], tmp1, _vecS);
 		TIMER_STOP(solution);
 
-		mul_SST (_V[1], _AV, _S);
+		mul_SST (_matV[1], _AV, _vecS);
 
 		TIMER_START(orthogonalization);
-		mul (_AVTAVSST_VTAV, transpose (_AV), _AV, _S);
+		mul (_AVTAVSST_VTAV, transpose (_AV), _AV, _vecS);
 
-		BLTraceReport (report, _MD, "V", 0, _V[0]);
+		BLTraceReport (report, _MD, "V", 0, _matV[0]);
 		BLTraceReport (report, _MD, "AV", 0, _AV);
 		BLTraceReport (report, _MD, "V^T A V", 0, _VTAV);
 		BLTraceReport (report, _MD, "Winv", 0, _Winv[0]);
-		reportS (report, _S, 0);
+		reportS (report, _vecS, 0);
 		BLTraceReport (report, _VD, "x", 0, x);
-		BLTraceReport (report, _MD, "AVSS^T", 0, _V[1]);
+		BLTraceReport (report, _MD, "AVSS^T", 0, _matV[1]);
 		BLTraceReport (report, _MD, "V^T A^2 V", 0, _AVTAVSST_VTAV);
 
 		_MD.addin (_AVTAVSST_VTAV, _VTAV);
 		_MD.mul (_DEF, _Winv[0], _AVTAVSST_VTAV);
 		addIN (_DEF);
 
-		_MD.axpyin (_V[1], _V[0], _DEF);
+		_MD.axpyin (_matV[1], _matV[0], _DEF);
 		TIMER_START(orthogonalization);
 
 		BLTraceReport (report, _MD, "D", 1, _DEF);
 
-		BLTraceReport (report, _MD, "V", 1, _V[1]);
-		checkAConjugacy (_MD, _AV, _V[1], _DEF, 0, 1);
+		BLTraceReport (report, _MD, "V", 1, _matV[1]);
+		checkAConjugacy (_MD, _AV, _matV[1], _DEF, 0, 1);
 
-		if (_MD.isZero (_V[1])) {
+		if (_MD.isZero (_matV[1])) {
 			commentator.stop ("done", NULL, "BlockLanczosSolver::iterate");
 			return true;
 		}
 
 		// Iteration 2
 		TIMER_START(AV);
-		_MD.blackboxMulLeft (_AV, A, _V[1]);
+		_MD.blackboxMulLeft (_AV, A, _matV[1]);
 		TIMER_STOP(AV);
 
 #ifdef DETAILED_TRACE
@@ -475,8 +470,8 @@ namespace LinBox
 #endif
 
 		TIMER_START(Winv);
-		_MD.mul (_VTAV, transpose (_V[1]), _AV);
-		Ni = compute_Winv_S (_Winv[1], _S, _VTAV);
+		_MD.mul (_VTAV, transpose (_matV[1]), _AV);
+		Ni = compute_Winv_S (_Winv[1], _vecS, _VTAV);
 		TIMER_STOP(Winv);
 
 		// Check for catastrophic breakdown
@@ -493,47 +488,47 @@ namespace LinBox
 #endif
 
 		TIMER_START(solution);
-		vectorMulTranspose (tmp, _V[1], b, _S);
+		vectorMulTranspose (tmp, _matV[1], b, _vecS);
 		_MD.vectorMul (tmp1, _Winv[1], tmp);
-		vectorMul (tmp2, _V[1], tmp1, _S);
+		vectorMul (tmp2, _matV[1], tmp1, _vecS);
 		_VD.addin (x, tmp2);
 		TIMER_STOP(solution);
 
-		mul_SST (_V[2], _AV, _S);
+		mul_SST (_matV[2], _AV, _vecS);
 
 		TIMER_START(orthogonalization);
-		mul (_AVTAVSST_VTAV, transpose (_AV), _AV, _S);
+		mul (_AVTAVSST_VTAV, transpose (_AV), _AV, _vecS);
 
 		BLTraceReport (report, _MD, "AV", 1, _AV);
 		BLTraceReport (report, _MD, "V^T A V", 1, _VTAV);
 		BLTraceReport (report, _MD, "Winv", 1, _Winv[1]);
-		reportS (report, _S, 1);
+		reportS (report, _vecS, 1);
 		BLTraceReport (report, _VD, "x", 1, x);
 		BLTraceReport (report, _MD, "V^T A^2 V", 1, _AVTAVSST_VTAV);
 
 		_MD.addin (_AVTAVSST_VTAV, _VTAV);
 		_MD.mul (_DEF, _Winv[1], _AVTAVSST_VTAV);
 		addIN (_DEF);
-		_MD.axpyin (_V[2], _V[1], _DEF);
+		_MD.axpyin (_matV[2], _matV[1], _DEF);
 
 		BLTraceReport (report, _MD, "D", 2, _DEF);
 
-		mul (_DEF, _Winv[0], _VTAV, _S);
-		_MD.axpyin (_V[2], _V[0], _DEF);
+		mul (_DEF, _Winv[0], _VTAV, _vecS);
+		_MD.axpyin (_matV[2], _matV[0], _DEF);
 		TIMER_STOP(orthogonalization);
 
 		BLTraceReport (report, _MD, "E", 2, _DEF);
-		BLTraceReport (report, _MD, "V", 2, _V[2]);
+		BLTraceReport (report, _MD, "V", 2, _matV[2]);
 
-		checkAConjugacy (_MD, _AV, _V[2], _DEF, 1, 2);
+		checkAConjugacy (_MD, _AV, _matV[2], _DEF, 1, 2);
 
 		// Now we're ready to begin the real iteration
-		while (!_MD.isZero (_V[j])) {
+		while (!_MD.isZero (_matV[j])) {
 			next_j = j + 1;
 			if (next_j > 2) next_j = 0;
 
 			TIMER_START(AV);
-			_MD.blackboxMulLeft (_AV, A, _V[j]);
+			_MD.blackboxMulLeft (_AV, A, _matV[j]);
 			TIMER_STOP(AV);
 
 			// First compute F_i+1, where we use Winv_i-2; then Winv_i and
@@ -542,16 +537,16 @@ namespace LinBox
 			// _DEF
 
 			TIMER_START(orthogonalization);
-			_MD.mul (_T, _VTAV, _Winv[1 - i]);
-			addIN (_T);
-			_MD.mul (_DEF, _Winv[i], _T);
+			_MD.mul (_matT, _VTAV, _Winv[1 - i]);
+			addIN (_matT);
+			_MD.mul (_DEF, _Winv[i], _matT);
 			_MD.mulin (_DEF, _AVTAVSST_VTAV);
 			TIMER_STOP(orthogonalization);
 
 			// Now get the next VTAV, Winv, and S_i
 			TIMER_START(Winv);
-			_MD.mul (_VTAV, transpose (_V[j]), _AV);
-			Ni = compute_Winv_S (_Winv[i], _S, _VTAV);
+			_MD.mul (_VTAV, transpose (_matV[j]), _AV);
+			Ni = compute_Winv_S (_Winv[i], _vecS, _VTAV);
 			TIMER_STOP(Winv);
 
 			// Check for catastrophic breakdown
@@ -571,18 +566,18 @@ namespace LinBox
 			BLTraceReport (report, _MD, "F", iter + 1, _DEF);
 			BLTraceReport (report, _MD, "V^T AV", iter, _VTAV);
 			BLTraceReport (report, _MD, "Winv", iter, _Winv[i]);
-			reportS (report, _S, iter);
+			reportS (report, _vecS, iter);
 
 			// Now that we have S_i, finish off with F_i+1
 			TIMER_START(orthogonalization);
-			mulin (_V[next_j], _DEF, _S);
+			mulin (_matV[next_j], _DEF, _vecS);
 			TIMER_STOP(orthogonalization);
 
 			// Update x
 			TIMER_START(solution);
-			vectorMulTranspose (tmp, _V[j], b, _S);
+			vectorMulTranspose (tmp, _matV[j], b, _vecS);
 			_MD.vectorMul (tmp1, _Winv[i], tmp);
-			vectorMul (tmp2, _V[j], tmp1, _S);
+			vectorMul (tmp2, _matV[j], tmp1, _vecS);
 			_VD.addin (x, tmp2);
 			TIMER_STOP(solution);
 
@@ -590,7 +585,7 @@ namespace LinBox
 
 			// Compute the next _AVTAVSST_VTAV
 			TIMER_START(orthogonalization);
-			mul (_AVTAVSST_VTAV, transpose (_AV), _AV, _S);
+			mul (_AVTAVSST_VTAV, transpose (_AV), _AV, _vecS);
 
 			BLTraceReport (report, _MD, "V^T A^2 V", iter, _AVTAVSST_VTAV);
 
@@ -599,25 +594,25 @@ namespace LinBox
 			// Compute D and update V_i+1
 			_MD.mul (_DEF, _Winv[i], _AVTAVSST_VTAV);
 			addIN (_DEF);
-			_MD.axpyin (_V[next_j], _V[j], _DEF);
+			_MD.axpyin (_matV[next_j], _matV[j], _DEF);
 
 			BLTraceReport (report, _MD, "D", iter + 1, _DEF);
 
 			// Compute E and update V_i+1
-			mul (_DEF, _Winv[1 - i], _VTAV, _S);
-			_MD.axpyin (_V[next_j], _V[prev_j], _DEF);
+			mul (_DEF, _Winv[1 - i], _VTAV, _vecS);
+			_MD.axpyin (_matV[next_j], _matV[prev_j], _DEF);
 
 			BLTraceReport (report, _MD, "E", iter + 1, _DEF);
 
 			// Add AV_i S_i S_i^T
-			addin (_V[next_j], _AV, _S);
+			addin (_matV[next_j], _AV, _vecS);
 			TIMER_STOP(orthogonalization);
 
-			BLTraceReport (report, _MD, "V", iter + 1, _V[next_j]);
-			checkAConjugacy (_MD, _AV, _V[next_j], _DEF, iter, iter + 1);
+			BLTraceReport (report, _MD, "V", iter + 1, _matV[next_j]);
+			checkAConjugacy (_MD, _AV, _matV[next_j], _DEF, iter, iter + 1);
 
 #ifdef DETAILED_TRACE
-			checkAConjugacy (_MD, AV1_backup, _V[next_j], _DEF, 1, iter + 1);
+			checkAConjugacy (_MD, AV1_backup, _matV[next_j], _DEF, 1, iter + 1);
 #endif
 
 			i = 1 - i;
@@ -662,8 +657,8 @@ namespace LinBox
 		linbox_check (S.size () == Winv.coldim ());
 		linbox_check (S.size () == T.rowdim ());
 		linbox_check (S.size () == T.coldim ());
-		linbox_check (S.size () == _M.rowdim ());
-		linbox_check (S.size () * 2 == _M.coldim ());
+		linbox_check (S.size () == _matM.rowdim ());
+		linbox_check (S.size () * 2 == _matM.coldim ());
 
 #ifdef DETAILED_TRACE
 		commentator.start ("Computing Winv and S", "BlockLanczosSolver::compute_Winv_S", S.size ());
@@ -673,8 +668,8 @@ namespace LinBox
 		_MD.write (report, T);
 #endif
 
-		BlasMatrix<Field> M1 (_M, 0, 0, T.rowdim (), T.coldim ());
-		BlasMatrix<Field> M2 (_M, 0, T.coldim (), T.rowdim (), T.coldim ());
+		BlasMatrix<Field> M1 (_matM, 0, 0, T.rowdim (), T.coldim ());
+		BlasMatrix<Field> M2 (_matM, 0, T.coldim (), T.rowdim (), T.coldim ());
 
 		_MD.copy (M1, T);
 		setIN (M2);
@@ -693,10 +688,10 @@ namespace LinBox
 
 			std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 			report << "Iteration " << row << ": Matrix M = " << std::endl;
-			_MD.write (report, _M);
+			_MD.write (report, _matM);
 #endif
 
-			if (find_pivot_row (_M, row, 0, _indices)) {
+			if (find_pivot_row (_matM, row, 0, _indices)) {
 #ifdef DETAILED_TRACE
 				commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION)
 				<< "Pivot found for column " << _indices[row] << std::endl;
@@ -707,11 +702,11 @@ namespace LinBox
 				S[_indices[row]] = true;  // Use column j of V_i in W_i
 
 				// Give the (j, j) entry unity
-				_F.inv (Mjj_inv, _M.getEntry (_indices[row], _indices[row]));
-				_VD.mulin (*(_M.rowBegin () + _indices[row]), Mjj_inv);
+				_field.inv (Mjj_inv, _matM.getEntry (_indices[row], _indices[row]));
+				_VD.mulin (*(_matM.rowBegin () + _indices[row]), Mjj_inv);
 
 				// Zero the rest of the column j
-				eliminate_col (_M, row, 0, _indices, Mjj_inv);
+				eliminate_col (_matM, row, 0, _indices, Mjj_inv);
 
 				++Ni;
 			}
@@ -725,17 +720,17 @@ namespace LinBox
 
 				S[_indices[row]] = false;  // Skip column j
 
-				find_pivot_row (_M, row, _N, _indices);
+				find_pivot_row (_matM, row, _block, _indices);
 
-				const typename Field::Element &Mjj = _M.refEntry (_indices[row], _indices[row] + _N);
+				const typename Field::Element &Mjj = _matM.refEntry (_indices[row], _indices[row] + _block);
 
-				linbox_check (!_F.isZero (Mjj));
+				linbox_check (!_field.isZero (Mjj));
 
 				// Zero the rest of the column j + N
-				eliminate_col (_M, row, _N, _indices, _F.inv (Mjj_inv, Mjj));
+				eliminate_col (_matM, row, _block, _indices, _field.inv (Mjj_inv, Mjj));
 
 				// Zero row j
-				_VD.subin (*(_M.rowBegin () + _indices[row]), *(_M.rowBegin () + _indices[row]));
+				_VD.subin (*(_matM.rowBegin () + _indices[row]), *(_matM.rowBegin () + _indices[row]));
 			}
 		}
 
@@ -836,7 +831,7 @@ namespace LinBox
 				if (*l)
 					_VD.dot (*k, *i, *j);
 				else
-					_F.subin (*k, *k);
+					_field.subin (*k, *k);
 			}
 
 			_VD.copy (*i, _tmp);
@@ -901,7 +896,7 @@ namespace LinBox
 		size_t idx = 0;
 
 		for (i = A.rowBegin (); i != A.rowEnd (); ++i, ++idx)
-			_F.addin ((*i)[idx], _one);
+			_field.addin ((*i)[idx], _one);
 
 		return A;
 	}
@@ -961,7 +956,7 @@ namespace LinBox
 
 		for (i = A.rowBegin (), i_idx = 0; i != A.rowEnd (); ++i, ++i_idx) {
 			_VD.subin (*i, *i);
-			_F.assign ((*i)[i_idx], _one);
+			_field.assign ((*i)[i_idx], _one);
 		}
 
 		return A;
@@ -985,11 +980,11 @@ namespace LinBox
 		typename Matrix::Col col_vec;
 		typename Matrix::Row row_vec;
 
-		col_vec = *(_M.colBegin () + indices[row] + col_offset);
-		row_vec = *(_M.rowBegin () + indices[row]);
+		col_vec = *(_matM.colBegin () + indices[row] + col_offset);
+		row_vec = *(_matM.rowBegin () + indices[row]);
 
 		for (idx = row; idx < A.rowdim (); ++idx) {
-			if (!_F.isZero (A.getEntry (indices[idx], indices[row] + col_offset))) {
+			if (!_field.isZero (A.getEntry (indices[idx], indices[row] + col_offset))) {
 				if (idx != row) {
 					typename Matrix::Row row1 = *(A.rowBegin () + indices[idx]);
 					std::swap_ranges (row_vec.begin (), row_vec.end (), row1.begin ());
@@ -1021,31 +1016,31 @@ namespace LinBox
 		for (row = 0; row < pivot; ++row) {
 			const typename Field::Element &Aij = A.getEntry (indices[row], indices[pivot] + col_offset);
 
-			if (!_F.isZero (Aij))
-				_VD.axpyin (*(A.rowBegin () + indices[row]), _F.neg (p, Aij), pivot_row);
+			if (!_field.isZero (Aij))
+				_VD.axpyin (*(A.rowBegin () + indices[row]), _field.neg (p, Aij), pivot_row);
 		}
 
 		for (++row; row < A.rowdim (); ++row) {
 			const typename Field::Element &Aij = A.getEntry (indices[row], indices[pivot] + col_offset);
 
-			if (!_F.isZero (Aij))
-				_VD.axpyin (*(A.rowBegin () + indices[row]), _F.neg (p, Aij), pivot_row);
+			if (!_field.isZero (Aij))
+				_VD.axpyin (*(A.rowBegin () + indices[row]), _field.neg (p, Aij), pivot_row);
 		}
 	}
 
 	template <class Field, class Matrix>
 	void BlockLanczosSolver<Field, Matrix>::init_temps ()
 	{
-		_VTAV.resize (_N, _N);
-		_Winv[0].resize (_N, _N);
-		_Winv[1].resize (_N, _N);
-		_AVTAVSST_VTAV.resize (_N, _N);
-		_T.resize (_N, _N);
-		_DEF.resize (_N, _N);
-		_S.resize (_N);
-		_M.resize (_N, 2 * _N);
-		_tmp.resize (_N);
-		_indices.resize (_N);
+		_VTAV.resize (_block, _block);
+		_Winv[0].resize (_block, _block);
+		_Winv[1].resize (_block, _block);
+		_AVTAVSST_VTAV.resize (_block, _block);
+		_matT.resize (_block, _block);
+		_DEF.resize (_block, _block);
+		_vecS.resize (_block);
+		_matM.resize (_block, 2 * _block);
+		_tmp.resize (_block);
+		_indices.resize (_block);
 	}
 
 	// Check whether the given matrix is "almost" the identity, i.e. the identity
@@ -1059,19 +1054,19 @@ namespace LinBox
 
 		typename Field::Element neg_one;
 
-		_F.init (neg_one, -1);
+		_field.init (neg_one, -1);
 
 		size_t i, j;
 
 		for (i = 0; i < M.rowdim (); ++i) {
 			for (j = 0; j < M.coldim (); ++j) {
-				if (i != j && !_F.isZero (M.getEntry (i, j))) {
-					if (!_F.isZero (M.getEntry (i, i))) {
+				if (i != j && !_field.isZero (M.getEntry (i, j))) {
+					if (!_field.isZero (M.getEntry (i, i))) {
 						typename Matrix::ConstRowIterator row = M.rowBegin () + j;
 						if (!_VD.isZero (*row))
 							return false;
 					}
-					else if (!_F.isZero (M.getEntry (j, j))) {
+					else if (!_field.isZero (M.getEntry (j, j))) {
 						typename Matrix::ConstColIterator col = M.colBegin () + i;
 						if (!_VD.isZero (*col))
 							return false;
@@ -1079,7 +1074,7 @@ namespace LinBox
 					else
 						return false;
 				}
-				else if (!_F.isZero (M.getEntry (i, j)) && !_F.areEqual (M.getEntry (i, j), neg_one))
+				else if (!_field.isZero (M.getEntry (i, j)) && !_field.areEqual (M.getEntry (i, j), neg_one))
 					return false;
 			}
 		}
@@ -1111,7 +1106,7 @@ namespace LinBox
 
 		bool ret = true;
 
-		RandomDenseStream<Field, typename Matrix::Row> stream (_F, _randiter, n);
+		RandomDenseStream<Field, typename Matrix::Row> stream (_field, _randiter, n);
 		typename Matrix::RowIterator i = A.rowBegin ();
 		typename Matrix::ColIterator j = AT.colBegin ();
 
@@ -1179,7 +1174,7 @@ namespace LinBox
 
 		bool ret = true;
 
-		RandomDenseStream<Field, typename Matrix::Row> stream (_F, _randiter, n);
+		RandomDenseStream<Field, typename Matrix::Row> stream (_field, _randiter, n);
 		typename Matrix::RowIterator i = A.rowBegin ();
 		typename Matrix::ColIterator j = AT.colBegin ();
 
@@ -1281,7 +1276,7 @@ namespace LinBox
 
 		bool ret = true;
 
-		RandomDenseStream<Field, typename Matrix::Row> stream (_F, _randiter, n);
+		RandomDenseStream<Field, typename Matrix::Row> stream (_field, _randiter, n);
 		typename Matrix::RowIterator i = A.rowBegin ();
 
 		for (; i != A.rowEnd (); ++i)
@@ -1291,10 +1286,10 @@ namespace LinBox
 		report << "Computed A:" << std::endl;
 		_MD.write (report, A);
 
-		RandomDenseStream<Field, Matrix> stream1 (_F, _randiter, m);
+		RandomDenseStream<Field, Matrix> stream1 (_field, _randiter, m);
 		stream1 >> x;
 
-		RandomDenseStream<Field, Matrix> stream2 (_F, _randiter, n);
+		RandomDenseStream<Field, Matrix> stream2 (_field, _randiter, n);
 		stream1 >> y;
 
 		report << "Computed     x: ";
@@ -1316,14 +1311,14 @@ namespace LinBox
 		_VD.dot (ATxy, ATx, y);
 
 		report << "Computed  ATxy: ";
-		_F.write (report, ATxy) << std::endl;
+		_field.write (report, ATxy) << std::endl;
 
 		_VD.dot (xAy, x, Ay);
 
 		report << "Computed   xAy: ";
-		_F.write (report, xAy) << std::endl;
+		_field.write (report, xAy) << std::endl;
 
-		if (!_F.areEqual (ATxy, xAy)) {
+		if (!_field.areEqual (ATxy, xAy)) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: <A^T x, y> != <x, Ay>" << std::endl;
 			ret = false;
@@ -1383,14 +1378,14 @@ namespace LinBox
 
 		commentator.start ("Running self check", "runSelfCheck", 10);
 
-		if (!test_compute_Winv_S_mul (_N)) ret = false;
-		if (!test_compute_Winv_S_mulin (_N)) ret = false;
-		if (!test_mul_SST (_N)) ret = false;
-		if (!test_mul_ABSST (_N)) ret = false;
-		if (!test_mulTranspose (_N * 10, _N)) ret = false;
-		if (!test_mulTranspose_ABSST (_N)) ret = false;
-		if (!test_mulin_ABSST (_N)) ret = false;
-		if (!test_addin_ABSST (_N)) ret = false;
+		if (!test_compute_Winv_S_mul (_block)) ret = false;
+		if (!test_compute_Winv_S_mulin (_block)) ret = false;
+		if (!test_mul_SST (_block)) ret = false;
+		if (!test_mul_ABSST (_block)) ret = false;
+		if (!test_mulTranspose (_block * 10, _block)) ret = false;
+		if (!test_mulTranspose_ABSST (_block)) ret = false;
+		if (!test_mulin_ABSST (_block)) ret = false;
+		if (!test_addin_ABSST (_block)) ret = false;
 
 		commentator.stop (MSG_STATUS (ret), NULL, "runSelfCheck");
 

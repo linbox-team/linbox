@@ -561,7 +561,7 @@ namespace LinBox
 		for (i = A.rowBegin (), l1 = Y.rowBegin (); i != A.rowEnd (); ++i, ++l1) {
 			for (j = X.colBegin (), l2 = l1->begin (); j != X.colEnd (); ++j, ++l2) {
 				_VD.dot (t, *i, *j);
-				_F.addin (*l2, t);
+				_field.addin (*l2, t);
 			}
 		}
 
@@ -586,7 +586,7 @@ namespace LinBox
 		for (j = X.colBegin (), l1 = Y.colBegin (); j != X.colEnd (); ++j, ++l1) {
 			for (i = A.rowBegin (), l2 = l1->begin (); i != A.rowEnd (); ++i, ++l2) {
 				_VD.dot (t, *i, *j);
-				_F.addin (*l2, t);
+				_field.addin (*l2, t);
 			}
 		}
 
@@ -674,7 +674,7 @@ namespace LinBox
 		for (; i != A.rowEnd (); ++i, ++idx) {
 			_VD.dot (t, v, *i);
 
-			if (!_F.isZero (t))
+			if (!_field.isZero (t))
 				w.push_back (std::pair<size_t, typename Field::Element> (idx, t));
 		}
 
@@ -695,7 +695,7 @@ namespace LinBox
 		for (; i != A.rowEnd (); ++i, ++idx) {
 			_VD.dot (t, v, *i);
 
-			if (!_F.isZero (t))
+			if (!_field.isZero (t))
 				w[idx] = t;
 		}
 
@@ -717,7 +717,7 @@ namespace LinBox
 		for (; i != A.rowEnd (); ++i, ++idx) {
 			_VD.dot (t, v, *i);
 
-			if (!_F.isZero (t)) {
+			if (!_field.isZero (t)) {
 				w.first.push_back (idx);
 				w.second.push_back (t);
 			}
@@ -821,7 +821,7 @@ namespace LinBox
 
 		for (; j != y.end (); ++j, ++i) {
 			_VD.dot (t, x, *i);
-			_F.addin (*j, t);
+			_field.addin (*j, t);
 		}
 
 		return y;

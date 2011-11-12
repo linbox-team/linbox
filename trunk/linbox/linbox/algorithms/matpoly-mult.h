@@ -153,14 +153,14 @@ namespace LinBox
 	template <class Field>
 	class ClassicMulDomain {
 	private:
-		Field                       _F;
+		Field                       _field;
 		BlasMatrixDomain<Field>   _BMD;
 		MatrixDomain<Field>        _MD;
 
 	public:
 
 		ClassicMulDomain(const Field &F) :
-			_F(F), _BMD(F), _MD(F)
+			_field(F), _BMD(F), _MD(F)
 		{}
 
 		template< class Polynomial1, class Polynomial2, class Polynomial3>
@@ -208,14 +208,14 @@ namespace LinBox
 	public:
 		typedef _Field                         Field;
 	private:
-		Field                       _F;
+		Field                       _field;
 		BlasMatrixDomain<Field>   _BMD;
 		MatrixDomain<Field>        _MD;
 		size_t                    _mul;
 	public:
 
 		KaratsubaMulDomain(const Field &F) :
-			_F(F), _BMD(F), _MD(F)
+			_field(F), _BMD(F), _MD(F)
 		{_mul=0;}
 
 		template< class Polynomial1, class Polynomial2, class Polynomial3>
@@ -462,17 +462,17 @@ namespace LinBox
 		typedef SpecialFFTMulDomain<Field>  FFTDomainBase;
 
 	private:
-		Field                _F;
+		Field                _field;
 		integer              _p;
 		size_t         _fftsize;
 
 	public:
 
 		FFTMulDomain (const Field &F) :
-			_F(F)
+			_field(F)
 		{
 
-			_F.characteristic(_p);
+			_field.characteristic(_p);
 
 			_fftsize=0;
 			//check if field is based on fft prime
@@ -497,7 +497,7 @@ namespace LinBox
 
 			// check if fft prime and good enough
 			if (lpts < _fftsize){
-				FFTDomainBase fftdomain(_F);
+				FFTDomainBase fftdomain(_field);
 				fftdomain.mul(a, b, c);
 			}
 			else {
@@ -550,7 +550,7 @@ namespace LinBox
 					for (size_t kk=0;kk<a.size();++kk)
 						for (size_t i=0;i<a[0].rowdim();++i)
 							for (size_t j=0;j<a[0].coldim();++j){
-								_F.init(a[kk].refEntry(i,j), a_i[0][kk].getEntry(i,j));
+								_field.init(a[kk].refEntry(i,j), a_i[0][kk].getEntry(i,j));
 							}
 				}
 				else {
@@ -575,7 +575,7 @@ namespace LinBox
 									if (acc > primesprod)
 										acc-= primesprod;
 								}
-								_F.init(a[kk].refEntry(i,j), acc);
+								_field.init(a[kk].refEntry(i,j), acc);
 							}
 #ifdef FFT_TIMING
 					chrono.stop();std::cout<<"reconstruction time: "<<chrono<<"\n";
@@ -607,7 +607,7 @@ namespace LinBox
 
 			// check if fft prime and good enough
 			if (lpts < _fftsize){
-				FFTDomainBase fftdomain(_F);
+				FFTDomainBase fftdomain(_field);
 				fftdomain.midproduct(a, b, c);
 			}
 			else {
@@ -665,7 +665,7 @@ namespace LinBox
 					for (size_t k=0;k<a.size();++k)
 						for (size_t i=0;i<a[0].rowdim();++i)
 							for (size_t j=0;j<a[0].coldim();++j){
-								_F.init(a[k].refEntry(i,j), a_i[0][k].getEntry(i,j));
+								_field.init(a[k].refEntry(i,j), a_i[0][k].getEntry(i,j));
 							}
 				}
 				else {
@@ -690,7 +690,7 @@ namespace LinBox
 									if (acc > primesprod)
 										acc-= primesprod;
 								}
-								_F.init(a[k].refEntry(i,j), acc);
+								_field.init(a[k].refEntry(i,j), acc);
 							}
 					delete [] crt;
 					delete [] crt_inv;
@@ -718,15 +718,15 @@ namespace LinBox
 		typedef SpecialFFTMulDomain<ModularField>   FFTDomainBase;
 
 	private:
-		Field                _F;
+		Field                _field;
 		integer              _p;
 		size_t         _fftsize;
 
 	public:
 
-		FFTMulDomain (const Field &F) :  _F(F){
+		FFTMulDomain (const Field &F) :  _field(F){
 
-			_F.characteristic(_p);
+			_field.characteristic(_p);
 
 			_fftsize=0;
 			//check if field is based on fft prime
@@ -805,7 +805,7 @@ namespace LinBox
 				for (size_t k=0;k<a.size();++k)
 					for (size_t i=0;i<a[0].rowdim();++i)
 						for (size_t j=0;j<a[0].coldim();++j){
-							_F.init(a[k].refEntry(i,j), a_i[0][k].getEntry(i,j));
+							_field.init(a[k].refEntry(i,j), a_i[0][k].getEntry(i,j));
 						}
 			}
 			else {
@@ -830,7 +830,7 @@ namespace LinBox
 								if (acc > primesprod)
 									acc-= primesprod;
 							}
-							_F.init(a[k].refEntry(i,j), acc);
+							_field.init(a[k].refEntry(i,j), acc);
 						}
 #ifdef FFT_TIMING
 				chrono.stop();std::cout<<"reconstruction time: "<<chrono<<"\n";
@@ -862,7 +862,7 @@ namespace LinBox
 
 			// check if fft prime and good enough
 			if (lpts < _fftsize){
-				FFTDomainBase fftdomain(_F);
+				FFTDomainBase fftdomain(_field);
 				fftdomain.midproduct(a, b, c);
 			}
 			else {
@@ -917,7 +917,7 @@ namespace LinBox
 					for (size_t k=0;k<a.size();++k)
 						for (size_t i=0;i<a[0].rowdim();++i)
 							for (size_t j=0;j<a[0].coldim();++j){
-								_F.init(a[k].refEntry(i,j), a_i[0][k].getEntry(i,j));
+								_field.init(a[k].refEntry(i,j), a_i[0][k].getEntry(i,j));
 							}
 				}
 				else {
@@ -942,7 +942,7 @@ namespace LinBox
 									if (acc > primesprod)
 										acc-= primesprod;
 								}
-								_F.init(a[k].refEntry(i,j), acc);
+								_field.init(a[k].refEntry(i,j), acc);
 							}
 					delete [] crt;
 					delete [] crt_inv;
@@ -967,7 +967,7 @@ namespace LinBox
 		typedef typename Field::Element                 Element;
 
 	private:
-		Field                      _F;
+		Field                      _field;
 		integer                    _p;
 		long                      _pl;
 		MatrixDomain<Field>       _MD;
@@ -977,7 +977,7 @@ namespace LinBox
 	public:
 
 		SpecialFFTMulDomain(const Field &F) :
-			_F(F), _MD(F), _BMD(F)
+			_field(F), _MD(F), _BMD(F)
 		{
 			F.characteristic(_p);
 			_pl = _p;
@@ -1089,8 +1089,8 @@ namespace LinBox
 
 
 			Element _w, _inv_w;
-			_F.init(_w, w);
-			_F.init(_inv_w, inv_w);
+			_field.init(_w, w);
+			_field.init(_inv_w, inv_w);
 			std::vector<Element> pow_w(pts);
 			std::vector<Element> pow_inv_w(pts);
 
@@ -1098,11 +1098,11 @@ namespace LinBox
 			//std::cout<<"degree: "<<pts<<"\n";
 
 			// compute power of w and w^(-1)
-			_F.init(pow_w[0],1);
-			_F.init(pow_inv_w[0],1);
+			_field.init(pow_w[0],1);
+			_field.init(pow_inv_w[0],1);
 			for (size_t i=1;i<pts;++i){
-				_F.mul(pow_w[i], pow_w[i-1], _w);
-				_F.mul(pow_inv_w[i], pow_inv_w[i-1], _inv_w);
+				_field.mul(pow_w[i], pow_w[i-1], _w);
+				_field.mul(pow_inv_w[i], pow_inv_w[i-1], _inv_w);
 			}
 
 			// compute reverse bit ordering
@@ -1181,9 +1181,9 @@ namespace LinBox
 					typename Coefficient::Iterator it_a1=fft_a[i].Begin();
 					typename Coefficient::Iterator it_a2=fft_a[revbit[i]].Begin();
 					for (; it_a1 != fft_a[i].End(); ++it_a1, ++it_a2){
-						_F.assign(swapping,*it_a1);
-						_F.assign(*it_a1, *it_a2);
-						_F.assign(*it_a2,swapping);
+						_field.assign(swapping,*it_a1);
+						_field.assign(*it_a1, *it_a2);
+						_field.assign(*it_a2,swapping);
 					}
 				}
 			}
@@ -1211,8 +1211,8 @@ namespace LinBox
 
 			// set the result according to bitreverse ordering and multiply by 1/pts
 			Element inv_pts;
-			_F.init(inv_pts, pts);
-			_F.invin(inv_pts);
+			_field.init(inv_pts, pts);
+			_field.invin(inv_pts);
 
 			// #ifdef __LINBOX_HAVE_OPENMP
 			// #pragma omp parallel for shared(a,fft_a,revbit,inv_pts) schedule(stati
@@ -1308,17 +1308,17 @@ namespace LinBox
 
 
 			Element _w, _inv_w;
-			_F.init(_w,w);
-			_F.init(_inv_w, inv_w);
+			_field.init(_w,w);
+			_field.init(_inv_w, inv_w);
 			std::vector<Element> pow_w(pts);
 			std::vector<Element> pow_inv_w(pts);
 
 			// compute power of w and w^(-1)
-			_F.init(pow_w[0],1);
-			_F.init(pow_inv_w[0],1);
+			_field.init(pow_w[0],1);
+			_field.init(pow_inv_w[0],1);
 			for (size_t i=1;i<pts;++i){
-				_F.mul(pow_w[i], pow_w[i-1], _w);
-				_F.mul(pow_inv_w[i], pow_inv_w[i-1], _inv_w);
+				_field.mul(pow_w[i], pow_w[i-1], _w);
+				_field.mul(pow_inv_w[i], pow_inv_w[i-1], _inv_w);
 			}
 
 			// compute reverse bit ordering
@@ -1361,9 +1361,9 @@ namespace LinBox
 					typename Coefficient::Iterator it_a1=fft_a[i].Begin();
 					typename Coefficient::Iterator it_a2=fft_a[revbit[i]].Begin();
 					for (; it_a1 != fft_a[i].End(); ++it_a1, ++it_a2){
-						_F.assign(swapping,*it_a1);
-						_F.assign(*it_a1, *it_a2);
-						_F.assign(*it_a2,swapping);
+						_field.assign(swapping,*it_a1);
+						_field.assign(*it_a1, *it_a2);
+						_field.assign(*it_a2,swapping);
 					}
 				}
 			}
@@ -1374,8 +1374,8 @@ namespace LinBox
 
 			// set the result according to bitreverse ordering and multiply by 1/pts
 			Element inv_pts;
-			_F.init(inv_pts, pts);
-			_F.invin(inv_pts);
+			_field.init(inv_pts, pts);
+			_field.invin(inv_pts);
 			// #ifdef __LINBOX_HAVE_OPENMP
 			// #pragma omp parallel for shared(fft_a,revbit,inv_pts) schedule(static)
 			// #endif
@@ -1463,17 +1463,17 @@ namespace LinBox
 
 
 			Element _w, _inv_w;
-			_F.init(_w,w);
-			_F.init(_inv_w, inv_w);
+			_field.init(_w,w);
+			_field.init(_inv_w, inv_w);
 			std::vector<Element> pow_w(pts);
 			std::vector<Element> pow_inv_w(pts);
 
 			// compute power of w and w^(-1)
-			_F.init(pow_w[0],1);
-			_F.init(pow_inv_w[0],1);
+			_field.init(pow_w[0],1);
+			_field.init(pow_inv_w[0],1);
 			for (size_t i=1;i<pts;++i){
-				_F.mul(pow_w[i], pow_w[i-1], _w);
-				_F.mul(pow_inv_w[i], pow_inv_w[i-1], _inv_w);
+				_field.mul(pow_w[i], pow_w[i-1], _w);
+				_field.mul(pow_inv_w[i], pow_inv_w[i-1], _inv_w);
 			}
 
 			// compute reverse bit ordering
@@ -1517,9 +1517,9 @@ namespace LinBox
 					typename Coefficient::Iterator it_a1=fft_a[i].Begin();
 					typename Coefficient::Iterator it_a2=fft_a[revbit[i]].Begin();
 					for (; it_a1 != fft_a[i].End(); ++it_a1, ++it_a2){
-						_F.assign(swapping,*it_a1);
-						_F.assign(*it_a1, *it_a2);
-						_F.assign(*it_a2,swapping);
+						_field.assign(swapping,*it_a1);
+						_field.assign(*it_a1, *it_a2);
+						_field.assign(*it_a2,swapping);
 					}
 				}
 			}
@@ -1530,8 +1530,8 @@ namespace LinBox
 
 			// set the result according to bitreverse ordering and multiply by 1/pts
 			Element inv_pts;
-			_F.init(inv_pts, pts);
-			_F.invin(inv_pts);
+			_field.init(inv_pts, pts);
+			_field.invin(inv_pts);
 			// #ifdef __LINBOX_HAVE_OPENMP
 			// #pragma omp parallel for shared(fft_a,revbit,inv_pts) schedule(static)
 			// #endif
@@ -1565,10 +1565,10 @@ namespace LinBox
 			typename Coeff::Iterator it_b= B.Begin();
 			Element tmp;
 			for (; it_a != A.End(); ++it_a, ++it_b){
-				_F.assign(tmp,*it_a);
-				_F.addin(*it_a, *it_b);
-				_F.sub(*it_b, tmp, *it_b);
-				_F.mulin(*it_b, alpha);
+				_field.assign(tmp,*it_a);
+				_field.addin(*it_a, *it_b);
+				_field.sub(*it_b, tmp, *it_b);
+				_field.mulin(*it_b, alpha);
 			}
 		}
 
@@ -1591,8 +1591,8 @@ namespace LinBox
 			Element tmp;
 			for (size_t i=0;i<n2;++i){
 				tmp = aptr[i];
-				_F.addin(aptr[i],bptr[i]);
-				_F.sub(bptr[i], tmp, bptr[i]);
+				_field.addin(aptr[i],bptr[i]);
+				_field.sub(bptr[i], tmp, bptr[i]);
 			}
 		}
 
@@ -1661,7 +1661,7 @@ namespace LinBox
 				//_MD.addin(fft[shift],fft[shift+n2]);
 				//_MD.sub(fft[shift+n2], tmp, fft[shift+n2]);
 				//myAddSub(fft[shift],fft[shift+n2]);
-				Element one;_F.init(one,integer(1));
+				Element one;_field.init(one,integer(1));
 				Butterfly(fft[shift],fft[shift+n2],one);
 
 				for (size_t i=1; i< n2; ++i){
@@ -1673,7 +1673,7 @@ namespace LinBox
 					//myAddSub(fft[shift+i],fft[shift+i+n2]);
 
 					//_MD.mulin(fft[shift+i+n2],  pow_w[idx_w*i]);
-					//FFLAS::fscal(_F, mn, pow_w[idx_w*i], fft[shift+i+n2].getPointer(), 1);
+					//FFLAS::fscal(_field, mn, pow_w[idx_w*i], fft[shift+i+n2].getPointer(), 1);
 				}
 				FFT(fft, n2, pow_w, idx_w<<1, shift);
 				FFT(fft, n2, pow_w, idx_w<<1, shift+n2);

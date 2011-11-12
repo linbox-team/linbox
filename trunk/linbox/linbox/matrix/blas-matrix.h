@@ -93,7 +93,7 @@ namespace LinBox
 		size_t			    _col;
 		Rep			    _rep;
 		pointer			    _ptr;
-		const Field		    & _F;
+		const Field		    & _field;
 		const MatrixDomain<Field>    _MD;
 		const VectorDomain<Field>    _VD;
 		bool		     _use_fflas ;
@@ -585,7 +585,7 @@ namespace LinBox
 
 		const _Field& field() const;
 		_Field& field() ;
-		// void setField(const _Field & F) { _F = F ; };
+		// void setField(const _Field & F) { _field = F ; };
 
 		template<class uselessTag>
 		void changeFieldSpecialised( _Field & G,
@@ -612,7 +612,7 @@ namespace LinBox
 
 		void changeField(const _Field &F)
 		{
-			changeFieldSpecialised(const_cast<_Field&>(_F),
+			changeFieldSpecialised(const_cast<_Field&>(_field),
 					       const_cast<MatrixDomain<_Field>&>(_MD),
 					       const_cast<VectorDomain<_Field>&>(_VD),
 					       F,
@@ -674,12 +674,12 @@ namespace LinBox
 
 
 	protected:
-		BlasMatrix<_Field> *_M;       //!< Parent BlasMatrix (ie raw vector)
+		BlasMatrix<_Field> *_Mat;       //!< Parent BlasMatrix (ie raw vector)
 		size_t _row;                   //!< row dimension of Submatrix
 		size_t _col;                   //!< col dimension of Submatrix
-		size_t _r0;                    //!< upper left corner row of Submatrix in \p _M
-		size_t _c0;                    //!< upper left corner row of Submatrix in \p _M
-		size_t _stride ;               //!< number of columns in \p _M (or stride of \p _M)
+		size_t _r0;                    //!< upper left corner row of Submatrix in \p _Mat
+		size_t _c0;                    //!< upper left corner row of Submatrix in \p _Mat
+		size_t _stride ;               //!< number of columns in \p _Mat (or stride of \p _Mat)
 		size_t _off;
 
 	public:
@@ -907,18 +907,18 @@ namespace LinBox
 		Vector1&  apply (Vector1& y, const Vector2& x) const
 		{
 			//_stride ?
-			if (_M->_use_fflas){
+			if (_Mat->_use_fflas){
 				//!@bug this supposes &x[0]++ == &x[1]
-				FFLAS::fgemv( _M->_F, FFLAS::FflasNoTrans,
+				FFLAS::fgemv( _Mat->_field, FFLAS::FflasNoTrans,
 					      _row, _col,
-					      _M->_F.one,
-					      _M->_ptr, getStride(),
+					      _Mat->_field.one,
+					      _Mat->_ptr, getStride(),
 					      &x[0],1,
-					      _M->_F.zero,
+					      _Mat->_field.zero,
 					      &y[0],1);
 			}
 			else {
-				_M->_MD. vectorMul (y, *this, x);
+				_Mat->_MD. vectorMul (y, *this, x);
 #if 0
 				typename BlasMatrix<_Field>::ConstRowIterator i = this->rowBegin ();
 				typename Vector1::iterator j = y.begin ();
@@ -935,20 +935,20 @@ namespace LinBox
 		{
 
 			//_stride ?
-			if (_M->_use_fflas) {
-				FFLAS::fgemv( _M->_F, FFLAS::FflasTrans,
+			if (_Mat->_use_fflas) {
+				FFLAS::fgemv( _Mat->_field, FFLAS::FflasTrans,
 					      _row, _col,
-					      _M->_F.one,
-					      _M->_ptr, getStride(),
+					      _Mat->_field.one,
+					      _Mat->_ptr, getStride(),
 					      &x[0],1,
-					      _M->_F.zero,
+					      _Mat->_field.zero,
 					      &y[0],1);
 			}
 			else {
 				typename BlasMatrix<_Field>::ConstColIterator i = this->colBegin ();
 				typename Vector1::iterator j = y.begin ();
 				for (; j != y.end (); ++j, ++i)
-					_M->_VD.dot (*j, x, *i);
+					_Mat->_VD.dot (*j, x, *i);
 			}
 
 			return y;
@@ -1094,18 +1094,18 @@ namespace LinBox
 		 * @param M
 		 */
 		TransposedBlasMatrix ( Matrix& Mat ) :
-			_M(Mat)
+			_Mat(Mat)
 		{}
 
 		/*! NO DOC
 		*/
 		Matrix& getMatrix() const
 		{
-			return _M;
+			return _Mat;
 		}
 
 	protected:
-		Matrix& _M; //!< NO DOC
+		Matrix& _Mat; //!< NO DOC
 	};
 
 	/*! TransposedBlasMatrix.
@@ -1151,7 +1151,7 @@ namespace LinBox
 
 	protected:
 
-		MultiModDouble                 _F;
+		MultiModDouble                 _field;
 		const std::vector<MatrixDomain<Modular<double> > >   _MD;
 		size_t                  _row,_col;
 		Element                _One,_Zero;
@@ -1163,18 +1163,18 @@ namespace LinBox
 		//BlasMatrix () {}
 
 		BlasMatrix (const MultiModDouble& F) :
-			_F(F) , _rep(F.size()), _entry(F.size())
+			_field(F) , _rep(F.size()), _entry(F.size())
 		{}
 
 		BlasMatrix (const Field& F, size_t m, size_t n, bool alloc=true) :
-			_F(F), _row(m) , _col(n) , _rep(F.size()),  _entry(F.size())
+			_field(F), _row(m) , _col(n) , _rep(F.size()),  _entry(F.size())
 		{
 			for (size_t i=0;i<_rep.size();++i)
 				_rep[i] =  new BlasMatrix<Modular<double> > (F.getBase(i), m, n);
 		}
 
 		BlasMatrix (const BlasMatrix<MultiModDouble> & A):
-			_F(A._F),_row(A._row), _col(A._col),
+			_field(A._field),_row(A._row), _col(A._col),
 			_rep(A._rep.size()), _entry(A._entry)
 		{
 
@@ -1185,7 +1185,7 @@ namespace LinBox
 
 		const BlasMatrix<MultiModDouble>& operator=(const BlasMatrix<MultiModDouble> & A)
 		{
-			_F   = A._F;
+			_field   = A._field;
 			_row = A._row;
 			_col = A._col;
 			_rep = std::vector<BlasMatrix<Modular<double> >* >(A._rep.size());
@@ -1254,7 +1254,7 @@ namespace LinBox
 		size_t coldim() const {return _col;}
 
 
-		const Field &field() const  {return _F;}
+		const Field &field() const  {return _field;}
 
 
 		std::ostream& write(std::ostream& os) const

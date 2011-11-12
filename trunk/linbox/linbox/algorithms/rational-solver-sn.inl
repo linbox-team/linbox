@@ -45,7 +45,7 @@ int zw_shift(NumericSolver & NS_S, size_t n, FVector &r, FVector &x)
 	NS_S.apply(ax, x);
 	// compute ax = ax -r, the negative of residual
 	for(size_t i=0; i<n; i++)
-		_F.sub(ax[i], ax[i], r[i]);
+		_field.sub(ax[i], ax[i], r[i]);
 	// compute possible shift
 	int zw_shift_loc;
 	double normr1, normr2, normr3, shift1, shift2;
@@ -83,14 +83,14 @@ int rat_sol(IVector& numx, Int& denx, FVector& xs_int, FVector& xs_frac, IVector
 	FVector nextx(n), quo(n);
 
 	integer denx_i;
-	typename Field::Element one; _F.init(one, 1);
+	typename Field::Element one; _field.init(one, 1);
 
 	//  need to save original r for zw_shift calculation
 	//  TODO: I took out the ZWSHIFT, still need last r??
 
 	if(denx == 1){
 		// compute first approximate solution x
-		_S.solve(x, r);
+		_numsolver.solve(x, r);
 
 		//writeVec(x, "x from first solve");
 		copy(r.begin(), r.end(), lastr.begin());
@@ -102,17 +102,17 @@ int rat_sol(IVector& numx, Int& denx, FVector& xs_int, FVector& xs_frac, IVector
 	}
 
 	//std::cerr << "while loopbound " << loopBound << std::endl;
-	while (_R.compare(denx, loopBound) < 0) {
+	while (_ring.compare(denx, loopBound) < 0) {
 		++iterations;
 		//  x = DM^{-1}*r
-		_S.solve(nextx, r);
+		_numsolver.solve(nextx, r);
 
 		for(size_t i=0; i<n; i++){
 			// TODO - analyze logic here
 			//  quo[i] = xs_frac[i] / nextx[i] - 1;
-			//_F.div(quo[i], xs_frac[i], nextx[i]);
-			//_F.subin(quo[i], one);
-			_F.sub(quo[i], xs_frac[i], nextx[i]);
+			//_field.div(quo[i], xs_frac[i], nextx[i]);
+			//_field.subin(quo[i], one);
+			_field.sub(quo[i], xs_frac[i], nextx[i]);
 		}
 
 		double q = zw_dmax((int)n, &*quo.begin(), 1);
@@ -250,7 +250,7 @@ inline void update_xs(FVector& xs_int, FVector& xs_frac, FVector& x)
 {
 	Float scalar, tmp;
 	int64_t shifted = ((int64_t)1 << shift);
-	_F.init(scalar, (double) shifted);
+	_field.init(scalar, (double) shifted);
 
 	//  make xs_int and xs_frac such that x*scalar = xs_int + xs_frac.
 	for(size_t i = 0; i < xs_int.size(); ++i){
@@ -268,12 +268,12 @@ inline void update_r(FVector& r, FVector& xs_int)
 	Float scalar;
 	size_t n = r.size();
 	int64_t shifted = ((int64_t)1 << shift);
-	_F.init(scalar, (double)shifted);
+	_field.init(scalar, (double)shifted);
 	FVector y(n);
 
 	//update r = r * 2^shift - Mat*xs_int
 	_VDF.mulin(r, scalar);
-	_S.apply(y, xs_int);
+	_numsolver.apply(y, xs_int);
 	_VDF.subin(r, y);
 
 	return;
@@ -296,23 +296,23 @@ inline void update_r_exact(IVector& r_exact, FVector& r, FVector& xs_int, IMatri
 
 	int64_t th = ((int64_t)1 << 52);  // double mantissa
 	Float thresh;
-	_F.init(thresh, (double)th);
+	_field.init(thresh, (double)th);
 
 	debugneol("vnorm " << vnorm);
 
 	//  r -= Mat * xs_int
-	if(_F.mulin(vnorm, mnorm) < thresh){
+	if(_field.mulin(vnorm, mnorm) < thresh){
 		debugneol("Numeric ");
 		FVector y(n);
-		_S.apply(y, xs_int);
+		_numsolver.apply(y, xs_int);
 		for(size_t i = 0; i < n; ++i)
-			_R.init(y_i[i], y[i]);
+			_ring.init(y_i[i], y[i]);
 	}
 	else{
 		SHIFT_BOUND--; // to less this possibility
 		debugneol("Exact ");
 		for(size_t i = 0; i < n; ++i)
-			_R.init(x_i[i], xs_int[i]);
+			_ring.init(x_i[i], xs_int[i]);
 		IM.apply(y_i, x_i);
 	}
 
@@ -322,7 +322,7 @@ inline void update_r_exact(IVector& r_exact, FVector& r, FVector& xs_int, IMatri
 	typename FVector::iterator rp = r.begin();
 	typename IVector::iterator rep = r_exact.begin();
 	for(; rp!= r.end(); ++rp, ++rep)
-		_F.init(*rp, *rep);
+		_field.init(*rp, *rep);
 
 	return;
 } // update_r_exact
@@ -351,9 +351,9 @@ inline IVector& update_num (IVector& num, const FVector& d)
 	size_t n = d.size();
 	IVector d_i(n);
 	for (size_t i = 0; i < n; ++i) {
-		_R.init(d_i[i], d[i]);
+		_ring.init(d_i[i], d[i]);
 	}
-	Int scalar; _R.init(scalar, 1UL << shift);
+	Int scalar; _ring.init(scalar, 1UL << shift);
 	//  TODO - analyze GMP shifting capability
 	_VDR.mulin(num, scalar);
 	_VDR.addin(num, d_i);

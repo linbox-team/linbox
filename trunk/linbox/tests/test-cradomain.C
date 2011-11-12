@@ -41,9 +41,9 @@
 
 using namespace LinBox;
 
-// avoid solaris wierdness.  Needs to be after linbox includes.  
-// Conjecture: _C as numeric const is introduced in some std header included in a linbox header.
-#undef _C
+// avoid solaris wierdness.  Needs to be after linbox includes.
+// Conjecture: _vectC as numeric const is introduced in some std header included in a linbox header.
+#undef _vectC
 
 struct Interator {
 	std::vector<integer> _v;
@@ -104,25 +104,25 @@ namespace LinBox
 
 struct InteratorIt : public Interator {
 
-	mutable std::vector<double> _C;
+	mutable std::vector<double> _vectC;
 
 	InteratorIt(const std::vector<integer>& v) :
-		Interator(v), _C(v.size())
+		Interator(v), _vectC(v.size())
 	{}
 	InteratorIt(int n, int s) :
-		Interator(n,s), _C(n)
+		Interator(n,s), _vectC(n)
 	{}
 
 	template<typename Iterator, typename Field>
 	Iterator& operator()(Iterator& res, const Field& F) const
 	{
 		std::vector<integer>::const_iterator vit=this->_v.begin();
-		std::vector<double>::iterator eit=_C.begin();
+		std::vector<double>::iterator eit=_vectC.begin();
 		for( ; vit != _v.end(); ++vit, ++eit) {
 			F.init(*eit, *vit);
 		}
 
-		return res=_C.begin();
+		return res=_vectC.begin();
 	}
 
 };
@@ -140,20 +140,20 @@ struct InteratorBlas : public Interator {
 	typedef typename Field::Element Element;
 	typedef LinBox::BlasMatrix<LinBox::UnparametricField<Element> > Matrix;
 	typedef typename Matrix::pointer Pointer;
-	typename LinBox::UnparametricField<Element> _F;
-	mutable Matrix _C;
+	typename LinBox::UnparametricField<Element> _field;
+	mutable Matrix _vectC;
 
-	InteratorBlas(const std::vector<integer>& v) : Interator(v),_F(), _C(_F,(int)v.size(), (int)1) {}
-	InteratorBlas(int n, int s) : Interator(n,s), _F(),_C(_F,n,1) {}
+	InteratorBlas(const std::vector<integer>& v) : Interator(v),_field(), _vectC(_field,(int)v.size(), (int)1) {}
+	InteratorBlas(int n, int s) : Interator(n,s), _field(),_vectC(_field,n,1) {}
 
 	Pointer& operator()(Pointer& res, const Field& F) const
 	{
 		std::vector<integer>::const_iterator vit=this->_v.begin();
-		res = _C.getWritePointer();
+		res = _vectC.getWritePointer();
 		for( ; vit != _v.end(); ++vit, ++res)
 			F.init(*res, *vit);
 
-		return res=_C.getWritePointer();
+		return res=_vectC.getWritePointer();
 	}
 
 };

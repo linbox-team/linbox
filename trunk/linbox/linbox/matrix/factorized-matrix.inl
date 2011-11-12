@@ -716,9 +716,9 @@ namespace LinBox
 {
 	template <class Field>
 	LQUPMatrix<Field>::LQUPMatrix (const BlasMatrix<Field>& A) :
-		_F(A.field()), _LU(*(new BlasMatrix<Field> (A))) ,
-		_PP(*(new BlasPermutation<size_t>(A.coldim()))),
-		_QQ(*(new BlasPermutation<size_t>(A.rowdim()))),
+		_field(A.field()), _factLU(*(new BlasMatrix<Field> (A))) ,
+		_permP(*(new BlasPermutation<size_t>(A.coldim()))),
+		_permQ(*(new BlasPermutation<size_t>(A.rowdim()))),
 		_m(A.rowdim()), _n(A.coldim()),
 		_alloc(true),_plloc(true)
 	{
@@ -727,23 +727,23 @@ namespace LinBox
 			_rank = 0 ;
 		}
 		else {
-			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans,
+			_rank= FFPACK::LUdivine( _field,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans,
 						 _m, _n,
-						 _LU.getPointer(),_LU.getStride(),
-						 _PP.getWritePointer(), _QQ.getWritePointer(),
+						 _factLU.getPointer(),_factLU.getStride(),
+						 _permP.getWritePointer(), _permQ.getWritePointer(),
 						 FFPACK::FfpackLQUP );
 		}
-		_PP.setOrder(_rank);
-		_QQ.setOrder(_rank);
+		_permP.setOrder(_rank);
+		_permQ.setOrder(_rank);
 
 	}
 
 	template <class Field>
 	LQUPMatrix<Field>::LQUPMatrix (BlasMatrix<Field>& A) :
-		_F(A.field()), _LU(static_cast<BlasMatrix<Field>&> (A)) ,
-		_PP(*(new BlasPermutation<size_t>(A.coldim()))),
-		_QQ(*(new BlasPermutation<size_t>(A.rowdim()))),
-		// _PP(A.coldim()), _QQ(A.rowdim()),
+		_field(A.field()), _factLU(static_cast<BlasMatrix<Field>&> (A)) ,
+		_permP(*(new BlasPermutation<size_t>(A.coldim()))),
+		_permQ(*(new BlasPermutation<size_t>(A.rowdim()))),
+		// _permP(A.coldim()), _permQ(A.rowdim()),
 		_m(A.rowdim()), _n(A.coldim()),
 		_alloc(false),_plloc(true)
 	{
@@ -752,66 +752,66 @@ namespace LinBox
 			_rank = 0 ;
 		}
 		else {
-			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans,
+			_rank= FFPACK::LUdivine( _field,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans,
 						 _m, _n,
-						 _LU.getPointer(),_LU.getStride(),
-						 _PP.getWritePointer(), _QQ.getWritePointer(),
+						 _factLU.getPointer(),_factLU.getStride(),
+						 _permP.getWritePointer(), _permQ.getWritePointer(),
 						 FFPACK::FfpackLQUP );
 		}
-		_PP.setOrder(_rank);
-		_QQ.setOrder(_rank);
+		_permP.setOrder(_rank);
+		_permQ.setOrder(_rank);
 
 	}
 
 	template <class Field>
 	LQUPMatrix<Field>::LQUPMatrix (const BlasMatrix<Field>& A,
 				       BlasPermutation<size_t> & P, BlasPermutation<size_t> & Q) :
-		_F(A.field()), _LU(*(new BlasMatrix<Field> (A))) ,
-		_PP(P), _QQ(Q),
+		_field(A.field()), _factLU(*(new BlasMatrix<Field> (A))) ,
+		_permP(P), _permQ(Q),
 		_m(A.rowdim()), _n(A.coldim()),
 		_alloc(true),_plloc(false)
 	{
 
-		linbox_check(_QQ.getOrder()==A.rowdim());
-		linbox_check(_PP.getOrder()==A.coldim());
+		linbox_check(_permQ.getOrder()==A.rowdim());
+		linbox_check(_permP.getOrder()==A.coldim());
 
 
-		_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans,
+		_rank= FFPACK::LUdivine( _field,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans,
 					 _m, _n,
-					 _LU.getPointer(),_LU.getStride(),
-					 _PP.getWritePointer(), _QQ.getWritePointer(),
+					 _factLU.getPointer(),_factLU.getStride(),
+					 _permP.getWritePointer(), _permQ.getWritePointer(),
 					 FFPACK::FfpackLQUP );
 
-		_PP.setOrder(_rank);
-		_QQ.setOrder(_rank);
+		_permP.setOrder(_rank);
+		_permQ.setOrder(_rank);
 
 	}
 
 	template <class Field>
 	LQUPMatrix<Field>::LQUPMatrix (BlasMatrix<Field>& A,
 				       BlasPermutation<size_t> & P, BlasPermutation<size_t> & Q) :
-		_F(A.field()), _LU(static_cast<BlasMatrix<Field>&> (A)) ,
-		_PP(P), _QQ(Q),
+		_field(A.field()), _factLU(static_cast<BlasMatrix<Field>&> (A)) ,
+		_permP(P), _permQ(Q),
 		_m(A.rowdim()), _n(A.coldim()),
 		_alloc(false),_plloc(false)
 	{
 
 
-		linbox_check(_QQ.getOrder()<=A.rowdim());
-		linbox_check(_PP.getOrder()<=A.coldim());
-		if (_QQ.getOrder() == 0)
-			_QQ.resize(A.rowdim());
-		if (_PP.getOrder() == 0)
-			_PP.resize(A.coldim());
+		linbox_check(_permQ.getOrder()<=A.rowdim());
+		linbox_check(_permP.getOrder()<=A.coldim());
+		if (_permQ.getOrder() == 0)
+			_permQ.resize(A.rowdim());
+		if (_permP.getOrder() == 0)
+			_permP.resize(A.coldim());
 
 
-		_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans,
+		_rank= FFPACK::LUdivine( _field,FFLAS::FflasNonUnit,  FFLAS::FflasNoTrans,
 					 _m, _n,
-					 _LU.getPointer(),_LU.getStride(),
-					 _PP.getWritePointer(), _QQ.getWritePointer(),
+					 _factLU.getPointer(),_factLU.getStride(),
+					 _permP.getWritePointer(), _permQ.getWritePointer(),
 					 FFPACK::FfpackLQUP );
-		_PP.setOrder(_rank);
-		_QQ.setOrder(_rank);
+		_permP.setOrder(_rank);
+		_permQ.setOrder(_rank);
 
 	}
 
@@ -819,17 +819,17 @@ namespace LinBox
 	LQUPMatrix<Field>::~LQUPMatrix ()
 	{
 		if (_alloc)
-			delete &_LU;
+			delete &_factLU;
 		if (_plloc) {
-			delete &_PP;
-			delete &_QQ;
+			delete &_permP;
+			delete &_permQ;
 		}
 	}
 
 	template <class Field>
 	Field& LQUPMatrix<Field>::field()
 	{
-		return _F;
+		return _field;
 	}
 
 	template <class Field>
@@ -853,26 +853,26 @@ namespace LinBox
 	template <class Field>
 	const BlasPermutation<size_t>& LQUPMatrix<Field>::getP() const
 	{
-		return _PP;
+		return _permP;
 	}
 
 	template <class Field>
 	BlasPermutation<size_t> & LQUPMatrix<Field>::getP( BlasPermutation<size_t> & P ) const
 	{
-		P = BlasPermutation<size_t>(_PP.getPointer(),_rank);
+		P = BlasPermutation<size_t>(_permP.getPointer(),_rank);
 		return P;
 	}
 
 	template <class Field>
 	const BlasPermutation<size_t>& LQUPMatrix<Field>::getQ() const
 	{
-		return _QQ;
+		return _permQ;
 	}
 
 	template <class Field>
 	BlasPermutation<size_t> & LQUPMatrix<Field>::getQ( BlasPermutation<size_t> & Qt ) const
 	{
-		Qt = BlasPermutation<size_t>(_QQ.getPointer(),_rank);
+		Qt = BlasPermutation<size_t>(_permQ.getPointer(),_rank);
 		return Qt ;
 	}
 
@@ -895,14 +895,14 @@ namespace LinBox
 			for ( ; i<_n; ++i ){
 				size_t j=0;
 				for (; j<i ; ++j )
-					L.setEntry( i, j, _LU.getEntry(i,j) );
+					L.setEntry( i, j, _factLU.getEntry(i,j) );
 				for (; j<_m; ++j )
 					L.setEntry( i, j, zero );
 			}
 			for ( ; i<_m; ++i ){
 				size_t j=0;
 				for (; j<_n ; ++j )
-					L.setEntry( i, j, _LU.getEntry(i,j) );
+					L.setEntry( i, j, _factLU.getEntry(i,j) );
 				for (; j<_m; ++j )
 					L.setEntry( i, j, zero );
 			}
@@ -913,7 +913,7 @@ namespace LinBox
 			for ( size_t i=0; i<_m; ++i ){
 				size_t j=0;
 				for (; j<i ; ++j )
-					L.setEntry( i, j, _LU.getEntry(i,j) );
+					L.setEntry( i, j, _factLU.getEntry(i,j) );
 				for (; j<_m; ++j )
 					L.setEntry( i, j, zero );
 			}
@@ -923,26 +923,26 @@ namespace LinBox
 		for ( size_t i=0; i<_m; ++i ){
 			size_t j=0;
 			for (; j< ((i<_n)?i:_n) ; ++j )
-				L.setEntry( i, j, _LU.getEntry(i,j) );
+				L.setEntry( i, j, _factLU.getEntry(i,j) );
 			for (; j<_m; ++j )
-				L.setEntry( i, j, _F.zero );
+				L.setEntry( i, j, _field.zero );
 		}
 #endif
 
-		if (!_QQ.isIdentity())
-			FFPACK::applyP( _F, FFLAS::FflasRight, FFLAS::FflasNoTrans,
-					_m,0,(int)_QQ.getOrder(),
-					L.getWritePointer(), _m, _QQ.getPointer() );
+		if (!_permQ.isIdentity())
+			FFPACK::applyP( _field, FFLAS::FflasRight, FFLAS::FflasNoTrans,
+					_m,0,(int)_permQ.getOrder(),
+					L.getWritePointer(), _m, _permQ.getPointer() );
 		for ( size_t i=0; i<_m; ++i )
-			L.setEntry( i, i, _F.one );
+			L.setEntry( i, i, _field.one );
 		if (_QLUP) {
-			if (!_QQ.isIdentity()) {
-				FFPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
-						_m,0,(int)_QQ.getOrder(),
-						L.getWritePointer(), _m, _QQ.getPointer() );
-				FFPACK::applyP( _F, FFLAS::FflasRight, FFLAS::FflasTrans,
-						_m,0,(int)_QQ.getOrder(),
-						L.getWritePointer(), _m, _QQ.getPointer() );
+			if (!_permQ.isIdentity()) {
+				FFPACK::applyP( _field, FFLAS::FflasLeft, FFLAS::FflasNoTrans,
+						_m,0,(int)_permQ.getOrder(),
+						L.getWritePointer(), _m, _permQ.getPointer() );
+				FFPACK::applyP( _field, FFLAS::FflasRight, FFLAS::FflasTrans,
+						_m,0,(int)_permQ.getOrder(),
+						L.getWritePointer(), _m, _permQ.getPointer() );
 
 			}
 		}
@@ -963,7 +963,7 @@ namespace LinBox
 		linbox_check( U.getDiag() == LinBoxTag::NonUnit);
 		for ( size_t i=0; i<_m; ++i )
 			for ( size_t j=i; j<_n; ++j )
-				U.setEntry( i, j, _LU.getEntry(i,j) );
+				U.setEntry( i, j, _factLU.getEntry(i,j) );
 		return U;
 	}
 
@@ -977,30 +977,30 @@ namespace LinBox
 		linbox_check( S.coldim() == _n);
 		for ( size_t i=0; i<_m; ++i ){
 			for ( size_t j=0; j<i; ++j )
-				S.setEntry( i, j, _F.zero );
+				S.setEntry( i, j, _field.zero );
 			for ( size_t j=i; j<_n; ++j )
-				S.setEntry( i, j, _LU.getEntry(i,j) );
+				S.setEntry( i, j, _factLU.getEntry(i,j) );
 		}
 
-		if (!_QQ.isIdentity())
-			FFPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FflasTrans,
-					_n, 0,(int) _QQ.getOrder(),
-					S.getWritePointer(), _n, _QQ.getPointer() );
+		if (!_permQ.isIdentity())
+			FFPACK::applyP( _field, FFLAS::FflasLeft, FFLAS::FflasTrans,
+					_n, 0,(int) _permQ.getOrder(),
+					S.getWritePointer(), _n, _permQ.getPointer() );
 		return S;
 	}
 
 	template <class Field>
 	typename Field::Element* LQUPMatrix<Field>::getPointer() const
 	{
-		return _LU.getPointer();
+		return _factLU.getPointer();
 	}
 
-	/*! @internal get  the stride in \c _LU
+	/*! @internal get  the stride in \c _factLU
 	*/
 	template <class Field>
 	size_t LQUPMatrix<Field>::getStride() const
 	{
-		return _LU.getStride();
+		return _factLU.getStride();
 	}
 
 	// solve AX=B
@@ -1008,7 +1008,7 @@ namespace LinBox
 	template <class Operand>
 	Operand& LQUPMatrix<Field>::left_solve(Operand& X, const Operand& B) const
 	{
-		return Protected::FactorizedMatrixLeftSolve<Field,Operand>()( _F, *this, X, B );
+		return Protected::FactorizedMatrixLeftSolve<Field,Operand>()( _field, *this, X, B );
 	}
 
 	// solve AX=B (X is stored in B)
@@ -1016,7 +1016,7 @@ namespace LinBox
 	template <class Operand>
 	Operand& LQUPMatrix<Field>::left_solve(Operand& B) const
 	{
-		return Protected::FactorizedMatrixLeftSolve<Field,Operand>()( _F, *this, B );
+		return Protected::FactorizedMatrixLeftSolve<Field,Operand>()( _field, *this, B );
 	}
 
 	// solve XA=B
@@ -1024,7 +1024,7 @@ namespace LinBox
 	template <class Operand>
 	Operand& LQUPMatrix<Field>::right_solve(Operand& X, const Operand& B) const
 	{
-		return Protected::FactorizedMatrixRightSolve<Field,Operand>()( _F, *this, X, B );
+		return Protected::FactorizedMatrixRightSolve<Field,Operand>()( _field, *this, X, B );
 	}
 
 	// solve XA=B (X is stored in B)
@@ -1032,7 +1032,7 @@ namespace LinBox
 	template <class Operand>
 	Operand& LQUPMatrix<Field>::right_solve(Operand& B) const
 	{
-		return Protected::FactorizedMatrixRightSolve<Field,Operand>()( _F, *this, B );
+		return Protected::FactorizedMatrixRightSolve<Field,Operand>()( _field, *this, B );
 	}
 
 	// solve LX=B (L from LQUP)
@@ -1040,7 +1040,7 @@ namespace LinBox
 	template <class Operand>
 	Operand& LQUPMatrix<Field>::left_Lsolve(Operand& X, const Operand& B) const
 	{
-		return Protected::FactorizedMatrixLeftLSolve<Field,Operand>()( _F, *this, X, B );
+		return Protected::FactorizedMatrixLeftLSolve<Field,Operand>()( _field, *this, X, B );
 	}
 
 	// solve LX=B (L from LQUP) (X is stored in B)
@@ -1048,7 +1048,7 @@ namespace LinBox
 	template <class Operand>
 	Operand& LQUPMatrix<Field>::left_Lsolve(Operand& B) const
 	{
-		return Protected::FactorizedMatrixLeftLSolve<Field,Operand>()( _F, *this, B );
+		return Protected::FactorizedMatrixLeftLSolve<Field,Operand>()( _field, *this, B );
 	}
 
 	// solve XL=B (L from LQUP)
@@ -1056,7 +1056,7 @@ namespace LinBox
 	template <class Operand>
 	Operand& LQUPMatrix<Field>::right_Lsolve(Operand& X, const Operand& B) const
 	{
-		return Protected::FactorizedMatrixRightLSolve<Field,Operand>()( _F, *this, X, B );
+		return Protected::FactorizedMatrixRightLSolve<Field,Operand>()( _field, *this, X, B );
 	}
 
 	// solve XL=B (L from LQUP) (X is stored in B)
@@ -1064,7 +1064,7 @@ namespace LinBox
 	template <class Operand>
 	Operand& LQUPMatrix<Field>::right_Lsolve(Operand& B) const
 	{
-		return Protected::FactorizedMatrixRightLSolve<Field,Operand>()( _F, *this, B );
+		return Protected::FactorizedMatrixRightLSolve<Field,Operand>()( _field, *this, B );
 	}
 
 	// solve UX=B (U from LQUP is r by r)
@@ -1072,7 +1072,7 @@ namespace LinBox
 	template <class Operand>
 	Operand& LQUPMatrix<Field>::left_Usolve(Operand& X, const Operand& B) const
 	{
-		return Protected::FactorizedMatrixLeftUSolve<Field,Operand>()( _F, *this, X, B );
+		return Protected::FactorizedMatrixLeftUSolve<Field,Operand>()( _field, *this, X, B );
 	}
 
 	// solve UX=B (U from LQUP) (X is stored in B)
@@ -1080,7 +1080,7 @@ namespace LinBox
 	template <class Operand>
 	Operand& LQUPMatrix<Field>::rleft_Usolve(Operand& B) const
 	{
-		return Protected::FactorizedMatrixLeftUSolve<Field,Operand>()( _F, *this, B );
+		return Protected::FactorizedMatrixLeftUSolve<Field,Operand>()( _field, *this, B );
 	}
 
 	// solve XU=B (U from LQUP)
@@ -1088,7 +1088,7 @@ namespace LinBox
 	template <class Operand>
 	Operand& LQUPMatrix<Field>::right_Usolve(Operand& X, const Operand& B) const
 	{
-		return Protected::FactorizedMatrixRightUSolve<Field,Operand>()( _F, *this, X, B );
+		return Protected::FactorizedMatrixRightUSolve<Field,Operand>()( _field, *this, X, B );
 	}
 
 	// solve XU=B (U from LQUP) (X is stored in B)
@@ -1096,7 +1096,7 @@ namespace LinBox
 	template <class Operand>
 	Operand& LQUPMatrix<Field>::right_Usolve(Operand& B) const
 	{
-		return Protected::FactorizedMatrixRightUSolve<Field,Operand>()( _F, *this, B );
+		return Protected::FactorizedMatrixRightUSolve<Field,Operand>()( _field, *this, B );
 	}
 
 

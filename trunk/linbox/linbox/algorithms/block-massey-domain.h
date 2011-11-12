@@ -80,7 +80,7 @@ namespace LinBox
 
 	private:
 		Sequence                          *_container;
-		Field                                      _F;
+		Field                                      _field;
 		BlasMatrixDomain<Field>                  _BMD;
 		MatrixDomain<Field>                       _MD;
 		unsigned long            EARLY_TERM_THRESHOLD;
@@ -164,8 +164,8 @@ namespace LinBox
 
 
 		BlockMasseyDomain (const BlockMasseyDomain<Field, Sequence> &Mat, unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) :
-			_container(Mat._container), _F(Mat._F), _BMD(Mat._F),
-			_MD(Mat._F),  EARLY_TERM_THRESHOLD (ett_default)
+			_container(Mat._container), _field(Mat._field), _BMD(Mat._field),
+			_MD(Mat._field),  EARLY_TERM_THRESHOLD (ett_default)
 		{
 #ifdef _BM_TIMING
 			clearTimer();
@@ -173,7 +173,7 @@ namespace LinBox
 		}
 
 		BlockMasseyDomain (Sequence *D, unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) :
-			_container(D), _F(D->getField ()), _BMD(D->getField ()), _MD(D->getField ()), EARLY_TERM_THRESHOLD (ett_default)
+			_container(D), _field(D->getField ()), _BMD(D->getField ()), _MD(D->getField ()), EARLY_TERM_THRESHOLD (ett_default)
 		{
 #ifdef _BM_TIMING
 			clearTimer();
@@ -183,7 +183,7 @@ namespace LinBox
 
 		// field of the domain
 		const Field &getField    () const
-		{ return _F; }
+		{ return _field; }
 
 		// sequence of the domain
 		Sequence *getSequence () const
@@ -268,9 +268,9 @@ namespace LinBox
 			Coefficient Unit(m+n,m);
 			const Coefficient Zero(m+n,m);
 			Element one,zero,mOne;
-			_F.init(one,1L);
-			_F.init(zero,0L);
-			_F.init(mOne,-1L);
+			_field.init(one,1L);
+			_field.init(zero,0L);
+			_field.init(mOne,-1L);
 			for (size_t i=0;i<m;i++)
 				Unit.setEntry(i,i,one);
 			size_t min_mn=(m <n)? m :n;
@@ -346,7 +346,7 @@ namespace LinBox
 
 				typename Coefficient::Iterator _iter_Discr = Discr.Begin();
 
-				while ((_F.isZero(*_iter_Discr) && _iter_Discr != Discr.End()))
+				while ((_field.isZero(*_iter_Discr) && _iter_Discr != Discr.End()))
 					++_iter_Discr;
 
 				// maybe there is something to do here
@@ -400,7 +400,7 @@ namespace LinBox
 
 #ifdef __CHECK_DISCREPANCY
 				report<<"Discrepancy"<<NN<<":=Matrix(";
-				Discrepancy.write(report,_F,true)<<");"<<std::endl;
+				Discrepancy.write(report,_field,true)<<");"<<std::endl;
 #endif
 
 
@@ -410,7 +410,7 @@ namespace LinBox
 				CopyDiscr=Discrepancy;
 				BlasPermutation<size_t> Pp (CopyDiscr.coldim());
 				BlasPermutation<size_t> Qt (CopyDiscr.rowdim());
-				LQUPMatrix<Field> LQUP(_F, CopyDiscr,Pp,Qt);
+				LQUPMatrix<Field> LQUP(_field, CopyDiscr,Pp,Qt);
 
 #ifdef _BM_TIMING
 				tLQUP.stop();
@@ -418,7 +418,7 @@ namespace LinBox
 
 #endif
 				// Get the matrix L of LQUP decomposition
-				TriangularBlasMatrix<Field> L(_F,m+n,m+n, LinBoxTag::Lower, LinBoxTag::Unit );
+				TriangularBlasMatrix<Field> L(_field,m+n,m+n, LinBoxTag::Lower, LinBoxTag::Unit );
 				LQUP.getL(L);
 
 				// Get the tranposed  permutation of Q from LQUP
@@ -444,8 +444,8 @@ namespace LinBox
 				tInverseL.start();
 #endif
 				// compute the inverse of L
-				TriangularBlasMatrix<Field> invL (_F,m+n,m+n, LinBoxTag::Lower,LinBoxTag::Unit);
-				FFPACK::trinv_left(_F,m+n,L.getPointer(),L.getStride(),invL.getWritePointer(),invL.getStride());
+				TriangularBlasMatrix<Field> invL (_field,m+n,m+n, LinBoxTag::Lower,LinBoxTag::Unit);
+				FFPACK::trinv_left(_field,m+n,L.getPointer(),L.getStride(),invL.getWritePointer(),invL.getStride());
 
 #ifdef _BM_TIMING
 				tInverseL.stop();
@@ -454,7 +454,7 @@ namespace LinBox
 
 #ifdef 	__CHECK_TRANSFORMATION
 				report<<"invL"<<N<<":=Matrix(";
-				invL.write(report,_F,true)<<");"<<std::endl;
+				invL.write(report,_field,true)<<");"<<std::endl;
 
 #endif
 				// SigmaBase =  BPerm2.Qt. L^(-1) . BPerm1 . SigmaBase
@@ -539,13 +539,13 @@ namespace LinBox
 							// report << &x << " " << x << " &x and x" << std::endl;
 							// x = SigmaBase[i].getEntry(m+j,k);
 							// report << x << " new x" << std::endl;
-							_F.assign(SigmaBase[i+1].refEntry(m+j,k), SigmaBase[i].getEntry(m+j,k));
+							_field.assign(SigmaBase[i+1].refEntry(m+j,k), SigmaBase[i].getEntry(m+j,k));
 
 						}
 
 				for (size_t j=0;j<n;j++)
 					for (size_t k=0;k<n;++k)
-						_F.assign(SigmaBase[0].refEntry(m+j,k),zero);
+						_field.assign(SigmaBase[0].refEntry(m+j,k),zero);
 
 
 #ifdef _BM_TIMING
@@ -556,7 +556,7 @@ namespace LinBox
 
 #ifdef __DEBUG_MAPLE
 				report<<"\n\nSigmaBase"<<NN<<":= ";
-				write_maple(_F,SigmaBase);
+				write_maple(_field,SigmaBase);
 
 				report<<"order"<<NN<<":=<";
 				for (size_t i=0;i<m+n;++i){
@@ -583,7 +583,7 @@ namespace LinBox
 					_BMD.mul(Disc,SigmaBase[0],S[i]);
 					for (size_t j=1;j<min_t -1;++j)
 						_BMD.axpyin(Disc,SigmaBase[j],S[i-j]);
-					Disc.write(report,_F)<<std::endl;
+					Disc.write(report,_field)<<std::endl;
 				}
 #endif
 
@@ -618,7 +618,7 @@ namespace LinBox
 
 #ifdef __PRINT_SEQUENCE
 			report<<"\n\nSequence:= ";
-			write_maple(_F,S);
+			write_maple(_field,S);
 #endif
 
 
@@ -629,7 +629,7 @@ namespace LinBox
 				Coefficient res(m+n,n);
 				for (size_t k=0;k<SigmaBase.size();++k)
 					_BMD.axpyin(res,SigmaBase[k],S[i-k]);
-				res.write(report,_F)<<std::endl;
+				res.write(report,_field)<<std::endl;
 			}
 
 #endif
@@ -655,7 +655,7 @@ namespace LinBox
 			for (size_t i=0;i<m;i++)
 				for (long j=0;j<=degree[i];j++)
 					for (size_t k=0;k<m;k++)
-						_F.assign(P[degree[i]-j].refEntry(i,k), SigmaBase[j].getEntry(i,k));
+						_field.assign(P[degree[i]-j].refEntry(i,k), SigmaBase[j].getEntry(i,k));
 #ifdef _BM_TIMING
 			tGetMinPoly.stop();
 			ttGetMinPoly +=tGetMinPoly;
@@ -671,9 +671,9 @@ namespace LinBox
 				for (size_t k=1,j=i+1;k<P.size();++k,++j)
 					_BMD.axpyin(res,P[k],S[j]);
 				for (size_t j=0;j<m*n;++j)
-					if (!_F.isZero(*(res.getPointer()+j)))
+					if (!_field.isZero(*(res.getPointer()+j)))
 						valid= false;
-				//res.write(report,_F)<<std::endl;
+				//res.write(report,_field)<<std::endl;
 			}
 			if (valid)
 				report<<"minpoly is correct\n";
@@ -683,11 +683,11 @@ namespace LinBox
 
 #ifdef __PRINT_MINPOLY
 			report<<"MinPoly:=";
-			write_maple(_F,P);
+			write_maple(_field,P);
 #if 0
 			Coefficient Mat(*_container->getBB());
 			report<<"A:=Matrix(";
-			Mat.write(report,_F,true);
+			Mat.write(report,_field,true);
 #endif
 #endif
 
@@ -720,7 +720,7 @@ namespace LinBox
 
 			// Set some useful constant
 			Element one;
-			_F.init(one,1UL);
+			_field.init(one,1UL);
 			const Coefficient Zero(2*m,2*m);
 
 			// Make the Power Serie from  Sequence (U.A^i.V) and Identity
@@ -738,7 +738,7 @@ namespace LinBox
 				PowerSerie[0].setEntry(m+j, j, one);
 #ifdef __PRINT_SEQUENCE
 			report<<"PowerSerie:=";
-			write_maple(_F,PowerSerie);
+			write_maple(_field,PowerSerie);
 #endif
 
 
@@ -751,7 +751,7 @@ namespace LinBox
 			std::vector<Coefficient> SigmaBase(length,Zero);
 
 			// Compute Sigma Base up to the order length - 1
-			SigmaBasis<Field> SB(_F, PowerSerie);
+			SigmaBasis<Field> SB(_field, PowerSerie);
 			SB.left_basis(SigmaBase, length-1, defect);
 
 			// take the m rows which have lowest defect
@@ -775,7 +775,7 @@ namespace LinBox
 
 #if 0
 			report<<"SigmaBase:=";
-			write_maple(_F,SigmaBase);
+			write_maple(_field,SigmaBase);
 #endif
 			// Compute the reverse polynomial of SigmaBase according to defect of each row
 			size_t max=defect[0];
@@ -790,7 +790,7 @@ namespace LinBox
 			for (size_t i=0;i<m;i++)
 				for (size_t j=0;j<=defect[i];j++)
 					for (size_t k=0;k<m;k++)
-						_F.assign(P[defect[i]-j].refEntry(i,k), SigmaBase[j].getEntry(i,k));
+						_field.assign(P[defect[i]-j].refEntry(i,k), SigmaBase[j].getEntry(i,k));
 
 #ifdef __CHECK_RESULT
 			report<<"Check minimal polynomial application\n";
@@ -809,9 +809,9 @@ namespace LinBox
 					_BMD.axpyin(res,P[k],Powerview);
 				}
 				for (size_t j=0;j<m*n;++j)
-					if (!_F.isZero(*(res.getPointer()+j)))
+					if (!_field.isZero(*(res.getPointer()+j)))
 						valid= false;
-				//res.write(report,_F)<<std::endl;
+				//res.write(report,_field)<<std::endl;
 			}
 			if (valid)
 				report<<"minpoly is correct\n";
@@ -821,10 +821,10 @@ namespace LinBox
 
 #ifdef __PRINT_MINPOLY
 			report<<"MinPoly:=";
-			write_maple(_F,P);
+			write_maple(_field,P);
 			//Coefficient Mat(*_container->getBB());
 			//report<<"A:=Matrix(";
-			//Mat.write(report,_F,true);
+			//Mat.write(report,_field,true);
 #endif
 			std::vector<size_t> degree(m);
 			for (size_t i=0;i<m;++i)

@@ -84,11 +84,11 @@ namespace LinBox
 		typedef std::vector<Element>         Vector;
 
 		BlasApply(const Domain& D) :
-			_D(D), _MD(D)
+			_domain(D), _MD(D)
 		{
-			_D.characteristic(_prime);
-			_D.init(_one,1UL);
-			_D.init(_zero,0UL);
+			_domain.characteristic(_prime);
+			_domain.init(_one,1UL);
+			_domain.init(_zero,0UL);
 		}
 
 
@@ -100,7 +100,7 @@ namespace LinBox
 
 			if (( _prime > 0) && ( _prime <  67108863)) {
 
-				FFLAS::fgemv( _D, FFLAS::FflasNoTrans,
+				FFLAS::fgemv( _domain, FFLAS::FflasNoTrans,
 					      A.rowdim(), A.coldim(),
 					      _one,
 					      A.getPointer(), A.getStride(),
@@ -121,7 +121,7 @@ namespace LinBox
 
 			if (( _prime > 0) && ( _prime <  67108863)) {
 
-				FFLAS::fgemv( _D, FFLAS::FflasTrans,
+				FFLAS::fgemv( _domain, FFLAS::FflasTrans,
 					      A.rowdim(), A.coldim(),
 					      _one,
 					      A.getPointer(), A.getStride(),
@@ -150,13 +150,13 @@ namespace LinBox
 
 			for (size_t i=0;i<m;++i)
 				for (size_t j=0;j<n;++j)
-					_D.convert(*(At_dbl+i+j*m), A.refEntry(i,j));
+					_domain.convert(*(At_dbl+i+j*m), A.refEntry(i,j));
 
 			integer tmp;
 			bool use_neg=false;
 			size_t maxword=0;
 			for (size_t i=0;i<n;++i){
-				_D.convert(tmp,x[i]);
+				_domain.convert(tmp,x[i]);
 				if (tmp <0)
 					use_neg = true;
 				if ( maxword < tmp.size())
@@ -169,7 +169,7 @@ namespace LinBox
 			memset(xdbl, 0, sizeof(double)*n*maxword);
 
 			for (size_t i=0;i<n;++i){
-				_D.convert(tmp,x[i]);
+				_domain.convert(tmp,x[i]);
 				double * ptr= xdbl+i;
 				if (tmp == 0)
 					*ptr=0;
@@ -244,7 +244,7 @@ namespace LinBox
 				importWords(tmp2, rclen, -1, 1, 0, 0, combined2+i*rclen);
 				result += tmp2;
 
-				_D.init(y[i], result);
+				_domain.init(y[i], result);
 			}
 			delete[] ydbl;
 			delete[] combined1;
@@ -255,7 +255,7 @@ namespace LinBox
 
 
 	private:
-		Domain         _D;
+		Domain         _domain;
 		integer    _prime;
 		Element _one,_zero;
 		MatrixDomain<Domain> _MD;
@@ -272,22 +272,22 @@ namespace LinBox
 		typedef std::vector<Element>         Vector;
 
 		MatrixApplyDomain(const Domain& D, const IMatrix &Mat) :
-			_D(D), _M(Mat)
+			_domain(D), _matM(Mat)
 		{}
 
 		void setup(LinBox::integer prime){}
 
 		Vector& applyV(Vector& y, Vector& x, Vector& z) const
 		{
-			return _M.apply(y,x);
+			return _matM.apply(y,x);
 		}
 
 		Vector& applyVTrans(Vector& y, Vector& x, Vector&z) const
-		{return _M.applyTranspose(y,x);}
+		{return _matM.applyTranspose(y,x);}
 
 	private:
-		Domain          _D;
-		const IMatrix  &_M;
+		Domain          _domain;
+		const IMatrix  &_matM;
 	};
 
 
@@ -324,7 +324,7 @@ namespace LinBox
 
 
 		BlasMatrixApplyDomain(const Domain& D, const IMatrix &Mat) :
-			_D(D), _M(Mat), _MD(D), _m(Mat.rowdim()), _n(Mat.coldim())
+			_domain(D), _matM(Mat), _MD(D), _m(Mat.rowdim()), _n(Mat.coldim())
 		{
 			_switcher= Classic;_rns=NULL;
 		}
@@ -343,7 +343,7 @@ namespace LinBox
 		ApplyChoice  setup(LinBox::integer prime)
 		{ //setup
 
-			_D.init(_prime,prime);
+			_domain.init(_prime,prime);
 			_apply.clear();
 			_convert_data.clear();
 			_convert_result.clear();
@@ -355,9 +355,9 @@ namespace LinBox
 			LinBox::integer tmp=0, maxValue=0;
 			size_t maxBitSize = 0;
 			use_neg = false;
-			typename Matrix::ConstIterator it = _M.Begin();
+			typename Matrix::ConstIterator it = _matM.Begin();
 			for (size_t i=0; i<_m*_n; i++, ++it) {
-				_D.convert(tmp, *it);
+				_domain.convert(tmp, *it);
 				if (tmp <0) {
 					use_neg = 1;
 					tmp=-tmp;
@@ -418,7 +418,7 @@ namespace LinBox
 					maxBitSize+=1;
 				}
 				// compute the number of chunk
-				if (maxValue*prime*_M.coldim() < integer("9007199254740992")){
+				if (maxValue*prime*_matM.coldim() < integer("9007199254740992")){
 					num_chunks=1;
 					use_neg=false;
 				}
@@ -434,7 +434,7 @@ namespace LinBox
 
 				shift= use_neg? maxValue : integer(0);
 
-				create_MatrixQadic(_D, _M, chunks, num_chunks, shift);
+				create_MatrixQadic(_domain, _matM, chunks, num_chunks, shift);
 
 #ifdef DEBUG_CHUNK_SETUP
 				std::cout<<std::endl;
@@ -460,7 +460,7 @@ namespace LinBox
 				// convert integer matrix to double matrix
 				chunks  = new double[_m*_n];
 				memset(chunks, 0, sizeof(double)*_m*_n);
-				create_MatrixQadic (_D, _M, chunks, 1);
+				create_MatrixQadic (_domain, _matM, chunks, 1);
 
 				// if the matrix has negative entries
 				if (use_neg){
@@ -495,7 +495,7 @@ namespace LinBox
 				// convert integer matrix to rns double matrix
 				chunks  = new double[_m*_n*_rns->size()];
 				memset(chunks, 0, sizeof(double)*_m*_n*_rns->size());
-				create_MatrixRNS(*_rns, _D, _M, chunks);
+				create_MatrixRNS(*_rns, _domain, _matM, chunks);
 
 				// allocate memory for the rns vector
 				vchunks = new double[_n*_rns->size()];
@@ -503,12 +503,12 @@ namespace LinBox
 				// prepare special CRT
 				Element g, s, q, zero,one,two;
 				_q= _rns->getCRTmodulo();
-				_D.init(q,_q);_D.init(zero,0UL);_D.init(one,1UL);_D.init(two,2UL);
-				_D.xgcd(g, _inv_q, s, q, _prime);
-				if (_D.compare(_inv_q, zero)<0 ) _D.addin(_inv_q,_prime);
-				_D.mul(_pq,_prime,q);
-				_D.sub(_h_pq,_pq, one);
-				_D.divin(_h_pq, two);
+				_domain.init(q,_q);_domain.init(zero,0UL);_domain.init(one,1UL);_domain.init(two,2UL);
+				_domain.xgcd(g, _inv_q, s, q, _prime);
+				if (_domain.compare(_inv_q, zero)<0 ) _domain.addin(_inv_q,_prime);
+				_domain.mul(_pq,_prime,q);
+				_domain.sub(_h_pq,_pq, one);
+				_domain.divin(_h_pq, two);
 
 				break;
 
@@ -517,7 +517,7 @@ namespace LinBox
 #endif
 #ifdef DEBUG_CHUNK_APPLY
 			std::cout<<"A: \n";
-			_M.write(std::cout);
+			_matM.write(std::cout);
 #endif
 
 			return _switcher;
@@ -540,19 +540,19 @@ namespace LinBox
 			switch(_switcher) {//switch
 
 			case Classic:
-				_MD.vectorMul (y, _M, x);
+				_MD.vectorMul (y, _matM, x);
 				break;
 
 			case MatrixQadic:
 				{// mqadic
 #if 0
 					temp fix
-					_MD.vectorMul (y, _M, x);
+					_MD.vectorMul (y, _matM, x);
 					break;
 #endif
 					double* dx = new double[_n];
 					for (size_t i=0; i<_n; i++) {
-						_D.convert(dx[i], x[i]);
+						_domain.convert(dx[i], x[i]);
 					}
 					if (num_chunks == 1) {
 						double *ctd = new double[_m];
@@ -560,7 +560,7 @@ namespace LinBox
 							    1,  chunks, (int) _n, dx, 1, 0,  ctd, 1);
 
 						for (size_t i=0;i<_n;++i)
-							_D.init(y[i],ctd[i]);
+							_domain.init(y[i],ctd[i]);
 						delete[] ctd;
 						delete[] dx;
 					}
@@ -640,18 +640,18 @@ namespace LinBox
 								importWords(tmp, rclen, -1, 1, 0, 0, thispos);
 								result += tmp;
 							}
-							_D.init(y[i], result);
+							_domain.init(y[i], result);
 						}
 						// shift back the result
 						if (use_neg) {
 							Element acc;
-							_D.init(acc,0);
+							_domain.init(acc,0);
 							for (size_t i=0;i<x.size();++i)
-								_D.addin(acc,x[i]);
-							_D.mulin(acc,shift);
+								_domain.addin(acc,x[i]);
+							_domain.mulin(acc,shift);
 
 							for (size_t i=0;i<y.size();++i)
-								_D.subin(y[i], acc);
+								_domain.subin(y[i], acc);
 						}
 						delete[] combined;
 						delete[] ctd;
@@ -682,9 +682,9 @@ namespace LinBox
 
 					double *ctd= new double[_m*num_chunks];
 					if (chunk_size >=32)
-						create_VectorQadic_32 (_D, x, vchunks, num_chunks);
+						create_VectorQadic_32 (_domain, x, vchunks, num_chunks);
 					else
-						create_VectorQadic (_D, x, vchunks, num_chunks);
+						create_VectorQadic (_domain, x, vchunks, num_chunks);
 #ifdef TIMING_APPLY
 					chrono.stop();
 					_convert_data+=chrono;
@@ -738,19 +738,19 @@ namespace LinBox
 							importWords(val, rclen, -1, 1, 0, 0, combined);
 							result+=val;
 						}
-						_D.init(y[i], result);
+						_domain.init(y[i], result);
 					}
 
 					// shift back the result
 					if (use_neg) {
 						Element acc;
-						_D.init(acc,0);
+						_domain.init(acc,0);
 						for (size_t i=0;i<x.size();++i)
-							_D.addin(acc,x[i]);
-						_D.mulin(acc,shift);
+							_domain.addin(acc,x[i]);
+						_domain.mulin(acc,shift);
 
 						for (size_t i=0;i<y.size();++i)
-							_D.subin(y[i], acc);
+							_domain.subin(y[i], acc);
 					}
 
 					delete[] combined;
@@ -780,7 +780,7 @@ namespace LinBox
 					//memset(vchunks, 0, sizeof(double)*_n*rns_size);
 
 					// create rns vector
-					create_VectorRNS (*_rns, _D, x, vchunks);
+					create_VectorRNS (*_rns, _domain, x, vchunks);
 
 					// allocate memory for the result
 					double *ctd= new double[_m*rns_size];
@@ -835,7 +835,7 @@ namespace LinBox
 						for (size_t i=0;i<rns_size;++i)
 							_rns->getBase(i).init(tmp[i], ctd[j+i*_m]);
 						_rns->convert(res, tmp);
-						_D.init(y[j], res);
+						_domain.init(y[j], res);
 						//if (y[j] > hmod) y[j]-=mod;
 					}
 					delete[] ctd;
@@ -855,11 +855,11 @@ namespace LinBox
 					Element y_cur, b_cur;
 					// finish crt according to b
 					for (size_t i=0;i<_m;++i){
-						_D.rem(b_cur, b[i], _prime);
-						_D.sub(y_cur, b_cur, y[i]);//std::cout<<"(b-y): "<<y_cur<<std::endl;
-						_D.mulin(y_cur, _inv_q);//std::cout<<"((b-y)/q): "<<y_cur<<std::endl;
-						_D.remin(y_cur, _prime);//std::cout<<"((b-y)/q mod p): "<<y_cur<<std::endl;
-						_D.axpyin(y[i],_q, y_cur);//std::cout<<"y+p((b-y)/q mod p): "<<y[i]<<std::endl;
+						_domain.rem(b_cur, b[i], _prime);
+						_domain.sub(y_cur, b_cur, y[i]);//std::cout<<"(b-y): "<<y_cur<<std::endl;
+						_domain.mulin(y_cur, _inv_q);//std::cout<<"((b-y)/q): "<<y_cur<<std::endl;
+						_domain.remin(y_cur, _prime);//std::cout<<"((b-y)/q mod p): "<<y_cur<<std::endl;
+						_domain.axpyin(y[i],_q, y_cur);//std::cout<<"y+p((b-y)/q mod p): "<<y[i]<<std::endl;
 						if ( y[i] > _h_pq) y[i]-=_pq;
 					}
 					/*
@@ -891,7 +891,7 @@ namespace LinBox
 
 		Vector& applyVTrans(Vector& y, Vector& x) const
 		{
-			TransposeMatrix<IMatrix> B(_M);
+			TransposeMatrix<IMatrix> B(_matM);
 			return _MD.vectorMul (y, B, x);
 		}
 
@@ -904,18 +904,18 @@ namespace LinBox
 			linbox_check( Y.coldim() == X.coldim());
 
 			if (!use_chunks){
-				_MD.mul (Y, _M, X);
+				_MD.mul (Y, _matM, X);
 			}
 			else{
 				size_t _k= X.coldim();
 				double* dX = new double[_n*_k];
 				for (size_t i=0; i<_n; i++)
 					for(size_t j=0;j<_k;++j)
-						_D.convert(dX[i*_k+j], X.getEntry(i,j));
+						_domain.convert(dX[i*_k+j], X.getEntry(i,j));
 
 #ifdef DEBUG_CHUNK_APPLYM
 				cout << "X: ";
-				X.write(cout,_D);
+				X.write(cout,_domain);
 				cout << endl;
 #endif
 
@@ -928,7 +928,7 @@ namespace LinBox
 
 					for (size_t i=0;i<_m;++i)
 						for (size_t j=0;j<_k;++j)
-							_D.init(Y.refEntry(i,j),ctd[i*_k+j]);
+							_domain.init(Y.refEntry(i,j),ctd[i*_k+j]);
 					delete[] ctd;
 					delete[] dX;
 				}
@@ -1002,7 +1002,7 @@ namespace LinBox
 						cout << "v2[" << i << "]:" << result  << endl;
 #endif
 
-						_D.init(*(Y.getWritePointer()+i), result);
+						_domain.init(*(Y.getWritePointer()+i), result);
 					}
 					delete[] combined;
 					delete[] ctd;
@@ -1014,8 +1014,8 @@ namespace LinBox
 
 
 	protected:
-		Domain                             _D;
-		const IMatrix                     &_M;
+		Domain                             _domain;
+		const IMatrix                     &_matM;
 		MatrixDomain<Domain>              _MD;
 		size_t                             _m;
 		size_t                             _n;

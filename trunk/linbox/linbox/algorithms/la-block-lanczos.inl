@@ -140,7 +140,7 @@ namespace LinBox
 		_VD.copy (*(_v0.colBegin ()), b);
 
 		// Fill the remaining columns of _v0 with random data
-		RandomDenseStream<Field, typename Matrix::Col> stream (_F, _randiter, A.coldim ());
+		RandomDenseStream<Field, typename Matrix::Col> stream (_field, _randiter, A.coldim ());
 		typename Matrix::ColIterator iter = _v0.colBegin ();
 
 		for (++iter; iter != _v0.colEnd (); ++iter)
@@ -217,7 +217,7 @@ namespace LinBox
 		_Av.resize (A.coldim (), _traits.blockingFactor ());
 
 		// Fill y with random data
-		RandomDenseStream<Field, typename Matrix::Col> stream (_F, _randiter, A.coldim ());
+		RandomDenseStream<Field, typename Matrix::Col> stream (_field, _randiter, A.coldim ());
 		typename Matrix::ColIterator iter;
 
 		for (iter = _y.colBegin (); iter != _y.colEnd (); ++iter)
@@ -288,7 +288,7 @@ namespace LinBox
 		_Av.resize (A.coldim (), _traits.blockingFactor ());
 
 		// Fill v0 with random data
-		RandomDenseStream<Field, typename Matrix::Col> stream (_F, _randiter, A.coldim ());
+		RandomDenseStream<Field, typename Matrix::Col> stream (_field, _randiter, A.coldim ());
 		typename Matrix::ColIterator iter;
 
 		for (iter = _y.colBegin (); iter != _y.colEnd (); ++iter)
@@ -339,7 +339,7 @@ namespace LinBox
 
 		unsigned int dead_iters = 0;
 		Integer c;
-		_F.characteristic (c);
+		_field.characteristic (c);
 		double logc = log (double (c));
 		unsigned int max_dead_iters = (unsigned int) ceil (3 * log (double (A.rowdim ())) / (N * logc)) + 2;
 
@@ -376,8 +376,8 @@ namespace LinBox
 		// Prepare the first iterate
 		next_iterate = getNextIterate (0);
 
-		// Get a random fat vectors _V[0] and _U[0]
-		RandomDenseStream<Field, typename Matrix::Col> stream (_F, _randiter, A.coldim ());
+		// Get a random fat vectors _blockV[0] and _blockU[0]
+		RandomDenseStream<Field, typename Matrix::Col> stream (_field, _randiter, A.coldim ());
 		typename Matrix::ColIterator u_iter;
 
 		for (u_iter = next_iterate->_u.colBegin (); u_iter != next_iterate->_u.colEnd (); ++u_iter)
@@ -639,7 +639,7 @@ namespace LinBox
 			i->_sigma_v.apply (_T1, false);
 
 			BlasMatrix<Field> uhatAvhat (_T1, (*l)->_rho_u, i->_rho_v, N - (*l)->_rho_u, N - i->_rho_v);
-			BlasMatrix<Field> uhatAvhatinv (_W, 0, 0, N - (*l)->_rho_u, N - (*l)->_rho_u);
+			BlasMatrix<Field> uhatAvhatinv (_matW, 0, 0, N - (*l)->_rho_u, N - (*l)->_rho_u);
 
 #ifdef LABL_DETAILED_TRACE
 			reportN << "ucheck_" << (*l)->_iter << "^TAvcheck_" << i->_iter << ":" << std::endl;
@@ -649,7 +649,7 @@ namespace LinBox
 			_MD.write (reportN, uhatAvhat);
 #endif
 
-			_eliminator.gaussJordan (uhatAvhatinv, _profile, _myPerm, _T2, _Q, _T3, rho_u, d, uhatAvhat);
+			_eliminator.gaussJordan (uhatAvhatinv, _profile, _permP, _T2, _permQ, _T3, rho_u, d, uhatAvhat);
 
 			BlasMatrix<Field> mu (uhatAvhatinv, 0, 0, rho_u, rho_u);
 			BlasMatrix<Field> Tu (_T2, rho_u, 0, N - (*l)->_rho_u - rho_u, rho_u);
@@ -657,10 +657,10 @@ namespace LinBox
 
 			TransposeMatrix<BlasMatrix<Field> > TuT (Tu);
 
-			(*l)->_sigma_u.append (_myPerm, TuT, rho_u);
+			(*l)->_sigma_u.append (_permP, TuT, rho_u);
 			(*l)->_sigma_u.applyLast ((*l)->_u, false);
 
-			i->_sigma_v.append (_Q, Tv, rho_u);
+			i->_sigma_v.append (_permQ, Tv, rho_u);
 			i->_sigma_v.applyLast (i->_v, false);
 
 			BlasMatrix<Field> utildel ((*l)->_u, 0, (*l)->_rho_u, (*l)->_u.rowdim (), rho_u);
@@ -771,9 +771,9 @@ namespace LinBox
 			_MD.write (reportN, uhatAvhat);
 #endif
 
-			BlasMatrix<Field> uhatAvhatinvT (_W, 0, 0, N - (*l)->_rho_v, N - (*l)->_rho_v);
+			BlasMatrix<Field> uhatAvhatinvT (_matW, 0, 0, N - (*l)->_rho_v, N - (*l)->_rho_v);
 
-			_eliminator.gaussJordan (uhatAvhatinvT, _profile, _myPerm, _T2, _Q, _T3, rho_v, d, transpose (uhatAvhat));
+			_eliminator.gaussJordan (uhatAvhatinvT, _profile, _permP, _T2, _permQ, _T3, rho_v, d, transpose (uhatAvhat));
 
 			BlasMatrix<Field> nu (uhatAvhatinvT, 0, 0, rho_v, rho_v);
 			BlasMatrix<Field> TuT (_T3, 0, rho_v, rho_v, N - i->_rho_u - rho_v);
@@ -781,10 +781,10 @@ namespace LinBox
 
 			TransposeMatrix<BlasMatrix<Field> > Tv (TvT);
 
-			(*l)->_sigma_v.append (_myPerm, Tv, rho_v);
+			(*l)->_sigma_v.append (_permP, Tv, rho_v);
 			(*l)->_sigma_v.applyLast ((*l)->_v, false);
 
-			i->_sigma_u.append (_Q, TuT, rho_v);
+			i->_sigma_u.append (_permQ, TuT, rho_v);
 			i->_sigma_u.applyLast (i->_u, false);
 
 			BlasMatrix<Field> vtildel ((*l)->_v, 0, (*l)->_rho_v, (*l)->_v.rowdim (), rho_v);
@@ -1172,26 +1172,26 @@ namespace LinBox
 	(Matrix1 &M, Permutation &P, Matrix *T, unsigned int rho, unsigned int s, bool left)
 	{
 		if (left) {
-			BlasMatrix<Field> Mcheck (M, s, 0, _N - s, M.coldim ());
+			BlasMatrix<Field> Mcheck (M, s, 0, _number - s, M.coldim ());
 
 			_solver._MD.permuteRows (Mcheck, P.begin (), P.end ());
 
 			BlasMatrix<Field> Mbar (M, s, 0, rho, M.coldim ());
-			BlasMatrix<Field> Mhat (M, s + rho, 0, _N - s - rho, M.coldim ());
+			BlasMatrix<Field> Mhat (M, s + rho, 0, _number - s - rho, M.coldim ());
 
-			BlasMatrix<Field> That (*T, _N - rho, s + rho, rho, _N - s - rho);
+			BlasMatrix<Field> That (*T, _number - rho, s + rho, rho, _number - s - rho);
 
 			_solver._MD.axpyin (Mhat, transpose (That), Mbar);
 		}
 		else {
-			BlasMatrix<Field> Mcheck (M, 0, s, M.rowdim (), _N - s);
+			BlasMatrix<Field> Mcheck (M, 0, s, M.rowdim (), _number - s);
 
 			_solver._MD.permuteColumns (Mcheck, P.begin (), P.end ());
 
 			BlasMatrix<Field> Mbar (M, 0, s, M.rowdim (), rho);
-			BlasMatrix<Field> Mhat (M, 0, s + rho, M.rowdim (), _N - s - rho);
+			BlasMatrix<Field> Mhat (M, 0, s + rho, M.rowdim (), _number - s - rho);
 
-			BlasMatrix<Field> That (*T, _N - rho, s + rho, rho, _N - s - rho);
+			BlasMatrix<Field> That (*T, _number - rho, s + rho, rho, _number - s - rho);
 
 			_solver._MD.axpyin (Mhat, Mbar, That);
 		}
@@ -1201,14 +1201,14 @@ namespace LinBox
 	template <class Matrix1>
 	Matrix1 &LABlockLanczosSolver<Field, Matrix>::BasisTransformation::apply (Matrix1 &M, bool left)
 	{
-		linbox_check (M.coldim () == _N);
+		linbox_check (M.coldim () == _number);
 
-		typename std::vector<Permutation>::iterator Pi = _myPerm.begin ();
-		typename std::vector<Matrix *>::iterator Ti = _T.begin ();
+		typename std::vector<Permutation>::iterator Pi = _permP.begin ();
+		typename std::vector<Matrix *>::iterator Ti = _multiMat.begin ();
 		typename std::vector<unsigned int>::iterator rhoi = _rho.begin ();
 		typename std::vector<unsigned int>::iterator si = _s.begin ();
 
-		while (Ti != _T.end ()) {
+		while (Ti != _multiMat.end ()) {
 			applyOne (M, *Pi, *Ti, *rhoi, *si, left);
 			++Pi; ++Ti; ++rhoi; ++si;
 		}
@@ -1220,20 +1220,20 @@ namespace LinBox
 	template <class Matrix1>
 	Matrix1 &LABlockLanczosSolver<Field, Matrix>::BasisTransformation::applyPermutation (Matrix1 &M, bool left)
 	{
-		linbox_check (M.coldim () == _N);
+		linbox_check (M.coldim () == _number);
 
 		typename std::vector<unsigned int>::iterator si;
 		typename std::vector<Permutation>::iterator Pi;
 
 		if (left) {
-			for (Pi = _myPerm.begin (), si = _s.begin (); Pi != _myPerm.end (); ++Pi, ++si) {
-				BlasMatrix<Field> Mcheck (M, *si, 0, _N - *si, M.coldim ());
+			for (Pi = _permP.begin (), si = _s.begin (); Pi != _permP.end (); ++Pi, ++si) {
+				BlasMatrix<Field> Mcheck (M, *si, 0, _number - *si, M.coldim ());
 				_solver._MD.permuteRows (Mcheck, Pi->begin (), Pi->end ());
 			}
 		}
 		else {
-			for (Pi = _myPerm.begin (), si = _s.begin (); Pi != _myPerm.end (); ++Pi, ++si) {
-				BlasMatrix<Field> Mcheck (M, 0, *si, M.rowdim (), _N - *si);
+			for (Pi = _permP.begin (), si = _s.begin (); Pi != _permP.end (); ++Pi, ++si) {
+				BlasMatrix<Field> Mcheck (M, 0, *si, M.rowdim (), _number - *si);
 				_solver._MD.permuteColumns (Mcheck, Pi->begin (), Pi->end ());
 			}
 		}
@@ -1245,9 +1245,9 @@ namespace LinBox
 	template <class Matrix1>
 	Matrix1 &LABlockLanczosSolver<Field, Matrix>::BasisTransformation::applyLast (Matrix1 &M, bool left)
 	{
-		linbox_check (M.coldim () == _N);
+		linbox_check (M.coldim () == _number);
 
-		applyOne (M, _myPerm.back (), _T.back (), _rho.back (), _s.back (), left);
+		applyOne (M, _permP.back (), _multiMat.back (), _rho.back (), _s.back (), left);
 		return M;
 	}
 
@@ -1258,30 +1258,30 @@ namespace LinBox
 	 Matrix1      &T,
 	 unsigned int  rho)
 	{
-		linbox_check (T.rowdim () <= _N);
-		linbox_check (T.coldim () <= _N);
-		linbox_check (rho + T.coldim () <= _N);
+		linbox_check (T.rowdim () <= _number);
+		linbox_check (T.coldim () <= _number);
+		linbox_check (rho + T.coldim () <= _number);
 
 		Matrix *Tnew = _solver.newBlock ();
 		_solver._MD.subin (*Tnew, *Tnew);
 
-		BlasMatrix<Field> Tnewhat (*Tnew, _N - T.rowdim (), _N - T.coldim (), T.rowdim (), T.coldim ());
+		BlasMatrix<Field> Tnewhat (*Tnew, _number - T.rowdim (), _number - T.coldim (), T.rowdim (), T.coldim ());
 		_solver._MD.copy (Tnewhat, T);
 
-		_myPerm.push_back (Permutation (P));
-		_T.push_back (Tnew);
+		_permP.push_back (Permutation (P));
+		_multiMat.push_back (Tnew);
 		_rho.push_back (rho);
-		_s.push_back (_N - rho -  (unsigned int) T.coldim ());
+		_s.push_back (_number - rho -  (unsigned int) T.coldim ());
 	}
 
 	template <class Field, class Matrix>
 	void LABlockLanczosSolver<Field, Matrix>::BasisTransformation::reset ()
 	{
-		for (typename std::vector<Matrix *>::iterator i = _T.begin (); i != _T.end (); ++i)
+		for (typename std::vector<Matrix *>::iterator i = _multiMat.begin (); i != _multiMat.end (); ++i)
 			_solver._ip_trashcan.push (*i);
 
-		_myPerm.clear ();
-		_T.clear ();
+		_permP.clear ();
+		_multiMat.clear ();
 		_rho.clear ();
 		_s.clear ();
 	}
@@ -1292,11 +1292,11 @@ namespace LinBox
 		typename Matrix::RowIterator i;
 		unsigned int idx;
 
-		Matrix T (_N, _N);
+		Matrix T (_number, _number);
 
 		for (i = T.rowBegin (), idx = 0; i != T.rowEnd (); ++i, ++idx) {
 			_solver._VD.subin (*i, *i);
-			_solver._F.assign ((*i)[idx], _solver._one);
+			_solver._field.assign ((*i)[idx], _solver._one);
 		}
 
 		apply (T, false);
@@ -1307,12 +1307,12 @@ namespace LinBox
 	template <class Field, class Matrix>
 	void LABlockLanczosSolver<Field, Matrix>::BasisTransformation::reportComplete (std::ostream &out)
 	{
-		typename std::vector<Permutation>::iterator Pi = _myPerm.begin ();
-		typename std::vector<Matrix *>::iterator Ti = _T.begin ();
+		typename std::vector<Permutation>::iterator Pi = _permP.begin ();
+		typename std::vector<Matrix *>::iterator Ti = _multiMat.begin ();
 		typename std::vector<unsigned int>::iterator rhoi = _rho.begin ();
 		typename std::vector<unsigned int>::iterator si = _s.begin ();
 
-		while (Pi != _myPerm.end ()) {
+		while (Pi != _permP.end ()) {
 			out << "Permutation: ";
 			_solver._eliminator.writePermutation (out, *Pi) << std::endl;
 
@@ -1331,7 +1331,7 @@ namespace LinBox
 	{
 		typename std::vector<Matrix *>::iterator Ti;
 
-		for (Ti = _T.begin (); Ti != _T.end (); ++Ti) {
+		for (Ti = _multiMat.begin (); Ti != _multiMat.end (); ++Ti) {
 			_solver._ip_trashcan.push (*Ti);
 		}
 	}
@@ -1531,10 +1531,10 @@ namespace LinBox
 		_T3.resize (_traits.blockingFactor (), _traits.blockingFactor ());
 		_T4.resize (_traits.blockingFactor (), _traits.blockingFactor ());
 		_T5.resize (_traits.blockingFactor (), _traits.blockingFactor ());
-		_W.resize (_traits.blockingFactor (), _traits.blockingFactor ());
+		_matW.resize (_traits.blockingFactor (), _traits.blockingFactor ());
 		_Cu.resize (_traits.blockingFactor (), _traits.blockingFactor ());
 		_Cv.resize (_traits.blockingFactor (), _traits.blockingFactor ());
-		_F.init (_one, 1);
+		_field.init (_one, 1);
 	}
 
 } // namespace LinBox

@@ -118,7 +118,7 @@ void extractLeftSigma(const Field &F,
 }
 
 template<class Field>
-void write_sigma(const Field &_F, const char* name, const std::vector<LinBox::BlasMatrix<Field> > & P)
+void write_sigma(const Field &F, const char* name, const std::vector<LinBox::BlasMatrix<Field> > & P)
 {
 	size_t m,n;
 	m = P[0].rowdim();
@@ -129,26 +129,26 @@ void write_sigma(const Field &_F, const char* name, const std::vector<LinBox::Bl
 		for (size_t i=0;i<m-1;++i){
 			std::cerr<<"[";
 			for (size_t j=0;j<n-1;++j)
-				_F.write(std::cerr,P[k].getEntry(i,j))<<",";
-			_F.write(std::cerr, P[k].getEntry(i,n-1))<<"] , ";
+				F.write(std::cerr,P[k].getEntry(i,j))<<",";
+			F.write(std::cerr, P[k].getEntry(i,n-1))<<"] , ";
 		}
 		std::cerr<<"[";
 		for (size_t j=0;j<n-1;++j)
-			_F.write(std::cerr,P[k].getEntry(m-1,j))<<",";
-		_F.write(std::cerr, P[k].getEntry(m-1,n-1))<<"]]) , ";
+			F.write(std::cerr,P[k].getEntry(m-1,j))<<",";
+		F.write(std::cerr, P[k].getEntry(m-1,n-1))<<"]]) , ";
 	}
 
 	std::cerr<<"Matrix([";
 	for (size_t i=0;i<m-1;++i){
 		std::cerr<<"[";
 		for (size_t j=0;j<n-1;++j)
-			_F.write(std::cerr,P[P.size()-1].getEntry(i,j))<<",";
-		_F.write(std::cerr, P[P.size()-1].getEntry(i,n-1))<<"] , ";
+			F.write(std::cerr,P[P.size()-1].getEntry(i,j))<<",";
+		F.write(std::cerr, P[P.size()-1].getEntry(i,n-1))<<"] , ";
 	}
 	std::cerr<<"[";
 	for (size_t j=0;j<n-1;++j)
-		_F.write(std::cerr,P[P.size()-1].getEntry(m-1,j))<<",";
-	_F.write(std::cerr, P[P.size()-1].getEntry(m-1,n-1))<<"]])]; \n";
+		F.write(std::cerr,P[P.size()-1].getEntry(m-1,j))<<",";
+	F.write(std::cerr, P[P.size()-1].getEntry(m-1,n-1))<<"]])]; \n";
 }
 
 

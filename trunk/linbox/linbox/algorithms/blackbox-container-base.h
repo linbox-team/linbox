@@ -61,12 +61,12 @@ namespace LinBox
 		BlackboxContainerBase () {}
 
 		BlackboxContainerBase (const Blackbox *BB, const Field &F) :
-			_F (F), _VD (F), _BB (BB), _size (MIN (BB->rowdim (), BB->coldim ()))
+			_field (F), _VD (F), _BB (BB), _size (MIN (BB->rowdim (), BB->coldim ()))
 		{ _size <<= 1; }
 
 		// Pascal Giorgi 16.02.2004
 		BlackboxContainerBase (const Blackbox *BB, const Field &F, unsigned long Size) :
-			_F (F), _VD (F), _BB (BB), _size (Size)
+			_field (F), _VD (F), _BB (BB), _size (Size)
 		{}
 
 		virtual ~BlackboxContainerBase ()
@@ -89,7 +89,7 @@ namespace LinBox
 		const_iterator end   () { return const_iterator (); }
 
 		long         size     () const { return _size; }
-		const Field &getField () const { return _F; }
+		const Field &getField () const { return _field; }
 		Blackbox    *getBB    () const { return _BB; }
 
 	protected:
@@ -110,7 +110,7 @@ namespace LinBox
 		/// Members
 		//--------------
 
-		Field                _F;
+		Field                _field;
 		VectorDomain<Field>  _VD;
 		const Blackbox            *_BB;
 

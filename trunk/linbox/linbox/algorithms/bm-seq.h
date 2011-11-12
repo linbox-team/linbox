@@ -55,25 +55,25 @@ namespace LinBox {
 
 	private:
 
-		Field& _F;
+		Field& _field;
 		std::list<value_type > _seq;
 		size_type _size;
 		size_t _row, _col;
 
 	public:
-		BM_Seq(Field& F, size_t r, size_t c) : _F(F)
+		BM_Seq(Field& F, size_t r, size_t c) : _field(F)
 		{
 			_row = r;
 			_col = c;
 			_size = 0;
 		}
-		BM_Seq(Field& F, size_t r) : _F(F)
+		BM_Seq(Field& F, size_t r) : _field(F)
 		{
 			_row = r;
 			_col = r;
 			_size = 0;
 		}
-		BM_Seq(int n, value_type& M) : _F(M.field()),  _seq(n, M), _size(n)
+		BM_Seq(int n, value_type& M) : _field(M.field()),  _seq(n, M), _size(n)
 		{
 			_row = M.rowdim();
 			_col = M.coldim();
@@ -82,7 +82,7 @@ namespace LinBox {
 		BM_Seq() {}
 
 		BM_Seq(const BM_Seq<Field>& S) :
-			_F(S._F), _seq(S._seq), _size(S._size), _row(S._row), _col(S._col)
+			_field(S._field), _seq(S._seq), _size(S._size), _row(S._row), _col(S._col)
 		{}
 
 		BM_Seq & operator=(const BM_Seq<Field>& S)
@@ -91,7 +91,7 @@ namespace LinBox {
 				(*this)._size = S._size;
 				(*this)._row = S._row;
 				(*this)._col = S._col;
-				(*this)._F = S._F;
+				(*this)._field = S._field;
 				_seq.clear();
 				for(typename std::list<value_type>::const_iterator it = S._seq.begin(); it != S._seq.end(); it++)
 					_seq.push_back(*it);
@@ -101,7 +101,7 @@ namespace LinBox {
 
 		Field& field()
 		{
-			return _F;
+			return _field;
 		}
 
 		size_t rowdim()
@@ -138,7 +138,7 @@ namespace LinBox {
 			bool test = false;
 			if(_size==l._size && _row==l._row && _col==l._col){
 				test = true;
-				MatrixDomain<Field> MD(_F);
+				MatrixDomain<Field> MD(_field);
 				it = _seq.begin();
 				lit = l._seq.begin();
 				if(_size==0){
@@ -171,7 +171,7 @@ namespace LinBox {
 
 		private:
 			typedef typename BM_Seq<Field>::value_type matrix_type;
-			Field& _F;
+			Field& _field;
 			BM_Seq<Field>& _seq;
 			typename BM_Seq<Field>::size_type _size;
 			typename BM_Seq<Field>::size_type _t;
@@ -249,7 +249,7 @@ namespace LinBox {
 			}
 			//Constructor
 			explicit BM_iterator(BM_Seq<Field>& s, typename BM_Seq<Field>::size_type elinit=0) :
-				_F(s.field()), _seq(s)
+				_field(s.field()), _seq(s)
 			{
 				_row = s.rowdim();
 				_col = s.coldim();
@@ -261,8 +261,8 @@ namespace LinBox {
 				for(size_t i = _col; i < _row+_col; i++)
 					_deg[i] = 1;
 				typename Field::Element one;
-				_F.init(one,1);
-				matrix_type gen1(_F,_col,_row+_col);
+				_field.init(one,1);
+				matrix_type gen1(_field,_col,_row+_col);
 				for(size_t i = 0; i<_col; i++)
 					gen1.setEntry(i,i,one);
 				_gen.push_back(gen1);
@@ -276,7 +276,7 @@ namespace LinBox {
 
 			//Copy constructor
 			BM_iterator(const BM_Seq<Field>::BM_iterator & it) :
-				_F(it._F), _seq(it._seq), _size(it._size), _t(it._t),
+				_field(it._field), _seq(it._seq), _size(it._size), _t(it._t),
 				_seqel(it._seqel), _gen(it._gen), _deg(it._deg),
 				_delta(it._delta), _mu(it._mu), _beta(it._beta),
 				_sigma(it._sigma), _gensize(it._gensize),
@@ -287,7 +287,7 @@ namespace LinBox {
 			BM_iterator& operator=(const typename BM_Seq<Field>::BM_iterator& it)
 			{
 				if(this != &it){
-					(*this)._F       = it._F;
+					(*this)._field       = it._field;
 					(*this)._row     = it._row;
 					(*this)._col     = it._col;
 					(*this)._seq     = it._seq;
@@ -478,14 +478,14 @@ namespace LinBox {
 					return *this;
 				}
 				//Initialize the discrepancy
-				matrix_type disc(_F,_row, _row+_col);
+				matrix_type disc(_field,_row, _row+_col);
 				//Create two iterators, one for seq, and one for gen
 				typename BM_Seq<Field>::const_iterator cseqit;
 				typename std::list<matrix_type>::iterator genit;
 				//get a iterator to the seq element to be processed
 				cseqit = _seqel;
 				//Create a matrix domain for addition and multiplication
-				MatrixDomain<Field> MD(_F);
+				MatrixDomain<Field> MD(_field);
 				//Compute the discrepancy
 				for(genit = _gen.begin(); genit!=_gen.end(); genit++){
 					MD.axpyin(disc,*cseqit,*genit);
@@ -507,7 +507,7 @@ namespace LinBox {
 					if(tmax < _deg[j])
 						tmax = _deg[j];
 				if(tmax+1 > _gensize){
-					_gen.push_back(matrix_type(_F,_col,_row+_col));
+					_gen.push_back(matrix_type(_field,_col,_row+_col));
 					_gensize++;
 				}
 				//Mimic multiplication be z in the auxiliary columns
@@ -523,7 +523,7 @@ namespace LinBox {
 					g2++;
 				}
 				genit = _gen.begin();
-				matrix_type z1(_F,_col,_row+_col);
+				matrix_type z1(_field,_col,_row+_col);
 				for(size_t k = _col; k < _row+_col; k++)
 					ColumnCopy(*genit, z1,k);
 				//Increment the t and seqel to the next element
@@ -569,14 +569,14 @@ namespace LinBox {
 					return *this;
 				}
 				//Initialize the discrepancy
-				matrix_type disc(_F,_row, _row+_col);
+				matrix_type disc(_field,_row, _row+_col);
 				//Create two iterators, one for seq, and one for gen
 				typename BM_Seq<Field>::const_iterator cseqit;
 				typename std::list<matrix_type>::iterator genit;
 				//get an iterator to the seq element to be processed
 				cseqit = _seqel;
 				//Create a matrix domain for addition and multiplication
-				MatrixDomain<Field> MD(_F);
+				MatrixDomain<Field> MD(_field);
 				//Compute the discrepancy
 				for(genit = _gen.begin(); genit!=_gen.end(); genit++, cseqit--){
 					MD.axpyin(disc,*cseqit,*genit);
@@ -600,7 +600,7 @@ namespace LinBox {
 					if(tmax < _deg[j])
 						tmax = _deg[j];
 				if(tmax+1 > _gensize){
-					_gen.push_back(matrix_type(_F,_col,_row+_col));
+					_gen.push_back(matrix_type(_field,_col,_row+_col));
 					_gensize++;
 				}
 				//Mimic multiplication by z in the auxiliary columns
@@ -616,7 +616,7 @@ namespace LinBox {
 					g2++;
 				}
 				genit = _gen.begin();
-				matrix_type z1(_F,_col,_row+_col);
+				matrix_type z1(_field,_col,_row+_col);
 				for(size_t k = _col; k < _row+_col; k++)
 					ColumnCopy(*genit, z1,k);
 				//Increment the t and seqel to the next element
@@ -655,7 +655,7 @@ namespace LinBox {
 			//Return a vector representing the reversal, by nominal degree, of the current generator
 			std::vector<matrix_type> GetGenerator()
 			{
-				std::vector<matrix_type> revgen(_mu+1, matrix_type(_F,_col,_col));
+				std::vector<matrix_type> revgen(_mu+1, matrix_type(_field,_col,_col));
 				for(size_t i = 0; i<_col; i++){
 					typename std::list<matrix_type>::iterator genit = _gen.begin();
 					for(int j = 0; j < _deg[i]+1; j++){

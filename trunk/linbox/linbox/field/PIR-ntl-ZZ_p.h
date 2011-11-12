@@ -565,14 +565,14 @@ namespace LinBox
 		 * @param F field F in which arithmetic is done
 		 */
 		FieldAXPY (const Field &F) :
-		       	_F (F)
+		       	_field (F)
 		{ _y = NTL::ZZ::zero(); }
 
 		/** Copy constructor.
 		 * @param faxpy
 		 */
 		FieldAXPY (const FieldAXPY<Field> &faxpy) :
-		       	_F (faxpy._F), _y (faxpy._y)
+		       	_field (faxpy._field), _y (faxpy._y)
 	       	{}
 
 		/** Assignment operator
@@ -622,7 +622,7 @@ namespace LinBox
 
 		/// Field in which arithmetic is done
 		/// Not sure why it must be mutable, but the compiler complains otherwise
-		Field _F;
+		Field _field;
 
 		/// Field element for arithmetic
 		NTL::ZZ _y;
