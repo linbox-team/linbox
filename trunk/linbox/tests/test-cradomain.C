@@ -27,7 +27,6 @@
  * @test tests LinBox::ChineseRemainer (see \ref CRA)
  */
 
-// avoid solaris polluting macro
 
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/field/modular.h"
@@ -40,10 +39,6 @@
 #include "linbox/integer.h"
 
 using namespace LinBox;
-
-// avoid solaris wierdness.  Needs to be after linbox includes.
-// Conjecture: _vectC as numeric const is introduced in some std header included in a linbox header.
-#undef _vectC
 
 struct Interator {
 	std::vector<integer> _v;
