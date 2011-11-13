@@ -866,6 +866,8 @@ namespace LinBox
 
 } // namespace LinBox
 
+#include "linbox/vector/stream-gf2.h"
+
 #endif // __LINBOX_vector_stream_H
 
 
