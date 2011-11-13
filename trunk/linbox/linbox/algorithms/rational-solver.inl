@@ -25,8 +25,10 @@
 #ifndef __LINBOX_rational_solver_INL
 #define __LINBOX_rational_solver_INL
 
+#include "linbox/util/debug.h"
+#include "linbox/linbox-config.h"
+
 #include "linbox/blackbox/sparse.h"
-#include "linbox/blackbox/lambda-sparse.h"
 #include "linbox/blackbox/lambda-sparse.h"
 #include "linbox/blackbox/transpose.h"
 #include "linbox/blackbox/diagonal.h"
@@ -44,9 +46,6 @@
 #include <fflas-ffpack/ffpack/ffpack.h>
 #include <fflas-ffpack/fflas/fflas.h>
 #include "linbox/solutions/methods.h"
-#include "linbox/util/debug.h"
-#include "linbox/linbox-config.h"
-#include "linbox/field/multimod-field.h"
 #include "linbox/blackbox/block-hankel-inverse.h"
 
 

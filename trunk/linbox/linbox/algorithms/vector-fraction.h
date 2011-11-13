@@ -25,6 +25,7 @@
 #define __LINBOX_vector_fraction_H
 
 #include "linbox/linbox-config.h"
+#include "linbox/util/debug.h"
 #include <stdio.h>
 #include "linbox/vector/vector-traits.h"
 

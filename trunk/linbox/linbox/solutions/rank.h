@@ -15,6 +15,7 @@
 #include "linbox/algorithms/matrix-hom.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/diagonal.h"
+#include "linbox/blackbox/diagonal-gf2.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/permutation.h"
 #include "linbox/blackbox/transpose.h"

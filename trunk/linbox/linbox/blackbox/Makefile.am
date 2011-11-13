@@ -20,6 +20,7 @@ BASIC_HDRS =			\
 	transpose.h               \
 	sum.h                     \
 	diagonal.h                \
+	diagonal-gf2.h            \
 	moore-penrose.h           \
 	direct-sum.h              \
 	null-matrix.h             \

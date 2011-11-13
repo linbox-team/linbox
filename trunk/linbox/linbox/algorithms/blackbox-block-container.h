@@ -29,6 +29,8 @@
 #ifndef __LINBOX_blackbox_block_container_H
 #define __LINBOX_blackbox_block_container_H
 
+#include "linbox/linbox-config.h"
+#include "linbox/util/debug.h"
 
 #include "linbox/algorithms/blackbox-block-container-base.h"
 #include "linbox/matrix/blas-matrix.h"

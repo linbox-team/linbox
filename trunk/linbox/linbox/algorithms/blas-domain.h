@@ -37,12 +37,14 @@
 
 #include <iostream>
 #include <vector>
+
+#include "linbox/linbox-config.h"
+#include "linbox/util/debug.h"
+
 #include <fflas-ffpack/ffpack/ffpack.h>
 #include <fflas-ffpack/fflas/fflas.h>
-//#include "linbox/blackbox/permutation.h"
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/matrix/permutation-matrix.h"
-#include "linbox/util/debug.h"
 
 
 namespace LinBox

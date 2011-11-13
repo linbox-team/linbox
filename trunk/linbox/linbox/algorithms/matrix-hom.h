@@ -33,13 +33,12 @@
 #ifndef __LINBOX_matrix_hom_H
 #define __LINBOX_matrix_hom_H
 
+#include "linbox/integer.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/polynomial.h"
 #include "linbox/blackbox/scalar-matrix.h"
-#include "linbox/integer.h"
 #include "linbox/field/hom.h"
-#include "linbox/field/multimod-field.h"
 #include "linbox/matrix/matrix-category.h"
 
 
@@ -290,12 +289,13 @@ namespace LinBox
 			}
 		};
 
+#ifdef __LINBOX_blas_matrix_multimod_H
 		template< class IMatrix>
 		class BlasMatrixMAP<MultiModDouble, IMatrix, MatrixContainerCategory::BlasContainer > {
 		public:
 			void operator() (BlasMatrix<MultiModDouble> &Ap, const IMatrix &A, const MultiModDouble &F,  MatrixContainerCategory::BlasContainer type)
 			{
-				//Ap = new BlasMatrix<MultiModDouble>(F, A.rowdim(), A.coldim());
+				// Ap = new BlasMatrix<MultiModDouble>(F, A.rowdim(), A.coldim());
 				for (size_t i=0; i<F.size();++i)
 					MatrixHom::map(Ap.getMatrix(i), A, F.getBase(i));
 			}
@@ -306,7 +306,7 @@ namespace LinBox
 		public:
 			void operator() (BlasMatrix<MultiModDouble> &Ap, const IMatrix &A, const MultiModDouble &F,  MatrixContainerCategory::Container type)
 			{
-				// 				Ap = new BlasMatrix<MultiModDouble>(F, A.rowdim(), A.coldim());
+				// Ap = new BlasMatrix<MultiModDouble>(F, A.rowdim(), A.coldim());
 				for (size_t i=0; i<F.size();++i)
 					MatrixHom::map(Ap.getMatrix(i), A, F.getBase(i));
 			}
@@ -317,11 +317,12 @@ namespace LinBox
 		public:
 			void operator() (BlasMatrix<MultiModDouble> &Ap, const IMatrix &A, const MultiModDouble &F,  MatrixContainerCategory::Blackbox type)
 			{
-				// 				Ap = new BlasMatrix<MultiModDouble>(F, A.rowdim(), A.coldim());
+				// Ap = new BlasMatrix<MultiModDouble>(F, A.rowdim(), A.coldim());
 				for (size_t i=0; i<F.size();++i)
 					MatrixHom::map(Ap.getMatrix(i), A, F.getBase(i));
 			}
 		};
+#endif
 	}
 }
 

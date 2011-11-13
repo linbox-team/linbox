@@ -33,6 +33,10 @@
 
 #include <iostream>
 
+#include "linbox/linbox-config.h"
+#include "linbox/util/debug.h"
+
+// #include "linbox/field/multimod-field.h"
 #include "linbox/solutions/methods.h"
 #include "linbox/blackbox/archetype.h"
 #include "linbox/blackbox/lambda-sparse.h"

@@ -8,7 +8,7 @@ EXTRA_DIST=			\
 
 pkgincludesub_HEADERS=		\
 	pair.h			\
-	light_container.h			\
+	light_container.h	\
 	sparse.h		\
 	vector-traits.h		\
 	subvector.h		\
@@ -16,7 +16,10 @@ pkgincludesub_HEADERS=		\
 	reverse.h		\
 	random.h                \
 	stream.h		\
+	stream-gf2.h		\
 	bit-vector.h		\
 	bit-vector.inl		\
 	vector-domain.h		\
-	vector-domain.inl
+	vector-domain-gf2.h	\
+	vector-domain.inl       \
+	vector-domain-gf2.inl
