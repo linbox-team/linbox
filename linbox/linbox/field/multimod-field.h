@@ -13,17 +13,19 @@
 
 
 
-#ifndef __LINBOX_multimod_field_H
-#define __LINBOX_multimod_field_H
+#ifndef __LINBOX_field_multimod_field_H
+#define __LINBOX_field_multimod_field_H
 
 
 #include "linbox/linbox-config.h"
+#include "linbox/util/debug.h"
 #include "linbox/integer.h"
+#include "linbox/field/modular.h"
+
 #include "linbox/vector/vector-domain.h"
 #include "linbox/field/field-interface.h"
 #include "linbox/field/field-traits.h"
 #include "linbox/util/field-axpy.h"
-#include "linbox/util/debug.h"
 #include <cmath>
 #include <vector>
 

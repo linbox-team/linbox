@@ -10,6 +10,7 @@ GIVARO_HDRS =           \
     givaro-gfq.h        \
     givaro-extension.h  \
     givaro-field.h      \
+    givaro-field-gf2.h  \
     givaro-rational.h
 
 if LINBOX_HAVE_GIVARO

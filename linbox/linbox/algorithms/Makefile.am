@@ -61,6 +61,7 @@ pkgincludesub_HEADERS =         \
     rational-cra-full-multip.h  \
     blas-domain.h               \
     blas-domain.inl             \
+    blas-domain-multimod.h      \
     bitonic-sort.h              \
     blackbox-block-container-base.h         \
     blackbox-block-container.h  \

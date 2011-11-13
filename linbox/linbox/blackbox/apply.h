@@ -33,6 +33,9 @@
 #include "linbox/linbox-config.h"
 #include "linbox/integer.h"
 #include "linbox/util/debug.h"
+// #if defined(__LINBOX_field_multimod_field_H) && !defined(__LINBOX_blas_matrix_domain_H)
+// #error "you need to include \"multimod-field.h\" before \"blas-domain.h\""
+// #endif
 #include "linbox/field/multimod-field.h"
 #include "linbox/field/hom.h"
 #include "linbox/randiter/multimod-randomprime.h"

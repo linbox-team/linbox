@@ -91,13 +91,6 @@ namespace LinBox
 		typedef MatrixContainerCategory::Container Type;
 	};
 
-	template <>
-	class MatrixContainerTrait<BlasMatrix<MultiModDouble> > {
-	public:
-		typedef MatrixContainerCategory::Blackbox Type;
-	};
-
-
 }
 
 #endif //__LINBOX_matrix_category_H

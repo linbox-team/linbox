@@ -10,8 +10,10 @@ BASIC_HDRS =                                     \
     transpose-matrix.h                           \
     dense-rows-matrix.h                          \
     matrix-domain.h      matrix-domain.inl       \
+    matrix-domain-gf2.h                          \
     blas-matrix.h                                \
     blas-matrix.inl      blas-submatrix.inl      \
+    blas-matrix-multimod.h                       \
     factorized-matrix.h  factorized-matrix.inl   \
     blas-triangularmatrix.inl                    \
     permutation-matrix.h permutation-matrix.inl  \

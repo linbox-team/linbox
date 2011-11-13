@@ -5,4 +5,5 @@ pkgincludesubdir=$(pkgincludedir)/switch
 
 pkgincludesub_HEADERS=		\
 	boolean.h		\
-	cekstv.h
+	cekstv.h                \
+	cekstv-gf2.h

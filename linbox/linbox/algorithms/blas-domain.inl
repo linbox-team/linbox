@@ -77,43 +77,6 @@ namespace LinBox
 	};
 #endif
 
-#ifndef __INTEL_COMPILER
-	template <>
-#endif
-	class BlasMatrixDomainInv<MultiModDouble,BlasMatrix<MultiModDouble> > {
-	public:
-		int operator() (const MultiModDouble                   &F,
-				BlasMatrix<MultiModDouble>        &Ainv,
-				const BlasMatrix<MultiModDouble>     &A) const
-		{
-
-			linbox_check( A.rowdim() == A.coldim());
-			linbox_check( A.rowdim() == Ainv.rowdim());
-			linbox_check( A.coldim() == Ainv.coldim());
-			BlasMatrix<MultiModDouble> tmp(A);
-			return (*this)(F,Ainv,tmp);
-		}
-
-		int operator() (const MultiModDouble                &F,
-				BlasMatrix<MultiModDouble>     &Ainv,
-				BlasMatrix<MultiModDouble>        &A) const
-		{
-
-			linbox_check( A.rowdim() == A.coldim());
-			linbox_check( A.rowdim() == Ainv.rowdim());
-			linbox_check( A.coldim() == Ainv.coldim());
-			int nullity, defrank=0;
-
-			for (size_t i=0;i<F.size();++i){
-				FFPACK::Invert(F.getBase(i),A.rowdim(), A.getMatrix(i)->getPointer(),A.getMatrix(i)->getStride(),
-					       Ainv.getMatrix(i)->getPointer(),Ainv.getMatrix(i)->getStride(),nullity);
-				defrank+=nullity;
-			}
-			return defrank;
-		}
-
-	};
-
 
 #if 0
 	// Rank
@@ -156,7 +119,6 @@ namespace LinBox
 		}
 	};
 #endif
-
 
 
 	/*
