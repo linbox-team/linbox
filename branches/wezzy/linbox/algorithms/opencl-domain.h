@@ -82,8 +82,8 @@ namespace LinBox{
 		bool doubleSupported;
 
 		//Storage for kernels
-		cl_kernel dpKernels[6];
-		cl_kernel spKernels[6];
+		cl_kernel dpKernels[10];
+		cl_kernel spKernels[10];
 
 		/**
 		 * @internal
@@ -119,10 +119,22 @@ namespace LinBox{
 
 		/**
 		 * @internal
+		 * Releases OpenCL cumpute resources
+		 */
+		void oclDomainTearDown();
+
+		/**
+		 * @internal
 		 * Checks to see if the memory levels required are possible
 		 */
 		template<typename T, class Operand1, class Operand2, class Operand3>
 		bool oclMemCheck(Operand1 &C, const Operand2 &A, const Operand3 &B) const;
+
+		template<typename T, class Operand1, class Operand2, class Operand3>
+		bool oclMemCheck(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C) const;
+		
+		template<typename T, class Operand1, class Operand2, class Operand3>
+		bool oclMemCheck(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C, Operand1& Temp) const;
 
 		/**
 		 * @internal
@@ -185,26 +197,7 @@ namespace LinBox{
 
 		//! Deconstructor
 		~OpenCLMatrixDomain(){
-			//Release all of the kernels
-			errcode = clReleaseKernel(dpKernels[0]);
-			errcode = clReleaseKernel(dpKernels[1]);
-			errcode = clReleaseKernel(dpKernels[2]);
-			errcode = clReleaseKernel(dpKernels[3]);
-			errcode = clReleaseKernel(dpKernels[4]);
-			errcode = clReleaseKernel(dpKernels[5]);
-
-			errcode = clReleaseKernel(spKernels[0]);
-			errcode = clReleaseKernel(spKernels[1]);
-			errcode = clReleaseKernel(spKernels[2]);
-			errcode = clReleaseKernel(spKernels[3]);
-			errcode = clReleaseKernel(spKernels[4]);
-			errcode = clReleaseKernel(spKernels[5]);
-
-			//Release the command queue
-			errcode = clReleaseCommandQueue(commandQue);
-
-			//Release the compute context
-			errcode = clReleaseContext(context);
+			oclDomainTearDown();
 		}
 
 

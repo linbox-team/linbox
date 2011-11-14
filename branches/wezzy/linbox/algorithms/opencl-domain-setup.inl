@@ -318,19 +318,10 @@ namespace LinBox{
 		maxBufferSize = (unsigned long)maxGlobalMemoryAllocSize;
 
 		if(errcode == CL_SUCCESS){
-			dpKernels[0] = oclCreateKernel("../linbox/algorithms/opencl-kernels/kernel_add_matrix_dp.cl", "vector_sum_kernel");
-			dpKernels[1] = oclCreateKernel("../linbox/algorithms/opencl-kernels/kernel_sub_matrix_dp.cl", "vector_sum_kernel");
-			dpKernels[2] = oclCreateKernel("../linbox/algorithms/opencl-kernels/kernel_modulus_dp.cl", "matrix_mul_kernel");
-			dpKernels[3] = oclCreateKernel("../linbox/algorithms/opencl-kernels/kernel_partial_8_dp.cl", "matrix_mul_kernel");
-			dpKernels[4] = oclCreateKernel("../linbox/algorithms/opencl-kernels/kernel_partial_32_dp.cl", "matrix_mul_kernel");
-			dpKernels[5] = oclCreateKernel("../linbox/algorithms/opencl-kernels/kernel_partial_1024_dp.cl", "matrix_mul_kernel");
-
-			spKernels[0] = oclCreateKernel("../linbox/algorithms/opencl-kernels/kernel_add_matrix_sp.cl", "vector_sum_kernel");
-			spKernels[1] = oclCreateKernel("../linbox/algorithms/opencl-kernels/kernel_sub_matrix_sp.cl", "vector_sum_kernel");
-			spKernels[2] = oclCreateKernel("../linbox/algorithms/opencl-kernels/kernel_modulus_sp.cl", "matrix_mul_kernel");
-			spKernels[3] = oclCreateKernel("../linbox/algorithms/opencl-kernels/kernel_partial_16_sp.cl", "matrix_mul_kernel");
-			spKernels[4] = oclCreateKernel("../linbox/algorithms/opencl-kernels/kernel_partial_32_sp.cl", "matrix_mul_kernel");
-			spKernels[5] = oclCreateKernel("../linbox/algorithms/opencl-kernels/kernel_partial_1024_sp.cl", "matrix_mul_kernel");
+			//Provides the code to load and create the kernels on the compiling platform
+			//Does not allow for compile once and reuse the host code binary unless
+			//the file paths are identical
+			#include "linbox/algorithms/opencl-kernels/opencl-domain-file-paths.inl"
 		}
 
 		if(errcode != CL_SUCCESS){
@@ -341,6 +332,42 @@ namespace LinBox{
 			setupCorrect = true;
 			//std::cout << "True\n";
 		}
+	}
+
+	/**
+	 * @internal
+	 * Releases OpenCL cumpute resources
+	 */
+	template<class Field>
+	void OpenCLMatrixDomain<Field>::oclDomainTearDown(){
+		//Release all of the kernels
+		errcode = clReleaseKernel(dpKernels[0]);
+		errcode = clReleaseKernel(dpKernels[1]);
+		errcode = clReleaseKernel(dpKernels[2]);
+		errcode = clReleaseKernel(dpKernels[3]);
+		errcode = clReleaseKernel(dpKernels[4]);
+		errcode = clReleaseKernel(dpKernels[5]);
+		errcode = clReleaseKernel(dpKernels[6]);
+		errcode = clReleaseKernel(dpKernels[7]);
+		errcode = clReleaseKernel(dpKernels[8]);
+		errcode = clReleaseKernel(dpKernels[9]);
+
+		errcode = clReleaseKernel(spKernels[0]);
+		errcode = clReleaseKernel(spKernels[1]);
+		errcode = clReleaseKernel(spKernels[2]);
+		errcode = clReleaseKernel(spKernels[3]);
+		errcode = clReleaseKernel(spKernels[4]);
+		errcode = clReleaseKernel(spKernels[5]);
+		errcode = clReleaseKernel(spKernels[6]);
+		errcode = clReleaseKernel(spKernels[7]);
+		errcode = clReleaseKernel(spKernels[8]);
+		errcode = clReleaseKernel(spKernels[9]);
+
+		//Release the command queue
+		errcode = clReleaseCommandQueue(commandQue);
+
+		//Release the compute context
+		errcode = clReleaseContext(context);
 	}
 
 }; //end of namespace LinBox
