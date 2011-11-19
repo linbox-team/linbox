@@ -33,84 +33,76 @@ namespace LinBox
 	class SmithFormLocal<Local2_32>
 	{
 	public:
-		typedef Local2_32 LocalPID;
-		typedef LocalPID::Element Elt;
+		typedef Local2_32 LocalPIR;
+		typedef LocalPIR::Element Elt;
 
 		template<class Matrix>
-		std::list<Elt>& operator()(std::list<Elt>& L, Matrix& A, const LocalPID& R)
+		std::list<Elt>& operator()(std::list<Elt>& L, Matrix& A, const LocalPIR& R)
 		{   Elt d; R.init(d, 1);
-			return smithStep(L, d, A, R);
+			Elt *p = &(A[0][0]);
+			return smithStep(L, d, p, A.rowdim(), A.coldim(), A.getStride(), R);
 		}
 
-		template<class Matrix>
 		std::list<Elt>&
-		smithStep(std::list<Elt>& L, Elt& d, Matrix& A, const LocalPID& R)
+		smithStep(std::list<Elt>& L, Elt& d, Elt* Ap, size_t m, size_t n, size_t stride, const LocalPIR& R)
 		{
-			if ( A.rowdim() == 0 || A.coldim() == 0 )
+			if ( m == 0 || n == 0 )
 				return L;
 
-			LocalPID::Exponent g = LocalPID::Exponent(32); //R.init(g, 0); // must change to 2^31 maybe.
-			typename Matrix::RowIterator p;
-			typename Matrix::Row::iterator q, r;
-			for ( p = A.rowBegin(); p != A.rowEnd(); ++p)
+			LocalPIR::Exponent g = LocalPIR::Exponent(32); //R.init(g, 0); // must change to 2^31 maybe.
+			size_t i, j, k;
+			/* Arguably this search order should be reversed to increase the likelyhood of no col swap,
+			   assuming row swaps cheaper.  Not so, however on my example. -bds 11Nov */
+			for ( i = 0; i != m; ++i)
 			{
-				for (q = p->begin(); q != p->end(); ++q)
+				for (j = 0; j != n; ++j)
 				{
-					R.gcdin(g, *q);
+					R.gcdin(g, Ap[i*stride + j]);
 					if ( R.isUnit(g) ) break;
 				}
 				if ( R.isUnit(g) ) break;
 			}
-			//std::cout << "g = " << (int)g <<"\n";
 			if ( R.isZero(g) )
 			{
-				//  std::cout << " R.isZero(g) is used\n";
-				// std::cout << A.rowdim() << " " << A.coldim() << "\n";
-				L.insert(L.end(),
-					 (A.rowdim() < A.coldim()) ? A.rowdim() : A.coldim(),
-					 0
-					);
+				L.insert(L.end(), (m < n) ? m : n, 0);
 				return L;
 			}
-			if ( p != A.rowEnd() ) // g is a unit and,
-				// because this is a local ring, value at which this first happened
-				// also is a unit.
+			if ( i != m ) // g is a unit and, because this is a local ring, 
+			// value at which this first happened also is a unit.
+			{ // put pivot in 0,0 position
+				if ( i != 0 ) // swap rows
+					std::swap_ranges(Ap, Ap+n, Ap + i*stride);
+				if ( j != 0 ) // swap cols
+					for(k = 0; k != m; ++k)
+						std::swap(Ap[k*stride + 0], Ap[k*stride + j]);
+
+				// elimination step - crude and for dense only - fix later
+				// Want to use a block method or "left looking" elimination.
+				Elt f; R.inv(f, Ap[0*stride + 0] );
+				R.negin(f);
+
+				// normalize first row to -1, ...
+				for ( j = 0; j != n; ++j)
+					R.mulin(Ap[0*stride + j], f);
+
+				// eliminate in subsequent rows
+				for ( i = 1; i != m; ++i)
 				{
-					if ( p != A.rowBegin() )
-						swap_ranges(A.rowBegin()->begin(), A.rowBegin()->end(),
-							    p->begin());
-					if ( q != p->begin() )
-						swap_ranges(A.colBegin()->begin(), A.colBegin()->end(),
-							    (A.colBegin() + (int)(q - p->begin()))->begin());
-
-					// eliminate step - crude and for dense only - fix later
-					// Want to use a block method or "left looking" elimination.
-					//std::cout << " Value of A[0][0]: " << *(A.rowBegin() -> begin()) <<"\n";
-					Elt f; R.inv(f, *(A.rowBegin()->begin() ) );
-					R.negin(f);
-					// normalize first row to -1, ...
-					//std::cout << "f = " << f << "\n";
-					//A.write(std::cout);
-
-					for ( q = A.rowBegin()->begin() /*+ 1*/; q != A.rowBegin()->end(); ++q)
-						R.mulin(*q, f);
-					//
-					// eliminate in subsequent rows
-					for ( p = A.rowBegin() + 1; p != A.rowEnd(); ++p)
-						for ( q = p->begin() + 1, r = A.rowBegin()->begin() + 1, f = *(p -> begin());
-						      q != p->end(); ++q, ++r )
-							R.axpyin( *q, f, *r );
-
-					BlasMatrix<LocalPID> Ap(A, 1, 1, A.rowdim() - 1, A.coldim() - 1);
-					L.push_back(d);
-					return smithStep(L, d, Ap, R);
+					f = Ap[i*stride + 0];
+					for ( j = 0; j != n; ++j)
+						R.axpyin( Ap[i*stride +j], f, Ap[0*stride +j] );
 				}
+				L.push_back(d);
+				return smithStep(L, d, Ap + stride+1,m-1, n-1, stride, R);
+			}
 			else
 			{
-				typename Matrix::Iterator p_it;
-				for (p_it = A.Begin(); p_it != A.End(); ++p_it)
-					R.divin(*p_it, g);
-				return smithStep(L, R.mulin(d, g), A, R);
+				for ( i = 0; i != m; ++i)
+					for ( j = 0; j != n; ++j)
+					{
+						R.divin(Ap[i*stride + j], g);
+					}
+				return smithStep(L, R.mulin(d, g), Ap, m, n, stride, R);
 			}
 		}
 
