@@ -53,7 +53,7 @@ using namespace LinBox;
 
 // using long on purpose
 template <class Field>
-static bool testIdentity (Field &F, long n, int iterations)
+static bool testIdentity (Field &F, size_t n, int iterations)
 {
 	typedef typename Vector<Field>::Dense Vector;
 	typedef BlasMatrix<Field>               Base;
@@ -73,7 +73,7 @@ static bool testIdentity (Field &F, long n, int iterations)
 
 	F.init (one, 1);
 
-	for (long i = 0; i < n; i++)
+	for (size_t i = 0; i < n; i++)
 		I.setEntry (i, i, one);
 
 	Vector v(n), w(n);
@@ -86,7 +86,7 @@ static bool testIdentity (Field &F, long n, int iterations)
 
 		iter_passed = true;
 
-		for (long j = 0; j < n; j++)
+		for (size_t j = 0; j < n; j++)
 			r.random (v[j]);
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
