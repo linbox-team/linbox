@@ -82,12 +82,14 @@ dnl GCC ?
 			AC_TRY_RUN( [
 				#ifdef __GNUC__
 				   int main() { return !(__GNUC__ >= 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 2)) ; }
-			   #else
+				#else
 				   pas gcc non plus ???
 				#endif], [
-		AC_MSG_RESULT(gcc)
+		CCNOM=gcc
+		AS_IF([ test -n "${CC}" ], [CCNOM="`$CC --version 2>&1|  awk 'NR<2{print $1}'`"])
 		CCNAM=gcc
 		AC_SUBST(CCNAM)
+		AC_MSG_RESULT($CCNOM)
 		])
 		])
 
