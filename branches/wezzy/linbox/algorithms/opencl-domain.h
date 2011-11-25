@@ -87,32 +87,6 @@ namespace LinBox{
 
 		/**
 		 * @internal
-		 * Picks the platform used for the container
-		 */
-		cl_int oclGetPlatformID(cl_platform_id* selected_platform);
-
-		/**
-		 * @internal
-		 * Picks the device used for the container
-		 */
-		cl_device_id oclDeviceSelector(cl_int num_devices, cl_device_id* devices);
-
-		/**
-		 * @internal
-		 * Loads the contents of the specified file into memory
-		 * Returns a pointer to a char array and the length of the file
-		 */
-		char* readFileContents(const char* file_name, int &length);
-
-		/**
-		 * @internal
-		 * Creates a kernel given a file name and kernel name
-		 * Returns the kernel
-		 */
-		cl_kernel oclCreateKernel(const char* file_name, const char* kernel_name);
-
-		/**
-		 * @internal
 		 * Initializes the OpenCL compute environment
 		 */
 		void oclDomainInit();
@@ -132,7 +106,7 @@ namespace LinBox{
 
 		template<typename T, class Operand1, class Operand2, class Operand3>
 		bool oclMemCheck(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C) const;
-		
+
 		template<typename T, class Operand1, class Operand2, class Operand3>
 		bool oclMemCheck(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C, Operand1& Temp) const;
 
@@ -140,13 +114,13 @@ namespace LinBox{
 		 * @internal
 		 * OpenCL memory management functions
 		 */
-		template<class Operand1>
+		template<typename T, class Operand1>
 		cl_mem createMatrixBuffer(Operand1 &matrix) const;
 
-		template<class Operand1>
+		template<typename T, class Operand1>
 		cl_mem createAndLoadMatrixBuffer(const Operand1 &matrix) const;
 
-		template<class Operand2>
+		template<typename T, class Operand2>
 		Operand2& readMatrixBuffer(cl_mem buffer, Operand2 &matrix) const;
 
 		template<typename T, class Operand1>

@@ -303,10 +303,9 @@ namespace LinBox{
 	 * @internal
 	 * Creates an empty matrix buffer on the OpenCL device from the dimensions of the matrix
 	 */
-	template<>
-	template<>
-	cl_mem OpenCLMatrixDomain<Modular<double> >::createMatrixBuffer
-		<BlasMatrix<double> >(BlasMatrix<double>& matrix) const{
+	template<class Field>
+	template<typename T, class Opernad1>
+	cl_mem OpenCLMatrixDomain<Field>::createMatrixBuffer(Opernad1& matrix) const{
 
 		//Calculate dimensions after padding of matrix
 		int newDimX = ((matrix.coldim() / 16) + (matrix.coldim() % 16 == 0 ? 0 : 1)) * 16;
@@ -315,25 +314,7 @@ namespace LinBox{
 		//Allocate buffer
 		cl_int tempErrcode;
 		cl_mem matrixBuffer = clCreateBuffer(context, CL_MEM_READ_WRITE,
-			(newDimX * newDimY * sizeof(cl_double)), 0, &tempErrcode);
-		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
-
-		return matrixBuffer;
-	}
-
-	template<>
-	template<>
-	cl_mem OpenCLMatrixDomain<Modular<float> >::createMatrixBuffer
-		<BlasMatrix<float> >(BlasMatrix<float> &matrix) const{
-
-		//Calculate dimensions after padding of matrix
-		int newDimX = ((matrix.coldim() / 16) + (matrix.coldim() % 16 == 0 ? 0 : 1)) * 16;
-		int newDimY = ((matrix.rowdim() / 16) + (matrix.rowdim() % 16 == 0 ? 0 : 1)) * 16;
-
-		//Allocate buffer
-		cl_int tempErrcode;
-		cl_mem matrixBuffer = clCreateBuffer(context, CL_MEM_READ_WRITE,
-			(newDimX * newDimY * sizeof(cl_float)), 0, &tempErrcode);
+			(newDimX * newDimY * sizeof(T)), 0, &tempErrcode);
 		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
 
 		return matrixBuffer;
@@ -344,10 +325,9 @@ namespace LinBox{
 	 * Creates a matrix buffer on the OpenCL device from the dimensions of the passed in matrix
 	 * and load the contents of the matrix into the matrix buffer
 	 */
-	template<>
-	template<>
-	cl_mem OpenCLMatrixDomain<Modular<double> >::createAndLoadMatrixBuffer
-		<BlasMatrix<double> >(const BlasMatrix<double> &matrix) const{
+	template<class Field>
+	template<typename T, class Operand1>
+	cl_mem OpenCLMatrixDomain<Field>::createAndLoadMatrixBuffer(const Operand1 &matrix) const{
 
 		//Calculate dimensions after padding of matrix
 		int newDimX = ((matrix.coldim() / 16) + (matrix.coldim() % 16 == 0 ? 0 : 1)) * 16;
@@ -356,44 +336,22 @@ namespace LinBox{
 		//Allocate buffer
 		cl_int tempErrcode;
 		cl_mem matrixBuffer = clCreateBuffer(context, CL_MEM_READ_WRITE,
-			(newDimX * newDimY * sizeof(cl_double)), 0, &tempErrcode);
+			(newDimX * newDimY * sizeof(T)), 0, &tempErrcode);
 		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
 
 		//Calculate number of elements in the matrixBuffer
 		int matrixBufferSize = newDimX * newDimY;
 
-		return padMatrix<cl_double, BlasMatrix<double> >(matrixBuffer, matrixBufferSize, newDimX, matrix);
-	}
-
-	template<>
-	template<>
-	cl_mem OpenCLMatrixDomain<Modular<float> >::createAndLoadMatrixBuffer
-		<BlasMatrix<float> >(const BlasMatrix<float> &matrix) const{
-
-		//Calculate dimensions after padding of matrix
-		int newDimX = ((matrix.coldim() / 16) + (matrix.coldim() % 16 == 0 ? 0 : 1)) * 16;
-		int newDimY = ((matrix.rowdim() / 16) + (matrix.rowdim() % 16 == 0 ? 0 : 1)) * 16;
-
-		//Allocate buffer
-		cl_int tempErrcode;
-		cl_mem matrixBuffer = clCreateBuffer(context, CL_MEM_READ_WRITE,
-			(newDimX * newDimY * sizeof(cl_float)), 0, &tempErrcode);
-		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
-
-		//Calculate number of elements in the matrixBuffer
-		int matrixBufferSize = newDimX * newDimY;
-
-		return padMatrix<cl_float, BlasMatrix<float> >(matrixBuffer, matrixBufferSize, newDimX, matrix);
+		return padMatrix<T, Operand1>(matrixBuffer, matrixBufferSize, newDimX, matrix);
 	}
 
 	/**
 	 * @internal
 	 * Read back the contents of the matrix buffer into the matrix and return a refence to the matrix
 	 */
-	template<>
-	template<>
-	BlasMatrix<double>& OpenCLMatrixDomain<Modular<double> >::readMatrixBuffer
-		<BlasMatrix<double> >(cl_mem matrixBuffer, BlasMatrix<double> &matrix) const{
+	template<class Field>
+	template<typename T, class Operand2>
+	Operand2& OpenCLMatrixDomain<Field>::readMatrixBuffer(cl_mem matrixBuffer, Operand2 &matrix) const{
 
 		//Calculate dimensions after padding of matrix
 		int newDimX = ((matrix.coldim() / 16) + (matrix.coldim() % 16 == 0 ? 0 : 1)) * 16;
@@ -405,26 +363,7 @@ namespace LinBox{
 		//Calculate number of elements in the matrix
 		int outputSize = matrix.coldim() * matrix.rowdim();
 
-		return depadMatrix<cl_double, BlasMatrix<double> >(matrixBuffer, matrixBufferSize, outputSize,
-			newDimX, matrix);
-	}
-
-	template<>
-	template<>
-	BlasMatrix<float>& OpenCLMatrixDomain<Modular<float> >::readMatrixBuffer
-		<BlasMatrix<float> >(cl_mem matrixBuffer, BlasMatrix<float> &matrix) const{
-
-		//Calculate dimensions after padding of matrix
-		int newDimX = ((matrix.coldim() / 16) + (matrix.coldim() % 16 == 0 ? 0 : 1)) * 16;
-		int newDimY = ((matrix.rowdim() / 16) + (matrix.rowdim() % 16 == 0 ? 0 : 1)) * 16;
-
-		//Calculate number of elements in the matrixBuffer
-		int matrixBufferSize = newDimX * newDimY;
-
-		//Calculate number of elements in the matrix
-		int outputSize = matrix.coldim() * matrix.rowdim();
-
-		return depadMatrix<cl_float, BlasMatrix<float> >(matrixBuffer, matrixBufferSize, outputSize,
+		return depadMatrix<T, Operand2>(matrixBuffer, matrixBufferSize, outputSize,
 			newDimX, matrix);
 	}
 

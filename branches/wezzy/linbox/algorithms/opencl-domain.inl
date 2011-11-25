@@ -64,9 +64,9 @@ namespace LinBox
 		linbox_check( C.rowdim() == A.rowdim());
 		linbox_check( C.coldim() == B.coldim());
 
-		cl_mem bufferC = createMatrixBuffer<BlasMatrix<double> >(C);
-		cl_mem bufferA = createAndLoadMatrixBuffer<BlasMatrix<double> >(A);
-		cl_mem bufferB = createAndLoadMatrixBuffer<BlasMatrix<double> >(B);
+		cl_mem bufferC = createMatrixBuffer<cl_double, BlasMatrix<double> >(C);
+		cl_mem bufferA = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(A);
+		cl_mem bufferB = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(B);
 
 		double p = _F.characteristic();
 
@@ -118,7 +118,7 @@ namespace LinBox
 		tempErrcode = clFinish(commandQue);
 		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
 
-		C = readMatrixBuffer<BlasMatrix<double> >(bufferC, C);
+		C = readMatrixBuffer<cl_double, BlasMatrix<double> >(bufferC, C);
 
 		//Delete OpenCL buffers
 		tempErrcode = clReleaseMemObject(bufferC);
@@ -154,9 +154,9 @@ namespace LinBox
 		linbox_check( C.rowdim() == A.rowdim());
 		linbox_check( C.coldim() == B.coldim());
 
-		cl_mem bufferC = createMatrixBuffer<BlasMatrix<float> >(C);
-		cl_mem bufferA = createAndLoadMatrixBuffer<BlasMatrix<float> >(A);
-		cl_mem bufferB = createAndLoadMatrixBuffer<BlasMatrix<float> >(B);
+		cl_mem bufferC = createMatrixBuffer<cl_float, BlasMatrix<float> >(C);
+		cl_mem bufferA = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(A);
+		cl_mem bufferB = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(B);
 
 		float p = _F.characteristic();
 
@@ -208,7 +208,7 @@ namespace LinBox
 		tempErrcode = clFinish(commandQue);
 		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
 
-		C = readMatrixBuffer<BlasMatrix<float> >(bufferC, C);
+		C = readMatrixBuffer<cl_float, BlasMatrix<float> >(bufferC, C);
 
 		//Delete OpenCL buffers
 		tempErrcode = clReleaseMemObject(bufferC);
@@ -219,7 +219,7 @@ namespace LinBox
 		return C;
 	}
 
-		/* Specialization of mulin_left for
+	/* Specialization of mulin_left for
 	 * multiplying two general dense matrices
 	 * over a Modular<double> Field.
 	 * Places result into the left matrix.
@@ -270,7 +270,7 @@ namespace LinBox
 		return mul<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(B,A,T);
 	}
 
-	/* Specialization of mulin_rigth for
+	/* Specialization of mulin_right for
 	 * multiplying two general dense matrices
 	 * over a Modular<float> Field.
 	 * Places the result into the right matrix.
@@ -316,9 +316,9 @@ namespace LinBox
 		linbox_check( D.rowdim() == C.rowdim());
 		linbox_check( D.coldim() == C.coldim());
 
-		cl_mem bufferT = createMatrixBuffer<BlasMatrix<double> >(D);
-		cl_mem bufferA = createAndLoadMatrixBuffer<BlasMatrix<double> >(A);
-		cl_mem bufferB = createAndLoadMatrixBuffer<BlasMatrix<double> >(B);
+		cl_mem bufferT = createMatrixBuffer<cl_double, BlasMatrix<double> >(D);
+		cl_mem bufferA = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(A);
+		cl_mem bufferB = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(B);
 
 		double p = _F.characteristic();
 
@@ -366,8 +366,8 @@ namespace LinBox
 				localWorkSize, 0, NULL, NULL);
 		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
 
-		cl_mem bufferD = createMatrixBuffer<BlasMatrix<double> >(D);
-		cl_mem bufferC = createAndLoadMatrixBuffer<BlasMatrix<double> >(C);
+		cl_mem bufferD = createMatrixBuffer<cl_double, BlasMatrix<double> >(D);
+		cl_mem bufferC = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(C);
 
 		//Select modular addition kernel
 		selectedKernel = dpKernels[0];
@@ -394,7 +394,7 @@ namespace LinBox
 		tempErrcode = clFinish(commandQue);
 		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
 
-		D = readMatrixBuffer<BlasMatrix<double> >(bufferD, D);
+		D = readMatrixBuffer<cl_double, BlasMatrix<double> >(bufferD, D);
 
 		//Delete OpenCL buffers
 		tempErrcode = clReleaseMemObject(bufferD);
@@ -436,9 +436,9 @@ namespace LinBox
 		linbox_check( D.rowdim() == C.rowdim());
 		linbox_check( D.coldim() == C.coldim());
 
-		cl_mem bufferT = createMatrixBuffer<BlasMatrix<float> >(D);
-		cl_mem bufferA = createAndLoadMatrixBuffer<BlasMatrix<float> >(A);
-		cl_mem bufferB = createAndLoadMatrixBuffer<BlasMatrix<float> >(B);
+		cl_mem bufferT = createMatrixBuffer<cl_float, BlasMatrix<float> >(D);
+		cl_mem bufferA = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(A);
+		cl_mem bufferB = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(B);
 
 		float p = _F.characteristic();
 
@@ -486,8 +486,8 @@ namespace LinBox
 				localWorkSize, 0, NULL, NULL);
 		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
 
-		cl_mem bufferD = createMatrixBuffer<BlasMatrix<float> >(D);
-		cl_mem bufferC = createAndLoadMatrixBuffer<BlasMatrix<float> >(C);
+		cl_mem bufferD = createMatrixBuffer<cl_float, BlasMatrix<float> >(D);
+		cl_mem bufferC = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(C);
 
 		//Select modular addition kernel
 		selectedKernel = dpKernels[0];
@@ -514,7 +514,7 @@ namespace LinBox
 		tempErrcode = clFinish(commandQue);
 		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
 
-		D = readMatrixBuffer<BlasMatrix<float> >(bufferD, D);
+		D = readMatrixBuffer<cl_float, BlasMatrix<float> >(bufferD, D);
 
 		//Delete OpenCL buffers
 		tempErrcode = clReleaseMemObject(bufferD);
@@ -593,9 +593,9 @@ namespace LinBox
 		linbox_check( D.rowdim() == C.rowdim());
 		linbox_check( D.coldim() == C.coldim());
 
-		cl_mem bufferT = createMatrixBuffer<BlasMatrix<double> >(D);
-		cl_mem bufferA = createAndLoadMatrixBuffer<BlasMatrix<double> >(A);
-		cl_mem bufferB = createAndLoadMatrixBuffer<BlasMatrix<double> >(B);
+		cl_mem bufferT = createMatrixBuffer<cl_double, BlasMatrix<double> >(D);
+		cl_mem bufferA = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(A);
+		cl_mem bufferB = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(B);
 
 		double p = _F.characteristic();
 
@@ -643,8 +643,8 @@ namespace LinBox
 				localWorkSize, 0, NULL, NULL);
 		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
 
-		cl_mem bufferD = createMatrixBuffer<BlasMatrix<double> >(D);
-		cl_mem bufferC = createAndLoadMatrixBuffer<BlasMatrix<double> >(C);
+		cl_mem bufferD = createMatrixBuffer<cl_double, BlasMatrix<double> >(D);
+		cl_mem bufferC = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(C);
 
 		//Select modular subtraction kernel
 		selectedKernel = dpKernels[1];
@@ -671,7 +671,7 @@ namespace LinBox
 		tempErrcode = clFinish(commandQue);
 		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
 
-		D = readMatrixBuffer<BlasMatrix<double> >(bufferD, D);
+		D = readMatrixBuffer<cl_double, BlasMatrix<double> >(bufferD, D);
 
 		//Delete OpenCL buffers
 		tempErrcode = clReleaseMemObject(bufferD);
@@ -714,9 +714,9 @@ namespace LinBox
 		linbox_check( D.rowdim() == C.rowdim());
 		linbox_check( D.coldim() == C.coldim());
 
-		cl_mem bufferT = createMatrixBuffer<BlasMatrix<float> >(D);
-		cl_mem bufferA = createAndLoadMatrixBuffer<BlasMatrix<float> >(A);
-		cl_mem bufferB = createAndLoadMatrixBuffer<BlasMatrix<float> >(B);
+		cl_mem bufferT = createMatrixBuffer<cl_float, BlasMatrix<float> >(D);
+		cl_mem bufferA = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(A);
+		cl_mem bufferB = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(B);
 
 		float p = _F.characteristic();
 
@@ -764,8 +764,8 @@ namespace LinBox
 				localWorkSize, 0, NULL, NULL);
 		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
 
-		cl_mem bufferD = createMatrixBuffer<BlasMatrix<float> >(D);
-		cl_mem bufferC = createAndLoadMatrixBuffer<BlasMatrix<float> >(C);
+		cl_mem bufferD = createMatrixBuffer<cl_float, BlasMatrix<float> >(D);
+		cl_mem bufferC = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(C);
 
 		//Select modular subtraction kernel
 		selectedKernel = dpKernels[1];
@@ -792,7 +792,7 @@ namespace LinBox
 		tempErrcode = clFinish(commandQue);
 		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
 
-		D = readMatrixBuffer<BlasMatrix<float> >(bufferD, D);
+		D = readMatrixBuffer<cl_float, BlasMatrix<float> >(bufferD, D);
 
 		//Delete OpenCL buffers
 		tempErrcode = clReleaseMemObject(bufferD);
@@ -870,9 +870,9 @@ namespace LinBox
 		linbox_check( D.rowdim() == C.rowdim());
 		linbox_check( D.coldim() == C.coldim());
 
-		cl_mem bufferT = createMatrixBuffer<BlasMatrix<double> >(D);
-		cl_mem bufferA = createAndLoadMatrixBuffer<BlasMatrix<double> >(A);
-		cl_mem bufferB = createAndLoadMatrixBuffer<BlasMatrix<double> >(B);
+		cl_mem bufferT = createMatrixBuffer<cl_double, BlasMatrix<double> >(D);
+		cl_mem bufferA = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(A);
+		cl_mem bufferB = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(B);
 
 		double p = _F.characteristic();
 
@@ -920,8 +920,8 @@ namespace LinBox
 				localWorkSize, 0, NULL, NULL);
 		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
 
-		cl_mem bufferD = createMatrixBuffer<BlasMatrix<double> >(D);
-		cl_mem bufferC = createAndLoadMatrixBuffer<BlasMatrix<double> >(C);
+		cl_mem bufferD = createMatrixBuffer<cl_double, BlasMatrix<double> >(D);
+		cl_mem bufferC = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(C);
 
 		//Select modular subtraction kernel
 		selectedKernel = dpKernels[1];
@@ -948,7 +948,7 @@ namespace LinBox
 		tempErrcode = clFinish(commandQue);
 		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
 
-		D = readMatrixBuffer<BlasMatrix<double> >(bufferD, D);
+		D = readMatrixBuffer<cl_double, BlasMatrix<double> >(bufferD, D);
 
 		//Delete OpenCL buffers
 		tempErrcode = clReleaseMemObject(bufferD);
@@ -990,9 +990,9 @@ namespace LinBox
 		linbox_check( D.rowdim() == C.rowdim());
 		linbox_check( D.coldim() == C.coldim());
 
-		cl_mem bufferT = createMatrixBuffer<BlasMatrix<float> >(D);
-		cl_mem bufferA = createAndLoadMatrixBuffer<BlasMatrix<float> >(A);
-		cl_mem bufferB = createAndLoadMatrixBuffer<BlasMatrix<float> >(B);
+		cl_mem bufferT = createMatrixBuffer<cl_float, BlasMatrix<float> >(D);
+		cl_mem bufferA = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(A);
+		cl_mem bufferB = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(B);
 
 		float p = _F.characteristic();
 
@@ -1040,8 +1040,8 @@ namespace LinBox
 				localWorkSize, 0, NULL, NULL);
 		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
 
-		cl_mem bufferD = createMatrixBuffer<BlasMatrix<float> >(D);
-		cl_mem bufferC = createAndLoadMatrixBuffer<BlasMatrix<float> >(C);
+		cl_mem bufferD = createMatrixBuffer<cl_float, BlasMatrix<float> >(D);
+		cl_mem bufferC = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(C);
 
 		//Select modular subtraction kernel
 		selectedKernel = dpKernels[1];
@@ -1068,7 +1068,7 @@ namespace LinBox
 		tempErrcode = clFinish(commandQue);
 		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
 
-		D = readMatrixBuffer<BlasMatrix<float> >(bufferD, D);
+		D = readMatrixBuffer<cl_float, BlasMatrix<float> >(bufferD, D);
 
 		//Delete OpenCL buffers
 		tempErrcode = clReleaseMemObject(bufferD);
