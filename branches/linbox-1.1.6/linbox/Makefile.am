@@ -1,4 +1,4 @@
-INCLUDES=-I$(top_srcdir)
+AM_CPPFLAGS=-I$(top_srcdir)
 
 SUBDIRS=util element field randiter vector matrix blackbox switch algorithms solutions fflas ffpack ring
 

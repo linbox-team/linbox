@@ -1,18 +1,18 @@
-INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/linbox
-#AM_LDFLAGS = -llapack -lcblas -latlas 
-#AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -O2 
-AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall 
+AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox
+#AM_LDFLAGS = -llapack -lcblas -latlas
+#AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -O2
+AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall
 #AM_CFLAGS = -g -Wall
 
 SUBDIRS = data
 
-AM_CPPFLAGS= $(CBLAS_FLAG) $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
+AM_CPPFLAGS+= $(CBLAS_FLAG) $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
 LDADD = $(BLAS_LIBS) $(NTL_LIBS) $(GIVARO_LIBS) $(GMP_LIBS)  $(LIDIA_LIBS)
 
 EXTRA_DIST=\
 test-common.C
 
-# Put an entry for your test-mycomponent.C here (or in one of the other test groups).  
+# Put an entry for your test-mycomponent.C here (or in one of the other test groups).
 # Don't forget to add a test_mycomponent_SOURCES entry below.
 #
 # Once present, tests should remain present, being moved from one group to another.
@@ -62,7 +62,7 @@ BASIC_TESTS =  			\
         test-trace              \
         test-triplesbb          \
         test-vector-domain      \
-	test-zero-one 
+	test-zero-one
 # tests of components not adhering to LinBox requirements.
 NONCOMPLIANT_TESTS =	\
 	test-unparametric-field	\
@@ -71,7 +71,7 @@ NONCOMPLIANT_TESTS =	\
 
 #These need clapack
 #test-rational-solver-adaptive
-#test-smith-form-adaptive  
+#test-smith-form-adaptive
 
 # this allows _SOURCES entry to remain
 # except for "make dist"
@@ -83,20 +83,20 @@ NONEXISTING_TESTS =
 #	test-solutions.C
 #
 
-NONCOMPILING_TESTS =  		
-#		test-inertia			
+NONCOMPILING_TESTS =
+#		test-inertia
 
 FAILING_TESTS =		\
         test-solve              \
         test-zo                 \
         test-quad-matrix        \
         test-mg-block-lanczos   \
-	test-la-block-lanczos    
-#       test-over-under         
-#       test-side-by-side       
+	test-la-block-lanczos
+#       test-over-under
+#       test-side-by-side
 
-USE_NONCOMPILING_TESTS = 
-USE_FAILING_TESTS = 
+USE_NONCOMPILING_TESTS =
+USE_FAILING_TESTS =
 # comment out these two lines to avoid facing reality
 #USE_NONCOMPILING_TESTS += $(NONCOMPILING_TESTS)
 #USE_FAILING_TESTS += $(FAILING_TESTS)
@@ -111,7 +111,7 @@ BENCHMARKS = 		\
 #       test-lsp 	lsp.h superceded by factorized-matrix.h
 # removed test
 #	test-nag-sparse
-#	test-image-field       replaced by hom 
+#	test-image-field       replaced by hom
 #       test-lsp
 # I put test-gssv_rank in hmrg:~saunders/gen_superlu.  It is not linbox until and unless it is made to work
 # test-gssv is an ntl test
@@ -145,7 +145,7 @@ NTL_TESTS = 				\
 LIDIA_TESTS =			\
 	test-lidia-gfq
 
-ATLAS_TESTS = 
+ATLAS_TESTS =
 
 if LINBOX_HAVE_NTL
 USE_NTL_TESTS = $(NTL_TESTS)
@@ -236,7 +236,7 @@ test_subvector_SOURCES = 		\
 
 test_vector_domain_SOURCES = 		\
 	test-vector-domain.C		\
-	test-vector-domain.h		
+	test-vector-domain.h
 
 test_matrix_domain_SOURCES = 		\
 	test-matrix-domain.C		\
@@ -427,7 +427,7 @@ test_zero_one_SOURCES =			\
 
 test_modular_int_SOURCES =		\
 	test-modular-int.C 		\
-	test-common.h	
+	test-common.h
 
 test_modular_short_SOURCES =		\
 	test-modular-short.C		\
