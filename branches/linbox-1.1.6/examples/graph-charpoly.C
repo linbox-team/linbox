@@ -1,0 +1,78 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/** 
+    Example for Mr G. Royle :
+    Compute the integer characteristic polynomial of symetric matrices with 
+    0,1 coefficients
+*/
+
+
+#include <iostream>
+
+#include "linbox/blackbox/zero-one.h"
+#include "linbox/field/PID-integer.h"
+#include "linbox/solutions/charpoly.h"
+#include "linbox/ring/givaro-polynomial.h"
+#include "linbox/solutions/methods.h"
+
+using namespace std;
+using namespace LinBox;
+
+template <class Field, class Polynomial>
+void printPolynomial(const Field& F, const Polynomial& P){
+	int n= P.size()-1;
+	for (int i=0;i<n;++i)
+		cout<<P[i]<<" ";
+	cout<<endl;
+	if (n==1){
+		cout<<"X";
+		if ( P[0] != 0)
+			F.write(cout<<((P[0]>0)?"+":""),P[0]);
+	}
+	else{
+		cout<<"X^"<<n;
+		for ( int i=n-1; i>1; --i)
+			if (!F.isZero(P[i]))
+				F.write(cout<<((P[i]>0)?"+":""),P[i])<<"*X^"<<i;
+		if ( P[1] != 0)
+			F.write(cout<<((P[1]>0)?"+":""),P[1])<<"*X";
+		if ( P[0] != 0)
+			F.write(cout<<((P[0]>0)?"+":""),P[0]);
+	}
+}
+
+
+typedef ZeroOne<PID_integer> Matrix;
+typedef GivPolynomialRing<PID_integer,Dense> IntPolRing;
+
+int main (int argc, char **argv)
+{
+	commentator.getMessageClass (BRIEF_REPORT).setMaxDepth (2);
+	commentator.getMessageClass (BRIEF_REPORT).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	
+
+	if (argc != 2) {
+		cerr << "Usage: graph-charpoly <matrix-file-in-SMS-format>" <<endl;
+		return -1;
+	}
+
+	ifstream input (argv[1]);
+	if (!input) { 
+	  cerr << "Error opening matrix file " << argv[1] << endl; 
+	  return -1; 
+	}
+	
+	//UnparametricField<integer> ZZ;
+	PID_integer ZZ;
+	Matrix A;
+	A.read (input);
+	commentator.report(1, BRIEF_REPORT)<< "A is " << A.rowdim() << " by " << A.coldim() << endl;
+	
+	IntPolRing::Element c_A;
+
+	charpoly (c_A, A, Method::Blackbox(Method::Wiedemann( Specifier::SYMMETRIC)));
+	
+	cout<< "Characteristic Polynomial is ";
+	printPolynomial (ZZ, c_A);
+	
+	return 0;
+}
