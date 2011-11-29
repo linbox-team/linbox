@@ -1,4 +1,4 @@
-INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/linbox
+AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox
 
 AM_CFLAGS=-Wall -O2
 

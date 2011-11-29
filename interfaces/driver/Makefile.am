@@ -1,7 +1,7 @@
 if LINBOX_COMPILE_DRIVERS
 pkgincludesubdir=$(includedir)/interfaces/driver
 
-INCLUDES=-I$(top_srcdir) -I. -I../../linbox
+AM_CPPFLAGS=-I$(top_srcdir) -I. -I../../linbox
 
 AM_CXXFLAGS = -O2 -DDISABLE_COMMENTATOR $(GMP_CFLAGS) $(BLAS_CFLAGS) $(GIVARO_CFLAGS)
 
@@ -11,7 +11,7 @@ AM_CXXFLAGS +=$(NTL_CFLAGS)
 
 #LDADD= $(GMP_LIBS) $(NTL_LIBS) $(BLAS_LIBS) $(MAPLE_LIBS) $(GIVARO_LIBS) "../../linbox/liblinbox.la -z muldefs"
 
-lib_LTLIBRARIES=liblbdriver.la 
+lib_LTLIBRARIES=liblbdriver.la
 
 
 liblbdriver_la_SOURCES= lb-element.C 	\
@@ -24,7 +24,7 @@ liblbdriver_la_SOURCES= lb-element.C 	\
 			lb-rank.C 	\
 			lb-minpoly.C 	\
 			lb-charpoly.C 	\
-			lb-solve.C 	
+			lb-solve.C
 
 liblbdriver_la_LDFLAGS=$(GIVARO_LIBS) $(GMP_LIBS) $(NTL_LIBS) $(BLAS_LIBS) $(top_srcdir)/linbox/liblinbox.la -Wl,-zmuldefs
 
@@ -64,5 +64,5 @@ pkginclude_HEADERS=\
 		lb-domain-data.h		\
 		lb-element-abstract.h		\
 		lb-minpoly.h			\
-		lb-vector-collection.h			
+		lb-vector-collection.h
 endif

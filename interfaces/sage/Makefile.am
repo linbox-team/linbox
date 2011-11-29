@@ -1,6 +1,6 @@
 if LINBOX_HAVE_SAGE
 
-INCLUDES=-I$(top_srcdir) -I. -I../../linbox
+AM_CPPFLAGS=-I$(top_srcdir) -I. -I../../linbox
 
 AM_CXXFLAGS = -O2 -DDISABLE_COMMENTATOR $(GMP_CFLAGS) $(NTL_CFLAGS) $(ATLAS_CFLAGS) $(GIVARO_CFLAGS)
 

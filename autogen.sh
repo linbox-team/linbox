@@ -1,15 +1,32 @@
 #!/bin/sh
+# This file is part of LinBox.
+# See COPYING for details about the licence.
+
 # Run this to generate all the initial makefiles, etc.
 
-echo "$0 $*" > autogen.status
+# Recover command line, with double-quotes
+CMDLINE=""
+for arg in "$@"
+do
+    WHO="`echo $arg | cut -d'=' -f1`"
+    WHAT="`echo $arg | cut -s -d'=' -f2`"
+    if test "x$WHAT" = "x"; then
+    	CMDLINE="$CMDLINE $WHO"
+    else
+	CMDLINE="$CMDLINE $WHO=\"$WHAT\""
+    fi
+done
+
+echo  "$0 $CMDLINE" > autogen.status
 chmod +x autogen.status
 
+# Starts configuring
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
 
 PKG_NAME="Linbox Library"
 
-(test -f $srcdir/configure.in \
+(test -f $srcdir/configure.ac \
   && test -f $srcdir/linbox/linbox.doxy) || {
     echo -n "**Error**: Directory "\`$srcdir\'" does not look like the"
     echo " top-level "\`$PKG_NAME\'" directory"
@@ -22,6 +39,19 @@ PROJECT=linbox
 TEST_TYPE=-f
 
 DIE=0
+
+# Defaults
+LIBTOOL=libtool
+LIBTOOLIZE=libtoolize
+
+# Fix OSx problem with GNU libtool
+(uname -a|grep -v Darwin) < /dev/null > /dev/null 2>&1 ||
+{
+echo "....Adding fix for OSX"
+LIBTOOL=glibtool
+LIBTOOLIZE=glibtoolize
+}
+
 
 (autoconf --version) < /dev/null > /dev/null 2>&1 || {
 	echo
@@ -37,32 +67,24 @@ DIE=0
         echo "Download the appropriate package for your distribution,"
         echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
  	DIE=1
- }
- 
-(libtool --version) < /dev/null > /dev/null 2>&1 || {
-        echo
-        echo "You must have libtool installed to compile $PROJECT."
-        echo "Download the appropriate package for your distribution,"
-        echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
-        DIE=1
 }
 
 
-(grep "^AM_PROG_LIBTOOL" configure.in >/dev/null) && {
-  (libtool --version) < /dev/null > /dev/null 2>&1 || {
+(grep "^AC_PROG_LIBTOOL" configure.ac >/dev/null) && {
+  ($LIBTOOL --version) < /dev/null > /dev/null 2>&1 || {
     echo
-    echo "You must have libtool installed to compile $PROJECT."
+     echo "**Error**: You must have \`libtool' installed to compile $PROJECT."
     echo "Download the appropriate package for your distribution,"
     echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
     DIE=1
   }
 }
 
-grep "^AM_GNU_GETTEXT" configure.in >/dev/null && {
-  grep "sed.*POTFILES" $srcdir/configure.in >/dev/null || \
+grep "^AM_GNU_GETTEXT" configure.ac >/dev/null && {
+  grep "sed.*POTFILES" $srcdir/configure.ac >/dev/null || \
   (gettext --version) < /dev/null > /dev/null 2>&1 || {
     echo
-    echo "You must have gettext installed to compile $PROJECT."
+	echo "**Error**: You must have \`gettext' installed to compile $PROJECT."
     echo "Download the appropriate package for your distribution,"
     echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
     DIE=1
@@ -80,10 +102,10 @@ if test -z "$*"; then
 fi
 
 case $CC in
-*xlc | *xlc\ * | *lcc | *lcc\ *) am_opt=--include-deps;;
+	*xlc | *xlc\ * | *lcc | *lcc\ *) am_opt=--include-deps;;
 esac
 
-for coin in `find . -name configure.in -print`
+for coin in `find . -name configure.ac -print`
 do 
   dr=`dirname $coin`
   if test -f $dr/NO-AUTO-GEN; then
@@ -100,9 +122,9 @@ do
 	##  echo "**Warning**: No such directory \`$k'.  Ignored."
         fi
       done
-      if grep "^AM_GNU_GETTEXT" configure.in >/dev/null; then
-	if grep "sed.*POTFILES" configure.in >/dev/null; then
-	  : do nothing -- we still have an old unmodified configure.in
+      if grep "^AM_GNU_GETTEXT" configure.ac >/dev/null; then
+	if grep "sed.*POTFILES" configure.ac >/dev/null; then
+	  : do nothing -- we still have an old unmodified configure.ac
 	else
 	  echo "Creating $dr/aclocal.m4 ..."
 	  test -r $dr/aclocal.m4 || touch $dr/aclocal.m4
@@ -112,7 +134,7 @@ do
 	  test -r $dr/aclocal.m4 && chmod u+w $dr/aclocal.m4
         fi
       fi
-      if grep "^AM_GNOME_GETTEXT" configure.in >/dev/null; then
+      if grep "^AM_GNOME_GETTEXT" configure.ac >/dev/null; then
 	echo "Creating $dr/aclocal.m4 ..."
 	test -r $dr/aclocal.m4 || touch $dr/aclocal.m4
 	echo "Running gettextize...  Ignore non-fatal messages."
@@ -120,13 +142,13 @@ do
 	echo "Making $dr/aclocal.m4 writable ..."
 	test -r $dr/aclocal.m4 && chmod u+w $dr/aclocal.m4
       fi
-      if grep "^AC_PROG_LIBTOOL" configure.in >/dev/null; then
+      if grep "^AC_PROG_LIBTOOL" configure.ac >/dev/null; then
 	echo "Running libtoolize..."
-	libtoolize --force --copy
+			$LIBTOOLIZE --force --copy
       fi
       echo "Running aclocal $aclocalinclude ..."
       aclocal $aclocalinclude
-      if grep "^AM_CONFIG_HEADER" configure.in >/dev/null; then
+      if grep "^AM_CONFIG_HEADER" configure.ac >/dev/null; then
 	echo "Running autoheader..."
 	autoheader
       fi
@@ -138,14 +160,15 @@ do
   fi
 done
 
-conf_flags="--enable-maintainer-mode --enable-compile-warnings" #--enable-iso-c
+conf_flags="--enable-maintainer-mode" 
+#--enable-iso-c
 
 cd "$ORIGDIR"
 
 if test x$NOCONFIGURE = x; then
   echo Running $srcdir/configure $conf_flags "$@" ...
   $srcdir/configure $conf_flags "$@" \
-  && echo Now type \`make\' to compile $PROJECT  || exit 1
+		&& echo "Now type \`make' to compile $PROJECT"  || exit 1
 else
   echo Skipping configure process.
 fi

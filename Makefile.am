@@ -1,3 +1,9 @@
+# Copyright (c) 2010 the LinBox group
+# This file is part of LinBox
+# see COPYING for licence
+
+ACLOCAL_AMFLAGS = -I macros
+
 SUBDIRS=linbox macros tests interfaces doc examples
 
 docs:doc/linbox-html/index.html

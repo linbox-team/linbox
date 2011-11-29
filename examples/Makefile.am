@@ -1,23 +1,23 @@
 
 #INCLUDES=-I$(top_srcdir)
-INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/linbox
+AM_CPPFLAGS=-I$(top_srcdir) -I$(top_srcdir)/linbox
 
 #if LinBoxSrcOnly
-#AM_CPPFLAGS=-g -DLinBoxSrcOnly $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) 
-#LINBOX_LIBS= 
+#AM_CPPFLAGS=-g -DLinBoxSrcOnly $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
+#LINBOX_LIBS=
 #else
-#AM_CPPFLAGS=-g $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) 
-#LINBOX_LIBS= $(top_builddir)/linbox/liblinbox.la 
+#AM_CPPFLAGS=-g $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
+#LINBOX_LIBS= $(top_builddir)/linbox/liblinbox.la
 #endif
 
-AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -O2 
-AM_CPPFLAGS= $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
+AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall -O2
+AM_CPPFLAGS+= $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
 LDADD = $(NTL_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) $(GMP_LIBS)
 
-#EX_LDADD = $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS) 
+#EX_LDADD = $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(BLAS_LIBS)
 #LDADD = $(LINBOX_LIBS) $(EX_LDADD)
 
-SUBDIRS=fields 
+SUBDIRS=fields
 
 EXAMPLES=rank det minpoly valence solve dot-product echelon sparseelimdet sparseelimrank checksolve doubledet
 GIVARONTL_EXAMPLES=smith charpoly graph-charpoly
@@ -28,7 +28,7 @@ endif
 endif
 
 
-EXTRA_PROGRAMS= $(EXAMPLES) $(USE_GIVARONTL_EXAMPLES) 
+EXTRA_PROGRAMS= $(EXAMPLES) $(USE_GIVARONTL_EXAMPLES)
 
 examples: ${EXTRA_PROGRAMS}
 
@@ -59,5 +59,5 @@ LINBOX=@prefix@
 LINBOX_BIN=@bindir@
 
 # for compilation of new examples
-%:%.C 
+%:%.C
 	$(CXX) $(CXXFLAGS) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $@ $(LDADD) $(top_srcdir)/linbox/.libs/liblinbox.a

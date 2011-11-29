@@ -1,8 +1,8 @@
-INCLUDES=-I$(top_srcdir)/linbox $(GMP_CFLAGS)
+AM_CPPFLAGS=-I$(top_srcdir)/linbox $(GMP_CFLAGS)
 pkgincludesubdir=$(pkgincludedir)/randiter
 
 AM_CXXFLAGS = -O2 -Wall -DDISABLE_COMMENTATOR $(GMP_CFLAGS) $(NTL_CFLAGS) $(ATLAS_CFLAGS) $(GIVARO_CFLAGS)
- 
+
 BASIC_HDRS =				\
 	abstract.h			\
 	archetype.h			\
