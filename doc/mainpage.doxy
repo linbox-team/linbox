@@ -1,0 +1,96 @@
+// Copyright (C) 2005 David Saunders, part of LinBox, GNU LGPL, see COPYING 
+/** \mainpage LinBox Symbolic Linear Algebra Software Library
+
+%LinBox is a C++ template library of routines 
+for solution of linear algebra
+problems including linear system solution, rank, determinant, minimal polynomial,
+characteristic polynomial, and Smith normal form.
+Algorithms are provided for 
+matrices with integer entries or entries in a finite field. 
+In support of the algorithms,
+a good collection of finite field and ring implementations is available.
+Also there is provided a number of matrix storage types, especially for 
+blackbox representation of sparse or structured matrix classes. 
+A few algorithms for rational matrices are available.  More for integer and rational
+matrices is planned for future releases.
+
+There is a <a href="tutorial.html">brief tutorial</a>.
+
+The copyright and licensing (GNU LGPL)info of %LinBox is in <a href="COPYING">COPYING</a>.
+
+To install from a distribution, the usual <em> configure, make</em> sequence applies.
+See <a href="install-dist.html">configuring and installing</a> for more details.  
+To install a development version from the SVN repository see the <a href="install-dev.html">developer info</a>.
+The generic Free Software Foundation <a href="INSTALL">INSTALL</a> may also be of use.
+
+Project %LinBox (http://linalg.org)
+is a collaborative effort among researchers at a number of locations around the 
+world. Some of the most active participants are listed <a href="AUTHORS">here</a>. 
+The goals are to produce algorithms and software 
+for symbolic linear algebra, particularly using black box matrix methods, 
+i.e. iterative methods requiring only the linear transform property of the 
+matrix (that, given A and x,  one can compute y <-- Ax).  Such methods are especially
+effective with sparse or structured matrices for which the matrix-vector product can
+be computed cheaply.  Increasingly, linbox also provides elimination based methods for 
+dense matrices exploiting the numeric BLAS routines. 
+
+%A good collection of finite field implementations is available.
+%Some algorithms are probabilistic, but their results are extremely reliable
+%except over very small fields (less than 1000 elements, say).
+
+%LinBox depends on other packages for some of its functionality.  It is a design goal 
+of %LinBox to be a kind of middleware, providing a common interface for use in projects needing 
+linear algebra and providing access to other systems and programs thru wrappers whenever their 
+capabilities may contribute to the linear algebra.  Thus, to gain full advangage of %LinBox it 
+will be desirable to have certain other packages installed.  In particular GMP and a BLAS implementation are required.  GMP provides the basic large integer system used throughout.  We have been
+using ATLAS for the the BLAS implementation.  The remaining dependencies are optional, but two
+packages stand out as contributing substantially to %LinBox.  They are %NTL and Givaro.
+%NTL is used for some finite field and ring representations, particularly in the case of GF(q),
+where q is a prime power or a prime greater than word size.  %NTL is also used by algorithms 
+that need polynomial operations such as factorization. 
+Givaro is another source of field representations and polynomial operations.  Importantly,
+Givaro provides our best representation of small non-prime fields, 
+say q = p<sup>e</sup> < 10<sup>6</sup>.
+Functionality from some other systems has been wrapped also but is currently less 
+widely used in %LinBox.
+
+Genericity and high performance are the twin goals of %LinBox.  The genericity is achieved 
+by use of a small set of interfaces.  Algorithms are implemented with C++ template 
+parameters which may be instantiated with any class adhering to the specified interface.
+High performance is achieved by judicious specializations of the generic algorithms.
+It is entirely within the spirit of the project to introduce new implementations. 
+Thus a user of the library may invoke a linbox algorithm, say for determinant or rank
+of a matrix, but providing a blackbox class of her own design and perhaps even providing
+the underlying field (or commutative ring) representation.
+Conversely, the %LinBox field and ring interfaces and the many specific representations can 
+be used for purposes other than linear algebra computation or with algorithms not provided
+by %LinBox.
+
+The distribution contains subdirectories (documented as `modules')
+ - <a href="group__linbox.html">linbox</a>. This contains the library sources.  The defined objects are in 
+   the namespace LinBox.
+   - linbox/<a href="group__field.html">field</a>, linbox/<a href="group__ring.html">ring</a>, field and ring representations.
+   - linbox/<a href="group__randiter.html">randiter</a>, random element generation for fields and rings.
+   - linbox/<a href="group__blackbox.html">blackbox</a>, generally immutable matrix representations for blackbox methods (based on matrix-vector products).
+   - linbox/<a href="group__matrix.html">matrix</a>, mutable sparse and dense matrices.
+   - linbox/<a href="group__algorithms.html">algorithms</a>,  the core algorithms of %LinBox
+   - linbox/<a href="group__solutions.html">solutions</a>, convenience wrappers of algorithms
+   - linbox/<a href="group__element.html">element</a>, details of field and ring element representation.
+   - linbox/<a href="group__fflas.html">fflas</a>, wrapper of BLAS for exact finite prime field linear algebra.
+   - linbox/<a href="group__ffpack.html">ffpack</a>, .
+   - linbox/<a href="group__util.html">util</a>, basic integers, timing clocks, commentator. 
+ - <a href="group__examples.html">examples</a>, programs meant to be directly useful or be guides 
+   for the progammer using %LinBox.
+ - <a href="group__doc.html">doc</a>, the browsable html documentation is generated with doxygen,
+ - <a href="group__interfaces.html">interfaces</a>, interfaces to other systems, such as Maple, gap, web servers,
+ - <a href="group__tests.html">tests</a>, primarily correctness tests to aid development. 
+
+\authors Members of the %LinBox group.  The most prolific documenters 
+have been first William J Turner, then Bradford Hovinen, and recently
+David Saunders.
+
+The project is supported by 
+the National Science Foundation (http://www.nsf.gov/) in the USA 
+and by CNRS in France. 
+ 
+*/

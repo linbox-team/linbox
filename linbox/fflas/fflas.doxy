@@ -1,0 +1,13 @@
+/** \defgroup fflas linbox/fflas
+
+\brief The C-style wrapper of BLAS for finite field linear algebra.
+
+FFLAS, Finite Field Linear Algebra Subroutines, provide basic linear algebra subroutines based on 
+the BLAS interface. Therefore, the specifications are in C style; only the field given as a 
+template parameter requires C++.
+
+As much as possible, these routines use ATLAS/BLAS computations and achieve therefore high 
+efficiency.
+
+
+*/
