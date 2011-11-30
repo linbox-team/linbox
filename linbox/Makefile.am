@@ -14,23 +14,23 @@ SUBDIRS=linbox macros tests interfaces doc examples benchmarks
 
 #  Fullcheck provides a full check for regression testing purposes.
 fullcheck:
-	(make ; cd tests; make fullcheck)
+	(${MAKE} ; cd tests; ${MAKE} fullcheck)
 
 docs:doc/linbox-html/index.html
 
 doc/linbox-html/index.html:
-	(cd doc; make docs)
+	(cd doc; ${MAKE} docs)
 
 docs_dev:doc/linbox-dev-html/pages.html
 
 doc/linbox-dev-html/pages.html:
-	(cd doc; make docs_dev)
+	(cd doc; ${MAKE} docs_dev)
 
 examples:
-	(cd examples; make examples)
+	(cd examples; ${MAKE} examples)
 
 benchmarks:
-	(cd benchmarks; make benchmarks)
+	(cd benchmarks; ${MAKE} benchmarks)
 
 .PHONY:examples benchmarks
 
