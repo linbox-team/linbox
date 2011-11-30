@@ -55,9 +55,9 @@ namespace LinBox {
 	 * note: H_col is not actually a norm! but it is what we need for lifting bound computation
 	 */
 	template <class Ring, class ItMatrix>
-	void SpecialBound(const Ring& R, typename Ring::Element& H_col_sqr, 
+	void SpecialBound(const Ring& R, typename Ring::Element& H_col_sqr,
 			  typename Ring::Element& short_col_sqr, const ItMatrix& A) {
-					
+
 		typedef typename Ring::Element Integer;
 		//Integer sqsum;
 		//size_t m, n, col=0;
@@ -66,13 +66,13 @@ namespace LinBox {
 		R.init(H_col_sqr, 1);
 		Integer zero;
 		R.init(zero,0UL);
-		
+
 		typename ItMatrix::ConstRowIterator row= A.rowBegin();
 		std::vector<Integer> tmp(A.coldim(), zero);
 		for (; row != A.rowEnd(); row++){
 			typename ItMatrix::ConstRow::const_iterator elm= row->begin();
 			for (size_t i=0; elm != row->end(); elm++, ++i)
-				R.axpyin(tmp[i], *elm, *elm);			
+				R.axpyin(tmp[i], *elm, *elm);
 		}
 
 		for (size_t i=0;i<A.coldim();++i)
@@ -93,25 +93,25 @@ namespace LinBox {
 				short_col_sqr = sqsum;
 		}
 		*/
-		
+
 	}
 
 	// in solveNonsingular, we may work with something that inherits from DenseMatrixBase
 	template <class Ring>
-	void BoundBlackbox(const Ring& R, typename Ring::Element& H_col_sqr, 
+	void BoundBlackbox(const Ring& R, typename Ring::Element& H_col_sqr,
 			   typename Ring::Element& short_col_sqr, const DenseMatrixBase<typename Ring::Element>& A) {
 		SpecialBound(R, H_col_sqr, short_col_sqr, A);
 	}
 	template <class Ring>
 
-	void BoundBlackbox(const Ring& R, typename Ring::Element& H_col_sqr, 
+	void BoundBlackbox(const Ring& R, typename Ring::Element& H_col_sqr,
 			   typename Ring::Element& short_col_sqr, const BlasBlackbox<Ring>& A) {
 		SpecialBound(R, H_col_sqr, short_col_sqr, A);
 	}
 
 	// in other solvers we generally use BlasBlackbox which inherits from DenseSubmatrix
 	template <class Ring>
-	void BoundBlackbox(const Ring& R, typename Ring::Element& H_col_sqr, 
+	void BoundBlackbox(const Ring& R, typename Ring::Element& H_col_sqr,
 			   typename Ring::Element& short_col_sqr, const DenseSubmatrix<typename Ring::Element>& A) {
 		SpecialBound(R, H_col_sqr, short_col_sqr, A);
 	}
@@ -130,7 +130,7 @@ namespace LinBox {
 		R.init(H_col_sqr, 1);
 		typename std::vector<Integer>::const_iterator iter;
 		std::vector<Integer> e(n,zero),tmp(m);
-	
+
 		for (size_t i=0;i<n;i++){
 			e[i]=one;
 			A.apply(tmp,e);
@@ -139,7 +139,7 @@ namespace LinBox {
 				sqsum += (*iter)*(*iter);
 			}
 			R.mulin(H_col_sqr, sqsum);
-			if (i==0 || sqsum < short_col_sqr) 
+			if (i==0 || sqsum < short_col_sqr)
 				short_col_sqr = sqsum;
 			e[i]=zero;
 		}
@@ -164,12 +164,12 @@ namespace LinBox {
 			for (iter=tmp.begin();iter!=tmp.end();++iter)
 				sqsum += (*iter)*(*iter);
 			R.mulin(H_col_sqr, sqsum);
-			if (i==0 || sqsum < short_col_sqr) 
+			if (i==0 || sqsum < short_col_sqr)
 				short_col_sqr = sqsum;
 			e[i]=zero;
 		}
 	}
-	
+
 	template < class Ring, class Matrix>
 	void BoundBlackbox (const Ring& R, typename Ring::Element& H_col_sqr, typename Ring::Element& short_col_sqr, const Transpose<Matrix> & A) {
 		typedef typename Ring::Element Integer;
@@ -189,21 +189,21 @@ namespace LinBox {
 			for (iter=tmp.begin();iter!=tmp.end();++iter)
 				sqsum += (*iter)*(*iter);
 			R.mulin(H_col_sqr, sqsum);
-			if (i==0 || sqsum < short_col_sqr) 
+			if (i==0 || sqsum < short_col_sqr)
 				short_col_sqr = sqsum;
 			e[i]=zero;
 		}
 	}
 
 
-	/* 
+	/*
 	   This should work with blackboxes. However it is much slower if column iterators are available.
-	   Furthermore the compiler always binds to this instead of the above faster version; so some 
+	   Furthermore the compiler always binds to this instead of the above faster version; so some
 	   trickier kind of specialization may have to be done when BoundBlackBox is to be used with true blackboxes.
 	   (Or is the plural Blackboxen?)
 
 	   template < class Ring, class IMatrix>
-	   void BoundBlackbox 
+	   void BoundBlackbox
 	   (const Ring& R, typename Ring::Element& H_col_sqr, typename Ring::Element& short_col_sqr, const IMatrix& A) {
 	   typedef typename Ring::Element Integer;
 	   Integer one,zero,sqsum;
@@ -222,7 +222,7 @@ namespace LinBox {
 	   for (iter=tmp.begin();iter!=tmp.end();++iter)
 	   sqsum += (*iter)*(*iter);
 	   R.mulin(H_col_sqr, sqsum);
-	   if (i==0 || sqsum < short_col_sqr) 
+	   if (i==0 || sqsum < short_col_sqr)
 	   short_col_sqr = sqsum;
 	   e[i]=zero;
 	   }
@@ -233,7 +233,7 @@ namespace LinBox {
 	 * ApplyBound: computes
 	 *         bound_A <- max_i(max(sum_{j|a_ij > 0} a_ij, sum_{j|a_ij < 0} |a_ij|))
 	 * this is useful because for all u, v >= 0:
-	 *     [b has all entries in -u..v] 
+	 *     [b has all entries in -u..v]
          *       => [each entry of A.b is at most (u+v)*bound_A in absolute value]
 	 */
 	template <class Ring, class ItMatrix> //iterable matrix
@@ -242,7 +242,7 @@ namespace LinBox {
 		Integer possum, negsum, zero;
 		R.init(bound_A, 0);
 		R.init(zero, 0);
-		
+
 		typename ItMatrix::ConstRowIterator rowIter;
 		rowIter = A.rowBegin();
 
@@ -250,12 +250,12 @@ namespace LinBox {
 			typename ItMatrix::ConstRow::const_iterator elm;
 			R.init(possum, 0);
 			R.init(negsum, 0);
-			for (elm = rowIter->begin(); elm != rowIter->end(); elm++) 
-				if (*elm > zero) 
+			for (elm = rowIter->begin(); elm != rowIter->end(); elm++)
+				if (*elm > zero)
 					R.addin(possum, *elm);
 				else
 					R.subin(negsum, *elm);
-			
+
 			if (possum > bound_A)
 				R.assign(bound_A, possum);
 			if (negsum > bound_A)
@@ -265,11 +265,11 @@ namespace LinBox {
 
 	template< class _Ring>
 	class LiftingContainer {
-		
+
 	public:
 		typedef _Ring Ring;
 		typedef typename Ring::Element Integer;
-				
+
 		// return the length of container
 		virtual const size_t length() const =0;
 
@@ -278,28 +278,28 @@ namespace LinBox {
 
 		// return the ring
 		virtual const Ring& ring() const = 0;
-				
+
 		// return the prime
-		virtual const Integer& prime () const = 0; 		
+		virtual const Integer& prime () const = 0;
 
 		virtual ~LiftingContainer () {}
-		
+
 	};
 
 	template< class _Ring, class _IMatrix>
 	class LiftingContainerBase : public LiftingContainer< _Ring> {
 
-	public:		
+	public:
 		typedef _IMatrix                  IMatrix;
 		typedef _Ring                        Ring;
-		typedef typename _Ring::Element   Integer;		
+		typedef typename _Ring::Element   Integer;
 		typedef std::vector<Integer>      IVector;
 #ifdef RSTIMING
 		mutable Timer ttSetup, tRingApply, tRingOther, ttRingOther, ttRingApply;
 #endif
 
 	protected:
-						
+
 		const IMatrix&            _A;
 		Ring                      _R;
 		Integer                   _p;
@@ -311,54 +311,56 @@ namespace LinBox {
 		MatrixApplyDomain<Ring,IMatrix>    _MAD;
 		//BlasApply<Ring>          _BA;
 
-	
-	
+
+
 
 		void convertPrime(Integer& e, const integer& p){
 			_R.init(e,p);
 		}
-		
+
 
 		void convertPrime(Integer& e, const std::vector<integer>& p){
 			integer tmp=1;
 			for (size_t i=0;i<p.size();++i)
-				tmp*=integer(p[i]);			
+				tmp*=integer(p[i]);
 			_R.init(e,tmp);
 		}
-	
+
 
 	public:
 
 		template <class Prime_Type, class Vector1>
 		LiftingContainerBase (const Ring& R, const IMatrix& A, const Vector1& b, const Prime_Type& p):
 			_A(A), _R(R), _VDR(R), _MAD(R,A) {
-		
+
 #ifdef RSTIMING
 			ttSetup.start();
 #endif
 			linbox_check(A.rowdim() == b.size());
+#ifdef DEBUG
 			int n,m;
 			n=A.rowdim();
 			m=A.coldim();
 
 			//assert(m == n); //logic may not work otherwise
 			linbox_check( m == n );
+#endif
 			// initialise the prime as an Integer
 			//this->_R.init(_p,p);
 			this->convertPrime(_p, p);
 			//std::cout<<"padic base= "<<_p<<std::endl;
-			
-			
+
+
 			// initialize res = b
 			_b.resize(b.size());
 			typename Vector1::const_iterator         b_iter    = b.begin();
 			typename std::vector<Integer>::iterator  res_iter  = _b.begin() ;
-			for (; b_iter != b.end(); ++res_iter, ++b_iter) 
+			for (; b_iter != b.end(); ++res_iter, ++b_iter)
 				this->_R.init(*res_iter, *b_iter);
-						
+
 			Integer had_sq, short_sq;
 			BoundBlackbox(this->_R, had_sq, short_sq, A);
-			
+
 			typename std::vector<Integer>::const_iterator iterb = _b.begin();
 			Integer normb_sq;
 			this->_R.init(normb_sq, 0);
@@ -372,9 +374,9 @@ namespace LinBox {
 			this->_R.convert(prime,_p);
 			D = sqrt(had_sqi) + 1;
 			N = sqrt(had_sqi * normb_sqi / short_sqi) + 1;
-			L = N * D * 2; 
+			L = N * D * 2;
 			_length = logp(L,prime) + 1;   // round up instead of down
-#ifdef DEBUG_LC                                   
+#ifdef DEBUG_LC
 			std::cout<<" norms computed, p = "<<_p<<"\n";
 			std::cout<<" N = "<<N<<", D = "<<D<<", length = "<<_length<<"\n";
 			std::cout<<"A:=\n";
@@ -385,11 +387,11 @@ namespace LinBox {
 #endif
 			this->_R.init(_numbound,N);
 			this->_R.init(_denbound,D);
-	
-			_MAD.setup( prime );		
-			
-#ifdef DEBUG_LC		
-			std::cout<<"lifting container initialized\n";			
+
+			_MAD.setup( prime );
+
+#ifdef DEBUG_LC
+			std::cout<<"lifting container initialized\n";
 #endif
 #ifdef RSTIMING
 			ttSetup.stop();
@@ -397,7 +399,7 @@ namespace LinBox {
 			ttRingApply.clear();
 #endif
 		}
-		
+
 		virtual IVector& nextdigit (IVector& , const IVector&) const = 0;
 
 		class const_iterator {
@@ -407,15 +409,15 @@ namespace LinBox {
 			size_t                   _position;
 		public:
 			const_iterator(const LiftingContainerBase& lc,size_t end=0)
-				: _res(lc._b), _lc(lc), _position(end) {}					
-			
+				: _res(lc._b), _lc(lc), _position(end) {}
+
 			/**
 			 * @returns False if the next digit cannot be computed
 			 * (probably indicates modulus is bad)
 			 */
 			bool next (IVector& digit)  {
-				
-				linbox_check (digit.size() == _lc._A.rowdim());	  
+
+				linbox_check (digit.size() == _lc._A.rowdim());
 				// compute next p-adic digit
 				_lc.nextdigit(digit,_res);
 #ifdef RSTIMING
@@ -426,14 +428,14 @@ namespace LinBox {
 				std::cout<<"\n residu "<<_position<<": ";
 				for (size_t i=0;i<digit.size();++i)
 					std::cout<<_res[i]<<",";
-				std::cout<<"\n digit "<<_position<<": ";			
+				std::cout<<"\n digit "<<_position<<": ";
 				for (size_t i=0;i<digit.size();++i)
 					std::cout<<digit[i]<<",";
 				std::cout<<"\n";
-#endif 	
+#endif
 				/*  prepare for updating residu */
 
-				// compute v2 = _A * digit				
+				// compute v2 = _A * digit
 				IVector v2 (_lc._A.coldim());
 				_lc._MAD.applyV(v2,digit, _res);
 
@@ -443,12 +445,12 @@ namespace LinBox {
 				_lc.tRingOther.start();
 #endif
 
-				// update _res -= v2 
+				// update _res -= v2
 				_lc._VDR.subin (_res, v2);
 				typename std::vector<Integer>::iterator p0;
 				// update _res = _res / p
 				int index=0;
-				for ( p0 = _res.begin(); p0 != _res.end(); ++ p0, ++index){ 
+				for ( p0 = _res.begin(); p0 != _res.end(); ++ p0, ++index){
 #ifdef LC_CHECK_DIVISION
  					if (! _lc._R.isDivisor(*p0,_lc._p)) {
 						std::cout<<"residue "<<*p0<<" not divisible by modulus "<<_lc._p<<std::endl;
@@ -458,10 +460,10 @@ namespace LinBox {
 #endif
 					_lc._R.divin(*p0, _lc._p);
 				}
-				
+
 				// increase position of the iterator
 				_position++;
-#ifdef RSTIMING				
+#ifdef RSTIMING
 				_lc.tRingOther.stop();
 				_lc.ttRingOther += _lc.tRingOther;
 #endif
@@ -471,13 +473,13 @@ namespace LinBox {
 			bool operator != (const const_iterator& iterator) const {
 				if ( &_lc != &iterator._lc)
 					;//assert("try to compare differents LiftingContainer::const_iterator , abort\n");
-				return _position != iterator._position;					
+				return _position != iterator._position;
 			}
-	
+
 			bool operator == (const const_iterator& iterator) const {
 				if ( &_lc != &iterator._lc)
 					;//assert("try to compare differents LiftingContainer::const_iterator , abort\n");
-				return _position == iterator._position;					
+				return _position == iterator._position;
 			}
 
 		};
@@ -486,12 +488,12 @@ namespace LinBox {
 		 // efficiently pulls out continuous blocks of bits, from lsb to msb inclusive
 		 // least significant bits start at index 0, so msb >= lsb
 		 // if any bits with index >= 8*numBytes are asked for they will be zeroes
-		 static long long bytesToBits(unsigned char * byteArray, size_t numBytes, size_t lsb, size_t msb) { 
+		 static long long bytesToBits(unsigned char * byteArray, size_t numBytes, size_t lsb, size_t msb) {
 		 linbox_check(msb >= lsb);
 		 size_t lsbi = lsb >> 3;
 		 size_t msbi = msb >> 3;
-		 if (msbi == lsbi) 
-		 if (msbi >= numBytes) 
+		 if (msbi == lsbi)
+		 if (msbi >= numBytes)
 		 return 0;
 		 else
 		 return (byteArray[lsbi] >> (lsb & 7)) & ((1 << (msb - lsb + 1)) - 1);
@@ -510,35 +512,35 @@ namespace LinBox {
 
 		const_iterator begin() const {
 			return const_iterator(*this);
-		}		
+		}
 
 		const_iterator end() const {
 			return const_iterator (*this,_length);
 		}
-	
+
 		virtual const size_t length() const
 		{ return _length;}
-		
+
 		// return the size of the solution
-		virtual const size_t size() const 
+		virtual const size_t size() const
 		{ return _A.coldim();}
 
 		// return the ring
-		virtual const Ring& ring() const 
+		virtual const Ring& ring() const
 		{ return this->_R; }
-		
+
 		// return the prime
-		virtual const Integer& prime () const 
+		virtual const Integer& prime () const
 		{ return _p; }
-		
+
 		// return the bound for the numerator
 		const Integer numbound() const
 		{return _numbound;}
-		
+
 		// return the bound for the denominator
 		const Integer denbound() const
 		{return _denbound;}
-		
+
 		// return the matrix
 		const IMatrix& getMatrix() const
 		{return _A; }
@@ -546,7 +548,7 @@ namespace LinBox {
 		// return the right hand side
 		const IVector& getVector() const
 		{return _b;}
-		
+
 	};
 
 	template <class _Ring, class _Field, class _IMatrix, class _FMatrix>
@@ -555,85 +557,85 @@ namespace LinBox {
 	public:
 		typedef _Field                               Field;
 		typedef _Ring                                 Ring;
-		typedef _IMatrix                           IMatrix;		
-		typedef _FMatrix                           FMatrix;	
+		typedef _IMatrix                           IMatrix;
+		typedef _FMatrix                           FMatrix;
 		typedef typename Field::Element            Element;
 		typedef typename IMatrix::Element          Integer;
 		typedef std::vector<Integer>               IVector;
 		typedef std::vector<Element>               FVector;
 
 	protected:
-		
-		const FMatrix&                  _Ap;	
+
+		const FMatrix&                  _Ap;
 		Field                            _F;
 		const VectorDomain<Field>      _VDF;
 		mutable FVector              _res_p;
-		mutable FVector            _digit_p;		
+		mutable FVector            _digit_p;
 		BlasApply<Field>                _BA;
-		
+
 	public:
 #ifdef RSTIMING
 		mutable Timer tGetDigit, ttGetDigit, tGetDigitConvert, ttGetDigitConvert;
 #endif
 
 		template <class Prime_Type, class VectorIn>
-		DixonLiftingContainer (const Ring&       R, 
-				       const Field&      F, 
-				       const IMatrix&    A, 
-				       const FMatrix&   Ap, 
-				       const VectorIn&   b, 
+		DixonLiftingContainer (const Ring&       R,
+				       const Field&      F,
+				       const IMatrix&    A,
+				       const FMatrix&   Ap,
+				       const VectorIn&   b,
 				       const Prime_Type& p)
-			: LiftingContainerBase<Ring,IMatrix> (R,A,b,p), _Ap(Ap), _F(F), _VDF(F), 
-			  _res_p(b.size()), _digit_p(A.coldim()), _BA(F) 
+			: LiftingContainerBase<Ring,IMatrix> (R,A,b,p), _Ap(Ap), _F(F), _VDF(F),
+			  _res_p(b.size()), _digit_p(A.coldim()), _BA(F)
 		{
 
 			for (size_t i=0; i< _res_p.size(); ++i)
 				_F.init(_res_p[i]);
 			for (size_t i=0; i< _digit_p.size(); ++i)
 				_F.init(_digit_p[i]);
-			
+
 			//Ap.write(std::cout,F);
 #ifdef RSTIMING
 			ttGetDigit.clear();
 			ttGetDigitConvert.clear();
-#endif	
+#endif
 #ifdef DEBUG_LC
 			std::cout<<"Primes: ";
 			_F.write(std::cout);
 #endif
 
 		}
-		
-		
+
+
 		virtual ~DixonLiftingContainer() {}
 
 		// return the field
 		const Field& field() const { return _F; }
 
 	protected:
-		
-		virtual IVector& nextdigit(IVector& digit, const IVector& residu) const {		
-#ifdef RSTIMING			
+
+		virtual IVector& nextdigit(IVector& digit, const IVector& residu) const {
+#ifdef RSTIMING
 			tGetDigitConvert.start();
 #endif
 			LinBox::integer tmp;
-			
+
 			Hom<Ring, Field> hom(this->_R, _F);
 			// res_p =  residu mod p
-			//VectorHom::map (_res_p, residu, _F, this->_R);			
+			//VectorHom::map (_res_p, residu, _F, this->_R);
 			{
 				typename FVector::iterator iter_p = _res_p.begin();
 				typename IVector::const_iterator iter = residu.begin();
 				for ( ;iter != residu. end(); ++iter, ++iter_p)
 					//_F. init (*iter_p, this->_R.convert(tmp,*iter));
 					hom.image(*iter_p, *iter);//std::cout<<*iter_p<<"= "<< *iter<<" mod "<<this->_p<<"\n";}
-			}			
+			}
 #ifdef RSTIMING
 			tGetDigitConvert.stop();
 			ttGetDigitConvert += tGetDigitConvert;
 			tGetDigit.start();
-#endif			
-			
+#endif
+
 			// compute the solution by applying the inverse of A mod p
 			//_BA.applyV(_digit_p,_Ap,_res_p);
 			_Ap.apply(_digit_p, _res_p);
@@ -643,23 +645,23 @@ namespace LinBox {
 			tGetDigitConvert.start();
 #endif
 			// digit = digit_p
-			//VectorHom::map(digit, _digit_p, this->_R, _F);			
+			//VectorHom::map(digit, _digit_p, this->_R, _F);
 			{
-				typename FVector::const_iterator iter_p = _digit_p.begin(); 
+				typename FVector::const_iterator iter_p = _digit_p.begin();
 				typename IVector::iterator iter = digit.begin();
-				
+
 				for ( ; iter_p!= _digit_p.end(); ++iter_p, ++iter)
 					//this->_R.init(*iter, _F.convert(tmp,*iter_p));
 					hom.preimage(*iter, *iter_p);
 			}
-			
+
 #ifdef RSTIMING
 			tGetDigitConvert.stop();
 			ttGetDigitConvert += tGetDigitConvert;
-#endif		
+#endif
 			return digit;
 		}
-		
+
 	}; // end of class DixonLiftingContainerBase
 
 
@@ -670,7 +672,7 @@ namespace LinBox {
 	public:
 		typedef _Field                                     Field;
 		typedef _Ring                                       Ring;
-		typedef _IMatrix                                 IMatrix;		
+		typedef _IMatrix                                 IMatrix;
 		typedef _FMatrix                                 FMatrix;
 		typedef typename Field::Element                  Element;
 		typedef typename Ring::Element                   Integer;
@@ -687,20 +689,20 @@ namespace LinBox {
 		const VectorDomain<Field>      _VDF;
 		mutable FVector              _res_p;
 		mutable FVector            _digit_p;
-		typename Field::RandIter      _rand;		
+		typename Field::RandIter      _rand;
 #ifdef RSTIMING
 	public:
 		mutable Timer tGetDigit, ttGetDigit, tGetDigitConvert, ttGetDigitConvert;
-#endif			
+#endif
 	public:
 
 		template <class Prime_Type, class VectorIn>
 		WiedemannLiftingContainer (const Ring& R,
-					   const Field& F, 
-					   const IMatrix& A, 
-					   const FMatrix& Ap, 
+					   const Field& F,
+					   const IMatrix& A,
+					   const FMatrix& Ap,
 					   const FPolynomial& MinPoly,
-					   const VectorIn& b, 
+					   const VectorIn& b,
 					   const Prime_Type& p)
 			: LiftingContainerBase<Ring,IMatrix> (R,A,b,p), _Ap(Ap), _MinPoly(MinPoly), _F(F), _VDF(F), _res_p(b.size()), _digit_p(A.coldim()), _rand(F) {
 
@@ -722,11 +724,11 @@ namespace LinBox {
 		const Field& field() const { return _F; }
 
 	protected:
-		
+
 		virtual IVector& nextdigit(IVector& digit,const IVector& residu) const {
-			
+
 			LinBox::integer tmp;
-#ifdef RSTIMING			
+#ifdef RSTIMING
 			tGetDigitConvert.start();
 #endif
 			// res_p =  residu mod p
@@ -736,22 +738,22 @@ namespace LinBox {
 				for ( ;iter != residu. end(); ++iter, ++iter_p)
 					_F. init (*iter_p, this->_R.convert(tmp,*iter));
 			}
-#ifdef RSTIMING			
+#ifdef RSTIMING
 			tGetDigitConvert.stop();
 			ttGetDigitConvert+=tGetDigitConvert;
 			tGetDigit.start();
-#endif		
+#endif
 			// compute the solution of system by Minimal polynomial application
-			_VDF.mul (_digit_p, _res_p, _MinPoly.back ());      
-			FVector z(_Ap.rowdim ());      
-			
-			
-			for (size_t i = _MinPoly.size () - 1; --i > 0;) {												
+			_VDF.mul (_digit_p, _res_p, _MinPoly.back ());
+			FVector z(_Ap.rowdim ());
+
+
+			for (size_t i = _MinPoly.size () - 1; --i > 0;) {
 				_Ap.apply (z, _digit_p);
 				_VDF.axpy (_digit_p, _MinPoly[i], _res_p, z);
-			}      
+			}
 
-			      
+
 			// check results
 			FVector error(_Ap.coldim());
 			_Ap.apply(error,_digit_p);
@@ -774,21 +776,21 @@ namespace LinBox {
 					std::cout<<" the prime was not good \n, result will be wrong";
 					break;
 				}
-				
+
 				// denormalize the minimal polynomial
 				FPolyIterator iter=_MinPoly.begin();
 				while (++iter != _MinPoly.end()) {
 					_F.mulin (*iter, _MinPoly.front());
 					_F.negin (*iter);
-				}	
-		       	
-				// update the minimal polynomial 
+				}
+
+				// update the minimal polynomial
 				Element zero;
 				_F.init(zero,0);
 				FPolynomial newMinPoly(_MinPoly.size()+Poly.size()-1,zero);
 				for (size_t i=0; i < _MinPoly.size(); i++)
 					for (size_t j=0 ; j < Poly.size(); j++)
-						_F.axpyin(newMinPoly[i+j],_MinPoly[i],Poly[j]);	
+						_F.axpyin(newMinPoly[i+j],_MinPoly[i],Poly[j]);
 				_MinPoly.clear();
 				Poly.clear();
 				_MinPoly=newMinPoly;
@@ -799,15 +801,15 @@ namespace LinBox {
 					_F.divin (*iter, _MinPoly.front ());
 					_F.negin (*iter);
 				}
-				
-				_VDF.mul (_digit_p, _res_p, _MinPoly.back ());      
-				FVector z(_Ap.rowdim ());      
-				for (size_t i = _MinPoly.size () - 1; --i > 0;) {		
+
+				_VDF.mul (_digit_p, _res_p, _MinPoly.back ());
+				FVector z(_Ap.rowdim ());
+				for (size_t i = _MinPoly.size () - 1; --i > 0;) {
 					_Ap.apply (z, _digit_p);
 					_VDF.axpy (_digit_p, _MinPoly[i], _res_p, z);
-				}    
+				}
 
-				_Ap.apply(error,_digit_p);	 
+				_Ap.apply(error,_digit_p);
 				if (_MinPoly.size() > minpoly_degree){
 					minpoly_degree = _MinPoly.size();
 					nst=0;std::cout<<"updating minpoly\n";
@@ -827,12 +829,12 @@ namespace LinBox {
 #endif
 			// digit = digit_p
 			{
-				typename FVector::const_iterator iter_p = _digit_p.begin(); 
+				typename FVector::const_iterator iter_p = _digit_p.begin();
 				typename IVector::iterator iter = digit.begin();
 				for ( ; iter_p!= _digit_p.end(); ++iter_p, ++iter)
 					this->_R.init(*iter, _F.convert(tmp,*iter_p));
 			}
-			
+
 #ifdef RSTIMING
 			tGetDigitConvert.stop();
 			ttGetDigitConvert += tGetDigitConvert;
@@ -851,7 +853,7 @@ namespace LinBox {
 	public:
 		typedef _Field                                	            Field;
 		typedef _Ring                                 	             Ring;
-		typedef _IMatrix                              	          IMatrix;       
+		typedef _IMatrix                              	          IMatrix;
 		typedef _FMatrix                              	          FMatrix;
 		typedef typename Field::Element               	          Element;
 		typedef typename Ring::Element                            Integer;
@@ -882,44 +884,44 @@ namespace LinBox {
 #ifdef RSTIMING
 	public:
 		mutable Timer tGetDigit, ttGetDigit, tGetDigitConvert, ttGetDigitConvert, tMinPoly, ttMinPoly;
-#endif			
+#endif
 	public:
 
 		template <class Prime_Type, class VectorIn>
 		BlockWiedemannLiftingContainer (const Ring                         &R,
-						const Field                        &F, 
-						const IMatrix                      &A, 
-						const FMatrix                     &Ap, 
-						const VectorIn                     &b, 
+						const Field                        &F,
+						const IMatrix                      &A,
+						const FMatrix                     &Ap,
+						const VectorIn                     &b,
 						const Prime_Type                   &p,
 						const size_t                        m,
 						const size_t                        n)
 			: LiftingContainerBase<Ring,IMatrix> (R,A,b,p), _Ap(Ap),
-			  _F(F), 
-			  _VDF(F), 
-			  _res_p(b.size()), 
-			  _digit_p(A.coldim()), 
-			  _rand(F), 
-			  _row(Ap.rowdim()), 
-			  _col(Ap.coldim()), 
-			  _m(m), 
-			  _n(n), 
-			  _U(m-1,Ap.rowdim()), 
+			  _F(F),
+			  _VDF(F),
+			  _res_p(b.size()),
+			  _digit_p(A.coldim()),
+			  _rand(F),
+			  _row(Ap.rowdim()),
+			  _col(Ap.coldim()),
+			  _m(m),
+			  _n(n),
+			  _U(m-1,Ap.rowdim()),
 			  _BMD(F) {
-			
-	
-		
-		
+
+
+
+
 			for (size_t i=0;i<_m-1;++i)
 				for (size_t j=0;j< _row;++j)
 					_rand.random(_U.refEntry(i,j));
-			
+
 			Coefficient V(_col,n);
 			for (size_t i=0;i< _col;++i)
 				for (size_t j=0; j< n;++j)
 					_rand.random(V.refEntry(i,j));
-			
-		       
+
+
 			std::cout<<"U:\n";
 			_U.write(std::cout, _F);
 
@@ -931,22 +933,22 @@ namespace LinBox {
 			typename Block::ConstRowIterator    iter_U   = _U.rowBegin();
 			typename Block::RowIterator         iter_UAp = UAp.rowBegin();
 			++iter_UAp;
-			for (; iter_U != _U.rowEnd(); ++iter_UAp, ++iter_U) 
+			for (; iter_U != _U.rowEnd(); ++iter_UAp, ++iter_U)
 				Ap.applyTranspose( *iter_UAp , *iter_U );
-				
+
 			for (size_t i=0;i<m;++i)
-				_rand.random(UAp.refEntry(0,i));			
-			
-			
+				_rand.random(UAp.refEntry(0,i));
+
+
 			_Seq = new Sequence (&Ap, _F, UAp,V);
 			std::cout<<"Sequence:\n";
 			for (size_t i=0;i<_Seq->getRep().size();++i)
 				_Seq->getRep()[i].write(std::cout,_F)<<"\n";
 			std::cout<<"\n";
 
-			
-			_Dom = new BlockMasseyDomain<Field,Sequence> (_Seq);					      					      
-			
+
+			_Dom = new BlockMasseyDomain<Field,Sequence> (_Seq);
+
 
 #ifdef RSTIMING
 			ttGetDigit.clear();
@@ -970,11 +972,11 @@ namespace LinBox {
 		const Field& field() const { return _F; }
 
 	protected:
-		
+
 		virtual IVector& nextdigit(IVector& digit,const IVector& residu) const {
-			
+
 			LinBox::integer tmp;
-#ifdef RSTIMING			
+#ifdef RSTIMING
 			tGetDigitConvert.start();
 #endif
 			// res_p =  residu mod p
@@ -984,18 +986,18 @@ namespace LinBox {
 				for ( ;iter != residu. end(); ++iter, ++iter_p)
 					_F. init (*iter_p, this->_R.convert(tmp,*iter));
 			}
-#ifdef RSTIMING			
+#ifdef RSTIMING
 			tGetDigitConvert.stop();
 			ttGetDigitConvert+=tGetDigitConvert;
 			tGetDigit.start();
-#endif		
+#endif
 
 			std::cout<<"residue:\n";
 			for (size_t i=0;i<_res_p.size();++i)
 				_F.write(std::cout,_res_p[i])<<",";
 			std::cout<<"\n";
 
-			
+
 
 			// compute the Minimal polynomial of the modified Sequence
 			_Seq->setU(_res_p,0);
@@ -1004,7 +1006,7 @@ namespace LinBox {
 			for (size_t i=0;i<_Seq->getRep().size();++i)
 				_Seq->getRep()[i].write(std::cout,_F)<<"\n";
 			std::cout<<"\n";
-			
+
 			FBlockPolynomial minpoly;
 			std::vector<size_t> degree(_m);
 
@@ -1015,10 +1017,10 @@ namespace LinBox {
 #ifdef RSTIMING
 			tMinPoly.stop();
 			ttMinPoly+=tMinPoly;
-#endif		
+#endif
 			std::cout<<"Block Minpoly:\n";
 			for (size_t i=0;i<minpoly.size();++i)
-				minpoly[i].write(std::cout,_F)<<"\n";			
+				minpoly[i].write(std::cout,_F)<<"\n";
 			std::cout<<"\n";
 
 			size_t idx=0;
@@ -1028,72 +1030,72 @@ namespace LinBox {
 					++i;
 				if (i == _m)
 					throw LinboxError(" block minpoly: matrix seems to be singular - abort");
-				else 
-					idx=i	;			
+				else
+					idx=i	;
 			}
 
-			size_t deg = degree[idx];		
+			size_t deg = degree[idx];
 			BlasMatrix<Element> idx_poly(deg+1,_m-1);
-			for (size_t i=0;i<deg+1;++i) 
+			for (size_t i=0;i<deg+1;++i)
 				for (size_t j=0;j<_m-1;++j)
 					idx_poly.setEntry(i,j,minpoly[i].getEntry(idx,j+1));
 
 			BlasMatrix<Element> Combi(deg+1,_row);
 			_BMD.mul(Combi,idx_poly,_U);
-					
 
-			FVector lhs(_col),row(_row);	
+
+			FVector lhs(_col),row(_row);
 			for (size_t i=0;i<_row;++i)
 				row[i]= Combi.getEntry(deg,i);
-					
-			_Ap.applyTranspose(lhs,row);					
+
+			_Ap.applyTranspose(lhs,row);
 			FVector lhsbis(lhs);
 			for (int i = deg-1 ; i >= 0;--i) {
 				for (size_t j=0;j<_row;++j)
 					row[j]= Combi.getEntry(i,j);
 				_VDF.add (lhs,row,lhsbis);
-				_Ap.applyTranspose (lhsbis, lhs);			
-			}   
-					
+				_Ap.applyTranspose (lhsbis, lhs);
+			}
+
 			FVector accu (lhs);
 			_Ap.applyTranspose(lhs,_res_p);
 			_VDF.mulin(lhs,minpoly[deg].getEntry(idx,0));
 			lhsbis=lhs;
 			for (size_t i = deg-1 ; i > 0;--i) {
 				_VDF.axpy (lhs,minpoly[i].getEntry(idx,0) , _res_p, lhsbis);
-				_Ap.applyTranspose (lhsbis, lhs);			
-			}  
-					
+				_Ap.applyTranspose (lhsbis, lhs);
+			}
+
 			_VDF.addin(accu,lhs);
 			Element scaling;
 			_F.init(scaling);
 			_F.neg(scaling,minpoly[0].getEntry(idx,0));
 			_F.invin(scaling);
 			_VDF.mul(_digit_p,accu,scaling);
-			
-			
+
+
 			// check results
 			FVector error(_Ap.coldim());
-			_Ap.apply(error,_digit_p);		
+			_Ap.apply(error,_digit_p);
 			if (!_VDF.areEqual(error,_res_p)){
 				std::cout<<"BlockMinpoly error\n";
 				throw LinboxError("BlockMinpoly error\n");
 			}
-			
-			
-#ifdef RSTIMING			
+
+
+#ifdef RSTIMING
 			tGetDigit.stop();
 			ttGetDigit+=tGetDigit;
 			tGetDigitConvert.start();
 #endif
 			// digit = digit_p
 			{
-				typename FVector::const_iterator iter_p = _digit_p.begin(); 
+				typename FVector::const_iterator iter_p = _digit_p.begin();
 				typename IVector::iterator iter = digit.begin();
 				for ( ; iter_p!= _digit_p.end(); ++iter_p, ++iter)
 					this->_R.init(*iter, _F.convert(tmp,*iter_p));
 			}
-			
+
 #ifdef RSTIMING
 			tGetDigitConvert.stop();
 			ttGetDigitConvert += tGetDigitConvert;
@@ -1111,8 +1113,8 @@ namespace LinBox {
 	public:
 		typedef _Field                               Field;
 		typedef _Ring                                 Ring;
-		typedef _IMatrix                           IMatrix;		
-		typedef _FMatrix                           FMatrix;	
+		typedef _IMatrix                           IMatrix;
+		typedef _FMatrix                           FMatrix;
 		typedef typename Field::Element            Element;
 		typedef typename IMatrix::Element          Integer;
 		typedef std::vector<Integer>               IVector;
@@ -1120,13 +1122,13 @@ namespace LinBox {
 		typedef _Block                               Block;
 
 	protected:
-		
+
 		const FMatrix&                      _Ap;
 		const Diagonal<Field>               &_D;
 		const BlockHankelInverse<Field>  &_Hinv;
 		Field                                _F;
 		mutable FVector                  _res_p;
-		mutable FVector                _digit_p;		
+		mutable FVector                _digit_p;
 		std::vector<std::vector<Element> >   _u;
 		std::vector<std::vector<Element> >   _v;
 		size_t                           _block;
@@ -1134,7 +1136,7 @@ namespace LinBox {
 		VectorDomain<Field>                 _VD;
 		BlasMatrixDomain<Field>            _BMD;
 		Element                           _zero;
-		
+
 	public:
 #ifdef RSTIMING
 		mutable Timer tGetDigit, ttGetDigit, tGetDigitConvert, ttGetDigitConvert;
@@ -1143,15 +1145,15 @@ namespace LinBox {
 
 
 		template <class Prime_Type, class VectorIn>
-		BlockHankelLiftingContainer (const Ring&        R, 
-					     const Field&       F, 
-					     const IMatrix&     A, 
+		BlockHankelLiftingContainer (const Ring&        R,
+					     const Field&       F,
+					     const IMatrix&     A,
 					     const FMatrix&    Ap,
 					     const Diagonal<Field> &D,
 					     const BlockHankelInverse<Field> &Hinv,
 					     const Block&      U,
 					     const Block&      V,
-					     const VectorIn&   b, 
+					     const VectorIn&   b,
 					     const Prime_Type& p)
 			: LiftingContainerBase<Ring,IMatrix> (R,A,b,p), _Ap(Ap), _Hinv(Hinv), _F(F),
 			  _res_p(b.size()), _digit_p(A.coldim()),  _block(U.rowdim()), _numblock(A.coldim()/_block) , _VD(F), _BMD(F), _D(D)
@@ -1163,7 +1165,7 @@ namespace LinBox {
 				_F.init(_res_p[i]);
 			for (size_t i=0; i< _digit_p.size(); ++i)
 				_F.init(_digit_p[i]);
-			
+
 			size_t block= U.rowdim();
 
 			_u.resize(_block, std::vector<Element>(_numblock));
@@ -1180,15 +1182,15 @@ namespace LinBox {
 #ifdef RSTIMING
 			ttGetDigit.clear();
 			ttGetDigitConvert.clear();
-#endif	
+#endif
 #ifdef DEBUG_LC
 			std::cout<<"Primes: ";
 			_F.write(std::cout);
 #endif
 
 		}
-		
-		
+
+
 		virtual ~BlockHankelLiftingContainer() {
 #ifdef RSTIMING
 			std::cout<<"time apply U: "<<tApplyU<<"\n";
@@ -1201,34 +1203,34 @@ namespace LinBox {
 		const Field& field() const { return _F; }
 
 	protected:
-		
-		virtual IVector& nextdigit(IVector& digit, const IVector& residu) const {		
-#ifdef RSTIMING			
+
+		virtual IVector& nextdigit(IVector& digit, const IVector& residu) const {
+#ifdef RSTIMING
 			tGetDigitConvert.start();
 #endif
 			//LinBox::integer tmp;
-			
+
 			Hom<Ring, Field> hom(this->_R, _F);
 			// res_p =  residu mod p
-			//VectorHom::map (_res_p, residu, _F, this->_R);			
+			//VectorHom::map (_res_p, residu, _F, this->_R);
 			{
 				typename FVector::iterator iter_p = _res_p.begin();
 				typename IVector::const_iterator iter = residu.begin();
 				for ( ;iter != residu. end(); ++iter, ++iter_p)
 					//_F. init (*iter_p, this->_R.convert(tmp,*iter));
 					hom.image(*iter_p, *iter);
-			}			
+			}
 #ifdef RSTIMING
 			tGetDigitConvert.stop();
 			ttGetDigitConvert += tGetDigitConvert;
 			tGetDigit.start();
-#endif			
-		
+#endif
+
 			// compute the solution of _Ap^(-1).residu mod p = [V^T AV^T ... A^k]^T . Hinv . [U^T U^TA ... U^TA^k]^T residue mod p
 			// with k= numblock -1
-#ifdef RSTIMING		
+#ifdef RSTIMING
 			tAcc.clear();
-			tAcc.start();			
+			tAcc.start();
 #endif
 			/*
 			std::cout<<"b:=<";
@@ -1237,7 +1239,7 @@ namespace LinBox {
 			_F.write(std::cout,_res_p[_res_p.size()-1])<<">;\n";
 			*/
 
-		
+
 
 			size_t n = _Ap.coldim();
 			// compute z0 = [U^T U^T Ap^T ... U^T Ap^k]^T . residue mod p
@@ -1248,13 +1250,13 @@ namespace LinBox {
 			for (size_t i=0;i<n;++i){
 				_F.assign(Apib.refEntry(i,0), _res_p[i]);
 			}
-		
+
 			int swi=1;
 			for (size_t j=1; j<_numblock; ++j)
 				if (swi){
 					_Ap.apply(b1, b0);
 					for (size_t i=0;i<n;++i)
-						_F.assign(Apib.refEntry(i,j), b1[i]);					
+						_F.assign(Apib.refEntry(i,j), b1[i]);
 					swi=0;
 				}
 				else{
@@ -1263,13 +1265,13 @@ namespace LinBox {
 						_F.assign(Apib.refEntry(i,j), b0[i]);
 					swi=1;
 				}
-		
+
 			FVector tmp(_numblock);
 			for (size_t i=0; i<_block; ++i){
-				BlasMatrix<Element> T(Apib, i*_numblock, 0, _numblock, _numblock); 				
+				BlasMatrix<Element> T(Apib, i*_numblock, 0, _numblock, _numblock);
 				_BMD.mul(tmp, _u[i], T);
 				for (size_t j=0;j<_numblock;++j){
-					this->_F.assign(z0[j*_block+i], tmp[j]);					
+					this->_F.assign(z0[j*_block+i], tmp[j]);
 				}
 			}
 #ifdef RSTIMING
@@ -1294,12 +1296,12 @@ namespace LinBox {
 				_F.write(std::cout,z1[i])<<",";
 			_F.write(std::cout,z1[_digit_p.size()-1])<<">;\n";
 			*/
-			// compute digit_p  = [V^T AV^T ... A^k]^T.z1			
-			FVector b_bar(n), b_hat(_numblock);			
+			// compute digit_p  = [V^T AV^T ... A^k]^T.z1
+			FVector b_bar(n), b_hat(_numblock);
 			for (size_t i=0;i<n;++i)
-				_F.assign(_digit_p[i], _zero);			
-						
-			for (int i= _numblock-1;i>=0; --i){				
+				_F.assign(_digit_p[i], _zero);
+
+			for (int i= _numblock-1;i>=0; --i){
 				_Ap.apply(b1, _digit_p);
 				_digit_p=b1;
 				for (size_t j=0;j<_block;++j){
@@ -1327,22 +1329,22 @@ namespace LinBox {
 			tGetDigitConvert.start();
 #endif
 			// digit = digit_p
-			//VectorHom::map(digit, _digit_p, this->_R, _F);			
+			//VectorHom::map(digit, _digit_p, this->_R, _F);
 			{
-				typename FVector::const_iterator iter_p = _digit_p.begin(); 
+				typename FVector::const_iterator iter_p = _digit_p.begin();
 				typename IVector::iterator iter = digit.begin();
 				for ( ; iter_p!= _digit_p.end(); ++iter_p, ++iter)
 					//this->_R.init(*iter, _F.convert(tmp,*iter_p));
 					hom.preimage(*iter, *iter_p);
 			}
-			
+
 #ifdef RSTIMING
 			tGetDigitConvert.stop();
 			ttGetDigitConvert += tGetDigitConvert;
-#endif		
+#endif
 			return digit;
 		}
-		
+
 	}; // end of class BlockHankelLiftingContainer
 
 
