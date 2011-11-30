@@ -24,7 +24,7 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * This file implements the C++ interface to commentators (for 
+ * This file implements the C++ interface to commentators (for
  * providing runtime commentary to the user)
  */
 
@@ -66,7 +66,7 @@
 #define MSG_STATUS(ret) (ret ? MSG_PASSED : MSG_FAILED)
 
 // Legacy definitions -- please do not use
-#define PRINT_EVERYTHING 100000 
+#define PRINT_EVERYTHING 100000
 #define PRINT_NOTHING 0
 
 #define LVL_ALWAYS =  1,
@@ -77,7 +77,7 @@
 #define LVL_NEVER  =  (2*PRINT_EVERYTHING)
 
 #ifndef DISABLE_COMMENTATOR
-namespace LinBox 
+namespace LinBox
 {
 	// Forward declaration
 	class MessageClass;
@@ -86,12 +86,12 @@ namespace LinBox
 	// Utility object needed for associative containers
 	struct LessThanString
 	{
-		bool operator () (const char *str1, const char *str2) const 
+		bool operator () (const char *str1, const char *str2) const
 			{ return strcmp (str1, str2) < 0; }
 	};
 
 	// \class ActivityState commentator.h linbox/util/commentator.h
-	/** 
+	/**
 	 * \brief used by commentator
 
 	 * This stores a snapshot of the state of the commentator's activity
@@ -160,7 +160,7 @@ namespace LinBox
 	 */
 
 	class Commentator {
-	    public: 
+	    public:
 		/** Default constructor
 		 * Constructs a commentator with default settings
 		 */
@@ -282,7 +282,7 @@ namespace LinBox
 		 * @return ActivityState object
 		 */
 
-		ActivityState saveActivityState () const 
+		ActivityState saveActivityState () const
 			{ return ActivityState (_activities.top ()); }
 
 		/** Restore activity state
@@ -441,7 +441,7 @@ namespace LinBox
 		 * @param stream Stream to check
 		 * @return true if stream is the null stream; false otherwise
 		 */
-		bool isNullStream (const std::ostream &str) 
+		bool isNullStream (const std::ostream &str)
 			{ return &str == &cnull; }
 
 		/** Set output stream for brief report
@@ -533,7 +533,7 @@ namespace LinBox
 		// Null std::ostream prints nothing
 		struct nullstreambuf : public std::streambuf {
 			nullstreambuf() {};
-                        // GV modidied seek_dir twice 
+                        // GV modidied seek_dir twice
 			std::streampos seekoff(std::streambuf::off_type, std::ios::seekdir, std::ios::openmode) {return 0;}
 			std::streampos seekpos(std::streambuf::pos_type, std::ios::openmode) {return 0;}
 			std::streampos sys_seek(std::streambuf::off_type, std::ios::seekdir) {return 0;}
@@ -549,11 +549,11 @@ namespace LinBox
 			double                   _time;
 			long                     _steps;
 		};
-        
+
 		typedef std::deque<StepsAndTime> Estimator;
 
 		struct Activity {
-			Activity (const char *desc, const char *fn, unsigned long len) 
+			Activity (const char *desc, const char *fn, unsigned long len)
 				: _desc (desc), _fn (fn), _len (len), _progress (0) {}
 
 			const char              *_desc;
@@ -669,7 +669,7 @@ namespace LinBox
 	    private:
 		typedef std::map <const char *, std::list<std::pair <unsigned long, unsigned long> >, LessThanString> Configuration;
 
-		class smartStreambuf : public std::streambuf 
+		class smartStreambuf : public std::streambuf
 		{
 			const Commentator &_comm;
 			std::ostream &_stream;
@@ -723,7 +723,7 @@ namespace LinBox
 // program when DISABLE_COMMENTATOR is defined. All code making use of the
 // commentator should disappear.
 
-namespace LinBox 
+namespace LinBox
 {
 	// Forward declaration
 	class Commentator;
@@ -741,7 +741,7 @@ namespace LinBox
 	};
 
 	class Commentator {
-	    public: 
+	    public:
 		inline Commentator () : cnull (new nullstreambuf) {}
 		inline  ~Commentator () {}
 		inline void start (const char *description, const char *fn = (const char *) 0, unsigned long len = 0) {}
@@ -756,7 +756,7 @@ namespace LinBox
 			LEVEL_UNIMPORTANT  =  3,
 		};
 
-		inline std::ostream &report (long level, const char *msg_class) { return cnull; }
+		inline std::ostream &report (long level =0, const char *msg_class=NULL) { return cnull; }
 		inline void indent (std::ostream &stream) {}
 
 		enum OutputFormat

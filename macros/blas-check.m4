@@ -52,18 +52,18 @@ if test -n "$BLAS_VAL"; then
 		if test -r "$BLAS_VAL/lib/libcblas.a" ; then 
 			ATLAS_NEEDED=`nm -u $BLAS_VAL/lib/libcblas.a | grep ATL`
 			if test -n "$ATLAS_NEEDED"; then
-				ATLAS_LIBS="-lcblas -latlas"
+				ATLAS_LIBS="-llapack -lcblas -latlas"	
 			else
-				ATLAS_LIBS="-lcblas"
+				ATLAS_LIBS="-lcblas -llapack"
 			fi		
 			BLAS_LIBS="-L${BLAS_VAL}/lib $ATLAS_LIBS" 
 
 		elif test -r "$BLAS_VAL/libcblas.a" ; then 
 			ATLAS_NEEDED=`nm -u $BLAS_VAL/libcblas.a | grep ATL`
 			if test -n "$ATLAS_NEEDED"; then
-				ATLAS_LIBS="-lcblas -latlas"
+				ATLAS_LIBS="-llapack -lcblas -latlas"	
 			else
-				ATLAS_LIBS="-lcblas"
+				ATLAS_LIBS="-lcblas -llapack"
 			fi		
 			BLAS_LIBS="-L${BLAS_VAL} $ATLAS_LIBS" 
                 elif test -r "$BLAS_VAL/include/mkl_cblas.h"; then
@@ -78,7 +78,7 @@ if test -n "$BLAS_VAL"; then
 					echo "Sorry unsupported arch, please complain in linbox-use discussion group";
 					;;
 			esac	
-                        BLAS_LIBS="-L${BLAS_VAL}/lib/${MKL_ARCH}/ -lmkl -lvml -lguide"
+                        BLAS_LIBS="-L${BLAS_VAL}/lib/${MKL_ARCH}/ -lmkl_lapack64 -lmkl -lvml -lguide"
 		fi
 	else
 		BLAS_LIBS="$BLAS_VAL"
@@ -132,9 +132,9 @@ else
 
 			ATLAS_NEEDED=`nm -u $BLAS_HOME/lib/libcblas.a | grep ATL`
 			if test -n "$ATLAS_NEEDED"; then
-				ATLAS_LIBS="-lcblas -latlas"
+				ATLAS_LIBS="-llapack -lcblas -latlas"	
 			else
-				ATLAS_LIBS="-lcblas"
+				ATLAS_LIBS="-lcblas -llapack"
 			fi		
 			if test "x$BLAS_HOME" = "x/usr" -o "x$BLAS_HOME" = "x/usr/local" ; then
  				BLAS_LIBS=" ${ATLAS_LIBS}"
@@ -145,9 +145,9 @@ else
 		elif test -r "$BLAS_HOME/libcblas.a"; then
 			ATLAS_NEEDED=`nm -u $BLAS_HOME/lib/libcblas.a | grep ATL`
 			if test -n "$ATLAS_NEEDED"; then
-				ATLAS_LIBS="-lcblas -latlas"
+				ATLAS_LIBS="-llapack -lcblas -latlas"
 			else
-				ATLAS_LIBS="-lcblas"
+				ATLAS_LIBS="-lcblas -llapack"	
 			fi		
 			BLAS_LIBS="-L${BLAS_HOME} ${ATLAS_LIBS}"
 		fi 
@@ -275,10 +275,10 @@ if test "x$blas_found" != "xyes" ; then
 			CBLAS="no"
 			CBLAS_FLAG=""
 
-			if test -r "$BLAS_HOME/lib64/libblas.a" ; then
-				BLAS_LIBS="-L${BLAS_HOME}/lib64 -lblas"
-			elif test -r "$BLAS_HOME/lib/libblas.a" ; then
-				BLAS_LIBS="-L${BLAS_HOME}/lib -lblas"
+			if test -r "$BLAS_HOME/lib64/libblas.a" && test -r "$BLAS_HOME/lib64/liblapack.a" ; then
+				BLAS_LIBS="-L${BLAS_HOME}/lib64 -llapack -lblas"
+			elif test -r "$BLAS_HOME/lib/libblas.a" && test -r "$BLAS_HOME/lib/liblapack.a" ; then
+				BLAS_LIBS="-L${BLAS_HOME}/lib -llapack -lblas"
 			elif test -r "$BLAS_HOME/lib/libblas.a"; then
 				if test "x$BLAS_HOME" = "x/usr" -o "x$BLAS_HOME" = "/usr/local" ; then
  					BLAS_LIBS="-lblas"
@@ -350,15 +350,142 @@ if test "x$blas_found" != "xyes" ; then
 		AC_MSG_RESULT(not found)
 		ifelse([$3], , :, [$3])
 	fi
-fi
+
+
 
 
 ## Check for dgetrf (mainly for Goto less than 1.7)
-## We don't have that in Gentoo define unconditionnally.
+	AC_MSG_CHECKING(for dgetrf)
+	AC_TRY_RUN(
+	[#define __LINBOX_CONFIGURATION
+	 #define __LINBOX_HAVE_DGETRF 1
+       	 #include "linbox/config-blas.h"
+	 int main () {  double a[4] = {1.,2.,3.,4.};
+			int ipiv[2];
+			clapack_dgetrf(CblasRowMajor, 2, 2, a, 2, ipiv);
+			if ( (a[0]!=2.) && (a[1]!=0.5) && (a[2]!=4.) && (a[3]!=1.))
+				return -1;
+			else
+				return 0;
+		      }
+	],[	
+	dgetrf_found="yes"	
+	break
+	],[	
+	dgetrf_problem="$problem"	
+	],[
+	break
+	])	
 
-AC_DEFINE(HAVE_DGETRF,1)
-AC_DEFINE(HAVE_DTRTRI,1)
-AC_DEFINE(HAVE_DGETRI,1)
+	if test "x$dgetrf_found" = "xyes"; then
+		AC_MSG_RESULT(found)
+		AC_DEFINE(HAVE_DGETRF,1,[Define if dgetrf is available])
+	else
+		AC_MSG_RESULT(disabling)
+		#AC_DEFINE(HAVE_DGETRF,0,[Define if dgetrf is available])	
+	fi
+	
+## Check for dtrtri (mainly for Goto less than 1.7)
+	AC_MSG_CHECKING(for dtrtri)
+	AC_TRY_RUN(
+	[#define __LINBOX_CONFIGURATION
+	 #define __LINBOX_HAVE_DTRTRI
+       	 #include "linbox/config-blas.h"
+	 int main () {  double a[4] = {1.,2.,3.,4.};
+			int ipiv[2];
+			clapack_dtrtri(CblasRowMajor,CblasUpper,CblasNonUnit,2, a, 2);
+			if ( (a[0]!=1.) && (a[1]!=-0.5) && (a[2]!=0.) && (a[3]!=0.25))
+				return -1;
+			else
+				return 0;
+		      }
+	],[	
+	dtrtri_found="yes"	
+	break
+	],[	
+	dtrtri_problem="$problem"	
+	],[
+	break
+	])	
+
+	if test "x$dtrtri_found" = "xyes"; then
+		AC_MSG_RESULT(found)
+		AC_DEFINE(HAVE_DTRTRI,1,[Define if dtrtri is available])
+	else
+		AC_MSG_RESULT(disabling)
+	fi
+
+
+## Check for dgetri (mainly for Goto less than 1.7)
+	AC_MSG_CHECKING(for dgetri)
+	AC_TRY_RUN(
+	[#define __LINBOX_CONFIGURATION
+	 #define __LINBOX_HAVE_DGETRF 1
+	 #define __LINBOX_HAVE_DGETRI 1
+       	 #include "linbox/config-blas.h"
+	 int main () {  double a[4] = {2.,0.5,4.,1.};
+			int ipiv[2] = {2,2};
+			clapack_dgetri(CblasRowMajor, 2, a, 2, ipiv);
+			if ( (a[0]!=-2.) && (a[1]!=1.) && (a[2]!=1.5) && (a[3]!=-0.5))
+				return -1;
+			else
+				return 0;
+		      }
+	],[	
+	dgetri_found="yes"	
+	break
+	],[	
+	dgetri_problem="autoimplement"	
+	],[
+	break
+	])
+
+	if test "x$dgetri_problem" = "xautoimplement"; then
+		if test "x$dtrtri_found" = "xyes"; then
+			AC_MSG_RESULT(no)
+			AC_MSG_CHECKING(for autoimplementation of dgetri)
+			AC_TRY_RUN(
+			[#define __LINBOX_CONFIGURATION
+		 	 #define __LINBOX_AUTOIMPLEMENT_DGETRI
+		 	 #define __LINBOX_HAVE_DGETRI 
+		 	 #define __LINBOX_HAVE_DTRTRI
+	 	 	 #include "linbox/config-blas.h"
+		 	 int main () {  double a[4] = {2.,0.5,4.,1.};
+					int ipiv[2] = {2,2};				
+					clapack_dgetri(CblasRowMajor, 2, a, 2, ipiv);
+					if ( (a[0]!=-2.) && (a[1]!=1.) && (a[2]!=1.5) && (a[3]!=-0.5))
+						return -1;
+					else
+						return 0;
+				      }
+			],[	
+			dgetri_found="yes"	
+			break
+			],[	
+			dgetri_problem="$problem"	
+			],[
+			break
+			])
+			if test "x$dgetri_found" = "xyes"; then
+				AC_MSG_RESULT(working)
+				AC_DEFINE(HAVE_DGETRI,1,[Define if dgetri is available])
+				AC_DEFINE(AUTOIMPLEMENT_DGETRI,,[Enable Autoimplementation of dgetri routine with dtrti and dtrsm])
+			else
+				AC_MSG_RESULT(disabling)
+				AC_DEFINE(HAVE_DGETRI,0,[Define if dgetri is available])
+			fi				
+		else	
+			AC_MSG_RESULT(disabling)
+			#AC_DEFINE(HAVE_DGETRI,0,[Define if dgetri is available])
+		fi
+	else
+		AC_MSG_RESULT(working)
+		AC_DEFINE(HAVE_DGETRI,1,[Define if dgetri is available])
+	fi	
+fi
+
+
+
 AM_CONDITIONAL(LINBOX_HAVE_BLAS, test "x$HAVE_BLAS" = "xyes")
 
 CXXFLAGS=${BACKUP_CXXFLAGS}

@@ -1,11 +1,13 @@
 AC_PREREQ(2.61)
-#AC_INIT(linbox/linbox.doxy)
+
 AC_INIT(LinBox, 1.1.6,linbox-use@googlegroups.com,linbox,http://www.linalg.org/)
 AC_CONFIG_MACRO_DIR([macros])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([1.8 gnu no-dependencies -Wall -Wno-portability])
 AM_CONFIG_HEADER([config.h])
 AX_PREFIX_CONFIG_H(linbox/linbox-config.h, __LINBOX)
+AC_PATH_PROG(RM, rm, $FALSE)
+RM="$RM -f"
 
 AM_MAINTAINER_MODE
 AM_DEP_TRACK
@@ -16,13 +18,23 @@ AM_OUTPUT_DEPENDENCY_COMMANDS
 #DEFAULT_CFLAGS="-O2 -Wall"
 
 CFLAGS=${CFLAGS:-$DEFAULT_CFLAGS}
-CXXFLAGS=${CXXFLAGS:-$DEFAULT_CFLAGS}
+CXXFLAGS=${CXXFLAGS:-$DEFAULT_CFLAGS -DDISABLE_COMMENTATOR}
 
 AM_ACLOCAL_INCLUDE(macros)
 
 # work around to fix the backward compatibility issue of automake 1.10 with 1.9 (pb with MKDIR_P)
 AC_SUBST([MKDIR_P])
-AC_PROG_CC
+# AC_PROG_CC
+AC_LANG([C++])
+
+echo "-----------------------------------------------"
+
+AC_DEBUG
+AC_PROFILE
+AC_WARNINGS
+
+echo "-----------------------------------------------"
+
 AC_PROG_CXX
 AC_STDC_HEADERS
 #AC_DISABLE_SHARED
@@ -31,6 +43,8 @@ AC_STDC_HEADERS
 # JGD 08.06.2004 : new name
 AC_PROG_LIBTOOL
 
+LT_PREREQ([2.2])
+LT_INIT
 # Machine characteristics
 
 AC_CHECK_SIZEOF(char, 8)
@@ -160,7 +174,7 @@ LB_DOC
 #CXXFLAGS="${GMP_CFLAGS} ${NTL_CFLAGS} ${GIVARO_CFLAGS} ${SACLIB_CFLAGS} ${CXXFLAGS}"
 #AC_SUBST(CXXFLAGS)
 
-AC_OUTPUT([
+AC_CONFIG_FILES([
 Makefile
 linbox-config
 examples/Makefile
@@ -191,4 +205,4 @@ interfaces/kaapi/Makefile
 interfaces/sage/Makefile
 macros/Makefile
 ])
-
+AC_OUTPUT
