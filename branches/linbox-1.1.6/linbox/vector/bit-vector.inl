@@ -18,7 +18,7 @@
 #include "linbox/vector/vector-traits.h"
 #include "linbox/vector/bit-vector.h"
 
-namespace std 
+namespace std
 {
 	template <>
 	struct iterator_traits<LinBox::BitVector::iterator>
@@ -53,31 +53,31 @@ class BitVector::reference
 
 	~reference () {}
 
-	reference &operator = (reference &a) 
+	reference &operator = (reference &a)
 		{ return *this = (bool) a; }
 
-	reference &operator = (bool v) 
-		{ 
+	reference &operator = (bool v)
+		{
                     *_word = v ? (*_word | (1UL << _pos)) : (*_word & ~(1UL << _pos));
                     return *this;
 }
 
-	reference &operator &= (reference &a) 
+	reference &operator &= (reference &a)
 		{ *_word &= ~(1UL << _pos) | (a.get_bit () << (_pos - a._pos)); return *this; }
 
-	reference &operator &= (bool v) 
+	reference &operator &= (bool v)
 		{ *_word &= ~(1UL << _pos) | (v & (1UL << _pos)); return *this; }
 
-	reference &operator |= (reference &a) 
+	reference &operator |= (reference &a)
 		{ *_word |= a.get_bit () << (_pos - a._pos); return *this; }
 
-	reference &operator |= (bool v) 
+	reference &operator |= (bool v)
 		{ *_word |= v & (1UL << _pos); return *this; }
 
-	reference &operator ^= (reference &a) 
+	reference &operator ^= (reference &a)
 		{ *_word ^= a.get_bit () << (_pos - a._pos); return *this; }
 
-	reference &operator ^= (bool v) 
+	reference &operator ^= (bool v)
 		{ *_word ^= v & (1UL << _pos); return *this; }
 
 	operator bool (void) const
@@ -95,10 +95,10 @@ class BitVector::reference
 	uint8                         _pos;
 };
 
-std::istream &operator >> (std::istream &is, BitVector::reference &a) 
+std::istream &operator >> (std::istream &is, BitVector::reference &a)
 	{ bool v; is >> v; a = v; return is; }
 
-std::ostream &operator << (std::ostream &os, BitVector::reference &a) 
+std::ostream &operator << (std::ostream &os, BitVector::reference &a)
 	{ os << bool (a); return os; }
 
 class BitVector::const_reference
@@ -126,7 +126,7 @@ class BitVector::const_reference
 	uint8                               _pos;
 };
 
-std::ostream &operator << (std::ostream &os, BitVector::const_reference &a) 
+std::ostream &operator << (std::ostream &os, BitVector::const_reference &a)
 	{ os << bool (a); return os; }
 
 // class BitVector::iterator : public std::iterator <std::random_access_iterator_tag, bool>
@@ -150,7 +150,7 @@ class BitVector::iterator : public std::_Bit_iterator
 		return *this;
 	}
 
-	iterator &operator ++ () 
+	iterator &operator ++ ()
 	{
 		if (++_ref._pos > __LINBOX_BITSOF_LONG_MUN) {
 			++_ref._word;
@@ -160,7 +160,7 @@ class BitVector::iterator : public std::_Bit_iterator
 		return *this;
 	}
 
-	iterator operator ++ (int) 
+	iterator operator ++ (int)
 	{
 		iterator tmp (*this);
 		++*this;
@@ -178,7 +178,7 @@ class BitVector::iterator : public std::_Bit_iterator
 		return iterator (new_word, new_pos);
 	}
 
-	iterator &operator += (difference_type i) 
+	iterator &operator += (difference_type i)
 	{
 		_ref._word += i >> __LINBOX_LOGOF_SIZE;
 		_ref._pos  += i & __LINBOX_POS_ALL_ONES;
@@ -187,7 +187,7 @@ class BitVector::iterator : public std::_Bit_iterator
 		return *this;
 	}
 
-	iterator &operator -- () 
+	iterator &operator -- ()
 	{
 		if (--_ref._pos > __LINBOX_BITSOF_LONG_MUN) {
 			--_ref._word;
@@ -197,7 +197,7 @@ class BitVector::iterator : public std::_Bit_iterator
 		return *this;
 	}
 
-	iterator operator -- (int) 
+	iterator operator -- (int)
 	{
 		iterator tmp (*this);
 		--*this;
@@ -207,25 +207,25 @@ class BitVector::iterator : public std::_Bit_iterator
 	iterator operator - (difference_type i) const
 		{ return *this + -i; }
 
-	iterator &operator -= (difference_type i) 
+	iterator &operator -= (difference_type i)
 		{ return *this += -i; }
 
-	difference_type operator - (iterator &i) const 
+	difference_type operator - (iterator &i) const
 		{ return (_ref._word - i._ref._word) * __LINBOX_BITSOF_LONG + (_ref._pos - i._ref._pos); }
 
-	reference operator [] (long i) 
+	reference operator [] (long i)
 		{ return *(*this + i); }
 
-	reference operator * () 
+	reference operator * ()
 		{ return _ref; }
 
-	const_reference operator * () const 
+	const_reference operator * () const
 		{ return _ref; }
 
-	bool operator == (const iterator &c) const 
+	bool operator == (const iterator &c) const
 		{ return (_ref._word == c._ref._word) && (_ref._pos == c._ref._pos); }
 
-	bool operator != (const iterator &c) const 
+	bool operator != (const iterator &c) const
 		{ return (_ref._word != c._ref._word) || (_ref._pos != c._ref._pos); }
 
     private:
@@ -233,16 +233,16 @@ class BitVector::iterator : public std::_Bit_iterator
 
 	reference _ref;
 };
- 
-class BitVector::const_iterator : public std::iterator <std::random_access_iterator_tag, bool>
-{
+
+class BitVector::const_iterator : public std::iterator <std::random_access_iterator_tag, bool> {
     public:
 
 	typedef std::iterator_traits<const_iterator>::iterator_category iterator_category;
-	typedef std::iterator_traits<const_iterator>::reference reference;
+	typedef std::iterator_traits<const_iterator>::reference const_reference;
 	typedef std::iterator_traits<const_iterator>::pointer pointer;
 	typedef std::iterator_traits<const_iterator>::value_type value_type;
 	typedef std::iterator_traits<const_iterator>::difference_type difference_type;
+	typedef BitVector::iterator iterator;
 
 	const_iterator () : _ref (std::vector<unsigned long>::const_iterator (), 0UL) {}
 	const_iterator (std::vector<unsigned long>::const_iterator word, uint8 position) : _ref (word, position) {}
@@ -254,13 +254,14 @@ class BitVector::const_iterator : public std::iterator <std::random_access_itera
 		return *this;
 	}
 
-	const_iterator &operator = (const iterator &i) {
-		_ref._word = i._ref._word;
-		_ref._pos = i._ref._pos;
+		const_iterator &operator = (const iterator &i)
+		{
+			this->_ref._word = i._ref._word;
+			this->_ref._pos = i._ref._pos;
 		return *this;
 	}
 
-	const_iterator &operator ++ () 
+	const_iterator &operator ++ ()
 	{
 		if (++_ref._pos > __LINBOX_BITSOF_LONG_MUN) {
 			++_ref._word;
@@ -270,7 +271,7 @@ class BitVector::const_iterator : public std::iterator <std::random_access_itera
 		return *this;
 	}
 
-	const_iterator operator ++ (int) 
+	const_iterator operator ++ (int)
 	{
 		const_iterator tmp (*this);
 		++*this;
@@ -288,7 +289,7 @@ class BitVector::const_iterator : public std::iterator <std::random_access_itera
 		return const_iterator (new_word, new_pos);
 	}
 
-	const_iterator &operator += (long i) 
+	const_iterator &operator += (long i)
 	{
 		_ref._word += i >> __LINBOX_LOGOF_SIZE;
 		_ref._pos  += i & __LINBOX_POS_ALL_ONES;
@@ -297,7 +298,7 @@ class BitVector::const_iterator : public std::iterator <std::random_access_itera
 		return *this;
 	}
 
-	const_iterator &operator -- () 
+	const_iterator &operator -- ()
 	{
 		if (--_ref._pos > __LINBOX_BITSOF_LONG_MUN) {
 			--_ref._word;
@@ -307,38 +308,38 @@ class BitVector::const_iterator : public std::iterator <std::random_access_itera
 		return *this;
 	}
 
-	const_iterator operator -- (int) 
+	const_iterator operator -- (int)
 	{
 		const_iterator tmp (*this);
 		--*this;
 		return tmp;
 	}
 
-	const_iterator operator - (difference_type i) const 
+	const_iterator operator - (difference_type i) const
 		{ return *this + -i; }
 
-	const_iterator &operator -= (difference_type i) 
+	const_iterator &operator -= (difference_type i)
 		{ return *this += -i; }
 
-	difference_type operator - (const_iterator &i) const 
+	difference_type operator - (const_iterator &i) const
 		{ return (_ref._word - i._ref._word) * __LINBOX_BITSOF_LONG + (_ref._pos - i._ref._pos); }
 
-	reference operator [] (difference_type i) const
+	const_reference operator [] (difference_type i) const
 		{ return *(*this + i); }
 
-	reference operator * () const
+	const_reference operator * () const
 		{ return _ref; }
 
-	bool operator == (const const_iterator &c) const 
+	bool operator == (const const_iterator &c) const
 		{ return (_ref._word == c._ref._word) && (_ref._pos == c._ref._pos); }
 
-	bool operator == (const iterator &c) const 
+	bool operator == (const iterator &c) const
 		{ return (_ref._word == c._ref._word) && (_ref._pos == c._ref._pos); }
 
-	bool operator != (const const_iterator &c) const 
+	bool operator != (const const_iterator &c) const
 		{ return (_ref._word != c._ref._word) || (_ref._pos != c._ref._pos); }
 
-	bool operator != (const iterator &c) const 
+	bool operator != (const iterator &c) const
 		{ return (_ref._word != c._ref._word) || (_ref._pos != c._ref._pos); }
 
     private:
@@ -478,8 +479,8 @@ bool BitVector::operator == (const BitVector &v) const
 		return false;
 }
 
-/* 
-namespace VectorWrapper 
+/*
+namespace VectorWrapper
 {
 	template <class Field, class Vector, class Trait>
 	inline BitVector::reference refSpecialized
