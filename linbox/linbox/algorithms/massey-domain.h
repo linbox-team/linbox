@@ -200,22 +200,18 @@ namespace LinBox
 			typename Sequence::const_iterator _iter (_container->begin ());
 			Polynomial S (END + 1);
 
-			Element Zero, One;
-			_field.init(Zero, 0);
-			_field.init(One, 1);
-
 			// -----------------------------------------------
 			// Preallocation. No further allocation.
 			//
-			C.reserve    (n + 1); C.resize (1); _field.assign (C[0], One);
-			Polynomial B (n + 1); B.resize (1); _field.assign (B[0], One);
+			C.reserve    (n + 1); C.resize (1); _field.assign (C[0], _field.one);
+			Polynomial B (n + 1); B.resize (1); _field.assign (B[0], _field.one);
 
 			long L = 0;
 			Element b, d, Ds;
 			long x = 1, b_deg = 0, c_deg = 0, l_deg;
 			long COMMOD = (END > 40) ? (END / 20) : 2;
 
-			_field.assign (b, One);
+			_field.assign (b, _field.one);
 
 
 			for (long NN = 0; NN < END && x < (long) EARLY_TERM_THRESHOLD; ++NN, ++_iter) {
@@ -266,7 +262,7 @@ namespace LinBox
 								for (; i >= x; --i)
 									_field.mul (C[i], Ds, B[i-x]);
 								for (; i > c_deg; --i)
-									_field.assign (C[i], Zero);
+									_field.assign (C[i], _field.zero);
 							}
 							else {
 								for (; i > c_deg; --i)
@@ -295,23 +291,23 @@ namespace LinBox
 								for (; i >= x; --i)
 									_field.mul (C[i], Ds, B[i-x]);
 								for (; i > c_deg; --i)
-									_field.assign (C[i], Zero);
+									_field.assign (C[i], _field.zero);
 							}
 							else {
 								for (; i > c_deg; --i)
 									_field.mul (C[i], Ds, B[i-x]);
 								for (; i >= x; --i)
-									_field.axpy (C[i], Ds, B[i-x], B[i] = C[i]);
+									_field.axpy (C[i], Ds, B[i-x], _field.assign(B[i],C[i]) );
 							}
 						}
 						else {
 							for (i = c_deg; i > l_deg; --i)
-								B[i] = C[i];
+								_field.assign(B[i],C[i]);
 							for (; i >= x; --i)
-								_field.axpy (C[i], Ds, B[i-x], B[i] = C[i] );
+								_field.axpy (C[i], Ds, B[i-x], _field.assign(B[i],C[i]) );
 						}
 
-						for (; i >= 0; --i) B[i] = C[i];
+						for (; i >= 0; --i) _field.assign(B[i],C[i]);
 
 						// -----------------------------------------------
 						L = NN+1-L;
@@ -372,7 +368,8 @@ namespace LinBox
 					phi[dp-i] = phi[0];
 				}
 				phi[0] = phi[dp];
-				_field.init (phi[dp], 1UL);
+// 				_field.init (phi[dp], 1UL);
+				_field.assign (phi[dp], _field.one);
 			}
 			return L;
 		}
@@ -387,7 +384,8 @@ namespace LinBox
 				for (long i = dp >> 1; i > 0; --i)
 					std::swap (phi[i], phi[dp-i]);
 				phi[0] = phi[dp];
-				_field.init (phi[dp], 1UL);
+// 				_field.init (phi[dp], 1UL);
+				_field.assign(phi[dp], _field.one);
 			}
 		}
 	};
