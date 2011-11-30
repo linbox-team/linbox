@@ -36,6 +36,7 @@
 // Files of Givaro library
 
 
+#include <givaro/givtablelimits.h>
 #include <givaro/givgfq.h>
 #include <givaro/giv_randiter.h>
 #include <givaro/givpoly1factor.h>
@@ -74,7 +75,7 @@ namespace LinBox
 	template<>
 	inline integer& FieldTraits<GivaroGfq>::maxExponent( integer& i )
 	{
-		return i = 20;  // Cardinality must be <= 2^20
+		return i = _GIVARO_FF_MAXEXPONENT_;  // Cardinality must be <= 2^21
 	}
 
 
@@ -124,8 +125,10 @@ namespace LinBox
 			if(!FieldTraits<GivaroGfq>::goodModulus(p)) {
 				throw PreconditionFailed(__func__,__FILE__,__LINE__,"modulus be between 2 and 2^15 and prime");
 			}
-			else if(pl>(1<<20))  {
-				throw PreconditionFailed(__func__,__FILE__,__LINE__,"cardinality must be < 2^20");
+			else if(pl>(1<<_GIVARO_FF_MAXEXPONENT_))  {
+                            std::stringstream MSGFFMAXE;
+                            MSGFFMAXE << "cardinality must be < 2^" << _GIVARO_FF_MAXEXPONENT_;       
+				throw PreconditionFailed(__func__,__FILE__,__LINE__,MSGFFMAXE.str().c_str());
 			}
 			// Givaro::GFqDom<int32_t>::init(one,1);
 			// Givaro::GFqDom<int32_t>::init(mOne,-1);
