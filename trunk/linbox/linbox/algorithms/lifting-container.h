@@ -1121,7 +1121,7 @@ namespace LinBox
 
 			_Ap.applyTranspose(lhs,row);
 			FVector lhsbis(lhs);
-			for (int i = deg-1 ; i >= 0;--i) {
+			for (int i = (int)deg-1 ; i >= 0;--i) {
 				for (size_t j=0;j<_row;++j)
 					row[j]= Combi.getEntry(i,j);
 				_VDF.add (lhs,row,lhsbis);
@@ -1238,7 +1238,7 @@ namespace LinBox
 			for (size_t i=0; i< _digit_p.size(); ++i)
 				_field.init(_digit_p[i]);
 
-			size_t block= U.rowdim();
+			// size_t block= U.rowdim();
 
 			_u.resize(_block, std::vector<Element>(_numblock));
 			_v.resize(_block, std::vector<Element>(_numblock));

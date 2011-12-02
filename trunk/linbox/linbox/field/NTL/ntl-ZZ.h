@@ -126,9 +126,9 @@ namespace LinBox
 			uint64_t t;
 			if( y < 0 ) {
 				isNeg = true;
-				t = y * -1;
+				t = uint64_t(y * -1);
 			}
-			else t = y;
+			else t = (uint64_t) y;
 			init(x,t);
 			if( isNeg ) x *= -1;
 			return x;

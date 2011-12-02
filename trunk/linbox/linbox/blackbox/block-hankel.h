@@ -79,7 +79,7 @@ namespace LinBox
 			F.assign(E[i], P[P.size()-block+i]);
 
 		for (int i=numblock-2; i>=0;--i)
-			for (size_t j= block*i; j< block*(i+1); ++j){
+			for (size_t j= block*i; j< (size_t) block*(i+1); ++j){
 				idx= j%block;
 				F.mulin(E[idx], a);
 				F.addin(E[idx], P[j]);
@@ -158,7 +158,7 @@ namespace LinBox
 			typename std::list<typename Field::Element>::const_reverse_iterator rit=L.rbegin();
 			F.assign(P[i][deg-2],*rit);
 			++rit;
-			for (int j=deg-3; j>=0;--j, ++rit)
+			for (int j= (int) deg-3; j>=0;--j, ++rit)
 				F.axpy(P[i][j], a, P[i][j+1], *rit);
 		}
 

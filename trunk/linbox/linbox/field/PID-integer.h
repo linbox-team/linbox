@@ -44,7 +44,7 @@ namespace LinBox
 {
 
 	template <class Ring>
-	class ClassifyRing;
+	struct ClassifyRing;
 
 	/*! \ingroup integers
 	 * @brief Domain for integer operations.

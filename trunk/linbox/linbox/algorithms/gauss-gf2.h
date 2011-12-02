@@ -11,7 +11,6 @@
  * SparseSeqMatrix is container< container< size_t > >
  * as e.g. linbox/blackbox/zo-gf2.h
  */
-// ========================================================================= //
 
 #ifndef __LINBOX_gauss_gf2_H
 #define __LINBOX_gauss_gf2_H
@@ -220,11 +219,11 @@ namespace LinBox
 	};
 } // namespace LinBox
 
-#include "linbox/algorithms/gauss-gf2.inl"
-#include "linbox/algorithms/gauss-pivot-gf2.inl"
-#include "linbox/algorithms/gauss-elim-gf2.inl"
-#include "linbox/algorithms/gauss-rank-gf2.inl"
-#include "linbox/algorithms/gauss-solve-gf2.inl"
+#include "linbox/algorithms/gauss/gauss-gf2.inl"
+#include "linbox/algorithms/gauss/gauss-pivot-gf2.inl"
+#include "linbox/algorithms/gauss/gauss-elim-gf2.inl"
+#include "linbox/algorithms/gauss/gauss-rank-gf2.inl"
+#include "linbox/algorithms/gauss/gauss-solve-gf2.inl"
 
 #endif // __LINBOX_gauss_gf2_H
 

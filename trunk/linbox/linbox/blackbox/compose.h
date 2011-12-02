@@ -471,7 +471,7 @@ namespace LinBox
 		{
 			linbox_check (A_data != (Blackbox1 *) 0);
 			linbox_check (B_data != (Blackbox2 *) 0);
-			linbox_check (A_data.coldim () == B_data.rowdim ());
+			linbox_check (A_data->coldim () == B_data->rowdim ());
 
 			// VectorWrapper::ensureDim (_z, _A_data.coldim ());
 			_z.resize(_A_data.coldim());

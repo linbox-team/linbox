@@ -68,6 +68,7 @@ namespace LinBox
 	 * This lists the methods implemented.
 	 */
 	class latticeMethod {
+	public:
 		struct genericMethod {};
 #ifdef __LINBOX_HAVE_NTL
 		/*! NTL_LLL.
@@ -75,6 +76,7 @@ namespace LinBox
 		 * The Defaults are NTL's
 		 */
 		struct latticeNTL_LLL : public virtual genericMethod {
+		public :
 			enum  localMeth { FP , XD , QP, RR } ;
 		private :
 			double _delta ;

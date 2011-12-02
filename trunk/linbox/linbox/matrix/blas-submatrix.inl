@@ -137,150 +137,6 @@ namespace LinBox
 
 } // LinBox
 
-///////////////////
-//      I/O      //
-///////////////////
-
-namespace LinBox
-{
-
-	//!@bug reading a submatrix should not be allowed !!
-	template <class _Field>
-	std::istream& BlasSubmatrix< _Field>::read (std::istream &file)
-	{
-#if 0
-		Iterator p;
-		int m,n;
-		char c;
-		file>>m>>n>>c;
-
-		if (m*n < _row*_col)
-			cerr<<"NOT ENOUGH ELEMENT TO READ\n";
-		else {
-			for (p = Begin (); p != End (); ++p) {
-				integer tmp;
-				file>>tmp;cout<<tmp<<endl;
-				//file.ignore(1);
-				_Mat->_field.read (file, *p);
-			}
-		}
-#endif
-
-
-		Iterator p;
-		int m,n;
-		char c;
-		file>>m>>n>>c;
-		// std::cout << m << 'x' << n << ':' << c << std::endl;
-		_row = m; _col = n;
-
-		_Field zero;
-		_Mat->_field.init(zero,0UL);
-		// resize(_row,_col);
-
-		if ((c != 'M') && (c != 'm')) {
-		for (p = Begin (); p != End (); ++p) {
-				//file.ignore(1);
-				_Mat->_field.read (file, *p);
-			}
-
-		}
-		else { // sparse file format - needs fixing
-			int i, j;
-			while (true)
-			{
-				file >> i >> j;
-				//file.ignore(1);
-				//if (! file) break;
-				if (i+j <= 0) break;
-				// std::cout << i << ',' << j << ':' ;
-				_Mat->_field.read (file, _Mat->refEntry[i-1, j-1]);
-			}
-		}
-
-		return file;
-	}
-
-	template <class _Field>
-	std::ostream &BlasSubmatrix< _Field>::write (std::ostream &os,
-						       bool mapleFormat) const
-	{
-
-		ConstRowIterator p;
-
-		if (!mapleFormat) {
-			integer c;
-			int wid;
-
-
-
-
-			_Mat->_field.cardinality (c);
-
-			if (c >0)
-				wid = (int) ceil (log ((double) c) / M_LN10);
-			else {
-				integer tmp;
-				size_t max=0;
-				ConstIterator it = Begin();
-				for (; it != End(); ++it){
-					_Mat->_field.convert(tmp,*it);
-					if (tmp.bitsize() > max)
-						max= tmp.bitsize();
-				}
-				wid= (int) ceil ((double)max / M_LN10)+1;
-			}
-
-			for (p = rowBegin (); p != rowEnd ();++p) {
-				typename ConstRow::const_iterator pe;
-
-				os << "  [ ";
-
-			for (pe = p->begin (); pe != p->end (); ++pe) {
-					os.width (wid);
-					/*!  @warning
-					 * matrix base does not provide this field(), maybe should?
-					 * _Mat.field ().write (os, *pe);
-					 * os << *pe;
-					 * fixed by using extra field
-					 */
-
-					_Mat->_field.write (os, *pe);
-				os << " ";
-			}
-
-				os << "]" << std::endl;
-			}
-		}
-		else {
-
-			os << "Matrix( " << rowdim() << ',' << coldim() << ",[" ;
-			for (p = rowBegin (); p != rowEnd (); ) {
-				typename ConstRow::const_iterator pe;
-
-				os << " [ ";
-
-				for (pe = p->begin (); pe != p->end (); ) {
-					_Mat->_field.write (os, *pe);
-					++pe ;
-					if (pe != p->end())
-						os << ", ";
-		}
-
-				os << "]" ;
-				++p ;
-				if (p != rowEnd() )
-					os << ',' << std::endl;;
-
-			}
-			os << "])" ;
-		}
-		return os;
-	}
-
-
-
-} // LinBox
 
 //////////////////
 //  DIMENSIONS  //
@@ -966,14 +822,159 @@ namespace LinBox
 	template <class _Field>
 	typename BlasSubmatrix< _Field>::Row BlasSubmatrix< _Field>::operator[] (size_t i)
 	{
-		return Row (_Mat.Begin () + (_r0+i) * _stride, _Mat.Begin () + ((_r0+i) * _stride + _stride) );
+		return Row (_Mat->Begin () + (_r0+i) * _stride, _Mat->Begin () + ((_r0+i) * _stride + _stride) );
 	}
 
 	template <class _Field>
 	typename BlasSubmatrix< _Field>::ConstRow BlasSubmatrix< _Field>::operator[] (size_t i) const
 	{
-		return Row (_Mat.Begin () + (_r0+i) * _stride, _Mat.Begin () + ((_r0+i) * _stride + _stride) );
+		return Row (_Mat->Begin () + (_r0+i) * _stride, _Mat->Begin () + ((_r0+i) * _stride + _stride) );
 	}
+
+} // LinBox
+
+///////////////////
+//      I/O      //
+///////////////////
+
+namespace LinBox
+{
+
+	//!@bug reading a submatrix should not be allowed !!
+	template <class _Field>
+	std::istream& BlasSubmatrix< _Field>::read (std::istream &file)
+	{
+#if 0
+		Iterator p;
+		int m,n;
+		char c;
+		file>>m>>n>>c;
+
+		if (m*n < _row*_col)
+			cerr<<"NOT ENOUGH ELEMENT TO READ\n";
+		else {
+			for (p = Begin (); p != End (); ++p) {
+				integer tmp;
+				file>>tmp;cout<<tmp<<endl;
+				//file.ignore(1);
+				_Mat->_field.read (file, *p);
+			}
+		}
+#endif
+
+
+		Iterator p;
+		int m,n;
+		char c;
+		file>>m>>n>>c;
+		// std::cout << m << 'x' << n << ':' << c << std::endl;
+		_row = m; _col = n;
+
+		_Field zero;
+		_Mat->_field.init(zero,0UL);
+		// resize(_row,_col);
+
+		if ((c != 'M') && (c != 'm')) {
+		for (p = Begin (); p != End (); ++p) {
+				//file.ignore(1);
+				_Mat->_field.read (file, *p);
+			}
+
+		}
+		else { // sparse file format - needs fixing
+			int i, j;
+			while (true)
+			{
+				file >> i >> j;
+				//file.ignore(1);
+				//if (! file) break;
+				if (i+j <= 0) break;
+				// std::cout << i << ',' << j << ':' ;
+				_Mat->_field.read (file, _Mat->refEntry(i-1, j-1));
+			}
+		}
+
+		return file;
+	}
+
+	template <class _Field>
+	std::ostream &BlasSubmatrix< _Field>::write (std::ostream &os,
+						       bool mapleFormat) const
+	{
+
+		ConstRowIterator p;
+
+		if (!mapleFormat) {
+			integer c;
+			int wid;
+
+
+
+
+			_Mat->_field.cardinality (c);
+
+			if (c >0)
+				wid = (int) ceil (log ((double) c) / M_LN10);
+			else {
+				integer tmp;
+				size_t max=0;
+				ConstIterator it = Begin();
+				for (; it != End(); ++it){
+					_Mat->_field.convert(tmp,*it);
+					if (tmp.bitsize() > max)
+						max= tmp.bitsize();
+				}
+				wid= (int) ceil ((double)max / M_LN10)+1;
+			}
+
+			for (p = rowBegin (); p != rowEnd ();++p) {
+				typename ConstRow::const_iterator pe;
+
+				os << "  [ ";
+
+			for (pe = p->begin (); pe != p->end (); ++pe) {
+					os.width (wid);
+					/*!  @warning
+					 * matrix base does not provide this field(), maybe should?
+					 * _Mat.field ().write (os, *pe);
+					 * os << *pe;
+					 * fixed by using extra field
+					 */
+
+					_Mat->_field.write (os, *pe);
+				os << " ";
+			}
+
+				os << "]" << std::endl;
+			}
+		}
+		else {
+
+			os << "Matrix( " << rowdim() << ',' << coldim() << ",[" ;
+			for (p = rowBegin (); p != rowEnd (); ) {
+				typename ConstRow::const_iterator pe;
+
+				os << " [ ";
+
+				for (pe = p->begin (); pe != p->end (); ) {
+					_Mat->_field.write (os, *pe);
+					++pe ;
+					if (pe != p->end())
+						os << ", ";
+		}
+
+				os << "]" ;
+				++p ;
+				if (p != rowEnd() )
+					os << ',' << std::endl;;
+
+			}
+			os << "])" ;
+		}
+		return os;
+	}
+
+
 
 } // LinBox
 

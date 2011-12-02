@@ -141,7 +141,7 @@ namespace LinBox {
 			for (; i_idx != v1.first.end (); ++i_idx, ++i_elt)
 				y += (uint64_t) *i_elt * (uint64_t) v2[*i_idx];
 
-			return res = y % (uint64_t) _field._modulus;
+			return res = (uint16_t) (y % (uint64_t) _field._modulus);
 		}
 		else {
 			typename Vector1::first_type::const_iterator iterend = v1.first.begin () + v1.first.size() % _field._k;
@@ -164,7 +164,7 @@ namespace LinBox {
 				y %= (uint64_t) _field._modulus;
 			}
 
-			return res = y;
+			return res = (Element) y;
 		}
 	}
 

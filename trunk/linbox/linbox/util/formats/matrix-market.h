@@ -53,7 +53,9 @@ namespace LinBox
 		int len = int(s1.size());
 		int counter = 0;
 		while( counter < len && s2[counter] != '\0' &&
-		       toupper(s1[counter]) == toupper(s2[counter]) ) ++counter;
+		       toupper(s1[(size_t)counter]) == toupper(s2[counter]) ) {
+			++counter;
+		}
 		return( counter == len && s2[counter] == '\0' );
 	}
 

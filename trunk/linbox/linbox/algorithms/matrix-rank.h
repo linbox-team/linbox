@@ -21,6 +21,12 @@
  * Boston, MA 02110-1301, USA.
  */
 
+/*! @file algorithms/matrix-rank.h
+ * @ingroup algorithms
+ * @ingroup rank
+ * @brief Computes the rank of a matrix by Gaussian Elimination, in place.
+ * @details NO DOC
+ */
 #ifndef __LINBOX_matrix_rank_H
 #define __LINBOX_matrix_rank_H
 
@@ -37,26 +43,35 @@ namespace LinBox
 {
 
 	/** Compute the rank of an integer matrix in place over a finite field by Gaussian elimination.
+	 * @bug there is no generic \c rankIn method.
 	*/
 	template<class _Ring, class _Field, class _RandomPrime = RandomPrimeIterator>
 	class MatrixRank {
 
 	public:
 
-		typedef _Ring Ring;
-		typedef _Field Field;
+		typedef _Ring Ring;  //!< Ring ?
+		typedef _Field Field; //!< Field ?
 
-		Ring r;
+		Ring r; //!< Ring  ?
 
-		mutable _RandomPrime rp;
+		mutable _RandomPrime rp; //!< Holds the random prime for Monte-Carlo rank
 
+		/*! Constructor.
+		 * @param _r ring (default is Ring)
+		 * @param _rp random prime generator (default is template provided)
+		 */
 		MatrixRank(const Ring& _r = Ring(), const _RandomPrime& _rp = _RandomPrime() ) :
 			r(_r), rp (_rp)
 		{}
 
 		~MatrixRank() {}
 
-		//compute the integer matrix A by modulo a random prime, Monto-Carlo
+		/*!compute the integer matrix A by modulo a random prime, Monto-Carlo.
+		 * This is the generic method (mapping to a random modular matrix).
+		 * @param A Any matrix
+		 * @return the rank of A.
+		 */
 		template<class IMatrix>
 		long rank(const IMatrix& A) const
 		{
@@ -74,6 +89,12 @@ namespace LinBox
 			return result;
 		}
 
+		/*!Specialisation for BlasMatrix.
+		 * Computation done by mapping to a random modular matrix.
+		 * @param A Any dense matrix
+		 * @return the rank of A.
+		 * @bug we suppose we can map IRing to Field...
+		 */
 		template<class IRing>
 		long rank(const BlasMatrix<IRing>& A) const
 		{
@@ -94,6 +115,12 @@ namespace LinBox
 		}
 
 
+		/*! Specialisation for SparseMatrix
+		 * Computation done by mapping to a random modular matrix.
+		 * @param A Any sparse matrix
+		 * @return the rank of A.
+		 * @bug we suppose we can map IRing to Field...
+		 */
 		template <class Row>
 		long rank(const SparseMatrix<Ring, Row>& A) const
 		{
@@ -105,19 +132,12 @@ namespace LinBox
 			return result;
 		}
 
-
-		template<class Field, class Row>
-		long rankIn(SparseMatrix<Field, Row>& A) const
-		{
-
-			unsigned long result;
-
-			LinBox::rank(result, A, A.field());
-
-			return result;
-		}
-
-
+		/*! Specialisation for BlasMatrix (in place).
+		 * Generic (slow) elimination code.
+		 * @param A a dense matrix
+		 * @return its rank
+		 * @warning The matrix is on the Field !!!!!!!
+		 */
 		long rankIn(BlasMatrix<Field>& Ap) const
 		{
 
@@ -195,6 +215,22 @@ namespace LinBox
 
 			}
 			return R;
+		}
+
+		/** Specialisation for SparseMatrix, in place.
+		 * solution rank is called. (is Elimination guaranteed as the doc says above ?)
+		 * @param A a sparse matrix
+		 * @return its rank
+		 */
+		template<class Field, class Row>
+		long rankIn(SparseMatrix<Field, Row>& A) const
+		{
+
+			unsigned long result;
+
+			LinBox::rank(result, A, A.field());
+
+			return result;
 		}
 
 	};

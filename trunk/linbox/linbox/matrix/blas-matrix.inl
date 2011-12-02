@@ -242,7 +242,7 @@ namespace LinBox
 	template <class _Field>
 	template<class T>
 	BlasMatrix< _Field>::BlasMatrix (const _Field &F, const int64_t& m, const T& n) :
-		_row(m),_col(n),_rep(_row*_col),_ptr(&_rep[0]),
+		_row((size_t)m),_col((size_t)n),_rep(_row*_col),_ptr(&_rep[0]),
 		_field(F),_MD(F),_VD(F)
 	{
 		linbox_check(n>=0);
@@ -283,7 +283,7 @@ namespace LinBox
 	template <class _Field>
 	template<class T>
 	BlasMatrix< _Field>::BlasMatrix (const _Field &F, const int32_t & m, const T &n) :
-		_row(m),_col(n),_rep(_row*_col),_ptr(&_rep[0]),
+		_row((size_t) m),_col((size_t)n),_rep(_row*_col),_ptr(&_rep[0]),
 		_field(F),_MD(F),_VD(F)
 	{
 		linbox_check(n>=0);

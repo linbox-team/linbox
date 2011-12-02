@@ -3,6 +3,8 @@
 # see COPYING for licence
 pkgincludesubdir=$(pkgincludedir)/algorithms
 
+SUBDIRS=gauss matrix-blas3 matrix-blas2
+
 noinst_LTLIBRARIES=libalgorithms.la
 
 libalgorithms_la_SOURCES= diophantine-solver.C
@@ -27,20 +29,8 @@ pkgincludesub_HEADERS =         \
     la-block-lanczos.h la-block-lanczos.inl \
     eliminator.h    eliminator.inl          \
     gauss.h                                 \
-    gauss.inl                   \
-    gauss-det.inl               \
-    gauss-rank.inl              \
-    gauss-solve.inl             \
-    gauss-nullspace.inl         \
-    gauss-elim.inl              \
-    gauss-pivot.inl             \
     triangular-solve.h          \
     gauss-gf2.h                 \
-    gauss-gf2.inl               \
-    gauss-elim-gf2.inl          \
-    gauss-rank-gf2.inl          \
-    gauss-pivot-gf2.inl         \
-    gauss-solve-gf2.inl         \
     triangular-solve-gf2.h      \
     dense-container.h           \
     cra-mpi.h                   \
@@ -125,6 +115,7 @@ EXTRA_DIST =                    \
              sigmabasis.doxy    \
              elimination.doxy   \
 	     lattice.doxy       \
-             diophantine.doxy
+             diophantine.doxy   \
+	     gauss.doxy
 
 

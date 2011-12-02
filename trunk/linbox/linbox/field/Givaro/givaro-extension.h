@@ -56,7 +56,7 @@ namespace LinBox
 	template< class BaseField>
 	class GivaroExtension;
 
-#if !defined(__INTEL_COMPILER) && !defined(__CUDACC__)
+#if !defined(__INTEL_COMPILER) && !defined(__CUDACC__) && !defined(__clang__)
 	template<>
 #endif
 	template< class BaseField>
@@ -64,7 +64,7 @@ namespace LinBox
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
-#if !defined(__INTEL_COMPILER) && !defined(__CUDACC__)
+#if !defined(__INTEL_COMPILER) && !defined(__CUDACC__) && !defined(__clang__)
 	template<>
 #endif
 	template< class BaseField>
