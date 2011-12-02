@@ -370,7 +370,7 @@ namespace LinBox
 		{
 			Specifier::_preconditioner = (Precond);
 			Specifier::_maxTries       = (MaxTries);
-			Specifier::_blockingFactor = (BlockingFactor);
+			Specifier::_blockingFactor = (unsigned long) (BlockingFactor);
 		}
 
 		BlockLanczosTraits( const Specifier& S) :
@@ -410,7 +410,7 @@ namespace LinBox
 			_solution                  = (Solution);
 			Specifier::_singular       = (Singular);
 			Specifier::_certificate    = (Certificate);
-			Specifier::_maxTries       = (MaxTries);
+			Specifier::_maxTries       = (unsigned long) (MaxTries);
 			Specifier::_preconditioner = (Precond);
 			Specifier::_rank           = (Rank);
 		}

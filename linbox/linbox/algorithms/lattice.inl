@@ -50,7 +50,8 @@ namespace LinBox
 		B.SetDims(H.rowdim(),H.coldim());
 		NTL::clear(B);
 		// XXX Maybe Bij, maybe Bji...
-		NTL_ZZ Bij ;
+		NTL_ZZ Ints ;
+		Ints::Element Bij ;
 		for (size_t i = 0 ; i < H.rowdim(); ++i) {
 			for (size_t j = 0  ; j < H.coldim() ; ++j) {
 				Bij.init(H.getEntry(i,j));
@@ -189,10 +190,11 @@ namespace LinBox
 		B.SetDims(H.rowdim(),H.coldim());
 		NTL::clear(B);
 		// XXX Maybe Bij, maybe Bji...
-		NTL_ZZ Bij ;
+		NTL_ZZ Ints ;
+		Ints::Element Bij ;
 		for (size_t i = 0 ; i < H.rowdim(); ++i) {
 			for (size_t j = 0  ; j < H.coldim() ; ++j) {
-				Bij.init(H.getEntry(i,j));
+				Ints.init(Bij, H.getEntry(i,j));
 				B[i][j] = Bij ;
 			}
 		}

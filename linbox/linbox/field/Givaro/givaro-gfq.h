@@ -166,7 +166,7 @@ namespace LinBox
 
 		 Givaro::Poly1Dom< Givaro::GFqDom<int32_t>, Givaro::Dense >::Rep tempVector(k+1);
 			for( int i = 0; i < k+1; i++ )
-				tempVector[i] = modPoly[i] % p;
+				tempVector[(size_t)i] = modPoly[(size_t)i] % p;
 			Pdom.assign( F, tempVector );
 
 			Pdom.give_prim_root(G,F);
@@ -193,7 +193,7 @@ namespace LinBox
 					b = a - r;
 				else
 					b = a + 1;
-				_plus1[i] = _pol2log[b] - _qm1;
+				_plus1[i] = (int) (_pol2log[b] - _qm1);
 			}
 
 			_plus1[_qm1o2] = 0;

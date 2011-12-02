@@ -161,7 +161,7 @@ namespace LinBox
 
 		FieldAXPY (const Field &F) :
 			_field (F) , //_invmod(1./_field.modulus),
-			_y(0.) , _bound( (float) ( (1UL << 23) - (int) (_field.modulus*_field.modulus)))
+			_y(0.) , _bound( (float) ( (1UL << 23) - (unsigned long int) (_field.modulus*_field.modulus)))
 		{}
 
 		FieldAXPY (const FieldAXPY &faxpy) :

@@ -334,12 +334,12 @@ Using : FindPivot and LU
 
 } // namespace LinBox
 
-#include "linbox/algorithms/gauss.inl"
-#include "linbox/algorithms/gauss-pivot.inl"
-#include "linbox/algorithms/gauss-elim.inl"
-#include "linbox/algorithms/gauss-solve.inl"
-#include "linbox/algorithms/gauss-nullspace.inl"
-#include "linbox/algorithms/gauss-rank.inl"
-#include "linbox/algorithms/gauss-det.inl"
+#include "linbox/algorithms/gauss/gauss.inl"
+#include "linbox/algorithms/gauss/gauss-pivot.inl"
+#include "linbox/algorithms/gauss/gauss-elim.inl"
+#include "linbox/algorithms/gauss/gauss-solve.inl"
+#include "linbox/algorithms/gauss/gauss-nullspace.inl"
+#include "linbox/algorithms/gauss/gauss-rank.inl"
+#include "linbox/algorithms/gauss/gauss-det.inl"
 
 #endif // __LINBOX_gauss_H

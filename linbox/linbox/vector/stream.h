@@ -382,8 +382,11 @@ namespace LinBox
 
 		RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0, int seed=(int)time (NULL)) :
 			_field (F), _r1 (r), _r (F, _r1), _n (n), _p (p), _m (m), _j (0),
-			MT (seed)
-		{ linbox_check ((p >= 0.0) && (p <= 1.0)); _field.init (_zero, 0); }
+			MT ((uint32_t)seed)
+		{
+			linbox_check ((p >= 0.0) && (p <= 1.0));
+			_field.init (_zero, 0);
+		}
 
 		Vector &get (Vector &v)
 		{
@@ -442,7 +445,7 @@ namespace LinBox
 		RandomSparseStream (const Field &F, const RandIter &r, double p,
 				    size_t N, size_t M = 0, int seed=(int)time (NULL)) :
 			_field (F), _r1 (r), _r (F, _r1), _n (N), _p (p), _m (M), _j (0),
-			MT (seed)
+			MT ((uint32_t)seed)
 		{ setP (p); }
 
 		Vector &get (Vector &v)
@@ -464,7 +467,7 @@ namespace LinBox
 				if (skip <= 0)
 					++i;
 				else
-					i += skip;
+					i += (size_t)skip;
 
 				if (i >= _n) break;
 
@@ -520,7 +523,7 @@ namespace LinBox
 		RandomSparseStream (const Field &F, const RandIter &r, double p, size_t N,
 				    size_t M = 0, int seed=(int)time (NULL)) :
 			_field (F), _r1 (F), _r (F, _r1), _n (N), _k ((long) (p * N)), _j (0), _m (M),
-			MT (seed)
+			MT ((uint32_t) seed)
 		{}
 
 		Vector &get (Vector &v)
@@ -578,7 +581,7 @@ namespace LinBox
 
 		RandomSparseStream (const Field &F, const RandIter &r, double p, size_t nn, size_t mm = 0, int seed=(int)time (NULL)) :
 			_field (F), _r1 (r), _r (F, _r1), _n (nn), _m (mm), _j (0),
-			MT (seed)
+			MT ((uint32_t)seed)
 		{ setP (p); }
 
 		Vector &get (Vector &v)
@@ -601,7 +604,7 @@ namespace LinBox
 				if (skip <= 0)
 					i++;
 				else
-					i += skip;
+					i += (size_t) skip;
 
 				if (i >= _n) break;
 

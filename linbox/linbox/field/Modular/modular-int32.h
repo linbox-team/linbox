@@ -162,7 +162,7 @@ namespace LinBox
 				if (modulus>= getMaxModulus())
 					return 0 ;
 				else
-					return (unsigned long) max_double/(modulus*modulus) ;
+					return (unsigned long) max_double/(unsigned long)(modulus*modulus) ;
 			}
 			else
 				throw LinboxError("Bad input, expecting 0 or 1");
@@ -200,17 +200,19 @@ namespace LinBox
 		{
 			uint64_t t = (uint64_t) a * (uint64_t) x;
 			_y += t;
-			if (_y < t)
-				return _y += _field._two64;
+			if (_y < t) {
+				 _y += (uint64_t)_field._two64;
+				 return _y ;
+			}
 			else
 				return _y;
 		}
 
 		 uint64_t& accumulate (const Element &t)
 		{
-			_y += t;
+			_y += (uint64_t) t;
 			if (_y < (uint64_t)t)
-				return _y += _field._two64;
+				return _y += (uint64_t) _field._two64;
 			else
 				return _y;
 		}
@@ -223,7 +225,7 @@ namespace LinBox
 
 		 FieldAXPY &assign (const Element y)
 		{
-			_y = y;
+			_y = (uint64_t) y;
 			return *this;
 		}
 
@@ -265,7 +267,7 @@ namespace LinBox
 				y += t;
 
 				if (y < t)
-					y += _field._two64;
+					y += (uint64_t) _field._two64;
 			}
 
 			y %= (uint64_t) _field.modulus;
@@ -288,13 +290,13 @@ namespace LinBox
 				y += t;
 
 				if (y < t)
-					y += _field._two64;
+					y += (uint64_t) _field._two64;
 			}
 
 
 			y %= (uint64_t) _field.modulus;
 
-			return res = y;
+			return res = (Element) y;
 		}
 	};
 
@@ -366,7 +368,7 @@ namespace LinBox
 				*l += t;
 
 				if (*l < t)
-					*l += VD.field ()._two64;
+					*l += (uint64_t) VD.field ()._two64;
 			}
 		}
 

@@ -480,7 +480,7 @@ namespace LinBox
 
 		inline uint64_t& accumulate (const Element &t)
 		{
-			return _y += t;
+			return _y += (uint64_t)t;
 		}
 
 		inline Element& get (Element &y)
@@ -491,7 +491,7 @@ namespace LinBox
 
 		inline FieldAXPY &assign (const Element y)
 		{
-			_y = y;
+			_y = (uint64_t) y;
 			return *this;
 		}
 
@@ -535,7 +535,7 @@ namespace LinBox
 
 			y %= (uint64_t) _field.modulus;
 
-			return res = y;
+			return res = (Element) y;
 
 		}
 
@@ -553,7 +553,7 @@ namespace LinBox
 
 			y %= (uint64_t) _field.modulus;
 
-			return res = y;
+			return res = (Element)y;
 
 		}
 

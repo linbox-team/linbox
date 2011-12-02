@@ -48,7 +48,7 @@ namespace LinBox
 			linbox_check(modulus < UINT8_MAX);
 		}
 		Modular (const integer &modulus) :
-			ModularBase<Element> ((long) modulus),
+			ModularBase<Element> ((unsigned long) modulus),
 			zero(0),one(1),mOne(modulus-1),
 			_k (((uint64_t) -1LL) / (((Element)modulus - 1) * ((Element)modulus - 1))),
 			_pinv (1.0 / (double) ((Element) modulus))
@@ -384,7 +384,7 @@ namespace LinBox
 			linbox_check(modulus<UINT16_MAX);
 		}
 		Modular (const integer &modulus) :
-			ModularBase<Element> ((long) modulus),
+			ModularBase<Element> ((unsigned long) modulus),
 			zero(0),one(1),mOne(Element(modulus-1)),
 			_k (((uint64_t) -1LL) / ((ModularBase<Element>::_modulus - 1) * (ModularBase<Element>::_modulus - 1))),
 			_pinv (1.0 / (double) ((Element) ModularBase<Element>::_modulus))
@@ -580,7 +580,7 @@ namespace LinBox
 
 		inline uint64_t& mulacc (const Element &a, const Element &x)
 		{
-			uint64_t t = (long long) a * (long long) x;
+			uint64_t t = (uint64_t) ((long long) a * (long long) x);
 
 			if (!i--) {
 				i = (int) _field._k;

@@ -507,12 +507,12 @@ namespace LinBox
 
 	inline BitVector::reference BitVector::operator[] (BitVector::size_type n)
 	{
-		return *(begin () + n);
+		return *(begin () + (difference_type) n);
 	}
 
 	inline BitVector::const_reference BitVector::operator[] (BitVector::size_type n) const
 	{
-		return *(begin () + n);
+		return *(begin () + (difference_type) n);
 	}
 
 	inline BitVector::reference BitVector::at (BitVector::size_type n)

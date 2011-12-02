@@ -170,7 +170,7 @@ namespace LinBox
 			if (skip <= 0)
 				i++;
 			else
-				i += skip;
+				i += (size_t) skip;
 
 			if (i >= _n) break;
 
