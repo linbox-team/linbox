@@ -154,7 +154,7 @@ namespace LinBox
 							++columns[k];
 							tmp.first = (unsigned)k;
 
-							for (long l = j_head; l > 0; l--)
+							for (long l = (long)j_head; l > 0; --l)
 								lignecourante[l] = lignecourante[l-1];
 
 							lignecourante[0] = tmp;
@@ -385,7 +385,7 @@ namespace LinBox
 							++columns[k];
 							tmp.first = (unsigned)k;
 
-							for (long l = j_head; l > 0; l--)
+							for (long l = (long)j_head; l > 0; --l)
 								lignecourante[l] = lignecourante[l-1];
 
 							lignecourante[0] = tmp;
@@ -594,7 +594,7 @@ namespace LinBox
 							// zero <--> non zero
 							E tmp = lignecourante[j_head];
 							tmp.first = k;
-							for (long l = j_head; l > 0; l--)
+							for (long l = (long)j_head; l > 0; --l)
 								lignecourante[l] = lignecourante[l-1];
 							lignecourante[0] = tmp;
 						}

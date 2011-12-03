@@ -79,7 +79,7 @@ namespace LinBox
 			for (unsigned long k = 0; k < LigneA[jj].size (); k++)
 				++col_density[LigneA[jj][k].first];
 
-		long last = Ni - 1;
+		long last = (long)Ni - 1;
 		long c;
 		Rank = 0;
 
@@ -134,8 +134,8 @@ namespace LinBox
 					}
 
 				if (p != k) {
-					//                         std::cerr << "Permuting rows: " << k << " <--> " << p << std::endl;
-					invQ.push_front( std::pair<size_t,size_t>(k,p) );
+					// std::cerr << "Permuting rows: " << k << " <--> " << p << std::endl;
+					invQ.push_front( std::pair<size_t,size_t>((size_t)k,(size_t)p) );
 					_field.negin(determinant);
 					std::swap( *LigneA_k, LigneA[p]);
 					std::swap( LigneL[k], LigneL[p]);
@@ -261,7 +261,7 @@ namespace LinBox
 			for (unsigned long k = 0; k < LigneA[jj].size (); k++)
 				++col_density[LigneA[jj][k].first];
 
-		long last = Ni - 1;
+		long last = (long)Ni - 1;
 		long c;
 		Rank = 0;
 
@@ -297,10 +297,10 @@ namespace LinBox
 
 				if (s) {
 					// Row permutation for the sparsest row
-					for (l = k + 1; l < Ni; ++l)
+					for (l = (unsigned long)k + 1; l < (unsigned long)Ni; ++l)
 						if (((sl = LigneA[l].size ()) < s) && (sl)) {
 							s = sl;
-							p = l;
+							p = (long)l;
 						}
 
 					if (p != k) {
@@ -315,7 +315,7 @@ namespace LinBox
 					SparseFindPivot (LigneA[k], Rank, c, col_density, determinant);
 					//                     LigneA.write(std::cerr << "PIV, k:" << k << ", Rank:" << Rank << ", c:" << c)<<std::endl;
 					if (c != -1) {
-						for (l = k + 1; l < Ni; ++l)
+						for (l = (unsigned long)k + 1; l < (unsigned long)Ni; ++l)
 							eliminate (LigneA[l], LigneA[k], Rank, c, col_density);
 					}
 
@@ -396,7 +396,7 @@ namespace LinBox
 				for (unsigned long k = 0; k < LigneA[jj].size (); k++)
 					++col_density[LigneA[jj][k].first];
 
-			long last = Ni - 1;
+			long last = (long)Ni - 1;
 			long c;
 			Rank = 0;
 
@@ -433,10 +433,10 @@ namespace LinBox
 
 				if (s) {
 					// Row permutation for the sparsest row
-					for (l = k + 1; l < Ni; ++l)
+					for (l = (unsigned long)k + 1; l < (unsigned long)Ni; ++l)
 						if (((sl = LigneA[l].size ()) < s) && (sl)) {
 							s = sl;
-							p = l;
+							p = (long)l;
 						}
 
 					if (p != k) {
@@ -456,7 +456,7 @@ namespace LinBox
 						for (long ll=0; ll < k ; ++ll)
 							permute( LigneA[ll], Rank, c);
 
-						for (l = k + 1; l < Ni; ++l)
+						for (l = (unsigned long)k + 1; l < (unsigned long)Ni; ++l)
 							eliminate (LigneA[l], LigneA[k], Rank, c, col_density);
 					}
 
@@ -536,7 +536,7 @@ namespace LinBox
 			Vector Vzer (0);
 
 			_field.init(determinant,1UL);
-			long last = Ni - 1;
+			long last = (long)Ni - 1;
 			long c;
 			unsigned long indcol (0);
 
@@ -549,7 +549,7 @@ namespace LinBox
 				if (!LigneA[k].empty ()) {
 					SparseFindPivot (LigneA[k], indcol, c, determinant);
 					if (c !=  -1)
-						for (l = k + 1; l < Ni; ++l)
+						for (l = (unsigned long)k + 1; l < (unsigned long)Ni; ++l)
 							eliminate (LigneA[l], LigneA[k], indcol, c);
 
 #ifdef __LINBOX_COUNT__
@@ -597,7 +597,7 @@ namespace LinBox
 			static typename _Field::Element zero = _field.init(zero);
 
 			long n = lignecur.size () ;
-			long k = indcol - 1 ;
+			long k = (long) indcol - 1 ;
 
 			// permutation if one has been performed to compute the pivot
 			if (indpermut != k) {
@@ -625,7 +625,7 @@ namespace LinBox
 					 long  indpermut) const
 		{
 			long n = lignecur.size ();
-			long k = indcol - 1;
+			long k = (long) indcol - 1;
 
 			// permutation if one has been performed to compute the pivot
 			if (indpermut != k) {

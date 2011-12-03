@@ -117,7 +117,7 @@ namespace LinBox
 			VectorDomain<Field> VD(F);
 
 
-			long i=rank;
+			long i=(long)rank;
 			for(--i; (vec >= b.begin()) && (i>=0); --i,--row) {
 				if (row->size()) {
 					typename Field::Element tmp;

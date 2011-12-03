@@ -205,7 +205,7 @@ namespace LinBox
 		{}
 
 		PolynomialBBOwner (const Blackbox *A_data, const Polynomial * P_data) :
-			_A_data(*A_data), _P_data(*P_data), _VD(A_data.field())
+			_A_data(*A_data), _P_data(*P_data), _VD(A_data->field())
 		{
 		}
 

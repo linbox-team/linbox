@@ -1134,7 +1134,7 @@ namespace LinBox
 				_BMD.mulin_right(BPerm2,Discrepancy);
 
 				// save the first pade matrix
-				if (NN == degree1 -1) {
+				if (NN == (long)degree1 -1) {
 					// extract the first m rows of SigmaBase
 					long max=order[0];
 					for (size_t i=1;i<m;i++) {
@@ -1216,7 +1216,7 @@ namespace LinBox
 			// Keep track on Sigma Base's row degree
 			// I adjust the degree with the maximal difference between defects
 			// this is just to be sure to catch degree increase according to elimination process
-			int min_defect, max_defect;
+			size_t min_defect, max_defect;
 			min_defect = max_defect = defect[0];
 			for (size_t i=0;i<m;++i){
 				if ( defect[i] > max_defect)
@@ -1471,8 +1471,8 @@ namespace LinBox
 				// compute size of trivial part of SigmaBase
 				size_t rsize, lsize;
 				rsize=0;
-				if (nbr_triv>rank)
-					rsize=nbr_triv-rank;
+				if (nbr_triv>(int)rank)
+					rsize=(size_t)nbr_triv-rank;
 				lsize=m-rsize;
 
 				//std::cout<<"rsize: "<<rsize<<"\n";
@@ -1495,9 +1495,10 @@ namespace LinBox
 					if (PermPivots[i]>i)
 						std::swap(triv_column[i], triv_column[PermPivots[i]]);
 
-				if (nbr_triv > rank) {
+				if (nbr_triv > (int)rank) {
 					size_t idx_triv, idx_nontriv;
-					idx_nontriv = 0; idx_triv = m-nbr_triv;
+					idx_nontriv = 0;
+					idx_triv = m-(size_t)nbr_triv;
 
 					for (size_t i=0;i<m;++i){
 						if (triv_column[i]!=0){
@@ -1512,12 +1513,12 @@ namespace LinBox
 						}
 					}
 				}
-				for(int i=m-1;i>=0;--i)
+				for(size_t i=m;i--;)
 					if (PermPivots[i]>i)
 						std::swap(triv_column[i], triv_column[PermPivots[i]]);
 
 				// Modify Permutation of trivial columns to incorporate pivot columns
-				if (nbr_triv>rank){
+				if (nbr_triv>(int)rank){
 					for(size_t i=0;i<m;++i)
 						std::swap(PermTrivial[i], PermTrivial[*(Qt.getPointer()+i)]);
 				}
@@ -1579,7 +1580,7 @@ namespace LinBox
 						_BMD.mulin_right(Qt, SigmaBase[i]);
 					}
 
-					if (nbr_triv > rank){
+					if (nbr_triv > (int)rank){
 						_BMD.mulin_left(SigmaBase[i],PPivT);
 						_BMD.mulin_left(SigmaBase[i], PTr);
 					}
@@ -1614,7 +1615,7 @@ namespace LinBox
 					}
 
 					// undo the permutation on sigmaBase
-					if (nbr_triv > rank){
+					if (nbr_triv > (int)rank){
 						_BMD.mulin_left(SigmaBase[i], PTrT);
 						_BMD.mulin_left(SigmaBase[i],PPiv);
 					}
@@ -1653,7 +1654,7 @@ namespace LinBox
 					_BMD.mulin_right(BPerm1, SigmaBase[i]);
 					if (!QisTrivial)
 						_BMD.mulin_right(Qt, SigmaBase[i]);
-					if (nbr_triv > rank)
+					if (nbr_triv > (int)rank)
 						_BMD.mulin_left(SigmaBase[i], PTr);
 				}
 
@@ -1723,7 +1724,7 @@ namespace LinBox
 
 				// undo Permutation of sigma Base
 				for (size_t i=0;i<SigmaBase.size();++i) {
-					if (nbr_triv > rank)
+					if (nbr_triv > (int)rank)
 						_BMD.mulin_left(SigmaBase[i], PTrT);
 					if (!QisTrivial)
 						_BMD.mulin_right(Q, SigmaBase[i]);
@@ -1879,7 +1880,7 @@ namespace LinBox
 					new_PM_Basis(Sigma1, Serie1, degree1, defect);
 					//new_PM_Basis(Sigma1, PowerSerie, degree1, defect);
 
-					size_t S1size= Sigma1.size();
+					// size_t S1size= (size_t)Sigma1.size();
 
 #ifdef _BM_TIMING
 					tUpdateSerie.clear();

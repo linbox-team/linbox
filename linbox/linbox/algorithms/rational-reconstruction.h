@@ -460,7 +460,7 @@ namespace LinBox
 
 					tmp = pPower * iN;
 					tmp /= iD;
-					root(tmp, tmp, 2*len);
+					root(tmp, tmp, (unsigned int)(2*len));
 					_r.init(numFactor, tmp);
 
 					// inital numbound is numFactor/sqrt(2)
@@ -1242,10 +1242,11 @@ namespace LinBox
 			_r.convert(N, _lcontainer.numbound());
 			_r.convert(D, _lcontainer.denbound());
 			_r.convert(mod, prime);
-			Givaro::root (D, D, k); D+=1;
+			Givaro::root (D, D, (unsigned)k);
+			D+=1;
 			bound=2*N*D;
 			std::cout<<"size in bit of the bound : "<<bound.bitsize()<<std::endl;
-			size_t minsteps = logp(bound, mod)+1;
+			size_t minsteps = (size_t)logp(bound, mod)+1;
 
 			Timer magn;
 			magn.start();

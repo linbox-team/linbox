@@ -504,10 +504,10 @@ namespace LinBox
 				// computation done using CRT and few fft primes
 
 				// get number of bits of feasible fft prime
-				int k= b[0].coldim();
+				size_t k= b[0].coldim();
 				size_t n=k;
 				size_t ln=0;
-				while ( k>0) {k>>=1; ln++;}
+				while ( k ) {k>>=1; ++ln;}
 
 				// taking primes greater than current prime
 				size_t bit = std::max((53-ln)>>1, _p.bitsize());
@@ -515,7 +515,7 @@ namespace LinBox
 				// get number of necessary primes
 				integer ibound = n * _p * _p * std::max(b.size(), c.size());
 				integer primesprod=1; size_t nbrprimes=1;
-				RandomFFTPrime fftprime(bit, FFT_PRIME_SEED);
+				RandomFFTPrime fftprime((int)bit, FFT_PRIME_SEED);
 				std::vector<integer> lprimes(10); lprimes.resize(nbrprimes);
 				lprimes[0] = fftprime.randomPrime();
 				primesprod = lprimes[0];
@@ -615,9 +615,10 @@ namespace LinBox
 
 				// get number of bits of feasible fft prime
 				size_t ln=0;
-				int kkk= b[0].coldim();
+				// XXX int -> size_t
+				size_t kkk= b[0].coldim();
 				size_t n=kkk;
-				while ( kkk>0) {
+				while ( kkk ) {
 					kkk>>=1;
 					ln++;
 				}
@@ -628,7 +629,7 @@ namespace LinBox
 				// get number of necessary primes
 				integer ibound = n * _p * _p * std::max(b.size(), c.size());
 				integer primesprod=1; size_t nbrprimes=1;
-				RandomFFTPrime fftprime(bit, FFT_PRIME_SEED);
+				RandomFFTPrime fftprime((int)bit, FFT_PRIME_SEED);
 				std::vector<integer> lprimes(10); lprimes.resize(nbrprimes);
 				lprimes[0] = fftprime.randomPrime();
 				primesprod = lprimes[0];
@@ -985,7 +986,8 @@ namespace LinBox
 
 			// find a pseudo primitive element of the multiplicative group _p -1
 			long m = _pl - 1;
-			long k = 0;srand(time(NULL));
+			long k = 0;
+			srand((unsigned int)time(NULL));
 			while ((m & 1) == 0) {
 				m = m >> 1;
 				k++;
@@ -1047,7 +1049,8 @@ namespace LinBox
 
 				// find a pseudo primitive element of the multiplicative group _p-1
 				long mm = _pl - 1;
-				long kk = 0;srand(time(NULL));
+				long kk = 0;
+				srand((unsigned int)time(NULL));
 				while ((mm & 1) == 0) {
 					mm = mm >> 1;
 					kk++;
@@ -1106,9 +1109,10 @@ namespace LinBox
 			}
 
 			// compute reverse bit ordering
-			size_t revbit[pts];
+			// size_t revbit[pts];
+			std::vector<size_t> revbit(pts);
 			for (long i = 0, j = 0; i < static_cast<long>(pts); i++, j = RevInc(j, lpts))
-				revbit[i]=j;
+				revbit[(size_t)i]=(size_t)j;
 
 			// set the data
 			std::vector<Coefficient> fft_a(pts, ZeroA), fft_b(pts, ZeroB), fft_c(pts,ZeroC);
@@ -1266,7 +1270,8 @@ namespace LinBox
 
 				// find a pseudo primitive element of the multiplicative group _p-1
 				long mm = _pl - 1;
-				long kk = 0;srand(time(NULL));
+				long kk = 0;
+				srand((unsigned int)time(NULL));
 				while ((mm & 1) == 0) {
 					mm = mm >> 1;
 					kk++;
@@ -1322,9 +1327,11 @@ namespace LinBox
 			}
 
 			// compute reverse bit ordering
-			size_t revbit[pts];
+			// XXX this is C99 extension
+			// size_t revbit[pts];
+			std::vector<size_t> revbit(pts);
 			for (long i = 0, j = 0; i < static_cast<long>(pts); i++, j = RevInc(j, lpts))
-				revbit[i]=j;
+				revbit[(size_t)i]=(size_t)j;
 
 			// set the data
 			std::vector<Coefficient> fft_a(pts, ZeroA), fft_b(pts, ZeroB), fft_c(pts, ZeroC);
@@ -1421,7 +1428,8 @@ namespace LinBox
 
 				// find a pseudo primitive element of the multiplicative group _p-1
 				long mm = _pl - 1;
-				long kk = 0;srand(time(NULL));
+				long kk = 0;
+				srand((unsigned int)time(NULL));
 				while ((mm & 1) == 0) {
 					mm = mm >> 1;
 					kk++;
@@ -1477,9 +1485,10 @@ namespace LinBox
 			}
 
 			// compute reverse bit ordering
-			size_t revbit[pts];
+			// size_t revbit[pts];
+			std::vector<size_t> revbit(pts);
 			for (long i = 0, j = 0; i < static_cast<long>(pts); i++, j = RevInc(j, lpts))
-				revbit[i]=j;
+				revbit[(size_t)i]=(size_t)j;
 
 			// set the data
 			std::vector<Coefficient> fft_a(pts, ZeroA), fft_b(pts, ZeroB), fft_c(pts, ZeroC);
@@ -1504,7 +1513,7 @@ namespace LinBox
 
 #pragma omp parallel for shared(fft_a,fft_b,fft_c) schedule(dynamic)
 #endif
-			for (long i=0;i<pts;++i)
+			for (long i=0;i<(long)pts;++i)
 				_BMD.mul(fft_a[i], fft_b[i], fft_c[i]);
 
 			Element swapping;
