@@ -40,7 +40,7 @@ namespace LinBox
 			_bits(bits)
 		{
 			if (! seed)
-				RandomFFTPrime::setSeed( BaseTimer::seed() );
+				RandomFFTPrime::setSeed( (unsigned long)BaseTimer::seed() );
 			else
 				RandomFFTPrime::setSeed( seed );
 		}
@@ -58,7 +58,7 @@ namespace LinBox
 			size_t tresh;
 			do {
 				tresh = 1<<(cbits);
-				size_t p = 1<<(_bits-cbits);
+				size_t p = 1<<((size_t)_bits-cbits);
 				do {
 					integer::random(tmp,cbits);
 					tmp = tmp*p+1;
@@ -79,7 +79,7 @@ namespace LinBox
 			size_t tresh;
 			do {
 				tresh = 1<<(cbits);
-				size_t p = 1<<(_bits-cbits);
+				size_t p = 1<<((size_t)_bits-cbits);
 				do {
 					integer::random(t,cbits);
 					t = t*p+1;

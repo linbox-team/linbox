@@ -94,7 +94,7 @@ namespace LinBox
 		}
 
 		//  constructor of the sequence from a blackbox, a field and two blocks random projection
-		BlackboxBlockContainer(const _Blackbox *D, const Field &F, size_t m, size_t n, size_t seed= time(NULL)) :
+		BlackboxBlockContainer(const _Blackbox *D, const Field &F, size_t m, size_t n, size_t seed= (size_t)time(NULL)) :
 			BlackboxBlockContainerBase<Field, _Blackbox> (D, F, m, n,seed)
 			, _blockW(F,D->rowdim(), n), _BMD(F)
 		{
@@ -234,7 +234,7 @@ namespace LinBox
 		}
 
 		//  constructor of the sequence from a blackbox, a field and two blocks random projection
-		BlackboxBlockContainerRecord(const _Blackbox *D, const Field &F, size_t m, size_t n, size_t seed= time(NULL)) :
+		BlackboxBlockContainerRecord(const _Blackbox *D, const Field &F, size_t m, size_t n, size_t seed= (size_t)time(NULL)) :
 			BlackboxBlockContainerBase<Field, _Blackbox> (D, F, m, n,seed),
 			_blockW(D->rowdim(), n), _BMD(F), _launcher(Nothing), _iter(1)
 		{

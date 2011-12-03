@@ -119,7 +119,7 @@ namespace LinBox
 	{
 		// Dense lignepivot
 		long n = lignepivot.size ();
-		long j = k;
+		long j = (long)k;
 
 		for (; j < n ; ++j )
 			if (!_field.isZero (lignepivot[j])) break ;
@@ -128,7 +128,7 @@ namespace LinBox
 			indpermut = -1 ;
 		else {
 			indpermut = j ;
-			if (indpermut != k) {
+			if (indpermut != (long)k) {
 				typename Vector::value_type tmp = lignepivot[k] ;
 				lignepivot[k] = lignepivot[j] ;
 				lignepivot[j] = tmp ;

@@ -134,7 +134,7 @@ namespace LinBox
 				Total+=T;
 			if (T.count() > 0) {
 				std::cout<<title<<": "<<timer;
-				for (int i=strlen(timer); i<28; i++)
+				for (int i=(int)strlen(timer); i<28; i++)
 					std::cout << ' ';
 				std::cout<<T<<std::endl;
 			}
@@ -396,9 +396,9 @@ namespace LinBox
 				tLQUP.start();
 #endif
 
-				std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 #ifdef __CHECK_DISCREPANCY
+				std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 				report<<"Discrepancy"<<NN<<":=Matrix(";
 				Discrepancy.write(report,_field,true)<<");"<<std::endl;
 #endif
@@ -693,7 +693,7 @@ namespace LinBox
 
 			std::vector<size_t> deg(m);
 			for (size_t i=0;i<m;++i)
-				deg[i]=degree[i];
+				deg[i]=(size_t)degree[i];
 
 			//report << "clearing S " << S.size() << std::endl;
 			//S.clear();

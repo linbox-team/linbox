@@ -61,12 +61,14 @@ namespace LinBox
 		BlackboxContainerBase () {}
 
 		BlackboxContainerBase (const Blackbox *BB, const Field &F) :
-			_field (F), _VD (F), _BB (BB), _size (MIN (BB->rowdim (), BB->coldim ()))
-		{ _size <<= 1; }
+			_field (F), _VD (F), _BB (BB), _size ((long)MIN (BB->rowdim (), BB->coldim ()))
+		{
+			_size <<= 1;
+		}
 
 		// Pascal Giorgi 16.02.2004
 		BlackboxContainerBase (const Blackbox *BB, const Field &F, unsigned long Size) :
-			_field (F), _VD (F), _BB (BB), _size (Size)
+			_field (F), _VD (F), _BB (BB), _size ((long)Size)
 		{}
 
 		virtual ~BlackboxContainerBase ()

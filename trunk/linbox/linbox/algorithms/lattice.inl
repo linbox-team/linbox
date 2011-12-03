@@ -51,11 +51,11 @@ namespace LinBox
 		NTL::clear(B);
 		// XXX Maybe Bij, maybe Bji...
 		NTL_ZZ Ints ;
-		Ints::Element Bij ;
+		NTL_ZZ::Element Bij ;
 		for (size_t i = 0 ; i < H.rowdim(); ++i) {
 			for (size_t j = 0  ; j < H.coldim() ; ++j) {
-				Bij.init(H.getEntry(i,j));
-				B[i][j] = Bij ;
+				Ints.init(Bij,H.getEntry(i,j));
+				B[(long)i][(long)j] = Bij ;
 			}
 		}
 		if (withU) {
@@ -67,7 +67,7 @@ namespace LinBox
 			switch (meth.getMeth()) {
 			case (latticeMethod::latticeNTL_LLL::FP) :
 				{
-					if (meth.givens) {
+					if (meth.givens()) {
 						G_LLL_FP(B,U,meth.getDelta(),meth.getDepth());
 					}
 					else {
@@ -77,7 +77,7 @@ namespace LinBox
 				break;
 			case (latticeMethod::latticeNTL_LLL::RR) :
 				{
-					if (meth.givens) {
+					if (meth.givens()) {
 						G_LLL_RR(B,U,meth.getDelta(),meth.getDepth());
 					}
 					else {
@@ -87,7 +87,7 @@ namespace LinBox
 				break;
 			case (latticeMethod::latticeNTL_LLL::XD) :
 				{
-					if (meth.givens) {
+					if (meth.givens()) {
 						G_LLL_XD(B,U,meth.getDelta(),meth.getDepth());
 					}
 					else {
@@ -97,7 +97,7 @@ namespace LinBox
 				break;
 			case (latticeMethod::latticeNTL_LLL::QP) :
 				{
-					if (meth.givens) {
+					if (meth.givens()) {
 						G_LLL_QP(B,U,meth.getDelta(),meth.getDepth());
 					}
 					else {
@@ -112,7 +112,7 @@ namespace LinBox
 			switch (meth.getMeth()) {
 			case (latticeMethod::latticeNTL_LLL::FP) :
 				{
-					if (meth.givens) {
+					if (meth.givens()) {
 						G_LLL_FP(B,meth.getDelta(),meth.getDepth());
 					}
 					else {
@@ -122,7 +122,7 @@ namespace LinBox
 				break;
 			case (latticeMethod::latticeNTL_LLL::RR) :
 				{
-					if (meth.givens) {
+					if (meth.givens()) {
 						G_LLL_RR(B,meth.getDelta(),meth.getDepth());
 					}
 					else {
@@ -132,7 +132,7 @@ namespace LinBox
 				break;
 			case (latticeMethod::latticeNTL_LLL::XD) :
 				{
-					if (meth.givens) {
+					if (meth.givens()) {
 						G_LLL_XD(B,meth.getDelta(),meth.getDepth());
 					}
 					else {
@@ -142,7 +142,7 @@ namespace LinBox
 				break;
 			case (latticeMethod::latticeNTL_LLL::QP) :
 				{
-					if (meth.givens) {
+					if (meth.givens()) {
 						G_LLL_QP(B,meth.getDelta(),meth.getDepth());
 					}
 					else {
@@ -157,13 +157,16 @@ namespace LinBox
 		Integer Hij;
 		for (size_t i = 0 ; i < H.rowdim(); ++i) {
 			for (size_t j = 0  ; j < H.coldim() ; ++j) {
-				H.setEntry( i,j,(Integer)B[i][j] );
+				Ints.convert(Hij,B[(long)i][(long)j]);
+				H.setEntry( i,j,Hij );
 			}
 		}
 		if (withU) {
+			Integer Uij;
 			for (size_t i = 0 ; i < H.rowdim(); ++i) {
 				for (size_t j = 0  ; j < H.coldim() ; ++j) {
-					UU.setEntry(i,j,(Integer)U[i][j] );
+					Ints.convert(Uij,U[(long)i][(long)j]);
+					UU.setEntry(i,j,Uij );
 				}
 			}
 		}
@@ -191,11 +194,11 @@ namespace LinBox
 		NTL::clear(B);
 		// XXX Maybe Bij, maybe Bji...
 		NTL_ZZ Ints ;
-		Ints::Element Bij ;
+		NTL_ZZ::Element Bij ;
 		for (size_t i = 0 ; i < H.rowdim(); ++i) {
 			for (size_t j = 0  ; j < H.coldim() ; ++j) {
 				Ints.init(Bij, H.getEntry(i,j));
-				B[i][j] = Bij ;
+				B[(long)i][(long)j] = Bij ;
 			}
 		}
 		if (withU) {
@@ -207,7 +210,7 @@ namespace LinBox
 			switch (meth.getMeth()) {
 			case (latticeMethod::latticeNTL_BKZ::FP) :
 				{
-					if (meth.givens) {
+					if (meth.givens()) {
 						G_BKZ_FP(B,U,meth.getBlockSize(),meth.getPrune());
 					}
 					else {
@@ -217,7 +220,7 @@ namespace LinBox
 				break;
 			case (latticeMethod::latticeNTL_BKZ::RR) :
 				{
-					if (meth.givens) {
+					if (meth.givens()) {
 						G_BKZ_RR(B,U,meth.getBlockSize(),meth.getPrune());
 					}
 					else {
@@ -227,7 +230,7 @@ namespace LinBox
 				break;
 			case (latticeMethod::latticeNTL_BKZ::XD) :
 				{
-					if (meth.givens) {
+					if (meth.givens()) {
 						G_BKZ_XD(B,U,meth.getBlockSize(),meth.getPrune());
 					}
 					else {
@@ -237,7 +240,7 @@ namespace LinBox
 				break;
 			case (latticeMethod::latticeNTL_BKZ::QP) :
 				{
-					if (meth.givens) {
+					if (meth.givens()) {
 						G_BKZ_QP(B,U,meth.getBlockSize(),meth.getPrune());
 					}
 					else {
@@ -252,7 +255,7 @@ namespace LinBox
 			switch (meth.getMeth()) {
 			case (latticeMethod::latticeNTL_BKZ::FP) :
 				{
-					if (meth.givens) {
+					if (meth.givens()) {
 						G_BKZ_FP(B,meth.getBlockSize(),meth.getPrune());
 					}
 					else {
@@ -262,7 +265,7 @@ namespace LinBox
 				break;
 			case (latticeMethod::latticeNTL_BKZ::RR) :
 				{
-					if (meth.givens) {
+					if (meth.givens()) {
 						G_BKZ_RR(B,meth.getBlockSize(),meth.getPrune());
 					}
 					else {
@@ -272,7 +275,7 @@ namespace LinBox
 				break;
 			case (latticeMethod::latticeNTL_BKZ::XD) :
 				{
-					if (meth.givens) {
+					if (meth.givens()) {
 						G_BKZ_XD(B,meth.getBlockSize(),meth.getPrune());
 					}
 					else {
@@ -282,7 +285,7 @@ namespace LinBox
 				break;
 			case (latticeMethod::latticeNTL_BKZ::QP) :
 				{
-					if (meth.givens) {
+					if (meth.givens()) {
 						G_BKZ_QP(B,meth.getBlockSize(),meth.getPrune());
 					}
 					else {
@@ -297,13 +300,16 @@ namespace LinBox
 		Integer Hij;
 		for (size_t i = 0 ; i < H.rowdim(); ++i) {
 			for (size_t j = 0  ; j < H.coldim() ; ++j) {
-				H.setEntry( i,j,(Integer)B[i][j] );
+				Ints.convert(Hij,B[(long)i][(long)j]);
+				H.setEntry( i,j,Hij );
 			}
 		}
 		if (withU) {
+			Integer Uij;
 			for (size_t i = 0 ; i < H.rowdim(); ++i) {
 				for (size_t j = 0  ; j < H.coldim() ; ++j) {
-					UU.setEntry(i,j,(Integer)U[i][j] );
+					Ints.convert(Uij,U[(long)i][(long)j]);
+					UU.setEntry(i,j,Uij );
 				}
 			}
 		}

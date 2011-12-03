@@ -77,7 +77,7 @@ namespace LinBox
 				for (size_t j=0;j<n;++j){
 					E.setEntry(i,j, At.getEntry(j,i));
 				}
-			return rank;
+			return (int)rank;
 		}
 
 
@@ -177,7 +177,7 @@ namespace LinBox
 				E.setEntry(*(Qt.getPointer()+i),i,one);
 			}
 
-			return rank;
+			return (int)rank;
 		}
 
 		// column reduced echelon form (IN-PLACE VERSION)

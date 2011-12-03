@@ -78,8 +78,8 @@ namespace LinBox
 		for (size_t i=0; i<block;++i)
 			F.assign(E[i], P[P.size()-block+i]);
 
-		for (int i=numblock-2; i>=0;--i)
-			for (size_t j= block*i; j< (size_t) block*(i+1); ++j){
+		for (size_t i=numblock-1; i--;)
+			for (size_t j= (size_t)block*i; j< (size_t) block*(i+1); ++j){
 				idx= j%block;
 				F.mulin(E[idx], a);
 				F.addin(E[idx], P[j]);

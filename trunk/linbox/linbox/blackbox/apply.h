@@ -219,7 +219,7 @@ namespace LinBox
 				for (size_t j=0;j< maxword;j=j+2){
 					if (!use_neg || j< maxword-1){
 						long long mask = static_cast<long long>(ydbl[j*m+i]);
-						*((long long*) ptr) |= mask;
+						*(reinterpret_cast<long long*>(ptr) ) |= mask;
 						ptr+=4;
 					}
 				}
@@ -227,7 +227,7 @@ namespace LinBox
 				for (size_t j=1;j< maxword;j=j+2){
 					if (!use_neg || j< maxword-1){
 						long long mask = static_cast<long long>(ydbl[j*m+i]);
-						*((long long*) ptr) |= mask;
+						*(reinterpret_cast<long long*>(ptr) ) |= mask;
 						ptr+=4;
 					}
 				}
@@ -242,9 +242,9 @@ namespace LinBox
 				else
 					result = 0;
 
-				importWords(tmp2, rclen, -1, 1, 0, 0, combined1+i*rclen);
+				importWords(tmp2, (size_t)rclen, -1, 1, 0, 0, combined1+i*rclen);
 				result += tmp2;
-				importWords(tmp2, rclen, -1, 1, 0, 0, combined2+i*rclen);
+				importWords(tmp2, (size_t)rclen, -1, 1, 0, 0, combined2+i*rclen);
 				result += tmp2;
 
 				_domain.init(y[i], result);
@@ -623,7 +623,7 @@ namespace LinBox
 								bitDest += rclen*((i % rc)*_n+j);
 								long long mask = static_cast<long long>(ctd[j]);
 								bitDest += 2*i;
-								*((long long*) bitDest) |= mask;
+								*(reinterpret_cast<long long*>(bitDest) ) |= mask;
 							}
 						}
 						delete[] dx;
@@ -640,7 +640,7 @@ namespace LinBox
 
 							for (int j=0; j<rc; j++) {
 								unsigned char* thispos = combined + rclen*(j*_n+i);
-								importWords(tmp, rclen, -1, 1, 0, 0, thispos);
+								importWords(tmp, (size_t)rclen, -1, 1, 0, 0, thispos);
 								result += tmp;
 							}
 							_domain.init(y[i], result);
@@ -735,10 +735,10 @@ namespace LinBox
 							unsigned char* BitDest = combined+chunk_byte*k;
 							for (size_t j=k; j< num_chunks; j+=rc){
 								long long mask = static_cast<long long>(ctd[i*num_chunks+j]);
-								*((long long*) BitDest) |= mask;
+								*(reinterpret_cast<long long*>(BitDest) ) |= mask;
 								BitDest+=rc*chunk_byte;
 							}
-							importWords(val, rclen, -1, 1, 0, 0, combined);
+							importWords(val, (size_t)rclen, -1, 1, 0, 0, combined);
 							result+=val;
 						}
 						_domain.init(y[i], result);
@@ -975,7 +975,7 @@ namespace LinBox
 								bitDest += rclen*((i % rc)*_m*_k+j);
 								long long mask = static_cast<long long>(ctd[j]);
 								bitDest += 2*i;
-								*((long long*) bitDest) |= mask;
+								*(reinterpret_cast<long long*>(bitDest) ) |= mask;
 							}
 					}
 
@@ -995,7 +995,7 @@ namespace LinBox
 
 						for (int j=0; j<rc; j++) {
 							unsigned char* thispos = combined + rclen*(j*_m*_k+i);
-							importWords(tmp, rclen, -1, 1, 0, 0, thispos);
+							importWords(tmp, (size_t)rclen, -1, 1, 0, 0, thispos);
 							result += tmp;
 #ifdef DEBUG_CHUNK_APPLYM
 							cout << "rc[" << j << "," << i << "]:" << tmp << endl;
@@ -1041,9 +1041,9 @@ namespace LinBox
 
 	};
 
-#ifndef __INTEL_COMPILER
-	template<>
-	#endif
+#if !defined (__INTEL_COMPILER) && !defined(__clang__)
+template<>
+#endif
 	template <class Domain>
 	class MatrixApplyDomain<Domain, BlasMatrix<Domain> > : public BlasMatrixApplyDomain<Domain, BlasMatrix<Domain> > {
 
