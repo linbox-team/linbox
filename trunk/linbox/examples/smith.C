@@ -298,107 +298,75 @@ int main(int argc, char* argv[])
 	return 0 ;
 }
 
-/** Output matrix is determined by src which may be:
-  "random-rough"
-  This mat will have s, near sqrt(n), distinct invariant factors,
-  each repeated twice), involving the s primes 101, 103, ...
-  "random"
-  This mat will have the same nontrivial invariant factors as
-  diag(1,2,3,5,8, ... 999, 0, 1, 2, ...).
-  "fib"
-  This mat will have the same nontrivial invariant factors as
-  diag(1,2,3,5,8, ... fib(k)), where k is about sqrt(n).
-  The basic matrix is block diagonal with i-th block of order i and
-  being a tridiagonal {-1,0,1} matrix whose snf = diag(i-1 1's, fib(i)),
-  where fib(1) = 1, fib(2) = 2.  But note that, depending on n,
-  the last block may be truncated, thus repeating an earlier fibonacci number.
-  "file" (or any other string)
-  mat read from named file with format "sparse" or "dense".
-  Also "tref" and file with format "kdense"
-  */
-template <class PIR>
-void Mat(BlasMatrix<PIR>& M, PIR& R, int n,
-	 string src, string file, string format) {
+template < class Ring >
+void scramble(BlasMatrix<Ring>& M)
+{
 
-	typename PIR::Element zero; R.init(zero, 0);
-	if (src == "random-rough") RandomRoughMat(M, R, n);
+	Ring R = M.field();
 
-	else if (src == "random") RandomFromDiagMat(M, R, n);
+	int N,n = (int)M.rowdim(); // number of random basic row and col ops.
+	N = n;
 
-	else if (src == "fib") RandomFibMat(M, R, n);
+	for (int k = 0; k < N; ++k) {
 
-	else if (src == "tref") TrefMat(M, R, n);
+		int i = rand()%(int)M.rowdim();
 
-	else // from file
-	{
+		int j = rand()%(int)M.coldim();
 
-		int rdim, cdim;
+		if (i == j) continue;
 
-		std::ifstream in (file.c_str(), std::ios::in);
-		if (! in) { cerr << "error: unable to open file" << endl; exit(-1); }
+		// M*i += alpha M*j and Mi* += beta Mj
 
-		in >> rdim >> cdim;
+		//int a = rand()%2;
+		int a = 0;
 
-		M. resize (rdim, cdim);
+		for (size_t l = 0; l < M.rowdim(); ++l) {
 
-		integer Val;
+			if (a)
 
-		if (format == "dense" ) {
+				R.subin(M[(int)l][i], M[(int)l][j]);
 
-			for (int i = 0; i < rdim; ++ i)
+			else
 
-				for ( int j = 0; j < cdim; ++ j) {
+				R.addin(M[(int)l][i], M[(int)l][j]);
 
-					in >> Val;
-
-					R. init (M[i][j], Val);
-
-				}
+			//K.axpy(c, M.getEntry(l, i), x, M.getEntry(l, j));
+			//M.setEntry(l, i, c);
 		}
 
-		else if (format == "sparse") {
+		//a = rand()%2;
 
-			int i, j;
+		for (size_t l = 0; l < M.coldim(); ++l) {
 
-			char mark;
+			if (a)
 
-			in >> mark;
+				R.subin(M[i][l], M[j][l]);
+			else
 
-			LinBox::integer val;
-
-			do {
-
-				in >> i >> j;
-				in. ignore (1);
-				in >> val;
-
-				if ( i == 0) break;
-
-				R. init (M[i-1][j-1], val);
-
-			} while (true);
-
-		}
-		//Krattenthaler's q^e matrices, given by exponent
-		else if (format == "kdense") KratMat(M, R, n, in);
-
-		else {
-
-			cout << "Format: " << format << " Unknown\n";
-
-			exit (-1);
-
+				R.addin(M[i][l], M[j][l]);
 		}
 	}
 
-	/*show some entries
-	  for (int k = 0; k < 10; ++k)
-	  cout << M.getEntry(0,k) <<  " " << M.getEntry(M.rowdim()-1, M.coldim()-1 - k) << endl;
-	  cout << endl << M.rowdim() << " " << M.coldim() << endl;
-	  */
+	std::ofstream out("matrix", std::ios::out);
 
-	/* some row ops and some col ops */
-} // Mat
+	out << n << " " << n << "\n";
+
+	for (int i = 0; i < n; ++ i) {
+
+		for ( int j = 0; j < n; ++ j) {
+
+			R. write(out, M[i][j]);
+
+			out << " ";
+		}
+
+		out << "\n";
+
+	}
+
+	//}
+}
+
 
 // This mat will have s, near sqrt(n), distinct invariant factors,
 // each repeated twice), involving the s primes 101, 103, ...
@@ -480,74 +448,6 @@ void RandomFibMat(BlasMatrix<PIR>& M, PIR& R, int n) {
 	scramble(M);
 }
 
-template < class Ring >
-void scramble(BlasMatrix<Ring>& M)
-{
-
-	Ring R = M.field();
-
-	int N,n = (int)M.rowdim(); // number of random basic row and col ops.
-	N = n;
-
-	for (int k = 0; k < N; ++k) {
-
-		int i = rand()%(int)M.rowdim();
-
-		int j = rand()%(int)M.coldim();
-
-		if (i == j) continue;
-
-		// M*i += alpha M*j and Mi* += beta Mj
-
-		//int a = rand()%2;
-		int a = 0;
-
-		for (size_t l = 0; l < M.rowdim(); ++l) {
-
-			if (a)
-
-				R.subin(M[(int)l][i], M[(int)l][j]);
-
-			else
-
-				R.addin(M[(int)l][i], M[(int)l][j]);
-
-			//K.axpy(c, M.getEntry(l, i), x, M.getEntry(l, j));
-			//M.setEntry(l, i, c);
-		}
-
-		//a = rand()%2;
-
-		for (size_t l = 0; l < M.coldim(); ++l) {
-
-			if (a)
-
-				R.subin(M[i][l], M[j][l]);
-			else
-
-				R.addin(M[i][l], M[j][l]);
-		}
-	}
-
-	std::ofstream out("matrix", std::ios::out);
-
-	out << n << " " << n << "\n";
-
-	for (int i = 0; i < n; ++ i) {
-
-		for ( int j = 0; j < n; ++ j) {
-
-			R. write(out, M[i][j]);
-
-			out << " ";
-		}
-
-		out << "\n";
-
-	}
-
-	//}
-}
 
 //////////////////////////////////
 // special mats tref and krat
@@ -658,4 +558,107 @@ void display(I b, I e)
 	for (I p = b; p != e; ++p) cout << p->first << " " << p->second << ", ";
 	cout << ")" << endl;
 }
+
+/** Output matrix is determined by src which may be:
+  "random-rough"
+  This mat will have s, near sqrt(n), distinct invariant factors,
+  each repeated twice), involving the s primes 101, 103, ...
+  "random"
+  This mat will have the same nontrivial invariant factors as
+  diag(1,2,3,5,8, ... 999, 0, 1, 2, ...).
+  "fib"
+  This mat will have the same nontrivial invariant factors as
+  diag(1,2,3,5,8, ... fib(k)), where k is about sqrt(n).
+  The basic matrix is block diagonal with i-th block of order i and
+  being a tridiagonal {-1,0,1} matrix whose snf = diag(i-1 1's, fib(i)),
+  where fib(1) = 1, fib(2) = 2.  But note that, depending on n,
+  the last block may be truncated, thus repeating an earlier fibonacci number.
+  "file" (or any other string)
+  mat read from named file with format "sparse" or "dense".
+  Also "tref" and file with format "kdense"
+  */
+template <class PIR>
+void Mat(BlasMatrix<PIR>& M, PIR& R, int n,
+	 string src, string file, string format) {
+
+	typename PIR::Element zero; R.init(zero, 0);
+	if (src == "random-rough") RandomRoughMat(M, R, n);
+
+	else if (src == "random") RandomFromDiagMat(M, R, n);
+
+	else if (src == "fib") RandomFibMat(M, R, n);
+
+	else if (src == "tref") TrefMat(M, R, n);
+
+	else // from file
+	{
+
+		int rdim, cdim;
+
+		std::ifstream in (file.c_str(), std::ios::in);
+		if (! in) { cerr << "error: unable to open file" << endl; exit(-1); }
+
+		in >> rdim >> cdim;
+
+		M. resize (rdim, cdim);
+
+		integer Val;
+
+		if (format == "dense" ) {
+
+			for (int i = 0; i < rdim; ++ i)
+
+				for ( int j = 0; j < cdim; ++ j) {
+
+					in >> Val;
+
+					R. init (M[i][j], Val);
+
+				}
+		}
+
+		else if (format == "sparse") {
+
+			int i, j;
+
+			char mark;
+
+			in >> mark;
+
+			LinBox::integer val;
+
+			do {
+
+				in >> i >> j;
+				in. ignore (1);
+				in >> val;
+
+				if ( i == 0) break;
+
+				R. init (M[i-1][j-1], val);
+
+			} while (true);
+
+		}
+		//Krattenthaler's q^e matrices, given by exponent
+		else if (format == "kdense") KratMat(M, R, n, in);
+
+		else {
+
+			cout << "Format: " << format << " Unknown\n";
+
+			exit (-1);
+
+		}
+	}
+
+	/*show some entries
+	  for (int k = 0; k < 10; ++k)
+	  cout << M.getEntry(0,k) <<  " " << M.getEntry(M.rowdim()-1, M.coldim()-1 - k) << endl;
+	  cout << endl << M.rowdim() << " " << M.coldim() << endl;
+	  */
+
+	/* some row ops and some col ops */
+} // Mat
+
 //@}
