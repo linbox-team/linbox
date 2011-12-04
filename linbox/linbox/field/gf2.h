@@ -25,6 +25,12 @@
 #include "linbox/field/field-traits.h"
 // #include "linbox/vector/vector-domain.h"
 
+#ifndef __PATHCC__
+#define stdBitReference std::_Bit_reference
+#else
+#define stdBitReference std::vector<bool>::reference
+#endif
+
 // Namespace in which all LinBox code resides
 namespace LinBox
 {
@@ -158,7 +164,7 @@ namespace LinBox
 			return x = long (y) & 1;
 		}
 
-		std::_Bit_reference init (std::_Bit_reference x, const integer &y = 0) const
+		stdBitReference init (stdBitReference x, const integer &y = 0) const
 		{
 			return x = long (y) & 1;
 		}
@@ -175,7 +181,7 @@ namespace LinBox
 			return x = y;
 		}
 
-		std::_Bit_reference convert (std::_Bit_reference x, Element y) const
+		stdBitReference convert (stdBitReference x, Element y) const
 		{
 			return x = y;
 		}
@@ -235,7 +241,7 @@ namespace LinBox
 			return x = y;
 		}
 
-		std::_Bit_reference assign (std::_Bit_reference x, Element y) const
+		stdBitReference assign (stdBitReference x, Element y) const
 		{
 			return x = y;
 		}
@@ -369,7 +375,7 @@ namespace LinBox
 		 * @param x
 		 * @return  \c is
 		 */
-		std::istream &read (std::istream &is, std::_Bit_reference x) const
+		std::istream &read (std::istream &is, stdBitReference x) const
 		{ bool a; is >> a; x=a; return is;
 		}
 
@@ -412,7 +418,7 @@ namespace LinBox
 		 * @param y
 		 * @param z
 		 */
-		std::_Bit_reference add (std::_Bit_reference x, Element y, Element z) const
+		stdBitReference add (stdBitReference x, Element y, Element z) const
 		{
 			return x = y ^ z;
 		}
@@ -446,7 +452,7 @@ namespace LinBox
 		 * @param y
 		 * @param z
 		 */
-		std::_Bit_reference sub (std::_Bit_reference x, Element y, Element z) const
+		stdBitReference sub (stdBitReference x, Element y, Element z) const
 		{
 			return x = y ^ z;
 		}
@@ -480,7 +486,7 @@ namespace LinBox
 		 * @param y
 		 * @param z
 		 */
-		std::_Bit_reference mul (std::_Bit_reference x, Element y, Element z) const
+		stdBitReference mul (stdBitReference x, Element y, Element z) const
 		{
 			return x = y & z;
 		}
@@ -515,7 +521,7 @@ namespace LinBox
 		 * @param y
 		 * @param z
 		 */
-		std::_Bit_reference div (std::_Bit_reference x, Element y, Element z ) const
+		stdBitReference div (stdBitReference x, Element y, Element z ) const
 		{
 			return x = y;
 		}
@@ -548,7 +554,7 @@ namespace LinBox
 		 * @param  x
 		 * @param  y
 		 */
-		std::_Bit_reference neg (std::_Bit_reference x, Element y) const
+		stdBitReference neg (stdBitReference x, Element y) const
 		{
 			return x = y;
 		}
@@ -581,7 +587,7 @@ namespace LinBox
 		 * @param  x
 		 * @param  y
 		 */
-		std::_Bit_reference inv (std::_Bit_reference x, Element y) const
+		stdBitReference inv (stdBitReference x, Element y) const
 		{
 			return x = y;
 		}
@@ -611,7 +617,7 @@ namespace LinBox
 		 * @param  x
 		 * @param  y
 		 */
-		std::_Bit_reference axpy (std::_Bit_reference r,
+		stdBitReference axpy (stdBitReference r,
 					  Element a,
 					  Element x,
 					  Element y) const
@@ -666,7 +672,7 @@ namespace LinBox
 		 * @param  x
 		 * @param  y
 		 */
-		std::_Bit_reference addin (std::_Bit_reference x, Element y) const
+		stdBitReference addin (stdBitReference x, Element y) const
 		{
 			return x = x ^ y;
 		}
@@ -699,7 +705,7 @@ namespace LinBox
 		 * @param  x
 		 * @param  y
 		 */
-		std::_Bit_reference subin (std::_Bit_reference x, Element y) const
+		stdBitReference subin (stdBitReference x, Element y) const
 		{
 			return x = x ^ y;
 		}
@@ -732,7 +738,7 @@ namespace LinBox
 		 * @param  x
 		 * @param  y
 		 */
-		Element& mulin (std::_Bit_reference& x, Element y) const
+		Element& mulin (stdBitReference& x, Element y) const
 		{
 			return mulin((bool&)x,y);
 		}
@@ -768,7 +774,7 @@ namespace LinBox
 		 * @param  y
 		 * @bug y is unused
 		 */
-		std::_Bit_reference divin (std::_Bit_reference x, Element y ) const
+		stdBitReference divin (stdBitReference x, Element y ) const
 		{
 			return x;
 		}
@@ -800,7 +806,7 @@ namespace LinBox
 		 * @param  x
 		 * @bug y is unused
 		 */
-		std::_Bit_reference negin (std::_Bit_reference x) const
+		stdBitReference negin (stdBitReference x) const
 		{
 			return x;
 		}
@@ -830,7 +836,7 @@ namespace LinBox
 		 * @return reference to x.
 		 * @param  x
 		 */
-		std::_Bit_reference invin (std::_Bit_reference x) const
+		stdBitReference invin (stdBitReference x) const
 		{
 			return x;
 		}
@@ -867,7 +873,7 @@ namespace LinBox
 		 * @param  a
 		 * @param  x
 		 */
-		std::_Bit_reference axpyin (std::_Bit_reference r, Element a, Element x) const
+		stdBitReference axpyin (stdBitReference r, Element a, Element x) const
 		{
 			return r = r ^ (a & x);
 		}
@@ -878,7 +884,7 @@ namespace LinBox
 		 * @param  a
 		 * @param  x
 		 */
-		Element &axpyin (Element &r, const std::_Bit_reference a, Element x) const
+		Element &axpyin (Element &r, const stdBitReference a, Element x) const
 		{
 			return r ^= a & x;
 		}
@@ -889,7 +895,7 @@ namespace LinBox
 		 * @param  a
 		 * @param  x
 		 */
-		std::_Bit_reference axpyin (std::_Bit_reference r, const std::_Bit_reference a, Element x) const
+		stdBitReference axpyin (stdBitReference r, const stdBitReference a, Element x) const
 		{
 			return r = r ^ (a & x);
 		}
@@ -900,7 +906,7 @@ namespace LinBox
 		 * @param  a
 		 * @param  x
 		 */
-		Element &axpyin (Element &r, Element a, const std::_Bit_reference x) const
+		Element &axpyin (Element &r, Element a, const stdBitReference x) const
 		{
 			return r ^= a & static_cast<bool>(x);
 		}
@@ -911,7 +917,7 @@ namespace LinBox
 		 * @param  a
 		 * @param  x
 		 */
-		std::_Bit_reference axpyin (std::_Bit_reference r, Element a, const std::_Bit_reference x) const
+		stdBitReference axpyin (stdBitReference r, Element a, const stdBitReference x) const
 		{
 			return r = r ^ (a & static_cast<bool>(x));
 		}
@@ -922,7 +928,7 @@ namespace LinBox
 		 * @param  a
 		 * @param  x
 		 */
-		Element &axpyin (Element &r, const std::_Bit_reference a, const std::_Bit_reference x) const
+		Element &axpyin (Element &r, const stdBitReference a, const stdBitReference x) const
 		{
 			return r ^= a & static_cast<bool>(x);
 		}
@@ -933,7 +939,7 @@ namespace LinBox
 		 * @param  a
 		 * @param  x
 		 */
-		std::_Bit_reference axpyin (std::_Bit_reference r, const std::_Bit_reference a, const std::_Bit_reference x) const
+		stdBitReference axpyin (stdBitReference r, const stdBitReference a, const stdBitReference x) const
 		{
 			return r = r ^ (a & static_cast<bool>(x));
 		}
@@ -949,7 +955,7 @@ namespace LinBox
 
 } // namespace LinBox
 
-#define LINBOX_field_gf2_H
+// #define LINBOX_field_gf2_H
 // #include "linbox/vector/vector-domain.h"
 
 
@@ -960,7 +966,7 @@ namespace LinBox
 namespace std
 {
 	//! @todo JGD 05.11.2009 : it should be in bits/stl_bvector.h  ...
-	inline void swap(_Bit_reference __x, _Bit_reference __y)
+	inline void swap(stdBitReference __x, stdBitReference __y)
 	{
 		bool __tmp = __x;
 		__x = __y;

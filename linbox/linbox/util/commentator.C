@@ -41,6 +41,7 @@
 #include <cmath>
 #include <cstring>
 #include <cstdlib>
+#include <cstdio>
 
 #include "linbox/util/commentator.h"
 #include "linbox/util/debug.h"

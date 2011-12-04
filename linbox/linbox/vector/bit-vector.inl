@@ -13,6 +13,9 @@
 
 #include <stdexcept>
 #include <vector>
+// #ifdef __PATHCC__
+// #include <bits/stl_bvector.h> // does not exist
+// #endif
 
 
 // #include "linbox/vector/vector-traits.h"
@@ -173,7 +176,8 @@ namespace LinBox
 	}
 
 	// class BitVector::iterator : public std::iterator <std::random_access_iterator_tag, bool>
-	class BitVector::iterator : public std::_Bit_iterator {
+	// class BitVector::iterator : public std::_Bit_iterator {
+	class BitVector::iterator : public std::vector<bool>::iterator {
 	public:
 
 		typedef std::iterator_traits<iterator>::iterator_category iterator_category;
@@ -189,7 +193,7 @@ namespace LinBox
 			_ref (word, position)
 		{}
 		iterator (const iterator &i) :
-			std::_Bit_iterator(),_ref (i._ref._word, i._ref._pos)
+			std::vector<bool>::iterator(),_ref (i._ref._word, i._ref._pos)
 		{}
 
 		iterator &operator = (const iterator &i)
