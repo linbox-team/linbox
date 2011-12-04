@@ -38,7 +38,7 @@ namespace LinBox
 	template<typename Ring>
 	struct ClassifyRing;
 
-	class Local2_32;
+	struct Local2_32;
 
 	template<>
 	struct ClassifyRing<Local2_32> {

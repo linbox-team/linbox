@@ -236,7 +236,7 @@ namespace LinBox
 						// It is the only shelf of the radix
 						// We normalize the result and output it
 						for( ; t_it != _tab_it->end(); ++t0_it, ++t_it)
-							normalize(*t0_it = *t_it, *t_it,
+							this->normalize(*t0_it = *t_it, *t_it,
 								  _mod_it->operator()());
 						this->RadixPrimeProd_.resize(1);
 						return d;
@@ -483,7 +483,7 @@ namespace LinBox
 						// It is the only shelf of the radix
 						// We normalize the result and output it
 						for( ; t_it != _tab_it->end(); ++t0_it, ++t_it)
-							normalize(*t0_it = *t_it, *t_it,
+							this->normalize(*t0_it = *t_it, *t_it,
 								  _mod_it->operator()());
 						this->RadixPrimeProd_.resize(1);
 						return d;

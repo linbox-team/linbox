@@ -237,11 +237,11 @@ namespace LinBox
 			// create new copies of matrices in dynamic memory
 			linbox_check (A_data != 0);
 			linbox_check (B_data != 0);
-			linbox_check (A_data.coldim () == B_data.coldim ());
-			linbox_check (A_data.rowdim () == B_data.rowdim ());
+			linbox_check (A_data->coldim () == B_data->coldim ());
+			linbox_check (A_data->rowdim () == B_data->rowdim ());
 
-			VectorWrapper::ensureDim (_z1, A_data.rowdim ());
-			VectorWrapper::ensureDim (_z2, A_data.coldim ());
+			VectorWrapper::ensureDim (_z1, A_data->rowdim ());
+			VectorWrapper::ensureDim (_z2, A_data->coldim ());
 		}
 
 		/** Copy constructor.

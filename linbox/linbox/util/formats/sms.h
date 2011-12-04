@@ -44,7 +44,7 @@ namespace LinBox
 {
 
 	template<class Field>
-	class SMSReader :public MatrixStreamReader<Field> {
+	class SMSReader : public MatrixStreamReader<Field> {
 	public:
 		typedef typename MatrixStreamReader<Field>::Element Element;
 	private:

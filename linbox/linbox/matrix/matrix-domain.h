@@ -997,7 +997,7 @@ namespace LinBox
 					    VectorCategories::DenseVectorTag,
 					    VectorCategories::DenseVectorTag) const
 		{
-			return mulColDense (_VD, w, A, v);
+			return this->mulColDense (_VD, w, A, v);
 		}
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,

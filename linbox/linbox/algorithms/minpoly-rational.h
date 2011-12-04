@@ -260,7 +260,7 @@ namespace LinBox
 						size_t i =0;
 						integer t,tt,ttt;
 						integer err;
-						size_t max_err = 0;
+						// size_t max_err = 0;
 						Quotient qerr;
 						p.resize(PP.size());
 						typename Vector <typename Rationals::Element>::iterator it;
@@ -285,9 +285,10 @@ namespace LinBox
 		size_t i =0;
 		integer t,tt;
 		integer err;
-		size_t max_res=0;int max_i; double rel;
+		size_t max_res=0;int max_i;
+		// double rel;
 		size_t max_resu=0; int max_iu;
-		size_t max_err = 0;
+		// size_t max_err = 0;
 		Quotient qerr;
 		p.resize(PP.size());
 

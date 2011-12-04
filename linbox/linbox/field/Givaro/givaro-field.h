@@ -42,8 +42,8 @@ namespace LinBox
 		{
 			this->init(zero,0UL);
 			this->init(one, 1UL);
-			init(mOne);
-			neg(mOne,one);
+			this->init(mOne);
+			this->neg(mOne,one);
 		}
 
 		GivaroField(const BaseField& bf) :
@@ -51,8 +51,8 @@ namespace LinBox
 		{
 			this->init(zero,0UL);
 			this->init(one, 1UL);
-			init(mOne);
-			neg(mOne,one);
+			this->init(mOne);
+			this->neg(mOne,one);
 			// neg(init(mOne),one);
 		}
 
