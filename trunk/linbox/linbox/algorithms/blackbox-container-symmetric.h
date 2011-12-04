@@ -46,7 +46,7 @@ namespace LinBox
 		{ init (u0, u0); }
 		BlackboxContainerSymmetric (const Blackbox *D, const Field &F, RandIter &g) :
 			BlackboxContainerBase<Field, _Blackbox> (D, F)
-		{ init (g); }
+		{ this->init (g); }
 
 	protected:
 

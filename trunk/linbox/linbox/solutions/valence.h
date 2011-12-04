@@ -269,7 +269,8 @@ namespace LinBox
 			int n_bit = (int)(log_max_mod / M_LN2 - 2);
 			unsigned long d;
 			RandomPrimeIterator g(n_bit); Field::Element v;
-			++g; Field F(*g);
+			++g;
+			Field F((int32_t)*g);
 			FBlackbox Ap(A, F);
 			one_valence(v, d, Ap);
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);

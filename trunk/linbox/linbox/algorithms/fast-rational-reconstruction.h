@@ -692,7 +692,7 @@ namespace LinBox
 
 		bool pushpop(QMatrix_& top, const QMatrix_& bottom) {
 			if (_size+1 < _maxSize) {
-				push_back(bottom);
+				this->push_back(bottom);
 				return false;
 				++_size;
 			}
@@ -700,7 +700,7 @@ namespace LinBox
 				if (!this->empty()) {
 					top = this->front();
 					this->pop_front();
-					push_back(bottom);
+					this->push_back(bottom);
 
 				}
 				else {
@@ -775,7 +775,8 @@ namespace LinBox
 			myQueue<Ring > queueMax(0);
 			QMatrix<Ring > maxQ(_intRing);
 
-			if (!fastQMaxEEA (ai,bi,ci,di,m,log_m,x,powtwo(powh,log_m+1), log_m+1,queueMax,maxQ)) {
+			if (!fastQMaxEEA (ai,bi,ci,di,m,log_m,x,
+					  this->powtwo(powh,log_m+1), log_m+1,queueMax,maxQ)) {
 				return false;
 			}
 
@@ -1011,7 +1012,7 @@ namespace LinBox
 				Element sqrth;
 				size_t logsqrth;
 				logsqrth = h >> (int) 1;
-				powtwo(sqrth, logsqrth);
+				this->powtwo(sqrth, logsqrth);
 
 				if (!fastQMaxEEA(a1,b1,c1,d1,m,d,n,sqrth, logsqrth, queueMax, maxQ)) return false;
 				if (maxQ.q.bitsize() > T.bitsize() + c) return true;
@@ -1059,7 +1060,9 @@ namespace LinBox
 
 					if (n2 >0) {
 						if (a1 < powh) {
-							if (!fastQMaxEEA(a2,b2,c2,d2,m2,log_m,n2, powtwo(sqrth,_k), _k, queueTmp,maxQTmp)) return false;
+							if (!fastQMaxEEA(a2,b2,c2,d2,m2,log_m,n2,
+									 this->powtwo(sqrth,_k), _k, queueTmp,maxQTmp))
+								return false;
 						}
 						else {
 							ai = a1; bi = b1; ci=c1; di = d1;

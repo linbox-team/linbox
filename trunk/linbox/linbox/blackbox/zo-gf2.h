@@ -29,8 +29,8 @@ namespace LinBox
 	 \ingroup blackbox
 	 */
 	template<>
-	struct ZeroOne<GF2> : public LightContainer< LightContainer< size_t > >
-	{
+	class ZeroOne<GF2> : public LightContainer< LightContainer< size_t > > {
+	public:
 		typedef LightContainer< LightContainer< size_t > > Father_t;
 		typedef LightContainer< size_t > Row_t;
 		typedef GF2::Element Element;

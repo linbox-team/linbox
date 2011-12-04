@@ -171,7 +171,7 @@ namespace LinBox
 namespace LinBox
 {
 	template <>
-	class RawVector<bool> {
+	struct RawVector<bool> {
 	public:
 		typedef BitVector Dense;
 		typedef std::vector<size_t> Sparse;

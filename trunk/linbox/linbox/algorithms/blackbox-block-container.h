@@ -138,12 +138,12 @@ namespace LinBox
 			tSequence.start();
 #endif
 			if (this->casenumber) {
-				Mul(_blockW,*this->_BB,this->_blockV);
+				this->Mul(_blockW,*this->_BB,this->_blockV);
 				_BMD.mul(this->_value, this->_blockU, _blockW);
 				this->casenumber = 0;
 			}
 			else {
-				Mul(this->_blockV,*this->_BB,_blockW);
+				this->Mul(this->_blockV,*this->_BB,_blockW);
 				_BMD.mul(this->_value, this->_blockU, this->_blockV);
 				this->casenumber = 1;
 			}

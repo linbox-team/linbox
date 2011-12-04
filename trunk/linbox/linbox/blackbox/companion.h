@@ -28,15 +28,17 @@ namespace LinBox
 		template<class Polynomial>
 		Companion(const Field& F =Field(), const Polynomial& P =Polynomial(1)) :
 			TriplesBB<Field>(F, P.size()-1, P.size()-1)
-		{	size_t n = P.size() - 1;
+		{
+			size_t n = P.size() - 1;
 			const size_t indexbase = 1;
 			typename Field::Element one; F.init(one, 1);
-			for (size_t i = 1; i < n; ++i) addEntry(one, i+indexbase, i-1+indexbase);
-			for (size_t i = 0; i < n; ++i)
-			{	typename Field::Element x;
+			for (size_t i = 1; i < n; ++i)
+				this->addEntry(one, i+indexbase, i-1+indexbase);
+			for (size_t i = 0; i < n; ++i) {
+				typename Field::Element x;
 				F.init(x, 0);
 				F.neg(x, P[i]);
-				addEntry(x, i+indexbase, n-1+indexbase);
+				this->addEntry(x, i+indexbase, n-1+indexbase);
 			}
 		}// Companion cstor
 
@@ -78,12 +80,13 @@ namespace LinBox
 
 			const size_t indexbase = 1;
 			typename Field::Element one; F.init(one, 1);
-			for (size_t i = 1; i < n; ++i) addEntry(one, i+indexbase, i-1+indexbase);
+			for (size_t i = 1; i < n; ++i)
+				this->addEntry(one, i+indexbase, i-1+indexbase);
 			for (size_t i = 0; i < n; ++i)
 			{	typename Field::Element x;
 				F.init(x, 0);
 				F.neg(x, p[i]);
-				addEntry(x, i+indexbase, n-1+indexbase);
+				this->addEntry(x, i+indexbase, n-1+indexbase);
 			}
 
 		}
