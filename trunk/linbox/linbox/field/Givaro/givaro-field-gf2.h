@@ -52,7 +52,7 @@ namespace LinBox
 			this->assign(r,c);
 			return this->subin(r,tmp);
 		}
-		std::_Bit_reference amxy (std::_Bit_reference r, const Rep a, const Rep b, const Rep c) const
+		stdBitReference amxy (stdBitReference r, const Rep a, const Rep b, const Rep c) const
 		{
 			Rep tmp;
 			this->mul(tmp, a, b);
@@ -67,7 +67,7 @@ namespace LinBox
 			Rep tmp; this->mul(tmp, a, x);
 			return this->sub(r,y,tmp);
 		}
-		std::_Bit_reference maxpy (std::_Bit_reference r, const Rep a, const Rep x, const Rep y) const
+		stdBitReference maxpy (stdBitReference r, const Rep a, const Rep x, const Rep y) const
 		{
 			Rep tmp; this->mul(tmp, a, x);
 			return this->sub(r,y,tmp);
@@ -78,7 +78,7 @@ namespace LinBox
 			maxpyin(r,a,x);
 			return negin(r);
 		}
-		std::_Bit_reference axmyin (std::_Bit_reference r, const Rep a, const Rep x) const
+		stdBitReference axmyin (stdBitReference r, const Rep a, const Rep x) const
 		{
 			maxpyin(r,a,x);
 			return negin(r);
@@ -89,7 +89,7 @@ namespace LinBox
 			Rep tmp; this->mul(tmp, a, x);
 			return this->subin(r,tmp);
 		}
-		std::_Bit_reference maxpyin (std::_Bit_reference r, const Rep a, const Rep x) const
+		stdBitReference maxpyin (stdBitReference r, const Rep a, const Rep x) const
 		{
 			Rep tmp; this->mul(tmp, a, x);
 			return this->subin(r,tmp);
@@ -153,31 +153,31 @@ namespace LinBox
 			return r = g() ;
 		}
 
-		template<class RandIter> std::_Bit_reference random(RandIter& g, std::_Bit_reference r) const
+		template<class RandIter> stdBitReference random(RandIter& g, stdBitReference r) const
 		{
 			return r = g() ;
 		}
-		template<class RandIter> std::_Bit_reference random(RandIter& g, std::_Bit_reference r, long s) const
+		template<class RandIter> stdBitReference random(RandIter& g, stdBitReference r, long s) const
 		{
 			return r = g() ;
 		}
-		template<class RandIter> std::_Bit_reference random(RandIter& g, std::_Bit_reference r, const std::_Bit_reference b) const
+		template<class RandIter> stdBitReference random(RandIter& g, stdBitReference r, const stdBitReference b) const
 		{
 			return r = g() ;
 		}
-		template<class RandIter> std::_Bit_reference nonzerorandom(RandIter& g, std::_Bit_reference r) const
+		template<class RandIter> stdBitReference nonzerorandom(RandIter& g, stdBitReference r) const
 		{
 			return r = g() ;
 		}
-		template<class RandIter> std::_Bit_reference nonzerorandom(RandIter& g, std::_Bit_reference r, long s) const
+		template<class RandIter> stdBitReference nonzerorandom(RandIter& g, stdBitReference r, long s) const
 		{
 			return r = g() ;
 		}
-		template<class RandIter> std::_Bit_reference nonzerorandom(RandIter& g, std::_Bit_reference r, const Rep& b) const
+		template<class RandIter> stdBitReference nonzerorandom(RandIter& g, stdBitReference r, const Rep& b) const
 		{
 			return r = g() ;
 		}
-		template<class RandIter> std::_Bit_reference nonzerorandom(RandIter& g, std::_Bit_reference r, const std::_Bit_reference b) const
+		template<class RandIter> stdBitReference nonzerorandom(RandIter& g, stdBitReference r, const stdBitReference b) const
 		{
 			return r = g() ;
 		}

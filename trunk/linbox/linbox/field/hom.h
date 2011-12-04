@@ -506,7 +506,7 @@ namespace LinBox
 		{
 			return _target.convert(s,t);
 		}
-		std::_Bit_reference preimage(std::_Bit_reference s, const Elt& t) const
+		stdBitReference preimage(stdBitReference s, const Elt& t) const
 		{
 			int ts;
 			return s = _target.convert(ts, t);
@@ -572,7 +572,7 @@ namespace LinBox
 		{
 			return _target.convert(s, t);
 		}
-		std::_Bit_reference preimage(std::_Bit_reference s, const Elt& t) const
+		stdBitReference preimage(stdBitReference s, const Elt& t) const
 		{
 			bool ts;
 			return s = _target.convert(ts, t);

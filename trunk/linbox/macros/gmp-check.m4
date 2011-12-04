@@ -49,11 +49,24 @@ for GMP_HOME in ${GMP_HOME_PATH}
 		LIBS="${LIBS} ${GMP_LIBS}"
 
 		AC_TRY_LINK(
-		[#include <gmp.h>],
+		[
+#ifdef __PATHCC__
+#include <rw/_defs.h>
+#include <ansi/_cstddef.h>
+#endif
+#include "stddef.h"
+		#include <gmp.h>
+		],
 		[mpz_t a; mpz_init (a);],
 		[
         		AC_TRY_RUN(
- 			[#include <gmp.h>
+ 			[
+#ifdef __PATHCC__
+#include <rw/_defs.h>
+		#include <ansi/_cstddef.h>
+		#include "stddef.h"
+#endif
+		#include <gmp.h>
 			 int main () {  if (__GNU_MP_VERSION < 3) return -1; else return 0; }
 		  	],[
 				AC_MSG_RESULT(found)
@@ -63,7 +76,13 @@ for GMP_HOME in ${GMP_HOME_PATH}
 				# See if we are running GMP 4.0
 	   			AC_MSG_CHECKING(whether GMP is 4.0 or greater)
 		   		AC_TRY_RUN(
-		   		[#include <gmp.h>
+		   		[
+#ifdef __PATHCC__
+#include <rw/_defs.h>
+		#include <ansi/_cstddef.h>
+		#include "stddef.h"
+#endif
+#include <gmp.h>
 	    			int main () { if (__GNU_MP_VERSION < 4) return -1; else return 0; }
 	   			],[
 					gmp_found="yes"

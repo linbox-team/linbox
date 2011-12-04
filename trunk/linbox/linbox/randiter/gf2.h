@@ -106,7 +106,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to random field element
 		 */
-		std::_Bit_reference random (std::_Bit_reference a)  const
+		stdBitReference random (stdBitReference a)  const
 		{ return a = MT.randomIntRange (0, 2); }
 
 		/** Random field element creator.
