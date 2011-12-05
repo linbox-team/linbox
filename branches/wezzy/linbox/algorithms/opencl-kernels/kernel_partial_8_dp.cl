@@ -59,8 +59,6 @@ __kernel void matrix_mul_kernel(__global double* C, __global double* A, __global
 		//Synchronize threads
 		barrier(CLK_LOCAL_MEM_FENCE);
 	}
-	//Calls fmod once to normalize the sum
-	Csub = fmod(Csub, mod);
 
 	//Calculates the offset in the result matrix and add the sum to the
 	//appropriate spot

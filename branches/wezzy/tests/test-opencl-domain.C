@@ -122,6 +122,8 @@ static bool testMulAdd (const Field& F, size_t n, int iterations)
 
 		if (!MD.isZero(R))
 			ret=false;
+			
+		OMD.write(commentator.report(), R) << std::endl;
 
 		// compute z = beta.y + alpha.A*x
 

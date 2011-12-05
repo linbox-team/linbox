@@ -1,5 +1,5 @@
 /*
- * kernel_partial_1024_dp.cl
+ * kernel_partial_1024_sp.cl
  *
  *  Created on: Jul 13, 2011
  *      Author: Matthew Wezowicz

@@ -25,6 +25,7 @@
 #include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/matrix/factorized-matrix.h"
+#include <cmath>
 
 #include "CL/cl.hpp"
 //#include "helper_functions.hpp" -- For debugging only
@@ -87,17 +88,18 @@ namespace LinBox
 			selectedKernel = dpKernels[2];
 		}
 
-		int widthA = ((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16;
-		int heightA = ((A.rowdim() / 16) + (A.rowdim() % 16 == 0 ? 0 : 1)) * 16;
-		int widthB = ((B.coldim() / 16) + (B.coldim() % 16 == 0 ? 0 : 1)) * 16;
+		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
+		int widthA = ((A.coldim() + 15) / 16) * 16;
+		int heightA = ((A.rowdim() + 15) / 16) * 16;
+		int widthB = ((B.coldim() + 15) / 16) * 16;
 
 		//Pass kernel arguments
 		cl_int tempErrcode;
 		tempErrcode = clSetKernelArg(selectedKernel, 0, sizeof(cl_mem), (void*)&bufferC);
 		tempErrcode = clSetKernelArg(selectedKernel, 1, sizeof(cl_mem), (void*)&bufferA);
 		tempErrcode = clSetKernelArg(selectedKernel, 2, sizeof(cl_mem), (void*)&bufferB);
-		tempErrcode = clSetKernelArg(selectedKernel, 3, sizeof(int), (void*)&widthA);
-		tempErrcode = clSetKernelArg(selectedKernel, 4, sizeof(int), (void*)&widthB);
+		tempErrcode = clSetKernelArg(selectedKernel, 3, sizeof(cl_int), (void*)&widthA);
+		tempErrcode = clSetKernelArg(selectedKernel, 4, sizeof(cl_int), (void*)&widthB);
 		tempErrcode = clSetKernelArg(selectedKernel, 5, sizeof(cl_double), (void*)&p);
 		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
 
@@ -177,17 +179,18 @@ namespace LinBox
 			selectedKernel = spKernels[2];
 		}
 
-		int widthA = ((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16;
-		int heightA = ((A.rowdim() / 16) + (A.rowdim() % 16 == 0 ? 0 : 1)) * 16;
-		int widthB = ((B.coldim() / 16) + (B.coldim() % 16 == 0 ? 0 : 1)) * 16;
+		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
+		int widthA = ((A.coldim() + 15) / 16) * 16;
+		int heightA = ((A.rowdim() + 15) / 16) * 16;
+		int widthB = ((B.coldim() + 15) / 16) * 16;
 
 		//Pass kernel arguments
 		cl_int tempErrcode;
 		tempErrcode = clSetKernelArg(selectedKernel, 0, sizeof(cl_mem), (void*)&bufferC);
 		tempErrcode = clSetKernelArg(selectedKernel, 1, sizeof(cl_mem), (void*)&bufferA);
 		tempErrcode = clSetKernelArg(selectedKernel, 2, sizeof(cl_mem), (void*)&bufferB);
-		tempErrcode = clSetKernelArg(selectedKernel, 3, sizeof(int), (void*)&widthA);
-		tempErrcode = clSetKernelArg(selectedKernel, 4, sizeof(int), (void*)&widthB);
+		tempErrcode = clSetKernelArg(selectedKernel, 3, sizeof(cl_int), (void*)&widthA);
+		tempErrcode = clSetKernelArg(selectedKernel, 4, sizeof(cl_int), (void*)&widthB);
 		tempErrcode = clSetKernelArg(selectedKernel, 5, sizeof(cl_float), (void*)&p);
 		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
 
@@ -339,17 +342,18 @@ namespace LinBox
 			selectedKernel = dpKernels[2];
 		}
 
-		int widthA = ((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16;
-		int heightA = ((A.rowdim() / 16) + (A.rowdim() % 16 == 0 ? 0 : 1)) * 16;
-		int widthB = ((B.coldim() / 16) + (B.coldim() % 16 == 0 ? 0 : 1)) * 16;
+		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
+		int widthA = ((A.coldim() + 15) / 16) * 16;
+		int heightA = ((A.rowdim() + 15) / 16) * 16;
+		int widthB = ((B.coldim() + 15) / 16) * 16;
 
 		//Pass 1st(mul) kernel arguments
 		cl_int tempErrcode;
 		tempErrcode = clSetKernelArg(selectedKernel, 0, sizeof(cl_mem), (void*)&bufferT);
 		tempErrcode = clSetKernelArg(selectedKernel, 1, sizeof(cl_mem), (void*)&bufferA);
 		tempErrcode = clSetKernelArg(selectedKernel, 2, sizeof(cl_mem), (void*)&bufferB);
-		tempErrcode = clSetKernelArg(selectedKernel, 3, sizeof(int), (void*)&widthA);
-		tempErrcode = clSetKernelArg(selectedKernel, 4, sizeof(int), (void*)&widthB);
+		tempErrcode = clSetKernelArg(selectedKernel, 3, sizeof(cl_int), (void*)&widthA);
+		tempErrcode = clSetKernelArg(selectedKernel, 4, sizeof(cl_int), (void*)&widthB);
 		tempErrcode = clSetKernelArg(selectedKernel, 5, sizeof(cl_double), (void*)&p);
 		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
 
@@ -459,17 +463,18 @@ namespace LinBox
 			selectedKernel = spKernels[2];
 		}
 
-		int widthA = ((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16;
-		int heightA = ((A.rowdim() / 16) + (A.rowdim() % 16 == 0 ? 0 : 1)) * 16;
-		int widthB = ((B.coldim() / 16) + (B.coldim() % 16 == 0 ? 0 : 1)) * 16;
+		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
+		int widthA = ((A.coldim() + 15) / 16) * 16;
+		int heightA = ((A.rowdim() + 15) / 16) * 16;
+		int widthB = ((B.coldim() + 15) / 16) * 16;
 
 		//Pass 1st(mul) kernel arguments
 		cl_int tempErrcode;
 		tempErrcode = clSetKernelArg(selectedKernel, 0, sizeof(cl_mem), (void*)&bufferT);
 		tempErrcode = clSetKernelArg(selectedKernel, 1, sizeof(cl_mem), (void*)&bufferA);
 		tempErrcode = clSetKernelArg(selectedKernel, 2, sizeof(cl_mem), (void*)&bufferB);
-		tempErrcode = clSetKernelArg(selectedKernel, 3, sizeof(int), (void*)&widthA);
-		tempErrcode = clSetKernelArg(selectedKernel, 4, sizeof(int), (void*)&widthB);
+		tempErrcode = clSetKernelArg(selectedKernel, 3, sizeof(cl_int), (void*)&widthA);
+		tempErrcode = clSetKernelArg(selectedKernel, 4, sizeof(cl_int), (void*)&widthB);
 		tempErrcode = clSetKernelArg(selectedKernel, 5, sizeof(cl_float), (void*)&p);
 		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
 
@@ -616,17 +621,18 @@ namespace LinBox
 			selectedKernel = dpKernels[2];
 		}
 
-		int widthA = ((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16;
-		int heightA = ((A.rowdim() / 16) + (A.rowdim() % 16 == 0 ? 0 : 1)) * 16;
-		int widthB = ((B.coldim() / 16) + (B.coldim() % 16 == 0 ? 0 : 1)) * 16;
+		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
+		int widthA = ((A.coldim() + 15) / 16) * 16;
+		int heightA = ((A.rowdim() + 15) / 16) * 16;
+		int widthB = ((B.coldim() + 15) / 16) * 16;
 
 		//Pass 1st(mul) kernel arguments
 		cl_int tempErrcode;
 		tempErrcode = clSetKernelArg(selectedKernel, 0, sizeof(cl_mem), (void*)&bufferT);
 		tempErrcode = clSetKernelArg(selectedKernel, 1, sizeof(cl_mem), (void*)&bufferA);
 		tempErrcode = clSetKernelArg(selectedKernel, 2, sizeof(cl_mem), (void*)&bufferB);
-		tempErrcode = clSetKernelArg(selectedKernel, 3, sizeof(int), (void*)&widthA);
-		tempErrcode = clSetKernelArg(selectedKernel, 4, sizeof(int), (void*)&widthB);
+		tempErrcode = clSetKernelArg(selectedKernel, 3, sizeof(cl_int), (void*)&widthA);
+		tempErrcode = clSetKernelArg(selectedKernel, 4, sizeof(cl_int), (void*)&widthB);
 		tempErrcode = clSetKernelArg(selectedKernel, 5, sizeof(cl_double), (void*)&p);
 		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
 
@@ -737,17 +743,18 @@ namespace LinBox
 			selectedKernel = spKernels[2];
 		}
 
-		int widthA = ((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16;
-		int heightA = ((A.rowdim() / 16) + (A.rowdim() % 16 == 0 ? 0 : 1)) * 16;
-		int widthB = ((B.coldim() / 16) + (B.coldim() % 16 == 0 ? 0 : 1)) * 16;
+		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
+		int widthA = ((A.coldim() + 15) / 16) * 16;
+		int heightA = ((A.rowdim() + 15) / 16) * 16;
+		int widthB = ((B.coldim() + 15) / 16) * 16;
 
 		//Pass 1st(mul) kernel arguments
 		cl_int tempErrcode;
 		tempErrcode = clSetKernelArg(selectedKernel, 0, sizeof(cl_mem), (void*)&bufferT);
 		tempErrcode = clSetKernelArg(selectedKernel, 1, sizeof(cl_mem), (void*)&bufferA);
 		tempErrcode = clSetKernelArg(selectedKernel, 2, sizeof(cl_mem), (void*)&bufferB);
-		tempErrcode = clSetKernelArg(selectedKernel, 3, sizeof(int), (void*)&widthA);
-		tempErrcode = clSetKernelArg(selectedKernel, 4, sizeof(int), (void*)&widthB);
+		tempErrcode = clSetKernelArg(selectedKernel, 3, sizeof(cl_int), (void*)&widthA);
+		tempErrcode = clSetKernelArg(selectedKernel, 4, sizeof(cl_int), (void*)&widthB);
 		tempErrcode = clSetKernelArg(selectedKernel, 5, sizeof(cl_float), (void*)&p);
 		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
 
@@ -893,17 +900,18 @@ namespace LinBox
 			selectedKernel = dpKernels[2];
 		}
 
-		int widthA = ((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16;
-		int heightA = ((A.rowdim() / 16) + (A.rowdim() % 16 == 0 ? 0 : 1)) * 16;
-		int widthB = ((B.coldim() / 16) + (B.coldim() % 16 == 0 ? 0 : 1)) * 16;
+		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
+		int widthA = ((A.coldim() + 15) / 16) * 16;
+		int heightA = ((A.rowdim() + 15) / 16) * 16;
+		int widthB = ((B.coldim() + 15) / 16) * 16;
 
 		//Pass 1st(mul) kernel arguments
 		cl_int tempErrcode;
 		tempErrcode = clSetKernelArg(selectedKernel, 0, sizeof(cl_mem), (void*)&bufferT);
 		tempErrcode = clSetKernelArg(selectedKernel, 1, sizeof(cl_mem), (void*)&bufferA);
 		tempErrcode = clSetKernelArg(selectedKernel, 2, sizeof(cl_mem), (void*)&bufferB);
-		tempErrcode = clSetKernelArg(selectedKernel, 3, sizeof(int), (void*)&widthA);
-		tempErrcode = clSetKernelArg(selectedKernel, 4, sizeof(int), (void*)&widthB);
+		tempErrcode = clSetKernelArg(selectedKernel, 3, sizeof(cl_int), (void*)&widthA);
+		tempErrcode = clSetKernelArg(selectedKernel, 4, sizeof(cl_int), (void*)&widthB);
 		tempErrcode = clSetKernelArg(selectedKernel, 5, sizeof(cl_double), (void*)&p);
 		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
 
@@ -1013,17 +1021,18 @@ namespace LinBox
 			selectedKernel = spKernels[2];
 		}
 
-		int widthA = ((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16;
-		int heightA = ((A.rowdim() / 16) + (A.rowdim() % 16 == 0 ? 0 : 1)) * 16;
-		int widthB = ((B.coldim() / 16) + (B.coldim() % 16 == 0 ? 0 : 1)) * 16;
+		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
+		int widthA = ((A.coldim() + 15) / 16) * 16;
+		int heightA = ((A.rowdim() + 15) / 16) * 16;
+		int widthB = ((B.coldim() + 15) / 16) * 16;
 
 		//Pass 1st(mul) kernel arguments
 		cl_int tempErrcode;
 		tempErrcode = clSetKernelArg(selectedKernel, 0, sizeof(cl_mem), (void*)&bufferT);
 		tempErrcode = clSetKernelArg(selectedKernel, 1, sizeof(cl_mem), (void*)&bufferA);
 		tempErrcode = clSetKernelArg(selectedKernel, 2, sizeof(cl_mem), (void*)&bufferB);
-		tempErrcode = clSetKernelArg(selectedKernel, 3, sizeof(int), (void*)&widthA);
-		tempErrcode = clSetKernelArg(selectedKernel, 4, sizeof(int), (void*)&widthB);
+		tempErrcode = clSetKernelArg(selectedKernel, 3, sizeof(cl_int), (void*)&widthA);
+		tempErrcode = clSetKernelArg(selectedKernel, 4, sizeof(cl_int), (void*)&widthB);
 		tempErrcode = clSetKernelArg(selectedKernel, 5, sizeof(cl_float), (void*)&p);
 		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
 
@@ -1115,6 +1124,210 @@ namespace LinBox
 		BlasMatrix<float> T(C);
 		T = C;
 		return axmy<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(C,A,B,T);
+	}
+
+	/*
+	 * Specialization of general matrix-matrix multiplication and
+	 * addition with scaling over a Modular<double> Field
+	 * D = beta.C + alpha.A*B
+	 */
+	template <>
+	template <>
+	BlasMatrix<double>& OpenCLMatrixDomain<Modular<double> >::muladd<
+		BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(
+		BlasMatrix<double>& D, const double& beta, const BlasMatrix<double>& C,
+		const double& alpha, const BlasMatrix<double>& A, const BlasMatrix<double>& B) const{
+
+		//Compute if the OpenCL device is capable of working with the required ammounts of memory
+		bool memLevelsAllowed = oclMemCheck<
+			cl_double, BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(D,A,B,C);
+
+		//If it is not capable or not setup properly use default implementation
+		if(!memLevelsAllowed && !setupCorrect && !doubleSupported){
+			return BlasMatrixDomainMulAdd<
+				Modular<double>, BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >()(
+				_F,D,beta,C,alpha,A,B);
+		}
+
+		linbox_check( A.coldim() == B.rowdim());
+		linbox_check( C.rowdim() == A.rowdim());
+		linbox_check( C.coldim() == B.coldim());
+		linbox_check( D.rowdim() == C.rowdim());
+		linbox_check( D.coldim() == C.coldim());
+
+		cl_mem bufferD = createMatrixBuffer<cl_double, BlasMatrix<double> >(D);
+		cl_mem bufferA = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(A);
+		cl_mem bufferB = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(B);
+		cl_mem bufferC = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(C);
+
+		double p = _F.characteristic();
+		double tempAlpha = fmod(alpha, p);
+		double tempBeta = fmod(beta, p);
+
+		cl_kernel selectedKernel;
+
+		// Select OpenCL kernel based on the size of the modulus factor for maximum performance
+		//p^2 * n < 2^53
+		if(p <= (1<<21)){
+			selectedKernel = dpKernels[9];
+		}
+		else if(p <=(1<<24)){
+			selectedKernel = dpKernels[8];
+		}
+		else if(p <=(1<<25)){
+			selectedKernel = dpKernels[7];
+		}
+		else{
+			selectedKernel = dpKernels[6];
+		}
+
+		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
+		int widthA = ((A.coldim() + 15) / 16) * 16;
+		int heightA = ((A.rowdim() + 15) / 16) * 16;
+		int widthB = ((B.coldim() + 15) / 16) * 16;
+
+		//Pass kernel arguments
+		cl_int tempErrcode;
+		tempErrcode = clSetKernelArg(selectedKernel, 0, sizeof(cl_mem), (void*)&bufferD);
+		tempErrcode = clSetKernelArg(selectedKernel, 1, sizeof(cl_double), (void*)&tempAlpha);
+		tempErrcode = clSetKernelArg(selectedKernel, 2, sizeof(cl_mem), (void*)&bufferA);
+		tempErrcode = clSetKernelArg(selectedKernel, 3, sizeof(cl_mem), (void*)&bufferB);
+		tempErrcode = clSetKernelArg(selectedKernel, 4, sizeof(cl_double), (void*)&tempBeta);
+		tempErrcode = clSetKernelArg(selectedKernel, 5, sizeof(cl_mem), (void*)&bufferC);
+		tempErrcode = clSetKernelArg(selectedKernel, 6, sizeof(cl_int), (void*)&widthA);
+		tempErrcode = clSetKernelArg(selectedKernel, 7, sizeof(cl_int), (void*)&widthB);
+		tempErrcode = clSetKernelArg(selectedKernel, 8, sizeof(cl_double), (void*)&p);
+		//updateErrcode(tempErrcode); //does not work because of const being used pointlessly
+
+		//Set NDRange
+		size_t localWorkSize[2];
+		size_t globalWorkSize[2];
+		localWorkSize[0] = 16;
+		localWorkSize[1] = 16;
+		globalWorkSize[0] = widthB;
+		globalWorkSize[1] = heightA;
+
+		//Launch kernel
+		tempErrcode = clEnqueueNDRangeKernel(commandQue, selectedKernel, 2, NULL, globalWorkSize,
+				localWorkSize, 0, NULL, NULL);
+		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
+
+		//Block until kernel finishes
+		tempErrcode = clFinish(commandQue);
+		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
+
+		D = readMatrixBuffer<cl_double, BlasMatrix<double> >(bufferD, D);
+
+		//Delete OpenCL buffers
+		tempErrcode = clReleaseMemObject(bufferD);
+		tempErrcode = clReleaseMemObject(bufferA);
+		tempErrcode = clReleaseMemObject(bufferB);
+		tempErrcode = clReleaseMemObject(bufferC);
+		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
+
+		return D;
+	}
+
+	/*
+	 * Specialization of general matrix-matrix multiplication and
+	 * addition with scaling over a Modular<float> Field
+	 * D = beta.C + alpha.A*B
+	 */
+	template <>
+	template <>
+	BlasMatrix<float>& OpenCLMatrixDomain<Modular<float> >::muladd<
+		BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(
+		BlasMatrix<float>& D, const float& beta, const BlasMatrix<float>& C,
+		const float& alpha, const BlasMatrix<float>& A, const BlasMatrix<float>& B) const{
+
+		//Compute if the OpenCL device is capable of working with the required ammounts of memory
+		bool memLevelsAllowed = oclMemCheck<
+			cl_float, BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(D,A,B,C);
+
+		//If it is not capable or not setup properly use default implementation
+		if(!memLevelsAllowed && !setupCorrect){
+			return BlasMatrixDomainMulAdd<
+				Modular<float>, BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >()(
+				_F,D,beta,C,alpha,A,B);
+		}
+
+		linbox_check( A.coldim() == B.rowdim());
+		linbox_check( C.rowdim() == A.rowdim());
+		linbox_check( C.coldim() == B.coldim());
+		linbox_check( D.rowdim() == C.rowdim());
+		linbox_check( D.coldim() == C.coldim());
+
+		cl_mem bufferD = createMatrixBuffer<cl_float, BlasMatrix<float> >(D);
+		cl_mem bufferA = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(A);
+		cl_mem bufferB = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(B);
+		cl_mem bufferC = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(C);
+
+		float p = _F.characteristic();
+		float tempAlpha = fmod(alpha, p);
+		float tempBeta = fmod(beta, p);
+
+		cl_kernel selectedKernel;
+
+		// Select OpenCL kernel based on the size of the modulus factor for maximum performance
+		//p^2 * n < 2^23
+		if(p <= (1<<7)){
+			selectedKernel = spKernels[9];
+		}
+		else if(p <=(1<<9)){
+			selectedKernel = spKernels[8];
+		}
+		else if(p <=(1<<10)){
+			selectedKernel = spKernels[7];
+		}
+		else{
+			selectedKernel = spKernels[6];
+		}
+
+		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
+		int widthA = ((A.coldim() + 15) / 16) * 16;
+		int heightA = ((A.rowdim() + 15) / 16) * 16;
+		int widthB = ((B.coldim() + 15) / 16) * 16;
+
+		//Pass kernel arguments
+		cl_int tempErrcode;
+		tempErrcode = clSetKernelArg(selectedKernel, 0, sizeof(cl_mem), (void*)&bufferD);
+		tempErrcode = clSetKernelArg(selectedKernel, 1, sizeof(cl_float), (void*)&tempAlpha);
+		tempErrcode = clSetKernelArg(selectedKernel, 2, sizeof(cl_mem), (void*)&bufferA);
+		tempErrcode = clSetKernelArg(selectedKernel, 3, sizeof(cl_mem), (void*)&bufferB);
+		tempErrcode = clSetKernelArg(selectedKernel, 4, sizeof(cl_float), (void*)&tempBeta);
+		tempErrcode = clSetKernelArg(selectedKernel, 5, sizeof(cl_mem), (void*)&bufferC);
+		tempErrcode = clSetKernelArg(selectedKernel, 6, sizeof(cl_int), (void*)&widthA);
+		tempErrcode = clSetKernelArg(selectedKernel, 7, sizeof(cl_int), (void*)&widthB);
+		tempErrcode = clSetKernelArg(selectedKernel, 8, sizeof(cl_float), (void*)&p);
+		//updateErrcode(tempErrcode); //does not work because of const being used pointlessly
+
+		//Set NDRange
+		size_t localWorkSize[2];
+		size_t globalWorkSize[2];
+		localWorkSize[0] = 16;
+		localWorkSize[1] = 16;
+		globalWorkSize[0] = widthB;
+		globalWorkSize[1] = heightA;
+
+		//Launch kernel
+		tempErrcode = clEnqueueNDRangeKernel(commandQue, selectedKernel, 2, NULL, globalWorkSize,
+				localWorkSize, 0, NULL, NULL);
+		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
+
+		//Block until kernel finishes
+		tempErrcode = clFinish(commandQue);
+		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
+
+		D = readMatrixBuffer<cl_float, BlasMatrix<float> >(bufferD, D);
+
+		//Delete OpenCL buffers
+		tempErrcode = clReleaseMemObject(bufferD);
+		tempErrcode = clReleaseMemObject(bufferA);
+		tempErrcode = clReleaseMemObject(bufferB);
+		tempErrcode = clReleaseMemObject(bufferC);
+		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
+
+		return D;
 	}
 
 } //end of namespace LinBox

@@ -1,5 +1,5 @@
 /*
- * kernel_sub_matrix_dp.cl
+ * kernel_sub_matrix_sp.cl
  *
  *  Created on: Jul 18, 2011
  *      Author: Matthew Wezowicz

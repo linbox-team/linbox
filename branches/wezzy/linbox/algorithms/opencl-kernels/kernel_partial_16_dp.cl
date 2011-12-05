@@ -1,5 +1,5 @@
 /*
- * kernel_partial_dp.cl
+ * kernel_partial_16_dp.cl
  *
  *  Created on: Jul 5, 2011
  *      Author: Matthew Wezowicz
@@ -34,9 +34,6 @@ __kernel void matrix_mul_kernel(__global double* C, __global double* A, __global
 	//Temporary storage for result
 	double Csub = 0;
 
-	//Setup count for modulus every 32 iterations.
-	int m = 0;
-
 	//Loop over all the sub-matrices of A and B required to compute
 	//the result sub-matrix
 	for(int a = aBegin, b = bBegin; a < aEnd; a += aStep, b += bStep){
@@ -57,8 +54,6 @@ __kernel void matrix_mul_kernel(__global double* C, __global double* A, __global
 		//Synchronize threads
 		barrier(CLK_LOCAL_MEM_FENCE);
 	}
-	//Calls fmod once to normalize the sum
-	Csub = fmod(Csub, mod);
 
 	//Calculates the offset in the result matrix and add the sum to the
 	//appropriate spot

@@ -8,8 +8,8 @@
 #define BLOCK_SIZE 16
 #pragma OPENCL EXTENSION cl_khr_fp64 : enable
 
-__kernel void matrix_mul_kernel(__global float* D, float alpha, __global float* A, __global float* B,
-		float beta, __global float* C, int width_A, int width_B, float mod){
+__kernel void matrix_mul_kernel(__global double* D, double alpha, __global double* A, __global double* B,
+		double beta, __global double* C, int width_A, int width_B, double mod){
 	//Get Workgroup ID
 	int bx = get_group_id(0);
 	int by = get_group_id(1);
@@ -28,11 +28,11 @@ __kernel void matrix_mul_kernel(__global float* D, float alpha, __global float* 
 	int bStep = BLOCK_SIZE * width_B;
 
 	//Local storage of sub-matrices of A and B
-	__local float As[BLOCK_SIZE][BLOCK_SIZE];
-	__local float Bs[BLOCK_SIZE][BLOCK_SIZE];
+	__local double As[BLOCK_SIZE][BLOCK_SIZE];
+	__local double Bs[BLOCK_SIZE][BLOCK_SIZE];
 
 	//Temporary storage for result
-	float Dsub = 0;
+	double Dsub = 0;
 
 	//Loop over all the sub-matrices of A and B required to compute
 	//the result sub-matrix
@@ -59,13 +59,17 @@ __kernel void matrix_mul_kernel(__global float* D, float alpha, __global float* 
 	int d = width_B * BLOCK_SIZE * by + BLOCK_SIZE * bx;
 	
 	//Scale Dsub by alpha
-	Dsub = fmod((alpha * Dsub), mod);
+	Dsub = alpha * Dsub;
+	Dsub = fmod(Dsub, mod);
 	
-	if(beta != 0.0){
-		//Add C scaled by beta to Dsub
-		float Csub = fmod((beta * C[d + ty * width_B + tx]), mod);
-		Dsub = fmod((Dsub + Csub), mod);
-	}
+	//Scalse Csub by beta
+	double Csub = C[d + ty * width_B + tx];
+	Csub = beta * Csub;
+	Csub = fmod(Csub, mod);
+	
+	//Add Dsub and Dsub
+	Dsub = Dsub + Csub;
+	Dsub = fmod(Dsub, mod);
 	
 	//Add the sum to the appropriate spot
 	D[d + ty * width_B + tx] = Dsub;

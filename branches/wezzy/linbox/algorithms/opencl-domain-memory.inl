@@ -39,12 +39,13 @@ namespace LinBox{
 	bool OpenCLMatrixDomain<Field>::oclMemCheck(Operand1 &C, const Operand2 &A, const Operand3 &B) const{
 
 		//Calculate dimensions after padding of matrices
-		int newCDimX = ((C.coldim() / 16) + (C.coldim() % 16 == 0 ? 0 : 1)) * 16;
-		int newCDimY = ((C.rowdim() / 16) + (C.rowdim() % 16 == 0 ? 0 : 1)) * 16;
-		int newADimX = ((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16;
-		int newADimY = ((A.rowdim() / 16) + (A.rowdim() % 16 == 0 ? 0 : 1)) * 16;
-		int newBDimX = ((B.coldim() / 16) + (B.coldim() % 16 == 0 ? 0 : 1)) * 16;
-		int newBDimY = ((B.rowdim() / 16) + (B.rowdim() % 16 == 0 ? 0 : 1)) * 16;
+		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
+		int newCDimX = ((C.coldim() + 15) / 16) * 16;
+		int newCDimY = ((C.rowdim() + 15) / 16) * 16;
+		int newADimX = ((A.coldim() + 15) / 16) * 16;
+		int newADimY = ((A.rowdim() + 15) / 16) * 16;
+		int newBDimX = ((B.coldim() + 15) / 16) * 16;
+		int newBDimY = ((B.rowdim() + 15) / 16) * 16;
 
 		//Determine if each individual matrix will fit in a buffer
 		bool temp = (maxBufferSize >= (newCDimX * newCDimY * sizeof(T)));
@@ -64,14 +65,15 @@ namespace LinBox{
 		const Operand1& C) const{
 
 		//Calculate dimensions after padding of matrices
-		int newDDimX = ((D.coldim() / 16) + (D.coldim() % 16 == 0 ? 0 : 1)) * 16;
-		int newDDimY = ((D.rowdim() / 16) + (D.rowdim() % 16 == 0 ? 0 : 1)) * 16;
-		int newADimX = ((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16;
-		int newADimY = ((A.rowdim() / 16) + (A.rowdim() % 16 == 0 ? 0 : 1)) * 16;
-		int newBDimX = ((B.coldim() / 16) + (B.coldim() % 16 == 0 ? 0 : 1)) * 16;
-		int newBDimY = ((B.rowdim() / 16) + (B.rowdim() % 16 == 0 ? 0 : 1)) * 16;
-		int newCDimX = ((C.coldim() / 16) + (C.coldim() % 16 == 0 ? 0 : 1)) * 16;
-		int newCDimY = ((C.rowdim() / 16) + (C.rowdim() % 16 == 0 ? 0 : 1)) * 16;
+		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
+		int newDDimX = ((D.coldim() + 15) / 16) * 16;
+		int newDDimY = ((D.rowdim() + 15) / 16) * 16;
+		int newADimX = ((A.coldim() + 15) / 16) * 16;
+		int newADimY = ((A.rowdim() + 15) / 16) * 16;
+		int newBDimX = ((B.coldim() + 15) / 16) * 16;
+		int newBDimY = ((B.rowdim() + 15) / 16) * 16;
+		int newCDimX = ((C.coldim() + 15) / 16) * 16;
+		int newCDimY = ((C.rowdim() + 15) / 16) * 16;
 
 		//Determine if each individual matrix will fit in a buffer
 		bool temp = (maxBufferSize >= (newDDimX * newDDimY * sizeof(T)));
@@ -92,16 +94,17 @@ namespace LinBox{
 		const Operand1& C, Operand1& Temp) const{
 
 		//Calculate dimensions after padding of matrices
-		int newDDimX = ((D.coldim() / 16) + (D.coldim() % 16 == 0 ? 0 : 1)) * 16;
-		int newDDimY = ((D.rowdim() / 16) + (D.rowdim() % 16 == 0 ? 0 : 1)) * 16;
-		int newADimX = ((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16;
-		int newADimY = ((A.rowdim() / 16) + (A.rowdim() % 16 == 0 ? 0 : 1)) * 16;
-		int newBDimX = ((B.coldim() / 16) + (B.coldim() % 16 == 0 ? 0 : 1)) * 16;
-		int newBDimY = ((B.rowdim() / 16) + (B.rowdim() % 16 == 0 ? 0 : 1)) * 16;
-		int newCDimX = ((C.coldim() / 16) + (C.coldim() % 16 == 0 ? 0 : 1)) * 16;
-		int newCDimY = ((C.rowdim() / 16) + (C.rowdim() % 16 == 0 ? 0 : 1)) * 16;
-		int newTempDimX = ((Temp.coldim() / 16) + (Temp.coldim() % 16 == 0 ? 0 : 1)) * 16;
-		int newTempDimY = ((Temp.rowdim() / 16) + (Temp.rowdim() % 16 == 0 ? 0 : 1)) * 16;
+		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
+		int newDDimX = ((D.coldim() + 15) / 16) * 16;
+		int newDDimY = ((D.rowdim() + 15) / 16) * 16;
+		int newADimX = ((A.coldim() + 15) / 16) * 16;
+		int newADimY = ((A.rowdim() + 15) / 16) * 16;
+		int newBDimX = ((B.coldim() + 15) / 16) * 16;
+		int newBDimY = ((B.rowdim() + 15) / 16) * 16;
+		int newCDimX = ((C.coldim() + 15) / 16) * 16;
+		int newCDimY = ((C.rowdim() + 15) / 16) * 16;
+		int newTempDimX = ((Temp.coldim() + 15) / 16) * 16;
+		int newTempDimY = ((Temp.rowdim() + 15) / 16) * 16;
 
 		//Determine if each individual matrix will fit in a buffer
 		bool temp = (maxBufferSize >= (newDDimX * newDDimY * sizeof(T)));
@@ -130,12 +133,13 @@ namespace LinBox{
 		int matrixBufferPosition = 0;
 		int dataOffset = 0;
 
+		const int paddingBufferSize = (32 * 1024 * 1024 / sizeof(T));
+
+		//Allocates a 32mb buffer for padding
+		T* paddingBuffer = (T*)operator new(32 * 1024 * 1024);
+
 		//Loops while there is still space in the matrixBuffer
 		while(matrixBufferPosition < matrixBufferSize){
-			const int paddingBufferSize = (32 * 1024 * 1024 / sizeof(T));
-
-			//Allocates a 32mb buffer for padding
-			T* paddingBuffer = (T*)operator new(32 * 1024 * 1024);
 
 			//Sets the starting position in the buffer
 			int paddingBufferPosition = 0;
@@ -191,9 +195,9 @@ namespace LinBox{
 
 			//Increment position in matrixBuffer by the size of the paddingBuffer
 			matrixBufferPosition += paddingBufferSize;
-
-			delete paddingBuffer;
 		}
+
+		delete paddingBuffer;
 
 		return matrixBuffer;
 	}
@@ -211,13 +215,13 @@ namespace LinBox{
 		int matrixBufferPosition = 0;
 		int dataOffset = 0;
 
+		const int depaddingBufferSize = (32 * 1024 * 1024 / sizeof(T));
+
+		//Allocates a 32mb buffer for depadding
+		T* depaddingBuffer = (T*)operator new(32 * 1024 * 1024);
+
 		//Loops while there are still elements in the matrixBuffer
 		while(dataOffset < outputSize){
-			int depaddingBufferSize = (32 * 1024 * 1024 / sizeof(T));
-
-			//Allocates a 32mb buffer for depadding
-			T* depaddingBuffer = (T*)operator new(32 * 1024 * 1024);
-
 			//Transfer a full depaddingBuffer worth of elements back to the host
 			if((matrixBufferPosition + depaddingBufferSize) <= matrixBufferSize){
 				int transferSize = (32 * 1024 * 1024);
@@ -296,6 +300,8 @@ namespace LinBox{
 			matrixBufferPosition += depaddingBufferSize;
 		}
 
+		delete depaddingBuffer;
+
 		return matrix;
 	}
 
@@ -308,8 +314,9 @@ namespace LinBox{
 	cl_mem OpenCLMatrixDomain<Field>::createMatrixBuffer(Opernad1& matrix) const{
 
 		//Calculate dimensions after padding of matrix
-		int newDimX = ((matrix.coldim() / 16) + (matrix.coldim() % 16 == 0 ? 0 : 1)) * 16;
-		int newDimY = ((matrix.rowdim() / 16) + (matrix.rowdim() % 16 == 0 ? 0 : 1)) * 16;
+		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
+		int newDimX = ((matrix.coldim() + 15) / 16) * 16;
+		int newDimY = ((matrix.rowdim() + 15) / 16) * 16;
 
 		//Allocate buffer
 		cl_int tempErrcode;
@@ -330,8 +337,9 @@ namespace LinBox{
 	cl_mem OpenCLMatrixDomain<Field>::createAndLoadMatrixBuffer(const Operand1 &matrix) const{
 
 		//Calculate dimensions after padding of matrix
-		int newDimX = ((matrix.coldim() / 16) + (matrix.coldim() % 16 == 0 ? 0 : 1)) * 16;
-		int newDimY = ((matrix.rowdim() / 16) + (matrix.rowdim() % 16 == 0 ? 0 : 1)) * 16;
+		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
+		int newDimX = ((matrix.coldim() + 15) / 16) * 16;
+		int newDimY = ((matrix.rowdim() + 15) / 16) * 16;
 
 		//Allocate buffer
 		cl_int tempErrcode;
@@ -354,8 +362,9 @@ namespace LinBox{
 	Operand2& OpenCLMatrixDomain<Field>::readMatrixBuffer(cl_mem matrixBuffer, Operand2 &matrix) const{
 
 		//Calculate dimensions after padding of matrix
-		int newDimX = ((matrix.coldim() / 16) + (matrix.coldim() % 16 == 0 ? 0 : 1)) * 16;
-		int newDimY = ((matrix.rowdim() / 16) + (matrix.rowdim() % 16 == 0 ? 0 : 1)) * 16;
+		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
+		int newDimX = ((matrix.coldim() + 15) / 16) * 16;
+		int newDimY = ((matrix.rowdim() + 15) / 16) * 16;
 
 		//Calculate number of elements in the matrixBuffer
 		int matrixBufferSize = newDimX * newDimY;

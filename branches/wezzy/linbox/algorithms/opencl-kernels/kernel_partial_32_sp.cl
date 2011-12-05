@@ -1,5 +1,5 @@
 /*
- * kernel_partial_32_dp.cl
+ * kernel_partial_32_sp.cl
  *
  *  Created on: Jul 5, 2011
  *      Author: Matthew Wezowicz

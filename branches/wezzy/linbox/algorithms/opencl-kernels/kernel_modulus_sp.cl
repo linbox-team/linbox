@@ -1,5 +1,5 @@
 /*
- * kernel_modulus_dp.cl
+ * kernel_modulus_sp.cl
  *
  *  Created on: Jul 5, 2011
  *      Author: Matthew Wezowicz

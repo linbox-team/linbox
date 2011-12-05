@@ -1,12 +1,11 @@
 /*
- * kernel_modulus_dp.cl
+ * kernel_modulus_sp.cl
  *
  *  Created on: Jul 5, 2011
  *      Author: Matthew Wezowicz
  */
 
 #define BLOCK_SIZE 16
-#pragma OPENCL EXTENSION cl_khr_fp64 : enable
 
 __kernel void matrix_mul_kernel(__global float* D, float alpha, __global float* A, __global float* B,
 		float beta, __global float* C, int width_A, int width_B, float mod){
@@ -59,13 +58,17 @@ __kernel void matrix_mul_kernel(__global float* D, float alpha, __global float* 
 	int d = width_B * BLOCK_SIZE * by + BLOCK_SIZE * bx;
 	
 	//Scale Dsub by alpha
-	Dsub = fmod((alpha * Dsub), mod);
+	Dsub = alpha * Dsub;
+	Dsub = fmod(Dsub, mod);
 	
-	if(beta != 0.0){
-		//Add C scaled by beta to Dsub
-		float Csub = fmod((beta * C[d + ty * width_B + tx]), mod);
-		Dsub = fmod((Dsub + Csub), mod);
-	}
+	//Scalse Csub by beta
+	float Csub = C[d + ty * width_B + tx];
+	Csub = beta * Csub;
+	Csub = fmod(Csub, mod);
+	
+	//Add Dsub and Dsub
+	Dsub = Dsub + Csub;
+	Dsub = fmod(Dsub, mod);
 	
 	//Add the sum to the appropriate spot
 	D[d + ty * width_B + tx] = Dsub;

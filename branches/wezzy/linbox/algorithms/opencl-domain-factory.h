@@ -172,12 +172,12 @@ namespace LinBox{
 			size_t sizeReturn;
 
 			errcode = clGetDeviceInfo(devices[selected], CL_DEVICE_EXTENSIONS, 0, NULL, &sizeReturn);
-			char* device_extensions = (char*) operator new(sizeReturn);
-			errcode = clGetDeviceInfo(devices[selected], CL_DEVICE_EXTENSIONS, sizeReturn, device_extensions, NULL);
+			char* deviceExtensions = (char*) operator new(sizeReturn);
+			errcode = clGetDeviceInfo(devices[selected], CL_DEVICE_EXTENSIONS, sizeReturn, deviceExtensions, NULL);
 
 			char* exten[200];
 
-			exten[0] = strtok(device_extensions, " ");
+			exten[0] = strtok(deviceExtensions, " ");
 
 			if(exten[0] != NULL){
 				for(int i = 1; i < 200; i++){
@@ -197,7 +197,7 @@ namespace LinBox{
 				}
 			}
 
-			delete device_extensions;
+			delete deviceExtensions;
 
 			return devices[selected];
 		}
