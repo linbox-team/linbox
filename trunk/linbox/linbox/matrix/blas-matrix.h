@@ -213,11 +213,20 @@ namespace LinBox
 		//@{
 #ifdef __GNUC__
 #ifndef __x86_64__
-#if (__GNUC__ == 4 && __GNUC_MINOR__ ==4 && __GNUC_PATCHLEVEL__==5)
+#if (__GNUC__ == 4 && __GNUC_MINOR__ ==4 && __GNUC_PATCHLEVEL__==5) 
 		template<class T>
 		BlasMatrix (const _Field &F, const long &m, const T &n) ;
 #endif
 #endif
+#endif
+
+		// Pascal Giorgi: fix a bug with MAC OSX
+		// MAC OSX defines in stdint.h the int64_t to be a long long which causes trouble here
+		// might be useful to add signed type either but need to resolve conflict with pathch version above for GCC-4.4.5
+#ifdef __APPLE__
+	 
+		template<class T>
+		BlasMatrix (const _Field &F, const unsigned long &m, const T &n) ;
 #endif
 
 		template<class T>

@@ -267,6 +267,20 @@ namespace LinBox
 #endif
 #endif
 
+#ifdef __APPLE__
+	template <class _Field>
+	template<class T>
+	BlasMatrix< _Field>::BlasMatrix (const _Field &F, const unsigned long & m, const T& n) :
+		_row(m),_col(n),_rep(_row*_col),_ptr(&_rep[0]),
+		_field(F),_MD(F),_VD(F)
+	{
+		linbox_check(n>=0);
+		linbox_check(m>=0);
+		_use_fflas = Protected::checkBlasApply(_field,_col);
+	}
+#endif
+
+
 	template <class _Field>
 	template<class T>
 	BlasMatrix< _Field>::BlasMatrix (const _Field &F, const uint64_t &m, const T & n) :
