@@ -344,7 +344,10 @@ namespace LinBox
 	class Modular : public ModularBase<_Element> {
 	public:
 		typedef _Element Element;
+		typedef Modular<_Element>     Self_t;
+		typedef ModularBase<_Element> Father_t;
 		typedef typename ModularBase<_Element>::RandIter RandIter;
+		typedef NonzeroRandIter<Self_t, RandIter > NonZeroRandIter;
 		const Element zero,one, mOne;
 
 		/*- @name Object Management
