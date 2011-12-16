@@ -89,6 +89,7 @@ namespace LinBox
 		typedef typename Givaro::ZpzDom<TAG>::Rep Element;
 		// Element zero,one,mOne;
 		typedef Givaro::ZpzDom<TAG> Father_t ;
+		typedef GivaroZpz<TAG>      Self_t ;
 		using  Father_t::one ;
 		using  Father_t::zero ;
 		using  Father_t::mOne ;
@@ -97,6 +98,7 @@ namespace LinBox
 		 *  This type is inherited from the Givaro class Givaro::ZpzDom<TAG>
 		 */
 		typedef Givaro::GIV_randIter< Givaro::ZpzDom<TAG>, integer > RandIter;
+		typedef NonzeroRandIter<Self_t, RandIter > NonZeroRandIter;
 
 		/** Constructor from an integer
 		 *  this constructor use the Givaro::ZpzDom<TAG> constructor
@@ -150,6 +152,10 @@ namespace LinBox
 		integer &characteristic (integer &c) const
 		{
 			return c = integer ( Givaro::ZpzDom<TAG>::size ());
+		}
+	unsigned long &characteristic (unsigned long &c) const
+		{
+			return c = (unsigned long) ( Givaro::ZpzDom<TAG>::size ());
 		}
 
 		long characteristic() const

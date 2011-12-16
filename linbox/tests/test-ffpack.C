@@ -955,7 +955,7 @@ int main(int argc, char** argv)
 	}
 #endif
 
-#if 0 // no NonZeroRandIter
+#if 1 // no NonZeroRandIter
 	/* Modular uint32_t */
 	{
 		typedef Modular<uint32_t> Field;
@@ -979,10 +979,10 @@ int main(int argc, char** argv)
 	}
 #endif
 
-#if 0 // no NonZeroRandIter
+#if 1 // no NonZeroRandIter
 	/* GivaroZpz int32_t */
 	{
-		typedef GivaroZpz<Std32> Field;
+		typedef GivaroZpz<Givaro::Std32> Field;
 
 		Field F (q);
 

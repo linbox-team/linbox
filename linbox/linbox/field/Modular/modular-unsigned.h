@@ -695,6 +695,11 @@ namespace LinBox
 	public:
 
 		typedef uint32_t Element;
+		typedef Modular<Element>     Self_t;
+		typedef ModularBase<Element> Father_t;
+		typedef ModularBase<Element>::RandIter RandIter;
+		typedef NonzeroRandIter<Self_t, RandIter > NonZeroRandIter;
+
 
 		const Element zero,one,mOne ;
 
