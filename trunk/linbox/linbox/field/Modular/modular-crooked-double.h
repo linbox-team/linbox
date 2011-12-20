@@ -75,7 +75,6 @@ namespace LinBox
 
 		typedef double Element;
 		typedef ModularCrookedRandIter<double> RandIter;
-		typedef NonzeroRandIter<ModularCrooked<double>,RandIter> NonZeroRandIter;
 
 		static ClassifyRing <ModularCrooked<double> >::categoryTag
 		getCategory()

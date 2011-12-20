@@ -124,9 +124,6 @@ namespace LinBox
 
 		/// Type of random field element generators.
 		typedef UnparametricRandIter<K> RandIter;
-		/// Type of non zero random field element generators.
-		typedef NonzeroRandIter<UnparametricField<K>, RandIter > NonZeroRandIter;
-
 
 		/** @name Field Object Basics.
 		*/

@@ -59,7 +59,8 @@ static bool testNonzeroRandom (Field &F, int iterations)
 	typename Field::Element x;
 	typename Field::RandIter r (F);
 
-	NonzeroRandIter <Field, typename Field::RandIter> rp (F, r);
+	//NonzeroRandIter <Field, typename Field::RandIter> rp (F, r);
+	NonzeroRandIter <Field> rp (F, r);
 
 	for (i = 0; i < iterations; i++) {
 		commentator.startIteration (i);
