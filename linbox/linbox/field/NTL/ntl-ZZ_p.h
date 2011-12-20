@@ -149,7 +149,6 @@ namespace LinBox
 		typedef FFPACK::UnparametricOperations<Element> Father_t ;
 
 		typedef UnparametricRandIter<Element> RandIter;
-		typedef NonzeroRandIter<NTL_ZZ_p, RandIter > NonZeroRandIter;
 
 		const Element zero,one,mOne ;
 

@@ -100,7 +100,6 @@ namespace LinBox
 
 		typedef int32_t Element;
 		typedef ModularRandIter<int32_t> RandIter;
-		typedef NonzeroRandIter<Modular<int32_t>, ModularRandIter<int32_t> > NonZeroRandIter;
 
 		Modular (integer &p) :
 			FFPACK::Modular<int32_t>((unsigned long)p)

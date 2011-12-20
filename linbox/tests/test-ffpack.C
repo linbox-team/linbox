@@ -955,7 +955,6 @@ int main(int argc, char** argv)
 	}
 #endif
 
-#if 1 // no NonZeroRandIter
 	/* Modular uint32_t */
 	{
 		typedef Modular<uint32_t> Field;
@@ -977,9 +976,7 @@ int main(int argc, char** argv)
 		if (!testMinPoly (F,n,iterations)) pass=false;
 		if (!testCharPoly (F,n,iterations)) pass=false;
 	}
-#endif
 
-#if 1 // no NonZeroRandIter
 	/* GivaroZpz int32_t */
 	{
 		typedef GivaroZpz<Givaro::Std32> Field;
@@ -1001,7 +998,6 @@ int main(int argc, char** argv)
 		if (!testMinPoly (F,n,iterations)) pass=false;
 		if (!testCharPoly (F,n,iterations)) pass=false;
 	}
-#endif
 #endif
 	commentator.stop(MSG_STATUS(pass),"ffpack test suite");
 

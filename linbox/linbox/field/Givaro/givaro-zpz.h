@@ -98,7 +98,6 @@ namespace LinBox
 		 *  This type is inherited from the Givaro class Givaro::ZpzDom<TAG>
 		 */
 		typedef Givaro::GIV_randIter< Givaro::ZpzDom<TAG>, integer > RandIter;
-		typedef NonzeroRandIter<Self_t, RandIter > NonZeroRandIter;
 
 		/** Constructor from an integer
 		 *  this constructor use the Givaro::ZpzDom<TAG> constructor

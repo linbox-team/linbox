@@ -90,7 +90,6 @@ namespace LinBox
 
 		typedef int32_t Element;
 		typedef ModularBalancedRandIter<int32_t> RandIter;
-		typedef NonzeroRandIter<ModularBalanced<int32_t>,RandIter> NonZeroRandIter;
 
 		ModularBalanced(int32_t p, int32_t e=1) :
 			FFPACK::ModularBalanced<int32_t>(p,e)

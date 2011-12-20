@@ -80,7 +80,6 @@ namespace LinBox
 	      public:
 
 		      typedef ModularRandIter<Element> RandIter;
-		      typedef NonzeroRandIter<Modular<Element>, ModularRandIter<Element> > NonZeroRandIter;
 
 		      static ClassifyRing<Modular<Element> >::categoryTag getCategory() {return ClassifyRing<Modular<Element> >::categoryTag();}
 

@@ -79,7 +79,6 @@ namespace LinBox
 		      friend class MultiModFloat;
 
 		      typedef ModularRandIter<Element> RandIter;
-		      typedef NonzeroRandIter<Modular<Element>, ModularRandIter<Element> > NonZeroRandIter;
 
 		      static ClassifyRing<Modular<Element> >::categoryTag getCategory()
 		      {

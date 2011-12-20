@@ -81,7 +81,6 @@ namespace LinBox
 
 		      typedef double Element;
 		      typedef ModularBalancedRandIter<double> RandIter;
-		      typedef NonzeroRandIter<ModularBalanced<double>, RandIter > NonZeroRandIter;
 
 		      static ClassifyRing <ModularBalanced<double> >::categoryTag getCategory()
 		      {
