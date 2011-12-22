@@ -51,6 +51,7 @@ namespace LinBox{
 
 	public:
 		typedef typename Field::Element         Element;
+		friend class OpenCLMatrixDomainFactory;
 
 	protected:
 
@@ -88,13 +89,13 @@ namespace LinBox{
 		 * @internal
 		 * Initializes the OpenCL compute environment
 		 */
-		void oclDomainInit();
+		void oclMatrixDomainInit();
 
 		/**
 		 * @internal
 		 * Releases OpenCL cumpute resources
 		 */
-		void oclDomainRelease(unsigned int IDnum);
+		void oclMatrixDomainRelease(unsigned int IDnum);
 
 		/**
 		 * @internal
@@ -111,20 +112,20 @@ namespace LinBox{
 		 * OpenCL memory management functions
 		 */
 		template<typename T, class Operand1>
-		cl_mem createMatrixBuffer(Operand1 &matrix) const;
+		cl_mem oclCreateMatrixBuffer(Operand1 &matrix) const;
 
 		template<typename T, class Operand1>
-		cl_mem createAndLoadMatrixBuffer(const Operand1 &matrix) const;
+		cl_mem oclCreateAndLoadMatrixBuffer(const Operand1 &matrix) const;
 
 		template<typename T, class Operand2>
-		Operand2& readMatrixBuffer(cl_mem buffer, Operand2 &matrix) const;
+		Operand2& oclReadMatrixBuffer(cl_mem buffer, Operand2 &matrix) const;
 
 		template<typename T, class Operand1>
-		cl_mem padMatrix(cl_mem matrixBuffer, int matrixBufferSize,
+		cl_mem oclPadMatrix(cl_mem matrixBuffer, int matrixBufferSize,
 			int newDimX, const Operand1 &matrix) const;
 
 		template<typename T, class Operand1>
-		Operand1& depadMatrix(cl_mem matrixBuffer, int matrixBufferSize,
+		Operand1& oclDepadMatrix(cl_mem matrixBuffer, int matrixBufferSize,
 			int outputSize, int newDimX, Operand1& matrix) const;
 
 	public:
@@ -144,7 +145,7 @@ namespace LinBox{
 #endif
 
 			//Initialize OpenCL environment
-			oclDomainInit(); //TODO -- make configure time instead of run time
+			oclMatrixDomainInit(); //TODO -- make configure time instead of run time
 		}
 
 		//! Copy constructor
@@ -159,12 +160,12 @@ namespace LinBox{
 #endif
 
 			//Initialize OpenCL environment
-			oclDomainInit(); //TODO -- make configure time instead of run time
+			oclMatrixDomainInit(); //TODO -- make configure time instead of run time
 		}
 
 		//! Deconstructor
 		~OpenCLMatrixDomain(){
-			oclDomainRelease(IDnum);
+			oclMatrixDomainRelease(IDnum);
 		}
 
 		//! Field accessor

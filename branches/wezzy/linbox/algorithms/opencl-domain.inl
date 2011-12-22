@@ -56,7 +56,7 @@ namespace LinBox
 			cl_double, BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(C,A,B);
 
 		//If it is not capable or not setup properly use default implementation
-		if(!memLevelsAllowed && !setupCorrect && !doubleSupported){
+		if((!memLevelsAllowed && !setupCorrect && !doubleSupported) || !dpKernelsAvailable[0]){
 			return BlasMatrixDomainAdd<
 				Modular<double>,BlasMatrix<double>,BlasMatrix<double>,BlasMatrix<double> >()(_F,C,A,B);
 		}
@@ -68,9 +68,9 @@ namespace LinBox
 		linbox_check( A.rowdim() == C.rowdim());
 
 		//Allocate buffers
-		cl_mem bufferC = createMatrixBuffer<cl_double, BlasMatrix<double> >(C);
-		cl_mem bufferA = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(A);
-		cl_mem bufferB = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(B);
+		cl_mem bufferC = oclCreateMatrixBuffer<cl_double, BlasMatrix<double> >(C);
+		cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(A);
+		cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(B);
 
 		double p = _F.characteristic();
 
@@ -106,7 +106,7 @@ namespace LinBox
 		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 		//Read back buffer
-		C = readMatrixBuffer<cl_double, BlasMatrix<double> >(bufferC, C);
+		C = oclReadMatrixBuffer<cl_double, BlasMatrix<double> >(bufferC, C);
 
 		//Delete OpenCL buffers
 		tempErrcode = clReleaseMemObject(bufferC);
@@ -133,7 +133,7 @@ namespace LinBox
 			cl_float, BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(C,A,B);
 
 		//If it is not capable or not setup properly use default implementation
-		if(!memLevelsAllowed && !setupCorrect){
+		if((!memLevelsAllowed && !setupCorrect) || !spKernelsAvailable[0]){
 			return BlasMatrixDomainAdd<
 				Modular<float>,BlasMatrix<float>,BlasMatrix<float>,BlasMatrix<float> >()(_F,C,A,B);
 		}
@@ -145,9 +145,9 @@ namespace LinBox
 		linbox_check( A.rowdim() == C.rowdim());
 
 		//Allocate buffers
-		cl_mem bufferC = createMatrixBuffer<cl_float, BlasMatrix<float> >(C);
-		cl_mem bufferA = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(A);
-		cl_mem bufferB = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(B);
+		cl_mem bufferC = oclCreateMatrixBuffer<cl_float, BlasMatrix<float> >(C);
+		cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(A);
+		cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(B);
 
 		float p = _F.characteristic();
 
@@ -183,7 +183,7 @@ namespace LinBox
 		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 		//Read back buffer
-		C = readMatrixBuffer<cl_float, BlasMatrix<float> >(bufferC, C);
+		C = oclReadMatrixBuffer<cl_float, BlasMatrix<float> >(bufferC, C);
 
 		//Delete OpenCL buffers
 		tempErrcode = clReleaseMemObject(bufferC);
@@ -244,7 +244,7 @@ namespace LinBox
 			cl_double, BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(C,A,B);
 
 		//If it is not capable or not setup properly use default implementation
-		if(!memLevelsAllowed && !setupCorrect && !doubleSupported){
+		if((!memLevelsAllowed && !setupCorrect && !doubleSupported) || !dpKernelsAvailable[1]){
 			return BlasMatrixDomainSub<
 				Modular<double>,BlasMatrix<double>,BlasMatrix<double>,BlasMatrix<double> >()(_F,C,A,B);
 		}
@@ -256,9 +256,9 @@ namespace LinBox
 		linbox_check( A.rowdim() == C.rowdim());
 
 		//Allocate buffers
-		cl_mem bufferC = createMatrixBuffer<cl_double, BlasMatrix<double> >(C);
-		cl_mem bufferA = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(A);
-		cl_mem bufferB = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(B);
+		cl_mem bufferC = oclCreateMatrixBuffer<cl_double, BlasMatrix<double> >(C);
+		cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(A);
+		cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(B);
 
 		double p = _F.characteristic();
 
@@ -294,7 +294,7 @@ namespace LinBox
 		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 		//Read back buffer
-		C = readMatrixBuffer<cl_double, BlasMatrix<double> >(bufferC, C);
+		C = oclReadMatrixBuffer<cl_double, BlasMatrix<double> >(bufferC, C);
 
 		//Delete OpenCL buffers
 		tempErrcode = clReleaseMemObject(bufferC);
@@ -321,7 +321,7 @@ namespace LinBox
 			cl_float, BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(C,A,B);
 
 		//If it is not capable or not setup properly use default implementation
-		if(!memLevelsAllowed && !setupCorrect){
+		if((!memLevelsAllowed && !setupCorrect) || !spKernelsAvailable[1]){
 			return BlasMatrixDomainSub<
 				Modular<float>,BlasMatrix<float>,BlasMatrix<float>,BlasMatrix<float> >()(_F,C,A,B);
 		}
@@ -333,9 +333,9 @@ namespace LinBox
 		linbox_check( A.rowdim() == C.rowdim());
 
 		//Allocate buffers
-		cl_mem bufferC = createMatrixBuffer<cl_float, BlasMatrix<float> >(C);
-		cl_mem bufferA = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(A);
-		cl_mem bufferB = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(B);
+		cl_mem bufferC = oclCreateMatrixBuffer<cl_float, BlasMatrix<float> >(C);
+		cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(A);
+		cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(B);
 
 		float p = _F.characteristic();
 
@@ -371,7 +371,7 @@ namespace LinBox
 		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 		//Read back buffer
-		C = readMatrixBuffer<cl_float, BlasMatrix<float> >(bufferC, C);
+		C = oclReadMatrixBuffer<cl_float, BlasMatrix<float> >(bufferC, C);
 
 		//Delete OpenCL buffers
 		tempErrcode = clReleaseMemObject(bufferC);
@@ -431,9 +431,15 @@ namespace LinBox
 		//Compute if the OpenCL device is capable of working with the required ammounts of memory
 		bool memLevelsAllowed = oclMemCheck<
 			cl_double, BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(C,A,B);
+			
+		//Check if kernels are available
+		bool kernelsAvailable = dpKernelsAvailable[2];
+		kernelsAvailable &= dpKernelsAvailable[3];
+		kernelsAvailable &= dpKernelsAvailable[4];
+		kernelsAvailable &= dpKernelsAvailable[5];
 
 		//If it is not capable or not setup properly use default implementation
-		if(!memLevelsAllowed && !setupCorrect && !doubleSupported){
+		if((!memLevelsAllowed && !setupCorrect && !doubleSupported) || !kernelsAvailable){
 			return BlasMatrixDomainMul<
 				Modular<double>,BlasMatrix<double>,BlasMatrix<double>,BlasMatrix<double> >()(_F,C,A,B);
 		}
@@ -444,9 +450,9 @@ namespace LinBox
 		linbox_check( C.coldim() == B.coldim());
 
 		//Allocate buffers
-		cl_mem bufferC = createMatrixBuffer<cl_double, BlasMatrix<double> >(C);
-		cl_mem bufferA = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(A);
-		cl_mem bufferB = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(B);
+		cl_mem bufferC = oclCreateMatrixBuffer<cl_double, BlasMatrix<double> >(C);
+		cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(A);
+		cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(B);
 
 		double p = _F.characteristic();
 
@@ -500,7 +506,7 @@ namespace LinBox
 		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 		//Read back buffer
-		C = readMatrixBuffer<cl_double, BlasMatrix<double> >(bufferC, C);
+		C = oclReadMatrixBuffer<cl_double, BlasMatrix<double> >(bufferC, C);
 
 		//Delete OpenCL buffers
 		tempErrcode = clReleaseMemObject(bufferC);
@@ -526,9 +532,15 @@ namespace LinBox
 		//Compute if the OpenCL device is capable of working with the required ammounts of memory
 		bool memLevelsAllowed = oclMemCheck<
 			cl_float, BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(C,A,B);
+		
+		//Check if kernels are available
+		bool kernelsAvailable = spKernelsAvailable[2];
+		kernelsAvailable &= spKernelsAvailable[3];
+		kernelsAvailable &= spKernelsAvailable[4];
+		kernelsAvailable &= spKernelsAvailable[5];
 
 		//If it is not capable or not setup properly use default implementation
-		if(!memLevelsAllowed && !setupCorrect){
+		if((!memLevelsAllowed && !setupCorrect) || !kernelsAvailable){
 			return BlasMatrixDomainMul<
 				Modular<float>,BlasMatrix<float>,BlasMatrix<float>,BlasMatrix<float> >()(_F,C,A,B);
 		}
@@ -539,9 +551,9 @@ namespace LinBox
 		linbox_check( C.coldim() == B.coldim());
 
 		//Allocate buffers
-		cl_mem bufferC = createMatrixBuffer<cl_float, BlasMatrix<float> >(C);
-		cl_mem bufferA = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(A);
-		cl_mem bufferB = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(B);
+		cl_mem bufferC = oclCreateMatrixBuffer<cl_float, BlasMatrix<float> >(C);
+		cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(A);
+		cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(B);
 
 		float p = _F.characteristic();
 
@@ -595,7 +607,7 @@ namespace LinBox
 		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 		//Read back buffer
-		C = readMatrixBuffer<cl_float, BlasMatrix<float> >(bufferC, C);
+		C = oclReadMatrixBuffer<cl_float, BlasMatrix<float> >(bufferC, C);
 
 		//Delete OpenCL buffers
 		tempErrcode = clReleaseMemObject(bufferC);
@@ -697,9 +709,15 @@ namespace LinBox
 		//Compute if the OpenCL device is capable of working with the required ammounts of memory
 		bool memLevelsAllowed = oclMemCheck<
 			cl_double, BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(D,A,B,C);
+			
+		//Check if kernels are available
+		bool kernelsAvailable = dpKernelsAvailable[6];
+		kernelsAvailable &= dpKernelsAvailable[7];
+		kernelsAvailable &= dpKernelsAvailable[8];
+		kernelsAvailable &= dpKernelsAvailable[9];
 
 		//If it is not capable or not setup properly use default implementation
-		if(!memLevelsAllowed && !setupCorrect && !doubleSupported){
+		if((!memLevelsAllowed && !setupCorrect && !doubleSupported) || !kernelsAvailable){
 			return BlasMatrixDomainMulAdd<
 				Modular<double>, BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >()(
 				_F,D,beta,C,alpha,A,B);
@@ -713,10 +731,10 @@ namespace LinBox
 		linbox_check( D.coldim() == C.coldim());
 
 		//Allocate buffers
-		cl_mem bufferD = createMatrixBuffer<cl_double, BlasMatrix<double> >(D);
-		cl_mem bufferA = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(A);
-		cl_mem bufferB = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(B);
-		cl_mem bufferC = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(C);
+		cl_mem bufferD = oclCreateMatrixBuffer<cl_double, BlasMatrix<double> >(D);
+		cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(A);
+		cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(B);
+		cl_mem bufferC = oclCreateAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(C);
 
 		double p = _F.characteristic();
 		double tempAlpha = fmod(alpha, p);
@@ -775,7 +793,7 @@ namespace LinBox
 		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 		//Read back buffer
-		D = readMatrixBuffer<cl_double, BlasMatrix<double> >(bufferD, D);
+		D = oclReadMatrixBuffer<cl_double, BlasMatrix<double> >(bufferD, D);
 
 		//Delete OpenCL buffers
 		tempErrcode = clReleaseMemObject(bufferD);
@@ -802,9 +820,15 @@ namespace LinBox
 		//Compute if the OpenCL device is capable of working with the required ammounts of memory
 		bool memLevelsAllowed = oclMemCheck<
 			cl_float, BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(D,A,B,C);
+			
+		//Check if kernels are available
+		bool kernelsAvailable = spKernelsAvailable[6];
+		kernelsAvailable &= spKernelsAvailable[7];
+		kernelsAvailable &= spKernelsAvailable[8];
+		kernelsAvailable &= spKernelsAvailable[9];
 
 		//If it is not capable or not setup properly use default implementation
-		if(!memLevelsAllowed && !setupCorrect){
+		if((!memLevelsAllowed && !setupCorrect) || !kernelsAvailable){
 			return BlasMatrixDomainMulAdd<
 				Modular<float>, BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >()(
 				_F,D,beta,C,alpha,A,B);
@@ -818,10 +842,10 @@ namespace LinBox
 		linbox_check( D.coldim() == C.coldim());
 
 		//Allocate buffers
-		cl_mem bufferD = createMatrixBuffer<cl_float, BlasMatrix<float> >(D);
-		cl_mem bufferA = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(A);
-		cl_mem bufferB = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(B);
-		cl_mem bufferC = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(C);
+		cl_mem bufferD = oclCreateMatrixBuffer<cl_float, BlasMatrix<float> >(D);
+		cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(A);
+		cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(B);
+		cl_mem bufferC = oclCreateAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(C);
 
 		float p = _F.characteristic();
 		float tempAlpha = fmod(alpha, p);
@@ -880,7 +904,7 @@ namespace LinBox
 		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 		//Read back buffer
-		D = readMatrixBuffer<cl_float, BlasMatrix<float> >(bufferD, D);
+		D = oclReadMatrixBuffer<cl_float, BlasMatrix<float> >(bufferD, D);
 
 		//Delete OpenCL buffers
 		tempErrcode = clReleaseMemObject(bufferD);
@@ -977,9 +1001,15 @@ namespace LinBox
 		//Compute if the OpenCL device is capable of working with the required ammounts of memory
 		bool memLevelsAllowed = oclMemCheck<
 			cl_double, BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(D,A,B,C);
+			
+		//Check if kernels are available
+		bool kernelsAvailable = dpKernelsAvailable[10];
+		kernelsAvailable &= dpKernelsAvailable[11];
+		kernelsAvailable &= dpKernelsAvailable[12];
+		kernelsAvailable &= dpKernelsAvailable[13];
 
 		//If it is not capable or not setup properly use default implementation
-		if(!memLevelsAllowed && !setupCorrect && !doubleSupported){
+		if((!memLevelsAllowed && !setupCorrect && !doubleSupported) || !kernelsAvailable){
 			D = mul<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(D,A,B);
 			return addin<BlasMatrix<double>, BlasMatrix<double> >(D,C);
 		}
@@ -992,10 +1022,10 @@ namespace LinBox
 		linbox_check( D.coldim() == C.coldim());
 
 		//Allocate buffers
-		cl_mem bufferD = createMatrixBuffer<cl_double, BlasMatrix<double> >(D);
-		cl_mem bufferA = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(A);
-		cl_mem bufferB = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(B);
-		cl_mem bufferC = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(C);
+		cl_mem bufferD = oclCreateMatrixBuffer<cl_double, BlasMatrix<double> >(D);
+		cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(A);
+		cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(B);
+		cl_mem bufferC = oclCreateAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(C);
 
 		double p = _F.characteristic();
 
@@ -1050,7 +1080,7 @@ namespace LinBox
 		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 		//Read back buffer
-		D = readMatrixBuffer<cl_double, BlasMatrix<double> >(bufferD, D);
+		D = oclReadMatrixBuffer<cl_double, BlasMatrix<double> >(bufferD, D);
 
 		//Delete OpenCL buffers
 		tempErrcode = clReleaseMemObject(bufferD);
@@ -1079,9 +1109,15 @@ namespace LinBox
 		//Compute if the OpenCL device is capable of working with the required ammounts of memory
 		bool memLevelsAllowed = oclMemCheck<
 			cl_float, BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(D,A,B,C);
+			
+		//Check if kernels are available
+		bool kernelsAvailable = spKernelsAvailable[10];
+		kernelsAvailable &= spKernelsAvailable[11];
+		kernelsAvailable &= spKernelsAvailable[12];
+		kernelsAvailable &= spKernelsAvailable[13];
 
 		//If it is not capable or not setup properly use default implementation
-		if(!memLevelsAllowed && !setupCorrect){
+		if((!memLevelsAllowed && !setupCorrect) || !kernelsAvailable){
 			D = mul<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(D,A,B);
 			return addin<BlasMatrix<float>, BlasMatrix<float> >(D,C);
 		}
@@ -1094,10 +1130,10 @@ namespace LinBox
 		linbox_check( D.coldim() == C.coldim());
 
 		//Allocate buffers
-		cl_mem bufferD = createMatrixBuffer<cl_float, BlasMatrix<float> >(D);
-		cl_mem bufferA = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(A);
-		cl_mem bufferB = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(B);
-		cl_mem bufferC = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(C);
+		cl_mem bufferD = oclCreateMatrixBuffer<cl_float, BlasMatrix<float> >(D);
+		cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(A);
+		cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(B);
+		cl_mem bufferC = oclCreateAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(C);
 
 		float p = _F.characteristic();
 
@@ -1152,7 +1188,7 @@ namespace LinBox
 		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 		//Read back buffer
-		D = readMatrixBuffer<cl_float, BlasMatrix<float> >(bufferD, D);
+		D = oclReadMatrixBuffer<cl_float, BlasMatrix<float> >(bufferD, D);
 
 		//Delete OpenCL buffers
 		tempErrcode = clReleaseMemObject(bufferD);
@@ -1221,9 +1257,15 @@ namespace LinBox
 		//Compute if the OpenCL device is capable of working with the required ammounts of memory
 		bool memLevelsAllowed = oclMemCheck<
 			cl_double, BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(D,A,B,C);
+			
+		//Check if kernels are available
+		bool kernelsAvailable = dpKernelsAvailable[14];
+		kernelsAvailable &= dpKernelsAvailable[15];
+		kernelsAvailable &= dpKernelsAvailable[16];
+		kernelsAvailable &= dpKernelsAvailable[17];
 
 		//If it is not capable or not setup properly use default implementation
-		if(!memLevelsAllowed && !setupCorrect && !doubleSupported){
+		if((!memLevelsAllowed && !setupCorrect && !doubleSupported) || !kernelsAvailable){
 			BlasMatrix<double> T(D.rowdim(),D.coldim());
 			T = mul<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(T,A,B);
 			return sub<BlasMatrix<double>, BlasMatrix<double> >(D,C,T);
@@ -1237,10 +1279,10 @@ namespace LinBox
 		linbox_check( D.coldim() == C.coldim());
 
 		//Allocate buffers
-		cl_mem bufferD = createMatrixBuffer<cl_double, BlasMatrix<double> >(D);
-		cl_mem bufferA = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(A);
-		cl_mem bufferB = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(B);
-		cl_mem bufferC = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(C);
+		cl_mem bufferD = oclCreateMatrixBuffer<cl_double, BlasMatrix<double> >(D);
+		cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(A);
+		cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(B);
+		cl_mem bufferC = oclCreateAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(C);
 
 		double p = _F.characteristic();
 
@@ -1295,7 +1337,7 @@ namespace LinBox
 		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 		//Read back buffer
-		D = readMatrixBuffer<cl_double, BlasMatrix<double> >(bufferD, D);
+		D = oclReadMatrixBuffer<cl_double, BlasMatrix<double> >(bufferD, D);
 
 		//Delete OpenCL buffers
 		tempErrcode = clReleaseMemObject(bufferD);
@@ -1324,9 +1366,15 @@ namespace LinBox
 		//Compute if the OpenCL device is capable of working with the required ammounts of memory
 		bool memLevelsAllowed = oclMemCheck<
 			cl_float, BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(D,A,B,C);
+			
+		//Check if kernels are available
+		bool kernelsAvailable = spKernelsAvailable[14];
+		kernelsAvailable &= spKernelsAvailable[15];
+		kernelsAvailable &= spKernelsAvailable[16];
+		kernelsAvailable &= spKernelsAvailable[17];
 
 		//If it is not capable or not setup properly use default implementation
-		if(!memLevelsAllowed && !setupCorrect){
+		if((!memLevelsAllowed && !setupCorrect) || !kernelsAvailable){
 			BlasMatrix<float> T(D.rowdim(),D.coldim());
 			T = mul<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(T,A,B);
 			return sub<BlasMatrix<float>, BlasMatrix<float> >(D,C,T);
@@ -1340,10 +1388,10 @@ namespace LinBox
 		linbox_check( D.coldim() == C.coldim());
 
 		//Allocate buffers
-		cl_mem bufferD = createMatrixBuffer<cl_float, BlasMatrix<float> >(D);
-		cl_mem bufferA = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(A);
-		cl_mem bufferB = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(B);
-		cl_mem bufferC = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(C);
+		cl_mem bufferD = oclCreateMatrixBuffer<cl_float, BlasMatrix<float> >(D);
+		cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(A);
+		cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(B);
+		cl_mem bufferC = oclCreateAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(C);
 
 		float p = _F.characteristic();
 
@@ -1398,7 +1446,7 @@ namespace LinBox
 		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 		//Read back buffer
-		D = readMatrixBuffer<cl_float, BlasMatrix<float> >(bufferD, D);
+		D = oclReadMatrixBuffer<cl_float, BlasMatrix<float> >(bufferD, D);
 
 		//Delete OpenCL buffers
 		tempErrcode = clReleaseMemObject(bufferD);
@@ -1467,9 +1515,15 @@ namespace LinBox
 		//Compute if the OpenCL device is capable of working with the required ammounts of memory
 		bool memLevelsAllowed = oclMemCheck<
 			cl_double, BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(D,A,B,C);
+			
+		//Check if kernels are available
+		bool kernelsAvailable = dpKernelsAvailable[18];
+		kernelsAvailable &= dpKernelsAvailable[19];
+		kernelsAvailable &= dpKernelsAvailable[20];
+		kernelsAvailable &= dpKernelsAvailable[21];
 
 		//If it is not capable or not setup properly use default implementation
-		if(!memLevelsAllowed && !setupCorrect && !doubleSupported){
+		if((!memLevelsAllowed && !setupCorrect && !doubleSupported) || !kernelsAvailable){
 			D = mul<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(D,A,B);
 			return subin<BlasMatrix<double>, BlasMatrix<double> >(D,C);
 		}
@@ -1482,10 +1536,10 @@ namespace LinBox
 		linbox_check( D.coldim() == C.coldim());
 
 		//Allocate buffers
-		cl_mem bufferD = createMatrixBuffer<cl_double, BlasMatrix<double> >(D);
-		cl_mem bufferA = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(A);
-		cl_mem bufferB = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(B);
-		cl_mem bufferC = createAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(C);
+		cl_mem bufferD = oclCreateMatrixBuffer<cl_double, BlasMatrix<double> >(D);
+		cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(A);
+		cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(B);
+		cl_mem bufferC = oclCreateAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(C);
 
 		double p = _F.characteristic();
 
@@ -1540,7 +1594,7 @@ namespace LinBox
 		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 		//Read back buffer
-		D = readMatrixBuffer<cl_double, BlasMatrix<double> >(bufferD, D);
+		D = oclReadMatrixBuffer<cl_double, BlasMatrix<double> >(bufferD, D);
 
 		//Delete OpenCL buffers
 		tempErrcode = clReleaseMemObject(bufferD);
@@ -1569,9 +1623,15 @@ namespace LinBox
 		//Compute if the OpenCL device is capable of working with the required ammounts of memory
 		bool memLevelsAllowed = oclMemCheck<
 			cl_float, BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(D,A,B,C);
+			
+		//Check if kernels are available
+		bool kernelsAvailable = spKernelsAvailable[18];
+		kernelsAvailable &= spKernelsAvailable[19];
+		kernelsAvailable &= spKernelsAvailable[20];
+		kernelsAvailable &= spKernelsAvailable[21];
 
 		//If it is not capable or not setup properly use default implementation
-		if(!memLevelsAllowed && !setupCorrect){
+		if((!memLevelsAllowed && !setupCorrect) || !kernelsAvailable){
 			D = mul<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(D,A,B);
 			return subin<BlasMatrix<float>, BlasMatrix<float> >(D,C);
 		}
@@ -1584,10 +1644,10 @@ namespace LinBox
 		linbox_check( D.coldim() == C.coldim());
 
 		//Allocate buffers
-		cl_mem bufferD = createMatrixBuffer<cl_float, BlasMatrix<float> >(D);
-		cl_mem bufferA = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(A);
-		cl_mem bufferB = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(B);
-		cl_mem bufferC = createAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(C);
+		cl_mem bufferD = oclCreateMatrixBuffer<cl_float, BlasMatrix<float> >(D);
+		cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(A);
+		cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(B);
+		cl_mem bufferC = oclCreateAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(C);
 
 		float p = _F.characteristic();
 
@@ -1642,7 +1702,7 @@ namespace LinBox
 		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 		//Read back buffer
-		D = readMatrixBuffer<cl_float, BlasMatrix<float> >(bufferD, D);
+		D = oclReadMatrixBuffer<cl_float, BlasMatrix<float> >(bufferD, D);
 
 		//Delete OpenCL buffers
 		tempErrcode = clReleaseMemObject(bufferD);

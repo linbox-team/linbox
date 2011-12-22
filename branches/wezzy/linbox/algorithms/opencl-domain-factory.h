@@ -25,6 +25,7 @@
 #include <new>
 #include <cstring>
 //#include <cstdio>
+#include "linbox/algorithms/opencl-domain.h"
 
 #include "CL/cl.hpp"
 
@@ -266,8 +267,10 @@ namespace LinBox{
 				&kernelLength, &errcode);
 
 			//Build the program into executable
-			errcode = clBuildProgram(program, 0,
-				NULL, NULL, NULL, NULL);
+			if(errcode == CL_SUCCESS){
+				errcode = clBuildProgram(program, 0,
+					NULL, NULL, NULL, NULL);
+			}
 			/*
 			printf(fileName);
 			printf("\n");
@@ -280,11 +283,14 @@ namespace LinBox{
 			*/
 
 			//Create kernel from executable
-			cl_kernel tempKernel = clCreateKernel(program,
-				kernelName, &errcode);
+			cl_kernel tempKernel = NULL;
+			if(errcode == CL_SUCCESS){
+				tempKernel = clCreateKernel(program,
+					kernelName, &errcode);
+			}
 
 			//Releasing program
-			errcode = clReleaseProgram(program);
+			clReleaseProgram(program);
 
 			//Return kernel
 			return tempKernel;
@@ -354,54 +360,104 @@ namespace LinBox{
 
 			memCapacity = (unsigned long)memSize;
 			maxBufferSize = (unsigned long)maxGlobalMemoryAllocSize;
-
+			
+			//Initialize al kernel compilation flags to false
+			for(int i = 0; i < 22; i++){
+				dpKernelsAvailable[i] = false;
+				spKernelsAvailable[i] = false;
+			}
+			
 			//Compile all of the kernels
 			if(errcode == CL_SUCCESS){
 				dpKernels[0] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_add_matrix_dp.cl", "addKernelModularDP");
+				if(errcode == CL_SUCCESS){dpKernelsAvailable[0] = true;}
 				dpKernels[1] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_sub_matrix_dp.cl", "subKernelModularDP");
+				if(errcode == CL_SUCCESS){dpKernelsAvailable[1] = true;}
 				dpKernels[2] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_modulus_dp.cl", "matrixMulKernelModular1DP");
+				if(errcode == CL_SUCCESS){dpKernelsAvailable[2] = true;}
 				dpKernels[3] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_partial_8_dp.cl", "matrixMulKernelModular8DP");
+				if(errcode == CL_SUCCESS){dpKernelsAvailable[3] = true;}
 				dpKernels[4] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_partial_32_dp.cl", "matrixMulKernelModular32DP");
+				if(errcode == CL_SUCCESS){dpKernelsAvailable[4] = true;}
 				dpKernels[5] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_partial_1024_dp.cl", "matrixMulKernelModular1024DP");
+				if(errcode == CL_SUCCESS){dpKernelsAvailable[5] = true;}
 				dpKernels[6] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_muladd_modulus_dp.cl", "matrixMuladdKernelModular1DP");
+				if(errcode == CL_SUCCESS){dpKernelsAvailable[6] = true;}
 				dpKernels[7] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_muladd_partial_8_dp.cl", "matrixMuladdKernelModular8DP");
+				if(errcode == CL_SUCCESS){dpKernelsAvailable[7] = true;}
 				dpKernels[8] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_muladd_partial_32_dp.cl", "matrixMuladdKernelModular32DP");
+				if(errcode == CL_SUCCESS){dpKernelsAvailable[8] = true;}
 				dpKernels[9] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_muladd_partial_1024_dp.cl", "matrixMuladdKernelModular1024DP");
+				if(errcode == CL_SUCCESS){dpKernelsAvailable[9] = true;}
 				dpKernels[10] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axpy_modulus_dp.cl", "matrixAxpyKernelModular1DP");
+				if(errcode == CL_SUCCESS){dpKernelsAvailable[10] = true;}
 				dpKernels[11] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axpy_partial_8_dp.cl", "matrixAxpyKernelModular8DP");
+				if(errcode == CL_SUCCESS){dpKernelsAvailable[11] = true;}
 				dpKernels[12] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axpy_partial_32_dp.cl", "matrixAxpyKernelModular32DP");
+				if(errcode == CL_SUCCESS){dpKernelsAvailable[12] = true;}
 				dpKernels[13] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axpy_partial_1024_dp.cl", "matrixAxpyKernelModular1024DP");
+				if(errcode == CL_SUCCESS){dpKernelsAvailable[13] = true;}
 				dpKernels[14] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_maxpy_modulus_dp.cl", "matrixMaxpyKernelModular1DP");
+				if(errcode == CL_SUCCESS){dpKernelsAvailable[14] = true;}
 				dpKernels[15] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_maxpy_partial_8_dp.cl", "matrixMaxpyKernelModular8DP");
+				if(errcode == CL_SUCCESS){dpKernelsAvailable[15] = true;}
 				dpKernels[16] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_maxpy_partial_32_dp.cl", "matrixMaxpyKernelModular32DP");
+				if(errcode == CL_SUCCESS){dpKernelsAvailable[16] = true;}
 				dpKernels[17] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_maxpy_partial_1024_dp.cl", "matrixMaxpyKernelModular1024DP");
+				if(errcode == CL_SUCCESS){dpKernelsAvailable[17] = true;}
 				dpKernels[18] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axmy_modulus_dp.cl", "matrixAxmyKernelModular1DP");
+				if(errcode == CL_SUCCESS){dpKernelsAvailable[18] = true;}
 				dpKernels[19] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axmy_partial_8_dp.cl", "matrixAxmyKernelModular8DP");
+				if(errcode == CL_SUCCESS){dpKernelsAvailable[19] = true;}
 				dpKernels[20] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axmy_partial_32_dp.cl", "matrixAxmyKernelModular32DP");
+				if(errcode == CL_SUCCESS){dpKernelsAvailable[20] = true;}
 				dpKernels[21] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axmy_partial_1024_dp.cl", "matrixAxmyKernelModular1024DP");
+				if(errcode == CL_SUCCESS){dpKernelsAvailable[21] = true;}
 
 				spKernels[0] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_add_matrix_sp.cl", "addKernelModularSP");
+				if(errcode == CL_SUCCESS){spKernelsAvailable[0] = true;}
 				spKernels[1] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_sub_matrix_sp.cl", "subKernelModularSP");
+				if(errcode == CL_SUCCESS){spKernelsAvailable[1] = true;}
 				spKernels[2] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_modulus_sp.cl", "matrixMulKernelModular1SP");
+				if(errcode == CL_SUCCESS){spKernelsAvailable[2] = true;}
 				spKernels[3] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_partial_16_sp.cl", "matrixMulKernelModular16SP");
+				if(errcode == CL_SUCCESS){spKernelsAvailable[3] = true;}
 				spKernels[4] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_partial_32_sp.cl", "matrixMulKernelModular32SP");
+				if(errcode == CL_SUCCESS){spKernelsAvailable[4] = true;}
 				spKernels[5] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_partial_1024_sp.cl", "matrixMulKernelModular1024SP");
+				if(errcode == CL_SUCCESS){spKernelsAvailable[5] = true;}
 				spKernels[6] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_muladd_modulus_sp.cl", "matrixMuladdKernelModular1SP");
+				if(errcode == CL_SUCCESS){spKernelsAvailable[6] = true;}
 				spKernels[7] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_muladd_partial_16_sp.cl", "matrixMuladdKernelModular16SP");
+				if(errcode == CL_SUCCESS){spKernelsAvailable[7] = true;}
 				spKernels[8] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_muladd_partial_32_sp.cl", "matrixMuladdKernelModular32SP");
+				if(errcode == CL_SUCCESS){spKernelsAvailable[8] = true;}
 				spKernels[9] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_muladd_partial_1024_sp.cl", "matrixMuladdKernelModular1024SP");
+				if(errcode == CL_SUCCESS){spKernelsAvailable[9] = true;}
 				spKernels[10] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axpy_modulus_sp.cl", "matrixAxpyKernelModular1SP");
+				if(errcode == CL_SUCCESS){spKernelsAvailable[10] = true;}
 				spKernels[11] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axpy_partial_16_sp.cl", "matrixAxpyKernelModular16SP");
+				if(errcode == CL_SUCCESS){spKernelsAvailable[11] = true;}
 				spKernels[12] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axpy_partial_32_sp.cl", "matrixAxpyKernelModular32SP");
+				if(errcode == CL_SUCCESS){spKernelsAvailable[12] = true;}
 				spKernels[13] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axpy_partial_1024_sp.cl", "matrixAxpyKernelModular1024SP");
+				if(errcode == CL_SUCCESS){spKernelsAvailable[13] = true;}
 				spKernels[14] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_maxpy_modulus_sp.cl", "matrixMaxpyKernelModular1SP");
+				if(errcode == CL_SUCCESS){spKernelsAvailable[14] = true;}
 				spKernels[15] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_maxpy_partial_16_sp.cl", "matrixMaxpyKernelModular16SP");
+				if(errcode == CL_SUCCESS){spKernelsAvailable[15] = true;}
 				spKernels[16] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_maxpy_partial_32_sp.cl", "matrixMaxpyKernelModular32SP");
+				if(errcode == CL_SUCCESS){spKernelsAvailable[16] = true;}
 				spKernels[17] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_maxpy_partial_1024_sp.cl", "matrixMaxpyKernelModular1024SP");
+				if(errcode == CL_SUCCESS){spKernelsAvailable[17] = true;}
 				spKernels[18] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axmy_modulus_sp.cl", "matrixAxmyKernelModular1SP");
+				if(errcode == CL_SUCCESS){spKernelsAvailable[18] = true;}
 				spKernels[19] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axmy_partial_16_sp.cl", "matrixAxmyKernelModular16SP");
+				if(errcode == CL_SUCCESS){spKernelsAvailable[19] = true;}
 				spKernels[20] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axmy_partial_32_sp.cl", "matrixAxmyKernelModular32SP");
+				if(errcode == CL_SUCCESS){spKernelsAvailable[20] = true;}
 				spKernels[21] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axmy_partial_1024_sp.cl", "matrixAxmyKernelModular1024SP");
+				if(errcode == CL_SUCCESS){spKernelsAvailable[21] = true;}
 			}
 
 			//Check if everthing is setup correctly
@@ -414,10 +470,8 @@ namespace LinBox{
 		}
 
 	public:
-		static void oclDomainCreate(cl_context& cont, cl_device_id& dev,
-			cl_command_queue& queue, cl_int& err, unsigned long& memCap,
-			unsigned long& maxBuf, bool& GPUflag, bool& CPUflag, bool& correct,
-			bool& doubleSupport, cl_kernel* dpKern, cl_kernel* spKern, unsigned int ID){
+		template <class Field>
+		static void oclMatrixDomainCreate(OpenCLMatrixDomain<Field>* target){
 
 			//Check if the OpenCL environment has been initialized
 			//It will only need to be initialized when the first OpenCLMatrixDomain instance
@@ -428,33 +482,35 @@ namespace LinBox{
 			}
 
 			//Copy all of the data required for the OpenCLMatrixDomain instance to function
-			cont = context;
-			dev = device;
-			queue = commandQue;
-			err = errcode;
+			target->context = context;
+			target->device = device;
+			target->commandQue = commandQue;
+			target->errcode = errcode;
 
-			memCap = memCapacity;
-			maxBuf = maxBufferSize;
+			target->memCapacity = memCapacity;
+			target->maxBufferSize = maxBufferSize;
 
-			GPUflag = GPUcontainer;
-			CPUflag = CPUcontainer;
-			correct = setupCorrect;
-			doubleSupport = doubleSupported;
+			target->GPUcontainer = GPUcontainer;
+			target->CPUcontainer = CPUcontainer;
+			target->setupCorrect = setupCorrect;
+			target->doubleSupported = doubleSupported;
 
 			for(int i = 0; i < 22; i++){
-				dpKern[i] = dpKernels[i];
-				spKern[i] = spKernels[i];
+				target->dpKernels[i] = dpKernels[i];
+				target->dpKernelsAvailable[i] = dpKernelsAvailable[i];
+				target->spKernels[i] = spKernels[i];
+				target->spKernelsAvailable[i] = spKernelsAvailable[i];
 			}
 
 			//Assign an ID number the OpenCLMatrixDomain instance to be used for locking and
 			//releasing the OpenCL resources
-			ID = countOpenCLMatrixDomain;
+			target->IDnum = countOpenCLMatrixDomain;
 
 			//Increase count of OpenCLMatrixDomain instances
 			countOpenCLMatrixDomain++;
 		}
 
-		static void oclDomainDestroy(unsigned int IDnum){
+		static void oclMatrixDomainDestroy(unsigned int IDnum){
 			//Decrease count of OpenCLMatrixDomain instances
 			countOpenCLMatrixDomain--;
 		}

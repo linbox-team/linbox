@@ -92,7 +92,7 @@ namespace LinBox{
 	 */
 	template<class Field>
 	template<typename T, class Operand1>
-	cl_mem OpenCLMatrixDomain<Field>::padMatrix(cl_mem matrixBuffer, int matrixBufferSize,
+	cl_mem OpenCLMatrixDomain<Field>::oclPadMatrix(cl_mem matrixBuffer, int matrixBufferSize,
 		int newDimX, const Operand1 &matrix) const{
 
 		//Set starting positions
@@ -176,7 +176,7 @@ namespace LinBox{
 	 */
 	template<class Field>
 	template<typename T, class Operand1>
-	Operand1& OpenCLMatrixDomain<Field>::depadMatrix(cl_mem matrixBuffer, int matrixBufferSize,
+	Operand1& OpenCLMatrixDomain<Field>::oclDepadMatrix(cl_mem matrixBuffer, int matrixBufferSize,
 		int outputSize, int newDimX, Operand1& matrix) const{
 
 		//Set starting positions
@@ -284,7 +284,7 @@ namespace LinBox{
 	 */
 	template<class Field>
 	template<typename T, class Opernad1>
-	cl_mem OpenCLMatrixDomain<Field>::createMatrixBuffer(Opernad1& matrix) const{
+	cl_mem OpenCLMatrixDomain<Field>::oclCreateMatrixBuffer(Opernad1& matrix) const{
 
 		//Calculate dimensions after padding of matrix
 		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
@@ -307,7 +307,7 @@ namespace LinBox{
 	 */
 	template<class Field>
 	template<typename T, class Operand1>
-	cl_mem OpenCLMatrixDomain<Field>::createAndLoadMatrixBuffer(const Operand1 &matrix) const{
+	cl_mem OpenCLMatrixDomain<Field>::oclCreateAndLoadMatrixBuffer(const Operand1 &matrix) const{
 
 		//Calculate dimensions after padding of matrix
 		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
@@ -323,7 +323,7 @@ namespace LinBox{
 		//Calculate number of elements in the matrixBuffer
 		int matrixBufferSize = newDimX * newDimY;
 
-		return padMatrix<T, Operand1>(matrixBuffer, matrixBufferSize, newDimX, matrix);
+		return oclPadMatrix<T, Operand1>(matrixBuffer, matrixBufferSize, newDimX, matrix);
 	}
 
 	/**
@@ -332,7 +332,7 @@ namespace LinBox{
 	 */
 	template<class Field>
 	template<typename T, class Operand2>
-	Operand2& OpenCLMatrixDomain<Field>::readMatrixBuffer(cl_mem matrixBuffer, Operand2 &matrix) const{
+	Operand2& OpenCLMatrixDomain<Field>::oclReadMatrixBuffer(cl_mem matrixBuffer, Operand2 &matrix) const{
 
 		//Calculate dimensions after padding of matrix
 		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
@@ -345,7 +345,7 @@ namespace LinBox{
 		//Calculate number of elements in the matrix
 		int outputSize = matrix.coldim() * matrix.rowdim();
 
-		return depadMatrix<T, Operand2>(matrixBuffer, matrixBufferSize, outputSize,
+		return oclDepadMatrix<T, Operand2>(matrixBuffer, matrixBufferSize, outputSize,
 			newDimX, matrix);
 	}
 

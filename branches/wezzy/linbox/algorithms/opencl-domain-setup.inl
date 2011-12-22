@@ -33,12 +33,9 @@ namespace LinBox{
 	 * Initializes the OpenCL compute environment
 	 */
 	template<class Field>
-	void OpenCLMatrixDomain<Field>::oclDomainInit(){
+	void OpenCLMatrixDomain<Field>::oclMatrixDomainInit(){
 
-		OpenCLMatrixDomainFactory::oclDomainCreate(context, device,
-			commandQue, errcode, memCapacity, maxBufferSize, GPUcontainer,
-			CPUcontainer, setupCorrect, doubleSupported, dpKernels, spKernels,
-			IDnum);
+		OpenCLMatrixDomainFactory::oclMatrixDomainCreate(this);
 	}
 
 	/**
@@ -46,9 +43,9 @@ namespace LinBox{
 	 * Releases OpenCL cumpute resources
 	 */
 	template<class Field>
-	void OpenCLMatrixDomain<Field>::oclDomainRelease(unsigned int IDnum){
+	void OpenCLMatrixDomain<Field>::oclMatrixDomainRelease(unsigned int IDnum){
 
-		OpenCLMatrixDomainFactory::oclDomainDestroy(IDnum);
+		OpenCLMatrixDomainFactory::oclMatrixDomainDestroy(IDnum);
 	}
 
 }; //end of namespace LinBox
