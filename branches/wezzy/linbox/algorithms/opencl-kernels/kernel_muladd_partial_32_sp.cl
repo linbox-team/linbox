@@ -7,7 +7,7 @@
 
 #define BLOCK_SIZE 16
 
-__kernel void matrix_mul_kernel(__global float* D, float alpha, __global float* A, __global float* B,
+__kernel void matrixMuladdKernelModular32SP(__global float* D, float alpha, __global float* A, __global float* B,
 		float beta, __global float* C, int width_A, int width_B, float mod){
 	//Get Workgroup ID
 	int bx = get_group_id(0);
@@ -62,25 +62,31 @@ __kernel void matrix_mul_kernel(__global float* D, float alpha, __global float* 
 		//Synchronize threads
 		barrier(CLK_LOCAL_MEM_FENCE);
 	}
-	
+
 	Dsub = fmod(Dsub, mod);
-	
+
 	//Calculates the offset in the result matrix
 	int d = width_B * BLOCK_SIZE * by + BLOCK_SIZE * bx;
-	
+
 	//Scale Dsub by alpha
 	Dsub = alpha * Dsub;
 	Dsub = fmod(Dsub, mod);
-	
+	if(Dsub < 0){
+		Dsub = mod + Dsub;
+	}
+
 	//Scalse Csub by beta
 	float Csub = C[d + ty * width_B + tx];
 	Csub = beta * Csub;
 	Csub = fmod(Csub, mod);
-	
+	if(Csub < 0){
+		Csub = mod + Csub;
+	}
+
 	//Add Dsub and Dsub
 	Dsub = Dsub + Csub;
 	Dsub = fmod(Dsub, mod);
-	
+
 	//Add the sum to the appropriate spot
 	D[d + ty * width_B + tx] = Dsub;
 }

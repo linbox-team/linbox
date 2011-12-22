@@ -22,12 +22,11 @@
 #ifndef __LINBOX_opencl_matrix_domain_factory_H
 #define __LINBOX_opencl_matrix_domain_factory_H
 
-#include "CL/cl.hpp"
-//#include "helper_functions.hpp" -- For debugging only
-
-#include <iostream>
 #include <new>
 #include <cstring>
+//#include <cstdio>
+
+#include "CL/cl.hpp"
 
 namespace LinBox{
 
@@ -54,7 +53,9 @@ namespace LinBox{
 
 		//Storage for kernels
 		static cl_kernel* dpKernels;
+		static bool* dpKernelsAvailable;
 		static cl_kernel* spKernels;
+		static bool* spKernelsAvailable;
 
 		//Count of instances
 		static int countOpenCLMatrixDomain;
@@ -64,26 +65,27 @@ namespace LinBox{
 		 * Picks the platform used for the container
 		 */
 		static cl_int oclGetPlatformID(cl_platform_id& selectedPlatform){
-
+			//Allocate temporary char array for platform name
 			char chBuffer[256];
 			cl_uint numPlatforms;
 			cl_platform_id* platforms;
 			selectedPlatform = NULL;
 
-			//OpenCL Platform count
+			//OpenCL Platform count return custom error codes if there are no platforms
+			//or could not get number of platforms
 			errcode = clGetPlatformIDs(0, NULL, &numPlatforms);
 			if(errcode != CL_SUCCESS){
-
 				return -1000;
 			}
 			if(numPlatforms == 0){
-
 				return -2000;
 			}
 
+			//Allocate space to store cl_platform_id's
 			platforms = (cl_platform_id*)operator new(numPlatforms * sizeof(cl_platform_id));
 			errcode = clGetPlatformIDs(numPlatforms, platforms, NULL);
 
+			//Search through the platforms looking of a prefered one specified by a string
 			for(unsigned int i = 0; i < numPlatforms; i++){
 				errcode= clGetPlatformInfo(platforms[i], CL_PLATFORM_NAME, 256, &chBuffer, NULL);
 
@@ -92,10 +94,15 @@ namespace LinBox{
 					break;
 				}
 			}
+
+			//If prefered platform could not be found use first platforms
 			if(selectedPlatform == NULL){
 				selectedPlatform = platforms[0];
 			}
+
+			//Clean up memory
 			delete platforms;
+
 			return CL_SUCCESS;
 		}
 
@@ -104,7 +111,7 @@ namespace LinBox{
 		 * Picks the device used for the container
 		 */
 		static cl_device_id oclDeviceSelector(cl_int numDevices, cl_device_id* devices){
-
+			//If there is only one device on the selected platform
 			if(numDevices == 1){
 				cl_device_type type;
 				errcode = clGetDeviceInfo(devices[0], CL_DEVICE_TYPE, sizeof(cl_device_type), &type, NULL);
@@ -116,6 +123,7 @@ namespace LinBox{
 				return devices[0];
 			}
 
+			//Allocate space for the calculation of device scores
 			int rankings[numDevices];
 			int selected = 0;
 
@@ -129,6 +137,7 @@ namespace LinBox{
 				GPUcontainer = (type == CL_DEVICE_TYPE_GPU);
 				CPUcontainer = (type == CL_DEVICE_TYPE_CPU);
 
+				//Get the number of processors, clock rate, device type, maximum buffere size, and total memory
 				cl_uint computeUnits;
 				errcode = clGetDeviceInfo(devices[i], CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(cl_uint),
 					&computeUnits, NULL);
@@ -148,16 +157,19 @@ namespace LinBox{
 				errcode = clGetDeviceInfo(devices[i], CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(cl_ulong),
 					&globalMemory, NULL);
 
+				//Calculate score for device -- Subject to modification
 				rankings[i] = ((computeUnits * clockFrequency) * (type == CL_DEVICE_TYPE_GPU ? 4 : 1) +
 					(maxGlobalMemoryAllocSize / (1024 * 1024)) + (globalMemory / (1024 * 1024)));
 			}
 
+			//Select the device with the highest score
 			for(int i = 0; i < numDevices; i++){
 				if(rankings[selected] < rankings[i]){
 					selected = i;
 				}
 			}
 
+			//Get the device type for the selected device
 			cl_device_type type;
 			errcode = clGetDeviceInfo(devices[selected], CL_DEVICE_TYPE, sizeof(cl_device_type),
 				&type, NULL);
@@ -166,7 +178,9 @@ namespace LinBox{
 			GPUcontainer = (type == CL_DEVICE_TYPE_GPU);
 			CPUcontainer = (type == CL_DEVICE_TYPE_CPU);
 
-			//Determine double precision support for device
+			//Determine double precision support for device by getting a listing of all
+			//OpenCL device extensions supported by the device and searching through them for
+			//the string "cl_khr_fp64"
 			doubleSupported = false;
 
 			size_t sizeReturn;
@@ -248,16 +262,26 @@ namespace LinBox{
 			//Create program from file
 			size_t kernelLength = fileLength;
 			cl_program program = clCreateProgramWithSource(context,
-					1, (const char**)&fileContents,
-					&kernelLength, &errcode);
+				1, (const char**)&fileContents,
+				&kernelLength, &errcode);
 
 			//Build the program into executable
 			errcode = clBuildProgram(program, 0,
-					NULL, NULL, NULL, NULL);
+				NULL, NULL, NULL, NULL);
+			/*
+			printf(fileName);
+			printf("\n");
+			size_t ret;
+			errcode = clGetProgramBuildInfo(program,device,CL_PROGRAM_BUILD_LOG,0,NULL,&ret);
+			char* log = (char*)operator new(ret);
+			errcode = clGetProgramBuildInfo(program,device,CL_PROGRAM_BUILD_LOG,ret,log,NULL);
+			printf(log);
+			delete log;
+			*/
 
 			//Create kernel from executable
 			cl_kernel tempKernel = clCreateKernel(program,
-							kernelName, &errcode);
+				kernelName, &errcode);
 
 			//Releasing program
 			errcode = clReleaseProgram(program);
@@ -331,37 +355,61 @@ namespace LinBox{
 			memCapacity = (unsigned long)memSize;
 			maxBufferSize = (unsigned long)maxGlobalMemoryAllocSize;
 
+			//Compile all of the kernels
 			if(errcode == CL_SUCCESS){
-				dpKernels[0] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_add_matrix_dp.cl", "vector_sum_kernel");
-				dpKernels[1] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_sub_matrix_dp.cl", "vector_sum_kernel");
-				dpKernels[2] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_modulus_dp.cl", "matrix_mul_kernel");
-				dpKernels[3] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_partial_8_dp.cl", "matrix_mul_kernel");
-				dpKernels[4] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_partial_32_dp.cl", "matrix_mul_kernel");
-				dpKernels[5] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_partial_1024_dp.cl", "matrix_mul_kernel");
-				dpKernels[6] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_muladd_modulus_dp.cl", "matrix_mul_kernel");
-				dpKernels[7] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_muladd_partial_8_dp.cl", "matrix_mul_kernel");
-				dpKernels[8] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_muladd_partial_32_dp.cl", "matrix_mul_kernel");
-				dpKernels[9] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_muladd_partial_1024_dp.cl", "matrix_mul_kernel");
+				dpKernels[0] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_add_matrix_dp.cl", "addKernelModularDP");
+				dpKernels[1] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_sub_matrix_dp.cl", "subKernelModularDP");
+				dpKernels[2] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_modulus_dp.cl", "matrixMulKernelModular1DP");
+				dpKernels[3] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_partial_8_dp.cl", "matrixMulKernelModular8DP");
+				dpKernels[4] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_partial_32_dp.cl", "matrixMulKernelModular32DP");
+				dpKernels[5] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_partial_1024_dp.cl", "matrixMulKernelModular1024DP");
+				dpKernels[6] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_muladd_modulus_dp.cl", "matrixMuladdKernelModular1DP");
+				dpKernels[7] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_muladd_partial_8_dp.cl", "matrixMuladdKernelModular8DP");
+				dpKernels[8] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_muladd_partial_32_dp.cl", "matrixMuladdKernelModular32DP");
+				dpKernels[9] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_muladd_partial_1024_dp.cl", "matrixMuladdKernelModular1024DP");
+				dpKernels[10] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axpy_modulus_dp.cl", "matrixAxpyKernelModular1DP");
+				dpKernels[11] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axpy_partial_8_dp.cl", "matrixAxpyKernelModular8DP");
+				dpKernels[12] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axpy_partial_32_dp.cl", "matrixAxpyKernelModular32DP");
+				dpKernels[13] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axpy_partial_1024_dp.cl", "matrixAxpyKernelModular1024DP");
+				dpKernels[14] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_maxpy_modulus_dp.cl", "matrixMaxpyKernelModular1DP");
+				dpKernels[15] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_maxpy_partial_8_dp.cl", "matrixMaxpyKernelModular8DP");
+				dpKernels[16] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_maxpy_partial_32_dp.cl", "matrixMaxpyKernelModular32DP");
+				dpKernels[17] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_maxpy_partial_1024_dp.cl", "matrixMaxpyKernelModular1024DP");
+				dpKernels[18] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axmy_modulus_dp.cl", "matrixAxmyKernelModular1DP");
+				dpKernels[19] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axmy_partial_8_dp.cl", "matrixAxmyKernelModular8DP");
+				dpKernels[20] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axmy_partial_32_dp.cl", "matrixAxmyKernelModular32DP");
+				dpKernels[21] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axmy_partial_1024_dp.cl", "matrixAxmyKernelModular1024DP");
 
-				spKernels[0] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_add_matrix_sp.cl", "vector_sum_kernel");
-				spKernels[1] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_sub_matrix_sp.cl", "vector_sum_kernel");
-				spKernels[2] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_modulus_sp.cl", "matrix_mul_kernel");
-				spKernels[3] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_partial_16_sp.cl", "matrix_mul_kernel");
-				spKernels[4] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_partial_32_sp.cl", "matrix_mul_kernel");
-				spKernels[5] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_partial_1024_sp.cl", "matrix_mul_kernel");
-				spKernels[6] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_muladd_modulus_sp.cl", "matrix_mul_kernel");
-				spKernels[7] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_muladd_partial_16_sp.cl", "matrix_mul_kernel");
-				spKernels[8] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_muladd_partial_32_sp.cl", "matrix_mul_kernel");
-				spKernels[9] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_muladd_partial_1024_sp.cl", "matrix_mul_kernel");
+				spKernels[0] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_add_matrix_sp.cl", "addKernelModularSP");
+				spKernels[1] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_sub_matrix_sp.cl", "subKernelModularSP");
+				spKernels[2] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_modulus_sp.cl", "matrixMulKernelModular1SP");
+				spKernels[3] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_partial_16_sp.cl", "matrixMulKernelModular16SP");
+				spKernels[4] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_partial_32_sp.cl", "matrixMulKernelModular32SP");
+				spKernels[5] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_partial_1024_sp.cl", "matrixMulKernelModular1024SP");
+				spKernels[6] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_muladd_modulus_sp.cl", "matrixMuladdKernelModular1SP");
+				spKernels[7] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_muladd_partial_16_sp.cl", "matrixMuladdKernelModular16SP");
+				spKernels[8] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_muladd_partial_32_sp.cl", "matrixMuladdKernelModular32SP");
+				spKernels[9] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_muladd_partial_1024_sp.cl", "matrixMuladdKernelModular1024SP");
+				spKernels[10] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axpy_modulus_sp.cl", "matrixAxpyKernelModular1SP");
+				spKernels[11] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axpy_partial_16_sp.cl", "matrixAxpyKernelModular16SP");
+				spKernels[12] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axpy_partial_32_sp.cl", "matrixAxpyKernelModular32SP");
+				spKernels[13] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axpy_partial_1024_sp.cl", "matrixAxpyKernelModular1024SP");
+				spKernels[14] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_maxpy_modulus_sp.cl", "matrixMaxpyKernelModular1SP");
+				spKernels[15] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_maxpy_partial_16_sp.cl", "matrixMaxpyKernelModular16SP");
+				spKernels[16] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_maxpy_partial_32_sp.cl", "matrixMaxpyKernelModular32SP");
+				spKernels[17] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_maxpy_partial_1024_sp.cl", "matrixMaxpyKernelModular1024SP");
+				spKernels[18] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axmy_modulus_sp.cl", "matrixAxmyKernelModular1SP");
+				spKernels[19] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axmy_partial_16_sp.cl", "matrixAxmyKernelModular16SP");
+				spKernels[20] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axmy_partial_32_sp.cl", "matrixAxmyKernelModular32SP");
+				spKernels[21] = oclCreateKernel("/home/mwezz/Downloads/linbox/linbox/algorithms/opencl-kernels/kernel_axmy_partial_1024_sp.cl", "matrixAxmyKernelModular1024SP");
 			}
 
+			//Check if everthing is setup correctly
 			if(errcode != CL_SUCCESS){
 				setupCorrect = false;
-				//std::cout << "Factory False\n";
 			}
 			else{
 				setupCorrect = true;
-				//std::cout << "Factory True\n";
 			}
 		}
 
@@ -369,13 +417,17 @@ namespace LinBox{
 		static void oclDomainCreate(cl_context& cont, cl_device_id& dev,
 			cl_command_queue& queue, cl_int& err, unsigned long& memCap,
 			unsigned long& maxBuf, bool& GPUflag, bool& CPUflag, bool& correct,
-			bool& doubleSupport, cl_kernel* dpKern, cl_kernel* spKern){
+			bool& doubleSupport, cl_kernel* dpKern, cl_kernel* spKern, unsigned int ID){
 
+			//Check if the OpenCL environment has been initialized
+			//It will only need to be initialized when the first OpenCLMatrixDomain instance
+			//is created otherwise it will just reuse the environment
 			if(!initialized){
 				oclEnvironInit();
 				initialized = true;
 			}
 
+			//Copy all of the data required for the OpenCLMatrixDomain instance to function
 			cont = context;
 			dev = device;
 			queue = commandQue;
@@ -389,15 +441,21 @@ namespace LinBox{
 			correct = setupCorrect;
 			doubleSupport = doubleSupported;
 
-			for(int i = 0; i < 10; i++){
+			for(int i = 0; i < 22; i++){
 				dpKern[i] = dpKernels[i];
 				spKern[i] = spKernels[i];
 			}
 
+			//Assign an ID number the OpenCLMatrixDomain instance to be used for locking and
+			//releasing the OpenCL resources
+			ID = countOpenCLMatrixDomain;
+
+			//Increase count of OpenCLMatrixDomain instances
 			countOpenCLMatrixDomain++;
 		}
 
-		static void oclDomainRelease(){
+		static void oclDomainDestroy(unsigned int IDnum){
+			//Decrease count of OpenCLMatrixDomain instances
 			countOpenCLMatrixDomain--;
 		}
 	};
@@ -407,15 +465,21 @@ namespace LinBox{
 	cl_device_id OpenCLMatrixDomainFactory::device = NULL;
 	cl_command_queue OpenCLMatrixDomainFactory::commandQue = NULL;
 	cl_int OpenCLMatrixDomainFactory::errcode = CL_SUCCESS;
+
 	unsigned long OpenCLMatrixDomainFactory::memCapacity = 0L;
 	unsigned long OpenCLMatrixDomainFactory::maxBufferSize = 0L;
+
 	bool OpenCLMatrixDomainFactory::GPUcontainer = false;
 	bool OpenCLMatrixDomainFactory::CPUcontainer = false;
 	bool OpenCLMatrixDomainFactory::setupCorrect = false;
 	bool OpenCLMatrixDomainFactory::doubleSupported = false;
 	bool OpenCLMatrixDomainFactory::initialized = false;
-	cl_kernel* OpenCLMatrixDomainFactory::dpKernels = (cl_kernel*)operator new(10 * sizeof(cl_kernel));
-	cl_kernel* OpenCLMatrixDomainFactory::spKernels = (cl_kernel*)operator new(10 * sizeof(cl_kernel));;
+
+	cl_kernel* OpenCLMatrixDomainFactory::dpKernels = (cl_kernel*)operator new(22 * sizeof(cl_kernel));
+	bool* OpenCLMatrixDomainFactory::dpKernelsAvailable = (bool*)operator new(22 * sizeof(bool));
+	cl_kernel* OpenCLMatrixDomainFactory::spKernels = (cl_kernel*)operator new(22 * sizeof(cl_kernel));
+	bool* OpenCLMatrixDomainFactory::spKernelsAvailable = (bool*)operator new(22 * sizeof(bool));
+
 	int OpenCLMatrixDomainFactory::countOpenCLMatrixDomain = 0;
 
 }

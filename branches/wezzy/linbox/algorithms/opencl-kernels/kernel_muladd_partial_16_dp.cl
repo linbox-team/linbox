@@ -8,7 +8,7 @@
 #define BLOCK_SIZE 16
 #pragma OPENCL EXTENSION cl_khr_fp64 : enable
 
-__kernel void matrix_mul_kernel(__global double* D, double alpha, __global double* A, __global double* B,
+__kernel void matrixMuladdKernelModular16DP(__global double* D, double alpha, __global double* A, __global double* B,
 		double beta, __global double* C, int width_A, int width_B, double mod){
 	//Get Workgroup ID
 	int bx = get_group_id(0);
@@ -56,20 +56,26 @@ __kernel void matrix_mul_kernel(__global double* D, double alpha, __global doubl
 	}
 	//Calculates the offset in the result matrix
 	int d = width_B * BLOCK_SIZE * by + BLOCK_SIZE * bx;
-	
+
 	//Scale Dsub by alpha
 	Dsub = alpha * Dsub;
 	Dsub = fmod(Dsub, mod);
-	
+	if(Dsub < 0){
+		Dsub = mod + Dsub;
+	}
+
 	//Scalse Csub by beta
 	double Csub = C[d + ty * width_B + tx];
 	Csub = beta * Csub;
 	Csub = fmod(Csub, mod);
-	
+	if(Csub < 0){
+		Csub = mod + Csub;
+	}
+
 	//Add Dsub and Dsub
 	Dsub = Dsub + Csub;
 	Dsub = fmod(Dsub, mod);
-	
+
 	//Add the sum to the appropriate spot
 	D[d + ty * width_B + tx] = Dsub;
 }

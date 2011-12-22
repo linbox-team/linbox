@@ -22,11 +22,9 @@
 #ifndef __LINBOX_opencl_matrix_domain_memory_INL
 #define __LINBOX_opencl_matrix_domain_memory_INL
 
-#include "CL/cl.hpp"
-//#include "helper_functions.hpp" -- For debugging only
-
-#include <iostream>
 #include <new>
+
+#include "CL/cl.hpp"
 
 namespace LinBox{
 
@@ -88,38 +86,6 @@ namespace LinBox{
 		return temp;
 	}
 
-	template<class Field>
-	template<typename T, class Operand1, class Operand2, class Operand3>
-	bool OpenCLMatrixDomain<Field>::oclMemCheck(Operand1& D, const Operand2& A, const Operand3& B,
-		const Operand1& C, Operand1& Temp) const{
-
-		//Calculate dimensions after padding of matrices
-		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-		int newDDimX = ((D.coldim() + 15) / 16) * 16;
-		int newDDimY = ((D.rowdim() + 15) / 16) * 16;
-		int newADimX = ((A.coldim() + 15) / 16) * 16;
-		int newADimY = ((A.rowdim() + 15) / 16) * 16;
-		int newBDimX = ((B.coldim() + 15) / 16) * 16;
-		int newBDimY = ((B.rowdim() + 15) / 16) * 16;
-		int newCDimX = ((C.coldim() + 15) / 16) * 16;
-		int newCDimY = ((C.rowdim() + 15) / 16) * 16;
-		int newTempDimX = ((Temp.coldim() + 15) / 16) * 16;
-		int newTempDimY = ((Temp.rowdim() + 15) / 16) * 16;
-
-		//Determine if each individual matrix will fit in a buffer
-		bool temp = (maxBufferSize >= (newDDimX * newDDimY * sizeof(T)));
-		temp &= (maxBufferSize >= (newADimX) * newADimY * sizeof(T));
-		temp &= (maxBufferSize >= (newBDimX * newBDimY) * sizeof(T));
-		temp &= (maxBufferSize >= (newCDimX * newCDimY) * sizeof(T));
-		temp &= (maxBufferSize >= (newTempDimX * newTempDimY) * sizeof(T));
-
-		//Determine if all three buffers will fit at the same time
-		temp &= (memCapacity >= ((newDDimX * newDDimY) + (newADimX * newADimY) +
-			(newBDimX * newBDimY) + (newCDimX * newCDimY) + (newTempDimX * newTempDimY)) * sizeof(T));
-
-		return temp;
-	}
-
 	/**
 	 * @internal
 	 * Pads a BlasMatrix into a form appropriate for OpenCL use and returns the OpenCL buffer
@@ -133,10 +99,11 @@ namespace LinBox{
 		int matrixBufferPosition = 0;
 		int dataOffset = 0;
 
-		const int paddingBufferSize = (32 * 1024 * 1024 / sizeof(T));
-
 		//Allocates a 32mb buffer for padding
 		T* paddingBuffer = (T*)operator new(32 * 1024 * 1024);
+
+		//Calculate the size of the padding buffer in number of elements
+		const int paddingBufferSize = (32 * 1024 * 1024 / sizeof(T));
 
 		//Loops while there is still space in the matrixBuffer
 		while(matrixBufferPosition < matrixBufferSize){
@@ -181,7 +148,7 @@ namespace LinBox{
 				cl_int tempErrcode;
 				tempErrcode = clEnqueueWriteBuffer(commandQue, matrixBuffer, CL_TRUE,
 					(matrixBufferPosition * sizeof(T)), transferSize, paddingBuffer, 0, NULL, NULL);
-				//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
+				//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 			}
 			//Transfer the partial paddingBuffer to the matrixBuffer
 			else{
@@ -190,13 +157,14 @@ namespace LinBox{
 				cl_int tempErrcode;
 				tempErrcode = clEnqueueWriteBuffer(commandQue, matrixBuffer, CL_TRUE,
 					(matrixBufferPosition * sizeof(T)), transferSize, paddingBuffer, 0, NULL, NULL);
-				//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
+				//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 			}
 
 			//Increment position in matrixBuffer by the size of the paddingBuffer
 			matrixBufferPosition += paddingBufferSize;
 		}
 
+		//Deallocates buffer
 		delete paddingBuffer;
 
 		return matrixBuffer;
@@ -215,10 +183,11 @@ namespace LinBox{
 		int matrixBufferPosition = 0;
 		int dataOffset = 0;
 
-		const int depaddingBufferSize = (32 * 1024 * 1024 / sizeof(T));
-
 		//Allocates a 32mb buffer for depadding
 		T* depaddingBuffer = (T*)operator new(32 * 1024 * 1024);
+
+		//Calculate the size of the depadding buffer in number of elements
+		const int depaddingBufferSize = (32 * 1024 * 1024 / sizeof(T));
 
 		//Loops while there are still elements in the matrixBuffer
 		while(dataOffset < outputSize){
@@ -230,7 +199,7 @@ namespace LinBox{
 				tempErrcode = clEnqueueReadBuffer(commandQue, matrixBuffer, CL_TRUE,
 					(matrixBufferPosition * sizeof(T)), transferSize, depaddingBuffer,
 					0, NULL, NULL);
-				//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
+				//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 				//Set depaddiingBuffer start position
 				int depaddingBufferPosition = 0;
@@ -243,9 +212,11 @@ namespace LinBox{
 					while(count < (int)matrix.coldim() && depaddingBufferPosition < depaddingBufferSize
 						&& dataOffset < outputSize){
 
+						//Put entry of depadding buffer into the matrix
 						matrix.setEntry((dataOffset / matrix.coldim()),(dataOffset % matrix.coldim()),
 							depaddingBuffer[depaddingBufferPosition]);
 
+						//Increment the count for the row, depadding buffer, and matrix
 						count++;
 						depaddingBufferPosition++;
 						dataOffset++;
@@ -258,7 +229,6 @@ namespace LinBox{
 					}
 				}
 			}
-
 			//Transfer a partial depaddingBuffer worth of elements back to the host
 			else{
 				int transferSize = (matrixBufferSize - matrixBufferPosition) * sizeof(T);
@@ -267,7 +237,7 @@ namespace LinBox{
 				tempErrcode = clEnqueueReadBuffer(commandQue, matrixBuffer, CL_TRUE,
 					(matrixBufferPosition * sizeof(T)), transferSize, depaddingBuffer,
 					0, NULL, NULL);
-				//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
+				//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 				//Set depaddiingBuffer start position
 				int depaddingBufferPosition = 0;
@@ -280,9 +250,11 @@ namespace LinBox{
 					while(count < (int)matrix.coldim() && depaddingBufferPosition < depaddingBufferSize
 						&& dataOffset < outputSize){
 
+						//Put entry of depadding buffer into the matrix
 						matrix.setEntry((dataOffset / matrix.coldim()),(dataOffset % matrix.coldim()),
 							depaddingBuffer[depaddingBufferPosition]);
 
+						//Increment the count for the row, depadding buffer, and matrix
 						count++;
 						depaddingBufferPosition++;
 						dataOffset++;
@@ -300,6 +272,7 @@ namespace LinBox{
 			matrixBufferPosition += depaddingBufferSize;
 		}
 
+		//Deallocates buffer
 		delete depaddingBuffer;
 
 		return matrix;
@@ -322,7 +295,7 @@ namespace LinBox{
 		cl_int tempErrcode;
 		cl_mem matrixBuffer = clCreateBuffer(context, CL_MEM_READ_WRITE,
 			(newDimX * newDimY * sizeof(T)), 0, &tempErrcode);
-		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
+		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 		return matrixBuffer;
 	}
@@ -345,7 +318,7 @@ namespace LinBox{
 		cl_int tempErrcode;
 		cl_mem matrixBuffer = clCreateBuffer(context, CL_MEM_READ_WRITE,
 			(newDimX * newDimY * sizeof(T)), 0, &tempErrcode);
-		//updateErrcode(tempErrcode); //Does not work because of const being used pointlessly
+		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 		//Calculate number of elements in the matrixBuffer
 		int matrixBufferSize = newDimX * newDimY;

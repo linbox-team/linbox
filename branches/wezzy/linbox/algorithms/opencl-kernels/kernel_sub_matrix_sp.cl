@@ -7,7 +7,7 @@
 
 #define BLOCK_SIZE 256
 
-__kernel void vector_sum_kernel(__global float* C, __global float* A, __global float* B, float mod){
+__kernel void subKernelModularSP(__global float* C, __global float* A, __global float* B, float mod){
 	//Get Workgroup ID
 	int bx = get_group_id(0);
 
@@ -22,7 +22,7 @@ __kernel void vector_sum_kernel(__global float* C, __global float* A, __global f
 	float b = B[gx];
 
 	//Sum and fmod()
-	float c = fmod((a - b), mod);
+	float c = fmod((mod + a - b), mod);
 
 	//Write to result matrix
 	C[gx] = c;

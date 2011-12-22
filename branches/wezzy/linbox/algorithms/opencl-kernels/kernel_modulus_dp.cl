@@ -8,7 +8,7 @@
 #define BLOCK_SIZE 16
 #pragma OPENCL EXTENSION cl_khr_fp64 : enable
 
-__kernel void matrix_mul_kernel(__global double* C, __global double* A, __global double* B,
+__kernel void matrixMulKernelModular1DP(__global double* C, __global double* A, __global double* B,
 		int width_A, int width_B, double mod){
 	//Get Workgroup ID
 	int bx = get_group_id(0);

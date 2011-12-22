@@ -7,7 +7,7 @@
 
 #define BLOCK_SIZE 16
 
-__kernel void matrix_mul_kernel(__global float* C, __global float* A, __global float* B,
+__kernel void matrixMulKernelModular16SP(__global float* C, __global float* A, __global float* B,
 		int width_A, int width_B, float mod){
 	//Get Workgroup ID
 	int bx = get_group_id(0);

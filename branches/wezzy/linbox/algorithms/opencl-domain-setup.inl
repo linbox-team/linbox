@@ -22,13 +22,9 @@
 #ifndef __LINBOX_opencl_matrix_domain_setup_INL
 #define __LINBOX_opencl_matrix_domain_setup_INL
 
-#include "CL/cl.hpp"
-//#include "helper_functions.hpp" -- For debugging only
 #include "linbox/algorithms/opencl-domain-factory.h"
 
-#include <iostream>
-#include <new>
-#include <cstring>
+#include "CL/cl.hpp"
 
 namespace LinBox{
 
@@ -41,16 +37,8 @@ namespace LinBox{
 
 		OpenCLMatrixDomainFactory::oclDomainCreate(context, device,
 			commandQue, errcode, memCapacity, maxBufferSize, GPUcontainer,
-			CPUcontainer, setupCorrect, doubleSupported, dpKernels, spKernels);
-
-		if(!setupCorrect){
-			setupCorrect = false;
-			//::cout << "False\n";
-		}
-		else{
-			setupCorrect = true;
-			//std::cout << "True\n";
-		}
+			CPUcontainer, setupCorrect, doubleSupported, dpKernels, spKernels,
+			IDnum);
 	}
 
 	/**
@@ -58,9 +46,9 @@ namespace LinBox{
 	 * Releases OpenCL cumpute resources
 	 */
 	template<class Field>
-	void OpenCLMatrixDomain<Field>::oclDomainTearDown(){
+	void OpenCLMatrixDomain<Field>::oclDomainRelease(unsigned int IDnum){
 
-		OpenCLMatrixDomainFactory::oclDomainRelease();
+		OpenCLMatrixDomainFactory::oclDomainDestroy(IDnum);
 	}
 
 }; //end of namespace LinBox
