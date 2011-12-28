@@ -78,6 +78,7 @@ for FFLAS_FFPACK_HOME in ${FFLAS_FFPACK_HOME_PATH}
 		[
 		ffflasffpack_found="yes"
 		FFLAS_FFPACK_LOC="$FFLAS_FFPACK_HOME"
+		break
 		],
 		[
 		ffflasffpack_found="no"
