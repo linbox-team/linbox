@@ -66,7 +66,7 @@ namespace LinBox
 	template<class _Field>
 	void BlasMatrix<_Field>::createBlasMatrix (const std::vector<Element> & v)
 	{
-		typename std::vector< _Field>::const_iterator iter_value = v.begin();
+		typename std::vector< Element>::const_iterator iter_value = v.begin();
 		Iterator  iter_addr = this->Begin();
 		for (;iter_value != v.end(); ++iter_value,++iter_addr)
 			_field.init(*iter_addr,*iter_value);
