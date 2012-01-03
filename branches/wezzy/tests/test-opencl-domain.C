@@ -854,7 +854,7 @@ int launch_tests(Field& F, int n, int iterations){
 }
 
 int main(int argc, char** argv){
-	static size_t n = 10;
+	static size_t n = 500;
 	static int q = 1000003U;
 	static int iterations = 3;
 

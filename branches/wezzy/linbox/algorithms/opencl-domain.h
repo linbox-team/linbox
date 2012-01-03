@@ -127,6 +127,14 @@ namespace LinBox{
 		template<typename T, class Operand1>
 		Operand1& oclDepadMatrix(cl_mem matrixBuffer, int matrixBufferSize,
 			int outputSize, int newDimX, Operand1& matrix) const;
+		
+		/**
+		 * @internal
+		 * Update the class error code
+		 */
+		void updateErrcode(const cl_int err) const{
+			errcode = const_cast<cl_int>(err);
+		}
 
 	public:
 

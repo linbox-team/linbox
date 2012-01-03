@@ -1,16 +1,15 @@
 /*
- * kernel_axpy_parital_16_dp.cl
+ * kernel_partial_sp.cl
  *
- *  Created on: Dec 20, 2011
+ *  Created on: Jul 5, 2011
  *      Author: Matthew Wezowicz
  */
 
 #define BLOCK_SIZE 16
-#pragma OPENCL EXTENSION cl_khr_fp64 : enable
 
-__kernel void matrixAxpyKernelModular16DP(__global double* D, __global double* A, __global double* B,
-		__global double* C, int width_A, int width_B, double mod){
-	//Geet Workgroup ID
+__kernel void matrixMuladdKernelModular16SP(__global float* D, float alpha, __global float* A, __global float* B,
+		float beta, __global float* C, int width_A, int width_B, float mod){
+	//Get Workgroup ID
 	int bx = get_group_id(0);
 	int by = get_group_id(1);
 
@@ -18,8 +17,8 @@ __kernel void matrixAxpyKernelModular16DP(__global double* D, __global double* A
 	int tx = get_local_id(0);
 	int ty = get_local_id(1);
 
-	//Range of indexies for submatrix of A
-	int aBegin= width_A * BLOCK_SIZE * by;
+	//Range of indecies for sub-matrix of A
+	int aBegin = width_A * BLOCK_SIZE * by;
 	int aEnd = aBegin + width_A - 1;
 	int aStep = BLOCK_SIZE;
 
@@ -27,17 +26,20 @@ __kernel void matrixAxpyKernelModular16DP(__global double* D, __global double* A
 	int bBegin = BLOCK_SIZE * bx;
 	int bStep = BLOCK_SIZE * width_B;
 
-	//Local storage of sub-matrices of A and B;
-	__local double As[BLOCK_SIZE][BLOCK_SIZE];
-	__local double Bs[BLOCK_SIZE][BLOCK_SIZE];
+	//Local storage of sub-matrices of A and B
+	__local float As[BLOCK_SIZE][BLOCK_SIZE];
+	__local float Bs[BLOCK_SIZE][BLOCK_SIZE];
 
 	//Temporary storage for result
-	double Dsub = 0;
+	float Dsub = 0;
 
-	//Loop over all the sub-maticies of A and B required to compute
+	//Setup count for modulus every 32 iterations.
+	int m = 0;
+
+	//Loop over all the sub-matrices of A and B required to compute
 	//the result sub-matrix
 	for(int a = aBegin, b = bBegin; a < aEnd; a += aStep, b += bStep){
-		//Load the matricies from global memory to local memory
+		//Load the matrices from global memory to local memory
 		//Each thread loads one element of each sub-matrix
 		As[ty][tx] = A[a + width_A * ty + tx];
 		Bs[ty][tx] = B[b + width_B * ty + tx];
@@ -54,12 +56,26 @@ __kernel void matrixAxpyKernelModular16DP(__global double* D, __global double* A
 		//Synchronize threads
 		barrier(CLK_LOCAL_MEM_FENCE);
 	}
-	//Calculates the offset inthe result matrix
+	//Calculates the offset in the result matrix
 	int d = width_B * BLOCK_SIZE * by + BLOCK_SIZE * bx;
 
-	//Load, add, and normalize with element from C
-	double c = C[d + ty * width_B + tx];
-	Dsub = Dsub + c;
+	//Scale Dsub by alpha
+	Dsub = alpha * Dsub;
+	Dsub = fmod(Dsub, mod);
+	if(Dsub < 0){
+		Dsub = mod + Dsub;
+	}
+
+	//Scalse Csub by beta
+	float Csub = C[d + ty * width_B + tx];
+	Csub = beta * Csub;
+	Csub = fmod(Csub, mod);
+	if(Csub < 0){
+		Csub = mod + Csub;
+	}
+
+	//Add Dsub and Dsub
+	Dsub = Dsub + Csub;
 	Dsub = fmod(Dsub, mod);
 
 	//Add the sum to the appropriate spot

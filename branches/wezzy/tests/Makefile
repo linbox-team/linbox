@@ -1165,6 +1165,7 @@ FULLCHECK_TESTS = \
         test-zero-one                 \
         test-last-invariant-factor    \
         test-cradomain                \
+				test-opencl-domain            \
 		test-rational-reconstruction-base
 
 

@@ -56,7 +56,7 @@ namespace LinBox
 			cl_double, BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(C,A,B);
 
 		//If it is not capable or not setup properly use default implementation
-		if((!memLevelsAllowed && !setupCorrect && !doubleSupported) || !dpKernelsAvailable[0]){
+		if(!memLevelsAllowed || !setupCorrect || !doubleSupported || !dpKernelsAvailable[0]){
 			return BlasMatrixDomainAdd<
 				Modular<double>,BlasMatrix<double>,BlasMatrix<double>,BlasMatrix<double> >()(_F,C,A,B);
 		}
@@ -133,7 +133,7 @@ namespace LinBox
 			cl_float, BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(C,A,B);
 
 		//If it is not capable or not setup properly use default implementation
-		if((!memLevelsAllowed && !setupCorrect) || !spKernelsAvailable[0]){
+		if(!memLevelsAllowed || !setupCorrect || !spKernelsAvailable[0]){
 			return BlasMatrixDomainAdd<
 				Modular<float>,BlasMatrix<float>,BlasMatrix<float>,BlasMatrix<float> >()(_F,C,A,B);
 		}
@@ -206,9 +206,9 @@ namespace LinBox
 		const BlasMatrix<double>& B) const{
 
 		//Create a temporary matrix for psuedo inline
-		BlasMatrix<double> T(C);
-		T = C;
-		return add<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(C,T,B);
+		//BlasMatrix<double> T(C);
+		//T = C;
+		return add<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(C,C,B);
 	}
 
 	/*
@@ -223,9 +223,9 @@ namespace LinBox
 		const BlasMatrix<float>& B) const{
 
 		//Create a temporary matrix for psuedo inline
-		BlasMatrix<float> T(C);
-		T = C;
-		return add<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(C,T,B);
+		//BlasMatrix<float> T(C);
+		//T = C;
+		return add<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(C,C,B);
 	}
 
 	/*
@@ -244,7 +244,7 @@ namespace LinBox
 			cl_double, BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(C,A,B);
 
 		//If it is not capable or not setup properly use default implementation
-		if((!memLevelsAllowed && !setupCorrect && !doubleSupported) || !dpKernelsAvailable[1]){
+		if(!memLevelsAllowed || !setupCorrect || !doubleSupported || !dpKernelsAvailable[1]){
 			return BlasMatrixDomainSub<
 				Modular<double>,BlasMatrix<double>,BlasMatrix<double>,BlasMatrix<double> >()(_F,C,A,B);
 		}
@@ -321,7 +321,7 @@ namespace LinBox
 			cl_float, BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(C,A,B);
 
 		//If it is not capable or not setup properly use default implementation
-		if((!memLevelsAllowed && !setupCorrect) || !spKernelsAvailable[1]){
+		if(!memLevelsAllowed || !setupCorrect || !spKernelsAvailable[1]){
 			return BlasMatrixDomainSub<
 				Modular<float>,BlasMatrix<float>,BlasMatrix<float>,BlasMatrix<float> >()(_F,C,A,B);
 		}
@@ -394,9 +394,9 @@ namespace LinBox
 		const BlasMatrix<double>& B) const{
 
 		//Create a temporary matrix for psuedo inline
-		BlasMatrix<double> T(C);
-		T = C;
-		return sub<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(C,T,B);
+		//BlasMatrix<double> T(C);
+		//T = C;
+		return sub<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(C,C,B);
 	}
 
 	/*
@@ -411,9 +411,9 @@ namespace LinBox
 		const BlasMatrix<float>& B) const{
 
 		//Create a temporary matrix for psuedo inline
-		BlasMatrix<float> T(C);
-		T = C;
-		return sub<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(C,T,B);
+		//BlasMatrix<float> T(C);
+		//T = C;
+		return sub<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(C,C,B);
 	}
 
 	/*
@@ -439,7 +439,7 @@ namespace LinBox
 		kernelsAvailable &= dpKernelsAvailable[5];
 
 		//If it is not capable or not setup properly use default implementation
-		if((!memLevelsAllowed && !setupCorrect && !doubleSupported) || !kernelsAvailable){
+		if(!memLevelsAllowed || !setupCorrect || !doubleSupported || !kernelsAvailable){
 			return BlasMatrixDomainMul<
 				Modular<double>,BlasMatrix<double>,BlasMatrix<double>,BlasMatrix<double> >()(_F,C,A,B);
 		}
@@ -540,7 +540,7 @@ namespace LinBox
 		kernelsAvailable &= spKernelsAvailable[5];
 
 		//If it is not capable or not setup properly use default implementation
-		if((!memLevelsAllowed && !setupCorrect) || !kernelsAvailable){
+		if(!memLevelsAllowed || !setupCorrect || !kernelsAvailable){
 			return BlasMatrixDomainMul<
 				Modular<float>,BlasMatrix<float>,BlasMatrix<float>,BlasMatrix<float> >()(_F,C,A,B);
 		}
@@ -632,9 +632,9 @@ namespace LinBox
 		const BlasMatrix<double>& B) const{
 
 		//Create a temporary matrix for psuedo inline
-		BlasMatrix<double> T(A);
-		T = A;
-		return mul<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(A,T,B);
+		//BlasMatrix<double> T(A);
+		//T = A;
+		return mul<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(A,A,B);
 	}
 
 	/*
@@ -651,9 +651,9 @@ namespace LinBox
 		const BlasMatrix<float>& B) const{
 
 		//Create a temporary matrix for psuedo inline
-		BlasMatrix<float> T(A);
-		T = A;
-		return mul<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(A,T,B);
+		//BlasMatrix<float> T(A);
+		//T = A;
+		return mul<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(A,A,B);
 	}
 
 	/*
@@ -670,9 +670,9 @@ namespace LinBox
 		BlasMatrix<double>& B) const{
 
 		//Create a temporary matrix for psuedo inline
-		BlasMatrix<double> T(B);
-		T = B;
-		return mul<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(B,A,T);
+		//BlasMatrix<double> T(B);
+		//T = B;
+		return mul<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(B,A,B);
 	}
 
 	/*
@@ -689,9 +689,9 @@ namespace LinBox
 		BlasMatrix<float>& B) const{
 
 		//Create a temporary matrix for psuedo inline
-		BlasMatrix<float> T(B);
-		T = B;
-		return mul<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(B,A,T);
+		//BlasMatrix<float> T(B);
+		//T = B;
+		return mul<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(B,A,B);
 	}
 
 	/*
@@ -717,7 +717,7 @@ namespace LinBox
 		kernelsAvailable &= dpKernelsAvailable[9];
 
 		//If it is not capable or not setup properly use default implementation
-		if((!memLevelsAllowed && !setupCorrect && !doubleSupported) || !kernelsAvailable){
+		if(!memLevelsAllowed || !setupCorrect || !doubleSupported || !kernelsAvailable){
 			return BlasMatrixDomainMulAdd<
 				Modular<double>, BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >()(
 				_F,D,beta,C,alpha,A,B);
@@ -828,7 +828,7 @@ namespace LinBox
 		kernelsAvailable &= spKernelsAvailable[9];
 
 		//If it is not capable or not setup properly use default implementation
-		if((!memLevelsAllowed && !setupCorrect) || !kernelsAvailable){
+		if(!memLevelsAllowed || !setupCorrect || !kernelsAvailable){
 			return BlasMatrixDomainMulAdd<
 				Modular<float>, BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >()(
 				_F,D,beta,C,alpha,A,B);
@@ -930,9 +930,9 @@ namespace LinBox
 		const BlasMatrix<double>& A, const BlasMatrix<double>& B) const{
 
 		//Create a temporary matrix for psuedo inline
-		BlasMatrix<double> T(C);
-		T = C;
-		return muladd<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(C,beta,T,alpha,A,B);
+		//BlasMatrix<double> T(C);
+		//T = C;
+		return muladd<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(C,beta,C,alpha,A,B);
 	}
 
 	/*
@@ -949,9 +949,9 @@ namespace LinBox
 		const BlasMatrix<float>& A, const BlasMatrix<float>& B) const{
 
 		//Create a temporary matrix for psuedo inline
-		BlasMatrix<float> T(C);
-		T = C;
-		return muladd<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(C,beta,T,alpha,A,B);
+		//BlasMatrix<float> T(C);
+		//T = C;
+		return muladd<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(C,beta,C,alpha,A,B);
 	}
 
 	/*
@@ -1009,7 +1009,7 @@ namespace LinBox
 		kernelsAvailable &= dpKernelsAvailable[13];
 
 		//If it is not capable or not setup properly use default implementation
-		if((!memLevelsAllowed && !setupCorrect && !doubleSupported) || !kernelsAvailable){
+		if(!memLevelsAllowed || !setupCorrect || !doubleSupported || !kernelsAvailable){
 			D = mul<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(D,A,B);
 			return addin<BlasMatrix<double>, BlasMatrix<double> >(D,C);
 		}
@@ -1117,7 +1117,7 @@ namespace LinBox
 		kernelsAvailable &= spKernelsAvailable[13];
 
 		//If it is not capable or not setup properly use default implementation
-		if((!memLevelsAllowed && !setupCorrect) || !kernelsAvailable){
+		if(!memLevelsAllowed || !setupCorrect || !kernelsAvailable){
 			D = mul<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(D,A,B);
 			return addin<BlasMatrix<float>, BlasMatrix<float> >(D,C);
 		}
@@ -1215,9 +1215,9 @@ namespace LinBox
 		BlasMatrix<double>& C, const BlasMatrix<double>& A, const BlasMatrix<double>& B) const{
 
 		//Create a temporary matrix for psuedo inline
-		BlasMatrix<double> T(C);
-		T = C;
-		return axpy<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(C,A,B,T);
+		//BlasMatrix<double> T(C);
+		//T = C;
+		return axpy<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(C,A,B,C);
 	}
 
 	/*
@@ -1235,9 +1235,9 @@ namespace LinBox
 		BlasMatrix<float>& C, const BlasMatrix<float>& A, const BlasMatrix<float>& B) const{
 
 		//Create a temporary matrix for psuedo inline
-		BlasMatrix<float> T(C);
-		T = C;
-		return axpy<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(C,A,B,T);
+		//BlasMatrix<float> T(C);
+		//T = C;
+		return axpy<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(C,A,B,C);
 	}
 
 	/*
@@ -1265,7 +1265,7 @@ namespace LinBox
 		kernelsAvailable &= dpKernelsAvailable[17];
 
 		//If it is not capable or not setup properly use default implementation
-		if((!memLevelsAllowed && !setupCorrect && !doubleSupported) || !kernelsAvailable){
+		if(!memLevelsAllowed || !setupCorrect || !doubleSupported || !kernelsAvailable){
 			BlasMatrix<double> T(D.rowdim(),D.coldim());
 			T = mul<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(T,A,B);
 			return sub<BlasMatrix<double>, BlasMatrix<double> >(D,C,T);
@@ -1374,7 +1374,7 @@ namespace LinBox
 		kernelsAvailable &= spKernelsAvailable[17];
 
 		//If it is not capable or not setup properly use default implementation
-		if((!memLevelsAllowed && !setupCorrect) || !kernelsAvailable){
+		if(!memLevelsAllowed || !setupCorrect || !kernelsAvailable){
 			BlasMatrix<float> T(D.rowdim(),D.coldim());
 			T = mul<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(T,A,B);
 			return sub<BlasMatrix<float>, BlasMatrix<float> >(D,C,T);
@@ -1473,9 +1473,9 @@ namespace LinBox
 		BlasMatrix<double>& C, const BlasMatrix<double>& A, const BlasMatrix<double>& B) const{
 
 		//Create a temporary matrix for psuedo inline
-		BlasMatrix<double> T(C);
-		T = C;
-		return maxpy<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(C,A,B,T);
+		//BlasMatrix<double> T(C);
+		//T = C;
+		return maxpy<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(C,A,B,C);
 	}
 
 	/*
@@ -1493,9 +1493,9 @@ namespace LinBox
 		BlasMatrix<float>& C, const BlasMatrix<float>& A, const BlasMatrix<float>& B) const{
 
 		//Create a temporary matrix for psuedo inline
-		BlasMatrix<float> T(C);
-		T = C;
-		return maxpy<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(C,A,B,T);
+		//BlasMatrix<float> T(C);
+		//T = C;
+		return maxpy<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(C,A,B,C);
 	}
 
 	/*
@@ -1523,7 +1523,7 @@ namespace LinBox
 		kernelsAvailable &= dpKernelsAvailable[21];
 
 		//If it is not capable or not setup properly use default implementation
-		if((!memLevelsAllowed && !setupCorrect && !doubleSupported) || !kernelsAvailable){
+		if(!memLevelsAllowed || !setupCorrect || !doubleSupported || !kernelsAvailable){
 			D = mul<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(D,A,B);
 			return subin<BlasMatrix<double>, BlasMatrix<double> >(D,C);
 		}
@@ -1631,7 +1631,7 @@ namespace LinBox
 		kernelsAvailable &= spKernelsAvailable[21];
 
 		//If it is not capable or not setup properly use default implementation
-		if((!memLevelsAllowed && !setupCorrect) || !kernelsAvailable){
+		if(!memLevelsAllowed || !setupCorrect || !kernelsAvailable){
 			D = mul<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(D,A,B);
 			return subin<BlasMatrix<float>, BlasMatrix<float> >(D,C);
 		}
@@ -1729,9 +1729,9 @@ namespace LinBox
 		BlasMatrix<double>& C, const BlasMatrix<double>& A, const BlasMatrix<double>& B) const{
 
 		//Create a temporary matrix for psuedo inline
-		BlasMatrix<double> T(C);
-		T = C;
-		return axmy<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(C,A,B,T);
+		//BlasMatrix<double> T(C);
+		//T = C;
+		return axmy<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(C,A,B,C);
 	}
 
 	/*
@@ -1749,9 +1749,9 @@ namespace LinBox
 		BlasMatrix<float>& C, const BlasMatrix<float>& A, const BlasMatrix<float>& B) const{
 
 		//Create a temporary matrix for psuedo inline
-		BlasMatrix<float> T(C);
-		T = C;
-		return axmy<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(C,A,B,T);
+		//BlasMatrix<float> T(C);
+		//T = C;
+		return axmy<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(C,A,B,C);
 	}
 
 } //end of namespace LinBox
