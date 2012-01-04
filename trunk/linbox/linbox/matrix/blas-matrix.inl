@@ -768,16 +768,20 @@ namespace LinBox
 	{
 		size_t r = this->rowdim() ;
 		size_t c = this->coldim() ;
+
 		if ( r == c) {
 			for (size_t i = 0 ; i < r ; ++i)
 				for (size_t j = i+1 ; j < c ; ++j)
 					std::swap(this->refEntry(i,j),this->refEntry(j,i));
 		}
 		else {
-			// maybe this should be possible on a DenseMatrix sharing its data with
-			// a BlasMatrix but with rowdim/coldim integer members.
-			// Or this has an integer rowdim/coldim member, mutable.
-			throw LinBoxError("you cannot transpose a BlasMatrix in place where m != n...");
+			BlasMatrix<_Field> MM(*this);
+			std::swap(_row,_col);
+			// XXX this is not inplace
+			// XXX iterate row or column first ?
+			for (size_t i = 0 ; i < r ; ++i)
+				for (size_t j = 0 ; j < c ; ++j)
+					this->setEntry(j,i,MM.getEntry(i,j));
 		}
 	}
 
