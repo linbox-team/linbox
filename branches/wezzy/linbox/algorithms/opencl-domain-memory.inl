@@ -141,24 +141,21 @@ namespace LinBox{
 				}
 			}
 
+			int transferSize;
+
 			//Transfer the paddingBuffer to the matrixBuffer
 			if((matrixBufferPosition + paddingBufferSize) <= matrixBufferSize){
-				int transferSize = (32 * 1024 * 1024);
-
-				cl_int tempErrcode;
-				tempErrcode = clEnqueueWriteBuffer(commandQue, matrixBuffer, CL_TRUE,
-					(matrixBufferPosition * sizeof(T)), transferSize, paddingBuffer, 0, NULL, NULL);
-				//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
+				transferSize = (32 * 1024 * 1024);
 			}
 			//Transfer the partial paddingBuffer to the matrixBuffer
 			else{
-				int transferSize = (matrixBufferSize - matrixBufferPosition) * sizeof(T);
-
-				cl_int tempErrcode;
-				tempErrcode = clEnqueueWriteBuffer(commandQue, matrixBuffer, CL_TRUE,
-					(matrixBufferPosition * sizeof(T)), transferSize, paddingBuffer, 0, NULL, NULL);
-				//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
+				transferSize = (matrixBufferSize - matrixBufferPosition) * sizeof(T);
 			}
+
+			cl_int tempErrcode;
+			tempErrcode = clEnqueueWriteBuffer(commandQue, matrixBuffer, CL_TRUE,
+				(matrixBufferPosition * sizeof(T)), transferSize, paddingBuffer, 0, NULL, NULL);
+			//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 			//Increment position in matrixBuffer by the size of the paddingBuffer
 			matrixBufferPosition += paddingBufferSize;
@@ -191,80 +188,48 @@ namespace LinBox{
 
 		//Loops while there are still elements in the matrixBuffer
 		while(dataOffset < outputSize){
+			int transferSize;
+
 			//Transfer a full depaddingBuffer worth of elements back to the host
 			if((matrixBufferPosition + depaddingBufferSize) <= matrixBufferSize){
-				int transferSize = (32 * 1024 * 1024);
-
-				cl_int tempErrcode;
-				tempErrcode = clEnqueueReadBuffer(commandQue, matrixBuffer, CL_TRUE,
-					(matrixBufferPosition * sizeof(T)), transferSize, depaddingBuffer,
-					0, NULL, NULL);
-				//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
-
-				//Set depaddiingBuffer start position
-				int depaddingBufferPosition = 0;
-
-				//Loops while there are still elements in the depaddingBuffer
-				while(depaddingBufferPosition < depaddingBufferSize){
-					int count = 0;
-
-					//Puts one row of data into the matrix while there are elements in the depaddingBuffer
-					while(count < (int)matrix.coldim() && depaddingBufferPosition < depaddingBufferSize
-						&& dataOffset < outputSize){
-
-						//Put entry of depadding buffer into the matrix
-						matrix.setEntry((dataOffset / matrix.coldim()),(dataOffset % matrix.coldim()),
-							depaddingBuffer[depaddingBufferPosition]);
-
-						//Increment the count for the row, depadding buffer, and matrix
-						count++;
-						depaddingBufferPosition++;
-						dataOffset++;
-					}
-
-					//Skip over the padding zero's
-					while(count < newDimX && depaddingBufferPosition < depaddingBufferSize){
-						count++;
-						depaddingBufferPosition++;
-					}
-				}
+				transferSize = (32 * 1024 * 1024);
 			}
 			//Transfer a partial depaddingBuffer worth of elements back to the host
 			else{
-				int transferSize = (matrixBufferSize - matrixBufferPosition) * sizeof(T);
+				transferSize = (matrixBufferSize - matrixBufferPosition) * sizeof(T);
+			}
 
-				cl_int tempErrcode;
-				tempErrcode = clEnqueueReadBuffer(commandQue, matrixBuffer, CL_TRUE,
-					(matrixBufferPosition * sizeof(T)), transferSize, depaddingBuffer,
-					0, NULL, NULL);
-				//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
+			cl_int tempErrcode;
+			tempErrcode = clEnqueueReadBuffer(commandQue, matrixBuffer, CL_TRUE,
+				(matrixBufferPosition * sizeof(T)), transferSize, depaddingBuffer,
+				0, NULL, NULL);
+			//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
-				//Set depaddiingBuffer start position
-				int depaddingBufferPosition = 0;
+			//Set depaddiingBuffer start position
+			int depaddingBufferPosition = 0;
 
-				//Loops while there are still elements in the depaddingBuffer
-				while(depaddingBufferPosition < depaddingBufferSize){
-					int count = 0;
+			//Loops while there are still elements in the depaddingBuffer
+			while(depaddingBufferPosition < depaddingBufferSize){
+				int count = 0;
 
-					//Loops while there are still elements in the depaddingBuffer
-					while(count < (int)matrix.coldim() && depaddingBufferPosition < depaddingBufferSize
-						&& dataOffset < outputSize){
+				//Puts one row of data into the matrix while there are elements in the depaddingBuffer
+				while(count < (int)matrix.coldim() && depaddingBufferPosition < depaddingBufferSize
+					&& dataOffset < outputSize){
 
-						//Put entry of depadding buffer into the matrix
-						matrix.setEntry((dataOffset / matrix.coldim()),(dataOffset % matrix.coldim()),
-							depaddingBuffer[depaddingBufferPosition]);
+					//Put entry of depadding buffer into the matrix
+					matrix.setEntry((dataOffset / matrix.coldim()),(dataOffset % matrix.coldim()),
+						depaddingBuffer[depaddingBufferPosition]);
 
-						//Increment the count for the row, depadding buffer, and matrix
-						count++;
-						depaddingBufferPosition++;
-						dataOffset++;
-					}
+					//Increment the count for the row, depadding buffer, and matrix
+					count++;
+					depaddingBufferPosition++;
+					dataOffset++;
+				}
 
-					//Skip over the padding zero's
-					while(count < newDimX && depaddingBufferPosition < depaddingBufferSize){
-						count++;
-						depaddingBufferPosition++;
-					}
+				//Skip over the padding zero's
+				while(count < newDimX && depaddingBufferPosition < depaddingBufferSize){
+					count++;
+					depaddingBufferPosition++;
 				}
 			}
 

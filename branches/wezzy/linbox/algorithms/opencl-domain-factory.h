@@ -504,6 +504,12 @@ namespace LinBox{
 				if(errcode == CL_SUCCESS){spKernelsAvailable[21] = true;}
 			}
 
+			//Set all kernel flags to true for debugging
+			for(int i = 0; i < 22; i++){
+				dpKernelsAvailable[i] = true;
+				spKernelsAvailable[i] = true;
+			}
+
 			//Check if everthing is setup correctly
 			if(errcode != CL_SUCCESS){
 				setupCorrect = false;
