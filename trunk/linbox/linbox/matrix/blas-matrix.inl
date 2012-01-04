@@ -763,7 +763,47 @@ namespace LinBox
 		return tM;
 	}
 
+	namespace Protected
+	{
+		/*! @internal
+		 *  @brief In-Place Tranpose.
+		* Adapted from the Wikipedia article.
+		* @todo make it for strides and Submatrices
+		* @todo use specialized versions when available (eg dgetmi)
+		* @todo make transpose have an inplace=true default parameter
+		* (execpt maybe when below a threshold).
+		* @param m pointer to the beginning of a row-major matrix vector
+		* @param w rows in the matrix
+		* @param h cols in the matrix
+		*/
+		template<class T>
+		void transposeIP(T *m, size_t h, size_t w)
+		{
+			size_t start, next, i;
+			T tmp;
+
+			for (start = 0; start <= w * h - 1; ++start) {
+				next = start;
+				i = 0;
+				do {
+					++i;
+					next = (next % h) * w + next / h;
+				} while (next > start);
+				if (next < start || i == 1)
+					continue;
+
+				tmp = m[next = start];
+				do {
+					i = (next % h) * w + next / h;
+					m[next] = (i == start) ? tmp : m[i];
+					next = i;
+				} while (next > start);
+			}
+		}
+	} // Protected
+
 	template <class _Field>
+	template<bool _IP>
 	void BlasMatrix< _Field>::transpose()
 	{
 		size_t r = this->rowdim() ;
@@ -775,14 +815,45 @@ namespace LinBox
 					std::swap(this->refEntry(i,j),this->refEntry(j,i));
 		}
 		else {
-			BlasMatrix<_Field> MM(*this);
-			std::swap(_row,_col);
-			// XXX this is not inplace
-			// XXX iterate row or column first ?
-			for (size_t i = 0 ; i < r ; ++i)
-				for (size_t j = 0 ; j < c ; ++j)
-					this->setEntry(j,i,MM.getEntry(i,j));
+			if (!_IP) {
+				BlasMatrix<_Field> MM(*this);
+				std::swap(_row,_col);
+				// iterating row first seems faster.
+#ifdef _BLOCKIT
+				size_t B ;
+				B =  1024;
+
+				for (size_t bi = 0 ; bi < r/B ; ++bi) {
+					for (size_t bj = 0 ; bj < c/B ; ++bj){
+						for (size_t i = 0 ; i < B ; ++i)
+							for (size_t j = 0 ; j < B ; ++j)
+								this->setEntry(bj*B+j,bi*B+i,
+									       MM.getEntry(bi*B+i,bj*B+j));
+					}
+				}
+				for (size_t i = r/B*B ; i < r ; ++i)
+					for (size_t j = c/B*B ; j < c ; ++j)
+						this->setEntry(j,i,
+							       MM.getEntry(i,j));
+#else
+				for (size_t i = 0 ; i < r ; ++i)
+					for (size_t j = 0 ; j < c ; ++j)
+						this->setEntry(j,i,
+							       MM.getEntry(i,j));
+#endif
+
+			}
+			else {
+				Protected::transposeIP<Element>(_ptr,_row,_col);
+				std::swap(_row,_col);
+			}
 		}
+	}
+
+	template <class _Field>
+	void BlasMatrix< _Field>::transpose()
+	{
+		this->transpose<_Field,false>();
 	}
 
 	template <class _Field>
