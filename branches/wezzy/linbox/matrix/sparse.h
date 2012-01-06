@@ -17,7 +17,7 @@
  *   - Renamed ColOfRowsIterator to RowIterator
  *   - Named template argument _Row rather than Row; add a typedef to Row
  *   - Named template argument _Element rather than Row; add a typedef to Element
- *   - Renamed RawIndexIterator as RawIndexedIterator, and adjusted to match
+ *   - Renamed IndexIterator as IndexedIterator, and adjusted to match
  *     interface in DenseMatrixBase
  * ------------------------------------
  * 2002-08-06  Bradford Hovinen  <hovinen@cis.udel.edu>
@@ -32,8 +32,8 @@
  *   - New read/write implementations for SparseMatrixBase, supporting multiple
  *     formats
  *   - Eliminated Gaussian elimination code
- *   - Added iterators, including ColOfRowsIterator, RawIterator, and
- *     RawIndexIterator
+ *   - Added iterators, including ColOfRowsIterator, Iterator, and
+ *     IndexIterator
  *   - Eliminated operator []; added getEntry; changed put_value to setEntry
  * ------------------------------------
  *
@@ -110,6 +110,9 @@ namespace LinBox
 		public:
 			typedef _Element Element;
 
+			template<class T>
+			Element & init(Element & a, const T & b = 0) const { return a = b ; }
+
 			std::istream &read (std::istream &stream, Element &elt) const
 			{
 				return stream >> elt;
@@ -153,6 +156,9 @@ namespace LinBox
 		class NoField {
 		public:
 			typedef _Element Element;
+
+			template<class T>
+			Element & init(Element & a, const T & b = 0) const { return a = b ; }
 
 			std::istream &read (std::istream &stream, Element &elt) const
 			{
@@ -200,7 +206,7 @@ namespace LinBox
 		 * @param  n  column dimension
 		 */
 		SparseMatrixBase (size_t m, size_t n) :
-			_A(m), _m(m), _n(n)
+			_matA(m), _m(m), _n(n)
 		{};
 
 
@@ -243,7 +249,7 @@ namespace LinBox
 		size_t size () const
 		{
 			size_t s(0);
-			for(typename Rep::const_iterator it = _A.begin(); it != _A.end(); ++it)
+			for(typename Rep::const_iterator it = _matA.begin(); it != _matA.end(); ++it)
 				s+= LinBox::RawVector<_Element>::size(*it);
 			return s;
 		}
@@ -331,17 +337,17 @@ namespace LinBox
 		 * passing the matrix into an algorithm.
 		 */
 
-		class RawIterator;
-		class ConstRawIterator;
+		class Iterator;
+		class ConstIterator;
 
-		/// rawBegin.
-		RawIterator rawBegin ();
-		/// rawEnd.
-		RawIterator rawEnd ();
-		/// const rawBegin.
-		ConstRawIterator rawBegin () const;
-		/// const rawEnd
-		ConstRawIterator rawEnd () const;
+		/// Begin.
+		Iterator Begin ();
+		/// End.
+		Iterator End ();
+		/// const Begin.
+		ConstIterator Begin () const;
+		/// const End
+		ConstIterator End () const;
 
 		/** @name Index iterator
 		 * The index iterator gives the row, column indices of all matrix
@@ -350,17 +356,17 @@ namespace LinBox
 		 * first and second positions, respectively.
 		 */
 
-		class RawIndexedIterator;
-		class ConstRawIndexedIterator;
+		class IndexedIterator;
+		class ConstIndexedIterator;
 
-		/// rawIndexedBegin
-		RawIndexedIterator rawIndexedBegin ();
-		/// rawIndexedEnd
-		RawIndexedIterator rawIndexedEnd ();
-		/// const rawIndexedBegin
-		ConstRawIndexedIterator rawIndexedBegin () const;
-		/// const rawIndexedEnd
-		ConstRawIndexedIterator rawIndexedEnd () const;
+		/// IndexedBegin
+		IndexedIterator IndexedBegin ();
+		/// IndexedEnd
+		IndexedIterator IndexedEnd ();
+		/// const IndexedBegin
+		ConstIndexedIterator IndexedBegin () const;
+		/// const IndexedEnd
+		ConstIndexedIterator IndexedEnd () const;
 
 		/** Retrieve a row as a writeable reference
 		 * @param i Row index
@@ -394,7 +400,7 @@ namespace LinBox
 		friend class SparseMatrixWriteHelper<Element, Row>;
 		friend class SparseMatrixReadWriteHelper<Element, Row>;
 
-		Rep               _A;
+		Rep               _matA;
 		size_t            _m;
 		size_t            _n;
 
@@ -417,7 +423,7 @@ namespace LinBox
 		{ typedef SparseMatrixBase<typename _Tp1::Element, _R1, VectorCategories::SparseSequenceVectorTag> other; };
 
 		SparseMatrixBase (size_t m, size_t n) :
-			_A (m), _m (m), _n (n)
+			_matA (m), _m (m), _n (n)
 		{}
 
 		/** Constructor from a MatrixStream
@@ -426,16 +432,16 @@ namespace LinBox
 		SparseMatrixBase ( MatrixStream<Field>& ms );
 
 		SparseMatrixBase (const SparseMatrixBase<Element, Row> &A) :
-			_A (A._A), _m (A._m), _n (A._n)
+			_matA (A._matA), _m (A._m), _n (A._n)
 		{}
 
 		template<class VectorType>
 		SparseMatrixBase (const SparseMatrixBase<Element, VectorType> &A) :
-			_A(A._m), _m (A._m), _n (A._n)
+			_matA(A._m), _m (A._m), _n (A._n)
 		{
-			typename Rep::iterator meit = this->_A.begin();
-			typename SparseMatrixBase<Element, VectorType>::Rep::const_iterator copit = A._A.begin();
-			for( ; meit != this->_A.end(); ++meit, ++copit)
+			typename Rep::iterator meit = this->_matA.begin();
+			typename SparseMatrixBase<Element, VectorType>::Rep::const_iterator copit = A._matA.begin();
+			for( ; meit != this->_matA.end(); ++meit, ++copit)
 				LinBox::RawVector<Element>::convert(*meit, *copit);
 		}
 
@@ -453,7 +459,7 @@ namespace LinBox
 		size_t size () const
 		{
 			size_t s(0);
-			for(typename Rep::const_iterator it = _A.begin(); it != _A.end(); ++it)
+			for(typename Rep::const_iterator it = _matA.begin(); it != _matA.end(); ++it)
 				s+= LinBox::RawVector<_Element>::size(*it);
 			return s;
 		}
@@ -504,30 +510,30 @@ namespace LinBox
 
 		ConstRowIterator rowBegin () const
 		{
-			return _A.begin ();
+			return _matA.begin ();
 		}
 
 		ConstRowIterator rowEnd () const
 		{
-			return _A.end ();
+			return _matA.end ();
 		}
 
 		RowIterator rowBegin ()
 		{
-			return _A.begin ();
+			return _matA.begin ();
 		}
 
 		RowIterator rowEnd ()
 		{
-			return _A.end ();
+			return _matA.end ();
 		}
 
 		template <class RepIterator, class RowIterator, class _I_Element>
-		class _RawIterator {
+		class _Iterator {
 		public:
 			typedef _I_Element value_type;
 
-			_RawIterator (const RepIterator &i, const RowIterator &j, const RepIterator &A_end) :
+			_Iterator (const RepIterator &i, const RowIterator &j, const RepIterator &A_end) :
 				_i (i), _j (j), _A_end (A_end)
 			{
 				if( _i == _A_end ) return;
@@ -537,13 +543,13 @@ namespace LinBox
 				}
 			}
 
-			_RawIterator (const _RawIterator &iter) :
+			_Iterator (const _Iterator &iter) :
 				_i (iter._i), _j (iter._j), _A_end (iter._A_end)
 			{}
 
-			_RawIterator () {}
+			_Iterator () {}
 
-			_RawIterator &operator = (const _RawIterator &iter)
+			_Iterator &operator = (const _Iterator &iter)
 			{
 				_i = iter._i;
 				_j = iter._j;
@@ -552,17 +558,17 @@ namespace LinBox
 				return *this;
 			}
 
-			bool operator == (const _RawIterator &i) const
+			bool operator == (const _Iterator &i) const
 			{
 				return (_i == i._i) && (_j == i._j);
 			}
 
-			bool operator != (const _RawIterator &i) const
+			bool operator != (const _Iterator &i) const
 			{
 				return (_i != i._i) || (_j != i._j);
 			}
 
-			_RawIterator &operator ++ ()
+			_Iterator &operator ++ ()
 			{
 				++_j;
 				while( _j == _i->end ()) {
@@ -576,14 +582,14 @@ namespace LinBox
 				return *this;
 			}
 
-			_RawIterator operator ++ (int)
+			_Iterator operator ++ (int)
 			{
-				_RawIterator tmp = *this;
+				_Iterator tmp = *this;
 				++(*this);
 				return tmp;
 			}
 
-			_RawIterator &operator -- ()
+			_Iterator &operator -- ()
 			{
 				while (_j == _i->begin ())
 					_j = (--_i)->end ();
@@ -591,9 +597,9 @@ namespace LinBox
 				return *this;
 			}
 
-			_RawIterator operator -- (int)
+			_Iterator operator -- (int)
 			{
-				_RawIterator tmp = *this;
+				_Iterator tmp = *this;
 				--(*this);
 				return tmp;
 			}
@@ -622,24 +628,24 @@ namespace LinBox
 		RepIterator _A_end;
 	};
 
-	typedef _RawIterator<typename Rep::iterator, typename Row::iterator, Element> RawIterator;
-	typedef _RawIterator<typename Rep::const_iterator, typename Row::const_iterator, const Element> ConstRawIterator;
+	typedef _Iterator<typename Rep::iterator, typename Row::iterator, Element> Iterator;
+	typedef _Iterator<typename Rep::const_iterator, typename Row::const_iterator, const Element> ConstIterator;
 
-	RawIterator rawBegin ()
+	Iterator Begin ()
 	{
-		return RawIterator (_A.begin (), _A.front ().begin (), _A.end ());
+		return Iterator (_matA.begin (), _matA.front ().begin (), _matA.end ());
 	}
-	RawIterator rawEnd ()
+	Iterator End ()
 	{
-		return RawIterator (_A.end (), _A.back ().end (), _A.end ());
+		return Iterator (_matA.end (), _matA.back ().end (), _matA.end ());
 	}
-	ConstRawIterator rawBegin () const
+	ConstIterator Begin () const
 	{
-		return ConstRawIterator (_A.begin (), _A.front ().begin (), _A.end ());
+		return ConstIterator (_matA.begin (), _matA.front ().begin (), _matA.end ());
 	}
-	ConstRawIterator rawEnd () const
+	ConstIterator End () const
 	{
-		return ConstRawIterator (_A.end (), _A.back ().end (), _A.end ());
+		return ConstIterator (_matA.end (), _matA.back ().end (), _matA.end ());
 	}
 
 
@@ -660,7 +666,7 @@ namespace LinBox
 
 
 	template <class RepIterator, class RowIdxIterator>
-	class _RawIndexedIterator {
+	class _IndexedIterator {
 	public:
 #if 0
 		typedef std::pair<size_t, size_t> value_type;
@@ -669,7 +675,7 @@ namespace LinBox
 #endif
 		typedef typename IteratorValueType< RowIdxIterator >::value_type::second_type value_type;
 
-		_RawIndexedIterator (size_t idx, const RepIterator &i, const RowIdxIterator &j, const RepIterator &A_end) :
+		_IndexedIterator (size_t idx, const RepIterator &i, const RowIdxIterator &j, const RepIterator &A_end) :
 			_i (i), _j (j), _A_end (A_end), _r_index (idx)
 		{
 			if( _i == _A_end ) return;
@@ -681,14 +687,14 @@ namespace LinBox
 			_c_index =_j->first;
 		}
 
-		_RawIndexedIterator (const _RawIndexedIterator &iter) :
+		_IndexedIterator (const _IndexedIterator &iter) :
 			_i (iter._i), _j (iter._j), _A_end (iter._A_end), _r_index (iter._r_index), _c_index (iter._c_index)
 		{}
 
-		_RawIndexedIterator ()
+		_IndexedIterator ()
 		{}
 
-		_RawIndexedIterator &operator = (const _RawIndexedIterator &iter)
+		_IndexedIterator &operator = (const _IndexedIterator &iter)
 		{
 			_A_end = iter._A_end;
 			_i = iter._i;
@@ -699,17 +705,17 @@ namespace LinBox
 			return *this;
 		}
 
-		bool operator == (const _RawIndexedIterator &i) const
+		bool operator == (const _IndexedIterator &i) const
 		{
 			return (_i == i._i) && (_j == i._j);
 		}
 
-		bool operator != (const _RawIndexedIterator &i) const
+		bool operator != (const _IndexedIterator &i) const
 		{
 			return (_i != i._i) || (_j != i._j);
 		}
 
-		_RawIndexedIterator &operator ++ ()
+		_IndexedIterator &operator ++ ()
 		{
 			++_j;
 			while(_j == _i->end ()){
@@ -732,14 +738,14 @@ namespace LinBox
 			return *this;
 		}
 
-		_RawIndexedIterator operator ++ (int)
+		_IndexedIterator operator ++ (int)
 		{
-			_RawIndexedIterator tmp = *this;
+			_IndexedIterator tmp = *this;
 			++(*this);
 			return tmp;
 		}
 
-		_RawIndexedIterator &operator -- ()
+		_IndexedIterator &operator -- ()
 		{
 			while (_j == _i->begin ()) {
 				_j = (--_i)->end ();
@@ -751,9 +757,9 @@ namespace LinBox
 			return *this;
 		}
 
-		_RawIndexedIterator operator -- (int)
+		_IndexedIterator operator -- (int)
 		{
-			_RawIndexedIterator tmp = *this;
+			_IndexedIterator tmp = *this;
 			--(*this);
 			return tmp;
 		}
@@ -797,35 +803,35 @@ namespace LinBox
 		mutable size_t _c_index;
 	};
 
-	typedef _RawIndexedIterator<typename Rep::iterator, typename Row::iterator> RawIndexedIterator;
-	typedef _RawIndexedIterator<typename Rep::const_iterator, typename Row::const_iterator> ConstRawIndexedIterator;
+	typedef _IndexedIterator<typename Rep::iterator, typename Row::iterator> IndexedIterator;
+	typedef _IndexedIterator<typename Rep::const_iterator, typename Row::const_iterator> ConstIndexedIterator;
 
-	RawIndexedIterator rawIndexedBegin ()
+	IndexedIterator IndexedBegin ()
 	{
-		return RawIndexedIterator (0, _A.begin (), _A.front ().begin (), _A.end ());
+		return IndexedIterator (0, _matA.begin (), _matA.front ().begin (), _matA.end ());
 	}
-	RawIndexedIterator rawIndexedEnd ()
+	IndexedIterator IndexedEnd ()
 	{
-		return RawIndexedIterator (_m, _A.end (), _A.back ().end (), _A.end ());
+		return IndexedIterator (_m, _matA.end (), _matA.back ().end (), _matA.end ());
 	}
-	ConstRawIndexedIterator rawIndexedBegin () const
+	ConstIndexedIterator IndexedBegin () const
 	{
-		return ConstRawIndexedIterator (0, _A.begin (), _A.front ().begin (), _A.end ());
+		return ConstIndexedIterator (0, _matA.begin (), _matA.front ().begin (), _matA.end ());
 	}
-	ConstRawIndexedIterator rawIndexedEnd () const
+	ConstIndexedIterator IndexedEnd () const
 	{
-		return ConstRawIndexedIterator (_m, _A.end (), _A.back ().end (), _A.end ());
+		return ConstIndexedIterator (_m, _matA.end (), _matA.back ().end (), _matA.end ());
 	}
 
 	Row &getRow (size_t i) {
-		return _A[i];
+		return _matA[i];
 	}
 	Row &operator [] (size_t i) {
-		return _A[i];
+		return _matA[i];
 	}
 	ConstRow &operator [] (size_t i) const
 	{
-		return _A[i];
+		return _matA[i];
 	}
 
 	template <class Vector> Vector &columnDensity (Vector &v) const;
@@ -836,7 +842,7 @@ protected:
 	friend class SparseMatrixWriteHelper<Element, Row>;
 	friend class SparseMatrixReadWriteHelper<Element, Row>;
 
-	Rep               _A;
+	Rep               _matA;
 	size_t            _m;
 	size_t            _n;
 
@@ -859,19 +865,19 @@ public:
 	{ typedef SparseMatrixBase<typename _Tp1::Element, _R1, VectorCategories::SparseAssociativeVectorTag> other; };
 
 	SparseMatrixBase (size_t m, size_t n) :
-		_A (m), _m (m), _n (n)
+		_matA (m), _m (m), _n (n)
 	{}
 	SparseMatrixBase (const SparseMatrixBase<Element, Row> &A) :
-		_A (A._A), _m (A._m), _n (A._n)
+		_matA (A._matA), _m (A._m), _n (A._n)
 	{}
 
 	template<class VectorType>
 	SparseMatrixBase (const SparseMatrixBase<Element, VectorType> &A) :
-		_A(A.m), _m (A._m), _n (A._n)
+		_matA(A.m), _m (A._m), _n (A._n)
 	{
-		typename Rep::iterator meit = this->_A.begin();
-		typename SparseMatrixBase<Element, VectorType>::Rep::const_iterator copit = A._A.begin();
-		for( ; meit != this->_A.end(); ++meit, ++copit)
+		typename Rep::iterator meit = this->_matA.begin();
+		typename SparseMatrixBase<Element, VectorType>::Rep::const_iterator copit = A._matA.begin();
+		for( ; meit != this->_matA.end(); ++meit, ++copit)
 			LinBox::RawVector<Element>::convert(*meit, *copit);
 	}
 
@@ -892,7 +898,7 @@ public:
 	size_t size () const
 	{
 		size_t s(0);
-		for(typename Rep::const_iterator it = _A.begin(); it != _A.end(); ++it)
+		for(typename Rep::const_iterator it = _matA.begin(); it != _matA.end(); ++it)
 			s+= LinBox::RawVector<_Element>::size(*it);
 		return s;
 	}
@@ -922,15 +928,15 @@ public:
 		 format);
 	}
 
-	void           setEntry (size_t i, size_t j, const Element &value) { _A[i][j] = value;
+	void           setEntry (size_t i, size_t j, const Element &value) { _matA[i][j] = value;
 	}
 	Element       &refEntry (size_t i, size_t j)                       {
-		return _A[i][j];
+		return _matA[i][j];
 	}
 	const Element &getEntry (size_t i, size_t j) const;
 	Element       &getEntry (Element &x, size_t i, size_t j) const
 	{
-		return x = _A[i][j];
+		return x = _matA[i][j];
 	}
 
 	typedef typename Rep::iterator RowIterator;
@@ -938,27 +944,27 @@ public:
 
 	ConstRowIterator rowBegin () const
 	{
-		return _A.begin ();
+		return _matA.begin ();
 	}
 	ConstRowIterator rowEnd () const
 	{
-		return _A.end ();
+		return _matA.end ();
 	}
 	RowIterator rowBegin ()
 	{
-		return _A.begin ();
+		return _matA.begin ();
 	}
 	RowIterator rowEnd ()
 	{
-		return _A.end ();
+		return _matA.end ();
 	}
 
 	template <class RepIterator, class RowEltIterator, class _I_Element>
-	class _RawIterator {
+	class _Iterator {
 	public:
 		typedef _I_Element value_type;
 
-		_RawIterator (const RepIterator &i, const RowEltIterator &j, const RepIterator &A_end) :
+		_Iterator (const RepIterator &i, const RowEltIterator &j, const RepIterator &A_end) :
 			_i (i), _j (j), _A_end (A_end)
 		{
 			if( _i == _A_end ) return;
@@ -968,13 +974,13 @@ public:
 			}
 		}
 
-		_RawIterator (const _RawIterator &iter) :
+		_Iterator (const _Iterator &iter) :
 			_i (iter._i), _j (iter._j), _A_end (iter._A_end)
 		{}
 
-		_RawIterator () {}
+		_Iterator () {}
 
-		_RawIterator &operator = (const _RawIterator &iter)
+		_Iterator &operator = (const _Iterator &iter)
 		{
 			_i = iter._i;
 			_j = iter._j;
@@ -983,17 +989,17 @@ public:
 			return *this;
 		}
 
-		bool operator == (const _RawIterator &i) const
+		bool operator == (const _Iterator &i) const
 		{
 			return (_i == i._i) && (_j == i._j);
 		}
 
-		bool operator != (const _RawIterator &i) const
+		bool operator != (const _Iterator &i) const
 		{
 			return (_i != i._i) || (_j != i._j);
 		}
 
-		_RawIterator &operator ++ ()
+		_Iterator &operator ++ ()
 		{
 			while (++_j == _i->end ()) {
 				if (++_i == _A_end ()) return *this;
@@ -1002,14 +1008,14 @@ public:
 			return *this;
 		}
 
-		_RawIterator operator ++ (int)
+		_Iterator operator ++ (int)
 		{
-			_RawIterator tmp = *this;
+			_Iterator tmp = *this;
 			++(*this);
 			return tmp;
 		}
 
-		_RawIterator &operator -- ()
+		_Iterator &operator -- ()
 		{
 			while (_j == _i->begin ())
 				_j = (--_i)->end ();
@@ -1017,9 +1023,9 @@ public:
 			return *this;
 		}
 
-		_RawIterator operator -- (int)
+		_Iterator operator -- (int)
 		{
-			_RawIterator tmp = *this;
+			_Iterator tmp = *this;
 			--(*this);
 			return tmp;
 		}
@@ -1039,32 +1045,32 @@ public:
 		RepIterator _A_end;
 	};
 
-	typedef _RawIterator<typename Rep::iterator, typename Row::iterator, Element> RawIterator;
-	typedef _RawIterator<typename Rep::const_iterator, typename Row::const_iterator, const Element> ConstRawIterator;
+	typedef _Iterator<typename Rep::iterator, typename Row::iterator, Element> Iterator;
+	typedef _Iterator<typename Rep::const_iterator, typename Row::const_iterator, const Element> ConstIterator;
 
-	RawIterator rawBegin ()
+	Iterator Begin ()
 	{
-		return RawIterator (_A.begin (), _A.front ().begin (), _A.end ());
+		return Iterator (_matA.begin (), _matA.front ().begin (), _matA.end ());
 	}
-	RawIterator rawEnd ()
+	Iterator End ()
 	{
-		return RawIterator (_A.end (), _A.back ().end (), _A.end ());
+		return Iterator (_matA.end (), _matA.back ().end (), _matA.end ());
 	}
-	ConstRawIterator rawBegin () const
+	ConstIterator Begin () const
 	{
-		return ConstRawIterator (_A.begin (), _A.front ().begin (), _A.end ());
+		return ConstIterator (_matA.begin (), _matA.front ().begin (), _matA.end ());
 	}
-	ConstRawIterator rawEnd () const
+	ConstIterator End () const
 	{
-		return ConstRawIterator (_A.end (), _A.back ().end (), _A.end ());
+		return ConstIterator (_matA.end (), _matA.back ().end (), _matA.end ());
 	}
 
 	template <class RepIterator, class RowIdxIterator>
-	class _RawIndexedIterator {
+	class _IndexedIterator {
 	public:
 		typedef std::pair<size_t, size_t> value_type;
 
-		_RawIndexedIterator (size_t idx, const RepIterator &i, const RowIdxIterator &j, const RepIterator &A_end) :
+		_IndexedIterator (size_t idx, const RepIterator &i, const RowIdxIterator &j, const RepIterator &A_end) :
 			_i (i), _j (j), _A_end (A_end), _r_index (idx), _c_index (0)
 		{
 			if( _i == _A_end ) return;
@@ -1076,14 +1082,14 @@ public:
 			_c_index = _j->second;
 		}
 
-		_RawIndexedIterator (const _RawIndexedIterator &iter) :
+		_IndexedIterator (const _IndexedIterator &iter) :
 			_i (iter._i), _j (iter._j), _A_end (iter._A_end), _r_index (iter._r_index), _c_index (iter._c_index)
 		{}
 
-		_RawIndexedIterator ()
+		_IndexedIterator ()
 		{}
 
-		_RawIndexedIterator &operator = (const _RawIndexedIterator &iter)
+		_IndexedIterator &operator = (const _IndexedIterator &iter)
 		{
 			_A_end = iter._A_end;
 			_i = iter._i;
@@ -1094,17 +1100,17 @@ public:
 			return *this;
 		}
 
-		bool operator == (const _RawIndexedIterator &i) const
+		bool operator == (const _IndexedIterator &i) const
 		{
 			return (_i == i._i) && (_j == i._j);
 		}
 
-		bool operator != (const _RawIndexedIterator &i) const
+		bool operator != (const _IndexedIterator &i) const
 		{
 			return (_i != i._i) || (_j != i._j);
 		}
 
-		_RawIndexedIterator &operator ++ ()
+		_IndexedIterator &operator ++ ()
 		{
 			++_j;
 			while (_j == _i->end ()) {
@@ -1118,14 +1124,14 @@ public:
 			return *this;
 		}
 
-		_RawIndexedIterator operator ++ (int)
+		_IndexedIterator operator ++ (int)
 		{
-			_RawIndexedIterator tmp = *this;
+			_IndexedIterator tmp = *this;
 			++(*this);
 			return tmp;
 		}
 
-		_RawIndexedIterator &operator -- ()
+		_IndexedIterator &operator -- ()
 		{
 			while (_j == _i->begin ()) {
 				_j = (--_i)->end ();
@@ -1137,9 +1143,9 @@ public:
 			return *this;
 		}
 
-		_RawIndexedIterator operator -- (int)
+		_IndexedIterator operator -- (int)
 		{
-			_RawIndexedIterator tmp = *this;
+			_IndexedIterator tmp = *this;
 			--(*this);
 			return tmp;
 		}
@@ -1183,35 +1189,35 @@ public:
 		mutable size_t _c_index;
 	};
 
-	typedef _RawIndexedIterator<typename Rep::iterator, typename Row::iterator> RawIndexedIterator;
-	typedef _RawIndexedIterator<typename Rep::const_iterator, typename Row::const_iterator> ConstRawIndexedIterator;
+	typedef _IndexedIterator<typename Rep::iterator, typename Row::iterator> IndexedIterator;
+	typedef _IndexedIterator<typename Rep::const_iterator, typename Row::const_iterator> ConstIndexedIterator;
 
-	RawIndexedIterator rawIndexedBegin ()
+	IndexedIterator IndexedBegin ()
 	{
-		return RawIndexedIterator (0, _A.begin (), _A.front ().begin (), _A.end ());
+		return IndexedIterator (0, _matA.begin (), _matA.front ().begin (), _matA.end ());
 	}
-	RawIndexedIterator rawIndexedEnd ()
+	IndexedIterator IndexedEnd ()
 	{
-		return RawIndexedIterator (_m, _A.end (), _A.back ().end (), _A.end ());
+		return IndexedIterator (_m, _matA.end (), _matA.back ().end (), _matA.end ());
 	}
-	ConstRawIndexedIterator rawIndexedBegin () const
+	ConstIndexedIterator IndexedBegin () const
 	{
-		return ConstRawIndexedIterator (0, _A.begin (), _A.front ().begin (), _A.end ());
+		return ConstIndexedIterator (0, _matA.begin (), _matA.front ().begin (), _matA.end ());
 	}
-	ConstRawIndexedIterator rawIndexedEnd () const
+	ConstIndexedIterator IndexedEnd () const
 	{
-		return ConstRawIndexedIterator (_m, _A.end (), _A.back ().end (), _A.end ());
+		return ConstIndexedIterator (_m, _matA.end (), _matA.back ().end (), _matA.end ());
 	}
 
 	Row &getRow (size_t i) {
-		return _A[i];
+		return _matA[i];
 	}
 	Row &operator [] (size_t i) {
-		return _A[i];
+		return _matA[i];
 	}
 	ConstRow &operator [] (size_t i) const
 	{
-		return _A[i];
+		return _matA[i];
 	}
 
 	template <class Vector> Vector &columnDensity (Vector &v) const;
@@ -1222,7 +1228,7 @@ protected:
 	friend class SparseMatrixWriteHelper<Element, Row>;
 	friend class SparseMatrixReadWriteHelper<Element, Row>;
 
-	Rep               _A;
+	Rep               _matA;
 	size_t            _m;
 	size_t            _n;
 
@@ -1235,29 +1241,37 @@ template <class _Element, class _Row>
 class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag > {
 public:
 
-	typedef _Element Element;
-	typedef _Row Row;
-	typedef const Row ConstRow;
+	typedef _Element        Element;
+	typedef _Row                Row;
+	typedef const Row      ConstRow;
 	typedef _SP_BB_VECTOR_<Row> Rep;
 
 	template<typename _Tp1, typename _R1 = typename Rebind<_Row,_Tp1>::other >
-	struct rebind
-	{ typedef SparseMatrixBase<typename _Tp1::Element, _R1, VectorCategories::SparseParallelVectorTag> other; };
+	struct rebind {
+		typedef SparseMatrixBase<typename _Tp1::Element, _R1, VectorCategories::SparseParallelVectorTag> other;
+	};
 
 	SparseMatrixBase (size_t m, size_t n) :
-		_A (m), _m (m), _n (n)
+		_matA (m), _m (m), _n (n)
 	{}
+
+	template<class Field>
+	SparseMatrixBase (Field & F, size_t m, size_t n) :
+		_matA (m), _m (m), _n (n)
+	{}
+
+
 	SparseMatrixBase (const SparseMatrixBase<Element, Row> &A) :
-		_A (A._A), _m (A._m), _n (A._n)
+		_matA (A._matA), _m (A._m), _n (A._n)
 	{}
 
 	template<class VectorType>
 	SparseMatrixBase (const SparseMatrixBase<Element, VectorType> &A) :
-		_A(A._m), _m (A._m), _n (A._n)
+		_matA(A._m), _m (A._m), _n (A._n)
 	{
-		typename Rep::iterator meit = this->_A.begin();
-		typename SparseMatrixBase<Element, VectorType>::Rep::const_iterator copit = A._A.begin();
-		for( ; meit != this->_A.end(); ++meit, ++copit)
+		typename Rep::iterator meit = this->_matA.begin();
+		typename SparseMatrixBase<Element, VectorType>::Rep::const_iterator copit = A._matA.begin();
+		for( ; meit != this->_matA.end(); ++meit, ++copit)
 			LinBox::RawVector<Element>::convert(*meit, *copit);
 	}
 
@@ -1279,7 +1293,7 @@ public:
 	size_t size () const
 	{
 		size_t s(0);
-		for(typename Rep::const_iterator it = _A.begin(); it != _A.end(); ++it)
+		for(typename Rep::const_iterator it = _matA.begin(); it != _matA.end(); ++it)
 			s+= LinBox::RawVector<_Element>::size(*it);
 		return s;
 	}
@@ -1290,22 +1304,25 @@ public:
 		return SparseMatrixReadWriteHelper<Element, Row>::read
 		(*this, is, F, format);
 	}
+
 	std::istream &read (std::istream &is, FileFormatTag format = FORMAT_DETECT)
 	{
 		return SparseMatrixReadWriteHelper<Element, Row>::read
 		(*this, is, SparseMatrixReadWriteHelper<Element, Row>::NoField (),
 		 format);
 	}
+
 	template <class Field>
 	std::ostream &write (std::ostream &os, const Field &F, FileFormatTag format = FORMAT_PRETTY) const
 	{
 		return SparseMatrixReadWriteHelper<Element, Row>::write
 		(*this, os, F, format);
 	}
+
 	std::ostream &write (std::ostream &os, FileFormatTag format = FORMAT_PRETTY) const
 	{
 		return SparseMatrixReadWriteHelper<Element, Row>::write
-		(*this, os, SparseMatrixReadWriteHelper<Element, Row>::NoField (),
+		(*this, os, typename SparseMatrixReadWriteHelper<Element, Row>::NoField (),
 		 format);
 	}
 
@@ -1322,27 +1339,27 @@ public:
 
 	ConstRowIterator rowBegin () const
 	{
-		return _A.begin ();
+		return _matA.begin ();
 	}
 	ConstRowIterator rowEnd () const
 	{
-		return _A.end ();
+		return _matA.end ();
 	}
 	RowIterator rowBegin ()
 	{
-		return _A.begin ();
+		return _matA.begin ();
 	}
 	RowIterator rowEnd ()
 	{
-		return _A.end ();
+		return _matA.end ();
 	}
 
 	template <class RepIterator, class RowEltIterator, class _I_Element>
-	class _RawIterator {
+	class _Iterator {
 	public:
 		typedef _I_Element value_type;
 
-		_RawIterator (const RepIterator &i, const RowEltIterator &j, const RepIterator &A_end) :
+		_Iterator (const RepIterator &i, const RowEltIterator &j, const RepIterator &A_end) :
 			_i (i), _j (j), _A_end (A_end)
 		{
 			if( _i == _A_end ) return;
@@ -1352,13 +1369,13 @@ public:
 			}
 		}
 
-		_RawIterator (const _RawIterator &iter) :
+		_Iterator (const _Iterator &iter) :
 			_i (iter._i), _j (iter._j), _A_end (iter._A_end)
 		{}
 
-		_RawIterator () {}
+		_Iterator () {}
 
-		_RawIterator &operator = (const _RawIterator &iter)
+		_Iterator &operator = (const _Iterator &iter)
 		{
 			_i = iter._i;
 			_j = iter._j;
@@ -1367,17 +1384,17 @@ public:
 			return *this;
 		}
 
-		bool operator == (const _RawIterator &i) const
+		bool operator == (const _Iterator &i) const
 		{
 			return (_i == i._i) && (_j == i._j);
 		}
 
-		bool operator != (const _RawIterator &i) const
+		bool operator != (const _Iterator &i) const
 		{
 			return (_i != i._i) || (_j != i._j);
 		}
 
-		_RawIterator &operator ++ ()
+		_Iterator &operator ++ ()
 		{
 			++_j;
 			while( _j == _i->second.end() ) {
@@ -1387,14 +1404,14 @@ public:
 			return *this;
 		}
 
-		_RawIterator operator ++ (int)
+		_Iterator operator ++ (int)
 		{
-			_RawIterator tmp = *this;
+			_Iterator tmp = *this;
 			++(*this);
 			return tmp;
 		}
 
-		_RawIterator &operator -- ()
+		_Iterator &operator -- ()
 		{
 			while (_j == _i->second.begin ())
 				_j = (--_i)->second.end ();
@@ -1402,9 +1419,9 @@ public:
 			return *this;
 		}
 
-		_RawIterator operator -- (int)
+		_Iterator operator -- (int)
 		{
-			_RawIterator tmp = *this;
+			_Iterator tmp = *this;
 			--(*this);
 			return tmp;
 		}
@@ -1424,33 +1441,33 @@ public:
 		RepIterator _A_end;
 	};
 
-	typedef _RawIterator<typename Rep::iterator, typename Row::second_type::iterator, Element> RawIterator;
-	typedef _RawIterator<typename Rep::const_iterator, typename Row::second_type::const_iterator, const Element> ConstRawIterator;
+	typedef _Iterator<typename Rep::iterator, typename Row::second_type::iterator, Element> Iterator;
+	typedef _Iterator<typename Rep::const_iterator, typename Row::second_type::const_iterator, const Element> ConstIterator;
 
-	RawIterator rawBegin ()
+	Iterator Begin ()
 	{
-		return RawIterator (_A.begin (), _A.front ().second.begin (), _A.end ());
+		return Iterator (_matA.begin (), _matA.front ().second.begin (), _matA.end ());
 	}
-	RawIterator rawEnd ()
+	Iterator End ()
 	{
-		return RawIterator (_A.end (), _A.back ().second.end (), _A.end ());
+		return Iterator (_matA.end (), _matA.back ().second.end (), _matA.end ());
 	}
-	ConstRawIterator rawBegin () const
+	ConstIterator Begin () const
 	{
-		return ConstRawIterator (_A.begin (), _A.front ().second.begin (), _A.end ());
+		return ConstIterator (_matA.begin (), _matA.front ().second.begin (), _matA.end ());
 	}
-	ConstRawIterator rawEnd () const
+	ConstIterator End () const
 	{
-		return ConstRawIterator (_A.end (), _A.back ().second.end (), _A.end ());
+		return ConstIterator (_matA.end (), _matA.back ().second.end (), _matA.end ());
 	}
 
 	template <class RepIterator, class RowIdxIterator>
-	class _RawIndexedIterator {
+	class _IndexedIterator {
 	public:
 		typedef typename RepIterator::value_type::second_type::value_type value_type;
 
 		// Dan Roche 7-6-05 Fixed a seg fault this code was causing
-		_RawIndexedIterator (size_t idx, const RepIterator &i, const RowIdxIterator &j, const RepIterator &A_end) :
+		_IndexedIterator (size_t idx, const RepIterator &i, const RowIdxIterator &j, const RepIterator &A_end) :
 			_i (i), _j (j), _A_end (A_end), _r_index (idx), _c_index(0), _value_index(0)
 		{
 			if( _i == _A_end ) return;
@@ -1464,14 +1481,14 @@ public:
 			_value_index = _j-_i->first.begin();
 		}
 
-		_RawIndexedIterator (const _RawIndexedIterator &iter) :
+		_IndexedIterator (const _IndexedIterator &iter) :
 			_i (iter._i), _j (iter._j), _A_end (iter._A_end), _r_index (iter._r_index), _c_index (iter._c_index), _value_index( iter._value_index )
 		{}
 
-		_RawIndexedIterator ()
+		_IndexedIterator ()
 		{}
 
-		_RawIndexedIterator &operator = (const _RawIndexedIterator &iter)
+		_IndexedIterator &operator = (const _IndexedIterator &iter)
 		{
 			_A_end = iter._A_end;
 			_i = iter._i;
@@ -1483,17 +1500,17 @@ public:
 			return *this;
 		}
 
-		bool operator == (const _RawIndexedIterator &i) const
+		bool operator == (const _IndexedIterator &i) const
 		{
 			return (_i == i._i) && (_j == i._j);
 		}
 
-		bool operator != (const _RawIndexedIterator &i) const
+		bool operator != (const _IndexedIterator &i) const
 		{
 			return (_i != i._i) || (_j != i._j);
 		}
 
-		_RawIndexedIterator &operator ++ ()
+		_IndexedIterator &operator ++ ()
 		{
 			if(_j != _i->first.end ()) {
 				++_j ;
@@ -1510,14 +1527,14 @@ public:
 			return *this;
 		}
 
-		_RawIndexedIterator operator ++ (int)
+		_IndexedIterator operator ++ (int)
 		{
-			_RawIndexedIterator tmp = *this;
+			_IndexedIterator tmp = *this;
 			++(*this);
 			return tmp;
 		}
 
-		_RawIndexedIterator &operator -- ()
+		_IndexedIterator &operator -- ()
 		{
 			while (_j == _i->first.begin ()) {
 				_j = (--_i)->first.end ();
@@ -1531,9 +1548,9 @@ public:
 			return *this;
 		}
 
-		_RawIndexedIterator operator -- (int)
+		_IndexedIterator operator -- (int)
 		{
-			_RawIndexedIterator tmp = *this;
+			_IndexedIterator tmp = *this;
 			--(*this);
 			return tmp;
 		}
@@ -1582,35 +1599,35 @@ public:
 	mutable size_t _value_index;
 	};
 
-	typedef _RawIndexedIterator<typename Rep::iterator, typename Row::first_type::iterator> RawIndexedIterator;
-	typedef _RawIndexedIterator<typename Rep::const_iterator, typename Row::first_type::const_iterator> ConstRawIndexedIterator;
+	typedef _IndexedIterator<typename Rep::iterator, typename Row::first_type::iterator> IndexedIterator;
+	typedef _IndexedIterator<typename Rep::const_iterator, typename Row::first_type::const_iterator> ConstIndexedIterator;
 
-	RawIndexedIterator rawIndexedBegin ()
+	IndexedIterator IndexedBegin ()
 	{
-		return RawIndexedIterator (0, _A.begin (), _A.front ().first.begin (), _A.end ());
+		return IndexedIterator (0, _matA.begin (), _matA.front ().first.begin (), _matA.end ());
 	}
-	RawIndexedIterator rawIndexedEnd ()
+	IndexedIterator IndexedEnd ()
 	{
-		return RawIndexedIterator (_m, _A.end (), _A.back ().first.end (), _A.end ());
+		return IndexedIterator (_m, _matA.end (), _matA.back ().first.end (), _matA.end ());
 	}
-	ConstRawIndexedIterator rawIndexedBegin () const
+	ConstIndexedIterator IndexedBegin () const
 	{
-		return ConstRawIndexedIterator (0, _A.begin (), _A.front ().first.begin (), _A.end ());
+		return ConstIndexedIterator (0, _matA.begin (), _matA.front ().first.begin (), _matA.end ());
 	}
-	ConstRawIndexedIterator rawIndexedEnd () const
+	ConstIndexedIterator IndexedEnd () const
 	{
-		return ConstRawIndexedIterator (_m, _A.end (), _A.back ().first.end (), _A.end ());
+		return ConstIndexedIterator (_m, _matA.end (), _matA.back ().first.end (), _matA.end ());
 	}
 
 	Row &getRow (size_t i) {
-		return _A[i];
+		return _matA[i];
 	}
 	Row &operator [] (size_t i) {
-		return _A[i];
+		return _matA[i];
 	}
 	ConstRow &operator [] (size_t i) const
 	{
-		return _A[i];
+		return _matA[i];
 	}
 
 	template <class Vector> Vector &columnDensity (Vector &v) const;
@@ -1621,7 +1638,7 @@ protected:
 	friend class SparseMatrixWriteHelper<Element, Row>;
 	friend class SparseMatrixReadWriteHelper<Element, Row>;
 
-	Rep               _A;
+	Rep               _matA;
 	size_t            _m;
 	size_t            _n;
 

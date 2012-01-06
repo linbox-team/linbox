@@ -204,20 +204,20 @@ namespace LinBox
 		ConstColIterator colEnd () const;
 		//@}
 
-		/**  RawIterator.
+		/**  Iterator.
 		 * The raw iterator is a method for accessing all entries in the matrix
 		 * in some unspecified order. This can be used, e.g. to reduce all
 		 * matrix entries modulo a prime before passing the matrix into an
 		 * algorithm.
 		 */
 		//@{
-		class RawIterator;
-		class ConstRawIterator;
+		class Iterator;
+		class ConstIterator;
 
-		RawIterator rawBegin ();
-		RawIterator rawEnd ();
-		ConstRawIterator rawBegin () const;
-		ConstRawIterator rawEnd () const;
+		Iterator Begin ();
+		Iterator End ();
+		ConstIterator Begin () const;
+		ConstIterator End () const;
 		//@}
 
 		/** Like the raw iterator, the indexed iterator is a method for
@@ -228,13 +228,13 @@ namespace LinBox
 		 * This is provided through it's \c rowIndex() and \c colIndex() functions.
 		 */
 		//@{
-		class RawIndexedIterator;
-		typedef const RawIndexedIterator ConstRawIndexedIterator;
+		class IndexedIterator;
+		typedef const IndexedIterator ConstIndexedIterator;
 
-		RawIndexedIterator rawIndexedBegin();
-		RawIndexedIterator rawIndexedEnd();
-		ConstRawIndexedIterator rawIndexedBegin() const;
-		ConstRawIndexedIterator rawIndexedEnd() const;
+		IndexedIterator IndexedBegin();
+		IndexedIterator IndexedEnd();
+		ConstIndexedIterator IndexedBegin() const;
+		ConstIndexedIterator IndexedEnd() const;
 		//@}
 
 		/** Retrieve a reference to a row.

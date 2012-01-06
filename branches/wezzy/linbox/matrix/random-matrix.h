@@ -33,7 +33,7 @@
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/randiter/random-integer.h"
 #include "linbox/randiter/random-prime.h"
-#include "linbox/matrix/matrix-permutation.h"
+#include "linbox/matrix/permutation-matrix.h"
 #include "linbox/algorithms/blas-domain.h"
 
 #include "linbox/algorithms/cra-domain.h"
@@ -141,7 +141,7 @@ namespace LinBox
 	void RandomBlasPermutation(BlasPermutation<size_t> & P) ;
 }
 
-#include <linbox/matrix/random-matrix.inl>
+#include "linbox/matrix/random-matrix.inl"
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // vim:sts=8:sw=8:ts=8:noet:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

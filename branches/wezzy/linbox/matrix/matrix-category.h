@@ -25,15 +25,21 @@
 #ifndef __LINBOX_matrix_category_H
 #define __LINBOX_matrix_category_H
 
-#include <linbox/matrix/sparse.h>
-#include <linbox/matrix/dense.h>
+#include "linbox/matrix/sparse.h"
+// #include "linbox/matrix/blas-matrix.h"
 
-#include <linbox/blackbox/sparse.h>
-#include <linbox/blackbox/dense.h>
+#include "linbox/blackbox/sparse.h"
 
 
 namespace LinBox
 {
+
+	template<class _Field>
+	class BlasMatrix ;
+
+	template<class _Field>
+	class BlasSubmatrix ;
+
 
 	struct MatrixContainerCategory {
 		struct BlasContainer{};
@@ -47,22 +53,34 @@ namespace LinBox
 		typedef MatrixContainerCategory::Blackbox Type;
 	};
 
-
-	template <class Element>
-	class MatrixContainerTrait<DenseMatrixBase<Element> > {
+	template <class Field>
+	class MatrixContainerTrait<BlasMatrix<Field> > {
 	public:
-		typedef MatrixContainerCategory::Container Type;
+		typedef MatrixContainerCategory::BlasContainer Type;
+	};
+
+	template <class Field>
+	class MatrixContainerTrait<const BlasMatrix<Field> > {
+	public:
+		typedef MatrixContainerCategory::BlasContainer Type;
+	};
+
+#if 0
+	template <class Field>
+	class MatrixContainerTrait<BlasMatrix<Field> > {
+	public:
+		typedef MatrixContainerCategory::BlasContainer Type;
+	};
+#endif
+
+	template <class Field>
+	class MatrixContainerTrait<const BlasSubmatrix<Field> > {
+	public:
+		typedef MatrixContainerCategory::BlasContainer Type;
 	};
 
 	template <class Element>
 	class MatrixContainerTrait<SparseMatrixBase<Element> > {
-	public:
-		typedef MatrixContainerCategory::Container Type;
-	};
-
-
-	template <class Field>
-	class MatrixContainerTrait<DenseMatrix<Field> > {
 	public:
 		typedef MatrixContainerCategory::Container Type;
 	};

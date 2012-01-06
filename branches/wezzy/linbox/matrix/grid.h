@@ -94,7 +94,7 @@ namespace LinBox
 	class Grid {
 
 	public:
-		Field _F;
+		Field _field;
 		size_t _n;
 		size_t _m;
 		vector<int> rowOcc;
@@ -111,7 +111,7 @@ namespace LinBox
 		 * file is sorted in sms format
 		 */
 		Grid (Field F, istream& in, vector<int>& mR, vector<int>& mC) :
-			_F(F)
+			_field(F)
 		{
 			read(F, in, mR, mC);
 			in >> _m >> _n;
@@ -289,7 +289,7 @@ namespace LinBox
 				Q.pop();
 				if (rowOcc[i]==1) {//if row not deleted
 					size_t j = A[i]->getJ();
-					Element x; _F.init(x, A[i]->getX());
+					Element x; _field.init(x, A[i]->getX());
 					if (mC[j]==1) {//if col deleted (not needed as we delete at once)
 						mR[i]=2;
 					}
@@ -324,9 +324,9 @@ namespace LinBox
 					if (rowOcc[i]==2) {
 						//std::cout << "2 row found " << i <<"\n" << std::flush;
 						j1 = A[i]->getJ();
-						_F.init(x1,A[i]->getX());
+						_field.init(x1,A[i]->getX());
 						j2 = A[i]->next->getJ();
-						_F.init(x2,A[i]->next->getX());
+						_field.init(x2,A[i]->next->getX());
 						if ((abs(x1)==1/*rowGcd[i]*/) && (abs(x1)== 1/*colGcd[j1]*/)) {
 							if ((abs(x2)== 1/*rowGcd[i]*/) && (abs(x2)==1/*colGcd[j2]*/) && (colOcc[j1]> colOcc[j2])) {
 								size_t jj = j1;
@@ -358,7 +358,7 @@ namespace LinBox
 					mC[j1]=1;
 					++rank;
 					mR[row2]=1;
-					_F.init(x, -x2/x1);
+					_field.init(x, -x2/x1);
 					//std::cout << "found " << j1 << "," << x2 << "," << j2 << "," << x2 << "\n"<< std::flush;
 					////std::cout << "reducing column " << j2+1 << " by  (" << j1+1 << "," << x << "}\n" << std::flush;
 					//std::cout << "row " << row2 << "\n"<<std::flush;
@@ -373,12 +373,12 @@ namespace LinBox
 							p2 = p2next;
 							p2next = p2next->up;
 						}
-						Element y; _F.init(y, p1->getX());
+						Element y; _field.init(y, p1->getX());
 						Element z;
 						if ((p2next!= NULL) && (p2next->getI()==p1->getI()) ) {
 							//std::cout << "updating " << p2next->getI() << " row" << std::flush;
-							_F.init (z, x*y)	;
-							_F.addin(z, p2next->getX());
+							_field.init (z, x*y)	;
+							_field.addin(z, p2next->getX());
 							if (z==0) {
 								//std::cout << ".....deleting \n" << std::flush;
 								p2next = deleteElement(p2next);
@@ -392,7 +392,7 @@ namespace LinBox
 						}
 						else {
 							//std::cout << "adding " << p1->getI() << " row\n" << std::flush;
-							_F.init(z, x*y);
+							_field.init(z, x*y);
 							ijElement<Element> X(p1->getI(), j2, z);
 							p2=addElement(p2, X);
 						}
@@ -443,7 +443,7 @@ namespace LinBox
 										jnext_pts.push_back(pair<Element, GridElement<Element>*>  (x1, AT[j]));
 									}
 									min_col = colOcc[r_p->getJ()];
-									_F.init(x1, r_p->getX());
+									_field.init(x1, r_p->getX());
 									j = r_p->getJ();
 								}
 								else {
@@ -481,19 +481,19 @@ namespace LinBox
 								typename vector<pair< Element, GridElement<Element>*> >::iterator p2next = jnext_pts.begin();
 								for (; p2 != j_pts.end(); ++p2, ++p2next) {
 									//std::cout << "eliminating column " << p2->first << "\n" << std::flush;
-									Element x; _F.init(x, -(p2next->first)/x1);
+									Element x; _field.init(x, -(p2next->first)/x1);
 
 									while (p2next->second != NULL) {
 										if (p2next->second->getI() >= p1->getI()) break;
 										p2->second = p2next->second;
 										p2next->second = p2next->second->up;
 									}
-									Element y; _F.init(y, p1->getX());
+									Element y; _field.init(y, p1->getX());
 									Element z;
 									if ((p2next->second!= NULL) && (p2next->second->getI()==p1->getI()) ) {
 										//std::cout << "updating " << p2next->second->getI() << " row" << std::flush;
-										_F.init (z, x*y)        ;
-										_F.addin(z, p2next->second->getX());
+										_field.init (z, x*y)        ;
+										_field.addin(z, p2next->second->getX());
 										if (z==0) {
 											//std::cout << ".....deleting \n" << std::flush;
 											p2next->second = deleteElement(p2next->second);
@@ -507,7 +507,7 @@ namespace LinBox
 									}
 									else {
 										//std::cout << "adding " << p1->getI() << " row\n" << std::flush;
-										_F.init(z, x*y);
+										_field.init(z, x*y);
 										ijElement<Element> X(p1->getI(), p2->first, z);
 										p2->second=addElement(p2->second, X);
 									}
