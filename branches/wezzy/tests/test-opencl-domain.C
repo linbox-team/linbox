@@ -19,8 +19,9 @@
  * @test NO DOC
  */
 
-#include <iostream>
 #include <string>
+#include <iostream>
+#include <pthread.h>
 
 #include <linbox/field/modular.h>
 #include <linbox/matrix/blas-matrix.h>
@@ -35,193 +36,15 @@ using namespace LinBox;
 
 const int maxpretty = 35;
 
-string blank;
-
-const char* pretty(string a) {
-	blank = "     " + a;
+const char* pretty(std::string a) {
+	std::string blank;
+	blank = a;
 	int msgsize= maxpretty - (int)blank.size();
-	string dot(".");
-	for (int i=0;i<msgsize ;++i)
-		 blank+=dot;
-	 return blank.c_str();
-}
-
-template <class Field>
-static bool testAdd(const Field& F, size_t n, int iterations){
-	typedef typename Field::Element Element;
-	typedef typename Field::RandIter RandIter;
-	typedef BlasMatrix<Element> Matrix;
-
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator.start(pretty("Testing add"),"testAdd",iterations);
-
-	RandIter G(F);
-	bool ret = true;
-	BlasMatrixDomain<Field> BMD(F);
-	OpenCLMatrixDomain<Field> OMD(F);
-
-	for(int i = 0; i < iterations; i++){
-		commentator.progress(i);
-		Matrix A(n,n);
-		Matrix B(n,n);
-		Matrix C_b(n,n);
-		Matrix C_o(n,n);
-
-		Element tmp;
-
-		for(size_t k = 0; k < n; k++){
-			for(size_t j = 0; j < n; j++){
-				A.setEntry(k,j,G.random(tmp));
-				B.setEntry(k,j,G.random(tmp));
-			}
-		}
-
-		BMD.add(C_b,A,B);
-		OMD.add(C_o,A,B);
-
-		if(!OMD.areEqual(C_b,C_o)){
-			ret = false;
-		}
+	std::string dot(".");
+	for(int i=0;i<msgsize ;++i){
+		blank += dot;
 	}
-
-	commentator.stop(MSG_STATUS(ret), (const char*)0, "testAdd");
-
-	return ret;
-}
-
-template <class Field>
-static bool testSub(const Field& F, size_t n, int iterations){
-	typedef typename Field::Element Element;
-	typedef typename Field::RandIter RandIter;
-	typedef BlasMatrix<Element> Matrix;
-
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator.start(pretty("Testing sub"),"testSub",iterations);
-
-	RandIter G(F);
-	bool ret = true;
-	BlasMatrixDomain<Field> BMD(F);
-	OpenCLMatrixDomain<Field> OMD(F);
-
-	for(int i = 0; i < iterations; i++){
-		commentator.progress(i);
-		Matrix A(n,n);
-		Matrix B(n,n);
-		Matrix C_b(n,n);
-		Matrix C_o(n,n);
-
-		Element tmp;
-
-		for(size_t k = 0; k < n; k++){
-			for(size_t j = 0; j < n; j++){
-				A.setEntry(k,j,G.random(tmp));
-				B.setEntry(k,j,G.random(tmp));
-			}
-		}
-
-		BMD.sub(C_b,A,B);
-		OMD.sub(C_o,A,B);
-
-		if(!OMD.areEqual(C_b,C_o)){
-			ret = false;
-		}
-	}
-
-	commentator.stop(MSG_STATUS(ret), (const char*)0, "testSub");
-
-	return ret;
-}
-
-template <class Field>
-static bool testAddin(const Field& F, size_t n, int iterations){
-	typedef typename Field::Element Element;
-	typedef typename Field::RandIter RandIter;
-	typedef BlasMatrix<Element> Matrix;
-
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator.start(pretty("Testing addin"),"testAddin",iterations);
-
-	RandIter G(F);
-	bool ret = true;
-	BlasMatrixDomain<Field> BMD(F);
-	OpenCLMatrixDomain<Field> OMD(F);
-
-	for(int i = 0; i < iterations; i++){
-		commentator.progress(i);
-		Matrix A(n,n);
-		Matrix B_b(n,n);
-		Matrix B_o(n,n);
-
-		Element tmp;
-
-		for(size_t k = 0; k < n; k++){
-			for(size_t j = 0; j < n; j++){
-				A.setEntry(k,j,G.random(tmp));
-				B_b.setEntry(k,j,G.random(tmp));
-			}
-		}
-
-		B_o = B_b;
-
-		BMD.addin(B_b,A);
-		OMD.addin(B_o,A);
-
-		if(!OMD.areEqual(B_b,B_o)){
-			ret = false;
-		}
-	}
-
-	commentator.stop(MSG_STATUS(ret), (const char*)0, "testAddin");
-
-	return ret;
-}
-
-template <class Field>
-static bool testSubin(const Field& F, size_t n, int iterations){
-	typedef typename Field::Element Element;
-	typedef typename Field::RandIter RandIter;
-	typedef BlasMatrix<Element> Matrix;
-
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDepth(3);
-	commentator.getMessageClass(INTERNAL_DESCRIPTION).setMaxDetailLevel(Commentator::LEVEL_NORMAL);
-	commentator.start(pretty("Testing subin"),"testSubin",iterations);
-
-	RandIter G(F);
-	bool ret = true;
-	BlasMatrixDomain<Field> BMD(F);
-	OpenCLMatrixDomain<Field> OMD(F);
-
-	for(int i = 0; i < iterations; i++){
-		commentator.progress(i);
-		Matrix A(n,n);
-		Matrix B_b(n,n);
-		Matrix B_o(n,n);
-
-		Element tmp;
-
-		for(size_t k = 0; k < n; k++){
-			for(size_t j = 0; j < n; j++){
-				A.setEntry(k,j,G.random(tmp));
-				B_b.setEntry(k,j,G.random(tmp));
-			}
-		}
-
-		B_o = B_b;
-
-		BMD.subin(B_b,A);
-		OMD.subin(B_o,A);
-
-		if(!OMD.areEqual(B_b,B_o)){
-			ret = false;
-		}
-	}
-
-	commentator.stop(MSG_STATUS(ret), (const char*)0, "testSubin");
-
-	return ret;
+	return blank.c_str();
 }
 
 template <class Field>
@@ -801,18 +624,6 @@ template <class Field>
 int launch_tests(Field& F, int n, int iterations){
 	bool pass = true;
 
-	if(!testAdd(F, n, iterations)){
-		pass = false;
-	}
-	if(!testAddin(F, n, iterations)){
-		pass = false;
-	}
-	if(!testSub(F, n, iterations)){
-		pass = false;
-	}
-	if(!testSubin(F, n, iterations)){
-		pass = false;
-	}
 	if(!testMul(F, n, iterations)){
 		pass = false;
 	}

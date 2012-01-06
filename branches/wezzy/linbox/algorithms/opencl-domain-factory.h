@@ -23,7 +23,9 @@
 #define __LINBOX_opencl_matrix_domain_factory_H
 
 #include <new>
+#include <iostream>
 #include <cstring>
+#include <pthread.h>
 #include "linbox/algorithms/opencl-domain.h"
 #include "linbox/algorithms/opencl-kernels/opencl-domain-kernels.inl"
 
@@ -60,6 +62,10 @@ namespace LinBox{
 
 		//Count of instances
 		static int countOpenCLMatrixDomain;
+
+		//Mutexes
+		static pthread_mutex_t factoryLock;
+		static pthread_mutex_t* deviceLock;
 
 		/**
 		 * @internal
@@ -262,9 +268,8 @@ namespace LinBox{
 
 			//find length of the kernel
 			size_t kernelLength = strlen(kernel);
-			
-			//Create program from file
 			//size_t kernelLength = fileLength;
+			//Create program from file
 			cl_program program = clCreateProgramWithSource(context, 1,
 				(const char**)&kernel, &kernelLength, &errcode);
 
@@ -363,145 +368,141 @@ namespace LinBox{
 			maxBufferSize = (unsigned long)maxGlobalMemoryAllocSize;
 
 			//Initialize al kernel compilation flags to false
-			for(int i = 0; i < 22; i++){
+			for(int i = 0; i < 20; i++){
 				dpKernelsAvailable[i] = false;
 				spKernelsAvailable[i] = false;
 			}
 
+			cl_int tempErrcode = errcode;
+
 			//Compile all of the kernels
 			if(errcode == CL_SUCCESS){
-				dpKernels[0] = oclCreateKernel(addKernelModularDP, "addKernelModularDP");
+				dpKernels[0] = oclCreateKernel(matrixMulKernelModular1DP, "matrixMulKernelModular1DP");
 				if(errcode == CL_SUCCESS){dpKernelsAvailable[0] = true;}
 
-				dpKernels[1] = oclCreateKernel(subKernelModularDP, "subKernelModularDP");
+				dpKernels[1] = oclCreateKernel(matrixMulKernelModular8DP, "matrixMulKernelModular8DP");
 				if(errcode == CL_SUCCESS){dpKernelsAvailable[1] = true;}
 
-				dpKernels[2] = oclCreateKernel(matrixMulKernelModular1DP, "matrixMulKernelModular1DP");
+				dpKernels[2] = oclCreateKernel(matrixMulKernelModular32DP, "matrixMulKernelModular32DP");
 				if(errcode == CL_SUCCESS){dpKernelsAvailable[2] = true;}
 
-				dpKernels[3] = oclCreateKernel(matrixMulKernelModular8DP, "matrixMulKernelModular8DP");
+				dpKernels[3] = oclCreateKernel(matrixMulKernelModular1024DP, "matrixMulKernelModular1024DP");
 				if(errcode == CL_SUCCESS){dpKernelsAvailable[3] = true;}
 
-				dpKernels[4] = oclCreateKernel(matrixMulKernelModular32DP, "matrixMulKernelModular32DP");
+				dpKernels[4] = oclCreateKernel(matrixMuladdKernelModular1DP, "matrixMuladdKernelModular1DP");
 				if(errcode == CL_SUCCESS){dpKernelsAvailable[4] = true;}
 
-				dpKernels[5] = oclCreateKernel(matrixMulKernelModular1024DP, "matrixMulKernelModular1024DP");
+				dpKernels[5] = oclCreateKernel(matrixMuladdKernelModular8DP, "matrixMuladdKernelModular8DP");
 				if(errcode == CL_SUCCESS){dpKernelsAvailable[5] = true;}
 
-				dpKernels[6] = oclCreateKernel(matrixMuladdKernelModular1DP, "matrixMuladdKernelModular1DP");
+				dpKernels[6] = oclCreateKernel(matrixMuladdKernelModular32DP, "matrixMuladdKernelModular32DP");
 				if(errcode == CL_SUCCESS){dpKernelsAvailable[6] = true;}
 
-				dpKernels[7] = oclCreateKernel(matrixMuladdKernelModular8DP, "matrixMuladdKernelModular8DP");
+				dpKernels[7] = oclCreateKernel(matrixMuladdKernelModular1024DP, "matrixMuladdKernelModular1024DP");
 				if(errcode == CL_SUCCESS){dpKernelsAvailable[7] = true;}
 
-				dpKernels[8] = oclCreateKernel(matrixMuladdKernelModular32DP, "matrixMuladdKernelModular32DP");
+				dpKernels[8] = oclCreateKernel(matrixAxpyKernelModular1DP, "matrixAxpyKernelModular1DP");
 				if(errcode == CL_SUCCESS){dpKernelsAvailable[8] = true;}
 
-				dpKernels[9] = oclCreateKernel(matrixMuladdKernelModular1024DP, "matrixMuladdKernelModular1024DP");
+				dpKernels[9] = oclCreateKernel(matrixAxpyKernelModular8DP, "matrixAxpyKernelModular8DP");
 				if(errcode == CL_SUCCESS){dpKernelsAvailable[9] = true;}
 
-				dpKernels[10] = oclCreateKernel(matrixAxpyKernelModular1DP, "matrixAxpyKernelModular1DP");
+				dpKernels[10] = oclCreateKernel(matrixAxpyKernelModular32DP, "matrixAxpyKernelModular32DP");
 				if(errcode == CL_SUCCESS){dpKernelsAvailable[10] = true;}
 
-				dpKernels[11] = oclCreateKernel(matrixAxpyKernelModular8DP, "matrixAxpyKernelModular8DP");
+				dpKernels[11] = oclCreateKernel(matrixAxpyKernelModular1024DP, "matrixAxpyKernelModular1024DP");
 				if(errcode == CL_SUCCESS){dpKernelsAvailable[11] = true;}
 
-				dpKernels[12] = oclCreateKernel(matrixAxpyKernelModular32DP, "matrixAxpyKernelModular32DP");
+				dpKernels[12] = oclCreateKernel(matrixMaxpyKernelModular1DP, "matrixMaxpyKernelModular1DP");
 				if(errcode == CL_SUCCESS){dpKernelsAvailable[12] = true;}
 
-				dpKernels[13] = oclCreateKernel(matrixAxpyKernelModular1024DP, "matrixAxpyKernelModular1024DP");
+				dpKernels[13] = oclCreateKernel(matrixMaxpyKernelModular8DP, "matrixMaxpyKernelModular8DP");
 				if(errcode == CL_SUCCESS){dpKernelsAvailable[13] = true;}
 
-				dpKernels[14] = oclCreateKernel(matrixMaxpyKernelModular1DP, "matrixMaxpyKernelModular1DP");
+				dpKernels[14] = oclCreateKernel(matrixMaxpyKernelModular32DP, "matrixMaxpyKernelModular32DP");
 				if(errcode == CL_SUCCESS){dpKernelsAvailable[14] = true;}
 
-				dpKernels[15] = oclCreateKernel(matrixMaxpyKernelModular8DP, "matrixMaxpyKernelModular8DP");
+				dpKernels[15] = oclCreateKernel(matrixMaxpyKernelModular1024DP, "matrixMaxpyKernelModular1024DP");
 				if(errcode == CL_SUCCESS){dpKernelsAvailable[15] = true;}
 
-				dpKernels[16] = oclCreateKernel(matrixMaxpyKernelModular32DP, "matrixMaxpyKernelModular32DP");
+				dpKernels[16] = oclCreateKernel(matrixAxmyKernelModular1DP, "matrixAxmyKernelModular1DP");
 				if(errcode == CL_SUCCESS){dpKernelsAvailable[16] = true;}
 
-				dpKernels[17] = oclCreateKernel(matrixMaxpyKernelModular1024DP, "matrixMaxpyKernelModular1024DP");
+				dpKernels[17] = oclCreateKernel(matrixAxmyKernelModular8DP, "matrixAxmyKernelModular8DP");
 				if(errcode == CL_SUCCESS){dpKernelsAvailable[17] = true;}
 
-				dpKernels[18] = oclCreateKernel(matrixAxmyKernelModular1DP, "matrixAxmyKernelModular1DP");
+				dpKernels[18] = oclCreateKernel(matrixAxmyKernelModular32DP, "matrixAxmyKernelModular32DP");
 				if(errcode == CL_SUCCESS){dpKernelsAvailable[18] = true;}
 
-				dpKernels[19] = oclCreateKernel(matrixAxmyKernelModular8DP, "matrixAxmyKernelModular8DP");
+				dpKernels[19] = oclCreateKernel(matrixAxmyKernelModular1024DP, "matrixAxmyKernelModular1024DP");
 				if(errcode == CL_SUCCESS){dpKernelsAvailable[19] = true;}
 
-				dpKernels[20] = oclCreateKernel(matrixAxmyKernelModular32DP, "matrixAxmyKernelModular32DP");
-				if(errcode == CL_SUCCESS){dpKernelsAvailable[20] = true;}
 
-				dpKernels[21] = oclCreateKernel(matrixAxmyKernelModular1024DP, "matrixAxmyKernelModular1024DP");
-				if(errcode == CL_SUCCESS){dpKernelsAvailable[21] = true;}
-
-
-				spKernels[0] = oclCreateKernel(addKernelModularSP, "addKernelModularSP");
+				spKernels[0] = oclCreateKernel(matrixMulKernelModular1SP, "matrixMulKernelModular1SP");
 				if(errcode == CL_SUCCESS){spKernelsAvailable[0] = true;}
 
-				spKernels[1] = oclCreateKernel(subKernelModularSP, "subKernelModularSP");
+				spKernels[1] = oclCreateKernel(matrixMulKernelModular16SP, "matrixMulKernelModular16SP");
 				if(errcode == CL_SUCCESS){spKernelsAvailable[1] = true;}
 
-				spKernels[2] = oclCreateKernel(matrixMulKernelModular1SP, "matrixMulKernelModular1SP");
+				spKernels[2] = oclCreateKernel(matrixMulKernelModular32SP, "matrixMulKernelModular32SP");
 				if(errcode == CL_SUCCESS){spKernelsAvailable[2] = true;}
 
-				spKernels[3] = oclCreateKernel(matrixMulKernelModular16SP, "matrixMulKernelModular16SP");
+				spKernels[3] = oclCreateKernel(matrixMulKernelModular1024SP, "matrixMulKernelModular1024SP");
 				if(errcode == CL_SUCCESS){spKernelsAvailable[3] = true;}
 
-				spKernels[4] = oclCreateKernel(matrixMulKernelModular32SP, "matrixMulKernelModular32SP");
+				spKernels[4] = oclCreateKernel(matrixMuladdKernelModular1SP, "matrixMuladdKernelModular1SP");
 				if(errcode == CL_SUCCESS){spKernelsAvailable[4] = true;}
 
-				spKernels[5] = oclCreateKernel(matrixMulKernelModular1024SP, "matrixMulKernelModular1024SP");
+				spKernels[5] = oclCreateKernel(matrixMuladdKernelModular16SP, "matrixMuladdKernelModular16SP");
 				if(errcode == CL_SUCCESS){spKernelsAvailable[5] = true;}
 
-				spKernels[6] = oclCreateKernel(matrixMuladdKernelModular1SP, "matrixMuladdKernelModular1SP");
+				spKernels[6] = oclCreateKernel(matrixMuladdKernelModular32SP, "matrixMuladdKernelModular32SP");
 				if(errcode == CL_SUCCESS){spKernelsAvailable[6] = true;}
 
-				spKernels[7] = oclCreateKernel(matrixMuladdKernelModular16SP, "matrixMuladdKernelModular16SP");
+				spKernels[7] = oclCreateKernel(matrixMuladdKernelModular1024SP, "matrixMuladdKernelModular1024SP");
 				if(errcode == CL_SUCCESS){spKernelsAvailable[7] = true;}
 
-				spKernels[8] = oclCreateKernel(matrixMuladdKernelModular32SP, "matrixMuladdKernelModular32SP");
+				spKernels[8] = oclCreateKernel(matrixAxpyKernelModular1SP, "matrixAxpyKernelModular1SP");
 				if(errcode == CL_SUCCESS){spKernelsAvailable[8] = true;}
 
-				spKernels[9] = oclCreateKernel(matrixMuladdKernelModular1024SP, "matrixMuladdKernelModular1024SP");
+				spKernels[9] = oclCreateKernel(matrixAxpyKernelModular16SP, "matrixAxpyKernelModular16SP");
 				if(errcode == CL_SUCCESS){spKernelsAvailable[9] = true;}
 
-				spKernels[10] = oclCreateKernel(matrixAxpyKernelModular1SP, "matrixAxpyKernelModular1SP");
+				spKernels[10] = oclCreateKernel(matrixAxpyKernelModular32SP, "matrixAxpyKernelModular32SP");
 				if(errcode == CL_SUCCESS){spKernelsAvailable[10] = true;}
 
-				spKernels[11] = oclCreateKernel(matrixAxpyKernelModular16SP, "matrixAxpyKernelModular16SP");
+				spKernels[11] = oclCreateKernel(matrixAxpyKernelModular1024SP, "matrixAxpyKernelModular1024SP");
 				if(errcode == CL_SUCCESS){spKernelsAvailable[11] = true;}
 
-				spKernels[12] = oclCreateKernel(matrixAxpyKernelModular32SP, "matrixAxpyKernelModular32SP");
+				spKernels[12] = oclCreateKernel(matrixMaxpyKernelModular1SP, "matrixMaxpyKernelModular1SP");
 				if(errcode == CL_SUCCESS){spKernelsAvailable[12] = true;}
 
-				spKernels[13] = oclCreateKernel(matrixAxpyKernelModular1024SP, "matrixAxpyKernelModular1024SP");
+				spKernels[13] = oclCreateKernel(matrixMaxpyKernelModular16SP, "matrixMaxpyKernelModular16SP");
 				if(errcode == CL_SUCCESS){spKernelsAvailable[13] = true;}
 
-				spKernels[14] = oclCreateKernel(matrixMaxpyKernelModular1SP, "matrixMaxpyKernelModular1SP");
+				spKernels[14] = oclCreateKernel(matrixMaxpyKernelModular32SP, "matrixMaxpyKernelModular32SP");
 				if(errcode == CL_SUCCESS){spKernelsAvailable[14] = true;}
 
-				spKernels[15] = oclCreateKernel(matrixMaxpyKernelModular16SP, "matrixMaxpyKernelModular16SP");
+				spKernels[15] = oclCreateKernel(matrixMaxpyKernelModular1024SP, "matrixMaxpyKernelModular1024SP");
 				if(errcode == CL_SUCCESS){spKernelsAvailable[15] = true;}
 
-				spKernels[16] = oclCreateKernel(matrixMaxpyKernelModular32SP, "matrixMaxpyKernelModular32SP");
+				spKernels[16] = oclCreateKernel(matrixAxmyKernelModular1SP, "matrixAxmyKernelModular1SP");
 				if(errcode == CL_SUCCESS){spKernelsAvailable[16] = true;}
 
-				spKernels[17] = oclCreateKernel(matrixMaxpyKernelModular1024SP, "matrixMaxpyKernelModular1024SP");
+				spKernels[17] = oclCreateKernel(matrixAxmyKernelModular16SP, "matrixAxmyKernelModular16SP");
 				if(errcode == CL_SUCCESS){spKernelsAvailable[17] = true;}
 
-				spKernels[18] = oclCreateKernel(matrixAxmyKernelModular1SP, "matrixAxmyKernelModular1SP");
+				spKernels[18] = oclCreateKernel(matrixAxmyKernelModular32SP, "matrixAxmyKernelModular32SP");
 				if(errcode == CL_SUCCESS){spKernelsAvailable[18] = true;}
 
-				spKernels[19] = oclCreateKernel(matrixAxmyKernelModular16SP, "matrixAxmyKernelModular16SP");
+				spKernels[19] = oclCreateKernel(matrixAxmyKernelModular1024SP, "matrixAxmyKernelModular1024SP");
 				if(errcode == CL_SUCCESS){spKernelsAvailable[19] = true;}
+			}
 
-				spKernels[20] = oclCreateKernel(matrixAxmyKernelModular32SP, "matrixAxmyKernelModular32SP");
-				if(errcode == CL_SUCCESS){spKernelsAvailable[20] = true;}
-
-				spKernels[21] = oclCreateKernel(matrixAxmyKernelModular1024SP, "matrixAxmyKernelModular1024SP");
-				if(errcode == CL_SUCCESS){spKernelsAvailable[21] = true;}
+			//Set all kernel flags to true for debugging
+			for(int i = 0; i < 20; i++){
+				dpKernelsAvailable[i] = true;
+				spKernelsAvailable[i] = true;
 			}
 
 			//Set all kernel flags to true for debugging
@@ -511,12 +512,16 @@ namespace LinBox{
 			}
 
 			//Check if everthing is setup correctly
+			errcode = tempErrcode;
 			if(errcode != CL_SUCCESS){
 				setupCorrect = false;
 			}
 			else{
 				setupCorrect = true;
 			}
+
+			//Initialize the device mutex
+			pthread_mutex_init(deviceLock, NULL);
 		}
 
 	public:
@@ -526,10 +531,19 @@ namespace LinBox{
 			//Check if the OpenCL environment has been initialized
 			//It will only need to be initialized when the first OpenCLMatrixDomain instance
 			//is created otherwise it will just reuse the environment
+			//Double check locking ensures Singleton
 			if(!initialized){
-				oclEnvironInit();
-				initialized = true;
+				pthread_mutex_lock(&factoryLock);
+
+				if(!initialized){
+					oclEnvironInit();
+					initialized = true;
+				}
+
+				pthread_mutex_unlock(&factoryLock);
 			}
+
+			pthread_mutex_lock(&factoryLock);
 
 			//Copy all of the data required for the OpenCLMatrixDomain instance to function
 			target->context = context;
@@ -545,7 +559,7 @@ namespace LinBox{
 			target->setupCorrect = setupCorrect;
 			target->doubleSupported = doubleSupported;
 
-			for(int i = 0; i < 22; i++){
+			for(int i = 0; i < 20; i++){
 				target->dpKernels[i] = dpKernels[i];
 				target->dpKernelsAvailable[i] = dpKernelsAvailable[i];
 				target->spKernels[i] = spKernels[i];
@@ -558,11 +572,20 @@ namespace LinBox{
 
 			//Increase count of OpenCLMatrixDomain instances
 			countOpenCLMatrixDomain++;
+
+			//Point OpenCLMatrixDomain to the mutex
+			target->deviceLock = deviceLock;
+
+			pthread_mutex_unlock(&factoryLock);
 		}
 
 		static void oclMatrixDomainDestroy(unsigned int IDnum){
+			pthread_mutex_lock(&factoryLock);
+
 			//Decrease count of OpenCLMatrixDomain instances
 			countOpenCLMatrixDomain--;
+
+			pthread_mutex_unlock(&factoryLock);
 		}
 	};
 
@@ -581,12 +604,15 @@ namespace LinBox{
 	bool OpenCLMatrixDomainFactory::doubleSupported = false;
 	bool OpenCLMatrixDomainFactory::initialized = false;
 
-	cl_kernel* OpenCLMatrixDomainFactory::dpKernels = (cl_kernel*)operator new(22 * sizeof(cl_kernel));
-	bool* OpenCLMatrixDomainFactory::dpKernelsAvailable = (bool*)operator new(22 * sizeof(bool));
-	cl_kernel* OpenCLMatrixDomainFactory::spKernels = (cl_kernel*)operator new(22 * sizeof(cl_kernel));
-	bool* OpenCLMatrixDomainFactory::spKernelsAvailable = (bool*)operator new(22 * sizeof(bool));
+	cl_kernel* OpenCLMatrixDomainFactory::dpKernels = (cl_kernel*)operator new(20 * sizeof(cl_kernel));
+	bool* OpenCLMatrixDomainFactory::dpKernelsAvailable = (bool*)operator new(20 * sizeof(bool));
+	cl_kernel* OpenCLMatrixDomainFactory::spKernels = (cl_kernel*)operator new(20 * sizeof(cl_kernel));
+	bool* OpenCLMatrixDomainFactory::spKernelsAvailable = (bool*)operator new(20 * sizeof(bool));
 
 	int OpenCLMatrixDomainFactory::countOpenCLMatrixDomain = 0;
+
+	pthread_mutex_t OpenCLMatrixDomainFactory::factoryLock = PTHREAD_MUTEX_INITIALIZER;
+	pthread_mutex_t* OpenCLMatrixDomainFactory::deviceLock = (pthread_mutex_t*)operator new(sizeof(pthread_mutex_t));
 
 }
 

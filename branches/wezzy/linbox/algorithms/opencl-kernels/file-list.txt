@@ -1,7 +1,3 @@
-kernel-add-matrix-dp.cl
-kernel-add-matrix-sp.cl
-kernel-sub-matrix-dp.cl
-kernel-sub-matrix-sp.cl
 kernel-modulus-dp.cl
 kernel-modulus-sp.cl
 kernel-partial-8-dp.cl

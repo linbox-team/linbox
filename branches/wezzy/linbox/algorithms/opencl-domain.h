@@ -30,6 +30,7 @@
 #define __LINBOX_opencl_matrix_domain_H
 
 #include <iostream>
+#include <pthread.h>
 #include "linbox/algorithms/blas-domain.h"
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/util/debug.h"
@@ -77,13 +78,16 @@ namespace LinBox{
 		bool doubleSupported;
 
 		//Storage for kernels and flags for availability
-		cl_kernel dpKernels[22];
-		bool dpKernelsAvailable[22];
-		cl_kernel spKernels[22];
-		bool spKernelsAvailable[22];
+		cl_kernel dpKernels[20];
+		bool dpKernelsAvailable[20];
+		cl_kernel spKernels[20];
+		bool spKernelsAvailable[20];
 
 		//ID number assigned by OpenCLMatrixDomainFactory
 		unsigned int IDnum;
+
+		//Mutex
+		pthread_mutex_t* deviceLock;
 
 		/**
 		 * @internal
@@ -127,7 +131,7 @@ namespace LinBox{
 		template<typename T, class Operand1>
 		Operand1& oclDepadMatrix(cl_mem matrixBuffer, int matrixBufferSize,
 			int outputSize, int newDimX, Operand1& matrix) const;
-		
+
 		/**
 		 * @internal
 		 * Update the class error code
@@ -153,7 +157,7 @@ namespace LinBox{
 #endif
 
 			//Initialize OpenCL environment
-			oclMatrixDomainInit(); //TODO -- make configure time instead of run time
+			oclMatrixDomainInit();
 		}
 
 		//! Copy constructor
@@ -168,7 +172,7 @@ namespace LinBox{
 #endif
 
 			//Initialize OpenCL environment
-			oclMatrixDomainInit(); //TODO -- make configure time instead of run time
+			oclMatrixDomainInit();
 		}
 
 		//! Deconstructor

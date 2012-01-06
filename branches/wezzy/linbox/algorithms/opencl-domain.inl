@@ -22,6 +22,7 @@
 #ifndef __LINBOX_opencl_matrix_domain_INL
 #define __LINBOX_opencl_matrix_domain_INL
 
+#include <pthread.h>
 #include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/matrix/factorized-matrix.h"
@@ -41,382 +42,6 @@ namespace LinBox
 	 */
 
 	/*
-	 * Specialization of addition over
-	 * a Modular<double> Field
-	 * C = A+B
-	 */
-	template <>
-	template <>
-	BlasMatrix<double>& OpenCLMatrixDomain<Modular<double> >::add<
-		BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(
-		BlasMatrix<double>& C, const BlasMatrix<double>& A, const BlasMatrix<double>& B) const{
-
-		//Compute if the OpenCL device is capable of working with the required ammounts of memory
-		bool memLevelsAllowed = oclMemCheck<
-			cl_double, BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(C,A,B);
-
-		//If it is not capable or not setup properly use default implementation
-		if(!memLevelsAllowed || !setupCorrect || !doubleSupported || !dpKernelsAvailable[0]){
-			return BlasMatrixDomainAdd<
-				Modular<double>,BlasMatrix<double>,BlasMatrix<double>,BlasMatrix<double> >()(_F,C,A,B);
-		}
-
-		//Check dimensions
-		linbox_check( A.coldim() == B.coldim());
-		linbox_check( A.rowdim() == B.rowdim());
-		linbox_check( A.coldim() == C.coldim());
-		linbox_check( A.rowdim() == C.rowdim());
-
-		//Allocate buffers
-		cl_mem bufferC = oclCreateMatrixBuffer<cl_double, BlasMatrix<double> >(C);
-		cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(A);
-		cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(B);
-
-		double p = _F.characteristic();
-
-		cl_kernel selectedKernel = dpKernels[0];
-
-		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-		int widthA = ((A.coldim() + 15) / 16) * 16;
-		int heightA = ((A.rowdim() + 15) / 16) * 16;
-
-		//Pass kernel arguments
-		cl_int tempErrcode;
-		tempErrcode = clSetKernelArg(selectedKernel, 0, sizeof(cl_mem), (void*)&bufferC);
-		tempErrcode = clSetKernelArg(selectedKernel, 1, sizeof(cl_mem), (void*)&bufferA);
-		tempErrcode = clSetKernelArg(selectedKernel, 2, sizeof(cl_mem), (void*)&bufferB);
-		tempErrcode = clSetKernelArg(selectedKernel, 3, sizeof(cl_double), (void*)&p);
-		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
-
-		//Set NDRange
-		size_t localWorkSize[2];
-		size_t globalWorkSize[2];
-		localWorkSize[0] = 256;
-		localWorkSize[1] = 1;
-		globalWorkSize[0] = widthA * heightA;
-		globalWorkSize[1] = 1;
-
-		//Launch kernel
-		tempErrcode = clEnqueueNDRangeKernel(commandQue, selectedKernel, 2, NULL, globalWorkSize,
-			localWorkSize, 0, NULL, NULL);
-		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
-
-		//Block unitl kernel finishes
-		tempErrcode = clFinish(commandQue);
-		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
-
-		//Read back buffer
-		C = oclReadMatrixBuffer<cl_double, BlasMatrix<double> >(bufferC, C);
-
-		//Delete OpenCL buffers
-		tempErrcode = clReleaseMemObject(bufferC);
-		tempErrcode = clReleaseMemObject(bufferA);
-		tempErrcode = clReleaseMemObject(bufferB);
-		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
-
-		return C;
-	}
-
-	/*
-	 * Specialization of addition over
-	 * a Modular<float> Field
-	 * C = A+B
-	 */
-	template <>
-	template <>
-	BlasMatrix<float>& OpenCLMatrixDomain<Modular<float> >::add<
-		BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(
-		BlasMatrix<float>& C, const BlasMatrix<float>& A, const BlasMatrix<float>& B) const{
-
-		//Compute if the OpenCL device is capable of working with the required ammounts of memory
-		bool memLevelsAllowed = oclMemCheck<
-			cl_float, BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(C,A,B);
-
-		//If it is not capable or not setup properly use default implementation
-		if(!memLevelsAllowed || !setupCorrect || !spKernelsAvailable[0]){
-			return BlasMatrixDomainAdd<
-				Modular<float>,BlasMatrix<float>,BlasMatrix<float>,BlasMatrix<float> >()(_F,C,A,B);
-		}
-
-		//Check dimensions
-		linbox_check( A.coldim() == B.coldim());
-		linbox_check( A.rowdim() == B.rowdim());
-		linbox_check( A.coldim() == C.coldim());
-		linbox_check( A.rowdim() == C.rowdim());
-
-		//Allocate buffers
-		cl_mem bufferC = oclCreateMatrixBuffer<cl_float, BlasMatrix<float> >(C);
-		cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(A);
-		cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(B);
-
-		float p = _F.characteristic();
-
-		cl_kernel selectedKernel = spKernels[0];
-
-		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-		int widthA = ((A.coldim() + 15) / 16) * 16;
-		int heightA = ((A.rowdim() + 15) / 16) * 16;
-
-		//Pass kernel arguments
-		cl_int tempErrcode;
-		tempErrcode = clSetKernelArg(selectedKernel, 0, sizeof(cl_mem), (void*)&bufferC);
-		tempErrcode = clSetKernelArg(selectedKernel, 1, sizeof(cl_mem), (void*)&bufferA);
-		tempErrcode = clSetKernelArg(selectedKernel, 2, sizeof(cl_mem), (void*)&bufferB);
-		tempErrcode = clSetKernelArg(selectedKernel, 3, sizeof(cl_float), (void*)&p);
-		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
-
-		//Set NDRange
-		size_t localWorkSize[2];
-		size_t globalWorkSize[2];
-		localWorkSize[0] = 256;
-		localWorkSize[1] = 1;
-		globalWorkSize[0] = widthA * heightA;
-		globalWorkSize[1] = 1;
-
-		//Launch kernel
-		tempErrcode = clEnqueueNDRangeKernel(commandQue, selectedKernel, 2, NULL, globalWorkSize,
-			localWorkSize, 0, NULL, NULL);
-		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
-
-		//Block unitl kernel finishes
-		tempErrcode = clFinish(commandQue);
-		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
-
-		//Read back buffer
-		C = oclReadMatrixBuffer<cl_float, BlasMatrix<float> >(bufferC, C);
-
-		//Delete OpenCL buffers
-		tempErrcode = clReleaseMemObject(bufferC);
-		tempErrcode = clReleaseMemObject(bufferA);
-		tempErrcode = clReleaseMemObject(bufferB);
-		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
-
-		return C;
-	}
-
-	/*
-	 * Specialization of in place addition over
-	 * a Modular<double> Field
-	 * C += B
-	 */
-	template <>
-	template <>
-	BlasMatrix<double>& OpenCLMatrixDomain<Modular<double> >::addin<
-		BlasMatrix<double>, BlasMatrix<double> >(BlasMatrix<double>& C,
-		const BlasMatrix<double>& B) const{
-
-		//Create a temporary matrix for psuedo inline
-		//BlasMatrix<double> T(C);
-		//T = C;
-		return add<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(C,C,B);
-	}
-
-	/*
-	 * Specialization of in place addition over
-	 * a Modular<float> Field
-	 * C += B
-	 */
-	template <>
-	template <>
-	BlasMatrix<float>& OpenCLMatrixDomain<Modular<float> >::addin<
-		BlasMatrix<float>, BlasMatrix<float> >(BlasMatrix<float>& C,
-		const BlasMatrix<float>& B) const{
-
-		//Create a temporary matrix for psuedo inline
-		//BlasMatrix<float> T(C);
-		//T = C;
-		return add<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(C,C,B);
-	}
-
-	/*
-	 * Specialization of subtraction over
-	 * a Modular<double> Field
-	 * C = A-B
-	 */
-	template <>
-	template <>
-	BlasMatrix<double>& OpenCLMatrixDomain<Modular<double> >::sub<
-		BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(
-		BlasMatrix<double>& C, const BlasMatrix<double>& A, const BlasMatrix<double>& B) const{
-
-		//Compute if the OpenCL device is capable of working with the required ammounts of memory
-		bool memLevelsAllowed = oclMemCheck<
-			cl_double, BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(C,A,B);
-
-		//If it is not capable or not setup properly use default implementation
-		if(!memLevelsAllowed || !setupCorrect || !doubleSupported || !dpKernelsAvailable[1]){
-			return BlasMatrixDomainSub<
-				Modular<double>,BlasMatrix<double>,BlasMatrix<double>,BlasMatrix<double> >()(_F,C,A,B);
-		}
-
-		//Check dimensions
-		linbox_check( A.coldim() == B.coldim());
-		linbox_check( A.rowdim() == B.rowdim());
-		linbox_check( A.coldim() == C.coldim());
-		linbox_check( A.rowdim() == C.rowdim());
-
-		//Allocate buffers
-		cl_mem bufferC = oclCreateMatrixBuffer<cl_double, BlasMatrix<double> >(C);
-		cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(A);
-		cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_double, BlasMatrix<double> >(B);
-
-		double p = _F.characteristic();
-
-		cl_kernel selectedKernel = dpKernels[1];
-
-		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-		int widthA = ((A.coldim() + 15) / 16) * 16;
-		int heightA = ((A.rowdim() + 15) / 16) * 16;
-
-		//Pass kernel arguments
-		cl_int tempErrcode;
-		tempErrcode = clSetKernelArg(selectedKernel, 0, sizeof(cl_mem), (void*)&bufferC);
-		tempErrcode = clSetKernelArg(selectedKernel, 1, sizeof(cl_mem), (void*)&bufferA);
-		tempErrcode = clSetKernelArg(selectedKernel, 2, sizeof(cl_mem), (void*)&bufferB);
-		tempErrcode = clSetKernelArg(selectedKernel, 3, sizeof(cl_double), (void*)&p);
-		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
-
-		//Set NDRange
-		size_t localWorkSize[2];
-		size_t globalWorkSize[2];
-		localWorkSize[0] = 256;
-		localWorkSize[1] = 1;
-		globalWorkSize[0] = widthA * heightA;
-		globalWorkSize[1] = 1;
-
-		//Launch kernel
-		tempErrcode = clEnqueueNDRangeKernel(commandQue, selectedKernel, 2, NULL, globalWorkSize,
-			localWorkSize, 0, NULL, NULL);
-		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
-
-		//Block unitl kernel finishes
-		tempErrcode = clFinish(commandQue);
-		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
-
-		//Read back buffer
-		C = oclReadMatrixBuffer<cl_double, BlasMatrix<double> >(bufferC, C);
-
-		//Delete OpenCL buffers
-		tempErrcode = clReleaseMemObject(bufferC);
-		tempErrcode = clReleaseMemObject(bufferA);
-		tempErrcode = clReleaseMemObject(bufferB);
-		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
-
-		return C;
-	}
-
-	/*
-	 * Specialization of subtraction over
-	 * a Modular<float> Field
-	 * C = A-B
-	 */
-	template <>
-	template <>
-	BlasMatrix<float>& OpenCLMatrixDomain<Modular<float> >::sub<
-		BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(
-		BlasMatrix<float>& C, const BlasMatrix<float>& A, const BlasMatrix<float>& B) const{
-
-		//Compute if the OpenCL device is capable of working with the required ammounts of memory
-		bool memLevelsAllowed = oclMemCheck<
-			cl_float, BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(C,A,B);
-
-		//If it is not capable or not setup properly use default implementation
-		if(!memLevelsAllowed || !setupCorrect || !spKernelsAvailable[1]){
-			return BlasMatrixDomainSub<
-				Modular<float>,BlasMatrix<float>,BlasMatrix<float>,BlasMatrix<float> >()(_F,C,A,B);
-		}
-
-		//Check dimensions
-		linbox_check( A.coldim() == B.coldim());
-		linbox_check( A.rowdim() == B.rowdim());
-		linbox_check( A.coldim() == C.coldim());
-		linbox_check( A.rowdim() == C.rowdim());
-
-		//Allocate buffers
-		cl_mem bufferC = oclCreateMatrixBuffer<cl_float, BlasMatrix<float> >(C);
-		cl_mem bufferA = oclCreateAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(A);
-		cl_mem bufferB = oclCreateAndLoadMatrixBuffer<cl_float, BlasMatrix<float> >(B);
-
-		float p = _F.characteristic();
-
-		cl_kernel selectedKernel = spKernels[1];
-
-		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
-		int widthA = ((A.coldim() + 15) / 16) * 16;
-		int heightA = ((A.rowdim() + 15) / 16) * 16;
-
-		//Pass kernel arguments
-		cl_int tempErrcode;
-		tempErrcode = clSetKernelArg(selectedKernel, 0, sizeof(cl_mem), (void*)&bufferC);
-		tempErrcode = clSetKernelArg(selectedKernel, 1, sizeof(cl_mem), (void*)&bufferA);
-		tempErrcode = clSetKernelArg(selectedKernel, 2, sizeof(cl_mem), (void*)&bufferB);
-		tempErrcode = clSetKernelArg(selectedKernel, 3, sizeof(cl_float), (void*)&p);
-		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
-
-		//Set NDRange
-		size_t localWorkSize[2];
-		size_t globalWorkSize[2];
-		localWorkSize[0] = 256;
-		localWorkSize[1] = 1;
-		globalWorkSize[0] = widthA * heightA;
-		globalWorkSize[1] = 1;
-
-		//Launch kernel
-		tempErrcode = clEnqueueNDRangeKernel(commandQue, selectedKernel, 2, NULL, globalWorkSize,
-			localWorkSize, 0, NULL, NULL);
-		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
-
-		//Block unitl kernel finishes
-		tempErrcode = clFinish(commandQue);
-		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
-
-		//Read back buffer
-		C = oclReadMatrixBuffer<cl_float, BlasMatrix<float> >(bufferC, C);
-
-		//Delete OpenCL buffers
-		tempErrcode = clReleaseMemObject(bufferC);
-		tempErrcode = clReleaseMemObject(bufferA);
-		tempErrcode = clReleaseMemObject(bufferB);
-		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
-
-		return C;
-	}
-
-	/*
-	 * Specialization of in place subtraction over
-	 * a Modular<double> Field
-	 * C -= B
-	 */
-	template <>
-	template <>
-	BlasMatrix<double>& OpenCLMatrixDomain<Modular<double> >::subin<
-		BlasMatrix<double>, BlasMatrix<double> >(BlasMatrix<double>& C,
-		const BlasMatrix<double>& B) const{
-
-		//Create a temporary matrix for psuedo inline
-		//BlasMatrix<double> T(C);
-		//T = C;
-		return sub<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(C,C,B);
-	}
-
-	/*
-	 * Specialization of in place subtraction over
-	 * a Modular<float> Field
-	 * C -= B
-	 */
-	template <>
-	template <>
-	BlasMatrix<float>& OpenCLMatrixDomain<Modular<float> >::subin<
-		BlasMatrix<float>, BlasMatrix<float> >(BlasMatrix<float>& C,
-		const BlasMatrix<float>& B) const{
-
-		//Create a temporary matrix for psuedo inline
-		//BlasMatrix<float> T(C);
-		//T = C;
-		return sub<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(C,C,B);
-	}
-
-	/*
 	 * Specialization of Mul for
 	 * multiplying two general dense matrices
 	 * over a Modular<double> Field.
@@ -431,15 +56,20 @@ namespace LinBox
 		//Compute if the OpenCL device is capable of working with the required ammounts of memory
 		bool memLevelsAllowed = oclMemCheck<
 			cl_double, BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(C,A,B);
-			
+
 		//Check if kernels are available
-		bool kernelsAvailable = dpKernelsAvailable[2];
+		bool kernelsAvailable = dpKernelsAvailable[0];
+		kernelsAvailable &= dpKernelsAvailable[1];
+		kernelsAvailable &= dpKernelsAvailable[2];
 		kernelsAvailable &= dpKernelsAvailable[3];
-		kernelsAvailable &= dpKernelsAvailable[4];
-		kernelsAvailable &= dpKernelsAvailable[5];
 
 		//If it is not capable or not setup properly use default implementation
-		if(!memLevelsAllowed || !setupCorrect || !doubleSupported || !kernelsAvailable){
+		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
+			return BlasMatrixDomainMul<
+				Modular<double>,BlasMatrix<double>,BlasMatrix<double>,BlasMatrix<double> >()(_F,C,A,B);
+		}
+		//If the buffers use too much memory partition into blocks -- TODO
+		if(!memLevelsAllowed){
 			return BlasMatrixDomainMul<
 				Modular<double>,BlasMatrix<double>,BlasMatrix<double>,BlasMatrix<double> >()(_F,C,A,B);
 		}
@@ -448,6 +78,9 @@ namespace LinBox
 		linbox_check( A.coldim() == B.rowdim());
 		linbox_check( C.rowdim() == A.rowdim());
 		linbox_check( C.coldim() == B.coldim());
+
+		//Lock the device
+		pthread_mutex_lock(deviceLock);
 
 		//Allocate buffers
 		cl_mem bufferC = oclCreateMatrixBuffer<cl_double, BlasMatrix<double> >(C);
@@ -461,16 +94,16 @@ namespace LinBox
 		// Select OpenCL kernel based on the size of the modulus factor for maximum performance
 		//p^2 * n < 2^53
 		if(p <= (1<<21)){
-			selectedKernel = dpKernels[5];
-		}
-		else if(p <= (1<<24)){
-			selectedKernel = dpKernels[4];
-		}
-		else if(p <= (1<<25)){
 			selectedKernel = dpKernels[3];
 		}
-		else{
+		else if(p <= (1<<24)){
 			selectedKernel = dpKernels[2];
+		}
+		else if(p <= (1<<25)){
+			selectedKernel = dpKernels[1];
+		}
+		else{
+			selectedKernel = dpKernels[0];
 		}
 
 		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
@@ -498,7 +131,7 @@ namespace LinBox
 
 		//Launch kernel
 		tempErrcode = clEnqueueNDRangeKernel(commandQue, selectedKernel, 2, NULL, globalWorkSize,
-				localWorkSize, 0, NULL, NULL);
+			localWorkSize, 0, NULL, NULL);
 		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 		//Block until kernel finishes
@@ -513,6 +146,9 @@ namespace LinBox
 		tempErrcode = clReleaseMemObject(bufferA);
 		tempErrcode = clReleaseMemObject(bufferB);
 		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
+
+		//Unlock the device
+		pthread_mutex_unlock(deviceLock);
 
 		return C;
 	}
@@ -532,15 +168,20 @@ namespace LinBox
 		//Compute if the OpenCL device is capable of working with the required ammounts of memory
 		bool memLevelsAllowed = oclMemCheck<
 			cl_float, BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(C,A,B);
-		
+
 		//Check if kernels are available
-		bool kernelsAvailable = spKernelsAvailable[2];
+		bool kernelsAvailable = spKernelsAvailable[0];
+		kernelsAvailable &= spKernelsAvailable[1];
+		kernelsAvailable &= spKernelsAvailable[2];
 		kernelsAvailable &= spKernelsAvailable[3];
-		kernelsAvailable &= spKernelsAvailable[4];
-		kernelsAvailable &= spKernelsAvailable[5];
 
 		//If it is not capable or not setup properly use default implementation
-		if(!memLevelsAllowed || !setupCorrect || !kernelsAvailable){
+		if(!setupCorrect || !kernelsAvailable){
+			return BlasMatrixDomainMul<
+				Modular<float>,BlasMatrix<float>,BlasMatrix<float>,BlasMatrix<float> >()(_F,C,A,B);
+		}
+		//If the buffers use too much memory partition into blocks -- TODO
+		if(!memLevelsAllowed){
 			return BlasMatrixDomainMul<
 				Modular<float>,BlasMatrix<float>,BlasMatrix<float>,BlasMatrix<float> >()(_F,C,A,B);
 		}
@@ -549,6 +190,9 @@ namespace LinBox
 		linbox_check( A.coldim() == B.rowdim());
 		linbox_check( C.rowdim() == A.rowdim());
 		linbox_check( C.coldim() == B.coldim());
+
+		//Lock the device
+		pthread_mutex_lock(deviceLock);
 
 		//Allocate buffers
 		cl_mem bufferC = oclCreateMatrixBuffer<cl_float, BlasMatrix<float> >(C);
@@ -562,16 +206,16 @@ namespace LinBox
 		// Select OpenCL kernel based on the size of the modulus factor for maximum performance
 		//p^2 * n < 2^23
 		if(p <= (1<<7)){
-			selectedKernel = spKernels[5];
-		}
-		else if(p <= (1<<9)){
-			selectedKernel = spKernels[4];
-		}
-		else if(p <= (1<<10)){
 			selectedKernel = spKernels[3];
 		}
-		else{
+		else if(p <= (1<<9)){
 			selectedKernel = spKernels[2];
+		}
+		else if(p <= (1<<10)){
+			selectedKernel = spKernels[1];
+		}
+		else{
+			selectedKernel = spKernels[0];
 		}
 
 		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
@@ -599,7 +243,7 @@ namespace LinBox
 
 		//Launch kernel
 		tempErrcode = clEnqueueNDRangeKernel(commandQue, selectedKernel, 2, NULL, globalWorkSize,
-				localWorkSize, 0, NULL, NULL);
+			localWorkSize, 0, NULL, NULL);
 		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
 		//Block until kernel finishes
@@ -614,6 +258,9 @@ namespace LinBox
 		tempErrcode = clReleaseMemObject(bufferA);
 		tempErrcode = clReleaseMemObject(bufferB);
 		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
+
+		//Unlock the device
+		pthread_mutex_unlock(deviceLock);
 
 		return C;
 	}
@@ -631,9 +278,17 @@ namespace LinBox
 		BlasMatrix<double>, BlasMatrix<double> >( BlasMatrix<double>& A,
 		const BlasMatrix<double>& B) const{
 
-		//Create a temporary matrix for psuedo inline
-		//BlasMatrix<double> T(A);
-		//T = A;
+		//Check if kernels are available
+		bool kernelsAvailable = dpKernelsAvailable[0];
+		kernelsAvailable &= dpKernelsAvailable[1];
+		kernelsAvailable &= dpKernelsAvailable[2];
+		kernelsAvailable &= dpKernelsAvailable[3];
+		
+		//If it is not capable or not setup properly use default implementation
+		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
+			return BlasMatrixDomainMulin<Modular<double>,BlasMatrix<double>,BlasMatrix<double> >()(_F,A,B);
+		}
+
 		return mul<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(A,A,B);
 	}
 
@@ -649,10 +304,19 @@ namespace LinBox
 	BlasMatrix<float>& OpenCLMatrixDomain<Modular<float> >::mulin_left<
 		BlasMatrix<float>, BlasMatrix<float> >( BlasMatrix<float>& A,
 		const BlasMatrix<float>& B) const{
+		
+		//Check if kernels are available
+		bool kernelsAvailable = spKernelsAvailable[0];
+		kernelsAvailable &= spKernelsAvailable[1];
+		kernelsAvailable &= spKernelsAvailable[2];
+		kernelsAvailable &= spKernelsAvailable[3];
 
-		//Create a temporary matrix for psuedo inline
-		//BlasMatrix<float> T(A);
-		//T = A;
+
+		//If it is not capable or not setup properly use default implementation
+		if(!setupCorrect || !kernelsAvailable){
+			return BlasMatrixDomainMulin<Modular<float>,BlasMatrix<float>,BlasMatrix<float> >()(_F,A,B);
+		}
+		
 		return mul<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(A,A,B);
 	}
 
@@ -668,10 +332,18 @@ namespace LinBox
 	BlasMatrix<double>& OpenCLMatrixDomain<Modular<double> >::mulin_right<
 		BlasMatrix<double>, BlasMatrix<double> >(const BlasMatrix<double>& A,
 		BlasMatrix<double>& B) const{
+		
+		//Check if kernels are available
+		bool kernelsAvailable = dpKernelsAvailable[0];
+		kernelsAvailable &= dpKernelsAvailable[1];
+		kernelsAvailable &= dpKernelsAvailable[2];
+		kernelsAvailable &= dpKernelsAvailable[3];
 
-		//Create a temporary matrix for psuedo inline
-		//BlasMatrix<double> T(B);
-		//T = B;
+		//If it is not capable or not setup properly use default implementation
+		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
+			return BlasMatrixDomainMulin<Modular<double>,BlasMatrix<double>,BlasMatrix<double> >()(_F,A,B);
+		}
+		
 		return mul<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(B,A,B);
 	}
 
@@ -687,10 +359,19 @@ namespace LinBox
 	BlasMatrix<float>& OpenCLMatrixDomain<Modular<float> >::mulin_right<
 		BlasMatrix<float>, BlasMatrix<float> >(const BlasMatrix<float>& A,
 		BlasMatrix<float>& B) const{
+		
+		//Check if kernels are available
+		bool kernelsAvailable = spKernelsAvailable[0];
+		kernelsAvailable &= spKernelsAvailable[1];
+		kernelsAvailable &= spKernelsAvailable[2];
+		kernelsAvailable &= spKernelsAvailable[3];
 
-		//Create a temporary matrix for psuedo inline
-		//BlasMatrix<float> T(B);
-		//T = B;
+
+		//If it is not capable or not setup properly use default implementation
+		if(!setupCorrect || !kernelsAvailable){
+			return BlasMatrixDomainMulin<Modular<float>,BlasMatrix<float>,BlasMatrix<float> >()(_F,A,B);
+		}
+		
 		return mul<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(B,A,B);
 	}
 
@@ -709,15 +390,21 @@ namespace LinBox
 		//Compute if the OpenCL device is capable of working with the required ammounts of memory
 		bool memLevelsAllowed = oclMemCheck<
 			cl_double, BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(D,A,B,C);
-			
+
 		//Check if kernels are available
-		bool kernelsAvailable = dpKernelsAvailable[6];
+		bool kernelsAvailable = dpKernelsAvailable[4];
+		kernelsAvailable &= dpKernelsAvailable[5];
+		kernelsAvailable &= dpKernelsAvailable[6];
 		kernelsAvailable &= dpKernelsAvailable[7];
-		kernelsAvailable &= dpKernelsAvailable[8];
-		kernelsAvailable &= dpKernelsAvailable[9];
 
 		//If it is not capable or not setup properly use default implementation
-		if(!memLevelsAllowed || !setupCorrect || !doubleSupported || !kernelsAvailable){
+		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
+			return BlasMatrixDomainMulAdd<
+				Modular<double>, BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >()(
+				_F,D,beta,C,alpha,A,B);
+		}
+		//If the buffers use too much memory partition into blocks -- TODO
+		if(!memLevelsAllowed){
 			return BlasMatrixDomainMulAdd<
 				Modular<double>, BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >()(
 				_F,D,beta,C,alpha,A,B);
@@ -729,6 +416,9 @@ namespace LinBox
 		linbox_check( C.coldim() == B.coldim());
 		linbox_check( D.rowdim() == C.rowdim());
 		linbox_check( D.coldim() == C.coldim());
+
+		//Lock the device
+		pthread_mutex_lock(deviceLock);
 
 		//Allocate buffers
 		cl_mem bufferD = oclCreateMatrixBuffer<cl_double, BlasMatrix<double> >(D);
@@ -745,16 +435,16 @@ namespace LinBox
 		// Select OpenCL kernel based on the size of the modulus factor for maximum performance
 		//p^2 * n < 2^53
 		if(p <= (1<<21)){
-			selectedKernel = dpKernels[9];
-		}
-		else if(p <=(1<<24)){
-			selectedKernel = dpKernels[8];
-		}
-		else if(p <=(1<<25)){
 			selectedKernel = dpKernels[7];
 		}
-		else{
+		else if(p <=(1<<24)){
 			selectedKernel = dpKernels[6];
+		}
+		else if(p <=(1<<25)){
+			selectedKernel = dpKernels[5];
+		}
+		else{
+			selectedKernel = dpKernels[4];
 		}
 
 		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
@@ -802,6 +492,9 @@ namespace LinBox
 		tempErrcode = clReleaseMemObject(bufferC);
 		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
+		//Unlock the device
+		pthread_mutex_unlock(deviceLock);
+
 		return D;
 	}
 
@@ -820,15 +513,21 @@ namespace LinBox
 		//Compute if the OpenCL device is capable of working with the required ammounts of memory
 		bool memLevelsAllowed = oclMemCheck<
 			cl_float, BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(D,A,B,C);
-			
+
 		//Check if kernels are available
-		bool kernelsAvailable = spKernelsAvailable[6];
+		bool kernelsAvailable = spKernelsAvailable[4];
+		kernelsAvailable &= spKernelsAvailable[5];
+		kernelsAvailable &= spKernelsAvailable[6];
 		kernelsAvailable &= spKernelsAvailable[7];
-		kernelsAvailable &= spKernelsAvailable[8];
-		kernelsAvailable &= spKernelsAvailable[9];
 
 		//If it is not capable or not setup properly use default implementation
-		if(!memLevelsAllowed || !setupCorrect || !kernelsAvailable){
+		if(!setupCorrect || !kernelsAvailable){
+			return BlasMatrixDomainMulAdd<
+				Modular<float>, BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >()(
+				_F,D,beta,C,alpha,A,B);
+		}
+		//If the buffers use too much memory partition into blocks -- TODO
+		if(!memLevelsAllowed){
 			return BlasMatrixDomainMulAdd<
 				Modular<float>, BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >()(
 				_F,D,beta,C,alpha,A,B);
@@ -840,6 +539,9 @@ namespace LinBox
 		linbox_check( C.coldim() == B.coldim());
 		linbox_check( D.rowdim() == C.rowdim());
 		linbox_check( D.coldim() == C.coldim());
+
+		//Lock the device
+		pthread_mutex_lock(deviceLock);
 
 		//Allocate buffers
 		cl_mem bufferD = oclCreateMatrixBuffer<cl_float, BlasMatrix<float> >(D);
@@ -856,16 +558,16 @@ namespace LinBox
 		// Select OpenCL kernel based on the size of the modulus factor for maximum performance
 		//p^2 * n < 2^23
 		if(p <= (1<<7)){
-			selectedKernel = spKernels[9];
-		}
-		else if(p <=(1<<9)){
-			selectedKernel = spKernels[8];
-		}
-		else if(p <=(1<<10)){
 			selectedKernel = spKernels[7];
 		}
-		else{
+		else if(p <=(1<<9)){
 			selectedKernel = spKernels[6];
+		}
+		else if(p <=(1<<10)){
+			selectedKernel = spKernels[5];
+		}
+		else{
+			selectedKernel = spKernels[4];
 		}
 
 		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
@@ -913,6 +615,9 @@ namespace LinBox
 		tempErrcode = clReleaseMemObject(bufferC);
 		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
+		//Unlock the device
+		pthread_mutex_unlock(deviceLock);
+
 		return D;
 	}
 
@@ -929,9 +634,19 @@ namespace LinBox
 		const double& beta, BlasMatrix<double>& C, const double& alpha,
 		const BlasMatrix<double>& A, const BlasMatrix<double>& B) const{
 
-		//Create a temporary matrix for psuedo inline
-		//BlasMatrix<double> T(C);
-		//T = C;
+		//Check if kernels are available
+		bool kernelsAvailable = dpKernelsAvailable[4];
+		kernelsAvailable &= dpKernelsAvailable[5];
+		kernelsAvailable &= dpKernelsAvailable[6];
+		kernelsAvailable &= dpKernelsAvailable[7];
+		
+		//If it is not capable or not setup properly use default implementation
+		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
+			return BlasMatrixDomainMulAdd<
+				Modular<double>, BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >()(
+				_F,beta,C,alpha,A,B);
+		}
+		
 		return muladd<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(C,beta,C,alpha,A,B);
 	}
 
@@ -948,9 +663,19 @@ namespace LinBox
 		const float& beta, BlasMatrix<float>& C, const float& alpha,
 		const BlasMatrix<float>& A, const BlasMatrix<float>& B) const{
 
-		//Create a temporary matrix for psuedo inline
-		//BlasMatrix<float> T(C);
-		//T = C;
+		//Check if kernels are available
+		bool kernelsAvailable = spKernelsAvailable[4];
+		kernelsAvailable &= spKernelsAvailable[5];
+		kernelsAvailable &= spKernelsAvailable[6];
+		kernelsAvailable &= spKernelsAvailable[7];
+		
+		//If it is not capable or not setup properly use default implementation
+		if(!setupCorrect || !kernelsAvailable){
+			return BlasMatrixDomainMulAdd<
+				Modular<float>, BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >()(
+				_F,beta,C,alpha,A,B);
+		}
+		
 		return muladd<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(C,beta,C,alpha,A,B);
 	}
 
@@ -966,7 +691,7 @@ namespace LinBox
 		BlasMatrix<double>& C, const double& alpha, const BlasMatrix<double>& A,
 		const BlasMatrix<double>& B) const{
 
-		return muladd<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(C,0,C,alpha,A,B);
+		return muladdin<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(0,C,alpha,A,B);
 	}
 
 	/*
@@ -981,7 +706,7 @@ namespace LinBox
 		BlasMatrix<float>& C, const float& alpha, const BlasMatrix<float>& A,
 		const BlasMatrix<float>& B) const{
 
-		return muladd<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(C,0,C,alpha,A,B);
+		return muladdin<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(0,C,alpha,A,B);
 	}
 
 	/*
@@ -1001,15 +726,21 @@ namespace LinBox
 		//Compute if the OpenCL device is capable of working with the required ammounts of memory
 		bool memLevelsAllowed = oclMemCheck<
 			cl_double, BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(D,A,B,C);
-			
+
 		//Check if kernels are available
-		bool kernelsAvailable = dpKernelsAvailable[10];
+		bool kernelsAvailable = dpKernelsAvailable[8];
+		kernelsAvailable &= dpKernelsAvailable[9];
+		kernelsAvailable &= dpKernelsAvailable[10];
 		kernelsAvailable &= dpKernelsAvailable[11];
-		kernelsAvailable &= dpKernelsAvailable[12];
-		kernelsAvailable &= dpKernelsAvailable[13];
 
 		//If it is not capable or not setup properly use default implementation
-		if(!memLevelsAllowed || !setupCorrect || !doubleSupported || !kernelsAvailable){
+		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
+			return BlasMatrixDomainMulAdd<
+				Modular<double>,BlasMatrix<double>,BlasMatrix<double>,BlasMatrix<double> >()(
+				_F,D,_One,C,_One,A,B);
+		}
+		//If the buffers use too much memory partition into blocks -- TODO
+		if(!memLevelsAllowed){
 			D = mul<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(D,A,B);
 			return addin<BlasMatrix<double>, BlasMatrix<double> >(D,C);
 		}
@@ -1020,6 +751,9 @@ namespace LinBox
 		linbox_check( C.coldim() == B.coldim());
 		linbox_check( D.rowdim() == C.rowdim());
 		linbox_check( D.coldim() == C.coldim());
+
+		//Lock the device
+		pthread_mutex_lock(deviceLock);
 
 		//Allocate buffers
 		cl_mem bufferD = oclCreateMatrixBuffer<cl_double, BlasMatrix<double> >(D);
@@ -1034,16 +768,16 @@ namespace LinBox
 		// Select OpenCL kernel based on the size of the modulus factor for maximum performance
 		//p^2 * n < 2^53
 		if(p <= (1<<21)){
-			selectedKernel = dpKernels[13];
-		}
-		else if(p <= (1<<24)){
-			selectedKernel = dpKernels[12];
-		}
-		else if(p <= (1<<25)){
 			selectedKernel = dpKernels[11];
 		}
-		else{
+		else if(p <= (1<<24)){
 			selectedKernel = dpKernels[10];
+		}
+		else if(p <= (1<<25)){
+			selectedKernel = dpKernels[9];
+		}
+		else{
+			selectedKernel = dpKernels[8];
 		}
 
 		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
@@ -1088,6 +822,9 @@ namespace LinBox
 		tempErrcode = clReleaseMemObject(bufferB);
 		tempErrcode = clReleaseMemObject(bufferC);
 		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
+
+		//Unlock the device
+		pthread_mutex_unlock(deviceLock);
 
 		return D;
 	}
@@ -1109,15 +846,21 @@ namespace LinBox
 		//Compute if the OpenCL device is capable of working with the required ammounts of memory
 		bool memLevelsAllowed = oclMemCheck<
 			cl_float, BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(D,A,B,C);
-			
+
 		//Check if kernels are available
-		bool kernelsAvailable = spKernelsAvailable[10];
+		bool kernelsAvailable = spKernelsAvailable[8];
+		kernelsAvailable &= spKernelsAvailable[9];
+		kernelsAvailable &= spKernelsAvailable[10];
 		kernelsAvailable &= spKernelsAvailable[11];
-		kernelsAvailable &= spKernelsAvailable[12];
-		kernelsAvailable &= spKernelsAvailable[13];
 
 		//If it is not capable or not setup properly use default implementation
-		if(!memLevelsAllowed || !setupCorrect || !kernelsAvailable){
+		if(!setupCorrect || !kernelsAvailable){
+			return BlasMatrixDomainMulAdd<
+				Modular<float>,BlasMatrix<float>,BlasMatrix<float>,BlasMatrix<float> >()(
+				_F,D,_One,C,_One,A,B);
+		}
+		//If the buffers use too much memory partition into blocks -- TODO
+		if(!memLevelsAllowed){
 			D = mul<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(D,A,B);
 			return addin<BlasMatrix<float>, BlasMatrix<float> >(D,C);
 		}
@@ -1128,6 +871,9 @@ namespace LinBox
 		linbox_check( C.coldim() == B.coldim());
 		linbox_check( D.rowdim() == C.rowdim());
 		linbox_check( D.coldim() == C.coldim());
+
+		//Lock the device
+		pthread_mutex_lock(deviceLock);
 
 		//Allocate buffers
 		cl_mem bufferD = oclCreateMatrixBuffer<cl_float, BlasMatrix<float> >(D);
@@ -1142,16 +888,16 @@ namespace LinBox
 		// Select OpenCL kernel based on the size of the modulus factor for maximum performance
 		//p^2 * n < 2^23
 		if(p <= (1<<7)){
-			selectedKernel = spKernels[13];
-		}
-		else if(p <= (1<<9)){
-			selectedKernel = spKernels[12];
-		}
-		else if(p <= (1<<10)){
 			selectedKernel = spKernels[11];
 		}
-		else{
+		else if(p <= (1<<9)){
 			selectedKernel = spKernels[10];
+		}
+		else if(p <= (1<<10)){
+			selectedKernel = spKernels[9];
+		}
+		else{
+			selectedKernel = spKernels[8];
 		}
 
 		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
@@ -1197,6 +943,9 @@ namespace LinBox
 		tempErrcode = clReleaseMemObject(bufferC);
 		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
+		//Unlock the device
+		pthread_mutex_unlock(deviceLock);
+
 		return D;
 	}
 
@@ -1213,10 +962,18 @@ namespace LinBox
 	BlasMatrix<double>& OpenCLMatrixDomain<Modular<double> >::axpyin<
 		BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(
 		BlasMatrix<double>& C, const BlasMatrix<double>& A, const BlasMatrix<double>& B) const{
+		
+		//Check if kernels are available
+		bool kernelsAvailable = dpKernelsAvailable[8];
+		kernelsAvailable &= dpKernelsAvailable[9];
+		kernelsAvailable &= dpKernelsAvailable[10];
+		kernelsAvailable &= dpKernelsAvailable[11];
 
-		//Create a temporary matrix for psuedo inline
-		//BlasMatrix<double> T(C);
-		//T = C;
+		//If it is not capable or not setup properly use default implementation
+		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
+			return muladdin<BlasMatrix<double>,BlasMatrix<double>,BlasMatrix<double> >(_One,C,_One,A,B);
+		}
+
 		return axpy<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(C,A,B,C);
 	}
 
@@ -1233,10 +990,18 @@ namespace LinBox
 	BlasMatrix<float>& OpenCLMatrixDomain<Modular<float> >::axpyin<
 		BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(
 		BlasMatrix<float>& C, const BlasMatrix<float>& A, const BlasMatrix<float>& B) const{
+		
+		//Check if kernels are available
+		bool kernelsAvailable = spKernelsAvailable[8];
+		kernelsAvailable &= spKernelsAvailable[9];
+		kernelsAvailable &= spKernelsAvailable[10];
+		kernelsAvailable &= spKernelsAvailable[11];
 
-		//Create a temporary matrix for psuedo inline
-		//BlasMatrix<float> T(C);
-		//T = C;
+		//If it is not capable or not setup properly use default implementation
+		if(!setupCorrect || !kernelsAvailable){
+			return muladdin<BlasMatrix<float>,BlasMatrix<float>,BlasMatrix<float> >(_One,C,_One,A,B);
+		}
+
 		return axpy<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(C,A,B,C);
 	}
 
@@ -1257,15 +1022,21 @@ namespace LinBox
 		//Compute if the OpenCL device is capable of working with the required ammounts of memory
 		bool memLevelsAllowed = oclMemCheck<
 			cl_double, BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(D,A,B,C);
-			
+
 		//Check if kernels are available
-		bool kernelsAvailable = dpKernelsAvailable[14];
+		bool kernelsAvailable = dpKernelsAvailable[12];
+		kernelsAvailable &= dpKernelsAvailable[13];
+		kernelsAvailable &= dpKernelsAvailable[14];
 		kernelsAvailable &= dpKernelsAvailable[15];
-		kernelsAvailable &= dpKernelsAvailable[16];
-		kernelsAvailable &= dpKernelsAvailable[17];
 
 		//If it is not capable or not setup properly use default implementation
-		if(!memLevelsAllowed || !setupCorrect || !doubleSupported || !kernelsAvailable){
+		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
+			return BlasMatrixDomainMulAdd<
+				Modular<double>,BlasMatrix<double>,BlasMatrix<double>,BlasMatrix<double> >()(
+				_F,D,_One,C,_MOne,A,B);
+		}
+		//If the buffers use too much memory partition into blocks -- TODO
+		if(!memLevelsAllowed){
 			BlasMatrix<double> T(D.rowdim(),D.coldim());
 			T = mul<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(T,A,B);
 			return sub<BlasMatrix<double>, BlasMatrix<double> >(D,C,T);
@@ -1277,6 +1048,9 @@ namespace LinBox
 		linbox_check( C.coldim() == B.coldim());
 		linbox_check( D.rowdim() == C.rowdim());
 		linbox_check( D.coldim() == C.coldim());
+
+		//Lock the device
+		pthread_mutex_lock(deviceLock);
 
 		//Allocate buffers
 		cl_mem bufferD = oclCreateMatrixBuffer<cl_double, BlasMatrix<double> >(D);
@@ -1291,16 +1065,16 @@ namespace LinBox
 		// Select OpenCL kernel based on the size of the modulus factor for maximum performance
 		//p^2 * n < 2^53
 		if(p <= (1<<21)){
-			selectedKernel = dpKernels[17];
-		}
-		else if(p <= (1<<24)){
-			selectedKernel = dpKernels[16];
-		}
-		else if(p <= (1<<25)){
 			selectedKernel = dpKernels[15];
 		}
-		else{
+		else if(p <= (1<<24)){
 			selectedKernel = dpKernels[14];
+		}
+		else if(p <= (1<<25)){
+			selectedKernel = dpKernels[13];
+		}
+		else{
+			selectedKernel = dpKernels[12];
 		}
 
 		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
@@ -1345,6 +1119,9 @@ namespace LinBox
 		tempErrcode = clReleaseMemObject(bufferB);
 		tempErrcode = clReleaseMemObject(bufferC);
 		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
+
+		//Unlock the device
+		pthread_mutex_unlock(deviceLock);
 
 		return D;
 	}
@@ -1366,15 +1143,21 @@ namespace LinBox
 		//Compute if the OpenCL device is capable of working with the required ammounts of memory
 		bool memLevelsAllowed = oclMemCheck<
 			cl_float, BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(D,A,B,C);
-			
+
 		//Check if kernels are available
-		bool kernelsAvailable = spKernelsAvailable[14];
+		bool kernelsAvailable = spKernelsAvailable[12];
+		kernelsAvailable &= spKernelsAvailable[13];
+		kernelsAvailable &= spKernelsAvailable[14];
 		kernelsAvailable &= spKernelsAvailable[15];
-		kernelsAvailable &= spKernelsAvailable[16];
-		kernelsAvailable &= spKernelsAvailable[17];
 
 		//If it is not capable or not setup properly use default implementation
-		if(!memLevelsAllowed || !setupCorrect || !kernelsAvailable){
+		if(!setupCorrect || !kernelsAvailable){
+			return BlasMatrixDomainMulAdd<
+				Modular<float>,BlasMatrix<float>,BlasMatrix<float>,BlasMatrix<float> >()(
+				_F,D,_One,C,_MOne,A,B);
+		}
+		//If the buffers use too much memory partition into blocks -- TODO
+		if(!memLevelsAllowed){
 			BlasMatrix<float> T(D.rowdim(),D.coldim());
 			T = mul<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(T,A,B);
 			return sub<BlasMatrix<float>, BlasMatrix<float> >(D,C,T);
@@ -1386,6 +1169,9 @@ namespace LinBox
 		linbox_check( C.coldim() == B.coldim());
 		linbox_check( D.rowdim() == C.rowdim());
 		linbox_check( D.coldim() == C.coldim());
+
+		//Lock the device
+		pthread_mutex_lock(deviceLock);
 
 		//Allocate buffers
 		cl_mem bufferD = oclCreateMatrixBuffer<cl_float, BlasMatrix<float> >(D);
@@ -1400,16 +1186,16 @@ namespace LinBox
 		// Select OpenCL kernel based on the size of the modulus factor for maximum performance
 		//p^2 * n < 2^23
 		if(p <= (1<<7)){
-			selectedKernel = spKernels[17];
-		}
-		else if(p <= (1<<9)){
-			selectedKernel = spKernels[16];
-		}
-		else if(p <= (1<<10)){
 			selectedKernel = spKernels[15];
 		}
-		else{
+		else if(p <= (1<<9)){
 			selectedKernel = spKernels[14];
+		}
+		else if(p <= (1<<10)){
+			selectedKernel = spKernels[13];
+		}
+		else{
+			selectedKernel = spKernels[12];
 		}
 
 		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
@@ -1455,6 +1241,9 @@ namespace LinBox
 		tempErrcode = clReleaseMemObject(bufferC);
 		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
+		//Unlock the device
+		pthread_mutex_unlock(deviceLock);
+
 		return D;
 	}
 
@@ -1471,10 +1260,18 @@ namespace LinBox
 	BlasMatrix<double>& OpenCLMatrixDomain<Modular<double> >::maxpyin<
 		BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(
 		BlasMatrix<double>& C, const BlasMatrix<double>& A, const BlasMatrix<double>& B) const{
+		
+		//Check if kernels are available
+		bool kernelsAvailable = dpKernelsAvailable[12];
+		kernelsAvailable &= dpKernelsAvailable[13];
+		kernelsAvailable &= dpKernelsAvailable[14];
+		kernelsAvailable &= dpKernelsAvailable[15];
 
-		//Create a temporary matrix for psuedo inline
-		//BlasMatrix<double> T(C);
-		//T = C;
+		//If it is not capable or not setup properly use default implementation
+		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
+			return muladdin<BlasMatrix<double>,BlasMatrix<double>,BlasMatrix<double> >(_One,C,_MOne,A,B);
+		}
+
 		return maxpy<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(C,A,B,C);
 	}
 
@@ -1491,10 +1288,18 @@ namespace LinBox
 	BlasMatrix<float>& OpenCLMatrixDomain<Modular<float> >::maxpyin<
 		BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(
 		BlasMatrix<float>& C, const BlasMatrix<float>& A, const BlasMatrix<float>& B) const{
+		
+		//Check if kernels are available
+		bool kernelsAvailable = spKernelsAvailable[12];
+		kernelsAvailable &= spKernelsAvailable[13];
+		kernelsAvailable &= spKernelsAvailable[14];
+		kernelsAvailable &= spKernelsAvailable[15];
 
-		//Create a temporary matrix for psuedo inline
-		//BlasMatrix<float> T(C);
-		//T = C;
+		//If it is not capable or not setup properly use default implementation
+		if(!setupCorrect || !kernelsAvailable){
+			return muladdin<BlasMatrix<float>,BlasMatrix<float>,BlasMatrix<float> >(_One,C,_MOne,A,B);
+		}
+
 		return maxpy<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(C,A,B,C);
 	}
 
@@ -1515,15 +1320,21 @@ namespace LinBox
 		//Compute if the OpenCL device is capable of working with the required ammounts of memory
 		bool memLevelsAllowed = oclMemCheck<
 			cl_double, BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(D,A,B,C);
-			
+
 		//Check if kernels are available
-		bool kernelsAvailable = dpKernelsAvailable[18];
+		bool kernelsAvailable = dpKernelsAvailable[16];
+		kernelsAvailable &= dpKernelsAvailable[17];
+		kernelsAvailable &= dpKernelsAvailable[18];
 		kernelsAvailable &= dpKernelsAvailable[19];
-		kernelsAvailable &= dpKernelsAvailable[20];
-		kernelsAvailable &= dpKernelsAvailable[21];
 
 		//If it is not capable or not setup properly use default implementation
-		if(!memLevelsAllowed || !setupCorrect || !doubleSupported || !kernelsAvailable){
+		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
+			return BlasMatrixDomainMulAdd<
+				Modular<double>,BlasMatrix<double>,BlasMatrix<double>,BlasMatrix<double> >()(
+				_F,D,_MOne,C,_One,A,B);
+		}
+		//If the buffers use too much memory partition into blocks -- TODO
+		if(!memLevelsAllowed){
 			D = mul<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(D,A,B);
 			return subin<BlasMatrix<double>, BlasMatrix<double> >(D,C);
 		}
@@ -1534,6 +1345,9 @@ namespace LinBox
 		linbox_check( C.coldim() == B.coldim());
 		linbox_check( D.rowdim() == C.rowdim());
 		linbox_check( D.coldim() == C.coldim());
+
+		//Lock the device
+		pthread_mutex_lock(deviceLock);
 
 		//Allocate buffers
 		cl_mem bufferD = oclCreateMatrixBuffer<cl_double, BlasMatrix<double> >(D);
@@ -1548,16 +1362,16 @@ namespace LinBox
 		// Select OpenCL kernel based on the size of the modulus factor for maximum performance
 		//p^2 * n < 2^53
 		if(p <= (1<<21)){
-			selectedKernel = dpKernels[21];
-		}
-		else if(p <= (1<<24)){
-			selectedKernel = dpKernels[20];
-		}
-		else if(p <= (1<<25)){
 			selectedKernel = dpKernels[19];
 		}
-		else{
+		else if(p <= (1<<24)){
 			selectedKernel = dpKernels[18];
+		}
+		else if(p <= (1<<25)){
+			selectedKernel = dpKernels[17];
+		}
+		else{
+			selectedKernel = dpKernels[16];
 		}
 
 		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
@@ -1603,6 +1417,9 @@ namespace LinBox
 		tempErrcode = clReleaseMemObject(bufferC);
 		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
+		//Unlock the device
+		pthread_mutex_unlock(deviceLock);
+
 		return D;
 	}
 
@@ -1623,15 +1440,21 @@ namespace LinBox
 		//Compute if the OpenCL device is capable of working with the required ammounts of memory
 		bool memLevelsAllowed = oclMemCheck<
 			cl_float, BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(D,A,B,C);
-			
+
 		//Check if kernels are available
-		bool kernelsAvailable = spKernelsAvailable[18];
+		bool kernelsAvailable = spKernelsAvailable[16];
+		kernelsAvailable &= spKernelsAvailable[17];
+		kernelsAvailable &= spKernelsAvailable[18];
 		kernelsAvailable &= spKernelsAvailable[19];
-		kernelsAvailable &= spKernelsAvailable[20];
-		kernelsAvailable &= spKernelsAvailable[21];
 
 		//If it is not capable or not setup properly use default implementation
-		if(!memLevelsAllowed || !setupCorrect || !kernelsAvailable){
+		if(!setupCorrect || !kernelsAvailable){
+			return BlasMatrixDomainMulAdd<
+				Modular<float>,BlasMatrix<float>,BlasMatrix<float>,BlasMatrix<float> >()(
+				_F,D,_MOne,C,_One,A,B);
+		}
+		//If the buffers use too much memory partition into blocks -- TODO
+		if(!memLevelsAllowed){
 			D = mul<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(D,A,B);
 			return subin<BlasMatrix<float>, BlasMatrix<float> >(D,C);
 		}
@@ -1642,6 +1465,9 @@ namespace LinBox
 		linbox_check( C.coldim() == B.coldim());
 		linbox_check( D.rowdim() == C.rowdim());
 		linbox_check( D.coldim() == C.coldim());
+
+		//Lock the device
+		pthread_mutex_lock(deviceLock);
 
 		//Allocate buffers
 		cl_mem bufferD = oclCreateMatrixBuffer<cl_float, BlasMatrix<float> >(D);
@@ -1656,16 +1482,16 @@ namespace LinBox
 		// Select OpenCL kernel based on the size of the modulus factor for maximum performance
 		//p^2 * n < 2^23
 		if(p <= (1<<7)){
-			selectedKernel = spKernels[21];
-		}
-		else if(p <= (1<<9)){
-			selectedKernel = spKernels[20];
-		}
-		else if(p <= (1<<10)){
 			selectedKernel = spKernels[19];
 		}
-		else{
+		else if(p <= (1<<9)){
 			selectedKernel = spKernels[18];
+		}
+		else if(p <= (1<<10)){
+			selectedKernel = spKernels[17];
+		}
+		else{
+			selectedKernel = spKernels[16];
 		}
 
 		//((A.coldim() / 16) + (A.coldim() % 16 == 0 ? 0 : 1)) * 16
@@ -1711,6 +1537,9 @@ namespace LinBox
 		tempErrcode = clReleaseMemObject(bufferC);
 		//updateErrcode(tempErrcode); //Does not work because of const -- will fix eventually
 
+		//Unlock the device
+		pthread_mutex_unlock(deviceLock);
+
 		return D;
 	}
 
@@ -1727,10 +1556,18 @@ namespace LinBox
 	BlasMatrix<double>& OpenCLMatrixDomain<Modular<double> >::axmyin<
 		BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(
 		BlasMatrix<double>& C, const BlasMatrix<double>& A, const BlasMatrix<double>& B) const{
+		
+		//Check if kernels are available
+		bool kernelsAvailable = dpKernelsAvailable[16];
+		kernelsAvailable &= dpKernelsAvailable[17];
+		kernelsAvailable &= dpKernelsAvailable[18];
+		kernelsAvailable &= dpKernelsAvailable[19];
 
-		//Create a temporary matrix for psuedo inline
-		//BlasMatrix<double> T(C);
-		//T = C;
+		//If it is not capable or not setup properly use default implementation
+		if(!setupCorrect || !doubleSupported || !kernelsAvailable){
+			return muladdin<BlasMatrix<double>,BlasMatrix<double>,BlasMatrix<double> >(_MOne,C,_One,A,B);
+		}
+
 		return axmy<BlasMatrix<double>, BlasMatrix<double>, BlasMatrix<double> >(C,A,B,C);
 	}
 
@@ -1747,10 +1584,18 @@ namespace LinBox
 	BlasMatrix<float>& OpenCLMatrixDomain<Modular<float> >::axmyin<
 		BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(
 		BlasMatrix<float>& C, const BlasMatrix<float>& A, const BlasMatrix<float>& B) const{
+		
+		//Check if kernels are available
+		bool kernelsAvailable = spKernelsAvailable[16];
+		kernelsAvailable &= spKernelsAvailable[17];
+		kernelsAvailable &= spKernelsAvailable[18];
+		kernelsAvailable &= spKernelsAvailable[19];
 
-		//Create a temporary matrix for psuedo inline
-		//BlasMatrix<float> T(C);
-		//T = C;
+		//If it is not capable or not setup properly use default implementation
+		if(!setupCorrect || !kernelsAvailable){
+			return muladdin<BlasMatrix<float>,BlasMatrix<float>,BlasMatrix<float> >(_MOne,C,_One,A,B);
+		}
+
 		return axmy<BlasMatrix<float>, BlasMatrix<float>, BlasMatrix<float> >(C,A,B,C);
 	}
 
