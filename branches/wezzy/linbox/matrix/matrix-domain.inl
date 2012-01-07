@@ -561,7 +561,7 @@ namespace LinBox
 		for (i = A.rowBegin (), l1 = Y.rowBegin (); i != A.rowEnd (); ++i, ++l1) {
 			for (j = X.colBegin (), l2 = l1->begin (); j != X.colEnd (); ++j, ++l2) {
 				_VD.dot (t, *i, *j);
-				_field.addin (*l2, t);
+				_F.addin (*l2, t);
 			}
 		}
 
@@ -586,7 +586,7 @@ namespace LinBox
 		for (j = X.colBegin (), l1 = Y.colBegin (); j != X.colEnd (); ++j, ++l1) {
 			for (i = A.rowBegin (), l2 = l1->begin (); i != A.rowEnd (); ++i, ++l2) {
 				_VD.dot (t, *i, *j);
-				_field.addin (*l2, t);
+				_F.addin (*l2, t);
 			}
 		}
 
@@ -652,10 +652,8 @@ namespace LinBox
 		// A must decide if dot is possible, not w
 		// 	for (; j != w.end (); ++j, ++i)
 		// 		_VD.dot (*j, v, *i);
-		for (; i != A.rowEnd (); ++j, ++i) {
-			linbox_check(j != w.end());
+		for (; i != A.rowEnd (); ++j, ++i)
 			_VD.dot (*j, v, *i);
-		}
 
 		return w;
 	}
@@ -674,7 +672,7 @@ namespace LinBox
 		for (; i != A.rowEnd (); ++i, ++idx) {
 			_VD.dot (t, v, *i);
 
-			if (!_field.isZero (t))
+			if (!_F.isZero (t))
 				w.push_back (std::pair<size_t, typename Field::Element> (idx, t));
 		}
 
@@ -695,7 +693,7 @@ namespace LinBox
 		for (; i != A.rowEnd (); ++i, ++idx) {
 			_VD.dot (t, v, *i);
 
-			if (!_field.isZero (t))
+			if (!_F.isZero (t))
 				w[idx] = t;
 		}
 
@@ -717,7 +715,7 @@ namespace LinBox
 		for (; i != A.rowEnd (); ++i, ++idx) {
 			_VD.dot (t, v, *i);
 
-			if (!_field.isZero (t)) {
+			if (!_F.isZero (t)) {
 				w.first.push_back (idx);
 				w.second.push_back (t);
 			}
@@ -821,7 +819,7 @@ namespace LinBox
 
 		for (; j != y.end (); ++j, ++i) {
 			_VD.dot (t, x, *i);
-			_field.addin (*j, t);
+			_F.addin (*j, t);
 		}
 
 		return y;
@@ -1084,10 +1082,10 @@ namespace LinBox
 			     (M1.rowdim()==M2.rowdim()));
 
 
-		typename Matrix1::Iterator p=M1.Begin();
-		for(;p!=M1.End();++p)
+		typename Matrix1::RawIterator p=M1.rawBegin();
+		for(;p!=M1.rawEnd();++p)
 			M1.field().init(*p,0);
-		for(p=M1.Begin();p<M1.End();)
+		for(p=M1.rawBegin();p<M1.rawEnd();)
 		{
 			M1.field().init(*p,1);
 			p=p+M1.rowdim()+1;
@@ -1110,10 +1108,10 @@ namespace LinBox
 
 		if(k==0)
 		{
-			typename Matrix1::Iterator p=M1.Begin();
-			for(;p!=M1.End();++p)
+			typename Matrix1::RawIterator p=M1.rawBegin();
+			for(;p!=M1.rawEnd();++p)
 				M1.field().init(*p,0);
-			for(p=M1.Begin();p<M1.End();)
+			for(p=M1.rawBegin();p<M1.rawEnd();)
 			{
 				M1.field().init(*p,1);
 				p+=M1.rowdim()+1;
@@ -1121,9 +1119,9 @@ namespace LinBox
 			return M1;
 		}
 
-		typename Matrix1::Iterator p1;
-		typename Matrix2::ConstIterator p2;
-		for(p1=M1.Begin(),p2=M2.Begin();p1!=M1.End();++p1,++p2)
+		typename Matrix1::RawIterator p1;
+		typename Matrix2::ConstRawIterator p2;
+		for(p1=M1.rawBegin(),p2=M2.rawBegin();p1!=M1.rawEnd();++p1,++p2)
 			M1.field().assign(*p1,*p2);
 
 		std::vector<bool> bit;

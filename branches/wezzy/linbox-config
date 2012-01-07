@@ -1,0 +1,93 @@
+#! /bin/sh
+
+# Copyright (c) the LinBox group
+# This file is part of LinBox (and probably stolen here and there)
+# see COPYING for licence
+
+prefix=/home/mwezz/LinBox
+exec_prefix=${prefix}
+includedir=${prefix}/include
+libdir=${exec_prefix}/lib
+
+major=`echo 1.2.1 | cut -d'.' -f1`
+minor=`echo 1.2.1 | cut -d'.' -f2`
+micro=`echo 1.2.1 | cut -d'.' -f3`
+decvr=$((((($major*100)+$minor)*100)+$micro))
+
+
+cflags=false
+libs=false
+
+
+
+
+usage()
+{
+    cat <<EOF
+Usage: linbox-config [OPTION]
+
+Known values for OPTION are:
+
+  --prefix		show Linbox installation prefix 
+  --libs		print library linking information
+  --cflags		print pre-processor and compiler flags
+  --help		display this help and exit
+  --version		output version information string (eg 1.2.1)
+  --decimal-version	output version information number (eg $decvr)
+
+EOF
+
+    exit $1
+}
+
+if test $# -eq 0; then
+    usage 1
+fi
+
+while test $# -gt 0; do
+    case "$1" in
+    -*=*) optarg=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
+    *) optarg= ;;
+    esac
+
+    case "$1" in
+    --prefix=*)
+	prefix=$optarg
+	;;
+
+    --prefix)
+	echo $prefix
+	;;
+
+    --version)
+	echo 1.2.1
+	exit 0
+	;;
+
+    --decimal-version)
+	echo $decvr
+	exit 0
+	;;
+
+    --help)
+	usage 0
+	;;
+
+    --cflags)
+       	echo -n " -I${includedir}   -I/home/youse/software//include  "
+	;;
+
+    --libs)
+	echo -n " -L${libdir} -llinbox    -L/home/youse/software//lib -lgivaro  -lgmpxx -lgmp -L/usr/local/atlas//lib -lcblas -latlas"
+	;;
+
+    *)
+	usage
+	exit 1
+	;;
+    esac
+    shift
+done
+echo
+
+exit 0

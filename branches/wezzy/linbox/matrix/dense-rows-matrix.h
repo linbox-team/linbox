@@ -53,7 +53,7 @@ namespace LinBox
 		/** Copy constructor.
 		*/
 		DenseRowsMatrix (const DenseRowsMatrix &A) :
-		       	_Mat (A._Mat), _m (A._m), _n (A._n)
+		       	_A (A._A), _m (A._m), _n (A._n)
 		{}
 
 		/** Destructor. */
@@ -110,7 +110,7 @@ namespace LinBox
 		 * @param value Value of the new entry
 		 */
 		void setEntry (size_t i, size_t j, const Element &value)
-		{ _Mat[i][j] = value; }
+		{ _A[i][j] = value; }
 
 		/** Get a writeable reference to an entry in the matrix
 		 * If there is no entry at the position (i, j), then a new entry
@@ -121,7 +121,7 @@ namespace LinBox
 		 * @return Reference to matrix entry
 		 */
 		Element &refEntry (size_t i, size_t j)
-		{ return _Mat[i][j]; }
+		{ return _A[i][j]; }
 
 		/** Get a read-only individual entry from the matrix
 		 * @param i Row index
@@ -129,7 +129,7 @@ namespace LinBox
 		 * @return Const reference to matrix entry
 		 */
 		const Element &getEntry (size_t i, size_t j) const
-		{ return _Mat[i][j]; }
+		{ return _A[i][j]; }
 
 		/** Get an entry and store it in the given value
 		 * This form is more in the Linbox style and is provided for interface
@@ -140,7 +140,7 @@ namespace LinBox
 		 * @return Reference to x
 		 */
 		Element &getEntry (Element &x, size_t i, size_t j) const
-		{ return x = _Mat[i][j]; }
+		{ return x = _A[i][j]; }
 
 		/** @name Columns of rows iterator
 		 * The columns of row iterator gives each of the rows of the
@@ -152,13 +152,13 @@ namespace LinBox
 		typedef typename Rep::const_iterator ConstRowIterator;
 
 		///
-		RowIterator rowBegin () { return _Mat.begin (); }
+		RowIterator rowBegin () { return _A.begin (); }
 		///
-		RowIterator rowEnd () { return _Mat.end (); }
+		RowIterator rowEnd () { return _A.end (); }
 		///
-		ConstRowIterator rowBegin () const { return _Mat.begin (); }
+		ConstRowIterator rowBegin () const { return _A.begin (); }
 		///
-		ConstRowIterator rowEnd () const { return _Mat.end (); }
+		ConstRowIterator rowEnd () const { return _A.end (); }
 
 		/** @name Raw iterator
 		 * The raw iterator is a method for accessing all nonzero
@@ -168,18 +168,18 @@ namespace LinBox
 		 */
 
 		///
-		class Iterator;
+		class RawIterator;
 		///
-		class ConstIterator;
+		class ConstRawIterator;
 
-		/// Begin
-		Iterator Begin ();
-		/// End
-		Iterator End ();
-		/// const Begin
-		ConstIterator Begin () const;
-		/// const End
-		ConstIterator End () const;
+		/// rawBegin
+		RawIterator rawBegin ();
+		/// rawEnd
+		RawIterator rawEnd ();
+		/// const rawBegin
+		ConstRawIterator rawBegin () const;
+		/// const rawEnd
+		ConstRawIterator rawEnd () const;
 
 		/** @name Index iterator
 		 * The index iterator gives the row, column indices of all matrix
@@ -188,25 +188,25 @@ namespace LinBox
 		 * first and second positions, respectively.
 		 */
 
-		/// IndexedIterator
-		class IndexedIterator;
-		/// ConstIndexedIterator
-		class ConstIndexedIterator;
+		/// RawIndexedIterator
+		class RawIndexedIterator;
+		/// ConstRawIndexedIterator
+		class ConstRawIndexedIterator;
 
-		/// IndexedBegin
-		IndexedIterator IndexedBegin ();
-		/// IndexedEnd
-		IndexedIterator IndexedEnd ();
-		/// const IndexedBegin
-		ConstIndexedIterator IndexedBegin () const;
-		/// const IndexedEnd
-		ConstIndexedIterator IndexedEnd () const;
+		/// rawIndexedBegin
+		RawIndexedIterator rawIndexedBegin ();
+		/// rawIndexedEnd
+		RawIndexedIterator rawIndexedEnd ();
+		/// const rawIndexedBegin
+		ConstRawIndexedIterator rawIndexedBegin () const;
+		/// const rawIndexedEnd
+		ConstRawIndexedIterator rawIndexedEnd () const;
 
 		/** Retrieve a row as a writeable reference
 		 * @param i Row index
 		 */
 		Row &getRow (size_t i)
-		{ return _Mat[i]; }
+		{ return _A[i]; }
 
 		/** Construct the transpose of this matrix and place it in the
 		 * DenseRowsMatrix given.
@@ -221,7 +221,7 @@ namespace LinBox
 		friend class SparseMatrixWriteHelper<Element, Row>;
 		friend class SparseMatrixReadWriteHelper<Element, Row>;
 
-		Rep               _Mat;
+		Rep               _A;
 		size_t            _m;
 		size_t            _n;
 	};

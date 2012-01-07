@@ -28,6 +28,8 @@
 #include "linbox/vector/stream.h"
 #include "linbox/matrix/matrix-domain.h"
 
+#undef _A
+
 namespace LinBox
 {
 
@@ -67,12 +69,12 @@ namespace LinBox
 
 		typedef typename Matrix::ColIterator RowIterator;
 		typedef typename Matrix::RowIterator ColIterator;
-		typedef typename Matrix::Iterator Iterator;
-		typedef typename Matrix::IndexedIterator IndexedIterator;
+		typedef typename Matrix::RawIterator RawIterator;
+		typedef typename Matrix::RawIndexedIterator RawIndexedIterator;
 		typedef typename Matrix::ConstColIterator ConstRowIterator;
 		typedef typename Matrix::ConstRowIterator ConstColIterator;
-		typedef typename Matrix::ConstIterator ConstIterator;
-		typedef typename Matrix::ConstIndexedIterator ConstIndexedIterator;
+		typedef typename Matrix::ConstRawIterator ConstRawIterator;
+		typedef typename Matrix::ConstRawIndexedIterator ConstRawIndexedIterator;
 
 		typedef typename Matrix::Row Column;
 		typedef typename Matrix::Row Col;
@@ -82,13 +84,13 @@ namespace LinBox
 		 * @param  A  Underlying matrix of which to construct the transpose
 		 */
 		TransposeMatrix (Matrix &A) :
-			_Mat (A)
+			_A (A)
 		{}
 
 		/** Copy constructor
 		*/
 		TransposeMatrix (const TransposeMatrix &Mat) :
-			_Mat (Mat._Mat)
+			_A (Mat._A)
 		{}
 
 		/** Get the number of rows in the matrix
@@ -96,7 +98,7 @@ namespace LinBox
 		 */
 		inline size_t rowdim () const
 		{
-			return _Mat.coldim ();
+			return _A.coldim ();
 		}
 
 		/** Get the number of columns in the matrix
@@ -104,7 +106,7 @@ namespace LinBox
 		 */
 		inline size_t coldim () const
 		{
-			return _Mat.rowdim ();
+			return _A.rowdim ();
 		}
 
 		/** @name Matrix I/O
@@ -117,9 +119,10 @@ namespace LinBox
 		 * @param F
 		 * @return Reference to stream
 		 */
-		inline std::ostream &write (std::ostream &stream) const
+		template <class Field>
+		inline std::ostream &write (std::ostream &stream, const Field &F) const
 		{
-			return _Mat.write (stream);
+			return _A.write (stream, F);
 		}
 
 		//@} Matrix I/O
@@ -136,7 +139,7 @@ namespace LinBox
 		 */
 		void setEntry (size_t i, size_t j, const Element &a_ij)
 		{
-			_Mat.setEntry (j, i, a_ij);
+			_A.setEntry (j, i, a_ij);
 		}
 
 		/** Get a writeable reference to the entry in the (i, j) position.
@@ -146,7 +149,7 @@ namespace LinBox
 		 */
 		Element &refEntry (size_t i, size_t j)
 		{
-			return _Mat.refEntry (j, i);
+			return _A.refEntry (j, i);
 		}
 
 		/** Get a read-only reference to the entry in the (i, j) position.
@@ -156,7 +159,7 @@ namespace LinBox
 		 */
 		inline const Element &getEntry (size_t i, size_t j) const
 		{
-			return _Mat.getEntry (j, i);
+			return _A.getEntry (j, i);
 		}
 
 		/** Copy the (i, j) entry into x, and return a reference to x.
@@ -169,7 +172,7 @@ namespace LinBox
 		 */
 		inline Element &getEntry (Element &x, size_t i, size_t j) const
 		{
-			return _Mat.getEntry (x, j, i);
+			return _A.getEntry (x, j, i);
 		}
 
 		/** @name Column of rows iterator
@@ -180,19 +183,19 @@ namespace LinBox
 
 		inline RowIterator rowBegin ()
 		{
-			return _Mat.colBegin ();
+			return _A.colBegin ();
 		}
 		inline RowIterator rowEnd ()
 		{
-			return _Mat.colEnd ();
+			return _A.colEnd ();
 		}
 		inline ConstRowIterator rowBegin () const
 		{
-			return _Mat.colBegin ();
+			return _A.colBegin ();
 		}
 		inline ConstRowIterator rowEnd () const
 		{
-			return _Mat.colEnd ();
+			return _A.colEnd ();
 		}
 
 		/** @name Row of columns iterator
@@ -203,19 +206,19 @@ namespace LinBox
 
 		inline ColIterator colBegin ()
 		{
-			return _Mat.rowBegin ();
+			return _A.rowBegin ();
 		}
 		inline ColIterator colEnd ()
 		{
-			return _Mat.rowEnd ();
+			return _A.rowEnd ();
 		}
 		inline ConstColIterator colBegin () const
 		{
-			return _Mat.rowBegin ();
+			return _A.rowBegin ();
 		}
 		inline ConstColIterator colEnd () const
 		{
-			return _Mat.rowEnd ();
+			return _A.rowEnd ();
 		}
 
 		/** @name Raw iterator
@@ -226,21 +229,21 @@ namespace LinBox
 		 * algorithm.
 		 */
 
-		inline Iterator Begin ()
+		inline RawIterator rawBegin ()
 		{
-			return _Mat.Begin ();
+			return _A.rawBegin ();
 		}
-		inline Iterator End ()
+		inline RawIterator rawEnd ()
 		{
-			return _Mat.End ();
+			return _A.rawEnd ();
 		}
-		inline ConstIterator Begin () const
+		inline ConstRawIterator rawBegin () const
 		{
-			return _Mat.Begin ();
+			return _A.rawBegin ();
 		}
-		inline ConstIterator End () const
+		inline ConstRawIterator rawEnd () const
 		{
-			return _Mat.End ();
+			return _A.rawEnd ();
 		}
 
 		/** @name Raw Indexed iterator.
@@ -252,28 +255,28 @@ namespace LinBox
 		 * This is provided through it's rowIndex() and colIndex() functions.
 		 */
 
-		inline IndexedIterator IndexedBegin()
+		inline RawIndexedIterator rawIndexedBegin()
 		{
-			return _Mat.IndexedBegin ();
+			return _A.rawIndexedBegin ();
 		}
-		inline IndexedIterator IndexedEnd()
+		inline RawIndexedIterator rawIndexedEnd()
 		{
-			return _Mat.IndexedEnd ();
+			return _A.rawIndexedEnd ();
 		}
-		inline ConstIndexedIterator IndexedBegin() const
+		inline ConstRawIndexedIterator rawIndexedBegin() const
 		{
-			return _Mat.IndexedBegin ();
+			return _A.rawIndexedBegin ();
 		}
-		inline ConstIndexedIterator IndexedEnd() const
+		inline ConstRawIndexedIterator rawIndexedEnd() const
 		{
-			return _Mat.IndexedEnd ();
+			return _A.rawIndexedEnd ();
 		}
 
 		//@}
 
 	protected:
 
-		Matrix &_Mat;
+		Matrix &_A;
 	};
 
 	// Specialization for matrices that have both row and column iterators
@@ -286,127 +289,128 @@ namespace LinBox
 
 		typedef typename Matrix::ColIterator RowIterator;
 		typedef typename Matrix::RowIterator ColIterator;
-		typedef typename Matrix::Iterator Iterator;
-		typedef typename Matrix::IndexedIterator IndexedIterator;
+		typedef typename Matrix::RawIterator RawIterator;
+		typedef typename Matrix::RawIndexedIterator RawIndexedIterator;
 		typedef typename Matrix::ConstColIterator ConstRowIterator;
 		typedef typename Matrix::ConstRowIterator ConstColIterator;
-		typedef typename Matrix::ConstIterator ConstIterator;
-		typedef typename Matrix::ConstIndexedIterator ConstIndexedIterator;
+		typedef typename Matrix::ConstRawIterator ConstRawIterator;
+		typedef typename Matrix::ConstRawIndexedIterator ConstRawIndexedIterator;
 
 		typedef typename Matrix::Row Column;
 		typedef typename Matrix::Row Col;
 		typedef typename Matrix::Col Row;
 
 		TransposeMatrix (Matrix &A) :
-			_Mat (A)
+			_A (A)
 		{}
 
 		TransposeMatrix (const TransposeMatrix &Mat) :
-			_Mat (Mat._Mat)
+			_A (Mat._A)
 		{}
 
 		inline size_t rowdim () const
 		{
-			return _Mat.coldim ();
+			return _A.coldim ();
 		}
 		inline size_t coldim () const
 		{
-			return _Mat.rowdim ();
+			return _A.rowdim ();
 		}
 
-		inline std::ostream &write (std::ostream &stream) const
+		template <class Field>
+		inline std::ostream &write (std::ostream &stream, const Field &F) const
 		{
-			return _Mat.write (stream);
+			return _A.write (stream, F);
 		}
 
 		inline void setEntry (size_t i, size_t j, const Element &a_ij)
 		{
-			_Mat.setEntry (j, i, a_ij);
+			_A.setEntry (j, i, a_ij);
 		}
 		inline Element &refEntry (size_t i, size_t j)
 		{
-			return _Mat.refEntry (j, i);
+			return _A.refEntry (j, i);
 		}
 		inline const Element &getEntry (size_t i, size_t j) const
 		{
-			return _Mat.getEntry (j, i);
+			return _A.getEntry (j, i);
 		}
 		inline Element &getEntry (Element &x, size_t i, size_t j) const
 		{
-			return _Mat.getEntry (x, j, i);
+			return _A.getEntry (x, j, i);
 		}
 
 		inline RowIterator rowBegin ()
 		{
-			return _Mat.colBegin ();
+			return _A.colBegin ();
 		}
 		inline RowIterator rowEnd ()
 		{
-			return _Mat.colEnd ();
+			return _A.colEnd ();
 		}
 		inline ConstRowIterator rowBegin () const
 		{
-			return _Mat.colBegin ();
+			return _A.colBegin ();
 		}
 		inline ConstRowIterator rowEnd () const
 		{
-			return _Mat.colEnd ();
+			return _A.colEnd ();
 		}
 
 		inline ColIterator colBegin ()
 		{
-			return _Mat.rowBegin ();
+			return _A.rowBegin ();
 		}
 		inline ColIterator colEnd ()
 		{
-			return _Mat.rowEnd ();
+			return _A.rowEnd ();
 		}
 		inline ConstColIterator colBegin () const
 		{
-			return _Mat.rowBegin ();
+			return _A.rowBegin ();
 		}
 		inline ConstColIterator colEnd () const
 		{
-			return _Mat.rowEnd ();
+			return _A.rowEnd ();
 		}
 
-		inline Iterator Begin ()
+		inline RawIterator rawBegin ()
 		{
-			return _Mat.Begin ();
+			return _A.rawBegin ();
 		}
-		inline Iterator End ()
+		inline RawIterator rawEnd ()
 		{
-			return _Mat.End ();
+			return _A.rawEnd ();
 		}
-		inline ConstIterator Begin () const
+		inline ConstRawIterator rawBegin () const
 		{
-			return _Mat.Begin ();
+			return _A.rawBegin ();
 		}
-		inline ConstIterator End () const
+		inline ConstRawIterator rawEnd () const
 		{
-			return _Mat.End ();
+			return _A.rawEnd ();
 		}
 
-		inline IndexedIterator IndexedBegin()
+		inline RawIndexedIterator rawIndexedBegin()
 		{
-			return _Mat.IndexedBegin ();
+			return _A.rawIndexedBegin ();
 		}
-		inline IndexedIterator IndexedEnd()
+		inline RawIndexedIterator rawIndexedEnd()
 		{
-			return _Mat.IndexedEnd ();
+			return _A.rawIndexedEnd ();
 		}
-		inline ConstIndexedIterator IndexedBegin() const
+		inline ConstRawIndexedIterator rawIndexedBegin() const
 		{
-			return _Mat.IndexedBegin ();
+			return _A.rawIndexedBegin ();
 		}
-		inline ConstIndexedIterator IndexedEnd() const
+		inline ConstRawIndexedIterator rawIndexedEnd() const
 		{
-			return _Mat.IndexedEnd ();
+			return _A.rawIndexedEnd ();
 		}
 
 	protected:
 
-		Matrix &_Mat;
+		Matrix &_A;
 	};
 
 	// Specialization for matrices that have only row iterators
@@ -418,11 +422,11 @@ namespace LinBox
 		typedef typename Matrix::Element Element;
 
 		typedef typename Matrix::RowIterator ColIterator;
-		typedef typename Matrix::Iterator Iterator;
-		typedef typename Matrix::IndexedIterator IndexedIterator;
+		typedef typename Matrix::RawIterator RawIterator;
+		typedef typename Matrix::RawIndexedIterator RawIndexedIterator;
 		typedef typename Matrix::ConstRowIterator ConstColIterator;
-		typedef typename Matrix::ConstIterator ConstIterator;
-		typedef typename Matrix::ConstIndexedIterator ConstIndexedIterator;
+		typedef typename Matrix::ConstRawIterator ConstRawIterator;
+		typedef typename Matrix::ConstRawIndexedIterator ConstRawIndexedIterator;
 
 		typedef typename Matrix::Row Column;
 		typedef typename Matrix::Row Col;
@@ -430,97 +434,98 @@ namespace LinBox
 		// TransposeMatrix () {}
 
 		TransposeMatrix (Matrix &A) :
-			_Mat (A)
+			_A (A)
 		{}
 		TransposeMatrix (const TransposeMatrix &Mat) :
-			_Mat (Mat._Mat)
+			_A (Mat._A)
 		{}
 
 		inline size_t rowdim () const
 		{
-			return _Mat.coldim ();
+			return _A.coldim ();
 		}
 		inline size_t coldim () const
 		{
-			return _Mat.rowdim ();
+			return _A.rowdim ();
 		}
 
-		inline std::ostream &write (std::ostream &stream) const
+		template <class Field>
+		inline std::ostream &write (std::ostream &stream, const Field &F) const
 		{
-			return _Mat.write (stream);
+			return _A.write (stream, F);
 		}
 
 		inline void setEntry (size_t i, size_t j, const Element &a_ij)
 		{
-			_Mat.setEntry (j, i, a_ij);
+			_A.setEntry (j, i, a_ij);
 		}
 		inline Element &refEntry (size_t i, size_t j)
 		{
-			return _Mat.refEntry (j, i);
+			return _A.refEntry (j, i);
 		}
 		inline const Element &getEntry (size_t i, size_t j) const
 		{
-			return _Mat.getEntry (j, i);
+			return _A.getEntry (j, i);
 		}
 		inline Element &getEntry (Element &x, size_t i, size_t j) const
 		{
-			return _Mat.getEntry (x, j, i);
+			return _A.getEntry (x, j, i);
 		}
 
 		inline ColIterator colBegin ()
 		{
-			return _Mat.rowBegin ();
+			return _A.rowBegin ();
 		}
 		inline ColIterator colEnd ()
 		{
-			return _Mat.rowEnd ();
+			return _A.rowEnd ();
 		}
 		inline ConstColIterator colBegin () const
 		{
-			return _Mat.rowBegin ();
+			return _A.rowBegin ();
 		}
 		inline ConstColIterator colEnd () const
 		{
-			return _Mat.rowEnd ();
+			return _A.rowEnd ();
 		}
 
-		inline Iterator Begin ()
+		inline RawIterator rawBegin ()
 		{
-			return _Mat.Begin ();
+			return _A.rawBegin ();
 		}
-		inline Iterator End ()
+		inline RawIterator rawEnd ()
 		{
-			return _Mat.End ();
+			return _A.rawEnd ();
 		}
-		inline ConstIterator Begin () const
+		inline ConstRawIterator rawBegin () const
 		{
-			return _Mat.Begin ();
+			return _A.rawBegin ();
 		}
-		inline ConstIterator End () const
+		inline ConstRawIterator rawEnd () const
 		{
-			return _Mat.End ();
+			return _A.rawEnd ();
 		}
 
-		inline IndexedIterator IndexedBegin()
+		inline RawIndexedIterator rawIndexedBegin()
 		{
-			return _Mat.IndexedBegin ();
+			return _A.rawIndexedBegin ();
 		}
-		inline IndexedIterator IndexedEnd()
+		inline RawIndexedIterator rawIndexedEnd()
 		{
-			return _Mat.IndexedEnd ();
+			return _A.rawIndexedEnd ();
 		}
-		inline ConstIndexedIterator IndexedBegin() const
+		inline ConstRawIndexedIterator rawIndexedBegin() const
 		{
-			return _Mat.IndexedBegin ();
+			return _A.rawIndexedBegin ();
 		}
-		inline ConstIndexedIterator IndexedEnd() const
+		inline ConstRawIndexedIterator rawIndexedEnd() const
 		{
-			return _Mat.IndexedEnd ();
+			return _A.rawIndexedEnd ();
 		}
 
 	protected:
 
-		Matrix &_Mat;
+		Matrix &_A;
 	};
 
 	// Specialization for matrices that have only column iterators
@@ -532,106 +537,107 @@ namespace LinBox
 		typedef typename Matrix::Element Element;
 
 		typedef typename Matrix::ColIterator RowIterator;
-		typedef typename Matrix::Iterator Iterator;
-		typedef typename Matrix::IndexedIterator IndexedIterator;
+		typedef typename Matrix::RawIterator RawIterator;
+		typedef typename Matrix::RawIndexedIterator RawIndexedIterator;
 		typedef typename Matrix::ConstColIterator ConstRowIterator;
-		typedef typename Matrix::ConstIterator ConstIterator;
-		typedef typename Matrix::ConstIndexedIterator ConstIndexedIterator;
+		typedef typename Matrix::ConstRawIterator ConstRawIterator;
+		typedef typename Matrix::ConstRawIndexedIterator ConstRawIndexedIterator;
 
 		typedef typename Matrix::Col Row;
 
 		TransposeMatrix (Matrix &A) :
-			_Mat (A)
+			_A (A)
 		{}
 		TransposeMatrix (const TransposeMatrix &Mat) :
-			_Mat (Mat._Mat)
+			_A (Mat._A)
 		{}
 
 		inline size_t rowdim () const
 		{
-			return _Mat.coldim ();
+			return _A.coldim ();
 		}
 		inline size_t coldim () const
 		{
-			return _Mat.rowdim ();
+			return _A.rowdim ();
 		}
 
-		inline std::ostream &write (std::ostream &stream) const
+		template <class Field>
+		inline std::ostream &write (std::ostream &stream, const Field &F) const
 		{
-			return _Mat.write (stream);
+			return _A.write (stream, F);
 		}
 
 		inline void setEntry (size_t i, size_t j, const Element &a_ij)
 		{
-			_Mat.setEntry (j, i, a_ij);
+			_A.setEntry (j, i, a_ij);
 		}
 		inline Element &refEntry (size_t i, size_t j)
 		{
-			return _Mat.refEntry (j, i);
+			return _A.refEntry (j, i);
 		}
 		inline const Element &getEntry (size_t i, size_t j) const
 		{
-			return _Mat.getEntry (j, i);
+			return _A.getEntry (j, i);
 		}
 		inline Element &getEntry (Element &x, size_t i, size_t j) const
 		{
-			return _Mat.getEntry (x, j, i);
+			return _A.getEntry (x, j, i);
 		}
 
 		inline RowIterator rowBegin ()
 		{
-			return _Mat.colBegin ();
+			return _A.colBegin ();
 		}
 		inline RowIterator rowEnd ()
 		{
-			return _Mat.colEnd ();
+			return _A.colEnd ();
 		}
 		inline ConstRowIterator rowBegin () const
 		{
-			return _Mat.colBegin ();
+			return _A.colBegin ();
 		}
 		inline ConstRowIterator rowEnd () const
 		{
-			return _Mat.colEnd ();
+			return _A.colEnd ();
 		}
 
-		inline Iterator Begin ()
+		inline RawIterator rawBegin ()
 		{
-			return _Mat.Begin ();
+			return _A.rawBegin ();
 		}
-		inline Iterator End ()
+		inline RawIterator rawEnd ()
 		{
-			return _Mat.End ();
+			return _A.rawEnd ();
 		}
-		inline ConstIterator Begin () const
+		inline ConstRawIterator rawBegin () const
 		{
-			return _Mat.Begin ();
+			return _A.rawBegin ();
 		}
-		inline ConstIterator End () const
+		inline ConstRawIterator rawEnd () const
 		{
-			return _Mat.End ();
+			return _A.rawEnd ();
 		}
 
-		inline IndexedIterator IndexedBegin()
+		inline RawIndexedIterator rawIndexedBegin()
 		{
-			return _Mat.IndexedBegin ();
+			return _A.rawIndexedBegin ();
 		}
-		inline IndexedIterator IndexedEnd()
+		inline RawIndexedIterator rawIndexedEnd()
 		{
-			return _Mat.IndexedEnd ();
+			return _A.rawIndexedEnd ();
 		}
-		inline ConstIndexedIterator IndexedBegin() const
+		inline ConstRawIndexedIterator rawIndexedBegin() const
 		{
-			return _Mat.IndexedBegin ();
+			return _A.rawIndexedBegin ();
 		}
-		inline ConstIndexedIterator IndexedEnd() const
+		inline ConstRawIndexedIterator rawIndexedEnd() const
 		{
-			return _Mat.IndexedEnd ();
+			return _A.rawIndexedEnd ();
 		}
 
 	protected:
 
-		const Matrix &_Mat;
+		const Matrix &_A;
 	};
 
 	template <class Matrix>

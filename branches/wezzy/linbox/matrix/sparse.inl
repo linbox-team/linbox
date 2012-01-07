@@ -37,7 +37,7 @@
 #include "linbox/vector/vector-traits.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/util/debug.h"
-#include "linbox/util/commentator.h"
+#include <linbox/util/commentator.h>
 
 namespace LinBox
 {
@@ -48,8 +48,8 @@ namespace LinBox
 	{
 		size_t i, j;
 
-		A._matA.clear ();
-		A._matA.resize (A._m);
+		A._A.clear ();
+		A._A.resize (A._m);
 
 		do {
 			std::istringstream str (buf);
@@ -75,8 +75,8 @@ namespace LinBox
 		std::istringstream str (buf);
 		str >> A._m >> A._n;
 
-		A._matA.clear ();
-		A._matA.resize (A._m);//cerr<<A.coldim()<<" "<<A.rowdim()<<endl;
+		A._A.clear ();
+		A._A.resize (A._m);//cerr<<A.coldim()<<" "<<A.rowdim()<<endl;
 
 		Element x;
 		while (is >> i) {
@@ -131,13 +131,13 @@ namespace LinBox
 		char c;
 
 		A._m = 0;
-		A._matA.clear ();
+		A._A.clear ();
 
 		i = 0;
 
 		do {
 			A._m++;
-			A._matA.push_back (Row ());
+			A._A.push_back (Row ());
 
 			std::istringstream str (buf);
 
@@ -181,7 +181,7 @@ namespace LinBox
 		const char pairstart = '[', pairend = ']';
 
 		A._m = A._n = 0;
-		A._matA.clear ();
+		A._A.clear ();
 
 		do {is.get(c);} while (c != matrixstart ); // find matrix start
 		i = 0;
@@ -192,7 +192,7 @@ namespace LinBox
 			else
 			{
 				A._m++;
-				A._matA.push_back (Row ());
+				A._A.push_back (Row ());
 				//processrow(i)
 				while (true)
 				{
@@ -291,7 +291,7 @@ namespace LinBox
 
 		case FORMAT_TURNER:
 			// The i j v triples, with zero based indices.
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
+			for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
 				for (j = i->begin (), j_idx = 0; j != i->end (); j++, j_idx++) {
 					os << i_idx << ' ' << j->first << ' ';
 					F.write (os, j->second);
@@ -302,7 +302,7 @@ namespace LinBox
 
 		case FORMAT_ONE_BASED:
 			// The i j v triples, with zero based indices.
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
+			for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
 				for (j = i->begin (), j_idx = 0; j != i->end (); j++, j_idx++) {
 					os << i_idx + 1 << ' ' << j->first + 1 << ' ';
 					F.write (os, j->second);
@@ -316,7 +316,7 @@ namespace LinBox
 			// followed by 0 0 0.
 			os << A._m << ' ' << A._n << " M" << std::endl;
 
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
+			for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
 				for (j = i->begin (), j_idx = 0; j != i->end (); j++, j_idx++) {
 					os << i_idx + 1 << ' ' << j->first + 1 << ' ';
 					F.write (os, j->second);
@@ -333,7 +333,7 @@ namespace LinBox
 
 			os << "[";
 
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
+			for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
 				j = i->begin ();
 
 				for (j_idx = 0; j_idx < A._n; j_idx++) {
@@ -361,7 +361,7 @@ namespace LinBox
 			os << "[";
 			firstrow=true;
 
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); ++i, ++i_idx) {
+			for (i = A._A.begin (), i_idx = 0; i != A._A.end (); ++i, ++i_idx) {
 				if (firstrow) {
 					os << "[";
 					firstrow =false;
@@ -395,7 +395,7 @@ namespace LinBox
 			//col_width = (int) ceil (log ((double) c) / M_LN10);
 			F.init (zero, 0);
 
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
+			for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
 				os << "  [ ";
 
 				j = i->begin ();
@@ -451,7 +451,7 @@ namespace LinBox
 			//break//BB: unreachable;
 
 		case FORMAT_TURNER:
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
+			for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
 				for (j_idx = i->first.begin (), j_elt = i->second.begin ();
 				     j_idx != i->first.end ();
 				     ++j_idx, ++j_elt)
@@ -465,7 +465,7 @@ namespace LinBox
 			break;
 
 		case FORMAT_ONE_BASED:
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
+			for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
 				for (j_idx = i->first.begin (), j_elt = i->second.begin ();
 				     j_idx != i->first.end ();
 				     ++j_idx, ++j_elt)
@@ -481,7 +481,7 @@ namespace LinBox
 		case FORMAT_GUILLAUME:
 			os << A._m << ' ' << A._n << " M" << std::endl;
 
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
+			for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
 				for (j_idx = i->first.begin (), j_elt = i->second.begin ();
 				     j_idx != i->first.end ();
 				     ++j_idx, ++j_elt)
@@ -502,7 +502,7 @@ namespace LinBox
 
 			os << "[";
 
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
+			for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
 				if (firstrow) {
 					os << "[";
 					firstrow =false;
@@ -538,7 +538,7 @@ namespace LinBox
 
 			os << "[";
 
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
+			for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
 				j_idx = i->first.begin ();
 				j_elt = i->second.begin ();
 
@@ -567,7 +567,7 @@ namespace LinBox
 			//col_width = (int) ceil (log ((double) c) / M_LN10);
 			F.init (zero, 0);
 
-			for (i = A._matA.begin (), i_idx = 0; i != A._matA.end (); i++, i_idx++) {
+			for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
 				os << "  [ ";
 
 				j_idx = i->first.begin ();
@@ -601,14 +601,14 @@ namespace LinBox
 	template <class Element, class Row, class Tag>
 	template <class Field>
 	SparseMatrixBase<Element,Row,Tag> ::SparseMatrixBase( MatrixStream<Field>& ms ) :
-		_matA(0), _m(0), _n(0)
+		_A(0), _m(0), _n(0)
 	{
 		Element val;
 		size_t i, j;
 		while( ms.nextTriple(i,j,val) ) {
 			if( i >= _m ) {
 				_m = i + 1;
-				_matA.resize( _m );
+				_A.resize( _m );
 			}
 			if( j >= _n ) _n = j + 1;
 			setEntry(i,j,val);
@@ -619,21 +619,21 @@ namespace LinBox
 			throw ms.reportError(__func__,__LINE__);
 		if( i > _m ) {
 			_m = i;
-			_matA.resize(_m);
+			_A.resize(_m);
 		}
 	}
 
 	template <class Element, class Row>
 	template <class Field>
 	SparseMatrixBase<Element,Row,VectorCategories::SparseSequenceVectorTag> ::SparseMatrixBase( MatrixStream<Field>& ms ) :
-		_matA(0), _m(0), _n(0)
+		_A(0), _m(0), _n(0)
 	{
 		Element val;
 		size_t i, j;
 		while( ms.nextTriple(i,j,val) ) {
 			if( i >= _m ) {
 				_m = i + 1;
-				_matA.resize( _m );
+				_A.resize( _m );
 			}
 			if( j >= _n ) _n = j + 1;
 			setEntry(i,j,val);
@@ -644,21 +644,21 @@ namespace LinBox
 			throw ms.reportError(__func__,__LINE__);
 		if( i > _m ) {
 			_m = i;
-			_matA.resize(_m);
+			_A.resize(_m);
 		}
 	}
 
 	template <class Element, class Row>
 	template <class Field>
 	SparseMatrixBase<Element,Row,VectorCategories::SparseAssociativeVectorTag> ::SparseMatrixBase( MatrixStream<Field>& ms ) :
-		_matA(0), _m(0), _n(0)
+		_A(0), _m(0), _n(0)
 	{
 		Element val;
 		size_t i, j;
 		while( ms.nextTriple(i,j,val) ) {
 			if( i >= _m ) {
 				_m = i + 1;
-				_matA.resize( _m );
+				_A.resize( _m );
 			}
 			if( j >= _n ) _n = j + 1;
 			setEntry(i,j,val);
@@ -669,21 +669,21 @@ namespace LinBox
 			throw ms.reportError(__func__,__LINE__);
 		if( i > _m ) {
 			_m = i;
-			_matA.resize(_m);
+			_A.resize(_m);
 		}
 	}
 
 	template <class Element, class Row>
 	template <class Field>
 	SparseMatrixBase<Element,Row,VectorCategories::SparseParallelVectorTag> ::SparseMatrixBase( MatrixStream<Field>& ms ) :
-		_matA(0), _m(0), _n(0)
+		_A(0), _m(0), _n(0)
 	{
 		Element val;
 		size_t i, j;
 		while( ms.nextTriple(i,j,val) ) {
 			if( i >= _m ) {
 				_m = i + 1;
-				_matA.resize( _m );
+				_A.resize( _m );
 			}
 			if( j >= _n ) _n = j + 1;
 			setEntry(i,j,val);
@@ -694,7 +694,7 @@ namespace LinBox
 			throw ms.reportError(__func__,__LINE__);
 		if( i > _m ) {
 			_m = i;
-			_matA.resize(_m);
+			_A.resize(_m);
 		}
 	}
 
@@ -702,7 +702,7 @@ namespace LinBox
 	void SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag > ::setEntry (size_t i, size_t j, const Element &value)
 	{
 		typedef typename Row::value_type value_type;
-		Row &v = _matA[i];
+		Row &v = _A[i];
 		typename Row::iterator iter;
 
 		if (v.size () == 0) {
@@ -723,7 +723,7 @@ namespace LinBox
 	{
 		static Element zero;
 
-		Row &v = _matA[i];
+		Row &v = _A[i];
 		typename Row::iterator iter;
 
 		if (v.size () == 0) {
@@ -745,7 +745,7 @@ namespace LinBox
 	{
 		static Element zero;
 
-		const Row &v = _matA[i];
+		const Row &v = _A[i];
 		typename Row::const_iterator iter;
 
 		if (v.size () == 0)
@@ -765,7 +765,7 @@ namespace LinBox
 	{
 		static Element zero;
 
-		const Row &v = _matA[i];
+		const Row &v = _A[i];
 		typename Row::const_iterator iter;
 
 		if (v.size () == 0)
@@ -783,10 +783,10 @@ namespace LinBox
 	template <class Element, class Row>
 	void SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag > ::setEntry (size_t i, size_t j, const Element &value)
 	{
-		while (_matA.size() < i + 1) _matA.push_back(Row());
-		_m = _matA.size();
+		while (_A.size() < i + 1) _A.push_back(Row());
+		_m = _A.size();
 
-		Row &v = _matA[i];
+		Row &v = _A[i];
 		typename Row::first_type::iterator iter;
 
 		if (v.first.size () == 0) {
@@ -810,7 +810,7 @@ namespace LinBox
 	{
 		static Element zero;
 
-		Row &v = _matA[i];
+		Row &v = _A[i];
 		typename Row::first_type::iterator iter;
 		typename Row::second_type::iterator iter_elt;
 
@@ -838,7 +838,7 @@ namespace LinBox
 	{
 		static Element zero;
 
-		const Row &v = _matA[i];
+		const Row &v = _A[i];
 		typename Row::first_type::const_iterator iter;
 
 		if (v.first.size () == 0)
@@ -911,7 +911,7 @@ namespace LinBox
 			typename Row::const_iterator j = i.begin ();
 
 			for (; j != i->begin (); ++j)
-				AT._matA[j->first].push_back (std::pair<size_t, Element> (row, j->second));
+				AT._A[j->first].push_back (std::pair<size_t, Element> (row, j->second));
 		}
 
 		return AT;
@@ -927,7 +927,7 @@ namespace LinBox
 			typename Row::const_iterator j = i.begin ();
 
 			for (; j != i->begin (); ++j)
-				AT._matA[j->first][row] = j->second;
+				AT._A[j->first][row] = j->second;
 		}
 
 		return AT;
@@ -944,8 +944,8 @@ namespace LinBox
 			typename Row::second_type::const_iterator j_elt = i->second.begin ();
 
 			for (; j_idx != i->first.end (); ++j_idx, ++j_elt) {
-				AT._matA[*j_idx].first.push_back (row);
-				AT._matA[*j_idx].second.push_back (*j_elt);
+				AT._A[*j_idx].first.push_back (row);
+				AT._A[*j_idx].second.push_back (*j_elt);
 			}
 		}
 

@@ -84,7 +84,7 @@ namespace LinBox
 	 *
 	 * For all of the arithmetic operations that output matrices, it is assumed that
 	 * the output matrix has an efficient row iterator. In typical use, the output
-	 * matrix will be a \ref BlasMatrix or a \ref BlasSubmatrix, which has
+	 * matrix will be a \ref DenseMatrixBase or a \ref DenseSubmatrix, which has
 	 * efficient row and column iterators. In particular, one should not perform
 	 * these arithmetic operations outputting to a \ref SparseMatrixBase.
 	 *
@@ -98,13 +98,13 @@ namespace LinBox
 		/// Constructor.
 		//! @param F field for MatrixDomain operations.
 		MatrixDomain (const Field &F) :
-			_field (F), _VD (F)
+			_F (F), _VD (F)
 		{}
 
 		/// Copy operator.
 		MatrixDomain& operator= (const MatrixDomain& MD)
 		{
-			_field = MD._field;
+			_F = MD._F;
 			_VD = MD._VD;
 			return *this;
 		}
@@ -117,11 +117,11 @@ namespace LinBox
 		//@{
 		const Field &field () const
 		{
-			return _field;
+			return _F;
 		}
 		Field &field ()
 		{
-			return _field;
+			return _F;
 		}
 		//@}
 
@@ -133,7 +133,7 @@ namespace LinBox
 		template <class Matrix>
 		inline std::ostream &write (std::ostream &os, const Matrix &A) const
 		{
-			return A.write (os);
+			return A.write (os, _F);
 		}
 
 		/** Read matrix.
@@ -144,7 +144,7 @@ namespace LinBox
 		template <class Matrix>
 		inline std::istream &read (std::istream &is, Matrix &A) const
 		{
-			return A.read (is, _field);
+			return A.read (is, _F);
 		}
 
 		/** Matrix copy
@@ -295,7 +295,7 @@ namespace LinBox
 		 *
 		 * C must support both row and column iterators, and the vector
 		 * representations must be dense. Examples of supported matrices are
-		 * \ref BlasMatrix and \ref BlasSubmatrix.
+		 * \ref DenseMatrixBase and \ref DenseSubmatrix.
 		 *
 		 * Either A or B, or both, may have limited iterators. However, either A
 		 * must support row iterators or B must support column iterators. If
@@ -416,16 +416,6 @@ namespace LinBox
 						  typename MatrixTraits<Matrix2>::MatrixCategory (),
 						  typename MatrixTraits<Matrix3>::MatrixCategory ());
 		}
-
-		//! Y <- AX-Y
-		template <class Matrix1, class Matrix2, class Matrix3>
-		inline Matrix1 &axmyin (Matrix1 &Y, const Matrix2 &A, const Matrix3 &X) const
-		{
-			negin(Y);
-			axpyin(Y,A,X);
-			return Y;
-		}
-
 
 		/*!  General matrix multiply
 		 * \f$ D \gets \alpha A B + \beta C\f$.
@@ -997,7 +987,7 @@ namespace LinBox
 					    VectorCategories::DenseVectorTag,
 					    VectorCategories::DenseVectorTag) const
 		{
-			return this->mulColDense (_VD, w, A, v);
+			return mulColDense (_VD, w, A, v);
 		}
 		template <class Vector1, class Matrix, class Vector2>
 		Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
@@ -1169,11 +1159,12 @@ namespace LinBox
 			return permuteColsByCol (A, P_start, P_end);
 		}
 
-		Field         _field;
+		Field         _F;
 		VectorDomain<Field>  _VD;
 	};
 
 }
+
 
 #include "linbox/matrix/matrix-domain.inl"
 

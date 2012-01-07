@@ -1165,7 +1165,6 @@ FULLCHECK_TESTS = \
         test-zero-one                 \
         test-last-invariant-factor    \
         test-cradomain                \
-				test-opencl-domain            \
 		test-rational-reconstruction-base
 
 
@@ -1703,7 +1702,7 @@ test-blas-domain$(EXEEXT): $(test_blas_domain_OBJECTS) $(test_blas_domain_DEPEND
 	$(CXXLINK) $(test_blas_domain_OBJECTS) $(test_blas_domain_LDADD) $(LIBS)
 test-opencl-domain$(EXEEXT): $(test_opencl_domain_OBJECTS) $(test_opencl_domain_DEPENDENCIES) 
 	@rm -f test-opencl-domain$(EXEEXT)
-	$(CXXLINK) $(test_opencl_domain_OBJECTS) $(test_opencl_domain_LDADD) $(LIBS) -lpthread -lOpenCL -I/home/mwezz/NVIDIA_GPU_COMPUTING_SDK/OpenCL/common/inc
+	$(CXXLINK) $(test_opencl_domain_OBJECTS) $(test_opencl_domain_LDADD) $(LIBS) -lOpenCL -I/home/mwezz/NVIDIA_GPU_COMPUTING_SDK/OpenCL/common/inc
 test-block-ring$(EXEEXT): $(test_block_ring_OBJECTS) $(test_block_ring_DEPENDENCIES) 
 	@rm -f test-block-ring$(EXEEXT)
 	$(CXXLINK) $(test_block_ring_OBJECTS) $(test_block_ring_LDADD) $(LIBS)
